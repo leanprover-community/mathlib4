@@ -3,10 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+module
+
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Data.Int.Sqrt
+
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Rat.Lemmas
-import Mathlib.Data.Int.Sqrt
 
 /-!
 # Square root on rational numbers
@@ -15,6 +18,8 @@ This file defines the square root function on rational numbers `Rat.sqrt`
 and proves several theorems about it.
 
 -/
+
+@[expose] public section
 
 
 namespace Rat

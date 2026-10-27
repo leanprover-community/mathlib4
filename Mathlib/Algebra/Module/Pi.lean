@@ -3,16 +3,23 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Regular.SMul
-import Mathlib.Algebra.Ring.Pi
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.Ring.Pi
 
 /-!
 # Pi instances for modules
 
-This file defines instances for module and related structures on Pi Types
+This file defines instances for module and related structures on Pi types.
+
+We also define the natural maps `LinearMap.pi` and `LinearMap.proj` on `Pi` types in the domain and
+codomain, respectively.
 -/
+
+public section
 
 
 universe u v w
@@ -26,27 +33,7 @@ namespace Pi
 
 theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
     (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
-  funext fun i => hk i (congr_fun h i :)
-
-instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
-    SMulWithZero α (∀ i, f i) :=
-  { Pi.instSMul with
-    smul_zero := fun _ => funext fun _ => smul_zero _
-    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
-
-instance smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
-    [∀ i, SMulWithZero (g i) (f i)] : SMulWithZero (∀ i, g i) (∀ i, f i) :=
-  { Pi.smul' with
-    smul_zero := fun _ => funext fun _ => smul_zero _
-    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
-
-instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
-    [∀ i, MulActionWithZero α (f i)] : MulActionWithZero α (∀ i, f i) :=
-  { Pi.mulAction _, Pi.smulWithZero _ with }
-
-instance mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
-    [∀ i, MulActionWithZero (g i) (f i)] : MulActionWithZero (∀ i, g i) (∀ i, f i) :=
-  { Pi.mulAction', Pi.smulWithZero' with }
+  funext fun i => hk i congr($h i)
 
 variable (I f)
 
@@ -83,3 +70,71 @@ instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCo
     rw [zero_smul]
 
 end Pi
+
+@[expose] section
+
+namespace LinearMap
+
+variable {R M M₂ M₃ ι ι' : Type*}
+variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃]
+  {φ : ι → Type*} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
+
+/-- `pi` construction for linear functions. From a family of linear functions it produces a linear
+function into a family of modules. -/
+def pi (f : (i : ι) → M₂ →ₗ[R] φ i) : M₂ →ₗ[R] (i : ι) → φ i :=
+  { AddHom.pi fun i => (f i).toAddHom with
+    toFun := fun c i => f i c
+    map_smul' := fun _ _ => funext fun i => (f i).map_smul _ _ }
+
+@[simp]
+theorem pi_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i : ι) : pi f c i = f i c :=
+  rfl
+
+theorem pi_eq_zero (f : (i : ι) → M₂ →ₗ[R] φ i) : pi f = 0 ↔ ∀ i, f i = 0 := by
+  simp only [LinearMap.ext_iff, pi_apply, funext_iff]
+  exact ⟨fun h a b => h b a, fun h a b => h b a⟩
+
+theorem pi_zero : pi (fun _ => 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
+
+theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂) :
+    (pi f).comp g = pi fun i => (f i).comp g :=
+  rfl
+
+/-- The constant linear map, taking `x` to `Function.const ι x`. -/
+def const : M₂ →ₗ[R] (ι → M₂) := pi fun _ ↦ .id
+
+@[simp] lemma const_apply (x : M₂) : LinearMap.const (R := R) x = Function.const ι x := rfl
+
+/-- The projections from a family of modules are linear maps.
+
+Note: this definition would be called `Pi.evalLinearMap` if we followed the pattern established by
+`Pi.evalAddHom`, `Pi.evalMonoidHom`, `Pi.evalRingHom`, ... -/
+def proj (i : ι) : ((i : ι) → φ i) →ₗ[R] φ i where
+  toFun := Function.eval i
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+theorem coe_proj (i : ι) : ⇑(proj i : ((i : ι) → φ i) →ₗ[R] φ i) = Function.eval i :=
+  rfl
+
+@[simp]
+theorem toAddMonoidHom_proj (i : ι) : (proj i).toAddMonoidHom (R := R) = Pi.evalAddMonoidHom φ i :=
+  rfl
+
+theorem proj_apply (i : ι) (b : (i : ι) → φ i) : (proj i : ((i : ι) → φ i) →ₗ[R] φ i) b = b i :=
+  rfl
+
+@[simp]
+theorem proj_pi (f : (i : ι) → M₂ →ₗ[R] φ i) (i : ι) : (proj i).comp (pi f) = f i := rfl
+
+@[simp]
+theorem pi_proj : pi proj = LinearMap.id (R := R) (M := ∀ i, φ i) := rfl
+
+@[simp]
+theorem pi_proj_comp (f : M₂ →ₗ[R] ∀ i, φ i) : pi (proj · ∘ₗ f) = f := rfl
+
+theorem proj_surjective (i : ι) : Function.Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :=
+  Function.surjective_eval i
+
+end LinearMap

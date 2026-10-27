@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.Additive
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.Embedding.Basic
 
 /-!
 # The restriction functor of an embedding of complex shapes
@@ -15,19 +17,21 @@ Given `c` and `c'` complex shapes on two types, and `e : c.Embedding c'`
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits ZeroObject
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
   (e : c.Embedding c') [e.IsRelIff]
 
 /-- Given `K : HomologicalComplex C c'` and `e : c.Embedding c'` (satisfying `[e.IsRelIff]`),
 this is the homological complex in `HomologicalComplex C c` obtained by restriction. -/
-@[simps]
+@[simps, implicit_reducible]
 def restriction : HomologicalComplex C c where
   X i := K.X (e.f i)
   d _ _ := K.d _ _
@@ -72,12 +76,12 @@ end HomologicalComplex
 
 namespace ComplexShape.Embedding
 
-variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C] [e.IsRelIff]
+variable (e : Embedding c c') (C : Type*) [Category* C] [HasZeroObject C] [e.IsRelIff]
 
 /-- Given `e : ComplexShape.Embedding c c'`, this is the restriction
 functor `HomologicalComplex C c' ⥤ HomologicalComplex C c`. -/
 @[simps]
-noncomputable def restrictionFunctor [HasZeroMorphisms C] :
+def restrictionFunctor [HasZeroMorphisms C] :
     HomologicalComplex C c' ⥤ HomologicalComplex C c where
   obj K := K.restriction e
   map φ := HomologicalComplex.restrictionMap φ e

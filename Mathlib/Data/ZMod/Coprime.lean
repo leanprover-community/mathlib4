@@ -3,9 +3,12 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+module
+
+public import Mathlib.Data.ZMod.Basic
+
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Data.Nat.Prime.Int
-import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
@@ -14,6 +17,8 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 We show that for prime `p`, the image of an integer `a` in `ZMod p` vanishes if and only if
 `a` and `p` are not coprime.
 -/
+
+public section
 
 assert_not_exists TwoSidedIdeal
 

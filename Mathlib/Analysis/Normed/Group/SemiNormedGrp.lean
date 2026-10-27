@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Riccardo Brasca
 -/
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+module
+
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # The category of seminormed groups
@@ -14,6 +16,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 We define `SemiNormedGrp`, the category of seminormed groups and normed group homs between
 them, as well as `SemiNormedGrp₁`, the subcategory of norm non-increasing morphisms.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -24,6 +28,8 @@ open CategoryTheory
 
 /-- The category of seminormed abelian groups and bounded group homomorphisms. -/
 structure SemiNormedGrp : Type (u + 1) where
+  /-- Construct a bundled `SemiNormedGrp` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
   [str : SeminormedAddCommGroup carrier]
@@ -34,10 +40,6 @@ namespace SemiNormedGrp
 
 instance : CoeSort SemiNormedGrp Type* where
   coe X := X.carrier
-
-/-- Construct a bundled `SemiNormedGrp` from the underlying type and typeclass. -/
-abbrev of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGrp where
-  carrier := M
 
 /-- The type of morphisms in `SemiNormedGrp` -/
 @[ext]
@@ -116,14 +118,10 @@ lemma ofHom_comp {M N O : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommG
 lemma ofHom_apply {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
     (f : NormedAddGroupHom M N) (r : M) : ofHom f r = f r := rfl
 
-@[simp]
 lemma inv_hom_apply {M N : SemiNormedGrp} (e : M ≅ N) (r : M) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {M N : SemiNormedGrp} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp.of V : Type u) = V :=
@@ -138,10 +136,6 @@ theorem coe_comp {M N K : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ K) :
 
 instance : Inhabited SemiNormedGrp :=
   ⟨of PUnit⟩
-
-instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
-    Unique (SemiNormedGrp.of V) :=
-  i
 
 instance {M N : SemiNormedGrp} : Zero (M ⟶ N) where
   zero := ofHom 0
@@ -183,7 +177,7 @@ instance Hom.neg {M N : SemiNormedGrp} : Neg (M ⟶ N) where
   neg f := ofHom (- f.hom)
 
 @[simp]
-theorem hom_neg {V W : SemiNormedGrp} (f : V ⟶ W) : (-f).hom = - f.hom :=
+theorem hom_neg {V W : SemiNormedGrp} (f : V ⟶ W) : (-f).hom = -f.hom :=
   rfl
 
 instance Hom.sub {M N : SemiNormedGrp} : Sub (M ⟶ N) where
@@ -217,6 +211,8 @@ end SemiNormedGrp
 which we shall equip with the category structure consisting only of the norm non-increasing maps.
 -/
 structure SemiNormedGrp₁ : Type (u + 1) where
+  /-- Construct a bundled `SemiNormedGrp₁` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
   [str : SeminormedAddCommGroup carrier]
@@ -227,10 +223,6 @@ namespace SemiNormedGrp₁
 
 instance : CoeSort SemiNormedGrp₁ Type* where
   coe X := X.carrier
-
-/-- Construct a bundled `SemiNormedGrp₁` from the underlying type and typeclass. -/
-abbrev of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGrp₁ where
-  carrier := M
 
 /-- The type of morphisms in `SemiNormedGrp₁` -/
 @[ext]
@@ -244,10 +236,11 @@ instance : LargeCategory.{u} SemiNormedGrp₁ where
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
   comp {_ _ _} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
+@[macro_inline]
 instance instFunLike (X Y : SemiNormedGrp₁) :
     FunLike { f : NormedAddGroupHom X Y // f.NormNoninc } X Y where
   coe f := f.1.toFun
-  coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
+  coe_injective _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
 
 instance : ConcreteCategory SemiNormedGrp₁
     fun X Y => { f : NormedAddGroupHom X Y // f.NormNoninc } where
@@ -307,7 +300,7 @@ lemma comp_apply {M N O : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ O) (r : M) 
 
 @[ext]
 lemma hom_ext {M N : SemiNormedGrp₁} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext (congr_arg Subtype.val hf)
+  Hom.ext congr($(hf).val)
 
 @[simp]
 lemma hom_mkHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
@@ -350,7 +343,7 @@ def mkIso {M N : SemiNormedGrp} (f : M ≅ N) (i : f.hom.hom.NormNoninc) (i' : f
 
 instance : HasForget₂ SemiNormedGrp₁ SemiNormedGrp where
   forget₂ :=
-    { obj := fun X => SemiNormedGrp.of X
+    { obj := fun X => ↧X
       map := fun f => SemiNormedGrp.ofHom f.1 }
 
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp₁.of V : Type u) = V :=
@@ -365,10 +358,6 @@ theorem coe_comp {M N K : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ K) :
 
 instance : Inhabited SemiNormedGrp₁ :=
   ⟨of PUnit⟩
-
-instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
-    Unique (SemiNormedGrp₁.of V) :=
-  i
 
 instance (X Y : SemiNormedGrp₁) : Zero (X ⟶ Y) where
   zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩
@@ -397,3 +386,23 @@ theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := 
     _ ≤ ‖i.hom v‖ := i.inv.2 _
 
 end SemiNormedGrp₁
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `SemiNormedGrp₁.of X` as `↧X`. -/
+@[app_delab SemiNormedGrp₁.of]
+meta def SemiNormedGrp₁.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prints `SemiNormedGrp.of X` as `↧X`. -/
+@[app_delab SemiNormedGrp.of]
+meta def SemiNormedGrp.delabOf : Delab := CategoryTheory.delabOf
+
+end Notation

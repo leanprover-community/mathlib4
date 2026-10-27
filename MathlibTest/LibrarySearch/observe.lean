@@ -1,8 +1,14 @@
-import Mathlib.Tactic.Observe
+module
+
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Observe
 
 set_option linter.unusedVariables false
 
-/-- info: Try this: have h : x + y = y + x := Nat.add_comm x y -/
+/--
+info: Try this:
+  [apply] have h : x + y = y + x := Nat.add_comm x y
+-/
 #guard_msgs in
 example (x y : Nat) : True := by
   observe? h : x + y = y + x

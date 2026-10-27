@@ -3,8 +3,10 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Lean.Meta.Basic
-import Mathlib.Init
+module
+
+public meta import Lean.Meta.Basic
+public import Mathlib.Init
 
 /-!
 # Datatypes for bicategory like structures
@@ -33,6 +35,8 @@ For example, a monad `m` with `[MonadMor₂ m]` provides the operation
 composition `η ≫ θ` of 2-morphisms `η` and `θ` in the monad `m`.
 
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -113,7 +117,7 @@ class MonadMor₁ (m : Type → Type) where
   comp₁M (f g : Mor₁) : m Mor₁
 
 /-- Expressions for coherence isomorphisms (i.e., structural 2-morphisms
-giveb by `BicategorycalCoherence.iso`). -/
+given by `BicategoricalCoherence.iso`). -/
 structure CoherenceHom where
   /-- The underlying lean expression of a coherence isomorphism. -/
   e : Expr
@@ -162,9 +166,41 @@ inductive Mor₂Iso : Type where
   deriving Inhabited
 
 /-- A monad equipped with the ability to unfold `BicategoricalCoherence.iso`. -/
-class MonadCoherehnceHom (m : Type → Type) where
+class MonadCoherenceHom (m : Type → Type) where
   /-- Unfold a coherence isomorphism. -/
   unfoldM (α : CoherenceHom) : m Mor₂Iso
+
+@[deprecated (since := "2026-09-17")] alias MonadCoherehnceHom := MonadCoherenceHom
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.unfoldM := MonadCoherenceHom.unfoldM
+
+-- The remaining declarations the compiler generates for the class, so that the rename leaves no
+-- name behind. `rec`, `recOn` and `noConfusion` have no executable code, hence `noncomputable`.
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.casesOn := MonadCoherenceHom.casesOn
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.ctorIdx := MonadCoherenceHom.ctorIdx
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.mk := MonadCoherenceHom.mk
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.mk.noConfusion := MonadCoherenceHom.mk.noConfusion
+
+@[deprecated (since := "2026-09-17")]
+alias MonadCoherehnceHom.noConfusionType := MonadCoherenceHom.noConfusionType
+
+@[deprecated (since := "2026-09-17")]
+noncomputable alias MonadCoherehnceHom.noConfusion := MonadCoherenceHom.noConfusion
+
+@[deprecated (since := "2026-09-17")]
+noncomputable alias MonadCoherehnceHom.rec := MonadCoherenceHom.rec
+
+@[deprecated (since := "2026-09-17")]
+noncomputable alias MonadCoherehnceHom.recOn := MonadCoherenceHom.recOn
 
 /-- The underlying lean expression of a 2-isomorphism. -/
 def StructuralAtom.e : StructuralAtom → Expr
@@ -289,7 +325,7 @@ structure Atom where
   deriving Inhabited
 
 /-- `Mor₂` expressions defined below will have the `isoLift? : Option IsoLift` field.
-For `η : Mor₂` such that `η.isoLift? = .some isoLift`, we have the following data:
+For `η : Mor₂` such that `η.isoLift? = some isoLift`, we have the following data:
 - `isoLift.e`: an expression for a 2-isomorphism `η'`, given as a `Mor₂Iso` term,
 - `isoLift.eq`: a lean expression for the proof that `η'.hom = η`.
 -/
@@ -412,7 +448,7 @@ inductive NormalizedHom : Type
 /-- The underlying expression of a normalized 1-morphism. -/
 def NormalizedHom.e : NormalizedHom → Mor₁
   | NormalizedHom.nil e _ => e
-  | NormalizedHom.cons e _ _  => e
+  | NormalizedHom.cons e _ _ => e
 
 /-- The domain of a normalized 1-morphism. -/
 def NormalizedHom.src : NormalizedHom → Obj
@@ -443,7 +479,7 @@ class Context (ρ : Type) where
 export Context (mkContext?)
 
 /-- Construct a context from a lean expression for a 2-morphism. -/
-def mkContext {ρ  : Type} [Context ρ] (e : Expr) : MetaM ρ := do
+def mkContext {ρ : Type} [Context ρ] (e : Expr) : MetaM ρ := do
   match ← mkContext? e with
   | some c => return c
   | none => throwError "failed to construct a monoidal category or bicategory context from {e}"

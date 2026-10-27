@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Urysohn's lemma for bounded continuous functions
@@ -17,6 +19,8 @@ bounded continuous functions `X →ᵇ ℝ`. These lemmas live in a separate fil
 
 Urysohn's lemma, normal topological space
 -/
+
+public section
 
 
 open BoundedContinuousFunction
@@ -50,4 +54,4 @@ theorem exists_bounded_mem_Icc_of_closed_of_le {X : Type*} [TopologicalSpace X] 
   let ⟨f, hfs, hft, hf01⟩ := exists_bounded_zero_one_of_closed hs ht hd
   ⟨BoundedContinuousFunction.const X a + (b - a) • f, fun x hx => by simp [hfs hx], fun x hx => by
     simp [hft hx], fun x =>
-    ⟨by dsimp; nlinarith [(hf01 x).1], by dsimp; nlinarith [(hf01 x).2]⟩⟩
+    ⟨by simp; nlinarith [(hf01 x).1], by simp; nlinarith [(hf01 x).2]⟩⟩

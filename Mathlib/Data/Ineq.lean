@@ -3,7 +3,9 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Lean.Expr.Basic
+module
+
+public import Mathlib.Init
 
 /-!
 # `Ineq` datatype
@@ -13,7 +15,7 @@ involving it. The type `Ineq` is one of the fundamental objects manipulated by t
 `linear_combination` tactics.
 -/
 
-open Lean Elab Tactic Meta
+@[expose] public section
 
 namespace Mathlib
 
@@ -55,46 +57,4 @@ def toString : Ineq → String
 
 instance : ToString Ineq := ⟨toString⟩
 
-instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
-
 end Mathlib.Ineq
-
-/-! ### Parsing inequalities -/
-
-namespace Lean.Expr
-open Mathlib
-
-/-- Given an expression `e`, parse it as a `=`, `≤` or `<`, and return this relation (as a
-`Linarith.Ineq`) together with the type in which the (in)equality occurs and the two sides of the
-(in)equality.
-
-This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
-for compositionality.
--/
-def ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := do
-  let e ← whnfR (← instantiateMVars e)
-  match e.eq? with
-  | some p => return (Ineq.eq, p)
-  | none =>
-  match e.le? with
-  | some p => return (Ineq.le, p)
-  | none =>
-  match e.lt? with
-  | some p => return (Ineq.lt, p)
-  | none => throwError "Not a comparison: {e}"
-
-/-- Given an expression `e`, parse it as a `=`, `≤` or `<`, or the negation of such, and return this
-relation (as a `Linarith.Ineq`) together with the type in which the (in)equality occurs, the two
-sides of the (in)equality, and a boolean flag indicating the presence or absence of the `¬`.
-
-This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
-for compositionality.
--/
-def ineqOrNotIneq? (e : Expr) : MetaM (Bool × Ineq × Expr × Expr × Expr) := do
-  try
-    return (true, ← e.ineq?)
-  catch _ =>
-    let some e' := e.not? | throwError "Not a comparison: {e}"
-    return (false, ← e'.ineq?)
-
-end Lean.Expr

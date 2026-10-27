@@ -3,8 +3,11 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Types
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # Concrete description of (co)limits in functor categories
@@ -12,6 +15,8 @@ import Mathlib.CategoryTheory.Limits.Types
 Some of the concrete descriptions of (co)limits in `Type v` extend to (co)limits in the functor
 category `K ⥤ Type v`.
 -/
+
+public section
 
 namespace CategoryTheory.FunctorToTypes
 
@@ -34,6 +39,6 @@ theorem jointly_surjective' [∀ k, HasColimit (F.flip.obj k)] (k : K) (x : (col
 
 theorem colimit.map_ι_apply [HasColimit F] (j : J) {k k' : K} {f : k ⟶ k'} {x} :
     (colimit F).map f ((colimit.ι F j).app _ x) = (colimit.ι F j).app _ ((F.obj j).map f x) :=
-  congrFun ((colimit.ι F j).naturality _).symm _
+  congr($(((colimit.ι F j).naturality _).symm) _)
 
 end CategoryTheory.FunctorToTypes

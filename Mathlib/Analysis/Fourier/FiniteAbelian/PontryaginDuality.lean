@@ -3,10 +3,15 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+module
+
+public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+
 import Mathlib.Algebra.DirectSum.AddChar
-import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+import Mathlib.Algebra.Field.ModEq
 import Mathlib.GroupTheory.FiniteAbelian.Basic
+import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Pontryagin duality for finite abelian groups
@@ -20,13 +25,15 @@ Structure Theorem.
 
 ## TODO
 
-Reuse the work done in `Mathlib.GroupTheory.FiniteAbelian.Duality`. This requires to write some more
-glue.
+Reuse the work done in `Mathlib/GroupTheory/FiniteAbelian/Duality.lean`. This requires to write some
+more glue.
 -/
+
+@[expose] public section
 
 noncomputable section
 
-open Circle Finset Function Multiplicative
+open Circle Finset Function Module Multiplicative
 open Fintype (card)
 open Real hiding exp
 open scoped BigOperators DirectSum
@@ -47,19 +54,19 @@ def zmod (x : ZMod n) : AddChar (ZMod n) Circle :=
     AddCircle.toCircle_apply_mk]
 
 @[simp] lemma zmod_zero : zmod n 0 = 1 :=
-  DFunLike.ext _ _ <| by simp [ZMod.intCast_surjective.forall, zmod]
+  DFunLike.ext _ _ <| by simp [zmod]
 
 variable {n}
 
 @[simp] lemma zmod_add : ∀ x y : ZMod n, zmod n (x + y) = zmod n x * zmod n y := by
-  simp [DFunLike.ext_iff, ← Int.cast_add, zmod, add_mul, add_div, map_add_eq_mul]
+  simp [DFunLike.ext_iff, zmod, add_mul, map_add_eq_mul]
 
 lemma zmod_injective : Injective (zmod n) := by
   simp_rw [Injective, ZMod.intCast_surjective.forall]
   rintro x y h
   have hn : (n : ℝ) ≠ 0 := NeZero.ne _
   simpa [pi_ne_zero, exp_inj, hn, CharP.intCast_eq_intCast (ZMod n) n] using
-    (zmod_intCast ..).symm.trans <| (DFunLike.congr_fun h ((1 : ℤ) : ZMod n)).trans <|
+    (zmod_intCast ..).symm.trans <| congr($h (((1 : ℤ) : ZMod n))).trans <|
       zmod_intCast ..
 
 @[simp] lemma zmod_inj {x y : ZMod n} : zmod n x = zmod n y ↔ x = y := zmod_injective.eq_iff
@@ -71,14 +78,15 @@ def zmodHom : AddChar (ZMod n) (AddChar (ZMod n) Circle) where
   map_add_eq_mul' := by simp
 
 /-- Character on a product of `ZMod`s given by `x ↦ ∏ i, e ^ (2 * π * I * x i * y / n)`. -/
-private def mkZModAux {ι : Type} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
+private def mkZModAux {ι : Type*} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
     (u : ∀ i, ZMod (n i)) : AddChar (⨁ i, ZMod (n i)) Circle :=
   AddChar.directSum fun i ↦ zmod (n i) (u i)
 
-private lemma mkZModAux_injective {ι : Type} [DecidableEq ι] {n : ι → ℕ} [∀ i, NeZero (n i)] :
+private lemma mkZModAux_injective {ι : Type*} [DecidableEq ι] {n : ι → ℕ} [∀ i, NeZero (n i)] :
     Injective (mkZModAux n) :=
   AddChar.directSum_injective.comp fun f g h ↦ by simpa [funext_iff] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The circle-valued characters of a finite abelian group are the same as its complex-valued
 characters. -/
 def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
@@ -135,10 +143,10 @@ lemma exists_apply_ne_zero : (∃ ψ : AddChar α ℂ, ψ a ≠ 1) ↔ a ≠ 0 :
   classical
   by_contra! h
   let f : α → ℂ := fun b ↦ if a = b then 1 else 0
-  have h₀ := congr_fun ((complexBasis α).sum_repr f) 0
-  have h₁ := congr_fun ((complexBasis α).sum_repr f) a
+  have h₀ := congr($((complexBasis α).sum_repr f) 0)
+  have h₁ := congr($((complexBasis α).sum_repr f) a)
   simp only [complexBasis_apply, Fintype.sum_apply, Pi.smul_apply, h, smul_eq_mul, mul_one,
-    map_zero_eq_one, if_pos rfl, if_neg ha, f] at h₀ h₁
+    map_zero_eq_one, ite_eq_left rfl, ite_eq_right ha, f] at h₀ h₁
   exact one_ne_zero (h₁.symm.trans h₀)
 
 lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
@@ -146,7 +154,7 @@ lemma forall_apply_eq_zero : (∀ ψ : AddChar α ℂ, ψ a = 1) ↔ a = 0 := by
 
 lemma doubleDualEmb_injective : Injective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) :=
   doubleDualEmb.ker_eq_bot_iff.1 <| eq_bot_iff.2 fun a ha ↦
-    forall_apply_eq_zero.1 fun ψ ↦ by simpa using DFunLike.congr_fun ha (Additive.ofMul ψ)
+    forall_apply_eq_zero.1 fun ψ ↦ by simpa using! congr($ha (Additive.ofMul ψ))
 
 lemma doubleDualEmb_bijective : Bijective (doubleDualEmb : α → AddChar (AddChar α ℂ) ℂ) := by
   cases nonempty_fintype α
@@ -182,7 +190,7 @@ lemma sum_apply_eq_ite [Fintype α] [DecidableEq α] (a : α) :
     ∑ ψ : AddChar α ℂ, ψ a = if a = 0 then (Fintype.card α : ℂ) else 0 := by
   simpa using sum_eq_ite (doubleDualEmb a : AddChar (AddChar α ℂ) ℂ)
 
-lemma expect_apply_eq_ite [Fintype α] [DecidableEq α] (a : α) :
+lemma expect_apply_eq_ite [Finite α] [DecidableEq α] (a : α) :
     𝔼 ψ : AddChar α ℂ, ψ a = if a = 0 then 1 else 0 := by
   simpa using expect_eq_ite (doubleDualEmb a : AddChar (AddChar α ℂ) ℂ)
 

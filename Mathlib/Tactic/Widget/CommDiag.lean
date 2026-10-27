@@ -3,12 +3,17 @@ Copyright (c) 2022 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki
 -/
-import ProofWidgets.Component.PenroseDiagram
-import ProofWidgets.Presentation.Expr
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public meta import Mathlib.Tactic.ToDual
+public meta import ProofWidgets.Component.PenroseDiagram
+public meta import ProofWidgets.Presentation.Expr
+public import Mathlib.CategoryTheory.Category.Basic
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/
+
+public meta section
 
 open Lean in
 /-- If the expression is a function application of `fName` with 7 arguments, return those arguments.
@@ -50,18 +55,17 @@ abbrev ExprEmbeds := Array (String × Expr)
 
 /-! ## Widget for general commutative diagrams -/
 
-open scoped Jsx in
 /-- Construct a commutative diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
-def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
+def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM ProofWidgets.Html := do
   let embeds ← embeds.mapM fun (s, h) =>
-      return (s, <InteractiveCode fmt={← Widget.ppExprTagged h} />)
-  return (
+      return (s, jsx%{<InteractiveCode fmt={← Widget.ppExprTagged h} />})
+  return jsx%{
     <PenroseDiagram
       embeds={embeds}
       dsl={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.dsl"}
       sty={include_str ".."/".."/".."/"widget"/"src"/"penrose"/"commutative.sty"}
-      sub={sub} />)
+      sub={sub} />}
 
 /-! ## Commutative triangles -/
 
@@ -77,7 +81,7 @@ def subTriangle := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"triangle
 
 /-- Given a commutative triangle `f ≫ g = h` or `e ≡ h = f ≫ g`, return a triangle diagram.
 Otherwise `none`. -/
-def commTriangleM? (e : Expr) : MetaM (Option Html) := do
+def commTriangleM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
   let e ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   if let some (f, g) := homComp? lhs then
@@ -93,6 +97,7 @@ def commTriangleM? (e : Expr) : MetaM (Option Html) := do
     #[("A", A), ("B", B), ("C", C),
       ("f", f), ("g", g), ("h", lhs)]
 
+/-- Presenter for a commutative triangle -/
 @[expr_presenter]
 def commutativeTrianglePresenter : ExprPresenter where
   userName := "Commutative triangle"
@@ -115,7 +120,7 @@ D h C
 def subSquare := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"square.sub"
 
 /-- Given a commutative square `f ≫ g = i ≫ h`, return a square diagram. Otherwise `none`. -/
-def commSquareM? (e : Expr) : MetaM (Option Html) := do
+def commSquareM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
   let e ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   let some (f, g) := homComp? lhs | return none
@@ -126,6 +131,7 @@ def commSquareM? (e : Expr) : MetaM (Option Html) := do
     #[("A", A), ("B", B), ("C", C), ("D", D),
       ("f", f), ("g", g), ("h", h), ("i", i)]
 
+/-- Presenter for a commutative square -/
 @[expr_presenter]
 def commutativeSquarePresenter : ExprPresenter where
   userName := "Commutative square"

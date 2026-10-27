@@ -3,8 +3,11 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
+module
+
+public import Mathlib.Combinatorics.Derangements.Basic
+
 import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Tactic.Ring
 
@@ -13,7 +16,7 @@ import Mathlib.Tactic.Ring
 
 This file contains lemmas that describe the cardinality of `derangements α` when `α` is a fintype.
 
-# Main definitions
+## Main definitions
 
 * `card_derangements_invariant`: A lemma stating that the number of derangements on a type `α`
     depends only on the cardinality of `α`.
@@ -25,15 +28,16 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
     factorials.
 -/
 
+@[expose] public section
+
 
 open derangements Equiv Fintype
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
-instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
+instance : DecidablePred (· ∈ derangements α) := fun _ => Fintype.decidableForallFintype
 
--- Porting note: used to use the tactic delta_instance
-instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
+example : Fintype (derangements α) := inferInstance
 
 theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
@@ -45,22 +49,20 @@ theorem card_derangements_fin_add_two (n : ℕ) :
   -- get some basic results about the size of Fin (n+1) plus or minus an element
   have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) := by
     intro a
-    simp only
-      [card_ofFinset (s := Finset.filter (fun x => x ∈ ({a}ᶜ : Set (Fin (n + 1)))) Finset.univ),
-      Set.mem_compl_singleton_iff, Finset.filter_ne' _ a,
-      Finset.card_erase_of_mem (Finset.mem_univ a), Finset.card_fin, add_tsub_cancel_right,
-      card_fin]
+    rw [Fintype.card_compl_set]
+    simp
   have h2 : card (Fin (n + 2)) = card (Option (Fin (n + 1))) := by simp only [card_fin, card_option]
   -- rewrite the LHS and substitute in our fintype-level equivalence
   simp only [card_derangements_invariant h2,
     card_congr
       (@derangementsRecursionEquiv (Fin (n + 1))
-        _),-- push the cardinality through the Σ and ⊕ so that we can use `card_n`
+        _), -- push the cardinality through the Σ and ⊕ so that we can use `card_n`
     card_sigma,
     card_sum, card_derangements_invariant (h1 _), Finset.sum_const, nsmul_eq_mul, Finset.card_fin,
     mul_add, Nat.cast_id]
 
 /-- The number of derangements of an `n`-element set. -/
+@[oeis A000166]
 def numDerangements : ℕ → ℕ
   | 0 => 1
   | 1 => 0
@@ -83,7 +85,7 @@ theorem numDerangements_succ (n : ℕ) :
   induction n with
   | zero => rfl
   | succ n hn =>
-    simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add]
+    simp only [numDerangements_add_two, hn, pow_succ, Int.natCast_mul, Int.natCast_add]
     ring
 
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
@@ -95,7 +97,7 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
   · rfl
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
-  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> omega
+  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> lia
 
 theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
     card (derangements α) = numDerangements (card α) := by
@@ -115,4 +117,4 @@ theorem numDerangements_sum (n : ℕ) :
     intro x hx
     have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
     rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_right_comm, add_tsub_cancel_of_le h_le,
-      Int.ofNat_mul, Int.ofNat_add, mul_left_comm, Nat.cast_one]
+      Int.natCast_mul, Int.natCast_add, mul_left_comm, Nat.cast_one]

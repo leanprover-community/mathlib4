@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 
 /-!
 # Derivatives of the `tan` and `arctan` functions.
@@ -12,8 +14,8 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 Continuity and derivatives of the tangent and arctangent functions.
 -/
 
+public section
 
-noncomputable section
 
 namespace Real
 
@@ -30,8 +32,8 @@ theorem hasDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^
 theorem tendsto_abs_tan_of_cos_eq_zero {x : ℝ} (hx : cos x = 0) :
     Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by
   have hx : Complex.cos x = 0 := mod_cast hx
-  simp only [← Complex.abs_ofReal, Complex.ofReal_tan]
-  refine (Complex.tendsto_abs_tan_of_cos_eq_zero hx).comp ?_
+  simp only [← Real.norm_eq_abs, ← Complex.norm_real, Complex.ofReal_tan]
+  refine (Complex.tendsto_norm_tan_of_cos_eq_zero hx).comp ?_
   refine Tendsto.inf Complex.continuous_ofReal.continuousAt ?_
   exact tendsto_principal_principal.2 fun y => mt Complex.ofReal_inj.1
 
@@ -66,6 +68,11 @@ theorem hasDerivAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : ℝ) (π
 theorem differentiableAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : ℝ) (π / 2)) :
     DifferentiableAt ℝ tan x :=
   (hasDerivAt_tan_of_mem_Ioo h).differentiableAt
+
+/-- The limit `lim_{x → 0} (tan x) / x = 1`. -/
+theorem tendsto_tan_div_nhdsNE_zero : Tendsto (fun x : ℝ ↦ tan x / x) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_tan (x := 0) (by simp))).congr
+    fun _ ↦ by simp [slope_def_field]
 
 theorem hasStrictDerivAt_arctan (x : ℝ) : HasStrictDerivAt arctan (1 / (1 + x ^ 2)) x := by
   have A : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'
@@ -136,8 +143,8 @@ end deriv
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E}
-  {s : Set E} {n : ℕ∞}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : StrongDual ℝ E}
+  {x : E} {s : Set E} {n : ℕ∞}
 
 theorem HasStrictFDerivAt.arctan (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => arctan (f x)) ((1 / (1 + f x ^ 2)) • f') x :=

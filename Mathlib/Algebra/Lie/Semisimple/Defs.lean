@@ -3,7 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Solvable
+module
+
+public import Mathlib.Algebra.Lie.Solvable
 
 /-!
 # Semisimple Lie algebras
@@ -22,12 +24,19 @@ In this file we define simple and semisimple Lie algebras, together with related
 lie algebra, radical, simple, semisimple
 -/
 
+public section
+
 variable (R L M : Type*)
 variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
 
 /-- A nontrivial Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`. -/
 abbrev LieModule.IsIrreducible : Prop :=
   IsSimpleOrder (LieSubmodule R L M)
+
+variable {R L M} in
+lemma LieModule.IsIrreducible.mk [Nontrivial M] (h : ∀ N : LieSubmodule R L M, N ≠ ⊥ → N = ⊤) :
+    IsIrreducible R L M :=
+  IsSimpleOrder.of_forall_eq_top h
 
 lemma LieSubmodule.eq_top_of_isIrreducible [LieModule.IsIrreducible R L M]
     (N : LieSubmodule R L M) [Nontrivial N] :
@@ -49,7 +58,7 @@ Note that the label 'semisimple' is apparently not universally agreed
 [upon](https://mathoverflow.net/questions/149391/on-radicals-of-a-lie-algebra#comment383669_149391)
 for general coefficients.
 
-For example [Seligman, page 15](seligman1967) uses the label for `LieAlgebra.HasTrivialRadical`,
+For example [Seligman, page 15][seligman1967] uses the label for `LieAlgebra.HasTrivialRadical`,
 whereas we reserve it for Lie algebras that are a direct sum of simple Lie algebras.
 -/
 @[mk_iff] class HasTrivialRadical : Prop where
@@ -70,6 +79,9 @@ lemma hasCentralRadical_of_radical_le (h : radical R L ≤ center R L) :
     LieAlgebra.HasCentralRadical R L where
   radical_eq_center := le_antisymm h (center_le_radical R L)
 
+instance [Subsingleton L] : HasTrivialRadical R L :=
+  ⟨by simpa only [radical_eq_top_of_isSolvable] using Subsingleton.elim ⊤ ⊥⟩
+
 export HasCentralRadical (radical_eq_center)
 attribute [simp] radical_eq_center
 
@@ -87,7 +99,7 @@ Note that the label 'semisimple' is apparently not universally agreed
 [upon](https://mathoverflow.net/questions/149391/on-radicals-of-a-lie-algebra#comment383669_149391)
 for general coefficients.
 
-For example [Seligman, page 15](seligman1967) uses the label for `LieAlgebra.HasTrivialRadical`,
+For example [Seligman, page 15][seligman1967] uses the label for `LieAlgebra.HasTrivialRadical`,
 the weakest of the various properties which are all equivalent over a field of characteristic zero.
 -/
 class IsSemisimple : Prop where

@@ -3,17 +3,18 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.GroupWithZero.Action.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Hom
 
 /-!
 # Morphisms of non-unital algebras
 
 This file defines morphisms between two types, each of which carries:
- * an addition,
- * an additive zero,
- * a multiplication,
- * a scalar action.
+* an addition,
+* an additive zero,
+* a multiplication,
+* a scalar action.
 
 The multiplications are not assumed to be associative or unital, or even to be compatible with the
 scalar actions. In a typical application, the operations will satisfy compatibility conditions
@@ -41,6 +42,8 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 
 non-unital, algebra, morphism
 -/
+
+@[expose] public section
 
 universe u u₁ v w w₁ w₂ w₃
 
@@ -70,8 +73,8 @@ from `A` to `B` which are equivariant with respect to `φ`. -/
 class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Monoid S]
     (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-    [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
-    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
+    [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B] : Prop
+    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are `R`-linear.
@@ -86,7 +89,7 @@ namespace NonUnitalAlgHomClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass
-  {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
+    {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
     {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]
     {_ : NonUnitalNonAssocSemiring B} [DistribMulAction S B] [FunLike F A B]
     [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F A B :=
@@ -154,9 +157,10 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
 variable [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
-instance : DFunLike (A →ₛₙₐ[φ] B) A fun _ => B where
+@[macro_inline]
+instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+  coe_injective := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 @[simp]
 theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
@@ -177,9 +181,10 @@ protected theorem coe_coe {F : Type*} [FunLike F A B]
 
 theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+@[macro_inline]
 instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
-  coe_injective' := coe_injective
+  coe_injective := coe_injective
 
 instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
   map_add f := f.map_add'
@@ -202,6 +207,8 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h�
 theorem mk_coe (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) = f := by
   rfl
 
+@[simp] lemma addHomMk_coe (f : A →ₛₙₐ[φ] B) : AddHom.mk f (map_add f) = f := rfl
+
 @[simp]
 theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toDistribMulActionHom = ↑f :=
   rfl
@@ -221,11 +228,11 @@ theorem coe_to_mulHom (f : A →ₛₙₐ[φ] B) : ⇑(f : A →ₙ* B) = f :=
 theorem to_distribMulActionHom_injective {f g : A →ₛₙₐ[φ] B}
     (h : (f : A →ₑ+[φ] B) = (g : A →ₑ+[φ] B)) : f = g := by
   ext a
-  exact DistribMulActionHom.congr_fun h a
+  congrm $h a
 
 theorem to_mulHom_injective {f g : A →ₛₙₐ[φ] B} (h : (f : A →ₙ* B) = (g : A →ₙ* B)) : f = g := by
   ext a
-  exact DFunLike.congr_fun h a
+  congrm $h a
 
 @[norm_cast]
 theorem coe_distribMulActionHom_mk (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) :
@@ -286,7 +293,6 @@ instance : Inhabited (A →ₛₙₐ[φ] B) :=
 
 variable {φ' : S →* R} {ψ : S →* T} {χ : R →* T}
 
-set_option linter.unusedVariables false in
 /-- The composition of morphisms is a morphism. -/
 def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₛₙₐ[χ] C :=
@@ -340,10 +346,10 @@ Note that much of this is copied from [`LinearAlgebra/Prod`](../../LinearAlgebra
 section Prod
 
 variable (R A B)
-variable  [DistribMulAction R B]
+variable [DistribMulAction R B]
 
-/-- The first projection of a product is a non-unital alg_hom. -/
-@[simps]
+/-- The first projection of a product is a non-unital algebra homomorphism. -/
+@[simps toFun]
 def fst : A × B →ₙₐ[R] A where
   toFun := Prod.fst
   map_zero' := rfl
@@ -351,8 +357,8 @@ def fst : A × B →ₙₐ[R] A where
   map_smul' _ _ := rfl
   map_mul' _ _ := rfl
 
-/-- The second projection of a product is a non-unital alg_hom. -/
-@[simps]
+/-- The second projection of a product is a non-unital algebra homomorphism. -/
+@[simps toFun]
 def snd : A × B →ₙₐ[R] B where
   toFun := Prod.snd
   map_zero' := rfl
@@ -364,15 +370,15 @@ variable {R A B}
 variable [DistribMulAction R C]
 
 /-- The prod of two morphisms is a morphism. -/
-@[simps]
+@[simps toFun]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
-  toFun := Pi.prod f g
-  map_zero' := by simp only [Pi.prod, Prod.mk_zero_zero, map_zero]
-  map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
-  map_mul' x y := by simp only [Pi.prod, Prod.mk_mul_mk, map_mul]
-  map_smul' c x := by simp only [Pi.prod, map_smul, MonoidHom.id_apply, id_eq, Prod.smul_mk]
+  toFun := Function.prod f g
+  map_zero' := by simp only [Function.prod_apply, Prod.mk_zero_zero, map_zero]
+  map_add' x y := by simp only [Function.prod_apply, Prod.mk_add_mk, map_add]
+  map_mul' x y := by simp only [Function.prod_apply, Prod.mk_mul_mk, map_mul]
+  map_smul' c x := by simp only [Function.prod_apply, map_smul, MonoidHom.id_apply, Prod.smul_mk]
 
-theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
+theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
 
 @[simp]
@@ -385,7 +391,7 @@ theorem snd_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : (snd R B C).com
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  coe_injective Pi.prod_fst_snd
+  coe_injective Function.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
@@ -393,8 +399,6 @@ their codomains. -/
 def prodEquiv : (A →ₙₐ[R] B) × (A →ₙₐ[R] C) ≃ (A →ₙₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable (R A B)
 

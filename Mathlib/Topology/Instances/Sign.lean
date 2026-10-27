@@ -3,17 +3,20 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Sign
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Basic.Sign.Defs
+public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Topology on `SignType`
 
 This file gives `SignType` the discrete topology, and proves continuity results for `SignType.sign`
 in an `OrderTopology`.
-
 -/
 
+public section
 
 instance : TopologicalSpace SignType :=
   ⊥
@@ -25,7 +28,7 @@ variable {α : Type*} [Zero α] [TopologicalSpace α]
 
 section PartialOrder
 
-variable [PartialOrder α] [DecidableRel ((· < ·) : α → α → Prop)] [OrderTopology α]
+variable [PartialOrder α] [DecidableLT α] [OrderTopology α]
 
 theorem continuousAt_sign_of_pos {a : α} (h : 0 < a) : ContinuousAt SignType.sign a := by
   refine (continuousAt_const : ContinuousAt (fun _ => (1 : SignType)) a).congr ?_
@@ -44,8 +47,14 @@ section LinearOrder
 variable [LinearOrder α] [OrderTopology α]
 
 theorem continuousAt_sign_of_ne_zero {a : α} (h : a ≠ 0) : ContinuousAt SignType.sign a := by
-  rcases h.lt_or_lt with (h_neg | h_pos)
+  rcases h.lt_or_gt with (h_neg | h_pos)
   · exact continuousAt_sign_of_neg h_neg
   · exact continuousAt_sign_of_pos h_pos
+
+theorem IsPreconnected.sign_eq_of_continuousOn {X : Type*} [TopologicalSpace X] {f : X → α}
+    {s : Set X} (hs : IsPreconnected s) (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0) {x y : X}
+    (hx : x ∈ s) (hy : y ∈ s) : SignType.sign (f x) = SignType.sign (f y) :=
+  hs.constant (f := SignType.sign ∘ f)
+    (fun z hz => (continuousAt_sign_of_ne_zero (h0 z hz)).comp_continuousWithinAt (hf z hz)) hx hy
 
 end LinearOrder

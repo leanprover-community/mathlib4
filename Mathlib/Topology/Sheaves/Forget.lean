@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.Sheaf
+module
+
+public import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
 # Checking the sheaf condition on the underlying presheaf of types.
@@ -23,9 +25,9 @@ to check it on the underlying sheaf of types.
 * https://stacks.math.columbia.edu/tag/0073
 -/
 
-universe v v₁ v₂ u₁ u₂
+public section
 
-noncomputable section
+universe v v₁ v₂ u₁ u₂
 
 open CategoryTheory Limits
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Spectral maps
@@ -20,11 +22,13 @@ compact open set is compact open.
 
 ## TODO
 
-Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib.Topology.Spectral.Basic`.
+Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/Spectral/Basic.lean`.
 -/
 
+@[expose] public section
 
-open Function OrderDual
+
+open Function
 
 variable {F α β γ δ : Type*}
 
@@ -35,9 +39,9 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {f : 
 /-- A function between topological spaces is spectral if it is continuous and the preimage of every
 compact open set is compact open. -/
 @[stacks 005A, stacks 08YG]
-structure IsSpectralMap (f : α → β) extends Continuous f : Prop where
+structure IsSpectralMap (f : α → β) : Prop extends Continuous f where
   /-- A function between topological spaces is spectral if it is continuous and the preimage of
-   every compact open set is compact open. -/
+  every compact open set is compact open. -/
   isCompact_preimage_of_isOpen ⦃s : Set β⦄ : IsOpen s → IsCompact s → IsCompact (f ⁻¹' s)
 
 theorem IsCompact.preimage_of_isOpen (hf : IsSpectralMap f) (h₀ : IsCompact s) (h₁ : IsOpen s) :
@@ -55,6 +59,9 @@ theorem IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f
     IsSpectralMap (f ∘ g) :=
   ⟨hf.continuous.comp hg.continuous, fun _s hs₀ hs₁ =>
     ((hs₁.preimage_of_isOpen hf hs₀).preimage_of_isOpen hg) (hs₀.preimage hf.continuous)⟩
+
+theorem IsProperMap.isSpectralMap {f : α → β} (hf : IsProperMap f) : IsSpectralMap f :=
+  ⟨hf.toContinuous, fun _ _ ↦ hf.isCompact_preimage⟩
 
 end Unbundled
 
@@ -101,9 +108,10 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [Topo
 def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
   ⟨_, f.spectral'.continuous⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance : SpectralMapClass (SpectralMap α β) α β where
   map_spectral f := f.spectral'
@@ -161,7 +169,7 @@ theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f
 
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
     f ∘ g = (f : ContinuousMap β γ) ∘ (g : ContinuousMap α β) :=
-   rfl
+  rfl
 
 @[simp]
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
@@ -185,7 +193,7 @@ theorem id_comp (f : SpectralMap α β) : (SpectralMap.id β).comp f = f :=
 theorem cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
-   fun a => of_eq (congrFun (congrArg comp a) f)⟩
+   fun a => of_eq congr(comp $a f)⟩
 
 @[simp]
 theorem cancel_left {g : SpectralMap β γ} {f₁ f₂ : SpectralMap α β} (hg : Injective g) :

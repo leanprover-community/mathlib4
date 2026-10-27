@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Analysis.Normed.Group.Basic
+module
+
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Product of normed groups and other constructions
@@ -14,9 +16,11 @@ This file constructs the infinity norm on finite products of normed groups and p
 for type synonyms.
 -/
 
+public section
+
 open NNReal
 
-variable {ι E F : Type*} {π : ι → Type*}
+variable {ι ι' E F : Type*} {G : ι → Type*}
 
 /-! ### `PUnit` -/
 
@@ -131,12 +135,12 @@ instance Multiplicative.toNNNorm : NNNorm (Multiplicative E) := ‹NNNorm E›
 end NNNorm
 
 instance Additive.seminormedAddGroup [SeminormedGroup E] : SeminormedAddGroup (Additive E) where
-  dist_eq x y := dist_eq_norm_div x.toMul y.toMul
+  dist_eq x y := dist_eq_norm_inv_mul x.toMul y.toMul
 
 
 instance Multiplicative.seminormedGroup [SeminormedAddGroup E] :
     SeminormedGroup (Multiplicative E) where
-  dist_eq x y := dist_eq_norm_sub x.toAdd y.toAdd
+  dist_eq x y := dist_eq_norm_neg_add x.toAdd y.toAdd
 
 instance Additive.seminormedCommGroup [SeminormedCommGroup E] :
     SeminormedAddCommGroup (Additive E) :=
@@ -177,7 +181,8 @@ open OrderDual
 section Norm
 variable [Norm E]
 
-instance OrderDual.toNorm : Norm Eᵒᵈ := ‹Norm E›
+instance OrderDual.toNorm : Norm Eᵒᵈ where
+  norm x := ‖ofDual x‖
 
 @[simp] lemma norm_toDual (x : E) : ‖toDual x‖ = ‖x‖ := rfl
 
@@ -188,7 +193,8 @@ end Norm
 section NNNorm
 variable [NNNorm E]
 
-instance OrderDual.toNNNorm : NNNorm Eᵒᵈ := ‹NNNorm E›
+instance OrderDual.toNNNorm : NNNorm Eᵒᵈ where
+  nnnorm x := ‖ofDual x‖₊
 
 @[simp] lemma nnnorm_toDual (x : E) : ‖toDual x‖₊ = ‖x‖₊ := rfl
 
@@ -201,21 +207,22 @@ namespace OrderDual
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) seminormedGroup [SeminormedGroup E] : SeminormedGroup Eᵒᵈ :=
-  ‹SeminormedGroup E›
+  inferInstanceAs <| SeminormedGroup E
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup Eᵒᵈ :=
-  ‹SeminormedCommGroup E›
+  inferInstanceAs <| SeminormedCommGroup E
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) normedGroup [NormedGroup E] : NormedGroup Eᵒᵈ := ‹NormedGroup E›
+instance (priority := 100) normedGroup [NormedGroup E] : NormedGroup Eᵒᵈ :=
+  inferInstanceAs <| NormedGroup E
 
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) normedCommGroup [NormedCommGroup E] : NormedCommGroup Eᵒᵈ :=
-  ‹NormedCommGroup E›
+  inferInstanceAs <| NormedCommGroup E
 
 end OrderDual
 end OrderDual
@@ -243,20 +250,18 @@ section SeminormedGroup
 variable [SeminormedGroup E] [SeminormedGroup F]
 
 /-- Product of seminormed groups, using the sup norm. -/
-@[to_additive "Product of seminormed groups, using the sup norm."]
+@[to_additive /-- Product of seminormed groups, using the sup norm. -/]
 instance Prod.seminormedGroup : SeminormedGroup (E × F) where
-  dist_eq x y := by
-    simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
+  dist_eq x y := by simp [Prod.norm_def, Prod.dist_eq, dist_eq_norm_inv_mul]
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
-Earlier, this names was used for the additive version. -/
-@[to_additive Prod.nnnorm_def]
+Earlier, this name was used for the additive version. -/
+@[to_additive Prod.nnnorm_def /-- Additive version of `Prod.nnnorm_def'`.
+Earlier, this name was used for the multiplicative version. -/]
 lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 
-@[deprecated (since := "2025-01-02")] alias Prod.nnorm_def := Prod.nnnorm_def'
-
 /-- Multiplicative version of `Prod.nnnorm_mk`. -/
-@[to_additive (attr := simp) Prod.nnnorm_mk]
+@[to_additive (attr := simp) Prod.nnnorm_mk /-- Additive version of `Prod.nnnorm_mk'`. -/]
 lemma Prod.nnnorm_mk' (x : E) (y : F) : ‖(x, y)‖₊ = max ‖x‖₊ ‖y‖₊ := rfl
 
 end SeminormedGroup
@@ -264,20 +269,20 @@ end SeminormedGroup
 namespace Prod
 
 /-- Product of seminormed groups, using the sup norm. -/
-@[to_additive "Product of seminormed groups, using the sup norm."]
+@[to_additive /-- Product of seminormed groups, using the sup norm. -/]
 instance seminormedCommGroup [SeminormedCommGroup E] [SeminormedCommGroup F] :
     SeminormedCommGroup (E × F) :=
   { Prod.seminormedGroup with
     mul_comm := mul_comm }
 
 /-- Product of normed groups, using the sup norm. -/
-@[to_additive "Product of normed groups, using the sup norm."]
+@[to_additive /-- Product of normed groups, using the sup norm. -/]
 instance normedGroup [NormedGroup E] [NormedGroup F] : NormedGroup (E × F) :=
   { Prod.seminormedGroup with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- Product of normed groups, using the sup norm. -/
-@[to_additive "Product of normed groups, using the sup norm."]
+@[to_additive /-- Product of normed groups, using the sup norm. -/]
 instance normedCommGroup [NormedCommGroup E] [NormedCommGroup F] : NormedCommGroup (E × F) :=
   { Prod.seminormedGroup with
     mul_comm := mul_comm
@@ -288,19 +293,18 @@ end Prod
 /-! ### Finite product of normed groups -/
 
 section Pi
-variable [Fintype ι]
+variable [Fintype ι] [Fintype ι']
 
 section SeminormedGroup
-variable [∀ i, SeminormedGroup (π i)] [SeminormedGroup E] (f : ∀ i, π i) {x : ∀ i, π i} {r : ℝ}
+variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x : ∀ i, G i} {r : ℝ}
 
 /-- Finite product of seminormed groups, using the sup norm. -/
-@[to_additive "Finite product of seminormed groups, using the sup norm."]
-instance Pi.seminormedGroup : SeminormedGroup (∀ i, π i) where
+@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
+instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
   dist_eq x y :=
-    congr_arg (toReal : ℝ≥0 → ℝ) <|
-      congr_arg (Finset.sup Finset.univ) <|
-        funext fun a => show nndist (x a) (y a) = ‖x a / y a‖₊ from nndist_eq_nnnorm_div (x a) (y a)
+    congr((Finset.univ.sup $(funext fun a => show nndist (x a) (y a) = ‖(x a)⁻¹ * y a‖₊
+      from nndist_eq_nnnorm_inv_mul (x a) (y a))).toReal)
 
 @[to_additive Pi.norm_def]
 lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
@@ -310,8 +314,8 @@ lemma Pi.nnnorm_def' : ‖f‖₊ = Finset.univ.sup fun b => ‖f b‖₊ := Sub
 
 /-- The seminorm of an element in a product space is `≤ r` if and only if the norm of each
 component is. -/
-@[to_additive pi_norm_le_iff_of_nonneg "The seminorm of an element in a product space is `≤ r` if
-and only if the norm of each component is."]
+@[to_additive pi_norm_le_iff_of_nonneg /-- The seminorm of an element in a product space is `≤ r` if
+and only if the norm of each component is. -/]
 lemma pi_norm_le_iff_of_nonneg' (hr : 0 ≤ r) : ‖x‖ ≤ r ↔ ∀ i, ‖x i‖ ≤ r := by
   simp only [← dist_one_right, dist_pi_le_iff hr, Pi.one_apply]
 
@@ -329,8 +333,8 @@ lemma pi_norm_le_iff_of_nonempty' [Nonempty ι] : ‖f‖ ≤ r ↔ ∀ b, ‖f 
 
 /-- The seminorm of an element in a product space is `< r` if and only if the norm of each
 component is. -/
-@[to_additive pi_norm_lt_iff "The seminorm of an element in a product space is `< r` if and only
-if the norm of each component is."]
+@[to_additive pi_norm_lt_iff /-- The seminorm of an element in a product space is `< r` if and only
+if the norm of each component is. -/]
 lemma pi_norm_lt_iff' (hr : 0 < r) : ‖x‖ < r ↔ ∀ i, ‖x i‖ < r := by
   simp only [← dist_one_right, dist_pi_lt_iff hr, Pi.one_apply]
 
@@ -356,59 +360,123 @@ lemma pi_nnnorm_const_le' (a : E) : ‖fun _ : ι => a‖₊ ≤ ‖a‖₊ :=
 
 @[to_additive (attr := simp) pi_norm_const]
 lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖ = ‖a‖ := by
-  simpa only [← dist_one_right] using dist_pi_const a 1
+  simpa only [← dist_one_right] using! dist_pi_const a 1
 
 @[to_additive (attr := simp) pi_nnnorm_const]
 lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a‖₊ :=
   NNReal.eq <| pi_norm_const' a
 
+@[to_additive pi_nnnorm_comp_le]
+lemma pi_nnnorm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖₊ ≤ ‖g‖₊ := by
+  rw [pi_nnnorm_le_iff']
+  exact fun x ↦ norm_le_pi_norm' g (f x)
+
+@[to_additive pi_norm_comp_le]
+lemma pi_norm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖ ≤ ‖g‖ :=
+  pi_nnnorm_comp_le' g f
+
+@[to_additive IsGreatest.pi_norm]
+lemma IsGreatest.pi_norm' [Nonempty ι] (f : ι → E) : IsGreatest (Set.range (‖f ·‖)) ‖f‖ := by
+  constructor
+  · rw [Pi.norm_def' f]
+    obtain ⟨x, -, hx⟩ := (Finset.univ (α := ι)).exists_mem_eq_sup (by simp) (‖f ·‖₊)
+    simp [hx]
+  · rintro - ⟨x, rfl⟩
+    exact norm_le_pi_norm' f x
+
+@[to_additive Function.Surjective.pi_norm_comp]
+lemma Function.Surjective.pi_norm_comp' [Fintype F] {f : ι → F} (hf : Function.Surjective f)
+    (g : F → E) : ‖g ∘ f‖ = ‖g‖ := by
+  obtain (h | h) := isEmpty_or_nonempty F
+  · have : IsEmpty ι := f.isEmpty
+    simp [Subsingleton.elim g 1]
+  apply le_antisymm (pi_norm_comp_le' g f)
+  obtain ⟨⟨x, h⟩, -⟩ := IsGreatest.pi_norm' g
+  obtain ⟨y, rfl⟩ := hf x
+  exact h ▸ norm_le_pi_norm' (g ∘ f) y
+
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
-@[to_additive Pi.sum_norm_apply_le_norm "The $L^1$ norm is less than the $L^\\infty$ norm scaled by
-the cardinality."]
+@[to_additive Pi.sum_norm_apply_le_norm /-- The $L^1$ norm is less than the $L^\infty$ norm scaled
+by the cardinality. -/]
 lemma Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f‖ :=
   Finset.sum_le_card_nsmul _ _ _ fun i _hi => norm_le_pi_norm' _ i
 
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
-@[to_additive Pi.sum_nnnorm_apply_le_nnnorm "The $L^1$ norm is less than the $L^\\infty$ norm
-scaled by the cardinality."]
+@[to_additive Pi.sum_nnnorm_apply_le_nnnorm /-- The $L^1$ norm is less than the $L^\infty$ norm
+scaled by the cardinality. -/]
 lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
   (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
+
+@[to_additive Pi.nnnorm_extend_le]
+theorem Pi.nnnorm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
+    ‖Function.extend f g j‖₊ ≤ max ‖g‖₊ ‖j‖₊ := by
+  rw [pi_nnnorm_le_iff']
+  classical aesop (add simp [Function.extend_def, nnnorm_le_pi_nnnorm'])
+
+@[to_additive Pi.norm_extend_le]
+theorem Pi.norm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
+    ‖Function.extend f g j‖ ≤ max ‖g‖ ‖j‖ :=
+  nnnorm_extend_le' f g j
+
+@[to_additive Function.FactorsThrough.nnnorm_extend]
+theorem Function.FactorsThrough.nnnorm_extend' {f : ι → ι'} {g : ι → E} {j : ι' → E}
+    (h : FactorsThrough g f) (hj : ‖j‖₊ ≤ ‖g‖₊) :
+    ‖extend f g j‖₊ = ‖g‖₊ := by
+  grw [le_antisymm (Pi.nnnorm_extend_le' f g j), max_eq_left hj]
+  simpa [hj, h.extend_comp] using pi_nnnorm_comp_le' (extend f g j) f
+
+@[to_additive Function.FactorsThrough.norm_extend]
+theorem Function.FactorsThrough.norm_extend' {f : ι → ι'} {g : ι → E} {j : ι' → E}
+    (h : FactorsThrough g f) (hj : ‖j‖ ≤ ‖g‖) :
+    ‖extend f g j‖ = ‖g‖ :=
+  congr(↑$(h.nnnorm_extend' hj))
+
+@[to_additive]
+theorem Function.FactorsThrough.nnnorm_extend_one {f : ι → ι'} {g : ι → E}
+    (h : FactorsThrough g f) :
+    ‖extend f g 1‖₊ = ‖g‖₊ :=
+  h.nnnorm_extend' (by simp)
+
+@[to_additive]
+theorem Function.FactorsThrough.norm_extend_one {f : ι → ι'} {g : ι → E} (h : FactorsThrough g f) :
+    ‖extend f g 1‖ = ‖g‖ :=
+  congr(↑$h.nnnorm_extend_one)
 
 end SeminormedGroup
 
 /-- Finite product of seminormed groups, using the sup norm. -/
-@[to_additive "Finite product of seminormed groups, using the sup norm."]
-instance Pi.seminormedCommGroup [∀ i, SeminormedCommGroup (π i)] : SeminormedCommGroup (∀ i, π i) :=
+@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
+instance Pi.seminormedCommGroup [∀ i, SeminormedCommGroup (G i)] : SeminormedCommGroup (∀ i, G i) :=
   { Pi.seminormedGroup with
     mul_comm := mul_comm }
 
 /-- Finite product of normed groups, using the sup norm. -/
-@[to_additive "Finite product of seminormed groups, using the sup norm."]
-instance Pi.normedGroup [∀ i, NormedGroup (π i)] : NormedGroup (∀ i, π i) :=
+@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
+instance Pi.normedGroup [∀ i, NormedGroup (G i)] : NormedGroup (∀ i, G i) :=
   { Pi.seminormedGroup with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- Finite product of normed groups, using the sup norm. -/
-@[to_additive "Finite product of seminormed groups, using the sup norm."]
-instance Pi.normedCommGroup [∀ i, NormedCommGroup (π i)] : NormedCommGroup (∀ i, π i) :=
+@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
+instance Pi.normedCommGroup [∀ i, NormedCommGroup (G i)] : NormedCommGroup (∀ i, G i) :=
   { Pi.seminormedGroup with
     mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i : ι} (y : π i) :
+theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖₊ = ‖y‖₊ := by
-  have H : ∀ b, ‖single i y b‖₊ = single (f := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
+  have H : ∀ b, ‖single i y b‖₊ = single (M := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
     intro b
-    refine Pi.apply_single (fun i (x : π i) ↦ ‖x‖₊) ?_ i y b
+    refine Pi.apply_single (fun i (x : G i) ↦ ‖x‖₊) ?_ i y b
     simp
   simp [Pi.nnnorm_def, H, Pi.single_apply, Finset.sup_ite, Finset.filter_eq']
 
-lemma Pi.enorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i : ι} (y : π i) :
+lemma Pi.enorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖ₑ = ‖y‖ₑ := by simp [enorm, Pi.nnnorm_single]
 
-theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i : ι} (y : π i) :
+theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖ = ‖y‖ :=
-  congr_arg Subtype.val <| Pi.nnnorm_single y
+  congr($(Pi.nnnorm_single y).val)
 
 end Pi
 
@@ -427,7 +495,7 @@ but that case would likely never be used.
 instance instSeminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
   __ := instPseudoMetricSpace
   norm x := ‖x.unop‖
-  dist_eq _ _ := dist_eq_norm _ _
+  dist_eq _ _ := dist_eq_norm_neg_add _ _
 
 lemma norm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ := rfl
 
@@ -442,7 +510,7 @@ instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
   __ := instSeminormedAddGroup
 
 instance instSeminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
-  dist_eq _ _ := dist_eq_norm _ _
+  dist_eq _ _ := dist_eq_norm_neg_add _ _
 
 instance instNormedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ where
   __ := instSeminormedAddCommGroup

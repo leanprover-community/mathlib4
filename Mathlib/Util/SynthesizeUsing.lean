@@ -3,15 +3,21 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
+
+public meta import Lean.Elab.Tactic.Basic
+public meta import Qq
+
+meta import Qq.Typ
 import Mathlib.Init
-import Lean.Elab.Tactic.Basic
-import Qq
 
 /-!
 # `SynthesizeUsing`
 
 This is a slight simplification of the `solve_aux` tactic in Lean3.
 -/
+
+public meta section
 
 open Lean Elab Tactic Meta Qq
 
@@ -37,7 +43,7 @@ The tactic must solve for all goals, in contrast to `synthesizeUsing`.
 -/
 def synthesizeUsing' {u : Level} (type : Q(Sort u)) (tac : TacticM Unit) : MetaM Q($type) := do
   let (goals, e) ← synthesizeUsing type tac
-  -- Note: doesn't use `tac *> Tactic.done` since that just adds a message
+  -- Note: does not use `tac *> Tactic.done` since that just adds a message
   -- rather than raising an error.
   unless goals.isEmpty do
     throwError m!"synthesizeUsing': unsolved goals\n{goalsToMessageData goals}"

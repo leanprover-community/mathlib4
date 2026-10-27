@@ -1,8 +1,13 @@
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Logic.Equiv.Basic
+
+@[expose] public section
 
 set_option autoImplicit true
 -- testing that the attribute is recognized
+set_option linter.defProp false in
 @[symm] def eq_symm {α : Type} (a b : α) : a = b → b = a := Eq.symm
 
 example (a b : Nat) : a = b → b = a := by intros; symm; assumption
@@ -11,6 +16,7 @@ example (a b : Nat) : a = b → True → b = a := by intro h _; symm at h; assum
 def sameParity : Nat → Nat → Prop
   | n, m => n % 2 = m % 2
 
+set_option linter.defProp false in
 @[symm] def sameParity_symm (n m : Nat) : sameParity n m → sameParity m n := Eq.symm
 
 example (a b : Nat) : sameParity a b → sameParity b a := by intros; symm; assumption
@@ -25,9 +31,7 @@ example (a b c : Nat) (ab : a = b) (bc : b = c) : c = a := by
 
 structure MulEquiv (M N : Type u) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
 
-/--
-info: MulEquiv : (M N : Type u_1) → [inst : Mul M] → [inst : Mul N] → Type u_1
--/
+/-- info: MulEquiv : (M N : Type u_1) → [Mul M] → [Mul N] → Type u_1 -/
 #guard_msgs in
 #check @MulEquiv
 

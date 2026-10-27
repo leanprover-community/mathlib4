@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinality of continuum
@@ -13,8 +15,10 @@ We also prove some `simp` lemmas about cardinal arithmetic involving `𝔠`.
 
 ## Notation
 
-- `𝔠` : notation for `Cardinal.continuum` in locale `Cardinal`.
+- `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`.
 -/
+
+@[expose] public section
 
 
 namespace Cardinal
@@ -65,10 +69,10 @@ theorem aleph0_le_continuum : ℵ₀ ≤ 𝔠 :=
   aleph0_lt_continuum.le
 
 @[simp]
-theorem beth_one : ℶ_ 1 = 𝔠 := by simpa using beth_succ 0
+theorem beth_one : ℶ_ 1 = 𝔠 := by simpa using beth_add_one 0
 
 theorem nat_lt_continuum (n : ℕ) : ↑n < 𝔠 :=
-  (nat_lt_aleph0 n).trans aleph0_lt_continuum
+  natCast_lt_aleph0.trans aleph0_lt_continuum
 
 theorem mk_set_nat : #(Set ℕ) = 𝔠 := by simp
 

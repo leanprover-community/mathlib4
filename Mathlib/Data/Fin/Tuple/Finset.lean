@@ -3,19 +3,23 @@ Copyright (c) 2023 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Pi
+module
+
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Fintype.Pi
 
 /-!
 # Fin-indexed tuples of finsets
 -/
 
+open scoped Finset
+
+public section
+
 open Fin Fintype
 
 namespace Fin
 variable {n : ℕ} {α : Fin (n + 1) → Type*} {f : ∀ i, α i} {s : ∀ i, Finset (α i)} {p : Fin (n + 1)}
-
-open Fintype
 
 lemma mem_piFinset_iff_zero_tail :
     f ∈ Fintype.piFinset s ↔ f 0 ∈ s 0 ∧ tail f ∈ piFinset (tail s) := by
@@ -28,9 +32,6 @@ lemma mem_piFinset_iff_last_init :
 lemma mem_piFinset_iff_pivot_removeNth (p : Fin (n + 1)) :
     f ∈ piFinset s ↔ f p ∈ s p ∧ removeNth p f ∈ piFinset (removeNth p s) := by
   simp only [Fintype.mem_piFinset, forall_iff_succAbove p, removeNth]
-
-@[deprecated (since := "2024-09-20")] alias mem_piFinset_succ := mem_piFinset_iff_zero_tail
-@[deprecated (since := "2024-09-20")] alias mem_piFinset_succ' := mem_piFinset_iff_last_init
 
 lemma cons_mem_piFinset_cons {x_zero : α 0} {x_tail : (i : Fin n) → α i.succ}
     {s_zero : Finset (α 0)} {s_tail : (i : Fin n) → Finset (α i.succ)} :
@@ -87,17 +88,17 @@ lemma filter_piFinset_eq_map_insertNthEquiv (P : (∀ i, α (p.succAbove i)) →
   simp [← map_insertNthEquiv_filter_piFinset, map_map]
 
 lemma card_consEquiv_filter_piFinset (P : (∀ i, α (succ i)) → Prop) [DecidablePred P] :
-    {r ∈ piFinset S | P (tail r)}.card = (S 0).card * {r ∈ piFinset (tail S) | P r}.card := by
+    #{r ∈ piFinset S | P (tail r)} = #(S 0) * #{r ∈ piFinset (tail S) | P r} := by
   rw [← card_product, ← map_consEquiv_filter_piFinset, card_map]
 
 lemma card_snocEquiv_filter_piFinset (P : (∀ i, α (castSucc i)) → Prop) [DecidablePred P] :
-    {r ∈ piFinset S | P (init r)}.card =
-      (S (last _)).card * {r ∈ piFinset (init S) | P r}.card := by
+    #{r ∈ piFinset S | P (init r)} =
+      #(S (last _)) * #{r ∈ piFinset (init S) | P r} := by
   rw [← card_product, ← map_snocEquiv_filter_piFinset, card_map]
 
 lemma card_insertNthEquiv_filter_piFinset (P : (∀ i, α (p.succAbove i)) → Prop) [DecidablePred P] :
-    {r ∈ piFinset S | P (p.removeNth r)}.card =
-      (S p).card * {r ∈ piFinset (p.removeNth  S) | P r}.card := by
+    #{r ∈ piFinset S | P (p.removeNth r)} =
+      #(S p) * #{r ∈ piFinset (p.removeNth  S) | P r} := by
   rw [← card_product, ← map_insertNthEquiv_filter_piFinset, card_map]
 
 end Finset

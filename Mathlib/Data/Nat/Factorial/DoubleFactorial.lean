@@ -3,10 +3,11 @@ Copyright (c) 2023 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring
 
 /-!
 # Double factorials
@@ -19,13 +20,15 @@ This file defines the double factorial,
 * `Nat.doubleFactorial`: The double factorial.
 -/
 
+@[expose] public section
+
 
 open Nat
 
 namespace Nat
 
 /-- `Nat.doubleFactorial n` is the double factorial of `n`. -/
-@[simp]
+@[simp, oeis A006882]
 def doubleFactorial : ℕ → ℕ
   | 0 => 1
   | 1 => 1
@@ -83,7 +86,8 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.doubleFactorial`. -/
 @[positivity Nat.doubleFactorial _]
-def evalDoubleFactorial : PositivityExt where eval {u α} _ _ e := do
+meta def evalDoubleFactorial : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
     assumeInstancesCommute

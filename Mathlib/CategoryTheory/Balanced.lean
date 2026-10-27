@@ -3,7 +3,9 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Balanced categories
@@ -16,6 +18,8 @@ as the category of types.
 
 -/
 
+public section
+
 
 universe v u
 
@@ -23,19 +27,19 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
-section
-
-variable (C)
-
+variable (C) in
 /-- A category is called balanced if any morphism that is both monic and epic is an isomorphism. -/
 class Balanced : Prop where
   isIso_of_mono_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Mono f] [Epi f], IsIso f
 
-end
+attribute [to_dual self (reorder := X Y, 7 8)] Balanced.isIso_of_mono_of_epi
+attribute [to_dual self (reorder := isIso_of_mono_of_epi (X Y, 4 5))] Balanced.mk
 
+@[to_dual self (reorder := X Y, 7 8)]
 theorem isIso_of_mono_of_epi [Balanced C] {X Y : C} (f : X ⟶ Y) [Mono f] [Epi f] : IsIso f :=
   Balanced.isIso_of_mono_of_epi _
 
+@[to_dual isIso_iff_epi_and_mono]
 theorem isIso_iff_mono_and_epi [Balanced C] {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Mono f ∧ Epi f :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => isIso_of_mono_of_epi _⟩
 
@@ -43,7 +47,7 @@ section
 
 attribute [local instance] isIso_of_mono_of_epi
 
-theorem balanced_opposite [Balanced C] : Balanced Cᵒᵖ :=
+instance balanced_opposite [Balanced C] : Balanced Cᵒᵖ :=
   { isIso_of_mono_of_epi := fun f fmono fepi => by
       rw [← Quiver.Hom.op_unop f]
       exact isIso_of_op _ }

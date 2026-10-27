@@ -3,8 +3,11 @@ Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Matrix.RowCol
+module
+
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.LinearAlgebra.Matrix.RowCol
+
 /-!
 # Permanent of a matrix
 
@@ -15,6 +18,8 @@ This file defines the permanent of a matrix, `Matrix.permanent`, and some of its
 * `Matrix.permanent`: the permanent of a square matrix, as a sum over permutations
 
 -/
+
+@[expose] public section
 
 open Equiv Fintype Finset
 
@@ -31,7 +36,7 @@ def permanent (M : Matrix n n R) : R := ∑ σ : Perm n, ∏ i, M (σ i) i
 theorem permanent_diagonal {d : n → R} : permanent (diagonal d) = ∏ i, d i := by
   refine (sum_eq_single 1 (fun σ _ hσ ↦ ?_) (fun h ↦ (h <| mem_univ _).elim)).trans ?_
   · match not_forall.mp (mt Equiv.ext hσ) with
-    | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (if_neg hx)
+    | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (ite_eq_right hx)
   · simp only [Perm.one_apply, diagonal_apply_eq]
 
 @[simp]
@@ -85,11 +90,11 @@ theorem permanent_permute_rows (σ : Perm n) (M : Matrix n n R) :
 @[simp]
 theorem permanent_smul (M : Matrix n n R) (c : R) :
     permanent (c • M) = c ^ Fintype.card n * permanent M := by
-  simp only [permanent, smul_apply, smul_eq_mul, Finset.mul_sum]
+  simp only [permanent, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum]
   congr
   ext
   rw [mul_comm]
-  conv in ∏ _ , c * _ => simp [mul_comm c];
+  conv in ∏ _, c * _ => simp [mul_comm c];
   exact prod_mul_pow_card.symm
 
 @[simp]
@@ -100,9 +105,6 @@ theorem permanent_updateCol_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R
   congr 1 with p
   rw [Finset.prod_congr rfl (fun i hi ↦ ?_)]
   simp only [ne_eq, ne_of_mem_erase hi, not_false_eq_true, updateCol_ne]
-
-@[deprecated (since := "2024-12-11")]
-alias permanent_updateColumn_smul := permanent_updateCol_smul
 
 @[simp]
 theorem permanent_updateRow_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :

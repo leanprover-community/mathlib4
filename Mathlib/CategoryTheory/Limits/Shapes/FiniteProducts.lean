@@ -3,14 +3,18 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Categories with finite (co)products
 
 Typeclasses representing categories with (co)products over finite indexing types.
 -/
+
+public section
 
 
 universe w v u
@@ -39,7 +43,7 @@ instance (priority := 10) hasFiniteProducts_of_hasFiniteLimits [HasFiniteLimits 
 instance hasLimitsOfShape_discrete [HasFiniteProducts C] (ι : Type w) [Finite ι] :
     HasLimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
-  haveI : HasLimitsOfShape (Discrete (Fin n)) C := HasFiniteProducts.out n
+  have : HasLimitsOfShape (Discrete (Fin n)) C := HasFiniteProducts.out n
   exact hasLimitsOfShape_of_equivalence (Discrete.equivalence e.symm)
 
 /-- We can now write this for powers. -/
@@ -61,12 +65,10 @@ class HasFiniteCoproducts : Prop where
   /-- `C` has all finite coproducts -/
   out (n : ℕ) : HasColimitsOfShape (Discrete (Fin n)) C
 
--- attribute [class] HasFiniteCoproducts Porting note: this doesn't seem necessary in Lean 4
-
 instance hasColimitsOfShape_discrete [HasFiniteCoproducts C] (ι : Type w) [Finite ι] :
     HasColimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
-  haveI : HasColimitsOfShape (Discrete (Fin n)) C := HasFiniteCoproducts.out n
+  have : HasColimitsOfShape (Discrete (Fin n)) C := HasFiniteCoproducts.out n
   exact hasColimitsOfShape_of_equivalence (Discrete.equivalence e.symm)
 
 /-- If `C` has finite colimits then it has finite coproducts. -/

@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementarySubstructures
+module
+
+public import Mathlib.ModelTheory.ElementarySubstructures
 
 /-!
 # Skolem Functions and Downward Löwenheim–Skolem
@@ -24,6 +26,8 @@ import Mathlib.ModelTheory.ElementarySubstructures
 - Use `skolem₁` recursively to construct an actual Skolemization of a language.
 -/
 
+@[expose] public section
+
 
 universe u v w w'
 
@@ -32,8 +36,6 @@ namespace FirstOrder
 namespace Language
 
 open Structure Cardinal
-
-open Cardinal
 
 variable (L : Language.{u, v}) {M : Type w} [Nonempty M] [L.Structure M]
 
@@ -50,7 +52,7 @@ theorem card_functions_sum_skolem₁ :
   simp only [card_functions_sum, skolem₁_Functions, mk_sigma, sum_add_distrib']
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
   rw [add_comm, add_eq_max, max_eq_left]
-  · refine sum_le_sum _ _ fun n => ?_
+  · gcongr with n
     rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{v}]
     refine ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => ?_⟩⟩
     rcases h with ⟨rfl, ⟨rfl⟩⟩
@@ -108,8 +110,12 @@ instance Substructure.elementarySkolem₁Reduct.instSmall :
   rw [coeSort_elementarySkolem₁Reduct]
   infer_instance
 
+omit [Nonempty M]
+
 theorem exists_small_elementarySubstructure : ∃ S : L.ElementarySubstructure M, Small.{max u v} S :=
-  ⟨Substructure.elementarySkolem₁Reduct ⊥, inferInstance⟩
+  (isEmpty_or_nonempty M).elim
+    (fun _ => ⟨⊤, Countable.toSmall _⟩)
+    (fun _ => ⟨Substructure.elementarySkolem₁Reduct ⊥, inferInstance⟩)
 
 variable {M}
 
@@ -125,6 +131,8 @@ theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (
   obtain ⟨s', hs'⟩ := Cardinal.le_mk_iff_exists_set.1 h4
   rw [← aleph0_le_lift.{_, w}] at h1
   rw [← hs'] at h1 h2 ⊢
+  have : Nonempty M := nonempty_ulift.1 (Cardinal.mk_ne_zero_iff.1
+    (aleph0_pos.trans_le (h1.trans (Cardinal.mk_subtype_le _))).ne')
   refine
     ⟨elementarySkolem₁Reduct (closure (L.sum L.skolem₁) (s ∪ Equiv.ulift '' s')),
       (s.subset_union_left).trans subset_closure, ?_⟩

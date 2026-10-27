@@ -3,15 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Violeta Hernández Palacios
 -/
+module
 
-import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.SuccPred.Limit
 
 /-!
 # Transfinite iteration of a function `I → I`
 
 Given `φ : I → I` where `[SupSet I]`, we define the `j`th transfinite iteration of `φ`
 for any `j : J`, with `J` a well-ordered type: this is `transfiniteIterate φ j : I → I`.
-If `i₀ : I`, then `transfiniteIterate φ ⊥ i₀ = i₀`; if `j` is a non maximal element,
+If `i₀ : I`, then `transfiniteIterate φ ⊥ i₀ = i₀`; if `j` is a non-maximal element,
 then `transfiniteIterate φ (Order.succ j) i₀ = φ (transfiniteIterate φ j i₀)`; and
 if `j` is a limit element, `transfiniteIterate φ j i₀` is the supremum
 of the `transfiniteIterate φ l i₀` for `l < j`.
@@ -25,11 +26,13 @@ when we know `Cardinal.mk I < Cardinal.mk J`).
 
 ## TODO (@joelriou)
 * deduce that in a Grothendieck abelian category, there is a *set* `I` of monomorphisms
-such that any monomorphism is a transfinite composition of pushouts of morphisms in `I`,
-and then an object `X` is injective iff `X ⟶ 0` has the right lifting
-property with respect to `I`.
+  such that any monomorphism is a transfinite composition of pushouts of morphisms in `I`,
+  and then an object `X` is injective iff `X ⟶ 0` has the right lifting
+  property with respect to `I`.
 
 -/
+
+@[expose] public section
 
 universe w u
 
@@ -50,7 +53,7 @@ lemma transfiniteIterate_bot [OrderBot J] (i₀ : I) :
   dsimp [transfiniteIterate]
   simp only [isMin_iff_eq_bot, SuccOrder.limitRecOn_isMin, id_eq]
 
-lemma transfiniteIterate_succ (i₀ : I) (j : J) (hj : ¬ IsMax j):
+lemma transfiniteIterate_succ (i₀ : I) (j : J) (hj : ¬ IsMax j) :
     transfiniteIterate φ (Order.succ j) i₀ =
       φ (transfiniteIterate φ j i₀) := by
   dsimp [transfiniteIterate]
@@ -75,23 +78,23 @@ lemma monotone_transfiniteIterate (hφ : ∀ (i : I), i ≤ φ i) :
     Monotone (fun (j : J) ↦ transfiniteIterate φ j i₀) := by
   intro k j hkj
   induction j using SuccOrder.limitRecOn with
-  | hm k hk =>
-      obtain rfl := hk.eq_bot
-      obtain rfl : k = ⊥ := by simpa using hkj
-      rfl
-  | hs k' hk' hkk' =>
-      obtain hkj | rfl := hkj.lt_or_eq
-      · refine (hkk' ((Order.lt_succ_iff_of_not_isMax hk').mp hkj)).trans ?_
-        dsimp
-        rw [transfiniteIterate_succ _ _ _ hk']
-        apply hφ
-      · rfl
-  | hl k' hk' _ =>
-      obtain hkj | rfl := hkj.lt_or_eq
-      · dsimp
-        rw [transfiniteIterate_limit _ _ _ hk']
-        exact le_iSup (fun (⟨l, hl⟩ : Set.Iio k') ↦ transfiniteIterate φ l i₀) ⟨k, hkj⟩
-      · rfl
+  | isMin k hk =>
+    obtain rfl := hk.eq_bot
+    obtain rfl : k = ⊥ := by simpa using hkj
+    rfl
+  | succ k' hk' hkk' =>
+    obtain hkj | rfl := hkj.lt_or_eq
+    · refine (hkk' ((Order.lt_succ_iff_of_not_isMax hk').mp hkj)).trans ?_
+      dsimp
+      rw [transfiniteIterate_succ _ _ _ hk']
+      apply hφ
+    · rfl
+  | isSuccLimit k' hk' _ =>
+    obtain hkj | rfl := hkj.lt_or_eq
+    · dsimp
+      rw [transfiniteIterate_limit _ _ _ hk']
+      exact le_iSup (fun (⟨l, hl⟩ : Set.Iio k') ↦ transfiniteIterate φ l i₀) ⟨k, hkj⟩
+    · rfl
 
 lemma top_mem_range_transfiniteIterate
     (hφ' : ∀ i ≠ (⊤ : I), i < φ i) (φtop : φ ⊤ = ⊤)
@@ -104,15 +107,7 @@ lemma top_mem_range_transfiniteIterate
     · exact (hφ' i hi).le
   obtain ⟨j₁, j₂, hj, eq⟩ : ∃ (j₁ j₂ : J) (hj : j₁ < j₂),
       transfiniteIterate φ j₁ i₀ = transfiniteIterate φ j₂ i₀ := by
-    dsimp [Function.Injective] at H
-    simp only [not_forall] at H
-    obtain ⟨j₁, j₂, eq, hj⟩ := H
-    by_cases hj' : j₁ < j₂
-    · exact ⟨j₁, j₂, hj', eq⟩
-    · simp only [not_lt] at hj'
-      obtain hj' | rfl := hj'.lt_or_eq
-      · exact ⟨j₂, j₁, hj', eq.symm⟩
-      · simp at hj
+    grind [Function.Injective]
   by_contra!
   suffices transfiniteIterate φ j₁ i₀ < transfiniteIterate φ j₂ i₀ by
     simp only [eq, lt_self_iff_false] at this

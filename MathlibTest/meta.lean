@@ -1,8 +1,10 @@
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Elab.Tactic.Rfl
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta.Basic
-import Mathlib.Tactic.Relation.Rfl
+module
+
+public meta import Mathlib.Lean.Meta.Basic
+public import Lean.Elab.Tactic.ElabTerm
+public import Lean.Elab.Tactic.Rfl
+public import Mathlib.Lean.Expr.Basic
+public import Mathlib.Tactic.Relation.Rfl
 
 /-! # Tests for mathlib extensions to `Lean.Expr` and `Lean.Meta` -/
 
@@ -32,22 +34,22 @@ def eNatOne := mkApp (Expr.const ``Nat.succ []) eNatZero
 /-- info: none -/
 #guard_msgs in #eval Expr.reduceProjStruct? eTrue
 /-- info: none -/
-#guard_msgs in #eval Expr.reduceProjStruct? (.const ``Prod.fst [levelOne, levelOne])
+#guard_msgs in #eval Expr.reduceProjStruct? (.const ``Prod.fst [.one, .one])
 /-- info: some (Lean.Expr.app (Lean.Expr.const `Nat.succ []) (Lean.Expr.const `Nat.zero [])) -/
 #guard_msgs in #eval Expr.reduceProjStruct? <|
-  mkAppN (.const ``Prod.fst [levelOne, levelOne])
-    #[eNat, eNat, mkAppN (.const ``Prod.mk [levelOne, levelOne]) #[eNat, eNat, eNatOne, eNatZero]]
+  mkAppN (.const ``Prod.fst [.one, .one])
+    #[eNat, eNat, mkAppN (.const ``Prod.mk [.one, .one]) #[eNat, eNat, eNatOne, eNatZero]]
 /-- info: some (Lean.Expr.const `Nat.zero []) -/
 #guard_msgs in #eval Expr.reduceProjStruct? <|
-  mkAppN (.const ``Prod.snd [levelOne, levelOne])
-    #[eNat, eNat, mkAppN (.const ``Prod.mk [levelOne, levelOne]) #[eNat, eNat, eNatOne, eNatZero]]
+  mkAppN (.const ``Prod.snd [.one, .one])
+    #[eNat, eNat, mkAppN (.const ``Prod.mk [.one, .one]) #[eNat, eNat, eNatOne, eNatZero]]
 /--
 error: ill-formed expression, Prod.fst is the 1-th projection function
 but Prod.mk does not have enough arguments
 -/
 #guard_msgs (error, drop info) in #eval Expr.reduceProjStruct? <|
-  mkAppN (.const ``Prod.fst [levelOne, levelOne])
-    #[eNat, eNat, mkAppN (.const ``Prod.mk [levelOne, levelOne]) #[eNat, eNat]]
+  mkAppN (.const ``Prod.fst [.one, .one])
+    #[eNat, eNat, mkAppN (.const ``Prod.mk [.one, .one]) #[eNat, eNat]]
 
 /-! ### `Lean.Expr.forallNot_of_notExists` -/
 

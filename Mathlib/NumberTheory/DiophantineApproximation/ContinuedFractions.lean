@@ -3,21 +3,25 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+public import Mathlib.NumberTheory.DiophantineApproximation.Basic
+
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
-import Mathlib.Algebra.ContinuedFractions.Computation.Translations
-import Mathlib.NumberTheory.DiophantineApproximation.Basic
 
 /-!
-# Restatements of results from Diophantine Approximation using `Mathlib.Algebra.ContinuedFractions`.
+# Diophantine Approximation using continued fractions
 
 ## Main statements
 
-There are two versions of Legendre's Theorem.
-`Real.exists_rat_eq_convergent`, defined in `Mathlib.NumberTheory.DiophantineApproximation.Basic`,
-uses `Real.convergent`, a simple recursive definition of the convergents that is also defined
-in that file. This file provides `Real.exists_convs_eq_rat`, using
-`GenContFract.convs` of `GenContFract.of ξ`.
+There are two versions of Legendre's Theorem.`Real.exists_rat_eq_convergent`,
+defined in `Mathlib/NumberTheory/DiophantineApproximation/Basic.lean`, uses `Real.convergent`,
+a simple recursive definition of the convergents that is also defined in that file.
+This file provides `Real.exists_convs_eq_rat`, using `GenContFract.convs` of `GenContFract.of ξ`.
 -/
+
+public section
 
 section Convergent
 
@@ -34,10 +38,9 @@ open GenContFract
 /-- The `n`th convergent of the `GenContFract.of ξ` agrees with `ξ.convergent n`. -/
 theorem convs_eq_convergent (ξ : ℝ) (n : ℕ) :
     (GenContFract.of ξ).convs n = ξ.convergent n := by
-  induction' n with n ih generalizing ξ
-  · simp only [zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
-  · rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
-    norm_cast
+  induction n generalizing ξ with
+  | zero => simp only [zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
+  | succ n ih => rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]; norm_cast
 
 end Real
 
@@ -45,7 +48,7 @@ end Convergent
 
 namespace Real
 
-variable {ξ : ℝ} {u v : ℤ}
+variable {ξ : ℝ}
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,

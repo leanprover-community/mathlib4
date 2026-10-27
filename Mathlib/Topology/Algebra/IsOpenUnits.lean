@@ -3,9 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+module
+
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
+
+import Mathlib.Topology.Algebra.Group.Units
 
 /-!
 
@@ -23,6 +27,8 @@ This condition is necessary and sufficient for `U(R)` to be an open subspace of 
 for all affine scheme `X` over `R` and all affine open subscheme `U ⊆ X`.
 -/
 
+public section
+
 open Topology
 
 /--
@@ -37,15 +43,17 @@ class IsOpenUnits (M : Type*) [Monoid M] [TopologicalSpace M] : Prop where
   isOpenEmbedding_unitsVal : IsOpenEmbedding (Units.val : Mˣ → M)
 
 instance (priority := 900) (M : Type*) [Monoid M] [TopologicalSpace M] [DiscreteTopology M] :
-    IsOpenUnits M := ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.ext
-      fun _ _ ↦ isOpen_discrete _⟩
+    IsOpenUnits M where
+  isOpenEmbedding_unitsVal :=
+    .of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective
+      fun _ _ ↦ isOpen_discrete _
 
 instance (priority := 900) {M : Type*} [Group M] [TopologicalSpace M] [ContinuousInv M] :
     IsOpenUnits M where
   isOpenEmbedding_unitsVal := toUnits_homeomorph.symm.isOpenEmbedding
 
 instance (priority := 900) {M : Type*} [GroupWithZero M]
-    [TopologicalSpace M] [HasContinuousInv₀ M] [T1Space M] : IsOpenUnits M where
+    [TopologicalSpace M] [ContinuousInv₀ M] [T1Space M] : IsOpenUnits M where
   isOpenEmbedding_unitsVal := by
     refine ⟨Units.isEmbedding_val₀, ?_⟩
     convert (isClosed_singleton (X := M) (x := 0)).isOpen_compl
@@ -53,17 +61,16 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
     simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
     exact isUnit_iff_ne_zero
 
-/-- If `R` has the `I`-adic topology where `I` is contained in the jacobson radical
+/-- If `R` has the `I`-adic topology where `I` is contained in the Jacobson radical
 (e.g. when `R` is complete or local), then `Rˣ` is an open subspace of `R`. -/
-lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [TopologicalRing R]
+lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     {I : Ideal R}
     (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
     IsOpenUnits R := by
-  refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.ext ?_⟩
-  refine (TopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
+  refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective ?_⟩
+  refine (IsTopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
   rw [nhds_induced, nhds_prod_eq]
-  simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one,
-    Prod.mk_one_one, Prod.fst_one, Prod.snd_one]
+  simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one]
   intro s hs
   have H := hR ▸ Ideal.hasBasis_nhds_adic I 1
   have := (H.prod (H.comap MulOpposite.opHomeomorph.symm))
@@ -90,3 +97,25 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [Topol
     · simp
   rw [this]
   exact Ideal.mul_mem_left _ _ hx
+
+/-!
+### Units of products
+
+This section contains the instances that the units in a product of two or finitely many topological
+monoids with open units are open.
+-/
+
+open ContinuousMulEquiv
+
+/-- Openness of the group of units is preserved under products. -/
+instance {M N : Type*} [Monoid M] [TopologicalSpace M] [Monoid N]
+    [TopologicalSpace N] [hM : IsOpenUnits M] [hN : IsOpenUnits N] : IsOpenUnits (M × N) := by
+  rw [isOpenUnits_iff] at *
+  exact ((hM.prodMap hN).of_comp_iff _).mpr prodUnits_isOpenEmbedding
+
+/-- Openness of the group of units is preserved under finite products. -/
+instance {I : Type*} [Finite I] {f : I → Type _} [(i : I) → Monoid (f i)]
+    [(i : I) → TopologicalSpace (f i)] [∀ i, IsOpenUnits (f i)] :
+    IsOpenUnits ((i : I) → f i) := by
+  simp_rw [isOpenUnits_iff] at *
+  exact ((IsOpenEmbedding.piMap ‹_›).of_comp_iff _).mpr piUnits_isOpenEmbedding

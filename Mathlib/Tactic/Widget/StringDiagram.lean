@@ -3,12 +3,16 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import ProofWidgets.Component.PenroseDiagram
-import ProofWidgets.Component.Panel.Basic
-import ProofWidgets.Presentation.Expr
-import ProofWidgets.Component.HtmlDisplay
-import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
-import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+module
+
+public meta import Mathlib.Data.List.Defs
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public meta import ProofWidgets.Component.HtmlDisplay
+public meta import ProofWidgets.Component.Panel.Basic
+public meta import ProofWidgets.Component.PenroseDiagram
+public meta import ProofWidgets.Presentation.Expr
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
 /-!
 # String Diagram Widget
@@ -49,19 +53,20 @@ and unitors from lean expressions. This operation is performed using the `Tactic
 function.
 
 A monoidal category can be viewed as a bicategory with a single object. The program in this
-file can also be used to display the string diagram for general bicategories (see the wip
-PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
-categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
-Note that the relation between monoidal categories and bicategories is formalized in
-`Mathlib.CategoryTheory.Bicategory.SingleObj`, although the string diagram widget does not use
-it directly.
+file can also be used to display the string diagram for general bicategories. With this in mind we
+will sometimes refer to objects and morphisms in monoidal categories as 1-morphisms and 2-morphisms
+respectively, borrowing the terminology of bicategories. Note that the relation between monoidal
+categories and bicategories is formalized in `Mathlib/CategoryTheory/Bicategory/SingleObj.lean`,
+although the string diagram widget does not use it directly.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
 open Lean Meta Elab
-open CategoryTheory
+open _root_.CategoryTheory
 
 open BicategoryLike
 
@@ -203,14 +208,10 @@ def NormalExpr.nodes (e : NormalExpr) : CoherenceM ρ (List (List Node)) :=
   | NormalExpr.nil _ _ => return []
   | NormalExpr.cons _ _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
 
-/-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
-def pairs {α : Type} : List α → List (α × α) :=
-  fun l => l.zip (l.drop 1)
-
 /-- The list of strands associated with a 2-morphism. -/
 def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do
   let l ← e.nodes
-  (pairs l).mapM fun (x, y) ↦ do
+  (l.consecutivePairs).mapM fun (x, y) ↦ do
     let xs := (x.map (fun n ↦ n.tarList)).flatten
     let ys := (y.map (fun n ↦ n.srcList)).flatten
     -- sanity check
@@ -247,11 +248,10 @@ def Strand.toPenroseVar (s : Strand) : PenroseVar :=
 
 open ProofWidgets Penrose DiagramBuilderM Lean.Server
 
-open scoped Jsx in
 /-- Add the variable `v` with the type `tp` to the substance program. -/
 def addPenroseVar (tp : String) (v : PenroseVar) :
     DiagramBuilderM Unit := do
-  let h := <InteractiveCode fmt={← Widget.ppExprTagged v.e} />
+  let h := jsx%{<InteractiveCode fmt={← Widget.ppExprTagged v.e} />}
   addEmbed (toString v) tp h
 
 /-- Add constructor `tp v := nm (vs)` to the substance program. -/
@@ -260,7 +260,6 @@ def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List Penro
   let vs' := ", ".intercalate (vs.map (fun v => toString v))
   addInstruction s!"{tp} {v} := {nm} ({vs'})"
 
-open scoped Jsx in
 /-- Construct a string diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
 def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
@@ -272,12 +271,12 @@ def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
     | .id _ => do addPenroseVar "Id" x.toPenroseVar
   /- Add constraints. -/
   for l in nodes do
-    for (x₁, x₂) in pairs l do
+    for (x₁, x₂) in l.consecutivePairs do
       addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add constraints. -/
-  for (l₁, l₂) in pairs nodes do
-    if let .some x₁ := l₁.head? then
-      if let .some x₂ := l₂.head? then
+  for (l₁, l₂) in nodes.consecutivePairs do
+    if let some x₁ := l₁.head? then
+      if let some x₂ := l₂.head? then
         addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add 1-morphisms as strings. -/
   for l in strands do
@@ -313,60 +312,58 @@ def mkKind (e : Expr) : MetaM Kind := do
     | none => return e)
   let ctx? ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e
   match ctx? with
-  | .some _ => return .bicategory
-  | .none =>
+  | some _ => return .bicategory
+  | none =>
     let ctx? ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e
     match ctx? with
-    | .some _ => return .monoidal
-    | .none => return .none
+    | some _ => return .monoidal
+    | none => return .none
 
-open scoped Jsx in
 /-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
-def stringM? (e : Expr) : MetaM (Option Html) := do
+def stringM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
   let e ← instantiateMVars e
   let k ← mkKind e
   let x : Option (List (List Node) × List (List Strand)) ← (match k with
     | .monoidal => do
-      let .some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return .none
+      let some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return none
       CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return .some (← e'.nodes, ← e'.strands)
+        return some (← e'.nodes, ← e'.strands)
     | .bicategory => do
-      let .some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return .none
+      let some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return none
       CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return .some (← e'.nodes, ← e'.strands)
-    | .none => return .none)
+        return some (← e'.nodes, ← e'.strands)
+    | .none => return none)
   match x with
-  | .none => return none
-  | .some (nodes, strands) => do
+  | none => return none
+  | some (nodes, strands) => do
     DiagramBuilderM.run do
       mkStringDiagram nodes strands
       trace[string_diagram] "Penrose substance: \n{(← get).sub}"
       match ← DiagramBuilderM.buildDiagram dsl sty with
       | some html => return html
-      | none => return <span>No non-structural morphisms found.</span>
+      | none => return jsx%{<span>No non-structural morphisms found.</span>}
 
-open scoped Jsx in
 /-- Help function for displaying two string diagrams in an equality. -/
-def mkEqHtml (lhs rhs : Html) : Html :=
-  <div className="flex">
+def mkEqHtml (lhs rhs : ProofWidgets.Html) : ProofWidgets.Html :=
+  jsx%{<div className="flex">
     <div className="w-50">
-      <details «open»={true}>
-        <summary className="mv2 pointer">String diagram for LHS</summary> {lhs}
+      <details open={true}>
+        <summary className="mv2 pointer">String diagram for LHS</summary>{lhs}
       </details>
     </div>
     <div className="w-50">
-      <details «open»={true}>
-        <summary className="mv2 pointer">String diagram for RHS</summary> {rhs}
+      <details open={true}>
+        <summary className="mv2 pointer">String diagram for RHS</summary>{rhs}
       </details>
     </div>
-  </div>
+  </div>}
 
 /-- Given an equality between 2-morphisms, return a string diagram of the LHS and RHS.
 Otherwise `none`. -/
-def stringEqM? (e : Expr) : MetaM (Option Html) := do
-  let e ← instantiateMVars e
+def stringEqM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
+  let e ← whnfR <| ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   let some lhs ← stringM? lhs | return none
   let some rhs ← stringM? rhs | return none
@@ -374,8 +371,8 @@ def stringEqM? (e : Expr) : MetaM (Option Html) := do
 
 /-- Given an 2-morphism or equality between 2-morphisms, return a string diagram.
 Otherwise `none`. -/
-def stringMorOrEqM? (e : Expr) : MetaM (Option Html) := do
-  forallTelescopeReducing (← inferType e) fun xs a => do
+def stringMorOrEqM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
+  forallTelescopeReducing (← whnfR <| ← inferType e) fun xs a => do
     if let some html ← stringM? (mkAppN e xs) then
       return some html
     else if let some html ← stringEqM? a then
@@ -393,12 +390,11 @@ def stringPresenter : ExprPresenter where
       return html
     throwError "Couldn't find a 2-morphism to display a string diagram."
 
-open scoped Jsx in
 /-- The RPC method for displaying string diagrams. -/
 @[server_rpc_method]
-def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
+def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.Html) :=
   RequestM.asTask do
-    let html : Option Html ← (do
+    let html : Option ProofWidgets.Html ← (do
       if props.goals.isEmpty then
         return none
       let some g := props.goals[0]? | unreachable!
@@ -407,7 +403,7 @@ def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
           let type ← g.mvarId.getType
           stringEqM? type)
     match html with
-    | none => return <span>No String Diagram.</span>
+    | none => return jsx%{<span>No String Diagram.</span>}
     | some inner => return inner
 
 end StringDiagram
@@ -443,8 +439,8 @@ def elabStringDiagramCmd : CommandElab := fun
       let e ← try mkConstWithFreshMVarLevels (← realizeGlobalConstNoOverloadWithInfo t)
         catch _ => Term.levelMVarToParam (← instantiateMVars (← Term.elabTerm t none))
       match ← StringDiagram.stringMorOrEqM? e with
-      | .some html => return html
-      | .none => throwError "could not find a morphism or equality: {e}"
+      | some html => return html
+      | none => throwError "could not find a morphism or equality: {e}"
     liftCoreM <| Widget.savePanelWidgetInfo
       (hash HtmlDisplay.javascript)
       (return json% { html: $(← Server.RpcEncodable.rpcEncode html) })

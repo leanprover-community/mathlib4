@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 
 /-!
 # Change of presheaf of rings
@@ -14,6 +15,8 @@ In this file, we define the restriction of scalars functor
 attached to a morphism of presheaves of rings `α : R ⟶ R'`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -37,10 +40,10 @@ noncomputable def restrictScalarsObj (M' : PresheafOfModules.{v} R') (α : R ⟶
     { toFun := M'.map f
       map_add' := map_add _
       map_smul' := fun r x ↦ (M'.map_smul f (α.app _ r) x).trans (by
-        have eq := RingHom.congr_fun (congrArg RingCat.Hom.hom <| α.naturality f) r
+        have eq := congr($(α.naturality f).hom r)
         dsimp at eq
         rw [← eq]
-        rfl ) }
+        rfl) }
 
 /-- The restriction of scalars functor `PresheafOfModules R' ⥤ PresheafOfModules R`
 induced by a morphism of presheaves of rings `R ⟶ R'`. -/

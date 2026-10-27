@@ -3,14 +3,17 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Init
-import Lean.Elab.ElabRules
+module
+
+public import Mathlib.Init
 
 /-!
 # Defines the `sudo set_option` command.
 
 Allows setting undeclared options.
 -/
+
+public meta section
 
 open Lean Elab
 
@@ -44,7 +47,7 @@ but it also allows to set undeclared options.
 elab "sudo " "set_option " n:ident ppSpace val:term " in " body:term : term <= expectedType => do
   let options ← setOption n val (← getOptions)
   withTheReader Core.Context (fun ctx ↦
-      { ctx with maxRecDepth := maxRecDepth.get options, options := options }) do
+      { ctx.setOptions options with maxRecDepth := maxRecDepth.get options }) do
     elabTerm body expectedType
 
 /-

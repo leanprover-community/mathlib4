@@ -3,13 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -24,6 +22,8 @@ In this file we show some results connecting multivariate polynomial rings and l
   `MvPolynomial σ R`.
 
 -/
+
+@[expose] public section
 
 variable {σ R : Type*} [CommRing R] (M : Submonoid R)
 variable (S : Type*) [CommRing S] [Algebra R S]
@@ -57,6 +57,7 @@ open MvPolynomial
 
 variable (r : R) [IsLocalization.Away r S]
 
+set_option backward.privateInPublic true in
 /-- The canonical algebra map from `MvPolynomial Unit R` quotiented by
 `C r * X () - 1` to the localization of `R` away from `r`. -/
 private noncomputable
@@ -77,6 +78,7 @@ private lemma auxHom_mk (p : MvPolynomial Unit R) :
     auxHom S r p = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
   rfl
 
+set_option backward.privateInPublic true in
 private noncomputable
 def auxInv : S →+* (MvPolynomial Unit R) ⧸ Ideal.span { C r * X () - 1 } :=
   letI g : R →+* MvPolynomial Unit R ⧸ (Ideal.span { C r * X () - 1 }) :=
@@ -98,13 +100,15 @@ private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = 
   ext x
   · simp [auxInv]
   · simp only [auxInv, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-      Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq]
-    erw [IsLocalization.lift_mk'_spec]
-    simp only [map_one, RingHom.coe_comp, Function.comp_apply]
+      Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq, invSelf, Away.lift,
+      lift_mk'_spec]
+    simp only [map_one]
     rw [← map_one (Ideal.Quotient.mk _), ← map_mul, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
       ← Ideal.neg_mem_iff, neg_sub]
     exact Ideal.mem_span_singleton_self (C r * X x - 1)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The canonical algebra isomorphism from `MvPolynomial Unit R` quotiented by
 `C r * X () - 1` to the localization of `R` away from `r`. -/
 noncomputable def mvPolynomialQuotientEquiv :
@@ -112,9 +116,9 @@ noncomputable def mvPolynomialQuotientEquiv :
   toFun := auxHom S r
   invFun := auxInv S r
   left_inv x := by
-    simpa using congrFun (congrArg DFunLike.coe <| auxInv_auxHom S r) x
+    simpa using congr($(auxInv_auxHom S r) x)
   right_inv s := by
-    simpa using congrFun (congrArg DFunLike.coe <| auxHom_auxInv S r) s
+    simpa using congr($(auxHom_auxInv S r) s)
   map_mul' := by simp
   map_add' := by simp
   commutes' := by simp

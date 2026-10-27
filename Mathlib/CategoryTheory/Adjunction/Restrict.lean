@@ -3,8 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.HomCongr
+
 /-!
 
 # Restricting adjunctions
@@ -12,6 +15,8 @@ import Mathlib.CategoryTheory.HomCongr
 `Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
 inclusions.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Adjunction
 
@@ -73,7 +78,7 @@ lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
         R'.map (iD.map f) ≫ comm2.hom.app Y) := by
   -- This proof was just `simp [restrictFullyFaithful]` before https://github.com/leanprover-community/mathlib4/pull/16317
   apply hiC.map_injective
-  simp only [homEquiv_apply, Functor.comp_obj, Functor.map_comp, map_restrictFullyFaithful_unit_app,
+  simp only [homEquiv_apply, Functor.map_comp, map_restrictFullyFaithful_unit_app,
     Functor.id_obj, assoc, Functor.FullyFaithful.map_preimage]
   congr 2
   exact (comm2.hom.naturality _).symm

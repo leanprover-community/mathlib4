@@ -1,4 +1,8 @@
-import Mathlib.Util.TermReduce
+module
+
+public import Mathlib.Util.TermReduce
+
+@[expose] public section
 -- On command line, tests format functions with => rather than ↦ without this.
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
@@ -72,10 +76,10 @@ instance c : C :=
   letI : B := {}
   {}
 
-set_option pp.explicit true in
-/-- info: @C.mk (@B.toA (@B.mk A.mk)) : C -/
+set_option pp.all true in
+/-- info: @C.mk A.mk : C -/
 #guard_msgs in #check delta% c
 
-set_option pp.explicit true in
+set_option pp.all true in
 /-- info: @C.mk A.mk : C -/
 #guard_msgs in #check reduceProj% delta% c

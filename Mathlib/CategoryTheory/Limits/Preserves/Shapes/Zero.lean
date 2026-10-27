@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # Preservation of zero objects and zero morphisms
@@ -21,6 +23,8 @@ We provide the following results:
 * functors which preserve initial or terminal objects preserve zero morphisms.
 
 -/
+
+@[expose] public section
 
 
 universe v u v₁ v₂ v₃ u₁ u₂ u₃
@@ -70,13 +74,13 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
   map_zero X Y := by
     let adj := Adjunction.ofIsLeftAdjoint F
     calc
-      F.map (0 : X ⟶ Y) = F.map 0 ≫ F.map (adj.unit.app Y) ≫ adj.counit.app (F.obj Y) := ?_
+      dsimp% F.map (0 : X ⟶ Y) = F.map 0 ≫ F.map (adj.unit.app Y) ≫ adj.counit.app (F.obj Y) := ?_
       _ = F.map 0 ≫ F.map ((rightAdjoint F).map (0 : F.obj X ⟶ _)) ≫ adj.counit.app (F.obj Y) := ?_
       _ = 0 := ?_
     · rw [Adjunction.left_triangle_components]
       exact (Category.comp_id _).symm
     · simp only [← Category.assoc, ← F.map_comp, zero_comp]
-    · simp only [Adjunction.counit_naturality, comp_zero]
+    · simp
 
 instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D) [IsRightAdjoint G] :
     PreservesZeroMorphisms G where
@@ -88,7 +92,7 @@ instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D
       _ = 0 := ?_
     · rw [Adjunction.right_triangle_components_assoc]
     · simp only [← G.map_comp, comp_zero]
-    · simp only [id_obj, comp_obj, Adjunction.unit_naturality_assoc, zero_comp]
+    · simp only [id_obj, Adjunction.unit_naturality_assoc, zero_comp]
 
 instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F] :
     PreservesZeroMorphisms F where
@@ -114,6 +118,17 @@ instance (F : C ⥤ D ⥤ E) [∀ X, (F.obj X).PreservesZeroMorphisms] :
 
 instance (F : C ⥤ D ⥤ E) [F.PreservesZeroMorphisms] (Y : D) :
     (F.flip.obj Y).PreservesZeroMorphisms where
+
+omit [HasZeroMorphisms C] in
+@[simp] lemma whiskerRight_zero {F G : C ⥤ D} (H : D ⥤ E) [H.PreservesZeroMorphisms] :
+    whiskerRight (0 : F ⟶ G) H = 0 := by cat_disch
+
+omit [HasZeroMorphisms C] in
+lemma FullyFaithful.preservesZeroMorphisms (F : C ⥤ D) (hF : F.FullyFaithful) :
+    letI : HasZeroMorphisms C := hF.hasZeroMorphisms
+    F.PreservesZeroMorphisms :=
+  letI : HasZeroMorphisms C := hF.hasZeroMorphisms
+  ⟨fun _ _ ↦ hF.map_preimage _⟩
 
 end ZeroMorphisms
 
@@ -174,7 +189,7 @@ end ZeroObject
 section
 
 variable [HasZeroObject D] [HasZeroMorphisms D]
-  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category J]
+  (G : C ⥤ D) (hG : IsZero G) (J : Type*) [Category* J]
 
 include hG
 

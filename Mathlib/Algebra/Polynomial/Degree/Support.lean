@@ -3,8 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Polynomial.Degree.Operations
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 /-!
 # Degree and support of univariate polynomials
@@ -12,10 +13,10 @@ import Mathlib.Algebra.Polynomial.Degree.Operations
 ## Main results
 * `Polynomial.as_sum_support`: write `p : R[X]` as a sum over its support
 * `Polynomial.as_sum_range`: write `p : R[X]` as a sum over `{0, ..., natDegree p}`
-* `Polynomial.natDegree_mem_support_of_nonzero`: `natDegree p ∈ support p` if `p ≠ 0`
+* `Polynomial.natDegree_mem_support_of_ne_zero`: `natDegree p ∈ support p` if `p ≠ 0`
 -/
 
-noncomputable section
+public section
 
 open Finsupp Finset
 
@@ -25,14 +26,14 @@ namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {S : Type v} {a c : R} {n m : ℕ}
 
 section Semiring
 
-variable [Semiring R] {p q r : R[X]}
+variable [Semiring R] {p : R[X]}
 
 theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
-  obtain rfl|h := eq_or_ne p 0
+  obtain rfl | h := eq_or_ne p 0
   · simp
   apply WithBot.coe_injective
   rw [← AddMonoidAlgebra.supDegree_withBot_some_comp, Function.comp_id, supDegree_eq_degree,
@@ -58,10 +59,9 @@ theorem as_sum_support_C_mul_X_pow (p : R[X]) : p = ∑ i ∈ p.support, C (p.co
 for any `n` satisfying `p.natDegree < n`.
 -/
 theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) (n : ℕ)
-    (w : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
-  rcases p with ⟨⟩
-  have := supp_subset_range w
-  simp only [Polynomial.sum, support, coeff, natDegree, degree] at this ⊢
+    (hn : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
+  have := supp_subset_range hn
+  simp only [Polynomial.sum, support, coeff] at this ⊢
   exact Finsupp.sum_of_support_subset _ this _ fun n _hn => h n
 
 /-- We can reexpress a sum over `p.support` as a sum over `range (p.natDegree + 1)`.
@@ -80,23 +80,27 @@ theorem sum_fin [AddCommMonoid S] (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) 
   rw [sum_over_range' _ hf n ((natDegree_lt_iff_degree_lt hp).mpr hn),
     Fin.sum_univ_eq_sum_range fun i => f i (p.coeff i)]
 
-theorem as_sum_range' (p : R[X]) (n : ℕ) (w : p.natDegree < n) :
+theorem as_sum_range' (p : R[X]) (n : ℕ) (hn : p.natDegree < n) :
     p = ∑ i ∈ range n, monomial i (coeff p i) :=
-  p.sum_monomial_eq.symm.trans <| p.sum_over_range' monomial_zero_right _ w
+  p.sum_monomial_eq.symm.trans <| p.sum_over_range' monomial_zero_right _ hn
 
 theorem as_sum_range (p : R[X]) : p = ∑ i ∈ range (p.natDegree + 1), monomial i (coeff p i) :=
-  p.sum_monomial_eq.symm.trans <| p.sum_over_range <| monomial_zero_right
+  p.as_sum_range' _ (lt_add_one _)
+
+theorem as_sum_range_C_mul_X_pow' (p : R[X]) {n : ℕ} (hn : p.natDegree < n) :
+    p = ∑ i ∈ range n, C (coeff p i) * X ^ i :=
+  (p.as_sum_range' _ hn).trans <| by simp only [C_mul_X_pow_eq_monomial]
 
 theorem as_sum_range_C_mul_X_pow (p : R[X]) :
     p = ∑ i ∈ range (p.natDegree + 1), C (coeff p i) * X ^ i :=
-  p.as_sum_range.trans <| by simp only [C_mul_X_pow_eq_monomial]
+  p.as_sum_range_C_mul_X_pow' (lt_add_one _)
 
 theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X ^ n)) : a = n :=
-  mem_singleton.1 <| support_C_mul_X_pow' n c h
+  mem_singleton.1 <| support_C_mul_X_pow_subset n c h
 
 theorem card_support_C_mul_X_pow_le_one {c : R} {n : ℕ} : #(support (C c * X ^ n)) ≤ 1 := by
   rw [← card_singleton n]
-  apply card_le_card (support_C_mul_X_pow' n c)
+  apply card_le_card (support_C_mul_X_pow_subset n c)
 
 theorem card_supp_le_succ_natDegree (p : R[X]) : #p.support ≤ p.natDegree + 1 := by
   rw [← Finset.card_range (p.natDegree + 1)]
@@ -112,15 +116,18 @@ end Semiring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type*}
+variable [Semiring R] {p : R[X]}
 
-theorem natDegree_mem_support_of_nonzero (H : p ≠ 0) : p.natDegree ∈ p.support := by
+theorem natDegree_mem_support_of_ne_zero (H : p ≠ 0) : p.natDegree ∈ p.support := by
   rw [mem_support_iff]
   exact (not_congr leadingCoeff_eq_zero).mpr H
 
+@[deprecated (since := "2026-10-13")]
+alias natDegree_mem_support_of_nonzero := natDegree_mem_support_of_ne_zero
+
 theorem natDegree_eq_support_max' (h : p ≠ 0) :
     p.natDegree = p.support.max' (nonempty_support_iff.mpr h) :=
-  (le_max' _ _ <| natDegree_mem_support_of_nonzero h).antisymm <|
+  (le_max' _ _ <| natDegree_mem_support_of_ne_zero h).antisymm <|
     max'_le _ _ _ le_natDegree_of_mem_supp
 
 end Semiring

@@ -3,8 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.GroupTheory.Archimedean
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.GroupTheory.Archimedean
+public import Mathlib.Topology.Algebra.Order.Group
 
 /-!
 # Topology on archimedean groups and fields
@@ -21,49 +24,51 @@ In this file we prove the following theorems:
   commutative group `G` with order topology either is dense in `G` or is a cyclic subgroup.
 -/
 
+public section
+
 open Set
 
 /-- Rational numbers are dense in a linear ordered archimedean field. -/
-theorem Rat.denseRange_cast {𝕜} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+theorem Rat.denseRange_cast {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [TopologicalSpace 𝕜] [OrderTopology 𝕜]
     [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
   dense_of_exists_between fun _ _ h => Set.exists_range_iff.2 <| exists_rat_btwn h
 
-namespace AddSubgroup
+namespace Subgroup
 
-variable {G : Type*} [LinearOrderedAddCommGroup G] [TopologicalSpace G] [OrderTopology G]
-  [Archimedean G]
+variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+  [TopologicalSpace G] [OrderTopology G]
+  [MulArchimedean G]
 
-/-- An additive subgroup of an archimedean linear ordered additive commutative group with order
-topology is dense provided that for all positive `ε` there exists a positive element of the
-subgroup that is less than `ε`. -/
-theorem dense_of_not_isolated_zero (S : AddSubgroup G) (hS : ∀ ε > 0, ∃ g ∈ S, g ∈ Ioo 0 ε) :
+/-- A subgroup of an archimedean linear ordered multiplicative commutative group with order
+topology is dense provided that for all `ε > 1` there exists an element of the subgroup
+that belongs to `(1, ε)`. -/
+@[to_additive /-- An additive subgroup of an archimedean linear ordered additive commutative group
+with order topology is dense provided that for all positive `ε` there exists a positive element of
+the subgroup that is less than `ε`. -/]
+theorem dense_of_not_isolated_one (S : Subgroup G) (hS : ∀ ε > 1, ∃ g ∈ S, g ∈ Ioo 1 ε) :
     Dense (S : Set G) := by
   cases subsingleton_or_nontrivial G
   · refine fun x => _root_.subset_closure ?_
-    rw [Subsingleton.elim x 0]
-    exact zero_mem S
+    rw [Subsingleton.elim x 1]
+    exact one_mem S
   refine dense_of_exists_between fun a b hlt => ?_
-  rcases hS (b - a) (sub_pos.2 hlt) with ⟨g, hgS, hg0, hg⟩
-  rcases (existsUnique_add_zsmul_mem_Ioc hg0 0 a).exists with ⟨m, hm⟩
-  rw [zero_add] at hm
-  refine ⟨m • g, zsmul_mem hgS _, hm.1, hm.2.trans_lt ?_⟩
-  rwa [lt_sub_iff_add_lt'] at hg
+  rcases hS (b / a) (one_lt_div'.2 hlt) with ⟨g, hgS, hg0, hg⟩
+  rcases (existsUnique_add_zpow_mem_Ioc hg0 1 a).exists with ⟨m, hm⟩
+  rw [one_mul] at hm
+  refine ⟨g ^ m, zpow_mem hgS _, hm.1, hm.2.trans_lt ?_⟩
+  rwa [lt_div_iff_mul_lt'] at hg
 
-/-- Let `S` be a nontrivial additive subgroup in an archimedean linear ordered additive commutative
-group `G` with order topology. If the set of positive elements of `S` does not have a minimal
-element, then `S` is dense `G`. -/
-theorem dense_of_no_min (S : AddSubgroup G) (hbot : S ≠ ⊥)
-    (H : ¬∃ a : G, IsLeast { g : G | g ∈ S ∧ 0 < g } a) : Dense (S : Set G) := by
-  refine S.dense_of_not_isolated_zero fun ε ε0 => ?_
+/-- Let `S` be a nontrivial subgroup in an archimedean linear ordered multiplicative commutative
+group `G` with order topology. If the set of elements of `S` that are greater than one
+does not have a minimal element, then `S` is dense `G`. -/
+@[to_additive /-- Let `S` be a nontrivial additive subgroup in an archimedean linear ordered
+additive commutative group `G` with order topology. If the set of positive elements of `S` does not
+have a minimal element, then `S` is dense `G`. -/]
+theorem dense_of_no_min (S : Subgroup G) (hbot : S ≠ ⊥)
+    (H : ¬∃ a : G, IsLeast { g : G | g ∈ S ∧ 1 < g } a) : Dense (S : Set G) := by
+  refine S.dense_of_not_isolated_one fun ε ε1 => ?_
   contrapose! H
-  exact exists_isLeast_pos hbot ε0 (disjoint_left.2 H)
+  exact exists_isLeast_one_lt hbot ε1 (disjoint_left.2 H)
 
-/-- An additive subgroup of an archimedean linear ordered additive commutative group `G` with order
-topology either is dense in `G` or is a cyclic subgroup. -/
-theorem dense_or_cyclic (S : AddSubgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
-  refine (em _).imp (dense_of_not_isolated_zero S) fun h => ?_
-  push_neg at h
-  rcases h with ⟨ε, ε0, hε⟩
-  exact cyclic_of_isolated_zero ε0 (disjoint_left.2 hε)
-
-end AddSubgroup
+end Subgroup

@@ -3,8 +3,9 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.EssentiallySmall
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 /-!
 # Limits over essentially small indexing categories
@@ -15,10 +16,10 @@ See also the file `FinallySmall.lean` for more general results.
 
 -/
 
+public section
+
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
-
-noncomputable section
 
 open CategoryTheory
 

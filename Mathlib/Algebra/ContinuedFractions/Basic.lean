@@ -3,8 +3,10 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Data.Seq.Seq
-import Mathlib.Algebra.Field.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Data.Seq.Defs
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions
@@ -25,7 +27,7 @@ convergents. We follow the naming conventions from Wikipedia and [wall2018analyt
 ## Implementation notes
 
 1. The most commonly used kind of continued fractions in the literature are regular continued
-fractions. We hence just call them `ContFract` in the library.
+   fractions. We hence just call them `ContFract` in the library.
 2. We use sequences from `Data.Seq` to encode potentially infinite sequences.
 
 ## References
@@ -37,6 +39,8 @@ fractions. We hence just call them `ContFract` in the library.
 
 numerics, number theory, approximations, fractions
 -/
+
+@[expose] public section
 
 -- Fix a carrier `α`.
 variable (α : Type*)
@@ -101,7 +105,7 @@ We store the sequence of partial numerators and denominators in a sequence of `G
 `s`.
 For convenience, one often writes `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`.
 -/
-@[ext]
+@[ext, wikidata Q4115724]
 structure GenContFract where
   /-- Head term -/
   h : α
@@ -130,12 +134,7 @@ def partDens (g : GenContFract α) : Stream'.Seq α :=
 /-- A gcf terminated at position `n` if its sequence terminates at position `n`. -/
 def TerminatedAt (g : GenContFract α) (n : ℕ) : Prop :=
   g.s.TerminatedAt n
-
-/-- It is decidable whether a gcf terminated at a given position. -/
-instance terminatedAtDecidable (g : GenContFract α) (n : ℕ) :
-    Decidable (g.TerminatedAt n) := by
-  unfold TerminatedAt
-  infer_instance
+deriving Decidable
 
 /-- A gcf terminates if its sequence terminates. -/
 def Terminates (g : GenContFract α) : Prop :=
@@ -181,8 +180,7 @@ def GenContFract.IsSimpContFract (g : GenContFract α)
     [One α] : Prop :=
   ∀ (n : ℕ) (aₙ : α), g.partNums.get? n = some aₙ → aₙ = 1
 
-variable (α)
-
+variable (α) in
 /-- A *simple continued fraction* (scf) is a generalized continued fraction (gcf) whose partial
 numerators are equal to one.
 $$
@@ -194,11 +192,9 @@ $$
 $$
 For convenience, one often writes `[h; b₀, b₁, b₂,...]`.
 It is encoded as the subtype of gcfs that satisfy `GenContFract.IsSimpContFract`.
- -/
+-/
 def SimpContFract [One α] :=
   { g : GenContFract α // g.IsSimpContFract }
-
-variable {α}
 
 -- Interlude: define some expected coercions.
 namespace SimpContFract
@@ -227,15 +223,12 @@ def SimpContFract.IsContFract [One α] [Zero α] [LT α]
   ∀ (n : ℕ) (bₙ : α),
     (↑s : GenContFract α).partDens.get? n = some bₙ → 0 < bₙ
 
-variable (α)
-
+variable (α) in
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
 denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
- -/
+-/
 def ContFract [One α] [Zero α] [LT α] :=
   { s : SimpContFract α // s.IsContFract }
-
-variable {α}
 
 /-! Interlude: define some expected coercions. -/
 

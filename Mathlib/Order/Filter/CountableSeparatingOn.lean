@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.CountableInter
+module
+
+public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Filters with countable intersections and countable separating families
@@ -70,6 +72,8 @@ We formalize several versions of this theorem in
 filter, countable
 -/
 
+public section
+
 open Function Set Filter
 
 /-- We say that a type `α` has a *countable separating family of sets* satisfying a predicate
@@ -119,7 +123,7 @@ theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {
   rcases h.1 with ⟨S, hSc, hSq, hS⟩
   choose! V hpV hV using fun s hs ↦ hpq s (hSq s hs)
   refine ⟨⟨V '' S, hSc.image _, forall_mem_image.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
-  refine congr_arg Subtype.val (hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_)
+  congrm $(hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_).val
   rw [← hV U hU]
   exact h _ (mem_image_of_mem _ hU)
 

@@ -3,10 +3,11 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.ContinuousMap.CocompactMap
-import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.ContinuousMap.CocompactMap
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Cocompact maps in normed groups
@@ -17,13 +18,15 @@ This file gives a characterization of cocompact maps in terms of norm estimates.
 
 * `CocompactMapClass.norm_le`: Every cocompact map satisfies a norm estimate
 * `ContinuousMapClass.toCocompactMapClass_of_norm`: Conversely, this norm estimate implies that a
-map is cocompact.
+  map is cocompact.
 
 -/
 
+public section
+
 open Filter Metric
 
-variable {𝕜 E F 𝓕 : Type*}
+variable {E F 𝓕 : Type*}
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable {f : 𝓕}
 
@@ -35,7 +38,7 @@ theorem CocompactMapClass.norm_le [ProperSpace F] [FunLike 𝓕 E F] [CocompactM
   rcases closedBall_compl_subset_of_mem_cocompact h 0 with ⟨r, hr⟩
   use r
   intro x hx
-  suffices x ∈ f⁻¹' (Metric.closedBall 0 ε)ᶜ by aesop
+  suffices x ∈ f ⁻¹' (Metric.closedBall 0 ε)ᶜ by simp_all
   apply hr
   simp [hx]
 

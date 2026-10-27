@@ -3,19 +3,29 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Anne Baanen
 -/
-import ImportGraph.Imports
-import Mathlib.Tactic.MinImports
+module
+
+public import ImportGraph.Widget.GoToModule
+public import Mathlib.Init
 
 /-! # The `upstreamableDecl` linter
 
 The `upstreamableDecl` linter detects declarations that could be moved to a file higher up in the
 import hierarchy. This is intended to assist with splitting files.
+
+# TODO
+
+This functionality does not behave well with the module system, and should be upgraded to use new
+`#find_home` internals (and/or upstreamed to `ImportGraph`).
 -/
 
-open Lean Elab Command
+meta section
 
+open Lean Elab Command Linter
+
+-- TODO: move this to the `Lean` directory
 /-- Does this declaration come from the current file? -/
-def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
+public def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
   (env.getModuleIdxFor? decl).isNone
 
 open Mathlib.Command.MinImports
@@ -31,10 +41,10 @@ def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : S
   let immediateDeps ← getAllDependencies stx id
 
   -- Drop all the unresolvable constants, otherwise `transitivelyUsedConstants` fails.
-  let immediateDeps : NameSet := immediateDeps.fold (init := ∅) fun s n =>
+  let immediateDeps : NameSet := immediateDeps.foldl (init := ∅) fun s n =>
     if (env.find? n).isSome then s.insert n else s
 
-  let deps ← liftCoreM <| immediateDeps.transitivelyUsedConstants
+  let deps ← liftCoreM immediateDeps.transitivelyUsedConstants
   let constInfos := deps.toList.filterMap env.find?
   -- We allow depending on theorems and constructors.
   -- We explicitly allow constructors since `inductive` declarations are reported to depend on their
@@ -42,7 +52,7 @@ def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : S
   -- warning on the inductive itself but nothing on its downstream uses.
   -- (There does not seem to be an easy way to determine, given `Syntax` and `ConstInfo`,
   -- whether the `ConstInfo` is a constructor declared in this piece of `Syntax`.)
-  let defs := constInfos.filter (fun constInfo => !(constInfo.isTheorem || constInfo.isCtor))
+  let defs := constInfos.filter (fun constInfo => !(constInfo matches .thmInfo _ | .ctorInfo _))
 
   return defs.any fun constInfo => declName != constInfo.name && constInfo.name.isLocal env
 
@@ -57,7 +67,7 @@ see options `linter.upstreamableDecl.defs` and `linter.upstreamableDecl.private`
 
 This is intended to assist with splitting files.
 -/
-register_option linter.upstreamableDecl : Bool := {
+public register_option linter.upstreamableDecl : Bool := {
   defValue := false
   descr := "enable the upstreamableDecl linter"
 }
@@ -69,7 +79,7 @@ The linter does not place a warning on any declaration depending on a definition
 (while it does place a warning on the definition itself), since we often create a new file for a
 definition on purpose.
 -/
-register_option linter.upstreamableDecl.defs : Bool := {
+public register_option linter.upstreamableDecl.defs : Bool := {
   defValue := false
   descr := "upstreamableDecl warns on definitions"
 }
@@ -77,7 +87,7 @@ register_option linter.upstreamableDecl.defs : Bool := {
 /--
 If set to `true`, the `upstreamableDecl` linter will add warnings on private declarations.
 -/
-register_option linter.upstreamableDecl.private : Bool := {
+public register_option linter.upstreamableDecl.private : Bool := {
   defValue := false
   descr := "upstreamableDecl warns on private declarations"
 }
@@ -86,12 +96,12 @@ namespace DoubleImports
 
 @[inherit_doc Mathlib.Linter.linter.upstreamableDecl]
 def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.upstreamableDecl (← getOptions) do
+    unless getLinterValue linter.upstreamableDecl (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
-    let skipDef := !Linter.getLinterValue linter.upstreamableDecl.defs (← getOptions)
-    let skipPrivate := !Linter.getLinterValue linter.upstreamableDecl.private (← getOptions)
+    let skipDef := !getLinterValue linter.upstreamableDecl.defs (← getLinterOptions)
+    let skipPrivate := !getLinterValue linter.upstreamableDecl.private (← getLinterOptions)
     if stx == (← `(command| set_option $(mkIdent `linter.upstreamableDecl) true)) then return
     let env ← getEnv
     let id ← getId stx
@@ -99,24 +109,19 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
       -- Skip defs and private decls by default.
       let name ← getDeclName stx
       if (skipDef && if let some constInfo := env.find? name
-         then !(constInfo.isTheorem || constInfo.isCtor)
+         then !(constInfo matches .thmInfo _ | .ctorInfo _)
          else true) ||
        (skipPrivate && isPrivateName name) then
         return
 
       let minImports := getIrredundantImports env (← getAllImports stx id)
-      match minImports with
-      | ⟨(RBNode.node _ .leaf upstream _ .leaf), _⟩ => do
+      match minImports.size, minImports.min? with
+      | 1, some upstream => do
         if !(← env.localDefinitionDependencies stx id) then
-          let p : GoToModuleLinkProps := { modName := upstream }
-          let widget : MessageData := .ofWidget
-            (← liftCoreM <| Widget.WidgetInstance.ofHash
-              GoToModuleLink.javascriptHash <|
-              Server.RpcEncodable.rpcEncode p)
-            (toString upstream)
+          let modWidget ← liftCoreM <| ImportGraph.Widget.goToModule upstream
           Linter.logLint linter.upstreamableDecl id
-            m!"Consider moving this declaration to the module {widget}."
-      | _ => pure ()
+            m!"Consider moving this declaration to the module {modWidget}."
+      | _, _ => pure ()
 
 initialize addLinter upstreamableDeclLinter
 

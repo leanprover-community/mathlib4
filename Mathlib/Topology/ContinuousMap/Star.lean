@@ -3,14 +3,18 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Nicolò Cavalleri
 -/
-import Mathlib.Topology.Algebra.Star
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Topology.Algebra.Star
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Star structures on continuous maps.
 
 -/
+
+@[expose] public section
 
 namespace ContinuousMap
 
@@ -63,7 +67,7 @@ instance starMul [Mul β] [ContinuousMul β] [StarMul β] [ContinuousStar β] :
     StarMul C(α, β) where
   star_mul _ _ := ext fun _ => star_mul _ _
 
-instance [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
+instance [NonUnitalNonAssocSemiring β] [IsTopologicalSemiring β] [StarRing β] [ContinuousStar β] :
     StarRing C(α, β) :=
   { ContinuousMap.starAddMonoid, ContinuousMap.starMul with }
 
@@ -77,7 +81,7 @@ section Precomposition
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 variable (𝕜 : Type*) [CommSemiring 𝕜]
-variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
+variable (A : Type*) [TopologicalSpace A] [Semiring A] [IsTopologicalSemiring A] [Star A]
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
 /-- The functorial map taking `f : C(X, Y)` to `C(Y, A) →⋆ₐ[𝕜] C(X, A)` given by pre-composition
@@ -110,11 +114,11 @@ end Precomposition
 section Postcomposition
 
 variable (X : Type*) {𝕜 A B C : Type*} [TopologicalSpace X] [CommSemiring 𝕜]
-variable [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
+variable [TopologicalSpace A] [Semiring A] [IsTopologicalSemiring A] [Star A]
 variable [ContinuousStar A] [Algebra 𝕜 A]
-variable [TopologicalSpace B] [Semiring B] [TopologicalSemiring B] [Star B]
+variable [TopologicalSpace B] [Semiring B] [IsTopologicalSemiring B] [Star B]
 variable [ContinuousStar B] [Algebra 𝕜 B]
-variable [TopologicalSpace C] [Semiring C] [TopologicalSemiring C] [Star C]
+variable [TopologicalSpace C] [Semiring C] [IsTopologicalSemiring C] [Star C]
 variable [ContinuousStar C] [Algebra 𝕜 C]
 
 /-- Post-composition with a continuous star algebra homomorphism is a star algebra homomorphism
@@ -148,7 +152,7 @@ namespace Homeomorph
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable (𝕜 : Type*) [CommSemiring 𝕜]
-variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [StarRing A]
+variable (A : Type*) [TopologicalSpace A] [Semiring A] [IsTopologicalSemiring A] [StarRing A]
 variable [ContinuousStar A] [Algebra 𝕜 A]
 
 /-- `ContinuousMap.compStarAlgHom'` as a `StarAlgEquiv` when the continuous map `f` is
@@ -171,7 +175,7 @@ end Homeomorph
 /-! ### Evaluation as a bundled map -/
 
 variable {X : Type*} (S R : Type*) [TopologicalSpace X] [CommSemiring S] [CommSemiring R]
-variable [Algebra S R] [TopologicalSpace R] [TopologicalSemiring R]
+variable [Algebra S R] [TopologicalSpace R] [IsTopologicalSemiring R]
 
 /-- Evaluation of continuous maps at a point, bundled as a star algebra homomorphism. -/
 @[simps!]

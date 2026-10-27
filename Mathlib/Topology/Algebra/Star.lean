@@ -3,10 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Star.Pi
-import Mathlib.Algebra.Star.Prod
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.ContinuousMap.Defs
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.Topology.Algebra.Constructions
 
 /-!
 # Continuity of `star`
@@ -15,7 +16,11 @@ This file defines the `ContinuousStar` typeclass, along with instances on `Pi`, 
 `MulOpposite`, and `Units`.
 -/
 
-open Filter Topology
+@[expose] public section
+
+open Filter
+
+open scoped Topology
 
 /-- Basic hypothesis to talk about a topological space with a continuous `star` operator. -/
 class ContinuousStar (R : Type*) [TopologicalSpace R] [Star R] : Prop where
@@ -26,7 +31,12 @@ export ContinuousStar (continuous_star)
 
 section Continuity
 
-variable {α R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R]
+
+variable {α R : Type*} [TopologicalSpace R]
+
+section Star
+
+variable [Star R] [ContinuousStar R]
 
 theorem continuousOn_star {s : Set R} : ContinuousOn star s :=
   continuous_star.continuousOn
@@ -46,26 +56,53 @@ theorem Filter.Tendsto.star {f : α → R} {l : Filter α} {y : R} (h : Tendsto 
 
 variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
 
-@[continuity, fun_prop]
-theorem Continuous.star (hf : Continuous f) : Continuous fun x => star (f x) :=
+@[to_fun (attr := fun_prop)]
+theorem Continuous.star (hf : Continuous f) : Continuous (star f) :=
   continuous_star.comp hf
 
-@[fun_prop]
-theorem ContinuousAt.star (hf : ContinuousAt f x) : ContinuousAt (fun x => star (f x)) x :=
+@[to_fun (attr := fun_prop)]
+theorem ContinuousAt.star (hf : ContinuousAt f x) : ContinuousAt (star f) x :=
   continuousAt_star.comp hf
 
-@[fun_prop]
-theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (fun x => star (f x)) s :=
+@[to_fun (attr := fun_prop)]
+theorem ContinuousOn.star (hf : ContinuousOn f s) : ContinuousOn (star f) s :=
   continuous_star.comp_continuousOn hf
 
+@[to_fun (attr := fun_prop)]
 theorem ContinuousWithinAt.star (hf : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => star (f x)) s x :=
+    ContinuousWithinAt (star f) s x :=
   Filter.Tendsto.star hf
 
 /-- The star operation bundled as a continuous map. -/
 @[simps]
 def starContinuousMap : C(R, R) :=
   ⟨star, continuous_star⟩
+
+end Star
+
+section InvolutiveStar
+
+variable [InvolutiveStar R] [ContinuousStar R]
+variable [TopologicalSpace α] {f : α → R} {s : Set α} {x : α}
+
+@[to_fun (attr := simp) continuous_fun_star_iff]
+theorem continuous_star_iff : Continuous (star f) ↔ Continuous f :=
+  ⟨fun h ↦ star_star f ▸ h.star, fun h ↦ h.star⟩
+
+@[to_fun (attr := simp) continuousAt_fun_star_iff]
+theorem continuousAt_star_iff : ContinuousAt (star f) x ↔ ContinuousAt f x :=
+  ⟨fun h ↦ star_star f ▸ h.star, fun h ↦ h.star⟩
+
+@[to_fun (attr := simp) continuousOn_fun_star_iff]
+theorem continuousOn_star_iff : ContinuousOn (star f) s ↔ ContinuousOn f s :=
+  ⟨fun h ↦ star_star f ▸ h.star, fun h ↦ h.star⟩
+
+@[to_fun (attr := simp) continuousWithinAt_fun_star_iff]
+theorem continuousWithinAt_star_iff :
+    ContinuousWithinAt (star f) s x ↔ ContinuousWithinAt f s x :=
+  ⟨fun h ↦ star_star f ▸ h.star, fun h ↦ h.star⟩
+
+end InvolutiveStar
 
 end Continuity
 
@@ -75,14 +112,14 @@ variable {R S ι : Type*}
 
 instance [Star R] [Star S] [TopologicalSpace R] [TopologicalSpace S] [ContinuousStar R]
     [ContinuousStar S] : ContinuousStar (R × S) :=
-  ⟨(continuous_star.comp continuous_fst).prod_mk (continuous_star.comp continuous_snd)⟩
+  ⟨(continuous_star.comp continuous_fst).prodMk (continuous_star.comp continuous_snd)⟩
 
 instance {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
     [∀ i, ContinuousStar (C i)] : ContinuousStar (∀ i, C i) where
   continuous_star := continuous_pi fun i => Continuous.star (continuous_apply i)
 
 instance [Star R] [TopologicalSpace R] [ContinuousStar R] : ContinuousStar Rᵐᵒᵖ :=
-  ⟨MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.star⟩
+  ⟨MulOpposite.continuous_op.comp MulOpposite.continuous_unop.star⟩
 
 instance [Monoid R] [StarMul R] [TopologicalSpace R] [ContinuousStar R] :
     ContinuousStar Rˣ :=

@@ -3,23 +3,28 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
-import Mathlib.Analysis.CStarAlgebra.Basic
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.ContinuousMap.Star
 
 /-!
 # Star structures on bounded continuous functions
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open Topology Bornology NNReal uniformity UniformConvergence
+open BoundedContinuousFunction
 
-open Set Filter Metric Function
+open Set
 
 universe u v w
 
-variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u} {β : Type v}
 
 namespace BoundedContinuousFunction
 
@@ -49,7 +54,7 @@ variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α]
 variable [NormedSpace 𝕜 β] [StarModule 𝕜 β]
 
 instance instStarAddMonoid : StarAddMonoid (α →ᵇ β) where
-  star f := f.comp star starNormedAddGroupHom.lipschitz
+  star f := f.comp star starNormedAddGroupHom.lipschitzWith
   star_involutive f := ext fun x => star_star (f x)
   star_add f g := ext fun x => star_add (f x) (g x)
 
@@ -62,7 +67,7 @@ theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star (⇑f) := rfl
 theorem star_apply (f : α →ᵇ β) (x : α) : star f x = star (f x) := rfl
 
 instance instNormedStarGroup : NormedStarGroup (α →ᵇ β) where
-  norm_star f := by simp only [norm_eq, star_apply, norm_star]
+  norm_star_le f := by simp only [norm_eq, star_apply, norm_star, le_of_eq]
 
 instance instStarModule : StarModule 𝕜 (α →ᵇ β) where
   star_smul k f := ext fun x => star_smul k (f x)
@@ -88,5 +93,20 @@ instance instCStarRing : CStarRing (α →ᵇ β) where
     exact norm_coe_le_norm (star f * f) x
 
 end CStarRing
+
+section NormedAlgebra
+
+variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α]
+  [NormedRing β] [NormedAlgebra 𝕜 β] [StarAddMonoid β] [NormedStarGroup β]
+
+/-- The ⋆-algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
+@[simps!]
+def toContinuousMapStarₐ : (α →ᵇ β) →⋆ₐ[𝕜] C(α, β) := { toContinuousMapₐ 𝕜 with
+  map_star' _ := rfl }
+
+@[simp]
+theorem coe_toContinuousMapStarₐ (f : α →ᵇ β) : (f.toContinuousMapStarₐ 𝕜 : α → β) = f := rfl
+
+end NormedAlgebra
 
 end BoundedContinuousFunction

@@ -3,8 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.Tactic.NormNum.GCD
+module
+
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Tactic.NormNum.GCD
 
 /-! # `norm_num` extension for `IsCoprime`
 
@@ -14,7 +16,9 @@ This module defines a `norm_num` extension for `IsCoprime` over `ℤ`.
 it does not correspond to the usual notion of coprime.)
 -/
 
-namespace Tactic
+public meta section
+
+namespace Mathlib.Meta
 
 namespace NormNum
 
@@ -60,4 +64,4 @@ def evalIntIsCoprime : NormNumExt where eval {_ _} e := do
 
 end NormNum
 
-end Tactic
+end Mathlib.Meta

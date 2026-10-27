@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Rank in a well-founded relation
 
-For `r` a well-founded relation, `IsWellFounded.rank r a` is recursively defined as the least
+For `r` a well-founded relation, `WellFounded.rank r a` is recursively defined as the least
 ordinal greater than the ranks of all elements below `a`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -55,75 +59,42 @@ end Acc
 
 /-! ### Rank in a well-founded relation -/
 
-namespace IsWellFounded
+namespace WellFounded
 
-variable (r : α → α → Prop) [hwf : IsWellFounded α r]
+variable (r : α → α → Prop) [hwf : WellFounded r]
 
 /-- The rank of an element `a` under a well-founded relation `r` is defined recursively as the
 smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
 `r b a`). -/
 noncomputable def rank (a : α) : Ordinal.{u} :=
-  (hwf.apply r a).rank
+  (hwf.apply a).rank
 
 theorem rank_eq (a : α) : rank r a = ⨆ b : { b // r b a }, Order.succ (rank r b) :=
-  (hwf.apply r a).rank_eq
+  (hwf.apply a).rank_eq
 
-variable {r : α → α → Prop} [hwf : IsWellFounded α r]
+variable {r : α → α → Prop} [hwf : WellFounded r]
 
 theorem rank_lt_of_rel (h : r a b) : rank r a < rank r b :=
   Acc.rank_lt_of_rel _ h
 
 theorem mem_range_rank_of_le {o : Ordinal} (h : o ≤ rank r a) : o ∈ Set.range (rank r) := by
-  obtain ⟨b, hb, rfl⟩ := Acc.mem_range_rank_of_le (hwf.apply r a) h
+  obtain ⟨b, hb, rfl⟩ := Acc.mem_range_rank_of_le (hwf.apply a) h
   exact ⟨b, rfl⟩
 
-end IsWellFounded
+end WellFounded
 
 theorem WellFoundedLT.rank_strictMono [Preorder α] [WellFoundedLT α] :
-    StrictMono (IsWellFounded.rank (α := α) (· < ·)) :=
-  fun _ _ => IsWellFounded.rank_lt_of_rel
+    StrictMono (WellFounded.rank (α := α) (· < ·)) :=
+  fun _ _ => WellFounded.rank_lt_of_rel
 
 theorem WellFoundedGT.rank_strictAnti [Preorder α] [WellFoundedGT α] :
-    StrictAnti (IsWellFounded.rank (α := α) (· > ·)) :=
-  fun _ _ a => IsWellFounded.rank_lt_of_rel a
+    StrictAnti (WellFounded.rank (α := α) (· > ·)) :=
+  fun _ _ a => WellFounded.rank_lt_of_rel a
 
 @[simp]
-theorem IsWellFounded.rank_eq_typein (r) [IsWellOrder α r] : rank r = Ordinal.typein r := by
+theorem WellFounded.rank_eq_typein (r) [IsWellOrder α r] : rank r = Ordinal.typein r := by
   classical
-  letI := linearOrderOfSTO r
+  let := linearOrderOfSTO r
   ext a
   exact InitialSeg.eq (⟨(OrderEmbedding.ofStrictMono _ WellFoundedLT.rank_strictMono).ltEmbedding,
     fun a b h ↦ mem_range_rank_of_le h.le⟩) (Ordinal.typein r) a
-
-namespace WellFounded
-
-variable {r : α → α → Prop} (hwf : WellFounded r)
-
-/-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
-smallest ordinal greater than the ranks of all elements below it (i.e. elements `b` such that
-`r b a`). -/
-@[deprecated IsWellFounded.rank (since := "2024-09-07")]
-noncomputable def rank (a : α) : Ordinal.{u} :=
-  (hwf.apply a).rank
-
-set_option linter.deprecated false in
-@[deprecated IsWellFounded.rank_eq (since := "2024-09-07")]
-theorem rank_eq : hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) :=
-  (hwf.apply a).rank_eq
-
-set_option linter.deprecated false in
-@[deprecated IsWellFounded.rank_lt_of_rel (since := "2024-09-07")]
-theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
-  Acc.rank_lt_of_rel _ h
-
-set_option linter.deprecated false in
-@[deprecated WellFoundedLT.rank_strictMono (since := "2024-09-07")]
-theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
-    StrictMono (rank <| @wellFounded_lt α _ _) := fun _ _ => rank_lt_of_rel _
-
-set_option linter.deprecated false in
-@[deprecated WellFoundedGT.rank_strictAnti (since := "2024-09-07")]
-theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
-    StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
-
-end WellFounded

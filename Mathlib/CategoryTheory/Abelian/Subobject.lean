@@ -3,13 +3,17 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Subobject.Limits
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Equivalence between subobjects and quotients in an abelian category
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits Opposite
@@ -22,10 +26,12 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- In an abelian category, the subobjects and quotient objects of an object `X` are
-    order-isomorphic via taking kernels and cokernels.
-    Implemented here using subobjects in the opposite category,
-    since mathlib does not have a notion of quotient objects at the time of writing. -/
+order-isomorphic via taking kernels and cokernels.
+Implemented here using subobjects in the opposite category,
+since mathlib does not have a notion of quotient objects at the time of writing. -/
 @[simps!]
 def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
   refine OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) ?_ ?_
@@ -62,5 +68,11 @@ instance wellPowered_opposite [Abelian C] [LocallySmall.{w} C] [WellPowered.{w} 
     WellPowered.{w} Cᵒᵖ where
   subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
+
+/-- In an abelian category, the projection `Subobject.pullbackπ f B` from the pullback of a
+subobject `B` along an epimorphism `f` is an epimorphism. -/
+instance [Abelian C] {X Y : C} (f : X ⟶ Y) [Epi f] (B : Subobject Y) :
+    Epi (Subobject.pullbackπ f B) :=
+  epi_fst_of_isLimit _ _ (Subobject.isPullback f B).isLimit
 
 end CategoryTheory.Abelian

@@ -3,8 +3,11 @@ Copyright (c) 2025 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
+module
+
+public import Mathlib.Topology.Algebra.Support
+
 import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Topology.Algebra.Support
 
 /-!
 # The topological support of sup and inf of functions
@@ -15,6 +18,8 @@ has compact support if so do `f` and `g`.
 
 -/
 
+public section
+
 variable {X M : Type*} [TopologicalSpace X] [One M]
 
 section SemilatticeSup
@@ -23,7 +28,7 @@ variable [SemilatticeSup M]
 
 @[to_additive]
 theorem HasCompactMulSupport.sup {f g : X → M} (hf : HasCompactMulSupport f)
-    (hg : HasCompactMulSupport g) :  HasCompactMulSupport (f ⊔ g) := by
+    (hg : HasCompactMulSupport g) : HasCompactMulSupport (f ⊔ g) := by
   apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_mulTSupport _)
   rw [mulTSupport, mulTSupport, mulTSupport, ← closure_union]
   apply closure_mono
@@ -37,7 +42,7 @@ variable [SemilatticeInf M]
 
 @[to_additive]
 theorem HasCompactMulSupport.inf {f g : X → M} (hf : HasCompactMulSupport f)
-    (hg : HasCompactMulSupport g) :  HasCompactMulSupport (f ⊓ g) := by
+    (hg : HasCompactMulSupport g) : HasCompactMulSupport (f ⊓ g) := by
   apply IsCompact.of_isClosed_subset (IsCompact.union hf hg) (isClosed_mulTSupport _)
   rw [mulTSupport, mulTSupport, mulTSupport, ← closure_union]
   apply closure_mono

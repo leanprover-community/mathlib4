@@ -3,8 +3,11 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Euclidean.Inversion.Basic
-import Mathlib.Analysis.InnerProductSpace.Calculus
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
+
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Tactic.AdaptationNote
 
@@ -23,7 +26,9 @@ space in this file.
 inversion, derivative
 -/
 
-open Metric Function AffineMap Set AffineSubspace
+public section
+
+open Function Set
 open scoped Topology RealInnerProductSpace
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -86,7 +91,7 @@ variable {c x : F} {R : ℝ}
 /-- Formula for the Fréchet derivative of `EuclideanGeometry.inversion c R`. -/
 theorem hasFDerivAt_inversion (hx : x ≠ c) :
     HasFDerivAt (inversion c R)
-      ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
+      ((R / dist x c) ^ 2 • ((ℝ ∙ (x - c))ᗮ.reflection : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
   have : HasFDerivAt (inversion c R) (?_ : F →L[ℝ] F) (c + x) := by
     simp +unfoldPartialApp only [inversion]
@@ -96,13 +101,40 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
       (R ^ 2)
     exact (B.smul A).add_const c
   refine this.congr_fderiv (LinearMap.ext_on_codisjoint
-    (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ ∙ x)).codisjoint
+    (Submodule.isCompl_orthogonal (ℝ ∙ x)).codisjoint
     (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
   · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹ := by
       rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']
-    simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq,
+    simp [Submodule.reflection_orthogonalComplement_singleton_eq_neg,
       two_mul, this, div_eq_mul_inv, mul_add, add_smul, mul_pow]
   · simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,
-      reflection_mem_subspace_eq_self hy, div_eq_mul_inv, mul_pow]
+      Submodule.reflection_mem_subspace_eq_self hy, div_eq_mul_inv, mul_pow]
+
+/-- Inversion with nonzero radius is not continuous at its center. -/
+theorem not_continuousAt_inversion_center [Nontrivial F] (hR : R ≠ 0) :
+    ¬ ContinuousAt (inversion c R) c :=
+  not_continuousAt_of_tendsto
+    (tendsto_inversion_nhdsNE_center_cobounded (c := c) (R := R) hR)
+    nhdsWithin_le_nhds (Metric.disjoint_nhds_cobounded _)
+
+/-- The value of `fderiv` for inversion at its center is zero. For nonzero radius in a nontrivial
+space, this is the value assigned by `fderiv` at a point where the map is not differentiable. -/
+@[simp]
+theorem fderiv_inversion_center : fderiv ℝ (inversion c R) c = 0 := by
+  cases subsingleton_or_nontrivial F
+  · exact Subsingleton.elim _ _
+  · obtain rfl | hR := eq_or_ne R 0
+    · simp +unfoldPartialApp [inversion]
+    · exact fderiv_zero_of_not_differentiableAt <| mt DifferentiableAt.continuousAt
+        (not_continuousAt_inversion_center (c := c) (R := R) hR)
+
+/-- Formula for the Fréchet derivative of inversion, valid at every point. -/
+theorem fderiv_inversion (x : F) :
+    fderiv ℝ (inversion c R) x =
+      (R / dist x c) ^ 2 • ((ℝ ∙ (x - c))ᗮ.reflection : F →L[ℝ] F) := by
+  by_cases hx : x = c
+  · subst x
+    simp
+  · simpa using (hasFDerivAt_inversion (c := c) (R := R) (x := x) hx).fderiv
 
 end EuclideanGeometry

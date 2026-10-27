@@ -3,15 +3,16 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Logic.Equiv.PartialEquiv
 
 private axiom test_sorry : ∀ {α}, α
 /-!
 This is a test file for the tactic `mfld_set_tac`. Because this tactic applies a simp-set which
 mostly contains lemmas in advanced parts of mathlib, it is currently impossible to truly test it
 in realistic conditions. Instead, we create stub definitions and lemmas on objects such as
-`PartialHomeomorph`, label them with `mfld_simps` and run tests on those.
+`OpenPartialHomeomorph`, label them with `mfld_simps` and run tests on those.
 -/
 
 open Lean Meta Elab Tactic
@@ -21,29 +22,29 @@ open Lean Meta Elab Tactic
 set_option autoImplicit true
 section stub_lemmas
 
-structure PartialHomeomorph (α : Type u) (β : Type u) extends PartialEquiv α β
+structure OpenPartialHomeomorph (α : Type u) (β : Type u) extends PartialEquiv α β
 
 noncomputable
-instance PartialHomeomorph.has_coe_to_fun : CoeFun (PartialHomeomorph α β) (fun _ ↦ α → β) :=
+instance OpenPartialHomeomorph.has_coe_to_fun : CoeFun (OpenPartialHomeomorph α β) (fun _ ↦ α → β) :=
   test_sorry
 
 noncomputable
-def PartialHomeomorph.symm (_e : PartialHomeomorph α β) : PartialHomeomorph β α := test_sorry
+def OpenPartialHomeomorph.symm (_e : OpenPartialHomeomorph α β) : OpenPartialHomeomorph β α := test_sorry
 
-@[mfld_simps] lemma PartialHomeomorph.left_inv (e : PartialHomeomorph α β) {x : α}
+@[mfld_simps] lemma OpenPartialHomeomorph.left_inv (e : OpenPartialHomeomorph α β) {x : α}
   (_h : x ∈ e.toPartialEquiv.source) :
   e.symm (e x) = x :=
 test_sorry
 
-@[mfld_simps] theorem PartialHomeomorph.symm_to_PartialEquiv (e : PartialHomeomorph α β) :
+@[mfld_simps] theorem OpenPartialHomeomorph.symm_to_PartialEquiv (e : OpenPartialHomeomorph α β) :
   e.symm.toPartialEquiv = e.toPartialEquiv.symm :=
 test_sorry
 
-@[mfld_simps] lemma PartialHomeomorph.coe_coe (e : PartialHomeomorph α β) :
+@[mfld_simps] lemma OpenPartialHomeomorph.coe_coe (e : OpenPartialHomeomorph α β) :
   (e.toPartialEquiv : α → β) = e :=
 test_sorry
 
-@[mfld_simps] lemma PartialHomeomorph.coe_coe_symm (e : PartialHomeomorph α β) :
+@[mfld_simps] lemma OpenPartialHomeomorph.coe_coe_symm (e : OpenPartialHomeomorph α β) :
   (e.toPartialEquiv.symm : β → α) = (e.symm : β → α) :=
 test_sorry
 
@@ -83,7 +84,7 @@ example (e : PartialEquiv α β) (e' : PartialEquiv β γ) :
 
 example (e : PartialEquiv α β) : (e.trans e.symm).source = e.source := by mfld_set_tac
 
-example (s : Set α) (f : PartialHomeomorph α β) :
+example (s : Set α) (f : OpenPartialHomeomorph α β) :
   f.symm.toPartialEquiv.source ∩ (f.toPartialEquiv.target ∩ Set.preimage f.symm s)
   = f.symm.toPartialEquiv.source ∩ Set.preimage f.symm s := by mfld_set_tac
 
@@ -91,9 +92,9 @@ example
   {I : ModelWithCorners 𝕜 E H}
   {I' : ModelWithCorners 𝕜 E' H'}
   {I'' : ModelWithCorners 𝕜 E'' H''}
-  (e₁ : PartialHomeomorph M H)
-  (e₂ : PartialHomeomorph M' H')
-  (e₃ : PartialHomeomorph M'' H'')
+  (e₁ : OpenPartialHomeomorph M H)
+  (e₂ : OpenPartialHomeomorph M' H')
+  (e₃ : OpenPartialHomeomorph M'' H'')
   {f : M → M'}
   {g : M' → M''} :
   (Set.preimage (f ∘ ((e₁.toPartialEquiv.trans I.toPartialEquiv).symm))

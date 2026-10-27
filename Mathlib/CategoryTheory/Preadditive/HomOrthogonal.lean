@@ -3,10 +3,11 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # Hom orthogonal families.
@@ -34,6 +35,8 @@ theorem HomOrthogonal.equiv_of_iso (o : HomOrthogonal s) {f : α → ι} {g : β
 
 This is preliminary to defining semisimple categories.
 -/
+
+@[expose] public section
 
 
 open Matrix CategoryTheory.Limits
@@ -74,7 +77,7 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fini
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) where
   toFun z i j k :=
-    eqToHom
+    .of (eqToHom
         (by
           rcases k with ⟨k, ⟨⟩⟩
           simp) ≫
@@ -82,10 +85,12 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fini
         eqToHom
           (by
             rcases j with ⟨j, ⟨⟩⟩
-            simp)
+            simp))
   invFun z :=
     biproduct.matrix fun j k =>
-      if h : f j = g k then z (f j) ⟨k, by simp [h]⟩ ⟨j, by simp⟩ ≫ eqToHom (by simp [h]) else 0
+      if h : f j = g k then
+        (z (f j) ⟨k, by simp [h]⟩ ⟨j, by simp⟩).asHom ≫ eqToHom (by simp [h])
+      else 0
   left_inv z := by
     ext j k
     simp only [biproduct.matrix_π, biproduct.ι_desc]
@@ -108,6 +113,7 @@ section
 
 variable [Preadditive C] [HasFiniteBiproducts C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `HomOrthogonal.matrixDecomposition` as an additive equivalence. -/
 @[simps!]
 noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Type} [Finite α]
@@ -126,16 +132,12 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
     o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
   ext ⟨b, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
-  simp only [Category.comp_id, Category.id_comp, Category.assoc, End.one_def, eqToHom_refl,
-    Matrix.one_apply, HomOrthogonal.matrixDecomposition_apply, biproduct.components]
+  simp only [Category.comp_id, Category.id_comp, eqToHom_refl,
+    Matrix.one_apply, HomOrthogonal.matrixDecomposition_apply_asHom, biproduct.components]
   split_ifs with h
   · cases h
     simp
-  · simp only [Subtype.mk.injEq] at h
-    -- Porting note: used to be `convert comp_zero`, but that does not work anymore
-    have : biproduct.ι (fun a ↦ s (f a)) a ≫ biproduct.π (fun b ↦ s (f b)) b = 0 := by
-      simpa using biproduct.ι_π_ne _ (Ne.symm h)
-    rw [this, comp_zero]
+  · simpa using biproduct.ι_π_ne _ (show a ≠ b by aesop)
 
 open scoped Classical in
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite α] [Fintype β]
@@ -144,25 +146,22 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite
     o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i * o.matrixDecomposition z i := by
   ext ⟨c, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
-  simp only [Matrix.mul_apply, Limits.biproduct.components,
-    HomOrthogonal.matrixDecomposition_apply, Category.comp_id, Category.id_comp, Category.assoc,
-    End.mul_def, eqToHom_refl, eqToHom_trans_assoc, Finset.sum_congr]
+  simp only [matrixDecomposition_apply_asHom, biproduct.components, Category.assoc, eqToHom_refl,
+    Category.comp_id, Matrix.mul_apply, End.sum_asHom, End.mul_asHom, eqToHom_trans_assoc,
+    Category.id_comp]
   conv_lhs => rw [← Category.id_comp w, ← biproduct.total]
   simp only [Preadditive.sum_comp, Preadditive.comp_sum]
-  apply Finset.sum_congr_set
-  · simp
-  · intro b nm
-    simp only [Set.mem_preimage, Set.mem_singleton_iff] at nm
-    simp only [Category.assoc]
-    -- Porting note: this used to be 4 times `convert comp_zero`
-    have : biproduct.ι (fun b ↦ s (g b)) b ≫ w ≫ biproduct.π (fun b ↦ s (h b)) c = 0 := by
-      apply o.eq_zero nm
-    simp only [this, comp_zero]
+  refine Finset.sum_congr_set _ _ _ (by simp) (fun b nm ↦ ?_)
+  simp only [Set.mem_preimage, Set.mem_singleton_iff] at nm
+  have : biproduct.ι (fun b ↦ s (g b)) b ≫ w ≫ biproduct.π (fun b ↦ s (h b)) c = 0 :=
+    o.eq_zero nm _
+  simp [this]
 
 section
 
 variable {R : Type*} [Semiring R] [Linear R C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `HomOrthogonal.MatrixDecomposition` as an `R`-linear equivalence. -/
 @[simps]
 noncomputable def matrixDecompositionLinearEquiv (o : HomOrthogonal s) {α β : Type} [Finite α]

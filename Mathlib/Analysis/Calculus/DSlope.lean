@@ -3,9 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Slope
+module
+
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+
+import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 
 /-!
@@ -19,13 +24,15 @@ In this file we define `dslope` and prove some basic lemmas about its continuity
 differentiability.
 -/
 
+@[expose] public section
+
 open scoped Topology Filter
 
 open Function Set Filter
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-open Classical in
+open scoped Classical in
 /-- `dslope f a b` is defined as `slope f a b = (b - a)⁻¹ • (f b - f a)` for `a ≠ b` and
 `deriv f a` for `a = b`. -/
 noncomputable def dslope (f : 𝕜 → E) (a : 𝕜) : 𝕜 → E :=
@@ -48,7 +55,7 @@ theorem ContinuousLinearMap.dslope_comp {F : Type*} [NormedAddCommGroup F] [Norm
   rcases eq_or_ne b a with (rfl | hne)
   · simp only [dslope_same]
     exact (f.hasFDerivAt.comp_hasDerivAt b (H rfl).hasDerivAt).deriv
-  · simpa only [dslope_of_ne _ hne] using f.toLinearMap.slope_comp g a b
+  · simpa only [dslope_of_ne _ hne] using! f.toLinearMap.slope_comp g a b
 
 theorem eqOn_dslope_slope (f : 𝕜 → E) (a : 𝕜) : EqOn (dslope f a) (slope f a) {a}ᶜ := fun _ =>
   dslope_of_ne f
@@ -56,7 +63,7 @@ theorem eqOn_dslope_slope (f : 𝕜 → E) (a : 𝕜) : EqOn (dslope f a) (slope
 theorem dslope_eventuallyEq_slope_of_ne (f : 𝕜 → E) (h : b ≠ a) : dslope f a =ᶠ[𝓝 b] slope f a :=
   (eqOn_dslope_slope f a).eventuallyEq_of_mem (isOpen_ne.mem_nhds h)
 
-theorem dslope_eventuallyEq_slope_punctured_nhds (f : 𝕜 → E) : dslope f a =ᶠ[𝓝[≠] a] slope f a :=
+theorem dslope_eventuallyEq_slope_nhdsNE (f : 𝕜 → E) : dslope f a =ᶠ[𝓝[≠] a] slope f a :=
   (eqOn_dslope_slope f a).eventuallyEq_of_mem self_mem_nhdsWithin
 
 @[simp]
@@ -112,7 +119,7 @@ theorem continuousOn_dslope (h : s ∈ 𝓝 a) :
 theorem DifferentiableWithinAt.of_dslope (h : DifferentiableWithinAt 𝕜 (dslope f a) s b) :
     DifferentiableWithinAt 𝕜 f s b := by
   simpa only [id, sub_smul_dslope f a, sub_add_cancel] using
-    ((differentiableWithinAt_id.sub_const a).smul h).add_const (f a)
+    ((differentiableWithinAt_id.sub_const a).fun_smul h).add_const (f a)
 
 theorem DifferentiableAt.of_dslope (h : DifferentiableAt 𝕜 (dslope f a) b) :
     DifferentiableAt 𝕜 f b :=
@@ -129,7 +136,7 @@ theorem differentiableWithinAt_dslope_of_ne (h : b ≠ a) :
   refine (eqOn_dslope_slope _ _).eventuallyEq_of_mem ?_
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 
-theorem differentiableOn_dslope_of_nmem (h : a ∉ s) :
+theorem differentiableOn_dslope_of_notMem (h : a ∉ s) :
     DifferentiableOn 𝕜 (dslope f a) s ↔ DifferentiableOn 𝕜 f s :=
   forall_congr' fun _ =>
     forall_congr' fun hx => differentiableWithinAt_dslope_of_ne <| ne_of_mem_of_not_mem hx h
@@ -137,3 +144,90 @@ theorem differentiableOn_dslope_of_nmem (h : a ∉ s) :
 theorem differentiableAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableAt 𝕜 (dslope f a) b ↔ DifferentiableAt 𝕜 f b := by
   simp only [← differentiableWithinAt_univ, differentiableWithinAt_dslope_of_ne h]
+
+lemma sub_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : 𝕜) :
+    (b - a) • dslope f a b = f b := by
+  simp [hf]
+
+lemma pow_sub_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
+    (hf : ∀ k < n, (Function.swap dslope a)^[k] f a = 0) (b : 𝕜) :
+    (b - a) ^ n • (Function.swap dslope a)^[n] f b = f b := by
+  induction n generalizing f with
+  | zero => simp
+  | succ n ih =>
+    rw [Function.iterate_succ_apply', pow_succ, mul_smul,
+      sub_smul_dslope_of_zero (hf n n.lt_succ_self), ih (by grind)]
+
+section analytic
+
+variable {z : 𝕜}
+
+/--
+If `f` has power series `p` at `z₀`, then `dslope f z₀` has power series `p.fslope` at `z₀`.
+-/
+theorem HasFPowerSeriesAt.dslope_fslope {p : FormalMultilinearSeries 𝕜 𝕜 E}
+    {z₀ : 𝕜} (hp : HasFPowerSeriesAt f p z₀) : HasFPowerSeriesAt (dslope f z₀) p.fslope z₀ := by
+  have hpd : deriv f z₀ = p.coeff 1 := hp.deriv
+  have hp0 : p.coeff 0 = f z₀ := hp.coeff_zero 1
+  simp only [hasFPowerSeriesAt_iff, FormalMultilinearSeries.coeff_fslope] at hp ⊢
+  refine hp.mono fun x hx => ?_
+  by_cases h : x = 0
+  · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
+  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by simp [field, pow_succ]
+    suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
+      simpa [dslope, slope, h, smul_smul, hxx] using this
+    simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
+
+@[deprecated (since := "2026-09-30")]
+alias HasFPowerSeriesAt.has_fpower_series_dslope_fslope := HasFPowerSeriesAt.dslope_fslope
+
+/--
+Away from the base point `a`, the function `dslope f a` is analytic within `s` at `z` as soon as `f`
+is.
+-/
+theorem AnalyticWithinAt.dslope_of_ne (hf : AnalyticWithinAt 𝕜 f s z) (hz : z ≠ a) :
+    AnalyticWithinAt 𝕜 (dslope f a) s z := by
+  suffices h : AnalyticWithinAt 𝕜 (fun w ↦ (w - a)⁻¹ • (f w - f a)) s z from
+    h.congr_of_eventuallyEq (dslope_eventuallyEq_slope_of_ne f hz |>.filter_mono nhdsWithin_le_nhds)
+      (by simp [dslope, slope, hz])
+  apply_rules [sub, inv, analyticWithinAt_id, analyticWithinAt_const, smul]
+  grind
+
+/-- If `f` is analytic at `z`, then so is `dslope f a`, for any base point `a`. -/
+@[fun_prop] protected theorem AnalyticAt.dslope (hf : AnalyticAt 𝕜 f z) (a : 𝕜) :
+    AnalyticAt 𝕜 (dslope f a) z := by
+  rcases eq_or_ne z a with rfl | hz
+  · obtain ⟨p, hp⟩ := hf
+    exact hp.dslope_fslope.analyticAt
+  · exact analyticWithinAt_univ.1 (hf.analyticWithinAt.dslope_of_ne hz)
+
+/--
+If `f` is analytic on `s` and the base point `a` does not lie in `s`, then `dslope f a` is analytic
+on `s`.
+-/
+theorem AnalyticOn.dslope_of_notMem (hf : AnalyticOn 𝕜 f s) (ha : a ∉ s) :
+    AnalyticOn 𝕜 (dslope f a) s :=
+  fun z hz ↦ (hf z hz).dslope_of_ne (ne_of_mem_of_not_mem hz ha)
+
+/--
+If `f` is analytic on a set `s` that is a neighbourhood of the base point `a`, then `dslope f a` is
+analytic on `s`.
+-/
+protected theorem AnalyticOn.dslope (hf : AnalyticOn 𝕜 f s) (ha : s ∈ 𝓝 a) :
+    AnalyticOn 𝕜 (dslope f a) s := by
+  intro z hz
+  rcases eq_or_ne z a with hz' | hz'
+  · have hfa : AnalyticAt 𝕜 f a :=
+      analyticWithinAt_univ.1 ((hf a (mem_of_mem_nhds ha)).mono_of_mem_nhdsWithin
+        (mem_nhdsWithin_of_mem_nhds ha))
+    exact hz' ▸ (hfa.dslope a).analyticWithinAt
+  · exact (hf z hz).dslope_of_ne hz'
+
+/--
+If `f` is analytic on a neighbourhood of `s`, then so is `dslope f a`, for any base point `a`.
+-/
+@[fun_prop] protected theorem AnalyticOnNhd.dslope (hf : AnalyticOnNhd 𝕜 f s) (a : 𝕜) :
+    AnalyticOnNhd 𝕜 (dslope f a) s :=
+  fun z hz ↦ (hf z hz).dslope a
+
+end analytic

@@ -3,8 +3,11 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.FunctionData
-import Batteries.Data.RBMap.Basic
+module
+
+public meta import Lean.Meta.Tactic.Simp
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public meta import Mathlib.Tactic.FunProp.FunctionData
 
 /-!
 ## `funProp`
@@ -12,9 +15,12 @@ import Batteries.Data.RBMap.Basic
 this file defines environment extension for `funProp`
 -/
 
+public meta section
+
 
 namespace Mathlib
 open Lean Meta
+open Std (TreeSet)
 
 namespace Meta.FunProp
 
@@ -63,7 +69,7 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
 
 /-- Default names to be considered reducible by `fun_prop` -/
 def defaultNamesToUnfold : Array Name :=
-  #[`id, `Function.comp, `Function.HasUncurry.uncurry, `Function.uncurry]
+  #[`id, `Function.comp, `Function.const, `Function.HasUncurry.uncurry, `Function.uncurry]
 
 /-- `fun_prop` configuration -/
 structure Config where
@@ -71,7 +77,7 @@ structure Config where
   from differentiability and then differentiability from smoothness (`ContDiff ℝ ∞`) requires
   `maxTransitionDepth = 2`. The default value of one expects that transition theorems are
   transitively closed e.g. there is a transition theorem that infers continuity directly from
-  smoothenss.
+  smoothness.
 
   Setting `maxTransitionDepth` to zero will disable all transition theorems. This can be very
   useful when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
@@ -84,15 +90,33 @@ deriving Inhabited, BEq
 
 /-- `fun_prop` context -/
 structure Context where
-  /-- fun_prop config -/
+  /-- `fun_prop` config -/
   config : Config := {}
   /-- Name to unfold -/
-  constToUnfold : Batteries.RBSet Name Name.quickCmp :=
+  constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
-  disch : Expr → MetaM (Option Expr) := fun _ => pure .none
+  disch : Expr → MetaM (Option Expr) := fun _ => pure none
   /-- current transition depth -/
   transitionDepth := 0
+
+/-- General theorem about a function property used for transition and morphism theorems -/
+structure GeneralTheorem where
+  /-- function property name -/
+  funPropName : Name
+  /-- theorem name -/
+  thmName : Name
+  /-- discrimination tree keys used to index this theorem -/
+  keys : List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
+  /-- priority -/
+  priority : Nat  := eval_prio default
+  deriving Inhabited
+
+/-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
+structure GeneralTheorems where
+  /-- Discrimination tree indexing theorems. -/
+  theorems : RefinedDiscrTree GeneralTheorem := {}
+  deriving Inhabited
 
 /-- `fun_prop` state -/
 structure State where
@@ -105,6 +129,10 @@ structure State where
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
   msgLog : List String := []
+  /-- `RefinedDiscrTree` is lazy, so we store the partially evaluated tree. -/
+  morTheorems : GeneralTheorems
+  /-- `RefinedDiscrTree` is lazy, so we store the partially evaluated tree. -/
+  transitionTheorems : GeneralTheorems
 
 /-- Increase depth -/
 def Context.increaseTransitionDepth (ctx : Context) : Context :=
@@ -113,19 +141,21 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
 /-- Monad to run `fun_prop` tactic in. -/
 abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
 
+set_option linter.style.docString.empty false in
 /-- Result of `funProp`, it is a proof of function property `P f` -/
 structure Result where
   /-- -/
   proof : Expr
 
-/-- Default names to unfold -/
-def defaultUnfoldPred : Name → Bool :=
-  defaultNamesToUnfold.contains
+/-- Predicate for unfolding the constants that are considered reducible by `fun_prop`. -/
+def unfoldPred (toUnfold : NameSet := .ofArray defaultNamesToUnfold) (cfg : Meta.Config)
+    (info : ConstantInfo) : CoreM Bool :=
+  pure (toUnfold.contains info.name) <||> canUnfoldDefault cfg info
 
-/-- Get predicate on names indicating if theys shoulds be unfolded. -/
-def unfoldNamePred : FunPropM (Name → Bool) := do
-  let toUnfold := (← read).constToUnfold
-  return fun n => toUnfold.contains n
+/-- Returns an unfolding predicate that also unfolds constants given with the `fun_prop [c]` syntax.
+-/
+def getUnfoldPred : FunPropM (Meta.Config → ConstantInfo → CoreM Bool) := do
+  return unfoldPred (← read).constToUnfold
 
 /-- Increase heartbeat, throws error when `maxSteps` was reached -/
 def increaseSteps : FunPropM Unit := do
@@ -141,9 +171,9 @@ def withIncreasedTransitionDepth {α} (go : FunPropM (Option α)) : FunPropM (Op
   let newDepth := (← read).transitionDepth + 1
   if newDepth > maxDepth then
     trace[Meta.Tactic.fun_prop]
-   "maximum transition depth ({maxDepth}) reached
+    "maximum transition depth ({maxDepth}) reached
     if you want `fun_prop` to continue then increase the maximum depth with \
-    `fun_prop (config := \{maxTransitionDepth := {newDepth}})`"
+    `fun_prop (maxTransitionDepth := {newDepth})`"
     return none
   else
     withReader (fun s => {s with transitionDepth := newDepth}) go

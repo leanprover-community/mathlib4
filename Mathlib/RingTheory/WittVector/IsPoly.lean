@@ -3,9 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Funext
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.RingTheory.WittVector.Basic
+module
+
+public meta import Mathlib.Lean.Elab.Tactic.Basic
+public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.RingTheory.WittVector.Basic
+
 /-!
 # The `IsPoly` predicate
 
@@ -88,6 +91,8 @@ Proofs of identities between polynomial functions will often follow the pattern
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
+@[expose] public section
+
 namespace WittVector
 
 universe u
@@ -115,7 +120,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolyn
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   rw [← funext_iff] at h
   replace h :=
-    congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
+    congr(bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ $h) (xInTermsOfW p ℚ n))
   simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 
@@ -125,7 +130,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolyno
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   rw [← funext_iff] at h
   replace h :=
-    congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
+    congr(bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ $h) (xInTermsOfW p ℚ n))
   simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 
@@ -185,10 +190,9 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext1
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-    simp only [coeff_mk]; rfl
+    rfl
 
 /-- The composition of polynomial functions is polynomial. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
     IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
   obtain ⟨φ, hf⟩ := hf
@@ -218,7 +222,6 @@ class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → �
 variable {p}
 
 /-- The composition of polynomial functions is polynomial. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
     IsPoly₂ p fun _ _Rcr x y => h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
@@ -229,39 +232,32 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), ?_⟩⟩
   intros
   funext n
-  simp (config := { unfoldPartialApp := true }) only [peval, aeval_bind₁, Function.comp, hh, hf, hg,
+  simp +unfoldPartialApp only [peval, aeval_bind₁, hh, hf, hg,
     uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
   fin_cases i <;> simp [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp_def]
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
     IsPoly₂ p fun _ _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   use fun n => bind₁ φ (ψ n)
   intros
-  simp only [peval, aeval_bind₁, Function.comp, hg, hf]
+  simp only [peval, aeval_bind₁, hg, hf]
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
   refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n
-  simp (config := { unfoldPartialApp := true }) only [hf, peval, uncurry, aeval_bind₁]
+  simp +unfoldPartialApp only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩
   fin_cases i <;> simp
 
--- Porting note: Lean 4's typeclass inference is sufficiently more powerful that we no longer
--- need the `@[is_poly]` attribute. Use of the attribute should just be replaced by changing the
--- theorem to an `instance`.
-
 /-- The additive negation is a polynomial function on Witt vectors. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
   ⟨⟨fun n => rename Prod.snd (wittNeg p n), by
       intros; funext n
@@ -280,7 +276,7 @@ instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
 @[simp]
 theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
-  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
+  rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, map_zero]
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
 def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
@@ -290,10 +286,9 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum, Finset.sum_eq_single 0]
-  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, if_true,
-      eq_self_iff_true]
+  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, ite_true]
   · intro i _hi hi0
-    simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, map_pow,
+    simp only [onePoly, ite_eq_right hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, map_pow,
       bind₁_X_right, map_mul]
   · simp
 
@@ -301,7 +296,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
-      · simp only [lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
+      · simp only [one_coeff_zero, onePoly, ite_true, map_one]
       · simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
   ⟩⟩
@@ -309,12 +304,10 @@ instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
 end ZeroOne
 
 /-- Addition of Witt vectors is a polynomial function. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
 
@@ -326,14 +319,11 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
   -- see `IsPoly₂.map` for a slightly more general proof strategy
   obtain ⟨φ, hf⟩ := hf
   ext n
-  simp only [map_coeff, hf, map_aeval]
-  apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-  ext  -- Porting note: this `ext` was not present in the mathport output
-  simp only [map_coeff]
+  simp_rw [map_coeff, hf, map_aeval, funext (map_coeff g _), RingHom.ext_int _ (algebraMap ℤ S),
+    aeval_eq_eval₂Hom]
 
 namespace IsPoly₂
 
--- porting note: the argument `(fun _ _ => (· + ·))` to `IsPoly₂` was just `_`.
 instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
 
@@ -361,7 +351,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
     ext1
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext ⟨b, _⟩
-    fin_cases b <;> simp only [coeff_mk, uncurry] <;> rfl
+    fin_cases b <;> rfl
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
 theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 R) :
@@ -370,7 +360,7 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
   -- so that applications do not have to worry about the universe issue
   obtain ⟨φ, hf⟩ := hf
   ext n
-  simp (config := { unfoldPartialApp := true }) only [map_coeff, hf, map_aeval, peval, uncurry]
+  simp +unfoldPartialApp only [map_coeff, hf, map_aeval, peval, uncurry]
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   ext ⟨i, k⟩
   fin_cases i <;> simp
@@ -380,7 +370,7 @@ end IsPoly₂
 attribute [ghost_simps] AlgHom.id_apply map_natCast RingHom.map_zero RingHom.map_one RingHom.map_mul
   RingHom.map_add RingHom.map_sub RingHom.map_neg RingHom.id_apply mul_add add_mul add_zero zero_add
   mul_one one_mul mul_zero zero_mul Nat.succ_ne_zero add_tsub_cancel_right
-  Nat.succ_eq_add_one if_true eq_self_iff_true if_false forall_true_iff forall₂_true_iff
+  Nat.succ_eq_add_one ite_true eq_self_iff_true ite_false forall_true_iff forall₂_true_iff
   forall₃_true_iff
 
 end
@@ -423,7 +413,7 @@ so it is easier (and prettier) to put it in a tactic script.
 -/
 syntax (name := ghostCalc) "ghost_calc" (ppSpace colGt term:max)* : tactic
 
-private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
+private meta def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
   let fvarId ← liftMetaTacticAux fun g => do
     let (fv, g') ← g.intro n
     return (fv, [g'])
@@ -431,7 +421,7 @@ private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
     Elab.Term.addLocalVarInfo ref (mkFVar fvarId)
   return fvarId
 
-private def getLocalOrIntro (t : Term) : TacticM FVarId := do
+private meta def getLocalOrIntro (t : Term) : TacticM FVarId := do
   match t with
     | `(_) => runIntro t `_
     | `($id:ident) => getFVarId id <|> runIntro id id.getId

@@ -3,8 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Data.Nat.Prime.Basic
+module
+
+public import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime numbers
@@ -14,12 +15,14 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 
 -/
 
+public section
+
 namespace Nat
 
 theorem pow_minFac {n k : ℕ} (hk : k ≠ 0) : (n ^ k).minFac = n.minFac := by
   rcases eq_or_ne n 1 with (rfl | hn)
   · simp
-  have hnk : n ^ k ≠ 1 := fun hk' => hn ((pow_eq_one_iff hk).1 hk')
+  have hnk : n ^ k ≠ 1 := fun hk' => hn ((pow_eq_one_iff_left hk).1 hk')
   apply (minFac_le_of_dvd (minFac_prime hn).two_le ((minFac_dvd n).pow hk)).antisymm
   apply
     minFac_le_of_dvd (minFac_prime hnk).two_le

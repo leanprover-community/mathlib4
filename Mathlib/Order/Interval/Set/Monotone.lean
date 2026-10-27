@@ -3,15 +3,21 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+module
+
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.SuccPred.Archimedean
+
 import Mathlib.Order.Interval.Set.Disjoint
-import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Monotonicity on intervals
 
-In this file we prove that `Set.Ici` etc are monotone/antitone functions. We also prove some lemmas
+In this file we prove that `Set.Ici` etc. are monotone/antitone functions. We also prove some lemmas
 about functions monotone on intervals in `SuccOrder`s.
 -/
+
+public section
 
 
 open Set
@@ -151,7 +157,7 @@ theorem iUnion_Ioo_of_mono_of_isGLB_of_isLUB (hf : Antitone f) (hg : Monotone g)
   calc
     ⋃ x, Ioo (f x) (g x) = (⋃ x, Ioi (f x)) ∩ ⋃ x, Iio (g x) :=
       iUnion_inter_of_monotone hf.Ioi hg.Iio
-    _ = Ioi a ∩ Iio b := congr_arg₂ (· ∩ ·) ha.iUnion_Ioi_eq hb.iUnion_Iio_eq
+    _ = Ioi a ∩ Iio b := congr($ha.iUnion_Ioi_eq ∩ $hb.iUnion_Iio_eq)
 
 end iUnion
 
@@ -200,9 +206,9 @@ theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot �
     exact ih (hφ.mono <| Iic_subset_Iic.2 (le_succ _)) _ hm
   obtain rfl | h := le_succ_iff_eq_or_le.1 hm
   · specialize ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) k le_rfl
-    refine le_trans (succ_mono ih) (succ_le_of_lt (hφ (le_succ _) le_rfl ?_))
-    rw [lt_succ_iff_eq_or_lt_of_not_isMax hk]
-    exact Or.inl rfl
+    nth_grw 1 [ih]
+    refine succ_le_of_lt (hφ (le_succ _) le_rfl ?_)
+    exact lt_succ_of_not_isMax hk
   · exact ih (StrictMonoOn.mono hφ fun x hx => le_trans hx (le_succ _)) _ h
 
 theorem StrictMonoOn.Ici_le_id [PredOrder α] [IsPredArchimedean α] [OrderTop α] {n : α} {φ : α → α}

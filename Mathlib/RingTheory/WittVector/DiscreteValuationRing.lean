@@ -3,10 +3,11 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Domain
-import Mathlib.RingTheory.WittVector.MulCoeff
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.WittVector.Domain
+public import Mathlib.RingTheory.WittVector.MulCoeff
 
 /-!
 
@@ -24,6 +25,8 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 * `WittVector.isDiscreteValuationRing`: `𝕎 k` is a discrete valuation ring if `k` is a perfect field
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -55,10 +58,11 @@ noncomputable def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
 Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself, a unit in `𝕎 k`.
 -/
 def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
-  Units.mkOfMulEqOne A (@WittVector.mk' p _ (inverseCoeff a A)) (by
+  Units.mkOfMulEqOne A (WittVector.mk p (inverseCoeff a A)) (by
     ext n
-    induction' n with n _
-    · simp [WittVector.mul_coeff_zero, inverseCoeff, hA]
+    induction n with
+    | zero => simp [WittVector.mul_coeff_zero, inverseCoeff, hA]
+    | succ n => ?_
     let H_coeff := A.coeff (n + 1) * ↑(a⁻¹ ^ p ^ (n + 1)) +
       nthRemainder p n (truncateFun (n + 1) A) fun i : Fin (n + 1) => inverseCoeff a A i
     have H := Units.mul_inv (a ^ p ^ (n + 1))
@@ -93,11 +97,11 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
       (constantCoeff : WittVector p k →+* _).isUnit_map hp
   refine ⟨hp, fun a b hab => ?_⟩
   obtain ⟨ha0, hb0⟩ : a ≠ 0 ∧ b ≠ 0 := by
-    rw [← mul_ne_zero_iff]; intro h; rw [h] at hab; exact p_nonzero p k hab
+    rw [← mul_ne_zero_iff]; intro h; rw [h] at hab; exact p_ne_zero p k hab
   obtain ⟨m, a, ha, rfl⟩ := verschiebung_nonzero ha0
   obtain ⟨n, b, hb, rfl⟩ := verschiebung_nonzero hb0
   cases m; · exact Or.inl (isUnit_of_coeff_zero_ne_zero a ha)
-  cases' n with n; · exact Or.inr (isUnit_of_coeff_zero_ne_zero b hb)
+  rcases n with - | n; · exact Or.inr (isUnit_of_coeff_zero_ne_zero b hb)
   rw [iterate_verschiebung_mul] at hab
   apply_fun fun x => coeff x 1 at hab
   simp only [coeff_p_one, Nat.add_succ, add_comm _ n, Function.iterate_succ', Function.comp_apply,
@@ -115,11 +119,11 @@ theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
   obtain ⟨m, c, hc, hcm⟩ := WittVector.verschiebung_nonzero ha
   obtain ⟨b, rfl⟩ := (frobenius_bijective p k).surjective.iterate m c
   rw [WittVector.iterate_frobenius_coeff] at hc
-  have := congr_fun (WittVector.verschiebung_frobenius_comm.comp_iterate m) b
+  have := congr($(WittVector.verschiebung_frobenius_comm.comp_iterate m) b)
   simp only [Function.comp_apply] at this
   rw [← this] at hcm
   refine ⟨m, b, ?_, ?_⟩
-  · contrapose! hc
+  · contrapose hc
     simp [hc, zero_pow <| pow_ne_zero _ hp.out.ne_zero]
   · simp_rw [← mul_left_iterate (p : 𝕎 k) m]
     convert hcm using 2
@@ -139,15 +143,9 @@ theorem exists_eq_pow_p_mul' (a : 𝕎 k) (ha : a ≠ 0) :
   have hb₀ : b.coeff 0 = b₀ := rfl
   exact ⟨m, mkUnit hb₀, h₂⟩
 
-/-
-Note: The following lemma should be an instance, but it seems to cause some
-exponential blowups in certain typeclass resolution problems.
-See the following Lean4 issue as well as the zulip discussion linked there:
-https://github.com/leanprover/lean4/issues/1102
--/
 /-- The ring of Witt Vectors of a perfect field of positive characteristic is a DVR.
 -/
-theorem isDiscreteValuationRing : IsDiscreteValuationRing (𝕎 k) :=
+instance isDiscreteValuationRing : IsDiscreteValuationRing (𝕎 k) :=
   IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization (by
     refine ⟨p, irreducible p, fun {x} hx => ?_⟩
     obtain ⟨n, b, hb⟩ := exists_eq_pow_p_mul' x hx

@@ -3,8 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+
 import Mathlib.Topology.Instances.Irrational
 
 /-!
@@ -33,8 +36,10 @@ predicate.
 Liouville number, irrational, irrationality exponent
 -/
 
+@[expose] public section
 
-open Filter Metric Real Set
+
+open Filter Real Set
 
 open scoped Filter Topology
 
@@ -117,7 +122,7 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
     calc _ < C / ↑n ^ p * |↑r| := by gcongr
       _ = ↑r.den ^ p * (↑|r| * C) / (↑r.den * ↑n) ^ p := ?_
     rw [mul_rpow, mul_div_mul_left, mul_comm, mul_div_assoc]
-    · simp only [Rat.cast_abs, le_refl]
+    · simp only [Rat.cast_abs]
     all_goals positivity
 
 /-- The product `x * r`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if
@@ -165,14 +170,14 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
   refine ⟨r.den ^ p * C, (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩
   rintro n ⟨hn, m, hne, hlt⟩
   have : (↑(r.den * m + r.num * n : ℤ) / ↑(r.den • id n) : ℝ) = m / n + r := by
-    rw [Algebra.id.smul_eq_mul, id]
+    rw [smul_eq_mul, id]
     nth_rewrite 4 [← Rat.num_div_den r]
     push_cast
     rw [add_div, mul_div_mul_left _ _ (by positivity), mul_div_mul_right _ _ (by positivity)]
   refine ⟨r.den * m + r.num * n, ?_⟩; rw [this, add_sub_add_right_eq_sub]
   refine ⟨by simpa, hlt.trans_le (le_of_eq ?_)⟩
   have : (r.den ^ p : ℝ) ≠ 0 := by positivity
-  simp [mul_rpow, Nat.cast_nonneg, mul_div_mul_left, this]
+  simp [mul_rpow, mul_div_mul_left, this]
 
 @[simp]
 theorem add_rat_iff : LiouvilleWith p (x + r) ↔ LiouvilleWith p x :=
@@ -262,11 +267,11 @@ theorem nat_sub_iff : LiouvilleWith p (n - x) ↔ LiouvilleWith p x := by simp [
 theorem nat_sub (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n - x) :=
   nat_sub_iff.2 h
 
-theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
+theorem ne_intCast (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
   rintro rfl; rename' m => M
   rcases ((eventually_gt_atTop 0).and_frequently (h.frequently_lt_rpow_neg hp)).exists with
     ⟨n : ℕ, hn : 0 < n, m : ℤ, hne : (M : ℝ) ≠ m / n, hlt : |(M - m / n : ℝ)| < n ^ (-1 : ℝ)⟩
-  refine hlt.not_le ?_
+  refine hlt.not_ge ?_
   have hn' : (0 : ℝ) < n := by simpa
   rw [rpow_neg_one, ← one_div, sub_div' hn'.ne', abs_div, Nat.abs_cast]
   gcongr
@@ -275,12 +280,14 @@ theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := 
   rw [Ne, eq_div_iff hn'.ne'] at hne
   exact mod_cast hne
 
+@[deprecated (since := "2026-10-27")] alias ne_cast_int := ne_intCast
+
 /-- A number satisfying the Liouville condition with exponent `p > 1` is an irrational number. -/
 protected theorem irrational (h : LiouvilleWith p x) (hp : 1 < p) : Irrational x := by
   rintro ⟨r, rfl⟩
   rcases eq_or_ne r 0 with (rfl | h0)
-  · refine h.ne_cast_int hp 0 ?_; rw [Rat.cast_zero, Int.cast_zero]
-  · refine (h.mul_rat (inv_ne_zero h0)).ne_cast_int hp 1 ?_
+  · refine h.ne_intCast hp 0 ?_; rw [Rat.cast_zero, Int.cast_zero]
+  · refine (h.mul_rat (inv_ne_zero h0)).ne_intCast hp 1 ?_
     rw [Rat.cast_inv, mul_inv_cancel₀]
     exacts [Int.cast_one.symm, Rat.cast_ne_zero.mpr h0]
 
@@ -294,9 +301,8 @@ variable {x : ℝ}
 exists a numerator `a` such that `x ≠ a / b` and `|x - a / b| < 1 / b ^ n`. -/
 theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     ∃ᶠ b : ℕ in atTop, ∃ a : ℤ, x ≠ a / b ∧ |x - a / b| < 1 / (b : ℝ) ^ n := by
-  refine Classical.not_not.1 fun H => ?_
-  simp only [Liouville, not_forall, not_exists, not_frequently, not_and, not_lt,
-    eventually_atTop] at H
+  by_contra! H
+  simp only [eventually_atTop] at H
   rcases H with ⟨N, hN⟩
   have : ∀ b > (1 : ℕ), ∀ᶠ m : ℕ in atTop, ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| := by
     intro b hb
@@ -311,11 +317,11 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
   rcases (this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
-  rcases le_or_lt N b with h | h
-  · refine (hN b h a hne).not_lt (hlt.trans_le ?_)
+  rcases le_or_gt N b with h | h
+  · refine (hN b h a hne).not_gt (hlt.trans_le ?_)
     gcongr
     exact_mod_cast hb.le
-  · exact (hm b h hb _).not_lt hlt
+  · exact (hm b h hb _).not_gt hlt
 
 /-- A Liouville number is a Liouville number with any real exponent. -/
 protected theorem liouvilleWith (hx : Liouville x) (p : ℝ) : LiouvilleWith p x := by

@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Normed.Module.Completion
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Polynomial.Basic
+public import Mathlib.Logic.Function.Const
 
 /-!
 # Liouville's theorem
@@ -20,7 +22,9 @@ The proof is based on the Cauchy integral formula for the derivative of an analy
 `Complex.deriv_eq_smul_circleIntegral`.
 -/
 
-open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory Bornology
+public section
+
+open Asymptotics Bornology Filter Function Metric Polynomial Set TopologicalSpace
 
 open scoped Topology Filter NNReal Real
 
@@ -33,37 +37,42 @@ local postfix:100 "̂" => UniformSpace.Completion
 
 namespace Complex
 
-/-- If `f` is complex differentiable on an open disc with center `c` and radius `R > 0` and is
-continuous on its closure, then `f' c` can be represented as an integral over the corresponding
-circle.
+/-- **Cauchy's estimate for derivatives**:  If `f` is complex differentiable on an open disc of
+radius `R > 0`, is continuous on its closure, and its values on the boundary circle of this disc
+are bounded from above by `C`, then the norm of its `n`-th derivative at the center is at most
+`n.factorial * C / R ^ n`. -/
+theorem norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le [CompleteSpace F] {c : ℂ} {R C : ℝ}
+    {f : ℂ → F} (n : ℕ) (hR : 0 < R) (hf : DiffContOnCl ℂ f (ball c R))
+    (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
+    ‖iteratedDeriv n f c‖ ≤ n.factorial * C / R ^ n := by
+  have hp (z) (hz : z ∈ sphere c R) : ‖(z - c)⁻¹ ^ (n + 1) • f z‖ ≤ C / (R ^ n * R) := by
+    simpa [norm_smul, norm_pow, norm_inv, ← div_eq_inv_mul, mem_sphere_iff_norm.1 hz] using!
+      (div_le_div_iff_of_pos_right (mul_pos (pow_pos hR n) hR)).2 (hC z hz)
+  have hq : iteratedDeriv n f c = n.factorial • (2 * π * I)⁻¹ •
+    ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z := by
+    have : (2 * π * I / n.factorial) ≠ 0 := by simp [Nat.factorial_ne_zero]
+    rw [← inv_smul_smul₀ this (iteratedDeriv n f c), inv_div, div_eq_inv_mul, mul_comm,
+      ← nsmul_eq_mul, smul_assoc]
+    simp [← DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul hR n hf]
+  calc
+    ‖iteratedDeriv n f c‖ = ‖n.factorial • (2 * π * I)⁻¹ •
+      ∮ z in C(c, R), (z - c)⁻¹ ^ (n + 1) • f z‖ := by rw [hq]
+    _ ≤ n.factorial * (R * (C / (R ^ (n + 1)))) := by
+      rw [RCLike.norm_nsmul (K := ℂ), nsmul_eq_mul, mul_le_mul_iff_right₀ (by positivity)]
+      exact circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le hp
+    _ = n.factorial * C / R ^ n := by
+      grind
 
-TODO: add a version for `w ∈ Metric.ball c R`.
-
-TODO: add a version for higher derivatives. -/
-theorem deriv_eq_smul_circleIntegral [CompleteSpace F] {R : ℝ} {c : ℂ} {f : ℂ → F} (hR : 0 < R)
-    (hf : DiffContOnCl ℂ f (ball c R)) :
-    deriv f c = (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z := by
-  lift R to ℝ≥0 using hR.le
-  refine (hf.hasFPowerSeriesOnBall hR).hasFPowerSeriesAt.deriv.trans ?_
-  simp only [cauchyPowerSeries_apply, one_div, zpow_neg, pow_one, smul_smul, zpow_two, mul_inv]
-
-theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
+private theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hf : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
-  have : ∀ z ∈ sphere c R, ‖(z - c) ^ (-2 : ℤ) • f z‖ ≤ C / (R * R) :=
-    fun z (hz : abs (z - c) = R) => by
-    simpa [-mul_inv_rev, norm_smul, hz, zpow_two, ← div_eq_inv_mul] using
-      (div_le_div_iff_of_pos_right (mul_pos hR hR)).2 (hC z hz)
-  calc
-    ‖deriv f c‖ = ‖(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c) ^ (-2 : ℤ) • f z‖ :=
-      congr_arg norm (deriv_eq_smul_circleIntegral hR hf)
-    _ ≤ R * (C / (R * R)) :=
-      (circleIntegral.norm_two_pi_i_inv_smul_integral_le_of_norm_le_const hR.le this)
-    _ = C / R := by rw [mul_div_left_comm, div_self_mul_self', div_eq_mul_inv]
+  simpa using norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le 1 hR hf hC
 
-/-- If `f` is complex differentiable on an open disc of radius `R > 0`, is continuous on its
-closure, and its values on the boundary circle of this disc are bounded from above by `C`, then the
-norm of its derivative at the center is at most `C / R`. -/
+/-- **Cauchy's estimate for the first order derivative**: If `f` is complex differentiable on an
+open disc of radius `R > 0`, is continuous on its closure, and its values on the boundary circle
+of this disc are bounded from above by `C`, then the norm of its derivative at the center is at
+most `C / R`. Note that this theorem does not require the completeness of the codomain of `f`. In
+contrast, the completeness is needed for `norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le`. -/
 theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hd : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
@@ -120,6 +129,7 @@ theorem exists_eq_const_of_bounded {f : E → F} (hf : Differentiable ℂ f)
     (hb : IsBounded (range f)) : ∃ c, f = const E c :=
   (hf.exists_const_forall_eq_of_bounded hb).imp fun _ => funext
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
 (i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/
 theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differentiable ℂ f) {c : F}
@@ -128,17 +138,67 @@ theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differe
     obtain ⟨s, hs, hs_bdd⟩ := Metric.exists_isBounded_image_of_tendsto hb
     obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
     apply ht.image hf.continuous |>.isBounded.union hs_bdd |>.subset
-    simpa [Set.image_union, Set.image_univ] using Set.image_subset _ <| calc
+    simpa [Set.image_union, Set.image_univ] using! Set.image_mono <| calc
       Set.univ = t ∪ tᶜ := t.union_compl_self.symm
       _        ⊆ t ∪ s  := by gcongr
   obtain ⟨c', hc'⟩ := hf.exists_eq_const_of_bounded h_bdd
   convert hc'
-  exact tendsto_nhds_unique hb (by simpa [hc'] using tendsto_const_nhds)
+  exact tendsto_nhds_unique_of_forall hb tendsto_const_nhds (by simp [hc'])
 
-/-- A corollary of Liouville's theorem where the function tends to a finite value at infinity
-(i.e., along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`). -/
+/--
+**Liouville's theorem**, asymptotic version: a complex differentiable function that is `O(1)` along
+the cocompact filter is constant.
+-/
+theorem isConst_of_isBigO_one {f : E → F} (hf : Differentiable ℂ f)
+    (hb : f =O[cocompact E] (1 : E → ℝ)) : f.IsConst := by
+  rw [Function.isConst_iff_exists_eq_const]
+  exact hf.exists_eq_const_of_bounded <| hf.continuous.isBounded_range_iff_isBigO.2 hb
+
+/--
+A corollary of Liouville's theorem where the function tends to a finite value at infinity (i.e.,
+along `Filter.cocompact`, which in proper spaces coincides with `Bornology.cobounded`).
+-/
 theorem apply_eq_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differentiable ℂ f) {c : F}
     (x : E) (hb : Tendsto f (cocompact E) (𝓝 c)) : f x = c :=
   congr($(hf.eq_const_of_tendsto_cocompact hb) x)
+
+/--
+**Corollary of Liouville's theorem for functions with polynomial growth**: an entire function
+`f : ℂ → ℂ` that is `O(z ^ n)` along `cobounded` is a polynomial of degree at most `n`.
+-/
+theorem exists_eq_polynomial_eval_of_isBigO_pow {n : ℕ} {f : ℂ → ℂ}
+    (hf : Differentiable ℂ f) (hg : f =O[cobounded ℂ] (· ^ n)) :
+    ∃ p : Polynomial ℂ, p.natDegree ≤ n ∧ f = p.eval := by
+  induction n generalizing f with
+  | zero =>
+    obtain ⟨c, rfl⟩ := (hf.isConst_of_isBigO_one <| by
+      rw [← Metric.cobounded_eq_cocompact]
+      refine hg.trans <| isBigO_of_le _ fun _ ↦ ?_
+      simp).exists_eq_const
+    exact ⟨C c, by simp, by ext; simp⟩
+  | succ n ih =>
+    have h : (f · - f 0) =O[cobounded ℂ] (· ^ (n + 1)) := by
+      refine hg.sub <| (isBigO_const_one ℂ (f 0) _).trans ?_
+      simpa using isBigO_pow_pow_cobounded_of_le (R := ℂ) (Nat.zero_le (n + 1))
+    have key : dslope f 0 =O[cobounded ℂ] (· ^ n) := by
+      refine ((isBigO_refl (·⁻¹) _).mul h).congr' ?_ ?_
+      all_goals
+        filter_upwards [eventually_ne_cobounded (0 : ℂ)]
+        grind [dslope_of_ne, slope_def_field]
+    obtain ⟨q, hqn, hq⟩ := ih (fun z ↦ hf.analyticAt z |>.dslope 0 |>.differentiableAt) key
+    refine ⟨X * q + C (f 0), ?_, ?_⟩
+    · grw [natDegree_add_C, natDegree_mul_le, natDegree_X_le, hqn, add_comm]
+    · ext z
+      grind [sub_smul_dslope f 0 z, smul_eq_mul, eval_add, eval_mul, eval_X, eval_C]
+
+/--
+**Liouville's theorem for functions with polynomial growth**: an entire function `f : ℂ → ℂ` is
+`O(z ^ n)` along `cobounded` if and only if it is a polynomial of degree at most `n`.
+-/
+theorem isBigO_pow_iff_exists_eq_polynomial_eval {n : ℕ} {f : ℂ → ℂ} (hf : Differentiable ℂ f) :
+    f =O[cobounded ℂ] (· ^ n) ↔ ∃ p : Polynomial ℂ, p.natDegree ≤ n ∧ f = p.eval := by
+  refine ⟨hf.exists_eq_polynomial_eval_of_isBigO_pow, ?_⟩
+  rintro ⟨p, hp, rfl⟩
+  exact p.isBigO_cobounded_pow_natDegree.trans (isBigO_pow_pow_cobounded_of_le hp)
 
 end Differentiable

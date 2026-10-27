@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.RingTheory.Algebraic.Defs
+module
+
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.RingTheory.Algebraic.Defs
 
 /-!
 # Linear independence of transcendental elements
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.Algebraic.Defs
 * `Transcendental.linearIndependent_sub_inv`: let `x : E` transcendental over `F`,
   then `{(x - a)⁻¹ | a : F}` is linearly independent over `F`.
 -/
+
+public section
 
 open Polynomial
 
@@ -33,7 +37,7 @@ theorem Transcendental.linearIndependent_sub_inv
   have h1 : ∀ i ∈ s, m i • (b * (x - algebraMap F E i)⁻¹) =
       m i • (s.erase i).prod fun j ↦ x - algebraMap F E j := fun i hi ↦ by
     simp_rw [b, ← s.prod_erase_mul _ hi, mul_inv_cancel_right₀ (hnz i)]
-  replace hm := congr(b * $(hm))
+  replace hm := congr(b * $hm)
   simp_rw [mul_zero, Finset.mul_sum, mul_smul_comm, Finset.sum_congr rfl h1] at hm
   let p : Polynomial F := s.sum fun i ↦ .C (m i) * (s.erase i).prod fun j ↦ .X - .C j
   replace hm := congr(Polynomial.aeval i $(H p (by simp_rw [← hm, p, map_sum, map_mul, map_prod,
@@ -42,7 +46,7 @@ theorem Transcendental.linearIndependent_sub_inv
     have := Finset.mem_erase_of_ne_of_mem (Finset.ne_of_mem_erase hj).symm hi
     simp_rw [← (s.erase j).prod_erase_mul _ this, sub_self, mul_zero]
   simp_rw [map_zero, p, map_sum, map_mul, map_prod, map_sub, aeval_X,
-    aeval_C, Algebra.id.map_eq_self, ← s.sum_erase_add _ hi,
+    aeval_C, Algebra.algebraMap_self_apply, ← s.sum_erase_add _ hi,
     Finset.sum_eq_zero h2, zero_add] at hm
   exact eq_zero_of_ne_zero_of_mul_right_eq_zero (Finset.prod_ne_zero_iff.2 fun j hj ↦
     sub_ne_zero.2 (Finset.ne_of_mem_erase hj).symm) hm
