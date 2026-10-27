@@ -847,20 +847,3 @@ meta def evalStdSimplexWeightsApply : PositivityExt where eval {_u α} _zα pα?
   | _ => throwError "not `StdSimplex.weights`"
 
 end Mathlib.Meta.Positivity
-
-/- ## `Convexity.StdSimplex.weights` -/
-
-example {R M : Type*} [PartialOrder R] [Semiring R] (w : Convexity.StdSimplex R M) :
-    0 ≤ w.weights := by positivity
-
-example {R M : Type*} [PartialOrder R] [Semiring R] [Nontrivial R]
-    (w : Convexity.StdSimplex R M) : 0 < w.weights := by positivity
-
-example {R M : Type*} [PartialOrder R] [Semiring R] [Nontrivial R]
-    (w : Convexity.StdSimplex R M) : w.weights ≠ 0 := by positivity
-
-example {R M : Type*} [PartialOrder R] [Semiring R] (w : Convexity.StdSimplex R M) (i : M) :
-    0 ≤ w.weights i := by positivity
-
-example {R M : Type*} [PartialOrder R] [Semiring R] [IsOrderedRing R]
-    (w : Convexity.StdSimplex R M) (i j : M) : 0 ≤ w.weights i * w.weights j := by positivity
