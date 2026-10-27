@@ -33,6 +33,8 @@ public section
 
 open Finset
 
+open scoped Nat
+
 namespace Inclusion
 
 namespace IntervalDyadicReal
@@ -46,8 +48,8 @@ def expPartialSumNum (a : ℤ) (b n : ℕ) : ℤ :=
   | n + 1 => (expPartialSumNum a b n + a ^ n) * (b * (n + 1) : ℕ)
 
 theorem expPartialSumNum_div (a : ℤ) {b : ℕ} (hb : b ≠ 0) (n : ℕ) :
-    (expPartialSumNum a b n : ℝ) / (b ^ n * n.factorial) =
-      ∑ m ∈ range n, ((a : ℝ) / b) ^ m / m.factorial := by
+    (expPartialSumNum a b n : ℝ) / (b ^ n * n !) =
+      ∑ m ∈ range n, ((a : ℝ) / b) ^ m / m ! := by
   induction n with
   | zero => simp [expPartialSumNum]
   | succ n ih =>
