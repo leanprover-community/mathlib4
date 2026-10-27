@@ -96,7 +96,7 @@ theorem natDegree_notMem_eraseLead_support : f.natDegree ∉ (eraseLead f).suppo
 
 theorem eraseLead_support_card_lt (h : f ≠ 0) : #(eraseLead f).support < #f.support := by
   rw [eraseLead_support]
-  exact card_lt_card (erase_ssubset <| natDegree_mem_support_of_nonzero h)
+  exact card_lt_card (erase_ssubset <| natDegree_mem_support_of_ne_zero h)
 
 theorem card_support_eraseLead_add_one (h : f ≠ 0) : #f.eraseLead.support + 1 = #f.support := by
   set c := #f.support with hc
@@ -105,7 +105,7 @@ theorem card_support_eraseLead_add_one (h : f ≠ 0) : #f.eraseLead.support + 1 
     by_contra
     exact h (card_support_eq_zero.mp h₁)
   case succ =>
-    rw [eraseLead_support, card_erase_of_mem (natDegree_mem_support_of_nonzero h), ← hc, h₁]
+    rw [eraseLead_support, card_erase_of_mem (natDegree_mem_support_of_ne_zero h), ← hc, h₁]
     rfl
 
 @[simp]
@@ -194,7 +194,7 @@ theorem eraseLead_natDegree_le_aux : (eraseLead f).natDegree ≤ f.natDegree :=
 theorem eraseLead_natDegree_lt (f0 : 2 ≤ #f.support) : (eraseLead f).natDegree < f.natDegree :=
   lt_of_le_of_ne eraseLead_natDegree_le_aux <|
     ne_natDegree_of_mem_eraseLead_support <|
-      natDegree_mem_support_of_nonzero <| eraseLead_ne_zero f0
+      natDegree_mem_support_of_ne_zero <| eraseLead_ne_zero f0
 
 theorem natDegree_pos_of_eraseLead_ne_zero (h : f.eraseLead ≠ 0) : 0 < f.natDegree := by
   by_contra h₂
