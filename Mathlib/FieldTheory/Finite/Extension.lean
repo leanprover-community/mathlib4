@@ -208,7 +208,7 @@ theorem irreducible_iff_dvd_X_pow_card_pow_sub_X_and_isCoprime {f : k[X]} (hd : 
   · intro hi
     refine ⟨hi.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.mp dvd_rfl, fun m hm hmne ↦ ?_⟩
     refine (EuclideanDomain.dvd_or_coprime _ _ hi).resolve_left ?_
-    exact fun h ↦ hmne (dvd_antisymm hm (hi.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.2 h))
+    exact fun h ↦ hmne (dvd_antisymm hm (hi.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.mpr h))
   · rintro ⟨hfdvd, h⟩
     obtain ⟨a, hai, advd⟩ := exists_irreducible_of_natDegree_pos hd
     refine (associated_of_dvd_of_natDegree_le advd (ne_zero_of_natDegree_gt hd) ?_).irreducible hai
