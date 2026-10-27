@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.FunLike
-public import Mathlib.Algebra.Module.FunLike
+public import Mathlib.Algebra.Module.FunLikeSMul
 
 /-!
 # Scalar multiplication on `Finsupp`
@@ -32,6 +32,8 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 -/
 
 public section
+
+assert_not_exists Module
 
 noncomputable section
 
