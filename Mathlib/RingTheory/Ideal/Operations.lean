@@ -768,10 +768,11 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
   simp only [isCoprime_iff_add, one_eq_top] at hf ⊢
   exact sup_iInf_eq_top hf
 
-theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J := by
-  apply le_antisymm mul_le_inf
-  rw [← mul_one (I ⊓ J), ← coprime.add_eq, mul_add, mul_comm]
-  exact add_le (mul_le_mul_right inf_le_right I) (mul_le_mul_left inf_le_left J)
+theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
+  le_antisymm mul_le_inf <| calc
+    I ⊓ J = I * (I ⊓ J) + (I ⊓ J) * J := by
+      simpa [mul_sup, mul_comm _ I] using congr((I ⊓ J) * $coprime.add_eq.symm)
+    _ ≤ I * J := by apply add_le <;> gcongr <;> order
 
 @[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-10-08")]
 theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
