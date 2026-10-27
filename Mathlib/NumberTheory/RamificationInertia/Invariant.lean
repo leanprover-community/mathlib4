@@ -21,7 +21,7 @@ An ideal stable under a finite group action on an unramified invariant algebra i
 from the base ring. The proof uses a separability tensor, a multiplier on which the inertia
 subgroup acts trivially, and a sum over left cosets of the inertia subgroup.
 
-The reusable ingredients are `Algebra.FormallyUnramified.smulIdempotent`,
+The reusable ingredients are `Algebra.FormallyUnramified.inertiaIdempotent`,
 `Algebra.FormallyUnramified.linearize`, and `Algebra.FormallyUnramified.subgroupIdempotent`.
 The subgroup idempotent only requires the subgroup to be finite; the coset sum does not require
 normality of the subgroup.
@@ -44,40 +44,40 @@ variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
 
 /-- The separability tensor evaluated at the identity and the action of `g`. Modulo an ideal
 `Q`, it equals `1` exactly when `g` belongs to `Q.inertia G`. -/
-noncomputable def smulIdempotent (g : G) : B :=
+noncomputable def inertiaIdempotent (g : G) : B :=
   productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) (elem A B)
 
-lemma isIdempotentElem_smulIdempotent (g : G) : IsIdempotentElem (smulIdempotent A B g) :=
+lemma isIdempotentElem_inertiaIdempotent (g : G) : IsIdempotentElem (inertiaIdempotent A B g) :=
   (isIdempotentElem_elem A B).map (productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g))
 
-lemma smulIdempotent_mul_smul (g : G) (b : B) :
-    smulIdempotent A B g * (g • b) = smulIdempotent A B g * b := by
-  simpa [smulIdempotent, mul_comm] using
+lemma inertiaIdempotent_mul_smul (g : G) (b : B) :
+    inertiaIdempotent A B g * (g • b) = inertiaIdempotent A B g * b := by
+  simpa [inertiaIdempotent, mul_comm] using
     congr(productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) $(one_tmul_mul_elem b))
 
 @[simp]
-lemma smulIdempotent_one : smulIdempotent A B (1 : G) = 1 := by
+lemma inertiaIdempotent_one : inertiaIdempotent A B (1 : G) = 1 := by
   have h : productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B (1 : G)) = lmul' A := by
     ext <;> simp
-  simpa [smulIdempotent, h] using lmul_elem
+  simpa [inertiaIdempotent, h] using lmul_elem
 
 @[simp]
-lemma mk_smulIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
-    Ideal.Quotient.mk Q (smulIdempotent A B g) = 1 ↔ g ∈ Q.inertia G := by
+lemma mk_inertiaIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
+    Ideal.Quotient.mk Q (inertiaIdempotent A B g) = 1 ↔ g ∈ Q.inertia G := by
   simp_rw [Q.mem_inertia, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
   refine ⟨fun he b ↦ ?_, fun hg ↦ ?_⟩
-  · simpa [he] using congr(Ideal.Quotient.mk Q $(smulIdempotent_mul_smul A B g b))
-  · rw [← map_one (Ideal.Quotient.mk Q), ← smulIdempotent_one A B (G := G)]
-    simp_rw [smulIdempotent, ← Ideal.Quotient.mkₐ_eq_mk A, ← AlgHom.comp_apply]
+  · simpa [he] using congr(Ideal.Quotient.mk Q $(inertiaIdempotent_mul_smul A B g b))
+  · rw [← map_one (Ideal.Quotient.mk Q), ← inertiaIdempotent_one A B (G := G)]
+    simp_rw [inertiaIdempotent, ← Ideal.Quotient.mkₐ_eq_mk A, ← AlgHom.comp_apply]
     congr 1
     ext <;> simp [hg]
 
 open Classical in
-lemma mk_smulIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
-    Ideal.Quotient.mk Q (smulIdempotent A B g) = if g ∈ Q.inertia G then 1 else 0 := by
+lemma mk_inertiaIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
+    Ideal.Quotient.mk Q (inertiaIdempotent A B g) = if g ∈ Q.inertia G then 1 else 0 := by
   have h := IsIdempotentElem.iff_eq_zero_or_one.mp
-    ((isIdempotentElem_smulIdempotent A B g).map (Ideal.Quotient.mk Q))
-  grind [mk_smulIdempotent_eq_one_iff]
+    ((isIdempotentElem_inertiaIdempotent A B g).map (Ideal.Quotient.mk Q))
+  grind [mk_inertiaIdempotent_eq_one_iff]
 
 end Algebra.FormallyUnramified
 
@@ -201,7 +201,7 @@ lemma linearize_restrictScalars (f : M →ₗ[B] N) : linearize B (f.restrictSca
 @[simp]
 lemma linearize_toAlgHom (g : G) :
     linearize B (MulSemiringAction.toAlgHom A B g).toLinearMap =
-      LinearMap.mulLeft B (smulIdempotent A B g) := by
+      LinearMap.mulLeft B (inertiaIdempotent A B g) := by
   apply LinearMap.ext_ring
   simp [linearize_apply]
   rfl
@@ -217,21 +217,21 @@ variable [Finite H]
 /-- The idempotent whose multiples are fixed by a finite subgroup. -/
 noncomputable def subgroupIdempotent : B :=
   letI := Fintype.ofFinite H
-  ∏ h : H, smulIdempotent A B (h : G)
+  ∏ h : H, inertiaIdempotent A B (h : G)
 
 lemma isIdempotentElem_subgroupIdempotent : IsIdempotentElem (subgroupIdempotent A B H) := by
   classical
   let := Fintype.ofFinite H
   rw [IsIdempotentElem, subgroupIdempotent, ← Finset.prod_mul_distrib]
-  exact Finset.prod_congr rfl fun h _ ↦ (isIdempotentElem_smulIdempotent A B (h : G)).eq
+  exact Finset.prod_congr rfl fun h _ ↦ (isIdempotentElem_inertiaIdempotent A B (h : G)).eq
 
 lemma subgroupIdempotent_mul_smul (h : H) (b : B) :
     subgroupIdempotent A B H * (h • b) = subgroupIdempotent A B H * b := by
   classical
   let := Fintype.ofFinite H
-  obtain ⟨w, hw⟩ : smulIdempotent A B (h : G) ∣ subgroupIdempotent A B H :=
+  obtain ⟨w, hw⟩ : inertiaIdempotent A B (h : G) ∣ subgroupIdempotent A B H :=
     Finset.dvd_prod_of_mem _ (Finset.mem_univ h)
-  rw [Subgroup.smul_def, hw, mul_right_comm, smulIdempotent_mul_smul, mul_right_comm]
+  rw [Subgroup.smul_def, hw, mul_right_comm, inertiaIdempotent_mul_smul, mul_right_comm]
 
 @[simp]
 lemma smul_subgroupIdempotent (h : H) :
@@ -270,7 +270,7 @@ idempotent. -/
 noncomputable def descentMultiplier : B := by
   classical
   letI := Fintype.ofFinite (G ⧸ H)
-  exact ∑ q : G ⧸ H, smulIdempotent A B q.out * subgroupIdempotent A B H
+  exact ∑ q : G ⧸ H, inertiaIdempotent A B q.out * subgroupIdempotent A B H
 
 private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     (I : Ideal B) (hI : ∀ g : G, g • I = I) :
@@ -302,7 +302,7 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
 lemma mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] :
     Ideal.Quotient.mk Q (descentMultiplier A B (Q.inertia G)) = 1 := by
   classical
-  simpa [descentMultiplier, mk_smulIdempotent, ite_mul,
+  simpa [descentMultiplier, mk_inertiaIdempotent, ite_mul,
     ← SetLike.mem_coe, ← QuotientGroup.preimage_mk_one] using
       (mk_subgroupIdempotent_inertia_eq_one A B Q)
 
