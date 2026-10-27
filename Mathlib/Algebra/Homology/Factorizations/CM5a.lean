@@ -500,7 +500,6 @@ sequence of morphisms `CofFibFactorizationQuasiIsoLE.toSequenceNext`. -/
 noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
   (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ) (hi : i ≤ n₀ + q₁) :
     IsIso (((functor f n₀).map (homOfLE hq).op).hom.h.f i) := by
   wlog hq' : q₁ + 1 = q₂ generalizing q₁ q₂

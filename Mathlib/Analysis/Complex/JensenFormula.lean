@@ -497,7 +497,7 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
     (h₂f : f c ≠ 0)
     (f_bound : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ M) :
     ∑ᶠ u, divisor f (closedBall c |r|) u ≤ Real.log (M / ‖f c‖) / Real.log (R / r) := by
-  -- Push the coerssion inside the sum
+  -- Push the coercion inside the sum
   trans ∑ᶠ u, (divisor f (closedBall c |r|) u : ℝ)
   · exact map_finsum (Int.castRingHom ℝ)
       ((divisor _ _).finiteSupport <| isCompact_closedBall ..) |>.le

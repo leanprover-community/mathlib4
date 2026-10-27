@@ -85,7 +85,7 @@ noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
     longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := by
   refine ComposableArrows.homMk₅ (ofHom (map f.τ₁ n₀)) (ofHom (map f.τ₂ n₀)) (ofHom (map f.τ₃ n₀))
     (ofHom (map f.τ₁ n₁)) (ofHom (map f.τ₂ n₁)) (ofHom (map f.τ₃ n₁)) ?_ ?_ ?_ ?_ ?_
-  any_goals
+  all_goals
     dsimp
     ext
     simp [← H.map_comp_apply, f.comm₁₂, f.comm₂₃, ← δ_naturality n₀ n₁ h h₁ h₂ f]
