@@ -1081,8 +1081,6 @@ lemma coheight_zero_of_coheight_one_of_strictMono
 
 @[deprecated (since := "2026-10-27")] alias krullDim_WithTop := krullDim_withTop
 
-@[deprecated (since := "2026-10-27")] alias krullDim_WithTop := krullDim_withTop
-
 @[simp] lemma krullDim_withBot [Nonempty α] : krullDim (WithBot α) = krullDim α + 1 := by
   conv_lhs => rw [← krullDim_orderDual]
   conv_rhs => rw [← krullDim_orderDual]

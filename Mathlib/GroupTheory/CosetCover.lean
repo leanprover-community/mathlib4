@@ -228,7 +228,7 @@ theorem leftCoset_cover_filter_finiteIndex_aux
     iInf₂_le i (Finset.mem_filter.mpr ⟨hi, hfi⟩)
   -- Each subgroup of finite index in the covering is the union of finitely many cosets of `D`.
   choose t ht using fun i hi hfi =>
-    exists_leftTransversal_of_FfniteIndex (H := H i) (hD_le hi hfi)
+    exists_leftTransversal_of_finiteIndex (H := H i) (hD_le hi hfi)
   -- We construct a cover of `G` by the cosets of subgroups of infinite index and of `D`.
   let κ := (i : s) × { x // x ∈ if h : (H i.1).FiniteIndex then t i.1 i.2 h else {1} }
   let f (k : κ) : G := g k.1 * k.2.val

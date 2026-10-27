@@ -119,7 +119,7 @@ lemma exists_finpartition_sum_gt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0
 
 @[deprecated (since := "2026-10-27")] alias exists_Finpartition_sum_gt := exists_finpartition_sum_gt
 
-lemma existsfinpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0} (hε : 0 < ε)
+lemma exists_finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0} (hε : 0 < ε)
     (h : preVariationFun f s ≠ ∞) :
     ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
     preVariationFun f s ≤ ∑ p ∈ P.parts, f p + ε := by
@@ -141,7 +141,7 @@ lemma existsfinpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0
       _ ≤ ∑ p ∈ P.parts, f p + ε := by gcongr
   · simp [*]
 
-@[deprecated (since := "2026-10-27")] alias exists_Finpartition_sum_ge := existsfinpartition_sum_ge
+@[deprecated (since := "2026-10-27")] alias exists_Finpartition_sum_ge := exists_finpartition_sum_ge
 
 lemma exists_finpartition_sum_ge' {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε : 0 < ε)
     (h : preVariationFun f s ≠ ∞) :
