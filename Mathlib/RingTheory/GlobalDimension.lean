@@ -116,14 +116,14 @@ lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.
 lemma globalDimension_eq_of_small [Small.{v} R] :
     globalDimension.{v} R = globalDimension.{u} R := by
   apply le_antisymm
-  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+  · rw [globalDimension_eq_sup_module_finite_projectiveDimension]
     simp only [iSup_le_iff]
     intro M hM
     have := Module.Finite.small.{u} R M
     let e : M ≃ₗ[R] ModuleCat.of R (Shrink.{u} M) := (Shrink.linearEquiv R M).symm
     rw [ModuleCat.projectiveDimension_eq_of_linearEquiv e]
     exact le_iSup _ _
-  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+  · rw [globalDimension_eq_sup_module_finite_projectiveDimension]
     simp only [iSup_le_iff]
     intro M hM
     have := Module.Finite.small.{v} R M
@@ -136,7 +136,7 @@ attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
     (e : R ≃+* R') : globalDimension.{u} R = globalDimension.{u'} R' := by
   apply le_antisymm
-  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+  · rw [globalDimension_eq_sup_module_finite_projectiveDimension]
     simp only [iSup_le_iff]
     intro M hM
     have : Small.{u'} R := Small.mk' e.toEquiv
@@ -147,7 +147,7 @@ lemma globalDimension_eq_of_ringEquiv (R' : Type u') [CommRing R']
       map_smul' r m := map_smul (Shrink.linearEquiv R M) (e.symm r) _ }
     rw [← ModuleCat.projectiveDimension_eq_of_semiLinearEquiv e.symm e']
     exact le_iSup _ _
-  · rw [globalDimension_eq_sup_projectiveDimension_finite]
+  · rw [globalDimension_eq_sup_module_finite_projectiveDimension]
     simp only [iSup_le_iff]
     intro M hM
     have : Small.{u} R' := Small.mk' e.symm.toEquiv
@@ -179,7 +179,7 @@ lemma globalDimension_eq_iSup_loclization_prime [Small.{v} R] [IsNoetherianRing 
     globalDimension.{v} R =
     ⨆ (p : PrimeSpectrum R), globalDimension.{v} (Localization.AtPrime p.1) := by
   apply le_antisymm
-  · simp only [globalDimension_eq_sup_projectiveDimension_finite, iSup_le_iff]
+  · simp only [globalDimension_eq_sup_module_finite_projectiveDimension, iSup_le_iff]
     intro M fin
     simp only [M.projectiveDimension_eq_iSup_localizedModule_prime, iSup_le_iff]
     intro p
@@ -191,7 +191,7 @@ lemma globalDimension_eq_iSup_loclization_maximal [Small.{v} R] [IsNoetherianRin
     globalDimension.{v} R =
     ⨆ (p : MaximalSpectrum R), globalDimension.{v} (Localization.AtPrime p.1) := by
   apply le_antisymm
-  · simp only [globalDimension_eq_sup_projectiveDimension_finite, iSup_le_iff]
+  · simp only [globalDimension_eq_sup_module_finite_projectiveDimension, iSup_le_iff]
     intro M fin
     simp only [M.projectiveDimension_eq_iSup_localizedModule_maximal, iSup_le_iff]
     exact fun m ↦ (le_iSup _ (M.localizedModule m.1.primeCompl)).trans
