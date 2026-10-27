@@ -72,7 +72,7 @@ namespace Submodule
 Note: for `R = ℤ` and `A` a normed field there is also `IsZLattice`, the analogue of
 `Submodule.IsFullLattice` with discreteness in place of the two conditions here. -/
 @[mk_iff]
-class IsLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type v} [AddCommMonoid V]
+class IsLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type v} [AddCommGroup V]
     [Module R V] [Module A V] [IsScalarTower R A V] (M : Submodule R V) : Prop where
   fg : M.FG
   linearIndepOn : ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn A id s

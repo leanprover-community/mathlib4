@@ -36,7 +36,7 @@ variable {R : Type*} [CommRing R]
 namespace Submodule
 
 /-- A lattice that spans `V` over `A`. -/
-class IsFullLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type v} [AddCommMonoid V]
+class IsFullLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type v} [AddCommGroup V]
     [Module R V] [Module A V] [IsScalarTower R A V] (M : Submodule R V) extends IsLattice A M where
   span_eq_top : span A (M : Set V) = ⊤
 
