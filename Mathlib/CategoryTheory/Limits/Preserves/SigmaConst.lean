@@ -119,7 +119,7 @@ section
 variable [HasCoproducts.{w} C] [HasCoproducts.{w} D]
   (F : C ⥤ D) [∀ (T : Type w), PreservesColimitsOfShape (Discrete T) F] (X : C)
 
-/-- The isomophism `sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X)` when `F`
+/-- The isomorphism `sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X)` when `F`
 preserves coproducts. -/
 noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X) :=
   NatIso.ofComponents (fun _ ↦ PreservesCoproduct.iso _ _) (fun {T₁ T₂} f ↦ by

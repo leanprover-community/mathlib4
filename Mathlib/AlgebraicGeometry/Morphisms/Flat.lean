@@ -352,7 +352,7 @@ lemma isIso_pushoutSection_of_iSup_eq
   ```
   The two rows are exact because of the sheaf axiom (and additionally the flatness assumption for
   the top row). The vertical arrow in the middle is an isomorphism by assumption, and the one
-  one the right is monomorphic by assumption. Hence the left arrow is also an isomorphism.
+  on the right is monomorphic by assumption. Hence the left arrow is also an isomorphism.
 
   In the actual proof we use `Pairwise`-indexed diagrams instead of nested limits because it works
   better with the existing API.

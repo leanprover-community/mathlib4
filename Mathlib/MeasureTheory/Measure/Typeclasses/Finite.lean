@@ -115,7 +115,7 @@ instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0�
 theorem isFiniteMeasure_of_le (μ : Measure α) [IsFiniteMeasure μ] (h : ν ≤ μ) : IsFiniteMeasure ν :=
   { measure_univ_lt_top := (h Set.univ).trans_lt (measure_lt_top _ _) }
 
-/-- This is not an instance as it is superseded by the fact that is is a probability measure. -/
+/-- This is not an instance as it is superseded by the fact that it is a probability measure. -/
 theorem isFiniteMeasure_dirac {a : α} : IsFiniteMeasure (dirac a) where
   measure_univ_lt_top := by
     simp [dirac_apply_of_mem <| mem_univ a]
