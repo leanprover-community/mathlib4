@@ -867,7 +867,8 @@ protected theorem equicontinuous_tfae {κ : Type*}
       Eventually.of_forall fun x k ↦ by simpa using! hfp k x
   tfae_finish
 
-@[deprecated (since := "2026-10-27")] alias equicontinuous_TFAE := equicontinuous_tfae
+@[deprecated (since := "2026-10-27")]
+protected alias equicontinuous_TFAE := WithSeminorms.equicontinuous_tfae
 
 theorem uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
