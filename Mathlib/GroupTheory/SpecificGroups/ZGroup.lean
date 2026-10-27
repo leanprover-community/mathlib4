@@ -6,10 +6,11 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.GroupTheory.Abelianization.Finite
 public import Mathlib.GroupTheory.Nilpotent
-public import Mathlib.GroupTheory.SchurZassenhaus
 public import Mathlib.GroupTheory.SemidirectProduct
+
+import Mathlib.GroupTheory.Abelianization.Finite
+import Mathlib.GroupTheory.SchurZassenhaus
 
 /-!
 # Z-Groups
@@ -58,7 +59,7 @@ theorem of_squarefree (hG : Squarefree (Nat.card G)) : IsZGroup G := by
   have : Finite G := Nat.finite_of_card_ne_zero hG.ne_zero
   refine ⟨fun p hp P ↦ ?_⟩
   have := Fact.mk hp
-  obtain ⟨k, hk⟩ := P.2.exists_card_eq
+  obtain ⟨k, hk⟩ := P.isPGroup.exists_card_eq
   exact isCyclic_of_card_dvd_prime ((hk ▸ hG.pow_dvd_of_pow_dvd) P.card_subgroup_dvd_card)
 
 theorem of_injective [hG' : IsZGroup G'] (hf : Function.Injective f) : IsZGroup G := by
@@ -94,7 +95,7 @@ theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < �
   let P : Sylow p G := default
   have hP := isZGroup p hp P
   let f := MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)
-  refine lt_of_le_of_lt (Abelianization.commutator_subset_ker f) ?_
+  refine lt_of_le_of_lt (Abelianization.commutator_le_ker f) ?_
   have h := P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd
   contrapose h
   rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
@@ -167,7 +168,7 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
       simpa [IsConcreteLE.le_iff, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
     rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
     let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
-    have h := Abelianization.commutator_subset_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
+    have h := Abelianization.commutator_le_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
     rwa [Subgroup.normalizerMonoidHom_ker, Subgroup.normalizer_eq_top,
       ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_subtype_commutator,
         Subgroup.map_subgroupOf_eq_of_le le_top] at h
@@ -234,7 +235,7 @@ variable [Finite G] (P : Sylow p G) [IsCyclic P]
   `⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self [P.Normal] {K : Subgroup G}
     (h : K.IsComplement' P) : ⁅K, P.1⁆ = ⊥ ∨ ⁅K, P.1⁆ = P :=
-  P.2.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
+  P.isPGroup.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
     (h.index_eq_card ▸ P.card_coprime_index)
 
 /-- A normal cyclic Sylow subgroup is either central or contained in the commutator subgroup. -/
@@ -274,7 +275,7 @@ theorem not_dvd_card_commutator_or_not_dvd_index_commutator :
   refine (normalizer_le_centralizer_or_le_commutator P).imp ?_ ?_ <;>
       refine fun hP h ↦ P.not_dvd_index (h.trans ?_)
   · rw [(MonoidHom.ker_transferSylow_isComplement' P hP).index_eq_card]
-    exact Subgroup.card_dvd_of_le (Abelianization.commutator_subset_ker _)
+    exact Subgroup.card_dvd_of_le (Abelianization.commutator_le_ker _)
   · exact Subgroup.index_dvd_of_le hP
 
 end Sylow
@@ -302,7 +303,7 @@ theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
   have := Fact.mk hp
   replace h_cop := (h_cop.of_dvd ((Subgroup.card_dvd_of_le h_le).trans
     (Subgroup.card_range_dvd f)) (Subgroup.index_ker f' ▸ f'.range.card_subgroup_dvd_card))
-  rcases P.2.le_or_disjoint_of_coprime h_cop with h | h
+  rcases P.isPGroup.le_or_disjoint_of_coprime h_cop with h | h
   · replace h_le : P ≤ f.range := h.trans h_le
     suffices IsCyclic (P.subgroupOf f.range) by
       have key := Subgroup.subgroupOfEquivOfLe h_le
@@ -310,7 +311,7 @@ theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
     obtain ⟨Q, hQ⟩ := Sylow.mapSurjective_surjective f.rangeRestrict_surjective p (P.subtype h_le)
     rw [Sylow.ext_iff, Sylow.coe_mapSurjective, Sylow.coe_subtype] at hQ
     exact hQ ▸ isCyclic_of_surjective _ (f.rangeRestrict.subgroupMap_surjective Q)
-  · have := (P.2.map f').isCyclic_of_isZGroup
+  · have := (P.isPGroup.map f').isCyclic_of_isZGroup
     apply isCyclic_of_injective (f'.subgroupMap P)
     rwa [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap f', Subgroup.subgroupOf_eq_bot]
 

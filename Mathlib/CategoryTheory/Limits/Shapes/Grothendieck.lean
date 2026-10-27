@@ -83,7 +83,6 @@ def fiberwiseColimit : C ⥤ H where
       conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z)).toFunctor]
       conv_rhs => rw [eqToHom_trans, eqToHom_trans]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (H) (F) in
 /-- Similar to `colimit` and `colim`, taking fiberwise colimits is a functor
@@ -172,7 +171,7 @@ set_option backward.isDefEq.respectTransparency false in
 `coconeOfFiberwiseCocone G c` -/
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where
-  desc s := hc.desc <| Cocone.mk s.pt <|
+  desc s := hc.desc <| Cocone.mk s.pt
     { app := fun X => colimit.desc (Grothendieck.ι F X ⋙ G) (s.whisker _) }
   uniq s m hm := hc.hom_ext <| fun X => by
     simp only [fiberwiseColimit_obj, IsColimit.fac]

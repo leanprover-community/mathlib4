@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.Tactic.WLOG
 
 /-!
 # Cardinal Divisibility
@@ -81,9 +80,9 @@ theorem prime_natCast_iff : Prime (n : Cardinal) ↔ n.Prime := by
     rw [h, zero_dvd_iff, mul_eq_zero] at hbc
     cases hbc <;> contradiction
   wlog hℵ₀b : ℵ₀ ≤ b
-  apply (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm <;> try assumption
-  · rwa [mul_comm] at hbc
-  · rwa [mul_comm] at h'
+  · apply (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm
+    · rwa [mul_comm] at hbc
+    · rwa [mul_comm] at h'
   · exact Or.inl (dvd_of_le_of_aleph0_le hn (natCast_lt_aleph0.le.trans hℵ₀b) hℵ₀b)
 
 @[deprecated (since := "2026-09-20")] alias nat_is_prime_iff := prime_natCast_iff
@@ -102,9 +101,8 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
   simp only [h, false_or, isPrimePow_nat_iff]
   lift a to ℕ using not_le.mp h
   rw [isPrimePow_def]
-  refine
-    ⟨?_, fun ⟨n, han, p, k, hp, hk, h⟩ =>
-          ⟨p, k, prime_natCast_iff.2 hp, hk, by rw [han]; exact mod_cast h⟩⟩
+  refine ⟨?_, fun ⟨n, han, p, k, hp, hk, h⟩ =>
+    ⟨p, k, prime_natCast_iff.2 hp, hk, by rw [han]; exact mod_cast h⟩⟩
   rintro ⟨p, k, hp, hk, hpk⟩
   have key : p ^ (1 : Cardinal) ≤ ↑a := by
     rw [← hpk]; apply power_le_power_left hp.ne_zero; exact mod_cast hk

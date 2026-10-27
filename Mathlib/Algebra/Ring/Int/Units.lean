@@ -5,9 +5,9 @@ Authors: Jeremy Avigad
 -/
 module
 
+public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.Units
-public import Mathlib.Algebra.Group.Int.Units
 
 /-!
 # Basic lemmas for `ℤˣ`.

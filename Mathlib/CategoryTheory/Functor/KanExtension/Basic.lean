@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
 /-!
 # Kan extensions
@@ -31,8 +31,6 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 * https://ncatlab.org/nlab/show/Kan+extension
 
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -98,7 +96,7 @@ lemma liftOfIsRightKanExtension_fac (G : D ⥤ H) (β : L ⋙ G ⟶ F) :
 @[reassoc (attr := simp)]
 lemma liftOfIsRightKanExtension_fac_app (G : D ⥤ H) (β : L ⋙ G ⟶ F) (X : C) :
     (F'.liftOfIsRightKanExtension α G β).app (L.obj X) ≫ α.app X = β.app X :=
-  NatTrans.congr_app (F'.liftOfIsRightKanExtension_fac α G β) X
+  congr($(F'.liftOfIsRightKanExtension_fac α G β).app X)
 
 lemma hom_ext_of_isRightKanExtension {G : D ⥤ H} (γ₁ γ₂ : G ⟶ F')
     (hγ : whiskerLeft L γ₁ ≫ α = whiskerLeft L γ₂ ≫ α) : γ₁ = γ₂ :=
@@ -191,7 +189,7 @@ lemma descOfIsLeftKanExtension_fac (G : D ⥤ H) (β : F ⟶ L ⋙ G) :
 @[reassoc (attr := simp)]
 lemma descOfIsLeftKanExtension_fac_app (G : D ⥤ H) (β : F ⟶ L ⋙ G) (X : C) :
     α.app X ≫ (F'.descOfIsLeftKanExtension α G β).app (L.obj X) = β.app X :=
-  NatTrans.congr_app (F'.descOfIsLeftKanExtension_fac α G β) X
+  congr($(F'.descOfIsLeftKanExtension_fac α G β).app X)
 
 lemma hom_ext_of_isLeftKanExtension {G : D ⥤ H} (γ₁ γ₂ : F' ⟶ G)
     (hγ : α ≫ whiskerLeft L γ₁ = α ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
@@ -371,7 +369,6 @@ noncomputable def RightExtension.isUniversalPostcomp₁Equiv (ex : RightExtensio
 
 variable {F F'}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
     F'.IsLeftKanExtension α ↔ (G ⋙ F').IsLeftKanExtension
       (α ≫ whiskerRight e.inv _ ≫ (associator _ _ _).hom) := by
@@ -384,7 +381,6 @@ lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
   · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔ (G ⋙ F').IsRightKanExtension
       ((associator _ _ _).inv ≫ whiskerRight e.hom F' ≫ α) := by
@@ -403,7 +399,6 @@ section
 
 variable (L : C ⥤ D) (F : C ⥤ H) (G : H ⥤ D')
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a left extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
 `E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
 on the right. -/
@@ -420,7 +415,6 @@ instance [G.IsEquivalence] : (LeftExtension.postcompose₂ L F G).IsEquivalence 
   intro
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a right extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
 `E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
 on the right. -/
@@ -446,7 +440,6 @@ def LeftExtension.postcompose₂ObjMkIso (α : F ⟶ L ⋙ F') :
     .mk (F' ⋙ G) <| whiskerRight α G ≫ (associator _ _ _).hom :=
   StructuredArrow.isoMk (.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An isomorphism to describe the action of `RightExtension.postcompose₂` on terms of the form
 `RightExtension.mk _ α`. -/
 @[simps!]
@@ -495,7 +488,6 @@ noncomputable def RightExtension.isUniversalPrecompEquiv (e : RightExtension L F
 
 variable {F L}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
     F'.IsLeftKanExtension α ↔ F'.IsLeftKanExtension
       (whiskerLeft G α ≫ (associator _ _ _).inv) := by
@@ -507,7 +499,6 @@ lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
   · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isRightKanExtension_iff_precomp (α : L ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔
       F'.IsRightKanExtension ((associator _ _ _).hom ≫ whiskerLeft G α) := by
@@ -685,6 +676,7 @@ def LeftExtension.isUniversalPrecomp₂
     simp [← a_w_t, hb_fac_app, u, hα_fac_app]
   apply IsInitial.ofUnique
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If the left extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
 then for every `L' : D ⥤ D'`, `F₁ : D ⥤ H`, if an extension
@@ -729,7 +721,7 @@ def LeftExtension.isUniversalPrecomp₂Equiv
   left_inv x := by subsingleton
   right_inv x := by subsingleton
 
-
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
     {F₂ : D' ⥤ H} (L'' : C ⥤ D') (e : L ⋙ L' ≅ L'') (β : F₁ ⟶ L' ⋙ F₂)
@@ -837,6 +829,7 @@ noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
   pt := c.pt
   ι := F'.descOfIsLeftKanExtension α _ c.ι
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `c` is a colimit cocone for a functor `F : C ⥤ H` and `α : F ⟶ L ⋙ F'` is the unit of any
 left Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coconeOfIsLeftKanExtension α c` is
@@ -951,7 +944,6 @@ instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
   ext x
   simpa using α.inv.app x ≫= congr_app m.w x
 
-set_option backward.isDefEq.respectTransparency false in
 instance isLeftKanExtensionAlongEquivalence' (L : C ⥤ D) (α : F₀ ⟶ L ⋙ F₁)
     [IsEquivalence L] [IsIso α] :
     F₁.IsLeftKanExtension α :=
@@ -969,7 +961,6 @@ instance isRightKanExtensionAlongEquivalence (α : L.functor ⋙ F₁ ≅ F₀) 
   ext x
   simpa using congr_app m.w x =≫ α.inv.app x
 
-set_option backward.isDefEq.respectTransparency false in
 instance isRightKanExtensionAlongEquivalence' (L : C ⥤ D) (α : L ⋙ F₁ ⟶ F₀)
     [IsEquivalence L] [IsIso α] :
     F₁.IsRightKanExtension α :=

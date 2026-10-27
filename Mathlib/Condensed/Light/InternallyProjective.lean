@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Preadditive.Projective.Internal
 public import Mathlib.Condensed.Light.Epi
 public import Mathlib.Condensed.Light.Monoidal
+
 /-!
 
 # Characterization of internal projectivity in light condensed modules
@@ -86,7 +87,6 @@ lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (�
   simpa [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply] using!
     (GrothendieckTopology.yonedaEquiv_naturality _ _ _).symm
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 `P : LightCondMod R` is internally projective if and
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
@@ -126,7 +126,6 @@ lemma internallyProjective_iff_tensor_condition (P : LightCondMod R) : Internall
     rw [hh] at this
     simp [this, Quiver.Hom.op]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 `P : LightCondMod R` is internally projective if and
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
@@ -193,7 +192,6 @@ lemma free_internallyProjective_iff_tensor_condition (P : LightCondSet.{u}) :
     simp only [Functor.comp_map, μIso_hom, ← μ_natural_right, μIso_inv, assoc, μ_δ,
       comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a `P : LightCondSet`, the light free light condensed module `R[P]` is internally projective if
 and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all

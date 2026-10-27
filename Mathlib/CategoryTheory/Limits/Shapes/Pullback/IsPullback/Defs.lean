@@ -126,7 +126,6 @@ lemma hom_ext (hP : IsPullback fst snd f g) {W : C} {k l : W ⟶ P}
     (h₀ : k ≫ fst = l ≫ fst) (h₁ : k ≫ snd = l ≫ snd) : k = l :=
   PullbackCone.IsLimit.hom_ext hP.isLimit h₀ h₁
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a limiting pullback cone, then we have an `IsPullback c.fst c.snd f g`. -/
 theorem of_isLimit {c : PullbackCone f g} (h : Limits.IsLimit c) : IsPullback c.fst c.snd f g :=
   { w := c.condition
@@ -194,14 +193,12 @@ noncomputable def isoPullback (h : IsPullback fst snd f g) [HasPullback f g] : P
   (limit.isoLimitCone ⟨_, h.isLimit⟩).symm
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem isoPullback_hom_fst (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.hom ≫ pullback.fst _ _ = fst := by
   dsimp [isoPullback, cone, CommSq.cone]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem isoPullback_hom_snd (h : IsPullback fst snd f g) [HasPullback f g] :
     h.isoPullback.hom ≫ pullback.snd _ _ = snd := by
@@ -265,7 +262,6 @@ lemma hom_ext (hP : IsPushout f g inl inr) {W : C} {k l : P ⟶ W}
     (h₀ : inl ≫ k = inl ≫ l) (h₁ : inr ≫ k = inr ≫ l) : k = l :=
   PushoutCocone.IsColimit.hom_ext hP.isColimit h₀ h₁
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a colimiting pushout cocone, then we have an `IsPushout f g c.inl c.inr`. -/
 theorem of_isColimit {c : PushoutCocone f g} (h : Limits.IsColimit c) : IsPushout f g c.inl c.inr :=
   { w := c.condition
@@ -331,14 +327,12 @@ isomorphic to the pullback provided by the `HasLimit` API. -/
 noncomputable def isoPushout (h : IsPushout f g inl inr) [HasPushout f g] : P ≅ pushout f g :=
   (colimit.isoColimitCocone ⟨_, h.isColimit⟩).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem inl_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
     pushout.inl _ _ ≫ h.isoPushout.inv = inl := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem inr_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
     pushout.inr _ _ ≫ h.isoPushout.inv = inr := by

@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Additive
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
@@ -72,7 +70,6 @@ identifies in degree `1` to `Λ.F.obj (kernel (Λ.π.app X))`. -/
 noncomputable def chainComplexXOneIso :
     (Λ.chainComplex X).X 1 ≅ Λ.F.obj (kernel (Λ.π.app X)) := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma map_chainComplex_d_1_0 :
     ι.map ((Λ.chainComplex X).d 1 0) =
@@ -97,7 +94,6 @@ lemma map_chainComplex_d (n : ℕ) :
 
 attribute [irreducible] chainComplex
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma exactAt_map_chainComplex_succ (n : ℕ) :
     ((ι.mapHomologicalComplex _).obj (Λ.chainComplex X)).ExactAt (n + 1) := by
@@ -110,7 +106,6 @@ lemma exactAt_map_chainComplex_succ (n : ℕ) :
 
 variable {X Y Z}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `Λ.chainComplex X ⟶ Λ.chainComplex Y` of chain complexes
 induced by `f : X ⟶ Y`. -/
 noncomputable def chainComplexMap : Λ.chainComplex X ⟶ Λ.chainComplex Y :=
@@ -152,7 +147,6 @@ lemma chainComplexMap_f_succ_succ (n : ℕ) :
           (Λ.chainComplexXIso Y n).inv := by
   apply ChainComplex.mkHom_f_succ_succ
 
-set_option backward.defeqAttrib.useBackward true in
 variable (X) in
 @[simp]
 lemma chainComplexMap_id : Λ.chainComplexMap (𝟙 X) = 𝟙 _ := by
@@ -161,7 +155,6 @@ lemma chainComplexMap_id : Λ.chainComplexMap (𝟙 X) = 𝟙 _ := by
   | zero => simp
   | succ n hn => obtain _ | n := n <;> simp [hn]
 
-set_option backward.defeqAttrib.useBackward true in
 variable (X Y) in
 @[simp]
 lemma chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
@@ -171,7 +164,6 @@ lemma chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
   | zero => simp
   | succ n hn => obtain _ | n := n <;> simp [hn]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc, simp]
 lemma chainComplexMap_comp :
     Λ.chainComplexMap (f ≫ g) = Λ.chainComplexMap f ≫ Λ.chainComplexMap g := by
