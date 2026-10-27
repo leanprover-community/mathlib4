@@ -22,24 +22,19 @@ variable {k : Type uK} [Field k]
   {Γ : Type uΓ} [LinearOrderedCommGroupWithZero Γ] (v : Valuation k Γ)
 
 def norm (x : k) (γ : v.ValueGroup₀) : k :=
-  have hy : ∃ y, v.restrict (x - y) ≤ γ := ⟨x, by simp⟩
-  hy.choose
+  (QuotientAddGroup.mk' (v.restrict.leAddSubgroup γ) x).out
 
-theorem norm_spec (x : k) (γ : v.ValueGroup₀) : v.restrict (x - norm v x γ) ≤ γ :=
-  have hy : ∃ y, v.restrict (x - y) ≤ γ := ⟨x, by simp⟩
-  hy.choose_spec
+theorem norm_spec (x : k) (γ : v.ValueGroup₀) : v.restrict (x - norm v x γ) ≤ γ := by
+  unfold norm
+  obtain ⟨c, hc⟩ := QuotientAddGroup.mk_out_eq_add (v.restrict.leAddSubgroup γ) x
+  rw [← v.restrict.mem_leAddSubgroup_iff, QuotientAddGroup.mk'_apply, hc, sub_add_cancel_left]
+  exact neg_mem c.2
 
 theorem norm_eq_of_le {x y : k} (γ : v.ValueGroup₀) (hxy : v.restrict (x - y) ≤ γ) :
     norm v x γ = norm v y γ := by
   unfold norm
-  dsimp only
-  congr! 2 with z
-  rw [← sub_add_sub_cancel x y z]
-  constructor
-  · intro h
-    simpa using v.restrict.map_sub_le h hxy
-  · intro h
-    exact v.restrict.map_add_le hxy h
+  rw [eq_comm, Quotient.out_inj, QuotientAddGroup.mk'_eq_mk']
+  exact ⟨x - y, by simpa using hxy, by simp⟩
 
 def coeff (x : k) (γ : v.ValueGroup₀) : IsLocalRing.ResidueField v.valuationSubring :=
   IsLocalRing.residue _ ⟨(x - norm v x γ) / (v.restrict_surjective γ).choose, by
