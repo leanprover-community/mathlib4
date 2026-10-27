@@ -92,7 +92,7 @@ protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f :
   (SemilinearIsometryClass.isometry f).continuous
 
 -- Should be `@[simp]` but it doesn't fire due to https://github.com/leanprover/lean4/issues/3107.
-theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
+theorem nnNorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 
 protected theorem lipschitzWith [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
@@ -200,7 +200,7 @@ protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x 
   f.toLinearMap.map_smul c x
 
 protected lemma norm_map (x : E) : ‖f x‖ = ‖x‖ := by simp
-protected lemma nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
+protected lemma nnNorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
 protected lemma enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by simp
 
 protected theorem isometry : Isometry f :=
@@ -540,7 +540,7 @@ def ofBounds (e : E ≃ₛₗ[σ₁₂] E₂) (h₁ : ∀ x, ‖e x‖ ≤ ‖x�
   ⟨e, fun x => le_antisymm (h₁ x) <| by simpa only [e.symm_apply_apply] using h₂ (e x)⟩
 
 protected lemma norm_map (x : E) : ‖e x‖ = ‖x‖ := by simp
-protected lemma nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ := by simp
+protected lemma nnNorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ := by simp
 protected lemma enorm_map (x : E) : ‖e x‖ₑ = ‖x‖ₑ := by simp
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `LinearIsometry`. -/

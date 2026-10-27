@@ -84,7 +84,7 @@ variable {E F : Type*}
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
 and `‖p x 1‖₊ < K`, then `f` is `K`-Lipschitz in a neighborhood of `x` within `s`. -/
-theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt
+theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnNorm_lt
     (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) (K : ℝ≥0)
     (hK : ‖p x 1‖₊ < K) : ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t := by
   set f' := fun y => continuousMultilinearCurryFin1 ℝ E F (p y 1)
@@ -93,9 +93,9 @@ theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt
   have hcont : ContinuousWithinAt f' s x :=
     (continuousMultilinearCurryFin1 ℝ E F).continuousAt.comp_continuousWithinAt
       ((hf.cont _ le_rfl _ (mem_insert _ _)).mono (subset_insert x s))
-  replace hK : ‖f' x‖₊ < K := by simpa only [f', LinearIsometryEquiv.nnnorm_map]
+  replace hK : ‖f' x‖₊ < K := by simpa only [f', LinearIsometryEquiv.nnNorm_map]
   exact
-    hs.exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnnorm_lt
+    hs.exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnNorm_lt
       (eventually_nhdsWithin_iff.2 <| Eventually.of_forall hder) hcont K hK
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
@@ -103,7 +103,7 @@ then `f` is Lipschitz in a neighborhood of `x` within `s`. -/
 theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith
     (hf : HasFTaylorSeriesUpToOn 1 f p (insert x s)) (hs : Convex ℝ s) :
     ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t :=
-  (exists_gt _).imp <| hf.exists_lipschitzOnWith_of_nnnorm_lt hs
+  (exists_gt _).imp <| hf.exists_lipschitzOnWith_of_nnNorm_lt hs
 
 /-- If `f` is `C^1` within a convex set `s` at `x`, then it is Lipschitz on a neighborhood of `x`
 within `s`. -/
@@ -121,10 +121,10 @@ theorem ContDiffWithinAt.exists_lipschitzOnWith
 
 /-- If `f` is `C^1` at `x` and `K > ‖fderiv 𝕂 f x‖`, then `f` is `K`-Lipschitz in a neighborhood of
 `x`. -/
-theorem ContDiffAt.exists_lipschitzOnWith_of_nnnorm_lt {f : E' → F'} {x : E'}
+theorem ContDiffAt.exists_lipschitzOnWith_of_nnNorm_lt {f : E' → F'} {x : E'}
     (hf : ContDiffAt 𝕂 1 f x) (K : ℝ≥0) (hK : ‖fderiv 𝕂 f x‖₊ < K) :
     ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
-  (hf.hasStrictFDerivAt one_ne_zero).exists_lipschitzOnWith_of_nnnorm_lt K hK
+  (hf.hasStrictFDerivAt one_ne_zero).exists_lipschitzOnWith_of_nnNorm_lt K hK
 
 /-- If `f` is `C^1` at `x`, then `f` is Lipschitz in a neighborhood of `x`. -/
 theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDiffAt 𝕂 1 f x) :
@@ -157,7 +157,7 @@ theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'}
     ∃ C, LipschitzWith C f := by
   obtain ⟨C, hC⟩ := (hf.fderiv 𝕂).exists_bound_of_continuous (h'f.continuous_fderiv hn)
   refine ⟨.mk (max C 0) (le_max_right _ _), ?_⟩
-  apply lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn) (fun x ↦ ?_)
+  apply lipschitzWith_of_nnNorm_fderiv_le (h'f.differentiable hn) (fun x ↦ ?_)
   simp [← NNReal.coe_le_coe, hC x]
 
 end Real

@@ -1248,7 +1248,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
     refine integral_le_sub_of_hasDeriv_right_of_le hab.le hcont hderiv ?_ fun x hx => ?_
     · rwa [integrableOn_Icc_iff_integrableOn_Ioo]
     · convert! NNReal.coe_le_coe.2 (fle x)
-      simp only [Real.norm_of_nonneg (g'pos x hx), coe_nnnorm]
+      simp only [Real.norm_of_nonneg (g'pos x hx), coe_nnNorm]
   exact lt_irrefl _ (hf.trans_le (ENNReal.ofReal_le_ofReal B))
 
 /-- When the derivative of a function is nonnegative, then it is automatically integrable,

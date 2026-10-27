@@ -25,7 +25,7 @@ for `n : ℕ`.
   is bounded above, then `r ≤ p.radius`;
 * `p.isLittleO_of_lt_radius`, `p.norm_mul_pow_le_mul_pow_of_lt_radius`,
   `p.isLittleO_one_of_lt_radius`,
-  `p.norm_mul_pow_le_of_lt_radius`, `p.nnnorm_mul_pow_le_of_lt_radius`: if `r < p.radius`, then
+  `p.norm_mul_pow_le_of_lt_radius`, `p.nnNorm_mul_pow_le_of_lt_radius`: if `r < p.radius`, then
   `‖p n‖ * r ^ n` tends to zero exponentially;
 * `p.lt_radius_of_isBigO`: if `r ≠ 0` and `‖p n‖ * r ^ n = O(a ^ n)` for some `-1 < a < 1`, then
   `r < p.radius`;
@@ -129,12 +129,12 @@ theorem le_radius_of_eventually_le (C) (h : ∀ᶠ n in atTop, ‖p n‖ * (r : 
     ↑r ≤ p.radius :=
   p.le_radius_of_isBigO <| IsBigO.of_bound C <| h.mono fun n hn => by simpa
 
-theorem le_radius_of_summable_nnnorm (h : Summable fun n => ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
+theorem le_radius_of_summable_nnNorm (h : Summable fun n => ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_bound_nnreal (∑' n, ‖p n‖₊ * r ^ n) fun _ => h.le_tsum' _
 
 theorem le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
-  p.le_radius_of_summable_nnnorm <| by
-    simp only [← coe_nnnorm] at h
+  p.le_radius_of_summable_nnNorm <| by
+    simp only [← coe_nnNorm] at h
     exact mod_cast h
 
 theorem radius_eq_top_of_forall_nnreal_isBigO
@@ -223,7 +223,7 @@ theorem norm_le_div_pow_of_pos_of_lt_radius (p : FormalMultilinearSeries 𝕜 E 
   ⟨C, hC, fun n => Iff.mpr (le_div_iff₀ (pow_pos h0 _)) (hp n)⟩
 
 /-- For `r` strictly smaller than the radius of `p`, then `‖pₙ‖ rⁿ` is bounded. -/
-theorem nnnorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
+theorem nnNorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖₊ * r ^ n ≤ C :=
   let ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
   ⟨⟨C, hC.lt.le⟩, hC, mod_cast hp⟩
@@ -236,7 +236,7 @@ theorem le_radius_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
     (hs : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_tendsto hs.tendsto_atTop_zero
 
-theorem not_summable_norm_of_radius_lt_nnnorm (p : FormalMultilinearSeries 𝕜 E F) {x : E}
+theorem not_summable_norm_of_radius_lt_nnNorm (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (h : p.radius < ‖x‖₊) : ¬Summable fun n => ‖p n‖ * ‖x‖ ^ n :=
   fun hs => not_le_of_gt h (p.le_radius_of_summable_norm hs)
 
@@ -253,7 +253,7 @@ theorem summable_norm_apply (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (fun _ ↦ norm_nonneg _) (fun n ↦ ((p n).le_opNorm _).trans_eq ?_) (p.summable_norm_mul_pow hx)
   simp
 
-theorem summable_nnnorm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0} (h : ↑r < p.radius) :
+theorem summable_nnNorm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0} (h : ↑r < p.radius) :
     Summable fun n : ℕ => ‖p n‖₊ * r ^ n := by
   rw [← NNReal.summable_coe]
   push_cast
@@ -346,27 +346,27 @@ lemma enorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
   gcongr
   apply norm_compContinuousLinearMap_le
 
-lemma nnnorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
+lemma nnNorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
     (u : E →L[𝕜] F) (n : ℕ) : ‖p.compContinuousLinearMap u n‖₊ ≤ ‖p n‖₊ * ‖u‖₊ ^ n :=
   norm_compContinuousLinearMap_le p u n
 
 theorem div_le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
     p.radius / ‖u‖ₑ ≤ (p.compContinuousLinearMap u).radius := by
-  obtain (rfl | h_zero) := eq_zero_or_nnnorm_pos u
+  obtain (rfl | h_zero) := eq_zero_or_nnNorm_pos u
   · simp
   rw [ENNReal.div_le_iff (by simpa using h_zero) (by simp)]
   refine le_of_forall_nnreal_lt fun r hr ↦ ?_
-  rw [← ENNReal.div_le_iff (by simpa using h_zero) (by simp), enorm_eq_nnnorm, ← coe_div h_zero.ne']
+  rw [← ENNReal.div_le_iff (by simpa using h_zero) (by simp), enorm_eq_nnNorm, ← coe_div h_zero.ne']
   obtain ⟨C, hC_pos, hC⟩ := p.norm_mul_pow_le_of_lt_radius hr
   refine le_radius_of_bound _ C fun n ↦ ?_
   calc
     ‖p.compContinuousLinearMap u n‖ * ↑(r / ‖u‖₊) ^ n ≤ ‖p n‖ * ‖u‖ ^ n * ↑(r / ‖u‖₊) ^ n := by
       gcongr
-      exact nnnorm_compContinuousLinearMap_le p u n
+      exact nnNorm_compContinuousLinearMap_le p u n
     _ = ‖p n‖ * r ^ n := by
-      simp only [NNReal.coe_div, coe_nnnorm, div_pow, mul_assoc]
+      simp only [NNReal.coe_div, coe_nnNorm, div_pow, mul_assoc]
       rw [mul_div_cancel₀]
-      rw [← NNReal.coe_pos, coe_nnnorm] at h_zero
+      rw [← NNReal.coe_pos, coe_nnNorm] at h_zero
       positivity
     _ ≤ C := hC n
 

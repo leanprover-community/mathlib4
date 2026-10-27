@@ -104,7 +104,7 @@ theorem norm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖ = ‖f‖ 
   Lp.norm_compMeasurePreserving _ _
 
 @[to_additive (attr := simp)]
-theorem nnnorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖f‖₊ :=
+theorem nnNorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖f‖₊ :=
   NNReal.eq <| Lp.norm_compMeasurePreserving _ _
 
 @[to_additive (attr := simp)]

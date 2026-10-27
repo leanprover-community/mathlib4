@@ -124,7 +124,7 @@ theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
     filter_upwards [condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x] with z hz
     rw [hz]
   rw [h_eq, ofReal_norm]
-  exact lintegral_nnnorm_condExpIndSMul_le hm hs hμs x
+  exact lintegral_nnNorm_condExpIndSMul_le hm hs hμs x
 
 theorem condExpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
     (hμt : μ t ≠ ∞) (hst : Disjoint s t) (x : G) :

@@ -112,7 +112,7 @@ variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [
 
 See also `egauge_le_of_smul_mem`. -/
 lemma egauge_le_of_smul_mem_of_ne (h : c • x ∈ s) (hc : c ≠ 0) : egauge 𝕜 s x ≤ (‖c‖₊⁻¹ : ℝ≥0) := by
-  rw [← nnnorm_inv]
+  rw [← nnNorm_inv]
   exact egauge_le_of_mem_smul <| (mem_inv_smul_set_iff₀ hc _ _).2 h
 
 /-- If `c • x ∈ s`, then `egauge 𝕜 s x` is at most `‖c‖ₑ⁻¹`.
@@ -197,7 +197,7 @@ lemma le_egauge_smul_right (c : 𝕜) (s : Set E) (x : E) :
   rcases eq_or_ne c 0 with rfl | hc
   · simp
   · refine ENNReal.mul_le_of_le_div' <| le_trans ?_ ENNReal.coe_div_le
-    rw [div_eq_inv_mul, ← nnnorm_inv, ← nnnorm_mul]
+    rw [div_eq_inv_mul, ← nnNorm_inv, ← nnNorm_mul]
     refine egauge_le_of_mem_smul ⟨y, hy, ?_⟩
     simp only [mul_smul, hxy, inv_smul_smul₀ hc]
 
@@ -318,7 +318,7 @@ lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) :
   rintro c ⟨y, hy, rfl⟩
   calc
     _ = ‖c‖ₑ * (p y).toNNReal / r := by
-      simp [map_smul_eq_mul, Real.toNNReal_mul, enorm_eq_nnnorm]
+      simp [map_smul_eq_mul, Real.toNNReal_mul, enorm_eq_nnNorm]
     _ ≤ _ := by
       apply ENNReal.div_le_of_le_mul
       gcongr
@@ -359,7 +359,7 @@ lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ p x �
           convert hainv using 1; ring
         _ ≤ ‖c‖ₑ * (p x).toNNReal / r := by
           have hr' : r ≠ 0 := by positivity
-          simp [ENNReal.coe_div hr', enorm_eq_nnnorm]
+          simp [ENNReal.coe_div hr', enorm_eq_nnNorm]
 
 lemma egauge_unitBall_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
     egauge 𝕜 (p.ball 0 1) x ≤ ‖c‖ₑ * (p x).toNNReal := by
@@ -385,7 +385,7 @@ lemma egauge_unitBall_le_mul_of_le_smul (ε : ℝ≥0) (hc : 1 < ‖c‖)
     _ ≤ ‖c‖ₑ * (p x).toNNReal := p.egauge_unitBall_le_of_one_lt_norm hc _
     _ ≤ ‖c‖ₑ * ((ε • q) y).toNNReal := by gcongr; exact h
     _ = ε * ((‖c‖₊ • q) y).toNNReal := by
-      simp [NNReal.smul_def, Real.toNNReal_mul, enorm_eq_nnnorm, ← mul_assoc, mul_comm]
+      simp [NNReal.smul_def, Real.toNNReal_mul, enorm_eq_nnNorm, ← mul_assoc, mul_comm]
     _ ≤ ε * egauge 𝕜 ((‖c‖₊ • q).ball 0 1) y := by
       grw [(‖c‖₊ • q).le_egauge_unitBall _]
 
@@ -396,7 +396,7 @@ section SeminormedAddCommGroup
 variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 (closedBall 0 r) x := by
-  simpa [enorm_eq_nnnorm] using (normSeminorm 𝕜 E).div_le_egauge_closedBall r x
+  simpa [enorm_eq_nnNorm] using (normSeminorm 𝕜 E).div_le_egauge_closedBall r x
 
 lemma le_egauge_unitClosedBall (x : E) : ‖x‖ₑ ≤ egauge 𝕜 (closedBall 0 1) x := by
   simpa using div_le_egauge_closedBall 𝕜 1 x
@@ -416,7 +416,7 @@ variable {c : 𝕜} {x : E} {r : ℝ≥0}
 
 lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x‖ ≠ 0) :
     egauge 𝕜 (ball 0 r) x ≤ ‖c‖ₑ * ‖x‖ₑ / r := by
-  simpa [enorm_eq_nnnorm] using (normSeminorm 𝕜 E).egauge_ball_le_of_one_lt_norm hc h₀
+  simpa [enorm_eq_nnNorm] using (normSeminorm 𝕜 E).egauge_ball_le_of_one_lt_norm hc h₀
 
 lemma egauge_unitBall_le_of_one_lt_norm (hc : 1 < ‖c‖) (x : E) :
     egauge 𝕜 (ball 0 1) x ≤ ‖c‖ₑ * ‖x‖ₑ := by

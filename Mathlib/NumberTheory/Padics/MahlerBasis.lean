@@ -154,7 +154,7 @@ Second step in Bojanić's proof of Mahler's theorem (equation (11) of [bojanic74
 `Δ_[1]^[n + p ^ t] f 0` for large enough `n` are bounded by the max of `(‖f‖ / p ^ s)` and `1 / p`
 times a sup over values for smaller `n`.
 
-We use `nnnorm`s on the RHS since `Finset.sup` requires an order with a bottom element.
+We use `nnNorm`s on the RHS since `Finset.sup` requires an order with a bottom element.
 -/
 private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     (hst : ∀ x y : ℤ_[p], ‖x - y‖ ≤ p ^ (-t : ℤ) → ‖f x - f y‖ ≤ ‖f‖ / p ^ s) (n : ℕ) :
@@ -166,14 +166,14 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
   refine (norm_add_le_max _ _).trans (max_le_max ?_ ?_)
   · -- Bounding the sum over `range (p ^ t - 1)`: every term involves a value `Δ_[1]^[·] f 0` and
     -- a binomial coefficient which is divisible by `p`
-    rw [norm_neg, ← coe_nnnorm, coe_le_coe]
-    refine nnnorm_sum_le_of_forall_le (fun i hi ↦ Finset.le_sup_of_le hi ?_)
+    rw [norm_neg, ← coe_nnNorm, coe_le_coe]
+    refine nnNorm_sum_le_of_forall_le (fun i hi ↦ Finset.le_sup_of_le hi ?_)
     rw [← Nat.cast_smul_eq_nsmul ℤ_[p], div_eq_inv_mul]
-    refine (nnnorm_smul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
+    refine (nnNorm_smul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
     rw [mem_range] at hi
     have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)
-    rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, PadicInt.norm_eq_zpow_neg_valuation
+    rw [← zpow_neg_one, ← coe_le_coe, coe_nnNorm, PadicInt.norm_eq_zpow_neg_valuation
       (mod_cast this.ne'), coe_zpow, NNReal.coe_natCast,
       zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt), neg_le_neg_iff,
       ← PadicInt.valuation_coe, PadicInt.coe_natCast, Padic.valuation_natCast, Nat.one_le_cast]
@@ -207,7 +207,7 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
   | succ k IH => -- induction is the "step 2" lemma above
     rw [add_mul, one_mul, ← add_assoc]
     refine (bojanic_mahler_step2 hst (n + k * p ^ t)).trans (max_le ?_ ?_)
-    · rw [← coe_nnnorm, ← NNReal.coe_natCast, ← NNReal.coe_pow, ← NNReal.coe_div, NNReal.coe_le_coe]
+    · rw [← coe_nnNorm, ← NNReal.coe_natCast, ← NNReal.coe_pow, ← NNReal.coe_div, NNReal.coe_le_coe]
       refine Finset.sup_le fun j _ ↦ ?_
       rw [pow_succ, ← div_div, div_le_div_iff_of_pos_right (mod_cast hp.out.pos), add_right_comm]
       exact_mod_cast IH (n + (j + 1)) (by lia)

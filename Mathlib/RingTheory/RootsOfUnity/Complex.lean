@@ -141,7 +141,7 @@ theorem IsPrimitiveRoot.norm'_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot �
     ‖ζ‖ = 1 :=
   Complex.norm_eq_one_of_pow_eq_one h.pow_eq_one hn
 
-theorem IsPrimitiveRoot.nnnorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
+theorem IsPrimitiveRoot.nnNorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ‖ζ‖₊ = 1 :=
   Subtype.ext <| h.norm'_eq_one hn
 

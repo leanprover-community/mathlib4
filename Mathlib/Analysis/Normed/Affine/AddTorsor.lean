@@ -299,7 +299,7 @@ def DilationEquiv.smulTorsor (c : P) {k : 𝕜} (hk : k ≠ 0) : E ≃ᵈ P wher
   invFun := k⁻¹ • (· -ᵥ c)
   left_inv x := by simp [inv_smul_smul₀ hk]
   right_inv p := by simp [smul_inv_smul₀ hk]
-  edist_eq' := ⟨‖k‖₊, nnnorm_ne_zero_iff.mpr hk, fun x y ↦ by
+  edist_eq' := ⟨‖k‖₊, nnNorm_ne_zero_iff.mpr hk, fun x y ↦ by
     rw [show edist (k • x +ᵥ c) (k • y +ᵥ c) = _ from (IsometryEquiv.vaddConst c).isometry ..]
     exact edist_smul₀ ..⟩
 

@@ -618,7 +618,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
   obtain ⟨r', yr', r'r⟩ : ∃ (r' : ℝ≥0), ‖y‖₊ < r' ∧ r' < r := by
     simp at hy
     simpa using ENNReal.lt_iff_exists_nnreal_btwn.1 hy
-  have yr'_2 : ‖y‖ < r' := by simpa [← coe_nnnorm] using yr'
+  have yr'_2 : ‖y‖ < r' := by simpa [← coe_nnNorm] using yr'
   have S : Summable fun n ↦ ‖p n‖ * ↑r' ^ n := p.summable_norm_mul_pow (r'r.trans_le hf.r_le)
   obtain ⟨k, hk⟩ : ∃ k, ∑' (n : ℕ), ‖p (n + k)‖ * ↑r' ^ (n + k) < ε / 4 := by
     have : Tendsto (fun k ↦ ∑' n, ‖p (n + k)‖ * ↑r' ^ (n + k)) atTop (𝓝 0) := by
@@ -631,7 +631,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
   have B : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y, ‖z.2‖₊ < r' := by
     suffices ∀ᶠ (z : E) in 𝓝 y, ‖z‖₊ < r' from tendsto_snd this
     have : Metric.ball 0 r' ∈ 𝓝 y := Metric.isOpen_ball.mem_nhds (by simpa using yr'_2)
-    filter_upwards [this] with a ha using by simpa [← coe_nnnorm] using ha
+    filter_upwards [this] with a ha using by simpa [← coe_nnNorm] using ha
   have C : ∀ᶠ (z : ℕ × E) in atTop ×ˢ 𝓝 y, k ≤ z.1 := tendsto_fst (Ici_mem_atTop _)
   filter_upwards [A, B, C]
   rintro ⟨n, z⟩ hz h'z hkn
@@ -646,7 +646,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
     _ ≤ ∑ i ∈ range (n - k), ‖p (i + k)‖ * ‖w‖ ^ (i + k) := by
         gcongr with i _hi; exact ((p (i + k)).le_opNorm _).trans_eq (by simp)
     _ ≤ ∑ i ∈ range (n - k), ‖p (i + k)‖ * ↑r' ^ (i + k) := by
-        gcongr with i _hi; simpa [← coe_nnnorm] using hw.le
+        gcongr with i _hi; simpa [← coe_nnNorm] using hw.le
     _ ≤ ∑' i, ‖p (i + k)‖ * ↑r' ^ (i + k) := by
         apply Summable.sum_le_tsum _ (fun i _hi ↦ by positivity)
         apply ((_root_.summable_nat_add_iff k).2 S)
@@ -1122,11 +1122,11 @@ theorem hasFPowerSeriesAt_iff :
       simp [norm_smul, mul_comm]
     refine lt_of_lt_of_le ?_ this
     simp only [ENNReal.coe_pos]
-    exact zero_lt_iff.mpr (nnnorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos))
+    exact zero_lt_iff.mpr (nnNorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos))
   · simp only [Metric.mem_eball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
       dist_zero_right] at h ⊢
     refine fun {y} _ hyr => h ?_
-    simpa [nndist_eq_nnnorm, Real.lt_toNNReal_iff_coe_lt] using hyr
+    simpa [nndist_eq_nnNorm, Real.lt_toNNReal_iff_coe_lt] using hyr
 
 theorem hasFPowerSeriesAt_iff' :
     HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n => (z - z₀) ^ n • p.coeff n) (f z) := by

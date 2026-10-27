@@ -45,11 +45,11 @@ theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • 
     · simp
     simp [zero_smul_set hs, ← Set.singleton_zero]
   · have := (lipschitzWith_smul c⁻¹).ediam_image_le (c • s)
-    rwa [← smul_eq_mul, ← ENNReal.smul_def, Set.image_smul, inv_smul_smul₀ hc s, nnnorm_inv,
-      le_inv_smul_iff_of_pos (nnnorm_pos.2 hc)] at this
+    rwa [← smul_eq_mul, ← ENNReal.smul_def, Set.image_smul, inv_smul_smul₀ hc s, nnNorm_inv,
+      le_inv_smul_iff_of_pos (nnNorm_pos.2 hc)] at this
 
 theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x := by
-  simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm, smul_eq_mul]
+  simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnNorm, smul_eq_mul]
 
 theorem infEDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
     infEDist (c • x) (c • s) = ‖c‖₊ • infEDist x s := by
@@ -64,7 +64,7 @@ theorem infEDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
 
 theorem infDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
     Metric.infDist (c • x) (c • s) = ‖c‖ * Metric.infDist x s := by
-  simp_rw [Metric.infDist, infEDist_smul₀ hc s, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm,
+  simp_rw [Metric.infDist, infEDist_smul₀ hc s, ENNReal.toReal_smul, NNReal.smul_def, coe_nnNorm,
     smul_eq_mul]
 
 end DivisionRing

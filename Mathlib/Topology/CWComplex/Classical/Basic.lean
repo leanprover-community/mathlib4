@@ -446,7 +446,7 @@ lemma RelCWComplex.cellFrontier_one_eq [RelCWComplex C D] (e : cell C 1) :
   congr 1
   ext f
   simp only [mem_sphere_iff_norm, sub_zero, Pi.norm_def, Finset.univ_unique, Fin.default_eq_zero,
-    Fin.isValue, Finset.sup_singleton, coe_nnnorm, Real.norm_eq_abs, abs_eq (zero_le_one' ℝ),
+    Fin.isValue, Finset.sup_singleton, coe_nnNorm, Real.norm_eq_abs, abs_eq (zero_le_one' ℝ),
     mem_insert_iff, mem_singleton_iff]
   rw [eq_const_of_unique (f := f), ← funext_iff_of_subsingleton (x := 0) (y := 0)]
   simp [const_apply, or_comm]

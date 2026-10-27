@@ -20,7 +20,7 @@ import Mathlib.Tactic.Basify.Attr
 In this file we define 10 classes:
 
 * `Norm`, `NNNorm`: auxiliary classes endowing a type `α` with a function `norm : α → ℝ`
-  (notation: `‖x‖`) and `nnnorm : α → ℝ≥0` (notation: `‖x‖₊`), respectively;
+  (notation: `‖x‖`) and `nnNorm : α → ℝ≥0` (notation: `‖x‖₊`), respectively;
 * `Seminormed...Group`: A seminormed (additive) (commutative) group is an (additive) (commutative)
   group with a norm and a compatible pseudometric space structure:
   `∀ x y, dist x y = ‖x⁻¹ * y‖` or `∀ x y, dist x y = ‖-x + y‖`, depending on the group operation.
@@ -63,11 +63,11 @@ class Norm (E : Type*) where
   /-- the `ℝ`-valued norm function. -/
   norm : E → ℝ
 
-/-- Auxiliary class, endowing a type `α` with a function `nnnorm : α → ℝ≥0` with notation `‖x‖₊`. -/
+/-- Auxiliary class, endowing a type `α` with a function `nnNorm : α → ℝ≥0` with notation `‖x‖₊`. -/
 @[notation_class]
 class NNNorm (E : Type*) where
   /-- the `ℝ≥0`-valued norm function. -/
-  nnnorm : E → ℝ≥0
+  nnNorm : E → ℝ≥0
 
 /-- Auxiliary class, endowing a type `α` with a function `enorm : α → ℝ≥0∞` with notation `‖x‖ₑ`. -/
 @[notation_class]
@@ -76,11 +76,11 @@ class ENorm (E : Type*) where
   enorm : E → ℝ≥0∞
 
 export Norm (norm)
-export NNNorm (nnnorm)
+export NNNorm (nnNorm)
 export ENorm (enorm)
 
 @[inherit_doc] notation "‖" e "‖" => norm e
-@[inherit_doc] notation "‖" e "‖₊" => nnnorm e
+@[inherit_doc] notation "‖" e "‖₊" => nnNorm e
 @[inherit_doc] notation "‖" e "‖ₑ" => enorm e
 
 section ENorm
@@ -89,7 +89,7 @@ variable {E : Type*} [NNNorm E] {x : E} {r : ℝ≥0}
 instance NNNorm.toENorm : ENorm E where enorm := (‖·‖₊ : E → ℝ≥0∞)
 
 @[basify_op]
-lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
+lemma enorm_eq_nnNorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
 @[simp] lemma toNNReal_enorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
 

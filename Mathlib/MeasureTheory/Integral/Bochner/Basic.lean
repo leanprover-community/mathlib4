@@ -361,7 +361,7 @@ theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
     (hf : HasFiniteIntegral f μ) {l : Filter ι} {s : ι → Set α} (hs : Tendsto (μ ∘ s) l (𝓝 0)) :
     Tendsto (fun i => ∫ x in s i, f x ∂μ) l (𝓝 0) := by
   rw [tendsto_zero_iff_norm_tendsto_zero]
-  simp_rw [← coe_nnnorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
+  simp_rw [← coe_nnNorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
     ENNReal.coe_zero]
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le)
@@ -494,7 +494,7 @@ theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (
     rw [h₁, h₂, ENNReal.ofReal]
     congr 1
     apply NNReal.eq
-    rw [Real.nnnorm_of_nonneg (le_max_right _ _)]
+    rw [Real.nnNorm_of_nonneg (le_max_right _ _)]
     rw [Real.coe_toNNReal', NNReal.coe_mk]
   -- Go to the `L¹` space
   have eq₂ : ENNReal.toReal (∫⁻ a, ENNReal.ofReal (-f a) ∂μ) = ‖Lp.negPart f₁‖ := by
@@ -505,7 +505,7 @@ theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (
     rw [h₁, h₂, ENNReal.ofReal]
     congr 1
     apply NNReal.eq
-    simp only [Real.coe_toNNReal', coe_nnnorm, nnnorm_neg]
+    simp only [Real.coe_toNNReal', coe_nnNorm, nnNorm_neg]
     rw [Real.norm_of_nonpos (min_le_right _ _), ← max_neg_neg, neg_zero]
   rw [eq₁, eq₂, integral, dite_eq_left, dite_eq_left]
   exact L1.integral_eq_norm_posPart_sub _
@@ -1040,7 +1040,7 @@ theorem integral_finsetSum_measure {ι} {m : MeasurableSpace α} {f : α → G} 
 theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
     (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖ₑ ∂ν := by
-  rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
+  rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnNorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm _
 
 @[simp]
@@ -1196,7 +1196,7 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
   · exact Eventually.of_forall fun x ↦ by positivity
   · exact hf.aestronglyMeasurable.norm.mul hg.aestronglyMeasurable.norm
   rw [ENNReal.toReal_rpow, ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
-  -- replace norms by nnnorm
+  -- replace norms by nnNorm
   have h_left : ∫⁻ a, ENNReal.ofReal (‖f a‖ * ‖g a‖) ∂μ =
       ∫⁻ a, ((‖f ·‖ₑ) * (‖g ·‖ₑ)) a ∂μ := by
     simp_rw [Pi.mul_apply, ← ofReal_norm, ENNReal.ofReal_mul (norm_nonneg _)]
@@ -1223,8 +1223,8 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
         exact hpq.symm.pos
       · finiteness
   · exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq
-      hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_ennreal
-      hg.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_ennreal
+      hf.aestronglyMeasurable.nnNorm.aemeasurable.coe_nnreal_ennreal
+      hg.aestronglyMeasurable.nnNorm.aemeasurable.coe_nnreal_ennreal
 
 /-- Hölder's inequality for functions `α → ℝ`. The integral of the product of two nonnegative
 functions is bounded by the product of their `ℒp` and `ℒq` seminorms when `p` and `q` are conjugate

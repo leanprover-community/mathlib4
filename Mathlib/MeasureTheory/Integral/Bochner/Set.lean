@@ -275,7 +275,7 @@ theorem tendsto_setIntegral_of_monotone₀
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
     tendsto_measure_iUnion_atTop h_mono (ENNReal.Icc_mem_nhds hfi'.ne (ENNReal.coe_pos.2 ε0).ne')
   filter_upwards [this] with i hi
-  rw [mem_closedBall_iff_norm', ← setIntegral_sdiff₀ (hsm i) hfi hsub, ← coe_nnnorm,
+  rw [mem_closedBall_iff_norm', ← setIntegral_sdiff₀ (hsm i) hfi hsub, ← coe_nnNorm,
     NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
   refine (enorm_integral_le_lintegral_enorm _).trans ?_
   have hsm' : NullMeasurableSet (s i) ν := (hsm i).mono_ac (withDensity_absolutelyContinuous ..)
@@ -638,8 +638,8 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
     refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_ hfint.2⟩
     refine setLIntegral_mono_ae hfint.1.enorm <| ae_of_all _ fun x hx => ?_
-    simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR, enorm_eq_nnnorm,
-      Real.nnnorm_of_nonneg (hR.trans <| le_of_lt hx)]
+    simp only [ENNReal.coe_le_coe, Real.nnNorm_of_nonneg hR, enorm_eq_nnNorm,
+      Real.nnNorm_of_nonneg (hR.trans <| le_of_lt hx)]
     exact le_of_lt hx
   rw [← sub_pos, ← smul_eq_mul, ← setIntegral_const, ← integral_sub hfint this,
     setIntegral_pos_iff_support_of_nonneg_ae]
@@ -906,12 +906,12 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
     (h : Summable fun i : ι => ∫ x : X in s i, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt ?_⟩
   have B := fun i => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi i).norm
-  simp_rw [enorm_eq_nnnorm, tsum_congr B]
+  simp_rw [enorm_eq_nnNorm, tsum_congr B]
   have S' : Summable fun i : ι =>
       (NNReal.mk (∫ x : X in s i, ‖f x‖₊ ∂μ) (integral_nonneg fun x => NNReal.coe_nonneg _)) := by
     rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
-  simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
+  simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnNorm] at S''
   convert! ENNReal.ofReal_lt_top
 
 variable [TopologicalSpace X] [BorelSpace X] [T2Space X] [IsLocallyFiniteMeasure μ]

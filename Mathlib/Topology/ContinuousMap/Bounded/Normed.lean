@@ -206,27 +206,27 @@ instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGrou
   { instSeminormedAddCommGroup with
     eq_of_dist_eq_zero }
 
-theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
+theorem nnNorm_def : ‖f‖₊ = nndist f 0 := rfl
 
-theorem nnnorm_coe_le_nnnorm (x : α) : ‖f x‖₊ ≤ ‖f‖₊ :=
+theorem nnNorm_coe_le_nnNorm (x : α) : ‖f x‖₊ ≤ ‖f‖₊ :=
   norm_coe_le_norm _ _
 
-theorem nndist_le_two_nnnorm (x y : α) : nndist (f x) (f y) ≤ 2 * ‖f‖₊ :=
+theorem nndist_le_two_nnNorm (x y : α) : nndist (f x) (f y) ≤ 2 * ‖f‖₊ :=
   dist_le_two_norm _ _ _
 
-/-- The `nnnorm` of a function is controlled by the supremum of the pointwise `nnnorm`s. -/
-theorem nnnorm_le (C : ℝ≥0) : ‖f‖₊ ≤ C ↔ ∀ x : α, ‖f x‖₊ ≤ C :=
+/-- The `nnNorm` of a function is controlled by the supremum of the pointwise `nnNorm`s. -/
+theorem nnNorm_le (C : ℝ≥0) : ‖f‖₊ ≤ C ↔ ∀ x : α, ‖f x‖₊ ≤ C :=
   norm_le C.prop
 
-theorem nnnorm_const_le (b : β) : ‖const α b‖₊ ≤ ‖b‖₊ :=
+theorem nnNorm_const_le (b : β) : ‖const α b‖₊ ≤ ‖b‖₊ :=
   norm_const_le _
 
 @[simp]
-theorem nnnorm_const_eq [Nonempty α] (b : β) : ‖const α b‖₊ = ‖b‖₊ :=
+theorem nnNorm_const_eq [Nonempty α] (b : β) : ‖const α b‖₊ = ‖b‖₊ :=
   Subtype.ext <| norm_const_eq _
 
-theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
-  Subtype.ext <| (norm_eq_iSup_norm f).trans <| by simp_rw [val_eq_coe, NNReal.coe_iSup, coe_nnnorm]
+theorem nnNorm_eq_iSup_nnNorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
+  Subtype.ext <| (norm_eq_iSup_norm f).trans <| by simp_rw [val_eq_coe, NNReal.coe_iSup, coe_nnNorm]
 
 theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ := by
   simpa only [← edist_zero_right] using! edist_eq_iSup
@@ -356,7 +356,7 @@ lemma norm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
 
 /-- If the product of bounded continuous functions is zero, then the norm of their sum is the
 maximum of their norms. -/
-lemma nnnorm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+lemma nnNorm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
     ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_add_eq_max h
 
@@ -364,21 +364,21 @@ lemma norm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
     ‖f - g‖ = max ‖f‖ ‖g‖ := by
   simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
 
-lemma nnnorm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
+lemma nnNorm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
     ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_sub_eq_max h
 
 open scoped Function in
 /-- If the pairwise products of bounded continuous functions are all zero, then the norm of their
 sum is the maximum of their norms. -/
-lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ R)} (s : Finset ι)
+lemma nnNorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ R)} (s : Finset ι)
     (h : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
   | insert j s hj ih =>
-    suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnnorm_add_eq_max this
+    suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnNorm_add_eq_max this
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h (by grind)
 
 end Seminormed
@@ -643,12 +643,12 @@ theorem nnrealPart_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnrealPart = Real.toNNRea
 
 /-- The absolute value of a bounded continuous `ℝ`-valued function as a bounded
 continuous `ℝ≥0`-valued function. -/
-def nnnorm (f : α →ᵇ ℝ) : α →ᵇ ℝ≥0 :=
+def nnNorm (f : α →ᵇ ℝ) : α →ᵇ ℝ≥0 :=
   BoundedContinuousFunction.comp _
     (show LipschitzWith 1 fun x : ℝ => ‖x‖₊ from lipschitzWith_one_norm) f
 
 @[simp]
-theorem nnnorm_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnnorm = NNNorm.nnnorm ∘ ⇑f := rfl
+theorem nnNorm_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnNorm = NNNorm.nnNorm ∘ ⇑f := rfl
 
 -- TODO: Use `posPart` and `negPart` here
 /-- Decompose a bounded continuous function to its positive and negative parts. -/

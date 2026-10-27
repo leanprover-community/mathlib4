@@ -315,7 +315,7 @@ private lemma variation_smul_le {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
     (c • μ).variation ≤ ‖c‖₊ • μ.variation := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   simp only [smul_apply, enorm_smul, Measure.smul_apply, Measure.nnreal_smul_coe_apply]
-  grw [enorm_measure_le_variation, enorm_eq_nnnorm]
+  grw [enorm_measure_le_variation, enorm_eq_nnNorm]
 
 lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
     (c • μ).variation = ‖c‖₊ • μ.variation := by
@@ -328,7 +328,7 @@ lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c :
     gcongr
     exact variation_smul_le
   _ = (c • μ).variation := by
-    simp [smul_smul, mul_inv_cancel₀ (nnnorm_ne_zero_iff.mpr hc)]
+    simp [smul_smul, mul_inv_cancel₀ (nnNorm_ne_zero_iff.mpr hc)]
 
 instance {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} [IsFiniteMeasure μ.variation] :
     IsFiniteMeasure (c • μ).variation := by
@@ -344,7 +344,7 @@ instance [Finite X] : IsFiniteMeasure μ.variation where
     exact (Finset.sup_lt_iff (by simp)).2 (fun b hb ↦ by simp [ENNReal.sum_lt_top, enorm_lt_top])
 
 instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation := by
-  simp only [variation_dirac, enorm_eq_nnnorm, Measure.coe_nnreal_smul]
+  simp only [variation_dirac, enorm_eq_nnNorm, Measure.coe_nnreal_smul]
   infer_instance
 
 @[simp] lemma _root_.MeasureTheory.Measure.variation_toSignedMeasure
@@ -372,9 +372,9 @@ lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_vari
     (∀ t ∈ P, MeasurableSet t) ∧ a < ∑ p ∈ P, ‖μ p‖ₑ := exists_lt_sum_of_lt_variation _ hs ha
   have I : (∑ p ∈ P.filter (fun p ↦ 0 ≤ μ p), ‖μ p‖ₑ) =
       ‖μ (⋃ p ∈ P.filter (fun p ↦ 0 ≤ μ p), p)‖ₑ := by
-    simp only [Real.norm_eq_abs, enorm_eq_nnnorm,
+    simp only [Real.norm_eq_abs, enorm_eq_nnNorm,
       ← ENNReal.ofNNReal_finsetSum, ENNReal.coe_inj, ← NNReal.coe_inj,
-      NNReal.coe_sum, coe_nnnorm, Real.norm_eq_abs]
+      NNReal.coe_sum, coe_nnNorm, Real.norm_eq_abs]
     have A : ∑ x ∈ P with 0 ≤ μ x, |μ x| = μ (⋃ x ∈ P.filter (fun x ↦ 0 ≤ μ x), x) := calc
       _ = ∑ x ∈ P with 0 ≤ μ x, μ x := by
         apply Finset.sum_congr rfl (fun p hp ↦ ?_)
@@ -389,8 +389,8 @@ lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_vari
     exact Finset.sum_nonneg (fun p hp ↦ by positivity)
   have J : (∑ p ∈ P.filter (fun p ↦ ¬ 0 ≤ μ p), ‖μ p‖ₑ) =
       ‖μ (⋃ p ∈ P.filter (fun p ↦ ¬ 0 ≤ μ p), p)‖ₑ := by
-    simp only [not_le, enorm_eq_nnnorm, ← ENNReal.ofNNReal_finsetSum,
-      ENNReal.coe_inj, ← NNReal.coe_inj, NNReal.coe_sum, coe_nnnorm, Real.norm_eq_abs]
+    simp only [not_le, enorm_eq_nnNorm, ← ENNReal.ofNNReal_finsetSum,
+      ENNReal.coe_inj, ← NNReal.coe_inj, NNReal.coe_sum, coe_nnNorm, Real.norm_eq_abs]
     have A : ∑ x ∈ P with μ x < 0, |μ x| = - μ (⋃ x ∈ P.filter (fun x ↦ μ x < 0), x) := calc
       ∑ x ∈ P with μ x < 0, |μ x|
       _ = ∑ x ∈ P with μ x < 0, -μ x := by

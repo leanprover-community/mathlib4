@@ -247,16 +247,16 @@ theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f
     AEMeasurable (fun a => norm (f a)) μ :=
   measurable_norm.comp_aemeasurable hf
 
-theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
-  continuous_nnnorm.measurable
+theorem measurable_nnNorm : Measurable (nnNorm : α → ℝ≥0) :=
+  continuous_nnNorm.measurable
 
 @[fun_prop]
-protected theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
-  measurable_nnnorm.comp hf
+protected theorem Measurable.nnNorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
+  measurable_nnNorm.comp hf
 
 @[fun_prop]
-protected lemma AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+protected lemma AEMeasurable.nnNorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => ‖f a‖₊) μ :=
-  measurable_nnnorm.comp_aemeasurable hf
+  measurable_nnNorm.comp_aemeasurable hf
 
 end NormedAddCommGroup

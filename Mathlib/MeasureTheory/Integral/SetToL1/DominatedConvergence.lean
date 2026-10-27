@@ -219,7 +219,7 @@ theorem setToFun_tsum [CompleteSpace E] (hT : DominatedFinMeasAdditive μ T C)
     have : ∫⁻ a, ∑' n, ‖f n a‖ₑ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
     convert this using 1
     apply lintegral_congr_ae
-    simp_rw [← coe_nnnorm, ← NNReal.coe_tsum, enorm_eq_nnnorm, NNReal.nnnorm_eq]
+    simp_rw [← coe_nnNorm, ← NNReal.coe_tsum, enorm_eq_nnNorm, NNReal.nnNorm_eq]
     filter_upwards [hhh] with a ha
     exact ENNReal.coe_tsum (NNReal.summable_coe.mp ha)
   · filter_upwards [hhh] with x hx

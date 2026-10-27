@@ -34,17 +34,17 @@ section IsBoundedSMul
 variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {c : 𝕜}
 
 theorem eLpNorm'_const_smul_le (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
-  eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnnorm_smul_le ..) hq
+  eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnNorm_smul_le ..) hq
 
 theorem eLpNormEssSup_const_smul_le : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ * eLpNormEssSup f μ :=
   eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul
-    (Eventually.of_forall fun _ => by simp [nnnorm_smul_le])
+    (Eventually.of_forall fun _ => by simp [nnNorm_smul_le])
 
 theorem eLpNorm_const_smul_le :
     eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (hf.const_smul c)
-      (Eventually.of_forall fun _ => by simp [nnnorm_smul_le]) _
+      (Eventually.of_forall fun _ => by simp [nnNorm_smul_le]) _
   rw [eLpNorm_of_not_aestronglyMeasurable hf]
   rcases eq_or_ne c 0 with rfl | hc
   · simp

@@ -64,7 +64,7 @@ lemma cauchyBound_X_sub_C (x : K) : cauchyBound (X - C x) = ‖x‖₊ + 1 := by
 @[simp]
 lemma cauchyBound_smul {x : K} (hx : x ≠ 0) (p : K[X]) : cauchyBound (x • p) = cauchyBound p := by
   simp only [cauchyBound, (IsRegular.of_ne_zero hx).left.isSMulRegular,
-    natDegree_smul_of_smul_regular, coeff_smul, smul_eq_mul, nnnorm_mul, ← mul_finset_sup,
+    natDegree_smul_of_smul_regular, coeff_smul, smul_eq_mul, nnNorm_mul, ← mul_finset_sup,
     leadingCoeff_smul_of_smul_regular, add_left_inj]
   apply mul_div_mul_left
   simpa
@@ -77,8 +77,8 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
   rw [IsRoot.def, eval_eq_sum_range, range_add_one] at h
   simp only [mem_range, lt_self_iff_false, not_false_eq_true, sum_insert, coeff_natDegree,
     add_eq_zero_iff_eq_neg] at h
-  apply_fun nnnorm at h
-  simp only [nnnorm_mul, nnnorm_pow, nnnorm_neg] at h
+  apply_fun nnNorm at h
+  simp only [nnNorm_mul, nnNorm_pow, nnNorm_neg] at h
   suffices ‖a‖₊ ^ p.natDegree ≤ (cauchyBound p - 1) * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x by
     rcases eq_or_ne ‖a‖₊ 1 with ha | ha
     · simp only [ha, one_pow, sum_const, card_range, nsmul_eq_mul, mul_one, gt_iff_lt] at this ⊢
@@ -116,7 +116,7 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
     _ ≤ ‖∑ x ∈ range p.natDegree, p.coeff x * a ^ x‖₊ / ‖p.leadingCoeff‖₊ := by gcongr
     _ ≤ (∑ x ∈ range p.natDegree, ‖p.coeff x * a ^ x‖₊) / ‖p.leadingCoeff‖₊ := by
       gcongr
-      apply nnnorm_sum_le
+      apply nnNorm_sum_le
     _ = (∑ x ∈ range p.natDegree, ‖p.coeff x‖₊ * ‖a‖₊ ^ x) / ‖p.leadingCoeff‖₊ := by simp
     _ ≤ (∑ x ∈ range p.natDegree, ‖p.leadingCoeff‖₊ * (cauchyBound p - 1) * ‖a‖₊ ^ x) /
         ‖p.leadingCoeff‖₊ := by

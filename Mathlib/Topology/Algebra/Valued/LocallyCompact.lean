@@ -92,7 +92,7 @@ lemma exists_norm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖ ∧ ‖x‖ < 1 :=
   exists_norm_coe_lt_one K
 
 variable (K) in
-lemma exists_nnnorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
+lemma exists_nnNorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
   exists_norm_coe_lt_one K
 
 end Valued.integer

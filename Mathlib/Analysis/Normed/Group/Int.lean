@@ -54,8 +54,8 @@ variable [SeminormedCommGroup α]
 theorem norm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖ ≤ ‖n‖ * ‖a‖ := by
   rcases n.eq_nat_or_neg with ⟨n, rfl | rfl⟩ <;> simpa [Int.norm_natCast] using norm_pow_le_mul_norm
 
-@[to_additive nnnorm_zsmul_le]
-theorem nnnorm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖₊ ≤ ‖n‖₊ * ‖a‖₊ := by
+@[to_additive nnNorm_zsmul_le]
+theorem nnNorm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖₊ ≤ ‖n‖₊ * ‖a‖₊ := by
   simpa only [← NNReal.coe_le_coe, NNReal.coe_mul] using! norm_zpow_le_mul_norm n a
 
 end

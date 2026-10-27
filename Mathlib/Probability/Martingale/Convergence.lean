@@ -167,15 +167,15 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
           ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable] at hb
         refine (lintegral_mono ?_ : ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ ∫⁻ ω, ‖f n ω‖₊ + ‖a‖₊ ∂μ).trans ?_
         · intro ω
-          simp_rw [sub_eq_add_neg, ← nnnorm_neg a, ← ENNReal.coe_add, ENNReal.coe_le_coe]
-          exact nnnorm_add_le _ _
+          simp_rw [sub_eq_add_neg, ← nnNorm_neg a, ← ENNReal.coe_add, ENNReal.coe_le_coe]
+          exact nnNorm_add_le _ _
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
           exact add_le_add hb le_rfl
       refine ne_of_lt (iSup_lt_iff.2 ⟨R + ‖a‖₊ * μ Set.univ, ENNReal.add_lt_top.2
         ⟨ENNReal.coe_lt_top, by finiteness⟩,
         fun n => le_trans ?_ (hR' n)⟩)
       refine lintegral_mono fun ω => ?_
-      rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
+      rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnNorm]
       · by_cases! hnonneg : 0 ≤ f n ω - a
         · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
         · rw [posPart_eq_zero.2 hnonneg.le]

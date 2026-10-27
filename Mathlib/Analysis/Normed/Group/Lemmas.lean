@@ -27,9 +27,9 @@ open NNReal
 
 open scoped Topology
 
-theorem eventually_nnnorm_sub_lt (x₀ : E) {ε : ℝ≥0} (ε_pos : 0 < ε) :
+theorem eventually_nnNorm_sub_lt (x₀ : E) {ε : ℝ≥0} (ε_pos : 0 < ε) :
     ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖₊ < ε :=
-  (continuousAt_id.sub continuousAt_const).nnnorm (gt_mem_nhds <| by simpa)
+  (continuousAt_id.sub continuousAt_const).nnNorm (gt_mem_nhds <| by simpa)
 
 theorem eventually_norm_sub_lt (x₀ : E) {ε : ℝ} (ε_pos : 0 < ε) :
     ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖ < ε :=

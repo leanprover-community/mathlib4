@@ -151,7 +151,7 @@ instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
 instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] : NormedSpace 𝕜 (∀ i, E i) where
   norm_smul_le a f := by
-    simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
+    simp_rw [← coe_nnNorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnNorm_def,
       NNReal.mul_finset_sup]
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 
@@ -285,11 +285,11 @@ theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * �
   rw [Algebra.algebraMap_eq_smul_one]
   exact norm_smul _ _
 
-theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
+theorem nnNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
   Subtype.ext <| norm_algebraMap 𝕜' x
 
 theorem enorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ₑ = ‖x‖ₑ * ‖(1 : 𝕜')‖ₑ := by
-  simp only [enorm_eq_nnnorm, nnnorm_algebraMap, ENNReal.coe_mul]
+  simp only [enorm_eq_nnNorm, nnNorm_algebraMap, ENNReal.coe_mul]
 
 theorem dist_algebraMap (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y * ‖(1 : 𝕜')‖ := by
@@ -304,9 +304,9 @@ theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 �
 theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x • (1 : 𝕜')‖ = ‖x‖ := by
   simp [norm_smul]
 
-/-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
+/-- This is a simpler version of `nnNorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
-theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
+theorem nnNorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
 
 /-- This is a simpler version of `enorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
@@ -329,7 +329,7 @@ theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ 
   (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
 
 @[simp]
-theorem nnnorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
+theorem nnNorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
   Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
 
 end NNReal

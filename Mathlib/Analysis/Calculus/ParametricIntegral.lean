@@ -218,9 +218,9 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L
   have : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs (bound a)) (F · a) (ball x₀ ε) := by
     apply (h_diff.and h_bound).mono
     rintro a ⟨ha_deriv, ha_bound⟩
-    refine (convex_ball _ _).lipschitzOnWith_of_nnnorm_hasFDerivWithin_le
+    refine (convex_ball _ _).lipschitzOnWith_of_nnNorm_hasFDerivWithin_le
       (fun x x_in ↦ (ha_deriv x (hε x_in)).hasFDerivWithinAt) fun x x_in ↦ ?_
-    rw [← NNReal.coe_le_coe, coe_nnnorm, Real.coe_nnabs]
+    rw [← NNReal.coe_le_coe, coe_nnNorm, Real.coe_nnabs]
     exact (ha_bound x (hε x_in)).trans (le_abs_self _)
   apply (hasFDerivAt_integral_of_dominated_loc_of_lip (ball_mem_nhds x₀ ε_pos)
     hF_meas hF_int hF'_meas this bound_integrable diff_x₀).2
@@ -294,9 +294,9 @@ theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le (hs : s ∈ 𝓝 x₀)
   have : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs (bound a)) (fun x : 𝕜 ↦ F x a) (ball x₀ ε) := by
     apply (h_diff.and h_bound).mono
     rintro a ⟨ha_deriv, ha_bound⟩
-    refine (convex_ball _ _).lipschitzOnWith_of_nnnorm_hasDerivWithin_le
+    refine (convex_ball _ _).lipschitzOnWith_of_nnNorm_hasDerivWithin_le
       (fun x x_in ↦ (ha_deriv x (hε x_in)).hasDerivWithinAt) fun x x_in ↦ ?_
-    rw [← NNReal.coe_le_coe, coe_nnnorm, Real.coe_nnabs]
+    rw [← NNReal.coe_le_coe, coe_nnNorm, Real.coe_nnabs]
     exact (ha_bound x (hε x_in)).trans (le_abs_self _)
   exact hasDerivAt_integral_of_dominated_loc_of_lip (ball_mem_nhds x₀ ε_pos) hF_meas hF_int
     hF'_meas this bound_integrable diff_x₀

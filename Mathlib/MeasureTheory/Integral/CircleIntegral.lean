@@ -138,7 +138,7 @@ theorem deriv_circleMap_ne_zero {c : ℂ} {R : ℝ} {θ : ℝ} (hR : R ≠ 0) :
   mt deriv_circleMap_eq_zero_iff.1 hR
 
 theorem lipschitzWith_circleMap (c : ℂ) (R : ℝ) : LipschitzWith (Real.nnabs R) (circleMap c R) :=
-  lipschitzWith_of_nnnorm_deriv_le (differentiable_circleMap _ _) fun θ =>
+  lipschitzWith_of_nnNorm_deriv_le (differentiable_circleMap _ _) fun θ =>
     NNReal.coe_le_coe.1 <| by simp
 
 theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :

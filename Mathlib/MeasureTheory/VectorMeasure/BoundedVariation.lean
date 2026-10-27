@@ -360,7 +360,7 @@ private lemma variationAux_singleton (hf : BoundedVariationOn f univ) {a : α} :
   by_cases ha : IsBot a
   · have hx : ∃ x, IsBot x := ⟨a, ha⟩
     have A : hx.choose = a := le_antisymm (hx.choose_spec _) (ha _)
-    suffices hf.measureAux {a} = 0 by simpa [hx, A, leftLim_eq_of_isBot ha, ← enorm_eq_nnnorm]
+    suffices hf.measureAux {a} = 0 by simpa [hx, A, leftLim_eq_of_isBot ha, ← enorm_eq_nnNorm]
     simp [measureAux, hα, leftLim_eq_of_isBot ha]
   have : (𝓝[<] a).NeBot := nhdsLT_neBot_of_exists_lt (by simpa [IsBot] using ha)
   have : (if h : ∃ x, IsBot x then ‖Function.rightLim f h.choose - f h.choose‖₊ •

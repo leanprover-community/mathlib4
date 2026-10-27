@@ -76,7 +76,7 @@ lemma, it is necessary to have `V` as an explicit argument; otherwise
 theorem dist_eq_norm_vsub (x y : P) : dist x y = ‖x -ᵥ y‖ :=
   NormedAddTorsor.dist_eq_norm' x y
 
-theorem nndist_eq_nnnorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
+theorem nndist_eq_nnNorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub V x y
 
 
@@ -86,7 +86,7 @@ lemma, it is necessary to have `V` as an explicit argument; otherwise
 theorem dist_eq_norm_vsub' (x y : P) : dist x y = ‖y -ᵥ x‖ :=
   (dist_comm _ _).trans (dist_eq_norm_vsub _ _ _)
 
-theorem nndist_eq_nnnorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
+theorem nndist_eq_nnNorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub' V x y
 
 end
