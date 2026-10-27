@@ -50,7 +50,7 @@ public register_option linter.style.numericProjection : Bool := {
 @[inline] def numericProj? (stx : Lean.Syntax) : Option Lean.Syntax :=
   if isNumericProj stx then stx[2] else none
 
-
+-- TODO: rewrite
 /-- If `stx` is the `identProj`-wrapped field index of a numeric projection which the elaborator
 resolved to the projection function `projFn`, returns the field index syntax and `projFn`.
 
