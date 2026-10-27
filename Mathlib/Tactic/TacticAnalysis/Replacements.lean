@@ -35,6 +35,18 @@ def aesopToSimpAll :=
     (fun _ _ _ => `(tactic| simp_all)) (reportSuccess := true) (reportFailure := false)
     (suggestSuccess := true)
 
+/-- Report places where `aesop` can be replaced directly by `simp`. -/
+register_option linter.tacticAnalysis.aesopToSimp : Bool := {
+  defValue := true
+}
+
+@[tacticAnalysis linter.tacticAnalysis.aesopToSimp,
+  inherit_doc linter.tacticAnalysis.aesopToSimp]
+def aesopToSimp :=
+  terminalReplacement "aesop" "simp" ``Aesop.Frontend.Parser.aesopTactic
+    (fun _ _ _ => `(tactic| simp)) (reportSuccess := true) (reportFailure := false)
+    (suggestSuccess := true)
+
 /-- Report places where `simp_all` can be replaced by `simp`. -/
 register_option linter.tacticAnalysis.simpAllToSimp : Bool := {
   defValue := true
@@ -97,7 +109,7 @@ private def tacticReplacement (newTacticName : String)
           let tac ← newTactic i.tacI.stx
           let oldGoals ← ppGoals i.ctxI i.tacI.mctxAfter i.tacI.goalsAfter
           let newGoals? ← try
-            some <$> i.ctxI.runTacticCode i.tacI goal tac
+            some <$> ({ i.ctxI with mctx := i.tacI.mctxBefore }).runTacticCode i.tacI goal tac
               ⟨String, fun goal => withOptions (·.setBool `pp.mvars false) do
                 return toString (← Meta.ppGoal goal)⟩
           catch _ =>

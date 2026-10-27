@@ -61,7 +61,8 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
   test ctxI i stx goal := do
     let tac ← newTactic ctxI i stx
     try
-      let goalTypes ← ctxI.runTacticCode i goal tac ⟨Expr, MVarId.getType'⟩
+      let goalTypes ← ({ ctxI with mctx := i.mctxBefore }).runTacticCode
+        i goal tac ⟨Expr, MVarId.getType'⟩
       match goalTypes with
       | [] => return .success tac
       | _ => do
