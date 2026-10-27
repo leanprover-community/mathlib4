@@ -45,7 +45,7 @@ noncomputable section
 
 universe w w' v u
 
-open CategoryTheory Functor
+open CategoryTheory
 
 namespace CategoryTheory.Limits
 
@@ -98,8 +98,8 @@ instance Bicone.category : Category (Bicone F) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
-/- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
--- a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
+/-! We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
+a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
 the underlying structure. -/
 @[ext]
 theorem BiconeMorphism.ext {c c' : Bicone F} (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
@@ -141,12 +141,13 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
 
 variable (G : C ⥤ D)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance functoriality_full [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
     (functoriality F G).Full where
   map_surjective t :=
    ⟨{ hom := G.preimage t.hom
-      wι := fun j => G.map_injective (by simpa using t.wι j)
-      wπ := fun j => G.map_injective (by simpa using t.wπ j) }, by cat_disch⟩
+      wι := fun j => G.map_injective (by simpa using! t.wι j)
+      wπ := fun j => G.map_injective (by simpa using! t.wπ j) }, by cat_disch⟩
 
 instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
     (functoriality F G).Faithful where
@@ -163,6 +164,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- Extract the cone from a bicone. -/
+@[implicit_reducible]
 def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
   obj B := { pt := B.pt, π := { app := fun j => B.π j.as } }
   map {_ _} F := { hom := F.hom, w := fun _ => F.wπ _ }
@@ -181,6 +183,7 @@ theorem toCone_π_app_mk (B : Bicone F) (j : J) : B.toCone.π.app ⟨j⟩ = B.π
 @[simp] theorem toCone_proj (B : Bicone F) (j : J) : Fan.proj B.toCone j = B.π j := rfl
 
 /-- Extract the cocone from a bicone. -/
+@[implicit_reducible]
 def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
   obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
   map {_ _} F := { hom := F.hom, w := fun _ => F.wι _ }
@@ -206,7 +209,6 @@ instance (B : Bicone F) (j : J) : IsSplitMono (B.ι j) := (B.retract j).instIsSp
 
 instance (B : Bicone F) (j : J) : IsSplitEpi (B.π j) := (B.retract j).instIsSplitEpiR
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- We can turn any limit cone over a discrete collection of objects into a bicone. -/
 @[simps]
@@ -216,7 +218,6 @@ def ofLimitCone {f : J → C} {t : Cone (Discrete.functor f)} (ht : IsLimit t) :
   ι j := ht.lift (Fan.mk _ fun j' => if h : j = j' then eqToHom (congr_arg f h) else 0)
   ι_π j j' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit t.toCone) (j : J) :
     t.ι j = ht.lift (Fan.mk _ fun j' => if h : j = j' then eqToHom (congr_arg f h) else 0) :=
@@ -224,7 +225,6 @@ theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit t.toCone) (j : 
     rw [ht.fac]
     simp [t.ι_π]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- We can turn any colimit cocone over a discrete collection of objects into a bicone. -/
 @[simps]
@@ -235,7 +235,6 @@ def ofColimitCocone {f : J → C} {t : Cocone (Discrete.functor f)} (ht : IsColi
   ι j := t.ι.app ⟨j⟩
   ι_π j j' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem π_of_isColimit {f : J → C} {t : Bicone f} (ht : IsColimit t.toCocone) (j : J) :
     t.π j = ht.desc (Cofan.mk _ fun j' => if h : j' = j then eqToHom (congr_arg f h) else 0) :=
@@ -261,9 +260,8 @@ section Whisker
 
 variable {K : Type w'}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Whisker a bicone with an equivalence between the indexing types. -/
-@[simps]
+@[implicit_reducible, simps]
 def whisker {f : J → C} (c : Bicone f) (g : K ≃ J) : Bicone (f ∘ g) where
   pt := c.pt
   π k := c.π (g k)
@@ -292,11 +290,11 @@ def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
 noncomputable def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).IsBilimit ≃ c.IsBilimit := by
   refine equivOfSubsingletonOfSubsingleton (fun hc => ⟨?_, ?_⟩) fun hc => ⟨?_, ?_⟩
-  · let this := IsLimit.ofIsoLimit hc.isLimit (Bicone.whiskerToCone c g)
-    let this := (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _) this
+  · let := IsLimit.ofIsoLimit hc.isLimit (Bicone.whiskerToCone c g)
+    let := (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _) this
     exact IsLimit.ofWhiskerEquivalence (Discrete.equivalence g) this
-  · let this := IsColimit.ofIsoColimit hc.isColimit (Bicone.whiskerToCocone c g)
-    let this := (IsColimit.precomposeHomEquiv (Discrete.functorComp f g) _) this
+  · let := IsColimit.ofIsoColimit hc.isColimit (Bicone.whiskerToCocone c g)
+    let := (IsColimit.precomposeHomEquiv (Discrete.functorComp f g) _) this
     exact IsColimit.ofWhiskerEquivalence (Discrete.equivalence g) this
   · apply IsLimit.ofIsoLimit _ (Bicone.whiskerToCone c g).symm
     apply (IsLimit.postcomposeHomEquiv (Discrete.functorComp f g).symm _).symm _
@@ -387,7 +385,7 @@ theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (
 instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [Finite J] :
     HasBiproductsOfShape J C := by
   rcases Finite.exists_equiv_fin J with ⟨n, ⟨e⟩⟩
-  haveI : HasBiproductsOfShape (Fin n) C := HasFiniteBiproducts.out n
+  have : HasBiproductsOfShape (Fin n) C := HasFiniteBiproducts.out n
   exact hasBiproductsOfShape_of_equiv C e
 
 instance (priority := 100) hasFiniteProducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
@@ -447,7 +445,7 @@ This means you may not be able to `simp` using this lemma unless you `open scope
 @[reassoc]
 theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J) :
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
-  convert (biproduct.bicone f).ι_π j j'
+  convert! (biproduct.bicone f).ι_π j j'
 
 @[reassoc] -- Not `simp` because `simp` can prove this
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
@@ -516,13 +514,11 @@ theorem biproduct.hom_ext' {f : J → C} [HasBiproduct f] {Z : C} (g h : ⨁ f �
 def biproduct.isoProduct (f : J → C) [HasBiproduct f] : ⨁ f ≅ ∏ᶜ f :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (limit.isLimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biproduct.isoProduct_hom {f : J → C} [HasBiproduct f] :
     (biproduct.isoProduct f).hom = Pi.lift (biproduct.π f) :=
   limit.hom_ext fun j => by simp [biproduct.isoProduct]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biproduct.isoProduct_inv {f : J → C} [HasBiproduct f] :
     (biproduct.isoProduct f).inv = biproduct.lift (Pi.π f) :=
@@ -532,19 +528,16 @@ theorem biproduct.isoProduct_inv {f : J → C} [HasBiproduct f] :
 def biproduct.isoCoproduct (f : J → C) [HasBiproduct f] : ⨁ f ≅ ∐ f :=
   IsColimit.coconePointUniqueUpToIso (biproduct.isColimit f) (colimit.isColimit _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biproduct.isoCoproduct_inv {f : J → C} [HasBiproduct f] :
     (biproduct.isoCoproduct f).inv = Sigma.desc (biproduct.ι f) :=
   colimit.hom_ext fun j => by simp [biproduct.isoCoproduct]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biproduct.isoCoproduct_hom {f : J → C} [HasBiproduct f] :
     (biproduct.isoCoproduct f).hom = biproduct.desc (Sigma.ι f) :=
   biproduct.hom_ext' _ _ fun j => by simp [← Iso.eq_comp_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a category has biproducts of a shape `J`, its `colim` and `lim` functor on diagrams over `J`
 are isomorphic. -/
 @[simps!]
@@ -557,12 +550,10 @@ def HasBiproductsOfShape.colimIsoLim [HasBiproductsOfShape J C] :
       by_cases h : i = j <;>
        simp_all [Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     biproduct.map p = biproduct.map' p := by
   classical
   ext
-  dsimp
   simp only [Discrete.natTrans_app, Limits.IsColimit.ι_map_assoc, Limits.IsLimit.map_π,
     ← Bicone.toCone_π_app_mk, ← Bicone.toCocone_ι_app_mk]
   dsimp
@@ -604,36 +595,32 @@ def biproduct.mapIso {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ 
   hom := biproduct.map fun b => (p b).hom
   inv := biproduct.map fun b => (p b).inv
 
-set_option backward.isDefEq.respectTransparency false in
 instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
     [∀ j, Epi (p j)] : Epi (biproduct.map p) := by
   classical
   have : biproduct.map p =
       (biproduct.isoCoproduct _).hom ≫ Sigma.map p ≫ (biproduct.isoCoproduct _).inv := by
     ext
-    simp only [map_π, ι_π_assoc, isoCoproduct_hom, isoCoproduct_inv, Category.assoc, ι_desc_assoc,
-      Sigma.ι_map_assoc, colimit.ι_desc_assoc, Discrete.functor_obj_eq_as, Cofan.mk_pt,
-      Cofan.mk_ι_app, ι_π]
+    simp only [map_π, isoCoproduct_hom, isoCoproduct_inv, Category.assoc, ι_desc_assoc, ι_π_assoc]
     split
-    all_goals simp_all
+    · subst_vars
+      simp
+    · simp_all
   rw [this]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance Pi.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
     [∀ j, Epi (p j)] : Epi (Pi.map p) := by
   rw [show Pi.map p = (biproduct.isoProduct _).inv ≫ biproduct.map p ≫
     (biproduct.isoProduct _).hom by aesop]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance biproduct.map_mono {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
     [∀ j, Mono (p j)] : Mono (biproduct.map p) := by
   rw [show biproduct.map p = (biproduct.isoProduct _).hom ≫ Pi.map p ≫
     (biproduct.isoProduct _).inv by aesop]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance Sigma.map_mono {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
     [∀ j, Mono (p j)] : Mono (Sigma.map p) := by
   rw [show Sigma.map p = (biproduct.isoCoproduct _).inv ≫ biproduct.map p ≫
@@ -706,9 +693,9 @@ instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
               simp [biproduct.ι_π_ne _ h]
             · simp [biproduct.ι_π_ne_assoc _ w] }
       isBilimit :=
-      { isLimit := mkFanLimit _
+      { isLimit := Fan.IsLimit.mk _
           (fun s => biproduct.lift fun b => biproduct.lift fun c => s.proj ⟨b, c⟩)
-        isColimit := mkCofanColimit _
+        isColimit := Cofan.IsColimit.mk _
           (fun s => biproduct.desc fun b => biproduct.desc fun c => s.inj ⟨b, c⟩) } }
 
 /-- An iterated biproduct is a biproduct over a sigma type. -/
@@ -736,26 +723,24 @@ type. -/
 def biproduct.toSubtype : ⨁ f ⟶ ⨁ Subtype.restrict p f :=
   biproduct.lift fun _ => biproduct.π _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
     biproduct.fromSubtype f p ≫ biproduct.π f j =
       if h : p j then biproduct.π (Subtype.restrict p f) ⟨j, h⟩ else 0 := by
   classical
-  ext i; dsimp
+  ext i
   rw [biproduct.fromSubtype, biproduct.ι_desc_assoc, biproduct.ι_π]
   by_cases h : p j
-  · rw [dif_pos h, biproduct.ι_π]
+  · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
     exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
-  · rw [dif_neg h, dif_neg (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
+  · rw [dite_eq_right h, dite_eq_right (show (i : J) ≠ j from fun h₂ => h (h₂ ▸ i.2)), comp_zero]
 
 theorem biproduct.fromSubtype_eq_lift [DecidablePred p] :
     biproduct.fromSubtype f p =
       biproduct.lift fun j => if h : p j then biproduct.π (Subtype.restrict p f) ⟨j, h⟩ else 0 :=
   biproduct.hom_ext _ _ (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc] -- Not `@[simp]` because `simp` can prove this
 theorem biproduct.fromSubtype_π_subtype (j : Subtype p) :
     biproduct.fromSubtype f p ≫ biproduct.π f j = biproduct.π (Subtype.restrict p f) j := by
@@ -770,7 +755,6 @@ theorem biproduct.toSubtype_π (j : Subtype p) :
     biproduct.toSubtype f p ≫ biproduct.π (Subtype.restrict p f) j = biproduct.π f j :=
   biproduct.lift_π _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
     biproduct.ι f j ≫ biproduct.toSubtype f p =
@@ -779,17 +763,16 @@ theorem biproduct.ι_toSubtype [DecidablePred p] (j : J) :
   ext i
   rw [biproduct.toSubtype, Category.assoc, biproduct.lift_π, biproduct.ι_π]
   by_cases h : p j
-  · rw [dif_pos h, biproduct.ι_π]
+  · rw [dite_eq_left h, biproduct.ι_π]
     split_ifs with h₁ h₂ h₂
     exacts [rfl, False.elim (h₂ (Subtype.ext h₁)), False.elim (h₁ (congr_arg Subtype.val h₂)), rfl]
-  · rw [dif_neg h, dif_neg (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
+  · rw [dite_eq_right h, dite_eq_right (show j ≠ i from fun h₂ => h (h₂.symm ▸ i.2)), zero_comp]
 
 theorem biproduct.toSubtype_eq_desc [DecidablePred p] :
     biproduct.toSubtype f p =
       biproduct.desc fun j => if h : p j then biproduct.ι (Subtype.restrict p f) ⟨j, h⟩ else 0 :=
   biproduct.hom_ext' _ _ (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem biproduct.ι_toSubtype_subtype (j : Subtype p) :
     biproduct.ι f j ≫ biproduct.toSubtype f p = biproduct.ι (Subtype.restrict p f) j := by
@@ -804,14 +787,12 @@ theorem biproduct.ι_fromSubtype (j : Subtype p) :
     biproduct.ι (Subtype.restrict p f) j ≫ biproduct.fromSubtype f p = biproduct.ι f j :=
   biproduct.ι_desc _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem biproduct.fromSubtype_toSubtype :
     biproduct.fromSubtype f p ≫ biproduct.toSubtype f p = 𝟙 (⨁ Subtype.restrict p f) := by
   refine biproduct.hom_ext _ _ fun j => ?_
   rw [Category.assoc, biproduct.toSubtype_π, biproduct.fromSubtype_π_subtype, Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem biproduct.toSubtype_fromSubtype [DecidablePred p] :
     biproduct.toSubtype f p ≫ biproduct.fromSubtype f p =
@@ -827,7 +808,6 @@ section
 
 variable (f : J → C) (i : J) [HasBiproduct f] [HasBiproduct (Subtype.restrict (fun j => j ≠ i) f)]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- The kernel of `biproduct.π f i` is the inclusion from the biproduct which omits `i`
 from the index set `J` into the biproduct over `J`. -/
@@ -840,8 +820,8 @@ def biproduct.isLimitFromSubtype :
       rw [KernelFork.ι_ofι, Category.assoc, Category.assoc,
         biproduct.toSubtype_fromSubtype_assoc, biproduct.map_π]
       rcases Classical.em (i = j) with (rfl | h)
-      · rw [if_neg (Classical.not_not.2 rfl), comp_zero, comp_zero, KernelFork.condition]
-      · rw [if_pos (Ne.symm h), Category.comp_id], by
+      · rw [ite_eq_right (Classical.not_not.2 rfl), comp_zero, comp_zero, KernelFork.condition]
+      · rw [ite_eq_left (Ne.symm h), Category.comp_id], by
       intro m hm
       rw [← hm, KernelFork.ι_ofι, Category.assoc, biproduct.fromSubtype_toSubtype]
       exact (Category.comp_id _).symm⟩
@@ -854,7 +834,6 @@ instance : HasKernel (biproduct.π f i) :=
 def kernelBiproductπIso : kernel (biproduct.π f i) ≅ ⨁ Subtype.restrict (fun j => j ≠ i) f :=
   limit.isoLimitCone ⟨_, biproduct.isLimitFromSubtype f i⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- The cokernel of `biproduct.ι f i` is the projection from the biproduct over the index set `J`
 onto the biproduct omitting `i`. -/
@@ -866,8 +845,8 @@ def biproduct.isColimitToSubtype :
       apply biproduct.hom_ext'; intro j
       rw [CokernelCofork.π_ofπ, biproduct.toSubtype_fromSubtype_assoc, biproduct.ι_map_assoc]
       rcases Classical.em (i = j) with (rfl | h)
-      · rw [if_neg (Classical.not_not.2 rfl), zero_comp, CokernelCofork.condition]
-      · rw [if_pos (Ne.symm h), Category.id_comp], by
+      · rw [ite_eq_right (Classical.not_not.2 rfl), zero_comp, CokernelCofork.condition]
+      · rw [ite_eq_left (Ne.symm h), Category.id_comp], by
       intro m hm
       rw [← hm, CokernelCofork.π_ofπ, ← Category.assoc, biproduct.fromSubtype_toSubtype]
       exact (Category.id_comp _).symm⟩
@@ -887,7 +866,6 @@ section
 -- Per https://github.com/leanprover-community/mathlib3/pull/15067, we only allow indexing in `Type 0` here.
 variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of
 `biproduct.toSubtype f p` -/
 @[simps]
@@ -900,7 +878,7 @@ def kernelForkBiproductToSubtype (p : K → Prop) :
         ext j k
         simp only [Category.assoc, biproduct.ι_fromSubtype_assoc, biproduct.ι_toSubtype_assoc,
           comp_zero, zero_comp]
-        rw [dif_neg k.2]
+        rw [dite_eq_right k.2]
         simp only [zero_comp])
   isLimit :=
     KernelFork.IsLimit.ofι _ _ (fun {_} g _ => g ≫ biproduct.toSubtype f pᶜ)
@@ -925,7 +903,6 @@ def kernelBiproductToSubtypeIso (p : K → Prop) :
     kernel (biproduct.toSubtype f p) ≅ ⨁ Subtype.restrict pᶜ f :=
   limit.isoLimitCone (kernelForkBiproductToSubtype f p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cocone exhibiting `⨁ Subtype.restrict pᶜ f` as the cokernel of
 `biproduct.fromSubtype f p` -/
 @[simps]
@@ -938,7 +915,7 @@ def cokernelCoforkBiproductFromSubtype (p : K → Prop) :
         ext j k
         simp only [Category.assoc, Pi.compl_apply, biproduct.ι_fromSubtype_assoc,
           biproduct.ι_toSubtype_assoc, comp_zero, zero_comp]
-        rw [dif_neg]
+        rw [dite_eq_right]
         · simp only [zero_comp]
         · exact not_not.mpr k.2)
   isColimit :=
@@ -1015,7 +992,6 @@ end FiniteBiproducts
 
 variable {J : Type w}
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
-variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
 instance biproduct.ι_mono (f : J → C) [HasBiproduct f] (b : J) : IsSplitMono (biproduct.ι f b) :=
   (biproduct.bicone f).instIsSplitMonoι b
@@ -1029,7 +1005,6 @@ theorem biproduct.conePointUniqueUpToIso_hom (f : J → C) [HasBiproduct f] {b :
     (hb.isLimit.conePointUniqueUpToIso (biproduct.isLimit _)).hom = biproduct.lift b.π :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `biproduct.uniqueUpToIso`. -/
 theorem biproduct.conePointUniqueUpToIso_inv (f : J → C) [HasBiproduct f] {b : Bicone f}
     (hb : b.IsBilimit) :

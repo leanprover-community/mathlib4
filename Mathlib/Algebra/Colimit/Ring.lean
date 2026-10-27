@@ -186,9 +186,11 @@ def ringEquiv [Nonempty ι] : DirectLimit G (f' · · ·) ≃+* _root_.DirectLim
     (by ext; simp)
     (by ext; simp)
 
+@[simp]
 theorem ringEquiv_of [Nonempty ι] {i g} : ringEquiv G f' (of _ _ i g) = ⟦⟨i, g⟩⟧ := by
-  simp [ringEquiv]; rfl
+  simp [ringEquiv]
 
+@[simp]
 theorem ringEquiv_symm_mk [Nonempty ι] {g} : (ringEquiv G f').symm ⟦g⟧ = of _ _ g.1 g.2 := rfl
 
 variable {G f'}
@@ -254,6 +256,7 @@ lemma map_comp (g₁ : (i : ι) → G i →+* G' i) (g₂ : (i : ι) → G' i �
       DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) := by
   ext; simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
 family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
@@ -319,13 +322,13 @@ theorem exists_inv {p : Ring.DirectLimit G f} : p ≠ 0 → ∃ y, p * y = 1 :=
 section
 
 
-open Classical in
+open scoped Classical in
 /-- Noncomputable multiplicative inverse in a direct limit of fields. -/
 noncomputable def inv (p : Ring.DirectLimit G f) : Ring.DirectLimit G f :=
   if H : p = 0 then 0 else Classical.choose (DirectLimit.exists_inv G f H)
 
 protected theorem mul_inv_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : p * inv G f p = 1 := by
-  rw [inv, dif_neg hp, Classical.choose_spec (DirectLimit.exists_inv G f hp)]
+  rw [inv, dite_eq_right hp, Classical.choose_spec (DirectLimit.exists_inv G f hp)]
 
 protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv G f p * p = 1 := by
   rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
@@ -338,7 +341,7 @@ protected noncomputable abbrev field [DirectedSystem G (f' · · ·)] :
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
   inv := inv G (f' · · ·)
   mul_inv_cancel := fun _ ↦ DirectLimit.mul_inv_cancel G (f' · · ·)
-  inv_zero := dif_pos rfl
+  inv_zero := dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def _ _ := rfl
   qsmul := _

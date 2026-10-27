@@ -140,7 +140,7 @@ theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
 /-- The inclusion of a subset of the direct summands
 into a larger subset of the direct summands, as a linear map. -/
 def lsetToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, M i) →ₗ[R] ⨁ i : T, M i :=
-  toModule R _ _ fun i ↦ lof R T (fun i : Subtype T ↦ M i) ⟨i, H i.prop⟩
+  toModule R _ _ fun i ↦ lof R T (fun i : T ↦ M i) ⟨i, H i.prop⟩
 
 variable (ι M)
 
@@ -213,6 +213,14 @@ theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
   DFinsupp.single_apply
 
+lemma component_comp_lof [DecidableEq ι] (i j : ι) :
+    component R ι M i ∘ₗ lof R ι M j = if h : j = i then h ▸ .id else 0 := by
+  aesop (add simp component.of)
+
+@[simp]
+lemma component_comp_lof_same [DecidableEq ι] (i : ι) : component R ι M i ∘ₗ lof R ι M i = .id := by
+  simp [component_comp_lof]
+
 section map
 
 variable {R} {N : ι → Type*}
@@ -260,10 +268,10 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
   DFinsupp.mapRange.linearMap_comp _ _
 
 theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
-  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
 
 theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) := by
-  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+  exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
 
 lemma lmap_eq_iff (x y : ⨁ i, M i) :
     lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
@@ -289,7 +297,7 @@ lemma range_lmap :
 end AddCommMonoid
 
 section AddCommGroup
-variable {R : Type u} {ι : Type v} {M : ι → Type w} {N : ι → Type*}
+variable {ι : Type v} {M : ι → Type w} {N : ι → Type*}
 
 lemma ker_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i) :
     (map f).ker =
@@ -325,12 +333,8 @@ lemma lequivCongrLeft_lof [DecidableEq ι] [DecidableEq κ] {e : ι ≃ κ}
     lequivCongrLeft R e (lof R ι M i x) = lof R _ _ k y := by
   subst hik hxy
   ext j
-  simp_rw [lequivCongrLeft_apply, lof_eq_of, of_apply]
-  by_cases eq : k = j
-  · subst eq
-    rw [dif_pos rfl, dif_pos rfl]
-    rfl
-  · rw [dif_neg (by aesop), dif_neg eq]
+  simp [lof_eq_of, of_apply]
+  lia
 
 lemma lequivCongrLeft_symm_lof [DecidableEq ι] [DecidableEq κ] {h : ι ≃ κ}
     {k : κ} {x : M (h.symm k)} :
@@ -348,7 +352,7 @@ variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σ _, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
+  { sigmaCurry with map_smul' := fun r ↦ by convert! DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
 theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) :
@@ -420,12 +424,14 @@ variable {A}
 theorem range_coeLinearMap : LinearMap.range (coeLinearMap A) = ⨆ i, A i :=
   (Submodule.iSup_eq_range_dfinsupp_lsum _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
     {i : ι} (x : A i) :
     (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = x := by
   rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_same]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
     {i j : ι} (hij : i ≠ j) (x : A i) :
@@ -573,13 +579,9 @@ def congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
   left_inv x := by aesop
   right_inv y := by aesop
 
-@[deprecated (since := "2025-12-01")] alias congr_addEquiv := congrAddEquiv
-
 theorem coe_congrAddEquiv (u : (i : ι) → N i ≃+ P i) :
     ⇑(congrAddEquiv u).toAddMonoidHom = ⇑(DirectSum.map fun i ↦ (u i).toAddMonoidHom) :=
   rfl
-
-@[deprecated (since := "2025-12-01")] alias coe_congr_addEquiv := coe_congrAddEquiv
 
 /-- Direct sums of isomorphic modules are isomorphic. -/
 def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
@@ -588,27 +590,17 @@ def congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
   map_smul' r x := by
     exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
 
-@[deprecated (since := "2025-12-01")] alias congr_linearEquiv := congrLinearEquiv
-
 theorem coe_congrLinearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     ⇑(congrLinearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=
   rfl
-
-@[deprecated (since := "2025-12-01")] alias coe_congr_linearEquiv := coe_congrLinearEquiv
 
 theorem congrLinearEquiv_toAddEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
     (congrLinearEquiv u).toAddEquiv = congrAddEquiv (fun i ↦ (u i).toAddEquiv) :=
   rfl
 
-@[deprecated (since := "2025-12-01")]
-alias congr_linearEquiv_toAddEquiv := congrLinearEquiv_toAddEquiv
-
 theorem congrLinearEquiv_toLinearMap (u : (i : ι) → N i ≃ₗ[R] P i) :
     (congrLinearEquiv u).toLinearMap = DirectSum.lmap (fun i ↦ (u i).toLinearMap) :=
   rfl
-
-@[deprecated (since := "2025-12-01")]
-alias congr_linearEquiv_toLinearMap := congrLinearEquiv_toLinearMap
 
 end Congr
 

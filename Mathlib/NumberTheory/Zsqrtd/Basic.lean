@@ -381,7 +381,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
         Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
-      convert this using 1
+      convert! this using 1
       simp only [one_mul, Int.natCast_add, Int.natCast_mul]
       ring
 
@@ -620,14 +620,9 @@ protected theorem nonneg_total : ∀ a : ℤ√d, Nonneg a ∨ Nonneg (-a)
   | ⟨(_ + 1 : ℕ), -[_+1]⟩ => Nat.le_total _ _
   | ⟨-[_+1], (_ + 1 : ℕ)⟩ => Nat.le_total _ _
 
-@[deprecated _root_.le_total (since := "2026-02-19")]
-protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
-  have t := (b - a).nonneg_total
-  rwa [neg_sub] at t
-
 instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
-  le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
+  le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using! hab.add hbc
   lt_iff_le_not_ge a b := by
     have ht : b ≤ a ∨ a ≤ b := by
       have t := (a - b).nonneg_total
@@ -653,21 +648,15 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
   exact h (y + 1)
 
-@[deprecated _root_.add_le_add_left (since := "2026-02-19")]
-protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : a + c ≤ b + c :=
-  show Nonneg _ by rwa [add_sub_add_right_eq_sub]
-
-
-
 theorem nonneg_smul {a : ℤ√d} {n : ℕ} (ha : Nonneg a) : Nonneg ((n : ℤ√d) * a) := by
   rw [← Int.cast_natCast n]
   exact
     match a, nonneg_cases ha, ha with
     | _, ⟨x, y, Or.inl rfl⟩, _ => by rw [smul_val]; trivial
     | _, ⟨x, y, Or.inr <| Or.inl rfl⟩, ha => by
-      rw [smul_val]; simpa using nonnegg_pos_neg.2 (sqLe_smul n <| nonnegg_pos_neg.1 ha)
+      rw [smul_val]; simpa using! nonnegg_pos_neg.2 (sqLe_smul n <| nonnegg_pos_neg.1 ha)
     | _, ⟨x, y, Or.inr <| Or.inr rfl⟩, ha => by
-      rw [smul_val]; simpa using nonnegg_neg_pos.2 (sqLe_smul n <| nonnegg_neg_pos.1 ha)
+      rw [smul_val]; simpa using! nonnegg_neg_pos.2 (sqLe_smul n <| nonnegg_neg_pos.1 ha)
 
 theorem nonneg_muld {a : ℤ√d} (ha : Nonneg a) : Nonneg (sqrtd * a) :=
   match a, nonneg_cases ha, ha with
@@ -784,10 +773,6 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
     rw [one_mul] at t
     exact absurd t (not_divides_sq _ _)
 
-@[deprecated _root_.le_antisymm (since := "2026-02-19")]
-theorem le_antisymm {a b : ℤ√d} (ab : a ≤ b) (ba : b ≤ a) : a = b :=
-  eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
-
 instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
     le_antisymm := fun _ _ ab ba => eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
@@ -844,14 +829,6 @@ instance : ZeroLEOneClass (ℤ√d) :=
 instance : IsOrderedAddMonoid (ℤ√d) :=
   { add_le_add_left := fun a b ab c => show Nonneg _ by rwa [add_sub_add_right_eq_sub] }
 
-@[deprecated _root_.le_of_add_le_add_left (since := "2026-02-19")]
-protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
-  exact _root_.le_of_add_le_add_left h
-
-@[deprecated _root_.add_lt_add_left (since := "2026-02-19")]
-protected theorem add_lt_add_left (a b : ℤ√d) (h : a < b) (c) : c + a < c + b := fun h' =>
-  h (_root_.le_of_add_le_add_left h')
-
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
 
@@ -863,7 +840,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
   rw [sub_eq_zero] at ha
   by_cases! h : 0 ≤ d
   · obtain ⟨d', rfl⟩ := Int.eq_ofNat_of_zero_le h
-    haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| mod_cast h⟩
+    have : Nonsquare d' := ⟨fun n h => h_nonsquare n <| mod_cast h⟩
     exact divides_sq_eq_zero_z ha
   · suffices a.re * a.re = 0 by
       rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢

@@ -5,9 +5,10 @@ Authors: Kim Morrison, Reid Barton, Joël Riou
 -/
 module
 
-public import Mathlib.Logic.UnivLE
+public import Mathlib.Basic.UnivLE
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Types.ColimitType
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # Colimits in the category of types
@@ -39,7 +40,7 @@ with a point in `Type u` is the same as the data of a cocone (in a categorical s
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
   toFun c :=
     { pt := c.pt
-      ι := { app j := TypeCat.ofHom (c.ι j) } }
+      ι := { app j := ↾(c.ι j) } }
   invFun c :=
     { pt := c.pt
       ι j := c.ι.app j
@@ -49,13 +50,14 @@ def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
 
 variable {F}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     c.IsColimit ↔ Nonempty (Limits.IsColimit (F.coconeTypesEquiv c)) := by
   constructor
   · intro hc
     exact
-     ⟨{ desc s := TypeCat.ofHom (fun x => hc.desc (F.coconeTypesEquiv.symm s) x)
+     ⟨{ desc s := ↾fun x => hc.desc (F.coconeTypesEquiv.symm s) x
         fac s j := by
           ext x
           exact congr_fun (hc.fac (F.coconeTypesEquiv.symm s) j) x
@@ -73,9 +75,9 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
       obtain ⟨j, z, rfl⟩ := F.ιColimitType_jointly_surjective z
       exact ConcreteCategory.congr_hom (hc.fac _ j) z
     · let f₁ : (F.coconeTypesEquiv c).pt ⟶ (ULift.{u} Bool) :=
-        TypeCat.ofHom (fun _ => ULift.up true)
+        ↾fun _ => ULift.up true
       let f₂ : (F.coconeTypesEquiv c).pt ⟶ (ULift.{u} Bool) :=
-        TypeCat.ofHom (fun x => ULift.up (∃ a, F.descColimitType c a = x))
+        ↾fun x => ULift.up (∃ a, F.descColimitType c a = x)
       suffices f₁ = f₂ by
         have := ConcreteCategory.congr_hom this x
         simpa [f₁, f₂] using this
@@ -174,23 +176,25 @@ theorem colimitEquivColimitType_apply (j : J) (x : F.obj j) :
   apply (colimitEquivColimitType F).symm.injective
   simp
 
--- We don’t want to add `simp` to the original lemmas here
-attribute [elementwise] colimit.w colimit.ι_desc colimit.ι_map
-attribute [simp] colimit.w_apply colimit.ι_desc_apply colimit.ι_map_apply
+-- We don’t want to add `simp` to the original lemmas here.
+-- `colimit.w_apply` and `colimit.ι_desc_apply` are generated (and tagged `simp`)
+-- in `Mathlib/CategoryTheory/ConcreteCategory/Elementwise.lean`.
+attribute [elementwise] colimit.ι_map
+attribute [simp] colimit.ι_map_apply
 
 variable {F} in
-@[deprecated colimit.w_apply (since := "2026-03-06")]
+@[deprecated colimit.w_apply +typeChanged (since := "2026-03-06")]
 theorem Colimit.w_apply {j j' : J} {x : F.obj j} (f : j ⟶ j') :
     colimit.ι F j' (F.map f x) = colimit.ι F j x := by
   rw [← comp_apply]
   exact congr_hom (colimit.w F f) x
 
-@[deprecated colimit.ι_desc_apply (since := "2026-03-06")]
+@[deprecated colimit.ι_desc_apply +typeChanged (since := "2026-03-06")]
 theorem Colimit.ι_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
   congr_hom (colimit.ι_desc s j) x
 
-@[deprecated colimit.ι_map_apply (since := "2026-03-06")]
+@[deprecated colimit.ι_map_apply +typeChanged (since := "2026-03-06")]
 theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J (Type u)]
     (α : F ⟶ G) (j : J) (x : F.obj j) :
     colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
@@ -214,18 +218,19 @@ theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}
     (w : colimit.ι F j x = colimit.ι F j' x') :
       Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨j', x'⟩ := by
   apply Quot.eq.1
-  simpa using congr_arg (colimitEquivColimitType F) w
+  simpa using! congr_arg (colimitEquivColimitType F) w
 
+set_option backward.defeqAttrib.useBackward true in
 theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : IsColimit t)
     (x : t.pt) : ∃ j y, t.ι.app j y = x := by
   by_contra hx
   simp_rw [not_exists] at hx
-  apply (_ : (TypeCat.ofHom (fun _ ↦ ULift.up True) :
+  apply (_ : (↾fun _ ↦ ULift.up True :
       t.pt ⟶ (ULift.{u} Prop)) ≠
-    (TypeCat.ofHom (fun y ↦ ULift.up (y ≠ x))))
+    (↾fun y ↦ ULift.up (y ≠ x)))
   · refine h.hom_ext fun j ↦ ?_
     ext y
-    simp only [Functor.const_obj_obj, TypeCat.Fun.toFun_apply, comp_apply, hom_ofHom,
+    simp only [TypeCat.Fun.toFun_apply, comp_apply, hom_ofHom,
       TypeCat.Fun.coe_mk, ne_eq, true_iff]
     exact hx j y
   · intro he

@@ -118,4 +118,22 @@ theorem coeff_expand {n : ℕ} :
 theorem order_expand : (φ.expand p hp).order = p • φ.order := by
   simp_rw [expand, order_eq_order, MvPowerSeries.order_expand p hp φ]
 
+section ExpChar
+
+variable [ExpChar R p]
+
+theorem map_frobenius_expand {f : R⟦X⟧} :
+    (f.expand p hp).map (frobenius R p) = f ^ p := by
+  rw [expand, map, MvPowerSeries.map_frobenius_expand _ hp]
+
+theorem map_iterateFrobenius_expand (f : R⟦X⟧) (n : ℕ) :
+    map (iterateFrobenius R p n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by
+  rw [expand, map, MvPowerSeries.map_iterateFrobenius_expand _ hp]
+
+theorem _root_.FiniteField.PowerSeries.expand_card {K : Type*} [Field K] [Fintype K] (f : K⟦X⟧) :
+    f.expand (Fintype.card K) Fintype.card_ne_zero = f ^ (Fintype.card K) := by
+  rw [expand, FiniteField.MvPowerSeries.expand_card]
+
+end ExpChar
+
 end PowerSeries

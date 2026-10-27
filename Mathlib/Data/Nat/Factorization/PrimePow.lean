@@ -30,8 +30,7 @@ theorem isPrimePow_of_minFac_pow_factorization_eq {n : ℕ}
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp_all
   refine ⟨_, _, (Nat.minFac_prime hn).prime, ?_, h⟩
-  simp [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.support_factorization, hn',
-    Nat.minFac_prime hn, Nat.minFac_dvd]
+  simpa [pos_iff_ne_zero, ← Finsupp.mem_support_iff, hn', Nat.minFac_dvd]
 
 theorem isPrimePow_iff_minFac_pow_factorization_eq {n : ℕ} (hn : n ≠ 1) :
     IsPrimePow n ↔ n.minFac ^ n.factorization n.minFac = n :=
@@ -105,7 +104,7 @@ theorem isPrimePow_iff_unique_prime_dvd {n : ℕ} : IsPrimePow n ↔ ∃! p : �
   intro q hq'
   rw [Nat.mem_primeFactorsList hn₀] at hq'
   cases hq _ hq'.1 hq'.2
-  simp
+  simp [Nat.primeFactorsList_count_eq]
 
 theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ IsPrimePow n := by
   simp only [isPrimePow_iff_unique_prime_dvd]
@@ -146,6 +145,7 @@ theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
     and_congr_left_iff, not_false_iff, Nat.mem_divisors, or_self_iff]
   apply hab.isPrimePow_dvd_mul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical equivalence between pairs `(p, k)` with `p` a prime and `k : ℕ`
 and the set of prime powers given by `(p, k) ↦ p^(k+1)`. -/
 def Nat.Primes.prodNatEquiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} where

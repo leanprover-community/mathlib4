@@ -10,13 +10,13 @@ public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.Algebra.Order.Ring.Finset
 
 /-!
-## Expand multivariate polynomials
+# Expand multivariate polynomials
 
 Given a multivariate polynomial `φ`, one may replace every occurrence of `X i` by `X i ^ n`,
 for some natural number `n`.
 This operation is called `MvPolynomial.expand` and it is an algebra homomorphism.
 
-### Main declaration
+## Main declaration
 
 * `MvPolynomial.expand`: expand a polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/

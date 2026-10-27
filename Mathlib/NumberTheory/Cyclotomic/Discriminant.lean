@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!
 # Discriminant of cyclotomic fields
+
 We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 ## Main results
@@ -39,7 +40,7 @@ variable [ce : IsCyclotomicExtension {n} ℚ K]
 discriminant of the power basis given by `ζ - 1`. -/
 theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
     discr ℚ (hζ.powerBasis ℚ).basis = discr ℚ (hζ.subOnePowerBasis ℚ).basis := by
-  haveI : NumberField K := @NumberField.mk _ _ _ (IsCyclotomicExtension.finiteDimensional {n} ℚ K)
+  have : NumberField K := @NumberField.mk _ _ _ (IsCyclotomicExtension.finiteDimensional {n} ℚ K)
   have H₁ : (aeval (hζ.powerBasis ℚ).gen) (X - 1 : ℤ[X]) = (hζ.subOnePowerBasis ℚ).gen := by simp
   have H₂ : (aeval (hζ.subOnePowerBasis ℚ).gen) (X + 1 : ℤ[X]) = (hζ.powerBasis ℚ).gen := by simp
   refine discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ ?_ ?_ _ _)
@@ -64,9 +65,9 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hirr : Irreducible (cyclotomic (p ^ (k + 1)) K))
     (hk : p ^ (k + 1) ≠ 2) : discr K (hζ.powerBasis K).basis =
       (-1) ^ ((p ^ (k + 1)).totient / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
-  haveI hne := IsCyclotomicExtension.neZero' (p ^ (k + 1)) K L
-  haveI mf : Module.Finite K L := finiteDimensional {p ^ (k + 1)} K L
-  haveI se : Algebra.IsSeparable K L := isSeparable {p ^ (k + 1)} K L
+  have hne := IsCyclotomicExtension.neZero' (p ^ (k + 1)) K L
+  have mf : Module.Finite K L := finiteDimensional {p ^ (k + 1)} K L
+  have se : Algebra.IsSeparable K L := isSeparable {p ^ (k + 1)} K L
   rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _,
     ← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, totient_prime_pow hp.out (succ_pos k),
     Nat.add_one_sub_one]
@@ -124,6 +125,7 @@ theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : 
       (-1) ^ (p ^ k * (p - 1) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   simpa [totient_prime_pow hp.out (succ_pos k)] using discr_prime_pow_ne_two hζ hirr hk
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ k} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1))`
@@ -168,7 +170,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
         simp only [map_neg, map_one, Function.comp_apply, Fin.val_eq_zero, _root_.pow_zero]
         suffices (e.symm i : ℕ) = 0 by simp [this]
         rw [← Nat.lt_one_iff]
-        convert (e.symm i).2
+        convert! (e.symm i).2
         rw [this]
       · simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
           _root_.pow_zero, traceForm_apply, mul_one]
@@ -198,7 +200,7 @@ theorem discr_odd_prime [IsCyclotomicExtension {p} K L] [hp : Fact p.Prime]
     rw [zero_add, pow_one]
     infer_instance
   have hζ' : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
-  convert discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
+  convert! discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
   · rw [zero_add, pow_one, totient_prime hp.out]
   · rw [_root_.pow_zero, one_mul, zero_add, mul_one, Nat.sub_sub]
 

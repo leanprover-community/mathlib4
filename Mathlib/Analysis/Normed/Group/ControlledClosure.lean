@@ -21,7 +21,7 @@ public section
 
 open Filter Finset
 
-open Topology
+open scoped Topology
 
 variable {G : Type*} [NormedAddCommGroup G] [CompleteSpace G]
 variable {H : Type*} [NormedAddCommGroup H]

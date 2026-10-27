@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Combinatorics.SimpleGraph.Density
 public import Mathlib.Data.Rat.BigOperators
+public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Energy of a partition

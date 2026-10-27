@@ -23,7 +23,7 @@ If furthermore the base ring is a domain, this is equivalent to the naïve
 `r • m = 0 ↔ r = 0 ∨ m = 0` definition.
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -138,7 +138,7 @@ lemma Module.isTorsionFree_nat_iff_isAddTorsionFree : IsTorsionFree ℕ M ↔ Is
 end AddCommMonoid
 
 section AddCommGroup
-variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M] {m : M}
+variable [CharZero R] [IsDomain R] [AddCommGroup M] [Module R M]
 
 instance [IsAddTorsionFree M] : IsTorsionFree ℤ M where
   isSMulRegular n hn := zsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
@@ -150,6 +150,24 @@ lemma Module.isTorsionFree_int_iff_isAddTorsionFree : IsTorsionFree ℤ M ↔ Is
 
 end AddCommGroup
 end Semiring
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring R] {n : ℕ}
+
+@[simp]
+theorem isLeftRegular_natCast : IsLeftRegular (n : R) ↔ IsSMulRegular R n := by
+  simp [IsSMulRegular, IsLeftRegular]
+
+@[simp]
+theorem isRightRegular_natCast : IsRightRegular (n : R) ↔ IsSMulRegular R n := by
+  simp [IsRightRegular, IsSMulRegular, Nat.cast_comm]
+
+@[simp]
+theorem isRegular_natCast : IsRegular (n : R) ↔ IsSMulRegular R n := by
+  simp [isRegular_iff]
+
+end NonAssocSemiring
 
 section Ring
 variable [Ring R] [AddCommGroup M] [Module R M] {m : M} {r₁ r₂ : R}
@@ -191,3 +209,12 @@ lemma CharZero.of_isAddTorsionFree [Nontrivial M] [IsAddTorsionFree M] : CharZer
   simpa using smul_left_injective ℤ hx h
 
 end Semiring
+
+section NonAssocRing
+variable [NonAssocRing R]
+
+theorem isSelfNeg_of_isSMulRegular_two (h : IsSMulRegular R 2) {a : R} :
+    IsSelfNeg a ↔ a = 0 :=
+  isSelfNeg_iff_two_nsmul_eq_zero.trans ⟨(h <| by simpa using ·), (by simp [·])⟩
+
+end NonAssocRing

@@ -17,8 +17,6 @@ everything in `α` is declared smaller than everything in `β`.
 
 @[expose] public section
 
-open OrderDual
-
 namespace Sum.Lex
 variable {α β : Type*}
 

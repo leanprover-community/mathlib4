@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Ring.Associator
-public import Mathlib.GroupTheory.GroupAction.Ring
 /-!
 # Pre-Lie rings and algebras
 
@@ -42,7 +41,7 @@ Perhaps one could be favored but there is no real reason to.
 <https://ncatlab.org/nlab/show/pre-Lie+algebra>
 -/
 
-@[expose] public section
+public section
 
 /-- `LeftPreLieRing`s are `NonUnitalNonAssocRing`s such that the `associator` is symmetric in the
 first two variables. -/

@@ -15,7 +15,7 @@ on its closure. In this file we define a predicate `HarmonicContOnCl` that expre
 and prove basic facts about this predicate.
 -/
 
-@[expose] public section
+public section
 
 variable
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
@@ -23,7 +23,7 @@ variable
   {f f₁ f₂ : E → F}
   {x : E} {s : Set E} {c : ℝ}
 
-open Laplacian Metric Topology
+open Laplacian Metric
 
 namespace InnerProductSpace
 

@@ -9,6 +9,8 @@ public import Mathlib.Data.Vector.Basic
 public import Mathlib.Data.Vector.Snoc
 
 /-!
+# Normalization lemmas for `map` and `mapAccumr` on vectors
+
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
 
@@ -347,7 +349,7 @@ section UnusedInput
 variable {xs : Vector α n} {ys : Vector β n}
 
 /--
-If `f` returns the same output and next state for every value of it's first argument, then
+If `f` returns the same output and next state for every value of its first argument, then
 `xs : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`.
 -/
 @[simp]
@@ -359,7 +361,7 @@ theorem mapAccumr₂_unused_input_left (f : α → β → σ → σ × γ) (f' :
   | snoc xs ys x y ih => simp [h x y s, ih]
 
 /--
-If `f` returns the same output and next state for every value of it's second argument, then
+If `f` returns the same output and next state for every value of its second argument, then
 `ys : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`.
 -/
 @[simp]

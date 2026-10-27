@@ -13,6 +13,7 @@ public import Mathlib.GroupTheory.FreeGroup.Reduce
 public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Finsupp
+public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 
 /-!
 # Cardinalities of free constructions
@@ -24,7 +25,7 @@ Combined with the ring `Fin n` for the finite cases, this lets us show that ther
 any cardinality.
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable (α : Type u)
@@ -58,10 +59,11 @@ instance : Countable (FreeGroup α) := inferInstanceAs <| Countable (Quot _)
 
 instance : Countable (FreeAbelianGroup α) := inferInstanceAs <| Countable (Quot _)
 
-instance : Countable (FreeRing α) := inferInstanceAs <| Countable (Quot _)
+instance : Countable (FreeRing α) := inferInstanceAs <| Countable (MonoidAlgebra ℤ _)
 
 instance : Countable (FreeCommRing α) :=
-  inferInstanceAs <| Countable (FreeAbelianGroup (Multiset α))
+  have : Countable (Multiplicative (Multiset α)) := .of_equiv _ Multiplicative.ofAdd
+  inferInstanceAs <| Countable (MonoidAlgebra ℤ _)
 
 end Countable
 
@@ -72,7 +74,7 @@ theorem mk_abelianization_le (G : Type u) [Group G] :
 
 @[to_additive (attr := simp)]
 theorem mk_freeMonoid [Nonempty α] : #(FreeMonoid α) = max #α ℵ₀ :=
-    Cardinal.mk_list_eq_max_mk_aleph0 _
+  Cardinal.mk_list_eq_max_mk_aleph0 _
 
 @[to_additive (attr := simp)]
 theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by

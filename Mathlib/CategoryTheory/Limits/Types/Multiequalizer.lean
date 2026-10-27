@@ -22,7 +22,7 @@ that `c` is a limit iff the canonical map
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace CategoryTheory.Limits
 

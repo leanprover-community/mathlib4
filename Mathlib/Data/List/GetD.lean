@@ -6,8 +6,8 @@ Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Data.List.Defs
-public import Mathlib.Logic.Basic
 
 /-! # getD and getI
 
@@ -52,7 +52,7 @@ theorem getD_reverse {l : List α} (i) (h : i < length l) :
 
 /-- An empty list can always be decidably checked for the presence of an element.
 Not an instance because it would clash with `DecidableEq α`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def decidableGetDNilNe (a : α) : DecidablePred fun i : ℕ => getD ([] : List α) i a ≠ a :=
   fun _ => isFalse fun H => H getD_nil
 
@@ -74,8 +74,6 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length) :
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
   grind
-
-@[deprecated (since := "2025-11-17")] alias getD_eq_getD_getElem? := getD_eq_getElem?_getD
 
 theorem getD_surjective_iff {l : List α} {d : α} :
     (l.getD · d).Surjective ↔ (∀ x, x = d ∨ x ∈ l) := by
@@ -124,10 +122,6 @@ theorem getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
 
 theorem getI_eq_getElem?_getD (n : ℕ) : l.getI n = (l[n]?).getD default := by
   rw [← getD_default_eq_getI, getD_eq_getElem?_getD]
-
-@[deprecated getI_eq_getElem?_getD (since := "2026-01-05")]
-theorem getI_eq_iget_getElem? (n : ℕ) : l.getI n = l[n]?.getD default :=
-  getI_eq_getElem?_getD (l := l) n
 
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 

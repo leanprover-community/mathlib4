@@ -15,7 +15,7 @@ As a consequence we also get the instance `Countable ℚ`.
 This is kept separate from `Data.Rat.Defs` in order to minimize imports.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Rat

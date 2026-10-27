@@ -40,7 +40,7 @@ theorem lift_cardinalMk_le_sigma_polynomial :
           ← Polynomial.aeval_def, p.2.2]⟩)
     fun x y => by
       intro h
-      simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
+      simp only [Set.coe_ofPred, ne_eq, Set.mem_ofPred_eq, Sigma.mk.inj_iff] at h
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
       simp only [h.1, forall_true_iff]
   rwa [lift_umax, lift_id'.{v}] at this

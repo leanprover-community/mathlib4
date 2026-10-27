@@ -20,13 +20,13 @@ and `Φ.sheafFiber : Sheaf J A ⥤ A` are monoidal.
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' u u'
 
 namespace CategoryTheory.GrothendieckTopology.Point
 
-open Limits MonoidalCategory Functor
+open Limits MonoidalCategory CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C} (Φ : Point.{w} J)
   {A : Type u'} [Category.{v'} A] [MonoidalCategory A] [HasColimitsOfSize.{w, w} A]

@@ -72,7 +72,7 @@ theorem isCyclic_units_four :
   simp only [Nat.card_eq_fintype_card, card_units_eq_totient]
   decide
 
-/- The multiplicative group of `ZMod p` is cyclic. -/
+/-- The multiplicative group of `ZMod p` is cyclic. -/
 theorem isCyclic_units_prime {p : ℕ} (hp : p.Prime) :
     IsCyclic (ZMod p)ˣ :=
   have : Fact (p.Prime) := ⟨hp⟩
@@ -181,13 +181,13 @@ theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ) (hm0 : 
 theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : ℤ)
     (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
     orderOf (1 + p * a : ZMod (p ^ (n + 1))) = p ^ n := by
-  convert orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
+  convert! orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
   · rw [pow_one]
   · have := hp.two_le; lia
 
 theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     orderOf (1 + p : ZMod (p ^ (n + 1))) = p ^ n := by
-  convert orderOf_one_add_mul_prime hp hp2 1 _ n
+  convert! orderOf_one_add_mul_prime hp hp2 1 _ n
   · simp
   · intro H
     apply hp.ne_one
@@ -196,7 +196,6 @@ theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ)
 /-- If `p` is an odd prime, then `(ZMod (p ^ n))ˣ` is cyclic for all n -/
 theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     IsCyclic (ZMod (p ^ n))ˣ := by
-  have _ : NeZero (p ^ n) := ⟨pow_ne_zero n hp.ne_zero⟩
   have := Fact.mk hp
   rcases n with _ | n
   · rw [pow_zero]; infer_instance
@@ -242,13 +241,13 @@ theorem isCyclic_units_two_pow_iff (n : ℕ) :
 
 lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
     orderOf (1 + 4 * a : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero le_rfl a ?_ n using 1
+  convert! orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero le_rfl a ?_ n using 1
   · norm_num
   · rwa [← Int.not_even_iff_odd, even_iff_two_dvd] at ha
 
 theorem orderOf_five (n : ℕ) :
     orderOf (5 : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_four_mul 1 (by simp) n
+  convert! orderOf_one_add_four_mul 1 (by simp) n
   norm_num
 
 end PrimePow
@@ -284,7 +283,6 @@ theorem isCyclic_units_two_mul_iff_of_odd (n : ℕ) (hn : Odd n) :
 theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
     (hm : Odd m) (hm1 : m ≠ 1) (hn : Odd n) (hn1 : n ≠ 1) (hmn : m.Coprime n) :
     ¬ IsCyclic (ZMod (m * n))ˣ := by
-  classical
   have _ : NeZero m := ⟨Nat.ne_of_odd_add hm⟩
   have _ : NeZero n := ⟨Nat.ne_of_odd_add hn⟩
   let e := (Units.mapEquiv (chineseRemainder hmn).toMulEquiv).trans .prodUnits

@@ -3,10 +3,12 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
-import Mathlib.RingTheory.KrullDimension.Polynomial
-import Mathlib.RingTheory.KrullDimension.LocalRing
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.PowerSeries.Inverse
+module
+
+public import Mathlib.RingTheory.KrullDimension.Polynomial
+public import Mathlib.RingTheory.KrullDimension.LocalRing
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.RingTheory.PowerSeries.Inverse
 
 /-!
 # Krull dimension of polynomial ring
@@ -21,6 +23,8 @@ We define the commutative ring `A` as `{f ∈ k(t)⟦Y⟧ | f(0) ∈ k}` for a f
 
 <https://math.stackexchange.com/questions/1267419/examples-of-rings-whose-polynomial-rings-have-large-dimension>
 -/
+
+@[expose] public section
 
 namespace Counterexample
 
@@ -69,7 +73,8 @@ theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   · simp only [Subring.coe_mul, SubmonoidClass.coe_pow, pow_succ, ← ha, mul_assoc, mul_comm x.val _]
 
 theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
-  apply le_antisymm (by simpa [ringKrullDim_A_eq_one k] using Polynomial.ringKrullDim_le (R := A k))
+  apply le_antisymm
+    (by simpa [ringKrullDim_A_eq_one k] using! Polynomial.ringKrullDim_le (R := A k))
   let φ : (A k) →+* k := by
     refine ((((⊤ : Subring k).equivMapOfInjective _ RatFunc.C_injective).symm.trans
       Subring.topEquiv).toRingHom.comp (Subring.inclusion ?_)).comp

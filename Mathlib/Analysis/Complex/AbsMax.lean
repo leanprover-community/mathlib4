@@ -83,7 +83,7 @@ maximum modulus principle, complex analysis
 public section
 
 
-open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
+open TopologicalSpace Metric Set Filter Function AffineMap Bornology
 
 open scoped Topology Filter NNReal Real
 
@@ -122,7 +122,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     refine this.ne ?_
     have A : (∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ) = (2 * π * I : ℂ) • f z :=
       hd.circleIntegral_sub_inv_smul (mem_ball_self hr)
-    simp [A, norm_smul, Real.pi_pos.le]
+    simp [A, norm_smul]
   suffices ‖∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ‖ < 2 * π * r * (‖f z‖ / r) by
     rwa [mul_assoc, mul_div_cancel₀ _ hr.ne'] at this
   /- This inequality is true because `‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r` for all `ζ` on the circle and
@@ -195,7 +195,7 @@ theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
       Subset.rfl ?_
     simpa only [lineMap_apply_zero, mul_one, coe_nndist] using ball_subset_ball hw
   exact norm_max_aux₃ hr (hd.comp hde.diffContOnCl hball)
-      (hz.comp_mapsTo hball (lineMap_apply_zero z w))
+      (hz.comp_of_mapsTo hball (lineMap_apply_zero z w))
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable on a set `s`, the norm
 of `f` takes it maximum on `s` at `z`, and `w` is a point such that the closed ball with center `z`
@@ -203,7 +203,7 @@ and radius `dist w z` is included in `s`, then `‖f w‖ = ‖f z‖`. -/
 theorem norm_eq_norm_of_isMaxOn_of_ball_subset {f : E → F} {s : Set E} {z w : E}
     (hd : DiffContOnCl ℂ f s) (hz : IsMaxOn (norm ∘ f) s z) (hsub : ball z (dist w z) ⊆ s) :
     ‖f w‖ = ‖f z‖ :=
-  norm_eqOn_closedBall_of_isMaxOn (hd.mono hsub) (hz.on_subset hsub) (mem_closedBall.2 le_rfl)
+  norm_eqOn_closedBall_of_isMaxOn (hd.mono hsub) (hz.of_subset hsub) (mem_closedBall.2 le_rfl)
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `‖f z‖` is locally constant in a neighborhood
@@ -217,12 +217,15 @@ theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
         (hr <| closure_ball_subset_closedBall hx).1.differentiableWithinAt) fun x hx =>
       (hr <| ball_subset_closedBall hx).2⟩
 
-theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
+theorem isOpen_setOfPred_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
     (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} := by
   refine isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).and ?_
   replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w := hd.eventually_differentiableAt hz.1
   exact (norm_eventually_eq_of_isLocalMax hd <| hz.2.isLocalMax hz.1).mono fun x hx y hy =>
     le_trans (hz.2 hy).out hx.ge
+
+@[deprecated (since := "2026-07-09")]
+alias isOpen_setOf_mem_nhds_and_isMaxOn_norm := isOpen_setOfPred_mem_nhds_and_isMaxOn_norm
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
 complex normed space. Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
@@ -234,8 +237,8 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
   have hV : ∀ x ∈ V, ‖f x‖ = ‖f c‖ := fun x hx => le_antisymm (hm hx.1) (hx.2 hcU)
   suffices U ⊆ V from fun x hx => hV x (this hx)
   have hVo : IsOpen V := by
-    simpa only [ho.mem_nhds_iff, setOf_and, setOf_mem_eq]
-      using isOpen_setOf_mem_nhds_and_isMaxOn_norm hd
+    simpa only [ho.mem_nhds_iff, ofPred_and, ofPred_mem_eq]
+      using isOpen_setOfPred_mem_nhds_and_isMaxOn_norm hd
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, hm⟩
   set W := U ∩ {z | ‖f z‖ ≠ ‖f c‖}
   have hWo : IsOpen W := hd.continuousOn.norm.isOpen_inter_preimage ho isOpen_ne
@@ -391,7 +394,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
   rcases exists_mem_frontier_infDist_compl_eq_dist hwU this with ⟨z, hzU, hzw⟩
   refine ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq ?_⟩
-  refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.on_subset subset_closure) ?_).symm
+  refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.of_subset subset_closure) ?_).symm
   rw [dist_comm, ← hzw]
   exact ball_infDist_compl_subset.trans interior_subset
 
@@ -423,7 +426,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
 theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U)
     (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) :
     EqOn f g (closure U) := by
-  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using H
+  suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using! H
   refine fun z hz => norm_le_of_forall_mem_frontier_norm_le hU (hf.sub hg) (fun w hw => ?_) hz
   simp [hfg hw]
 

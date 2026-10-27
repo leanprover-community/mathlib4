@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.NNReal.Star
+public import Mathlib.Basic.NNReal.Star
 public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 
@@ -13,7 +13,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 # Topological properties of conjugation on ℝ
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 

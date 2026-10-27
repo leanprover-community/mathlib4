@@ -6,8 +6,7 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Algebra.Field.ULift
-public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Data.Rat.Encodable
 public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.RingTheory.Localization.Cardinality
@@ -46,8 +45,8 @@ theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimeP
 theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
   refine ⟨fun ⟨h⟩ => Fintype.isPrimePow_card_of_field, ?_⟩
   rintro ⟨p, n, hp, hn, hα⟩
-  haveI := Fact.mk hp.nat_prime
-  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
+  have := Fact.mk hp.nat_prime
+  have : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   exact ⟨(Fintype.equivOfCardEq
     (((Fintype.card_eq_nat_card).trans (GaloisField.card p n hn.ne')).trans hα)).symm.field⟩
 

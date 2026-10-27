@@ -64,6 +64,7 @@ def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk
 
 variable (V G)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (Action.forget V G).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
@@ -85,6 +86,7 @@ section
 
 variable [BraidedCategory V]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : BraidedCategory (Action V G) :=
   .ofFaithful (Action.forget V G) fun X Y ↦ mkIso (β_ _ _) fun g ↦ by simp
 
@@ -94,6 +96,7 @@ theorem β_hom_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom :=
 @[simp]
 theorem β_inv_hom {X Y : Action V G} : (β_ X Y).inv.hom = (β_ X.V Y.V).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where
 
@@ -215,6 +218,7 @@ noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
 
 variable [Group G]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
@@ -263,6 +267,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
     <;> simp_all [diagonalSuccIsoTensorTrivial, types_tensorObj_def]
     <;> rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
@@ -279,7 +284,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n 
     | zero => simp; rfl
     | succ i =>
       simpa [diagonalSuccIsoTensorTrivial, types_tensorObj_def, mul_assoc, Fin.partialProd_succ',
-        ofMulAction_V] using congrFun (hn (g * f 0) (Fin.tail f)) i
+        ofMulAction_V] using! congrFun (hn (g * f 0) (Fin.tail f)) i
 
 end
 
@@ -294,6 +299,7 @@ variable {W : Type*} [Category* W] [MonoidalCategory V] [MonoidalCategory W]
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
@@ -319,6 +325,7 @@ lemma mapAction_ε_hom [F.LaxMonoidal] : (ε (F.mapAction G)).hom = ε F := rfl
 lemma mapAction_μ_hom [F.LaxMonoidal] (X Y : Action V G) :
     (μ (F.mapAction G) X Y).hom = μ F X.V Y.V := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An oplax monoidal functor induces an oplax monoidal functor between
 the categories of `G`-actions within those categories. -/
@@ -344,6 +351,7 @@ lemma mapAction_η_hom [F.OplaxMonoidal] : (η (F.mapAction G)).hom = η F := rf
 lemma mapAction_δ_hom [F.OplaxMonoidal] (X Y : Action V G) :
     (δ (F.mapAction G) X Y).hom = δ F X.V Y.V := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A monoidal functor induces a monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.Monoidal] : (F.mapAction G).Monoidal where

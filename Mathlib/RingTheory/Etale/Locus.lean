@@ -46,6 +46,7 @@ lemma mem_etaleLocus_iff {p : PrimeSpectrum A} : p ∈ etaleLocus R A ↔ IsEtal
 lemma IsEtaleAt.comp
     (p : Ideal A) (P : Ideal B) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [IsEtaleAt R p] [IsEtaleAt A P] : IsEtaleAt R P := by
+  let := Localization.AtPrime.algebraOfLiesOver p P
   have : FormallyEtale (Localization.AtPrime p) (Localization.AtPrime P) :=
     .localization_base p.primeCompl
   exact FormallyEtale.comp R (Localization.AtPrime p) _

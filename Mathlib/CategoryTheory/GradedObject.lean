@@ -40,6 +40,7 @@ open Category Limits
 universe w v u
 
 /-- A type synonym for `β → C`, used for `β`-graded objects in a category `C`. -/
+@[implicit_reducible]
 def GradedObject (β : Type w) (C : Type u) : Type max w u :=
   β → C
 
@@ -70,7 +71,7 @@ lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x,
   apply h
 
 /-- The projection of a graded object to its `i`-th component. -/
-@[simps]
+@[implicit_reducible, simps]
 def eval {β : Type w} (b : β) : GradedObject β C ⥤ C where
   obj X := X b
   map f := f b
@@ -88,6 +89,7 @@ def isoMk (e : ∀ i, X i ≅ Y i) : X ≅ Y where
 variable {X Y}
 
 -- this lemma is not an instance as it may create a loop with `isIso_apply_of_isIso`
+set_option backward.isDefEq.respectTransparency.types false in
 lemma isIso_of_isIso_apply (f : X ⟶ Y) [hf : ∀ i, IsIso (f i)] :
     IsIso f := by
   change IsIso (isoMk X Y (fun i => asIso (f i))).hom
@@ -181,7 +183,6 @@ theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
   subst h
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between β-graded objects and γ-graded objects,
 given an equivalence between β and γ.
 -/
@@ -196,6 +197,7 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
@@ -441,6 +443,8 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
     (c (p i) (by rw [hpqr, hi])).inj ⟨i, rfl⟩ ≫ c'.inj (⟨p i, by
       rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
 `X : GradedObject I C`, `k : K`, the cofan constructed by `cofanMapObjComp` is a colimit.
 In other words, if we have, for all `j : J` such that `hj : q j = k`,
@@ -450,7 +454,7 @@ the point of this latter cofan computes the coproduct of the `X i` such that `r 
 @[simp]
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s => Cofan.IsColimit.desc hc'
       (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
         (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
@@ -481,9 +485,9 @@ noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
     then X.ιMapObj p i j h
     else 0
 
-lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
+lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dite_eq_left h
 
-lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
+lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dite_eq_right h
 
 variable {X Y} in
 @[reassoc (attr := simp)]

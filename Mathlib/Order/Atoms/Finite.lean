@@ -21,10 +21,10 @@ This module contains some results on atoms and simple lattices in the finite con
 
 -/
 
-@[expose] public section
+public section
 
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace IsSimpleOrder
 
@@ -76,8 +76,6 @@ end Bool
 
 section Fintype
 
-open Finset
-
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :
     IsCoatomic α :=
@@ -115,7 +113,7 @@ theorem exists_covby_infinite_Ici_of_infinite_Ici [IsStronglyAtomic α]
     ∃ b, a ⋖ b ∧ (Set.Ici b).Infinite := by
   by_contra! h
   refine ((hfin.biUnion (t := Set.Ici) (by simpa using h)).subset (fun b hb ↦ ?_)).not_infinite
-    (ha.diff (Set.finite_singleton a))
+    (ha.sdiff (Set.finite_singleton a))
   obtain ⟨x, hax, hxb⟩ := ((show a ≤ b from hb.1).lt_of_ne (Ne.symm hb.2)).exists_covby_le
   exact Set.mem_biUnion hax hxb
 

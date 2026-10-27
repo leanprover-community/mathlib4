@@ -21,7 +21,9 @@ It also introduces a coercion from `X.Subcomplex` to `SSet`.
 
 universe u
 
-open CategoryTheory Simplicial Limits
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -128,7 +130,7 @@ instance : Subsingleton (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
 
 instance : Unique (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   default :=
-    { app _ := TypeCat.ofHom fun ⟨_, h⟩ ↦ by tauto
+    { app _ := ↾fun ⟨_, h⟩ ↦ by tauto
       naturality _ _ _ := by ext ⟨_, h⟩; tauto }
   uniq := by subsingleton
 
@@ -203,7 +205,7 @@ instance [Mono f] : IsIso (toRange f) :=
 lemma range_eq_top_iff : Subcomplex.range f = ⊤ ↔ Epi f := by
   rw [NatTrans.epi_iff_epi_app, Subfunctor.ext_iff, funext_iff]
   simp only [epi_iff_surjective, Subfunctor.range_obj, Subfunctor.top_obj,
-    Set.top_eq_univ, Set.range_eq_univ]
+    Set.range_eq_univ]
 
 lemma range_eq_top [Epi f] : Subcomplex.range f = ⊤ := by
   rwa [range_eq_top_iff]
@@ -258,9 +260,11 @@ lemma preimage_id (A : X.Subcomplex) : A.preimage (𝟙 X) = A := rfl
 lemma preimage_comp {Z : SSet.{u}} (A : Z.Subcomplex) (f : X ⟶ Y) (g : Y ⟶ Z) :
     A.preimage (f ≫ g) = (A.preimage g).preimage f := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_ι (A : X.Subcomplex) : A.preimage A.ι = ⊤ := by aesop
+
+lemma preimage_monotone (f : Y ⟶ X) : Monotone (fun (S : X.Subcomplex) ↦ S.preimage f) :=
+  fun _ _ h _ _ hx ↦ h _ hx
 
 end
 
@@ -287,6 +291,7 @@ lemma image_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
 lemma range_comp {Z : SSet.{u}} (g : Y ⟶ Z) :
     Subcomplex.range (f ≫ g) = (Subcomplex.range f).image g := by aesop
 
+set_option backward.defeqAttrib.useBackward true in
 lemma image_eq_range : A.image f = range (A.ι ≫ f) := by aesop
 
 lemma image_iSup {ι : Type*} (S : ι → X.Subcomplex) (f : X ⟶ Y) :
@@ -340,6 +345,20 @@ lemma preimage_eq_top_iff (B : X.Subcomplex) (f : Y ⟶ X) :
 lemma image_preimage_le (B : X.Subcomplex) (f : Y ⟶ X) :
     (B.preimage f).image f ≤ B := by
   rw [image_le_iff]
+
+@[simp]
+lemma preimage_image (S : X.Subcomplex) (f : X ⟶ Y) [Mono f] :
+    (S.image f).preimage f = S := by
+  refine le_antisymm ?_ (by rw [← image_le_iff])
+  intro n x ⟨y, hy, h⟩
+  rwa [← injective_of_mono (f.app n) h]
+
+@[simp]
+lemma image_le_image_iff (f : X ⟶ Y) [Mono f] {S₁ S₂ : X.Subcomplex} :
+    S₁.image f ≤ S₂.image f ↔ S₁ ≤ S₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ image_monotone f h⟩
+  rw [← S₁.preimage_image f, ← S₂.preimage_image f]
+  exact preimage_monotone f h
 
 @[simp]
 lemma preimage_image_of_isIso (f : X ⟶ Y) (B : Y.Subcomplex) [IsIso f] :

@@ -6,6 +6,7 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.RingTheory.MvPowerSeries.Basic  -- shake: keep (tactic dependency)
+public meta import Mathlib.Tactic.Simps
 
 /-!
 The command `name_power_vars` names variables in

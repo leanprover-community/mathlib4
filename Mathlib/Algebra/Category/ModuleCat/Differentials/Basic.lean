@@ -73,6 +73,7 @@ def d (b : B) : M :=
 @[simp]
 lemma d_add (b b' : B) : D.d (b + b') = D.d b + D.d b' := by simp [d]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma d_mul (b b' : B) : D.d (b * b') = b • D.d b' + b' • D.d b := by simp [d]
 
@@ -95,7 +96,7 @@ variable (f) in
 /-- The module of differentials of a morphism `f : A ⟶ B` in the category `CommRingCat`. -/
 noncomputable def KaehlerDifferential : ModuleCat.{u} B :=
   letI := f.hom.toAlgebra
-  ModuleCat.of B (_root_.KaehlerDifferential A B)
+  ↧(_root_.KaehlerDifferential A B)
 
 namespace KaehlerDifferential
 
@@ -175,8 +176,8 @@ noncomputable def desc : CommRingCat.KaehlerDifferential f ⟶ M :=
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma desc_d (b : B) : D.desc (CommRingCat.KaehlerDifferential.d b) = D.d b := by
-  letI := f.hom.toAlgebra
-  letI := Module.compHom M f.hom
+  let := f.hom.toAlgebra
+  let := Module.compHom M f.hom
   apply D.liftKaehlerDifferential_comp_D
 
 end ModuleCat.Derivation

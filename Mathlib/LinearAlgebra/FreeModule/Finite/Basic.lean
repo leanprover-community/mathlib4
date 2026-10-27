@@ -20,7 +20,7 @@ We provide some instances for finite and free modules.
 * `Module.Finite.of_basis` : A free module with a basis indexed by a `Fintype` is finite.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

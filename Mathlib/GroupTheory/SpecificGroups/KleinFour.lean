@@ -80,7 +80,8 @@ theorem isMulCommutative {G : Type*} [Group G] [IsKleinFour G] :
 
 /-- This instance is scoped, because it always applies (which makes linting and typeclass inference
 potentially *a lot* slower). -/
-@[to_additive]
+@[to_additive /-- This instance is scoped, because it always applies (which makes linting and
+typeclass inference potentially *a lot* slower). -/]
 scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
   Nat.finite_of_card_ne_zero <| by simp [IsKleinFour.card_four]
 

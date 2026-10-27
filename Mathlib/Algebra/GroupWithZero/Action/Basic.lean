@@ -52,7 +52,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {G G₀ A M M₀ N₀ R α : Type*}
+variable {G G₀ A M₀ N₀ R α : Type*}
 
 section GroupWithZero
 variable [GroupWithZero G₀] [MulAction G₀ α] {a : G₀}
@@ -69,7 +69,7 @@ protected lemma MulAction.surjective₀ (ha : a ≠ 0) : Surjective (a • · : 
 end GroupWithZero
 
 section DistribMulAction
-variable [Group G] [Monoid M] [AddMonoid A]
+variable [Group G] [AddMonoid A]
 variable (A)
 
 /-- Each element of the group defines an additive monoid isomorphism.
@@ -86,7 +86,7 @@ variable (G)
 
 This is a stronger version of `MulAction.toPermHom`. -/
 @[simps]
-def DistribMulAction.toAddAut [DistribMulAction G A] : G →* AddAut A where
+def DistribMulAction.toAddAut [DistribMulAction G A] : G →* Multiplicative (AddAut A) where
   toFun := toAddEquiv _
   map_one' := AddEquiv.ext (one_smul _)
   map_mul' _ _ := AddEquiv.ext (mul_smul _ _)
@@ -98,20 +98,6 @@ end DistribMulAction
 def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActionWithZero M₀ N₀]
     [IsScalarTower M₀ N₀ N₀] [SMulCommClass M₀ N₀ N₀] : M₀ × N₀ →*₀ N₀ :=
   { smulMonoidHom with map_zero' := smul_zero _ }
-
-namespace AddAut
-
-/-- The tautological action by `AddAut A` on `A`.
-
-This generalizes `Function.End.applyMulAction`. -/
-instance applyDistribMulAction [AddMonoid A] : DistribMulAction (AddAut A) A where
-  smul := (· <| ·)
-  smul_zero := map_zero
-  smul_add := map_add
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-
-end AddAut
 
 lemma IsUnit.smul_sub_iff_sub_inv_smul [Group G] [Monoid R] [AddGroup R] [DistribMulAction G R]
     [IsScalarTower G R R] [SMulCommClass G R R] (r : G) (a : R) :

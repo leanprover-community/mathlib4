@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2026 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger, Aristotle AI
+Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger
 -/
 module
 
-public import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.Complex.Poisson
+public import Mathlib.Analysis.Complex.Harmonic.Analytic
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.HarmonicContOnCl
 
 /-!
 # Poisson Integral Formula
@@ -20,7 +21,7 @@ TODO: Extend this formula to vector-valued harmonic functions
 
 public section
 
-open Complex InnerProductSpace Metric Real Topology
+open Complex InnerProductSpace Metric Real
 
 variable
   {f : ℂ → ℝ} {c w : ℂ} {R : ℝ}
@@ -32,9 +33,8 @@ private lemma continuousOn_herglotz_riesz (_ : w ∈ ball c R) :
       {z | ‖z - c‖ ∈ Set.Ioc ‖w - c‖ R} := by
   have : ∀ x ∈ {z | ‖z - c‖ ∈ Set.Ioc ‖w - c‖ R}, x - c - (w - c) ≠ 0 := by
     grind [mem_ball, mem_sphere]
-  fun_prop (disch := assumption)
+  fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Poisson integral formula** for harmonic functions on arbitrary disks in the complex plane,
 formulated with the real part of the Herglotz–Riesz kernel of integration.
@@ -43,7 +43,7 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
     (hf : HarmonicOnNhd f (closedBall c R)) (hw : w ∈ ball c R) :
     Real.circleAverage ((re ∘ herglotzRieszKernel c w) • f) c R = f w := by
   obtain ⟨e, h₁e, h₂e⟩ := (isCompact_closedBall c R).exists_thickening_subset_open
-    (isOpen_setOf_harmonicAt f) (by aesop)
+    (isOpen_setOfPred_harmonicAt f) (by aesop)
   rw [thickening_closedBall h₁e (pos_of_mem_ball hw).le] at h₂e
   obtain ⟨F, h₁F, h₂F⟩ := HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq h₂e
   have h₃F : DifferentiableOn ℂ F (closure (ball c R)) := by
@@ -61,7 +61,7 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
   · apply h₂F
     grind [mem_ball]
   -- CircleIntegrable (fun z ↦ ((z - c + (w - c)) / (z - c - (w - c))).re • F z) c R
-  apply (ContinuousOn.smul _ _).circleIntegrable'
+  apply (ContinuousOn.fun_smul _ _).circleIntegrable'
   · apply (continuousOn_herglotz_riesz hw).mono
     grind [mem_ball, dist_eq_norm, mem_sphere_iff_norm, (pos_of_mem_ball hw)]
   · apply (h₁F.mono _).continuousOn (𝕜 := ℂ)

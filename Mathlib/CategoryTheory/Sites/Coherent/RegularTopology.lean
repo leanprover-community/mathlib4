@@ -18,11 +18,9 @@ This file characterises the covering sieves of the regular topology.
   regular topology if and only if it contains an effective epi.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.regularTopology
-
-open Limits
 
 variable {C : Type*} [Category* C] [Preregular C] {X : C}
 

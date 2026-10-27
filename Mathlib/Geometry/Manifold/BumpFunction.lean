@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.Notation
@@ -73,7 +74,7 @@ section FiniteDimensional
 
 variable [FiniteDimensional ℝ E]
 
-variable {c : M} (f : SmoothBumpFunction I c) {x : M}
+variable {c : M} (f : SmoothBumpFunction I c)
 
 /-- The function defined by `f : SmoothBumpFunction c`. Use automatic coercion to function
 instead. -/

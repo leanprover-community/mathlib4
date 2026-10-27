@@ -18,8 +18,8 @@ and `Frac R` denotes the fraction field of a domain `R`.
 
 ## Main results and definitions
 
-* `FractionalIdeal.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
-* `FractionalIdeal.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
+* `IsDedekindDomain.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
+* `IsDedekindDomain.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
   `𝓓(B/A) = 𝓓(R₁/A) * 𝓓(R₂/A)`.
 * `Module.Basis.ofIsCoprimeDifferentIdeal`: Construct a `R₁`-basis of `B` by lifting an
   `A`-basis of `R₂`.
@@ -75,6 +75,8 @@ attribute [local instance] FractionRing.liftAlgebra
 variable [IsDomain A] [IsDedekindDomain B] [IsDedekindDomain R₁] [IsDedekindDomain R₂]
     [IsFractionRing B L] [IsFractionRing R₁ F₁] [IsFractionRing R₂ F₂] [IsIntegrallyClosed A]
     [IsIntegralClosure B R₁ L] [IsTorsionFree R₁ B] [IsTorsionFree R₂ B]
+
+set_option linter.overlappingInstances false
 
 namespace IsDedekindDomain
 
@@ -228,8 +230,9 @@ noncomputable def ofIsCoprimeDifferentIdeal (h₁ : F₁.LinearDisjoint F₂)
     apply map_injective_of_injective (f := (IsScalarTower.toAlgHom R₁ B L).toLinearMap)
       (FaithfulSMul.algebraMap_injective B L)
     rw [map_span, ← Set.range_comp]
-    convert Module.Basis.ofIsCoprimeDifferentIdeal_aux A B R₁ R₂ h₁ h₂ h₃ b₂
-      (b.localizationLocalization_span K A⁰ F₂)
+    convert!
+      Module.Basis.ofIsCoprimeDifferentIdeal_aux A B R₁ R₂ h₁ h₂ h₃ b₂
+        (b.localizationLocalization_span K A⁰ F₂)
     · ext
       simp [b₂, v, ← IsScalarTower.algebraMap_apply]
     · ext; simp

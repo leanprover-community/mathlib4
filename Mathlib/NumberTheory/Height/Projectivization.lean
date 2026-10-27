@@ -83,7 +83,8 @@ open Lean.Meta Qq Projectivization
 
 /-- Extension for the `positivity` tactic: `Projectivization.mulHeight` is always positive. -/
 @[positivity Projectivization.mulHeight _]
-meta def evalProjMulHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalProjMulHeight : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $ιF $a) =>
     assertInstancesCommute
@@ -92,7 +93,8 @@ meta def evalProjMulHeight : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for the `positivity` tactic: `Projectivization.logHeight` is always nonnegative. -/
 @[positivity Projectivization.logHeight _]
-meta def evalProjLogHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalProjLogHeight : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $ιF $a) =>
     assertInstancesCommute

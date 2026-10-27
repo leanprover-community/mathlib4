@@ -299,7 +299,7 @@ section FEPair
 
 /-- A `StrongFEPair` structure with `f = oddKernel a` and `g = sinKernel a`. -/
 @[simps]
-def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
+def hurwitzOddFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   f := ofReal ∘ oddKernel a
   g := ofReal ∘ sinKernel a
   hf_int := (continuous_ofReal.comp_continuousOn (continuousOn_oddKernel a)).locallyIntegrableOn
@@ -311,9 +311,7 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
   ε := 1
   hε := one_ne_zero
   f₀ := 0
-  hf₀ := rfl
   g₀ := 0
-  hg₀ := rfl
   hf_top r := by
     let ⟨v, hv, hv'⟩ := isBigO_atTop_oddKernel a
     rw [← isBigO_norm_left] at hv' ⊢
@@ -323,6 +321,10 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
     rw [← isBigO_norm_left] at hv' ⊢
     simpa using hv'.trans (isLittleO_exp_neg_mul_rpow_atTop hv _).isBigO
   h_feq x hx := by simp [← ofReal_mul, oddKernel_functional_equation a, inv_rpow (le_of_lt hx)]
+
+lemma isStrong_hurwitzOddFEPair (a : UnitAddCircle) : IsStrongFEPair (hurwitzOddFEPair a) where
+  hf₀ := rfl
+  hg₀ := rfl
 
 end FEPair
 
@@ -339,7 +341,7 @@ def completedHurwitzZetaOdd (a : UnitAddCircle) (s : ℂ) : ℂ :=
 
 lemma differentiable_completedHurwitzZetaOdd (a : UnitAddCircle) :
     Differentiable ℂ (completedHurwitzZetaOdd a) :=
-  ((hurwitzOddFEPair a).differentiable_Λ.comp
+  ((isStrong_hurwitzOddFEPair a).differentiable_Λ.comp
     ((differentiable_id.add_const 1).div_const 2)).div_const 2
 
 /-- The entire function of `s` which agrees with
@@ -351,7 +353,7 @@ def completedSinZeta (a : UnitAddCircle) (s : ℂ) : ℂ :=
 
 lemma differentiable_completedSinZeta (a : UnitAddCircle) :
     Differentiable ℂ (completedSinZeta a) :=
-  ((hurwitzOddFEPair a).symm.differentiable_Λ.comp
+  ((isStrong_hurwitzOddFEPair a).symm.differentiable_Λ.comp
     ((differentiable_id.add_const 1).div_const 2)).div_const 2
 
 /-!
@@ -360,13 +362,13 @@ lemma differentiable_completedSinZeta (a : UnitAddCircle) :
 
 lemma completedHurwitzZetaOdd_neg (a : UnitAddCircle) (s : ℂ) :
     completedHurwitzZetaOdd (-a) s = -completedHurwitzZetaOdd a s := by
-  simp [completedHurwitzZetaOdd, StrongFEPair.Λ, hurwitzOddFEPair, mellin, oddKernel_neg,
-    integral_neg, neg_div]
+  simp [completedHurwitzZetaOdd, (isStrong_hurwitzOddFEPair _).Λ_eq, mellin,
+    oddKernel_neg, integral_neg, neg_div]
 
 lemma completedSinZeta_neg (a : UnitAddCircle) (s : ℂ) :
     completedSinZeta (-a) s = -completedSinZeta a s := by
-  simp [completedSinZeta, StrongFEPair.Λ, mellin, StrongFEPair.symm, WeakFEPair.symm,
-    hurwitzOddFEPair, sinKernel_neg, integral_neg, neg_div]
+  simp [completedSinZeta, (isStrong_hurwitzOddFEPair _).symm_Λ_eq, mellin, sinKernel_neg,
+    integral_neg, neg_div]
 
 /-- Functional equation for the odd Hurwitz zeta function. -/
 theorem completedHurwitzZetaOdd_one_sub (a : UnitAddCircle) (s : ℂ) :
@@ -403,6 +405,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     apply Summable.div_const
     apply Summable.of_nat_of_neg <;>
     simpa
+  rw [completedSinZeta, (isStrong_hurwitzOddFEPair _).symm_Λ_eq]
   refine (mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum).congr_fun
     fun n ↦ ?_
   simp [Int.sign_eq_sign, ← Int.cast_abs] -- non-terminal simp OK when `ring` follows
@@ -441,6 +444,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     simp_rw [c, ← mul_one_div ‖_‖]
     apply Summable.mul_left
     rwa [summable_one_div_int_add_rpow]
+  rw [completedHurwitzZetaOdd, (isStrong_hurwitzOddFEPair _).Λ_eq]
   have := mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum
   refine this.congr_fun fun n ↦ ?_
   simp only [r, c, mul_one_div, div_mul_eq_mul_div, div_right_comm]

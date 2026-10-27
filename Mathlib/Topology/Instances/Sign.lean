@@ -5,7 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Data.Sign.Defs
+public import Mathlib.Basic.Sign.Defs
 public import Mathlib.Topology.Order.Basic
 
 /-!
@@ -15,7 +15,7 @@ This file gives `SignType` the discrete topology, and proves continuity results 
 in an `OrderTopology`.
 -/
 
-@[expose] public section
+public section
 
 instance : TopologicalSpace SignType :=
   ⊥

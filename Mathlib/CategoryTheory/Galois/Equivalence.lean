@@ -40,9 +40,11 @@ variable (F) in
 def functorToContAction : C ⥤ ContAction FintypeCat (Aut F) :=
   ObjectProperty.lift _ (functorToAction F) (fun X ↦ continuousSMul_aut_fiber F X)
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (functorToContAction F).Faithful :=
   inferInstanceAs <| (ObjectProperty.lift _ _ _).Faithful
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (functorToContAction F).Full :=
   inferInstanceAs <| (ObjectProperty.lift _ _ _).Full
 
@@ -54,7 +56,7 @@ instance {F : C ⥤ FintypeCat.{u₁}} [FiberFunctor F] : (functorToContAction F
 
 instance : (functorToContAction F).EssSurj := by
   let F' : C ⥤ FintypeCat.{u₁} := F ⋙ FintypeCat.uSwitch.{w, u₁}
-  letI : FiberFunctor F' := FiberFunctor.comp_right _
+  let : FiberFunctor F' := FiberFunctor.comp_right _
   have : (functorToContAction F').EssSurj := inferInstance
   let f : Aut F ≃ₜ* Aut F' :=
     (autEquivAutWhiskerRight F (FintypeCat.uSwitchEquivalence.{w, u₁}).fullyFaithfulFunctor)

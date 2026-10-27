@@ -70,7 +70,7 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
   neg_add_cancel := fun ⟨a, ha⟩ ↦
     Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
       rw [Fin.val_zero, Nat.sub_add_cancel, Nat.mod_self]
-      exact le_of_lt ha
+      exact Nat.le_of_lt ha
   sub := Fin.sub
   sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦
     Fin.ext <| by simp [Fin.sub_def, Fin.neg_def, Fin.add_def, Nat.add_comm]
@@ -126,13 +126,11 @@ lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
 @[simp] lemma le_sub_one_iff {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   cases n
   · simp [fin_one_eq_zero k]
-  simp only [le_def]
-  rw [← lt_sub_one_iff, le_iff_lt_or_eq, val_fin_lt, val_inj, lt_sub_one_iff, or_iff_left_iff_imp,
-    eq_comm, sub_eq_iff_eq_add]
+  rw [le_def, Nat.le_iff_lt_or_eq, val_fin_lt, lt_sub_iff, val_inj, eq_comm, sub_eq_self]
   simp
 
 lemma sub_one_lt_iff {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
-  not_iff_not.1 <| by simp only [lt_def, not_lt, val_fin_le, le_sub_one_iff, le_zero_iff]
+  not_iff_not.1 <| by simp only [lt_def, Nat.not_lt, val_fin_le, le_sub_one_iff, le_zero_iff]
 
 @[simp] lemma neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 

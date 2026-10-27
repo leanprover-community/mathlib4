@@ -29,7 +29,7 @@ variable {R : Type*} [Semiring R]
 
 /-- Left multiplication by a unit of a semiring as an additive automorphism. -/
 @[simps! +simpRhs]
-def mulLeft : Rˣ →* AddAut R :=
+def mulLeft : Rˣ →* Multiplicative (AddAut R) :=
   DistribMulAction.toAddAut _ _
 
 /-- Right multiplication by a unit of a semiring as an additive automorphism. -/

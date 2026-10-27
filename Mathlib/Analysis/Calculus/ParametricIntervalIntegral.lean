@@ -17,7 +17,7 @@ integrals. -/
 public section
 
 
-open TopologicalSpace MeasureTheory Filter Metric Set
+open TopologicalSpace MeasureTheory Filter Set
 
 open scoped Topology Filter Interval
 

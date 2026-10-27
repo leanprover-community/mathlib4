@@ -53,7 +53,7 @@ theorem tendsto_mul_pow_div_factorial_sub_atTop (a c : K) (d : ℕ) :
 
 theorem tendsto_pow_div_factorial_atTop (c : K) :
     Tendsto (fun n ↦ c ^ n / n !) atTop (𝓝 0) := by
-  convert tendsto_mul_pow_div_factorial_sub_atTop 1 c 0
+  convert! tendsto_mul_pow_div_factorial_sub_atTop 1 c 0
   rw [one_mul]
 
 end FloorSemiring
@@ -86,7 +86,7 @@ theorem continuousOn_floor (n : ℤ) :
     ContinuousOn (fun x => floor x : α → α) (Ico n (n + 1) : Set α) :=
   (continuousOn_congr <| floor_eq_on_Ico' n).mpr continuousOn_const
 
-theorem continuousOn_ceil [IsStrictOrderedRing α] (n : ℤ) :
+theorem continuousOn_ceil (n : ℤ) :
     ContinuousOn (fun x => ceil x : α → α) (Ioc (n - 1) n : Set α) :=
   (continuousOn_congr <| ceil_eq_on_Ioc' n).mpr continuousOn_const
 

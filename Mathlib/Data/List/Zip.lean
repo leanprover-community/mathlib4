@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.List.Basic
+public import Mathlib.Logic.OpClass
 
 /-!
 # zip & unzip
@@ -21,7 +23,7 @@ applies, until one of the lists is exhausted. For example,
 `unzip` undoes `zip`. For example, `unzip [(a₁, b₁), (a₂, b₂)] = ([a₁, a₂], [b₁, b₂])`.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

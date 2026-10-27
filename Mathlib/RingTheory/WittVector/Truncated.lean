@@ -100,7 +100,7 @@ def out (x : TruncatedWittVector p n R) : 𝕎 R :=
 
 @[simp]
 theorem coeff_out (x : TruncatedWittVector p n R) (i : Fin n) : x.out.coeff i = x.coeff i := by
-  rw [out]; dsimp only; rw [dif_pos i.is_lt, Fin.eta]
+  rw [out]; dsimp only; rw [dite_eq_left i.is_lt, Fin.eta]
 
 theorem out_injective : Injective (@out p n R _) := by
   intro x y h
@@ -197,7 +197,7 @@ end TruncatedWittVector
 /-- A macro tactic used to prove that `truncateFun` respects ring operations. -/
 macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
   `(tactic|
-    { show _ = WittVector.truncateFun n _
+    { change _ = WittVector.truncateFun n _
       apply TruncatedWittVector.out_injective
       iterate rw [WittVector.out_truncateFun]
       first

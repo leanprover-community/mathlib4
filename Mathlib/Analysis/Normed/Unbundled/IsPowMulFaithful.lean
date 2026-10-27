@@ -42,7 +42,7 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
     exact ((rpow_zero C ▸ ContinuousAt.tendsto (continuousAt_const_rpow (ne_of_gt hC0))).comp
       (tendsto_const_div_atTop_nhds_zero_nat 1)).mul tendsto_const_nhds
   apply ge_of_tendsto hlim
-  simp only [eventually_atTop, ge_iff_le]
+  simp only [eventually_atTop]
   use 1
   intro n hn
   have h : (C ^ (1 / n : ℝ)) ^ n = C := by
@@ -70,7 +70,7 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
   obtain ⟨s, hs0, hs⟩ := hgf
   have hle : RingHom.IsBoundedWrt f g (RingHom.id _) := ⟨s, hs0, hs⟩
   have hge : RingHom.IsBoundedWrt g f (RingHom.id _) := ⟨r, hr0, hr⟩
-  rw [← Function.Injective.eq_iff DFunLike.coe_injective']
+  rw [← Function.Injective.eq_iff DFunLike.coe_injective]
   ext x
   exact le_antisymm (contraction_of_isPowMul_of_boundedWrt g hfpm hge x)
     (contraction_of_isPowMul_of_boundedWrt f hgpm hle x)

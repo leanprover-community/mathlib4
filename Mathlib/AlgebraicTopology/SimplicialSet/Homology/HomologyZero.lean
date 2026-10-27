@@ -22,7 +22,9 @@ set `X`.
 
 universe w v v' u u'
 
-open CategoryTheory Limits AlgebraicTopology Simplicial TypeCat
+open CategoryTheory Limits AlgebraicTopology TypeCat
+
+open scoped Simplicial
 
 variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 
@@ -37,7 +39,6 @@ noncomputable def π₀.fromChainComplexXZero :
     (X.chainComplex R).X 0 ⟶ ∐ (fun (_ : π₀ X) ↦ R) :=
   (sigmaConst.obj _).map (↾π₀.mk)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π₀.comp_fromChainComplexXZero (x : X _⦋0⦌) :
     X.ιChainComplex x ≫ π₀.fromChainComplexXZero X R =
@@ -53,7 +54,7 @@ lemma π₀.d_fromChainComplexXZero (n : ℕ) :
     ext x
     simp [π₀.sound (Edge.mk' x)]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a simplicial set `X`, the cokernel of the differential `d 1 0`
 of the chain complex of `X` with coefficients in `R` identifies
 to the coproduct of copies of `R` indexed by `π₀ X`. -/
@@ -78,14 +79,17 @@ noncomputable def homologyData₀ :
   ShortComplex.HomologyData.ofIsColimitCokernelCofork _ (by cat_disch) _
     (isColimitCokernelCoforkChainComplexDOneZero X R)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma homologyData₀_left_π :
     dsimp% (X.homologyData₀ R).left.π = π₀.fromChainComplexXZero X R := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma homologyData₀_left_i :
     dsimp% (X.homologyData₀ R).left.i = 𝟙 _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma homologyData₀_left_liftK {T : C} (f : T ⟶ (X.chainComplex R).X 0) :
     dsimp% (X.homologyData₀ R).left.liftK f (by cat_disch) = f :=
@@ -100,6 +104,7 @@ noncomputable def homology₀Iso :
   ShortComplex.homologyMapIso (HomologicalComplex.isoSc' _ 1 0 0 (by simp) (by simp)) ≪≫
     (X.homologyData₀ R).left.homologyIso
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCycles_ιChainComplex_homologyπ_homology₀Iso_hom (x : X _⦋0⦌) :
@@ -113,14 +118,12 @@ lemma liftCycles_ιChainComplex_homologyπ_homology₀Iso_hom (x : X _⦋0⦌) :
 noncomputable def homology₀ε : X.homology R 0 ⟶ R :=
   (X.homology₀Iso R).hom ≫ Sigma.desc (fun _ ↦ 𝟙 R)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCycles_ιChainComplex_homologyπ_homology₀ε (x : X _⦋0⦌) :
     (X.chainComplex R).liftCycles (X.ιChainComplex x) 0 (by simp) (by simp) ≫
       (X.chainComplex R).homologyπ 0 ≫ X.homology₀ε R = 𝟙 R := by
   simp [homology₀ε]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [X.IsConnected] : IsIso (X.homology₀ε R) := by
   dsimp [homology₀ε]
   simp only [isIso_comp_left_iff]

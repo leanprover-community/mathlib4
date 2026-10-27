@@ -13,6 +13,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 # Scheme-theoretically dominant morphisms
 
 In this file, we define scheme-theoretically dominant morphisms as morphisms with trivial kernel.
+
 ## Main results
 - `AlgebraicGeometry.IsSchemeTheoreticallyDominant`:
   The class of scheme-theoretically dominant morphisms.
@@ -24,7 +25,7 @@ In this file, we define scheme-theoretically dominant morphisms as morphisms wit
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty Limits
 

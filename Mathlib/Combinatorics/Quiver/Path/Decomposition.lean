@@ -47,7 +47,6 @@ theorem exists_mem_notMem_hom_path_path_of_notMem_mem {a b : V} (p : Path a b) (
     (ha_in_S : a ∈ S) (hb_not_in_S : b ∉ S) :
     ∃ᵉ (u ∈ S) (v ∉ S) (e : u ⟶ v) (p₁ : Path a u) (p₂ : Path v b),
       p = p₁.comp (e.toPath.comp p₂) := by
-  classical
   have ha_not_in_compl : a ∉ Sᶜ := by simpa
   have hb_in_compl : b ∈ Sᶜ := by simpa
   obtain ⟨u, hu_not_in_compl, v, hv_in_compl, e, p₁, p₂, hp⟩ :=

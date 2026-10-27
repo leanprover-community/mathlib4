@@ -14,6 +14,7 @@ import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Lemmas about index and multiplication-by-n
@@ -27,7 +28,7 @@ public section
 
 namespace AddSubgroup
 
-variable {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+variable {M : Type*} [AddCommGroup M]
 
 open Module
 
@@ -54,7 +55,7 @@ lemma relIndex_map_nsmul (n : ℕ) (S : AddSubgroup M) [Free ℤ ↥S.toIntSubmo
     [Module.Finite ℤ ↥S.toIntSubmodule] :
     (S.map (nsmulAddMonoidHom (α := M) n)).relIndex S = n ^ finrank ℤ S := by
   simpa only [relIndex, addSubgroupOf_map_nsmulAddMonoidHom_eq_range]
-    using index_range_nsmul S.toIntSubmodule n
+    using! index_range_nsmul S.toIntSubmodule n
 
 /-- On an additive group that is torsion-free as a `ℤ`-module, the linear map given by
 multiplication by `n : ℕ` is injective (when `n ≠ 0`). -/

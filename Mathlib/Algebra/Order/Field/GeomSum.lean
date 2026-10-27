@@ -19,7 +19,7 @@ public section
 
 variable {K : Type*}
 
-open Finset MulOpposite
+open Finset
 
 section Semifield
 variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [CanonicallyOrderedAdd K]

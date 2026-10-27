@@ -33,9 +33,9 @@ assert_not_exists Monoid
 
 universe v
 
-open List Subtype Nat Function
+open List Nat
 
-variable {α : Type*} {β : Type v} {γ : Type*}
+variable {α : Type*} {β : Type v}
 
 namespace Multiset
 
@@ -252,19 +252,19 @@ theorem card_erase_le {a : α} {s : Multiset α} : card (s.erase a) ≤ card s :
 theorem card_erase_eq_ite {a : α} {s : Multiset α} :
     card (s.erase a) = if a ∈ s then pred (card s) else card s := by
   by_cases h : a ∈ s
-  · rwa [card_erase_of_mem h, if_pos]
-  · rwa [erase_of_notMem h, if_neg]
+  · rwa [card_erase_of_mem h, ite_eq_left]
+  · rwa [erase_of_notMem h, ite_eq_right]
 
 @[simp]
 theorem count_erase_self (a : α) (s : Multiset α) : count a (erase s a) = count a s - 1 :=
   Quotient.inductionOn s fun l => by
-    convert List.count_erase_self (a := a) (l := l) <;> rw [← coe_count] <;> simp
+    convert! List.count_erase_self (a := a) (l := l) <;> rw [← coe_count] <;> simp
 
 @[simp]
 theorem count_erase_of_ne {a b : α} (ab : a ≠ b) (s : Multiset α) :
     count a (erase s b) = count a s :=
   Quotient.inductionOn s fun l => by
-    convert List.count_erase_of_ne ab (l := l) <;> rw [← coe_count] <;> simp
+    convert! List.count_erase_of_ne ab (l := l) <;> rw [← coe_count] <;> simp
 
 end Erase
 
@@ -367,7 +367,7 @@ end sub
 
 section Rel
 
-variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
+variable {r : α → β → Prop}
 
 theorem Rel.add {s t u v} (hst : Rel r s t) (huv : Rel r u v) : Rel r (s + u) (t + v) := by
   induction hst with

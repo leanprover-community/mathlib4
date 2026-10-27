@@ -18,11 +18,11 @@ public import Mathlib.Tactic.Continuity
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R]
 
 variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N] [Module R N]
 

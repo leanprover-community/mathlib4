@@ -121,7 +121,7 @@ noncomputable instance colimitGroup : Group (G.{v, u} F) :=
 /-- The bundled group giving the filtered colimit of a diagram. -/
 @[to_additive /-- The bundled additive group giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : GrpCat.{max v u} :=
-  GrpCat.of (G.{v, u} F)
+  ↧(G.{v, u} F)
 
 /-- The cocone over the proposed colimit group. -/
 @[to_additive /-- The cocone over the proposed colimit additive group. -/]
@@ -130,7 +130,7 @@ noncomputable def colimitCocone : Cocone F where
   ι.app J := GrpCat.ofHom ((MonCat.FilteredColimits.colimitCocone
     (F ⋙ forget₂ GrpCat MonCat)).ι.app J).hom
   ι.naturality _ _ f := (forget₂ _ MonCat).map_injective
-    ((MonCat.FilteredColimits.colimitCocone _).ι.naturality f)
+    ((MonCat.FilteredColimits.colimitCocone (F ⋙ forget₂ GrpCat MonCat)).ι.naturality f)
 
 /-- The proposed colimit cocone is a colimit in `GrpCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddGroup`. -/]
@@ -182,7 +182,7 @@ noncomputable instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
 @[to_additive
 /-- The bundled additive commutative group giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : CommGrpCat :=
-  CommGrpCat.of (G.{v, u} F)
+  ↧(G.{v, u} F)
 
 /-- The cocone over the proposed colimit commutative group. -/
 @[to_additive /-- The cocone over the proposed colimit additive commutative group. -/]
@@ -191,7 +191,7 @@ noncomputable def colimitCocone : Cocone F where
   ι.app J := CommGrpCat.ofHom
     ((GrpCat.FilteredColimits.colimitCocone (F ⋙ forget₂ CommGrpCat GrpCat)).ι.app J).hom
   ι.naturality _ _ f := (forget₂ _ GrpCat).map_injective
-    ((GrpCat.FilteredColimits.colimitCocone _).ι.naturality f)
+    ((GrpCat.FilteredColimits.colimitCocone (F ⋙ forget₂ CommGrpCat GrpCat)).ι.naturality f)
 
 /-- The proposed colimit cocone is a colimit in `CommGrpCat`. -/
 @[to_additive /-- The proposed colimit cocone is a colimit in `AddCommGroup`. -/]

@@ -33,9 +33,9 @@ section SupSet
 
 variable [Preorder α] [SupSet α]
 
-open Classical in
-/-- `SupSet` structure on a nonempty subset `s` of a preorder with `SupSet`.
-It should be used only as here, as an auxiliary instance in the
+open scoped Classical in
+/-- `SupSet` structure on a nonempty subset `s` of a preorder with `SupSet`. This definition is
+non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
 @[instance_reducible]
 noncomputable def subsetSupSet [Bot s] : SupSet s where
@@ -46,7 +46,7 @@ noncomputable def subsetSupSet [Bot s] : SupSet s where
 
 attribute [local instance] subsetSupSet
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem subset_sSup_def [Bot s] :
     @sSup s _ = fun t =>
@@ -73,9 +73,9 @@ section InfSet
 
 variable [Preorder α] [InfSet α]
 
-open Classical in
-/-- `InfSet` structure on a nonempty subset `s` of a preorder with `InfSet`.
-It should be used only as here, as an auxiliary instance in the
+open scoped Classical in
+/-- `InfSet` structure on a nonempty subset `s` of a preorder with `InfSet`. This definition is
+non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
 @[instance_reducible]
 noncomputable def subsetInfSet [Top s] : InfSet s where
@@ -86,7 +86,7 @@ noncomputable def subsetInfSet [Top s] : InfSet s where
 
 attribute [local instance] subsetInfSet
 
-open Classical in
+open scoped Classical in
 @[simp]
 theorem subset_sInf_def [Top s] :
     @sInf s _ = fun t =>
@@ -131,18 +131,18 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Bot s] [Top s]
       dsimp [subset_sSup_def]
       obtain rfl | hn := eq_empty_or_nonempty t
       · rw [isLUB_empty_iff] at h ⊢
-        rw [dif_neg (by simp)]
+        rw [dite_eq_right (by simp)]
         exact hbot.resolve_right fun _ ↦ not_isBot _ h
-      · rw [dif_pos ⟨hn, h.bddAbove, h_Sup hn h.bddAbove⟩]
+      · rw [dite_eq_left ⟨hn, h.bddAbove, h_Sup hn h.bddAbove⟩]
         exact .of_image Subtype.coe_le_coe
           (isLUB_csSup (hn.image _ ) ((Subtype.mono_coe _).map_bddAbove h.bddAbove))
     isGLB_sInf_of_isGLB t _ h := by
       dsimp [subset_sSup_def]
       obtain rfl | hn := eq_empty_or_nonempty t
       · rw [isGLB_empty_iff] at h ⊢
-        rw [dif_neg (by simp)]
+        rw [dite_eq_right (by simp)]
         exact htop.resolve_right fun _ ↦ not_isTop _ h
-      · rw [dif_pos ⟨hn, h.bddBelow, h_Inf hn h.bddBelow⟩]
+      · rw [dite_eq_left ⟨hn, h.bddBelow, h_Inf hn h.bddBelow⟩]
         exact .of_image Subtype.coe_le_coe
           (isGLB_csInf (hn.image _) ((Subtype.mono_coe _).map_bddBelow h.bddBelow))
     exists_isLUB_cond t ht h_bdd := ⟨sSup t, .of_image Subtype.coe_le_coe <| by
@@ -197,7 +197,6 @@ end OrdConnected
 
 section Icc
 
-open Classical in
 /-- Complete lattice structure on `Set.Icc` -/
 noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     {a b : α} [Fact (a ≤ b)] : CompleteLattice (Set.Icc a b) where
@@ -231,12 +230,12 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] {a b : α} [Fact (a
 lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : have : Fact (a ≤ b) := ⟨h⟩
     ↑(sSup S) = sSup ((↑) '' S : Set α) :=
-  congrArg Subtype.val (dif_neg hS.ne_empty)
+  congrArg Subtype.val (dite_eq_right hS.ne_empty)
 
 lemma Set.Icc.coe_sInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : have : Fact (a ≤ b) := ⟨h⟩
     ↑(sInf S) = sInf ((↑) '' S : Set α) :=
-  congrArg Subtype.val (dif_neg hS.ne_empty)
+  congrArg Subtype.val (dite_eq_right hS.ne_empty)
 
 lemma Set.Icc.coe_iSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     [Nonempty ι] {S : ι → Set.Icc a b} : have : Fact (a ≤ b) := ⟨h⟩

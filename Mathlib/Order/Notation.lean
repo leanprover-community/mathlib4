@@ -7,9 +7,9 @@ module
 
 public import Qq
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
-public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
-public import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-!
 # Notation classes for lattice operations
@@ -47,16 +47,10 @@ class Compl (α : Type*) where
 
 export Compl (compl)
 
-/-- Set / lattice complement -/
-@[deprecated Compl (since := "2026-01-04")]
-class HasCompl (α : Type*) where
-  /-- Set / lattice complement -/
-  compl : α → α
-
-attribute [deprecated Compl.compl (since := "2026-01-04")] HasCompl.compl
-
 @[inherit_doc]
 postfix:1024 "ᶜ" => compl
+
+initialize_simps_projections Compl
 
 /-! ### `Sup` and `Inf` -/
 
@@ -100,13 +94,13 @@ private meta def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u →
     MetaM Bool := do
   try
     withNewMCtxDepth do
-    -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances
-    -- In Lean 4.19 the pretty printer clears local instances, so we re-add them here.
-    -- TODO(Jovan): remove
+    -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances.
+    -- Unfortunately, the local instances are not present in delaboration.
+    -- See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Bug.3F.20Local.20instances.20not.20populated.20during.20delaboration/with/545766705
     withLocalInstances (← getLCtx).decls.toList.reduceOption do
       let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
       let inst' : Q($cls $α) := q($toCls $α $mvar)
-      isDefEq inst inst'
+      withImplicit <| isDefEq inst inst'
   catch _ =>
     -- For instance, if `LinearOrder` is not yet imported.
     return false
@@ -144,10 +138,15 @@ meta def delabInf : Delab :=
 end Mathlib.Meta
 
 /-- Syntax typeclass for Heyting implication `⇨`. -/
-@[notation_class]
+@[notation_class, to_dual SDiff]
 class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
+
+set_option linter.translateOverwrite false in
+attribute [to_dual existing (reorder := 3 4) sdiff] HImp.himp
+set_option linter.translateOverwrite false in
+attribute [to_dual existing (reorder := himp (1 2))] HImp.mk
 
 /-- Syntax typeclass for Heyting negation `￢`.
 
@@ -156,7 +155,7 @@ while the latter belongs to co-Heyting algebras. They are both pseudo-complement
 underestimates while `HNot` overestimates. In Boolean algebras, they are equal.
 See `hnot_eq_compl`.
 -/
-@[notation_class]
+@[notation_class, to_dual Compl]
 class HNot (α : Type*) where
   /-- Heyting negation `￢` -/
   hnot : α → α
@@ -171,6 +170,8 @@ infixr:60 " ⇨ " => himp
 /-- Heyting negation -/
 prefix:72 "￢" => hnot
 
+initialize_simps_projections HImp
+initialize_simps_projections HNot
 
 /-- Typeclass for the `⊤` (`\top`) notation -/
 @[notation_class, ext]

@@ -81,7 +81,7 @@ variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [Complete
 
 instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
-  coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
+  coe_injective S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
 
 instance : PartialOrder (VonNeumannAlgebra H) := .ofSetLike (VonNeumannAlgebra H) (H →L[ℂ] H)
 
@@ -157,6 +157,6 @@ theorem IsStarProjection.mem_iff {e : H →L[ℂ] H} (he : IsStarProjection e)
   simp_rw [he.isIdempotentElem.mem_iff, he.isIdempotentElem.range_mem_invtSubmodule_iff,
     he.isIdempotentElem.ker_mem_invtSubmodule_iff, forall_and, and_iff_left_iff_imp, ← mul_def]
   intro h x hx
-  simpa [he.isSelfAdjoint.star_eq] using congr(star $(h _ (star_mem hx)))
+  simpa [he.isSelfAdjoint.star_eq] using! congr(star $(h _ (star_mem hx)))
 
 end VonNeumannAlgebra

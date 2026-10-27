@@ -63,7 +63,7 @@ scoped[MeasureTheory] notation:67 f " ⋆ₗ[" μ:67 "] " g:66 => MeasureTheory.
 /-- Scoped notation for the additive convolution of functions with respect to `volume`. -/
 scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66 => MeasureTheory.lconvolution f g volume
 
-/- The definition of multiplicative convolution of functions. -/
+/-- The definition of multiplicative convolution of functions. -/
 @[to_additive /-- The definition of additive convolution of functions. -/]
 theorem mlconvolution_def {f g : G → ℝ≥0∞} {μ : Measure G} {x : G} :
     (f ⋆ₘₗ[μ] g) x = ∫⁻ y, (f y) * (g (y⁻¹ * x)) ∂μ := rfl
@@ -125,7 +125,7 @@ theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
   · simp [mul_assoc]
   simpa [mul_assoc] using by fun_prop
 
-/- Convolution is associative. -/
+/-- Convolution is associative. -/
 @[to_additive /-- Convolution is associative. -/]
 theorem mlconvolution_assoc {f g k : G → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) (hk : Measurable k) :

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 public import Mathlib.CategoryTheory.Presentable.Dense
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 
 /-!
 # Ind and pro-properties
@@ -101,5 +102,59 @@ lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C)
       essentiallySmall_of_fully_faithful (C := CostructuredArrow (incl ⋙ _) X)
         (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X)
     exact of_essentiallySmall_index ⟨_, _, hc⟩ fun Y ↦ Y.left.2
+
+section
+
+variable {D : Type*} [Category D] (P : ObjectProperty D) (F : C ⥤ D)
+
+lemma ind_inverseImage_le [PreservesFilteredColimitsOfSize.{w, w} F] :
+    ind.{w} (P.inverseImage F) ≤ (ind.{w} P).inverseImage F := by
+  intro X ⟨J, _, _, pres, h⟩
+  simp only [prop_inverseImage_iff]
+  use J, inferInstance, inferInstance, pres.map F, h
+
+lemma ind_inverseImage_eq_of_isEquivalence [P.IsClosedUnderIsomorphisms] [F.IsEquivalence] :
+    ind.{w} (P.inverseImage F) = (ind.{w} P).inverseImage F := by
+  refine le_antisymm (ind_inverseImage_le _ _) fun X ⟨J, _, _, pres, h⟩ ↦ ?_
+  refine ⟨J, ‹_›, ‹_›, .ofIso (pres.map F.asEquivalence.inverse) ?_, fun j ↦ ?_⟩
+  · exact (F.asEquivalence.unitIso.app X).symm
+  · exact P.prop_of_iso ((F.asEquivalence.counitIso.app _).symm) (h j)
+
+lemma ind_iff_of_equivalence (e : C ≌ D) [P.IsClosedUnderIsomorphisms] (X : D) :
+    ind.{w} (P.inverseImage e.functor) (e.inverse.obj X) ↔ ind.{w} P X := by
+  dsimp only [ObjectProperty.ind]
+  congr!
+  refine ⟨fun ⟨pres, h⟩ ↦ ?_, fun ⟨pres, h⟩ ↦ ?_⟩
+  · exact ⟨.ofIso (pres.map e.functor) (e.counitIso.app X), fun i ↦ h i⟩
+  · exact ⟨pres.map e.inverse, fun i ↦ P.prop_of_iso ((e.counitIso.app _).symm) (h i)⟩
+
+end
+
+section Products
+
+private lemma ind_pi_of_ind {ι : Type w} [P.IsClosedUnderLimitsOfShape (Discrete ι)]
+    [HasProductsOfShape ι C] [IsIPCOfShape.{w} ι C] {X : ι → C} (hc : ∀ i, ind.{w} P (X i)) :
+    ind.{w} P (∏ᶜ X) := by
+  choose J _ _ pres hpres using hc
+  obtain ⟨hc⟩ := IsIPCOfShape.nonempty_isColimit fun i ↦ (pres i).isColimit
+  exact ⟨∀ j, J j, inferInstance, inferInstance,
+    { diag := _, ι := _, isColimit := hc }, fun i ↦ P.prop_limit _ fun a ↦ hpres a.1 _⟩
+
+instance isClosedUnderLimitsOfShape_ind_discrete {ι : Type*} [Small.{w} ι]
+    [P.IsClosedUnderLimitsOfShape (Discrete ι)] [HasProductsOfShape ι C] [IsIPCOfShape.{w} ι C] :
+    (ind.{w} P).IsClosedUnderLimitsOfShape (Discrete ι) := by
+  refine .mk' fun X ⟨Y, h⟩ ↦ ?_
+  let e := equivShrink ι
+  have : HasProductsOfShape (Shrink.{w} ι) C :=
+    hasLimitsOfShape_of_equivalence (Discrete.equivalence e)
+  have : IsIPCOfShape.{w} (Shrink.{w} ι) C := .of_equiv e
+  have : P.IsClosedUnderLimitsOfShape (Discrete (Shrink.{w} ι)) :=
+    .of_equivalence (Discrete.equivalence e)
+  let iso : limit Y ≅ ∏ᶜ fun i ↦ Y.obj ⟨e.symm i⟩ :=
+    (Pi.isoLimit _).symm ≪≫ (Pi.reindex e.symm _).symm
+  rw [(ind.{w} P).prop_iff_of_iso iso]
+  exact ind_pi_of_ind fun i ↦ h _
+
+end Products
 
 end CategoryTheory.ObjectProperty

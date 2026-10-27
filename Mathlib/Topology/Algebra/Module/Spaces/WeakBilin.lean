@@ -5,7 +5,7 @@ Authors: Kalle Kytölä, Moritz Doll
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
@@ -63,20 +63,25 @@ section WeakTopology
 @[nolint unusedArguments]
 def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
     (_ : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) := E
-deriving AddCommMonoid, Module 𝕜
 
 namespace WeakBilin
 
-instance instAddCommGroup [CommSemiring 𝕜] [a : AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
-    [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) := a
+variable [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
+  (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) [CommSemiring 𝕝] [Module 𝕝 E] in
+deriving instance SMul 𝕝, AddCommMonoid, Module 𝕝 for WeakBilin B
 
-instance (priority := 100) instModule' [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommMonoid E]
-    [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F] [m : Module 𝕝 E] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
-    Module 𝕝 (WeakBilin B) := m
+instance instAddCommGroup [CommSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
+    [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) :=
+  inferInstanceAs <| AddCommGroup E
+
+instance [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
+    (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : Module 𝕜 (WeakBilin B) :=
+  inferInstance
 
 instance instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommMonoid E] [Module 𝕜 E]
-    [AddCommMonoid F] [Module 𝕜 F] [SMul 𝕝 𝕜] [Module 𝕝 E] [s : IsScalarTower 𝕝 𝕜 E]
-    (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : IsScalarTower 𝕝 𝕜 (WeakBilin B) := s
+    [AddCommMonoid F] [Module 𝕜 F] [SMul 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E]
+    (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : IsScalarTower 𝕝 𝕜 (WeakBilin B) :=
+  inferInstanceAs <| IsScalarTower 𝕝 𝕜 E
 
 section Semiring
 
@@ -125,7 +130,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Scalar multiplication by `𝕜` on `WeakBilin B` is continuous. -/
 instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) := by
   refine ⟨continuous_induced_rng.2 ?_⟩
-  refine cast (congr_arg _ ?_) (continuous_fst.smul ((coeFn_continuous B).comp continuous_snd))
+  refine cast (congr_arg _ ?_) (continuous_fst.fun_smul ((coeFn_continuous B).comp continuous_snd))
   ext
   simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, LinearMap.smul_apply]
 

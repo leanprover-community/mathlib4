@@ -15,7 +15,7 @@ This file contains results related to the order bornology on (non-negative) real
 We prove that `ℝ` and `ℝ≥0` are equipped with the order topology and bornology.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 

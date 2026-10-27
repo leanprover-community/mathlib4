@@ -46,6 +46,7 @@ noncomputable def equivalence : D₁ ≌ D₂ :=
   Equivalence.mk G' F' (liftNatIso L₁ W₁ L₁ (G ⋙ F') (𝟭 D₁) (G' ⋙ F') α.symm)
     (liftNatIso L₂ W₂ (F ⋙ G') L₂ (F' ⋙ G') (𝟭 D₂) β)
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma equivalence_counitIso_app (X : C₂) :
     (equivalence L₁ W₁ L₂ W₂ G G' F F' α β).counitIso.app (L₂.obj X) =
@@ -107,7 +108,7 @@ lemma of_equivalences (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L�
     (E : C₁ ≌ C₂) (E' : D₁ ≌ D₂) [CatCommSq E.functor L₁ L₂ E'.functor]
     (hW₁ : W₁ ≤ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂) :
     L₂.IsLocalization W₂ := by
-  haveI : (E.functor ⋙ L₂).IsLocalization W₁ :=
+  have : (E.functor ⋙ L₂).IsLocalization W₁ :=
     of_equivalence_target L₁ W₁ _ E' ((CatCommSq.iso _ _ _ _).symm)
   exact of_equivalence_source (E.functor ⋙ L₂) W₁ L₂ W₂ E hW₁ hW₂ (Iso.refl _)
 

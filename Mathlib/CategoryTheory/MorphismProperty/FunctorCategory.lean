@@ -22,7 +22,7 @@ then the same holds in the category `J ⥤ C`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' v'' u u' u''
 

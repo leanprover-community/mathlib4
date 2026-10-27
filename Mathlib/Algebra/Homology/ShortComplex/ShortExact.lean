@@ -62,6 +62,7 @@ lemma shortExact_iff_of_iso (e : S₁ ≅ S₂) : S₁.ShortExact ↔ S₂.Short
   · exact shortExact_of_iso e
   · exact shortExact_of_iso e.symm
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ShortExact.op (h : S.ShortExact) : S.op.ShortExact where
   exact := h.exact.op
   mono_f := by
@@ -73,6 +74,7 @@ lemma ShortExact.op (h : S.ShortExact) : S.op.ShortExact where
     dsimp
     infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ShortExact.unop {S : ShortComplex Cᵒᵖ} (h : S.ShortExact) : S.unop.ShortExact where
   exact := h.exact.unop
   mono_f := by
@@ -218,6 +220,15 @@ end ShortExact
 
 end Preadditive
 
+/-- `ShortComplex.ShortExact` as an object property. -/
+abbrev shortExact (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :
+    ObjectProperty (ShortComplex C) :=
+  ShortComplex.ShortExact
+
 end ShortComplex
+
+/-- The category of short exact sequences. -/
+abbrev ShortExactSequence (C : Type*) [Category* C] [Limits.HasZeroMorphisms C] :=
+  (ShortComplex.shortExact C).FullSubcategory
 
 end CategoryTheory

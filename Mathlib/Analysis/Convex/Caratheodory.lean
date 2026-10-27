@@ -55,7 +55,7 @@ then it is in the convex hull of a strict subset of `t`. -/
 theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndependent 𝕜 ((↑) : t → E))
     {x : E} (m : x ∈ convexHull 𝕜 (↑t : Set E)) :
     ∃ y : (↑t : Set E), x ∈ convexHull 𝕜 (↑(t.erase y) : Set E) := by
-  simp only [Finset.convexHull_eq, mem_setOf_eq] at m ⊢
+  simp only [Finset.convexHull_eq, mem_ofPred_eq] at m ⊢
   obtain ⟨f, fpos, fsum, rfl⟩ := m
   obtain ⟨g, gcombo, gsum, gpos⟩ := exists_nontrivial_relation_sum_zero_of_not_affine_ind h
   replace gpos := exists_pos_of_sum_zero_of_exists_nonzero g gsum gpos
@@ -77,7 +77,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
         conv_rhs => rw [← insert_erase hi₀, sum_insert (notMem_erase i₀ t), hk, zero_add]
       _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) := rfl
       _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
-  refine ⟨⟨i₀, hi₀⟩, k, ?_, by convert ksum, ?_⟩
+  refine ⟨⟨i₀, hi₀⟩, k, ?_, by convert! ksum, ?_⟩
   · simp only [k, and_imp, sub_nonneg, mem_erase, Ne]
     intro e _ het
     by_cases hes : e ∈ s
@@ -106,7 +106,7 @@ variable {s : Set E} {x : E}
 cardinality, whose convex hull contains `x`. -/
 noncomputable def minCardFinsetOfMemConvexHull (hx : x ∈ convexHull 𝕜 s) : Finset E :=
   Function.argminOn Finset.card { t | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } <| by
-    simpa only [convexHull_eq_union_convexHull_finite_subsets s, exists_prop, mem_iUnion] using hx
+    simpa only [convexHull_eq_union_convexHull_finite_subsets s, exists_prop, mem_iUnion] using! hx
 
 variable (hx : x ∈ convexHull 𝕜 s)
 
@@ -155,7 +155,7 @@ theorem convexHull_eq_union : convexHull 𝕜 s =
       Caratheodory.minCardFinsetOfMemConvexHull_subseteq hx,
       Caratheodory.affineIndependent_minCardFinsetOfMemConvexHull hx,
       Caratheodory.mem_minCardFinsetOfMemConvexHull hx⟩
-  · iterate 3 convert Set.iUnion_subset _; intro
+  · iterate 3 convert! Set.iUnion_subset _; intro
     exact convexHull_mono ‹_›
 
 /-- A more explicit version of `convexHull_eq_union`. -/
@@ -166,7 +166,7 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   rw [convexHull_eq_union] at hx
   simp only [exists_prop, Set.mem_iUnion] at hx
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx
-  simp only [t.convexHull_eq, Set.mem_setOf_eq] at ht₃
+  simp only [t.convexHull_eq, Set.mem_ofPred_eq] at ht₃
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
   let t' := {i ∈ t | w i ≠ 0}
   refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_, ?_, ?_⟩

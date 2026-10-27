@@ -12,7 +12,7 @@ public import Mathlib.Topology.Instances.EReal.Lemmas
 # Half-planes in ℂ are open
 
 We state that open left, right, upper and lower half-planes in the complex numbers are open sets,
-where the bounding value of the real or imaginary part is given by an `EReal` `x`.
+where the bounding value of the real or imaginary part is given by a real or `EReal` `x`.
 So this includes the full plane and the empty set for `x = ⊤`/`x = ⊥`.
 -/
 
@@ -39,5 +39,21 @@ lemma isOpen_im_lt_EReal (x : EReal) : IsOpen {z : ℂ | z.im < x} :=
 in the complex plane. -/
 lemma isOpen_im_gt_EReal (x : EReal) : IsOpen {z : ℂ | x < z.im} :=
   isOpen_lt continuous_const <| EReal.continuous_coe_iff.mpr continuous_im
+
+/-- An open left half-plane is an open set in the complex plane. -/
+lemma isOpen_re_lt (x : ℝ) : IsOpen {z : ℂ | z.re < x} := by
+  simpa using isOpen_re_lt_EReal x
+
+/-- An open right half-plane is an open set in the complex plane. -/
+lemma isOpen_re_gt (x : ℝ) : IsOpen {z : ℂ | x < z.re} := by
+  simpa using isOpen_re_gt_EReal x
+
+/-- An open lower half-plane is an open set in the complex plane. -/
+lemma isOpen_im_lt (x : ℝ) : IsOpen {z : ℂ | z.im < x} := by
+  simpa using isOpen_im_lt_EReal x
+
+/-- An open upper half-plane is an open set in the complex plane. -/
+lemma isOpen_im_gt (x : ℝ) : IsOpen {z : ℂ | x < z.im} := by
+  simpa using isOpen_im_gt_EReal x
 
 end Complex

@@ -31,6 +31,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 namespace WithOne
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) where
   inv_inv a := (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id]
@@ -75,6 +76,11 @@ theorem lift_unique (f : WithOne α →* β) : f = lift (f.toMulHom.comp coeMulH
 
 @[to_additive (attr := simp)]
 theorem lift_symm_apply (f : WithOne α →* β) (x : α) : lift.symm f x = f x := rfl
+
+@[to_additive]
+lemma lift_symm_injective_of_injective {f : WithOne α →* β} (hf : Function.Injective f) :
+    Function.Injective (lift.symm f) :=
+  fun _ _ ↦ by simp [hf.eq_iff]
 
 end lift
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
 
 /-!
 # Inverse function theorem - the easy half
@@ -69,6 +70,13 @@ theorem OpenPartialHomeomorph.hasStrictDerivAt_symm (f : OpenPartialHomeomorph �
     HasStrictDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
 
+theorem HasDerivAt.of_comp_left {f g h : 𝕜 → 𝕜} {f' h' a : 𝕜} (hst : ContinuousAt g a)
+    (hf : HasDerivAt f f' (g a)) (hh : HasDerivAt h h' a) (hf' : f' ≠ 0)
+    (hcomp : f ∘ g =ᶠ[𝓝 a] h) : HasDerivAt g (h' / f') a := by
+  convert! hf.hasFDerivAt.of_comp_of_leftInverse hst hh hcomp (f'symm := .toSpanSingleton 𝕜 f'⁻¹)
+    (fun _ ↦ by simp [hf']) |>.hasDerivAt using 1
+  simp [div_eq_mul_inv]
+
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
 invertible derivative `f'` at `g a`, then `g` has the derivative `f'⁻¹` at `a`.
 
@@ -106,15 +114,15 @@ theorem HasDerivWithinAt.eventually_notMem (h : HasDerivWithinAt f f' s x) (hf' 
 
 theorem HasDerivAt.tendsto_nhdsNE (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     Tendsto f (𝓝[≠] x) (𝓝[≠] f x) := by
-  simpa only [compl_eq_univ_diff] using (hasDerivWithinAt_univ.2 h).tendsto_nhdsWithin_nhdsNE hf'
+  simpa only [compl_eq_univ_sdiff] using (hasDerivWithinAt_univ.2 h).tendsto_nhdsWithin_nhdsNE hf'
 
 theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
-  simpa only [compl_eq_univ_diff] using (hasDerivWithinAt_univ.2 h).eventually_ne hf'
+  simpa only [compl_eq_univ_sdiff] using (hasDerivWithinAt_univ.2 h).eventually_ne hf'
 
 theorem HasDerivAt.eventually_notMem (h : HasDerivAt f f' x) (hf' : f' ≠ 0)
     (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t)) : ∀ᶠ z in 𝓝[≠] x, f z ∉ t := by
-  simpa only [compl_eq_univ_diff] using (hasDerivWithinAt_univ.2 h).eventually_notMem hf' t ht
+  simpa only [compl_eq_univ_sdiff] using (hasDerivWithinAt_univ.2 h).eventually_notMem hf' t ht
 
 /-- If a function is equal to a constant at a set of points that accumulates to `x` in `s`,
 then its derivative within `s` at `x` equals zero,
@@ -141,7 +149,7 @@ then its derivative at `x` equals zero,
 either because it has derivative zero or because it isn't differentiable at this point. -/
 theorem deriv_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[≠] x, f y = c) : deriv f x = 0 := by
   rw [← derivWithin_univ, derivWithin_zero_of_frequently_const]
-  rwa [← compl_eq_univ_diff]
+  rwa [← compl_eq_univ_sdiff]
 
 /-- If a function frequently (in `𝓝[≠] x`) takes values in a set `t` that does not
 accumulate at `f x`, then its derivative at `x` equals zero,
@@ -149,7 +157,7 @@ either because it has derivative zero or because it isn't differentiable at this
 theorem deriv_zero_of_frequently_mem (t : Set F) (ht : ¬ AccPt (f x) (𝓟 t))
     (h : ∃ᶠ y in 𝓝[≠] x, f y ∈ t) : deriv f x = 0 := by
   rw [← derivWithin_univ, derivWithin_zero_of_frequently_mem t ht]
-  rwa [← compl_eq_univ_diff]
+  rwa [← compl_eq_univ_sdiff]
 
 theorem not_differentiableWithinAt_of_local_left_inverse_hasDerivWithinAt_zero {f g : 𝕜 → 𝕜} {a : 𝕜}
     {s t : Set 𝕜} (ha : a ∈ s) (hsu : UniqueDiffWithinAt 𝕜 s a) (hf : HasDerivWithinAt f 0 t (g a))

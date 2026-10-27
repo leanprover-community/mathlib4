@@ -66,9 +66,9 @@ lemma hasFiniteIntegral_mkD_restrict_of_bound {s : Set Y} [CompactSpace s] [Zero
     (bound : X → ℝ)
     (bound_int : HasFiniteIntegral bound μ)
     (bound_ge : ∀ᵐ x ∂μ, ∀ y ∈ s, ‖f x y‖ ≤ bound x) :
-    HasFiniteIntegral (fun x ↦ mkD (s.restrict (f x)) g) μ := by
+    HasFiniteIntegral (fun x ↦ mkD (s.domRestrict (f x)) g) μ := by
   refine hasFiniteIntegral_mkD_of_bound _ _ ?_ f_ae_zero bound bound_int ?_
-  · simpa [← continuousOn_iff_continuous_restrict]
+  · simpa [← continuousOn_iff_continuous_domRestrict]
   · simpa
 
 lemma aeStronglyMeasurable_mkD_of_uncurry [CompactSpace Y] [Zero Y] [TopologicalSpace X]
@@ -100,7 +100,7 @@ lemma aeStronglyMeasurable_mkD_restrict_of_uncurry {t : Set Y} [CompactSpace t] 
     [TopologicalSpace X] [OpensMeasurableSpace X] [SecondCountableTopologyEither X (C(t, E))]
     (f : X → Y → E) (g : C(t, E)₀) (f_cont : ContinuousOn (Function.uncurry f) (univ ×ˢ t))
     (f_zero : ∀ᵐ x ∂μ, f x (0 : t) = 0) :
-    AEStronglyMeasurable (fun x ↦ mkD (t.restrict (f x)) g) μ := by
+    AEStronglyMeasurable (fun x ↦ mkD (t.domRestrict (f x)) g) μ := by
   rw [← ContinuousMapZero.isEmbedding_toContinuousMap.aestronglyMeasurable_comp_iff]
   refine aestronglyMeasurable_congr ?_ |>.mp <|
     ContinuousMap.aeStronglyMeasurable_mkD_restrict_of_uncurry f g f_cont
@@ -114,7 +114,7 @@ lemma aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry {s : Set X} {t : Set
     (hs : MeasurableSet s) (f : X → Y → E) (g : C(t, E)₀)
     (f_cont : ContinuousOn (Function.uncurry f) (s ×ˢ t))
     (f_zero : ∀ᵐ x ∂(μ.restrict s), f x (0 : t) = 0) :
-    AEStronglyMeasurable (fun x ↦ mkD (t.restrict (f x)) g) (μ.restrict s) := by
+    AEStronglyMeasurable (fun x ↦ mkD (t.domRestrict (f x)) g) (μ.restrict s) := by
   rw [← ContinuousMapZero.isEmbedding_toContinuousMap.aestronglyMeasurable_comp_iff]
   refine aestronglyMeasurable_congr ?_ |>.mp <|
     ContinuousMap.aeStronglyMeasurable_restrict_mkD_restrict_of_uncurry hs f g f_cont

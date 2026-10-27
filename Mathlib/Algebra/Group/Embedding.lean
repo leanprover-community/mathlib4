@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Logic.Embedding.Basic
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Semigroup
 
 /-!
 # The embedding of a cancellative semigroup into itself by multiplication by a fixed element.

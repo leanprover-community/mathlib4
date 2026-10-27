@@ -184,7 +184,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
-  convert h using 1
+  convert! h using 1
   all_goals
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
@@ -286,9 +286,9 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum, Finset.sum_eq_single 0]
-  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, if_true]
+  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, ite_true]
   · intro i _hi hi0
-    simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, map_pow,
+    simp only [onePoly, ite_eq_right hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, map_pow,
       bind₁_X_right, map_mul]
   · simp
 
@@ -344,7 +344,7 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   simp only [ghostComponent_apply, aeval_eq_eval₂Hom] at h
   apply (ULift.ringEquiv.symm : ℤ ≃+* _).injective
   simp only [← RingEquiv.coe_toRingHom, map_eval₂Hom]
-  convert h using 1
+  convert! h using 1
   all_goals
     simp only [hf, hg, MvPolynomial.eval, map_eval₂Hom]
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
@@ -370,7 +370,7 @@ end IsPoly₂
 attribute [ghost_simps] AlgHom.id_apply map_natCast RingHom.map_zero RingHom.map_one RingHom.map_mul
   RingHom.map_add RingHom.map_sub RingHom.map_neg RingHom.id_apply mul_add add_mul add_zero zero_add
   mul_one one_mul mul_zero zero_mul Nat.succ_ne_zero add_tsub_cancel_right
-  Nat.succ_eq_add_one if_true eq_self_iff_true if_false forall_true_iff forall₂_true_iff
+  Nat.succ_eq_add_one ite_true eq_self_iff_true ite_false forall_true_iff forall₂_true_iff
   forall₃_true_iff
 
 end

@@ -126,6 +126,7 @@ lemma hom_ext (hP : IsPullback fst snd f g) {W : C} {k l : W ⟶ P}
     (h₀ : k ≫ fst = l ≫ fst) (h₁ : k ≫ snd = l ≫ snd) : k = l :=
   PullbackCone.IsLimit.hom_ext hP.isLimit h₀ h₁
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a limiting pullback cone, then we have an `IsPullback c.fst c.snd f g`. -/
 theorem of_isLimit {c : PullbackCone f g} (h : Limits.IsLimit c) : IsPullback c.fst c.snd f g :=
   { w := c.condition
@@ -137,7 +138,6 @@ theorem of_isLimit' (w : CommSq fst snd f g) (h : Limits.IsLimit w.cone) :
     IsPullback fst snd f g :=
   of_isLimit h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `of_isLimit` for an arbitrary cone on a diagram `WalkingCospan ⥤ C`. -/
 lemma of_isLimit_cone {D : WalkingCospan ⥤ C} {c : Cone D} (hc : IsLimit c) :
     IsPullback (c.π.app .left) (c.π.app .right) (D.map WalkingCospan.Hom.inl)
@@ -265,6 +265,7 @@ lemma hom_ext (hP : IsPushout f g inl inr) {W : C} {k l : P ⟶ W}
     (h₀ : inl ≫ k = inl ≫ l) (h₁ : inr ≫ k = inr ≫ l) : k = l :=
   PushoutCocone.IsColimit.hom_ext hP.isColimit h₀ h₁
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `c` is a colimiting pushout cocone, then we have an `IsPushout f g c.inl c.inr`. -/
 theorem of_isColimit {c : PushoutCocone f g} (h : Limits.IsColimit c) : IsPushout f g c.inl c.inr :=
   { w := c.condition
@@ -277,7 +278,6 @@ theorem of_isColimit' (w : CommSq f g inl inr) (h : Limits.IsColimit w.cocone) :
     IsPushout f g inl inr :=
   of_isColimit h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `of_isColimit` for an arbitrary cocone on a diagram `WalkingSpan ⥤ C`. -/
 lemma of_isColimit_cocone {D : WalkingSpan ⥤ C} {c : Cocone D} (hc : IsColimit c) :
     IsPushout (D.map WalkingSpan.Hom.fst) (D.map WalkingSpan.Hom.snd)

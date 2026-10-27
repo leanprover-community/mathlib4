@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 This file shows that divisibility makes associates into a canonically ordered monoid.
 -/
 
-@[expose] public section
+public section
 
 variable {M : Type*} [CommMonoidWithZero M]
 

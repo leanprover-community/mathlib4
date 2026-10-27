@@ -55,7 +55,7 @@ instance : P.IsClosedUnderIsomorphisms where
 instance (priority := 100) [HasZeroObject C] [P.Nonempty] : P.ContainsZero where
   exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract _) P.prop_arbitrary⟩
 
-@[deprecated instContainsZeroOfHasZeroObjectOfNonempty (since := "2026-04-03")]
+@[deprecated instContainsZeroOfHasZeroObjectOfNonempty +typeChanged (since := "2026-04-03")]
 lemma containsZero [HasZeroObject C] {X : C} (h : P X) : P.ContainsZero where
   exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract X) h⟩
 

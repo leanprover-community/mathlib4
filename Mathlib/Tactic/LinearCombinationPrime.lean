@@ -94,7 +94,7 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
     match ← expandLinearCombo ty e with
     | .const c => .const <$> `(-$c)
     | .proof p => .proof <$> ``(neg_pf $p)
-  | `(← $e) => do
+  | `(← $e:term) => do
     match ← expandLinearCombo ty e with
     | .const c => return .const c
     | .proof p => .proof <$> ``(Eq.symm $p)
@@ -130,7 +130,7 @@ theorem eq_trans₃ (p : (a : α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b'
 theorem eq_of_add [AddGroup α] (p : (a : α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
 
-theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a : α) = b)
+theorem eq_of_add_pow [Ring α] [IsReduced α] (n : ℕ) (p : (a : α) = b)
     (H : (a' - b') ^ n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply eq_zero_of_pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 

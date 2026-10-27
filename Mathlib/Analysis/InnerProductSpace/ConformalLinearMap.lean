@@ -23,7 +23,7 @@ variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 
 open LinearIsometry ContinuousLinearMap
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 /-- A map between two inner product spaces is a conformal map if and only if it preserves inner
 products up to a scalar factor, i.e., there exists a positive `c : ℝ` such that
@@ -33,8 +33,8 @@ theorem isConformalMap_iff (f : E →L[ℝ] F) :
   constructor
   · rintro ⟨c₁, hc₁, li, rfl⟩
     refine ⟨c₁ * c₁, mul_self_pos.2 hc₁, fun u v => ?_⟩
-    simp only [real_inner_smul_left, real_inner_smul_right, mul_assoc, coe_smul',
-      coe_toContinuousLinearMap, Pi.smul_apply, inner_map_map]
+    simp only [real_inner_smul_left, real_inner_smul_right, mul_assoc,
+      coe_toContinuousLinearMap, smul_apply, inner_map_map]
   · rintro ⟨c₁, hc₁, huv⟩
     obtain ⟨c, hc, rfl⟩ : ∃ c : ℝ, 0 < c ∧ c₁ = c * c :=
       ⟨√c₁, Real.sqrt_pos.2 hc₁, (Real.mul_self_sqrt hc₁.le).symm⟩

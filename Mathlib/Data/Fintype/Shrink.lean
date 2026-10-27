@@ -5,14 +5,14 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Countable.Small
+public import Mathlib.Basic.Countable.Small
 public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Fintype instance for `Shrink`
 -/
 
-@[expose] public section
+public section
 
 universe u v
 variable {α : Type u} [Fintype α]

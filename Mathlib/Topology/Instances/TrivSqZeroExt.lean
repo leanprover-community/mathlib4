@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
-public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
 /-!
 # Topology on `TrivSqZeroExt R M`
@@ -83,9 +83,7 @@ def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : StrongDual R (tsze 
 /-- `TrivSqZeroExt.snd` as a continuous linear map. -/
 @[simps]
 def sndCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] M :=
-  { ContinuousLinearMap.snd R R M with
-    toFun := snd
-    cont := continuous_snd }
+  { ContinuousLinearMap.snd R R M with toFun := snd }
 
 /-- `TrivSqZeroExt.inl` as a continuous linear map. -/
 @[simps]
@@ -164,7 +162,7 @@ instance [AddGroup R] [AddGroup M] [IsUniformAddGroup R] [IsUniformAddGroup M] :
     IsUniformAddGroup (tsze R M) :=
   inferInstanceAs <| IsUniformAddGroup (R × M)
 
-open Uniformity
+open scoped Uniformity
 
 theorem uniformity_def :
     𝓤 (tsze R M) =

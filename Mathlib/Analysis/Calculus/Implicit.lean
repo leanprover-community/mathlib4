@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Normed.Module.Complemented
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Implicit function theorem
@@ -184,22 +185,13 @@ theorem prodFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.prodFun (φ.implicitFunction p.1 p.2) = p :=
   φ.hasStrictFDerivAt.eventually_right_inverse.mono fun ⟨_, _⟩ h => h
 
-@[deprecated (since := "2026-01-27")]
-alias prod_map_implicitFunction := prodFun_implicitFunction
-
 theorem leftFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.leftFun (φ.implicitFunction p.1 p.2) = p.1 :=
   φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.fst
 
-@[deprecated (since := "2026-01-27")]
-alias left_map_implicitFunction := leftFun_implicitFunction
-
 theorem rightFun_implicitFunction :
     ∀ᶠ p : F × G in 𝓝 (φ.prodFun φ.pt), φ.rightFun (φ.implicitFunction p.1 p.2) = p.2 :=
   φ.prodFun_implicitFunction.mono fun _ => congr_arg Prod.snd
-
-@[deprecated (since := "2026-01-27")]
-alias right_map_implicitFunction := rightFun_implicitFunction
 
 theorem implicitFunction_apply_image :
     ∀ᶠ x in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun x) (φ.rightFun x) = x :=
@@ -230,7 +222,7 @@ theorem hasStrictFDerivAt_implicitFunction_fderiv :
       (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt)) (φ.rightFun φ.pt) := by
   have := φ.hasStrictFDerivAt.to_localInverse.comp (φ.rightFun φ.pt)
     ((hasStrictFDerivAt_const _ _).prodMk (hasStrictFDerivAt_id _))
-  convert this
+  convert! this
   exact this.hasFDerivAt.fderiv
 
 theorem differentiableAt_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G) :
@@ -261,13 +253,10 @@ theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
-  convert φ.hasStrictFDerivAt_implicitFunction_fderiv
+  convert! φ.hasStrictFDerivAt_implicitFunction_fderiv
   ext1 x
   rw [eq_comm, fderiv_implicitFunction_apply_eq_iff]
   simp_all [DFunLike.ext_iff]
-
-@[deprecated (since := "2026-01-27")]
-alias implicitFunction_hasStrictFDerivAt := hasStrictFDerivAt_implicitFunction
 
 theorem map_implicitFunction_nhdsWithin_preimage (φ : ImplicitFunctionData 𝕜 E F G)
     (s : Set E) :
@@ -415,25 +404,27 @@ theorem eq_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
 theorem implicitFunctionOfComplemented_apply_image (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) (hker : f'.ker.ClosedComplemented) :
     hf.implicitFunctionOfComplemented f f' hf' hker (f a) 0 = a := by
-  simpa only [implicitToOpenPartialHomeomorphOfComplemented_self] using
+  simpa only [implicitToOpenPartialHomeomorphOfComplemented_self] using!
       (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).left_inv
       (hf.mem_implicitToOpenPartialHomeomorphOfComplemented_source hf' hker)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤)
     (hker : f'.ker.ClosedComplemented) :
     HasStrictFDerivAt (hf.implicitFunctionOfComplemented f f' hf' hker (f a))
       f'.ker.subtypeL 0 := by
-  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
-    f'.ker.subtypeL _ _
+  convert!
+    (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
+      f'.ker.subtypeL _ _
   swap
   · ext
     simp only [Classical.choose_spec hker, implicitFunctionDataOfComplemented,
-      ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coe_subtype,
+      ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL, Submodule.coe_subtype,
       ContinuousLinearMap.id_apply]
   swap
   · ext
-    simp only [ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coe_subtype,
-      ContinuousLinearMap.apply_val_ker, ContinuousLinearMap.zero_apply]
+    simp only [ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL, Submodule.coe_subtype,
+      ContinuousLinearMap.apply_val_ker, zero_apply]
   simp only [implicitFunctionDataOfComplemented, map_sub, sub_self]
 
 end Complemented

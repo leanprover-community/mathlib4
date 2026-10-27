@@ -34,7 +34,6 @@ instance Transported.instBraidedCategory (e : C ≌ D) [MonoidalCategory C] [Bra
 
 local notation "e'" e => equivalenceTransported e
 
-set_option backward.isDefEq.respectTransparency false in
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).inverse.Braided where
   braided X Y := by
@@ -61,6 +60,7 @@ braided, this causes a diamond.
 def transportedFunctorCompInverseBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).Braided where
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] transportedFunctorCompInverseBraided in
 instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).functor.Braided where

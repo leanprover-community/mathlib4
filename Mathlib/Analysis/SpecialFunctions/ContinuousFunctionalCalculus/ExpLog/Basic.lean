@@ -148,7 +148,7 @@ lemma log_smul' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
 
 lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0)
     (ha₁ : IsSelfAdjoint a := by cfc_tac) : log (a ^ n) = n • log a := by
-  have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by fun_prop (disch := assumption)
+  have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by fun_prop
   have ha₂'' : ContinuousOn Real.log ((· ^ n) '' spectrum ℝ a) := by fun_prop (disch := aesop)
   rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp' Real.log (· ^ n) a ha₂'', log]
   simp_rw [Real.log_pow, ← Nat.cast_smul_eq_nsmul ℝ n, cfc_const_mul (n : ℝ) Real.log a ha₂']
@@ -173,7 +173,7 @@ lemma exp_log [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (
   have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by grind
   rw [← real_exp_eq_normedSpace_exp .log, log, ← cfc_comp' Real.exp Real.log a (by fun_prop)]
   conv_rhs => rw [← cfc_id (R := ℝ) a]
-  refine cfc_congr fun x hx => ?_
+  congr! 1 with x hx
   grind [Real.exp_log]
 
 lemma continuousOn_log {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]

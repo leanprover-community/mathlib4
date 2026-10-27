@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Covering.VitaliFamily
 public import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Differentiation of measures
@@ -104,7 +103,7 @@ theorem ae_eventually_measure_pos [SecondCountableTopology α] :
   have h : v.FineSubfamilyOn f s := by
     intro x hx ε εpos
     rw [hs] at hx
-    simp only [frequently_filterAt_iff, gt_iff_lt, mem_setOf_eq] at hx
+    simp only [frequently_filterAt_iff, gt_iff_lt, mem_ofPred_eq] at hx
     rcases hx ε εpos with ⟨a, a_sets, ax, μa⟩
     exact ⟨a, ⟨a_sets, μa⟩, ax⟩
   refine le_antisymm ?_ bot_le
@@ -138,7 +137,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
     apply Frequently.mono this
     rintro a ⟨ρa, _, aU⟩
     exact ⟨ρa, aU⟩
-  haveI : Encodable h.index := h.index_countable.toEncodable
+  have : Encodable h.index := h.index_countable.toEncodable
   calc
     ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
     _ ≤ ∑' x : h.index, ν (h.covering x) := ENNReal.tsum_le_tsum fun x => (h.covering_mem x.2).1
@@ -184,7 +183,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
         intro x hx
         rw [hs] at hx
-        simp only [mem_inter_iff, not_lt, not_eventually, mem_setOf_eq] at hx
+        simp only [mem_inter_iff, not_lt, not_eventually, mem_ofPred_eq] at hx
         exact hx.1
       _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ o := by gcongr; apply inter_subset_right
       _ = 0 := by rw [ρo, mul_zero]
@@ -201,9 +200,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
   obtain ⟨n, hn⟩ : ∃ n, u n < w := ((tendsto_order.1 u_lim).2 w (ENNReal.coe_pos.1 w_pos)).exists
   filter_upwards [hx n, h'x, v.eventually_measure_lt_top x]
   intro a ha μa_pos μa_lt_top
-  grw [ENNReal.div_lt_iff (.inl μa_pos.ne') (.inl μa_lt_top.ne), ha, hn]
-  gcongr
-  exact μa_lt_top.ne
+  grw [ENNReal.div_lt_iff (.inl μa_pos.ne') (.inl μa_lt_top.ne), ha, hn, w_lt]
 
 section AbsolutelyContinuous
 
@@ -242,13 +239,13 @@ theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (
     lift d to ℝ≥0 using I d hd
     apply v.null_of_frequently_le_of_frequently_ge hρ (ENNReal.coe_lt_coe.1 hcd)
     · simp only [and_imp, exists_prop, not_frequently, not_and, not_lt, not_le, not_eventually,
-        mem_setOf_eq, mem_compl_iff, not_forall]
+        mem_ofPred_eq, mem_compl_iff, not_forall]
       intro x h1x _
       apply h1x.mono fun a ha => ?_
       refine (ENNReal.div_le_iff_le_mul ?_ (Or.inr (bot_le.trans_lt ha).ne')).1 ha.le
       simp only [ENNReal.coe_ne_top, Ne, or_true, not_false_iff]
     · simp only [and_imp, exists_prop, not_frequently, not_and, not_lt, not_le, not_eventually,
-        mem_setOf_eq, mem_compl_iff, not_forall]
+        mem_ofPred_eq, mem_compl_iff, not_forall]
       intro x _ h2x
       apply h2x.mono fun a ha => ?_
       exact ENNReal.mul_le_of_le_div ha.le
@@ -482,7 +479,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
     · apply v.mul_measure_le_of_subset_lt_limRatioMeas hρ
       intro y hy
       have : v.limRatioMeas hρ y = ∞ := hy.1
-      simp only [this, ENNReal.coe_lt_top, mem_setOf_eq]
+      simp only [this, ENNReal.coe_lt_top, mem_ofPred_eq]
     · simp only [(zero_lt_one.trans_le hq).ne', true_or, ENNReal.coe_eq_zero, Ne,
         not_false_iff]
   have B : Tendsto (fun q : ℝ≥0 => (q : ℝ≥0∞)⁻¹ * ρ s) atTop (𝓝 (∞⁻¹ * ρ s)) := by
@@ -493,7 +490,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
   exact eventually_atTop.2 ⟨1, A⟩
 
 /-- The points with `v.limRatioMeas hρ x = 0` have measure `0` for `ρ`. -/
-theorem measure_limRatioMeas_zero : ρ {x | v.limRatioMeas hρ x = 0} = 0 := by
+theorem measure_limRatioMeas_zero : ρ (v.limRatioMeas hρ ⁻¹' {0}) = 0 := by
   refine measure_null_of_locally_null _ fun x _ => ?_
   obtain ⟨o, xo, o_open, μo⟩ : ∃ o : Set α, x ∈ o ∧ IsOpen o ∧ μ o < ∞ :=
     Measure.exists_isOpen_measure_lt_top μ x
@@ -505,7 +502,7 @@ theorem measure_limRatioMeas_zero : ρ {x | v.limRatioMeas hρ x = 0} = 0 := by
     apply v.measure_le_mul_of_subset_limRatioMeas_lt hρ
     intro y hy
     have : v.limRatioMeas hρ y = 0 := hy.1
-    simp only [this, mem_setOf_eq, hq, ENNReal.coe_pos]
+    simp only [this, mem_ofPred_eq, hq, ENNReal.coe_pos]
   have B : Tendsto (fun q : ℝ≥0 => (q : ℝ≥0∞) * μ s) (𝓝[>] (0 : ℝ≥0)) (𝓝 ((0 : ℝ≥0) * μ s)) := by
     apply ENNReal.Tendsto.mul_const _ (Or.inr μs)
     rw [ENNReal.tendsto_coe]
@@ -533,16 +530,16 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   -- unless you use the `(... :)` notation. Another fix is using `(2 : Nat)`, so this appears
   -- to be an unpleasant interaction with default instances.
   have A : ν (s ∩ f ⁻¹' {0}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) := by
-    apply le_trans _ (zero_le _)
+    apply zero_le.trans'
     have M : MeasurableSet (s ∩ f ⁻¹' {0}) := hs.inter (f_meas (measurableSet_singleton _))
     simp only [f, ν, nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
     apply (ae_restrict_iff' M).2
     exact Eventually.of_forall fun x hx => hx.2
   have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) := by
-    apply le_trans (le_of_eq _) (zero_le _)
-    apply withDensity_absolutelyContinuous μ _
-    rw [← nonpos_iff_eq_zero]
-    exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
+    rw [withDensity_absolutelyContinuous μ]
+    · exact zero_le
+    · rw [← nonpos_iff_eq_zero]
+      exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
   have C :
     ∀ n : ℤ,
       ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) ≤
@@ -599,11 +596,10 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   let f := v.limRatioMeas hρ
   have f_meas : Measurable f := v.limRatioMeas_measurable hρ
   have A : ρ (s ∩ f ⁻¹' {0}) ≤ (t • ν) (s ∩ f ⁻¹' {0}) := by
-    refine le_trans (measure_mono inter_subset_right) (le_trans (le_of_eq ?_) (zero_le _))
-    exact v.measure_limRatioMeas_zero hρ
+    grw [measure_mono inter_subset_right, v.measure_limRatioMeas_zero hρ]
+    exact zero_le
   have B : ρ (s ∩ f ⁻¹' {∞}) ≤ (t • ν) (s ∩ f ⁻¹' {∞}) := by
-    apply le_trans (le_of_eq _) (zero_le _)
-    apply hρ
+    apply (hρ _).le.trans zero_le
     rw [← nonpos_iff_eq_zero]
     exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
   have C :
@@ -697,7 +693,7 @@ theorem ae_tendsto_rnDeriv :
   have C : ∀ᵐ x ∂μ, Tendsto (fun a => t a / μ a) (v.filterAt x) (𝓝 (t.rnDeriv μ x)) :=
     v.ae_tendsto_rnDeriv_of_absolutelyContinuous (withDensity_absolutelyContinuous _ _)
   filter_upwards [A, B, C] with _ Ax Bx Cx
-  convert Ax.add Cx using 1
+  convert! Ax.add Cx using 1
   · ext1 a
     conv_lhs => rw [eq_add]
     simp only [Pi.add_apply, coe_add, ENNReal.add_div]
@@ -712,7 +708,7 @@ almost every point of `s` is a Lebesgue density point for `s`. A version for non
 holds, but it only gives the first conclusion, see `ae_tendsto_measure_inter_div`. -/
 theorem ae_tendsto_measure_inter_div_of_measurableSet {s : Set α} (hs : MeasurableSet s) :
     ∀ᵐ x ∂μ, Tendsto (fun a => μ (s ∩ a) / μ a) (v.filterAt x) (𝓝 (s.indicator 1 x)) := by
-  haveI : IsLocallyFiniteMeasure (μ.restrict s) :=
+  have : IsLocallyFiniteMeasure (μ.restrict s) :=
     isLocallyFiniteMeasure_of_le restrict_le_self
   filter_upwards [ae_tendsto_rnDeriv v (μ.restrict s), rnDeriv_restrict_self μ hs]
   intro x hx h'x
@@ -757,12 +753,12 @@ theorem ae_tendsto_lintegral_div' {f : α → ℝ≥0∞} (hf : Measurable f) (h
 theorem ae_tendsto_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h'f : (∫⁻ y, f y ∂μ) ≠ ∞) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, f y ∂μ) / μ a) (v.filterAt x) (𝓝 (f x)) := by
   have A : (∫⁻ y, hf.mk f y ∂μ) ≠ ∞ := by
-    convert h'f using 1
+    convert! h'f using 1
     apply lintegral_congr_ae
     exact hf.ae_eq_mk.symm
   filter_upwards [v.ae_tendsto_lintegral_div' hf.measurable_mk A, hf.ae_eq_mk] with x hx h'x
   rw [h'x]
-  convert hx using 1
+  convert! hx using 1
   ext1 a
   congr 1
   apply lintegral_congr_ae

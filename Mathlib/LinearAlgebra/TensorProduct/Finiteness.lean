@@ -48,7 +48,7 @@ variable {R M N : Type*}
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
-variable {M₁ M₂ : Submodule R M} {N₁ N₂ : Submodule R N}
+variable {M₁ : Submodule R M} {N₁ : Submodule R N}
 
 namespace TensorProduct
 
@@ -57,7 +57,6 @@ of `M × N`, such that `x` is equal to the sum of `m_i ⊗ₜ[R] n_i`. -/
 theorem exists_multiset (x : M ⊗[R] N) :
     ∃ S : Multiset (M × N), x = (S.map fun i ↦ i.1 ⊗ₜ[R] i.2).sum := by
   induction x with
-  | zero => exact ⟨0, by simp⟩
   | tmul x y => exact ⟨{(x, y)}, by simp⟩
   | add x y hx hy =>
     obtain ⟨Sx, hx⟩ := hx
@@ -70,7 +69,6 @@ such that `x` is equal to the sum of `m_i ⊗ₜ[R] n_i`. -/
 theorem exists_finsupp_left (x : M ⊗[R] N) :
     ∃ S : M →₀ N, x = S.sum fun m n ↦ m ⊗ₜ[R] n := by
   induction x with
-  | zero => exact ⟨0, by simp⟩
   | tmul x y => exact ⟨Finsupp.single x y, by simp⟩
   | add x y hx hy =>
     obtain ⟨Sx, hx⟩ := hx
@@ -111,8 +109,7 @@ theorem exists_finite_submodule_of_setFinite (s : Set (M ⊗[R] N)) (hs : s.Fini
   | empty => exact ⟨_, _, fg_bot, fg_bot, Set.empty_subset _⟩
   | @insert a s _ _ ih =>
   obtain ⟨M', N', hM', hN', h⟩ := ih
-  refine TensorProduct.induction_on a ?_ (fun x y ↦ ?_) fun x y hx hy ↦ ?_
-  · exact ⟨M', N', hM', hN', Set.insert_subset (zero_mem _) h⟩
+  refine TensorProduct.inductionOn a (fun x y ↦ ?_) fun x y hx hy ↦ ?_
   · refine ⟨_, _, hM'.sup (fg_span_singleton x),
       hN'.sup (fg_span_singleton y), Set.insert_subset ?_ fun z hz ↦ ?_⟩
     · exact ⟨⟨x, mem_sup_right (mem_span_singleton_self x)⟩ ⊗ₜ
@@ -185,7 +182,6 @@ theorem exists_finite_submodule_right_of_setFinite' (s : Set (M₁ ⊗[R] N₁))
 lemma exists_sum_tmul_eq (x : M ⊗[R] N) :
     ∃ (k : ℕ) (m : Fin k → M) (n : Fin k → N), x = ∑ j, m j ⊗ₜ n j := by
   induction x with
-  | zero => exact ⟨0, IsEmpty.elim inferInstance, IsEmpty.elim inferInstance, by simp⟩
   | tmul x y => exact ⟨1, fun _ ↦ x, fun _ ↦ y, by simp⟩
   | add x y hx hy =>
     obtain ⟨kx, mx, nx, rfl⟩ := hx

@@ -49,7 +49,7 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 
 @[expose] public section
 
-open MeasureTheory Set Filter TopologicalSpace
+open MeasureTheory Set Filter
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
@@ -313,9 +313,10 @@ lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f
     [IsFiniteKernel ν] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, f (a, t) r) (ν a) := by
   rw [← memLp_one_iff_integrable]
-  refine ⟨(Measurable.iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable, ?_⟩
+  rw [memLp_iff]
   refine (?_ : _ ≤ (ν a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
-  refine (eLpNorm_le_of_ae_bound (C := 1) ?_).trans (by simp)
+  refine (eLpNorm_le_of_ae_bound (C := 1)
+    ((Measurable.iInf fun i ↦ hf.measurable_right a _).aestronglyMeasurable) ?_).trans (by simp)
   filter_upwards [hf.bddBelow_range a, hf.nonneg a, hf.le_one a]
     with t hbdd_below h_nonneg h_le_one
   rw [Real.norm_eq_abs, abs_of_nonneg]
@@ -528,9 +529,9 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     _ = κ a (s ×ˢ univ) - κ a (s ×ˢ t) := by
         rw [setLIntegral_toKernel_univ hf a hs, iht]
     _ = κ a (s ×ˢ tᶜ) := by
-        rw [← measure_diff _ (hs.prod ht).nullMeasurableSet (measure_ne_top _ _)]
-        · rw [prod_diff_prod, compl_eq_univ_diff]
-          simp only [diff_self, empty_prod, union_empty]
+        rw [← measure_sdiff _ (hs.prod ht).nullMeasurableSet (measure_ne_top _ _)]
+        · rw [prod_sdiff_prod, compl_eq_univ_sdiff]
+          simp only [sdiff_self, empty_prod, union_empty]
         · rw [prod_subset_prod_iff]
           exact Or.inl ⟨subset_rfl, subset_univ t⟩
   | iUnion f hf_disj hf_meas ihf =>
@@ -555,7 +556,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     simp only [preimage_empty, measure_empty, lintegral_const, zero_mul]
   | basic s hs =>
     rcases hs with ⟨t₁, ht₁, t₂, ht₂, rfl⟩
-    simp only [mem_setOf_eq] at ht₁ ht₂
+    simp only [mem_ofPred_eq] at ht₁ ht₂
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ x in t₁, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) ∂(ν a)
         = ∫⁻ x in t₁, hf.toKernel f (a, x) t₂ ∂(ν a) := by

@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Module.Torsion.Free
 This file shows that the product of two torsion-free modules is torsion-free.
 -/
 
-@[expose] public section
+public section
 
 open Module
 

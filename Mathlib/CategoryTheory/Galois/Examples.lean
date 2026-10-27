@@ -25,7 +25,7 @@ universe u v w
 
 namespace CategoryTheory
 
-open Limits Functor PreGaloisCategory
+open Limits CategoryTheory.Functor PreGaloisCategory
 
 namespace FintypeCat
 
@@ -33,7 +33,7 @@ namespace FintypeCat
 noncomputable def imageComplement {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     FintypeCat.{u} := by
   haveI : Fintype (↑(Set.range f)ᶜ) := Fintype.ofFinite _
-  exact FintypeCat.of (↑(Set.range f)ᶜ)
+  exact ↧(↑(Set.range f)ᶜ)
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
 noncomputable def imageComplementIncl {X Y : FintypeCat.{u}}
@@ -103,7 +103,7 @@ noncomputable instance : FiberFunctor (forget₂ (Action FintypeCat G) FintypeCa
 
 /-- The category of finite `G`-sets is a `GaloisCategory`. -/
 instance : GaloisCategory (Action FintypeCat G) where
-  hasFiberFunctor := ⟨Action.forget FintypeCat G, ⟨inferInstance⟩⟩
+  hasFiberFunctor := ⟨Action.forget FintypeCat G, inferInstance⟩
 
 /-- The `G`-action on a connected finite `G`-set is transitive. -/
 theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
@@ -113,9 +113,9 @@ theorem Action.pretransitive_of_isConnected (X : Action FintypeCat G)
     connectedness, the orbit equals `X.V`. -/
     let T : Set X.V := MulAction.orbit G x
     have : Fintype T := Fintype.ofFinite T
-    letI : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G
+    let : MulAction G (FintypeCat.of T) := inferInstanceAs <| MulAction G
       ↑(MulAction.orbit G x)
-    let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G (FintypeCat.of T)
+    let T' : Action FintypeCat G := Action.FintypeCat.ofMulAction G ↧T
     let i : T' ⟶ X := ⟨FintypeCat.homMk Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by
@@ -140,9 +140,9 @@ theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
     obtain ⟨(y : Y.V)⟩ := (not_initial_iff_fiber_nonempty (Action.forget _ _) Y).mp hni
     have : IsIso i.hom := by
       refine (ConcreteCategory.isIso_iff_bijective i.hom).mpr ⟨?_, fun x' ↦ ?_⟩
-      · haveI : Mono i.hom := map_mono (forget₂ _ _) i
+      · have : Mono i.hom := map_mono (forget₂ _ _) i
         exact ConcreteCategory.injective_of_mono_of_preservesPullback i.hom
-      · letI x : X := i.hom y
+      · let x : X := i.hom y
         obtain ⟨σ, hσ⟩ := MulAction.exists_smul_eq G x x'
         use σ • y
         change (Y.ρ σ ≫ i.hom) y = x'
@@ -165,7 +165,7 @@ noncomputable def isoQuotientStabilizerOfIsConnected (X : Action FintypeCat G)
   haveI : MulAction.IsPretransitive G X.V := Action.pretransitive_of_isConnected G X
   let e : X.V ≃ G ⧸ MulAction.stabilizer G x :=
     (Equiv.Set.univ X.V).symm.trans <|
-      (Equiv.setCongr ((MulAction.orbit_eq_univ G x).symm)).trans <|
+      (Set.equivOfEq ((MulAction.orbit_eq_univ G x).symm)).trans <|
       MulAction.orbitEquivQuotientStabilizer G x
   Iso.symm <| Action.mkIso (FintypeCat.equivEquivIso e.symm) <| fun σ : G ↦ by
     ext (a : G ⧸ MulAction.stabilizer G x)

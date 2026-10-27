@@ -16,7 +16,7 @@ and `n` is not divisible by the characteristic. In particular, when `F` has char
 this hold for all `n ≠ 0`.
 -/
 
-@[expose] public section
+public section
 
 variable (F : Type*) [Field F] (n k : ℕ) [NeZero (n : F)]
 

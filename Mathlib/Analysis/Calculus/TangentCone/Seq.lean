@@ -41,7 +41,7 @@ theorem mem_tangentConeAt_iff_exists_seq {R E : Type*} [AddCommGroup E] [SMul R 
       (∀ᶠ n in atTop, x + d n ∈ s) ∧ Tendsto (fun n ↦ c n • d n) atTop (𝓝 y) := by
   constructor
   · intro h
-    simp only [tangentConeAt_def, Set.mem_setOf, ← map₂_smul, ← map_prod_eq_map₂, ClusterPt,
+    simp only [tangentConeAt_def, Set.mem_ofPred, ← map₂_smul, ← map_prod_eq_map₂, ClusterPt,
       ← neBot_inf_comap_iff_map'] at h
     rcases @exists_seq_tendsto _ _ _ h with ⟨cd, hcd⟩
     simp only [tendsto_inf, tendsto_comap_iff, tendsto_prod_iff', tendsto_nhdsWithin_iff] at hcd

@@ -37,7 +37,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     rw [← Ideal.zero_eq_bot, zero_pow two_ne_zero]
   rcases n with - | n
   · rw [pow_zero, Ideal.one_eq_top] at hI
-    haveI := subsingleton_of_bot_eq_top hI.symm
+    have := subsingleton_of_bot_eq_top hI.symm
     exact (hI' (Subsingleton.elim _ _)).elim
   rcases n with - | n
   · rw [pow_one] at hI
@@ -89,3 +89,10 @@ theorem Ideal.Quotient.isUnit_mk_pow_iff_notMem [I.IsMaximal] {n : ℕ} (hn : n 
   let := Ideal.Quotient.field I
   rw [isUnit_mk_pow_iff_isUnit_mk I hn, isUnit_iff_ne_zero]
   exact Ideal.Quotient.eq_zero_iff_mem.not
+
+theorem Ideal.Quotient.isUnit_mk_pow_of_notMem [I.IsMaximal] {n : ℕ} {x : S} (hx : x ∉ I) :
+    IsUnit (mk (I ^ n) x) := by
+  by_cases! hn : n = 0
+  · rw [pow_eq_top_iff.mpr (Or.inr hn)]
+    exact isUnit_of_subsingleton _
+  exact (isUnit_mk_pow_iff_notMem I hn).mpr hx

@@ -257,7 +257,7 @@ variable [CharP R p]
 @[simp]
 theorem coeff_frobenius_charP (x : 𝕎 R) (n : ℕ) : coeff (frobenius x) n = x.coeff n ^ p := by
   rw [coeff_frobenius]
-  letI : Algebra (ZMod p) R := ZMod.algebra _ _
+  let : Algebra (ZMod p) R := ZMod.algebra _ _
   -- outline of the calculation, proofs follow below
   calc
     aeval (fun k => x.coeff k) (frobeniusPoly p n) =

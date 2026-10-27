@@ -24,7 +24,7 @@ monotone functions.
 monotone map, bundled morphism
 -/
 
-@[expose] public section
+public section
 
 
 namespace OrderHom

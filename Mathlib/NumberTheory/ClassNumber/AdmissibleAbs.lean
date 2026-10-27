@@ -6,11 +6,12 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Admissible absolute value on the integers
+
 This file defines an admissible absolute value `AbsoluteValue.absIsAdmissible`
 which we use to show the class number of the ring of integers of a number field
 is finite.

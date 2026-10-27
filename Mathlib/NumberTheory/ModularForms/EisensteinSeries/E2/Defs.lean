@@ -38,7 +38,7 @@ lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n ↦ eisSummand 2 
 
 @[simp]
 lemma e2Summand_zero_eq_two_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riemannZeta 2 := by
-  simpa [e2Summand, eisSummand] using
+  simpa [e2Summand, eisSummand] using!
     (two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (k := 2) (by grind) (by simp)).symm
 
 lemma e2Summand_even (z : ℍ) : (e2Summand · z).Even := by
@@ -98,6 +98,7 @@ lemma D2_T : D2 ModularGroup.T = 0 := by
   ext z
   simp [D2, ModularGroup.T]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma D2_S (z : ℍ) : D2 ModularGroup.S z = 2 * π * I / z := by
   simp [D2, ModularGroup.S, ModularGroup.denom_apply]
 
