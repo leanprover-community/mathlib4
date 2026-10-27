@@ -134,7 +134,7 @@ theorem iteratedDerivedSet_mem_fixedPoints (s : Set X) :
 /-- The perfect kernel of a set, defined as the intersection of all iterated derived sets. It is
 the largest perfect subset of the original set. -/
 def perfectKernel (s : Set X) : Set X :=
-  ⋂ a, sᵈ[a]
+  ⋂ a : Ordinal, sᵈ[a]
 
 theorem perfectKernel_subset_iteratedDerivedSet (s : Set X) (a : Ordinal) :
     perfectKernel s ⊆ sᵈ[a] :=
