@@ -408,6 +408,8 @@ instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
 theorem nnNorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :
     ‖x‖₊ = hammingNorm (ofHamming x) := rfl
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_eq_hammingNorm := nnNorm_eq_hammingNorm
+
 end
 
 end Hamming

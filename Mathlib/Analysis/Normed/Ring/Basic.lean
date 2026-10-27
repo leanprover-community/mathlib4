@@ -176,6 +176,8 @@ variable [SeminormedAddCommGroup G] [One G] [NormOneClass G]
 @[simp] lemma nnNorm_one : ‖(1 : G)‖₊ = 1 := NNReal.eq norm_one
 @[simp] lemma enorm_one : ‖(1 : G)‖ₑ = 1 := by simp [enorm]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_one := nnNorm_one
+
 theorem NormOneClass.nontrivial : Nontrivial G :=
   nontrivial_of_ne 0 1 <| ne_of_apply_ne norm <| by simp
 
@@ -220,16 +222,22 @@ theorem norm_mul_le (a b : α) : ‖a * b‖ ≤ ‖a‖ * ‖b‖ :=
 
 theorem nnNorm_mul_le (a b : α) : ‖a * b‖₊ ≤ ‖a‖₊ * ‖b‖₊ := norm_mul_le a b
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_mul_le := nnNorm_mul_le
+
 lemma norm_mul_le_of_le {r₁ r₂ : ℝ} (h₁ : ‖a₁‖ ≤ r₁) (h₂ : ‖a₂‖ ≤ r₂) : ‖a₁ * a₂‖ ≤ r₁ * r₂ :=
   (norm_mul_le ..).trans <| mul_le_mul h₁ h₂ (norm_nonneg _) ((norm_nonneg _).trans h₁)
 
 lemma nnNorm_mul_le_of_le {r₁ r₂ : ℝ≥0} (h₁ : ‖a₁‖₊ ≤ r₁) (h₂ : ‖a₂‖₊ ≤ r₂) :
     ‖a₁ * a₂‖₊ ≤ r₁ * r₂ := (nnNorm_mul_le ..).trans <| mul_le_mul' h₁ h₂
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_mul_le_of_le := nnNorm_mul_le_of_le
+
 lemma norm_mul₃_le : ‖a * b * c‖ ≤ ‖a‖ * ‖b‖ * ‖c‖ := norm_mul_le_of_le (norm_mul_le ..) le_rfl
 
 lemma nnNorm_mul₃_le : ‖a * b * c‖₊ ≤ ‖a‖₊ * ‖b‖₊ * ‖c‖₊ :=
   nnNorm_mul_le_of_le (norm_mul_le ..) le_rfl
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_mul₃_le := nnNorm_mul₃_le
 
 theorem one_le_norm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖ :=
   (le_mul_iff_one_le_left <| norm_pos_iff.mpr (one_ne_zero : (1 : β) ≠ 0)).mp
@@ -237,6 +245,8 @@ theorem one_le_norm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)
 
 theorem one_le_nnNorm_one (β) [NormedRing β] [Nontrivial β] : 1 ≤ ‖(1 : β)‖₊ :=
   one_le_norm_one β
+
+@[deprecated (since := "2026-10-27")] alias one_le_nnnorm_one := one_le_nnNorm_one
 
 /-- In a seminormed ring, the left-multiplication `AddMonoidHom` is bounded. -/
 theorem mulLeft_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulLeft x y‖ ≤ ‖x‖ * ‖y‖ :=
@@ -350,12 +360,16 @@ theorem List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l
 theorem List.nnNorm_prod_le' {l : List α} (hl : l ≠ []) : ‖l.prod‖₊ ≤ (l.map nnNorm).prod :=
   (List.norm_prod_le' hl).trans_eq <| by simp [NNReal.coe_list_prod, List.map_map]
 
+@[deprecated (since := "2026-10-27")] alias List.nnnorm_prod_le' := List.nnNorm_prod_le'
+
 theorem List.norm_prod_le [NormOneClass α] : ∀ l : List α, ‖l.prod‖ ≤ (l.map norm).prod
   | [] => by simp
   | a::l => List.norm_prod_le' (List.cons_ne_nil a l)
 
 theorem List.nnNorm_prod_le [NormOneClass α] (l : List α) : ‖l.prod‖₊ ≤ (l.map nnNorm).prod :=
   l.norm_prod_le.trans_eq <| by simp [NNReal.coe_list_prod, List.map_map]
+
+@[deprecated (since := "2026-10-27")] alias List.nnnorm_prod_le := List.nnNorm_prod_le
 
 theorem Finset.norm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) (hs : s.Nonempty)
     (f : ι → α) : ‖∏ i ∈ s, f i‖ ≤ ∏ i ∈ s, ‖f i‖ := by
@@ -367,6 +381,8 @@ theorem Finset.nnNorm_prod_le' {α : Type*} [NormedCommRing α] (s : Finset ι) 
     (f : ι → α) : ‖∏ i ∈ s, f i‖₊ ≤ ∏ i ∈ s, ‖f i‖₊ :=
   (s.norm_prod_le' hs f).trans_eq <| by simp [NNReal.coe_prod]
 
+@[deprecated (since := "2026-10-27")] alias Finset.nnnorm_prod_le' := Finset.nnNorm_prod_le'
+
 theorem Finset.norm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
     (f : ι → α) : ‖∏ i ∈ s, f i‖ ≤ ∏ i ∈ s, ‖f i‖ := by
   rcases s with ⟨⟨l⟩, hl⟩
@@ -375,6 +391,8 @@ theorem Finset.norm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (
 theorem Finset.nnNorm_prod_le {α : Type*} [NormedCommRing α] [NormOneClass α] (s : Finset ι)
     (f : ι → α) : ‖∏ i ∈ s, f i‖₊ ≤ ∏ i ∈ s, ‖f i‖₊ :=
   (s.norm_prod_le f).trans_eq <| by simp [NNReal.coe_prod]
+
+@[deprecated (since := "2026-10-27")] alias Finset.nnnorm_prod_le := Finset.nnNorm_prod_le
 
 lemma norm_natAbs (z : ℤ) :
     ‖(z.natAbs : α)‖ = ‖(z : α)‖ := by
@@ -386,6 +404,8 @@ lemma nnNorm_natAbs (z : ℤ) :
     ‖(z.natAbs : α)‖₊ = ‖(z : α)‖₊ := by
   simp [← NNReal.coe_inj, -Nat.cast_natAbs, norm_natAbs]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_natAbs := nnNorm_natAbs
+
 @[simp] lemma norm_intCast_abs (z : ℤ) :
     ‖((|z| : ℤ) : α)‖ = ‖(z : α)‖ := by
   simp [← norm_natAbs]
@@ -393,6 +413,8 @@ lemma nnNorm_natAbs (z : ℤ) :
 @[simp] lemma nnNorm_intCast_abs (z : ℤ) :
     ‖((|z| : ℤ) : α)‖₊ = ‖(z : α)‖₊ := by
   simp [← nnNorm_natAbs]
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_intCast_abs := nnNorm_intCast_abs
 
 /-- If `α` is a seminormed ring, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n` for `n > 0`.
 See also `nnNorm_pow_le`. -/
@@ -402,11 +424,15 @@ theorem nnNorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ �
     simpa only [pow_succ' _ (n + 1)] using
       le_trans (nnNorm_mul_le _ _) (mul_le_mul_right (nnNorm_pow_le' a n.succ_pos) _)
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_pow_le' := nnNorm_pow_le'
+
 /-- If `α` is a seminormed ring with `‖1‖₊ = 1`, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n`.
 See also `nnNorm_pow_le'`. -/
 theorem nnNorm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n :=
   Nat.recOn n (by simp)
     fun k _hk => nnNorm_pow_le' a k.succ_pos
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_pow_le := nnNorm_pow_le
 
 /-- If `α` is a seminormed ring, then `‖a ^ n‖ ≤ ‖a‖ ^ n` for `n > 0`. See also `norm_pow_le`. -/
 theorem norm_pow_le' (a : α) {n : ℕ} (h : 0 < n) : ‖a ^ n‖ ≤ ‖a‖ ^ n := by
@@ -429,6 +455,8 @@ theorem norm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖ = ‖a ^ n‖ := by
 @[simp]
 theorem nnNorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖₊ = ‖a ^ n‖₊ := by
   simp [nnNorm]
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_neg_pow := nnNorm_neg_pow
 
 @[simp]
 theorem enorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖ₑ = ‖a ^ n‖ₑ := by
@@ -465,9 +493,13 @@ lemma norm_sub_mul_le' (hb : ‖b‖ ≤ 1) : ‖c - a * b‖ ≤ ‖1 - a‖ + 
 chord length is a metric on the unit complex numbers. -/
 lemma nnNorm_sub_mul_le (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - a‖₊ + ‖1 - b‖₊ := norm_sub_mul_le ha
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_sub_mul_le := nnNorm_sub_mul_le
+
 /-- This inequality is particularly useful when `c = 1` and `‖a‖ = ‖b‖ = 1` as it then shows that
 chord length is a metric on the unit complex numbers. -/
 lemma nnNorm_sub_mul_le' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ := norm_sub_mul_le' hb
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_sub_mul_le' := nnNorm_sub_mul_le'
 
 lemma norm_commutator_units_sub_one_le (a b : αˣ) :
     ‖(a * b * a⁻¹ * b⁻¹).val - 1‖ ≤ 2 * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ * ‖a.val - 1‖ * ‖b.val - 1‖ :=
@@ -485,6 +517,9 @@ lemma norm_commutator_units_sub_one_le (a b : αˣ) :
 lemma nnNorm_commutator_units_sub_one_le (a b : αˣ) :
     ‖(a * b * a⁻¹ * b⁻¹).val - 1‖₊ ≤ 2 * ‖a⁻¹.val‖₊ * ‖b⁻¹.val‖₊ * ‖a.val - 1‖₊ * ‖b.val - 1‖₊ := by
   simpa using! norm_commutator_units_sub_one_le a b
+
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_commutator_units_sub_one_le := nnNorm_commutator_units_sub_one_le
 
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
   constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
@@ -522,6 +557,8 @@ theorem Units.norm_pos [Nontrivial α] (x : αˣ) : 0 < ‖(x : α)‖ :=
 
 theorem Units.nnNorm_pos [Nontrivial α] (x : αˣ) : 0 < ‖(x : α)‖₊ :=
   x.norm_pos
+
+@[deprecated (since := "2026-10-27")] alias Units.nnnorm_pos := Units.nnNorm_pos
 
 instance ULift.normedRing : NormedRing (ULift α) :=
   { ULift.seminormedRing, ULift.normedAddCommGroup with }
@@ -669,6 +706,8 @@ theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, 
 @[simp] lemma nnNorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x := by ext; simp [nnNorm]
 @[simp] lemma enorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ₑ = x := by simp [enorm]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_eq := nnNorm_eq
+
 end NNReal
 
 /-- A restatement of `MetricSpace.tendsto_atTop` in terms of the norm. -/
@@ -702,6 +741,9 @@ theorem RingHomIsometric.nnNorm_map [SeminormedRing R₁] [SeminormedRing R₂] 
     [RingHomIsometric σ] (x : R₁) : ‖σ x‖₊ = ‖x‖₊ :=
   NNReal.eq norm_map
 
+@[deprecated (since := "2026-10-27")]
+alias RingHomIsometric.nnnorm_map := RingHomIsometric.nnNorm_map
+
 @[simp]
 theorem RingHomIsometric.enorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
     [RingHomIsometric σ] (x : R₁) : ‖σ x‖ₑ = ‖x‖ₑ :=
@@ -733,6 +775,8 @@ variable [SeminormedAddCommGroup α] [Mul α] [NormMulClass α] (a b : α)
 
 @[simp] lemma nnNorm_mul : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ := NNReal.eq <| norm_mul a b
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_mul := nnNorm_mul
+
 @[simp] lemma enorm_mul : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [enorm]
 
 end SeminormedAddCommGroup
@@ -757,6 +801,8 @@ def nnNormHom : α →*₀ ℝ≥0 where
   map_one' := nnNorm_one
   map_mul' := nnNorm_mul
 
+@[deprecated (since := "2026-10-27")] alias nnnormHom := nnNormHom
+
 @[simp]
 theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
   (normHom.toMonoidHom : α →* ℝ).map_pow a
@@ -765,6 +811,8 @@ theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
 theorem nnNorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   (nnNormHom.toMonoidHom : α →* ℝ≥0).map_pow a n
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_pow := nnNorm_pow
+
 @[simp] lemma enorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [enorm]
 
 protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
@@ -772,6 +820,8 @@ protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).pro
 
 protected theorem List.nnNorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnNorm).prod :=
   map_list_prod (nnNormHom.toMonoidHom : α →* ℝ≥0) _
+
+@[deprecated (since := "2026-10-27")] alias List.nnnorm_prod := List.nnNorm_prod
 
 @[simp]
 theorem List.norm_prod_map (l : List β) (f : β → α) :
@@ -782,6 +832,8 @@ theorem List.norm_prod_map (l : List β) (f : β → α) :
 theorem List.nnNorm_prod_map (l : List β) (f : β → α) :
     ‖(l.map f).prod‖₊ = (l.map (‖f ·‖₊)).prod := by
   aesop (add simp List.nnNorm_prod)
+
+@[deprecated (since := "2026-10-27")] alias List.nnnorm_prod_map := List.nnNorm_prod_map
 
 end SeminormedRing
 
@@ -797,11 +849,15 @@ theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏
 theorem nnNorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ = ∏ b ∈ s, ‖f b‖₊ :=
   map_prod nnNormHom.toMonoidHom f s
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_prod := nnNorm_prod
+
 protected theorem Multiset.norm_prod (s : Multiset α) : ‖s.prod‖ = (s.map norm).prod :=
   map_multiset_prod (normHom.toMonoidHom : α →* ℝ) _
 
 protected theorem Multiset.nnNorm_prod (s : Multiset α) : ‖s.prod‖₊ = (s.map nnNorm).prod :=
   map_multiset_prod (nnNormHom.toMonoidHom : α →* ℝ≥0) _
+
+@[deprecated (since := "2026-10-27")] alias Multiset.nnnorm_prod := Multiset.nnNorm_prod
 
 @[simp]
 theorem Multiset.norm_prod_map (s : Multiset β) (f : β → α) :
@@ -812,6 +868,8 @@ theorem Multiset.norm_prod_map (s : Multiset β) (f : β → α) :
 theorem Multiset.nnNorm_prod_map (s : Multiset β) (f : β → α) :
     ‖(s.map f).prod‖₊ = (s.map (‖f ·‖₊)).prod := by
   simp [Multiset.nnNorm_prod]
+
+@[deprecated (since := "2026-10-27")] alias Multiset.nnnorm_prod_map := Multiset.nnNorm_prod_map
 
 end SeminormedCommRing
 

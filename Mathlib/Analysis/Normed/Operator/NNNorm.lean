@@ -41,6 +41,8 @@ theorem nnNorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, �
   simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnNorm, mem_ofPred_eq, NNReal.coe_mk,
     exists_prop]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_def := nnNorm_def
+
 @[simp, nontriviality]
 theorem opNNNorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f‖₊ = 0 :=
   NNReal.eq f.opNorm_subsingleton
@@ -59,6 +61,8 @@ one controls the norm of `f`. -/
 theorem opNNNorm_le_of_unit_nnNorm [NormedAlgebra ℝ 𝕜] {f : E →SL[σ₁₂] F} {C : ℝ≥0}
     (hf : ∀ x, ‖x‖₊ = 1 → ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ C :=
   opNorm_le_of_unit_norm C.coe_nonneg fun x hx => hf x <| by rwa [← NNReal.coe_eq_one]
+
+@[deprecated (since := "2026-10-27")] alias opNNNorm_le_of_unit_nnnorm := opNNNorm_le_of_unit_nnNorm
 
 theorem opNNNorm_le_of_lipschitzWith {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖₊ ≤ K :=
@@ -196,6 +200,8 @@ theorem sSup_unit_ball_eq_nnNorm (f : E →SL[σ₁₂] F) :
   · obtain ⟨x, hx, hxf⟩ := f.exists_lt_apply_of_lt_opNNNorm hub
     exact ⟨_, ⟨x, mem_ball_zero_iff.2 hx, rfl⟩, hxf⟩
 
+@[deprecated (since := "2026-10-27")] alias sSup_unit_ball_eq_nnnorm := sSup_unit_ball_eq_nnNorm
+
 theorem sSup_unit_ball_eq_norm (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' ball 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using! NNReal.coe_inj.2 f.sSup_unit_ball_eq_nnNorm
@@ -209,6 +215,9 @@ theorem sSup_unitClosedBall_eq_nnNorm (f : E →SL[σ₁₂] F) :
   rw [← sSup_unit_ball_eq_nnNorm]
   gcongr
   exacts [⟨‖f‖₊, hbdd⟩, ball_subset_closedBall]
+
+@[deprecated (since := "2026-10-27")]
+alias sSup_unitClosedBall_eq_nnnorm := sSup_unitClosedBall_eq_nnNorm
 
 theorem sSup_unitClosedBall_eq_norm (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' closedBall 0 1) = ‖f‖ := by
@@ -227,6 +236,9 @@ theorem exists_nnNorm_eq_one_lt_apply_of_lt_opNNNorm [NormedAlgebra ℝ 𝕜]
     r < 1⁻¹ * ‖f x‖₊ := by simpa
     _ < ‖x‖₊⁻¹ * ‖f x‖₊ := by gcongr; exact hr.pos
 
+@[deprecated (since := "2026-10-27")]
+alias exists_nnnorm_eq_one_lt_apply_of_lt_opNNNorm := exists_nnNorm_eq_one_lt_apply_of_lt_opNNNorm
+
 /-- When the domain is a real normed space, `ContinuousLinearMap.sSup_unitClosedBall_eq_nnNorm` can
 be tightened to take the supremum over only the `Metric.sphere`. -/
 theorem sSup_sphere_eq_nnNorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F) :
@@ -240,6 +252,8 @@ theorem sSup_sphere_eq_nnNorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F)
     simpa only [mul_one] using! f.le_opNorm_of_le (mem_sphere_zero_iff_norm.1 hx).le
   · obtain ⟨x, hx, hxf⟩ := f.exists_nnNorm_eq_one_lt_apply_of_lt_opNNNorm hub
     exact ⟨_, ⟨x, by simpa using! congrArg NNReal.toReal hx, rfl⟩, hxf⟩
+
+@[deprecated (since := "2026-10-27")] alias sSup_sphere_eq_nnnorm := sSup_sphere_eq_nnNorm
 
 /-- When the domain is a real normed space, `ContinuousLinearMap.sSup_unitClosedBall_eq_norm` can be
 tightened to take the supremum over only the `Metric.sphere`. -/

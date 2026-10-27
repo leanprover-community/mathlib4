@@ -74,6 +74,8 @@ theorem nnNorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measura
   simp only [edist_nndist, nndist_eq_nnNorm] at this
   exact mod_cast this
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_approxOn_le := nnNorm_approxOn_le
+
 theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s y₀ h₀ n x - y₀‖ ≤ ‖f x - y₀‖ + ‖f x - y₀‖ := by

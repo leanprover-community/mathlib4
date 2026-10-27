@@ -151,6 +151,8 @@ lemma eventually_nnNorm {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     ∀ᶠ x in l, ‖x‖₊ ≤ 1 :=
   hl.eventually_norm
 
+@[deprecated (since := "2026-10-27")] alias eventually_nnnorm := eventually_nnNorm
+
 lemma eventually_isSelfAdjoint {l : Filter A} (hl : l.IsIncreasingApproximateUnit) :
     ∀ᶠ x in l, IsSelfAdjoint x :=
   hl.eventually_nonneg.mp <| .of_forall fun _ ↦ IsSelfAdjoint.of_nonneg
@@ -242,6 +244,8 @@ lemma nnNorm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [Star
   · simpa using pow_antitone hy'.2 hy'.1 one_le_two
   · gcongr
     exact hy.1
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_sub_mul_self_le := nnNorm_sub_mul_self_le
 
 /-- A variant of `nnNorm_sub_mul_self_le` which uses `‖·‖` instead of `‖·‖₊`. -/
 lemma norm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]

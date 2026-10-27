@@ -79,6 +79,8 @@ theorem dist_eq_norm_vsub (x y : P) : dist x y = ‖x -ᵥ y‖ :=
 theorem nndist_eq_nnNorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub V x y
 
+@[deprecated (since := "2026-10-27")] alias nndist_eq_nnnorm_vsub := nndist_eq_nnNorm_vsub
+
 
 /-- The distance equals the norm of subtracting two points. In this
 lemma, it is necessary to have `V` as an explicit argument; otherwise
@@ -88,6 +90,8 @@ theorem dist_eq_norm_vsub' (x y : P) : dist x y = ‖y -ᵥ x‖ :=
 
 theorem nndist_eq_nnNorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub' V x y
+
+@[deprecated (since := "2026-10-27")] alias nndist_eq_nnnorm_vsub' := nndist_eq_nnNorm_vsub'
 
 end
 

@@ -48,6 +48,8 @@ instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
 theorem nnNorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
   simp [nnNorm]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_coe := nnNorm_coe
+
 @[simp]
 lemma enorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ₑ = ‖x‖ₑ := by
   simp [enorm]

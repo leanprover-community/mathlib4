@@ -471,6 +471,9 @@ theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
 theorem _root_.Real.nnNorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : ‖x ^ y‖₊ = ‖x‖₊ ^ y := by
   ext; exact Real.norm_rpow_of_nonneg hx
 
+@[deprecated (since := "2026-10-27")]
+alias _root_.Real.nnnorm_rpow_of_nonneg := _root_.Real.nnNorm_rpow_of_nonneg
+
 end NNReal
 
 namespace ENNReal

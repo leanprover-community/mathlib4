@@ -567,6 +567,8 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 
 @[simp 1100, rclike_simps] lemma nnNorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnNorm]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_conj := nnNorm_conj
+
 @[simp 1100, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
 
 instance (priority := 100) : CStarRing K where
@@ -662,6 +664,8 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
 
 @[simp, rclike_simps, norm_cast] lemma nnNorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnNorm]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_natCast := nnNorm_natCast
+
 @[simp, rclike_simps]
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖ = ofNat(n) :=
   norm_natCast n
@@ -670,8 +674,12 @@ theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖ = ofNat(n) :=
 lemma nnNorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖₊ = ofNat(n) :=
   nnNorm_natCast n
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_ofNat := nnNorm_ofNat
+
 lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
 lemma nnNorm_two : ‖(2 : K)‖₊ = 2 := nnNorm_ofNat 2
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_two := nnNorm_two
 
 @[simp, rclike_simps, norm_cast]
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
@@ -680,6 +688,8 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
 @[simp, rclike_simps, norm_cast]
 lemma nnNorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnNorm]; rfl
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_nnratCast := nnNorm_nnratCast
+
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
@@ -687,6 +697,8 @@ lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : �
 variable (K) in
 lemma nnNorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
     ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnNorm_smul (n : K) x
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_nsmul := nnNorm_nsmul
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
@@ -823,6 +835,8 @@ lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
 variable (K) in
 lemma nnNorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
   simpa [NNRat.cast_smul_eq_nnqsmul] using! nnNorm_smul (q : K) x
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_nnqsmul := nnNorm_nnqsmul
 
 @[bound]
 lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=

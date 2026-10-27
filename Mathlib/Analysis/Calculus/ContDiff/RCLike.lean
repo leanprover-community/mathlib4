@@ -126,6 +126,10 @@ theorem ContDiffAt.exists_lipschitzOnWith_of_nnNorm_lt {f : E' → F'} {x : E'}
     ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=
   (hf.hasStrictFDerivAt one_ne_zero).exists_lipschitzOnWith_of_nnNorm_lt K hK
 
+@[deprecated (since := "2026-10-27")]
+alias ContDiffAt.exists_lipschitzOnWith_of_nnnorm_lt :=
+  ContDiffAt.exists_lipschitzOnWith_of_nnNorm_lt
+
 /-- If `f` is `C^1` at `x`, then `f` is Lipschitz in a neighborhood of `x`. -/
 theorem ContDiffAt.exists_lipschitzOnWith {f : E' → F'} {x : E'} (hf : ContDiffAt 𝕂 1 f x) :
     ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t :=

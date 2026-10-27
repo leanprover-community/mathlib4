@@ -460,6 +460,8 @@ theorem norm_inner_le_norm (x y : E) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 theorem nnNorm_inner_le_nnNorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
   norm_inner_le_norm x y
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_inner_le_nnnorm := nnNorm_inner_le_nnNorm
+
 lemma enorm_inner_le_enorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
   grw [← ofReal_norm, norm_inner_le_norm]
   simp
@@ -502,10 +504,16 @@ theorem parallelogram_law_with_nnNorm_mul (x y : E) :
     ‖x + y‖₊ * ‖x + y‖₊ + ‖x - y‖₊ * ‖x - y‖₊ = 2 * (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) :=
   Subtype.ext <| parallelogram_law_with_norm_mul 𝕜 x y
 
+@[deprecated (since := "2026-10-27")]
+alias parallelogram_law_with_nnnorm_mul := parallelogram_law_with_nnNorm_mul
+
 include 𝕜 in
 theorem parallelogram_law_with_nnNorm (x y : E) :
     ‖x + y‖₊ ^ 2 + ‖x - y‖₊ ^ 2 = 2 * (‖x‖₊ ^ 2 + ‖y‖₊ ^ 2) := by
   simp_rw [sq, parallelogram_law_with_nnNorm_mul 𝕜 x y]
+
+@[deprecated (since := "2026-10-27")]
+alias parallelogram_law_with_nnnorm := parallelogram_law_with_nnNorm
 
 variable {𝕜}
 

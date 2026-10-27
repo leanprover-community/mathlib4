@@ -502,11 +502,15 @@ theorem norm_def (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdHom a‖ :=
 theorem nnNorm_def (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdHom a‖₊ :=
   rfl
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_def := nnNorm_def
+
 theorem norm_def' (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdMulOppositeHom a‖ :=
   rfl
 
 theorem nnNorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a‖₊ :=
   rfl
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_def' := nnNorm_def'
 
 noncomputable instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instModule with
@@ -563,6 +567,8 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
 theorem nnNorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ :=
   Subtype.ext <| norm_fst_eq_snd a
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_fst_eq_snd := nnNorm_fst_eq_snd
+
 @[simp]
 theorem norm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a‖ := by
   simp only [norm_def, toProdHom_apply, Prod.norm_def, norm_fst_eq_snd, max_eq_right le_rfl]
@@ -574,9 +580,13 @@ theorem norm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖ = ‖a‖ := by rw [← norm_
 theorem nnNorm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a‖₊ :=
   Subtype.ext (norm_fst a)
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_fst := nnNorm_fst
+
 @[simp]
 theorem nnNorm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖₊ = ‖a‖₊ :=
   Subtype.ext (norm_snd a)
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_snd := nnNorm_snd
 
 end NontriviallyNormed
 

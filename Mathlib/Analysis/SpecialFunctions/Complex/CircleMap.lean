@@ -43,6 +43,8 @@ theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| 
 @[simp]
 theorem nnNorm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖₊ = ‖R‖₊ := by simp [circleMap]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_circleMap_zero := nnNorm_circleMap_zero
+
 theorem circleMap_notMem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [Complex.dist_eq, le_abs_self]
 

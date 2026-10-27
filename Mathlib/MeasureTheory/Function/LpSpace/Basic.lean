@@ -234,9 +234,13 @@ theorem norm_def (f : Lp E p μ) : ‖f‖ = ENNReal.toReal (eLpNorm f p μ) :=
 theorem nnNorm_def (f : Lp E p μ) : ‖f‖₊ = ENNReal.toNNReal (eLpNorm f p μ) :=
   rfl
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_def := nnNorm_def
+
 @[simp, norm_cast]
 protected theorem coe_nnNorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
   rfl
+
+@[deprecated (since := "2026-10-27")] alias coe_nnnorm := coe_nnNorm
 
 theorem enorm_def (f : Lp E p μ) : ‖f‖ₑ = eLpNorm f p μ :=
   ENNReal.coe_toNNReal <| Lp.eLpNorm_ne_top f
@@ -249,6 +253,8 @@ lemma norm_toLp (f : α → E) (hf : MemLp f p μ) : ‖hf.toLp f‖ = ENNReal.t
 theorem nnNorm_toLp (f : α → E) (hf : MemLp f p μ) :
     ‖hf.toLp f‖₊ = ENNReal.toNNReal (eLpNorm f p μ) :=
   NNReal.eq <| norm_toLp f hf
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_toLp := nnNorm_toLp
 
 @[simp]
 lemma enorm_toLp {f : α → E} (hf : MemLp f p μ) : ‖hf.toLp f‖ₑ = eLpNorm f p μ := by
@@ -295,6 +301,8 @@ theorem nnNorm_zero : ‖(0 : Lp E p μ)‖₊ = 0 := by
   rw [nnNorm_def, ZeroMemClass.coe_zero, eLpNorm_congr_ae AEEqFun.coeFn_zero, eLpNorm_zero,
     ENNReal.toNNReal_zero]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_zero := nnNorm_zero
+
 @[simp]
 theorem norm_zero : ‖(0 : Lp E p μ)‖ = 0 :=
   congr($nnNorm_zero)
@@ -311,6 +319,8 @@ theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ 
 @[simp] theorem nnNorm_exponent_zero (f : Lp E 0 μ) : ‖f‖₊ = 0 := by
   simp [nnNorm]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_exponent_zero := nnNorm_exponent_zero
+
 @[simp] theorem enorm_exponent_zero (f : Lp E 0 μ) : ‖f‖ₑ = 0 := by
   simp [enorm]
 
@@ -323,12 +333,16 @@ theorem nnNorm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f =
   simp_rw [nnNorm_def, ENNReal.toNNReal_eq_zero_iff, eLpNorm_ne_top, or_false] at hf
   simp_rw [eq_zero_iff_ae_eq_zero, ← eLpNorm_eq_zero_iff hp.ne.symm, hf]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_eq_zero_iff := nnNorm_eq_zero_iff
+
 theorem norm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖ = 0 ↔ f = 0 :=
   NNReal.coe_eq_zero.trans (nnNorm_eq_zero_iff hp)
 
 @[simp]
 theorem nnNorm_neg (f : Lp E p μ) : ‖-f‖₊ = ‖f‖₊ := by
   rw [nnNorm_def, nnNorm_def, eLpNorm_congr_ae (coeFn_neg _), eLpNorm_neg]
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_neg := nnNorm_neg
 
 @[simp]
 theorem norm_neg (f : Lp E p μ) : ‖-f‖ = ‖f‖ :=
@@ -343,6 +357,9 @@ theorem nnNorm_le_mul_nnNorm_of_ae_le_mul {c : ℝ≥0} {f : Lp E p μ} {g : Lp 
     ENNReal.toNNReal_coe] at this
   · finiteness
   · exact ENNReal.mul_ne_top ENNReal.coe_ne_top (by finiteness)
+
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_le_mul_nnnorm_of_ae_le_mul := nnNorm_le_mul_nnNorm_of_ae_le_mul
 
 theorem norm_le_mul_norm_of_ae_le_mul {c : ℝ} {f : Lp E p μ} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : ‖f‖ ≤ c * ‖g‖ := by
@@ -362,6 +379,8 @@ theorem mem_Lp_of_nnNorm_ae_le_mul {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : f ∈ Lp E p μ :=
   mem_Lp_iff_memLp.2 <| MemLp.of_nnNorm_le_mul (Lp.memLp g) f.aestronglyMeasurable h
 
+@[deprecated (since := "2026-10-27")] alias mem_Lp_of_nnnorm_ae_le_mul := mem_Lp_of_nnNorm_ae_le_mul
+
 theorem mem_Lp_of_ae_le_mul {c : ℝ} {f : α →ₘ[μ] E} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) : f ∈ Lp E p μ :=
   mem_Lp_iff_memLp.2 <| MemLp.of_le_mul (Lp.memLp g) f.aestronglyMeasurable h
@@ -370,6 +389,8 @@ theorem mem_Lp_of_nnNorm_ae_le {f : α →ₘ[μ] E} {g : Lp F p μ} (h : ∀ᵐ
     f ∈ Lp E p μ :=
   mem_Lp_iff_memLp.2 <| MemLp.of_le (Lp.memLp g) f.aestronglyMeasurable h
 
+@[deprecated (since := "2026-10-27")] alias mem_Lp_of_nnnorm_ae_le := mem_Lp_of_nnNorm_ae_le
+
 theorem mem_Lp_of_ae_le {f : α →ₘ[μ] E} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     f ∈ Lp E p μ :=
   mem_Lp_of_nnNorm_ae_le h
@@ -377,6 +398,8 @@ theorem mem_Lp_of_ae_le {f : α →ₘ[μ] E} {g : Lp F p μ} (h : ∀ᵐ x ∂�
 theorem mem_Lp_of_ae_nnNorm_bound [IsFiniteMeasure μ] {f : α →ₘ[μ] E} (C : ℝ≥0)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) : f ∈ Lp E p μ :=
   mem_Lp_iff_memLp.2 <| MemLp.of_bound f.aestronglyMeasurable _ hfC
+
+@[deprecated (since := "2026-10-27")] alias mem_Lp_of_ae_nnnorm_bound := mem_Lp_of_ae_nnNorm_bound
 
 theorem mem_Lp_of_ae_bound [IsFiniteMeasure μ] {f : α →ₘ[μ] E} (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     f ∈ Lp E p μ :=
@@ -390,6 +413,8 @@ theorem nnNorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
   refine (eLpNorm_le_of_ae_nnNorm_bound (Lp.aestronglyMeasurable f) hfC).trans_eq ?_
   rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
     ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul]
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_le_of_ae_bound := nnNorm_le_of_ae_bound
 
 theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC : 0 ≤ C)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖f‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ * C := by

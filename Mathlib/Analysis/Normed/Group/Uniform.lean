@@ -45,6 +45,8 @@ theorem nnNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass �
     ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map' f x
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_map' := nnNorm_map'
+
 @[to_additive (attr := simp) enorm_map]
 lemma enorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
     ‖f x‖ₑ = ‖x‖ₑ := by simp [enorm]
@@ -129,6 +131,9 @@ theorem MonoidHomClass.lipschitz_of_bound_nnNorm [MonoidHomClass 𝓕 E F] (f : 
     (h : ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊) : LipschitzWith C f :=
   @Real.toNNReal_coe C ▸ MonoidHomClass.lipschitz_of_bound f C h
 
+@[deprecated (since := "2026-10-27")]
+alias MonoidHomClass.lipschitz_of_bound_nnnorm := MonoidHomClass.lipschitz_of_bound_nnNorm
+
 @[to_additive]
 theorem MonoidHomClass.antilipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) {K : ℝ≥0}
     (h : ∀ x, ‖x‖ ≤ K * ‖f x‖) : AntilipschitzWith K f :=
@@ -143,6 +148,9 @@ theorem LipschitzWith.norm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWit
 theorem LipschitzWith.nnNorm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f)
     (hf : f 1 = 1) (x) : ‖f x‖₊ ≤ K * ‖x‖₊ :=
   h.norm_le_mul' hf x
+
+@[deprecated (since := "2026-10-27")]
+alias LipschitzWith.nnnorm_le_mul' := LipschitzWith.nnNorm_le_mul'
 
 @[to_additive (attr := deprecated (since := "2026-09-28")) LipschitzWith.nnorm_le_mul]
 alias LipschitzWith.nnorm_le_mul' := LipschitzWith.nnNorm_le_mul'
@@ -166,6 +174,9 @@ theorem AntilipschitzWith.le_mul_nnNorm' {f : E → F} {K : ℝ≥0} (h : Antili
     (hf : f 1 = 1) (x) : ‖x‖₊ ≤ K * ‖f x‖₊ :=
   h.le_mul_norm' hf x
 
+@[deprecated (since := "2026-10-27")]
+alias AntilipschitzWith.le_mul_nnnorm' := AntilipschitzWith.le_mul_nnNorm'
+
 @[to_additive]
 theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K : ℝ≥0}
     (h : AntilipschitzWith K f) (x) : ‖x‖ ≤ K * ‖f x‖ :=
@@ -175,6 +186,9 @@ theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K 
 theorem Isometry.nnNorm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
     ‖f x‖₊ = ‖x‖₊ :=
   Subtype.ext <| hi.norm_map_of_map_one h₁ x
+
+@[deprecated (since := "2026-10-27")]
+alias Isometry.nnnorm_map_of_map_one := Isometry.nnNorm_map_of_map_one
 
 end NNNorm
 
@@ -186,6 +200,8 @@ theorem lipschitzWith_one_norm' : LipschitzWith 1 (norm : E → ℝ) := by
 theorem lipschitzWith_one_nnNorm' : LipschitzWith 1 (NNNorm.nnNorm : E → ℝ≥0) :=
   lipschitzWith_one_norm'
 
+@[deprecated (since := "2026-10-27")] alias lipschitzWith_one_nnnorm' := lipschitzWith_one_nnNorm'
+
 @[to_additive (attr := fun_prop) uniformContinuous_norm]
 theorem uniformContinuous_norm' : UniformContinuous (norm : E → ℝ) :=
   lipschitzWith_one_norm'.uniformContinuous
@@ -193,6 +209,8 @@ theorem uniformContinuous_norm' : UniformContinuous (norm : E → ℝ) :=
 @[to_additive (attr := fun_prop) uniformContinuous_nnNorm]
 theorem uniformContinuous_nnNorm' : UniformContinuous fun a : E => ‖a‖₊ :=
   uniformContinuous_norm'.subtype_mk _
+
+@[deprecated (since := "2026-10-27")] alias uniformContinuous_nnnorm' := uniformContinuous_nnNorm'
 
 end SeminormedGroup
 
@@ -413,6 +431,8 @@ theorem mk_eq_one_iff {p : E} : mk p = 1 ↔ ‖p‖ = 0 := by
 set_option linter.docPrime false in
 @[to_additive (attr := simp) nnNorm_mk]
 theorem nnNorm_mk' (p : E) : ‖mk p‖₊ = ‖p‖₊ := rfl
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_mk' := nnNorm_mk'
 
 end SeparationQuotient
 

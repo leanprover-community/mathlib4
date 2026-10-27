@@ -249,6 +249,8 @@ theorem denseRange_nnNorm : DenseRange (nnNorm : α → ℝ≥0) :=
     let ⟨x, h⟩ := exists_lt_nnNorm_lt α hr
     ⟨‖x‖₊, ⟨x, rfl⟩, h⟩
 
+@[deprecated (since := "2026-10-27")] alias denseRange_nnnorm := denseRange_nnNorm
+
 end Densely
 
 section NontriviallyNormedField

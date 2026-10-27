@@ -85,6 +85,9 @@ lemma nnNorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
     (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g)
     (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_holder_apply_apply_le := nnNorm_holder_apply_apply_le
+
 lemma norm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
     ‖B.holder r f g‖ ≤ ‖B‖ * ‖f‖ * ‖g‖ :=
   NNReal.coe_le_coe.mpr <| nnNorm_holder_apply_apply_le B f g

@@ -883,6 +883,10 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnNorm_lt (hf : HasStrictFDe
   exact
     ⟨U, Uo.mem_nhds xU, lipschitzOnWith_iff_norm_sub_le.2 fun x hx y hy => hU (mk_mem_prod hx hy)⟩
 
+@[deprecated (since := "2026-10-27")]
+alias HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt :=
+  HasStrictFDerivAt.exists_lipschitzOnWith_of_nnNorm_lt
+
 /-- If `f` is strictly differentiable at `x` with derivative `f'`, then `f` is Lipschitz in a
 neighborhood of `x`. See also `HasStrictFDerivAt.exists_lipschitzOnWith_of_nnNorm_lt` for a
 more precise statement. -/

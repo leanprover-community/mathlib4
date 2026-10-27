@@ -76,6 +76,8 @@ theorem nnNorm_eq [NumberField K] (x : K) :
     ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
   simp_rw [Pi.nnNorm_def, apply_at]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_eq := nnNorm_eq
+
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_ge r 0
@@ -399,6 +401,8 @@ theorem nnNorm_eq_sup_normAtPlace (x : mixedSpace K) :
     simp [normAtPlace_apply_of_isReal w.prop]
   · ext w
     simp [normAtPlace_apply_of_isComplex w.prop]
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_eq_sup_normAtPlace := nnNorm_eq_sup_normAtPlace
 
 set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in

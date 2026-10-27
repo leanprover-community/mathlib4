@@ -57,6 +57,8 @@ lemma norm_star (x : E) : ‖x⋆‖ = ‖x‖ :=
 theorem nnNorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_star _
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_star := nnNorm_star
+
 /-- The `star` map in a normed star group is a normed group homomorphism. -/
 def starNormedAddGroupHom : NormedAddGroupHom E E :=
   { starAddEquiv with bound' := ⟨1, fun _ => le_trans (norm_star _).le (one_mul _).symm.le⟩ }
@@ -147,8 +149,12 @@ theorem norm_star_mul_self' {x : E} : ‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖ := b
 theorem nnNorm_self_mul_star {x : E} : ‖x * x⋆‖₊ = ‖x‖₊ * ‖x‖₊ :=
   Subtype.ext norm_self_mul_star
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_self_mul_star := nnNorm_self_mul_star
+
 theorem nnNorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖₊ :=
   Subtype.ext norm_star_mul_self
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_star_mul_self := nnNorm_star_mul_self
 
 lemma _root_.IsSelfAdjoint.norm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖ = ‖x‖ ^ 2 := by
@@ -157,6 +163,9 @@ lemma _root_.IsSelfAdjoint.norm_mul_self {x : E} (hx : IsSelfAdjoint x) :
 lemma _root_.IsSelfAdjoint.nnNorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖₊ = ‖x‖₊ ^ 2 :=
   Subtype.ext hx.norm_mul_self
+
+@[deprecated (since := "2026-10-27")]
+alias _root_.IsSelfAdjoint.nnnorm_mul_self := _root_.IsSelfAdjoint.nnNorm_mul_self
 
 instance : IsProperStar E where
   eq_zero_of_star_mul_self_eq_zero {x} := by rw [← norm_eq_zero, norm_star_mul_self]; simp
@@ -271,6 +280,9 @@ theorem IsSelfAdjoint.nnNorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ
   | zero => simp only [pow_zero, pow_one]
   | succ k hk =>
     rw [pow_succ', pow_mul', sq, (hx.pow (2 ^ k)).nnNorm_mul_self, hk, pow_mul']
+
+@[deprecated (since := "2026-10-27")]
+alias IsSelfAdjoint.nnnorm_pow_two_pow := IsSelfAdjoint.nnNorm_pow_two_pow
 
 theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
     ‖x ^ 2 ^ n‖ = ‖x‖ ^ 2 ^ n :=

@@ -67,6 +67,8 @@ theorem Lp_nnNorm_le (f : α →ᵇ E) :
   rw [← NNReal.coe_le_coe, coe_nnNorm, coe_nnNorm]
   convert f.norm_coe_le_norm x using 2
 
+@[deprecated (since := "2026-10-27")] alias Lp_nnnorm_le := Lp_nnNorm_le
+
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
 theorem Lp_norm_le (f : α →ᵇ E) :

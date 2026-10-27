@@ -41,6 +41,9 @@ variable [NontrivialTopology E] [RingHomIsometric σ₁₂]
 @[simp] lemma nnNorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖₊ = 1 :=
   Subtype.ext f.norm_toContinuousLinearMap
 
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_toContinuousLinearMap := nnNorm_toContinuousLinearMap
+
 @[simp] lemma enorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ₑ = 1 :=
   congrArg _ f.nnNorm_toContinuousLinearMap
 
@@ -76,6 +79,9 @@ variable [NontrivialTopology E] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜
 @[simp] lemma nnNorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖₊ = 1 :=
   e.toLinearIsometry.nnNorm_toContinuousLinearMap
+
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_toContinuousLinearMap := nnNorm_toContinuousLinearMap
 
 @[simp] lemma enorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖ₑ = 1 :=
@@ -288,6 +294,8 @@ theorem nnNorm_symm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[
     0 < ‖(e.symm : F →SL[σ₂₁] E)‖₊ :=
   e.norm_symm_pos
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_symm_pos := nnNorm_symm_pos
+
 theorem subsingleton_or_norm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[σ₁₂] F) :
     Subsingleton E ∨ 0 < ‖(e.symm : F →SL[σ₂₁] E)‖ := by
   rcases subsingleton_or_nontrivial E with (_i | _i)
@@ -299,6 +307,9 @@ theorem subsingleton_or_norm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[�
 theorem subsingleton_or_nnNorm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[σ₁₂] F) :
     Subsingleton E ∨ 0 < ‖(e.symm : F →SL[σ₂₁] E)‖₊ :=
   subsingleton_or_norm_symm_pos e
+
+@[deprecated (since := "2026-10-27")]
+alias subsingleton_or_nnnorm_symm_pos := subsingleton_or_nnNorm_symm_pos
 
 variable (𝕜)
 

@@ -180,6 +180,8 @@ lemma nnNorm_apply_le_bound : ‖μ s‖₊ ≤ μ.bound := by
   rw [← ENNReal.coe_le_coe, ← enorm_eq_nnNorm]
   exact enorm_apply_le_bound
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_apply_le_bound := nnNorm_apply_le_bound
+
 lemma norm_apply_le_bound : ‖μ s‖ ≤ μ.bound := by
   simpa [← coe_nnNorm] using nnNorm_apply_le_bound
 

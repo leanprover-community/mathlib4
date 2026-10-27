@@ -134,6 +134,9 @@ lemma nnNorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖₊ = ‖NormedSpace.fromTangentSpace _  v‖₊ := by
   simp [nnNorm, norm_tangentSpace_vectorSpace]
 
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_tangentSpace_vectorSpace := nnNorm_tangentSpace_vectorSpace
+
 lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖ₑ = ‖NormedSpace.fromTangentSpace _ v‖ₑ := by
   simp [enorm, nnNorm_tangentSpace_vectorSpace]

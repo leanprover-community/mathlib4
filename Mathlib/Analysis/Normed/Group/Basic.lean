@@ -373,9 +373,13 @@ instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
 @[to_additive (attr := simp, norm_cast, basify_op) coe_nnNorm, basify_op]
 theorem coe_nnNorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
 
+@[deprecated (since := "2026-10-27")] alias coe_nnnorm' := coe_nnNorm'
+
 @[to_additive (attr := simp) coe_comp_nnNorm]
 theorem coe_comp_nnNorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnNorm : E → ℝ≥0) = norm :=
   rfl
+
+@[deprecated (since := "2026-10-27")] alias coe_comp_nnnorm' := coe_comp_nnNorm'
 
 @[to_additive (attr := simp) norm_toNNReal]
 theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
@@ -408,9 +412,13 @@ theorem enorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ �
 theorem nndist_eq_nnNorm_inv_mul (a b : E) : nndist a b = ‖a⁻¹ * b‖₊ :=
   NNReal.eq <| dist_eq_norm_inv_mul _ _
 
+@[deprecated (since := "2026-10-27")] alias nndist_eq_nnnorm_inv_mul := nndist_eq_nnNorm_inv_mul
+
 @[to_additive (attr := simp) nnNorm_neg]
 theorem nnNorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_inv' := nnNorm_inv'
 
 @[to_additive (attr := simp)]
 theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by
@@ -422,15 +430,21 @@ lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nndist,
 @[to_additive (attr := simp) nnNorm_zero]
 theorem nnNorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_one' := nnNorm_one'
+
 @[to_additive]
 theorem ne_one_of_nnNorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
   mt <| by
     rintro rfl
     exact nnNorm_one'
 
+@[deprecated (since := "2026-10-27")] alias ne_one_of_nnnorm_ne_zero := ne_one_of_nnNorm_ne_zero
+
 @[to_additive nnNorm_add_le]
 theorem nnNorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_mul_le' := nnNorm_mul_le'
 
 @[to_additive norm_nsmul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
@@ -441,21 +455,31 @@ lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
 lemma nnNorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
   simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using! norm_pow_le_mul_norm
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_pow_le_mul_norm := nnNorm_pow_le_mul_norm
+
 @[to_additive (attr := simp) nnNorm_abs_zsmul]
 theorem nnNorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_zpow_abs a n
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_zpow_abs := nnNorm_zpow_abs
 
 @[to_additive (attr := simp) nnNorm_natAbs_smul]
 theorem nnNorm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_pow_natAbs a n
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_pow_natAbs := nnNorm_pow_natAbs
+
 @[to_additive nnNorm_isUnit_zsmul]
 theorem nnNorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_zpow_isUnit a hn
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_zpow_isUnit := nnNorm_zpow_isUnit
+
 @[simp]
 theorem nnNorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_isUnit_zsmul a n.isUnit
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_units_zsmul := nnNorm_units_zsmul
 
 @[to_additive (attr := simp)]
 theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nndist_eq_nnNorm_inv_mul]
@@ -474,6 +498,8 @@ theorem nndist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
 theorem nnNorm_div_le (a b : E) : ‖a / b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_div_le _ _
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_div_le := nnNorm_div_le
+
 @[to_additive]
 lemma enorm_div_le : ‖a / b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
   simpa [enorm, ← ENNReal.coe_add] using nnNorm_div_le a b
@@ -482,47 +508,74 @@ lemma enorm_div_le : ‖a / b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
 theorem nndist_nnNorm_nnNorm_le_nnNorm_inv_mul (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a⁻¹ * b‖₊ :=
   NNReal.coe_le_coe.1 <| dist_norm_norm_le_norm_inv_mul a b
 
+@[deprecated (since := "2026-10-27")]
+alias nndist_nnnorm_nnnorm_le_nnnorm_inv_mul := nndist_nnNorm_nnNorm_le_nnNorm_inv_mul
+
 @[to_additive]
 theorem nnNorm_le_nnNorm_add_nnNorm_div (a b : E) : ‖b‖₊ ≤ ‖a‖₊ + ‖a / b‖₊ :=
   norm_le_norm_add_norm_div _ _
+
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_le_nnnorm_add_nnnorm_div := nnNorm_le_nnNorm_add_nnNorm_div
 
 @[to_additive]
 theorem nnNorm_le_nnNorm_add_nnNorm_div' (a b : E) : ‖a‖₊ ≤ ‖b‖₊ + ‖a / b‖₊ :=
   norm_le_norm_add_norm_div' _ _
 
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_le_nnnorm_add_nnnorm_div' := nnNorm_le_nnNorm_add_nnNorm_div'
+
 alias nnNorm_le_insert' := nnNorm_le_nnNorm_add_nnNorm_sub'
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_le_insert' := nnNorm_le_insert'
+
 alias nnNorm_le_insert := nnNorm_le_nnNorm_add_nnNorm_sub
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_le_insert := nnNorm_le_insert
 
 @[to_additive]
 theorem nnNorm_le_mul_nnNorm_add (a b : E) : ‖a‖₊ ≤ ‖a * b‖₊ + ‖b‖₊ :=
   norm_le_mul_norm_add _ _
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_le_mul_nnnorm_add := nnNorm_le_mul_nnNorm_add
 
 /-- An analogue of `nnNorm_le_mul_nnNorm_add` for the multiplication from the left. -/
 @[to_additive /-- An analogue of `nnNorm_le_add_nnNorm_add` for the addition from the left. -/]
 theorem nnNorm_le_mul_nnNorm_add' (a b : E) : ‖b‖₊ ≤ ‖a * b‖₊ + ‖a‖₊ :=
   norm_le_mul_norm_add' _ _
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_le_mul_nnnorm_add' := nnNorm_le_mul_nnNorm_add'
+
 @[to_additive]
 lemma nnNorm_mul_eq_nnNorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x * y‖₊ = ‖y‖₊ :=
   NNReal.eq <| norm_mul_eq_norm_right _ congr($(h).toReal)
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_mul_eq_nnnorm_right := nnNorm_mul_eq_nnNorm_right
 
 @[to_additive]
 lemma nnNorm_mul_eq_nnNorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x * y‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_mul_eq_norm_left _ congr($(h).toReal)
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_mul_eq_nnnorm_left := nnNorm_mul_eq_nnNorm_left
+
 @[to_additive]
 lemma nnNorm_div_eq_nnNorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y‖₊ = ‖y‖₊ :=
   NNReal.eq <| norm_div_eq_norm_right _ congr($(h).toReal)
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_div_eq_nnnorm_right := nnNorm_div_eq_nnNorm_right
 
 @[to_additive]
 lemma nnNorm_div_eq_nnNorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_div_eq_norm_left _ congr($(h).toReal)
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_div_eq_nnnorm_left := nnNorm_div_eq_nnNorm_left
+
 /-- The nonnegative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
 @[to_additive toReal_coe_nnNorm /-- The nonnegative norm seen as an `ENNReal` and
 then as a `Real` is equal to the norm. -/]
 theorem toReal_coe_nnNorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
+
+@[deprecated (since := "2026-10-27")] alias toReal_coe_nnnorm' := toReal_coe_nnNorm'
 
 open scoped symmDiff in
 @[to_additive]
@@ -537,19 +590,30 @@ theorem nontrivialTopology_iff_exists_nnNorm_ne_zero' :
     nndist_eq_nnNorm_inv_mul]
   exact ⟨fun ⟨x, y, hxy⟩ => ⟨_, hxy⟩, fun ⟨x, hx⟩ => ⟨x, 1, by simpa using hx⟩⟩
 
+@[deprecated (since := "2026-10-27")]
+alias nontrivialTopology_iff_exists_nnnorm_ne_zero' := nontrivialTopology_iff_exists_nnNorm_ne_zero'
+
 @[to_additive indiscreteTopology_iff_forall_nnNorm_eq_zero]
 theorem indiscreteTopology_iff_forall_nnNorm_eq_zero' :
     IndiscreteTopology E ↔ ∀ x : E, ‖x‖₊ = 0 := by
   simpa using nontrivialTopology_iff_exists_nnNorm_ne_zero' (E := E).not
+
+@[deprecated (since := "2026-10-27")]
+alias indiscreteTopology_iff_forall_nnnorm_eq_zero' := indiscreteTopology_iff_forall_nnNorm_eq_zero'
 
 variable (E) in
 @[to_additive exists_nnNorm_ne_zero]
 theorem exists_nnNorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ ≠ 0 :=
   nontrivialTopology_iff_exists_nnNorm_ne_zero'.1 ‹_›
 
+@[deprecated (since := "2026-10-27")] alias exists_nnnorm_ne_zero' := exists_nnNorm_ne_zero'
+
 @[to_additive (attr := nontriviality) nnNorm_eq_zero]
 theorem IndiscreteTopology.nnNorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
   indiscreteTopology_iff_forall_nnNorm_eq_zero'.1 ‹_›
+
+@[deprecated (since := "2026-10-27")]
+alias IndiscreteTopology.nnnorm_eq_zero' := IndiscreteTopology.nnNorm_eq_zero'
 
 @[to_additive of_exists_nnNorm_ne_zero]
 alias ⟨_, NontrivialTopology.of_exists_nnNorm_ne_zero'⟩ :=
@@ -756,11 +820,17 @@ theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
 theorem nndist_nnNorm_nnNorm_le' (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a / b‖₊ :=
   NNReal.coe_le_coe.1 <| dist_norm_norm_le' a b
 
+@[deprecated (since := "2026-10-27")] alias nndist_nnnorm_nnnorm_le' := nndist_nnNorm_nnNorm_le'
+
 @[to_additive]
 theorem nndist_eq_nnNorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
 
+@[deprecated (since := "2026-10-27")] alias nndist_eq_nnnorm_div := nndist_eq_nnNorm_div
+
 alias nndist_eq_nnNorm := nndist_eq_nnNorm_sub
+
+@[deprecated (since := "2026-10-27")] alias nndist_eq_nnnorm := nndist_eq_nnNorm
 
 @[to_additive]
 theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
@@ -863,9 +933,15 @@ theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r 
 theorem mem_closedBall_iff_nnNorm'' {r : ℝ≥0} : b ∈ closedBall a r ↔ ‖b / a‖₊ ≤ r :=
   mem_closedBall_iff_norm''
 
+@[deprecated (since := "2026-10-27")]
+alias mem_closedBall_iff_nnnorm'' := mem_closedBall_iff_nnNorm''
+
 @[to_additive mem_closedBall_iff_nnNorm']
 theorem mem_closedBall_iff_nnNorm''' {r : ℝ≥0} : b ∈ closedBall a r ↔ ‖a / b‖₊ ≤ r :=
   mem_closedBall_iff_norm'''
+
+@[deprecated (since := "2026-10-27")]
+alias mem_closedBall_iff_nnnorm''' := mem_closedBall_iff_nnNorm'''
 
 /-- A scaled closed ball is a closed ball. -/
 @[to_additive setOf_sub_mem_closedBall_eq_closedBall
@@ -958,16 +1034,22 @@ theorem nnNorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fu
     rw [Multiset.map_map]
     exact norm_multiset_prod_le _
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_multiset_prod_le := nnNorm_multiset_prod_le
+
 @[to_additive]
 theorem nnNorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖₊ ≤ ∑ a ∈ s, ‖f a‖₊ :=
   NNReal.coe_le_coe.1 <| by
     push_cast
     exact norm_prod_le _ _
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_prod_le := nnNorm_prod_le
+
 @[to_additive]
 theorem nnNorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
   (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_prod_le_of_le := nnNorm_prod_le_of_le
 
 @[to_additive]
 theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
@@ -1026,16 +1108,24 @@ theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
 theorem eq_one_or_nnNorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
   eq_one_or_norm_pos a
 
+@[deprecated (since := "2026-10-27")] alias eq_one_or_nnnorm_pos := eq_one_or_nnNorm_pos
+
 @[to_additive (attr := simp) nnNorm_eq_zero]
 theorem nnNorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnNorm', norm_eq_zero']
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_eq_zero' := nnNorm_eq_zero'
 
 @[to_additive nnNorm_ne_zero_iff]
 theorem nnNorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
   nnNorm_eq_zero'.not
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_ne_zero_iff' := nnNorm_ne_zero_iff'
+
 @[to_additive (attr := simp) nnNorm_pos]
 lemma nnNorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnNorm_ne_zero_iff'
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_pos' := nnNorm_pos'
 
 variable (E)
 

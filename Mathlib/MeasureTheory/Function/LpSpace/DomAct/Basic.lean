@@ -107,6 +107,8 @@ theorem norm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖ = ‖f‖ 
 theorem nnNorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖f‖₊ :=
   NNReal.eq <| Lp.norm_compMeasurePreserving _ _
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_smul_Lp := nnNorm_smul_Lp
+
 @[to_additive (attr := simp)]
 theorem dist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : dist (c • f) (c • g) = dist f g := by
   simp only [dist, ← smul_Lp_neg, ← smul_Lp_add, norm_smul_Lp]

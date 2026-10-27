@@ -471,11 +471,15 @@ space is the product of the non-negative norms. -/
 theorem nnNorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
   NNReal.eq <| c.norm_smulRight_apply f
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_smulRight_apply := nnNorm_smulRight_apply
+
 @[simp] theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
   simp [← smulRight_id, norm_id]
 
 @[simp] theorem nnNorm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_toSpanSingleton _
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_toSpanSingleton := nnNorm_toSpanSingleton
 
 variable [IsTopologicalAddGroup Fₗ']
 variable (𝕜 E' Fₗ')

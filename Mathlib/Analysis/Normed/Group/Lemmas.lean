@@ -31,6 +31,8 @@ theorem eventually_nnNorm_sub_lt (x₀ : E) {ε : ℝ≥0} (ε_pos : 0 < ε) :
     ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖₊ < ε :=
   (continuousAt_id.sub continuousAt_const).nnNorm (gt_mem_nhds <| by simpa)
 
+@[deprecated (since := "2026-10-27")] alias eventually_nnnorm_sub_lt := eventually_nnNorm_sub_lt
+
 theorem eventually_norm_sub_lt (x₀ : E) {ε : ℝ} (ε_pos : 0 < ε) :
     ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖ < ε :=
   (continuousAt_id.sub continuousAt_const).norm (gt_mem_nhds <| by simpa)

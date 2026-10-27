@@ -55,6 +55,9 @@ lemma nnNorm_add_one_le_max_nnNorm_one (x : R) :
     ‖x + 1‖₊ ≤ max ‖x‖₊ 1 :=
   norm_add_one_le_max_norm_one _
 
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_add_one_le_max_nnnorm_one := nnNorm_add_one_le_max_nnNorm_one
+
 variable (R)
 
 lemma nnNorm_natCast_le_one (n : ℕ) :
@@ -63,6 +66,8 @@ lemma nnNorm_natCast_le_one (n : ℕ) :
   | zero => simp only [Nat.cast_zero, nnNorm_zero, zero_le]
   | succ n hn => simpa only [Nat.cast_add, Nat.cast_one, hn, max_eq_right] using
     nnNorm_add_one_le_max_nnNorm_one (n : R)
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_natCast_le_one := nnNorm_natCast_le_one
 
 lemma norm_natCast_le_one (n : ℕ) :
     ‖(n : R)‖ ≤ 1 :=
@@ -73,6 +78,8 @@ lemma nnNorm_intCast_le_one (z : ℤ) :
   cases z <;>
   simpa only [Int.ofNat_eq_natCast, Int.cast_natCast, Int.cast_negSucc, Nat.cast_one, nnNorm_neg]
     using nnNorm_natCast_le_one _ _
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_intCast_le_one := nnNorm_intCast_le_one
 
 lemma norm_intCast_le_one (z : ℤ) :
     ‖(z : R)‖ ≤ 1 :=

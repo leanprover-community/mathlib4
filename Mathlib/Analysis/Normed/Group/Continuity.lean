@@ -130,6 +130,8 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 theorem continuous_nnNorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
+@[deprecated (since := "2026-10-27")] alias continuous_nnnorm' := continuous_nnNorm'
+
 end SeminormedGroup
 
 section Instances
@@ -169,6 +171,9 @@ set_option linter.docPrime false in
 theorem Inseparable.nnNorm_eq_nnNorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
   h.map continuous_nnNorm' |>.eq
 
+@[deprecated (since := "2026-10-27")]
+alias Inseparable.nnnorm_eq_nnnorm' := Inseparable.nnNorm_eq_nnNorm'
+
 theorem Inseparable.enorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
     {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
   h.map continuous_enorm |>.eq
@@ -193,6 +198,8 @@ theorem Filter.Tendsto.norm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f
 theorem Filter.Tendsto.nnNorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f x‖₊) l (𝓝 ‖a‖₊) :=
   Tendsto.comp continuous_nnNorm'.continuousAt h
 
+@[deprecated (since := "2026-10-27")] alias Filter.Tendsto.nnnorm' := Filter.Tendsto.nnNorm'
+
 
 end
 
@@ -207,6 +214,8 @@ theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
 @[to_additive (attr := fun_prop) Continuous.nnNorm]
 theorem Continuous.nnNorm' : Continuous f → Continuous fun x => ‖f x‖₊ :=
   continuous_nnNorm'.comp
+
+@[deprecated (since := "2026-10-27")] alias Continuous.nnnorm' := Continuous.nnNorm'
 
 end
 end SeminormedGroup
@@ -236,6 +245,8 @@ theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x
 theorem ContinuousAt.nnNorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖₊) a :=
   Tendsto.nnNorm' h
 
+@[deprecated (since := "2026-10-27")] alias ContinuousAt.nnnorm' := ContinuousAt.nnNorm'
+
 @[to_additive ContinuousWithinAt.norm]
 theorem ContinuousWithinAt.norm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (fun x => ‖f x‖) s a :=
@@ -246,6 +257,8 @@ theorem ContinuousWithinAt.nnNorm' {s : Set α} {a : α} (h : ContinuousWithinAt
     ContinuousWithinAt (fun x => ‖f x‖₊) s a :=
   Tendsto.nnNorm' h
 
+@[deprecated (since := "2026-10-27")] alias ContinuousWithinAt.nnnorm' := ContinuousWithinAt.nnNorm'
+
 @[to_additive (attr := fun_prop) ContinuousOn.norm]
 theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (fun x => ‖f x‖) s :=
   fun x hx => (h x hx).norm'
@@ -253,6 +266,8 @@ theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (f
 @[to_additive (attr := fun_prop) ContinuousOn.nnNorm]
 theorem ContinuousOn.nnNorm' {s : Set α} (h : ContinuousOn f s) :
     ContinuousOn (fun x => ‖f x‖₊) s := fun x hx => (h x hx).nnNorm'
+
+@[deprecated (since := "2026-10-27")] alias ContinuousOn.nnnorm' := ContinuousOn.nnNorm'
 
 end
 

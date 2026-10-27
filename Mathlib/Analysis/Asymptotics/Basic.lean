@@ -46,11 +46,15 @@ theorem isBigO_iff_nnNorm :
     grw [h, Real.le_coe_toNNReal c]
   · use c
 
+@[deprecated (since := "2026-10-27")] alias isBigO_iff_nnnorm := isBigO_iff_nnNorm
+
 /-- `IsLittleO` in terms of the non-negative norm. -/
 theorem isLittleO_iff_nnNorm :
     f' =o[l] g' ↔ ∀ ⦃c : ℝ≥0⦄, c ≠ 0 → ∀ᶠ x in l, ‖f' x‖₊ ≤ c * ‖g' x‖₊ := by
   simpa [-NNReal.image_coe_Ioi, isLittleO_iff_forall_isBigOWith, zero_lt_iff, ← NNReal.coe_le_coe,
     isBigOWith_iff] using congr(∀ c ∈ $(NNReal.image_coe_Ioi 0), ∀ᶠ x in l, _).symm
+
+@[deprecated (since := "2026-10-27")] alias isLittleO_iff_nnnorm := isLittleO_iff_nnNorm
 
 /-! ### Conversions -/
 

@@ -145,6 +145,9 @@ theorem IsPrimitiveRoot.nnNorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot 
     ‖ζ‖₊ = 1 :=
   Subtype.ext <| h.norm'_eq_one hn
 
+@[deprecated (since := "2026-10-27")]
+alias IsPrimitiveRoot.nnnorm_eq_one := IsPrimitiveRoot.nnNorm_eq_one
+
 theorem IsPrimitiveRoot.arg_ext {n m : ℕ} {ζ μ : ℂ} (hζ : IsPrimitiveRoot ζ n)
     (hμ : IsPrimitiveRoot μ m) (hn : n ≠ 0) (hm : m ≠ 0) (h : ζ.arg = μ.arg) : ζ = μ :=
   Complex.ext_norm_arg ((hζ.norm'_eq_one hn).trans (hμ.norm'_eq_one hm).symm) h

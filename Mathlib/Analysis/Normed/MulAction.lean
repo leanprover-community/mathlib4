@@ -38,6 +38,8 @@ theorem norm_smul_le (r : α) (x : β) : ‖r • x‖ ≤ ‖r‖ * ‖x‖ := 
 theorem nnNorm_smul_le (r : α) (x : β) : ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊ :=
   norm_smul_le _ _
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_smul_le := nnNorm_smul_le
+
 @[bound]
 lemma enorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
   simpa [enorm, ← ENNReal.coe_mul] using nnNorm_smul_le ..
@@ -86,6 +88,9 @@ theorem IsBoundedSMul.of_enorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖
 theorem IsBoundedSMul.of_nnNorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
     IsBoundedSMul α β := .of_norm_smul_le h
 
+@[deprecated (since := "2026-10-27")]
+alias IsBoundedSMul.of_nnnorm_smul_le := IsBoundedSMul.of_nnNorm_smul_le
+
 end SeminormedRing
 
 section NormSMulClass
@@ -122,10 +127,15 @@ theorem NormSMulClass.of_nnNorm_smul (h : ∀ (r : α) (x : β), ‖r • x‖�
     NormSMulClass α β where
   norm_smul r b := congr($(h r b).toReal)
 
+@[deprecated (since := "2026-10-27")]
+alias NormSMulClass.of_nnnorm_smul := NormSMulClass.of_nnNorm_smul
+
 variable [NormSMulClass α β]
 
 theorem nnNorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
   NNReal.eq <| norm_smul r x
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_smul := nnNorm_smul
 
 instance (priority := 100) : ENormSMulClass α β where
   enorm_smul r x := by simp [enorm, nnNorm_smul]

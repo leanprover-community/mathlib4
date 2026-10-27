@@ -116,12 +116,20 @@ theorem limsup_pow_nnNorm_pow_one_div_le_spectralRadius (a : A) :
   have H₁ := (differentiableOn_inverse_one_sub_smul r_lt).hasFPowerSeriesOnBall r_pos
   exact ((hasFPowerSeriesOnBall_inverse_one_sub_smul ℂ a).exchange_radius H₁).r_le
 
+@[deprecated (since := "2026-10-27")]
+alias limsup_pow_nnnorm_pow_one_div_le_spectralRadius :=
+  limsup_pow_nnNorm_pow_one_div_le_spectralRadius
+
 /-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
 `spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖₊ ^ (1 / n)`. -/
 theorem pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
     Tendsto (fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) atTop (𝓝 (spectralRadius ℂ a)) :=
   tendsto_of_le_liminf_of_limsup_le (spectralRadius_le_liminf_pow_nnNorm_pow_one_div ℂ a)
     (limsup_pow_nnNorm_pow_one_div_le_spectralRadius a)
+
+@[deprecated (since := "2026-10-27")]
+alias pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius :=
+  pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius
 
 alias gelfand_formula := pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius
 
@@ -168,6 +176,9 @@ spectrum. -/
 theorem exists_nnNorm_eq_spectralRadius (a : A) :
     ∃ z ∈ spectrum ℂ a, (‖z‖₊ : ℝ≥0∞) = spectralRadius ℂ a :=
   exists_nnNorm_eq_spectralRadius_of_nonempty (spectrum.nonempty a)
+
+@[deprecated (since := "2026-10-27")]
+alias exists_nnnorm_eq_spectralRadius := exists_nnNorm_eq_spectralRadius
 
 /-- In a complex Banach algebra, if every element of the spectrum has norm strictly less than
 `r : ℝ≥0`, then the spectral radius is also strictly less than `r`. -/

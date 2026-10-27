@@ -297,4 +297,7 @@ theorem enorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : �
 theorem nnNorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖₊ ≤ ‖x‖₊ := by
   rw [← ENNReal.coe_le_coe]; exact enorm_exp_I_mul_ofReal_sub_one_le
 
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_exp_I_mul_ofReal_sub_one_le := nnNorm_exp_I_mul_ofReal_sub_one_le
+
 end Real

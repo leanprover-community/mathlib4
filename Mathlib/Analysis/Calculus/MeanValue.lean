@@ -449,6 +449,9 @@ theorem lipschitzOnWith_of_nnNorm_hasFDerivWithin_le {C : ℝ≥0}
   intro x x_in y y_in
   exact hs.norm_image_sub_le_of_norm_hasFDerivWithin_le hf bound y_in x_in
 
+@[deprecated (since := "2026-10-27")]
+alias lipschitzOnWith_of_nnnorm_hasFDerivWithin_le := lipschitzOnWith_of_nnNorm_hasFDerivWithin_le
+
 /-- Let `s` be a convex set in a real normed vector space `E`, let `f : E → G` be a function
 differentiable within `s` in a neighborhood of `x : E` with derivative `f'`. Suppose that `f'` is
 continuous within `s` at `x`. Then for any number `K : ℝ≥0` larger than `‖f' x‖₊`, `f` is
@@ -467,6 +470,10 @@ theorem exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnNorm_lt (hs 
   exact
     (hs.inter (convex_ball _ _)).lipschitzOnWith_of_nnNorm_hasFDerivWithin_le
       (fun y hy => (hε hy).1.mono inter_subset_left) fun y hy => (hε hy).2.le
+
+@[deprecated (since := "2026-10-27")]
+alias exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnnorm_lt :=
+  exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnNorm_lt
 
 /-- Let `s` be a convex set in a real normed vector space `E`, let `f : E → G` be a function
 differentiable within `s` in a neighborhood of `x : E` with derivative `f'`. Suppose that `f'` is
@@ -495,6 +502,9 @@ theorem lipschitzOnWith_of_nnNorm_fderivWithin_le {C : ℝ≥0} (hf : Differenti
     (bound : ∀ x ∈ s, ‖fderivWithin 𝕜 f s x‖₊ ≤ C) (hs : Convex ℝ s) : LipschitzOnWith C f s :=
   hs.lipschitzOnWith_of_nnNorm_hasFDerivWithin_le (fun x hx => (hf x hx).hasFDerivWithinAt) bound
 
+@[deprecated (since := "2026-10-27")]
+alias lipschitzOnWith_of_nnnorm_fderivWithin_le := lipschitzOnWith_of_nnNorm_fderivWithin_le
+
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`,
 then the function is `C`-Lipschitz. Version with `fderiv`. -/
 theorem norm_image_sub_le_of_norm_fderiv_le (hf : ∀ x ∈ s, DifferentiableAt 𝕜 f x)
@@ -509,6 +519,9 @@ theorem lipschitzOnWith_of_nnNorm_fderiv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Dif
     (bound : ∀ x ∈ s, ‖fderiv 𝕜 f x‖₊ ≤ C) (hs : Convex ℝ s) : LipschitzOnWith C f s :=
   hs.lipschitzOnWith_of_nnNorm_hasFDerivWithin_le
     (fun x hx => (hf x hx).hasFDerivAt.hasFDerivWithinAt) bound
+
+@[deprecated (since := "2026-10-27")]
+alias lipschitzOnWith_of_nnnorm_fderiv_le := lipschitzOnWith_of_nnNorm_fderiv_le
 
 /-- The mean value theorem: if the derivative of a function is bounded by `C`, then the function is
 `C`-Lipschitz. Version with `fderiv` and `LipschitzWith`. -/
@@ -707,6 +720,9 @@ theorem lipschitzOnWith_of_nnNorm_hasDerivWithin_le {C : ℝ≥0} (hs : Convex �
   Convex.lipschitzOnWith_of_nnNorm_hasFDerivWithin_le (fun x hx => (hf x hx).hasFDerivWithinAt)
     (fun x hx => le_trans (by simp) (bound x hx)) hs
 
+@[deprecated (since := "2026-10-27")]
+alias lipschitzOnWith_of_nnnorm_hasDerivWithin_le := lipschitzOnWith_of_nnNorm_hasDerivWithin_le
+
 /-- The mean value theorem on a convex set in dimension 1: if the derivative of a function within
 this set is bounded by `C`, then the function is `C`-Lipschitz. Version with `derivWithin` -/
 theorem norm_image_sub_le_of_norm_derivWithin_le {C : ℝ} (hf : DifferentiableOn 𝕜 f s)
@@ -722,6 +738,9 @@ theorem lipschitzOnWith_of_nnNorm_derivWithin_le {C : ℝ≥0} (hs : Convex ℝ 
     (hf : DifferentiableOn 𝕜 f s) (bound : ∀ x ∈ s, ‖derivWithin f s x‖₊ ≤ C) :
     LipschitzOnWith C f s :=
   hs.lipschitzOnWith_of_nnNorm_hasDerivWithin_le (fun x hx => (hf x hx).hasDerivWithinAt) bound
+
+@[deprecated (since := "2026-10-27")]
+alias lipschitzOnWith_of_nnnorm_derivWithin_le := lipschitzOnWith_of_nnNorm_derivWithin_le
 
 /-- The mean value theorem on a convex set in dimension 1: if the derivative of a function is
 bounded by `C`, then the function is `C`-Lipschitz. Version with `deriv`. -/
@@ -739,12 +758,18 @@ theorem lipschitzOnWith_of_nnNorm_deriv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Diff
   hs.lipschitzOnWith_of_nnNorm_hasDerivWithin_le
     (fun x hx => (hf x hx).hasDerivAt.hasDerivWithinAt) bound
 
+@[deprecated (since := "2026-10-27")]
+alias lipschitzOnWith_of_nnnorm_deriv_le := lipschitzOnWith_of_nnNorm_deriv_le
+
 /-- The mean value theorem set in dimension 1: if the derivative of a function is bounded by `C`,
 then the function is `C`-Lipschitz. Version with `deriv` and `LipschitzWith`. -/
 theorem _root_.lipschitzWith_of_nnNorm_deriv_le {C : ℝ≥0} (hf : Differentiable 𝕜 f)
     (bound : ∀ x, ‖deriv f x‖₊ ≤ C) : LipschitzWith C f :=
   lipschitzOnWith_univ.1 <|
     convex_univ.lipschitzOnWith_of_nnNorm_deriv_le (fun x _ => hf x) fun x _ => bound x
+
+@[deprecated (since := "2026-10-27")]
+alias _root_.lipschitzWith_of_nnnorm_deriv_le := _root_.lipschitzWith_of_nnNorm_deriv_le
 
 /-- If `f : 𝕜 → G`, `𝕜 = R` or `𝕜 = ℂ`, is differentiable everywhere and its derivative equal zero,
 then it is a constant function. -/

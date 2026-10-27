@@ -93,6 +93,8 @@ lemma lintegral_nnNorm_le (f : X →ᵇ E) :
     _ ≤ ∫⁻ _, ‖f‖₊ ∂μ       := by gcongr; apply nnNorm_coe_le_nnNorm
     _ = ‖f‖₊ * (μ Set.univ) := by rw [lintegral_const]
 
+@[deprecated (since := "2026-10-27")] alias lintegral_nnnorm_le := lintegral_nnNorm_le
+
 variable [OpensMeasurableSpace X] [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised

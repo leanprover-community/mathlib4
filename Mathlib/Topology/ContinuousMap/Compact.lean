@@ -214,11 +214,15 @@ theorem norm_lt_iff {M : ℝ} (M0 : 0 < M) : ‖f‖ < M ↔ ∀ x, ‖f x‖ < 
 theorem nnNorm_lt_iff {M : ℝ≥0} (M0 : 0 < M) : ‖f‖₊ < M ↔ ∀ x : α, ‖f x‖₊ < M :=
   f.norm_lt_iff M0
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_lt_iff := nnNorm_lt_iff
+
 theorem norm_lt_iff_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
   @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ (mkOfCompact f) _
 
 theorem nnNorm_lt_iff_of_nonempty [Nonempty α] {M : ℝ≥0} : ‖f‖₊ < M ↔ ∀ x, ‖f x‖₊ < M :=
   f.norm_lt_iff_of_nonempty
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_lt_iff_of_nonempty := nnNorm_lt_iff_of_nonempty
 
 theorem apply_le_norm (f : C(α, ℝ)) (x : α) : f x ≤ ‖f‖ :=
   le_trans (le_abs.mpr (Or.inl (le_refl (f x)))) (f.norm_coe_le_norm x)
@@ -228,6 +232,8 @@ theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
 
 theorem nnNorm_eq_iSup_nnNorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
   (mkOfCompact f).nnNorm_eq_iSup_nnNorm
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_eq_iSup_nnnorm := nnNorm_eq_iSup_nnNorm
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
@@ -351,6 +357,8 @@ end
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnNorm_eq_iSup_nnNorm, smul_apply', const_apply, nnNorm_smul, iSup_mul]
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_smul_const := nnNorm_smul_const
+
 @[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
@@ -375,6 +383,8 @@ lemma nnNorm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
     ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_add_eq_max h
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
+
 lemma norm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
     ‖f - g‖ = max ‖f‖ ‖g‖ := by
   simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
@@ -382,6 +392,8 @@ lemma norm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
 lemma nnNorm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
     ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_sub_eq_max h
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 open scoped Function in
 /-- If the pairwise products of continuous functions on a compact space are all zero, then the norm
@@ -395,6 +407,8 @@ lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → C(α, R)} (s : Finset ι)
   | insert j s hj ih =>
     suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnNorm_add_eq_max this
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h (by grind)
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end NormSum
 

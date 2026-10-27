@@ -183,6 +183,9 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[�
 @[simp] theorem nnNorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl
 @[simp] theorem enorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ₑ = ‖f‖ₑ := rfl
 
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_toContinuousMultilinearMap := nnNorm_toContinuousMultilinearMap
+
 /-- The inclusion of `E [⋀^ι]→L[𝕜] F` into `ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F`
 as a linear isometry. -/
 @[simps!]
@@ -289,6 +292,8 @@ section
     ‖ofSubsingleton 𝕜 E F i f‖₊ = ‖f‖₊ :=
   NNReal.eq <| norm_ofSubsingleton i f
 
+@[deprecated (since := "2026-10-27")] alias nnnorm_ofSubsingleton := nnNorm_ofSubsingleton
+
 /-- `ContinuousAlternatingMap.ofSubsingleton` as a linear isometry. -/
 @[simps +simpRhs]
 def ofSubsingletonLIE [Subsingleton ι] (i : ι) : (E →L[𝕜] F) ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] F) where
@@ -305,6 +310,9 @@ theorem nnNorm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
     ‖ofSubsingleton 𝕜 E E i (.id _ _)‖₊ ≤ 1 :=
   ContinuousMultilinearMap.nnNorm_ofSubsingleton_id_le ..
 
+@[deprecated (since := "2026-10-27")]
+alias nnnorm_ofSubsingleton_id_le := nnNorm_ofSubsingleton_id_le
+
 variable (𝕜 E)
 
 @[simp] theorem norm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖ = ‖x‖ :=
@@ -312,6 +320,8 @@ variable (𝕜 E)
 
 @[simp] theorem nnNorm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_constOfIsEmpty _ _ _
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_constOfIsEmpty := nnNorm_constOfIsEmpty
 
 variable (ι F) in
 /-- `constOfIsEmpty` as a linear isometry equivalence. -/
@@ -637,6 +647,8 @@ variable (𝕜 F) in
 theorem nnNorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :
     ‖ofSubsingleton 𝕜 F F i (.id _ _)‖₊ = 1 :=
   NNReal.eq <| norm_ofSubsingleton_id ..
+
+@[deprecated (since := "2026-10-27")] alias nnnorm_ofSubsingleton_id := nnNorm_ofSubsingleton_id
 
 end ContinuousAlternatingMap
 
