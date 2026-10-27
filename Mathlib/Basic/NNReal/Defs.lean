@@ -874,10 +874,10 @@ namespace OrdConnected
 
 variable {s : Set ℝ} {t : Set ℝ≥0}
 
-theorem preimage_coe_nnreal_real (h : s.OrdConnected) : ((↑) ⁻¹' s : Set ℝ≥0).OrdConnected :=
+theorem preimage_coe_nnReal_real (h : s.OrdConnected) : ((↑) ⁻¹' s : Set ℝ≥0).OrdConnected :=
   h.preimage_mono NNReal.coe_mono
 
-theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdConnected :=
+theorem image_coe_nnReal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdConnected :=
   ⟨forall_mem_image.2 fun x hx =>
       forall_mem_image.2 fun _y hy z hz => ⟨⟨z, x.2.trans hz.1⟩, h.out hx hy hz, rfl⟩⟩
 
@@ -935,7 +935,7 @@ theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := 
 theorem nnabs_pos {x : ℝ} : 0 < x.nnabs ↔ x ≠ 0 := by simp [← NNReal.coe_pos]
 
 /-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
-lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
+lemma nnReal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
   obtain (hr | hr) : 0 ≤ r ∨ 0 ≤ -r := by simpa using le_total ..
   all_goals
     rw [← neg_neg r]
@@ -943,25 +943,25 @@ lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
     aesop
 
 /-- Every real number is either zero, positive or negative, phrased using `ℝ≥0`. -/
-lemma nnreal_trichotomy (r : ℝ) : r = 0 ∨ ∃ x : ℝ≥0, 0 < x ∧ (r = x ∨ r = -x) := by
-  obtain ⟨x, hx⟩ := nnreal_dichotomy r
+lemma nnReal_trichotomy (r : ℝ) : r = 0 ∨ ∃ x : ℝ≥0, 0 < x ∧ (r = x ∨ r = -x) := by
+  obtain ⟨x, hx⟩ := nnReal_dichotomy r
   rw [or_iff_not_imp_left]
   aesop (add simp pos_iff_ne_zero)
 
 /-- To prove a property holds for real numbers it suffices to show that it holds for `x : ℝ≥0`,
 and if it holds for `x : ℝ≥0`, then it does also for `(-↑x : ℝ)`. -/
 @[elab_as_elim]
-lemma nnreal_induction_on {motive : ℝ → Prop} (nonneg : ∀ x : ℝ≥0, motive x)
+lemma nnReal_induction_on {motive : ℝ → Prop} (nonneg : ∀ x : ℝ≥0, motive x)
     (nonpos : ∀ x : ℝ≥0, motive x → motive (-x)) (r : ℝ) : motive r := by
-  obtain ⟨r, (rfl | rfl)⟩ := r.nnreal_dichotomy
+  obtain ⟨r, (rfl | rfl)⟩ := r.nnReal_dichotomy
   all_goals simp_all
 
-/-- A version of `nnreal_induction_on` which splits into three cases (zero, positive and negative)
+/-- A version of `nnReal_induction_on` which splits into three cases (zero, positive and negative)
 instead of two. -/
 @[elab_as_elim]
-lemma nnreal_induction_on' {motive : ℝ → Prop} (zero : motive 0) (pos : ∀ x : ℝ≥0, 0 < x → motive x)
+lemma nnReal_induction_on' {motive : ℝ → Prop} (zero : motive 0) (pos : ∀ x : ℝ≥0, 0 < x → motive x)
     (neg : ∀ x : ℝ≥0, 0 < x → motive x → motive (-x)) (r : ℝ) : motive r := by
-  obtain rfl | ⟨r, hr, (rfl | rfl)⟩ := r.nnreal_trichotomy
+  obtain rfl | ⟨r, hr, (rfl | rfl)⟩ := r.nnReal_trichotomy
   all_goals simp_all
 
 end Real
@@ -1007,7 +1007,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Qq
 
-alias ⟨_, nnreal_coe_pos⟩ := coe_pos
+alias ⟨_, nnReal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
@@ -1018,7 +1018,7 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
     assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
-    | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
+    | .positive pa => pure (.positive q(nnReal_coe_pos $pa))
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
 

@@ -178,7 +178,7 @@ lemma continuous_convexCombPair :
       x.2.1 x.2.2 := by
   apply continuous_prod_of_continuous_lipschitzWith' (K := 1)
   · intro i x y
-    simp only [← coe_nnreal_ennreal_nndist, ENNReal.coe_one, one_mul, ENNReal.coe_le_coe,
+    simp only [← coe_nnReal_ennReal_nndist, ENNReal.coe_one, one_mul, ENNReal.coe_le_coe,
       NNReal.toReal_le, coe_nndist]
     grw [dist_convexCombPair_convexCombPair_le, Prod.dist_eq]
     nth_grw 1 [le_max_left (dist x.1 y.1) (dist x.2 y.2)]
@@ -189,7 +189,7 @@ lemma continuous_convexCombPair :
   · intro b
     refine LipschitzWith.continuous (K := nndist b.1 b.2) fun x y ↦ ?_
     rw [mul_comm]
-    simp [← coe_nnreal_ennreal_nndist, ← ENNReal.coe_mul, NNReal.toReal_le,
+    simp [← coe_nnReal_ennReal_nndist, ← ENNReal.coe_mul, NNReal.toReal_le,
       dist_convexCombPair_convexCombPair, Subtype.dist_eq, dist_eq_norm]
 
 @[deprecated (since := "2026-05-15")] alias continuous_convexComboPair := continuous_convexCombPair

@@ -116,7 +116,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
   /- We will show that, if a sequence of sets `s n` satisfies
     `edist (s n) (s (n+1)) < 2^{-n}`, then it converges. This is enough to guarantee
     completeness, by a standard completeness criterion.
-    We use the shorthand `B n = 2^{-n}` in ennreal. -/
+    We use the shorthand `B n = 2^{-n}` in ennReal. -/
   let B : ℕ → ℝ≥0∞ := fun n => 2⁻¹ ^ n
   have B_pos : ∀ n, (0 : ℝ≥0∞) < B n := by simp [B, ENNReal.pow_pos]
   have B_ne_top : ∀ n, B n ≠ ⊤ := by finiteness

@@ -65,7 +65,7 @@ theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
   · refine StronglyMeasurable.indicator ?_ (measurableSet_integrable hf)
     simp_rw [SimpleFunc.integral_eq]
     refine Finset.stronglyMeasurable_fun_sum _ fun _ _ ↦ ?_
-    refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
+    refine (Measurable.ennReal_toReal ?_).stronglyMeasurable.smul_const _
     exact κ.measurable_coe ((s n).measurableSet_fiber _)
   · rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable f (κ x)
@@ -94,7 +94,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
       exact Finset.Subset.trans (Finset.filter_subset _ _) (SimpleFunc.range_comp_subset_range _ _)
     simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
     refine Finset.stronglyMeasurable_fun_sum _ fun x _ => ?_
-    refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
+    refine (Measurable.ennReal_toReal ?_).stronglyMeasurable.smul_const _
     simp only [s', SimpleFunc.coe_comp, preimage_comp]
     apply Kernel.measurable_kernel_prodMk_left
     exact (s n).measurableSet_fiber x

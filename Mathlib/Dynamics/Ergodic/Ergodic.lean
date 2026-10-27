@@ -112,7 +112,7 @@ theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞
   · rw [hc, zero_smul]
     exact zero_measure f
   · exact ⟨fun _s hs hfs ↦ by
-      rw [ae_ennreal_smul_measure_eq hc] at hfs ⊢
+      rw [ae_ennReal_smul_measure_eq hc] at hfs ⊢
       exact hf.aeconst_set (hs.mono_ac (absolutelyContinuous_smul hc)) hfs⟩
 
 end PreErgodic

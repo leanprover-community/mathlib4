@@ -274,7 +274,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
     (p.prod q).radius = min p.radius q.radius := by
   apply le_antisymm
-  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
+  · refine ENNReal.le_of_forall_nnReal_lt fun r hr => ?_
     rw [le_min_iff]
     have := (p.prod q).isLittleO_one_of_lt_radius hr
     constructor
@@ -286,7 +286,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
       rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
     · apply le_max_left
     · apply le_max_right
-  · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
+  · refine ENNReal.le_of_forall_nnReal_lt fun r hr => ?_
     rw [lt_min_iff] at hr
     have := ((p.isLittleO_one_of_lt_radius hr.1).add
       (q.isLittleO_one_of_lt_radius hr.2)).isBigO
@@ -467,7 +467,7 @@ variable {ι : Type*} [Fintype ι] {e : E} {Fm : ι → Type*}
 
 lemma FormalMultilinearSeries.radius_pi_le (p : Π i, FormalMultilinearSeries 𝕜 E (Fm i)) (i : ι) :
     (FormalMultilinearSeries.pi p).radius ≤ (p i).radius := by
-  apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
+  apply le_of_forall_nnReal_lt (fun r' hr' ↦ ?_)
   obtain ⟨C, -, hC⟩ : ∃ C > 0, ∀ n, ‖pi p n‖ * ↑r' ^ n ≤ C := norm_mul_pow_le_of_lt_radius _ hr'
   apply le_radius_of_bound _ C (fun n ↦ ?_)
   apply le_trans _ (hC n)
@@ -477,7 +477,7 @@ lemma FormalMultilinearSeries.radius_pi_le (p : Π i, FormalMultilinearSeries �
 
 lemma FormalMultilinearSeries.le_radius_pi (h : ∀ i, r ≤ (p i).radius) :
     r ≤ (FormalMultilinearSeries.pi p).radius := by
-  apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
+  apply le_of_forall_nnReal_lt (fun r' hr' ↦ ?_)
   have I i : ∃ C > 0, ∀ n, ‖p i n‖ * (r' : ℝ) ^ n ≤ C :=
     norm_mul_pow_le_of_lt_radius _ (hr'.trans_le (h i))
   choose C C_pos hC using I
@@ -496,7 +496,7 @@ lemma FormalMultilinearSeries.le_radius_pi (h : ∀ i, r ≤ (p i).radius) :
 lemma FormalMultilinearSeries.radius_pi_eq_iInf :
     (FormalMultilinearSeries.pi p).radius = ⨅ i, (p i).radius := by
   refine le_antisymm (by simp [radius_pi_le]) ?_
-  apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
+  apply le_of_forall_nnReal_lt (fun r' hr' ↦ ?_)
   exact le_radius_pi (fun i ↦ le_iInf_iff.1 hr'.le i)
 
 /-- If each function in a finite family has a power series within a ball, then so does the

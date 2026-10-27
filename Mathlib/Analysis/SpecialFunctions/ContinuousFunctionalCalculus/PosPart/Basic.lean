@@ -334,14 +334,14 @@ lemma negPart_algebraMap (r : ℝ) : (algebraMap ℝ A r)⁻ = algebraMap ℝ A 
 
 open NNReal in
 @[simp]
-lemma posPart_algebraMap_nnreal (r : ℝ≥0) : (algebraMap ℝ≥0 A r)⁺ = algebraMap ℝ≥0 A r := by
+lemma posPart_algebraMap_nnReal (r : ℝ≥0) : (algebraMap ℝ≥0 A r)⁺ = algebraMap ℝ≥0 A r := by
   rw [CFC.posPart_def, cfcₙ_eq_cfc, IsScalarTower.algebraMap_apply ℝ≥0 ℝ A]
   simp
 
 open NNReal in
 @[simp]
 lemma posPart_natCast (n : ℕ) : (n : A)⁺ = n := by
-  rw [← map_natCast (algebraMap ℝ≥0 A), posPart_algebraMap_nnreal]
+  rw [← map_natCast (algebraMap ℝ≥0 A), posPart_algebraMap_nnReal]
 
 end CFC
 

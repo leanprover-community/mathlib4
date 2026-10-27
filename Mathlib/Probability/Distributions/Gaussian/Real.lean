@@ -191,7 +191,7 @@ lemma support_gaussianPDF {μ : ℝ} {v : ℝ≥0} (hv : v ≠ 0) :
 
 @[fun_prop]
 lemma measurable_uncurry_gaussianPDF : Measurable (fun (μ, v, x) ↦ gaussianPDF μ v x) :=
-  Measurable.ennreal_ofReal (by fun_prop)
+  Measurable.ennReal_ofReal (by fun_prop)
 
 lemma measurable_gaussianPDF (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDF μ v) := by
   fun_prop

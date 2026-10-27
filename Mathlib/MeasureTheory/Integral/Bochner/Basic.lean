@@ -729,7 +729,7 @@ variable [hE : CompleteSpace E]
 theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x => (f x : ℝ)) μ) :
     ∫⁻ a, f a ∂μ = ENNReal.ofReal (∫ a, f a ∂μ) := by
   simp_rw [integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall fun x => (f x).coe_nonneg)
-      hfi.aestronglyMeasurable, ← ENNReal.coe_nnreal_eq]
+      hfi.aestronglyMeasurable, ← ENNReal.coe_nnReal_eq]
   rw [ENNReal.ofReal_toReal]
   simpa [← lt_top_iff_ne_top, hasFiniteIntegral_iff_enorm, NNReal.enorm_eq] using
     hfi.hasFiniteIntegral
@@ -743,7 +743,7 @@ theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f
 
 theorem integral_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) (hf : ∀ᵐ x ∂μ, f x < ∞) :
     ∫ a, (f a).toReal ∂μ = (∫⁻ a, f a ∂μ).toReal := by
-  rw [integral_eq_lintegral_of_nonneg_ae _ hfm.ennreal_toReal.aestronglyMeasurable,
+  rw [integral_eq_lintegral_of_nonneg_ae _ hfm.ennReal_toReal.aestronglyMeasurable,
     lintegral_congr_ae (ofReal_toReal_ae_eq hf)]
   exact Eventually.of_forall fun x => ENNReal.toReal_nonneg
 
@@ -826,7 +826,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   refine h_cont.tendsto.comp ?_
   -- use the result for the Lebesgue integral
   refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
-  · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
+  · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennReal_ofReal
   · filter_upwards [h_mono] with x hx n m hnm
     refine ENNReal.ofReal_le_ofReal ?_
     simp only [f', tsub_le_iff_right, sub_add_cancel]
@@ -889,7 +889,7 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   -- use the corresponding lemma for `ℝ≥0∞`
   have h := tendsto_of_lintegral_tendsto_of_monotone ?_ h_tendsto h_mono h_bound ?_
   rotate_left
-  · exact (hF_int.1.aemeasurable.sub (hf_int 0).1.aemeasurable).ennreal_ofReal
+  · exact (hF_int.1.aemeasurable.sub (hf_int 0).1.aemeasurable).ennReal_ofReal
   · exact ((lintegral_ofReal_le_lintegral_enorm _).trans_lt (hF_int.sub (hf_int 0)).2).ne
   filter_upwards [h, hf_mono, hf_bound] with a ha ha_mono ha_bound
   have h1 : (fun i ↦ f i a) = fun i ↦ (f' i a).toReal + f 0 a := by
@@ -1058,7 +1058,7 @@ theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
   exact setToFun_congr_left' _ _ (fun s _ _ => weightedSMul_smul_measure μ c) f
 
 @[simp]
-theorem integral_smul_nnreal_measure (f : α → G) (c : ℝ≥0) :
+theorem integral_smul_nnReal_measure (f : α → G) (c : ℝ≥0) :
     ∫ x, f x ∂(c • μ) = c • ∫ x, f x ∂μ :=
   integral_smul_measure f (c : ℝ≥0∞)
 
@@ -1223,8 +1223,8 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
         exact hpq.symm.pos
       · finiteness
   · exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq
-      hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_ennreal
-      hg.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_ennreal
+      hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnReal_ennReal
+      hg.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnReal_ennReal
 
 /-- Hölder's inequality for functions `α → ℝ`. The integral of the product of two nonnegative
 functions is bounded by the product of their `ℒp` and `ℒq` seminorms when `p` and `q` are conjugate

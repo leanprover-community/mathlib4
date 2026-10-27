@@ -23,33 +23,33 @@ open NNReal
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
 
-lemma nnreal_iff {a : A} :
+lemma nnReal_iff {a : A} :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔ ∀ x ∈ spectrum ℝ a, 0 ≤ x := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
     exact coe_nonneg x
   · exact .of_subset_range_algebraMap (fun _ ↦ Real.toNNReal_coe) fun x hx ↦ ⟨⟨x, h x hx⟩, rfl⟩
 
-lemma nnreal_of_nonneg [PartialOrder A] [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
+lemma nnReal_of_nonneg [PartialOrder A] [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
     SpectrumRestricts a ContinuousMap.realToNNReal :=
-  nnreal_iff.mpr <| spectrum_nonneg_of_nonneg ha
+  nnReal_iff.mpr <| spectrum_nonneg_of_nonneg ha
 
-lemma nnreal_le_iff {a : A}
+lemma nnReal_le_iff {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ spectrum ℝ≥0 a, r ≤ x) ↔ ∀ x ∈ spectrum ℝ a, r ≤ x := by
   simp [← ha.algebraMap_image]
 
-lemma nnreal_lt_iff {a : A}
+lemma nnReal_lt_iff {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ spectrum ℝ≥0 a, r < x) ↔ ∀ x ∈ spectrum ℝ a, r < x := by
   simp [← ha.algebraMap_image]
 
-lemma le_nnreal_iff {a : A}
+lemma le_nnReal_iff {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ spectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ spectrum ℝ a, x ≤ r := by
   simp [← ha.algebraMap_image]
 
-lemma lt_nnreal_iff {a : A}
+lemma lt_nnReal_iff {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ spectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ spectrum ℝ a, x < r := by
   simp [← ha.algebraMap_image]
@@ -63,22 +63,22 @@ local notation "σₙ" => quasispectrum
 
 variable {A : Type*} [NonUnitalRing A]
 
-lemma nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A} :
+lemma nnReal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A} :
     QuasispectrumRestricts a ContinuousMap.realToNNReal ↔ ∀ x ∈ σₙ ℝ a, 0 ≤ x := by
   rw [quasispectrumRestricts_iff_spectrumRestricts_inr,
-    Unitization.quasispectrum_eq_spectrum_inr' _ ℝ, SpectrumRestricts.nnreal_iff]
+    Unitization.quasispectrum_eq_spectrum_inr' _ ℝ, SpectrumRestricts.nnReal_iff]
 
-lemma nnreal_of_nonneg [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A]
+lemma nnReal_of_nonneg [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A]
     [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
     QuasispectrumRestricts a ContinuousMap.realToNNReal :=
-  nnreal_iff.mpr <| quasispectrum_nonneg_of_nonneg _ ha
+  nnReal_iff.mpr <| quasispectrum_nonneg_of_nonneg _ ha
 
-lemma le_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
+lemma le_nnReal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
     (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ quasispectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ quasispectrum ℝ a, x ≤ r := by
   simp [← ha.algebraMap_image]
 
-lemma lt_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
+lemma lt_nnReal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
     (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ quasispectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ quasispectrum ℝ a, x < r := by
   simp [← ha.algebraMap_image]

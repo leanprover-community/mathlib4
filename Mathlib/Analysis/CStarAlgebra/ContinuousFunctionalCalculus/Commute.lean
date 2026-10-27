@@ -71,7 +71,7 @@ protected theorem IsSelfAdjoint.commute_cfcHom {a b : A} (ha : p a)
 
 /-- An element commutes with `cfc f a` if it commutes with both `a` and `star a`.
 
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfc_real` or `Commute.cfc_nnreal` which don't require
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfc_real` or `Commute.cfc_nnReal` which don't require
 the `Commute (star a) b` hypothesis. -/
 @[grind ←]
 protected theorem Commute.cfc {a b : A} (hb₁ : Commute a b)
@@ -82,7 +82,7 @@ protected theorem Commute.cfc {a b : A} (hb₁ : Commute a b)
 
 /-- For `a` selfadjoint, an element commutes with `cfc f a` if it commutes with `a`.
 
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfc_real` or `Commute.cfc_nnreal` which don't require
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfc_real` or `Commute.cfc_nnReal` which don't require
 the `IsSelfAdjoint` hypothesis on `a` (due to the junk value `cfc f a = 0`). -/
 protected theorem IsSelfAdjoint.commute_cfc {a b : A}
     (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) :
@@ -110,10 +110,10 @@ variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 /-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
 with `star` when the base ring is `ℝ≥0`. -/
 @[grind ←]
-protected theorem Commute.cfc_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
+protected theorem Commute.cfc_nnReal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
     Commute (cfc f a) b := by
   by_cases ha : 0 ≤ a
-  · rw [cfc_nnreal_eq_real ..]
+  · rw [cfc_nnReal_eq_real ..]
     exact hb.cfc_real _
   · simp [cfc_apply_of_not_predicate a ha]
 
@@ -156,7 +156,7 @@ protected theorem IsSelfAdjoint.commute_cfcₙHom {a b : A} (ha : p a)
 
 /-- An element commutes with `cfcₙ f a` if it commutes with both `a` and `star a`.
 
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnReal` which don't
 require the `Commute (star a) b` hypothesis. -/
 @[grind ←]
 protected theorem Commute.cfcₙ {a b : A} (hb₁ : Commute a b)
@@ -167,7 +167,7 @@ protected theorem Commute.cfcₙ {a b : A} (hb₁ : Commute a b)
 
 /-- For `a` selfadjoint, an element commutes with `cfcₙ f a` if it commutes with `a`.
 
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnReal` which don't
 require the `IsSelfAdjoint` hypothesis on `a` (due to the junk value `cfcₙ f a = 0`). -/
 protected theorem IsSelfAdjoint.commute_cfcₙ {a b : A}
     (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) :
@@ -197,10 +197,10 @@ variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 /-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
 interaction with `star` when the base ring is `ℝ≥0`. -/
 @[grind ←]
-protected theorem Commute.cfcₙ_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
+protected theorem Commute.cfcₙ_nnReal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
     Commute (cfcₙ f a) b := by
   by_cases ha : 0 ≤ a
-  · rw [cfcₙ_nnreal_eq_real ..]
+  · rw [cfcₙ_nnReal_eq_real ..]
     exact hb.cfcₙ_real _
   · simp [cfcₙ_apply_of_not_predicate a ha]
 

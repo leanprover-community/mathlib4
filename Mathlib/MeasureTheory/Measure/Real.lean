@@ -68,11 +68,11 @@ theorem ofReal_measureReal (h : μ s ≠ ∞ := by finiteness) : ENNReal.ofReal 
 theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h' ↦ h <| h'.symm ▸ measureReal_empty
 
-@[simp] theorem measureReal_ennreal_smul_apply (c : ℝ≥0∞) :
+@[simp] theorem measureReal_ennReal_smul_apply (c : ℝ≥0∞) :
     (c • μ).real s = c.toReal * μ.real s := by
   simp [Measure.real]
 
-@[simp] theorem measureReal_nnreal_smul_apply (c : ℝ≥0) :
+@[simp] theorem measureReal_nnReal_smul_apply (c : ℝ≥0) :
     (c • μ).real s = c * μ.real s := by
   simp [measureReal_def]
 

@@ -696,7 +696,7 @@ theorem measure_le_setLAverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀
     (hf.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const)]
   rw [← ofPred_inter_eq_sep, ← Measure.restrict_apply₀
-    (hf.ennreal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
+    (hf.ennReal_toReal.aestronglyMeasurable.nullMeasurableSet_le aestronglyMeasurable_const),
     ← measure_sdiff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
   gconvert this
   rintro x ⟨hfx, hx⟩

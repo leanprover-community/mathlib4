@@ -54,7 +54,7 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a ha b hb hab
   simp only [Set.mem_Ici] at ha hb
-  rw [← inr_le_inr_iff, nnreal_cfcₙ_eq_cfc_inr a _, nnreal_cfcₙ_eq_cfc_inr b _]
+  rw [← inr_le_inr_iff, nnReal_cfcₙ_eq_cfc_inr a _, nnReal_cfcₙ_eq_cfc_inr b _]
   rw [← inr_le_inr_iff] at hab
   rw [← inr_nonneg_iff] at ha hb
   have h_cfc_one_sub (c : A⁺¹) (hc : 0 ≤ c := by cfc_tac) :
@@ -72,14 +72,14 @@ lemma CFC.monotoneOn_one_sub_one_add_inv_real :
     MonotoneOn (cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
   calc _ = cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) a := by
-          rw [cfcₙ_nnreal_eq_real _ _ ha]
+          rw [cfcₙ_nnReal_eq_real _ _ ha]
           congr! 1 with x hx
           have hx' : 0 ≤ x := by grind
           simp [hx']
     _ ≤ cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) b :=
           CFC.monotoneOn_one_sub_one_add_inv ha hb hab
     _ = cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹) b := by
-          rw [cfcₙ_nnreal_eq_real _ _ hb]
+          rw [cfcₙ_nnReal_eq_real _ _ hb]
           congr! 1 with x hx
           have hx' : 0 ≤ x := by grind
           simp [hx']
@@ -99,7 +99,7 @@ lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fu
 
 lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) :
     ‖cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a‖ < 1 :=
-  nnnorm_cfcₙ_nnreal_lt fun x _ ↦ tsub_lt_self zero_lt_one (by positivity)
+  nnnorm_cfcₙ_nnReal_lt fun x _ ↦ tsub_lt_self zero_lt_one (by positivity)
 
 lemma CStarAlgebra.directedOn_nonneg_ball :
     DirectedOn (· ≤ ·) ({x : A | 0 ≤ x} ∩ Metric.ball 0 1) := by
@@ -278,7 +278,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
   simp only [mem_closedBall, dist_eq_norm', zero_sub, norm_neg] at hx₂ ⊢
   rw [← coe_nnnorm, coe_le_coe]
   have hx₀ : 0 ≤ x := cfcₙ_nonneg_of_predicate.trans hx₁
-  rw [← inr_le_inr_iff, nnreal_cfcₙ_eq_cfc_inr _ _ (by simp [tsub_self]), inr_smul] at hx₁
+  rw [← inr_le_inr_iff, nnReal_cfcₙ_eq_cfc_inr _ _ (by simp [tsub_self]), inr_smul] at hx₁
   rw [← norm_inr (𝕜 := ℂ)] at hm₂ hx₂
   rw [← inr_nonneg_iff] at hx₀ hm₁
   rw [← nnnorm_inr (𝕜 := ℂ), inr_sub, inr_mul]
@@ -295,7 +295,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
   suffices star m * (1 - cfc g (ε⁻¹ ^ 2 • m)) * m =
       cfc (fun y : ℝ≥0 ↦ y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y) m by
     rw [this]
-    refine nnnorm_cfc_nnreal_le fun y hy ↦ ?_
+    refine nnnorm_cfc_nnReal_le fun y hy ↦ ?_
     calc
       y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y = y * ε ^ 2 * (y / (ε ^ 2 + y)) := by simp [field]
       _ ≤ ε ^ 2 * 1 := by
@@ -303,7 +303,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
         · apply mul_le_of_le_one_left'
           have hm' := hm₂.le
           rw [norm_le_one_iff_of_nonneg m hm₁, ← cfc_id' ℝ≥0 m, ← cfc_one (R := ℝ≥0) m,
-            cfc_nnreal_le_iff _ _ _ (QuasispectrumRestricts.nnreal_of_nonneg hm₁)] at hm'
+            cfc_nnReal_le_iff _ _ _ (QuasispectrumRestricts.nnReal_of_nonneg hm₁)] at hm'
           exact hm' y hy
         · exact div_le_one (by positivity) |>.mpr le_add_self
       _ = ε ^ 2 := mul_one _

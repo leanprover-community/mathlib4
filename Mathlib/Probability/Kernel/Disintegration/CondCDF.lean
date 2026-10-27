@@ -139,7 +139,7 @@ theorem measurable_preCDF {ρ : Measure (α × ℝ)} {r : ℚ} : Measurable (pre
 lemma measurable_preCDF' {ρ : Measure (α × ℝ)} :
     Measurable fun a r ↦ (preCDF ρ r a).toReal := by
   rw [measurable_pi_iff]
-  exact fun _ ↦ measurable_preCDF.ennreal_toReal
+  exact fun _ ↦ measurable_preCDF.ennReal_toReal
 
 theorem withDensity_preCDF (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ρ.fst.withDensity (preCDF ρ r) = ρ.IicSnd r :=
@@ -192,7 +192,7 @@ lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure 
 lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ) :
     Integrable (fun a ↦ (preCDF ρ x a).toReal) ρ.fst := by
   refine integrable_of_forall_fin_meas_le _ (measure_lt_top ρ.fst univ) ?_ fun t _ _ ↦ ?_
-  · exact measurable_preCDF.ennreal_toReal.aestronglyMeasurable
+  · exact measurable_preCDF.ennReal_toReal.aestronglyMeasurable
   · simp_rw [← ofReal_norm, Real.norm_of_nonneg ENNReal.toReal_nonneg]
     rw [← lintegral_one]
     refine (setLIntegral_le_lintegral _ _).trans (lintegral_mono_ae ?_)
@@ -327,7 +327,7 @@ theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
     Measurable fun a => (condCDF ρ a).measure :=
   .measure_of_isPiSystem_of_isProbabilityMeasure (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic <| by
     simp_rw [forall_mem_range, measure_condCDF_Iic]
-    exact fun u ↦ (measurable_condCDF ρ u).ennreal_ofReal
+    exact fun u ↦ (measurable_condCDF ρ u).ennReal_ofReal
 
 end Measure
 

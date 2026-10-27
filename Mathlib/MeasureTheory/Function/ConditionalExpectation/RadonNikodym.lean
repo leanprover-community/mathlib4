@@ -70,7 +70,7 @@ lemma toReal_rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
       rw [Measure.setIntegral_toReal_rnDeriv (hμν.map hg),
         Measure.setIntegral_toReal_rnDeriv hμν, measureReal_def, Measure.map_apply hg ht,
         measureReal_def]
-  · refine (Measurable.ennreal_toReal fun s hs ↦ ?_).aestronglyMeasurable
+  · refine (Measurable.ennReal_toReal fun s hs ↦ ?_).aestronglyMeasurable
     exact ⟨_, Measure.measurable_rnDeriv _ _ hs, rfl⟩
 
 /-- The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by

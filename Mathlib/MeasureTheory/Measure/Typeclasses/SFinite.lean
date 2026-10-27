@@ -644,7 +644,7 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
       set_mem := fun _ ↦ trivial
       finite := by
         intro i
-        simp only [Measure.coe_smul, Pi.smul_apply, nnreal_smul_coe_apply]
+        simp only [Measure.coe_smul, Pi.smul_apply, nnReal_smul_coe_apply]
         exact ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_spanningSets_lt_top μ i)
       spanning := iUnion_spanningSets μ }⟩
 

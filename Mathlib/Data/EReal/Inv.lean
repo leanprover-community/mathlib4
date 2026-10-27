@@ -59,7 +59,7 @@ theorem abs_zero : (0 : EReal).abs = 0 := by rw [abs_eq_zero_iff]
 
 @[simp]
 theorem coe_abs (x : ℝ) : ((x : EReal).abs : EReal) = (|x| : ℝ) := by
-  rw [abs_def, ← Real.coe_nnabs, ENNReal.ofReal_coe_nnreal]; rfl
+  rw [abs_def, ← Real.coe_nnabs, ENNReal.ofReal_coe_nnReal]; rfl
 
 @[simp]
 protected theorem abs_neg : ∀ x : EReal, (-x).abs = x.abs
@@ -174,8 +174,8 @@ theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
   map_pow (⟨⟨(↑), coe_one⟩, coe_mul⟩ : ℝ →* EReal) _ _
 
 @[simp, norm_cast]
-theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
-  map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
+theorem coe_ennReal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
+  map_pow (⟨⟨(↑), coe_ennReal_one⟩, coe_ennReal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 
 lemma exists_nat_ge_mul {a : EReal} (ha : a ≠ ⊤) (n : ℕ) :
     ∃ m : ℕ, a * n ≤ m :=
@@ -252,10 +252,10 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
   | coe a =>
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, ← inv_neg, abs_def a,
-        coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
+        coe_ennReal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
     · simp
     · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul]
-      simp only [abs_def a, coe_ennreal_ofReal, abs_nonneg, max_eq_left]
+      simp only [abs_def a, coe_ennReal_ofReal, abs_nonneg, max_eq_left]
       congr
       exact abs_of_pos a_pos
 
@@ -265,12 +265,12 @@ lemma sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : ER
   | coe a =>
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, abs_def a,
-        ← ofReal_inv_of_pos (abs_pos_of_neg a_neg), coe_ennreal_ofReal,
+        ← ofReal_inv_of_pos (abs_pos_of_neg a_neg), coe_ennReal_ofReal,
         max_eq_left (inv_nonneg.2 (abs_nonneg a)), ← coe_neg |a|⁻¹, ← coe_inv a, abs_of_neg a_neg,
         ← _root_.inv_neg, neg_neg]
     · simp
     · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul, abs_def a,
-        ← ofReal_inv_of_pos (abs_pos_of_pos a_pos), coe_ennreal_ofReal,
+        ← ofReal_inv_of_pos (abs_pos_of_pos a_pos), coe_ennReal_ofReal,
           max_eq_left (inv_nonneg.2 (abs_nonneg a)), ← coe_inv a]
       congr
       exact abs_of_pos a_pos

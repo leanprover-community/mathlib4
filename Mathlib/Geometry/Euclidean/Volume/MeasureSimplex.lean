@@ -87,7 +87,7 @@ theorem euclideanHausdorffMeasure_closedInterior (s : Simplex ℝ P (n + 1)) (i 
     (support_euclideanHausdorffMeasure_closedInterior_inter_shift_subset s i),
     lintegral_congr_ae (euclideanHausdorffMeasure_closedInterior_inter_shift_aeEq s i)]
   -- Cancel common factors and reduce it to `∫ x in 0..1, x ^ n`
-  simp_rw [nnreal_smul_coe_apply]
+  simp_rw [nnReal_smul_coe_apply]
   rw [lintegral_mul_const _ (by fun_prop), ← mul_assoc, mul_comm (ENNReal.ofReal (s.height i))]
   congr
   calc

@@ -119,34 +119,34 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
   exact ⟨v.ne_bot, v.isPrime.ne_top⟩
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
-lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
+lemma one_lt_absNorm_nnReal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
 
-lemma two_le_absNorm_nnreal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
+lemma two_le_absNorm_nnReal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
 lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
-  ne_zero_of_lt (one_lt_absNorm_nnreal v)
+  ne_zero_of_lt (one_lt_absNorm_nnReal v)
 
 variable (K)
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
 valuation -/
-noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_nnreal v
+noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_nnReal v
 
 theorem adicAbv_def {x : K} : adicAbv K v x = toNNReal (absNorm_ne_zero v) (v.valuation K x) := rfl
 
 /-- The `v`-adic absolute value is nonarchimedean -/
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv K v) :=
-  v.isNonarchimedean_adicAbv <| one_lt_absNorm_nnreal v
+  v.isNonarchimedean_adicAbv <| one_lt_absNorm_nnReal v
 
 open Valuation.IsRankOneDiscrete
 
 noncomputable instance : (v.valuation K).RankOne :=
-  rankOne (v.valuation K) (one_lt_absNorm_nnreal v)
+  rankOne (v.valuation K) (one_lt_absNorm_nnReal v)
 
 noncomputable instance instRankOneAdicCompletion :
     (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).RankOne :=
-  rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
+  rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnReal v)
 
 lemma rankOne_hom'_def :
     (instRankOneAdicCompletion K v).hom' = (toNNReal (absNorm_ne_zero v)).comp
@@ -209,26 +209,26 @@ open FinitePlace
 /-- The `v`-adic norm of an integer is at most 1. -/
 theorem FinitePlace.norm_le_one (x : R) : ‖embedding v (algebraMap _ K x)‖ ≤ 1 := by
   rw [norm_embedding]
-  exact v.adicAbv_coe_le_one (one_lt_absNorm_nnreal v) x
+  exact v.adicAbv_coe_le_one (one_lt_absNorm_nnReal v) x
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem FinitePlace.norm_eq_one_iff_notMem (x : R) :
     ‖embedding v (algebraMap _ K x)‖ = 1 ↔ x ∉ v.asIdeal := by
   rw [norm_embedding]
-  exact v.adicAbv_coe_eq_one_iff (one_lt_absNorm_nnreal v) x
+  exact v.adicAbv_coe_eq_one_iff (one_lt_absNorm_nnReal v) x
 
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
     ‖embedding v (algebraMap _ K x)‖ < 1 ↔ x ∈ v.asIdeal := by
   rw [norm_embedding]
-  exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
+  exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnReal v) x
 
 variable {v} in
 lemma FinitePlace.two_le_norm_of_one_lt_norm (x : v.adicCompletion K) (h : 1 < ‖x‖) : 2 ≤ ‖x‖ := by
   rw [FinitePlace.norm_def, WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero v) (by aesop)]
-  apply (two_le_absNorm_nnreal v).trans
+  apply (two_le_absNorm_nnReal v).trans
   conv_lhs => rw [← zpow_one (v.asIdeal.absNorm : NNReal)]
-  apply zpow_le_zpow_right₀ (one_lt_absNorm_nnreal v).le
+  apply zpow_le_zpow_right₀ (one_lt_absNorm_nnReal v).le
   simpa [← Int.sub_one_lt_iff, ← log_one] using
     lt_log_of_exp_lt (Valued.toNormedField.one_lt_norm_iff.1 h)
 
@@ -238,9 +238,9 @@ lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
     WithZeroMulInt.toNNReal_neg_apply _ ((v.valuation K).ne_zero_iff.mpr
       ((FaithfulSMul.algebraMap_eq_zero_iff R K).not.2 h_x_nezero))]
   push_cast
-  rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_absNorm_nnreal v)).ne']
+  rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_absNorm_nnReal v)).ne']
   norm_cast
-  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
+  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnReal v).ne')]
   simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
 
 end HasFiniteQuotients

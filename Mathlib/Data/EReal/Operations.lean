@@ -319,19 +319,19 @@ def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     H₂ ▸ neg_coe _ <| by positivity
 
 @[simp]
-theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+theorem recENNReal_coe_ennReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : ℝ≥0∞) : recENNReal coe neg_coe x = coe x := by
   unfold recENNReal
-  rw [dite_eq_left (coe_ennreal_nonneg x)]
+  rw [dite_eq_left (coe_ennReal_nonneg x)]
   rw! [toENNReal_coe]
   rfl
 
 @[simp]
-theorem recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+theorem recENNReal_neg_coe_ennReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
     recENNReal coe neg_coe (-x) = neg_coe x hx := by
   unfold recENNReal
-  rw [dite_eq_right (not_le.2 (EReal.neg_lt_zero.2 (coe_ennreal_pos.2 hx)))]
+  rw [dite_eq_right (not_le.2 (EReal.neg_lt_zero.2 (coe_ennReal_pos.2 hx)))]
   rw! [neg_neg, toENNReal_coe]
   rfl
 
@@ -404,9 +404,9 @@ theorem coe_real_ereal_eq_coe_toNNReal_sub_coe_toNNReal (x : ℝ) :
   rcases le_total 0 x with (h | h)
   · lift x to ℝ≥0 using h
     rw [Real.toNNReal_of_nonpos (neg_nonpos.mpr x.coe_nonneg), Real.toNNReal_coe, ENNReal.coe_zero,
-      coe_ennreal_zero, sub_zero]
+      coe_ennReal_zero, sub_zero]
     rfl
-  · rw [Real.toNNReal_of_nonpos h, ENNReal.coe_zero, coe_ennreal_zero, coe_nnreal_eq_coe_real,
+  · rw [Real.toNNReal_of_nonpos h, ENNReal.coe_zero, coe_ennReal_zero, coe_nnReal_eq_coe_real,
       Real.coe_toNNReal, zero_sub, coe_neg, neg_neg]
     exact neg_nonneg.2 h
 
@@ -562,9 +562,9 @@ lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le :
     (x - y).toEReal = x.toEReal - y.toEReal := by
   lift y to ℝ≥0 using hy_top
   cases x with
-  | top => simp [coe_nnreal_eq_coe_real]
+  | top => simp [coe_nnReal_eq_coe_real]
   | coe x =>
-    simp only [coe_nnreal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
+    simp only [coe_nnReal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
 
 /-! ### Multiplication -/
 
@@ -606,11 +606,11 @@ lemma top_mul_of_neg {x : EReal} (h : x < 0) : ⊤ * x = ⊥ := by
   rw [EReal.mul_comm]
   exact mul_top_of_neg h
 
-lemma top_mul_coe_ennreal {x : ℝ≥0∞} (hx : x ≠ 0) : ⊤ * (x : EReal) = ⊤ :=
-  top_mul_of_pos <| coe_ennreal_pos.mpr <| pos_iff_ne_zero.mpr hx
+lemma top_mul_coe_ennReal {x : ℝ≥0∞} (hx : x ≠ 0) : ⊤ * (x : EReal) = ⊤ :=
+  top_mul_of_pos <| coe_ennReal_pos.mpr <| pos_iff_ne_zero.mpr hx
 
-lemma coe_ennreal_mul_top {x : ℝ≥0∞} (hx : x ≠ 0) : (x : EReal) * ⊤ = ⊤ := by
-  rw [EReal.mul_comm, top_mul_coe_ennreal hx]
+lemma coe_ennReal_mul_top {x : ℝ≥0∞} (hx : x ≠ 0) : (x : EReal) * ⊤ = ⊤ := by
+  rw [EReal.mul_comm, top_mul_coe_ennReal hx]
 
 lemma coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
   ite_eq_left h
@@ -817,8 +817,8 @@ lemma right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   cases c using recENNReal with
   | coe c => exact_mod_cast add_mul a b c
   | neg_coe c hc =>
-    simp only [mul_neg, ← coe_ennreal_add, ← coe_ennreal_mul, add_mul]
-    rw [coe_ennreal_add, EReal.neg_add (.inl (coe_ennreal_ne_bot _)) (.inr (coe_ennreal_ne_bot _)),
+    simp only [mul_neg, ← coe_ennReal_add, ← coe_ennReal_mul, add_mul]
+    rw [coe_ennReal_add, EReal.neg_add (.inl (coe_ennReal_ne_bot _)) (.inr (coe_ennReal_ne_bot _)),
       sub_eq_add_neg]
 
 lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :

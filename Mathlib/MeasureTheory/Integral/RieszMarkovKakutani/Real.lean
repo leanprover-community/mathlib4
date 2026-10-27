@@ -74,7 +74,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
   have := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ))
     (contentRegular_rieszContent (toNNRealLinear Λ)) (⟨tsupport f, f.hasCompactSupport⟩)
   rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, this, rieszContent,
-    ENNReal.ofReal_eq_coe_nnreal (Λ.map_nonneg fun x ↦ (hf x).1), Content.mk_apply,
+    ENNReal.ofReal_eq_coe_nnReal (Λ.map_nonneg fun x ↦ (hf x).1), Content.mk_apply,
     ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro _ hε
@@ -94,15 +94,15 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
     Content.measure_eq_content_of_regular _ (contentRegular_rieszContent (toNNRealLinear Λ))]
   apply ENNReal.coe_le_iff.mpr
   intro p hp
-  rw [← ENNReal.ofReal_coe_nnreal,
+  rw [← ENNReal.ofReal_coe_nnReal,
     ENNReal.ofReal_eq_ofReal_iff (Λ.map_nonneg hf) NNReal.zero_le_coe] at hp
   apply csInf_le'
   rw [Set.mem_image]
-  use f.nnrealPart
-  simp_rw [Set.mem_ofPred_eq, nnrealPart_apply, Real.one_le_toNNReal]
+  use f.nnRealPart
+  simp_rw [Set.mem_ofPred_eq, nnRealPart_apply, Real.one_le_toNNReal]
   refine ⟨(fun x hx ↦ Eq.ge (hfK x hx)), ?_⟩
   apply NNReal.eq
-  rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]
+  rw [toNNRealLinear_apply, show f.nnRealPart.toReal = f by ext z; simp [hf z], hp]
 
 omit [T2Space X] [LocallyCompactSpace X] in
 /-- Given `f : C_c(X, ℝ)` such that `range f ⊆ [a, b]` we obtain a partition of the support of `f`

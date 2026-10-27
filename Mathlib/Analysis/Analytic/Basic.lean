@@ -617,7 +617,7 @@ theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum_prod {y : E}
   apply Metric.tendsto_nhds.2 (fun ε εpos ↦ ?_)
   obtain ⟨r', yr', r'r⟩ : ∃ (r' : ℝ≥0), ‖y‖₊ < r' ∧ r' < r := by
     simp at hy
-    simpa using ENNReal.lt_iff_exists_nnreal_btwn.1 hy
+    simpa using ENNReal.lt_iff_exists_nnReal_btwn.1 hy
   have yr'_2 : ‖y‖ < r' := by simpa [← coe_nnnorm] using yr'
   have S : Summable fun n ↦ ‖p n‖ * ↑r' ^ n := p.summable_norm_mul_pow (r'r.trans_le hf.r_le)
   obtain ⟨k, hk⟩ : ∃ k, ∑' (n : ℕ), ‖p (n + k)‖ * ↑r' ^ (n + k) < ε / 4 := by
@@ -757,7 +757,7 @@ theorem HasFPowerSeriesWithinAt.isBigO_sub_partialSum_pow
     (fun y : E => f (x + y) - p.partialSum n y)
       =O[𝓝[(x + ·) ⁻¹' insert x s] 0] fun y => ‖y‖ ^ n := by
   rcases hf with ⟨r, hf⟩
-  rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
+  rcases ENNReal.lt_iff_exists_nnReal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
   obtain ⟨a, -, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
       x + y ∈ insert x s → ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n :=
     hf.uniform_geometric_approx' h
@@ -882,7 +882,7 @@ theorem HasFPowerSeriesWithinAt.isBigO_image_sub_norm_mul_norm_sub
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
       =O[𝓝[(insert x s) ×ˢ (insert x s)] (x, x)] fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   rcases hf with ⟨r, hf⟩
-  rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
+  rcases ENNReal.lt_iff_exists_nnReal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
   refine (hf.isBigO_image_sub_image_sub_deriv_principal h).mono ?_
   rw [inter_comm]
   exact le_principal_iff.2 (inter_mem_nhdsWithin _ (Metric.eball_mem_nhds _ r'0))
@@ -931,7 +931,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
       ((x + ·) ⁻¹' (insert x s) ∩ Metric.eball (0 : E) r) := by
   intro u hu y hy
-  rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hy.2 with ⟨r', yr', hr'⟩
+  rcases ENNReal.lt_iff_exists_nnReal_btwn.1 hy.2 with ⟨r', yr', hr'⟩
   have : Metric.eball (0 : E) r' ∈ 𝓝 y := IsOpen.mem_nhds Metric.isOpen_eball yr'
   refine ⟨(x + ·)⁻¹' (insert x s) ∩ Metric.eball (0 : E) r', ?_, ?_⟩
   · rw [nhdsWithin_inter_of_mem']

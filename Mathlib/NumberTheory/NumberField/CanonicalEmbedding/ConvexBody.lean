@@ -107,14 +107,14 @@ theorem convexBodyLT_volume :
           * ((∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2) *
             NNReal.pi ^ nrComplexPlaces K) := by
       simp_rw [ofReal_mul (by simp : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
-        Finset.card_univ, ofReal_ofNat, ofReal_coe_nnreal, coe_ofNat]
+        Finset.card_univ, ofReal_ofNat, ofReal_coe_nnReal, coe_ofNat]
     _ = (convexBodyLTFactor K) * ((∏ x : {w // InfinitePlace.IsReal w}, .ofReal (f x.val)) *
         (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by
       simp_rw [convexBodyLTFactor, coe_mul, ENNReal.coe_pow]
       ring
     _ = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
       simp_rw [prod_eq_prod_mul_prod, coe_mul, ofNNReal_finsetProd, mult_isReal, mult_isComplex,
-        pow_one, ENNReal.coe_pow, ofReal_coe_nnreal]
+        pow_one, ENNReal.coe_pow, ofReal_coe_nnReal]
 
 variable {f}
 
@@ -218,7 +218,7 @@ theorem convexBodyLT'_volume :
           ext; simp_rw [Set.mem_ofPred_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
       simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
         ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
-        ofReal_coe_nnreal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by norm_num]
+        ofReal_coe_nnReal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by norm_num]
     · change NullMeasurableSet ({x : ℂ | |x.re| < 1} ∩ {x : ℂ | |x.im| < ↑B ^ 2}) volume
       measurability
   calc
@@ -237,16 +237,16 @@ theorem convexBodyLT'_volume :
               ↑pi ^ (nrComplexPlaces K - 1) * (4 * (f w₀) ^ 2)) := by
       simp_rw [ofReal_mul (by simp : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ, ofReal_ofNat,
-        ofReal_coe_nnreal, coe_ofNat]
+        ofReal_coe_nnReal, coe_ofNat]
     _ = convexBodyLT'Factor K * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))
         * (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2) := by
       rw [show (4 : ℝ≥0∞) = (2 : ℝ≥0) ^ 2 by norm_num, convexBodyLT'Factor, pow_add,
-        ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀), ofReal_coe_nnreal]
+        ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀), ofReal_coe_nnReal]
       simp_rw [coe_mul, ENNReal.coe_pow]
       ring
     _ = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
       simp_rw [prod_eq_prod_mul_prod, coe_mul, ofNNReal_finsetProd, mult_isReal, mult_isComplex,
-        pow_one, ENNReal.coe_pow, ofReal_coe_nnreal, mul_assoc]
+        pow_one, ENNReal.coe_pow, ofReal_coe_nnReal, mul_assoc]
 
 end convexBodyLT'
 
@@ -402,7 +402,7 @@ theorem convexBodySum_volume :
         (2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K by
       rw [this, convexBodySumFactor, ofReal_mul (by positivity), ofReal_pow zero_le_two,
         ofReal_pow (by positivity), ofReal_div_of_pos zero_lt_two, ofReal_ofNat,
-        ← NNReal.coe_real_pi, ofReal_coe_nnreal, coe_div (Nat.cast_ne_zero.mpr
+        ← NNReal.coe_real_pi, ofReal_coe_nnReal, coe_div (Nat.cast_ne_zero.mpr
         (Nat.factorial_ne_zero _)), coe_mul, coe_pow, coe_pow, coe_ofNat, coe_div two_ne_zero,
         coe_ofNat, coe_natCast]
     calc

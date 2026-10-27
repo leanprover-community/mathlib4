@@ -911,7 +911,7 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
       (NNReal.mk (∫ x : X in s i, ‖f x‖₊ ∂μ) (integral_nonneg fun x => NNReal.coe_nonneg _)) := by
     rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
-  simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
+  simp_rw [ENNReal.coe_nnReal_eq, NNReal.coe_mk, coe_nnnorm] at S''
   convert! ENNReal.ofReal_lt_top
 
 variable [TopologicalSpace X] [BorelSpace X] [T2Space X] [IsLocallyFiniteMeasure μ]

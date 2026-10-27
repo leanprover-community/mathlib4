@@ -223,9 +223,9 @@ theorem withDensity_ofReal_mutuallySingular {f : α → ℝ} (hf : Measurable f)
   set S : Set α := { x | f x < 0 }
   have hS : MeasurableSet S := measurableSet_lt hf measurable_const
   refine ⟨S, hS, ?_, ?_⟩
-  · rw [withDensity_apply _ hS, lintegral_eq_zero_iff hf.ennreal_ofReal, EventuallyEq]
+  · rw [withDensity_apply _ hS, lintegral_eq_zero_iff hf.ennReal_ofReal, EventuallyEq]
     exact (ae_restrict_mem hS).mono fun x hx => ENNReal.ofReal_eq_zero.2 (le_of_lt hx)
-  · rw [withDensity_apply _ hS.compl, lintegral_eq_zero_iff hf.fun_neg.ennreal_ofReal, EventuallyEq]
+  · rw [withDensity_apply _ hS.compl, lintegral_eq_zero_iff hf.fun_neg.ennReal_ofReal, EventuallyEq]
     exact
       (ae_restrict_mem hS.compl).mono fun x hx =>
         ENNReal.ofReal_eq_zero.2 (not_lt.1 <| mt neg_pos.1 hx)
@@ -337,7 +337,7 @@ theorem ae_withDensity_iff_ae_restrict {p : α → Prop} {f : α → ℝ≥0∞}
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ.restrict { x | f x ≠ 0 }, p x :=
   ae_withDensity_iff_ae_restrict' hf.aemeasurable
 
-theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
+theorem aemeasurable_withDensity_ennReal_iff' {f : α → ℝ≥0}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ := by
@@ -346,9 +346,9 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
   constructor
   · rintro ⟨g', g'meas, hg'⟩
     have A : MeasurableSet {x | f' x ≠ 0} := hf'_m (measurableSet_singleton _).compl
-    refine ⟨fun x => f' x * g' x, hf'_m.coe_nnreal_ennreal.smul g'meas, ?_⟩
+    refine ⟨fun x => f' x * g' x, hf'_m.coe_nnReal_ennReal.smul g'meas, ?_⟩
     apply ae_of_ae_restrict_of_ae_restrict_compl { x | f' x ≠ 0 }
-    · rw [EventuallyEq, ae_withDensity_iff' hf.coe_nnreal_ennreal] at hg'
+    · rw [EventuallyEq, ae_withDensity_iff' hf.coe_nnReal_ennReal] at hg'
       rw [ae_restrict_iff' A]
       filter_upwards [hg', hf'_ae] with a ha h'a h_a_nonneg
       have : (f' a : ℝ≥0∞) ≠ 0 := by simpa only [Ne, ENNReal.coe_eq_zero] using h_a_nonneg
@@ -361,16 +361,16 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
       rw [ha]
       simp only [ENNReal.coe_zero, zero_mul]
   · rintro ⟨g', g'meas, hg'⟩
-    refine ⟨fun x => ((f' x)⁻¹ : ℝ≥0∞) * g' x, hf'_m.coe_nnreal_ennreal.inv.smul g'meas, ?_⟩
-    rw [EventuallyEq, ae_withDensity_iff' hf.coe_nnreal_ennreal]
+    refine ⟨fun x => ((f' x)⁻¹ : ℝ≥0∞) * g' x, hf'_m.coe_nnReal_ennReal.inv.smul g'meas, ?_⟩
+    rw [EventuallyEq, ae_withDensity_iff' hf.coe_nnReal_ennReal]
     filter_upwards [hg', hf'_ae] with a hfga hff'a h'a
     rw [hff'a] at hfga h'a
     rw [← hfga, ← mul_assoc, ENNReal.inv_mul_cancel h'a ENNReal.coe_ne_top, one_mul]
 
-theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
+theorem aemeasurable_withDensity_ennReal_iff {f : α → ℝ≥0} (hf : Measurable f) {g : α → ℝ≥0∞} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ :=
-  aemeasurable_withDensity_ennreal_iff' hf.aemeasurable
+  aemeasurable_withDensity_ennReal_iff' hf.aemeasurable
 
 theorem dirac_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
     (dirac a).withDensity f = f a • dirac a := by
@@ -416,7 +416,7 @@ and other moments as a function of the probability density function.
 theorem lintegral_withDensity_eq_lintegral_mul (μ : Measure α) {f : α → ℝ≥0∞}
     (h_mf : Measurable f) :
     ∀ {g : α → ℝ≥0∞}, Measurable g → ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ := by
-  apply Measurable.ennreal_induction
+  apply Measurable.ennReal_induction
   · intro c s h_ms
     simp [*, mul_comm _ c, ← indicator_mul_right]
   · intro g h _ h_mea_g _ h_ind_g h_ind_h

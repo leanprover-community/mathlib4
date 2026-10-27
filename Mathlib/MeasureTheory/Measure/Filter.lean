@@ -75,7 +75,7 @@ lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0�
 
 lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
     NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ := by
-  simp only [nullMeasurableSet_iff_eventuallyMeasurableSet, μ.ae_ennreal_smul_measure_eq hc]
+  simp only [nullMeasurableSet_iff_eventuallyMeasurableSet, μ.ae_ennReal_smul_measure_eq hc]
 
 theorem _root_.AEMeasurable.mono_measure {f : α → β} (h : AEMeasurable f μ) (h' : ν ≤ μ) :
     AEMeasurable f ν := by

@@ -22,7 +22,7 @@ not less than this function. It turns out that this function is a measure.
 ## Main definitions
 
 * `VectorMeasure.variation`: the variation as a `Measure X`
-* `VectorMeasure.ennrealVariation`: the variation as a `VectorMeasure X ℝ≥0∞`
+* `VectorMeasure.ennRealVariation`: the variation as a `VectorMeasure X ℝ≥0∞`
 
 ## References
 
@@ -52,7 +52,7 @@ noncomputable def variation (μ : VectorMeasure X V) : Measure X :=
   preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp)
 
 /-- The variation of a `VectorMeasure` as an `ℝ≥0∞`-valued `VectorMeasure`. -/
-noncomputable def ennrealVariation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ :=
+noncomputable def ennRealVariation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ :=
   μ.variation.toENNRealVectorMeasure
 
 end MeasureTheory.VectorMeasure

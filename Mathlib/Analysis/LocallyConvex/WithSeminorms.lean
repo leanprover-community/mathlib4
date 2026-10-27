@@ -1126,7 +1126,7 @@ theorem SeminormFamily.comp_apply (q : SeminormFamily 𝕜₂ F ι) (i : ι) (f 
     q.comp f i = (q i).comp f :=
   rfl
 
-theorem SeminormFamily.comp_smul_nnreal (q : SeminormFamily 𝕜₂ F ι) (c : NNReal)
+theorem SeminormFamily.comp_smul_nnReal (q : SeminormFamily 𝕜₂ F ι) (c : NNReal)
     (f : E →ₛₗ[σ₁₂] F) :
     c • q.comp f = (c • q).comp f := by
   ext

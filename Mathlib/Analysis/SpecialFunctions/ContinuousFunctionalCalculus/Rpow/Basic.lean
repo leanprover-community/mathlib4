@@ -103,7 +103,7 @@ lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (NNReal.nnrpow · y) a :
 
 lemma nnrpow_eq_cfcₙ_real [T2Space A] [IsSemitopologicalRing A] (a : A)
     (y : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) : a ^ y = cfcₙ (fun x : ℝ => x ^ (y : ℝ)) a := by
-  rw [nnrpow_def, cfcₙ_nnreal_eq_real ..]
+  rw [nnrpow_def, cfcₙ_nnReal_eq_real ..]
   congr! 1 with x hx
   have : 0 ≤ x := by grind
   simp [this]
@@ -413,7 +413,7 @@ lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := r
 
 lemma rpow_eq_cfc_real [IsSemitopologicalRing A] [T2Space A] {a : A} {y : ℝ}
     (ha : 0 ≤ a := by cfc_tac) : a ^ y = cfc (fun x : ℝ => x ^ y) a := by
-  rw [CFC.rpow_def, cfc_nnreal_eq_real ..]
+  rw [CFC.rpow_def, cfc_nnReal_eq_real ..]
   congr! 1 with x hx
   simp only [NNReal.coe_rpow, Real.coe_toNNReal']
   grind
@@ -679,7 +679,7 @@ lemma rpow_sqrt (a : A) (x : ℝ) (h : IsUnit a)
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
       rpow_rpow _ _ _ (by simp), inv_mul_eq_div]
 
-lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
+lemma sqrt_rpow_nnReal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a
   case neg => simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a htriv]
   case pos =>
@@ -690,7 +690,7 @@ lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2
       have h₃ : 0 < x / 2 := by positivity
       rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow (A := A)]
 
-lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
+lemma rpow_sqrt_nnReal {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
   by_cases hx : x = 0
   case pos =>

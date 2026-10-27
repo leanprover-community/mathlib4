@@ -197,7 +197,7 @@ theorem changeOriginSeries_summable_aux₃ {r : ℝ≥0} (hr : ↑r < p.radius) 
   apply p.nnnorm_changeOriginSeries_le_tsum
 
 theorem le_changeOriginSeries_radius (k : ℕ) : p.radius ≤ (p.changeOriginSeries k).radius :=
-  ENNReal.le_of_forall_nnreal_lt fun _r hr =>
+  ENNReal.le_of_forall_nnReal_lt fun _r hr =>
     le_radius_of_summable_nnnorm _ (p.changeOriginSeries_summable_aux₃ hr k)
 
 theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radius) :
@@ -212,7 +212,7 @@ theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radi
 `p.changeOrigin x` is well defined on the largest ball contained in the original ball of
 convergence. -/
 theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radius := by
-  refine ENNReal.le_of_forall_pos_nnreal_lt fun r _h0 hr => ?_
+  refine ENNReal.le_of_forall_pos_nnReal_lt fun r _h0 hr => ?_
   rw [lt_tsub_iff_right, add_comm] at hr
   have hr' : (‖x‖₊ : ℝ≥0∞) < p.radius := (le_add_right le_rfl).trans_lt hr
   apply le_radius_of_summable_nnnorm

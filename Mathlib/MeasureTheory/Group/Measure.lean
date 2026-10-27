@@ -68,13 +68,13 @@ instance isMulRightInvariant_smul [MeasurableConstSMul Gᵐᵒᵖ G] [IsMulRight
     rw [Measure.map_smul, map_mul_right_eq_self]
     exact (measurable_const_smul (MulOpposite.op g)).aemeasurable⟩
 
-@[to_additive MeasureTheory.isAddLeftInvariant_smul_nnreal]
-instance isMulLeftInvariant_smul_nnreal [MeasurableConstSMul G G] [IsMulLeftInvariant μ] (c : ℝ≥0) :
+@[to_additive MeasureTheory.isAddLeftInvariant_smul_nnReal]
+instance isMulLeftInvariant_smul_nnReal [MeasurableConstSMul G G] [IsMulLeftInvariant μ] (c : ℝ≥0) :
     IsMulLeftInvariant (c • μ) :=
   MeasureTheory.isMulLeftInvariant_smul (c : ℝ≥0∞)
 
-@[to_additive MeasureTheory.isAddRightInvariant_smul_nnreal]
-instance isMulRightInvariant_smul_nnreal [MeasurableConstSMul Gᵐᵒᵖ G] [IsMulRightInvariant μ]
+@[to_additive MeasureTheory.isAddRightInvariant_smul_nnReal]
+instance isMulRightInvariant_smul_nnReal [MeasurableConstSMul Gᵐᵒᵖ G] [IsMulRightInvariant μ]
     (c : ℝ≥0) :
     IsMulRightInvariant (c • μ) :=
   MeasureTheory.isMulRightInvariant_smul (c : ℝ≥0∞)
@@ -800,8 +800,8 @@ theorem IsHaarMeasure.smul [MeasurableConstSMul G G] {c : ℝ≥0∞} (cpos : c 
   { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop.lt_top hK.measure_lt_top
     toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
 
-@[to_additive IsAddHaarMeasure.nnreal_smul]
-lemma IsHaarMeasure.nnreal_smul [MeasurableConstSMul G G] {c : ℝ≥0} (hc : c ≠ 0) :
+@[to_additive IsAddHaarMeasure.nnReal_smul]
+lemma IsHaarMeasure.nnReal_smul [MeasurableConstSMul G G] {c : ℝ≥0} (hc : c ≠ 0) :
     IsHaarMeasure (c • μ) :=
   .smul _ (by simp [hc]) (Option.some_ne_none _)
 

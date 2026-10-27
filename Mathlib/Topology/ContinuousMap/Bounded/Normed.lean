@@ -635,11 +635,11 @@ variable [TopologicalSpace α]
 
 /-- The nonnegative part of a bounded continuous `ℝ`-valued function as a bounded
 continuous `ℝ≥0`-valued function. -/
-def nnrealPart (f : α →ᵇ ℝ) : α →ᵇ ℝ≥0 :=
+def nnRealPart (f : α →ᵇ ℝ) : α →ᵇ ℝ≥0 :=
   BoundedContinuousFunction.comp _ (show LipschitzWith 1 Real.toNNReal from lipschitzWith_posPart) f
 
 @[simp]
-theorem nnrealPart_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnrealPart = Real.toNNReal ∘ ⇑f := rfl
+theorem nnRealPart_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnRealPart = Real.toNNReal ∘ ⇑f := rfl
 
 /-- The absolute value of a bounded continuous `ℝ`-valued function as a bounded
 continuous `ℝ≥0`-valued function. -/
@@ -652,15 +652,15 @@ theorem nnnorm_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnnorm = NNNorm.nnnorm ∘ �
 
 -- TODO: Use `posPart` and `negPart` here
 /-- Decompose a bounded continuous function to its positive and negative parts. -/
-theorem self_eq_nnrealPart_sub_nnrealPart_neg (f : α →ᵇ ℝ) :
-    ⇑f = (↑) ∘ f.nnrealPart - (↑) ∘ (-f).nnrealPart := by
+theorem self_eq_nnRealPart_sub_nnRealPart_neg (f : α →ᵇ ℝ) :
+    ⇑f = (↑) ∘ f.nnRealPart - (↑) ∘ (-f).nnRealPart := by
   funext x
   simp
 
 /-- Express the absolute value of a bounded continuous function in terms of its
 positive and negative parts. -/
-theorem abs_self_eq_nnrealPart_add_nnrealPart_neg (f : α →ᵇ ℝ) :
-    abs ∘ ⇑f = (↑) ∘ f.nnrealPart + (↑) ∘ (-f).nnrealPart := by
+theorem abs_self_eq_nnRealPart_add_nnRealPart_neg (f : α →ᵇ ℝ) :
+    abs ∘ ⇑f = (↑) ∘ f.nnRealPart + (↑) ∘ (-f).nnRealPart := by
   funext x
   simp
 

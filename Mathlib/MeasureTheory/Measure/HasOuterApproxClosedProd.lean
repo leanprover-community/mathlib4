@@ -181,12 +181,12 @@ lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction
     exact h (fun i ↦ ⟨⟨fun x ↦ (f i x), by fun_prop⟩, (f i).map_bounded'⟩)
       (fun j ↦ ⟨⟨fun y ↦ (g j y), by fun_prop⟩, (g j).map_bounded'⟩)
   · convert!
-    (lintegral_lt_top_of_nnreal μ
+    (lintegral_lt_top_of_nnReal μ
         ((∏ i, (f i).compContinuous ⟨Function.eval i ∘ Prod.fst, by fun_prop⟩) *
           (∏ j, (g j).compContinuous ⟨Function.eval j ∘ Prod.snd, by fun_prop⟩))).ne
     simp
   · convert!
-    (lintegral_lt_top_of_nnreal ν
+    (lintegral_lt_top_of_nnReal ν
         ((∏ i, (f i).compContinuous ⟨Function.eval i ∘ Prod.fst, by fun_prop⟩) *
           (∏ j, (g j).compContinuous ⟨Function.eval j ∘ Prod.snd, by fun_prop⟩))).ne
     simp

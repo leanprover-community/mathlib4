@@ -54,11 +54,11 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
     (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum ℝ≥0 a) := by cfc_cont_tac) :
     cfc (fun x ↦ f x - g x) a = cfc f a - cfc g a := by
-  have ha' := SpectrumRestricts.nnreal_of_nonneg ha
+  have ha' := SpectrumRestricts.nnReal_of_nonneg ha
   have : (spectrum ℝ a).EqOn (fun x ↦ ((f x.toNNReal - g x.toNNReal : ℝ≥0) : ℝ))
       (fun x ↦ f x.toNNReal - g x.toNNReal) :=
     fun x hx ↦ NNReal.coe_sub <| hfg _ <| ha'.apply_mem hx
-  rw [cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_congr this]
+  rw [cfc_nnReal_eq_real .., cfc_nnReal_eq_real .., cfc_nnReal_eq_real .., cfc_congr this]
   refine cfc_sub _ _ a ?_ ?_
   all_goals
     exact continuous_subtype_val.comp_continuousOn <|
@@ -72,11 +72,11 @@ theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialO
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (hg : ContinuousOn g (σₙ ℝ≥0 a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
     cfcₙ (fun x ↦ f x - g x) a = cfcₙ f a - cfcₙ g a := by
-  have ha' := QuasispectrumRestricts.nnreal_of_nonneg ha
+  have ha' := QuasispectrumRestricts.nnReal_of_nonneg ha
   have : (σₙ ℝ a).EqOn (fun x ↦ ((f x.toNNReal - g x.toNNReal : ℝ≥0) : ℝ))
       (fun x ↦ f x.toNNReal - g x.toNNReal) :=
     fun x hx ↦ NNReal.coe_sub <| hfg _ <| ha'.apply_mem hx
-  rw [cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_congr this]
+  rw [cfcₙ_nnReal_eq_real .., cfcₙ_nnReal_eq_real .., cfcₙ_nnReal_eq_real .., cfcₙ_congr this]
   refine cfcₙ_sub _ _ a ?_ (by simpa) ?_
   all_goals
     exact continuous_subtype_val.comp_continuousOn <|
@@ -128,7 +128,7 @@ lemma concaveOn_of_concaveOn_inr_comp {f : A → A} {s : Set A}
   rw [← inr_le_inr_iff]
   simpa using hf₂.2 hx hy ha hb hab
 
-lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
+lemma nnReal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
   cfcₙ_eq_cfc_inr inr_nonneg_iff ..
 
@@ -141,7 +141,7 @@ end Unitization
 
 /-- `cfc_le_iff` only applies to a scalar ring where `R` is an actual `Ring`, and not a `Semiring`.
 However, this theorem still holds for `ℝ≥0` as long as the algebra `A` itself is an `ℝ`-algebra. -/
-lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
+lemma cfc_nnReal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [NonnegSpectrumClass ℝ A]
     [T2Space A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     (f : ℝ≥0 → ℝ≥0) (g : ℝ≥0 → ℝ≥0) (a : A)
@@ -152,7 +152,7 @@ lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [
     cfc f a ≤ cfc g a ↔ ∀ x ∈ spectrum ℝ≥0 a, f x ≤ g x := by
   have hf' := hf.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
   have hg' := hg.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
-  rw [cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_le_iff ..]
+  rw [cfc_nnReal_eq_real .., cfc_nnReal_eq_real .., cfc_le_iff ..]
   simp [NNReal.coe_le_coe, ← ha_spec.image]
 
 open ContinuousFunctionalCalculus in
@@ -222,7 +222,7 @@ variable [PartialOrder A] [StarOrderedRing A]
 lemma nnnorm_mem_spectrum_of_nonneg [Nontrivial A] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ∈ spectrum ℝ≥0 a := by
   have : IsSelfAdjoint a := .of_nonneg ha
-  convert NNReal.spectralRadius_mem_spectrum (a := a) ?_ (.nnreal_of_nonneg ha)
+  convert NNReal.spectralRadius_mem_spectrum (a := a) ?_ (.nnReal_of_nonneg ha)
   · simp [this.spectrumRestricts.spectralRadius_eq, this.spectralRadius_eq_nnnorm]
   · exact this.spectrumRestricts.image ▸ (spectrum.nonempty a).image _
 
@@ -539,7 +539,7 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     congr! 2 with x
     exact and_congr_left fun h ↦ by simp [← h]
   simp only [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts,
-    and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.ofPred_and]
+    and_congr_right (SpectrumRestricts.nnReal_iff_nnnorm · le_rfl), Set.ofPred_and]
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
 

@@ -397,14 +397,14 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
     · exact ENNReal.add_ne_top.mpr ⟨measure_ne_top ν _, ofReal_ne_top⟩
   have intble₁ : IntegrableOn (fun t ↦ μ.real {a | t ≤ f a}) (Ioc 0 ‖f‖) := by
     apply Measure.integrableOn_of_bounded (M := μ.real univ) measure_Ioc_lt_top.ne
-    · apply (Measurable.ennreal_toReal (Antitone.measurable ?_)).aestronglyMeasurable
+    · apply (Measurable.ennReal_toReal (Antitone.measurable ?_)).aestronglyMeasurable
       exact fun _ _ hst ↦ measure_mono (fun _ h ↦ hst.trans h)
     · apply Eventually.of_forall <| fun t ↦ ?_
       simp only [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
       exact measureReal_mono (subset_univ _)
   have intble₂ : IntegrableOn (fun t ↦ ν.real (thickening ε {a | t ≤ f a})) (Ioc 0 ‖f‖) := by
     apply Measure.integrableOn_of_bounded (M := ν.real univ) measure_Ioc_lt_top.ne
-    · apply (Measurable.ennreal_toReal (Antitone.measurable ?_)).aestronglyMeasurable
+    · apply (Measurable.ennReal_toReal (Antitone.measurable ?_)).aestronglyMeasurable
       exact fun _ _ hst ↦ measure_mono <| thickening_subset_of_subset ε (fun _ h ↦ hst.trans h)
     · apply Eventually.of_forall <| fun t ↦ ?_
       simp only [Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
@@ -427,7 +427,7 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
   apply tendsto_integral_filter_of_dominated_convergence (G := ℝ) (μ := volume.restrict A)
         (F := fun ε t ↦ (μ (thickening ε {a | t ≤ f a}))) (f := fun t ↦ (μ {a | t ≤ f a})) 1
   · apply Eventually.of_forall fun n ↦ Measurable.aestronglyMeasurable ?_
-    simp only [measurable_coe_nnreal_real_iff]
+    simp only [measurable_coe_nnReal_real_iff]
     apply measurable_toNNReal.comp <| Antitone.measurable (fun s t hst ↦ ?_)
     exact measure_mono <| thickening_subset_of_subset _ <| fun ω h ↦ hst.trans h
   · apply Eventually.of_forall (fun i ↦ ?_)

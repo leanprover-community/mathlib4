@@ -440,7 +440,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       (add_le_add (f.length_subadditive_Icc_Ioo I_subset) (ENNReal.ofReal_le_ofReal ha'.le))
     _ ≤ ∑' i, (f.length (s i) + ε' i) + δ :=
       (add_le_add (tsum_le_tsum fun i => (hg i).2.le)
-        (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
+        (by simp only [ENNReal.ofReal_coe_nnReal, le_rfl]))
     _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [tsum_add]
     _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
@@ -498,7 +498,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
         simp [empty_sdiff]
       _ = f.outer (Ioc a b) := by simp
       _ < f.length (t i) + ofReal ↑(ε' i) := by simpa using h₂
-  simp only [ofReal_coe_nnreal] at hg
+  simp only [ofReal_coe_nnReal] at hg
   apply iInf_le_of_le (iUnion g) _
   apply iInf_le_of_le (ht.trans <| iUnion_mono fun i => (hg i).1) _
   apply iInf_le_of_le (MeasurableSet.iUnion fun i => (hg i).2.1) _
@@ -649,9 +649,9 @@ lemma measure_Ioi {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
 lemma measure_Ioi_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : R) :
     f.measure (Ioi x) = ∞ := by
   have : Nonempty R := ⟨x⟩
-  refine ENNReal.eq_top_of_forall_nnreal_le fun r ↦ ?_
+  refine ENNReal.eq_top_of_forall_nnReal_le fun r ↦ ?_
   obtain ⟨N, hN⟩ := eventually_atTop.mp (tendsto_atTop.mp hf (r + f x))
-  exact (f.measure_Ioc x (max x N) ▸ ENNReal.coe_nnreal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
+  exact (f.measure_Ioc x (max x N) ▸ ENNReal.coe_nnReal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
     le_tsub_of_add_le_right <| hN _ (le_max_right x N))).trans (measure_mono Ioc_subset_Ioi_self)
 
 lemma measure_Ici_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : R) :
@@ -662,9 +662,9 @@ lemma measure_Ici_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : R) :
 lemma measure_Iic_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
     f.measure (Iic x) = ∞ := by
   have : Nonempty R := ⟨x⟩
-  refine ENNReal.eq_top_of_forall_nnreal_le fun r ↦ ?_
+  refine ENNReal.eq_top_of_forall_nnReal_le fun r ↦ ?_
   obtain ⟨N, hN⟩ := eventually_atBot.mp (tendsto_atBot.mp hf (f x - r))
-  exact (f.measure_Ioc (min x N) x ▸ ENNReal.coe_nnreal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
+  exact (f.measure_Ioc (min x N) x ▸ ENNReal.coe_nnReal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
     le_sub_comm.mp <| hN _ (min_le_right x N))).trans (measure_mono Ioc_subset_Iic_self)
 
 lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
@@ -800,7 +800,7 @@ lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction R) : (c • f).measure =
       rfl
     · exact tendsto_nhds_unique ((c • f).mono.tendsto_leftLim a)
         ((f.mono.tendsto_leftLim a).const_smul c)
-  rw [this, ← _root_.mul_sub, ENNReal.ofReal_mul zero_le_coe, ofReal_coe_nnreal, ← smul_eq_mul]
+  rw [this, ← _root_.mul_sub, ENNReal.ofReal_mul zero_le_coe, ofReal_coe_nnReal, ← smul_eq_mul]
   rfl
 
 end StieltjesFunction

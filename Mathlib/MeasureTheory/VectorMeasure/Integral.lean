@@ -172,7 +172,7 @@ lemma variation_transpose_le :
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   apply opENorm_le_bound _ (fun x ↦ ?_)
   simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe, flip_apply,
-    Measure.smul_apply, Measure.nnreal_smul_coe_apply]
+    Measure.smul_apply, Measure.nnReal_smul_coe_apply]
   grw [le_opENorm, le_opENorm, enorm_measure_le_variation, ← enorm_eq_nnnorm]
   exact le_of_eq (by ring)
 
@@ -484,7 +484,7 @@ lemma Integrable.sub_vectorMeasure (hμ : μ.Integrable f) (hν : ν.Integrable 
 omit [NormedSpace ℝ E] in
 lemma Integrable.smul_vectorMeasure (hμ : μ.Integrable f) (c : ℝ) :
     (c • μ).Integrable f := by
-  apply Integrable.mono_measure (Integrable.smul_measure_nnreal hμ (c := ‖c‖₊))
+  apply Integrable.mono_measure (Integrable.smul_measure_nnReal hμ (c := ‖c‖₊))
   simp [variation_smul]
 
 omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
@@ -529,7 +529,7 @@ theorem integral_smul_vectorMeasure (f : X → E) (c : ℝ) :
   rfl
 
 @[simp]
-theorem integral_smul_nnreal_vectorMeasure (f : X → E) (c : ℝ≥0) :
+theorem integral_smul_nnReal_vectorMeasure (f : X → E) (c : ℝ≥0) :
     ∫ᵛ x, f x ∂[B; c • μ] = c • ∫ᵛ x, f x ∂[B; μ] :=
   integral_smul_vectorMeasure f (c : ℝ)
 

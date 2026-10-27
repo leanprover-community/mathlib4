@@ -1212,15 +1212,15 @@ namespace Mathlib.Meta.NormNum
 
 open Lean.Meta Qq
 
-theorem IsNat.nnreal_rpow_eq_nnreal_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a : ℝ≥0) :
+theorem IsNat.nnReal_rpow_eq_nnReal_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a : ℝ≥0) :
     a ^ b = a ^ n := by
   rw [h.1, NNReal.rpow_natCast]
 
-theorem IsInt.nnreal_rpow_eq_inv_nnreal_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ≥0) :
+theorem IsInt.nnReal_rpow_eq_inv_nnReal_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ≥0) :
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, NNReal.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
 
-theorem IsNat.nnreal_rpow_isNNRat {a : ℝ≥0} {b : ℝ} {m n d r : ℕ} (ha : IsNat a m)
+theorem IsNat.nnReal_rpow_isNNRat {a : ℝ≥0} {b : ℝ} {m n d r : ℕ} (ha : IsNat a m)
     (hb : IsNNRat b n d) (k : ℕ) (hr : r ^ d = k) (l : ℕ) (hm : m ^ n = l) (hkl : k = l) :
     IsNat (a ^ b) r := by
   rcases ha with ⟨rfl⟩
@@ -1230,7 +1230,7 @@ theorem IsNat.nnreal_rpow_isNNRat {a : ℝ≥0} {b : ℝ} {m n d r : ℕ} (ha : 
     Nat.cast_pow, NNReal.pow_rpow_inv_natCast]
   positivity
 
-theorem IsNNRat.nnreal_rpow_isNNRat (a : ℝ≥0) (b : ℝ) (na da : ℕ) (ha : IsNNRat a na da)
+theorem IsNNRat.nnReal_rpow_isNNRat (a : ℝ≥0) (b : ℝ) (na da : ℕ) (ha : IsNNRat a na da)
     (nr dr : ℕ) (hnum : IsNat ((na : ℝ≥0) ^ b) nr) (hden : IsNat ((da : ℝ≥0) ^ b) dr) :
     IsNNRat (a ^ b) nr dr := by
   suffices IsNNRat (nr / dr : ℝ≥0) nr dr by
@@ -1238,7 +1238,7 @@ theorem IsNNRat.nnreal_rpow_isNNRat (a : ℝ≥0) (b : ℝ) (na da : ℕ) (ha : 
   apply IsNNRat.of_raw
   simp [← hden.1, ha.den_nz]
 
-theorem nnreal_rpow_isRat_eq_inv_nnreal_rpow (a : ℝ≥0) (b : ℝ) (n d : ℕ)
+theorem nnReal_rpow_isRat_eq_inv_nnReal_rpow (a : ℝ≥0) (b : ℝ) (n d : ℕ)
     (hb : IsRat b (Int.negOfNat n) d) : a ^ b = (a⁻¹) ^ (n / d : ℝ) := by
   rw [NNReal.inv_rpow, ← NNReal.rpow_neg, hb.neg_to_eq rfl rfl]
 
@@ -1266,7 +1266,7 @@ meta def proveIsNatNNRealRPowIsNNRat
   let .some ⟨d, pd⟩ ← liftM <| OptionT.run <| evalNatPow na nb | failure
   guard (c.natLit! = d.natLit!)
   have hcd : Q($c = $d) := (q(Eq.refl $c) : Expr)
-  return (r, ⟨er, q(IsNat.nnreal_rpow_isNNRat $pa $pb $c $pc $d $pd $hcd)⟩)
+  return (r, ⟨er, q(IsNat.nnReal_rpow_isNNRat $pa $pb $c $pc $d $pd $hcd)⟩)
 
 /-- Evaluates expressions of the form `a ^ b` when `a : ℝ≥0` and `b : ℝ`.
 Works if `a`, `b`, and `a ^ b` are in fact rational numbers.
@@ -1278,10 +1278,10 @@ meta def evalNNRealRPow : NormNumExt where eval {u αR} e := do
     match ← derive b with
     | .isNat sβ nb pb =>
       assumeInstancesCommute
-      return .eqTrans q(IsNat.nnreal_rpow_eq_nnreal_pow $pb _) (← derive q($a ^ $nb))
+      return .eqTrans q(IsNat.nnReal_rpow_eq_nnReal_pow $pb _) (← derive q($a ^ $nb))
     | .isNegNat sβ nb pb =>
       assumeInstancesCommute
-      return .eqTrans q(IsInt.nnreal_rpow_eq_inv_nnreal_pow $pb _) (← derive q(($a ^ $nb)⁻¹))
+      return .eqTrans q(IsInt.nnReal_rpow_eq_inv_nnReal_pow $pb _) (← derive q(($a ^ $nb)⁻¹))
     | .isNNRat _ qb nb db pb => do
       assumeInstancesCommute
       match ← derive a with
@@ -1295,12 +1295,12 @@ meta def evalNNRealRPow : NormNumExt where eval {u αR} e := do
         let ⟨rden, erden, pden⟩ ←
           proveIsNatNNRealRPowIsNNRat q(Nat.rawCast $da) da q(IsNat.of_raw _ _) b nb db pb
         return .isNNRat q(inferInstance) (rnum / rden) ernum erden
-          q(IsNNRat.nnreal_rpow_isNNRat $a $b $na $da $pa $ernum $erden $pnum $pden)
+          q(IsNNRat.nnReal_rpow_isNNRat $a $b $na $da $pa $ernum $erden $pnum $pden)
       | _ => failure
     | .isNegNNRat _ qb nb db pb => do
       let r ← derive q(($a⁻¹) ^ ($nb / $db : ℝ))
       assumeInstancesCommute
-      return .eqTrans q(nnreal_rpow_isRat_eq_inv_nnreal_rpow $a $b $nb $db $pb) r
+      return .eqTrans q(nnReal_rpow_isRat_eq_inv_nnReal_rpow $a $b $nb $db $pb) r
     | _ => failure
   | _ => failure
 

@@ -69,7 +69,7 @@ theorem log_pos_real' {x : ℝ≥0∞} (h : 0 < x.toReal) :
     log x = Real.log (ENNReal.toReal x) := by
   simp [log, (ENNReal.toReal_pos_iff.1 h).1.ne', (ENNReal.toReal_pos_iff.1 h).2.ne]
 
-theorem log_of_nnreal {x : ℝ≥0} (h : x ≠ 0) :
+theorem log_of_nnReal {x : ℝ≥0} (h : x ≠ 0) :
     log (x : ℝ≥0∞) = Real.log x := by simp [log, h]
 
 end Definition

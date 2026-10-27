@@ -43,7 +43,7 @@ theorem exists_eq_const_mul_setIntegral_of_ae_nonneg
   let ρ := fun x ↦ ENNReal.ofReal (g x)
   let ν := μ.withDensity ρ
   have hρ_ae : AEMeasurable ρ (μ.restrict s) := by
-    apply AEMeasurable.ennreal_ofReal
+    apply AEMeasurable.ennReal_ofReal
     exact hg.aestronglyMeasurable.aemeasurable
   have hρ_top : ∀ᵐ x ∂μ.restrict s, ρ x < ⊤ := by simp [ρ]
   have h_toReal_ae : (fun x ↦ (ρ x).toReal) =ᵐ[μ.restrict s] g := by

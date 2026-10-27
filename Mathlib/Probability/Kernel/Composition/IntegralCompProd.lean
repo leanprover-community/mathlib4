@@ -79,7 +79,7 @@ theorem hasFiniteIntegral_prodMk_left (a : α) {s : Set (β × γ)} (h2s : (κ �
 theorem integrable_kernel_prodMk_left (a : α) {s : Set (β × γ)} (hs : MeasurableSet s)
     (h2s : (κ ⊗ₖ η) a s ≠ ∞) : Integrable (fun b => (η (a, b)).real (Prod.mk b ⁻¹' s)) (κ a) := by
   constructor
-  · exact (measurable_kernel_prodMk_left' hs a).ennreal_toReal.aestronglyMeasurable
+  · exact (measurable_kernel_prodMk_left' hs a).ennReal_toReal.aestronglyMeasurable
   · exact hasFiniteIntegral_prodMk_left a h2s
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_kernel_compProd [NormedSpace ℝ E]

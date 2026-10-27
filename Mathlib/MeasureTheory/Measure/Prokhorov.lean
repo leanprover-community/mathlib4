@@ -400,7 +400,7 @@ lemma isCompact_setOfPred_finiteMeasure_mass_le_compl_isCompact_le
     -- as the measure is inner regular. Therefore, we are reduced to a question about integrals of
     -- continuous functions, for which we can take advantage of the weak convergence.
     have : Measure.InnerRegular (μ : Measure E) := by simp only [toMeasure_mk, μ]; infer_instance
-    rw [← ENNReal.coe_le_coe, ennreal_coeFn_eq_coeFn_toMeasure,
+    rw [← ENNReal.coe_le_coe, ennReal_coeFn_eq_coeFn_toMeasure,
       (hK n).isClosed.isOpen_compl.measure_eq_biSup_integral_continuous]
     simp only [compl_compl, iSup_le_iff, ENNReal.ofReal_le_coe]
     intro g g_cont gK g_nonneg g_le
@@ -589,7 +589,7 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
       have hopen : IsOpen (⋃ i ≤ n, U i) :=
         isOpen_biUnion (s := {i | i ≤ n}) fun i a ↦ O i
       have := ProbabilityMeasure.le_liminf_measure_open_of_tendsto hμconverges hopen
-      simp_rw [Function.comp_apply, ← ennreal_coeFn_eq_coeFn_toMeasure] at this
+      simp_rw [Function.comp_apply, ← ennReal_coeFn_eq_coeFn_toMeasure] at this
       rw [← ofNNReal_liminf] at this
       · exact mod_cast this
       use 1
@@ -615,7 +615,7 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
       intro b c h
       apply le_trans (h c le_rfl)
       refine (ofReal_le_ofReal_iff (by rw [sub_nonneg]; exact hεbound)).mp ?_
-      rw [ofReal_coe_nnreal]
+      rw [ofReal_coe_nnReal]
       apply le_trans (hcontradiction (sub c))
       norm_cast
   have accumulation : Tendsto (fun n ↦ μlim (⋃ i ≤ n, U i)) atTop (𝓝 (μlim (⋃ i, U i))) := by
@@ -673,7 +673,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
       refine tsum_le_tsum fun m ↦ tsub_le_iff_tsub_le.mp ?_
       replace hbound := (hbound (m + 1) μ hs).le
       simp_all only [neg_add_rev, Int.reduceNeg, tsub_le_iff_right, Nat.cast_add, Nat.cast_one,
-          ← coe_ofNat, ← ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+          ← coe_ofNat, ← ProbabilityMeasure.ennReal_coeFn_eq_coeFn_toMeasure]
       grw [hbound]
       gcongr with i hi
       grw [← subset_closure (s := ball (D i) (u m)), ball_subset_ball]

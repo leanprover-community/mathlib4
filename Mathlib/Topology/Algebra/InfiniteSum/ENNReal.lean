@@ -393,7 +393,7 @@ theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summa
     hp.summable
 
 /-- Summable non-negative functions have countable support -/
-theorem _root_.Summable.countable_support_nnreal (f : α → ℝ≥0) (h : Summable f) :
+theorem _root_.Summable.countable_support_nnReal (f : α → ℝ≥0) (h : Summable f) :
     f.support.Countable := by
   rw [← NNReal.summable_coe] at h
   simpa [support] using h.countable_support
@@ -565,10 +565,10 @@ lemma Summable.tsum_ofReal_ne_top {f : α → ℝ} (hf : Summable f) : ∑' i, .
   hf.tsum_ofReal_lt_top.ne
 
 /-- Finitely summable non-negative functions have countable support -/
-theorem Summable.countable_support_ennreal {f : α → ℝ≥0∞} (h : ∑' (i : α), f i ≠ ∞) :
+theorem Summable.countable_support_ennReal {f : α → ℝ≥0∞} (h : ∑' (i : α), f i ≠ ∞) :
     f.support.Countable := by
   lift f to α → ℝ≥0 using ne_top_of_tsum_ne_top h
-  simpa [support] using (ENNReal.tsum_coe_ne_top_iff_summable.1 h).countable_support_nnreal
+  simpa [support] using (ENNReal.tsum_coe_ne_top_iff_summable.1 h).countable_support_nnReal
 
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/

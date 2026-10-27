@@ -259,16 +259,16 @@ theorem coe_toNNReal_le_self : ∀ {a : ℝ≥0∞}, ↑a.toNNReal ≤ a
   | ofNNReal r => by rw [toNNReal_coe]
   | ⊤ => le_top
 
-theorem coe_nnreal_eq (r : ℝ≥0) : (r : ℝ≥0∞) = ENNReal.ofReal r := by
+theorem coe_nnReal_eq (r : ℝ≥0) : (r : ℝ≥0∞) = ENNReal.ofReal r := by
   rw [ENNReal.ofReal, Real.toNNReal_coe]
 
-theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
+theorem ofReal_eq_coe_nnReal {x : ℝ} (h : 0 ≤ x) :
     ENNReal.ofReal x = ofNNReal (NNReal.mk x h) :=
-  (coe_nnreal_eq ⟨x, h⟩).symm
+  (coe_nnReal_eq ⟨x, h⟩).symm
 
 theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.ofReal x := rfl
 
-@[simp] theorem ofReal_coe_nnreal : ENNReal.ofReal p = p := (coe_nnreal_eq p).symm
+@[simp] theorem ofReal_coe_nnReal : ENNReal.ofReal p = p := (coe_nnReal_eq p).symm
 
 @[simp, norm_cast, basify_op ←] theorem coe_zero : ↑(0 : ℝ≥0) = (0 : ℝ≥0∞) := rfl
 
@@ -302,7 +302,7 @@ theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.o
 theorem ofReal_toReal_le {a : ℝ≥0∞} : ENNReal.ofReal a.toReal ≤ a :=
   if ha : a = ∞ then ha.symm ▸ le_top else le_of_eq (ofReal_toReal ha)
 
-theorem forall_ennreal {p : ℝ≥0∞ → Prop} : (∀ a, p a) ↔ (∀ r : ℝ≥0, p r) ∧ p ∞ :=
+theorem forall_ennReal {p : ℝ≥0∞ → Prop} : (∀ a, p a) ↔ (∀ r : ℝ≥0, p r) ∧ p ∞ :=
   WithTop.forall.trans and_comm
 
 theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ x ≠ ∞, p x) ↔ ∀ x : ℝ≥0, p x :=
@@ -436,15 +436,15 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
-instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
+instance _root_.fact_one_le_one_ennReal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
   ⟨le_rfl⟩
 
 /-- `(1 : ℝ≥0∞) ≤ 2`, recorded as a `Fact` for use with `Lp` spaces. -/
-instance _root_.fact_one_le_two_ennreal : Fact ((1 : ℝ≥0∞) ≤ 2) :=
+instance _root_.fact_one_le_two_ennReal : Fact ((1 : ℝ≥0∞) ≤ 2) :=
   ⟨one_le_two⟩
 
 /-- `(1 : ℝ≥0∞) ≤ ∞`, recorded as a `Fact` for use with `Lp` spaces. -/
-instance _root_.fact_one_le_top_ennreal : Fact ((1 : ℝ≥0∞) ≤ ∞) :=
+instance _root_.fact_one_le_top_ennReal : Fact ((1 : ℝ≥0∞) ≤ ∞) :=
   ⟨le_top⟩
 
 /-- The set of numbers in `ℝ≥0∞` that are not equal to `∞` is equivalent to `ℝ≥0`. -/
@@ -467,13 +467,13 @@ theorem iSup_ne_top [CompleteLattice α] (f : ℝ≥0∞ → α) :
     ⨆ (x) (_ : x ≠ ∞), f x = ⨆ x : ℝ≥0, f x :=
   @iInf_ne_top αᵒᵈ _ _
 
-theorem iInf_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
+theorem iInf_ennReal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨅ n, f n = (⨅ n : ℝ≥0, f n) ⊓ f ∞ :=
   (iInf_option f).trans (inf_comm _ _)
 
-theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
+theorem iSup_ennReal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
     ⨆ n, f n = (⨆ n : ℝ≥0, f n) ⊔ f ∞ :=
-  @iInf_ennreal αᵒᵈ _ _
+  @iInf_ennReal αᵒᵈ _ _
 
 /-- Coercion `ℝ≥0 → ℝ≥0∞` as a `RingHom`. -/
 noncomputable def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
@@ -600,12 +600,12 @@ theorem lt_iff_exists_real_btwn :
     ⟨q, Rat.cast_nonneg.2 q0, aq, qb⟩,
     fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
 
-theorem lt_iff_exists_nnreal_btwn : a < b ↔ ∃ r : ℝ≥0, a < r ∧ (r : ℝ≥0∞) < b :=
+theorem lt_iff_exists_nnReal_btwn : a < b ↔ ∃ r : ℝ≥0, a < r ∧ (r : ℝ≥0∞) < b :=
   WithTop.lt_iff_exists_coe_btwn
 
 theorem lt_iff_exists_add_pos_lt : a < b ↔ ∃ r : ℝ≥0, 0 < r ∧ a + r < b := by
   refine ⟨fun hab => ?_, fun ⟨r, _, hr⟩ => lt_of_le_of_lt le_self_add hr⟩
-  rcases lt_iff_exists_nnreal_btwn.1 hab with ⟨c, ac, cb⟩
+  rcases lt_iff_exists_nnReal_btwn.1 hab with ⟨c, ac, cb⟩
   lift a to ℝ≥0 using ac.ne_top
   rw [coe_lt_coe] at ac
   refine ⟨c - a, tsub_pos_iff_lt.2 ac, ?_⟩
@@ -683,12 +683,12 @@ theorem coe_min (r p : ℝ≥0) : ((min r p : ℝ≥0) : ℝ≥0∞) = min (r : 
 theorem coe_max (r p : ℝ≥0) : ((max r p : ℝ≥0) : ℝ≥0∞) = max (r : ℝ≥0∞) p := rfl
 
 theorem le_of_top_imp_top_of_toNNReal_le {a b : ℝ≥0∞} (h : a = ⊤ → b = ⊤)
-    (h_nnreal : a ≠ ⊤ → b ≠ ⊤ → a.toNNReal ≤ b.toNNReal) : a ≤ b := by
+    (h_nnReal : a ≠ ⊤ → b ≠ ⊤ → a.toNNReal ≤ b.toNNReal) : a ≤ b := by
   by_contra! hlt
   lift b to ℝ≥0 using hlt.ne_top
   lift a to ℝ≥0 using mt h coe_ne_top
   refine hlt.not_ge ?_
-  simpa using h_nnreal
+  simpa using h_nnReal
 
 @[simp]
 theorem abs_toReal {x : ℝ≥0∞} : |x.toReal| = x.toReal := by cases x <;> simp
@@ -735,20 +735,20 @@ namespace OrdConnected
 
 variable {s : Set ℝ} {t : Set ℝ≥0} {u : Set ℝ≥0∞}
 
-theorem preimage_coe_nnreal_ennreal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set ℝ≥0).OrdConnected :=
+theorem preimage_coe_nnReal_ennReal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set ℝ≥0).OrdConnected :=
   h.preimage_mono ENNReal.coe_mono
 
 -- TODO: generalize to `WithTop`
-theorem image_coe_nnreal_ennreal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
+theorem image_coe_nnReal_ennReal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩
   exact mem_image_of_mem _ (h.out hx hy ⟨ENNReal.coe_le_coe.1 hz.1, ENNReal.coe_le_coe.1 hz.2⟩)
 
-theorem preimage_ennreal_ofReal (h : u.OrdConnected) : (ENNReal.ofReal ⁻¹' u).OrdConnected :=
-  h.preimage_coe_nnreal_ennreal.preimage_real_toNNReal
+theorem preimage_ennReal_ofReal (h : u.OrdConnected) : (ENNReal.ofReal ⁻¹' u).OrdConnected :=
+  h.preimage_coe_nnReal_ennReal.preimage_real_toNNReal
 
-theorem image_ennreal_ofReal (h : s.OrdConnected) : (ENNReal.ofReal '' s).OrdConnected := by
-  simpa only [image_image] using! h.image_real_toNNReal.image_coe_nnreal_ennreal
+theorem image_ennReal_ofReal (h : s.OrdConnected) : (ENNReal.ofReal '' s).OrdConnected := by
+  simpa only [image_image] using! h.image_real_toNNReal.image_coe_nnReal_ennReal
 
 end OrdConnected
 

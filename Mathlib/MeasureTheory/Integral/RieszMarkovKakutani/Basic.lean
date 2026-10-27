@@ -46,7 +46,7 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 section Monotone
 
-lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
+lemma CompactlySupportedContinuousMap.monotone_of_nnReal : Monotone Λ := by
   intro f₁ f₂ h
   obtain ⟨g, hg⟩ := CompactlySupportedContinuousMap.exists_add_of_le h
   rw [← hg]
@@ -81,10 +81,10 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
   have hfHasCompactSupport : HasCompactSupport f :=
     IsCompact.of_isClosed_subset hVcp (isClosed_tsupport f)
       (Set.Subset.trans hsuppfsubV interior_subset)
-  use nnrealPart ⟨f, hfHasCompactSupport⟩
+  use nnRealPart ⟨f, hfHasCompactSupport⟩
   intro x hx
   apply le_of_eq
-  simp only [nnrealPart_apply, CompactlySupportedContinuousMap.coe_mk]
+  simp only [nnRealPart_apply, CompactlySupportedContinuousMap.coe_mk]
   rw [← Real.toNNReal_one, Real.toNNReal_eq_toNNReal_iff (zero_le_one' ℝ) (hfinicc x).1]
   exact hfeq1onK.symm hx
 
@@ -150,7 +150,7 @@ section PartitionOfUnity
 
 variable [T2Space X] [LocallyCompactSpace X]
 
-lemma exists_continuous_add_one_of_isCompact_nnreal
+lemma exists_continuous_add_one_of_isCompact_nnReal
     {s₀ s₁ : Set X} {t : Set X} (s₀_compact : IsCompact s₀) (s₁_compact : IsCompact s₁)
     (t_compact : IsCompact t) (disj : Disjoint s₀ s₁) (hst : s₀ ∪ s₁ ⊆ t) :
     ∃ (f₀ f₁ : C_c(X, ℝ≥0)), EqOn f₀ 1 s₀ ∧ EqOn f₁ 1 s₁ ∧ EqOn (f₀ + f₁) 1 t := by
@@ -181,15 +181,15 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
       exact h1
   obtain ⟨f, f_supp_in_so, sum_f_one_on_t, f_in_icc, f_hcs⟩ :=
     exists_continuous_sum_one_of_isOpen_isCompact soopen t_compact hsot
-  use (nnrealPart (⟨f 1, f_hcs 1⟩ : C_c(X, ℝ))),
-    (nnrealPart (⟨f 0, f_hcs 0⟩ : C_c(X, ℝ)))
+  use (nnRealPart (⟨f 1, f_hcs 1⟩ : C_c(X, ℝ))),
+    (nnRealPart (⟨f 0, f_hcs 0⟩ : C_c(X, ℝ)))
   simp only [Fin.isValue, CompactlySupportedContinuousMap.coe_add]
   have sum_one_x (x : X) (hx : x ∈ t) : (f 0) x + (f 1) x = 1 := by
     simpa only [Finset.sum_apply, Fin.sum_univ_two, Fin.isValue, Pi.one_apply]
       using sum_f_one_on_t hx
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
-    simp only [Fin.isValue, nnrealPart_apply,
+    simp only [Fin.isValue, nnRealPart_apply,
       CompactlySupportedContinuousMap.coe_mk, Pi.one_apply, Real.toNNReal_eq_one]
     have : (f 0) x = 0 := by
       rw [← notMem_support]
@@ -204,7 +204,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     rw [← sum_one_x x (mem_of_subset_of_mem hst.1 hx), this]
     exact Eq.symm (AddZeroClass.zero_add ((f 1) x))
   · intro x hx
-    simp only [Fin.isValue, nnrealPart_apply,
+    simp only [Fin.isValue, nnRealPart_apply,
       CompactlySupportedContinuousMap.coe_mk, Pi.one_apply, Real.toNNReal_eq_one]
     have : (f 1) x = 0 := by
       rw [← notMem_support]
@@ -219,7 +219,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     rw [← sum_one_x x (mem_of_subset_of_mem hst.2 hx), this]
     exact Eq.symm (AddMonoid.add_zero ((f 0) x))
   · intro x hx
-    simp only [Fin.isValue, Pi.add_apply, nnrealPart_apply,
+    simp only [Fin.isValue, Pi.add_apply, nnRealPart_apply,
       CompactlySupportedContinuousMap.coe_mk, Pi.one_apply]
     rw [Real.toNNReal_add_toNNReal (f_in_icc 1 x).1 (f_in_icc 0 x).1, add_comm]
     simp only [Fin.isValue, Real.toNNReal_eq_one]
@@ -242,7 +242,7 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
     rw [mem_support]
     exact ne_of_gt <| lt_of_lt_of_le (zero_lt_one' ℝ≥0) (hf x hx)
   have hsubsuppf : (K₁ : Set X) ∪ (K₂ : Set X) ⊆ tsupport f := subset_trans hsuppf subset_closure
-  obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_continuous_add_one_of_isCompact_nnreal K₁.isCompact'
+  obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_continuous_add_one_of_isCompact_nnReal K₁.isCompact'
     K₂.isCompact' f.hasCompactSupport'.isCompact disj hsubsuppf
   have f_eq_sum : f = g₁ * f + g₂ * f := by
     ext x
@@ -334,7 +334,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
   intro ε hε
   obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos Λ ⟨K, hK⟩ hε
   apply le_trans _ hg.2.le
-  apply monotone_of_nnreal Λ
+  apply monotone_of_nnReal Λ
   intro x
   simp only
   by_cases hx : x ∈ tsupport f

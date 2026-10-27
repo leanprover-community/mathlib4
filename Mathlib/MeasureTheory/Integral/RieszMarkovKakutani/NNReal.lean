@@ -73,13 +73,13 @@ and regular measures with inverse `NNRealRMK.integralLinearMap`. -/
 
 /-- If two regular measures give the same integral for every function in `C_c(X, ℝ≥0)`, then they
 are equal. -/
-theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nnreal
+theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nnReal
     {μ ν : Measure X} [μ.Regular] [ν.Regular]
     (hμν : ∀ (f : C_c(X, ℝ≥0)), ∫ (x : X), (f x : ℝ) ∂μ = ∫ (x : X), (f x : ℝ) ∂ν) : μ = ν := by
   apply Measure.ext_of_integral_eq_on_compactlySupported
   intro f
   repeat rw [integral_eq_integral_pos_part_sub_integral_neg_part f.integrable]
-  erw [hμν f.nnrealPart, hμν (-f).nnrealPart]
+  erw [hμν f.nnRealPart, hμν (-f).nnRealPart]
   rfl
 
 /-- If two regular measures induce the same linear functional on `C_c(X, ℝ≥0)`, then they are
@@ -87,7 +87,7 @@ equal. -/
 @[simp]
 theorem integralLinearMap_inj {μ ν : Measure X} [μ.Regular] [ν.Regular] :
     integralLinearMap μ = integralLinearMap ν ↔ μ = ν :=
-  ⟨fun hμν ↦ Measure.ext_of_integral_eq_on_compactlySupported_nnreal fun f ↦
+  ⟨fun hμν ↦ Measure.ext_of_integral_eq_on_compactlySupported_nnReal fun f ↦
       by simpa using congr(($hμν f).toReal), fun _ ↦ by congr⟩
 
 /-- Every regular measure is induced by a positive linear functional on `C_c(X, ℝ≥0)`.
@@ -95,7 +95,7 @@ That is, `NNRealRMK.rieszMeasure` is a surjective function onto regular measures
 @[simp]
 theorem rieszMeasure_integralLinearMap {μ : Measure X} [μ.Regular] :
     rieszMeasure (integralLinearMap μ) = μ :=
-  Measure.ext_of_integral_eq_on_compactlySupported_nnreal (by simp)
+  Measure.ext_of_integral_eq_on_compactlySupported_nnReal (by simp)
 
 @[simp]
 theorem integralLinearMap_rieszMeasure :

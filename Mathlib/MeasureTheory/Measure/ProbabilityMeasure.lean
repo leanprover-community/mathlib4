@@ -199,15 +199,15 @@ theorem toFiniteMeasure_apply_eq_apply (ν : ProbabilityMeasure Ω) (s : Set Ω)
     ν.toFiniteMeasure s = ν s := rfl
 
 @[simp]
-theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set Ω) :
+theorem ennReal_coeFn_eq_coeFn_toMeasure (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     (ν s : ℝ≥0∞) = (ν : Measure Ω) s := by
-  rw [← coeFn_comp_toFiniteMeasure_eq_coeFn, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure,
+  rw [← coeFn_comp_toFiniteMeasure_eq_coeFn, FiniteMeasure.ennReal_coeFn_eq_coeFn_toMeasure,
     toMeasure_comp_toFiniteMeasure_eq_toMeasure]
 
 @[simp]
 theorem null_iff_toMeasure_null (ν : ProbabilityMeasure Ω) (s : Set Ω) :
     ν s = 0 ↔ (ν : Measure Ω) s = 0 :=
-  ⟨fun h ↦ by rw [← ennreal_coeFn_eq_coeFn_toMeasure, h, ENNReal.coe_zero],
+  ⟨fun h ↦ by rw [← ennReal_coeFn_eq_coeFn_toMeasure, h, ENNReal.coe_zero],
    fun h ↦ congrArg ENNReal.toNNReal h⟩
 
 @[gcongr]
@@ -224,7 +224,7 @@ sets is the limit of the measures of the partial unions. -/
 protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
     [IsCountablyGenerated (atTop : Filter ι)] {μ : ProbabilityMeasure Ω} {f : ι → Set Ω} :
     Tendsto (fun i ↦ μ (accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
-  simpa [← ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.tendsto_coe]
+  simpa [← ennReal_coeFn_eq_coeFn_toMeasure, ENNReal.tendsto_coe]
     using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure)
 
 @[simp] theorem apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
@@ -243,7 +243,7 @@ theorem eq_of_forall_toMeasure_apply_eq (μ ν : ProbabilityMeasure Ω)
 theorem eq_of_forall_apply_eq (μ ν : ProbabilityMeasure Ω)
     (h : ∀ s : Set Ω, MeasurableSet s → μ s = ν s) : μ = ν := by
   ext1 s s_mble
-  simpa [ennreal_coeFn_eq_coeFn_toMeasure] using congr(($(h s s_mble) : ℝ≥0∞))
+  simpa [ennReal_coeFn_eq_coeFn_toMeasure] using congr(($(h s s_mble) : ℝ≥0∞))
 
 @[simp]
 theorem mass_toFiniteMeasure (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasure.mass = 1 :=
@@ -473,9 +473,9 @@ def normalize : ProbabilityMeasure Ω :=
     { val := μ.mass⁻¹ • (μ : Measure Ω)
       property := by
         refine ⟨?_⟩
-        simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnreal_smul_coe_apply,
-          ENNReal.coe_inv zero, ennreal_mass]
-        rw [← Ne, ← ENNReal.coe_ne_zero, ennreal_mass] at zero
+        simp only [Measure.coe_smul, Pi.smul_apply, Measure.nnReal_smul_coe_apply,
+          ENNReal.coe_inv zero, ennReal_mass]
+        rw [← Ne, ← ENNReal.coe_ne_zero, ennReal_mass] at zero
         exact ENNReal.inv_mul_cancel zero μ.prop.measure_univ_lt_top.ne }
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -512,9 +512,9 @@ alias normalize_eq_inv_mass_smul_of_nonzero := normalize_eq_inv_mass_smul_of_ne_
 theorem toMeasure_normalize_eq_of_ne_zero (nonzero : μ ≠ 0) :
     (μ.normalize : Measure Ω) = μ.mass⁻¹ • μ := by
   ext1 s _s_mble
-  rw [← μ.normalize.ennreal_coeFn_eq_coeFn_toMeasure s, μ.normalize_eq_of_ne_zero nonzero s,
-    ENNReal.coe_mul, ennreal_coeFn_eq_coeFn_toMeasure]
-  exact Measure.coe_nnreal_smul_apply _ _ _
+  rw [← μ.normalize.ennReal_coeFn_eq_coeFn_toMeasure s, μ.normalize_eq_of_ne_zero nonzero s,
+    ENNReal.coe_mul, ennReal_coeFn_eq_coeFn_toMeasure]
+  exact Measure.coe_nnReal_smul_apply _ _ _
 
 @[deprecated (since := "2026-10-13")]
 alias toMeasure_normalize_eq_of_nonzero := toMeasure_normalize_eq_of_ne_zero
@@ -534,7 +534,7 @@ theorem average_eq_integral_normalize {E : Type*} [NormedAddCommGroup E] [Normed
     average (μ : Measure Ω) f = ∫ ω, f ω ∂(μ.normalize : Measure Ω) := by
   rw [μ.toMeasure_normalize_eq_of_ne_zero nonzero, average]
   congr
-  simp [ENNReal.coe_inv (μ.mass_ne_zero_iff.mpr nonzero), ennreal_mass]
+  simp [ENNReal.coe_inv (μ.mass_ne_zero_iff.mpr nonzero), ennReal_mass]
 
 variable [TopologicalSpace Ω]
 

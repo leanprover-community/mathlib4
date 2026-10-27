@@ -130,7 +130,7 @@ theorem le_dimH_of_hausdorffMeasure_eq_top {s : Set X} {d : ℝ≥0} (h : μH[d]
 
 theorem hausdorffMeasure_of_dimH_lt {s : Set X} {d : ℝ≥0} (h : dimH s < d) : μH[d] s = 0 := by
   rw [dimH_def] at h
-  rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hsd', hd'd⟩
+  rcases ENNReal.lt_iff_exists_nnReal_btwn.1 h with ⟨d', hsd', hd'd⟩
   rw [ENNReal.coe_lt_coe, ← NNReal.coe_lt_coe] at hd'd
   apply (hausdorffMeasure_zero_or_top hd'd s).resolve_right
   contrapose! hsd' with h₂
@@ -158,7 +158,7 @@ theorem dimH_eq_iInf (s : Set X) : dimH s = ⨅ (d : ℝ≥0) (_ : μH[d] s = 0)
     by_contra! hij
     simpa [hi, hj] using hausdorffMeasure_mono hij.le s
   · by_contra! h
-    rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hdim_lt, hlt⟩
+    rcases ENNReal.lt_iff_exists_nnReal_btwn.1 h with ⟨d', hdim_lt, hlt⟩
     have h0 : μH[d'] s = 0 := hausdorffMeasure_of_dimH_lt hdim_lt
     exact hlt.not_ge (iInf₂_le d' h0)
 

@@ -215,7 +215,7 @@ equal to the inner product of the constant `c` and the integral of `f` over `s`.
 theorem inner_indicatorConstLp_eq_inner_setIntegral [CompleteSpace E] [NormedSpace ℝ E]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) (f : Lp E 2 μ) :
     (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ⟪c, ∫ x in s, f x ∂μ⟫ := by
-  rw [← integral_inner (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs),
+  rw [← integral_inner (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennReal.elim hμs),
     L2.inner_indicatorConstLp_eq_setIntegral_inner]
 
 variable {𝕜}

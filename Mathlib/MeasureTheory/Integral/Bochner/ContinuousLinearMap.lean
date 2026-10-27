@@ -264,7 +264,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     rw [lintegral_coe_eq_integral, ENNReal.toReal_ofReal, ← integral_smul_const]
     · rfl
     · exact integral_nonneg fun x => NNReal.coe_nonneg _
-    · refine ⟨f_meas.coe_nnreal_real.aemeasurable.aestronglyMeasurable, ?_⟩
+    · refine ⟨f_meas.coe_nnReal_real.aemeasurable.aestronglyMeasurable, ?_⟩
       simpa [withDensity_apply _ s_meas, hasFiniteIntegral_iff_enorm] using hs
   · intro u u' _ u_int u'_int h h'
     change
@@ -287,7 +287,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
   · intro u v huv _ hu
     rw [← integral_congr_ae huv, hu]
     apply integral_congr_ae
-    filter_upwards [(ae_withDensity_iff f_meas.coe_nnreal_ennreal).1 huv] with x hx
+    filter_upwards [(ae_withDensity_iff f_meas.coe_nnReal_ennReal).1 huv] with x hx
     rcases eq_or_ne (f x) 0 with (h'x | h'x)
     · simp only [h'x, zero_smul]
     · rw [hx _]
@@ -312,7 +312,7 @@ theorem integral_withDensity_eq_integral_toReal_smul₀ {f : X → ℝ≥0∞} (
     (hf_lt_top : ∀ᵐ x ∂μ, f x < ∞) (g : X → E) :
     ∫ x, g x ∂μ.withDensity f = ∫ x, (f x).toReal • g x ∂μ := by
   dsimp only [ENNReal.toReal, ← NNReal.smul_def]
-  rw [← integral_withDensity_eq_integral_smul₀ f_meas.ennreal_toNNReal,
+  rw [← integral_withDensity_eq_integral_smul₀ f_meas.ennReal_toNNReal,
     withDensity_congr_ae (coe_toNNReal_ae_eq hf_lt_top)]
 
 theorem integral_withDensity_eq_integral_toReal_smul {f : X → ℝ≥0∞} (f_meas : Measurable f)

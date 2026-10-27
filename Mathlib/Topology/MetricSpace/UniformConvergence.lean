@@ -141,7 +141,7 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ β) :=
         simp +contextual [mem_upperBounds, eq_comm (a := dist _ _), ← edist_dist,
           ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
           Metric.edist_le_ediam_of_mem]
-      exact ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ by simp [edist_def, ciSup_le_iff this]
+      exact ENNReal.eq_of_forall_le_nnReal_iff fun r ↦ by simp [edist_def, ciSup_le_iff this]
 
 lemma dist_def [BoundedSpace β] (f g : α →ᵤ β) :
     dist f g = ⨆ x, dist (toFun f x) (toFun g x) :=
@@ -296,7 +296,7 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
         simp +contextual [mem_upperBounds, eq_comm (a := dist _ _), ← edist_dist,
           ← ENNReal.ofReal_le_iff_le_toReal BoundedSpace.bounded_univ.ediam_ne_top,
           Metric.edist_le_ediam_of_mem]
-      refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+      refine ENNReal.eq_of_forall_le_nnReal_iff fun r ↦ ?_
       simp [edist_def, ciSup_le_iff this]
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where

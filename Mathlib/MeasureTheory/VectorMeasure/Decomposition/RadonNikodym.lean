@@ -28,7 +28,7 @@ namespace SignedMeasure
 
 theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [SigmaFinite μ]
     (h : s ≪ᵥ μ.toENNRealVectorMeasure) : μ.withDensityᵥ (s.rnDeriv μ) = s := by
-  rw [absolutelyContinuous_ennreal_iff, (_ : μ.toENNRealVectorMeasure.ennrealToMeasure = μ),
+  rw [absolutelyContinuous_ennReal_iff, (_ : μ.toENNRealVectorMeasure.ennRealToMeasure = μ),
     totalVariation_absolutelyContinuous_iff] at h
   · ext1 i hi
     rw [withDensityᵥ_apply (integrable_rnDeriv _ _) hi, rnDeriv_def, integral_sub,

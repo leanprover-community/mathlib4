@@ -483,10 +483,10 @@ variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A] [PartialO
 variable [StarOrderedRing A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [NonnegSpectrumClass ℝ A]
 
-lemma IsGreatest.nnnorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a : A)
+lemma IsGreatest.nnnorm_cfc_nnReal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac) (ha : 0 ≤ a := by cfc_tac) :
     IsGreatest (f '' σ ℝ≥0 a) ‖cfc f a‖₊ := by
-  rw [cfc_nnreal_eq_real ..]
+  rw [cfc_nnReal_eq_real ..]
   obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
   rw [← SpectrumRestricts] at ha'
   convert IsGreatest.nnnorm_cfc (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont
@@ -494,52 +494,52 @@ lemma IsGreatest.nnnorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a :
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 
-lemma apply_le_nnnorm_cfc_nnreal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σ ℝ≥0 a)
+lemma apply_le_nnnorm_cfc_nnReal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σ ℝ≥0 a)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac) (ha : 0 ≤ a := by cfc_tac) :
     f x ≤ ‖cfc f a‖₊ := by
   revert hx
   nontriviality A
-  exact (IsGreatest.nnnorm_cfc_nnreal f a hf ha |>.2 ⟨x, ·, rfl⟩)
+  exact (IsGreatest.nnnorm_cfc_nnReal f a hf ha |>.2 ⟨x, ·, rfl⟩)
 
-lemma nnnorm_cfc_nnreal_le {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : ∀ x ∈ σ ℝ≥0 a, f x ≤ c) :
+lemma nnnorm_cfc_nnReal_le {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : ∀ x ∈ σ ℝ≥0 a, f x ≤ c) :
     ‖cfc f a‖₊ ≤ c := by
   obtain (_ | _) := subsingleton_or_nontrivial A
   · rw [Subsingleton.elim (cfc f a) 0]
     simp
   · refine cfc_cases (‖·‖₊ ≤ c) a f (by simp) fun hf ha ↦ ?_
-    simp only [← cfc_apply f a, isLUB_le_iff (IsGreatest.nnnorm_cfc_nnreal f a hf ha |>.isLUB)]
+    simp only [← cfc_apply f a, isLUB_le_iff (IsGreatest.nnnorm_cfc_nnReal f a hf ha |>.isLUB)]
     rintro - ⟨x, hx, rfl⟩
     exact h x hx
 
-lemma nnnorm_cfc_nnreal_le_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0)
+lemma nnnorm_cfc_nnReal_le_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfc f a‖₊ ≤ c ↔ ∀ x ∈ σ ℝ≥0 a, f x ≤ c :=
-  ⟨fun h _ hx ↦ apply_le_nnnorm_cfc_nnreal f a hx hf ha |>.trans h, nnnorm_cfc_nnreal_le⟩
+  ⟨fun h _ hx ↦ apply_le_nnnorm_cfc_nnReal f a hx hf ha |>.trans h, nnnorm_cfc_nnReal_le⟩
 
-lemma nnnorm_cfc_nnreal_lt {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (hc : 0 < c)
+lemma nnnorm_cfc_nnReal_lt {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (hc : 0 < c)
     (h : ∀ x ∈ σ ℝ≥0 a, f x < c) : ‖cfc f a‖₊ < c := by
   obtain (_ | _) := subsingleton_or_nontrivial A
   · rw [Subsingleton.elim (cfc f a) 0]
     simpa
   · refine cfc_cases (‖·‖₊ < c) a f (by simpa) fun hf ha ↦ ?_
-    simp only [← cfc_apply f a, (IsGreatest.nnnorm_cfc_nnreal f a hf ha |>.lt_iff)]
+    simp only [← cfc_apply f a, (IsGreatest.nnnorm_cfc_nnReal f a hf ha |>.lt_iff)]
     rintro - ⟨x, hx, rfl⟩
     exact h x hx
 
-lemma nnnorm_cfc_nnreal_lt_iff (f : ℝ≥0 → ℝ≥0) (a : A) {c : ℝ≥0} (hc : 0 < c)
+lemma nnnorm_cfc_nnReal_lt_iff (f : ℝ≥0 → ℝ≥0) (a : A) {c : ℝ≥0} (hc : 0 < c)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfc f a‖₊ < c ↔ ∀ x ∈ σ ℝ≥0 a, f x < c :=
-  ⟨fun h _ hx ↦ apply_le_nnnorm_cfc_nnreal f a hx hf ha |>.trans_lt h, nnnorm_cfc_nnreal_lt hc⟩
+  ⟨fun h _ hx ↦ apply_le_nnnorm_cfc_nnReal f a hx hf ha |>.trans_lt h, nnnorm_cfc_nnReal_lt hc⟩
 
 namespace IsometricContinuousFunctionalCalculus
 
 lemma isGreatest_spectrum [Nontrivial A] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     IsGreatest (σ ℝ≥0 a) ‖a‖₊ := by
-  simpa [cfc_id' ℝ≥0 a] using IsGreatest.nnnorm_cfc_nnreal id a
+  simpa [cfc_id' ℝ≥0 a] using IsGreatest.nnnorm_cfc_nnReal id a
 
 lemma spectrum_le (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σ ℝ≥0 a) (ha : 0 ≤ a := by cfc_tac) :
     x ≤ ‖a‖₊ := by
-  simpa [cfc_id' ℝ≥0 a] using apply_le_nnnorm_cfc_nnreal id a hx
+  simpa [cfc_id' ℝ≥0 a] using apply_le_nnnorm_cfc_nnReal id a hx
 
 end IsometricContinuousFunctionalCalculus
 
@@ -547,7 +547,7 @@ open IsometricContinuousFunctionalCalculus in
 lemma MonotoneOn.nnnorm_cfc [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : MonotoneOn f (σ ℝ≥0 a)) (hf₂ : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfc f a‖₊ = f ‖a‖₊ :=
-  IsGreatest.nnnorm_cfc_nnreal f a |>.unique <| hf.map_isGreatest (isGreatest_spectrum a)
+  IsGreatest.nnnorm_cfc_nnReal f a |>.unique <| hf.map_isGreatest (isGreatest_spectrum a)
 
 end Unital
 
@@ -558,56 +558,56 @@ variable [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A]
 variable [StarOrderedRing A] [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [NonnegSpectrumClass ℝ A]
 
-lemma IsGreatest.nnnorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
+lemma IsGreatest.nnnorm_cfcₙ_nnReal (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha : 0 ≤ a := by cfc_tac) : IsGreatest (f '' σₙ ℝ≥0 a) ‖cfcₙ f a‖₊ := by
-  rw [cfcₙ_nnreal_eq_real ..]
+  rw [cfcₙ_nnReal_eq_real ..]
   obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
   convert IsGreatest.nnnorm_cfcₙ (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont (by simpa)
   case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 
-lemma apply_le_nnnorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σₙ ℝ≥0 a)
+lemma apply_le_nnnorm_cfcₙ_nnReal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σₙ ℝ≥0 a)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (ha : 0 ≤ a := by cfc_tac) : f x ≤ ‖cfcₙ f a‖₊ := by
   revert hx
-  exact (IsGreatest.nnnorm_cfcₙ_nnreal f a hf hf0 ha |>.2 ⟨x, ·, rfl⟩)
+  exact (IsGreatest.nnnorm_cfcₙ_nnReal f a hf hf0 ha |>.2 ⟨x, ·, rfl⟩)
 
-lemma nnnorm_cfcₙ_nnreal_le {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : ∀ x ∈ σₙ ℝ≥0 a, f x ≤ c) :
+lemma nnnorm_cfcₙ_nnReal_le {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : ∀ x ∈ σₙ ℝ≥0 a, f x ≤ c) :
     ‖cfcₙ f a‖₊ ≤ c := by
   refine cfcₙ_cases (‖·‖₊ ≤ c) a f (by simp) fun hf hf0 ha ↦ ?_
-  simp only [← cfcₙ_apply f a, isLUB_le_iff (IsGreatest.nnnorm_cfcₙ_nnreal f a hf hf0 ha |>.isLUB)]
+  simp only [← cfcₙ_apply f a, isLUB_le_iff (IsGreatest.nnnorm_cfcₙ_nnReal f a hf hf0 ha |>.isLUB)]
   rintro - ⟨x, hx, rfl⟩
   exact h x hx
 
-lemma nnnorm_cfcₙ_nnreal_le_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0)
+lemma nnnorm_cfcₙ_nnReal_le_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfcₙ f a‖₊ ≤ c ↔ ∀ x ∈ σₙ ℝ≥0 a, f x ≤ c :=
-  ⟨fun h _ hx ↦ apply_le_nnnorm_cfcₙ_nnreal f a hx hf hf₀ ha |>.trans h, nnnorm_cfcₙ_nnreal_le⟩
+  ⟨fun h _ hx ↦ apply_le_nnnorm_cfcₙ_nnReal f a hx hf hf₀ ha |>.trans h, nnnorm_cfcₙ_nnReal_le⟩
 
-lemma nnnorm_cfcₙ_nnreal_lt {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : ∀ x ∈ σₙ ℝ≥0 a, f x < c) :
+lemma nnnorm_cfcₙ_nnReal_lt {f : ℝ≥0 → ℝ≥0} {a : A} {c : ℝ≥0} (h : ∀ x ∈ σₙ ℝ≥0 a, f x < c) :
     ‖cfcₙ f a‖₊ < c := by
   refine cfcₙ_cases (‖·‖₊ < c) a f ?_ fun hf hf0 ha ↦ ?_
   · simpa using (h 0 (quasispectrum.zero_mem ℝ≥0 _)).pos
-  · simp only [← cfcₙ_apply f a, (IsGreatest.nnnorm_cfcₙ_nnreal f a hf hf0 ha |>.lt_iff)]
+  · simp only [← cfcₙ_apply f a, (IsGreatest.nnnorm_cfcₙ_nnReal f a hf hf0 ha |>.lt_iff)]
     rintro - ⟨x, hx, rfl⟩
     exact h x hx
 
-lemma nnnorm_cfcₙ_nnreal_lt_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0)
+lemma nnnorm_cfcₙ_nnReal_lt_iff (f : ℝ≥0 → ℝ≥0) (a : A) (c : ℝ≥0)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : 0 ≤ a := by cfc_tac) : ‖cfcₙ f a‖₊ < c ↔ ∀ x ∈ σₙ ℝ≥0 a, f x < c :=
-  ⟨fun h _ hx ↦ apply_le_nnnorm_cfcₙ_nnreal f a hx hf hf₀ ha |>.trans_lt h, nnnorm_cfcₙ_nnreal_lt⟩
+  ⟨fun h _ hx ↦ apply_le_nnnorm_cfcₙ_nnReal f a hx hf hf₀ ha |>.trans_lt h, nnnorm_cfcₙ_nnReal_lt⟩
 
 namespace NonUnitalIsometricContinuousFunctionalCalculus
 
 lemma isGreatest_quasispectrum (a : A) (ha : 0 ≤ a := by cfc_tac) :
     IsGreatest (σₙ ℝ≥0 a) ‖a‖₊ := by
-  simpa [cfcₙ_id' ℝ≥0 a] using IsGreatest.nnnorm_cfcₙ_nnreal id a
+  simpa [cfcₙ_id' ℝ≥0 a] using IsGreatest.nnnorm_cfcₙ_nnReal id a
 
 lemma quasispectrum_le (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σₙ ℝ≥0 a) (ha : 0 ≤ a := by cfc_tac) :
     x ≤ ‖a‖₊ := by
-  simpa [cfcₙ_id' ℝ≥0 a] using apply_le_nnnorm_cfcₙ_nnreal id a hx
+  simpa [cfcₙ_id' ℝ≥0 a] using apply_le_nnnorm_cfcₙ_nnReal id a hx
 
 end NonUnitalIsometricContinuousFunctionalCalculus
 
@@ -616,7 +616,7 @@ lemma MonotoneOn.nnnorm_cfcₙ (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : MonotoneOn f (σₙ ℝ≥0 a)) (hf₂ : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac)
     (hf0 : f 0 = 0 := by cfc_zero_tac) (ha : 0 ≤ a := by cfc_tac) :
     ‖cfcₙ f a‖₊ = f ‖a‖₊ :=
-  IsGreatest.nnnorm_cfcₙ_nnreal f a |>.unique <| hf.map_isGreatest (isGreatest_quasispectrum a)
+  IsGreatest.nnnorm_cfcₙ_nnReal f a |>.unique <| hf.map_isGreatest (isGreatest_quasispectrum a)
 
 end NonUnital
 

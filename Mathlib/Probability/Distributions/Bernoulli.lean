@@ -176,7 +176,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 lemma integrable_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (f : X → E) :
     Integrable f Ber(x, y, p) := by
   simp [bernoulliMeasure_def, integrable_add_measure, integrable_dirac,
-    Integrable.smul_measure_nnreal]
+    Integrable.smul_measure_nnReal]
 
 variable [NormedSpace ℝ E] [CompleteSpace E]
 
@@ -184,7 +184,7 @@ lemma integral_bernoulliMeasure [MeasurableSingletonClass X] (x y : X) (p : I) (
     ∫ z, f z ∂Ber(x, y, p) = (p : ℝ) • (f x) + (1 - p : ℝ) • (f y) := by
   rw [bernoulliMeasure_def, integral_add_measure]
   · simp [NNReal.smul_def]
-  all_goals exact (integrable_dirac (by simp)).smul_measure_nnreal
+  all_goals exact (integrable_dirac (by simp)).smul_measure_nnReal
 
 end Integral
 
@@ -204,7 +204,7 @@ theorem hasLaw_indicator_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [
   all_goals
     intro t ht h1 h2
     simp_all [map_apply_of_aemeasurable h ht, Set.indicator_const_preimage_eq_union,
-      measure_compl₀ hs, ENNReal.coe_nnreal_eq, ENNReal.ofReal_sub]
+      measure_compl₀ hs, ENNReal.coe_nnReal_eq, ENNReal.ofReal_sub]
 
 /-- The constant indicator of a set follows a Bernoulli distribution. -/
 theorem hasLaw_indicator_one_bernoulliMeasure [IsProbabilityMeasure P] {M : Type*} [Zero M] [One M]

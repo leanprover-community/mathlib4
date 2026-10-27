@@ -325,12 +325,12 @@ section NNReal
 variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
 
 @[simp]
-theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
+theorem norm_algebraMap_nnReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
   (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
 
 @[simp]
-theorem nnnorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
-  Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
+theorem nnnorm_algebraMap_nnReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
+  Subtype.ext <| norm_algebraMap_nnReal 𝕜' x
 
 end NNReal
 
@@ -592,7 +592,7 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField �
     have : -x + z = (-x + y) + (-y + z) := by abel
     rw [this]
     exact core.norm_triangle _ _
-  edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
+  edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnReal _).symm
 
 /-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core`. Note that
 if this is used to define an instance on a type, it also provides a new uniformity and

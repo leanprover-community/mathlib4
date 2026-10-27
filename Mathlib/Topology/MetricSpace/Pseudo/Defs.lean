@@ -144,7 +144,7 @@ class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   /-- Extended distance between two points -/
   edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal (.mk (dist x y) (dist_nonneg' _ ‹_› ‹_› ‹_›))
   edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) := by
-    intro x y; exact ENNReal.coe_nnreal_eq _
+    intro x y; exact ENNReal.coe_nnReal_eq _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
   uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
   toBornology : Bornology α := Bornology.ofDist dist dist_comm dist_triangle
@@ -292,14 +292,14 @@ theorem coe_nndist (x y : α) : ↑(nndist x y) = dist x y := rfl
 
 /-- Express `edist` in terms of `nndist` -/
 theorem edist_nndist (x y : α) : edist x y = nndist x y := by
-  rw [edist_dist, dist_nndist, ENNReal.ofReal_coe_nnreal]
+  rw [edist_dist, dist_nndist, ENNReal.ofReal_coe_nnReal]
 
 /-- Express `nndist` in terms of `edist` -/
 theorem nndist_edist (x y : α) : nndist x y = (edist x y).toNNReal := by
   simp [edist_nndist]
 
 @[simp, norm_cast]
-theorem coe_nnreal_ennreal_nndist (x y : α) : ↑(nndist x y) = edist x y :=
+theorem coe_nnReal_ennReal_nndist (x y : α) : ↑(nndist x y) = edist x y :=
   (edist_nndist x y).symm
 
 @[simp, norm_cast]
@@ -959,7 +959,7 @@ theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by
   simp only [le_antisymm_iff, le_iInf_iff, le_principal_iff]
   refine ⟨fun ε hε => ?_, fun ε hε => ?_⟩
-  · rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hε with ⟨ε', ε'0, ε'ε⟩
+  · rcases ENNReal.lt_iff_exists_nnReal_btwn.1 hε with ⟨ε', ε'0, ε'ε⟩
     refine mem_iInf_of_mem (ε' : ℝ) (mem_iInf_of_mem (ENNReal.coe_pos.1 ε'0) ?_)
     exact fun x hx => lt_trans (ENNReal.coe_lt_coe.2 hx) ε'ε
   · lift ε to ℝ≥0 using le_of_lt hε
@@ -1009,7 +1009,7 @@ theorem Metric.closedEBall_ofReal {x : α} {ε : ℝ} (h : 0 ≤ ε) :
 @[simp]
 theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
     closedEBall x ε = closedBall x ε := by
-  rw [← closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
+  rw [← closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnReal]
 
 @[simp]
 theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=

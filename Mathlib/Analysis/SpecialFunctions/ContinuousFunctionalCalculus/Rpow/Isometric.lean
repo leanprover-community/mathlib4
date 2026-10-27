@@ -54,12 +54,12 @@ lemma norm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖ = √‖a‖
 variable [ContinuousStar A] [CompleteSpace A]
 
 lemma continuousOn_sqrt : ContinuousOn sqrt {a : A | 0 ≤ a} :=
-  continuousOn_id.cfcₙ_nnreal_of_mem_nhdsSet _ Filter.univ_mem
+  continuousOn_id.cfcₙ_nnReal_of_mem_nhdsSet _ Filter.univ_mem
 
 lemma continuousOn_nnrpow (r : ℝ≥0) : ContinuousOn (· ^ r) {a : A | 0 ≤ a} := by
   obtain (rfl | hr) := eq_zero_or_pos r
   · simpa using continuousOn_const
-  · exact continuousOn_id.cfcₙ_nnreal_of_mem_nhdsSet _ Filter.univ_mem
+  · exact continuousOn_id.cfcₙ_nnReal_of_mem_nhdsSet _ Filter.univ_mem
 
 end nonunital
 
@@ -81,7 +81,7 @@ lemma norm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
 
 lemma continuousOn_rpow [ContinuousStar A] [CompleteSpace A] (r : ℝ) :
     ContinuousOn (· ^ r) {a : A | IsStrictlyPositive a} := by
-  refine continuousOn_id.cfc_nnreal_of_mem_nhdsSet _ (s := {0}ᶜ) ?_
+  refine continuousOn_id.cfc_nnReal_of_mem_nhdsSet _ (s := {0}ᶜ) ?_
   simp_rw [nhdsSet_iUnion, Filter.mem_iSup, isOpen_compl_singleton.mem_nhdsSet]
   exact fun a ha ↦ by simpa using spectrum.zero_notMem _ ha.isUnit
 

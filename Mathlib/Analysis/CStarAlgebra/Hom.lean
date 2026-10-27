@@ -79,7 +79,7 @@ def NonUnitalStarAlgHom.toOrderEmbedding (φ : A →⋆ₙₐ[ℂ] B) (hφ : Fun
     simp only [Function.Embedding.coeFn_mk]
     refine ⟨?_, (OrderHomClass.mono φ ·)⟩
     rw [← sub_nonneg, ← sub_nonneg (a := b), ← map_sub φ]
-    simp_rw [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts, QuasispectrumRestricts.nnreal_iff]
+    simp_rw [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts, QuasispectrumRestricts.nnReal_iff]
     rintro ⟨h₁, h₂⟩
     have h_sa := h₁.of_map φ hφ
     exact ⟨h_sa, by rwa [← h_sa.map_quasispectrum_real φ hφ]⟩

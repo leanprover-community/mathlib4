@@ -81,7 +81,7 @@ lemma exp_neg_llr' [SigmaFinite μ] [SigmaFinite ν] (hμν : ν ≪ μ) :
 
 @[fun_prop]
 lemma measurable_llr (μ ν : Measure α) : Measurable (llr μ ν) :=
-  (Measure.measurable_rnDeriv μ ν).ennreal_toReal.log
+  (Measure.measurable_rnDeriv μ ν).ennReal_toReal.log
 
 @[fun_prop]
 lemma stronglyMeasurable_llr (μ ν : Measure α) : StronglyMeasurable (llr μ ν) :=
@@ -104,10 +104,10 @@ lemma llr_smul_left [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ �
     simp [hx_pos.ne', hx_ne_top.ne]
   ring
 
-lemma llr_smul_nnreal_left [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+lemma llr_smul_nnReal_left [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0) (hc : c ≠ 0) :
     llr (c • μ) ν =ᵐ[μ] fun x ↦ llr μ ν x + log c := by
-  rw [← Measure.coe_nnreal_smul]
+  rw [← Measure.coe_nnReal_smul]
   filter_upwards [llr_smul_left hμν (c : ℝ≥0∞) (by simpa) (by simp)] with x hx
   rw [hx]
   simp
@@ -130,10 +130,10 @@ lemma llr_smul_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ 
   rw [ENNReal.toReal_inv, log_inv]
   ring
 
-lemma llr_smul_nnreal_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+lemma llr_smul_nnReal_right [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0) (hc : c ≠ 0) :
     llr μ (c • ν) =ᵐ[μ] fun x ↦ llr μ ν x - log c := by
-  rw [← Measure.coe_nnreal_smul]
+  rw [← Measure.coe_nnReal_smul]
   filter_upwards [llr_smul_right hμν (c : ℝ≥0∞) (by simpa) (by simp)] with x hx
   rw [hx]
   simp
@@ -156,10 +156,10 @@ lemma llr_smul_same [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ �
   norm_cast at hc
   filter_upwards [hμν.ae_le (Measure.rnDeriv_smul_same μ ν hc)] with x hx using by simp [hx]
 
-lemma llr_smul_nnreal_same [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
+lemma llr_smul_nnReal_same [IsFiniteMeasure μ] [Measure.HaveLebesgueDecomposition μ ν]
     (hμν : μ ≪ ν) (c : ℝ≥0) (hc : c ≠ 0) :
     llr (c • μ) (c • ν) =ᵐ[μ] llr μ ν := by
-  simp_rw [← Measure.coe_nnreal_smul]
+  simp_rw [← Measure.coe_nnReal_smul]
   filter_upwards [llr_smul_same hμν (c : ℝ≥0∞) (by simpa) (by simp)] with x hx
   rw [hx]
 

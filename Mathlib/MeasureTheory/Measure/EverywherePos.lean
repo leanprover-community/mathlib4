@@ -174,7 +174,7 @@ lemma IsEverywherePos.smul_measure (hs : IsEverywherePos μ s) {c : ℝ≥0∞} 
     IsEverywherePos (c • μ) s :=
   fun x hx n hn ↦ by simpa [hc.bot_lt, hs x hx n hn] using hc.bot_lt
 
-lemma IsEverywherePos.smul_measure_nnreal (hs : IsEverywherePos μ s) {c : ℝ≥0} (hc : c ≠ 0) :
+lemma IsEverywherePos.smul_measure_nnReal (hs : IsEverywherePos μ s) {c : ℝ≥0} (hc : c ≠ 0) :
     IsEverywherePos (c • μ) s :=
   hs.smul_measure (by simpa using hc)
 

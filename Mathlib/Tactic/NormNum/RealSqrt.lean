@@ -21,10 +21,10 @@ open Qq Lean Lean.Meta Elab.Tactic Mathlib.Meta.NormNum NNReal
 lemma isNat_realSqrt {x : ℝ} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat √x ny := ⟨by simp [h.out, ← hy]⟩
 
-lemma isNat_nnrealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
+lemma isNat_nnRealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * ny = nx) :
     IsNat (NNReal.sqrt x) ny := ⟨by simp [h.out, ← hy]⟩
 
-lemma isNNRat_nnrealSqrt_of_isNNRat {x : ℝ≥0} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
+lemma isNNRat_nnRealSqrt_of_isNNRat {x : ℝ≥0} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsNNRat x n d) :
     IsNNRat (NNReal.sqrt x) sn sd := by
   obtain ⟨_, rfl⟩ := h
@@ -106,7 +106,7 @@ def evalNNRealSqrt : NormNumExt where eval {u α} e := do
         have ey : Q(ℕ) := mkRawNatLit y
         have pf₁ : Q($ey * $ey = $ex) := (q(Eq.refl $ex) : Expr)
         assumeInstancesCommute
-        return .isNat sℝ ey q(isNat_nnrealSqrt $pf $pf₁)
+        return .isNat sℝ ey q(isNat_nnRealSqrt $pf $pf₁)
     | .isNegNat _ ex pf => failure
     | .isNNRat sℝ eq n' ed pf =>
         let n : ℕ := n'.natLit!
@@ -120,7 +120,7 @@ def evalNNRealSqrt : NormNumExt where eval {u α} e := do
         have hd : Q($esd * $esd = $ed) := (q(Eq.refl $ed) : Expr)
         assumeInstancesCommute
         -- will never be an integer
-        return .isNNRat q($sℝ) (sn / sd) _ q($esd) q(isNNRat_nnrealSqrt_of_isNNRat $hn $hd $pf)
+        return .isNNRat q($sℝ) (sn / sd) _ q($esd) q(isNNRat_nnRealSqrt_of_isNNRat $hn $hd $pf)
     | .isNegNNRat sℝ eq en ed pf => failure
   | _ => failure
 

@@ -50,10 +50,10 @@ lemma lintegral_le_iSup [IsProbabilityMeasure μ] (f : α → ℝ≥0∞) : ∫�
   le_trans (lintegral_le_iSup_mul f) (by simp)
 
 variable (μ) in
-theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
+theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennReal
     [IsFiniteMeasure μ] {f : α → ℝ≥0∞} (f_bdd : ∃ c : ℝ≥0, ∀ x, f x ≤ c) : ∫⁻ x, f x ∂μ < ∞ := by
   rw [← μ.restrict_univ]
-  refine setLIntegral_lt_top_of_le_nnreal (measure_ne_top _ _) ?_
+  refine setLIntegral_lt_top_of_le_nnReal (measure_ne_top _ _) ?_
   simpa using f_bdd
 
 end FiniteMeasure
@@ -108,7 +108,7 @@ theorem _root_.NNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α]
   rw [show (fun i => ε ≤ a i) = fun i => (ε : ℝ≥0∞) ≤ ((↑) ∘ a) i by
       simp only [ENNReal.coe_le_coe, Function.comp]]
   apply
-    ENNReal.count_const_le_le_of_tsum_le (measurable_coe_nnreal_ennreal.comp a_mble) _
+    ENNReal.count_const_le_le_of_tsum_le (measurable_coe_nnReal_ennReal.comp a_mble) _
       (mod_cast ε_ne_zero) (@ENNReal.coe_ne_top ε)
   convert ENNReal.coe_le_coe.mpr tsum_le_c
   simp_rw [Function.comp_apply]
@@ -200,7 +200,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
   refine ⟨φ, hφm, hφle, fun s ↦ ?_⟩
   -- Now we show the inequality between set integrals.
   -- Choose a simple function `ψ ≤ f` with values in `ℝ≥0` and prove for `ψ`.
-  rw [lintegral_eq_nnreal]
+  rw [lintegral_eq_nnReal]
   refine iSup₂_le fun ψ hψ ↦ ?_
   -- Choose `n` such that `ψ x ≤ n` for all `x`.
   obtain ⟨n, hn⟩ : ∃ n : ℕ, ∀ x, ψ x ≤ n := by
@@ -213,7 +213,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
       lintegral_mono fun a ↦ le_min (hψ _) (ENNReal.coe_le_coe.2 (hn a))
     _ ≤ ∫⁻ a in s, g n a ∂μ := by
       have : ∫⁻ a in (toMeasurable μ s)ᶜ, min (f a) n ∂μ ≠ ∞ :=
-        IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal _ ⟨n, fun _ ↦ min_le_right ..⟩ |>.ne
+        IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennReal _ ⟨n, fun _ ↦ min_le_right ..⟩ |>.ne
       have hsm : MeasurableSet (toMeasurable μ s) := measurableSet_toMeasurable ..
       apply ENNReal.le_of_add_le_add_right this
       rw [← μ.restrict_toMeasurable_of_sfinite, lintegral_add_compl _ hsm, hgint,
@@ -239,7 +239,7 @@ theorem exists_pos_lintegral_lt_of_sigmaFinite (μ : Measure α) [SigmaFinite μ
   have hNs : ∀ n, N ⁻¹' {n} = s n := preimage_spanningSetsIndex_singleton μ
   refine ⟨δ ∘ N, fun x => δpos _, measurable_from_nat.comp hN_meas, ?_⟩
   simp_rw [Function.comp_apply, ← Function.comp_apply (f := (fun n ↦ (↑(δ n) : ℝ≥0∞))),
-    lintegral_comp measurable_from_nat.coe_nnreal_ennreal hN_meas]
+    lintegral_comp measurable_from_nat.coe_nnReal_ennReal hN_meas]
   simpa [N, hNs, lintegral_countable', measurableSet_spanningSetsIndex, mul_comm] using δsum
 
 omit [MeasurableSpace α]
@@ -316,7 +316,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       · simp only [Ne, coe_ne_top, not_false_iff, true_or]
   | @add f₁ f₂ _ h₁ h₂ =>
     replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
-      rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
+      rwa [← lintegral_add_left f₁.measurable.coe_nnReal_ennReal]
     by_cases hf₁ : ∫⁻ x, f₁ x ∂μ = 0
     · simp only [hf₁, zero_add] at hL
       rcases h₂ hL with ⟨g, g_le, g_top, gL⟩
@@ -333,16 +333,16 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
     rcases h₂ hL₂ with ⟨g₂, g₂_le, g₂_top, hg₂⟩
     refine ⟨g₁ + g₂, fun x => add_le_add (g₁_le x) (g₂_le x), ?_, ?_⟩
     · apply lt_of_le_of_lt _ (add_lt_top.2 ⟨g₁_top, g₂_top⟩)
-      rw [← lintegral_add_left g₁.measurable.coe_nnreal_ennreal]
+      rw [← lintegral_add_left g₁.measurable.coe_nnReal_ennReal]
       exact le_rfl
     · apply hL.trans ((ENNReal.add_lt_add hg₁ hg₂).trans_le _)
-      rw [← lintegral_add_left g₁.measurable.coe_nnreal_ennreal]
+      rw [← lintegral_add_left g₁.measurable.coe_nnReal_ennReal]
       simp only [FunLike.coe_add, Pi.add_apply, ENNReal.coe_add, le_rfl]
 
 theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} {μ : Measure α}
     [SigmaFinite μ] {f : α → ℝ≥0} {L : ℝ≥0∞} (hL : L < ∫⁻ x, f x ∂μ) :
     ∃ g : α →ₛ ℝ≥0, (∀ x, g x ≤ f x) ∧ ∫⁻ x, g x ∂μ < ∞ ∧ L < ∫⁻ x, g x ∂μ := by
-  simp_rw [lintegral_eq_nnreal, lt_iSup_iff] at hL
+  simp_rw [lintegral_eq_nnReal, lt_iSup_iff] at hL
   rcases hL with ⟨g₀, hg₀, g₀L⟩
   have h'L : L < ∫⁻ x, g₀ x ∂μ := by
     convert g₀L

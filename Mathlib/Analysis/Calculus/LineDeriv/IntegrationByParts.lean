@@ -97,11 +97,11 @@ lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux2
   have A : ν.prod volume = (addHaarScalarFactor (ν.prod volume) μ) • μ :=
     isAddLeftInvariant_eq_smul _ _
   have Hf'g : Integrable (fun x ↦ B (f' x) (g x)) (ν.prod volume) := by
-    rw [A]; exact hf'g.smul_measure_nnreal
+    rw [A]; exact hf'g.smul_measure_nnReal
   have Hfg' : Integrable (fun x ↦ B (f x) (g' x)) (ν.prod volume) := by
-    rw [A]; exact hfg'.smul_measure_nnreal
+    rw [A]; exact hfg'.smul_measure_nnReal
   have Hfg : Integrable (fun x ↦ B (f x) (g x)) (ν.prod volume) := by
-    rw [A]; exact hfg.smul_measure_nnreal
+    rw [A]; exact hfg.smul_measure_nnReal
   rw [isAddLeftInvariant_eq_smul μ (ν.prod volume)]
   simp [integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 Hf'g Hfg' Hfg hf hg]
 

@@ -85,7 +85,7 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
   have htends : Tendsto (fun n => ∑ k ∈ Finset.range n, μ (s (k + 1))) atTop (𝓝 ∞) := by
     rw [← ENNReal.tsum_add_one_eq_top hs' (measure_ne_top _ _)]
     exact ENNReal.tendsto_nat_tsum _
-  rw [ENNReal.tendsto_nhds_top_iff_nnreal] at htends
+  rw [ENNReal.tendsto_nhds_top_iff_nnReal] at htends
   refine tendsto_atTop_atTop_of_monotone' ?_ ?_
   · refine monotone_nat_of_le_succ fun n => ?_
     rw [← sub_nonneg, Finset.sum_range_succ_sub_sum]

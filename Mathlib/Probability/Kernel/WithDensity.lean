@@ -272,7 +272,7 @@ nonrec lemma withDensity_mul [IsSFiniteKernel κ] {f : α → β → ℝ≥0} {g
       (withDensity (withDensity κ fun a x ↦ f a x) g) a
   rw [withDensity_mul]
   · rw [Kernel.withDensity_apply _ hg, Kernel.withDensity_apply]
-    exact measurable_coe_nnreal_ennreal.comp hf
+    exact measurable_coe_nnReal_ennReal.comp hf
   · fun_prop
   · fun_prop
 

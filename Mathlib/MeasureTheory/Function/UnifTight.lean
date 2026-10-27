@@ -61,7 +61,7 @@ def UnifTight {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (
   ∀ ε > 0, ∃ s : Set α, μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε
 
 @[deprecated "This is a duplicate of the new definition of UnifTight." (since := "2026-07-24")]
-theorem unifTight_iff_ennreal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
+theorem unifTight_iff_ennReal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
     UnifTight f p μ ↔ ∀ ⦃ε : ℝ≥0∞⦄, 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε := by
   rfl
@@ -75,7 +75,7 @@ theorem unifTight_iff_real {_ : MeasurableSpace α} (f : ι → α → β) (p : 
   obtain ⟨s, hμs, hfε⟩ := hut ε.toReal (ε.toReal_pos hε.ne' hε_top.ne)
   exact ⟨s, hμs, fun i ↦ (hfε i).trans ofReal_toReal_le⟩
 
-theorem unifTight_iff_nnreal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
+theorem unifTight_iff_nnReal {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
     UnifTight f p μ ↔ ∀ ⦃ε : NNReal⦄, 0 < ε → ∃ s : Set α,
       μ s ≠ ∞ ∧ ∀ i, eLpNorm (sᶜ.indicator (f i)) p μ ≤ ε := by
   refine ⟨fun hut ε hε ↦ hut ε (coe_pos.2 hε), fun hut ε hε ↦ ?_⟩

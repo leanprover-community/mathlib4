@@ -112,7 +112,7 @@ theorem eLpNorm_eq_eLpNorm' [TopologicalSpace ε]
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = eLpNorm' f p.toReal μ := by simp [eLpNorm, hp_ne_zero, hp_ne_top, hf]
 
-lemma eLpNorm_nnreal_eq_eLpNorm' [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
+lemma eLpNorm_nnReal_eq_eLpNorm' [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = eLpNorm' f p μ :=
   eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top hf
@@ -122,10 +122,10 @@ lemma eLpNorm_eq_lintegral_rpow_enorm_toReal [TopologicalSpace ε]
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
   rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top hf, eLpNorm'_eq_lintegral_enorm]
 
-lemma eLpNorm_nnreal_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
+lemma eLpNorm_nnReal_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
-  eLpNorm_nnreal_eq_eLpNorm' hp hf
+  eLpNorm_nnReal_eq_eLpNorm' hp hf
 
 theorem eLpNorm_one_eq_lintegral_enorm [TopologicalSpace ε] {f : α → ε}
     (hf : AEStronglyMeasurable f μ) :
@@ -171,7 +171,7 @@ theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
   rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
   exact hq0_lt.ne'
 
-lemma eLpNorm_nnreal_pow_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
+lemma eLpNorm_nnReal_pow_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ := by
   simp [eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top hf,

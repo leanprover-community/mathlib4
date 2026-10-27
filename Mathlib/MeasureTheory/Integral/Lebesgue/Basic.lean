@@ -84,7 +84,7 @@ theorem lintegral_mono' {m : MeasurableSpace α} ⦃μ ν : Measure α⦄ (hμν
 theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono' (le_refl μ) hfg
 
-theorem lintegral_mono_nnreal {f g : α → ℝ≥0} (h : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
+theorem lintegral_mono_nnReal {f g : α → ℝ≥0} (h : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono fun a => ENNReal.coe_le_coe.2 (h a)
 
 theorem iSup_lintegral_measurable_le_eq_lintegral (f : α → ℝ≥0∞) :
@@ -155,7 +155,7 @@ theorem exists_measurable_le_lintegral_eq (f : α → ℝ≥0∞) :
 /-- `∫⁻ a in s, f a ∂μ` is defined as the supremum of integrals of simple functions
 `φ : α →ₛ ℝ≥0∞` such that `φ ≤ f`. This lemma says that it suffices to take
 functions `φ : α →ₛ ℝ≥0`. -/
-theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : Measure α) :
+theorem lintegral_eq_nnReal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : Measure α) :
     ∫⁻ a, f a ∂μ =
       ⨆ (φ : α →ₛ ℝ≥0) (_ : ∀ x, ↑(φ x) ≤ f x), (φ.map ((↑) : ℝ≥0 → ℝ≥0∞)).lintegral μ := by
   rw [lintegral]
@@ -171,7 +171,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
     use (const α (n : ℝ≥0)).restrict (φ ⁻¹' {∞})
     simp only [lt_iSup_iff, exists_prop, coe_restrict, φ.measurableSet_preimage, coe_const,
-      ENNReal.coe_indicator, map_coe_ennreal_restrict, SimpleFunc.map_const, ENNReal.coe_natCast,
+      ENNReal.coe_indicator, map_coe_ennReal_restrict, SimpleFunc.map_const, ENNReal.coe_natCast,
       restrict_const_lintegral]
     refine ⟨indicator_le fun x hx => le_trans ?_ (hφ _), hn⟩
     simp only [mem_preimage, mem_singleton_iff] at hx
@@ -182,7 +182,7 @@ theorem exists_simpleFunc_forall_lintegral_sub_lt_of_pos {f : α → ℝ≥0∞}
     ∃ φ : α →ₛ ℝ≥0,
       (∀ x, ↑(φ x) ≤ f x) ∧
         ∀ ψ : α →ₛ ℝ≥0, (∀ x, ↑(ψ x) ≤ f x) → (map (↑) (ψ - φ)).lintegral μ < ε := by
-  rw [lintegral_eq_nnreal] at h
+  rw [lintegral_eq_nnReal] at h
   have := ENNReal.lt_add_right h hε
   rw [ENNReal.biSup_add' ⟨0, fun x => by simp⟩] at this
   simp_rw [lt_iSup_iff, iSup_lt_iff, iSup_le_iff] at this
@@ -380,7 +380,7 @@ theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : �
   rcases φ.exists_forall_le with ⟨C, hC⟩
   use (ε₂ - ε₁) / C, ENNReal.div_pos_iff.2 ⟨(tsub_pos_iff_lt.2 hε₁₂).ne', ENNReal.coe_ne_top⟩
   refine fun s hs => lt_of_le_of_lt ?_ hε₂ε
-  simp only [lintegral_eq_nnreal, iSup_le_iff]
+  simp only [lintegral_eq_nnReal, iSup_le_iff]
   intro ψ hψ
   calc
     (map (↑) ψ).lintegral (μ.restrict s) ≤
@@ -690,7 +690,7 @@ theorem setLIntegral_max {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg 
 
 /-- Lebesgue integral of a bounded function over a set of finite measure is finite.
 Note that this lemma assumes no regularity of either `f` or `s`. -/
-theorem setLIntegral_lt_top_of_le_nnreal {s : Set α} (hs : μ s ≠ ∞) {f : α → ℝ≥0∞}
+theorem setLIntegral_lt_top_of_le_nnReal {s : Set α} (hs : μ s ≠ ∞) {f : α → ℝ≥0∞}
     (hbdd : ∃ y : ℝ≥0, ∀ x ∈ s, f x ≤ y) : ∫⁻ x in s, f x ∂μ < ∞ := by
   obtain ⟨M, hM⟩ := hbdd
   refine lt_of_le_of_lt (setLIntegral_mono measurable_const hM) ?_
@@ -700,7 +700,7 @@ theorem setLIntegral_lt_top_of_le_nnreal {s : Set α} (hs : μ s ≠ ∞) {f : �
 Note that this lemma assumes no regularity of either `f` or `s`. -/
 theorem setLIntegral_lt_top_of_bddAbove {s : Set α} (hs : μ s ≠ ∞) {f : α → ℝ≥0}
     (hbdd : BddAbove (f '' s)) : ∫⁻ x in s, f x ∂μ < ∞ :=
-  setLIntegral_lt_top_of_le_nnreal hs <| hbdd.imp fun _M hM _x hx ↦
+  setLIntegral_lt_top_of_le_nnReal hs <| hbdd.imp fun _M hM _x hx ↦
     ENNReal.coe_le_coe.2 <| hM (mem_image_of_mem f hx)
 
 theorem setLIntegral_lt_top_of_isCompact [TopologicalSpace α] {s : Set α}

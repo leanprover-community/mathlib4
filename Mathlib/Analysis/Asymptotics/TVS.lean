@@ -146,7 +146,7 @@ alias ⟨IsLittleOTVS.tendsto_div, IsLittleOTVS.of_tendsto_div⟩ := isLittleOTV
 
 /-- A version of `IsLittleOTVS.exists_eventuallyLE_mul`
 where `ε` is quantified over `ℝ≥0∞` instead of `ℝ≥0`. -/
-theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : Set E} (hU : U ∈ 𝓝 0) :
+theorem IsLittleOTVS.exists_eventuallyLE_mul_ennReal (h : f =o[𝕜; l] g) {U : Set E} (hU : U ∈ 𝓝 0) :
     ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ 0, (fun x ↦ egauge 𝕜 U (f x)) ≤ᶠ[l] (fun x ↦ ε * egauge 𝕜 V (g x)) := by
   obtain ⟨V, hV₀, hV⟩ := h.exists_eventuallyLE_mul U hU
   refine ⟨V, hV₀, fun ε hε ↦ ?_⟩

@@ -16,7 +16,7 @@ is measurable, and the range is finite. In this file, we define simple functions
 basic properties; and we construct a sequence of simple functions approximating an arbitrary Borel
 measurable function `f : α → ℝ≥0∞`.
 
-The theorem `Measurable.ennreal_induction` shows that in order to prove something for an arbitrary
+The theorem `Measurable.ennReal_induction` shows that in order to prove something for an arbitrary
 measurable function into `ℝ≥0∞`, it is sufficient to show that the property holds for (multiples of)
 characteristic functions and is closed under addition and supremum of increasing sequences of
 functions.
@@ -748,11 +748,11 @@ theorem map_restrict_of_zero [Zero γ] {g : β → γ} (hg : g 0 = 0) (f : α �
     if hs : MeasurableSet s then by simp [hs, Set.indicator_comp_of_zero hg]
     else by simp [restrict_of_not_measurable hs, hg]
 
-theorem map_coe_ennreal_restrict (f : α →ₛ ℝ≥0) (s : Set α) :
+theorem map_coe_ennReal_restrict (f : α →ₛ ℝ≥0) (s : Set α) :
     (f.restrict s).map ((↑) : ℝ≥0 → ℝ≥0∞) = (f.map (↑)).restrict s :=
   map_restrict_of_zero ENNReal.coe_zero _ _
 
-theorem map_coe_nnreal_restrict (f : α →ₛ ℝ≥0) (s : Set α) :
+theorem map_coe_nnReal_restrict (f : α →ₛ ℝ≥0) (s : Set α) :
     (f.restrict s).map ((↑) : ℝ≥0 → ℝ) = (f.map (↑)).restrict s :=
   map_restrict_of_zero NNReal.coe_zero _ _
 
@@ -845,16 +845,16 @@ section EApprox
 variable {f : α → ℝ≥0∞}
 
 /-- A sequence of `ℝ≥0∞`s such that its range is the set of non-negative rational numbers. -/
-def ennrealRatEmbed (n : ℕ) : ℝ≥0∞ :=
+def ennRealRatEmbed (n : ℕ) : ℝ≥0∞ :=
   ENNReal.ofReal ((Encodable.decode (α := ℚ) n).getD (0 : ℚ))
 
-theorem ennrealRatEmbed_encode (q : ℚ) :
-    ennrealRatEmbed (Encodable.encode q) = Real.toNNReal q := by
-  rw [ennrealRatEmbed, Encodable.encodek]; rfl
+theorem ennRealRatEmbed_encode (q : ℚ) :
+    ennRealRatEmbed (Encodable.encode q) = Real.toNNReal q := by
+  rw [ennRealRatEmbed, Encodable.encodek]; rfl
 
 /-- Approximate a function `α → ℝ≥0∞` by a sequence of simple functions. -/
 def eapprox : (α → ℝ≥0∞) → ℕ → α →ₛ ℝ≥0∞ :=
-  approx ennrealRatEmbed
+  approx ennRealRatEmbed
 
 theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n a < ∞ := by
   simp only [eapprox, approx, finset_sup_apply, restrict]
@@ -863,8 +863,8 @@ theorem eapprox_lt_top (f : α → ℝ≥0∞) (n : ℕ) (a : α) : eapprox f n 
   split_ifs
   · simp only [FunLike.coe_zero, coe_piecewise, piecewise_eq_indicator, coe_const]
     calc
-      { a : α | ennrealRatEmbed b ≤ f a }.indicator (fun _ => ennrealRatEmbed b) a ≤
-          ennrealRatEmbed b :=
+      { a : α | ennRealRatEmbed b ≤ f a }.indicator (fun _ => ennRealRatEmbed b) a ≤
+          ennRealRatEmbed b :=
         indicator_le_self _ _ a
       _ < ⊤ := ENNReal.coe_lt_top
   · exact WithTop.top_pos
@@ -874,14 +874,14 @@ theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
   monotone_approx _ f
 
 lemma iSup_eapprox_apply (hf : Measurable f) (a : α) : ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
-  rw [eapprox, iSup_approx_apply ennrealRatEmbed f a hf rfl]
+  rw [eapprox, iSup_approx_apply ennRealRatEmbed f a hf rfl]
   refine le_antisymm (iSup_le fun i => iSup_le fun hi => hi) (le_of_not_gt ?_)
   intro h
   rcases ENNReal.lt_iff_exists_rat_btwn.1 h with ⟨q, _, lt_q, q_lt⟩
   have :
-    (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ (k : ℕ) (_ : ennrealRatEmbed k ≤ f a), ennrealRatEmbed k := by
+    (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ (k : ℕ) (_ : ennRealRatEmbed k ≤ f a), ennRealRatEmbed k := by
     refine le_iSup_of_le (Encodable.encode q) ?_
-    rw [ennrealRatEmbed_encode q]
+    rw [ennRealRatEmbed_encode q]
     exact le_iSup_of_le (le_of_lt q_lt) le_rfl
   exact lt_irrefl _ (lt_of_le_of_lt this lt_q)
 
@@ -1340,7 +1340,7 @@ can be added once we need them (for example in `h_add` it is only necessary to c
 a simple function with a multiple of a characteristic function and that the intersection
 of their images is a subset of `{0}`). -/
 @[elab_as_elim]
-theorem Measurable.ennreal_induction {motive : (α → ℝ≥0∞) → Prop}
+theorem Measurable.ennReal_induction {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → motive (Set.indicator s fun _ => c))
     (add : ∀ ⦃f g : α → ℝ≥0∞⦄, Disjoint (support f) (support g) →
       Measurable f → Measurable g → motive f → motive g → motive (f + g))
@@ -1363,14 +1363,14 @@ can be added once we need them (for example in `h_add` it is only necessary to c
 a simple function with a multiple of a characteristic function and that the intersection
 of their images is a subset of `{0}`). -/
 @[elab_as_elim]
-lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α → ℝ≥0∞) → Prop}
+lemma Measurable.ennReal_sigmaFinite_induction [SigmaFinite μ] {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → μ s < ∞ → motive (Set.indicator s fun _ ↦ c))
     (add : ∀ ⦃f g : α → ℝ≥0∞⦄, Disjoint (support f) (support g) →
       Measurable f → Measurable g → motive f → motive g → motive (f + g))
     (iSup : ∀ ⦃f : ℕ → α → ℝ≥0∞⦄, (∀ n, Measurable (f n)) → Monotone f →
       (∀ n, motive (f n)) → motive fun x => ⨆ n, f n x)
     ⦃f : α → ℝ≥0∞⦄ (hf : Measurable f) : motive f := by
-  refine Measurable.ennreal_induction (fun c s hs ↦ ?_) add iSup hf
+  refine Measurable.ennReal_induction (fun c s hs ↦ ?_) add iSup hf
   convert!
     iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
       (fun n ↦ measurable_const.indicator (hs.inter (measurableSet_spanningSets ..)))

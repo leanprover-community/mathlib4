@@ -214,12 +214,12 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
   exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 @[simp]
-theorem isCompact_nnreal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+theorem isCompact_nnReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : IsCompact (spectrum ℝ≥0 a) := by
   rw [isCompact_iff_compactSpace]
   infer_instance
 
-grind_pattern isCompact_nnreal => IsCompact (spectrum ℝ≥0 a)
+grind_pattern isCompact_nnReal => IsCompact (spectrum ℝ≥0 a)
 
 theorem exists_nnnorm_eq_spectralRadius_of_nonempty [ProperSpace 𝕜] {a : A}
     (ha : (spectrum 𝕜 a).Nonempty) :
@@ -354,8 +354,8 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
       (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
-      refine le_of_forall_nnreal_lt fun r hr =>
-        le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => ?_
+      refine le_of_forall_nnReal_lt fun r hr =>
+        le_radius_of_bound_nnReal _ (max 1 ‖(1 : A)‖₊) fun n => ?_
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       rcases n with - | n
       · simp
@@ -462,13 +462,13 @@ instance instCompactSpaceNNReal {A : Type*} [NonUnitalNormedRing A] [NormedSpace
   exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage ‹_›
 
 @[simp]
-theorem isCompact_nnreal {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A] [IsScalarTower ℝ A A]
+theorem isCompact_nnReal {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A] [IsScalarTower ℝ A A]
     [SMulCommClass ℝ A A] (a : A) [CompactSpace (quasispectrum ℝ a)] :
     IsCompact (quasispectrum ℝ≥0 a) := by
   rw [isCompact_iff_compactSpace]
   infer_instance
 
-grind_pattern isCompact_nnreal => IsCompact (quasispectrum ℝ≥0 a)
+grind_pattern isCompact_nnReal => IsCompact (quasispectrum ℝ≥0 a)
 
 theorem isClosed (a : A) : IsClosed (quasispectrum 𝕜 a) := by
   rw [quasispectrum_eq_spectrum_toLp_inr]
@@ -743,7 +743,7 @@ lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [Norme
 
 variable {A : Type*} [Ring A]
 
-lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
+lemma nnReal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔
       spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
   simp only [spectralRadius_eq_of_unital] at ht ⊢
@@ -752,7 +752,7 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     rw [Set.mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← coe_nnnorm, NNReal.coe_le_coe,
       ← ENNReal.coe_le_coe]
     exact le_iSup₂ (α := ℝ≥0∞) x hx |>.trans ht
-  rw [nnreal_iff]
+  rw [nnReal_iff]
   refine ⟨fun h ↦ iSup₂_le fun x hx ↦ ?_, fun h ↦ ?_⟩
   · rw [← spectrum.singleton_sub_eq] at hx
     obtain ⟨y, hy, rfl⟩ : ∃ y ∈ spectrum ℝ a, ↑t - y = x := by simpa using hx
@@ -837,7 +837,7 @@ lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
       (continuous_algebraMap 𝕜 A |>.tendsto x₀ |>.comp hx |>.sub ha) <| .of_forall hx_mem
 
 /-- The map `a ↦ spectrum ℝ≥0 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] :
+theorem upperHemicontinuous_spectrum_nnReal [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] :
     UpperHemicontinuous (spectrum ℝ≥0 : A → Set ℝ≥0) := by
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := NNReal.isClosedEmbedding_coe
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
@@ -856,7 +856,7 @@ theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [Proper
   congr
 
 /-- The map `a ↦ quasispectrum ℝ≥0 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A]
+theorem upperHemicontinuous_quasispectrum_nnReal [NonUnitalNormedRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum ℝ≥0 : A → Set ℝ≥0) := by
   obtain ⟨⟨h₁, -⟩, h₂⟩ := NNReal.isClosedEmbedding_coe

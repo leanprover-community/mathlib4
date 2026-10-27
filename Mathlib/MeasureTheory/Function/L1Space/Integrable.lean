@@ -317,7 +317,7 @@ theorem Integrable.smul_measure {f : α → ε} (h : Integrable f μ) {c : ℝ�
   exact h.smul_measure hc
 
 @[fun_prop]
-theorem Integrable.smul_measure_nnreal {f : α → ε} (h : Integrable f μ) {c : ℝ≥0} :
+theorem Integrable.smul_measure_nnReal {f : α → ε} (h : Integrable f μ) {c : ℝ≥0} :
     Integrable f (c • μ) := by
   apply h.smul_measure
   simp
@@ -782,9 +782,9 @@ theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf 
   by_cases H : AEStronglyMeasurable (fun x : α => (f x : ℝ) • g x) μ
   · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, hasFiniteIntegral_iff_enorm, H,
       true_and]
-    rw [lintegral_withDensity_eq_lintegral_mul₀' hf.coe_nnreal_ennreal.aemeasurable]
+    rw [lintegral_withDensity_eq_lintegral_mul₀' hf.coe_nnReal_ennReal.aemeasurable]
     · simp [enorm_smul]
-    · simpa [aemeasurable_withDensity_ennreal_iff hf, enorm_smul] using H.enorm
+    · simpa [aemeasurable_withDensity_ennReal_iff hf, enorm_smul] using H.enorm
   · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, H, false_and]
 
 theorem integrable_withDensity_iff_integrable_smul {f : α → ℝ≥0} (hf : Measurable f) {g : α → E} :
@@ -797,7 +797,7 @@ theorem integrable_withDensity_iff_integrable_smul' {f : α → ℝ≥0∞} (hf 
   rw [← withDensity_congr_ae (coe_toNNReal_ae_eq hflt),
     integrable_withDensity_iff_integrable_smul]
   · simp_rw [NNReal.smul_def, ENNReal.toReal]
-  · exact hf.ennreal_toNNReal
+  · exact hf.ennReal_toNNReal
 
 theorem integrable_withDensity_iff_integrable_coe_smul₀ {f : α → ℝ≥0} (hf : AEMeasurable f μ)
     {g : α → E} :
@@ -822,7 +822,7 @@ theorem integrable_withDensity_iff_integrable_smul₀' {f : α → ℝ≥0∞} (
   rw [← withDensity_congr_ae (coe_toNNReal_ae_eq hflt),
     integrable_withDensity_iff_integrable_coe_smul₀]
   · congr!
-  · exact hf.ennreal_toNNReal
+  · exact hf.ennReal_toNNReal
 
 theorem integrable_withDensity_iff_integrable_smul₀ {f : α → ℝ≥0} (hf : AEMeasurable f μ)
     {g : α → E} : Integrable g (μ.withDensity fun x => f x) ↔ Integrable (fun x => f x • g x) μ :=
@@ -859,7 +859,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
       (memL1_smul_of_L1_withDensity f_meas (u + v)).coeFn_toLp,
       Lp.coeFn_add ((memL1_smul_of_L1_withDensity f_meas u).toLp _)
         ((memL1_smul_of_L1_withDensity f_meas v).toLp _),
-      (ae_withDensity_iff f_meas.coe_nnreal_ennreal).1 (Lp.coeFn_add u v)]
+      (ae_withDensity_iff f_meas.coe_nnReal_ennReal).1 (Lp.coeFn_add u v)]
     intro x hu hv huv h' h''
     rw [huv, h', Pi.add_apply, hu, hv]
     rcases eq_or_ne (f x) 0 with (hx | hx)
@@ -869,7 +869,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
   map_smul' := by
     intro r u
     ext1
-    filter_upwards [(ae_withDensity_iff f_meas.coe_nnreal_ennreal).1 (Lp.coeFn_smul r u),
+    filter_upwards [(ae_withDensity_iff f_meas.coe_nnReal_ennReal).1 (Lp.coeFn_smul r u),
       (memL1_smul_of_L1_withDensity f_meas (r • u)).coeFn_toLp,
       Lp.coeFn_smul r ((memL1_smul_of_L1_withDensity f_meas u).toLp _),
       (memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp]
@@ -887,7 +887,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
     rw [eLpNorm_one_eq_lintegral_enorm
       (memL1_smul_of_L1_withDensity f_meas u).aestronglyMeasurable,
       eLpNorm_one_eq_lintegral_enorm (Lp.aestronglyMeasurable u)]
-    rw [lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas.coe_nnreal_ennreal
+    rw [lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas.coe_nnReal_ennReal
         (Filter.Eventually.of_forall fun x => ENNReal.coe_lt_top)]
     apply lintegral_congr_ae
     filter_upwards with x
@@ -907,7 +907,7 @@ section ENNReal
 theorem mem_L1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : MemLp (fun x ↦ (f x).toReal) 1 μ := by
   have hfm' : AEStronglyMeasurable (fun x ↦ (f x).toReal) μ :=
-    (AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable
+    (AEMeasurable.ennReal_toReal hfm).aestronglyMeasurable
   rw [memLp_iff, eLpNorm_one_eq_lintegral_enorm hfm']
   exact hasFiniteIntegral_toReal_of_lintegral_ne_top hfi
 
@@ -918,7 +918,7 @@ theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEM
 lemma integrable_toReal_iff {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     Integrable (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
   rw [Integrable, hasFiniteIntegral_toReal_iff hf_ne_top]
-  simp only [hf.ennreal_toReal.aestronglyMeasurable, ne_eq, true_and]
+  simp only [hf.ennReal_toReal.aestronglyMeasurable, ne_eq, true_and]
 
 lemma lintegral_ofReal_ne_top_iff_integrable {f : α → ℝ}
     (hfm : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) :

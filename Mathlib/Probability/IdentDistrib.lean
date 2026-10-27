@@ -210,12 +210,12 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g
   · simp only [h_top, eLpNorm_exponent_top hf, eLpNorm_exponent_top hg,
       eLpNormEssSup]
     apply essSup_eq
-    exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
+    exact h.comp (measurable_coe_nnReal_ennReal.comp measurable_nnnorm)
   simp only [eLpNorm_eq_eLpNorm' h0 h_top hf, eLpNorm_eq_eLpNorm' h0 h_top hg,
     eLpNorm', one_div]
   congr 1
   apply lintegral_eq
-  exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
+  exact h.comp (Measurable.pow_const (measurable_coe_nnReal_ennReal.comp measurable_nnnorm)
     p.toReal)
 
 theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
@@ -254,9 +254,9 @@ protected theorem sq [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g �
     IdentDistrib (fun x => f x ^ 2) (fun x => g x ^ 2) μ ν :=
   h.comp (measurable_id.pow_const 2)
 
-protected theorem coe_nnreal_ennreal {f : α → ℝ≥0} {g : β → ℝ≥0} (h : IdentDistrib f g μ ν) :
+protected theorem coe_nnReal_ennReal {f : α → ℝ≥0} {g : β → ℝ≥0} (h : IdentDistrib f g μ ν) :
     IdentDistrib (fun x => (f x : ℝ≥0∞)) (fun x => (g x : ℝ≥0∞)) μ ν :=
-  h.comp measurable_coe_nnreal_ennreal
+  h.comp measurable_coe_nnReal_ennReal
 
 @[to_additive]
 theorem mul_const [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
@@ -284,7 +284,7 @@ lemma inv [Inv γ] [MeasurableInv γ] (h : IdentDistrib f g μ ν) :
 
 theorem evariance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ ν) :
     evariance f μ = evariance g ν := by
-  convert! (h.sub_const (∫ x, f x ∂μ)).nnnorm.coe_nnreal_ennreal.sq.lintegral_eq
+  convert! (h.sub_const (∫ x, f x ∂μ)).nnnorm.coe_nnReal_ennReal.sq.lintegral_eq
   rw [h.integral_eq]
   rfl
 
@@ -312,7 +312,7 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
   rw [this, ← eLpNorm_norm _ <| (hmeas i).indicator₀
       (nullMeasurableSet_le aemeasurable_const (hmeas i).norm.aemeasurable),
     ← eLpNorm_norm (Set.indicator _ _) <| (hmeas j).indicator₀
-      (nullMeasurableSet_le aemeasurable_const (hmeas j).nnnorm.aemeasurable.coe_nnreal_real)]
+      (nullMeasurableSet_le aemeasurable_const (hmeas j).nnnorm.aemeasurable.coe_nnReal_real)]
   simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
   let F : E → ℝ := (fun x : E ↦ if C.toNNReal ≤ ‖x‖₊ then ‖x‖ else 0)
   have F_meas : Measurable F := by

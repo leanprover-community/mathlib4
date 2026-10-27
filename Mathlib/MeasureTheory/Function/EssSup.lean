@@ -90,9 +90,9 @@ lemma essSup_smul_measure (hc : c ≠ 0) (f : α → β) : essSup f (c • μ) =
 end SMul
 
 @[simp]
-lemma essSup_ennreal_smul_measure {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → β) :
+lemma essSup_ennReal_smul_measure {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → β) :
     essSup f (c • μ) = essSup f μ := by
-  simp_rw [essSup, Measure.ae_ennreal_smul_measure_eq hc]
+  simp_rw [essSup, Measure.ae_ennReal_smul_measure_eq hc]
 
 theorem essSup_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g)
     (hf : IsCoboundedUnder (· ≤ ·) (ae μ) f := by isBoundedDefault)
@@ -380,7 +380,7 @@ theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ)
     ((essSup f μ : ℝ≥0) : ℝ≥0∞) = essSup (fun x => (f x : ℝ≥0∞)) μ :=
   (ENNReal.coe_sInf (s := {a | ∀ᶠ x in ae μ, f x ≤ a}) hf).trans <|
     eq_of_forall_le_iff fun r => by
-      simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]
+      simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennReal]
 
 lemma ofReal_essSup {f : α → ℝ} (h₁ : IsCoboundedUnder (· ≤ ·) (ae μ) f)
     (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) f) :

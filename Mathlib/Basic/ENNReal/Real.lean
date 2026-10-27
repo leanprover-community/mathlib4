@@ -305,7 +305,7 @@ theorem ofReal_mul' {p q : ℝ} (hq : 0 ≤ q) :
 @[simp]
 theorem ofReal_pow {p : ℝ} (hp : 0 ≤ p) (n : ℕ) :
     ENNReal.ofReal (p ^ n) = ENNReal.ofReal p ^ n := by
-  rw [ofReal_eq_coe_nnreal hp, ← coe_pow, ← ofReal_coe_nnreal, NNReal.coe_pow, NNReal.coe_mk]
+  rw [ofReal_eq_coe_nnReal hp, ← coe_pow, ← ofReal_coe_nnReal, NNReal.coe_pow, NNReal.coe_mk]
 
 theorem ofReal_nsmul {x : ℝ} {n : ℕ} : ENNReal.ofReal (n • x) = n • ENNReal.ofReal x := by
   simp only [nsmul_eq_mul, ← ofReal_natCast n, ← ofReal_mul n.cast_nonneg]
