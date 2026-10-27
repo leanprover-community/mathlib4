@@ -66,10 +66,10 @@ structure IsSubgraph (H G : Graph α β) : Prop where
 attribute [gcongr, grind →] IsSubgraph.vertexSet_mono
 
 lemma IsSubgraph.trans (h₁ : H.IsSubgraph G) (h₂ : G.IsSubgraph G₁) : H.IsSubgraph G₁ :=
-  ⟨h₁.1.trans h₂.1, fun _ _ _ h ↦ h₂.2 (h₁.2 h)⟩
+  ⟨h₁.vertexSet_mono.trans h₂.vertexSet_mono, fun _ _ _ h ↦ h₂.isLink_mono (h₁.isLink_mono h)⟩
 
 lemma IsSubgraph.antisymm (h₁ : H.IsSubgraph G) (h₂ : G.IsSubgraph H) : H = G :=
-  Graph.ext (h₁.1.antisymm h₂.1) fun _ _ _ ↦ ⟨(h₁.2 ·), (h₂.2 ·)⟩
+  Graph.ext (h₁.vertexSet_mono.antisymm h₂.vertexSet_mono) fun _ _ _ ↦ ⟨(h₁.isLink_mono ·), (h₂.isLink_mono ·)⟩
 
 /-- `H ≤ G` means `H` is a subgraph of `G`. It is defined as `V(H) ⊆ V(G)` and every link of `H`
 being a link of `G`. -/
@@ -83,7 +83,7 @@ instance : PartialOrder (Graph α β) where
 lemma isSubgraph_iff_le : H.IsSubgraph G ↔ H ≤ G := .rfl
 
 @[gcongr]
-lemma IsLink.mono (hHG : H ≤ G) (h : H.IsLink e x y) : G.IsLink e x y := hHG.2 h
+lemma IsLink.mono (hHG : H ≤ G) (h : H.IsLink e x y) : G.IsLink e x y := hHG.isLink_mono h
 
 @[gcongr, grind →]
 lemma IsSubgraph.edgeSet_mono (h : H ≤ G) : E(H) ⊆ E(G) := by
@@ -171,7 +171,7 @@ lemma Adj.mono (hHG : H ≤ G) (h : H.Adj x y) : G.Adj x y :=
   (h.choose_spec.mono hHG).adj
 
 lemma le_iff_compatible_subset_subset : G ≤ H ↔ Compatible G H ∧ V(G) ⊆ V(H) ∧ E(G) ⊆ E(H) :=
-  ⟨fun h ↦ ⟨.of_le h, h.1, h.edgeSet_mono⟩, fun ⟨h, hV, hE⟩ ↦
+  ⟨fun h ↦ ⟨.of_le h, h.vertexSet_mono, h.edgeSet_mono⟩, fun ⟨h, hV, hE⟩ ↦
     ⟨hV, fun _ _ _ hxy ↦ h hxy.edge_mem (hE hxy.edge_mem) .. |>.mp hxy⟩⟩
 
 lemma Compatible.le_iff (hH : Compatible H₁ H₂) : H₁ ≤ H₂ ↔ V(H₁) ⊆ V(H₂) ∧ E(H₁) ⊆ E(H₂) :=
@@ -216,7 +216,7 @@ protected lemma trans (h₁ : G ≤s G₁) (h₂ : G₁ ≤s G₂) : G ≤s G₂
 instance : IsPartialOrder (Graph α β) (· ≤s ·) where
   refl G := ⟨le_refl G, rfl⟩
   trans _ _ _ h₁ h₂ := h₁.trans h₂
-  antisymm _ _ h₁ h₂ := h₁.1.antisymm h₂.1
+  antisymm _ _ h₁ h₂ := h₁.le.antisymm h₂.le
 
 @[simp] protected lemma rfl : G ≤s G := refl G
 
@@ -261,7 +261,7 @@ protected lemma trans (h₁ : G ≤i G₁) (h₂ : G₁ ≤i G₂) : G ≤i G₂
 instance : IsPartialOrder (Graph α β) (· ≤i ·) where
   refl G := ⟨le_refl G, by tauto⟩
   trans _ _ _ h₁ h₂ := h₁.trans h₂
-  antisymm _ _ h₁ h₂ := h₁.1.antisymm h₂.1
+  antisymm _ _ h₁ h₂ := h₁.le.antisymm h₂.le
 
 @[simp] protected lemma rfl : G ≤i G := refl G
 
@@ -279,7 +279,7 @@ lemma anti_right (hHK : H ≤ K) (hKG : K ≤ G) (h : H ≤i G) : H ≤i K where
 lemma le_of_le_subset (h' : K ≤ G) (hsu : V(K) ⊆ V(H)) (h : H ≤i G) : K ≤ H := by
   refine (Compatible.of_le_le h' h.le).le_iff.mpr ⟨hsu, fun e he ↦ ?_⟩
   obtain ⟨u, v, huv⟩ := K.exists_isLink_of_mem_edgeSet he
-  exact h.2 (huv.mono h') (hsu huv.left_mem) (hsu huv.right_mem) |>.edge_mem
+  exact h.isLink_of_mem_mem (huv.mono h') (hsu huv.left_mem) (hsu huv.right_mem) |>.edge_mem
 
 lemma ext_of_vertexSet (hV : V(H) = V(G)) (h : H ≤i G) : H = G :=
   h.compatible.ext hV <| antisymm h.edgeSet_mono <| fun e he ↦ by

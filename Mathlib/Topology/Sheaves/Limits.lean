@@ -56,7 +56,7 @@ theorem isSheaf_of_isLimit [HasLimitsOfShape J C] {X : TopCat.{v}} (F : J ⥤ Pr
   let e : F' ⋙ Sheaf.forget C X ≅ F := NatIso.ofComponents fun _ => Iso.refl _
   exact Presheaf.isSheaf_of_iso
     ((isLimitOfPreserves (Sheaf.forget C X) (limit.isLimit F')).conePointsIsoOfNatIso hc e)
-    (limit F').2
+    (limit F').property
 
 theorem limit_isSheaf [HasLimitsOfShape J C] {X : TopCat.{v}} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) : (limit F).IsSheaf :=

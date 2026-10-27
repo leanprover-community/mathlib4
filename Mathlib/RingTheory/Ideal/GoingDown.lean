@@ -117,7 +117,7 @@ lemma iff_generalizingMap_primeSpectrumComap :
   · have : (⟨p, hp⟩ : PrimeSpectrum R) ⤳ (PrimeSpectrum.comap (algebraMap R S) ⟨Q, hQ⟩) :=
       (PrimeSpectrum.le_iff_specializes _ _).mp hlt.le
     obtain ⟨P, hs, heq⟩ := h this
-    refine ⟨P.asIdeal, (PrimeSpectrum.le_iff_specializes _ _).mpr hs, P.2, ⟨?_⟩⟩
+    refine ⟨P.asIdeal, (PrimeSpectrum.le_iff_specializes _ _).mpr hs, P.isPrime, ⟨?_⟩⟩
     simpa [PrimeSpectrum.ext_iff] using heq.symm
 
 variable (R S) in

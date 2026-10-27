@@ -39,14 +39,14 @@ instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α]
 @[simp]
 theorem isCyclic_multiplicative_iff [SubNegMonoid α] :
     IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
-  ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
+  ⟨fun H ↦ ⟨H.exists_zpow_surjective⟩, fun H ↦ ⟨H.exists_zsmul_surjective⟩⟩
 
 instance isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) :=
   isCyclic_multiplicative_iff.mpr inferInstance
 
 @[simp]
 theorem isAddCyclic_additive_iff [DivInvMonoid α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
-  ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
+  ⟨fun H ↦ ⟨H.exists_zsmul_surjective⟩, fun H ↦ ⟨H.exists_zpow_surjective⟩⟩
 
 instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
   isAddCyclic_additive_iff.mpr inferInstance

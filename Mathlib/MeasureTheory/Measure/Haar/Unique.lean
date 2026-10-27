@@ -317,8 +317,8 @@ lemma haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos
     haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
   obtain ⟨f_comp, f_nonneg, f_one⟩ := hf
   have int_f_ne_zero : ∫ (x : G), f x ∂μ ≠ 0 :=
-    ne_of_gt (f.2.integral_pos_of_hasCompactSupport_nonneg_ne_zero f_comp f_nonneg f_one)
-  exact haarScalarFactor_eq_integral_div _ _ f.2 f_comp int_f_ne_zero
+    ne_of_gt (f.continuous_toFun.integral_pos_of_hasCompactSupport_nonneg_ne_zero f_comp f_nonneg f_one)
+  exact haarScalarFactor_eq_integral_div _ _ f.continuous_toFun f_comp int_f_ne_zero
 
 @[to_additive (attr := simp) addHaarScalarFactor_smul]
 lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsHaarMeasure μ]
@@ -368,7 +368,7 @@ lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
   · simp [haarScalarFactor, hG]
   obtain ⟨g, hg⟩ := exists_continuous_nonneg_pos (1 : G)
   have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
-    ne_of_gt (g.2.integral_pos_of_hasCompactSupport_nonneg_ne_zero hg.1 hg.2.1 hg.2.2)
+    ne_of_gt (g.continuous_toFun.integral_pos_of_hasCompactSupport_nonneg_ne_zero hg.1 hg.2.1 hg.2.2)
   apply NNReal.coe_injective
   calc
     haarScalarFactor μ μ = (∫ x, g x ∂μ) / ∫ x, g x ∂μ :=

@@ -62,7 +62,7 @@ instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   let g' : A' ⟶ B' := CompHausLike.ofHom _ ⟨g,hg⟩
   have : Epi g' := by rwa [CompHaus.epi_iff_surjective]
   obtain ⟨h, hh⟩ := Projective.factors f' g'
-  refine ⟨h, h.hom.hom.2, ?_⟩
+  refine ⟨h, h.hom.hom.continuous_toFun, ?_⟩
   ext t
   apply_fun (fun e => e t) at hh
   exact hh
@@ -202,7 +202,7 @@ namespace CompHaus
   "constructive" witness to the fact that `CompHaus` has enough projectives. -/
 noncomputable
 def presentation (X : CompHaus) : Stonean where
-  toTop := (projectivePresentation X).p.1
+  toTop := (projectivePresentation X).p.toTop
   prop := instExtremallyDisconnectedCarrierToTopTrueOfProjective X.projectivePresentation.p
 
 /-- The morphism from `presentation X` to `X`. -/

@@ -216,7 +216,7 @@ def ContMDiff (n : ℕ∞ω) (f : M → M') :=
 theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
     ContMDiffWithinAt I I' m f s x := by
   simp only [ContMDiffWithinAt] at hf ⊢
-  exact ⟨hf.1, hf.2.of_le (mod_cast le)⟩
+  exact ⟨hf.continuousWithinAt, hf.prop.of_le (mod_cast le)⟩
 
 theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
   ContMDiffWithinAt.of_le hf le
@@ -523,7 +523,7 @@ theorem contMDiffOn_iff [IsManifold I n M] [IsManifold I' n M'] :
               (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source)) := by
   constructor
   · intro h
-    refine ⟨fun x hx => (h x hx).1, fun x y z hz => ?_⟩
+    refine ⟨fun x hx => (h x hx).continuousWithinAt, fun x y z hz => ?_⟩
     simp only [mfld_simps] at hz
     let w := (extChartAt I x).symm z
     have : w ∈ s := by simp only [w, hz, mfld_simps]
@@ -620,7 +620,7 @@ theorem ContMDiff.of_succ (h : ContMDiff I I' (n + 1) f) : ContMDiff I I' n f :=
 
 theorem ContMDiffWithinAt.continuousWithinAt (hf : ContMDiffWithinAt I I' n f s x) :
     ContinuousWithinAt f s x :=
-  hf.1
+  hf.continuousWithinAt
 
 theorem ContMDiffAt.continuousAt (hf : ContMDiffAt I I' n f x) : ContinuousAt f x :=
   (continuousWithinAt_univ _ _).1 <| ContMDiffWithinAt.continuousWithinAt hf
@@ -635,8 +635,8 @@ theorem ContMDiff.continuous (hf : ContMDiff I I' n f) : Continuous f :=
 
 theorem contMDiffWithinAt_infty :
     ContMDiffWithinAt I I' ∞ f s x ↔ ∀ n : ℕ, ContMDiffWithinAt I I' n f s x :=
-  ⟨fun h n => ⟨h.1, contDiffWithinAt_infty.1 h.2 n⟩, fun H =>
-    ⟨(H 0).1, contDiffWithinAt_infty.2 fun n => (H n).2⟩⟩
+  ⟨fun h n => ⟨h.continuousWithinAt, contDiffWithinAt_infty.1 h.prop n⟩, fun H =>
+    ⟨(H 0).continuousWithinAt, contDiffWithinAt_infty.2 fun n => (H n).prop⟩⟩
 
 theorem contMDiffAt_infty : ContMDiffAt I I' ∞ f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_infty
@@ -781,7 +781,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
   -- Then `(extChartAt I x).symm '' v` is the neighborhood we are looking for.
   refine ⟨(extChartAt I x).symm '' v, ?_, ?_⟩
   · rw [← map_extChartAt_symm_nhdsWithin (I := I),
-      h.1.nhdsWithin_extChartAt_symm_preimage_inter_range (I := I) (I' := I')]
+      h.continuousWithinAt.nhdsWithin_extChartAt_symm_preimage_inter_range (I := I) (I' := I')]
     exact image_mem_map hmem
   · have hv₁ : (extChartAt I x).symm '' v ⊆ (extChartAt I x).source :=
       image_subset_iff.2 fun y hy ↦ (extChartAt I x).map_target (hsub hy).1

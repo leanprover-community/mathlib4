@@ -146,7 +146,7 @@ lemma isConservative_pointSmallEtale
 
 lemma isConservativeFamilyOfPoints_pointSmallEtale' (S : Scheme.{u}) :
     (ObjectProperty.ofObj (fun (s : S) ↦ pointSmallEtale
-      ((SpecToEquivOfField (SeparableClosure (S.residueField s)) _).2
+      ((SpecToEquivOfField (SeparableClosure (S.residueField s)) _).invFun
         ⟨s, CommRingCat.ofHom
           (algebraMap (S.residueField s) _)⟩))).IsConservativeFamilyOfPoints :=
   isConservative_pointSmallEtale _ (by

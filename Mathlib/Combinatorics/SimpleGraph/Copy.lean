@@ -196,7 +196,7 @@ instance [Subsingleton (V → W)] : Subsingleton (G.Copy H) := DFunLike.coe_inje
 instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
   .ofEquiv {f : G →g H // Injective f} {
     toFun f := ⟨f.1, f.2⟩
-    invFun f := ⟨f.1, f.2⟩
+    invFun f := ⟨f.toHom, f.injective'⟩
   }
 
 /-- A copy of `⊤` gives rise to an embedding of `⊤`. -/

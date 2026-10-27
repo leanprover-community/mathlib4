@@ -374,7 +374,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
     [hc : MeasurableSpace.CountablyGenerated β] (h : NullMeasurable f μ) : AEMeasurable f μ := by
   classical
   nontriviality β; inhabit β
-  rcases hc.1 with ⟨S, hSc, rfl⟩
+  rcases hc.isCountablyGenerated with ⟨S, hSc, rfl⟩
   choose! T hTf hTm hTeq using fun s hs ↦ (h <| .basic s hs).exists_measurable_subset_ae_eq
   choose! U hUf hUm hUeq using fun s hs ↦ (h <| .basic s hs).exists_measurable_superset_ae_eq
   set v := ⋃ s ∈ S, U s \ T s

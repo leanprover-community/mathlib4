@@ -73,7 +73,7 @@ theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (h : #α < 
       (by rwa [isRegular_aleph0.cof_ord])
     exact ⟨a, ha.trans' (succ_le_of_lt hα)⟩
   · exact infinite_pigeonhole_card f (succ #α) (succ_le_of_lt h) (hα.trans (le_succ _))
-      ((lt_succ _).trans_le (isRegular_succ hα).2.ge)
+      ((lt_succ _).trans_le (isRegular_succ hα).le_cof_ord.ge)
 
 /-- A function whose domain's cardinality is infinite and strictly greater than its codomain's
 has an infinite fiber. -/

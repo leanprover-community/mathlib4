@@ -147,7 +147,7 @@ theorem isClopen_setOfPred_rel (x : X) : IsClopen (Set.ofPred (S.toSetoid x)) :=
 alias isClopen_setOf_rel := isClopen_setOfPred_rel
 
 instance : Min (DiscreteQuotient X) :=
-  ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
+  ⟨fun S₁ S₂ => ⟨S₁.toSetoid ⊓ S₂.toSetoid, fun x => (S₁.isOpen_setOfPred_rel x).inter (S₂.isOpen_setOfPred_rel x)⟩⟩
 
 instance : PartialOrder (DiscreteQuotient X) :=
   PartialOrder.lift _ toSetoid_injective
@@ -174,8 +174,8 @@ variable (g : C(Y, Z)) (f : C(X, Y))
 
 /-- Comap a discrete quotient along a continuous map. -/
 def comap (S : DiscreteQuotient Y) : DiscreteQuotient X where
-  toSetoid := Setoid.comap f S.1
-  isOpen_setOfPred_rel _ := (S.2 _).preimage f.continuous
+  toSetoid := Setoid.comap f S.toSetoid
+  isOpen_setOfPred_rel _ := (S.isOpen_setOfPred_rel _).preimage f.continuous
 
 @[simp]
 theorem comap_id : S.comap (ContinuousMap.id X) = S := rfl

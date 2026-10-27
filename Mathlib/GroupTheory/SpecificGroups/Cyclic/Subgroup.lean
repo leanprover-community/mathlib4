@@ -83,9 +83,9 @@ theorem isCyclic_of_card_le_orderOf [Finite α] (x : α) (hx : Nat.card α ≤ o
 @[to_additive]
 theorem Subgroup.eq_bot_or_eq_top_of_prime_card
     (H : Subgroup G) [hp : Fact (Nat.card G).Prime] : H = ⊥ ∨ H = ⊤ := by
-  have : Finite G := Nat.finite_of_card_ne_zero hp.1.ne_zero
+  have : Finite G := Nat.finite_of_card_ne_zero hp.out.ne_zero
   have := card_subgroup_dvd_card H
-  rwa [Nat.dvd_prime hp.1, ← eq_bot_iff_card, card_eq_iff_eq_top] at this
+  rwa [Nat.dvd_prime hp.out, ← eq_bot_iff_card, card_eq_iff_eq_top] at this
 
 /-- Any non-identity element of a finite group of prime order generates the group. -/
 @[to_additive /-- Any non-identity element of a finite group of prime order generates the group. -/]
@@ -103,7 +103,7 @@ theorem mem_zpowers_of_prime_card {p : ℕ} [hp : Fact p.Prime]
 @[to_additive]
 theorem mem_powers_of_prime_card {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card G = p) {g g' : G} (hg : g ≠ 1) : g' ∈ Submonoid.powers g := by
-  have : Finite G := Nat.finite_of_card_ne_zero (h ▸ hp.1.ne_zero)
+  have : Finite G := Nat.finite_of_card_ne_zero (h ▸ hp.out.ne_zero)
   rw [mem_powers_iff_mem_zpowers]
   exact mem_zpowers_of_prime_card h hg
 
@@ -117,8 +117,8 @@ theorem powers_eq_top_of_prime_card {p : ℕ}
 @[to_additive /-- A finite group of prime order is cyclic. -/]
 theorem isCyclic_of_prime_card {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α = p) : IsCyclic α := by
-  have : Finite α := Nat.finite_of_card_ne_zero (h ▸ hp.1.ne_zero)
-  have : Nontrivial α := Finite.one_lt_card_iff_nontrivial.mp (h ▸ hp.1.one_lt)
+  have : Finite α := Nat.finite_of_card_ne_zero (h ▸ hp.out.ne_zero)
+  have : Nontrivial α := Finite.one_lt_card_iff_nontrivial.mp (h ▸ hp.out.one_lt)
   obtain ⟨g, hg⟩ : ∃ g : α, g ≠ 1 := exists_ne 1
   exact ⟨g, fun g' ↦ mem_zpowers_of_prime_card h hg⟩
 

@@ -139,7 +139,7 @@ def toNormalization : X ⟶ f.normalization :=
   have : (pullbackRestrictIsoRestrict f U.1).inv ≫
       Cover.trans ((directedCover Y).pullback₁ f) i ≫
       (pullbackRestrictIsoRestrict f V.1).hom = X.homOfLE
-        (f.preimage_mono (toOpens_mono i.1.1)) := by
+        (f.preimage_mono (toOpens_mono i.down.down)) := by
     rw [← cancel_mono (Scheme.Opens.ι _)]
     simp +instances [Cover.trans, Cover.locallyDirectedPullbackCover]
   rw [← Iso.inv_comp_eq, reassoc_of% this, ← Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc,
@@ -185,7 +185,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma toNormalization_fromNormalization :
     f.toNormalization ≫ f.fromNormalization = f := by
   refine Scheme.Cover.hom_ext (X.openCoverOfIsOpenCover _
-    (.comap (iSup_affineOpens_eq_top Y) f.base.1)) _ _ fun U ↦ ?_
+    (.comap (iSup_affineOpens_eq_top Y) f.base.hom')) _ _ fun U ↦ ?_
   refine (f.ι_toNormalization_assoc _ _).trans ?_
   rw [f.ι_fromNormalization, ← Spec.map_comp_assoc]
   change (f ⁻¹ᵁ U.1).toSpecΓ ≫ Spec.map (f.app _) ≫ U.2.fromSpec = (f ⁻¹ᵁ U.1).ι ≫ _
@@ -197,7 +197,7 @@ instance : IsIntegralHom f.fromNormalization := by
     (iSup_affineOpens_eq_top _)]
   intro U
   let e := IsOpenImmersion.isoOfRangeEq (f.fromNormalization ⁻¹ᵁ U).ι (f.normalizationOpenCover.f U)
-      (by simpa using congr($(f.fromNormalization_preimage U).1))
+      (by simpa using congr($(f.fromNormalization_preimage U).carrier))
   rw [← MorphismProperty.cancel_left_of_respectsIso @IsIntegralHom e.inv,
     ← MorphismProperty.cancel_right_of_respectsIso @IsIntegralHom _ U.2.isoSpec.hom]
   have : (f.normalizationDiagramMap.app (.op U)).hom.IsIntegral := by
@@ -600,7 +600,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := S.isBasis_affineOpens.exists_subset_of_mem_open
     (Set.mem_univ ((pullback.snd _ g ≫ g) x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU : V ≤ g ⁻¹ᵁ U⟩ :=
-    Y.isBasis_affineOpens.exists_subset_of_mem_open (a := pullback.snd _ g x) hxU (g ⁻¹ᵁ U).2
+    Y.isBasis_affineOpens.exists_subset_of_mem_open (a := pullback.snd _ g x) hxU (g ⁻¹ᵁ U).is_open'
   let W := pullback.snd (Scheme.Hom.fromNormalization f) g ⁻¹ᵁ V
   refine ⟨W, hxV, (isIso_morphismRestrict_iff_isIso_app _ (U := W) (hV.preimage _)).mpr ?_⟩
   have := isIso_pushoutSection_of_isQuasiSeparated_of_flat_right

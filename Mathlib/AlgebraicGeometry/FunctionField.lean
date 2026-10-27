@@ -76,7 +76,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenI
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
-  · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
+  · exact ⟨_, trivial, Set.mem_range_self hX.toNonempty.some⟩
 
 noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X] (x : X) :
     Algebra (X.presheaf.stalk x) X.functionField := by

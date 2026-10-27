@@ -551,7 +551,7 @@ theorem add_pf_add_overlap
 
 theorem add_pf_add_overlap_zero
     (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
-  subst_vars; rw [add_add_add_comm, h.1, Nat.cast_zero, add_pf_zero_add]
+  subst_vars; rw [add_add_add_comm, h.out, Nat.cast_zero, add_pf_zero_add]
 
 theorem add_pf_add_lt (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
 

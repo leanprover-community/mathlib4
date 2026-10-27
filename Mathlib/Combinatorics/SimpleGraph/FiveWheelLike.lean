@@ -102,7 +102,7 @@ private lemma IsNClique.insert_insert (h1 : G.IsNClique r (insert a s))
   apply h1.insert (fun b hb ↦ ?_)
   obtain (rfl | h) := mem_insert.1 hb
   · exact ha.symm
-  · exact h2.1 (mem_insert_self _ s) (mem_insert_of_mem h) <| fun h' ↦ (h3 (h' ▸ h)).elim
+  · exact h2.isClique (mem_insert_self _ s) (mem_insert_of_mem h) <| fun h' ↦ (h3 (h' ▸ h)).elim
 
 private lemma IsNClique.insert_insert_erase (hs : G.IsNClique r (insert a s)) (hc : c ∈ s)
     (ha : a ∉ s) (hd : ∀ w ∈ insert a s, w ≠ c → G.Adj w b) :
@@ -158,7 +158,7 @@ include hw
 
 @[grind →]
 lemma fst_notMem_right : w₁ ∉ t :=
-  fun h ↦ hw.isPathGraph3Compl.not_adj_fst <| hw.isNClique_right.1 (mem_insert_self ..)
+  fun h ↦ hw.isPathGraph3Compl.not_adj_fst <| hw.isNClique_right.isClique (mem_insert_self ..)
     (mem_insert_of_mem h) hw.isPathGraph3Compl.ne_fst
 
 @[grind →]
@@ -169,8 +169,8 @@ Any graph containing an `IsFiveWheelLike r k` structure is not `(r + 1)`-colorab
 -/
 lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
   intro ⟨C⟩
-  have h := C.surjOn_of_card_le_isClique hw.isNClique_fst_left.1 (by simp [hw.isNClique_fst_left.2])
-  have := C.surjOn_of_card_le_isClique hw.isNClique_snd_right.1 (by simp [hw.isNClique_snd_right.2])
+  have h := C.surjOn_of_card_le_isClique hw.isNClique_fst_left.isClique (by simp [hw.isNClique_fst_left.card_eq])
+  have := C.surjOn_of_card_le_isClique hw.isNClique_snd_right.isClique (by simp [hw.isNClique_snd_right.card_eq])
   -- Since `C` is an `r + 1`-coloring and `insert w₁ s` is an `r + 1`-clique, it contains a vertex
   -- `x` which shares its color with `v`
   obtain ⟨x, hx, hcx⟩ := h (a := C v) trivial
@@ -186,14 +186,14 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
       subst_vars; exact C.valid hw.isPathGraph3Compl.adj (hcy ▸ hcx)
     | inr hy =>
       apply (C.valid _ hcy.symm).elim
-      exact hw.isNClique_right.1 (by simp) (by simp [hy]) fun h ↦ hw.notMem_right (h ▸ hy)
+      exact hw.isNClique_right.isClique (by simp) (by simp [hy]) fun h ↦ hw.notMem_right (h ▸ hy)
   | inr hx =>
     apply (C.valid _ hcx.symm).elim
-    exact hw.isNClique_left.1 (by simp) (by simp [hx]) fun h ↦ hw.notMem_left (h ▸ hx)
+    exact hw.isNClique_left.isClique (by simp) (by simp [hx]) fun h ↦ hw.notMem_left (h ▸ hx)
 
 @[grind →]
 lemma card_left : s.card = r := by
-  simp [← Nat.succ_inj, ← hw.isNClique_left.2, hw.notMem_left]
+  simp [← Nat.succ_inj, ← hw.isNClique_left.card_eq, hw.notMem_left]
 
 @[grind →]
 lemma card_right : t.card = r := hw.symm.card_left
@@ -312,13 +312,13 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
     refine ⟨?_, ?_, ?_⟩
     · by_cases hax : x = a <;> rintro rfl
       · grind
-      · exact haj <| hw.isNClique_left.1 (mem_insert_self ..) (mem_insert_of_mem has) hax
+      · exact haj <| hw.isNClique_left.isClique (mem_insert_self ..) (mem_insert_of_mem has) hax
     · by_cases hax : x = a <;> rintro rfl
       · grind
-      · exact haj <| hw.isNClique_fst_left.1 (mem_insert_self ..) (mem_insert_of_mem has) hax
+      · exact haj <| hw.isNClique_fst_left.isClique (mem_insert_self ..) (mem_insert_of_mem has) hax
     · by_cases hbx : x = b <;> rintro rfl
       · grind
-      · exact hbj <| hw.isNClique_snd_right.1 (mem_insert_self ..) (mem_insert_of_mem hbt) hbx
+      · exact hbj <| hw.isNClique_snd_right.isClique (mem_insert_self ..) (mem_insert_of_mem hbt) hbx
   -- Since `x` is not adjacent to `a` and `b` but is adjacent to all but at most two vertices
   -- from `W` we have `∀ w ∈ W, w ≠ a → w ≠ b → G.Adj w x`
   have wa : ∀ ⦃w⦄, w ∈ W → w ≠ a → w ≠ b → G.Adj w x := by

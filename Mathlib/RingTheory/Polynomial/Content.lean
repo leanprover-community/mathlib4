@@ -65,7 +65,7 @@ theorem isPrimitive_of_dvd {p q : R[X]} (hp : IsPrimitive p) (hq : q ∣ p) : Is
 theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
     {p : Polynomial R} (hp : Irreducible p) (hp' : p.natDegree ≠ 0) : p.IsPrimitive := by
   rintro r ⟨q, hq⟩
-  suffices ¬IsUnit q by simpa using ((hp.2 hq).resolve_right this).map Polynomial.constantCoeff
+  suffices ¬IsUnit q by simpa using ((hp.isUnit_or_isUnit hq).resolve_right this).map Polynomial.constantCoeff
   intro H
   have hr : r ≠ 0 := by rintro rfl; simp_all
   obtain ⟨s, hs, rfl⟩ := Polynomial.isUnit_iff.mp H

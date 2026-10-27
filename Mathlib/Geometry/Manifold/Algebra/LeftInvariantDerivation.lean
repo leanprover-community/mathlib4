@@ -68,8 +68,8 @@ instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I
   coe_injective _ _ h := toDerivation_injective <| DFunLike.ext' h
 
 instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
-  map_add f := map_add f.1
-  map_smulₛₗ f := map_smul f.1.1
+  map_add f := map_add f.toDerivation
+  map_smulₛₗ f := map_smul f.toDerivation.toLinearMap
 
 variable {r : 𝕜} {X Y : LeftInvariantDerivation I G} {f f' : C^∞⟮I, G; 𝕜⟯}
 
@@ -151,16 +151,16 @@ theorem lift_zero :
   rfl
 
 instance hasNatScalar : SMul ℕ (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
+  smul r X := ⟨r • X.toDerivation, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 
 instance hasIntScalar : SMul ℤ (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
+  smul r X := ⟨r • X.toDerivation, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 
 instance : AddCommGroup (LeftInvariantDerivation I G) :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 instance : SMul 𝕜 (LeftInvariantDerivation I G) where
-  smul r X := ⟨r • X.1, fun g => by
+  smul r X := ⟨r • X.toDerivation, fun g => by
     simp only [LinearMap.map_smul_of_tower, map_smul]; rw [left_invariant']⟩
 
 variable (r)
@@ -170,7 +170,7 @@ theorem coe_smul : ⇑(r • X) = r • ⇑X :=
   rfl
 
 @[simp]
-theorem lift_smul (k : 𝕜) : (k • X).1 = k • X.1 :=
+theorem lift_smul (k : 𝕜) : (k • X).toDerivation = k • X.toDerivation :=
   rfl
 
 variable (I G)
@@ -188,7 +188,7 @@ instance : Module 𝕜 (LeftInvariantDerivation I G) :=
 /-- Evaluation at a point for left invariant derivations. Same thing as for generic global
 derivations (`Derivation.evalAt`). -/
 def evalAt : LeftInvariantDerivation I G →ₗ[𝕜] PointDerivation I g where
-  toFun X := Derivation.evalAt g X.1
+  toFun X := Derivation.evalAt g X.toDerivation
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 

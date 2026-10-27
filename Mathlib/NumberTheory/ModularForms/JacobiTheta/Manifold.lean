@@ -27,4 +27,4 @@ public section
 open scoped UpperHalfPlane Manifold
 
 theorem mdifferentiable_jacobiTheta : MDiff (jacobiTheta ∘ (↑) : ℍ → ℂ) :=
-  fun τ => (differentiableAt_jacobiTheta τ.2).mdifferentiableAt.comp τ τ.mdifferentiable_coe
+  fun τ => (differentiableAt_jacobiTheta τ.coe_im_pos).mdifferentiableAt.comp τ τ.mdifferentiable_coe

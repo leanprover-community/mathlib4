@@ -62,7 +62,7 @@ theorem IsRightRegular.isUnit_of_finite (h : IsRightRegular r) : IsUnit r := by
   rwa [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
 
 theorem isRegular_iff_isUnit_of_finite : IsRegular r ↔ IsUnit r where
-  mp h := h.1.isUnit_of_finite
+  mp h := h.left.isUnit_of_finite
   mpr h := h.isRegular
 
 end Monoid

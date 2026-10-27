@@ -271,7 +271,7 @@ attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
 /-- `mapCommGrp` is functorial in the left-exact functor. -/
 @[simps]
 noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp C ⥤ CommGrp D where
-  obj F := F.1.mapCommGrp
+  obj F := F.obj.mapCommGrp
   map α := mapCommGrpNatTrans α.hom
 
 end Functor

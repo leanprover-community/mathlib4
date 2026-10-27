@@ -75,9 +75,9 @@ open EisensteinSeries in
 lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
     logDeriv (η ∘ (-1 / ·)) z = logDeriv (sqrt * η) z := by
   rw [logDeriv_eta_comp_div_eq z,
-      logDeriv_mul _ (by simp [sqrt, ne_zero z]) (eta_ne_zero z.2)
+      logDeriv_mul _ (by simp [sqrt, ne_zero z]) (eta_ne_zero z.coe_im_pos)
       (differentiableAt_sqrt (mem_slitPlane z))
-      (differentiableAt_eta_of_mem_upperHalfPlaneSet z.2), logDeriv_apply sqrt]
+      (differentiableAt_eta_of_mem_upperHalfPlaneSet z.coe_im_pos), logDeriv_apply sqrt]
   have hE2 := congr($(E2_slash_action ModularGroup.S) z)
   simp only [one_div, SL_slash_def, modular_S_smul, ModularGroup.denom_S,
     Int.reduceNeg, zpow_neg, riemannZeta_two, mul_inv_rev, inv_div, Pi.sub_apply, Pi.smul_apply,
@@ -117,11 +117,11 @@ lemma discriminant_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n 
   congr
   · simp [Periodic.qParam, ← exp_nsmul, nsmul_eq_mul, Nat.cast_ofNat]
     grind
-  · exact ((multipliableLocallyUniformlyOn_eta.multipliable z.2).tprod_pow _).symm
+  · exact ((multipliableLocallyUniformlyOn_eta.multipliable z.coe_im_pos).tprod_pow _).symm
 
 /-- The modular discriminant is non-vanishing on the upper half-plane. -/
 lemma discriminant_ne_zero (z : ℍ) : Δ z ≠ 0 := by
-  simpa [discriminant] using eta_ne_zero z.2
+  simpa [discriminant] using eta_ne_zero z.coe_im_pos
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant is invariant under `T : z ↦ z + 1`, i.e., `Δ(z + 1) = Δ(z)`. -/
@@ -148,7 +148,7 @@ lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
     rw [SL_slash_apply, UpperHalfPlane.modular_S_smul]
     simpa [denom, ModularGroup.S]
   have he : η (-(↑z)⁻¹) = (sqrt I)⁻¹ * (sqrt z * η z) := by
-    simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.2
+    simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.coe_im_pos
   simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
 
@@ -168,7 +168,7 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
   simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
   convert! this using 2 with τ
   rw [Multipliable.tprod_pow]
-  apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
+  apply (multipliableLocallyUniformlyOn_eta.multipliable τ.coe_im_pos).congr
   simp [eta_q, Periodic.qParam, ← exp_nat_mul]
 
 @[deprecated (since := "2026-04-30")]

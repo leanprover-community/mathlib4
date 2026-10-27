@@ -54,7 +54,7 @@ def range (n : ℕ) : Finset ℕ :=
   ⟨_, nodup_range n⟩
 
 @[simp]
-theorem range_val (n : ℕ) : (range n).1 = Multiset.range n :=
+theorem range_val (n : ℕ) : (range n).val = Multiset.range n :=
   rfl
 
 @[simp] lemma _root_.Multiset.toFinset_range (n : ℕ) : (Multiset.range n).toFinset = .range n :=

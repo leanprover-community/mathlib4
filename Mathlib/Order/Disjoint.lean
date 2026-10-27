@@ -318,7 +318,7 @@ attribute [to_dual self] IsCompl.casesOn
 @[to_dual isCompl_iff']
 theorem isCompl_iff [PartialOrder α] [BoundedOrder α] {a b : α} :
     IsCompl a b ↔ Disjoint a b ∧ Codisjoint a b :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+  ⟨fun h ↦ ⟨h.disjoint, h.codisjoint⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 namespace IsCompl
 
@@ -328,16 +328,16 @@ variable [PartialOrder α] [BoundedOrder α] {x y : α}
 
 @[symm]
 protected theorem symm (h : IsCompl x y) : IsCompl y x :=
-  ⟨h.1.symm, h.2.symm⟩
+  ⟨h.disjoint.symm, h.codisjoint.symm⟩
 
 @[grind =]
 lemma _root_.isCompl_comm : IsCompl x y ↔ IsCompl y x := ⟨IsCompl.symm, IsCompl.symm⟩
 
 theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
-  ⟨h.2, h.1⟩
+  ⟨h.codisjoint, h.disjoint⟩
 
 theorem ofDual {a b : αᵒᵈ} (h : IsCompl a b) : IsCompl (ofDual a) (ofDual b) :=
-  ⟨h.2, h.1⟩
+  ⟨h.codisjoint, h.disjoint⟩
 
 end BoundedPartialOrder
 

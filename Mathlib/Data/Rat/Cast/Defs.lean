@@ -132,7 +132,7 @@ theorem cast_one : ((1 : ℚ) : α) = 1 :=
   (cast_intCast _).trans Int.cast_one
 
 theorem cast_commute (r : ℚ) (a : α) : Commute (↑r) a := by
-  simpa only [cast_def] using (r.1.cast_commute a).div_left (r.2.cast_commute a)
+  simpa only [cast_def] using (r.num.cast_commute a).div_left (r.den.cast_commute a)
 
 theorem cast_comm (r : ℚ) (a : α) : (r : α) * a = a * r :=
   (cast_commute r a).eq

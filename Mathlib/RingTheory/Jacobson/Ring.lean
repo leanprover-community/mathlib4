@@ -62,7 +62,7 @@ class IsJacobsonRing (R : Type*) [CommRing R] : Prop where
 
 theorem isJacobsonRing_iff {R} [CommRing R] :
     IsJacobsonRing R ↔ ∀ I : Ideal R, I.IsRadical → I.jacobson = I :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out', fun h => ⟨h⟩⟩
 
 theorem IsJacobsonRing.out {R} [CommRing R] :
     IsJacobsonRing R → ∀ {I : Ideal R}, I.IsRadical → I.jacobson = I :=
@@ -169,7 +169,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
       h.ne_top (Ideal.eq_top_of_isUnit_mem _ hy (map_units _ ⟨y, Submonoid.mem_powers _⟩))⟩
     have hJ : J.IsPrime := IsMaximal.isPrime h
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
-    have : y ∉ (J.under R).1 := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
+    have : y ∉ (J.under R).toAddSubmonoid := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
     rw [← H.out hJ.left.isRadical, jacobson, Submodule.mem_toAddSubmonoid, Ideal.mem_sInf] at this
     push Not at this
     rcases this with ⟨I, ⟨hJI, hIm⟩, hI'⟩
@@ -181,7 +181,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
         refine isPrime_of_isPrime_disjoint (powers y) _ I hIm.isPrime ?_
         rwa [disjoint_powers_iff_notMem_of_isPrime]
       have : J ≤ I.map (algebraMap R S) := map_under (Submonoid.powers y) S J ▸ map_mono hJI
-      exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
+      exact absurd (h.out.2 _ (lt_of_le_of_ne this hJ)) hI_p.ne_top'
   · simp only [Ideal.mem_comap, and_imp]
     exact (fun _ _ ↦ isMaximal_of_isMaximal_under (powers y) S J)
 

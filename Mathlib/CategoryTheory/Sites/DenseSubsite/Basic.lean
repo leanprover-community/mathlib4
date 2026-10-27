@@ -164,9 +164,9 @@ namespace Types
 variable {ℱ : Dᵒᵖ ⥤ Type v} {ℱ' : Sheaf K (Type v)} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj)
 
 theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) (x) :
-    ℱ'.1.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
+    ℱ'.obj.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
   have {X Y} (i : X ⟶ Y) (x) :
-      ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
+      ℱ'.obj.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
     congrm $((α.naturality i.op).symm) x
   refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
   simp only [← Functor.map_comp_apply, ← op_comp, ← e, this]
@@ -176,7 +176,7 @@ theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y)
 set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 theorem naturality [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) :
-    α.app _ ≫ ℱ'.1.map i.op = ℱ.map i.op ≫ α.app _ := by ext; exact naturality_apply α i _
+    α.app _ ≫ ℱ'.obj.map i.op = ℱ.map i.op ≫ α.app _ := by ext; exact naturality_apply α i _
 
 /--
 (Implementation). Given a section of `ℱ` on `X`, we can obtain a family of elements valued in `ℱ'`
@@ -205,7 +205,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
   suffices ∀ {Z W₁ W₂} (iWX₁ : G.obj W₁ ⟶ X) (iWX₂ : G.obj W₂ ⟶ X) (iZW₁ : Z ⟶ G.obj W₁)
       (iZW₂ : Z ⟶ G.obj W₂), iZW₁ ≫ iWX₁ = iZW₂ ≫ iWX₂ →
-      ℱ'.1.map iZW₁.op (α.app _ (ℱ.map iWX₁.op x)) = ℱ'.1.map iZW₂.op (α.app _ (ℱ.map iWX₂.op x)) by
+      ℱ'.obj.map iZW₁.op (α.app _ (ℱ.map iWX₁.op x)) = ℱ'.obj.map iZW₂.op (α.app _ (ℱ.map iWX₂.op x)) by
     rintro Y₁ Y₂ Z iZY₁ iZY₂ f₁ f₂ h₁ h₂ e
     simp only [pushforwardFamily, ← Functor.map_comp_apply, ← op_comp]
     generalize Nonempty.some h₁ = l₁
@@ -617,7 +617,7 @@ lemma mapPreimage_map_of_fac {X Y Z : C} (f : G.obj X ⟶ G.obj Y)
       rintro ⟨W₀, a, ha⟩
       dsimp at ha ⊢
       rw [Category.assoc, ← Functor.map_comp, ← op_comp, mapPreimage]
-      rw [F.2.amalgamate_map ⟨_, imageSieve_mem J K G f⟩
+      rw [F.property.amalgamate_map ⟨_, imageSieve_mem J K G f⟩
         (fun ⟨W₀, a, ha⟩ ↦ F.obj.map ha.choose.op) _ ⟨W₀, a ≫ p, ha⟩,
         ← Functor.map_comp, ← op_comp]
       apply map_eq_of_eq K G

@@ -66,8 +66,8 @@ theorem topologicalKrullDim_zero_of_discreteTopology
     (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     topologicalKrullDim X ≤ 0 := by
   refine krullDim_nonpos_iff_forall_isMax.mpr fun Z Y h ↦ (h.antisymm' fun x hx ↦ ?_).le
-  obtain ⟨z, hz⟩ := Z.2.nonempty
-  rwa [DiscreteTopology.isDiscrete.subsingleton_of_isPreirreducible Y.2.isPreirreducible hx (h hz)]
+  obtain ⟨z, hz⟩ := Z.isIrreducible'.nonempty
+  rwa [DiscreteTopology.isDiscrete.subsingleton_of_isPreirreducible Y.isIrreducible'.isPreirreducible hx (h hz)]
 
 lemma Topology.IsOpenEmbedding.coheight_map {f : X → Y} (hf : IsOpenEmbedding f)
     (Z : TopologicalSpace.IrreducibleCloseds X) :

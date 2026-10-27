@@ -110,7 +110,7 @@ theorem IsLocallyFull.ext [G.IsLocallyFull K]
     (ℱ : Sheaf K Type*) {X Y : C} (i : G.obj X ⟶ G.obj Y)
     {s t : ℱ.obj.obj (op (G.obj X))}
     (h : ∀ ⦃Z : C⦄ (j : Z ⟶ X) (f : Z ⟶ Y), G.map f = G.map j ≫ i →
-      ℱ.1.map (G.map j).op s = ℱ.1.map (G.map j).op t) : s = t := by
+      ℱ.obj.map (G.map j).op s = ℱ.obj.map (G.map j).op t) : s = t := by
   apply (((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.property) _
     (G.functorPushforward_imageSieve_mem K i)).isSeparatedFor.ext
   rintro Z _ ⟨W, iWX, iZW, ⟨iWY, e⟩, rfl⟩
@@ -120,7 +120,7 @@ theorem IsLocallyFaithful.ext [G.IsLocallyFaithful K] (ℱ : Sheaf K Type*)
     {X Y : C} (i₁ i₂ : X ⟶ Y) (e : G.map i₁ = G.map i₂)
     {s t : ℱ.obj.obj (op (G.obj X))}
     (h : ∀ ⦃Z : C⦄ (j : Z ⟶ X), j ≫ i₁ = j ≫ i₂ →
-      ℱ.1.map (G.map j).op s = ℱ.1.map (G.map j).op t) : s = t := by
+      ℱ.obj.map (G.map j).op s = ℱ.obj.map (G.map j).op t) : s = t := by
   apply (((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.property) _
     (G.functorPushforward_equalizer_mem K i₁ i₂ e)).isSeparatedFor.ext
   rintro Z _ ⟨W, iWX, iZW, hiWX, rfl⟩

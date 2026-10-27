@@ -129,15 +129,15 @@ end
 namespace ContinuousLinearMap
 
 theorem bound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) : ∃ C, 0 < C ∧ ∀ x : E, ‖f x‖ ≤ C * ‖x‖ :=
-  SemilinearMapClass.bound_of_continuous f f.2
+  SemilinearMapClass.bound_of_continuous f f.cont
 
 theorem nnbound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     ∃ C : ℝ≥0, 0 < C ∧ ∀ x : E, ‖f x‖₊ ≤ C * ‖x‖₊ :=
-  SemilinearMapClass.nnbound_of_continuous f f.2
+  SemilinearMapClass.nnbound_of_continuous f f.cont
 
 theorem ebound [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     ∃ C : ℝ≥0, 0 < C ∧ ∀ x : E, ‖f x‖ₑ ≤ C * ‖x‖ₑ :=
-  SemilinearMapClass.ebound_of_continuous f f.2
+  SemilinearMapClass.ebound_of_continuous f f.cont
 
 section
 
@@ -202,7 +202,7 @@ theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, ‖x‖ ≠ 0 → ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
   opNorm_le_bound f hMp fun x =>
     (ne_or_eq ‖x‖ 0).elim (hM x) fun h => by
-      simp only [h, mul_zero, norm_image_of_norm_eq_zero f f.2 h, le_refl]
+      simp only [h, mul_zero, norm_image_of_norm_eq_zero f f.cont h, le_refl]
 
 theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 ≤ M)
     (h_above : ∀ x, ‖φ x‖ ≤ M * ‖x‖) (h_below : ∀ N ≥ 0, (∀ x, ‖φ x‖ ≤ N * ‖x‖) → M ≤ N) :

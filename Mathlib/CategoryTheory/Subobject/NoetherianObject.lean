@@ -121,7 +121,7 @@ lemma isNoetherianObject_of_mono (i : X ⟶ Y) [Mono i] [IsNoetherianObject Y] :
   rw [isNoetherianObject_iff_monotone_chain_condition]
   intro f
   obtain ⟨n, hn⟩ := monotone_chain_condition_of_isNoetherianObject
-    ⟨_, (Subobject.map i).monotone.comp f.2⟩
+    ⟨_, (Subobject.map i).monotone.comp f.monotone'⟩
   exact ⟨n, fun m hm ↦ Subobject.map_obj_injective i (hn m hm)⟩
 
 instance : (isNoetherianObject (C := C)).IsClosedUnderSubobjects where

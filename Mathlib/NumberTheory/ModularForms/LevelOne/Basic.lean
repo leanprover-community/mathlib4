@@ -94,7 +94,7 @@ private theorem levelOne_nonpos_wt_const (hk : k ≤ 0) (f : F) :
     f = Function.const ℍ (cuspFunction 1 f 0) := by
   ext z
   have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
-    simpa using (norm_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
+    simpa using (norm_qParam_lt_iff zero_lt_one 0 z.coe).mpr z.coe_im_pos
   simpa [← SlashInvariantFormClass.eq_cuspFunction f _ one_mem_strictPeriods_SL one_ne_zero]
     using cuspFunction_eqOn_const_of_nonpos_wt hk f hQ
 

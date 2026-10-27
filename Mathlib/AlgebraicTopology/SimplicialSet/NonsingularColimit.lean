@@ -72,6 +72,6 @@ noncomputable def coconeN' : Cocone X.functorN' where
 for all nondegenerate simplices `x : X.N`. -/
 noncomputable def isColimitCoconeN' : IsColimit X.coconeN' :=
   (IsColimit.equivOfNatIsoOfIso
-    X.functorN'Iso.symm _ _ (Cocone.ext (Iso.refl _))).1 X.isColimitCoconeN
+    X.functorN'Iso.symm _ _ (Cocone.ext (Iso.refl _))).toFun X.isColimitCoconeN
 
 end SSet

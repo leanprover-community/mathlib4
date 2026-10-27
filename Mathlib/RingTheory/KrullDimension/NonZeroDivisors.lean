@@ -105,7 +105,7 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     rw [ENat.WithBot.eq_top_iff_forall_ge]
     intro n
     let ι := Infinite.natEmbedding σ ∘ Fin.val (n := n + 1)
-    have := Function.invFun_surjective (f := ι) ((Infinite.natEmbedding σ).2.comp Fin.val_injective)
+    have := Function.invFun_surjective (f := ι) ((Infinite.natEmbedding σ).inj'.comp Fin.val_injective)
     refine le_trans ?_ (ringKrullDim_le_of_surjective
       (rename (R := R) _).toRingHom (rename_surjective _ this))
     refine le_trans ?_ (ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _)

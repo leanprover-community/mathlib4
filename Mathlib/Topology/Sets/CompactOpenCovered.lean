@@ -34,7 +34,7 @@ open TopologicalSpace Opens
 def IsCompactOpenCovered {S ι : Type*} {X : ι → Type*} (f : ∀ i, X i → S)
     [∀ i, TopologicalSpace (X i)] (U : Set S) : Prop :=
   ∃ (s : Set ι) (_ : s.Finite) (V : ∀ i ∈ s, Opens (X i)),
-    (∀ (i : ι) (h : i ∈ s), IsCompact (V i h).1) ∧
+    (∀ (i : ι) (h : i ∈ s), IsCompact (V i h).carrier) ∧
     ⋃ (i : ι) (h : i ∈ s), (f i) '' (V i h) = U
 
 namespace IsCompactOpenCovered
@@ -45,7 +45,7 @@ lemma empty : IsCompactOpenCovered f ∅ :=
   ⟨∅, Set.finite_empty, fun _ _ ↦ ⟨∅, isOpen_empty⟩, fun _ _ ↦ isCompact_empty, by simp⟩
 
 lemma iff_of_unique [Unique ι] :
-    IsCompactOpenCovered f U ↔ ∃ (V : Opens (X default)), IsCompact V.1 ∧ f default '' V.1 = U := by
+    IsCompactOpenCovered f U ↔ ∃ (V : Opens (X default)), IsCompact V.carrier ∧ f default '' V.carrier = U := by
   refine ⟨fun ⟨s, hs, V, hc, hcov⟩ ↦ ?_, fun ⟨V, hc, h⟩ ↦ ?_⟩
   · cases s.eq_empty_or_singleton_of_unique <;> aesop
   · refine ⟨{default}, Set.finite_singleton _, fun i h ↦ h ▸ V, fun i ↦ ?_, by simpa⟩
@@ -57,7 +57,7 @@ lemma id_iff_isOpen_and_isCompact [TopologicalSpace S] :
   rw [iff_of_unique]
   refine ⟨fun ⟨V, hV, heq⟩ ↦ ?_, fun ⟨ho, hc⟩ ↦ ⟨⟨U, ho⟩, hc, by simp⟩⟩
   simp only [id_eq, Set.image_id', carrier_eq_coe, ← heq] at heq ⊢
-  exact ⟨V.2, hV⟩
+  exact ⟨V.is_open', hV⟩
 
 lemma iff_isCompactOpenCovered_sigmaMk :
     IsCompactOpenCovered f U ↔
@@ -68,7 +68,7 @@ lemma iff_isCompactOpenCovered_sigmaMk :
   · refine ⟨⟨s.sigma fun i ↦ if h : i ∈ s then V i h else ∅, isOpen_sigma_iff.mpr ?_⟩, ?_, ?_⟩
     · intro i
       by_cases h : i ∈ s
-      · simpa [h] using (V _ _).2
+      · simpa [h] using (V _ _).is_open'
       · simp [h]
     · dsimp only
       exact Set.isCompact_sigma hs fun i ↦ (by simp_all)
@@ -76,14 +76,14 @@ lemma iff_isCompactOpenCovered_sigmaMk :
   · obtain ⟨s, t, hs, hc, heq'⟩ := hc.sigma_exists_finite_sigma_eq
     have (i : ι) (hi : i ∈ s) : IsOpen (t i) := by
       rw [← Set.mk_preimage_sigma (t := t) hi]
-      exact isOpen_sigma_iff.mp (heq' ▸ V.2) i
+      exact isOpen_sigma_iff.mp (heq' ▸ V.is_open') i
     refine ⟨s, hs, fun i hi ↦ ⟨t i, this i hi⟩, fun i _ ↦ hc i, ?_⟩
     simp_rw [coe_mk, ← heq, ← heq', Set.image_sigma_eq_iUnion, Function.comp_apply]
 
 lemma of_iUnion_eq_of_finite {κ : Type*} [Finite κ] (s : κ → Set S) (hs : ⋃ i, s i = U)
     (H : ∀ i, IsCompactOpenCovered f (s i)) : IsCompactOpenCovered f U := by
   rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
-  have (i : κ) : ∃ (V : Opens (Σ i, X i)), IsCompact V.1 ∧ (f _ ·.snd) '' V.1 = s i := by
+  have (i : κ) : ∃ (V : Opens (Σ i, X i)), IsCompact V.carrier ∧ (f _ ·.snd) '' V.carrier = s i := by
     convert H i; rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
   choose V hVeq hVc using this
   exact ⟨⨆ i, V i, by simpa using isCompact_iUnion hVeq, by simp_all [Set.image_iUnion, ← hs]⟩
@@ -97,7 +97,7 @@ lemma of_biUnion_eq_of_isCompact [TopologicalSpace S] {U : Set S} (hU : IsCompac
     (s : Set (Opens S)) (hs : ⋃ t ∈ s, t = U) (H : ∀ t ∈ s, IsCompactOpenCovered f t) :
     IsCompactOpenCovered f U := by
   classical
-  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun V : s ↦ V.1) (fun V ↦ V.1.2) (by simp [← hs])
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun V : s ↦ V.1) (fun V ↦ V.1.is_open') (by simp [← hs])
   refine of_biUnion_eq_of_finite (SetLike.coe '' (t.image Subtype.val : Set (Opens S))) ?_ ?_ ?_
   · exact subset_antisymm (fun x h ↦ by aesop) (subset_trans ht <| by simp)
   · exact Set.toFinite _
@@ -119,19 +119,19 @@ lemma image {i : ι} (V : Opens (X i)) (hV : IsCompact (X := X i) V) :
   refine ⟨{i}, Set.finite_singleton i, fun j hj ↦ hj ▸ V, by rintro i rfl; simpa, by simp⟩
 
 lemma of_finite {U : Set S} {κ : Type*} [Finite κ] (a : κ → ι) (V : ∀ k, Opens (X (a k)))
-    (hV : ∀ k, IsCompact (V k).1) (hU : ⋃ k, f (a k) '' V k = U) :
+    (hV : ∀ k, IsCompact (V k).carrier) (hU : ⋃ k, f (a k) '' V k = U) :
     IsCompactOpenCovered f U :=
   of_iUnion_eq_of_finite _ hU (fun _ ↦ .image _ (hV _))
 
 /-- If `U` is compact-open covered and the `X i` have a basis of compact opens,
 `U` can be written as the union of images of elements of the basis. -/
 lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis (B i))
-    (hBc : ∀ (i : ι), ∀ U ∈ B i, IsCompact U.1)
+    (hBc : ∀ (i : ι), ∀ U ∈ B i, IsCompact U.carrier)
     {U : Set S} (hU : IsCompactOpenCovered f U) :
     ∃ (n : ℕ) (a : Fin n → ι) (V : ∀ i, Opens (X (a i))),
       (∀ i, V i ∈ B (a i)) ∧ ⋃ i, f (a i) '' V i = U := by
   suffices h : ∃ (κ : Type _) (_ : Finite κ) (a : κ → ι) (V : ∀ i, Opens (X (a i))),
-      (∀ i, V i ∈ B (a i)) ∧ (∀ i, IsCompact (V i).1) ∧ ⋃ i, f (a i) '' V i = U by
+      (∀ i, V i ∈ B (a i)) ∧ (∀ i, IsCompact (V i).carrier) ∧ ⋃ i, f (a i) '' V i = U by
     obtain ⟨κ, _, a, V, hB, hc, hU⟩ := h
     cases nonempty_fintype κ
     refine ⟨Fintype.card κ, a ∘ (Fintype.equivFin κ).symm, fun i ↦ V _, fun i ↦ hB _, ?_⟩
@@ -156,7 +156,7 @@ lemma of_finite_of_isSpectralMap [Finite ι] [TopologicalSpace S]
     (hf : ∀ i, IsSpectralMap (f i)) {U : Set S} (hs : ∀ x ∈ U, ∃ i, x ∈ Set.range (f i))
     (hU : IsOpen U) (hc : IsCompact U) :
     IsCompactOpenCovered f U := by
-  refine ⟨.univ, Set.finite_univ, fun i _ ↦ ⟨f i ⁻¹' U, hU.preimage (hf i).1⟩,
+  refine ⟨.univ, Set.finite_univ, fun i _ ↦ ⟨f i ⁻¹' U, hU.preimage (hf i).toContinuous⟩,
     fun i _ ↦ hc.preimage_of_isOpen (hf i) hU, subset_antisymm (by simp) fun x hx ↦ ?_⟩
   obtain ⟨i, y, rfl⟩ := hs x hx
   simpa using ⟨i, y, hx, rfl⟩

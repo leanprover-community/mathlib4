@@ -27,5 +27,5 @@ variable {C : Type*} [Category* C] (J : GrothendieckTopology C) (A : Type*) [Cat
 instance [HasSheafify J A] [CartesianMonoidalCategory A] [MonoidalClosed (Cᵒᵖ ⥤ A)] :
     MonoidalClosed (Sheaf J A) :=
   cartesianClosedOfReflective' (sheafToPresheaf _ _) {
-    obj F := ⟨F.obj, (isSheaf_of_iso_iff F.2.choose_spec.some).1 F.2.choose.property⟩
+    obj F := ⟨F.obj, (isSheaf_of_iso_iff F.property.choose_spec.some).1 F.property.choose.property⟩
     map f := ⟨f.hom⟩ } (Iso.refl _)

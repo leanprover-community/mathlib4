@@ -256,7 +256,7 @@ lemma preservesHomology_of_map_exact : L.PreservesHomology where
   preservesCokernels X Y f := by
     have := preservesEpimorphisms_of_map_exact _ hL
     apply preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
-    apply (CokernelCofork.isColimitMapCoconeEquiv _ L).2
+    apply (CokernelCofork.isColimitMapCoconeEquiv _ L).invFun
     have : Epi ((ShortComplex.mk _ _ (cokernel.condition f)).map L).g := by
       dsimp
       infer_instance
@@ -265,7 +265,7 @@ lemma preservesHomology_of_map_exact : L.PreservesHomology where
   preservesKernels X Y f := by
     have := preservesMonomorphisms_of_map_exact _ hL
     apply preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
-    apply (KernelFork.isLimitMapConeEquiv _ L).2
+    apply (KernelFork.isLimitMapConeEquiv _ L).invFun
     have : Mono ((ShortComplex.mk _ _ (kernel.condition f)).map L).f := by
       dsimp
       infer_instance

@@ -196,7 +196,7 @@ noncomputable def leftHomologyDataShortComplex
     hi := hi
     wπ := by rw [this]; simp
     hπ := by
-      refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).2
+      refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).invFun
         (cokernelIsCokernel (X.δToCycles f₁ f₂ f₃ n₀ n₁))
       · exact parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa) (by simp)
       · exact Cofork.ext (Iso.refl _) }
@@ -298,7 +298,7 @@ noncomputable def rightHomologyDataShortComplex
     hp := hp
     wι := by rw [this]; simp
     hι := by
-      refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).2
+      refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).invFun
         (kernelIsKernel (X.δFromOpcycles f₁ f₂ f₃ n₁ n₂))
       · exact parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa) (by simp)
       · exact Fork.ext (Iso.refl _) }

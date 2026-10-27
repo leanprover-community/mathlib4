@@ -55,24 +55,24 @@ theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
     QuasiSeparatedSpace X ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X) := by
   rw [quasiSeparatedSpace_iff]
   constructor
-  · intro H U V; exact H U V U.1.2 U.2.isCompact V.1.2 V.2.isCompact
+  · intro H U V; exact H U V U.1.is_open' U.2.isCompact V.1.is_open' V.2.isCompact
   · intro H
     suffices
-      ∀ (U : X.Opens) (_ : IsCompact U.1) (V : X.Opens) (_ : IsCompact V.1),
-        IsCompact (U ⊓ V).1
+      ∀ (U : X.Opens) (_ : IsCompact U.carrier) (V : X.Opens) (_ : IsCompact V.carrier),
+        IsCompact (U ⊓ V).carrier
       by intro U V hU hU' hV hV'; exact this ⟨U, hU⟩ hU' ⟨V, hV⟩ hV'
     intro U hU V hV
     refine compact_open_induction_on V hV ?_ ?_
     · simp
     · intro S _ V hV
-      change IsCompact (U.1 ∩ (S.1 ∪ V.1))
+      change IsCompact (U.carrier ∩ (S.carrier ∪ V.1))
       rw [Set.inter_union_distrib_left]
       apply hV.union
       clear hV
       refine compact_open_induction_on U hU ?_ ?_
       · simp
       · intro S _ W hW
-        change IsCompact ((S.1 ∪ W.1) ∩ V.1)
+        change IsCompact ((S.carrier ∪ W.1) ∩ V.1)
         rw [Set.union_inter_distrib_right]
         apply hW.union
         apply H
@@ -158,8 +158,8 @@ theorem quasiSeparatedSpace_of_quasiSeparated (f : X ⟶ Y)
 
 lemma Scheme.Hom.isQuasiSeparated_preimage [QuasiSeparated f] {U : Opens Y}
     (hU : IsQuasiSeparated (U : Set Y)) : IsQuasiSeparated (f ⁻¹ᵁ U : Set X) := by
-  have : QuasiSeparatedSpace U := (isQuasiSeparated_iff_quasiSeparatedSpace _ U.2).mp hU
-  exact (isQuasiSeparated_iff_quasiSeparatedSpace _ (f ⁻¹ᵁ U).2).mpr
+  have : QuasiSeparatedSpace U := (isQuasiSeparated_iff_quasiSeparatedSpace _ U.is_open').mp hU
+  exact (isQuasiSeparated_iff_quasiSeparatedSpace _ (f ⁻¹ᵁ U).is_open').mpr
     (quasiSeparatedSpace_of_quasiSeparated (f ∣_ U))
 
 instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] : QuasiSeparatedSpace X :=
@@ -262,7 +262,7 @@ theorem quasiCompact_iff_compactSpace (f : X ⟶ Y) [QuasiSeparatedSpace Y] [Com
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
     (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
-  have := (hU.isLocalization_basicOpen f).1.2
+  have := (hU.isLocalization_basicOpen f).toIsLocalizationMap.surj
   obtain ⟨⟨y, _, n, rfl⟩, d⟩ := this x
   use n, y
   simpa [mul_comm x] using! d.symm
@@ -314,7 +314,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
 
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : X.Opens)
-    (hU : IsCompact U.1) (hU' : IsQuasiSeparated U.1) (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
+    (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier) (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
   dsimp only [TopCat.Presheaf.restrictOpenCommRingCat_apply]
   revert hU' f x
@@ -342,9 +342,9 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     -- Since `S ∪ U` is quasi-separated, `S ∩ U` can be covered by finite affine opens.
     obtain ⟨s, hs', hs⟩ :=
       isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp
-        ⟨hSU _ _ Set.subset_union_left S.2 hS Set.subset_union_right U.1.2
+        ⟨hSU _ _ Set.subset_union_left S.is_open' hS Set.subset_union_right U.1.is_open'
             U.2.isCompact,
-          (S ⊓ U.1).2⟩
+          (S ⊓ U.1).is_open'⟩
     have := hs'.to_subtype
     cases nonempty_fintype s
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs
@@ -396,8 +396,8 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
 
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 This is known as the **Qcqs lemma** in [R. Vakil, *The rising sea*][RisingSea]. -/
-theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCompact U.1)
-    (hU' : IsQuasiSeparated U.1) (f : Γ(X, U)) :
+theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsCompact U.carrier)
+    (hU' : IsQuasiSeparated U.carrier) (f : Γ(X, U)) :
     IsLocalization.Away f (Γ(X, X.basicOpen f)) := by
   constructor; constructor
   · rintro ⟨_, n, rfl⟩

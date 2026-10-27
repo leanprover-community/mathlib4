@@ -44,7 +44,7 @@ def _root_.LinearMap.intertwiningMap_of_isIntertwiningMap
 
 lemma IntertwiningMap.isIntertwining_assoc {f : IntertwiningMap ρ σ} (g : G) (l : U →ₗ[A] V) :
     f.toLinearMap ∘ₗ ρ g ∘ₗ l = σ g ∘ₗ f.toLinearMap ∘ₗ l := by
-  rw [← LinearMap.comp_assoc, f.2, LinearMap.comp_assoc]
+  rw [← LinearMap.comp_assoc, f.isIntertwining', LinearMap.comp_assoc]
 
 namespace IntertwiningMap
 
@@ -103,7 +103,7 @@ instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
 instance : Add (IntertwiningMap ρ σ) :=
   ⟨fun f g ↦ ⟨f.toLinearMap + g.toLinearMap, by
-    simp [LinearMap.add_comp, LinearMap.comp_add, f.2, g.2]⟩⟩
+    simp [LinearMap.add_comp, LinearMap.comp_add, f.isIntertwining', g.isIntertwining']⟩⟩
 
 @[simp] lemma coe_add (f g : IntertwiningMap ρ σ) :
     ((f + g : IntertwiningMap ρ σ) : V → W) = f + g := rfl
@@ -113,7 +113,7 @@ lemma add_toLinearMap (f g : IntertwiningMap ρ σ) :
     (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := rfl
 
 instance : SMul ℕ (IntertwiningMap ρ σ) :=
-  ⟨fun n f ↦ ⟨n • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.2]⟩⟩
+  ⟨fun n f ↦ ⟨n • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.isIntertwining']⟩⟩
 
 @[simp] lemma coe_nsmul (f : IntertwiningMap ρ σ) (n : ℕ) :
     ((n • f : IntertwiningMap ρ σ) : V → W) = n • f := rfl
@@ -160,14 +160,14 @@ variable {V W : Type*} [AddCommMonoid V] [AddCommGroup W]
   (f : V →ₗ[A] W)
 
 instance : Neg (IntertwiningMap ρ σ) :=
-  ⟨fun f ↦ ⟨-f.toLinearMap, by simp [LinearMap.neg_comp, f.2]⟩⟩
+  ⟨fun f ↦ ⟨-f.toLinearMap, by simp [LinearMap.neg_comp, f.isIntertwining']⟩⟩
 
 @[simp]
 lemma coe_neg (f : IntertwiningMap ρ σ) : ((-f : IntertwiningMap ρ σ) : V → W) = -f := rfl
 
 instance : Sub (IntertwiningMap ρ σ) :=
   ⟨fun f g ↦ ⟨f.toLinearMap - g.toLinearMap, by
-    simp [LinearMap.sub_comp, LinearMap.comp_sub, f.2, g.2]⟩⟩
+    simp [LinearMap.sub_comp, LinearMap.comp_sub, f.isIntertwining', g.isIntertwining']⟩⟩
 
 @[simp] lemma coe_sub (f g : IntertwiningMap ρ σ) :
     ((f - g : IntertwiningMap ρ σ) : V → W) = f - g := rfl
@@ -177,7 +177,7 @@ lemma sub_toLinearMap (f g : IntertwiningMap ρ σ) :
     (f - g).toLinearMap = f.toLinearMap - g.toLinearMap := rfl
 
 instance : SMul ℤ (IntertwiningMap ρ σ) :=
-  ⟨fun z f ↦ ⟨z • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.2]⟩⟩
+  ⟨fun z f ↦ ⟨z • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.isIntertwining']⟩⟩
 
 @[simp] lemma coe_zsmul (f : IntertwiningMap ρ σ) (z : ℤ) :
     ((z • f : IntertwiningMap ρ σ) : V → W) = z • f := rfl
@@ -212,7 +212,7 @@ variable {ρ σ τ} in
 A convenience variant of `IntertwiningMap.llcomp` for use in dot notation. -/
 def comp (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) : IntertwiningMap ρ τ where
   __ := f.toLinearMap ∘ₗ g.toLinearMap
-  isIntertwining' := by simp [LinearMap.comp_assoc, g.2, f.isIntertwining_assoc]
+  isIntertwining' := by simp [LinearMap.comp_assoc, g.isIntertwining', f.isIntertwining_assoc]
 
 @[simp]
 lemma comp_toLinearMap (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
@@ -404,7 +404,7 @@ open LinearMap in
 def symm (φ : Equiv ρ σ) : Equiv σ ρ where
   __ := φ.toLinearEquiv.symm
   isIntertwining' g := by
-    rw [← cancel_left φ.toLinearEquiv.injective, ← comp_assoc, ← comp_assoc, φ.1.2 g, φ.comp_symm,
+    rw [← cancel_left φ.toLinearEquiv.injective, ← comp_assoc, ← comp_assoc, φ.toIntertwiningMap.isIntertwining' g, φ.comp_symm,
       comp_assoc, φ.comp_symm, id_comp, comp_id]
 
 open LinearMap in
@@ -432,7 +432,7 @@ open LinearMap in
 def trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) : Equiv ρ τ where
   __ := φ.toLinearEquiv.trans ψ.toLinearEquiv
   isIntertwining' g := by
-    rw [LinearEquiv.coe_trans, comp_assoc, φ.1.2, ← comp_assoc, ψ.1.2, comp_assoc]
+    rw [LinearEquiv.coe_trans, comp_assoc, φ.toIntertwiningMap.isIntertwining', ← comp_assoc, ψ.toIntertwiningMap.isIntertwining', comp_assoc]
 
 @[simp]
 lemma toIntertwiningMap_trans (φ : Equiv ρ σ) (ψ : Equiv σ τ) :
@@ -471,7 +471,7 @@ variable {A G V W U : Type*} [CommSemiring A] [Monoid G] [AddCommMonoid V] [AddC
 variable {ρ σ} in
 theorem Equiv.conj_apply_self (g : G) (φ : Equiv ρ σ) : φ.conj (ρ g) = σ g := by
   ext w
-  have := (congr($(φ.symm.toIntertwiningMap.2 g) w)).symm
+  have := (congr($(φ.symm.toIntertwiningMap.isIntertwining' g) w)).symm
   simp only [LinearMap.coe_comp, coe_toLinearMap, Function.comp_apply, LinearEquiv.conj_apply_apply,
     coe_symm, toLinearEquiv_apply, coe_toIntertwiningMap] at this ⊢
   simp [this]
@@ -481,7 +481,7 @@ section Monoid
 namespace IntertwiningMap
 
 instance : SMul A (IntertwiningMap ρ σ) :=
-  ⟨fun a f ↦ ⟨a • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.2]⟩⟩
+  ⟨fun a f ↦ ⟨a • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.isIntertwining']⟩⟩
 
 @[simp] lemma coe_smul (a : A) (f : IntertwiningMap ρ σ) :
     ((a • f : IntertwiningMap ρ σ) : V → W) = a • f := rfl
@@ -685,7 +685,7 @@ def tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
     (tprod ρ τ).IntertwiningMap (tprod σ π) where
   toLinearMap := TensorProduct.map f.toLinearMap g.toLinearMap
   isIntertwining' x := by
-    rw [tprod_apply, ← TensorProduct.map_comp, f.2, g.2, TensorProduct.map_comp, tprod_apply]
+    rw [tprod_apply, ← TensorProduct.map_comp, f.isIntertwining', g.isIntertwining', TensorProduct.map_comp, tprod_apply]
 
 @[simp]
 lemma toLinearMap_tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :

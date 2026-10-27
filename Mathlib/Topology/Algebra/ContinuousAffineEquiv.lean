@@ -104,7 +104,7 @@ theorem ext {e e' : P₁ ≃ᴬ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
 
 @[continuity]
 protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
-  e.2
+  e.continuous_toFun
 
 /-- A continuous affine equivalence is a continuous affine map. -/
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where

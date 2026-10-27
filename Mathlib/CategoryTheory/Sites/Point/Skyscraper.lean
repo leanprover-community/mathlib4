@@ -169,7 +169,7 @@ private lemma isSheaf_skyscraperPresheaf_aux
     let α₂ : Φ.fiber.elementsMk _ y₂ ⟶ Φ.fiber.elementsMk _ x := ⟨f₂, hy₂⟩
     obtain ⟨z, q₁, q₂, fac⟩ := IsCofiltered.cospan α₁ α₂
     replace fac := congr_arg Functor.Elements.Hom.hom fac
-    refine ⟨z.1, q₁.1, q₂.1, z.2, fac, ?_, ?_⟩
+    refine ⟨z.obj, q₁.hom, q₂.hom, z.val, fac, ?_, ?_⟩
     all_goals rw [Functor.Elements.Hom.map_val] -- was `simp`
   let φ₁ : Presieve.categoryMk _ _ (R.downward_closed hf₁ p₁) ⟶
       Presieve.categoryMk _ _ hf₁ :=

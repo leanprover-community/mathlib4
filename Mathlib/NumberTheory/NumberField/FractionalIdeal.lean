@@ -54,10 +54,10 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     exact nonZeroDivisors.coe_ne_zero x
   surj x := by
     obtain ⟨⟨a, _, d, hd, rfl⟩, h⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) x
-    refine ⟨⟨⟨Ideal.absNorm I.1.num * (algebraMap _ K a), I.1.num_le ?_⟩, d * Ideal.absNorm I.1.num,
+    refine ⟨⟨⟨Ideal.absNorm I.val.num * (algebraMap _ K a), I.val.num_le ?_⟩, d * Ideal.absNorm I.val.num,
       ?_⟩, ?_⟩
-    · refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
-      · exact Ideal.mul_mem_right _ _ I.1.num.absNorm_mem
+    · refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.val.num * a, ?_, ?_⟩
+      · exact Ideal.mul_mem_right _ _ I.val.num.absNorm_mem
       · rw [map_mul, map_natCast]
     · refine Submonoid.mul_mem _ hd (mem_nonZeroDivisors_of_ne_zero ?_)
       rw [Nat.cast_ne_zero, ne_eq, Ideal.absNorm_eq_zero_iff]
@@ -68,7 +68,7 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
         eq_intCast, map_intCast]
       ring
   exists_of_eq h :=
-    ⟨1, by rwa [one_smul, one_smul, ← (Submodule.injective_subtype I.1.coeToSubmodule).eq_iff]⟩
+    ⟨1, by rwa [one_smul, one_smul, ← (Submodule.injective_subtype I.val.coeToSubmodule).eq_iff]⟩
 
 /-- A `ℤ`-basis of a fractional ideal. -/
 noncomputable def fractionalIdealBasis (I : FractionalIdeal (𝓞 K)⁰ K) :
@@ -77,17 +77,17 @@ noncomputable def fractionalIdealBasis (I : FractionalIdeal (𝓞 K)⁰ K) :
 /-- A `ℚ`-basis of `K` that spans `I` over `ℤ`, see `mem_span_basisOfFractionalIdeal` below. -/
 noncomputable def basisOfFractionalIdeal (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     Basis (Free.ChooseBasisIndex ℤ I) ℚ K :=
-  (fractionalIdealBasis K I.1).ofIsLocalizedModule ℚ ℤ⁰
+  (fractionalIdealBasis K I.val).ofIsLocalizedModule ℚ ℤ⁰
     ((Submodule.subtype (I : Submodule (𝓞 K) K)).restrictScalars ℤ)
 
 theorem basisOfFractionalIdeal_apply (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
     (i : Free.ChooseBasisIndex ℤ I) :
-    basisOfFractionalIdeal K I i = fractionalIdealBasis K I.1 i :=
-  (fractionalIdealBasis K I.1).ofIsLocalizedModule_apply ℚ ℤ⁰ _ i
+    basisOfFractionalIdeal K I i = fractionalIdealBasis K I.val i :=
+  (fractionalIdealBasis K I.val).ofIsLocalizedModule_apply ℚ ℤ⁰ _ i
 
 theorem mem_span_basisOfFractionalIdeal {I : (FractionalIdeal (𝓞 K)⁰ K)ˣ} {x : K} :
     x ∈ Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) ↔ x ∈ (I : Set K) := by
-  rw [basisOfFractionalIdeal, (fractionalIdealBasis K I.1).ofIsLocalizedModule_span ℚ ℤ⁰ _]
+  rw [basisOfFractionalIdeal, (fractionalIdealBasis K I.val).ofIsLocalizedModule_span ℚ ℤ⁰ _]
   simp
 
 open Module in
@@ -107,9 +107,9 @@ open Module
 theorem det_basisOfFractionalIdeal_eq_absNorm (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
     (e : (Free.ChooseBasisIndex ℤ (𝓞 K)) ≃ (Free.ChooseBasisIndex ℤ I)) :
     |(integralBasis K).det ((basisOfFractionalIdeal K I).reindex e.symm)| =
-      FractionalIdeal.absNorm I.1 := by
-  rw [← FractionalIdeal.abs_det_basis_change (RingOfIntegers.basis K) I.1
-    ((fractionalIdealBasis K I.1).reindex e.symm)]
+      FractionalIdeal.absNorm I.val := by
+  rw [← FractionalIdeal.abs_det_basis_change (RingOfIntegers.basis K) I.val
+    ((fractionalIdealBasis K I.val).reindex e.symm)]
   congr
   ext
   simpa using basisOfFractionalIdeal_apply K I _

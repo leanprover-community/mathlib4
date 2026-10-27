@@ -454,7 +454,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
   have span_ne_zero' :
     (Ideal.span {↑P} : Ideal K⟦X⟧) ≠ 0 ∧ ((idealX K).asIdeal : Ideal K⟦X⟧) ≠ 0 := by
     simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
-      not_false_eq_true, true_and, (idealX K).3]
+      not_false_eq_true, true_and, (idealX K).ne_bot]
   classical
   rw [Ideal.count_associates_factors_eq span_ne_zero.1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr Polynomial.prime_X) span_ne_zero.2,
@@ -671,7 +671,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
   refine ⟨?_, fun _ hP ↦ ?_⟩
   · obtain ⟨x, hx⟩ := LaurentSeries.valuation_surjective K γ
-    have : Valued.v.restrict x ≠ 0 := fun h ↦ NeZero.ne γ.1 <|
+    have : Valued.v.restrict x ≠ 0 := fun h ↦ NeZero.ne γ.val <|
       hx ▸ MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.1 h
     rw [← hx]
     nth_rw 2 [← Valuation.coe_toMonoidWithZeroHom]
@@ -717,10 +717,10 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
     · refine ⟨0, fun x hg ↦ ?_⟩
       rw [hf, sub_zero] at hg
       exact (valuation_le_iff_coeff_lt_eq_zero K).mp hg
-    · refine ⟨min (f.2.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) 0 - 1, fun _ hg n hn ↦ ?_⟩
+    · refine ⟨min (f.isPWO_support'.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) 0 - 1, fun _ hg n hn ↦ ?_⟩
       rw [eq_coeff_of_valuation_sub_lt K hg (d := 0)]
       · exact Function.notMem_support.mp fun h ↦
-        f.2.isWF.not_lt_min (HahnSeries.support_nonempty_iff.mpr hf) h
+        f.isPWO_support'.isWF.not_lt_min (HahnSeries.support_nonempty_iff.mpr hf) h
         <| lt_trans hn <| Int.sub_one_lt_iff.mpr <| min_le_left _ _
       exact lt_of_lt_of_le hn <| le_of_lt (Int.sub_one_lt_of_le <| min_le_right _ _)
   use N
@@ -760,7 +760,7 @@ series in `ℱ` the `d`th coefficient coincides with the `d`th coefficient of `C
 theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ d < N, coeff hℱ d = f.coeff d := by
   obtain ⟨⟨N₁, hN₁⟩, ⟨N₂, hN₂⟩⟩ := exists_lb_eventual_support hℱ, exists_lb_support hℱ
-  refine ⟨min N₁ N₂, ℱ.3 hN₁ fun _ hf d hd ↦ ?_⟩
+  refine ⟨min N₁ N₂, ℱ.sets_of_superset hN₁ fun _ hf d hd ↦ ?_⟩
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
 /-- Given a Cauchy filter `ℱ` in the Laurent Series and a bound `D`, for almost all series in the
@@ -803,11 +803,11 @@ open MonoidWithZeroHom.ValueGroup₀
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
     {U : Set K⸨X⸩} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
-  suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < embedding γ.1} by
+  suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < embedding γ.val} by
     simp_rw [← Valued.v.restrict_lt_iff_lt_embedding] at this
     apply this.mono fun _ hf ↦ hU₁ hf
-  set D := -(log (embedding γ.1) - 1) with hD₀
-  have hD : exp (-D) < embedding γ.1 := by
+  set D := -(log (embedding γ.val) - 1) with hD₀
+  have hD : exp (-D) < embedding γ.val := by
     rw [← lt_log_iff_exp_lt (by simp), hD₀]
     simp
   apply coeff_eventually_equal (D := D) hℱ |>.mono
@@ -897,7 +897,7 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
-  have := embedding γ.1
+  have := embedding γ.val
   obtain ⟨P, hP⟩ := exists_ratFunc_val_lt f
     <| γ.map (embedding (f := ((valued K).v : K⸨X⸩ →*₀ ℤᵐ⁰)))
   use P
@@ -931,10 +931,10 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
   constructor
   · rintro ⟨T, ⟨⟨R, ⟨hR, pre_R⟩⟩, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hR
-    use {P : K⟮X⟯ | Valued.v P < embedding d.1}
+    use {P : K⟮X⟯ | Valued.v P < embedding d.val}
     simp only [Valued.mem_nhds, sub_zero]
     refine ⟨?_, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
-    · obtain ⟨x, hx⟩ := RatFunc.valuation_surjective K (embedding d.1)
+    · obtain ⟨x, hx⟩ := RatFunc.valuation_surjective K (embedding d.val)
       use Units.mk0 (Valued.v.restrict x) (by
         rw [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff]; simp [hx])
       simp [v_def, Valuation.restrict_lt_iff, ← hx]
@@ -945,11 +945,11 @@ theorem inducing_coe : IsUniformInducing ((↑) : K⟮X⟯ → K⸨X⸩) := by
     rwa [← valuation_eq_LaurentSeries_valuation]
   · rintro ⟨_, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
-    set X := {f : K⸨X⸩ | Valued.v f < embedding d.1} with X_def
+    set X := {f : K⸨X⸩ | Valued.v f < embedding d.val} with X_def
     refine ⟨(fun x : K⸨X⸩ × K⸨X⸩ ↦ x.snd - x.fst) ⁻¹' X, ⟨X, ?_⟩, ?_⟩
     · refine ⟨?_, Set.Subset.refl _⟩
       simp only [Valued.mem_nhds, sub_zero, Valuation.restrict_lt_iff_lt_embedding]
-      obtain ⟨x, hx⟩ := restrict₀_surjective _ d.1
+      obtain ⟨x, hx⟩ := restrict₀_surjective _ d.val
       use Units.mk0 (Valued.v.restrict (x : K⸨X⸩)) (by
         simp only [ne_eq, map_eq_zero]
         intro h
@@ -1092,7 +1092,7 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
   by_cases ha : a = 0
   · rw [tendsto_def]
     intro S hS
-    rw [ha, map_zero, WithZeroTopology.hasBasis_nhds_zero.1 S] at hS
+    rw [ha, map_zero, WithZeroTopology.hasBasis_nhds_zero.mem_iff' S] at hS
     obtain ⟨γ, γ_ne_zero, γ_le⟩ := hS
     use {t | Valued.v t < γ}
     constructor

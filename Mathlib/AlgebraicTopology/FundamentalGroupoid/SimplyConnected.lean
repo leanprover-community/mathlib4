@@ -51,7 +51,7 @@ theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
 
 theorem ContinuousMap.HomotopyEquiv.simplyConnectedSpace [hY : SimplyConnectedSpace Y]
     (e : X ≃ₕ Y) : SimplyConnectedSpace X :=
-  ⟨hY.1.map (FundamentalGroupoidFunctor.equivOfHomotopyEquiv e).trans⟩
+  ⟨hY.equiv_unit.map (FundamentalGroupoidFunctor.equivOfHomotopyEquiv e).trans⟩
 
 theorem ContinuousMap.HomotopyEquiv.simplyConnectedSpace_iff (e : X ≃ₕ Y) :
     SimplyConnectedSpace X ↔ SimplyConnectedSpace Y :=

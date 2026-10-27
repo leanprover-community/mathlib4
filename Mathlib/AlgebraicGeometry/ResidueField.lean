@@ -158,12 +158,12 @@ lemma Hom.residueDegree_id (x : X) : (𝟙 _ : X ⟶ X).residueDegree x = 1 := b
 lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f x ∈ V) :
     Y.evaluation V (f x) hx ≫ f.residueFieldMap x =
       f.app V ≫ X.evaluation (f ⁻¹ᵁ V) x hx :=
-  LocallyRingedSpace.evaluation_naturality f.1 ⟨x, hx⟩
+  LocallyRingedSpace.evaluation_naturality f.toLRSHom' ⟨x, hx⟩
 
 lemma evaluation_naturality_apply {V : Opens Y} (x : X) (hx : f x ∈ V) (s) :
     f.residueFieldMap x (Y.evaluation V (f x) hx s) =
       X.evaluation (f ⁻¹ᵁ V) x hx (f.app V s) :=
-  LocallyRingedSpace.evaluation_naturality_apply f.1 ⟨x, hx⟩ s
+  LocallyRingedSpace.evaluation_naturality_apply f.toLRSHom' ⟨x, hx⟩ s
 
 @[reassoc]
 lemma Γevaluation_naturality (x : X) :

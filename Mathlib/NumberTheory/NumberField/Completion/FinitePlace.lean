@@ -392,10 +392,10 @@ lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K)
 -- domains `𝓞 K` and `𝓞 L` once we have a ramification theory for finite places set up.
 -- Note that this will mean `FinitePlace.equivHeightOneSpectrum` no longer appears in the statement.
 lemma equivHeightOneSpectrum_symm_apply_algebraMap
-    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.1.LiesOver v.1] (x : K) :
+    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.asIdeal.LiesOver v.asIdeal] (x : K) :
     FinitePlace.equivHeightOneSpectrum.symm w (algebraMap K L x) =
       FinitePlace.equivHeightOneSpectrum.symm v x ^
-        (w.1.ramificationIdx (𝓞 K) * w.1.inertiaDeg (𝓞 K)) := by
+        (w.asIdeal.ramificationIdx (𝓞 K) * w.asIdeal.inertiaDeg (𝓞 K)) := by
   by_cases hx : x = 0
   · rw [hx, map_zero, map_zero, map_zero, zero_pow]
     exact (mul_pos (w.asIdeal.ramificationIdx_pos (𝓞 K)) (w.asIdeal.inertiaDeg_pos (𝓞 K))).ne'
@@ -403,7 +403,7 @@ lemma equivHeightOneSpectrum_symm_apply_algebraMap
     FinitePlace.norm_embedding, HeightOneSpectrum.adicAbv_def]
   rw [← IsDedekindDomain.HeightOneSpectrum.valuation_liesOver L v, map_pow,
     WithZeroMulInt.toNNReal_neg_apply _ (by simpa), WithZeroMulInt.toNNReal_neg_apply _ (by simpa),
-    ← Ideal.absNorm_pow_inertiaDeg v.1 w.1]
+    ← Ideal.absNorm_pow_inertiaDeg v.asIdeal w.asIdeal]
   simp only [Nat.cast_pow, NNReal.coe_zpow, ← zpow_natCast, ← zpow_mul]
   grind
 

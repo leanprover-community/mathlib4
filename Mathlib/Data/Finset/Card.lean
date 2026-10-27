@@ -45,14 +45,14 @@ variable {s t : Finset α} {a b c : α}
 
 The notation `#s` can be accessed in the `Finset` locale. -/
 def card (s : Finset α) : ℕ :=
-  Multiset.card s.1
+  Multiset.card s.val
 
 @[inherit_doc] scoped prefix:arg "#" => Finset.card
 
-theorem card_def (s : Finset α) : #s = Multiset.card s.1 :=
+theorem card_def (s : Finset α) : #s = Multiset.card s.val :=
   rfl
 
-@[simp] lemma card_val (s : Finset α) : Multiset.card s.1 = #s := rfl
+@[simp] lemma card_val (s : Finset α) : Multiset.card s.val = #s := rfl
 
 @[simp]
 theorem card_mk {m nodup} : #(⟨m, nodup⟩ : Finset α) = Multiset.card m :=
@@ -231,7 +231,7 @@ theorem length_toList (s : Finset α) : s.toList.length = #s := by
   rw [toList, ← Multiset.coe_card, Multiset.coe_toList, card_def]
 
 theorem card_image_le [DecidableEq β] : #(s.image f) ≤ #s := by
-  simpa only [card_map] using! (s.1.map f).toFinset_card_le
+  simpa only [card_map] using! (s.val.map f).toFinset_card_le
 
 grind_pattern card_image_le => #(s.image f)
 grind_pattern card_image_le => s.image f, #s
@@ -242,7 +242,7 @@ theorem card_image_of_injOn [DecidableEq β] (H : Set.InjOn f s) : #(s.image f) 
 theorem injOn_of_card_image_eq [DecidableEq β] (H : #(s.image f) = #s) : Set.InjOn f s := by
   rw [card_def, card_def, image, toFinset] at H
   dsimp only at H
-  have : (s.1.map f).dedup = s.1.map f := by
+  have : (s.val.map f).dedup = s.val.map f := by
     refine Multiset.eq_of_le_of_card_le (Multiset.dedup_le _) ?_
     simp only [H, Multiset.card_map, le_rfl]
   rw [Multiset.dedup_eq_self] at this
@@ -264,8 +264,8 @@ theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [Decida
 
 lemma card_filter_le_iff (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     #(s.filter P) ≤ n ↔ ∀ s' ⊆ s, n < #s' → ∃ a ∈ s', ¬ P a :=
-  (s.1.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by simp_all) h,
-    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun _ hx ↦ Multiset.subset_of_le hs' hx) h⟩
+  (s.val.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.val (by simp_all) h,
+    fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.nodup⟩ (fun _ hx ↦ Multiset.subset_of_le hs' hx) h⟩
 
 @[simp, grind =]
 theorem card_map (f : α ↪ β) : #(s.map f) = #s :=
@@ -940,7 +940,7 @@ theorem strongDownwardInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
 theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
-  Subrelation.wf H <| InvImage.wf _ (Nat.lt_wfRel).2
+  Subrelation.wf H <| InvImage.wf _ (Nat.lt_wfRel).wf
 
 /--
 To prove a proposition for an arbitrary `Finset α`,

@@ -396,7 +396,7 @@ theorem isSeparating_iff_epi
     IsSeparating P ↔ ∀ X : C, Epi (P.coproductFrom X) :=
   ⟨fun hP X ↦ hP.epi_coproductFrom X,
     fun hP ↦ IsSeparating.mk_of_exists_epi (fun X ↦ ⟨_, P.coproductFromFamily X,
-      fun i ↦ i.left.2, _, colimit.isColimit _, _, hP X⟩)⟩
+      fun i ↦ i.left.property, _, colimit.isColimit _, _, hP X⟩)⟩
 
 section
 
@@ -434,7 +434,7 @@ theorem isCoseparating_iff_mono
     IsCoseparating P ↔ ∀ X : C, Mono (P.productTo X) :=
   ⟨fun hP X ↦ hP.mono_productTo X,
     fun hP ↦ IsCoseparating.mk_of_exists_mono (fun X ↦ ⟨_, P.productToFamily X,
-      fun i ↦ i.right.2, _, limit.isLimit _, _, hP X⟩)⟩
+      fun i ↦ i.right.property, _, limit.isLimit _, _, hP X⟩)⟩
 
 end ObjectProperty
 

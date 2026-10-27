@@ -232,7 +232,7 @@ theorem card_eq_one (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
 instance [IsEmpty α] : Unique (FinEnum α) where
   default := ⟨0, Equiv.equivOfIsEmpty α (Fin 0)⟩
   uniq e := by
-    change FinEnum.mk e.1 e.2 = _
+    change FinEnum.mk e.card e.equiv = _
     congr 1
     · exact card_eq_zero
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
@@ -248,7 +248,7 @@ def ofIsEmpty [IsEmpty α] : FinEnum α := default
 instance [Unique α] : Unique (FinEnum α) where
   default := ⟨1, Equiv.ofUnique α (Fin 1)⟩
   uniq e := by
-    change FinEnum.mk e.1 e.2 = _
+    change FinEnum.mk e.card e.equiv = _
     congr 1
     · exact card_eq_one α
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)

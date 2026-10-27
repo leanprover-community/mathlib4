@@ -72,7 +72,7 @@ namespace IsFlasque
 
 instance pushforward_isFlasque {C : Type v} [Category.{w} C] {Y : TopCat.{u}} (F : Sheaf C X)
     [IsFlasque F] (f : X ⟶ Y) : IsFlasque ((pushforward C f).obj F) :=
-  Presheaf.IsFlasque.pushforward_isFlasque F.1 f
+  Presheaf.IsFlasque.pushforward_isFlasque F.obj f
 
 variable {U : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.obj.obj (op U))
 
@@ -85,21 +85,21 @@ abbrev Under := StructuredArrow (Functor.elementsMk _ _ s) (Functor.whiskerRight
 satisfies the requirements for applying Zorn's lemma -/
 lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
     (h : IsChain (fun x y ↦ Nonempty (y ⟶ x)) c) : ∃ ub, ∀ a ∈ c, Nonempty (ub ⟶ a) := by
-  let f : c → (Opens X) := fun x => x.1.right.1.unop
-  obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.right.2) s_1 := by
+  let f : c → (Opens X) := fun x => x.1.right.obj.unop
+  obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.right.val) s_1 := by
     refine Sheaf.existsUnique_gluing F _ _ (fun i j ↦ ?_)
     obtain (rfl | h₁ | h₁) : i = j ∨ Nonempty (i.val ⟶ j.val) ∨ Nonempty (j.val ⟶ i.val) := by
       grind [Subtype.ext_iff, h i.property j.property]
     · rfl
     all_goals
-      rw [← h₁.some.2.map_val ]
+      rw [← h₁.some.right.map_val ]
       dsimp
       rw [← Functor.map_comp_apply]
       rfl
-  have le₁ : iSup f ≤ U := iSup_le <| fun j => leOfHom j.1.hom.1.unop
-  have le₂ : ∀ i, i ∈ c → unop i.right.1 ≤ iSup f := fun i hi ↦ le_iSup f ⟨i, hi⟩
+  have le₁ : iSup f ≤ U := iSup_le <| fun j => leOfHom j.1.hom.hom.unop
+  have le₂ : ∀ i, i ∈ c → unop i.right.obj ≤ iSup f := fun i hi ↦ le_iSup f ⟨i, hi⟩
   use StructuredArrow.mk (Functor.Elements.homMk (homOfLE le₁).op (eq_app_of_locally_eq ht
-      (fun i ↦ leOfHom i.1.hom.1.unop) (fun i ↦ (i.1.hom.map_val).symm)).symm :
+      (fun i ↦ leOfHom i.1.hom.hom.unop) (fun i ↦ (i.1.hom.map_val).symm)).symm :
       Functor.elementsMk _ _ s ⟶ (Functor.whiskerRight g.hom
       (CategoryTheory.forget AddCommGrpCat)).mapElements.obj (Functor.elementsMk _ _ t))
   exact fun i hi => Nonempty.intro (StructuredArrow.homMk (Functor.Elements.homMk
@@ -109,19 +109,19 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
 `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`. -/
 theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S.ShortExact)
-    [IsFlasque S.X₁] : Epi (S.g.1.app (op U)) := by
+    [IsFlasque S.X₁] : Epi (S.g.hom.app (op U)) := by
   refine (AddCommGrpCat.epi_iff_surjective _).mpr (fun s ↦ ?_)
   -- We want to find a preimage of `s` by `S.g`.
   -- We apply Zorn's lemma to obtain a term `t` of `Under S.g s` that is maximal.
   obtain ⟨t, ht⟩ := exists_maximal_of_chains_bounded
     (structured_arrows_elements_sheaf_chains_bounded S.g s)
     (fun ⟨f⟩ ⟨g⟩ ↦ ⟨g ≫ f⟩)
-  have tle : t.right.1.unop ≤ U := leOfHom t.hom.1.unop
-  have tcomp : s |_ t.right.1.unop = S.g.hom.app t.right.1 t.right.2 :=
+  have tle : t.right.obj.unop ≤ U := leOfHom t.hom.hom.unop
+  have tcomp : s |_ t.right.obj.unop = S.g.hom.app t.right.obj t.right.val :=
       t.hom.map_val
   -- We get a section `t.right.2` of `S.g` defined on an open subset `t.right.1.unop` of `U`,
   -- that is sent to the restriction of `s` by `S.g`.
-  have : U ≤ t.right.1.unop := by
+  have : U ≤ t.right.obj.unop := by
   -- Prove that the set of definition of `t.right.2` contains `U`.
     intro x hx
     have := (isLocallySurjective_iff_epi S.g).mpr hS.epi_g
@@ -130,19 +130,19 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S
     obtain ⟨W, Wle, ⟨t₁, ht₁⟩, hW⟩ := (isLocallySurjective_iff S.g.hom).mp this U s x hx
     --`t.right.2` and `t₁` need not agree on their overlap so we need to deal with their
     -- difference `t₂`
-    let t₂ := t.right.2 |_ (t.right.1.unop ⊓ W) - t₁ |_ (t.right.1.unop ⊓ W)
-    have : (S.g.hom.app (op (t.right.1.unop ⊓ W))) t₂ = 0 := by
+    let t₂ := t.right.val |_ (t.right.obj.unop ⊓ W) - t₁ |_ (t.right.obj.unop ⊓ W)
+    have : (S.g.hom.app (op (t.right.obj.unop ⊓ W))) t₂ = 0 := by
       simp [map_restrict, ← tcomp, restrict_restrict, ht₁, t₂]
     -- Since `S` is exact and `t₂` maps to zero, we can lift it to a section `t₃` of `S.X₁`
-    obtain ⟨t₃, ht₃⟩ := Sheaf.sections_exact_of_left_exact hS.1 hS.2 t₂ this
+    obtain ⟨t₃, ht₃⟩ := Sheaf.sections_exact_of_left_exact hS.exact hS.mono_f t₂ this
     -- Using that `S.X₁` is flasque, we can lift `t₃` to a section on `W`.
-    obtain ⟨t₄, (ht₄ : t₄ |_ (t.right.1.unop ⊓ W) = t₃)⟩ := (AddCommGrpCat.epi_iff_surjective
+    obtain ⟨t₄, (ht₄ : t₄ |_ (t.right.obj.unop ⊓ W) = t₃)⟩ := (AddCommGrpCat.epi_iff_surjective
       (S.X₁.obj.map (homOfLE inf_le_right).op)).mp inferInstance t₃
-    let f : Fin 2 → Opens X := ![t.right.1.unop, W]
+    let f : Fin 2 → Opens X := ![t.right.obj.unop, W]
     let sf : (i : Fin 2) → S.X₂.obj.obj (op (f i))
-    | 0 => t.right.2
+    | 0 => t.right.val
     | 1 => t₁ + (S.f.hom.app (op W)) t₄
-    have : sf 0 |_ (t.right.1.unop ⊓ W) = sf 1 |_ (t.right.1.unop ⊓ W) := by
+    have : sf 0 |_ (t.right.obj.unop ⊓ W) = sf 1 |_ (t.right.obj.unop ⊓ W) := by
       dsimp [sf, f]
       simp only [restrict_sum, ← map_restrict, ht₄, ht₃, t₂, add_sub_cancel]
     -- We glue `t.right.2` and `t₁ + (S.f.hom.app (op W)) t₄` together to form `t₅`
@@ -150,7 +150,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S
       apply Sheaf.existsUnique_gluing
       simp only [IsCompatible, Fin.forall_fin_two]
       refine ⟨⟨rfl, this⟩, Eq.symm ?_, rfl⟩
-      apply_fun (fun s ↦ restrictOpen s (W ⊓ t.right.1.unop) (le_of_eq (inf_comm _ _))) at this
+      apply_fun (fun s ↦ restrictOpen s (W ⊓ t.right.obj.unop) (le_of_eq (inf_comm _ _))) at this
       rw [restrict_restrict, restrict_restrict] at this
       exact this
     have le : iSup f ≤ U := iSup_le_iff.mpr (Fin.forall_fin_two.mpr ⟨tle, Wle⟩)
@@ -171,18 +171,18 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S
     -- We prove that `t₆` is bigger than `t` for the preorder used on `Under S.g s`.
     have : Nonempty (t₆ ⟶ t) := Nonempty.intro (StructuredArrow.homMk (Functor.Elements.homMk
       (homOfLE (le_iSup f 0)).op (ht₅ 0)) (by cat_disch))
-    exact leOfHom ((ht t₆) this).some.right.1.unop ((le_iSup f 1) hW)
-  exact ⟨t.right.2 |_ U, by simp [map_restrict, ← tcomp, restrict_restrict]⟩
+    exact leOfHom ((ht t₆) this).some.right.hom.unop ((le_iSup f 1) hW)
+  exact ⟨t.right.val |_ U, by simp [map_restrict, ← tcomp, restrict_restrict]⟩
 
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
 theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)}
     (hS : S.ShortExact) [IsFlasque S.X₁] [IsFlasque S.X₂] : IsFlasque S.X₃ where
   epi {U V} i := by
-    have : Epi (S.g.1.app U ≫ S.X₃.obj.map i) := by
+    have : Epi (S.g.hom.app U ≫ S.X₃.obj.map i) := by
       rw [← S.g.hom.naturality i]
       exact CategoryTheory.epi_comp' inferInstance (epi_of_shortExact hS)
-    exact CategoryTheory.epi_of_epi (S.g.1.app U) (S.X₃.obj.map i)
+    exact CategoryTheory.epi_of_epi (S.g.hom.app U) (S.X₃.obj.map i)
 
 end TopCat.Sheaf.IsFlasque
 

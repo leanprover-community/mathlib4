@@ -54,13 +54,13 @@ instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
     exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
 
 lemma embedding_unit_pos (a : (ValueGroup₀ f)ˣ) :
-    0 < embedding a.1 := by
+    0 < embedding a.val := by
   conv_lhs => rw [← map_zero f, ← ValueGroup₀.embedding_restrict₀ (0 : A)]
   rw [embedding_strictMono.lt_iff_lt]
   simp
 
 lemma embedding_unit_ne_zero (a : (ValueGroup₀ f)ˣ) :
-    embedding a.1 ≠ 0 := (embedding_unit_pos a).ne.symm
+    embedding a.val ≠ 0 := (embedding_unit_pos a).ne.symm
 
 end ValueGroup₀
 

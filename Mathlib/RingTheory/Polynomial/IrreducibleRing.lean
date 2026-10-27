@@ -44,10 +44,10 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   let ι := algebraMap R R'
   rw [show φ = ψ.comp ι from rfl, ← map_map] at hi
   replace hi := hm.map ι |>.irreducible_of_irreducible_map _ _ hi
-  refine ⟨fun h ↦ hi.1 <| (mapRingHom ι).isUnit_map h, fun a b h ↦ ?_⟩
+  refine ⟨fun h ↦ hi.not_isUnit <| (mapRingHom ι).isUnit_map h, fun a b h ↦ ?_⟩
   wlog hb : IsUnit (b.map ι) generalizing a b
   · exact (this b a (mul_comm a b ▸ h)
-      (hi.2 (by rw [h, Polynomial.map_mul]) |>.resolve_right hb)).symm
+      (hi.isUnit_or_isUnit (by rw [h, Polynomial.map_mul]) |>.resolve_right hb)).symm
   have hn (i : ℕ) (hi : i ≠ 0) : IsNilpotent (b.coeff i) := by
     obtain ⟨_, _, h⟩ := Polynomial.isUnit_iff.1 hb
     simpa only [coeff_map, coeff_C, hi, ite_false, ← RingHom.mem_ker,

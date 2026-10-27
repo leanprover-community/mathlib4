@@ -157,7 +157,7 @@ instance {d : ℕ} : StrongEpiCategory (Truncated d) where
 
 instance {d : ℕ} : HasStrongEpiMonoFactorisations (Truncated d) where
   has_fac {a b} f :=
-    ⟨{ I := ⟨image f.hom, (len_le_of_epi (factorThruImage f.hom)).trans a.2⟩
+    ⟨{ I := ⟨image f.hom, (len_le_of_epi (factorThruImage f.hom)).trans a.property⟩
        m := ObjectProperty.homMk (image.ι f.hom)
        e := ObjectProperty.homMk (factorThruImage f.hom)
        e_strong_epi := strongEpi_of_epi _ }⟩

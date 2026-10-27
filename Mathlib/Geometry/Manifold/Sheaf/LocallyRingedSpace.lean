@@ -75,7 +75,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     have H : ∀ᶠ (z : U) in 𝓝 ⟨x, hxU⟩, f z ≠ 0 := f.2.continuous.continuousAt.eventually_ne hf'
     rw [eventually_nhds_iff] at H
     obtain ⟨V₀, hV₀f, hV₀, hxV₀⟩ := H
-    let V : Opens M := ⟨Subtype.val '' V₀, U.2.isOpenMap_subtype_val V₀ hV₀⟩
+    let V : Opens M := ⟨Subtype.val '' V₀, U.is_open'.isOpenMap_subtype_val V₀ hV₀⟩
     have hUV : V ≤ U := Subtype.coe_image_subset (U : Set M) V₀
     have hV : V₀ = .range (Set.inclusion hUV) := by rw [Set.range_inclusion hUV]; simp [V]
     clear_value V
@@ -205,7 +205,7 @@ instance (U : Opens M) :
       have ha : IsOpenEmbedding a.hom := U.isOpenEmbedding'
       let V' : Opens U := (Opens.map a).obj (ha.isOpenMap.functor.obj V)
       let b : V' ≃ₜ ha.isOpenMap.functor.obj V :=
-        U.isOpenEmbedding'.homeomorphOfSubsetRange <| Set.image_subset_range _ V.1
+        U.isOpenEmbedding'.homeomorphOfSubsetRange <| Set.image_subset_range _ V.carrier
       refine ⟨⟨g ∘ b.symm, ContMDiff.comp hg ?_⟩, Subtype.ext <| funext fun _ ↦ ?_⟩
       · refine (ContMDiff.subtypeVal_comp_iff V' _).mp ?_
         rw [← ContMDiff.subtypeVal_comp_iff]

@@ -37,7 +37,7 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 lemma map_aux ⦃X : D⦄ (R : Sieve X) (hR : R ∈ K X)
     ⦃u : Φ.fiber.Elements⦄ (f : (Functor.Elements.π Φ.fiber ⋙ F).obj u ⟶ X) :
     ∃ (Y : D) (g : Y ⟶ X) (_ : R.arrows g) (v : Φ.fiber.Elements)
-      (q : v ⟶ u) (a : F.obj v.obj ⟶ Y), a ≫ g = F.map q.1 ≫ f := by
+      (q : v ⟶ u) (a : F.obj v.obj ⟶ Y), a ≫ g = F.map q.hom ≫ f := by
   induction u with | mk u
   dsimp at f ⊢
   obtain ⟨V, g, hg, v, rfl⟩ :=
@@ -82,7 +82,7 @@ for `X : C`, `x : Φ.fiber.obj X`. -/
 noncomputable def presheafFiberMapCocone (P : Dᵒᵖ ⥤ A) :
     Cocone ((Functor.Elements.π Φ.fiber).op ⋙ F.op ⋙ P) where
   pt := (Φ.map F K).presheafFiber.obj P
-  ι.app x := Φ.toPresheafFiberMap F K P x.unop.1 x.unop.2
+  ι.app x := Φ.toPresheafFiberMap F K P x.unop.obj x.unop.val
 
 /-- Given a cocontinuous functor `F : C ⥤ D` between sites `(C, J)` and `(D, K)`,
 `P` a presheaf on `D`, then `(Φ.map F K).presheafFiber.obj P` is a colimit

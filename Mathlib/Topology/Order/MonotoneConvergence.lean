@@ -58,11 +58,11 @@ class InfConvergenceClass (α : Type*) [Preorder α] [TopologicalSpace α] : Pro
 
 instance OrderDual.supConvergenceClass [Preorder α] [TopologicalSpace α] [InfConvergenceClass α] :
     SupConvergenceClass αᵒᵈ :=
-  ⟨‹InfConvergenceClass α›.1⟩
+  ⟨‹InfConvergenceClass α›.tendsto_coe_atBot_isGLB⟩
 
 instance OrderDual.infConvergenceClass [Preorder α] [TopologicalSpace α] [SupConvergenceClass α] :
     InfConvergenceClass αᵒᵈ :=
-  ⟨‹SupConvergenceClass α›.1⟩
+  ⟨‹SupConvergenceClass α›.tendsto_coe_atTop_isLUB⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.supConvergenceClass [TopologicalSpace α] [LinearOrder α]

@@ -50,7 +50,7 @@ lemma toSubmodule_injective : Injective (toSubmodule : ClosedSubmodule R M → S
   fun s t h ↦ by cases s; congr!
 
 instance : SetLike (ClosedSubmodule R M) M where
-  coe s := s.1
+  coe s := s.toSubmodule
   coe_injective _ _ h := toSubmodule_injective <| SetLike.coe_injective h
 
 instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M)

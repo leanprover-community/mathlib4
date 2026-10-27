@@ -45,7 +45,7 @@ space `Y`.
 -/
 @[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
-  obj X := C((unop X).1, Y)
+  obj X := C((unop X).carrier, Y)
   map f := ↾fun g ↦ ContinuousMap.comp g
     (ConcreteCategory.hom f.unop)
 
@@ -55,7 +55,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem piComparison_fac {α : Type} (X : α → TopCat) :
     piComparison (yonedaPresheaf'.{w, w'} Y) (fun x ↦ op (X x)) =
     (yonedaPresheaf' Y).map ((opCoproductIsoProduct X).inv ≫ (TopCat.sigmaIsoSigma X).inv.op) ≫
-    (equivEquivIso (sigmaEquiv Y (fun x ↦ (X x).1))).inv ≫ (Types.productIso _).inv := by
+    (equivEquivIso (sigmaEquiv Y (fun x ↦ (X x).carrier))).inv ≫ (Types.productIso _).inv := by
   rw [← Category.assoc, Iso.eq_comp_inv]
   ext
   simp [yonedaPresheaf', piComparison, ← opCoproductIsoProduct_inv_comp_ι]

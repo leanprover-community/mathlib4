@@ -70,14 +70,14 @@ functions `f` on `X` such that `f ≥ 1` on `K`. -/
 theorem rieszContentAux_image_nonempty (K : Compacts X) :
     (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x }).Nonempty := by
   rw [image_nonempty]
-  obtain ⟨V, hVcp, hKsubintV⟩ := exists_compact_superset K.2
+  obtain ⟨V, hVcp, hKsubintV⟩ := exists_compact_superset K.isCompact'
   have hIsCompact_closure_interior : IsCompact (closure (interior V)) := by
     apply IsCompact.of_isClosed_subset hVcp isClosed_closure
     nth_rw 2 [← closure_eq_iff_isClosed.mpr (IsCompact.isClosed hVcp)]
     exact closure_mono interior_subset
   obtain ⟨f, hsuppfsubV, hfeq1onK, hfinicc⟩ :=
     exists_tsupport_one_of_isOpen_isClosed isOpen_interior hIsCompact_closure_interior
-      (IsCompact.isClosed K.2) hKsubintV
+      (IsCompact.isClosed K.isCompact') hKsubintV
   have hfHasCompactSupport : HasCompactSupport f :=
     IsCompact.of_isClosed_subset hVcp (isClosed_tsupport f)
       (Set.Subset.trans hsuppfsubV interior_subset)
@@ -290,7 +290,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro b hb
   rw [rieszContentAux, ENNReal.le_coe_iff]
   have : b < ⊤ := by
-    obtain ⟨F, hF⟩ := exists_compact_superset K.2
+    obtain ⟨F, hF⟩ := exists_compact_superset K.isCompact'
     exact (le_iInf_iff.mp (hb ⟨F, hF.1⟩) hF.2).trans_lt ENNReal.coe_lt_top
   refine ⟨b.toNNReal, (ENNReal.coe_toNNReal this.ne).symm, NNReal.coe_le_coe.mp ?_⟩
   apply le_iff_forall_pos_le_add.mpr
@@ -302,10 +302,10 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   rw [mul_comm, ← smul_eq_mul, ← map_smul]
   set K' := f ⁻¹' Ici α⁻¹
   have hKK' : ↑K ⊆ interior K' :=
-    subset_interior_iff.2 ⟨f ⁻¹' Ioi α⁻¹, isOpen_Ioi.preimage f.1.2,
+    subset_interior_iff.2 ⟨f ⁻¹' Ioi α⁻¹, isOpen_Ioi.preimage f.toContinuousMap.continuous_toFun,
       fun x hx ↦ (inv_lt_one_of_one_lt₀ hα).trans_le (hfleoneonK x hx),
       preimage_mono Ioi_subset_Ici_self⟩
-  have hK'cp : IsCompact K' := .of_isClosed_subset f.2 (isClosed_Ici.preimage f.1.2) fun x hx ↦
+  have hK'cp : IsCompact K' := .of_isClosed_subset f.hasCompactSupport' (isClosed_Ici.preimage f.toContinuousMap.continuous_toFun) fun x hx ↦
     subset_closure ((inv_pos_of_pos <| zero_lt_one.trans hα).trans_le hx).ne'
   set hb' := hb ⟨K', hK'cp⟩
   simp only [Compacts.coe_mk, le_iInf_iff] at hb'

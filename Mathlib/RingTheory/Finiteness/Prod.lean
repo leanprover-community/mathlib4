@@ -46,7 +46,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R
 instance prod [hM : Module.Finite R M] [hN : Module.Finite R N] : Module.Finite R (M × N) :=
   ⟨by
     rw [← Submodule.prod_top]
-    exact hM.1.prod hN.1⟩
+    exact hM.fg_top.prod hN.fg_top⟩
 
 end Finite
 

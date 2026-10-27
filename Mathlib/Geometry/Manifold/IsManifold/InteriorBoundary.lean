@@ -455,7 +455,7 @@ lemma isInteriorPoint_iff_isInteriorPoint_val {u : Opens M} {x : u} :
     I.IsInteriorPoint x ↔ I.IsInteriorPoint x.1 := by
   simpa [I.isInteriorPoint_iff, u.chartAt_eq,
     OpenPartialHomeomorph.subtypeRestr, mem_interior_iff_mem_nhds] using!
-    fun _ _ ↦ (chartAt H x.1).extend_preimage_mem_nhds (mem_chart_source H x.1) (u.2.mem_nhds x.2)
+    fun _ _ ↦ (chartAt H x.1).extend_preimage_mem_nhds (mem_chart_source H x.1) (u.is_open'.mem_nhds x.2)
 
 /-- For `u : Opens M`, `x : u` is a boundary point iff `x.val : M` is. -/
 lemma isBoundaryPoint_iff_isBoundaryPoint_val {u : Opens M} {x : u} :

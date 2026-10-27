@@ -182,7 +182,7 @@ noncomputable
 abbrev fromFunctionField [IrreducibleSpace X] (f : X.PartialMap Y) :
     Spec X.functionField ⟶ Y :=
   f.fromSpecStalkOfMem
-    ((genericPoint_specializes _).mem_open f.domain.2 f.dense_domain.nonempty.choose_spec)
+    ((genericPoint_specializes _).mem_open f.domain.is_open' f.dense_domain.nonempty.choose_spec)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma fromSpecStalkOfMem_restrict (f : X.PartialMap Y)
@@ -217,7 +217,7 @@ def ofFromSpecStalk [IrreducibleSpace X] [LocallyOfFiniteType sY] {x : X} [X.IsG
     (φ : Spec (X.presheaf.stalk x) ⟶ Y) (h : φ ≫ sY = X.fromSpecStalk x ≫ sX) : X.PartialMap Y where
   hom := (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose_spec.choose
   domain := (spread_out_of_isGermInjective' sX sY φ h).choose
-  dense_domain := (spread_out_of_isGermInjective' sX sY φ h).choose.2.dense
+  dense_domain := (spread_out_of_isGermInjective' sX sY φ h).choose.is_open'.dense
     ⟨_, (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose⟩
 
 lemma ofFromSpecStalk_comp [IrreducibleSpace X] [LocallyOfFiniteType sY]
@@ -278,7 +278,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[trans]
 lemma equiv.trans {f g h : X.PartialMap Y} : f.equiv g → g.equiv h → f.equiv h := by
   intro ⟨W₁, hW₁, hW₁l, hW₁r, e₁⟩ ⟨W₂, hW₂, hW₂l, hW₂r, e₂⟩
-  refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.2, inf_le_left.trans hW₁l,
+  refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.is_open', inf_le_left.trans hW₁l,
     inf_le_right.trans hW₂r, ?_⟩
   dsimp at e₁ e₂
   simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
@@ -305,13 +305,13 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
     (hxf : x ∈ f.domain) (hxg : x ∈ g.domain)
     (H : f.fromSpecStalkOfMem hxf = g.fromSpecStalkOfMem hxg) : f.equiv g := by
   have hdense : Dense ((f.domain ⊓ g.domain) : Set X) :=
-    f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.2
+    f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open'
   have := (isGermInjectiveAt_iff_of_isOpenImmersion (f := (f.domain ⊓ g.domain).ι)
     (x := ⟨x, hxf, hxg⟩)).mp ‹_›
   have := spread_out_unique_of_isGermInjective' (X := (f.domain ⊓ g.domain).toScheme)
     (X.homOfLE inf_le_left ≫ f.hom) (X.homOfLE inf_le_right ≫ g.hom) (x := ⟨x, hxf, hxg⟩) ?_
   · obtain ⟨U, hxU, e⟩ := this
-    refine ⟨(f.domain ⊓ g.domain).ι ''ᵁ U, ((f.domain ⊓ g.domain).ι ''ᵁ U).2.dense
+    refine ⟨(f.domain ⊓ g.domain).ι ''ᵁ U, ((f.domain ⊓ g.domain).ι ''ᵁ U).is_open'.dense
       ⟨_, ⟨_, hxU, rfl⟩⟩,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_left,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
@@ -332,7 +332,7 @@ lemma equiv_iff_of_isSeparated_of_le [X.Over S] [Y.Over S] [IsReduced X]
       (f.restrict W hW hWl).hom = (g.restrict W hW hWr).hom := by
   refine ⟨fun ⟨V, hV, hVl, hVr, e⟩ ↦ ?_, fun e ↦ ⟨_, _, _, _, e⟩⟩
   have : IsDominant (X.homOfLE (inf_le_left : W ⊓ V ≤ W)) :=
-    Opens.isDominant_homOfLE (hW.inter_of_isOpen_left hV W.2) _
+    Opens.isDominant_homOfLE (hW.inter_of_isOpen_left hV W.is_open') _
   apply ext_of_isDominant_of_isSeparated' S (X.homOfLE (inf_le_left : W ⊓ V ≤ W))
   simpa using congr(X.homOfLE (inf_le_right : W ⊓ V ≤ V) ≫ $e)
 
@@ -341,8 +341,8 @@ they are equal on the intersection of the domains. -/
 lemma equiv_iff_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
     [IsSeparated (Y ↘ S)] {f g : X.PartialMap Y}
     [f.IsOver S] [g.IsOver S] : f.equiv g ↔
-      (f.restrict _ (f.2.inter_of_isOpen_left g.2 f.domain.2) inf_le_left).hom =
-      (g.restrict _ (f.2.inter_of_isOpen_left g.2 f.domain.2) inf_le_right).hom :=
+      (f.restrict _ (f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open') inf_le_left).hom =
+      (g.restrict _ (f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open') inf_le_right).hom :=
   equiv_iff_of_isSeparated_of_le (S := S) _ _ _
 
 set_option backward.defeqAttrib.useBackward true in
@@ -491,7 +491,7 @@ lemma PartialMap.isOver_toRationalMap_iff_of_isSeparated [X.Over S] [Y.Over S] [
   obtain ⟨U, hU, hU', H⟩ := f.exists_restrict_isOver (S := S)
   rw [isOver_iff]
   have : IsDominant (X.homOfLE hU') := Opens.isDominant_homOfLE hU _
-  exact ext_of_isDominant (ι := X.homOfLE hU') (by simpa using H.1)
+  exact ext_of_isDominant (ι := X.homOfLE hU') (by simpa using H.comp_over)
 
 section functionField
 

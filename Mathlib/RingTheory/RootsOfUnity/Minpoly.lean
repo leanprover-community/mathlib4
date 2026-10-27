@@ -117,9 +117,9 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   set P := minpoly ℤ μ
   set Q := minpoly ℤ (μ ^ p)
   have Pmonic : P.Monic := minpoly.monic (h.isIntegral hpos)
-  have Qmonic : Q.Monic := minpoly.monic ((h.pow_of_prime hprime.1 hdiv).isIntegral hpos)
+  have Qmonic : Q.Monic := minpoly.monic ((h.pow_of_prime hprime.out hdiv).isIntegral hpos)
   have Pirr : Irreducible P := minpoly.irreducible (h.isIntegral hpos)
-  have Qirr : Irreducible Q := minpoly.irreducible ((h.pow_of_prime hprime.1 hdiv).isIntegral hpos)
+  have Qirr : Irreducible Q := minpoly.irreducible ((h.pow_of_prime hprime.out hdiv).isIntegral hpos)
   have PQprim : IsPrimitive (P * Q) := Pmonic.isPrimitive.mul Qmonic.isPrimitive
   have prod : P * Q ∣ X ^ n - 1 := by
     rw [IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (P * Q) (X ^ n - 1) PQprim,
@@ -134,7 +134,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     · apply (map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Pmonic).2
       exact minpoly_dvd_x_pow_sub_one h
     · apply (map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Qmonic).2
-      exact minpoly_dvd_x_pow_sub_one (pow_of_prime h hprime.1 hdiv)
+      exact minpoly_dvd_x_pow_sub_one (pow_of_prime h hprime.out hdiv)
   replace prod := _root_.map_dvd (mapRingHom (Int.castRingHom (ZMod p))) prod
   rw [coe_mapRingHom, Polynomial.map_mul, Polynomial.map_sub, Polynomial.map_one,
     Polynomial.map_pow, map_X] at prod

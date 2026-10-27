@@ -108,7 +108,7 @@ lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of
     apply hp.mem_of_pow_mem k
     rw [← map_pow]
     exact ((hp.under R).mul_mem_iff_mem_or_mem.mp mem).resolve_right
-      (Set.disjoint_left.mp ((IsLocalization.disjoint_under_iff S R' p).mpr hp.1) (∏ a, g a).2)
+      (Set.disjoint_left.mp ((IsLocalization.disjoint_under_iff S R' p).mpr hp.ne_top') (∏ a, g a).2)
 
 variable (R')
 

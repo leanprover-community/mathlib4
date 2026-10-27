@@ -80,7 +80,7 @@ theorem StructureGroupoid.trans_restricted {e e' : OpenPartialHomeomorph M H}
     [HasGroupoid M G] [ClosedUnderRestriction G] {s : Opens M} (hs : Nonempty s) :
     (e.subtypeRestr hs).symm ≫ₕ e'.subtypeRestr hs ∈ G :=
   G.mem_of_eqOnSource (closedUnderRestriction' (G.compatible he he')
-    (e.isOpen_inter_preimage_symm s.2)) (e.subtypeRestr_symm_trans_subtypeRestr hs e')
+    (e.isOpen_inter_preimage_symm s.is_open')) (e.subtypeRestr_symm_trans_subtypeRestr hs e')
 
 section MaximalAtlas
 
@@ -317,7 +317,7 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
       (subtypeRestr_symm_trans_subtypeRestr (s := s) _ (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
-    · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
+    · exact isOpen_inter_preimage_symm (chartAt _ _) s.is_open'
 
 theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
     (chartAt H x.val).symm =ᶠ[𝓝 (chartAt H x.val x.val)] Subtype.val ∘ (chartAt H x).symm := by

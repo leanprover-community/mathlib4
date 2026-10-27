@@ -47,7 +47,7 @@ theorem of_isOpenMap_isQuotientMap (ho : IsOpenMap f) (hq : IsQuotientMap f) :
 
 theorem comp {g : Y → Z} (hg : IsOpenQuotientMap g) (hf : IsOpenQuotientMap f) :
     IsOpenQuotientMap (g ∘ f) :=
-  ⟨.comp hg.1 hf.1, .comp hg.2 hf.2, .comp hg.3 hf.3⟩
+  ⟨.comp hg.surjective hf.surjective, .comp hg.continuous hf.continuous, .comp hg.isOpenMap hf.isOpenMap⟩
 
 theorem of_comp {g : Y → Z} (hf : Continuous f) (f_surj : Surjective f) (hg : Continuous g)
     (h : IsOpenQuotientMap (g ∘ f)) : IsOpenQuotientMap g :=
@@ -127,7 +127,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     ← hq.isQuotientMap.isOpen_preimage]
   constructor
   · rintro ⟨V, hV, e⟩
-    refine ⟨V, hq.continuous.1 _ (hq.isOpenMap _ hV), ?_⟩
+    refine ⟨V, hq.continuous.isOpen_preimage _ (hq.isOpenMap _ hV), ?_⟩
     ext x
     obtain ⟨x, rfl⟩ := hp x
     constructor

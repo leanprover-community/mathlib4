@@ -892,7 +892,7 @@ lemma isUnit_resultant_iff_isCoprime {f g : R[X]} (hf : f.Monic) :
   · obtain rfl := eq_one_of_monic_natDegree_zero hf hf0; simp [isCoprime_one_left]
   refine ⟨fun H ↦ ?_, ?_⟩
   · obtain ⟨p, q, hp, hq, e⟩ := exists_mul_add_mul_eq_C_resultant f g le_rfl le_rfl (by simp [hf0])
-    exact ⟨C (H.unit⁻¹).1 * p, C (H.unit⁻¹).1 * q, by simp only [mul_assoc, ← mul_add, mul_comm p,
+    exact ⟨C (H.unit⁻¹).val * p, C (H.unit⁻¹).val * q, by simp only [mul_assoc, ← mul_add, mul_comm p,
       mul_comm q, e, ← map_mul, IsUnit.val_inv_mul, map_one]⟩
   · intro ⟨a, b, e⟩
     suffices 1 = f.resultant b * f.resultant g from isUnit_iff_exists_inv'.mpr ⟨_, this.symm⟩

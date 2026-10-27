@@ -640,11 +640,11 @@ structure HasAntitoneBasis (l : Filter α) (s : ι'' → Set α) : Prop
 
 protected theorem HasAntitoneBasis.map {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : α → β) : HasAntitoneBasis (map m l) (m '' s ·) :=
-  ⟨HasBasis.map _ hf.toHasBasis, fun _ _ h => image_mono <| hf.2 h⟩
+  ⟨HasBasis.map _ hf.toHasBasis, fun _ _ h => image_mono <| hf.antitone h⟩
 
 protected theorem HasAntitoneBasis.comap {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : β → α) : HasAntitoneBasis (comap m l) (m ⁻¹' s ·) :=
-  ⟨hf.1.comap _, fun _ _ h ↦ preimage_mono (hf.2 h)⟩
+  ⟨hf.toHasBasis.comap _, fun _ _ h ↦ preimage_mono (hf.antitone h)⟩
 
 lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
     {s : ι → Set α} (hs : Antitone s) : (⨅ i, 𝓟 (s i)).HasAntitoneBasis s :=
@@ -754,7 +754,7 @@ lemma eventually_prod_self_iff' {r : α × α → Prop} :
 theorem HasAntitoneBasis.prod {ι : Type*} [LinearOrder ι] {f : Filter α} {g : Filter β}
     {s : ι → Set α} {t : ι → Set β} (hf : HasAntitoneBasis f s) (hg : HasAntitoneBasis g t) :
     HasAntitoneBasis (f ×ˢ g) fun n => s n ×ˢ t n :=
-  ⟨hf.1.prod_same_index_anti hg.1 (hf.2.antitoneOn _) (hg.2.antitoneOn _), hf.2.set_prod hg.2⟩
+  ⟨hf.toHasBasis.prod_same_index_anti hg.toHasBasis (hf.antitone.antitoneOn _) (hg.antitone.antitoneOn _), hf.antitone.set_prod hg.antitone⟩
 
 theorem HasBasis.coprod {ι ι' : Type*} {pa : ι → Prop} {sa : ι → Set α} {pb : ι' → Prop}
     {sb : ι' → Set β} (hla : la.HasBasis pa sa) (hlb : lb.HasBasis pb sb) :

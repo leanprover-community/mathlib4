@@ -226,7 +226,7 @@ theorem quasiMeasurePreserving_hasPDF (hg : QuasiMeasurePreserving g μ ν)
   have hgm : AEMeasurable g (map X ℙ) := hg.aemeasurable.mono_ac HasPDF.absolutelyContinuous
   rw [hasPDF_iff, ← AEMeasurable.map_map_of_aemeasurable hgm (HasPDF.aemeasurable X ℙ μ)]
   refine ⟨hg.measurable.comp_aemeasurable (HasPDF.aemeasurable _ _ μ), hmap, ?_⟩
-  exact (HasPDF.absolutelyContinuous.map hg.1).trans hg.2
+  exact (HasPDF.absolutelyContinuous.map hg.measurable).trans hg.absolutelyContinuous
 
 theorem quasiMeasurePreserving_hasPDF' [SFinite ℙ] [SigmaFinite ν]
     (hg : QuasiMeasurePreserving g μ ν) : HasPDF (g ∘ X) ℙ ν :=

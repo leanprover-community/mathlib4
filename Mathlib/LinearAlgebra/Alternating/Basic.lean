@@ -305,7 +305,7 @@ theorem toMultilinearMap_zero : ((0 : M [⋀^ι]→ₗ[R] N) : MultilinearMap R 
 
 @[simp]
 theorem mk_zero :
-    mk (0 : MultilinearMap R (fun _ : ι ↦ M) N) (0 : M [⋀^ι]→ₗ[R] N).2 = 0 :=
+    mk (0 : MultilinearMap R (fun _ : ι ↦ M) N) (0 : M [⋀^ι]→ₗ[R] N).map_eq_zero_of_eq' = 0 :=
   rfl
 
 instance instInhabited : Inhabited (M [⋀^ι]→ₗ[R] N) :=

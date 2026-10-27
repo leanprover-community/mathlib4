@@ -72,7 +72,7 @@ theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
 
 @[to_additive]
 instance : SetLike (OpenSubgroup G) G where
-  coe U := U.1
+  coe U := U.toSubgroup
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G)
@@ -414,7 +414,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
 @[to_additive]
 instance : Max (OpenSubgroup G) :=
-  ⟨fun U V ↦ ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.1 ≤ U.1 ⊔ V.1) U.isOpen⟩⟩
+  ⟨fun U V ↦ ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.toSubgroup ≤ U.toSubgroup ⊔ V.toSubgroup) U.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
@@ -491,7 +491,7 @@ theorem toSubgroup_injective : Function.Injective
 
 @[to_additive]
 instance : SetLike (OpenNormalSubgroup G) G where
-  coe U := U.1
+  coe U := U.toOpenSubgroup
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G)
@@ -521,7 +521,7 @@ instance instSemilatticeInfOpenNormalSubgroup : SemilatticeInf (OpenNormalSubgro
 @[to_additive]
 instance [SeparatelyContinuousMul G] : Max (OpenNormalSubgroup G) :=
   ⟨fun U V ↦ ⟨U.toOpenSubgroup ⊔ V.toOpenSubgroup,
-    Subgroup.sup_normal U.toOpenSubgroup.1 V.toOpenSubgroup.1⟩⟩
+    Subgroup.sup_normal U.toOpenSubgroup.toSubgroup V.toOpenSubgroup.toSubgroup⟩⟩
 
 @[to_additive]
 instance instSemilatticeSupOpenNormalSubgroup [SeparatelyContinuousMul G] :

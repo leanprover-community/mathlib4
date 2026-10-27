@@ -130,7 +130,7 @@ instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := in
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
-  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
+  ⟨⟨g, h.symm ▸ f.1.continuous_toFun⟩, by convert f.2⟩
 
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
@@ -467,7 +467,7 @@ def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   toFun f := f 0
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ ↦ isEmptyElim i⟩
   left_inv f := by ext; congrm f $(Subsingleton.elim ..)
-  continuous_invFun := ContinuousMap.const'.2.subtype_mk _
+  continuous_invFun := ContinuousMap.const'.continuous_toFun.subtype_mk _
 
 /-- The homotopy "group" indexed by an empty type is in bijection with
   the path components of `X`, aka the `ZerothHomotopy`. -/

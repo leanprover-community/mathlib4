@@ -125,8 +125,8 @@ theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n -
       add_assoc, tsub_right_comm, add_comm i,
       tsub_add_cancel_of_le (le_tsub_of_add_le_right ((le_tsub_iff_left hi).mp h₁))]
   have hle : p ^ m ≤ j + 1 := h ▸ Nat.le_of_dvd j.succ_pos (pow_multiplicity_dvd _ _)
-  exact ⟨(Nat.pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
-     Nat.le_of_lt_succ ((m.lt_pow_self hp.1.one_lt).trans_le hle)⟩
+  exact ⟨(Nat.pow_le_pow_iff_right hp.out.one_lt).1 (hle.trans hj),
+     Nat.le_of_lt_succ ((m.lt_pow_self hp.out.one_lt).trans_le hle)⟩
 
 theorem map_frobeniusPoly (n : ℕ) :
     MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n := by
@@ -170,7 +170,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   push_cast
   linear_combination (norm := skip) -p / p ^ n / p ^ (n - i - v p (j + 1))
     * (p ^ (n - i)).choose (j + 1) * congr((p : ℚ) ^ $(map_frobeniusPoly.key₂ p hi.le hj))
-  field [hp.1.ne_zero]
+  field [hp.out.ne_zero]
 
 theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by

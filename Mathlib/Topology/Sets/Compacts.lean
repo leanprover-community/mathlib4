@@ -195,7 +195,7 @@ theorem nontrivial_iff : Nontrivial (Compacts α) ↔ Nonempty α := by
 
 /-- The image of a compact set under a continuous function. -/
 protected def map (f : α → β) (hf : Continuous f) (K : Compacts α) : Compacts β :=
-  ⟨f '' K.1, K.2.image hf⟩
+  ⟨f '' K.carrier, K.isCompact'.image hf⟩
 
 @[simp, norm_cast]
 theorem coe_map {f : α → β} (hf : Continuous f) (s : Compacts α) : (s.map f hf : Set β) = f '' s :=
@@ -266,7 +266,7 @@ theorem coe_equiv_apply_eq_preimage (f : α ≃ₜ β) (K : Compacts α) :
 /-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
 space. -/
 instance : SProd (Compacts α) (Compacts β) (Compacts (α × β)) where
-  sprod K L := { carrier := K ×ˢ L, isCompact' := IsCompact.prod K.2 L.2 }
+  sprod K L := { carrier := K ×ˢ L, isCompact' := IsCompact.prod K.isCompact' L.isCompact' }
 
 @[simp]
 theorem coe_prod (K : Compacts α) (L : Compacts β) :
@@ -844,7 +844,7 @@ variable [QuasiSeparatedSpace α]
 
 instance instInf : Min (CompactOpens α) where
   min U V :=
-    ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩, U.2.inter V.2⟩
+    ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.toCompacts.carrier V.toCompacts.carrier U.isOpen' U.toCompacts.isCompact' V.isOpen' V.toCompacts.isCompact'⟩, U.isOpen'.inter V.isOpen'⟩
 
 @[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
 

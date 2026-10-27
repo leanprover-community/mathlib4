@@ -403,7 +403,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   · rw [isUnit_iff] at h
     rcases h with ⟨r, hr, rfl⟩
     simp_rw [expand_C] at hf
-    exact absurd (isUnit_C.2 hr) hf.1
+    exact absurd (isUnit_C.2 hr) hf.not_isUnit
   · rw [add_zero, pow_zero, expand_one]
     constructor <;> rfl
 

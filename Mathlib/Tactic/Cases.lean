@@ -120,7 +120,7 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.elimTarget,+)
     usingArg:((" using " ident)?)
     withArg:((" with" (ppSpace colGt binderIdent)+)?)
     genArg:((" generalizing" (ppSpace colGt ident)+)?) : tactic => do
-  let (targets, toTag) ← elabElimTargets tgts.1.getSepArgs
+  let (targets, toTag) ← elabElimTargets tgts.raw.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := true)
@@ -128,7 +128,7 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.elimTarget,+)
     checkInductionTargets targets
     let targetFVarIds := targets.map (·.fvarId!)
     g.withContext do
-      let genArgs ← if genArg.1.isNone then pure #[] else getFVarIds genArg.1[1].getArgs
+      let genArgs ← if genArg.raw.isNone then pure #[] else getFVarIds genArg.raw[1].getArgs
       let forbidden ← mkGeneralizationForbiddenSet targets
       let mut s ← getFVarSetToGeneralize targets forbidden
       for v in genArgs do
@@ -189,7 +189,7 @@ example (h : p ∨ q) : q ∨ p := by
 -/
 elab (name := cases') "cases' " tgts:(Parser.Tactic.elimTarget,+) usingArg:((" using " ident)?)
   withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
-  let (targets, toTag) ← elabElimTargets tgts.1.getSepArgs
+  let (targets, toTag) ← elabElimTargets tgts.raw.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := false)

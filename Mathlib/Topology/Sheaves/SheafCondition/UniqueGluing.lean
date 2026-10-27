@@ -177,36 +177,36 @@ variable {X : TopCat.{x}} (F : Sheaf C X) {ι : Type*} (U : ι → Opens X)
 
 /-- A more convenient way of obtaining a unique gluing of sections for a sheaf.
 -/
-theorem existsUnique_gluing (sf : ∀ i : ι, ToType (F.1.obj (op (U i))))
-    (h : IsCompatible F.1 U sf) :
-    ∃! s : ToType (F.1.obj (op (iSup U))), IsGluing F.1 U sf s :=
+theorem existsUnique_gluing (sf : ∀ i : ι, ToType (F.obj.obj (op (U i))))
+    (h : IsCompatible F.obj U sf) :
+    ∃! s : ToType (F.obj.obj (op (iSup U))), IsGluing F.obj U sf s :=
   IsSheaf.isSheafUniqueGluing F.property U sf h
 
 /-- In this version of the lemma, the inclusion homs `iUV` can be specified directly by the user,
 which can be more convenient in practice.
 -/
 theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : V ≤ iSup U)
-    (sf : ∀ i : ι, ToType (F.1.obj (op (U i)))) (h : IsCompatible F.1 U sf) :
-    ∃! s : ToType (F.1.obj (op V)), ∀ i : ι, F.1.map (iUV i).op s = sf i := by
+    (sf : ∀ i : ι, ToType (F.obj.obj (op (U i)))) (h : IsCompatible F.obj U sf) :
+    ∃! s : ToType (F.obj.obj (op V)), ∀ i : ι, F.obj.map (iUV i).op s = sf i := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   obtain ⟨gl, gl_spec, gl_uniq⟩ := F.existsUnique_gluing U sf h
-  refine ⟨F.1.map (eqToHom V_eq_supr_U).op gl, ?_, ?_⟩
+  refine ⟨F.obj.map (eqToHom V_eq_supr_U).op gl, ?_, ?_⟩
   · intro i
-    rw [← ConcreteCategory.comp_apply, ← F.1.map_comp]
+    rw [← ConcreteCategory.comp_apply, ← F.obj.map_comp]
     exact gl_spec i
   · intro gl' gl'_spec
-    convert congr_arg _ (gl_uniq (F.1.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
-      rw [← ConcreteCategory.comp_apply, ← F.1.map_comp]
+    convert congr_arg _ (gl_uniq (F.obj.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
+      rw [← ConcreteCategory.comp_apply, ← F.obj.map_comp]
     · simp
     · exact gl'_spec i
 
 @[ext]
-theorem eq_of_locally_eq (s t : ToType (F.1.obj (op (iSup U))))
-    (h : ∀ i, F.1.map (Opens.leSupr U i).op s = F.1.map (Opens.leSupr U i).op t) : s = t := by
-  let sf : ∀ i : ι, ToType (F.1.obj (op (U i))) := fun i => F.1.map (Opens.leSupr U i).op s
+theorem eq_of_locally_eq (s t : ToType (F.obj.obj (op (iSup U))))
+    (h : ∀ i, F.obj.map (Opens.leSupr U i).op s = F.obj.map (Opens.leSupr U i).op t) : s = t := by
+  let sf : ∀ i : ι, ToType (F.obj.obj (op (U i))) := fun i => F.obj.map (Opens.leSupr U i).op s
   have sf_compatible : IsCompatible _ U sf := by
     intro i j
-    simp_rw [sf, ← ConcreteCategory.comp_apply, ← F.1.map_comp]
+    simp_rw [sf, ← ConcreteCategory.comp_apply, ← F.obj.map_comp]
     rfl
   obtain ⟨gl, -, gl_uniq⟩ := F.existsUnique_gluing U sf sf_compatible
   trans gl
@@ -222,21 +222,21 @@ theorem eq_of_locally_eq (s t : ToType (F.1.obj (op (iSup U))))
 which can be more convenient in practice.
 -/
 theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : V ≤ iSup U)
-    (s t : ToType (F.1.obj (op V))) (h : ∀ i, F.1.map (iUV i).op s = F.1.map (iUV i).op t) :
+    (s t : ToType (F.obj.obj (op V))) (h : ∀ i, F.obj.map (iUV i).op s = F.obj.map (iUV i).op t) :
     s = t := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
-  suffices F.1.map (eqToHom V_eq_supr_U.symm).op s = F.1.map (eqToHom V_eq_supr_U.symm).op t by
-    convert congr(F.1.map (eqToHom V_eq_supr_U).op $this) <;>
-    rw [← ConcreteCategory.comp_apply, ← F.1.map_comp, eqToHom_op, eqToHom_op, eqToHom_trans,
-      eqToHom_refl, F.1.map_id, ConcreteCategory.id_apply]
+  suffices F.obj.map (eqToHom V_eq_supr_U.symm).op s = F.obj.map (eqToHom V_eq_supr_U.symm).op t by
+    convert congr(F.obj.map (eqToHom V_eq_supr_U).op $this) <;>
+    rw [← ConcreteCategory.comp_apply, ← F.obj.map_comp, eqToHom_op, eqToHom_op, eqToHom_trans,
+      eqToHom_refl, F.obj.map_id, ConcreteCategory.id_apply]
   apply eq_of_locally_eq
   intro i
-  rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← F.1.map_comp]
+  rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← F.obj.map_comp]
   exact h i
 
 theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : U₂ ⟶ V) (hcover : V ≤ U₁ ⊔ U₂)
-    (s t : ToType (F.1.obj (op V))) (h₁ : F.1.map i₁.op s = F.1.map i₁.op t)
-    (h₂ : F.1.map i₂.op s = F.1.map i₂.op t) : s = t := by
+    (s t : ToType (F.obj.obj (op V))) (h₁ : F.obj.map i₁.op s = F.obj.map i₁.op t)
+    (h₂ : F.obj.map i₂.op s = F.obj.map i₂.op t) : s = t := by
   fapply F.eq_of_locally_eq' fun t : Bool => if t then U₁ else U₂
   · exact fun i => if h : i then eqToHom (ite_eq_left h) ≫ i₁ else eqToHom (ite_eq_right h) ≫ i₂
   · refine le_trans hcover ?_
@@ -250,9 +250,9 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
 
 variable {F} {U} in
 theorem eq_app_of_locally_eq {V : Opens X} {G : Sheaf C X} {f : F ⟶ G}
-    {s : ToType (F.1.obj (op (iSup U)))} {t : ToType (G.1.obj (op V))}
-    {sf : ∀ i : ι, ToType (F.1.obj (op (U i)))} (h : IsGluing F.1 U sf s) (hV : ∀ i : ι, U i ≤ V)
-    (ht : ∀ i : ι, f.1.app (op (U i)) (sf i) = G.1.map (homOfLE (hV i)).op t) :
+    {s : ToType (F.obj.obj (op (iSup U)))} {t : ToType (G.obj.obj (op V))}
+    {sf : ∀ i : ι, ToType (F.obj.obj (op (U i)))} (h : IsGluing F.obj U sf s) (hV : ∀ i : ι, U i ≤ V)
+    (ht : ∀ i : ι, f.hom.app (op (U i)) (sf i) = G.obj.map (homOfLE (hV i)).op t) :
     f.hom.app (op (iSup U)) s = G.obj.map (homOfLE (by aesop_cat)).op t := by
   refine eq_of_locally_eq G U _ _ (fun _ ↦ ?_)
   rw [← NatTrans.naturality_apply, h, ht, ← ConcreteCategory.comp_apply, ← Functor.map_comp]

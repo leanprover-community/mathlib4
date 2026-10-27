@@ -128,7 +128,7 @@ lemma differentiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ} (hs : 
 lemma iteratedDerivWithin_tsum_cexp_eq (k : ℕ) (z : ℍ) :
     iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ z =
     ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * π * I * s) ^ n) ℍₒ z := by
-  rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet (by simpa using z.2)]
+  rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet (by simpa using z.coe_im_pos)]
   · exact fun x hx ↦ summable_geometric_iff_norm_lt_one.mpr
       (UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨x, hx⟩)
   · exact fun n _ _ ↦ summableLocallyUniformlyOn_iteratedDerivWithin_cexp n
@@ -151,9 +151,9 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
     (2 * π * I) * ∑' n : ℕ, cexp (2 * π * I * z) ^ n)) ℍₒ z =
     -(2 * π * I) * ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * π * I * s) ^ n) ℍₒ z := by
     rw [iteratedDerivWithin_const_sub hk, iteratedDerivWithin_fun_neg,
-      iteratedDerivWithin_const_mul (by simpa using z.2) (isOpen_upperHalfPlaneSet.uniqueDiffOn)]
+      iteratedDerivWithin_const_mul (by simpa using z.coe_im_pos) (isOpen_upperHalfPlaneSet.uniqueDiffOn)]
     · simp only [iteratedDerivWithin_tsum_cexp_eq, neg_mul]
-    · exact (contDiffOn_tsum_cexp k).contDiffWithinAt (by simpa using z.2)
+    · exact (contDiffOn_tsum_cexp k).contDiffWithinAt (by simpa using z.coe_im_pos)
   have h : -(2 * π * I * (2 * π * I) ^ k) * ∑' (n : ℕ), n ^ k * cexp (2 * π * I * z) ^ n =
         -(2 * π * I) * ∑' n : ℕ, (2 * π * I * n) ^ k * cexp (2 * π * I * z) ^ n := by
     simp_rw [← tsum_mul_left]
@@ -167,7 +167,7 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
   have := exp_nsmul' (p := 1) (a := 2 * π * I) (n := n)
   simp_rw [div_one] at this
   simpa [this, UpperHalfPlane.coe] using
-    iteratedDerivWithin_cexp_aux k n 1 isOpen_upperHalfPlaneSet z.2
+    iteratedDerivWithin_cexp_aux k n 1 isOpen_upperHalfPlaneSet z.coe_im_pos
 
 /-- This is one key identity relating infinite series to q-expansions which shows that
 `∑' n, 1 / (z + n) ^ (k + 1) = ((-2 π I) ^ (k + 1) / k !) * ∑' n, n ^ k q ^n` where
@@ -178,9 +178,9 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
   have : (-1) ^ k * k ! * ∑' n : ℤ, 1 / ((z : ℂ) + n) ^ (k + 1) =
     -(2 * π * I) ^ (k + 1) * ∑' n : ℕ, n ^ k * cexp (2 * π * I * z) ^ n := by
     rw [← iteratedDerivWithin_tsum_exp_aux_eq hk z,
-      ← iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow hk (by simpa using z.2)]
+      ← iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow hk (by simpa using z.coe_im_pos)]
     exact iteratedDerivWithin_congr (fun x hx ↦ by (simpa using pi_mul_cot_pi_q_exp ⟨x, hx⟩))
-      (by simpa using z.2)
+      (by simpa using z.coe_im_pos)
   simp_rw [(eq_inv_mul_iff_mul_eq₀ (by simp [Nat.factorial_ne_zero])).mpr this, ← tsum_mul_left]
   congr
   ext n
@@ -192,7 +192,7 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
 lemma summable_pow_mul_cexp (k : ℕ) (e : ℕ+) (z : ℍ) :
     Summable fun c : ℕ ↦ (c : ℂ) ^ k * cexp (2 * π * I * e * z) ^ c := by
   have he : 0 < (e * (z : ℂ)).im := by
-    simpa using z.2
+    simpa using z.coe_im_pos
   apply ((summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp 0 k (p := 1)
     (f := fun n ↦ (n ^ k : ℂ)) (by simp)
     (by simp [← Complex.isBigO_ofReal_right, Asymptotics.isBigO_refl])).summable he).congr
@@ -228,7 +228,7 @@ lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 :
   case h₁ =>
     nth_rewrite 1 [← tsum_comp_neg]
     exact tsum_congr fun y ↦ by simp [eisSummand, ← neg_add _ (y : ℂ), -neg_add_rev, hk2.neg_pow]
-  have H (b : ℕ+) := qExpansion_identity_pnat (k := k - 1) (by grind) ⟨b * z, by simpa using z.2⟩
+  have H (b : ℕ+) := qExpansion_identity_pnat (k := k - 1) (by grind) ⟨b * z, by simpa using z.coe_im_pos⟩
   simp_rw [show k - 1 + 1 = k by grind, one_div] at H
   simp only [neg_mul] at H
   rw [nsmul_eq_mul, mul_assoc]

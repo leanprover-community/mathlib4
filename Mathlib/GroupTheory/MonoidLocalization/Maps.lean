@@ -510,7 +510,7 @@ Localization map for `S` and `k : P ≃+ M` is an isomorphism of `AddCommMonoid`
 `k(T) = S`, `f ∘ k` is a Localization map for `T`. -/]
 def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationMap T N :=
   have H' : S.comap k.toMonoidHom = T :=
-    H ▸ (SetLike.coe_injective <| T.1.1.preimage_image_eq k.toEquiv.injective)
+    H ▸ (SetLike.coe_injective <| T.toSubsemigroup.carrier.preimage_image_eq k.toEquiv.injective)
   (f.toMonoidHom.comp k.toMonoidHom).toLocalizationMap
     (fun y ↦
       let ⟨z, hz⟩ := f.map_units ⟨k y, H ▸ Set.mem_image_of_mem k y.2⟩

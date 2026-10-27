@@ -31,11 +31,11 @@ namespace ZMod
   of the integer in `(-p/2, p/2]` that is congruent to `a * x mod p` is the set
   of nonzero natural numbers `x` such that `x ≤ p / 2`. -/
 theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a : ZMod p)
-    (hap : a ≠ 0) : ((Ico 1 (p / 2).succ).1.map fun (x : ℕ) => (a * x).valMinAbs.natAbs) =
-    (Ico 1 (p / 2).succ).1.map fun a => a := by
+    (hap : a ≠ 0) : ((Ico 1 (p / 2).succ).val.map fun (x : ℕ) => (a * x).valMinAbs.natAbs) =
+    (Ico 1 (p / 2).succ).val.map fun a => a := by
   have he : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x ≠ 0 ∧ x ≤ p / 2 := by grind
   have hep : ∀ {x}, x ∈ Ico 1 (p / 2).succ → x < p := fun hx =>
-    lt_of_le_of_lt (he hx).2 (Nat.div_lt_self hp.1.pos (by decide))
+    lt_of_le_of_lt (he hx).2 (Nat.div_lt_self hp.out.pos (by decide))
   have hpe : ∀ {x}, x ∈ Ico 1 (p / 2).succ → ¬p ∣ x := fun hx hpx =>
     not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero (he hx).1) hpx) (hep hx)
   have hmem : ∀ (x : ℕ) (_ : x ∈ Ico 1 (p / 2).succ),
@@ -87,8 +87,8 @@ theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ} (hap : (a : ZMod
     (a ^ (p / 2) : ZMod p) =
       ((-1) ^ #{x ∈ Ico 1 (p / 2).succ | p / 2 < (a * x.cast : ZMod p).val} :) :=
   (mul_left_inj' (show ((p / 2)! : ZMod p) ≠ 0 by
-    rw [Ne, CharP.cast_eq_zero_iff (ZMod p) p, hp.1.dvd_factorial, not_le]
-    exact Nat.div_lt_self hp.1.pos (by decide))).1 <| by
+    rw [Ne, CharP.cast_eq_zero_iff (ZMod p) p, hp.out.dvd_factorial, not_le]
+    exact Nat.div_lt_self hp.out.pos (by decide))).1 <| by
       simpa using gauss_lemma_aux₁ p hap
 
 /-- **Gauss' lemma**. The Legendre symbol can be computed by considering the number of naturals less
@@ -108,7 +108,7 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
     ((∑ x ∈ Ico 1 (p / 2).succ, a * x : ℕ) : ZMod 2) =
       #{x ∈ Ico 1 (p / 2).succ | p / 2 < (a * x.cast : ZMod p).val} +
         ∑ x ∈ Ico 1 (p / 2).succ, x + (∑ x ∈ Ico 1 (p / 2).succ, a * x / p : ℕ) :=
-  have hp2 : (p : ZMod 2) = (1 : ℕ) := (natCast_eq_natCast_iff _ _ _).2 hp2.1
+  have hp2 : (p : ZMod 2) = (1 : ℕ) := (natCast_eq_natCast_iff _ _ _).2 hp2.out
   calc
     ((∑ x ∈ Ico 1 (p / 2).succ, a * x : ℕ) : ZMod 2) =
         ((∑ x ∈ Ico 1 (p / 2).succ, (a * x % p + p * (a * x / p)) : ℕ) : ZMod 2) := by
@@ -184,7 +184,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       {x ∈ Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ | x.1 * q ≤ x.2 * p} := by
     apply disjoint_filter.2 fun x hx hpq hqp => ?_
     have hxp : x.1 < p := lt_of_le_of_lt (b := p / 2)
-      (by grind) (Nat.div_lt_self hp.1.pos (by decide))
+      (by grind) (Nat.div_lt_self hp.out.pos (by decide))
     have : (x.1 : ZMod p) = 0 := by
       simpa [hq0] using congr(($(le_antisymm hpq hqp) : ZMod p))
     apply_fun ZMod.val at this

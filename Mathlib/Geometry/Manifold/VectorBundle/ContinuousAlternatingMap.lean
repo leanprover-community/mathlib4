@@ -67,22 +67,22 @@ variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E�
 
 @[simp] theorem chartAt_continuousAlternatingMap (y₀ y : AE₁E₂) :
     chartAt (ModelProd HB (F₁ [⋀^ι]→L[𝕜] F₂)) y₀ y =
-      (chartAt HB y₀.1 y.1, inCoordinates F₁ F₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
+      (chartAt HB y₀.proj y.proj, inCoordinates F₁ F₂ y₀.proj y.proj y₀.proj y.proj y.snd) := by
   rw [FiberBundle.chartedSpace_chartAt, trans_apply, OpenPartialHomeomorph.prod_apply,
     Trivialization.coe_coe, OpenPartialHomeomorph.refl_apply, Function.id_def,
     trivializationAt_continuousAlternatingMap_apply]
 
 theorem contMDiffWithinAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {s : Set M} {x₀ : M} :
     CMDiffAt[s] n f x₀ ↔
-      CMDiffAt[s] n (fun x ↦ (f x).1) x₀ ∧
+      CMDiffAt[s] n (fun x ↦ (f x).proj) x₀ ∧
         CMDiffAt[s] n
-          (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+          (fun x ↦ inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   contMDiffWithinAt_totalSpace
 
 theorem contMDiffAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {x₀ : M} :
     CMDiffAt n f x₀ ↔
-      CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ CMDiffAt n
-        (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+      CMDiffAt n (fun x ↦ (f x).proj) x₀ ∧ CMDiffAt n
+        (fun x ↦ inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   contMDiffAt_totalSpace
 
 end
@@ -103,15 +103,15 @@ variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E�
 theorem mdifferentiableWithinAt_continuousAlternatingMap_bundle
     (f : M → AE₁E₂) {s : Set M} {x₀ : M} :
     MDiffAt[s] f x₀ ↔
-      MDiffAt[s] (fun x ↦ (f x).1) x₀ ∧
+      MDiffAt[s] (fun x ↦ (f x).proj) x₀ ∧
         MDiffAt[s]
-          (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+          (fun x ↦ inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   mdifferentiableWithinAt_totalSpace IB ..
 
 theorem mdifferentiableAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {x₀ : M} :
     MDiffAt f x₀ ↔
-      MDiffAt (fun x ↦ (f x).1) x₀ ∧
-        MDiffAt (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+      MDiffAt (fun x ↦ (f x).proj) x₀ ∧
+        MDiffAt (fun x ↦ inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   mdifferentiableAt_totalSpace ..
 
 end

@@ -297,7 +297,7 @@ instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M
 -- see Note [lower instance priority]
 instance (priority := 100) IsReflexive.to_isTorsionFree : IsTorsionFree R M where
   isSMulRegular r hr m₁ m₂ hm :=
-    (bijective_dual_eval R M).injective <| by ext n; simpa [hr.1.eq_iff] using congr(n $hm)
+    (bijective_dual_eval R M).injective <| by ext n; simpa [hr.left.eq_iff] using congr(n $hm)
 
 end IsReflexive
 

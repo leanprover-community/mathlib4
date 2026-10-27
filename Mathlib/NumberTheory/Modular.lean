@@ -138,7 +138,7 @@ theorem tendsto_normSq_coprime_pair :
     suffices ((z : ℂ).im⁻¹ • g).comp f = LinearMap.id by exact LinearMap.ker_eq_bot_of_inverse this
     apply LinearMap.ext
     intro c
-    have hz : (z : ℂ).im ≠ 0 := z.2.ne'
+    have hz : (z : ℂ).im ≠ 0 := z.coe_im_pos.ne'
     rw [LinearMap.comp_apply, LinearMap.smul_apply, LinearMap.id_apply]
     ext i
     dsimp only [Pi.smul_apply, LinearMap.pi_apply, smul_eq_mul]
@@ -997,6 +997,6 @@ lemma exists_one_half_le_im_smul_and_norm_denom_le (τ : ℍ) :
     rw [im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos γ τ.im_ne_zero),
       normSq_eq_norm_sq] at h1
     simpa only [sq_le_one_iff_abs_le_one, abs_norm] using
-      (mul_le_iff_le_one_right τ.2).mp h1
+      (mul_le_iff_le_one_right τ.coe_im_pos).mp h1
 
 end ModularGroup

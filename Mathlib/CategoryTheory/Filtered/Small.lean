@@ -41,10 +41,10 @@ inductive filteredClosure : ObjectProperty C
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
 instance : IsFilteredOrEmpty (filteredClosure f).FullSubcategory where
   cocone_objs j j' :=
-    ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, ObjectProperty.homMk (leftToMax _ _),
+    ⟨⟨max j.obj j'.obj, filteredClosure.max j.property j'.property⟩, ObjectProperty.homMk (leftToMax _ _),
       ObjectProperty.homMk (rightToMax _ _), trivial⟩
   cocone_maps {j j'} f f' :=
-    ⟨⟨coeq f.hom f'.hom, filteredClosure.coeq j.2 j'.2 f.hom f'.hom⟩,
+    ⟨⟨coeq f.hom f'.hom, filteredClosure.coeq j.property j'.property f.hom f'.hom⟩,
       ObjectProperty.homMk (coeqHom f.hom f'.hom),
       ObjectProperty.hom_ext _ (coeq_condition _ _)⟩
 
@@ -207,10 +207,10 @@ inductive cofilteredClosure : ObjectProperty C
 /-- The full subcategory induced by the cofiltered closure of a family is cofiltered. -/
 instance : IsCofilteredOrEmpty (cofilteredClosure f).FullSubcategory where
   cone_objs j j' :=
-    ⟨⟨min j.1 j'.1, cofilteredClosure.min j.2 j'.2⟩,
+    ⟨⟨min j.obj j'.obj, cofilteredClosure.min j.property j'.property⟩,
     ObjectProperty.homMk (minToLeft _ _), ObjectProperty.homMk (minToRight _ _), trivial⟩
   cone_maps {j j'} f f' :=
-    ⟨⟨eq f.hom f'.hom, cofilteredClosure.eq j.2 j'.2 f.hom f'.hom⟩,
+    ⟨⟨eq f.hom f'.hom, cofilteredClosure.eq j.property j'.property f.hom f'.hom⟩,
     ObjectProperty.homMk (eqHom f.hom f'.hom), ObjectProperty.hom_ext _ (eq_condition _ _)⟩
 
 namespace CofilteredClosureSmall

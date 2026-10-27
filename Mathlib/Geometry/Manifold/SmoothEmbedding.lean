@@ -83,7 +83,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
     [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N] [IsManifold J' n N']
     (hf : IsSmoothEmbedding I J n f) (hg : IsSmoothEmbedding I' J' n g) :
     IsSmoothEmbedding (I.prod I') (J.prod J') n (Prod.map f g) :=
-  ⟨hf.1.prodMap hg.1, hf.2.prodMap hg.2⟩
+  ⟨hf.isImmersion.prodMap hg.isImmersion, hf.isEmbedding.prodMap hg.isEmbedding⟩
 
 /- The inclusion of an open subset `s` of a smooth manifold `M` is a smooth embedding. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :

@@ -302,7 +302,7 @@ class Terminates (s : Computation α) : Prop where
   term : ∃ a, a ∈ s
 
 theorem terminates_iff (s : Computation α) : Terminates s ↔ ∃ a, a ∈ s :=
-  ⟨fun h => h.1, Terminates.mk⟩
+  ⟨fun h => h.term, Terminates.mk⟩
 
 theorem terminates_of_mem {s : Computation α} {a : α} (h : a ∈ s) : Terminates s :=
   ⟨⟨a, h⟩⟩

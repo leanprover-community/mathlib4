@@ -154,7 +154,7 @@ is induced by a functor (which preserves zero morphisms). -/
 @[implicit_reducible, simps! obj_obj map_hom]
 def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
-    obtain ⟨i, hi⟩ := K.2
+    obtain ⟨i, hi⟩ := K.property
     refine ⟨i, ?_⟩
     dsimp [CochainComplex.Plus.ι]
     infer_instance)

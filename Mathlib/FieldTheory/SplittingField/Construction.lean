@@ -305,7 +305,7 @@ instance (f : K[X]) : Module.IsTorsionFree K f.SplittingField :=
 def algEquiv (f : K[X]) [h : IsSplittingField K L f] : L ≃ₐ[K] SplittingField f :=
   AlgEquiv.ofBijective (lift L f <| splits (SplittingField f) f) <|
     have := finiteDimensional L f
-    ((Algebra.IsAlgebraic.of_finite K L).algHom_bijective₂ _ <| lift _ f h.1).1
+    ((Algebra.IsAlgebraic.of_finite K L).algHom_bijective₂ _ <| lift _ f h.splits').1
 
 end IsSplittingField
 

@@ -211,7 +211,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
   rw [finitaryExtensive_iff_of_isTerminal (Type u) PUnit Types.isTerminalPUnit _
       (Types.binaryCoproductColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => Types.binaryCoproductColimit X Y) _
-      fun f g => (Limits.Types.pullbackLimitCone f g).2
+      fun f g => (Limits.Types.pullbackLimitCone f g).isLimit
   · intro _ _ _ _ f hαX hαY
     constructor
     · refine ⟨⟨hαX.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
@@ -301,9 +301,9 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   refine ((TopCat.binaryCofan_isColimit_iff _).mpr ⟨?_, ?_, ?_⟩).some
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert! f.hom.2.1 _ isOpen_range_inl
+    convert! f.hom.continuous_toFun.isOpen_preimage _ isOpen_range_inl
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert! f.hom.2.1 _ isOpen_range_inr
+    convert! f.hom.continuous_toFun.isOpen_preimage _ isOpen_range_inr
   · convert! Set.isCompl_range_inl_range_inr.preimage f
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -330,7 +330,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
         fun {l'} h₁ _ => TopCat.ext fun x =>
           hl' x (l' x) congr($h₁ x).symm⟩
       apply (IsEmbedding.inl (X := X') (Y := Y')).isInducing.continuous_iff.mpr
-      convert! s.fst.hom.2 using 1
+      convert! s.fst.hom.continuous_toFun using 1
       exact (funext hl).symm
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
@@ -348,7 +348,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
         fun {l'} h₁ _ =>
           TopCat.ext fun x => hl' x (l' x) congr($h₁ x).symm⟩
       apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
-      convert! s.fst.hom.2 using 1
+      convert! s.fst.hom.continuous_toFun using 1
       exact (funext hl).symm
   · intro Z f
     exact finitaryExtensiveTopCatAux Z f
@@ -501,7 +501,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
           BinaryCofan.mk_inr, colimit.ι_desc_assoc, Discrete.functor_obj, Category.comp_id]
         exact dite_eq_right j.prop }
   let e' : c.pt ≅ f i ⨿ (∐ fun j : ({i}ᶜ : Set ι) ↦ f j) :=
-    hc.coconePointUniqueUpToIso (getColimitCocone _).2 ≪≫ e
+    hc.coconePointUniqueUpToIso (getColimitCocone _).isColimit ≪≫ e
   have : coprod.inl ≫ e'.inv = c.ι.app ⟨i⟩ := by
     simp only [e, e', Iso.trans_inv, coprod.desc_comp, colimit.ι_desc,
       BinaryCofan.ι_app_left, BinaryCofan.mk_inl]

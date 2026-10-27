@@ -125,7 +125,7 @@ lemma isArtinianObject_of_mono (i : X ⟶ Y) [Mono i] [IsArtinianObject Y] :
   intro f
   obtain ⟨n, hn⟩ := antitone_chain_condition_of_isArtinianObject
     ⟨fun n ↦ (Subobject.map i).obj (f n),
-      fun _ _ h ↦ (Subobject.map i).monotone (f.2 h)⟩
+      fun _ _ h ↦ (Subobject.map i).monotone (f.monotone' h)⟩
   exact ⟨n, fun m hm ↦ Subobject.map_obj_injective i (hn m hm)⟩
 
 instance : (isArtinianObject (C := C)).IsClosedUnderSubobjects where

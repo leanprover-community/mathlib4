@@ -53,7 +53,7 @@ namespace DiffContOnCl
 
 theorem comp {g : G → E} {t : Set G} (hf : DiffContOnCl 𝕜 f s) (hg : DiffContOnCl 𝕜 g t)
     (h : MapsTo g t s) : DiffContOnCl 𝕜 (f ∘ g) t :=
-  ⟨hf.1.comp hg.1 h, hf.2.comp hg.2 <| h.closure_of_continuousOn hg.2⟩
+  ⟨hf.differentiableOn.comp hg.differentiableOn h, hf.continuousOn.comp hg.continuousOn <| h.closure_of_continuousOn hg.continuousOn⟩
 
 theorem continuousOn_ball [NormedSpace ℝ E] {x : E} {r : ℝ} (h : DiffContOnCl 𝕜 f (ball x r)) :
     ContinuousOn f (closedBall x r) := by
@@ -78,7 +78,7 @@ protected theorem mono (h : DiffContOnCl 𝕜 f s) (ht : t ⊆ s) : DiffContOnCl
   ⟨h.differentiableOn.mono ht, h.continuousOn.mono (closure_mono ht)⟩
 
 theorem add (hf : DiffContOnCl 𝕜 f s) (hg : DiffContOnCl 𝕜 g s) : DiffContOnCl 𝕜 (f + g) s :=
-  ⟨hf.1.add hg.1, hf.2.add hg.2⟩
+  ⟨hf.differentiableOn.add hg.differentiableOn, hf.continuousOn.add hg.continuousOn⟩
 
 theorem add_const (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => f x + c) s :=
   hf.add diffContOnCl_const
@@ -87,10 +87,10 @@ theorem const_add (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun 
   diffContOnCl_const.add hf
 
 theorem neg (hf : DiffContOnCl 𝕜 f s) : DiffContOnCl 𝕜 (-f) s :=
-  ⟨hf.1.neg, hf.2.neg⟩
+  ⟨hf.differentiableOn.neg, hf.continuousOn.neg⟩
 
 theorem sub (hf : DiffContOnCl 𝕜 f s) (hg : DiffContOnCl 𝕜 g s) : DiffContOnCl 𝕜 (f - g) s :=
-  ⟨hf.1.sub hg.1, hf.2.sub hg.2⟩
+  ⟨hf.differentiableOn.sub hg.differentiableOn, hf.continuousOn.sub hg.continuousOn⟩
 
 theorem sub_const (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun x => f x - c) s :=
   hf.sub diffContOnCl_const
@@ -100,12 +100,12 @@ theorem const_sub (hf : DiffContOnCl 𝕜 f s) (c : F) : DiffContOnCl 𝕜 (fun 
 
 theorem const_smul {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F]
     [ContinuousConstSMul R F] (hf : DiffContOnCl 𝕜 f s) (c : R) : DiffContOnCl 𝕜 (c • f) s :=
-  ⟨hf.1.const_smul c, hf.2.const_smul c⟩
+  ⟨hf.differentiableOn.const_smul c, hf.continuousOn.const_smul c⟩
 
 theorem smul {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
     [IsScalarTower 𝕜 𝕜' F] {c : E → 𝕜'} {f : E → F} {s : Set E} (hc : DiffContOnCl 𝕜 c s)
     (hf : DiffContOnCl 𝕜 f s) : DiffContOnCl 𝕜 (fun x => c x • f x) s :=
-  ⟨hc.1.smul hf.1, hc.2.smul hf.2⟩
+  ⟨hc.differentiableOn.smul hf.differentiableOn, hc.continuousOn.smul hf.continuousOn⟩
 
 theorem smul_const {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
     [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F] {c : E → 𝕜'} {s : Set E} (hc : DiffContOnCl 𝕜 c s)
@@ -114,7 +114,7 @@ theorem smul_const {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebr
 
 theorem inv {f : E → 𝕜} (hf : DiffContOnCl 𝕜 f s) (h₀ : ∀ x ∈ closure s, f x ≠ 0) :
     DiffContOnCl 𝕜 f⁻¹ s :=
-  ⟨(differentiableOn_inv.comp hf.1 fun _ hx => h₀ _ (subset_closure hx) :), hf.2.inv₀ h₀⟩
+  ⟨(differentiableOn_inv.comp hf.differentiableOn fun _ hx => h₀ _ (subset_closure hx) :), hf.continuousOn.inv₀ h₀⟩
 
 end DiffContOnCl
 
