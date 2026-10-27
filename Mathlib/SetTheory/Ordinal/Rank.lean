@@ -92,9 +92,9 @@ theorem WellFoundedGT.rank_strictAnti [Preorder α] [WellFoundedGT α] :
   fun _ _ a => WellFounded.rank_lt_of_rel a
 
 @[simp]
-theorem WellFounded.rank_eq_typein (r) [IsWellOrder α r] : rank r = Ordinal.typein r := by
+theorem WellFounded.rank_eq_typein [LinearOrder α] [WellFoundedLT α] :
+    rank (· < · : α → _) = Ordinal.typein := by
   classical
-  let := linearOrderOfSTO r
   ext a
   exact InitialSeg.eq (⟨(OrderEmbedding.ofStrictMono _ WellFoundedLT.rank_strictMono).ltEmbedding,
-    fun a b h ↦ mem_range_rank_of_le h.le⟩) (Ordinal.typein r) a
+    fun a b h ↦ mem_range_rank_of_le h.le⟩) (Ordinal.typein (α := α)) a

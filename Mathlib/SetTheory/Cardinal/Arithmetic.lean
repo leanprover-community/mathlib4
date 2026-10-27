@@ -25,6 +25,8 @@ use of ordinal numbers. This is done within this file.
 cardinal arithmetic (for infinite cardinals)
 -/
 
+public section
+
 assert_not_exists Module Finsupp Ordinal.log
 
 open Function Set Cardinal Equiv Order Ordinal
