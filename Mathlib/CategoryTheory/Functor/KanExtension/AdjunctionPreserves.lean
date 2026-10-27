@@ -33,7 +33,6 @@ section
 
 variable (F : C ⥤ H₁) (L : C ⥤ D)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The right adjoint of `LeftExtension.postcompose₂ L F G₁` when `G₁` is
 part of an adjunction `adj : G₁ ⊣ G₂`. -/
 @[simps! +dsimpLhs obj_right_obj obj_right_map obj_hom_app map_right_app]
@@ -68,7 +67,6 @@ section
 
 variable (F : C ⥤ H₂) (L : C ⥤ D)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The left adjoint of `RightExtension.postcompose₂ L F G₂` when `G₂` is
 part of an adjunction `adj : G₁ ⊣ G₂`. -/
 @[simps! +dsimpLhs obj_left_obj obj_left_map obj_hom_app map_left_app]
@@ -87,7 +85,6 @@ def rightExtensionPostcompose₂ :
   unit.app E := CostructuredArrow.homMk (whiskerLeft E.left adj.unit)
   counit.app E := CostructuredArrow.homMk (whiskerLeft E.left adj.counit)
 
-set_option backward.defeqAttrib.useBackward true in
 include adj in
 lemma preservesRightKanExtension : G₂.PreservesRightKanExtension F L where
   preserves F' α hα := by

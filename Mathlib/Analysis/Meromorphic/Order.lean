@@ -119,7 +119,7 @@ lemma meromorphicOrderAt_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : meromor
         ← zpow_add₀ (sub_ne_zero.mpr hz), ← add_sub_assoc, add_sub_cancel_left, zpow_natCast,
         zpow_natCast]
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
-      AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
+      AnalyticAt.unique_eventuallyEq_zpow_smul_ne_zero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
 /--
 The order of a meromorphic function `f` at `z₀` is finite iff `f` can locally be

@@ -73,9 +73,11 @@ theorem InftyValuation.map_add_le_max' (x y : RatFunc F) :
   aesop
 
 @[simp]
-theorem inftyValuation_of_nonzero {x : RatFunc F} (hx : x ≠ 0) :
+theorem inftyValuation_of_ne_zero {x : RatFunc F} (hx : x ≠ 0) :
     inftyValuationDef F x = exp x.intDegree := by
   rw [inftyValuationDef, ite_eq_right hx]
+
+@[deprecated (since := "2026-10-13")] alias inftyValuation_of_nonzero := inftyValuation_of_ne_zero
 
 /-- The valuation at infinity on `F(t)`. -/
 def inftyValuation : Valuation (RatFunc F) ℤᵐ⁰ where
