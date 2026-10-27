@@ -69,7 +69,10 @@ deriving Fintype, DecidableEq
 
 namespace FreeModLatThree
 
-theorem card_eq_28 : Fintype.card FreeModLatThree = 28 := rfl
+@[simp]
+theorem fintypeCard_eq : Fintype.card FreeModLatThree = 28 := rfl
+
+instance : Nontrivial FreeModLatThree := Fintype.one_lt_card_iff_nontrivial.1 (by simp)
 
 /--
 One of the generators of `FreeModLatThree`.
