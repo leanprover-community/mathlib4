@@ -193,7 +193,7 @@ instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{
 instance ObjectProperty.FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory.{w} C FC]
-    (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
+    (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.obj Y.obj) where
   hom f := hom f.hom
   ofHom g := homMk (ofHom g)
   hom_ofHom _ := hom_ofHom _

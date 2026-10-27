@@ -48,7 +48,7 @@ on its closure are again harmonic on the set and continuous on its closure.
 -/
 theorem HarmonicContOnCl.comp_CLM {f : E → F} {s : Set E} (h : HarmonicContOnCl f s)
     (l : F →L[ℝ] G) : HarmonicContOnCl (l ∘ f) s :=
-  ⟨h.1.comp_CLM l, l.continuous.comp_continuousOn h.2⟩
+  ⟨h.harmonicOnNhd.comp_CLM l, l.continuous.comp_continuousOn h.continuousOn⟩
 
 end
 
@@ -102,7 +102,7 @@ theorem HarmonicContOnCl.circleAverage_eq (hf : HarmonicContOnCl f (ball c |R|))
   by_cases hR : R = 0
   · simp_all
   have H : ContinuousOn (circleAverage (g ∘ f) c) (Set.Ioc 0 |R|) := by
-    refine ((hf.comp_CLM g).2.mono ?_).circleAverage (fun z hz ↦ hz.1.le)
+    refine ((hf.comp_CLM g).continuousOn.mono ?_).circleAverage (fun z hz ↦ hz.1.le)
     intro x hx
     rw [closure_ball _ (by aesop), mem_closedBall_iff_norm]
     exact hx.2
@@ -110,7 +110,7 @@ theorem HarmonicContOnCl.circleAverage_eq (hf : HarmonicContOnCl f (ball c |R|))
   apply H.eq_of_eqOn_Ioo (by aesop)
   intro r hr
   apply HarmonicOnNhd.circleAverage_eq
-  apply (hf.comp_CLM g).1.mono
+  apply (hf.comp_CLM g).harmonicOnNhd.mono
   rw [abs_of_pos hr.1]
   exact closedBall_subset_ball hr.2
 

@@ -103,7 +103,7 @@ protected theorem HasAntitoneBasis.mem [Preorder ι] {l : Filter α} {s : ι →
 
 theorem HasAntitoneBasis.hasBasis_ge [Preorder ι] [IsDirectedOrder ι] {l : Filter α}
     {s : ι → Set α} (hs : l.HasAntitoneBasis s) (i : ι) : l.HasBasis (fun j => i ≤ j) s :=
-  hs.1.to_hasBasis (fun j _ => (exists_ge_ge i j).imp fun _k hk => ⟨hk.1, hs.2 hk.2⟩) fun j _ =>
+  hs.toHasBasis.to_hasBasis (fun j _ => (exists_ge_ge i j).imp fun _k hk => ⟨hk.1, hs.antitone hk.2⟩) fun j _ =>
     ⟨j, trivial, Subset.rfl⟩
 
 /-- If `f` is countably generated and `f.HasBasis p s`, then `f` admits a decreasing basis
@@ -132,7 +132,7 @@ theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGene
   exact
     le_antisymm (le_iInf fun i => le_principal_iff.2 <| by cases i <;> apply hs.set_index_mem)
       (hx'.symm ▸
-        le_iInf fun i => le_principal_iff.2 <| this.1.mem_iff.2 ⟨i, trivial, x_subset i⟩)
+        le_iInf fun i => le_principal_iff.2 <| this.toHasBasis.mem_iff.2 ⟨i, trivial, x_subset i⟩)
 
 /-- A countably generated filter admits a basis formed by an antitone sequence of sets. -/
 theorem exists_antitone_basis (f : Filter α) [f.IsCountablyGenerated] :
@@ -143,13 +143,13 @@ theorem exists_antitone_basis (f : Filter α) [f.IsCountablyGenerated] :
 theorem exists_antitone_seq (f : Filter α) [f.IsCountablyGenerated] :
     ∃ x : ℕ → Set α, Antitone x ∧ ∀ {s}, s ∈ f ↔ ∃ i, x i ⊆ s :=
   let ⟨x, hx⟩ := f.exists_antitone_basis
-  ⟨x, hx.antitone, by simp [hx.1.mem_iff]⟩
+  ⟨x, hx.antitone, by simp [hx.toHasBasis.mem_iff]⟩
 
 instance Inf.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
     [IsCountablyGenerated g] : IsCountablyGenerated (f ⊓ g) := by
   rcases f.exists_antitone_basis with ⟨s, hs⟩
   rcases g.exists_antitone_basis with ⟨t, ht⟩
-  exact HasCountableBasis.isCountablyGenerated ⟨hs.1.inf ht.1, Set.to_countable _⟩
+  exact HasCountableBasis.isCountablyGenerated ⟨hs.toHasBasis.inf ht.toHasBasis, Set.to_countable _⟩
 
 instance map.isCountablyGenerated (l : Filter α) [l.IsCountablyGenerated] (f : α → β) :
     (map f l).IsCountablyGenerated :=
@@ -165,7 +165,7 @@ instance Sup.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
     [IsCountablyGenerated g] : IsCountablyGenerated (f ⊔ g) := by
   rcases f.exists_antitone_basis with ⟨s, hs⟩
   rcases g.exists_antitone_basis with ⟨t, ht⟩
-  exact HasCountableBasis.isCountablyGenerated ⟨hs.1.sup ht.1, Set.to_countable _⟩
+  exact HasCountableBasis.isCountablyGenerated ⟨hs.toHasBasis.sup ht.toHasBasis, Set.to_countable _⟩
 
 instance prod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCountablyGenerated la]
     [IsCountablyGenerated lb] : IsCountablyGenerated (la ×ˢ lb) :=
@@ -197,7 +197,7 @@ theorem isCountablyGenerated_iff_exists_antitone_basis {f : Filter α} :
   · intro h
     exact f.exists_antitone_basis
   · rintro ⟨x, h⟩
-    rw [h.1.eq_iInf]
+    rw [h.toHasBasis.eq_iInf]
     exact isCountablyGenerated_seq x
 
 @[instance]
@@ -221,7 +221,7 @@ instance iInf.isCountablyGenerated {ι : Sort*} {α : Type*} [Countable ι] (f :
     [∀ i, IsCountablyGenerated (f i)] : IsCountablyGenerated (⨅ i, f i) := by
   choose s hs using fun i => exists_antitone_basis (f i)
   rw [← PLift.down_surjective.iInf_comp]
-  refine HasCountableBasis.isCountablyGenerated ⟨.iInf fun n => (hs _).1, ?_⟩
+  refine HasCountableBasis.isCountablyGenerated ⟨.iInf fun n => (hs _).toHasBasis, ?_⟩
   refine (countable_range <| Sigma.map ((↑) : Finset (PLift ι) → Set (PLift ι)) fun _ => id).mono ?_
   rintro ⟨I, f⟩ ⟨hI, -⟩
   lift I to Finset (PLift ι) using hI

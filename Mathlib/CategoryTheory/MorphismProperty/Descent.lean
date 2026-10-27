@@ -85,7 +85,7 @@ instance [Q.IsStableUnderBaseChange] [P.HasOfPrecompProperty Q] [P.RespectsRight
     P.DescendsAlong Q where
   of_isPullback {A X Y Z fst snd f g} h hf hfst := by
     apply P.of_precomp (W' := Q) _ _ (Q.of_isPullback h hf)
-    rw [← h.1.1]
+    rw [← h.toCommSq.w]
     exact RespectsRight.postcomp _ hf _ hfst
 
 /-- If `P` descends along `Q`, then `P.diagonal` descends along `Q`. -/
@@ -205,7 +205,7 @@ instance [Q.IsStableUnderCobaseChange] [P.HasOfPostcompProperty Q] [P.RespectsLe
     P.CodescendsAlong Q where
   of_isPushout {X Y Z A f g inl inr} h hf hinl := by
     apply P.of_postcomp (W' := Q) g inr (Q.of_isPushout h.flip hf)
-    rw [← h.1.1]
+    rw [← h.toCommSq.w]
     exact RespectsLeft.precomp _ hf _ hinl
 
 end CodescendsAlong

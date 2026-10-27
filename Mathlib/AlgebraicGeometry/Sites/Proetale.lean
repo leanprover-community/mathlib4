@@ -182,7 +182,7 @@ lemma bot_mem_topology (X : S.ProEt) [IsEmpty X.left] : ⊥ ∈ topology S X := 
 lemma topology_eq_top_of_isEmpty [IsEmpty S] : topology S = ⊤ := by
   rw [GrothendieckTopology.eq_top_iff]
   intro X
-  have : IsEmpty X.left := X.hom.base.1.1.isEmpty (β := S)
+  have : IsEmpty X.left := X.hom.base.hom'.toFun.isEmpty (β := S)
   exact bot_mem_topology _
 
 end ProEt

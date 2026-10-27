@@ -98,7 +98,7 @@ lemma ofCompactSupport_mem (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCo
 
 instance : SMul C(α, γ) C_cb(α, γ) where
   smul := fun (g : C(α, γ)) => (fun (f : C_cb(α, γ)) =>
-    ⟨ofCompactSupport (g * (f : α →ᵇ γ) : α → γ) (Continuous.mul g.2 f.1.1.2)
+    ⟨ofCompactSupport (g * (f : α →ᵇ γ) : α → γ) (Continuous.mul g.continuous_toFun f.1.toContinuousMap.continuous_toFun)
     (HasCompactSupport.mul_left (mem_compactlySupported.mp f.2)), by
       apply mem_compactlySupported.mpr
       rw [ofCompactSupport]

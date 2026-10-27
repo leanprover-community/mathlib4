@@ -28,7 +28,7 @@ variable (R : Type u) [CommRing R]
 abbrev FGAlgCat := ObjectProperty.FullSubcategory
   fun A : CommAlgCat.{v, u} R ↦ Algebra.FiniteType R A
 
-instance (A : FGAlgCat R) : Algebra.FiniteType R A.1 := A.2
+instance (A : FGAlgCat R) : Algebra.FiniteType R A.obj := A.property
 
 /-- (Implementation detail): A small skeleton of `FGAlgCat`. -/
 structure FGAlgCatSkeleton : Type u where
@@ -56,7 +56,7 @@ lemma RingHom.FiniteType.exists_smallRepr {S : Type v} [CommRing S] {f : R →+*
 
 /-- Universe lift functor for finitely generated algebras. -/
 def FGAlgCat.uliftFunctor : FGAlgCat.{v} R ⥤ FGAlgCat.{max v w} R where
-  obj A := ⟨.of R <| ULift A.1, .equiv inferInstance ULift.algEquiv.symm⟩
+  obj A := ⟨.of R <| ULift A.obj, .equiv inferInstance ULift.algEquiv.symm⟩
   map {A B} f := ConcreteCategory.ofHom <|
     ULift.algEquiv.symm.toAlgHom.comp <| f.hom.hom.comp ULift.algEquiv.toAlgHom
 
@@ -102,12 +102,12 @@ finite type ring homomorphisms from `R`. -/
 def FGAlgCat.equivUnder (R : CommRingCat.{u}) :
     FGAlgCat R ≌ MorphismProperty.Under (toMorphismProperty FiniteType) ⊤ R where
   functor.obj A := ⟨(commAlgCatEquivUnder R).functor.obj A.obj,
-    (RingHom.finiteType_algebraMap (A := R) (B := A.obj)).mpr A.2⟩
+    (RingHom.finiteType_algebraMap (A := R) (B := A.obj)).mpr A.property⟩
   functor.map {A B} f := ⟨(commAlgCatEquivUnder R).functor.map f.hom, trivial, trivial⟩
-  inverse.obj A := ⟨(commAlgCatEquivUnder R).inverse.obj A.1, A.2⟩
+  inverse.obj A := ⟨(commAlgCatEquivUnder R).inverse.obj A.toComma, A.prop⟩
   inverse.map {A B} f := ObjectProperty.homMk ((commAlgCatEquivUnder R).inverse.map f.hom)
   unitIso := NatIso.ofComponents fun A ↦
-    ObjectProperty.isoMk _ (CommAlgCat.isoMk { toRingEquiv := .refl A.1, commutes' _ := rfl })
+    ObjectProperty.isoMk _ (CommAlgCat.isoMk { toRingEquiv := .refl A.obj, commutes' _ := rfl })
   counitIso := .refl _
 
 variable {Q : MorphismProperty CommRingCat.{u}}

@@ -469,14 +469,14 @@ variable {α : Type u}
 
 @[to_additive]
 instance : Semigroup (FreeSemigroup α) where
-  mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
+  mul L1 L2 := ⟨L1.head, L1.tail ++ L2.head :: L2.tail⟩
   mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext rfl <| List.append_assoc _ _ _
 
 @[to_additive (attr := simp)]
-theorem head_mul (x y : FreeSemigroup α) : (x * y).1 = x.1 := rfl
+theorem head_mul (x y : FreeSemigroup α) : (x * y).head = x.head := rfl
 
 @[to_additive (attr := simp)]
-theorem tail_mul (x y : FreeSemigroup α) : (x * y).2 = x.2 ++ y.1 :: y.2 := rfl
+theorem tail_mul (x y : FreeSemigroup α) : (x * y).tail = x.tail ++ y.head :: y.tail := rfl
 
 @[to_additive (attr := simp)]
 theorem mk_mul_mk (x y : α) (L1 L2 : List α) : mk x L1 * mk y L2 = mk x (L1 ++ y :: L2) := rfl
@@ -522,7 +522,7 @@ a semigroup `β`. -/
 homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
-    { toFun x := x.2.foldl (fun a b ↦ a * f b) (f x.1)
+    { toFun x := x.tail.foldl (fun a b ↦ a * f b) (f x.head)
       map_mul' := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
 

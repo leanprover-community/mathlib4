@@ -204,7 +204,7 @@ def invariantsEquivRepHom : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y wher
   toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.2 g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.2 g⟩
+  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 <| f.hom.isIntertwining' g⟩
 
 end Rep
 

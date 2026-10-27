@@ -80,7 +80,7 @@ def uniqueGalOfSplits (h : p.Splits) : Unique p.Gal where
       rw [AlgEquiv.commutes, AlgEquiv.commutes]
 
 instance [h : Fact p.Splits] : Unique p.Gal :=
-  uniqueGalOfSplits _ h.1
+  uniqueGalOfSplits _ h.out
 
 instance uniqueGalZero : Unique (0 : F[X]).Gal :=
   uniqueGalOfSplits _ (by simp)
@@ -101,11 +101,11 @@ instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
   uniqueGalOfSplits _ (Splits.X_pow _)
 
 instance [h : Fact ((p.map (algebraMap F E)).Splits)] : Algebra p.SplittingField E :=
-  (IsSplittingField.lift p.SplittingField p h.1).toRingHom.toAlgebra
+  (IsSplittingField.lift p.SplittingField p h.out).toRingHom.toAlgebra
 
 instance [h : Fact ((p.map (algebraMap F E)).Splits)] : IsScalarTower F p.SplittingField E :=
   IsScalarTower.of_algebraMap_eq fun x =>
-    ((IsSplittingField.lift p.SplittingField p h.1).commutes x).symm
+    ((IsSplittingField.lift p.SplittingField p h.out).commutes x).symm
 
 -- The `Algebra p.SplittingField E` instance above behaves badly when
 -- `E := p.SplittingField`, since it may result in a unification problem

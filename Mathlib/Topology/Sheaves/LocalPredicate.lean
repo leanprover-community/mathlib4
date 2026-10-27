@@ -128,7 +128,7 @@ def PrelocalPredicate.and (P Q : PrelocalPredicate T) : PrelocalPredicate T wher
 
 /-- The conjunction of two prelocal predicates is prelocal. -/
 def LocalPredicate.and (P Q : LocalPredicate T) : LocalPredicate T where
-  __ := P.1.and Q.1
+  __ := P.toPrelocalPredicate.and Q.toPrelocalPredicate
   locality f w := by
     refine ⟨P.locality f ?_, Q.locality f ?_⟩ <;>
       (intro x; have ⟨V, hV, i, h⟩ := w x; use V, hV, i)
@@ -363,7 +363,7 @@ def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
     { hom := ↾fun f ↦ ofHom ⟨f.1, f.2⟩
-      inv := ↾fun f ↦ ⟨f.1, f.1.2⟩ }
+      inv := ↾fun f ↦ ⟨f.hom', f.hom'.continuous_toFun⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.
 -/

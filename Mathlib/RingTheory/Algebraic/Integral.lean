@@ -162,7 +162,7 @@ theorem _root_.Algebra.IsAlgebraic.exists_integral_multiples [NoZeroDivisors R]
     [alg : Algebra.IsAlgebraic R A] (s : Finset A) :
     ∃ y ≠ (0 : R), ∀ z ∈ s, IsIntegral R (y • z) := by
   have := Algebra.IsAlgebraic.nontrivial R A
-  choose r hr int using fun x ↦ (alg.1 x).exists_integral_multiple
+  choose r hr int using fun x ↦ (alg.isAlgebraic x).exists_integral_multiple
   refine ⟨∏ x ∈ s, r x, Finset.prod_ne_zero_iff.mpr fun _ _ ↦ hr _, fun _ h ↦ ?_⟩
   classical rw [← Finset.prod_erase_mul _ _ h, mul_smul]
   exact (int _).smul _
@@ -232,13 +232,13 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
     {a : A} (h : IsAlgebraic S a) : IsAlgebraic R a := by
   by_cases hRS : Function.Injective (algebraMap R S)
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
-    fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
+    fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).isAlgebraic _
   have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
   have ⟨s, hs, int_s⟩ := h.exists_integral_multiple
   cases subsingleton_or_nontrivial R
   · have := Module.subsingleton R S
     exact (is_transcendental_of_subsingleton _ _ h).elim
-  have ⟨r, hr, _, e⟩ := (int.1 s).isAlgebraic.exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero hs)
+  have ⟨r, hr, _, e⟩ := (int.isIntegral s).isAlgebraic.exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero hs)
   refine .of_smul_isIntegral (y := r) (by rwa [isNilpotent_iff_eq_zero]) ?_
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R S,
     e, ← Algebra.smul_def, mul_comm, mul_smul]
@@ -250,7 +250,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   have ⟨p, hp, eval0⟩ := h
   by_cases hRS : Function.Injective (algebraMap R S)
   on_goal 2 => exact (Algebra.isAlgebraic_of_not_injective
-    fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
+    fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).isAlgebraic _
   rw [← faithfulSMul_iff_algebraMap_injective] at hRS
   have := NoZeroDivisors.of_faithfulSMul R S
   have := Algebra.nontrivial_of_isAlgebraic R S
@@ -347,15 +347,15 @@ variable (R S A) [NoZeroDivisors S]
 /-- Transitivity of algebraicity for algebras over domains. -/
 @[stacks 09GJ] theorem IsAlgebraic.trans [Algebra.IsAlgebraic R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ (alg.1 _).restrictScalars _⟩
+  ⟨fun _ ↦ (alg.isAlgebraic _).restrictScalars _⟩
 
 theorem IsIntegral.trans_isAlgebraic [Algebra.IsIntegral R S] [alg : Algebra.IsAlgebraic S A] :
     Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ (alg.1 _).restrictScalars_of_isIntegral _⟩
+  ⟨fun _ ↦ (alg.isAlgebraic _).restrictScalars_of_isIntegral _⟩
 
 theorem IsAlgebraic.trans_isIntegral [Algebra.IsAlgebraic R S] [int : Algebra.IsIntegral S A] :
     Algebra.IsAlgebraic R A :=
-  ⟨fun _ ↦ (int.1 _).trans_isAlgebraic _⟩
+  ⟨fun _ ↦ (int.isIntegral _).trans_isAlgebraic _⟩
 
 variable {A}
 
@@ -512,7 +512,7 @@ instance : IsLocalization (algebraMapSubmonoid S R⁰) S' :=
   have := (FaithfulSMul.algebraMap_injective R S).noZeroDivisors _ (map_zero _) (map_mul _)
   (IsLocalization.iff_of_le_of_exists_dvd _ S⁰
     (map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective ..) le_rfl)
-    fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.1 s).exists_ne_zero_dvd hs
+    fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.isAlgebraic s).exists_ne_zero_dvd hs
     ⟨_, ⟨r, mem_nonZeroDivisors_of_ne_zero ne, rfl⟩, eq⟩).mpr inferInstance
 
 variable [Algebra R S'] [IsScalarTower R S S']
@@ -612,7 +612,7 @@ instance Algebra.IsAlgebraic.tensorProduct : Algebra.IsAlgebraic R' (R' ⊗[R] S
   isAlgebraic p :=
     have := IsAlgebraic.nontrivial R S
     have := (FaithfulSMul.algebraMap_injective R R').nontrivial
-    p.inductionOn (fun _ s ↦ .tmul _ <| alg.1 s) (fun _ _ ↦ .add)
+    p.inductionOn (fun _ s ↦ .tmul _ <| alg.isAlgebraic s) (fun _ _ ↦ .add)
 
 variable (S' : Type*) [CommRing S'] [Algebra R S'] [Algebra S S'] [Algebra R' S']
   [IsScalarTower R R' S'] [IsScalarTower R S S']

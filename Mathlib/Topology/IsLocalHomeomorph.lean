@@ -76,7 +76,7 @@ theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
 
 lemma isDiscrete_of_image (h : IsLocalHomeomorphOn f s)
     (hs : IsDiscrete (f '' s)) : IsDiscrete s :=
-  have := hs.1; ⟨discreteTopology_of_image h⟩
+  have := hs.to_subtype; ⟨discreteTopology_of_image h⟩
 
 theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :
     DiscreteTopology (f '' s) ↔ DiscreteTopology s := by

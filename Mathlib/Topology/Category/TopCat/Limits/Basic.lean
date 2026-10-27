@@ -62,7 +62,7 @@ def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v, u} F)
           rw [← S.w f]
           rfl⟩
       continuous_toFun :=
-        Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).hom.2) fun x i j f => by
+        Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).hom.continuous_toFun) fun x i j f => by
           dsimp
           rw [← S.w f]
           rfl }

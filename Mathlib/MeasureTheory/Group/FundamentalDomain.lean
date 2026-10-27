@@ -147,7 +147,7 @@ theorem measure_ne_zero [Countable G] [SMulInvariantMeasure G α μ]
 @[to_additive]
 theorem mono (h : IsFundamentalDomain G s μ) {ν : Measure α} (hle : ν ≪ μ) :
     IsFundamentalDomain G s ν :=
-  ⟨h.1.mono_ac hle, hle h.2, h.aedisjoint.mono fun _ _ h => hle h⟩
+  ⟨h.nullMeasurableSet.mono_ac hle, hle h.ae_covers, h.aedisjoint.mono fun _ _ h => hle h⟩
 
 @[to_additive]
 theorem preimage_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) {f : β → α}

@@ -62,7 +62,7 @@ abbrev IsContinuous (X : Action V G) : Prop :=
 lemma isContinuous_def (X : Action V G) :
     X.IsContinuous ↔ Continuous (fun p : G × (forget₂ _ TopCat).obj X ↦
       (forget₂ _ TopCat).map (X.ρ p.1).asHom p.2) :=
-  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
+  ⟨fun h ↦ h.continuous_smul, fun h ↦ ⟨h⟩⟩
 
 end Action
 
@@ -107,7 +107,7 @@ def res (f : G →ₜ* H) : ContAction V H ⥤ ContAction V G :=
     have : Continuous v := by fun_prop
     let u : H × (forget₂ _ TopCat).obj X → (forget₂ _ TopCat).obj X :=
       fun p ↦ (forget₂ _ TopCat).map (X.obj.ρ p.1).asHom p.2
-    have : Continuous u := X.2.1
+    have : Continuous u := X.property.continuous_smul
     change Continuous (u ∘ v)
     fun_prop
 
@@ -224,9 +224,9 @@ def Equivalence.mapContAction (E : V ≌ W)
   functor := E.functor.mapContAction G H₁
   inverse := E.inverse.mapContAction G H₂
   unitIso := Functor.mapContActionCongr G E.unitIso
-      (fun X ↦ X.2) (fun X ↦ H₂ ((E.functor.mapContAction G H₁).obj X)) ≪≫
+      (fun X ↦ X.property) (fun X ↦ H₂ ((E.functor.mapContAction G H₁).obj X)) ≪≫
     Functor.mapContActionComp G _ _ _ _
   counitIso := (Functor.mapContActionComp G _ _ _ _).symm ≪≫
-    Functor.mapContActionCongr G E.counitIso _ (fun X ↦ X.2)
+    Functor.mapContActionCongr G E.counitIso _ (fun X ↦ X.property)
 
 end CategoryTheory

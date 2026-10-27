@@ -64,7 +64,7 @@ protected theorem IsUpperSet.upperClosure (hs : IsUpperSet s) : ↑(upperClosure
 
 @[to_dual (attr := simp)]
 protected theorem UpperSet.upperClosure (s : UpperSet α) : upperClosure (s : Set α) = s :=
-  SetLike.coe_injective s.2.upperClosure
+  SetLike.coe_injective s.upper'.upperClosure
 
 @[to_dual (attr := simp)]
 theorem upperClosure_image (f : α ≃o β) :

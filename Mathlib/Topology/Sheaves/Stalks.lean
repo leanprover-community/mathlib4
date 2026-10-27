@@ -348,12 +348,12 @@ noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
   refine colimit.desc _ ⟨_, fun U => ?_, ?_⟩
   · exact
       colimit.ι ((OpenNhds.inclusion x).op ⋙ F)
-        (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 :)⟩)
+        (op ⟨(unop U).1, (specializes_iff_forall_open.mp h _ (unop U).1.is_open' (unop U).2 :)⟩)
   · intro U V i
     dsimp
     rw [Category.comp_id]
-    let U' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop U).1.2 (unop U).2 :)⟩
-    let V' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop V).1.2 (unop V).2 :)⟩
+    let U' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop U).1.is_open' (unop U).2 :)⟩
+    let V' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop V).1.is_open' (unop V).2 :)⟩
     exact colimit.w ((OpenNhds.inclusion x).op ⋙ F) (show V' ⟶ U' from i.unop).op
 
 @[reassoc (attr := simp), elementwise nosimp]
@@ -472,7 +472,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_mem_germ_eq_of_isBasis (F : X.Presheaf C) (x : X) (t : ToType (F.stalk x)) :
     ∃ (U : Opens X) (m : x ∈ U) (_ : U ∈ B) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
   obtain ⟨U, hxU, s, rfl⟩ := F.exists_germ_eq t
-  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hB.exists_subset_of_mem_open hxU U.2
+  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hB.exists_subset_of_mem_open hxU U.is_open'
   exact ⟨V, hxV, hV, F.map (homOfLE hVU).op s, by rw [← ConcreteCategory.comp_apply, F.germ_res']⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -482,7 +482,7 @@ lemma germ_eq_of_isBasis (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ 
     ∃ (W : Opens X) (_ : x ∈ W) (_ : W ∈ B) (hWU : W ≤ U) (hWV : W ≤ V),
       F.map (homOfLE hWU).op s = F.map (homOfLE hWV).op t := by
   obtain ⟨W, hxW, hWU, hWV, e⟩ := F.germ_eq x mU mV _ _ h
-  obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.2
+  obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.is_open'
   refine ⟨W', hxW', hW', hW'W.trans hWU.le, hW'W.trans hWV.le, ?_⟩
   simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using!
     congr(ConcreteCategory.hom (F.map (homOfLE hW'W).op) $e)
@@ -505,7 +505,7 @@ variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorph
 /-- Let `F` be a sheaf valued in a concrete category, whose forgetful functor reflects isomorphisms,
 preserves limits and filtered colimits. Then two sections who agree on every stalk must be equal.
 -/
-theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : ToType (F.1.obj (op U)))
+theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : ToType (F.obj.obj (op U)))
     (h : ∀ (x : X) (hx : x ∈ U), F.presheaf.germ U x hx s = F.presheaf.germ U x hx t) : s = t := by
   -- We use `germ_eq` and the axiom of choice, to pick for every point `x` a neighbourhood
   -- `V x`, such that the restrictions of `s` and `t` to `V x` coincide.
@@ -525,14 +525,14 @@ imply surjectivity of the components of a sheaf morphism. However it does imply 
 is an epi, but this fact is not yet formalized.
 -/
 set_option backward.isDefEq.respectTransparency.types false in
-theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X} (f : F.1 ⟶ G)
+theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X} (f : F.obj ⟶ G)
     (U : Opens X) (h : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f)) :
     Function.Injective (f.app (op U)) := fun s t hst =>
   section_ext F _ _ _ fun x hx =>
     h x hx <| by rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply, hst]
 
 theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X}
-    (f : F.1 ⟶ G) :
+    (f : F.obj ⟶ G) :
     (∀ x : X, Function.Injective ((stalkFunctor C x).map f)) ↔
       ∀ U : Opens X, Function.Injective (f.app (op U)) :=
   ⟨fun h U => app_injective_of_stalkFunctor_map_injective f U fun x _ => h x,
@@ -543,32 +543,32 @@ instance stalkFunctor_preserves_mono (x : X) :
     Functor.PreservesMonomorphisms (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) :=
   ⟨@fun _𝓐 _𝓑 f _ =>
     ConcreteCategory.mono_of_injective _ <|
-      (app_injective_iff_stalkFunctor_map_injective f.1).mpr
+      (app_injective_iff_stalkFunctor_map_injective f.hom).mpr
         (fun c =>
-          (ConcreteCategory.mono_iff_injective_of_preservesPullback (f.1.app (op c))).mp
-            ((NatTrans.mono_iff_mono_app f.1).mp
+          (ConcreteCategory.mono_iff_injective_of_preservesPullback (f.hom.app (op c))).mp
+            ((NatTrans.mono_iff_mono_app f.hom).mp
                 (CategoryTheory.presheaf_mono_of_mono ..) <|
               op c))
         x⟩
 
 include instCC in
 theorem stalk_mono_of_mono {F G : Sheaf C X} (f : F ⟶ G) [Mono f] :
-    ∀ x, Mono <| (stalkFunctor C x).map f.1 :=
+    ∀ x, Mono <| (stalkFunctor C x).map f.hom :=
   fun x => Functor.map_mono (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) f
 
 include instCC in
-theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.1] :
+theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.hom] :
     Mono f :=
   (Sheaf.Hom.mono_iff_presheaf_mono _ _ _).mpr <|
     (NatTrans.mono_iff_mono_app _).mpr fun U =>
       (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mpr <|
-        app_injective_of_stalkFunctor_map_injective f.1 U.unop fun _x _hx =>
+        app_injective_of_stalkFunctor_map_injective f.hom U.unop fun _x _hx =>
           (ConcreteCategory.mono_iff_injective_of_preservesPullback
             ((stalkFunctor C _).map f.hom)).mp inferInstance
 
 include instCC in
 theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
-    Mono f ↔ ∀ x, Mono ((stalkFunctor C x).map f.1) :=
+    Mono f ↔ ∀ x, Mono ((stalkFunctor C x).map f.hom) :=
   ⟨fun _ => stalk_mono_of_mono _, fun _ => mono_of_stalk_mono _⟩
 
 /-- For surjectivity, we are given an arbitrary section `t` and need to find a preimage for it.
@@ -576,10 +576,10 @@ We claim that it suffices to find preimages *locally*. That is, for each `x : U`
 a neighborhood `V ≤ U` and a section `s : F.obj (op V)` such that `f.app (op V) s` and `t`
 agree on `V`. -/
 theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f : F ⟶ G)
-    (U : Opens X) (hinj : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f.1))
+    (U : Opens X) (hinj : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f.hom))
     (hsurj : ∀ (t x) (_ : x ∈ U), ∃ (V : Opens X) (_ : x ∈ V) (iVU : V ⟶ U)
-    (s : ToType (F.1.obj (op V))), f.1.app (op V) s = G.1.map iVU.op t) :
-    Function.Surjective (f.1.app (op U)) := by
+    (s : ToType (F.obj.obj (op V))), f.hom.app (op V) s = G.obj.map iVU.op t) :
+    Function.Surjective (f.hom.app (op U)) := by
   conv at hsurj =>
     enter [t]
     rw [Subtype.forall' (p := (· ∈ U))]
@@ -598,7 +598,7 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
     use s
     apply G.eq_of_locally_eq' V U iVU V_cover
     intro x
-    rw [← ConcreteCategory.comp_apply, ← f.1.naturality, ConcreteCategory.comp_apply, s_spec, heq]
+    rw [← ConcreteCategory.comp_apply, ← f.hom.naturality, ConcreteCategory.comp_apply, s_spec, heq]
   intro x y
   -- What's left to show here is that the sections `sf` are compatible, i.e. they agree on
   -- the intersections `V x ⊓ V y`. We prove this by showing that all germs are equal.
@@ -607,13 +607,13 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   -- Here, we need to use injectivity of the stalk maps.
   apply hinj z ((iVU x).le ((inf_le_left : V x ⊓ V y ≤ V x) hz))
   rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply]
-  simp_rw [← ConcreteCategory.comp_apply, f.1.naturality, ConcreteCategory.comp_apply, heq,
-    ← ConcreteCategory.comp_apply, ← G.1.map_comp]
+  simp_rw [← ConcreteCategory.comp_apply, f.hom.naturality, ConcreteCategory.comp_apply, heq,
+    ← ConcreteCategory.comp_apply, ← G.obj.map_comp]
   rfl
 
 theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
-    (h : ∀ x ∈ U, Function.Bijective ((stalkFunctor C x).map f.1)) :
-    Function.Surjective (f.1.app (op U)) := by
+    (h : ∀ x ∈ U, Function.Bijective ((stalkFunctor C x).map f.hom)) :
+    Function.Surjective (f.hom.app (op U)) := by
   refine app_surjective_of_injective_of_locally_surjective f U (And.left <| h · ·) fun t x hx => ?_
   -- Now we need to prove our initial claim: That we can find preimages of `t` locally.
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
@@ -621,32 +621,32 @@ theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F �
   -- ... and this preimage must come from some section `s₁` defined on some open neighborhood `V₁`
   obtain ⟨V₁, hxV₁, s₁, rfl⟩ := F.presheaf.exists_germ_eq s₀
   rename' hs₀ => hs₁
-  rw [stalkFunctor_map_germ_apply V₁ x hxV₁ f.1 s₁] at hs₁
+  rw [stalkFunctor_map_germ_apply V₁ x hxV₁ f.hom s₁] at hs₁
   -- Now, the germ of `f.app (op V₁) s₁` equals the germ of `t`, hence they must coincide on
   -- some open neighborhood `V₂`.
   obtain ⟨V₂, hxV₂, iV₂V₁, iV₂U, heq⟩ := G.presheaf.germ_eq x hxV₁ hx _ _ hs₁
   -- The restriction of `s₁` to that neighborhood is our desired local preimage.
-  use V₂, hxV₂, iV₂U, F.1.map iV₂V₁.op s₁
-  rw [← ConcreteCategory.comp_apply, f.1.naturality, ConcreteCategory.comp_apply, heq]
+  use V₂, hxV₂, iV₂U, F.obj.map iV₂V₁.op s₁
+  rw [← ConcreteCategory.comp_apply, f.hom.naturality, ConcreteCategory.comp_apply, heq]
 
 theorem app_bijective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
-    (h : ∀ x ∈ U, Function.Bijective ((stalkFunctor C x).map f.1)) :
-    Function.Bijective (f.1.app (op U)) :=
-  ⟨app_injective_of_stalkFunctor_map_injective f.1 U fun x hx => (h x hx).1,
+    (h : ∀ x ∈ U, Function.Bijective ((stalkFunctor C x).map f.hom)) :
+    Function.Bijective (f.hom.app (op U)) :=
+  ⟨app_injective_of_stalkFunctor_map_injective f.hom U fun x hx => (h x hx).1,
     app_surjective_of_stalkFunctor_map_bijective f U h⟩
 
 include instCC in
 theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
-    [∀ x : U, IsIso ((stalkFunctor C x.val).map f.1)] : IsIso (f.1.app (op U)) := by
+    [∀ x : U, IsIso ((stalkFunctor C x.val).map f.hom)] : IsIso (f.hom.app (op U)) := by
   -- Since the forgetful functor of `C` reflects isomorphisms, it suffices to see that the
   -- underlying map between types is an isomorphism, i.e. bijective.
-  suffices IsIso ((forget C).map (f.1.app (op U))) by
-    exact isIso_of_reflects_iso (f.1.app (op U)) (forget C)
+  suffices IsIso ((forget C).map (f.hom.app (op U))) by
+    exact isIso_of_reflects_iso (f.hom.app (op U)) (forget C)
   rw [isIso_iff_bijective]
   apply app_bijective_of_stalkFunctor_map_bijective
   intro x hx
   apply (bijective_iff_isIso_ofHom _).mpr
-  exact Functor.map_isIso (forget C) ((stalkFunctor C (⟨x, hx⟩ : U).1).map f.1)
+  exact Functor.map_isIso (forget C) ((stalkFunctor C (⟨x, hx⟩ : U).1).map f.hom)
 
 include instCC in
 -- Making this an instance would cause a loop in typeclass resolution with `Functor.map_isIso`
@@ -655,13 +655,13 @@ isomorphisms, preserves limits and filtered colimits. Then if the stalk maps of 
 `f : F ⟶ G` are all isomorphisms, `f` must be an isomorphism.
 -/
 theorem isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G)
-    [∀ x : X, IsIso ((stalkFunctor C x).map f.1)] : IsIso f := by
+    [∀ x : X, IsIso ((stalkFunctor C x).map f.hom)] : IsIso f := by
   -- Since the inclusion functor from sheaves to presheaves is fully faithful, it suffices to
   -- show that `f`, as a morphism between _presheaves_, is an isomorphism.
   suffices IsIso ((Sheaf.forget C X).map f) by exact isIso_of_fully_faithful (Sheaf.forget C X) f
   -- We show that all components of `f` are isomorphisms.
-  suffices ∀ U : (Opens X)ᵒᵖ, IsIso (f.1.app U) by
-    exact @NatIso.isIso_of_isIso_app _ _ _ _ F.1 G.1 f.1 this
+  suffices ∀ U : (Opens X)ᵒᵖ, IsIso (f.hom.app U) by
+    exact @NatIso.isIso_of_isIso_app _ _ _ _ F.obj G.obj f.hom this
   intro U; induction U
   apply app_isIso_of_stalkFunctor_map_iso
 
@@ -671,9 +671,9 @@ isomorphisms, preserves limits and filtered colimits. Then a morphism `f : F ⟶
 isomorphism if and only if all of its stalk maps are isomorphisms.
 -/
 theorem isIso_iff_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) :
-    IsIso f ↔ ∀ x : X, IsIso ((stalkFunctor C x).map f.1) :=
+    IsIso f ↔ ∀ x : X, IsIso ((stalkFunctor C x).map f.hom) :=
   ⟨fun _ x =>
-    @Functor.map_isIso _ _ _ _ _ _ (stalkFunctor C x) f.1 ((Sheaf.forget C X).map_isIso f),
+    @Functor.map_isIso _ _ _ _ _ _ (stalkFunctor C x) f.hom ((Sheaf.forget C X).map_isIso f),
    fun _ => isIso_of_stalkFunctor_map_iso f⟩
 
 end Concrete

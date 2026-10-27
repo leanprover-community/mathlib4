@@ -94,7 +94,7 @@ theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : F
     (ne : p ≠ q) : padicNorm p q = 1 := by
   have p : padicValRat p q = 0 := mod_cast padicValNat_primes ne
   rw [padicNorm, p]
-  simp [q_prime.1.ne_zero]
+  simp [q_prime.out.ne_zero]
 
 /-- The `p`-adic norm of `p` is less than `1` if `1 < p`.
 
@@ -124,7 +124,7 @@ variable [hp : Fact p.Prime]
 protected theorem ne_zero {q : ℚ} (hq : q ≠ 0) : padicNorm p q ≠ 0 := by
   rw [padicNorm.eq_zpow_of_ne_zero hq]
   apply zpow_ne_zero
-  exact mod_cast ne_of_gt hp.1.pos
+  exact mod_cast ne_of_gt hp.out.pos
 
 @[deprecated (since := "2026-10-13")] protected alias nonzero := padicNorm.ne_zero
 
@@ -134,7 +134,7 @@ theorem zero_of_padicNorm_eq_zero {q : ℚ} (h : padicNorm p q = 0) : q = 0 := b
   unfold padicNorm at h; rw [ite_eq_right hq] at h
   apply absurd h
   apply zpow_ne_zero
-  exact mod_cast hp.1.ne_zero
+  exact mod_cast hp.out.ne_zero
 
 /-- The `p`-adic norm is multiplicative. -/
 @[simp]
@@ -143,7 +143,7 @@ protected theorem mul (q r : ℚ) : padicNorm p (q * r) = padicNorm p q * padicN
   else
     if hr : r = 0 then by simp [hr]
     else by
-      have : (p : ℚ) ≠ 0 := by simp [hp.1.ne_zero]
+      have : (p : ℚ) ≠ 0 := by simp [hp.out.ne_zero]
       simp [padicNorm, *, padicValRat.mul, zpow_add₀ this, mul_comm]
 
 /-- The `p`-adic norm respects division. -/
@@ -157,7 +157,7 @@ protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 := by
   obtain rfl | hz := eq_or_ne z 0
   · simp
   · rw [padicNorm, ite_eq_right (mod_cast hz)]
-    exact zpow_le_one_of_nonpos₀ (mod_cast hp.1.one_le) (by simp)
+    exact zpow_le_one_of_nonpos₀ (mod_cast hp.out.one_le) (by simp)
 
 private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicValRat p r) :
     padicNorm p (q + r) ≤ max (padicNorm p q) (padicNorm p r) :=
@@ -173,7 +173,7 @@ private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicVal
         apply le_max_iff.2
         left
         apply zpow_le_zpow_right₀
-        · exact mod_cast le_of_lt hp.1.one_lt
+        · exact mod_cast le_of_lt hp.out.one_lt
         · apply neg_le_neg
           have : padicValRat p q = min (padicValRat p q) (padicValRat p r) := (min_eq_left h).symm
           rw [this]

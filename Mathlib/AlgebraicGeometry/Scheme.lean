@@ -144,7 +144,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := f.base.hom.2
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := f.base.hom.continuous_toFun
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -443,7 +443,7 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
 
 /-- Copies a morphism with a different underlying map -/
 def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
-  base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
+  base := TopCat.ofHom ⟨g, h ▸ f.base.hom'.continuous_toFun⟩
   c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
   prop x := by
     subst h
@@ -532,7 +532,7 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 -- The lemmas below are not tagged simp to respect the abstraction.
 lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
-lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
+lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).obj := rfl
 lemma Spec.map_base : (Spec.map f).base = ofHom ⟨_, PrimeSpectrum.continuous_comap f.hom⟩ := rfl
 lemma Spec.map_apply (x : Spec S) : Spec.map f x = PrimeSpectrum.comap f.hom x := rfl
 

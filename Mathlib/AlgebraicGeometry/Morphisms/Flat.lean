@@ -457,8 +457,8 @@ lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_right [Flat f]
   have := hI.to_subtype
   exact isIso_pushoutSection_of_iSup_eq H hUST hUSX hUY (fun i : I ↦ i) (by rwa [iSup_subtype,
     eq_comm]) (fun i ↦ isIso_pushoutSection_of_isAffineOpen _ _ _ _ hUS hUT i.1.2) (fun i j ↦
-    mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT (hUX' _ _ (hIUX _) i.1.1.2
-    i.1.2.isCompact (hIUX _) j.1.1.2 j.1.2.isCompact))
+    mono_pushoutSection_of_isCompact_of_flat_right _ _ _ _ hUS hUT (hUX' _ _ (hIUX _) i.1.1.is_open'
+    i.1.2.isCompact (hIUX _) j.1.1.is_open' j.1.2.isCompact))
     (f.flat_appLE hUS hUT _)
 
 lemma isIso_pushoutSection_of_isQuasiSeparated_of_flat_left [Flat iX]
@@ -500,7 +500,7 @@ lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
   exact isIso_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
     (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_left _ _ _ _ hUS i.1.2 hUX hUX')
     (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat _ _ _ _ hUS hUX
-    (hUT' _ _ (hIUT _) i.1.1.2 i.1.2.isCompact (hIUT _) j.1.1.2 j.1.2.isCompact) hiX) hiX
+    (hUT' _ _ (hIUT _) i.1.1.is_open' i.1.2.isCompact (hIUT _) j.1.1.is_open' j.1.2.isCompact) hiX) hiX
 
 end sections
 

@@ -735,7 +735,7 @@ the `ℤ`-basis of `I` is actually an `ℝ`-basis of the mixed space, see
 theorem det_basisOfFractionalIdeal_eq_norm
     (e : (ChooseBasisIndex ℤ (𝓞 K)) ≃ (ChooseBasisIndex ℤ I)) :
     |Basis.det (latticeBasis K) ((mixedEmbedding K ∘ (basisOfFractionalIdeal K I) ∘ e))| =
-      FractionalIdeal.absNorm I.1 := by
+      FractionalIdeal.absNorm I.val := by
   suffices Basis.det (latticeBasis K) ((mixedEmbedding K ∘ (basisOfFractionalIdeal K I) ∘ e)) =
       (algebraMap ℚ ℝ) ((Basis.det (integralBasis K)) ((basisOfFractionalIdeal K I) ∘ e)) by
     rw [this, eq_ratCast, ← Rat.cast_abs, ← Equiv.symm_symm e, ← Basis.coe_reindex,

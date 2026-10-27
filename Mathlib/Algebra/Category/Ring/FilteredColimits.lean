@@ -132,7 +132,7 @@ namespace colimitCoconeIsColimit
 variable {F} (t : Cocone F)
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
-def descAddMonoidHom : R F →+ t.1 :=
+def descAddMonoidHom : R F →+ t.pt :=
   ((AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget₂ SemiRingCat AddCommMonCat)).desc
       ((forget₂ SemiRingCat AddCommMonCat).mapCocone t)).hom
@@ -145,7 +145,7 @@ lemma descAddMonoidHom_quotMk {j : J} (x : F.obj j) :
         ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x)
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
-def descMonoidHom : R F →* t.1 :=
+def descMonoidHom : R F →* t.pt :=
   ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget₂ _ _)).desc ((forget₂ _ _).mapCocone t)).hom
 
@@ -382,7 +382,7 @@ set_option linter.overlappingInstances false in
 omit [IsFiltered J] in
 instance {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
     [HasColimit F] [∀ i, Nontrivial (F.obj i)] : Nontrivial ↑(Limits.colimit F) :=
-  FilteredColimits.nontrivial (getColimitCocone F).2
+  FilteredColimits.nontrivial (getColimitCocone F).isColimit
 
 end
 

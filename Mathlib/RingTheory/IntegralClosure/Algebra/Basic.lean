@@ -130,7 +130,7 @@ variable {f}
 @[stacks 00GK]
 theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
   letI := f.toAlgebra
-  fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.1 _ trivial
+  fun _ ↦ IsIntegral.of_mem_of_fg ⊤ h.fg_top _ trivial
 
 alias RingHom.IsIntegral.of_finite := RingHom.Finite.to_isIntegral
 
@@ -256,7 +256,7 @@ variable (R A B)
 instance Algebra.IsIntegral.tensorProduct [CommRing B]
     [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
     Algebra.IsIntegral A (A ⊗[R] B) where
-  isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+  isIntegral p := p.inductionOn (fun _ s ↦ .tmul _ <| int.isIntegral s) (fun _ _ ↦ .add)
 
 end TensorProduct
 

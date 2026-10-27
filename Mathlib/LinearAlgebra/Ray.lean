@@ -454,7 +454,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
 /-- `SameRay` follows from membership of `MulAction.orbit` for the `Units.posSubgroup`. -/
 theorem sameRay_of_mem_orbit {v₁ v₂ : M} (h : v₁ ∈ MulAction.orbit (Units.posSubgroup R) v₂) :
     SameRay R v₁ v₂ := by
-  rcases h with ⟨⟨r, hr : 0 < r.1⟩, rfl : r • v₂ = v₁⟩
+  rcases h with ⟨⟨r, hr : 0 < r.val⟩, rfl : r • v₂ = v₁⟩
   exact SameRay.sameRay_pos_smul_left _ hr
 
 /-- Scaling by an inverse unit is the same as scaling by itself. -/
@@ -525,7 +525,7 @@ theorem units_smul_eq_self_iff {u : Rˣ} {v : Module.Ray R M} : u • v = v ↔ 
   simp only [smul_rayOfNeZero, ray_eq_iff, Units.smul_def, sameRay_smul_left_iff_of_ne hv u.ne_zero]
 
 @[simp]
-theorem units_smul_eq_neg_iff {u : Rˣ} {v : Module.Ray R M} : u • v = -v ↔ u.1 < 0 := by
+theorem units_smul_eq_neg_iff {u : Rˣ} {v : Module.Ray R M} : u • v = -v ↔ u.val < 0 := by
   rw [← neg_inj, neg_neg, ← Module.Ray.neg_units_smul, units_smul_eq_self_iff, Units.val_neg,
     neg_pos]
 

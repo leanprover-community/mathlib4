@@ -446,7 +446,7 @@ noncomputable def corepresentableBy :
     ⟨_, isLocal_reflectionObj Z hW⟩ where
   homEquiv {A} :=
     (ObjectProperty.fullyFaithfulι _).homEquiv.trans
-      (Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.2))
+      (Equiv.ofBijective _ (isLocal_isLocal_reflection W Z κ _ A.property))
 
 variable (W κ)
 

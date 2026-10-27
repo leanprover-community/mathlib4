@@ -86,7 +86,7 @@ variable {M N K : X.Modules} {φ : M ⟶ N} {U V : X.Opens}
 section Presheaf
 
 /-- The underlying abelian presheaf of an `𝒪ₓ`-module. -/
-noncomputable def presheaf (M : X.Modules) : TopCat.Presheaf Ab X := M.1.presheaf
+noncomputable def presheaf (M : X.Modules) : TopCat.Presheaf Ab X := M.val.presheaf
 
 /-- Notation for sections of a presheaf of module. -/
 scoped[AlgebraicGeometry] notation3 "Γ(" M ", " U ")" => (Scheme.Modules.presheaf M).obj (.op U)

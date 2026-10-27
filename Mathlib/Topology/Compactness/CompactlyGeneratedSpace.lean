@@ -98,7 +98,7 @@ lemma eq_compactlyGenerated [t : TopologicalSpace X] [UCompactlyGeneratedSpace.{
   · exact UCompactlyGeneratedSpace.le_compactlyGenerated
   · simp only [compactlyGenerated, ← continuous_iff_coinduced_le, continuous_sigma_iff,
       Sigma.forall]
-    exact fun S f ↦ f.2
+    exact fun S f ↦ f.continuous_toFun
 
 instance (X : Type v) [t : TopologicalSpace X] [DiscreteTopology X] :
     UCompactlyGeneratedSpace.{u} X where

@@ -337,9 +337,9 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
     ClassGroup.mk0 ⟨ClassGroup.integralRep I, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩
       = ClassGroup.mk (FractionRing R) I := by
   rw [← ClassGroup.mk_mk0 (FractionRing R), eq_comm, ClassGroup.mk_eq_mk]
-  have fd_ne_zero : (algebraMap R (FractionRing R)) I.1.den ≠ 0 := by
+  have fd_ne_zero : (algebraMap R (FractionRing R)) I.val.den ≠ 0 := by
     exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (SetLike.coe_mem _)
-  refine ⟨Units.mk0 (algebraMap R _ I.1.den) fd_ne_zero, ?_⟩
+  refine ⟨Units.mk0 (algebraMap R _ I.val.den) fd_ne_zero, ?_⟩
   apply Units.ext
   rw [mul_comm, val_mul, coe_toPrincipalIdeal, val_mk0]
   exact FractionalIdeal.den_mul_self_eq_num' R⁰ (FractionRing R) I
@@ -347,7 +347,7 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
 theorem ClassGroup.mk0_surjective [IsDedekindDomain R] :
     Function.Surjective (ClassGroup.mk0 : (Ideal R)⁰ → ClassGroup R) := by
   rintro ⟨I⟩
-  refine ⟨⟨ClassGroup.integralRep I.1, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
+  refine ⟨⟨ClassGroup.integralRep I.val, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
   rw [ClassGroup.mk0_integralRep, ClassGroup.Quot_mk_eq_mk]
 
 theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :

@@ -33,7 +33,7 @@ section sort
   (Uses merge sort algorithm.) -/
 def sort (s : Finset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
     [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r] : List α :=
-  Multiset.sort s.1 r
+  Multiset.sort s.val r
 
 section
 
@@ -50,12 +50,12 @@ theorem pairwise_sort : List.Pairwise r (sort s r) :=
   Multiset.pairwise_sort _ _
 
 @[simp]
-theorem sort_eq : ↑(sort s r) = s.1 :=
+theorem sort_eq : ↑(sort s r) = s.val :=
   Multiset.sort_eq _ _
 
 @[simp]
 theorem sort_nodup : (sort s r).Nodup :=
-  (by rw [sort_eq]; exact s.2 : @Multiset.Nodup α (sort s r))
+  (by rw [sort_eq]; exact s.nodup : @Multiset.Nodup α (sort s r))
 
 @[simp]
 theorem sort_toFinset [DecidableEq α] : (sort s r).toFinset = s :=
@@ -322,7 +322,7 @@ end SortLinearOrder
 unsafe instance [Repr α] : Repr (Finset α) where
   reprPrec s _ :=
     -- multiset uses `0` not `∅` for empty sets
-    if s.card = 0 then "∅" else repr s.1
+    if s.card = 0 then "∅" else repr s.val
 
 end Finset
 

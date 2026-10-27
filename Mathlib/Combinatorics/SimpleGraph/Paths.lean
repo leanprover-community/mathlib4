@@ -113,7 +113,7 @@ lemma IsCircuit.not_nil {p : G.Walk v v} (hp : IsCircuit p) : ¬ p.Nil := (hp.ne
 
 theorem isCycle_def {u : V} (p : G.Walk u u) :
     p.IsCycle ↔ p.IsTrail ∧ p ≠ nil ∧ p.support.tail.Nodup :=
-  Iff.intro (fun h => ⟨h.1.1, h.1.2, h.2⟩) fun h => ⟨⟨h.1, h.2.1⟩, h.2.2⟩
+  Iff.intro (fun h => ⟨h.isCircuit.isTrail, h.isCircuit.ne_nil, h.support_nodup⟩) fun h => ⟨⟨h.1, h.2.1⟩, h.2.2⟩
 
 @[simp]
 theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :
@@ -378,7 +378,7 @@ lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
 
 lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.Nil)
     (hcyc : (p.append q).IsCycle) : q.IsPath := by
-  have := hcyc.2
+  have := hcyc.support_nodup
   rw [tail_support_append, List.nodup_append'] at this
   rw [isPath_def, ← cons_tail_support, List.nodup_cons]
   exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩

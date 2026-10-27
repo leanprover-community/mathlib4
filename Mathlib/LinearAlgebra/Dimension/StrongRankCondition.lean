@@ -83,7 +83,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
     -- we see they have the same cardinality.
     have w₁ := infinite_basis_le_maximal_linearIndependent' v _ v'.linearIndependent v'.maximal
     rcases Cardinal.lift_mk_le'.mp w₁ with ⟨f⟩
-    have : Infinite ι' := Infinite.of_injective f f.2
+    have : Infinite ι' := Infinite.of_injective f f.inj'
     have w₂ := infinite_basis_le_maximal_linearIndependent' v' _ v.linearIndependent v.maximal
     exact le_antisymm w₁ w₂
 

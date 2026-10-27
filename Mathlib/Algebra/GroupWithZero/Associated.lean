@@ -308,11 +308,11 @@ theorem Associated.isUnit_iff [Monoid M] {a b : M} (h : a ~ᵤ b) : IsUnit a ↔
 
 theorem Irreducible.isUnit_iff_not_associated_of_dvd [Monoid M]
     {x y : M} (hx : Irreducible x) (hy : y ∣ x) : IsUnit y ↔ ¬ Associated x y :=
-  ⟨fun hy hxy => hx.1 (hxy.symm.isUnit hy), (hx.dvd_iff.mp hy).resolve_right⟩
+  ⟨fun hy hxy => hx.not_isUnit (hxy.symm.isUnit hy), (hx.dvd_iff.mp hy).resolve_right⟩
 
 protected theorem Associated.irreducible [Monoid M] {p q : M} (h : p ~ᵤ q) (hp : Irreducible p) :
     Irreducible q :=
-  ⟨mt h.symm.isUnit hp.1,
+  ⟨mt h.symm.isUnit hp.not_isUnit,
     let ⟨u, hu⟩ := h
     fun a b hab =>
     have hpab : p = a * (b * (u⁻¹ : Mˣ)) :=

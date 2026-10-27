@@ -209,7 +209,7 @@ section Prod
 theorem MDifferentiableWithinAt.prodMk {f : M → M'} {g : M → M''}
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
     MDiffAt[s] (fun x ↦ (f x, g x)) x :=
-  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
 /-- If `f` and `g` have derivatives `df` and `dg` within `s` at `x`, respectively,
 then `x ↦ (f x, g x)` has derivative `df.prod dg` within `s`. -/
@@ -232,7 +232,7 @@ lemma mfderiv_prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt f x) (hg : MDi
 
 theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDiffAt f x) (hg : MDiffAt g x) :
     MDiffAt (fun x ↦ (f x, g x)) x :=
-  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
 /-- If `f` and `g` have derivatives `df` and `dg` at `x`, respectively,
 then `x ↦ (f x, g x)` has derivative `df.prod dg`. -/
@@ -245,12 +245,12 @@ theorem HasMFDerivAt.prodMk {f : M → M'} {g : M → M''}
 theorem MDifferentiableWithinAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
     MDifferentiableWithinAt I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) s x :=
-  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
 theorem MDifferentiableAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDiffAt f x) (hg : MDiffAt g x) :
     MDifferentiableAt I 𝓘(𝕜, E' × E'') (fun x ↦ (f x, g x)) x :=
-  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+  ⟨hf.continuousWithinAt.prodMk hg.continuousWithinAt, hf.prop.prodMk hg.prop⟩
 
 theorem MDifferentiableOn.prodMk {f : M → M'} {g : M → M''} (hf : MDiff[s] f) (hg : MDiff[s] g) :
     MDiff[s] (fun x ↦ (f x, g x)) := fun x hx ↦ (hf x hx).prodMk (hg x hx)
@@ -316,12 +316,12 @@ theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
 
 @[simp, mfld_simps]
 theorem tangentMap_prodFst {p : TangentBundle (I.prod I') (M × M')} :
-    tangentMap% (@Prod.fst M M') p = ⟨p.proj.1, p.2.1⟩ := by
+    tangentMap% (@Prod.fst M M') p = ⟨p.proj.1, p.snd.1⟩ := by
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prodFst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffAt[s] p.proj) :
-    tangentMap[s] (@Prod.fst M M') p = ⟨p.proj.1, p.2.1⟩ := by
+    tangentMap[s] (@Prod.fst M M') p = ⟨p.proj.1, p.snd.1⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_fst]
   · rcases p with ⟨⟩; rfl
@@ -536,12 +536,12 @@ end prodMap
 
 @[simp, mfld_simps]
 theorem tangentMap_prodSnd {p : TangentBundle (I.prod I') (M × M')} :
-    tangentMap% (@Prod.snd M M') p = ⟨p.proj.2, p.2.2⟩ := by
+    tangentMap% (@Prod.snd M M') p = ⟨p.proj.2, p.snd.2⟩ := by
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
     (hs : UniqueMDiffAt[s] p.proj) :
-    tangentMap[s] (@Prod.snd M M') p = ⟨p.proj.2, p.2.2⟩ := by
+    tangentMap[s] (@Prod.snd M M') p = ⟨p.proj.2, p.snd.2⟩ := by
   simp only [tangentMapWithin]
   rw [mfderivWithin_snd hs]
   rcases p with ⟨⟩; rfl
@@ -557,7 +557,7 @@ theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
 
 -- TODO: better error when the type of x is left open
 theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
-    tangentMap% (fun (x : M) ↦ (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
+    tangentMap% (fun (x : M) ↦ (x, y₀)) p = ⟨(p.proj, y₀), (p.snd, 0)⟩ := by
   simp only [tangentMap, mfderiv_prod_left]
   rfl
 
@@ -568,7 +568,7 @@ theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
 
 theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
-    tangentMap% (fun (y : M') ↦ (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
+    tangentMap% (fun (y : M') ↦ (x₀, y)) p = ⟨(x₀, p.proj), (0, p.snd)⟩ := by
   simp only [tangentMap, mfderiv_prod_right]
   rfl
 

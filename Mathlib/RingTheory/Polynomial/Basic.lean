@@ -589,7 +589,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     · rw [Ne, eq_top_iff_one, mem_map_C_iff, not_forall]
       use 0
       rw [coeff_one_zero, ← eq_top_iff_one]
-      exact h.1
+      exact h.ne_top'
     · intro f g
       simp only [mem_map_C_iff]
       contrapose!
@@ -600,7 +600,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         refine ⟨m + n, ?_⟩
         rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m, n))).mpr rfl),
           Finset.sum_insert (Finset.notMem_erase _ _), (P.add_mem_iff_left _).not]
-        · apply mt h.2
+        · apply mt h.mem_or_mem'
           rw [not_or]
           exact ⟨Nat.find_spec hf, Nat.find_spec hg⟩
         apply P.sum_mem

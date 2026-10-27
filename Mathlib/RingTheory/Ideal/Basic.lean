@@ -155,7 +155,7 @@ theorem sum_pow_mem_span_pow {ι} (s : Finset ι) (f : ι → α) (n : ℕ) :
     (∑ i ∈ s, f i) ^ (s.card * n + 1) ∈ span ((fun i => f i ^ (n + 1)) '' s) := by
   classical
   simpa only [Multiset.card_map, Multiset.map_map, comp_apply, Multiset.toFinset_map,
-    Finset.coe_image, Finset.val_toFinset] using! pow_multiset_sum_mem_span_pow (s.1.map f) n
+    Finset.coe_image, Finset.val_toFinset] using! pow_multiset_sum_mem_span_pow (s.val.map f) n
 
 theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     span ((fun (x : α) => x ^ n) '' s) = ⊤ := by
@@ -296,7 +296,7 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
   contrapose! +distrib
   simp_rw [not_lt_top_iff, not_bot_lt_iff]
-  exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
+  exact ⟨fun h => ⟨h⟩, fun h => h.eq_bot_or_eq_top⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/
 theorem ne_bot_of_isMaximal_of_not_isField [Nontrivial R] {M : Ideal R} (max : M.IsMaximal)

@@ -415,7 +415,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   support := v.support.map f
   toFun b :=
     haveI := Classical.decEq β
-    match v.support.1.find? (fun a => f a = b) (by intro x; grind) with
+    match v.support.val.find? (fun a => f a = b) (by intro x; grind) with
     | some a => v a
     | none => 0
   mem_support_toFun a₂ := by grind

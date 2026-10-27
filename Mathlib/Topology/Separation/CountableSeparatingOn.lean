@@ -35,6 +35,6 @@ instance [TopologicalSpace X] {s : Set X} [T0Space s] [SecondCountableTopology s
 a countable family of closed sets separating points of `s`. -/
 instance [TopologicalSpace X] {s : Set X} [h : HasCountableSeparatingOn X IsOpen s] :
     HasCountableSeparatingOn X IsClosed s :=
-  let ⟨S, hSc, hSo, hS⟩ := h.1
+  let ⟨S, hSc, hSo, hS⟩ := h.exists_countable_separating
   ⟨compl '' S, hSc.image _, forall_mem_image.2 fun U hU ↦ (hSo U hU).isClosed_compl,
     fun x hx y hy h ↦ hS x hx y hy fun _U hU ↦ not_iff_not.1 <| h _ (mem_image_of_mem _ hU)⟩

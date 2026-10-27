@@ -51,7 +51,7 @@ lemma essentiallyLarge_top :
   have : HasColimit p.diag := ⟨_, p.isColimit⟩
   have := hasColimit_of_iso iso
   let i : ι := ⟨J, inferInstance, G ⋙ e.functor, inferInstance⟩
-  exact ⟨_, ⟨i⟩, ⟨((IsColimit.precomposeHomEquiv iso _).2
+  exact ⟨_, ⟨i⟩, ⟨((IsColimit.precomposeHomEquiv iso _).invFun
     (p.isColimit)).coconePointUniqueUpToIso (colimit.isColimit _)⟩⟩
 
 end ObjectProperty.IsCardinalFilteredGenerator

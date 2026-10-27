@@ -584,7 +584,7 @@ lemma Topology.IsOpenEmbedding.restrict {f : X → Y}
     IsOpenEmbedding H.restrict :=
   ⟨hf.isEmbedding.restrict H, (by
     rw [MapsTo.range_restrict]
-    exact continuous_subtype_val.1 _ (hf.isOpenMap _ hs))⟩
+    exact continuous_subtype_val.isOpen_preimage _ (hf.isOpenMap _ hs))⟩
 
 theorem Topology.IsInducing.codRestrict {e : X → Y} (he : IsInducing e) {s : Set Y}
     (hs : ∀ x, e x ∈ s) : IsInducing (codRestrict e s hs) :=
@@ -803,8 +803,8 @@ protected theorem IsOpenMap.piMap {f : ∀ i, A i → B i}
 
 protected theorem IsOpenQuotientMap.piMap
     {f : ∀ i, A i → B i} (hf : ∀ i, IsOpenQuotientMap (f i)) : IsOpenQuotientMap (Pi.map f) :=
-  ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2, .piMap (fun i ↦ (hf i).3) <|
-    .of_forall fun i ↦ (hf i).1⟩
+  ⟨.piMap fun i ↦ (hf i).surjective, .piMap fun i ↦ (hf i).continuous, .piMap (fun i ↦ (hf i).isOpenMap) <|
+    .of_forall fun i ↦ (hf i).surjective⟩
 
 theorem tendsto_pi_nhds {f : Y → ∀ i, A i} {g : ∀ i, A i} {u : Filter Y} :
     Tendsto f u (𝓝 g) ↔ ∀ x, Tendsto (fun i => f i x) u (𝓝 (g x)) := by
@@ -831,7 +831,7 @@ protected lemma Topology.IsInducing.piMap {f : ∀ i, A i → B i}
 
 protected lemma Topology.IsEmbedding.piMap {f : ∀ i, A i → B i}
     (hf : ∀ i, IsEmbedding (f i)) : IsEmbedding (Pi.map f) :=
-  ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
+  ⟨.piMap fun i ↦ (hf i).toIsInducing, .piMap fun i ↦ (hf i).injective⟩
 
 theorem Pi.continuous_precomp' {ι' : Type*} (φ : ι' → ι) :
     Continuous (fun (f : (∀ i, A i)) (j : ι') ↦ f (φ j)) :=
@@ -1121,11 +1121,11 @@ theorem isClosed_set_pi {i : Set ι} {s : ∀ a, Set (A a)} (hs : ∀ a ∈ i, I
 
 protected lemma Topology.IsClosedEmbedding.piMap {f : ∀ i, A i → B i}
     (hf : ∀ i, IsClosedEmbedding (f i)) : IsClosedEmbedding (Pi.map f) :=
-  ⟨.piMap fun i ↦ (hf i).1, by simpa using isClosed_set_pi fun i _ ↦ (hf i).2⟩
+  ⟨.piMap fun i ↦ (hf i).toIsEmbedding, by simpa using isClosed_set_pi fun i _ ↦ (hf i).isClosed_range⟩
 
 protected lemma Topology.IsOpenEmbedding.piMap [Finite ι] {f : ∀ i, A i → B i}
     (hf : ∀ i, IsOpenEmbedding (f i)) : IsOpenEmbedding (Pi.map f) :=
-  ⟨.piMap fun i ↦ (hf i).1, by simpa using isOpen_set_pi Set.finite_univ fun i _ ↦ (hf i).2⟩
+  ⟨.piMap fun i ↦ (hf i).toIsEmbedding, by simpa using isOpen_set_pi Set.finite_univ fun i _ ↦ (hf i).isOpen_range⟩
 
 theorem mem_nhds_of_pi_mem_nhds {I : Set ι} {s : ∀ i, Set (A i)} (a : ∀ i, A i) (hs : I.pi s ∈ 𝓝 a)
     {i : ι} (hi : i ∈ I) : s i ∈ 𝓝 (a i) := by
@@ -1269,7 +1269,7 @@ lemma Topology.IsClosedEmbedding.sigmaMk {i : ι} : IsClosedEmbedding (@Sigma.mk
   .of_continuous_injective_isClosedMap continuous_sigmaMk sigma_mk_injective isClosedMap_sigmaMk
 
 lemma Topology.IsEmbedding.sigmaMk {i : ι} : IsEmbedding (@Sigma.mk ι σ i) :=
-  IsClosedEmbedding.sigmaMk.1
+  IsClosedEmbedding.sigmaMk.toIsEmbedding
 
 theorem Sigma.nhds_mk (i : ι) (x : σ i) : 𝓝 (⟨i, x⟩ : Sigma σ) = Filter.map (Sigma.mk i) (𝓝 x) :=
   (IsOpenEmbedding.sigmaMk.map_nhds_eq x).symm
@@ -1308,7 +1308,7 @@ component under `f` can be separated from the images of all other components by 
 theorem inducing_sigma {f : Sigma σ → X} :
     IsInducing f ↔ (∀ i, IsInducing (f ∘ Sigma.mk i)) ∧
       (∀ i, ∃ U, IsOpen U ∧ ∀ x, f x ∈ U ↔ x.1 = i) := by
-  refine ⟨fun h ↦ ⟨fun i ↦ h.comp IsEmbedding.sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun i ↦ h.comp IsEmbedding.sigmaMk.toIsInducing, fun i ↦ ?_⟩, ?_⟩
   · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
     refine ⟨U, hUo, ?_⟩
     simpa [Set.ext_iff] using hU

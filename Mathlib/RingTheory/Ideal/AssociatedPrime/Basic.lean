@@ -70,7 +70,7 @@ variable {N I}
 
 protected theorem isAssociatedPrime_def :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = (colon N {x}).radical :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+  ⟨fun h ↦ ⟨h.toIsPrime, h.eq_radical_colon⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = colon N {x} := by
@@ -82,7 +82,7 @@ protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
   · rintro ⟨hx, x, rfl⟩
     exact ⟨hx, x, hx.radical.symm⟩
 
-instance (I : N.associatedPrimes) : I.1.IsPrime := I.2.1
+instance (I : N.associatedPrimes) : I.1.IsPrime := I.2.toIsPrime
 
 protected theorem AssociatePrimes.mem_iff : I ∈ N.associatedPrimes ↔ N.IsAssociatedPrime I :=
   .rfl
@@ -107,9 +107,9 @@ variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] 
 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 
-theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
+theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.toIsPrime
 
-instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.1
+instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.toIsPrime
 
 theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x : M, I = colon ⊥ {x} :=
@@ -117,8 +117,8 @@ theorem isAssociatedPrime_iff [IsNoetherianRing R] :
 
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
     IsAssociatedPrime I M' := by
-  obtain ⟨x, rfl⟩ := h.2
-  refine ⟨h.1, ⟨f x, ?_⟩⟩
+  obtain ⟨x, rfl⟩ := h.eq_radical_colon
+  refine ⟨h.toIsPrime, ⟨f x, ?_⟩⟩
   ext r
   simp_rw [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot, ← map_smul, map_eq_zero_iff f hf]
 
@@ -267,7 +267,7 @@ theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J
   obtain ⟨hJ, x, e⟩ := h
   have : x ≠ 0 := by
     rintro rfl
-    apply hJ.1
+    apply hJ.ne_top'
     rwa [colon_singleton_zero, Ideal.radical_top] at e
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mkₐ_surjective R _ x
   have h {y} : y ∈ colon ⊥ {(Ideal.Quotient.mk I) x} ↔ Ideal.Quotient.mk I (y * x) = 0 := by

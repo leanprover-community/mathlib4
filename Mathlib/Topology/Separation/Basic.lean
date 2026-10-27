@@ -436,7 +436,7 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ ⦃x y : X⦄, x ≠ y → Disjoint (pure x) (𝓝 y),
       ∀ ⦃x y : X⦄, x ⤳ y → x = y,
       T0Space X ∧ R0Space X] := by
-  tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 1 ↔ 2 := ⟨fun h => h.t1, fun h => ⟨h⟩⟩
   tfae_have 2 ↔ 3 := by
     simp only [isOpen_compl_iff]
   tfae_have 5 ↔ 3 := by
@@ -813,7 +813,7 @@ theorem isOpen_singleton_of_finite_mem_nhds [T1Space X] (x : X)
 infinite. -/
 theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : NeBot (𝓝[≠] x)]
     {s : Set X} (hs : s ∈ 𝓝 x) : Set.Infinite s := by
-  refine fun hsf => hx.1 ?_
+  refine fun hsf => hx.ne' ?_
   rw [← isOpen_singleton_iff_punctured_nhds]
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 
@@ -1101,7 +1101,7 @@ protected theorem R1Space.sInf {X : Type*} {T : Set (TopologicalSpace X)}
   by_cases! hTd : ∃ t ∈ T, Disjoint (@nhds X t x) (@nhds X t y)
   · rcases hTd with ⟨t, htT, htd⟩
     exact .inr <| htd.mono (iInf₂_le t htT) (iInf₂_le t htT)
-  · exact .inl <| iInf₂_mono fun t ht ↦ ((hT t ht).1 x y).resolve_right (hTd t ht)
+  · exact .inl <| iInf₂_mono fun t ht ↦ ((hT t ht).specializes_or_disjoint_nhds x y).resolve_right (hTd t ht)
 
 protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=

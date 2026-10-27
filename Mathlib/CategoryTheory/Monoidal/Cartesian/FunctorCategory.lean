@@ -34,7 +34,7 @@ instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
   tensorProductIsBinaryProduct X Y :=
     evaluationJointlyReflectsLimits _ (fun j =>
       (IsLimit.postcomposeHomEquiv
-        (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
+        (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).toFun
         (IsLimit.ofIsoLimit
           (tensorProductIsBinaryProduct (X := X.obj j) (Y := Y.obj j))
           (Cone.ext (Iso.refl _) (by rintro ⟨_ | _⟩; all_goals cat_disch))))

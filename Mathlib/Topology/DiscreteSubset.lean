@@ -164,7 +164,7 @@ lemma IsDiscrete.preimage' {s : Set Y} (hs : IsDiscrete s)
 
 lemma IsDiscrete.eq_of_specializes (hs : IsDiscrete s)
     {a b : X} (hab : a ⤳ b) (ha : a ∈ s) (hb : b ∈ s) : a = b := by
-  let := hs.1
+  let := hs.to_subtype
   simpa only [← Topology.IsInducing.subtypeVal.specializes_iff, hab, Subtype.mk.injEq,
     true_iff] using specializes_iff_eq (X := s) (x := ⟨a, ha⟩) (y := ⟨b, hb⟩)
 

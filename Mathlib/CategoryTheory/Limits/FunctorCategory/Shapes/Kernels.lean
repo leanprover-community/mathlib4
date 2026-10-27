@@ -20,13 +20,13 @@ variable (J C : Type*) [Category* J] [Category* C] [HasZeroMorphisms C]
 /-- The kernel inclusion is itself a kernel in the functor category. -/
 noncomputable def kerIsKernel [HasKernels C] :
     IsLimit (KernelFork.ofι (ker.ι C) (ker.condition C)) :=
-  evaluationJointlyReflectsLimits _ fun f ↦ (KernelFork.isLimitMapConeEquiv ..).2 <|
+  evaluationJointlyReflectsLimits _ fun f ↦ (KernelFork.isLimitMapConeEquiv ..).invFun <|
     (kernelIsKernel f.hom).ofIsoLimit <| Fork.ext <| .refl _
 
 /-- The cokernel projection is itself a cokernel in the functor category. -/
 noncomputable def cokerIsCokernel [HasCokernels C] :
     IsColimit (CokernelCofork.ofπ (coker.π C) (coker.condition C)) :=
-  evaluationJointlyReflectsColimits _ fun f ↦ (CokernelCofork.isColimitMapCoconeEquiv ..).2 <|
+  evaluationJointlyReflectsColimits _ fun f ↦ (CokernelCofork.isColimitMapCoconeEquiv ..).invFun <|
     (cokernelIsCokernel f.hom).ofIsoColimit <| Cofork.ext <| .refl _
 
 variable {J C} {F₁ F₂ : J ⥤ C} (f : F₁ ⟶ F₂)

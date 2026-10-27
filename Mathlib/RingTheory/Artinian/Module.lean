@@ -447,14 +447,14 @@ theorem isUnit_iff_isRightRegular [IsArtinianRing R] {x : R} : IsUnit x ↔ IsRi
   exact IsArtinian.surjective_of_injective_endomorphism (.toSpanSingleton R R x)
 
 theorem isUnit_iff_isRegular [IsArtinianRing R] {x : R} : IsUnit x ↔ IsRegular x := by
-  rw [isRegular_iff, ← isUnit_iff_isRightRegular, and_iff_right_of_imp (·.isRegular.1)]
+  rw [isRegular_iff, ← isUnit_iff_isRightRegular, and_iff_right_of_imp (·.isRegular.left)]
 
 theorem isUnit_iff_isLeftRegular [IsArtinianRing Rᵐᵒᵖ] {x : R} : IsUnit x ↔ IsLeftRegular x := by
   rw [← isRightRegular_op, ← isUnit_op, isUnit_iff_isRightRegular]
 
 theorem isUnit_iff_isRegular_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {x : R} :
     IsUnit x ↔ IsRegular x := by
-  rw [isRegular_iff, ← isUnit_iff_isLeftRegular, and_iff_left_of_imp (·.isRegular.2)]
+  rw [isRegular_iff, ← isUnit_iff_isLeftRegular, and_iff_left_of_imp (·.isRegular.right)]
 
 end Semiring
 
@@ -570,7 +570,7 @@ lemma primeSpectrum_asIdeal_range_eq :
 variable (R)
 
 theorem nilradical_pow_eq_iInf (n : ℕ) :
-    nilradical R ^ n = iInf fun I : MaximalSpectrum R ↦ I.1 ^ n := by
+    nilradical R ^ n = iInf fun I : MaximalSpectrum R ↦ I.asIdeal ^ n := by
   have : Fintype (MaximalSpectrum R) := Fintype.ofFinite (MaximalSpectrum R)
   rw [← iInf_univ, ← Finset.coe_univ, PrimeSpectrum.nilradical_eq_iInf]
   simp only [Finset.mem_coe]

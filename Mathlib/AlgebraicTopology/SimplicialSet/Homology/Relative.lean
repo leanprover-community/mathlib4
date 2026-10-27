@@ -244,7 +244,7 @@ noncomputable def isColimitCokernelCoforkChainComplex :
     IsColimit (P.cokernelCoforkChainComplex R) :=
   (CokernelCofork.isColimitMapCoconeEquiv
       (cokernelCoforkChainComplexFunctorLeftToRight C)
-      ((evaluation ..).obj R ⋙ (evaluation ..).obj P)).1
+      ((evaluation ..).obj R ⋙ (evaluation ..).obj P)).toFun
       (isColimitOfPreserves ((evaluation ..).obj R ⋙ (evaluation ..).obj P)
     (isColimitCokernelCoforkChainComplexFunctorLeftToRight.{w} C))
 

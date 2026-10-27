@@ -50,10 +50,10 @@ variable [DecidableEq α]
 finset `s.pi t` of all functions defined on elements of `s` taking values in `t a` for `a ∈ s`.
 Note that the elements of `s.pi t` are only partially defined, on `s`. -/
 def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :=
-  ⟨s.1.pi fun a => (t a).1, s.nodup.pi fun a _ => (t a).nodup⟩
+  ⟨s.val.pi fun a => (t a).val, s.nodup.pi fun a _ => (t a).nodup⟩
 
 @[simp]
-theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi fun a => (t a).1 :=
+theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).val = s.val.pi fun a => (t a).val :=
   rfl
 
 @[simp, grind =]
@@ -67,7 +67,7 @@ equal to `f` on `s` and sending `a` to a given value `b`. This function is denot
 anyway. -/
 def Pi.cons (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (a' : α) (h : a' ∈ insert a s) :
     δ a' :=
-  Multiset.Pi.cons s.1 a b f _ (Multiset.mem_cons.2 <| mem_insert.symm.2 h)
+  Multiset.Pi.cons s.val a b f _ (Multiset.mem_cons.2 <| mem_insert.symm.2 h)
 
 @[simp]
 theorem Pi.cons_same (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (h : a ∈ insert a s) :
@@ -80,7 +80,7 @@ theorem Pi.cons_ne {s : Finset α} {a a' : α} {b : δ a} {f : ∀ a, a ∈ s �
 
 theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
     Function.Injective (Pi.cons s a b) := fun e₁ e₂ eq =>
-  @Multiset.Pi.cons_injective α _ δ a b s.1 hs _ _ <|
+  @Multiset.Pi.cons_injective α _ δ a b s.val hs _ _ <|
     funext fun e =>
       funext fun h =>
         have :
@@ -108,16 +108,16 @@ lemma pi_eq_empty : s.pi t = ∅ ↔ ∃ a ∈ s, t a = ∅ := by
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
     (ha : a ∉ s) : pi (insert a s) t = (t a).biUnion fun b => (pi s t).image (Pi.cons s a b) := by
   apply eq_of_veq
-  rw [← (pi (insert a s) t).2.dedup]
+  rw [← (pi (insert a s) t).nodup.dedup]
   refine
-    (fun s' (h : s' = a ::ₘ s.1) =>
+    (fun s' (h : s' = a ::ₘ s.val) =>
         (?_ :
-          dedup (Multiset.pi s' fun a => (t a).1) =
+          dedup (Multiset.pi s' fun a => (t a).val) =
             dedup
-              ((t a).1.bind fun b =>
+              ((t a).val.bind fun b =>
                 dedup <|
-                  (Multiset.pi s.1 fun a : α => (t a).val).map fun f a' h' =>
-                    Multiset.Pi.cons s.1 a b f a' (h ▸ h'))))
+                  (Multiset.pi s.val fun a : α => (t a).val).map fun f a' h' =>
+                    Multiset.Pi.cons s.val a b f a' (h ▸ h'))))
       _ (insert_val_of_notMem ha)
   subst s'; rw [pi_cons]
   congr; funext b

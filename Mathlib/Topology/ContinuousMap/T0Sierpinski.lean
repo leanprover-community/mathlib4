@@ -30,7 +30,7 @@ theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm
   · rw [le_iInf_iff]
-    exact fun u => Continuous.le_induced (isOpen_iff_continuous_mem.mp u.2)
+    exact fun u => Continuous.le_induced (isOpen_iff_continuous_mem.mp u.is_open')
   · intro u h
     rw [← generateFrom_iUnion_isOpen]
     apply isOpen_generateFrom_of_mem

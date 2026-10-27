@@ -508,11 +508,11 @@ protected lemma ωScottContinuous (f : α →𝒄 β) : ωScottContinuous f :=
   ωScottContinuous.of_map_ωSup_of_orderHom f.map_ωSup'
 
 -- Not a `simp` lemma because in many cases projection is simpler than a generic coercion
-theorem toOrderHom_eq_coe (f : α →𝒄 β) : f.1 = f := rfl
+theorem toOrderHom_eq_coe (f : α →𝒄 β) : f.toOrderHom = f := rfl
 
 @[simp] theorem coe_mk (f : α →o β) (hf) : ⇑(mk f hf) = f := rfl
 
-@[simp] theorem coe_toOrderHom (f : α →𝒄 β) : ⇑f.1 = f := rfl
+@[simp] theorem coe_toOrderHom (f : α →𝒄 β) : ⇑f.toOrderHom = f := rfl
 
 /-- See Note [custom simps projection]. We specify this explicitly because we don't have a DFunLike
 instance.
@@ -592,7 +592,7 @@ theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.m
 they are equal. -/
 @[simps!]
 def copy (f : α → β) (g : α →𝒄 β) (h : f = g) : α →𝒄 β where
-  toOrderHom := g.1.copy f h
+  toOrderHom := g.toOrderHom.copy f h
   map_ωSup' := by rw [OrderHom.copy_eq]; exact g.map_ωSup'
 
 /-- The identity as a continuous function. -/
@@ -602,7 +602,7 @@ def id : α →𝒄 α := ⟨OrderHom.id, ωScottContinuous.id.map_ωSup⟩
 /-- The composition of continuous functions. -/
 @[simps!]
 def comp (f : β →𝒄 γ) (g : α →𝒄 β) : α →𝒄 γ :=
-  ⟨.comp f.1 g.1, (f.ωScottContinuous.comp g.ωScottContinuous).map_ωSup⟩
+  ⟨.comp f.toOrderHom g.toOrderHom, (f.ωScottContinuous.comp g.ωScottContinuous).map_ωSup⟩
 
 @[ext]
 protected theorem ext (f g : α →𝒄 β) (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h

@@ -587,8 +587,8 @@ lemma isLeftKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : F₁ ⟶
   let eq := LeftExtension.isUniversalEquivOfIso₂ (LeftExtension.mk _ α₁)
     (LeftExtension.mk _ α₂) e e' h
   constructor
-  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
-  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
+  · exact fun _ => ⟨⟨eq.toFun (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.invFun (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
 
 /-- When two right extensions `α₁ : RightExtension L F₁` and `α₂ : RightExtension L F₂`
 are essentially the same via an isomorphism of functors `F₁ ≅ F₂`,
@@ -608,8 +608,8 @@ lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F
   let eq := RightExtension.isUniversalEquivOfIso₂ (RightExtension.mk _ α₁)
     (RightExtension.mk _ α₂) e e' h
   constructor
-  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
-  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
+  · exact fun _ => ⟨⟨eq.toFun (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.invFun (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
 
 end
 

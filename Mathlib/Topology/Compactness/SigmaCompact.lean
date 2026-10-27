@@ -145,7 +145,7 @@ class SigmaCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 /-- A topological space is σ-compact iff `univ` is σ-compact. -/
 lemma isSigmaCompact_univ_iff : IsSigmaCompact (univ : Set X) ↔ SigmaCompactSpace X :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.isSigmaCompact_univ⟩
 
 /-- In a σ-compact space, `univ` is σ-compact. -/
 lemma isSigmaCompact_univ [h : SigmaCompactSpace X] : IsSigmaCompact (univ : Set X) :=

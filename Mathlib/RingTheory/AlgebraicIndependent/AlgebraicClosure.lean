@@ -53,7 +53,7 @@ theorem extendScalars [alg : Algebra.IsAlgebraic R S] : AlgebraicIndependent S x
     have := Algebra.IsAlgebraic.nontrivial R S
     have := hx.algebraMap_injective.nontrivial
     exact adjoin_induction (fun _ h ↦ isAlgebraic_algebraMap (⟨_, subset_adjoin h⟩ : Rt))
-      (fun z ↦ ((alg.1 z).algHom (IsScalarTower.toAlgHom R S A)).extendScalars fun _ _ eq ↦ by
+      (fun z ↦ ((alg.isAlgebraic z).algHom (IsScalarTower.toAlgHom R S A)).extendScalars fun _ _ eq ↦ by
         exact hx.algebraMap_injective congr($eq.1)) (fun _ _ _ _ ↦ .add) (fun _ _ _ _ ↦ .mul) hy⟩
   change Transcendental St (x i)
   exact (hx.transcendental_adjoin hi).extendScalars _

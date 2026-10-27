@@ -56,7 +56,7 @@ abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := �
 
 /-- Constructs the topological pair `(X, ∅)` from `X : TopCat`. -/
 abbrev ofTopCat (X : TopCat.{u}) : TopPair.{u} :=
-  TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
+  TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).toIsEmbedding
 
 /-- Construct a morphism in `TopPair` from its components. -/
 abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=

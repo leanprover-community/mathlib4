@@ -52,7 +52,7 @@ def Simps.coe (L : Sublattice α) : Set α := L
 initialize_simps_projections Sublattice (carrier → coe, as_prefix coe)
 
 /-- Turn a set closed under supremum and infimum into a sublattice. -/
-abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α := ⟨s, hs.1, hs.2⟩
+abbrev ofIsSublattice (s : Set α) (hs : IsSublattice s) : Sublattice α := ⟨s, hs.supClosed, hs.infClosed⟩
 
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 

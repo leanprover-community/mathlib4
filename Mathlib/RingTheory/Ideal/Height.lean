@@ -326,7 +326,7 @@ lemma ringKrullDim_le_iff_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞
   refine ⟨fun h p hp ↦ ?_, fun h p ↦ ?_⟩
   · rw [Ideal.height_eq_primeHeight]
     exact h ⟨p, hp⟩
-  · specialize h p.2
+  · specialize h p.isPrime
     rwa [Ideal.height_eq_primeHeight] at h
 
 /-- `dim R ≤ n` if and only if the height of all maximal ideals is less than `n`. -/
@@ -349,13 +349,13 @@ private theorem IsLocalization.height_under_eq_of_isPrime (S : Submonoid R) {A :
   have H (p : Ideal R) (hp : p ≤ J.comap (algebraMap R A)) : Disjoint (S : Set R) p :=
     Set.disjoint_of_subset_right hp (e ⟨_, ‹J.IsPrime›⟩).2.2
   exact Order.krullDim_eq_of_orderIso
-    { toFun I := ⟨⟨I.1.1.comap (algebraMap R A), (e ⟨_, I.1.2⟩).2.1⟩, Ideal.comap_mono I.2⟩
-      invFun I := ⟨⟨_, (e.symm ⟨_, I.1.2, H _ I.2⟩).2⟩, Ideal.map_le_iff_le_comap.mpr I.2⟩
+    { toFun I := ⟨⟨I.1.asIdeal.comap (algebraMap R A), (e ⟨_, I.1.isPrime⟩).2.1⟩, Ideal.comap_mono I.2⟩
+      invFun I := ⟨⟨_, (e.symm ⟨_, I.1.isPrime, H _ I.2⟩).2⟩, Ideal.map_le_iff_le_comap.mpr I.2⟩
       left_inv I := Subtype.ext <| PrimeSpectrum.ext_iff.mpr <|
-        congrArg (fun I ↦ I.1) (e.left_inv ⟨_, I.1.2⟩)
+        congrArg (fun I ↦ I.1) (e.left_inv ⟨_, I.1.isPrime⟩)
       right_inv I := Subtype.ext <| PrimeSpectrum.ext_iff.mpr <|
-        congrArg (fun I ↦ I.1) (e.right_inv ⟨_, I.1.2, H _ I.2⟩)
-      map_rel_iff' {I₁ I₂} := @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
+        congrArg (fun I ↦ I.1) (e.right_inv ⟨_, I.1.isPrime, H _ I.2⟩)
+      map_rel_iff' {I₁ I₂} := @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.isPrime⟩ ⟨_, I₂.1.isPrime⟩ }
 
 theorem IsLocalization.height_under (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) : (J.under R).height = J.height := by

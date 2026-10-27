@@ -194,14 +194,14 @@ namespace TangentBundle
 protected theorem chartAt (p : TM) :
     chartAt (ModelProd H E) p =
       ((tangentBundleCore I M).toFiberBundleCore.localTriv
-        (achart H p.1)).toOpenPartialHomeomorph ≫ₕ
-        (chartAt H p.1).prod (OpenPartialHomeomorph.refl E) :=
+        (achart H p.proj)).toOpenPartialHomeomorph ≫ₕ
+        (chartAt H p.proj).prod (OpenPartialHomeomorph.refl E) :=
   rfl
 
 theorem chartAt_toPartialEquiv (p : TM) :
     (chartAt (ModelProd H E) p).toPartialEquiv =
-      (tangentBundleCore I M).toFiberBundleCore.localTrivAsPartialEquiv (achart H p.1) ≫
-        (chartAt H p.1).toPartialEquiv.prod (PartialEquiv.refl E) :=
+      (tangentBundleCore I M).toFiberBundleCore.localTrivAsPartialEquiv (achart H p.proj) ≫
+        (chartAt H p.proj).toPartialEquiv.prod (PartialEquiv.refl E) :=
   rfl
 
 theorem trivializationAt_eq_localTriv (x : M) :
@@ -227,22 +227,22 @@ theorem trivializationAt_baseSet (x : M) :
 
 theorem trivializationAt_apply (x : M) (z : TM) :
     trivializationAt E (TangentSpace I) x z =
-      (z.1, fderivWithin 𝕜 ((chartAt H x).extend I ∘ ((chartAt H z.1).extend I).symm) (range I)
-        ((chartAt H z.1).extend I z.1) z.2) :=
+      (z.proj, fderivWithin 𝕜 ((chartAt H x).extend I ∘ ((chartAt H z.proj).extend I).symm) (range I)
+        ((chartAt H z.proj).extend I z.proj) z.snd) :=
   rfl
 
 @[simp, mfld_simps]
-theorem trivializationAt_fst (x : M) (z : TM) : (trivializationAt E (TangentSpace I) x z).1 = z.1 :=
+theorem trivializationAt_fst (x : M) (z : TM) : (trivializationAt E (TangentSpace I) x z).1 = z.proj :=
   rfl
 
 @[simp, mfld_simps]
 theorem mem_chart_source_iff (p q : TM) :
-    p ∈ (chartAt (ModelProd H E) q).source ↔ p.1 ∈ (chartAt H q.1).source := by
+    p ∈ (chartAt (ModelProd H E) q).source ↔ p.proj ∈ (chartAt H q.proj).source := by
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps]
 
 @[simp, mfld_simps]
 theorem mem_chart_target_iff (p : H × E) (q : TM) :
-    p ∈ (chartAt (ModelProd H E) q).target ↔ p.1 ∈ (chartAt H q.1).target := by
+    p ∈ (chartAt (ModelProd H E) q).target ↔ p.1 ∈ (chartAt H q.proj).target := by
   /- porting note: was
   simp +contextual only [FiberBundle.chartedSpace_chartAt,
     and_iff_left_iff_imp, mfld_simps]
@@ -252,12 +252,12 @@ theorem mem_chart_target_iff (p : H × E) (q : TM) :
   simp +contextual only [and_iff_left_iff_imp, mfld_simps]
 
 @[simp, mfld_simps]
-theorem coe_chartAt_fst (p q : TM) : ((chartAt (ModelProd H E) q) p).1 = chartAt H q.1 p.1 :=
+theorem coe_chartAt_fst (p q : TM) : ((chartAt (ModelProd H E) q) p).1 = chartAt H q.proj p.proj :=
   rfl
 
 @[simp, mfld_simps]
 theorem coe_chartAt_symm_fst (p : H × E) (q : TM) :
-    ((chartAt (ModelProd H E) q).symm p).1 = ((chartAt H q.1).symm : H → M) p.1 :=
+    ((chartAt (ModelProd H E) q).symm p).proj = ((chartAt H q.proj).symm : H → M) p.1 :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -350,7 +350,7 @@ end TangentBundleInstances
 set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem trivializationAt_model_space_apply (p : TangentBundle I H) (x : H) :
-    trivializationAt E (TangentSpace I) x p = (p.1, p.2) := by
+    trivializationAt E (TangentSpace I) x p = (p.proj, p.snd) := by
   simp only [TangentBundle.trivializationAt_apply]
   have : fderivWithin 𝕜 (↑I ∘ ↑I.symm) (range I) (I p.proj) =
       fderivWithin 𝕜 id (range I) (I p.proj) :=
@@ -365,7 +365,7 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
     (chartAt (ModelProd H E) p).toPartialEquiv = (TotalSpace.toProd H E).toPartialEquiv := by
   ext x : 1
   · ext; · rfl
-    exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
+    exact (tangentBundleCore I H).coordChange_self (achart _ x.proj) x.proj (mem_achart_source H x.proj) x.snd
   · ext; · rfl
     apply heq_of_eq
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
@@ -449,7 +449,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm :
 variable (H I) in
 /-- In the tangent bundle to the model space, the second projection is `C^n`. -/
 lemma contMDiff_snd_tangentBundle_modelSpace :
-    ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
+    ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.snd) := by
   change CMDiff n ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
   apply ContMDiff.comp (I' := I.prod 𝓘(𝕜, E))
   · convert! contMDiff_snd

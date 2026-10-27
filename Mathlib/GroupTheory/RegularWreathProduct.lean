@@ -54,12 +54,12 @@ namespace RegularWreathProduct
 variable {D Q}
 
 instance : Mul (D ≀ᵣ Q) where
-  mul a b := ⟨a.1 * (fun x ↦ b.1 (a.2⁻¹ * x)), a.2 * b.2⟩
+  mul a b := ⟨a.left * (fun x ↦ b.left (a.right⁻¹ * x)), a.right * b.right⟩
 
-lemma mul_def (a b : D ≀ᵣ Q) : a * b = ⟨a.1 * fun x ↦ b.1 (a.2⁻¹ * x), a.2 * b.2⟩ := rfl
+lemma mul_def (a b : D ≀ᵣ Q) : a * b = ⟨a.left * fun x ↦ b.left (a.right⁻¹ * x), a.right * b.right⟩ := rfl
 
 @[simp]
-theorem mul_left (a b : D ≀ᵣ Q) : (a * b).1 = a.1 * fun x ↦ b.1 (a.2⁻¹ * x) := rfl
+theorem mul_left (a b : D ≀ᵣ Q) : (a * b).left = a.left * fun x ↦ b.left (a.right⁻¹ * x) := rfl
 
 @[simp]
 theorem mul_right (a b : D ≀ᵣ Q) : (a * b).right = a.right * b.right := rfl
@@ -73,7 +73,7 @@ theorem one_left : (1 : D ≀ᵣ Q).left = 1 := rfl
 theorem one_right : (1 : D ≀ᵣ Q).right = 1 := rfl
 
 instance : Inv (RegularWreathProduct D Q) where
-  inv x := ⟨fun k ↦ x.1⁻¹ (x.2 * k), x.2⁻¹⟩
+  inv x := ⟨fun k ↦ x.left⁻¹ (x.right * k), x.right⁻¹⟩
 
 @[simp]
 theorem inv_left (a : D ≀ᵣ Q) : a⁻¹.left = fun x ↦ a.left⁻¹ (a.right * x) := rfl
@@ -149,7 +149,7 @@ instance : SMul (D ≀ᵣ Q) (Λ × Q) where
   smul w p := ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
 
 @[simp]
-lemma smul_def {w : D ≀ᵣ Q} {p : Λ × Q} : w • p = ⟨(w.1 (w.2 * p.2)) • p.1, w.2 * p.2⟩ := rfl
+lemma smul_def {w : D ≀ᵣ Q} {p : Λ × Q} : w • p = ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩ := rfl
 
 instance : MulAction (D ≀ᵣ Q) (Λ × Q) where
   one_smul := by simp

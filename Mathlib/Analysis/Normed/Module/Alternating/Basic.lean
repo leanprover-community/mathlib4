@@ -76,7 +76,7 @@ Then `f : (Unit → ℝ₀) → ℝ` given by `f x = x ()`
 sends vector `1` with zero norm to number `1` with nonzero norm. -/
 theorem norm_map_coord_zero (f : E [⋀^ι]→ₗ[𝕜] F) (hf : Continuous f)
     {m : ι → E} {i : ι} (hi : ‖m i‖ = 0) : ‖f m‖ = 0 :=
-  f.1.norm_map_coord_zero hf hi
+  f.toMultilinearMap.norm_map_coord_zero hf hi
 
 variable [Fintype ι]
 
@@ -94,7 +94,7 @@ theorem bound_of_shell_of_norm_map_coord_zero (f : E [⋀^ι]→ₗ[𝕜] F)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ι → E, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ι → E) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
-  f.1.bound_of_shell_of_norm_map_coord_zero hf₀ hε hc hf m
+  f.toMultilinearMap.bound_of_shell_of_norm_map_coord_zero hf₀ hε hc hf m
 
 /-- If a continuous alternating map in finitely many variables on normed spaces
 satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`
@@ -107,14 +107,14 @@ theorem bound_of_shell_of_continuous (f : E [⋀^ι]→ₗ[𝕜] F) (hfc : Conti
     {ε : ℝ} {C : ℝ} (hε : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
     (hf : ∀ m : ι → E, (∀ i, ε / ‖c‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ι → E) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
-  f.1.bound_of_shell_of_continuous hfc (fun _ ↦ hε) (fun _ ↦ hc) hf m
+  f.toMultilinearMap.bound_of_shell_of_continuous hfc (fun _ ↦ hε) (fun _ ↦ hc) hf m
 
 /-- If an alternating map in finitely many variables on a seminormed space is continuous,
 then it satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`,
 for some `C` which can be chosen to be positive. -/
 theorem exists_bound_of_continuous (f : E [⋀^ι]→ₗ[𝕜] F) (hf : Continuous f) :
     ∃ (C : ℝ), 0 < C ∧ (∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :=
-  f.1.exists_bound_of_continuous hf
+  f.toMultilinearMap.exists_bound_of_continuous hf
 
 /-- If an alternating map `f` satisfies a boundedness property around `0`,
 one can deduce a bound on `f m₁ - f m₂` using the multilinearity.
@@ -179,9 +179,9 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[�
   __ := SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
   norm f := ‖f.toContinuousMultilinearMap‖
 
-@[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ = ‖f‖ := rfl
-@[simp] theorem nnnorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl
-@[simp] theorem enorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ₑ = ‖f‖ₑ := rfl
+@[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.toContinuousMultilinearMap‖ = ‖f‖ := rfl
+@[simp] theorem nnnorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.toContinuousMultilinearMap‖₊ = ‖f‖₊ := rfl
+@[simp] theorem enorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.toContinuousMultilinearMap‖ₑ = ‖f‖ₑ := rfl
 
 /-- The inclusion of `E [⋀^ι]→L[𝕜] F` into `ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F`
 as a linear isometry. -/
@@ -205,79 +205,79 @@ theorem bounds_bddBelow {f : E [⋀^ι]→L[𝕜] F} :
 
 theorem isLeast_opNorm (f : E [⋀^ι]→L[𝕜] F) :
     IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ :=
-  f.1.isLeast_opNorm
+  f.toContinuousMultilinearMap.isLeast_opNorm
 
 /-- The fundamental property of the operator norm of a continuous alternating map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`. -/
-theorem le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.1.le_opNorm m
+theorem le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.toContinuousMultilinearMap.le_opNorm m
 
 theorem le_mul_prod_of_opNorm_le_of_le
     {m : ι → E} {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ C * ∏ i, b i :=
-  f.1.le_mul_prod_of_opNorm_le_of_le hC hm
+  f.toContinuousMultilinearMap.le_mul_prod_of_opNorm_le_of_le hC hm
 
 theorem le_opNorm_mul_prod_of_le (f : E [⋀^ι]→L[𝕜] F) {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
-  f.1.le_opNorm_mul_prod_of_le hm
+  f.toContinuousMultilinearMap.le_opNorm_mul_prod_of_le hm
 
 theorem le_opNorm_mul_pow_card_of_le (f : E [⋀^ι]→L[𝕜] F) {m b} (hm : ‖m‖ ≤ b) :
     ‖f m‖ ≤ ‖f‖ * b ^ Fintype.card ι :=
-  f.1.le_opNorm_mul_pow_card_of_le hm
+  f.toContinuousMultilinearMap.le_opNorm_mul_pow_card_of_le hm
 
 theorem le_opNorm_mul_pow_of_le {n} (f : E [⋀^Fin n]→L[𝕜] F) {m b} (hm : ‖m‖ ≤ b) :
     ‖f m‖ ≤ ‖f‖ * b ^ n :=
-  f.1.le_opNorm_mul_pow_of_le hm
+  f.toContinuousMultilinearMap.le_opNorm_mul_pow_of_le hm
 
 theorem le_of_opNorm_le {C : ℝ} (h : ‖f‖ ≤ C) (m : ι → E) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
-  f.1.le_of_opNorm_le h m
+  f.toContinuousMultilinearMap.le_of_opNorm_le h m
 
 theorem ratio_le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ / ∏ i, ‖m i‖ ≤ ‖f‖ :=
-  f.1.ratio_le_opNorm m
+  f.toContinuousMultilinearMap.ratio_le_opNorm m
 
 /-- The image of the unit ball under a continuous alternating map is bounded. -/
-theorem unit_le_opNorm (f : E [⋀^ι]→L[𝕜] F) (h : ‖m‖ ≤ 1) : ‖f m‖ ≤ ‖f‖ := f.1.unit_le_opNorm h
+theorem unit_le_opNorm (f : E [⋀^ι]→L[𝕜] F) (h : ‖m‖ ≤ 1) : ‖f m‖ ≤ ‖f‖ := f.toContinuousMultilinearMap.unit_le_opNorm h
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `f`. -/
 theorem opNorm_le_bound (f : E [⋀^ι]→L[𝕜] F) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ m, ‖f m‖ ≤ M * ∏ i, ‖m i‖) : ‖f‖ ≤ M :=
-  f.1.opNorm_le_bound hMp hM
+  f.toContinuousMultilinearMap.opNorm_le_bound hMp hM
 
 theorem opNorm_le_iff {C : ℝ} (hC : 0 ≤ C) : ‖f‖ ≤ C ↔ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
-  f.1.opNorm_le_iff hC
+  f.toContinuousMultilinearMap.opNorm_le_iff hC
 
 /-- The fundamental property of the operator norm of a continuous alternating map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
 theorem le_opNNNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
-  f.1.le_opNNNorm m
+  f.toContinuousMultilinearMap.le_opNNNorm m
 
 theorem le_of_opNNNorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) (m : ι → E) : ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ :=
-  f.1.le_of_opNNNorm_le h m
+  f.toContinuousMultilinearMap.le_of_opNNNorm_le h m
 
 theorem opNNNorm_le_iff {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ :=
-  f.1.opNNNorm_le_iff
+  f.toContinuousMultilinearMap.opNNNorm_le_iff
 
 theorem isLeast_opNNNorm (f : E [⋀^ι]→L[𝕜] F) :
     IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ :=
-  f.1.isLeast_opNNNorm
+  f.toContinuousMultilinearMap.isLeast_opNNNorm
 
 theorem opNNNorm_prod (f : E [⋀^ι]→L[𝕜] F) (g : E [⋀^ι]→L[𝕜] G) :
     ‖f.prod g‖₊ = max (‖f‖₊) (‖g‖₊) :=
-  f.1.opNNNorm_prod g.1
+  f.toContinuousMultilinearMap.opNNNorm_prod g.toContinuousMultilinearMap
 
 theorem opNorm_prod (f : E [⋀^ι]→L[𝕜] F) (g : E [⋀^ι]→L[𝕜] G) : ‖f.prod g‖ = max (‖f‖) (‖g‖) :=
-  f.1.opNorm_prod g.1
+  f.toContinuousMultilinearMap.opNorm_prod g.toContinuousMultilinearMap
 
 theorem opNNNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
     [∀ i', NormedSpace 𝕜 (F i')] (f : ∀ i', E [⋀^ι]→L[𝕜] F i') : ‖pi f‖₊ = ‖f‖₊ :=
-  ContinuousMultilinearMap.opNNNorm_pi fun i ↦ (f i).1
+  ContinuousMultilinearMap.opNNNorm_pi fun i ↦ (f i).toContinuousMultilinearMap
 
 theorem opNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', SeminormedAddCommGroup (F i')]
     [∀ i', NormedSpace 𝕜 (F i')] (f : ∀ i', E [⋀^ι]→L[𝕜] F i') : ‖pi f‖ = ‖f‖ :=
-  ContinuousMultilinearMap.opNorm_pi fun i ↦ (f i).1
+  ContinuousMultilinearMap.opNorm_pi fun i ↦ (f i).toContinuousMultilinearMap
 
 instance instNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
     NormedSpace 𝕜' (E [⋀^ι]→L[𝕜] F) :=
-  ⟨fun c f ↦ f.1.opNorm_smul_le c⟩
+  ⟨fun c f ↦ f.toContinuousMultilinearMap.opNorm_smul_le c⟩
 
 section
 
@@ -374,7 +374,7 @@ For a less precise but more usable version, see `norm_image_sub_le`. The bound r
 where the other terms in the sum are the same products where `1` is replaced by any `i`. -/
 theorem norm_image_sub_le' [DecidableEq ι] (f : E [⋀^ι]→L[𝕜] F) (m₁ m₂ : ι → E) :
     ‖f m₁ - f m₂‖ ≤ ‖f‖ * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
-  f.1.norm_image_sub_le' m₁ m₂
+  f.toContinuousMultilinearMap.norm_image_sub_le' m₁ m₂
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`,
 less precise version.
@@ -382,7 +382,7 @@ For a more precise but less usable version, see `norm_image_sub_le'`.
 The bound is `‖f m - f m'‖ ≤ ‖f‖ * card ι * ‖m - m'‖ * (max ‖m‖ ‖m'‖) ^ (card ι - 1)`. -/
 theorem norm_image_sub_le (f : E [⋀^ι]→L[𝕜] F) (m₁ m₂ : ι → E) :
     ‖f m₁ - f m₂‖ ≤ ‖f‖ * (Fintype.card ι) * (max ‖m₁‖ ‖m₂‖) ^ (Fintype.card ι - 1) * ‖m₁ - m₂‖ :=
-  f.1.norm_image_sub_le m₁ m₂
+  f.toContinuousMultilinearMap.norm_image_sub_le m₁ m₂
 
 end ContinuousAlternatingMap
 
@@ -408,7 +408,7 @@ namespace ContinuousLinearMap
 
 theorem norm_compContinuousAlternatingMap_le (g : F →L[𝕜] G) (f : E [⋀^ι]→L[𝕜] F) :
     ‖g.compContinuousAlternatingMap f‖ ≤ ‖g‖ * ‖f‖ :=
-  g.norm_compContinuousMultilinearMap_le f.1
+  g.norm_compContinuousMultilinearMap_le f.toContinuousMultilinearMap
 
 /-- Flip arguments in `f : F →L[𝕜] E [⋀^ι]→L[𝕜] G` to get `⋀^ι⟮𝕜; E; F →L[𝕜] G⟯` -/
 @[simps! apply_apply]
@@ -421,7 +421,7 @@ end ContinuousLinearMap
 
 theorem LinearIsometry.norm_compContinuousAlternatingMap (g : F →ₗᵢ[𝕜] G) (f : E [⋀^ι]→L[𝕜] F) :
     ‖g.toContinuousLinearMap.compContinuousAlternatingMap f‖ = ‖f‖ :=
-  g.norm_compContinuousMultilinearMap f.1
+  g.norm_compContinuousMultilinearMap f.toContinuousMultilinearMap
 
 open ContinuousAlternatingMap
 
@@ -431,7 +431,7 @@ namespace ContinuousAlternatingMap
 
 theorem norm_compContinuousLinearMap_le (f : F [⋀^ι]→L[𝕜] G)
     (g : E →L[𝕜] F) : ‖f.compContinuousLinearMap g‖ ≤ ‖f‖ * (‖g‖ ^ Fintype.card ι) :=
-  (f.1.norm_compContinuousLinearMap_le _).trans_eq <| by simp
+  (f.toContinuousMultilinearMap.norm_compContinuousLinearMap_le _).trans_eq <| by simp
 
 omit [Fintype ι] in
 theorem continuous_compContinuousLinearMapCLM [Finite ι] :
@@ -465,7 +465,7 @@ see `fderivCompContinuousLinearMap_apply` below.
 -/
 def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
     (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
-  liftCLM (f.1.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _) <| by
+  liftCLM (f.toContinuousMultilinearMap.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _) <| by
     intro dg v a b heq hne
     trans ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j)
     · simp
@@ -485,7 +485,7 @@ def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜]
 lemma toContinuousMultilinearMapCLM_comp_fderivCompContinuousLinearMap
     (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
     toContinuousMultilinearMapCLM 𝕜 ∘L f.fderivCompContinuousLinearMap g =
-      f.1.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _ :=
+      f.toContinuousMultilinearMap.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _ :=
   rfl
 
 @[simp]
@@ -649,7 +649,7 @@ theorem bound_of_shell (f : F [⋀^ι]→ₗ[𝕜] E) {ε : ι → ℝ} {C : ℝ
     (hε : ∀ i, 0 < ε i) (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ι → F, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ι → F) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
-  f.1.bound_of_shell hε hc hf m
+  f.toMultilinearMap.bound_of_shell hε hc hf m
 
 end AlternatingMap
 

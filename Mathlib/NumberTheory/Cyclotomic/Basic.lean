@@ -357,8 +357,8 @@ theorem isMulCommutative [IsCyclotomicExtension S A B] [IsDomain B] :
   use r, hr
   simp only [AlgEquiv.mul_apply]
   have := NeZero.mk h1
-  obtain ⟨mf, -, hf⟩ := hr.eq_pow_of_pow_eq_one (show f r ^ n = 1 by rw [← map_pow, hr.1, map_one])
-  obtain ⟨mg, -, hg⟩ := hr.eq_pow_of_pow_eq_one (show g r ^ n = 1 by rw [← map_pow, hr.1, map_one])
+  obtain ⟨mf, -, hf⟩ := hr.eq_pow_of_pow_eq_one (show f r ^ n = 1 by rw [← map_pow, hr.pow_eq_one, map_one])
+  obtain ⟨mg, -, hg⟩ := hr.eq_pow_of_pow_eq_one (show g r ^ n = 1 by rw [← map_pow, hr.pow_eq_one, map_one])
   simp [← hf, ← hg, ← pow_mul, mul_comm mf mg]
 
 end Basic
@@ -866,7 +866,7 @@ variable {A B} [IsDomain B]
 theorem IsCyclotomicExtension.mem_of_pow_eq_one (C : Subalgebra A B)
     [h : IsCyclotomicExtension S A C] {m : ℕ} {ζ : B} (h₁ : m ∈ S) (h₂ : m ≠ 0)
     (hζ : ζ ^ m = 1) : ζ ∈ C := by
-  obtain ⟨η, hη⟩ := h.1 h₁ h₂
+  obtain ⟨η, hη⟩ := h.exists_isPrimitiveRoot h₁ h₂
   replace hη := hη.map_of_injective (FaithfulSMul.algebraMap_injective C B)
   have : NeZero m := ⟨h₂⟩
   obtain ⟨k, _, rfl⟩ := hη.eq_pow_of_pow_eq_one hζ
@@ -901,7 +901,7 @@ theorem isCyclotomicExtension_singleton_iff_eq_adjoin (C : Subalgebra A B) {ζ :
 theorem IsCyclotomicExtension.eq (C₁ C₂ : Subalgebra A B) [h₁ : IsCyclotomicExtension S A C₁]
     [h₂ : IsCyclotomicExtension S A C₂] : C₁ = C₂ := by
   have hC (n) (hn₁ : n ∈ S) (hn₂ : n ≠ 0) : ∃ x : B, IsPrimitiveRoot x n := by
-    obtain ⟨ζ, hζ⟩ := h₁.1 hn₁ hn₂
+    obtain ⟨ζ, hζ⟩ := h₁.exists_isPrimitiveRoot hn₁ hn₂
     exact ⟨ζ, IsPrimitiveRoot.coe_submonoidClass_iff.mpr hζ⟩
   rw [(isCyclotomicExtension_iff_eq_adjoin S C₁ hC).mp h₁,
     (isCyclotomicExtension_iff_eq_adjoin S C₂ hC).mp h₂]
@@ -914,7 +914,7 @@ theorem IsCyclotomicExtension.le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : C₁
     constructor
     rintro rfl
     exact NeZero.ne n₂ <| eq_zero_of_zero_dvd h
-  obtain ⟨ζ₂, hζ₂⟩ := h₂.1 rfl (NeZero.ne n₂)
+  obtain ⟨ζ₂, hζ₂⟩ := h₂.exists_isPrimitiveRoot rfl (NeZero.ne n₂)
   replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective C₂ B)
   obtain ⟨d, hd⟩ := h
   have hζ₁ := IsPrimitiveRoot.pow n₂.pos_of_neZero hζ₂ (by rwa [mul_comm])
@@ -925,8 +925,8 @@ theorem IsCyclotomicExtension.le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : C₁
 
 theorem IsCyclotomicExtension.lcm_sup [NeZero n₁] [NeZero n₂] :
     IsCyclotomicExtension {n₁.lcm n₂} A (C₁ ⊔ C₂ : Subalgebra A B) := by
-  obtain ⟨ζ₁, hζ₁⟩ := h₁.1 rfl (NeZero.ne n₁)
-  obtain ⟨ζ₂, hζ₂⟩ := h₂.1 rfl (NeZero.ne n₂)
+  obtain ⟨ζ₁, hζ₁⟩ := h₁.exists_isPrimitiveRoot rfl (NeZero.ne n₁)
+  obtain ⟨ζ₂, hζ₂⟩ := h₂.exists_isPrimitiveRoot rfl (NeZero.ne n₂)
   replace hζ₁ := hζ₁.map_of_injective (FaithfulSMul.algebraMap_injective C₁ B)
   replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective C₂ B)
   have hζ := hζ₁.pow_mul_pow_lcm hζ₂ (NeZero.ne n₁) (NeZero.ne n₂)

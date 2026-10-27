@@ -212,7 +212,7 @@ protected theorem orderOf (ζ : M) : IsPrimitiveRoot ζ (orderOf ζ) :=
   ⟨pow_orderOf_eq_one ζ, fun _ ↦ orderOf_dvd_of_pow_eq_one⟩
 
 theorem unique {ζ : M} (hk : IsPrimitiveRoot ζ k) (hl : IsPrimitiveRoot ζ l) : k = l :=
-  Nat.dvd_antisymm (hk.2 _ hl.1) (hl.2 _ hk.1)
+  Nat.dvd_antisymm (hk.dvd_of_pow_eq_one _ hl.pow_eq_one) (hl.dvd_of_pow_eq_one _ hk.pow_eq_one)
 
 theorem eq_orderOf (h : IsPrimitiveRoot ζ k) : k = orderOf ζ :=
   h.unique (IsPrimitiveRoot.orderOf ζ)
@@ -418,9 +418,9 @@ theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n :
   have h : p ≠ 0 ∧ n ≠ 0 := by aesop
   have : NeZero p := .mk h.1
   have hp : Fact p.Prime := CharP.char_is_prime_of_pos R p
-  refine (hζ.pow_ne_one_of_pos_of_lt h.2 (lt_mul_of_one_lt_left (by grind) hp.1.one_lt) <|
+  refine (hζ.pow_ne_one_of_pos_of_lt h.2 (lt_mul_of_one_lt_left (by grind) hp.out.one_lt) <|
     frobenius_inj R p ?_).elim
-  rw [frobenius_def, ← pow_mul', hζ.1, map_one]
+  rw [frobenius_def, ← pow_mul', hζ.pow_eq_one, map_one]
 
 nonrec theorem mem_nthRootsFinset (hζ : IsPrimitiveRoot ζ k) (hk : 0 < k) :
     ζ ∈ nthRootsFinset k (1 : R) :=
@@ -762,7 +762,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' [DecidableEq R] {n : ℕ} [NeZer
   constructor
   · intro H
     obtain ⟨k, hk, hx⟩ := exists_pos H (NeZero.ne n)
-    exact ⟨k, hx.2 _ H, (mem_primitiveRoots hk).mpr hx⟩
+    exact ⟨k, hx.dvd_of_pow_eq_one _ H, (mem_primitiveRoots hk).mpr hx⟩
   · rintro ⟨a, ⟨d, hd⟩, ha⟩
     have hazero : 0 < a := Nat.pos_of_ne_zero fun ha₀ ↦ by simp_all
     rw [mem_primitiveRoots hazero] at ha

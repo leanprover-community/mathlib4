@@ -58,11 +58,11 @@ namespace IsFaceOf
 
 theorem mem_of_smul_add_smul_mem_left {x y : M} {a b : R} (hF : F.IsFaceOf C) (hx : x ∈ C)
     (hy : y ∈ C) (ha : 0 < a) (hb : 0 < b) (h : a • x + b • y ∈ F) : x ∈ F :=
-  hF.2 hx (smul_mem _ hb.le hy) ha h
+  hF.mem_of_smul_add_mem hx (smul_mem _ hb.le hy) ha h
 
 theorem mem_of_smul_add_smul_mem_right {x y : M} {a b : R} (hF : F.IsFaceOf C) (hx : x ∈ C)
     (hy : y ∈ C) (ha : 0 < a) (hb : 0 < b) (h : a • x + b • y ∈ F) : y ∈ F := by
-  apply hF.2 hy (smul_mem _ ha.le hx) hb; rwa [add_comm]
+  apply hF.mem_of_smul_add_mem hy (smul_mem _ ha.le hx) hb; rwa [add_comm]
 
 /-- A pointed cone `C` is a face of itself. -/
 @[refl, simp]
@@ -73,11 +73,11 @@ protected theorem rfl {C : PointedCone R M} : C.IsFaceOf C := .refl _
 /-- A face of a cone is a face of another if and only if they are contained in each other. -/
 theorem isFaceOf_iff_le (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) :
     F₁.IsFaceOf F₂ ↔ F₁ ≤ F₂ :=
-  ⟨IsFaceOf.le, fun h ↦ ⟨h, fun hx hy ha hxy ↦ h₁.2 (h₂.le hx) (h₂.le hy) ha hxy⟩⟩
+  ⟨IsFaceOf.le, fun h ↦ ⟨h, fun hx hy ha hxy ↦ h₁.mem_of_smul_add_mem (h₂.le hx) (h₂.le hy) ha hxy⟩⟩
 
 /-- A face of a cone is an extreme subset of the cone. -/
 theorem isExtreme (h : F.IsFaceOf C) : IsExtreme R (C : Set M) F := by
-  refine ⟨h.1, ?_⟩
+  refine ⟨h.le, ?_⟩
   rintro _ xc _ yc _ zf ⟨_, _, a0, b0, -, rfl⟩
   exact h.mem_of_smul_add_smul_mem_left xc yc a0 b0 zf
 
@@ -143,7 +143,7 @@ theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι →
 /-- The face of a face of a cone is also a face of the cone. -/
 @[trans]
 protected theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F₂.IsFaceOf C := by
-  refine ⟨h₁.1.trans h₂.1, fun hx hy ha hxy ↦ h₁.2 (h₂.2 hx hy ha (h₁.le hxy)) ?_ ha hxy⟩
+  refine ⟨h₁.le.trans h₂.le, fun hx hy ha hxy ↦ h₁.mem_of_smul_add_mem (h₂.mem_of_smul_add_mem hx hy ha (h₁.le hxy)) ?_ ha hxy⟩
   exact h₂.mem_of_add_mem_right (smul_mem _ ha.le hx) hy (h₁.le hxy)
 
 section Map
@@ -186,10 +186,10 @@ theorem of_comap_surjective {f : N →ₗ[R] M} (hf : Function.Surjective f)
     (hc : (F.comap f).IsFaceOf (C.comap f)) : F.IsFaceOf C := by
   refine ⟨fun x xF ↦ ?_, fun {x y _} xC yC a0 h ↦ ?_⟩
   · rw [← (hf x).choose_spec] at xF ⊢
-    exact mem_comap.mp (hc.1 xF)
+    exact mem_comap.mp (hc.le xF)
   · rw [← (hf x).choose_spec] at h ⊢ xC
     rw [← (hf y).choose_spec] at h yC
-    exact hc.2 xC yC a0 (by simpa)
+    exact hc.mem_of_smul_add_mem xC yC a0 (by simpa)
 
 end Map
 

@@ -120,7 +120,7 @@ lemma TopologicalSpace.generatedBy_le : generatedBy X ≤ tY :=
 omit tY in
 lemma TopologicalSpace.generatedBy_mono {t₁ t₂ : TopologicalSpace Y} (h : t₁ ≤ t₂) :
     t₁.generatedBy X ≤ t₂.generatedBy X :=
-  iSup₂_le fun i f ↦ le_iSup₂_of_le i ⟨f, continuous_le_rng h @f.2⟩ le_rfl
+  iSup₂_le fun i f ↦ le_iSup₂_of_le i ⟨f, continuous_le_rng h @f.continuous_toFun⟩ le_rfl
 
 namespace Topology
 

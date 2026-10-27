@@ -129,7 +129,7 @@ instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
 instance continuousSemilinearMapClass :
     ContinuousSemilinearMapClass (M₁ →SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
   map_add f := map_add f.toLinearMap
-  map_continuous f := f.2
+  map_continuous f := f.cont
   map_smulₛₗ f := f.toLinearMap.map_smul'
 
 theorem coe_mk (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ →ₛₗ[σ₁₂] M₂) = f :=
@@ -141,11 +141,11 @@ theorem coe_mk' (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ → M�
 
 @[continuity, fun_prop]
 protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
-  f.2
+  f.cont
 
 @[continuity, fun_prop]
 protected theorem continuous_toLinearMap (f : M₁ →SL[σ₁₂] M₂) : Continuous f.toLinearMap :=
-  f.2
+  f.cont
 
 @[simp]
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
@@ -289,7 +289,7 @@ variable [DistribSMul S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConst
 variable [DistribSMul T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConstSMul T₂ M₂]
 
 instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
-  smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
+  smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.cont.const_smul _ : Continuous fun x => c • f x)⟩
 
 instance : IsSMulApply S₂ (M₁ →SL[σ₁₂] M₂) where
 
@@ -414,7 +414,7 @@ section Add
 variable [ContinuousAdd M₂]
 
 instance add : Add (M₁ →SL[σ₁₂] M₂) :=
-  ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
+  ⟨fun f g => ⟨f + g, f.cont.add g.cont⟩⟩
 
 instance instIsAddApply : IsAddApply (M₁ →SL[σ₁₂] M₂) where
 
@@ -454,7 +454,7 @@ variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- Composition of continuous linear maps. -/
 def comp (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : M₁ →SL[σ₁₃] M₃ :=
-  ⟨(g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂), g.2.comp f.2⟩
+  ⟨(g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂), g.cont.comp f.cont⟩
 
 @[inherit_doc comp]
 infixr:80 " ∘L " =>
@@ -618,8 +618,8 @@ theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
 /-- Construct a homeomorphism from an invertible continuous linear map. -/
 @[simps]
 def homeomorphOfUnit (T : (M₁ →L[R₁] M₁)ˣ) : M₁ ≃ₜ M₁ where
-  toFun := T.1
-  invFun := T⁻¹.1
+  toFun := T.val
+  invFun := T⁻¹.val
   left_inv x := by rw [← mul_apply_eq_comp, Units.inv_mul, one_apply_eq_self]
   right_inv x := by rw [← mul_apply_eq_comp, Units.mul_inv, one_apply_eq_self]
 
@@ -816,7 +816,7 @@ section
 variable [IsTopologicalAddGroup M₂]
 
 instance neg : Neg (M →SL[σ₁₂] M₂) :=
-  ⟨fun f => ⟨-f, f.2.neg⟩⟩
+  ⟨fun f => ⟨-f, f.cont.neg⟩⟩
 
 instance : IsNegApply (M →SL[σ₁₂] M₂) where
 
@@ -835,7 +835,7 @@ theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
     ↑(-f) = -(f : ContinuousAddMonoidHom M M₂) := rfl
 
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
-  ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
+  ⟨fun f g => ⟨f - g, f.cont.sub g.cont⟩⟩
 
 instance : IsSubApply (M →SL[σ₁₂] M₂) where
 

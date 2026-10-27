@@ -41,10 +41,10 @@ deriving Inhabited
 
 instance : Ord ApplyKey where
   compare a b :=
-    (compare a.1 b.1).then <|
-    (compare a.2 b.2).then <|
-    (compare a.3 b.3).then
-    (compare a.4 b.4)
+    (compare a.numGoals b.numGoals).then <|
+    (compare a.nameLength b.nameLength).then <|
+    (compare a.replacementSize b.replacementSize).then
+    (compare a.name b.name)
 
 /-- Whether the two suggestions are duplicates of each other. -/
 def ApplyKey.isDuplicate (a b : ApplyKey) : MetaM Bool :=

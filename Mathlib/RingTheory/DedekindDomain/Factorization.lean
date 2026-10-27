@@ -618,10 +618,10 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
       mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
-      exact p.2.ne_top
+      exact p.isPrime.ne_top
     · rw [Ideal.zero_eq_bot, bot_lt_iff_ne_bot, ← Ideal.zero_eq_bot,
         mul_ne_zero_iff, Finset.prod_ne_zero_iff]
-      exact ⟨hJ, fun x _ ↦ x.3⟩
+      exact ⟨hJ, fun x _ ↦ x.ne_bot⟩
   choose! a ha ha' using fun p hps ↦ IsConcreteLE.exists_of_lt (this p hps)
   obtain ⟨K, hK⟩ : J ∣ Ideal.span {∑ p ∈ s, a p} := by
     rw [Ideal.dvd_iff_le, Ideal.span_singleton_le_iff_mem]
@@ -812,7 +812,7 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
     ← Finset.prod_set_coe]
   · let _ : Fintype {v : HeightOneSpectrum R // v.asIdeal ∣ map (algebraMap S R) p} := hF
     refine Fintype.prod_equiv (equivPrimesOver _ hp) _ _ fun ⟨v, _⟩ ↦ ?_
-    have : v.asIdeal.LiesOver p := by rwa [Ideal.liesOver_iff_dvd_map v.2.ne_top]
+    have : v.asIdeal.LiesOver p := by rwa [Ideal.liesOver_iff_dvd_map v.isPrime.ne_top]
     simp [maxPowDividing_eq_pow_multiset_count _ h, ramificationIdx_eq_factors_count p v h]
   · intro v hv
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,

@@ -110,7 +110,7 @@ instance : (forget₂ TopCommRingCat.{u} TopCat.{u}).ReflectsIsomorphisms where
     let e_Ring : X ≃+* Y := { f.1, ((forget TopCat).mapIso i_Top).toEquiv with }
     -- Putting these together we obtain the isomorphism we're after:
     exact
-      ⟨⟨⟨e_Ring.symm, i_Top.inv.hom.2⟩,
+      ⟨⟨⟨e_Ring.symm, i_Top.inv.hom.continuous_toFun⟩,
           ⟨by
             ext x
             exact e_Ring.left_inv x, by

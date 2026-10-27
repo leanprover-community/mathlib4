@@ -54,7 +54,7 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
       convert IsLocalRing.maximalIdeal.isMaximal R
       rw [Ideal.minimalPrimes, Set.mem_ofPred] at hp
       have := prime.comap (Ideal.Quotient.mk I)
-      exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.1)
+      exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.ne_top')
   IsNoetherianRing.isArtinianRing_of_krullDimLE_zero
 
 set_option backward.isDefEq.respectTransparency.types false in

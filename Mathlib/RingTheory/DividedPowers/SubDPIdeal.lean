@@ -124,7 +124,7 @@ lemma dpow_eq_of_mem {n : ℕ} {a : A} (ha : a ∈ J) :
 theorem isDPMorphism (hJ : IsSubDPIdeal hI J) :
     (IsSubDPIdeal.dividedPowers hI hJ).IsDPMorphism hI (RingHom.id A) := by
   simpa only [isDPMorphism_iff, Ideal.map_id, RingHom.id_apply]
-    using ⟨hJ.1, fun _ _ _ ha ↦ by rw [dpow_eq_of_mem _ _ ha]⟩
+    using ⟨hJ.isSubideal, fun _ _ _ ha ↦ by rw [dpow_eq_of_mem _ _ ha]⟩
 
 end IsSubDPIdeal
 
@@ -175,18 +175,18 @@ theorem span_isSubDPIdeal_iff {S : Set A} (hS : S ⊆ I) :
 theorem isSubDPIdeal_sup {J K : Ideal A} (hJ : IsSubDPIdeal hI J) (hK : IsSubDPIdeal hI K) :
     IsSubDPIdeal hI (J ⊔ K) := by
   rw [← J.span_eq, ← K.span_eq, ← span_union,
-    span_isSubDPIdeal_iff (Set.union_subset_iff.mpr ⟨hJ.1, hK.1⟩)]
+    span_isSubDPIdeal_iff (Set.union_subset_iff.mpr ⟨hJ.isSubideal, hK.isSubideal⟩)]
   intro n hn a ha
   rcases ha with ha | ha
-  · exact span_mono Set.subset_union_left (subset_span (hJ.2 n hn ha))
-  · exact span_mono Set.subset_union_right (subset_span (hK.2 n hn ha))
+  · exact span_mono Set.subset_union_left (subset_span (hJ.dpow_mem n hn ha))
+  · exact span_mono Set.subset_union_right (subset_span (hK.dpow_mem n hn ha))
 
 theorem isSubDPIdeal_iSup {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDPIdeal hI (J i)) :
     IsSubDPIdeal hI (iSup J) := by
-  rw [iSup_eq_span, span_isSubDPIdeal_iff (Set.iUnion_subset_iff.mpr <| fun i ↦ (hJ i).1)]
+  rw [iSup_eq_span, span_isSubDPIdeal_iff (Set.iUnion_subset_iff.mpr <| fun i ↦ (hJ i).isSubideal)]
   simp_rw [Set.mem_iUnion]
   rintro n hn a ⟨i, ha⟩
-  exact span_mono (Set.subset_iUnion _ i) (subset_span ((hJ i).2 n hn ha))
+  exact span_mono (Set.subset_iUnion _ i) (subset_span ((hJ i).dpow_mem n hn ha))
 
 theorem isSubDPIdeal_iInf {ι : Type*} {J : ι → Ideal A} (hJ : ∀ i, IsSubDPIdeal hI (J i)) :
     IsSubDPIdeal hI (I ⊓ iInf (fun i ↦ J i)) := by
@@ -204,9 +204,9 @@ theorem isSubDPIdeal_map_of_isSubDPIdeal {f : A →+* B} (hf : IsDPMorphism hI h
     (hK : IsSubDPIdeal hI K) : IsSubDPIdeal hJ (map f K) := by
   rw [Ideal.map, span_isSubDPIdeal_iff]
   · rintro n hn y ⟨x, hx, rfl⟩
-    exact hf.2 x (hK.1 hx) ▸ mem_map_of_mem _ (hK.2 _ hn hx)
+    exact hf.dpow_comp x (hK.isSubideal hx) ▸ mem_map_of_mem _ (hK.dpow_mem _ hn hx)
   · rintro y ⟨x, hx, rfl⟩
-    exact hf.1 (mem_map_of_mem f (hK.1 hx))
+    exact hf.ideal_comp (mem_map_of_mem f (hK.isSubideal hx))
 
 /-- The image of a divided power morphism from `I` to `J` is a sub-dp-ideal of `J`. -/
 theorem isSubDPIdeal_map {f : A →+* B} (hf : IsDPMorphism hI hJ f) :
@@ -229,7 +229,7 @@ namespace SubDPIdeal
 variable {A : Type*} [CommSemiring A] {I : Ideal A} {hI : DividedPowers I}
 
 /-- Constructs a `SubPDIdeal` given an ideal `J` satisfying `hI.IsSubDPIdeal J`. -/
-def mk' {J : Ideal A} (hJ : hI.IsSubDPIdeal J) : hI.SubDPIdeal := ⟨J, hJ.1, hJ.2⟩
+def mk' {J : Ideal A} (hJ : hI.IsSubDPIdeal J) : hI.SubDPIdeal := ⟨J, hJ.isSubideal, hJ.dpow_mem⟩
 
 instance : SetLike (SubDPIdeal hI) A where
   coe s := s.carrier
@@ -465,7 +465,7 @@ def DPMorphism.ker (f : DPMorphism hI hJ) : SubDPIdeal hI where
   dpow_mem _ hn a := by
     simp only [mem_inf, and_imp, RingHom.mem_ker]
     intro ha ha'
-    rw [← f.isDPMorphism.2 a ha', ha]
+    rw [← f.isDPMorphism.dpow_comp a ha', ha]
     exact ⟨dpow_eval_zero hJ hn, hI.dpow_mem hn ha'⟩
 
 end Ker
@@ -514,7 +514,7 @@ theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B
     Ideal.map f I ≤ dpEqualizer hK hK' := by
   rw [Ideal.map, span_le]
   rintro b ⟨a, ha, rfl⟩
-  exact ⟨hI_le_K (mem_map_of_mem f ha), fun n ↦ by rw [hIK.2 a ha, hIK'.2 a ha]⟩
+  exact ⟨hI_le_K (mem_map_of_mem f ha), fun n ↦ by rw [hIK.dpow_comp a ha, hIK'.dpow_comp a ha]⟩
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If there is a divided power structure on `I⬝(A/J)` such that the quotient map is
@@ -625,7 +625,7 @@ theorem dividedPowers_unique (hquot : DividedPowers J)
     (hm : DividedPowers.IsDPMorphism hI hquot f) : hquot = dividedPowers hI hf hIJ hIf :=
   ext _ _ fun n x hx ↦ by
     obtain ⟨a, ha, rfl⟩ := (mem_map_iff_of_surjective f hf).mp (hIJ ▸ hx)
-    rw [hm.2 a ha, dpow_apply hI hf hIJ hIf ha]
+    rw [hm.dpow_comp a ha, dpow_apply hI hf hIJ hIf ha]
 
 end OfSurjective
 

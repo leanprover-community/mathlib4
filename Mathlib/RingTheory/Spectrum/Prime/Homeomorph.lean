@@ -43,7 +43,7 @@ lemma PrimeSpectrum.isHomeomorph_comap (f : R →+* S) (H : ∀ (x : S), ∃ n >
     intro q q' hqq'
     ext x
     obtain ⟨n, hn, y, hy⟩ := H x
-    rw [← q.2.pow_mem_iff_mem _ hn, ← q'.2.pow_mem_iff_mem _ hn, ← hy]
+    rw [← q.isPrime.pow_mem_iff_mem _ hn, ← q'.isPrime.pow_mem_iff_mem _ hn, ← hy]
     rw [PrimeSpectrum.ext_iff, SetLike.ext_iff] at hqq'
     apply hqq'
   have hint : f.kerLift.IsIntegral := fun x ↦

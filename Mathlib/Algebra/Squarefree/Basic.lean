@@ -311,7 +311,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
       · rw [← normalize_normalized_factor _ hmem]
         rw [emultiplicity_eq_count_normalizedFactors ha x0] at h
         assumption_mod_cast
-      · have := ha.1
+      · have := ha.not_isUnit
         contradiction
     · simp [Multiset.count_eq_zero_of_notMem hmem]
   · rw [or_iff_not_imp_right]

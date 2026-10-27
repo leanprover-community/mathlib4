@@ -64,7 +64,7 @@ abbrev MonoOver (X : C) := (Over.isMono X).FullSubcategory
 
 namespace MonoOver
 
-instance mono_obj_hom (S : MonoOver X) : Mono S.obj.hom := S.2
+instance mono_obj_hom (S : MonoOver X) : Mono S.obj.hom := S.property
 
 /-- Construct a `MonoOver X`. -/
 @[simps]
@@ -162,7 +162,7 @@ def liftComp {X Z : C} {Y : D} (F : Over X ⥤ Over Y) (G : Over Y ⥤ Over Z) (
   Functor.fullyFaithfulCancelRight (MonoOver.forget _) (Iso.refl _)
 
 /-- `MonoOver.lift` preserves the identity functor. -/
-def liftId : (lift (𝟭 (Over X)) fun f => f.2) ≅ 𝟭 _ :=
+def liftId : (lift (𝟭 (Over X)) fun f => f.property) ≅ 𝟭 _ :=
   Functor.fullyFaithfulCancelRight (MonoOver.forget _) (Iso.refl _)
 
 @[simp]

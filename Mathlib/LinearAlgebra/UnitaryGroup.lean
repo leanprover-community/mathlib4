@@ -224,7 +224,7 @@ def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
 def toGL (A : unitaryGroup n α) : GeneralLinearGroup α (n → α) :=
   GeneralLinearGroup.ofLinearEquiv (toLinearEquiv A)
 
-theorem coe_toGL (A : unitaryGroup n α) : (toGL A).1 = toLin' A := rfl
+theorem coe_toGL (A : unitaryGroup n α) : (toGL A).val = toLin' A := rfl
 
 @[simp]
 theorem toGL_one : toGL (1 : unitaryGroup n α) = 1 := Units.ext <| by

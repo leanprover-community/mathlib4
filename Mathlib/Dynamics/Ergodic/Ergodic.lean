@@ -176,7 +176,7 @@ theorem ae_mem_or_ae_notMem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
-  ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
+  ⟨hf.toQuasiMeasurePreserving.smul_measure _, hf.toPreErgodic.smul_measure _⟩
 
 theorem zero_measure {f : α → α} (hf : Measurable f) : @QuasiErgodic α m f 0 where
   measurable := hf
@@ -223,7 +223,7 @@ theorem symm {e : α ≃ᵐ α} (he : Ergodic e μ) : Ergodic e.symm μ :=
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : Ergodic f μ) (c : R) : Ergodic f (c • μ) :=
-  ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
+  ⟨hf.toMeasurePreserving.smul_measure _, hf.toPreErgodic.smul_measure _⟩
 
 theorem zero_measure {f : α → α} (hf : Measurable f) : @Ergodic α m f 0 where
   measurable := hf

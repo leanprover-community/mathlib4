@@ -49,14 +49,14 @@ set_option backward.defeqAttrib.useBackward true in
 variable {a} in
 /-- Given some lift `φ'` of `g ≫ f`, the canonical map from the domain of `φ'` to the domain of
 the Cartesian lift of `f`. -/
-abbrev homCartesianLift {a' : ∫ᶜ F} (g : a'.1 ⟶ R) (φ' : a' ⟶ ⟨S, a⟩)
+abbrev homCartesianLift {a' : ∫ᶜ F} (g : a'.base ⟶ R) (φ' : a' ⟶ ⟨S, a⟩)
     [IsHomLift (forget F) (g ≫ f) φ'] : a' ⟶ domainCartesianLift a f where
   base := g
   fiber :=
     have : φ'.base = g ≫ f := by simpa using IsHomLift.fac' (forget F) (g ≫ f) φ'
     φ'.fiber ≫ eqToHom (by simp [this]) ≫ (F.mapComp f.op.toLoc g.op.toLoc).hom.toNatTrans.app a
 
-instance isHomLift_homCartesianLift {a' : ∫ᶜ F} {φ' : a' ⟶ ⟨S, a⟩} {g : a'.1 ⟶ R}
+instance isHomLift_homCartesianLift {a' : ∫ᶜ F} {φ' : a' ⟶ ⟨S, a⟩} {g : a'.base ⟶ R}
     [IsHomLift (forget F) (g ≫ f) φ'] : IsHomLift (forget F) g (homCartesianLift f g φ') :=
   IsHomLift.map (forget F) (homCartesianLift f g φ')
 
@@ -68,7 +68,7 @@ lemma isStronglyCartesian_homCartesianLift :
     · exact Hom.ext _ _ (by simpa using IsHomLift.fac (forget F) (g ≫ f) φ')
         (by simp [← Cat.Hom₂.comp_app])
     rintro χ' ⟨hχ'.symm, rfl⟩
-    obtain ⟨rfl⟩ : g = χ'.1 := by simpa using IsHomLift.fac (forget F) g χ'
+    obtain ⟨rfl⟩ : g = χ'.base := by simpa using IsHomLift.fac (forget F) g χ'
     ext <;> simp [← Cat.Hom₂.comp_app]
 
 end
@@ -76,7 +76,7 @@ end
 /-- `forget F : ∫ᶜ F ⥤ 𝒮` is a fibered category. -/
 instance : IsFibered (forget F) :=
   IsFibered.of_exists_isStronglyCartesian (fun a _ f ↦
-    ⟨domainCartesianLift a.2 f, cartesianLift a.2 f, isStronglyCartesian_homCartesianLift a.2 f⟩)
+    ⟨domainCartesianLift a.fiber f, cartesianLift a.fiber f, isStronglyCartesian_homCartesianLift a.fiber f⟩)
 
 variable (F) (S : 𝒮)
 

@@ -211,7 +211,7 @@ namespace Weight
 
 @[macro_inline]
 instance instFunLike : FunLike (Weight R L M) L R where
-  coe χ := χ.1
+  coe χ := χ.toFun
   coe_injective χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
 
 @[simp] lemma coe_weight_mk (χ : L → R) (h) :
@@ -231,7 +231,7 @@ lemma exists_ne_zero (χ : Weight R L M) :
   simpa [LieSubmodule.eq_bot_iff] using χ.genWeightSpace_ne_bot
 
 instance [Subsingleton M] : IsEmpty (Weight R L M) :=
-  ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
+  ⟨fun h ↦ h.genWeightSpace_ne_bot' (Subsingleton.elim _ _)⟩
 
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
@@ -268,7 +268,7 @@ noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) :=
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
 def equivSetOfPred : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
-  toFun w := ⟨w.1, w.2⟩
+  toFun w := ⟨w.toFun, w.genWeightSpace_ne_bot'⟩
   invFun w := ⟨w.1, w.2⟩
   left_inv w := by simp
   right_inv w := by simp

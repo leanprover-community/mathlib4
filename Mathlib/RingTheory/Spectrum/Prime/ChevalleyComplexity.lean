@@ -185,11 +185,11 @@ private lemma induction_structure (n : ℕ)
     (P : ∀ (R : Type u) [CommRing R], (InductionObj R n) → Prop)
     (hP₁ : ∀ (R) [CommRing R], P R ⟨0⟩)
     (hP₂ : ∀ (R) [CommRing R] (e : InductionObj R n) (i : Fin n),
-      (e.1 i).Monic → (∀ j ≠ i, e.1 j = 0) → P R e)
+      (e.val i).Monic → (∀ j ≠ i, e.val j = 0) → P R e)
     (hP₃ : ∀ (R) [CommRing R] (e : InductionObj R n) (i j : Fin n),
-      (e.1 i).Monic → (e.1 i).degree ≤ (e.1 j).degree → i ≠ j →
-      P R ⟨update e.1 j (e.1 j %ₘ e.1 i)⟩ → P R e)
-    (hP₄ : ∀ (R) [CommRing R] (c : R) (i : Fin n) (e : InductionObj R n), c = (e.1 i).leadingCoeff →
+      (e.val i).Monic → (e.val i).degree ≤ (e.val j).degree → i ≠ j →
+      P R ⟨update e.val j (e.val j %ₘ e.val i)⟩ → P R e)
+    (hP₄ : ∀ (R) [CommRing R] (c : R) (i : Fin n) (e : InductionObj R n), c = (e.val i).leadingCoeff →
       c ≠ 0 →
       P (Away c) ⟨Polynomial.C (IsLocalization.Away.invSelf (S := Away c) c) •
         mapRingHom (algebraMap _ _) ∘ e⟩ →
@@ -206,10 +206,10 @@ private lemma induction_structure (n : ℕ)
     · convert hP₁ R; ext; exact Subsingleton.elim _ _
     simp only [InductionObj.ext_iff, funext_iff, Pi.zero_apply, not_forall] at he0
     -- Case I : The `e i ≠ 0` with minimal degree has invertible leading coefficient
-    by_cases H : (∃ i, (e.1 i).Monic ∧ ∀ j, e.1 j ≠ 0 → (e.1 i).degree ≤ (e.1 j).degree)
+    by_cases H : (∃ i, (e.val i).Monic ∧ ∀ j, e.val j ≠ 0 → (e.val i).degree ≤ (e.val j).degree)
     · obtain ⟨i, hi, i_min⟩ := H
       -- Case I.ii : `e j = 0` for all `j ≠ i`.
-      by_cases! H' : ∀ j ≠ i, e.1 j = 0
+      by_cases! H' : ∀ j ≠ i, e.val j = 0
       -- then `I = Ideal.span {e i}`
       · exact hP₂ R e i hi H'
       -- Case I.i : There is another `e j ≠ 0`
@@ -231,11 +231,11 @@ private lemma induction_structure (n : ℕ)
           simp only [update_self]
           refine ((degree_modByMonic_lt _ hi).trans_le i_min).ne
     -- Case II : The `e i ≠ 0` with minimal degree has non-invertible leading coefficient
-    obtain ⟨i, hi, i_min⟩ : ∃ i, e.1 i ≠ 0 ∧ ∀ j, e.1 j ≠ 0 → (e.1 i).degree ≤ (e.1 j).degree := by
-      have : ∃ n : ℕ, ∃ i, (e.1 i).degree = n ∧ (e.1 i) ≠ 0 := by
-        obtain ⟨i, hi⟩ := he0; exact ⟨(e.1 i).natDegree, i, degree_eq_natDegree hi, hi⟩
+    obtain ⟨i, hi, i_min⟩ : ∃ i, e.val i ≠ 0 ∧ ∀ j, e.val j ≠ 0 → (e.val i).degree ≤ (e.val j).degree := by
+      have : ∃ n : ℕ, ∃ i, (e.val i).degree = n ∧ (e.val i) ≠ 0 := by
+        obtain ⟨i, hi⟩ := he0; exact ⟨(e.val i).natDegree, i, degree_eq_natDegree hi, hi⟩
       let m := Nat.find this
-      obtain ⟨i, hi, hi'⟩ : ∃ i, (e.1 i).degree = m ∧ (e.1 i) ≠ 0 := Nat.find_spec this
+      obtain ⟨i, hi, hi'⟩ : ∃ i, (e.val i).degree = m ∧ (e.val i) ≠ 0 := Nat.find_spec this
       refine ⟨i, hi', fun j hj ↦ ?_⟩
       refine hi.le.trans ?_
       rw [degree_eq_natDegree hj, Nat.cast_le]
@@ -276,7 +276,7 @@ open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
 `induction_structure`. -/
 private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
-    (c : R) (i : Fin n) (e : InductionObj R n) (hi : c = (e.1 i).leadingCoeff) (hc : c ≠ 0) :
+    (c : R) (i : Fin n) (e : InductionObj R n) (hi : c = (e.val i).leadingCoeff) (hc : c ≠ 0) :
     Statement R₀ (Away c) n
       ⟨Polynomial.C (IsLocalization.Away.invSelf (S := Away c) c) •
         mapRingHom (algebraMap _ _) ∘ e⟩ →
@@ -377,7 +377,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           swap; · exact localization_comap_injective _ (.powers c)
           simp only [AlgHom.toLinearMap_apply] at hq₁g₁
           simp only [← Set.range_comp, comp_def, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-            hq₁g₁ _ hxT₁, Set.image_singleton, map_mul, ← hf₁, mul_comm x.1, ← mul_assoc,
+            hq₁g₁ _ hxT₁, Set.image_singleton, map_mul, ← hf₁, mul_comm x.f, ← mul_assoc,
             ← pow_succ']
           simp only [← smul_eq_mul, ← Set.smul_set_range, ← Set.smul_set_singleton,
             zeroLocus_smul_of_isUnit ((isUnit_of_invertible (q₁ c)).pow _)]
@@ -450,13 +450,13 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
         · ext; simp [eq_comm]
     · simp
   · intro R _ g i hi hi_min _ R₀ _ f
-    let M := R[X] ⧸ Ideal.span {g.1 i}
+    let M := R[X] ⧸ Ideal.span {g.val i}
     have : Module.Free R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
     have : Module.Finite R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
     refine ⟨(Finset.range (Module.finrank R M)).image
       fun j ↦ ⟨(Algebra.lmul R M (Ideal.Quotient.mk _ f)).charpoly.coeff j, 0, 0⟩, ?_, ?_⟩
     · ext x
-      have : zeroLocus (Set.range g.val) = zeroLocus {g.1 i} := by
+      have : zeroLocus (Set.range g.val) = zeroLocus {g.val i} := by
         rw [Set.range_eq_iUnion, zeroLocus_iUnion]
         refine (Set.iInter_subset _ _).antisymm (Set.subset_iInter fun j ↦ ?_)
         by_cases hij : i = j
@@ -868,7 +868,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
     simp [hg'', ← Set.inter_sdiff_distrib_right, Set.sdiff_inter_right_comm, s₀]
   obtain ⟨T, hT, hT'⟩ :=
     chevalley_mvPolynomialC
-    (M := (degreesLE R (Fin n) Finset.univ.1).restrictScalars ℤ) (by simp) (k + n) d S'
+    (M := (degreesLE R (Fin n) Finset.univ.val).restrictScalars ℤ) (by simp) (k + n) d S'
     (Finset.forall_mem_image.mpr fun x hx ↦ (by simpa using hSn _ hx))
     (Finset.forall_mem_image.mpr fun x hx ↦ by
       intro j

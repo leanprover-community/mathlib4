@@ -124,7 +124,7 @@ theorem constantCoeff_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   rintro i _
   rw [ite_eq_right]
   rw [Finsupp.single_eq_zero]
-  exact ne_of_gt (pow_pos hp.1.pos _)
+  exact ne_of_gt (pow_pos hp.out.pos _)
 
 @[simp]
 theorem wittPolynomial_zero : wittPolynomial p R 0 = X 0 := by
@@ -160,8 +160,8 @@ variable [hp : NeZero p]
 theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars = range (n + 1) := by
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
-    refine vars_monomial_single i (pow_ne_zero _ hp.1) ?_
-    exact_mod_cast pow_ne_zero i hp.1
+    refine vars_monomial_single i (pow_ne_zero _ hp.out) ?_
+    exact_mod_cast pow_ne_zero i hp.out
   rw [wittPolynomial, vars_sum_of_disjoint]
   · simp only [this, biUnion_singleton_eq_self]
   · simp only [this]
@@ -208,7 +208,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
   rw [mem_range] at H
   simp only [map_mul, map_pow, map_natCast, IH m H]
   rw [zero_pow, mul_zero]
-  exact pow_ne_zero _ hp.1.ne_zero
+  exact pow_ne_zero _ hp.out.ne_zero
 
 @[simp]
 theorem xInTermsOfW_zero [Invertible (p : R)] : xInTermsOfW p R 0 = X 0 := by
@@ -237,7 +237,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     rw [vars_C_mul] at H
     swap
     · apply pow_ne_zero
-      exact mod_cast hp.1.ne_zero
+      exact mod_cast hp.out.ne_zero
     rw [mem_range] at hj
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H

@@ -150,7 +150,7 @@ instance {S : Scheme.{u}} (𝒰 : Scheme.Cover (propQCPrecoverage P) S) :
 /-- Construct a cover in the `P`-qc topology from a quasi-compact cover in the `P`-topology. -/
 @[simps toPreZeroHypercover]
 def Cover.ofQuasiCompactCover {S : Scheme.{u}} (𝒰 : Scheme.Cover (precoverage P) S)
-    [qc : QuasiCompactCover 𝒰.1] :
+    [qc : QuasiCompactCover 𝒰.toPreZeroHypercover] :
     Scheme.Cover (propQCPrecoverage P) S where
   __ := 𝒰.toPreZeroHypercover
   mem₀ := ⟨Scheme.presieve₀_mem_qcPrecoverage_iff.mpr ‹_›, 𝒰.mem₀⟩
@@ -158,15 +158,15 @@ def Cover.ofQuasiCompactCover {S : Scheme.{u}} (𝒰 : Scheme.Cover (precoverage
 /-- Lift a quasi-compact `P`-cover of a `u`-scheme in an arbitrary universe to universe `u`.
 This is again quasi-compact. -/
 noncomputable def Cover.qculift {S : Scheme.{u}} (𝒰 : Cover.{w} (precoverage P) S)
-    [QuasiCompactCover 𝒰.1] : Scheme.Cover.{u} (precoverage P) S where
-  __ := 𝒰.ulift.toPreZeroHypercover.sum (QuasiCompactCover.ulift 𝒰.1)
+    [QuasiCompactCover 𝒰.toPreZeroHypercover] : Scheme.Cover.{u} (precoverage P) S where
+  __ := 𝒰.ulift.toPreZeroHypercover.sum (QuasiCompactCover.ulift 𝒰.toPreZeroHypercover)
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ⟨.inl x, 𝒰.covers _⟩, fun i ↦ ?_⟩
     induction i <;> exact 𝒰.map_prop _
 
-instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage P)) [QuasiCompactCover 𝒰.1] :
-    QuasiCompactCover (Scheme.Cover.qculift 𝒰).1 :=
+instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage P)) [QuasiCompactCover 𝒰.toPreZeroHypercover] :
+    QuasiCompactCover (Scheme.Cover.qculift 𝒰).toPreZeroHypercover :=
   .of_hom (PreZeroHypercover.sumInr _ _)
 
 instance : Precoverage.Small.{u} (propQCPrecoverage P) where
@@ -174,7 +174,7 @@ instance : Precoverage.Small.{u} (propQCPrecoverage P) where
     refine ⟨𝒰.forgetQc.qculift.I₀, Sum.elim 𝒰.forgetQc.idx (QuasiCompactCover.uliftHom _).s₀,
       ⟨?_, ?_⟩⟩
     · rw [Scheme.presieve₀_mem_qcPrecoverage_iff]
-      exact .of_hom (𝒱 := QuasiCompactCover.ulift 𝒰.1) ⟨Sum.inr, fun i ↦ 𝟙 _, by cat_disch⟩
+      exact .of_hom (𝒱 := QuasiCompactCover.ulift 𝒰.toPreZeroHypercover) ⟨Sum.inr, fun i ↦ 𝟙 _, by cat_disch⟩
     · rw [Scheme.presieve₀_mem_precoverage_iff]
       exact ⟨fun x ↦ ⟨Sum.inl x, 𝒰.forgetQc.covers _⟩, fun i ↦ 𝒰.forgetQc.map_prop _⟩
 
@@ -183,7 +183,7 @@ lemma mem_propQCPrecoverage_iff_exists_quasiCompactCover {S : Scheme.{u}} {R : P
       QuasiCompactCover 𝒰.toPreZeroHypercover ∧ R = 𝒰.presieve₀ := by
   rw [Precoverage.mem_iff_exists_zeroHypercover]
   refine ⟨fun ⟨𝒰, h⟩ ↦ ⟨𝒰.weaken propQCPrecoverage_le_precoverage, ?_, h⟩,
-    fun ⟨𝒰, _, h⟩ ↦ ⟨⟨𝒰.1, ⟨by simpa, 𝒰.mem₀⟩⟩, h⟩⟩
+    fun ⟨𝒰, _, h⟩ ↦ ⟨⟨𝒰.toPreZeroHypercover, ⟨by simpa, 𝒰.mem₀⟩⟩, h⟩⟩
   rw [← Scheme.presieve₀_mem_qcPrecoverage_iff]
   exact 𝒰.mem₀.1
 
@@ -211,7 +211,7 @@ lemma Hom.generate_singleton_mem_propQCTopology {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 @[simp, grind .]
 lemma Cover.mem_propQCTopology {S : Scheme.{u}} (𝒰 : Cover.{u} (precoverage P) S)
-    [QuasiCompactCover 𝒰.1] :
+    [QuasiCompactCover 𝒰.toPreZeroHypercover] :
     .ofArrows 𝒰.X 𝒰.f ∈ propQCTopology P S := by
   refine Precoverage.generate_mem_toGrothendieck ⟨?_, 𝒰.mem₀⟩
   rwa [presieve₀_mem_qcPrecoverage_iff]

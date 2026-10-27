@@ -134,7 +134,7 @@ theorem mem_prehaar_empty {K₀ : Set G} {f : Compacts G → ℝ} :
   on compact sets is defined to be an element in the closure of this intersection. -/
 @[to_additive /-- additive version of `MeasureTheory.Measure.haar.clPrehaar` -/]
 def clPrehaar (K₀ : Set G) (V : OpenNhdsOf (1 : G)) : Set (Compacts G → ℝ) :=
-  closure <| prehaar K₀ '' { U : Set G | U ⊆ V.1 ∧ IsOpen U ∧ (1 : G) ∈ U }
+  closure <| prehaar K₀ '' { U : Set G | U ⊆ V.toOpens ∧ IsOpen U ∧ (1 : G) ∈ U }
 
 variable [IsTopologicalGroup G]
 
@@ -193,10 +193,10 @@ theorem index_mono {K K' V : Set G} (hK' : IsCompact K') (h : K ⊆ K') (hV : (i
 
 @[to_additive addIndex_union_le]
 theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty) :
-    index (K₁.1 ∪ K₂.1) V ≤ index K₁.1 V + index K₂.1 V := by
+    index (K₁.carrier ∪ K₂.carrier) V ≤ index K₁.carrier V + index K₂.carrier V := by
   classical
-  rcases index_elim K₁.2 hV with ⟨s, h1s, h2s⟩
-  rcases index_elim K₂.2 hV with ⟨t, h1t, h2t⟩
+  rcases index_elim K₁.isCompact' hV with ⟨s, h1s, h2s⟩
+  rcases index_elim K₂.isCompact' hV with ⟨t, h1t, h2t⟩
   rw [← h2s, ← h2t]
   refine le_trans (Nat.sInf_le ⟨_, ?_, rfl⟩) (Finset.card_union_le _ _)
   rw [mem_ofPred_eq, Finset.set_biUnion_union]
@@ -204,11 +204,11 @@ theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
 
 @[to_additive addIndex_union_eq]
 theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty)
-    (h : Disjoint (K₁.1 * V⁻¹) (K₂.1 * V⁻¹)) :
-    index (K₁.1 ∪ K₂.1) V = index K₁.1 V + index K₂.1 V := by
+    (h : Disjoint (K₁.carrier * V⁻¹) (K₂.carrier * V⁻¹)) :
+    index (K₁.carrier ∪ K₂.carrier) V = index K₁.carrier V + index K₂.carrier V := by
   classical
   apply le_antisymm (index_union_le K₁ K₂ hV)
-  rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
+  rcases index_elim (K₁.isCompact'.union K₂.isCompact') hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   have (K : Set G) (hK : K ⊆ ⋃ g ∈ s, (g * ·) ⁻¹' V) :
       index K V ≤ #{g ∈ s | ((g * ·) ⁻¹' V ∩ K).Nonempty} := by
     apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_ofPred_eq]
@@ -220,8 +220,8 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
     exact h2g₀
   refine
     le_trans
-      (add_le_add (this K₁.1 <| Subset.trans subset_union_left h1s)
-        (this K₂.1 <| Subset.trans subset_union_right h1s)) ?_
+      (add_le_add (this K₁.carrier <| Subset.trans subset_union_left h1s)
+        (this K₂.carrier <| Subset.trans subset_union_right h1s)) ?_
   rw [← Finset.card_union_of_disjoint, Finset.filter_union_right]
   · exact s.card_filter_le _
   apply Finset.disjoint_filter.mpr
@@ -278,10 +278,10 @@ theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).N
 
 @[to_additive]
 theorem prehaar_mono {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty)
-    {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂.1) :
+    {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂.carrier) :
     prehaar (K₀ : Set G) U K₁ ≤ prehaar (K₀ : Set G) U K₂ := by
   simp only [prehaar]; rw [div_le_div_iff_of_pos_right]
-  · exact mod_cast index_mono K₂.2 h hU
+  · exact mod_cast index_mono K₂.isCompact' h hU
   · exact mod_cast index_pos K₀ hU
 
 @[to_additive]
@@ -299,7 +299,7 @@ theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Comp
 
 @[to_additive]
 theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Compacts G}
-    (hU : (interior U).Nonempty) (h : Disjoint (K₁.1 * U⁻¹) (K₂.1 * U⁻¹)) :
+    (hU : (interior U).Nonempty) (h : Disjoint (K₁.carrier * U⁻¹) (K₂.carrier * U⁻¹)) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) = prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
   simp only [prehaar]; rw [← add_div]
   congr
@@ -412,14 +412,14 @@ theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
 
 @[to_additive addCHaar_sup_eq]
 theorem chaar_sup_eq {K₀ : PositiveCompacts G}
-    {K₁ K₂ : Compacts G} (h : Disjoint K₁.1 K₂.1) (h₂ : IsClosed K₂.1) :
+    {K₁ K₂ : Compacts G} (h : Disjoint K₁.carrier K₂.carrier) (h₂ : IsClosed K₂.carrier) :
     chaar K₀ (K₁ ⊔ K₂) = chaar K₀ K₁ + chaar K₀ K₂ := by
-  rcases SeparatedNhds.of_isCompact_isCompact_isClosed K₁.2 K₂.2 h₂ h
+  rcases SeparatedNhds.of_isCompact_isCompact_isClosed K₁.isCompact' K₂.isCompact' h₂ h
     with ⟨U₁, U₂, h1U₁, h1U₂, h2U₁, h2U₂, hU⟩
-  rcases compact_open_separated_mul_right K₁.2 h1U₁ h2U₁ with ⟨L₁, h1L₁, h2L₁⟩
+  rcases compact_open_separated_mul_right K₁.isCompact' h1U₁ h2U₁ with ⟨L₁, h1L₁, h2L₁⟩
   rcases mem_nhds_iff.mp h1L₁ with ⟨V₁, h1V₁, h2V₁, h3V₁⟩
   replace h2L₁ := Subset.trans (mul_subset_mul_left h1V₁) h2L₁
-  rcases compact_open_separated_mul_right K₂.2 h1U₂ h2U₂ with ⟨L₂, h1L₂, h2L₂⟩
+  rcases compact_open_separated_mul_right K₂.isCompact' h1U₂ h2U₂ with ⟨L₂, h1L₂, h2L₂⟩
   rcases mem_nhds_iff.mp h1L₂ with ⟨V₂, h1V₂, h2V₂, h3V₂⟩
   replace h2L₂ := Subset.trans (mul_subset_mul_left h1V₂) h2L₂
   let eval : (Compacts G → ℝ) → ℝ := fun f => f K₁ + f K₂ - f (K₁ ⊔ K₂)
@@ -683,7 +683,7 @@ theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SigmaFi
   ⟨fun h => h.symm ▸ haarMeasure_self, fun h => by rw [haarMeasure_unique μ K₀, h, one_smul]⟩
 
 example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : PositiveCompacts G) :
-    μ = μ K₀.1 • haarMeasure K₀ :=
+    μ = μ K₀.toCompacts • haarMeasure K₀ :=
   haarMeasure_unique μ K₀
 
 /-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite

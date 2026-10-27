@@ -248,7 +248,7 @@ lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
   let p := (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal
   let q := (hV.primeIdealOf ⟨x, hx⟩).asIdeal
   have : q.LiesOver p :=
-    ⟨congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).1).symm⟩
+    ⟨congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).asIdeal).symm⟩
   let := Localization.AtPrime.algebraOfLiesOver p q
   trans Algebra.FormallySmooth (Localization.AtPrime p) (Localization.AtPrime q)
   · rw [← formallySmooth_algebraMap]
@@ -266,7 +266,7 @@ lemma exists_smooth_of_formallySmooth_stalk
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
-    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.2.preimage f.continuous)
+    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.is_open'.preimage f.continuous)
   have := f.finitePresentation_appLE hU hV hVU
   algebraize [(f.appLE U V hVU).hom]
   have : Algebra.IsSmoothAt _ _ := (formallySmooth_stalkMap_iff U hU V hV hVU hxV).mp H
@@ -294,7 +294,7 @@ lemma Scheme.Hom.isOpen_smoothLocus [LocallyOfFinitePresentation f] :
   obtain ⟨U, hU, V, hV, hVU, hxV, H⟩ := exists_smooth_of_formallySmooth_stalk f x hx
   algebraize [(f.appLE U V hVU).hom]
   exact ⟨V, fun y hy ↦ (formallySmooth_stalkMap_iff U hU V hV hVU hy).mpr
-    (inferInstanceAs (Algebra.IsSmoothAt _ _)), V.2, hxV⟩
+    (inferInstanceAs (Algebra.IsSmoothAt _ _)), V.is_open', hxV⟩
 
 /-- The set of points smooth over a base, as a `Scheme.Opens`. -/
 def Scheme.Hom.smoothLocus (f : X ⟶ Y) [LocallyOfFinitePresentation f] : X.Opens :=
@@ -310,7 +310,7 @@ lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
-    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.2.preimage f.continuous)
+    X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.is_open'.preimage f.continuous)
   have := f.smooth_appLE hU hV hVU
   algebraize [(f.appLE U V hVU).hom]
   rw [Scheme.Hom.mem_smoothLocus, formallySmooth_stalkMap_iff U hU V hV hVU hxV]

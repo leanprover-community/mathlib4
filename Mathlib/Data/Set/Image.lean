@@ -1349,7 +1349,7 @@ lemma Codisjoint.preimage (f : α → β) {s t : Set β} (h : Codisjoint s t) :
 
 lemma IsCompl.preimage (f : α → β) {s t : Set β} (h : IsCompl s t) :
     IsCompl (f ⁻¹' s) (f ⁻¹' t) :=
-  ⟨h.1.preimage f, h.2.preimage f⟩
+  ⟨h.disjoint.preimage f, h.codisjoint.preimage f⟩
 
 namespace Set
 

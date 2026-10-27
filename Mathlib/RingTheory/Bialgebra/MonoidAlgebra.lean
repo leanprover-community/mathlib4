@@ -157,7 +157,7 @@ lemma isGroupLikeElem_of (m : M) : IsGroupLikeElem R (of A M m) := isGroupLikeEl
 /-- The `R`-bialgebra map from the group algebra on the group-like elements of `A` to `A`. -/
 @[expose, simps!]
 def liftGroupLikeBialgHom : R[GroupLike R A] →ₐc[R] A :=
-  .ofAlgHom (lift R A (GroupLike R A) { toFun g := g.1, map_one' := by simp, map_mul' := by simp })
+  .ofAlgHom (lift R A (GroupLike R A) { toFun g := g.val, map_one' := by simp, map_mul' := by simp })
     (by ext; simp) (by ext; simp)
 
 variable (R A M) in

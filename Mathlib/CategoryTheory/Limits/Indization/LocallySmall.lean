@@ -77,8 +77,8 @@ end
 
 instance : LocallySmall.{v} (ObjectProperty.FullSubcategory (IsIndObject (C := C))) where
   hom_small X Y := by
-    obtain ⟨⟨P⟩⟩ := X.2
-    obtain ⟨⟨Q⟩⟩ := Y.2
+    obtain ⟨⟨P⟩⟩ := X.property
+    obtain ⟨⟨Q⟩⟩ := Y.property
     let e₁ := IsColimit.coconePointUniqueUpToIso (P.isColimit) (colimit.isColimit _)
     let e₂ := IsColimit.coconePointUniqueUpToIso (Q.isColimit) (colimit.isColimit _)
     let e₃ := Iso.homCongr e₁ e₂

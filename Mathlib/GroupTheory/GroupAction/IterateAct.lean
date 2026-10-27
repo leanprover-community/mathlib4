@@ -42,7 +42,7 @@ instance instCountable : Countable (IterateMulAct f) :=
 @[to_additive]
 instance instCommMonoid : CommMonoid (IterateMulAct f) where
   one := ⟨0⟩
-  mul m n := ⟨m.1 + n.1⟩
+  mul m n := ⟨m.val + n.val⟩
   mul_assoc a b c := by ext; apply Nat.add_assoc
   one_mul _ := by ext; apply Nat.zero_add
   mul_one _ := rfl

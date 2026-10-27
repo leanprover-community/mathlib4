@@ -149,7 +149,7 @@ def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPri
 order-preserving bijection with the interval $(-∞, I]$ in the prime spectrum of R. -/
 @[simps!] def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime S I).trans
-    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.asIdeal, p.1.isPrime, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx =>
@@ -484,7 +484,7 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
   have := hp.1.1
   have : Unique (Set.Iic (⟨p, hp.1.1⟩ : PrimeSpectrum R)) := ⟨⟨⟨p, hp.1.1⟩, by exact
     fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
-    (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
+    (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.isPrime i.2⟩
   (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
 
 open Ideal in

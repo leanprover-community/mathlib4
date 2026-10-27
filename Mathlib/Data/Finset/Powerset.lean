@@ -29,7 +29,7 @@ section Powerset
 
 /-- When `s` is a finset, `s.powerset` is the finset of all subsets of `s` (seen as finsets). -/
 def powerset (s : Finset α) : Finset (Finset α) :=
-  ⟨(s.1.powerset.pmap Finset.mk) fun _t h => nodup_of_le (mem_powerset.1 h) s.nodup,
+  ⟨(s.val.powerset.pmap Finset.mk) fun _t h => nodup_of_le (mem_powerset.1 h) s.nodup,
     s.nodup.powerset.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
 @[simp, grind =]
@@ -100,7 +100,7 @@ theorem powerset_image {β : Type*} [DecidableEq β] {f : α → β} :
 /-- **Number of Subsets of a Set** -/
 @[simp]
 theorem card_powerset (s : Finset α) : card (powerset s) = 2 ^ card s :=
-  (card_pmap _ _ _).trans (Multiset.card_powerset s.1)
+  (card_pmap _ _ _).trans (Multiset.card_powerset s.val)
 
 theorem notMem_of_mem_powerset_of_notMem {s t : Finset α} {a : α} (ht : t ∈ s.powerset)
     (h : a ∉ s) : a ∉ t := by
@@ -195,8 +195,8 @@ variable {n} {s t : Finset α}
 /-- Given an integer `n` and a finset `s`, then `powersetCard n s` is the finset of subsets of `s`
 of cardinality `n`. -/
 def powersetCard (n : ℕ) (s : Finset α) : Finset (Finset α) :=
-  ⟨((s.1.powersetCard n).pmap Finset.mk) fun _t h => nodup_of_le (mem_powersetCard.1 h).1 s.2,
-    s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
+  ⟨((s.val.powersetCard n).pmap Finset.mk) fun _t h => nodup_of_le (mem_powersetCard.1 h).1 s.nodup,
+    s.nodup.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
 @[simp, grind =] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
   cases s; simp [powersetCard, val_le_iff.symm]
@@ -210,7 +210,7 @@ theorem powersetCard_mono {n} {s t : Finset α} (h : s ⊆ t) : powersetCard n s
 @[simp]
 theorem card_powersetCard (n : ℕ) (s : Finset α) :
     card (powersetCard n s) = Nat.choose (card s) n :=
-  (card_pmap _ _ _).trans (Multiset.card_powersetCard n s.1)
+  (card_pmap _ _ _).trans (Multiset.card_powersetCard n s.val)
 
 /-- The `n`-element subsets of `t` containing `s` are exactly the `(n - s.card)`-element
 subsets of `t \ s`, unioned with `s`. -/
@@ -252,7 +252,7 @@ lemma powersetCard_empty_subsingleton (n : ℕ) :
 
 @[simp]
 theorem map_val_val_powersetCard (s : Finset α) (i : ℕ) :
-    (s.powersetCard i).val.map Finset.val = s.1.powersetCard i := by
+    (s.powersetCard i).val.map Finset.val = s.val.powersetCard i := by
   simp [Finset.powersetCard, map_pmap, pmap_eq_map, map_id']
 
 theorem powersetCard_one (s : Finset α) :

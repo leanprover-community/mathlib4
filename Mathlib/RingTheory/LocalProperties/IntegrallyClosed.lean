@@ -56,11 +56,11 @@ theorem IsIntegrallyClosed.of_localization_submonoid [IsDomain R] {ι : Type*} (
   $\bigcap_{\mathfrak{p} \in S} R_{\mathfrak{p}} = R$ and for every $\mathfrak{p} \in S$,
   $R_{\mathfrak{p}}$ is integrally closed. -/
 theorem IsIntegrallyClosed.of_localization [IsDomain R] (S : Set (PrimeSpectrum R))
-    (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
-    (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl
-      p.1.primeCompl_le_nonZeroDivisors) = ⊥) : IsIntegrallyClosed R := by
-  apply IsIntegrallyClosed.of_localization_submonoid (fun p : S ↦ p.1.1.primeCompl)
-    (fun p ↦ p.1.1.primeCompl_le_nonZeroDivisors) (fun p ↦ h p.1 p.2)
+    (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.asIdeal))
+    (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.asIdeal.primeCompl
+      p.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥) : IsIntegrallyClosed R := by
+  apply IsIntegrallyClosed.of_localization_submonoid (fun p : S ↦ p.1.asIdeal.primeCompl)
+    (fun p ↦ p.1.asIdeal.primeCompl_le_nonZeroDivisors) (fun p ↦ h p.1 p.2)
   ext x
   simp only [← hs, Algebra.mem_iInf, Subtype.forall]
 

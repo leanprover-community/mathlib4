@@ -490,7 +490,7 @@ theorem measurableSpace_const (f : Filtration ι m) (i : ι) :
       simp only [hij, Set.ofPred_true, Set.inter_univ]
       exact f.mono hij _ h
     · norm_cast
-      simp only [hij, Set.ofPred_false, Set.inter_empty, @MeasurableSet.empty _ (f.1 j)]
+      simp only [hij, Set.ofPred_false, Set.inter_empty, @MeasurableSet.empty _ (f.seq j)]
 
 theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i : ι) :
     MeasurableSet[hτ.measurableSpace] (s ∩ {ω | τ ω = i}) ↔

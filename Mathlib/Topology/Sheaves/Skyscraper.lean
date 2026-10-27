@@ -143,11 +143,11 @@ def skyscraperPresheafCoconeOfSpecializes {y : X} (h : p₀ ⤳ y) :
     Cocone ((OpenNhds.inclusion y).op ⋙ skyscraperPresheaf p₀ A) where
   pt := A
   ι :=
-    { app := fun U => eqToHom <| ite_eq_left <| h.mem_open U.unop.1.2 U.unop.2
+    { app := fun U => eqToHom <| ite_eq_left <| h.mem_open U.unop.1.is_open' U.unop.2
       naturality := fun U V inc => by
         change dite _ _ _ ≫ _ = _; rw [dite_eq_left]
         swap
-        · exact h.mem_open V.unop.1.2 V.unop.2
+        · exact h.mem_open V.unop.1.is_open' V.unop.2
         · simp only [Functor.comp_obj, Functor.op_obj, skyscraperPresheaf_obj, unop_op,
             Functor.const_obj_obj, eqToHom_trans, Functor.const_obj_map, Category.comp_id] }
 
@@ -167,7 +167,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
     rw [dite_eq_left]
     · simp only [eqToHom_trans_assoc,
         eqToHom_refl, Category.id_comp, op_unop]
-    · exact h.mem_open U.unop.1.2 U.unop.2
+    · exact h.mem_open U.unop.1.is_open' U.unop.2
   uniq c f h := by
     dsimp
     rw [← h, skyscraperPresheafCoconeOfSpecializes_ι_app, eqToHom_trans_assoc, eqToHom_refl,
@@ -183,7 +183,7 @@ noncomputable def skyscraperPresheafStalkOfSpecializes [HasColimits C] {y : X} (
 lemma germ_skyscraperPresheafStalkOfSpecializes_hom [HasColimits C] {y : X} (h : p₀ ⤳ y) (U hU) :
     (skyscraperPresheaf p₀ A).germ U y hU ≫
       (skyscraperPresheafStalkOfSpecializes p₀ A h).hom =
-        eqToHom (ite_eq_left (h.mem_open U.2 hU)) :=
+        eqToHom (ite_eq_left (h.mem_open U.is_open' hU)) :=
   colimit.isoColimitCocone_ι_hom _ _
 
 /-- The cocone at `*` for the stalk functor of `skyscraperPresheaf p₀ A` when `y ∉ closure {p₀}`
@@ -406,7 +406,7 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
     Sheaf.forget C X ⋙ Presheaf.stalkFunctor _ p₀ ⊣ skyscraperSheafFunctor p₀ where
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is changed to `Sheaf.Hom.ext`,
   unit :=
-    { app := fun 𝓕 => ⟨(StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).app 𝓕.1⟩
+    { app := fun 𝓕 => ⟨(StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).app 𝓕.obj⟩
       naturality := fun 𝓐 𝓑 f => Sheaf.hom_ext <| by
         apply (StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).naturality }
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit p₀

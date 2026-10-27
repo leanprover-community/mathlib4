@@ -123,7 +123,7 @@ instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] :
     obtain ⟨Z, hZ, hZ₂⟩ := P.exists_prop_of_containsZero
     have hX : IsTerminal X :=
       (IsLimit.equivOfNatIsoOfIso p.diag.uniqueFromEmpty _ _
-        (by exact Cone.ext (Iso.refl _) (by rintro ⟨⟨⟩⟩))).1 p.isLimit
+        (by exact Cone.ext (Iso.refl _) (by rintro ⟨⟨⟩⟩))).toFun p.isLimit
     exact P.prop_of_isZero (IsZero.of_iso hZ
       (IsLimit.conePointUniqueUpToIso hX (IsZero.isTerminal hZ)))
 
@@ -227,7 +227,7 @@ instance [P.ContainsZero] [P.IsClosedUnderIsomorphisms] :
     obtain ⟨Z, hZ, hZ₂⟩ := P.exists_prop_of_containsZero
     have hX : IsInitial X :=
       (IsColimit.equivOfNatIsoOfIso p.diag.uniqueFromEmpty _ _
-        (by exact Cocone.ext (Iso.refl _) (by rintro ⟨⟨⟩⟩))).1 p.isColimit
+        (by exact Cocone.ext (Iso.refl _) (by rintro ⟨⟨⟩⟩))).toFun p.isColimit
     exact P.prop_of_isZero (IsZero.of_iso hZ
       (IsColimit.coconePointUniqueUpToIso hX (IsZero.isInitial hZ)))
 

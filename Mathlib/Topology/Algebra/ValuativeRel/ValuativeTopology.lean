@@ -217,8 +217,8 @@ instance (priority := low) : IsTopologicalAddGroup R := by
       ⟨γ, trivial, fun ⟨_, _⟩ hx ↦ (valuation R).restrict.map_add_lt hx.left hx.right⟩
   · exact (basis.tendsto_iff basis).2 fun γ _ ↦ ⟨γ, trivial, fun y hy ↦ by simpa using hy⟩
   · ext; simp
-  · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := 0)
-  · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
+  · simpa [ContinuousAt] using (cts_add.continuous_const_vadd x₀).continuousAt (x := 0)
+  · simpa [ContinuousAt] using (cts_add.continuous_const_vadd (-x₀)).continuousAt (x := x₀)
 
 end IsValuativeTopology
 
@@ -276,7 +276,7 @@ variable [_u : UniformSpace R] [IsUniformAddGroup R] [IsValuativeTopology R] (v 
 
 theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
     fun γ : v.ValueGroup₀ˣ ↦
-      { p : R × R | v.restrict (p.2 - p.1) < γ.1 } := by
+      { p : R × R | v.restrict (p.2 - p.1) < γ.val } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact v.hasBasis_nhds_zero.comap _
 
@@ -288,7 +288,7 @@ theorem toUniformSpace_eq : _u =
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : v.ValueGroup₀ˣ,
-      ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, v.restrict (y - x) < γ.1 := by
+      ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, v.restrict (y - x) < γ.val := by
   rw [v.toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
   simp_rw [v.subgroups_basis.mem_addGroupFilterBasis_iff]

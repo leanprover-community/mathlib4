@@ -348,11 +348,11 @@ theorem trans_apply (e₁ : M₁ ≃SL[σ₁₂] M₂) (e₂ : M₂ ≃SL[σ₂�
 
 @[simp]
 theorem apply_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) (c : M₂) : e (e.symm c) = c :=
-  e.1.right_inv c
+  e.toLinearEquiv.right_inv c
 
 @[simp]
 theorem symm_apply_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : e.symm (e b) = b :=
-  e.1.left_inv b
+  e.toLinearEquiv.left_inv b
 
 @[simp] theorem symm_trans_self (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.trans e = .refl R₂ M₂ :=
   ext <| funext fun _ ↦ apply_symm_apply _ _

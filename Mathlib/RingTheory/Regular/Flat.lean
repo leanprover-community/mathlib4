@@ -85,9 +85,9 @@ variable {S} [FaithfullyFlat R S]
   in `N` is a regular `N`-sequence. -/
 theorem IsRegular.of_faithfullyFlat_of_isBaseChange {f : M →ₗ[R] N} (hf : IsBaseChange S f)
     {rs : List R} (reg : IsRegular M rs) : IsRegular N (rs.map (algebraMap R S)) := by
-  refine ⟨reg.1.of_flat_of_isBaseChange hf, ?_⟩
+  refine ⟨reg.toIsWeaklyRegular.of_flat_of_isBaseChange hf, ?_⟩
   rw [← Ideal.map_ofList]
-  exact ((hf.map_smul_top_ne_top_iff_of_faithfullyFlat R M _).mpr reg.2.symm).symm
+  exact ((hf.map_smul_top_ne_top_iff_of_faithfullyFlat R M _).mpr reg.top_ne_smul.symm).symm
 
 theorem IsRegular.of_faithfullyFlat {rs : List R} (reg : IsRegular R rs) :
     IsRegular S (rs.map (algebraMap R S)) :=
