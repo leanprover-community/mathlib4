@@ -183,15 +183,13 @@ theorem isCyclic_charP_tfae :
   have := (Algebra.charP_iff F K p).mp ‹CharP F p›
   have ha := fun (a : F) ↦ artinSchreierPoly_isMonicOfDegree p a
   tfae_have 1 → 3 := by
-    refine fun ⟨hrank, hgal⟩ ↦ ?_
+    intro ⟨hrank, hgal⟩
     let := FiniteDimensional.of_finrank_pos (hp.elim.pos.trans_eq hrank.symm)
     have h_ord := (hgal.card_aut_eq_finrank F K).trans hrank
     obtain ⟨g, h_gen⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (isCyclic_of_prime_card h_ord)
     obtain ⟨z, hgz⟩ := generator_of_charP hrank g h_gen
-    have h_int := fun (z : K) ↦ Algebra.IsIntegral.isIntegral z (R := F)
-    have hprim := fun (z : K) ↦ primitive_element_iff_minpoly_natDegree_eq F z
     refine ⟨z, ⟨?_, (hgal.mem_range_algebraMap_iff_fixed _).mpr fun γ ↦ ?_,
-        (hprim z).mpr (Eq.symm ?_)⟩⟩
+        (primitive_element_iff_minpoly_natDegree_eq F z).mpr (Eq.symm ?_)⟩⟩
     · contrapose hgz
       rw [← coe_bot, SetLike.mem_coe, hgal.mem_bot_iff_fixed] at hgz
       grind [hgz g]
@@ -200,7 +198,7 @@ theorem isCyclic_charP_tfae :
       exact MulAction.mem_fixedBy_zpow (by simp [hgz, sub_pow_char]) n
     · have hz := (hgal.mem_range_algebraMap_iff_fixed z).mp.mt (by grind)
       rw [hrank, ← hp.elim.dvd_iff_eq (natDegree_eq_one_iff.mp.mt hz)]
-      simpa [hrank] using degree_dvd (h_int z)
+      simpa [hrank] using degree_dvd (Algebra.IsIntegral.isIntegral z (R := F))
   tfae_have 3 → 4 := by
     refine fun ⟨z, hz, ⟨a, _⟩, htop⟩ ↦ ⟨a, z, ?_, htop⟩
     set f := artinSchreierPoly a with hf
@@ -209,24 +207,20 @@ theorem isCyclic_charP_tfae :
     contrapose hz
     rw [← mem_rootSet_of_ne (ha a).ne_zero] at heval
     have splits := (artinSchreierPoly_irreducible_or_splits a).resolve_left hz
-    have : (algebraMap F K) '' f.rootSet F = f.rootSet K :=
-      Splits.image_rootSet_algebraMap (by simpa using splits)
-    rw [← this, Set.mem_image] at heval
+    rw [← Splits.image_rootSet_algebraMap (A := F) (by simpa using splits)] at heval
     obtain ⟨x, _, hx⟩ := heval
     exact ⟨x, hx⟩
   tfae_have 4 → 5 := by
     refine fun ⟨a, z, h, htop⟩ ↦ ⟨a, Nonempty.intro ?_⟩
-    rw [← h]
-    have h_int : IsIntegral F z := by refine ne_zero_iff.mp (by rw [h]; exact (ha a).ne_zero)
+    have h_int : IsIntegral F z := ne_zero_iff.mp (by rw [h]; exact (ha a).ne_zero)
     have : FiniteDimensional F K := by
       refine Module.finite_def.mpr ?_
       rw [adjoin_simple_eq_top_iff_of_isAlgebraic (IsIntegral.isAlgebraic h_int)] at htop
       rw [← Algebra.top_toSubmodule, ← htop]
       exact IsIntegral.fg_adjoin_singleton h_int
-    exact IsAdjoinRootMonic.mkOfPrimitiveElement h_int htop
+    simpa [← h] using IsAdjoinRootMonic.mkOfPrimitiveElement h_int htop
   tfae_have 5 → 2 := by
     refine fun ⟨a, ⟨h, h1⟩⟩ ↦ ⟨a, IsAdjoinRoot.irreducible h, ?_⟩
-    let z := h.root
     have heval := IsAdjoinRoot.aeval_root_self h
     refine isSplittingField_iff_intermediateField.mpr ⟨?_, ?_⟩
     · rw [artinSchreierPoly_map p a]
@@ -236,7 +230,7 @@ theorem isCyclic_charP_tfae :
     · refine (adjoin_eq_top_iff_of_isAlgebraic (fun _ hx ↦ isAlgebraic_of_mem_rootSet hx)).mpr ?_
       rw [eq_top_iff, ← IsAdjoinRoot.adjoin_root_eq_top h, Algebra.adjoin_le_iff,
         Set.singleton_subset_iff, SetLike.mem_coe]
-      exact Algebra.mem_adjoin_of_mem ((Monic.mem_rootSet h1).mpr heval)
+      exact Algebra.mem_adjoin_of_mem (h1.mem_rootSet.mpr heval)
   tfae_have 2 → 1 := by
     refine fun ⟨a, h1, h2⟩ ↦ ⟨?_, IsGalois.of_separable_splitting_field
       ((separable_iff_derivative_ne_zero h1).mpr
@@ -250,18 +244,12 @@ theorem isCyclic_charP_tfae :
     set z := Polynomial.rootOfSplits splits hd with hz
     have htop : F⟮z⟯ = ⊤ := by
       have splits' : (f.map (algebraMap F F⟮z⟯)).Splits := by
-        have hr := Polynomial.eval_rootOfSplits splits hd
         rw [artinSchreierPoly_map p a]
         refine artinSchreierPoly_splits ?_ (c := ⟨z, mem_adjoin_simple_self F z⟩)
-        apply Polynomial.isRoot_of_eval₂_map_eq_zero (f := algebraMap F⟮z⟯ K)
-        · exact FaithfulSMul.algebraMap_injective (↥F⟮z⟯) K
-        simp only [IntermediateField.algebraMap_apply]
-        rw [eval₂_eq_eval_map (algebraMap (↥F⟮z⟯) K)]
-        rw [← artinSchreierPoly_map p a]
-        rw [Polynomial.map_map (algebraMap F ↥F⟮z⟯) (algebraMap (↥F⟮z⟯) K) (artinSchreierPoly a)]
-        rw [← IsScalarTower.algebraMap_eq F (↥F⟮z⟯) K]
-        rw [← hz, hf] at hr
-        exact hr
+        apply Polynomial.isRoot_of_eval₂_map_eq_zero (FaithfulSMul.algebraMap_injective (↥F⟮z⟯) K)
+        rw [IntermediateField.algebraMap_apply, eval₂_eq_eval_map, ← artinSchreierPoly_map p a,
+          Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
+        simpa [hz, hf] using Polynomial.eval_rootOfSplits splits hd
       rw [eq_top_iff, ← (isSplittingField_iff_intermediateField.mp h2).2,
         adjoin_le_iff, Set.subset_def]
       intro x hx
@@ -270,8 +258,7 @@ theorem isCyclic_charP_tfae :
     have : FiniteDimensional F K := IsSplittingField.finiteDimensional K f
     have hmin : minpoly F z = f := by
       refine (eq_of_irreducible_of_monic h1 ?_ (ha a).2).symm
-      rw [← eval_map_algebraMap f z]
-      exact Polynomial.eval_rootOfSplits splits hd
+      simpa [eval_map_algebraMap f z] using Polynomial.eval_rootOfSplits splits hd
     rw [← (ha a).1, ← hf, ← hmin]
     exact ((primitive_element_iff_minpoly_natDegree_eq F z).mp htop).symm
   tfae_finish
