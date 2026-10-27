@@ -40,7 +40,7 @@ variable {F} [NormedAddCommGroup F] [NormedSpace ℝ F]
 `f` in each Schwartz seminorm as `R → ∞`, when `φ` is smooth, compactly supported, and equal to
 `1` on `ball 0 r`. -/
 lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDiff ℝ ∞ φ)
-    (hφc : HasCompactSupport φ) {r : ℝ} (hr : 0 < r) (hφr : ∀ y ∈ ball (0 : E) r, φ y = 1)
+    (hφc : HasCompactSupport φ) {r : ℝ} (hr : 0 < r) (hφr : ∀ y ∈ ball 0 r, φ y = 1)
     (f : 𝓢(E, F)) (k n : ℕ) :
     Tendsto (fun R : ℝ ↦ (smulLeftCLM F (fun x ↦ φ (R⁻¹ • x)) f - f).seminorm ℝ k n) atTop
       (𝓝 0) := by
@@ -52,7 +52,7 @@ lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub {φ : E → ℝ} (hφ : ContDif
   · filter_upwards with _ using apply_nonneg _ _
   filter_upwards [eventually_ge_atTop 1] with R hR
   have hR0 : 0 < R := by linarith
-  have hcd : ContDiff ℝ ∞ (fun x : E ↦ φ (R⁻¹ • x)) := hφ.comp (contDiff_const_smul _)
+  have hcd : ContDiff ℝ ∞ (fun x ↦ φ (R⁻¹ • x)) := hφ.comp (contDiff_const_smul _)
   refine seminorm_le_bound ℝ k n _ (by positivity) fun x ↦ ?_
   rw [(by funext; simp [smulLeftCLM_apply_apply
     ((hφc.comp_smul (by positivity)).hasTemperateGrowth hcd), sub_smul] :
@@ -126,11 +126,11 @@ theorem dense_hasCompactSupport : Dense {f : 𝓢(E, F) | HasCompactSupport (f :
     exact b.one_of_mem_closedBall (ball_subset_closedBall hy)
   refine mem_closure_of_tendsto (tendsto_smulLeftCLM_comp_smul hφcd hφcs hφ1 f) ?_
   filter_upwards [eventually_gt_atTop 0] with R hR
-  have hcd : ContDiff ℝ ∞ (fun x : E ↦ b (R⁻¹ • x)) := hφcd.comp (contDiff_const_smul _)
-  have hcs : HasCompactSupport (fun x : E ↦ b (R⁻¹ • x)) := hφcs.comp_smul (by positivity)
+  have hcd : ContDiff ℝ ∞ (fun x ↦ b (R⁻¹ • x)) := hφcd.comp (contDiff_const_smul _)
+  have hcs : HasCompactSupport (fun x ↦ b (R⁻¹ • x)) := hφcs.comp_smul (by positivity)
   suffices (smulLeftCLM F (fun x ↦ b (R⁻¹ • x)) f : E → F) = (fun x ↦ b (R⁻¹ • x)) • f by
     simpa [this] using hcs.smul_right
-  funext x
+  funext
   simp [smulLeftCLM_apply_apply (hcs.hasTemperateGrowth hcd)]
 
 end SchwartzMap
