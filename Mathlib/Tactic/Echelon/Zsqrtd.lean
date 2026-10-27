@@ -12,9 +12,8 @@ public import Mathlib.Tactic.Echelon.Core
 /-!
 # The `ℤ√d` model for the Bareiss elimination
 
-The computable model of the quadratic extensions `ℤ√d`. The elimination runs on `Expr` representing
-`⟨a, b⟩` literals with raw integer components. Accepted entries are `⟨a, b⟩` literals, `√d`, or
-integers evaluated from `norm_num`.
+The computable model of the quadratic extensions `ℤ√d`. The elimination runs on `ℤ√d` values.
+Accepted entries are `⟨a, b⟩` literals, `√d`, or integers evaluated from `norm_num`.
 -/
 
 public meta section
@@ -52,9 +51,8 @@ def zsqrtdOps (d : ℤ) : RingOps (ℤ√d) where
     ⟨z.re / n, z.im / n⟩
   isZero := (· == 0)
 
-/-- The `ℤ√d` model of the ring `α`, which reduces to `Zsqrtd dQ`. The elimination runs on
-literals with raw integer components, computed with the arithmetic of `ℤ√d`. `d` is the value of
-the integer literal `dQ`. -/
+/-- The `ℤ√d` model of the ring `α`, which reduces to `Zsqrtd dQ`.
+The elimination runs on `ℤ√d` values. `d` is the value of the integer literal `dQ`. -/
 def zsqrtdModel {u : Level} (α : Q(Type u)) (dQ : Q(ℤ)) (d : ℤ) : Model α := .mk (ℤ√d) {
   ops := zsqrtdOps d
   evalEntry e := return (← evalZsqrtdEntry d e, none)
