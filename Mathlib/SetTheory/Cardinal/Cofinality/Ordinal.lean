@@ -119,7 +119,7 @@ theorem cof_natCast {n : ℕ} (hn : n ≠ 0) : cof n = 1 := by
   | succ n => rw [Nat.cast_add_one, cof_add_one]
 
 @[simp]
-theorem cof_ofNat (n : ℕ) [n.AtLeastTwo] : cof (ofNat(n)) = 1 :=
+theorem cof_ofNat (n : ℕ) [n.AtLeastTwo] : cof ofNat(n) = 1 :=
   cof_natCast (NeZero.ne n)
 
 theorem one_lt_cof_iff {o : Ordinal} : 1 < cof o ↔ IsSuccLimit o := by
