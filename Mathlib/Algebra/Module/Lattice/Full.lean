@@ -142,25 +142,31 @@ end Submodule.IsFullLattice
 
 namespace Submodule
 
-@[deprecated (since := "2026-09-30")]
+@[deprecated (since := "2026-10-27")]
 alias IsLattice.of_le_of_isLattice_of_fg := IsFullLattice.of_le_of_fg
 
-@[deprecated (since := "2026-09-30")]
+@[deprecated (since := "2026-10-27")]
 alias IsLattice.of_rank_le := IsFullLattice.of_rank_le
 
-@[deprecated (since := "2026-09-30")]
+@[deprecated (since := "2026-10-27")]
 alias IsLattice.rank' := IsFullLattice.rank
 
-@[deprecated (since := "2026-09-30")]
+@[deprecated (since := "2026-10-27")]
 alias IsLattice.rank_of_pi := IsFullLattice.rank_of_pi
 
-@[deprecated (since := "2026-09-30")]
+@[deprecated (since := "2026-10-27")]
 alias IsLattice.finrank_of_pi := IsFullLattice.finrank_of_pi
+
+@[deprecated (since := "2026-10-27")]
+alias IsLattice.span_eq_top := IsFullLattice.span_eq_top
+
+@[deprecated (since := "2026-10-27")]
+alias IsLattice.inf := IsFullLattice.inf
 
 end Submodule
 
-@[deprecated (since := "2026-09-30")]
+@[deprecated (since := "2026-10-27")]
 alias Module.Basis.extendOfIsLattice := Module.Basis.extendOfIsFullLattice
 
-@[deprecated (since := "2026-09-30")]
+@[deprecated (since := "2026-10-27")]
 alias Module.Basis.extendOfIsLattice_apply := Module.Basis.extendOfIsFullLattice_apply
