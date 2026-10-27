@@ -350,8 +350,8 @@ noncomputable def cauSeqConj (f : CauSeq ℂ (‖·‖)) : CauSeq ℂ (‖·‖)
 theorem cauSeqConj_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqConj f x = conj (f x) := rfl
 
 theorem lim_conj (f : CauSeq ℂ (‖·‖)) : lim (cauSeqConj f) = conj (lim f) :=
-  Complex.ext (by simp [← Complex.lim_re]; congr 1)
-    (by simp [← Complex.lim_im, ← lim_neg]; congr 1)
+  Complex.ext (by simp [← Complex.lim_re]; rfl)
+    (by simp [← Complex.lim_im, ← lim_neg]; rfl)
 
 /-- The norm of a complex Cauchy sequence, as a real Cauchy sequence. -/
 noncomputable def cauSeqNorm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
