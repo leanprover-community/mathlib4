@@ -15,15 +15,11 @@ public import Mathlib.GroupTheory.Torsion
 /-!
 # Vitali set and its non-measurability
 
-This file defines the Vitali set and proves that it is not measurable.
-The proof is essentially the one in Wikipedia:
-
-## References
-
-* <https://en.wikipedia.org/wiki/Vitali_set>
+This file defines a Vitali set and proves that it is not measurable.
+The proof constructs it by taking a representative of each coset
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Real MeasureTheory
 
@@ -74,7 +70,7 @@ while in a finite group every element has order at most the cardinality. -/
 instance : Infinite ratAddCircle := by
   refine not_finite_iff_infinite.1 fun _ ↦ ?_
   let n := Nat.card ratAddCircle + 1
-  let x : ratAddCircle := ⟨1 / n, ⟨_, ⟨1 / n, rfl⟩, by simp⟩⟩
+  let x : ratAddCircle := ⟨(1 / n : ℝ), ⟨_, ⟨1 / n, rfl⟩, by simp⟩⟩
   have hx : addOrderOf x = n := by
     rw [← AddSubgroup.addOrderOf_coe]
     simpa [x, n] using
@@ -94,3 +90,26 @@ theorem not_nullMeasurableSet_vitaliSet : ¬ NullMeasurableSet vitaliSet volume 
 /-- `vitaliSet` is not measurable. -/
 theorem not_measurableSet_vitaliSet : ¬ MeasurableSet vitaliSet :=
   fun hm ↦ not_nullMeasurableSet_vitaliSet hm.nullMeasurableSet
+
+/-! ### A non-measurable subset of `ℝ` -/
+
+/-- The preimage of `vitaliSet` in `ℝ` is not null-measurable. Composing the section
+`UnitAddCircle → Ioc 0 1 → ℝ` of the projection with the projection gives the identity, so
+null-measurability of the preimage would make `vitaliSet` null-measurable. -/
+theorem not_nullMeasurableSet_preimage_vitaliSet :
+    ¬ NullMeasurableSet (((↑) : ℝ → UnitAddCircle) ⁻¹' vitaliSet) volume := by
+  intro hm
+  apply not_nullMeasurableSet_vitaliSet
+  have hg : QuasiMeasurePreserving
+      (fun x : UnitAddCircle ↦ (AddCircle.equivIoc 1 0 x : ℝ)) volume volume :=
+    ((measurePreserving_subtype_coe measurableSet_Ioc).comp
+      (AddCircle.measurePreserving_equivIoc 1)).quasiMeasurePreserving.mono_right
+      Measure.restrict_le_self.absolutelyContinuous
+  convert hm.preimage hg
+  ext x
+  simp [AddCircle.coe_equivIoc]
+
+/-- The preimage of `vitaliSet` in `ℝ` is not measurable. -/
+theorem not_measurableSet_preimage_vitaliSet :
+    ¬ MeasurableSet (((↑) : ℝ → UnitAddCircle) ⁻¹' vitaliSet) :=
+  fun hm ↦ not_nullMeasurableSet_preimage_vitaliSet hm.nullMeasurableSet
