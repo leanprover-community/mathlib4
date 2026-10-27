@@ -142,6 +142,22 @@ lemma principal_le_iff {a : α} {c : DedekindCut α} :
   simp only [← left_subset_left_iff, left_principal]
   exact ⟨fun h ↦ h self_mem_Iic, fun h y hy ↦ c.isLowerSet_left hy h⟩
 
+theorem sSup_image_principal_left (c : DedekindCut α) : sSup (principal '' c.left) = c := by
+  refine le_antisymm (sSup_le <| forall_mem_image.mpr <| by simp [principal_le_iff])
+    (right_subset_right_iff.mp fun x hx ↦ ?_)
+  rw [← upperBounds_left]
+  intro y hy
+  grw [← principal_le_principal]
+  exact (le_sSup (mem_image_of_mem _ hy)).trans (le_principal_iff.2 hx)
+
+theorem sInf_image_principal_right (c : DedekindCut α) : sInf (principal '' c.right) = c := by
+  refine le_antisymm (left_subset_left_iff.mp fun x hx ↦ ?_)
+    (le_sInf <| forall_mem_image.mpr <| by simp [le_principal_iff])
+  rw [← lowerBounds_right]
+  intro y hy
+  rw [← principal_le_principal]
+  exact (principal_le_iff.mpr hx).trans (sInf_le (mem_image_of_mem _ hy))
+
 /-- We can never have a computable decidable instance, for the same reason we can't on `Set α`. -/
 noncomputable instance : DecidableLE (DedekindCut α) :=
   Classical.decRel _

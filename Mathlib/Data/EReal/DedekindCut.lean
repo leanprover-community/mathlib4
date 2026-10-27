@@ -45,8 +45,8 @@ theorem lowerBounds_setOfPred_le_ratCast (x : EReal) :
     simpa using le_trans (b := x) hy hz
 
 /-- The Dedekind completion of the rationals is order isomorphic to the extended reals. -/
-@[expose] def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
-  toFun := private factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)
+def dedekindCutOrderIso : DedekindCut ℚ ≃o EReal where
+  toFun := factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)
   invFun x := {
     extent := {q : ℚ | (q : ℝ) ≤ x}
     intent := {q : ℚ | x ≤ (q : ℝ)}
@@ -56,13 +56,11 @@ theorem lowerBounds_setOfPred_le_ratCast (x : EReal) :
   left_inv x := by
     ext z
     simp only [left_mk, Set.mem_ofPred]
-    change _ ≤ factorEmbedding _ x ↔ _
     rw [← principal_le_iff,
       ← (factorEmbedding (Rat.castOrderEmbedding.trans Real.coeOrderEmbedding)).le_iff_le ,
       factorEmbedding_principal]
     rfl
   right_inv x := by
-    change factorEmbedding _ _ = x
     rw [factorEmbedding_apply]
     exact le_antisymm (by simp) (le_of_forall_ratCast_lt_imp_le fun q hq ↦ le_sSup ⟨q, hq.le, rfl⟩)
   map_rel_iff' {a b} := by simp
@@ -70,12 +68,16 @@ theorem lowerBounds_setOfPred_le_ratCast (x : EReal) :
 @[simp]
 theorem left_dedekindCutOrderIso_symm_apply (x : EReal) :
     (dedekindCutOrderIso.symm x).left = {q : ℚ | (q : ℝ) ≤ x} :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem right_dedekindCutOrderIso_symm_apply (x : EReal) :
     (dedekindCutOrderIso.symm x).right = {q : ℚ | x ≤ (q : ℝ)} :=
-  rfl
+  (rfl)
+
+@[simp]
+theorem dedekindCutOrderIso_principal (q : ℚ) : dedekindCutOrderIso (principal q) = (q : ℝ) := by
+  apply (sSup_le _).antisymm (le_sSup _) <;> simp
 
 theorem dedekindCutOrderIso_apply_eq_sSup (A : DedekindCut ℚ) :
     dedekindCutOrderIso A = sSup ((fun q : ℚ ↦ ((q : ℝ) : EReal)) '' A.left) :=
@@ -86,9 +88,5 @@ theorem dedekindCutOrderIso_apply_eq_sInf (A : DedekindCut ℚ) :
   conv_lhs => rw [← A.sInf_image_principal_right]
   rw [OrderIso.map_sInf, ← sInf_image, Set.image_image]
   simp only [dedekindCutOrderIso_principal]
-
-@[simp]
-theorem dedekindCutOrderIso_principal (q : ℚ) : dedekindCutOrderIso (principal q) = (q : ℝ) := by
-  apply (sSup_le _).antisymm (le_sSup _) <;> simp
 
 end EReal
