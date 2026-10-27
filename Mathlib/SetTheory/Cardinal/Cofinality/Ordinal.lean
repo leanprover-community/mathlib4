@@ -85,6 +85,9 @@ theorem ord_cof_le (o : Ordinal) : o.cof.ord ≤ o :=
 theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 := by
   rw [← cof_toType, cof_eq_zero_iff, isEmpty_toType_iff]
 
+theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
+  cof_eq_zero.not
+
 @[simp]
 theorem cof_pos {o} : 0 < cof o ↔ 0 < o := by
   simp [pos_iff_ne_zero]
@@ -108,6 +111,16 @@ theorem cof_one : cof 1 = 1 := by
 @[deprecated cof_add_one +typeChanged (since := "2026-05-25")]
 theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
+
+@[simp]
+theorem cof_natCast {n : ℕ} (hn : n ≠ 0) : cof n = 1 := by
+  cases n with
+  | zero => contradiction
+  | succ n => rw [Nat.cast_add_one, cof_add_one]
+
+@[simp]
+theorem cof_ofNat (n : ℕ) [n.AtLeastTwo] : cof (ofNat(n)) = 1 :=
+  cof_natCast (NeZero.ne n)
 
 theorem one_lt_cof_iff {o : Ordinal} : 1 < cof o ↔ IsSuccLimit o := by
   rw [← not_iff_not, not_lt, Cardinal.le_one_iff, isSuccLimit_iff,
@@ -330,6 +343,30 @@ theorem cof_mul {a b : Ordinal} (ha : a ≠ 0) (hb : IsSuccPrelimit b) : cof (a 
   by_cases hb' : IsMin b
   · simp [hb'.eq_bot]
   · exact cof_map_of_isNormal (isNormal_mul_right ha.pos) ⟨hb', hb⟩
+
+@[simp]
+theorem cof_mul_add_one {a b : Ordinal} : cof (a * (b + 1)) = cof a := by
+  obtain rfl | ha := eq_or_ne a 0
+  · simp
+  · rw [mul_add_one, cof_add _ ha]
+
+@[simp]
+theorem cof_opow {a b : Ordinal} (ha : 1 < a) (hb : IsSuccLimit b) : cof (a ^ b) = cof b :=
+  cof_map_of_isNormal (isNormal_opow ha) hb
+
+/-- This lemma lets `simp` solve goals about `cof (ω ^ b)`. -/
+@[simp]
+theorem cof_opow_of_cof_left_eq_aleph0 {a b : Ordinal} (ha : cof a = ℵ₀) (hb : b ≠ 0) :
+    cof (a ^ b) = max ℵ₀ (cof b) := by
+  have ha' := ha.ge
+  rw [aleph0_le_cof_iff, one_lt_cof_iff] at ha'
+  rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
+  · contradiction
+  · rw [succ_eq_add_one, opow_add_one, cof_mul ?_ ha'.isSuccPrelimit, ha]
+    · simp
+    · simp [ha'.ne_zero]
+  · rw [cof_opow (one_lt_of_isSuccLimit ha') hb]
+    simpa [one_lt_cof_iff]
 
 @[simp]
 theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = o.cof := by
