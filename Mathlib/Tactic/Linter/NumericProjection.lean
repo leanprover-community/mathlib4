@@ -16,7 +16,13 @@ import Lean.Elab.App
 /-!
 # Linting against numeric projections
 
-This linter lints against syntax of the form `foo.42`, with exceptions determined by whether the head of the type is
+This linter lints against syntax of the form `foo.42`, with exceptions determined by whether the head of the type is either in a hardcoded exemptions list (if upstream) or tagged with
+`@[allow_numeric_proj]`.
+
+## TODO
+
+- Should we necessarily see through type defs? Maybe we should insist that the typedefs themselves
+  are tagged instead.
 -/
 
 open Lean Elab Command
@@ -28,7 +34,7 @@ public meta section
 /-- Stores type names which may be the head of terms that are allowed to use numeric projections. -/
 initialize allowNumericProjExt : TagAttribute ← do
   registerTagAttribute (`allow_numeric_proj)
-    "allow terms of this type to use numeric projections"
+    "Allow terms of this type to use numeric projections."
     (validate := fun n => unless (getStructureInfo? (← getEnv) n).isSome do
       throwError "Expected `{.ofConstName n}` to be a structure.")
 

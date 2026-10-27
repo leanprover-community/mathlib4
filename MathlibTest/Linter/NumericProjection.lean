@@ -13,6 +13,10 @@ structure Bar extends Foo where b : Nat
 
 variable (r : Rat) (bar : Bar)
 
+def MySubtype := { a : Nat // a < 42 }
+
+example (a : MySubtype) := a.1
+
 /--
 warning: Numeric projections are disallowed.
 
