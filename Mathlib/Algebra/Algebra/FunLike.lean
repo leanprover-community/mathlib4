@@ -5,10 +5,10 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Ring.FunLike
 
-/-! # Algebra map `FunLike` class
+/-! # `FunLike` classes between algebras
 In this file we prove that for `FunLike F α β`, `r : R`, and `x : α`, the `algebraMap R F r x`
 is given by `algebraMap R β r`.
 
@@ -19,14 +19,13 @@ public section
 
 variable {R F α β : Type*}
 
-section Def
-
-end Def
-
 namespace FunLike
 
 variable [FunLike F α β] [CommSemiring R] [Semiring F] [Semiring β] [Algebra R F] [Algebra R β]
-  [IsOneApply F] [IsSMulApply R F]
+
+section IsApply
+
+variable [IsOneApply F] [IsSMulApply R F]
 
 @[simp]
 theorem algebraMap_apply (r : R) (x : α) : algebraMap R F r x = algebraMap R β r := by
@@ -36,9 +35,11 @@ theorem algebraMap_apply (r : R) (x : α) : algebraMap R F r x = algebraMap R β
 theorem coe_algebraMap (r : R) :
     algebraMap R F r = algebraMap R (α → β) r := by ext; simp
 
+end IsApply
+
 section AlgHom
 
-variable [IsZeroApply F] [IsAddApply F] [IsMulApply F]
+variable [IsZeroApply F] [IsOneApply F] [IsAddApply F] [IsMulApply F] [IsSMulApply R F]
 
 variable (R F) in
 /-- Coercion as an algebra homomorphism. -/
