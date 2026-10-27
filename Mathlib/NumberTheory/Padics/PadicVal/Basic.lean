@@ -476,7 +476,7 @@ variable {p : ℕ}
 
 theorem dvd_of_one_le_multiplicity {n : ℕ} (hp : 1 ≤ multiplicity p n) : p ∣ n := by
   by_contra h
-  rw [_root_.multiplicity_eq_zero_of_not_dvd h] at hp
+  rw [multiplicity_eq_zero_of_not_dvd h] at hp
   exact lt_irrefl 0 (lt_of_lt_of_le zero_lt_one hp)
 
 @[deprecated (since := "2026-09-11")] alias dvd_of_one_le_padicValNat :=
@@ -517,7 +517,7 @@ theorem pow_succ_multiplicity_not_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 
 
 theorem multiplicity_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne : p ≠ q) :
     multiplicity p q = 0 :=
-  _root_.multiplicity_eq_zero_of_not_dvd <|
+  multiplicity_eq_zero_of_not_dvd <|
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp ne
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_primes := multiplicity_primes
