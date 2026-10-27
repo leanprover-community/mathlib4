@@ -32,8 +32,7 @@ theorem algebraMap_apply (r : R) (x : α) : algebraMap R F r x = algebraMap R β
   grind [Algebra.algebraMap_eq_smul_one]
 
 @[simp, norm_cast]
-theorem coe_algebraMap (r : R) :
-    algebraMap R F r = algebraMap R (α → β) r := by ext; simp
+theorem coe_algebraMap (r : R) : algebraMap R F r = algebraMap R (α → β) r := by ext; simp
 
 end IsApply
 
