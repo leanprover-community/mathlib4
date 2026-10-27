@@ -618,7 +618,7 @@ theorem ContMDiff.of_succ (h : ContMDiff I I' (n + 1) f) : ContMDiff I I' n f :=
 
 /-! ### `C^n` functions are continuous -/
 
-theorem ContMDiffWithinAt.continuousWithinAt (hf : ContMDiffWithinAt I I' n f s x) :
+nonrec theorem ContMDiffWithinAt.continuousWithinAt (hf : ContMDiffWithinAt I I' n f s x) :
     ContinuousWithinAt f s x :=
   hf.continuousWithinAt
 
