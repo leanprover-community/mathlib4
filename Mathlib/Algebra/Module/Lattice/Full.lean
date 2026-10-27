@@ -87,15 +87,9 @@ variable (M : Submodule R V)
 theorem rank [IsFullLattice K M] : Module.rank R M = Module.rank K V := by
   rw [← IsLattice.rank_span_eq_rank K M, span_eq_top, rank_top]
 
-/-- Any full `R`-lattice in `ι → K` has `#ι` as `R`-rank. -/
-theorem rank_of_pi {ι : Type*} [Fintype ι] (M : Submodule R (ι → K)) [IsFullLattice K M] :
-    Module.rank R M = Fintype.card ι := by
-  rw [rank K M, rank_fun']
-
-/-- `Module.finrank` version of `Submodule.IsFullLattice.rank_of_pi`. -/
-theorem finrank_of_pi {ι : Type*} [Fintype ι] (M : Submodule R (ι → K)) [IsFullLattice K M] :
-    finrank R M = Fintype.card ι :=
-  finrank_eq_of_rank_eq (IsFullLattice.rank_of_pi K M)
+/-- The `R`-finrank of a full lattice equals the `K`-finrank of the ambient module. -/
+theorem finrank [IsFullLattice K M] : finrank R M = finrank K V :=
+  congrArg Cardinal.toNat (rank K M)
 
 /-- A lattice whose `R`-rank is at least the `K`-rank of a finite-dimensional ambient module
 is full. -/
@@ -150,11 +144,18 @@ alias IsLattice.of_rank_le := IsFullLattice.of_rank_le
 @[deprecated (since := "2026-10-27")]
 alias IsLattice.rank' := IsFullLattice.rank
 
-@[deprecated (since := "2026-10-27")]
-alias IsLattice.rank_of_pi := IsFullLattice.rank_of_pi
+@[deprecated "Use `IsFullLattice.rank` and `rank_fun'`." (since := "2026-10-27")]
+theorem IsLattice.rank_of_pi (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K] {ι : Type*}
+    [Fintype ι] (M : Submodule R (ι → K)) [IsFullLattice K M] :
+    Module.rank R M = Fintype.card ι := by
+  rw [IsFullLattice.rank K M, rank_fun']
 
-@[deprecated (since := "2026-10-27")]
-alias IsLattice.finrank_of_pi := IsFullLattice.finrank_of_pi
+@[deprecated "Use `IsFullLattice.finrank` and `Module.finrank_fintype_fun_eq_card`."
+  (since := "2026-10-27")]
+theorem IsLattice.finrank_of_pi (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K]
+    {ι : Type*} [Fintype ι] (M : Submodule R (ι → K)) [IsFullLattice K M] :
+    finrank R M = Fintype.card ι := by
+  rw [IsFullLattice.finrank K M, finrank_fintype_fun_eq_card]
 
 @[deprecated (since := "2026-10-27")]
 alias IsLattice.span_eq_top := IsFullLattice.span_eq_top
