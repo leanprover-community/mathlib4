@@ -344,7 +344,7 @@ theorem length_subadditive_Icc_Ioo {a b : R} {c d : ℕ → R} (ss : Icc a b ⊆
     have e : ⋃ i ∈ (hf.toFinset : Set ℕ), Iotop (c i) (d i) = ⋃ i ∈ s, Iotop (c i) (d i) := by
       simp only [Finset.set_biUnion_coe,
         Finite.mem_toFinset]
-    rw [ENNReal.tsum_eq_iSup_sum]
+    rw [tsum_eq_iSup_sum]
     refine le_trans ?_ (le_iSup _ hf.toFinset)
     exact this hf.toFinset _ (by simpa only [e])
   clear ss b
@@ -403,7 +403,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
       (ofReal (f p.2 - f p.1) : ℝ≥0∞) < f.length (s i) + ε' i := by
     intro i
     have hl :=
-      ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_ne_zero.2 (ε'0 i).ne')
+      ENNReal.lt_add_right ((le_tsum _ i).trans_lt h).ne (ENNReal.coe_ne_zero.2 (ε'0 i).ne')
     conv at hl =>
       lhs
       rw [length_eq]
@@ -439,9 +439,9 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     _ ≤ ∑' i, ofReal (f (g i).2 - f (g i).1) + ofReal δ :=
       (add_le_add (f.length_subadditive_Icc_Ioo I_subset) (ENNReal.ofReal_le_ofReal ha'.le))
     _ ≤ ∑' i, (f.length (s i) + ε' i) + δ :=
-      (add_le_add (ENNReal.tsum_le_tsum fun i => (hg i).2.le)
+      (add_le_add (tsum_le_tsum fun i => (hg i).2.le)
         (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
-    _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [ENNReal.tsum_add]
+    _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [tsum_add]
     _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 
@@ -474,14 +474,14 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
   refine le_iInf fun t => le_iInf fun ht => ENNReal.le_of_forall_pos_le_add fun ε ε0 h => ?_
   rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 ε0).ne' ℕ with ⟨ε', ε'0, hε⟩
   grw [← hε]
-  rw [← ENNReal.tsum_add]
+  rw [← tsum_add]
   choose g hg using
     show ∀ i, ∃ s, t i ⊆ s ∧ MeasurableSet s ∧ f.outer s ≤ f.length (t i) + ofReal (ε' i) by
       intro i
       rcases isEmpty_or_nonempty R with hR | hR
       · exact ⟨∅, by simp, MeasurableSet.empty, by simp⟩
       have hl :=
-        ENNReal.lt_add_right ((ENNReal.le_tsum i).trans_lt h).ne (ENNReal.coe_pos.2 (ε'0 i)).ne'
+        ENNReal.lt_add_right ((le_tsum _ i).trans_lt h).ne (ENNReal.coe_pos.2 (ε'0 i)).ne'
       conv at hl =>
         lhs
         rw [length_eq]
@@ -502,7 +502,7 @@ theorem outer_trim [MeasurableSpace R] [BorelSpace R] [DenselyOrdered R] :
   apply iInf_le_of_le (iUnion g) _
   apply iInf_le_of_le (ht.trans <| iUnion_mono fun i => (hg i).1) _
   apply iInf_le_of_le (MeasurableSet.iUnion fun i => (hg i).2.1) _
-  exact le_trans (measure_iUnion_le _) (ENNReal.tsum_le_tsum fun i => (hg i).2.2)
+  exact le_trans (measure_iUnion_le _) (tsum_le_tsum fun i => (hg i).2.2)
 
 omit [CompactIccSpace R] in
 theorem borel_le_measurable [SecondCountableTopology R] :
