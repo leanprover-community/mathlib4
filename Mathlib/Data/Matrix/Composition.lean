@@ -49,7 +49,7 @@ variable {R I J K L}
 
 set_option backward.isDefEq.respectTransparency false in
 theorem comp_one [DecidableEq I] [DecidableEq J] [Zero R] [One R] : comp I I J J R 1 = 1 := by
-  ext; simp only [comp, Equiv.coe_fn_mk, one_apply, apply_ite]; aesop
+  ext; simp only [comp, Equiv.coe_fn_mk, Matrix.one_apply, apply_ite]; aesop
 
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
     comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
@@ -145,7 +145,7 @@ variable [AddCommMonoid R] [Mul R] [Fintype I] [Fintype J]
 /-- `Matrix.comp` as `RingEquiv` -/
 def compRingEquiv : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R where
   __ := compAddEquiv I I J J R
-  map_mul' _ _ := by ext; exact sum_apply .. |>.trans <| .symm <| Fintype.sum_prod_type ..
+  map_mul' _ _ := by ext; exact Matrix.sum_apply .. |>.trans <| .symm <| Fintype.sum_prod_type ..
 
 @[simp]
 theorem compRingEquiv_apply (M : Matrix I I (Matrix J J R)) :

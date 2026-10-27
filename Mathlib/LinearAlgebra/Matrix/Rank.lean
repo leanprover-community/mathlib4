@@ -143,7 +143,7 @@ theorem cRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
   have h : LinearIndependent R (1 : Matrix m m R).col := by
     convert! Pi.linearIndependent_single_one m R
-    simp [funext_iff, one_apply, Pi.single_apply]
+    simp [funext_iff, Matrix.one_apply, Pi.single_apply]
   rw [cRank, rank_span h, ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 
 @[simp] theorem eRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
@@ -387,7 +387,7 @@ theorem rank_le_card_of_support_subset [CommSemiring R] [StrongRankCondition R] 
   set B : Matrix m {x // x ∈ s} R := Matrix.of fun i a => if (a : m) = i then 1 else 0 with hBdef
   have hB : B * A.submatrix Subtype.val id = A := by
     ext i j
-    simp only [hBdef, mul_apply, of_apply, submatrix_apply, id_eq]
+    simp only [hBdef, Matrix.mul_apply, of_apply, submatrix_apply, id_eq]
     by_cases hi : i ∈ s
     · rw [Fintype.sum_eq_single (⟨i, hi⟩ : {x // x ∈ s})
         fun a ha => by rw [ite_eq_right fun he => ha (Subtype.ext he), zero_mul],

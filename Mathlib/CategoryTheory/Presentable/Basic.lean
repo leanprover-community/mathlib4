@@ -90,7 +90,6 @@ instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 
 instance [PreservesColimitsOfSize.{w, w} F] : F.IsCardinalAccessible κ where
 
-set_option backward.defeqAttrib.useBackward true in
 instance (A : C) : IsCardinalAccessible ((Functor.const C).obj A) κ where
   preservesColimitOfShape J _ _ :=
     { preservesColimit {F} :=
@@ -237,7 +236,6 @@ lemma isCardinalPresentable_iff_of_isEquivalence
     infer_instance
 
 variable {X κ} in
-set_option backward.defeqAttrib.useBackward true in
 open IsFiltered in
 lemma IsCardinalPresentable.mk
     (hX : ∀ (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ]
@@ -350,7 +348,6 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
   have := isFiltered_of_isCardinalFiltered J κ
   exact exists_eq_of_preservesColimit_coyoneda_self hc f₁ f₂ hf
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a commutative square where both objects on the top are `κ`-presentable
 and the bottom map is a colimit of a natural transformation `f : X ⟶ Y` between
 functors in `J ⥤ C` where `J` is `κ`-filtered, the commutative square can be
