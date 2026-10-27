@@ -22,7 +22,7 @@ typeclass searches.
 
 public section
 
-variable {F α β : Type*}
+variable {F α β R : Type*}
 
 namespace FunLike
 
@@ -201,5 +201,32 @@ protected abbrev commRing [CommRing β] [IsZeroApply F] [IsOneApply F]
     coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
 end PointwiseMul
+
+section SMulSelf
+
+variable [Semiring R] [SMul R F] [NonUnitalNonAssocSemiring F] [NonUnitalNonAssocSemiring β]
+  [SMul R β]
+
+variable [FunLike F α β] [IsMulApply F] [IsSMulApply R F]
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is an `R`-scalar tower if `β` is an `R`-scalar
+tower. -/
+protected abbrev isScalarTowerSelf [IsScalarTower R β β] : IsScalarTower R F F where
+  smul_assoc r f g := by
+    apply DFunLike.ext
+    intro x
+    simp only [smul_eq_mul, mul_apply, smul_apply]
+    rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` has commutative `R`-scalar multiplication if `β`
+has commutative `R`-scalar multiplication. -/
+protected abbrev smulCommClassSelf [SMulCommClass R β β] : SMulCommClass R F F where
+  smul_comm r f g := by
+    apply DFunLike.ext
+    intro x
+    simp only [smul_eq_mul, mul_apply, smul_apply]
+    rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
+
+end SMulSelf
 
 end FunLike

@@ -91,7 +91,7 @@ theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
     @h a ℵ₀
 
 @[simp, norm_cast]
-theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
+theorem natCast_dvd_natCast : (n : Cardinal) ∣ m ↔ n ∣ m := by
   refine ⟨?_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
   rintro ⟨k, hk⟩
   have : ↑m < ℵ₀ := natCast_lt_aleph0
@@ -100,6 +100,8 @@ theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
   on_goal 1 2 => simp only [h, mul_zero, zero_mul, Nat.cast_eq_zero] at hk; simp [hk]
   lift k to ℕ using hk'
   exact ⟨k, mod_cast hk⟩
+
+@[deprecated (since := "2026-10-13")] alias nat_coe_dvd_iff := natCast_dvd_natCast
 
 @[simp]
 theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by

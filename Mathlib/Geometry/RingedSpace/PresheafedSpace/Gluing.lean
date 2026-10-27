@@ -167,7 +167,6 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   erw [(D.V (i, k)).presheaf.map_id]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- We can prove the `eq` along with the lemma. Thus this is bundled together here, and the
 lemma itself is separated below.
@@ -316,7 +315,6 @@ The projection from the limit of `diagram_over_open` to a component of `D.U j`. 
 abbrev diagramOverOpenπ {i : D.J} (U : Opens (D.U i).carrier) (j : D.J) :=
   limit.π (D.diagramOverOpen U) (op (WalkingMultispan.right j))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) We construct the map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_V, U_V)` for each `V` in the gluing
 diagram. We will lift these maps into `ιInvApp`. -/
 def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
