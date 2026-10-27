@@ -159,12 +159,12 @@ theorem map_add_right (f : M →ₛₗ[σ₁₂] M₂) (g₁ g₂ : N →ₛₗ[
 theorem map_smul_left (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map (r • f) g = r • map f g := by
   ext
-  simp only [smul_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [smul_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.smul_apply, tmul_smul]
 
 theorem map_smul_right (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map f (r • g) = r • map f g := by
   ext
-  simp only [compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.smul_apply, tmul_smul]
 
 variable (M N P M₂ N₂ σ₁₂)
 
