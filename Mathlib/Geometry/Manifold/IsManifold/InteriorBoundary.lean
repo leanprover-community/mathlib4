@@ -32,8 +32,8 @@ Define the interior and boundary of a manifold.
 - `isInteriorPoint_iff_of_mem_atlas`: a point is an interior point iff any given chart around it
   sends it to the interior of the model; that is, the notion of interior is independent of choices
   of charts
-- `ModelWithCorners.isOpen_interior`, `ModelWithCorners.isClosed_boundary`: the interior is open
-  and the boundary is closed. This is currently only proven for C¹ manifolds.
+- `ModelWithCorners.isOpen_interior`, `ModelWithCorners.isClosed_boundary`: the interior is open and
+  the boundary is closed. This is currently only proven for C¹ manifolds.
 
 - `MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv`: differentiable maps with surjective
   differential send interior points to interior points
