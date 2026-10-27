@@ -76,6 +76,18 @@ theorem mdifferentiableAt_section (s : Π b, E b) {b₀ : B} :
     MDiffAt (T% s) b₀ ↔ MDiffAt (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
   simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_section _ _
 
+@[simp]
+lemma mdifferentiableAt_total_trivial_iff {s : M → F} {x : M} :
+    MDiffAt (T% s) x ↔ MDiffAt s x := by
+  rw [mdifferentiableAt_section]
+  simp
+
+@[simp]
+lemma mdifferentiableAt_section_trivial_iff {σ : (x : M) → Trivial M F x} {x : M} :
+    MDiffAt (T% σ) x ↔ MDifferentiableAt IM 𝓘(𝕜, F) σ x := by
+  rw [mdifferentiableAt_section]
+  simp
+
 namespace Bundle
 
 variable (E) {IB}

@@ -38,18 +38,6 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [∀ x : M, TopologicalSpace (V x)]
   [FiberBundle F V]
 
-@[simp]
-lemma _root_.mdifferentiableAt_total_trivial_iff {s : M → F} {x : M} :
-    MDiffAt (T% s) x ↔ MDiffAt s x := by
-  rw [mdifferentiableAt_section I]
-  simp
-
-@[simp]
-lemma _root_.mdifferentiableAt_section_trivial_iff {σ : (x : M) → Trivial M F x} {x : M} :
-    MDiffAt (T% σ) x ↔ MDifferentiableAt I 𝓘(𝕜, F) σ x := by
-  rw [mdifferentiableAt_section I]
-  simp
-
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e]
 
 lemma mdifferentiableAt
