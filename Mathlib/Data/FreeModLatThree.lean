@@ -573,7 +573,7 @@ theorem liftEquiv_apply_swap (i j k : α) (x : FreeModLatThree) :
 theorem toDual_liftEquiv_apply (i j k : α) (x : FreeModLatThree) :
     OrderDual.toDual (liftEquiv (i, j, k) x) =
       liftEquiv (OrderDual.toDual i, OrderDual.toDual j, OrderDual.toDual k) (flip x) :=
-    toDual_liftFun i j k x
+  toDual_liftFun i j k x
 
 theorem liftEquiv_symm_apply (f : LatticeHom FreeModLatThree α) :
     liftEquiv.symm f = (f gen, f (cycle gen), f (cycle (cycle gen))) := rfl
