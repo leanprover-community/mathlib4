@@ -5,11 +5,12 @@ Authors: Johannes Hölzl, Yaël Dillies, David Loeffler
 -/
 module
 
-public import Mathlib.Order.PartialSups
 public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Order.PartialSups
 public import Mathlib.Order.SuccPred.LinearLocallyFinite
-public import Mathlib.Order.Interval.Finset.SuccPred
-public import Mathlib.Data.Finset.Lattice.Union
+
+import Mathlib.Data.Finset.Lattice.Union
+import Mathlib.Order.Interval.Finset.SuccPred
 
 /-!
 # Making a sequence disjoint
@@ -84,7 +85,7 @@ theorem disjoint_disjointed_of_lt (f : ι → α) {i j : ι} (h : i < j) :
 lemma disjointed_eq_self {f : ι → α} {i : ι} (hf : ∀ j < i, Disjoint (f j) (f i)) :
     disjointed f i = f i := by
   rw [disjointed_apply, sdiff_eq_left, disjoint_iff, sup_inf_distrib_left,
-    sup_congr rfl <| fun j hj ↦ disjoint_iff.mp <| (hf _ (mem_Iio.mp hj)).symm]
+    sup_congr rfl <| fun j hj ↦ disjoint_iff.mp (hf _ (mem_Iio.mp hj)).symm]
   exact sup_bot _
 
 /- NB: The original statement for `ι = ℕ` was a `def` and worked for `p : α → Sort*`. I couldn't

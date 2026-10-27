@@ -7,15 +7,13 @@ module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.Tactic.FunProp
 public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Lp.SmoothApprox
-public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 
 /-!
@@ -248,8 +246,7 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
             gcongr
             apply f.le_seminormAux }⟩
 
-instance : IsSMulApply 𝕜 𝓢(E, F) E F where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply 𝕜 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -273,8 +270,7 @@ instance instNSMul : SMul ℕ 𝓢(E, F) :=
       smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
 
-instance : IsSMulApply ℕ 𝓢(E, F) E F where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply ℕ 𝓢(E, F) where
 
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
@@ -282,8 +278,7 @@ instance instZSMul : SMul ℤ 𝓢(E, F) :=
       smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
 
-instance : IsSMulApply ℤ 𝓢(E, F) E F where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply ℤ 𝓢(E, F) where
 
 end SMul
 
@@ -297,8 +292,7 @@ instance instZero : Zero 𝓢(E, F) :=
 instance instInhabited : Inhabited 𝓢(E, F) :=
   ⟨0⟩
 
-instance : IsZeroApply 𝓢(E, F) E F where
-  zero_apply _ := rfl
+instance : IsZeroApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] alias coe_zero := FunLike.coe_zero
 
@@ -321,8 +315,7 @@ instance instNeg : Neg 𝓢(E, F) :=
       intro x
       grw [f.decay_neg_aux k n x, f.le_seminormAux k n x]⟩⟩
 
-instance : IsNegApply 𝓢(E, F) E F where
-  neg_apply _ _ := rfl
+instance : IsNegApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -337,8 +330,7 @@ instance instAdd : Add 𝓢(E, F) :=
       intro x
       grw [decay_add_le_aux k n f g x, f.le_seminormAux k n x, g.le_seminormAux k n x]⟩⟩
 
-instance : IsAddApply 𝓢(E, F) E F where
-  add_apply _ _ _ := rfl
+instance : IsAddApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
@@ -363,8 +355,7 @@ instance instSub : Sub 𝓢(E, F) :=
       rw [← decay_neg_aux k n g x]
       exact decay_add_le_aux k n f (-g) x⟩⟩
 
-instance : IsSubApply 𝓢(E, F) E F where
-  sub_apply _ _ _ := rfl
+instance : IsSubApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
@@ -772,7 +763,7 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
 theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
     smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
-  convert! (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
+  convert (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
   simp
 
 theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
@@ -1004,7 +995,7 @@ def compCLMOfAntilipschitz {K : ℝ≥0} {g : D → E}
 Schwartz space. -/
 def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
     𝓢(E, F) →L[𝕜] 𝓢(D, F) :=
-  compCLMOfAntilipschitz 𝕜 (g.toContinuousLinearMap.hasTemperateGrowth) g.antilipschitz
+  compCLMOfAntilipschitz 𝕜 (g.toContinuousLinearMap.hasTemperateGrowth) g.antilipschitzWith
 
 @[simp] lemma compCLMOfContinuousLinearEquiv_apply (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     compCLMOfContinuousLinearEquiv 𝕜 g f = f ∘ g := rfl
@@ -1204,7 +1195,7 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
 
 theorem toBoundedContinuousFunctionCLM_injective :
     Function.Injective (toBoundedContinuousFunctionCLM .. : 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
-  fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ DFunLike.congr_fun h x
+  fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ congr($h x)
 
 instance : T3Space 𝓢(E, F) :=
   suffices T2Space 𝓢(E, F) from inferInstance

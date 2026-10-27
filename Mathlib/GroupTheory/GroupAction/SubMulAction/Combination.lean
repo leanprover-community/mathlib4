@@ -86,7 +86,7 @@ theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
     rw [Equiv.ext_iff, not_forall]
     use s
-    contrapose! has'
+    contrapose has'
     simp only [toPerm_apply, coe_one, id_eq] at has'
     rw [← has']
     simpa only [coe_smul, smul_mem_smul_finset_iff, ← mem_coe_iff]
@@ -187,7 +187,7 @@ theorem fixedPoints_ne_univ_of_faithfulSMul
     {n : ℕ} (hn : 0 < n) (hn' : n < Nat.card α) :
     fixedPoints G (powersetCard α n) ≠ univ := by
   obtain ⟨g, h⟩ := exists_ne (1 : G)
-  contrapose! h
+  contrapose h
   replace h : (toPerm g : Perm (powersetCard α n)) = 1 := by
     ext1 s
     exact eq_univ_iff_forall.mp h s g
@@ -286,7 +286,7 @@ theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ}
   rw [← isCoatom_stabilizer_iff_preprimitive _ s, stabilizer_coe]
   apply alternatingGroup.isCoatom_stabilizer
   · rw [powersetCard.coe_nonempty_iff]
-    exact le_trans (by norm_num) h_three_le
+    exact le_trans (by simp) h_three_le
   · simpa [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq] using ne_of_lt hn
   · simpa only [ncard_eq]
 

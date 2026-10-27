@@ -117,8 +117,7 @@ namespace Counterexample.GrothendieckPower
 private theorem quadratic_lift_omega {C S : Type*} [CommSemiring C] [Ring S]
     {c l : C} [Algebra C S] (x : S) (hx : x * x = c • 1 + l • x) :
     QuadraticAlgebra.lift (R := C) ⟨x, hx⟩ QuadraticAlgebra.omega = x :=
-  congr_arg Subtype.val
-    (QuadraticAlgebra.lift.symm_apply_apply ⟨x, hx⟩)
+  congr($(QuadraticAlgebra.lift.symm_apply_apply ⟨x, hx⟩).val)
 
 /-!
 ### An explicit faithful model of the base ring
@@ -205,7 +204,7 @@ def bw : WitnessRing :=
   Subtype.ext aEnd_sq_mul_bEnd
 
 theorem two_bw_ne_zero : (2 : WitnessRing) * bw ≠ 0 := fun h ↦
-  two_mul_bEnd_ne_zero (congr_arg Subtype.val h)
+  two_mul_bEnd_ne_zero congr($(h).val)
 
 instance : Nontrivial WitnessRing := ⟨⟨(2 : WitnessRing) * bw, 0, two_bw_ne_zero⟩⟩
 
@@ -268,7 +267,7 @@ def witnessHom : R →+* WitnessRing :=
 theorem two_b_ne_zero : (2 : R) * b ≠ 0 := by
   intro h
   apply two_bw_ne_zero
-  simpa [map_ofNat] using congr_arg witnessHom h
+  simpa [map_ofNat] using congr(witnessHom $h)
 
 instance : Nontrivial R := ⟨⟨(2 : R) * b, 0, two_b_ne_zero⟩⟩
 
@@ -449,7 +448,7 @@ private theorem mapped_relations {S : Type*} [CommRing S] [Algebra R S]
     simp [aA, ← map_pow]
   · have h : U ^ 2 = aA * bA * U - bA ^ 2 * V := by
       simp [aA, bA, map_pow, map_mul]
-    simpa only [map_pow, map_sub, map_mul] using congr_arg f h
+    simpa only [map_pow, map_sub, map_mul] using congr(f $h)
 
 open scoped TensorProduct
 
@@ -692,7 +691,7 @@ def powerMap (n : ℕ) : A →ₐ[R] A :=
   rfl
 
 @[simp] theorem powerMap_one_apply (x : A) : powerMap 1 x = x :=
-  congr_arg (fun f : WithConv (A →ₐ[R] A) ↦ f.ofConv x) (pow_one universalPoint)
+  congr($(pow_one universalPoint).ofConv x)
 
 theorem powerMap_succ_U (n : ℕ) :
     powerMap (n + 1) U = powerMap n U + powerMap n lambda * U := by
@@ -757,8 +756,8 @@ theorem powerMap_four_U : powerMap 4 U = 2 * bA * U * V := by
 
 theorem two_b_U_V_ne_zero : 2 * bA * U * V ≠ 0 := by
   intro h
-  have hOuter := congr_arg (fun x : A ↦ x.im) h
-  have hInner := congr_arg (fun x : B ↦ x.im) hOuter
+  have hOuter := congr($(h).im)
+  have hInner := congr($(hOuter).im)
   apply two_b_ne_zero
   simpa [bA, U, V, VB, IsScalarTower.algebraMap_apply R B A] using hInner
 
@@ -799,8 +798,8 @@ theorem universalPoint_pow_eight : universalPoint ^ 8 = 1 :=
 
 theorem universalPoint_pow_four_ne_one : universalPoint ^ 4 ≠ 1 := by
   intro h
-  have h' : powerMap 4 = powerMap 0 := congr_arg WithConv.ofConv h
-  exact powerMap_four_U_ne_zero (by simpa using DFunLike.congr_fun h' U)
+  have h' : powerMap 4 = powerMap 0 := congr($(h).ofConv)
+  exact powerMap_four_U_ne_zero (by simpa using congr($h' U))
 
 /-- In the group of `A`-valued points of the group scheme, the universal point has order
 exactly eight: an element of order eight on a group scheme of order four. -/
@@ -827,7 +826,7 @@ theorem antipode_right_identity :
     ((Algebra.TensorProduct.lift (powerMap 7) (.id R A) fun _ ↦ Commute.all _).comp
       (Bialgebra.comulAlgHom R A)) =
         (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A) := by
-  have h := congr_arg WithConv.ofConv powerMap_seven_mul_universalPoint
+  have h := congr($(powerMap_seven_mul_universalPoint).ofConv)
   change
     (Algebra.TensorProduct.lmul' R).comp
         ((Algebra.TensorProduct.map (powerMap 7) (.id R A)).comp
@@ -840,7 +839,7 @@ theorem antipode_left_identity :
     ((Algebra.TensorProduct.lift (.id R A) (powerMap 7) fun _ _ ↦ Commute.all _ _).comp
       (Bialgebra.comulAlgHom R A)) =
         (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A) := by
-  have h := congr_arg WithConv.ofConv universalPoint_mul_powerMap_seven
+  have h := congr($(universalPoint_mul_powerMap_seven).ofConv)
   change
     (Algebra.TensorProduct.lmul' R).comp
         ((Algebra.TensorProduct.map (.id R A) (powerMap 7)).comp
@@ -917,14 +916,14 @@ represents is noncommutative.  This is forced by Deligne's theorem, which affirm
 Grothendieck's question for commutative group schemes. -/
 theorem not_isCocomm : ¬Coalgebra.IsCocomm R A := by
   intro h
-  have hU := DFunLike.congr_fun h.comm_comp_comul U
+  have hU := congr($h.comm_comp_comul U)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     ← Bialgebra.comulAlgHom_apply (R := R), bialgebra_comulAlgHom] at hU
   rw [comul_U_formula] at hU
   simp only [map_add, Algebra.TensorProduct.includeLeft_apply,
     Algebra.TensorProduct.includeRight_apply, Algebra.TensorProduct.tmul_mul_tmul, one_mul,
     mul_one, TensorProduct.comm_tmul] at hU
-  have h2 := congr_arg (fun z ↦ TensorProduct.lid R R (TensorProduct.map coeffU coeffV z)) hU
+  have h2 := congr(TensorProduct.lid R R (TensorProduct.map coeffU coeffV $hU))
   have hV1 : coeffV 1 = 0 := rfl
   have hVU : coeffV U = 0 := rfl
   have hU1 : coeffU 1 = 0 := rfl
@@ -978,7 +977,7 @@ theorem id_pow_op_four_ne_one : 𝟙 (op (CommAlgCat.of R A)) ^ 4 ≠ 1 := by
   intro h
   have h' : powerMap 4 = powerMap 0 := by
     rw [← id_pow_op_unop_hom, ← id_pow_op_unop_hom, pow_zero, h]
-  exact powerMap_four_U_ne_zero (by simpa using DFunLike.congr_fun h' U)
+  exact powerMap_four_U_ne_zero (by simpa using congr($h' U))
 
 /-- The rank-four counterexample as an affine group scheme: the group object in the opposite
 of the category of commutative `R`-algebras corresponding to `coordinateHopfAlgebra` under

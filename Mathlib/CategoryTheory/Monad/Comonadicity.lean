@@ -6,7 +6,6 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Monad.Equalizer
 public import Mathlib.CategoryTheory.Monad.Limits
 
@@ -67,7 +66,7 @@ instance main_pair_coreflexive (A : adj.toComonad.Coalgebra) :
     IsCoreflexivePair (G.map A.a) (adj.unit.app (G.obj A.A)) := by
   apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _
   · rw [← G.map_comp, ← G.map_id]
-    exact congr_arg G.map A.counit
+    congrm G.map $A.counit
   · rw [adj.right_triangle_components]
     rfl
 
@@ -147,7 +146,7 @@ theorem comparisonAdjunction_counit_f_aux
     (A : adj.toComonad.Coalgebra) :
     ((comparisonAdjunction adj).counit.app A).f =
       (adj.homEquiv _ A.A).symm (equalizer.ι (G.map A.a) (adj.unit.app (G.obj A.A))) :=
-  congr_arg (adj.homEquiv _ _).symm (Category.id_comp _)
+  congr((adj.homEquiv ..).symm $(Category.id_comp _))
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- This is a fork which is helpful for establishing comonadicity: the morphism from this fork to
@@ -209,7 +208,6 @@ instance
     (G.map ((comparison adj).obj B).a)
     (adj.unit.app (G.obj ((comparison adj).obj B).A))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem comparisonAdjunction_unit_app
     [∀ A : adj.toComonad.Coalgebra, HasEqualizer (G.map A.a) (adj.unit.app (G.obj A.A))] (B : C) :
@@ -228,7 +226,6 @@ variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
-set_option backward.defeqAttrib.useBackward true in
 variable (G) in
 /--
 If `F` is comonadic, it creates limits of `F`-cosplit pairs. This is the "boring" direction of
@@ -293,13 +290,13 @@ def comonadicOfHasPreservesReflectsFSplitEqualizers [HasEqualizerOfIsCosplitPair
     have : ∀ (X : Coalgebra adj.toComonad), IsIso ((comparisonAdjunction adj).counit.app X) := by
       intro X
       apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (Comonad.forget adj.toComonad) ?_ _
-      · change IsIso ((comparisonAdjunction adj).counit.app X).f
-        rw [comparisonAdjunction_counit_f]
-        change
-          IsIso
-            (IsLimit.conePointUniqueUpToIso (beckEqualizer X)
-                (counitLimitOfPreservesEqualizer X)).inv
-        exact (IsLimit.conePointUniqueUpToIso _ _).isIso_inv
+      change IsIso ((comparisonAdjunction adj).counit.app X).f
+      rw [comparisonAdjunction_counit_f]
+      change
+        IsIso
+          (IsLimit.conePointUniqueUpToIso (beckEqualizer X)
+              (counitLimitOfPreservesEqualizer X)).inv
+      exact (IsLimit.conePointUniqueUpToIso _ _).isIso_inv
     have : ∀ (Y : C), IsIso ((comparisonAdjunction adj).unit.app Y) := by
       intro Y
       rw [comparisonAdjunction_unit_app]
@@ -389,10 +386,10 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
       intro X
       apply
         @isIso_of_reflects_iso _ _ _ _ _ _ _ (Comonad.forget adj.toComonad) ?_ _
-      · change IsIso ((comparisonAdjunction adj).counit.app X).f
-        rw [comparisonAdjunction_counit_f]
-        exact (IsLimit.conePointUniqueUpToIso (beckEqualizer X)
-          (counitLimitOfPreservesEqualizer X)).isIso_inv
+      change IsIso ((comparisonAdjunction adj).counit.app X).f
+      rw [comparisonAdjunction_counit_f]
+      exact (IsLimit.conePointUniqueUpToIso (beckEqualizer X)
+        (counitLimitOfPreservesEqualizer X)).isIso_inv
     have : ∀ (Y : C), IsIso ((comparisonAdjunction adj).unit.app Y) := by
       intro Y
       rw [comparisonAdjunction_unit_app]
@@ -402,7 +399,7 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
           (adj.unit.app (G.obj (F.obj Y))) := by
         apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _
         · rw [← G.map_comp, ← G.map_id]
-          exact congr_arg G.map (adj.left_triangle_components Y)
+          congrm G.map $(adj.left_triangle_components Y)
         · rw [← G.map_id]
           simp
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_

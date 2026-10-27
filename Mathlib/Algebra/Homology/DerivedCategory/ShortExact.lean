@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
 
 /-!
 # The distinguished triangle attached to a short exact sequence of cochain complexes
@@ -42,7 +42,6 @@ noncomputable def triangleOfSESδ :
     Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
     (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma descShortComplex_triangleOfSESδ :
     dsimp% Q.map (CochainComplex.mappingCone.descShortComplex S) ≫ triangleOfSESδ hS =
@@ -50,7 +49,6 @@ lemma descShortComplex_triangleOfSESδ :
       (Functor.commShiftIso Q 1).hom.app S.X₁ := by
   simp [triangleOfSESδ]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
@@ -99,7 +97,6 @@ section map
 variable {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact)
   (f : S₁ ⟶ S₂)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /--
 The morphism `triangleOfSES h₁ ⟶ triangleOfSES h₂` that is induced by a morphism of short
@@ -110,17 +107,15 @@ noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ 
   hom₁ := Q.map f.τ₁
   hom₂ := Q.map f.τ₂
   hom₃ := Q.map f.τ₃
-  comm₁ := by simp [← Functor.map_comp, f.comm₁₂]
-  comm₂ := by simp [← Functor.map_comp, f.comm₂₃]
+  comm₁ := by simp [f.comm₁₂_map]
+  comm₂ := by simp [f.comm₂₃_map]
   comm₃ := by
     dsimp [triangleOfSES, triangleOfSESδ]
-    rw [assoc, assoc, IsIso.inv_comp_eq, ← Functor.map_comp_assoc,
-      ← CochainComplex.mappingCone.map_descShortComplex,
-      Functor.map_comp_assoc, IsIso.hom_inv_id_assoc,
-      ← Functor.commShiftIso_hom_naturality,
-      ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
-    congr 2
-    exact (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm).comm₃
+    rw [assoc, assoc, IsIso.inv_comp_eq,
+      ← CochainComplex.mappingCone.map_descShortComplex_map_assoc,
+      IsIso.hom_inv_id_assoc, ← Functor.commShiftIso_hom_naturality]
+    exact (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂
+      f.comm₁₂.symm).comm₃_map_assoc _ _
 
 end map
 

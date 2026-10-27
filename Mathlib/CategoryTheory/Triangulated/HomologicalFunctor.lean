@@ -5,11 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.CategoryTheory.Shift.ShiftSequence
-public import Mathlib.CategoryTheory.Triangulated.Functor
-public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.CategoryTheory.Shift.ShiftSequence
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 /-! # Homological functors
 
@@ -127,7 +125,6 @@ instance : F.homologicalKernel.IsTriangulated where
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from
@@ -254,7 +251,6 @@ lemma homologySequence_mono_shift_map_mor₂_iff :
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
 end
 
-set_option backward.defeqAttrib.useBackward true in
 lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.trW f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f

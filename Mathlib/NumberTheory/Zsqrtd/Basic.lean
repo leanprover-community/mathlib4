@@ -5,11 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Associated
+public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.Tactic.Ring
-public import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]
 
@@ -381,7 +379,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
         Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
-      convert! this using 1
+      convert this using 1
       simp only [one_mul, Int.natCast_add, Int.natCast_mul]
       ring
 
@@ -482,9 +480,8 @@ theorem norm_eq_one_iff {x : ℤ√d} : x.norm.natAbs = 1 ↔ IsUnit x :=
               Int.cast_neg, norm_eq_mul_conj, neg_mul_eq_mul_neg, eq_comm] at h⟩,
     fun h => by
     let ⟨y, hy⟩ := isUnit_iff_dvd_one.1 h
-    have := congr_arg (Int.natAbs ∘ norm) hy
-    rw [Function.comp_apply, Function.comp_apply, norm_mul, Int.natAbs_mul, norm_one,
-      Int.natAbs_one, eq_comm, mul_eq_one] at this
+    have := congr((norm $hy).natAbs)
+    rw [norm_mul, Int.natAbs_mul, norm_one, Int.natAbs_one, eq_comm, mul_eq_one] at this
     exact this.1⟩
 
 theorem isUnit_iff_norm_isUnit {d : ℤ} (z : ℤ√d) : IsUnit z ↔ IsUnit z.norm := by

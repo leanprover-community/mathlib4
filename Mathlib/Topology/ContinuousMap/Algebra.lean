@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
-public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
@@ -588,6 +587,7 @@ instance module : Module R C(α, M) := fast_instance%
 
 variable (R)
 
+set_option fun_prop.projDefaultTransparency true in
 /-- Composition on the left by a continuous linear map, as a `ContinuousLinearMap`.
 Similar to `LinearMap.compLeft`. -/
 @[simps]

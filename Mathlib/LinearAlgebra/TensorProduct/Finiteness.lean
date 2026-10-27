@@ -6,8 +6,8 @@ Authors: Jz Pan
 module
 
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Map
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 

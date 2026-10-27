@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.SetTheory.Cardinal.NatCard
 public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
 /-!
 # The topology on the standard simplex

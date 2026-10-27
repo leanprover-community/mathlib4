@@ -5,12 +5,13 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+
+import Mathlib.Analysis.Complex.TaylorSeries
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # q-expansions of functions on the upper half plane
@@ -236,7 +237,7 @@ private lemma hasSum_cuspFunction_of_hasSum_punctured {f : ℍ → ℂ} (hh : 0 
     (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) := by
   have h1 := Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1
   let τ : ℍ := ⟨Periodic.invQParam h q, h1⟩
-  have h2 := (Periodic.cuspFunction_eq_of_nonzero h (f ∘ ofComplex) hq1)
+  have h2 := (Periodic.cuspFunction_eq_of_ne_zero h (f ∘ ofComplex) hq1)
   have : cuspFunction h f q = f τ := by simpa [UpperHalfPlane.ofComplex_apply_of_im_pos h1]
     using! h2
   grind [hf τ, Periodic.qParam_right_inv]
@@ -555,7 +556,7 @@ lemma qExpansion_one (h) : qExpansion h (1 : ℍ → ℂ) = 1 := by
     ext q
     rcases eq_or_ne q 0 with rfl | hq
     · simpa [cuspFunction, Periodic.cuspFunction] using! tendsto_const_nhds.limUnder_eq
-    · simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero h _ hq]
+    · simp [cuspFunction, Periodic.cuspFunction_eq_of_ne_zero h _ hq]
   have h2 : iteratedDeriv m (1 : ℂ → ℂ) 0 = if m = 0 then 1 else 0 := by
     simpa [ite_apply] using! iteratedDeriv_const
   simp +contextual [qExpansion_coeff, h1, h2]
@@ -787,7 +788,7 @@ lemma qExpansion_coeff_unique {c : ℕ → ℂ} (hh : 0 < h)
     c m = (qExpansion h f).coeff m := by
   have h1 := (hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf).hasFPowerSeriesAt
   have h2 := (hasFPowerSeries_cuspFunction f hh hfanalytic hf).hasFPowerSeriesAt
-  simpa using congr_arg (FormalMultilinearSeries.coeff · m) (h1.eq_formalMultilinearSeries h2)
+  simpa using congr(FormalMultilinearSeries.coeff $(h1.eq_formalMultilinearSeries h2) m)
 
 end UpperHalfPlane
 

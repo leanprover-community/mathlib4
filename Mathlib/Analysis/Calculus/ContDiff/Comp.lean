@@ -33,7 +33,7 @@ In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ�
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
 
-public noncomputable section
+public section
 
 open Set Filter Function
 
@@ -664,7 +664,7 @@ protected theorem ContDiffWithinAt.fderivWithin {f : E → F → G} {g : E → F
   exact eventually_of_mem self_mem_nhdsWithin fun x hx => ht _ (hst hx)
 
 /-- `x ↦ fderivWithin 𝕜 (f x) t (g x) (k x)` is smooth at a point within a set. -/
-theorem ContDiffWithinAt.fderivWithin_apply {f : E → F → G} {g k : E → F} {t : Set F}
+protected theorem ContDiffWithinAt.fderivWithin_apply {f : E → F → G} {g k : E → F} {t : Set F}
     (hf : ContDiffWithinAt 𝕜 n (Function.uncurry f) (s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 m g s x₀) (hk : ContDiffWithinAt 𝕜 m k s x₀) (ht : UniqueDiffOn 𝕜 t)
     (hmn : m + 1 ≤ n) (hx₀ : x₀ ∈ s) (hst : s ⊆ g ⁻¹' t) :
@@ -761,13 +761,13 @@ theorem ContDiff.iteratedFDeriv_right' {i : ℕ} (hf : ContDiff 𝕜 (m + i) f) 
   contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.iteratedFDeriv_right (le_refl _)
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is continuous. -/
-theorem Continuous.fderiv {f : E → F → G} {g : E → F}
+protected theorem Continuous.fderiv {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 n <| Function.uncurry f) (hg : Continuous g) (hn : 1 ≤ n) :
     Continuous fun x => fderiv 𝕜 (f x) (g x) :=
   (hf.fderiv (contDiff_zero.mpr hg) hn).continuous
 
 @[fun_prop]
-theorem Continuous.fderiv_one {f : E → F → G} {g : E → F}
+protected theorem Continuous.fderiv_one {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 1 <| Function.uncurry f) (hg : Continuous g) :
     Continuous fun x => _root_.fderiv 𝕜 (f x) (g x) :=
   (hf.fderiv (contDiff_zero.mpr hg) (le_refl 1)).continuous
@@ -781,7 +781,7 @@ protected theorem Differentiable.fderiv_two {f : E → F → G} {g : E → F}
     one_ne_zero
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x) (k x)` is smooth. -/
-theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F}
+protected theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F}
     (hf : ContDiff 𝕜 m <| Function.uncurry f) (hg : ContDiff 𝕜 n g) (hk : ContDiff 𝕜 n k)
     (hnm : n + 1 ≤ m) : ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) (k x) :=
   (hf.fderiv hg hnm).clm_apply hk

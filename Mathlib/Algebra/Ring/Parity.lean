@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.Group.Int.Even
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Commute
-public import Mathlib.Data.Set.Operations
-public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Even and odd elements in rings
@@ -89,13 +87,13 @@ lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
   ext x
   simp [eq_comm, two_mul, Even]
 
-
 lemma even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
 
 lemma Even.pow_of_ne_zero (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n)
   | n + 1, _ => by rw [pow_succ]; exact ha.mul_left _
 
 /-- An element `a` of a semiring is odd if there exists `k` such `a = 2*k + 1`. -/
+@[oeis A005408]
 def Odd (a : α) : Prop := ∃ k, a = 2 * k + 1
 
 lemma odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = 2 * b + 1 := exists_congr fun b ↦ by rw [two_mul]
@@ -118,7 +116,7 @@ lemma Odd.add_odd : Odd a → Odd b → Even (a + b) := by
   ac_rfl
 
 @[simp] lemma odd_one : Odd (1 : α) :=
-  ⟨0, (zero_add _).symm.trans (congr_arg (· + (1 : α)) (mul_zero _).symm)⟩
+  ⟨0, (zero_add _).symm.trans congr($((mul_zero _).symm) + (1 : α))⟩
 
 @[simp] lemma Even.add_one (h : Even a) : Odd (a + 1) := h.add_odd odd_one
 @[simp] lemma Even.one_add (h : Even a) : Odd (1 + a) := h.odd_add odd_one
@@ -183,7 +181,17 @@ theorem Odd.of_isUnit_two (h : IsUnit (2 : α)) (a : α) : Odd a := by
 end Ring
 
 section Monoid
-variable [Monoid α] [HasDistribNeg α] {n : ℕ}
+variable [Monoid α]
+
+/-- If `a` is a unit, then it is a square if and only if its underlying element in the monoid is a
+square. -/
+@[to_additive (attr := simp) /-- If `a` is an additive unit, then it is even if and only if its
+underlying element in the additive monoid is even. -/]
+lemma Units.isSquare_coe_iff {a : αˣ} : IsSquare (a : α) ↔ IsSquare a :=
+  ⟨fun ⟨b, hb⟩ ↦ ⟨(isUnit_mul_self_iff.mp <| hb ▸ a.isUnit).unit, Units.ext hb⟩,
+    fun ⟨b, hb⟩ ↦ ⟨b.val, by simp [hb]⟩⟩
+
+variable [HasDistribNeg α] {n : ℕ}
 
 lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   rintro ⟨c, rfl⟩ a; simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
@@ -218,27 +226,27 @@ lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
 
 @[simp]
 lemma even_add_one : Even (a + 1) ↔ Odd a :=
-  ⟨(by convert! ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
 
 @[simp]
 lemma even_sub_one : Even (a - 1) ↔ Odd a :=
-  ⟨(by convert! ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
 
 @[simp]
 lemma even_add_two : Even (a + 2) ↔ Even a :=
-  ⟨(by convert! ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
+  ⟨(by convert ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
 
 @[simp]
 lemma even_sub_two : Even (a - 2) ↔ Even a :=
-  ⟨(by convert! ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
+  ⟨(by convert ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
 
 @[simp]
 lemma odd_add_one : Odd (a + 1) ↔ Even a :=
-  ⟨(by convert! ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
 
 @[simp]
 lemma odd_sub_one : Odd (a - 1) ↔ Even a :=
-  ⟨(by convert! ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
 
 @[simp]
 lemma odd_add_two : Odd (a + 2) ↔ Odd a := by

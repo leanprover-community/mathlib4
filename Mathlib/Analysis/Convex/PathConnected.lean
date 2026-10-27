@@ -6,8 +6,9 @@ Authors: Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Connected.PathConnected
+
+import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Segment between 2 points as a bundled path

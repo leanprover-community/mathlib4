@@ -6,8 +6,9 @@ Authors: Edison Xie
 module
 
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
-public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
+
+import Mathlib.GroupTheory.IsPerfect
 
 /-!
 -/
@@ -83,7 +84,7 @@ noncomputable abbrev PSL2.Iwasawa : IwasawaStructure PSL(2, F) (ℙ F (Fin 2 →
   is_comm p := by
     have hSL : IsMulCommutative (lineStab (F := F) (ι := Fin 2) p.submodule) := by
       rw [← Projectivization.mk_rep p, Projectivization.submodule_mk]
-      exact lineStab_isMulCommutative_of_span p.rep p.rep_nonzero
+      exact lineStab_isMulCommutative_of_span p.rep p.rep_ne_zero
     exact Subgroup.map_isMulCommutative _ _
   is_conj g p := by
     obtain ⟨g_SL, rfl⟩ := QuotientGroup.mk_surjective g
