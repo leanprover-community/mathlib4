@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Ring.FunLike
 
 /-! # `FunLike` classes between algebras
@@ -59,7 +60,10 @@ theorem coeAlgHom_apply (f : F) : coeAlgHom R F f = f := rfl
 theorem coe_coeAlgHom : (coeAlgHom R F : F → α → β) = DFunLike.coe := rfl
 
 @[simp]
-theorem toRingHom_coeAlgHom : (coeAlgHom R F : F →+* α → β) = coeRingHom F := rfl
+theorem toRingHom_coeAlgHom : (coeAlgHom R F).toRingHom = coeRingHom F := rfl
+
+@[simp]
+theorem toLinearMap_coeAlgHom : (coeAlgHom R F).toLinearMap = coeₗ R F := rfl
 
 variable (R F) in
 /-- Evaluation as an algebra homomorphism. -/
@@ -70,7 +74,10 @@ def evalAlgHom (x : α) : F →ₐ[R] β := (Pi.evalAlgHom R _ x).comp (coeAlgHo
 theorem evalAlgHom_apply (x : α) (f : F) : evalAlgHom R F x f = f x := rfl
 
 @[simp]
-theorem coe_evalAlgHom (x : α) : (evalAlgHom R F x : F →+* β) = evalRingHom F x := rfl
+theorem toRingHom_evalAlgHom (x : α) : (evalAlgHom R F x : F →+* β) = evalRingHom F x := rfl
+
+@[simp]
+theorem toLinearMap_evalAlgHom (x : α) : (evalAlgHom R F x).toLinearMap = evalₗ R F x := rfl
 
 end AlgHom
 
