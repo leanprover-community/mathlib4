@@ -49,18 +49,18 @@ variable {ι : Type*} (𝕜)
 
 /-- An orthonormal set of vectors in an `InnerProductSpace` -/
 def Orthonormal (v : ι → E) : Prop :=
-  (∀ i, ‖v i‖ = 1) ∧ Pairwise fun i j => ⟪v i, v j⟫ = 0
+  (∀ i, ‖v i‖ = 1) ∧ Pairwise' fun i j => ⟪v i, v j⟫ = 0
 
 variable {𝕜}
 
 @[simp]
 lemma Orthonormal.of_isEmpty [IsEmpty ι] (v : ι → E) : Orthonormal 𝕜 v :=
-  ⟨IsEmpty.elim ‹_›, Subsingleton.pairwise⟩
+  ⟨IsEmpty.elim ‹_›, Subsingleton.pairwise'⟩
 
 @[simp]
 lemma orthonormal_vecCons_iff {n : ℕ} {v : E} {vs : Fin n → E} :
     Orthonormal 𝕜 (Matrix.vecCons v vs) ↔ ‖v‖ = 1 ∧ (∀ i, ⟪v, vs i⟫ = 0) ∧ Orthonormal 𝕜 vs := by
-  simp_rw [Orthonormal, pairwise_fin_succ_iff_of_isSymm, Fin.forall_fin_succ]
+  simp_rw [Orthonormal, pairwise'_fin_succ_iff_of_isSymm, Fin.forall_fin_succ]
   tauto
 
 lemma Orthonormal.norm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
@@ -75,7 +75,7 @@ lemma Orthonormal.enorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) 
     ‖v i‖ₑ = 1 := by rw [← ofReal_norm]; simp [h.norm_eq_one]
 
 lemma Orthonormal.inner_eq_zero {v : ι → E} {i j : ι} (h : Orthonormal 𝕜 v) (hij : i ≠ j) :
-    ⟪v i, v j⟫ = 0 := h.2 hij
+    ⟪v i, v j⟫ = 0 := pairwise'_apply h.2 hij
 
 /-- `if ... then ... else` characterization of an indexed set of vectors being orthonormal.  (Inner
 product equals Kronecker delta.) -/
@@ -94,7 +94,7 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
       have h₁ : 0 ≤ ‖v i‖ := norm_nonneg _
       have h₂ : (0 : ℝ) ≤ 1 := zero_le_one
       rwa [sq_eq_sq₀ h₁ h₂] at h'
-    · intro i j hij
+    · intro i _ j _ hij
       simpa [hij] using h i j
 
 @[simp]

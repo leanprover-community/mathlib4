@@ -115,7 +115,7 @@ lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}
     rw [eq_bot_iff]
     rintro Y f ⟨g, _, _, ⟨i⟩, _⟩
     exact i.elim
-  · intro i j
+  · intro i _ j _
     exact CoproductDisjoint.isPullback_of_isInitial
       (coproductIsCoproduct' <| Discrete.functor <| unop ∘ X) initialIsInitial
   · exact hF.isSheafFor _ (sigmaOpenCover _).mem_grothendieckTopology

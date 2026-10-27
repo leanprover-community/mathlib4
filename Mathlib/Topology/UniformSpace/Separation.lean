@@ -183,7 +183,7 @@ theorem t0Space_iff_uniformity :
   simp only [t0Space_iff_inseparable, inseparable_iff_ker_uniformity, mem_ker]
 
 theorem t0Space_iff_uniformity' :
-    T0Space α ↔ Pairwise fun x y ↦ ∃ r ∈ 𝓤 α, (x, y) ∉ r := by
+    T0Space α ↔ Pairwise' fun x y ↦ ∃ r ∈ 𝓤 α, (x, y) ∉ r := by
   simp [t0Space_iff_not_inseparable, inseparable_iff_ker_uniformity]
 
 theorem t0Space_iff_ker_uniformity : T0Space α ↔ (𝓤 α).ker = diagonal α := by
@@ -231,10 +231,10 @@ theorem isClosed_of_spaced_out [T0Space α] {V₀ : Set (α × α)} (V₀_in : V
   exact ball_inter_right x _ _ hz
 
 theorem isClosed_range_of_spaced_out {ι} [T0Space α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α)
-    {f : ι → α} (hf : Pairwise fun x y => (f x, f y) ∉ V₀) : IsClosed (range f) :=
+    {f : ι → α} (hf : Pairwise' fun x y => (f x, f y) ∉ V₀) : IsClosed (range f) :=
   isClosed_of_spaced_out V₀_in <| by
     rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ h
-    exact hf (ne_of_apply_ne f h)
+    exact pairwise'_apply hf (ne_of_apply_ne f h)
 
 /-!
 ### Separation quotient

@@ -474,8 +474,8 @@ theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α �
   simp [separableSpace_iff, countable_univ_iff]
 
 /-- In a separable space, a family of nonempty disjoint open sets is countable. -/
-theorem _root_.Pairwise.countable_of_isOpen_disjoint [SeparableSpace α] {ι : Type*}
-    {s : ι → Set α} (hd : Pairwise (Disjoint on s)) (ho : ∀ i, IsOpen (s i))
+theorem _root_.Pairwise'.countable_of_isOpen_disjoint [SeparableSpace α] {ι : Type*}
+    {s : ι → Set α} (hd : Pairwise' (Disjoint on s)) (ho : ∀ i, IsOpen (s i))
     (hne : ∀ i, (s i).Nonempty) : Countable ι := by
   rcases exists_countable_dense α with ⟨u, u_countable, u_dense⟩
   choose f hfu hfs using fun i ↦ u_dense.exists_mem_open (ho i) (hne i)
