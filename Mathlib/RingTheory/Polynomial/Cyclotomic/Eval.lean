@@ -349,8 +349,9 @@ theorem isUnit_sub_one_of_not_isPrimePow (hζ : IsPrimitiveRoot ζ n) (hn : 1 < 
 
 /-- If the order of `ζ` is a power of the prime `p`, then `ζ - 1` is a unit precisely when `p` is
 a unit in `R`. -/
-theorem isUnit_sub_one_iff_of_prime_pow {p k : ℕ} [Fact p.Prime]
-    (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) : IsUnit (ζ - 1) ↔ IsUnit (p : R) := by
+theorem isUnit_sub_one_iff_of_prime_pow {p k : ℕ} [Fact p.Prime] (hk : k ≠ 0)
+    (hζ : IsPrimitiveRoot ζ (p ^ k)) : IsUnit (ζ - 1) ↔ IsUnit (p : R) := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hk
   simp [hζ.isUnit_sub_one_iff_isUnit_eval_one_cyclotomic]
 
 /-- If no prime number is a unit in `R`, then `ζ - 1` is a unit precisely when the order of `ζ` is
@@ -359,9 +360,8 @@ theorem isUnit_sub_one_iff [IsLocalHom (algebraMap ℤ R)] (hζ : IsPrimitiveRoo
     (hn : 1 < n) : IsUnit (ζ - 1) ↔ ¬ IsPrimePow n := by
   refine ⟨fun h hpp ↦ ?_, hζ.isUnit_sub_one_of_not_isPrimePow hn⟩
   obtain ⟨p, k, hp, hk, rfl⟩ := (isPrimePow_nat_iff _).mp hpp
-  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hk.ne'
   have : Fact p.Prime := ⟨hp⟩
-  rw [hζ.isUnit_sub_one_iff_of_prime_pow, ← map_natCast (algebraMap ℤ R), isUnit_map_iff,
+  rw [hζ.isUnit_sub_one_iff_of_prime_pow hk.ne', ← map_natCast (algebraMap ℤ R), isUnit_map_iff,
     Int.ofNat_isUnit, Nat.isUnit_iff] at h
   exact hp.ne_one h
 
