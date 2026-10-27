@@ -245,6 +245,17 @@ theorem sub_star (z : QuadraticAlgebra R a b) :
     z - star z = z.im • (ω - star ω) := by
   ext <;> simp <;> ring
 
+/-- Conjugation as an `R`-algebra automorphism of `QuadraticAlgebra R a b`. -/
+def starAlgEquiv : QuadraticAlgebra R a b ≃ₐ[R] QuadraticAlgebra R a b where
+  __ := starRingAut
+  commutes' _ := by ext <;> simp
+
+@[simp]
+theorem starAlgEquiv_apply (z : QuadraticAlgebra R a b) : starAlgEquiv z = star z := rfl
+
+@[simp]
+theorem starAlgEquiv_symm_apply (z : QuadraticAlgebra R a b) : starAlgEquiv.symm z = star z := rfl
+
 end star
 
 section norm
@@ -270,6 +281,12 @@ theorem norm_one : norm (1 : QuadraticAlgebra R a b) = 1 := by simp [norm]
 @[simp]
 theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r) = r ^ 2 := by
   simp [norm_def, pow_two]
+
+@[simp]
+theorem norm_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
+    [SMulCommClass S R R] (s : S) (z : QuadraticAlgebra R a b) :
+    norm (s • z) = s ^ 2 • norm z := by
+  simp [norm_def, mul_smul_comm, smul_sub, pow_two, mul_smul, smul_mul_assoc]
 
 @[simp]
 theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by

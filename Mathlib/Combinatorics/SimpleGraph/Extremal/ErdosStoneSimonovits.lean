@@ -132,7 +132,7 @@ lemma mul_le_card_filter_mul (hr_pos : 0 < r) (ht'_pos : 0 < t')
         sub_left_le_of_le_add <| (le_card_edgeFinset_between_verts K).trans
           (card_edgeFinset_between_verts_le K hr_pos ht'_pos)
 
-/-- For `w ∈ ErdosStone.filter`, there exists a `r` subets of vertices of size `t < t'`
+/-- For `w ∈ ErdosStone.filter`, there exists a `r` subsets of vertices of size `t < t'`
 adjacent to `w`.
 
 This is an auxiliary definition for the Erdős-Stone theorem. -/

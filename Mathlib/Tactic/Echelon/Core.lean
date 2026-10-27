@@ -7,7 +7,6 @@ module
 
 public meta import Qq
 public import Mathlib.Init
-public import Mathlib.Tactic.Matrix.Cert
 
 /-!
 # Parameterized computation core for the Bareiss elimination
@@ -27,6 +26,8 @@ extension registry.
 - `RingOps`: the arithmetic of a model's carrier.
 - `Model`: the computation model of a ring, including the encode/decode between the ring element
   and the carrier representation, and an optional entry certifier.
+- `EntryCertifier`: the functions that prove the ring arithmetic facts about single entries that a
+  certificate needs.
 - `bareissDecomp`: runs fraction-free elimination over a model's carrier.
 - `BareissData`: raw data of the computed decomposition.
 - `bareiss_ext`: the attribute registering a computation model.
@@ -51,7 +52,7 @@ so `L` is conjugated by the matrix of `τ`, as in LU factorisation with partial 
 
 public meta section
 
-open Lean Meta Qq Mathlib.Tactic.Matrix
+open Lean Meta Qq
 
 initialize registerTraceClass `Tactic.evalRank
 
@@ -181,6 +182,19 @@ abbrev Carrier.type : Carrier → Type
   | .int => Int
   | .expr => Expr
 
+/-- An entry certifier proves arithmetic facts about expressions of the ring `α` that the
+certificates need. `eq` proves an equation `a = b`, such as an unreduced entry of a matrix
+product equal to its computed value, and `neZero` proves `a ≠ 0`, such as for a pivot entry.
+
+`eq` is typically built on a normalizer, while `neZero` may depend on bespoke methods if a
+normalizer cannot provide a disequality proof.
+-/
+structure EntryCertifier {u : Level} (α : Q(Type u)) where
+  /-- Prove `a = b`. -/
+  eq (a b : Q($α)) : MetaM Q($a = $b)
+  /-- Prove `a ≠ 0`, stated with the caller's `Zero` instance `zα`. -/
+  neZero (zα : Q(Zero $α)) (a : Q($α)) : MetaM Q($a ≠ 0)
+
 /-- A computation model of the ring `α` on the carrier `V`. -/
 structure Model {u : Level} (α : Q(Type u)) (V : Type) where
   /-- The arithmetic of the carrier. -/
@@ -197,9 +211,9 @@ structure Model {u : Level} (α : Q(Type u)) (V : Type) where
   /-- An optional certifier for the ring, or `none` to leave the conditions to the kernel.
   With `none`, the kernel checks the decomposition product `L * A_σ = U` by evaluating the
   list-based form as a whole without assembling it from per-entry proofs, which is faster than
-  applying `Mathlib.Tactic.Matrix.decideCertifier` on every entry. As a result this field is
-  optional rather than taking a default value, so that `Mathlib.Tactic.Matrix.certifyProductEq`
-  can perform this optimization. -/
+  applying `decideCertifier` on every entry. As a result this field is optional rather than
+  taking a default value, so that `Mathlib.Tactic.Matrix.certifyProductEq` can perform this
+  optimization. -/
   entryCertifier? : Option (EntryCertifier α) := none
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
