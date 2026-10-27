@@ -257,25 +257,6 @@ def _root_.Center.nonUnitalRingHom : Center R →ₙ+* R where
   map_zero' := by simp
   map_add' := by simp
 
-variable {R} [NonUnitalNonAssocSemiring S] {f : R →ₙ+* S}
-
-/-- A surjective morphism between (not necessarily unital or associative) rings induces a momorhpism
-between their centers. -/
-@[simps!]
-def _root_.NonUnitalRingHom.toCenter (hf : Function.Surjective f) : Center R →ₙ+* Center S where
-  toFun z := Center.mk (f z.val) (IsMulCentral.map z.prop hf)
-  map_mul' := by simp
-  map_zero' := by simp
-  map_add' := by simp
-
-/-- Lift a morphism through the inclusion `Center R →ₙ+* R`. -/
-@[simps!]
-def _root_.NonUnitalRingHom.liftCenter (hf : ∀ m, f m ∈ Set.center S) : R →ₙ+* Center S where
-  toFun m := Center.mk (f m) (hf m)
-  map_mul' := by simp
-  map_zero' := by simp
-  map_add' := by simp
-
 /-- A point-free means of proving membership in the center, for a non-associative ring.
 
 This can be helpful when working with types that have ext lemmas for `R →+ R`. -/
