@@ -1190,18 +1190,26 @@ noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 
 /-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
-noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) := by
+noncomputable def measurableEquivNatBoolOfUncountable (h : Uncountable α) : α ≃ᵐ (ℕ → Bool) := by
   apply Nonempty.some
   let := upgradeStandardBorel α
   obtain ⟨f, -, fcts, finj⟩ :=
     isClosed_univ.exists_nat_bool_injection_of_not_countable (α := α)
-      (by rwa [← countable_coe_iff, (Equiv.Set.univ _).countable_iff])
+      (by rwa [← countable_coe_iff, (Equiv.Set.univ _).countable_iff, not_countable_iff])
   obtain ⟨g, gmeas, ginj⟩ :=
     MeasurableSpace.measurable_injection_nat_bool_of_countablySeparated α
   exact ⟨borelSchroederBernstein gmeas ginj fcts.measurable finj⟩
 
+@[deprecated measurableEquivNatBoolOfUncountable +typeChanged (since := "2026-10-27")]
+noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) :=
+  measurableEquivNatBoolOfUncountable (not_countable_iff.1 h)
+
 /-- The **Borel Isomorphism Theorem**: Any two uncountable standard Borel spaces are
 Borel isomorphic. -/
+noncomputable def measurableEquivOfUncountable (hα : Uncountable α) (hβ : Uncountable β) : α ≃ᵐ β :=
+  (measurableEquivNatBoolOfUncountable hα).trans (measurableEquivNatBoolOfUncountable hβ).symm
+
+@[deprecated measurableEquivOfUncountable +typeChanged (since := "2026-10-27")]
 noncomputable def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬Countable β) : α ≃ᵐ β :=
   (measurableEquivNatBoolOfNotCountable hα).trans (measurableEquivNatBoolOfNotCountable hβ).symm
 
@@ -1211,7 +1219,7 @@ noncomputable def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
   by_cases h : Countable α
   · letI := Countable.of_equiv α e
     refine ⟨e, ?_, ?_⟩ <;> apply measurable_of_countable
-  refine measurableEquivOfNotCountable h ?_
-  rwa [e.countable_iff] at h
+  refine measurableEquivOfUncountable (not_countable_iff.1 h) ?_
+  rwa [← e.uncountable_iff, ← not_countable_iff]
 
 end PolishSpace
