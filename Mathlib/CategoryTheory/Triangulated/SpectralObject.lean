@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 
 /-!
 # Spectral objects in triangulated categories
@@ -133,7 +133,6 @@ section
 
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Precomp.map Precomp.obj δ in
 /-- The precomposition of a spectral object with a functor. -/
 def precomp : SpectralObject C ι' where
@@ -293,7 +292,6 @@ namespace Functor
 
 variable {C}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor between categories of spectral objects that is induced by
 a triangulated functor. -/
 @[implicit_reducible, simps]

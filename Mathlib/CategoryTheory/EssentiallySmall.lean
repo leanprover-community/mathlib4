@@ -234,10 +234,10 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
     fconstructor
     · rcases h with ⟨S, 𝒮, ⟨e⟩⟩
       refine ⟨⟨Skeleton S, ⟨?_⟩⟩⟩
-      exact e.skeletonEquiv
+      exact e.skeletonIsoCat.objEquiv
     · infer_instance
   · rintro ⟨⟨S, ⟨e⟩⟩, L⟩
-    let e' := (ShrinkHoms.equivalence C).skeletonEquiv.symm
+    let e' := (ShrinkHoms.equivalence C).skeletonIsoCat.objEquiv.symm
     exact ⟨⟨InducedCategory _ (e'.trans e).symm, inferInstance,
       ⟨(ShrinkHoms.equivalence C).trans
       ((skeletonEquivalence (ShrinkHoms C)).symm.trans

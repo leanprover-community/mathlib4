@@ -124,6 +124,25 @@ theorem le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSu
 theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   le_trans h (le_ciSup H c)
 
+@[to_dual]
+theorem ciSup_extend_le [Nonempty β] {f : ι → β} {g : ι → α} (hg : BddAbove (range g)) {j : β → α}
+    (hj : BddAbove (range j)) :
+    iSup (extend f g j) ≤ iSup g ⊔ iSup j := by
+  refine ciSup_le fun i ↦ ?_
+  classical aesop (add simp [le_sup_of_le_left, le_sup_of_le_right, Function.extend_def, le_ciSup])
+
+@[to_dual]
+theorem ciSup_extend [Nonempty ι] {f : ι → β} {g : ι → α} (hf : FactorsThrough g f)
+    (hg : BddAbove (range g)) {j : β → α} (hjg : ∀ i, j i ≤ iSup g) :
+    iSup (extend f g j) = iSup g := by
+  have hβ : Nonempty β := ‹Nonempty ι›.map f
+  refine le_antisymm ?_ ?_
+  · refine (ciSup_extend_le hg ⟨iSup g, by grind [mem_upperBounds]⟩).trans_eq ?_
+    simpa using ciSup_le hjg
+  · refine ciSup_le fun i ↦ le_ciSup_of_le ?_ (f i) (by simp [hf.extend_apply])
+    refine (bddAbove_union.mpr ⟨hg, ?_⟩).mono (Set.range_extend_subset f g j)
+    exact ⟨iSup g, by grind [mem_upperBounds]⟩
+
 /-- If the set of all `f i j` is bounded above, then so is the set of the supremums of every row -/
 @[to_dual /-- If the set of all `f i j` is bounded below, then so is the set of the infimums of
 every row -/]
@@ -243,19 +262,11 @@ theorem cbiSup_eq_ciSup_subtype {p : ι → Prop} {f : ∀ i, p i → α}
     ⨆ (i) (h), f i h = ⨆ x : Subtype p, f x x.property :=
   (ciSup_subtype (f := fun x => f x.val x.property) hf hf').symm
 
-@[deprecated (since := "2026-04-04")] alias ciSup_subtype' := cbiSup_eq_ciSup_subtype
-
-@[deprecated (since := "2026-04-04")] alias ciInf_subtype' := cbiInf_eq_ciInf_subtype
-
 @[to_dual]
 theorem ciSup_subtype_fun {ι} {s : Set ι} {f : ι → α}
     (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :
     ⨆ i : s, f i = ⨆ (t : ι) (_ : t ∈ s), f t :=
   ciSup_subtype hf hf'
-
-@[deprecated (since := "2026-04-04")] alias ciSup_subtype'' := ciSup_subtype_fun
-
-@[deprecated (since := "2026-04-04")] alias ciInf_subtype'' := ciInf_subtype_fun
 
 @[to_dual]
 theorem csSup_image {s : Set β} {f : β → α}
@@ -266,8 +277,8 @@ theorem csSup_image {s : Set β} {f : β → α}
 @[to_dual]
 theorem cbiSup_id {s : Set α} (hs : BddAbove s) (h : sSup ∅ ≤ sSup s) : ⨆ i ∈ s, i = sSup s := by
   rw [← csSup_image (Subtype.range_coe ▸ hs), Set.image_id']
-  · convert h
-    rw [← sSup_range, Subtype.range_coe]
+  convert h
+  rw [← sSup_range, Subtype.range_coe]
 
 @[to_dual]
 lemma ciSup_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α}
@@ -388,8 +399,6 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
 @[to_dual]
 theorem ciSup_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
   csSup_eq_top_of_top_mem hs
-
-@[deprecated (since := "2026-04-05")] alias ciInf_eq_top_of_top_mem := ciSup_eq_top_of_top_mem
 
 variable [WellFoundedLT α]
 

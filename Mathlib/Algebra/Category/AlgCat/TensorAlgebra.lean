@@ -6,10 +6,11 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Ring.Shrink
-public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
 # `TensorAlgebra` as a functor `ModuleCat R ⥤ AlgCat R`

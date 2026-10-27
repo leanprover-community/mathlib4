@@ -5,12 +5,13 @@ Authors: Andrew Yang, Christian Merten, Junyan Xu
 -/
 module
 
-import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 public import Mathlib.Algebra.Order.Ring.Finset
 public import Mathlib.FieldTheory.SeparableClosure
 public import Mathlib.RingTheory.Polynomial.GaussLemma
+
+import Mathlib.Algebra.CharP.IntermediateField
 
 /-!
 
@@ -135,7 +136,6 @@ theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (hFa : F.aeval a = 0) (
       (Finsupp.mem_support_iff.mp hσi) ?_, aeval_toPolynomialAdjoinImageCompl_eq_zero hFa ..⟩
   rw [h, Polynomial.coeff_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 include hp H in
 theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) :
     ∃ i, ∃ σ ∈ F.support, ¬ p ∣ σ i := by

@@ -710,7 +710,6 @@ lemma leftRightHomologyComparison_fac [S.HasHomology] :
 
 variable {S}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso
     (h : S.HomologyData) [S.HasHomology] :
     h.right.homologyIso = h.left.homologyIso ≪≫ h.iso := by
@@ -907,7 +906,6 @@ noncomputable def homologyIsCokernel :
   IsColimit.ofIsoColimit S.leftHomologyIsCokernel
     (Cofork.ext S.leftHomologyIso rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The homology `S.homology` of a short complex is
 the kernel of the morphism `S.fromOpcycles : S.opcycles ⟶ S.X₃`. -/
 noncomputable def homologyIsKernel :
@@ -1118,7 +1116,6 @@ lemma homologyι_descOpcycles_eq_zero_of_boundary [S.HasHomology]
   dsimp only [homologyι]
   rw [assoc, S.rightHomologyι_descOpcycles_π_eq_zero_of_boundary k x hx, comp_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi {φ : S₁ ⟶ S₂}
     [S₁.HasHomology] [S₂.HasHomology] (h₁ : IsIso (cyclesMap φ)) (h₂ : Epi φ.τ₁) :
     IsIso (homologyMap φ) := by
@@ -1133,7 +1130,6 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi {φ : S₁ ⟶ S₂}
   · rw [← cancel_epi S₂.homologyπ, reassoc_of% hz, homologyπ_naturality,
       IsIso.inv_hom_id_assoc, comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono {φ : S₁ ⟶ S₂}
     [S₁.HasHomology] [S₂.HasHomology] (h₁ : IsIso (opcyclesMap φ)) (h₂ : Mono φ.τ₃) :
     IsIso (homologyMap φ) := by

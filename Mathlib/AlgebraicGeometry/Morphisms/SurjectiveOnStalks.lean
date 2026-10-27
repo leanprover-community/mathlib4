@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.RingTheory.RingHom.Surjective
+
 import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 
 /-!

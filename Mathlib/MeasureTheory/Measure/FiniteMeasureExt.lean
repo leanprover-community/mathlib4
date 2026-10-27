@@ -5,9 +5,10 @@ Authors: Jakob Stiefel
 -/
 module
 
-import Mathlib.Analysis.RCLike.BoundedContinuous
 public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+
+import Mathlib.Analysis.RCLike.BoundedContinuous
 
 /-!
 # Extensionality of finite measures

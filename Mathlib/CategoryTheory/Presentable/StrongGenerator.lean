@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 /-!
 # Locally presentable categories and strong generators
@@ -82,7 +82,6 @@ instance ObjectProperty.isFiltered_costructuredArrow_colimitsCardinalClosure_ι
 
 variable {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
     [HasColimitsOfSize.{w, w} C] [LocallySmall.{w} C]
     {P : ObjectProperty C} [ObjectProperty.Small.{w} P] (hS₁ : P.IsStrongGenerator)

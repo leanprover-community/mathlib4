@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+
+import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 
 /-!
 # Differentiation of measures
@@ -707,7 +708,7 @@ theorem ae_tendsto_measure_inter_div (s : Set α) :
   apply hx.congr' _
   filter_upwards [v.eventually_filterAt_measurableSet x] with _ ha
   congr 1
-  exact measure_toMeasurable_inter_of_sFinite ha _
+  exact measure_toMeasurable_inter_of_sfinite ha _
 
 /-! ### Lebesgue differentiation theorem -/
 
@@ -748,7 +749,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
   rcases h'f.isSeparable_range with ⟨t, t_count, ht⟩
   have main :
     ∀ᵐ x ∂μ,
-      ∀ᵉ (n : ℕ) (c ∈ t),
+      ∀ n : ℕ, ∀ c ∈ t,
         Tendsto (fun a => (∫⁻ y in a, ‖f y - (A.set n).indicator (fun _ => c) y‖ₑ ∂μ) / μ a)
           (v.filterAt x) (𝓝 ‖f x - (A.set n).indicator (fun _ => c) x‖ₑ) := by
     simp_rw [ae_all_iff, ae_ball_iff t_count]

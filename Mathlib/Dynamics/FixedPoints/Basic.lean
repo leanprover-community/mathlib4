@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.End
-import Mathlib.Data.Set.Function
 public import Mathlib.Dynamics.FixedPoints.Defs
+
+import Mathlib.Data.Set.Function
 
 /-!
 # Fixed points of a self-map

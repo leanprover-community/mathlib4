@@ -6,7 +6,9 @@ Authors: John Talbot, Lian Bremner Tattersall
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+
 import Mathlib.Tactic.Linarith
+
 /-!
 # Five-wheel like graphs
 

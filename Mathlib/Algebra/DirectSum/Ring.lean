@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.Ring.Associator
 
 /-!
@@ -234,7 +234,6 @@ private nonrec theorem mul_one (x : ⨁ i, A i) : x * 1 = x := by
   rw [flip_apply, mulHom_of_of]
   exact of_eq_of_gradedMonoid_eq (mul_one <| GradedMonoid.mk i xi)
 
-set_option backward.defeqAttrib.useBackward true in
 private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   -- (`fun a b c => a * b * c` as a bundled hom) = (`fun a b c => a * (b * c)` as a bundled hom)
   suffices AddMonoidHom.mulLeft₃ = AddMonoidHom.mulRight₃ by

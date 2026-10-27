@@ -462,7 +462,7 @@ theorem mem_closure {x : R} {s : Set R} : x ∈ closure s ↔ ∀ S : NonUnitalS
 @[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _x hx => mem_closure.2 fun _S hS => hS hx
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
@@ -564,15 +564,6 @@ theorem isMulCommutative_closure {R : Type*} [NonUnitalRing R] {s : Set R}
   have := closure_le_centralizer_centralizer s
   .of_setLike_mul_comm fun _ h₁ _ h₂ ↦
     Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂)
-
-open scoped IsMulCommutative in
-/-- If all the elements of a set `s` commute, then `closure s` is a non-unital commutative
-ring. -/
-@[deprecated isMulCommutative_closure +typeChanged (since := "2026-03-11")]
-abbrev closureNonUnitalCommRingOfComm {R : Type*} [NonUnitalRing R] {s : Set R}
-    (hcomm : s.Pairwise Commute) : NonUnitalCommRing (closure s) :=
-  have := isMulCommutative_closure hcomm
-  inferInstance
 
 instance instIsMulCommutative_closure {S R : Type*} [NonUnitalRing R]
     [SetLike S R] [MulMemClass S R] (s : S) [IsMulCommutative s] :

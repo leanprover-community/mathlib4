@@ -5,12 +5,13 @@ Authors: Sophie Morel
 -/
 module
 
+public import Mathlib.RepresentationTheory.Character
+
 import Mathlib.Algebra.Category.FGModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Injective
-public import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.Maschke
-import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 import Mathlib.RepresentationTheory.Rep.Iso
+import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 
 /-!
 # Applications of Maschke's theorem
@@ -107,7 +108,7 @@ lemma simple_iff_end_is_rank_one [NeZero (Nat.card G : k)] (V : FDRep k G) :
         have hιφ : 𝟙 _ = ι ≫ φ := (Injective.comp_factorThru (𝟙 _) ι).symm
         apply_fun (· ≫ ι) at hιφ
         simp_all
-      obtain ⟨c, hc⟩ : ∃ c : k, c • _ = 𝟙 V := (finrank_eq_one_iff_of_nonzero' _ hφι).mp h (𝟙 V)
+      obtain ⟨c, hc⟩ : ∃ c : k, c • _ = 𝟙 V := (finrank_eq_one_iff_of_ne_zero' _ hφι).mp h (𝟙 V)
       refine Preadditive.epi_of_cancel_zero _ (fun g hg ↦ ?_)
       apply_fun (· ≫ g) at hc
       simpa [hg] using hc.symm
