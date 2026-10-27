@@ -644,7 +644,7 @@ private lemma span_range_sRoot_eq_top :
   suffices (hA.toRealisation (hA.isUnit_map k).invertible).sRoot = Pi.basisFun k n by simp [this]
   ext; simp [toRealisation]
 
-/-- Given a field `k` of chacteristic zero and Cartan matrix `A`, this is a reduced
+/-- Given a field `k` of characteristic zero and Cartan matrix `A`, this is a reduced
 crystrallographic root system over `k`. It carries a natural base with Cartan matrix `A`. -/
 def toRootPairing := (hA.toRealisation (hA.isUnit_map k).invertible).toRootPairing
 

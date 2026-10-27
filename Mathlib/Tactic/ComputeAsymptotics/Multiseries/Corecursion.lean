@@ -119,7 +119,6 @@ theorem dist_eq_two_inv_pow {s t : Seq α} (h : s ≠ t) : ∃ n, dist s t = 2�
   simp
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward false in
 @[simp]
 theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ * dist s t := by
   by_cases! h : s = t

@@ -239,21 +239,30 @@ theorem equiv_zero_of_val_eq_of_equiv_zero {f g : PadicSeq p}
   let ⟨i, hi⟩ := hf _ hε
   ⟨i, fun j hj ↦ by simpa [h] using hi _ hj⟩
 
-theorem norm_nonzero_of_not_equiv_zero {f : PadicSeq p} (hf : ¬f ≈ 0) : f.norm ≠ 0 :=
+theorem norm_ne_zero_of_not_equiv_zero {f : PadicSeq p} (hf : ¬f ≈ 0) : f.norm ≠ 0 :=
   hf ∘ f.norm_zero_iff.1
+
+@[deprecated (since := "2026-10-13")]
+alias norm_nonzero_of_not_equiv_zero := norm_ne_zero_of_not_equiv_zero
 
 theorem norm_eq_norm_app_of_nonzero {f : PadicSeq p} (hf : ¬f ≈ 0) :
     ∃ k, f.norm = padicNorm p k ∧ k ≠ 0 :=
   have heq : f.norm = padicNorm p (f <| stationaryPoint hf) := by simp [norm, hf]
   ⟨f <| stationaryPoint hf, heq, fun h ↦
-    norm_nonzero_of_not_equiv_zero hf (by simpa [h] using heq)⟩
+    norm_ne_zero_of_not_equiv_zero hf (by simpa [h] using heq)⟩
 
-theorem not_limZero_const_of_nonzero {q : ℚ} (hq : q ≠ 0) : ¬LimZero (const (padicNorm p) q) :=
+theorem not_limZero_const_of_ne_zero {q : ℚ} (hq : q ≠ 0) : ¬LimZero (const (padicNorm p) q) :=
   fun h' ↦ hq <| const_limZero.1 h'
 
-theorem not_equiv_zero_const_of_nonzero {q : ℚ} (hq : q ≠ 0) : ¬const (padicNorm p) q ≈ 0 :=
+@[deprecated (since := "2026-10-13")]
+alias not_limZero_const_of_nonzero := not_limZero_const_of_ne_zero
+
+theorem not_equiv_zero_const_of_ne_zero {q : ℚ} (hq : q ≠ 0) : ¬const (padicNorm p) q ≈ 0 :=
   fun h : LimZero (const (padicNorm p) q - 0) ↦
-    not_limZero_const_of_nonzero (p := p) hq <| by simpa using h
+    not_limZero_const_of_ne_zero (p := p) hq <| by simpa using h
+
+@[deprecated (since := "2026-10-13")]
+alias not_equiv_zero_const_of_nonzero := not_equiv_zero_const_of_ne_zero
 
 theorem norm_nonneg (f : PadicSeq p) : 0 ≤ f.norm := by
   classical exact if hf : f ≈ 0 then by simp [hf, norm] else by simp [norm, hf, padicNorm.nonneg]
@@ -387,7 +396,7 @@ theorem ne_zero_iff_not_equiv_zero (f : PadicSeq p) : mk f ≠ 0 ↔ ¬f ≈ 0 :
 theorem norm_const (q : ℚ) : norm (const (padicNorm p) q) = padicNorm p q := by
   obtain rfl | hq := eq_or_ne q 0
   · simp [norm]
-  · simp [norm, not_equiv_zero_const_of_nonzero hq]
+  · simp [norm, not_equiv_zero_const_of_ne_zero hq]
 
 theorem norm_values_discrete (a : PadicSeq p) (ha : ¬a ≈ 0) : ∃ z : ℤ, a.norm = (p : ℚ) ^ (-z) := by
   let ⟨k, hk, hk'⟩ := norm_eq_norm_app_of_nonzero ha
@@ -911,7 +920,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       rw [eq_padicNorm]
       norm_cast
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
-      rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
+      rw [padicNorm.eq_zpow_of_ne_zero hnz', padicValRat, neg_sub,
         padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
       apply inv_le_one_of_one_le₀
       norm_cast
@@ -1071,7 +1080,7 @@ lemma valuation_ratCast (q : ℚ) : valuation (q : ℚ_[p]) = padicValRat p q :=
   refine neg_injective ((zpow_right_strictMono₀ (mod_cast hp.out.one_lt)).injective
     <| (norm_eq_zpow_neg_valuation (mod_cast hq)).symm.trans ?_)
   rw [eq_padicNorm, ← Rat.cast_natCast, ← Rat.cast_zpow, Rat.cast_inj]
-  exact padicNorm.eq_zpow_of_nonzero hq
+  exact padicNorm.eq_zpow_of_ne_zero hq
 
 @[simp]
 lemma valuation_intCast (n : ℤ) : valuation (n : ℚ_[p]) = padicValInt p n := by

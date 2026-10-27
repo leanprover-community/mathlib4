@@ -196,7 +196,6 @@ abbrev localizerMorphism : LocalizerMorphism
     intro n
     infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_quotient_map_iff
     {K L : CochainComplex.Plus (InjectiveObject C)} (f : K ⟶ L) :
     IsIso ((quotient _).map f) ↔
@@ -208,7 +207,6 @@ lemma isIso_quotient_map_iff
     ← CochainComplex.IsKInjective.quasiIso_iff]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 open HomologicalComplex in
 lemma inverseImage_quasiIso_mapCochainComplexPlus_injectiveObjectι :
     (CochainComplex.Plus.quasiIso C).inverseImage (InjectiveObject.ι C).mapCochainComplexPlus =
