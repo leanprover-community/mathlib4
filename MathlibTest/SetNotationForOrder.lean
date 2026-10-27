@@ -46,6 +46,26 @@ variable (a b : Set Nat) in
 variable (a b : Nat) in
 #check GT.gt a b
 
+/-- info: a ∪ b : Set ℕ -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check max a b
+
+/-- info: max a b : ℕ -/
+#guard_msgs in
+variable (a b : Nat) in
+#check max a b
+
+/-- info: a ∩ b : Set ℕ -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check min a b
+
+/-- info: min a b : ℕ -/
+#guard_msgs in
+variable (a b : Nat) in
+#check min a b
+
 end Delab
 
 section Elab
@@ -83,6 +103,25 @@ variable (a b : List Nat) in
 variable (a b : Set Nat) in
 #check a ⊃ b
 
+/-- info: max a b : Set Nat -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check a ∪ b
+
+/-- info: Union.union a b : Std.HashSet Nat -/
+#guard_msgs in
+variable (a b : Std.HashSet Nat) in
+#check a ∪ b
+
+/-- info: min a b : Set Nat -/
+#guard_msgs in
+variable (a b : Set Nat) in
+#check a ∩ b
+
+/-- info: Inter.inter a b : Std.HashSet Nat -/
+#guard_msgs in
+variable (a b : Std.HashSet Nat) in
+#check a ∩ b
 
 -- `⊆` is not elaborated to `LE.le` even if that is the only valid relation on this type
 variable (a b : Nat) in
