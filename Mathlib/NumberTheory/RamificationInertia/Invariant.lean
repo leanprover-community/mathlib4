@@ -118,13 +118,6 @@ end Algebra.FormallyUnramified
 
 section LiftBaseChange
 
--- PRed
-theorem Submodule.baseChange_le_iff_le_comap {R M A : Type*} [CommSemiring R] [Semiring A]
-    [Algebra R A] [AddCommMonoid M] [Module R M] (p : Submodule R M) (q : Submodule A (A ⊗[R] M)) :
-    p.baseChange A ≤ q ↔ p ≤ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) := by
-  rw [baseChange_eq_span, span_le, ← q.coe_restrictScalars R, SetLike.coe_subset_coe,
-    map_le_iff_le_comap]
-
 lemma Submodule.baseChange_le_comap_liftBaseChange_iff
     {R M N A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
   [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
