@@ -534,7 +534,6 @@ def lift (i j k : α) : LatticeHom FreeModLatThree α where
     rw [← OrderDual.toDual_inj, ← flipOrderIso_apply, map_sup,
       flipOrderIso_apply, flipOrderIso_apply, toDual_inf]
 
-set_option linter.style.whitespace false in
 @[simp ←]
 theorem coe_lift (i j k : α) : lift i j k = liftFun i j k := rfl
 
@@ -556,7 +555,6 @@ def liftEquiv : α × α × α ≃ LatticeHom FreeModLatThree α where
 theorem coe_liftEquiv (x : α × α × α) :
     liftEquiv x = lift x.1 x.2.1 x.2.2 := rfl
 
-set_option linter.style.whitespace false in
 @[simp ←]
 theorem coe_liftEquiv' (i j k : α) :
     liftEquiv (i, j, k) = lift i j k := rfl
