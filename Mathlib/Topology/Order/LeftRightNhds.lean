@@ -70,7 +70,7 @@ theorem tfae_mem_nhdsGT {a b : α} (hab : a < b) (s : Set α) :
     exact ⟨u, au, fun x hx => hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, hx.1⟩⟩
   tfae_finish
 
-@[deprecated (since := "2026-10-27")]
+@[to_dual (attr := deprecated (since := "2026-10-27"))]
 alias TFAE_mem_nhdsGT := tfae_mem_nhdsGT
 
 @[to_dual]
@@ -236,7 +236,7 @@ theorem tfae_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
       (Ico_subset_Ico_right <| min_le_left _ _).trans hus⟩
   tfae_finish
 
-@[deprecated (since := "2026-10-27")]
+@[to_dual (attr := deprecated (since := "2026-10-27"))]
 alias TFAE_mem_nhdsGE := tfae_mem_nhdsGE
 
 @[to_dual]
