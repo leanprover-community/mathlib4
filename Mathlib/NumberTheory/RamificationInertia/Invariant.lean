@@ -34,6 +34,7 @@ by `Algebra.FormallyUnramified.descentMultiplier`.
 
 open scoped Pointwise TensorProduct
 
+-- PRed
 namespace Algebra.FormallyUnramified
 
 open Algebra.TensorProduct
@@ -42,18 +43,11 @@ variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
   [FormallyUnramified A B] [EssFiniteType A B]
   {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-/-- The separability tensor evaluated at the identity and the action of `g`. Modulo an ideal
-`Q`, it equals `1` exactly when `g` belongs to `Q.inertia G`. -/
+/-- If `B/A` is a formally unramified and essentially finite type, then the inertia idempotent
+of an algebra automorphism `g : G` is an idempotent element `e` of `B` with the properties that
+`g • b ≡ b [MOD e]` and `e ≡ 1 [MOD Q] ↔ g ∈ Q.inertia G`. -/
 noncomputable def inertiaIdempotent (g : G) : B :=
   productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) (elem A B)
-
-lemma isIdempotentElem_inertiaIdempotent (g : G) : IsIdempotentElem (inertiaIdempotent A B g) :=
-  (isIdempotentElem_elem A B).map (productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g))
-
-lemma inertiaIdempotent_mul_smul (g : G) (b : B) :
-    inertiaIdempotent A B g * (g • b) = inertiaIdempotent A B g * b := by
-  simpa [inertiaIdempotent, mul_comm] using
-    congr(productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) $(one_tmul_mul_elem b))
 
 @[simp]
 lemma inertiaIdempotent_one : inertiaIdempotent A B (1 : G) = 1 := by
@@ -61,6 +55,16 @@ lemma inertiaIdempotent_one : inertiaIdempotent A B (1 : G) = 1 := by
     ext <;> simp
   simpa [inertiaIdempotent, h] using lmul_elem
 
+lemma isIdempotentElem_inertiaIdempotent (g : G) : IsIdempotentElem (inertiaIdempotent A B g) :=
+  (isIdempotentElem_elem A B).map (productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g))
+
+/-- `g • b` is congruent to `b` modulo the inertia idempotent of `g`. -/
+lemma inertiaIdempotent_mul_smul (g : G) (b : B) :
+    inertiaIdempotent A B g * (g • b) = inertiaIdempotent A B g * b := by
+  simpa [inertiaIdempotent, mul_comm] using
+    congr(productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) $(one_tmul_mul_elem b))
+
+/-- The inertia idempotent of `g` is congruent to `1` modulo `Q` if and only `g ∈ Q.inertia G`. -/
 @[simp]
 lemma mk_inertiaIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
     Ideal.Quotient.mk Q (inertiaIdempotent A B g) = 1 ↔ g ∈ Q.inertia G := by
