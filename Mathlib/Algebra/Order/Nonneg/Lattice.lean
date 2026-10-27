@@ -46,9 +46,10 @@ instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
 protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
-    {a : α} [NoMaxOrder α] : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
-  fast_instance% @ordConnectedSubsetConditionallyCompleteLinearOrderOfBotTop α (Set.Ici a) _
-    _ ⟨⊥⟩ (.inl isBot_bot) (.inr inferInstance) _
+    {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
+  -- TODO: missing `Inhabited (Ici a)` instance
+  haveI : Inhabited (Ici a) := ⟨a, le_rfl⟩
+  inferInstanceAs <| ConditionallyCompleteLinearOrder (Ici a)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
@@ -57,7 +58,7 @@ This instance uses data fields from `Subtype.linearOrder` to help type-class inf
 The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
 protected noncomputable abbrev conditionallyCompleteLinearOrderBot
-    [ConditionallyCompleteLinearOrder α] [NoMaxOrder α] (a : α) :
+    [ConditionallyCompleteLinearOrder α] (a : α) :
     ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with }
 
