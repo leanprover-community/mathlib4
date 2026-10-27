@@ -33,8 +33,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 public section
 
--- assert_not_exists Module
-
 noncomputable section
 
 open Finset Function

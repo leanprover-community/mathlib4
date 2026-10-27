@@ -5,7 +5,6 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Data.Int.Cast.Pi
@@ -116,14 +115,6 @@ class IsMulApplyEqComp (F : Type*) {α : outParam Type*} [FunLike F α α] [Mul 
 
 @[simp, grind =]
 alias mul_apply_eq_comp := IsMulApplyEqComp.mul_apply_eq_comp
-
-@[simp, grind =]
-lemma pow_apply_eq_iterate {F α : Type*} [FunLike F α α] [Monoid F] [IsOneApplyEqSelf F]
-    [IsMulApplyEqComp F] (f : F) (n : ℕ) (x : α) :
-    (f ^ n) x = f^[n] x := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
 
 end Add
 
@@ -267,11 +258,6 @@ theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F'] (f : F') : (f : α → 
 @[simp, norm_cast]
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F'] (f g : F') : ↑(f * g) = f ∘ g := by
   ext; simp
-
-@[simp, norm_cast]
-lemma coe_pow_eq_iterate [Monoid F'] [IsMulApplyEqComp F'] [IsOneApplyEqSelf F']
-    (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  funext <| pow_apply_eq_iterate f n
 
 -- this lemma cannot be `simp` since this creates loops
 @[norm_cast]

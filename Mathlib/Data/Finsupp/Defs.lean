@@ -76,7 +76,7 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 @[expose] public section
 
-assert_not_exists CompleteLattice
+assert_not_exists CompleteLattice Monoid
 
 noncomputable section
 
