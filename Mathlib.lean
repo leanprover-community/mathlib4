@@ -4185,7 +4185,6 @@ public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Fintype.Units
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Fintype.WithTopBot
-public import Mathlib.Data.FreeModLatThree
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Data.FunLike.Embedding
 public import Mathlib.Data.FunLike.Equiv
@@ -6363,6 +6362,7 @@ public import Mathlib.Order.Fin.Prod
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.FixedPoints
+public import Mathlib.Order.FreeModLatThree
 public import Mathlib.Order.GaloisConnection.Basic
 public import Mathlib.Order.GaloisConnection.Defs
 public import Mathlib.Order.GameAdd
