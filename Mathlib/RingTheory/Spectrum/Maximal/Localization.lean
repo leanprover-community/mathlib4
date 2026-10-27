@@ -133,7 +133,8 @@ theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
     simp_rw [toPiLocalization_apply_apply,
       ← Localization.AtPrime.mapPiEvalRingHom_algebraMap_apply, hr]
     rw [Function.update_of_ne]; · simp_rw [Pi.zero_apply, map_zero]
-    exact fun h ↦ notMem ⟨⟨i, I.asIdeal, I.isMaximal.isPrime⟩, PrimeSpectrum.ext congr($h.asIdeal)⟩
+    exact fun h ↦ notMem
+      ⟨⟨i, I.asIdeal, I.isMaximal.isPrime⟩, PrimeSpectrum.ext congr(($h).asIdeal)⟩
   replace hr := congr($hr ⟨J, max⟩)
   rw [this, map_zero, Function.update_self] at hr
   exact zero_ne_one hr
