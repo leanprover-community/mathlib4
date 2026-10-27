@@ -291,7 +291,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
 
 /-- If `S/R` is a formally unramified and essentially finite type, then the inertia idempotent
 of an algebra automorphism `g : G` is an idempotent element `e` of `S` with the properties that
-`g • b ≡ b [MOD e]` and `e ≡ 1 [MOD Q] ↔ g ∈ Q.inertia G`. -/
+`g • x ≡ x [MOD e]` and `e ≡ 1 [MOD Q] ↔ g ∈ Q.inertia G`. -/
 noncomputable def inertiaIdempotent (g : G) : S :=
   productMap (AlgHom.id R S) (MulSemiringAction.toAlgHom R S g) (elem R S)
 
@@ -306,7 +306,7 @@ lemma isIdempotentElem_inertiaIdempotent (g : G) : IsIdempotentElem (inertiaIdem
   (isIdempotentElem_elem R S).map (productMap (AlgHom.id R S) (MulSemiringAction.toAlgHom R S g))
 
 variable {S} in
-/-- `g • b` is congruent to `b` modulo the inertia idempotent of `g`. -/
+/-- `g • x` is congruent to `x` modulo the inertia idempotent of `g`. -/
 lemma inertiaIdempotent_mul_smul (g : G) (x : S) :
     inertiaIdempotent R S g * (g • x) = inertiaIdempotent R S g * x := by
   simpa [inertiaIdempotent, mul_comm] using
