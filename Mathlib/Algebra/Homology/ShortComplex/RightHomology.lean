@@ -133,7 +133,6 @@ lemma isIso_p (hf : S.f = 0) : IsIso h.p :=
   ⟨h.descQ (𝟙 S.X₂) (by rw [hf, comp_id]), p_descQ _ _ _, by
     simp only [← cancel_epi h.p, p_descQ_assoc, id_comp, comp_id]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_ι (hg : S.g = 0) : IsIso h.ι := by
   have ⟨φ, hφ⟩ := KernelFork.IsLimit.lift' h.hι' (𝟙 _)
     (by rw [← cancel_epi h.p, id_comp, p_g', comp_zero, hg])
@@ -178,7 +177,6 @@ the chosen `kernel S.g` -/
 noncomputable def ofHasKernel [HasKernel S.g] (hf : S.f = 0) : S.RightHomologyData :=
 ofIsLimitKernelFork S hf _ (kernelIsKernel _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When the second map `S.g` is zero, this is the right homology data on `S` given
 by any colimit cokernel cofork of `S.g` -/
 @[simps]
@@ -223,7 +221,6 @@ lemma ofZeros_g' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).g' = 0 := by
   rw [← cancel_epi ((ofZeros S hf hg).p), comp_zero, p_g', hg]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {S} in
 /-- Given a right homology data `h` of a short complex `S`, we can construct another right homology
@@ -873,7 +870,6 @@ namespace RightHomologyMapData
 variable {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
   (γ : RightHomologyMapData φ h₁ h₂)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightHomologyMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
     rightHomologyMap φ = h₁.rightHomologyIso.hom ≫ γ.φH ≫ h₂.rightHomologyIso.inv := by
