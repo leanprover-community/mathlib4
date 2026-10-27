@@ -171,7 +171,7 @@ structure EntryCertifier {u : Level} (α : Q(Type u)) where
 The underlying type of `Model`.
 
 We want to allow the carrier type of this model to be any type. Unfortunately, making it a
-structure field causes the structure to live in `Type 1 `, which doesn't work in `IO`/`MetaM`.
+structure field causes the structure to live in `Type 1`, which doesn't work in `IO`/`MetaM`.
 -/
 structure ModelAux {u : Level} (α : Q(Type u)) (V : Type) where
   /-- The arithmetic of the carrier. -/
