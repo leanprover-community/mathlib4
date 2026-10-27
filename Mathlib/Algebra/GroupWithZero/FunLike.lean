@@ -38,8 +38,8 @@ protected abbrev compMonoidWithZero : MonoidWithZero F where
   mul_one _ := by apply DFunLike.ext; simp
   one_mul _ := by apply DFunLike.ext; simp
   mul_assoc _ _ _ := by apply DFunLike.ext; simp
-  npow_zero _ := by apply DFunLike.ext; simp
-  npow_succ _ _ := by apply DFunLike.ext; simp
+  npow_zero _ := by apply DFunLike.ext; simp [pow_apply_eq_iterate]
+  npow_succ _ _ := by apply DFunLike.ext; simp [pow_apply_eq_iterate]
 
 end Comp
 
