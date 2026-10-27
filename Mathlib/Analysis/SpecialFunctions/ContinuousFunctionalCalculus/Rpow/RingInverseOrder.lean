@@ -51,9 +51,7 @@ public lemma convexOn_ringInverse :
     simp only [smul_eq_mul]
     refine cfc_rpow fun r hr => ?_
     by_cases ha' : a = 0
-    · have hb' : b = 1 := by grind
-      simp only [ha', hb', one_mul, zero_add, gt_iff_lt]
-      grind
+    · grind
     · grind [add_pos_of_pos_of_nonneg, mul_nonneg]
   have h₂ : (a • 1 + b • z ^ (-1 : ℝ)) = cfc (fun r => (a + b * r ^ (-1 : ℝ))) z := by
     rw [CFC.rpow_eq_cfc_real zpos.nonneg]
