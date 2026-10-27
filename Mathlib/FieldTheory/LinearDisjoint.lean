@@ -745,6 +745,8 @@ If `A` and `B` are linearly disjoint, then `trace` and `algebraMap` commutes.
 theorem trace_algebraMap [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤)
     (x : B) :
     Algebra.trace A E (algebraMap B E x) = algebraMap F A (Algebra.trace F B x) := by
+  have : Module.Finite A.toSubalgebra E := Module.Finite.of_restrictScalars_finite F _ _
+  have : Module.Projective A.toSubalgebra E := (inferInstance : Module.Projective A E)
   rw [linearDisjoint_iff'] at h₁
   refine h₁.trace_algebraMap ?_ x
   simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr(toSubalgebra $h₂)

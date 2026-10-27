@@ -335,6 +335,23 @@ lemma smulRight_apply_eq_zero_iff [IsDomain S] {f : M₁ →ₗ[R] S} {x : M} [M
 
 end SMulRight
 
+section SMulRightComp
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [Module R M] [Module R M₁] [Module R M₂]
+
+@[simp]
+lemma smulRight_comp [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
+    (f : M₁ →ₗ[R] S) (x : M) (g : M₂ →ₗ[R] M₁) :
+    (f.smulRight x).comp g = (f.comp g).smulRight x := rfl
+
+@[simp]
+lemma comp_smulRight (g : M →ₗ[R] M₂) (f : M₁ →ₗ[R] R) (x : M) :
+    g.comp (f.smulRight x) = f.smulRight (g x) := by
+  ext y; exact g.map_smul (f y) x
+
+end SMulRightComp
+
 end AddCommMonoid
 
 section Module
