@@ -257,7 +257,7 @@ variable (R)
 
 /-- The center of a non-associative semiring `R` is the set of elements that commute and associate
 with everything in `R` -/
-@[simps! coe toSubmonoid]
+@[simps coe toSubmonoid]
 def center : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
     one_mem' := Set.one_mem_center }
