@@ -367,12 +367,13 @@ lemma evalCLM_apply {𝕜 : Type*} [Semiring 𝕜] [Module 𝕜 R] [ContinuousCo
     (x : X) (f : C(X, R)₀) : evalCLM 𝕜 x f = f x := rfl
 
 /-- Coercion to a function as an `AddMonoidHom`. Similar to `ContinuousMap.coeFnAddMonoidHom`. -/
+@[deprecated FunLike.coeAddMonoidHom +typeChanged (since := "2026-10-27")]
 def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
   toFun f := f
   map_zero' := FunLike.coe_zero
   map_add' f g := by simp
 
-@[simp]
+@[deprecated FunLike.coeAddMonoidHom +typeChanged (since := "2026-10-27")]
 lemma coeFnAddMonoidHom_apply (f : C(X, R)₀) : coeFnAddMonoidHom f = f := rfl
 
 @[deprecated FunLike.coe_sum +typeChanged (since := "2026-10-26")]
