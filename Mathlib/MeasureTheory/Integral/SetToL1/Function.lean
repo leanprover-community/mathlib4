@@ -168,14 +168,10 @@ theorem setToFun_finsetSum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Fin
     · convert! integrable_finsetSum s fun i hi => hf i (Finset.mem_insert_of_mem hi) with x
       simp
 
-@[deprecated (since := "2026-04-08")] alias setToFun_finset_sum' := setToFun_finsetSum'
-
 theorem setToFun_finsetSum (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι) {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) :
     (setToFun μ T hT fun a => ∑ i ∈ s, f i a) = ∑ i ∈ s, setToFun μ T hT (f i) := by
   convert! setToFun_finsetSum' hT s hf with a; simp
-
-@[deprecated (since := "2026-04-08")] alias setToFun_finset_sum := setToFun_finsetSum
 
 theorem setToFun_neg (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
     setToFun μ T hT (-f) = -setToFun μ T hT f := by
@@ -334,7 +330,9 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
   let F_lp i := if hFi : Integrable (fs i) μ then hFi.toL1 (fs i) else 0
   have tendsto_L1 : Tendsto F_lp l (𝓝 f_lp) := by
     rw [Lp.tendsto_Lp_iff_tendsto_eLpNorm']
-    simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply]
+    have M n : AEStronglyMeasurable ((F_lp n : α → E) - (f_lp : α → E)) μ :=
+      (Lp.aestronglyMeasurable (F_lp n)).sub (Lp.aestronglyMeasurable f_lp)
+    simp_rw [eLpNorm_one_eq_lintegral_enorm (M _), Pi.sub_apply]
     refine (tendsto_congr' ?_).mp hfs
     filter_upwards [hfsi] with i hi
     refine lintegral_congr_ae ?_
@@ -348,7 +346,6 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
     exact hi.coeFn_toL1
   rw [setToFun_congr_ae hT hfi.coeFn_toL1.symm]
   exact ((continuous_setToFun hT).tendsto f_lp).comp tendsto_L1
-
 
 end Function
 

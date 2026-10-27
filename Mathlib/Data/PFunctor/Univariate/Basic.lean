@@ -43,16 +43,50 @@ instance : Inhabited PFunctor :=
 variable (P : PFunctor.{uA, uB}) {α : Type v₁} {β : Type v₂} {γ : Type v₃}
 
 /-- Applying `P` to an object of `Type` -/
-@[coe]
+@[coe, implicit_reducible]
 def Obj (α : Type v) : Type (max v uA uB) :=
   Σ x : P.A, P.B x → α
 
 instance : CoeFun PFunctor.{uA, uB} (fun _ => Type v → Type (max v uA uB)) where
   coe := Obj
 
+section Obj
+
+variable {P}
+
+/-- Make an element of `P α` from a "shape" `a : P.A` and a family of elements `f : P.B a → α`.
+
+Important: You should use `PFunctor.Obj.mk` instead of the anonymous constructor `⟨_, _⟩`
+to avoid abuse of the definitional equality between `P α` and `Σ x : P.A, P.B x → α`. -/
+@[implicit_reducible, match_pattern]
+def Obj.mk (a : P.A) (f : P.B a → α) : P α := ⟨a, f⟩
+
+/-- To prove a theorem about `t : P α` it suffices to
+prove it for `P.Obj.mk a f` for all possible values of `a` and `f`. -/
+@[implicit_reducible, elab_as_elim, induction_eliminator, cases_eliminator]
+def Obj.rec {motive : P α → Sort*} (mk : ∀ a f, motive (.mk a f)) : ∀ t, motive t :=
+  fun t => mk t.1 t.2
+
+@[simp]
+theorem Obj.rec_mk {motive : P α → Sort*}
+    {mk : ∀ a b, motive (.mk a b)} (a : P.A) (b : P.B a → α) :
+    Obj.rec mk (.mk a b) = mk a b := rfl
+
+/-- Extract the "shape" of a `x : P α` as `x.fst : P.A`. -/
+@[implicit_reducible] def Obj.fst (x : P α) : P.A := x.1
+/-- Extract the underlying value of type `α` associated to an object `x : P α`
+at an index `i : P.B x.fst`. -/
+@[implicit_reducible] def Obj.snd (x : P α) : P.B x.fst → α := x.2
+
+@[simp] theorem Obj.fst_mk (a : P.A) (f : P.B a → α) : Obj.fst (.mk a f) = a := rfl
+@[simp] theorem Obj.snd_mk (a : P.A) (f : P.B a → α) : Obj.snd (.mk a f) = f := rfl
+
+@[simp] theorem Obj.eta (x : P α) : .mk x.fst x.snd = x := rfl
+
+end Obj
+
 /-- Applying `P` to a morphism of `Type` -/
-def map (f : α → β) : P α → P β :=
-  fun ⟨a, g⟩ => ⟨a, f ∘ g⟩
+def map (f : α → β) : P α → P β := fun x => .mk x.fst (f ∘ x.snd)
 
 instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
   ⟨⟨default, default⟩⟩
@@ -66,15 +100,15 @@ theorem map_eq_map {α β : Type v} (f : α → β) (x : P α) : f <$> x = P.map
 
 @[simp]
 protected theorem map_eq (f : α → β) (a : P.A) (g : P.B a → α) :
-    P.map f ⟨a, g⟩ = ⟨a, f ∘ g⟩ :=
+    P.map f (.mk a g) = .mk a (f ∘ g) :=
   rfl
 
 @[simp]
-protected theorem id_map : ∀ x : P α, P.map id x = x := fun ⟨_, _⟩ => rfl
+protected theorem id_map (x : P α) : P.map id x = x := rfl
 
 @[simp]
-protected theorem map_map (f : α → β) (g : β → γ) :
-    ∀ x : P α, P.map g (P.map f x) = P.map (g ∘ f) x := fun ⟨_, _⟩ => rfl
+protected theorem map_map (f : α → β) (g : β → γ) (x : P α) :
+    P.map g (P.map f x) = P.map (g ∘ f) x := rfl
 
 instance : LawfulFunctor (Obj.{v} P) where
   map_const := rfl
@@ -147,19 +181,21 @@ Composition of polynomial functors.
 namespace PFunctor
 
 /-- Composition for polynomial functors -/
+@[implicit_reducible]
 def comp (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) :
-    PFunctor.{max uA₁ uA₂ uB₂, max uB₁ uB₂} :=
-  ⟨Σ a₂ : P₂.1, P₂.2 a₂ → P₁.1, fun a₂a₁ => Σ u : P₂.2 a₂a₁.1, P₁.2 (a₂a₁.2 u)⟩
+    PFunctor.{max uA₁ uA₂ uB₂, max uB₁ uB₂} where
+  A := Σ a₂ : P₂.A, P₂.B a₂ → P₁.A
+  B a₂a₁ := Σ u : P₂.B a₂a₁.1, P₁.B (a₂a₁.2 u)
 
 /-- Constructor for composition -/
 def comp.mk (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {α : Type v} (x : P₂ (P₁ α)) :
     comp P₂ P₁ α :=
-  ⟨⟨x.1, Sigma.fst ∘ x.2⟩, fun a₂a₁ => (x.2 a₂a₁.1).2 a₂a₁.2⟩
+  .mk ⟨x.fst, Obj.fst ∘ x.snd⟩ fun a₂a₁ => (x.snd a₂a₁.1).snd a₂a₁.2
 
 /-- Destructor for composition -/
 def comp.get (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {α : Type v} (x : comp P₂ P₁ α) :
     P₂ (P₁ α) :=
-  ⟨x.1.1, fun a₂ => ⟨x.1.2 a₂, fun a₁ => x.2 ⟨a₂, a₁⟩⟩⟩
+  .mk x.fst.1 fun a₂ => .mk (x.fst.2 a₂) fun a₁ => x.snd ⟨a₂, a₁⟩
 
 end PFunctor
 
@@ -172,53 +208,36 @@ variable {P : PFunctor.{uA, uB}}
 
 open Functor
 
-set_option backward.isDefEq.respectTransparency false in
 theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
-    Liftp p x ↔ ∃ a f, x = ⟨a, f⟩ ∧ ∀ i, p (f i) := by
+    Liftp p x ↔ ∃ a f, x = .mk a f ∧ ∀ i, p (f i) := by
   constructor
-  · rintro ⟨y, hy⟩
-    rcases h : y with ⟨a, f⟩
-    refine ⟨a, fun i => (f i).val, ?_, fun i => (f i).property⟩
-    rw [← hy, h, map_eq_map, PFunctor.map_eq]
-    congr
-  rintro ⟨a, f, xeq, pf⟩
-  use ⟨a, fun i => ⟨f i, pf i⟩⟩
-  rw [xeq]; rfl
+  · rintro ⟨y, rfl⟩
+    cases y with | mk a f
+    refine ⟨a, fun i => (f i).val, rfl, fun i => (f i).property⟩
+  · rintro ⟨a, f, rfl, pf⟩
+    exact ⟨.mk a fun i => ⟨f i, pf i⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) :
-    @Liftp.{u} P.Obj _ α p ⟨a, f⟩ ↔ ∀ i, p (f i) := by
+    Liftp p (.mk a f : P α) ↔ ∀ i, p (f i) := by
   simp only [liftp_iff]; constructor <;> intro h
   · rcases h with ⟨a', f', heq, h'⟩
     cases heq
     assumption
-  repeat' first | constructor | assumption
+  · repeat' first | constructor | assumption
 
 theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
-    Liftr r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by
+    Liftr r x y ↔ ∃ a f₀ f₁, x = .mk a f₀ ∧ y = .mk a f₁ ∧ ∀ i, r (f₀ i) (f₁ i) := by
   constructor
-  · rintro ⟨u, xeq, yeq⟩
-    rcases h : u with ⟨a, f⟩
-    use a, fun i => (f i).val.fst, fun i => (f i).val.snd
-    constructor
-    · rw [← xeq, h]
-      rfl
-    constructor
-    · rw [← yeq, h]
-      rfl
-    intro i
-    exact (f i).property
-  rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use ⟨a, fun i => ⟨(f₀ i, f₁ i), h i⟩⟩
-  constructor
-  · rw [xeq]
-    rfl
-  rw [yeq]; rfl
+  · rintro ⟨u, rfl, rfl⟩
+    cases u with | mk a f
+    exact ⟨a, fun i => (f i).1.1, fun i => (f i).1.2, rfl, rfl, fun i => (f i).2⟩
+  · rintro ⟨a, f₀, f₁, rfl, rfl, h⟩
+    exact ⟨.mk a fun i => ⟨(f₀ i, f₁ i), h i⟩, rfl, rfl⟩
 
 open Set
 
 theorem supp_eq {α : Type u} (a : P.A) (f : P.B a → α) :
-    @supp.{u} P.Obj _ α (⟨a, f⟩ : P α) = f '' univ := by
+    supp (.mk a f : P α) = f '' univ := by
   ext x; simp only [supp, image_univ, mem_range, mem_ofPred_eq]
   constructor <;> intro h
   · apply @h fun x => ∃ y : P.B a, f y = x

@@ -66,13 +66,10 @@ theorem setToFun_of_le_map_of_stronglyMeasurable
     ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hf).mono_measure hμ'
   borelize E
   have : SeparableSpace (range f ∪ {0} : Set E) := hfm.separableSpace_range_union_singleton
-  refine tendsto_nhds_unique
-    (tendsto_setToFun_approxOn_of_measurable_of_range_subset
-      hT' hfm.measurable hfi' _ Subset.rfl) ?_
-  convert tendsto_setToFun_approxOn_of_measurable_of_range_subset
-    hT (hfm.measurable.comp hφ) hf (range f ∪ {0})
-    (union_subset_union_left {0} (range_comp_subset_range φ f)) using 1
-  ext i : 1
+  refine tendsto_nhds_unique_of_forall
+    (tendsto_setToFun_approxOn_of_measurable_of_range_subset hT' hfm.measurable hfi' _ Subset.rfl)
+      (tendsto_setToFun_approxOn_of_measurable_of_range_subset hT (hfm.measurable.comp hφ) hf
+        (range f ∪ {0}) (union_subset_union_left {0} (range_comp_subset_range φ f))) fun i ↦ ?_
   rw [setToFun_simpleFunc _ _ (SimpleFunc.integrable_approxOn_range _ hfi' _),
     setToFun_simpleFunc, SimpleFunc.approxOn_comp hfm.measurable hφ]; swap
   · apply SimpleFunc.integrable_approxOn _ hf (by simp) (by simp)

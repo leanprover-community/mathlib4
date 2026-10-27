@@ -59,7 +59,6 @@ theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Categor
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the coproduct `Y ⨿ Z` and the coequalizer of `f ≫ ι₁` and `g ≫ ι₂` exist, then the
 pushout of `f` and `g` exists: It is given by composing the inclusions with the coequalizer. -/
 theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type u}

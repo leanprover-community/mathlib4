@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
 /-!
 # Edges and "triangles" in truncated simplicial sets
@@ -146,7 +146,7 @@ def idCompId (x : X _⦋0⦌₂) :
     CompStruct (.id x) (.id x) (.id x) :=
   idComp _
 
-attribute [local simp ←] FunctorToTypes.naturality in
+attribute [local simp ←] NatTrans.naturality_apply in
 /-- The image of a `Edge.CompStruct` by a morphism of `2`-truncated
 simplicial sets. -/
 @[simps]

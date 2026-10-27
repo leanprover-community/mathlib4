@@ -5,10 +5,11 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Tactic.Location
 public meta import Lean.Meta.Tactic.Simp.Main
-public import Lean.Elab.Tactic.Location
+
+import Lean.Elab.Tactic.Location
+import Mathlib.Init
 
 /-!
 # Rewriting at specified locations
@@ -26,7 +27,8 @@ public meta section
 /-- Runs the given `atLocal` and `atTarget` methods on each of the locations selected by the given
 `loc`.
 * If `loc` is a list of locations, runs at each specified hypothesis (and finally the goal if `⊢` is
-  included), and fails if any of the tactic applications fail.
+  included), and fails if any of the tactic applications fail. If an earlier location closes the
+  goal, later unused locations are an error.
 * If `loc` is `*`, runs at the target and at the nondependent `Prop` hypotheses in reversed order
   (those produced by `Lean.MVarId.getNondepPropHyps`), calling `failed` if no location succeeds.
 
@@ -34,7 +36,17 @@ The implementation adapts `Lean.Elab.Tactic.withLocation` with a restricted wild
 def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId → TacticM Unit)
     (atTarget : TacticM Unit) (failed : MVarId → TacticM Unit) : TacticM Unit := do
   match loc with
-  | .targets .. => withLocation loc atLocal atTarget failed
+  | .targets hyps target => do
+    hyps.forM fun hyp => do
+      if (← getUnsolvedGoals).isEmpty then
+        throwErrorAt hyp m!"Goal was closed before the tactic could be applied at `{hyp}`"
+      withMainContext do
+        let fvarId ← getFVarId hyp
+        atLocal fvarId
+    if target then
+      if (← getUnsolvedGoals).isEmpty then
+        throwError "Goal was closed before the tactic could be applied at ⊢"
+      withMainContext atTarget
   | .wildcard => do
     let hyps ← withMainContext do (← getMainGoal).getNondepPropHyps
     withLocation loc
@@ -43,6 +55,22 @@ def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId �
         unless hyps.contains fvarId do throwError "not a nondependent Prop hypothesis"
         atLocal fvarId)
       atTarget failed
+
+/-- Collect the values from running the `atLocal` and `atTarget` methods on each of the locations
+selected by the given `loc`.
+* If `loc` is a list of locations, collects the results of running at each specified hypothesis (and
+  finally the goal if `⊢` is included), and fails if any of the applications fail.
+* If `loc` is `*`, collects the results of running at the target and at the nondependent `Prop`
+  hypotheses (those produced by `Lean.MVarId.getNondepPropHyps`). Locations where the application
+  fails are skipped, so the result can be empty. -/
+def Lean.Elab.Tactic.mapNondepPropLocation {α : Type} (loc : Location)
+    (atLocal : FVarId → TacticM α) (atTarget : TacticM α) : TacticM (Array α) := do
+  let results ← IO.mkRef (#[] : Array α)
+  withNondepPropLocation loc
+    (fun fvarId => do results.modify (·.push (← atLocal fvarId)))
+    (do results.modify (·.push (← atTarget)))
+    (fun _ => pure ())
+  results.get
 
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic

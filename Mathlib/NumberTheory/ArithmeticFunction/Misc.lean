@@ -5,8 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
+
 /-!
 # Miscellaneous arithmetic Functions
 
@@ -101,6 +102,7 @@ end ProdPrimeFactors
 section Id
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
+@[oeis A001477]
 protected def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 
@@ -140,6 +142,7 @@ end Pow
 section Sigma
 
 /-- `σ k n` is the sum of the `k`th powers of the divisors of `n` -/
+@[oeis A000005 "values for `k = 0`, `n > 0`"]
 def sigma (k : ℕ) : ArithmeticFunction ℕ :=
   ⟨fun n => ∑ d ∈ divisors n, d ^ k, by simp⟩
 
@@ -255,6 +258,7 @@ theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
     sigma_one_apply_prime_pow <| prime_of_mem_primeFactors h
 
 /-- `Ω n` is the number of prime factors of `n`. -/
+@[oeis A001222 "the sequence skips `n = 0`"]
 def cardFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.length, by simp⟩
 
@@ -317,9 +321,11 @@ theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k 
 
 theorem cardFactors_eq_sum_factorization {n : ℕ} :
     Ω n = n.factorization.sum fun _ k => k := by
-  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum]
+  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum,
+    primeFactorsList_count_eq]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
+@[oeis A001221 "the sequence skips `n = 0`"]
 def cardDistinctFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.dedup.length, by simp⟩
 

@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Dialectica.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # The Dialectica category is symmetric monoidal
@@ -52,11 +52,11 @@ set_option backward.isDefEq.respectTransparency false in
     · have := (Subobject.pullback (prod.map π₁ π₁ :
         (X₁.src ⨯ Y₁.src) ⨯ X₂.tgt ⨯ Y₂.tgt ⟶ _)).monotone (Hom.le f)
       rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at this
-      convert! this using 3 <;> simp
+      convert this using 3 <;> simp
     · have := (Subobject.pullback (prod.map π₂ π₂ :
         (X₁.src ⨯ Y₁.src) ⨯ X₂.tgt ⨯ Y₂.tgt ⟶ _)).monotone (Hom.le g)
       rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at this
-      convert! this using 3 <;> simp
+      convert this using 3 <;> simp
 
 /-- The unit for the tensor `X ⊗ Y` in `Dial C`. -/
 @[simps] def tensorUnitImpl : Dial C := { src := ⊤_ _, tgt := ⊤_ _, rel := ⊤ }
@@ -118,19 +118,23 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- TODO: fix the non-terminal simp
-set_option linter.flexible false in
 theorem leftUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (𝟙 (𝟙_ (Dial C)) ⊗ₘ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
-  ext <;> simp; ext; simp; congr 1; ext <;> simp
+  ext; · simp
+  simp only [tensorObj_tgt, tensorUnit_tgt, comp_F]
+  ext; simp only [tensorObj_src, tensorUnit_src, leftUnitor_hom_F, prod.comp_lift,
+    tensorHom_F, tensorUnit_tgt, BinaryFan.mk_snd, limit.lift_π, prod.lift_map_assoc]
+  congr 1; ext <;> simp
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
--- TODO: fix the non-terminal simp
-set_option linter.flexible false in
 theorem rightUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (f ⊗ₘ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
-  ext <;> simp; ext; simp; congr 1; ext <;> simp
+  ext; · simp
+  simp only [tensorObj_tgt, tensorUnit_tgt, comp_F]
+  ext; simp only [tensorObj_src, tensorUnit_src, rightUnitor_hom_F, prod.comp_lift,
+    tensorHom_F, tensorUnit_tgt, BinaryFan.mk_fst, limit.lift_π, prod.lift_map_assoc]
+  congr 1; ext <;> simp
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

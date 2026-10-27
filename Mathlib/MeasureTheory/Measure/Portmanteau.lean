@@ -88,8 +88,6 @@ probability measure
 public section
 
 
-noncomputable section
-
 open MeasureTheory Set Filter BoundedContinuousFunction
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
@@ -214,16 +212,16 @@ theorem tendsto_measure_of_le_liminf_measure_of_limsup_measure_le {ι : Type*} {
     (h_E₁ : (L.limsup fun i ↦ μs i E₁) ≤ μ E₁) : L.Tendsto (fun i ↦ μs i E) (𝓝 (μ E)) := by
   apply tendsto_of_le_liminf_of_limsup_le
   · have E₀_ae_eq_E : E₀ =ᵐ[μ] E :=
-      EventuallyLE.antisymm E₀_subset.eventuallyLE
-        (subset_E₁.eventuallyLE.trans (ae_le_set.mpr nulldiff))
+      E₀_subset.eventuallySubset.antisymm <|
+        subset_E₁.eventuallySubset.trans (ae_le_set.mpr nulldiff)
     calc
       μ E = μ E₀ := measure_congr E₀_ae_eq_E.symm
       _ ≤ L.liminf fun i ↦ μs i E₀ := h_E₀
       _ ≤ L.liminf fun i ↦ μs i E :=
         liminf_le_liminf (.of_forall fun _ ↦ measure_mono E₀_subset)
   · have E_ae_eq_E₁ : E =ᵐ[μ] E₁ :=
-      EventuallyLE.antisymm subset_E₁.eventuallyLE
-        ((ae_le_set.mpr nulldiff).trans E₀_subset.eventuallyLE)
+      EventuallyLE.antisymm subset_E₁.eventuallySubset <|
+        (ae_le_set.mpr nulldiff).trans E₀_subset.eventuallySubset
     calc
       (L.limsup fun i ↦ μs i E) ≤ L.limsup fun i ↦ μs i E₁ :=
         limsup_le_limsup (.of_forall fun _ ↦ measure_mono subset_E₁)
@@ -520,7 +518,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                   f.continuous f_nn h_opens
   rw [@integral_eq_lintegral_of_nonneg_ae Ω _ μ f (Eventually.of_forall f_nn)
         f.continuous.measurable.aestronglyMeasurable]
-  convert! ENNReal.toReal_mono ?_ same
+  convert ENNReal.toReal_mono ?_ same
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (Eventually.of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
@@ -820,7 +818,7 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
   refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
-  · convert! hn
+  · convert hn
     simp [accumulate_def]
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 

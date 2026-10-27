@@ -5,10 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
-public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.Monotone
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
+
+import Mathlib.Analysis.Calculus.FDeriv.Equiv
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Almost everywhere differentiability of functions with locally bounded variation
@@ -147,6 +149,56 @@ lemma LocallyBoundedVariationOn.mul {f g : α → ℝ} {s : Set α}
   hf.bilinear_comp hg (B := ContinuousLinearMap.lsmul ℝ ℝ)
 
 end
+
+namespace BoundedVariationOn
+
+variable {α E M : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+  [PseudoEMetricSpace M]
+  [SecondCountableTopologyEither α M] [MeasurableSpace α] [BorelSpace α]
+  [NormedAddCommGroup E] [SecondCountableTopologyEither α E]
+
+theorem stronglyMeasurable {f : α → M} (hf : BoundedVariationOn f univ) :
+    StronglyMeasurable f :=
+  StronglyMeasurable.of_countable_not_continuousAt hf.countable_not_continuousAt
+
+theorem measurable [MeasurableSpace M] [BorelSpace M] {f : α → M} (hf : BoundedVariationOn f univ) :
+    Measurable f :=
+  hf.stronglyMeasurable.measurable
+
+variable {μ : Measure α} {f : α → E}
+
+theorem memLp_top (hf : BoundedVariationOn f univ) : MemLp f ∞ μ := by
+  rcases isEmpty_or_nonempty α with hα | ⟨⟨x⟩⟩
+  · simp only [MemLp.of_discrete]
+  apply memLp_top_of_bound hf.stronglyMeasurable.aestronglyMeasurable
+    (‖f x‖ + (eVariationOn f univ).toReal)
+  filter_upwards with y
+  grw [← hf.dist_le (mem_univ x) (mem_univ y), dist_comm, dist_eq_norm_sub]
+  exact norm_le_norm_add_norm_sub' (f y) (f x)
+
+theorem memLp [IsFiniteMeasure μ] {p : ℝ≥0∞} (hf : BoundedVariationOn f univ) : MemLp f p μ :=
+  hf.memLp_top.mono_exponent le_top
+
+theorem integrable [IsFiniteMeasure μ] (hf : BoundedVariationOn f univ) : Integrable f μ :=
+  memLp_one_iff_integrable.1 hf.memLp
+
+theorem intervalIntegrable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+    {s : Set ℝ} (hf : BoundedVariationOn f s) (hs : uIcc a b ⊆ s) : IntervalIntegrable f μ a b := by
+  replace hf : BoundedVariationOn f (uIcc a b) := hf.mono hs
+  let φ : ℝ → ℝ := fun x ↦ (a ⊓ b) ⊔ ((a ⊔ b) ⊓ x)
+  have hφ : Monotone φ := fun _ _ h ↦ sup_le_sup_left (inf_le_inf_left _ h) _
+  have hmaps : MapsTo φ univ (uIcc a b) := fun _ _ ↦
+    ⟨le_sup_left, sup_le inf_le_sup inf_le_left⟩
+  have heq : EqOn (f ∘ φ) f (uIcc a b) := fun x hx ↦ by
+    simp only [Function.comp_apply, φ, inf_eq_right.2 hx.2, sup_eq_right.2 hx.1]
+  have hg : BoundedVariationOn (f ∘ φ) univ :=
+    ne_top_of_le_ne_top hf (eVariationOn.comp_le_of_monotoneOn f φ (hφ.monotoneOn univ) hmaps)
+  have : IsFiniteMeasure (μ.restrict (uIcc a b)) :=
+    isFiniteMeasure_restrict.2 isCompact_uIcc.measure_lt_top.ne
+  have hint : IntegrableOn (f ∘ φ) (uIcc a b) μ := hg.integrable
+  exact (hint.congr_fun heq measurableSet_uIcc).intervalIntegrable
+
+end BoundedVariationOn
 
 namespace LocallyBoundedVariationOn
 

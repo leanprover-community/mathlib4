@@ -6,9 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # The weak operator topology
@@ -192,6 +190,7 @@ def algEquiv (S : Type*) [CommSemiring S] [Module S E] [SMulCommClass 𝕜₁ S 
     (E →WOT[𝕜₁] E) ≃ₐ[S] (E →L[𝕜₁] E) :=
   equiv.algEquiv S
 
+@[macro_inline]
 instance instFunLike : FunLike (E →SWOT[σ] F) E F where
   coe f := toCLM f
   coe_injective := DFunLike.coe_injective.comp toCLM_injective
@@ -218,8 +217,6 @@ lemma toCLM_apply {A : E →SWOT[σ] F} {x : E} : toCLM A x = A x := rfl
 
 @[simp]
 lemma ofCLM_apply {A : E →SL[σ] F} {x : E} : ofCLM A x = A x := rfl
-
-@[deprecated (since := "2026-04-10")] alias _root_.ContinuousLinearMap.toWOT_apply := ofCLM_apply
 
 @[ext]
 lemma ext {A B : E →SWOT[σ] F} (h : ∀ x, A x = B x) : A = B :=
@@ -406,7 +403,7 @@ def seminormFamily : SeminormFamily 𝕜₂ (E →SWOT[σ] F) (E × F⋆) :=
   fun ⟨x, y⟩ => seminorm x y
 
 lemma withSeminorms : WithSeminorms (seminormFamily σ E F) :=
-  let e : E × F⋆ ≃ (Σ _ : E × F⋆, Fin 1) := .symm <| .sigmaUnique _ _
+  let e : E × F⋆ ≃ (Σ _ : E × F⋆, Unit) := .symm <| .sigmaUnique _ _
   isInducing_inducingFn.withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜₂ 𝕜₂)
     |>.congr_equiv e
 
@@ -433,15 +430,10 @@ lemma continuous_ofCLM :
   ContinuousLinearMapWOT.continuous_of_dual_apply_continuous fun x y ↦
     y.cont.comp <| continuous_eval_const x
 
-@[deprecated (since := "2026-04-10")] alias ContinuousLinearMap.continuous_toWOT := continuous_ofCLM
-
 /-- The inclusion map from `E →[𝕜] F` to `E →WOT[𝕜] F`, bundled as a continuous linear map. -/
 def _root_.ContinuousLinearMap.WOTofCLM : (E →SL[σ] F) →L[𝕜₂] (E →SWOT[σ] F) where
   toLinearMap := linearEquiv 𝕜₂ |>.symm.toLinearMap
   cont := continuous_ofCLM
-
-@[deprecated (since := "2026-04-10")]
-alias ContinuousLinearMap.toWOTCLM := ContinuousLinearMap.WOTofCLM
 
 end toWOT_continuous
 

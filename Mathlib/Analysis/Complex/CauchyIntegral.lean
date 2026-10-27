@@ -5,16 +5,15 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-public import Mathlib.Analysis.Calculus.DSlope
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Complex.ReImTopology
-public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Cauchy integral formula
@@ -39,6 +38,18 @@ differentiability at all but countably many points of the set mentioned below.
 * `Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable`: If a function
   `f : ℂ → E` is continuous on a closed rectangle and is *complex* differentiable on its interior,
   then its integral over the boundary of this rectangle is equal to zero.
+
+### Unbounded rectangle integrals
+
+* `Complex.integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable`: If a
+  function `f : ℂ → E` is continuous on an unbounded rectangle `[[x₁, x₂]] ×ℂ Ici y`, is *complex*
+  differentiable on its interior, tends to zero as the imaginary part of its argument tends to
+  infinity inside the strip `[[x₁, x₂]] ×ℂ Ici y`, and its integrals along the two vertical sides
+  converge, then its integral over the boundary of this rectangle is equal to zero.
+
+* `Complex.tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides`: In
+  the same setting, the integrals along one vertical side tend to the sum of the integral along
+  the horizontal side and the limit of the integrals along the other vertical side.
 
 ### Annuli and circles
 
@@ -155,6 +166,13 @@ Finally, we use the properties of the Cauchy integrals established elsewhere (se
 `hasFPowerSeriesOn_cauchy_integral`) and Cauchy integral formula to prove that the original
 function is analytic on the open ball.
 
+## TODO
+
+* The results on unbounded rectangles only cover rectangles that are unbounded above. Add versions
+  for rectangles that are unbounded below, to the left and to the right, together with lemmas
+  transferring statements between the four cases, so that these follow readily from the results
+  already formalised in this file.
+
 ## Tags
 
 Cauchy-Goursat theorem, Cauchy integral formula
@@ -165,8 +183,6 @@ public section
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
 open scoped Interval Real NNReal ENNReal Topology
-
-noncomputable section
 
 universe u
 
@@ -409,8 +425,10 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       have hc' : ContinuousOn (fun z => (z - c)⁻¹) (sphere c r) :=
         (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hzne _ hz
       rw [circleIntegral.integral_sub] <;> refine (hc'.smul ?_).circleIntegrable hr0.le
-      · exact hc.mono <| subset_inter
-          (sphere_subset_closedBall.trans <| closedBall_subset_closedBall hrR) hzne
+      · refine hc.mono ?_
+        grw [subset_sdiff, disjoint_left]
+        refine ⟨?_, hzne⟩
+        grw [sphere_subset_closedBall, hrR]
       · exact continuousOn_const
     _ ≤ 2 * π * r * (r⁻¹ * (ε / (2 * π))) := by
       refine circleIntegral.norm_integral_le_of_norm_le_const hr0.le fun z hz => ?_
@@ -578,30 +596,6 @@ theorem circleIntegral_div_sub_of_differentiable_on_off_countable {R : ℝ} {c w
   simpa only [smul_eq_mul, div_eq_inv_mul] using
     circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw hc hd
 
-/-
-Helper lemma for `hasDerivAt_circleIntegral_sub_zpow_smul`: For `w ∉ sphere c |R|`, there is a
-radius `d > 0` and a constant `M` such that all points of `ball w d` keep distance at least `d`
-and at most `M` from the circle `sphere c |R|`.
--/
-private lemma exists_ball_forall_le_norm_circleMap_sub {R : ℝ} {c w : ℂ}
-    (hw : w ∉ sphere c |R|) :
-    ∃ d > 0, ∃ M : ℝ, ∀ x ∈ ball w d, ∀ θ : ℝ,
-      d ≤ ‖circleMap c R θ - x‖ ∧ ‖circleMap c R θ - x‖ ≤ M := by
-  have hd₀ : 0 < abs (dist w c - |R|) :=
-    abs_pos.2 (sub_ne_zero.2 fun h ↦ hw (mem_sphere.2 h))
-  refine ⟨abs (dist w c - |R|) / 2, by positivity, |R| + dist c w + abs (dist w c - |R|) / 2,
-    fun x hx θ ↦ ?_⟩
-  rw [mem_ball] at hx
-  have h₁ : dist (circleMap c R θ) c = |R| := mem_sphere.1 (circleMap_mem_sphere' c R θ)
-  have h₂ : abs (dist w c - |R|) ≤ dist (circleMap c R θ) w := by
-    calc abs (dist w c - |R|) = |dist (circleMap c R θ) c - dist w c| := by rw [h₁, abs_sub_comm]
-      _ ≤ dist (circleMap c R θ) w := abs_dist_sub_le _ _ _
-  have h₃ := dist_triangle (circleMap c R θ) x w
-  have h₄ := dist_triangle4 (circleMap c R θ) c w x
-  rw [dist_comm w x] at h₄
-  rw [← dist_eq_norm]
-  exact ⟨by linarith, by linarith⟩
-
 omit [CompleteSpace E] in
 /--
 **Derivative of Cauchy-type integrals**: if `f` is circle integrable and `w` does not lie on the
@@ -613,7 +607,7 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
     (hf : CircleIntegrable f c R) (hw : w ∉ sphere c |R|) :
     HasDerivAt (fun w ↦ ∮ z in C(c, R), (z - w) ^ n • f z)
       ((-n : ℂ) • ∮ z in C(c, R), (z - w) ^ (n - 1) • f z) w := by
-  obtain ⟨d, hd, M, hdist⟩ := exists_ball_forall_le_norm_circleMap_sub hw
+  obtain ⟨d, hd, hdist⟩ := exists_ball_forall_le_norm_circleMap_sub hw
   have hfm : AEStronglyMeasurable (fun θ ↦ f (circleMap c R θ))
       (volume.restrict (uIoc 0 (2 * π))) := (intervalIntegrable_iff.1 hf).aestronglyMeasurable
   simp only [circleIntegral, deriv_circleMap]
@@ -621,7 +615,7 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
   refine (intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le
     (F' := fun x θ ↦ (-n : ℂ) • ((circleMap 0 R θ * I)
       • (circleMap c R θ - x) ^ (n - 1) • f (circleMap c R θ)))
-    (bound := fun θ ↦ |(n : ℝ)| * |R| * max (d ^ (n - 1)) (M ^ (n - 1)) *
+    (bound := fun θ ↦ |(n : ℝ)| * |R| * max (d ^ (n - 1)) ((|R| + dist c w + d) ^ (n - 1)) *
       ‖f (circleMap c R θ)‖)
     (ball_mem_nhds w hd) ?_ ?_ ?_ ?_ ?_ ?_).2
   · -- Measurability of the integrand, for `x` near `w`
@@ -635,8 +629,12 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
       ((Measurable.aestronglyMeasurable (by fun_prop)).smul hfm)).const_smul _
   · -- Uniform bound for the differentiated integrand near `w`
     filter_upwards with θ _ x hx
-    obtain ⟨hlb, hub⟩ := hdist x hx θ
-    have key : ‖circleMap c R θ - x‖ ^ (n - 1) ≤ max (d ^ (n - 1)) (M ^ (n - 1)) := by
+    have hlb := hdist x hx θ
+    have hub : ‖circleMap c R θ - x‖ ≤ |R| + dist c w + d := by
+      have := mem_ball.1 hx
+      linarith [norm_circleMap_sub_le c R θ x, dist_triangle_right c x w]
+    have key : ‖circleMap c R θ - x‖ ^ (n - 1)
+        ≤ max (d ^ (n - 1)) ((|R| + dist c w + d) ^ (n - 1)) := by
       rcases le_or_gt 0 (n - 1) with h | h
       · exact le_max_of_le_right (zpow_le_zpow_left₀ h (norm_nonneg _) hub)
       · refine le_max_of_le_left ?_
@@ -655,7 +653,7 @@ theorem hasDerivAt_circleIntegral_sub_zpow_smul {f : ℂ → E} {R : ℝ} {c w :
     exact (IntervalIntegrable.norm hf).const_mul _
   · -- Differentiability of the integrand in `x`, for `x` near `w`
     filter_upwards with θ _ x hx
-    have hne : circleMap c R θ - x ≠ 0 := norm_pos_iff.mp (hd.trans_le (hdist x hx θ).1)
+    have hne : circleMap c R θ - x ≠ 0 := norm_pos_iff.mp (hd.trans_le (hdist x hx θ))
     have h₁ : HasDerivAt (fun y : ℂ ↦ (circleMap c R θ - y) ^ n)
         (-((n : ℂ) * (circleMap c R θ - x) ^ (n - 1))) x :=
       (hasDerivAt_zpow n _ (Or.inl hne)).comp_const_sub (circleMap c R θ) x
@@ -807,7 +805,156 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
 
 end analyticity
 
+section unbounded
+
+/-!
+## Integrals over unbounded rectangular contours
+-/
+
+open Set Real Complex intervalIntegral Metric Filter MeasureTheory
+
+open scoped Interval Topology
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} {x₁ x₂ : ℝ} (y : ℝ)
+
+section tendsto_zero
+
+/-- If a family of functions `g m` tends to zero uniformly along the product filter
+`atTop ×ˢ (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))` (i.e., as `m → ∞` and the imaginary part of
+the input → ∞ jointly, within `[[x₁, x₂]] ×ℂ Ici y`), then
+$\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
+`tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`. -/
+lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero {g : ℝ → ℂ → E}
+    (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))) :
+    Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
+  apply TendstoUniformlyOn.tendsto_intervalIntegral_nhds_zero
+  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter]
+  rw [tendstoUniformlyOnFilter_iff_tendsto] at htendsto ⊢
+  refine htendsto.comp <| tendsto_fst.prodMk <| tendsto_inf.mpr ⟨?_, tendsto_principal.mpr ?_⟩
+  · simpa [Function.comp_def] using tendsto_fst
+  · filter_upwards [tendsto_fst.eventually_ge_atTop y,
+      tendsto_snd.eventually (eventually_principal.mpr fun _ h ↦ h)] with q hq₁ hq₂
+    simpa [Complex.mem_reProdIm] using ⟨hq₂, hq₁⟩
+
+/-- If $f(z) \to 0$ as $\Im(z) \to \infty$ within `[[x₁, x₂]] ×ℂ univ`, then
+$\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
+lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, f (x + m * I)) atTop (𝓝 0) :=
+  tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero (y := 0) (g := fun _ ↦ f) <|
+    (tendstoUniformlyOnFilter_iff_tendsto.mpr <|
+        tendsto_left_nhds_uniformity.comp (htendsto.comp tendsto_snd)).mono_right <|
+      inf_le_inf_left _ <| principal_mono.2 <| reProdIm_subset_iff.2 <|
+        prod_mono_right <| subset_univ _
+
+end tendsto_zero
+
+section tendsto
+
+private lemma integral_intermediate_rectangle_eq_zero
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x) :
+    ∀ m ≥ y, (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) - (∫ (x : ℝ) in x₁..x₂, f (x + m * I)) +
+      (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) - (I • ∫ (t : ℝ) in y..m, f (x₁ + t * I))
+        = 0 := fun m hm ↦ calc
+  _ = (((∫ (t : ℝ) in (x₁ + y * I).re..(x₂ + m * I).re, f (t + (x₁ + y * I).im * I)) -
+      ∫ (t : ℝ) in (x₁ + y * I).re..(x₂ + m * I).re, f (t + (x₂ + m * I).im * I)) +
+      I • ∫ (t : ℝ) in (x₁ + y * I).im..(x₂ + m * I).im, f ((x₂ + m * I).re + t * I)) -
+      I • ∫ (t : ℝ) in (x₁ + y * I).im..(x₂ + m * I).im, f ((x₁ + y * I).re + t * I) := by
+      simp
+  _ = 0 := by
+      refine Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable
+        f (x₁ + y * I) (x₂ + m * I) s hs ?_ ?_ <;> simp
+      · grind [hcont.mono, reProdIm_subset_iff, uIcc_of_le]
+      · grind [mem_reProdIm]
+
+/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+that a function satisfies Cauchy-Goursat conditions between them, interval integrals of increasing
+interval length along the first contour tend to the sum of a translation integral and the limit of
+interval integrals along the second integral. ("Unbounded rectangular contours" refers to contours
+that look like the disjoint union symbol "⨆") -/
+theorem tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
+    {C₂ : E} (hC₂ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop <|
+      𝓝 ((∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂) := by
+  refine .congr' ((eventually_ge_atTop y).mono fun m hm ↦
+    sub_eq_zero.mp (integral_intermediate_rectangle_eq_zero y hcont s hs hdiff m hm)) ?_
+  simpa using (tendsto_const_nhds.sub
+    (tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero htendsto)).add hC₂
+
+/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+that a function satisfies Cauchy-Goursat conditions between them, the limit of interval integrals
+along the first contour equals the sum of a translation integral and the limit of interval integrals
+along the second integral. -/
+theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
+    {C₁ : E} (hC₁ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop (𝓝 C₁))
+    {C₂ : E} (hC₂ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    (∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂ - C₁ = 0 := by
+  rw [sub_eq_zero]
+  exact (tendsto_nhds_unique hC₁ <|
+    tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides
+      y hcont s hs hdiff hC₂ htendsto).symm
+
+/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+that a function satisfies Cauchy-Goursat conditions between them, the limit of interval integrals
+along the first contour equals the sum of a translation integral and the limit of interval integrals
+along the second integral.
+
+This is a variant of `integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable`.
+The sole difference is that the assumptions in this lemma do not include the factor of `I` that
+comes from contour parametrisation. The reason we state this version is that it might be more
+convenient to use in certain cases.
+-/
+theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable'
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
+    {C₁ : E} (hC₁ : Tendsto (fun m ↦ ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop (𝓝 C₁))
+    {C₂ : E} (hC₂ : Tendsto (fun m ↦ ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    (∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + (I • C₂) - (I • C₁) = 0 :=
+  integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable y hcont s hs hdiff
+    (hC₁.const_smul I) (hC₂.const_smul I) htendsto
+
+end tendsto
+
+section integrable
+
+/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+that a function satisfies Cauchy-Goursat conditions between them and is integrable along both
+vertical contours, the improper integral along the first contour equals the sum of a translation
+integral and the improper integrals along the second integral.
+
+This is a variant of `integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable'`
+that requires the much stronger assumption of integrability. The reason integrability is stronger is
+that it requires the integral of the norm of the function to be finite rather than just that of the
+function. We nevertheless include this version of the theorem because it is likely that in
+applications involving specific functions, there will already be proofs of integrability.
+-/
+theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable_of_integrable_on
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
+    (hint₁ : IntegrableOn (fun (t : ℝ) ↦ f (x₁ + t * I)) (Ioi y) volume)
+    (hint₂ : IntegrableOn (fun (t : ℝ) ↦ f (x₂ + t * I)) (Ioi y) volume)
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) + (I • ∫ (t : ℝ) in Ioi y, f (x₂ + t * I)) -
+      (I • ∫ (t : ℝ) in Ioi y, f (x₁ + t * I)) = 0 := by
+  refine integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable' y hcont s hs
+    hdiff ?_ ?_ htendsto
+  · exact intervalIntegral_tendsto_integral_Ioi y hint₁ fun ⦃U⦄ a ↦ a
+  · exact intervalIntegral_tendsto_integral_Ioi y hint₂ fun ⦃U⦄ a ↦ a
+
+end integrable
+
+end unbounded
+
 section derivatives
+
 /-!
 ## Circle integrals for higher derivatives
 -/

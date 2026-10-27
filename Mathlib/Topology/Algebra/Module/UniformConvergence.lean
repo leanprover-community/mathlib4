@@ -6,8 +6,9 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.UniformConvergence
+
+import Mathlib.Topology.Algebra.FilterBasis
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -64,7 +65,7 @@ lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
     ContinuousSMul 𝕜 H := by
   have : IsTopologicalAddGroup H :=
     let ofFun' : (α → E) →+ (α →ᵤ E) := AddMonoidHom.id _
-    IsInducing.topologicalAddGroup (ofFun'.comp (φ : H →+ (α → E))) hφ
+    IsInducing.isTopologicalAddGroup (ofFun'.comp (φ : H →+ (α → E))) hφ
   have hb : (𝓝 (0 : H)).HasBasis (· ∈ 𝓝 (0 : E)) fun V ↦ {u | ∀ x, φ u x ∈ V} := by
     simp only [hφ.nhds_eq_comap, Function.comp_apply, map_zero]
     exact UniformFun.hasBasis_nhds_zero.comap _
@@ -104,8 +105,8 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
     .induced (UniformFun.ofFun ∘ s.domRestrict ∘ φ) (UniformFun.topologicalSpace s E)
   set φ' : H →ₗ[𝕜] (s → E) :=
     { toFun := s.domRestrict ∘ φ,
-      map_smul' := fun c x ↦ by exact congr_arg s.domRestrict (map_smul φ c x),
-      map_add' := fun x y ↦ by exact congr_arg s.domRestrict (map_add φ x y) }
+      map_smul' := fun c x ↦ by congrm s.domRestrict $(map_smul φ c x),
+      map_add' := fun x y ↦ by congrm s.domRestrict $(map_add φ x y) }
   refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
   simpa only [Set.image_eq_range] using! h u s hs
 

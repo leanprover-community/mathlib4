@@ -407,10 +407,6 @@ theorem notMem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_ge h.1
 @[to_dual notMem_Ioc_of_gt]
 theorem notMem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_ge h.1
 
-@[deprecated (since := "2026-02-10")] alias notMem_Ioi_self := self_notMem_Ioi
-
-@[deprecated (since := "2026-02-10")] alias notMem_Iio_self := self_notMem_Iio
-
 @[to_dual notMem_Ico_of_ge]
 theorem notMem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
@@ -742,13 +738,22 @@ end Dense
 
 /-! ### Intervals in `Prop` -/
 
-@[simp] lemma Iic_False : Iic False = {False} := by aesop
-@[simp] lemma Iic_True : Iic True = univ := by aesop
-@[simp] lemma Ici_False : Ici False = univ := by aesop
-@[simp] lemma Ici_True : Ici True = {True} := by aesop
-lemma Iio_False : Iio False = ∅ := by aesop
-@[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_ge])
-@[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_ge])
-lemma Ioi_True : Ioi True = ∅ := by aesop
+@[simp] lemma Iic_false : Iic False = {False} := by aesop
+@[simp] lemma Iic_true : Iic True = univ := by aesop
+@[simp] lemma Ici_false : Ici False = univ := by aesop
+@[simp] lemma Ici_true : Ici True = {True} := by aesop
+lemma Iio_false : Iio False = ∅ := by simp
+@[simp] lemma Iio_true : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_ge])
+@[simp] lemma Ioi_false : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_ge])
+lemma Ioi_true : Ioi True = ∅ := by simp
+
+@[deprecated (since := "2026-10-27")] alias Iic_False := Iic_false
+@[deprecated (since := "2026-10-27")] alias Iic_True := Iic_true
+@[deprecated (since := "2026-10-27")] alias Ici_False := Ici_false
+@[deprecated (since := "2026-10-27")] alias Ici_True := Ici_true
+@[deprecated (since := "2026-10-27")] alias Iio_False := Iio_false
+@[deprecated (since := "2026-10-27")] alias Iio_True := Iio_true
+@[deprecated (since := "2026-10-27")] alias Ioi_False := Ioi_false
+@[deprecated (since := "2026-10-27")] alias Ioi_True := Ioi_true
 
 end Set

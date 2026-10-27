@@ -6,9 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Topology.Algebra.Group.Pointwise
-public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Topology on the quotient group
@@ -117,7 +115,7 @@ theorem discreteTopology (hN : IsOpen (N : Set G)) :
   discreteTopology_iff.mpr hN
 
 /-- A quotient of a locally compact group is locally compact. -/
-@[to_additive]
+@[to_additive /-- A quotient of a locally compact additive group is locally compact. -/]
 instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) :=
   QuotientGroup.isOpenQuotientMap_mk.locallyCompactSpace

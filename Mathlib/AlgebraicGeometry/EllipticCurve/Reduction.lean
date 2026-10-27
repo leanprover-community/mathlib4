@@ -6,10 +6,9 @@ Authors: Bryan Wang
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
-public import Mathlib.GroupTheory.ArchimedeanDensely
+
+import Mathlib.GroupTheory.ArchimedeanDensely
 
 /-!
 # Reduction of Weierstrass curves over local fields
@@ -200,6 +199,51 @@ theorem exists_isIntegral (W : WeierstrassCurve K) :
 
 end Integral
 
+section UIntegral
+
+open Polynomial
+
+variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] {K : Type*} [Field K]
+  [Algebra R K] [IsFractionRing R K] {W W' : WeierstrassCurve K} [IsIntegral R W] [IsIntegral R W']
+  {CK : VariableChange K} (hCK : CK • W = W') {u : Rˣ} (hu : algebraMap R K u = CK.u)
+
+include hCK hu
+
+lemma r_integral_of_u_integral : ∃ r : R, algebraMap R K r = CK.r := by
+  refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 4 - C (integralModel R W).b₄ * X ^ 2 -
+    C (u ^ 6 * (integralModel R W').b₆ + 2 * (integralModel R W).b₆) * X -
+    C ((integralModel R W).b₈ - u ^ 8 * (integralModel R W').b₈), by monicity!, ?_⟩
+  simp [map_ofNat, hu, ← hCK, integralModel_b₄_eq, integralModel_b₆_eq,
+    integralModel_b₈_eq, variableChange_b₆, variableChange_b₈]
+  ring1
+
+lemma s_integral_of_u_integral : ∃ s : R, algebraMap R K s = CK.s := by
+  rcases r_integral_of_u_integral hCK hu with ⟨r, hr⟩
+  refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 + C (integralModel R W).a₁ * X +
+    C (u ^ 2 * (integralModel R W').a₂ - (integralModel R W).a₂ - 3 * r), by monicity!, ?_⟩
+  simp [map_ofNat, hu, hr, ← hCK, integralModel_a₁_eq, integralModel_a₂_eq,
+    variableChange_a₂]
+  ring1
+
+lemma t_integral_of_u_integral : ∃ t : R, algebraMap R K t = CK.t := by
+  rcases r_integral_of_u_integral hCK hu with ⟨r, hr⟩
+  refine IsIntegrallyClosed.isIntegral_iff.mp ⟨X ^ 2 +
+    C ((integralModel R W).a₃ + r * (integralModel R W).a₁) * X +
+    C (u ^ 6 * (integralModel R W').a₆ - (integralModel R W).a₆ - r * (integralModel R W).a₄
+      - r ^ 2 * (integralModel R W).a₂ - r ^ 3), by monicity!, ?_⟩
+  simp [hu, hr, ← hCK, integralModel_a₁_eq, integralModel_a₂_eq, integralModel_a₃_eq,
+    integralModel_a₄_eq, integralModel_a₆_eq, variableChange_a₆]
+  ring1
+
+/-- A variable change over the fraction field between integral Weierstrass equations descends to the
+base ring if its `u` coefficient descends to a unit of the base ring. -/
+theorem variableChange_integral_of_u_integral : ∃ CR : VariableChange R, CR.baseChange K = CK := by
+  rcases r_integral_of_u_integral hCK hu, s_integral_of_u_integral hCK hu,
+    t_integral_of_u_integral hCK hu with ⟨⟨r, hr⟩, ⟨s, hs⟩, ⟨t, ht⟩⟩
+  exact ⟨⟨u, r, s, t⟩, by ext <;> simpa⟩
+
+end UIntegral
+
 section Minimal
 
 variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
@@ -280,8 +324,6 @@ the valuation of its discriminant is 1. -/
 class HasGoodReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   goodReduction : valuation K (maximalIdeal R) W.Δ = 1
 
-@[deprecated (since := "2026-03-04")] alias IsGoodReduction := HasGoodReduction
-
 lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : IsMinimal R W] :
     HasGoodReduction R W ↔ (W.reduction R).IsElliptic := by
   refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm
@@ -292,9 +334,6 @@ lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : I
     not_iff_not.mpr <| valuation_lt_one_iff_mem _ _
   refine ((integralModel_Δ_eq R W ▸ hasGoodReduction_iff _ _).trans ?_).trans h
   simpa [hW] using (valuation_le_one (R := R) (K := K) _ _).ge_iff_eq.symm
-
-@[deprecated (since := "2026-03-04")] alias isGoodReduction_iff_isElliptic_reduction :=
-  hasGoodReduction_iff_isElliptic_reduction
 
 /-- A minimal Weierstrass equation has multiplicative reduction if and only if
 the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/

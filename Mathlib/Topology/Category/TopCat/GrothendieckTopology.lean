@@ -9,8 +9,9 @@ public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Continuous
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
-public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.ULift
+
+import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 
 /-!
 
@@ -84,7 +85,6 @@ lemma isOpenEmbedding_f_zeroHypercover {X : TopCat.{u}} (E : precoverage.ZeroHyp
 instance : Precoverage.Small.{u} precoverage.{u} :=
   .inf fun _ _ _ hRS hS _ _ hf ↦ hS (hRS _ _ hf)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The Grothendieck topology on `TopCat` is subcanonical. -/
 instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical := by
   refine .of_isSheaf_yoneda_obj _ fun X ↦ ?_
@@ -104,7 +104,7 @@ instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical :
       have := hx i j _ (TopCat.pullbackCone (𝒰.f i) (𝒰.f j)).fst
         (TopCat.pullbackCone (𝒰.f i) (𝒰.f j)).snd (TopCat.pullbackCone (𝒰.f i) (𝒰.f j)).condition
       dsimp at this
-      simpa using! congr($(this) ⟨(xi, xj), hi ▸ hj.symm⟩)
+      simpa using! congr($this ⟨(xi, xj), hi ▸ hj.symm⟩)
     · intro x
       obtain ⟨i, hi⟩ := exists_mem_zeroHypercover_range 𝒰 x
       exact ⟨i, (isOpenEmbedding_f_zeroHypercover 𝒰 i).isOpen_range.mem_nhds hi⟩

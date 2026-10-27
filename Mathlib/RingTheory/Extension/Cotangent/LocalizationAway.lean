@@ -5,9 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Extension.Presentation.Basic
-public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 public import Mathlib.RingTheory.Kaehler.JacobiZariski
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 
 /-!
 # Cotangent and localization away
@@ -65,7 +64,7 @@ def compLocalizationAwayAlgHom : ((Generators.localizationAway T g).comp P).Ring
       Localization.Away (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)) :=
   aeval (R := R) (S₁ := Localization.Away _)
     (Sum.elim
-      (fun _ ↦ IsLocalization.Away.invSelf <| (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)))
+      (fun _ ↦ IsLocalization.Away.invSelf (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)))
       (fun i : ι ↦ algebraMap P.Ring _ (X i)))
 
 set_option backward.isDefEq.respectTransparency false in

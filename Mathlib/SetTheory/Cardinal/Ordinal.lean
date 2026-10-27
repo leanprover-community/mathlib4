@@ -73,7 +73,7 @@ theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Iio o → Ordinal.{max 
 theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
     (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
   apply (card_iSup_Iio_le_sum_card f).trans
-  convert! ← sum_le_lift_mk_mul_iSup _
+  convert ← sum_le_lift_mk_mul_iSup _
   · exact mk_toType o
   · exact ToType.mk.symm.iSup_comp (g := fun x ↦ (f x).card)
 
@@ -116,15 +116,63 @@ theorem card_sSup_le {c : Cardinal} {s : Set Ordinal.{u}}
   · rwa [Cardinal.lift_id'.{u, u + 1}]
   · simpa
 
+theorem card_nfpFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
+    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
+    (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
+    (nfpFamily f o).card ≤ max c o.card := by
+  have : Small.{u} ι := small_of_lift_mk_le_lift hι
+  replace hι : #(Shrink.{u} ι) ≤ c := by rwa [← Cardinal.lift_le.{v}, Cardinal.lift_mk_shrink' ι]
+  set σ := equivShrink (List ι) |>.symm
+  rw [nfpFamily, ← Equiv.iSup_comp σ]
+  apply card_iSup_le_sum_card (List.foldr f o <| σ ·) |>.trans <|
+    sum_le_lift_mk_mul_iSup _ |>.trans <|
+    mul_le_mul' (b := c) ?_ (d := max c o.card) ?_ |>.trans ?_
+  · simp only [Cardinal.lift_id]
+    apply max_le hc hι |>.trans'
+    grw [mk_congr (σ.trans (equivShrink ι).listEquivOfEquiv), mk_list_le_max (Shrink ι)]
+  · have : Nonempty (Shrink (List ι)) := ⟨σ.symm []⟩
+    apply ciSup_le fun i => ?_
+    induction σ i with
+    | nil => simp
+    | cons => grind
+  · rw [Cardinal.mul_eq_max hc (le_trans hc (le_max_left _ _)), ← max_assoc, max_self]
+
+theorem card_derivFamily_le {ι : Type v} {f : ι → Ordinal → Ordinal}
+    {c : Cardinal} (hc : ℵ₀ ≤ c) (hι : Cardinal.lift.{u} #ι ≤ Cardinal.lift.{v} c)
+    (hf : ∀ i x, (f i x).card ≤ max c x.card) (o : Ordinal) :
+    (derivFamily f o).card ≤ max c o.card := by
+  induction o using limitRecOn with
+  | zero => simpa using card_nfpFamily_le hc hι hf 0
+  | add_one o ih =>
+    simp only [derivFamily_add_one, card_add_one]
+    grw [card_nfpFamily_le hc hι hf ((derivFamily f o) + 1), card_add_one, ih]
+    suffices max c o.card + 1 ≤ c ∨ c ≤ o.card + 1 ∧ c ≤ o.card by simp [this]
+    rcases lt_or_ge c o.card with ho | ho
+    · simp [ho.le, hc.trans ho.le]
+    · simp [ho, hc]
+  | limit o ho ih =>
+    rw [derivFamily_limit f ho]
+    apply card_iSup_Iio_le_card_mul_iSup _ |>.trans <|
+      mul_le_mul' (Cardinal.lift_le.mpr <| le_max_right c o.card)
+        (ciSup_le' (a := max c o.card) ?_) |>.trans ?_
+    · exact fun ⟨i, hi⟩ => ih _ hi |>.trans <| max_le_max_left _ (card_le_card hi.le)
+    · grw [Cardinal.lift_id, ← sq, power_nat_le (by simp [hc])]
+
+theorem card_nfp_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (nfp f o).card ≤ max ℵ₀ o.card :=
+  card_nfpFamily_le le_rfl (by simp) (fun _ => hf) o
+
+theorem card_deriv_le_of_forall_le {o : Ordinal} {f : Ordinal → Ordinal}
+    (hf : ∀ x, (f x).card ≤ max ℵ₀ x.card) : (deriv f o).card ≤ max ℵ₀ o.card :=
+  card_derivFamily_le le_rfl (by simp) (fun _ => hf) o
+
 theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordinal) :
     (a ^ b).card ≤ max a.card b.card := by
   induction b using limitRecOn with
   | zero => simpa using one_lt_omega0.le.trans ha
   | add_one b IH =>
-    rw [opow_add_one, card_mul, card_add_one, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
-    · grw [IH]
-      rw [← max_assoc, max_self]
-      grw [← le_self_add]
+    rw [opow_add_one, card_mul, card_add_one, Cardinal.mul_eq_max_of_aleph0_le_right]
+    · grw [IH, max_comm, ← max_assoc, max_self, ← le_self_add]
     · rw [ne_eq, card_eq_zero, opow_eq_zero]
       rintro ⟨rfl, -⟩
       cases omega0_pos.not_ge ha
@@ -177,20 +225,14 @@ theorem isPrincipal_opow_omega (o : Ordinal) : IsPrincipal (· ^ ·) (ω_ o) := 
     apply (card_opow_le a b).trans_lt (max_lt _ (max_lt ha hb))
     rwa [← aleph_zero, aleph_lt_aleph]
 
-@[deprecated (since := "2026-03-18")] alias principal_opow_omega := isPrincipal_opow_omega
-
 theorem IsInitial.isPrincipal_opow {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
     IsPrincipal (· ^ ·) o := by
   obtain ⟨a, rfl⟩ := mem_range_omega_iff.2 ⟨ho, h⟩
   exact isPrincipal_opow_omega a
 
-@[deprecated (since := "2026-03-18")] alias IsInitial.principal_opow := IsInitial.isPrincipal_opow
-
 theorem isPrincipal_opow_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : IsPrincipal (· ^ ·) c.ord := by
   apply (isInitial_ord c).isPrincipal_opow
   rwa [omega0_le_ord]
-
-@[deprecated (since := "2026-03-18")] alias principal_opow_ord := isPrincipal_opow_ord
 
 /-! ### Initial ordinals are principal -/
 
@@ -199,27 +241,19 @@ theorem isPrincipal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : IsPrincipal (·
   rw [lt_ord, card_add] at *
   exact add_lt_of_lt hc ha hb
 
-@[deprecated (since := "2026-03-18")] alias principal_add_ord := isPrincipal_add_ord
-
 theorem IsInitial.isPrincipal_add {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
     IsPrincipal (· + ·) o := by
   rw [← h.ord_card]
   apply isPrincipal_add_ord
   rwa [aleph0_le_card]
 
-@[deprecated (since := "2026-03-18")] alias IsInitial.principal_add := IsInitial.isPrincipal_add
-
 theorem isPrincipal_add_omega (o : Ordinal) : IsPrincipal (· + ·) (ω_ o) :=
   (isInitial_omega o).isPrincipal_add (omega0_le_omega o)
-
-@[deprecated (since := "2026-03-18")] alias principal_add_omega := isPrincipal_add_omega
 
 theorem isPrincipal_mul_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : IsPrincipal (· * ·) c.ord := by
   intro a b ha hb
   rw [lt_ord, card_mul] at *
   exact mul_lt_of_lt hc ha hb
-
-@[deprecated (since := "2026-03-18")] alias principal_mul_ord := isPrincipal_mul_ord
 
 theorem IsInitial.isPrincipal_mul {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
     IsPrincipal (· * ·) o := by
@@ -227,11 +261,7 @@ theorem IsInitial.isPrincipal_mul {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o
   apply isPrincipal_mul_ord
   rwa [aleph0_le_card]
 
-@[deprecated (since := "2026-03-18")] alias IsInitial.principal_mul := IsInitial.isPrincipal_mul
-
 theorem isPrincipal_mul_omega (o : Ordinal) : IsPrincipal (· * ·) (ω_ o) :=
   (isInitial_omega o).isPrincipal_mul (omega0_le_omega o)
-
-@[deprecated (since := "2026-03-18")] alias principal_mul_omega := isPrincipal_mul_omega
 
 end Ordinal

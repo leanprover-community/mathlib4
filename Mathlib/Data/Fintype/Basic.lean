@@ -5,11 +5,6 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finite.Defs
-public import Mathlib.Data.Finset.BooleanAlgebra
-public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.Fintype.OfMap
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.List.FinRange
 public import Mathlib.Data.List.OfFn
@@ -103,7 +98,7 @@ theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
   simp [univ_image_def]
 
 @[simp] theorem Fin.univ_image_getElem' [DecidableEq β] (l : List α) (f : α → β) :
-    Finset.univ.image (fun i : Fin l.length => f <| l[(i : Nat)]) = (l.map f).toFinset := by
+    Finset.univ.image (fun i : Fin l.length => f l[(i : Nat)]) = (l.map f).toFinset := by
   simp only [univ_image_def, List.ofFn_getElem_eq_map]
 
 theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :

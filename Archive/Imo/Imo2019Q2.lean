@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Sphere
-import Mathlib.Geometry.Euclidean.Sphere.SecondInter
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Sphere
+public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 
 /-!
 # IMO 2019 Q2
@@ -68,7 +70,7 @@ variable [NormedAddTorsor V Pt]
 
 namespace Imo2019Q2
 
-noncomputable section
+@[expose] public noncomputable section
 
 /-- A configuration satisfying the conditions of the problem. We define this structure to avoid
 passing many hypotheses around as we build up information about the configuration; the final

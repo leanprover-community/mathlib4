@@ -38,9 +38,9 @@ theorem PairwiseDisjoint.elim_finset {s : Set ι} {f : ι → Finset α} (hs : s
     {i j : ι} (hi : i ∈ s) (hj : j ∈ s) (a : α) (hai : a ∈ f i) (haj : a ∈ f j) : i = j :=
   hs.elim hi hj (Finset.not_disjoint_iff.2 ⟨a, hai, haj⟩)
 
-section SemilatticeInf
+section PartialOrder
 
-variable [SemilatticeInf α] [OrderBot α] {s : Finset ι} {f : ι → α}
+variable [PartialOrder α] [OrderBot α] {s : Finset ι} {f : ι → α}
 
 theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f : ι → α}
     (hs : (s : Set ι).PairwiseDisjoint f) {g : ι → ι} (hf : ∀ a, f (g a) ≤ f a) :
@@ -52,7 +52,7 @@ theorem PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
     (s.attach : Set { x // x ∈ s }).PairwiseDisjoint (f ∘ Subtype.val) := fun i _ j _ hij =>
   hs i.2 j.2 <| mt Subtype.ext hij
 
-end SemilatticeInf
+end PartialOrder
 
 variable [Lattice α] [OrderBot α]
 

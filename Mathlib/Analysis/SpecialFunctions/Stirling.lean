@@ -6,7 +6,8 @@ Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 module
 
 public import Mathlib.Analysis.Real.Pi.Wallis
-public import Mathlib.Tactic.AdaptationNote
+
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Stirling's formula
@@ -78,7 +79,7 @@ theorem log_stirlingSeq_sdiff_hasSum (m : ℕ) :
   let f (k : ℕ) := (1 : ℝ) / (2 * k + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ k
   change HasSum (fun k => f (k + 1)) _
   rw [hasSum_nat_add_iff]
-  convert! (hasSum_log_one_add_inv m.cast_add_one_pos).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
+  convert (hasSum_log_one_add_inv m.cast_add_one_pos).mul_left ((↑(m + 1) : ℝ) + 1 / 2) using 1
   · ext k
     dsimp only [f]
     rw [← pow_mul, pow_add]
@@ -97,29 +98,6 @@ theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ)
   antitone_nat_of_succ_le fun n =>
     sub_nonneg.mp <| (log_stirlingSeq_sdiff_hasSum n).nonneg fun m => by positivity
 
-/-- We have a bound for successive elements in the sequence `log (stirlingSeq k)`. -/
-@[deprecated "Use `log_stirlingSeq_sdiff_le` instead." (since := "2026-03-16")]
-theorem log_stirlingSeq_sdiff_le_geo_sum (n : ℕ) :
-    log (stirlingSeq (n + 1)) - log (stirlingSeq (n + 2)) ≤
-      ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (1 - ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) := by
-  have h_nonneg : (0 : ℝ) ≤ ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 := sq_nonneg _
-  have g : HasSum (fun k : ℕ => (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1))
-      (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2 / (1 - ((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)) := by
-    have := (hasSum_geometric_of_lt_one h_nonneg ?_).mul_left (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2)
-    · simp_rw [← _root_.pow_succ'] at this
-      exact this
-    rw [one_div, inv_pow]
-    exact inv_lt_one_of_one_lt₀ (one_lt_pow₀ (lt_add_of_pos_left _ <| by positivity) two_ne_zero)
-  have hab (k : ℕ) : (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) ≤
-      (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) := by
-    refine mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) ?_
-    rw [one_div]
-    exact inv_le_one_of_one_le₀ (le_add_of_nonneg_left <| by positivity)
-  exact hasSum_le hab (log_stirlingSeq_sdiff_hasSum n) g
-
-@[deprecated (since := "2026-06-03")]
-alias log_stirlingSeq_diff_le_geo_sum := log_stirlingSeq_sdiff_le_geo_sum
-
 /-- **Robbins' sharp stepwise bound** for the Stirling sequence:
 `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (12 n (n + 1))`. -/
 theorem log_stirlingSeq_sdiff_le (n : ℕ) :
@@ -133,17 +111,12 @@ theorem log_stirlingSeq_sdiff_le (n : ℕ) :
   have hr1 : r < 1 := by grw [hr, ← n.zero_le]; norm_num
   suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (n + 1 : ℕ) * ((n + 1 : ℕ) + 1))) by
     refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_sdiff_hasSum n) this
-    simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by norm_cast; grind
+    simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by grind
   grind [((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3]
 
 @[deprecated (since := "2026-06-03")] alias log_stirlingSeq_diff_le := log_stirlingSeq_sdiff_le
-
-/-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (4 n ^ 2)`. -/
-@[deprecated "Use `log_stirlingSeq_sdiff_le` instead." (since := "2026-03-16")]
-theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
-    log (stirlingSeq n) - log (stirlingSeq (n + 1)) ≤ 1 / (4 * n ^ 2) := by
-  grw [log_stirlingSeq_sdiff_le]
-  cases n <;> simp [field]; grind
+@[deprecated "type changed" (since := "2026-06-03")]
+alias log_stirlingSeq_diff_le_geo_sum := log_stirlingSeq_sdiff_le
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 12⁻¹`. -/
 theorem log_stirlingSeq_bounded_aux (n : ℕ) :
@@ -247,7 +220,7 @@ lemma factorial_isEquivalent_stirling :
   apply Asymptotics.isEquivalent_of_tendsto_one
   have : sqrt π ≠ 0 := by positivity
   nth_rewrite 2 [← div_self this]
-  convert! tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
+  convert tendsto_stirlingSeq_sqrt_pi.div tendsto_const_nhds this using 1
   ext n
   simp [field, stirlingSeq, mul_right_comm]
 

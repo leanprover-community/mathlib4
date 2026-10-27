@@ -5,10 +5,11 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Data.Nat.Cast.Field
+
 import Mathlib.Analysis.Asymptotics.Theta
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # Binomial coefficients and factorial variants

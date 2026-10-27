@@ -5,7 +5,6 @@ Authors: Johan Commelin, Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-!

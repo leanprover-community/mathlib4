@@ -5,7 +5,6 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.Rep.Res
 
@@ -248,7 +247,7 @@ variable (k G)
 /-- The functor sending a representation to its submodule of invariants. -/
 @[implicit_reducible, simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
-  obj A := ModuleCat.of k A.ρ.invariants
+  obj A := ↧A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
     B.ρ.invariants fun ⟨c, hc⟩ g => by
       have := (hom_comm_apply f g c).symm
