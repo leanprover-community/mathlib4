@@ -310,17 +310,23 @@ theorem totient_eq_div_primeFactors_mul (n : ℕ) :
     Nat.mul_div_assoc _ (prod_primeFactors_dvd n), mul_comm]
   exact prod_pos (fun p => pos_of_mem_primeFactors)
 
-/-- Euler's product formula for a product of distinct primes. -/
-theorem totient_prod_primes {s : Finset ℕ} (hs : ∀ p ∈ s, p.Prime) :
-    φ (∏ p ∈ s, p) = ∏ p ∈ s, (p - 1) := by
-  induction s using Finset.induction_on with
+/-- The totient of a product of pairwise coprime factors is the product of their totients. -/
+theorem totient_prod_of_pairwise_coprime {ι : Type*} {s : Finset ι} {f : ι → ℕ}
+    (hs : Set.Pairwise s <| Coprime.onFun f) : φ (∏ i ∈ s, f i) = ∏ i ∈ s, φ (f i) := by
+  induction s using Finset.cons_induction with
   | empty => simp
-  | insert q s hq ih =>
-    have hq' := hs q (mem_insert_self q s)
-    have hs' (p) (hp : p ∈ s) := hs p (mem_insert_of_mem hp)
-    rw [prod_insert hq, prod_insert hq, totient_mul, totient_prime hq', ih hs']
-    exact prod_induction _ (Coprime q) (fun _ _ ↦ Coprime.mul_right) (coprime_one_right q)
-      fun p hp ↦ (coprime_primes hq' (hs' p hp)).2 <| by rintro rfl; exact hq hp
+  | cons a s ha ih =>
+    rw [coe_cons, Set.pairwise_insert] at hs
+    rw [prod_cons, prod_cons, totient_mul, ih hs.1]
+    exact prod_induction _ (Coprime (f a)) (fun _ _ ↦ Coprime.mul_right) (coprime_one_right _)
+      fun i hi ↦ (hs.2 i hi fun h ↦ ha (h ▸ hi)).1
+
+/-- Euler's product formula for a product of distinct primes. -/
+theorem totient_prod_of_forall_prime {s : Finset ℕ} (hs : ∀ p ∈ s, p.Prime) :
+    φ (∏ p ∈ s, p) = ∏ p ∈ s, (p - 1) := by
+  rw [totient_prod_of_pairwise_coprime fun p hp q hq hpq ↦
+    (coprime_primes (hs p hp) (hs q hq)).2 hpq]
+  exact prod_congr rfl fun p hp ↦ totient_prime (hs p hp)
 
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_mul_prod_factors (n : ℕ) :
