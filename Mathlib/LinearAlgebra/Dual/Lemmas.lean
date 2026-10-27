@@ -6,14 +6,10 @@ Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 module
 
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
-public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
-public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.LocalRing.Basic
@@ -144,12 +140,12 @@ instance dual_free [Free R M] : Free R (Dual R M) :=
 
 instance dual_projective [Projective R M] : Projective R (Dual R M) :=
   have ⟨_, f, g, _, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
-  .of_split f.dualMap g.dualMap (congr_arg dualMap hfg)
+  .of_split f.dualMap g.dualMap congr(dualMap $hfg)
 
 instance dual_finite [Projective R M] : Module.Finite R (Dual R M) :=
   have ⟨n, f, g, _, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
   have := Finite.of_basis (Free.chooseBasis R <| Fin n → R).dualBasis
-  .of_surjective _ (surjective_of_comp_eq_id f.dualMap g.dualMap <| congr_arg dualMap hfg)
+  .of_surjective _ (surjective_of_comp_eq_id f.dualMap g.dualMap congr(dualMap $hfg))
 
 end Module
 
@@ -297,7 +293,7 @@ instance (priority := 90) instFiniteDimensionalOfIsReflexive (K V : Type*)
     exact lt_irrefl _ this
   have h₁ : lift (Module.rank K V) < Module.rank K (Dual K V) := lift_rank_lt_rank_dual contra
   have h₂ : Module.rank K (Dual K V) < Module.rank K (Dual K (Dual K V)) := by
-    convert! lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
+    convert lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
     rw [lift_id']
   exact lt_trans h₁ h₂
 
@@ -323,9 +319,6 @@ protected theorem Nondegenerate.id : Nondegenerate (M₁ := M →ₗ[R] R) .id :
   ⟨.id, .id⟩
 
 alias id_nondegenerate := Nondegenerate.id
-
-@[deprecated (since := "2026-04-02")]
-alias dualPairing_nondegenerate := id_nondegenerate
 
 /-- The pairing `Dual.eval` is left-separating. -/
 protected theorem SeparatingLeft.eval : (Dual.eval R M).SeparatingLeft :=
@@ -423,7 +416,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
   rw [← p.liftQ_mkQ K h]
   ext x
-  convert! LinearMap.congr_fun hK' (p.mkQ x)
+  convert! congr($hK' (p.mkQ x))
   simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
     smul_eq_mul]
 
@@ -487,7 +480,7 @@ variable {W : Subspace K V}
 
 @[simp]
 theorem dualLift_of_subtype {φ : Module.Dual K W} (w : W) : W.dualLift φ (w : V) = φ w :=
-  congr_arg φ <| LinearMap.leftInverse_apply_of_inj W.ker_subtype _
+  congr(φ $(LinearMap.leftInverse_apply_of_inj W.ker_subtype _))
 
 theorem dualLift_of_mem {φ : Module.Dual K W} {w : V} (hw : w ∈ W) : W.dualLift φ w = φ ⟨w, hw⟩ :=
   dualLift_of_subtype ⟨w, hw⟩
@@ -613,6 +606,7 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
     ext ⟨φ, hφ⟩
     exact (mem_dualAnnihilator φ).mp hφ w hw)
 
+@[macro_inline]
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
   coe_injective φ ψ h := by
@@ -741,7 +735,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have rr_surj : Function.Surjective f.rangeRestrict := by
     rw [← range_eq_top, range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
-  convert! this using 1
+  convert this using 1
   · calc
       _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
       _ = _ := ?_
@@ -806,7 +800,7 @@ lemma eq_of_ker_eq_of_apply_eq [FiniteDimensional K V₁] {f g : Module.Dual K V
     simp [ht]
   have hf : f ≠ 0 := by aesop
   ext v
-  obtain ⟨y, hy, z, hz, rfl⟩ : ∃ᵉ (y ∈ LinearMap.ker f) (z ∈ p), y + z = v := by
+  obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y ∈ LinearMap.ker f, ∃ z ∈ p, y + z = v := by
     have : v ∈ (⊤ : Submodule K V₁) := Submodule.mem_top
     rwa [← (isCompl_ker_of_disjoint_of_ne_bot hf hpf hp).sup_eq_top, Submodule.mem_sup] at this
   have hy' : g y = 0 := by rwa [← LinearMap.mem_ker, ← h]
@@ -935,7 +929,7 @@ namespace LinearMap
 @[simp]
 theorem finrank_range_dualMap_eq_finrank_range (f : V₁ →ₗ[K] V₂) :
     finrank K (LinearMap.range f.dualMap) = finrank K (LinearMap.range f) := by
-  rw [congr_arg dualMap (show f = (range f).subtype.comp f.rangeRestrict by rfl),
+  rw [congr(dualMap $(show f = (range f).subtype.comp f.rangeRestrict by rfl)),
     ← dualMap_comp_dualMap, range_comp,
     range_eq_top.mpr (dualMap_surjective_of_injective (range f).injective_subtype),
     Submodule.map_top, finrank_range_of_inj, Subspace.dual_finrank_eq]

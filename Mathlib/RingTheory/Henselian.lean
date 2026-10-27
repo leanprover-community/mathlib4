@@ -6,8 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Polynomial.Taylor
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # Henselian rings
@@ -200,7 +200,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         have := isLocalHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
         apply IsUnit.of_map (Ideal.Quotient.mk I)
-        convert! h₂ using 1
+        convert h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n
@@ -271,7 +271,7 @@ theorem IsLocalRing.eq_of_eval_eq_zero_of_not_isUnit_sub {R : Type*} [CommRing R
   suffices (c * (b - a) + eval a (derivative f)) ∉ maximalIdeal R by
     rw [notMem_maximalIdeal, isUnit_iff_exists] at this
     grind
-  by_contra!
+  by_contra
   replace this := (maximalIdeal R).add_mem this ((maximalIdeal R).mul_mem_left c h)
   ring_nf at this
   contradiction

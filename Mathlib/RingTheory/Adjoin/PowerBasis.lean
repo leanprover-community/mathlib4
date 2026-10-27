@@ -5,9 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.RingTheory.Adjoin.Basic
-public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.RingTheory.PowerBasis
 
 /-!
 # Power basis for `R[x]`

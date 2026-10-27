@@ -6,7 +6,6 @@ Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-public import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Subgraphs of a simple graph
@@ -395,7 +394,7 @@ theorem eq_bot_iff_verts_eq_empty (G' : G.Subgraph) : G' = ⊥ ↔ G'.verts = �
     funext₂ fun _ _ ↦ propext ⟨fun h' ↦ (h ▸ h'.fst_mem :), False.elim⟩⟩
 
 theorem ne_bot_iff_nonempty_verts (G' : G.Subgraph) : G' ≠ ⊥ ↔ G'.verts.Nonempty :=
-  G'.eq_bot_iff_verts_eq_empty.not.trans <| Set.nonempty_iff_ne_empty.symm
+  G'.eq_bot_iff_verts_eq_empty.not.trans Set.nonempty_iff_ne_empty.symm
 
 @[simp]
 theorem sSup_adj {s : Set G.Subgraph} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
@@ -1373,7 +1372,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
 def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
-  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_inter_left hv⟩, by aesop⟩
+  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_sdiff hv⟩, by aesop⟩
   invFun := fun ⟨v, hv⟩ ↦ ⟨v, by simp_all⟩
   map_rel_iff' := by simp
 

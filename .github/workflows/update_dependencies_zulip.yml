@@ -8,10 +8,15 @@ on:
     branches:
       - 'update-dependencies-**'
 
+# `workflow_run` matches the triggering workflow by name and branch name only, which doesn't
+# identify it. So both jobs require a run for a push to this repository.
 jobs:
   monitor-failures:
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'failure' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' &&
+            github.event.workflow_run.event == 'push' &&
+            github.event.workflow_run.head_repository.full_name == github.repository &&
+            github.event.workflow_run.conclusion == 'failure' }}
     permissions:
       contents: read
       id-token: write
@@ -48,7 +53,7 @@ jobs:
 
       - name: Generate app token
         id: app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
@@ -60,6 +65,8 @@ jobs:
       - name: Construct message
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         id: construct_message
+        env:
+          CHANGES: ${{ steps.parse_changes.outputs.changes }}
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
@@ -75,17 +82,11 @@ jobs:
                   pull_number: pr.number,
                 });
                 output += "Found [PR " + pr.number + "](" + pullRequest.html_url + "). "
-                await github.rest.issues.removeLabel({
-                  owner,
-                  repo,
-                  issue_number: pr.number,
-                  name: "auto-merge-after-CI",
-                });
               }
             } else {
               output += "No PR found for this run! If you are feeling impatient and have write access, please go to the following page and click the \"Run workflow\" button!\nhttps://github.com/leanprover-community/mathlib4/actions/workflows/update_dependencies.yml";
             }
-            output += "\n\n" + "${{ steps.parse_changes.outputs.changes }}";
+            output += "\n\n" + (process.env.CHANGES ?? "");
             return output;
 
       - name: Send Zulip message
@@ -102,7 +103,10 @@ jobs:
 
   monitor-success:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' &&
+            github.event.workflow_run.event == 'push' &&
+            github.event.workflow_run.head_repository.full_name == github.repository &&
+            github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
       id-token: write
@@ -138,7 +142,7 @@ jobs:
 
       - name: Generate app token
         id: app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
@@ -150,6 +154,8 @@ jobs:
       - name: Construct success message
         id: construct_message
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          CHANGES: ${{ steps.parse_changes.outputs.changes }}
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           result-encoding: string
@@ -161,7 +167,7 @@ jobs:
               for (let pr of prs) {
                 output += "merged via #" + pr.number + ". ";
               }
-              output += "\n\n" + "${{ steps.parse_changes.outputs.changes }}";
+              output += "\n\n" + (process.env.CHANGES ?? "");
               return output
             }
             return ''  // Return empty string if no PRs found

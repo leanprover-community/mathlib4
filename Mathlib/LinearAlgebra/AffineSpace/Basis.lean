@@ -45,6 +45,8 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 open Module Set
@@ -105,6 +107,7 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : �
 instance : Inhabited (AffineBasis PUnit k PUnit) :=
   ⟨⟨id, affineIndependent_of_subsingleton k id, by simp⟩⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -366,7 +369,7 @@ variable [DivisionRing k] [Module k V]
 
 @[simp]
 theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset ι} {i : ι}
-    (hi : i ∈ s) : b.coord i (s.centroid k b) = (s.card : k)⁻¹ := by
+    (hi : i ∈ s) : b.coord i (s.centroid k b) = (#s : k)⁻¹ := by
   rw [Finset.centroid,
     b.coord_apply_combination_of_mem hi (s.sum_centroidWeights_eq_one_of_nonempty _ ⟨i, hi⟩),
     Finset.centroidWeights, Function.const_apply]

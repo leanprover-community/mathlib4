@@ -465,7 +465,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
     μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
     _ ≤ ∑' n, (μ (A n) + δ n) := ENNReal.tsum_le_tsum fun n => (hU n).le
     _ = ∑' n, μ (A n) + ∑' n, δ n := ENNReal.tsum_add
-    _ = μ (⋃ n, A n) + ∑' n, δ n := (congr_arg₂ (· + ·) (measure_iUnion hAd hAm).symm rfl)
+    _ = μ (⋃ n, A n) + ∑' n, δ n := congr($((measure_iUnion hAd hAm).symm) + _)
     _ < r := hδε
 
 /-- See also `IsCompact.measure_closure` for a version
@@ -584,7 +584,7 @@ theorem measurableSet_of_isOpen [OuterRegular μ] (H : InnerRegularWRT μ p IsOp
     InnerRegularWRT μ p fun s => MeasurableSet s ∧ μ s ≠ ∞ := by
   rintro s ⟨hs, hμs⟩ r hr
   have h0 : p ∅ := by
-    have : 0 < μ univ := (bot_le.trans_lt hr).trans_le (measure_mono (subset_univ _))
+    have : 0 < μ univ := by gconvert hr <;> simp
     obtain ⟨K, -, hK, -⟩ : ∃ K, K ⊆ univ ∧ p K ∧ 0 < μ K := H isOpen_univ _ this
     simpa using hd hK isOpen_univ
   obtain ⟨ε, hε, hεs, rfl⟩ : ∃ ε ≠ 0, ε + ε ≤ μ s ∧ r = μ s - (ε + ε) := by
@@ -748,7 +748,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     InnerRegular (Measure.map f μ) ↔ InnerRegular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert! h.map f.symm
+  convert h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 
@@ -1135,7 +1135,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     Regular (Measure.map f μ) ↔ Regular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert! h.map f.symm
+  convert h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 

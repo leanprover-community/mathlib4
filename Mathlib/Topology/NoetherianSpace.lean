@@ -12,8 +12,8 @@ public import Mathlib.Topology.Sets.Closeds
 # Noetherian space
 
 A Noetherian space is a topological space that satisfies any of the following equivalent conditions:
-- `WellFounded ((· > ·) : TopologicalSpace.Opens α → TopologicalSpace.Opens α → Prop)`
-- `WellFounded ((· < ·) : TopologicalSpace.Closeds α → TopologicalSpace.Closeds α → Prop)`
+- `WellFoundedGT (TopologicalSpace.Opens α)`
+- `WellFoundedLT (TopologicalSpace.Closeds α)`
 - `∀ s : Set α, IsCompact s`
 - `∀ s : TopologicalSpace.Opens α, IsCompact s`
 
@@ -84,7 +84,6 @@ theorem noetherianSpace_TFAE :
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
   tfae_have 1 ↔ 2 := by
-    simp_rw [isWellFounded_iff]
     exact Opens.compl_bijective.2.wellFounded_iff (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4 := noetherianSpace_iff_opens α
   tfae_have 1 → 3 := @NoetherianSpace.isCompact α _
@@ -147,7 +146,7 @@ theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α :=
   Finite.of_finite_univ (NoetherianSpace.isCompact Set.univ).finite_of_discrete
 
 instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpace α :=
-  ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+  Finite.wellFounded_of_trans_of_irrefl _
 
 instance (priority := 100) [IndiscreteTopology α] : NoetherianSpace α :=
   noetherianSpace_of_surjective CofiniteTopology.of.symm continuous_of_indiscreteTopology
@@ -169,7 +168,7 @@ theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace �
       lift z₂ to Closeds α using hz₂
       rcases H (s ⊓ z₁) (inf_lt_left.2 hz₁') with ⟨S₁, hSf₁, hS₁, h₁⟩
       rcases H (s ⊓ z₂) (inf_lt_left.2 hz₂') with ⟨S₂, hSf₂, hS₂, h₂⟩
-      refine ⟨S₁ ∪ S₂, hSf₁.union hSf₂, Set.union_subset_iff.2 ⟨hS₁, hS₂⟩, ?_⟩
+      refine ⟨S₁ ∪ S₂, hSf₁.union hSf₂, by grind, ?_⟩
       rwa [sSup_union, ← h₁, ← h₂, ← inf_sup_left, left_eq_inf]
 
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/

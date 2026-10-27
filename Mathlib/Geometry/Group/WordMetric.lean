@@ -72,7 +72,9 @@ lemma IsGeodesic.eq {l : List (ι × Bool)} (hl : P.IsGeodesic l) :
 
 /-- Every group element has a geodesic word representative. -/
 theorem exists_isGeodesic : ∃ l, P.IsGeodesic l ∧ P.wordProd l = g := by
-  obtain ⟨l, rfl, hlen⟩ := Nat.sInf_mem (Set.Nonempty.image List.length (P.wordProd_surjective g))
+  obtain ⟨l, rfl, hlen⟩ :
+      sInf (List.length '' {l | P.wordProd l = g}) ∈ List.length '' {l | P.wordProd l = g} :=
+    Nat.sInf_mem <| .image List.length (P.wordProd_surjective g)
   exact ⟨l, hlen.symm, rfl⟩
 
 /-! ### Word length -/
@@ -81,7 +83,7 @@ lemma wordLength_wordProd_le : P.wordLength (P.wordProd l) ≤ l.length :=
   Nat.sInf_le ⟨l, rfl, rfl⟩
 
 /-- The characterisation of word length: the word length of a group element is less or equal to `n`
-if and only if there exists a word `l` of length `n` which evaluates to `g`. -/
+if and only if there exists a word `l` of length at most `n` which evaluates to `g`. -/
 theorem wordLength_le_iff {n : ℕ} : P.wordLength g ≤ n ↔ ∃ l, l.length ≤ n ∧ P.wordProd l = g := by
   constructor
   · intro h

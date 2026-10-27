@@ -5,9 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Hom
-public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # Evaluating a polynomial
@@ -80,7 +79,7 @@ theorem eval₂_monomial {n : ℕ} {r : R} : (monomial n r).eval₂ f x = f r * 
 @[simp]
 theorem eval₂_X_pow {n : ℕ} : (X ^ n).eval₂ f x = x ^ n := by
   rw [X_pow_eq_monomial]
-  convert! eval₂_monomial f x (n := n) (r := 1)
+  convert eval₂_monomial f x (n := n) (r := 1)
   simp
 
 @[simp]
@@ -132,8 +131,6 @@ theorem eval₂_multiset_sum (s : Multiset R[X]) (x : S) :
 theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∑ i ∈ s, g i).eval₂ f x = ∑ i ∈ s, (g i).eval₂ f x :=
   map_sum (eval₂AddMonoidHom f x) _ _
-
-@[deprecated (since := "2026-04-08")] alias eval₂_finset_sum := eval₂_finsetSum
 
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
     eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
@@ -265,13 +262,13 @@ theorem eval₂_at_apply {S : Type*} [Semiring S] (f : R →+* S) (r : R) :
 
 @[simp]
 theorem eval₂_at_one {S : Type*} [Semiring S] (f : R →+* S) : p.eval₂ f 1 = f (p.eval 1) := by
-  convert! eval₂_at_apply (p := p) f 1
+  convert eval₂_at_apply (p := p) f 1
   simp
 
 @[simp]
 theorem eval₂_at_natCast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
     p.eval₂ f n = f (p.eval n) := by
-  convert! eval₂_at_apply (p := p) f n
+  convert eval₂_at_apply (p := p) f n
   simp
 
 @[simp]
@@ -348,8 +345,6 @@ theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
 theorem eval_finsetSum (s : Finset ι) (g : ι → R[X]) (x : R) :
     (∑ i ∈ s, g i).eval x = ∑ i ∈ s, (g i).eval x :=
   eval₂_finsetSum _ _ _ _
-
-@[deprecated (since := "2026-04-08")] alias eval_finset_sum := eval_finsetSum
 
 /-- `IsRoot p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero -/
 def IsRoot (p : R[X]) (a : R) : Prop :=
@@ -644,11 +639,11 @@ theorem coe_compRingHom (q : R[X]) : (compRingHom q : R[X] → R[X]) = fun p => 
 theorem coe_compRingHom_apply (p q : R[X]) : (compRingHom q : R[X] → R[X]) p = comp p q :=
   rfl
 
-theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} : IsRoot q a → IsRoot (p * q) a := fun H => by
-  rw [IsRoot, eval_mul, IsRoot.def.1 H, mul_zero]
+theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} (hq : IsRoot q a) : IsRoot (p * q) a := by
+  rw [IsRoot, eval_mul, IsRoot.def.1 hq, mul_zero]
 
-theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) : IsRoot p a → IsRoot (p * q) a := fun H =>
-  by rw [IsRoot, eval_mul, IsRoot.def.1 H, zero_mul]
+theorem root_mul_right_of_isRoot {p : R[X]} (q : R[X]) (hp : IsRoot p a) : IsRoot (p * q) a := by
+  rw [IsRoot, eval_mul, IsRoot.def.1 hp, zero_mul]
 
 theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
     eval₂ f x s.prod = (s.map (eval₂ f x)).prod :=
@@ -657,8 +652,6 @@ theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
 theorem eval₂_finsetProd (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∏ i ∈ s, g i).eval₂ f x = ∏ i ∈ s, (g i).eval₂ f x :=
   map_prod (eval₂RingHom f x) _ _
-
-@[deprecated (since := "2026-04-08")] alias eval₂_finset_prod := eval₂_finsetProd
 
 /-- Polynomial evaluation commutes with `List.prod`
 -/
@@ -783,7 +776,7 @@ theorem intCast_comp (i : ℤ) : comp (i : R[X]) p = i := by cases i <;> simp
 @[simp]
 theorem eval₂_at_intCast {S : Type*} [Ring S] (f : R →+* S) (n : ℤ) :
     p.eval₂ f n = f (p.eval n) := by
-  convert! eval₂_at_apply (p := p) f n
+  convert eval₂_at_apply (p := p) f n
   simp
 
 theorem mul_X_sub_intCast_comp {n : ℕ} :

@@ -676,7 +676,7 @@ lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
   have : NoMinOrder R := NoBotOrder.to_noMinOrder R
   obtain ⟨y, hy⟩ : ∃ y, y < x := exists_lt x
   rw [← top_le_iff, ← f.measure_Iic_of_tendsto_atBot_atBot hf y]
-  exact measure_mono <| Set.Iic_subset_Iio.mpr <| hy
+  exact measure_mono <| Set.Iic_subset_Iio.mpr hy
 
 theorem measure_univ [Nonempty R]
     {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :

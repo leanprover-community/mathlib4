@@ -6,13 +6,13 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Logic.Relator
-public import Mathlib.Tactic.Use
-public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Mathlib.Tactic.SimpRw
 public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Defs.Unbundled
-public import Batteries.Logic
-public import Batteries.Tactic.Trans
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.Use
+
+import Batteries.Logic
 
 /-!
 # Relation closures
@@ -64,29 +64,21 @@ section NeImp
 
 variable {r : α → α → Prop}
 
-@[deprecated (since := "2026-03-27")] alias Std.Refl.reflexive := refl
-
 /-- To show a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 it suffices to show it holds when `x ≠ y`. -/
 theorem Std.Refl.rel_of_ne_imp [Std.Refl r] {x y : α} (hr : x ≠ y → r x y) : r x y := by
   grind [Std.Refl]
-
-@[deprecated (since := "2026-03-27")] alias Reflexive.rel_of_ne_imp := Std.Refl.rel_of_ne_imp
 
 /-- If a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 then it holds whether or not `x ≠ y`. -/
 theorem Std.Refl.ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x y :=
   ⟨Std.Refl.rel_of_ne_imp, fun hr _ ↦ hr⟩
 
-@[deprecated (since := "2026-03-27")] alias Reflexive.ne_imp_iff := Std.Refl.ne_imp_iff
-@[deprecated (since := "2026-03-27")] alias reflexive_ne_imp_iff := Std.Refl.ne_imp_iff
-
 theorem refl_iff_eq_le : Std.Refl r ↔ Eq ≤ r := by
   unfold Pi.hasLe Prop.le
   grind [Std.Refl]
 
 @[deprecated (since := "2026-06-30")] alias refl_iff_subrelation_eq := refl_iff_eq_le
-@[deprecated (since := "2026-03-27")] alias reflexive_iff_subrelation_eq := refl_iff_eq_le
 
 theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
   unfold Pi.hasLe Prop.le
@@ -123,8 +115,6 @@ variable {r : β → β → Prop}
 
 instance Std.Refl.comap [Std.Refl r] (f : α → β) : Std.Refl (r on f) where
   refl a := refl <| f a
-
-@[deprecated (since := "2026-03-27")] alias Reflexive.comap := Std.Refl.comap
 
 instance Std.Symm.comap [Std.Symm r] (f : α → β) : Std.Symm (r on f) where
   symm _ _ hab := symm_of r hab
@@ -222,7 +212,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
 end Fibration
 
 section Map
-variable {r : α → β → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : δ}
+variable {r : α → β → Prop} {s : γ → δ → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : δ}
 
 /-- The map of a relation `r` through a pair of functions pushes the
 relation to the codomains of the functions.  The resulting relation is
@@ -241,7 +231,7 @@ lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b 
 
 @[simp]
 lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → Prop) (a : α) (b : β) :
-    Relation.Map r f g (f a) (g b) ↔ r a b := by simp [Relation.Map, hf.eq_iff, hg.eq_iff]
+    Relation.Map r f g (f a) (g b) ↔ r a b := by grind
 
 @[simp] lemma map_id_id (r : α → β → Prop) : Relation.Map r id id = r := by ext; simp [Relation.Map]
 
@@ -253,8 +243,6 @@ lemma _root_.Std.Refl.map {r : α → α → Prop} [Std.Refl r] {f : α → β} 
   refl x := by
     obtain ⟨y, rfl⟩ := hf x
     exact ⟨y, y, refl y, rfl, rfl⟩
-
-@[deprecated (since := "2026-03-27")] alias map_reflexive := Std.Refl.map
 
 instance _root_.Std.Symm.map {r : α → α → Prop} [Std.Symm r] (f : α → β) :
     Std.Symm (Relation.Map r f f) where
@@ -268,8 +256,6 @@ lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
     (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
   grind [isTrans_def]
 
-@[deprecated (since := "2026-03-27")] alias isTrans_map := IsTrans.map
-
 lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β) (hf : f.Surjective)
     (hf_ker : ∀ x y, f x = f y → r x y) : Equivalence (Relation.Map r f f) where
   refl := hr.stdRefl.map hf |>.refl
@@ -280,35 +266,104 @@ lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : r
     Relation.Map r f g ≤ Relation.Map s f g :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
-lemma le_onFun_map {r : α → α → Prop} (f : α → β) : r ≤ (Relation.Map r f f on f) := by
-  unfold Pi.hasLe Prop.le
-  grind
+theorem bicompl_le_of_le_map (hf : f.Injective) (hg : g.Injective) (hle : s ≤ Relation.Map r f g) :
+    s.bicompl f g ≤ r := by
+  intro a b hs
+  grind [hle _ _ hs, Relation.Map]
 
-lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj : f.Injective) :
-    (Relation.Map r f f on f) = r := by
-  ext x y
-  exact ⟨fun ⟨x', y', hr, hx, hy⟩ ↦ hinj hx ▸ hinj hy ▸ hr, fun h ↦ ⟨x, y, h, rfl, rfl⟩⟩
+theorem onFun_le_of_le_map {r : α → α → Prop} {s : β → β → Prop} {f : α → β} (hf : f.Injective)
+    (hle : s ≤ Relation.Map r f f) : (s on f) ≤ r :=
+  bicompl_le_of_le_map hf hf hle
+
+theorem le_map_of_bicompl_le (hf : f.Surjective) (hg : g.Surjective) (hle : s.bicompl f g ≤ r) :
+    s ≤ Relation.Map r f g := by
+  intro a b hs
+  obtain ⟨a, rfl⟩ := hf a
+  obtain ⟨b, rfl⟩ := hg b
+  exact ⟨a, b, hle a b hs, rfl, rfl⟩
+
+theorem le_map_of_onFun_le {r : α → α → Prop} {s : β → β → Prop} {f : α → β} (hf : f.Surjective)
+    (hle : (s on f) ≤ r) : s ≤ Relation.Map r f f :=
+  le_map_of_bicompl_le hf hf hle
+
+theorem le_map_iff_bicompl_le (hf : f.Bijective) (hg : g.Bijective) :
+    s ≤ Relation.Map r f g ↔ s.bicompl f g ≤ r :=
+  ⟨bicompl_le_of_le_map hf.left hg.left, le_map_of_bicompl_le hf.right hg.right⟩
+
+theorem le_map_iff_onFun_le {r : α → α → Prop} {s : β → β → Prop} {f : α → β} (hf : f.Bijective) :
+    s ≤ Relation.Map r f f ↔ s.onFun f ≤ r :=
+  ⟨onFun_le_of_le_map hf.left, le_map_of_onFun_le hf.right⟩
+
+theorem map_le_iff_le_bicompl : Relation.Map r f g ≤ s ↔ r ≤ s.bicompl f g := by
+  unfold Pi.hasLe
+  grind [bicompl, le_Prop_eq]
+
+theorem map_le_iff_le_onFun {r : α → α → Prop} {s : β → β → Prop} {f : α → β} :
+    Relation.Map r f f ≤ s ↔ r ≤ (s on f) := by
+  unfold Pi.hasLe
+  grind [le_Prop_eq]
+
+variable (r) in
+theorem le_bicompl_map : r ≤ (Relation.Map r f g).bicompl f g :=
+  (⟨·, ·, ·, rfl, rfl⟩)
+
+lemma le_onFun_map {r : α → α → Prop} (f : α → β) : r ≤ (Relation.Map r f f on f) := by
+  unfold Pi.hasLe
+  grind [le_Prop_eq]
+
+variable (r) in
+theorem bicompl_map_eq_of_injective (hf : f.Injective) (hg : g.Injective) :
+    (Relation.Map r f g).bicompl f g = r := by
+  grind [bicompl]
+
+lemma onFun_map_eq_of_injective (r : α → α → Prop) {f : α → β} (hf : f.Injective) :
+    (Relation.Map r f f on f) = r :=
+  bicompl_map_eq_of_injective r hf hf
+
+variable (s f g) in
+theorem map_bicompl_le : Relation.Map (s.bicompl f g) f g ≤ s := by
+  unfold Pi.hasLe
+  grind [bicompl, le_Prop_eq]
 
 lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Relation.Map (r on f) f f ≤ r := by
-  unfold Pi.hasLe Prop.le
-  grind
+  unfold Pi.hasLe
+  grind [le_Prop_eq]
 
-lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : f.Surjective) :
-    Relation.Map (r on f) f f = r := by
-  ext x y
-  grind [hsurj x, hsurj y]
+variable (s) in
+theorem map_bicompl_eq_of_surjective (hf : f.Surjective) (hg : g.Surjective) :
+    Relation.Map (s.bicompl f g) f g = s := by
+  ext a b
+  grind [hf a, hg b, bicompl]
 
-lemma map_onFun_map_eq_map {r : α → α → Prop} (f : α → β) :
-    Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f := by
-  grind
+lemma map_onFun_eq_of_surjective (r : β → β → Prop) {f : α → β} (hf : f.Surjective) :
+    Relation.Map (r on f) f f = r :=
+  map_bicompl_eq_of_surjective r hf hf
 
-lemma onFun_map_onFun_eq_onFun {r : β → β → Prop} (f : α → β) :
-    (Relation.Map (r on f) f f on f) = (r on f) := by
-  grind
+variable (r f g) in
+theorem map_bicompl_map_eq_map :
+    Relation.Map (Relation.Map r f g |>.bicompl f g) f g = Relation.Map r f g := by
+  grind [bicompl]
 
-lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} (f : α → β) (a₁ a₂ : α) :
-    Relation.Map (r on f) f f (f a₁) (f a₂) ↔ r (f a₁) (f a₂) := by
-  grind
+lemma map_onFun_map_eq_map (r : α → α → Prop) (f : α → β) :
+    Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f :=
+  map_bicompl_map_eq_map r f f
+
+variable (s f g) in
+theorem bicompl_map_bicompl_eq_bicompl :
+    (Relation.Map (s.bicompl f g) f g).bicompl f g = s.bicompl f g := by
+  grind [bicompl]
+
+lemma onFun_map_onFun_eq_onFun (r : β → β → Prop) (f : α → β) :
+    (Relation.Map (r on f) f f on f) = (r on f) :=
+  bicompl_map_bicompl_eq_bicompl r f f
+
+theorem bicompl_map_bicompl_iff_bicompl {a b} :
+    Relation.Map (s.bicompl f g) f g (f a) (g b) ↔ s (f a) (g b) := by
+  grind [bicompl]
+
+lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} {f : α → β} {a b : α} :
+    Relation.Map (r on f) f f (f a) (f b) ↔ r (f a) (f b) :=
+  bicompl_map_bicompl_iff_bicompl
 
 end Map
 
@@ -576,9 +631,6 @@ lemma reflGen_eq_self [Std.Refl r] : ReflGen r = r := by
   ext x y
   simpa only [reflGen_iff, or_iff_right_iff_imp] using fun h ↦ h ▸ refl y
 
-@[deprecated inferInstance (since := "2026-03-27")]
-lemma reflexive_reflGen : Std.Refl (ReflGen r) := inferInstance
-
 lemma reflGen_minimal {r' : α → α → Prop} [Std.Refl r'] (h : r ≤ r') : ReflGen r ≤ r' := by
   simpa [reflGen_eq_self] using ReflGen.mono h
 
@@ -617,15 +669,11 @@ instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
 
 @[grind =]
 theorem transGen_eq_self [IsTrans α r] : TransGen r = r :=
-  funext₂ fun a b ↦ propext <|
+  funext₂ fun a b ↦ propext
     ⟨fun h ↦ by
       induction h with
       | single hc => exact hc
       | tail _ hcd hac => exact IsTrans.trans _ _ _ hac hcd, TransGen.single⟩
-
-@[deprecated transGen_eq_self (since := "2026-03-27"), grind =]
-theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
-  transGen_eq_self
 
 theorem TransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
     TransGen r ≤ (TransGen p on f) := by
@@ -705,13 +753,6 @@ instance : Trans (ReflTransGen r) r (ReflTransGen r) :=
 instance : IsPreorder α (ReflTransGen r) where
   refl := @ReflTransGen.refl α r
   trans := @ReflTransGen.trans α r
-
-@[deprecated inferInstance (since := "2026-03-27")]
-theorem reflexive_reflTransGen : Std.Refl (ReflTransGen r) := inferInstance
-
-@[deprecated reflTransGen_eq_self (since := "2026-03-27"), grind =]
-theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
-  reflTransGen_eq_self
 
 theorem ReflTransGen.lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (ReflTransGen p on f)) :
     ReflTransGen r ≤ (ReflTransGen p on f) := by
@@ -952,6 +993,6 @@ theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
   ⟨fun h ↦ by induction h <;> grind [Equivalence], .rel a b⟩
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
-  funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
+  funext fun _ ↦ funext fun _ ↦ propext h.eqvGen_iff
 
 end EqvGen

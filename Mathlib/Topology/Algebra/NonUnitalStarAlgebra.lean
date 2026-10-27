@@ -76,7 +76,7 @@ open scoped IsMulCommutative in
 so is its topological closure.
 
 See note [reducible non-instances] -/
-@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   fast_instance%
@@ -131,7 +131,7 @@ open scoped IsMulCommutative in
 so is its topological closure.
 
 See note [reducible non-instances]. -/
-@[deprecated isMulCommutative_topologicalClosure (since := "2026-07-29")]
+@[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=
   have : IsMulCommutative s := ⟨⟨hs⟩⟩
@@ -156,11 +156,11 @@ def elemental (x : A) : NonUnitalStarSubalgebra R A :=
 
 namespace elemental
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem star_self_mem (x : A) : star x ∈ elemental R x :=
   le_topologicalClosure _ <| star_self_mem_adjoin_singleton R x
 

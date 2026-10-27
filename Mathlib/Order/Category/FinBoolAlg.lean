@@ -8,8 +8,6 @@ module
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Category.BoolAlg
 public import Mathlib.Order.Category.FinBddDistLat
-public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # The category of finite Boolean algebras
@@ -88,7 +86,7 @@ instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
 instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful where
   map_injective h := by
     ext x
-    exact CategoryTheory.congr_fun h x
+    congrm $h x
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/

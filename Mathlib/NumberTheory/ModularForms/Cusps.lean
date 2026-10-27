@@ -5,12 +5,12 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
-public import Mathlib.RingTheory.Localization.NumDen
 public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.RingTheory.Localization.NumDen
 
 /-!
 # Cusps
@@ -68,7 +68,7 @@ lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : Is
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     {g : GL (Fin 2) ℝ} (hg : g ∈ 𝒢) : IsCusp (g • c) 𝒢 := by
-  convert! hc.smul g
+  convert hc.smul g
   ext x
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv,
     ConjAct.toConjAct_smul, inv_inv, Subgroup.mul_mem_cancel_right _ hg,
@@ -122,7 +122,7 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
     obtain ⟨a, rfl⟩ := c.exists_mem_SL2 ℤ
     refine ⟨_, ⟨a * ModularGroup.T * a⁻¹, rfl⟩, ?_, ?_⟩
     · suffices (mapGL ℝ ModularGroup.T).IsParabolic by simpa
-      refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr_fun₂ ha 0 1), ?_⟩
+      refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr($ha 0 1)), ?_⟩
       simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
       norm_num
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
@@ -250,7 +250,7 @@ lemma relIndex_strictPeriods :
   by_cases h : 𝒢.strictPeriods = 𝒢.periods
   · simp [h]
   · replace h := 𝒢.strictPeriods_le_periods.lt_of_ne h
-    obtain ⟨u, hu_mem, hu_notMem⟩ := (SetLike.lt_iff_le_and_exists.mp h).2
+    obtain ⟨u, hu_mem, hu_notMem⟩ := (IsConcreteLE.lt_iff_le_and_exists.mp h).2
     rw [AddSubgroup.relIndex_eq_two_iff_exists_notMem_and]
     refine .inr ⟨u, hu_mem, hu_notMem, fun b hb ↦ ?_⟩
     simp only [Subgroup.periods, mem_strictPeriods_iff, mem_adjoinNegOne_iff,
@@ -299,7 +299,7 @@ lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ :
   ext x
   simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix,
     map_apply_coe]
-  refine ⟨fun ⟨g, _, hg⟩ ↦ ⟨g 0 1, by simpa using congr_fun₂ hg 0 1⟩, ?_⟩
+  refine ⟨fun ⟨g, _, hg⟩ ↦ ⟨g 0 1, by simpa using congr($hg 0 1)⟩, ?_⟩
   rintro ⟨m, rfl⟩
   refine ⟨ModularGroup.T ^ m, zpow_mem hΓ m, ?_⟩
   ext i j
@@ -318,7 +318,7 @@ open scoped Classical in
 noncomputable def strictWidthInfty : ℝ :=
   if h : DiscreteTopology 𝒢.strictPeriods then
     |Exists.choose <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
-      <| AddSubgroup.discrete_iff_addCyclic.mpr h|
+      <| AddSubgroup.isAddCyclic_iff_discreteTopology.mpr h|
   else 0
 
 lemma strictWidthInfty_nonneg : 0 ≤ 𝒢.strictWidthInfty := by
@@ -335,7 +335,7 @@ lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strict
     𝒢.strictPeriods = AddSubgroup.zmultiples 𝒢.strictWidthInfty := by
   simp [Subgroup.strictWidthInfty, dite_eq_left,
     Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
-      <| AddSubgroup.discrete_iff_addCyclic.mpr inferInstance]
+      <| AddSubgroup.isAddCyclic_iff_discreteTopology.mpr inferInstance]
 
 lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
     strictWidthInfty (Γ : Subgroup (GL (Fin 2) ℝ)) = 1 := by
@@ -458,7 +458,7 @@ set_option backward.isDefEq.respectTransparency.types false in
   simp only [this, mem_strictPeriods_iff, Subgroup.mem_map, Gamma_mem]
   constructor
   · rintro ⟨g, ⟨-, hg, -, -⟩, hx⟩
-    rw [show x = g 0 1 by simpa using congr_arg (· 0 1) hx.symm]
+    rw [show x = g 0 1 by simpa using congr($hx.symm 0 1)]
     apply AddSubgroup.mem_map_of_mem
     rwa [Int.mem_zmultiples_iff, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
   · simp only [AddSubgroup.mem_map, AddSubgroup.mem_zmultiples_iff, existsAndEq, true_and,

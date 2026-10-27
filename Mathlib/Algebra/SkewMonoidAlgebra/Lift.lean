@@ -5,9 +5,9 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
 module
 
-public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
-public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 
 /-!
 # Lemmas about different kinds of "lifts" to `SkewMonoidAlgebra`.
@@ -74,7 +74,7 @@ theorem lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by
 
 @[simp]
 theorem lift_single (F : G →* A) (a b) : lift k G A F (single a b) = b • F a := by
-  rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
+  rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_ofClass]
 
 theorem lift_unique' (F : AlgHom k (SkewMonoidAlgebra k G) A) :
     F = lift k G A ((F : SkewMonoidAlgebra k G →* A).comp (of k G)) :=

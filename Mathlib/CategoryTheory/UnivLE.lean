@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Basic.UnivLE
-public import Mathlib.CategoryTheory.EssentialImage
 public import Mathlib.CategoryTheory.Types.Basic
 
 /-!

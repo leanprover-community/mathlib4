@@ -8,6 +8,8 @@ module
 public import Mathlib.Basic.ENNReal.Real
 public import Mathlib.Tactic.Finiteness
 
+import Mathlib.Tactic.Basify.Attr
+
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
 
@@ -171,6 +173,7 @@ theorem toReal_le_add (hle : a ≤ b + c) (hb : b ≠ ∞) (hc : c ≠ ∞) :
     a.toReal ≤ b.toReal + c.toReal :=
   toReal_le_add' hle (flip absurd hb) (flip absurd hc)
 
+@[basify_simp]
 theorem not_lt_top {x : ℝ≥0∞} : ¬x < ∞ ↔ x = ∞ := by rw [lt_top_iff_ne_top, Classical.not_not]
 
 theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using add_lt_top
@@ -179,13 +182,15 @@ theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only 
 protected lemma Finiteness.add_ne_top {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a + b ≠ ∞ :=
   ENNReal.add_ne_top.2 ⟨ha, hb⟩
 
+@[basify_simp]
 theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert! WithTop.mul_top' a
 
-@[simp] theorem mul_top (h : a ≠ 0) : a * ∞ = ∞ := WithTop.mul_top h
+@[simp, basify_simp] theorem mul_top (h : a ≠ 0) : a * ∞ = ∞ := WithTop.mul_top h
 
+@[basify_simp]
 theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert! WithTop.top_mul' a
 
-@[simp] theorem top_mul (h : a ≠ 0) : ∞ * a = ∞ := WithTop.top_mul h
+@[simp, basify_simp] theorem top_mul (h : a ≠ 0) : ∞ * a = ∞ := WithTop.top_mul h
 
 theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 
@@ -223,7 +228,7 @@ theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
 theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   mul_pos_iff.2 ⟨pos_iff_ne_zero.2 ha, pos_iff_ne_zero.2 hb⟩
 
-@[simp] lemma top_pow {n : ℕ} (hn : n ≠ 0) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow hn
+@[simp, basify_simp] lemma top_pow {n : ℕ} (hn : n ≠ 0) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow hn
 
 @[simp] lemma pow_eq_top_iff : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := WithTop.pow_eq_top_iff
 
@@ -247,12 +252,14 @@ section Cancel
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
   This is true in `ℝ≥0∞` for all elements except `∞`. -/
 @[simp]
-theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
+theorem addLECancellable_iff_ne_top {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
   WithTop.addLECancellable_iff_ne_top
+
+@[deprecated (since := "2026-09-25")] alias addLECancellable_iff_ne := addLECancellable_iff_ne_top
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_ne {a : ℝ≥0∞} (h : a ≠ ∞) : AddLECancellable a :=
-  addLECancellable_iff_ne.mpr h
+  addLECancellable_iff_ne_top.mpr h
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_lt {a : ℝ≥0∞} (h : a < ∞) : AddLECancellable a :=
@@ -280,15 +287,15 @@ theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
   le_antisymm (le_sInf fun _ h => tsub_le_iff_right.mpr h) <| sInf_le <| mem_ofPred.2 le_tsub_add
 
 /-- This is a special case of `WithTop.coe_sub` in the `ENNReal` namespace -/
-@[simp, norm_cast] theorem coe_sub : (↑(r - p) : ℝ≥0∞) = ↑r - ↑p := WithTop.coe_sub
+@[simp, norm_cast, basify_op ←] theorem coe_sub : (↑(r - p) : ℝ≥0∞) = ↑r - ↑p := WithTop.coe_sub
 
 /-- This is a special case of `WithTop.top_sub_coe` in the `ENNReal` namespace -/
-@[simp] theorem top_sub_coe : ∞ - ↑r = ∞ := rfl
+@[simp, basify_simp] theorem top_sub_coe : ∞ - ↑r = ∞ := rfl
 
 @[simp] lemma top_sub (ha : a ≠ ∞) : ∞ - a = ∞ := by lift a to ℝ≥0 using ha; exact top_sub_coe
 
 /-- This is a special case of `WithTop.sub_top` in the `ENNReal` namespace -/
-@[simp] theorem sub_top : a - ∞ = 0 := WithTop.sub_top
+@[simp, basify_simp] theorem sub_top : a - ∞ = 0 := WithTop.sub_top
 
 @[simp] theorem sub_eq_top_iff : a - b = ∞ ↔ a = ∞ ∧ b ≠ ∞ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ∞ ↔ a ≠ ∞ ∨ b = ∞ := WithTop.sub_ne_top_iff
@@ -537,7 +544,7 @@ theorem toReal_sInf (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
   · exact Real.iInf_nonneg h
 
 theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
-  le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) <| le_rfl)
+  le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) le_rfl)
     (tsub_le_iff_right.1 <| le_iInf fun _ => tsub_le_iff_right.2 <| iInf_le _ _)
 
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by

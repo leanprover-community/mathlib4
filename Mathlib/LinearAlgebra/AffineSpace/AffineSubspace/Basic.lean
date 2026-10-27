@@ -5,9 +5,9 @@ Authors: Joseph Myers
 -/
 module
 
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Affine spaces
@@ -138,7 +138,7 @@ lemma affineSpan_singleton (x : P) : affineSpan k ({x} : Set P) = {x} := by
   simp [← vsub_right_mem_direction_iff_mem (mem_affineSpan k _) _, direction_affineSpan]
 
 /-- The affine span of a single point, coerced to a set, contains just that point. -/
-@[deprecated affineSpan_singleton (since := "2026-09-01")]
+@[deprecated affineSpan_singleton +typeChanged (since := "2026-09-01")]
 theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
   simp
 
@@ -201,7 +201,7 @@ theorem direction_lt_of_nonempty {s₁ s₂ : AffineSubspace k P} (h : s₁ < s�
   obtain ⟨p, hp⟩ := hn
   rw [lt_iff_le_and_exists] at h
   rcases h with ⟨hle, p₂, hp₂, hp₂s₁⟩
-  rw [SetLike.lt_iff_le_and_exists]
+  rw [IsConcreteLE.lt_iff_le_and_exists]
   use direction_le hle, p₂ -ᵥ p, vsub_mem_direction hp₂ (hle hp)
   intro hm
   rw [vsub_right_mem_direction_iff_mem hp p₂] at hm
@@ -344,7 +344,7 @@ spans `P`. -/
 theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P)
     (h : Submodule.span k (Set.range ((↑) : s → V)) = ⊤) :
     affineSpan k ({p} ∪ (fun v => v +ᵥ p) '' s) = ⊤ := by
-  convert!
+  convert
     ext_of_direction_eq _
       ⟨p, mem_affineSpan k (Set.mem_union_left _ (Set.mem_singleton _)), mem_top k V p⟩
   rw [direction_affineSpan, direction_top,
@@ -544,7 +544,7 @@ def map (s : AffineSubspace k P₁) : AffineSubspace k P₂ where
     use t • (p₁ -ᵥ p₂) +ᵥ p₃
     suffices t • (p₁ -ᵥ p₂) +ᵥ p₃ ∈ s by
     { simp only [SetLike.mem_coe, true_and, this]
-      rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub] }
+      rw [AffineMap.map_vadd, map_smul, AffineMap.linear_apply_vsub] }
     exact s.smul_vsub_vadd_mem t h₁ h₂ h₃
 
 @[simp]
@@ -734,7 +734,7 @@ def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace
   carrier := f ⁻¹' s
   smul_vsub_vadd_mem' t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
     show f _ ∈ s by
-      rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub]
+      rw [AffineMap.map_vadd, map_smul, AffineMap.linear_apply_vsub]
       apply s.smul_vsub_vadd_mem _ hp₁ hp₂ hp₃
 
 @[simp]
@@ -815,6 +815,10 @@ def gciMapComap {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f) :
 lemma comap_map_eq_of_injective {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f)
     (s : AffineSubspace k P₁) : (s.map f).comap f = s :=
   (gciMapComap hf).u_l_eq _
+
+lemma comap_mk' (f : P₁ →ᵃ[k] P₂) (p : P₁) (s : Submodule k V₂) :
+    (mk' (f p) s).comap f = mk' p (s.comap f.linear) := by
+  aesop
 
 end AffineSubspace
 
@@ -1035,9 +1039,9 @@ lemma affineSpan_pair_eq_of_mem_of_mem_of_ne {p₁ p₂ p₃ p₄ : P} (hp₁ : 
     simp [sub_smul, hp₁, hp₂]
   rw [← eq_inv_smul_iff₀ hr₀] at hr
   refine affineSpan_pair_le_of_mem_of_mem ?_ ?_
-  · convert! smul_vsub_vadd_mem_affineSpan_pair (-r₁ * (r₂ - r₁)⁻¹) p₁ p₂
+  · convert smul_vsub_vadd_mem_affineSpan_pair (-r₁ * (r₂ - r₁)⁻¹) p₁ p₂
     simp [mul_smul, ← hr, hp₁]
-  · convert! smul_vsub_vadd_mem_affineSpan_pair ((1 - r₁) * (r₂ - r₁)⁻¹) p₁ p₂
+  · convert smul_vsub_vadd_mem_affineSpan_pair ((1 - r₁) * (r₂ - r₁)⁻¹) p₁ p₂
     simp [mul_smul, ← hr, sub_smul, hp₁]
 
 /-- One line equals another differing in the first point if the first point of the first line is

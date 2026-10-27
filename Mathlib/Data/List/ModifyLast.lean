@@ -6,9 +6,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Batteries.Data.List.Basic
-public import Mathlib.Init
 
-/-! ### List.modifyLast -/
+import Mathlib.Init
+
+/-! # `List.modifyLast` -/
 
 public section
 

@@ -6,7 +6,6 @@ Authors: Edison Xie
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Simple
-public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 

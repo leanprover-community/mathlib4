@@ -6,12 +6,11 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras, Daniel Funck, Juny
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.GoingUp
-public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.LocalRing.LocalSubring
-public import Mathlib.RingTheory.Polynomial.Ideal
 public import Mathlib.RingTheory.Valuation.Integral
 public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+import Mathlib.RingTheory.Polynomial.Ideal
 
 -- The copyright notice exceeds the maximum column width, but the `linter.style.header` linter
 -- flags the copyright notice if "All rights reserved." is not on the same line as "Copyright".
@@ -100,7 +99,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   have hx0 : x ≠ 0 := fun e ↦ hx (e ▸ zero_mem _)
   let := invertibleOfNonzero hx0
   let S := R.toSubring[x]
-  have : R.toSubring < S.toSubring := SetLike.lt_iff_le_and_exists.mpr
+  have : R.toSubring < S.toSubring := IsConcreteLE.lt_iff_le_and_exists.mpr
     ⟨fun r hr ↦ algebraMap_mem S ⟨r, hr⟩, ⟨x, self_mem_adjoin_singleton _ _, hx⟩⟩
   have ⟨p, hp, hpx⟩ := exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top x _
     (maximalIdeal.isMaximal R.toSubring).ne_top
@@ -228,7 +227,7 @@ lemma bijective_rangeRestrict_comp_of_valuationRing [IsDomain R] [ValuationRing 
     (f : R →+* S) (g : S →+* K) (h : g.comp f = algebraMap R K) [IsLocalHom f] :
     Function.Bijective (g.rangeRestrict.comp f) := by
   refine ⟨?_, ?_⟩
-  · exact .of_comp (f := Subtype.val) (by convert! (IsFractionRing.injective R K); rw [← h]; rfl)
+  · exact .of_comp (f := Subtype.val) (by convert (IsFractionRing.injective R K); rw [← h]; rfl)
   · let V : ValuationSubring K :=
       ⟨(algebraMap R K).range, ValuationRing.isInteger_or_isInteger R⟩
     suffices LocalSubring.range g ≤ V.toLocalSubring by
@@ -242,7 +241,7 @@ lemma bijective_rangeRestrict_comp_of_valuationRing [IsDomain R] [ValuationRing 
     suffices IsUnit a from this.map (algebraMap R K).rangeRestrict
     apply IsUnit.of_map f
     apply (IsLocalHom.of_surjective g.rangeRestrict g.rangeRestrict_surjective).1
-    convert! ha
+    convert ha
     simp only [← h, RingHom.coe_comp, Function.comp_apply]
     ext
     simp
