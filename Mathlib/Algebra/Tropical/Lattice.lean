@@ -6,8 +6,8 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Tropical.Basic
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 
