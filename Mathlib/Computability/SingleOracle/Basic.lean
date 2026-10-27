@@ -50,7 +50,7 @@ def Nat.right (n : ℕ) := n.unpair.2
 theorem pair_lr {x} : (Nat.pair x.left x.right) = x := by simp [Nat.right, Nat.left]
 theorem unpair1_to_l {n : ℕ} : (n.unpair.1) = n.left := by simp [Nat.left]
 theorem unpair2_to_r {n : ℕ} : (n.unpair.2) = n.right := by simp [Nat.right]
--- scoped, so that they don't change the simp normal form of `Nat.unpair` outside this library
+-- they are scoped so that they don't change the simp normal form of `Nat.unpair` outside this lib
 namespace Oracle.Single
 attribute [scoped simp] pair_lr unpair1_to_l unpair2_to_r
 end Oracle.Single
@@ -124,9 +124,7 @@ end conversions
 section primrec
 -- templates for primrec constructions as codes
 namespace Oracle.Single.Code
-/-- `IsPrim c` holds if the code `c` is built only from the primitive recursive constructors, i.e.
-without `rfind'`. Such codes are total (`prim_total`), and their evaluation agrees with `evalp`
-(`evalp_eq_eval`). -/
+/-- `IsPrim c` holds if the code `c` is built only from the primitive recursive constructors. -/
 @[aesop safe, cp] inductive IsPrim : Code → Prop
 | zero : IsPrim zero
 | succ : IsPrim succ
@@ -175,8 +173,9 @@ theorem prim_total {O : ℕ → ℕ} {c} (h : IsPrim c) : IsTotal O c := by
     induction x.right with
     | zero => exact ha_ih x.left
     | succ y' IH' => use IH'; apply hb_ih
-/-- Evaluates a code as a total function `ℕ → ℕ`, relative to the oracle `O`. It agrees with `eval`
-on codes satisfying `IsPrim` (`evalp_eq_eval`). `rfind'` is sent to the constant function `0`. -/
+/-- A specialised evaluation function meant to operate only on primitive recursive codes. This
+restriction allows us to take advantage of the totality of primitive recursive functions, which
+greatly simplifies proofs as one can avoid dealing with the `Part` monad -/
 @[simp, evp_simps] def evalp (O : ℕ → ℕ) : Code → ℕ → ℕ
 | zero       => fun _ ↦ 0
 | succ       => Nat.succ

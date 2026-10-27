@@ -32,9 +32,7 @@ open Nat Encodable Denumerable
 
 namespace Oracle.Single
 
-/-- Codes for partial functions `ℕ →. ℕ` that are partial recursive relative to an oracle. These are
-the codes of `Nat.Partrec.Code`, with an extra constructor `oracle` for querying the oracle. See
-`Oracle.Single.eval` for their interpretation. -/
+/-- Codes for partial functions `ℕ →. ℕ` that are partial recursive relative to an oracle. -/
 inductive Code : Type
 | zero  : Code
 | succ  : Code
