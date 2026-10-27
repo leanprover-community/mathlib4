@@ -369,7 +369,6 @@ noncomputable def RightExtension.isUniversalPostcomp₁Equiv (ex : RightExtensio
 
 variable {F F'}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
     F'.IsLeftKanExtension α ↔ (G ⋙ F').IsLeftKanExtension
       (α ≫ whiskerRight e.inv _ ≫ (associator _ _ _).hom) := by
@@ -382,7 +381,6 @@ lemma isLeftKanExtension_iff_postcomp₁ (α : F ⟶ L' ⋙ F') :
   · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isRightKanExtension_iff_postcomp₁ (α : L' ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔ (G ⋙ F').IsRightKanExtension
       ((associator _ _ _).inv ≫ whiskerRight e.hom F' ≫ α) := by
@@ -401,7 +399,6 @@ section
 
 variable (L : C ⥤ D) (F : C ⥤ H) (G : H ⥤ D')
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a left extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
 `E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
 on the right. -/
@@ -418,7 +415,6 @@ instance [G.IsEquivalence] : (LeftExtension.postcompose₂ L F G).IsEquivalence 
   intro
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a right extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
 `E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
 on the right. -/
@@ -444,7 +440,6 @@ def LeftExtension.postcompose₂ObjMkIso (α : F ⟶ L ⋙ F') :
     .mk (F' ⋙ G) <| whiskerRight α G ≫ (associator _ _ _).hom :=
   StructuredArrow.isoMk (.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An isomorphism to describe the action of `RightExtension.postcompose₂` on terms of the form
 `RightExtension.mk _ α`. -/
 @[simps!]
@@ -493,7 +488,6 @@ noncomputable def RightExtension.isUniversalPrecompEquiv (e : RightExtension L F
 
 variable {F L}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
     F'.IsLeftKanExtension α ↔ F'.IsLeftKanExtension
       (whiskerLeft G α ≫ (associator _ _ _).inv) := by
@@ -505,7 +499,6 @@ lemma isLeftKanExtension_iff_precomp (α : F ⟶ L ⋙ F') :
   · exact fun _ => ⟨⟨eq (isUniversalOfIsLeftKanExtension _ _)⟩⟩
   · exact fun _ => ⟨⟨eq.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isRightKanExtension_iff_precomp (α : L ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔
       F'.IsRightKanExtension ((associator _ _ _).hom ≫ whiskerLeft G α) := by

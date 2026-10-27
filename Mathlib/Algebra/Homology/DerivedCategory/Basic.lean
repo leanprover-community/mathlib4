@@ -242,7 +242,6 @@ def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
 abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance

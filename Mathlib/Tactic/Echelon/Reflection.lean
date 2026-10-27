@@ -133,17 +133,4 @@ theorem isPivotedBy_ofLists [Zero α] {m : ℕ} {rows : List (List α)} {cols : 
   · exact pivotOfList_lt_pivotOfList hsorted hij hj
   · simpa only [ofLists_apply, ofList_apply] using getD_of_isPivotedList h i
 
-/-! ### The row permutation -/
-
-/-- The permutation `swap a₀ b₀ * swap a₁ b₁ * ⋯` of the swaps in `l`. -/
-@[expose] def permOfSwaps {m : Type*} [DecidableEq m] (l : List (m × m)) : Equiv.Perm m :=
-  (l.map fun p ↦ Equiv.swap p.1 p.2).foldl (· * ·) 1
-
-theorem intCast_sign_permOfSwaps [Ring α] {m : Type*} [DecidableEq m] [Fintype m]
-    {l : List (m × m)} {k : ℕ} (hl : l.all fun p ↦ p.1 != p.2) (hk : l.length = k) :
-    ((Equiv.Perm.sign (permOfSwaps l) : ℤ) : α) = (-1) ^ k := by
-  rw [permOfSwaps, ← List.prod_eq_foldl, Equiv.Perm.sign_prod_list_swap]
-  · simp [hk]
-  · grind [Equiv.Perm.IsSwap]
-
 end Mathlib.Tactic.Echelon

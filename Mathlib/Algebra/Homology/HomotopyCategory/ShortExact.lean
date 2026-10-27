@@ -179,7 +179,6 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
 
 variable {D : Type*} [Category* D] [Abelian D]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexIso_hom_descShortComplex (F : C ⥤ D) [F.Additive]
     (S : ShortComplex (CochainComplex C ℤ)) :

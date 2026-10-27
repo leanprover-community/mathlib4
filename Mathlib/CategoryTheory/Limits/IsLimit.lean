@@ -625,7 +625,6 @@ def ofRepresentableBy {X : C} (h : F.cones.RepresentableBy X) : IsLimit (limitCo
     rw [coneOfHom_fac]
     dsimp [Cone.extend]; cases s; congr with j; exact w j
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a limit cone, `F.cones` is representable by the point of the cone. -/
 def representableBy (hc : IsLimit t) : F.cones.RepresentableBy t.pt where
   homEquiv := hc.homEquiv
@@ -720,7 +719,6 @@ def ofCorepresentableBy {X : C} (h : F.cocones.CorepresentableBy X) :
     rw [coconeOfHom_fac]
     dsimp [Cocone.extend]; cases s; congr with j; exact w j
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a colimit cocone, `F.cocones` is corepresentable by the point of the cocone. -/
 def corepresentableBy (hc : IsColimit t) : F.cocones.CorepresentableBy t.pt where
   homEquiv := hc.homEquiv
