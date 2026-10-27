@@ -56,10 +56,9 @@ theorem coeff_injective : Function.Injective (coeff v) := by
   absurd congrFun hcc (v.restrict (x - y))
   unfold coeff
   rw [← sub_eq_zero, ← map_sub, IsLocalRing.residue_eq_zero_iff, IsLocalRing.notMem_maximalIdeal,
-    ValuationSubring.valuation_eq_one_iff, AddSubgroupClass.coe_sub,
-    ← (v.isEquiv_valuation_valuationSubring).eq_one_iff_eq_one,
-    ← sub_div, ← v.restrict_eq_one_iff, map_div₀, sub_sub_sub_comm,
-    sub_eq_zero.2 (trunc_eq_of_le v (v.restrict (x - y)) le_rfl), sub_zero,
+    ValuationSubring.valuation_eq_one_iff, AddSubgroupClass.coe_sub, ← sub_div, sub_sub_sub_comm,
+    ← (v.isEquiv_valuation_valuationSubring).eq_one_iff_eq_one, ← v.restrict_eq_one_iff,
+    sub_eq_zero.2 (trunc_eq_of_le v (v.restrict (x - y)) le_rfl), sub_zero, map_div₀,
     (v.restrict_surjective (v.restrict (x - y))).choose_spec]
   exact div_self hxy
 
