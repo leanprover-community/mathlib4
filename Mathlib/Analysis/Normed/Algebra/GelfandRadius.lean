@@ -73,7 +73,7 @@ open Lean Meta Qq Function
 meta def evalGelfandRadius : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@gelfandRadius $A $KA $a) =>
+  | 0, ~q(ℝ), ~q(@gelfandRadius $A $KA $a) => liftM <| catchNone do
     assertInstancesCommute
     pure (.nonnegative q(gelfandRadius_nonneg $a))
   | _, _, _ => throwError "not gelfandRadius"
