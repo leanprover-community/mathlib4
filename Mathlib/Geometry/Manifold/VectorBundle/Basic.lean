@@ -441,6 +441,14 @@ theorem Bundle.Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → Total
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) s x :=
   ⟨(hp.change_section_trivialization · he he'), (hp.change_section_trivialization · he' he)⟩
 
+theorem Bundle.Trivialization.contMDiffAt_snd_comp_iff₂ {f : M → TotalSpace F E}
+    (hp : ContMDiffAt IM IB n (π F E ∘ f) x)
+    (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
+    ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ (e (f y)).2) x ↔
+      ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) x := by
+  simpa [← contMDiffWithinAt_univ] using
+    e.contMDiffWithinAt_snd_comp_iff₂ hp he he'
+
 end ContMDiffCoordChange
 
 variable [IsManifold IB n B] in
