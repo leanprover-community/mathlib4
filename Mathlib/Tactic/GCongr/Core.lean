@@ -417,7 +417,7 @@ def addGCongrLemma (declName : Name) (stx : Syntax) (kind : AttributeKind) : Met
     -- If none of the methods work, we throw the error thrown by the "normal" attempt.
     throw e
 where
-  /-- Assuming the lemma has conslusion `lhs ↔ rhs`, mark one of the implications
+  /-- Assuming the lemma has conclusion `lhs ↔ rhs`, mark one of the implications
   `lhs → rhs` or `rhs → lhs` as a `gcongr` lemma. -/
   addIffGCongrLemma (prio : Nat) (strict forGrw : Bool) (cinfo : ConstantInfo)
       (xs : Array Expr) (lhs rhs : Expr) : MetaM Unit := do

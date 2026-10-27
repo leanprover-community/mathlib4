@@ -110,7 +110,7 @@ lemma wordLength_eq_zero_iff : P.wordLength g = 0 ↔ g = 1 := by
 lemma wordLength_one : P.wordLength (1 : G) = 0 := by
   rw [wordLength_eq_zero_iff]
 
--- This is superceded by `wordLength_inv`.
+-- This is superseded by `wordLength_inv`.
 @[to_additive]
 private lemma wordLength_inv_le : P.wordLength g⁻¹ ≤ P.wordLength g := by
   obtain ⟨l, hl, rfl⟩ := P.exists_isGeodesic g
