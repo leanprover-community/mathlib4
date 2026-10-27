@@ -70,7 +70,7 @@ theorem isFiltered_of_isFiltered_costructuredArrow (L : A ⥤ T) (R : B ⥤ T)
     (CostructuredArrow.pre sA.inverse (L ⋙ sT.functor) _).asEquivalence.trans
       (CostructuredArrow.post L sT.functor _).asEquivalence.symm
   have : ∀ b, IsFiltered (CostructuredArrow _ ((sB.inverse ⋙ R ⋙ sT.functor).obj b)) :=
-    fun b => IsFiltered.of_equivalence (sC b.down).symm
+    fun b => IsFiltered.of_equivalence (sC <| ULift.down b).symm
   have := isFiltered_of_isFiltered_costructuredArrow_small
     (sA.inverse ⋙ L ⋙ sT.functor) (sB.inverse ⋙ R ⋙ sT.functor)
   exact IsFiltered.of_equivalence sA.symm
