@@ -7,6 +7,8 @@ Authors: Floris van Doorn
 module
 
 public import Lean.Meta.Tactic.Grind.RegisterCommand
+public import Std.Data.HashSet.Basic
+
 import Mathlib.Init
 
 /-!
@@ -16,7 +18,8 @@ In this file we declare custom grind attributes and tactics that call grind usin
 attributes. These grind sets are helpful because they can contain a lot of specialized ways to
 prove a particular problem.
 
-Currently, this implements the `compactness` and `closedness` grind attribute and tactic.
+Currently, this implements the `compactness`, `closedness` and `membership`
+grind attribute and tactic.
 
 ## Usage Notes
 
@@ -63,7 +66,7 @@ open Lean Parser Tactic
 
 When adding a new grind attribute, manually add it to this hash set as well. -/
 def Mathlib.grindAttrs : Std.HashSet Name :=
- {`compactness, `closedness}
+ {`compactness, `closedness, `membership}
 
 /-- The `compactness` attribute is a custom grind-set specialized to prove that sets are compact.
 It is called by the `compactness` tactic. -/
@@ -78,13 +81,15 @@ compact.
 
 It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [compactness, ...]`.
+
+* `compactness?` shows the suggestions from `grind?`.
 -/
 macro (name := compactnessTac) "compactness" config:optConfig : tactic =>
   -- note: directly giving `compactness` as argument in the syntax quotation below is treated
   -- as an unknown identifier by the hygiene system.
   `(tactic|grind $config only [$(mkIdent `compactness):term])
 
-@[inherit_doc compactnessTac]
+@[tactic_alt compactnessTac]
 macro "compactness?" config:optConfig : tactic =>
     `(tactic|grind? $config only [$(mkIdent `compactness):term])
 
@@ -99,12 +104,38 @@ It is implemented using `grind`, and has the same configuration options as `grin
 
 It also exists as a grind attribute, and can be combined with other grind attributes using
 `grind only [closedness, ...]`.
+
+* `closedness?` shows the suggestions from `grind?`.
 -/
 macro (name := closednessTac) "closedness" config:optConfig : tactic =>
   -- note: directly giving `closedness` as argument in the syntax quotation below is treated
   -- as an unknown identifier by the hygiene system.
   `(tactic|grind $config only [$(mkIdent `closedness):term])
 
-@[inherit_doc closednessTac]
+@[tactic_alt closednessTac]
 macro "closedness?" config:optConfig : tactic =>
     `(tactic|grind? $config only [$(mkIdent `closedness):term])
+
+/-- The `membership` attribute is a custom grind-set specialized to prove
+membership goals in algebraic substructures by backward reasoning.
+It is called by the `membership` tactic. -/
+register_grind_attr membership
+
+/--
+`membership` is a simple tactic that performs backward reasoning to prove
+membership goals in algebraic substructures.
+It is implemented using `grind`, and has the same configuration options as `grind`.
+
+It also exists as a grind attribute, and can be combined with other grind attributes using
+`grind only [membership, ...]`.
+
+* `membership?` shows the suggestions from `grind?`.
+-/
+macro (name := membershipTac) "membership" config:optConfig : tactic =>
+  -- note: directly giving `membership` as argument in the syntax quotation below is treated
+  -- as an unknown identifier by the hygiene system.
+  `(tactic|grind $config only [$(mkIdent `membership):term])
+
+@[tactic_alt membershipTac]
+macro "membership?" config:optConfig : tactic =>
+    `(tactic|grind? $config only [$(mkIdent `membership):term])

@@ -172,7 +172,6 @@ theorem inhomogeneousChains.d_def (n : ℕ) :
     (inhomogeneousChains A).d (n + 1) n = d A n := by
   simp [inhomogeneousChains]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
   simpa [ChainComplex.of.d] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)

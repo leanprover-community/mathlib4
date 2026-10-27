@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
+
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
@@ -55,13 +56,15 @@ being the map `weights : StdSimplex R X → R^⊕X`.
 Note in particular that, in the common case where `X := M` is a `R`-module, `StdSimplex R M` is NOT
 the standard simplex in `M`. Indeed, the notion of a standard simplex depends on a choice of basis,
 and `M` isn't given one. -/
-structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) where
-  /-- The weights of the `StdSimplex` as a `Finsupp`. -/
-  weights : X →₀ R
+structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) extends
+    weights : X →₀ R where
   /-- All weights are non-negative. -/
   nonneg : 0 ≤ weights
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
+
+/-- The weights of an element of the standard simplex` as a `Finsupp`. -/
+add_decl_doc StdSimplex.weights
 
 attribute [simp] StdSimplex.total
 grind_pattern StdSimplex.nonneg => self.weights

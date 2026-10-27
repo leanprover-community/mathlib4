@@ -5,13 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Abelian.CommSq
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
-import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 public import Mathlib.CategoryTheory.SmallObject.Basic
 public import Mathlib.CategoryTheory.Subobject.HasCardinalLT
 public import Mathlib.Order.TransfiniteIteration
+
+import Mathlib.CategoryTheory.Abelian.CommSq
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
+import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 
 /-!
 # Grothendieck abelian categories have enough injectives
@@ -134,7 +135,6 @@ lemma exists_pushouts
   · exact (IsPushout.of_hasPushout _ _).mono_of_isPullback_of_mono
       (IsPullback.of_hasPullback p f) _ (by simp) (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
     ∃ (A' : Subobject X) (h : A < A'),
       (generatingMonomorphisms G).pushouts (Subobject.ofLE A A' h.le) := by
@@ -177,7 +177,6 @@ lemma le_largerSubobject (A : Subobject X) :
     simp only [largerSubobject_top, le_refl]
   · exact (lt_largerSubobject hG A hA).le
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma pushouts_ofLE_le_largerSubobject (A : Subobject X) :
       (generatingMonomorphisms G).pushouts

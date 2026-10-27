@@ -130,7 +130,7 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
     Polynomial.eval_pow, succNthDefiningPoly, Polynomial.eval_mul, Polynomial.eval_add,
     Polynomial.eval_sub, Polynomial.IsRoot.def]
     at this
-  convert! this using 1
+  convert this using 1
   ring
 
 end IsAlgClosed
@@ -151,13 +151,15 @@ def solution (a₁ a₂ : 𝕎 k) : k :=
 theorem solution_spec (a₁ a₂ : 𝕎 k) : solution p a₁ a₂ ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
   Classical.choose_spec <| solution_pow p a₁ a₂
 
-theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
+theorem solution_ne_zero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     solution p a₁ a₂ ≠ 0 := by
   intro h
   have := solution_spec p a₁ a₂
   rw [h, zero_pow] at this
   · simpa [ha₁, ha₂] using _root_.div_eq_zero_iff.mp this.symm
   · exact Nat.sub_ne_zero_of_lt hp.out.one_lt
+
+@[deprecated (since := "2026-10-13")] alias solution_nonzero := solution_ne_zero
 
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
     solution p a₁ a₂ ^ p * a₁.coeff 0 = solution p a₁ a₂ * a₂.coeff 0 := by
@@ -187,11 +189,13 @@ equation `frobenius (frobeniusRotation a₁ a₂) * a₁ = (frobeniusRotation a�
 def frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) : 𝕎 k :=
   WittVector.mk p (frobeniusRotationCoeff p ha₁ ha₂)
 
-theorem frobeniusRotation_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
+theorem frobeniusRotation_ne_zero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     frobeniusRotation p ha₁ ha₂ ≠ 0 := by
   intro h
-  apply solution_nonzero p ha₁ ha₂
+  apply solution_ne_zero p ha₁ ha₂
   simpa [← h, frobeniusRotation, frobeniusRotationCoeff] using WittVector.zero_coeff p k 0
+
+@[deprecated (since := "2026-10-13")] alias frobeniusRotation_nonzero := frobeniusRotation_ne_zero
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
@@ -199,10 +203,10 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
   ext n
   rcases n with - | n
   · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
-      coeff_mk, frobeniusRotationCoeff]
+      frobeniusRotationCoeff]
     exact solution_spec' _ ha₁ _
   · simp only [nthRemainder_spec, WittVector.coeff_frobenius_charP,
-      frobeniusRotation, coeff_mk, frobeniusRotationCoeff]
+      frobeniusRotation, frobeniusRotationCoeff]
     have :=
       succNthVal_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobeniusRotationCoeff p ha₁ ha₂ i.val)
         ha₁ ha₂
@@ -230,14 +234,14 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
     simpa only [Ne, map_zero] using
       (IsFractionRing.injective (𝕎 k) (FractionRing (𝕎 k))).ne hq'''
-  simp_rw [zpow_sub₀ (FractionRing.p_nonzero p k), IsFractionRing.ringEquivOfRingEquiv_apply,
+  simp_rw [zpow_sub₀ (FractionRing.p_ne_zero p k), IsFractionRing.ringEquivOfRingEquiv_apply,
     IsLocalization.map_eq, RingHom.coe_coe, frobeniusEquiv_apply, FractionRing.mk_eq_div, map_mul,
     map_pow, map_natCast, zpow_natCast, mul_div_mul_comm, mul_left_comm]
   congr
   simp_rw [← mul_div_assoc, div_eq_iff hq'', mul_comm (algebraMap _ _ b), ← map_mul, key]
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
-    ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
+    ∃ b ≠ 0, ∃ m : ℤ, φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
   refine Localization.induction_on a ?_
   rintro ⟨r, q, hq⟩ hrq
@@ -249,7 +253,7 @@ theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha :
   refine ⟨algebraMap (𝕎 k) (FractionRing (𝕎 k)) b, ?_, m - n, ?_⟩
   · simpa only [map_zero] using
       (IsFractionRing.injective (WittVector p k) (FractionRing (WittVector p k))).ne
-        (frobeniusRotation_nonzero p hr' hq')
+        (frobeniusRotation_ne_zero p hr' hq')
   exact exists_frobenius_solution_fractionRing_aux p m n r' q' hr' hq' hq
 
 end IsAlgClosed

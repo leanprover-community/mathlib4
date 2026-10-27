@@ -6,7 +6,8 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Sym.Sym2.Order
+
+import Mathlib.Order.Sym2
 
 /-!
 # Lemmas on `Finset.sum` and `Finset.prod` involving `Finset.sym2` or `Finset.sym`.

@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Data.DFinsupp.Ext
-public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 
 /-!
 # Dependent functions with finite support
@@ -62,14 +62,10 @@ theorem coe_finsetSum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α
     ⇑(∑ a ∈ s, g a) = ∑ a ∈ s, ⇑(g a) :=
   map_sum coeFnAddMonoidHom g s
 
-@[deprecated (since := "2026-04-08")] alias coe_finset_sum := coe_finsetSum
-
 @[simp]
 theorem finsetSum_apply {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) (i : ι) :
     (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
   map_sum (evalAddMonoidHom i) g s
-
-@[deprecated (since := "2026-04-08")] alias finset_sum_apply := finsetSum_apply
 
 end Algebra
 
@@ -267,14 +263,14 @@ def sumZeroHom [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β 
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
-        convert! map_zero (φ i)
+        convert map_zero (φ i)
         exact (hy i).resolve_left (mt (And.intro H1) H2)
       · intro i _
         rfl
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
-        convert! map_zero (φ i)
+        convert map_zero (φ i)
         exact (hx i).resolve_left (mt (fun H3 => And.intro H3 H1) H2)
   map_zero' := by
     simp only [toFun_eq_coe, coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
@@ -439,11 +435,6 @@ theorem prod_finsetSum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid (
   classical
   exact Finset.induction_on s (by simp [prod_zero_index])
         (by simp +contextual [prod_add_index, h_zero, h_add])
-
-@[deprecated (since := "2026-04-08")] alias sum_finset_sum_index := sum_finsetSum_index
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias prod_finset_sum_index := prod_finsetSum_index
 
 @[to_additive]
 theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]
