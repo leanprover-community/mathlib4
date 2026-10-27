@@ -62,13 +62,11 @@ private lemma lift_rank_mul_lift_rank_of_isFractionRing_localization
   have : IsScalarTower FR FS M' := .restrictScalars ..
   have : IsScalarTower R FR M' := .to₁₂₄ (P := FS) ..
   have h₀ := IsLocalizedModule.isBaseChange R⁰ FR (IsScalarTower.toAlgHom R S FS).toLinearMap
-    |>.rank_eq
   have h₁ := IsLocalizedModule.isBaseChange mS FS f |>.lift_rank_eq
   have h₂ := IsLocalizedModule.restrictScalars R⁰ f |>.isBaseChange R⁰ FR |>.lift_rank_eq
   rw [lift_id'.{w, v}, lift_umax] at h₁ h₂
-  have := lift_rank_mul_lift_rank FR FS M'
-  rw [lift_id'.{v, w}, lift_id'.{v, w}, lift_umax] at this
-  rw [← h₀, ← h₁, ← h₂, this]
+  rw [← h₁, ← h₂, ← lift_inj.{_, v}, lift_mul, ← lift_rank_mul_lift_rank FR FS M',
+    ← lift_lift.{v, w}, h₀.lift_rank_eq, lift_lift, lift_lift]
 
 section isFractionRing_isLocalization
 
