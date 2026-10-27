@@ -85,8 +85,6 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     ``Lean.Parser.Tactic.tacticSeq,
     `focus,
     ``Lean.Parser.Tactic.focus,
-    -- conv mode
-    ``Lean.Parser.Tactic.Conv.«conv·_»,
     -- grind interactive mode
     ``Lean.Parser.Tactic.Grind.grindSeq1Indented,
     ``Lean.Parser.Tactic.Grind.grindSeq,
@@ -126,11 +124,15 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
 /-- The `SyntaxNodeKind`s in `ignoreBranch` correspond to tactics that disable the linter from
 their first application until the corresponding proof branch is closed.
 Reasons for ignoring these tactics include
+* the linter gets confused by the proof management, e.g. `conv`;
 * the tactics are *intended* to act on multiple goals, e.g. `repeat`, `any_goals`, `all_goals`, ...
 
 There is some overlap in scope between `exclusions` and `ignoreBranch`.
 -/
 abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
+    ``Lean.Parser.Tactic.Conv.conv,
+    `Mathlib.Tactic.Conv.convLHS,
+    `Mathlib.Tactic.Conv.convRHS,
     ``Lean.Parser.Tactic.first,
     ``Lean.Parser.Tactic.tacticRepeat_,
     ``Lean.Parser.Tactic.repeat',
