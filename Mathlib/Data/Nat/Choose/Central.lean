@@ -34,6 +34,7 @@ namespace Nat
 
 /-- The central binomial coefficient, `Nat.choose (2 * n) n`.
 -/
+@[oeis A000984]
 def centralBinom (n : ℕ) :=
   (2 * n).choose n
 

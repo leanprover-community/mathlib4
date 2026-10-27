@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.Order.Interval.Finset.Nat
+
 /-!
 
 # ℕ-indexed products as sequential limits

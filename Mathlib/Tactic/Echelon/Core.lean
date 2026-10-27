@@ -5,8 +5,8 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Qq
 public import Mathlib.Init
-public import Qq
 
 /-!
 # Parameterized computation core for the Bareiss elimination

@@ -9,6 +9,7 @@ public import Mathlib.Condensed.Discrete.LocallyConstant
 public import Mathlib.Condensed.Light.Module
 public import Mathlib.Condensed.Module
 public import Mathlib.Topology.LocallyConstant.Algebra
+
 /-!
 
 # Discrete condensed `R`-modules

@@ -4,3 +4,8 @@ self-hosted-runner:
     - pr
     - doc-gen
     - lean4checker
+paths:
+  .github/workflows/*.yml:
+    ignore:
+      # actionlint 1.7.12 doesn't know the `cache-mode` key yet (rhysd/actionlint#745).
+      - 'unexpected key "cache-mode" for "job" section'

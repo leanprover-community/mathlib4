@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 public import Mathlib.CategoryTheory.Products.Associator
 
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+
 /-!
 # Sifted categories
 

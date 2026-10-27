@@ -153,7 +153,6 @@ lemma shift_f_comp_mappingConeHomOfDegreewiseSplitIso_inv :
   rw [id_comp, comp_sub, ← comp_f_assoc, S.zero, zero_f, zero_comp, zero_sub, reassoc_of% h]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃ :
     (mappingConeHomOfDegreewiseSplitIso S σ).inv ≫

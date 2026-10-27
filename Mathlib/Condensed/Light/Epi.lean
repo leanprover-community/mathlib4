@@ -10,6 +10,7 @@ public import Mathlib.Condensed.Light.Limits
 
 import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
 import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
+
 /-!
 
 # Epimorphisms of light condensed objects

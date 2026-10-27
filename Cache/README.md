@@ -121,31 +121,12 @@ lake exe cache get --cache-from=master,forks
 
 `cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts.
 
-### Troubleshooting
-
-The public cache endpoint has been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before this endpoint was available, for troubleshooting any issues that might arise in the transition to this new endpoint:
-
-```bash
-# bash, zsh, Git Bash
-MATHLIB_CACHE_DEBUG_USE_LEGACY=1 lake exe cache get
-
-# PowerShell
-$env:MATHLIB_CACHE_DEBUG_USE_LEGACY = 1; lake exe cache get
-
-# Windows CMD
-set MATHLIB_CACHE_DEBUG_USE_LEGACY=1
-lake exe cache get
-```
-
-The variable is intended as a troubleshooting fallback and it might be retired at any time.
-
 ## Environment Variables
 
 | Variable                         | Description                        | Default                                         |
 |----------------------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
 | `MATHLIB_CACHE_GET_URL`          | Download from this single URL as a flat namespace (see [Operating an external cache](#operating-an-external-cache)) | unset |
-| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | See [Troubleshooting](#troubleshooting) | unset |
 
 An empty value means unset. The upload variables are internal to mathlib CI;
 see [`CI.md`](./CI.md).

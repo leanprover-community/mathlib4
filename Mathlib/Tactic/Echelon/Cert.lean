@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.Echelon.Reflection  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Matrix.MulExpand
 
-import Mathlib.Util.Qq
+meta import Mathlib.Util.Qq
 
 /-!
 # Certificate construction for the Bareiss decomposition

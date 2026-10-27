@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
+
 /-!
 
 # The constant sheaf

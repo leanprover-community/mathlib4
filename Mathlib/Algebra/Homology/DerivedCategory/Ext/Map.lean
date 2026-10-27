@@ -60,7 +60,6 @@ section
 open DerivedCategory
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
     dsimp% F.mapDerivedCategory.map (triangleOfSESδ hS) =
@@ -81,7 +80,6 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
   simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
     ← Functor.map_comp_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ShortComplex.ShortExact.mapShiftedHom_singleδ'
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
