@@ -527,8 +527,7 @@ private theorem liftFun_inf (i j k : α) (x y : FreeModLatThree) :
 def lift (i j k : α) : LatticeHom FreeModLatThree α where
   toFun := liftFun i j k
   map_inf' := by exact liftFun_inf i j k
-  map_sup' := by
-    intro a b
+  map_sup' a b := by
     rw [← OrderDual.toDual_inj, toDual_sup, toDual_liftFun,
       toDual_liftFun, toDual_liftFun, ← liftFun_inf]
     congr
