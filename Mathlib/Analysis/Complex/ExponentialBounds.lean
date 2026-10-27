@@ -9,9 +9,6 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Bounds on specific values of the exponential
 -/

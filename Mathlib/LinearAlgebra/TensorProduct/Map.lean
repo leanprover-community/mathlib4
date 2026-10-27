@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Tensor products and linear maps
 

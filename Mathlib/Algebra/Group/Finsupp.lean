@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finsupp.Single
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Additive monoid structure on `ι →₀ M`
 -/
@@ -83,7 +80,7 @@ noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
   __ := Finsupp.equivFunOnFinite
   map_add' _ _ := rfl
 
-/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
+/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M`
 is isomorphic to `M`. -/
 @[simps! apply symm_apply]
 noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+ M where
@@ -94,7 +91,7 @@ noncomputable def uniqueAddEquiv (i : ι) [Subsingleton ι] : (ι →₀ M) ≃+
 @[simp↓ high] lemma uniqueAddEquiv_symm_apply_apply (i : ι) [Subsingleton ι] (m : M) (j : ι) :
     (uniqueAddEquiv i).symm m j = m := by simp [Subsingleton.elim j i]
 
-/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
+/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M`
 is isomorphic to `M`. -/
 @[simps!, deprecated uniqueAddEquiv +typeChanged (since := "2026-05-06")]
 noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where

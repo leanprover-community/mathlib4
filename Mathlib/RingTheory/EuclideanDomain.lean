@@ -7,9 +7,6 @@ module
 
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lemmas about Euclidean domains
 

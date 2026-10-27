@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Order.Filter.Map
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Convergence in terms of filters
 

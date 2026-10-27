@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.QPF.Multivariate.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Constant functors are QPFs
 

@@ -10,9 +10,6 @@ public import Mathlib.Order.BoundedOrder.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Order.Lattice  -- shake: keep (Qq dependency)
 public import Mathlib.Util.AtomM
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Facts collection for the `order` Tactic
 

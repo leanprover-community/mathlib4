@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Basic.NNReal.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # WithZero
 

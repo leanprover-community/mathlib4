@@ -8,9 +8,6 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 public import Mathlib.MeasureTheory.Function.Jacobian
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Change of variable formulas for integrals in dimension 1
 

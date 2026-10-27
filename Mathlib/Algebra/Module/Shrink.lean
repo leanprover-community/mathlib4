@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Group.Shrink
 public import Mathlib.Algebra.Module.TransferInstance
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Transfer module and algebra structures from `α` to `Shrink α`
 -/

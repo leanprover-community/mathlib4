@@ -12,9 +12,6 @@ import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Data.EReal.Inv
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Topologies on spaces of measures
 

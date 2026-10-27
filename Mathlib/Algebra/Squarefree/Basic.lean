@@ -290,6 +290,15 @@ theorem _root_.exists_sq_mul_squarefree (x : R) : ∃ e d : R, e ^ 2 * d = x ∧
       rw [squarefree_mul_iff]
       exact ⟨(hp.isRelPrime_iff_not_dvd.mpr hpd).symm, hd, hp.squarefree⟩
 
+/-- A nonzero square factor can be cancelled from a square. -/
+theorem _root_.IsSquare.of_mul_right {x y : R} (hy : y ≠ 0) (h : IsSquare (x * y))
+    (hy' : IsSquare y) : IsSquare x := by
+  obtain ⟨c, rfl⟩ := hy'
+  obtain ⟨d, hd⟩ := h
+  obtain ⟨e, rfl⟩ : c ∣ d :=
+    (pow_dvd_pow_iff_dvd two_ne_zero).mp ⟨x, by rw [pow_two, pow_two, ← hd, mul_comm]⟩
+  exact ⟨e, mul_right_cancel₀ hy (by rw [hd]; simp [mul_comm, mul_left_comm])⟩
+
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   classical

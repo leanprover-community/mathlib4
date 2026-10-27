@@ -7,9 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Module
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The complete lattice of measures
 

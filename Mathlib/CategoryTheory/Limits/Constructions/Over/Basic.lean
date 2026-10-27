@@ -10,9 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Limits in the over category
 

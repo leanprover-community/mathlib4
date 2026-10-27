@@ -8,9 +8,6 @@ module
 public import Mathlib.CategoryTheory.Category.Quiv
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of refl quivers
 
@@ -366,7 +363,6 @@ theorem freeReflMap_naturality
     freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W :=
   Paths.ext_functor rfl (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor sending a reflexive quiver to the free category it generates, a quotient of
 its path category -/
 @[simps]

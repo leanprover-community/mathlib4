@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Canonical
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Grothendieck Topology and Sheaves on the Category of Types
 
@@ -135,7 +132,6 @@ theorem eval_map (S : Type uᵒᵖ ⥤ Type u) (α β) (f : β ⟶ α) (s x) :
   simp_rw [eval, ← comp_apply, ← Functor.map_comp, ← op_comp]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a sheaf `S`, construct an isomorphism `S ≅ [-, S(*)]`. -/
 @[simps!]
 noncomputable def equivYoneda (S : Type uᵒᵖ ⥤ Type u)
@@ -189,7 +185,6 @@ noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u
 instance subcanonical_typesGrothendieckTopology : typesGrothendieckTopology.{u}.Subcanonical :=
   GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ fun _ => Presieve.isSheaf_yoneda'
 
-set_option backward.defeqAttrib.useBackward true in
 theorem typesGrothendieckTopology_eq_canonical :
     typesGrothendieckTopology.{u} = Sheaf.canonicalTopology (Type u) := by
   refine le_antisymm typesGrothendieckTopology.le_canonical (sInf_le ?_)

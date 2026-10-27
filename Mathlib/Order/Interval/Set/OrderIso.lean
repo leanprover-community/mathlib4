@@ -8,9 +8,6 @@ module
 public import Mathlib.Order.Hom.Set
 public import Mathlib.Order.Interval.Set.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lemmas about images of intervals under order isomorphisms.
 -/

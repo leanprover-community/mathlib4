@@ -9,9 +9,6 @@ public import Mathlib.RingTheory.KrullDimension.Zero
 
 import Mathlib.RingTheory.KrullDimension.Field
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The Krull dimension of a local ring
 

@@ -12,9 +12,6 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Simple objects in the category of `R`-modules
 
