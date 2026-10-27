@@ -33,7 +33,7 @@ initialize allowNumericProjExt : TagAttribute ← do
       throwError "Expected `{.ofConstName n}` to be a structure.")
 
 /-- We can't add to a tag attribute later on, so hardcode the upstream exempt declarations here. -/
-def upstreamAllowed := #[``Prod, ``PProd, ``Sigma, ``And, ``Iff, ``Subtype, ``Fin]
+def upstreamAllowed := #[``Prod, ``PProd, ``Sigma, ``PSigma, ``And, ``Iff, ``Subtype, ``Fin]
 
 /-- Lints against numeric projections such as `foo.42` unless the type's head has been registered
 via `@[allow_numeric_proj]`. -/
