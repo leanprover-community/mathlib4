@@ -393,7 +393,9 @@ theorem map_center_eq {F} [EquivLike F R S] [RingEquivClass F R S] (f : F) :
 theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
-instance {R : Type*} [Ring R] : CommRing (center R) where
+/-- The center is commutative. -/
+instance {R} [Ring R] : CommRing (center R) where
+  __ := (center R).toRing
   mul_comm x y := Subtype.ext (x.prop.comm y.val)
 
 instance {R : Type*} [Ring R] : CommRing (Center R) :=
