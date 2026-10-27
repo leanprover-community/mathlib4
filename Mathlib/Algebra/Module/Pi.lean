@@ -69,15 +69,6 @@ instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCo
     ext1
     rw [zero_smul]
 
-/-- Evaluation of functions into an indexed collection of rings at a point is a linear map.
-This is `Function.eval` as a `LinearMap`. -/
-@[expose, simps!]
-def evalₗ (R : Type*) (f : I → Type*) [Semiring R] [∀ i, AddCommMonoid <| f i]
-    [∀ i, Module R <| f i] (i : I) : (∀ i, f i) →ₗ[R] f i where
-  toFun f := f i
-  map_add' := by intros; simp
-  map_smul' := by intros; simp
-
 end Pi
 
 @[expose] section
