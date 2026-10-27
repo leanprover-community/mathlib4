@@ -37,7 +37,7 @@ open scoped Classical in
 /-- `SupSet` structure on a nonempty subset `s` of a preorder with `SupSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
-@[instance_reducible]
+@[instance_reducible, deprecated "deprecated without replacement" (since := "2026-10-26")]
 noncomputable def subsetSupSet [Inhabited s] : SupSet s where
   sSup t :=
     if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
@@ -47,6 +47,7 @@ noncomputable def subsetSupSet [Inhabited s] : SupSet s where
 attribute [local instance] subsetSupSet
 
 open scoped Classical in
+@[simp, deprecated "deprecated without replacement" (since := "2026-10-26")]
 theorem subset_sSup_def [Inhabited s] :
     @sSup s _ = fun t =>
       if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
@@ -56,7 +57,7 @@ theorem subset_sSup_def [Inhabited s] :
 
 theorem subset_sSup_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
-    sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [subset_sSup_def, h, h', h'']
+    sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [h, h', h'']
 
 theorem subset_sSup_emptyset [Inhabited s] :
     sSup (∅ : Set s) = default := by
@@ -76,7 +77,7 @@ open scoped Classical in
 /-- `InfSet` structure on a nonempty subset `s` of a preorder with `InfSet`. This definition is
 non-canonical (it uses `default s`); it should be used only as here, as an auxiliary instance in the
 construction of the `ConditionallyCompleteLinearOrder` structure. -/
-@[instance_reducible]
+@[instance_reducible, deprecated "deprecated without replacement" (since := "2026-10-26")]
 noncomputable def subsetInfSet [Inhabited s] : InfSet s where
   sInf t :=
     if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s
@@ -86,6 +87,7 @@ noncomputable def subsetInfSet [Inhabited s] : InfSet s where
 attribute [local instance] subsetInfSet
 
 open scoped Classical in
+@[simp, deprecated "deprecated without replacement" (since := "2026-10-26")]
 theorem subset_sInf_def [Inhabited s] :
     @sInf s _ = fun t =>
       if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s
@@ -95,7 +97,7 @@ theorem subset_sInf_def [Inhabited s] :
 
 theorem subset_sInf_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddBelow t) (h : sInf ((↑) '' t : Set α) ∈ s) :
-    sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [subset_sInf_def, h, h', h'']
+    sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [h, h', h'']
 
 theorem subset_sInf_emptyset [Inhabited s] :
     sInf (∅ : Set s) = default := by
@@ -275,8 +277,6 @@ theorem coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ 
 
 end Set.Iic
 
-attribute [deprecated "deprecated without replacement" (since := "2026-10-26")]
-  subsetSupSet subset_sSup_def subsetInfSet subset_sInf_def
 attribute [deprecated Subtype.isLUB_of_csSup_image_mem +typeChanged (since := "2026-10-26")]
   subset_sSup_of_within
 attribute [deprecated Subtype.isGLB_of_csInf_image_mem +typeChanged (since := "2026-10-26")]
