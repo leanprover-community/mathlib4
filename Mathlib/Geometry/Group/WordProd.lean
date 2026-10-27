@@ -18,7 +18,6 @@ A generating family `P : Group.Generators G ι` indexed by `ι` gives rise to an
 * `Group.Generators.wordProd`: the canonical map from a word `List (ι × Bool)` over a generating
   family `ι` to the corresponding group `G`. It sends each `(i, true)` to `P.val i` and
   `(i, false)` to `(P.val i)⁻¹`.
-* `AddGroup.Generators.wordSum`: the additive version of `Group.Generators.wordProd`.
 
 ## Implementation notes
 
