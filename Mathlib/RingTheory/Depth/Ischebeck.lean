@@ -17,6 +17,17 @@ public import Mathlib.RingTheory.Regular.Category
 
 # The Ischebeck theorem and its corollary
 
+In this file, we prove the Ischebeck theorem (`depth_ge_depth_sub_dim`) and its important corollary
+that depth doesn't exceed codimension of any associated prime.
+
+## Main Results
+
+* `depth_ge_depth_sub_dim` (Ischebeck theorem) : For nontrivial finitely genrated modules `M N` over
+  Noetherian local ring `R`, `depth(N, M)` is not less than `depth(M) - dim(N)`.
+
+* `depth_le_ringKrullDim_associatedPrime` : For nontrivial finitely genrated modules `M` over
+  Noetherian local ring `R`, `depth(M) ≤ dim(R/p)` for any associated prime `p` of `M`.
+
 -/
 
 public section
@@ -28,6 +39,8 @@ universe u v
 
 variable {R : Type u} [CommRing R]
 
+/-- **Ischbeck Theorem** : For nontrivial finitely genrated modules `M N` over
+Noetherian local ring `R`, `depth(N, M)` is not less than `depth(M) - dim(N)`. -/
 theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : ModuleCat.{v} R)
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
     [Small.{v} R] : N.depth M ≥ IsLocalRing.depth M -
