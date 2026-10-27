@@ -229,6 +229,7 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
 
 variable [Fact p.Prime]
 
+set_option backward.privateInPublic true in
 private local instance comm_ring_aux₁ : CommRing (𝕎 (MvPolynomial R ℚ)) :=
   (ghostEquiv' p (MvPolynomial R ℚ)).injective.commRing ghostFun ghostFun_zero ghostFun_one
     ghostFun_add ghostFun_mul ghostFun_neg ghostFun_sub ghostFun_nsmul ghostFun_zsmul
