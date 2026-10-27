@@ -21,26 +21,33 @@ universe u uK uΓ
 variable {k : Type uK} [Field k]
   {Γ : Type uΓ} [LinearOrderedCommGroupWithZero Γ] (v : Valuation k Γ)
 
-def trunc (x : k) (γ : v.ValueGroup₀) : k :=
+/-- "Truncate" a given field element `x` at a precision `γ`. Analagous to `HahnSeries.truncLT`.
+Two elements have the same truncation iff they differ by an element of valuation `≤ γ`. -/
+def trunc (γ : v.ValueGroup₀) (x : k) : k :=
   (QuotientAddGroup.mk' (v.restrict.leAddSubgroup γ) x).out
 
-theorem trunc_spec (x : k) (γ : v.ValueGroup₀) : v.restrict (x - trunc v x γ) ≤ γ := by
+theorem trunc_spec (γ : v.ValueGroup₀) (x : k) : v.restrict (x - trunc v γ x) ≤ γ := by
   unfold trunc
   obtain ⟨c, hc⟩ := QuotientAddGroup.mk_out_eq_add (v.restrict.leAddSubgroup γ) x
   rw [← v.restrict.mem_leAddSubgroup_iff, QuotientAddGroup.mk'_apply, hc, sub_add_cancel_left]
   exact neg_mem c.2
 
-theorem trunc_eq_of_le {x y : k} (γ : v.ValueGroup₀) (hxy : v.restrict (x - y) ≤ γ) :
-    trunc v x γ = trunc v y γ := by
+theorem trunc_eq_of_le (γ : v.ValueGroup₀) {x y : k} (hxy : v.restrict (x - y) ≤ γ) :
+    trunc v γ x = trunc v γ y := by
   unfold trunc
   rw [eq_comm, Quotient.out_inj, QuotientAddGroup.mk'_eq_mk']
   exact ⟨x - y, by simpa using hxy, by simp⟩
 
+/-- The `γ`-th "coefficient" of `x` is defined as the residue of `(x - trunc x γ) / c`,
+where `c` is an arbitrarily chosen element of `k` of valuation equal to `γ`
+(but the choice of `c` is made independent of `x`). Analagous to `HahnSeries.coeff`.
+Two elements with the same truncation have the same coefficient
+iff they differ by an element of valuation `< γ`. -/
 def coeff (x : k) (γ : v.ValueGroup₀) : IsLocalRing.ResidueField v.valuationSubring :=
-  IsLocalRing.residue _ ⟨(x - trunc v x γ) / (v.restrict_surjective γ).choose, by
+  IsLocalRing.residue _ ⟨(x - trunc v γ x) / (v.restrict_surjective γ).choose, by
     rw [v.mem_valuationSubring_iff, ← v.restrict_le_one_iff, map_div₀,
       (v.restrict_surjective γ).choose_spec]
-    exact div_le_one_of_le₀ (trunc_spec v x γ) zero_le⟩
+    exact div_le_one_of_le₀ (trunc_spec v γ x) zero_le⟩
 
 theorem coeff_injective : Function.Injective (coeff v) := by
   intro x y hcc
