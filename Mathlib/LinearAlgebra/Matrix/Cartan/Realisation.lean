@@ -20,7 +20,7 @@ import Mathlib.LinearAlgebra.Matrix.Dual
 Let `R` be an integral domain of characteristic zero, and let `M` and `N` be `R`-modules in perfect
 pairing. Then, given vectors `r₁, r₂, …, rₗ` in `M` and `c₁, c₂, …, cₗ` in `N`, the following two
 propositions are equivalent:
-1. The vectors `rᵢ`, `cᵢ` are the simple roots and coroots of a finite, reduced, crystrallographic
+1. The vectors `rᵢ`, `cᵢ` are the simple roots and coroots of a finite, reduced, crystallographic
    root pairing (i.e., a reduced root datum except we do not require `R = ℤ`).
 2. The matrix `Aᵢⱼ = ⟨cⱼ, rᵢ⟩` is a finite-type Cartan matrix.
 
@@ -645,7 +645,7 @@ private lemma span_range_sRoot_eq_top :
   ext; simp [toRealisation]
 
 /-- Given a field `k` of characteristic zero and Cartan matrix `A`, this is a reduced
-crystrallographic root system over `k`. It carries a natural base with Cartan matrix `A`. -/
+crystallographic root system over `k`. It carries a natural base with Cartan matrix `A`. -/
 def toRootPairing := (hA.toRealisation (hA.isUnit_map k).invertible).toRootPairing
 
 instance : (hA.toRootPairing k).IsReduced :=
