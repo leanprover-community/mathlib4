@@ -406,7 +406,7 @@ lemma isNilpotent_restrict_genEigenspace_nat (f : End R M) (μ : R) (k : ℕ)
   rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero,
     Module.End.pow_restrict, LinearMap.restrict_apply]
   ext
-  simpa only [ZeroMemClass.coe_zero]
+  simpa
 
 /-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_genEigenspace_top [IsNoetherian R M] (f : End R M) (μ : R)

@@ -226,9 +226,7 @@ theorem commute_exp_left_of_commute
   replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by omega) hfN
   have (i : ℕ) : (fN ^ i) (g m) = g ((fM ^ i) m) := by
     simpa using congr($(Module.End.commute_pow_left_of_commute h i) m)
-  simp only [exp_eq_sum hfN, LinearMap.coe_comp, LinearMap.coe_sum, LinearMap.coe_smul,
-    Function.comp_apply, Finset.sum_apply, Pi.smul_apply, this, exp_eq_sum hfM, map_sum,
-    map_rat_smul]
+  simp [exp_eq_sum hfM, exp_eq_sum hfN, this, map_rat_smul]
 
 theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing B]
     [Module R B] [SMulCommClass R B B] [IsScalarTower R B B] [Module ℚ B]

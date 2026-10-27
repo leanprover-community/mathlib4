@@ -105,8 +105,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
   rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_mul]
   ext
   dsimp [PiToModule.fromEnd]
-  simp_rw [mul_apply_eq_comp]
-  rw [← h'.congr_fun, ← h.congr_fun]
+  rw [mul_apply_eq_comp, mul_apply_eq_comp, ← h'.congr_fun, ← h.congr_fun]
   rfl
 
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by

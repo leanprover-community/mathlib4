@@ -195,7 +195,7 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
   refine .trans ?_ hx
   generalize_proofs h'
   clear hx
-  induction n <;> simp [pow_succ', *, -FunLike.coe_pow_eq_iterate, -pow_apply_eq_iterate]
+  induction n <;> simp [pow_succ', *]
 
 lemma finrank_maxGenEigenspace_eq (φ : Module.End K M) (μ : K) :
     finrank K (φ.maxGenEigenspace μ) = φ.charpoly.rootMultiplicity μ := by

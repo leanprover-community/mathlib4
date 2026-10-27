@@ -1157,7 +1157,7 @@ def endVecRingEquivMatrixEnd :
   map_mul' f g := by
     ext
     simp only [mul_apply_eq_comp, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
-      LinearMap.coe_sum, FunLike.coe_mul_eq_comp, Finset.sum_apply, Function.comp_apply]
+      LinearMap.coe_sum, Finset.sum_apply]
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl
   map_add' f g := by ext; simp

@@ -162,9 +162,7 @@ lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
   obtain ⟨m, hm⟩ := h
   obtain (hmn | hmn) : m ≤ n ∨ n ≤ m := le_total m n
   · exact Module.End.pow_map_zero_of_le hmn hm
-  · have : ∀ k : ℕ, ((ad R L) x ^ k) y = 0 ↔ y ∈ K k := by
-      simp only [OrderHom.coe_mk, LinearMap.mem_ker, Subtype.ext_iff, coe_ad_pow,
-        ZeroMemClass.coe_zero, implies_true, K]
+  · have : ∀ k : ℕ, ((ad R L) x ^ k) y = 0 ↔ y ∈ K k := by simp [K, Subtype.ext_iff, coe_ad_pow]
     rwa [this, ← hn m hmn, ← this] at hm
 
 end LieSubalgebra

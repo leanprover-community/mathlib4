@@ -297,9 +297,8 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : Module.End R M) :
   intro x
   rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
   · exact ⟨x - (f ^ n) y, by simp only [mem_ker, map_sub, hy, sub_self], (f ^ n) y, by simp⟩
-  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `mem_range` into `mem_range (f := _)`
-  simp_rw [pow_apply_eq_iterate, ← iterate_add_apply, ← pow_apply_eq_iterate,
-    ← mem_range (f := _), ← hn _ (n.le_add_left m), hn _ hm]
+  simp_rw [pow_apply_eq_iterate, ← iterate_add_apply, ← pow_apply_eq_iterate, ← mem_range,
+    ← hn _ (n.le_add_left m), hn _ hm]
   exact LinearMap.mem_range_self (f ^ m) x
 
 /-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
