@@ -77,7 +77,7 @@ bound of `Real.exp_bound`, rounded outward to precision `prec`. This is only int
 when `| a / b | ≤ 1`. -/
 @[expose]
 def expRatTaylor (a : ℤ) (b n prec : ℕ) : Interval Dyadic :=
-  ratBall (n * expPartialSumNum a b n) ((n + 1) * |a ^ n|) (n * (b ^ n * n.factorial)) prec
+  ratBall (n * expPartialSumNum a b n) ((n + 1) * |a ^ n|) (n * (b ^ n * n !)) prec
 
 theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ b) {n : ℕ} (hn : 0 < n)
     (prec : ℕ) : Real.exp (a / b) ∈ expRatTaylor a b n prec := by
@@ -93,20 +93,28 @@ theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ 
   field_simp
 
 -- TODO: refactor this to a general util file once there's a second user.
-/-- Round the endpoints of `I` outward to precision `prec`. This allows downstream intervals to
-not carry an unnecessary number of bits (e.g. due to taking a large power in the case of `exp`). -/
+/-- Round the lower endpoint of `I` down and the upper endpoint up, each to a multiple of
+`2 ^ (-prec)`. Infinite endpoints are left unchanged, so the result always contains `I`.
+
+This drops surplus bits so that later computations don't have to carry them. For example, a large
+power of an interval (as in `expPoint`) has endpoints with very long binary expansions. -/
 @[expose]
 def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
   ⟨I.lb.map (fun l ↦ Dyadic.roundDown l prec), I.ub.map (fun u ↦ Dyadic.roundUp u prec)⟩
 
+theorem mem_roundOut_iff {x : ℝ} {I : Interval Dyadic} {prec : ℕ} :
+    x ∈ roundOut I prec ↔
+      (∀ J : Dyadic, I.lb = J → (J.roundDown prec).toReal ≤ x) ∧
+      (∀ J : Dyadic, I.ub = J → x ≤ (J.roundUp prec).toReal) := by
+  rw [mem_iff_mem_map, Interval.mem_map_iff]
+  simp [roundOut, WithBot.map_eq_some_iff, WithTop.map_eq_some_iff]
+
 theorem roundOut_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
     x ∈ roundOut I prec := by
-  rw [mem_iff_mem_map, Interval.mem_map_iff] at hx ⊢
-  refine ⟨fun c hc ↦ ?_, fun c hc ↦ ?_⟩
-  · obtain ⟨l, hl, rfl⟩ := WithBot.map_eq_some_iff.mp hc
-    exact (Dyadic.toReal_le_toReal.mpr Dyadic.roundDown_le).trans (hx.1 l hl)
-  · obtain ⟨u, hu, rfl⟩ := WithTop.map_eq_some_iff.mp hc
-    exact (hx.2 u hu).trans (Dyadic.toReal_le_toReal.mpr Dyadic.le_roundUp)
+  rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
+  refine mem_roundOut_iff.mpr ⟨fun l hl ↦ ?_, fun u hu ↦ ?_⟩
+  · exact (Dyadic.toReal_le_toReal.mpr Dyadic.roundDown_le).trans (hx.1 l hl)
+  · exact (hx.2 u hu).trans (Dyadic.toReal_le_toReal.mpr Dyadic.le_roundUp)
 
 /-- An enclosure of `exp x` by rewriting as `exp (x / m) ^ m` so that `|x / m| < 1 / 32` to make
 the Taylor series converge quickly. The interval is rounded outward after the power to drop the
@@ -138,12 +146,10 @@ def expPoint (x : Dyadic) (prec : ℕ) : Interval Dyadic :=
 
 theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint x prec := by
   have hb : x.toRat.den ≠ 0 := x.toRat.den_nz
-  unfold expPoint
-  dsimp only
+  dsimp only [expPoint]
   generalize hm : 16 * (2 * x.toRat.num.natAbs / x.toRat.den + 1) = m
   have hm0 : m ≠ 0 := by lia
-  have hred : Real.exp x.toReal =
-      Real.exp ((x.toRat.num : ℝ) / ((x.toRat.den * m : ℕ) : ℝ)) ^ m := by
+  have hred : Real.exp x.toReal = Real.exp (x.toRat.num / (x.toRat.den * m : ℕ)) ^ m := by
     rw [← Real.exp_nat_mul, Dyadic.toReal, Rat.cast_def]
     push_cast
     field_simp
