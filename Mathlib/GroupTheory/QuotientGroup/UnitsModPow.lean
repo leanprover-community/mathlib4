@@ -58,7 +58,7 @@ in `α`. -/
 @[to_additive /-- The class of an additive unit `u` is trivial in `AddUnits.ModNSMul α n` exactly
 when `u` is an `n`-th multiple in `α`. -/]
 lemma mk_eq_one_iff_exists_pow_eq_val {u : αˣ} : (u : ModPow α n) = 1 ↔ ∃ x : α, x ^ n = u :=
-  mk_eq_one_iff.trans (by simpa using u.isUnit.exists_pow_eq_unit_iff)
+  mk_eq_one_iff.trans (by simpa using exists_pow_eq_unit_iff u)
 
 @[to_additive]
 lemma mk_eq_mk_iff {u v : αˣ} : (u : ModPow α n) = v ↔ ∃ w : αˣ, v = u * w ^ n := by
@@ -66,14 +66,23 @@ lemma mk_eq_mk_iff {u v : αˣ} : (u : ModPow α n) = v ↔ ∃ w : αˣ, v = u 
   exact congr(∃ _, $(eq_comm.trans _root_.inv_mul_eq_iff_eq_mul))
 
 @[to_additive]
-lemma unit_eq_one_iff (ha : IsUnit a) : (ha.unit : ModPow α n) = 1 ↔ ∃ x, x ^ n = a := by
-  rw [mk_eq_one_iff_exists_pow_eq_val, IsUnit.unit_spec]
+lemma mk_eq_mk_iff_exists_eq_mul_pow {u v : αˣ} :
+    (u : ModPow α n) = v ↔ ∃ w : α, v = u * w ^ n := by
+  refine mk_eq_mk_iff.trans ⟨fun ⟨w, hw⟩ ↦ ⟨w, by simp [hw]⟩, fun ⟨w, hw⟩ ↦ ?_⟩
+  match n with
+  | 0 =>
+    simp only [pow_zero, mul_one, exists_const] at hw ⊢
+    exact Units.ext_iff.mpr hw
+  | n + 1 =>
+    suffices IsUnit w from ⟨this.unit, by ext; simp [hw]⟩
+    refine .of_mul_eq_one_right (v⁻¹ * u * w ^ n) ?_
+    simp [mul_assoc, ← pow_succ, ← hw]
 
 @[to_additive]
-lemma unit_mul_unit_mul_unit_eq_one_iff (ha : IsUnit a) (hb : IsUnit b) (hc : IsUnit c) :
-    (ha.unit : ModPow α n) * hb.unit * hc.unit = 1 ↔ ∃ x, x ^ n = a * b * c := by
+lemma mk_mul_mk_mul_mk_eq_one_iff (a b c : αˣ) :
+    (a : ModPow α n) * b * c = 1 ↔ ∃ x, x ^ n = a * b * c := by
   rw [← mk_mul, ← mk_mul, mk_eq_one_iff_exists_pow_eq_val]
-  simp
+  simp [exists_pow_eq_unit_iff]
 
 /-- The class of a unit `u` is trivial in `Units.ModPow α 2` exactly when `u` is a square
 in `α`. -/
@@ -114,15 +123,14 @@ lemma map_id (n : ℕ) : map (MonoidHom.id α) n = MonoidHom.id (ModPow α n) :=
 
 @[to_additive]
 lemma map_comp {γ : Type*} [CommMonoid γ] (ψ : β →* γ) (φ : α →* β) (n : ℕ) :
-    (map ψ n).comp (map φ n) = map (ψ.comp φ) n := by
+    map (ψ.comp φ) n = (map ψ n).comp (map φ n) := by
   ext
   simp
 
 @[to_additive]
 lemma map_map {γ : Type*} [CommMonoid γ] (ψ : β →* γ) (φ : α →* β) {n : ℕ} (x : ModPow α n) :
     map ψ n (map φ n x) = map (ψ.comp φ) n x := by
-  rw [← map_comp]
-  simp
+  simp [map_comp]
 
 @[to_additive]
 lemma map_unit (φ : α →* β) (n : ℕ) (ha : IsUnit a) :
