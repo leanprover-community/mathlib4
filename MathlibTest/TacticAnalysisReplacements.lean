@@ -40,6 +40,14 @@ Note: This linter can be disabled with `set_option linter.tacticAnalysis.grindTo
 example (x y : Int) (h : x ≤ y) : x ≤ y := by
   grind
 
+-- A failed replacement must not try to extract a counterexample when failure reporting is off.
+-- In particular, the target may depend on the auxiliary declaration for a recursive definition,
+-- which cannot be cleared while extracting a standalone theorem.
+#guard_msgs in
+private def recursiveAux : (n : Nat) → { p : Prop // p }
+  | 0 => ⟨True, by trivial⟩
+  | n + 1 => ⟨(recursiveAux n).1, by grind [(recursiveAux n).2]⟩
+
 section
 
 variable {α : Type*} {a b : α} (h : a = b)

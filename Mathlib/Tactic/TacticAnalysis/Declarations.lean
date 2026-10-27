@@ -68,6 +68,8 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
         let goalsMessages := goalTypes.map fun e => m!"⊢ {MessageData.ofExpr e}\n"
         return .remainingGoals tac goalsMessages
     catch _e =>
+      if !reportFailure then
+        return .error tac m!""
       let name ← mkAuxDeclName `extracted
       -- Rerun in the original tactic context, since `omega` changes the state.
       let ((sig, _, modules, _), _) ← ctxI.runTactic i goal (fun goal =>
