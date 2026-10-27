@@ -768,7 +768,6 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
   simp only [isCoprime_iff_add, one_eq_top] at hf ⊢
   exact sup_iInf_eq_top hf
 
-theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
 theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J := by
   apply le_antisymm mul_le_inf
   rw [← mul_one (I ⊓ J), ← coprime.add_eq, mul_add, mul_comm]
