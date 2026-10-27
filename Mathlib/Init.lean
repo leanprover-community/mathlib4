@@ -24,6 +24,7 @@ public meta import Mathlib.Tactic.Linter.Header
 public meta import Mathlib.Tactic.Linter.InternalConstructor
 -- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
 public meta import Mathlib.Tactic.Linter.Lint
+public meta import Mathlib.Tactic.Linter.LongProof
 public meta import Mathlib.Tactic.Linter.Multigoal
 public meta import Mathlib.Tactic.Linter.OldObtain
 public meta import Mathlib.Tactic.Linter.PrivateModule
@@ -89,6 +90,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.auxLemma
   linter.flexible
   linter.hashCommand
+  linter.longProof
   linter.oldObtain
   linter.privateModule
   linter.style.cases

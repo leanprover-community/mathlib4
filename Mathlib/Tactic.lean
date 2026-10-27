@@ -230,6 +230,7 @@ public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.InternalConstructor
 public import Mathlib.Tactic.Linter.Lint
+public import Mathlib.Tactic.Linter.LongProof
 public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
