@@ -34,16 +34,14 @@ by taking `[Fact p.Prime]` as a type class argument.
 
 * `multiplicity_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
   quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
-  greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in
-  the language of prime multiplicity.
+  greater than `log p n`.
 
 * `Nat.Prime.sub_one_mul_multiplicity_factorial`: Legendre's Theorem.  Taking (`p - 1`) times
   the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 * `multiplicity_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
   of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
-  `Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for
-  the same result but stated in the language of prime multiplicity.
+  `Ico 1 b` where `b` is any bound greater than `log p n`.
 
 * `sub_one_mul_multiplicity_choose_eq_sub_sum_digits`: Kummer's Theorem. Taking (`p - 1`) times the
   `p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum
@@ -185,8 +183,8 @@ theorem zero_le_padicValRat_of_nat (n : ℕ) : 0 ≤ padicValRat p n := by simp
 theorem padicValRat_of_nat (n : ℕ) : ↑(multiplicity p n) = padicValRat p n := by simp
 
 @[simp]
-theorem Nat.Prime.multiplicity_self [Fact p.Prime] : multiplicity p p = 1 :=
-  Nat.multiplicity_self Fact.out
+theorem Nat.Prime.multiplicity_self (hp : p.Prime) : multiplicity p p = 1 :=
+  Nat.multiplicity_self hp.one_lt
 
 @[deprecated (since := "2026-09-11")] alias padicValNat_self := Nat.Prime.multiplicity_self
 
@@ -443,7 +441,7 @@ theorem multiplicity_div_of_dvd (h : b ∣ a) :
 
 /-- Dividing out by a prime factor reduces the `multiplicity` by `1`. -/
 theorem multiplicity_div (dvd : p ∣ b) : multiplicity p (b / p) = multiplicity p b - 1 := by
-  rw [Nat.multiplicity_div_of_dvd dvd, Nat.Prime.multiplicity_self]
+  rw [Nat.multiplicity_div_of_dvd dvd, hp.out.multiplicity_self]
 
 /-- A version of `padicValRat.pow` for `multiplicity`. -/
 @[simp]
@@ -451,7 +449,7 @@ theorem multiplicity_pow (a n : ℕ) : multiplicity p (a ^ n) = n * multiplicity
   simpa only [← @Nat.cast_inj ℤ, push_cast] using padicValRat.pow a
 
 theorem multiplicity_prime_pow (n : ℕ) : multiplicity p (p ^ n) = n := by
-  rw [multiplicity_pow p, Nat.Prime.multiplicity_self, mul_one]
+  rw [multiplicity_pow p, hp.out.multiplicity_self, mul_one]
 
 theorem multiplicity_div_pow (dvd : p ^ a ∣ b) :
     multiplicity p (b / p ^ a) = multiplicity p b - a := by
@@ -565,7 +563,7 @@ lemma multiplicity_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
     have : multiplicity p k < k := by calc
       _ ≤ log p k := multiplicity_le_nat_log k
       _ < _ := log_lt_self p (by lia)
-    rw [hk, Nat.multiplicity_mul (by lia) (by lia), Nat.Prime.multiplicity_self]
+    rw [hk, Nat.multiplicity_mul (by lia) (by lia), hp.out.multiplicity_self]
     calc
       _ ≤ p + k := by lia
       _ ≤ _ := Nat.add_le_mul hp.out.two_le (by lia)
@@ -816,6 +814,6 @@ theorem padicValInt.mul [hp : Fact p.Prime] {a b : ℤ} (ha : a ≠ 0) (hb : b �
 theorem padicValInt_mul_eq_succ [hp : Fact p.Prime] (a : ℤ) (ha : a ≠ 0) :
     padicValInt p (a * p) = padicValInt p a + 1 := by
   rw [padicValInt.mul ha (Int.natCast_ne_zero.mpr hp.out.ne_zero)]
-  simp only [padicValInt.of_nat, Nat.Prime.multiplicity_self]
+  simp only [padicValInt.of_nat, hp.out.multiplicity_self]
 
 end padicValInt

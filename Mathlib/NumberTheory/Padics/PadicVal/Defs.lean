@@ -59,10 +59,6 @@ theorem multiplicity_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 
 @[deprecated (since := "2026-09-12")] alias padicValNat_eq_emultiplicity :=
   multiplicity_eq_emultiplicity
 
-namespace padicValNat
-
-end padicValNat
-
 @[simp]
 theorem Nat.multiplicity_eq_zero_iff {n : ℕ} : multiplicity p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
   rcases eq_or_ne n 0 with rfl | hn₀; · simp
@@ -89,7 +85,7 @@ theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : 
     ENat.natCast_le_natCast]
 
 @[deprecated (since := "2026-09-11")] alias le_padicValNat_iff_replicate_subperm_primeFactorsList :=
-le_multiplicity_iff_replicate_subperm_primeFactorsList
+  le_multiplicity_iff_replicate_subperm_primeFactorsList
 
 /-- A weak upper bound on `multiplicity p n`. -/
 theorem mul_multiplicity_le {p n : ℕ} : p * multiplicity p n ≤ n := by
