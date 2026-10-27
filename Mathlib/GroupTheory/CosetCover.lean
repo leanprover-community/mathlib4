@@ -75,6 +75,9 @@ theorem exists_leftTransversal_of_finiteIndex
     exact ⟨_, (ht.1.toLeftFun ⟨x, hx⟩).2, _,
       ht.1.inv_toLeftFun_mul_mem ⟨x, hx⟩, mul_inv_cancel_left _ _⟩
 
+@[to_additive (attr := deprecated (since := "2026-10-27"))]
+alias exists_leftTransversal_of_FiniteIndex := exists_leftTransversal_of_finiteIndex
+
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 
 @[to_additive]
@@ -309,6 +312,9 @@ theorem leftCoset_cover_filter_finiteIndex_aux
       (ne_of_apply_ne Sigma.fst (ne_of_apply_ne Subtype.val (hik₁ ▸ hjk₂ ▸ hij)))
       hxk₁ hxk₂
 
+@[to_additive (attr := deprecated (since := "2026-10-27"))]
+alias leftCoset_cover_filter_FiniteIndex_aux := leftCoset_cover_filter_finiteIndex_aux
+
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 Then the cosets of subgroups of infinite index may be omitted from the covering. -/
 @[to_additive /-- Let the additive group `G` be the union of finitely many left cosets `g i +ᵥ H i`.
@@ -317,6 +323,9 @@ theorem leftCoset_cover_filter_finiteIndex
     [DecidablePred (FiniteIndex : Subgroup G → Prop)] :
     ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ :=
   (leftCoset_cover_filter_finiteIndex_aux hcovers).1
+
+@[to_additive (attr := deprecated (since := "2026-10-27"))]
+alias leftCoset_cover_filter_FiniteIndex := leftCoset_cover_filter_finiteIndex
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`. Then the
 sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
