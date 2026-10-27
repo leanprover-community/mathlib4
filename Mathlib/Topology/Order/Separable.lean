@@ -17,8 +17,10 @@ In this file we prove some results about a separable linearly ordered topologica
 * `exists_isOpen_ordConnected_mem_subset`: every point of an open set has an open order connected
   neighbourhood contained in that set.
 * `isTopologicalBasis_isOpen_ordConnected`: the open order connected sets form a topological basis.
-* `countable_setOf_isolated_subtype`: in a separable linearly ordered topological space, the
+* `countable_ofPred_isolated_subtype`: in a separable linearly ordered topological space, the
   points of a subset that are isolated in the subspace topology form a countable set.
+* `countable_ofPred_isolated_within`: the same statement for the points `x ∈ s` with
+  `𝓝[s \ {x}] x = ⊥`, as a set in `α`.
 * `Set.separableSpace`: a separable linearly ordered topological space is hereditarily separable.
 
 ## TODO
@@ -83,7 +85,7 @@ private lemma countable_isolated_inter_Ioi_aux [SeparableSpace α] {s : Set α} 
 
 /-- In a separable linearly ordered topological space, the points of a subset `s` that are
 isolated in the subspace `s` form a countable set. -/
-theorem countable_setOf_isolated_subtype [SeparableSpace α] (s : Set α) :
+theorem countable_ofPred_isolated_subtype [SeparableSpace α] (s : Set α) :
     {x : s | IsOpen {x}}.Countable := by
   obtain ⟨D, hDc, hDd⟩ := exists_countable_dense α
   -- Each such point `x` has an open order connected neighbourhood `W x` meeting `s` only in `x`.
@@ -110,6 +112,16 @@ theorem countable_setOf_isolated_subtype [SeparableSpace α] (s : Set α) :
     · exact .inl (.inr ⟨hx, h₂⟩)
   · exact .inl (.inl ⟨hx, h₁⟩)
 
+/-- In a separable linearly ordered topological space, the points of a subset `s` that are
+isolated within `s` form a countable set. -/
+theorem countable_ofPred_isolated_within [SeparableSpace α] {s : Set α} :
+    {x ∈ s | 𝓝[s \ {x}] x = ⊥}.Countable := by
+  refine ((countable_ofPred_isolated_subtype s).image Subtype.val).mono ?_
+  rintro x ⟨hxs, hx⟩
+  refine ⟨⟨x, hxs⟩, ?_, rfl⟩
+  rwa [mem_ofPred_eq, isOpen_singleton_iff_punctured_nhds, nhds_ne_subtype_eq_bot_iff,
+    ← nhdsWithin_inter', ← sdiff_eq_compl_inter]
+
 /-- A separable linearly ordered topological space is hereditarily separable: every subset,
 equipped with the subspace topology, is a separable space. -/
 instance Set.separableSpace [SeparableSpace α] (s : Set α) : SeparableSpace s := by
@@ -121,7 +133,7 @@ instance Set.separableSpace [SeparableSpace α] (s : Set α) : SeparableSpace s 
     · exact ⟨p, fun h' ↦ absurd h' h⟩
   choose a ha using hchoice
   refine ⟨⟨{x : s | IsOpen {x}} ∪ Subtype.val ⁻¹' image2 a D D,
-    (countable_setOf_isolated_subtype s).union
+    (countable_ofPred_isolated_subtype s).union
     ((hc.image2 hc a).preimage Subtype.val_injective), ?_⟩⟩
   refine dense_iff_inter_open.2 fun O hO ⟨x, hxO⟩ ↦ ?_
   by_cases hxiso : IsOpen {x}
@@ -132,12 +144,12 @@ instance Set.separableSpace [SeparableSpace α] (s : Set α) : SeparableSpace s 
   obtain ⟨b, hbs, hlo, hhi⟩ :
       ∃ b ∈ s, (W ∩ Iio b).Nonempty ∧ (W ∩ Ioi b).Nonempty := by
     rw [isOpen_singleton_iff_punctured_nhds] at hxiso
-    let : NeBot (𝓝[≠] x) := ⟨hxiso⟩
+    have : NeBot (𝓝[≠] x) := ⟨hxiso⟩
     have hWinf : (Subtype.val ⁻¹' W).Infinite :=
       infinite_of_mem_nhds x ((hWo.preimage continuous_subtype_val).mem_nhds hWx)
     by_contra! h
     exact hWinf (finite_of_forall_not_lt_lt fun a ha b hb c hc hab hbc ↦
-      (congrArg ((c : α) ∈ ·) (h b b.2 ⟨a, ha, hab⟩)).mp ⟨hc, hbc⟩)
+      (h b b.2 ⟨a, ha, hab⟩).subset ⟨hc, hbc⟩)
   obtain ⟨p, hpD, hpW⟩ := hd.exists_mem_open (hWo.inter isOpen_Iio) hlo
   obtain ⟨q, hqD, hqW⟩ := hd.exists_mem_open (hWo.inter isOpen_Ioi) hhi
   obtain ⟨hasq, hapq⟩ := ha p q ⟨b, hbs, hpW.2, hqW.2⟩
