@@ -62,6 +62,7 @@ theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     z.im ^ 2 * discr a b = trace z ^ 2 - 4 * norm z := by
   rw [trace_def, norm_def, discr_def]; ring
 
+/-- Four times the norm of `z` is `trace z ^ 2 - discr a b * z.im ^ 2`. -/
 theorem four_mul_norm_eq [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     4 * norm z = trace z ^ 2 - discr a b * z.im ^ 2 := by
   rw [trace_def, norm_def, discr_def]; ring
