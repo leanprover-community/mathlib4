@@ -156,8 +156,6 @@ lean_exe mk_all where
   allowNonModules := true
   srcDir := "scripts"
   supportInterpreter := true
-  -- Executables which import `Lake` must set `-lLake`.
-  weakLinkArgs := #["-lLake"]
 
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
@@ -165,8 +163,6 @@ lean_exe «lint-style» where
   supportInterpreter := true
   -- TODO: modulise this script, so remove the need for this option
   allowNonModules := true
-  -- Executables which import `Lake` must set `-lLake`.
-  weakLinkArgs := #["-lLake"]
 
 /-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
 Currently, these checks are quite lenient, but could be made stricter in the future. -/

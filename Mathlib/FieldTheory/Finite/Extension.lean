@@ -111,7 +111,7 @@ noncomputable def Extension.frob :
 
 @[simp]
 theorem Extension.frob_iterate_apply (i : ℕ) {x : Extension k p n} :
-    (frob k p n ^ i) x = x ^ (Nat.card k ^ i) := by
+    (frob k p n ^ i) x = x ^ Nat.card k ^ i := by
   induction i generalizing x with
   | zero => simp
   | succ i ih =>
@@ -141,7 +141,7 @@ noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
 
 include p in
 theorem exists_forall_apply_eq_pow (l : Type*) [Field l] [Algebra k l] [Finite l] (g : Gal(l/k)) :
-    ∃ i, ∀ x, g x = x ^ (Nat.card k ^ i) := by
+    ∃ i, ∀ x, g x = x ^ Nat.card k ^ i := by
   let n := Module.finrank k l
   have : NeZero n := NeZero.of_pos Module.finrank_pos
   obtain ⟨i, _, hi⟩ := Extension.exists_frob_pow_eq k p n <|
@@ -161,7 +161,7 @@ variable {f : k[X]} (hi : Irreducible f)
 include hi
 
 omit [Finite k] in -- Junk for `Nat.card` allows us to omit the finiteness assumption here.
-theorem natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} (h : f ∣ X ^ (Nat.card k) ^ n - X) :
+theorem natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} (h : f ∣ X ^ Nat.card k ^ n - X) :
     f.natDegree ∣ n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
@@ -173,13 +173,11 @@ theorem natDegree_dvd_of_dvd_X_pow_card_pow_sub_X {n : ℕ} (h : f ∣ X ^ (Nat.
   have : Fact (Nat.Prime p) := ⟨CharP.char_is_prime k p⟩
   have : NeZero n := ⟨hn⟩
   rw [← finrank_extension k p n]
-  apply Irreducible.natDegree_dvd_finrank hi
-  refine Splits.of_dvd ?_ ?_ (map_dvd (algebraMap _ (Extension _ p n)) h)
-  · apply IsSplittingField.splits
-  · exact map_ne_zero (X_pow_card_pow_sub_X_ne_zero _ hn Finite.one_lt_card)
+  apply Irreducible.natDegree_dvd_finrank hi <| (IsSplittingField.splits _ _).of_dvd _ (map_dvd _ h)
+  exact map_ne_zero (X_pow_sub_X_ne_zero <| Nat.one_lt_pow hn Finite.one_lt_card)
 
 theorem natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X {n : ℕ} :
-    f.natDegree ∣ n ↔ f ∣ X ^ (Nat.card k) ^ n - X := by
+    f.natDegree ∣ n ↔ f ∣ X ^ Nat.card k ^ n - X := by
   refine ⟨fun hdvd ↦ dvd_trans ?_ (dvd_pow_pow_sub_self_of_dvd hdvd),
     hi.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X⟩
   let a := AdjoinRoot.root f
