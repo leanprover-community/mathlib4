@@ -28,6 +28,7 @@ results about their interactions.
 -/
 
 variable {A : Type*} [Mul A]
+open Equiv
 
 set_option linter.unusedVariables false in
 /-- The set of all left-normal `n`-ary products of elements of `a : Fin n → A`. -/
@@ -101,7 +102,7 @@ theorem orderedLeftProduct_mem_leftProducts {n : ℕ} (a : Fin (n + 1) → A) :
     apply hn
 
 lemma leftProducts_exists_ordering {n : ℕ} {x : A} {a : Fin (n + 1) → A} (hx : x ∈ LeftProducts a) :
-    ∃ e : Fin (n + 1) ≃ Fin (n + 1), x = OrderedLeftProduct (a ∘ e) := by
+    ∃ e : Equiv.Perm (Fin (n + 1)), x = OrderedLeftProduct (a ∘ e) := by
   induction n generalizing x with
   | zero =>
     simp only [orderedLeftProduct_one, Function.comp_apply]
