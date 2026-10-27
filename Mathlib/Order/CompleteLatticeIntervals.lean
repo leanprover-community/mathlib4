@@ -296,6 +296,3 @@ attribute [deprecated csInf_of_not_bddBelow +typeChanged (since := "2026-10-26")
 alias sSup_within_of_ordConnected := Set.OrdConnected.csSup_image_mem
 @[deprecated (since := "2026-10-26")]
 alias sInf_within_of_ordConnected := Set.OrdConnected.csInf_image_mem
-@[deprecated (since := "2026-10-26")]
-alias ordConnectedSubsetConditionallyCompleteLinearOrder :=
-  Set.OrdConnected.conditionallyCompleteLinearOrder
