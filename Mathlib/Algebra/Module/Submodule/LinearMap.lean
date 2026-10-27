@@ -303,7 +303,7 @@ theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x 
     (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
   have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ coe_restrict_apply _ _
-  simp [Module.End.coe_pow, this.iterate_right _ _]
+  simp [this.iterate_right _ _]
 
 end
 

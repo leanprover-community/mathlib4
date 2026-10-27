@@ -215,7 +215,7 @@ lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
   simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
   obtain ⟨k, hk⟩ := hm₀ x
   obtain ⟨m, rfl⟩ := (mem_posFittingCompOf R x m₁).mp hm₁ k
-  simp [hB, hk]
+  simp only [hB, hk, map_zero, LinearMap.zero_apply, smul_eq_mul, mul_zero]
 
 lemma trace_toEnd_eq_zero_of_mem_lcs
     {k : ℕ} {x : L} (hk : 1 ≤ k) (hx : x ∈ lowerCentralSeries R L L k) :

@@ -818,12 +818,14 @@ instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
     (1 : Module.End R M)
   invOf_mul_self := by
     ext m
-    dsimp [Submonoid.smul_def]
+    simp only [smul_one_mul, LinearMap.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
+      one_apply_eq_self]
     rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
   mul_invOf_self := by
     ext m
-    dsimp [Submonoid.smul_def]
-    rw [← ofNat_smul_eq_nsmul R, smul_invOf_smul (2 : R) m]
+    simp only [mul_smul_one, LinearMap.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
+      one_apply_eq_self]
+    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
@@ -865,7 +867,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
   dsimp [associated_apply]
-  rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', Module.End.one_apply,
+  rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', one_apply_eq_self,
     polar]
 
 theorem associated_isSymm (Q : QuadraticMap R M N) (x y : M) :

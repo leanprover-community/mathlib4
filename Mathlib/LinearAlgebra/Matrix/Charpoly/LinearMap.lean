@@ -105,6 +105,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
   rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_mul]
   ext
   dsimp [PiToModule.fromEnd]
+  simp_rw [mul_apply_eq_comp]
   rw [← h'.congr_fun, ← h.congr_fun]
   rfl
 

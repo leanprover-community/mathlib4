@@ -99,7 +99,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   have h_comm_square : F ∘ₗ ↑g = (g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (f₁ + f₂) := by
     ext m₁ m₂
     simp only [f₁, f₂, F, ← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul,
-      lie_tmul_right, tmul_smul, toEnd_apply_apply, map_smul, Module.End.one_apply,
+      lie_tmul_right, tmul_smul, toEnd_apply_apply, map_smul, one_apply_eq_self,
       LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, map_add, LinearMap.add_apply, map_sub, LinearMap.sub_apply,
       LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
@@ -121,7 +121,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   use k₁ + k₂ - 1
   have hf_comm : Commute f₁ f₂ := by
     ext m₁ m₂
-    simp only [f₁, f₂, Module.End.mul_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
+    simp only [f₁, f₂, mul_apply_eq_comp, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
       AlgebraTensorModule.curry_apply, LinearMap.lTensor_tmul, TensorProduct.curry_apply,
       LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
@@ -133,9 +133,9 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   suffices (f₁ ^ i * f₂ ^ j) (m₁ ⊗ₜ m₂) = 0 by rw [this]; apply smul_zero
   -- Finish off with appropriate case analysis.
   rcases Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi | hj
-  · rw [(hf_comm.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hf₁,
+  · rw [(hf_comm.pow_pow i j).eq, mul_apply_eq_comp, Module.End.pow_map_zero_of_le hi hf₁,
       map_zero]
-  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hf₂, map_zero]
+  · rw [mul_apply_eq_comp, Module.End.pow_map_zero_of_le hj hf₂, map_zero]
 
 lemma lie_mem_maxGenEigenspace_toEnd
     {χ₁ χ₂ : R} {x y : L} {m : M} (hy : y ∈ 𝕎(L, χ₁, x)) (hm : m ∈ 𝕎(M, χ₂, x)) :
@@ -364,7 +364,7 @@ lemma genWeightSpace_zero_normalizer_eq_self :
   intro y
   obtain ⟨k, hk⟩ := hm y y
   use k + 1
-  simpa [pow_succ, Module.End.mul_eq_comp]
+  simpa only [pow_succ, Module.End.mul_eq_comp, LinearMap.coe_comp, comp_apply, toEnd_apply_apply]
 
 lemma iSup_ucs_le_genWeightSpace_zero :
     ⨆ k, (⊥ : LieSubmodule R L M).ucs k ≤ genWeightSpace M (0 : L → R) := by
@@ -426,7 +426,7 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
   induction l with
   | zero => simp
   | succ l ih =>
-    simp only [lowerCentralSeries_succ, pow_succ', Module.End.mul_apply]
+    simp only [lowerCentralSeries_succ, pow_succ', mul_apply_eq_comp]
     exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
@@ -475,7 +475,8 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
     apply LinearMap.mem_range_self
   suffices (toEnd R L (M ⧸ F) x ^ k) (LieSubmodule.Quotient.mk (N := F) m) =
     LieSubmodule.Quotient.mk (N := F) ((toEnd R L M x ^ k) m)
-      by simpa [Submodule.Quotient.quot_mk_eq_mk, this]
+      by simpa only [Submodule.Quotient.quot_mk_eq_mk, this, LinearMap.zero_apply,
+        LieSubmodule.Quotient.mk_eq_zero']
   have := congr($(Module.End.commute_pow_left_of_commute
     (LieSubmodule.Quotient.toEnd_comp_mk' F x) k) m)
   simpa using this
@@ -513,7 +514,8 @@ lemma map_genWeightSpace_le :
     ext; simp
   obtain ⟨k, h⟩ := (mem_genWeightSpace _ _ _).mp hm x
   refine ⟨k, ?_⟩
-  simpa [h] using congr($(Module.End.commute_pow_left_of_commute this k) m)
+  simpa [h, -FunLike.coe_pow_eq_iterate] using
+    congr($(Module.End.commute_pow_left_of_commute this k) m)
 
 variable {f}
 
@@ -529,7 +531,8 @@ lemma comap_genWeightSpace_eq_of_injective (hf : Injective f) :
     use k
     suffices f (((toEnd R L M x - χ x • ↑1) ^ k) m) = 0 by
       rw [← map_zero f] at this; exact hf this
-    simpa [hk] using congr($(Module.End.commute_pow_left_of_commute h k) m).symm
+    simpa [hk, -FunLike.coe_pow_eq_iterate] using
+      congr($(Module.End.commute_pow_left_of_commute h k) m).symm
   · rw [← LieSubmodule.map_le_iff_le_comap]
     exact map_genWeightSpace_le f
 

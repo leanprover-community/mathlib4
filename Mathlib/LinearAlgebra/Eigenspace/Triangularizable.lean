@@ -180,11 +180,10 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
       simpa only [Nat.cast_le] using Finset.le_sup hμ'
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
       (fun μ ↦ (f - algebraMap K (End K V) μ) ^ l₀) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
-    rw [← this, Module.End.mul_apply, hl₀, _root_.map_zero]
+    rw [← this, mul_apply_eq_comp, hl₀, _root_.map_zero]
   have hg₁ : MapsTo g p p := Finset.noncommProd_induction _ _ _ (fun g' : End K V ↦ MapsTo g' p p)
       (fun f₁ f₂ ↦ MapsTo.comp) (mapsTo_id _) fun μ' _ ↦ by
-    suffices MapsTo (f - algebraMap K (End K V) μ') p p by
-      simp only [Module.End.coe_pow, this.iterate l₀]
+    suffices MapsTo (f - algebraMap K (End K V) μ') p p by simp [this.iterate l₀]
     intro x hx
     rw [LinearMap.sub_apply, algebraMap_end_apply]
     exact p.sub_mem (h _ hx) (smul_mem p μ' hx)
