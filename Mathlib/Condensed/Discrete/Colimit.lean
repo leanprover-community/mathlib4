@@ -330,7 +330,6 @@ variable {F : ℕᵒᵖ ⥤ FintypeCat.{u}} (c : Cone <| F ⋙ toLightProfinite)
 abbrev locallyConstantPresheaf : LightProfiniteᵒᵖ ⥤ Type u :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u}.obj X
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 The functor `locallyConstantPresheaf` takes sequential limits of finite sets with surjective
 projection maps to colimits.
