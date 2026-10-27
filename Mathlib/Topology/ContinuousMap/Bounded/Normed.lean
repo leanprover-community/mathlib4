@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
 module
 
+public import Mathlib.Algebra.Algebra.FunLike
 public import Mathlib.Algebra.Module.MinimalAxioms
 public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Order.Lattice
@@ -459,8 +460,7 @@ section NormedCommRing
 
 variable [TopologicalSpace α] {R : Type*}
 
-instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
-  mul_comm _ _ := ext fun _ ↦ mul_comm _ _
+instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) := fast_instance% FunLike.commRing
 
 instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
   __ := instCommRing
@@ -507,9 +507,9 @@ instance instAlgebra : Algebra 𝕜 (α →ᵇ γ) where
   commutes' _ _ := ext fun _ ↦ Algebra.commutes' _ _
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def' _ _
 
-@[simp]
+@[deprecated FunLike.algebraMap_apply +typeChanged (since := "2026-10-27")]
 theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k a = k • (1 : γ) := by
-  simp only [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply]
+  simp
 
 instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra

@@ -28,11 +28,12 @@ section IsApply
 variable [IsOneApply F] [IsSMulApply R F]
 
 @[simp]
-theorem algebraMap_apply (r : R) (x : α) : algebraMap R F r x = algebraMap R β r := by
+theorem algebraMap_apply (r : R) (x : α) : algebraMap R F r x = r • 1 := by
   grind [Algebra.algebraMap_eq_smul_one]
 
 @[simp, norm_cast]
-theorem coe_algebraMap (r : R) : algebraMap R F r = algebraMap R (α → β) r := by ext; simp
+theorem coe_algebraMap (r : R) : algebraMap R F r = algebraMap R (α → β) r := by
+  ext; simp [Algebra.algebraMap_eq_smul_one]
 
 end IsApply
 
@@ -58,7 +59,7 @@ theorem coeAlgHom_apply (f : F) : coeAlgHom R F f = f := rfl
 theorem coe_coeAlgHom : (coeAlgHom R F : F → α → β) = DFunLike.coe := rfl
 
 @[simp]
-theorem toRingHom_coeAlgHom : (coeAlgHom R F).toRingHom = coeRingHom F := rfl
+theorem toRingHom_coeAlgHom : (coeAlgHom R F : F →+* α → β) = coeRingHom F := rfl
 
 variable (R F) in
 /-- Evaluation as an algebra homomorphism. -/
@@ -69,7 +70,7 @@ def evalAlgHom (x : α) : F →ₐ[R] β := (Pi.evalAlgHom R _ x).comp (coeAlgHo
 theorem evalAlgHom_apply (x : α) (f : F) : evalAlgHom R F x f = f x := rfl
 
 @[simp]
-theorem toRingHom_evalAlgHom (x : α) : (evalAlgHom R F x).toRingHom = evalRingHom F x := rfl
+theorem coe_evalAlgHom (x : α) : (evalAlgHom R F x : F →+* β) = evalRingHom F x := rfl
 
 end AlgHom
 
