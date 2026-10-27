@@ -263,8 +263,6 @@ def center : Subsemiring R :=
     one_mem' := Set.one_mem_center }
 
 /-- The center is commutative and associative.
-instance : NonAssocCommSemiring (Center R) :=
-  {toNonAssocSemiring := inferInstanceAs <| NonAssocSemiring (center R), mul_comm}
 
 This is not an instance as it forms a non-defeq diamond with
 `NonUnitalSubringClass.toNonUnitalRing` in the `npow` field. -/
@@ -1012,9 +1010,8 @@ instance {R M : Type*} [Semiring R] [MulAction R M] : SMulCommClass R (Center R)
 instance {R M : Type*} [Semiring R] [MulAction R M] : SMulCommClass (Center R) R M where
   smul_comm _ _ _ := by simp [smul_smul, Center.comm]
 
-instance [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β] :
-    IsScalarTower (Center R') α β :=
-  inferInstanceAs <| IsScalarTower (center R') α β
+instance [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β] : IsScalarTower (Center R') α β
+  where smul_assoc := by simp
 
 instance [SMul R' α] [FaithfulSMul R' α] : FaithfulSMul (Center R') α :=
   inferInstanceAs <| FaithfulSMul (center R') α

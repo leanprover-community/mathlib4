@@ -63,7 +63,6 @@ instance instStarAddMonoidCenter : StarAddMonoid (Center (CentroidHom α)) where
 instance : StarRing (Center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by
-    rw [Center.eq_iff]
     ext a
     calc
       star (f * g) a = star (g * f) a := by rw [CommMonoid.mul_comm f g]
@@ -78,7 +77,6 @@ def centerStarEmbedding : Center (CentroidHom α) →⋆ₙ+* CentroidHom α whe
 
 theorem star_centerToCentroidCenter (z : Center α) :
     star (centerToCentroidCenter z) = (centerToCentroidCenter (star z)) := by
-  rw [Center.eq_iff]
   ext a
   calc
       (star (centerToCentroidCenter z)) a = star (z * star a) := rfl

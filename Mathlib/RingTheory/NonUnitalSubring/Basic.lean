@@ -363,6 +363,7 @@ instance : NonUnitalNonAssocCommRing (Center R) :=
 
 @[simp] lemma _root_.Center.coe_sub (a b : Center R) : (a - b).val = a.val - b.val := rfl
 
+/-- The center is commutative and associative. -/
 instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) where
   __ : NonUnitalCommSemiring (center R) :=
     inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center R)

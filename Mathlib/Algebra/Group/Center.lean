@@ -376,6 +376,9 @@ abbrev mk [Mul M] (z : M) (hz : z ∈ Set.center M) : Center M := ⟨z, hz⟩
 @[to_additive (attr := simp)]
 lemma eq_iff [Mul M] (x y : Center M) : x = y ↔ x.val = y.val := Subtype.ext_iff
 
+@[to_additive (attr := ext)]
+lemma ext_coe [Mul M] {x y : Center M} (h : x.val = y.val) : x = y := Subtype.ext h
+
 @[to_additive]
 instance [Mul M] : CommMagma (Center M) where
   mul x y := mk (x.val * y.val) (Set.mul_mem_center x.prop y.prop)
