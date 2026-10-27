@@ -5,21 +5,21 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.BifunctorColimits
 public import Mathlib.Algebra.Homology.BifunctorSingle
 public import Mathlib.Algebra.Homology.BifunctorTriangulated
-public import Mathlib.Algebra.Homology.BifunctorColimits
-public import Mathlib.Algebra.Homology.HomotopyCategory.MonoidalTriangulated
+public import Mathlib.Algebra.Homology.DerivedCategory.Monoidal
 public import Mathlib.Algebra.Homology.HomotopyCategory.Devissage
+public import Mathlib.Algebra.Homology.HomotopyCategory.MonoidalTriangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.PreservesQuasiIso
 public import Mathlib.Algebra.Homology.LeftResolution.CochainComplex
 public import Mathlib.Algebra.Homology.LeftResolution.Reduced
-public import Mathlib.Algebra.Homology.DerivedCategory.Monoidal
 public import Mathlib.CategoryTheory.Abelian.Flat.Basic
-public import Mathlib.CategoryTheory.Monoidal.KFlat
+public import Mathlib.CategoryTheory.GuitartExact.Quotient
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFunctorialResolutions
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 public import Mathlib.CategoryTheory.Localization.OfQuotient
-public import Mathlib.CategoryTheory.GuitartExact.Quotient
+public import Mathlib.CategoryTheory.Monoidal.KFlat
 
 /-!
 # Flat objects and K-flat complexes

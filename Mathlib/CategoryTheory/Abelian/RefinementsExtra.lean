@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Abelian.Refinements
-public import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
-public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 public import Mathlib.CategoryTheory.Sites.Balanced
+public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+public import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 public import Mathlib.CategoryTheory.Sites.Limits
 
 /-!
@@ -148,7 +148,7 @@ variable (C)
 set_option backward.defeqAttrib.useBackward true in
 def refinementsTopology :
     GrothendieckTopology C where
-  sieves X S := ∃ (T : C) (p : T ⟶ X) (_ : Epi p), S p
+  sieves X := .ofPred fun S ↦ ∃ (T : C) (p : T ⟶ X) (_ : Epi p), S p
   top_mem' X := ⟨X, 𝟙 X, inferInstance, by simp⟩
   pullback_stable' X Y S f hS := by
     obtain ⟨T, p, hp, h⟩ := hS

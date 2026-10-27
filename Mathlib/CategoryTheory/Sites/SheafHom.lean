@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Over
-public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
+public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-! # Internal hom of sheaves
 

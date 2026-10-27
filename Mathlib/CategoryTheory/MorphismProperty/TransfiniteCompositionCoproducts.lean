@@ -268,7 +268,7 @@ variable {α : Type*} {X : Option α → C} {c : Cofan X} (hc : IsColimit c)
   [HasCoproduct (X ∘ Option.some)]
 
 variable (c) in
-@[simps!]
+@[simps!, implicit_reducible]
 noncomputable def binaryCofanOfIsColimitCofanOption :
     BinaryCofan (∐ X ∘ Option.some) (X none) :=
   BinaryCofan.mk (Sigma.desc (fun i ↦ c.inj (some i))) (c.inj none)

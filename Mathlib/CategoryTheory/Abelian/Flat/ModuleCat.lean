@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Flat.KFlat
 public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.Algebra.Category.ModuleCat.LeftResolution
@@ -13,8 +12,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.RingTheory.Flat.CategoryTheory
 public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+public import Mathlib.CategoryTheory.Abelian.Flat.KFlat
+public import Mathlib.RingTheory.Flat.CategoryTheory
 
 /-!
 # Flat objects in ModuleCat
