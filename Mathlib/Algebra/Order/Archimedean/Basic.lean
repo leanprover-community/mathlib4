@@ -202,7 +202,7 @@ theorem exists_natCast_pow_near (hx : 1 ≤ x) (hy : 1 < y) :
   have hltn : Nat.pred n < n := Nat.pred_lt hnp.ne'
   exact ⟨Nat.pred n, le_of_not_gt (Nat.find_min h hltn), by rwa [hnsp]⟩
 
-@[deprecated (since := "2026-10-18")] alias exists_nat_pow_near := exists_natCast_pow_near
+@[deprecated (since := "2026-10-27")] alias exists_nat_pow_near := exists_natCast_pow_near
 
 end LinearOrderedSemiring
 
@@ -217,7 +217,7 @@ lemma exists_natCast_one_div_lt (hε : 0 < ε) : ∃ n : ℕ, 1 / (n + 1 : K) < 
     simp [zero_lt_one]
   · exact n.cast_add_one_pos
 
-@[deprecated (since := "2026-10-18")] alias exists_nat_one_div_lt := exists_natCast_one_div_lt
+@[deprecated (since := "2026-10-27")] alias exists_nat_one_div_lt := exists_natCast_one_div_lt
 
 variable [ExistsAddOfLE K]
 
@@ -267,7 +267,7 @@ theorem exists_natCast_pow_near_of_lt_one (xpos : 0 < x) (hx : x ≤ 1) (ypos : 
   · rwa [inv_pow, inv_lt_inv₀ xpos (pow_pos ypos _)] at h'n
   · rwa [inv_pow, inv_le_inv₀ (pow_pos ypos _) xpos] at hn
 
-@[deprecated (since := "2026-10-18")]
+@[deprecated (since := "2026-10-27")]
 alias exists_nat_pow_near_of_lt_one := exists_natCast_pow_near_of_lt_one
 
 /-- If `a < b * c`, `0 < b ≤ 1` and `0 < c < 1`, then there is a power `c ^ n` with `n : ℕ`
@@ -317,7 +317,7 @@ theorem archimedean_iff_natCast_lt : Archimedean K ↔ ∀ x : K, ∃ n : ℕ, x
     ⟨fun x y y0 =>
       (H (x / y)).imp fun n h => le_of_lt <| by rwa [div_lt_iff₀ y0, ← nsmul_eq_mul] at h⟩⟩
 
-@[deprecated (since := "2026-10-18")] alias archimedean_iff_nat_lt := archimedean_iff_natCast_lt
+@[deprecated (since := "2026-10-27")] alias archimedean_iff_nat_lt := archimedean_iff_natCast_lt
 
 theorem archimedean_iff_natCast_le : Archimedean K ↔ ∀ x : K, ∃ n : ℕ, x ≤ n :=
   archimedean_iff_natCast_lt.trans
@@ -325,7 +325,7 @@ theorem archimedean_iff_natCast_le : Archimedean K ↔ ∀ x : K, ∃ n : ℕ, x
       let ⟨n, h⟩ := H x
       ⟨n + 1, lt_of_le_of_lt h (Nat.cast_lt.2 (lt_add_one _))⟩⟩
 
-@[deprecated (since := "2026-10-18")] alias archimedean_iff_nat_le := archimedean_iff_natCast_le
+@[deprecated (since := "2026-10-27")] alias archimedean_iff_nat_le := archimedean_iff_natCast_le
 
 theorem archimedean_iff_intCast_lt : Archimedean K ↔ ∀ x : K, ∃ n : ℤ, x < n :=
   ⟨@exists_int_gt K _ _ _, by
@@ -335,7 +335,7 @@ theorem archimedean_iff_intCast_lt : Archimedean K ↔ ∀ x : K, ∃ n : ℤ, x
     refine ⟨n.toNat, h.trans_le ?_⟩
     exact mod_cast Int.self_le_toNat _⟩
 
-@[deprecated (since := "2026-10-18")] alias archimedean_iff_int_lt := archimedean_iff_intCast_lt
+@[deprecated (since := "2026-10-27")] alias archimedean_iff_int_lt := archimedean_iff_intCast_lt
 
 theorem archimedean_iff_intCast_le : Archimedean K ↔ ∀ x : K, ∃ n : ℤ, x ≤ n :=
   archimedean_iff_intCast_lt.trans
@@ -343,7 +343,7 @@ theorem archimedean_iff_intCast_le : Archimedean K ↔ ∀ x : K, ∃ n : ℤ, x
       let ⟨n, h⟩ := H x
       ⟨n + 1, lt_of_le_of_lt h (Int.cast_lt.2 (lt_add_one _))⟩⟩
 
-@[deprecated (since := "2026-10-18")] alias archimedean_iff_int_le := archimedean_iff_intCast_le
+@[deprecated (since := "2026-10-27")] alias archimedean_iff_int_le := archimedean_iff_intCast_le
 
 theorem archimedean_iff_ratCast_lt : Archimedean K ↔ ∀ x : K, ∃ q : ℚ, x < q where
   mp _ x :=
@@ -352,7 +352,7 @@ theorem archimedean_iff_ratCast_lt : Archimedean K ↔ ∀ x : K, ∃ q : ℚ, x
   mpr H := archimedean_iff_natCast_lt.2 fun x ↦
     let ⟨q, h⟩ := H x; ⟨⌈q⌉₊, lt_of_lt_of_le h <| mod_cast Nat.le_ceil _⟩
 
-@[deprecated (since := "2026-10-18")] alias archimedean_iff_rat_lt := archimedean_iff_ratCast_lt
+@[deprecated (since := "2026-10-27")] alias archimedean_iff_rat_lt := archimedean_iff_ratCast_lt
 
 theorem archimedean_iff_ratCast_le : Archimedean K ↔ ∀ x : K, ∃ q : ℚ, x ≤ q :=
   archimedean_iff_ratCast_lt.trans
@@ -360,7 +360,7 @@ theorem archimedean_iff_ratCast_le : Archimedean K ↔ ∀ x : K, ∃ q : ℚ, x
       let ⟨n, h⟩ := H x
       ⟨n + 1, lt_of_le_of_lt h (Rat.cast_lt.2 (lt_add_one _))⟩⟩
 
-@[deprecated (since := "2026-10-18")] alias archimedean_iff_rat_le := archimedean_iff_ratCast_le
+@[deprecated (since := "2026-10-27")] alias archimedean_iff_rat_le := archimedean_iff_ratCast_le
 
 instance : Archimedean ℚ :=
   archimedean_iff_ratCast_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
@@ -369,13 +369,13 @@ variable [Archimedean K] {x y ε : K}
 
 theorem exists_ratCast_gt (x : K) : ∃ q : ℚ, x < q := archimedean_iff_ratCast_lt.mp ‹_› _
 
-@[deprecated (since := "2026-10-18")] alias exists_rat_gt := exists_ratCast_gt
+@[deprecated (since := "2026-10-27")] alias exists_rat_gt := exists_ratCast_gt
 
 theorem exists_ratCast_lt (x : K) : ∃ q : ℚ, (q : K) < x :=
   let ⟨n, h⟩ := exists_int_lt x
   ⟨n, by rwa [Rat.cast_intCast]⟩
 
-@[deprecated (since := "2026-10-18")] alias exists_rat_lt := exists_ratCast_lt
+@[deprecated (since := "2026-10-27")] alias exists_rat_lt := exists_ratCast_lt
 
 theorem exists_div_btwn {x y : K} {n : ℕ} (h : x < y) (nh : (y - x)⁻¹ < n) :
     ∃ z : ℤ, x < (z : K) / n ∧ (z : K) / n < y := by
@@ -393,12 +393,12 @@ theorem exists_ratCast_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ q < y
   obtain ⟨z, zh, zh'⟩ := exists_div_btwn h nh
   refine ⟨(z : ℚ) / n, ?_, ?_⟩ <;> simpa
 
-@[deprecated (since := "2026-10-18")] alias exists_rat_btwn := exists_ratCast_btwn
+@[deprecated (since := "2026-10-27")] alias exists_rat_btwn := exists_ratCast_btwn
 
 theorem exists_ratCast_mem_uIoo {x y : K} (h : x ≠ y) : ∃ q : ℚ, ↑q ∈ Set.uIoo x y :=
   exists_ratCast_btwn (min_lt_max.mpr h)
 
-@[deprecated (since := "2026-10-18")] alias exists_rat_mem_uIoo := exists_ratCast_mem_uIoo
+@[deprecated (since := "2026-10-27")] alias exists_rat_mem_uIoo := exists_ratCast_mem_uIoo
 
 theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 < y) :
     ∃ q : K, 0 < q ∧ x < q ^ n ∧ q ^ n < y := by
@@ -436,14 +436,14 @@ theorem exists_ratCast_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (
   obtain ⟨q, hq, hq₁, hq₂⟩ := exists_pow_btwn hn hq₁₂ this
   refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans ?_, hy₂.trans' ?_⟩ <;> assumption_mod_cast
 
-@[deprecated (since := "2026-10-18")] alias exists_rat_pow_btwn := exists_ratCast_pow_btwn
+@[deprecated (since := "2026-10-27")] alias exists_rat_pow_btwn := exists_ratCast_pow_btwn
 
 theorem le_of_forall_ratCast_lt_imp_le (h : ∀ q : ℚ, (q : K) < x → (q : K) ≤ y) : x ≤ y :=
   le_of_not_gt fun hyx =>
     let ⟨_, hy, hx⟩ := exists_ratCast_btwn hyx
     hy.not_ge <| h _ hx
 
-@[deprecated (since := "2026-10-18")]
+@[deprecated (since := "2026-10-27")]
 alias le_of_forall_rat_lt_imp_le := le_of_forall_ratCast_lt_imp_le
 
 theorem le_of_forall_lt_ratCast_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x ≤ y :=
@@ -451,39 +451,39 @@ theorem le_of_forall_lt_ratCast_imp_le (h : ∀ q : ℚ, y < q → x ≤ q) : x 
     let ⟨_, hy, hx⟩ := exists_ratCast_btwn hyx
     hx.not_ge <| h _ hy
 
-@[deprecated (since := "2026-10-18")]
+@[deprecated (since := "2026-10-27")]
 alias le_of_forall_lt_rat_imp_le := le_of_forall_lt_ratCast_imp_le
 
 theorem le_iff_forall_ratCast_lt_imp_le : x ≤ y ↔ ∀ q : ℚ, (q : K) < x → (q : K) ≤ y :=
   ⟨fun hxy _ hqx ↦ hqx.le.trans hxy, le_of_forall_ratCast_lt_imp_le⟩
 
-@[deprecated (since := "2026-10-18")]
+@[deprecated (since := "2026-10-27")]
 alias le_iff_forall_rat_lt_imp_le := le_iff_forall_ratCast_lt_imp_le
 
 theorem le_iff_forall_lt_ratCast_imp_le : x ≤ y ↔ ∀ q : ℚ, y < q → x ≤ q :=
   ⟨fun hxy _ hqx ↦ hxy.trans hqx.le, le_of_forall_lt_ratCast_imp_le⟩
 
-@[deprecated (since := "2026-10-18")]
+@[deprecated (since := "2026-10-27")]
 alias le_iff_forall_lt_rat_imp_le := le_iff_forall_lt_ratCast_imp_le
 
 theorem eq_of_forall_ratCast_lt_iff_lt (h : ∀ q : ℚ, (q : K) < x ↔ (q : K) < y) : x = y :=
   (le_of_forall_ratCast_lt_imp_le fun q hq => ((h q).1 hq).le).antisymm <|
     le_of_forall_ratCast_lt_imp_le fun q hq => ((h q).2 hq).le
 
-@[deprecated (since := "2026-10-18")]
+@[deprecated (since := "2026-10-27")]
 alias eq_of_forall_rat_lt_iff_lt := eq_of_forall_ratCast_lt_iff_lt
 
 theorem eq_of_forall_lt_ratCast_iff_lt (h : ∀ q : ℚ, x < q ↔ y < q) : x = y :=
   (le_of_forall_lt_ratCast_imp_le fun q hq => ((h q).2 hq).le).antisymm <|
     le_of_forall_lt_ratCast_imp_le fun q hq => ((h q).1 hq).le
 
-@[deprecated (since := "2026-10-18")]
+@[deprecated (since := "2026-10-27")]
 alias eq_of_forall_lt_rat_iff_lt := eq_of_forall_lt_ratCast_iff_lt
 
 theorem exists_pos_ratCast_lt {x : K} (x0 : 0 < x) : ∃ q : ℚ, 0 < q ∧ (q : K) < x := by
   simpa only [Rat.cast_pos] using exists_ratCast_btwn x0
 
-@[deprecated (since := "2026-10-18")]
+@[deprecated (since := "2026-10-27")]
 alias exists_pos_rat_lt := exists_pos_ratCast_lt
 
 theorem exists_ratCast_near (x : K) (ε0 : 0 < ε) : ∃ q : ℚ, |x - q| < ε :=
@@ -491,7 +491,7 @@ theorem exists_ratCast_near (x : K) (ε0 : 0 < ε) : ∃ q : ℚ, |x - q| < ε :
     exists_ratCast_btwn <| ((sub_lt_self_iff x).2 ε0).trans ((lt_add_iff_pos_left x).2 ε0)
   ⟨q, abs_sub_lt_iff.2 ⟨sub_lt_comm.1 h₁, sub_lt_iff_lt_add.2 h₂⟩⟩
 
-@[deprecated (since := "2026-10-18")] alias exists_rat_near := exists_ratCast_near
+@[deprecated (since := "2026-10-27")] alias exists_rat_near := exists_ratCast_near
 
 end LinearOrderedField
 

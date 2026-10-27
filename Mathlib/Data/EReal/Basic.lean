@@ -856,9 +856,13 @@ theorem exists_ratCast_btwn_of_lt :
     ⟨b, bot_lt_coe _, by simpa using hab⟩
   | ⊥, ⊤, _ => ⟨0, bot_lt_coe _, coe_lt_top _⟩
 
+@[deprecated (since := "2026-10-27")] alias exists_rat_btwn_of_lt := exists_ratCast_btwn_of_lt
+
 theorem lt_iff_exists_ratCast_btwn {a b : EReal} :
     a < b ↔ ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b :=
   ⟨fun hab => exists_ratCast_btwn_of_lt hab, fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
+
+@[deprecated (since := "2026-10-27")] alias lt_iff_exists_rat_btwn := lt_iff_exists_ratCast_btwn
 
 theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧ (x : EReal) < b :=
   ⟨fun hab =>

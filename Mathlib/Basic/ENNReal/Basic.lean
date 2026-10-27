@@ -593,6 +593,8 @@ theorem lt_iff_exists_ratCast_btwn :
     exact ⟨q, hq0, coe_lt_coe.2 pq, lt_trans (coe_lt_coe.2 qr) cb⟩,
       fun ⟨_, _, qa, qb⟩ => lt_trans qa qb⟩
 
+@[deprecated (since := "2026-10-27")] alias lt_iff_exists_rat_btwn := lt_iff_exists_ratCast_btwn
+
 theorem lt_iff_exists_real_btwn :
     a < b ↔ ∃ r : ℝ, 0 ≤ r ∧ a < ENNReal.ofReal r ∧ (ENNReal.ofReal r : ℝ≥0∞) < b :=
   ⟨fun h =>
