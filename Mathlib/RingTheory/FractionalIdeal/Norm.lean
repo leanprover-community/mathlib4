@@ -97,7 +97,7 @@ theorem absNorm_eq_zero_iff {I : FractionalIdeal R⁰ K} : absNorm I = 0 ↔ I =
   have : IsDomain K := IsFractionRing.isDomain R
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq_absNorm_span, div_eq_zero_iff] at h
-  refine Ideal.absNorm_eq_zero_iff'.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
+  refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
   simp
 
 theorem coeIdeal_absNorm (I₀ : Ideal R) :

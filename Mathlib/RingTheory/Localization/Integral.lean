@@ -110,7 +110,7 @@ theorem integerNormalization_eq_zero_iff {p : K[X]} :
     [Algebra K L] [IsScalarTower A K L] (p : K[X]) :
     (integerNormalization (nonZeroDivisors A) p).aroots L = p.aroots L := by
   obtain ⟨b, hb, hbp⟩ := integerNormalization_spec (nonZeroDivisors A) p
-  rw [← aroots_map L K, hbp, ← algebraMap_smul K, aroots_smul_nonzero]
+  rw [← aroots_map L K, hbp, ← algebraMap_smul K, aroots_smul_of_ne_zero]
   exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hb
 
 omit [IsDomain A] in
