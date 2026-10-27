@@ -152,7 +152,6 @@ instance (priority := 100) [IndiscreteTopology α] : NoetherianSpace α :=
   noetherianSpace_of_surjective CofiniteTopology.of.symm continuous_of_indiscreteTopology
     CofiniteTopology.of.symm.surjective
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace α] (s : Closeds α) :
     ∃ S : Set (Closeds α), S.Finite ∧ (∀ t ∈ S, IsIrreducible (t : Set α)) ∧ s = sSup S := by

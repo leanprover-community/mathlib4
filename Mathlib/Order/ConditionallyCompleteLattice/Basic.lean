@@ -124,6 +124,8 @@ theorem coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
   rw [sSup_eq (by simp) (by rwa [preimage_image_eq _ coe_injective]),
     preimage_image_eq _ coe_injective]
 
+@[to_dual (attr := deprecated (since := "2026-10-27"))] alias sSup_empty := sSup_empty
+
 end LE
 
 section Preorder
@@ -175,8 +177,6 @@ noncomputable instance instOrderInfSet [OrderInfSet α] :
       obtain ⟨hs, h'⟩ := isGLB_coe_iff.mp h
       rw [sInf_eq hs ⟨_, h.1⟩, isGLB_coe_iff]
       exact ⟨hs, h'.isGLB_sInf⟩
-
-@[to_dual (attr := deprecated (since := "2026-10-27"))] alias sSup_empty := sSup_empty
 
 @[to_dual (attr := norm_cast)]
 theorem coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
@@ -559,11 +559,11 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-@[deprecated (since := "2026-02-26")] alias csInf_univ := sInf_univ
+@[deprecated (since := "2026-10-27")] alias csInf_univ := sInf_univ
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
 
-@[deprecated (since := "2026-02-26")] alias csSup_empty := sSup_empty
+@[deprecated (since := "2026-10-27")] alias csSup_empty := sSup_empty
 
 theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
