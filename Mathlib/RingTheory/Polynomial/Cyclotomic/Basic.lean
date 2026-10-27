@@ -124,7 +124,7 @@ theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitive
   have hmonic : (X ^ n - C (1 : R)).Monic := monic_X_pow_sub_C (1 : R) (ne_of_lt hpos).symm
   symm
   apply prod_multiset_X_sub_C_of_monic_of_roots_card_eq hmonic
-  rw [@natDegree_X_pow_sub_C R _ _ n 1, ← nthRoots]
+  rw [natDegree_X_pow_sub_C, ← nthRoots]
   exact IsPrimitiveRoot.card_nthRoots_one h
 
 end IsDomain
@@ -427,7 +427,7 @@ theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [Comm
       algebraMap _ _ (X ^ n - 1 : R[X]) := by
     intro n hn
     rw [← prod_cyclotomic_eq_X_pow_sub_one hn R, map_prod]
-  rw [(prod_eq_iff_prod_pow_moebius_eq_of_nonzero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
+  rw [(prod_eq_iff_prod_pow_moebius_eq_of_ne_zero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
     simp_rw [Ne, IsFractionRing.to_map_eq_zero_iff]
   · simp [cyclotomic_ne_zero]
   · intro n hn

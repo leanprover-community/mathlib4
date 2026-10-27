@@ -117,7 +117,7 @@ variable {B} (f : A →ₐ[R] B)
 
 /-- The map on Grassmannians induced by base change along an algebra map `A → B`.
 Given a submodule `N` of `A ⊗[R] M`, the image is the kernel of the composition
-B ⊗[R] M ≃ B ⊗[A] (A ⊗[R] M) → B ⊗[A] ((A ⊗[R] M) ⧸ N)`. -/
+`B ⊗[R] M ≃ B ⊗[A] (A ⊗[R] M) → B ⊗[A] ((A ⊗[R] M) ⧸ N)`. -/
 def map (N : G(k, (A ⊗[R] M); A)) : G(k, (B ⊗[R] M); B) :=
   letI : Algebra A B := f.toAlgebra
   letI : IsScalarTower R A B := IsScalarTower.of_algebraMap_eq' <| IsScalarTower.algebraMap_eq R A B

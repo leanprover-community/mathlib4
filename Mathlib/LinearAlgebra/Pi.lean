@@ -22,10 +22,8 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
 ## Main definitions
 
 - pi types in the codomain:
-  - `LinearMap.pi`
   - `LinearMap.single`
 - pi types in the domain:
-  - `LinearMap.proj`
   - `LinearMap.diag`
 
 -/
@@ -47,71 +45,13 @@ universe i
 variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃]
   {φ : ι → Type i} [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
 
-/-- `pi` construction for linear functions. From a family of linear functions it produces a linear
-function into a family of modules. -/
-def pi (f : (i : ι) → M₂ →ₗ[R] φ i) : M₂ →ₗ[R] (i : ι) → φ i :=
-  { AddHom.pi fun i => (f i).toAddHom with
-    toFun := fun c i => f i c
-    map_smul' := fun _ _ => funext fun i => (f i).map_smul _ _ }
-
-@[simp]
-theorem pi_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i : ι) : pi f c i = f i c :=
-  rfl
-
 theorem ker_pi (f : (i : ι) → M₂ →ₗ[R] φ i) : ker (pi f) = ⨅ i : ι, ker (f i) := by
   ext c; simp [funext_iff]
-
-theorem pi_eq_zero (f : (i : ι) → M₂ →ₗ[R] φ i) : pi f = 0 ↔ ∀ i, f i = 0 := by
-  simp only [LinearMap.ext_iff, pi_apply, funext_iff]
-  exact ⟨fun h a b => h b a, fun h a b => h b a⟩
-
-theorem pi_zero : pi (fun _ => 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
-
-theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂) :
-    (pi f).comp g = pi fun i => (f i).comp g :=
-  rfl
-
-/-- The constant linear map, taking `x` to `Function.const ι x`. -/
-def const : M₂ →ₗ[R] (ι → M₂) := pi fun _ ↦ .id
-
-@[simp] lemma const_apply (x : M₂) : LinearMap.const (R := R) x = Function.const ι x := rfl
-
-/-- The projections from a family of modules are linear maps.
-
-Note: this definition would be called `Pi.evalLinearMap` if we followed the pattern established by
-`Pi.evalAddHom`, `Pi.evalMonoidHom`, `Pi.evalRingHom`, ... -/
-def proj (i : ι) : ((i : ι) → φ i) →ₗ[R] φ i where
-  toFun := Function.eval i
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-@[simp]
-theorem coe_proj (i : ι) : ⇑(proj i : ((i : ι) → φ i) →ₗ[R] φ i) = Function.eval i :=
-  rfl
-
-@[simp]
-theorem toAddMonoidHom_proj (i : ι) : (proj i).toAddMonoidHom (R := R) = Pi.evalAddMonoidHom φ i :=
-  rfl
-
-theorem proj_apply (i : ι) (b : (i : ι) → φ i) : (proj i : ((i : ι) → φ i) →ₗ[R] φ i) b = b i :=
-  rfl
-
-@[simp]
-theorem proj_pi (f : (i : ι) → M₂ →ₗ[R] φ i) (i : ι) : (proj i).comp (pi f) = f i := rfl
-
-@[simp]
-theorem pi_proj : pi proj = LinearMap.id (R := R) (M := ∀ i, φ i) := rfl
-
-@[simp]
-theorem pi_proj_comp (f : M₂ →ₗ[R] ∀ i, φ i) : pi (proj · ∘ₗ f) = f := rfl
 
 @[simp]
 theorem proj_comp_funLeft (f : ι' → ι) (i : ι') :
     proj i ∘ₗ funLeft R M₂ f = proj (f i) :=
   rfl
-
-theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :=
-  surjective_eval i
 
 /-- Homs to a pi module are canonically identified with a product of hom types, even linearly so. -/
 @[simps] def _root_.LinearEquiv.linearMapPi (S) [Semiring S] [(i : ι) → Module S (φ i)]

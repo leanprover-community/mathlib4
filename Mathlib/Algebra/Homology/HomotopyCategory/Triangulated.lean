@@ -50,7 +50,6 @@ noncomputable def mappingConeCompTriangleh :
   (HomotopyCategory.quotient _ _).mapTriangle.obj (mappingConeCompTriangle f g)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mappingConeCompTriangle_mor₃_naturality {Y₁ Y₂ Y₃ : CochainComplex C ℤ} (f' : Y₁ ⟶ Y₂)
     (g' : Y₂ ⟶ Y₃) (φ : mk₂ f g ⟶ mk₂ f' g') :
