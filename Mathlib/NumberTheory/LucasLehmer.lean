@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 module
 
 public import Mathlib.NumberTheory.Fermat
+
 import Mathlib.RingTheory.Fintype
 
 /-!
@@ -35,6 +36,7 @@ extension and made to use kernel reductions by Kyle Miller.
 @[expose] public section
 
 /-- The Mersenne numbers, 2^p - 1. -/
+@[oeis A000225]
 def mersenne (p : ℕ) : ℕ :=
   2 ^ p - 1
 
@@ -151,6 +153,7 @@ so we take a moment setting up the lemmas relating them.
 -/
 
 /-- The recurrence `s (i+1) = (s i)^2 - 2` in `ℤ`. -/
+@[oeis A003010]
 def s : ℕ → ℤ
   | 0 => 4
   | i + 1 => s i ^ 2 - 2
@@ -190,7 +193,7 @@ theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p
   | succ i ih => push_cast [s, sZMod, ih]; rfl
 
 theorem sZMod_eq_sMod (p : ℕ) (i : ℕ) : sZMod p i = (sMod p i : ZMod (2 ^ p - 1)) := by
-  induction i <;> push_cast [← Int.coe_nat_two_pow_pred p, sMod, sZMod, *] <;> rfl
+  induction i <;> push_cast [← Int.natCast_two_pow_pred p, sMod, sZMod, *] <;> rfl
 
 /-- The Lucas-Lehmer residue is `s p (p-2)` in `ZMod (2^p - 1)`. -/
 def lucasLehmerResidue (p : ℕ) : ZMod (2 ^ p - 1) :=
@@ -396,7 +399,7 @@ lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
 
 instance : CharP (X q) q where
   cast_eq_zero_iff x := by
-    convert! ZMod.natCast_eq_zero_iff _ _
+    convert ZMod.natCast_eq_zero_iff _ _
     exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
 
 instance : Coe (ZMod ↑q) (X q) where
@@ -476,7 +479,7 @@ theorem card_eq : Fintype.card (X q) = q ^ 2 := by
 /-- There are strictly fewer than `q^2` units, since `0` is not a unit. -/
 nonrec theorem card_units_lt (w : 1 < q) : Fintype.card (X q)ˣ < q ^ 2 := by
   have : Fact (1 < (q : ℕ)) := ⟨w⟩
-  convert! card_units_lt (X q)
+  convert card_units_lt (X q)
   rw [card_eq]
 
 end X

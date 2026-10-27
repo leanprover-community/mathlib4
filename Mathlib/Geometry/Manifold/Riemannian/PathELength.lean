@@ -6,10 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
-import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 public import Mathlib.Geometry.Manifold.Instances.Icc
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
 public import Mathlib.MeasureTheory.Function.JacobianOneDim
+
+import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 
 /-! # Lengths of paths in manifolds
 
@@ -229,7 +230,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : CMDiff[Icc a b] 1 �
     refine ⟨⟨f, hf.continuous⟩, ?_, ?_⟩ <;>
     simp [f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
   have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv% g x 1‖ₑ := by
-    rw [riemannianEDist]; exact biInf_le _ hf
+    rw [riemannianEDist]; exact iInf₂_le g hf
   apply A.trans_eq
   rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
   have E : pathELength I (g ∘ projIcc 0 1 zero_le_one) 0 1 = pathELength I (γ ∘ η) 0 1 := by
@@ -291,7 +292,7 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
       fun_prop
     · intro t ht
       exact ⟨Real.smoothTransition.nonneg _, Real.smoothTransition.le_one _⟩
-  · convert! hγ using 1
+  · convert hγ using 1
     rw [← A a haa', ← B b hb'b]
     apply pathELength_comp_of_monotoneOn hab.le
     · apply Monotone.monotoneOn
@@ -330,7 +331,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   · exact differentiableOn_neg _
   · exact h_smooth.contMDiffOn.mdifferentiableOn one_ne_zero
   apply this.trans_lt
-  convert! hγ
+  convert hγ
   ext t
   simp [η]
 
@@ -353,11 +354,11 @@ lemma riemannianEDist_triangle :
   apply this.trans_lt (lt_trans ?_ huv)
   rw [← pathELength_add zero_le_one one_le_two]
   gcongr
-  · convert! hγ₁ using 1
+  · convert hγ₁ using 1
     apply pathELength_congr
     intro t ht
     simp [γ, ht.2]
-  · convert! hγ₂ using 1
+  · convert hγ₂ using 1
     apply pathELength_congr_Ioo
     intro t ht
     simp [γ, ht.1]

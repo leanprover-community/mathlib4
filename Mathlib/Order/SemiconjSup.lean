@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.Order.Group.End
-import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+import Mathlib.Order.Bounds.OrderIso
 
 /-!
 # Semiconjugate by `sSup`

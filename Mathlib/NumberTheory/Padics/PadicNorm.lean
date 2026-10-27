@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
@@ -53,8 +54,11 @@ variable {p : ℕ}
 
 /-- Unfolds the definition of the `p`-adic norm of `q` when `q ≠ 0`. -/
 @[simp]
-protected theorem eq_zpow_of_nonzero {q : ℚ} (hq : q ≠ 0) :
+protected theorem eq_zpow_of_ne_zero {q : ℚ} (hq : q ≠ 0) :
     padicNorm p q = (p : ℚ) ^ (-padicValRat p q) := by simp [hq, padicNorm]
+
+@[deprecated (since := "2026-10-13")]
+protected alias eq_zpow_of_nonzero := padicNorm.eq_zpow_of_ne_zero
 
 /-- The `p`-adic norm is nonnegative. -/
 protected theorem nonneg (q : ℚ) : 0 ≤ padicNorm p q :=
@@ -117,10 +121,12 @@ protected theorem neg (q : ℚ) : padicNorm p (-q) = padicNorm p q :=
 variable [hp : Fact p.Prime]
 
 /-- If `q ≠ 0`, then `padicNorm p q ≠ 0`. -/
-protected theorem nonzero {q : ℚ} (hq : q ≠ 0) : padicNorm p q ≠ 0 := by
-  rw [padicNorm.eq_zpow_of_nonzero hq]
+protected theorem ne_zero {q : ℚ} (hq : q ≠ 0) : padicNorm p q ≠ 0 := by
+  rw [padicNorm.eq_zpow_of_ne_zero hq]
   apply zpow_ne_zero
   exact mod_cast ne_of_gt hp.1.pos
+
+@[deprecated (since := "2026-10-13")] protected alias nonzero := padicNorm.ne_zero
 
 /-- If the `p`-adic norm of `q` is 0, then `q` is `0`. -/
 theorem zero_of_padicNorm_eq_zero {q : ℚ} (h : padicNorm p q = 0) : q = 0 := by
@@ -144,7 +150,7 @@ protected theorem mul (q r : ℚ) : padicNorm p (q * r) = padicNorm p q * padicN
 @[simp]
 protected theorem div (q r : ℚ) : padicNorm p (q / r) = padicNorm p q / padicNorm p r :=
   if hr : r = 0 then by simp [hr]
-  else eq_div_of_mul_eq (padicNorm.nonzero hr) (by rw [← padicNorm.mul, div_mul_cancel₀ _ hr])
+  else eq_div_of_mul_eq (padicNorm.ne_zero hr) (by rw [← padicNorm.mul, div_mul_cancel₀ _ hr])
 
 /-- The `p`-adic norm of an integer is at most `1`. -/
 protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 := by

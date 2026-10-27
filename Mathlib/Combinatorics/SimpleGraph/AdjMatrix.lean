@@ -6,8 +6,8 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
-public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
@@ -323,7 +323,7 @@ variable (V)
     (0 : Matrix V V α).compl = (completeGraph V).adjMatrix α := by simp [← IsAdjMatrix.compl_inj]
 
 theorem adjMatrix_completeGraph_eq_of_one_sub_one [AddGroup α] [One α] [DecidableEq V] :
-    (completeGraph V).adjMatrix α = of 1 - 1 := by ext; simp [one_apply, sub_ite]
+    (completeGraph V).adjMatrix α = of 1 - 1 := by ext; simp [Matrix.one_apply, sub_ite]
 
 theorem _root_.Matrix.compl_zero_eq_of_one_sub_one [AddGroup α] [One α] [DecidableEq V]
     [DecidableEq α] : (0 : Matrix V V α).compl = of 1 - 1 := by
@@ -368,12 +368,12 @@ theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
 @[simp]
 theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
     (G.adjMatrix α * M) v w = ∑ u ∈ G.neighborFinset v, M u w := by
-  simp [mul_apply, neighborFinset_eq_filter, sum_filter]
+  simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter]
 
 @[simp]
 theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
     (M * G.adjMatrix α) v w = ∑ u ∈ G.neighborFinset w, M v u := by
-  simp [mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
+  simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
 
 variable (α) in
 @[simp]

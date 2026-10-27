@@ -5,9 +5,9 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Order.Atoms
-public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.Atoms
 
 /-!
 # Affine spaces
@@ -232,6 +232,23 @@ theorem coe_toAffineSubspace (p : Submodule k V) : (p.toAffineSubspace : Set V) 
 theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
     x ∈ (p : AffineSubspace k V) ↔ x ∈ p := Iff.rfl
 
+@[simp]
+theorem toAffineSubspace_le_toAffineSubspace {p q : Submodule k V} :
+    (p : AffineSubspace k V) ≤ q ↔ p ≤ q :=
+  .rfl
+
+@[gcongr]
+theorem monotone_toAffineSubspace : Monotone ((↑) : Submodule k V → AffineSubspace k V) :=
+  fun _ _ => toAffineSubspace_le_toAffineSubspace.mpr
+
+theorem toAffineSubspace_injective :
+    Function.Injective ((↑) : Submodule k V → AffineSubspace k V) := by
+  simp [Function.Injective, le_antisymm_iff]
+
+@[simp]
+theorem toAffineSubspace_inj {p q : Submodule k V} : (p : AffineSubspace k V) = q ↔ p = q :=
+  toAffineSubspace_injective.eq_iff
+
 /-- Reinterprets `p : AffineSubspace k V` that includes `0` as a `Submodule k V`. -/
 def ofAffineSubspace (p : AffineSubspace k V) (hp : 0 ∈ p) : Submodule k V where
   carrier := p
@@ -365,7 +382,7 @@ the original point is in the subspace. -/
 theorem vadd_mem_iff_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction)
     {p : P} : v +ᵥ p ∈ s ↔ p ∈ s := by
   refine ⟨fun h => ?_, fun h => vadd_mem_of_mem_direction hv h⟩
-  convert! vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) h
+  convert vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) h
   simp
 
 /-- Given a point in an affine subspace, the set of vectors in its direction equals the set of
@@ -1204,3 +1221,48 @@ theorem affineSpan_eq_span_iff_zero_mem {s : Set V} :
 alias ⟨_, affineSpan_eq_span_of_zero_mem⟩ := affineSpan_eq_span_iff_zero_mem
 
 end AffineSpace'
+
+namespace Submodule
+
+variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
+
+@[simp]
+theorem toAffineSubspace_top : ((⊤ : Submodule k V) : AffineSubspace k V) = ⊤ :=
+  rfl
+
+@[simp]
+theorem toAffineSubspace_bot : ((⊥ : Submodule k V) : AffineSubspace k V) = {0} :=
+  rfl
+
+@[simp]
+theorem toAffineSubspace_inf (p q : Submodule k V) :
+    ((p ⊓ q : Submodule k V) : AffineSubspace k V) = (p : AffineSubspace k V) ⊓ q :=
+  rfl
+
+@[simp]
+theorem toAffineSubspace_sInf (s : Set (Submodule k V)) :
+    ((sInf s : Submodule k V) : AffineSubspace k V) = ⨅ p ∈ s, (p : AffineSubspace k V) :=
+  SetLike.coe_injective <| by simp
+
+@[simp]
+theorem toAffineSubspace_iInf {ι : Type*} (p : ι → Submodule k V) :
+    ((⨅ i, p i : Submodule k V) : AffineSubspace k V) = ⨅ i, (p i : AffineSubspace k V) :=
+  SetLike.coe_injective <| by simp
+
+theorem toAffineSubspace_sSup {s : Set (Submodule k V)} (hs : s.Nonempty) :
+    ((sSup s : Submodule k V) : AffineSubspace k V) = ⨆ p ∈ s, (p : AffineSubspace k V) := by
+  refine le_antisymm (le_of_forall_ge fun q hq => ?_) monotone_toAffineSubspace.le_map_sSup
+  rw [iSup₂_le_iff] at hq
+  obtain ⟨p, hp⟩ := hs
+  lift q to Submodule k V using hq p hp p.zero_mem
+  simpa using hq
+
+theorem toAffineSubspace_iSup {ι : Type*} [Nonempty ι] (p : ι → Submodule k V) :
+    ((⨆ i, p i : Submodule k V) : AffineSubspace k V) = ⨆ i, (p i : AffineSubspace k V) := by
+  rw [← sSup_range, toAffineSubspace_sSup (range_nonempty _), iSup_range]
+
+theorem toAffineSubspace_sup (p q : Submodule k V) :
+    ((p ⊔ q : Submodule k V) : AffineSubspace k V) = (p : AffineSubspace k V) ⊔ q := by
+  simp_rw [sup_eq_iSup, toAffineSubspace_iSup, Bool.apply_cond]
+
+end Submodule

@@ -99,7 +99,6 @@ lemma coneπApp_eq (j j' : J) (α : j' ⟶ i₀) (β : j' ⟶ j) :
 lemma coneπApp_eq_id : h.coneπApp i₀ = 𝟙 _ := by
   rw [h.coneπApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_inv_hom_id]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `h : F.IsEventuallyConstantTo i₀`, this is the (limit) cone for `F` whose
 point is `F.obj i₀`. -/
 @[simps]
@@ -210,7 +209,6 @@ lemma coconeιApp_eq (j j' : J) (α : j ⟶ j') (β : i₀ ⟶ j') :
 lemma coconeιApp_eq_id : h.coconeιApp i₀ = 𝟙 _ := by
   rw [h.coconeιApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_hom_inv_id]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `h : F.IsEventuallyConstantFrom i₀`, this is the (limit) cocone for `F` whose
 point is `F.obj i₀`. -/
 @[simps]

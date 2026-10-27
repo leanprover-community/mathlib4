@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+
 /-!
 
 # Sheaves for the regular topology
@@ -64,7 +65,6 @@ epimorphisms to equalizer diagrams.
 def EqualizerCondition (P : Cᵒᵖ ⥤ D) : Prop :=
   ∀ ⦃X B : C⦄ (π : X ⟶ B) [EffectiveEpi π], SingleEqualizerCondition P π
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The equalizer condition is preserved by natural isomorphism. -/
 theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ D} (i : P ≅ P')
     (hP : EqualizerCondition P) : EqualizerCondition P' := fun X B π _ c hc ↦
@@ -285,7 +285,7 @@ lemma isSheaf_yoneda_obj [Preregular C] (W : C) :
   obtain ⟨t, t_amalg, t_uniq⟩ :=
     (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
   refine ⟨t, ?_, ?_⟩
-  · convert!
+  · convert
     Presieve.isAmalgamation_restrict
       (Sieve.le_generate (Presieve.ofArrows (fun () ↦ Y) (fun () ↦ f))) _ _ t_amalg
     exact (Presieve.restrict_extend hx).symm
