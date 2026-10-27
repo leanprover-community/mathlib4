@@ -137,25 +137,6 @@ theorem Forall₂.length_eq : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → length 
   | _, _, Forall₂.nil => rfl
   | _, _, Forall₂.cons _ h₂ => congr(succ $(Forall₂.length_eq h₂))
 
-theorem Forall₂.get :
-    ∀ {x : List α} {y : List β}, Forall₂ R x y →
-      ∀ ⦃i : ℕ⦄ (hx : i < x.length) (hy : i < y.length), R (x.get ⟨i, hx⟩) (y.get ⟨i, hy⟩)
-  | _, _, Forall₂.cons ha _, 0, _, _ => ha
-  | _, _, Forall₂.cons _ hl, succ _, _, _ => hl.get _ _
-
-theorem forall₂_of_length_eq_of_get :
-    ∀ {x : List α} {y : List β},
-      x.length = y.length → (∀ i h₁ h₂, R (x.get ⟨i, h₁⟩) (y.get ⟨i, h₂⟩)) → Forall₂ R x y
-  | [], [], _, _ => Forall₂.nil
-  | _ :: _, _ :: _, hl, h =>
-    Forall₂.cons (h 0 (Nat.zero_lt_succ _) (Nat.zero_lt_succ _))
-      (forall₂_of_length_eq_of_get (succ.inj hl) fun i h₁ h₂ =>
-        h i.succ (succ_lt_succ h₁) (succ_lt_succ h₂))
-
-theorem forall₂_iff_get {l₁ : List α} {l₂ : List β} :
-    Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.get ⟨i, h₁⟩) (l₂.get ⟨i, h₂⟩) :=
-  ⟨fun h => ⟨h.length_eq, h.get⟩, fun h => forall₂_of_length_eq_of_get h.1 h.2⟩
-
 theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b
   | _, _, Forall₂.cons h₁ h₂, x, y, hx => by
     rw [zip, zipWith, mem_cons] at hx
@@ -179,6 +160,50 @@ theorem forall₂_iff_zip {l₁ l₂} :
           (IH h₁ fun h => h₂ <| by
             simp only [zip, zipWith, mem_cons, Prod.mk.injEq]; right
             simpa [zip] using h)⟩
+
+theorem Forall₂.getElem {l₁ : List α} {l₂ : List β} (h : Forall₂ R l₁ l₂) ⦃i : ℕ⦄
+    (h₁ : i < l₁.length) (h₂ : i < l₂.length) : R l₁[i] l₂[i] := by
+  induction h generalizing i <;> grind
+
+/-- Entries of `l₁` and `l₂` at the same index are related, or both are absent. -/
+theorem Forall₂.getElem? {l₁ : List α} {l₂ : List β} (h : Forall₂ R l₁ l₂) {i : ℕ} :
+    Option.Rel R l₁[i]? l₂[i]? := by
+  induction h generalizing i <;> cases i <;> grind [Option.Rel]
+
+theorem forall₂_of_length_eq_of_getElem {l₁ : List α} {l₂ : List β} (hl : l₁.length = l₂.length)
+    (h : ∀ (i : ℕ) (h₁ : i < l₁.length) (h₂ : i < l₂.length), R l₁[i] l₂[i]) :
+    Forall₂ R l₁ l₂ := by
+  grind [forall₂_iff_zip, getElem_of_mem]
+
+theorem forall₂_iff_getElem {l₁ : List α} {l₂ : List β} :
+    Forall₂ R l₁ l₂ ↔
+      l₁.length = l₂.length ∧ ∀ (i : ℕ) (h₁ : i < l₁.length) (h₂ : i < l₂.length), R l₁[i] l₂[i] :=
+  ⟨fun h => ⟨h.length_eq, h.getElem⟩, fun h => forall₂_of_length_eq_of_getElem h.1 h.2⟩
+
+@[deprecated Forall₂.getElem +typeChanged (since := "2026-10-27")]
+theorem Forall₂.get {x : List α} {y : List β} (h : Forall₂ R x y) ⦃i : ℕ⦄ (hx : i < x.length)
+    (hy : i < y.length) : R (x.get ⟨i, hx⟩) (y.get ⟨i, hy⟩) :=
+  h.getElem hx hy
+
+@[deprecated forall₂_of_length_eq_of_getElem +typeChanged (since := "2026-10-27")]
+theorem forall₂_of_length_eq_of_get {x : List α} {y : List β} (hl : x.length = y.length)
+    (h : ∀ i h₁ h₂, R (x.get ⟨i, h₁⟩) (y.get ⟨i, h₂⟩)) : Forall₂ R x y :=
+  forall₂_of_length_eq_of_getElem hl h
+
+@[deprecated forall₂_iff_getElem +typeChanged (since := "2026-10-27")]
+theorem forall₂_iff_get {l₁ : List α} {l₂ : List β} :
+    Forall₂ R l₁ l₂ ↔ l₁.length = l₂.length ∧ ∀ i h₁ h₂, R (l₁.get ⟨i, h₁⟩) (l₂.get ⟨i, h₂⟩) :=
+  forall₂_iff_getElem
+
+/-- Every entry of `l₂` is related to some entry of `l₁`. -/
+theorem Forall₂.mem_right {l₁ : List α} {l₂ : List β} (h : Forall₂ R l₁ l₂) :
+    ∀ b ∈ l₂, ∃ a ∈ l₁, R a b := by
+  induction h <;> grind
+
+/-- Every entry of `l₁` is related to some entry of `l₂`. -/
+theorem Forall₂.mem_left {l₁ : List α} {l₂ : List β} (h : Forall₂ R l₁ l₂) :
+    ∀ a ∈ l₁, ∃ b ∈ l₂, R a b :=
+  h.flip.mem_right
 
 theorem forall₂_take : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (take n l₁) (take n l₂)
   | 0, _, _, _ => by simp only [Forall₂.nil, take]
