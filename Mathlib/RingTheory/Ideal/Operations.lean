@@ -769,11 +769,10 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
   exact sup_iInf_eq_top hf
 
 theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
-  le_antisymm mul_le_inf fun r ⟨hri, hrj⟩ =>
-    let ⟨s, hsi, t, htj, hst⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 coprime.sup_eq)
-    mul_one r ▸
-      hst ▸
-        (mul_add r s t).symm ▸ Ideal.add_mem (I * J) (mul_mem_mul_rev hsi hrj) (mul_mem_mul hri htj)
+theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J := by
+  apply le_antisymm mul_le_inf
+  rw [← mul_one (I ⊓ J), ← coprime.add_eq, mul_add, mul_comm]
+  exact add_le (mul_le_mul_right inf_le_right I) (mul_le_mul_left inf_le_left J)
 
 @[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-10-08")]
 theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
