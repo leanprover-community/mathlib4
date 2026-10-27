@@ -11,10 +11,35 @@ Try this:
   [apply] simp_all
 
 Note: This linter can be disabled with `set_option linter.tacticAnalysis.aesopToSimpAll false`
+---
+info: `simp` can replace `aesop`
+
+Try this:
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.aesopToSimp false`
 -/
 #guard_msgs in
 example : True := by
   aesop
+
+-- A tactic after `<;>` is executed separately on every generated goal.  Do not suggest a
+-- replacement which succeeds on only some of them.
+/--
+info: `simp_all` can replace `aesop`
+
+Try this:
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.aesopToSimpAll false`
+-/
+#guard_msgs in
+example (P Q R : Prop) (hP : P) (hPQ : P → Q) (hQR : Q → R) : True ∧ R := by
+  constructor <;> aesop
+
+#guard_msgs in
+example (P Q R : Prop) (hP : P) (hPQ : P → Q) (hQR : Q → R) : True ∧ R := by
+  constructor <;> simp_all
 
 /--
 info: `simp` can replace `simp_all`
