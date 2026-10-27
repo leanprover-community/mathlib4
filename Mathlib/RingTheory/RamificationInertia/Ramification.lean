@@ -187,12 +187,12 @@ namespace IsDedekindDomain
 
 open UniqueFactorizationMonoid IsLocalization.AtPrime
 
-theorem ramificationIdx_eq_of_map_eq_pow [IsDedekindDomain S]
-    [q.LiesOver p] [hq : q.IsPrime] (hq : q ≠ ⊥) (e : ℕ)
+theorem ramificationIdx_eq_of_map_eq_pow [q.LiesOver p] [q.IsPrime] (e : ℕ)
+    [IsDomain (Localization.AtPrime q)] [IsDiscreteValuationRing (Localization.AtPrime q)]
     (hpS : p.map (algebraMap R (Localization.AtPrime q)) = IsLocalRing.maximalIdeal _ ^ e) :
     q.ramificationIdx R = e := by
-  have hSq := isDiscreteValuationRing_of_dedekind_domain S hq (Localization.AtPrime q)
-  rw [ramificationIdx_eq p q, hpS, hSq.length_quotient_pow_maximalIdeal, ENat.toNat_natCast]
+  rw [ramificationIdx_eq p q, hpS, IsDiscreteValuationRing.length_quotient_pow_maximalIdeal,
+    ENat.toNat_natCast]
 
 theorem ramificationIdx_eq_normalizedFactors_count [IsDedekindDomain S]
     [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
@@ -208,9 +208,10 @@ theorem ramificationIdx_eq_normalizedFactors_count [IsDedekindDomain S]
     contrapose! hqI
     rw [sup_of_le_left hqI]
     exact hq.ne_top
-  apply ramificationIdx_eq_of_map_eq_pow p q hq0
-  rw [IsScalarTower.algebraMap_eq R S, ← map_map, h, Ideal.map_mul, Ideal.map_pow, ← h,
-    map_eq_maximalIdeal, map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top]
+  have := isDiscreteValuationRing_of_dedekind_domain S hq0 (Localization.AtPrime q)
+  apply ramificationIdx_eq_of_map_eq_pow p q
+  conv_lhs => rw [IsScalarTower.algebraMap_eq R S, ← map_map, h, Ideal.map_mul, Ideal.map_pow,]
+  rw [map_eq_maximalIdeal, map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top]
 
 theorem ramificationIdx_eq_factors_count [IsDedekindDomain S]
     [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
