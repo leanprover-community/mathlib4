@@ -337,7 +337,7 @@ theorem exists_map_eq_of_map_sum_eq_zero {ι : Type*} {s : Finset ι} {f : ι �
   classical
   by_contra! hne
   obtain ⟨c, hck, hc⟩ := Finset.exists_max_image s (fun i => v (f i)) ⟨k, hk⟩
-  have hvc : 0 < v (f c) := (zero_lt_iff.2 hs).trans_le (hc k hk)
+  have hvc : 0 < v (f c) := hs.pos.trans_le (hc k hk)
   apply hvc.ne
   rw [← h]
   refine map_sum_eq_of_lt v hck fun i hi => ?_
