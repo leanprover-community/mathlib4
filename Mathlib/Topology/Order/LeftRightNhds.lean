@@ -71,7 +71,7 @@ theorem tfae_mem_nhdsGT {a b : α} (hab : a < b) (s : Set α) :
   tfae_finish
 
 @[deprecated (since := "2026-10-27")]
-alias tendstoLocallyUniformlyOn_TFAE := tendstoLocallyUniformlyOn_tfae
+alias TFAE_mem_nhdsGT := tfae_mem_nhdsGT
 
 @[to_dual]
 theorem mem_nhdsGT_iff_exists_mem_Ioc_Ioo_subset {a u' : α} {s : Set α} (hu' : a < u') :
@@ -237,7 +237,7 @@ theorem tfae_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
   tfae_finish
 
 @[deprecated (since := "2026-10-27")]
-alias tendstoLocallyUniformlyOn_TFAE := tendstoLocallyUniformlyOn_tfae
+alias TFAE_mem_nhdsGE := tfae_mem_nhdsGE
 
 @[to_dual]
 theorem mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :
