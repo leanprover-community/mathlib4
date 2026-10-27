@@ -206,7 +206,6 @@ private lemma W_map_of_adjunction_of_isContinuous_aux (F : C ⥤ D)
   rw [isSheaf_iff_isSheaf_of_type]
   exact IsContinuous.op_comp_isSheaf_of_types (F := F) ⟨U, hU⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `Functor.IsContinuous` is preserved under enlarging the universe if the starting
 universe is large enough. SGA 4 III 1.5. -/
 private lemma isSheaf_of_isContinuous_aux (F : C ⥤ D) [Functor.IsContinuous F J K]
