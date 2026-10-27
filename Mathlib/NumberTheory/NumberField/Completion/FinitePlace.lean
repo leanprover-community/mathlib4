@@ -113,18 +113,13 @@ variable [Ring.HasFiniteQuotients R]
 
 namespace HeightOneSpectrum
 
-/-- The norm of a maximal ideal is `> 1` -/
-lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
-  rw [Nat.one_lt_iff_ne_zero_and_ne_one, ne_eq, absNorm_eq_zero_iff', ne_eq, absNorm_eq_one_iff]
-  exact ⟨v.ne_bot, v.isPrime.ne_top⟩
-
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
-lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
+lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v.ne_bot
 
-lemma two_le_absNorm_nnreal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
+lemma two_le_absNorm_nnreal : 2 ≤ (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v.ne_bot
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0` -/
-lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
+lemma absNorm_ne_zero_nnreal : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
   ne_zero_of_lt (one_lt_absNorm_nnreal v)
 
 variable (K)
@@ -133,7 +128,8 @@ variable (K)
 valuation -/
 noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_nnreal v
 
-theorem adicAbv_def {x : K} : adicAbv K v x = toNNReal (absNorm_ne_zero v) (v.valuation K x) := rfl
+theorem adicAbv_def {x : K} :
+    adicAbv K v x = toNNReal (absNorm_ne_zero_nnreal v) (v.valuation K x) := rfl
 
 /-- The `v`-adic absolute value is nonarchimedean -/
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv K v) :=
@@ -149,7 +145,7 @@ noncomputable instance instRankOneAdicCompletion :
   rankOne (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰) (one_lt_absNorm_nnreal v)
 
 lemma rankOne_hom'_def :
-    (instRankOneAdicCompletion K v).hom' = (toNNReal (absNorm_ne_zero v)).comp
+    (instRankOneAdicCompletion K v).hom' = (toNNReal (absNorm_ne_zero_nnreal v)).comp
       (valueGroup₀_equiv_withZeroMulInt Valued.v).toMonoidWithZeroHom := rfl
 
 /-- The `v`-adic completion of `K` is a normed field. -/
@@ -157,7 +153,7 @@ noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCo
   Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
-    toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv K v (WithVal.equiv _ x) := rfl
+    toNNReal (absNorm_ne_zero_nnreal v) (Valued.v x) = adicAbv K v (WithVal.equiv _ x) := rfl
 
 /-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
 theorem adicAbv_add_le_max (x y : K) :
@@ -173,6 +169,12 @@ theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
   (isNonarchimedean_adicAbv K v).apply_intCast_le_one (map_zero_le (adicAbv K v) 1)
   (map_one (adicAbv K v)) (map_neg_eq_map (adicAbv K v))
 
+@[deprecated (since := "2026-08-08")]
+alias absNorm_ne_zero := absNorm_ne_zero_nnreal
+
+@[deprecated Ideal.one_lt_absNorm +typeChanged (since := "2026-08-08")]
+lemma one_lt_absNorm : 1 < absNorm v.asIdeal := Ideal.one_lt_absNorm v.ne_bot
+
 end HeightOneSpectrum
 
 open HeightOneSpectrum Valuation.IsRankOneDiscrete
@@ -180,7 +182,7 @@ open HeightOneSpectrum Valuation.IsRankOneDiscrete
 /-- The norm of an element in the `v`-adic completion of `K`. See `FinitePlace.norm_embedding`
 for the equality involving `‖embedding v x‖` on the LHS. -/
 theorem FinitePlace.norm_def (x : v.adicCompletion K) :
-    ‖x‖ = toNNReal (absNorm_ne_zero v) (Valued.v x) := by
+    ‖x‖ = toNNReal (absNorm_ne_zero_nnreal v) (Valued.v x) := by
   simp [Valued.toNormedField.norm_def, Valuation.RankOne.hom, HeightOneSpectrum.rankOne_hom'_def,
     valueGroup₀_equiv_withZeroMulInt_restrict_apply_of_surjective
       (valuedAdicCompletion_surjective K v)]
@@ -193,7 +195,7 @@ theorem FinitePlace.norm_embedding (x : K) : ‖embedding v x‖ = adicAbv K v x
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
 theorem FinitePlace.norm_embedding' (x : K) :
-    ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.valuation K x) := by
+    ‖embedding v x‖ = toNNReal (absNorm_ne_zero_nnreal v) (v.valuation K x) := by
   rw [norm_embedding, adicAbv_def]
 
 variable (K)
@@ -201,7 +203,7 @@ variable (K)
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation for integers. -/
 theorem FinitePlace.norm_embedding_int (x : R) :
-    ‖embedding v (algebraMap _ K x)‖ = toNNReal (absNorm_ne_zero v) (v.intValuation x) := by
+    ‖embedding v (algebraMap _ K x)‖ = toNNReal (absNorm_ne_zero_nnreal v) (v.intValuation x) := by
   simp [norm_embedding, adicAbv_def, valuation_of_algebraMap]
 
 open FinitePlace
@@ -225,7 +227,7 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
 
 variable {v} in
 lemma FinitePlace.two_le_norm_of_one_lt_norm (x : v.adicCompletion K) (h : 1 < ‖x‖) : 2 ≤ ‖x‖ := by
-  rw [FinitePlace.norm_def, WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero v) (by aesop)]
+  rw [FinitePlace.norm_def, WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero_nnreal v) (by aesop)]
   apply (two_le_absNorm_nnreal v).trans
   conv_lhs => rw [← zpow_one (v.asIdeal.absNorm : NNReal)]
   apply zpow_le_zpow_right₀ (one_lt_absNorm_nnreal v).le

@@ -378,6 +378,16 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
   · rw [Ne, span_singleton_eq_bot]
     exact Int.ofNat_ne_zero.mpr hI.ne_zero
 
+variable {A : Type*} [CommRing A] [Algebra A S] [IsDedekindDomain A] [Module.Free ℤ A] in
+/-- The norm of `I.under A` divides the norm of `I`. -/
+theorem absNorm_under_dvd_absNorm (I : Ideal S) : absNorm (I.under A) ∣ absNorm I := by
+  have : Infinite A := Module.Free.infinite ℤ A
+  obtain rfl | hI := eq_or_ne I ⊥
+  · simp
+  rw [absNorm_of_ne_bot hI, absNorm_apply, Submodule.cardQuot_apply, Submodule.cardQuot_apply]
+  exact AddSubgroup.card_dvd_of_injective (quotientMap I (algebraMap A S) le_rfl)
+    quotientMap_injective
+
 section Infinite
 
 variable [Infinite S]
@@ -419,6 +429,17 @@ theorem absNorm_ne_zero_of_nonZeroDivisors' (I : (Ideal S)⁰) : absNorm (I : Id
 /-- A version of `absNorm_pos_of_nonZeroDivisors` for a ring with finite quotients. -/
 theorem absNorm_pos_of_nonZeroDivisors' (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
   absNorm_pos_iff_mem_nonZeroDivisors'.mpr (SetLike.coe_mem I)
+
+/-- The norm of a nonzero prime ideal is `> 1`. -/
+theorem one_lt_absNorm {I : Ideal S} [hI : I.IsPrime] (h : I ≠ ⊥) : 1 < absNorm I := by
+  have h₀ : absNorm I ≠ 0 := by simpa [absNorm_eq_zero_iff'] using h
+  have h₁ : absNorm I ≠ 1 := fun h ↦ hI.ne_top (absNorm_eq_one_iff.mp h)
+  lia
+
+/-- The norm of a prime of the height-one spectrum is `≠ 0`. -/
+theorem _root_.IsDedekindDomain.HeightOneSpectrum.absNorm_ne_zero
+    (v : IsDedekindDomain.HeightOneSpectrum S) : absNorm v.asIdeal ≠ 0 :=
+  ne_zero_of_lt (one_lt_absNorm v.ne_bot)
 
 /-- A version of `card_norm_le_eq_card_norm_le_add_one` for a ring with finite quotients. -/
 theorem card_norm_le_eq_card_norm_le_add_one' (n : ℕ) :
