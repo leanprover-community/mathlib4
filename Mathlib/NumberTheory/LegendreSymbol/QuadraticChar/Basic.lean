@@ -206,7 +206,7 @@ when the domain has odd characteristic. -/
 theorem quadraticChar_ne_one (hF : ringChar F ≠ 2) : quadraticChar F ≠ 1 := by
   rcases quadraticChar_exists_neg_one' hF with ⟨a, ha⟩
   intro hχ
-  simp only [hχ, one_apply a.isUnit, reduceCtorEq] at ha
+  simp [hχ] at ha
 
 open Finset in
 /-- The number of solutions to `x^2 = a` is determined by the quadratic character. -/
