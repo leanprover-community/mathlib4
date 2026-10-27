@@ -41,7 +41,7 @@ of `Γ`, exhibits infinitely many roots of that Laurent polynomial, so all its c
 vanish.
 -/
 
-@[expose] public noncomputable section
+public noncomputable section
 
 open DirectSum Function OnePoint UpperHalfPlane ModularFormClass
 open Matrix.GeneralLinearGroup (upperRightHom)
