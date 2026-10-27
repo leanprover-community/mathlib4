@@ -9,9 +9,6 @@ public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Polynomial.Basic
 public import Mathlib.Logic.Function.Const
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Liouville's theorem
 

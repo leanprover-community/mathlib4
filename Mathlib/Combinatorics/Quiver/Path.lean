@@ -11,9 +11,6 @@ public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Util.CompileInductive
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Paths in quivers
 

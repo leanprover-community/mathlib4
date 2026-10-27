@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Order.Atoms
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The radical of a lattice
 

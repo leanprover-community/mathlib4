@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Algebra.Regular.SMul
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Torsion-free modules
 

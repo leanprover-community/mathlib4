@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Group.TransferInstance
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Transfer algebraic structures across `Equiv`s
 

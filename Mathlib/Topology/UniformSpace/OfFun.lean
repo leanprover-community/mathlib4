@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.UniformSpace.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Construct a `UniformSpace` from a `dist`-like function
 

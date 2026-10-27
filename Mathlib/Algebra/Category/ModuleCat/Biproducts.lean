@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of `R`-modules has finite biproducts
 -/

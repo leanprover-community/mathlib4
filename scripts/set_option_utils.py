@@ -81,7 +81,7 @@ def lake_build_with_progress(project_dir: Path) -> tuple[int, str]:
     Returns (returncode, captured_output).
     """
     proc = subprocess.Popen(
-        ["lake", "build"],
+        ["lake", "build", "--iofail"],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,

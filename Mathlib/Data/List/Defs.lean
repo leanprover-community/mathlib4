@@ -11,9 +11,6 @@ public import Mathlib.Basic.SProd
 public import Mathlib.Control.Functor
 public import Mathlib.Data.Nat.Notation
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Definitions on lists
 

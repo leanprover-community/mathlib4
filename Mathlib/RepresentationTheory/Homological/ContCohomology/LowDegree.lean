@@ -7,9 +7,6 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Low degree continuous cohomology
 

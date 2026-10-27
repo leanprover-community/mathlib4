@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Order.Hom.Ring
 public import Mathlib.Order.SuccPred.ENat
 public import Mathlib.SetTheory.Cardinal.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
 

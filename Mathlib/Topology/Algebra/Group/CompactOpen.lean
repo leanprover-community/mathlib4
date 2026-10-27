@@ -11,9 +11,6 @@ public import Mathlib.Topology.UniformSpace.Ascoli
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Group.Compact
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The compact-open topology on continuous monoid morphisms.
 -/
