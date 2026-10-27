@@ -434,6 +434,7 @@ local notation "Kv" => v.adicCompletion K
 local notation "Lw" => w.adicCompletion L
 
 open scoped TensorProduct Valued in
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 instance : Module.Finite Kv Lw :=
   let Φ : Kv ⊗[K] L →ₗ[Kv] Lw := Algebra.TensorProduct.lift (Algebra.algHom Kv Kv Lw)
     (Algebra.algHom K L Lw) (fun _ _ ↦ mul_comm ..) |>.toLinearMap

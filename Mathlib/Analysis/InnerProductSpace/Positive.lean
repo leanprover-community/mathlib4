@@ -382,6 +382,7 @@ theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E 
 section LinearMap
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : E →ₗ[𝕜] F) : (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
