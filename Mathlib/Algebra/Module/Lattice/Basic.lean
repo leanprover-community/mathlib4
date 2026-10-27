@@ -88,8 +88,8 @@ theorem linearIndependent [IsLattice A M] {ι : Type*} {v : ι → V}
     (hv : ∀ i, v i ∈ M) (h : LinearIndependent R v) : LinearIndependent A v := by
   nontriviality A
   nontriviality R using Algebra.subsingleton R A
-  exact (linearIndepOn_id_range_iff h.injective).mp <|
-    linearIndepOn _ (Set.range_subset_iff.mpr hv) h.linearIndepOn_id
+  rw [← linearIndepOn_id_range_iff h.injective]
+  exact linearIndepOn _ (Set.range_subset_iff.mpr hv) h.linearIndepOn_id
 
 /-- Any basis of an `R`-lattice in `V` is `A`-linearly independent. -/
 theorem basis_linearIndependent [IsLattice A M] {ι : Type*} (b : Basis ι R M) :
