@@ -185,7 +185,8 @@ def Submonoid.centerCongr [MulOneClass M] [MulOneClass N] (e : M ≃* N) : cente
   op_mem_center_iff.symm
 
 /-- The center of a magma is isomorphic to the center of its opposite. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+/-- The center of an additive magma is isomorphic to the center of its opposite. -/]
 def Center.toMulOpposite [Mul M] : Center M ≃* Center Mᵐᵒᵖ where
   toFun r := Center.mk _ (MulOpposite.op_mem_center_iff.mpr r.2)
   invFun r := Center.mk _ (MulOpposite.unop_mem_center_iff.mpr r.2)
