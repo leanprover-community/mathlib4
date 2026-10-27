@@ -938,14 +938,6 @@ lemma _root_.Center.coe_smul_self (r : R) (z : Center A) :
 lemma _root_.Center.coe_algebraMpa (r : R) :
     (algebraMap R (Center A) r).val = algebraMap R A r := rfl
 
-/-- A surjective morphism between `R`-algebras induces an `R`-algebra homomorhpism between their
-centers. -/
-@[simps!]
-def _root_.AlgHom.toCenter {f : A →ₐ[R] B} (hf : Function.Surjective f) :
-    Center A →ₐ[R] Center B where
-  toRingHom := f.toRingHom.toCenter hf
-  commutes' x := by simp
-
 /-- An isomorphism morphism between `R`-algebras induces an `R`-algebra isomorphism between their
 centers. -/
 @[simps!]
@@ -960,13 +952,6 @@ variable (R A) in
 def _root_.Center.algHom :
     Center A →ₐ[R] A where
   toRingHom := Center.ringHom A
-  commutes' := by simp
-
-/-- Lift a morphism through the inclusion `Center B →ₐ[R] B`. -/
-@[simps!]
-def _root_.AlgHom.liftCenter {f : A →ₐ[R] B} (hf : ∀ r, f r ∈ Set.center B) :
-    A →ₐ[R] Center B where
-  toRingHom := f.toRingHom.liftCenter hf
   commutes' := by simp
 
 end Center

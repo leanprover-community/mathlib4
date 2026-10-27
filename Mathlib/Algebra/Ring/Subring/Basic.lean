@@ -439,6 +439,16 @@ theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹
 theorem center.coe_div (a b : center K) : ((a / b : center K) : K) = (a : K) / (b : K) :=
   rfl
 
+instance : Field (Center K) := inferInstanceAs <| Field (center K)
+
+@[simp]
+theorem _root_.Center.coe_inv' (a : Center K) : ((a⁻¹ : Center K) : K) = (a : K)⁻¹ :=
+  rfl
+
+@[simp]
+theorem _root_.Center.coe_div (a b : Center K) : ((a / b : Center K) : K) = (a : K) / (b : K) :=
+  rfl
+
 end DivisionRing
 
 section Centralizer

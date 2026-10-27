@@ -281,16 +281,6 @@ def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ := Center.toMulOpposi
 @[simp]
 lemma _root_.Center._coe_natCast (n : ℕ) : (n : Center R).val = (n : R) := rfl
 
-/-- A surjective morphism between (not necessarily associative) semirings induces a semiring
-homomorhpism between their centers. -/
-@[simps!]
-def _root_.RingHom.toCenter {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] {f : R →+* S}
-    (hf : Function.Surjective f) :
-    Center R →+* Center S where
-  toMonoidHom := f.toMonoidHom.toCenter hf
-  map_zero' := by simp
-  map_add' _ _ := by simp
-
 /-- The inclusion of `Center R` into `R` as a `RingHom`. -/
 @[simps!]
 def _root_.Center.ringHom (R : Type*) [NonAssocSemiring R] :
@@ -298,15 +288,6 @@ def _root_.Center.ringHom (R : Type*) [NonAssocSemiring R] :
   toMonoidHom := Center.monoidHom R
   map_add' _ _ := by simp
   map_zero' := by simp
-
-/-- Lift a morphism through the inclusion `Center S →+* S`. -/
-@[simps!]
-def _root_.RingHom.liftCenter {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
-    {f : R →+* S} (hf : ∀ r, f r ∈ Set.center S) :
-    R →+* Center S where
-  toMonoidHom := f.toMonoidHom.liftCenter hf
-  map_zero' := by simp
-  map_add' _ _ := by simp
 
 end NonAssocSemiring
 

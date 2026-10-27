@@ -100,10 +100,10 @@ instance {M α : Type*} [Monoid M] [MulAction M α] : MulAction (Center M) α :=
 lemma _root_.Center.coe_smul {M α : Type*} [Monoid M] [MulAction M α] (z : Center M)
     (a : α) : z • a = z.val • a := rfl
 
-instance {M α : Type*} [Monoid M] [MulAction M α] : SMulCommClass (Center M) M α where
+instance {α : Type*} [MulAction M α] : SMulCommClass (Center M) M α where
   smul_comm c r v := by simp [smul_smul, Center.comm]
 
-instance {M α : Type*} [Monoid M] [MulAction M α] : SMulCommClass M (Center M) α :=
+instance {α : Type*} [MulAction M α] : SMulCommClass M (Center M) α :=
   SMulCommClass.symm (Center M) M α
 
 @[to_additive]

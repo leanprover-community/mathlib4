@@ -419,23 +419,6 @@ def monoidHom [MulOneClass M] : Center M →* M where
   map_mul' _ _ := rfl
   map_one' := rfl
 
-/-- A surjective morphism between monoids induces a monoid homomorhpism between their centers. -/
-@[to_additive (attr := simps) /-- A surjective morphism between additive monoids induces a additive
-monoid homomorhpism between their centers. -/]
-def _root_.MonoidHom.toCenter [MulOneClass M] [MulOneClass N] {f : M →* N}
-    (hf : Function.Surjective f) : Center M →* Center N where
-  toFun m := Center.mk (f m.val) (IsMulCentral.map m.prop hf)
-  map_mul' := by simp
-  map_one' := by simp
-
-/-- Lift a morphism through the inclusion `Center N →* N`. -/
-@[to_additive (attr := simps) /-- Lift a morphism through the inclusion `AddCenter N →+ N`. -/]
-def _root_.MonoidHom.liftCenter {N} [MulOneClass M] [MulOneClass N] {f : M →* N}
-    (hf : ∀ m, f m ∈ Set.center N) : M →* Center N where
-  toFun m := Center.mk (f m) (hf m)
-  map_mul' := by simp
-  map_one' := by simp
-
 /-- An ismorphism between monoids induces an isomorphism between their centers. -/
 @[simps, to_additive /-- An ismorphism between additive monoids induces an isomorphism between
 their centers. -/]
