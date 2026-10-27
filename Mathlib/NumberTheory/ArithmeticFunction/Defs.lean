@@ -216,7 +216,7 @@ instance [NegZeroClass R] : IsNegApply (ArithmeticFunction R) where
 
 @[deprecated neg_apply +typeChanged (since := "2026-10-27")]
 protected theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} :
-  (-f) n = -f n := rfl
+    (-f) n = -f n := rfl
 
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
   neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
