@@ -162,15 +162,11 @@ theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : Modul
             exact ge_trans (depth_min_fst_trd_le_snd_left S hS M) (le_inf_iff.mpr
               ⟨(tsub_le_tsub_left dimle1 _).trans ge1, (tsub_le_tsub_left dimle3 _).trans ge3⟩)
 
-lemma quotient_prime_ringKrullDim_ne_bot {P : Ideal R} (prime : P.IsPrime) :
-    ringKrullDim (R ⧸ P) ≠ ⊥ :=
-  ne_bot_of_le_ne_bot WithBot.zero_ne_bot
-    (@ringKrullDim_nonneg_of_nontrivial _ _ (Quotient.nontrivial_iff.mpr prime.ne_top'))
-
 theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing R]
     [Small.{v} R] (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] (P : Ideal R)
-    (ass : P ∈ associatedPrimes R M) : IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot
-      (quotient_prime_ringKrullDim_ne_bot ass.1) := by
+    (ass : P ∈ associatedPrimes R M) :
+    letI := ass.isPrime
+    IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot ringKrullDim_ne_bot_of_nontrivial := by
   have := Quotient.nontrivial_iff.mpr ass.1.ne_top'
   have dep0 : (of R (Shrink.{v} (R ⧸ P))).depth M = 0 := by
     rw [depth_eq_zero_iff_nontrivial_linearMap,
