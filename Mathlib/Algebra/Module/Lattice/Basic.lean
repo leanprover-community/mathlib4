@@ -55,8 +55,6 @@ finite-dimensional, but API relating them is still missing.
 -/
 @[expose] public section
 
-universe v
-
 open Module
 open scoped Pointwise
 
@@ -72,7 +70,7 @@ namespace Submodule
 Note: for `R = ℤ` and `A` a normed field there is also `IsZLattice`, the analogue of
 `Submodule.IsFullLattice` with discreteness in place of the two conditions here. -/
 @[mk_iff]
-class IsLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type v} [AddCommGroup V]
+class IsLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type*} [AddCommGroup V]
     [Module R V] [Module A V] [IsScalarTower R A V] (M : Submodule R V) : Prop where
   fg (M) : M.FG
   linearIndepOn : ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn A id s
@@ -82,7 +80,7 @@ namespace IsLattice
 section CommRing
 
 variable (A : Type*) [CommRing A] [Algebra R A]
-variable {V : Type v} [AddCommGroup V] [Module R V] [Module A V] [IsScalarTower R A V]
+variable {V : Type*} [AddCommGroup V] [Module R V] [Module A V] [IsScalarTower R A V]
 variable (M : Submodule R V)
 
 /-- Any `R`-independent family of vectors in a lattice is `A`-linearly independent. -/
@@ -146,7 +144,7 @@ end CommRing
 section Field
 
 variable (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K]
-variable {V : Type v} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
+variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 variable (M : Submodule R V)
 
 /-- The `R`-rank of a lattice equals the `K`-dimension of its `K`-span. -/
@@ -180,9 +178,9 @@ theorem free (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
 
 /-- A lattice over a PID has a basis that's `K`-linearly independent. -/
 theorem exists_basis_linearIndependent (M : Submodule R V) [IsLattice K M] :
-    ∃ (I : Type v) (b : Basis I R M), LinearIndependent K (fun i ↦ (b i).val) := by
+    ∃ (I : Set M) (b : Basis I R M), LinearIndependent K (fun i ↦ (b i).val) := by
   have := free K M
-  obtain ⟨I, b⟩ := Module.Free.exists_basis R M
+  obtain ⟨I, ⟨b⟩⟩ := Free.exists_set R M
   exact ⟨I, b, basis_linearIndependent K M b⟩
 
 end IsPrincipalIdealRing

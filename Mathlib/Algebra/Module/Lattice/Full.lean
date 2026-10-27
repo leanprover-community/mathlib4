@@ -26,8 +26,6 @@ A lattice in an `A`-module `V` is full if its `A`-span is all of `V`.
 
 @[expose] public section
 
-universe v
-
 open Module
 open scoped Pointwise
 
@@ -36,7 +34,7 @@ variable {R : Type*} [CommRing R]
 namespace Submodule
 
 /-- A lattice that spans `V` over `A`. -/
-class IsFullLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type v} [AddCommGroup V]
+class IsFullLattice (A : Type*) [CommRing A] [Algebra R A] {V : Type*} [AddCommGroup V]
     [Module R V] [Module A V] [IsScalarTower R A V] (M : Submodule R V) extends IsLattice A M where
   span_eq_top : span A (M : Set V) = ⊤
 
@@ -45,7 +43,7 @@ namespace IsFullLattice
 section CommRing
 
 variable (A : Type*) [CommRing A] [Algebra R A]
-variable {V : Type v} [AddCommGroup V] [Module R V] [Module A V] [IsScalarTower R A V]
+variable {V : Type*} [AddCommGroup V] [Module R V] [Module A V] [IsScalarTower R A V]
 
 /-- Any basis of a full `R`-lattice in `V` defines a `A`-basis of `V`. -/
 noncomputable def _root_.Module.Basis.extendOfIsFullLattice {M : Submodule R V}
@@ -83,7 +81,7 @@ end CommRing
 section Field
 
 variable (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K]
-variable {V : Type v} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
+variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 variable (M : Submodule R V)
 
 /-- The `R`-rank of a full lattice equals the `K`-rank of the ambient module. -/
