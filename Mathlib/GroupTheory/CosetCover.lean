@@ -20,7 +20,7 @@ $$ G = ⋃_{i = 1}^n C_i g_i. $$
 * `Subgroup.exists_finiteIndex_of_leftCoset_cover`
   at least one subgroup $C_i$ has finite index in $G$.
 
-* `Subgroup.leftCoset_cover_filter_FiniteIndex`
+* `Subgroup.leftCoset_cover_filter_finiteIndex`
   the cosets of subgroups of infinite index may be omitted from the covering.
 
 * `Subgroup.exists_index_le_card_of_leftCoset_cover` :
@@ -58,7 +58,7 @@ variable {G : Type*} [Group G]
 section leftCoset_cover_const
 
 @[to_additive]
-theorem exists_leftTransversal_of_FiniteIndex
+theorem exists_leftTransversal_of_finiteIndex
     {D H : Subgroup G} [D.FiniteIndex] (hD_le_H : D ≤ H) :
     ∃ t : Finset H,
       IsComplement (t : Set H) (D.subgroupOf H) ∧
@@ -212,9 +212,9 @@ theorem exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).FiniteIndex :
       exists_finiteIndex_of_leftCoset_cover_aux hcovers j hj hcovers'
     exact ⟨i, hi, hfi⟩
 
--- Auxiliary to `leftCoset_cover_filter_FiniteIndex` and `one_le_sum_inv_index_of_leftCoset_cover`.
+-- Auxiliary to `leftCoset_cover_filter_finiteIndex` and `one_le_sum_inv_index_of_leftCoset_cover`.
 @[to_additive]
-theorem leftCoset_cover_filter_FiniteIndex_aux
+theorem leftCoset_cover_filter_finiteIndex_aux
     [DecidablePred (FiniteIndex : Subgroup G → Prop)] :
     (⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ) ∧
       (1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹) ∧
@@ -228,7 +228,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     iInf₂_le i (Finset.mem_filter.mpr ⟨hi, hfi⟩)
   -- Each subgroup of finite index in the covering is the union of finitely many cosets of `D`.
   choose t ht using fun i hi hfi =>
-    exists_leftTransversal_of_FiniteIndex (H := H i) (hD_le hi hfi)
+    exists_leftTransversal_of_FfniteIndex (H := H i) (hD_le hi hfi)
   -- We construct a cover of `G` by the cosets of subgroups of infinite index and of `D`.
   let κ := (i : s) × { x // x ∈ if h : (H i.1).FiniteIndex then t i.1 i.2 h else {1} }
   let f (k : κ) : G := g k.1 * k.2.val
@@ -313,10 +313,10 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
 Then the cosets of subgroups of infinite index may be omitted from the covering. -/
 @[to_additive /-- Let the additive group `G` be the union of finitely many left cosets `g i +ᵥ H i`.
 Then the cosets of additive subgroups of infinite index may be omitted from the covering. -/]
-theorem leftCoset_cover_filter_FiniteIndex
+theorem leftCoset_cover_filter_finiteIndex
     [DecidablePred (FiniteIndex : Subgroup G → Prop)] :
     ⋃ k ∈ s.filter (fun i => (H i).FiniteIndex), g k • (H k : Set G) = Set.univ :=
-  (leftCoset_cover_filter_FiniteIndex_aux hcovers).1
+  (leftCoset_cover_filter_finiteIndex_aux hcovers).1
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`. Then the
 sum of the inverses of the indexes of the subgroups `H i` is greater than or equal to 1. -/
@@ -326,7 +326,7 @@ additive subgroups `H i` is greater than or equal to 1. -/]
 theorem one_le_sum_inv_index_of_leftCoset_cover :
     1 ≤ ∑ i ∈ s, ((H i).index : ℚ)⁻¹ :=
   have := Classical.decPred (FiniteIndex : Subgroup G → Prop)
-  (leftCoset_cover_filter_FiniteIndex_aux hcovers).2.1
+  (leftCoset_cover_filter_finiteIndex_aux hcovers).2.1
 
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 If the sum of the inverses of the indexes of the subgroups `H i` is equal to 1,
@@ -339,7 +339,7 @@ theorem pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
     ∑ i ∈ s, ((H i).index : ℚ)⁻¹ = 1 →
       Set.PairwiseDisjoint (s.filter (fun i => (H i).FiniteIndex))
         (fun i ↦ g i • (H i : Set G)) :=
-  (leftCoset_cover_filter_FiniteIndex_aux hcovers).2.2
+  (leftCoset_cover_filter_finiteIndex_aux hcovers).2.2
 
 /-- B. H. Neumann Lemma :
 If a finite family of cosets of subgroups covers the group, then at least one

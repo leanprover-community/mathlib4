@@ -426,7 +426,7 @@ end Functor
 
 section FiniteCoproducts
 
-theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtensive C] {n : ℕ}
+theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_fin [FinitaryPreExtensive C] {n : ℕ}
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
   have : F = Discrete.functor f :=
@@ -442,14 +442,18 @@ theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtens
     dsimp
     infer_instance
 
+@[deprecated (since := "2026-10-27")]
+alias FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin :=
+  FinitaryPreExtensive.isUniversal_finiteCoproducts_fin
+
 theorem FinitaryPreExtensive.isUniversal_finiteCoproducts [FinitaryPreExtensive C] {ι : Type*}
     [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
   apply (IsUniversalColimit.whiskerEquivalence_iff (Discrete.equivalence e).symm).mp
-  apply FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin
+  apply FinitaryPreExtensive.isUniversal_finiteCoproducts_fin
   exact (IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence e).symm) hc
 
-theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C] {n : ℕ}
+theorem FinitaryExtensive.isVanKampen_finiteCoproducts_fin [FinitaryExtensive C] {n : ℕ}
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
   have : F = Discrete.functor f :=
@@ -469,11 +473,15 @@ theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C]
     · dsimp
       infer_instance
 
+@[deprecated (since := "2026-10-27")]
+alias FinitaryExtensive.isVanKampen_finiteCoproducts_Fin :=
+  FinitaryExtensive.isVanKampen_finiteCoproducts_fin
+
 theorem FinitaryExtensive.isVanKampen_finiteCoproducts [FinitaryExtensive C] {ι : Type*}
     [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin ι
   apply (IsVanKampenColimit.whiskerEquivalence_iff (Discrete.equivalence e).symm).mp
-  apply FinitaryExtensive.isVanKampen_finiteCoproducts_Fin
+  apply FinitaryExtensive.isVanKampen_finiteCoproducts_fin
   exact (IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence e).symm) hc
 
 set_option backward.isDefEq.respectTransparency false in

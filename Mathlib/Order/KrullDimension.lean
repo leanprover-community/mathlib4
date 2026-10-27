@@ -1070,7 +1070,7 @@ lemma coheight_zero_of_coheight_one_of_strictMono
   rw [← height_orderIso (WithTop.toDualBotEquiv (α := α))] at this
   exact this
 
-@[simp] lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
+@[simp] lemma krullDim_withTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
   norm_cast
   simp_rw [WithTop.lt_top_iff_ne_top]
@@ -1079,11 +1079,15 @@ lemma coheight_zero_of_coheight_one_of_strictMono
   apply Equiv.withTopSubtypeNe.symm.iSup_congr
   simp
 
+@[deprecated (since := "2026-10-27")] alias krullDim_WithTop := krullDim_withTop
+
+@[deprecated (since := "2026-10-27")] alias krullDim_WithTop := krullDim_withTop
+
 @[simp] lemma krullDim_withBot [Nonempty α] : krullDim (WithBot α) = krullDim α + 1 := by
   conv_lhs => rw [← krullDim_orderDual]
   conv_rhs => rw [← krullDim_orderDual]
   rw [krullDim_eq_of_orderIso (WithTop.toDualBotEquiv (α := α)).symm]
-  exact krullDim_WithTop (α := αᵒᵈ)
+  exact krullDim_withTop (α := αᵒᵈ)
 
 @[simp]
 lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
