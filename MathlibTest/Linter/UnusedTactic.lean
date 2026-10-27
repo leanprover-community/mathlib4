@@ -258,6 +258,30 @@ example : True ∧ (1 : Rat) + 1 = 2 := by
   any_goals trivial
   grind
 
+/--
+warning: Unused tactic linter: `rfl` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor
+  try all_goals rfl
+  all_goals trivial
+
+-- TODO: this warning message is weird because `any_goals` behaves weirdly when throwing an error.
+/--
+warning: Unused tactic linter: `any_goals` can be replaced with `on_goal 1 =>`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor
+  try
+    any_goals rfl
+  all_goals trivial
+
 section allowing_more_unused_tactics
 
 /-- info: The `Lean.SyntaxNodeKind` is `Lean.Parser.Tactic.refine`. -/
