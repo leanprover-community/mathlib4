@@ -194,11 +194,10 @@ instance instMul : Mul (⨁ i, A i) where
   mul := fun a b => mulHom A a b
 
 instance : NonUnitalNonAssocSemiring (⨁ i, A i) where
-  zero_mul := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
-  mul_zero := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero]
-  left_distrib := fun _ _ _ => by simp only [Mul.mul, HMul.hMul, map_add]
-  right_distrib := fun _ _ _ => by
-    simp only [Mul.mul, HMul.hMul, map_add, AddMonoidHom.add_apply]
+  zero_mul := fun _ => by simp [Mul.mul, HMul.hMul]
+  mul_zero := fun _ => by simp [Mul.mul, HMul.hMul]
+  left_distrib := fun _ _ _ => by simp [Mul.mul, HMul.hMul]
+  right_distrib := fun _ _ _ => by simp [Mul.mul, HMul.hMul]
 
 variable {A}
 

@@ -129,7 +129,7 @@ theorem rightHom_inl (n : N) : S.rightHom (S.inl n) = 1 := by
 @[to_additive (attr := simp)]
 theorem rightHom_comp_inl : S.rightHom.comp S.inl = 1 := by
   ext n
-  rw [MonoidHom.one_apply, MonoidHom.comp_apply]
+  rw [one_apply, MonoidHom.comp_apply]
   exact S.rightHom_inl n
 
 /-- `E` acts on `N` by conjugation. -/

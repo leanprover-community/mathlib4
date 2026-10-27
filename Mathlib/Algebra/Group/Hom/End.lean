@@ -33,9 +33,9 @@ instance instAddMonoidWithOne (M) [AddCommMonoid M] : AddMonoidWithOne (AddMonoi
   natCast_zero := AddMonoid.nsmul_zero _
   natCast_succ n := AddMonoid.nsmul_succ n 1
 
-/-- See also `AddMonoid.End.natCast_def`. -/
-@[simp]
-lemma natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) : (↑n : AddMonoid.End M) m = n • m := rfl
+instance [AddCommMonoid M] : IsNatCastApplyEqSMul (AddMonoid.End M) where
+
+@[deprecated (since := "2026-10-24")] alias natCast_apply := natCast_apply_eq_smul
 
 @[simp] lemma ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
     (ofNat(n) : AddMonoid.End M) m = n • m := rfl

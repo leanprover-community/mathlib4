@@ -6,6 +6,7 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 -/
 module
 
+public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Pi.Basic
@@ -39,39 +40,40 @@ instance OneHom.instPow [One M] [Monoid N] : Pow (OneHom M N) ℕ where
       map_one' := by simp }
 
 @[to_additive]
+instance [One M] [Monoid N] : IsPowApply ℕ (OneHom M N) where
+
+@[to_additive]
 instance MonoidHom.instPow [MulOneClass M] [CommMonoid N] : Pow (M →* N) ℕ where
   pow f n :=
     { toFun := f ^ n
       map_one' := by simp
       map_mul' x y := by simp [mul_pow] }
 
-@[to_additive (attr := simp)]
-lemma OneHom.pow_apply [One M] [Monoid N] (f : OneHom M N) (n : ℕ) (x : M) :
-    (f ^ n) x = f x ^ n :=
-  rfl
+@[to_additive]
+instance [MulOneClass M] [CommMonoid N] : IsPowApply ℕ (M →* N) where
 
-@[to_additive (attr := simp)]
-lemma MonoidHom.pow_apply [MulOneClass M] [CommMonoid N] (f : M →* N) (n : ℕ) (x : M) :
-    (f ^ n) x = f x ^ n :=
-  rfl
+@[deprecated (since := "2026-10-24")] protected alias ZeroHom.nsmul_apply := smul_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias OneHom.pow_apply :=
+  pow_apply
+
+@[deprecated (since := "2026-10-24")] protected alias AddMonoidHom.nsmul_apply := smul_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias MonoidHom.pow_apply :=
+  pow_apply
 
 /-- `OneHom M N` is a `Monoid` if `N` is. -/
 @[to_additive /-- `ZeroHom M N` is an `AddMonoid` if `N` is. -/]
 instance OneHom.instMonoid [One M] [Monoid N] : Monoid (OneHom M N) :=
-  fast_instance%
-    DFunLike.coe_injective.monoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.monoid
 
 /-- `OneHom M N` is a `CommMonoid` if `N` is commutative. -/
 @[to_additive /-- `ZeroHom M N` is an `AddCommMonoid` if `N` is commutative. -/]
 instance OneHom.instCommMonoid [One M] [CommMonoid N] : CommMonoid (OneHom M N) :=
-  fast_instance%
-    DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.commMonoid
 
 /-- `(M →* N)` is a `CommMonoid` if `N` is commutative. -/
 @[to_additive /-- `(M →+ N)` is an `AddCommMonoid` if `N` is commutative. -/]
 instance MonoidHom.instCommMonoid [MulOneClass M] [CommMonoid N] : CommMonoid (M →* N) :=
-  fast_instance%
-    DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.commMonoid
 
 @[to_additive]
 instance OneHom.instZPow [One M] [Group N] : Pow (OneHom M N) ℤ where
@@ -80,59 +82,57 @@ instance OneHom.instZPow [One M] [Group N] : Pow (OneHom M N) ℤ where
       map_one' := by simp }
 
 @[to_additive]
+instance [One M] [Group N] : IsPowApply ℤ (OneHom M N) where
+
+@[to_additive]
 instance MonoidHom.instZPow [MulOneClass M] [CommGroup N] : Pow (M →* N) ℤ where
   pow f n :=
     { toFun := f ^ n
       map_one' := by simp
       map_mul' x y := by simp [mul_zpow] }
 
-@[to_additive (attr := simp)]
-lemma OneHom.zpow_apply [One M] [Group N] (f : OneHom M N) (z : ℤ) (x : M) :
-    (f ^ z) x = f x ^ z :=
-  rfl
+@[to_additive]
+instance [MulOneClass M] [CommGroup N] : IsPowApply ℤ (M →* N) where
 
-@[to_additive (attr := simp)]
-lemma MonoidHom.zpow_apply [MulOneClass M] [CommGroup N] (f : M →* N) (z : ℤ) (x : M) :
-    (f ^ z) x = f x ^ z :=
-  rfl
+@[deprecated (since := "2026-10-24")] protected alias ZeroHom.zsmul_apply := smul_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias OneHom.zpow_apply :=
+  pow_apply
+
+@[deprecated (since := "2026-10-24")] protected alias AddMonoidHom.zsmul_apply := smul_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias MonoidHom.zpow_apply :=
+  pow_apply
 
 /-- If `G` is a group, then so is `OneHom M G`. -/
 @[to_additive /-- If `G` is an additive group, then so is `ZeroHom M G`. -/]
 instance OneHom.instGroup [One M] [Group N] : Group (OneHom M N) :=
-  fast_instance%
-    DFunLike.coe_injective.group DFunLike.coe
-      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.group
 
 /-- If `G` is a commutative group, then so is `OneHom M G`. -/
 @[to_additive /-- If `G` is an additive commutative group, then so is `ZeroHom M G`. -/]
 instance OneHom.instCommGroup [One M] [CommGroup N] : CommGroup (OneHom M N) :=
-  fast_instance%
-    DFunLike.coe_injective.commGroup DFunLike.coe
-      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.commGroup
 
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
 @[to_additive /-- If `G` is an additive commutative group, then `M →+ G` is an additive commutative
       group too. -/]
 instance MonoidHom.instCommGroup [MulOneClass M] [CommGroup N] : CommGroup (M →* N) :=
-  fast_instance%
-    DFunLike.coe_injective.commGroup DFunLike.coe
-      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.commGroup
 
 @[to_additive]
 instance [One M] [MulOneClass N] [IsLeftCancelMul N] : IsLeftCancelMul (OneHom M N) :=
-  DFunLike.coe_injective.isLeftCancelMul _ fun _ _ => rfl
+  FunLike.isLeftCancelMul
 
 @[to_additive]
 instance [MulOneClass M] [CommMonoid N] [IsLeftCancelMul N] : IsLeftCancelMul (M →* N) :=
-  DFunLike.coe_injective.isLeftCancelMul _ fun _ _ => rfl
+  FunLike.isLeftCancelMul
 
 @[to_additive]
 instance [One M] [MulOneClass N] [IsRightCancelMul N] : IsRightCancelMul (OneHom M N) :=
-  DFunLike.coe_injective.isRightCancelMul _ fun _ _ => rfl
+  FunLike.isRightCancelMul
 
 @[to_additive]
 instance [MulOneClass M] [CommMonoid N] [IsRightCancelMul N] : IsRightCancelMul (M →* N) :=
-  DFunLike.coe_injective.isRightCancelMul _ fun _ _ => rfl
+  FunLike.isRightCancelMul
 
 @[to_additive]
 instance [One M] [MulOneClass N] [IsCancelMul N] : IsCancelMul (OneHom M N) where
@@ -145,13 +145,11 @@ section End
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   inferInstanceAs <| AddCommMonoid (M →+ M)
 
-@[simp]
-theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
-  rfl
+instance [AddCommMonoid M] : IsZeroApply (AddMonoid.End M) where
 
--- Note: `@[simp]` omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.End.coe_one`
-theorem AddMonoid.End.one_apply [AddZeroClass M] (m : M) : (1 : AddMonoid.End M) m = m :=
-  rfl
+@[deprecated (since := "2026-10-24")] protected alias AddMonoid.End.zero_apply := zero_apply
+
+@[deprecated (since := "2026-10-24")] alias AddMonoid.End.one_apply := one_apply_eq_self
 
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
   inferInstanceAs <| AddCommGroup (M →+ M)
@@ -159,11 +157,9 @@ instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMono
 instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) where
   intCast := fun z => z • 1
 
-/-- See also `AddMonoid.End.intCast_def`. -/
-@[simp]
-theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
-    (↑z : AddMonoid.End M) m = z • m :=
-  rfl
+instance [AddCommGroup M] : IsIntCastApplyEqSMul (AddMonoid.End M) where
+
+@[deprecated (since := "2026-10-24")] alias AddMonoid.End.intCast_apply := intCast_apply_eq_smul
 
 end End
 

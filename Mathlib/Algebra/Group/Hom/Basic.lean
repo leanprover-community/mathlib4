@@ -86,12 +86,15 @@ instance [One M] [MulOneClass N] : Mul (OneHom M N) where
     { toFun m := f m * g m
       map_one' := by simp }
 
-@[to_additive (attr := norm_cast)]
-theorem coe_mul {M N} [One M] [MulOneClass N] (f g : OneHom M N) : ⇑(f * g) = ⇑f * ⇑g := rfl
+@[to_additive]
+instance [One M] [MulOneClass N] : IsMulApply (OneHom M N) where
 
-@[to_additive (attr := simp)]
-theorem mul_apply {M N} [One M] [MulOneClass N] (f g : OneHom M N) (x : M) :
-    (f * g) x = f x * g x := rfl
+@[deprecated (since := "2026-10-24")] alias _root_.ZeroHom.coe_add := FunLike.coe_add
+@[to_additive existing, deprecated (since := "2026-10-24")] alias coe_mul := FunLike.coe_mul
+
+@[deprecated (since := "2026-10-24")] protected alias _root_.ZeroHom.add_apply := add_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias mul_apply :=
+  mul_apply
 
 @[to_additive]
 theorem mul_comp [One M] [One N] [MulOneClass P] (g₁ g₂ : OneHom N P) (f : OneHom M N) :
@@ -106,12 +109,15 @@ instance [One M] [InvOneClass N] : Inv (OneHom M N) where
     { toFun m := (f m)⁻¹
       map_one' := by simp }
 
-@[to_additive (attr := norm_cast)]
-theorem coe_inv {M N} [One M] [InvOneClass N] (f : OneHom M N) : ⇑(f⁻¹) = (⇑f)⁻¹ := rfl
+@[to_additive]
+instance [One M] [InvOneClass N] : IsInvApply (OneHom M N) where
 
-@[to_additive (attr := simp)]
-theorem inv_apply {M N} [One M] [InvOneClass N] (f : OneHom M N) (x : M) :
-    f⁻¹ x = (f x)⁻¹ := rfl
+@[deprecated (since := "2026-10-24")] alias _root_.ZeroHom.coe_neg := FunLike.coe_neg
+@[to_additive existing, deprecated (since := "2026-10-24")] alias coe_inv := FunLike.coe_inv
+
+@[deprecated (since := "2026-10-24")] protected alias _root_.ZeroHom.neg_apply := neg_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias inv_apply :=
+  inv_apply
 
 @[to_additive]
 theorem inv_comp [One M] [One N] [InvOneClass P] (g : OneHom N P) (f : OneHom M N) :
@@ -126,12 +132,15 @@ instance [One M] [DivisionMonoid N] : Div (OneHom M N) where
     { toFun m := f m / g m
       map_one' := by simp }
 
-@[to_additive (attr := norm_cast)]
-theorem coe_div {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) : ⇑(f / g) = ⇑f / ⇑g := rfl
+@[to_additive]
+instance [One M] [DivisionMonoid N] : IsDivApply (OneHom M N) where
 
-@[to_additive (attr := simp)]
-theorem div_apply {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) (x : M) :
-    (f / g) x = f x / g x := rfl
+@[deprecated (since := "2026-10-24")] alias _root_.ZeroHom.coe_sub := FunLike.coe_sub
+@[to_additive existing, deprecated (since := "2026-10-24")] alias coe_div := FunLike.coe_div
+
+@[deprecated (since := "2026-10-24")] protected alias _root_.ZeroHom.sub_apply := sub_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias div_apply :=
+  div_apply
 
 @[to_additive]
 theorem div_comp [One M] [One N] [DivisionMonoid P] (g₁ g₂ : OneHom N P) (f : OneHom M N) :
@@ -152,9 +161,12 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
-@[to_additive (attr := simp)]
-theorem mul_apply {M N} [Mul M] [CommSemigroup N] (f g : M →ₙ* N) (x : M) :
-    (f * g) x = f x * g x := rfl
+@[to_additive]
+instance [Mul M] [CommSemigroup N] : IsMulApply (M →ₙ* N) where
+
+@[deprecated (since := "2026-10-24")] protected alias _root_.AddHom.add_apply := add_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias mul_apply :=
+  mul_apply
 
 @[to_additive]
 theorem mul_comp [Mul M] [Mul N] [CommSemigroup P] (g₁ g₂ : N →ₙ* P) (f : M →ₙ* N) :
@@ -235,7 +247,8 @@ variable [MulOneClass M] [CommMonoid N]
 
 /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
 sending `x` to `f x * g x`. -/
-@[to_additive]
+@[to_additive /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
+`f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/]
 instance mul : Mul (M →* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
@@ -243,11 +256,11 @@ instance mul : Mul (M →* N) :=
       map_mul' := fun x y => by
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
-/-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,
-`f + g` is the additive monoid morphism sending `x` to `f x + g x`. -/
-add_decl_doc AddMonoidHom.add
+@[to_additive]
+instance : IsMulApply (M →* N) where
 
-@[to_additive (attr := simp)] lemma mul_apply (f g : M →* N) (x : M) : (f * g) x = f x * g x := rfl
+@[deprecated (since := "2026-10-24")] protected alias _root_.AddMonoidHom.add_apply := add_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias mul_apply := mul_apply
 
 @[to_additive]
 lemma mul_comp [MulOneClass P] (g₁ g₂ : M →* N) (f : P →* M) :
@@ -271,7 +284,11 @@ then `-f` is the homomorphism sending `x` to `-(f x)`. -/]
 instance : Inv (M →* G) where
   inv f := mk' (fun g ↦ (f g)⁻¹) fun a b ↦ by simp_rw [← mul_inv, f.map_mul]
 
-@[to_additive (attr := simp)] lemma inv_apply (f : M →* G) (x : M) : f⁻¹ x = (f x)⁻¹ := rfl
+@[to_additive]
+instance : IsInvApply (M →* G) where
+
+@[deprecated (since := "2026-10-24")] protected alias _root_.AddMonoidHom.neg_apply := neg_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias inv_apply := inv_apply
 
 @[to_additive (attr := simp)]
 theorem inv_comp (φ : N →* G) (ψ : M →* N) : φ⁻¹.comp ψ = (φ.comp ψ)⁻¹ := rfl
@@ -289,7 +306,11 @@ instance : Div (M →* G) where
   div f g := mk' (fun x ↦ f x / g x) fun a b ↦ by
     simp [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm]
 
-@[to_additive (attr := simp)] lemma div_apply (f g : M →* G) (x : M) : (f / g) x = f x / g x := rfl
+@[to_additive]
+instance : IsDivApply (M →* G) where
+
+@[deprecated (since := "2026-10-24")] protected alias _root_.AddMonoidHom.sub_apply := sub_apply
+@[to_additive existing, deprecated (since := "2026-10-24")] protected alias div_apply := div_apply
 
 @[to_additive (attr := simp)]
 lemma div_comp (f g : N →* G) (h : M →* N) : (f / g).comp h = f.comp h / g.comp h := rfl
