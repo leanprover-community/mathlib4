@@ -178,10 +178,10 @@ theorem free (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
 
 /-- A lattice over a PID has a basis that's `K`-linearly independent. -/
 theorem exists_basis_linearIndependent (M : Submodule R V) [IsLattice K M] :
-    ∃ (I : Set M) (b : Basis I R M), LinearIndependent K (fun i ↦ (b i).val) := by
+    ∃ b : Basis (Fin (finrank R M)) R M, LinearIndependent K (fun i ↦ (b i).val) :=
   have := free K M
-  obtain ⟨I, ⟨b⟩⟩ := Free.exists_set R M
-  exact ⟨I, b, basis_linearIndependent K M b⟩
+  have := finite K M
+  ⟨finBasis R M, basis_linearIndependent K M _⟩
 
 end IsPrincipalIdealRing
 
