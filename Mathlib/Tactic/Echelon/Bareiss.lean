@@ -61,7 +61,7 @@ structure BareissResult {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRi
   /-- The computation model that produced the decomposition. -/
   model : Model α
   /-- The decomposition data underlying the certificate, on the model's carrier. -/
-  data : BareissData ModelType
+  data : BareissData (ModelType α)
 
 /-- Produce the decomposition of the matrix literal `A` and elaborate its certificates. -/
 def mkBareissDecomposition {u : Level} {m n : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))

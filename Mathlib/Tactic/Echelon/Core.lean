@@ -194,21 +194,25 @@ structure ModelAux {u : Level} (α : Q(Type u)) (V : Type) where
   entryCertifier? : Option (EntryCertifier α) := none
 deriving Nonempty
 
+section unsafeCast
+
 -- Analogous to the opaque type `Lean.EnvExtensionState`
-private opaque ModelValueTypeSpec : {α : Type // Nonempty α} := ⟨Unit, ⟨()⟩⟩
-/-- An opaque model type that is used in place of the actual model type. -/
-def ModelType : Type := ModelValueTypeSpec.1
-instance : Nonempty ModelType := ModelValueTypeSpec.2
-
+private opaque ModelValueTypeSpec {u : Level} (α : Q(Type u)) : {β : Type // Nonempty β} :=
+  ⟨Unit, ⟨()⟩⟩
+/-- An opaque model type that is used in place of the actual model type.
+We artificially add a parameter `α` to avoid mixing model types of different rings. -/
+def ModelType {u : Level} (α : Q(Type u)) : Type := (ModelValueTypeSpec α).1
+instance {u : Level} (α : Q(Type u)) : Nonempty (ModelType α) := (ModelValueTypeSpec α).2
 /-- A computation model of a ring `α`. It should be constructed using `Model.mk`. -/
-abbrev Model {u : Level} (α : Q(Type u)) : Type := ModelAux α ModelType
-
+abbrev Model {u : Level} (α : Q(Type u)) : Type := ModelAux α (ModelType α)
 /--
-Construct a `Model` from a `ModelAux` by casting the carrier type using `unsafeCast`.
-This is safe if you use only one `Model` at a time.
+Construct a `Model α` from a `ModelAux α V` by replacing `V` with `ModelType α` using `unsafeCast`.
+This is safe if you use only one `Model α` at a time.
 -/
 def Model.mk {u : Level} {α : Q(Type u)} (V : Type) (model : ModelAux α V) : Model α :=
   unsafe unsafeCast model
+
+end unsafeCast
 
 /-- Clear the denominators of the rows before the decomposition algorithm. -/
 def scaleRows {V : Type} (ops : RingOps V) (commonMultiple : V → V → V)
