@@ -53,8 +53,10 @@ class Simple (X : C) : Prop where
   mono_isIso_iff_nonzero : ∀ {Y : C} (f : Y ⟶ X) [Mono f], IsIso f ↔ f ≠ 0
 
 /-- A nonzero monomorphism to a simple object is an isomorphism. -/
-theorem isIso_of_mono_of_nonzero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w : f ≠ 0) : IsIso f :=
+theorem isIso_of_mono_of_ne_zero {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f] (w : f ≠ 0) : IsIso f :=
   (Simple.mono_isIso_iff_nonzero f).mpr w
+
+@[deprecated (since := "2026-10-13")] alias isIso_of_mono_of_nonzero := isIso_of_mono_of_ne_zero
 
 theorem Functor.simple_of_simple_obj {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤ D)
     [F.PreservesMonomorphisms] [F.PreservesZeroMorphisms] [F.ReflectsIsomorphisms] [F.Faithful]
@@ -73,7 +75,7 @@ theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
         simp at j
       · intro h
         have j : IsIso (f ≫ i.hom) := by
-          apply isIso_of_mono_of_nonzero
+          apply isIso_of_mono_of_ne_zero
           intro w
           apply h
           simpa using (cancel_mono i.inv).2 w
@@ -96,37 +98,44 @@ theorem simple_obj_iff {D : Type*} [Category* D] [HasZeroMorphisms D] (F : C ⥤
     Simple (F.obj X) ↔ Simple X :=
   ⟨fun _ ↦ Functor.simple_of_simple_obj F X, fun _ ↦ simple_obj F X⟩
 
-theorem kernel_zero_of_nonzero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
+theorem kernel_zero_of_ne_zero_from_simple {X Y : C} [Simple X] {f : X ⟶ Y} [HasKernel f]
     (w : f ≠ 0) : kernel.ι f = 0 := by
   by_contra h
-  have := isIso_of_mono_of_nonzero h
+  have := isIso_of_mono_of_ne_zero h
   exact w (eq_zero_of_epi_kernel f)
 
--- See also `mono_of_nonzero_from_simple`, which requires `Preadditive C`.
+@[deprecated (since := "2026-10-13")]
+alias kernel_zero_of_nonzero_from_simple := kernel_zero_of_ne_zero_from_simple
+
+-- See also `mono_of_ne_zero_from_simple`, which requires `Preadditive C`.
 /-- A nonzero morphism `f` to a simple object is an epimorphism
 (assuming `f` has an image, and `C` has equalizers).
 -/
-theorem epi_of_nonzero_to_simple [HasEqualizers C] {X Y : C} [Simple Y] {f : X ⟶ Y} [HasImage f]
+theorem epi_of_ne_zero_to_simple [HasEqualizers C] {X Y : C} [Simple Y] {f : X ⟶ Y} [HasImage f]
     (w : f ≠ 0) : Epi f := by
   rw [← image.fac f]
-  have : IsIso (image.ι f) := isIso_of_mono_of_nonzero fun h => w (eq_zero_of_image_eq_zero h)
+  have : IsIso (image.ι f) := isIso_of_mono_of_ne_zero fun h => w (eq_zero_of_image_eq_zero h)
   apply epi_comp
+
+@[deprecated (since := "2026-10-13")] alias epi_of_nonzero_to_simple := epi_of_ne_zero_to_simple
 
 theorem mono_to_simple_zero_of_not_iso {X Y : C} [Simple Y] {f : X ⟶ Y} [Mono f]
     (w : IsIso f → False) : f = 0 := by
   by_contra h
-  exact w (isIso_of_mono_of_nonzero h)
+  exact w (isIso_of_mono_of_ne_zero h)
 
-theorem id_nonzero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
+theorem id_ne_zero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
   (Simple.mono_isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
 
+@[deprecated (since := "2026-10-13")] alias id_nonzero := id_ne_zero
+
 instance (X : C) [Simple.{v} X] : Nontrivial (End X) :=
-  nontrivial_of_ne 1 _ (id_nonzero X)
+  nontrivial_of_ne 1 (.of 0) (fun h ↦ id_ne_zero X (by simpa [End.ext_iff] using h))
 
 section
 
 theorem Simple.not_isZero (X : C) [Simple X] : ¬IsZero X := by
-  simpa [Limits.IsZero.iff_id_eq_zero] using id_nonzero X
+  simpa [Limits.IsZero.iff_id_eq_zero] using id_ne_zero X
 
 variable [HasZeroObject C]
 
@@ -162,25 +171,30 @@ theorem simple_of_cosimple (X : C) (h : ∀ {Z : C} (f : X ⟶ Z) [Epi f], IsIso
       suffices Epi f by exact isIso_of_mono_of_epi _
       apply Preadditive.epi_of_cokernel_zero
       by_contra h'
-      exact cokernel_not_iso_of_nonzero hf ((h _).mpr h')⟩
+      exact cokernel_not_iso_of_ne_zero hf ((h _).mpr h')⟩
 
 /-- A nonzero epimorphism from a simple object is an isomorphism. -/
-theorem isIso_of_epi_of_nonzero {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f] (w : f ≠ 0) : IsIso f :=
+theorem isIso_of_epi_of_ne_zero {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f] (w : f ≠ 0) : IsIso f :=
   -- `f ≠ 0` means that `kernel.ι f` is not an iso, and hence zero, and hence `f` is a mono.
   haveI : Mono f :=
-    Preadditive.mono_of_kernel_zero (mono_to_simple_zero_of_not_iso (kernel_not_iso_of_nonzero w))
+    Preadditive.mono_of_kernel_zero (mono_to_simple_zero_of_not_iso (kernel_not_iso_of_ne_zero w))
   isIso_of_mono_of_epi f
 
-theorem cokernel_zero_of_nonzero_to_simple {X Y : C} [Simple Y] {f : X ⟶ Y} (w : f ≠ 0) :
+@[deprecated (since := "2026-10-13")] alias isIso_of_epi_of_nonzero := isIso_of_epi_of_ne_zero
+
+theorem cokernel_zero_of_ne_zero_to_simple {X Y : C} [Simple Y] {f : X ⟶ Y} (w : f ≠ 0) :
     cokernel.π f = 0 := by
   by_contra h
-  have := isIso_of_epi_of_nonzero h
+  have := isIso_of_epi_of_ne_zero h
   exact w (eq_zero_of_mono_cokernel f)
+
+@[deprecated (since := "2026-10-13")]
+alias cokernel_zero_of_nonzero_to_simple := cokernel_zero_of_ne_zero_to_simple
 
 theorem epi_from_simple_zero_of_not_iso {X Y : C} [Simple X] {f : X ⟶ Y} [Epi f]
     (w : IsIso f → False) : f = 0 := by
   by_contra h
-  exact w (isIso_of_epi_of_nonzero h)
+  exact w (isIso_of_epi_of_ne_zero h)
 
 end Abelian
 

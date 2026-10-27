@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Extension.Cotangent.Basic
 public import Mathlib.Algebra.Module.SnakeLemma
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 /-!
 
@@ -97,7 +97,7 @@ lemma Cotangent.exact :
       ((Extension.Cotangent.map (Q.toComp P).toExtensionHom).liftBaseChange T)
       (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) := by
   apply LinearMap.exact_of_comp_of_mem_range
-  · rw [LinearMap.liftBaseChange_comp, ← Extension.Cotangent.map_comp,
+  · rw [LinearMap.comp_liftBaseChange, ← Extension.Cotangent.map_comp,
       EmbeddingLike.map_eq_zero_iff]
     ext x
     obtain ⟨⟨x, hx⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -518,7 +518,7 @@ theorem exact_liftBaseChange_map_of_flat' [Module.Flat S T] (f : Hom W Q) (g : H
   rw [← LinearEquiv.conj_exact_iff_exact _ _ (H1Cotangent.equiv W (Q.comp P))]
   convert exact_liftBaseChange_map_of_flat Q P
   · change Extension.H1Cotangent.map (W.defaultHom (Q.comp P)).toExtensionHom ∘ₗ _ = _
-    rw [LinearMap.liftBaseChange_comp, ← Extension.H1Cotangent.map_comp,
+    rw [LinearMap.comp_liftBaseChange, ← Extension.H1Cotangent.map_comp,
       Extension.H1Cotangent.map_eq]
   · change (Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
       (Extension.H1Cotangent.map _) = _

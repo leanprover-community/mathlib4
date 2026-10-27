@@ -5,13 +5,14 @@ Authors: Alex Kontorovich, Heather Macbeth
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.Support
+
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 /-!
 # Monoid actions continuous in the second variable
@@ -261,6 +262,7 @@ theorem continuousAt_const_smul_iff (c : G) :
 theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ Continuous f := by
   simp only [continuous_iff_continuousAt, continuousAt_const_smul_iff]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The homeomorphism given by scalar multiplication by a given element of a group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/
 @[to_additive (attr := simps!)]

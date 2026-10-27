@@ -5,9 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.Topology.Category.Profinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.CofilteredLimit
-public import Mathlib.CategoryTheory.Filtered.Final
+
 /-!
 
 # Extending cones in `Profinite`
@@ -116,7 +117,6 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
 `(StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G)` with cone point `G.obj S`.
@@ -148,7 +148,6 @@ section Colimit
 
 variable {C : Type*} [Category* C] (G : Profiniteᵒᵖ ⥤ C)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `Profiniteᵒᵖ` and `S : Profinite`, we obtain a cocone on
 `(CostructuredArrow.proj toProfinite.op ⟨S⟩ ⋙ toProfinite.op ⋙ G)` with cocone point `G.obj ⟨S⟩`.

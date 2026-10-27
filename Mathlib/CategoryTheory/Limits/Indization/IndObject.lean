@@ -6,6 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.FinallySmall
+
 import Mathlib.CategoryTheory.Filtered.Small
 import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
@@ -112,7 +113,6 @@ def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
 instance : P.toCostructuredArrow.Final :=
   Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Representable presheaves are (trivially) ind-objects. -/
 @[simps]
 def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
