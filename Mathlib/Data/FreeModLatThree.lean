@@ -454,24 +454,28 @@ private theorem liftFun_inf_top_parti (i j k : α) (xi xj xk ybot ytop : Bool) :
 private theorem liftFun_inf_parti_partj (i j k : α) (xbot xtop ybot ytop : Bool) :
     liftFun i j k (parti xbot xtop ⊓ partj ybot ytop) =
       liftFun i j k (parti xbot xtop) ⊓ liftFun i j k (partj ybot ytop) := by
-  cases xbot, ybot with
-  | false, false =>
-    cases xtop <;> cases ytop <;> simp only [inf_def, inf, liftFun] <;> order
-  | false, true =>
-    cases xtop <;> cases ytop <;> simp only [inf_def, inf, liftFun] <;>
-      rw [← inf_sup_assoc_of_le _ (by order)] <;> order
-  | true, false =>
-    cases xtop <;> cases ytop <;> (
-      simp only [inf_def, inf, liftFun]
-      conv_rhs => rw [← sup_comm (j ⊓ k), sup_inf_assoc_of_le _ (by order)]
-      order)
-  | true, true =>
-    cases xtop <;> cases ytop <;>
-    \. simp only [inf_def, inf, liftFun]
-      conv_rhs =>
-        rw [← inf_sup_assoc_of_le _ (by order), ← sup_comm (j ⊓ k),
-          sup_inf_assoc_of_le _ (by order)]
-      order
+  cases xbot with
+  | false =>
+    cases ybot with
+    | false =>
+      cases xtop <;> cases ytop <;> simp only [inf_def, inf, liftFun] <;> order
+    | true =>
+      cases xtop <;> cases ytop <;> simp only [inf_def, inf, liftFun] <;>
+        rw [← inf_sup_assoc_of_le _ (by order)] <;> order
+  | true =>
+    cases ybot with
+    | false =>
+      cases xtop <;> cases ytop <;> (
+        simp only [inf_def, inf, liftFun]
+        conv_rhs => rw [← sup_comm (j ⊓ k), sup_inf_assoc_of_le _ (by order)]
+        order)
+    | true =>
+      cases xtop <;> cases ytop <;> (
+        simp only [inf_def, inf, liftFun]
+        conv_rhs =>
+          rw [← inf_sup_assoc_of_le _ (by order), ← sup_comm (j ⊓ k),
+            sup_inf_assoc_of_le _ (by order)]
+        order)
 
 private theorem liftFun_inf (i j k : α) (x y : FreeModLatThree) :
     liftFun i j k (x ⊓ y) = liftFun i j k x ⊓ liftFun i j k y := by
