@@ -123,14 +123,6 @@ instance center.smulCommClass_left : SMulCommClass (center M) M M where
 instance center.smulCommClass_right : SMulCommClass M (center M) M :=
   SMulCommClass.symm _ _ _
 
-/-- The center of a monoid acts commutatively on that monoid. -/
-instance : SMulCommClass (Center M) M M where
-  smul_comm m x y := Commute.left_comm (m.prop.comm x) y
-
-/-- The center of a monoid acts commutatively on that monoid. -/
-instance : SMulCommClass M (Center M) M :=
-  SMulCommClass.symm _ _ _
-
 /-! Note that `smulCommClass (center M) (center M) M` is already implied by
 `Submonoid.smulCommClass_right` -/
 
