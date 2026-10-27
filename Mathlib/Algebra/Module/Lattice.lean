@@ -8,4 +8,4 @@ module -- shake: keep-all
 public import Mathlib.Algebra.Module.Lattice.Basic
 public import Mathlib.Algebra.Module.Lattice.Full
 
-deprecated_module (since := "2026-09-30")
+deprecated_module (since := "2026-10-27")
