@@ -408,6 +408,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
   exact e₂.toHomeomorph.secondCountableTopology
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
     [NormedAddTorsor E P] (s : AffineSubspace 𝕜 P) [FiniteDimensional 𝕜 s.direction] :
     IsClosed (s : Set P) :=
@@ -415,6 +416,7 @@ theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
 
 section Riesz
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- In an infinite-dimensional space, given a finite number of points, one may find a point
 with norm at most `R` which is at distance at least `1` of all these points. -/
 theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)

@@ -835,6 +835,7 @@ def metricSpace : MetricSpace L := (normedField K L).toMetricSpace
 @[instance_reducible]
 def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- If `L/K` is finite dimensional, then `L` is a complete space with respect to topology induced
   by the spectral norm. -/
 instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :

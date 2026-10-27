@@ -725,6 +725,7 @@ protected theorem span_apply [DecidableEq E] {v' : ι' → E} (h : Orthonormal �
 
 open Submodule
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- A finite orthonormal family of vectors whose span has trivial orthogonal complement is an
 orthonormal basis. -/
 protected def mkOfOrthogonalEqBot (hon : Orthonormal 𝕜 v) (hsp : (span 𝕜 (Set.range v))ᗮ = ⊥) :
@@ -1147,6 +1148,7 @@ variable {S : Submodule 𝕜 V} {L : S →ₗᵢ[𝕜] V}
 
 open Module
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
 isometry mapping `S` into `V` can be extended to a full isometry of `V`.
 

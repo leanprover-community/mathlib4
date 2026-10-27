@@ -453,6 +453,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] {E :
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [FiniteDimensional 𝕜 F] (f : E → F) (f' : E →L[𝕜] F) {a : E}
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional
+
 /-- Given a map `f : E → F` to a finite-dimensional space with a surjective derivative `f'`,
 returns an open partial homeomorphism between `E` and `F × ker f'`. -/
 def implicitToOpenPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) :

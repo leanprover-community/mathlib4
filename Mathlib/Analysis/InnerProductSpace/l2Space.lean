@@ -472,6 +472,7 @@ protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     ∑' i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ :=
   (b.hasSum_inner_mul_inner x y).tsum_eq
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 -- Note: this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
 -- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
 /-- A finite Hilbert basis is an orthonormal basis. -/
