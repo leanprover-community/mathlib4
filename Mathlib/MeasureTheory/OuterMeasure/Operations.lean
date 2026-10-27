@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.FunLike
+public import Mathlib.Algebra.Module.FunLikeSMul
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
 

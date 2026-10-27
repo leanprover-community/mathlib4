@@ -414,7 +414,7 @@ theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
   refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
   ext n
-  simp only [AddMonoidAlgebra.coeff_zero, coe_zero, Pi.ofNat_apply]
+  simp only [AddMonoidAlgebra.coeff_zero, zero_apply]
   simp_rw [degree, Finset.max_eq_sup_withBot, Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne,
     WithBot.coe_ne_bot, imp_false, not_not] at h
   exact h n

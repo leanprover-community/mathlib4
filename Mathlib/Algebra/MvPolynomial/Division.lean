@@ -226,7 +226,7 @@ theorem eq_divMonomial_single [IsLeftCancelAdd R]
     (hr : ∀ n ∈ r.support, n i = 0) :
     q = p.divMonomial (Finsupp.single i 1) := by
   ext n
-  rw [coeff_divMonomial, h, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, coeff_X_mul, left_eq_add,
+  rw [coeff_divMonomial, h, AddMonoidAlgebra.coeff_add, add_apply, coeff_X_mul, left_eq_add,
     ← notMem_support_iff]
   intro hn
   simpa using hr _ hn
@@ -284,7 +284,7 @@ theorem X_dvd_mul_iff [IsCancelMulZero R] :
       apply Finset.sum_eq_zero
       intro x hx
       simp only [Finset.mem_antidiagonal] at hx
-      simp only [← hx, Finsupp.coe_add, Pi.add_apply, Nat.add_eq_zero_iff, not_and_or] at hn
+      simp only [← hx, add_apply, Nat.add_eq_zero_iff, not_and_or] at hn
       rcases hn with hn | hn
       · rw [coeff_modMonomial_of_le, zero_mul]
         simpa [← Nat.one_le_iff_ne_zero] using hn

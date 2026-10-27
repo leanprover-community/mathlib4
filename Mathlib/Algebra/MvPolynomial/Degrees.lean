@@ -159,7 +159,7 @@ theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (
   obtain rfl | h0 := eq_or_ne d 0
   · rw [toMultiset_zero]; apply Multiset.zero_le
   · refine Finset.le_sup_of_le (b := d) ?_ le_rfl
-    rw [mem_support_iff, coeff_add, Finsupp.add_apply]
+    rw [mem_support_iff, coeff_add, add_apply]
     suffices q.coeff d = 0 by rw [this, add_zero]; rwa [← mem_support_iff]
     rw [Ne, ← Finsupp.support_eq_empty, ← Ne, ← Finset.nonempty_iff_ne_empty] at h0
     obtain ⟨j, hj⟩ := h0
@@ -312,7 +312,7 @@ Note that `degreeOf_mul_eq` proves equality with `NoZeroDivisors R` and nonzero 
 theorem degreeOf_prod_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
     degreeOf i (∏ j ∈ s, f j) ≤ ∑ j ∈ s, (f j).degreeOf i := by
   simp_rw [degreeOf_eq_sup]
-  exact supDegree_prod_le (by simp only [coe_zero, Pi.zero_apply]) (by simp)
+  exact supDegree_prod_le (by simp) (by simp)
 
 /--
 Note that `degreeOf_pow_eq` proves equality with `NoZeroDivisors R` and nonzero polynomials.
@@ -327,8 +327,7 @@ theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
   simp only [degreeOf_eq_sup i, support_mul_X, Finset.sup_map]
   congr
   ext
-  simp only [Finsupp.single, addRightEmbedding_apply, coe_mk,
-    Pi.add_apply, comp_apply, Finsupp.coe_add, Pi.single_eq_of_ne h, add_zero]
+  simp [Finsupp.single, Pi.single_eq_of_ne h]
 
 theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) ≤ degreeOf j f + 1 := by
@@ -394,7 +393,7 @@ theorem degreeOf_add_eq_of_degreeOf_lt {i : σ} (h : q.degreeOf i < p.degreeOf i
     contrapose! h
     rw [hs2]
     exact le_degreeOf_of_mem_support i h
-  simp only [mem_support_iff, ne_eq, coeff_add, Finsupp.add_apply, not_not] at hs1 ⊢ this
+  simp only [mem_support_iff, ne_eq, not_not, coeff_add, add_apply] at hs1 ⊢ this
   rwa [this, add_zero]
 
 theorem degreeOf_eq_of_degreeOf_add_lt {i : σ} (h : (p + q).degreeOf i < p.degreeOf i) :

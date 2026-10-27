@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 public import Mathlib.Algebra.Module.FunLike
+public import Mathlib.Algebra.Module.FunLikeSMul
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset

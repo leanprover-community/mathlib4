@@ -144,7 +144,7 @@ theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv i (X j) = (0 : MvPowerS
   classical
   ext n
   simpa only [coeff_pderiv, coeff_X, boole_mul, coeff_zero] using
-    ite_eq_right (ne_iff.mpr ⟨i, by grind [Finsupp.add_apply]⟩)
+    ite_eq_right (ne_iff.mpr ⟨i, by grind⟩)
 
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
     pderiv i (X j) = Pi.single (M := fun _ => MvPowerSeries σ R) i 1 j := by

@@ -5,8 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Algebra.Group.IsApply
+public import Mathlib.Algebra.Group.Monoid
 
 /-!
 
@@ -32,5 +32,5 @@ lemma pow_apply_eq_iterate (f : F) (n : ℕ) (x : α) :
   | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
 
 @[simp, norm_cast]
-lemma coe_pow_eq_iterate (f : F) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+lemma FunLike.coe_pow_eq_iterate (f : F) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   funext <| pow_apply_eq_iterate f n
