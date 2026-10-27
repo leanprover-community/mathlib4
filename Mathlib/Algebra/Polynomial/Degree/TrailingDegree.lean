@@ -250,11 +250,17 @@ theorem trailingCoeff_eq_zero : trailingCoeff p = 0 ↔ p = 0 :=
         (mem_of_min (trailingDegree_eq_natTrailingDegree hp)),
     fun h => h.symm ▸ leadingCoeff_zero⟩
 
-theorem trailingCoeff_nonzero_iff_nonzero : trailingCoeff p ≠ 0 ↔ p ≠ 0 :=
+theorem trailingCoeff_ne_zero : trailingCoeff p ≠ 0 ↔ p ≠ 0 :=
   not_congr trailingCoeff_eq_zero
 
-theorem natTrailingDegree_mem_support_of_nonzero : p ≠ 0 → natTrailingDegree p ∈ p.support :=
-  mem_support_iff.mpr ∘ trailingCoeff_nonzero_iff_nonzero.mpr
+@[deprecated (since := "2026-10-13")]
+alias trailingCoeff_nonzero_iff_nonzero := trailingCoeff_ne_zero
+
+theorem natTrailingDegree_mem_support_of_ne_zero : p ≠ 0 → natTrailingDegree p ∈ p.support :=
+  mem_support_iff.mpr ∘ trailingCoeff_ne_zero.mpr
+
+@[deprecated (since := "2026-10-13")]
+alias natTrailingDegree_mem_support_of_nonzero := natTrailingDegree_mem_support_of_ne_zero
 
 theorem natTrailingDegree_le_of_mem_supp (a : ℕ) : a ∈ p.support → natTrailingDegree p ≤ a :=
   natTrailingDegree_le_of_ne_zero ∘ mem_support_iff.mp

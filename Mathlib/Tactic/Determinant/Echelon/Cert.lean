@@ -7,11 +7,13 @@ module
 
 public meta import Mathlib.Tactic.Echelon.Bareiss
 public meta import Mathlib.Tactic.Echelon.Cert
+public meta import Mathlib.Tactic.Matrix.Swaps
 public meta import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Determinant.Echelon.Reflection  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Bareiss
 public import Mathlib.Tactic.Echelon.Cert
+public import Mathlib.Tactic.Matrix.Swaps  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Basic
 
 /-!
@@ -27,7 +29,6 @@ through the certificate `Echelon.Decomposition A L σ pivot` of its echelon deco
 - `detValue`: computes the value of the determinant from the decomposition data.
 - `certifyDiagProd`: computes the product of the diagonal of a list-based matrix literal with its
   proof.
-- `certifyPermSign`: computes the sign of the row permutation from its swaps with its proof.
 
 ## Implementation notes
 
@@ -60,15 +61,6 @@ equality. -/
 def certifyDiagProd {u : Level} {m : Nat} {α : Q(Type u)} (rα : Q(CommRing $α))
     (M : ListMatrixLit α m m) : MetaM ((e : Q($α)) × Q(diagProd 0 $m $(M.lit) = $e)) :=
   certifyDiagProdList rα 0 m M.lit
-
-/-- Compute the sign of the permutation from the swaps with the corresponding proof. -/
-def certifyPermSign {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) {m : Nat}
-    (swaps : Q(List (Fin $m × Fin $m))) (k : Nat) :
-    (s : Q($α)) × Q(((Equiv.Perm.sign (permOfSwaps $swaps) : Int) : $α) = $s) :=
-  -- The decomposition producer only records swaps between distinct rows.
-  let hl : Q(($swaps).all (fun p ↦ p.1 != p.2) = true) := (q(Eq.refl true) : Expr)
-  let hk : Q(($swaps).length = $k) := (q(Eq.refl $k) : Expr)
-  ⟨q((-1) ^ $k), q(intCast_sign_permOfSwaps $hl $hk)⟩
 
 /-- The value of the determinant read off the decomposition `data`, computed by `s * u / l`,
 where `u` and `l` are the diagonal products of `U` and `L` and `s` is the sign of the swaps.

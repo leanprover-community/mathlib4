@@ -201,7 +201,9 @@ theorem ennreal_mass {μ : FiniteMeasure Ω} : (μ.mass : ℝ≥0∞) = (μ : Me
 
 instance instZero : Zero (FiniteMeasure Ω) where zero := ⟨0, MeasureTheory.isFiniteMeasureZero⟩
 
-@[simp, norm_cast] lemma coeFn_zero : ⇑(0 : FiniteMeasure Ω) = 0 := rfl
+instance : IsZeroApply (FiniteMeasure Ω) where
+
+@[deprecated (since := "2026-10-21")] alias coeFn_zero := FunLike.coe_zero
 
 @[simp]
 theorem zero_mass : (0 : FiniteMeasure Ω).mass = 0 := rfl
@@ -213,8 +215,10 @@ theorem mass_zero_iff (μ : FiniteMeasure Ω) : μ.mass = 0 ↔ μ = 0 := by
   apply Measure.measure_univ_eq_zero.mp
   rwa [← ennreal_mass, ENNReal.coe_eq_zero]
 
-theorem mass_nonzero_iff (μ : FiniteMeasure Ω) : μ.mass ≠ 0 ↔ μ ≠ 0 :=
+theorem mass_ne_zero_iff (μ : FiniteMeasure Ω) : μ.mass ≠ 0 ↔ μ ≠ 0 :=
   not_iff_not.mpr <| FiniteMeasure.mass_zero_iff μ
+
+@[deprecated (since := "2026-10-13")] alias mass_nonzero_iff := mass_ne_zero_iff
 
 @[ext]
 theorem eq_of_forall_toMeasure_apply_eq (μ ν : FiniteMeasure Ω)
@@ -248,20 +252,17 @@ theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν
 theorem toMeasure_smul (c : R) (μ : FiniteMeasure Ω) : ↑(c • μ) = c • (μ : Measure Ω) :=
   rfl
 
-@[simp, norm_cast]
-theorem coeFn_add (μ ν : FiniteMeasure Ω) : (⇑(μ + ν) : Set Ω → ℝ≥0) = (⇑μ + ⇑ν : Set Ω → ℝ≥0) := by
-  funext
-  simp only [Pi.add_apply, ← ENNReal.coe_inj, ennreal_coeFn_eq_coeFn_toMeasure,
-    ENNReal.coe_add]
-  norm_cast
+instance : IsAddApply (FiniteMeasure Ω) where
+  add_apply μ ν s := by simp [← ENNReal.coe_inj]
 
-@[simp, norm_cast]
-theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) :
-    (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
-  funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
+@[deprecated (since := "2026-10-21")] alias coeFn_add := FunLike.coe_add
 
-instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance%
-  toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
+instance [IsScalarTower R ℝ≥0 ℝ≥0] : IsSMulApply R (FiniteMeasure Ω) where
+  smul_apply μ ν s := by simp [← ENNReal.coe_inj, ENNReal.coe_smul]
+
+@[deprecated (since := "2026-10-21")] alias coeFn_smul := FunLike.coe_smul
+
+instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance% FunLike.addCommMonoid
 
 /-- Coercion is an `AddMonoidHom`. -/
 @[simps]
@@ -275,13 +276,9 @@ theorem toMeasure_sum {ι : Type*} {s : Finset ι} {ν : ι → FiniteMeasure Ω
     ↑(∑ i ∈ s, ν i) = ∑ i ∈ s, (ν i : Measure Ω) :=
   map_sum toMeasureAddMonoidHom _ _
 
-instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
-  Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
+instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) := FunLike.module
 
-@[simp]
-protected theorem smul_apply [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) (s : Set Ω) :
-    (c • μ) s = c • μ s := by
-  rw [coeFn_smul, Pi.smul_apply]
+@[deprecated (since := "2026-10-21")] protected alias smul_apply := smul_apply
 
 /-- Restrict a finite measure μ to a set A. -/
 def restrict (μ : FiniteMeasure Ω) (A : Set Ω) : FiniteMeasure Ω where
@@ -327,8 +324,10 @@ lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset �
 theorem restrict_eq_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A = 0 ↔ μ A = 0 := by
   rw [← mass_zero_iff, restrict_mass]
 
-theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A ≠ 0 ↔ μ A ≠ 0 := by
+theorem restrict_ne_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A ≠ 0 ↔ μ A ≠ 0 := by
   simp
+
+@[deprecated (since := "2026-10-13")] alias restrict_nonzero_iff := restrict_ne_zero_iff
 
 /-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
 instance : MeasurableSpace (FiniteMeasure Ω) :=
