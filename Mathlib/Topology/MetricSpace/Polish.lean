@@ -141,16 +141,6 @@ instance : PolishSpace ENNReal :=
 
 end PolishSpace
 
-/-!
-### Deprecated: a complete metric on an open subset of a Polish space
-
-The following construction was used to prove `IsOpen.polishSpace` before it was generalized by
-`IsGδ.polishSpace` and is now deprecated. It builds another metric giving rise to the same
-topology, for which the open subset is complete. This is not obvious, as for instance
-`(0,1) ⊆ ℝ` is not complete for the usual metric of `ℝ`: one should build a new metric that
-blows up close to the boundary.
--/
-
 namespace TopologicalSpace.Opens
 
 variable [MetricSpace α] {s : Opens α}
