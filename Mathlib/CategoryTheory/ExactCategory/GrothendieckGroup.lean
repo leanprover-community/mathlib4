@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.CategoryTheory.ExactCategory.Basic
 public import Mathlib.GroupTheory.FreeAbelianGroup
-public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
@@ -28,7 +28,7 @@ namespace ExactCategory
 
 namespace GrothendieckGroup
 
-inductive relations : Set (FreeAbelianGroup C)
+inductive relations : FreeAbelianGroup C → Prop
   | ofShortExact (S : ShortComplex C) (hS : shortExact C S) :
       relations (FreeAbelianGroup.of S.X₁ + FreeAbelianGroup.of S.X₃ -
         FreeAbelianGroup.of S.X₂)
@@ -36,7 +36,7 @@ inductive relations : Set (FreeAbelianGroup C)
 end GrothendieckGroup
 
 def GrothendieckGroup :=
-  FreeAbelianGroup C ⧸ AddSubgroup.closure (GrothendieckGroup.relations C)
+  FreeAbelianGroup C ⧸ AddSubgroup.closure (.ofPred (GrothendieckGroup.relations C))
 
 instance : AddCommGroup (GrothendieckGroup C) := by
   dsimp [GrothendieckGroup]

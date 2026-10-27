@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.CategoryTheory.ExactCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-public import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 /-!
 # Split exact categories

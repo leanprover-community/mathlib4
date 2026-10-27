@@ -24,9 +24,9 @@ Similarly, given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃₄ ⥤ E` and a bifunc
 
 namespace CategoryTheory
 
-variable {C₁ C₂ C₃ C₄ C₂₃₄ C₃₄ E : Type*}
+variable {C₁ C₂ C₃ C₄ C₁₂₃ C₂₃₄ C₃₄ E : Type*}
   [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄]
-  [Category* C₂₃₄] [Category* C₃₄] [Category* E]
+  [Category* C₁₂₃] [Category* C₂₃₄] [Category* C₃₄] [Category* E]
 
 section trifunctorComp₂₃₄Functor
 
@@ -105,5 +105,10 @@ def trifunctorComp₃₄Functor :
   map := trifunctorComp₃₄FunctorMap
 
 end trifunctorComp₃₄Functor
+
+@[simps!]
+def trifunctorComp₁₂₃ (F₁₂₃ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₁₂₃) (G : C₁₂₃ ⥤ C₄ ⥤ E) :
+    C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E :=
+  (Functor.postcompose₃.obj G).obj F₁₂₃
 
 end CategoryTheory

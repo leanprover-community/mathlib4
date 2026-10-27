@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Category
 public import Mathlib.CategoryTheory.Functor.Quadrifunctor
+public import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
 # The pentagon identity as an equality of natural transformations
