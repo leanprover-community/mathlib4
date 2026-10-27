@@ -488,7 +488,7 @@ theorem zmodEquivZPowers_apply_intCast (i : ℤ) :
   rw [zmodEquivZPowers, AddEquiv.ofBijective_apply] -- Porting note: Original proof didn't have `rw`
   exact AddMonoidHom.liftOfRightInverse_comp_apply _ _ ZMod.intCast_rightInverse _ _
 
-@[deprecated (since := "2026-10-13")]
+@[deprecated (since := "2026-10-27")]
 alias zmodEquivZPowers_apply_coe_int := zmodEquivZPowers_apply_intCast
 
 @[simp]

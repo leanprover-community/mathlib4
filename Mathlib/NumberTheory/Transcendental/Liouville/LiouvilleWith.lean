@@ -280,7 +280,7 @@ theorem ne_intCast (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := b
   rw [Ne, eq_div_iff hn'.ne'] at hne
   exact mod_cast hne
 
-@[deprecated (since := "2026-10-13")] alias ne_cast_int := ne_intCast
+@[deprecated (since := "2026-10-27")] alias ne_cast_int := ne_intCast
 
 /-- A number satisfying the Liouville condition with exponent `p > 1` is an irrational number. -/
 protected theorem irrational (h : LiouvilleWith p x) (hp : 1 < p) : Irrational x := by

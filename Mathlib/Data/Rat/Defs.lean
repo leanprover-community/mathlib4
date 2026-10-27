@@ -257,7 +257,7 @@ theorem intCast_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q
   rw [intCast_eq_divInt]
   rfl
 
-@[deprecated (since := "2026-10-13")] alias coe_int_num_of_den_eq_one := intCast_num_of_den_eq_one
+@[deprecated (since := "2026-10-27")] alias coe_int_num_of_den_eq_one := intCast_num_of_den_eq_one
 
 lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
   rw [Rat.isInt, Nat.beq_eq_true_eq] at h
