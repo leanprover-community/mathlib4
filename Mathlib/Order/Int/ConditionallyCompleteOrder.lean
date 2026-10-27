@@ -8,9 +8,6 @@ module
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 public import Mathlib.Order.Int.LeastGreatest
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # `ℤ` forms a conditionally complete linear order
 

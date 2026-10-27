@@ -7,9 +7,6 @@ module
 
 public import Mathlib.RingTheory.Coalgebra.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # MulOpposite of coalgebras
 

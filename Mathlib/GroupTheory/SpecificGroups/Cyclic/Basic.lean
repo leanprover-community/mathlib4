@@ -13,9 +13,6 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Tactic.Contrapose
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Cyclic groups
 

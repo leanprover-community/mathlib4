@@ -5,7 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
+public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Bicategory.Extension
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Kan extensions and Kan lifts in bicategories
@@ -117,6 +119,11 @@ def whiskerOfCommute (s t : LeftExtension f g) (i : s ≅ t) {x : B} (h : c ⟶ 
     IsKan (t.whisker h) :=
   P.ofIsoKan <| whiskerIso i h
 
+/-- `LeftExtension.ofIso` preserves Kan extensions. -/
+noncomputable def ofIso {f' : a ⟶ b} {g' : a ⟶ c} (H : IsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsKan (t.ofIso ef eg) :=
+  Limits.IsInitial.isInitialObj (LeftExtension.mapIso ef eg).functor t H
+
 end IsKan
 
 namespace IsAbsKan
@@ -136,6 +143,11 @@ def isKan (H : IsAbsKan t) : IsKan t :=
 of extensions. -/
 def ofIsoAbsKan (P : IsAbsKan s) (i : s ≅ t) : IsAbsKan t :=
   fun h ↦ (P h).ofIsoKan (whiskerIso i h)
+
+/-- `LeftExtension.ofIso` preserves absolute left Kan extensions. -/
+noncomputable def ofIso {f' : a ⟶ b} {g' : a ⟶ c} (H : IsAbsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsAbsKan (t.ofIso ef eg) :=
+  fun h ↦ ((H h).ofIso ef (whiskerRightIso eg h)).ofIsoKan (whiskerOfIso ef eg t h)
 
 end IsAbsKan
 
@@ -209,6 +221,11 @@ def whiskerOfCommute (s t : LeftLift f g) (i : s ≅ t) {x : B} (h : x ⟶ c)
     IsKan (t.whisker h) :=
   P.ofIsoKan <| whiskerIso i h
 
+/-- `LeftLift.ofIso` preserves Kan lifts. -/
+noncomputable def ofIso {f' : b ⟶ a} {g' : c ⟶ a} (H : IsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsKan (t.ofIso ef eg) :=
+  Limits.IsInitial.isInitialObj (LeftLift.mapIso ef eg).functor t H
+
 end IsKan
 
 namespace IsAbsKan
@@ -228,6 +245,11 @@ def isKan (H : IsAbsKan t) : IsKan t :=
 def ofIsoAbsKan (P : IsAbsKan s) (i : s ≅ t) : IsAbsKan t :=
   fun h ↦ (P h).ofIsoKan (whiskerIso i h)
 
+/-- `LeftLift.ofIso` preserves absolute left Kan lifts. -/
+noncomputable def ofIso {f' : b ⟶ a} {g' : c ⟶ a} (H : IsAbsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsAbsKan (t.ofIso ef eg) :=
+  fun h ↦ ((H h).ofIso ef (whiskerLeftIso h eg)).ofIsoKan (whiskerOfIso ef eg t h)
+
 end IsAbsKan
 
 end LeftLift
@@ -238,6 +260,100 @@ variable {f : a ⟶ b} {g : a ⟶ c}
 
 /-- A right Kan extension of `g` along `f` is a terminal object in `RightExtension f g`. -/
 abbrev IsKan (t : RightExtension f g) := t.IsUniversal
+
+/-- An absolute right Kan extension is a Kan extension that commutes with any 1-morphism. -/
+abbrev IsAbsKan (t : RightExtension f g) :=
+  ∀ {x : B} (h : c ⟶ x), IsKan (t.whisker h)
+
+namespace IsKan
+
+variable {s t : RightExtension f g}
+
+/-- To show that a right extension `t` is a Kan extension, we need to show that for every right
+extension `s` there is a unique morphism `s ⟶ t`. -/
+abbrev mk (desc : ∀ s, s ⟶ t) (w : ∀ s τ, τ = desc s) :
+    IsKan t :=
+  .ofUniqueHom desc w
+
+/-- The family of 2-morphisms into a right Kan extension. -/
+abbrev desc (H : IsKan t) (s : RightExtension f g) : s.extension ⟶ t.extension :=
+  CostructuredArrow.IsUniversal.lift H s
+
+@[reassoc (attr := simp)]
+theorem fac (H : IsKan t) (s : RightExtension f g) :
+    f ◁ H.desc s ≫ t.counit = s.counit :=
+  CostructuredArrow.IsUniversal.fac H s
+
+/-- Two 2-morphisms into a right Kan extension are equal if their compositions with
+each triangle 2-morphism are equal. -/
+theorem hom_ext (H : IsKan t) {k : b ⟶ c} {τ τ' : k ⟶ t.extension}
+    (w : f ◁ τ ≫ t.counit = f ◁ τ' ≫ t.counit) : τ = τ' :=
+  CostructuredArrow.IsUniversal.hom_ext H w
+
+/-- Kan extensions on `g` along `f` are unique up to isomorphism. -/
+def uniqueUpToIso (P : IsKan s) (Q : IsKan t) : s ≅ t :=
+  Limits.IsTerminal.uniqueUpToIso P Q
+
+@[simp]
+theorem uniqueUpToIso_hom_left (P : IsKan s) (Q : IsKan t) :
+    (uniqueUpToIso P Q).hom.left = Q.desc s := rfl
+
+@[simp]
+theorem uniqueUpToIso_inv_left (P : IsKan s) (Q : IsKan t) :
+    (uniqueUpToIso P Q).inv.left = P.desc t := rfl
+
+/-- Transport evidence that a right extension is a Kan extension across an isomorphism
+of extensions. -/
+def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
+  Limits.IsTerminal.ofIso P i
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `t : RightExtension f (g ≫ 𝟙 c)` is a Kan extension, then `t.ofCompId : RightExtension f g`
+is also a Kan extension. -/
+def ofCompId (t : RightExtension f (g ≫ 𝟙 c)) (P : IsKan t) : IsKan t.ofCompId :=
+  .mk (fun s ↦ t.whiskerIdCancel <| P.from (s.whisker (𝟙 c))) <| by
+    intro s τ
+    ext
+    apply P.hom_ext
+    simp [← RightExtension.w τ]
+
+/-- If `s ≅ t` and `IsKan (s.whisker h)`, then `IsKan (t.whisker h)`. -/
+def whiskerOfCommute (s t : RightExtension f g) (i : s ≅ t) {x : B} (h : c ⟶ x)
+    (P : IsKan (s.whisker h)) :
+    IsKan (t.whisker h) :=
+  P.ofIsoKan <| whiskerIso i h
+
+/-- `RightExtension.ofIso` preserves Kan extensions. -/
+noncomputable def ofIso {f' : a ⟶ b} {g' : a ⟶ c} (H : IsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsKan (t.ofIso ef eg) :=
+  Limits.IsTerminal.isTerminalObj (RightExtension.mapIso ef eg).functor t H
+
+end IsKan
+
+namespace IsAbsKan
+
+variable {s t : RightExtension f g}
+
+/-- The family of 2-morphisms into an absolute right Kan extension. -/
+abbrev desc (H : IsAbsKan t) {x : B} {h : c ⟶ x} (s : RightExtension f (g ≫ h)) :
+    s.extension ⟶ t.extension ≫ h :=
+  (H h).desc s
+
+/-- An absolute right Kan extension is a right Kan extension. -/
+def isKan (H : IsAbsKan t) : IsKan t :=
+  ((H (𝟙 c)).ofCompId _).ofIsoKan <| whiskerOfCompIdIsoSelf t
+
+/-- Transport evidence that a right extension is a Kan extension across an isomorphism
+of extensions. -/
+def ofIsoAbsKan (P : IsAbsKan s) (i : s ≅ t) : IsAbsKan t :=
+  fun h ↦ (P h).ofIsoKan (whiskerIso i h)
+
+/-- `RightExtension.ofIso` preserves absolute right Kan extensions. -/
+noncomputable def ofIso {f' : a ⟶ b} {g' : a ⟶ c} (H : IsAbsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsAbsKan (t.ofIso ef eg) :=
+  fun h ↦ ((H h).ofIso ef (whiskerRightIso eg h)).ofIsoKan (whiskerOfIso ef eg t h)
+
+end IsAbsKan
 
 end RightExtension
 
@@ -309,6 +425,11 @@ def whiskerOfCommute (s t : RightLift f g) (i : s ≅ t) {x : B} (h : x ⟶ c)
     IsKan (t.whisker h) :=
   P.ofIsoKan <| whiskerIso i h
 
+/-- `RightLift.ofIso` preserves Kan lifts. -/
+noncomputable def ofIso {f' : b ⟶ a} {g' : c ⟶ a} (H : IsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsKan (t.ofIso ef eg) :=
+  Limits.IsTerminal.isTerminalObj (RightLift.mapIso ef eg).functor t H
+
 end IsKan
 
 namespace IsAbsKan
@@ -327,6 +448,11 @@ def isKan (H : IsAbsKan t) : IsKan t :=
 /-- Transport evidence that a right lift is a Kan lift across an isomorphism of lifts. -/
 def ofIsoAbsKan (P : IsAbsKan s) (i : s ≅ t) : IsAbsKan t :=
   fun h ↦ (P h).ofIsoKan (whiskerIso i h)
+
+/-- `RightLift.ofIso` preserves absolute right Kan lifts. -/
+noncomputable def ofIso {f' : b ⟶ a} {g' : c ⟶ a} (H : IsAbsKan t) (ef : f ≅ f') (eg : g ≅ g') :
+    IsAbsKan (t.ofIso ef eg) :=
+  fun h ↦ ((H h).ofIso ef (whiskerLeftIso h eg)).ofIsoKan (whiskerOfIso ef eg t h)
 
 end IsAbsKan
 

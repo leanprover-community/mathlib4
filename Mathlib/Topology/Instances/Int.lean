@@ -10,9 +10,6 @@ public import Mathlib.Order.Int.ConditionallyCompleteOrder
 public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Topology.MetricSpace.Bounded
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Topology on the integers
 

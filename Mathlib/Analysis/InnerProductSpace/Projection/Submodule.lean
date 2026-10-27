@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Subspaces associated with orthogonal projections
 

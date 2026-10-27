@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Algebra
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Characteristic of subrings
 -/

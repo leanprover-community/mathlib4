@@ -9,9 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 import Mathlib.Algebra.Regular.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Product of regular elements
 

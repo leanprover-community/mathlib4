@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Data.Nat.Cast.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The product of two `AddMonoidWithOne`s.
 -/

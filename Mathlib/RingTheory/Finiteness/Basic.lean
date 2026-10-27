@@ -11,9 +11,6 @@ public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.RingTheory.Finiteness.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Basic results on finitely generated (sub)modules
 

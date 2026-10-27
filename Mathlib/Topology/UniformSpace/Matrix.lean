@@ -8,9 +8,6 @@ module
 public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Instances.Matrix
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Uniform space structure on matrices
 -/

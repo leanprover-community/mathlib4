@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Complete lattice structure of subalgebras
 

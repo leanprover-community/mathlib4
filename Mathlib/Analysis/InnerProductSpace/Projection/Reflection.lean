@@ -8,9 +8,6 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 public import Mathlib.Analysis.Normed.Group.RadialFunction
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Reflection
 

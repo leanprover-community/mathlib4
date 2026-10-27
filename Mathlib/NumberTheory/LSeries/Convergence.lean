@@ -7,9 +7,6 @@ module
 
 public import Mathlib.NumberTheory.LSeries.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Convergence of L-series
 
