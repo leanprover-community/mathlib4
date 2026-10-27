@@ -165,7 +165,7 @@ lemma single_eq_same (i : ι) (a : β i) : single p i a i = a := by
 lemma single_eq_of_ne {i i' : ι} (h : i' ≠ i) (a : β i) : single p i a i' = 0 := by
   rw [ofLp_single, Pi.single_eq_of_ne h]
 
-/-- Changing the hypothesis direction in `PiLp.single_eq_of_ne` for for ease of use by simp. -/
+/-- Changing the hypothesis direction in `PiLp.single_eq_of_ne` for ease of use by simp. -/
 @[simp]
 lemma single_eq_of_ne' {i i' : ι} (h : i ≠ i') (a : β i) : single p i a i' = 0 := by
   rw [ofLp_single, Pi.single_eq_of_ne' h]

@@ -5,13 +5,13 @@ Authors: Michael Rothgang
 -/
 module
 
+public meta import Batteries.Tactic.Lint.Basic
+public meta import Batteries.Util.ExtendedBinder
 public meta import Lean.Elab.Command
+public meta import Lean.Parser.Module
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public meta import Batteries.Tactic.Lint.Basic
-public meta import Batteries.Util.ExtendedBinder
-public meta import Lean.Parser.Module
 public import Mathlib.Tactic.DeclarationNames
 
 meta import Lean.Parser.Command

@@ -55,7 +55,7 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
   · convert! Independent.mk _ _ h
     · simp only [mk_rep, Function.comp_apply]
     · intro i
-      apply rep_nonzero
+      apply rep_ne_zero
 
 /-- A family of points in projective space is independent if and only if the family of
 submodules which the points determine is independent in the lattice-theoretic sense. -/
@@ -67,7 +67,7 @@ theorem independent_iff_iSupIndep : Independent f ↔ iSupIndep fun i => (f i).s
   · rw [independent_iff]
     refine h.linearIndependent (Projectivization.submodule ∘ f) (fun i => ?_) fun i => ?_
     · simpa only [Function.comp_apply, submodule_eq] using Submodule.mem_span_singleton_self _
-    · exact rep_nonzero (f i)
+    · exact rep_ne_zero (f i)
 
 /-- A linearly dependent family of nonzero vectors gives a dependent family of points
 in projective space. -/
@@ -87,7 +87,7 @@ theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.
     simp only [← ha, inv_smul_smul, Pi.smul_apply', Pi.inv_apply, Function.comp_apply]
   · convert! Dependent.mk _ _ h
     · simp only [mk_rep, Function.comp_apply]
-    · exact fun i => rep_nonzero (f i)
+    · exact fun i => rep_ne_zero (f i)
 
 /-- Dependence is the negation of independence. -/
 theorem dependent_iff_not_independent : Dependent f ↔ ¬Independent f := by
@@ -102,9 +102,9 @@ theorem independent_iff_not_dependent : Independent f ↔ ¬Dependent f := by
 theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := by
   rw [dependent_iff_not_independent, independent_iff, linearIndependent_fin2]
   dsimp only [Function.comp_def, Matrix.cons_val]
-  simp only [not_and, not_forall, not_not, ← mk_eq_mk_iff' K _ _ (rep_nonzero u) (rep_nonzero v),
+  simp only [not_and, not_forall, not_not, ← mk_eq_mk_iff' K _ _ (rep_ne_zero u) (rep_ne_zero v),
     mk_rep, Classical.imp_iff_right_iff]
-  exact Or.inl (rep_nonzero v)
+  exact Or.inl (rep_ne_zero v)
 
 /-- Two points in a projective space are independent if and only if the points are not equal. -/
 @[simp]
