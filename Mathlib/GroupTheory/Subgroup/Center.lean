@@ -50,7 +50,7 @@ instance : CommGroup (Center G) := inferInstanceAs <| CommGroup (center G)
 lemma _root_.Center.coe_inv (z : Center G) : z⁻¹.val = z.val⁻¹ := rfl
 
 @[to_additive]
-lemma _root_.Centercoe_zpow (z : Center G) (n : ℤ) : (z ^ n).val = z.val ^ n := rfl
+lemma _root_.Center.coe_zpow (z : Center G) (n : ℤ) : (z ^ n).val = z.val ^ n := rfl
 
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
