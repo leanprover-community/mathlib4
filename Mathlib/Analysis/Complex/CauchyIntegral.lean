@@ -830,20 +830,20 @@ lemma circleIntegral_one_div_sub_pow_smul_of_differentiable_on_off_countable
   | zero =>
     simpa using circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw hc hd
   | succ n ih =>
-    let J (n : ℕ) (w : ℂ) : E :=
-      ∮ z in C(c, R), (z - w) ^ (-((n + 1 : ℕ) : ℤ)) • f z
-    apply smul_right_injective E (by norm_cast : ((n + 1 : ℕ) : ℂ) ≠ 0)
-    simp only [smul_smul, Nat.factorial_succ, Nat.cast_mul, iteratedDeriv_succ,
-      ← deriv_fun_const_smul_field]
-    have hws : w ∉ sphere c |R| := by
-      simpa only [mem_sphere, abs_of_pos hR] using (mem_ball.mp hw).ne
-    trans deriv (J n) w
-    · convert hasDerivAt_circleIntegral_sub_zpow_smul
-        (n := -((n + 1 : ℕ) : ℤ)) hfi hws |>.deriv.symm <;> norm_cast
-    · apply EventuallyEq.deriv_eq
-      filter_upwards [isOpen_ball.mem_nhds hw] with w hw
-      convert ih hw
-      field
+    have hws : w ∉ sphere c |R| := by grind [abs_of_pos hR, sphere_disjoint_ball]
+    let J (n : ℕ) (w : ℂ) : E := ∮ z in C(c, R), (z - w) ^ (-((n + 1 : ℕ) : ℤ)) • f z
+    calc
+      J (n + 1) w = (n + 1 : ℂ)⁻¹ • deriv (J n) w := by
+        rw [(hasDerivAt_circleIntegral_sub_zpow_smul hfi hws).deriv, smul_smul]
+        conv in _ * _ => simp [inv_mul_cancel₀ (n.cast_add_one_ne_zero (R := ℂ))]
+        rw [one_smul]
+        congr
+      _ = (2 * π * I / (n + 1).factorial) • iteratedDeriv (n + 1) f w := by
+        rw [EventuallyEq.deriv_eq ((isOpen_ball.eventually_mem hw).mono fun _ ↦ ih),
+          deriv_fun_const_smul_field, ← iteratedDeriv_succ, smul_smul, Nat.factorial_succ]
+        congr 1
+        push_cast
+        field
 
 /-- **Cauchy integral formula for derivatives**, assuming `f` is continuous on a closed ball and
 differentiable on its interior away from a countable set. -/
