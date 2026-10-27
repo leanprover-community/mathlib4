@@ -64,7 +64,7 @@ class ModObj (X : D) where
   /-- The action map is compatible with multiplication. -/
   mul_smul (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by cat_disch
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] ModObj.mul_smul ModObj.one_smul
 
 
@@ -187,7 +187,7 @@ the action maps -/
 class IsModHom {M N : D} [ModObj A M] [ModObj A N] (f : M ⟶ N) where
   smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by cat_disch
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_additive existing (attr := reassoc (attr := simp))] IsModHom.smul_hom
 
 variable {M N O : D} [ModObj A M] [ModObj A N] [ModObj A O]

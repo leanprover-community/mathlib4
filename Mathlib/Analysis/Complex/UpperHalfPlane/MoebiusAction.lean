@@ -75,7 +75,7 @@ lemma denom_cocycle (g h : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     denom (g * h) z = denom g (num h z / denom h z) * denom h z := by
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero_of_im h hz]
-  simp only [denom, Units.val_mul, mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
+  simp only [denom, Units.val_mul, Matrix.mul_apply, Fin.sum_univ_succ, Finset.univ_unique,
     Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one, Complex.ofReal_add,
     Complex.ofReal_mul, num]
   ring
@@ -171,7 +171,7 @@ theorem mul_smul' (g h : GL (Fin 2) ℝ) (z : ℍ) :
   conv_rhs => rw [num]
   rw [mul_div, div_add' _ _ _ (denom_ne_zero_of_im _ hu), div_mul_eq_mul_div]
   congr 1
-  simp only [num, denom, Units.val_mul, mul_apply, Fin.sum_univ_succ,
+  simp only [num, denom, Units.val_mul, Matrix.mul_apply, Fin.sum_univ_succ,
     Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one,
     Complex.ofReal_add, Complex.ofReal_mul]
   ring
