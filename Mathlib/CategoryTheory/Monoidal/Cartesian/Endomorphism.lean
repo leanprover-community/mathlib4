@@ -24,29 +24,23 @@ variable {C : Type*} [Category* C] [CartesianMonoidalCategory C]
 section EndomorphismSemiring
 
 open AddMonObj CartesianMonoidalCategory
+open scoped MonObj
 
 variable {G : AddMon C} {H : AddMon C}
-
-instance [BraidedCategory C] [IsCommAddMonObj G.X] : AddCommMonoid (G ⟶ G) := Hom.addCommMonoid
 
 namespace AddMon.End
 
 open AddMon End
 
 /-- The zero homomorphism in `End G` for an additive monoid object `G : AddMon C` -/
+@[simps]
 scoped instance : Zero (End G) where
   zero := .of 0
 
 /-- The addition in `End G` for an additive commutative monoid object `G : AddMon C` -/
+@[simps]
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g := .of (f.asHom + g.asHom)
-
-@[simp]
-lemma add_asHom (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X] :
-  (f + g).asHom = f.asHom + g.asHom := rfl
-
-@[simp]
-lemma zero_asHom : (0 : End G).asHom = 0 := rfl
 
 /-- For an additive commutative monoid object `G`, the endomorphisms `End G` have
 a semiring structure. -/
@@ -91,19 +85,14 @@ namespace AddGrp.End
 open AddGrp End
 
 /-- The zero homomorphism in `End G` for an additive group object `G : AddGrp C` -/
+@[simps]
 scoped instance : Zero (End G) where
   zero := .of 0
 
 /-- The addition in `End G` for an additive commutative group object `G : AddGrp C` -/
+@[simps]
 scoped instance [BraidedCategory C] [IsCommAddMonObj G.X] : Add (End G) where
   add f g := .of (f.asHom + g.asHom)
-
-@[simp]
-lemma add_asHom (f g : End G) [BraidedCategory C] [IsCommAddMonObj G.X] :
-  (f + g).asHom = f.asHom + g.asHom := rfl
-
-@[simp]
-lemma zero_asHom : (0 : End G).asHom = 0 := rfl
 
 /-- For an additive commutative group object `G`, the endomorphisms `End G` have
 a ring structure. -/
