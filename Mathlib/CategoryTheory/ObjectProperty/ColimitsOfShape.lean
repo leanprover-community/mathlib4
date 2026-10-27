@@ -116,7 +116,6 @@ noncomputable def reindex {X : C} (h : P.ColimitOfShape J X) (G : J' ⥤ J) [G.F
   toColimitPresentation := h.toColimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `P : ObjectProperty C`, and a presentation `P.ColimitOfShape J X`
 of an object `X : C`, this is the induced functor `J ⥤ CostructuredArrow P.ι X`. -/
 @[simps]

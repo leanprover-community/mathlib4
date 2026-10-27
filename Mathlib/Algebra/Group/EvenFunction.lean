@@ -154,8 +154,6 @@ lemma Odd.finsetSum_eq_zero [InvolutiveNeg α] {f : α → β} (hf : f.Odd) {s :
     s.sum f = 0 := by
   simpa [neg_eq_self, funext hf, hs] using (Finset.sum_map s (Equiv.neg α).toEmbedding f).symm
 
-@[deprecated (since := "2026-04-08")] alias Odd.finset_sum_eq_zero := Odd.finsetSum_eq_zero
-
 /-- The sum of the values of an odd function is 0. -/
 lemma Odd.sum_eq_zero [Fintype α] [InvolutiveNeg α] {f : α → β} (hf : f.Odd) : ∑ a, f a = 0 :=
   hf.finsetSum_eq_zero <| Finset.map_univ_equiv (Equiv.neg α)

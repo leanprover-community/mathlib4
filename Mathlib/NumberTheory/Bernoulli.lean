@@ -80,6 +80,7 @@ variable (A : Type*) [CommRing A] [Algebra ℚ A]
 /-- The Bernoulli numbers:
 the $n$-th Bernoulli number $B_n$ is defined recursively via
 $$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
+@[oeis A164555 "numerators", oeis A027642 "denominators"]
 def bernoulli' (n : ℕ) : ℚ :=
   1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k
 
@@ -192,6 +193,7 @@ theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bern
   congr
 
 /-- The Bernoulli numbers are defined to be `bernoulli'` with a parity sign. -/
+@[oeis A027641 "numerators", oeis A027642 "denominators"]
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 
@@ -669,7 +671,7 @@ theorem vonStaudt_clausen (k : ℕ) :
   rcases Nat.eq_zero_or_pos k with rfl | hk
   · exact ⟨1, by decide +kernel⟩
   · rw [Set.mem_range]
-    refine ⟨_, Rat.coe_int_num_of_den_eq_one ?_⟩
+    refine ⟨_, Rat.intCast_num_of_den_eq_one ?_⟩
     by_contra h
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
     exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hk) hdvd

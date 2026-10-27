@@ -188,7 +188,7 @@ We have to insert a coordinate change from `x₀` to `x` to make the derivative 
 This is a special case of `ContMDiffWithinAt.mfderivWithin` where `f` does not contain any
 parameters and `g = id`.
 -/
-theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
+protected theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
     (hf : CMDiffAt[s] n f x₀) (hmn : m + 1 ≤ n) (hx : x₀ ∈ s) (hs : UniqueMDiff[s]) :
     CMDiffAt[s] m (inTangentCoordinates I I' id f (mfderiv[s] f) x₀) x₀ := by
   have : CMDiffAt[s ×ˢ s] n (fun x : M × M ↦ f x.2) (x₀, x₀) :=
@@ -348,6 +348,43 @@ theorem ContMDiff.continuous_tangentMap (hf : CMDiff n f) (hn : 1 ≤ n) :
   exact fun x ↦ (hf x.1).continuousAt_tangentMap hn
 
 end tangentMap
+
+section
+
+open scoped ContDiff
+
+variable {f : M → F} {s : Set M} {x : M} {X : Π x : M, TangentSpace% x} [IsManifold I 1 M]
+
+protected lemma ContMDiffWithinAt.mvfderivWithin
+    (hf : CMDiffAt[s] n f x) (hX : CMDiffAt[s] m (T% X) x) (hmn : m + 1 ≤ n)
+    (hs : UniqueMDiff[s]) (hx : x ∈ s) :
+    CMDiffAt[s] m (fun (x : M) ↦ d[s] f x (X x)) x := by
+  let b₁ : TangentBundle I M → M := fun p ↦ p.1
+  replace hf' : CMDiffAt[s] n f (b₁ (X x)) := hf
+  have aux := hf'.contMDiffWithinAt_tangentMapWithin hx hmn hs
+  -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
+  -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
+  convert (Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp x hX (by intro; simp))).2
+  simp
+  rfl
+
+protected lemma ContMDiffAt.mvfderiv
+    (hf : CMDiffAt n f x) (hX : CMDiffAt m (T% X) x) (hmn : m + 1 ≤ n) :
+    CMDiffAt m (fun (x : M) ↦ d% f x (X x)) x := by
+  rw [← contMDiffWithinAt_univ] at hf hX ⊢
+  rw [← mvfderivWithin_univ]
+  exact hf.mvfderivWithin hX hmn uniqueMDiffOn_univ (by simp)
+
+protected lemma ContMDiffOn.mvfderivWithin
+    (hf : CMDiff[s] n f) (hX : CMDiff[s] m (T% X)) (hmn : m + 1 ≤ n) (hs : UniqueMDiff[s]) :
+    CMDiff[s] m (fun (x : M) ↦ d[s] f x (X x)) :=
+  fun x hx ↦ ContMDiffWithinAt.mvfderivWithin (hf x hx) (hX x hx) hmn hs hx
+
+protected lemma ContMDiff.mvfderiv (hf : CMDiff n f) (hX : CMDiff m (T% X)) (hmn : m + 1 ≤ n) :
+    CMDiff m (fun (x : M) ↦ d% f x (X x)) :=
+  fun x ↦ (hf x).mvfderiv (hX x) hmn
+
+end
 
 namespace TangentBundle
 

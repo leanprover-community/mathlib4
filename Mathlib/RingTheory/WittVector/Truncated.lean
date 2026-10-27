@@ -96,7 +96,7 @@ variable [CommRing R]
 by setting all coefficients after `x` to be 0.
 -/
 def out (x : TruncatedWittVector p n R) : 𝕎 R :=
-  @WittVector.mk' p _ fun i => if h : i < n then x.coeff ⟨i, h⟩ else 0
+  WittVector.mk p fun i => if h : i < n then x.coeff ⟨i, h⟩ else 0
 
 @[simp]
 theorem coeff_out (x : TruncatedWittVector p n R) (i : Fin n) : x.out.coeff i = x.coeff i := by
@@ -315,7 +315,7 @@ variable (p)
 
 @[simp]
 theorem truncate_mk' (f : ℕ → R) :
-    truncate n (@mk' p _ f) = TruncatedWittVector.mk _ fun k => f k := by
+    truncate n (mk p f) = TruncatedWittVector.mk _ fun k => f k := by
   ext i
   simp only [coeff_truncate, TruncatedWittVector.coeff_mk]
 
@@ -417,7 +417,7 @@ variable (n)
 defining the `k`th entry to be the final entry of `fₖ s`.
 -/
 def liftFun (s : S) : 𝕎 R :=
-  @WittVector.mk' p _ fun k => TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
+  WittVector.mk p fun k => TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
 
 variable {f} in
 include f_compat in

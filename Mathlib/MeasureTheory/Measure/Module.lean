@@ -155,12 +155,8 @@ theorem coeAddHom_apply (μ : Measure α) : coeAddHom μ = ⇑μ := rfl
 theorem coe_finsetSum (I : Finset ι) (μ : ι → Measure α) :
     ⇑(∑ i ∈ I, μ i) = ∑ i ∈ I, ⇑(μ i) := map_sum coeAddHom μ I
 
-@[deprecated (since := "2026-04-08")] alias coe_finset_sum := coe_finsetSum
-
 theorem finsetSum_apply (I : Finset ι) (μ : ι → Measure α) (s : Set α) :
     (∑ i ∈ I, μ i) s = ∑ i ∈ I, μ i s := by rw [coe_finsetSum, Finset.sum_apply]
-
-@[deprecated (since := "2026-04-08")] alias finset_sum_apply := finsetSum_apply
 
 instance [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] :
     DistribMulAction R (Measure α) :=

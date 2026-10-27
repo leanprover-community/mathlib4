@@ -10,6 +10,7 @@ public import Mathlib.Condensed.Light.Limits
 
 import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
 import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
+
 /-!
 
 # Epimorphisms of light condensed objects
@@ -136,7 +137,6 @@ instance : Epi (Limits.Pi.map f) :=
       Functor.ofOpSequence_map_homOfLE_succ]
     infer_instance)
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
   preserves f _ := by
     have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by
