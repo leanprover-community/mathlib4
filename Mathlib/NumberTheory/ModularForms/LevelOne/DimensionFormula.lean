@@ -175,7 +175,7 @@ lemma CuspForm.rank_eq_one_of_weight_eq_twelve : Module.rank ℂ (CuspForm 𝒮�
 /-- Every weight 12 cusp form for `𝒮ℒ` is a scalar multiple of the discriminant. -/
 lemma CuspForm.exists_smul_discriminant_of_weight_eq_twelve (f : CuspForm 𝒮ℒ 12) :
     ∃ c : ℂ, c • CuspForm.discriminant = f :=
-  (finrank_eq_one_iff_of_nonzero' _ (DFunLike.ne_iff.mpr ⟨I, discriminant_ne_zero _⟩)).mp
+  (finrank_eq_one_iff_of_ne_zero' _ (DFunLike.ne_iff.mpr ⟨I, discriminant_ne_zero _⟩)).mp
     (Module.rank_eq_one_iff_finrank_eq_one.mp CuspForm.rank_eq_one_of_weight_eq_twelve) f
 
 /-- For even `k ≥ 3`, the rank of `𝒮ℒ` modular forms is one more than the rank of
@@ -236,10 +236,10 @@ private lemma eq_zero_of_pow_eq_smul {p p4 p6 : PowerSeries ℂ} {c4 c6 : ℂ}
 
 private lemma weight_two_qExpansion_eq_zero (f : ModularForm 𝒮ℒ 2) : qExpansion 1 f = 0 := by
   obtain ⟨c4, hc4⟩ : ∃ c4, c4 • E₄ = f.mul f :=
-    (finrank_eq_one_iff_of_nonzero' E₄ (E_ne_zero _ ⟨2, rfl⟩)).mp
+    (finrank_eq_one_iff_of_ne_zero' E₄ (E_ne_zero _ ⟨2, rfl⟩)).mp
       (Module.rank_eq_one_iff_finrank_eq_one.mp levelOne_weight_four_rank_one) _
   obtain ⟨c6, hc6⟩ : ∃ c6, c6 • E₆ = (f.mul f).mul f :=
-    (finrank_eq_one_iff_of_nonzero' E₆ (E_ne_zero _ ⟨3, rfl⟩)).mp
+    (finrank_eq_one_iff_of_ne_zero' E₆ (E_ne_zero _ ⟨3, rfl⟩)).mp
       (Module.rank_eq_one_iff_finrank_eq_one.mp levelOne_weight_six_rank_one) _
   have hqc4 : c4 • qExpansion 1 (E₄ : ℍ → ℂ) = qExpansion 1 (f : ℍ → ℂ) ^ 2 := by
     rw [pow_two, ← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f,
