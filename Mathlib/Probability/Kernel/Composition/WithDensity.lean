@@ -85,7 +85,7 @@ lemma withDensity_comp_left {η : Kernel 𝓨 𝓩} [IsSFiniteKernel η]
   ext a s hs
   rw [Kernel.withDensity_apply _ (by fun_prop), Kernel.comp_apply, Kernel.comp_apply]
   conv_rhs => rw [Measure.bind_apply hs (by fun_prop)]
-  simp only [withDensity_const, Measure.smul_apply, smul_eq_mul]
+  simp only [withDensity_const, smul_apply, smul_eq_mul]
   rw [lintegral_withDensity _ (by fun_prop) _ (η.measurable_coe hs),
     Measure.bind_apply hs (Kernel.aemeasurable _), lintegral_const_mul _ (η.measurable_coe hs)]
 
