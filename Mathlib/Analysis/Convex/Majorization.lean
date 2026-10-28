@@ -5,18 +5,19 @@ Authors: Marcin Bugaj
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Data.Fin.Tuple.Sort
 public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Order.OrderDual
+public import Mathlib.Order.SuccPred.Archimedean
+public import Mathlib.Order.SuccPred.Fin
+public import Mathlib.Order.SuccPred.LinearLocallyFinite
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Tauto
-public import Mathlib.Data.Fin.Tuple.Sort
-public import Mathlib.Order.OrderDual
-public import Mathlib.Data.Fin.SuccPredOrder
-public import Mathlib.Order.SuccPred.Archimedean
-public import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Majorization
@@ -457,7 +458,7 @@ private lemma exists_subset_sum_le_of_relatedByTTransform {n} {a b : Fin n → K
   · refine ⟨insert k (s.erase l), ?_, ?_⟩
     · have hcard_erase := Finset.card_erase_of_mem hls
       have hcard_insert :=
-        Finset.card_insert_of_notMem (Finset.not_mem_subset (Finset.erase_subset l s) hks)
+        Finset.card_insert_of_notMem (Finset.notMem_subset (Finset.erase_subset l s) hks)
       rw [hcard_erase] at hcard_insert
       have hs_ne : #s ≠ 0 := Finset.card_ne_zero_of_mem hls
       rwa [show #s - 1 + 1 = #s from by omega] at hcard_insert
@@ -469,7 +470,7 @@ private lemma exists_subset_sum_le_of_relatedByTTransform {n} {a b : Fin n → K
       rw [bl]
       rw [←Finset.sum_erase_add (insert k (s.erase l)) (b ·) (Finset.mem_insert_self k (s.erase l))]
       rw [show (insert k (s.erase l)).erase k = s.erase l from
-          Finset.erase_insert (Finset.not_mem_subset (Finset.erase_subset l s) hks)]
+          Finset.erase_insert (Finset.notMem_subset (Finset.erase_subset l s) hks)]
       rw [add_le_add_iff_left]
       nlinarith [lambda_0_1.1, lambda_0_1.2, ak_gt_al]
   · -- Neither `k` nor `l` lies in `s`, so `a` and `b` agree on all of `s`.
