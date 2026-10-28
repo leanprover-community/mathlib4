@@ -35,12 +35,10 @@ namespace SchwartzMap
 variable {E} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {F} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-section
-
 variable {φ : E → ℝ} (hφ : ContDiff ℝ ∞ φ) (hφc : HasCompactSupport φ) (hφ1 : φ =ᶠ[𝓝 0] 1)
   (f : 𝓢(E, F))
-include hφ hφc hφ1
 
+include hφ hφc hφ1 in
 /-- Multiplying a Schwartz function `f` by the rescaled cutoff `fun x ↦ φ (ε • x)` converges to
 `f` in each Schwartz seminorm as `ε → 0`, when `φ` is smooth, compactly supported, and equal to
 `1` near the origin. -/
@@ -94,6 +92,7 @@ lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub (k n : ℕ) :
           · exact hg i (by grind) x
           · exact le_seminorm ℝ _ _ f x
 
+include hφ hφc hφ1 in
 /-- As `ε → 0`, multiplying `f` by the rescaled cutoff `fun x ↦ φ (ε • x)` converges to `f` in
 the Schwartz topology, for any smooth, compactly supported `φ` equal to `1` near the origin. -/
 theorem tendsto_smulLeftCLM_comp_smul :
@@ -102,8 +101,6 @@ theorem tendsto_smulLeftCLM_comp_smul :
   rintro ⟨k, n⟩ δ hδ
   simpa using (tendsto_seminorm_smulLeftCLM_comp_smul_sub hφ hφc hφ1 f k n).eventually
     (isOpen_Iio.mem_nhds hδ)
-
-end
 
 /-- Compactly supported Schwartz functions are dense in `𝓢(E, F)`. -/
 theorem dense_hasCompactSupport [FiniteDimensional ℝ E] :
