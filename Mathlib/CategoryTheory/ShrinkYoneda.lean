@@ -333,8 +333,8 @@ lemma comp_shrinkYonedaMap_comp_eq_uliftYonedaMap
     uliftYonedaMap.{w} F X := by
   ext
   simp [shrinkYonedaMap_app_hom_apply.{max w v v'}, uliftYonedaMap,
-    uliftYonedaIsoShrinkYoneda_inv_app_app,
-    uliftYonedaIsoShrinkYoneda_hom_app_app]
+    uliftYonedaIsoShrinkYoneda_hom_app_app.{max v' w},
+    uliftYonedaIsoShrinkYoneda_inv_app_app.{max v w}]
 
 end Yoneda
 
