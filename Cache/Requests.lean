@@ -307,8 +307,9 @@ def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
 
 /-- Fail a download that averages under 1 byte/s (`--speed-limit`) for 30 s (`--speed-time`),
 curl exit 28. The limit is the lowest possible, so a slow transfer that still moves bytes
-passes, and curl measures each transfer on its own. curl retries a failed transfer on the
-same connection, so only the retry pass in `downloadFiles` reaches a new one. -/
+passes, and curl measures each transfer on its own. The `--retry` attempts reuse the frozen
+connection. The retry pass in `downloadFiles` runs a new curl process, which opens a new
+connection. -/
 def curlStallArgs : Array String :=
   #["--speed-time", "30", "--speed-limit", "1"]
 
