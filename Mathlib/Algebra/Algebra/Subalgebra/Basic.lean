@@ -941,7 +941,7 @@ lemma _root_.Center.coe_smul_self (r : R) (z : Center A) :
     (r • z).val = r • z.val := rfl
 
 @[simp]
-lemma _root_.Center.coe_algebraMpa (r : R) :
+lemma _root_.Center.coe_algebraMap (r : R) :
     (algebraMap R (Center A) r).val = algebraMap R A r := rfl
 
 /-- An isomorphism morphism between `R`-algebras induces an `R`-algebra isomorphism between their

@@ -432,7 +432,7 @@ instance instField : Field (center K) where
   qsmul_def := fun _ _ => rfl
 
 @[simp]
-theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
+theorem center.coe_inv (a : center K) : a⁻¹.val = a.val⁻¹ :=
   rfl
 
 @[simp]
@@ -441,13 +441,9 @@ theorem center.coe_div (a b : center K) : ((a / b : center K) : K) = (a : K) / (
 
 instance : Field (Center K) := inferInstanceAs <| Field (center K)
 
-@[simp]
-theorem _root_.Center.coe_inv' (a : Center K) : ((a⁻¹ : Center K) : K) = (a : K)⁻¹ :=
-  rfl
+@[simp] theorem _root_.Center.coe_inv' (a : Center K) : a⁻¹.val = a.val⁻¹ := rfl
 
-@[simp]
-theorem _root_.Center.coe_div (a b : Center K) : ((a / b : Center K) : K) = (a : K) / (b : K) :=
-  rfl
+@[simp] theorem _root_.Center.coe_div (a b : Center K) : (a / b).val = a.val / b.val := rfl
 
 end DivisionRing
 

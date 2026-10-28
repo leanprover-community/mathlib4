@@ -284,7 +284,7 @@ is isomorphic to the center of its opposite. -/
 def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ := Center.toMulOppositeRingEquiv
 
 @[simp]
-lemma _root_.Center._coe_natCast (n : ℕ) : (n : Center R).val = (n : R) := rfl
+lemma _root_.Center.coe_natCast (n : ℕ) : (n : Center R).val = (n : R) := rfl
 
 /-- The inclusion of `Center R` into `R` as a `RingHom`. -/
 @[simps!]
