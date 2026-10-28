@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
+public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
 # Preservation of limits, as a property of objects in the functor category
@@ -49,6 +50,21 @@ lemma congr_preservesLimit {F F' : K ⥤ J} (e : F ≅ F') :
 instance (F : K ⥤ J) : (preservesLimit (C := C) F).IsClosedUnderIsomorphisms where
   of_iso e _ := preservesLimit_of_natIso _ e
 
+instance (F : K ⥤ J) : (preservesLimit (C := C) F).IsStableUnderRetracts where
+  of_retract {G₁ G₂} r h := ⟨fun {c} hc ↦ ⟨{
+    lift s :=
+      (isLimitOfPreserves G₂ hc).lift
+        ((Cone.postcompose (Functor.whiskerLeft F r.i)).obj s) ≫ r.r.app _
+    fac s j := by
+      dsimp
+      rw [Category.assoc, ← r.r.naturality, dsimp% (isLimitOfPreserves G₂ hc).fac_assoc]
+      simp
+    uniq s m hm := by
+      rw [← cancel_mono (r.i.app c.pt)]
+      refine (isLimitOfPreserves G₂ hc).hom_ext (fun j ↦ ?_)
+      simp [← NatTrans.naturality, ← NatTrans.naturality_assoc,
+        dsimp% (isLimitOfPreserves G₂ hc).fac_assoc, ← hm] }⟩⟩
+
 variable {K} in
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves the colimit of a functor `F : K ⥤ J`. -/
@@ -67,6 +83,20 @@ lemma congr_preservesColimit {F F' : K ⥤ J} (e : F ≅ F') :
 
 instance (F : K ⥤ J) : (preservesColimit (C := C) F).IsClosedUnderIsomorphisms where
   of_iso e _ := preservesColimit_of_natIso _ e
+
+instance (F : K ⥤ J) : (preservesColimit (C := C) F).IsStableUnderRetracts where
+  of_retract {G₁ G₂} r h := ⟨fun {c} hc ↦ ⟨{
+    desc s :=
+      r.i.app _ ≫ (isColimitOfPreserves G₂ hc).desc
+        ((Cocone.precompose (Functor.whiskerLeft F r.r)).obj s)
+    fac s j := by
+      dsimp
+      rw [r.i.naturality_assoc, dsimp% (isColimitOfPreserves G₂ hc).fac]
+      simp
+    uniq s m hm := by
+      rw [← cancel_epi (r.r.app c.pt)]
+      refine (isColimitOfPreserves G₂ hc).hom_ext (fun j ↦ ?_)
+      simp [dsimp% (isColimitOfPreserves G₂ hc).fac, ← hm] }⟩⟩
 
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves limits of shape `K`. -/
@@ -92,6 +122,10 @@ lemma congr_preservesLimitsOfShape (e : K ≌ K') :
     fun _ ↦ preservesLimitsOfShape_of_equiv e.symm _⟩
 
 instance : (preservesLimitsOfShape (J := J) (C := C) K).IsClosedUnderIsomorphisms := by
+  rw [preservesLimitsOfShape_eq_iSup]
+  infer_instance
+
+instance : (preservesLimitsOfShape (J := J) (C := C) K).IsStableUnderRetracts := by
   rw [preservesLimitsOfShape_eq_iSup]
   infer_instance
 
@@ -122,6 +156,10 @@ instance : (preservesColimitsOfShape (J := J) (C := C) K).IsClosedUnderIsomorphi
   rw [preservesColimitsOfShape_eq_iSup]
   infer_instance
 
+instance : (preservesColimitsOfShape (J := J) (C := C) K).IsStableUnderRetracts := by
+  rw [preservesColimitsOfShape_eq_iSup]
+  infer_instance
+
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves finite limits. -/
 abbrev preservesFiniteLimits : ObjectProperty (J ⥤ C) := PreservesFiniteLimits
@@ -133,6 +171,17 @@ lemma preservesFiniteLimits_iff (F : J ⥤ C) :
 instance : (preservesFiniteLimits (J := J) (C := C)).IsClosedUnderIsomorphisms where
   of_iso e _ := preservesFiniteLimits_of_natIso e
 
+lemma preservesFiniteLimits_eq_iSup :
+    preservesFiniteLimits (J := J) (C := C) =
+      ⨅ (K : Type) (_ : SmallCategory K) (_ : FinCategory K), preservesLimitsOfShape K := by
+  ext F
+  simp only [preservesFiniteLimits_iff, iInf_apply, preservesLimitsOfShape_iff, iInf_Prop_eq]
+  exact ⟨fun _ _ _ _ ↦ inferInstance, fun h ↦ ⟨fun _ _ _ ↦ h _ _ inferInstance⟩⟩
+
+instance : (preservesFiniteLimits (J := J) (C := C)).IsStableUnderRetracts := by
+  rw [preservesFiniteLimits_eq_iSup]
+  infer_instance
+
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves finite colimits. -/
 abbrev preservesFiniteColimits : ObjectProperty (J ⥤ C) := PreservesFiniteColimits
@@ -143,6 +192,17 @@ instance : (preservesFiniteColimits (J := J) (C := C)).IsClosedUnderIsomorphisms
 @[simp]
 lemma preservesFiniteColimits_iff (F : J ⥤ C) :
     preservesFiniteColimits F ↔ PreservesFiniteColimits F := Iff.rfl
+
+lemma preservesFiniteColimits_eq_iSup :
+    preservesFiniteColimits (J := J) (C := C) =
+      ⨅ (K : Type) (_ : SmallCategory K) (_ : FinCategory K), preservesColimitsOfShape K := by
+  ext F
+  simp only [preservesFiniteColimits_iff, iInf_apply, preservesColimitsOfShape_iff, iInf_Prop_eq]
+  exact ⟨fun _ _ _ _ ↦ inferInstance, fun h ↦ ⟨fun _ _ _ ↦ h _ _ inferInstance⟩⟩
+
+instance : (preservesFiniteColimits (J := J) (C := C)).IsStableUnderRetracts := by
+  rw [preservesFiniteColimits_eq_iSup]
+  infer_instance
 
 instance [HasColimitsOfShape K' C]
     [PreservesLimitsOfShape K (colim (J := K') (C := C))] :
