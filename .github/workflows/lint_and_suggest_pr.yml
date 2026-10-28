@@ -29,7 +29,7 @@ jobs:
     steps:
       # Applies `lake exe mk_all`, `lake exe lint-style --fix` and `scripts/lint-bib.sh`, and
       # leaves the results in the working tree for the last step to pick up.
-      - uses: leanprover-community/lint-style-action@a5e3ef275cc682ba79c1f8ba34ae2ade5d8d2101 # 2026-10-23
+      - uses: leanprover-community/lint-style-action@a5e3ef275cc682ba79c1f8ba34ae2ade5d8d2101 # 2026-10-28
         with:
           mode: fix-worktree
           lint-bib-file: true
