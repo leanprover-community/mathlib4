@@ -6,8 +6,9 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
+
+import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # The von Mangoldt Function

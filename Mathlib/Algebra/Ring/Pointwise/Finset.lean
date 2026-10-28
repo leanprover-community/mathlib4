@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Ring.Pointwise.Set
-public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Pointwise.Set
 
 /-!
 # Pointwise operations of sets in a ring

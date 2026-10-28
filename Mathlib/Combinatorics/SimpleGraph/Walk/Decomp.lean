@@ -5,7 +5,6 @@ Authors: Kyle Miller, Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 
 /-!

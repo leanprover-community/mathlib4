@@ -5,9 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.Algebra.Polynomial.Eval.Degree
-public import Mathlib.Algebra.Prime.Defs
 
 /-!
 # Mapping irreducible polynomials
@@ -20,7 +18,6 @@ public import Mathlib.Algebra.Prime.Defs
 
 public section
 
-noncomputable section
 
 open Polynomial
 
@@ -46,7 +43,7 @@ lemma Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
   have q := (leadingCoeff_mul a b).symm
   rw [← h, h_mon] at q
   refine (h_irr.isUnit_or_isUnit <|
-    (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp ?_ ?_ <;>
+    congr(Polynomial.map φ $h).trans (Polynomial.map_mul φ)).imp ?_ ?_ <;>
       apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
     apply IsUnit.of_mul_eq_one
   · exact q

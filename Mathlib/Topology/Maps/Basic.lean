@@ -6,7 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Order
-public import Mathlib.Topology.NhdsSet
+
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Specific classes of maps between topological spaces
@@ -343,9 +344,6 @@ protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
 theorem of_comp_of_isCoinducing (hgf : IsQuotientMap (g ∘ f)) (hf : IsCoinducing f) :
     IsQuotientMap g :=
   ⟨hf.of_comp_iff.mp hgf.1, hgf.2.of_comp⟩
-
-@[deprecated (since := "2026-03-21")]
-alias of_comp_of_eq_coinduced := of_comp_of_isCoinducing
 
 protected theorem of_comp_iff (hf : IsQuotientMap f) :
     IsQuotientMap (g ∘ f) ↔ IsQuotientMap g := by
@@ -722,7 +720,7 @@ lemma IsOpenEmbedding.isOpen_iff_image_isOpen (hf : IsOpenEmbedding f) {s : Set 
     IsOpen s ↔ IsOpen (f '' s) where
   mp := hf.isOpenMap s
   mpr h := by
-    convert! ← h.preimage hf.isEmbedding.continuous
+    convert ← h.preimage hf.isEmbedding.continuous
     apply preimage_image_eq _ hf.injective
 
 theorem IsOpenEmbedding.tendsto_nhds_iff [TopologicalSpace Z] {f : ι → Y} {l : Filter ι} {y : Y}
@@ -874,7 +872,7 @@ protected lemma of_comp (hg : IsEmbedding g) (hgf : IsClosedEmbedding (g ∘ f))
     IsClosedEmbedding f where
   __ := hg.of_comp_iff.mp hgf.isEmbedding
   isClosed_range := by
-    convert! hg.isClosed_preimage _ hgf.isClosed_range
+    convert hg.isClosed_preimage _ hgf.isClosed_range
     rw [range_comp, hg.injective.preimage_image]
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :

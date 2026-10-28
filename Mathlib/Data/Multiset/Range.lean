@@ -52,7 +52,7 @@ theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   List.self_mem_range_succ
 
 theorem range_add (a b : ℕ) : range (a + b) = range a + (range b).map (a + ·) :=
-  congr_arg ((↑) : List ℕ → Multiset ℕ) List.range_add
+  congr($List.range_add)
 
 theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
     Disjoint (range a) (m.map (a + ·)) := by

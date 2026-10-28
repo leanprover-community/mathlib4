@@ -6,12 +6,12 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Category.GaloisConnection
-public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.CategoryTheory.Limits.Preorder
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Lattice
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Sets.Opens
-public import Mathlib.CategoryTheory.Limits.Preserves.Lattice
+
+import Mathlib.CategoryTheory.Limits.Preorder
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # The category of open sets in a topological space.
@@ -269,7 +269,7 @@ theorem map_comp_eq (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) = map g ⋙ map 
 then the functors `Opens Y ⥤ Opens X` they induce are isomorphic.
 -/
 def mapIso (f g : X ⟶ Y) (h : f = g) : map f ≅ map g :=
-  NatIso.ofComponents fun U => eqToIso (by rw [congr_arg map h])
+  NatIso.ofComponents fun U => eqToIso (by rw [congr(map $h)])
 
 theorem map_eq (f g : X ⟶ Y) (h : f = g) : map f = map g := by
   subst h
@@ -502,7 +502,6 @@ theorem map_functor_eq {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     ((Opens.map U.inclusion').obj <| U.isOpenEmbedding.functor.obj V) = V :=
   TopologicalSpace.Opens.map_functor_eq' _ U.isOpenEmbedding V
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat.{u}} {U : Opens X} (V : Opens U) :
     U.isOpenEmbedding.isOpenMap.adjunction.counit.app (U.isOpenEmbedding.functor.obj V) =

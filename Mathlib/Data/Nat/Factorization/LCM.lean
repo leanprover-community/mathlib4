@@ -6,7 +6,8 @@ Authors: Paul Lezeau
 module
 
 public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.Data.Nat.GCD.BigOperators
+
+import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
 # Lemmas about `factorizationLCMLeft`

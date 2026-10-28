@@ -8,11 +8,9 @@ module
 public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Tactic.RCases
 public meta import Lean.Meta.Tactic.Assumption
-
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
 public import Mathlib.Tactic.Relation.Rfl
-public import Lean.Elab.ConfigEval
-public import Mathlib.Basic.Logic.Basic
 
 /-!
 # The `congr!` tactic
@@ -609,11 +607,11 @@ where
       return mvarId
   loop (mvarId : MVarId) : CongrMetaM (List MVarId) :=
     mvarId.withContext do
-      let ty ← withReducible <| mvarId.getType'
+      let ty ← withReducible mvarId.getType'
       if ty.isForall then
         let mvarId := (← heqImpOfEqImp mvarId).getD mvarId
         let mvarId := (← eqImpOfIffImp mvarId).getD mvarId
-        let ty ← withReducible <| mvarId.getType'
+        let ty ← withReducible mvarId.getType'
         if ty.isArrow then
           if ← (isTrivialType ty.bindingDomain!
                 <||> (← getLCtx).anyM (fun decl => do
@@ -710,7 +708,7 @@ def Lean.MVarId.congrN! (mvarId : MVarId)
     (depth? : Option Nat := none) (config : Congr!.Config := {})
     (patterns : List (TSyntax `rintroPat) := []) :
     MetaM (List MVarId) := do
-  let ty ← withReducible <| mvarId.getType'
+  let ty ← withReducible mvarId.getType'
   -- A reasonably large yet practically bounded default recursion depth.
   let defaultDepth := min 1000000 (8 * (1 + ty.approxDepth.toNat))
   let depth := depth?.getD defaultDepth

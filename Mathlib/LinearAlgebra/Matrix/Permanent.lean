@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.LinearAlgebra.Matrix.RowCol
+
 /-!
 # Permanent of a matrix
 
@@ -61,7 +62,7 @@ theorem permanent_unique {n : Type*} [Unique n] [DecidableEq n] [Fintype n] (A :
 theorem permanent_eq_elem_of_subsingleton [Subsingleton n] (A : Matrix n n R) (k : n) :
     permanent A = A k k := by
   have := uniqueOfSubsingleton k
-  convert! permanent_unique A
+  convert permanent_unique A
 
 theorem permanent_eq_elem_of_card_eq_one {A : Matrix n n R} (h : card n = 1) (k : n) :
     permanent A = A k k :=
@@ -89,7 +90,7 @@ theorem permanent_permute_rows (σ : Perm n) (M : Matrix n n R) :
 @[simp]
 theorem permanent_smul (M : Matrix n n R) (c : R) :
     permanent (c • M) = c ^ Fintype.card n * permanent M := by
-  simp only [permanent, smul_apply, smul_eq_mul, Finset.mul_sum]
+  simp only [permanent, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum]
   congr
   ext
   rw [mul_comm]

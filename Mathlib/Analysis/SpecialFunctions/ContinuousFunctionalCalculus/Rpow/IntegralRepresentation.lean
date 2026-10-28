@@ -5,11 +5,12 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.RingInverseOrder
+import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-!
 # Integral representations of `rpow`
@@ -359,9 +360,6 @@ lemma exists_measure_rpow_eq_integral_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) :
   · simp_rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx,
       NNReal.smul_def, C, NNReal.coe_mk, smul_eq_mul]
 
-@[deprecated (since := "2026-04-03")]
-alias exists_measure_rpow_eq_integral := exists_measure_rpow_eq_integral_rpowIntegrand₀₁
-
 end ZeroOne
 
 section OneTwo
@@ -486,7 +484,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
   obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral_rpowIntegrand₀₁ hp
   refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
   nontriviality A
-  have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
+  have p_pos : 0 < (p : ℝ) := mod_cast hp.1
   let f t := rpowIntegrand₀₁ p t
   let maxr := sSup (quasispectrum ℝ a)
   have maxr_nonneg : 0 ≤ maxr :=
@@ -529,7 +527,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂ [CompleteSpac
       ∧ a ^ p = ∫ t in Ioi 0, cfcₙ (rpowIntegrand₁₂ p t) a ∂μ := by
   obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral_rpowIntegrand₁₂ hp
   refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
-  have hpcoe : (p : ℝ) ∈ Ioo 1 2 := by exact_mod_cast hp
+  have hpcoe : (p : ℝ) ∈ Ioo 1 2 := mod_cast hp
   let f t := rpowIntegrand₁₂ p t
   let maxr := sSup (quasispectrum ℝ a)
   have maxr_nonneg : 0 ≤ maxr :=

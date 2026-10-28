@@ -6,8 +6,6 @@ Authors: David Loeffler, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Analytic.Order
-public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
@@ -290,7 +288,7 @@ lemma inv {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x
     rw [Pi.inv_apply, (smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)).mp hfz,
       inv_zero]
   · -- interesting case: use local formula for `f`
-    obtain ⟨n, g, hg_an, hg_ne, hg_eq⟩ := hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h_eq
+    obtain ⟨n, g, hg_an, hg_ne, hg_eq⟩ := hf.exists_eventuallyEq_pow_smul_ne_zero_iff.mpr h_eq
     have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ (m + 1)) x :=
       (analyticAt_id.sub analyticAt_const).pow _
     -- use `m + 1` rather than `m` to damp out any silly issues with the value at `z = x`
@@ -298,7 +296,7 @@ lemma inv {f : 𝕜 → 𝕜'} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp
-    · replace hfg := congr_arg (·⁻¹) hfg
+    · replace hfg := congr($hfg⁻¹)
       simp only [smul_inv₀] at hfg
       rw [inv_smul_eq_iff₀ (pow_ne_zero m (sub_ne_zero.mpr hz_ne)), smul_comm,
         eq_inv_smul_iff₀ (pow_ne_zero n (sub_ne_zero.mpr hz_ne))] at hfg

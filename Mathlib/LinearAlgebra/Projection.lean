@@ -5,11 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Projection to a subspace
@@ -18,7 +17,7 @@ In this file we define
 * `Submodule.projectionOnto (p q : Submodule R E) (h : IsCompl p q)`:
   the projection of a module `E` to a submodule `p` along its complement `q`;
   it is the unique linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
-* `Submodule.projection` (p q : Submodule R E) (h : IsCompl p q)`:
+* `Submodule.projection (p q : Submodule R E) (h : IsCompl p q)`:
   the projection `Submodule.projectionOnto` as a linear map from `E` to `E`.
 * `Submodule.isComplEquivProj p`: equivalence between submodules `q`
   such that `IsCompl p q` and projections `f : E → p`, `∀ x ∈ p, f x = x`.
@@ -534,7 +533,7 @@ correspondence with linear maps to the submodule that restrict to the identity o
   toFun f := ⟨f.1.codRestrict _ fun x ↦ by simp_rw [← f.2.2]; exact mem_range_self f.1 x,
     fun ⟨x, hx⟩ ↦ Subtype.ext <| by
       obtain ⟨x, rfl⟩ := f.2.2.symm ▸ hx
-      exact DFunLike.congr_fun f.2.1 x⟩
+      congrm $(f.2.1) x⟩
   invFun f := ⟨p.subtype ∘ₗ f.1, LinearMap.ext fun x ↦ by simp [f.2], le_antisymm
     ((range_comp_le_range _ _).trans_eq p.range_subtype)
     fun x hx ↦ ⟨x, Subtype.ext_iff.1 <| f.2 ⟨x, hx⟩⟩⟩
@@ -664,7 +663,7 @@ open LinearMap in
 its range along its kernel. -/
 theorem IsIdempotentElem.eq_projection {T : E →ₗ[R] E} (hT : IsIdempotentElem T) :
     T = T.range.projection T.ker hT.isCompl := by
-  convert! ofIsCompl_subtype_zero_eq hT.isCompl
+  convert ofIsCompl_subtype_zero_eq hT.isCompl
   exact ofIsCompl_eq _ (by simp [hT.isProj_range.map_id]) (by simp) |>.symm
 
 open LinearMap in

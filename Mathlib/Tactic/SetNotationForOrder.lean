@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public meta import Lean.Elab.App
+public meta import Mathlib.Lean.Name
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Util.AddRelatedDecl
@@ -111,7 +112,7 @@ public def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getP
 
 /-! ## Elaboration -/
 
-/-- Linter for ambiguous use of subset notation notation. -/
+/-- Linter for ambiguous use of subset notation. -/
 register_option linter.setNotationForOrder : Bool := {
   defValue := true
   descr := "Linter for ambiguous use of subset notation notation" }

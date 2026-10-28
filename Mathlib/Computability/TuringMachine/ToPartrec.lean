@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Computability.TuringMachine.Config
 public import Mathlib.Computability.TuringMachine.StackTuringMachine
 public import Mathlib.Data.Num.Lemmas
 public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
-public import Mathlib.Computability.TuringMachine.Config
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -339,7 +339,7 @@ def tr : Λ' → Stmt'
       goto fun s =>
         cond (natEnd (s.getD default)) (Λ'.ret k) <|
           Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
-  | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
+  | Λ'.ret Cont'.halt => (load fun _ => none) halt
 
 @[simp]
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
@@ -970,7 +970,7 @@ def trStmts₁ : Λ' → Finset Λ'
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
-  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
   all_goals
     simp +contextual only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]

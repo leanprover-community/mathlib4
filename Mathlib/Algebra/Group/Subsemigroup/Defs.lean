@@ -8,8 +8,8 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Tactic.FastInstance
+public import Mathlib.Basic.SetLike.Basic
+public import Mathlib.Tactic.GrindAttrs
 
 /-!
 # Subsemigroups: definition
@@ -74,7 +74,7 @@ export AddMemClass (add_mem)
 
 attribute [to_additive] MulMemClass
 
-attribute [aesop 90% (rule_sets := [SetLike])] mul_mem add_mem
+attribute [aesop 90% (rule_sets := [SetLike]), membership .] mul_mem add_mem
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 structure Subsemigroup (M : Type*) [Mul M] where
@@ -98,7 +98,7 @@ namespace Subsemigroup
 instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
-@[to_additive] instance : PartialOrder (Subsemigroup M) := .ofSetLike (Subsemigroup M) M
+@[to_additive] instance : PartialOrder (Subsemigroup M) := .ofSetLike (Subsemigroup M)
 
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)

@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Hom
 public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-! # Subrings invariant under an action
 

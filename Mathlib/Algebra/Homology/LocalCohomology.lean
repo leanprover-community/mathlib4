@@ -8,9 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.CategoryTheory.Abelian.Ext
-public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.RingTheory.Finiteness.Ideal
-public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Noetherian.Defs
 
@@ -81,7 +79,7 @@ variable {R : Type u} [CommRing R] {D : Type u₁} [Category.{v₁} D]
 variable {E : Type u₂} [Category.{v₂} E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
 /-- The diagram `ringModIdeals (I' ⋙ I)` is isomorphism (in fact, definitionally equal)
-to the the diagram `I' ⋙ ringModIdeals I`. -/
+to the diagram `I' ⋙ ringModIdeals I`. -/
 def ringModIdealComp : ringModIdeals (I' ⋙ I) ≅ I' ⋙ ringModIdeals I :=
   NatIso.ofComponents (fun _ ↦ .refl _)
 

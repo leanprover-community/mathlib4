@@ -5,10 +5,9 @@ Authors: Jineon Baek, Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
-public import Mathlib.Tactic.GCongr
+
 import Mathlib.RingTheory.Polynomial.IsIntegral
 
 /-!
@@ -52,7 +51,7 @@ private lemma rot_coprime
   rw [add_eq_zero_iff_neg_eq] at heq
   rw [← IsCoprime.pow_iff hq.bot_lt hr.bot_lt, ← isCoprime_mul_units_left hCv hCw,
     ← heq, IsCoprime.neg_right_iff]
-  convert! IsCoprime.add_mul_left_right hab.symm 1 using 2
+  convert IsCoprime.add_mul_left_right hab.symm 1 using 2
   rw [mul_one]
 
 private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
@@ -165,11 +164,9 @@ private theorem Polynomial.flt_catalan_aux
   · generalize eq_d : a.natDegree = d
     -- set up infinite descent
     -- strong induct on `d := a.natDegree`
-    induction d
-      using Nat.case_strong_induction_on
-      generalizing a b c ha hb hc hab heq with
-    | hz => rfl
-    | hi d ih_d => -- have derivatives of `a, b, c` zero
+    induction d using Nat.case_strong_induction_on generalizing a b c ha hb hc hab heq with
+    | zero => rfl
+    | succ d ih_d => -- have derivatives of `a, b, c` zero
       obtain ⟨ad, bd, cd⟩ := flt_catalan_deriv
         hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
       -- find contracts `ca, cb, cc` so that `a(k) = ca(k^ch)`
@@ -261,7 +258,7 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
     rw [← hc', C_ne_zero] at hc
     exact ⟨ha.right.isUnit_C, hb.right.isUnit_C, hc.right.isUnit_C⟩
   apply flt hn chn ha.right hb.right hc.right _ heq
-  convert! isCoprime_div_gcd_div_gcd _
+  convert isCoprime_div_gcd_div_gcd _
   · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_a.symm
   · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_b.symm
   · rw [eq_b]

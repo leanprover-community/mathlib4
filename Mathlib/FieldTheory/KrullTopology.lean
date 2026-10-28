@@ -7,7 +7,8 @@ module
 
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
-public import Mathlib.Topology.Algebra.OpenSubgroup
+
+import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # Krull topology
@@ -262,7 +263,7 @@ theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
   open IntermediateField in
   let E := adjoin K {x}
   have hL : FiniteDimensional K E := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
-  convert! fixingSubgroup_isOpen E
+  convert fixingSubgroup_isOpen E
   ext g
   simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
 
