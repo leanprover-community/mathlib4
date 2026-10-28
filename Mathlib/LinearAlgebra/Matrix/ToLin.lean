@@ -990,7 +990,7 @@ theorem smul_leftMulMatrix {G} [Group G] [DistribMulAction G S]
     leftMulMatrix (g • b) x = leftMulMatrix b x := by
   ext
   simp_rw [leftMulMatrix_apply, LinearMap.toMatrix_apply, coe_lmul_eq_mul, LinearMap.mul_apply',
-    Basis.repr_smul, Basis.smul_apply, LinearEquiv.trans_apply,
+    Basis.repr_smul, smul_apply, LinearEquiv.trans_apply,
     DistribMulAction.toLinearEquiv_symm_apply, mul_smul_comm, inv_smul_smul]
 
 variable {A M n : Type*} [Fintype n] [DecidableEq n]
