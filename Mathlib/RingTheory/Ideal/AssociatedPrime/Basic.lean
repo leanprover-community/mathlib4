@@ -107,9 +107,9 @@ variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] 
 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 
-theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.toIsPrime
+theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
-instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.toIsPrime
+instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.1
 
 theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x : M, I = colon ⊥ {x} :=
@@ -117,8 +117,8 @@ theorem isAssociatedPrime_iff [IsNoetherianRing R] :
 
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
     IsAssociatedPrime I M' := by
-  obtain ⟨x, rfl⟩ := h.eq_radical_colon
-  refine ⟨h.toIsPrime, ⟨f x, ?_⟩⟩
+  obtain ⟨x, rfl⟩ := h.2
+  refine ⟨h.1, ⟨f x, ?_⟩⟩
   ext r
   simp_rw [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot, ← map_smul, map_eq_zero_iff f hf]
 
