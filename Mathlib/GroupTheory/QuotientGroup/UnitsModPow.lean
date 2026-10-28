@@ -68,15 +68,8 @@ lemma mk_eq_mk_iff {u v : αˣ} : (u : ModPow α n) = v ↔ ∃ w : αˣ, v = u 
 @[to_additive]
 lemma mk_eq_mk_iff_exists_eq_mul_pow {u v : αˣ} :
     (u : ModPow α n) = v ↔ ∃ w : α, v = u * w ^ n := by
-  refine mk_eq_mk_iff.trans ⟨fun ⟨w, hw⟩ ↦ ⟨w, by simp [hw]⟩, fun ⟨w, hw⟩ ↦ ?_⟩
-  match n with
-  | 0 =>
-    simp only [pow_zero, mul_one, exists_const] at hw ⊢
-    exact Units.ext_iff.mpr hw
-  | n + 1 =>
-    suffices IsUnit w from ⟨this.unit, by ext; simp [hw]⟩
-    refine .of_mul_eq_one_right (v⁻¹ * u * w ^ n) ?_
-    simp [mul_assoc, ← pow_succ, ← hw]
+  rw [← _root_.inv_mul_eq_one, ← mk_inv, ← mk_mul, mk_eq_one_iff_exists_pow_eq_val]
+  exact congr(∃ _, $(Units.eq_inv_mul_iff_mul_eq u |>.trans eq_comm))
 
 @[to_additive]
 lemma mk_mul_mk_mul_mk_eq_one_iff (a b c : αˣ) :
