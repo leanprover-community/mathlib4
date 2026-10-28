@@ -310,7 +310,7 @@ variable [AddCommMonoid α] [CompleteLattice α] [CanonicallyOrderedAdd α] [Top
 theorem CompleteLattice.hasSum : HasSum f (⨆ s : Finset ι, ∑ a ∈ s, f a) :=
   tendsto_atTop_iSup fun _ _ ↦ Finset.sum_le_sum_of_subset
 
-theorem CompleteLattice.summable : Summable f := ⟨_, CompleteLattice.hasSum⟩
+@[simp] theorem CompleteLattice.summable : Summable f := ⟨_, CompleteLattice.hasSum⟩
 
 open CompleteLattice Set
 
