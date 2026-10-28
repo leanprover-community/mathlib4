@@ -505,10 +505,7 @@ theorem spectralRadius_le_nnNorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ 
 @[deprecated (since := "2026-10-27")] alias spectralRadius_le_nnnorm := spectralRadius_le_nnNorm
 
 @[deprecated (since := "2026-08-13")]
-alias spectrum.spectralRadius_le_nnNorm := spectralRadius_le_nnNorm
-
-@[deprecated (since := "2026-10-27")]
-alias spectrum.spectralRadius_le_nnnorm := spectrum.spectralRadius_le_nnNorm
+alias spectrum.spectralRadius_le_nnnorm := spectralRadius_le_nnNorm
 
 theorem exists_nnNorm_quasispectrum_eq_spectralRadius [ProperSpace 𝕜] (a : A) :
     ∃ k ∈ quasispectrum 𝕜 a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by

@@ -246,7 +246,7 @@ theorem exists_norm_proj_le [CompleteSpace X] : ∃ C : ℝ, ∀ A : Finset β, 
     see lemma `bddAbove_range_nnNorm_proj` below. -/
 noncomputable def nnNormProjBound : ℝ≥0 := ⨆ A : Finset β, ‖b.proj A‖₊
 
-@[deprecated (since := "2026-10-27")] alias nnnormProjBound := `bddAbove_range_nnNorm_proj`
+@[deprecated (since := "2026-10-27")] alias nnnormProjBound := nnNormProjBound
 
 /-- The projection norms are bounded above in a complete space. -/
 theorem bddAbove_range_nnNorm_proj [CompleteSpace X] :
@@ -345,7 +345,7 @@ theorem enorm_proj_le_enormProjBound (n : ℕ) : ‖b.proj n‖ₑ ≤ b.enormPr
     see lemma `bddAbove_range_nnNorm_proj` below. -/
 noncomputable def nnNormProjBound : ℝ≥0 := ⨆ n, ‖b.proj n‖₊
 
-@[deprecated (since := "2026-10-27")] alias nnnormProjBound := `bddAbove_range_nnNorm_proj`
+@[deprecated (since := "2026-10-27")] alias nnnormProjBound := nnNormProjBound
 
 /-- The projection norms are bounded above in a complete space. -/
 theorem bddAbove_range_nnNorm_proj [CompleteSpace X] :
