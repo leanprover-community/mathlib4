@@ -96,7 +96,7 @@ theorem natDegree_notMem_eraseLead_support : f.natDegree ∉ (eraseLead f).suppo
 
 theorem eraseLead_support_card_lt (h : f ≠ 0) : #(eraseLead f).support < #f.support := by
   rw [eraseLead_support]
-  exact card_lt_card (erase_ssubset <| natDegree_mem_support_of_nonzero h)
+  exact card_lt_card (erase_ssubset <| natDegree_mem_support_of_ne_zero h)
 
 theorem card_support_eraseLead_add_one (h : f ≠ 0) : #f.eraseLead.support + 1 = #f.support := by
   set c := #f.support with hc
@@ -105,7 +105,7 @@ theorem card_support_eraseLead_add_one (h : f ≠ 0) : #f.eraseLead.support + 1 
     by_contra
     exact h (card_support_eq_zero.mp h₁)
   case succ =>
-    rw [eraseLead_support, card_erase_of_mem (natDegree_mem_support_of_nonzero h), ← hc, h₁]
+    rw [eraseLead_support, card_erase_of_mem (natDegree_mem_support_of_ne_zero h), ← hc, h₁]
     rfl
 
 @[simp]
@@ -194,7 +194,7 @@ theorem eraseLead_natDegree_le_aux : (eraseLead f).natDegree ≤ f.natDegree :=
 theorem eraseLead_natDegree_lt (f0 : 2 ≤ #f.support) : (eraseLead f).natDegree < f.natDegree :=
   lt_of_le_of_ne eraseLead_natDegree_le_aux <|
     ne_natDegree_of_mem_eraseLead_support <|
-      natDegree_mem_support_of_nonzero <| eraseLead_ne_zero f0
+      natDegree_mem_support_of_ne_zero <| eraseLead_ne_zero f0
 
 theorem natDegree_pos_of_eraseLead_ne_zero (h : f.eraseLead ≠ 0) : 0 < f.natDegree := by
   by_contra h₂
@@ -219,7 +219,7 @@ lemma natDegree_eraseLead (h : f.nextCoeff ≠ 0) : f.eraseLead.natDegree = f.na
   have := natDegree_pos_of_nextCoeff_ne_zero h
   refine f.eraseLead_natDegree_le.antisymm <| le_natDegree_of_ne_zero ?_
   rwa [eraseLead_coeff_of_ne _ (tsub_lt_self _ _).ne, ← nextCoeff_of_natDegree_pos]
-  all_goals positivity
+  positivity
 
 lemma natDegree_eraseLead_add_one (h : f.nextCoeff ≠ 0) :
     f.eraseLead.natDegree + 1 = f.natDegree := by
@@ -323,13 +323,13 @@ theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : m
       motive f → motive g → motive (f + g)) (f : R[X]) (df : f.natDegree ≤ N) : motive f := by
   induction hf : #f.support generalizing f with
   | zero =>
-    convert! zero
+    convert zero
     simpa [support_eq_empty, card_eq_zero] using hf
   | succ c hc =>
     rw [← eraseLead_add_C_mul_X_pow f]
     cases c
     · convert C_mul_pow f.natDegree f.leadingCoeff ?_ df
-      · convert! zero_add (C (leadingCoeff f) * X ^ f.natDegree)
+      · convert zero_add (C (leadingCoeff f) * X ^ f.natDegree)
         rw [← card_support_eq_zero, card_support_eraseLead' hf]
       · rw [leadingCoeff_ne_zero, Ne, ← card_support_eq_zero, hf]
         exact zero_ne_one.symm

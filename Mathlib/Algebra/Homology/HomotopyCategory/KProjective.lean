@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.Algebra.Homology.CochainComplexOpposite
+public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 
 /-!
 # K-projective cochain complexes
@@ -45,7 +45,8 @@ class IsKProjective (K : CochainComplex C ℤ) : Prop where
 
 /-- A choice of homotopy to zero for a morphism from a
 K-projective cochain complex to an acyclic cochain complex. -/
-noncomputable irreducible_def IsKProjective.homotopyZero
+@[no_expose]
+noncomputable def IsKProjective.homotopyZero
     {K L : CochainComplex C ℤ} (f : K ⟶ L)
     (hL : L.Acyclic) [K.IsKProjective] :
     Homotopy f 0 :=

@@ -5,11 +5,11 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
 # Eigenvalues are the roots of the minimal polynomial.
@@ -39,7 +39,7 @@ variable {R : Type v} {M : Type w} [CommSemiring R] [AddCommMonoid M] [Module R 
 theorem ker_aeval_ring_hom'_unit_polynomial (f : End R M) (c : R[X]ˣ) :
     LinearMap.ker (aeval f (c : R[X])) = ⊥ :=
   LinearMap.ker_eq_bot'.mpr fun m hm ↦ by
-    simpa [← mul_apply, ← aeval_mul] using congr(c⁻¹.1.aeval f $hm)
+    simpa [← mul_apply_eq_comp, ← aeval_mul] using congr(c⁻¹.1.aeval f $hm)
 
 end CommSemiring
 
@@ -54,7 +54,7 @@ theorem aeval_apply_of_hasEigenvector (h : f.HasEigenvector μ x) :
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna
-    rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
+    rw [mul_comm, pow_succ', mul_assoc, map_mul, mul_apply_eq_comp, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       map_smulₛₗ, RingHom.id_apply, mul_comm]
 
@@ -138,7 +138,7 @@ section FiniteSpectrum
 theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
     Set.Finite (spectrum K f) := by
-  convert! f.finite_hasEigenvalue using 1
+  convert f.finite_hasEigenvalue using 1
   ext x
   exact Module.End.hasEigenvalue_iff_mem_spectrum.symm
 

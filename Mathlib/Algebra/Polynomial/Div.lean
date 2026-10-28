@@ -5,11 +5,12 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
-public import Mathlib.Order.Lattice.Nat
 public import Mathlib.RingTheory.Multiplicity
+
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Order.Lattice.Nat
 
 /-!
 # Division of univariate polynomials
@@ -72,7 +73,7 @@ theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degr
           hr0, not_false_eq_true]
     have hnp : 0 < natDegree p := Nat.cast_lt.1 <| by
       rw [← degree_eq_natDegree hp0]; exact hp
-    have := congr_arg natDegree hr
+    have := congr(natDegree $hr)
     rw [natDegree_mul' hpnr0, natDegree_pow' hpn0', add_mul, add_assoc] at this
     exact
       ne_of_lt
@@ -133,7 +134,7 @@ def divByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).1 else 0
 
-/-- `modByMonic`, denoted as `p  %ₘ q`, gives the remainder of `p` by a monic polynomial `q`. -/
+/-- `modByMonic`, denoted as `p %ₘ q`, gives the remainder of `p` by a monic polynomial `q`. -/
 def modByMonic (p q : R[X]) : R[X] :=
   letI := Classical.decEq R
   if hq : Monic q then (divModByMonicAux p hq).2 else p
@@ -433,7 +434,7 @@ theorem map_dvd_map [Ring S] (f : R →+* S) (hf : Function.Injective f) {x y : 
 
 @[simp]
 theorem modByMonic_one (p : R[X]) : p %ₘ 1 = 0 :=
-  (modByMonic_eq_zero_iff_dvd (by convert! monic_one (R := R))).2 (one_dvd _)
+  (modByMonic_eq_zero_iff_dvd (by convert monic_one (R := R))).2 (one_dvd _)
 
 @[simp]
 theorem divByMonic_one (p : R[X]) : p /ₘ 1 = p := by
@@ -585,7 +586,7 @@ lemma rootMultiplicity_eq_natTrailingDegree' : p.rootMultiplicity 0 = p.natTrail
   refine le_antisymm ?_ ?_
   · rw [rootMultiplicity_le_iff h, map_zero, sub_zero, X_pow_dvd_iff, not_forall]
     exact ⟨p.natTrailingDegree,
-      fun h' ↦ trailingCoeff_nonzero_iff_nonzero.2 h <| h' <| Nat.lt_add_one _⟩
+      fun h' ↦ trailingCoeff_ne_zero.2 h <| h' <| Nat.lt_add_one _⟩
   · rw [le_rootMultiplicity_iff h, map_zero, sub_zero, X_pow_dvd_iff]
     exact fun _ ↦ coeff_eq_zero_of_lt_natTrailingDegree
 
@@ -795,9 +796,10 @@ lemma _root_.Irreducible.not_isRoot_of_natDegree_ne_one
     (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) {x : R} : ¬p.IsRoot x :=
   fun hr ↦ hdeg <| natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hi hr
 
+@[deprecated Irreducible.not_isRoot_of_natDegree_ne_one +typeChanged (since := "2026-09-27")]
 lemma _root_.Irreducible.isRoot_eq_bot_of_natDegree_ne_one
-    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
-  le_bot_iff.mp fun _ ↦ hi.not_isRoot_of_natDegree_ne_one hdeg
+    (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ := by
+  simpa [funext_iff] using fun _ ↦ Irreducible.not_isRoot_of_natDegree_ne_one hi hdeg
 
 lemma _root_.Irreducible.subsingleton_isRoot
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=

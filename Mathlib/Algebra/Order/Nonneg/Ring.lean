@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Algebra.Order.Nonneg.Lattice
 public import Mathlib.Algebra.Order.Ring.InjSurj
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled ordered algebra instance on the type of nonnegative elements
@@ -67,7 +66,7 @@ instance existsAddOfLE [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] 
 
 instance nontrivial [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     Nontrivial (Nonneg α) :=
-  ⟨⟨0, 1, fun h => zero_ne_one (congr_arg Subtype.val h)⟩⟩
+  ⟨⟨0, 1, fun h => zero_ne_one congr($(h).val)⟩⟩
 
 instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
     Nontrivial (Nonneg α) := by

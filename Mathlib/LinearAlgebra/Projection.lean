@@ -5,11 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Projection to a subspace
@@ -18,7 +17,7 @@ In this file we define
 * `Submodule.projectionOnto (p q : Submodule R E) (h : IsCompl p q)`:
   the projection of a module `E` to a submodule `p` along its complement `q`;
   it is the unique linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
-* `Submodule.projection` (p q : Submodule R E) (h : IsCompl p q)`:
+* `Submodule.projection (p q : Submodule R E) (h : IsCompl p q)`:
   the projection `Submodule.projectionOnto` as a linear map from `E` to `E`.
 * `Submodule.isComplEquivProj p`: equivalence between submodules `q`
   such that `IsCompl p q` and projections `f : E → p`, `∀ x ∈ p, f x = x`.
@@ -48,7 +47,7 @@ open Submodule
 theorem ker_id_sub_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) :
     ker (id - p.subtype.comp f) = p := by
   ext x
-  simp only [comp_apply, mem_ker, subtype_apply, sub_apply, id_apply, sub_eq_zero]
+  simp only [comp_apply, mem_ker, subtype_apply, LinearMap.sub_apply, id_apply, sub_eq_zero]
   exact ⟨fun h => h.symm ▸ Submodule.coe_mem _, fun hx => by rw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
 
 theorem range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
@@ -534,7 +533,7 @@ correspondence with linear maps to the submodule that restrict to the identity o
   toFun f := ⟨f.1.codRestrict _ fun x ↦ by simp_rw [← f.2.2]; exact mem_range_self f.1 x,
     fun ⟨x, hx⟩ ↦ Subtype.ext <| by
       obtain ⟨x, rfl⟩ := f.2.2.symm ▸ hx
-      exact DFunLike.congr_fun f.2.1 x⟩
+      congrm $(f.2.1) x⟩
   invFun f := ⟨p.subtype ∘ₗ f.1, LinearMap.ext fun x ↦ by simp [f.2], le_antisymm
     ((range_comp_le_range _ _).trans_eq p.range_subtype)
     fun x hx ↦ ⟨x, Subtype.ext_iff.1 <| f.2 ⟨x, hx⟩⟩⟩
@@ -558,7 +557,7 @@ structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
 theorem isProj_range_iff_isIdempotentElem (f : M →ₗ[S] M) :
     IsProj (range f) f ↔ IsIdempotentElem f := by
   refine ⟨fun ⟨h1, h2⟩ => ?_, fun hf =>
-    ⟨fun x => mem_range_self f x, fun x ⟨y, hy⟩ => by rw [← hy, ← Module.End.mul_apply, hf.eq]⟩⟩
+    ⟨fun x => mem_range_self f x, fun x ⟨y, hy⟩ => by rw [← hy, ← mul_apply_eq_comp, hf.eq]⟩⟩
   ext x
   exact h2 (f x) (h1 x)
 
@@ -612,7 +611,7 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coe_subtype,
       map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
-      coe_subtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
+      coe_subtype, zero_add, map_coe_ker, prodMap_apply, LinearMap.zero_apply, add_zero]
 
 theorem submodule_unique {f : M →ₗ[S] M} {m₁ m₂ : Submodule S M}
     (hf₁ : IsProj m₁ f) (hf₂ : IsProj m₂ f) : m₁ = m₂ := by
@@ -624,7 +623,7 @@ protected theorem range {f : M →ₗ[S] M} (h : IsProj m f) : range f = m :=
 
 variable (S M) in
 protected theorem bot : IsProj (⊥ : Submodule S M) (0 : M →ₗ[S] M) :=
-  ⟨congrFun rfl, by simp only [mem_bot, zero_apply, forall_eq]⟩
+  ⟨congrFun rfl, by simp only [mem_bot, LinearMap.zero_apply, forall_eq]⟩
 
 variable (S M) in
 protected theorem top : IsProj (⊤ : Submodule S M) (id (R := S)) :=
@@ -664,7 +663,7 @@ open LinearMap in
 its range along its kernel. -/
 theorem IsIdempotentElem.eq_projection {T : E →ₗ[R] E} (hT : IsIdempotentElem T) :
     T = T.range.projection T.ker hT.isCompl := by
-  convert! ofIsCompl_subtype_zero_eq hT.isCompl
+  convert ofIsCompl_subtype_zero_eq hT.isCompl
   exact ofIsCompl_eq _ (by simp [hT.isProj_range.map_id]) (by simp) |>.symm
 
 open LinearMap in

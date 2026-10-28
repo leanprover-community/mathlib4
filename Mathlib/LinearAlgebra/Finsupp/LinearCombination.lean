@@ -31,6 +31,8 @@ public import Mathlib.LinearAlgebra.Finsupp.Supported
 function with finite support, module, linear algebra
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 noncomputable section
@@ -157,7 +159,7 @@ theorem linearCombination_embDomain (f : α ↪ α') (l : α →₀ R) :
 @[simp]
 theorem linearCombination_mapDomain (f : α → α') (l : α →₀ R) :
     (linearCombination R v') (mapDomain f l) = (linearCombination R (v' ∘ f)) l :=
-  LinearMap.congr_fun (linearCombination_comp_lmapDomain _ _) l
+  congr($(linearCombination_comp_lmapDomain _ _) l)
 
 @[simp]
 theorem linearCombination_equivMapDomain (f : α ≃ α') (l : α →₀ R) :
@@ -438,14 +440,13 @@ variable (R)
 /-- Pick some representation of `x : span R w` as a linear combination in `w`,
 `((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose`
 -/
-irreducible_def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
+@[no_expose] def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
   ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
 
 @[simp]
 theorem Span.finsupp_linearCombination_repr {w : Set M} (x : span R w) :
-    Finsupp.linearCombination R ((↑) : w → M) (Span.repr R w x) = x := by
-  rw [Span.repr_def]
-  exact ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose_spec
+    Finsupp.linearCombination R ((↑) : w → M) (Span.repr R w x) = x :=
+  ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose_spec
 
 end
 
@@ -499,7 +500,7 @@ lemma Submodule.mem_span_set' {m : M} {s : Set M} :
       ∑ i, f i • (g i : M) = m := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · rcases mem_span_set.1 h with ⟨c, cs, rfl⟩
-    have A : c.support ≃ Fin c.support.card := Finset.equivFin _
+    have A : c.support ≃ Fin #c.support := Finset.equivFin _
     refine ⟨_, fun i ↦ c (A.symm i), fun i ↦ ⟨A.symm i, cs (A.symm i).2⟩, ?_⟩
     rw [Finsupp.sum, ← Finset.sum_coe_sort c.support]
     exact Fintype.sum_equiv A.symm _ (fun j ↦ c j • (j : M)) (fun i ↦ rfl)

@@ -5,10 +5,8 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.BigOperators.RingEquiv
-public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.LinearAlgebra.Pi
@@ -68,9 +66,10 @@ def ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : (m → n → �
 
 end
 
-theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
+protected theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β)
+    (g : β → Matrix m n α) :
     (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
-  (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
+  congr($(s.sum_apply i g) j).trans (s.sum_apply j _)
 
 end Matrix
 
@@ -656,7 +655,7 @@ given that its multiplication is commutative. -/
 def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   toFun M := op (M.transpose.map unop)
   invFun M := M.unop.transpose.map op
-  map_mul' _ _ := unop_injective <| by ext; simp [mul_apply]
+  map_mul' _ _ := unop_injective <| by ext; simp [Matrix.mul_apply]
   map_add' _ _ := rfl
 
 end RingEquiv
@@ -670,7 +669,7 @@ theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
     IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
   mp _ :=
   ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
-               fun _ _ ↦ by ext; simp [mul_apply]
+               fun _ _ ↦ by ext; simp [Matrix.mul_apply]
   .of_injective f (map_injective (op_injective.comp op_injective))⟩
   mpr _ := inferInstance
 
@@ -952,7 +951,7 @@ variable {ι : Type*} [NonUnitalNonAssocSemiring α] [Fintype n]
 theorem sum_mulVec (s : Finset ι) (x : ι → Matrix m n α) (y : n → α) :
     (∑ i ∈ s, x i) *ᵥ y = ∑ i ∈ s, x i *ᵥ y := by
   ext
-  simp only [mulVec, dotProduct, sum_apply, Finset.sum_mul, Finset.sum_apply]
+  simp only [mulVec, dotProduct, Matrix.sum_apply, Finset.sum_mul, Finset.sum_apply]
   rw [Finset.sum_comm]
 
 theorem mulVec_sum (x : Matrix m n α) (s : Finset ι) (y : ι → (n → α)) :
@@ -968,7 +967,7 @@ theorem sum_vecMul (s : Finset ι) (x : ι → (n → α)) (y : Matrix n m α) :
 theorem vecMul_sum (x : n → α) (s : Finset ι) (y : ι → Matrix n m α) :
     x ᵥ* (∑ i ∈ s, y i) = ∑ i ∈ s, x ᵥ* y i := by
   ext
-  simp only [vecMul, dotProduct, sum_apply, Finset.mul_sum, Finset.sum_apply]
+  simp only [vecMul, dotProduct, Matrix.sum_apply, Finset.mul_sum, Finset.sum_apply]
   rw [Finset.sum_comm]
 
 end NonUnitalNonAssocSemiring

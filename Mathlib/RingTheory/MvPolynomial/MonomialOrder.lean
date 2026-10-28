@@ -5,12 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.Lex
-public import Mathlib.Data.Finsupp.MonomialOrder
-public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Data.List.TFAE
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
@@ -90,7 +87,7 @@ and a monomial order `m : MonomialOrder σ`.
 * `m.degree_sub_leadingTerm_lt_iff` : the degree of `f - m.leadingTerm f` is smaller than the
   degree of `f` if and only if `m.degree f ≠ 0`.
 
-## Reference
+## References
 
 [Becker-Weispfenning1993]
 

@@ -6,10 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Action.Continuous
-public import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.FullSubcategory
 public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Category.FinTopCat
+
+import Mathlib.CategoryTheory.Galois.Examples
 
 /-!
 # The Galois category of finite sets with a continuous action of a topological group
@@ -55,16 +56,18 @@ instance (J : Type*) [Category* J] [HasLimitsOfShape J V] (S : Set G) :
   limitsOfShape_le := by
     rintro X ⟨p⟩
     intro g hg
+    ext : 1
     exact (isLimitOfPreserves (Action.forget _ _) p.isLimit).hom_ext
-      (fun j ↦ by simp [dsimp% (p.π.app j).comm g, dsimp% p.prop_diag_obj j g hg])
+      (fun j ↦ by simp [dsimp% (p.π.app j).comm g, p.prop_diag_obj j g hg])
 
 instance (J : Type*) [Category* J] [HasColimitsOfShape J V] (S : Set G) :
     (trivialOnSet V S).IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := by
     rintro X ⟨p⟩
     intro g hg
+    ext : 1
     exact (isColimitOfPreserves (Action.forget _ _) p.isColimit).hom_ext (fun j ↦ by
-      simp [← dsimp% (p.ι.app j).comm g, dsimp% p.prop_diag_obj j g hg])
+      simp [← dsimp% (p.ι.app j).comm g, p.prop_diag_obj j g hg])
 
 instance [HasFiniteLimits V] (S : Set G) :
     (trivialOnSet V S).IsClosedUnderFiniteLimits where
@@ -76,6 +79,7 @@ instance (S : Set G) [HasPullbacks V] :
     (trivialOnSet V S).IsClosedUnderSubobjects where
   prop_of_mono f _ h g hg := by
     have : Mono f.hom := inferInstanceAs (Mono ((Action.forget V G).map f))
+    ext : 1
     simp [← cancel_mono f.hom, f.comm, h g hg]
 
 instance (S : Set G) : (trivialOnSet FintypeCat.{w} S).IsGaloisSubcategory where
@@ -112,7 +116,7 @@ lemma isContinuous_eq_iSup :
   change ContinuousSMul G R.V.obj at h
   simp only [ObjectProperty.prop_iSup_iff]
   exact ⟨OpenSubgroup.iInfOfFinite (fun (v : R.V) ↦ ⟨_, stabilizer_isOpen G v⟩),
-    fun g hg ↦ ConcreteCategory.hom_ext _ _ fun v ↦ OpenSubgroup.iInfOfFinite_le _ v hg⟩
+    fun g hg ↦ by ext v; apply OpenSubgroup.iInfOfFinite_le _ _ hg⟩
 
 instance : (isContinuous FintypeCat.{w} G).IsClosedUnderSubobjects := by
   rw [isContinuous_eq_iSup]

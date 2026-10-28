@@ -6,7 +6,6 @@ Authors: Mihai Iancu, Stefan Kebekus, Sebastian Schleissinger
 module
 
 public import Mathlib.Analysis.Complex.MeanValue
-public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 
 /-!
 # Poisson Integral Formula

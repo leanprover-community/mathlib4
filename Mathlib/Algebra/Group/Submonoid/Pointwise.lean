@@ -113,6 +113,11 @@ theorem coe_sup {N : Type*} [CommMonoid N] (H K : Submonoid N) :
   simp [mem_sup, Set.mem_mul]
 
 @[to_additive]
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Submonoid M) :
+    ((⨆ i, S i : Submonoid M) : Set M) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Submonoid M) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
+@[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
     (r : M) (s : Set N) {x : N} (hx : x ∈ closure s) : ∃ n : ℕ, r ^ n • x ∈ closure (r • s) := by
   induction hx using closure_induction with
@@ -221,9 +226,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
   one_smul S := by
     change S.map _ = S
     simpa only [map_one] using! S.map_id
-  mul_smul _ _ S :=
-    (congr_arg (fun f : Monoid.End M => S.map f) (map_mul _ _ _)).trans
-      (S.map_map _ _).symm
+  mul_smul _ _ S := congr(S.map $(map_mul ..)).trans (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Submonoid.pointwiseMulAction
 

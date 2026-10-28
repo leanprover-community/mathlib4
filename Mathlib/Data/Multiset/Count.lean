@@ -73,12 +73,14 @@ theorem countP_le_of_le {s t} (h : s ≤ t) : countP p s ≤ countP p t :=
   leInductionOn h fun s => s.countP_le
 
 @[simp]
-theorem countP_True {s : Multiset α} : countP (fun _ => True) s = card s :=
-  Quot.inductionOn s fun _l => congrFun List.countP_true _
+theorem countP_true {s : Multiset α} : countP (fun _ => True) s = card s :=
+  Quot.inductionOn s fun _l => congr($List.countP_true _)
+
+@[deprecated (since := "2026-10-27")] alias countP_True := countP_true
 
 @[simp]
 theorem countP_False {s : Multiset α} : countP (fun _ => False) s = 0 :=
-  Quot.inductionOn s fun _l => congrFun List.countP_false _
+  Quot.inductionOn s fun _l => congr($List.countP_false _)
 
 lemma countP_attach (s : Multiset α) : s.attach.countP (fun a : {a // a ∈ s} ↦ p a) = s.countP p :=
   Quotient.inductionOn s fun l => by

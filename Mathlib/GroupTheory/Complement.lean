@@ -259,7 +259,7 @@ lemma isComplement_range_left {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q) :
   rw [isComplement_subgroup_right_iff_bijective]
   refine ⟨?_, fun q ↦ ⟨⟨f q, q, rfl⟩, hf q⟩⟩
   rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
-  exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂)
+  exact Subtype.ext congr(f $(((hf q₁).symm.trans h).trans (hf q₂)))
 
 @[to_additive]
 lemma isComplement_range_right {f : Quotient (QuotientGroup.rightRel H) → G}
@@ -267,7 +267,7 @@ lemma isComplement_range_right {f : Quotient (QuotientGroup.rightRel H) → G}
   rw [isComplement_subgroup_left_iff_bijective]
   refine ⟨?_, fun q ↦ ⟨⟨f q, q, rfl⟩, hf q⟩⟩
   rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
-  exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂)
+  exact Subtype.ext congr(f $(((hf q₁).symm.trans h).trans (hf q₂)))
 
 @[to_additive]
 lemma exists_isComplement_left (H : Subgroup G) (g : G) : ∃ S, IsComplement S H ∧ g ∈ S := by
@@ -301,7 +301,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     rw [← this, cmem.mul_eq]
     simp
   · rw [← cmem.card_mul_card]
-    refine congr_arg₂ (· * ·) ?_ ?_ <;>
+    congrm ?_ * ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
 /-- Given two subgroups `H' ⊆ H`, there exists a right transversal to `H'` inside `H`. -/
@@ -318,7 +318,7 @@ lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     simp
   · have : Nat.card H'' * Nat.card S = Nat.card H := cmem.card_mul_card
     rw [← this]
-    refine congr_arg₂ (· * ·) ?_ ?_ <;>
+    congrm ?_ * ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
 namespace IsComplement
@@ -502,7 +502,7 @@ theorem inv_toLeftFun_mul_mem (hS : IsComplement S H) (g : G) :
 @[to_additive]
 theorem inv_mul_toLeftFun_mem (hS : IsComplement S H) (g : G) :
     g⁻¹ * toLeftFun hS g ∈ H :=
-  (congr_arg (· ∈ H) (by rw [mul_inv_rev, inv_inv])).mp (H.inv_mem (inv_toLeftFun_mul_mem hS g))
+  congr($(by rw [mul_inv_rev, inv_inv]) ∈ H).mp (H.inv_mem (inv_toLeftFun_mul_mem hS g))
 
 /-- A right transversal is in bijection with right cosets. -/
 @[to_additive /-- A right transversal is in bijection with right cosets. -/]
@@ -546,7 +546,7 @@ theorem mul_inv_toRightFun_mem (hT : IsComplement H T) (g : G) :
 @[to_additive]
 theorem toRightFun_mul_inv_mem (hT : IsComplement H T) (g : G) :
     (toRightFun hT g : G) * g⁻¹ ∈ H :=
-  (congr_arg (· ∈ H) (by rw [mul_inv_rev, inv_inv])).mp (H.inv_mem (mul_inv_toRightFun_mem hT g))
+  congr($(by rw [mul_inv_rev, inv_inv]) ∈ H).mp (H.inv_mem (mul_inv_toRightFun_mem hT g))
 
 @[to_additive]
 theorem encard_left [H.FiniteIndex] (h : IsComplement S H) : S.encard = H.index := by
@@ -695,5 +695,15 @@ theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
   specialize h1 (h * h') (by rwa [mul_smul, smul_def h', ← hg, ← mul_smul, hg])
   refine Prod.ext (eq_inv_of_mul_eq_one_right h1) (Subtype.ext ?_)
   rwa [Subtype.ext_iff, coe_one, coe_mul, ← right_eq_mul, mul_assoc (↑h) (↑h') g] at h1
+
+/-- If `S` is a complement of a subgroup `H` of a commutative group `G`, then for every `x : G`
+there is a unique `g : H` with `g • x ∈ S`. -/
+@[to_additive /-- If `S` is a complement of a subgroup `H` of a commutative additive group `G`, then
+for every `x : G` there is a unique `g : H` with `g +ᵥ x ∈ S`. -/]
+lemma IsComplement.existsUnique_smul_mem {G : Type*} [CommGroup G] {S : Set G} {H : Subgroup G}
+    (h : IsComplement S H) (x : G) : ∃! g : H, g • x ∈ S := by
+  obtain ⟨t, ht, ht'⟩ := isComplement_iff_existsUnique_mul_inv_mem.1 h x
+  refine ⟨t⁻¹, by simpa [Subgroup.smul_def, mul_comm] using ht, fun g hg ↦ ?_⟩
+  rw [← inv_inv g, ht' g⁻¹ (by simpa [Subgroup.smul_def, mul_comm] using hg)]
 
 end Subgroup

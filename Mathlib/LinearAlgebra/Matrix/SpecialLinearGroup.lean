@@ -320,7 +320,7 @@ theorem scalar_eq_self_of_mem_center
     scalar n (A i i) = A := by
   obtain ⟨r : R, hr : scalar n r = A⟩ := mem_range_scalar_of_commute_transvectionStruct fun t ↦
     Subtype.ext_iff.mp <| Subgroup.mem_center_iff.mp hA ⟨t.toMatrix, by simp⟩
-  simp [← congr_fun₂ hr i i, ← hr]
+  simp [← congr($hr i i), ← hr]
 
 theorem scalar_eq_coe_self_center
     (A : center (SpecialLinearGroup n R)) (i : n) :
@@ -353,7 +353,7 @@ def center_equiv_rootsOfUnity' (i : n) :
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
     Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
   left_inv A := by
-    refine SetCoe.ext <| SetCoe.ext ?_
+    refine Subtype.ext <| Subtype.ext ?_
     obtain ⟨r, _, hr⟩ := mem_center_iff.mp A.property
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using! smul_one_eq_diagonal r
   right_inv a := by
@@ -464,7 +464,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1), P ⟨!![a, b; c, d], by rwa [det_fin_two_of]⟩)
     (g : SL(2, R)) : P g := by
   obtain ⟨m, hm⟩ := g
-  convert! h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
+  convert h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -666,7 +666,7 @@ open scoped MatrixGroups
 namespace SpecialLinearGroup
 
 /-- An element in SLₙ(F) induced by a diagonal matrix `1` on any other entries and `a`, `a⁻¹` on
-  positition `i` and `j` respectively where `i ≠ j`. -/
+  positions `i` and `j` respectively where `i ≠ j`. -/
 noncomputable def diag2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
     (ha : a ≠ 0) : SpecialLinearGroup ι F :=
   ⟨diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1), by
@@ -678,7 +678,7 @@ lemma diag2n_coe {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i 
       if k = i then a else if k = j then a⁻¹ else 1) := rfl
 
 /-- An element in SL₂(F) induced by a diagonal matrix with `a`, `a⁻¹` on
-  positition `0` and `1` respectively. -/
+  positions `0` and `1` respectively. -/
 noncomputable abbrev diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
   diag2n zero_ne_one a ha
 

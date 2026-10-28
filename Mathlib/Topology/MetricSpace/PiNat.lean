@@ -6,10 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
-public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
-public import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.UnitInterval
+
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -57,6 +58,8 @@ in general), and `ι` is countable.
 
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 noncomputable section
@@ -74,22 +77,27 @@ namespace PiNat
 open scoped Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
-irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
+@[no_expose] def firstDiff (x y : ∀ n, E n) : ℕ :=
   if h : x ≠ y then Nat.find (ne_iff.1 h) else 0
+
+open scoped Classical in
+lemma firstDiff_def (x y : ∀ n, E n) :
+    firstDiff x y = (if h : x ≠ y then Nat.find (ne_iff.1 h) else 0) :=
+  (rfl)
 
 theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
     x (firstDiff x y) ≠ y (firstDiff x y) := by
-  rw [firstDiff_def, dite_eq_left h]
+  rw [firstDiff, dite_eq_left h]
   classical
   exact Nat.find_spec (ne_iff.1 h)
 
 theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDiff x y) : x n = y n := by
-  rw [firstDiff_def] at hn
+  rw [firstDiff] at hn
   aesop
 
 theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
   classical
-  simp only [firstDiff_def, ne_comm]
+  simp only [firstDiff, ne_comm]
 
 theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
     min (firstDiff x y) (firstDiff y z) ≤ firstDiff x z := by
@@ -808,7 +816,7 @@ lemma edist_eq_tsum (x y : ∀ i, F i) :
 
 lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
     min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := by
-  grw [edist_eq_tsum, ← ENNReal.le_tsum i]
+  grw [edist_eq_tsum, ← le_tsum _ i]
 
 lemma edist_le_two : edist x y ≤ 2 :=
   (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
@@ -841,7 +849,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
     _ ≤ ∑' i, (min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
          min (2⁻¹ ^ encode i) (edist (y i) (z i))) := by
       gcongr with n; grw [edist_triangle _ (y n), min_add_distrib, min_le_right]
-    _ = _ := ENNReal.tsum_add ..
+    _ = _ := tsum_add ..
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
     simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_ofPred_eq, comap_principal,
@@ -852,7 +860,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
         ((tendsto_order.1 <| ENNReal.tendsto_tsum_compl_atTop_zero
           (tsum_geometric_encode_lt_top ENNReal.one_half_lt_one).ne).2 _
             <| by simpa using hε.ne').exists
-      obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ * K.card < ε / 2 :=
+      obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ δ * #K < ε / 2 :=
         ENNReal.exists_pos_mul_lt (by simp) (by simpa using hε.ne')
       apply @mem_iInf_of_iInter _ _ _ _ _ K.finite_toSet fun i =>
           {p : (∀ i : ι, F i) × ∀ i : ι, F i | edist (p.fst i) (p.snd i) < δ}
@@ -865,7 +873,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
           edist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
           _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, min (2⁻¹ ^ encode (i : ι)) (edist (x i) (y i)) :=
-            (ENNReal.sum_add_tsum_compl ..).symm
+            (sum_add_tsum_compl ..).symm
           _ ≤ ∑ i ∈ K, edist (x i) (y i) + ∑' i : ↑(K : Set ι)ᶜ, 2⁻¹ ^ encode (i : ι) := by
             gcongr
             · apply min_le_right
@@ -1119,7 +1127,7 @@ lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
   cases isEmpty_or_nonempty X
   · exact continuous_of_discreteTopology
   refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
-  convert! continuous_const (y := denseSeq X n)
+  convert continuous_const (y := denseSeq X n)
 
 lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
     ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by

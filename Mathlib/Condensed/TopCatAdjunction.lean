@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompactlyGenerated
+
 /-!
 
 # The adjunction between condensed sets and topological spaces
@@ -23,7 +24,7 @@ The counit is an isomorphism for compactly generated spaces, and we conclude tha
 
 universe u
 
-open Condensed CondensedSet CategoryTheory CompHaus
+open Condensed CategoryTheory CompHaus
 
 variable (X : CondensedSet.{u})
 
@@ -32,6 +33,8 @@ set_option backward.privateInPublic true in
 private def CondensedSet.coinducingCoprod :
     (Σ (i : (S : CompHaus.{u}) × X.obj.obj ⟨S⟩), i.fst) → X.obj.obj ⟨of PUnit⟩ :=
   fun ⟨⟨_, i⟩, s⟩ ↦ X.obj.map ((of PUnit.{u + 1}).const s).op i
+
+open CondensedSet
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -175,6 +178,7 @@ noncomputable def compactlyGeneratedAdjunction :
     (Functor.FullyFaithful.id _) fullyFaithfulCompactlyGeneratedToTop
     (Iso.refl _) (Iso.refl _)
 
+set_option fun_prop.projDefaultTransparency true in
 /--
 The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
 is a homeomorphism.

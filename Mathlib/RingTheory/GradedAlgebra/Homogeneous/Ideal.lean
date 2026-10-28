@@ -5,12 +5,9 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
-public import Mathlib.RingTheory.GradedAlgebra.Basic
-public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -136,7 +133,7 @@ theorem Ideal.isHomogeneous_iff_forall_subset :
 
 theorem Ideal.isHomogeneous_iff_subset_iInter :
     I.IsHomogeneous 𝒜 ↔ (I : Set A) ⊆ ⋂ i, GradedRing.proj 𝒜 i ⁻¹' ↑I :=
-  subset_iInter_iff.symm
+  (Ideal.isHomogeneous_iff_forall_subset 𝒜 I).trans subset_iInter_iff.symm
 
 theorem Ideal.mul_homogeneous_element_mem_of_mem
     {I : Ideal A} (r x : A) (hx₁ : SetLike.IsHomogeneousElem 𝒜 x)
@@ -201,7 +198,7 @@ theorem Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self (h : I.IsHomogeneous
 theorem HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal 𝒜) :
     I.toIdeal.homogeneousCore 𝒜 = I := by
   ext1
-  convert! Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
+  convert Ideal.IsHomogeneous.toIdeal_homogeneousCore_eq_self I.isHomogeneous
 
 variable (𝒜 I)
 
@@ -607,8 +604,10 @@ lemma irrelevant_eq_iSup : 𝒜₊.toAddSubmonoid = ⨆ i > 0, .ofClass (𝒜 i)
 open AddSubmonoid Set in
 lemma irrelevant_eq_closure : 𝒜₊.toAddSubmonoid = .closure (⋃ i > 0, 𝒜 i) := by
   rw [irrelevant_eq_iSup]
-  exact le_antisymm (iSup_le fun i ↦ iSup_le fun hi _ hx ↦ subset_closure <| mem_biUnion hi hx) <|
-    closure_le.mpr <| iUnion_subset fun i ↦ iUnion_subset fun hi ↦ le_biSup (ofClass <| 𝒜 ·) hi
+  exact le_antisymm
+    (iSup_le fun i ↦ iSup_le fun hi _ hx ↦ subset_closure <| mem_iUnion₂_of_mem hi hx) <|
+    closure_le.mpr <| iUnion_subset fun i ↦ iUnion_subset fun hi ↦
+      SetLike.coe_subset_coe.mpr <| le_iSup₂ (f := fun i (_ : 0 < i) ↦ ofClass (𝒜 i)) i hi
 
 open AddSubmonoid Set in
 lemma irrelevant_eq_span : 𝒜₊.toIdeal = .span (⋃ i > 0, 𝒜 i) :=

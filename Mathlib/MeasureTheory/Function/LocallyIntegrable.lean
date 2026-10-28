@@ -395,7 +395,7 @@ theorem locallyIntegrable_map_homeomorph [BorelSpace X] [BorelSpace Y] (e : X �
     refine ⟨e.symm ⁻¹' U, e.symm.continuous.continuousAt.preimage_mem_nhds hU, ?_⟩
     apply (integrableOn_map_equiv e.toMeasurableEquiv).2
     simp only [Homeomorph.toMeasurableEquiv_coe]
-    convert! h'U
+    convert h'U
     ext x
     simp only [mem_preimage, Homeomorph.symm_apply_apply]
 
@@ -431,17 +431,11 @@ theorem locallyIntegrable_finsetSum' {ι} (s : Finset ι) {f : ι → X → ε''
   Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
     locallyIntegrable_zero hf
 
-@[deprecated (since := "2026-04-08")]
-alias locallyIntegrable_finset_sum' := locallyIntegrable_finsetSum'
-
 variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
   [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finsetSum {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using locallyIntegrable_finsetSum' s hf
-
-@[deprecated (since := "2026-04-08")]
-alias locallyIntegrable_finset_sum := locallyIntegrable_finsetSum
 
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `g • f` is integrable. -/
@@ -521,7 +515,8 @@ theorem integrableOn_Iic_iff_integrableAtFilter_atBot [LinearOrder X] [CompactIc
   refine ⟨fun h ↦ ⟨⟨Iic a, Iic_mem_atBot a, h⟩, h.locallyIntegrableOn⟩, fun ⟨⟨s, hsl, hs⟩, h⟩ ↦ ?_⟩
   have : Nonempty X := Nonempty.intro a
   obtain ⟨a', ha'⟩ := mem_atBot_sets.mp hsl
-  refine (integrableOn_union.mpr ⟨hs.mono ha' le_rfl, ?_⟩).mono Iic_subset_Iic_union_Icc le_rfl
+  refine (integrableOn_union.mpr ⟨hs.mono (fun b hb ↦ ha' b hb) le_rfl, ?_⟩).mono
+    Iic_subset_Iic_union_Icc le_rfl
   exact h.integrableOn_compact_subset Icc_subset_Iic_self isCompact_Icc
 
 theorem integrableOn_Ici_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIccSpace X] :
