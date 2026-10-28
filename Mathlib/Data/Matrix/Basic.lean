@@ -849,8 +849,8 @@ This is available in bundled forms as:
   map_smul' _ _ := rfl
 
 @[simp] theorem toAddEquiv_prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
-    [Module R α] [Module R β] : (prodLinearEquiv m n α β R :
-      Matrix m n (α × β) ≃+ Matrix m n α × Matrix m n β) = prodAddEquiv m n α β := rfl
+    [Module R α] [Module R β] :
+    prodLinearEquiv m n α β R = prodAddEquiv m n α β := rfl
 
 variable [Fintype n]
 
