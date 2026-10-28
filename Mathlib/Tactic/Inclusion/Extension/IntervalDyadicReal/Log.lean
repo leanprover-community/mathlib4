@@ -560,25 +560,6 @@ def Interval.log (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
       ⟨lb.lowerLog prec, ub.upperLog prec⟩
   | _ => .univ Dyadic -- impossible case
 
-theorem Interval.mem_mk {α : Type*} [Preorder α] (x a b : α) :
-    x ∈ (⟨a, b⟩ : Interval α) ↔ a ≤ x ∧ x ≤ b := by
-  simp
-
-@[simp]
-theorem IntervalDyadicReal.mem_mk_coe (x : ℝ) (a b : Dyadic) :
-    x ∈ (⟨a, b⟩ : Interval Dyadic) ↔ a.toReal ≤ x ∧ x ≤ b.toReal := by
-  simp [mem_iff_mem_map, Interval.map]
-
-@[simp]
-theorem IntervalDyadicReal.mem_Iic_coe (x : ℝ) (b : Dyadic) :
-    x ∈ Interval.Iic (↑b : WithTop Dyadic) ↔ x ≤ b.toReal := by
-  simp [mem_iff_mem_map, Interval.Iic, Interval.map]
-
-@[simp]
-theorem IntervalDyadicReal.mem_Ici_coe (x : ℝ) (a : Dyadic) :
-    x ∈ Interval.Ici (↑a : WithBot Dyadic) ↔ a.toReal ≤ x := by
-  simp [mem_iff_mem_map, Interval.Ici, Interval.map]
-
 @[inclusion_op interval_dyadic_real]
 theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : x.log ∈ I.log prec := by
   apply IntervalDyadicReal.abs_mem at hx
