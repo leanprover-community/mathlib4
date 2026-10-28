@@ -5,8 +5,8 @@ Authors: Heather Macbeth, Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Lift
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.IntegralCurvePrelim
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Lift
 
 /-!
 # Geodesics for covariant derivatives on tangent bundles
