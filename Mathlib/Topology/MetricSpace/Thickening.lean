@@ -574,7 +574,7 @@ theorem cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α] [P
     isClosed_closure.exists_infDist_eq_dist (closure_nonempty_iff.mpr hne) x
   replace hy : dist x y ≤ δ :=
     (ENNReal.ofReal_le_ofReal_iff hδ).mp
-      (((congr_arg ENNReal.ofReal hy.symm).le.trans ENNReal.ofReal_toReal_le).trans hx)
+      ((congr(ENNReal.ofReal $hy.symm).le.trans ENNReal.ofReal_toReal_le).trans hx)
   exact mem_biUnion yE hy
 
 nonrec theorem _root_.IsClosed.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α]

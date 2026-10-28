@@ -5,8 +5,6 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Data.Nat.Factorization.LCM
 public import Mathlib.GroupTheory.OrderOfElement
@@ -281,9 +279,10 @@ lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : or
       y ^ (orderOf y / factorizationLCMRight (orderOf x) (orderOf y))) =
       Nat.lcm (orderOf x) (orderOf y) := by
   rw [(h.pow_pow _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
-  all_goals iterate 2 rw [orderOf_pow_orderOf_div]; try rw [Coprime]
-  all_goals simp [factorizationLCMLeft_mul_factorizationLCMRight, factorizationLCMLeft_dvd_left,
-    factorizationLCMRight_dvd_right, coprime_factorizationLCMLeft_factorizationLCMRight, hx, hy]
+  all_goals iterate 2 rw [orderOf_pow_orderOf_div]
+  all_goals simp [Coprime, factorizationLCMLeft_mul_factorizationLCMRight,
+    factorizationLCMLeft_dvd_left, factorizationLCMRight_dvd_right,
+    coprime_factorizationLCMLeft_factorizationLCMRight, hx, hy]
 
 open Submonoid in
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, then there is an
@@ -571,7 +570,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
   push Not at hj ⊢
   gconvert hj with n hn ⟨m, hm⟩
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
-  simpa using congr_fun h j
+  simpa using congr($h j)
 
 /-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
 @[to_additive /-- If `f : M₁ →+ M₂` is surjective, then the exponent of `M₂` divides the exponent of

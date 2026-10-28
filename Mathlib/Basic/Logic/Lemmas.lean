@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Basic.Logic.Basic
-public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Tauto
+
+import Mathlib.Basic.Logic.Basic
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # More basic logic properties

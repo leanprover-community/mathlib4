@@ -5,9 +5,9 @@ Authors: Fabian Odermatt
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
-public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
 
 /-!
 # Simplicial homotopies induce chain homotopies
@@ -120,9 +120,6 @@ private lemma comm_succ (n : ℕ) :
     grind
   have h₃ : Disjoint (Finset.disjUnion _ _ h₂) {(0, 0), (Fin.last _, Fin.last _)} := by
     rw [Finset.disjoint_iff_ne]
-    simp only [Finset.mem_insert, forall_eq_or_imp, Prod.forall]
-    rintro ⟨a, _⟩ ⟨b, _⟩
-    simp
     grind
   have h₄ : Disjoint (Finset.disjUnion _ _ h₁) (Finset.disjUnion _ _ h₃) := by
     rw [Finset.disjoint_iff_ne]

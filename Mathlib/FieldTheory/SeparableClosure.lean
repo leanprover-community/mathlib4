@@ -181,6 +181,13 @@ theorem separableClosure.normalClosure_eq_self :
       (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
 
+/-- If `K / F` is separable, then the normal closure of `K` over `F` in `E`
+is separable over `F`. -/
+instance IntermediateField.normalClosure.isSeparable [Algebra.IsSeparable F K] :
+    Algebra.IsSeparable F (normalClosure F K E) := by
+  simp_rw [← le_separableClosure_iff, normalClosure_le_iff, le_separableClosure_iff]
+  exact fun f ↦ AlgEquiv.Algebra.isSeparable f.equivFieldRange
+
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
 theorem IntermediateField.isSeparable_adjoin_iff_isSeparable {S : Set E} :
@@ -406,7 +413,7 @@ variable {F}
 @[simp]
 theorem finInsepDegree_bot' :
     finInsepDegree F (⊥ : IntermediateField E K) = finInsepDegree F E := by
-  simpa only [Cardinal.toNat_lift] using! congr_arg Cardinal.toNat (lift_insepDegree_bot' F E K)
+  simpa only [Cardinal.toNat_lift] using! congr($(lift_insepDegree_bot' F E K).toNat)
 
 @[simp]
 theorem sepDegree_top : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K :=
@@ -477,4 +484,4 @@ theorem Algebra.IsSeparable.insepDegree_eq [Algebra.IsSeparable F E] : insepDegr
 
 /-- A separable extension has finite inseparable degree one. -/
 theorem Algebra.IsSeparable.finInsepDegree_eq [Algebra.IsSeparable F E] : finInsepDegree F E = 1 :=
-  Cardinal.one_toNat ▸ congr(Cardinal.toNat $(insepDegree_eq F E))
+  Cardinal.one_toNat ▸ congr($(insepDegree_eq F E).toNat)

@@ -5,10 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.RingHom.Etale
-public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
-public import Mathlib.Tactic.Algebraize
 
 /-!
 # Standard smooth ring homomorphisms
@@ -130,9 +127,9 @@ lemma isStandardSmooth_isStableUnderBaseChange :
   · exact isStandardSmooth_respectsIso
   · introv h
     replace h : Algebra.IsStandardSmooth R T := by
-      rw [RingHom.IsStandardSmooth] at h; convert! h; ext; simp_rw [Algebra.smul_def]; rfl
+      rw [RingHom.IsStandardSmooth] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
     suffices Algebra.IsStandardSmooth S (S ⊗[R] T) by
-      rw [RingHom.IsStandardSmooth]; convert! this; ext; simp_rw [Algebra.smul_def]; rfl
+      rw [RingHom.IsStandardSmooth]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
     infer_instance
 
 variable (n)
@@ -144,10 +141,10 @@ lemma isStandardSmoothOfRelativeDimension_isStableUnderBaseChange :
   · introv h
     replace h : Algebra.IsStandardSmoothOfRelativeDimension n R T := by
       rw [RingHom.IsStandardSmoothOfRelativeDimension] at h
-      convert! h; ext; simp_rw [Algebra.smul_def]; rfl
+      convert h; ext; simp_rw [Algebra.smul_def]; rfl
     suffices Algebra.IsStandardSmoothOfRelativeDimension n S (S ⊗[R] T) by
       rw [RingHom.IsStandardSmoothOfRelativeDimension]
-      convert! this; ext; simp_rw [Algebra.smul_def]; rfl
+      convert this; ext; simp_rw [Algebra.smul_def]; rfl
     infer_instance
 
 lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway {Rᵣ : Type*} [CommRing Rᵣ]
@@ -223,8 +220,8 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
     · simp [e]
   let P' : Algebra.PreSubmersivePresentation (MvPolynomial (Fin n) R) S σ σ :=
   { toGenerators := .ofSurjective (algebraMap _ _ <| e <| .X ·) <| by
-      convert! P.algebraMap_surjective.comp e.surjective
-      exact congr($H)
+      convert P.algebraMap_surjective.comp e.surjective
+      congrm $H
     relation := e.symm ∘ P.relation
     span_range_relation_eq_ker := by
       rw [Set.range_comp, ← AlgEquiv.coe_toRingEquiv e.symm, AlgEquiv.symm_toRingEquiv,
@@ -235,7 +232,7 @@ theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolyno
   let P' : Algebra.SubmersivePresentation (MvPolynomial (Fin n) R) S σ σ :=
   { __ := P'
     jacobian_isUnit := by
-      convert! P.jacobian_isUnit using 1
+      convert P.jacobian_isUnit using 1
       simp_rw [Algebra.PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det, map_det]
       congr 1
       ext i j

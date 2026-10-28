@@ -6,7 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Data.ZMod.Basic
-public import Mathlib.Tactic.NormNum
+
+import Mathlib.Tactic.NormNum
 
 /-!
 # Some facts about finite rings

@@ -185,7 +185,7 @@ lemma sigmaFinite_restrict_sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeas
     rw [Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT', Set.compl_inter_self,
       Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT']
     simp only [measure_empty, ENNReal.zero_lt_top, true_and]
-    refine (measure_mono Set.inter_subset_left).trans_lt ?_
+    grw [Set.inter_subset_left]
     rw [← Measure.restrict_apply' (measurableSet_sigmaFiniteSetGE _)]
     exact measure_spanningSets_lt_top _ _
   · simp only [Nat.pairEquiv_symm_apply, f, e]

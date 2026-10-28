@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Derivation.MapCoeffs
 
 /-!
@@ -84,8 +84,6 @@ lemma evalEval_sum (x y : R) (p : R[X]) (f : ℕ → R → R[X][Y]) :
 lemma evalEval_finsetSum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X][Y]) :
     (∑ i ∈ s, f i).evalEval x y = ∑ i ∈ s, (f i).evalEval x y := by
   simp only [evalEval, eval_finsetSum]
-
-@[deprecated (since := "2026-04-08")] alias evalEval_finset_sum := evalEval_finsetSum
 
 @[simp]
 lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)
@@ -292,7 +290,7 @@ theorem Bivariate.aevalAeval_swap (x y : A) (p : R[X][Y]) :
     induction a using Polynomial.induction_on' <;> aesop (add norm add_mul)
 
 attribute [local instance] Polynomial.algebra in
-theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
+theorem Bivariate.aeval_eq_map_swap (x : A) (p : R[X][Y]) :
     aeval (C x) p = mapAlgHom (aeval x) (swap p) := by
   induction p using Polynomial.induction_on' with
   | add => aesop
@@ -300,6 +298,9 @@ theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
       simp
       induction a using Polynomial.induction_on'
         <;> aesop (add norm [add_mul, C_mul_X_pow_eq_monomial])
+
+@[deprecated (since := "2026-09-17")]
+alias Bivariate.aveal_eq_map_swap := Bivariate.aeval_eq_map_swap
 
 end
 

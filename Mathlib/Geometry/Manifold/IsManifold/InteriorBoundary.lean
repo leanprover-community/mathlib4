@@ -6,7 +6,6 @@ Authors: Michael Rothgang, Ben Eltschig
 module
 
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
-public import Mathlib.Geometry.Manifold.Notation
 
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Analysis.LocallyConvex.Separation
@@ -34,7 +33,7 @@ Define the interior and boundary of a manifold.
   sends it to the interior of the model; that is, the notion of interior is independent of choices
   of charts
 - `ModelWithCorners.isOpen_interior`, `ModelWithCorners.isClosed_boundary`: the interior is open and
-  and the boundary is closed. This is currently only proven for C¹ manifolds.
+  the boundary is closed. This is currently only proven for C¹ manifolds.
 
 - `MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv`: differentiable maps with surjective
   differential send interior points to interior points

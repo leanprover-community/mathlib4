@@ -5,8 +5,9 @@ Authors: Kenny Lau, Xavier Roblot
 -/
 module
 
-public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+
+import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Torsion-free monoids with zero
@@ -22,19 +23,21 @@ public section
 
 variable {M : Type*} [CommMonoidWithZero M]
 
-theorem IsMulTorsionFree.mk' [IsReduced M]
+theorem HasUniqueRoots.mk' [IsReduced M]
     (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n : M) = y ^ n → x = y) :
-    IsMulTorsionFree M := by
+    HasUniqueRoots M := by
   refine ⟨fun n hn x y hxy ↦ ?_⟩
   by_cases h : x ≠ 0 ∧ y ≠ 0
   · exact ih x h.1 y h.2 n hn hxy
   grind [eq_zero_of_pow_eq_zero, zero_pow]
 
+@[deprecated (since := "2026-08-07")] alias IsMulTorsionFree.mk' := HasUniqueRoots.mk'
+
 variable [UniqueFactorizationMonoid M] [NormalizationMonoid M] [IsMulTorsionFree Mˣ]
 
 namespace UniqueFactorizationMonoid
 
-instance : IsMulTorsionFree M := by
+instance : HasUniqueRoots M := by
   refine .mk' fun x hx y hy n hn hxy ↦ ?_
   obtain ⟨u, hu⟩ : Associated x y := by
     have := (Associated.of_eq hxy).normalizedFactors_eq

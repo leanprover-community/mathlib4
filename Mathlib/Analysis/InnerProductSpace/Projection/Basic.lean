@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
 public import Mathlib.Analysis.InnerProductSpace.Symmetric
 public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.Topology.Algebra.Module.Complement
 
 /-!
 # The orthogonal projection
@@ -462,7 +461,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
-  convert! key using 1 <;> match_scalars <;> field_simp [hv']
+  convert key using 1 <;> match_scalars <;> field_simp [hv']
 
 /-- Formula for orthogonal projection onto a single unit vector. -/
 theorem starProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
@@ -509,7 +508,7 @@ theorem orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜
     [U.HasOrthogonalProjection] : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 ↔ U ⟂ V := by
   refine ⟨fun h u hu v hv ↦ ?_, Submodule.IsOrtho.orthogonalProjectionOnto_comp_subtypeL⟩
   convert starProjection_inner_eq_zero v u hu
-  have : U.orthogonalProjectionOnto v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
+  have : U.orthogonalProjectionOnto v = 0 := congr($h ⟨_, hv⟩)
   rw [starProjection_apply, this, Submodule.coe_zero, sub_zero]
 
 @[deprecated (since := "2026-05-05")]

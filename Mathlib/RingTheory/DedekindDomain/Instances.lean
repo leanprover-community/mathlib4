@@ -5,9 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.FieldTheory.Separable
-public import Mathlib.RingTheory.Localization.Finiteness
+public import Mathlib.RingTheory.DedekindDomain.PID
+
+import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
 # Instances for Dedekind domains

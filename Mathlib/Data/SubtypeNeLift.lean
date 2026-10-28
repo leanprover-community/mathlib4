@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Aesop
 public import Mathlib.Data.Subtype
-public import Mathlib.Util.CompileInductive
+
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extending a function from the complement of a singleton

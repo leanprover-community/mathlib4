@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.CategoryTheory.Comma.Over.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Adjunctions in `CommRingCat`
@@ -85,7 +86,6 @@ set_option backward.isDefEq.respectTransparency false in
 def coyonedaUnique {n : Type v} [Unique n] : coyoneda.obj (op n) ≅ 𝟭 CommRingCat.{max u v} :=
   NatIso.ofComponents (fun X ↦ (RingEquiv.piUnique _).toCommRingCatIso) (fun f ↦ by ext; simp)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The monoid algebra functor `CommGrpCat ⥤ R-Alg` given by `G ↦ R[G]`. -/
 @[simps]
 def monoidAlgebra (R : CommRingCat.{max u v}) : CommMonCat.{v} ⥤ Under R where

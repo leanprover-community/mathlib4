@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Data.Set.Lattice.Disjoint

@@ -6,11 +6,12 @@ Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Y
 module
 
 public import Mathlib.Algebra.Central.Defs
-public import Mathlib.Algebra.CharP.LinearMaps
-public import Mathlib.Algebra.CharP.Subring
-public import Mathlib.Algebra.GroupWithZero.Conj
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
+
+import Mathlib.Algebra.CharP.LinearMaps
+import Mathlib.Algebra.CharP.Subring
+import Mathlib.Algebra.GroupWithZero.Conj
 
 /-!
 # The Jacobson-Noether theorem
@@ -64,11 +65,10 @@ open LinearMap LieAlgebra
   such that `a ^ (p ^ n)` is contained in `k`. -/
 lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
-  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.expChar_center_iff.2 hchar)).1
-  have pure : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, fun x hx ↦ by
+  have insep : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, fun x hx ↦ by
     rw [RingHom.mem_range, Subtype.exists]
     exact ⟨x, ⟨hinsep x hx, rfl⟩⟩⟩
-  obtain ⟨n, ⟨m, hm⟩⟩ := this pure a
+  obtain ⟨n, ⟨m, hm⟩⟩ := (isPurelyInseparable_iff_pow_mem k p).1 insep a
   have := Subalgebra.range_subset (R := k) ⟨(k).toSubsemiring, fun r ↦ r.2⟩
   exact ⟨n, Set.mem_of_subset_of_mem this <| Set.mem_range.2 ⟨m, hm⟩⟩
 
@@ -133,7 +133,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
     by_cases! h_pos : 0 < t
-    · convert! (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
+    · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by lia)) h_pos
       lia
     · suffices h_find : Nat.find h_exist = 1 by
         rwa [h_find]

@@ -196,12 +196,12 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
   induction i generalizing r j m with
   | zero =>
     rw [Function.iterate_zero, zero_add]
-    exact congr(ofCoeff R $(Finsupp.smul_single r j m))
+    congrm ofCoeff R $(Finsupp.smul_single r j m)
   | succ n hn =>
     rw [Function.iterate_succ, Function.comp_apply, add_assoc, ← hn]
     congr 2
     rw [Nat.one_add]
-    exact congr(ofCoeff R $(Finsupp.mapDomain_single))
+    congrm ofCoeff R $Finsupp.mapDomain_single
 
 @[simp]
 theorem monomial_smul_lsingle (i : ℕ) (r : R) (j : ℕ) (m : M) :

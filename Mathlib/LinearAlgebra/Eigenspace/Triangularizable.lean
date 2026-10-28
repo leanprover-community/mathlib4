@@ -5,9 +5,8 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Triangularizable linear endomorphisms
@@ -77,7 +76,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
   -- We prove the claim by strong induction on the dimension of the vector space.
   suffices ∀ n, finrank K V = n → ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ by exact this _ rfl
   intro n h_dim
-  induction n using Nat.strong_induction_on generalizing V with | h n ih =>
+  induction n using Nat.strong_induction_on generalizing V with | ind n ih
   rcases n with - | n
   -- If the vector space is 0-dimensional, the result is trivial.
   · rw [← top_le_iff]
@@ -237,7 +236,7 @@ theorem Module.End.genEigenspace_restrict_eq_top
     {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V] {k : ℕ∞}
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, f.genEigenspace μ k = ⊤) :
     ⨆ μ, Module.End.genEigenspace (LinearMap.restrict f h) μ k = ⊤ := by
-  have := congr_arg (Submodule.comap p.subtype) (Submodule.eq_iSup_inf_genEigenspace k h h')
+  have := congr(Submodule.comap p.subtype $(Submodule.eq_iSup_inf_genEigenspace k h h'))
   have h_inj : Function.Injective p.subtype := Subtype.coe_injective
   simp_rw [Submodule.inf_genEigenspace f p h, Submodule.comap_subtype_self,
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this

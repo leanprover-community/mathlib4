@@ -5,10 +5,11 @@ Authors: Bhavik Mehta, Jakob von Raumer
 -/
 module
 
-public import Mathlib.Data.List.Chain
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.PUnit
+
+import Mathlib.Data.List.Chain
 
 /-!
 # Connected category
@@ -88,7 +89,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
   obj j := have := Nonempty.intro j
     Discrete.mk (Function.invFun F.obj (F.obj j))
   map {j _} f := have := Nonempty.intro j
-    ⟨congr_arg (Function.invFun F.obj) (Discrete.ext (Discrete.eq_of_hom (F.map f)))⟩
+    ⟨congr(Function.invFun F.obj $(Discrete.ext (Discrete.eq_of_hom (F.map f))))⟩
 
 set_option backward.privateInPublic true in
 /-- Implementation detail of `isoConstant`. -/
@@ -98,7 +99,6 @@ private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
 
 end IsPreconnected.IsoConstantAux
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `J` is connected, any functor `F : J ⥤ Discrete α` is isomorphic to
@@ -473,7 +473,6 @@ def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] :
 
 variable {C : Type w₂} [Category.{w₁} C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a connected
 category must be constant.
 This is the key property of connected categories which we use to establish properties about limits.

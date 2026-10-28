@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
-public import Mathlib.Data.FunLike.Module
 
 /-!
 # Operations on outer measures
@@ -46,7 +46,7 @@ instance instZero : Zero (OuterMeasure α) :=
       mono _ := le_rfl
       iUnion_nat _ _ := zero_le }⟩
 
-instance : IsZeroApply (OuterMeasure α) (Set α) ℝ≥0∞ where
+instance : IsZeroApply (OuterMeasure α) where
 
 @[deprecated (since := "2026-06-23")] alias coe_zero := FunLike.coe_zero
 
@@ -62,9 +62,9 @@ instance instAdd : Add (OuterMeasure α) :=
         calc
           m₁ (⋃ i, s i) + m₂ (⋃ i, s i) ≤ (∑' i, m₁ (s i)) + ∑' i, m₂ (s i) :=
             add_le_add (measure_iUnion_le s) (measure_iUnion_le s)
-          _ = _ := ENNReal.tsum_add.symm }⟩
+          _ = _ := tsum_add.symm }⟩
 
-instance : IsAddApply (OuterMeasure α) (Set α) ℝ≥0∞ where
+instance : IsAddApply (OuterMeasure α) where
 
 @[deprecated (since := "2026-06-23")] alias coe_add := FunLike.coe_add
 
@@ -86,7 +86,7 @@ instance instSMul : SMul R (OuterMeasure α) :=
         simp_rw [← smul_one_mul c (m _), ENNReal.tsum_mul_left]
         exact mul_right_mono (measure_iUnion_le _) }⟩
 
-instance : IsSMulApply R (OuterMeasure α) (Set α) ℝ≥0∞ where
+instance : IsSMulApply R (OuterMeasure α) where
 
 @[deprecated (since := "2026-06-23")] alias coe_smul := FunLike.coe_smul
 
@@ -154,7 +154,7 @@ instance instSupSet : SupSet (OuterMeasure α) :=
           calc
             m (⋃ i, f i) ≤ ∑' i : ℕ, m (f i) := measure_iUnion_le _
             _ ≤ ∑' i, ⨆ m ∈ ms, (m : OuterMeasure α) (f i) :=
-               ENNReal.tsum_le_tsum fun i => by apply le_iSup₂ m hm
+              tsum_le_tsum fun i => by apply le_iSup₂ m hm
              }⟩
 
 instance instCompleteLattice : CompleteLattice (OuterMeasure α) :=
@@ -236,7 +236,7 @@ def dirac (a : α) : OuterMeasure α where
   mono {_ _} h := by grw [h]
   iUnion_nat s _ := calc
     indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a := indicator_iUnion_apply rfl _ _ _
-    _ ≤ ∑' n, indicator (s n) 1 a := iSup_le ENNReal.le_tsum
+    _ ≤ ∑' n, indicator (s n) 1 a := iSup_le (le_tsum _)
 
 @[simp]
 theorem dirac_apply (a : α) (s : Set α) : dirac a s = indicator s (fun _ => 1) a :=
@@ -246,9 +246,9 @@ theorem dirac_apply (a : α) (s : Set α) : dirac a s = indicator s (fun _ => 1)
 def sum {ι} (f : ι → OuterMeasure α) : OuterMeasure α where
   measureOf s := ∑' i, f i s
   empty := by simp
-  mono {_ _} h := ENNReal.tsum_le_tsum fun _ => measure_mono h
+  mono {_ _} h := tsum_le_tsum fun _ => measure_mono h
   iUnion_nat s _ := by
-    rw [ENNReal.tsum_comm]; exact ENNReal.tsum_le_tsum fun i => measure_iUnion_le _
+    rw [tsum_comm]; exact tsum_le_tsum fun i => measure_iUnion_le _
 
 @[simp]
 theorem sum_apply {ι} (f : ι → OuterMeasure α) (s : Set α) : sum f s = ∑' i, f i s :=
@@ -308,7 +308,7 @@ theorem restrict_iSup {ι} (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨆ i, m i) = ⨆ i, restrict s (m i) := by simp [restrict]
 
 theorem map_comap {β} (f : α → β) (m : OuterMeasure β) : map f (comap f m) = restrict (range f) m :=
-  ext fun s => congr_arg m <| by simp only [image_preimage_eq_inter_range, Subtype.range_coe]
+  ext fun s => congr(m $(by simp only [image_preimage_eq_inter_range, Subtype.range_coe]))
 
 theorem map_comap_le {β} (f : α → β) (m : OuterMeasure β) : map f (comap f m) ≤ m := fun _ =>
   m.mono <| image_preimage_subset _ _
