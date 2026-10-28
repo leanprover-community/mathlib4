@@ -1102,10 +1102,10 @@ def uniqueProd : β × α ≃o α where
 @[simp] lemma prodComm_trans_prodUnique : prodComm.trans (prodUnique α β) = uniqueProd α β := rfl
 @[simp] lemma prodComm_trans_uniqueProd : prodComm.trans (uniqueProd α β) = prodUnique α β := rfl
 
-lemma symm_prodUnique_trans_prodComm :
+@[simp] lemma symm_prodUnique_trans_prodComm :
     (prodUnique α β).symm.trans prodComm = (uniqueProd α β).symm := rfl
 
-lemma symm_uniqueProd_trans_prodComm :
+@[simp] lemma symm_uniqueProd_trans_prodComm :
     (uniqueProd α β).symm.trans prodComm = (prodUnique α β).symm := rfl
 
 end Unique
