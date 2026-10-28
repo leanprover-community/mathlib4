@@ -725,9 +725,8 @@ theorem sum_natDegree_normalizedFactors [DecidableEq R] (p : R[X]) :
     ((normalizedFactors p).map natDegree).sum = p.natDegree := by
   obtain rfl | hp := eq_or_ne p 0
   · simp
-  nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors p]
-  rw [natDegree_C_mul (by simp [hp]),
-      natDegree_multiset_prod _ (zero_notMem_normalizedFactors p)]
+  rw [← natDegree_multiset_prod _ (zero_notMem_normalizedFactors p),
+    ← natDegree_C_mul (leadingCoeff_ne_zero.mpr hp), leadingCoeff_mul_prod_normalizedFactors]
 
 /-- A polynomial over a field which is not a unit must have a monic irreducible factor.
 See also `WfDvdMonoid.exists_irreducible_factor`. -/
