@@ -29,18 +29,17 @@ variable [w.LiesOver v]
 /-- The ring homomorphism `v.Completion →+* w.Completion` induced by `algebraMap K L`, when `w`
 lies over `v`. -/
 noncomputable def completionMap : v.Completion →+* w.Completion :=
-  ((Completion.equiv w).symm.toRingHom.comp <|
-    UniformSpace.Completion.mapRingHom _ (LiesOver.isometry_algebraMap w v).continuous).comp
+  ((Completion.equiv w).symm.toRingHom.comp <| AbsoluteValue.Completion.map v.1 w.1).comp
     (Completion.equiv v).toRingHom
 
 theorem continuous_completionMap : Continuous (completionMap v w) :=
   (continuous_ofCompletion w).comp <|
-    UniformSpace.Completion.continuous_map.comp (continuous_toCompletion v)
+    (AbsoluteValue.Completion.continuous_map v.1 w.1).comp (continuous_toCompletion v)
 
 theorem completionMap_coe (x : WithAbs v.1) :
     completionMap v w (x : v.Completion) =
       ((algebraMap (WithAbs v.1) (WithAbs w.1) x : WithAbs w.1) : w.Completion) :=
-  Completion.ext <| UniformSpace.Completion.mapRingHom_coe _ x
+  Completion.ext <| AbsoluteValue.Completion.map_coe v.1 w.1 x
 
 /-- If `w` lies over `v`, then `w.Completion` is a `v.Completion`-algebra. -/
 noncomputable scoped instance : Algebra v.Completion w.Completion := (completionMap v w).toAlgebra
@@ -51,7 +50,9 @@ scoped instance : IsScalarTower K v.Completion w.Completion :=
       rfl
     rw [RingHom.algebraMap_toAlgebra, h, completionMap_coe]
     apply Completion.ext
-    rw [Completion.algebraMap_toCompletion, UniformSpace.Completion.algebraMap_def]
+    rw [Completion.algebraMap_toCompletion]
+    apply AbsoluteValue.Completion.ext
+    rw [AbsoluteValue.Completion.algebraMap_toCompletion, UniformSpace.Completion.algebraMap_def]
     simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
 
 scoped instance : ContinuousSMul v.Completion w.Completion where
