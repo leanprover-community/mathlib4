@@ -947,11 +947,36 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
                OrderHomClass.coe_coe, Function.comp_apply, map_le_map_iff]
     exact Iff.symm f.forall_congr_left
 
+@[simp] lemma arrowCongr_refl {α β : Type*} [Preorder α] [Preorder β] :
+    arrowCongr (.refl α) (.refl β) = .refl (α →o β) := rfl
+
+@[simp] lemma arrowCongr_trans {α₁ α₂ α₃ β₁ β₂ β₃ : Type*} [Preorder α₁] [Preorder α₂]
+    [Preorder α₃] [Preorder β₁] [Preorder β₂] [Preorder β₃]
+    (e₁ : α₁ ≃o α₂) (e₁' : β₁ ≃o β₂) (e₂ : α₂ ≃o α₃) (e₂' : β₂ ≃o β₃) :
+    arrowCongr (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂') := rfl
+
+@[simp, grind =] lemma arrowCongr_symm {α₁ α₂ β₁ β₂ : Type*} [Preorder α₁] [Preorder α₂]
+    [Preorder β₁] [Preorder β₂] (e₁ : α₁ ≃o α₂) (e₂ : β₁ ≃o β₂) :
+    (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm := rfl
+
 /-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
 from `α` and `β` to themselves are order-isomorphic. -/
-@[simps! apply symm_apply]
+@[simps! apply]
 def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
   arrowCongr f f
+
+@[simp] lemma conj_refl {α : Type*} [Preorder α] : conj (.refl α) = Equiv.refl (α →o α) := rfl
+
+@[simp, grind =]
+lemma symm_conj {α β} [Preorder α] [Preorder β] (e : α ≃o β) : e.conj.symm = e.symm.conj := rfl
+
+@[deprecated symm_conj +typeChanged (since := "2026-10-28")]
+lemma conj_symm_apply {α β} [Preorder α] [Preorder β] (e : α ≃o β) (f : β →o β) :
+    e.conj.symm f = e.symm.conj f := rfl
+
+@[simp]
+lemma conj_trans_conj {α β γ} [Preorder α] [Preorder β] [Preorder γ] (e₁ : α ≃o β) (e₂ : β ≃o γ) :
+    e₁.conj.trans e₂.conj = (e₁.trans e₂).conj := rfl
 
 /-- Transport an `OrderEmbedding` across a pair of `OrderIso`s, by pre- and post-composition.
 
@@ -969,6 +994,20 @@ theorem orderEmbeddingCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ
     (orderEmbeddingCongr f g).symm h = .trans (.trans f h) g.symm :=
   rfl
 
+@[simp, grind =]
+lemma orderEmbeddingCongr_symm (f : α ≃o γ) (g : β ≃o δ) :
+    (orderEmbeddingCongr f g).symm = orderEmbeddingCongr f.symm g.symm := rfl
+
+@[simp]
+lemma orderEmbeddingCongr_refl :
+    orderEmbeddingCongr (.refl α) (.refl β) = Equiv.refl (α ↪o β) := rfl
+
+@[simp]
+lemma orderEmbeddingCongr_trans {ε ζ : Type*} [LE ε] [LE ζ]
+    (f : α ≃o γ) (g : β ≃o δ) (f' : γ ≃o ε) (g' : δ ≃o ζ) :
+    (orderEmbeddingCongr f g).trans (orderEmbeddingCongr f' g') =
+      orderEmbeddingCongr (f.trans f') (g.trans g') := rfl
+
 /-- Transport an `OrderIso` across a pair of `OrderIso`s, by pre- and post-composition.
 
 This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`. -/
@@ -984,6 +1023,18 @@ theorem orderIsoCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ≃o β) :
 theorem orderIsoCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ≃o δ) :
     (orderIsoCongr f g).symm h = .trans (.trans f h) g.symm :=
   rfl
+
+@[simp, grind =]
+lemma orderIsoCongr_symm (f : α ≃o γ) (g : β ≃o δ) :
+    (orderIsoCongr f g).symm = orderIsoCongr f.symm g.symm := rfl
+
+@[simp] lemma orderIsoCongr_refl : orderIsoCongr (.refl α) (.refl β) = .refl (α ≃o β) := rfl
+
+@[simp]
+lemma orderIsoCongr_trans {ε ζ : Type*} [LE ε] [LE ζ]
+    (e₁ : α ≃o γ) (e₂ : β ≃o δ) (e₁' : γ ≃o ε) (e₂' : δ ≃o ζ) :
+    (orderIsoCongr e₁ e₂).trans (orderIsoCongr e₁' e₂') =
+      orderIsoCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
 
 /-- A surjective order embedding is an order isomorphism. -/
 @[simps!]
@@ -1288,6 +1339,11 @@ variable [LE α] [LE β] (f : α ≃o β)
 @[simp] lemma OrderIso.dual_symm_apply (x) : f.dual.symm x = .toDual (f.symm x.ofDual) := rfl
 
 @[simp] lemma OrderIso.symm_dual : f.symm.dual = f.dual.symm := rfl
+
+@[simp] lemma OrderIso.dual_refl (α : Type*) [LE α] : (OrderIso.refl α).dual = .refl αᵒᵈ := rfl
+
+@[simp] lemma OrderIso.dual_trans {γ : Type*} [LE γ] (g : β ≃o γ) :
+    (f.trans g).dual = f.dual.trans g.dual := rfl
 
 end
 
