@@ -83,10 +83,10 @@ theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_natCast]
 
 theorem isInitial_zero : IsInitial 0 := by
-  exact_mod_cast isInitial_natCast 0
+  exact mod_cast isInitial_natCast 0
 
 theorem isInitial_one : IsInitial 1 := by
-  exact_mod_cast isInitial_natCast 1
+  exact mod_cast isInitial_natCast 1
 
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
@@ -397,6 +397,10 @@ theorem preAleph_le_of_strictMono {f : Ordinal → Cardinal} (hf : StrictMono f)
     preAleph o ≤ f o := by
   simpa using (hf.comp preAleph.symm.strictMono).id_le (preAleph o)
 
+theorem _root_.Ordinal.card_le_preAleph_iff {x y : Ordinal} :
+    x.card ≤ preAleph y ↔ x < preOmega (y + 1) := by
+  rw [card_le_iff, succ_preAleph, ord_preAleph]
+
 /-- The `aleph` function gives the infinite cardinals listed by their ordinal index. `aleph 0 = ℵ₀`,
 `aleph 1 = succ ℵ₀` is the first uncountable cardinal, and so on.
 
@@ -520,6 +524,9 @@ theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by simp
 
 theorem preAleph_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preAleph o = ℵ_ o := by
   simpa [← ord_inj] using preOmega_of_omega0_sq_le ho
+
+theorem _root_.Ordinal.card_le_aleph_iff {x y : Ordinal} : x.card ≤ ℵ_ y ↔ x < ω_ (y + 1) := by
+  rw [card_le_iff, succ_aleph, ord_aleph]
 
 theorem countable_toType_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : Countable (ToType o) := by
   rwa [← mk_le_aleph0_iff, mk_toType, card_le_iff, succ_aleph0, ord_aleph]
