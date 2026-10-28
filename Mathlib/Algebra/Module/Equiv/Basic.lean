@@ -110,7 +110,7 @@ theorem coe_pow (e : M ≃ₗ[R] M) (n : ℕ) : ⇑(e ^ n) = e^[n] := hom_coe_po
 protected theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m :=
   congr($(coe_pow e n) m)
 
-@[deprecated mul_apply +typeChanged (since := "2026-10-27")]
+@[deprecated mul_apply_eq_comp +typeChanged (since := "2026-10-27")]
 protected lemma mul_apply (f : M ≃ₗ[R] M) (g : M ≃ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
 
 /-- Restriction from `R`-linear automorphisms of `M` to `R`-linear endomorphisms of `M`,

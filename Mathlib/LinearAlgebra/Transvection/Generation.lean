@@ -130,7 +130,7 @@ theorem fixedSubmodule_transvection_mul {f : Dual K V} {v : V}
   constructor
   · -- e.fixedSubmodule ≤ e'.fixedSubmodule
     intro x hx
-    simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap, LinearEquiv.mul_apply]
+    simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap, mul_apply_eq_comp]
     suffices transvection hfv x = x by
       simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap] at hx
       simp only [hx, this]
