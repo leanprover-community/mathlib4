@@ -455,7 +455,8 @@ theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : CMDiffAt[s] n f x) (hn :
     apply hf.continuousWithinAt.preimage_mem_nhdsWithin
     exact extChartAt_source_mem_nhds (f x)
   rw [mdifferentiableWithinAt_iff]
-  exact ⟨hf.continuousWithinAt.mono inter_subset_left, (hf.prop.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
+  exact ⟨hf.continuousWithinAt.mono inter_subset_left,
+    (hf.prop.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
 
 theorem ContMDiffAt.mdifferentiableAt (hf : CMDiffAt n f x) (hn : n ≠ 0) : MDiffAt f x :=
   mdifferentiableWithinAt_univ.1 <| ContMDiffWithinAt.mdifferentiableWithinAt hf hn
@@ -833,7 +834,8 @@ theorem tangentMapWithin_eq_tangentMap {p : TangentBundle I M} (hs : UniqueMDiff
 theorem tangentMapWithin_proj {p : TangentBundle I M} : (tangentMap[s] f p).proj = f p.proj := rfl
 
 @[simp, mfld_simps]
-lemma tangentMapWithin_snd {X : TangentSpace% x} : (tangentMap[s] f X).snd = (mfderiv[s] f x) X := rfl
+lemma tangentMapWithin_snd {X : TangentSpace% x} :
+    (tangentMap[s] f X).snd = (mfderiv[s] f x) X := rfl
 
 @[simp, mfld_simps]
 theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap% f p).proj = f p.proj := rfl
@@ -1267,7 +1269,8 @@ theorem tangentMapWithin_comp_at (p : TangentBundle I M) (hg : MDiffAt[u] g (f p
   rw [mfderivWithin_comp p.proj hg hf h hps]
   rfl
 
-theorem tangentMap_comp_at (p : TangentBundle I M) (hg : MDiffAt g (f p.proj)) (hf : MDiffAt f p.proj) :
+theorem tangentMap_comp_at (p : TangentBundle I M) (hg : MDiffAt g (f p.proj))
+    (hf : MDiffAt f p.proj) :
     tangentMap% (g ∘ f) p = tangentMap% g (tangentMap% f p) := by
   simp only [tangentMap, mfld_simps]
   rw [mfderiv_comp p.proj hg hf]

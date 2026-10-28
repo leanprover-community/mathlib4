@@ -241,7 +241,8 @@ lemma coe_iInf {ι : Type*} [Finite ι] (U : ι → TopologicalSpace.Opens α) :
   | h_empty => simp
   | h_option ih => rw [iInf_option, Set.iInter_option, Opens.coe_inf, ih]
 
-theorem iSup_def {ι} (s : ι → Opens α) : ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).is_open'⟩ :=
+theorem iSup_def {ι} (s : ι → Opens α) :
+    ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).is_open'⟩ :=
   ext <| coe_iSup s
 
 @[simp]
@@ -387,7 +388,8 @@ lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {
     (hU : IsCompact U.carrier) : ∃ Us ⊆ B, Us.Finite ∧ U = sSup Us := by
   classical
   obtain ⟨Us', hsub, hsup⟩ := isBasis_iff_cover.mp hB U
-  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.is_open') (by simp [hsup])
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.is_open')
+    (by simp [hsup])
   refine ⟨Finset.image Subtype.val t, subset_trans (by simp) hsub, Finset.finite_toSet _, ?_⟩
   exact le_antisymm (subset_trans (a := U.carrier) ht (by simp))
     (le_trans (sSup_le_sSup (by simp)) hsup.ge)
@@ -400,7 +402,8 @@ lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
 
 lemma isBasis_sigma {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)]
     {B : ∀ i, Set (Opens (α i))} (hB : ∀ i, IsBasis (B i)) :
-    IsBasis (⋃ i : ι, (fun U ↦ ⟨Sigma.mk i '' U.carrier, isOpenMap_sigmaMk _ U.is_open'⟩) '' B i) := by
+    IsBasis (⋃ i : ι,
+      (fun U ↦ ⟨Sigma.mk i '' U.carrier, isOpenMap_sigmaMk _ U.is_open'⟩) '' B i) := by
   convert TopologicalSpace.IsTopologicalBasis.sigma hB
   simp only [IsBasis, Set.image_iUnion, ← Set.image_comp]
   simp

@@ -279,7 +279,8 @@ lemma isDiameter_iff_left_mem_and_midpoint_eq_center :
 
 lemma isDiameter_iff_right_mem_and_midpoint_eq_center :
     s.IsDiameter p₁ p₂ ↔ p₂ ∈ s ∧ midpoint ℝ p₁ p₂ = s.center :=
-  ⟨fun h ↦ ⟨h.right_mem, h.midpoint_eq_center⟩, fun h ↦ IsDiameter.symm ⟨h.1, midpoint_comm (R := ℝ) p₁ p₂ ▸ h.2⟩⟩
+  ⟨fun h ↦ ⟨h.right_mem, h.midpoint_eq_center⟩,
+    fun h ↦ IsDiameter.symm ⟨h.1, midpoint_comm (R := ℝ) p₁ p₂ ▸ h.2⟩⟩
 
 lemma IsDiameter.pointReflection_center_left (h : s.IsDiameter p₁ p₂) :
     Equiv.pointReflection s.center p₁ = p₂ := by

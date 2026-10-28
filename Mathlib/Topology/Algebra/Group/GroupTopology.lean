@@ -118,7 +118,9 @@ instance : BoundedOrder (GroupTopology α) where
   bot_le x := show ⊥ ≤ x.toTopologicalSpace from bot_le
 
 @[to_additive]
-instance : Min (GroupTopology α) where min x y := ⟨x.toTopologicalSpace ⊓ y.toTopologicalSpace, isTopologicalGroup_inf x.toIsTopologicalGroup y.toIsTopologicalGroup⟩
+instance : Min (GroupTopology α) where
+  min x y := ⟨x.toTopologicalSpace ⊓ y.toTopologicalSpace,
+    isTopologicalGroup_inf x.toIsTopologicalGroup y.toIsTopologicalGroup⟩
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_inf (x y : GroupTopology α) :
@@ -137,7 +139,8 @@ instance : Inhabited (GroupTopology α) :=
 @[to_additive /-- Infimum of a collection of additive group topologies -/]
 instance : InfSet (GroupTopology α) where
   sInf S :=
-    ⟨sInf (toTopologicalSpace '' S), isTopologicalGroup_sInf <| forall_mem_image.2 fun t _ => t.toIsTopologicalGroup⟩
+    ⟨sInf (toTopologicalSpace '' S),
+      isTopologicalGroup_sInf <| forall_mem_image.2 fun t _ => t.toIsTopologicalGroup⟩
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_sInf (s : Set (GroupTopology α)) :

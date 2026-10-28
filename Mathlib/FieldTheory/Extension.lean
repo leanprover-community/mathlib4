@@ -141,7 +141,8 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
     [Nonempty c] (hext : ∀ σ ∈ c, σ.IsExtendible) :
     (union c hc).IsExtendible := fun S ↦ by
   let Ω := adjoin F (S : Set E) →ₐ[F] K
-  have ⟨ω, hω⟩ : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ ∧ θ.carrier = π.1.carrier ⊔ adjoin F S := by
+  have ⟨ω, hω⟩ : ∃ ω : Ω, ∀ π : c, ∃ θ ≥ π.1, ⟨_, ω⟩ ≤ θ ∧
+      θ.carrier = π.1.carrier ⊔ adjoin F S := by
     by_contra!; choose π hπ using this
     have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ (alg.isIntegral).isIntegral _
     have ⟨π₀, hπ₀⟩ := hc.directed.finite_le π
@@ -187,7 +188,8 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
   obtain ⟨α, -, hα⟩ := IsConcreteLE.exists_of_lt this.lt_top
   let _ : Algebra ϕ.carrier K := ϕ.emb.toAlgebra
   let Λ := ϕ.carrier⟮α⟯ →ₐ[ϕ.carrier] K
-  have := finiteDimensional_adjoin (S := {α}) fun _ _ ↦ ((alg.tower_top ϕ.carrier).isIntegral).isIntegral _
+  have := finiteDimensional_adjoin (S := {α}) fun _ _ ↦
+    ((alg.tower_top ϕ.carrier).isIntegral).isIntegral _
   let L (σ : Λ) : Lifts F E K := ⟨ϕ.carrier⟮α⟯.restrictScalars F, σ.restrictScalars F⟩
   have hL (σ : Λ) : ϕ < L σ := lt_iff.mpr
     ⟨by simpa only [L, restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],

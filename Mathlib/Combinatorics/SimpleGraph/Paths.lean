@@ -113,7 +113,8 @@ lemma IsCircuit.not_nil {p : G.Walk v v} (hp : IsCircuit p) : ¬ p.Nil := (hp.ne
 
 theorem isCycle_def {u : V} (p : G.Walk u u) :
     p.IsCycle ↔ p.IsTrail ∧ p ≠ nil ∧ p.support.tail.Nodup :=
-  Iff.intro (fun h => ⟨h.isCircuit.isTrail, h.isCircuit.ne_nil, h.support_nodup⟩) fun h => ⟨⟨h.1, h.2.1⟩, h.2.2⟩
+  Iff.intro (fun h => ⟨h.isCircuit.isTrail, h.isCircuit.ne_nil, h.support_nodup⟩) fun h =>
+    ⟨⟨h.1, h.2.1⟩, h.2.2⟩
 
 @[simp]
 theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :

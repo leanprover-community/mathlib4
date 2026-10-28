@@ -109,7 +109,8 @@ instance : SMul (Submodule R A) (Submodule R M) where
   { __ := A'.toAddSubmonoid • M'.toAddSubmonoid
     smul_mem' := fun r m hm ↦ AddSubmonoid.smul_induction_on hm
       (fun a ha m hm ↦ by rw [← smul_assoc]; exact AddSubmonoid.smul_mem_smul (A'.smul_mem r ha) hm)
-      fun m₁ m₂ h₁ h₂ ↦ by rw [smul_add]; exact (A'.toAddSubmonoid • M'.toAddSubmonoid).add_mem h₁ h₂ }
+      fun m₁ m₂ h₁ h₂ ↦ by
+        rw [smul_add]; exact (A'.toAddSubmonoid • M'.toAddSubmonoid).add_mem h₁ h₂ }
 
 section
 

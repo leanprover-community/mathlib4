@@ -507,7 +507,8 @@ lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
 include hU in
 protected theorem isCompact :
     IsCompact (U : Set X) := by
-  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.isCompact_univ (by fun_prop)
+  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.isCompact_univ
+    (by fun_prop)
   convert hU.range_fromSpec.symm
   exact Set.image_univ
 
@@ -1007,7 +1008,8 @@ lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
   · rw [iSup₂_le_iff]
     exact fun i _ ↦ X.basicOpen_le i
   · intro x hx
-    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open hx U.is_open'
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
+      X.isBasis_affineOpens.exists_subset_of_mem_open hx U.is_open'
     refine SetLike.mem_of_subset ?_ hxV
     rw [← (hV.iSup_basicOpen_eq_self_iff (s := X.presheaf.map (homOfLE hVU).op '' s)).mpr
       (by rw [← Ideal.map_span, hs, Ideal.map_top])]

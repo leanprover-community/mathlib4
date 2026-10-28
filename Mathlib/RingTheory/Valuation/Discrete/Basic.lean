@@ -312,7 +312,8 @@ variable {v} [hv : v.IsRankOneDiscrete]
 theorem IsUniformizer.of_associated {π₁ π₂ : K₀} (h1 : IsUniformizer v π₁)
     (H : Associated π₁ π₂) : IsUniformizer v π₂ := by
   obtain ⟨u, hu⟩ := H
-  have : v (u.val : K) = 1 := (Integers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
+  have : v (u.val : K) = 1 :=
+    (Integers.isUnit_iff_valuation_eq_one <| integer.integers v).mp u.isUnit
   rwa [IsUniformizer.iff, ← hu, Subring.coe_mul, map_mul, this, mul_one, ← IsUniformizer.iff]
 
 /-- If two elements of `K₀` are uniformizers, then they are associated. -/
@@ -340,7 +341,8 @@ theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
     rw [← Units.val_mk0 hr₀, ← hm]
     simp [Units.val_zpow_eq_zpow_val, Units.val_mk0]
   have hm₀ : 0 ≤ m := by
-    rw [← zpow_le_one_iff_right_of_lt_one₀ π.valuation_gt_one.val_pos π.valuation_gt_one.val_lt_one, hm']
+    rw [← zpow_le_one_iff_right_of_lt_one₀ π.valuation_gt_one.val_pos
+      π.valuation_gt_one.val_lt_one, hm']
     exact r.2
   obtain ⟨n, hn⟩ := Int.eq_ofNat_of_zero_le hm₀
   use n

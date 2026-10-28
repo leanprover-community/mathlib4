@@ -53,12 +53,14 @@ variable (U : Opens (ProjectiveSpectrum 𝒜)) (V : Opens (ProjectiveSpectrum �
 
 /-- The underlying function of `Proj ℬ ⟶ Proj 𝒜` on the level of structure sheaves. -/
 noncomputable def comapStructureSheafFun
-    (s : ∀ x : U, AtPrime 𝒜 x.1.asHomogeneousIdeal.toSubmodule) (y : V) : AtPrime ℬ y.1.asHomogeneousIdeal.toSubmodule :=
+    (s : ∀ x : U, AtPrime 𝒜 x.1.asHomogeneousIdeal.toSubmodule) (y : V) :
+    AtPrime ℬ y.1.asHomogeneousIdeal.toSubmodule :=
   localRingHom f _ y.1.asHomogeneousIdeal.toSubmodule rfl <| s ⟨.comap f hf y.1, hUV y.2⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isLocallyFraction_comapStructureSheafFun
-    (s : ∀ x : U, AtPrime 𝒜 x.1.asHomogeneousIdeal.toSubmodule) (hs : (isLocallyFraction 𝒜).pred s) :
+    (s : ∀ x : U, AtPrime 𝒜 x.1.asHomogeneousIdeal.toSubmodule)
+    (hs : (isLocallyFraction 𝒜).pred s) :
     (isLocallyFraction ℬ).pred (comapStructureSheafFun f hf U V hUV s) := by
   rintro ⟨p, hpV⟩
   rcases hs ⟨.comap f hf p, hUV hpV⟩ with ⟨W, m, iWU, i, a, b, hb, h_frac⟩
@@ -198,8 +200,8 @@ Spec A₂[f(s)⁻¹]₀ ⟶ Spec A₁[s⁻¹]₀
 /-- Given a graded ring hom `f : 𝒜 →+*ᵍ ℬ` satisfying the hypothesis `ℬ₊ ≤ 𝒜₊.map f`, we obtain
 an affine open cover of `Proj ℬ` consisting of `D(f(s))` for `s ∈ A` positive degree. -/
 @[simps! I₀ f] noncomputable def mapAffineOpenCover : (Proj ℬ).AffineOpenCover :=
-  affineOpenCoverOfIrrelevantLESpan _ (fun s : (affineOpenCover 𝒜).I₀ ↦ f s.2) (fun s ↦ f.map_mem s.2.2)
-    (fun s ↦ s.1.2) <| (toIdeal_le_toIdeal_iff.mpr hf).trans <|
+  affineOpenCoverOfIrrelevantLESpan _ (fun s : (affineOpenCover 𝒜).I₀ ↦ f s.2)
+    (fun s ↦ f.map_mem s.2.2) (fun s ↦ s.1.2) <| (toIdeal_le_toIdeal_iff.mpr hf).trans <|
     Ideal.map_le_of_le_comap <| (toIdeal_irrelevant_le _).mpr fun i hi x hx ↦
     Ideal.subset_span ⟨⟨⟨i, hi⟩, ⟨x, hx⟩⟩, rfl⟩
 

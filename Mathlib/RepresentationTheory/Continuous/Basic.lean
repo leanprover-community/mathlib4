@@ -153,7 +153,8 @@ open ContinuousLinearMap in
 def comp {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
     {π₃ : ContRepresentation R G U} (f : π₂ →ⁱL π₃) (g : π₁ →ⁱL π₂) : π₁ →ⁱL π₃ where
   __ := f.toContinuousLinearMap.comp g.toContinuousLinearMap
-  isIntertwining' h := by rw [comp_assoc, g.isIntertwining', ← comp_assoc, f.isIntertwining', comp_assoc]
+  isIntertwining' h := by
+    rw [comp_assoc, g.isIntertwining', ← comp_assoc, f.isIntertwining', comp_assoc]
 
 @[simp]
 lemma toContinuousLinearMap_comp {π₁ : ContRepresentation R G V} {π₂ : ContRepresentation R G W}
@@ -161,7 +162,8 @@ lemma toContinuousLinearMap_comp {π₁ : ContRepresentation R G V} {π₂ : Con
     (f.comp g).toContinuousLinearMap = f.toContinuousLinearMap.comp g.toContinuousLinearMap := rfl
 
 instance : Add (π₁ →ⁱL π₂) where
-  add f g := ⟨f.toContinuousLinearMap + g.toContinuousLinearMap, by simp [g.isIntertwining', f.isIntertwining']⟩
+  add f g := ⟨f.toContinuousLinearMap + g.toContinuousLinearMap, by
+    simp [g.isIntertwining', f.isIntertwining']⟩
 
 @[simp]
 lemma toContinuousLinearMap_add (f g : π₁ →ⁱL π₂) :
@@ -227,7 +229,8 @@ lemma toContinuousLinearMap_neg (f : π₁ →ⁱL π₂) :
 lemma neg_apply (f : π₁ →ⁱL π₂) (v : V) : (-f) v = -f v := rfl
 
 instance : Sub (π₁ →ⁱL π₂) where
-  sub f g := ⟨f.toContinuousLinearMap - g.toContinuousLinearMap, by simp [g.isIntertwining', f.isIntertwining']⟩
+  sub f g := ⟨f.toContinuousLinearMap - g.toContinuousLinearMap, by
+    simp [g.isIntertwining', f.isIntertwining']⟩
 
 @[simp]
 lemma toContinuousLinearMap_sub (f g : π₁ →ⁱL π₂) :

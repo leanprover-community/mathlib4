@@ -65,7 +65,8 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
       PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU U.unop.is_open'
     refine ⟨_, hrU, hxr, ?_⟩
     refine Eq.trans ?_ (N.val.map_smul (homOfLE hrU).op t _).symm
-    change N.val.map (homOfLE hrU).op (f.hom.app _ _) = _ • N.val.map (homOfLE hrU).op (f.hom.app _ _)
+    change N.val.map (homOfLE hrU).op (f.hom.app _ _) =
+      _ • N.val.map (homOfLE hrU).op (f.hom.app _ _)
     have (x : _) :
         f.hom.app _ (M.val.map (homOfLE hrU).op _) = N.val.map (homOfLE hrU).op (f.hom.app _ x) :=
       congr($(f.hom.naturality (homOfLE hrU).op).hom x)

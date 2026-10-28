@@ -1012,7 +1012,8 @@ set_option backward.isDefEq.respectTransparency false in
 def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
   PullbackCone.isLimitAux' _ fun s => by
     refine ⟨LocallyRingedSpace.Hom.mk (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift
-        f.toHom g.toHom (PullbackCone.mk _ _ congr($(s.condition).toHom))) ?_, LocallyRingedSpace.Hom.ext'
+        f.toHom g.toHom (PullbackCone.mk _ _ congr($(s.condition).toHom))) ?_,
+      LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_fst f.toHom g.toHom _),
       LocallyRingedSpace.Hom.ext'
           (PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd f.toHom g.toHom _), ?_⟩

@@ -86,7 +86,8 @@ lemma indToCoindAux_snd_mul_inv (g₁ g₂ g₃ : G) (a : A) :
   rcases em ((QuotientGroup.rightRel S).r (g₂ * g₃⁻¹) g₁) with ⟨s, hs⟩ | h
   · simp [S.toSubmonoid.smul_def, mul_assoc, ← eq_mul_inv_iff_mul_eq.1 hs]
   · rw [indToCoindAux_of_not_rel (h := h), indToCoindAux_of_not_rel]
-    exact mt (fun ⟨s, hs⟩ => ⟨s, by simpa [S.toSubmonoid.smul_def, eq_mul_inv_iff_mul_eq, mul_assoc]⟩) h
+    exact mt (fun ⟨s, hs⟩ =>
+      ⟨s, by simpa [S.toSubmonoid.smul_def, eq_mul_inv_iff_mul_eq, mul_assoc]⟩) h
 
 @[simp]
 lemma indToCoindAux_fst_mul_inv (g₁ g₂ g₃ : G) (a : A) :

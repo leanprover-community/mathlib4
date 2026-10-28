@@ -97,7 +97,8 @@ protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving
 
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
-  ⟨hg.measurable.comp hf.measurable, by rw [← map_map hg.measurable hf.measurable, hf.map_eq, hg.map_eq]⟩
+  ⟨hg.measurable.comp hf.measurable, by
+    rw [← map_map hg.measurable hf.measurable, hf.map_eq, hg.map_eq]⟩
 
 protected theorem map_of_comp {f : α → β} {g : β → γ} (hgf : MeasurePreserving (g ∘ f) μa μc)
     (hg : Measurable g) (hf : Measurable f) :

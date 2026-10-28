@@ -123,7 +123,8 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff_isAlgebraic
   have ⟨a, has, hax⟩ := not_subset.mp this
   rw [show range x = Subtype.val '' range (Set.inclusion hxs) by
     rw [← range_comp, val_comp_inclusion, Subtype.range_val]] at alg
-  refine ind_s.transcendental_adjoin (s := range (inclusion hxs)) (i := ⟨a, has⟩) ?_ (alg.isAlgebraic _)
+  refine ind_s.transcendental_adjoin (s := range (inclusion hxs)) (i := ⟨a, has⟩) ?_
+    (alg.isAlgebraic _)
   simpa using hax
 
 theorem isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic [Nontrivial R] :

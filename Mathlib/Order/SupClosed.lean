@@ -165,7 +165,8 @@ lemma IsSublattice.inter (hs : IsSublattice s) (ht : IsSublattice t) : IsSublatt
   ⟨hs.supClosed.inter ht.supClosed, hs.infClosed.inter ht.infClosed⟩
 
 lemma isSublattice_sInter (hS : ∀ s ∈ S, IsSublattice s) : IsSublattice (⋂₀ S) :=
-  ⟨supClosed_sInter fun _s hs ↦ (hS _ hs).supClosed, infClosed_sInter fun _s hs ↦ (hS _ hs).infClosed⟩
+  ⟨supClosed_sInter fun _s hs ↦ (hS _ hs).supClosed,
+    infClosed_sInter fun _s hs ↦ (hS _ hs).infClosed⟩
 
 lemma isSublattice_iInter (hf : ∀ i, IsSublattice (f i)) : IsSublattice (⋂ i, f i) :=
   ⟨supClosed_iInter fun _i ↦ (hf _).supClosed, infClosed_iInter fun _i ↦ (hf _).infClosed⟩
@@ -195,10 +196,12 @@ lemma isSublattice_pi {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] {
     SupClosed (ofDual ⁻¹' s) ↔ InfClosed s := Iff.rfl
 
 @[simp] lemma isSublattice_preimage_toDual {s : Set αᵒᵈ} :
-    IsSublattice (toDual ⁻¹' s) ↔ IsSublattice s := ⟨fun h ↦ ⟨h.infClosed, h.supClosed⟩, fun h ↦ ⟨h.infClosed, h.supClosed⟩⟩
+    IsSublattice (toDual ⁻¹' s) ↔ IsSublattice s :=
+  ⟨fun h ↦ ⟨h.infClosed, h.supClosed⟩, fun h ↦ ⟨h.infClosed, h.supClosed⟩⟩
 
 @[simp] lemma isSublattice_preimage_ofDual :
-    IsSublattice (ofDual ⁻¹' s) ↔ IsSublattice s := ⟨fun h ↦ ⟨h.infClosed, h.supClosed⟩, fun h ↦ ⟨h.infClosed, h.supClosed⟩⟩
+    IsSublattice (ofDual ⁻¹' s) ↔ IsSublattice s :=
+  ⟨fun h ↦ ⟨h.infClosed, h.supClosed⟩, fun h ↦ ⟨h.infClosed, h.supClosed⟩⟩
 
 @[to_dual] alias ⟨_, InfClosed.dual⟩ := supClosed_preimage_ofDual
 alias ⟨_, IsSublattice.dual⟩ := isSublattice_preimage_ofDual
@@ -395,8 +398,10 @@ protected lemma SupClosed.infClosure (hs : SupClosed s) : SupClosed (infClosure 
 
 @[to_dual (attr := simp)]
 lemma supClosure_infClosure (s : Set α) : supClosure (infClosure s) = latticeClosure s :=
-  le_antisymm (supClosure_min (infClosure_min subset_latticeClosure isSublattice_latticeClosure.infClosed)
-    isSublattice_latticeClosure.supClosed) <| latticeClosure_min (subset_infClosure.trans subset_supClosure)
+  le_antisymm (supClosure_min
+    (infClosure_min subset_latticeClosure isSublattice_latticeClosure.infClosed)
+    isSublattice_latticeClosure.supClosed) <|
+    latticeClosure_min (subset_infClosure.trans subset_supClosure)
       ⟨supClosed_supClosure, infClosed_infClosure.supClosure⟩
 
 lemma Set.Finite.latticeClosure (hs : s.Finite) : (latticeClosure s).Finite := by

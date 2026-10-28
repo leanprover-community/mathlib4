@@ -137,7 +137,8 @@ section Functorial
 /-- `C(X, ·)` is a functor. -/
 @[fun_prop]
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
-  continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOfPred_mapsTo hK (hU.preimage g.continuous_toFun)
+  continuous_compactOpen.2 fun _K hK _U hU ↦
+    isOpen_setOfPred_mapsTo hK (hU.preimage g.continuous_toFun)
 
 /-- If `g : C(Y, Z)` is injective,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is injective too. -/

@@ -86,7 +86,8 @@ lemma injectiveDimension_le_injectiveDimension_of_isLocalizedModule [Small.{v, u
 
 lemma hasInjectiveDimensionLE_iff_forall_maximalSpectrum [Small.{v, u} R] [IsNoetherianRing R]
     (n : ℕ) (M : ModuleCat.{v} R) : HasInjectiveDimensionLE M n ↔
-    ∀ (m : MaximalSpectrum R), HasInjectiveDimensionLE (M.localizedModule m.asIdeal.primeCompl) n := by
+    ∀ (m : MaximalSpectrum R),
+      HasInjectiveDimensionLE (M.localizedModule m.asIdeal.primeCompl) n := by
   induction n generalizing M with
   | zero =>
     simp only [HasInjectiveDimensionLE, zero_add, ← injective_iff_hasInjectiveDimensionLT_one]

@@ -500,7 +500,8 @@ lemma isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat [Flat f]
   exact isIso_pushoutSection_of_iSup_eq _ _ _ _ (fun i : I ↦ i) (by rwa [iSup_subtype, eq_comm])
     (fun i ↦ isIso_pushoutSection_of_isQuasiSeparated_of_flat_left _ _ _ _ hUS i.1.2 hUX hUX')
     (fun i j ↦ mono_pushoutSection_of_isCompact_of_flat_left_of_ringHomFlat _ _ _ _ hUS hUX
-    (hUT' _ _ (hIUT _) i.1.1.is_open' i.1.2.isCompact (hIUT _) j.1.1.is_open' j.1.2.isCompact) hiX) hiX
+      (hUT' _ _ (hIUT _) i.1.1.is_open' i.1.2.isCompact (hIUT _) j.1.1.is_open' j.1.2.isCompact)
+      hiX) hiX
 
 end sections
 

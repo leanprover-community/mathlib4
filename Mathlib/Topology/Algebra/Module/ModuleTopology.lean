@@ -219,7 +219,8 @@ protected theorem isoₛₗ (hσ : Continuous σ) (hσ' : Continuous σ') (e : A
     let g' : B' →ₛₗ[σ'] A := e.symm
     let h : A →+ B' := e
     let h' : B' →+ A := e.symm
-    simp_rw [e.toHomeomorph.symm.isInducing.eq_induced, eq_moduleTopology R A, moduleTopology, induced_sInf]
+    simp_rw [e.toHomeomorph.symm.isInducing.eq_induced, eq_moduleTopology R A, moduleTopology,
+      induced_sInf]
     apply congr_arg
     ext τ -- from this point on the definitions of `g`, `g'` etc. above don't work without `@`.
     rw [Set.mem_image]

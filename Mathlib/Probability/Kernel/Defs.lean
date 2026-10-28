@@ -88,7 +88,8 @@ lemma aemeasurable (κ : Kernel α β) {μ : Measure α} : AEMeasurable κ μ :=
 initialize_simps_projections Kernel (toFun → apply)
 
 instance instZero : Zero (Kernel α β) where zero := ⟨0, measurable_zero⟩
-noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + η, κ.measurable'.add η.measurable'⟩
+noncomputable instance instAdd : Add (Kernel α β) where
+  add κ η := ⟨κ + η, κ.measurable'.add η.measurable'⟩
 noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
   smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.measurable'⟩
 

@@ -147,7 +147,8 @@ theorem mem_top {x : M} : x ∈ (⊤ : SaturatedSubmonoid M) := trivial
 variable (M) in
 @[to_additive]
 instance : Min (SaturatedSubmonoid M) where
-  min s₁ s₂ := { s₁.toSubmonoid ⊓ s₂.toSubmonoid with mulSaturated := .inf s₁.mulSaturated s₂.mulSaturated }
+  min s₁ s₂ :=
+    { s₁.toSubmonoid ⊓ s₂.toSubmonoid with mulSaturated := .inf s₁.mulSaturated s₂.mulSaturated }
 
 variable (M) in
 @[to_additive]

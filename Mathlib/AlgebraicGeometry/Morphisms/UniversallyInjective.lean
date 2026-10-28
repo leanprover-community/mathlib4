@@ -59,7 +59,8 @@ theorem universallyInjective_eq_diagonal :
     @UniversallyInjective = diagonal @Surjective := by
   apply le_antisymm
   · intro X Y f hf
-    refine ⟨fun x ↦ ⟨pullback.fst f f x, hf.universally_injective _ _ _ (IsPullback.of_hasPullback f f) ?_⟩⟩
+    refine ⟨fun x ↦ ⟨pullback.fst f f x,
+      hf.universally_injective _ _ _ (IsPullback.of_hasPullback f f) ?_⟩⟩
     rw [← Scheme.Hom.comp_apply, pullback.diagonal_fst]
     rfl
   · rw [← universally_eq_iff.mpr (inferInstance : IsStableUnderBaseChange (diagonal @Surjective)),

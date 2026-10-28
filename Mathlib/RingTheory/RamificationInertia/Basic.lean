@@ -63,7 +63,8 @@ theorem sum_ramification_inertia_eq_finrank_fiber
   suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr($(this).toNat)
   calc length Sr A * finrank κp κr = length Sr A * length κp κr := by rw [length_eq_finrank]
     _ = length Rp A := (length_restrictScalars Rp Sr A).symm
-    _ = length Rp Sq := (Fiber.localizationAlgEquivQuotient p q.asIdeal).toLinearEquiv.length_eq.symm
+    _ = length Rp Sq :=
+      (Fiber.localizationAlgEquivQuotient p q.asIdeal).toLinearEquiv.length_eq.symm
     _ = length κp Sq := length_eq_of_surjective residue_surjective
     _ = finrank κp Sq := length_eq_finrank κp Sq
 

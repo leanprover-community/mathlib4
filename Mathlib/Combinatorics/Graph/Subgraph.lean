@@ -69,7 +69,8 @@ lemma IsSubgraph.trans (h₁ : H.IsSubgraph G) (h₂ : G.IsSubgraph G₁) : H.Is
   ⟨h₁.vertexSet_mono.trans h₂.vertexSet_mono, fun _ _ _ h ↦ h₂.isLink_mono (h₁.isLink_mono h)⟩
 
 lemma IsSubgraph.antisymm (h₁ : H.IsSubgraph G) (h₂ : G.IsSubgraph H) : H = G :=
-  Graph.ext (h₁.vertexSet_mono.antisymm h₂.vertexSet_mono) fun _ _ _ ↦ ⟨(h₁.isLink_mono ·), (h₂.isLink_mono ·)⟩
+  Graph.ext (h₁.vertexSet_mono.antisymm h₂.vertexSet_mono) fun _ _ _ ↦
+    ⟨(h₁.isLink_mono ·), (h₂.isLink_mono ·)⟩
 
 /-- `H ≤ G` means `H` is a subgraph of `G`. It is defined as `V(H) ⊆ V(G)` and every link of `H`
 being a link of `G`. -/

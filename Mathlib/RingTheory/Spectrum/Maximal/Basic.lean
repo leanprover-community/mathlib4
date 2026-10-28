@@ -48,6 +48,7 @@ theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_
   simpa only [MaximalSpectrum.mk.injEq] using! PrimeSpectrum.ext_iff.mp h
 
 theorem isCoprime_of_ne {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.asIdeal J.asIdeal :=
-  Ideal.isCoprime_iff_sup_eq.mpr <| I.isMaximal.coprime_of_ne J.isMaximal <| mt MaximalSpectrum.ext h
+  Ideal.isCoprime_iff_sup_eq.mpr <|
+    I.isMaximal.coprime_of_ne J.isMaximal <| mt MaximalSpectrum.ext h
 
 end MaximalSpectrum

@@ -45,7 +45,8 @@ lemma empty : IsCompactOpenCovered f ∅ :=
   ⟨∅, Set.finite_empty, fun _ _ ↦ ⟨∅, isOpen_empty⟩, fun _ _ ↦ isCompact_empty, by simp⟩
 
 lemma iff_of_unique [Unique ι] :
-    IsCompactOpenCovered f U ↔ ∃ (V : Opens (X default)), IsCompact V.carrier ∧ f default '' V.carrier = U := by
+    IsCompactOpenCovered f U ↔
+      ∃ (V : Opens (X default)), IsCompact V.carrier ∧ f default '' V.carrier = U := by
   refine ⟨fun ⟨s, hs, V, hc, hcov⟩ ↦ ?_, fun ⟨V, hc, h⟩ ↦ ?_⟩
   · cases s.eq_empty_or_singleton_of_unique <;> aesop
   · refine ⟨{default}, Set.finite_singleton _, fun i h ↦ h ▸ V, fun i ↦ ?_, by simpa⟩
@@ -83,7 +84,8 @@ lemma iff_isCompactOpenCovered_sigmaMk :
 lemma of_iUnion_eq_of_finite {κ : Type*} [Finite κ] (s : κ → Set S) (hs : ⋃ i, s i = U)
     (H : ∀ i, IsCompactOpenCovered f (s i)) : IsCompactOpenCovered f U := by
   rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
-  have (i : κ) : ∃ (V : Opens (Σ i, X i)), IsCompact V.carrier ∧ (f _ ·.snd) '' V.carrier = s i := by
+  have (i : κ) :
+      ∃ (V : Opens (Σ i, X i)), IsCompact V.carrier ∧ (f _ ·.snd) '' V.carrier = s i := by
     convert H i; rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
   choose V hVeq hVc using this
   exact ⟨⨆ i, V i, by simpa using isCompact_iUnion hVeq, by simp_all [Set.image_iUnion, ← hs]⟩
@@ -97,7 +99,8 @@ lemma of_biUnion_eq_of_isCompact [TopologicalSpace S] {U : Set S} (hU : IsCompac
     (s : Set (Opens S)) (hs : ⋃ t ∈ s, t = U) (H : ∀ t ∈ s, IsCompactOpenCovered f t) :
     IsCompactOpenCovered f U := by
   classical
-  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun V : s ↦ V.1) (fun V ↦ V.1.is_open') (by simp [← hs])
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun V : s ↦ V.1) (fun V ↦ V.1.is_open')
+    (by simp [← hs])
   refine of_biUnion_eq_of_finite (SetLike.coe '' (t.image Subtype.val : Set (Opens S))) ?_ ?_ ?_
   · exact subset_antisymm (fun x h ↦ by aesop) (subset_trans ht <| by simp)
   · exact Set.toFinite _

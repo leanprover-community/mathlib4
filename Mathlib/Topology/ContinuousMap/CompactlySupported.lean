@@ -243,7 +243,8 @@ def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → �
 
 instance [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
     SMul R C_c(α, β) := fast_instance%
-  ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩, HasCompactSupport.smul_left f.hasCompactSupport'⟩⟩
+  ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩,
+    HasCompactSupport.smul_left f.hasCompactSupport'⟩⟩
 
 @[simp, norm_cast]
 theorem coe_smul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
@@ -279,7 +280,8 @@ variable [AddGroup β] [IsTopologicalAddGroup β] (f g : C_c(α, β))
 instance : Neg C_c(α, β) where
   neg f := { toFun := -f.toContinuousMap
              continuous_toFun := map_continuous (-f.toContinuousMap)
-             hasCompactSupport' := by simpa [HasCompactSupport, tsupport] using f.hasCompactSupport' }
+             hasCompactSupport' := by
+               simpa [HasCompactSupport, tsupport] using f.hasCompactSupport' }
 
 @[simp]
 theorem coe_neg : ⇑(-f) = -f :=
@@ -292,7 +294,8 @@ instance : Sub C_c(α, β) where
   sub f g := { toFun := f.toContinuousMap - g.toContinuousMap
                continuous_toFun := map_continuous (f.toContinuousMap - g.toContinuousMap)
                hasCompactSupport' := by
-                 simpa [sub_eq_add_neg] using HasCompactSupport.add f.hasCompactSupport' (-g).hasCompactSupport' }
+                 simpa [sub_eq_add_neg] using
+                   HasCompactSupport.add f.hasCompactSupport' (-g).hasCompactSupport' }
 
 @[simp]
 theorem coe_sub : ⇑(f - g) = f - g :=
@@ -558,7 +561,8 @@ yields another continuous function with compact support. -/
 def comp (f : C_c(γ, δ)) (g : β →co γ) : C_c(β, δ) where
   toContinuousMap := (f : C(γ, δ)).comp g
   hasCompactSupport' := by
-    apply IsCompact.of_isClosed_subset (g.isCompact_preimage_of_isClosed f.hasCompactSupport' (isClosed_tsupport _))
+    apply IsCompact.of_isClosed_subset
+      (g.isCompact_preimage_of_isClosed f.hasCompactSupport' (isClosed_tsupport _))
       (isClosed_tsupport (f ∘ g))
     intro x hx
     rw [tsupport, Set.mem_preimage, _root_.mem_closure_iff]

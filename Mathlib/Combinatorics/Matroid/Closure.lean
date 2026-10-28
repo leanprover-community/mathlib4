@@ -330,7 +330,8 @@ lemma Indep.closure_eq_setOfPred_isBasis_insert (hI : M.Indep I) :
   · rintro F' ⟨hF', hIF'⟩ e (he : M.IsBasis I (insert e I))
     rw [inter_eq_left.mpr (hIF.subset.trans hIF.subset_ground)] at hIF'
     obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset hIF' hF'.subset_ground
-    exact (hF'.subset_of_isBasis_of_isBasis hJ (he.isBasis_union_of_subset hJ.indep hIJ)) (Or.inr (mem_insert _ _))
+    exact (hF'.subset_of_isBasis_of_isBasis hJ (he.isBasis_union_of_subset hJ.indep hIJ))
+      (Or.inr (mem_insert _ _))
   exact ⟨hF, inter_subset_left.trans hIF.subset⟩
 
 @[deprecated (since := "2026-07-09")]

@@ -76,7 +76,8 @@ end
 /-- `forget F : ∫ᶜ F ⥤ 𝒮` is a fibered category. -/
 instance : IsFibered (forget F) :=
   IsFibered.of_exists_isStronglyCartesian (fun a _ f ↦
-    ⟨domainCartesianLift a.fiber f, cartesianLift a.fiber f, isStronglyCartesian_homCartesianLift a.fiber f⟩)
+    ⟨domainCartesianLift a.fiber f, cartesianLift a.fiber f,
+      isStronglyCartesian_homCartesianLift a.fiber f⟩)
 
 variable (F) (S : 𝒮)
 

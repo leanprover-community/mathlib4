@@ -56,7 +56,8 @@ variable {D Q}
 instance : Mul (D ≀ᵣ Q) where
   mul a b := ⟨a.left * (fun x ↦ b.left (a.right⁻¹ * x)), a.right * b.right⟩
 
-lemma mul_def (a b : D ≀ᵣ Q) : a * b = ⟨a.left * fun x ↦ b.left (a.right⁻¹ * x), a.right * b.right⟩ := rfl
+lemma mul_def (a b : D ≀ᵣ Q) :
+    a * b = ⟨a.left * fun x ↦ b.left (a.right⁻¹ * x), a.right * b.right⟩ := rfl
 
 @[simp]
 theorem mul_left (a b : D ≀ᵣ Q) : (a * b).left = a.left * fun x ↦ b.left (a.right⁻¹ * x) := rfl
@@ -149,7 +150,8 @@ instance : SMul (D ≀ᵣ Q) (Λ × Q) where
   smul w p := ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩
 
 @[simp]
-lemma smul_def {w : D ≀ᵣ Q} {p : Λ × Q} : w • p = ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩ := rfl
+lemma smul_def {w : D ≀ᵣ Q} {p : Λ × Q} :
+    w • p = ⟨(w.left (w.right * p.2)) • p.1, w.right * p.2⟩ := rfl
 
 instance : MulAction (D ≀ᵣ Q) (Λ × Q) where
   one_smul := by simp

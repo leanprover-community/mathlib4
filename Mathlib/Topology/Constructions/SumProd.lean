@@ -626,7 +626,8 @@ theorem isOpenMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z →
 
 protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenEmbedding f)
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
-  .of_isEmbedding_isOpenMap (hf.toIsEmbedding.prodMap hg.toIsEmbedding) (hf.isOpenMap.prodMap hg.isOpenMap)
+  .of_isEmbedding_isOpenMap (hf.toIsEmbedding.prodMap hg.toIsEmbedding)
+    (hf.isOpenMap.prodMap hg.isOpenMap)
 
 protected lemma Topology.IsClosedEmbedding.prodMap {f : X → Y} {g : Z → W}
     (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) :
@@ -645,7 +646,8 @@ lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :
 
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
-  ⟨.prodMap hf.surjective hg.surjective, .prodMap hf.continuous hg.continuous, .prodMap hf.isOpenMap hg.isOpenMap⟩
+  ⟨.prodMap hf.surjective hg.surjective, .prodMap hf.continuous hg.continuous,
+    .prodMap hf.isOpenMap hg.isOpenMap⟩
 
 @[simp]
 theorem isOpenQuotientMap_prodMap_iff [Nonempty X] [Nonempty Z] {f : X → Y} {g : Z → W} :
@@ -794,8 +796,10 @@ protected lemma Topology.IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
 protected lemma Topology.IsOpenEmbedding.inr : IsOpenEmbedding (@inr X Y) :=
   .of_continuous_injective_isOpenMap continuous_inr inr_injective isOpenMap_inr
 
-protected lemma Topology.IsEmbedding.inl : IsEmbedding (@inl X Y) := IsOpenEmbedding.inl.toIsEmbedding
-protected lemma Topology.IsEmbedding.inr : IsEmbedding (@inr X Y) := IsOpenEmbedding.inr.toIsEmbedding
+protected lemma Topology.IsEmbedding.inl : IsEmbedding (@inl X Y) :=
+  IsOpenEmbedding.inl.toIsEmbedding
+protected lemma Topology.IsEmbedding.inr : IsEmbedding (@inr X Y) :=
+  IsOpenEmbedding.inr.toIsEmbedding
 
 lemma isOpen_range_inl : IsOpen (range (inl : X → X ⊕ Y)) := IsOpenEmbedding.inl.isOpen_range
 lemma isOpen_range_inr : IsOpen (range (inr : Y → X ⊕ Y)) := IsOpenEmbedding.inr.isOpen_range

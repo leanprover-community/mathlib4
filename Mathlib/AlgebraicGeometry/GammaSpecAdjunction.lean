@@ -413,7 +413,8 @@ lemma _root_.AlgebraicGeometry.ext_to_Spec {X : Scheme} {R : Type*} [CommRing R]
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
-    ΓSpec.adjunction.homEquiv X R f = ⟨locallyRingedSpaceAdjunction.homEquiv X.toLocallyRingedSpace R f⟩ := rfl
+    ΓSpec.adjunction.homEquiv X R f =
+      ⟨locallyRingedSpaceAdjunction.homEquiv X.toLocallyRingedSpace R f⟩ := rfl
 
 theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : X ⟶ Scheme.Spec.obj R) :

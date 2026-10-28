@@ -155,7 +155,8 @@ structure GCongrKey where
 deriving Inhabited, BEq
 
 instance : Ord GCongrKey where
-  compare a b := a.relName.quickCmp b.relName |>.then (a.head.quickCmp b.head) |>.then (compare a.arity b.arity)
+  compare a b :=
+    a.relName.quickCmp b.relName |>.then (a.head.quickCmp b.head) |>.then (compare a.arity b.arity)
 
 /-- The data for a "main" hypothesis of a `gcongr` lemma.
 That is a hypothesis of the form `∀ xs, a xs' ~ b xs'` where `xs'` is a subset of `xs`,

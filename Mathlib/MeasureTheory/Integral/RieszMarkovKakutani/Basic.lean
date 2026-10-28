@@ -305,8 +305,9 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
     subset_interior_iff.2 ⟨f ⁻¹' Ioi α⁻¹, isOpen_Ioi.preimage f.toContinuousMap.continuous_toFun,
       fun x hx ↦ (inv_lt_one_of_one_lt₀ hα).trans_le (hfleoneonK x hx),
       preimage_mono Ioi_subset_Ici_self⟩
-  have hK'cp : IsCompact K' := .of_isClosed_subset f.hasCompactSupport' (isClosed_Ici.preimage f.toContinuousMap.continuous_toFun) fun x hx ↦
-    subset_closure ((inv_pos_of_pos <| zero_lt_one.trans hα).trans_le hx).ne'
+  have hK'cp : IsCompact K' := .of_isClosed_subset f.hasCompactSupport'
+    (isClosed_Ici.preimage f.toContinuousMap.continuous_toFun) fun x hx ↦
+      subset_closure ((inv_pos_of_pos <| zero_lt_one.trans hα).trans_le hx).ne'
   set hb' := hb ⟨K', hK'cp⟩
   simp only [Compacts.coe_mk, le_iInf_iff] at hb'
   exact (ENNReal.toNNReal_mono (by simp) <| hb' hKK').trans <| csInf_le'

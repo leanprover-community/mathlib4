@@ -754,7 +754,8 @@ lemma eventually_prod_self_iff' {r : α × α → Prop} :
 theorem HasAntitoneBasis.prod {ι : Type*} [LinearOrder ι] {f : Filter α} {g : Filter β}
     {s : ι → Set α} {t : ι → Set β} (hf : HasAntitoneBasis f s) (hg : HasAntitoneBasis g t) :
     HasAntitoneBasis (f ×ˢ g) fun n => s n ×ˢ t n :=
-  ⟨hf.toHasBasis.prod_same_index_anti hg.toHasBasis (hf.antitone.antitoneOn _) (hg.antitone.antitoneOn _), hf.antitone.set_prod hg.antitone⟩
+  ⟨hf.toHasBasis.prod_same_index_anti hg.toHasBasis (hf.antitone.antitoneOn _)
+    (hg.antitone.antitoneOn _), hf.antitone.set_prod hg.antitone⟩
 
 theorem HasBasis.coprod {ι ι' : Type*} {pa : ι → Prop} {sa : ι → Set α} {pb : ι' → Prop}
     {sb : ι' → Set β} (hla : la.HasBasis pa sa) (hlb : lb.HasBasis pb sb) :

@@ -300,11 +300,12 @@ lemma _root_.QuasiSeparatedSpace.of_isOpenCover {ι : Type*} {U : ι → Opens X
     (h₁ : ∀ i, IsRetrocompact (X := X) (U i)) (h₂ : ∀ i, IsQuasiSeparated (α := X) (U i)) :
     QuasiSeparatedSpace X where
   inter_isCompact V₁ V₂ ho₁ hc₁ ho₂ hc₂ := by
-    obtain ⟨t, ht⟩ := hc₁.elim_finite_subcover _ (fun i ↦ (U i).is_open') (by simp [hU.iSup_set_eq_univ])
+    obtain ⟨t, ht⟩ := hc₁.elim_finite_subcover _ (fun i ↦ (U i).is_open')
+      (by simp [hU.iSup_set_eq_univ])
     convert
       t.isCompact_biUnion fun i _ ↦
-        h₂ i _ _ Set.inter_subset_left ((U i).is_open'.inter ho₁) (h₁ i hc₁ ho₁) Set.inter_subset_left
-          ((U i).is_open'.inter ho₂) (h₁ i hc₂ ho₂)
+        h₂ i _ _ Set.inter_subset_left ((U i).is_open'.inter ho₁) (h₁ i hc₁ ho₁)
+          Set.inter_subset_left ((U i).is_open'.inter ho₂) (h₁ i hc₂ ho₂)
     apply subset_antisymm
     · rintro x ⟨hx₁, hx₂⟩
       obtain ⟨i, hi, hxi⟩ := Set.mem_iUnion₂.mp (ht hx₁)

@@ -56,7 +56,8 @@ theorem Module.Finite.of_isLocalized_maximal
   classical
   have : Fintype (MaximalSpectrum R) := Fintype.ofFinite _
   choose s hs using fun P : MaximalSpectrum R ↦ (H P.asIdeal).fg_top
-  choose frac hfrac using fun P : MaximalSpectrum R ↦ IsLocalizedModule.surj P.asIdeal.primeCompl (f P.asIdeal)
+  choose frac hfrac using fun P : MaximalSpectrum R ↦
+    IsLocalizedModule.surj P.asIdeal.primeCompl (f P.asIdeal)
   use Finset.biUnion Finset.univ fun P ↦ Finset.image (frac P · |>.1) (s P)
   refine Submodule.eq_top_of_localization_maximal Rₚ Mₚ f _ fun P hP ↦ ?_
   rw [eq_top_iff, ← hs ⟨P, hP⟩, Submodule.localized'_span, Submodule.span_le]

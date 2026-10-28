@@ -133,7 +133,8 @@ instance : Category (Monad C) where
   comp f g :=
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
-          naturality := fun X Y h => by rw [assoc, f.toNatTrans.naturality_assoc, g.toNatTrans.naturality] } }
+          naturality := fun X Y h => by
+            rw [assoc, f.toNatTrans.naturality_assoc, g.toNatTrans.naturality] } }
 
 @[to_dual]
 instance {T : Monad C} : Inhabited (MonadHom T T) :=

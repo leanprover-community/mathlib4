@@ -189,8 +189,8 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocallyPathConn
     let Γ' : Path e₀ ((p.symm ∘ f) a) :=
       ⟨Γ _ (somePath a₀ a).source, Γ_0 .., by simp [← this, hep, F]⟩
     specialize uniq ((somePath a₀ a).trans γ) _ (Γ'.trans <| γ.map' <| p.continuousOn_symm.comp
-      f.continuous_toFun.continuousOn <| by rintro _ ⟨t, rfl⟩; exact hUp (hγ _)) _ (by simp) (somePath a₀ x).source
-      (by simp) (Γ_0 _ (somePath a₀ x).source) _ (Γ_lifts ..) (by simp)
+      f.continuous_toFun.continuousOn <| by rintro _ ⟨t, rfl⟩; exact hUp (hγ _)) _ (by simp)
+      (somePath a₀ x).source (by simp) (Γ_0 _ (somePath a₀ x).source) _ (Γ_lifts ..) (by simp)
     · ext
       simp only [Function.comp, ContinuousMap.coe_ofClass, Path.trans_apply, ContinuousMap.coe_comp]
       split_ifs
@@ -247,7 +247,8 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
     rw [q.mem_source, pΓtn]
     exact t_sub ⟨le_rfl, t_mono n.le_succ⟩
   · rw [closure_le_eq continuous_id' continuous_const] at h; exact ⟨h.1.1, h.2⟩
-  · apply q.continuousOn_invFun.comp ((Continuous.prodMk_left _).comp γ.continuous_toFun).continuousOn
+  · apply q.continuousOn_invFun.comp
+      ((Continuous.prodMk_left _).comp γ.continuous_toFun).continuousOn
     simp_rw [not_le, q.target_eq]; intro s h
     exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
@@ -264,8 +265,9 @@ variable {γ e}
 lemma eq_liftPath_iff {Γ : I → E} : Γ = cov.liftPath γ e γ_0 ↔ Continuous Γ ∧ p ∘ Γ = γ ∧ Γ 0 = e :=
   have lifts := cov.liftPath_lifts γ e γ_0
   have zero := cov.liftPath_zero γ e γ_0
-  ⟨(· ▸ ⟨(cov.liftPath γ e γ_0).continuous_toFun, lifts, zero⟩), fun ⟨Γ_cont, Γ_lifts, Γ_0⟩ ↦ cov.eq_of_comp_eq
-    Γ_cont (cov.liftPath γ e γ_0).continuous (Γ_lifts ▸ lifts.symm) 0 (Γ_0 ▸ zero.symm)⟩
+  ⟨(· ▸ ⟨(cov.liftPath γ e γ_0).continuous_toFun, lifts, zero⟩), fun ⟨Γ_cont, Γ_lifts, Γ_0⟩ ↦
+    cov.eq_of_comp_eq Γ_cont (cov.liftPath γ e γ_0).continuous (Γ_lifts ▸ lifts.symm) 0
+      (Γ_0 ▸ zero.symm)⟩
 
 /-- Unique characterization of the lifted path. -/
 lemma eq_liftPath_iff' {Γ : C(I, E)} : Γ = cov.liftPath γ e γ_0 ↔ p ∘ Γ = γ ∧ Γ 0 = e := by

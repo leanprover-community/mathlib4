@@ -357,8 +357,10 @@ theorem isMulCommutative [IsCyclotomicExtension S A B] [IsDomain B] :
   use r, hr
   simp only [AlgEquiv.mul_apply]
   have := NeZero.mk h1
-  obtain ⟨mf, -, hf⟩ := hr.eq_pow_of_pow_eq_one (show f r ^ n = 1 by rw [← map_pow, hr.pow_eq_one, map_one])
-  obtain ⟨mg, -, hg⟩ := hr.eq_pow_of_pow_eq_one (show g r ^ n = 1 by rw [← map_pow, hr.pow_eq_one, map_one])
+  obtain ⟨mf, -, hf⟩ := hr.eq_pow_of_pow_eq_one
+    (show f r ^ n = 1 by rw [← map_pow, hr.pow_eq_one, map_one])
+  obtain ⟨mg, -, hg⟩ := hr.eq_pow_of_pow_eq_one
+    (show g r ^ n = 1 by rw [← map_pow, hr.pow_eq_one, map_one])
   simp [← hf, ← hg, ← pow_mul, mul_comm mf mg]
 
 end Basic

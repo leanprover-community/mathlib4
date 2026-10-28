@@ -143,7 +143,8 @@ theorem mem_of_sum_smul_mem {ι : Type*} [Fintype ι] {f : ι → M} {c : ι →
 /-- The face of a face of a cone is also a face of the cone. -/
 @[trans]
 protected theorem trans (h₁ : F₂.IsFaceOf F₁) (h₂ : F₁.IsFaceOf C) : F₂.IsFaceOf C := by
-  refine ⟨h₁.le.trans h₂.le, fun hx hy ha hxy ↦ h₁.mem_of_smul_add_mem (h₂.mem_of_smul_add_mem hx hy ha (h₁.le hxy)) ?_ ha hxy⟩
+  refine ⟨h₁.le.trans h₂.le, fun hx hy ha hxy ↦
+    h₁.mem_of_smul_add_mem (h₂.mem_of_smul_add_mem hx hy ha (h₁.le hxy)) ?_ ha hxy⟩
   exact h₂.mem_of_add_mem_right (smul_mem _ ha.le hx) hy (h₁.le hxy)
 
 section Map

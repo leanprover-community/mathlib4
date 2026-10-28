@@ -410,7 +410,8 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
   convert nonempty_isColimit_cofanMk_of fi _ _
   · intro i
     cases i <;> (simp only [fi]; infer_instance)
-  · simpa [← WalkingPair.equivBool.symm.iSup_comp, iSup_bool_eq, ← codisjoint_iff] using hf.codisjoint
+  · simpa [← WalkingPair.equivBool.symm.iSup_comp, iSup_bool_eq, ← codisjoint_iff]
+      using hf.codisjoint
   · intro i j hij
     match i, j with
     | .left, .right => simpa [fi] using hf.disjoint

@@ -53,7 +53,8 @@ namespace DiffContOnCl
 
 theorem comp {g : G → E} {t : Set G} (hf : DiffContOnCl 𝕜 f s) (hg : DiffContOnCl 𝕜 g t)
     (h : MapsTo g t s) : DiffContOnCl 𝕜 (f ∘ g) t :=
-  ⟨hf.differentiableOn.comp hg.differentiableOn h, hf.continuousOn.comp hg.continuousOn <| h.closure_of_continuousOn hg.continuousOn⟩
+  ⟨hf.differentiableOn.comp hg.differentiableOn h,
+    hf.continuousOn.comp hg.continuousOn <| h.closure_of_continuousOn hg.continuousOn⟩
 
 theorem continuousOn_ball [NormedSpace ℝ E] {x : E} {r : ℝ} (h : DiffContOnCl 𝕜 f (ball x r)) :
     ContinuousOn f (closedBall x r) := by
@@ -114,7 +115,8 @@ theorem smul_const {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebr
 
 theorem inv {f : E → 𝕜} (hf : DiffContOnCl 𝕜 f s) (h₀ : ∀ x ∈ closure s, f x ≠ 0) :
     DiffContOnCl 𝕜 f⁻¹ s :=
-  ⟨(differentiableOn_inv.comp hf.differentiableOn fun _ hx => h₀ _ (subset_closure hx) :), hf.continuousOn.inv₀ h₀⟩
+  ⟨(differentiableOn_inv.comp hf.differentiableOn fun _ hx => h₀ _ (subset_closure hx) :),
+    hf.continuousOn.inv₀ h₀⟩
 
 end DiffContOnCl
 

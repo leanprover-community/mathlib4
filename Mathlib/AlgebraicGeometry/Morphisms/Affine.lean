@@ -98,7 +98,8 @@ private lemma isAffine_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
   intro i
   rw [Set.inter_inter_distrib_right]
   refine (hs₂ i (hs' i.2)).isQuasiSeparated _ _ Set.inter_subset_right
-    (U.1.is_open'.inter (X.basicOpen _).is_open') ?_ Set.inter_subset_right (V.1.is_open'.inter (X.basicOpen _).is_open') ?_
+    (U.1.is_open'.inter (X.basicOpen _).is_open') ?_ Set.inter_subset_right
+    (V.1.is_open'.inter (X.basicOpen _).is_open') ?_
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
     exact (U.2.basicOpen _).isCompact
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]

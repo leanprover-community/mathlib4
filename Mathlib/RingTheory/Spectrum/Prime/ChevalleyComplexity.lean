@@ -189,7 +189,8 @@ private lemma induction_structure (n : ℕ)
     (hP₃ : ∀ (R) [CommRing R] (e : InductionObj R n) (i j : Fin n),
       (e.val i).Monic → (e.val i).degree ≤ (e.val j).degree → i ≠ j →
       P R ⟨update e.val j (e.val j %ₘ e.val i)⟩ → P R e)
-    (hP₄ : ∀ (R) [CommRing R] (c : R) (i : Fin n) (e : InductionObj R n), c = (e.val i).leadingCoeff →
+    (hP₄ : ∀ (R) [CommRing R] (c : R) (i : Fin n) (e : InductionObj R n),
+      c = (e.val i).leadingCoeff →
       c ≠ 0 →
       P (Away c) ⟨Polynomial.C (IsLocalization.Away.invSelf (S := Away c) c) •
         mapRingHom (algebraMap _ _) ∘ e⟩ →
@@ -231,7 +232,8 @@ private lemma induction_structure (n : ℕ)
           simp only [update_self]
           refine ((degree_modByMonic_lt _ hi).trans_le i_min).ne
     -- Case II : The `e i ≠ 0` with minimal degree has non-invertible leading coefficient
-    obtain ⟨i, hi, i_min⟩ : ∃ i, e.val i ≠ 0 ∧ ∀ j, e.val j ≠ 0 → (e.val i).degree ≤ (e.val j).degree := by
+    obtain ⟨i, hi, i_min⟩ :
+        ∃ i, e.val i ≠ 0 ∧ ∀ j, e.val j ≠ 0 → (e.val i).degree ≤ (e.val j).degree := by
       have : ∃ n : ℕ, ∃ i, (e.val i).degree = n ∧ (e.val i) ≠ 0 := by
         obtain ⟨i, hi⟩ := he0; exact ⟨(e.val i).natDegree, i, degree_eq_natDegree hi, hi⟩
       let m := Nat.find this

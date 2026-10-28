@@ -49,7 +49,8 @@ theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
   exact ⟨⟨U, (ContinuousMap.isClopen_setOfPred_mapsTo hV W.isClopen').preimage
-    (ContinuousMap.id (X × Y)).curry.continuous_toFun⟩, by simp [U, V, MapsTo], ⟨V, W.isClopen'.preimage hp⟩, h, hUV⟩
+    (ContinuousMap.id (X × Y)).curry.continuous_toFun⟩, by simp [U, V, MapsTo],
+    ⟨V, W.isClopen'.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
 
@@ -87,7 +88,8 @@ lemma countable_iff_secondCountable [T2Space X] [TotallyDisconnectedSpace X] :
   refine ⟨fun h ↦ ⟨_, ?_, isTopologicalBasis_isClopen.eq_generateFrom⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
     exact Injective.of_eq_imp_le (f := f) (·.le) |>.countable
-  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.carrier = (SetLike.coe t).sUnion :=
+  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)),
+        s.carrier = (SetLike.coe t).sUnion :=
       fun s ↦ eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _
         (isBasis_countableBasis X) s.carrier s.isClopen'.1.isCompact s.isClopen'.2
     let f : Clopens X → Finset (countableBasis X) := fun s ↦ (this s).choose

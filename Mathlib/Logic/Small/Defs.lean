@@ -119,9 +119,10 @@ instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (
 
 theorem not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
-    @Function.cantor_injective (Σ α, e.symm α) (fun a => ⟨_, cast (e.left_inv _).symm a⟩) fun a b e => by
-      dsimp at e
-      injection e with h₁ h₂
-      simpa using h₂
+    @Function.cantor_injective (Σ α, e.symm α) (fun a => ⟨_, cast (e.left_inv _).symm a⟩)
+      fun a b e => by
+        dsimp at e
+        injection e with h₁ h₂
+        simpa using h₂
 
 end

@@ -174,15 +174,15 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
       rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val))]
       simp_rw [NNReal.coe_inv, NNReal.coe_div, NNReal.coe_mul, NNReal.coe_pow, NNReal.coe_div,
         coe_real_pi, NNReal.coe_ofNat, NNReal.coe_natCast]
-    _ = FractionalIdeal.absNorm I.val * (2 : ℝ) ^ (finrank ℚ K - nrComplexPlaces K - nrRealPlaces K +
-          nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
-            π⁻¹ ^ (nrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.val * (2 : ℝ) ^ (finrank ℚ K - nrComplexPlaces K -
+          nrRealPlaces K + nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
+            Nat.factorial (finrank ℚ K) * π⁻¹ ^ (nrComplexPlaces K) := by
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_natCast, mul_zpow,
         ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
         zpow_add₀ (two_ne_zero : (2 : ℝ) ≠ 0)]
       ring
-    _ = FractionalIdeal.absNorm I.val * (2 : ℝ) ^ (2 * nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
-          Nat.factorial (finrank ℚ K) * π⁻¹ ^ (nrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.val * (2 : ℝ) ^ (2 * nrComplexPlaces K : ℤ) *
+          Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) * π⁻¹ ^ (nrComplexPlaces K) := by
       congr
       rw [← card_add_two_mul_card_eq_rank, Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
       ring

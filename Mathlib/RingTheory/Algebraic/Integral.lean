@@ -238,7 +238,8 @@ theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
   cases subsingleton_or_nontrivial R
   · have := Module.subsingleton R S
     exact (is_transcendental_of_subsingleton _ _ h).elim
-  have ⟨r, hr, _, e⟩ := (int.isIntegral s).isAlgebraic.exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero hs)
+  have ⟨r, hr, _, e⟩ :=
+    (int.isIntegral s).isAlgebraic.exists_ne_zero_dvd (mem_nonZeroDivisors_of_ne_zero hs)
   refine .of_smul_isIntegral (y := r) (by rwa [isNilpotent_iff_eq_zero]) ?_
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R S,
     e, ← Algebra.smul_def, mul_comm, mul_smul]

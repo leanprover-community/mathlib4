@@ -138,7 +138,8 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       grw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul, h]
     let ⟨z, hz⟩ := hv.exists_of_le_one this
-    ⟨z, hv.hom_inj <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
+    ⟨z, hv.hom_inj <|
+      ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
 
 theorem dvd_iff_le (hv : Integers v O) {x y : O} :
     x ∣ y ↔ v (algebraMap O F y) ≤ v (algebraMap O F x) :=

@@ -835,7 +835,8 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
       (∑ J ∈ π.boxes with tag π J ∉ s, g J)
       ≤ ∑ J ∈ π.boxes with tag π J ∉ s, ε' * B J := dist_sum_sum_le_of_le _ fun J hJ ↦ by
       rw [Finset.mem_filter] at hJ; obtain ⟨hJ, hJs⟩ := hJ
-      refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_ (fun hH => hπδ.isHenstock hH J hJ)
+      refine Hδ₂ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ ε'0 _ (π.le_of_mem' _ hJ) ?_
+        (fun hH => hπδ.isHenstock hH J hJ)
         fun hD => (Finset.le_sup hJ).trans (hπδ.distortion_le hD)
       convert! hπδ.isSubordinate J hJ using 3; exact (ite_eq_right hJs).symm
     _ ≤ ∑ J ∈ π.boxes, ε' * B J := by

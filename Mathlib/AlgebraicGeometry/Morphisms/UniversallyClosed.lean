@@ -78,7 +78,8 @@ lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y
   intro X' Y' i₁ i₂ f' H
   have := UniversallyClosed.universally_isClosedMap _ _ _
     ((IsPullback.of_hasPullback i₁ f).paste_horiz H)
-  exact IsClosedMap.of_comp_surjective (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).surj
+  exact IsClosedMap.of_comp_surjective
+    (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).surj
     (Scheme.Hom.continuous _) this
 
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
@@ -123,7 +124,8 @@ lemma compactSpace_of_universallyClosed
   let Z : Set (pullback f q :) := (⨆ i, fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i) : (pullback f q).Opens)ᶜ
   have hZ : IsClosed Z := by
     simp only [Z, isClosed_compl_iff, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe]
-    exact isOpen_iUnion fun i ↦ (fT.continuous.isOpen_preimage _ (Ti i).is_open').inter (p.continuous.isOpen_preimage _ (U i).is_open')
+    exact isOpen_iUnion fun i ↦ (fT.continuous.isOpen_preimage _ (Ti i).is_open').inter
+      (p.continuous.isOpen_preimage _ (U i).is_open')
   let Zc : T.Opens := ⟨(fT '' Z)ᶜ, (fT.isClosedMap _ hZ).isOpen_compl⟩
   let ψ : MvPolynomial 𝒰.I₀ K →ₐ[K] K := MvPolynomial.aeval (fun _ ↦ 1)
   let t : T := Spec.map (CommRingCat.ofHom ψ.toRingHom) default

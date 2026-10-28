@@ -205,7 +205,8 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     (pushforwardFamily α x).Compatible := by
   suffices ∀ {Z W₁ W₂} (iWX₁ : G.obj W₁ ⟶ X) (iWX₂ : G.obj W₂ ⟶ X) (iZW₁ : Z ⟶ G.obj W₁)
       (iZW₂ : Z ⟶ G.obj W₂), iZW₁ ≫ iWX₁ = iZW₂ ≫ iWX₂ →
-      ℱ'.obj.map iZW₁.op (α.app _ (ℱ.map iWX₁.op x)) = ℱ'.obj.map iZW₂.op (α.app _ (ℱ.map iWX₂.op x)) by
+      ℱ'.obj.map iZW₁.op (α.app _ (ℱ.map iWX₁.op x)) =
+        ℱ'.obj.map iZW₂.op (α.app _ (ℱ.map iWX₂.op x)) by
     rintro Y₁ Y₂ Z iZY₁ iZY₂ f₁ f₂ h₁ h₂ e
     simp only [pushforwardFamily, ← Functor.map_comp_apply, ← op_comp]
     generalize Nonempty.some h₁ = l₁

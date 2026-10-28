@@ -81,7 +81,8 @@ lemma LocalSubring.mem_of_isMax_of_isIntegral {R : LocalSubring K}
 lemma ValuationSubring.isMax_toLocalSubring (R : ValuationSubring K) :
     IsMax R.toLocalSubring := by
   intro S hS
-  refine (LocalSubring.toSubring_injective (hS.1.antisymm fun x hx ↦ (R.mem_or_inv_mem' x).elim id fun h ↦ ?_)).ge
+  refine (LocalSubring.toSubring_injective
+    (hS.1.antisymm fun x hx ↦ (R.mem_or_inv_mem' x).elim id fun h ↦ ?_)).ge
   by_contra h'
   have hx0 : x ≠ 0 := by rintro rfl; exact h' R.zero_mem
   have : IsUnit (Subring.inclusion hS.1 ⟨x⁻¹, h⟩) :=
@@ -129,7 +130,8 @@ lemma LocalSubring.exists_le_valuationSubring (A : LocalSubring K) :
     obtain ⟨A, haA : a ∈ A.1.toSubring⟩ := (Subring.mem_iSup_of_directed hdir).mp ha
     obtain ⟨B, hbB : b ∈ B.1.toSubring⟩ := (Subring.mem_iSup_of_directed hdir).mp hb
     obtain ⟨C, hCA, hCB⟩ := hdir A B
-    refine (C.1.isLocalRing.isUnit_or_isUnit_of_add_one (a := ⟨a, hCA haA⟩) (b := ⟨b, hCB hbB⟩) (Subtype.ext congr(($e).1))).imp ?_ ?_
+    refine (C.1.isLocalRing.isUnit_or_isUnit_of_add_one (a := ⟨a, hCA haA⟩) (b := ⟨b, hCB hbB⟩)
+      (Subtype.ext congr(($e).1))).imp ?_ ?_
     · exact fun h ↦ h.map (Subring.inclusion (le_iSup (fun i : s ↦ i.1.toSubring) C))
     · exact fun h ↦ h.map (Subring.inclusion (le_iSup (fun i : s ↦ i.1.toSubring) C))
   · intro A hA

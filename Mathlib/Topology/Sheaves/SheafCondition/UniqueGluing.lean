@@ -251,7 +251,8 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
 variable {F} {U} in
 theorem eq_app_of_locally_eq {V : Opens X} {G : Sheaf C X} {f : F ⟶ G}
     {s : ToType (F.obj.obj (op (iSup U)))} {t : ToType (G.obj.obj (op V))}
-    {sf : ∀ i : ι, ToType (F.obj.obj (op (U i)))} (h : IsGluing F.obj U sf s) (hV : ∀ i : ι, U i ≤ V)
+    {sf : ∀ i : ι, ToType (F.obj.obj (op (U i)))} (h : IsGluing F.obj U sf s)
+    (hV : ∀ i : ι, U i ≤ V)
     (ht : ∀ i : ι, f.hom.app (op (U i)) (sf i) = G.obj.map (homOfLE (hV i)).op t) :
     f.hom.app (op (iSup U)) s = G.obj.map (homOfLE (by aesop_cat)).op t := by
   refine eq_of_locally_eq G U _ _ (fun _ ↦ ?_)

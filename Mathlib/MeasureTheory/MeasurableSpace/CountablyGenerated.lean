@@ -346,7 +346,8 @@ theorem CountablySeparated.subtype_iff [MeasurableSpace α] {s : Set α} :
 
 instance (priority := 100) Subtype.separatesPoints [MeasurableSpace α] [h : SeparatesPoints α]
     {s : Set α} : SeparatesPoints s :=
-  ⟨fun _ _ hxy ↦ Subtype.val_injective <| h.separates _ _ fun _ ht ↦ hxy _ <| measurable_subtype_coe ht⟩
+  ⟨fun _ _ hxy ↦ Subtype.val_injective <| h.separates _ _ fun _ ht ↦
+    hxy _ <| measurable_subtype_coe ht⟩
 
 instance (priority := 100) Subtype.countablySeparated [MeasurableSpace α]
     [h : CountablySeparated α] {s : Set α} : CountablySeparated s := by

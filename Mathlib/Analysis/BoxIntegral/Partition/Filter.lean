@@ -360,7 +360,8 @@ protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c 
     l.MemBaseSet I c r₁ (π₁.unionComplToSubordinate π₂ hU r₂) :=
   ⟨hπ₁.isSubordinate.disjUnion ((π₂.isSubordinate_toSubordinate r₂).mono hle) _,
     fun h => (hπ₁.isHenstock h).disjUnion (π₂.isHenstock_toSubordinate _) _,
-    fun h => (distortion_unionComplToSubordinate _ _ _ _).trans_le (max_le (hπ₁.distortion_le h) (hc h)),
+    fun h => (distortion_unionComplToSubordinate _ _ _ _).trans_le
+      (max_le (hπ₁.distortion_le h) (hc h)),
     fun _ => ⟨⊥, by simp⟩⟩
 
 variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
@@ -369,7 +370,8 @@ set_option backward.isDefEq.respectTransparency false in
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by
   classical
-  refine ⟨fun J hJ => hπ.isSubordinate J (π.mem_filter.1 hJ).1, fun hH J hJ => hπ.isHenstock hH J (π.mem_filter.1 hJ).1,
+  refine ⟨fun J hJ => hπ.isSubordinate J (π.mem_filter.1 hJ).1,
+    fun hH J hJ => hπ.isHenstock hH J (π.mem_filter.1 hJ).1,
     fun hD => (distortion_filter_le _ _).trans (hπ.distortion_le hD), fun hD => ?_⟩
   rcases hπ.exists_compl hD with ⟨π₁, hπ₁U, hc⟩
   set π₂ := π.filter fun J => ¬p J
@@ -387,7 +389,8 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
     · rintro ⟨hxI, hxp⟩
       by_cases hxπ : x ∈ π.iUnion
       exacts [Or.inr ⟨hxπ, hxp⟩, Or.inl ⟨hxI, hxπ⟩]
-  · have : (π.filter fun J => ¬p J).distortion ≤ c := (distortion_filter_le _ _).trans (hπ.distortion_le hD)
+  · have : (π.filter fun J => ¬p J).distortion ≤ c :=
+      (distortion_filter_le _ _).trans (hπ.distortion_le hD)
     simpa [hc]
 
 theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J}
@@ -473,7 +476,8 @@ theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J
     (l.hasBasis_toFilterDistortioniUnion J _ _)).2 fun r hr => ?_
   refine ⟨r, hr, fun π hπ => ?_⟩
   rw [mem_ofPred_eq, Prepartition.iUnion_top] at hπ
-  refine ⟨⟨hπ.1.isSubordinate, hπ.1.isHenstock, fun hD => le_trans (hπ.1.distortion_le hD) (le_max_left _ _), fun _ => ?_⟩, ?_⟩
+  refine ⟨⟨hπ.1.isSubordinate, hπ.1.isHenstock,
+    fun hD => le_trans (hπ.1.distortion_le hD) (le_max_left _ _), fun _ => ?_⟩, ?_⟩
   · refine ⟨_, π₀.iUnion_compl.trans ?_, le_max_right _ _⟩
     congr 1
     exact (Prepartition.iUnion_single h).trans hπ.2.symm

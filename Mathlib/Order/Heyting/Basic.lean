@@ -613,7 +613,8 @@ theorem IsCompl.compl_eq (h : IsCompl a b) : aᶜ = b :=
 
 @[to_dual]
 theorem IsCompl.eq_compl (h : IsCompl a b) : a = bᶜ :=
-  h.disjoint.le_compl_right.antisymm <| Disjoint.le_of_codisjoint disjoint_compl_left h.codisjoint.symm
+  h.disjoint.le_compl_right.antisymm <|
+    Disjoint.le_of_codisjoint disjoint_compl_left h.codisjoint.symm
 
 @[to_dual none]
 theorem compl_unique (h₀ : a ⊓ b = ⊥) (h₁ : a ⊔ b = ⊤) : aᶜ = b :=

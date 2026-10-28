@@ -98,7 +98,8 @@ instance (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime] [QuasiFinite R S
   let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
   have : q = r.asIdeal.comap Algebra.TensorProduct.includeRight := by
     rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
-  let := Localization.AtPrime.algebraOfLiesOver p (r.asIdeal.comap Algebra.TensorProduct.includeRight)
+  let := Localization.AtPrime.algebraOfLiesOver p
+    (r.asIdeal.comap Algebra.TensorProduct.includeRight)
   convert (Fiber.localizationAlgEquivQuotient p r.asIdeal).toRingEquiv.isArtinianRing
 
 lemma finite_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)} (hs : s.Finite) :

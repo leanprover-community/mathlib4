@@ -368,7 +368,8 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by
   obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.exists_germ_eq _ y
   obtain ⟨_, ⟨r, rfl⟩, hpr : p ∈ PrimeSpectrum.basicOpen r, hrU : PrimeSpectrum.basicOpen r ≤ U⟩ :=
-    PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U from hp) U.is_open'
+    PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U from hp)
+      U.is_open'
   change PrimeSpectrum.basicOpen r ≤ U at hrU
   replace e :=
     ((Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).obj).germ_res_apply
@@ -386,8 +387,8 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
   rw [Submonoid.smul_def, Algebra.smul_def, algebraMap_pushforward_stalk, toPushforwardStalk,
     CommRingCat.comp_apply, CommRingCat.comp_apply]
   iterate 2
-    erw [← (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).obj).germ_res_apply
-      (homOfLE le_top) p hpr]
+    erw [← (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _*
+      (structureSheaf S).obj).germ_res_apply (homOfLE le_top) p hpr]
   rw [← e]
   let f := TopCat.Presheaf.germ (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _*
       (structureSheaf S).obj) _ p hpr
@@ -412,8 +413,8 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     rw [CommRingCat.comp_apply, map_zero] at hx
     obtain ⟨U, hpU, i₁, i₂, e⟩ := TopCat.Presheaf.germ_eq (C := CommRingCat) _ _ _ _ _ _ hx
     obtain ⟨_, ⟨r, rfl⟩, hpr, hrU⟩ :=
-      PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U.carrier from hpU)
-        U.is_open'
+      PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open
+        (show p ∈ U.carrier from hpU) U.is_open'
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).obj).map
         (homOfLE hrU).op at e
     have : algebraMap S ((structureSheaf S).presheaf.obj _) x = 0 := e

@@ -202,7 +202,8 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
     (algebraMap S S').comp φ := by ext <;>
       simp [-Polynomial.algebraMap_apply, ← Polynomial.algebraMap_eq, ← algebraMap_apply]
   obtain ⟨q, hq⟩ := exists_isIntegral_sub_of_isIntegralElem_of_mul_mem_range (R := R')
-    (aeval (algebraMap S S' (φ X))) (algebraMap S S' t) (C ha.unit⁻¹.val * p.map (algebraMap _ _)) (by
+    (aeval (algebraMap S S' (φ X))) (algebraMap S S' t)
+    (C ha.unit⁻¹.val * p.map (algebraMap _ _)) (by
       obtain ⟨q, hqm, hq⟩ := ht
       refine ⟨q.map (mapRingHom (algebraMap _ _)), hqm.map _, ?_⟩
       rw [eval₂_map, H, ← hom_eval₂, ← AlgHom.toRingHom_eq_coe, hq, map_zero]) (by

@@ -119,7 +119,8 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   have Pmonic : P.Monic := minpoly.monic (h.isIntegral hpos)
   have Qmonic : Q.Monic := minpoly.monic ((h.pow_of_prime hprime.out hdiv).isIntegral hpos)
   have Pirr : Irreducible P := minpoly.irreducible (h.isIntegral hpos)
-  have Qirr : Irreducible Q := minpoly.irreducible ((h.pow_of_prime hprime.out hdiv).isIntegral hpos)
+  have Qirr : Irreducible Q :=
+    minpoly.irreducible ((h.pow_of_prime hprime.out hdiv).isIntegral hpos)
   have PQprim : IsPrimitive (P * Q) := Pmonic.isPrimitive.mul Qmonic.isPrimitive
   have prod : P * Q ∣ X ^ n - 1 := by
     rw [IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (P * Q) (X ^ n - 1) PQprim,

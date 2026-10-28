@@ -209,7 +209,8 @@ theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsReg
 theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → deriv f a < c.ord :=
   derivFamily_lt_ord_lift hc
-    (by simpa using Cardinal.one_lt_aleph0.trans (lt_of_le_of_ne hc.aleph0_le hc'.symm)) hc' fun _ => hf
+    (by simpa using Cardinal.one_lt_aleph0.trans (lt_of_le_of_ne hc.aleph0_le hc'.symm)) hc'
+    fun _ => hf
 
 /-! ### Singular cardinals -/
 

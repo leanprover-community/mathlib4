@@ -414,7 +414,8 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
 @[to_additive]
 instance : Max (OpenSubgroup G) :=
-  ⟨fun U V ↦ ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.toSubgroup ≤ U.toSubgroup ⊔ V.toSubgroup) U.isOpen⟩⟩
+  ⟨fun U V ↦ ⟨U ⊔ V,
+    Subgroup.isOpen_mono (le_sup_left : U.toSubgroup ≤ U.toSubgroup ⊔ V.toSubgroup) U.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl

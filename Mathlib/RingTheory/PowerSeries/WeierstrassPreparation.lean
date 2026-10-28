@@ -580,7 +580,8 @@ instead, which requires the ring being complete with respect to the maximal idea
 theorem IsWeierstrassDivision.elim [IsHausdorff (IsLocalRing.maximalIdeal A) A]
     {q q' : A⟦X⟧} {r r' : A[X]}
     (H : f.IsWeierstrassDivision g q r) (H2 : f.IsWeierstrassDivision g q' r') : q = q' ∧ r = r' :=
-  (IsWeierstrassDivisor.of_map_ne_zero hg).eq_of_mul_add_eq_mul_add H.degree_lt H2.degree_lt (H.eq_mul_add.symm.trans H2.eq_mul_add)
+  (IsWeierstrassDivisor.of_map_ne_zero hg).eq_of_mul_add_eq_mul_add H.degree_lt H2.degree_lt
+    (H.eq_mul_add.symm.trans H2.eq_mul_add)
 
 /-- If `q` and `r` are quotient and remainder in the Weierstrass division `0 / g`, then they are
 equal to `0`. -/

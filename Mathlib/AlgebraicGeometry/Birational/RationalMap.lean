@@ -341,8 +341,10 @@ they are equal on the intersection of the domains. -/
 lemma equiv_iff_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
     [IsSeparated (Y ↘ S)] {f g : X.PartialMap Y}
     [f.IsOver S] [g.IsOver S] : f.equiv g ↔
-      (f.restrict _ (f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open') inf_le_left).hom =
-      (g.restrict _ (f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open') inf_le_right).hom :=
+      (f.restrict _ (f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open')
+        inf_le_left).hom =
+      (g.restrict _ (f.dense_domain.inter_of_isOpen_left g.dense_domain f.domain.is_open')
+        inf_le_right).hom :=
   equiv_iff_of_isSeparated_of_le (S := S) _ _ _
 
 set_option backward.defeqAttrib.useBackward true in

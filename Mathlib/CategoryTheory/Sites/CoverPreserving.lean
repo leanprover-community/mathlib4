@@ -162,7 +162,8 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
         fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
           (hF₁.apply_map _ hx hf)⟩
     · intro y₁ y₂ hy₁ hy₂
-      apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.property).isSeparated _ (hF₂.cover_preserve hS)).ext
+      apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.property).isSeparated _
+        (hF₂.cover_preserve hS)).ext
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
       simpa using! congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
 

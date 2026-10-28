@@ -203,7 +203,8 @@ theorem HomogeneousIdeal.toIdeal_homogeneousCore_eq_self (I : HomogeneousIdeal �
 variable (𝒜 I)
 
 theorem Ideal.IsHomogeneous.iff_eq : I.IsHomogeneous 𝒜 ↔ (I.homogeneousCore 𝒜).toIdeal = I :=
-  ⟨fun hI => hI.toIdeal_homogeneousCore_eq_self, fun hI => hI ▸ (Ideal.homogeneousCore 𝒜 I).is_homogeneous'⟩
+  ⟨fun hI => hI.toIdeal_homogeneousCore_eq_self,
+    fun hI => hI ▸ (Ideal.homogeneousCore 𝒜 I).is_homogeneous'⟩
 
 theorem Ideal.IsHomogeneous.iff_exists :
     I.IsHomogeneous 𝒜 ↔ ∃ S : Set (homogeneousSubmonoid 𝒜), I = Ideal.span ((↑) '' S) := by

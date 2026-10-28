@@ -192,7 +192,8 @@ see https://math.stackexchange.com/a/3187153. -/
 theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     (h : Disjoint (I : Set A) (nonZeroDivisors A)) : ⊥ < Module.annihilator A I := by
   obtain ⟨P, h, hP⟩ : ∃ P ∈ associatedPrimes A A, I ≤ P :=
-    (I.subset_union_prime_finite (associatedPrimes.finite ..) (f := id) 0 0 fun _ h _ _ ↦ h.toIsPrime).1 <|
+    (I.subset_union_prime_finite (associatedPrimes.finite ..) (f := id) 0 0
+      fun _ h _ _ ↦ h.toIsPrime).1 <|
     biUnion_associatedPrimes_eq_compl_nonZeroDivisors A ▸ h.subset_compl_right
   rw [AssociatedPrimes.mem_iff, isAssociatedPrime_iff] at h
   obtain ⟨prime, x, rfl⟩ := h

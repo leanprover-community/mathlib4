@@ -245,24 +245,29 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
   left_inv x := by
     let L := adjoin k {x, toAlgEquivAux g x}
     have hx : x ∈ L.toIntermediateField := subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g x})
-    have hx' : toAlgEquivAux g x ∈ L.toIntermediateField := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+    have hx' : toAlgEquivAux g x ∈ L.toIntermediateField :=
+      subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
     simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', map_inv, AlgEquiv.aut_inv,
       mk_toAlgEquivAux g x L hx' hx, AlgEquiv.symm_apply_apply]
   right_inv x := by
     let L := adjoin k {x, toAlgEquivAux g⁻¹ x}
-    have hx : x ∈ L.toIntermediateField := subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g⁻¹ x})
-    have hx' : toAlgEquivAux g⁻¹ x ∈ L.toIntermediateField := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+    have hx : x ∈ L.toIntermediateField :=
+      subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g⁻¹ x})
+    have hx' : toAlgEquivAux g⁻¹ x ∈ L.toIntermediateField :=
+      subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
     simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', mk_toAlgEquivAux g⁻¹ x L hx' hx, map_inv,
       AlgEquiv.aut_inv, AlgEquiv.apply_symm_apply]
   map_mul' x y := by
     have hx : x ∈ (adjoin k {x, y}).toIntermediateField := subset_adjoin _ _ (Set.mem_insert x {y})
-    have hy : y ∈ (adjoin k {x, y}).toIntermediateField := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+    have hy : y ∈ (adjoin k {x, y}).toIntermediateField :=
+      subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
     rw [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
       toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
       toAlgEquivAux_eq_liftNormal g (x * y) (adjoin k {x, y}) (mul_mem hx hy), map_mul]
   map_add' x y := by
     have hx : x ∈ (adjoin k {x, y}).toIntermediateField := subset_adjoin _ _ (Set.mem_insert x {y})
-    have hy : y ∈ (adjoin k {x, y}).toIntermediateField := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+    have hy : y ∈ (adjoin k {x, y}).toIntermediateField :=
+      subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
     simp only [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
       toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
       toAlgEquivAux_eq_liftNormal g (x + y) (adjoin k {x, y}) (add_mem hx hy), map_add]
@@ -298,7 +303,8 @@ lemma krullTopology_mem_nhds_one_iff_of_isGalois [IsGalois k K] (A : Set Gal(K/k
 lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
     (L : FiniteGaloisIntermediateField k K) : IsOpen (mulEquivToLimit k K '' L.fixingSubgroup) := by
   let fix1 : Set (Π L, (asProfiniteGaloisGroupFunctor k K).obj L) := {f | f (op L) = 1}
-  suffices mulEquivToLimit k K '' L.toIntermediateField.fixingSubgroup = Set.preimage Subtype.val fix1 by
+  suffices mulEquivToLimit k K '' L.toIntermediateField.fixingSubgroup =
+      Set.preimage Subtype.val fix1 by
     rw [this]
     exact (isOpen_induced <| (continuous_apply (op L)).isOpen_preimage {1} trivial)
   ext x

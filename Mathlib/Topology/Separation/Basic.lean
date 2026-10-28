@@ -1101,7 +1101,8 @@ protected theorem R1Space.sInf {X : Type*} {T : Set (TopologicalSpace X)}
   by_cases! hTd : ∃ t ∈ T, Disjoint (@nhds X t x) (@nhds X t y)
   · rcases hTd with ⟨t, htT, htd⟩
     exact .inr <| htd.mono (iInf₂_le t htT) (iInf₂_le t htT)
-  · exact .inl <| iInf₂_mono fun t ht ↦ ((hT t ht).specializes_or_disjoint_nhds x y).resolve_right (hTd t ht)
+  · exact .inl <| iInf₂_mono fun t ht ↦
+      ((hT t ht).specializes_or_disjoint_nhds x y).resolve_right (hTd t ht)
 
 protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=
