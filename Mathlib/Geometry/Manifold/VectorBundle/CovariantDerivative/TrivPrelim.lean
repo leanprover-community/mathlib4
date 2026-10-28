@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Topology.VectorBundle.SecToFun
+public import Mathlib.Geometry.Manifold.VectorBundle.SecToFun
 
 /-!
 # Supporting lemmas for CovariantDerivative.Basic trivialization stuff
@@ -164,55 +164,6 @@ lemma bijective_deriv
    constructor
    all_goals { intro u; simp [hv] }
 
-lemma mdifferentiableAt_funToSec
-    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {x : M} (hx : x ∈ e.baseSet) {s : M → F}
-    (hs : MDiffAt s x) :
-    MDiffAt (T% (e.funToSec s)) x := by
-  rw [e.mdifferentiableAt_section_iff (IB := I) _ hx]
-  change MDiffAt (e.secToFun <| e.funToSec s) x
-  have := e.secToFun_funToSec_eventuallyEq hx s
-  exact hs.congr_of_eventuallyEq this
-
-lemma mdifferentiableAt_funToSec'
-    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {x : M} (hx : x ∈ e.baseSet) {s : M → F}
-    (hs : MDiffAt (T% s) x) :
-    MDiffAt (T% (e.funToSec s)) x := by
-  rw [mdifferentiableAt_total_trivial_iff] at hs
-  apply mdifferentiableAt_funToSec _ hx hs
-
-lemma mdifferentiableAt_secToFun
-    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {x : M} (hx : x ∈ e.baseSet) {σ : (x : M) → V x}
-    (hσ : MDiffAt (T% σ) x) :
-    MDiffAt (e.secToFun σ) x := by
-  rw [e.mdifferentiableAt_section_iff (IB := I) _ hx] at hσ
-  exact hσ
-
-lemma mdifferentiableAt_total_secToFun
-    [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
-    {x : M} (hx : x ∈ e.baseSet) {σ : (x : M) → V x}
-    (hσ : MDiffAt (T% σ) x) :
-    MDiffAt (T% (e.secToFun σ)) x := by
-  rw [e.mdifferentiableAt_section_iff (IB := I) _ hx] at hσ
-  exact (mdifferentiableAt_section I _).mpr hσ
-
-omit [MemTrivializationAtlas e] [(x : M) → Module 𝕜 (V x)] in
-@[simp]
-lemma mdifferentiableAt_total_funToSec_secToFun
-    {x : M} (hx : x ∈ e.baseSet) {σ : (x : M) → V x} :
-    MDiffAt (T% (e.funToSec <| e.secToFun σ)) x ↔ MDiffAt (T%σ) x := by
-  rw [e.total_funToSec_secToFun_eventuallyEq hx σ |>.mdifferentiableAt_iff]
-
-omit [(x : M) → Module 𝕜 (V x)] [(x : M) → TopologicalSpace (V x)]
-  [FiberBundle F V] [MemTrivializationAtlas e] in
-@[simp]
-lemma mdifferentiableAt_secToFun_funToSec
-    {x : M} (hx : x ∈ e.baseSet) {s : M → F} :
-    MDiffAt (e.secToFun <| e.funToSec s) x ↔ MDiffAt s x :=
-  e.secToFun_funToSec_eventuallyEq hx s |>.mdifferentiableAt_iff
-
 lemma mfderiv_total_funToSec
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {s : M → F} {x : M} (hs : MDiffAt s x)
@@ -232,7 +183,6 @@ lemma mfderiv_total_funToSec
       · exact mdifferentiableAt_id
       · exact hs
   · exact mdifferentiableAt_id.prodMk hs
-
 
 
 noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
