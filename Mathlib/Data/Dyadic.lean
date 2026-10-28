@@ -40,6 +40,11 @@ instance : AddCommGroup Dyadic where
   zsmul_succ' := by grind
   zsmul_neg' := by grind
 
+-- TODO: remove this once #43038 lands.
+instance : AddLeftMono Dyadic where
+  elim a b c h := Dyadic.toRat_le_toRat_iff.mp <| by
+    simpa [Dyadic.toRat_add] using add_le_add_right (Dyadic.toRat_le_toRat_iff.mpr h) c.toRat
+
 namespace Dyadic
 
 @[simp]

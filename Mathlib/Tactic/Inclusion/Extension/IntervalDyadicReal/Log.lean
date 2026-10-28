@@ -38,9 +38,11 @@ obtained by adding a `step prec`.
 
 @[expose] public section
 
+open Real
+
 namespace Dyadic
 
-section
+section Fdiv
 
 variable (num den prec : ℤ)
 
@@ -62,7 +64,7 @@ private theorem ofIntFdivWithPrec_spec :
     exact Int.floor_eq_iff.mp rfl
   | case2 p =>
     simp only [toRat_ofIntWithPrec_eq_mul_two_pow, ← add_one_mul]
-    rw [← le_div_iff₀ (by positivity), ← div_lt_iff₀ (by positivity),
+    rw [← le_div_iff₀ (by simp [zpow_pos]), ← div_lt_iff₀ (by simp [zpow_pos]),
       Int.fdiv_eq_floor, Int.shiftLeft_eq, div_div]
     push_cast
     exact Int.floor_eq_iff.mp rfl
@@ -84,9 +86,7 @@ theorem abs_ofIntFdivWithPrec_le :
   · rw [tsub_le_iff_right, _root_.add_comm]
     exact lt_ofIntFdivWithPrec num den prec |>.le
 
-end
-
-open Real
+end Fdiv
 
 section SmallArtanh
 
@@ -324,9 +324,9 @@ protected def logSum (x : Dyadic) (prec : ℕ) : Dyadic :=
   match x with
   | zero => 0
   | ofOdd n _ _ =>
+    -- `(x - 1) / (x + 1) = (m - 2 ^ e) / (m + 2 ^ e) ∈ (0, 1 / 3)`
     let e : ℕ := n.natAbs.log2
     let m : ℕ := n.natAbs
-    -- `(x - 1) / (x + 1) = (m - 2 ^ e) / (m + 2 ^ e) ∈ (0, 1 / 3)`
     -- Dyadic.smallArtanh -> δ₁ < (1 / 2) ^ (prec + 2)
     let (P, Q) : ℕ × ℕ := Dyadic.smallArtanh (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
     -- ofIntFdivWithPrec -> δ₂ ≤ (1 / 2) ^ (prec + 2)
@@ -440,7 +440,7 @@ def lowerLog (x : Dyadic) (prec : ℕ) : Dyadic :=
     else
       Dyadic.logSum x' (prec + 1) + k * (Dyadic.logTwo wp + step wp)
 
-/-- Computes an upper bound for `log x`. -/
+/-- Computes an upper bound for `log x` with precision `prec`. -/
 def upperLog (x : Dyadic) (prec : ℕ) : Dyadic :=
   if x = 0 ∨ x = 1 ∨ x = -1 then 0 else lowerLog x prec + step prec
 
@@ -572,11 +572,7 @@ theorem IntervalDyadicReal.mem_Iic_coe (x : ℝ) (b : Dyadic) :
 theorem IntervalDyadicReal.mem_Ici_coe (x : ℝ) (a : Dyadic) :
     x ∈ Interval.Ici (↑a : WithBot Dyadic) ↔ a.toReal ≤ x := by
   simp [mem_iff_mem_map, Interval.Ici, Interval.map]
-
--- don't use this, use #43038 ?
-instance : AddLeftMono Dyadic where
-  elim a b c h := Dyadic.toReal_le_toReal.mp <| by simpa
-
+  
 @[inclusion_op interval_dyadic_real]
 theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : x.log ∈ I.log prec := by
   apply IntervalDyadicReal.abs_mem at hx
