@@ -37,17 +37,16 @@ noncomputable def coconeOfPreserves
     Cocone K where
   pt.obj := c.pt
   pt.hom :=
-    letI p : Cocone ((K ⋙ proj F G) ⋙ F) := {
-      pt := G.obj c.pt
+    (isColimitOfPreserves F hc).desc
+    { pt := G.obj c.pt
       ι.app j := (K.obj j).hom ≫ G.map (c.ι.app j)
-      ι.naturality {_ _} f := by grind [congr(G.map $(c.ι.naturality f)), Functor.const] }
-    (isColimitOfPreserves F hc).desc p
+      ι.naturality _ _ f := by simp [← Functor.map_comp, dsimp% c.w f] }
   ι.app j := {
     hom := c.ι.app j
     comm := (isColimitOfPreserves F hc).fac .. }
   ι.naturality {_ _} f := by
     ext
-    simpa using (c.ι.naturality f)
+   simp [dsimp% c.w f]
 
 @[reassoc (attr := simp)]
 lemma map_ι_coconeOfPreserves_pt_hom {K : J ⥤ Inserter F G}
@@ -106,11 +105,10 @@ noncomputable def coneOfPreserves
     Cone K where
   pt.obj := c.pt
   pt.hom :=
-    letI p : Cone ((K ⋙ proj F G) ⋙ G) := {
-      pt := F.obj c.pt
+    (isLimitOfPreserves G hc).lift
+    { pt := F.obj c.pt
       π.app j := F.map (c.π.app j) ≫ (K.obj j).hom
-      π.naturality {_ _} f := by grind [congr(F.map $(c.π.naturality f)), Functor.const] }
-    (isLimitOfPreserves G hc).lift p
+      π.naturality _ _ f := by simp [← c.w f] }
   π.app j := {
     hom := c.π.app j
     comm := by
