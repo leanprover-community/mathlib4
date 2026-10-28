@@ -299,6 +299,43 @@ theorem isCompactOperator_of_locallyCompactSpace_rng [AddCommGroup M₂] [Module
 
 end Comp
 
+section Inverse
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+  [TopologicalSpace M] [IsTopologicalAddGroup M] {f g : M →L[R] M}
+
+/-- A continuous linear right inverse of a compact perturbation of the identity is itself a
+compact perturbation of the identity. -/
+theorem IsCompactOperator.sub_id_of_rightInverse
+    (hf : IsCompactOperator (f - ContinuousLinearMap.id R M))
+    (hfg : Function.RightInverse g f) :
+    IsCompactOperator (g - ContinuousLinearMap.id R M) := by
+  have h : (f - ContinuousLinearMap.id R M) ∘L g = ContinuousLinearMap.id R M - g := by
+    rw [ContinuousLinearMap.sub_comp, ContinuousLinearMap.id_comp]
+    congr 1
+    ext x
+    exact hfg x
+  have hc : IsCompactOperator (-((f - ContinuousLinearMap.id R M) ∘L g)) :=
+    (hf.comp_clm g).neg
+  simpa only [h, neg_sub] using hc
+
+/-- A continuous linear left inverse of a compact perturbation of the identity is itself a
+compact perturbation of the identity. -/
+theorem IsCompactOperator.sub_id_of_leftInverse
+    (hf : IsCompactOperator (f - ContinuousLinearMap.id R M))
+    (hgf : Function.LeftInverse g f) :
+    IsCompactOperator (g - ContinuousLinearMap.id R M) := by
+  have h : g ∘L (f - ContinuousLinearMap.id R M) = ContinuousLinearMap.id R M - g := by
+    rw [ContinuousLinearMap.comp_sub, ContinuousLinearMap.comp_id]
+    congr 1
+    ext x
+    exact hgf x
+  have hc : IsCompactOperator (-(g ∘L (f - ContinuousLinearMap.id R M))) :=
+    (hf.clm_comp g).neg
+  simpa only [h, neg_sub] using hc
+
+end Inverse
+
 section CodRestrict
 
 variable {R₂ : Type*} [Semiring R₂] {M₁ M₂ : Type*}
