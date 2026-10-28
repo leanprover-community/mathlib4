@@ -114,7 +114,7 @@ theorem isPositive_id : IsPositive (id : E →ₗ[𝕜] E) := isPositive_one
 @[simp]
 theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →ₗ[𝕜] E) := by
   refine ⟨IsSymmetric.natCast n, fun x => ?_⟩
-  simp only [Module.End.natCast_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
+  simp only [natCast_apply_eq_smul, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
     mul_re, natCast_re, inner_self_im, mul_zero, sub_zero]
   positivity [inner_self_nonneg (x := x) (𝕜 := 𝕜)]
 
@@ -197,7 +197,7 @@ end Order
 theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT : IsIdempotentElem T) :
     T.IsPositive ↔ T.IsSymmetric := by
   refine ⟨fun h => h.isSymmetric, fun h => ⟨h, fun x => ?_⟩⟩
-  rw [← hT.eq, Module.End.mul_apply, h]
+  rw [← hT.eq, mul_apply_eq_comp, h]
   exact inner_self_nonneg
 
 theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E ≃ₗᵢ[𝕜] F) :
@@ -239,7 +239,7 @@ theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
   specialize h2 a
   have hh {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) : RCLike.re ⟪T a, a⟫_𝕜 = ‖T a‖ ^ 2 := by
     conv_lhs => rw [← hT.isIdempotentElem]
-    rw [Module.End.mul_apply, hT.isSymmetric]
+    rw [mul_apply_eq_comp, hT.isSymmetric]
     exact inner_self_eq_norm_sq _
   simp_rw [LinearMap.sub_apply, inner_sub_left, map_sub, hh hq, hh hp,
     hp.isIdempotentElem.mem_range_iff.mp ha, sub_nonneg, sq_le_sq, abs_norm] at h2

@@ -557,7 +557,7 @@ structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
 theorem isProj_range_iff_isIdempotentElem (f : M →ₗ[S] M) :
     IsProj (range f) f ↔ IsIdempotentElem f := by
   refine ⟨fun ⟨h1, h2⟩ => ?_, fun hf =>
-    ⟨fun x => mem_range_self f x, fun x ⟨y, hy⟩ => by rw [← hy, ← Module.End.mul_apply, hf.eq]⟩⟩
+    ⟨fun x => mem_range_self f x, fun x ⟨y, hy⟩ => by rw [← hy, ← mul_apply_eq_comp, hf.eq]⟩⟩
   ext x
   exact h2 (f x) (h1 x)
 

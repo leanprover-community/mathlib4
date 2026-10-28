@@ -347,7 +347,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [IsDomain R] [IsTorsionFree R
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
     simp only [u, reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul,
-      LinearMap.id_coe, LinearEquiv.coe_coe, Module.End.mul_apply, LinearMap.add_apply, id_eq,
+      LinearMap.id_coe, LinearEquiv.coe_coe, mul_apply_eq_comp, LinearMap.add_apply, id_eq,
       LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel_left,
       smul_neg, sub_neg_eq_add, sub_smul]
     abel
