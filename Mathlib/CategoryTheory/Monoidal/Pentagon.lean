@@ -162,7 +162,7 @@ lemma pentagon_curriedAssociatorNatIso_hom [MonoidalCategory C] :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[implicit_reducible]
-def ofBifunctor (unit : C) (F : C ⥤ C ⥤ C) (α : bifunctorComp₁₂ F F ≅ bifunctorComp₂₃ F F)
+def ofBifunctor' (unit : C) (F : C ⥤ C ⥤ C) (α : bifunctorComp₁₂ F F ≅ bifunctorComp₂₃ F F)
     (leftUnitor : F.obj unit ≅ 𝟭 C) (rightUnitor : F.flip.obj unit ≅ 𝟭 C)
     (pentagon : NatTrans.Pentagon α.hom)
     (triangle : NatTrans.Triangle α.hom unit leftUnitor rightUnitor) :

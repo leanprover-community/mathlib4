@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.BifunctorHomotopy
 public import Mathlib.Algebra.Homology.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Multifunctor
 public import Mathlib.CategoryTheory.Monoidal.Pentagon
 public import Mathlib.CategoryTheory.QuotientThree
 
@@ -205,36 +206,35 @@ lemma quotient_map_whiskerLeft (K₁ : HomologicalComplex C c) {K₂ L₂ : Homo
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-lemma pentagon :
-    NatTrans.Pentagon (associator C c).hom where
-  natTrans₁₂_comp_natTrans₂₃_comp_natTrans₃₄ := by
-    ext K₁ K₂ K₃ K₄
-    obtain ⟨K₁, rfl⟩ := K₁.quotient_obj_surjective
-    obtain ⟨K₂, rfl⟩ := K₂.quotient_obj_surjective
-    obtain ⟨K₃, rfl⟩ := K₃.quotient_obj_surjective
-    obtain ⟨K₄, rfl⟩ := K₄.quotient_obj_surjective
-    dsimp
-    have h₁ := ((associator C c).hom.app ((quotient C c).obj K₁)).naturality
-      (((bifunctorIso C c).hom.app K₂).app K₃)
-    have h₂ := congr_app ((associator C c).hom.naturality
-      (((bifunctorIso C c).hom.app K₁).app K₂)) ((quotient C c).obj K₃)
-    have h₃ := (((associator C c).hom.app ((quotient C c).obj K₁)).app
-      ((quotient C c).obj K₂)).naturality (((bifunctorIso C c).hom.app K₃).app K₄)
-    dsimp at h₁ h₂ h₃
-    simp only [CategoryTheory.Functor.map_id, id_comp, comp_id, NatTrans.id_app,
-      bifunctorComp₁₂_obj, bifunctorComp₂₃_obj] at h₁ h₂ h₃
-    rw [associator_hom_app_app_app K₁ K₂ K₃, associator_hom_app_app_app K₂ K₃ K₄,
-      ← h₁, associator_hom_app_app_app K₁ (K₂ ⊗ K₃) K₄, ← h₂,
-      associator_hom_app_app_app (K₁ ⊗ K₂) K₃ K₄, ← h₃,
-      associator_hom_app_app_app K₁ K₂ (K₃ ⊗ K₄),
-      ← quotient_map_whiskerRight, ← quotient_map_whiskerLeft]
-    have := (quotient C c).congr_map (CategoryTheory.MonoidalCategory.pentagon K₁ K₂ K₃ K₄)
-    simp only [Functor.map_comp] at this
-    exact this
+lemma pentagon : ofBifunctor.Pentagon.firstMap (bifunctor C c) (associator C c) =
+    ofBifunctor.Pentagon.secondMap (bifunctor C c) (associator C c) := by
+  ext K₁ K₂ K₃ K₄
+  obtain ⟨K₁, rfl⟩ := K₁.quotient_obj_surjective
+  obtain ⟨K₂, rfl⟩ := K₂.quotient_obj_surjective
+  obtain ⟨K₃, rfl⟩ := K₃.quotient_obj_surjective
+  obtain ⟨K₄, rfl⟩ := K₄.quotient_obj_surjective
+  dsimp
+  have h₁ := ((associator C c).hom.app ((quotient C c).obj K₁)).naturality
+    (((bifunctorIso C c).hom.app K₂).app K₃)
+  have h₂ := congr_app ((associator C c).hom.naturality
+    (((bifunctorIso C c).hom.app K₁).app K₂)) ((quotient C c).obj K₃)
+  have h₃ := (((associator C c).hom.app ((quotient C c).obj K₁)).app
+    ((quotient C c).obj K₂)).naturality (((bifunctorIso C c).hom.app K₃).app K₄)
+  dsimp at h₁ h₂ h₃
+  simp only [CategoryTheory.Functor.map_id, id_comp, comp_id, NatTrans.id_app,
+    bifunctorComp₁₂_obj, bifunctorComp₂₃_obj] at h₁ h₂ h₃
+  rw [associator_hom_app_app_app K₁ K₂ K₃, associator_hom_app_app_app K₂ K₃ K₄,
+    ← h₁, associator_hom_app_app_app K₁ (K₂ ⊗ K₃) K₄, ← h₂,
+    associator_hom_app_app_app (K₁ ⊗ K₂) K₃ K₄, ← h₃,
+    associator_hom_app_app_app K₁ K₂ (K₃ ⊗ K₄),
+    ← quotient_map_whiskerRight, ← quotient_map_whiskerLeft]
+  have := (quotient C c).congr_map (CategoryTheory.MonoidalCategory.pentagon K₁ K₂ K₃ K₄)
+  simp only [Functor.map_comp] at this
+  exact this
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (HomotopyCategory C c) :=
-  .ofBifunctor (unit C c) (bifunctor C c) (associator C c)
-  (leftUnitor C c) (rightUnitor C c) (pentagon C c) (triangle C c)
+  .ofBifunctor (bifunctor C c) (unit C c) (associator C c) (leftUnitor C c) (rightUnitor C c)
+    (pentagon C c) (triangle C c).triangle
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (quotient C c).Monoidal :=

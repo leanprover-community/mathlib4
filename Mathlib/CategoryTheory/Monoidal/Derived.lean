@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedBifunctorComp
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedFour
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTrifunctorComp
 public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.CategoryTheory.Monoidal.Multifunctor
 public import Mathlib.CategoryTheory.Monoidal.Pentagon
 
 /-!
@@ -264,7 +265,9 @@ lemma pentagon :
         associator_hom_fac_app_app_app_assoc, Category.assoc, Category.assoc]
 
 noncomputable instance : MonoidalCategory (DerivedMonoidal L W) :=
-  .ofBifunctor _ _ _ _ _ (pentagon L W) (triangle L W)
+  MonoidalCategory.ofBifunctor (bifunctor L W) ((L').obj (𝟙_ _))
+    (associator L W) (leftUnitor L W) (rightUnitor L W)
+    (pentagon L W).natTrans₁₂_comp_natTrans₂₃_comp_natTrans₃₄ (triangle L W).triangle
 
 lemma tensorObj_eq (X₁ X₂ : DerivedMonoidal L W) :
     X₁ ⊗ X₂ = ((bifunctor L W).obj X₁).obj X₂ :=
