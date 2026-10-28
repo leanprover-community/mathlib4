@@ -150,13 +150,13 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
       forall_exists_index]
     intro x n hx
     use n
-    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply, hx, map_zero]
+    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp, hx, map_zero]
   have hφW : ∀ x ∈ W, φ x ∈ W := by
     simp only [W, Submodule.mem_iInf, mem_range]
     intro x H n
     obtain ⟨y, rfl⟩ := H n
     use φ y
-    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply]
+    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp]
   let F := φ.restrict hφV
   let G := φ.restrict hφW
   let ψ := F.prodMap G

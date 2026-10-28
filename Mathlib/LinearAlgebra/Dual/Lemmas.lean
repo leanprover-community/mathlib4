@@ -492,7 +492,7 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
     Function.LeftInverse W.dualRestrict W.dualLift := fun x ↦ by
-  rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, End.one_apply]
+  rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, one_apply_eq_self]
 
 theorem dualLift_rightInverse (W : Subspace K V) :
     Function.RightInverse W.dualLift W.dualRestrict :=
