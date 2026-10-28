@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Topology.Sheaves.Abelian
 
+import Mathlib.Algebra.Category.Grp.FilteredColimits
+import Mathlib.Algebra.Homology.ShortComplex.Ab
+
 /-!
 # Sheaves of abelian groups.
 
