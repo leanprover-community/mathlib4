@@ -362,7 +362,7 @@ lemma truncTotal_pow_eq_truncTotal_truncTotal_pow :
   ext d
   by_cases hd : d.degree < n
   · simp_rw [coeff_truncTotal _ hd]
-    exact_mod_cast (coeff_truncTotal_pow _ hd).symm
+    exact mod_cast (coeff_truncTotal_pow _ hd).symm
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
 theorem totalDegree_truncTotal_lt (h : n ≠ 0) :
