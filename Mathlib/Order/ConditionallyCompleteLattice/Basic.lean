@@ -480,15 +480,15 @@ theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b �
 end ConditionallyCompleteLinearOrderBot
 
 /-- A bounded conditionally complete lattice is a complete lattice. -/
-instance (priority := 100) ConditionallyCompleteLattice.toCompleteLattice
+abbrev CompleteLattice.ofConditionallyCompleteLattice
     [ConditionallyCompleteLattice α] [BoundedOrder α] : CompleteLattice α where
   isLUB_sSup s := isLUB_csSup' (OrderTop.bddAbove s)
   isGLB_sInf s := isGLB_csInf' (OrderBot.bddBelow s)
 
 /-- A bounded conditionally complete linear order is a complete linear order. -/
-instance (priority := 100) ConditionallyCompleteLinearOrder.toCompleteLinearOrder
+abbrev CompleteLinearOrder.ofConditionallyCompleteLinearOrder
     [ConditionallyCompleteLinearOrder α] [BoundedOrder α] : CompleteLinearOrder α where
-  __ := ConditionallyCompleteLattice.toCompleteLattice
+  __ := CompleteLattice.ofConditionallyCompleteLattice
   __ := ‹ConditionallyCompleteLinearOrder α›
   __ := LinearOrder.toBiheytingAlgebra α
 

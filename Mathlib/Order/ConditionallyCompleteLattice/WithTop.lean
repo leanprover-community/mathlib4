@@ -273,7 +273,8 @@ noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
   exists_isGLB_cond _ _ hS := ⟨_, WithTop.isGLB_sInf' hS⟩
 
 @[to_dual]
-noncomputable instance [CompleteLattice α] : CompleteLattice (WithTop α) := inferInstance
+noncomputable instance [CompleteLattice α] : CompleteLattice (WithTop α) :=
+  .ofConditionallyCompleteLattice
 
 noncomputable instance [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrder (WithTop α) where
@@ -293,18 +294,20 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] :
   csSup_of_not_bddAbove s h := by simp [h]
   csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
 
-noncomputable instance [CompleteLinearOrder α] : CompleteLinearOrder (WithBot α) := inferInstance
+noncomputable instance [CompleteLinearOrder α] : CompleteLinearOrder (WithBot α) :=
+  .ofConditionallyCompleteLinearOrder
 
 @[to_dual WithBot.WithTop.completeLattice]
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
-    [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) := inferInstance
+    [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
+  .ofConditionallyCompleteLattice
 
 noncomputable instance {α : Type*} [ConditionallyCompleteLattice α] :
     CompleteLattice (WithBot (WithTop α)) := inferInstance
 
 noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) :=
-  inferInstance
+  .ofConditionallyCompleteLinearOrder
 
 end WithTopBot
 
