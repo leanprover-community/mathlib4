@@ -96,9 +96,9 @@ noncomputable def measure : Measure α where
     rw [isStationary_iUnion_iff_of_countable (by simpa using h₀.out)]
     split_ifs with hf
     · obtain ⟨i, hi⟩ := hf
-      apply (ENNReal.le_tsum i).trans'
+      apply (le_tsum _ i).trans'
       rw [ite_eq_left hi]
-    · rw [ENNReal.tsum_eq_zero.2]
+    · rw [tsum_eq_zero_iff.2]
       simpa using hf
   m_iUnion f hf hf' := by
     dsimp
@@ -113,7 +113,7 @@ noncomputable def measure : Measure α where
         have : Nonempty α := hi.nonempty.to_type
         obtain ⟨a, ha⟩ := (hs.inter h₀.out ht).nonempty
         exact ((hf' hji.symm).inter_eq ▸ notMem_empty a) ⟨hsi ha.1, htj ha.2⟩
-    · rw [ENNReal.tsum_eq_zero.2]
+    · rw [tsum_eq_zero_iff.2]
       simpa using hf
   trim_le s := by
     rw [OuterMeasure.trim_eq_iInf']
