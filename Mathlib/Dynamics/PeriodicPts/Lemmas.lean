@@ -20,7 +20,7 @@ public section
 open Nat Set
 
 namespace Function
-variable {α : Type*} {f : α → α} {x y : α}
+variable {α : Type*} {f : α → α} {x : α}
 
 open Function (Commute)
 
@@ -42,7 +42,14 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
 theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
     minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
   dsimp +instances [minimalPeriod, periodicPts, sInf]
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/14727 (replacing
+  grind's `ToInt` machinery with homomorphism-based translation), `grind` closed this.
+  Both sides are the same `dite`, differing only in the `DecidablePred` instance fed to
+  `Nat.find`: `instDecidableAnd .. (IsPeriodicPt.instDecidableOfDecidableEq ..)` on the
+  left, `Classical.propDecidable` on the right. `grind` cannot do that subsingleton
+  reasoning on its own — an opaque analogue fails on nightly-2026-08-12 too — so it was
+  only ever discharged as a side effect of cutsat internalizing the `Nat.find` term. -/
+  congr!
 
 /-- The backward direction of `minimalPeriod_eq_prime_iff`. -/
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
@@ -116,7 +123,7 @@ namespace Function
 
 section Prod
 
-variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {m n : ℕ}
 
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
     minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=

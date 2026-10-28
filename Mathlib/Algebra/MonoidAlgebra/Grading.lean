@@ -5,11 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Internal
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Algebra.MonoidAlgebra.Support
-public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.RingTheory.GradedAlgebra.Basic
+
+import Mathlib.Algebra.MonoidAlgebra.Support
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`
@@ -52,7 +51,7 @@ abbrev gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
   zero_mem' m h := by cases h
   add_mem' {a b} ha hb m h := by
     classical exact (Finset.mem_union.mp (Finsupp.support_add h)).elim (ha m) (hb m)
-  smul_mem' _ _ h := Set.Subset.trans Finsupp.support_smul h
+  smul_mem' _ _ h m hm := h m (Finsupp.support_smul hm)
 
 /-- The submodule corresponding to each grade. -/
 abbrev grade (m : M) : Submodule R R[M] :=
@@ -61,13 +60,12 @@ abbrev grade (m : M) : Submodule R R[M] :=
 theorem gradeBy_id : gradeBy R (id : M → M) = grade R := rfl
 
 theorem mem_gradeBy_iff (f : M → ι) (i : ι) (a : R[M]) :
-    a ∈ gradeBy R f i ↔ (a.coeff.support : Set M) ⊆ f ⁻¹' {i} := by rfl
+    a ∈ gradeBy R f i ↔ (a.coeff.support : Set M) ⊆ f ⁻¹' {i} :=
+  ⟨fun h m hm => h m hm, fun h _ hm => h hm⟩
 
 theorem mem_grade_iff (m : M) (a : R[M]) : a ∈ grade R m ↔ a.coeff.support ⊆ {m} := by
-  rw [← Finset.coe_subset, Finset.coe_singleton]
-  rfl
+  simp [← Finset.coe_subset]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem mem_grade_iff' (m : M) (a : R[M]) :
     a ∈ grade R m ↔ a ∈ LinearMap.range (lsingle (R := R) m) := by
   rw [mem_grade_iff, Finsupp.support_subset_singleton']; simp [← coeff_inj, eq_comm]
@@ -155,7 +153,6 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     apply DirectSum.of_eq_of_gradedMonoid_eq
     congr 2
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) :=
   .ofAlgHom _ (decomposeAux f) (by ext; simp [decomposeAux_single]) <| by simp [decomposeAux_coe]
 

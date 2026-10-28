@@ -3,15 +3,17 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Tactic.GRewrite
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.NormNum
 
 /- In many examples in this module, we rewrite expressions which do not make it into the final term.
 
@@ -487,6 +489,12 @@ example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
 
 example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
   by_contra!; grw [← h₂, ← h₁] at this; contrapose! this; rfl
+
+example (h₁ : a < b) (h₂ : b ≤ c) : c > a := by
+  grw [h₁, h₂]
+
+example (h₁ : a < b) (h₂ : b ≤ c) : c > a := by
+  grw [← h₂, ← h₁]
 
 -- Strict inequalities can also be used as non-strict ones:
 example (h₁ : a < b) (h₂ : b < c) : a ≤ c := by

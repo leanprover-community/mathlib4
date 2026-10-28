@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
-public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
+
+import Mathlib.Tactic.Qify
 
 /-!
 # The Ruzsa-Szemerédi problem
@@ -30,7 +30,7 @@ original set.
 
 @[expose] public section
 
-open Finset Nat Real SimpleGraph Sum3 SimpleGraph.TripartiteFromTriangles
+open Finset Nat Real SimpleGraph SimpleGraph.TripartiteFromTriangles
 open Fintype (card)
 open scoped Pointwise
 
@@ -39,7 +39,7 @@ variable {α β : Type*}
 /-! ### The Ruzsa-Szemerédi number -/
 
 section ruzsaSzemerediNumber
-variable [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {G H : SimpleGraph α}
+variable [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {G : SimpleGraph α}
 
 variable (α) in
 /-- The **Ruzsa-Szemerédi number** of a fintype is the maximum number of edges a locally linear
@@ -65,7 +65,7 @@ lemma ruzsaSzemerediNumber_spec :
       #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) _ _ (Nat.zero_le _)
     ⟨⊥, inferInstance, by simp, locallyLinear_bot⟩
 
-variable {m n : ℕ}
+variable {n : ℕ}
 
 lemma SimpleGraph.LocallyLinear.le_ruzsaSzemerediNumber [DecidableRel G.Adj]
     (hG : G.LocallyLinear) : #(G.cliqueFinset 3) ≤ ruzsaSzemerediNumber α := by
@@ -257,9 +257,9 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
       refine IsLittleO.right_isBigO_sub ?_
       simpa [div_eq_inv_mul, Function.comp_def] using
         .atTop_of_const_mul₀ zero_lt_three (by simp [tendsto_natCast_atTop_atTop])
-    · rw [IsBigO_def]
+    · rw [isBigO_iff]
       refine ⟨12, ?_⟩
-      simp only [IsBigOWith, norm_natCast, eventually_atTop]
+      simp only [norm_natCast, eventually_atTop]
       exact ⟨15, fun x hx ↦ by norm_cast; lia⟩
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩

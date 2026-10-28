@@ -56,7 +56,6 @@ instance id : IsMonoidal (𝟙 F₁) where
 instance comp (τ' : F₂ ⟶ F₃) [IsMonoidal τ] [IsMonoidal τ'] :
     IsMonoidal (τ ≫ τ') where
 
-set_option backward.defeqAttrib.useBackward true in
 instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' : G₁ ⟶ G₂)
     [IsMonoidal τ] [IsMonoidal τ'] : IsMonoidal (τ ◫ τ') where
   unit := by
@@ -77,13 +76,10 @@ instance whiskerLeft {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal]
   rw [← Functor.id_hcomp]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.leftUnitor.hom where
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.rightUnitor.hom where
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoidal] [H.LaxMonoidal] :
     NatTrans.IsMonoidal (Functor.associator F G H).hom where
   unit := by
@@ -95,7 +91,6 @@ instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoid
 
 end IsMonoidal
 
-set_option backward.isDefEq.respectTransparency false in
 instance {F G : C ⥤ D} {H K : C ⥤ E} (α : F ⟶ G) (β : H ⟶ K)
     [F.LaxMonoidal] [G.LaxMonoidal] [IsMonoidal α]
     [H.LaxMonoidal] [K.LaxMonoidal] [IsMonoidal β] :
@@ -136,16 +131,15 @@ namespace IsMonoidal
 
 variable [F.Monoidal] [G.LaxMonoidal] [adj.IsMonoidal]
 
-set_option backward.defeqAttrib.useBackward true in
 instance : NatTrans.IsMonoidal adj.unit where
   unit := by
     dsimp
-    rw [id_comp, ← unit_app_unit_comp_map_η adj, assoc, Monoidal.map_η_ε]
+    rw [id_comp, ← unit_app_unit_comp_map_η adj, assoc, Monoidal.η_ε_map]
     dsimp
     rw [comp_id]
   tensor X Y := by
     dsimp
-    rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.map_δ_μ, comp_id]
+    rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.δ_μ_map, comp_id]
 
 instance : NatTrans.IsMonoidal adj.counit where
   unit := by

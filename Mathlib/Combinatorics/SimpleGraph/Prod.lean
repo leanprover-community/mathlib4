@@ -6,7 +6,6 @@ Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Metric
-public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Sum
 
 /-!
@@ -151,7 +150,7 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
   | nil => rfl
   | cons' x y z h w => by
-    rw [Walk.boxProdLeft, map_cons, ofBoxProdLeft, Or.by_cases, dif_pos, ← Walk.boxProdLeft]
+    rw [Walk.boxProdLeft, map_cons, ofBoxProdLeft, Or.by_cases, dite_eq_left, ← Walk.boxProdLeft]
     · simp [ofBoxProdLeft_boxProdLeft]
     · exact ⟨h, rfl⟩
 
@@ -161,7 +160,7 @@ theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b�
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
   | nil => rfl
   | cons' x y z h w => by
-    rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
+    rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dite_eq_left, ←
       Walk.boxProdRight]
     · simp [ofBoxProdRight_boxProdRight]
     · exact ⟨h, rfl⟩
@@ -281,7 +280,7 @@ lemma edist_boxProd (x y : α × β) :
       unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
     refine le_antisymm ?_ ?_
     · calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
-          _ = wG.length + wH.length := by exact_mod_cast w_len
+          _ = wG.length + wH.length := mod_cast w_len
           _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
     · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, Walk.length_boxProd]

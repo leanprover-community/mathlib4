@@ -5,10 +5,10 @@ Authors: Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # Chosen pullbacks along a morphism
@@ -97,7 +97,6 @@ theorem pullbackId_hom_counit (X : C) [ChosenPullbacksAlong (𝟙 X)] :
   have := Adjunction.rightAdjointUniq_hom_counit (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
   rw [pullbackId, Adjunction.rightAdjointUniq_hom_counit]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Every isomorphism has a functorial choice of pullbacks. -/
 @[simps, instance_reducible]
 def iso {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.hom where
@@ -140,7 +139,6 @@ theorem pullbackComp_hom_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
       (mapPullbackAdj (f ≫ g)).counit := by
   rw [pullbackComp, Adjunction.rightAdjointUniq_hom_counit]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a functorial
 choice of pullbacks. -/
 @[instance_reducible, simps]
@@ -151,7 +149,6 @@ def cartesianMonoidalCategoryToUnit [CartesianMonoidalCategory C] {X : C} (f : X
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom))
   mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In cartesian monoidal categories, the first product projections `fst` have a functorial choice
 of pullbacks. -/
 @[simps, instance_reducible]
@@ -162,7 +159,6 @@ def cartesianMonoidalCategoryFst [CartesianMonoidalCategory C] (X Y : C) :
   mapPullbackAdj.unit.app T := Over.homMk (lift (𝟙 _) (T.hom ≫ snd _ _))
   mapPullbackAdj.counit.app U := Over.homMk (fst _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In cartesian monoidal categories, the second product projections `snd` have a functorial choice
 of pullbacks. -/
 @[simps, instance_reducible]
@@ -217,7 +213,7 @@ theorem hom_ext {W : C} {φ₁ φ₂ : W ⟶ pullbackObj f g} (h₁ : φ₁ ≫ 
     apply (adj.homEquiv U _).symm.injective
     apply (Over.forget X).map_injective
     simpa using! h₁
-  exact congr_arg CommaMorphism.left this
+  congrm $(this).left
 
 section Lift
 
@@ -236,9 +232,8 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
   let a' : (Over.map g).obj (Over.mk b) ⟶ Over.mk f := Over.homMk a h
   have : (Over.map g).map (adj.homEquiv (.mk b) (.mk f) (Over.homMk a)) ≫ fst' f g = a' := by
     simp only [← Adjunction.homEquiv_counit, Equiv.symm_apply_apply, adj, a']
-  exact congr_arg CommaMorphism.left this
+  congrm $(this).left
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]
 theorem lift_snd : lift a b h ≫ snd f g = b := by
@@ -328,7 +323,6 @@ theorem isPullback : IsPullback (fst f g) (snd f g) f g where
   w := condition
   isLimit' := ⟨isLimitPullbackCone f g⟩
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullbacksAlong.fst f g` has a chosen pullback. -/
 @[instance_reducible]

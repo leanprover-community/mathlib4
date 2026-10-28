@@ -6,14 +6,14 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 -/
 module
 
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.Submodule.EqLocus
-public import Mathlib.LinearAlgebra.Projection
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.Algebra.Ring.FunLike
+public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Algebra.Module.Basic
-public import Mathlib.Data.FunLike.Module
-public import Mathlib.Data.FunLike.Ring
 
 /-!
 # Continuous linear maps
@@ -51,7 +51,6 @@ Later files endow it with a topological structure, see the docstring of
 assert_not_exists TrivialStar
 
 open LinearMap (ker range)
-open Topology Filter Pointwise
 
 universe u v w u'
 
@@ -122,6 +121,7 @@ theorem coe_injective : Function.Injective ((↑) : (M₁ →SL[σ₁₂] M₂) 
   cases g
   congr
 
+@[macro_inline]
 instance funLike : FunLike (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective _ _ h := coe_injective (DFunLike.coe_injective h)
@@ -291,8 +291,7 @@ variable [DistribSMul T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConst
 instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
   smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
 
-instance : IsSMulApply S₂ (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply S₂ (M₁ →SL[σ₁₂] M₂) where
 
 @[simp, norm_cast]
 theorem toLinearMap_smul (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
@@ -326,8 +325,7 @@ end SMulMonoid
 instance zero : Zero (M₁ →SL[σ₁₂] M₂) :=
   ⟨⟨0, continuous_zero⟩⟩
 
-instance : IsZeroApply (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
-  zero_apply _ := rfl
+instance : IsZeroApply (M₁ →SL[σ₁₂] M₂) where
 
 instance inhabited : Inhabited (M₁ →SL[σ₁₂] M₂) :=
   ⟨0⟩
@@ -375,8 +373,7 @@ instance one : One (M₁ →L[R₁] M₁) :=
 
 theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
 
-instance instIsOneApply : IsOneApplyEqSelf (M₁ →L[R₁] M₁) M₁ where
-  one_apply_eq_self _ := rfl
+instance instIsOneApply : IsOneApplyEqSelf (M₁ →L[R₁] M₁) where
 
 @[simp]
 theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x := rfl
@@ -410,7 +407,7 @@ theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = Li
 
 instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
   ⟨0, 1, fun e ↦
-    have ⟨x, hx⟩ := exists_ne (0 : M₁); hx (by simpa using DFunLike.congr_fun e.symm x)⟩
+    have ⟨x, hx⟩ := exists_ne (0 : M₁); hx (by simpa using congr($e.symm x))⟩
 
 section Add
 
@@ -419,8 +416,7 @@ variable [ContinuousAdd M₂]
 instance add : Add (M₁ →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
-instance instIsAddApply : IsAddApply (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
-  add_apply _ _ _ := rfl
+instance instIsAddApply : IsAddApply (M₁ →SL[σ₁₂] M₂) where
 
 @[simp, norm_cast]
 theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ →ₛₗ[σ₁₂] M₂) = f + g :=
@@ -542,15 +538,11 @@ theorem comp_finsetSum {ι : Type*} {s : Finset ι}
   ext
   simp
 
-@[deprecated (since := "2026-04-08")] alias comp_finset_sum := comp_finsetSum
-
 theorem finsetSum_comp {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₃] (g : ι → M₂ →SL[σ₂₃] M₃)
     (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i) ∘SL f = ∑ i ∈ s, (g i) ∘SL f := by
   ext
   simp only [comp_apply, sum_apply]
-
-@[deprecated (since := "2026-04-08")] alias finset_sum_comp := finsetSum_comp
 
 theorem comp_assoc {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₁₄ : R₁ →+* R₄} {σ₂₄ : R₂ →+* R₄}
     {σ₃₄ : R₃ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
@@ -570,8 +562,7 @@ lemma cancel_left' {g : M₂ →SL[σ₂₃] M₃} {f₁ f₂ : M₁ →SL[σ₁
 instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
 
-instance : IsMulApplyEqComp (M₁ →L[R₁] M₁) M₁ where
-  mul_apply_eq_comp _ _ _ := rfl
+instance : IsMulApplyEqComp (M₁ →L[R₁] M₁) where
 
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f ∘L g :=
   rfl
@@ -587,24 +578,24 @@ theorem toLinearMap_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ
 @[deprecated (since := "2026-05-20")] protected alias mul_apply := mul_apply_eq_comp
 
 instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) :=
-  fast_instance% FunLike.monoidWithZero
+  fast_instance% FunLike.compMonoidWithZero
+
+@[deprecated (since := "2026-07-23")] alias coe_pow' := FunLike.coe_pow_eq_iterate
 
 @[simp, norm_cast]
-theorem coe_pow' (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+theorem toLinearMap_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
+  DFunLike.ext' <| (FunLike.coe_pow_eq_iterate f n).trans
+    <| .symm <| hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
-@[simp, norm_cast]
-theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : (↑(f ^ n) : M₁ →ₗ[R₁] M₁) = f ^ n :=
-  DFunLike.ext' <| (coe_pow' f n).trans <| .symm <| hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+@[deprecated (since := "2026-07-24")] protected alias coe_pow := toLinearMap_pow
 
 instance instNatCast [ContinuousAdd M₁] : NatCast (M₁ →L[R₁] M₁) where
   natCast n := n • (1 : M₁ →L[R₁] M₁)
 
-instance instIsNatCastApply [ContinuousAdd M₁] : IsNatCastApply (M₁ →L[R₁] M₁) M₁ where
-  natCast_apply _ _ := rfl
+instance instIsNatCastApply [ContinuousAdd M₁] : IsNatCastApplyEqSMul (M₁ →L[R₁] M₁) where
 
 instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
-  fast_instance% FunLike.semiring
+  fast_instance% FunLike.compSemiring
 
 /-- `ContinuousLinearMap.toLinearMap` as a `RingHom`. -/
 @[simps]
@@ -827,8 +818,7 @@ variable [IsTopologicalAddGroup M₂]
 instance neg : Neg (M →SL[σ₁₂] M₂) :=
   ⟨fun f => ⟨-f, f.2.neg⟩⟩
 
-instance : IsNegApply (M →SL[σ₁₂] M₂) M M₂ where
-  neg_apply _ _ := rfl
+instance : IsNegApply (M →SL[σ₁₂] M₂) where
 
 @[simp, norm_cast]
 theorem toLinearMap_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ₁₂] M₂) = -f :=
@@ -847,8 +837,7 @@ theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
 instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
-instance : IsSubApply (M →SL[σ₁₂] M₂) M M₂ where
-  sub_apply _ _ _ := rfl
+instance : IsSubApply (M →SL[σ₁₂] M₂) where
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := fast_instance% FunLike.addCommGroup
 
@@ -897,12 +886,11 @@ theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAd
 instance [IsTopologicalAddGroup M] : IntCast (M →L[R] M) where
   intCast z := z • (1 : M →L[R] M)
 
-instance instIsIntCastApply [IsTopologicalAddGroup M] : IsIntCastApply (M →L[R] M) M where
-  intCast_apply _ _ := rfl
+instance instIsIntCastApply [IsTopologicalAddGroup M] : IsIntCastApplyEqSMul (M →L[R] M) where
 
-@[deprecated (since := "2026-05-20")] alias intCast_apply := _root_.intCast_apply
+@[deprecated (since := "2026-05-20")] alias intCast_apply := _root_.intCast_apply_eq_smul
 
-instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) := fast_instance% FunLike.ring
+instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) := fast_instance% FunLike.compRing
 
 theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
     toSpanSingleton R c ^ n = toSpanSingleton R (c ^ n) := by
@@ -931,13 +919,13 @@ end DivisionRing
 section SMulMonoid
 
 -- The M's are used for semilinear maps, and the N's for plain linear maps
-variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R₃] [Monoid S] [Monoid S₃]
+variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R₃]
   {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] {M₂ : Type*}
   [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R₂ M₂] {M₃ : Type*} [TopologicalSpace M₃]
   [AddCommMonoid M₃] [Module R₃ M₃] {N₂ : Type*} [TopologicalSpace N₂] [AddCommMonoid N₂]
   [Module R N₂] {N₃ : Type*} [TopologicalSpace N₃] [AddCommMonoid N₃] [Module R N₃]
-  [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃]
-  [DistribMulAction S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃] {σ₁₂ : R →+* R₂}
+  [DistribSMul S₃ M₃] [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃]
+  [DistribSMul S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃] {σ₁₂ : R →+* R₂}
   {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 @[simp]
@@ -945,8 +933,8 @@ theorem smul_comp (c : S₃) (h : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁�
     (c • h) ∘SL f = c • h ∘SL f :=
   rfl
 
-variable [DistribMulAction S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
-variable [DistribMulAction S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R S N₂]
+variable [DistribSMul S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
+variable [DistribSMul S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R S N₂]
 
 @[simp]
 theorem comp_smul [LinearMap.CompatibleSMul N₂ N₃ S R] (hₗ : N₂ →L[R] N₃) (c : S)
@@ -961,10 +949,28 @@ theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ 
   ext x
   simp
 
+instance distribSMul [ContinuousAdd M₂] : DistribSMul S₃ (M →SL[σ₁₂] M₂) :=
+  fast_instance% FunLike.distribSMul
+
+end SMulMonoid
+
+section DistribMulAction
+
+variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R₃] [Monoid S] [Monoid S₃]
+  {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] {M₂ : Type*}
+  [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R₂ M₂] {M₃ : Type*} [TopologicalSpace M₃]
+  [AddCommMonoid M₃] [Module R₃ M₃] {N₂ : Type*} [TopologicalSpace N₂] [AddCommMonoid N₂]
+  [Module R N₂] {N₃ : Type*} [TopologicalSpace N₃] [AddCommMonoid N₃] [Module R N₃]
+  [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃] [ContinuousConstSMul S₃ M₃]
+  [DistribMulAction S N₃] [SMulCommClass R S N₃] [ContinuousConstSMul S N₃] {σ₁₂ : R →+* R₂}
+  {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  [DistribMulAction S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
+  [DistribMulAction S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R S N₂]
+
 instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) :=
   fast_instance% FunLike.distribMulAction
 
-end SMulMonoid
+end DistribMulAction
 
 section SMul
 

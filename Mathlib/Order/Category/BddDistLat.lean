@@ -45,28 +45,29 @@ attribute [instance] BddDistLat.isBoundedOrder
 abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BddDistLat.of X` as `↧X`. -/
+@[app_delab BddDistLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
 /-- The type of morphisms in `BddDistLat R`. -/
 @[ext]
 structure Hom (X Y : BddDistLat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : Category BddDistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `BddDistLat` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : BddDistLat.{u}} (f : Hom X Y) :=
@@ -159,18 +160,18 @@ instance : Inhabited BddDistLat :=
 
 /-- Turn a `BddDistLat` into a `BddLat` by forgetting it is distributive. -/
 def toBddLat (X : BddDistLat) : BddLat :=
-  .of X
+  ↧X
 
 @[simp]
 theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
   rfl
 
 instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := DistLat.ofHom f.hom.toLatticeHom
 
 instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddLat.ofHom f.hom
 
 theorem forget_bddLat_lat_eq_forget_distLat_lat :

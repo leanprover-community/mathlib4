@@ -23,7 +23,7 @@ namespace Matrix
 
 universe u v
 
-open Matrix LinearMap
+open Matrix
 
 open scoped MatrixGroups
 

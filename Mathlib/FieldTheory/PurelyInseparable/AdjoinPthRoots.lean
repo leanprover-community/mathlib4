@@ -10,12 +10,12 @@ public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 
-# The extension adjoining all p-th roots to a field of characteristic p.
+# The extension adjoining all `p`-th roots to a field of characteristic `p`
 
 In this file, we introduce the field extension adjoining all `p`-th roots to a
 field of (exponential) characteristic `p`.
 
-# Main definitions and results
+## Main definitions and results
 
 * `AdjoinPthRoots`: the field extension adjoining all `p`-th roots to a field of
   (exponential) characteristic `p`.

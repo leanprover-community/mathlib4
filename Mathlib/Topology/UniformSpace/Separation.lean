@@ -98,7 +98,9 @@ uniform space, separated space, Hausdorff space, separation quotient
 
 @[expose] public section
 
-open Filter Set Function Topology Uniformity UniformSpace
+open Filter Set Function UniformSpace
+
+open scoped Topology Uniformity
 
 noncomputable section
 
@@ -298,13 +300,13 @@ def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
   else fun x => f (Nonempty.some ⟨x.out⟩)
 
 theorem lift'_mk [T0Space β] {f : α → β} (h : UniformContinuous f) (a : α) :
-    lift' f (mk a) = f a := by rw [lift', dif_pos h, lift_mk]
+    lift' f (mk a) = f a := by rw [lift', dite_eq_left h, lift_mk]
 
 @[fun_prop]
 theorem uniformContinuous_lift' [T0Space β] (f : α → β) : UniformContinuous (lift' f) := by
   by_cases hf : UniformContinuous f
-  · rwa [lift', dif_pos hf, uniformContinuous_lift]
-  · rw [lift', dif_neg hf]
+  · rwa [lift', dite_eq_left hf, uniformContinuous_lift]
+  · rw [lift', dite_eq_right hf]
     exact uniformContinuous_of_const fun a _ => rfl
 
 /-- The separation quotient functor acting on functions. -/
@@ -317,13 +319,12 @@ theorem map_mk {f : α → β} (h : UniformContinuous f) (a : α) : map f (mk a)
 theorem uniformContinuous_map (f : α → β) : UniformContinuous (map f) :=
   uniformContinuous_lift' _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_unique {f : α → β} (hf : UniformContinuous f)
     {g : SeparationQuotient α → SeparationQuotient β} (comm : mk ∘ f = g ∘ mk) : map f = g := by
   ext ⟨a⟩
   calc
     map f ⟦a⟧ = ⟦f a⟧ := map_mk hf a
-    _ = g ⟦a⟧ := congr_fun comm a
+    _ = g ⟦a⟧ := congr($comm a)
 
 @[simp]
 theorem map_id : map (@id α) = id := map_unique uniformContinuous_id rfl

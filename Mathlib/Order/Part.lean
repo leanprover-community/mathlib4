@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Part
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
 /-!

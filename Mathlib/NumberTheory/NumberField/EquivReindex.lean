@@ -53,7 +53,7 @@ theorem conj_basisMatrix :
 
 theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K).det ≠ 0 := by
   rw [basisMatrix_eq_embeddingsMatrixReindex, ← pow_ne_zero_iff two_ne_zero]
-  convert!
+  convert
     (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
   rw [← Algebra.discr_reindex ℚ (integralBasis K) (equivReindex K).symm]
@@ -70,9 +70,7 @@ theorem canonicalEmbedding_eq_basisMatrix_mulVec (α : K) :
       (fun i ↦ (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) := by
   ext i
   rw [← (latticeBasis K).sum_repr (canonicalEmbedding K α), ← Equiv.sum_comp (equivReindex K)]
-  simp only [canonicalEmbedding.integralBasis_repr_apply, mulVec, dotProduct,
-    transpose_apply, of_apply, Fintype.sum_apply, mul_comm, Basis.repr_reindex,
-    Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Pi.smul_apply, smul_eq_mul]
+  simp [canonicalEmbedding.integralBasis_repr_apply, mulVec, dotProduct, mul_comm]
 
 theorem inverse_basisMatrix_mulVec_eq_repr [DecidableEq (K →+* ℂ)] (α : 𝓞 K) :
     ∀ i, ((basisMatrix K).transpose)⁻¹.mulVec (fun j =>

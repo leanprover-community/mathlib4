@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.MetricSpace.IsometricSMul
-public import Mathlib.Tactic.Finiteness
 
 /-!
 # Hausdorff distance
@@ -56,7 +55,9 @@ metric space, Hausdorff distance
 
 noncomputable section
 
-open NNReal ENNReal Topology Set Filter Pointwise Bornology
+open NNReal ENNReal Set Filter Pointwise Bornology
+
+open scoped Topology
 
 universe u v w
 
@@ -104,7 +105,7 @@ theorem infEDist_le_edist_of_mem (h : y ∈ s) : infEDist x s ≤ edist x y :=
 
 /-- If a point `x` belongs to `s`, then its edist to `s` vanishes -/
 theorem infEDist_zero_of_mem (h : x ∈ s) : infEDist x s = 0 :=
-  nonpos_iff_eq_zero.1 <| @edist_self _ _ x ▸ infEDist_le_edist_of_mem h
+  nonpos_iff_eq_zero.1 <| edist_self x ▸ infEDist_le_edist_of_mem h
 
 /-- The edist is antitone with respect to inclusion. -/
 @[gcongr]
@@ -255,8 +256,10 @@ end InfEDist
 
 /-- The Hausdorff edistance between two sets is the smallest `r` such that each set
 is contained in the `r`-neighborhood of the other one -/
-irreducible_def hausdorffEDist {α : Type u} [PseudoEMetricSpace α] (s t : Set α) : ℝ≥0∞ :=
+@[no_expose] def hausdorffEDist {α : Type u} [PseudoEMetricSpace α] (s t : Set α) : ℝ≥0∞ :=
   (⨆ x ∈ s, infEDist x t) ⊔ ⨆ y ∈ t, infEDist y s
+
+alias hausdorffEDist_def := hausdorffEDist.eq_def
 
 section HausdorffEDist
 
@@ -265,18 +268,18 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t u : Set
 /-- The Hausdorff edistance of a set to itself vanishes. -/
 @[simp]
 theorem hausdorffEDist_self : hausdorffEDist s s = 0 := by
-  simp only [hausdorffEDist_def, sup_idem, ENNReal.iSup_eq_zero]
+  simp only [hausdorffEDist, sup_idem, ENNReal.iSup_eq_zero]
   exact fun x hx => infEDist_zero_of_mem hx
 
 /-- The Hausdorff edistances of `s` to `t` and of `t` to `s` coincide. -/
 theorem hausdorffEDist_comm : hausdorffEDist s t = hausdorffEDist t s := by
-  simp only [hausdorffEDist_def]; apply sup_comm
+  simp only [hausdorffEDist]; apply sup_comm
 
 /-- Bounding the Hausdorff edistance by bounding the edistance of any point
 in each set to the other set -/
 theorem hausdorffEDist_le_of_infEDist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, infEDist x t ≤ r)
     (H2 : ∀ x ∈ t, infEDist x s ≤ r) : hausdorffEDist s t ≤ r := by
-  simp only [hausdorffEDist_def, sup_le_iff, iSup_le_iff]
+  simp only [hausdorffEDist, sup_le_iff, iSup_le_iff]
   exact ⟨H1, H2⟩
 
 /-- Bounding the Hausdorff edistance by exhibiting, for any point in each set,
@@ -291,9 +294,9 @@ theorem hausdorffEDist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y
 
 /-- The distance to a set is controlled by the Hausdorff distance. -/
 theorem infEDist_le_hausdorffEDist_of_mem (h : x ∈ s) : infEDist x t ≤ hausdorffEDist s t := by
-  rw [hausdorffEDist_def]
+  rw [hausdorffEDist]
   refine le_trans ?_ le_sup_left
-  exact le_iSup₂ (α := ℝ≥0∞) x h
+  grw [← le_iSup₂ x h]
 
 /-- If the Hausdorff distance is `< r`, then any point in one of the sets has
 a corresponding point at distance `< r` in the other set. -/
@@ -327,7 +330,7 @@ theorem infEDist_le_infEDist_add_hausdorffEDist :
 /-- The Hausdorff edistance is invariant under isometries. -/
 theorem hausdorffEDist_image (h : Isometry Φ) :
     hausdorffEDist (Φ '' s) (Φ '' t) = hausdorffEDist s t := by
-  simp only [hausdorffEDist_def, iSup_image, infEDist_image h]
+  simp only [hausdorffEDist, iSup_image, infEDist_image h]
 
 /-- The Hausdorff distance is controlled by the diameter of the union. -/
 theorem hausdorffEDist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
@@ -342,7 +345,7 @@ theorem hausdorffEDist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
 
 /-- The Hausdorff distance satisfies the triangle inequality. -/
 theorem hausdorffEDist_triangle : hausdorffEDist s u ≤ hausdorffEDist s t + hausdorffEDist t u := by
-  rw [hausdorffEDist_def]
+  rw [hausdorffEDist]
   simp only [sup_le_iff, iSup_le_iff]
   constructor
   · change ∀ x ∈ s, infEDist x u ≤ hausdorffEDist s t + hausdorffEDist t u
@@ -362,7 +365,7 @@ theorem hausdorffEDist_triangle : hausdorffEDist s u ≤ hausdorffEDist s t + ha
 /-- Two sets are at zero Hausdorff edistance if and only if they have the same closure. -/
 theorem hausdorffEDist_zero_iff_closure_eq_closure :
     hausdorffEDist s t = 0 ↔ closure s = closure t := by
-  simp [hausdorffEDist_def, ← subset_def, ← mem_closure_iff_infEDist_zero,
+  simp [hausdorffEDist, ← subset_def, ← mem_closure_iff_infEDist_zero,
     subset_antisymm_iff, isClosed_closure.closure_subset_iff]
 
 /-- The Hausdorff edistance between a set and its closure vanishes. -/
@@ -443,118 +446,6 @@ end HausdorffEDist -- section
 
 end Metric -- namespace
 
-namespace EMetric
-
-open Metric
-
-@[deprecated (since := "2026-01-08")]
-noncomputable alias infEdist := infEDist
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_empty := infEDist_empty
-
-@[deprecated (since := "2026-01-08")] alias le_infEdist := le_infEDist
-@[deprecated (since := "2026-01-08")] alias infEdist_union := infEDist_union
-@[deprecated (since := "2026-01-08")] alias infEdist_iUnion := infEDist_iUnion
-@[deprecated (since := "2026-01-08")] alias infEdist_biUnion := infEDist_biUnion
-@[deprecated (since := "2026-01-08")] alias infEdist_singleton := infEDist_singleton
-@[deprecated (since := "2026-01-08")] alias infEdist_le_edist_of_mem := infEDist_le_edist_of_mem
-@[deprecated (since := "2026-01-08")] alias infEdist_zero_of_mem := infEDist_zero_of_mem
-@[deprecated (since := "2026-01-08")] alias infEdist_anti := infEDist_anti
-@[deprecated (since := "2026-01-08")] alias infEdist_lt_iff := infEDist_lt_iff
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_le_infEdist_add_edist := infEDist_le_infEDist_add_edist
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_le_edist_add_infEdist := infEDist_le_edist_add_infEDist
-
-@[deprecated (since := "2026-01-08")]
-alias edist_le_infEdist_add_ediam := edist_le_infEDist_add_ediam
-
-@[deprecated (since := "2026-01-08")] alias continuous_infEdist := continuous_infEDist
-@[deprecated (since := "2026-01-08")] alias infEdist_closure := infEDist_closure
-
-@[deprecated (since := "2026-01-08")]
-alias mem_closure_iff_infEdist_zero := mem_closure_iff_infEDist_zero
-
-@[deprecated (since := "2026-01-08")]
-alias mem_iff_infEdist_zero_of_closed := mem_iff_infEDist_zero_of_closed
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_pos_iff_notMem_closure := infEDist_pos_iff_notMem_closure
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_closure_pos_iff_notMem_closure := infEDist_closure_pos_iff_notMem_closure
-
-@[deprecated (since := "2026-01-08")]
-alias exists_real_pos_lt_infEdist_of_notMem_closure := exists_real_pos_lt_infEDist_of_notMem_closure
-
-@[deprecated (since := "2026-01-08")]
-alias disjoint_closedBall_of_lt_infEdist := disjoint_closedEBall_of_lt_infEDist
-
-@[deprecated (since := "2026-01-08")] alias infEdist_image := infEDist_image
-@[deprecated (since := "2026-01-08")] alias infEdist_vadd := infEDist_vadd
-@[to_additive existing, deprecated (since := "2026-01-08")] alias infEdist_smul := infEDist_smul
-
-@[deprecated (since := "2026-01-08")]
-alias _root_.IsCompact.exists_infEdist_eq_edist := _root_.IsCompact.exists_infEDist_eq_edist
-
-@[deprecated (since := "2026-01-08")] alias exists_pos_forall_lt_edist := exists_pos_forall_lt_edist
-@[deprecated (since := "2026-01-08")] alias infEdist_prod := infEDist_prod
-
-@[deprecated (since := "2026-01-08")] noncomputable alias hausdorffEdist := hausdorffEDist
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_def := hausdorffEDist_def
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_self := hausdorffEDist_self
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_comm := hausdorffEDist_comm
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_le_of_infEdist := hausdorffEDist_le_of_infEDist
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_le_of_mem_edist := hausdorffEDist_le_of_mem_edist
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_le_hausdorffEdist_of_mem := infEDist_le_hausdorffEDist_of_mem
-
-@[deprecated (since := "2026-01-08")]
-alias exists_edist_lt_of_hausdorffEdist_lt := exists_edist_lt_of_hausdorffEDist_lt
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_le_infEdist_add_hausdorffEdist := infEDist_le_infEDist_add_hausdorffEDist
-
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_image := hausdorffEDist_image
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_le_ediam := hausdorffEDist_le_ediam
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_triangle := hausdorffEDist_triangle
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_zero_iff_closure_eq_closure := hausdorffEDist_zero_iff_closure_eq_closure
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_self_closure := hausdorffEDist_self_closure
-
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_closure₁ := hausdorffEDist_closure_left
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_closure₂ := hausdorffEDist_closure_right
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_closure := hausdorffEDist_closure
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_zero_iff_eq_of_closed := IsClosed.hausdorffEDist_zero_iff
-
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_empty := hausdorffEDist_empty
-
-@[deprecated (since := "2026-01-08")]
-alias nonempty_of_hausdorffEdist_ne_top := nonempty_of_hausdorffEDist_ne_top
-
-@[deprecated (since := "2026-01-08")]
-alias empty_or_nonempty_of_hausdorffEdist_ne_top := empty_or_nonempty_of_hausdorffEDist_ne_top
-
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_singleton := hausdorffEDist_singleton
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_iUnion_le := hausdorffEDist_iUnion_le
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_union_le := hausdorffEDist_union_le
-@[deprecated (since := "2026-01-08")] alias hausdorffEdist_prod_le := hausdorffEDist_prod_le
-
-end EMetric
-
 /-! Now, we turn to the same notions in metric spaces. To avoid the difficulties related to
 `sInf` and `sSup` on `ℝ` (which is only conditionally complete), we use the notions in `ℝ≥0∞`
 formulated in terms of the edistance, and coerce them to `ℝ`.
@@ -595,15 +486,9 @@ theorem infEDist_ne_top (h : s.Nonempty) : infEDist x s ≠ ∞ := by
   rcases h with ⟨y, hy⟩
   exact ne_top_of_le_ne_top (edist_ne_top _ _) (infEDist_le_edist_of_mem hy)
 
-@[deprecated (since := "2026-01-08")]
-alias infEdist_ne_top := infEDist_ne_top
-
 @[simp]
 theorem infEDist_eq_top_iff : infEDist x s = ∞ ↔ s = ∅ := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [*, Nonempty.ne_empty, infEDist_ne_top]
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_eq_top_iff := infEDist_eq_top_iff
 
 /-- The minimal distance of a point to a set containing it vanishes. -/
 theorem infDist_zero_of_mem (h : x ∈ s) : infDist x s = 0 := by
@@ -650,8 +535,9 @@ theorem ball_infDist_compl_subset : ball x (infDist x sᶜ) ⊆ s :=
   ball_infDist_subset_compl.trans_eq (compl_compl s)
 
 theorem disjoint_closedBall_of_lt_infDist {r : ℝ} (h : r < infDist x s) :
-    Disjoint (closedBall x r) s :=
-  disjoint_ball_infDist.mono_left <| closedBall_subset_ball h
+    Disjoint (closedBall x r) s := by
+  grw [h]
+  exact disjoint_ball_infDist
 
 theorem dist_le_infDist_add_diam (hs : IsBounded s) (hy : y ∈ s) :
     dist x y ≤ infDist x s + diam s := by
@@ -798,9 +684,6 @@ theorem hausdorffEDist_ne_top_of_nonempty_of_bounded (hs : s.Nonempty) (ht : t.N
       rwa [edist_dist, ENNReal.ofReal_le_ofReal_iff]
       exact le_trans dist_nonneg this
   exact ne_top_of_le_ne_top ENNReal.ofReal_ne_top this
-
-@[deprecated (since := "2026-01-08")]
-alias hausdorffEdist_ne_top_of_nonempty_of_bounded := hausdorffEDist_ne_top_of_nonempty_of_bounded
 
 /-- The Hausdorff distance between a set and itself is zero. -/
 @[simp]

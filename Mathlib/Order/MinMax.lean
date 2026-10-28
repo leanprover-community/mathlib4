@@ -29,27 +29,11 @@ section
 
 variable [LinearOrder α] [LinearOrder β] {f : α → β} {s : Set α} {a b c d : α}
 
--- translate from lattices to linear orders (sup → max, inf → min)
-@[to_dual max_le_iff]
-theorem le_min_iff : c ≤ min a b ↔ c ≤ a ∧ c ≤ b :=
-  le_inf_iff
-
-@[to_dual min_le_iff]
-theorem le_max_iff : a ≤ max b c ↔ a ≤ b ∨ a ≤ c :=
-  le_sup_iff
-
 @[to_dual]
 instance : Std.LawfulOrderSup α where
   max_le_iff _ _ _ := max_le_iff
 
-@[to_dual max_lt_iff]
-theorem lt_min_iff : a < min b c ↔ a < b ∧ a < c :=
-  lt_inf_iff
-
-@[to_dual min_lt_iff]
-theorem lt_max_iff : a < max b c ↔ a < b ∨ a < c :=
-  lt_sup_iff
-
+-- translate from lattices to linear orders (sup → max, inf → min)
 @[to_dual]
 theorem max_le_max : a ≤ c → b ≤ d → max a b ≤ max c d :=
   sup_le_sup
@@ -132,9 +116,6 @@ theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
 @[to_dual]
 lemma min_right_comm (a b c : α) : min (min a b) c = min (min a c) b := by
   rw [min_assoc, min_comm b, ← min_assoc]
-
-@[deprecated (since := "2026-03-22")] alias Max.left_comm := max_left_comm
-@[deprecated (since := "2026-03-22")] alias Max.right_comm := max_right_comm
 
 @[to_dual]
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.Algebra.Homology.ShortComplex.Retract
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Quasi-isomorphisms
@@ -223,7 +222,6 @@ lemma quasiIso_of_comp_right (φ : K ⟶ L) (φ' : L ⟶ M) [∀ i, K.HasHomolog
   rw [← quasiIso_iff_comp_right φ φ']
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_iff_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ ≅ Arrow.mk φ')
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] :

@@ -7,8 +7,8 @@ Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 module
 
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Dimension of vector spaces
@@ -18,11 +18,13 @@ over division rings.
 
 ## Main statements
 
-For vector spaces (i.e. modules over a field), we have
+For vector spaces (i.e. modules over a division ring), we have
 
 * `rank_quotient_add_rank_of_divisionRing`: if `V₁` is a submodule of `V`, then
   `Module.rank (V/V₁) + Module.rank V₁ = Module.rank V`.
-* `rank_range_add_rank_ker`: the rank-nullity theorem.
+* `DivisionRing.hasRankNullity`: The rank-nullity theorem for division rings.
+* `Submodule.rank_span_le_rank`: The `K`-rank of the `K`-span of an `R`-submodule `M` of `V`
+  is at most the `R`-rank of `M`.
 
 See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
 
@@ -30,15 +32,13 @@ See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Ka
 
 public section
 
-
 noncomputable section
 
-universe u₀ u v v' v'' u₁' w w'
+universe u₀ u v
 
 variable {K : Type u} {V V₁ V₂ V₃ : Type v}
-variable {ι : Type w}
 
-open Cardinal Basis Submodule Function Set
+open Cardinal Submodule Function Set Module
 
 section Module
 
@@ -51,7 +51,7 @@ variable [AddCommGroup V₁] [Module K V₁]
 /-- If a vector space has a finite dimension, the index set of `Basis.ofVectorSpace` is finite. -/
 theorem Module.Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V < ℵ₀) :
     (Basis.ofVectorSpaceIndex K V).Finite :=
-  Set.finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
+  (Basis.ofVectorSpace K V).setFinite_index_of_rank_lt_aleph0 h
 
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
@@ -101,6 +101,98 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     grind
 
 end
+
+namespace Submodule
+
+variable {R : Type*} [CommRing R] [Nontrivial R]
+variable [SMulWithZero R K] [FaithfulSMul R K] [IsScalarTower R K K]
+variable [Module R V] [IsScalarTower R K V]
+variable (M : Submodule R V)
+
+/-- The `K`-rank of the `K`-span of an `R`-submodule `M` of `V` is at most the `R`-rank of `M`. -/
+theorem rank_span_le_rank : Module.rank K (span K (M : Set V)) ≤ Module.rank R M := by
+  obtain ⟨b, hbM, hbspan, hbli⟩ := exists_linearIndependent K (M : Set V)
+  rw [← hbspan, rank_span_set hbli]
+  exact LinearIndependent.cardinal_le_rank (v := Set.inclusion hbM)
+    (.of_comp M.subtype (hbli.restrict_scalars' R))
+
+/-- The `K`-rank of the `K`-span of a set `s` in `V` is at most the `R`-rank of the `R`-span
+of `s`. -/
+theorem rank_span_le_rank_span (s : Set V) :
+    Module.rank K (span K s) ≤ Module.rank R (span R s) :=
+  span_span_of_tower R K s ▸ rank_span_le_rank (span R s)
+
+/-- The `K`-rank of the `K`-span of a finitely generated `R`-submodule `M` of `V` is at most
+the `R`-rank of `M`. This is the `Module.finrank` version of `Submodule.rank_span_le_rank`. -/
+theorem finrank_span_le_finrank (h : M.FG) : finrank K (span K (M : Set V)) ≤ finrank R M := by
+  apply finrank_le_of_rank_le
+  have : Module.Finite R M := Module.Finite.of_fg h
+  rw [finrank_eq_rank]
+  exact rank_span_le_rank M
+
+/-- The `K`-rank of the `K`-span of a finite set `s` in `V` is at most the `R`-rank of the
+`R`-span of `s`. This is the `Module.finrank` version of `Submodule.rank_span_le_rank_span`. -/
+theorem finrank_span_le_finrank_span {s : Set V} (hs : s.Finite) :
+    finrank K (span K s) ≤ finrank R (span R s) :=
+  span_span_of_tower R K s ▸ finrank_span_le_finrank _ (Submodule.fg_span hs)
+
+/-- If every `R`-linearly independent subset of `M` is `K`-linearly independent, then the
+`K`-rank of the `K`-span of `M` equals the `R`-rank of `M`. -/
+theorem rank_span_eq_rank_of_linearIndepOn
+    (H : ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn K id s) :
+    Module.rank K (span K (M : Set V)) = Module.rank R M := by
+  apply le_antisymm (rank_span_le_rank M)
+  rw [Module.rank_def]
+  refine ciSup_le' fun s ↦ ?_
+  apply LinearIndependent.cardinal_le_rank (v := fun x ↦ ⟨(x.1 : V), subset_span x.1.2⟩)
+  apply LinearIndependent.of_comp (span K (M : Set V)).subtype
+  have hli := s.2.map' M.subtype (ker_subtype _)
+  exact (linearIndepOn_id_range_iff hli.injective).mp
+    (H _ (Set.range_subset_iff.mpr fun x ↦ (x : M).2) hli.linearIndepOn_id)
+
+/-- If every `R`-linearly independent subset of `M` is `K`-linearly independent, then the
+`K`-rank of the `K`-span of `M` equals the `R`-rank of `M`.
+
+This is the `Module.finrank` version of `Submodule.rank_span_eq_rank_of_linearIndepOn`; see also
+`Submodule.finrank_span_eq_finrank` for an equality in a different setting. -/
+theorem finrank_span_eq_finrank_of_linearIndepOn
+    (H : ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn K id s) :
+    finrank K (span K (M : Set V)) = finrank R M :=
+  congrArg Cardinal.toNat (rank_span_eq_rank_of_linearIndepOn M H)
+
+/-- If the `R`-rank of a finitely generated `R`-module `M` is at most the `K`-rank of the `K`-span
+of `M`, then every `R`-linearly independent subset of `M` is `K`-linearly independent. -/
+theorem linearIndepOn_of_finrank_le_finrank_span (hfg : M.FG)
+    (h : finrank R M ≤ finrank K (span K (M : Set V)))
+    {s : Set V} (hsM : s ⊆ M) (hs : LinearIndepOn R id s) :
+    LinearIndepOn K id s := by
+  obtain ⟨b, hbs, hb, hbK⟩ := exists_linearIndependent K s
+  obtain ⟨c, hcM, hbc, hMc, hcK⟩ := exists_linearIndepOn_id_extension hbK (hbs.trans hsM)
+  suffices c = s ∪ (c \ b) from hcK.mono (by grind)
+  have hdisj : Disjoint (span R s) (span R (c \ b)) := by
+    apply Disjoint.mono (span_le_restrictScalars R K s) (span_le_restrictScalars R K (c \ b))
+    rw [disjoint_restrictScalars_iff, ← hb]
+    apply disjoint_span_of_linearIndepOn_id_union disjoint_sdiff_right
+    simpa [union_eq_self_of_subset_left hbc]
+  have : Module.Finite R M := .of_fg hfg
+  have hcR : LinearIndepOn R id c := hcK.linearIndependent.restrict_scalars' R
+  have hu : LinearIndepOn R id (s ∪ (c \ b)) := hs.id_union (hcR.mono sdiff_subset) hdisj
+  have huM : s ∪ (c \ b) ⊆ M := union_subset hsM (by grind)
+  refine eq_of_subset_of_ncard_le (by grind) ?_ ?_
+  · grw [← finrank_span_set_eq_ncard hu, finrank_mono (span_le.mpr huM), h,
+      le_antisymm (span_le.mpr hMc) (span_mono hcM), finrank_span_set_eq_ncard hcK]
+  · exact (hu.linearIndependent.codRestrict M (fun x ↦ huM x.2)).finite
+
+/-- The `K`-rank of the `K`-span of a finitely generated `M` is equal to the `R`-rank of `M` if
+and only if every `R`-linearly independent subset of `M` is `K`-linearly independent. See also
+`Submodule.finrank_span_eq_finrank` for an equality in a different setting. -/
+theorem finrank_span_eq_finrank_iff (hfg : M.FG) :
+    finrank K (span K (M : Set V)) = finrank R M ↔
+      ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn K id s :=
+  ⟨fun h _ ↦ linearIndepOn_of_finrank_le_finrank_span M hfg h.ge,
+    finrank_span_eq_finrank_of_linearIndepOn M⟩
+
+end Submodule
 
 end DivisionRing
 

@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
-public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Notation
 
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
@@ -73,7 +72,7 @@ _ = ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ
 
 ## TODO
 
-Add a version of the chain rule for the integral form of the contional KL divergence, i.e.
+Add a version of the chain rule for the integral form of the conditional KL divergence, i.e.
 `μ[fun x ↦ klDiv (κ x) (η x)]`.
 
 -/

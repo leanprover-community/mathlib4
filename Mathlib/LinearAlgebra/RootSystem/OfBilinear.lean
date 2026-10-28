@@ -80,7 +80,6 @@ lemma smul_coroot : B x x • coroot B hx = 2 • B x := by
 lemma coroot_apply_self : coroot B hx x = 2 :=
   hx.regular.left <| by simp [mul_comm _ (B x x)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
@@ -114,7 +113,6 @@ namespace RootPairing
 
 open LinearMap IsReflective
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The root pairing given by all reflective vectors for a bilinear form. -/
 def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
     (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :

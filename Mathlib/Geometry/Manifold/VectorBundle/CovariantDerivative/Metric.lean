@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 /-! # Metric connections
 
@@ -36,7 +35,7 @@ metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
   `CovariantDerivative.IsMetricCompatible` with the characterisation that parallel transport be an
   isometry.
 
-* Given connections on bundles `V` and `W`, there is an induced connnection on the bundle
+* Given connections on bundles `V` and `W`, there is an induced connection on the bundle
   `Hom(V, W)`. When this induced connection has been defined in Mathlib, rephrase the definition of
   `CovariantDerivative.derivMetricTensor`, to be simply the covariant derivative of the
   metric tensor (considered as a section of `Hom(V, Hom(V, ℝ))`).
@@ -55,7 +54,7 @@ variable
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, NormedAddCommGroup (V x)] [∀ x, InnerProductSpace ℝ (V x)] [FiberBundle F V]
 
-/-! # Compatible connections
+/-! ### Compatible connections
 
 A connection on `V` is compatible with the metric on `V` iff `𝓛_X ⟨σ, τ⟩ = ⟨∇_X σ, τ⟩ + ⟨σ, ∇_X τ⟩`
 holds for all sufficiently nice vector fields `X` on `M` and sections `σ`, `τ` of `V`.
@@ -66,7 +65,7 @@ In our definition, we ask for this identity to hold at each `x : M`, whenever `X
 differentiable at `x`.
 -/
 
-variable {σ σ' σ'' τ τ' τ'' : Π x : M, V x}
+variable {σ σ' τ : Π x : M, V x}
 
 local notation "⟪" σ ", " τ "⟫" => fun x ↦ inner ℝ (σ x) (τ x)
 
@@ -100,12 +99,13 @@ theorem tensorial_derivMetricTensorAux₁ (τ : Π x, V x) (hτ : MDiffAt (T% τ
   smul hf hσ := by
     ext X₀
     simp [mvfderiv_fun_mul hf (hσ.inner_bundle hτ),
-      cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left, inner_smul_left]
+      cov.isCovariantDerivativeOnUniv.leibniz hσ hf, inner_add_left,
+      inner_smul_left]
     ring
   add hσ hσ' := by
     ext X₀
     simp [mvfderiv_fun_add (hσ.inner_bundle hτ) (hσ'.inner_bundle hτ),
-      cov.isCovariantDerivativeOn.add hσ hσ', inner_add_left]
+      cov.isCovariantDerivativeOnUniv.add hσ hσ', inner_add_left]
     abel
 
 theorem tensorial_derivMetricTensorAux₂ (σ : Π x, V x) (hσ : MDiffAt (T% σ) x) :
@@ -113,12 +113,13 @@ theorem tensorial_derivMetricTensorAux₂ (σ : Π x, V x) (hσ : MDiffAt (T% σ
   smul hf hτ := by
     ext X₀
     simp [mvfderiv_fun_mul hf (hσ.inner_bundle hτ),
-      cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right, inner_smul_right]
+      cov.isCovariantDerivativeOnUniv.leibniz hτ hf, inner_add_right,
+      inner_smul_right]
     ring
   add hτ hτ' := by
     ext X₀
     simp [mvfderiv_fun_add (hσ.inner_bundle hτ) (hσ.inner_bundle hτ'),
-      cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
+      cov.isCovariantDerivativeOnUniv.add hτ hτ', inner_add_right]
     abel
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in

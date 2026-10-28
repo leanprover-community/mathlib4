@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # The associated sheaf of a presheaf of modules
@@ -335,15 +334,11 @@ noncomputable def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ
     simpa using! (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by simp) m₀ (by simp)).symm)
 
+@[simp]
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
     ((toSheafify α φ).app X).hom x = φ.app X x := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
-/-- `@[simp]`-normal form of `toSheafify_app_apply`. -/
-@[simp]
-lemma toSheafify_app_apply' (X : Cᵒᵖ) (x : M₀.obj X) :
-    DFunLike.coe (F := (_ →ₗ[_] ↑((ModuleCat.restrictScalars (α.app X).hom).obj _)))
-    ((toSheafify α φ).app X).hom x = φ.app X x := rfl
+@[deprecated (since := "2026-09-24")] alias toSheafify_app_apply' := toSheafify_app_apply
 
 @[simp]
 lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) = φ := rfl
