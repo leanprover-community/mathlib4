@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Order.Filter.AtTopBot.Tendsto
+
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Convergence to ±infinity in ordered commutative monoids

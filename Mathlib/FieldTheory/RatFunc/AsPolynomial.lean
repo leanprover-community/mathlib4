@@ -7,7 +7,8 @@ module
 
 public import Mathlib.FieldTheory.RatFunc.Basic
 public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
+
 import Mathlib.RingTheory.Valuation.IsTrivialOn
 
 /-!

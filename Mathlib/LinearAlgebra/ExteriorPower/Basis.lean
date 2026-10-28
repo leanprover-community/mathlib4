@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
+
 import Mathlib.RingTheory.Finiteness.Subalgebra
 
 /-!

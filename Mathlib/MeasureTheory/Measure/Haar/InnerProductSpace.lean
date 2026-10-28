@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Orientation
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Volume forms and measures on inner product spaces
@@ -73,7 +73,7 @@ theorem Orientation.measure_eq_volume (o : Orientation ℝ F (Fin n)) :
     Orientation.measure_orthonormalBasis o (stdOrthonormalBasis ℝ F)
   rw [addHaarMeasure_unique o.volumeForm.measure
     (stdOrthonormalBasis ℝ F).toBasis.parallelepiped, A, one_smul]
-  simp only [volume, Basis.addHaar]
+  simp only [volume, Basis.addHaar_def]
 
 end
 

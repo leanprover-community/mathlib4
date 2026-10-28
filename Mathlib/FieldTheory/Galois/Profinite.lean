@@ -5,8 +5,8 @@ Authors: Nailin Guan, Yuyang Zhao, Jujian Zhang
 -/
 module
 
-public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.FieldTheory.Galois.GaloisClosure
+public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 /-!

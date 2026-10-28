@@ -6,10 +6,11 @@ Authors: Bianca Viray, Bryan Boehnke, Grant Yang, George Peykanu, Tianshuo Wang
 
 module
 
+public import Mathlib.RingTheory.Unramified.LocalRing
+
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.LocalRing.Quotient
 import Mathlib.RingTheory.Smooth.Flat
-public import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 # Étale extensions of local rings
@@ -64,8 +65,8 @@ lemma adjoin_residue_eq_top_iff_adjoin_eq_top [Algebra.FormallyUnramified R S] (
     Algebra.adjoin (ResidueField R) {residue S β} = ⊤ ↔ Algebra.adjoin R {β} = ⊤ := by
   constructor
   · intro hβ
-    refine eq_top_iff.mpr <| Submodule.le_of_le_smul_of_le_jacobson_bot
-      (Module.finite_def.mp inferInstance) (IsLocalRing.maximalIdeal_le_jacobson ⊥)
+    refine eq_top_iff.mpr <| Submodule.le_of_le_smul_of_le_jacobson
+      (Module.finite_def.mp inferInstance) (IsLocalRing.ringJacobson_eq_maximalIdeal R).ge
       (?_ : ⊤ ≤ (adjoin R {β}).toSubmodule ⊔ maximalIdeal R • ⊤)
     intro s _
     rw [adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hβ

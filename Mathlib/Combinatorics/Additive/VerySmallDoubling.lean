@@ -5,9 +5,10 @@ Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
 module
 
-import Mathlib.Algebra.Pointwise.Stabilizer
 public import Mathlib.Combinatorics.Additive.Convolution
 public import Mathlib.NumberTheory.Real.GoldenRatio
+
+import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Qify
 
@@ -329,7 +330,7 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
       mem_coe, ← Nat.card_eq_fintype_card, H]
     rwa [Nat.card_eq_finsetCard, card_inv_mul_of_doubling_lt_three_halves h]
   · rw [invMulSubgroup_eq_inv_mul]
-    exact_mod_cast A_subset_aH a ha
+    exact mod_cast A_subset_aH a ha
   · simpa [H, invMulSubgroup_eq_inv_mul, ← coe_inv, ← coe_mul, ← coe_smul_finset]
       using smul_inv_mul_eq_inv_mul_opSMul h ha
 

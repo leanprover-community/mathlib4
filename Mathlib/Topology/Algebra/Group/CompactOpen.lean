@@ -5,10 +5,11 @@ Authors: Thomas Browning, Nailin Guan
 -/
 module
 
-import Mathlib.Topology.Algebra.Equicontinuity
-import Mathlib.Topology.Algebra.Group.Compact
 public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.UniformSpace.Ascoli
+
+import Mathlib.Topology.Algebra.Equicontinuity
+import Mathlib.Topology.Algebra.Group.Compact
 
 /-!
 # The compact-open topology on continuous monoid morphisms.

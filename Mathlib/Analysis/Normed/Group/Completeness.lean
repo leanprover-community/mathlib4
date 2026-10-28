@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
+
 import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!

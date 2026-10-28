@@ -6,6 +6,7 @@ Authors: Niels Voss, Arnav Mehta
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Positive
+
 import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!

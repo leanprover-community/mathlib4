@@ -195,8 +195,6 @@ theorem hasFiniteSupport (f : α →₀ M) : HasFiniteSupport f := by
   rw [HasFiniteSupport]
   exact f.fun_support_eq.symm ▸ f.support.finite_toSet
 
-@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
-
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
   grind
@@ -347,6 +345,9 @@ theorem support_mapRange {f : M → N} {hf : f 0 = 0} {g : α →₀ M} :
 
 theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →₀ M)
     (he : Function.Injective e) : (Finsupp.mapRange e he0 f).support = f.support := by grind
+
+theorem support_mapRange_eq {f : M → N} (hf : f 0 = 0) (g : α →₀ M)
+    (h : ∀ x, f x = 0 → x = 0) : (g.mapRange f hf).support = g.support := by grind
 
 lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
     Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by

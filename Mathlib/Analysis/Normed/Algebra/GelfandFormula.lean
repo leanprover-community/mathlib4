@@ -5,11 +5,13 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Normed.Operator.Mul
-import Mathlib.Analysis.Complex.Polynomial.Basic
+
 import Mathlib.Analysis.Analytic.RadiusLiminf
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Gelfand's formula and other results on the spectrum in complex Banach algebras
@@ -57,9 +59,6 @@ theorem hasDerivAt_resolvent_const_left {a : A} {k : 𝕜} (hk : k ∈ resolvent
   have H₂ : HasDerivAt (fun k => algebraMap 𝕜 A k - a) 1 k := by
     simpa using! (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using! H₁.comp_hasDerivAt k H₂
-
-@[deprecated (since := "2026-03-26")]
-alias hasDerivAt_resolvent := hasDerivAt_resolvent_const_left
 
 theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasFDerivAt (resolvent · k)
@@ -129,7 +128,7 @@ alias gelfand_formula := pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius
 /- This is the same as `pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius` but for `norm`
 instead of `nnnorm`. -/
 /-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
-`spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖₊ ^ (1 / n)`. -/
+`spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖ ^ (1 / n)`. -/
 theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
     Tendsto (fun n : ℕ => ENNReal.ofReal (‖a ^ n‖ ^ (1 / n : ℝ))) atTop
       (𝓝 (spectralRadius ℂ a)) := by
@@ -137,6 +136,13 @@ theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
   ext1
   rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnnorm, coe_nnreal_eq]
   simp
+
+/-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
+`spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖ ^ (1 / n)`. -/
+theorem spectralRadius_eq_gelfandRadius (a : A) :
+    spectralRadius ℂ a = ENNReal.ofReal (gelfandRadius a) :=
+  tendsto_nhds_unique (by simpa using pow_norm_pow_one_div_tendsto_nhds_spectralRadius a)
+    (tendsto_ofReal (tendsto_gelfandRadius a))
 
 section Nontrivial
 

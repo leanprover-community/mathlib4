@@ -5,8 +5,9 @@ Authors: Kenny Lau
 -/
 module
 
-import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Finite.Basic
+
+import Mathlib.Data.Finset.Max
 
 /-!
 # Dense orders and finsets

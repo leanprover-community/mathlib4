@@ -6,9 +6,10 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Disjointed
-import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Algebra.Order.Ring.Prod
 public import Mathlib.Data.Int.Interval
+
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 

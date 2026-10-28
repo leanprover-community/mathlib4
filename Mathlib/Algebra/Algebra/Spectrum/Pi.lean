@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+
 import Mathlib.Algebra.Group.Pi.Units
 
 /-!

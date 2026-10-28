@@ -5,9 +5,10 @@ Authors: Weiyi Wang
 -/
 module
 
-import Mathlib.Algebra.Module.LinearMap.Rat
 public import Mathlib.Algebra.Order.Module.HahnEmbedding
 public import Mathlib.Analysis.RCLike.Basic
+
+import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Basic.Real.Embedding
 import Mathlib.GroupTheory.DivisibleHull
 

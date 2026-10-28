@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.LinearAlgebra.Determinant
+
 import Mathlib.LinearAlgebra.Matrix.Block
 
 /-!

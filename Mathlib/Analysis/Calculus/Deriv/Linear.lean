@@ -6,6 +6,7 @@ Authors: Gabriel Ebner, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!

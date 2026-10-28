@@ -8,8 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Cover.Sigma
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.CoproductSheafCondition
-import Mathlib.CategoryTheory.Sites.Preserves
 public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
+
+import Mathlib.CategoryTheory.Sites.Preserves
 
 /-!
 # The big Zariski site of schemes
@@ -53,7 +54,6 @@ abbrev zariskiTopology : GrothendieckTopology Scheme.{u} :=
 lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck :=
   Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck.symm
 
-set_option backward.defeqAttrib.useBackward true in
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
   intro X

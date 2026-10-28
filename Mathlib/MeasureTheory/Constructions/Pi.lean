@@ -5,10 +5,11 @@ Authors: Floris van Doorn
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.MeasureTheory.Group.Measure
 public import Mathlib.MeasureTheory.MeasurableSpace.Pi
+
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Indexed product measures
@@ -207,7 +208,7 @@ theorem pi_caratheodory :
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.
   It is defined to be measure corresponding to `MeasureTheory.OuterMeasure.pi`. -/
-protected irreducible_def pi : Measure (∀ i, α i) :=
+@[no_expose] protected def pi : Measure (∀ i, α i) :=
   toMeasure (OuterMeasure.pi fun i => (μ i).toOuterMeasure) (pi_caratheodory μ)
 
 instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, MeasureSpace (α i)] :
@@ -511,7 +512,7 @@ theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
 
 end Intervals
 
-/-- If one of the measures `μ i` has value zero on singeltons, them `Measure.pi µ`
+/-- If one of the measures `μ i` has value zero on singletons, then `Measure.pi µ`
 has value zero on singletons. The instance below assumes that all `μ i` have value zero on
 singletons. -/
 theorem pi_nullSingletonClass (i : ι) [NullSingletonClass (μ i)] :

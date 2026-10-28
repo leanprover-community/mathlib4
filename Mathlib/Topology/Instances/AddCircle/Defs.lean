@@ -13,6 +13,7 @@ public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
+
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.GroupTheory.QuotientGroup.ModEq
@@ -515,7 +516,6 @@ theorem equivAddCircle_eq [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimed
     [hp : Fact (0 < p)] (hq : q ≠ 0) :
     ⇑(equivAddCircle p q hp.out.ne' hq)
       = fun x ↦ ((equivIco p 0 x : 𝕜) * (p⁻¹ * q) : AddCircle q) := by
-  ext x
   grind [coe_equivIco, equivAddCircle_apply_mk]
 
 section
@@ -637,7 +637,7 @@ protected theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     mul_div_cancel_right₀ p h0] at ha
   rw [← ha, coe_add, ← Int.cast_natCast, Int.natMod, Int.toNat_of_nonneg, zsmul_eq_mul,
     mul_div_right_comm, eq_comm, add_eq_right, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
-  exact Int.emod_nonneg _ (by exact_mod_cast h.ne')
+  exact Int.emod_nonneg _ (mod_cast h.ne')
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by

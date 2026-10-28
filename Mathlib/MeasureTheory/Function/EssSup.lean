@@ -58,6 +58,14 @@ theorem essInf_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essInf f μ = e
   @essSup_congr_ae α βᵒᵈ _ _ _ _ _ hfg
 
 @[simp]
+lemma essSup_dirac [MeasurableSingletonClass α] (a : α) : essSup f (Measure.dirac a) = f a := by
+  simp [essSup]
+
+@[simp]
+lemma essInf_dirac [MeasurableSingletonClass α] (a : α) : essInf f (Measure.dirac a) = f a := by
+  simp [essInf]
+
+@[simp]
 theorem essSup_const' [NeZero μ] (c : β) : essSup (fun _ : α => c) μ = c :=
   limsup_const _
 
@@ -370,9 +378,9 @@ theorem essSup_liminf_le {ι} [Countable ι] [Preorder ι] (f : ι → α → �
 
 theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ) f) :
     ((essSup f μ : ℝ≥0) : ℝ≥0∞) = essSup (fun x => (f x : ℝ≥0∞)) μ :=
-  (ENNReal.coe_sInf hf).trans <|
+  (ENNReal.coe_sInf (s := {a | ∀ᶠ x in ae μ, f x ≤ a}) hf).trans <|
     eq_of_forall_le_iff fun r => by
-      simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
+      simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]
 
 lemma ofReal_essSup {f : α → ℝ} (h₁ : IsCoboundedUnder (· ≤ ·) (ae μ) f)
     (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) f) :

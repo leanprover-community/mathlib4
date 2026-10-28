@@ -5,11 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.Ring.Units
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Logic.Embedding.Basic
+
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Characteristic zero rings
