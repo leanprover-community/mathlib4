@@ -29,22 +29,22 @@ noncomputable section
 def ratAddCircle : AddSubgroup UnitAddCircle :=
   (Rat.castHom ℝ : ℚ →+ ℝ).range.map (QuotientAddGroup.mk' _)
 
-/-- The quotient type of the unit circle by the subgroup of rational numbers. -/
-def vitaliType : Type := UnitAddCircle ⧸ ratAddCircle
+/-- The quotient of `UnitAddCircle` by the action of `ratAddCircle` on the left. -/
+def vitaliType : Type := AddAction.orbitRel.Quotient ratAddCircle UnitAddCircle
 
 /-- The Vitali set is the range of `Quotient.out` on `vitaliType`, i.e. the range of some
 arbitrary choice function. -/
 def vitaliSet : Set UnitAddCircle := Set.range fun x : vitaliType ↦ x.out
 
 /-- `vitaliSet` contains exactly one representative of each coset of `ratAddCircle`. -/
-lemma isComplement_vitaliSet : AddSubgroup.IsComplement vitaliSet ratAddCircle :=
-  AddSubgroup.isComplement_range_left Quotient.out_eq'
+lemma isComplement_vitaliSet : AddSubgroup.IsComplement ratAddCircle vitaliSet :=
+  AddSubgroup.isComplement_range_right Quotient.out_eq'
 
 /-- Since `vitaliSet` is a complement of `ratAddCircle`, every point of `UnitAddCircle` has exactly
 one translate by an element of `ratAddCircle` lying in `vitaliSet`. -/
 lemma existsUnique_vadd_mem_vitaliSet (x : UnitAddCircle) :
-    ∃! g : ratAddCircle, g +ᵥ x ∈ vitaliSet :=
-  isComplement_vitaliSet.existsUnique_vadd_mem x
+    ∃! g : ratAddCircle, g + x ∈ vitaliSet :=
+  isComplement_vitaliSet.existsUnique_add_mem_right x
 
 /-- If `vitaliSet` is null-measurable, then it is a fundamental domain for the action of
 `ratAddCircle` on `UnitAddCircle`. -/
@@ -52,12 +52,8 @@ lemma isAddFundamentalDomain_vitaliSet (hm : NullMeasurableSet vitaliSet volume)
     IsAddFundamentalDomain ratAddCircle vitaliSet volume :=
   .mk' hm existsUnique_vadd_mem_vitaliSet
 
--- todo: should this be general instances `Countable (Set.range f)` and
--- `Countable (K.map f)`, which are missing from Mathlib?
 /-- `ratAddCircle` is countable, being the image of the countable type `ℚ`. -/
-instance : Countable ratAddCircle := by
-  unfold ratAddCircle
-  exact Set.Countable.to_subtype ((Set.countable_range _).image _)
+instance : Countable ratAddCircle := (Set.countable_range _).image _
 
 /-- If `vitaliSet` is null-measurable, then the volume of `UnitAddCircle` is the sum of countably
 many copies of the volume of `vitaliSet`. -/
@@ -70,7 +66,7 @@ while in a finite group every element has order at most the cardinality. -/
 instance : Infinite ratAddCircle := by
   refine not_finite_iff_infinite.1 fun _ ↦ ?_
   let n := Nat.card ratAddCircle + 1
-  let x : ratAddCircle := ⟨(1 / n : ℝ), ⟨_, ⟨1 / n, rfl⟩, by simp⟩⟩
+  let x : ratAddCircle := ⟨_, _, ⟨(1 / n : ℚ), rfl⟩, rfl⟩
   have hx : addOrderOf x = n := by
     rw [← AddSubgroup.addOrderOf_coe]
     simpa [x, n] using
@@ -93,9 +89,7 @@ theorem not_measurableSet_vitaliSet : ¬ MeasurableSet vitaliSet :=
 
 /-! ### A non-measurable subset of `ℝ` -/
 
-/-- The preimage of `vitaliSet` in `ℝ` is not null-measurable. Composing the section
-`UnitAddCircle → Ioc 0 1 → ℝ` of the projection with the projection gives the identity, so
-null-measurability of the preimage would make `vitaliSet` null-measurable. -/
+/-- The preimage of `vitaliSet` in `ℝ` is not null-measurable. -/
 theorem not_nullMeasurableSet_preimage_vitaliSet :
     ¬ NullMeasurableSet (((↑) : ℝ → UnitAddCircle) ⁻¹' vitaliSet) volume := by
   intro hm
