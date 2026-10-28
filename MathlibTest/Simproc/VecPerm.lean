@@ -1,6 +1,9 @@
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.GroupTheory.Perm.Cycle.Concrete
-import Mathlib.Tactic.Simproc.VecPerm
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.GroupTheory.Perm.Cycle.Concrete
+
+import all Mathlib.Tactic.Simproc.VecPerm
 
 open Mathlib.Tactic.FinVec
 

@@ -3,7 +3,12 @@ Copyright (c) 2026 David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Ledvinka
 -/
-import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
+module
+
+-- `Tactic` imports the extensions in `Rational` privately, so they are not loaded in a module;
+-- the meta import also makes them available to the tactic's compile-time evaluation
+public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 
 open Inclusion
 
