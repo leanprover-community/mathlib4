@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Conditionally complete lattice structure on `WithTop` and `WithBot`
