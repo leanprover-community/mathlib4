@@ -238,6 +238,30 @@ theorem ramificationIdx_eq_multiplicity [IsDedekindDomain S]
     multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_eq_count_normalizedFactors
       (prime_of_isPrime hq inferInstance).irreducible hp), normalize_eq]
 
+theorem multiplicity_map_eq_ramificationIdx_mul [IsDedekindDomain S] [IsDedekindDomain R]
+    [q.LiesOver p] [q.IsPrime] (hq : q ≠ ⊥) (I : Ideal R) :
+    multiplicity q (I.map (algebraMap R S)) = q.ramificationIdx R * multiplicity p I := by
+  by_cases hI : I = ⊥
+  · simp [hI]
+  have hpq : FiniteMultiplicity p I := finiteMultiplicity (isPrime_of_liesOver q p).ne_top hI
+  have hqp : q.comap (algebraMap R S) = p := (Ideal.over_def q p).symm
+  by_cases hp : p.map (algebraMap R S) = ⊥
+  · have hq1 : multiplicity q (I.map (algebraMap R S)) = 0 := by
+      by_cases hI : I.map (algebraMap R S) = ⊥
+      · rw [hI, bot_eq_zero, multiplicity_zero_right]
+      · apply multiplicity_eq_zero_of_not_dvd
+        contrapose hI
+        rw [dvd_iff_le, map_le_iff_le_comap, hqp] at hI
+        grw [eq_bot_iff, hI, hp]
+    have hq2 : q.ramificationIdx R = 0 := by
+      have := isDiscreteValuationRing_of_dedekind_domain S hq (Localization.AtPrime q)
+      rw [ramificationIdx_eq p q, IsScalarTower.algebraMap_eq R S, ← map_map, hp, map_bot,
+        Module.length_quotient, IsDiscreteValuationRing.coheight_bot, ENat.toNat_top]
+    rw [hq1, hq2, zero_mul]
+  · rw [ramificationIdx_eq_multiplicity p q hp]
+    refine multiplicity_map_eq_mul hpq (prime_of_isPrime hq ‹_›) (mapHom (algebraMap R S)) ?_
+    simp [dvd_iff_le, map_le_iff_le_comap, hqp]
+
 end IsDedekindDomain
 
 theorem ramificationIdx'_eq_ramificationIdx' [IsDedekindDomain S]
