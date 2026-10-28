@@ -74,7 +74,7 @@ lemma continuous_diracProba : Continuous (fun (x : X) ↦ diracProba x) := by
   rw [continuous_iff_continuousAt]
   apply fun x ↦ ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto.mpr fun f ↦ ?_
   have f_mble : Measurable (fun X ↦ (f X : ℝ≥0∞)) :=
-    measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable
+    measurable_coe_nnReal_ennReal_iff.mpr f.continuous.measurable
   simp only [diracProba, ProbabilityMeasure.coe_mk, lintegral_dirac' _ f_mble]
   exact (ENNReal.continuous_coe.comp f.continuous).continuousAt
 
@@ -91,7 +91,7 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, not_forall]
   use f
   simp only [diracProba, ProbabilityMeasure.coe_mk, fx_eq_one,
-             lintegral_dirac' _ (measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable)]
+             lintegral_dirac' _ (measurable_coe_nnReal_ennReal_iff.mpr f.continuous.measurable)]
   apply not_tendsto_iff_exists_frequently_notMem.mpr
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
           hU.mp (Eventually.of_forall ?_)⟩

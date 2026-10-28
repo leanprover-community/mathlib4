@@ -95,7 +95,7 @@ private lemma IsProper.lintegral_indicator_mul_indicator (hπ : IsProper π) (h�
 private lemma IsProper.lintegral_indicator_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)
     (hf : Measurable[𝓧] f) (hB : MeasurableSet[𝓑] B) :
     ∫⁻ x, B.indicator 1 x * f x ∂(π x₀) = B.indicator 1 x₀ * ∫⁻ x, f x ∂(π x₀) := by
-  refine hf.ennreal_induction ?_ ?_ ?_
+  refine hf.ennReal_induction ?_ ?_ ?_
   · rintro c A hA
     simp_rw [← smul_indicator_one_apply, mul_smul_comm, smul_eq_mul]
     rw [lintegral_const_mul, lintegral_const_mul, hπ.lintegral_indicator_mul_indicator h𝓑𝓧 hA hB,
@@ -124,7 +124,7 @@ lemma IsProper.setLIntegral_inter_eq_indicator_mul_setLIntegral (hπ : IsProper 
 lemma IsProper.lintegral_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) (hf : Measurable[𝓧] f)
     (hg : Measurable[𝓑] g) (x₀ : X) :
     ∫⁻ x, g x * f x ∂(π x₀) = g x₀ * ∫⁻ x, f x ∂(π x₀) := by
-  refine hg.ennreal_induction ?_ ?_ ?_
+  refine hg.ennReal_induction ?_ ?_ ?_
   · rintro c A hA
     simp_rw [← smul_indicator_one_apply, smul_mul_assoc, smul_eq_mul]
     rw [lintegral_const_mul, hπ.lintegral_indicator_mul h𝓑𝓧 hf hA]

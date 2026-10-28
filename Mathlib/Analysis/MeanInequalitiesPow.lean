@@ -249,17 +249,17 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
     -- put the `.toNNReal` inside the sums.
     simp_rw [toNNReal_sum h_top_rpow, toNNReal_rpow, toNNReal_sum h_top, toNNReal_mul,
       toNNReal_rpow]
-    -- use corresponding nnreal result
+    -- use corresponding nnReal result
     refine
       NNReal.rpow_arith_mean_le_arith_mean_rpow s (fun i => (w i).toNNReal)
         (fun i => (z i).toNNReal) ?_ hp
     -- verify the hypothesis `∑ i ∈ s, (w i).toNNReal = 1`, using `∑ i ∈ s, w i = 1` .
-    have h_sum_nnreal : ∑ i ∈ s, w i = ↑(∑ i ∈ s, (w i).toNNReal) := by
+    have h_sum_nnReal : ∑ i ∈ s, w i = ↑(∑ i ∈ s, (w i).toNNReal) := by
       push_cast
       congr! with i hi
       refine (coe_toNNReal (lt_top_of_sum_ne_top ?_ hi).ne).symm
       exact hw'.symm ▸ ENNReal.one_ne_top
-    rwa [← coe_inj, ← h_sum_nnreal]
+    rwa [← coe_inj, ← h_sum_nnReal]
 
 /-- Weighted generalized mean inequality, version for two elements of `ℝ≥0∞` and real
 exponents. -/

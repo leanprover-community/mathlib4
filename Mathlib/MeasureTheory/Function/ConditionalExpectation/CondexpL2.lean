@@ -77,7 +77,7 @@ theorem aestronglyMeasurable_condExpL2 (hm : m ≤ m0) (f : α →₂[μ] E) :
 
 theorem integrableOn_condExpL2_of_measure_ne_top (hm : m ≤ m0) (hμs : μ s ≠ ∞) (f : α →₂[μ] E) :
     IntegrableOn (ε := E) (condExpL2 E 𝕜 hm f) s μ :=
-  integrableOn_Lp_of_measure_ne_top (condExpL2 E 𝕜 hm f : α →₂[μ] E) fact_one_le_two_ennreal.elim
+  integrableOn_Lp_of_measure_ne_top (condExpL2 E 𝕜 hm f : α →₂[μ] E) fact_one_le_two_ennReal.elim
     hμs
 
 theorem integrable_condExpL2_of_isFiniteMeasure (hm : m ≤ m0) [IsFiniteMeasure μ] {f : α →₂[μ] E} :
@@ -157,7 +157,7 @@ theorem lintegral_nnnorm_condExpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
   rw [lintegral_congr_ae hg_nnnorm_eq.symm]
   refine lintegral_enorm_le_of_forall_fin_meas_integral_eq
     hm (Lp.stronglyMeasurable f) ?_ ?_ ?_ ?_ hs hμs
-  · exact integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs
+  · exact integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennReal.elim hμs
   · exact hg_meas
   · rw [IntegrableOn, integrable_congr hg_eq_restrict]
     exact integrableOn_condExpL2_of_measure_ne_top hm hμs f
@@ -173,7 +173,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
       dsimp only at hx
       rw [Pi.zero_apply] at hx ⊢
       rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
-    · refine Measurable.coe_nnreal_ennreal (Measurable.nnnorm ?_)
+    · refine Measurable.coe_nnReal_ennReal (Measurable.nnnorm ?_)
       exact (Lp.stronglyMeasurable _).measurable
   rw [← nonpos_iff_eq_zero]
   refine (lintegral_nnnorm_condExpL2_le hs hμs f).trans (le_of_eq ?_)
@@ -235,16 +235,16 @@ theorem condExpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
 theorem integral_condExpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableSet[m] s)
     (hμs : μ s ≠ ∞) : ∫ x in s, (condExpL2 E' 𝕜 hm f : α → E') x ∂μ = ∫ x in s, f x ∂μ := by
   rw [← sub_eq_zero, ←
-    integral_sub' (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs)
-      (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs)]
+    integral_sub' (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennReal.elim hμs)
+      (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennReal.elim hμs)]
   refine integral_eq_zero_of_forall_integral_inner_eq_zero 𝕜 _ ?_ ?_
   · rw [integrable_congr (ae_restrict_of_ae (Lp.coeFn_sub (↑(condExpL2 E' 𝕜 hm f)) f).symm)]
-    exact integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs
+    exact integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennReal.elim hμs
   intro c
   simp_rw [Pi.sub_apply, inner_sub_right]
   rw [integral_sub
-      ((integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs).const_inner c)
-      ((integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs).const_inner c)]
+      ((integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennReal.elim hμs).const_inner c)
+      ((integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennReal.elim hμs).const_inner c)]
   have h_ae_eq_f := MemLp.coeFn_toLp (E := 𝕜) ((Lp.memLp f).const_inner c)
   rw [sub_eq_zero, ←
     setIntegral_congr_ae (hm s hs) ((condExpL2_const_inner hm f c).mono fun x hx _ => hx), ←
@@ -261,15 +261,15 @@ theorem condExpL2_comp_continuousLinearMap (hm : m ≤ m0) (T : E' →L[ℝ] E''
     T.compLp (condExpL2 E' 𝕜 hm f : α →₂[μ] E') := by
   refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜' hm _ _ two_ne_zero ENNReal.coe_ne_top
     (fun s _ hμs => integrableOn_condExpL2_of_measure_ne_top hm hμs.ne _) (fun s _ hμs =>
-      integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs.ne) ?_ ?_ ?_
+      integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennReal.elim hμs.ne) ?_ ?_ ?_
   · intro s hs hμs
     rw [T.setIntegral_compLp _ (hm s hs),
       T.integral_comp_comm
-        (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs.ne),
+        (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennReal.elim hμs.ne),
       integral_condExpL2_eq hm f hs hμs.ne,
       integral_condExpL2_eq hm (T.compLp f) hs hμs.ne, T.setIntegral_compLp _ (hm s hs),
       T.integral_comp_comm
-        (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs.ne)]
+        (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennReal.elim hμs.ne)]
   · exact lpMeas.aestronglyMeasurable _
   · have h_coe := T.coeFn_compLp (condExpL2 E' 𝕜 hm f : α →₂[μ] E')
     rw [← EventuallyEq] at h_coe

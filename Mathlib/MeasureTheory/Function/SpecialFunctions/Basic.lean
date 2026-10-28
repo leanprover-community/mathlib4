@@ -284,7 +284,7 @@ instance Real.hasMeasurablePow : MeasurablePow ℝ ℝ := ⟨Complex.measurable_
 instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ := ⟨Measurable.subtype_mk (by fun_prop)⟩
 
 instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
-  refine ⟨ENNReal.measurable_of_measurable_nnreal_prod ?_ ?_⟩
+  refine ⟨ENNReal.measurable_of_measurable_nnReal_prod ?_ ?_⟩
   · simp_rw [ENNReal.coe_rpow_def]
     exact Measurable.ite (by measurability) measurable_const (by fun_prop)
   · simp_rw [ENNReal.top_rpow_def]

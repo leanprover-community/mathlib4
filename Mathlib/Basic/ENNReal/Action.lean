@@ -81,14 +81,20 @@ theorem smul_top {R : Type*} [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [Is
   rw [← smul_one_mul, mul_top']
   simp_rw [smul_eq_zero, or_iff_left one_ne_zero]
 
-lemma nnreal_smul_lt_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y < ⊤) : x • y < ⊤ := mul_lt_top (by simp) hy
-lemma nnreal_smul_ne_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y ≠ ⊤) : x • y ≠ ⊤ := mul_ne_top (by simp) hy
+lemma nnReal_smul_lt_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y < ⊤) : x • y < ⊤ := mul_lt_top (by simp) hy
+lemma nnReal_smul_ne_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y ≠ ⊤) : x • y ≠ ⊤ := mul_ne_top (by simp) hy
 
-lemma nnreal_smul_ne_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y ≠ ⊤ ↔ y ≠ ⊤ :=
-  ⟨by rintro h rfl; simp [smul_top (R := ℝ≥0), hx] at h, nnreal_smul_ne_top⟩
+@[deprecated (since := "2026-10-27")] alias nnreal_smul_ne_top := nnReal_smul_lt_top
 
-lemma nnreal_smul_lt_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y < ⊤ ↔ y < ⊤ := by
-  rw [lt_top_iff_ne_top, lt_top_iff_ne_top, nnreal_smul_ne_top_iff hx]
+lemma nnReal_smul_ne_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y ≠ ⊤ ↔ y ≠ ⊤ :=
+  ⟨by rintro h rfl; simp [smul_top (R := ℝ≥0), hx] at h, nnReal_smul_ne_top⟩
+
+@[deprecated (since := "2026-10-27")] alias nnreal_smul_ne_top_iff := nnReal_smul_ne_top_iff
+
+lemma nnReal_smul_lt_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y < ⊤ ↔ y < ⊤ := by
+  rw [lt_top_iff_ne_top, lt_top_iff_ne_top, nnReal_smul_ne_top_iff hx]
+
+@[deprecated (since := "2026-10-27")] alias nnreal_smul_lt_top_iff := nnReal_smul_lt_top_iff
 
 @[simp]
 theorem smul_toNNReal (a : ℝ≥0) (b : ℝ≥0∞) : (a • b).toNNReal = a * b.toNNReal := by

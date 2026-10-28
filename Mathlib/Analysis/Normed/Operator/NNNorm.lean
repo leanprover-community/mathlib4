@@ -100,7 +100,7 @@ theorem opENorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ≥0∞} (hM : ∀ x,
   simp only [← ofReal_norm, ENNReal.ofReal_le_coe]
   apply opNorm_le_bound _ (by positivity) (fun x ↦ ?_)
   specialize hM x
-  simp only [← ofReal_norm, ← ENNReal.ofReal_coe_nnreal] at hM
+  simp only [← ofReal_norm, ← ENNReal.ofReal_coe_nnReal] at hM
   rwa [← ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_le_ofReal_iff (by positivity)] at hM
 
 theorem le_of_opENorm_le_of_le (f : E →SL[σ₁₂] F) {x} {a b : ℝ≥0∞} (hf : ‖f‖ₑ ≤ a) (hx : ‖x‖ₑ ≤ b) :

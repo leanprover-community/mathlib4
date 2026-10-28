@@ -198,7 +198,7 @@ private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
 theorem inv_le_ofScalars_radius_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       ofNNReal r⁻¹ ≤ (ofScalars E c).radius := by
-  refine le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
+  refine le_of_forall_nnReal_lt (fun r' hr' ↦ ?_)
   rw [coe_lt_coe, NNReal.lt_inv_iff_mul_lt hr] at hr'
   by_cases hrz : r' = 0
   · simp [hrz]
@@ -220,7 +220,7 @@ theorem ofScalars_radius_eq_inv_of_tendsto [NormOneClass E] {r : ℝ≥0} (hr : 
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       (ofScalars E c).radius = ofNNReal r⁻¹ := by
   refine le_antisymm ?_ (inv_le_ofScalars_radius_of_tendsto E c hr hc)
-  refine le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
+  refine le_of_forall_nnReal_lt (fun r' hr' ↦ ?_)
   rw [coe_le_coe, NNReal.le_inv_iff_mul_le hr]
   have := FormalMultilinearSeries.summable_norm_mul_pow _ hr'
   contrapose! this
@@ -262,7 +262,7 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
 theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop atTop) : (ofScalars E c).radius = 0 := by
   suffices (ofScalars E c).radius ≤ 0 by simp_all
-  refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+  refine le_of_forall_nnReal_lt (fun r hr ↦ ?_)
   rw [← coe_zero, coe_le_coe]
   have := FormalMultilinearSeries.summable_norm_mul_pow _ hr
   contrapose! this

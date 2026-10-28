@@ -182,20 +182,28 @@ theorem Measure.map_dirac [MeasurableSingletonClass α] [MeasurableSingletonClas
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 
-lemma _root_.HasSum.isProbabilityMeasure_sum_dirac_ennreal {ι : Type*} {mδ : MeasurableSpace δ}
+lemma _root_.HasSum.isProbabilityMeasure_sum_dirac_ennReal {ι : Type*} {mδ : MeasurableSpace δ}
     {c : ι → ℝ≥0∞} {d : ι → δ} (h : HasSum c 1) :
     IsProbabilityMeasure (Measure.sum fun i ↦ c i • .dirac (d i)) where
   measure_univ := by simp [h.tsum_eq]
 
-lemma _root_.HasSum.isProbabilityMeasure_sum_dirac_nnreal {ι : Type*} {mδ : MeasurableSpace δ}
+@[deprecated (since := "2026-10-27")]
+alias _root_.HasSum.isProbabilityMeasure_sum_dirac_ennreal :=
+  _root_.HasSum.isProbabilityMeasure_sum_dirac_ennReal
+
+lemma _root_.HasSum.isProbabilityMeasure_sum_dirac_nnReal {ι : Type*} {mδ : MeasurableSpace δ}
     {c : ι → ℝ≥0} {d : ι → δ} (h : HasSum c 1) :
     IsProbabilityMeasure (Measure.sum fun i ↦ c i • .dirac (d i)) :=
-  (ENNReal.hasSum_coe.2 h).isProbabilityMeasure_sum_dirac_ennreal
+  (ENNReal.hasSum_coe.2 h).isProbabilityMeasure_sum_dirac_ennReal
+
+@[deprecated (since := "2026-10-27")]
+alias _root_.HasSum.isProbabilityMeasure_sum_dirac_nnreal :=
+  _root_.HasSum.isProbabilityMeasure_sum_dirac_nnReal
 
 lemma _root_.HasSum.isProbabilityMeasure_sum_dirac {ι : Type*} {mδ : MeasurableSpace δ}
     {c : ι → ℝ} {d : ι → δ} (h1 : ∀ i, 0 ≤ c i) (h2 : HasSum c 1) :
     IsProbabilityMeasure (Measure.sum fun i ↦ ENNReal.ofReal (c i) • .dirac (d i)) :=
-  HasSum.isProbabilityMeasure_sum_dirac_nnreal (by simpa using h2.toNNReal h1)
+  HasSum.isProbabilityMeasure_sum_dirac_nnReal (by simpa using h2.toNNReal h1)
 
 instance [hα : Nonempty α] : Nonempty {μ : Measure α // IsProbabilityMeasure μ} :=
   ⟨Measure.dirac hα.some, inferInstance⟩

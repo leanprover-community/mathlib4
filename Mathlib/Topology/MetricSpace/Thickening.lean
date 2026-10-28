@@ -340,7 +340,7 @@ lemma thickening_biUnion {ι : Type*} (δ : ℝ) (f : ι → Set α) (I : Set ι
 theorem ediam_cthickening_le (ε : ℝ≥0) :
     ediam (cthickening ε s) ≤ ediam s + 2 * ε := by
   refine ediam_le fun x hx y hy => ENNReal.le_of_forall_pos_le_add fun δ hδ _ => ?_
-  rw [mem_cthickening_iff, ENNReal.ofReal_coe_nnreal] at hx hy
+  rw [mem_cthickening_iff, ENNReal.ofReal_coe_nnReal] at hx hy
   have hε : (ε : ℝ≥0∞) < ε + δ := ENNReal.coe_lt_coe.2 (lt_add_of_pos_right _ hδ)
   replace hx := hx.trans_lt hε
   obtain ⟨x', hx', hxx'⟩ := infEDist_lt_iff.mp hx
@@ -406,7 +406,7 @@ theorem _root_.Disjoint.exists_thickenings (hst : Disjoint s t) (hs : IsCompact 
   rw [disjoint_iff_inf_le]
   rintro z ⟨hzs, hzt⟩
   rw [mem_thickening_iff_exists_edist_lt] at hzs hzt
-  rw [← NNReal.coe_two, ← NNReal.coe_div, ENNReal.ofReal_coe_nnreal] at hzs hzt
+  rw [← NNReal.coe_two, ← NNReal.coe_div, ENNReal.ofReal_coe_nnReal] at hzs hzt
   obtain ⟨x, hx, hzx⟩ := hzs
   obtain ⟨y, hy, hzy⟩ := hzt
   refine (h x hx y hy).not_ge ?_
@@ -463,7 +463,7 @@ theorem cthickening_eq_iInter_cthickening' {δ : ℝ} (s : Set ℝ) (hsδ : s �
     intro η η_pos _
     rcases hs (δ + η) (lt_add_of_pos_right _ (NNReal.coe_pos.mpr η_pos)) with ⟨ε, ⟨hsε, hε⟩⟩
     apply ((hx ε hsε).trans (ENNReal.ofReal_le_ofReal hε.2)).trans
-    rw [ENNReal.coe_nnreal_eq η]
+    rw [ENNReal.coe_nnReal_eq η]
     exact ENNReal.ofReal_add_le
 
 theorem cthickening_eq_iInter_cthickening {δ : ℝ} (E : Set α) :

@@ -518,7 +518,7 @@ lemma eLpNorm_ofReal (f : α → ℝ) (hf : ∀ᵐ x ∂μ, 0 ≤ f x) :
       hf.mono fun _x hx ↦ Real.enorm_ofReal_of_nonneg hx
   rw [eLpNorm_of_not_aestronglyMeasurable hfm, eLpNorm_of_not_aestronglyMeasurable]
   contrapose hfm
-  apply hfm.aemeasurable.ennreal_toReal.aestronglyMeasurable.congr
+  apply hfm.aemeasurable.ennReal_toReal.aestronglyMeasurable.congr
   filter_upwards [hf] with x hx
   simpa
 
@@ -721,9 +721,12 @@ variable {R : Type*} [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTo
 
 end SMul
 
-@[simp] lemma eLpNormEssSup_ennreal_smul_measure {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → ε') :
+@[simp] lemma eLpNormEssSup_ennReal_smul_measure {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → ε') :
     eLpNormEssSup f (c • μ) = eLpNormEssSup f μ := by
-  simp_rw [eLpNormEssSup]; exact essSup_ennreal_smul_measure hc _
+  simp_rw [eLpNormEssSup]; exact essSup_ennReal_smul_measure hc _
+
+@[deprecated (since := "2026-10-27")]
+alias eLpNormEssSup_ennreal_smul_measure := eLpNormEssSup_ennReal_smul_measure
 
 theorem eLpNorm_smul_measure_of_ne_zero_of_ne_top {p : ℝ≥0∞} (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) {f : α → ε} (c : ℝ≥0∞) :
@@ -811,9 +814,11 @@ theorem MemLp.smul_measure {f : α → ε} {c : ℝ≥0∞} (hf : MemLp f p μ) 
     MemLp f p (c • μ) :=
   hf.of_measure_le_smul hc le_rfl
 
-theorem MemLp.smul_measure_nnreal {f : α → ε} {c : ℝ≥0} (hf : MemLp f p μ) :
+theorem MemLp.smul_measure_nnReal {f : α → ε} {c : ℝ≥0} (hf : MemLp f p μ) :
     MemLp f p (c • μ) :=
   hf.of_measure_le_smul (by simp) le_rfl
+
+@[deprecated (since := "2026-10-27")] alias MemLp.smul_measure_nnreal := MemLp.smul_measure_nnReal
 
 variable {ε : Type*} [TopologicalSpace ε] [ENorm ε] [PseudoMetrizableSpace ε] in
 theorem eLpNorm_one_add_measure (f : α → ε) (μ ν : Measure α) :
@@ -917,7 +922,7 @@ lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] (hf : AEStrongly
   · simp only [eLpNorm_exponent_top hf, eLpNormEssSup_lt_top_iff_isBoundedUnder]
     exact .le_of_finite
   rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp₀ hp hf]
-  refine IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal μ ?_
+  refine IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennReal μ ?_
   simp_rw [enorm, ← ENNReal.coe_rpow_of_nonneg _ ENNReal.toReal_nonneg]
   norm_cast
   exact Finite.exists_le _
@@ -1097,9 +1102,9 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α
   have hp : p ≠ 0 := fun h => by simp [h] at hp0
   have hp' : p ≠ ∞ := fun h => by simp [h] at hp0
   refine
-    ae_lt_top' (.liminf fun n => (hfae n).nnnorm.aemeasurable.coe_nnreal_ennreal.pow_const p.toReal)
+    ae_lt_top' (.liminf fun n => (hfae n).nnnorm.aemeasurable.coe_nnReal_ennReal.pow_const p.toReal)
       (lt_of_le_of_lt
-          (lintegral_liminf_le' fun n => (hfae n).nnnorm.aemeasurable.coe_nnreal_ennreal.pow_const
+          (lintegral_liminf_le' fun n => (hfae n).nnnorm.aemeasurable.coe_nnReal_ennReal.pow_const
             p.toReal)
           (lt_of_le_of_lt ?_ (by finiteness : (R : ℝ≥0∞) ^ p.toReal < ∞))).ne
   simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp'

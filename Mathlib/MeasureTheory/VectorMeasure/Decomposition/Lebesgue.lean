@@ -141,8 +141,8 @@ theorem singularPart_totalVariation (s : SignedMeasure α) (μ : Measure α) :
 
 nonrec theorem mutuallySingular_singularPart (s : SignedMeasure α) (μ : Measure α) :
     singularPart s μ ⟂ᵥ μ.toENNRealVectorMeasure := by
-  rw [mutuallySingular_ennreal_iff, singularPart_totalVariation,
-    VectorMeasure.ennrealToMeasure_toENNRealVectorMeasure]
+  rw [mutuallySingular_ennReal_iff, singularPart_totalVariation,
+    VectorMeasure.ennRealToMeasure_toENNRealVectorMeasure]
   exact (mutuallySingular_singularPart _ _).add_left (mutuallySingular_singularPart _ _)
 
 end
@@ -212,8 +212,8 @@ theorem jordanDecomposition_add_withDensity_mutuallySingular {f : α → ℝ} (h
     (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) :
     (t.toJordanDecomposition.posPart + μ.withDensity fun x : α => ENNReal.ofReal (f x)) ⟂ₘ
       t.toJordanDecomposition.negPart + μ.withDensity fun x : α => ENNReal.ofReal (-f x) := by
-  rw [mutuallySingular_ennreal_iff, totalVariation_mutuallySingular_iff,
-    VectorMeasure.ennrealToMeasure_toENNRealVectorMeasure] at htμ
+  rw [mutuallySingular_ennReal_iff, totalVariation_mutuallySingular_iff,
+    VectorMeasure.ennRealToMeasure_toENNRealVectorMeasure] at htμ
   exact
     ((JordanDecomposition.mutuallySingular _).add_right
           (htμ.1.mono_ac (refl _) (withDensity_absolutelyContinuous _ _))).add_left
@@ -248,17 +248,17 @@ private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ}
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     s.HaveLebesgueDecomposition μ := by
   have htμ' := htμ
-  rw [mutuallySingular_ennreal_iff] at htμ
+  rw [mutuallySingular_ennReal_iff] at htμ
   change _ ⟂ₘ VectorMeasure.equivMeasure.toFun (VectorMeasure.equivMeasure.invFun μ) at htμ
   rw [VectorMeasure.equivMeasure.right_inv, totalVariation_mutuallySingular_iff] at htμ
   refine
     { posPart := by
         use ⟨t.toJordanDecomposition.posPart, fun x => ENNReal.ofReal (f x)⟩
-        refine ⟨hf.ennreal_ofReal, htμ.1, ?_⟩
+        refine ⟨hf.ennReal_ofReal, htμ.1, ?_⟩
         rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
       negPart := by
         use ⟨t.toJordanDecomposition.negPart, fun x => ENNReal.ofReal (-f x)⟩
-        refine ⟨hf.neg.ennreal_ofReal, htμ.2, ?_⟩
+        refine ⟨hf.neg.ennReal_ofReal, htμ.2, ?_⟩
         rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd] }
 
 theorem haveLebesgueDecomposition_mk (μ : Measure α) {f : α → ℝ} (hf : Measurable f)
@@ -274,8 +274,8 @@ private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : M
     (hfi : Integrable f μ) (htμ : t ⟂ᵥ μ.toENNRealVectorMeasure) (hadd : s = t + μ.withDensityᵥ f) :
     t = s.singularPart μ := by
   have htμ' := htμ
-  rw [mutuallySingular_ennreal_iff, totalVariation_mutuallySingular_iff,
-    VectorMeasure.ennrealToMeasure_toENNRealVectorMeasure] at htμ
+  rw [mutuallySingular_ennReal_iff, totalVariation_mutuallySingular_iff,
+    VectorMeasure.ennRealToMeasure_toENNRealVectorMeasure] at htμ
   rw [singularPart, ← t.toSignedMeasure_toJordanDecomposition,
     JordanDecomposition.toSignedMeasure]
   congr
@@ -308,7 +308,7 @@ theorem singularPart_neg (s : SignedMeasure α) (μ : Measure α) :
     (-s).singularPart μ = -s.singularPart μ := by
   simp [singularPart, toJordanDecomposition_neg]
 
-theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : ℝ≥0) :
+theorem singularPart_smul_nnReal (s : SignedMeasure α) (μ : Measure α) (r : ℝ≥0) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   rw [singularPart, singularPart, smul_sub, ← toSignedMeasure_smul, ← toSignedMeasure_smul]
   conv_lhs =>
@@ -318,12 +318,14 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
     · congr
       rw [toJordanDecomposition_smul, JordanDecomposition.smul_negPart, singularPart_smul]
 
+@[deprecated (since := "2026-10-27")] alias singularPart_smul_nnreal := singularPart_smul_nnReal
+
 nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
     (r • s).singularPart μ = r • s.singularPart μ := by
   cases le_or_gt 0 r with
   | inl hr =>
     lift r to ℝ≥0 using hr
-    exact singularPart_smul_nnreal s μ r
+    exact singularPart_smul_nnReal s μ r
   | inr hr =>
     rw [singularPart, singularPart]
     conv_lhs =>

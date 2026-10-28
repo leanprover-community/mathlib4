@@ -141,7 +141,7 @@ theorem HasFPowerSeriesOnBall.r_eq_top_of_exists {f : 𝕜 → E} {r : ℝ≥0�
     (h' : ∀ (r' : ℝ≥0) (_ : 0 < r'), ∃ p' : FormalMultilinearSeries 𝕜 𝕜 E,
       HasFPowerSeriesOnBall f p' x r') :
     HasFPowerSeriesOnBall f p x ∞ :=
-  { r_le := ENNReal.le_of_forall_pos_nnreal_lt fun r hr _ =>
+  { r_le := ENNReal.le_of_forall_pos_nnReal_lt fun r hr _ =>
       let ⟨_, hp'⟩ := h' r hr
       (h.exchange_radius hp').r_le
     r_pos := ENNReal.coe_lt_top

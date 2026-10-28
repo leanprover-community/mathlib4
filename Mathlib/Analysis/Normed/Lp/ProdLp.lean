@@ -387,7 +387,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
         split_ifs with hp' <;> positivity)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
-    · refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+    · refine ENNReal.eq_of_forall_le_nnReal_iff fun r ↦ ?_
       simp [prod_edist_eq_sup, prod_dist_eq_sup]
     · have : 0 < p.toReal := by rw [ENNReal.toReal_pos_iff_ne_top]; rintro rfl; norm_num at h
       simp only [prod_edist_eq_add, edist_dist, one_div, prod_dist_eq_add, this]
@@ -632,11 +632,11 @@ theorem edist_snd_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : With
 
 theorem nndist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     nndist x.fst y.fst ≤ nndist x y := by
-  simpa [← coe_nnreal_ennreal_nndist] using edist_fst_le x y
+  simpa [← coe_nnReal_ennReal_nndist] using edist_fst_le x y
 
 theorem nndist_snd_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     nndist x.snd y.snd ≤ nndist x y := by
-  simpa [← coe_nnreal_ennreal_nndist] using edist_snd_le x y
+  simpa [← coe_nnReal_ennReal_nndist] using edist_snd_le x y
 
 theorem dist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     dist x.fst y.fst ≤ dist x y :=

@@ -425,7 +425,7 @@ protected theorem smul (μ : Measure α) [OuterRegular μ] {x : ℝ≥0∞} (hx 
     rw [smul_apply, A.measure_eq_iInf_isOpen, smul_eq_mul] at hr
     simpa only [ENNReal.mul_iInf_of_ne h0 hx, gt_iff_lt, iInf_lt_iff, exists_prop] using! hr
 
-instance smul_nnreal (μ : Measure α) [OuterRegular μ] (c : ℝ≥0) :
+instance smul_nnReal (μ : Measure α) [OuterRegular μ] (c : ℝ≥0) :
     OuterRegular (c • μ) :=
   OuterRegular.smul μ coe_ne_top
 
@@ -712,7 +712,7 @@ instance zero : InnerRegular (0 : Measure α) :=
 instance smul [h : InnerRegular μ] (c : ℝ≥0∞) : InnerRegular (c • μ) :=
   ⟨InnerRegularWRT.smul h.innerRegular c⟩
 
-instance smul_nnreal [InnerRegular μ] (c : ℝ≥0) : InnerRegular (c • μ) := smul (c : ℝ≥0∞)
+instance smul_nnReal [InnerRegular μ] (c : ℝ≥0) : InnerRegular (c • μ) := smul (c : ℝ≥0∞)
 
 instance (priority := 100) [InnerRegular μ] : InnerRegularCompactLTTop μ :=
   ⟨fun _s hs r hr ↦ InnerRegular.innerRegular hs.1 r hr⟩
@@ -984,7 +984,7 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
     have : (c • μ) s ≠ ∞ ↔ μ s ≠ ∞ := by simp [ENNReal.mul_eq_top, hc, h'c]
     simp only [this]
 
-instance smul_nnreal [InnerRegularCompactLTTop μ] (c : ℝ≥0) :
+instance smul_nnReal [InnerRegularCompactLTTop μ] (c : ℝ≥0) :
     InnerRegularCompactLTTop (c • μ) :=
   inferInstanceAs (InnerRegularCompactLTTop ((c : ℝ≥0∞) • μ))
 
@@ -1091,7 +1091,7 @@ protected theorem smul [WeaklyRegular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x
   have := OuterRegular.smul μ hx
   exact ⟨WeaklyRegular.innerRegular.smul x⟩
 
-instance smul_nnreal [WeaklyRegular μ] (c : ℝ≥0) : WeaklyRegular (c • μ) :=
+instance smul_nnReal [WeaklyRegular μ] (c : ℝ≥0) : WeaklyRegular (c • μ) :=
   WeaklyRegular.smul coe_ne_top
 
 end WeaklyRegular
@@ -1158,7 +1158,7 @@ protected theorem smul [Regular μ] {x : ℝ≥0∞} (hx : x ≠ ∞) : (x • �
   have := IsFiniteMeasureOnCompacts.smul μ hx
   exact ⟨Regular.innerRegular.smul x⟩
 
-instance smul_nnreal [Regular μ] (c : ℝ≥0) : Regular (c • μ) := Regular.smul coe_ne_top
+instance smul_nnReal [Regular μ] (c : ℝ≥0) : Regular (c • μ) := Regular.smul coe_ne_top
 
 /-- The restriction of a regular measure to a set of finite measure is regular. -/
 theorem restrict_of_measure_ne_top [R1Space α] [BorelSpace α] [Regular μ]

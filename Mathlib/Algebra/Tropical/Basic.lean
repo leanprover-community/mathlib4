@@ -591,7 +591,7 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : MinTropical R) (n : ℕ
   | zero => simp [one_nsmul]
   | succ n IH => rw [add_nsmul, IH, one_nsmul, add_self]
 
--- TODO: find/create the right classes to make this hold (for enat, ennreal, etc)
+-- TODO: find/create the right classes to make this hold (for enat, ennReal, etc)
 -- Requires `zero_eq_bot` to be true
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry

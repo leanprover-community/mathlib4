@@ -33,8 +33,10 @@ variable {m n : ℕ∞}
 instance hasCoeENNReal : CoeTC ℕ∞ ℝ≥0∞ := ⟨toENNReal⟩
 
 @[simp]
-theorem map_coe_nnreal : ENat.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ → ℝ≥0∞) :=
+theorem map_coe_nnReal : ENat.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ → ℝ≥0∞) :=
   rfl
+
+@[deprecated (since := "2026-10-27")] alias map_coe_nnreal := map_coe_nnReal
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as an `OrderEmbedding`. -/
 @[simps! -fullyApplied]

@@ -124,7 +124,7 @@ theorem volume_real_Ioc_of_le {a b : ℝ} (hab : a ≤ b) : volume.real (Ioc a b
 theorem volume_singleton {a : ℝ} : volume ({a} : Set ℝ) = 0 := by simp
 
 theorem volume_univ : volume (univ : Set ℝ) = ∞ :=
-  ENNReal.eq_top_of_forall_nnreal_le fun r =>
+  ENNReal.eq_top_of_forall_nnReal_le fun r =>
     calc
       (r : ℝ≥0∞) = volume (Icc (0 : ℝ) r) := by simp
       _ ≤ volume univ := measure_mono (subset_univ _)
@@ -152,7 +152,7 @@ theorem volume_eball (a : ℝ) (r : ℝ≥0∞) : volume (Metric.eball a r) = 2 
   · rw [Metric.eball_top, volume_univ, two_mul, _root_.top_add]
   · lift r to ℝ≥0 using hr
     rw [Metric.eball_coe, volume_ball, two_mul, ← NNReal.coe_add,
-      ENNReal.ofReal_coe_nnreal, ENNReal.coe_add, two_mul]
+      ENNReal.ofReal_coe_nnReal, ENNReal.coe_add, two_mul]
 
 @[simp]
 theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBall a r) = 2 * r := by
@@ -160,7 +160,7 @@ theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBa
   · rw [Metric.closedEBall_top, volume_univ, two_mul, _root_.top_add]
   · lift r to ℝ≥0 using hr
     rw [Metric.closedEBall_coe, volume_closedBall, two_mul, ← NNReal.coe_add,
-      ENNReal.ofReal_coe_nnreal, ENNReal.coe_add, two_mul]
+      ENNReal.ofReal_coe_nnReal, ENNReal.coe_add, two_mul]
 
 instance nullSingletonClass_volume : NullSingletonClass (volume : Measure ℝ) :=
   ⟨fun _ => volume_singleton⟩

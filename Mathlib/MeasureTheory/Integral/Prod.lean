@@ -66,7 +66,7 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f :
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂ν := by
   simp only [integral_eq_setToFun]
   apply StronglyMeasurable.setToFun_prod_right _ (fun s hs ↦ ?_) hf
-  refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
+  refine (Measurable.ennReal_toReal ?_).stronglyMeasurable.smul_const _
   exact measurable_measure_prodMk_left hs
 
 /-- The Bochner integral is measurable. This shows that the integrand of (the right-hand-side of)
@@ -101,7 +101,7 @@ variable [SFinite ν]
 
 theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet s)
     (h2s : (μ.prod ν) s ≠ ∞) : Integrable (fun x => ν.real (Prod.mk x ⁻¹' s)) μ := by
-  refine ⟨(measurable_measure_prodMk_left hs).ennreal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
+  refine ⟨(measurable_measure_prodMk_left hs).ennReal_toReal.aemeasurable.aestronglyMeasurable, ?_⟩
   simp_rw [hasFiniteIntegral_iff_enorm, measureReal_def, enorm_eq_ofReal toReal_nonneg]
   convert h2s.lt_top using 1
   rw [prod_apply hs]

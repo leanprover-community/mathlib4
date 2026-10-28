@@ -767,7 +767,7 @@ def normedField : NormedField L :=
       rw [← spectralNorm_neg, sub_eq_add_neg, neg_add, neg_neg]
       exact Algebra.IsAlgebraic.isAlgebraic (x - y)
     norm_mul x y := by simp [← spectralMulAlgNorm_def, map_mul]
-    edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal] }
+    edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnReal] }
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
 @[instance_reducible]

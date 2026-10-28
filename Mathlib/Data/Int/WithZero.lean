@@ -25,7 +25,7 @@ the morphism `WithZeroMultInt.toNNReal`.
 
 ## Tags
 
-WithZero, multiplicative, nnreal
+WithZero, multiplicative, nnReal
 -/
 
 @[expose] public section

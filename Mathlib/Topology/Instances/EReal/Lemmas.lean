@@ -79,24 +79,36 @@ def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
 
 /-! ### ENNReal coercion -/
 
-theorem isEmbedding_coe_ennreal : IsEmbedding ((↑) : ℝ≥0∞ → EReal) :=
-  coe_ennreal_strictMono.isEmbedding_of_ordConnected <| by
-    rw [range_coe_ennreal]; exact ordConnected_Ici
+theorem isEmbedding_coe_ennReal : IsEmbedding ((↑) : ℝ≥0∞ → EReal) :=
+  coe_ennReal_strictMono.isEmbedding_of_ordConnected <| by
+    rw [range_coe_ennReal]; exact ordConnected_Ici
 
-theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
-  ⟨isEmbedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
+@[deprecated (since := "2026-10-27")] alias isEmbedding_coe_ennreal := isEmbedding_coe_ennReal
+
+theorem isClosedEmbedding_coe_ennReal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
+  ⟨isEmbedding_coe_ennReal, by rw [range_coe_ennReal]; exact isClosed_Ici⟩
+
+@[deprecated (since := "2026-10-27")]
+alias isClosedEmbedding_coe_ennreal := isClosedEmbedding_coe_ennReal
 
 @[norm_cast]
-theorem tendsto_coe_ennreal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
+theorem tendsto_coe_ennReal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
-  isEmbedding_coe_ennreal.tendsto_nhds_iff.symm
+  isEmbedding_coe_ennReal.tendsto_nhds_iff.symm
 
-theorem _root_.continuous_coe_ennreal_ereal : Continuous ((↑) : ℝ≥0∞ → EReal) :=
-  isEmbedding_coe_ennreal.continuous
+@[deprecated (since := "2026-10-27")] alias tendsto_coe_ennreal := tendsto_coe_ennReal
 
-theorem continuous_coe_ennreal_iff {f : α → ℝ≥0∞} :
+theorem _root_.continuous_coe_ennReal_ereal : Continuous ((↑) : ℝ≥0∞ → EReal) :=
+  isEmbedding_coe_ennReal.continuous
+
+@[deprecated (since := "2026-10-27")]
+alias _root_.continuous_coe_ennreal_ereal := _root_.continuous_coe_ennReal_ereal
+
+theorem continuous_coe_ennReal_iff {f : α → ℝ≥0∞} :
     (Continuous fun a => (f a : EReal)) ↔ Continuous f :=
-  isEmbedding_coe_ennreal.continuous_iff.symm
+  isEmbedding_coe_ennReal.continuous_iff.symm
+
+@[deprecated (since := "2026-10-27")] alias continuous_coe_ennreal_iff := continuous_coe_ennReal_iff
 
 /-! ### Neighborhoods of infinity -/
 
@@ -199,7 +211,7 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
   · simp only [ContinuousAt, h_top, toENNReal_top]
     refine ENNReal.tendsto_nhds_top fun n ↦ ?_
     filter_upwards [eventually_gt_nhds (coe_lt_top n)] with y hy
-    exact toENNReal_coe (x := n) ▸ toENNReal_lt_toENNReal (coe_ennreal_nonneg _) hy
+    exact toENNReal_coe (x := n) ▸ toENNReal_lt_toENNReal (coe_ennReal_nonneg _) hy
   refine ContinuousOn.continuousAt ?_ (compl_singleton_mem_nhds_iff.mpr h_top)
   refine (continuousOn_of_forall_continuousAt fun x hx ↦ ?_).congr (fun _ h ↦ toENNReal_of_ne_top h)
   by_cases h_bot : x = ⊥

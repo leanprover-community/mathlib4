@@ -427,7 +427,7 @@ theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
   cases nonempty_fintype ι
   obtain ⟨M, hM⟩ := Finite.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
   refine ne_of_lt ((iSup_le fun i => ?_).trans_lt (@ENNReal.coe_lt_top M))
-  simp only [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
+  simp only [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_coe_nnReal dist_nonneg]
   exact mod_cast hM i
 
 /-- Endowing the space `PiLp p α` with the `L^p` pseudometric structure. This definition is not
@@ -455,7 +455,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
     · rw [edist_eq_iSup, dist_eq_iSup]
       cases isEmpty_or_nonempty ι
       · simp
-      · refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+      · refine ENNReal.eq_of_forall_le_nnReal_iff fun r ↦ ?_
         have : BddAbove <| .range fun i ↦ dist (f i) (g i) := Finite.bddAbove_range _
         simp [ciSup_le_iff this]
     · have : 0 < p.toReal := by rw [ENNReal.toReal_pos_iff_ne_top]; rintro rfl; norm_num at h
@@ -647,7 +647,7 @@ theorem edist_apply_le [∀ i, PseudoEMetricSpace (β i)] (x y : PiLp p β) (i :
 
 theorem nndist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
     nndist (x i) (y i) ≤ nndist x y := by
-  simpa [← coe_nnreal_ennreal_nndist] using edist_apply_le x y i
+  simpa [← coe_nnReal_ennReal_nndist] using edist_apply_le x y i
 
 theorem dist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
     dist (x i) (y i) ≤ dist x y :=

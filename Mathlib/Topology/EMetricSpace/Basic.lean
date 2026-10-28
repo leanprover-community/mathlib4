@@ -174,7 +174,7 @@ theorem cauchySeq_iff' [Nonempty β] [SemilatticeSup β] {u : β → γ} :
 `ℝ≥0` upper bounds. -/
 theorem cauchySeq_iff_NNReal [Nonempty β] [SemilatticeSup β] {u : β → γ} :
     CauchySeq u ↔ ∀ ε : ℝ≥0, 0 < ε → ∃ N, ∀ n, N ≤ n → edist (u n) (u N) < ε :=
-  uniformity_basis_edist_nnreal.cauchySeq_iff'
+  uniformity_basis_edist_nnReal.cauchySeq_iff'
 
 theorem totallyBounded_iff {s : Set γ} :
     TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set γ, t.Finite ∧ s ⊆ ⋃ y ∈ t, eball y ε :=

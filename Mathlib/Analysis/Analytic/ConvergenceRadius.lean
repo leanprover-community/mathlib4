@@ -21,7 +21,7 @@ Let `p` be a formal multilinear series from `E` to `F`, i.e., `p n` is a multili
 for `n : ℕ`.
 
 * `p.radius`: the largest `r : ℝ≥0∞` such that `‖p n‖ * r^n` grows subexponentially.
-* `p.le_radius_of_bound`, `p.le_radius_of_bound_nnreal`, `p.le_radius_of_isBigO`: if `‖p n‖ * r ^ n`
+* `p.le_radius_of_bound`, `p.le_radius_of_bound_nnReal`, `p.le_radius_of_isBigO`: if `‖p n‖ * r ^ n`
   is bounded above, then `r ≤ p.radius`;
 * `p.isLittleO_of_lt_radius`, `p.norm_mul_pow_le_mul_pow_of_lt_radius`,
   `p.isLittleO_one_of_lt_radius`,
@@ -115,9 +115,11 @@ theorem le_radius_of_bound (C : ℝ) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖ *
   le_iSup_of_le r <| le_iSup_of_le C <| le_iSup (fun _ => (r : ℝ≥0∞)) h
 
 /-- If `‖pₙ‖ rⁿ` is bounded in `n`, then the radius of `p` is at least `r`. -/
-theorem le_radius_of_bound_nnreal (C : ℝ≥0) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖₊ * r ^ n ≤ C) :
+theorem le_radius_of_bound_nnReal (C : ℝ≥0) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖₊ * r ^ n ≤ C) :
     (r : ℝ≥0∞) ≤ p.radius :=
   p.le_radius_of_bound C fun n => mod_cast h n
+
+@[deprecated (since := "2026-10-27")] alias le_radius_of_bound_nnreal := le_radius_of_bound_nnReal
 
 /-- If `‖pₙ‖ rⁿ = O(1)`, as `n → ∞`, then the radius of `p` is at least `r`. -/
 theorem le_radius_of_isBigO (h : (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] fun _ => (1 : ℝ)) :
@@ -130,19 +132,19 @@ theorem le_radius_of_eventually_le (C) (h : ∀ᶠ n in atTop, ‖p n‖ * (r : 
   p.le_radius_of_isBigO <| IsBigO.of_bound C <| h.mono fun n hn => by simpa
 
 theorem le_radius_of_summable_nnnorm (h : Summable fun n => ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
-  p.le_radius_of_bound_nnreal (∑' n, ‖p n‖₊ * r ^ n) fun _ => h.le_tsum' _
+  p.le_radius_of_bound_nnReal (∑' n, ‖p n‖₊ * r ^ n) fun _ => h.le_tsum' _
 
 theorem le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_summable_nnnorm <| by
     simp only [← coe_nnnorm] at h
     exact mod_cast h
 
-theorem radius_eq_top_of_forall_nnreal_isBigO
+theorem radius_eq_top_of_forall_nnReal_isBigO
     (h : ∀ r : ℝ≥0, (fun n => ‖p n‖ * (r : ℝ) ^ n) =O[atTop] fun _ => (1 : ℝ)) : p.radius = ∞ :=
-  ENNReal.eq_top_of_forall_nnreal_le fun r => p.le_radius_of_isBigO (h r)
+  ENNReal.eq_top_of_forall_nnReal_le fun r => p.le_radius_of_isBigO (h r)
 
 theorem radius_eq_top_of_eventually_eq_zero (h : ∀ᶠ n in atTop, p n = 0) : p.radius = ∞ :=
-  p.radius_eq_top_of_forall_nnreal_isBigO fun r =>
+  p.radius_eq_top_of_forall_nnReal_isBigO fun r =>
     (isBigO_zero _ _).congr' (h.mono fun n hn => by simp [hn]) EventuallyEq.rfl
 
 theorem radius_eq_top_of_forall_image_add_eq_zero (n : ℕ) (hn : ∀ m, p (m + n) = 0) :
@@ -265,7 +267,7 @@ protected theorem summable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E
 
 theorem radius_eq_top_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
     (hs : ∀ r : ℝ≥0, Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : p.radius = ∞ :=
-  ENNReal.eq_top_of_forall_nnreal_le fun r => p.le_radius_of_summable_norm (hs r)
+  ENNReal.eq_top_of_forall_nnReal_le fun r => p.le_radius_of_summable_norm (hs r)
 
 theorem radius_eq_top_iff_summable_norm (p : FormalMultilinearSeries 𝕜 E F) :
     p.radius = ∞ ↔ ∀ r : ℝ≥0, Summable fun n => ‖p n‖ * (r : ℝ) ^ n := by
@@ -283,7 +285,7 @@ theorem radius_eq_top_iff_summable_norm (p : FormalMultilinearSeries 𝕜 E F) :
 /-- If the radius of `p` is positive, then `‖pₙ‖` grows at most geometrically. -/
 theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 < p.radius) :
     ∃ (C r : _) (_ : 0 < C) (_ : 0 < r), ∀ n, ‖p n‖ ≤ C * r ^ n := by
-  rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨r, r0, rlt⟩
+  rcases ENNReal.lt_iff_exists_nnReal_btwn.1 h with ⟨r, r0, rlt⟩
   have rpos : 0 < (r : ℝ) := by simp [ENNReal.coe_pos.1 r0]
   rcases norm_le_div_pow_of_pos_of_lt_radius p rpos rlt with ⟨C, Cpos, hCp⟩
   refine ⟨C, r⁻¹, Cpos, by simp only [inv_pos, rpos], fun n => ?_⟩
@@ -295,7 +297,7 @@ lemma radius_le_of_le {𝕜' E' F' : Type*}
     [NormedAddCommGroup F'] [NormedSpace 𝕜' F']
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜' E' F'}
     (h : ∀ n, ‖p n‖ ≤ ‖q n‖) : q.radius ≤ p.radius := by
-  apply le_of_forall_nnreal_lt (fun r hr ↦ ?_)
+  apply le_of_forall_nnReal_lt (fun r hr ↦ ?_)
   rcases norm_mul_pow_le_of_lt_radius _ hr with ⟨C, -, hC⟩
   apply le_radius_of_bound _ C (fun n ↦ ?_)
   apply le_trans _ (hC n)
@@ -305,7 +307,7 @@ lemma radius_le_of_le {𝕜' E' F' : Type*}
 /-- The radius of the sum of two formal series is at least the minimum of their two radii. -/
 theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
     min p.radius q.radius ≤ (p + q).radius := by
-  refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
+  refine ENNReal.le_of_forall_nnReal_lt fun r hr => ?_
   rw [lt_min_iff] at hr
   have := ((p.isLittleO_one_of_lt_radius hr.1).add (q.isLittleO_one_of_lt_radius hr.2)).isBigO
   refine (p + q).le_radius_of_isBigO ((isBigO_of_le _ fun n => ?_).trans this)
@@ -355,7 +357,7 @@ theorem div_le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 
   obtain (rfl | h_zero) := eq_zero_or_nnnorm_pos u
   · simp
   rw [ENNReal.div_le_iff (by simpa using h_zero) (by simp)]
-  refine le_of_forall_nnreal_lt fun r hr ↦ ?_
+  refine le_of_forall_nnReal_lt fun r hr ↦ ?_
   rw [← ENNReal.div_le_iff (by simpa using h_zero) (by simp), enorm_eq_nnnorm, ← coe_div h_zero.ne']
   obtain ⟨C, hC_pos, hC⟩ := p.norm_mul_pow_le_of_lt_radius hr
   refine le_radius_of_bound _ C fun n ↦ ?_
@@ -461,7 +463,7 @@ protected theorem hasSum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F
 
 theorem radius_le_radius_continuousLinearMap_comp (p : FormalMultilinearSeries 𝕜 E F)
     (f : F →L[𝕜] G) : p.radius ≤ (f.compFormalMultilinearSeries p).radius := by
-  refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
+  refine ENNReal.le_of_forall_nnReal_lt fun r hr => ?_
   apply le_radius_of_isBigO
   apply (IsBigO.trans_isLittleO _ (p.isLittleO_one_of_lt_radius hr)).isBigO
   refine IsBigO.mul (@IsBigOWith.isBigO _ _ _ _ _ ‖f‖ _ _ _ ?_) (isBigO_refl _ _)

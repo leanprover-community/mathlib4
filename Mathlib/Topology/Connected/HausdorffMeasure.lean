@@ -120,7 +120,7 @@ theorem IsPreconnected.totallyBounded_of_hausdorffMeasure_lt_top (hs : IsPreconn
     (hle : μH[1] s < ∞) : TotallyBounded s := by
   refine EMetric.totallyBounded_iff.2 fun ε hε => ?_
   contrapose! hle with hcov
-  refine top_le_iff.mpr <| ENNReal.eq_top_of_forall_nnreal_le fun r => ?_
+  refine top_le_iff.mpr <| ENNReal.eq_top_of_forall_nnReal_le fun r => ?_
   have : ε / 2 ≠ 0 := by simp [hε.ne.symm]
   obtain ⟨N, hN⟩ := ENNReal.exists_nat_mul_gt this (ENNReal.coe_ne_top (r := r))
   apply hN.le.trans

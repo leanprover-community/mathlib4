@@ -252,13 +252,13 @@ lemma CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts {A : Type*} [No
     ∃ x : A, IsSelfAdjoint x ∧ QuasispectrumRestricts x ContinuousMap.realToNNReal ∧ x * x = a := by
   use cfcₙ (√·) a, cfcₙ_predicate (√·) a
   constructor
-  · simpa only [QuasispectrumRestricts.nnreal_iff, cfcₙ_map_quasispectrum (√·) a,
+  · simpa only [QuasispectrumRestricts.nnReal_iff, cfcₙ_map_quasispectrum (√·) a,
       Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
         using fun x _ ↦ Real.sqrt_nonneg x
   · rw [← cfcₙ_mul ..]
     nth_rw 2 [← cfcₙ_id ℝ a]
     congr! 1 with x hx
-    rw [QuasispectrumRestricts.nnreal_iff] at ha₂
+    rw [QuasispectrumRestricts.nnReal_iff] at ha₂
     apply ha₂ x at hx
     simp [← sq, Real.sq_sqrt hx]
 
@@ -269,7 +269,7 @@ variable [NonnegSpectrumClass ℝ A]
 
 lemma nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts {a : A} :
     0 ≤ a ↔ IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal := by
-  refine ⟨fun ha ↦ ⟨.of_nonneg ha, .nnreal_of_nonneg ha⟩, ?_⟩
+  refine ⟨fun ha ↦ ⟨.of_nonneg ha, .nnReal_of_nonneg ha⟩, ?_⟩
   rintro ⟨ha₁, ha₂⟩
   obtain ⟨x, hx, -, rfl⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts ha₁ ha₂
   simpa [sq, hx.star_eq] using star_mul_self_nonneg x
@@ -291,7 +291,7 @@ lemma Commute.mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : Commute a 
   have hx := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mpr ⟨hx₁, hx₂⟩
   rw [← mul_assoc, quasispectrumRestricts_iff, quasispectrum.mul_comm,
     ← quasispectrumRestricts_iff, ← mul_assoc]
-  exact QuasispectrumRestricts.nnreal_of_nonneg <| conjugate_nonneg_of_nonneg ha hx
+  exact QuasispectrumRestricts.nnReal_of_nonneg <| conjugate_nonneg_of_nonneg ha hx
 
 lemma commute_iff_mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     Commute a b ↔ 0 ≤ a * b :=
@@ -386,21 +386,27 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A]
 
-lemma cfcHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
-    cfcHom ha = (SpectrumRestricts.nnreal_of_nonneg ha).starAlgHom
+lemma cfcHom_nnReal_eq_restrict {a : A} (ha : 0 ≤ a) :
+    cfcHom ha = (SpectrumRestricts.nnReal_of_nonneg ha).starAlgHom
       (cfcHom (IsSelfAdjoint.of_nonneg ha)) := by
-  apply (SpectrumRestricts.nnreal_of_nonneg ha).cfcHom_eq_restrict _
+  apply (SpectrumRestricts.nnReal_of_nonneg ha).cfcHom_eq_restrict _
 
-lemma cfc_nnreal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
+@[deprecated (since := "2026-10-27")] alias cfcHom_nnreal_eq_restrict := cfcHom_nnReal_eq_restrict
+
+lemma cfc_nnReal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
     cfc f a = cfc (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
-  apply (SpectrumRestricts.nnreal_of_nonneg ha).cfc_eq_restrict _
+  apply (SpectrumRestricts.nnReal_of_nonneg ha).cfc_eq_restrict _
     NNReal.isClosedEmbedding_coe ha (.of_nonneg ha)
 
-lemma cfc_real_eq_nnreal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ spectrum ℝ a, 0 ≤ f x)
+@[deprecated (since := "2026-10-27")] alias cfc_nnreal_eq_real := cfc_nnReal_eq_real
+
+lemma cfc_real_eq_nnReal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ spectrum ℝ a, 0 ≤ f x)
     (ha : 0 ≤ a := by cfc_tac) : cfc f a = cfc (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
-  rw [cfc_nnreal_eq_real ..]
+  rw [cfc_nnReal_eq_real ..]
   congr! 1 with x hx
   rw [x.coe_toNNReal (spectrum_nonneg_of_nonneg ha hx), (f x).coe_toNNReal (hf_nonneg x hx)]
+
+@[deprecated (since := "2026-10-27")] alias cfc_real_eq_nnreal := cfc_real_eq_nnReal
 
 end NNRealEqReal
 
@@ -413,22 +419,28 @@ variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [St
   [SMulCommClass ℝ A A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A]
 
-lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
-    cfcₙHom ha = (QuasispectrumRestricts.nnreal_of_nonneg ha).nonUnitalStarAlgHom
+lemma cfcₙHom_nnReal_eq_restrict {a : A} (ha : 0 ≤ a) :
+    cfcₙHom ha = (QuasispectrumRestricts.nnReal_of_nonneg ha).nonUnitalStarAlgHom
       (cfcₙHom (IsSelfAdjoint.of_nonneg ha)) := by
-  apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙHom_eq_restrict _
+  apply (QuasispectrumRestricts.nnReal_of_nonneg ha).cfcₙHom_eq_restrict _
 
-lemma cfcₙ_nnreal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
+@[deprecated (since := "2026-10-27")] alias cfcₙHom_nnreal_eq_restrict := cfcₙHom_nnReal_eq_restrict
+
+lemma cfcₙ_nnReal_eq_real (f : ℝ≥0 → ℝ≥0) (a : A) (ha : 0 ≤ a := by cfc_tac) :
     cfcₙ f a = cfcₙ (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
-  apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙ_eq_restrict _
+  apply (QuasispectrumRestricts.nnReal_of_nonneg ha).cfcₙ_eq_restrict _
     NNReal.isClosedEmbedding_coe ha (.of_nonneg ha)
 
-lemma cfcₙ_real_eq_nnreal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ σₙ ℝ a, 0 ≤ f x)
+@[deprecated (since := "2026-10-27")] alias cfcₙ_nnreal_eq_real := cfcₙ_nnReal_eq_real
+
+lemma cfcₙ_real_eq_nnReal {f : ℝ → ℝ} (a : A) (hf_nonneg : ∀ x ∈ σₙ ℝ a, 0 ≤ f x)
     (ha : 0 ≤ a := by cfc_tac) : cfcₙ f a = cfcₙ (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
-  rw [cfcₙ_nnreal_eq_real ..]
+  rw [cfcₙ_nnReal_eq_real ..]
   congr! 1 with x hx
   rw [x.coe_toNNReal (quasispectrum_nonneg_of_nonneg _ ha _ hx),
     (f x).coe_toNNReal (hf_nonneg x hx)]
+
+@[deprecated (since := "2026-10-27")] alias cfcₙ_real_eq_nnreal := cfcₙ_real_eq_nnReal
 
 end NNRealEqRealNonUnital
 

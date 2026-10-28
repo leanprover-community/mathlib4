@@ -1238,7 +1238,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
     exists_lt_lintegral_simpleFunc_of_lt_lintegral H
   let F : ℝ → ℝ := (↑) ∘ f
   have intF : IntegrableOn F (Ioo a b) := by
-    refine ⟨f.measurable.coe_nnreal_real.aestronglyMeasurable, ?_⟩
+    refine ⟨f.measurable.coe_nnReal_real.aestronglyMeasurable, ?_⟩
     simpa only [F, hasFiniteIntegral_iff_enorm, comp_apply, NNReal.enorm_eq] using fint
   have A : ∫⁻ x : ℝ in Ioo a b, f x = ENNReal.ofReal (∫ x in Ioo a b, F x) :=
     lintegral_coe_eq_integral _ intF

@@ -356,8 +356,8 @@ lemma exists_measure_rpow_eq_integral_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) :
   refine ⟨C • volume, fun x hx => ⟨?_, ?_⟩⟩
   · unfold IntegrableOn
     rw [Measure.restrict_smul]
-    exact Integrable.smul_measure_nnreal <| integrableOn_rpowIntegrand₀₁_Ioi hp hx
-  · simp_rw [Measure.restrict_smul, integral_smul_nnreal_measure, rpow_eq_const_mul_integral hp hx,
+    exact Integrable.smul_measure_nnReal <| integrableOn_rpowIntegrand₀₁_Ioi hp hx
+  · simp_rw [Measure.restrict_smul, integral_smul_nnReal_measure, rpow_eq_const_mul_integral hp hx,
       NNReal.smul_def, C, NNReal.coe_mk, smul_eq_mul]
 
 end ZeroOne
@@ -434,8 +434,8 @@ lemma exists_measure_rpow_eq_integral_rpowIntegrand₁₂ (hp : p ∈ Ioo 1 2) :
   refine ⟨μ, fun x hx => ⟨?_, ?_⟩⟩
   · unfold μ IntegrableOn
     rw [Measure.restrict_smul]
-    exact Integrable.smul_measure_nnreal <| integrableOn_rpowIntegrand₁₂ hp hx
-  · rw [Measure.restrict_smul, integral_smul_nnreal_measure,
+    exact Integrable.smul_measure_nnReal <| integrableOn_rpowIntegrand₁₂ hp hx
+  · rw [Measure.restrict_smul, integral_smul_nnReal_measure,
       rpow_eq_const_mul_integral_rpowIntegrand₁₂ hp hx]
     simp [C, NNReal.smul_def]
 
@@ -557,7 +557,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂ [CompleteSpac
       a ^ p = cfcₙ (fun x => NNReal.nnrpow x p) a := by
         rw [CFC.nnrpow_def]
       _ = cfcₙ (fun r => ∫ t in Ioi 0, rpowIntegrand₁₂ p t r ∂μ) a := by
-        rw [cfcₙ_nnreal_eq_real ..]
+        rw [cfcₙ_nnReal_eq_real ..]
         congr! 1 with r hr
         have hr' : 0 ≤ r := by grind
         simp only [sup_of_le_left hr', NNReal.nnrpow_def, NNReal.coe_rpow, coe_toNNReal']

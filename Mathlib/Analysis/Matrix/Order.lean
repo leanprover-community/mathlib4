@@ -119,7 +119,7 @@ lemma instStarOrderedRing : StarOrderedRing (Matrix n n 𝕜) :=
       classical
       obtain ⟨X, hX, -, rfl⟩ :=
         sub_zero A ▸ CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts hA.isHermitian
-          (QuasispectrumRestricts.nnreal_of_nonneg hA.nonneg)
+          (QuasispectrumRestricts.nnReal_of_nonneg hA.nonneg)
       exact ⟨X, hX.star_eq.symm ▸ rfl⟩,
     fun ⟨A, hA⟩ => hA ▸ (posSemidef_conjTranspose_mul_self A).nonneg⟩
 
@@ -147,7 +147,7 @@ end sqrtDeprecated
 
 theorem det_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
     (CFC.sqrt A).det = RCLike.sqrt A.det := by
-  rw [CFC.sqrt_eq_cfc, cfc_nnreal_eq_real _ A, hA.1.cfc_eq, RCLike.sqrt_of_nonneg hA.det_nonneg]
+  rw [CFC.sqrt_eq_cfc, cfc_nnReal_eq_real _ A, hA.1.cfc_eq, RCLike.sqrt_of_nonneg hA.det_nonneg]
   simp only [IsHermitian.cfc, Real.coe_sqrt, Real.coe_toNNReal', det_map, det_diagonal,
     Function.comp_apply, hA.isHermitian.det_eq_prod_eigenvalues, ← RCLike.ofReal_prod,
     RCLike.ofReal_re, Real.sqrt_prod _ fun _ _ ↦ hA.eigenvalues_nonneg _]

@@ -531,7 +531,7 @@ theorem Integrable.integral_eq_integral_meas_lt
       exact fun t t_pos ↦ ENNReal.ofReal_toReal (rhs_integrand_finite t t_pos).ne
     · exact Eventually.of_forall (fun x ↦ by positivity)
     · apply Measurable.aestronglyMeasurable
-      refine Measurable.ennreal_toReal ?_
+      refine Measurable.ennReal_toReal ?_
       exact Antitone.measurable (fun _ _ hst ↦ measure_mono (fun _ h ↦ lt_of_le_of_lt hst h))
 
 theorem Integrable.integral_eq_integral_meas_le

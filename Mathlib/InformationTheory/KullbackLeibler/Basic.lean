@@ -180,13 +180,13 @@ lemma toReal_klDiv_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
       c * (klDiv μ ν).toReal + (1 - c) * ν.real univ + c * log c * μ.real univ := by
   by_cases hc : c = 0
   · simp [hc, measureReal_def]
-  have h_llr := llr_smul_nnreal_left hμν c (by simpa)
+  have h_llr := llr_smul_nnReal_left hμν c (by simpa)
   rw [toReal_klDiv hμν h_int, toReal_klDiv (hμν.smul_left c)]
   swap
-  · refine Integrable.smul_measure_nnreal ?_
+  · refine Integrable.smul_measure_nnReal ?_
     rw [integrable_congr h_llr]
     fun_prop
-  simp only [integral_smul_nnreal_measure, measureReal_nnreal_smul_apply]
+  simp only [integral_smul_nnReal_measure, measureReal_nnReal_smul_apply]
   rw [integral_congr_ae h_llr, integral_add h_int (integrable_const _)]
   have h_smul (a : ℝ) : c • a = c * a := rfl
   simp [h_smul]
@@ -198,21 +198,21 @@ lemma toReal_klDiv_smul_right_eq_smul_left (hμν : μ ≪ ν) (h_int : Integrab
   by_cases hc : c = 0
   · simp only [hc, zero_smul, NNReal.coe_zero, inv_zero, klDiv_zero_left, zero_mul]
     rcases eq_zero_or_neZero μ with rfl | hμ <;> simp
-  have h_llr_left := llr_smul_nnreal_left hμν c⁻¹ (by simpa)
-  have h_llr_right := llr_smul_nnreal_right hμν c (by simpa)
+  have h_llr_left := llr_smul_nnReal_left hμν c⁻¹ (by simpa)
+  have h_llr_right := llr_smul_nnReal_right hμν c (by simpa)
   rw [toReal_klDiv, toReal_klDiv]
   rotate_left
   · exact hμν.smul_left _
-  · refine Integrable.smul_measure_nnreal ?_
+  · refine Integrable.smul_measure_nnReal ?_
     rw [integrable_congr h_llr_left]
     fun_prop
   · exact hμν.smul_right (by simpa)
   · rw [integrable_congr h_llr_right]
     fun_prop
   have h_smul (c : ℝ≥0) (a : ℝ) : c • a = c * a := rfl
-  simp only [measureReal_nnreal_smul_apply, integral_smul_nnreal_measure, h_smul, NNReal.coe_inv]
+  simp only [measureReal_nnReal_smul_apply, integral_smul_nnReal_measure, h_smul, NNReal.coe_inv]
   have h_llr_smul_inv := llr_smul_inv_left_eq_smul_right hμν c (by simpa) (by simp)
-  simp only [← ENNReal.coe_inv hc, Measure.coe_nnreal_smul] at h_llr_smul_inv
+  simp only [← ENNReal.coe_inv hc, Measure.coe_nnReal_smul] at h_llr_smul_inv
   rw [integral_congr_ae h_llr_smul_inv, mul_sub, mul_add, mul_inv_cancel_left₀ (by simpa),
     mul_inv_cancel_left₀ (by simpa)]
 
@@ -230,8 +230,8 @@ lemma toReal_klDiv_smul_same (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
   · simp [hc]
   rw [toReal_klDiv_smul_right_eq_smul_left, smul_smul, inv_mul_cancel₀ hc, one_smul]
   · exact hμν.smul_left c
-  · refine Integrable.smul_measure_nnreal ?_
-    rw [integrable_congr (llr_smul_nnreal_left hμν c (by simpa))]
+  · refine Integrable.smul_measure_nnReal ?_
+    rw [integrable_congr (llr_smul_nnReal_left hμν c (by simpa))]
     fun_prop
 
 end Real
@@ -251,34 +251,34 @@ lemma klDiv_smul_right_eq_smul_left [IsFiniteMeasure μ] [IsFiniteMeasure ν] {c
       rw [hν_smul]
       exact h_contra.smul_right (by simpa)
   have hμν_right := hμν.smul_right hc'
-  simp only [Measure.coe_nnreal_smul] at hμν_right
+  simp only [Measure.coe_nnReal_smul] at hμν_right
   by_cases h_int : Integrable (llr μ ν) μ
   swap
   · rw [klDiv_of_not_integrable, klDiv_of_not_integrable, ENNReal.mul_top hc']
     · refine fun h_contra ↦ h_int ?_
       rw [hμ_smul]
-      refine Integrable.smul_measure_nnreal ?_
-      rw [integrable_congr (llr_smul_nnreal_left (hμν.smul_left _) c hc)]
+      refine Integrable.smul_measure_nnReal ?_
+      rw [integrable_congr (llr_smul_nnReal_left (hμν.smul_left _) c hc)]
       fun_prop
     · refine fun h_contra ↦ h_int ?_
       rw [hν_smul]
       have : IsFiniteMeasure ((c : ℝ≥0∞) • ν) := by
-        simp only [Measure.coe_nnreal_smul]
+        simp only [Measure.coe_nnReal_smul]
         infer_instance
-      have h := llr_smul_nnreal_right (hμν.smul_right hc') c⁻¹ (by simpa)
-      simp only [Measure.coe_nnreal_smul, NNReal.coe_inv, log_inv, sub_neg_eq_add] at h
+      have h := llr_smul_nnReal_right (hμν.smul_right hc') c⁻¹ (by simpa)
+      simp only [Measure.coe_nnReal_smul, NNReal.coe_inv, log_inv, sub_neg_eq_add] at h
       rw [integrable_congr h]
       fun_prop
   have h_int_left : Integrable (llr (c⁻¹ • μ) ν) (c⁻¹ • μ) := by
-    refine Integrable.smul_measure_nnreal ?_
-    rw [integrable_congr (llr_smul_nnreal_left hμν c⁻¹ (by simpa))]
+    refine Integrable.smul_measure_nnReal ?_
+    rw [integrable_congr (llr_smul_nnReal_left hμν c⁻¹ (by simpa))]
     fun_prop
   have h_int_right : Integrable (llr μ (c • ν)) μ := by
-    rw [integrable_congr (llr_smul_nnreal_right hμν c (by simpa))]
+    rw [integrable_congr (llr_smul_nnReal_right hμν c (by simpa))]
     fun_prop
   rw [← ENNReal.ofReal_toReal (klDiv_ne_top hμν_right h_int_right),
     toReal_klDiv_smul_right_eq_smul_left hμν h_int c]
-  simp only [NNReal.zero_le_coe, ENNReal.ofReal_mul, ENNReal.ofReal_coe_nnreal]
+  simp only [NNReal.zero_le_coe, ENNReal.ofReal_mul, ENNReal.ofReal_coe_nnReal]
   rw [ENNReal.ofReal_toReal]
   exact klDiv_ne_top (hμν.smul_left _) h_int_left
 
@@ -300,14 +300,14 @@ lemma klDiv_smul_same [IsFiniteMeasure μ] [IsFiniteMeasure ν] (c : ℝ≥0) :
   · rw [klDiv_of_not_integrable h_int, klDiv_of_not_integrable, ENNReal.mul_top hc']
     refine fun h_contra ↦ h_int ?_
     rw [hμ_smul μ, hμ_smul ν]
-    refine Integrable.smul_measure_nnreal ?_
-    rw [integrable_congr (llr_smul_nnreal_same (hμν.smul c) c⁻¹ (by simpa))]
+    refine Integrable.smul_measure_nnReal ?_
+    rw [integrable_congr (llr_smul_nnReal_same (hμν.smul c) c⁻¹ (by simpa))]
     fun_prop
   rw [← ENNReal.ofReal_toReal (klDiv_ne_top (hμν.smul c) _),
     ← ENNReal.ofReal_toReal (klDiv_ne_top hμν h_int)]
   swap
-  · refine Integrable.smul_measure_nnreal ?_
-    rw [integrable_congr (llr_smul_nnreal_same hμν c hc)]
+  · refine Integrable.smul_measure_nnReal ?_
+    rw [integrable_congr (llr_smul_nnReal_same hμν c hc)]
     fun_prop
   simp [toReal_klDiv_smul_same hμν h_int]
 

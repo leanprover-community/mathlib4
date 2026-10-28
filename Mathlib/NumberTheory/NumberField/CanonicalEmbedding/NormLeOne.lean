@@ -846,7 +846,7 @@ theorem volume_normLeOne : volume (normLeOne K) =
     (prod_ne_top fun _ _ ↦ ofReal_ne_top)]
   rw [setLIntegral_paramSet_exp K Module.finrank_pos, ofReal_mul zero_le_two, mul_pow,
     ofReal_ofNat, ENNReal.mul_inv_cancel_right (Nat.cast_ne_zero.mpr Module.finrank_pos.ne')
-    (natCast_ne_top _), coe_nnreal_eq, NNReal.coe_real_pi, mul_mul_mul_comm, ← ENNReal.inv_pow,
+    (natCast_ne_top _), coe_nnReal_eq, NNReal.coe_real_pi, mul_mul_mul_comm, ← ENNReal.inv_pow,
     ← mul_assoc, ← mul_assoc, ENNReal.inv_mul_cancel_right (pow_ne_zero _ two_ne_zero)
     (pow_ne_top ENNReal.ofNat_ne_top)]
 

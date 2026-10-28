@@ -76,7 +76,7 @@ theorem lintegral_rpow_eq_lintegral_meas_le_mul
   · congr with ω
     rw [← ENNReal.ofReal_mul p_pos.le, mul_div_cancel₀ (f ω ^ p) p_pos.ne.symm]
   · have aux := (measurable_const (a := p)).aemeasurable (μ := μ)
-    exact measurable_id.ennreal_ofReal.comp_aemeasurable <| (f_mble.pow aux).div_const p
+    exact measurable_id.ennReal_ofReal.comp_aemeasurable <| (f_mble.pow aux).div_const p
 
 end Layercake
 

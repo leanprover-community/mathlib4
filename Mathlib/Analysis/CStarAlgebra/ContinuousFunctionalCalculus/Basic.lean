@@ -227,29 +227,35 @@ open NNReal ENNReal
 
 variable [CStarAlgebra A]
 
-lemma SpectrumRestricts.nnreal_iff_nnnorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjoint a) (ht : ‖a‖₊ ≤ t) :
+lemma SpectrumRestricts.nnReal_iff_nnnorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjoint a) (ht : ‖a‖₊ ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔ ‖algebraMap ℝ A t - a‖₊ ≤ t := by
   have : IsSelfAdjoint (algebraMap ℝ A t - a) := IsSelfAdjoint.algebraMap A (.all (t : ℝ)) |>.sub ha
   rw [← ENNReal.coe_le_coe, ← IsSelfAdjoint.spectralRadius_eq_nnnorm,
     ← SpectrumRestricts.spectralRadius_eq (f := Complex.reCLM)] at ht ⊢
-  · exact SpectrumRestricts.nnreal_iff_spectralRadius_le ht
+  · exact SpectrumRestricts.nnReal_iff_spectralRadius_le ht
   all_goals
     try apply IsSelfAdjoint.spectrumRestricts
     assumption
 
-lemma SpectrumRestricts.nnreal_add {a b : A} (ha₁ : IsSelfAdjoint a)
+@[deprecated (since := "2026-10-27")]
+alias SpectrumRestricts.nnreal_iff_nnnorm := SpectrumRestricts.nnReal_iff_nnnorm
+
+lemma SpectrumRestricts.nnReal_add {a b : A} (ha₁ : IsSelfAdjoint a)
     (hb₁ : IsSelfAdjoint b) (ha₂ : SpectrumRestricts a ContinuousMap.realToNNReal)
     (hb₂ : SpectrumRestricts b ContinuousMap.realToNNReal) :
     SpectrumRestricts (a + b) ContinuousMap.realToNNReal := by
-  rw [SpectrumRestricts.nnreal_iff_nnnorm (ha₁.add hb₁) (nnnorm_add_le a b), NNReal.coe_add,
+  rw [SpectrumRestricts.nnReal_iff_nnnorm (ha₁.add hb₁) (nnnorm_add_le a b), NNReal.coe_add,
     map_add, add_sub_add_comm]
   refine nnnorm_add_le _ _ |>.trans ?_
   gcongr
-  all_goals rw [← SpectrumRestricts.nnreal_iff_nnnorm] <;> first | rfl | assumption
+  all_goals rw [← SpectrumRestricts.nnReal_iff_nnnorm] <;> first | rfl | assumption
+
+@[deprecated (since := "2026-10-27")]
+alias SpectrumRestricts.nnreal_add := SpectrumRestricts.nnReal_add
 
 lemma IsSelfAdjoint.sq_spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
     SpectrumRestricts (a ^ 2) ContinuousMap.realToNNReal := by
-  rw [SpectrumRestricts.nnreal_iff, ← cfc_id (R := ℝ) a, ← cfc_pow .., cfc_map_spectrum ..]
+  rw [SpectrumRestricts.nnReal_iff, ← cfc_id (R := ℝ) a, ← cfc_pow .., cfc_map_spectrum ..]
   rintro - ⟨x, -, rfl⟩
   exact sq_nonneg x
 
@@ -259,7 +265,7 @@ lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
     (ha₁ : SpectrumRestricts a ContinuousMap.realToNNReal)
     (ha₂ : SpectrumRestricts (-a) ContinuousMap.realToNNReal) :
     a = 0 := by
-  rw [SpectrumRestricts.nnreal_iff] at ha₁ ha₂
+  rw [SpectrumRestricts.nnReal_iff] at ha₁ ha₂
   apply CFC.eq_zero_of_spectrum_subset_zero (R := ℝ) a
   rw [Set.subset_singleton_iff]
   simp only [← spectrum.neg_eq, Set.mem_neg] at ha₂
@@ -269,7 +275,7 @@ lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
 lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ} (hr : 0 ≤ r) :
     SpectrumRestricts (r • a) ContinuousMap.realToNNReal := by
-  rw [SpectrumRestricts.nnreal_iff] at ha ⊢
+  rw [SpectrumRestricts.nnReal_iff] at ha ⊢
   nontriviality A
   intro x hx
   by_cases hr' : r = 0
@@ -299,7 +305,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   -- the spectrum of `- (star c * c) = a⁻ ^ 3` is nonnegative, since the function on the right
   -- is nonnegative on the spectrum of `a`.
   have h_c_spec₀ : SpectrumRestricts (-(star c * c)) (ContinuousMap.realToNNReal ·) := by
-    simp only [SpectrumRestricts.nnreal_iff, h_eq_negPart_a, CFC.negPart_def]
+    simp only [SpectrumRestricts.nnReal_iff, h_eq_negPart_a, CFC.negPart_def]
     rw [cfcₙ_eq_cfc (hf0 := by simp), ← cfc_pow (ha := ha) .., cfc_map_spectrum (ha := ha) ..]
     rintro - ⟨x, -, rfl⟩
     positivity
@@ -308,11 +314,11 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   -- and selfadjoint elements with nonnegative spectrum are closed under addition.
   have h_c_spec₁ : SpectrumRestricts (c * star c) ContinuousMap.realToNNReal := by
     rw [eq_sub_iff_add_eq'.mpr <| star_mul_self_add_self_mul_star c, sub_eq_add_neg, ← sq, ← sq]
-    refine SpectrumRestricts.nnreal_add ?_ ?_ ?_ h_c_spec₀
+    refine SpectrumRestricts.nnReal_add ?_ ?_ ?_ h_c_spec₀
     · exact .smul (star_trivial _) <| ((ℜ c).prop.pow 2).add ((ℑ c).prop.pow 2)
     · exact .neg <| .star_mul_self c
     · rw [← Nat.cast_smul_eq_nsmul ℝ]
-      refine (ℜ c).2.sq_spectrumRestricts.nnreal_add ((ℜ c).2.pow 2) ((ℑ c).2.pow 2)
+      refine (ℜ c).2.sq_spectrumRestricts.nnReal_add ((ℜ c).2.pow 2) ((ℑ c).2.pow 2)
         (ℑ c).2.sq_spectrumRestricts |>.smul_of_nonneg <| by simp
   -- therefore `- (star c * c) = 0` and so `a⁻ ^ 3 = 0`. By properties of the continuous functional
   -- calculus, `fun x ↦ x⁻ ^ 3` is zero on the spectrum of `a`, `0 ≤ x` for `x ∈ spectrum ℝ a`.
@@ -344,9 +350,9 @@ instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
       nontriviality A
       simp
     | add x y x_mem y_mem hx hy =>
-      rw [← SpectrumRestricts.nnreal_iff] at hx hy ⊢
+      rw [← SpectrumRestricts.nnReal_iff] at hx hy ⊢
       rw [← StarOrderedRing.nonneg_iff] at x_mem y_mem
-      exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
+      exact hx.nnReal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
 
 open ComplexOrder in
 instance CStarAlgebra.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
@@ -375,7 +381,7 @@ def CStarAlgebra.spectralOrder : PartialOrder A where
   le x y := IsSelfAdjoint (y - x) ∧ QuasispectrumRestricts (y - x) ContinuousMap.realToNNReal
   le_refl := by
     simp only [sub_self, IsSelfAdjoint.zero, true_and, forall_const]
-    rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, SpectrumRestricts.nnreal_iff]
+    rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, SpectrumRestricts.nnReal_iff]
     nontriviality A
     simp
   le_antisymm x y hxy hyx := by
@@ -388,7 +394,7 @@ def CStarAlgebra.spectralOrder : PartialOrder A where
   le_trans x y z hxy hyz := by
     simp +singlePass only [← Unitization.isSelfAdjoint_inr (R := ℂ),
       quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ] at hxy hyz ⊢
-    exact ⟨by simpa using hyz.1.add hxy.1, by simpa using hyz.2.nnreal_add hyz.1 hxy.1 hxy.2⟩
+    exact ⟨by simpa using hyz.1.add hxy.1, by simpa using hyz.2.nnReal_add hyz.1 hxy.1 hxy.2⟩
 
 variable (A) in
 /-- The `CStarAlgebra.spectralOrder` on a C⋆-algebra is a `StarOrderedRing`. -/
@@ -409,16 +415,16 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
           obtain ⟨s, rfl⟩ := hx
           refine ⟨IsSelfAdjoint.star_mul_self s, ?_⟩
           rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ,
-            SpectrumRestricts.nnreal_iff, Unitization.inr_mul, Unitization.inr_star]
+            SpectrumRestricts.nnReal_iff, Unitization.inr_mul, Unitization.inr_star]
           exact spectrum_star_mul_self_nonneg
         | zero =>
-          rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, SpectrumRestricts.nnreal_iff]
+          rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, SpectrumRestricts.nnReal_iff]
           simp
         | add x y _ _ hx hy =>
           simp +singlePass only [← Unitization.isSelfAdjoint_inr (R := ℂ),
             quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ] at hx hy ⊢
           rw [Unitization.inr_add]
-          exact ⟨hx.1.add hy.1, hx.2.nnreal_add hx.1 hy.1 hy.2⟩ }
+          exact ⟨hx.1.add hy.1, hx.2.nnReal_add hx.1 hy.1 hy.2⟩ }
 
 end SpectralOrder
 
@@ -470,7 +476,7 @@ lemma Unitization.complex_cfcₙ_eq_cfc_inr (a : A) (f : ℂ → ℂ) (hf₀ : f
     cfcₙ f a = cfc f (a : A⁺¹) :=
   Unitization.cfcₙ_eq_cfc_inr isStarNormal_inr ..
 
-/-- note: the version for `ℝ≥0`, `Unitization.nnreal_cfcₙ_eq_cfc_inr`, can be found in
+/-- note: the version for `ℝ≥0`, `Unitization.nnReal_cfcₙ_eq_cfc_inr`, can be found in
 `Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Order.lean` -/
 lemma Unitization.real_cfcₙ_eq_cfc_inr (a : A) (f : ℝ → ℝ) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f (a : A⁺¹) :=

@@ -51,7 +51,7 @@ private lemma toMeasureOfZeroLE_apply_eq_enorm {i j : Set X} (him : MeasurableSe
     (hjm : MeasurableSet j) : μ.toMeasureOfZeroLE i him hi j = ‖μ (i ∩ j)‖ₑ := by
   have : 0 ≤ μ (i ∩ j) :=
     μ.nonneg_of_zero_le_restrict (μ.zero_le_restrict_subset ‹_› Set.inter_subset_left ‹_›)
-  rw [Real.enorm_of_nonneg this, μ.toMeasureOfZeroLE_apply hi him hjm, ENNReal.ofReal_eq_coe_nnreal]
+  rw [Real.enorm_of_nonneg this, μ.toMeasureOfZeroLE_apply hi him hjm, ENNReal.ofReal_eq_coe_nnReal]
 
 private lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
     (hi : μ ≤[i] 0) (hjm : MeasurableSet j) :
@@ -59,7 +59,7 @@ private lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSe
   have : μ (i ∩ j) ≤ 0 :=
     μ.nonpos_of_restrict_le_zero (μ.restrict_le_zero_subset ‹_› Set.inter_subset_left ‹_›)
   rw [← enorm_neg, Real.enorm_of_nonneg (neg_nonneg.mpr this), μ.toMeasureOfLEZero_apply hi him hjm,
-    ENNReal.ofReal_eq_coe_nnreal]
+    ENNReal.ofReal_eq_coe_nnReal]
 
 /-- The Hahn–Jordan-based `totalVariation` agrees with the supremum-based `variation`. -/
 theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation = μ.variation := by

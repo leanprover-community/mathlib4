@@ -78,7 +78,7 @@ lemma modularCharacterFun_eq_haarScalarFactor [MeasurableSpace G] [BorelSpace G]
   _ = (∫ x, f (x * g) ∂(haarScalarFactor ν μ • μ)) / ∫ x, f x ∂(haarScalarFactor ν μ • μ) := by
     rw [integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport ν μ f_cont f_comp]
   _ = (haarScalarFactor ν μ • ∫ x, f (x * g) ∂μ) / (haarScalarFactor ν μ • ∫ x, f x ∂μ) := by
-    rw [integral_smul_nnreal_measure, integral_smul_nnreal_measure]
+    rw [integral_smul_nnReal_measure, integral_smul_nnReal_measure]
   _ = (haarScalarFactor ν μ / haarScalarFactor ν μ) * ((∫ x, f (x * g) ∂μ) / ∫ x, f x ∂μ) :=
     mul_div_mul_comm _ _ _ _
   _ = 1 * ((∫ x, f (x * g) ∂μ) / ∫ x, f x ∂μ) := by rw [r]

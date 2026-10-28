@@ -110,16 +110,18 @@ theorem map [MeasureSpace β] (h : v ≪ᵥ w) (f : α → β) : v.map f ≪ᵥ 
   · intro s _
     rw [map_not_measurable v hf, zero_apply]
 
-theorem ennrealToMeasure {μ : VectorMeasure α ℝ≥0∞} :
-    (∀ ⦃s : Set α⦄, μ.ennrealToMeasure s = 0 → v s = 0) ↔ v ≪ᵥ μ := by
+theorem ennRealToMeasure {μ : VectorMeasure α ℝ≥0∞} :
+    (∀ ⦃s : Set α⦄, μ.ennRealToMeasure s = 0 → v s = 0) ↔ v ≪ᵥ μ := by
   constructor <;> intro h
   · refine mk fun s hmeas hs => h ?_
-    rw [← hs, ennrealToMeasure_apply hmeas]
+    rw [← hs, ennRealToMeasure_apply hmeas]
   · intro s hs
     by_cases hmeas : MeasurableSet s
-    · rw [ennrealToMeasure_apply hmeas] at hs
+    · rw [ennRealToMeasure_apply hmeas] at hs
       exact h hs
     · exact not_measurable v hmeas
+
+@[deprecated (since := "2026-10-27")] alias ennrealToMeasure := ennRealToMeasure
 
 end AbsolutelyContinuous
 

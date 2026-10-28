@@ -18,7 +18,7 @@ pushforwards, maps on the range, restrictions, and restriction to a sub-σ-algeb
 ## Main definitions
 
 * `Measure.toSignedMeasure`, `Measure.toENNRealVectorMeasure`, and
-  `VectorMeasure.ennrealToMeasure` convert between measures and vector measures.
+  `VectorMeasure.ennRealToMeasure` convert between measures and vector measures.
 * `MeasureTheory.VectorMeasure.map` is the pushforward of a vector measure along a function.
 * `VectorMeasure.mapRange` composes a vector measure with a continuous additive homomorphism.
 * `MeasureTheory.VectorMeasure.restrict` is the restriction of a vector measure on some set.
@@ -93,7 +93,7 @@ theorem toSignedMeasure_smul (μ : Measure α) [IsFiniteMeasure μ] (r : ℝ≥0
     (r • μ).toSignedMeasure = r • μ.toSignedMeasure := by
   ext i hi
   rw [toSignedMeasure_apply_measurable hi, _root_.smul_apply,
-    toSignedMeasure_apply_measurable hi, measureReal_nnreal_smul_apply]
+    toSignedMeasure_apply_measurable hi, measureReal_nnReal_smul_apply]
   rfl
 
 open scoped Classical in
@@ -143,37 +143,46 @@ open Measure
 section
 
 /-- A vector measure over `ℝ≥0∞` is a measure. -/
-def ennrealToMeasure {_ : MeasurableSpace α} (v : VectorMeasure α ℝ≥0∞) : Measure α :=
+def ennRealToMeasure {_ : MeasurableSpace α} (v : VectorMeasure α ℝ≥0∞) : Measure α :=
   ofMeasurable (fun s _ => v s) v.empty fun _ hf₁ hf₂ => v.of_disjoint_iUnion hf₁ hf₂
 
-theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α ℝ≥0∞} {s : Set α}
-    (hs : MeasurableSet s) : ennrealToMeasure v s = v s := by
-  rw [ennrealToMeasure, ofMeasurable_apply _ hs]
+@[deprecated (since := "2026-10-27")] alias ennrealToMeasure := ennRealToMeasure
+
+theorem ennRealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α ℝ≥0∞} {s : Set α}
+    (hs : MeasurableSet s) : ennRealToMeasure v s = v s := by
+  rw [ennRealToMeasure, ofMeasurable_apply _ hs]
+
+@[deprecated (since := "2026-10-27")] alias ennrealToMeasure_apply := ennRealToMeasure_apply
 
 @[simp]
-theorem ennrealToMeasure_zero : ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
-  simp [ennrealToMeasure]
+theorem ennRealToMeasure_zero : ennRealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
+  simp [ennRealToMeasure]
+
+@[deprecated (since := "2026-10-27")] alias ennrealToMeasure_zero := ennRealToMeasure_zero
 
 @[simp]
-theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennrealToMeasure
+theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennRealToMeasure
     (μ : VectorMeasure α ℝ≥0∞) :
-    toENNRealVectorMeasure (ennrealToMeasure μ) = μ := ext fun s hs => by
-  rw [toENNRealVectorMeasure_apply_measurable hs, ennrealToMeasure_apply hs]
+    toENNRealVectorMeasure (ennRealToMeasure μ) = μ := ext fun s hs => by
+  rw [toENNRealVectorMeasure_apply_measurable hs, ennRealToMeasure_apply hs]
 
 @[simp]
-theorem ennrealToMeasure_toENNRealVectorMeasure (μ : Measure α) :
-    ennrealToMeasure (toENNRealVectorMeasure μ) = μ := Measure.ext fun s hs => by
-  rw [ennrealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
+theorem ennRealToMeasure_toENNRealVectorMeasure (μ : Measure α) :
+    ennRealToMeasure (toENNRealVectorMeasure μ) = μ := Measure.ext fun s hs => by
+  rw [ennRealToMeasure_apply hs, toENNRealVectorMeasure_apply_measurable hs]
+
+@[deprecated (since := "2026-10-27")]
+alias ennrealToMeasure_toENNRealVectorMeasure := ennRealToMeasure_toENNRealVectorMeasure
 
 /-- The equiv between `VectorMeasure α ℝ≥0∞` and `Measure α` formed by
-`MeasureTheory.VectorMeasure.ennrealToMeasure` and
+`MeasureTheory.VectorMeasure.ennRealToMeasure` and
 `MeasureTheory.Measure.toENNRealVectorMeasure`. -/
 @[simps]
 def equivMeasure [MeasurableSpace α] : VectorMeasure α ℝ≥0∞ ≃ Measure α where
-  toFun := ennrealToMeasure
+  toFun := ennRealToMeasure
   invFun := toENNRealVectorMeasure
-  left_inv := toENNRealVectorMeasure_ennrealToMeasure
-  right_inv := ennrealToMeasure_toENNRealVectorMeasure
+  left_inv := toENNRealVectorMeasure_ennRealToMeasure
+  right_inv := ennRealToMeasure_toENNRealVectorMeasure
 
 end
 

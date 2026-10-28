@@ -38,7 +38,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   set c : ℝ≥0 → ℝ≥0∞ := (↑)
   set F := fun a : α => ⨆ n, f n a
   refine le_antisymm ?_ (iSup_lintegral_le _)
-  rw [lintegral_eq_nnreal]
+  rw [lintegral_eq_nnReal]
   refine iSup_le fun s => iSup_le fun hsf => ?_
   refine ENNReal.le_of_forall_lt_one_mul_le fun a ha => ?_
   rcases ENNReal.lt_iff_exists_coe.1 ha with ⟨r, rfl, _⟩
@@ -463,7 +463,7 @@ variable {m m0 : MeasurableSpace α}
 theorem lintegral_trim {μ : Measure α} (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     ∫⁻ a, f a ∂μ.trim hm = ∫⁻ a, f a ∂μ := by
   refine
-    @Measurable.ennreal_induction α m (fun f => ∫⁻ a, f a ∂μ.trim hm = ∫⁻ a, f a ∂μ) ?_ ?_ ?_ f hf
+    @Measurable.ennReal_induction α m (fun f => ∫⁻ a, f a ∂μ.trim hm = ∫⁻ a, f a ∂μ) ?_ ?_ ?_ f hf
   · intro c s hs
     rw [lintegral_indicator hs, lintegral_indicator (hm s hs), setLIntegral_const,
       setLIntegral_const]

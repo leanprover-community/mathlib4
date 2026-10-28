@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Rify
 
 This file contains a `linarith` preprocessor for converting (in)equalities in `ℝ≥0` to `ℝ`.
 
-By overriding the behaviour of the placeholder preprocessor `nnrealToReal` (which does nothing
+By overriding the behaviour of the placeholder preprocessor `nnRealToReal` (which does nothing
 unless this file is imported) `linarith` can still be used without importing `NNReal`.
 -/
 
@@ -62,7 +62,7 @@ def mkToRealNonnegProof? (e : Expr) : MetaM (Option Expr) :=
 
 @[deprecated (since := "2026-05-27")] alias mk_toReal_nonneg_prf := mkToRealNonnegProof?
 
-initialize nnrealToRealTransform.set fun l => do
+initialize nnRealToRealTransform.set fun l => do
   let l ← l.mapM fun e => do
     let t ← whnfR (← instantiateMVars (← inferType e))
     if ← isNNRealProp t then

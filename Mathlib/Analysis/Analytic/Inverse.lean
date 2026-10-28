@@ -573,7 +573,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
     ∀ᶠ y in 𝓝 0, Tendsto (fun (a : ℕ × ℕ) ↦ q.partialSum a.1 (p.partialSum a.2 y
       - p 0 (fun _ ↦ 0))) atTop (𝓝 (f (x + y))) := by
   rcases hf with ⟨r0, h0⟩
-  rcases q.comp_summable_nnreal p hq hp with ⟨r1, r1_pos : 0 < r1, hr1⟩
+  rcases q.comp_summable_nnReal p hq hp with ⟨r1, r1_pos : 0 < r1, hr1⟩
   let r : ℝ≥0∞ := min r0 r1
   have : Metric.eball (0 : E) r ∈ 𝓝 0 :=
     Metric.eball_mem_nhds 0 (lt_min h0.r_pos (by exact_mod_cast r1_pos))

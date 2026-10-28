@@ -90,9 +90,9 @@ theorem aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E]
   constructor
   · rintro ⟨g', g'meas, hg'⟩
     have A : MeasurableSet { x : α | f x ≠ 0 } := (hf (measurableSet_singleton 0)).compl
-    refine ⟨fun x => (f x : ℝ) • g' x, hf.coe_nnreal_real.stronglyMeasurable.smul g'meas, ?_⟩
+    refine ⟨fun x => (f x : ℝ) • g' x, hf.coe_nnReal_real.stronglyMeasurable.smul g'meas, ?_⟩
     apply @ae_of_ae_restrict_of_ae_restrict_compl _ _ _ { x | f x ≠ 0 }
-    · rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal] at hg'
+    · rw [EventuallyEq, ae_withDensity_iff hf.coe_nnReal_ennReal] at hg'
       rw [ae_restrict_iff' A]
       filter_upwards [hg'] with a ha h'a
       have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne, ENNReal.coe_eq_zero] using h'a
@@ -101,8 +101,8 @@ theorem aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E]
       simp only [Classical.not_not, mem_ofPred_eq, mem_compl_iff] at hx
       simp [hx]
   · rintro ⟨g', g'meas, hg'⟩
-    refine ⟨fun x => (f x : ℝ)⁻¹ • g' x, hf.coe_nnreal_real.inv.stronglyMeasurable.smul g'meas, ?_⟩
-    rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal]
+    refine ⟨fun x => (f x : ℝ)⁻¹ • g' x, hf.coe_nnReal_real.inv.stronglyMeasurable.smul g'meas, ?_⟩
+    rw [EventuallyEq, ae_withDensity_iff hf.coe_nnReal_ennReal]
     filter_upwards [hg'] with x hx h'x
     rw [← hx, smul_smul, inv_mul_cancel₀, one_smul]
     simp only [Ne, ENNReal.coe_eq_zero] at h'x

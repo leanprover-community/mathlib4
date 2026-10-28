@@ -59,8 +59,10 @@ theorem smul_extend [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTow
   classical
   ext s; by_cases h : P s <;> simp [extend, ENNReal.smul_top, *]
 
-lemma ennreal_smul_extend {c : ℝ≥0∞} (hc : c ≠ 0) : c • extend m = extend fun s h => c • m s h := by
+lemma ennReal_smul_extend {c : ℝ≥0∞} (hc : c ≠ 0) : c • extend m = extend fun s h => c • m s h := by
   ext s; by_cases h : P s <;> simp [extend, *]
+
+@[deprecated (since := "2026-10-27")] alias ennreal_smul_extend := ennReal_smul_extend
 
 theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
   simp only [extend, le_iInf_iff]

@@ -379,9 +379,11 @@ theorem addHaar_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) (s : Set E) :
   rw [addHaar_smul, abs_pow, abs_of_nonneg hr]
 
 @[simp]
-theorem addHaar_nnreal_smul (r : ℝ≥0) (s : Set E) :
+theorem addHaar_nnReal_smul (r : ℝ≥0) (s : Set E) :
     μ (r • s) = r ^ Module.finrank ℝ E * μ s := by
   simp [NNReal.smul_def]
+
+@[deprecated (since := "2026-10-27")] alias addHaar_nnreal_smul := addHaar_nnReal_smul
 
 variable {μ} {s : Set E}
 
@@ -585,7 +587,7 @@ noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [⋀^Fin n]�
 theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ)
     (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
-  simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
+  simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnReal_smul_apply,
     _root_.smul_apply, smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
     ← Real.enorm_eq_ofReal_abs, enorm]
 

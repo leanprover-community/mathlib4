@@ -96,7 +96,7 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
           neg_le_self (sqrt_nonneg _))
       _ = ENNReal.ofReal (∫ x in (-r : ℝ)..r, 2 * f x) := by
         rw [integral_of_le] <;> simp [two_mul]
-      _ = NNReal.pi * r ^ 2 := by rw_mod_cast [this, ← ENNReal.coe_nnreal_eq]
+      _ = NNReal.pi * r ^ 2 := by rw_mod_cast [this, ← ENNReal.coe_nnReal_eq]
   have hle := NNReal.coe_nonneg r
   obtain heq | hlt := hle.eq_or_lt; · simp [← heq]
   have hderiv : ∀ x ∈ Ioo (-r : ℝ) r, HasDerivAt F (2 * f x) x := by

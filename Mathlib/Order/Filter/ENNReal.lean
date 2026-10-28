@@ -246,7 +246,7 @@ lemma ofReal_limsup {u : α → ℝ}
     (h₁ : IsCoboundedUnder (· ≤ ·) f u := by isBoundedDefault)
     (h₂ : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     ENNReal.ofReal (limsup u f) = limsup (fun a ↦ .ofReal (u a)) f := by
-  refine ENNReal.eq_of_forall_le_nnreal_iff fun r ↦ ?_
+  refine ENNReal.eq_of_forall_le_nnReal_iff fun r ↦ ?_
   simp only [ofReal_le_coe]
   rw [limsup_le_iff, limsup_le_iff]
   constructor

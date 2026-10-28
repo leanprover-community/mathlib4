@@ -71,7 +71,7 @@ private theorem lintegral_rpow_div_add_rpow_div_eq_one_of_lintegral_rpow_eq_one 
     ∫⁻ a, f a ^ p / .ofReal p + g a ^ q / .ofReal q ∂μ = 1 := by
   simp_rw [div_eq_mul_inv]
   rw [lintegral_add_left' (by fun_prop), lintegral_mul_const'' _ (hf.pow_const p),
-    lintegral_mul_const', hf_norm, hg_norm, one_mul, one_mul, hpq.inv_add_inv_ennreal]
+    lintegral_mul_const', hf_norm, hg_norm, one_mul, one_mul, hpq.inv_add_inv_ennReal]
   simp [hpq.symm.pos]
 
 /-- Hölder's inequality for functions with norm `1` -/
@@ -484,7 +484,7 @@ theorem NNReal.lintegral_mul_le_Lp_mul_Lq {p q : ℝ} (hpq : p.HolderConjugate q
     (∫⁻ a, (f * g) a ∂μ) ≤
       (∫⁻ a, (f a : ℝ≥0∞) ^ p ∂μ) ^ (1 / p) * (∫⁻ a, (g a : ℝ≥0∞) ^ q ∂μ) ^ (1 / q) := by
   simp_rw [Pi.mul_apply, ENNReal.coe_mul]
-  exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf.coe_nnreal_ennreal hg.coe_nnreal_ennreal
+  exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf.coe_nnReal_ennReal hg.coe_nnReal_ennReal
 
 end
 

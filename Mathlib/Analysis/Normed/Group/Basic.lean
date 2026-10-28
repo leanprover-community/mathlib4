@@ -385,7 +385,7 @@ theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
 lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
 
 @[to_additive (attr := simp) ofReal_norm]
-lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
+lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := ENNReal.ofReal_eq_coe_nnReal _
 
 @[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm := ofReal_norm
 

@@ -43,8 +43,8 @@ noncomputable def etvDist (μ ν : VectorMeasure 𝓧 M) : ℝ≥0∞ := (μ - �
 lemma etvDist_eq_iSup_finPartition_enorm :
     etvDist μ ν = ⨆ P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧))),
       ∑ x ∈ P.parts, ‖μ x - ν x‖ₑ := by
-  simp [etvDist, variation, preVariation, ennrealPreVariation,
-    ennrealToMeasure_apply .univ, preVariationFun]
+  simp [etvDist, variation, preVariation, ennRealPreVariation,
+    ennRealToMeasure_apply .univ, preVariationFun]
 
 @[simp]
 lemma etvDist_self (μ : VectorMeasure 𝓧 M) : etvDist μ μ = 0 := by simp [etvDist]

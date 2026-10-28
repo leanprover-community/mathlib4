@@ -114,7 +114,9 @@ theorem coe_smul (c : R) (μ : Measure α) : ⇑(c • μ) = c • ⇑μ :=
   rfl
 
 @[simp]
-lemma coe_nnreal_smul (c : ℝ≥0) (μ : Measure α) : (c : ℝ≥0∞) • μ = c • μ := rfl
+lemma coe_nnReal_smul (c : ℝ≥0) (μ : Measure α) : (c : ℝ≥0∞) • μ = c • μ := rfl
+
+@[deprecated (since := "2026-10-27")] alias coe_nnreal_smul := coe_nnReal_smul
 
 @[simp]
 theorem smul_apply (c : R) (μ : Measure α) (s : Set α) :
@@ -171,18 +173,24 @@ instance [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0�
     [Module.IsTorsionFree R ℝ≥0∞] : Module.IsTorsionFree R (Measure α) :=
   DFunLike.coe_injective.moduleIsTorsionFree _ (by simp)
 
-@[simp] lemma ennreal_smul_eq_zero : c • μ = 0 ↔ c = 0 ∨ μ = 0 := by
+@[simp] lemma ennReal_smul_eq_zero : c • μ = 0 ↔ c = 0 ∨ μ = 0 := by
   simp [Measure.ext_iff', forall_or_left]
 
+@[deprecated (since := "2026-10-27")] alias ennreal_smul_eq_zero := ennReal_smul_eq_zero
+
 @[simp]
-theorem coe_nnreal_smul_apply (c : ℝ≥0) (μ : Measure α) (s : Set α) :
+theorem coe_nnReal_smul_apply (c : ℝ≥0) (μ : Measure α) (s : Set α) :
     (c • μ) s = c * μ s :=
   rfl
 
+@[deprecated (since := "2026-10-27")] alias coe_nnreal_smul_apply := coe_nnReal_smul_apply
+
 @[simp]
-theorem nnreal_smul_coe_apply (c : ℝ≥0) (μ : Measure α) (s : Set α) :
+theorem nnReal_smul_coe_apply (c : ℝ≥0) (μ : Measure α) (s : Set α) :
     c • μ s = c * μ s :=
   rfl
+
+@[deprecated (since := "2026-10-27")] alias nnreal_smul_coe_apply := nnReal_smul_coe_apply
 
 theorem ae_smul_measure {p : α → Prop} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (h : ∀ᵐ x ∂μ, p x) (c : R) : ∀ᵐ x ∂c • μ, p x :=
@@ -191,11 +199,16 @@ theorem ae_smul_measure {p : α → Prop} [SMul R ℝ≥0∞] [IsScalarTower R �
 theorem ae_smul_measure_le [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) :
     ae (c • μ) ≤ ae μ := fun _ h ↦ ae_smul_measure h c
 
-lemma ae_ennreal_smul_measure_iff {p : α → Prop} (hc : c ≠ 0) :
+lemma ae_ennReal_smul_measure_iff {p : α → Prop} (hc : c ≠ 0) :
     (∀ᵐ x ∂c • μ, p x) ↔ ∀ᵐ x ∂μ, p x := by simp [ae_iff, hc]
 
-@[simp] lemma ae_ennreal_smul_measure_eq (hc : c ≠ 0) (μ : Measure α) :
-    ae (c • μ) = ae μ := by ext; exact ae_ennreal_smul_measure_iff hc
+@[deprecated (since := "2026-10-27")]
+alias ae_ennreal_smul_measure_iff := ae_ennReal_smul_measure_iff
+
+@[simp] lemma ae_ennReal_smul_measure_eq (hc : c ≠ 0) (μ : Measure α) :
+    ae (c • μ) = ae μ := by ext; exact ae_ennReal_smul_measure_iff hc
+
+@[deprecated (since := "2026-10-27")] alias ae_ennreal_smul_measure_eq := ae_ennReal_smul_measure_eq
 
 lemma ae_smul_measure_iff [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [Module.IsTorsionFree R ℝ≥0∞] {c : R} {p : α → Prop} (hc : c ≠ 0) :

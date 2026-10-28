@@ -147,7 +147,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s P) :
   have : IsProbabilityMeasure P := isProbabilityMeasure hnt.1 hnt.2 huX
   constructor
   · exact aestronglyMeasurable_id.mul
-      (measurable_pdf X P).aemeasurable.ennreal_toReal.aestronglyMeasurable
+      (measurable_pdf X P).aemeasurable.ennReal_toReal.aestronglyMeasurable
   refine hasFiniteIntegral_mul (pdf_eq hcs.measurableSet huX) ?_
   set ind := (volume s)⁻¹ • (1 : ℝ → ℝ≥0∞)
   have : ∀ x, ‖x‖ₑ * s.indicator ind x = s.indicator (fun x => ‖x‖ₑ * ind x) x := fun x =>

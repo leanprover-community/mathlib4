@@ -246,7 +246,7 @@ theorem MemLp.integral_indicator_norm_ge_le (hf : MemLp f 1 μ) {ε : ℝ≥0∞
   simp only [sub_zero] at hM
   refine ⟨M, ?_⟩
   convert! hM M le_rfl
-  simp only [coe_nnnorm, ofReal_eq_coe_nnreal (norm_nonneg _)]
+  simp only [coe_nnnorm, ofReal_eq_coe_nnReal (norm_nonneg _)]
   rfl
 
 theorem MemLp.integral_indicator_norm_ge_nonneg_le (hf : MemLp f 1 μ) {ε : ℝ≥0∞} (hε : 0 < ε) :
@@ -301,14 +301,14 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) {ε : ℝ≥0∞}
     refine ⟨M, ?_⟩
     have hfi : AEStronglyMeasurable ({ x | M ≤ ‖f x‖₊ }.indicator f) μ := by
       refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
-      exact hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_real
+      exact hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnReal_real
     simp only [eLpNorm_exponent_top hfi, hM, zero_le]
   obtain ⟨M, hM', hM⟩ := MemLp.integral_indicator_norm_ge_nonneg_le
     (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (rpow_pos_of_nonneg hε toReal_nonneg)
   refine ⟨M ^ (1 / p.toReal), ?_⟩
   rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top _, ← rpow_one ε]; swap
   · refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
-    exact hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_real
+    exact hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnReal_real
   conv_rhs => rw [← mul_one_div_cancel (toReal_pos hp_ne_zero hp_ne_top).ne']
   rw [rpow_mul]
   gcongr
@@ -334,7 +334,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_pos_le (hf : MemLp f p μ) {ε : ℝ≥0
   refine ⟨max M 1, by positivity, hM.trans' ?_⟩
   refine eLpNorm_mono ?_ (fun x ↦ ?_)
   · refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
-    exact hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnreal_real
+    exact hf.aestronglyMeasurable.nnnorm.aemeasurable.coe_nnReal_real
   · simp only [norm_indicator_eq_indicator_norm]
     grw [← le_max_left]
 
@@ -506,7 +506,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp'
     rw [mul_comm, mul_one_div, div_le_one]
     · gcongr
       refine (toReal_le_of_le_ofReal (measureUnivNNReal_pos hμ).le ?_)
-      rw [ofReal_coe_nnreal, coe_measureUnivNNReal]
+      rw [ofReal_coe_nnReal, coe_measureUnivNNReal]
       exact measure_mono (Set.subset_univ _)
     · exact Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
   rw [eLpNorm_neg, ← add_thirds ε, ← sub_eq_add_neg]
@@ -612,7 +612,7 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
       refine (eLpNorm_le_of_ae_bound ?_ this).trans ?_
       · apply (hf i).restrict.indicator₀
         exact nullMeasurableSet_lt (hf i).nnnorm.aemeasurable.restrict aemeasurable_const
-      rw [mul_comm, Measure.restrict_apply' hs, Set.univ_inter, ENNReal.ofReal_coe_nnreal, one_div]
+      rw [mul_comm, Measure.restrict_apply' hs, Set.univ_inter, ENNReal.ofReal_coe_nnReal, one_div]
     _ ≤ (ε / 2) + C * (ε / (2 * C)) := by
       grw [hC i]
       gcongr
@@ -759,7 +759,7 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
       refine (eLpNorm_le_of_ae_bound ?_ this).trans_eq ?_
       · apply (hf i).indicator₀
         exact nullMeasurableSet_lt (hf i).nnnorm.aemeasurable aemeasurable_const
-      · simp_rw [NNReal.val_eq_coe, ENNReal.ofReal_coe_nnreal, mul_comm]
+      · simp_rw [NNReal.val_eq_coe, ENNReal.ofReal_coe_nnReal, mul_comm]
     _ = ((C : ℝ≥0∞) * μ Set.univ ^ p.toReal⁻¹ + 1 : ℝ≥0∞).toNNReal := by
       rw [coe_toNNReal (by finiteness)]
 

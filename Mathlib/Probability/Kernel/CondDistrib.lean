@@ -323,7 +323,7 @@ theorem condDistrib_ae_eq_condExp (hX : Measurable X) (hY : Measurable Y) (hs : 
       integral_indicator_const _ (hY hs), measureReal_restrict_apply (hY hs), smul_eq_mul, mul_one,
       inter_comm, setLIntegral_condDistrib_of_measurableSet hX hY.aemeasurable hs ht,
       measureReal_def]
-  · exact (measurable_condDistrib hs).ennreal_toReal.aestronglyMeasurable
+  · exact (measurable_condDistrib hs).ennReal_toReal.aestronglyMeasurable
 
 /-- The conditional expectation of a function `f` of the product `(X, Y)` is almost everywhere equal
 to the integral of `y ↦ f(X, y)` against the `condDistrib` kernel. -/

@@ -296,7 +296,7 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
   have room₂ :
     (lintegral (μ : Measure Ω) fun a ↦ fs M a) <
       (lintegral (μ : Measure Ω) fun a ↦ fs M a) + ε / 2 :=
-    ENNReal.lt_add_right (ne_of_lt ((fs M).lintegral_lt_top_of_nnreal _)) ε_pos'
+    ENNReal.lt_add_right (ne_of_lt ((fs M).lintegral_lt_top_of_nnReal _)) ε_pos'
   have ev_near := key₂.eventually_le_const room₂
   have ev_near' := ev_near.mono
     (fun n ↦ le_trans (HasOuterApproxClosed.measure_le_lintegral F_closed (μs n) M))
@@ -523,7 +523,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
     have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
-      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using!
+      simpa only [coe_nnReal_ennReal_nndist, measure_univ, mul_one, ge_iff_le] using!
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
     apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (Eventually.of_forall bound)
   · apply ne_of_lt
@@ -536,7 +536,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
       obtain ⟨i, hi⟩ := hx.exists
       apply le_trans hi
       convert! obs i with x
-      have aux := ENNReal.ofReal_eq_coe_nnreal (f_nn x)
+      have aux := ENNReal.ofReal_eq_coe_nnReal (f_nn x)
       simp only [ContinuousMap.toFun_eq_coe, BoundedContinuousFunction.coe_toContinuousMap] at aux
       rw [aux]
       congr
@@ -567,9 +567,9 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
     · exact IsBoundedUnder.isCoboundedUnder_ge ⟨1, by simp⟩
     · exact ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h_opens
-  simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
+  simp only [ProbabilityMeasure.ennReal_coeFn_eq_coeFn_toMeasure, aux] at obs
   convert! obs
-  simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+  simp only [Function.comp_apply, ProbabilityMeasure.ennReal_coeFn_eq_coeFn_toMeasure]
 
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
 condition `μ(G) ≤ liminf μsₙ(G)`, then the measures `μsₙ` converge weakly to the measure `μ`.
@@ -628,7 +628,7 @@ lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure
     Monotone.map_limsup_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · F) (by fun_prop)
       ⟨1, by simp⟩ ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h
-  simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
+  simp only [ProbabilityMeasure.ennReal_coeFn_eq_coeFn_toMeasure, aux] at obs
   convert! obs
   simp
 
@@ -671,7 +671,7 @@ theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
     grw [h₂]
     simp [measure_mono]
   · refine .of_forall (fun i ↦ ?_)
-    simp_rw [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+    simp_rw [ProbabilityMeasure.ennReal_coeFn_eq_coeFn_toMeasure]
     grw [measure_mono (t := (F ∩ K) ∪ F \ K) (by simp), measure_union_le]
     gcongr
     exact le_trans (measure_mono (by simp)) <| hK_le (μs i) <| by simp

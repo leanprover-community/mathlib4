@@ -34,7 +34,7 @@ variable [Algebra ℝ (H →L[𝕜] H)] [IsScalarTower ℝ 𝕜 (H →L[𝕜] H)
 open scoped InnerProductSpace in
 lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
     SpectrumRestricts f ContinuousMap.realToNNReal := by
-  rw [SpectrumRestricts.nnreal_iff]
+  rw [SpectrumRestricts.nnReal_iff]
   intro c hc
   contrapose! hc
   rw [spectrum.notMem_iff, IsUnit.sub_iff, sub_eq_add_neg, ← map_neg]
@@ -52,7 +52,7 @@ lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
 
 instance : NonnegSpectrumClass ℝ (H →L[𝕜] H) where
   quasispectrum_nonneg_of_nonneg f hf :=
-    QuasispectrumRestricts.nnreal_iff.mp <| sub_zero f ▸ hf.spectrumRestricts
+    QuasispectrumRestricts.nnReal_iff.mp <| sub_zero f ▸ hf.spectrumRestricts
 
 /-- Because this takes `ContinuousFunctionalCalculus ℝ (H →L[𝕜] H) IsSelfAdjoint` as an argument,
 and for the moment we only have this for `𝕜 := ℂ`, this is not registered as an instance. -/

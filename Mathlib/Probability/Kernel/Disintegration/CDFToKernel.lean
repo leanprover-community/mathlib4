@@ -158,7 +158,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
     simp_rw [← measure_stieltjesOfMeasurableRat_Iic]
     refine measure_mono (Iic_subset_Iic.mpr ?_)
     exact mod_cast hij
-  · refine Measurable.ennreal_ofReal ?_
+  · refine Measurable.ennReal_ofReal ?_
     exact (measurable_stieltjesOfMeasurableRat hf.measurable _).comp measurable_prodMk_left
   simp_rw [setLIntegral_stieltjesOfMeasurableRat_rat hf _ _ hs]
   rw [← Monotone.measure_iInter]
@@ -186,7 +186,7 @@ lemma integrable_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKer
     exact stieltjesOfMeasurableRat_nonneg _ _ _
   rw [this]
   refine integrable_toReal_of_lintegral_ne_top ?_ ?_
-  · refine (Measurable.ennreal_ofReal ?_).aemeasurable
+  · refine (Measurable.ennReal_ofReal ?_).aemeasurable
     exact (measurable_stieltjesOfMeasurableRat hf.measurable x).comp measurable_prodMk_left
   · rw [lintegral_stieltjesOfMeasurableRat hf]
     exact measure_ne_top _ _

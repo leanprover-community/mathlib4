@@ -65,15 +65,15 @@ lemma abs_mul_abs (a : A) : abs a * abs a = star a * a :=
   sqrt_mul_sqrt_self _ <| star_mul_self_nonneg _
 
 /- The hypotheses could be weakened to `Commute (star a * a) b`, but
-in that case one should simply use `Commute.cfcₙ_nnreal` directly.
+in that case one should simply use `Commute.cfcₙ_nnReal` directly.
 
 The point of this theorem is to have simpler hypotheses. -/
 lemma _root_.Commute.cfcAbs_left {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute (abs a) b :=
-  .cfcₙ_nnreal (by simp_all [h₂.star_left]) _
+  .cfcₙ_nnReal (by simp_all [h₂.star_left]) _
 
 /- The hypotheses could be weakened to `Commute (star a * a) b`, but
-in that case one should simply use `Commute.cfcₙ_nnreal` directly.
+in that case one should simply use `Commute.cfcₙ_nnReal` directly.
 
 The point of this theorem is to have simpler hypotheses. -/
 lemma _root_.Commute.cfcAbs_right {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
@@ -81,12 +81,12 @@ lemma _root_.Commute.cfcAbs_right {a b : A} (h₁ : Commute a b) (h₂ : Commute
   h₁.cfcAbs_left h₂ |>.symm
 
 /- The hypotheses could be weakened to `Commute (star a * a) (star b * b)`, but
-in that case one should simply use `Commute.cfcₙ_nnreal` (twice) directly.
+in that case one should simply use `Commute.cfcₙ_nnReal` (twice) directly.
 
 The point of this theorem is to have simpler hypotheses. -/
 lemma _root_.Commute.cfcAbs_cfcAbs {a b : A} (h₁ : Commute a b) (h₂ : Commute a (star b)) :
     Commute (abs a) (abs b) :=
-  Commute.cfcₙ_nnreal (by simp_all [h₂.star_left]) _ |>.symm.cfcₙ_nnreal _ |>.symm
+  Commute.cfcₙ_nnReal (by simp_all [h₂.star_left]) _ |>.symm.cfcₙ_nnReal _ |>.symm
 
 /-- Normal elements commute with their absolute value. -/
 lemma commute_abs_self (a : A) (ha : IsStarNormal a := by cfc_tac) :
@@ -233,12 +233,14 @@ lemma abs_one : abs (1 : A) = 1 := by simp
 variable [StarModule ℝ A]
 
 @[simp]
-lemma abs_algebraMap_nnreal (x : ℝ≥0) : abs (algebraMap ℝ≥0 A x) = algebraMap ℝ≥0 A x := by
+lemma abs_algebraMap_nnReal (x : ℝ≥0) : abs (algebraMap ℝ≥0 A x) = algebraMap ℝ≥0 A x := by
   simp [Algebra.algebraMap_eq_smul_one]
+
+@[deprecated (since := "2026-10-27")] alias abs_algebraMap_nnreal := abs_algebraMap_nnReal
 
 @[simp]
 lemma abs_natCast (n : ℕ) : abs (n : A) = n := by
-  simpa only [map_natCast, Nat.abs_cast] using abs_algebraMap_nnreal (n : ℝ≥0)
+  simpa only [map_natCast, Nat.abs_cast] using abs_algebraMap_nnReal (n : ℝ≥0)
 
 @[simp]
 lemma abs_ofNat (n : ℕ) [n.AtLeastTwo] : abs (ofNat(n) : A) = ofNat(n) := by

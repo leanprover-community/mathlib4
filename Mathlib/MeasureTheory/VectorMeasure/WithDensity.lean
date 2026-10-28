@@ -137,7 +137,7 @@ theorem withDensityᵥ_smul_eq_withDensityᵥ_withDensity' {f : α → ℝ≥0�
     (hfg : Integrable (fun x ↦ (f x).toReal • g x) μ) :
     μ.withDensityᵥ (fun x ↦ (f x).toReal • g x) = (μ.withDensity f).withDensityᵥ g := by
   rw [← withDensity_congr_ae (coe_toNNReal_ae_eq hflt),
-    ← withDensityᵥ_smul_eq_withDensityᵥ_withDensity hf.ennreal_toNNReal hfg]
+    ← withDensityᵥ_smul_eq_withDensityᵥ_withDensity hf.ennReal_toNNReal hfg]
   apply congr_arg
   ext
   simp [NNReal.smul_def, ENNReal.coe_toNNReal_eq_toReal]

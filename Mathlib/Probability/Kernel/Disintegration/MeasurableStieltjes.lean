@@ -61,7 +61,7 @@ lemma StieltjesFunction.measurable_measure {α : Type*} {_ : MeasurableSpace α}
     fun a ↦ (f a).isProbabilityMeasure (hf_bot a) (hf_top a)
   .measure_of_isPiSystem_of_isProbabilityMeasure (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic <| by
     simp_rw [forall_mem_range, StieltjesFunction.measure_Iic (f _) (hf_bot _), sub_zero]
-    exact fun _ ↦ (hf _).ennreal_ofReal
+    exact fun _ ↦ (hf _).ennReal_ofReal
 
 namespace ProbabilityTheory
 

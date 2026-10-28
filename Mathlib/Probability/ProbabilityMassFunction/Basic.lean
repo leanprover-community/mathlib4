@@ -88,7 +88,7 @@ theorem support_nonempty (p : PMF α) : p.support.Nonempty :=
 
 @[simp]
 theorem support_countable (p : PMF α) : p.support.Countable :=
-  Summable.countable_support_ennreal (tsum_coe_ne_top p)
+  Summable.countable_support_ennReal (tsum_coe_ne_top p)
 
 theorem apply_eq_zero_iff (p : PMF α) (a : α) : p a = 0 ↔ a ∉ p.support := by
   rw [mem_support_iff, Classical.not_not]

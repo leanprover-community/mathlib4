@@ -18,7 +18,7 @@ measure.
 ## Main definitions
 
 * `IsSigmaSubadditiveSetFun f`: `f` is σ-subadditive on measurable sets
-* `ennrealPreVariation f`: the `VectorMeasure X ℝ≥0∞` built from a σ-subadditive function
+* `ennRealPreVariation f`: the `VectorMeasure X ℝ≥0∞` built from a σ-subadditive function
 * `preVariation f`: the `Measure X` built from a σ-subadditive function
 
 ## References
@@ -244,27 +244,33 @@ end preVariation
 variable (f : Set X → ℝ≥0∞)
 
 /-- The `VectorMeasure X ℝ≥0∞` built from a σ-subadditive function. -/
-noncomputable def ennrealPreVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) :
+noncomputable def ennRealPreVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) :
     VectorMeasure X ℝ≥0∞ where
   measureOf' := preVariationFun f
   empty' := preVariation.empty f
   not_measurable' _ h := by simp [preVariationFun, h]
   m_iUnion' := preVariation.iUnion hf hf'
 
-lemma ennrealPreVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : Set X) :
-  ennrealPreVariation f hf hf' s = preVariationFun f s := rfl
+@[deprecated (since := "2026-10-27")] alias ennrealPreVariation := ennRealPreVariation
+
+lemma ennRealPreVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : Set X) :
+  ennRealPreVariation f hf hf' s = preVariationFun f s := rfl
+
+@[deprecated (since := "2026-10-27")] alias ennrealPreVariation_apply := ennRealPreVariation_apply
 
 @[simp]
-lemma ennrealPreVariation_zero :
-    ennrealPreVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
-  ext; simp [ennrealPreVariation_apply]
+lemma ennRealPreVariation_zero :
+    ennRealPreVariation (0 : Set X → ℝ≥0∞) isSigmaSubadditiveSetFun_zero (by simp) = 0 := by
+  ext; simp [ennRealPreVariation_apply]
+
+@[deprecated (since := "2026-10-27")] alias ennrealPreVariation_zero := ennRealPreVariation_zero
 
 /-- The `Measure X` built from a σ-subadditive function. -/
 noncomputable def preVariation (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) : Measure X :=
-  (ennrealPreVariation f hf hf').ennrealToMeasure
+  (ennRealPreVariation f hf hf').ennRealToMeasure
 
 lemma preVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : Set X) :
-    preVariation f hf hf' s = (ennrealPreVariation f hf hf').ennrealToMeasure s := rfl
+    preVariation f hf hf' s = (ennRealPreVariation f hf hf').ennRealToMeasure s := rfl
 
 @[simp]
 lemma preVariation_zero :
