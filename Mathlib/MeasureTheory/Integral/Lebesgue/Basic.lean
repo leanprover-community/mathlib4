@@ -45,8 +45,10 @@ open SimpleFunc
 variable {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
 /-- The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. -/
-noncomputable irreducible_def lintegral (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
+@[no_expose] noncomputable def lintegral (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
   ⨆ (g : α →ₛ ℝ≥0∞) (_ : ⇑g ≤ f), g.lintegral μ
+
+alias lintegral_def := lintegral.eq_def
 
 /-! In the notation for integrals, an expression like `∫⁻ x, g ‖x‖ ∂μ` will not be parsed correctly,
   and needs parentheses. We do not set the binding power of `r` to `0`, because then
@@ -452,13 +454,13 @@ theorem lintegral_finsetSum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞)
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum, ← lintegral_finsetSum_measure,
-    lintegral, SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum,
+  simp_rw [tsum_eq_iSup_sum, ← lintegral_finsetSum_measure,
+    lintegral, SimpleFunc.lintegral_sum, tsum_eq_iSup_sum,
     SimpleFunc.lintegral_finsetSum, iSup_comm (ι := Finset ι)]
 
 theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     HasSum (fun i => ∫⁻ a, f a ∂μ i) (∫⁻ a, f a ∂Measure.sum μ) :=
-  (lintegral_sum_measure f μ).symm ▸ ENNReal.summable.hasSum
+  (lintegral_sum_measure f μ).symm ▸ CompleteLattice.summable.hasSum
 
 @[simp]
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
@@ -666,7 +668,7 @@ theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : Measurabl
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
     ∫⁻ x in ⋃ i, s i, f x ∂μ = ⨆ i, ∫⁻ x in s i, f x ∂μ := by
-  simp only [lintegral_def, iSup_comm (ι := ι),
+  simp only [lintegral, iSup_comm (ι := ι),
     SimpleFunc.lintegral_restrict_iUnion_of_directed _ hd]
 
 theorem lintegral_max {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :

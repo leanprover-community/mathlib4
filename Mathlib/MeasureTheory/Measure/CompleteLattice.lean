@@ -21,7 +21,7 @@ public section
 
 noncomputable section
 
-open Set ENNReal
+open Set ENNReal CompleteLattice
 
 namespace MeasureTheory.Measure
 
@@ -153,7 +153,7 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
         simp [hx, hxt]
     · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
       rw [tsum_eq_add_tsum_ite 0, tsum_eq_add_tsum_ite 1, ite_eq_right zero_ne_one.symm,
-        ENNReal.summable.tsum_eq_zero_iff.2 _, add_zero]
+        summable.tsum_eq_zero_iff.2 _, add_zero]
       · exact add_le_add (inf_le_left.trans <| by simp [ht']) (inf_le_right.trans <| by simp [ht'])
       · simp only [ite_eq_left_iff]
         intro n hn₁ hn₀
@@ -184,8 +184,8 @@ lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
     have heq : {k | μ (t' k) ≤ ν (t' k)} ∪ {k | ν (t' k) < μ (t' k)} = univ := by
       ext k; simp [le_or_gt]
     conv in ∑' (n : ℕ), μ (t' n) ⊓ ν (t' n) => rw [← tsum_univ, ← heq]
-    rw [ENNReal.summable.tsum_union_of_disjoint (f := fun n ↦ μ (t' n) ⊓ ν (t' n)) ?_
-      ENNReal.summable]
+    rw [summable.tsum_union_of_disjoint (f := fun n ↦ μ (t' n) ⊓ ν (t' n)) ?_
+      summable]
     · refine add_le_add (tsum_congr ?_).le (tsum_congr ?_).le
       · rw [Subtype.forall]
         intro n hn; simpa
