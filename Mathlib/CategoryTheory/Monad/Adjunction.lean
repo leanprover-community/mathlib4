@@ -41,7 +41,6 @@ variable {L : C ⥤ D} {R : D ⥤ C}
 
 namespace Adjunction
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a monad on
 the category `C`.
 -/
@@ -59,7 +58,6 @@ def toMonad (h : L ⊣ R) : Monad C where
     rw [← R.map_comp]
     simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
 -/
