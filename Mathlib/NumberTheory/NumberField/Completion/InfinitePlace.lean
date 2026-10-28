@@ -165,13 +165,14 @@ instance : Coe (WithAbs v.1) v.Completion where
 
 /-- Coercion of an element of `K` into the completion. -/
 instance : Coe K v.Completion where
-  coe k := ofCompletion (k : v.1.Completion)
+  coe k := ofCompletion (WithAbs.toAbs v.1 k : v.1.Completion)
 
 @[simp] lemma coe_toCompletion (x : WithAbs v.1) :
     (x : v.Completion).toCompletion = (x : v.1.Completion) := rfl
 
 @[norm_cast] lemma coe_zero : ((0 : K) : v.Completion) = 0 := by ext; simp
-@[norm_cast] lemma coe_one : ((1 : K) : v.Completion) = 1 := by ext; simp
+@[norm_cast] lemma coe_one : ((1 : K) : v.Completion) = 1 := by
+  ext; simp [UniformSpace.Completion.coe_one]
 @[norm_cast] lemma coe_add (x y : K) : ((x + y : K) : v.Completion) = ↑x + ↑y := by
   ext; simp [UniformSpace.Completion.coe_add]
 @[norm_cast] lemma coe_mul (x y : K) : ((x * y : K) : v.Completion) = ↑x * ↑y := by
@@ -348,7 +349,7 @@ theorem algebraMap_eq_coe (x : WithAbs v.1) :
     algebraMap (WithAbs v.1) w.Completion x = (algebraMap (WithAbs v.1) (WithAbs w.1) x) := by
   apply ext
   rw [algebraMap_toCompletion]
-  exact AbsoluteValue.Completion.ext <|
+  exact AbsoluteValue.Completion.toCompletion_injective _ <|
     UniformSpace.Completion.algebraMap_def (WithAbs w.1) (WithAbs v.1) x
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]

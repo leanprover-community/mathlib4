@@ -133,12 +133,17 @@ end Notation
 namespace Completion
 
 /-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
-@[simps]
+@[simps apply]
 def equivCompletion : v.Completion ≃ UniformSpace.Completion (WithAbs v) where
   toFun := toCompletion
   invFun := ofCompletion
   left_inv _ := rfl
   right_inv _ := rfl
+
+@[simp]
+theorem equivCompletion_symm_apply (x : UniformSpace.Completion (WithAbs v)) :
+    (equivCompletion v).symm x = .ofCompletion x :=
+  rfl
 
 noncomputable instance : NormedField v.Completion := fast_instance% (equivCompletion v).normedField
 
@@ -149,21 +154,35 @@ def equiv : v.Completion ≃+* UniformSpace.Completion (WithAbs v) where
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
-@[simp] lemma toCompletion_ofCompletion (x : UniformSpace.Completion (WithAbs v)) :
+@[simp]
+theorem equiv_symm_apply (x : UniformSpace.Completion (WithAbs v)) :
+    (equiv v).symm x = .ofCompletion x :=
+  rfl
+
+@[simp] theorem toCompletion_ofCompletion (x : UniformSpace.Completion (WithAbs v)) :
     toCompletion (ofCompletion x : v.Completion) = x := rfl
-@[simp] lemma ofCompletion_toCompletion (x : v.Completion) :
+@[simp] theorem ofCompletion_toCompletion (x : v.Completion) :
     ofCompletion x.toCompletion = x := rfl
 
-@[simp] lemma toCompletion_zero : (0 : v.Completion).toCompletion = 0 := rfl
-@[simp] lemma toCompletion_one : (1 : v.Completion).toCompletion = 1 := rfl
-@[simp] lemma toCompletion_add (x y : v.Completion) :
+@[simp] theorem toCompletion_zero : (0 : v.Completion).toCompletion = 0 := rfl
+@[simp] theorem toCompletion_one : (1 : v.Completion).toCompletion = 1 := rfl
+@[simp] theorem toCompletion_add (x y : v.Completion) :
     (x + y).toCompletion = x.toCompletion + y.toCompletion := rfl
-@[simp] lemma toCompletion_mul (x y : v.Completion) :
+@[simp] theorem toCompletion_mul (x y : v.Completion) :
     (x * y).toCompletion = x.toCompletion * y.toCompletion := rfl
 
-@[ext] theorem ext {v : AbsoluteValue K ℝ} {x y : v.Completion}
-    (h : x.toCompletion = y.toCompletion) : x = y := by
-  cases x; cases y; exact congrArg ofCompletion h
+@[simp] theorem ofCompletion_zero : (ofCompletion 0 : v.Completion) = 0 := rfl
+@[simp] theorem ofCompletion_one : (ofCompletion 1 : v.Completion) = 1 := rfl
+@[simp] theorem ofCompletion_add (x y : UniformSpace.Completion (WithAbs v)) :
+    (ofCompletion (x + y) : v.Completion) = ofCompletion x + ofCompletion y := rfl
+@[simp] theorem ofCompletion_mul (x y : UniformSpace.Completion (WithAbs v)) :
+    (ofCompletion (x * y) : v.Completion) = ofCompletion x * ofCompletion y := rfl
+
+theorem toCompletion_injective : Function.Injective (toCompletion (v := v)) :=
+  (equivCompletion v).injective
+
+theorem ofCompletion_injective : Function.Injective (ofCompletion (v := v)) :=
+  (equivCompletion v).symm.injective
 
 theorem toCompletion_surjective : Function.Surjective (toCompletion (v := v)) :=
   (equivCompletion v).surjective
@@ -171,19 +190,25 @@ theorem toCompletion_surjective : Function.Surjective (toCompletion (v := v)) :=
 theorem ofCompletion_surjective : Function.Surjective (ofCompletion (v := v)) :=
   (equivCompletion v).symm.surjective
 
-@[simp] lemma norm_toCompletion (x : v.Completion) : ‖x.toCompletion‖ = ‖x‖ := rfl
+@[simp] theorem norm_toCompletion (x : v.Completion) : ‖x.toCompletion‖ = ‖x‖ := rfl
 
-@[simp] lemma norm_ofCompletion (x : UniformSpace.Completion (WithAbs v)) :
+@[simp] theorem norm_ofCompletion (x : UniformSpace.Completion (WithAbs v)) :
     ‖(ofCompletion x : v.Completion)‖ = ‖x‖ := rfl
 
 theorem isometry_toCompletion : Isometry (toCompletion (v := v)) :=
   Isometry.of_dist_eq fun _ _ ↦ rfl
 
 /-- `Completion.toCompletion` as an isometry equivalence onto the underlying completion. -/
+@[simps! apply]
 noncomputable def isometryEquivCompletion :
     v.Completion ≃ᵢ UniformSpace.Completion (WithAbs v) where
   toEquiv := equivCompletion v
   isometry_toFun := isometry_toCompletion v
+
+@[simp]
+theorem isometryEquivCompletion_symm_apply (x : UniformSpace.Completion (WithAbs v)) :
+    (isometryEquivCompletion v).symm x = .ofCompletion x :=
+  rfl
 
 theorem continuous_toCompletion : Continuous (toCompletion (v := v)) :=
   (isometry_toCompletion v).continuous
@@ -201,21 +226,19 @@ noncomputable instance : Inhabited v.Completion := ⟨0⟩
 noncomputable instance : Coe (WithAbs v) v.Completion where
   coe x := ofCompletion (x : UniformSpace.Completion (WithAbs v))
 
-/-- Coercion of an element of `K` into the completion. -/
-noncomputable instance : Coe K v.Completion where
-  coe k := ofCompletion (toAbs v k : UniformSpace.Completion (WithAbs v))
-
-@[simp] lemma coe_toCompletion (x : WithAbs v) :
+@[simp] theorem coe_toCompletion (x : WithAbs v) :
     (x : v.Completion).toCompletion = (x : UniformSpace.Completion (WithAbs v)) := rfl
 
-@[norm_cast] lemma coe_zero : ((0 : K) : v.Completion) = 0 := by ext; simp
-@[norm_cast] lemma coe_one : ((1 : K) : v.Completion) = 1 := by ext; simp
-@[norm_cast] lemma coe_add (x y : K) : ((x + y : K) : v.Completion) = ↑x + ↑y := by
-  ext; simp [UniformSpace.Completion.coe_add]
-@[norm_cast] lemma coe_mul (x y : K) : ((x * y : K) : v.Completion) = ↑x * ↑y := by
-  ext; simp [UniformSpace.Completion.coe_mul]
+@[norm_cast] theorem coe_zero : ((0 : WithAbs v) : v.Completion) = 0 :=
+  toCompletion_injective v UniformSpace.Completion.coe_zero
+@[norm_cast] theorem coe_one : ((1 : WithAbs v) : v.Completion) = 1 :=
+  toCompletion_injective v <| UniformSpace.Completion.coe_one _
+@[norm_cast] theorem coe_add (x y : WithAbs v) : ((x + y : WithAbs v) : v.Completion) = ↑x + ↑y :=
+  toCompletion_injective v <| UniformSpace.Completion.coe_add x y
+@[norm_cast] theorem coe_mul (x y : WithAbs v) : ((x * y : WithAbs v) : v.Completion) = ↑x * ↑y :=
+  toCompletion_injective v <| UniformSpace.Completion.coe_mul x y
 
-lemma norm_coe (x : WithAbs v) : ‖(x : v.Completion)‖ = v x.ofAbs :=
+theorem norm_coe (x : WithAbs v) : ‖(x : v.Completion)‖ = v x.ofAbs :=
   UniformSpace.Completion.norm_coe x
 
 theorem continuous_coe : Continuous ((↑) : WithAbs v → v.Completion) :=
@@ -235,7 +258,7 @@ theorem induction_on {p : v.Completion → Prop} (x : v.Completion) (hp : IsClos
 
 /-- Two continuous functions out of `v.Completion` into a Hausdorff space that agree on `K`
 are equal. -/
-theorem ext_of_continuous {Y : Type*} [TopologicalSpace Y] [T2Space Y] {f g : v.Completion → Y}
+theorem ext {Y : Type*} [TopologicalSpace Y] [T2Space Y] {f g : v.Completion → Y}
     (hf : Continuous f) (hg : Continuous g) (h : ∀ a : WithAbs v, f a = g a) : f = g :=
   (denseRange_coe v).equalizer hf hg (funext h)
 
@@ -251,8 +274,6 @@ theorem algebraMap_toCompletion (r : R) :
       algebraMap R (UniformSpace.Completion (WithAbs v)) r := rfl
 
 end Algebra
-
-@[simp] theorem algebraMap_apply (k : K) : algebraMap K v.Completion k = (k : v.Completion) := rfl
 
 section LiesOver
 
@@ -276,11 +297,12 @@ theorem continuous_map : Continuous (map v w) :=
 @[simp]
 theorem map_coe (x : WithAbs v) :
     map v w (x : v.Completion) = (WithAbs.map v w (algebraMap K L) x : w.Completion) :=
-  ext <| UniformSpace.Completion.mapRingHom_coe _ x
+  toCompletion_injective w <| UniformSpace.Completion.mapRingHom_coe _ x
 
 /-- If `w` lies over `v` with completions `K_v` and `L_w`, then there is a unique `K_v`-algebra
 structure on `L_w` satisfying both `IsScalarTower K K_v L_w` and `ContinuousSMul K_v L_w`,
-see `AbsoluteValue.Completion.algebraMap_eq` and `AbsoluteValue.Completion.algebra_eq`. -/
+see `AbsoluteValue.Completion.algebraMap_eq_of_liesOver` and
+`AbsoluteValue.Completion.algebra_eq`. -/
 @[instance_reducible]
 noncomputable def algebraOfLiesOver : Algebra v.Completion w.Completion :=
   (map v w).toAlgebra
@@ -298,17 +320,21 @@ instance : letI := algebraOfLiesOver v w
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
   [ContinuousSMul v.Completion w.Completion]
 
-theorem algebraMap_eq : algebraMap v.Completion w.Completion = map v w :=
-  DFunLike.ext' <| ext_of_continuous v (continuous_algebraMap _ _) (continuous_map v w) fun x ↦
+theorem algebraMap_eq_of_liesOver : algebraMap v.Completion w.Completion = map v w :=
+  DFunLike.ext' <| ext v (continuous_algebraMap _ _) (continuous_map v w) fun x ↦
     (IsScalarTower.algebraMap_apply K v.Completion w.Completion x.ofAbs).symm.trans
       (map_coe v w x).symm
 
-theorem algebraMap_of_liesOver_apply (x : v.Completion) :
+@[deprecated (since := "2026-10-28")] alias algebraMap_eq := algebraMap_eq_of_liesOver
+
+theorem algebraMap_apply_of_liesOver (x : v.Completion) :
     algebraMap v.Completion w.Completion x = map v w x := by
-  rw [algebraMap_eq]
+  rw [algebraMap_eq_of_liesOver]
+
+@[deprecated (since := "2026-10-28")] alias algebraMap_apply := algebraMap_apply_of_liesOver
 
 theorem algebra_eq : ‹_› = algebraOfLiesOver v w :=
-  Algebra.algebra_ext _ _ (algebraMap_of_liesOver_apply v w)
+  Algebra.algebra_ext _ _ (algebraMap_apply_of_liesOver v w)
 
 end LiesOver
 

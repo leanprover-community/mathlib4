@@ -51,7 +51,7 @@ scoped instance : IsScalarTower K v.Completion w.Completion :=
     rw [RingHom.algebraMap_toAlgebra, h, completionMap_coe]
     apply Completion.ext
     rw [Completion.algebraMap_toCompletion]
-    apply AbsoluteValue.Completion.ext
+    apply AbsoluteValue.Completion.toCompletion_injective
     rw [AbsoluteValue.Completion.algebraMap_toCompletion, UniformSpace.Completion.algebraMap_def]
     simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
 
