@@ -585,7 +585,7 @@ instance : IsNPowApplyEqIterate (M₁ →L[R₁] M₁) where
 @[deprecated (since := "2026-05-20")] protected alias mul_apply := mul_apply_eq_comp
 
 instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) :=
-  fast_instance% FunLike.monoidWithZero (fun _ => rfl) (fun _ _ => rfl)
+  fast_instance% FunLike.compMonoidWithZero
 
 @[deprecated (since := "2026-07-23")] alias coe_pow' := FunLike.coe_pow_eq_iterate
 
