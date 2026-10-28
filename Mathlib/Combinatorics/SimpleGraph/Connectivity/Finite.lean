@@ -70,13 +70,13 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable {G} in
 lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ G')
     (c' : ConnectedComponent G') [Fintype c'.supp]
     [DecidablePred fun c : G.ConnectedComponent ↦ c.supp ⊆ c'.supp] :
-    .disjiUnion {c : ConnectedComponent G | c.supp ⊆ c'.supp} (fun c ↦ c.supp.toFinset)
-      (fun x _ y _ hxy ↦ by simpa using pairwise_disjoint_supp_connectedComponent _ hxy) =
+    .disjiUnion {c : ConnectedComponent G | c.supp ⊆ c'.supp} (fun c ↦ c.supp.toFinset) (by
+      intro x _ y _ hxy
+      exact Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy)) =
       c'.supp.toFinset :=
   Finset.coe_injective <| by simpa using ConnectedComponent.biUnion_supp_eq_supp h _
 
@@ -86,7 +86,6 @@ end Fintype
 infinite components. -/
 abbrev oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | Odd c.supp.ncard}
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd {c ∈ G.oddComponents | c.supp ⊆ c'.supp}.ncard ↔ Odd c'.supp.ncard := by
