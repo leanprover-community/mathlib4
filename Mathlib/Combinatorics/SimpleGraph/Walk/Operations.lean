@@ -292,7 +292,14 @@ theorem concatRec_nil (u : V) :
 theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
     @concatRec _ _ motive @Hnil @Hconcat _ _ (p.concat h) =
       Hconcat p h (concatRec @Hnil @Hconcat p) := by
-  sorry
+  simp only [concatRec]
+  apply eq_of_heq (rec_heq_of_heq _ _)
+  trans concatRecAux @Hnil @Hconcat (cons h.symm p.reverse)
+  · congr
+    simp
+  · simp only [concatRecAux]
+    apply HEq.trans (eqRec_heq ..)
+    congr <;> simp
 
 end ConcatRec
 
@@ -412,11 +419,8 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
 @[simp]
 theorem ofSupport_support {u v : V} (p : G.Walk u v) :
     ofSupport _ p.support_ne_nil p.isChain_adj_support = p.copy (by simp) (by simp) := by
-  match p with
-  | nil => rfl
-  | cons (v := w) h .nil => rfl
-  | cons (v := u') h₁ (.cons (v := v') h₂ p) =>
-    sorry
+  apply ext_support
+  simp
 
 @[simp]
 theorem darts_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
@@ -445,11 +449,8 @@ theorem mem_darts_reverse {u v : V} {d : G.Dart} {p : G.Walk u v} :
 @[simp]
 theorem ofDarts_darts {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
     ofDarts _ (darts_eq_nil.not.mpr hp) p.isChain_dartAdj_darts = p.copy (by simp) (by simp) := by
-  match p, hp with
-  | nil, hp => simp at hp
-  | cons (v := w) h .nil, _ => rfl
-  | cons (v := u') h₁ (.cons (v := v') h₂ p), _ =>
-    sorry
+  apply ext_support
+  simp [← cons_map_snd_darts]
 
 @[simp]
 theorem edges_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
@@ -606,7 +607,17 @@ lemma take_getVert (p : G.Walk u v) (n m : ℕ) : (p.take n).getVert m = p.getVe
 
 lemma take_add_heq (p : G.Walk u v) (n m : ℕ) :
     p.take (n + m) ≍ (p.take n).append ((p.drop n).take m) := by
-  sorry
+  rw [add_comm]
+  induction p generalizing n <;> cases n
+  case cons.succ h p ih n =>
+    change cons h (p.take (m + n)) ≍ cons h ((p.take n).append ((p.drop n).take m))
+    have hc {a b : V} (q : G.Walk _ a) (r : G.Walk _ b) (hab : a = b) (hqr : q ≍ r) :
+        cons h q ≍ cons h r := by
+      subst b
+      cases eq_of_heq hqr
+      rfl
+    exact hc _ _ (by rw [drop_getVert, add_comm]) (ih n)
+  all_goals rfl
 
 lemma take_add_eq (p : G.Walk u v) (n m : ℕ) :
     p.take (n + m) = ((p.take n).append ((p.drop n).take m)).copy rfl (drop_getVert ..) :=
@@ -742,11 +753,18 @@ lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
       simp [*, ← length_eq_zero_iff]
 
 lemma cons_tail_eq (p : G.Walk u v) (hp : ¬p.Nil) : cons (p.adj_snd hp) p.tail = p := by
-  sorry
+  cases p with
+  | nil => exact (hp .nil).elim
+  | cons h p => cases p <;> rfl
 
 @[simp]
 lemma concat_dropLast {p : G.Walk u v} (hp : G.Adj p.penultimate v) : p.dropLast.concat hp = p := by
-  sorry
+  induction p with
+  | nil => simp at hp
+  | cons hadj p hind =>
+    cases p with
+    | nil => rfl
+    | _ => exact congr(cons hadj $(hind hp))
 
 @[simp]
 lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
