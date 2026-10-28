@@ -226,7 +226,6 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
     _ = μ.real univ • y := by simp [Set.preimage]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ : Measure α) {s : Set α}
     (hs : MeasurableSet s) : (piecewise s hs f 0).integral μ = f.integral (μ.restrict s) := by
@@ -533,7 +532,7 @@ def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
   integralCLM' ℝ
 
 /-- The Bochner integral in L1 space -/
-irreducible_def integral : (α →₁[μ] E) → E :=
+@[no_expose] def integral : (α →₁[μ] E) → E :=
   integralCLM
 
 theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM f := by
@@ -559,8 +558,7 @@ variable (𝕜) in
 theorem integral_eq' (f : α →₁[μ] E) : integral f = integralCLM' 𝕜 f := by
   apply isClosed_property (simpleFunc.denseRange one_ne_top)
     (isClosed_eq _ (integralCLM' 𝕜).continuous) _ f
-  · simp_rw [integral_def]
-    exact (integralCLM (E := E)).continuous
+  · exact (integralCLM (E := E)).continuous
   intro f
   norm_cast
 
