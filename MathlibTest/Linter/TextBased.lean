@@ -481,14 +481,18 @@ section
 
 open Lean Meta
 
-/-- Auxiliary definition used for unit-testing this linter. -/
+/-- Auxiliary definition used for unit-testing this linter.
+
+NB. This function assumes that `name` is a public declaration (as does the linter). -/
 meta def isMisnamedCoercionAux (name : Name) : MetaM (Bool × String) := do
   let (s, m) ← Mathlib.Linter.Style.misnamedCoercions.isMisnamedCoercion name
   return (s, ← m.toString)
 
 -- This lemma is misnamed: the name contains "coe".
 public lemma foo_coe : 2 = 2 := rfl
-/-- info: (true, "This declaration statement references the constant(s) []") -/
+/--
+info: (true, "This declaration statement references the constant(s) [Eq, Nat, OfNat.ofNat, instOfNatNat]")
+-/
 #guard_msgs in
 #eval isMisnamedCoercionAux `foo_coe
 
@@ -504,9 +508,10 @@ public lemma coeFoo_bar_eq_baz : 2 = 2 := rfl
 #eval isMisnamedCoercionAux `coeFoo_bar_eq_baz
 
 -- This lemma involves the name `coe`, but also the coercion `DFunLike.coe`.
-lemma coe_f {M N : Type*} (f : M → N) : (f : M → N) = f := rfl
-/-- info: (false, "") -/ #guard_msgs in
-#eval isMisnamedCoercionAux `coeFoo_bar_eq_baz
+public lemma coe_f {M N : Type*} (f : M → N) : (f : M → N) = f := rfl
+/-- info: (true, "This declaration statement references the constant(s) [Eq]") -/
+#guard_msgs in
+#eval isMisnamedCoercionAux `coe_f
 
 end
 

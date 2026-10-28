@@ -583,10 +583,11 @@ public def isMisnamedCoercion (name : Name) :
   let parts := name.components.getLast!.toString.split "_" |>.toList
   unless parts.contains "coe" || parts.contains "coe'" do return (false, "")
   -- Does the declaration reference a constant called `coe`? If so, we are fine.
-  let coercion_constants := ((← getEnv).find? name).get!.type.getUsedConstants.filter
+  let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
+  let coercionConstants := usedConstants.filter
     fun c ↦ c.components.getLast? == some `coe || c == `UniformSpace.Completion.coe'
-  if coercion_constants.isEmpty then return (true,
-    m!"This declaration statement references the constant(s) {coercion_constants}")
+  if coercionConstants.isEmpty then return (true,
+    m!"This declaration statement references the constant(s) {usedConstants}")
   return (false, "")
 
 /-- Linter that checks for lemmas whose name contains the string "coe",
