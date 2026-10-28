@@ -187,7 +187,7 @@ end lift
 
 /-- If `m` is an upper bound for the index type, then the direct limit is equivalent to the
 component at `m`. -/
-def equivOfForallLE (m : ι) (hm : ∀ i, i ≤ m) : DirectLimit F f ≃ F m where
+def equivOfIsTop (m : ι) (hm : IsTop m) : DirectLimit F f ≃ F m where
   toFun := DirectLimit.lift f (fun i x ↦ f i m (hm i) x) (by simp [map_map'])
   invFun := fun x ↦ ⟦⟨m,x⟩⟧
   left_inv := by
