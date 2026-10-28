@@ -250,7 +250,6 @@ lemma _root_.Center.coe_add (a b : Center R) : (a + b).val = a.val + b.val := rf
 @[simp]
 lemma _root_.Center.coe_nsmul (n : ℕ) (z : Center R) : (n • z).val = n • z.val := rfl
 
-
 @[simps!]
 def _root_.Center.nonUnitalRingHom : Center R →ₙ+* R where
   toFun z := z.val
