@@ -567,13 +567,8 @@ theorem analyticOrderAt_eq_qExpansion_order {f : ℍ → ℂ} (hh : 0 < h)
   -- Both orders are characterized by the vanishing of all coefficients below `n`.
   refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
   rw [natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero
-    (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd)]
-  constructor
-  · exact fun hn ↦ (qExpansion h f).nat_le_order n fun i hi ↦ by simp [qExpansion_coeff, hn i hi]
-  · intro hn i hi
-    have hcoeff : (qExpansion h f).coeff i = 0 :=
-      (qExpansion h f).coeff_of_lt_order i ((ENat.natCast_lt_natCast.mpr hi).trans_le hn)
-    simpa [qExpansion_coeff, Nat.factorial_ne_zero] using hcoeff
+    (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd), PowerSeries.nat_le_order_iff]
+  simp [qExpansion_coeff, Nat.factorial_ne_zero]
 
 end UpperHalfPlane
 

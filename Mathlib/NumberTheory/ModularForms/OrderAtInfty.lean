@@ -63,7 +63,7 @@ variable [Norm E]
 supremum as an `EReal`, so the zero function has order `+∞`, and a function with no exponential
 bound has order `-∞`. See `lt_orderAtInfty_iff` and `le_orderAtInfty_iff` for characterizations. -/
 noncomputable def orderAtInfty (f : ℍ → E) : EReal :=
-    ⨆ t : {t : ℝ // f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im * t)}, (t : EReal)
+  ⨆ t : {t : ℝ // f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im * t)}, (t : EReal)
 
 lemma le_orderAtInfty_of_isBigO (ht : f =O[atImInfty] fun τ ↦ exp (-2 * π * τ.im * t)) :
     t ≤ orderAtInfty f :=
@@ -242,11 +242,8 @@ lemma orderAtInfty_eq_analyticOrderAt_div (hh : 0 < h) (hfper : Periodic (f ∘ 
     (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
     orderAtInfty f = analyticOrderAt (cuspFunction h f) 0 / h := by
   rcases eq_or_ne f 0 with rfl | hfne
-  · rw [cuspFunction, show (0 : ℍ → ℂ) ∘ ofComplex = 0 by rfl,
-      Function.Periodic.cuspFunction_zero, analyticOrderAt_zero, ENat.toENNReal_top,
-      EReal.coe_ennreal_top,
+  · simp [cuspFunction, Pi.zero_comp, Function.Periodic.cuspFunction_zero,
       EReal.top_div_of_pos_ne_top (EReal.coe_pos.mpr hh) (EReal.coe_ne_top h)]
-    exact orderAtInfty_eq_top_iff.mpr fun t ↦ Asymptotics.isBigO_zero _ _
   -- For a nonzero function, the analytic order is finite and the theta estimate is exact.
   have hfinite := analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne
   rw [← Nat.cast_analyticOrderNatAt hfinite]
@@ -271,12 +268,9 @@ at the rate given by its order at infinity. -/
 lemma isTheta_orderAtInfty (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
     (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) (hfne : f ≠ 0) :
     f =Θ[atImInfty] fun τ ↦ exp (-2 * π * τ.im * (orderAtInfty f).toReal) := by
-  have hfinite := analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne
-  rw [orderAtInfty_eq_analyticOrderAt_div hh hfper hfhol hfbdd,
-    ← Nat.cast_analyticOrderNatAt hfinite, ENat.toENNReal_coe, ← ENNReal.coe_natCast,
-    EReal.coe_nnreal_eq_coe_real, NNReal.coe_natCast, ← EReal.coe_div, EReal.toReal_coe]
-  simpa only [mul_div_assoc] using
-    isTheta_analyticOrderAt hh hfper hfhol hfbdd hfne
+  have hθ := isTheta_analyticOrderAt hh hfper hfhol hfbdd hfne
+  simp only [mul_div_assoc] at hθ
+  rwa [orderAtInfty_eq_of_isTheta hθ, EReal.toReal_coe]
 
 /-- The order at infinity is additive on products of periodic functions holomorphic on `ℍ ∪ ∞`. -/
 lemma orderAtInfty_mul_of_holo (hh : 0 < h) {h' : ℝ} (hh' : 0 < h')
@@ -311,10 +305,7 @@ lemma orderAtInfty_prod_of_holo {ι : Type*} {s : Finset ι} {f : ι → ℍ →
       fun i hi ↦ isTheta_orderAtInfty (hh i hi) (hfper i hi) (hfhol i hi) (hfbdd i hi) (hfne i hi)
     have hprodθ := Asymptotics.IsTheta.finsetProd hθ
     simp only [← Real.exp_sum, ← Finset.mul_sum] at hprodθ
-    have hcoe : (↑(∑ i ∈ s, (orderAtInfty (f i)).toReal) : EReal) =
-        ∑ i ∈ s, ↑(orderAtInfty (f i)).toReal :=
-      Finset.induction_on s (by simp) fun i t hi ih ↦ by simp [hi, EReal.coe_add, ih]
-    rw [s.prod_fn, orderAtInfty_eq_of_isTheta hprodθ, hcoe]
+    rw [s.prod_fn, orderAtInfty_eq_of_isTheta hprodθ, ← Real.coe_toERealAddHom, map_sum]
     exact Finset.sum_congr rfl fun i hi ↦ (orderAtInfty_eq_of_isTheta (hθ i hi)).symm
   · obtain ⟨i, hi, hfi⟩ := hfne
     have horder : orderAtInfty (f i) = ⊤ := hfi ▸ orderAtInfty_zero
@@ -331,9 +322,8 @@ lemma orderAtInfty_prod_of_holo {ι : Type*} {s : Finset ι} {f : ι → ℍ →
 lemma orderAtInfty_eq_qExpansion_order (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
     (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
     orderAtInfty f = (qExpansion h f).order / h := by
-  suffices horder : analyticOrderAt (cuspFunction h f) 0 = (qExpansion h f).order by
-    rw [orderAtInfty_eq_analyticOrderAt_div hh hfper hfhol hfbdd, horder]
-  exact analyticOrderAt_eq_qExpansion_order hh hfper hfhol hfbdd
+    rw [orderAtInfty_eq_analyticOrderAt_div hh hfper hfhol hfbdd,
+    analyticOrderAt_eq_qExpansion_order hh hfper hfhol hfbdd]
 
 end Complex
 
