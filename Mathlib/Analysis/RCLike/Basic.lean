@@ -1361,7 +1361,8 @@ end
 namespace LinearIsometryEquiv
 variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module 𝕜 V]
   [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-
+-- attribute [-simp] smul_apply
+attribute [simp] LinearEquiv.smul_apply
 /-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
 as a linear isometric equivalence. -/
 instance : SMul (unitary 𝕜) (V ≃ₗᵢ[𝕜] W) where smul α e :=
