@@ -12,6 +12,7 @@ public import Lean.Linter.Init
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+meta import Lean.DeclarationRange
 meta import Lean.Elab.InfoTree.Util
 meta import Lean.Linter.Basic
 
@@ -26,7 +27,8 @@ Lines consisting entirely of comments are excluded. Blank lines still count, exc
 comments. Declaration headers and trailing comments do not count.
 
 Both tactic and term proofs are checked, including proofs in definitions, instances and examples.
-Elaborated types distinguish proofs from computations returning data.
+Elaborated types distinguish proofs from computations returning data. Proofs elaborated outside
+declaration contexts, such as standalone `#check` commands, are not checked.
 
 Only original source terms are checked. Nested overlong proofs produce a single warning on the
 outermost overlong proof, rather than repeated warnings on its subproofs. Like other info-tree
@@ -50,6 +52,24 @@ public register_option linter.longProof.maxLines : Nat := {
 namespace Mathlib.Linter.LongProof
 
 open Lean Elab Command
+
+/-- Whether an info tree may contain a long proof, using recorded declaration ranges to skip
+short declarations without traversing their bodies. Missing ranges are handled conservatively;
+terms outside parent-declaration contexts are ignored. -/
+private partial def mayContainLongProof (tree : InfoTree) (limit : Nat) : CommandElabM Bool := do
+  match tree with
+  | .context (.parentDeclCtx name) _ =>
+    let some ranges ← findDeclarationRanges? name | return true
+    let range := ranges.range
+    -- The recorded range includes the statement and comments, so its length is an upper bound
+    -- for every proof inside the declaration. An end at column zero excludes that final line.
+    return range.endPos.line - range.pos.line + (if range.endPos.column == 0 then 0 else 1) > limit
+  | .context _ tree => mayContainLongProof tree limit
+  | .node _ children =>
+    for child in children do
+      if ← mayContainLongProof child limit then return true
+    return false
+  | .hole _ => return false
 
 /-- Update the nesting depth of block comments after scanning one line of token trivia.
 
@@ -169,13 +189,17 @@ private def checkLongProofs : Syntax → CommandElabM Unit := withSetOptionIn fu
   if (← get).messages.hasErrors || !(← getInfoState).enabled then return
   let fileMap ← getFileMap
   let limit := linter.longProof.maxLines.get (← getOptions)
+  let trees ← getInfoTrees
+  -- Most declarations fit under the limit even before removing comments. Avoid the syntax
+  -- traversal and proof classification entirely when all their recorded ranges are short.
+  unless ← trees.anyM (mayContainLongProof · limit) do return
   let (code, comments) := sourceLines fileMap stx {} {}
   -- Only lines with comments and no code are free; an inline comment does not exempt its line.
   let commentOnly := comments.filter (!code.contains ·)
   let mut ranges : Array Syntax.Range := #[]
   -- A command can produce several info trees. Enforce the same outermost-range policy across
   -- trees as within each tree, so that each long proof produces just one warning.
-  for tree in ← getInfoTrees do
+  for tree in trees do
     for range in ← longProofs tree fileMap commentOnly limit do
       unless ranges.any (containsRange · range) do
         ranges := (ranges.filter fun inner => !containsRange range inner).push range

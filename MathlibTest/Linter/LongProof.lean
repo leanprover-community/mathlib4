@@ -22,6 +22,32 @@ example : True := by
   skip
   exact True.intro
 
+-- A named declaration whose entire range is exactly the limit can take the fast path.
+#guard_msgs in
+theorem shortProofAtLimit : True := by
+  skip
+  exact True.intro
+
+-- A long declaration range is only an upper bound: its header is still excluded from the count.
+#guard_msgs in
+theorem shortProofWithLongHeader
+    (α : Type)
+    (_x : α)
+    (h : True) :
+    True := by
+  exact h
+
+/--
+warning: This proof contains 4 non-comment lines, exceeding the limit of 3. Consider extracting intermediate results into separate lemmas.
+
+Note: This linter can be disabled with `set_option linter.longProof false`
+-/
+#guard_msgs in
+private theorem longPrivateProofTest : True := by
+  skip
+  skip
+  exact True.intro
+
 /--
 warning: This proof contains 4 non-comment lines, exceeding the limit of 3. Consider extracting intermediate results into separate lemmas.
 
