@@ -468,8 +468,8 @@ instance lt_wf : WellFoundedLT Ordinal :=
 instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   WellFoundedLT.toWellFoundedRelation
 
-instance : ConditionallyCompleteLinearOrderBot Ordinal :=
-  WellFoundedLT.conditionallyCompleteLinearOrderBot _
+instance : ConditionallyCompleteLinearOrder Ordinal :=
+  WellFoundedLT.conditionallyCompleteLinearOrder _
 
 theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
     (f : r ≼i s) (a : α) : typein s (f a) = typein r a := by

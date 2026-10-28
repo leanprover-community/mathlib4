@@ -54,9 +54,6 @@ instance ConditionallyCompleteLinearOrder.toLinearOrder [h : ConditionallyComple
   __ := h
 
 -- see Note [lower instance priority]
-attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
-
--- see Note [lower instance priority]
 /-- A complete lattice is a conditionally complete lattice, as there are no restrictions
 on the properties of sInf and sSup in a complete lattice. -/
 instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [CompleteLattice α] :
@@ -65,8 +62,8 @@ instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [Compl
   exists_isGLB_cond _ _ _ := ⟨_, isGLB_sInf _⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrderBot {α : Type*}
-    [h : CompleteLinearOrder α] : ConditionallyCompleteLinearOrderBot α where
+instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrder {α : Type*}
+    [h : CompleteLinearOrder α] : ConditionallyCompleteLinearOrder α where
   csSup_of_not_bddAbove := fun s H ↦ (H (OrderTop.bddAbove s)).elim
   csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim
   __ := CompleteLattice.toConditionallyCompleteLattice

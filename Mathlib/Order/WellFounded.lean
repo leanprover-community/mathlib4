@@ -108,8 +108,8 @@ theorem not_leftTotal (wf : WellFounded (Function.swap r)) [Nonempty α] :
 /-- A minimal element of a nonempty set in a well-founded order.
 
 If you're working with a nonempty linear order, consider defining a
-`ConditionallyCompleteLinearOrderBot` instance via
-`WellFoundedLT.conditionallyCompleteLinearOrderBot` and using `Inf` instead. -/
+`ConditionallyCompleteLinearOrder` instance via
+`WellFoundedLT.conditionallyCompleteLinearOrder` and using `Inf` instead. -/
 noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) : α :=
   Classical.choose (H.has_min s h)
 

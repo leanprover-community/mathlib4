@@ -26,7 +26,7 @@ variable {α β : Type*}
   [LinearOrder β] [WellFoundedLT β] [TopologicalSpace β] [OrderTopology β]
 
 attribute [local instance]
-  WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrderBot in
+  WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrder in
 theorem IsNormal.continuous {f : α → β} (hf : IsNormal f) : Continuous f := by
   rw [OrderTopology.continuous_iff]
   refine fun b ↦ ⟨?_, ((IsLowerSet.Iio b).preimage hf.strictMono.monotone).isOpen⟩

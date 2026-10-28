@@ -33,7 +33,7 @@ semiring structure.
   product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
 * The less-than relation on cardinals forms a well-order.
-* Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
+* Cardinals form a `ConditionallyCompleteLinearOrder`. Bounded sets for cardinals in universe
   `u` are precisely the sets indexed by some type in universe `u`, see
   `Cardinal.bddAbove_iff_small`. One can use `sSup` for the cardinal supremum,
   and `sInf` for the minimum of a set of cardinals.
@@ -370,8 +370,8 @@ protected instance lt_wf : WellFoundedLT Cardinal.{u} :=
 instance : WellFoundedRelation Cardinal.{u} :=
   WellFoundedLT.toWellFoundedRelation
 
-instance : ConditionallyCompleteLinearOrderBot Cardinal :=
-  WellFoundedLT.conditionallyCompleteLinearOrderBot _
+instance : ConditionallyCompleteLinearOrder Cardinal :=
+  WellFoundedLT.conditionallyCompleteLinearOrder _
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
