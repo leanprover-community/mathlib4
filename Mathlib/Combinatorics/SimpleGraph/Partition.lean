@@ -137,7 +137,6 @@ namespace Partition
 instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
 end Partition
 
-set_option backward.isDefEq.respectTransparency false in
 theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor
   · rintro ⟨P, hf, hc⟩
@@ -147,9 +146,9 @@ theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorabl
   · rintro ⟨C⟩
     refine ⟨C.toPartition, C.colorClasses_finite, le_trans ?_ (Fintype.card_fin n).le⟩
     generalize_proofs h
-    change Set.Finite (Coloring.colorClasses C) at h
     have : Fintype C.colorClasses := C.colorClasses_finite.fintype
+    have : Fintype C.toPartition.parts := this
     rw [h.card_toFinset]
-    exact C.card_colorClasses_le
+    convert! C.card_colorClasses_le
 
 end SimpleGraph
