@@ -3000,6 +3000,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.HasExactLimitsOfShape
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.IndYoneda
 public import Mathlib.CategoryTheory.Limits.Indization.Category
