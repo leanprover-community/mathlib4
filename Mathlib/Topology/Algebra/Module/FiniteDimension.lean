@@ -502,6 +502,37 @@ end ContinuousLinearMap
 
 end NormedField
 
+section IsModuleTopology
+
+variable {𝕜 E : Type*} [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [UniformSpace 𝕜] [CompleteSpace 𝕜]
+  [IsUniformAddGroup 𝕜] [IsTopologicalRing 𝕜] [Nontrivial 𝕜]
+
+variable (𝕜 E) in
+theorem FiniteDimensional.complete_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
+    [Module.Finite 𝕜 E] [Module.Free 𝕜 E] [IsModuleTopology 𝕜 E] : CompleteSpace E := by
+  let e := (Module.finBasis 𝕜 E).equivFun
+  have h₁ : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
+  have h₂ : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
+  have he : IsUniformEmbedding e.toEquiv := e.isUniformEmbedding h₁ h₂
+  exact (completeSpace_congr he).mpr inferInstance
+
+theorem Submodule.complete_of_finiteDimensional_of_isModuleTopology
+    [UniformSpace E] [IsUniformAddGroup E]
+    (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Free 𝕜 s] [IsModuleTopology 𝕜 s] :
+    IsComplete (s : Set E) :=
+  haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
+  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.complete_of_isModuleTopology 𝕜 s)
+
+theorem Submodule.closed_of_finiteDimensional_of_isModuleTopology
+    [TopologicalSpace E] [IsTopologicalAddGroup E] [T0Space E]
+    (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Free 𝕜 s] [IsModuleTopology 𝕜 s] :
+    IsClosed (s : Set E) :=
+  letI := IsTopologicalAddGroup.rightUniformSpace E
+  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  s.complete_of_finiteDimensional_of_isModuleTopology.isClosed
+
+end IsModuleTopology
+
 section IsUniformAddGroup
 
 variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
@@ -509,18 +540,17 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 include 𝕜 in
-theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E := by
-  set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  have : IsUniformEmbedding e.toEquiv.symm := e.symm.isUniformEmbedding
-  exact (completeSpace_congr this).1 inferInstance
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
+theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E :=
+  FiniteDimensional.complete_of_isModuleTopology 𝕜 E
 
 variable {𝕜 E}
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- A finite-dimensional subspace is complete. -/
 theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsComplete (s : Set E) :=
-  haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
-  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.complete 𝕜 s)
+  s.complete_of_finiteDimensional_of_isModuleTopology
 
 end IsUniformAddGroup
 
@@ -530,13 +560,12 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
   [ContinuousSMul 𝕜 F]
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- A finite-dimensional subspace is closed. -/
 theorem Submodule.closed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
-  letI := IsTopologicalAddGroup.rightUniformSpace E
-  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
-  s.complete_of_finiteDimensional.isClosed
+  s.closed_of_finiteDimensional_of_isModuleTopology
 
 /-- If `s` is a closed subspace with finite codimension, any subspace containing `s` is closed. -/
 theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
