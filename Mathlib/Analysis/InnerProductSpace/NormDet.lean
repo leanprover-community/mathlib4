@@ -261,6 +261,7 @@ theorem normDet_smul (f : U →ₗ[𝕜] V) (c : 𝕜) :
 theorem normDet_neg (f : U →ₗ[𝕜] V) : (-f).normDet = f.normDet := by
   simpa using f.normDet_smul (-1)
 
+attribute [local instance] isModuleTopologyOfFiniteDimensional
 /--
 The square of `f.normDet` equals the determinant of `f.adjoint ∘L f`.
 -/
