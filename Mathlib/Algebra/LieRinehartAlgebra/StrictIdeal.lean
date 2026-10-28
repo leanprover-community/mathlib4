@@ -23,13 +23,19 @@ acting trivially on `A`.
 `f: L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂` is a Lie-Rinehart ideal. In particular the kernel of such an `f`
 is an ideal.
 
-## Remark on strictness:
+## Remark on strictness
 
-The strict notion corresponds to ideals which realize kernels of Lie Rinehart homomorphisms over
-the identity algebra map of `A`. We use the word strict, because more flexible notions of ideals
-exists:
-https://www.uni-math.gwdg.de/mjotz/JotzLean18c.pdf
-https://arxiv.org/pdf/1706.07084
+The strict notion corresponds to ideals which realize kernels of Lie-Rinehart homomorphisms over
+the identity algebra map of `A`. Strict ideals are simply called ideals in
+[castiglioni_garcia-martinez_ladra_2018]. We use the word strict, because more flexible notions of
+ideals exist, see [albuquerque_barreiro_calderon_sanchez_2021].
+
+## References
+
+* [J. L. Castiglioni, X. García-Martínez, M. Ladra,
+  *Universal central extensions of Lie-Rinehart algebras*][castiglioni_garcia-martinez_ladra_2018]
+* [H. Albuquerque, E. Barreiro, A. J. Calderón, J. M. Sánchez,
+  *Split Lie-Rinehart algebras*][albuquerque_barreiro_calderon_sanchez_2021]
 
 -/
 

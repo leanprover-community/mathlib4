@@ -19,6 +19,16 @@ structure of a Lie-Rinehart algebra.
 
 * The quotient map `mk'` is a Lie-Rinehart algebra homomorphism.
 
+## Implementation notes
+
+Quotients by strict ideals appear in [huebschmann_1999] in the form of extensions; in our notation
+these are the short exact sequences `0 → s → L → L ⧸ s → 0`.
+
+## References
+
+* [J. Huebschmann,
+  *Extensions of Lie-Rinehart algebras and the Chern-Weil construction*][huebschmann_1999]
+
 -/
 
 public section
