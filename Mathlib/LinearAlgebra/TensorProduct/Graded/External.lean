@@ -175,7 +175,7 @@ variable [DirectSum.GAlgebra R 𝒜] [DirectSum.GAlgebra R ℬ]
 
 open TensorProduct (assoc map) in
 /-- The multiplication operation for tensor products of externally `ι`-graded algebras. -/
-noncomputable irreducible_def gradedMul :
+@[no_expose] noncomputable def gradedMul :
     letI AB := DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ
     letI : Module R AB := TensorProduct.leftModule
     AB →ₗ[R] AB →ₗ[R] AB := by
