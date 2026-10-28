@@ -119,8 +119,8 @@ protected theorem DirectedOn.lt_csSup_of_lt (hd : DirectedOn (· ≤ ·) s) (hs 
 theorem csSup_singleton (a : α) : sSup {a} = a :=
   sSup_singleton
 
-attribute [deprecated sSup_singleton (since := "2026-04-24")] csSup_singleton
-attribute [deprecated sInf_singleton (since := "2026-04-24")] csInf_singleton
+attribute [deprecated sSup_singleton +typeChanged (since := "2026-10-29")] csSup_singleton
+attribute [deprecated sInf_singleton +typeChanged (since := "2026-10-29")] csInf_singleton
 
 @[simp]
 theorem csInf_Ici {α : Type*} [ConditionallyCompletePartialOrderInf α] {a : α} :
