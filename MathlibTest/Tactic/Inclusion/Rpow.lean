@@ -10,6 +10,10 @@ open Real
 
 namespace Inclusion.Tests
 
+example : (2 : ℝ) ^ (0 : ℝ) = 1 := by dyadic_interval
+
+example {x : ℝ} (hx : 1 ≤ x) : x ^ (0 : ℝ) = 1 := by dyadic_interval
+
 example : (2 : ℝ) ^ (0.5 : ℝ) ∈ Set.Icc 1.4142 1.4143 := by
   dyadic_interval [prec := 20]
 
