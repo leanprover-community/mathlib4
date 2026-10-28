@@ -106,6 +106,7 @@ open WithAbs
 
 variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
+set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- The completion of a field with respect to a real absolute value, as a one-field structure
 wrapping the uniform-space completion of `WithAbs v`. -/
@@ -120,7 +121,7 @@ section Notation
 
 open Lean.PrettyPrinter.Delaborator
 
-/-- Prevents `ofCompletion v x` being printed as `{ toCompletion := x }`
+/-- Prevents `ofCompletion v x` being printed as `{ toCompletion' := x }`
 by `delabStructureInstance`. -/
 @[app_delab Completion.ofCompletion']
 meta def Completion.delabOfCompletion' : Delab := delabApp
