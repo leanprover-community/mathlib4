@@ -510,7 +510,7 @@ lemma ContDiffOn.parametric_integral
       have : z ∈ v'' := by
         have : u'' ×ˢ (t'' ∩ k) ⊆ v'' := Subset.trans (by gcongr) (ht'.trans inter_subset_right)
         exact this z_mem
-      simp only [Finset.mem_Iic, mem_iInter, mem_ofPred_eq, v''] at this
+      simp only [Finset.mem_Iic, mem_iInter, mem_ofPred, v''] at this
       exact this i hi
   refine ⟨k', k'_mem, k', inter_subset_right, k'k, k'meas, fun t tk' tmeas hmut ↦ ?_⟩
   have : HasFTaylorSeriesUpToOn m (fun x ↦ ∫ a in t, f x a ∂μ)
