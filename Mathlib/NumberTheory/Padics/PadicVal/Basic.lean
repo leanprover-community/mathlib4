@@ -78,12 +78,12 @@ theorem multiplicity_dvd_of_ne_zero {n : ℕ} (h : multiplicity p n ≠ 0) : p �
 
 end Nat
 
-@[deprecated (since := "2026-09-12")] alias padicValNat.self := Nat.multiplicity_self
+@[deprecated (since := "2026-10-28")] alias padicValNat.self := Nat.multiplicity_self
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.eq_zero_of_not_dvd :=
+@[deprecated (since := "2026-10-28")] alias padicValNat.eq_zero_of_not_dvd :=
   multiplicity_eq_zero_of_not_dvd
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.dvd_of_ne_zero :=
+@[deprecated (since := "2026-10-28")] alias padicValNat.dvd_of_ne_zero :=
   Nat.multiplicity_dvd_of_ne_zero
 
 /-- For `p ≠ 1`, the `p`-adic valuation of an integer `z ≠ 0` is the largest natural number `k` such
@@ -186,21 +186,21 @@ theorem padicValRat_of_nat (n : ℕ) : ↑(multiplicity p n) = padicValRat p n :
 theorem Nat.Prime.multiplicity_self [hp : Fact p.Prime] : multiplicity p p = 1 :=
   Nat.multiplicity_self hp.out.one_lt
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_self := Nat.Prime.multiplicity_self
+@[deprecated (since := "2026-10-28")] alias padicValNat_self := Nat.Prime.multiplicity_self
 
 theorem one_le_multiplicity_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) (div : p ∣ n) :
     1 ≤ multiplicity p n := by
   rwa [← ENat.natCast_le_natCast, multiplicity_eq_emultiplicity hn,
     ← pow_dvd_iff_le_emultiplicity, pow_one]
 
-@[deprecated (since := "2026-09-11")] alias one_le_padicValNat_of_dvd := one_le_multiplicity_of_dvd
+@[deprecated (since := "2026-10-28")] alias one_le_padicValNat_of_dvd := one_le_multiplicity_of_dvd
 
 theorem dvd_iff_multiplicity_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     p ∣ n ↔ multiplicity p n ≠ 0 :=
   ⟨fun h => one_le_iff_ne_zero.mp (one_le_multiplicity_of_dvd hn0 h), fun h =>
     Classical.not_not.1 (mt multiplicity_eq_zero_of_not_dvd h)⟩
 
-@[deprecated (since := "2026-09-11")] alias dvd_iff_padicValNat_ne_zero :=
+@[deprecated (since := "2026-10-28")] alias dvd_iff_padicValNat_ne_zero :=
   dvd_iff_multiplicity_ne_zero
 
 end multiplicity
@@ -462,13 +462,13 @@ theorem multiplicity_div' {m : ℕ} (cpm : Coprime p m) {b : ℕ} (dvd : m ∣ b
 
 end Nat
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.mul := Nat.multiplicity_mul
-@[deprecated (since := "2026-09-11")] alias padicValNat.div_of_dvd := Nat.multiplicity_div_of_dvd
-@[deprecated (since := "2026-09-11")] alias padicValNat.div := Nat.multiplicity_div
-@[deprecated (since := "2026-09-11")] alias padicValNat.pow := Nat.multiplicity_pow
-@[deprecated (since := "2026-09-11")] alias padicValNat.prime_pow := Nat.multiplicity_prime_pow
-@[deprecated (since := "2026-09-11")] alias padicValNat.div_pow := Nat.multiplicity_div_pow
-@[deprecated (since := "2026-09-11")] alias padicValNat.div' := Nat.multiplicity_div'
+@[deprecated (since := "2026-10-28")] alias padicValNat.mul := Nat.multiplicity_mul
+@[deprecated (since := "2026-10-28")] alias padicValNat.div_of_dvd := Nat.multiplicity_div_of_dvd
+@[deprecated (since := "2026-10-28")] alias padicValNat.div := Nat.multiplicity_div
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow := Nat.multiplicity_pow
+@[deprecated (since := "2026-10-28")] alias padicValNat.prime_pow := Nat.multiplicity_prime_pow
+@[deprecated (since := "2026-10-28")] alias padicValNat.div_pow := Nat.multiplicity_div_pow
+@[deprecated (since := "2026-10-28")] alias padicValNat.div' := Nat.multiplicity_div'
 
 section multiplicity
 
@@ -479,17 +479,17 @@ theorem dvd_of_one_le_multiplicity {n : ℕ} (hp : 1 ≤ multiplicity p n) : p �
   rw [multiplicity_eq_zero_of_not_dvd h] at hp
   exact lt_irrefl 0 (lt_of_lt_of_le zero_lt_one hp)
 
-@[deprecated (since := "2026-09-11")] alias dvd_of_one_le_padicValNat :=
+@[deprecated (since := "2026-10-28")] alias dvd_of_one_le_padicValNat :=
   dvd_of_one_le_multiplicity
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_dvd_iff_le_of_ne_one :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_dvd_iff_le_of_ne_one :=
   Nat.pow_dvd_iff_le_multiplicity
 
 theorem multiplicity_dvd_iff_le [hp : Fact p.Prime] {a n : ℕ} (ha : a ≠ 0) :
     p ^ n ∣ a ↔ n ≤ multiplicity p a :=
   Nat.pow_dvd_iff_le_multiplicity hp.out.ne_one ha
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_dvd_iff_le :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_dvd_iff_le :=
   multiplicity_dvd_iff_le
 
 theorem multiplicity_dvd_iff_of_ne_one {p : ℕ} (hp : p ≠ 1) (n a : ℕ) :
@@ -498,21 +498,21 @@ theorem multiplicity_dvd_iff_of_ne_one {p : ℕ} (hp : p ≠ 1) (n a : ℕ) :
   · exact iff_of_true (dvd_zero _) (Or.inl rfl)
   · rw [Nat.pow_dvd_iff_le_multiplicity hp ha, or_iff_right ha]
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_dvd_iff_of_ne_one :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_dvd_iff_of_ne_one :=
   multiplicity_dvd_iff_of_ne_one
 
 theorem multiplicity_dvd_iff (n : ℕ) [hp : Fact p.Prime] (a : ℕ) :
     p ^ n ∣ a ↔ a = 0 ∨ n ≤ multiplicity p a :=
   multiplicity_dvd_iff_of_ne_one hp.out.ne_one n a
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_dvd_iff := multiplicity_dvd_iff
+@[deprecated (since := "2026-10-28")] alias padicValNat_dvd_iff := multiplicity_dvd_iff
 
 theorem pow_succ_multiplicity_not_dvd {n : ℕ} [hp : Fact p.Prime] (hn : n ≠ 0) :
     ¬p ^ (multiplicity p n + 1) ∣ n := by
   rw [multiplicity_dvd_iff_le hn, not_le]
   exact Nat.lt_succ_self _
 
-@[deprecated (since := "2026-09-11")] alias pow_succ_padicValNat_not_dvd :=
+@[deprecated (since := "2026-10-28")] alias pow_succ_padicValNat_not_dvd :=
   pow_succ_multiplicity_not_dvd
 
 theorem multiplicity_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (ne : p ≠ q) :
@@ -520,13 +520,13 @@ theorem multiplicity_primes {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime] (n
   multiplicity_eq_zero_of_not_dvd <|
     (not_congr (Iff.symm (prime_dvd_prime_iff_eq hp.1 hq.1))).mp ne
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_primes := multiplicity_primes
+@[deprecated (since := "2026-10-28")] alias padicValNat_primes := multiplicity_primes
 
 theorem multiplicity_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n : ℕ) (ne : p ≠ q) : multiplicity p (q ^ n) = 0 := by
   rw [Nat.multiplicity_pow _, multiplicity_primes ne, mul_zero]
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_prime_prime_pow :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_prime_prime_pow :=
   multiplicity_prime_prime_pow
 
 theorem multiplicity_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
@@ -534,7 +534,7 @@ theorem multiplicity_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Pri
   rw [Nat.multiplicity_mul (NeZero.ne' (p ^ n)).symm (NeZero.ne' (q ^ m)).symm,
     Nat.multiplicity_prime_pow, multiplicity_prime_prime_pow m ne, add_zero]
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_mul_pow_left :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_mul_pow_left :=
   multiplicity_mul_pow_left
 
 theorem multiplicity_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
@@ -542,7 +542,7 @@ theorem multiplicity_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Pr
   rw [mul_comm (p ^ n) (q ^ m)]
   exact multiplicity_mul_pow_left m n ne
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_mul_pow_right :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_mul_pow_right :=
   multiplicity_mul_pow_right
 
 /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t. `p`. -/
@@ -554,7 +554,7 @@ lemma multiplicity_le_nat_log (n : ℕ) : multiplicity p n ≤ Nat.log p n := by
   · simp
   exact Nat.le_log_of_pow_le p.one_lt_succ_succ (le_of_dvd n.succ_pos (pow_multiplicity_dvd ..))
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_le_nat_log := multiplicity_le_nat_log
+@[deprecated (since := "2026-10-28")] alias padicValNat_le_nat_log := multiplicity_le_nat_log
 
 lemma multiplicity_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
     multiplicity p a + p ≤ a := by
@@ -570,7 +570,7 @@ lemma multiplicity_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
   · rw [multiplicity_eq_zero_of_not_dvd dvd]
     lia
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_add_le_self := multiplicity_add_le_self
+@[deprecated (since := "2026-10-28")] alias padicValNat_add_le_self := multiplicity_add_le_self
 
 /-- The p-adic valuation of `n` is equal to the logarithm w.r.t. `p` iff
 `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
@@ -579,7 +579,7 @@ lemma nat_log_eq_multiplicity_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : n �
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by lia⟩), and_iff_right_iff_imp]
   exact fun _ => Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr hn) (pow_multiplicity_dvd p n)
 
-@[deprecated (since := "2026-09-11")] alias nat_log_eq_padicValNat_iff :=
+@[deprecated (since := "2026-10-28")] alias nat_log_eq_padicValNat_iff :=
   nat_log_eq_multiplicity_iff
 
 /-- This is false for prime numbers other than 2:
@@ -593,7 +593,7 @@ lemma Nat.log_ne_multiplicity_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ multip
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_multiplicity_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
 
-@[deprecated (since := "2026-09-11")] alias Nat.log_ne_padicValNat_succ :=
+@[deprecated (since := "2026-10-28")] alias Nat.log_ne_padicValNat_succ :=
   Nat.log_ne_multiplicity_succ
 
 lemma Nat.max_log_multiplicity_succ_eq_log_succ (n : ℕ) [hp : Fact p.Prime] :
@@ -606,7 +606,7 @@ lemma Nat.max_log_multiplicity_succ_eq_log_succ (n : ℕ) [hp : Fact p.Prime] :
     (pow_log_le_self p n.succ_ne_zero)
   rw [h, Nat.multiplicity_prime_pow, ← h]
 
-@[deprecated (since := "2026-09-11")] alias Nat.max_log_padicValNat_succ_eq_log_succ :=
+@[deprecated (since := "2026-10-28")] alias Nat.max_log_padicValNat_succ_eq_log_succ :=
   Nat.max_log_multiplicity_succ_eq_log_succ
 
 theorem range_pow_multiplicity_subset_divisors {n : ℕ} (hn : n ≠ 0) :
@@ -617,7 +617,7 @@ theorem range_pow_multiplicity_subset_divisors {n : ℕ} (hn : n ≠ 0) :
   rw [Nat.mem_divisors]
   exact ⟨(pow_dvd_pow p <| by lia).trans (pow_multiplicity_dvd p n), hn⟩
 
-@[deprecated (since := "2026-09-11")] alias range_pow_padicValNat_subset_divisors :=
+@[deprecated (since := "2026-10-28")] alias range_pow_padicValNat_subset_divisors :=
   range_pow_multiplicity_subset_divisors
 
 theorem range_pow_multiplicity_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
@@ -631,7 +631,7 @@ theorem range_pow_multiplicity_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   refine ⟨?_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans (pow_multiplicity_dvd p n), hn⟩
   exact (Nat.one_lt_pow k.succ_ne_zero hp.out.one_lt).ne'
 
-@[deprecated (since := "2026-09-11")] alias range_pow_padicValNat_subset_divisors' :=
+@[deprecated (since := "2026-10-28")] alias range_pow_padicValNat_subset_divisors' :=
   range_pow_multiplicity_subset_divisors'
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
@@ -642,7 +642,7 @@ theorem multiplicity_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
       multiplicity_eq_emultiplicity <| factorial_ne_zero n]
   exact Prime.emultiplicity_factorial_mul hp.out
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_factorial_mul :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_factorial_mul :=
   multiplicity_factorial_mul
 
 /-- The `p`-adic valuation of `m` equals zero if it is between `p * k` and `p * (k + 1)` for
@@ -651,7 +651,7 @@ theorem multiplicity_eq_zero_of_mem_Ioo {m k : ℕ}
     (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : multiplicity p m = 0 :=
   multiplicity_eq_zero_of_not_dvd <| not_dvd_of_lt_of_lt_mul_succ hm.1 hm.2
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_eq_zero_of_mem_Ioo :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_eq_zero_of_mem_Ioo :=
   multiplicity_eq_zero_of_mem_Ioo
 
 theorem multiplicity_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
@@ -666,7 +666,7 @@ theorem multiplicity_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (
         (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h))⟩,
       zero_add]
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_factorial_mul_add :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_factorial_mul_add :=
   multiplicity_factorial_mul_add
 
 /-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
@@ -676,7 +676,7 @@ largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
   nth_rw 2 [← div_add_mod n p]
   exact (multiplicity_factorial_mul_add (n / p) <| mod_lt n hp.out.pos).symm
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_mul_div_factorial :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_mul_div_factorial :=
   multiplicity_mul_div_factorial
 
 /-- **Legendre's Theorem**
@@ -688,9 +688,9 @@ theorem multiplicity_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < 
   exact_mod_cast ((multiplicity_eq_emultiplicity (p := p) <| factorial_ne_zero _) ▸
       Prime.emultiplicity_factorial hp.out hnb)
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_factorial := multiplicity_factorial
+@[deprecated (since := "2026-10-28")] alias padicValNat_factorial := multiplicity_factorial
 
-@[deprecated (since := "2026-09-11")] alias sub_one_mul_padicValNat_factorial :=
+@[deprecated (since := "2026-10-28")] alias sub_one_mul_padicValNat_factorial :=
   Nat.Prime.sub_one_mul_multiplicity_factorial
 
 variable (p)
@@ -703,7 +703,7 @@ theorem sub_one_mul_multiplicity_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n 
   exact List.sum_pos_iff_exists_pos_nat.mpr
     ⟨_, List.getLast_mem hnil, Nat.pos_of_ne_zero (Nat.getLast_digit_ne_zero p hn)⟩
 
-@[deprecated (since := "2026-09-11")] alias sub_one_mul_padicValNat_factorial_lt_of_ne_zero :=
+@[deprecated (since := "2026-10-28")] alias sub_one_mul_padicValNat_factorial_lt_of_ne_zero :=
   sub_one_mul_multiplicity_factorial_lt_of_ne_zero
 
 theorem multiplicity_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
@@ -713,7 +713,7 @@ theorem multiplicity_factorial_lt_of_ne_zero [hp : Fact p.Prime] {n : ℕ} (hn :
   gcongr
   exact le_sub_one_of_lt (Nat.Prime.one_lt hp.elim)
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_factorial_lt_of_ne_zero :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_factorial_lt_of_ne_zero :=
   multiplicity_factorial_lt_of_ne_zero
 
 theorem multiplicity_factorial_le [hp : Fact p.Prime] (n : ℕ) : multiplicity p n.factorial ≤ n := by
@@ -721,7 +721,7 @@ theorem multiplicity_factorial_le [hp : Fact p.Prime] (n : ℕ) : multiplicity p
   · simp [hn]
   · exact le_of_lt (multiplicity_factorial_lt_of_ne_zero p hn)
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_factorial_le := multiplicity_factorial_le
+@[deprecated (since := "2026-10-28")] alias padicValNat_factorial_le := multiplicity_factorial_le
 
 variable {p}
 
@@ -735,7 +735,7 @@ theorem multiplicity_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (h
   exact_mod_cast (multiplicity_eq_emultiplicity (p := p) (choose_ne_zero hkn)) ▸
     Prime.emultiplicity_choose hp.out hkn hnb
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_choose := multiplicity_choose
+@[deprecated (since := "2026-10-28")] alias padicValNat_choose := multiplicity_choose
 
 /-- **Kummer's Theorem**
 
@@ -747,7 +747,7 @@ theorem multiplicity_choose' {n k b : ℕ} [hp : Fact p.Prime] (hnb : log p (n +
   exact_mod_cast (multiplicity_eq_emultiplicity (p := p) <| choose_ne_zero <|
     Nat.le_add_left k n) ▸ Prime.emultiplicity_choose' hp.out hnb
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_choose' := multiplicity_choose'
+@[deprecated (since := "2026-10-28")] alias padicValNat_choose' := multiplicity_choose'
 
 /-- **Kummer's Theorem**
 Taking (`p - 1`) times the `p`-adic valuation of the binomial `n + k` over `k` equals the sum of the
@@ -766,7 +766,7 @@ theorem sub_one_mul_multiplicity_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fac
       add_comm, tsub_tsub_assoc (Nat.le_refl (k + n)) <| (add_comm k n) ▸ (Nat.add_le_add
       (digit_sum_le p n) (digit_sum_le p k)), Nat.sub_self (k + n), zero_add, add_comm]
 
-@[deprecated (since := "2026-09-11")] alias sub_one_mul_padicValNat_choose_eq_sub_sum_digits' :=
+@[deprecated (since := "2026-10-28")] alias sub_one_mul_padicValNat_choose_eq_sub_sum_digits' :=
   sub_one_mul_multiplicity_choose_eq_sub_sum_digits'
 
 /-- **Kummer's Theorem**
@@ -779,7 +779,7 @@ theorem sub_one_mul_multiplicity_choose_eq_sub_sum_digits {k n : ℕ} [hp : Fact
   convert @sub_one_mul_multiplicity_choose_eq_sub_sum_digits' _ _ _ ‹_›
   all_goals lia
 
-@[deprecated (since := "2026-09-11")] alias sub_one_mul_padicValNat_choose_eq_sub_sum_digits :=
+@[deprecated (since := "2026-10-28")] alias sub_one_mul_padicValNat_choose_eq_sub_sum_digits :=
   sub_one_mul_multiplicity_choose_eq_sub_sum_digits
 
 end multiplicity

@@ -37,7 +37,7 @@ theorem multiplicity_eq_emultiplicity_of_ne_one (hp : p ≠ 1) {n : ℕ} (hn : n
     pow_dvd_iff_le_multiplicity hp hn]
   simp
 
-@[deprecated (since := "2026-09-11")] alias padicValNat_eq_emultiplicity_of_ne_one :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_eq_emultiplicity_of_ne_one :=
   multiplicity_eq_emultiplicity_of_ne_one
 
 @[simp]
@@ -56,7 +56,7 @@ theorem multiplicity_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 
     multiplicity p n = emultiplicity p n :=
   multiplicity_eq_emultiplicity_of_ne_one hp.out.ne_one hn
 
-@[deprecated (since := "2026-09-12")] alias padicValNat_eq_emultiplicity :=
+@[deprecated (since := "2026-10-28")] alias padicValNat_eq_emultiplicity :=
   multiplicity_eq_emultiplicity
 
 @[simp]
@@ -65,7 +65,7 @@ theorem Nat.multiplicity_eq_zero_iff {n : ℕ} : multiplicity p n = 0 ↔ p = 1 
   rcases eq_or_ne p 1 with rfl | hp₁; · simp
   simpa [*] using pow_dvd_iff_le_multiplicity (k := 1) hp₁ hn₀ |>.symm |>.not
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.eq_zero_iff :=
+@[deprecated (since := "2026-10-28")] alias padicValNat.eq_zero_iff :=
   Nat.multiplicity_eq_zero_iff
 
 open List
@@ -84,7 +84,7 @@ theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : 
       |>.emultiplicity_eq_multiplicity, ← padicValNat_def,
     ENat.natCast_le_natCast]
 
-@[deprecated (since := "2026-09-11")] alias le_padicValNat_iff_replicate_subperm_primeFactorsList :=
+@[deprecated (since := "2026-10-28")] alias le_padicValNat_iff_replicate_subperm_primeFactorsList :=
   le_multiplicity_iff_replicate_subperm_primeFactorsList
 
 /-- A weak upper bound on `multiplicity p n`. -/
@@ -95,4 +95,4 @@ theorem mul_multiplicity_le {p n : ℕ} : p * multiplicity p n ≤ n := by
   · simp
   grw [Nat.mul_le_pow hp, Nat.le_of_dvd hn.bot_lt (pow_multiplicity_dvd p n)]
 
-@[deprecated (since := "2026-09-11")] alias mul_padicValNat_le := mul_multiplicity_le
+@[deprecated (since := "2026-10-28")] alias mul_padicValNat_le := mul_multiplicity_le

@@ -465,7 +465,7 @@ theorem eq_iff_prime_multiplicity_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
     · simp [factorization_def, pp, h p pp]
     · simp [factorization_eq_zero_of_not_prime, pp]
 
-@[deprecated (since := "2026-09-11")] alias eq_iff_prime_padicValNat_eq :=
+@[deprecated (since := "2026-10-28")] alias eq_iff_prime_padicValNat_eq :=
   eq_iff_prime_multiplicity_eq
 
 theorem prod_pow_prime_multiplicity (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < m) :
@@ -482,7 +482,7 @@ theorem prod_pow_prime_multiplicity (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n <
   · intro p hp
     simp [factorization_def n (prime_of_mem_primeFactors hp)]
 
-@[deprecated (since := "2026-09-11")] alias prod_pow_prime_padicValNat :=
+@[deprecated (since := "2026-10-28")] alias prod_pow_prime_padicValNat :=
   prod_pow_prime_multiplicity
 
 theorem prod_primeFactors_pow_factorization (hn : n ≠ 0) :

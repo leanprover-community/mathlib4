@@ -395,15 +395,15 @@ theorem multiplicity_pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} 
 
 end Nat
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.pow_two_sub_pow :=
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_two_sub_pow :=
   Nat.multiplicity_pow_two_sub_pow
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.pow_two_sub_one :=
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_two_sub_one :=
   Nat.multiplicity_pow_two_sub_one
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.pow_two_sub_one_ge :=
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_two_sub_one_ge :=
   Nat.multiplicity_pow_two_sub_one_ge
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.pow_sub_pow := Nat.multiplicity_pow_sub_pow
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_sub_pow := Nat.multiplicity_pow_sub_pow
 
-@[deprecated (since := "2026-09-11")] alias padicValNat.pow_add_pow := Nat.multiplicity_pow_add_pow
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_add_pow := Nat.multiplicity_pow_add_pow
