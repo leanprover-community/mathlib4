@@ -173,6 +173,17 @@ theorem intCoe_one [AddGroupWithOne R] : ((1 : ArithmeticFunction ℤ) :
   ext n
   simp [ArithmeticFunction.one_apply]
 
+section SMul
+
+variable {S : Type*} [Zero R] [SMulZeroClass S R]
+
+instance : SMul S (ArithmeticFunction R) where
+  smul n f := ⟨n • f, by simp⟩
+
+instance : IsSMulApply S (ArithmeticFunction R) where
+
+end SMul
+
 section AddMonoid
 
 variable [AddMonoid R]
@@ -185,11 +196,6 @@ instance : IsAddApply (ArithmeticFunction R) where
 @[deprecated add_apply +typeChanged (since := "2026-10-27")]
 protected theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n :=
   rfl
-
-instance : SMul ℕ (ArithmeticFunction R) where
-  smul n f := ⟨n • f, by simp⟩
-
-instance : IsSMulApply ℕ (ArithmeticFunction R) where
 
 instance instAddMonoid : AddMonoid (ArithmeticFunction R) := fast_instance% FunLike.addMonoid
 
@@ -213,15 +219,10 @@ instance [NegZeroClass R] : IsNegApply (ArithmeticFunction R) where
 protected theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} :
     (-f) n = -f n := rfl
 
-instance [AddGroup R] : Sub (ArithmeticFunction R) where
+instance [SubNegZeroMonoid R] : Sub (ArithmeticFunction R) where
   sub f g := ⟨f - g, by simp⟩
 
-instance [AddGroup R] : IsSubApply (ArithmeticFunction R) where
-
-instance [AddGroup R] : SMul ℤ (ArithmeticFunction R) where
-  smul n f := ⟨n • f, by simp⟩
-
-instance [AddGroup R] : IsSMulApply ℤ (ArithmeticFunction R) where
+instance [SubNegZeroMonoid R] : IsSubApply (ArithmeticFunction R) where
 
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) := fast_instance% FunLike.addGroup
 
