@@ -479,11 +479,18 @@ end
 /-! Tests for the `misnamedCoercionLemmas` linter -/
 section
 
+open Lean Meta
+
+/-- Auxiliary definition used for unit-testing this linter. -/
+meta def isMisnamedCoercionAux (name : Name) : MetaM (Bool × String) := do
+  let (s, m) ← Mathlib.Linter.Style.misnamedCoercions.isMisnamedCoercion name
+  return (s, ← m.toString)
+
 -- This lemma is misnamed: the name contains "coe".
 public lemma foo_coe : 2 = 2 := rfl
 /-- info: (true, "This declaration statement references the constant(s) []") -/
 #guard_msgs in
-#eval Mathlib.Linter.Style.isMisnamedCoercionAux `foo_coe
+#eval isMisnamedCoercionAux `foo_coe
 
 -- The next two lemmas are fine: their names involves the string "coe", but not as a name component.
 public lemma foo_coeBar : 2 = 2 := rfl
@@ -491,15 +498,15 @@ public lemma coeFoo_bar_eq_baz : 2 = 2 := rfl
 
 /-- info: (false, "") -/
 #guard_msgs in
-#eval Mathlib.Linter.Style.isMisnamedCoercionAux `foo_coeBar
+#eval isMisnamedCoercionAux `foo_coeBar
 /-- info: (false, "") -/
 #guard_msgs in
-#eval Mathlib.Linter.Style.isMisnamedCoercionAux `coeFoo_bar_eq_baz
+#eval isMisnamedCoercionAux `coeFoo_bar_eq_baz
 
 -- This lemma involves the name `coe`, but also the coercion `DFunLike.coe`.
 lemma coe_f {M N : Type*} (f : M → N) : (f : M → N) = f := rfl
 /-- info: (false, "") -/ #guard_msgs in
-#eval Mathlib.Linter.Style.isMisnamedCoercionAux `coeFoo_bar_eq_baz
+#eval isMisnamedCoercionAux `coeFoo_bar_eq_baz
 
 end
 

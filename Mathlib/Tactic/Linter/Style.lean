@@ -568,12 +568,16 @@ such names violate the naming convention. -/
         use lowerCamelCase or UpperCamelCase instead."
     else return none
 
+end Style.nameCheck
+
+namespace Style.misnamedCoercions
+
 /-- Checks if a lemma `name` is (very likely) a misnamed coercion lemma:
 if its name contains the component `coe`, but the statement involves no such declaration,
 most likely it needs renaming.
 Upon error, return a message describing more details (such as, all relevant constants
 that *do* occur in the lemma). -/
-public def _root_.Mathlib.Linter.Style.isMisnamedCoercion (name : Name) :
+public def isMisnamedCoercion (name : Name) :
   MetaM (Bool × MessageData) := do
   -- Does the final name component contain a part `coe` (or `coe'`)?
   let parts := name.components.getLast!.toString.split "_" |>.toList
@@ -584,12 +588,6 @@ public def _root_.Mathlib.Linter.Style.isMisnamedCoercion (name : Name) :
   if coercion_constants.isEmpty then return (true,
     m!"This declaration statement references the constant(s) {coercion_constants}")
   return (false, "")
-
-/-- Auxiliary definition used for unit-testing this linter. -/
-public def _root_.Mathlib.Linter.Style.isMisnamedCoercionAux (name : Name) :
-    MetaM (Bool × String) := do
-  let (s, m) ← isMisnamedCoercion name
-  return (s, ← m.toString)
 
 /-- Linter that checks for lemmas whose name contains the string "coe",
 but which don't reference any declaration named like this: most likely,
@@ -611,7 +609,7 @@ these are coercion lemmas violating mathlib's naming convention. -/
         note that it should be named according to the coercion used."
     | (false, _) => return none
 
-end Style.nameCheck
+end Style.misnamedCoercions
 
 /-! ### The "openClassical" linter -/
 
