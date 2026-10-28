@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
+
 /-!
 # Base change for the dual of a module
 

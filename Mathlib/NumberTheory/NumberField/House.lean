@@ -152,7 +152,7 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
       exact norm_sum_le_of_le _ fun _ _ ↦ (norm_mul _ _).le
     _ ≤ ∑ j, ‖((basisMatrix K).transpose)⁻¹‖ * ‖σ (algebraMap (𝓞 K) K α) j‖ := by
       gcongr
-      exact norm_entry_le_entrywise_sup_norm ((basisMatrix K).transpose)⁻¹
+      exact norm_apply_le_norm ((basisMatrix K).transpose)⁻¹
     _ ≤ ∑ _ : K →+* ℂ, ‖fun i j => ((basisMatrix K).transpose)⁻¹ i j‖
         * house (algebraMap (𝓞 K) K α) := by
       gcongr with j

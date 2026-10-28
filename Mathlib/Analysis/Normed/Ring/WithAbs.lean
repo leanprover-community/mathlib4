@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.TransferInstance
@@ -52,6 +53,9 @@ namespace WithAbs
 section Semiring
 
 variable [Semiring R] (v : AbsoluteValue R S)
+
+instance {T : Type*} [SMul T R] : SMul T (WithAbs v) where
+  smul t x := toAbs v (t • ofAbs x)
 
 instance : Semiring (WithAbs v) :=
   fast_instance% Equiv.semiring { toFun := ofAbs, invFun := toAbs v }
@@ -188,8 +192,6 @@ theorem smul_left_def [SMul R T] (x : WithAbs v) (t : T) :
 instance [SMul R T] [FaithfulSMul R T] : FaithfulSMul (WithAbs v) T where
   eq_of_smul_eq_smul h := ofAbs_injective v <| FaithfulSMul.eq_of_smul_eq_smul h
 
-instance [SMul T R] : SMul T (WithAbs v) := Equiv.smul T { toFun := ofAbs, invFun := toAbs v }
-
 theorem smul_right_def [SMul T R] (t : T) (x : WithAbs v) :
     t • x = toAbs v (t • x.ofAbs) := rfl
 
@@ -287,15 +289,46 @@ theorem under_def (w : AbsoluteValue L S) :
     w.under K = w.comp (FaithfulSMul.algebraMap_injective K L) :=
   rfl
 
+@[simp]
+theorem under_apply (w : AbsoluteValue L S) (x : K) : w.under K x = w (algebraMap K L x) :=
+  rfl
+
 variable {K}
 
 /-- An absolute value `w` of `L / K` lies over the absolute value `v` of `K` if `v` is the
 restriction of `w` to `K`. -/
+@[mk_iff]
 class LiesOver (w : AbsoluteValue L S) (v : AbsoluteValue K S) : Prop where
   under_eq (w) (v) : w.under K = v
 
 @[deprecated (since := "2026-08-08")] alias LiesOver.comp_eq := LiesOver.under_eq
 
 instance (w : AbsoluteValue L S) : w.LiesOver (w.under K) := ⟨rfl⟩
+
+theorem over_def (w : AbsoluteValue L S) (v : AbsoluteValue K S) [w.LiesOver v] : v = w.under K :=
+  (LiesOver.under_eq w v).symm
+
+section tower
+
+variable {M : Type*} [CommSemiring M] [Algebra K M] [Algebra M L] [IsScalarTower K M L]
+  [FaithfulSMul K M] [FaithfulSMul M L]
+
+variable (K M) in
+@[simp]
+theorem under_under (w : AbsoluteValue L S) : (w.under M).under K = w.under K := by
+  ext x
+  simp [← IsScalarTower.algebraMap_apply]
+
+variable (M) in
+@[simp]
+theorem under_liesOver_iff {w : AbsoluteValue L S} {v : AbsoluteValue K S} :
+    (w.under M).LiesOver v ↔ w.LiesOver v := by
+  simp [liesOver_iff]
+
+theorem LiesOver.trans (v : AbsoluteValue K S) (u : AbsoluteValue M S) (w : AbsoluteValue L S)
+    [w.LiesOver u] [u.LiesOver v] : w.LiesOver v := by
+  rwa [← under_liesOver_iff M, ← over_def w u]
+
+end tower
 
 end AbsoluteValue
