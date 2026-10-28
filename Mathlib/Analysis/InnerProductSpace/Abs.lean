@@ -63,18 +63,22 @@ theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 theorem adjoint_comp_self_nonneg (T : E →L[ℂ] F) : 0 ≤ T.adjoint ∘L T :=
     nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self T)
 
+@[simp]
 theorem abs_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
   simp [abs, CFC.sqrt_eq_zero_iff, adjoint_comp_self_eq_zero_iff]
 
+@[simp]
 theorem abs_comp_abs (T : E →L[ℂ] F) : |T| ∘L |T| = T.adjoint ∘L T := by
   simp [abs, ← mul_def, CFC.sqrt_mul_sqrt_self]
 
+@[simp]
 theorem norm_abs_apply (T : E →L[ℂ] F) (x : E) : ‖|T| x‖ = ‖T x‖ := by
   apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
   simp_rw [apply_norm_sq_eq_inner_adjoint_left, ContinuousLinearMap.comp_apply]
   rw [T.abs_nonneg.isSelfAdjoint.adjoint_eq]
   simp [abs, ← mul_apply_eq_comp, CFC.sqrt_mul_sqrt_self, ContinuousLinearMap.comp_apply]
 
+@[simp]
 theorem ker_abs_eq (T : E →L[ℂ] F) : |T|.ker = T.ker := by
   ext x
   rw [LinearMap.mem_ker, LinearMap.mem_ker, ← norm_eq_zero (a := T.toLinearMap x),
