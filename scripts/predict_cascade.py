@@ -6,11 +6,16 @@ Prints the number of Mathlib modules that a change to the listed files
 rebuilds: the changed modules and every module that imports one of them,
 directly or transitively.
 
-`import_graph.dot` is the output of `lake exe graph` at the merge-base: an
+`import_graph.dot` is the output of `lake exe graph` of a master build: an
 edge `"A" -> "B"` means that module `B` imports module `A`. The changed files
-are paths relative to the repository root, one per line. A file that is not
-a Mathlib module counts as no module, and a new module that is not in the
+are the files that differ between that build's commit and the change, as
+paths relative to the repository root, one per line. A file that is not a
+Mathlib module counts as no module, and a new module that is not in the
 graph counts as one module.
+
+The count is an upper bound of the modules the build compiles when the cache
+holds every module of that master build: an import that the change removes
+still counts the importers of the removed module.
 
 A change to `lakefile.lean`, `lake-manifest.json` or `lean-toolchain`
 rebuilds every module, so the count is then the number of modules in the
