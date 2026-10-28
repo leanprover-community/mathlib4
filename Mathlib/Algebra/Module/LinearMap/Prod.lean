@@ -5,9 +5,10 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Algebra.Module.Prod
-public import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Prod
+
+import Mathlib.Tactic.Abel
 
 /-!
 # Addition and subtraction are linear maps from the product space
@@ -19,7 +20,7 @@ linear algebra, vector space, module
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} {M : Type*} [Semiring R]
 

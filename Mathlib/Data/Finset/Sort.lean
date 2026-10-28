@@ -10,6 +10,8 @@ public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Order.RelIso.Set
 
+import Mathlib.Data.List.Pairwise
+
 /-!
 # Construct a sorted list from a finset.
 -/
@@ -30,22 +32,22 @@ section sort
 /-- `sort s` constructs a sorted list from the unordered set `s`.
   (Uses merge sort algorithm.) -/
 def sort (s : Finset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
-    [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
+    [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r] : List α :=
   Multiset.sort s.1 r
 
 section
 
 variable (f : α ↪ β) (s : Finset α)
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
-variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
+variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [Std.Antisymm r'] [Std.Total r']
 
 @[simp]
-theorem sort_val : Multiset.sort s.val r  = sort s r :=
+theorem sort_val : Multiset.sort s.val r = sort s r :=
   rfl
 
 @[simp]
-theorem sort_sorted : List.Sorted r (sort s r) :=
-  Multiset.sort_sorted _ _
+theorem pairwise_sort : List.Pairwise r (sort s r) :=
+  Multiset.pairwise_sort _ _
 
 @[simp]
 theorem sort_eq : ↑(sort s r) = s.1 :=
@@ -87,19 +89,19 @@ theorem sort_perm_toList : sort s r ~ s.toList := by
   simp only [coe_toList, sort_eq]
 
 theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
-    sort l.toFinset r = l ↔ l.Sorted r := by
-  refine ⟨?_, List.eq_of_perm_of_sorted ((sort_perm_toList _ r).trans (List.toFinset_toList hl))
-    (sort_sorted _ r)⟩
+    sort l.toFinset r = l ↔ l.Pairwise r := by
+  refine ⟨?_, ((sort_perm_toList _ r).trans (List.toFinset_toList hl)).eq_of_pairwise'
+    (pairwise_sort _ _)⟩
   intro h
   rw [← h]
-  exact sort_sorted _ r
+  exact pairwise_sort _ r
 
 end
 
 section
 
 variable {m : Multiset α} {s : Finset α}
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
 
 @[simp]
 theorem sort_mk (h : m.Nodup) : sort ⟨m, h⟩ r = m.sort r := rfl
@@ -128,11 +130,11 @@ section SortLinearOrder
 
 variable [LinearOrder α]
 
-theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort s) :=
-  (sort_sorted _ _).lt_of_le (sort_nodup _ _)
+theorem sortedLT_sort (s : Finset α) : (sort s).SortedLT :=
+  (pairwise_sort _ _).sortedLE.sortedLT_of_nodup (sort_nodup _ _)
 
-theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort s (· ≥ ·)) :=
-  (sort_sorted _ _).gt_of_ge (sort_nodup _ _)
+theorem sortedGT_sort (s : Finset α) : (sort s (· ≥ ·)).SortedGT :=
+  (pairwise_sort _ _).sortedGE.sortedGT_of_nodup (sort_nodup _ _)
 
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < s.sort.length) (H : s.Nonempty) :
     s.sort.get ⟨0, h⟩ = s.min' H := by
@@ -141,8 +143,8 @@ theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < s.sort.length) (H : s.N
   · have : s.min' H ∈ l := (s.mem_sort (· ≤ ·)).mpr (s.min'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.min' H := List.mem_iff_get.1 this
     rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.zero_le i)
-  · have : l.get ⟨0, h⟩ ∈ s := (s.mem_sort (· ≤ ·)).1 (List.get_mem l _)
+    exact (s.pairwise_sort (· ≤ ·)).rel_get_of_le (Nat.zero_le i)
+  · have : l.get ⟨0, h⟩ ∈ s := (Finset.mem_sort (α := α) (· ≤ ·)).1 (List.get_mem l _)
     exact s.min'_le _ this
 
 theorem sorted_zero_eq_min' {s : Finset α} {h : 0 < s.sort.length} :
@@ -164,7 +166,7 @@ theorem sorted_last_eq_max'_aux (s : Finset α)
   · have : s.max' H ∈ l := (s.mem_sort (· ≤ ·)).mpr (s.max'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
     rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_get_of_le (Nat.le_sub_one_of_lt i.prop)
+    exact (s.pairwise_sort (· ≤ ·)).rel_get_of_le (Nat.le_sub_one_of_lt i.prop)
 
 theorem sorted_last_eq_max' {s : Finset α}
     {h : s.sort.length - 1 < s.sort.length} :
@@ -184,7 +186,7 @@ the cardinality of `s` is `k`. We use this instead of an iso `Fin s.card ≃o s`
 casting issues in further uses of this function. -/
 def orderIsoOfFin (s : Finset α) {k : ℕ} (h : s.card = k) : Fin k ≃o s :=
   OrderIso.trans (Fin.castOrderIso ((s.length_sort (· ≤ ·)).trans h).symm) <|
-    (s.sort_sorted_lt.getIso _).trans <| OrderIso.setCongr _ _ <| Set.ext fun _ => mem_sort _
+    (s.sortedLT_sort.getIso _).trans <| Set.orderIsoOfEq {x | x ∈ s.sort (· ≤ ·)} _ <| by simp
 
 /-- Given a finset `s` of cardinality `k` in a linear order `α`, the map `orderEmbOfFin s h` is
 the increasing bijection between `Fin k` and `s` as an order embedding into `α`. Here, `h` is a
@@ -217,7 +219,7 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
   simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
     OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding,
-    Subtype.range_coe_subtype, Finset.setOf_mem]
+    Subtype.range_coe_subtype, Finset.setOfPred_mem]
 
 @[simp]
 theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
@@ -234,7 +236,7 @@ theorem map_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
 theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k) :
     (List.finRange k).map (s.orderEmbOfFin h) = s.sort := by
   obtain rfl : k = s.sort.length := by simp [h]
-  exact List.finRange_map_getElem s.sort
+  exact List.map_getElem_finRange s.sort
 
 /-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
 theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
@@ -258,8 +260,8 @@ theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k → α}
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
-  rw [← hmono.range_inj (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin, ← Set.image_univ,
-    ← coe_univ, ← coe_image, coe_inj]
+  rw [← hmono.range_inj_of_wellFoundedLT (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin,
+    ← Set.image_univ, ← coe_univ, ← coe_image, coe_inj]
   refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
   · rcases mem_image.1 hx with ⟨x, _, rfl⟩
     exact hfs x
@@ -278,7 +280,7 @@ and only if `i = j`. Since they can be defined on a priori not defeq types `Fin 
 theorem orderEmbOfFin_eq_orderEmbOfFin_iff {k l : ℕ} {s : Finset α} {i : Fin k} {j : Fin l}
     {h : s.card = k} {h' : s.card = l} :
     s.orderEmbOfFin h i = s.orderEmbOfFin h' j ↔ (i : ℕ) = (j : ℕ) := by
-  substs k l
+  subst k l
   exact (s.orderEmbOfFin rfl).eq_iff_eq.trans Fin.ext_iff
 
 /-- Given a finset `s` of size at least `k` in a linear order `α`, the map `orderEmbOfCardLe`
@@ -299,8 +301,8 @@ lemma orderEmbOfFin_compl_singleton {n : ℕ} {i : Fin (n + 1)} {k : ℕ}
         (Fin.succAboveOrderEmb i) := by
   apply DFunLike.coe_injective
   rw [eq_comm]
-  convert orderEmbOfFin_unique _ (fun x ↦ ?_)
-    ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
+  convert!
+    orderEmbOfFin_unique _ (fun x ↦ ?_) ((Fin.strictMono_succAbove _).comp (Fin.cast_strictMono _))
   · simp
   · simp [← h, card_compl]
 
@@ -327,11 +329,7 @@ end Finset
 namespace Fin
 
 theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = List.finRange n :=
-  List.eq_of_perm_of_sorted
-    (List.perm_of_nodup_nodup_toFinset_eq
-      (Finset.univ.sort_nodup _) (List.nodup_finRange n) (by simp))
-    (Finset.univ.sort_sorted LE.le)
-    (List.pairwise_le_finRange n)
+  Finset.univ.sortedLT_sort.eq_of_mem_iff (List.sortedLT_finRange n) (by simp)
 
 end Fin
 
@@ -343,12 +341,12 @@ def Fintype.orderIsoFinOfCardEq
     (α : Type*) [LinearOrder α] [Fintype α] {k : ℕ} (h : Fintype.card α = k) :
     Fin k ≃o α :=
   (Finset.univ.orderIsoOfFin h).trans
-    ((OrderIso.setCongr _ _ Finset.coe_univ).trans OrderIso.Set.univ)
+    ((Set.orderIsoOfEq _ _ Finset.coe_univ).trans OrderIso.Set.univ)
 
 /-- Any finite linear order order-embeds into any infinite linear order. -/
 lemma nonempty_orderEmbedding_of_finite_infinite
     (α : Type*) [LinearOrder α] [hα : Finite α]
     (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
-  haveI := Fintype.ofFinite α
+  have := Fintype.ofFinite α
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
   exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩

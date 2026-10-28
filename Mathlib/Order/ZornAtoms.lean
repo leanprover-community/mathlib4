@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Zorn
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Zorn
 
 /-!
 # Zorn lemma for (co)atoms
@@ -16,7 +16,7 @@ In this file we use Zorn's lemma to prove that a partial order is atomic if ever
 statement.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

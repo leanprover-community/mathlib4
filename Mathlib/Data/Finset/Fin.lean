@@ -5,8 +5,8 @@ Authors: Chris Hughes, Kim Morrison, Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Fin.Embedding
+public import Mathlib.Data.Finset.Card
 
 /-!
 # Finsets in `Fin n`
@@ -77,7 +77,5 @@ lemma attachFin_ssubset_attachFin_iff {s t : Finset ℕ} (hs : ∀ m ∈ s, m < 
 @[mono, gcongr]
 lemma attachFin_ssubset_attachFin {s t : Finset ℕ} (hst : s ⊂ t) (ht : ∀ m ∈ t, m < n) :
     s.attachFin (fun m hm ↦ ht m (hst.subset hm)) ⊂ t.attachFin ht := by simpa
-
-set_option linter.deprecated false
 
 end Finset

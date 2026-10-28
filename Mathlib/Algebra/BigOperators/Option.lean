@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finset.Option
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.Option
 
 /-!
 # Lemmas about products and sums over finite sets in `Option α`
@@ -15,7 +15,7 @@ In this file we prove formulas for products and sums over `Finset.insertNone s` 
 `Finset.eraseNone s`.
 -/
 
-@[expose] public section
+public section
 
 open Function
 

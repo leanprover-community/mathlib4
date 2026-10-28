@@ -5,11 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 Deprecated aliases can be dumped here if they are no longer used in Mathlib,
 to avoid needing their imports if they are otherwise unnecessary.
 -/
 
-@[expose] public section
+public section

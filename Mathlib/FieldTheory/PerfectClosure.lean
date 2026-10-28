@@ -5,7 +5,6 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.FieldTheory.Perfect
 
 /-!
@@ -113,6 +112,7 @@ theorem induction_on (x : PerfectClosure K p) {q : PerfectClosure K p → Prop}
 
 variable (K p)
 
+set_option backward.privateInPublic true in
 private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
     mk K p (x1.1 + y.1, (frobenius K p)^[y.1] x1.2 * (frobenius K p)^[x1.1] y.2) =
       mk K p (x2.1 + y.1, (frobenius K p)^[y.1] x2.2 * (frobenius K p)^[x2.1] y.2) :=
@@ -123,6 +123,7 @@ private theorem mul_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
         Nat.succ_add]
       apply R.intro
 
+set_option backward.privateInPublic true in
 private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
     mk K p (x.1 + y1.1, (frobenius K p)^[y1.1] x.2 * (frobenius K p)^[x.1] y1.2) =
       mk K p (x.1 + y2.1, (frobenius K p)^[y2.1] x.2 * (frobenius K p)^[x.1] y2.2) :=
@@ -132,6 +133,8 @@ private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
       rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_mul]
       apply R.intro
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instMul : Mul (PerfectClosure K p) :=
   ⟨Quot.lift
       (fun x : ℕ × K =>
@@ -160,16 +163,16 @@ instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
     one := mk K p (0, 1)
     one_mul := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
-        congr_arg (Quot.mk _) <| by
-          simp only [iterate_map_one, iterate_zero_apply, one_mul, zero_add]
+        congr(Quot.mk _ $(by
+          simp only [iterate_map_one, iterate_zero_apply, one_mul, zero_add]))
     mul_one := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
-        congr_arg (Quot.mk _) <| by
-          simp only [iterate_map_one, iterate_zero_apply, mul_one, add_zero]
+        congr(Quot.mk _ $(by
+          simp only [iterate_map_one, iterate_zero_apply, mul_one, add_zero]))
     mul_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
-          congr_arg (Quot.mk _) <| by simp only [add_comm, mul_comm] }
+          congr(Quot.mk _ $(by simp only [add_comm, mul_comm])) }
 
 theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
   rfl
@@ -177,6 +180,7 @@ theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
 instance instInhabited : Inhabited (PerfectClosure K p) :=
   ⟨1⟩
 
+set_option backward.privateInPublic true in
 private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
     mk K p (x1.1 + y.1, (frobenius K p)^[y.1] x1.2 + (frobenius K p)^[x1.1] y.2) =
       mk K p (x2.1 + y.1, (frobenius K p)^[y.1] x2.2 + (frobenius K p)^[x2.1] y.2) :=
@@ -187,6 +191,7 @@ private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
         Nat.succ_add]
       apply R.intro
 
+set_option backward.privateInPublic true in
 private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
     mk K p (x.1 + y1.1, (frobenius K p)^[y1.1] x.2 + (frobenius K p)^[x.1] y1.2) =
       mk K p (x.1 + y2.1, (frobenius K p)^[y2.1] x.2 + (frobenius K p)^[x.1] y2.2) :=
@@ -196,6 +201,8 @@ private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
       rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← map_add]
       apply R.intro
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instAdd : Add (PerfectClosure K p) :=
   ⟨Quot.lift
       (fun x : ℕ × K =>
@@ -264,19 +271,19 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
             simp only [iterate_map_add, ← iterate_add_apply, add_assoc, add_comm s _]
     zero_add := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
-        congr_arg (Quot.mk _) <| by
-          simp only [iterate_map_zero, iterate_zero_apply, zero_add]
+        congr(Quot.mk _ $(by
+          simp only [iterate_map_zero, iterate_zero_apply, zero_add]))
     add_zero := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
-        congr_arg (Quot.mk _) <| by
-          simp only [iterate_map_zero, iterate_zero_apply, add_zero]
+        congr(Quot.mk _ $(by
+          simp only [iterate_map_zero, iterate_zero_apply, add_zero]))
     sub_eq_add_neg := fun _ _ => rfl
     neg_add_cancel := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ => by
         simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, neg_add_cancel, mk_zero_right]
     add_comm := fun e f =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
-        Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm]
+        Quot.inductionOn f fun ⟨n, y⟩ => congr(Quot.mk _ $(by simp only [add_comm]))
     nsmul := nsmulRec
     zsmul := zsmulRec }
 
@@ -398,6 +405,7 @@ instance instReduced : IsReduced (PerfectClosure K p) where
 
 instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
   bijective_frobenius := by
+    simp_rw [← frobenius_def]
     let f : PerfectClosure K p → PerfectClosure K p := fun e ↦
       liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
       match x, y, H with
@@ -450,7 +458,7 @@ end Ring
 theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
     mk K p x = mk K p y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
   (mk_eq_iff K p x y).trans
-    ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using H,
+    ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using! H,
       fun H => ⟨0, H⟩⟩
 
 instance [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] [Nontrivial K] :
@@ -481,9 +489,9 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
     refine (eq_iff K p _ _).2 ?_
     simp only [iterate_map_one, iterate_map_zero, iterate_zero_apply, ← iterate_map_mul] at this ⊢
     rw [mul_inv_cancel₀ this, iterate_map_one]
-  inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
+  inv_zero := congr(Quot.mk (R K p) $(by rw [inv_zero]))
   nnqsmul := _
-  nnqsmul_def := fun _ _  => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
   qsmul_def := fun _ _ => rfl
 

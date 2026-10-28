@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Limits over essentially small indexing categories
@@ -17,12 +16,10 @@ See also the file `FinallySmall.lean` for more general results.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
-
-noncomputable section
 
 open CategoryTheory
 

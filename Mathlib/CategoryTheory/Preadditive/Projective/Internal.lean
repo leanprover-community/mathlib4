@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson, Jonas van der Schaaf
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
@@ -32,7 +32,7 @@ open CategoryTheory MonoidalCategory MonoidalClosed Limits Functor
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [MonoidalClosed C]
+variable {C : Type*} [Category* C] [MonoidalCategory C] [MonoidalClosed C]
 
 /--
 An object `P : C` is *internally projective* if the functor `P ⟶[C] -` taking internal homs
@@ -54,7 +54,7 @@ instance : (isInternallyProjective (C := C)).IsStableUnderRetracts where
   of_retract {Y X} r h :=
     have : InternallyProjective X := ⟨h⟩
     have : Retract (ihom Y) (ihom X) := r.op.map internalHom
-    preservesEpimorphisms.ofRetract this
+    PreservesEpimorphisms.ofRetract this
 
 namespace InternallyProjective
 

@@ -7,13 +7,12 @@ module
 
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Prod
-public import Mathlib.Algebra.Ring.Prod
 
 /-!
 # Products of star-ordered rings
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

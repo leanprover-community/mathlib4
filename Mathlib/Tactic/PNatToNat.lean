@@ -5,8 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Data.PNat.Basic
-import all Lean.Elab.Tactic.Induction
+public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Data.PNat.Basic
 
 
 /-!
@@ -56,15 +56,16 @@ lemma coe_lt_coe (m n : PNat) : m < n ↔ (m : ℕ) < (n : ℕ) := by simp
 
 attribute [pnat_to_nat_coe] PNat.add_coe PNat.mul_coe PNat.val_ofNat
 
+set_option backward.isDefEq.respectTransparency false in
 @[pnat_to_nat_coe]
 lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := by
   cases a
   cases b
   simp only [PNat.mk_coe, _root_.PNat.sub_coe, ← _root_.PNat.coe_lt_coe]
-  split_ifs <;> omega
+  split_ifs <;> lia
 
 /-- `pnat_to_nat` shifts all `PNat`s in the context to `Nat`, rewriting propositions about them.
-A typical use case is `pnat_to_nat; omega`. -/
+A typical use case is `pnat_to_nat; lia`. -/
 macro "pnat_to_nat" : tactic => `(tactic| focus (
   pnat_positivity;
   simp only [pnat_to_nat_coe] at *)

@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Algebra.Group.Nat.Defs
-public meta import Mathlib.Tactic.ByContra
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.Push
 
 /-!
 # `lrat_proof` command
@@ -174,7 +174,7 @@ theorem Valuation.mk_implies {p} {as ps} (as₁) : as = List.reverseAux as₁ ps
       ∀ bs, mk (as₁.reverseAux bs) n' ↔ mk bs n from this 0 _ rfl (a::as)
     induction as₁ with
     | nil => simp
-    | cons b as₁ ih => simpa using fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
+    | cons b as₁ ih => simpa using! fun n bs ↦ ih (n + 1) _ (Nat.succ_add ..) _
 
 /-- Asserts that `¬⟦f⟧_v` implies `p`. -/
 structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
@@ -444,15 +444,15 @@ partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := I
     pr := mkLambda `h default ty pr
   pr := mkLambda `v default (mkConst ``Sat.Valuation) pr
   let mut e := e.lowerLooseBVars (nvars+1) (nvars+1)
-  let cons := mkApp (mkConst ``List.cons [levelZero]) (mkSort levelZero)
-  let nil := mkApp (mkConst ``List.nil [levelZero]) (mkSort levelZero)
+  let cons := mkApp (mkConst ``List.cons [.zero]) (mkSort .zero)
+  let nil := mkApp (mkConst ``List.nil [.zero]) (mkSort .zero)
   let rec mkPS depth e
   | 0 => e
   | n + 1 => mkPS (depth+1) (mkApp2 cons (mkBVar depth) e) n
   pr := mkApp5 (mkConst ``Sat.Fmla.refute) e (mkPS 0 nil nvars) ctx proof pr
   for _ in [0:nvars] do
-    e := mkForall `a default (mkSort levelZero) e
-    pr := mkLambda `a default (mkSort levelZero) pr
+    e := mkForall `a default (mkSort .zero) e
+    pr := mkLambda `a default (mkSort .zero) pr
   pure (e, pr)
 where
   /-- The `v` variable under the `a1 ... an, v, h1 ... hn` context -/
@@ -556,7 +556,7 @@ but not the reification theorem. Returns:
   * `proof`: A proof of `ctx.proof []`
 -/
 def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr × Expr) := do
-  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs ⟨_, cnf.startValidPos⟩
+  let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs ⟨_, cnf.startPos⟩
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
@@ -570,7 +570,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     safety      := DefinitionSafety.safe
   }
   let ctx := mkConst ctxName
-  let Parsec.ParseResult.success _ steps := Parser.parseLRAT ⟨_, lrat.startValidPos⟩
+  let Parsec.ParseResult.success _ steps := Parser.parseLRAT ⟨_, lrat.startPos⟩
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
   let declName ← mkAuxDeclName (name ++ `proof)
@@ -626,8 +626,7 @@ elab "lrat_proof " n:(ident <|> "example")
     let lrat ← unsafe evalTerm String (mkConst ``String) lrat
     let go := do
       fromLRAT cnf lrat name
-      withSaveInfoContext do
-        Term.addTermInfo' n (mkConst name) (isBinder := true)
+      addTermInfo' n (← mkConstWithLevelParams name) (isBinder := true) |>.run'
     if n.1.isIdent then go else withoutModifyingEnv go
 
 lrat_proof example

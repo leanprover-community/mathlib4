@@ -25,11 +25,9 @@ to check it on the underlying sheaf of types.
 * https://stacks.math.columbia.edu/tag/0073
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ v₂ u₁ u₂
-
-noncomputable section
 
 open CategoryTheory Limits
 

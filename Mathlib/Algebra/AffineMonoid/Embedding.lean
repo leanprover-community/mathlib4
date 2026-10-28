@@ -5,14 +5,11 @@ Authors: Yaël Dillies, Patrick Luo
 -/
 module
 
-public import Mathlib.GroupTheory.Finiteness
-public import Mathlib.GroupTheory.FreeAbelianGroup
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
-public import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.GroupTheory.MonoidLocalization.Finite
-import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
@@ -26,7 +23,7 @@ public section
 
 open Algebra AddLocalization Function
 
-variable {M : Type*} [AddCancelCommMonoid M] [AddMonoid.FG M] [IsAddTorsionFree M]
+variable {M : Type*} [AddCancelCommMonoid M] [AddMonoid.FG M] [HasUniqueDiv M]
 
 namespace AffineAddMonoid
 
@@ -42,6 +39,6 @@ noncomputable def embedding : M →+ FreeAbelianGroup (Fin (dim M)) :=
       (addMonoidOf ⊤).toAddMonoidHom
 
 lemma embedding_injective : Injective (embedding M) := by
-  simpa [embedding] using mk_left_injective 0
+  simpa [embedding] using! mk_left_injective 0
 
 end AffineAddMonoid

@@ -5,8 +5,9 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.IntegralDomain
+
+import Mathlib.Algebra.Field.ZMod
 
 /-!
 # The Lucas test for primes
@@ -19,7 +20,7 @@ certificate.
 
 ## TODO
 - Write a tactic that uses this theorem to generate Pratt primality certificates
-- Integrate Pratt primality certificates into the norm_num primality verifier
+- Integrate Pratt primality certificates into the `norm_num` primality verifier
 
 ## Implementation notes
 
@@ -29,7 +30,7 @@ cases, we can take `q` to be any prime and see that `hd` does not hold, since `a
 to `1`.
 -/
 
-@[expose] public section
+public section
 
 
 /-- If `a^(p-1) = 1 mod p`, but `a^((p-1)/q) ≠ 1 mod p` for all prime factors `q` of `p-1`, then `p`

@@ -28,12 +28,12 @@ for an ordered module interpreted as an affine space.
 affine space, ordered module, slope
 -/
 
-@[expose] public section
+public section
 
 
 open AffineMap
 
-variable {k E PE : Type*}
+variable {k E : Type*}
 
 /-!
 ### Monotonicity of `lineMap`
@@ -109,7 +109,7 @@ theorem lineMap_le_lineMap_iff_of_lt' (h : a < b) : lineMap a b r ≤ lineMap a 
   rw [add_le_add_iff_right, smul_le_smul_iff_of_pos_right (sub_pos.mpr h)]
 
 theorem left_le_lineMap_iff_nonneg (h : a < b) : a ≤ lineMap a b r ↔ 0 ≤ r := by
-  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero,]
+  rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero]
 
 theorem lineMap_le_left_iff_nonpos (h : a < b) : lineMap a b r ≤ a ↔ r ≤ 0 := by
   rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_zero]
@@ -130,7 +130,7 @@ theorem left_lt_lineMap_iff_pos (h : a < b) : a < lineMap a b r ↔ 0 < r := by
 theorem lineMap_lt_left_iff_neg (h : a < b) : lineMap a b r < a ↔ r < 0 := by
   rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_zero]
 
-theorem right_lt_lineMap_iff_one_lt (h : a < b) : b < lineMap a b r ↔ 1 < r  := by
+theorem right_lt_lineMap_iff_one_lt (h : a < b) : b < lineMap a b r ↔ 1 < r := by
   rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_one]
 
 theorem lineMap_lt_right_iff_lt_one (h : a < b) : lineMap a b r < b ↔ r < 1 := by
@@ -261,7 +261,7 @@ theorem map_le_lineMap_iff_slope_le_slope_right (h : 0 < (1 - r) * (b - a)) :
   rw [sub_add_eq_sub_sub_swap, sub_self, zero_sub, neg_mul_eq_mul_neg, neg_sub,
     le_inv_smul_iff_of_pos h, smul_smul, mul_inv_cancel_right₀, le_sub_comm, ← neg_sub (f b),
     smul_neg, neg_add_eq_sub]
-  · exact right_ne_zero_of_mul h.ne'
+  exact right_ne_zero_of_mul h.ne'
 
 /-- Given `c = lineMap a b r`, `c < b`, the point `(c, f c)` is non-strictly above the
 segment `[(a, f a), (b, f b)]` if and only if `slope f c b ≤ slope f a b`. -/
@@ -332,4 +332,3 @@ lemma neg_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRi
     {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
     (hb : b < x₀) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : f b < 0 := by
   rwa [slope_pos_iff_gt, hf] at hbf
-  exact hb

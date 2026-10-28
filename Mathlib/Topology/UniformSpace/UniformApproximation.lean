@@ -27,15 +27,14 @@ convergence from them.
 Uniform limit, uniform convergence, tends uniformly to
 -/
 
-@[expose] public section
+public section
 
+open Filter SetRel Set Uniform
 
-noncomputable section
-
-open Topology Uniformity Filter SetRel Set Uniform
+open scoped Topology Uniformity
 
 variable {α β ι : Type*} [TopologicalSpace α] [UniformSpace β]
-variable {F : ι → α → β} {f : α → β} {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
+variable {F : ι → α → β} {f : α → β} {s : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
 /-- A function which can be locally uniformly approximated by functions which are continuous
 within a set at a point is continuous within this set at this point. -/
@@ -182,3 +181,48 @@ theorem TendstoLocallyUniformly.tendsto_comp (h : TendstoLocallyUniformly F f p)
 theorem TendstoUniformly.tendsto_comp (h : TendstoUniformly F f p) (hf : ContinuousAt f x)
     (hg : Tendsto g p (𝓝 x)) : Tendsto (fun n => F n (g n)) p (𝓝 (f x)) :=
   h.tendstoLocallyUniformly.tendsto_comp hf hg
+
+/-!
+### Uniform approximation and limit of uniformly continuous functions.
+-/
+section UniformContinuous
+variable {α β ι : Type*} [UniformSpace α] [UniformSpace β]
+variable {F : ι → α → β} {f : α → β} {s : Set α} {p : Filter ι}
+
+/-- A function which can be uniformly approximated by functions which are uniformly continuous on a
+set is uniformly continuous on this set. -/
+theorem uniformContinuousOn_of_uniform_approx_of_uniformContinuousOn
+    (h : ∀ u ∈ 𝓤 β, ∃ F : α → β, UniformContinuousOn F s ∧ ∀ y ∈ s, (f y, F y) ∈ u) :
+    UniformContinuousOn f s := by
+  simp_rw [uniformContinuousOn_iff_restrict, uniformContinuous_def] at h ⊢
+  intro u hu
+  obtain ⟨v, hv, hvsymm, hvu⟩ := comp_comp_symm_mem_uniformity_sets hu
+  obtain ⟨F, hF, hFv⟩ := h v hv
+  filter_upwards [hF v hv] with x hx
+  exact hvu <| prodMk_mem_comp (prodMk_mem_comp (hFv _ x.1.prop) hx)
+      <| hvsymm.symm (f x.2) (F x.2) <| hFv _ x.2.prop
+
+/-- A function which can be uniformly approximated by uniformly continuous functions is uniformly
+continuous. -/
+theorem uniformContinuous_of_uniform_approx_of_uniformContinuous
+    (h : ∀ u ∈ 𝓤 β, ∃ F : α → β, UniformContinuous F ∧ ∀ y, (f y, F y) ∈ u) :
+    UniformContinuous f :=
+  uniformContinuousOn_univ.mp <| uniformContinuousOn_of_uniform_approx_of_uniformContinuousOn
+    <| by simpa [uniformContinuousOn_univ] using h
+
+/-- A uniform limit on a set of functions which are uniformly continuous on this set is itself
+uniformly continuous on this set. -/
+protected theorem TendstoUniformlyOn.uniformContinuousOn (h : TendstoUniformlyOn F f p s)
+    (hc : ∃ᶠ n in p, UniformContinuousOn (F n) s) : UniformContinuousOn f s :=
+  uniformContinuousOn_of_uniform_approx_of_uniformContinuousOn fun u hu ↦
+    let ⟨i, hF⟩ := (hc.and_eventually (h u hu)).exists
+    ⟨F i, hF⟩
+
+/-- A uniform limit of uniformly continuous functions is uniformly continuous. -/
+protected theorem TendstoUniformly.uniformContinuous (h : TendstoUniformly F f p)
+    (hc : ∃ᶠ n in p, UniformContinuous (F n)) : UniformContinuous f :=
+  uniformContinuous_of_uniform_approx_of_uniformContinuous fun u hu ↦
+    let ⟨i, hF⟩ := (hc.and_eventually (h u hu)).exists
+    ⟨F i, hF⟩
+
+end UniformContinuous

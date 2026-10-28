@@ -6,8 +6,9 @@ Authors: Christian Merten, Junyan Xu
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Purely inseparable extensions are universal homeomorphisms
@@ -24,7 +25,7 @@ homeomorphism, i.e. it stays a homeomorphism after arbitrary base change.
   homeomorphism for a purely inseparable field extension `K` over `k`.
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 
@@ -51,8 +52,8 @@ lemma PrimeSpectrum.isHomeomorph_comap (f : R →+* S) (H : ∀ (x : S), ∃ n >
     IsIntegral.of_pow hn (hy ▸ f.kerLift.isIntegralElem_map (x := ⟦y⟧))
   have hbij : Function.Bijective (comap f) :=
     ⟨h1, (comap_quotientMk_bijective_of_le_nilradical hker).2.comp <|
-      hint.specComap_surjective f.kerLift_injective⟩
-  refine ⟨(comap f).continuous, ?_, h1, hbij.2⟩
+      hint.comap_surjective f.kerLift_injective⟩
+  refine ⟨continuous_comap f, ?_, h1, hbij.2⟩
   rw [isTopologicalBasis_basic_opens.isOpenMap_iff]
   rintro - ⟨s, rfl⟩
   obtain ⟨n, hn, r, hr⟩ := H s
@@ -84,8 +85,8 @@ lemma PrimeSpectrum.isHomeomorph_comap_tensorProductMap_of_isPurelyInseparable [
         (IsScalarTower.toAlgHom K (K ⊗[R] S) ((K ⊗[R] S) ⊗[K] L)) := by
     ext; simp [e, e2]
   rw [heq]
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
-    AlgEquiv.toAlgHom_toRingHom, IsScalarTower.coe_toAlgHom, comap_comp, ContinuousMap.coe_comp]
+  simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
+    AlgEquiv.toAlgHom_toRingHom, IsScalarTower.coe_toAlgHom, comap_comp]
   exact (isHomeomorph_comap_of_isPurelyInseparable K L (K ⊗[R] S)).comp <|
     (isHomeomorph_comap_of_bijective e2.symm.bijective).comp <|
     isHomeomorph_comap_of_bijective e.symm.bijective

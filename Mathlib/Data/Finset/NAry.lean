@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Finset.Lattice.Prod
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Set.Lattice.Image
+
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # N-ary images of finsets
@@ -17,8 +18,8 @@ This file defines `Finset.image₂`, the binary image of finsets. This is the fi
 
 ## Notes
 
-This file is very similar to `Data.Set.NAry`, `Order.Filter.NAry` and `Data.Option.NAry`. Please
-keep them in sync.
+This file is very similar to `Mathlib/Data/Set/NAry.lean`, `Mathlib/Order/Filter/NAry.lean` and
+`Mathlib/Data/Option/NAry.lean`. Please keep them in sync.
 
 We do not define `Finset.image₃` as its only purpose would be to prove properties of `Finset.image₂`
 and `Set.image2` already fulfills this task.
@@ -34,7 +35,7 @@ namespace Finset
 
 variable [DecidableEq α'] [DecidableEq β'] [DecidableEq γ] [DecidableEq γ']
   [DecidableEq δ'] [DecidableEq ε] [DecidableEq ε'] {f f' : α → β → γ} {g g' : α → β → γ → δ}
-  {s s' : Finset α} {t t' : Finset β} {u u' : Finset γ} {a a' : α} {b b' : β} {c : γ}
+  {s s' : Finset α} {t t' : Finset β} {u : Finset γ} {a : α} {b : β} {c : γ}
 
 /-- The image of a binary function `f : α → β → γ` as a function `Finset α → Finset β → Finset γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
@@ -102,7 +103,7 @@ theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.imag
   simp_rw [image₂_subset_iff, image_subset_iff]
 
 theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.image fun a => f a b) ⊆ u := by
-  simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_swap α]
+  simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_comm α]
 
 @[simp]
 theorem image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
@@ -129,7 +130,7 @@ theorem image₂_empty_right : image₂ f s ∅ = ∅ :=
 
 @[simp]
 theorem image₂_eq_empty_iff : image₂ f s t = ∅ ↔ s = ∅ ∨ t = ∅ := by
-  simp_rw [← not_nonempty_iff_eq_empty, image₂_nonempty_iff, not_and_or]
+  contrapose!; exact image₂_nonempty_iff
 
 @[simp]
 theorem image₂_singleton_left : image₂ f {a} t = t.image fun b => f a b :=

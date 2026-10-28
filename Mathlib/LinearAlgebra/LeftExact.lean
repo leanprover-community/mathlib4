@@ -5,14 +5,14 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # The Left Exactness of Hom
 
 
-If `M1 → M2 → M3 → 0` is an exact sequence of `R`-modules and `N` is a `R`-module,
+If `M1 → M2 → M3 → 0` is an exact sequence of `R`-modules and `N` is an `R`-module,
 then `0 → (M3 →ₗ[R] N) → (M2 →ₗ[R] N) → (M1 →ₗ[R] N)` is exact. In this file, we
 show the exactness at `M2 →ₗ[R] N` (`exact_lcomp_of_exact_of_surjective`);
 the injectivity part is `LinearMap.lcomp_injective_of_surjective` in the file
@@ -21,7 +21,7 @@ the injectivity part is `LinearMap.lcomp_injective_of_surjective` in the file
 
 -/
 
-@[expose] public section
+public section
 
 namespace LinearMap
 

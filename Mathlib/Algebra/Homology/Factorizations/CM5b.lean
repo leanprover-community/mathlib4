@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
-public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.Algebra.Homology.Factorizations.Basic
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 
 /-!
 # Factorization lemma
@@ -27,7 +27,7 @@ open CategoryTheory Limits Abelian
 
 namespace CochainComplex
 
-variable {C : Type*} [Category C] [Abelian C] [EnoughInjectives C]
+variable {C : Type*} [Category* C] [Abelian C] [EnoughInjectives C]
   {K L : CochainComplex C ℤ} (f : K ⟶ L)
 
 namespace cm5b
@@ -41,6 +41,7 @@ noncomputable def I : CochainComplex C ℤ where
   X n := Injective.under (K.X n)
   d _ _ := 0
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : Injective ((I K).X n) := by
   dsimp
   infer_instance
@@ -63,22 +64,25 @@ variable (K L) in
 /-- The second projection `mappingCone (𝟙 (I K)) ⊞ L ⟶ L`. -/
 noncomputable abbrev p : mappingCone (𝟙 (I K)) ⊞ L ⟶ L := biprod.snd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A lift of a morphism `f : K ⟶ L` between bounded below cochain complexes
 as a monomorphism `K ⟶ mappingCone (𝟙 (I K)) ⊞ L`. -/
 noncomputable def i : K ⟶ mappingCone (𝟙 (I K)) ⊞ L :=
   biprod.lift (mappingCone.lift _
     (HomComplex.Cocycle.mk (HomComplex.Cochain.mk (fun p q _ => K.d p q ≫ Injective.ι _)) 2
-      (by cutsat) (by
+      (by lia) (by
         ext p q hpq
-        simp [HomComplex.δ_v 1 2 (by cutsat) _ p q hpq (p + 1) (p + 1) (by cutsat) rfl]))
+        simp [HomComplex.δ_v 1 2 (by lia) _ p q hpq (p + 1) (p + 1) (by lia) rfl]))
     (HomComplex.Cochain.ofHoms (fun n => Injective.ι _)) (by cat_disch)) f
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma i_f_comp (n : ℤ) : (i f).f n ≫
     (biprod.fst : mappingCone (𝟙 (I K)) ⊞ L ⟶ _).f n ≫
       (mappingCone.snd (𝟙 (I K))).v n n (add_zero n) = Injective.ι (K.X n) := by
   simp [i]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : Mono ((i f).f n) := mono_of_mono_fac (i_f_comp f n)
 
 instance : Mono (i f) := HomologicalComplex.mono_of_mono_f (i f) inferInstance

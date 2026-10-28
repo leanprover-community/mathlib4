@@ -6,7 +6,8 @@ Authors: Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.MkIffOfInductiveProp
+
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Additional lemmas about sum types
@@ -28,10 +29,7 @@ namespace Sum
 @[simp]
 theorem elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
     Sum.elim f g ∘ Sum.swap = Sum.elim g f := by
-  ext x
-  cases x with
-  | inl x => simp
-  | inr x => simp
+  grind
 
 -- Lean has removed the `@[simp]` attribute on these. For now Mathlib adds it back.
 attribute [simp] Sum.forall Sum.exists
@@ -53,23 +51,25 @@ section get
 
 variable {x : α ⊕ β}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
   cases x <;> simp
 
 theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
-    x.getLeft h₁ = x.getLeft?.get h₂ := by simp [← getLeft?_eq_some_iff]
+    x.getLeft h₁ = x.getLeft?.get h₂ := by grind
 
 theorem getRight_eq_getRight? (h₁ : x.isRight) (h₂ : x.getRight?.isSome) :
-    x.getRight h₁ = x.getRight?.get h₂ := by simp [← getRight?_eq_some_iff]
+    x.getRight h₁ = x.getRight?.get h₂ := by grind
 
 @[simp] theorem isSome_getLeft?_iff_isLeft : x.getLeft?.isSome ↔ x.isLeft := by
-  rw [isLeft_iff, Option.isSome_iff_exists]; simp
+  grind
 
 @[simp] theorem isSome_getRight?_iff_isRight : x.getRight?.isSome ↔ x.isRight := by
-  rw [isRight_iff, Option.isSome_iff_exists]; simp
+  grind
 
 end get
 
@@ -93,7 +93,7 @@ theorem update_inl_comp_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α �
 @[simp]
 theorem update_inl_apply_inl [DecidableEq α] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i j : α}
     {x : γ} : update f (inl i) x (inl j) = update (f ∘ inl) i x j := by
-  rw [← update_inl_comp_inl, Function.comp_apply]
+  grind
 
 @[simp]
 theorem update_inl_comp_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {x : γ} :
@@ -188,18 +188,14 @@ theorem isRight_right (h : LiftRel r s (inr b) y) : y.isRight := by cases h; rfl
 
 theorem exists_of_isLeft_left (h₁ : LiftRel r s x y) (h₂ : x.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := by
-  rcases isLeft_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, or_false, reduceCtorEq] at h₁
-  exact h₁
+  grind
 
 theorem exists_of_isLeft_right (h₁ : LiftRel r s x y) (h₂ : y.isLeft) :
     ∃ a c, r a c ∧ x = inl a ∧ y = inl c := exists_of_isLeft_left h₁ ((isLeft_congr h₁).mpr h₂)
 
 theorem exists_of_isRight_left (h₁ : LiftRel r s x y) (h₂ : x.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d := by
-  rcases isRight_iff.mp h₂ with ⟨_, rfl⟩
-  simp only [liftRel_iff, false_and, and_false, exists_false, false_or, reduceCtorEq] at h₁
-  exact h₁
+  grind
 
 theorem exists_of_isRight_right (h₁ : LiftRel r s x y) (h₂ : y.isRight) :
     ∃ b d, s b d ∧ x = inr b ∧ y = inr d :=
@@ -251,6 +247,11 @@ theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
   mpr | ⟨hf, hg, hfg⟩ => hf.sumElim hg hfg
 
 @[simp]
+theorem elim_injective' {γ : Sort*} {f : α → γ} :
+    Injective (Sum.elim f : (β → γ) → (α ⊕ β → γ)) :=
+  fun g₁ g₂ hg ↦ funext fun b ↦ by simpa using congr_fun hg (Sum.inr b)
+
+@[simp]
 theorem map_injective {f : α → γ} {g : β → δ} :
     Injective (Sum.map f g) ↔ Injective f ∧ Injective g where
   mp h := ⟨.of_comp <| h.comp inl_injective, .of_comp <| h.comp inr_injective⟩
@@ -273,7 +274,7 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
 @[simp]
 theorem map_bijective {f : α → γ} {g : β → δ} :
     Bijective (Sum.map f g) ↔ Bijective f ∧ Bijective g :=
-  (map_injective.and map_surjective).trans <| and_and_and_comm
+  (map_injective.and map_surjective).trans and_and_and_comm
 
 end Sum
 

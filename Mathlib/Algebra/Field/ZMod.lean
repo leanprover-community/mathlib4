@@ -12,7 +12,7 @@ public import Mathlib.Data.ZMod.Basic
 # `ZMod p` is a field
 -/
 
-@[expose] public section
+public section
 
 namespace ZMod
 variable (p : ℕ) [hp : Fact p.Prime]
@@ -25,7 +25,7 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
 instance : Field (ZMod p) where
-  mul_inv_cancel := mul_inv_cancel_aux p
+  mul_inv_cancel := private mul_inv_cancel_aux p
   inv_zero := inv_zero p
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl

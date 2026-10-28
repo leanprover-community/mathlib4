@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Module
 
 # Krull Dimension of Module
 
-In this file we define `Module.supportDim R M` for a `R`-module `M` as
+In this file we define `Module.supportDim R M` for an `R`-module `M` as
 the krull dimension of its support. It is equal to the krull dimension of `R / Ann M` when
 `M` is finitely generated.
 
@@ -93,13 +93,13 @@ lemma support_of_supportDim_eq_zero [IsLocalRing R]
   apply le_antisymm
   · intro p hp
     by_contra nmem
-    simp only [Set.mem_singleton_iff] at nmem
+    push _ ∈ _ at nmem
     have : p < ⟨maximalIdeal R, IsMaximal.isPrime' (maximalIdeal R)⟩ :=
       lt_of_le_of_ne (IsLocalRing.le_maximalIdeal IsPrime.ne_top') nmem
     have : Module.supportDim R N > 0 := by
       simp only [Module.supportDim, gt_iff_lt, Order.krullDim_pos_iff, Subtype.exists,
         Subtype.mk_lt_mk, exists_prop]
       use p
-      simpa [hp] using ⟨_, IsLocalRing.closedPoint_mem_support R N, this⟩
+      simpa [hp] using! ⟨_, IsLocalRing.closedPoint_mem_support R N, this⟩
     exact (ne_of_lt this) dim.symm
-  · simpa using IsLocalRing.closedPoint_mem_support R N
+  · simpa using! IsLocalRing.closedPoint_mem_support R N

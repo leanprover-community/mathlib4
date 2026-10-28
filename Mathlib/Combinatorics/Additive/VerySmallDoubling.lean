@@ -5,12 +5,12 @@ Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Pointwise.Stabilizer
 public import Mathlib.Combinatorics.Additive.Convolution
 public import Mathlib.NumberTheory.Real.GoldenRatio
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Positivity
-public import Mathlib.Tactic.Qify
+
+import Mathlib.Algebra.Pointwise.Stabilizer
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Qify
 
 /-!
 # Sets with very small doubling
@@ -62,7 +62,7 @@ private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a 
     ext x
     rw [Set.mem_inv_smul_set_iff, smul_eq_mul]
     refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
-    · simpa [← smul_A ha, mul_smul] using smul_A hx
+    · simpa [← smul_A ha, mul_smul] using! smul_A hx
     · norm_cast
       rwa [← mul_mem_A_comm ha, ← smul_eq_mul, ← mem_inv_smul_finset_iff, inv_mem hx]
   refine ⟨?_, ?_⟩
@@ -146,8 +146,7 @@ private lemma weaken_doubling (h : #(A * A) < (3 / 2 : ℚ) * #A) : #(A * A) < 2
   linarith only [h]
 
 private lemma nonempty_of_doubling (h : #(A * A) < (3 / 2 : ℚ) * #A) : A.Nonempty := by
-  rw [nonempty_iff_ne_empty]
-  rintro rfl
+  by_contra! rfl
   simp at h
 
 /-- If `A` has doubling strictly less than `3 / 2`, then `A⁻¹ * A` is a subgroup.
@@ -327,7 +326,8 @@ theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
       (A : Set G) ⊆ a • H ∧ a •> (H : Set G) = H <• a := by
   let H := invMulSubgroup A h
   refine ⟨H, inferInstance, ?_, fun a ha ↦ ⟨?_, ?_⟩⟩
-  · simp [← Nat.card_eq_fintype_card, invMulSubgroup, ← coe_mul, - coe_inv, H]
+  · simp only [invMulSubgroup, ← coe_mul, Subgroup.mem_mk, Submonoid.mem_mk, Subsemigroup.mem_mk,
+      mem_coe, ← Nat.card_eq_fintype_card, H]
     rwa [Nat.card_eq_finsetCard, card_inv_mul_of_doubling_lt_three_halves h]
   · rw [invMulSubgroup_eq_inv_mul]
     exact_mod_cast A_subset_aH a ha
@@ -379,7 +379,6 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
     (hA₁ : #(A⁻¹ * A) ≤ K * #A) (hA₂ : #(A * A⁻¹) ≤ K * #A) :
     ∃ (H : Subgroup G) (_ : Fintype H) (Z : Finset G),
       #Z ≤ (2 - K) * K / ((φ - K) * (K - ψ)) ∧ (H : Set G) * Z = A * A⁻¹ := by
-  classical
   -- Some useful initial calculations
   have K_pos : 0 < K := by positivity
   have hK₀ : 0 < K := by positivity
@@ -389,13 +388,13 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
   have const_pos : 0 < K * (2 - K) / ((φ - K) * (K - ψ)) := by positivity
   -- We dispatch the trivial case `A = ∅` separately.
   obtain rfl | A_nonempty := A.eq_empty_or_nonempty
-  · exact ⟨⊥, inferInstance, ∅, by simp; positivity⟩
+  · exact ⟨⊥, inferInstance, ∅, by rw [card_empty, Nat.cast_zero]; positivity, by simp⟩
   -- In the case where `A` is non-empty, we consider the set `S := A * A⁻¹` and its stabilizer `H`.
   let S := A * A⁻¹
   let H := stabilizer G S
   -- `S` is finite and non-empty (because `A` is), and therefore `H` is finite too.
   have S_nonempty : S.Nonempty := by simpa [S]
-  have : Finite H := by simpa [H] using stabilizer_finite (by simpa) S.finite_toSet
+  have : Finite H := by simpa [H] using! stabilizer_finite (by simpa) S.finite_toSet
   cases nonempty_fintype H
   -- By definition, `H * S = S`.
   have H_mul_S : (H : Set G) * S = S := by simp [H, ← stabilizer_coe_finset]
@@ -404,7 +403,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
   have H_mul_Z : (H : Set G) * Z = S := by simp [hZ.2.1, H_mul_S]
   have H_toFinset_mul_Z : Set.toFinset H * Z = S := by simpa [← Finset.coe_inj]
   have card_H_mul_card_Z : Fintype.card H * #Z = #S := by
-    simpa [card_mul_eq_mul_card_of_injOn_opSMul hZ.2.2] using congr_arg _ H_toFinset_mul_Z
+    simpa [card_mul_eq_mul_card_of_injOn_opSMul hZ.2.2] using! congr_arg _ H_toFinset_mul_Z
   -- It remains to show that `|Z| ≤ C(K)` for some `C(K)` depending only on `K`.
   refine ⟨H, inferInstance, Z, ?_, mod_cast H_mul_Z⟩
   -- This is equivalent to showing that `|H| ≥ c(K)|S|` for some `c(K)` depending only on `K`.
@@ -451,7 +450,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
           · simp_all
         _ = l * #A + (#S - l) * (K - 1) * #A := by
           simp [hk, ← not_lt, mul_assoc,
-            ← S.filter_card_add_filter_neg_card_eq_card fun z ↦ (K - 1) * #A < r z]
+            ← S.card_filter_add_card_filter_not fun z ↦ (K - 1) * #A < r z]
         _ = ((2 - K) * l + (K - 1) * #S) * #A := by ring
     -- By cancelling `|A|` on both sides, we get `|A| ≤ (2 - K)l + (K - 1)|S|`.
     -- By composing with `|S| ≤ K|A|`, we get `|S| ≤ (2 - K)Kl + (K - 1)K|S|`.
@@ -482,7 +481,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
     rintro w hw
     -- Since `w ∈ S` and `|A⁻¹ * A| ≤ K|A|`, we know that `r(w) ≥ (2 - K)|A|`.
     have hrw : (2 - K) * #A ≤ r w := by
-      simpa [card_mul_inv_eq_convolution_inv] using le_card_mul_inv_eq hA₁ (by simpa)
+      simpa [card_mul_inv_eq_convolution_inv] using! le_card_mul_inv_eq hA₁ (by simpa)
     -- But also `r(z⁻¹) = r(z) > (K - 1)|A|`.
     rw [← r_inv] at hrz
     simp only [r, ← card_inter_smul] at hrz hrw
@@ -498,7 +497,7 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
       linarith
     -- This is exactly what we set out to prove.
     simpa [S, card_smul_inter_smul, Finset.Nonempty, mem_mul, mem_inv, -mem_inv', and_assoc]
-      using this
+      using! this
 
 /-! ### Doubling less than `2-ε` -/
 
@@ -526,7 +525,7 @@ private lemma mul_card_le_expansion (hS : S.Nonempty) : (1 - K) * #A ≤ expansi
 
 @[simp] private lemma expansion_pos_iff (hK : K < 1) (hS : S.Nonempty) :
     0 < expansion K S A ↔ A.Nonempty where
-  mp hA := by rw [nonempty_iff_ne_empty]; rintro rfl; simp at hA
+  mp hA := by by_contra! rfl; simp at hA
   mpr := expansion_pos hK hS
 
 @[simp] private lemma expansion_smul_finset (K : ℝ) (S A : Finset G) (a : G) :
@@ -608,6 +607,7 @@ private lemma IsAtom.eq_of_inter_nonempty (hK : K ≤ 1) (hS : S.Nonempty)
   replace hB := eq_of_subset_of_card_le inter_subset_right hB
   exact hA.symm.trans hB
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- For `K < 1` and `S ⊆ G` finite and nonempty, the value of connectivity is attained by a
 nonempty finite subset of `G`. That is, a fragment for given `K` and `S` exists. -/
 private lemma exists_nonempty_isFragment (hK : K < 1) (hS : S.Nonempty) :
@@ -674,8 +674,7 @@ private lemma not_isFragment_empty (hK : K < 1) (hS : S.Nonempty) : ¬ IsFragmen
 
 private lemma IsFragment.nonempty (hK : K < 1) (hS : S.Nonempty) (hA : IsFragment K S A) :
     A.Nonempty := by
-  rw [nonempty_iff_ne_empty]
-  rintro rfl
+  by_contra! rfl
   simp [*, not_isFragment_empty hK hS] at hA
 
 private lemma IsAtom.nonempty (hK : K < 1) (hS : S.Nonempty) (hA : IsAtom K S A) : A.Nonempty :=
@@ -693,7 +692,7 @@ private lemma exists_subgroup_isAtom (hK : K < 1) (hS : S.Nonempty) :
   have one_mem_carrier : 1 ∈ n⁻¹ •> N := by simpa [mem_inv_smul_finset_iff]
   have self_mem_smul_carrier (x : G) : x ∈ x • n⁻¹ • N := by
     apply smul_mem_smul_finset (a := x) at one_mem_carrier
-    simpa only [smul_eq_mul, mul_one] using one_mem_carrier
+    simpa only [smul_eq_mul, mul_one] using! one_mem_carrier
   let H : Subgroup G := {
     carrier := n⁻¹ •> N
     one_mem' := mod_cast one_mem_carrier
@@ -702,21 +701,22 @@ private lemma exists_subgroup_isAtom (hK : K < 1) (hS : S.Nonempty) :
       apply smul_mem_smul_finset (a := a) at hb
       rw [smul_eq_mul] at hb
       have : (n⁻¹ •> N ∩ a •> n⁻¹ •> N).Nonempty := ⟨a, by
-        simpa only [mem_inter] using ⟨ha, self_mem_smul_carrier a⟩⟩
+        simpa only [mem_inter] using! ⟨ha, self_mem_smul_carrier a⟩⟩
       simpa only [← (hN.smul_finset n⁻¹).eq_of_inter_nonempty hK.le hS
-        ((hN.smul_finset n⁻¹).smul_finset a) this] using hb
+        ((hN.smul_finset n⁻¹).smul_finset a) this] using! hb
     inv_mem' {a} ha := by
       rw [← coe_smul_finset, mem_coe] at *
       apply smul_mem_smul_finset (a := a⁻¹) at ha
       rw [smul_eq_mul, inv_mul_cancel] at ha
-      have : (n⁻¹ •> N ∩ a⁻¹ •> n⁻¹ •> N).Nonempty := ⟨1, by simpa using ⟨one_mem_carrier, ha⟩⟩
+      have : (n⁻¹ •> N ∩ a⁻¹ •> n⁻¹ •> N).Nonempty := ⟨1, by simpa using! ⟨one_mem_carrier, ha⟩⟩
       simpa only [← (hN.smul_finset n⁻¹).eq_of_inter_nonempty hK.le hS
-        ((hN.smul_finset n⁻¹).smul_finset a⁻¹) this] using self_mem_smul_carrier a⁻¹
+        ((hN.smul_finset n⁻¹).smul_finset a⁻¹) this] using! self_mem_smul_carrier a⁻¹
   }
   refine ⟨H, Fintype.ofFinset (n⁻¹ •> N) fun a => ?_, ?_⟩
-  · simpa only [← mem_coe, coe_smul_finset] using H.mem_carrier
-  · simpa [Set.toFinset_smul_set, toFinset_coe, H] using IsAtom.smul_finset n⁻¹ hN
+  · simpa only [← mem_coe, coe_smul_finset] using! H.mem_carrier
+  · simpa [Set.toFinset_smul_set, toFinset_coe, H] using! IsAtom.smul_finset n⁻¹ hN
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `S` is nonempty such that there is `A` with `|S| ≤ |A|` such that `|A * S| ≤ (2 - ε) * |S|`
 for some `0 < ε ≤ 1`, then there is a finite subgroup `H` of `G` of size `|H| ≤ (2 / ε - 1) * |S|`
 such that `S` is covered by at most `2 / ε - 1` right cosets of `H`. -/
@@ -773,7 +773,7 @@ theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) 
     -- where we used `calc₁` again.
     rw [← mul_le_mul_iff_right₀ (show 0 < 1 - K by linarith [hK])]
     suffices (1 - K) * #(Set.toFinset H * S) ≤ (1 - ε / 2) * #(H : Set G).toFinset by
-      apply le_of_eq_of_le' _ this; simp [K]; field
+      apply le_of_le_of_eq this; simp [K]; field
     rw [sub_mul, one_mul, sub_le_iff_le_add]
     calc
           (#(Set.toFinset H * S) : ℝ)

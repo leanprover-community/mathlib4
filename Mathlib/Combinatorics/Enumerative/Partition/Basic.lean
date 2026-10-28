@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Combinatorics.Enumerative.Composition
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Partitions
@@ -30,10 +29,6 @@ related results.
 
 The representation of a partition as a multiset is very handy as multisets are very flexible and
 already have a well-developed API.
-
-## TODO
-
-Link this to Young diagrams.
 
 ## Tags
 
@@ -152,7 +147,7 @@ theorem toFinsuppAntidiag_injective (n : ℕ) : Function.Injective (toFinsuppAnt
 theorem toFinsuppAntidiag_mem_finsuppAntidiag {n : ℕ} (p : Partition n) :
     p.toFinsuppAntidiag ∈ (Finset.Icc 1 n).finsuppAntidiag n := by
   have hp : p.parts.toFinset ⊆ Finset.Icc 1 n := by
-    grind [Multiset.mem_toFinset, Finset.mem_Icc]
+    grind
   suffices ∑ m ∈ Finset.Icc 1 n, Multiset.count m p.parts * m = n by simpa [toFinsuppAntidiag, hp]
   convert ← p.parts_sum
   rw [Finset.sum_multiset_count]
@@ -165,6 +160,7 @@ def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
 
 instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma indiscrete_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
   simp [indiscrete, filter_eq_self, hn]
 
@@ -205,17 +201,58 @@ partitions.
 instance (n : ℕ) : Fintype (Partition n) :=
   Fintype.ofSurjective (ofComposition n) ofComposition_surj
 
+/-- The finset of those partitions in which every part satisfies a certain condition. -/
+def restricted (n : ℕ) (p : ℕ → Prop) [DecidablePred p] : Finset n.Partition :=
+  Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, p i
+
+/-- The finset of those partitions in which every part is used less than `m` times. -/
+def countRestricted (n : ℕ) (m : ℕ) : Finset n.Partition :=
+  Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, x.parts.count i < m
+
 /-- The finset of those partitions in which every part is odd. -/
-def odds (n : ℕ) : Finset (Partition n) :=
-  Finset.univ.filter fun c => ∀ i ∈ c.parts, ¬Even i
+@[oeis A000009 "cardinality"]
+def odds (n : ℕ) : Finset n.Partition := restricted n (¬ Even ·)
 
 /-- The finset of those partitions in which each part is used at most once. -/
-def distincts (n : ℕ) : Finset (Partition n) :=
+@[oeis A000009 "cardinality"]
+def distincts (n : ℕ) : Finset n.Partition :=
   Finset.univ.filter fun c => c.parts.Nodup
 
+theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
+  congrm Finset.univ.filter fun x ↦ ?_
+  rw [Multiset.nodup_iff_count_le_one]
+  grind [Multiset.count_eq_zero]
+
 /-- The finset of those partitions in which every part is odd and used at most once. -/
-def oddDistincts (n : ℕ) : Finset (Partition n) :=
+def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
+
+/-- If `1 ≤ a` and `a ≤ n`, partitions of `n` containing `a` as a part are equivalent to
+partitions of `n - a`. The forward map removes one occurrence of `a`, and the inverse adds `a` as
+a part. -/
+def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n) :
+    {p : n.Partition // a ∈ p.parts} ≃ (n - a).Partition where
+  toFun p := by
+    refine ⟨p.1.parts.erase a, ?_, ?_⟩
+    · intro _ hi
+      exact p.1.parts_pos (p.1.parts.erase_subset a hi)
+    · have hs : a + (p.1.parts.erase a).sum = n := by
+        simpa [p.1.parts_sum] using congrArg Multiset.sum (Multiset.cons_erase p.2)
+      lia
+  invFun q := ⟨⟨a ::ₘ q.parts, by grind, by simp [q.parts_sum, ha]⟩, by simp⟩
+  left_inv p := Subtype.ext <| Partition.ext <| cons_erase p.property
+  right_inv q := Partition.ext <| erase_cons_head a q.parts
+
+@[simp]
+theorem partitionWithPartEquiv_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n)
+    (p : {p : n.Partition // a ∈ p.parts}) :
+    (partitionWithPartEquiv ha1 ha p).parts = p.1.parts.erase a := by
+  dsimp [partitionWithPartEquiv]
+
+@[simp]
+theorem partitionWithPartEquiv_symm_apply_parts {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n)
+    (p : (n - a).Partition) : ((partitionWithPartEquiv ha1 ha).symm p).1.parts = a ::ₘ p.parts := by
+  dsimp [partitionWithPartEquiv]
 
 end Partition
 

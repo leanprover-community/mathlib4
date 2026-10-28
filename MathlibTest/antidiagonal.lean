@@ -1,7 +1,9 @@
-import Mathlib.Algebra.Order.Antidiag.Finsupp
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Finsupp.Notation
-import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+module
+
+public meta import Mathlib.Algebra.Order.Antidiag.Finsupp
+public meta import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+public meta import Mathlib.Data.Finset.Sort
+public meta import Mathlib.Data.Finsupp.Notation
 
 /-!
 # Testing computability (and runtime) of antidiagonal
@@ -11,8 +13,6 @@ open Finset
 
 section
 -- set_option trace.profiler true
-
-set_option linter.style.commandStart false
 
 -- `antidiagonalTuple` is faster than `finAntidiagonal` by a small constant factor
 /-- info: 23426 -/

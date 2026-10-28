@@ -6,9 +6,10 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
+public meta import Lean.Parser.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # The "docPrime" linter
@@ -20,7 +21,7 @@ to an unprimed version of that declaration, or an explanation as to why no bette
 is possible.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Linter
 
@@ -33,7 +34,7 @@ name ends with a `'`.
 The file `scripts/nolints_prime_decls.txt` contains a list of temporary exceptions to this linter.
 This list should not be appended to, and become emptied over time.
 -/
-register_option linter.docPrime : Bool := {
+public register_option linter.docPrime : Bool := {
   defValue := false
   descr := "enable the docPrime linter"
 }
@@ -69,7 +70,9 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
       presence of a `'` in their doc-string. This may consist of discussion of the difference \
       relative to the unprimed version, or an explanation as to why no better naming scheme \
       is possible."
-  if docstring[0][1].getAtomVal.isEmpty && declName.toString.back == '\'' then
+  -- A `docComment` is `/--`, then a `commentBody` node holding the text and the closing `-/`,
+  -- so the text itself is `docstring[0][1][0]`.
+  if docstring[0][1][0].getAtomVal.isEmpty && declName.toString.back == '\'' then
     if ← System.FilePath.pathExists "scripts/nolints_prime_decls.txt" then
       if (← IO.FS.lines "scripts/nolints_prime_decls.txt").contains declName.toString then
         return

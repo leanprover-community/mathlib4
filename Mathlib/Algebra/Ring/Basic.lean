@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
-public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Tactic.TFAE
+
+import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Semirings and rings
@@ -28,8 +30,6 @@ For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 assert_not_exists Nat.cast_sub
 
 variable {R S : Type*}
-
-open Function
 
 namespace AddHom
 
@@ -77,7 +77,7 @@ and `Algebra.lmul`.
 -/
 def mul : R →+ R →+ R where
   toFun := mulLeft
-  map_zero' := ext <| zero_mul
+  map_zero' := ext zero_mul
   map_add' a b := ext <| add_mul a b
 
 lemma mul_apply (x y : R) : mul x y = x * y := rfl
@@ -169,16 +169,6 @@ section NoZeroDivisors
 
 variable (α)
 
-lemma IsLeftCancelMulZero.to_noZeroDivisors [MulZeroClass α]
-    [IsLeftCancelMulZero α] : NoZeroDivisors α where
-  eq_zero_or_eq_zero_of_mul_eq_zero {x _} h :=
-    or_iff_not_imp_left.mpr fun ne ↦ mul_left_cancel₀ ne ((mul_zero x).symm ▸ h)
-
-lemma IsRightCancelMulZero.to_noZeroDivisors [MulZeroClass α]
-    [IsRightCancelMulZero α] : NoZeroDivisors α where
-  eq_zero_or_eq_zero_of_mul_eq_zero {_ y} h :=
-    or_iff_not_imp_right.mpr fun ne ↦ mul_right_cancel₀ ne ((zero_mul y).symm ▸ h)
-
 section NonUnitalNonAssocRing
 
 variable {R : Type*} [NonUnitalNonAssocRing R] {r : R}
@@ -210,7 +200,7 @@ lemma noZeroDivisors_tfae : List.TFAE
 
 /-- In a ring, `IsCancelMulZero` and `NoZeroDivisors` are equivalent. -/
 lemma isCancelMulZero_iff_noZeroDivisors : IsCancelMulZero R ↔ NoZeroDivisors R :=
-  noZeroDivisors_tfae.out 3 0
+  noZeroDivisors_tfae.out 4 1
 
 variable (R) in
 instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
@@ -297,9 +287,18 @@ lemma div_neg_eq_neg_div' (a : R) : a / -b = -a / b := neg_div b a ▸ div_neg _
 @[simp]
 lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
 
-@[deprecated (since := "2025-04-24")]
-alias inv_neg' := inv_neg
-
 lemma inv_neg_one : (-1 : R)⁻¹ = -1 := by rw [← neg_inv, inv_one]
+
+@[simp]
+lemma isSelfInv_neg_iff : IsSelfInv (-a) ↔ IsSelfInv a := by
+  rw [isSelfInv_iff, isSelfInv_iff, inv_neg, neg_inj]
+
+protected alias ⟨_, IsSelfInv.neg⟩ := isSelfInv_neg_iff
+
+@[simp]
+lemma isSelfNeg_inv_iff : IsSelfNeg a⁻¹ ↔ IsSelfNeg a := by
+  rw [isSelfNeg_iff, isSelfNeg_iff, neg_inv, inv_inj]
+
+protected alias ⟨_, IsSelfNeg.inv⟩ := isSelfNeg_inv_iff
 
 end DivisionMonoid

@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
 
 /-!
 # The monoidal structure on `QuadraticModuleCat` is symmetric.
@@ -20,7 +20,7 @@ In this file we show:
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Symmetric.lean`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 

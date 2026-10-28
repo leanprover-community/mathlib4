@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Category.Lat
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # The category of frames
@@ -40,6 +39,11 @@ initialize_simps_projections Frm (carrier → coe, -str)
 
 namespace Frm
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Frm.of X` as `↧X`. -/
+@[app_delab Frm.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort Frm (Type _) :=
   ⟨Frm.carrier⟩
 
@@ -48,7 +52,7 @@ attribute [coe] Frm.carrier
 /-- The type of morphisms in `Frm R`. -/
 @[ext]
 structure Hom (X Y : Frm.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `FrameHom`. -/
   hom' : FrameHom X Y
 
@@ -59,7 +63,7 @@ instance : Category Frm.{u} where
 
 instance : ConcreteCategory Frm (FrameHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Frm` back into a `FrameHom`. -/
 abbrev Hom.hom {X Y : Frm.{u}} (f : Hom X Y) :=
@@ -88,7 +92,7 @@ lemma coe_comp {X Y Z : Frm} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) =
 
 @[simp]
 lemma forget_map {X Y : Frm} (f : X ⟶ Y) :
-    (forget Frm).map f = f := rfl
+    (forget Frm).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : Frm} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -145,7 +149,7 @@ instance : Inhabited Frm :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ Frm Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom f.hom
 
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/

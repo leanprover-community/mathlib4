@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Algebra.RestrictScalars
-public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
@@ -44,13 +43,14 @@ variable {k : Type u} [Field k]
 variable {A : Type w} [Ring A] [Algebra k A]
 
 /-- Type synonym for considering a module over a `k`-algebra as a `k`-module. -/
+@[instance_reducible]
 def moduleOfAlgebraModule (M : ModuleCat.{v} A) : Module k M :=
-  RestrictScalars.module k A M
+  Module.restrictScalars k A M
 
 attribute [scoped instance] ModuleCat.moduleOfAlgebraModule
 
 theorem isScalarTower_of_algebra_moduleCat (M : ModuleCat.{v} A) : IsScalarTower k A M :=
-  RestrictScalars.isScalarTower k A M
+  IsScalarTower.restrictScalars k A M
 
 attribute [scoped instance] ModuleCat.isScalarTower_of_algebra_moduleCat
 

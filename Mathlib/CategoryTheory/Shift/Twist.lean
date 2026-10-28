@@ -31,11 +31,11 @@ variable (C : Type u) [Category.{v} C] (A : Type w) [AddMonoid A] [HasShift C A]
 /-- Given a category `C` equipped with a shift by a monoid `A` -/
 structure TwistShiftData where
   /-- The invertible elements in the center of `C` which are used to
-  modify the `shiftFunctorAdd` isomorphisms . -/
+  modify the `shiftFunctorAdd` isomorphisms. -/
   z (a b : A) : (CatCenter C)ˣ
   z_zero_zero : z 0 0 = 1 := by cat_disch
   assoc (a b c : A) : z (a + b) c * z a b = z a (b + c) * z b c := by cat_disch
-  commShift (a b : A) : NatTrans.CommShift (z a b).val A := by infer_instance
+  commShift (a b : A) : NatTrans.CommShift (z a b).val.asHom A := by infer_instance
 
 namespace TwistShiftData
 
@@ -54,7 +54,7 @@ attribute [instance] commShift
 @[simp]
 lemma shift_z_app (a b c : A) (X : C) :
     ((t.z a b).val.app X)⟦c⟧' = (t.z a b).val.app (X⟦c⟧) := by
-  simpa using NatTrans.shift_app_comm (t.z a b).val c X
+  simpa using NatTrans.shift_app_comm (t.z a b).val.asHom c X
 
 /-- Given `t : TwistShiftData C A`, this is a type synonym for the category `C`,
 which the same shift functors as `C` but where the `shiftFunctorAdd` isomorphisms
@@ -64,6 +64,7 @@ protected def Category (_ : TwistShiftData C A) : Type u := C
 
 instance : Category t.Category := inferInstanceAs (Category C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `t : TwistShiftData C A`, the shift on the category `TwistShift t` has
 the same shift functors as `C`, the same isomorphism `shiftFunctorZero` isomorphism,
 but the `shiftFunctorAdd` isomorphisms are modified using `t`. -/
@@ -91,6 +92,7 @@ identify to the shift functors on `C`. -/
 noncomputable def shiftIso (m : A) : shiftFunctor t.Category m ≅ shiftFunctor C m :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctor_map {X Y : t.Category} (f : X ⟶ Y) (m : A) :
     (shiftFunctor t.Category m).map f =
       (t.shiftIso m).hom.app X ≫ (shiftFunctor C m).map f ≫ (t.shiftIso m).inv.app Y := by
@@ -106,6 +108,7 @@ lemma shiftFunctorZero_inv_app (X : t.Category) :
       (shiftFunctorZero C A).inv.app X ≫ (shiftIso t (0 : A)).inv.app X :=
   (Category.comp_id _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shiftFunctorAdd'_hom_app (i j k : A) (h : i + j = k) (X : t.Category) :
     (shiftFunctorAdd' t.Category i j k h).hom.app X =
@@ -121,10 +124,11 @@ lemma shiftFunctorAdd'_hom_app (i j k : A) (h : i + j = k) (X : t.Category) :
   change _ = 𝟙 _ ≫ _ ≫ (shiftFunctor C j).map (𝟙 _) ≫ 𝟙 _
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma shiftFunctorAdd'_inv_app (i j k : A) (h : i + j = k) (X : t.Category) :
     (shiftFunctorAdd' t.Category i j k h).inv.app X =
-      ((t.z i j)⁻¹).val • (t.shiftIso j).hom.app _  ≫
+      ((t.z i j)⁻¹).val • (t.shiftIso j).hom.app _ ≫
         (shiftFunctor C j).map ((t.shiftIso i).hom.app X) ≫
         (shiftFunctorAdd' C i j k h).inv.app X ≫
         (t.shiftIso k).inv.app X := by

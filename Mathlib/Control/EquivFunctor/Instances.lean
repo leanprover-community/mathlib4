@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Control.EquivFunctor
 public import Mathlib.Data.Fintype.OfMap
 
 /-!
@@ -14,7 +13,7 @@ public import Mathlib.Data.Fintype.OfMap
 We derive some `EquivFunctor` instances, to enable `equiv_rw` to rewrite under these functions.
 -/
 
-@[expose] public section
+public section
 
 
 open Equiv
@@ -34,12 +33,7 @@ instance EquivFunctorPerm : EquivFunctor Perm where
 instance EquivFunctorFinset : EquivFunctor Finset where
   map e s := s.map e.toEmbedding
   map_refl' α := by ext; simp
-  map_trans' k h := by
-    ext _ a; simp; constructor <;> intro h'
-    · let ⟨a, ha₁, ha₂⟩ := h'
-      rw [← ha₂]; simpa
-    · exists (Equiv.symm k) ((Equiv.symm h) a)
-      simp [h']
+  map_trans' k h := by ext; simp [-trans_toEmbedding]
 
 instance EquivFunctorFintype : EquivFunctor Fintype where
   map e _ := Fintype.ofBijective e e.bijective

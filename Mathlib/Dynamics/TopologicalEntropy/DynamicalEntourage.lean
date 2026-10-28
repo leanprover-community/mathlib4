@@ -5,9 +5,9 @@ Authors: Damien Thomine, Pietro Monticone
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.UniformSpace.Basic
+
+import Mathlib.Order.Lattice.Nat
 
 /-!
 # Dynamical entourages
@@ -23,7 +23,7 @@ about these objects.
 ## Main definitions
 
 - `dynEntourage`: dynamical entourage associated with a given transformation `T`, entourage `U`
-and time `n`.
+  and time `n`.
 
 ## Tags
 
@@ -44,7 +44,7 @@ namespace Dynamics
 open Prod Set UniformSpace
 open scoped SetRel Topology Uniformity
 
-variable {X : Type*} {T : X → X} {U : SetRel X X} {n : ℕ} {x y : X}
+variable {X : Type*} {T : X → X} {U V : SetRel X X} {m n : ℕ} {x y : X}
 
 /-- The dynamical entourage associated to a transformation `T`, entourage `U` and time `n`
 is the entourage where `x` and `y` are close iff `T^[k] x` and `T^[k] y` are `U`-close
@@ -61,15 +61,20 @@ lemma mem_dynEntourage : (x, y) ∈ dynEntourage T U n ↔ ∀ k < n, (T^[k] x, 
 
 lemma mem_ball_dynEntourage :
     y ∈ ball x (dynEntourage T U n) ↔ ∀ k < n, T^[k] y ∈ ball (T^[k] x) U := by
-  simp only [ball, mem_preimage, mem_dynEntourage]
+  simp only [ball, SetRel.mem_ball, SetRel.mem_inv, mem_dynEntourage]
 
 lemma dynEntourage_mem_uniformity [UniformSpace X] (h : UniformContinuous T)
     (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     dynEntourage T U n ∈ 𝓤 X := by
   rw [dynEntourage_eq_inter_Ico T U n]
-  refine Filter.iInter_mem.2 fun k ↦ ?_
-  rw [map_iterate T T k]
-  exact uniformContinuous_def.1 (UniformContinuous.iterate T k h) U U_uni
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [iInter_coe_set, mem_Ico, Nat.zero_le, true_and] at ih ⊢
+    rw [Set.biInter_lt_succ]
+    apply Filter.inter_mem ih
+    rw [map_iterate T T n]
+    exact uniformContinuous_def.1 (UniformContinuous.iterate T n h) U U_uni
 
 lemma ball_dynEntourage_mem_nhds [UniformSpace X] (h : Continuous T)
     (U_uni : U ∈ 𝓤 X) (n : ℕ) (x : X) :
@@ -80,33 +85,18 @@ lemma ball_dynEntourage_mem_nhds [UniformSpace X] (h : Continuous T)
   exact (h.iterate k).continuousAt.preimage_mem_nhds (ball_mem_nhds (T^[k] x) U_uni)
 
 instance isRefl_dynEntourage [U.IsRefl] : (dynEntourage T U n).IsRefl := by
-  simp [dynEntourage]; infer_instance
+  simp only [dynEntourage, map_iterate]
+  infer_instance
 
 instance isSymm_dynEntourage [U.IsSymm] : (dynEntourage T U n).IsSymm := by
-  simp [dynEntourage]; infer_instance
-
-set_option linter.deprecated false in
-@[deprecated isRefl_dynEntourage (since := "2025-10-17")]
-lemma idRel_subset_dynEntourage (T : X → X) {U : Set (X × X)} (h : idRel ⊆ U) (n : ℕ) :
-    idRel ⊆ (dynEntourage T U n) := by
-  simp only [dynEntourage, map_iterate, subset_iInter_iff, idRel_subset, mem_preimage, map_apply]
-  exact fun _ _ _ ↦ h rfl
-
-set_option linter.deprecated false in
-@[deprecated isSymm_dynEntourage (since := "2025-10-17")]
-lemma _root_.IsSymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)}
-    (h : IsSymmetricRel U) (n : ℕ) :
-    IsSymmetricRel (dynEntourage T U n) := by
-  ext xy
-  simp only [Dynamics.dynEntourage, map_iterate, mem_preimage, mem_iInter]
-  refine forall₂_congr fun k _ ↦ ?_
-  exact map_apply' _ _ _ ▸ IsSymmetricRel.mk_mem_comm h
+  simp only [dynEntourage, map_iterate]
+  infer_instance
 
 lemma dynEntourage_comp_subset (T : X → X) (U V : SetRel X X) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by
   simp only [dynEntourage, map_iterate, subset_iInter_iff]
   intro k k_n xy xy_comp
-  simp only [SetRel.comp, mem_iInter, mem_preimage, map_apply, mem_setOf_eq] at xy_comp ⊢
+  simp only [SetRel.comp, mem_iInter, mem_preimage, map_apply, mem_ofPred_eq] at xy_comp ⊢
   rcases xy_comp with ⟨z, hz1, hz2⟩
   exact mem_ball_comp (hz1 k k_n) (hz2 k k_n)
 
@@ -125,6 +115,10 @@ lemma dynEntourage_antitone (T : X → X) (U : SetRel X X) :
     Antitone (fun n : ℕ ↦ dynEntourage T U n) :=
   fun m n m_n ↦ iInter₂_mono' fun k k_m ↦ by use k, lt_of_lt_of_le k_m m_n
 
+@[gcongr]
+lemma dynEntourage_mono (hUV : U ⊆ V) (hmn : m ≤ n) : dynEntourage T U n ⊆ dynEntourage T V m :=
+  (dynEntourage_monotone _ _ hUV).trans (dynEntourage_antitone _ _ hmn)
+
 @[simp] lemma dynEntourage_zero : dynEntourage T U 0 = univ := by simp [dynEntourage]
 @[simp] lemma dynEntourage_one : dynEntourage T U 1 = U := by simp [dynEntourage]
 
@@ -141,7 +135,7 @@ lemma mem_ball_dynEntourage_comp (T : X → X) (n : ℕ) {U : SetRel X X} [U.IsS
 
 lemma _root_.Function.Semiconj.preimage_dynEntourage {Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Function.Semiconj φ S T) (U : Set (Y × Y)) (n : ℕ) :
-    (map φ φ)⁻¹' (dynEntourage T U n) = dynEntourage S ((map φ φ)⁻¹' U) n := by
+    (map φ φ) ⁻¹' (dynEntourage T U n) = dynEntourage S ((map φ φ) ⁻¹' U) n := by
   rw [dynEntourage, preimage_iInter₂]
   refine iInter₂_congr fun k _ ↦ ?_
   rw [← preimage_comp, ← preimage_comp, map_iterate S S k, map_iterate T T k, map_comp_map,

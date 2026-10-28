@@ -5,11 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Fintype.Basic
+
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Lemmas about (finite domain) functions into fields.
@@ -17,7 +16,7 @@ public import Mathlib.Data.Fintype.Basic
 We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness hierarchy there.
 -/
 
-@[expose] public section
+public section
 
 variable {α ι : Type*} [AddCommMonoid α] [LinearOrder α] [IsOrderedCancelAddMonoid α]
   [Nontrivial α] [DenselyOrdered α]

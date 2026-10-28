@@ -5,8 +5,8 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # Cofiltered limits in the category of topological spaces
@@ -16,18 +16,16 @@ which contain `Set.univ` and are closed under intersections, the induced *naive*
 of sets in the limit is, in fact, a topological basis.
 -/
 
-@[expose] public section
+public section
 
 
-open TopologicalSpace Topology
+open TopologicalSpace
 
 open CategoryTheory
 
 open CategoryTheory.Limits
 
 universe u v w
-
-noncomputable section
 
 namespace TopCat
 
@@ -83,18 +81,18 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       refine this _ _ _ (univ _) (inter _) ?_
       intro e he
       dsimp [Vs]
-      rw [dif_pos he]
+      rw [dite_eq_left he]
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...
       rw [h2]
-      change _ = (C.π.app j)⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
+      change _ = (C.π.app j) ⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
-      simp [Vs, dif_pos he, ← Set.preimage_comp, ← coe_comp]
+      simp [Vs, dite_eq_left he, ← Set.preimage_comp, ← coe_comp]
 
 end CofilteredLimit
 

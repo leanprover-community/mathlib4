@@ -5,8 +5,9 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.Probability.Kernel.Integral
+
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-! # Integral against a kernel over a set
 
@@ -14,7 +15,7 @@ This file contains lemmas about the integral against a kernel and over a set.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory
 

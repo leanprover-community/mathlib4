@@ -1,10 +1,13 @@
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-import Mathlib.Tactic.Variable
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+public import Mathlib.Tactic.Variable
+
 set_option autoImplicit true
 namespace Tests
 
@@ -61,10 +64,10 @@ end
 
 section
 /--
-error: failed to synthesize
+error: failed to synthesize instance of type class
   Semiring R
 
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
 -/
 #guard_msgs in
 variable? [Module R M] => [Module R M]
@@ -194,6 +197,8 @@ info: Try this:
 -/
 #guard_msgs in
 variable? [VectorSpace k V] [Algebra k V]
+
+set_option linter.overlappingInstances false
 example : Field k := inferInstance
 example : AddCommGroup V := inferInstance
 example : Module k V := inferInstance

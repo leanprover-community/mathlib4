@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Analysis.Normed.Field.WithAbs
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Equivalence of real-valued absolute values
@@ -42,10 +42,6 @@ theorem IsEquiv.symm (h : v.IsEquiv w) : w.IsEquiv v := fun _ _ ↦ (h _ _).symm
 
 theorem IsEquiv.trans {u : AbsoluteValue R S} (h₁ : v.IsEquiv w)
     (h₂ : w.IsEquiv u) : v.IsEquiv u := fun _ _ ↦ (h₁ _ _).trans (h₂ _ _)
-
-@[deprecated (since := "2025-09-12")] alias isEquiv_refl := IsEquiv.refl
-@[deprecated (since := "2025-09-12")] alias isEquiv_symm := IsEquiv.symm
-@[deprecated (since := "2025-09-12")] alias isEquiv_trans := IsEquiv.trans
 
 instance : Setoid (AbsoluteValue R S) where
   r := IsEquiv
@@ -103,15 +99,13 @@ lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZero
     f.IsEquiv .trivial ↔ f = .trivial :=
   ⟨fun h ↦ by aesop (add simp [h.eq_one_iff, AbsoluteValue.trivial]), fun h ↦ h ▸ .rfl⟩
 
-@[deprecated (since := "2025-09-12")]
-alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
-
 variable [IsStrictOrderedRing S]
 
 theorem isEquiv_iff_lt_one_iff :
     v.IsEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
   refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
-  rcases eq_or_ne (v x) 0 with (_ | hy₀) <;> simp_all
+  rcases eq_or_ne (v x) 0 with (_ | hy₀)
+  · simp_all
   rw [le_iff_le_iff_lt_iff_lt, ← one_mul (v x), ← mul_inv_lt_iff₀ (by simp_all), ← one_mul (w x),
     ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
   exact h _
@@ -163,7 +157,7 @@ open scoped Topology
 
 variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
   [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [OrderTopology S]
-  {ι : Type*} [Fintype ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
+  {ι : Type*} [Finite ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
   {a b : R} {i : ι}
 
 /--
@@ -185,10 +179,11 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
     simpa [c] using Tendsto.atTop_mul_const (by linarith) (tendsto_pow_atTop_atTop_of_one_lt ha)
   have hcⱼ (j : ι) (hj : j ≠ i) : Tendsto (fun n ↦ (v j) (c n)) atTop (𝓝 0) := by
     simpa [c] using (tendsto_pow_atTop_nhds_zero_of_lt_one ((v j).nonneg _) (haj j hj)).mul_const _
-  simp_rw [OrderTopology.topology_eq_generate_intervals,
+  simp_rw +instances [OrderTopology.topology_eq_generate_intervals,
     TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using tendsto_atTop_atTop.1 hcᵢ 2
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
+  have := Fintype.ofFinite ι
   let r := Finset.univ.sup fun j ↦ if h : j = i then r₁ else rₙ j h
   refine ⟨c r, lt_of_lt_of_le (by linarith) (hr₁ r ?_), fun j hj ↦ ?_, by simpa [c, haw]⟩
   · exact Finset.le_sup_dite_pos (p := fun j ↦ j = i) (f := fun _ _ ↦ r₁) (Finset.mem_univ _) rfl
@@ -219,11 +214,12 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   have hcₙ : atTop.Tendsto (fun n ↦ w (c n)) (𝓝 (w b)) := by
     have : w a⁻¹ < 1 := map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ haw
     simpa [c] using (tendsto_div_one_add_pow_nhds_one this).mul_const (w b)
-  simp_rw [OrderTopology.topology_eq_generate_intervals,
+  simp_rw +instances [OrderTopology.topology_eq_generate_intervals,
     TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_const_lt hb hcᵢ
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
   choose rN hrN using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_lt_const hbw hcₙ
+  have := Fintype.ofFinite ι
   let r := max (Finset.univ.sup fun j ↦ if h : j = i then r₁ else rₙ j h) rN
   refine ⟨c r, hr₁ r ?_, fun j hj ↦ ?_, ?_⟩
   · exact le_max_iff.2 <| .inl <|
@@ -242,6 +238,7 @@ theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
     (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
     ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1 := by
   classical
+  have := Fintype.ofFinite ι
   let P (ι : Type _) [Fintype ι] : Prop :=
     ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
       (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1
@@ -270,16 +267,22 @@ theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
       let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_eq_one ha.1 ha.2 ha₁ hb.1 (hb.2 ⟨j, .inr rfl⟩
         (by grind))
       refine ⟨c, hc.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (by grind)
+      rcases eq_or_ne k j with (rfl | h)
+      · exact hc.2.2
+      · exact hc.2.1 ⟨k, h⟩ (by grind)
     rcases ha₁.lt_or_gt with (ha_lt | ha_gt)
     · -- If `v j a < 1` then `a` works as the divergent point.
       refine ⟨a, ha.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact ha_lt; exact ha.2 ⟨k, h⟩ (by grind)
+      rcases eq_or_ne k j with (rfl | h)
+      · exact ha_lt
+      · exact ha.2 ⟨k, h⟩ (by grind)
     · -- If `1 < v j a` then take a large enough value from the sequence `b / (1 + a ^ (-n))`.
       let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_one_lt ha.1 ha.2 ha_gt hb.1 (hb.2 ⟨j, .inr rfl⟩
         (by grind))
       refine ⟨c, hc.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (by grind)
+      rcases eq_or_ne k j with (rfl | h)
+      · exact hc.2.2
+      · exact hc.2.1 ⟨k, h⟩ (by grind)
 
 end LinearOrderedField
 
@@ -294,7 +297,7 @@ theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha�
   rcases ha₁.lt_or_gt with hwa | hwa
   · simpa using div_pos (neg_pos_of_neg <| log_neg (w.pos ha₀) (hwa))
       (neg_pos_of_neg <| log_neg (v.pos ha₀) (h.lt_one_iff.2 hwa))
-  · exact div_pos (log_pos <| hwa) (log_pos (h.one_lt_iff.2 hwa))
+  · exact div_pos (log_pos hwa) (log_pos (h.one_lt_iff.2 hwa))
 
 /--
 If $v$ and $w$ are two real absolute values on a field $F$, equivalent in the sense that
@@ -305,14 +308,14 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
     {a : F} (ha₀ : a ≠ 0) (ha₁ : v a ≠ 1) {b : F} (hb₀ : b ≠ 0) (hb₁ : v b ≠ 1) :
     (v b).log / (w b).log = (v a).log / (w a).log := by
   by_contra! h_ne
-  wlog ha : 1 < v a generalizing a b
+  wlog! ha : 1 < v a generalizing a b
   · apply this (inv_ne_zero ha₀) (by simpa) hb₀ hb₁ (by simpa)
-    simpa using one_lt_inv_iff₀.2 ⟨v.pos ha₀, ha₁.lt_of_le (not_lt.1 ha)⟩
-  wlog hb : 1 < v b generalizing a b
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos ha₀, ha₁.lt_of_le ha⟩
+  wlog! hb : 1 < v b generalizing a b
   · apply this ha₀ ha₁ (inv_ne_zero hb₀) (by simpa) (by simpa) ha
-    simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le (not_lt.1 hb)⟩
-  wlog h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
-  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne (not_lt.1 h_lt) h_ne.symm
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le hb⟩
+  wlog! h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
+  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne h_lt h_ne.symm
   have hwa := h.one_lt_iff.1 ha
   have hwb := h.one_lt_iff.1 hb
   rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,
@@ -342,45 +345,101 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
     rcases eq_or_ne (w b) 1 with hb₁ | hb₁; · simp [hb₁, h.eq_one_iff.2 hb₁]
     rw [← h.symm.log_div_log_eq_log_div_log ha₀ ha₁ hb₀ hb₁, div_eq_inv_mul, rpow_mul (v.nonneg _),
       rpow_inv_log (v.pos hb₀) (h.eq_one_iff.not.2 hb₁), exp_one_rpow, exp_log (w.pos hb₀)]
-  · exact ⟨1, zero_lt_one, funext fun x ↦ by rcases eq_or_ne x 0 with rfl | h₀ <;>
-      aesop (add simp [h.isNontrivial_congr])⟩
+  · exact ⟨1, zero_lt_one,
+      funext fun x ↦ by
+        rcases eq_or_ne x 0 with rfl | h₀ <;>
+        aesop (add simp [h.isNontrivial_congr])⟩
 
 theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
-    (hU : U ∈ 𝓝 0) : WithAbs.equivWithAbs v w '' U ∈ 𝓝 0 := by
+    (hU : U ∈ 𝓝 0) : WithAbs.congr v w (.refl F) '' U ∈ 𝓝 0 := by
   rw [Metric.mem_nhds_iff] at hU ⊢
   obtain ⟨ε, hε, hU⟩ := hU
   obtain ⟨c, hc, hvw⟩ := isEquiv_iff_exists_rpow_eq.1 h
   refine ⟨ε ^ c, rpow_pos_of_pos hε _, fun x hx ↦ ?_⟩
-  rw [← RingEquiv.apply_symm_apply (WithAbs.equivWithAbs v w) x]
+  rw [← RingEquiv.apply_symm_apply (WithAbs.congr v w (.refl F)) x]
   refine Set.mem_image_of_mem _ (hU ?_)
-  rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_abv, ← funext_iff.1 hvw,
+  rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_apply_ofAbs, ← funext_iff.1 hvw,
     rpow_lt_rpow_iff (v.nonneg _) hε.le hc] at hx
-  simpa [WithAbs.norm_eq_abv]
+  simpa [WithAbs.norm_eq_apply_ofAbs]
 
 open Topology IsTopologicalAddGroup in
 theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
-    IsEmbedding (WithAbs.equivWithAbs v w) := by
+    IsEmbedding (WithAbs.congr v w (.refl F)) := by
   refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
     ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
-  · exact ⟨WithAbs.equivWithAbs v w '' U, h.equivWithAbs_image_mem_nhds_zero hU,
-      by simp [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
+  · exact ⟨WithAbs.congr v w (.refl F)'' U, h.equivWithAbs_image_mem_nhds_zero hU,
+      by
+        #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+        (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
+        goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
+        the new canonicalizer; a minimization would help. The original proof was:
+        `grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]` -/
+        rw [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]; simp⟩
   · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
     obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
-    rw [← RingEquiv.coe_toEquiv_symm, WithAbs.equivWithAbs_symm] at hss
+    rw [← RingEquiv.coe_toEquiv_symm, WithAbs.congr_symm] at hss
     exact Filter.mem_of_superset (h.symm.equivWithAbs_image_mem_nhds_zero hs) hss
 
 theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
-    v.IsEquiv w ↔ IsHomeomorph (WithAbs.equivWithAbs v w) := by
+    v.IsEquiv w ↔ IsHomeomorph (WithAbs.congr v w (.refl F)) := by
   rw [isHomeomorph_iff_isEmbedding_surjective]
   refine ⟨fun h ↦ ⟨h.isEmbedding_equivWithAbs, RingEquiv.surjective _⟩, fun ⟨hi, _⟩ ↦ ?_⟩
   refine isEquiv_iff_lt_one_iff.2 fun x ↦ ?_
-  conv_lhs => rw [← (WithAbs.equiv v).apply_symm_apply x]
-  conv_rhs => rw [← (WithAbs.equiv w).apply_symm_apply x]
-  simp_rw [← WithAbs.norm_eq_abv, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
+  conv_lhs => rw [← WithAbs.ofAbs_toAbs v x]
+  conv_rhs => rw [← WithAbs.ofAbs_toAbs w x]
+  rw [← WithAbs.norm_eq_apply_ofAbs, ← WithAbs.norm_eq_apply_ofAbs,
+    ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
   exact ⟨fun h ↦ by simpa [Function.comp_def] using (hi.continuous.tendsto 0).comp h, fun h ↦ by
-    simpa [Function.comp_def] using (hi.continuous_iff (f := (WithAbs.equivWithAbs v w).symm)).2
+    simpa [Function.comp_def] using (hi.continuous_iff (f := (WithAbs.congr v w (.refl F)).symm)).2
       continuous_id |>.tendsto 0 |>.comp h ⟩
 
 end Real
+
+section WeakApproximation
+
+open Filter
+open scoped Topology
+
+variable {F : Type*} [Field F]
+
+/--
+If `v : ι → AbsoluteValue F ℝ` is a finite family of nontrivial, pairwise inequivalent
+real absolute values on a field `F`, then the diagonal embedding
+`algebraMap F ((i : ι) → WithAbs (v i))` has dense range.
+
+This is the abstract weak approximation theorem; see
+`NumberField.InfinitePlace.denseRange_algebraMap_pi` for the number-field special case.
+-/
+theorem denseRange_algebraMap_pi {ι : Type*} [Finite ι] {v : ι → AbsoluteValue F ℝ}
+    (h : ∀ i, (v i).IsNontrivial)
+    (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
+    DenseRange <| algebraMap F ((i : ι) → WithAbs (v i)) := by
+  classical
+  have := Fintype.ofFinite ι
+  refine Metric.denseRange_iff.mpr fun z r hr ↦ ?_
+  choose a hx using exists_one_lt_lt_one_pi_of_not_isEquiv h hv
+  let y := fun n : ℕ ↦ ∑ i, (1 / (1 + (a i)⁻¹ ^ n)) * WithAbs.equiv (v i) (z i)
+  have htend : atTop.Tendsto (fun n i ↦ (WithAbs.equiv (v i)).symm (y n)) (𝓝 z) := by
+    refine tendsto_pi_nhds.mpr fun u ↦ ?_
+    simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
+    refine tendsto_finsetSum _ fun w _ ↦ ?_
+    by_cases hw : u = w
+    · rw [← hw, Pi.single_eq_same]
+      have hlt : (v u) (a u)⁻¹ < 1 := by
+        simpa [← inv_pow, inv_lt_one_iff₀] using Or.inr (hx u).1
+      simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one hlt).mul_const (z u)
+    · rw [Pi.single_eq_of_ne (M := fun i ↦ WithAbs (v i)) hw (z w)]
+      have hgt : 1 < (v u) (a w)⁻¹ := by
+        rw [map_inv₀]
+        refine one_lt_inv_iff₀.mpr ⟨(v u).pos_iff.mpr fun ha ↦ ?_, (hx w).2 u hw⟩
+        linarith [map_zero (v w) ▸ ha ▸ (hx w).1]
+      have := (v u).tendsto_div_one_add_pow_nhds_zero hgt
+      simp_rw [← WithAbs.norm_toAbs_eq] at this
+      simpa using (tendsto_zero_iff_norm_tendsto_zero.2 this).mul_const
+        ((WithAbs.equiv (v u)).symm _)
+  let ⟨N, hN⟩ := Metric.tendsto_atTop.1 htend r hr
+  exact ⟨y N, dist_comm z (algebraMap F _ (y N)) ▸ hN N le_rfl⟩
+
+end WeakApproximation
 
 end AbsoluteValue

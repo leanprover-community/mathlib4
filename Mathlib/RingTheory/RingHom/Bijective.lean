@@ -6,7 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.LocalProperties.Exactness
+
+import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
 # Meta properties of bijective ring homomorphisms
@@ -19,9 +20,7 @@ We don't define a `RingHom.Bijective` predicate, but use `fun f ↦ Function.Bij
 the ring hom property.
 -/
 
-@[expose] public section
-
-open TensorProduct
+public section
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 

@@ -5,13 +5,14 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 public import Mathlib.Order.CompleteLattice.Basic
 
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+
 /-! # Complete lattices and groups -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
   [CompleteLattice α] [Mul α] [MulLeftMono α] [MulRightMono α]

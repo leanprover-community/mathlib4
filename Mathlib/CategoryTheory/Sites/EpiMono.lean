@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Concrete
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
@@ -27,7 +26,7 @@ universe w v' u' v u
 
 namespace CategoryTheory
 
-open Category ConcreteCategory Functor
+open Category ConcreteCategory CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w}
@@ -39,11 +38,11 @@ namespace Sheaf
 
 /-- The class of locally injective morphisms of sheaves, see `Sheaf.IsLocallyInjective`. -/
 def locallyInjective : MorphismProperty (Sheaf J A) :=
-  fun _ _  f => IsLocallyInjective f
+  fun _ _ f => IsLocallyInjective f
 
 /-- The class of locally surjective morphisms of sheaves, see `Sheaf.IsLocallySurjective`. -/
 def locallySurjective : MorphismProperty (Sheaf J A) :=
-  fun _ _  f => IsLocallySurjective f
+  fun _ _ f => IsLocallySurjective f
 
 section
 

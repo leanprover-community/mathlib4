@@ -20,7 +20,6 @@ We have `(const J).obj X ⋙ F ≅ (const J).obj (F.obj X)` for any `F : C ⥤ D
 
 @[expose] public section
 
-
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -33,12 +32,15 @@ variable {C : Type u₂} [Category.{v₂} C]
 
 /-- The functor sending `X : C` to the constant functor `J ⥤ C` sending everything to `X`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def const : C ⥤ J ⥤ C where
   obj X :=
     { obj := fun _ => X
       map := fun _ => 𝟙 X }
-  map f := { app := fun _ => f }
+  map {X Y} f := { app := fun _ => f }
+
+attribute [to_dual self] const_obj_map
+attribute [to_dual self (reorder := X Y)] const_map_app
 
 namespace const
 
@@ -83,7 +85,7 @@ section
 variable {D : Type u₃} [Category.{v₃} D]
 
 /-- These are actually equal, of course, but not definitionally equal
-  (the equality requires F.map (𝟙 _) = 𝟙 _). A natural isomorphism is
+  (the equality requires `F.map (𝟙 _) = 𝟙 _`). A natural isomorphism is
   more convenient than an equality between functors (compare id_to_iso). -/
 @[simps]
 def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F.obj X) where
@@ -92,7 +94,7 @@ def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F
 
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
 instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
-  map_injective e := NatTrans.congr_app e (Classical.arbitrary J)
+  map_injective e := congr($(e).app (Classical.arbitrary J))
 
 /-- The canonical isomorphism
 `F ⋙ Functor.const J ≅ Functor.const F ⋙ (whiskeringRight J _ _).obj L`. -/

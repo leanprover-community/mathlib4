@@ -5,14 +5,14 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Data.FunLike.Equiv
+public import Mathlib.Basic.FunLike.Equiv
 public import Mathlib.Logic.Pairwise
 
 /-!
 # Interaction of equivalences with `Pairwise`
 -/
 
-@[expose] public section
+public section
 
 open scoped Function -- required for scoped `on` notation
 

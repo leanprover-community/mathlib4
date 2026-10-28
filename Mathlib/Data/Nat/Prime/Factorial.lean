@@ -7,12 +7,13 @@ module
 
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Prime.Basic
+
 /-!
 # Prime natural numbers and the factorial operator
 
 -/
 
-@[expose] public section
+public section
 
 open Bool Subtype
 

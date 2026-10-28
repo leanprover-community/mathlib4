@@ -15,14 +15,16 @@ untruncated simplex category, and the inclusion functor from the `n`-truncated t
 simplex category, for `n ≤ m` are initial.
 -/
 
-@[expose] public section
+public section
 
-open Simplicial CategoryTheory
+open CategoryTheory Limits
+
+open scoped Simplicial
 
 namespace SimplexCategory.Truncated
 
 instance {d : ℕ} {n m : Truncated d} : DecidableEq (n ⟶ m) := fun a b =>
-  decidable_of_iff (a.toOrderHom = b.toOrderHom) SimplexCategory.Hom.ext_iff.symm
+  decidable_of_iff (a.hom.toOrderHom = b.hom.toOrderHom) (by cat_disch)
 
 /-- For `0 < n`, the inclusion functor from the `n`-truncated simplex category to the untruncated
 simplex category is initial. -/
@@ -51,16 +53,16 @@ instance initial_inclusion {n : ℕ} [NeZero n] : (inclusion n).Initial := by
 `m`-truncated simplex category is initial. -/
 theorem initial_incl {n m : ℕ} [NeZero n] (hm : n ≤ m) : (incl n m).Initial := by
   have : (incl n m hm ⋙ inclusion m).Initial :=
-    Functor.initial_of_natIso (inclCompInclusion _).symm
+    Functor.initial_of_natIso (inclCompInclusion (by lia)).symm
   apply Functor.initial_of_comp_full_faithful _ (inclusion m)
 
 /-- Abbreviation for face maps in the `n`-truncated simplex category. -/
 abbrev δ (m : Nat) {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
-  (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated m) ⟶ ⟨⦋n + 1⦌, hn'⟩ := SimplexCategory.δ i
+  (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated m) ⟶ ⟨⦋n + 1⦌, hn'⟩ := Hom.tr (SimplexCategory.δ i)
 
 /-- Abbreviation for degeneracy maps in the `n`-truncated simplex category. -/
 abbrev σ (m : Nat) {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n + 1⦌, hn⟩ : SimplexCategory.Truncated m) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
+    (⟨⦋n + 1⦌, hn⟩ : SimplexCategory.Truncated m) ⟶ ⟨⦋n⦌, hn'⟩ := Hom.tr (SimplexCategory.σ i)
 
 section Two
 
@@ -72,36 +74,92 @@ abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) := σ 2 
 
 @[reassoc (attr := simp)]
 lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_self
+    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ :=
+  ObjectProperty.hom_ext _ (SimplexCategory.δ_comp_σ_self)
 
 @[reassoc]
 lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ₂ 0 :=
-  SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _)
+  ObjectProperty.hom_ext _ (SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _))
 
 @[reassoc (attr := simp)]
 lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
+    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ :=
+  ObjectProperty.hom_ext _ (SimplexCategory.δ_comp_σ_succ)
 
 @[reassoc (attr := simp)]
 lemma δ₂_one_comp_σ₂_one {n} (hn := by decide) (hn' := by decide) :
     δ₂ (n := n + 1) 1 hn hn' ≫ σ₂ 1 hn' hn = 𝟙 _ :=
-  SimplexCategory.δ_comp_σ_self (n := n + 1) (i := 1)
+  ObjectProperty.hom_ext _ (SimplexCategory.δ_comp_σ_self (n := n + 1) (i := 1))
 
 @[reassoc (attr := simp)]
 lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ :=
-  SimplexCategory.δ_comp_σ_succ' (by decide)
+  ObjectProperty.hom_ext _ (SimplexCategory.δ_comp_σ_succ' (by decide))
 
 @[reassoc]
 lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
-  SimplexCategory.δ_comp_σ_of_gt' (by decide)
+  ObjectProperty.hom_ext _ (SimplexCategory.δ_comp_σ_of_gt' (by decide))
 
-lemma δ₂_one_eq_const : δ₂ (1 : Fin 2) = const _ _ 0 := by decide
+lemma δ₂_one_eq_const : δ₂ (1 : Fin 2) = Hom.tr (const _ _ 0) := by decide
 
-lemma δ₂_zero_eq_const : δ₂ (0 : Fin 2) = const _ _ 1 := by decide
+lemma δ₂_zero_eq_const : δ₂ (0 : Fin 2) = Hom.tr (const _ _ 1) := by decide
 
 @[reassoc]
 lemma δ₂_zero_comp_δ₂_two : δ₂ (0 : Fin 2) ≫ δ₂ 2 = δ₂ 1 ≫ δ₂ 0 := by decide
 
 end Two
+
+/-- A morphism in `Truncated d` is a monomorphism if and only if it is a monomorphism in
+`SimplexCategory`. -/
+lemma mono_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Mono f ↔ Mono f.hom := by
+  constructor
+  · intro hf
+    rw [SimplexCategory.mono_iff_injective]
+    intro x y hxy
+    have h : ObjectProperty.homMk (SimplexCategory.const ⦋0⦌ a.obj x) ≫ f =
+        ObjectProperty.homMk (X := ⟨⦋0⦌, by simp⟩) (SimplexCategory.const ⦋0⦌ a.obj y) ≫ f :=
+      Hom.ext _ _ <| OrderHom.ext _ _ <| funext fun _ ↦ hxy
+    exact congr($((cancel_mono f).mp h).hom.toOrderHom 0)
+  · intro hf
+    exact (inclusion d).mono_of_mono_map hf
+
+/-- A morphism in `Truncated d` is an epimorphism if and only if it is an epimorphism in
+`SimplexCategory`. -/
+lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom := by
+  constructor
+  · intro hf
+    refine SimplexCategory.epi_iff_surjective.mpr fun j ↦ not_forall_not.mp fun hj ↦ ?_
+    have hb : 1 ≤ b.obj.len := by grind [hj 0]
+    let g (t : ℕ) : b ⟶ ⟨⦋1⦌, hb.trans b.property⟩ :=
+      ObjectProperty.homMk <| Hom.mk ⟨fun x ↦ if t ≤ x then 1 else 0, fun x y h ↦ by grind⟩
+    have hg (t x) : (g t).hom.toOrderHom x = if t ≤ x.val then 1 else 0 := rfl
+    have h := (cancel_epi f (g := g (j + 1)) (h := g j)).1 (by ext x : 4; simp [hg]; grind [hj x])
+    simpa [hg] using congr($(h).hom.toOrderHom j)
+  · intro hf
+    exact (inclusion d).epi_of_epi_map hf
+
+instance {d : ℕ} : SplitEpiCategory (Truncated d) where
+  isSplitEpi_of_epi f hf :=
+    have := epi_iff.mp hf
+    ((inclusion d).isSplitEpi_iff f).mp (isSplitEpi_of_epi f.hom)
+
+instance {d : ℕ} {a b : Truncated d} (g : a.obj ⟶ b.obj) [hg : Epi g] :
+    Epi (ObjectProperty.homMk g : a ⟶ b) :=
+  epi_iff.mpr hg
+
+instance {d : ℕ} {a b : Truncated d} (g : a.obj ⟶ b.obj) [hg : Mono g] :
+    Mono (ObjectProperty.homMk g : a ⟶ b) :=
+  mono_iff.mpr hg
+
+instance {d : ℕ} : StrongEpiCategory (Truncated d) where
+  strongEpi_of_epi f _ :=
+    have := isSplitEpi_of_epi f
+    inferInstance
+
+instance {d : ℕ} : HasStrongEpiMonoFactorisations (Truncated d) where
+  has_fac {a b} f :=
+    ⟨{ I := ⟨image f.hom, (len_le_of_epi (factorThruImage f.hom)).trans a.2⟩
+       m := ObjectProperty.homMk (image.ι f.hom)
+       e := ObjectProperty.homMk (factorThruImage f.hom)
+       e_strong_epi := strongEpi_of_epi _ }⟩
 
 end SimplexCategory.Truncated

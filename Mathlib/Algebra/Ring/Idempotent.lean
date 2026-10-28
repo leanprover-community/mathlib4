@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Idempotent
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.Convert
-public import Mathlib.Algebra.Group.Torsion
+
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Tactic.Convert
 
 /-!
 # Idempotent elements of a ring
@@ -19,7 +20,7 @@ This file proves result about idempotent elements of a ring, like:
   `1 - a` is an idempotent.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 
@@ -50,7 +51,7 @@ lemma _root_.isIdempotentElem_iff_one_sub_mul_self :
     IsIdempotentElem a ↔ (1 - a) * a = 0 := by
   rw [sub_mul, one_mul, sub_eq_zero, eq_comm, IsIdempotentElem]
 
-instance : HasCompl {a : R // IsIdempotentElem a} where compl a := ⟨1 - a, a.prop.one_sub⟩
+instance : Compl {a : R // IsIdempotentElem a} where compl a := ⟨1 - a, a.prop.one_sub⟩
 
 @[simp] lemma coe_compl (a : {a : R // IsIdempotentElem a}) : ↑aᶜ = (1 : R) - ↑a := rfl
 
@@ -111,7 +112,7 @@ lemma sub [NonUnitalNonAssocRing R] {a b : R} (ha : IsIdempotentElem a)
   simp_rw [IsIdempotentElem, sub_mul, mul_sub, hab, hba, ha.eq, hb.eq, sub_self, sub_zero]
 
 /-- If idempotent `a` and element `b` anti-commute, then their product is zero. -/
-theorem mul_eq_zero_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsionFree R]
+theorem mul_eq_zero_of_anticommute {a b : R} [NonUnitalSemiring R] [HasUniqueDiv R]
     (ha : IsIdempotentElem a) (hab : a * b + b * a = 0) : a * b = 0 := by
   have h : a * b * a = 0 := by
     rw [← nsmul_right_inj ((Nat.zero_ne_add_one 1).symm), nsmul_zero]
@@ -123,13 +124,13 @@ theorem mul_eq_zero_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsion
 
 /-- If idempotent `a` and element `b` anti-commute, then they commute.
 So anti-commutativity implies commutativity when one of them is idempotent. -/
-lemma commute_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsionFree R]
+lemma commute_of_anticommute {a b : R} [NonUnitalSemiring R] [HasUniqueDiv R]
     (ha : IsIdempotentElem a) (hab : a * b + b * a = 0) : Commute a b := by
   have := mul_eq_zero_of_anticommute ha hab
   rw [this, zero_add] at hab
   rw [Commute, SemiconjBy, hab, this]
 
-theorem sub_iff [NonUnitalRing R] [IsAddTorsionFree R] {p q : R}
+theorem sub_iff [NonUnitalRing R] [HasUniqueDiv R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p := by
   refine ⟨fun hqp ↦ ?_, fun ⟨h1, h2⟩ => hp.sub hq h1 h2⟩
@@ -143,7 +144,7 @@ theorem sub_iff [NonUnitalRing R] [IsAddTorsionFree R] {p q : R}
     simp_rw [sub_mul, add_mul, mul_assoc, hq.eq, add_sub_cancel_left, ← mul_assoc] at h2
     exact h2.symm.trans h1
   rw [hpq.eq, and_self, ← nsmul_right_inj (by simp : 2 ≠ 0), ← zero_add (2 • p)]
-  convert congrArg (· + 2 • p) h using 1
+  convert congrArg (· + 2 • p) h
   simp [sub_mul, mul_sub, hp.eq, hpq.eq, two_nsmul, sub_add, sub_sub]
 
 end IsIdempotentElem

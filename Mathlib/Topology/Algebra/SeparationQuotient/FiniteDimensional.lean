@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!
 # Separation quotient is a finite module
@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Finiteness.Basic
 In this file we show that the separation quotient of a finite module is a finite module.
 -/
 
-@[expose] public section
+public section
 
 /-- The separation quotient of a finite module is a finite module. -/
 instance SeparationQuotient.instModuleFinite

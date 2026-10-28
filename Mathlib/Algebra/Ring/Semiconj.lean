@@ -20,14 +20,12 @@ For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u
 
 variable {R : Type u}
-
-open Function
 
 namespace SemiconjBy
 

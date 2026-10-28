@@ -5,7 +5,10 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Common
+
+import Mathlib.Tactic.Attr.Core
 
 /-!
 # Lists in product and sigma types
@@ -15,7 +18,7 @@ living in `Prod` and `Sigma` types respectively. Their definitions can be found 
 [`Data.List.Defs`](./defs). Beware, this is not about `List.prod`, the multiplicative product.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

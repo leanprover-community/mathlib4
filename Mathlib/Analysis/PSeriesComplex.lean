@@ -5,9 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Analysis.PSeries
-public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+
+import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Convergence of `p`-series (complex case)
@@ -20,7 +21,7 @@ rather than in `Analysis.PSeries` in order to keep the prerequisites of the form
 p-series, Cauchy condensation test
 -/
 
-@[expose] public section
+public section
 
 lemma Complex.summable_one_div_nat_cpow {p : ℂ} :
     Summable (fun n : ℕ ↦ 1 / (n : ℂ) ^ p) ↔ 1 < re p := by

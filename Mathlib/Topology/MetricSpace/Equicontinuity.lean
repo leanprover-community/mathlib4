@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.Equicontinuity
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.UniformSpace.Equicontinuity
 
 /-!
 # Equicontinuity in metric spaces
@@ -33,10 +33,12 @@ and we prove that functions sharing a common (local or global) continuity modulu
 equicontinuity, continuity modulus
 -/
 
-@[expose] public section
+public section
 
 
-open Filter Topology Uniformity
+open Filter
+
+open scoped Topology Uniformity
 
 variable {α β ι : Type*} [PseudoMetricSpace α]
 

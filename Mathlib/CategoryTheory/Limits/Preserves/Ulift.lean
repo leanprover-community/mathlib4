@@ -6,9 +6,8 @@ Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
 module
 
 public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # `ULift` creates small (co)limits
@@ -28,12 +27,13 @@ universe v w w' u
 
 namespace CategoryTheory.Limits.Types
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The equivalence between `K.sections` and `(K ⋙ uliftFunctor.{v, u}).sections`. This is used to show
 that `uliftFunctor` preserves limits that are potentially too large to exist in the source
 category.
 -/
-def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :
+def sectionsEquiv {J : Type*} [Category* J] (K : J ⥤ Type u) :
     K.sections ≃ (K ⋙ uliftFunctor.{v, u}).sections where
   toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
   invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
@@ -48,8 +48,8 @@ noncomputable instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
         rw [Types.isLimit_iff ((uliftFunctor.{v, u}).mapCone c)]
         intro s hs
         obtain ⟨x, hx₁, hx₂⟩ := (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv K).symm ⟨s, hs⟩).2
-        exact ⟨⟨x⟩, fun i => ULift.ext _ _ (hx₁ i),
-          fun y hy => ULift.ext _ _ (hx₂ y.down fun i ↦ ULift.ext_iff.mp (hy i))⟩ } }
+        exact ⟨⟨x⟩, fun i => ULift.ext (hx₁ i),
+          fun y hy => ULift.ext (hx₂ y.down fun i ↦ ULift.ext_iff.mp (hy i))⟩ } }
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small limits.
@@ -57,7 +57,7 @@ The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small limits.
 noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
 
-variable {J : Type*} [Category J] {K : J ⥤ Type u} {c : Cocone K} (hc : IsColimit c)
+variable {J : Type*} [Category* J] {K : J ⥤ Type u} {c : Cocone K} (hc : IsColimit c)
 variable {lc : Cocone (K ⋙ uliftFunctor.{v, u})}
 
 /--

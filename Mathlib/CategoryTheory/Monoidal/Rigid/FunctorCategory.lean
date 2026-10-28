@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 
 /-!
 # Functors from a groupoid into a right/left rigid category form a right/left rigid category.
@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 (Using the pointwise monoidal structure on the functor category.)
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -25,7 +25,7 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory.Monoidal
 
-variable {C D : Type*} [Groupoid C] [Category D] [MonoidalCategory D]
+variable {C D : Type*} [Groupoid C] [Category* D] [MonoidalCategory D]
 
 instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
   rightDual :=

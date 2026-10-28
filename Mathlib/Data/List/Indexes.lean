@@ -5,11 +5,10 @@ Authors: Jannis Limperg
 -/
 module
 
-public import Mathlib.Util.AssertExists
 public import Mathlib.Data.List.Defs
 
 /-!
-# Lemmas about List.*Idx functions.
+# Lemmas about `List.*Idx` functions.
 
 Some specification lemmas for `List.mapIdx`, `List.mapIdxM`, `List.foldlIdx` and `List.foldrIdx`.
 
@@ -22,7 +21,7 @@ Anyone wanting to restore this material is welcome to do so, but will need to up
 However, note that this material will later be implemented in the Lean standard library.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -45,6 +44,12 @@ theorem mapIdx_eq_ofFn (l : List α) (f : ℕ → α → β) :
   induction l generalizing f with
   | nil => simp
   | cons _ _ IH => simp [IH]
+
+theorem mapIdx_replicate (f : ℕ → α → β) (n : ℕ) (a : α) :
+    mapIdx f (replicate n a) = map (fun n ↦ f n a) (range n) := by
+  induction n with
+  | zero => simp
+  | succ n hn => simp [replicate_succ', mapIdx_append, range_succ, hn]
 
 end MapIdx
 

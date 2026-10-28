@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 This file proves results about finite sums over monoids extended by a bottom or top element.
 -/
 
-@[expose] public section
+public section
 
 open Finset
 
@@ -63,7 +63,7 @@ lemma prod_eq_top (hi : i ∈ s) (hi' : f i = ⊤) (h : ∀ j ∈ s, f j ≠ 0) 
   simp_all only [ne_eq, mem_erase, not_false_eq_true]
 
 lemma prod_eq_top_ne_zero (hi : i ∈ s) (h : ∏ j ∈ s, f j = ⊤) : f i ≠ 0 := by
-  by_contra! h0
+  by_contra h0
   apply WithTop.top_ne_zero (α := M₀)
   calc
     ⊤ = ∏ j ∈ s, f j := Eq.symm h

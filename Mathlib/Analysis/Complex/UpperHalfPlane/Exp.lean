@@ -5,7 +5,6 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.Complex.Periodic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 
@@ -16,7 +15,7 @@ This file contains lemmas about the exponential function on the upper half plane
 q-expansions of modular forms.
 -/
 
-@[expose] public section
+public section
 
 open Real Complex UpperHalfPlane Function
 

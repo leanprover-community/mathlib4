@@ -32,7 +32,7 @@ open CategoryTheory Limits MonoidalCategory Category
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [Preadditive C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [MonoidalCategory C] [Preadditive C] [HasZeroObject C]
   [(curriedTensor C).Additive] [∀ (X₁ : C), ((curriedTensor C).obj X₁).Additive]
   {I : Type*} [AddMonoid I] {c : ComplexShape I} [c.TensorSigns]
 
@@ -181,6 +181,8 @@ noncomputable def leftUnitor' :
   GradedObject.Monoidal.tensorIso ((tensorUnitIso C c).symm) (Iso.refl _) ≪≫
     GradedObject.Monoidal.leftUnitor K.X
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor'_inv (i : I) :
     (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ (K.X i)) ≫
       ιTensorObj (tensorUnit C c) K 0 i i (zero_add i) := by
@@ -192,7 +194,7 @@ lemma leftUnitor'_inv (i : I) :
   congr 2
   rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom, Iso.hom_inv_id_assoc]
   dsimp [tensorUnitIso]
-  rw [dif_pos rfl]
+  rw [dite_eq_left rfl]
   rfl
 
 @[reassoc]
@@ -224,9 +226,11 @@ variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).ob
 /-- Auxiliary definition for `rightUnitor`. -/
 noncomputable def rightUnitor' :
     (tensorObj K (tensorUnit C c)).X ≅ K.X :=
-  GradedObject.Monoidal.tensorIso (Iso.refl _) ((tensorUnitIso C c).symm)  ≪≫
+  GradedObject.Monoidal.tensorIso (Iso.refl _) ((tensorUnitIso C c).symm) ≪≫
     GradedObject.Monoidal.rightUnitor K.X
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor'_inv (i : I) :
     (rightUnitor' K).inv i = (ρ_ (K.X i)).inv ≫ ((K.X i) ◁ (singleObjXSelf c 0 (𝟙_ C)).inv) ≫
       ιTensorObj K (tensorUnit C c) i 0 i (add_zero i) := by
@@ -238,7 +242,7 @@ lemma rightUnitor'_inv (i : I) :
   congr 2
   rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom, Iso.hom_inv_id_assoc]
   dsimp [tensorUnitIso]
-  rw [dif_pos rfl]
+  rw [dite_eq_left rfl]
   rfl
 
 lemma rightUnitor'_inv_comm (i j : I) :
@@ -282,6 +286,7 @@ noncomputable instance monoidalCategoryStruct :
   leftUnitor K := leftUnitor K
   rightUnitor K := rightUnitor K
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The structure which allows to construct the monoidal category structure
 on `HomologicalComplex C c` from the monoidal category structure on
 graded objects. -/
@@ -325,7 +330,7 @@ noncomputable def Monoidal.inducingFunctorData :
 noncomputable instance monoidalCategory : MonoidalCategory (HomologicalComplex C c) :=
   Monoidal.induced _ (Monoidal.inducingFunctorData C c)
 
-noncomputable example {D : Type*} [Category D] [Preadditive D] [MonoidalCategory D]
+noncomputable example {D : Type*} [Category* D] [Preadditive D] [MonoidalCategory D]
     [HasZeroObject D] [HasFiniteCoproducts D] [((curriedTensor D).Additive)]
     [∀ (X : D), (((curriedTensor D).obj X).Additive)]
     [∀ (X : D), PreservesFiniteCoproducts ((curriedTensor D).obj X)]

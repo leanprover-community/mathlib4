@@ -19,11 +19,9 @@ This file contains basic results on the natural-valued floor and ceiling functio
 rounding, floor, ceil
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
-
-open Set
 
 variable {R K : Type*}
 
@@ -36,7 +34,7 @@ variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
 theorem floor_div_natCast (a : K) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
   obtain rfl | hn := n.eq_zero_or_pos
   · simp
-  nth_rw 2 [<-div_mul_cancel₀ (a := a) (b := ↑n) (by positivity)]
+  nth_rw 2 [← div_mul_cancel₀ (a := a) (b := ↑n) (by positivity)]
   rw [mul_cast_floor_div_cancel (Nat.ne_zero_of_lt hn)]
 
 theorem floor_div_ofNat (a : K) (n : ℕ) [n.AtLeastTwo] :
@@ -51,7 +49,7 @@ theorem floor_div_eq_div (m n : ℕ) : ⌊(m : K) / n⌋₊ = m / n := by
 end LinearOrderedSemifield
 
 section LinearOrderedField
-variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K] {a b : K}
+variable [Field K] [LinearOrder K] [IsOrderedRing K] [FloorSemiring K] {a b : K}
 
 lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
   calc
@@ -101,7 +99,7 @@ open Qq
 ### `norm_num` extension for `Nat.floor`
 -/
 
-theorem IsNat.natFloor {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem IsNat.natFloor {R : Type*} [Semiring R] [LinearOrder R]
     [FloorSemiring R] (r : R) (m : ℕ) : IsNat r m → IsNat (⌊r⌋₊) m := by
   rintro ⟨⟨⟩⟩
   exact ⟨by simp⟩
@@ -134,7 +132,6 @@ meta def evalNatFloor : NormNumExt where eval {u αZ} e := do
     | .isBool .. => failure
     | .isNat sα nb pb => do
       let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
-      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(IsNat.natFloor $x _ $pb)
     | .isNegNat sα nb pb => do

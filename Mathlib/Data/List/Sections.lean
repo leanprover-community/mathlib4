@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.List.Forall2
+
 /-!
 # List sections
 
@@ -13,10 +14,10 @@ This file proves some stuff about `List.sections` (definition in `Data.List.Defs
 list of lists `[l₁, ..., lₙ]` is a list whose `i`-th element comes from the `i`-th list.
 -/
 
-@[expose] public section
+public section
 
 
-open Nat Function
+open Nat
 
 namespace List
 

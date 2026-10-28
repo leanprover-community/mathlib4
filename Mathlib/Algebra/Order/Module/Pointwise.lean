@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Order.Bounds.OrderIso
-public import Mathlib.Order.GaloisConnection.Basic
+
+import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Bounds on scalar multiplication of set
@@ -16,7 +17,7 @@ public import Mathlib.Order.GaloisConnection.Basic
 This file proves order properties of pointwise operations of sets.
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

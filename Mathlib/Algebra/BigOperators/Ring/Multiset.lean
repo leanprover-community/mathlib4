@@ -5,14 +5,13 @@ Authors: Chris Hughes, Bhavik Mehta, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 public import Mathlib.Algebra.BigOperators.Ring.List
 public import Mathlib.Data.Multiset.Antidiagonal
 public import Mathlib.Data.Multiset.Sections
 
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
 
-@[expose] public section
+public section
 
 
 variable {ι M M₀ R : Type*}

@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
 # Existence of conical pullbacks
 -/
 
-@[expose] public section
+public section
 
 universe w v' v u u'
 
@@ -22,7 +22,7 @@ open Limits
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
-/-- `HasPullback f g` represents the mere existence of a conical limit cone for the pair
+/-- `HasConicalPullback f g` represents the mere existence of a conical limit cone for the pair
 of morphisms `f : X ⟶ Z` and `g : Y ⟶ Z` -/
 abbrev HasConicalPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :=
   HasConicalLimit V (cospan f g)
@@ -34,12 +34,12 @@ example {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasConicalPullback V f g] : Has
 variable (C)
 
 /--
-`HasConicalPullbacks` represents the existence of conical pullback for every pair of
-morphisms
+`HasConicalPullbacks` represents the existence of conical pullbacks for every pair of
+morphisms.
 -/
 abbrev HasConicalPullbacks : Prop := HasConicalLimitsOfShape WalkingCospan V C
 
-/-- ensure pullbacks exist of existence of conical pullbacks -/
+/-- Ensure pullbacks exist from the existence of conical pullbacks. -/
 example [HasConicalPullbacks V C] : HasPullbacks C := inferInstance
 
 end CategoryTheory.Enriched

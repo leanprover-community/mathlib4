@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Additive Haar measure constructed from a basis
@@ -58,7 +58,7 @@ theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
     parallelepiped b = {x | ∀ i, b.repr x i ∈ Set.Icc 0 1} := by
   classical
   ext x
-  simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
+  simp_rw [mem_parallelepiped_iff, mem_ofPred_eq, b.ext_elem_iff, _root_.map_sum,
     map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
     mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
     Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
@@ -114,17 +114,17 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       exact ⟨fun _j => hy.1, fun _j => hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
-    simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
+    simp_rw [parallelepiped, H, A, smul_eq_mul, mul_one]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton,
       ← image_comp, Function.comp_apply, image_id']
   · right
-    simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
+    simp_rw [H, parallelepiped, smul_eq_mul, A]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
       Finset.sum_singleton, ← image_comp, Function.comp, image_neg_eq_neg, neg_Icc, neg_zero]
 
 theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
   ext
-  simp only [mem_parallelepiped_iff, Set.mem_finset_sum, Finset.mem_univ, forall_true_left,
+  simp only [mem_parallelepiped_iff, Set.mem_finsetSum, Finset.mem_univ, forall_true_left,
     segment_eq_image, smul_zero, zero_add, ← Set.pi_univ_Icc, Set.mem_univ_pi]
   constructor
   · rintro ⟨t, ht, rfl⟩
@@ -186,12 +186,12 @@ namespace Module.Basis
 def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   carrier := _root_.parallelepiped b
   isCompact' := IsCompact.image isCompact_Icc
-      (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) =>
-        (continuous_apply i).smul continuous_const)
+      (continuous_finsetSum Finset.univ
+        fun (i : ι) (_H : i ∈ Finset.univ) ↦ by fun_prop)
   interior_nonempty' := by
     suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1)) by
       dsimp only [_root_.parallelepiped]
-      convert H
+      convert! H
       exact (b.equivFun_symm_apply _).symm
     have A : Set.Nonempty (interior (Icc (0 : ι → ℝ) 1)) := by
       rw [← pi_univ_Icc, interior_pi_set (@finite_univ ι _)]

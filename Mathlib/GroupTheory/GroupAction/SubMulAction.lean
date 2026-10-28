@@ -5,11 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Data.SetLike.Basic
-public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 
@@ -30,7 +29,7 @@ For most uses, typically `Submodule R M` is more powerful.
 
 ## Tags
 
-submodule, mul_action
+submodule, multiplicative action
 -/
 
 @[expose] public section
@@ -65,7 +64,8 @@ class VAddMemClass (S : Type*) (R : outParam Type*) (M : Type*) [VAdd R M] [SetL
 
 attribute [to_additive] SMulMemClass
 
-attribute [aesop 90% (rule_sets := [SetLike])] SMulMemClass.smul_mem VAddMemClass.vadd_mem
+attribute [aesop 90% (rule_sets := [SetLike]), membership .]
+  SMulMemClass.smul_mem VAddMemClass.vadd_mem
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
 lemma AddSubmonoidClass.nsmulMemClass {S M : Type*} [AddMonoid M] [SetLike S M]
@@ -94,6 +94,12 @@ instance (priority := 50) smul : SMul R s :=
 @[to_additive] instance (priority := 50) [SMul T M] [SMulMemClass S T M] [SMulCommClass T R M] :
     SMulCommClass T R s where
   smul_comm _ _ _ := Subtype.ext (smul_comm ..)
+
+@[to_additive] instance (priority := 50) [IsLeftCancelSMul R M] : IsLeftCancelSMul R s where
+  left_cancel' x _ _ eq := Subtype.ext <| IsLeftCancelSMul.left_cancel x _ _ congr($eq)
+
+@[to_additive] instance (priority := 50) [IsCancelSMul R M] : IsCancelSMul R s where
+  right_cancel' _ _ x eq := IsCancelSMul.right_cancel _ _ x.1 congr($eq)
 
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
@@ -126,6 +132,21 @@ theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.2⟩ :=
 theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike S M]
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
+
+open scoped Pointwise in
+@[to_additive]
+theorem smul_subset_self {S R M : Type*} [SetLike S M] [SMul R M] [SMulMemClass S R M]
+    (r : R) (s : S) : (r • s : Set M) ⊆ s := by
+  rintro _ ⟨x, hx, rfl⟩
+  simpa using SMulMemClass.smul_mem (r : R) hx
+
+open scoped Pointwise in
+@[to_additive (attr := simp)]
+theorem units_smul {S R M : Type*} [SetLike S M] [Monoid R] [MulAction R M] [SMulMemClass S R M]
+    (s : S) (r : Rˣ) : r • s = (s : Set M) := by
+  apply subset_antisymm (smul_subset_self _ s)
+  rintro x hx
+  exact ⟨r⁻¹ • x, SMulMemClass.smul_mem (↑r⁻¹ : R) hx, by simp [← Units.smul_def]⟩
 
 end SMul
 
@@ -190,6 +211,8 @@ variable [SMul R M]
 instance : SetLike (SubMulAction R M) M :=
   ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
+@[to_additive] instance : PartialOrder (SubMulAction R M) := .ofSetLike (SubMulAction R M)
+
 @[to_additive]
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
@@ -247,8 +270,8 @@ instance : InfSet (SubMulAction R M) :=
 
 @[to_additive]
 instance : CompleteLattice (SubMulAction R M) :=
-  SetLike.coe_injective.completeLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) rfl rfl
+  SetLike.coe_injective.completeLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) rfl rfl
 
 @[to_additive (attr := simp)]
 theorem mem_iSup {ι : Sort*} {p : ι → SubMulAction R M} {x : M} :
@@ -402,11 +425,6 @@ theorem val_image_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val '' MulAction.orbit R m = MulAction.orbit R (m : M) :=
   (Set.range_comp _ _).symm
 
-/- -- Previously, the relatively useless :
-lemma orbit_of_sub_mul {p : SubMulAction R M} (m : p) :
-    (mul_action.orbit R m : set M) = MulAction.orbit R (m : M) := rfl
--/
-
 @[to_additive]
 theorem val_preimage_orbit {p : SubMulAction R M} (m : p) :
     Subtype.val ⁻¹' MulAction.orbit R (m : M) = MulAction.orbit R m := by
@@ -446,7 +464,7 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
 
 /-- SubMulAction on the complement of an invariant subset -/
 @[to_additive /-- SubAddAction on the complement of an invariant subset -/]
-instance : HasCompl (SubMulAction R M) where
+instance : Compl (SubMulAction R M) where
   compl s := ⟨sᶜ, by simp⟩
 
 @[to_additive]
@@ -475,8 +493,8 @@ section AddCommGroup
 
 variable [Ring R] [AddCommGroup M]
 variable [Module R M]
-variable (p p' : SubMulAction R M)
-variable {r : R} {x y : M}
+variable (p : SubMulAction R M)
+variable {x : M}
 
 theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
   rw [← neg_one_smul R]
@@ -503,7 +521,7 @@ namespace SubMulAction
 
 variable [GroupWithZero S] [Monoid R] [MulAction R M]
 variable [SMul S R] [MulAction S M] [IsScalarTower S R M]
-variable (p : SubMulAction R M) {s : S} {x y : M}
+variable (p : SubMulAction R M) {s : S} {x : M}
 
 theorem smul_mem_iff (s0 : s ≠ 0) : s • x ∈ p ↔ x ∈ p :=
   p.smul_mem_iff' (Units.mk0 s s0)
@@ -555,7 +573,7 @@ def nonZeroSubMul : SubMulAction Rˣ M where
   smul_mem' := by simp [Units.smul_def]
 
 instance : MulAction Rˣ { x : M // x ≠ 0 } :=
-  SubMulAction.mulAction' (nonZeroSubMul R M)
+  inferInstanceAs <| MulAction Rˣ (nonZeroSubMul R M)
 
 @[simp]
 lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
@@ -567,3 +585,32 @@ lemma orbitRel_nonZero_iff (x y : { v : M // v ≠ 0 }) :
   ⟨by rintro ⟨a, rfl⟩; exact ⟨a, by simp⟩, by intro ⟨a, ha⟩; exact ⟨a, by ext; simpa⟩⟩
 
 end Units
+
+section FixedPoints
+
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α] {H : Subgroup G}
+
+@[to_additive]
+lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
+    (g : G) {a : α} (ha : a ∈ MulAction.fixedPoints H α) :
+    g • a ∈ MulAction.fixedPoints H α := by
+  intro h
+  rw [Subgroup.smul_def, ← inv_smul_eq_iff, smul_smul, smul_smul]
+  exact ha ⟨_, hH.conj_mem' _ h.2 _⟩
+
+/-- The set of fixed points of a normal subgroup is stable under the group action. -/
+@[to_additive /-- The set of fixed points of a normal subgroup is stable under the group action. -/]
+def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
+  carrier := MulAction.fixedPoints H α
+  smul_mem' := smul_mem_fixedPoints_of_normal
+
+instance [hH : H.Normal] : MulAction G (MulAction.fixedPoints H α) :=
+  inferInstanceAs <| MulAction G fixedPointsSubMulOfNormal
+
+@[simp]
+lemma coe_smul_fixedPoints_of_normal [hH : H.Normal]
+    (g : G) (a : MulAction.fixedPoints H α) :
+    (g • a : MulAction.fixedPoints H α) = g • (a : α) :=
+  rfl
+
+end FixedPoints

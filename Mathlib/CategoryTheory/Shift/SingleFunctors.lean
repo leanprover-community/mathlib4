@@ -31,7 +31,7 @@ which sends an object `X : C` to a complex where `X` sits in a single degree.
 
 open CategoryTheory Category ZeroObject Limits Functor
 
-variable (C D E E' : Type*) [Category C] [Category D] [Category E] [Category E']
+variable (C D E E' : Type*) [Category* C] [Category* D] [Category* E] [Category* E']
   (A : Type*) [AddMonoid A] [HasShift D A] [HasShift E A] [HasShift E' A]
 
 namespace CategoryTheory
@@ -168,7 +168,7 @@ def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
 variable (C D)
 
 /-- The evaluation `SingleFunctors C D A ⥤ C ⥤ D` for some `a : A`. -/
-@[simps]
+@[implicit_reducible, simps]
 def evaluation (a : A) : SingleFunctors C D A ⥤ C ⥤ D where
   obj F := F.functor a
   map {_ _} φ := φ.hom a
@@ -194,13 +194,13 @@ lemma inv_hom_id_hom_app (e : F ≅ G) (n : A) (X : C) :
   rw [← NatTrans.comp_app, inv_hom_id_hom, NatTrans.id_app]
 
 instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
-  (inferInstance : IsIso ((evaluation C D n).map f))
+  inferInstanceAs <| IsIso ((evaluation C D n).map f)
 
 variable (F)
 
 /-- Given `F : SingleFunctors C D A`, and a functor `G : D ⥤ E` which commutes
 with the shift by `A`, this is the "composition" of `F` and `G` in `SingleFunctors C E A`. -/
-@[simps! functor shiftIso_hom_app shiftIso_inv_app]
+@[implicit_reducible, simps! functor shiftIso_hom_app shiftIso_inv_app]
 def postcomp (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C E A where
   functor a := F.functor a ⋙ G
@@ -211,7 +211,7 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
     ext X
     dsimp
     simp only [Functor.commShiftIso_zero, Functor.CommShift.isoZero_inv_app,
-      SingleFunctors.shiftIso_zero_hom_app,id_comp, assoc, ← G.map_comp, Iso.inv_hom_id_app,
+      SingleFunctors.shiftIso_zero_hom_app, id_comp, assoc, ← G.map_comp, Iso.inv_hom_id_app,
       Functor.map_id, Functor.id_obj, comp_id]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
@@ -225,7 +225,7 @@ variable (C A)
 
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
-@[simps]
+@[implicit_reducible, simps]
 def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C D A ⥤ SingleFunctors C E A where
   obj F := F.postcomp G

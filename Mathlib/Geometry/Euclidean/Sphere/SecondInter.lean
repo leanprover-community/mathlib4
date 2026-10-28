@@ -5,7 +5,10 @@ Authors: Joseph Myers
 -/
 module
 
+public import Mathlib.Analysis.Convex.Side
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
+
+import Mathlib.Analysis.Convex.StrictCombination
 
 /-!
 # Second intersection of a sphere and a line
@@ -25,12 +28,14 @@ through a point on that sphere.
 
 noncomputable section
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 namespace EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
+variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable [NormedAddTorsor V₂ P₂]
 
 /-- The second intersection of a sphere with a line through a point on that sphere; that point
 if it is the only point of intersection of the line with the sphere. The intended use of this
@@ -38,6 +43,16 @@ definition is when `p ∈ s`; the definition does not use `s.radius`, so in gene
 the second intersection with the sphere through `p` and with center `s.center`. -/
 def Sphere.secondInter (s : Sphere P) (p : P) (v : V) : P :=
   (-2 * ⟪v, p -ᵥ s.center⟫ / ⟪v, v⟫) • v +ᵥ p
+
+@[simp] lemma Sphere.secondInter_map (s : Sphere P) (p : P) (v : V) (f : P →ᵃⁱ[ℝ] P₂) :
+    Sphere.secondInter ⟨f s.center, s.radius⟩ (f p) (f.linearIsometry v) =
+      f (s.secondInter p v) := by
+  simp [secondInter, ← AffineIsometry.map_vsub]
+
+lemma Sphere.coe_secondInter (as : AffineSubspace ℝ P) [Nonempty as] (s : Sphere as)
+    (p : as) (v : as.direction) :
+    s.secondInter p v = Sphere.secondInter ⟨(s.center : P), s.radius⟩ (p : P) (v : V) :=
+  rfl
 
 /-- The distance between `secondInter` and the center equals the distance between the original
 point and the center. -/
@@ -130,6 +145,37 @@ theorem Sphere.secondInter_secondInter (s : Sphere P) (p : P) (v : V) :
   convert zero_div (G₀ := ℝ) _
   ring
 
+/-- The difference between the second intersections of two spheres along a common
+direction `v` is `(2 * ⟪v, s₁.center -ᵥ s₂.center⟫ / ⟪v, v⟫) • v`. -/
+theorem Sphere.secondInter_vsub_secondInter (s₁ s₂ : Sphere P) (p : P) (v : V) :
+    s₁.secondInter p v -ᵥ s₂.secondInter p v = (2 * ⟪v, s₁.center -ᵥ s₂.center⟫ / ⟪v, v⟫) • v := by
+  rw [Sphere.secondInter, Sphere.secondInter, vadd_vsub_vadd_cancel_right, ← sub_smul,
+    ← vsub_sub_vsub_cancel_left s₁.center s₂.center p, inner_sub_right]
+  grind
+
+/-- The difference between the second intersections of two spheres along a common
+unit direction `v` is `(2 * ⟪v, s₁.center -ᵥ s₂.center⟫) • v`. -/
+theorem Sphere.secondInter_vsub_secondInter_of_norm_eq_one (s₁ s₂ : Sphere P) (p : P) {v : V}
+    (hv : ‖v‖ = 1) :
+    s₁.secondInter p v -ᵥ s₂.secondInter p v = (2 * ⟪v, s₁.center -ᵥ s₂.center⟫) • v := by
+  simp [hv, secondInter_vsub_secondInter]
+
+/-- The distance between the second intersections of two spheres along a common
+direction `v` is `2 * |⟪v, s₁.center -ᵥ s₂.center⟫| / ‖v‖`. -/
+theorem Sphere.dist_secondInter_secondInter (s₁ s₂ : Sphere P) (p : P) (v : V) :
+    dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| / ‖v‖ := by
+  rcases eq_or_ne v 0 with rfl | hv
+  · simp
+  simp [dist_eq_norm_vsub, secondInter_vsub_secondInter, norm_smul]
+  grind
+
+/-- The distance between the second intersections of two spheres along a common
+unit direction `v` is `2 * |⟪v, s₁.center -ᵥ s₂.center⟫|`. -/
+theorem Sphere.dist_secondInter_secondInter_of_norm_eq_one (s₁ s₂ : Sphere P) (p : P) {v : V}
+    (hv : ‖v‖ = 1) :
+    dist (s₁.secondInter p v) (s₂.secondInter p v) = 2 * |⟪v, s₁.center -ᵥ s₂.center⟫| := by
+  rw [dist_secondInter_secondInter, hv, div_one]
+
 /-- If the vector passed to `secondInter` is given by a subtraction involving the point in
 `secondInter`, the result of `secondInter` may be expressed using `lineMap`. -/
 theorem Sphere.secondInter_eq_lineMap (s : Sphere P) (p p' : P) :
@@ -178,5 +224,55 @@ theorem Sphere.sbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
   · rintro h
     rw [h, mem_sphere.1 ((Sphere.secondInter_mem _).2 hp)] at hp'
     exact lt_irrefl _ hp'
+
+/-- If the point passed to `secondInter` is a vertex of a simplex, lying on the sphere, and all
+vertices lie on or inside the sphere, and the vector passed to `secondInter` is given by a
+subtraction involving that vertex and a point in the interior of the opposite face, the given
+vertex and the result of `secondInter` are on opposite sides of that face. -/
+lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite {s : Sphere P}
+    {n : ℕ} [NeZero n] {sx : Affine.Simplex ℝ P n} {i : Fin (n + 1)} (hi : sx.points i ∈ s)
+    (hsx : ∀ j, dist (sx.points j) s.center ≤ s.radius) {p : P}
+    (hp : p ∈ (sx.faceOpposite i).interior) :
+    (affineSpan ℝ (Set.range (sx.faceOpposite i).points)).SOppSide (sx.points i)
+      (s.secondInter (sx.points i) (p -ᵥ (sx.points i))) :=
+  Sbtw.sOppSide_of_notMem_of_mem
+    (s.sbtw_secondInter hi ((sx.faceOpposite i).dist_lt_of_mem_interior_of_strictConvexSpace hp
+      (fun j ↦ hsx _)))
+    (by simp)
+    (Set.mem_of_mem_of_subset hp ((sx.faceOpposite i).interior_subset_closedInterior.trans
+      (sx.faceOpposite i).closedInterior_subset_affineSpan))
+
+attribute [local instance] Nat.AtLeastTwo.neZero_sub_one
+
+/-- If the point passed to `secondInter` is a vertex of a simplex, lying on the sphere, and all
+vertices lie on or inside the sphere, and the vector passed to `secondInter` is given by a
+subtraction involving that vertex and a point in the interior of the simplex, the given vertex
+and the result of `secondInter` are on opposite sides of the face opposite that vertex. -/
+lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior {s : Sphere P}
+    {n : ℕ} [Nat.AtLeastTwo n] {sx : Affine.Simplex ℝ P n} {i : Fin (n + 1)} (hi : sx.points i ∈ s)
+    (hsx : ∀ j, dist (sx.points j) s.center ≤ s.radius) {p : P}
+    (hp : p ∈ sx.interior) :
+    (affineSpan ℝ (Set.range (sx.faceOpposite i).points)).SOppSide (sx.points i)
+      (s.secondInter (sx.points i) (p -ᵥ (sx.points i))) := by
+  obtain ⟨w, hw, hw01, rfl⟩ := hp
+  let r : ℝ := (1 - w i)⁻¹
+  have hrpos : 0 < r := by simp [inv_pos, sub_pos, r, (hw01 i).2]
+  let p' : P := AffineMap.lineMap (sx.points i) (Finset.univ.affineCombination ℝ sx.points w) r
+  have hp' : (p' -ᵥ (sx.points i)) =
+      r • (Finset.univ.affineCombination ℝ sx.points w -ᵥ (sx.points i)) := by simp [p']
+  suffices (affineSpan ℝ (Set.range (sx.faceOpposite i).points)).SOppSide (sx.points i)
+      (s.secondInter (sx.points i) (p' -ᵥ (sx.points i))) by
+    rwa [hp', s.secondInter_smul _ _ hrpos.ne'] at this
+  refine s.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite hi hsx ?_
+  simp_rw [p', ← Finset.univ.affineCombination_piSingle ℝ (sx.points)
+    (Finset.mem_univ i), AffineMap.lineMap_apply, Finset.affineCombination_vsub,
+    ← LinearMap.map_smul, Finset.weightedVSub_vadd_affineCombination,
+    Affine.Simplex.faceOpposite]
+  rw [Affine.Simplex.affineCombination_mem_interior_face_iff_pos]
+  · simp only [Finset.mem_compl, Finset.mem_singleton, Pi.add_apply, Pi.smul_apply, Pi.sub_apply,
+      smul_eq_mul, Decidable.not_not, forall_eq, Pi.single_eq_same]
+    refine ⟨fun j hj ↦ ?_, by grind⟩
+    simp [hj, hrpos, (hw01 j).1]
+  · simp [Finset.sum_add_distrib, ← Finset.mul_sum, hw]
 
 end EuclideanGeometry

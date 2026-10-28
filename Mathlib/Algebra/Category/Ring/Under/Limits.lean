@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Under.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.CategoryTheory.Limits.Over
-public import Mathlib.RingTheory.TensorProduct.Pi
-public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.Flat.Equalizer
+public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.RingTheory.TensorProduct.Pi
 
 /-!
 # Limits in `Under R` for a commutative ring `R`
@@ -42,7 +42,7 @@ variable {ι : Type u} (P : ι → Under R)
 
 /-- The canonical fan on `P : ι → Under R` given by `∀ i, P i`. -/
 def piFan : Fan P :=
-  Fan.mk (Under.mk <| ofHom <| Pi.ringHom (fun i ↦ (P i).hom.hom))
+  Fan.mk (Under.mk <| ofHom <| RingHom.pi (fun i ↦ (P i).hom.hom))
     (fun i ↦ Under.homMk (ofHom <| Pi.evalRingHom _ i))
 
 /-- The canonical fan is limiting. -/
@@ -72,13 +72,12 @@ def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     apply CommRingCat.mkUnder_ext
     intro c
     induction c
-    · simp only [map_zero, Under.comp_right]
     · simp only [AlgHom.toUnder_right, Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq,
         Pi.evalAlgHom_apply, Under.comp_right, comp_apply, AlgEquiv.toUnder_hom_right_apply,
         Algebra.TensorProduct.piRight_tmul]
     · simp_all
 
-open Classical in
+open scoped Classical in
 /-- The fan on `i ↦ S ⊗[R] P i` given by `S ⊗[R] ∀ i, P i` is limiting if `ι` is finite. -/
 def tensorProductFanIsLimit [Finite ι] : IsLimit (tensorProductFan S P) :=
   letI : Fintype ι := Fintype.ofFinite ι

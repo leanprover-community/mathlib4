@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
-public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 /-!
@@ -20,13 +19,13 @@ functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrpCat` for `A : Cᵒᵖ` and
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
-variable {C : Type*} [Category C] [Preadditive C] [HasShift C ℤ]
+variable {C : Type*} [Category* C] [Preadditive C] [HasShift C ℤ]
 
 namespace CategoryTheory
 
@@ -39,6 +38,7 @@ section
 variable [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated C]
 
+@[stacks 0149]
 instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
   exact T hT := by
     rw [ShortComplex.ab_exact_iff]
@@ -46,6 +46,7 @@ instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
     obtain ⟨x₁, hx₁⟩ := T.coyoneda_exact₂ hT x₂ hx₂
     exact ⟨x₁, hx₁.symm⟩
 
+@[stacks 0149]
 instance (B : C) : (preadditiveYoneda.obj B).IsHomological where
   exact T hT := by
     rw [ShortComplex.ab_exact_iff]
@@ -66,7 +67,7 @@ noncomputable instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).ShiftSequence
 lemma preadditiveCoyoneda_homologySequenceδ_apply
     (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {A : Cᵒᵖ} (x : A.unop ⟶ T.obj₃⟦n₀⟧) :
     (preadditiveCoyoneda.obj A).homologySequenceδ T n₀ n₁ h x =
-      x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by cutsat)).inv.app _ := by
+      x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by lia)).inv.app _ := by
   apply Category.assoc
 
 section
@@ -88,10 +89,11 @@ noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ whe
 lemma preadditiveYoneda_shiftMap_apply (B : C) {X Y : Cᵒᵖ} (n : ℤ) (f : X ⟶ Y⟦n⟧)
     (a a' : ℤ) (h : n + a = a') (z : X.unop ⟶ B⟦a⟧) :
     (preadditiveYoneda.obj B).shiftMap f a a' h z =
-      ((ShiftedHom.opEquiv _).symm f).comp z (show a + n = a' by cutsat) := by
+      ((ShiftedHom.opEquiv _).symm f).comp z (show a + n = a' by lia) := by
   symm
   apply ShiftedHom.opEquiv_symm_apply_comp
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma preadditiveYoneda_homologySequenceδ_apply
     (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {B : C} (x : T.obj₁ ⟶ B⟦n₀⟧) :
     (preadditiveYoneda.obj B).homologySequenceδ

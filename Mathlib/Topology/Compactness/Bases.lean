@@ -6,13 +6,14 @@ Authors: Andrew Yang, Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Compactness.Compact
+
+import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Topological bases in compact sets and compact spaces
 -/
 
-@[expose] public section
+public section
 
 open Set TopologicalSpace
 

@@ -5,16 +5,18 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.RingTheory.SimpleModule.Basic
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
+# Modules over semisimple rings are injective and projective
+
 If `R` is a semisimple ring, then any `R`-module is both injective and projective.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 
@@ -27,11 +29,5 @@ theorem injective_of_isSemisimpleRing : Module.Injective R M where
 
 theorem projective_of_isSemisimpleRing : Module.Projective R M :=
   .of_lifting_property'' (IsSemisimpleModule.lifting_property · · _)
-
-@[deprecated (since := "2025-09-12")]
-alias injective_of_semisimple_ring := injective_of_isSemisimpleRing
-
-@[deprecated (since := "2025-09-12")]
-alias projective_of_semisimple_ring := projective_of_isSemisimpleRing
 
 end Module

@@ -6,10 +6,11 @@ Authors: Pierre-Alexandre Bazin, Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Algebra
-public import Mathlib.Algebra.Category.ModuleCat.Subobject
 public import Mathlib.CategoryTheory.Simple
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.Algebra.Category.ModuleCat.Subobject
 
 /-!
 # Simple objects in the category of `R`-modules
@@ -17,7 +18,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 We prove simple modules are exactly simple objects in the category of `R`-modules.
 -/
 
-@[expose] public section
+public section
 
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]

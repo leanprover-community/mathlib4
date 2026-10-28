@@ -5,9 +5,13 @@ Authors: Ben Eltschig
 -/
 module
 
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
-public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
+import Mathlib.Analysis.Calculus.ContDiff.Deriv
+import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # Hadamard's lemma
@@ -20,7 +24,8 @@ open star-convex set around `x`. We do this by providing explicit functions `had
 to serve as the `g i`, characterising their smoothness and showing that `f` can be written in terms
 of them.
 
-See https://en.wikipedia.org/wiki/Hadamard%27s_lemma and https://ncatlab.org/nlab/show/Hadamard+lemma.
+See https://en.wikipedia.org/wiki/Hadamard%27s_lemma and
+https://ncatlab.org/nlab/show/Hadamard+lemma.
 
 ## Main definitions and results
 * `hadamardFun f x (b i)`: the `i`th *Hadamard quotient* of `f` at `x`, i.e. the `i`th function
@@ -56,11 +61,11 @@ protected lemma ContDiffOn.hadamardFun {x : E} {s : Set E} (hs : IsOpen s) (hs' 
     ContDiffOn ℝ m (hadamardFun f x b) s := by
   unfold hadamardFun
   refine ContDiffOn.parametric_intervalIntegral
-    (f := fun y ↦ lineDeriv ℝ f (x + y.2 • (y.1 - x)) b) hs ?_
+    (f := fun y y' ↦ lineDeriv ℝ f (x + y' • (y - x)) b) hs ?_
   rw [Set.uIcc_of_le zero_le_one]
-  refine .congr ?_ (fun y hy ↦ DifferentiableAt.lineDeriv_eq_fderiv <|
-    (hf.differentiableOn <| by simp [le_of_add_le_right hm]).differentiableAt <|
-      hs.mem_nhds <| hs'.add_smul_sub_mem hy.1 hy.2.1 hy.2.2)
+  refine .congr ?_ (fun y hy ↦ DifferentiableAt.lineDeriv_eq_fderiv <| (hf.differentiableOn <| by
+      grind [WithTop.coe_eq_zero, one_pos, le_of_add_le_right hm]).differentiableAt <|
+    hs.mem_nhds <| hs'.add_smul_sub_mem hy.1 hy.2.1 hy.2.2)
   refine .mono ?_ (s := (fun y : E × ℝ ↦ x + y.2 • (y.1 - x)) ⁻¹' s)
     fun y hy ↦ hs'.add_smul_sub_mem hy.1 hy.2.1 hy.2.2
   exact (ContinuousLinearMap.apply ℝ F b).contDiff.comp_contDiffOn <|
@@ -74,13 +79,14 @@ variable [CompleteSpace F]
 
 open intervalIntegral in
 lemma eqOn_add_sum_hadamardFun {x : E} {s : Set E} (hs : IsOpen s) (hs' : StarConvex ℝ x s)
-    {f : E → F} {n : WithTop ℕ∞} (hf : ContDiffOn ℝ n f s) (hn : 1 ≤ n)
+    {f : E → F} {n : ℕ∞ω} (hf : ContDiffOn ℝ n f s) (hn : n ≠ 0)
     {ι : Type*} [Fintype ι] (b : Module.Basis ι ℝ E) :
     s.EqOn f (fun y ↦ f x + ∑ i : ι, b.repr (y - x) i • hadamardFun f x (b i) y) := by
   intro y hy
   have hs'' : ∀ t ∈ Set.uIcc (0 : ℝ) 1, x + t • (y - x) ∈ s := fun t ht ↦ by
     rw [Set.uIcc_of_le zero_le_one] at ht
     exact hs'.add_smul_sub_mem hy ht.1 ht.2
+  have hn' := ENat.one_le_iff_ne_zero_withTop.2 hn
   refine sub_eq_iff_eq_add'.1 <| Eq.trans (by simp) <| (integral_deriv_eq_sub
     (a := 0) (b := 1) (f := f ∘ fun t ↦ x + t • (y - x)) ?_ ?_).symm.trans ?_
   · intro t ht
@@ -88,12 +94,12 @@ lemma eqOn_add_sum_hadamardFun {x : E} {s : Set E} (hs : IsOpen s) (hs' : StarCo
     fun_prop
   · refine ContinuousOn.intervalIntegrable ?_
     exact ((hf.comp (by fun_prop) <| s.mapsTo_preimage _).continuousOn_deriv_of_isOpen
-      (hs.preimage <| by fun_prop) hn).mono fun t ht ↦ hs'' _ ht
+      (hs.preimage <| by fun_prop) hn').mono fun t ht ↦ hs'' _ ht
   · unfold hadamardFun
     simp_rw [← integral_smul]
-    rw [← integral_finset_sum]
+    rw [← integral_finsetSum]
     · refine integral_congr fun t ht ↦ ?_
-      rw [← fderiv_deriv, fderiv_comp]
+      rw [← fderiv_apply_one_eq_deriv, fderiv_comp]
       · simp_rw [DifferentiableAt.lineDeriv_eq_fderiv <|
           (hf.differentiableOn hn).differentiableAt <| hs.mem_nhds <| hs'' _ ht]
         simp_rw [← ContinuousLinearMap.map_smul, ← map_sum]
@@ -106,9 +112,9 @@ lemma eqOn_add_sum_hadamardFun {x : E} {s : Set E} (hs : IsOpen s) (hs' : StarCo
           (hf.differentiableOn hn).differentiableAt <| hs.mem_nhds <| hs'' _ ht)
       refine .mono ?_  (s := (fun t ↦ x + t • (y - x)) ⁻¹' s) fun t ht ↦ hs'' _ ht
       exact (ContinuousLinearMap.apply ℝ F _).continuous.comp_continuousOn <|
-        (hf.continuousOn_fderiv_of_isOpen hs hn).comp (by fun_prop) <| s.mapsTo_preimage _
+        (hf.continuousOn_fderiv_of_isOpen hs hn').comp (by fun_prop) <| s.mapsTo_preimage _
 
 lemma eq_add_sum_hadamardFun {x : E} {f : E → F} {n : WithTop ℕ∞} (hf : ContDiff ℝ n f)
-    (hn : 1 ≤ n) {ι : Type*} [Fintype ι] (b : Module.Basis ι ℝ E) :
+    (hn : n ≠ 0) {ι : Type*} [Fintype ι] (b : Module.Basis ι ℝ E) :
     f = (fun y ↦ f x + ∑ i : ι, b.repr (y - x) i • hadamardFun f x (b i) y) := by
   simpa using eqOn_add_sum_hadamardFun isOpen_univ (starConvex_univ x) hf.contDiffOn hn b

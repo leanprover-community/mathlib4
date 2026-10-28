@@ -35,8 +35,6 @@ theorem notMem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = fals
   unfold boolIndicator
   split_ifs with h <;> simp [h]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_iff_boolIndicator := notMem_iff_boolIndicator
-
 theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
   ext fun x ↦ (s.mem_iff_boolIndicator x).symm
 

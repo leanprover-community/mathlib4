@@ -27,6 +27,8 @@ All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 - `PreSubmersivePresentation`: A `Presentation` of `S` as `R`-algebra, equipped with an injective
   map `P.map` from `σ` to `ι`. This map is used to define the differential of a
   presubmersive presentation.
+- `PreSubmersivePresentation.mvPolynomial`: The canonical presentation of `MvPolynomial ι R`,
+  viewed as a presubmersive presentation via the (empty) map from its relations to its generators.
 
 For a presubmersive presentation `P` of `S` over `R` we make the following definitions:
 
@@ -64,7 +66,6 @@ with relations equipped with an injective `map : relations → vars`.
 This map determines how the differential of `P` is constructed. See
 `PreSubmersivePresentation.differential` for details.
 -/
-@[nolint checkUnivs]
 structure PreSubmersivePresentation extends Algebra.Presentation R S ι σ where
   /-- A map from the relations type to the variables type. Used to compute the differential. -/
   map : σ → ι
@@ -166,16 +167,43 @@ lemma isUnit_jacobian_iff_aevalDifferential_bijective :
 lemma isUnit_jacobian_of_linearIndependent_of_span_eq_top
     (hli : LinearIndependent S (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j)))
     (hsp : Submodule.span S
-      (Set.range <| (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
+      (Set.range (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
     IsUnit P.jacobian := by
   classical
   rw [isUnit_jacobian_iff_aevalDifferential_bijective]
   exact LinearMap.bijective_of_linearIndependent_of_span_eq_top (Pi.basisFun _ _).span_eq
-    (by convert hli; simp) (by convert hsp; simp)
+    (by convert! hli; simp) (by convert! hsp; simp)
 
 end
 
 section Constructions
+
+/-- Transport a pre-submersive presentation along an algebra isomorphism. -/
+@[simps toPresentation map]
+noncomputable def ofAlgEquiv
+    (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    PreSubmersivePresentation R T ι σ where
+  __ := P.toPresentation.ofAlgEquiv e
+  map := P.map
+  map_inj := P.map_inj
+
+@[simp]
+lemma jacobiMatrix_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
+    [Algebra R T] (e : S ≃ₐ[R] T) [Fintype σ] [DecidableEq σ] :
+    (P.ofAlgEquiv e).jacobiMatrix = P.jacobiMatrix :=
+  rfl
+
+@[simp]
+lemma jacobian_ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T]
+    [Algebra R T] (e : S ≃ₐ[R] T) [Finite σ] :
+    (P.ofAlgEquiv e).jacobian = e P.jacobian := by
+  classical
+  cases nonempty_fintype σ
+  rw [jacobian_eq_jacobiMatrix_det, jacobian_eq_jacobiMatrix_det]
+  simp only [ofAlgEquiv_toPresentation, Presentation.ofAlgEquiv_toGenerators,
+    jacobiMatrix_ofAlgEquiv, Generators.algebraMap_apply, Generators.ofAlgEquiv_val,
+    ← AlgHom.coe_ofClass e, MvPolynomial.comp_aeval_apply]
+  simp [Function.comp_def]
 
 /-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive
 presentation with no relations. -/
@@ -188,12 +216,25 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 @[simp]
 lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).jacobian = 1 := by
-  classical
   have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
       (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
     ext (i j : PEmpty)
     contradiction
   rw [jacobian_eq_jacobiMatrix_det, RingHom.map_det, this, Matrix.det_one]
+
+variable (R ι) in
+/-- The canonical pre-submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+@[simps -fullyApplied map]
+noncomputable def mvPolynomial :
+    PreSubmersivePresentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  map := PEmpty.elim
+  map_inj := PEmpty.elim.injective_of_subsingleton
+  __ := Presentation.mvPolynomial R ι
+
+@[simp]
+lemma jacobian_mvPolynomial : (mvPolynomial R ι).jacobian = 1 := by
+  rw [jacobian_eq_jacobiMatrix_det, Matrix.det_isEmpty, map_one]
 
 section Localization
 
@@ -251,7 +292,7 @@ lemma dimension_comp_eq_dimension_add_dimension [Finite ι] [Finite ι'] [Finite
   have : Nat.card σ' ≤ Nat.card ι' :=
     card_relations_le_card_vars_of_isFinite Q
   simp only [Nat.card_sum]
-  cutsat
+  lia
 
 section
 
@@ -271,7 +312,6 @@ variable [Fintype σ] [Fintype σ']
 open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inr (i : σ') (j : σ) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
-  classical
   rw [jacobiMatrix_apply]
   refine MvPolynomial.pderiv_eq_zero_of_notMem_vars (fun hmem ↦ ?_)
   apply MvPolynomial.vars_rename at hmem
@@ -324,7 +364,7 @@ private lemma jacobiMatrix_comp_₂₂_det :
   simp only [Matrix.toBlocks₂₂, AlgHom.mapMatrix_apply, Matrix.map_apply, Matrix.of_apply,
     RingHom.mapMatrix_apply, Generators.algebraMap_apply, map_aeval, coe_eval₂Hom]
   rw [jacobiMatrix_comp_inr_inr, ← IsScalarTower.algebraMap_eq]
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  simp only [aeval]
   generalize P.jacobiMatrix i j = p
   induction p using MvPolynomial.induction_on with
   | C a =>
@@ -352,8 +392,9 @@ lemma comp_jacobian_eq_jacobian_smul_jacobian [Finite σ] [Finite σ'] :
     (aeval (Q.comp P).val) (Q.comp P).jacobiMatrix.toBlocks₂₂.det = P.jacobian • Q.jacobian
   · simp only [Generators.algebraMap_apply, ← map_mul]
     congr
-    convert Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
-      (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
+    convert
+      Matrix.det_fromBlocks_zero₁₂ (Q.comp P).jacobiMatrix.toBlocks₁₁
+        (Q.comp P).jacobiMatrix.toBlocks₂₁ (Q.comp P).jacobiMatrix.toBlocks₂₂
   · rw [jacobiMatrix_comp_₁₁_det, jacobiMatrix_comp_₂₂_det, mul_comm, Algebra.smul_def]
 
 end Composition
@@ -430,9 +471,8 @@ lemma jacobian_reindex (P : PreSubmersivePresentation R S ι σ)
 section
 
 variable {v : ι → MvPolynomial σ R} (a : ι → σ) (ha : Function.Injective a)
-  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R :=
-    Function.surjInv Ideal.Quotient.mk_surjective)
-  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq)
+  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R)
+  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
 
 /--
 The naive pre-submersive presentation of a quotient `R[Xᵢ] ⧸ (vⱼ)`.
@@ -468,7 +508,6 @@ variable [Finite σ]
 A `PreSubmersivePresentation` is submersive if its Jacobian is a unit in `S`
 and the presentation is finite.
 -/
-@[nolint checkUnivs]
 structure SubmersivePresentation extends PreSubmersivePresentation.{t, w} R S ι σ where
   jacobian_isUnit : IsUnit toPreSubmersivePresentation.jacobian
 
@@ -477,6 +516,15 @@ namespace SubmersivePresentation
 open PreSubmersivePresentation
 
 section Constructions
+
+variable {R S ι σ} in
+/-- Transport a submersive presentation along an algebra isomorphism. -/
+@[simps toPreSubmersivePresentation]
+noncomputable def ofAlgEquiv
+    (P : SubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
+    SubmersivePresentation R T ι σ where
+  __ := P.toPreSubmersivePresentation.ofAlgEquiv e
+  jacobian_isUnit := by simp [P.jacobian_isUnit]
 
 variable {R S} in
 /-- If `algebraMap R S` is bijective, the empty generators are a submersive
@@ -492,6 +540,12 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 noncomputable def id : SubmersivePresentation R R PEmpty.{w + 1} PEmpty.{t + 1} :=
   ofBijectiveAlgebraMap Function.bijective_id
 
+/-- The canonical submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+noncomputable def mvPolynomial : SubmersivePresentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  __ := PreSubmersivePresentation.mvPolynomial R ι
+  jacobian_isUnit := by simp
+
 section Composition
 variable {R S ι σ}
 variable {T ι' σ' : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -503,7 +557,7 @@ noncomputable def comp : SubmersivePresentation R T (ι' ⊕ ι) (σ' ⊕ σ) wh
   __ := Q.toPreSubmersivePresentation.comp P.toPreSubmersivePresentation
   jacobian_isUnit := by
     rw [comp_jacobian_eq_jacobian_smul_jacobian, Algebra.smul_def, IsUnit.mul_iff]
-    exact ⟨RingHom.isUnit_map _ <| P.jacobian_isUnit, Q.jacobian_isUnit⟩
+    exact ⟨RingHom.isUnit_map _ P.jacobian_isUnit, Q.jacobian_isUnit⟩
 
 end Composition
 
@@ -517,7 +571,7 @@ noncomputable def localizationAway : SubmersivePresentation R S Unit Unit where
   __ := PreSubmersivePresentation.localizationAway S r
   jacobian_isUnit := by
     rw [localizationAway_jacobian]
-    apply IsLocalization.map_units _ (⟨r, 1, by simp⟩ : Submonoid.powers r)
+    exact IsLocalization.map_units _ (⟨r, 1, by simp⟩ : Submonoid.powers r)
 
 end Localization
 
@@ -545,6 +599,7 @@ noncomputable def reindex (P : SubmersivePresentation R S ι σ)
   __ := P.toPreSubmersivePresentation.reindex e f
   jacobian_isUnit := by simp [P.jacobian_isUnit]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `S = 0`, this is the submersive presentation on one generator and one relation. -/
 @[simps]
 noncomputable def ofSubsingleton [Subsingleton S] : SubmersivePresentation R S PUnit PUnit where
@@ -562,7 +617,7 @@ end Constructions
 
 variable {R S ι σ}
 
-open Classical in
+open scoped Classical in
 /-- If `P` is submersive, `PreSubmersivePresentation.aevalDifferential` is an isomorphism. -/
 noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) :
     (σ → S) ≃ₗ[S] (σ → S) :=
@@ -578,7 +633,7 @@ noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) 
 variable (P : SubmersivePresentation R S ι σ)
 
 @[simp]
-lemma aevalDifferentialEquiv_apply [Finite σ] (x : σ → S) :
+lemma aevalDifferentialEquiv_apply (x : σ → S) :
     P.aevalDifferentialEquiv x = P.aevalDifferential x :=
   rfl
 

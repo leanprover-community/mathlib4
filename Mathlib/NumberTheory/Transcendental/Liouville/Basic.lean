@@ -5,11 +5,13 @@ Authors: Damiano Testa, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.DenomsClearable
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Topology.Algebra.Polynomial
+
+import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.Algebra.Polynomial.DenomsClearable
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 
 /-!
 
@@ -181,7 +183,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   rintro ⟨f : ℤ[X], f0, ef0⟩
   -- Change `aeval x f = 0` to `eval (map _ f) = 0`, who knew.
   replace ef0 : (f.map (algebraMap ℤ ℝ)).eval x = 0 := by
-    rwa [aeval_def, ← eval_map] at ef0
+    rwa [← eval_map_algebraMap] at ef0
   -- There is a "large" real number `A` such that `(b + 1) ^ (deg f) * |f (x - a / (b + 1))| * A`
   -- is at least one.  This is obtained from lemma `exists_pos_real_of_irrational_root`.
   obtain ⟨A, hA, h⟩ : ∃ A : ℝ, 0 < A ∧ ∀ (a : ℤ) (b : ℕ),

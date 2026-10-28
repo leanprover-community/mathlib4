@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
@@ -18,7 +17,7 @@ Note that this statement does not need topology on the domain.
 In particular, it applies to discontinuous quadratic forms on infinite-dimensional spaces.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -27,7 +26,7 @@ namespace QuadraticMap
 
 theorem hasLineDerivAt (f : QuadraticMap 𝕜 E F) (a b : E) :
     HasLineDerivAt 𝕜 f (polar f a b) a b := by
-  simpa [HasLineDerivAt, QuadraticMap.map_add, f.map_smul] using
+  simpa [HasLineDerivAt, QuadraticMap.map_add, f.map_smul] using!
     ((hasDerivAt_const (0 : 𝕜) (f a)).add <|
       ((hasDerivAt_id 0).mul (hasDerivAt_id 0)).smul (hasDerivAt_const 0 (f b))).add
       ((hasDerivAt_id 0).smul (hasDerivAt_const 0 (polar f a b)))

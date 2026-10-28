@@ -5,9 +5,9 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.RingTheory.Ideal.Prime
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Ring orderings
@@ -54,7 +54,9 @@ attribute [coe] toSubsemiring
 
 instance : SetLike (RingPreordering R) R where
   coe P := P.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+instance : PartialOrder (RingPreordering R) := .ofSetLike (RingPreordering R)
 
 initialize_simps_projections RingPreordering (carrier → coe, as_prefix coe)
 
@@ -66,7 +68,7 @@ instance : SubsemiringClass (RingPreordering R) R where
 
 variable {R}
 
-@[aesop unsafe 80% (rule_sets := [SetLike])]
+@[aesop unsafe 80% (rule_sets := [SetLike]), membership .]
 protected theorem mem_of_isSquare (P : RingPreordering R) {x : R} (hx : IsSquare x) : x ∈ P :=
   RingPreordering.mem_of_isSquare' _ hx
 

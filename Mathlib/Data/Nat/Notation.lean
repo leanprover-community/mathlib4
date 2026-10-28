@@ -11,6 +11,6 @@ public import Mathlib.Init
 # Notation `ℕ` for the natural numbers.
 -/
 
-@[expose] public section
+public section
 
 @[inherit_doc] notation "ℕ" => Nat

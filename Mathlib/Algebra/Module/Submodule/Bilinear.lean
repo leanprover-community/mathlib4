@@ -5,8 +5,8 @@ Authors: Kenny Lau, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Images of pairs of submodules under bilinear maps
@@ -20,8 +20,8 @@ This file provides `Submodule.map₂`, which is later used to implement `Submodu
 
 ## Notes
 
-This file is quite similar to the n-ary section of `Data.Set.Basic` and to `Order.Filter.NAry`.
-Please keep them in sync.
+This file is quite similar to the n-ary section of `Mathlib/Data/Set/Basic.lean` and to
+`Mathlib/Order/Filter/NAry.lean`. Please keep them in sync.
 
 ## TODO
 
@@ -30,12 +30,11 @@ Generalize this file to semilinear maps.
 
 @[expose] public section
 
-
 universe uι u v
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 

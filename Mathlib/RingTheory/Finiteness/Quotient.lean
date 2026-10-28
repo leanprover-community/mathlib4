@@ -5,16 +5,14 @@ Authors: Anne Baanen, Yongle Hu
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Ideal.Pointwise
 public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 # Finiteness of quotient modules
 -/
 
-@[expose] public section
+public section
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable (P : Ideal B) (p : Ideal A) [P.LiesOver p]
@@ -37,5 +35,5 @@ instance isNoetherian_of_liesOver [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B
 instance QuotientMapQuotient.isNoetherian [IsNoetherian A B] :
     IsNoetherian (A ⧸ p) (B ⧸ p.map (algebraMap A B)) :=
   isNoetherian_of_tower A <|
-    isNoetherian_of_surjective B (Ideal.Quotient.mkₐ A _).toLinearMap <|
+    isNoetherian_of_surjective (Ideal.Quotient.mkₐ A _).toLinearMap <|
       LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective

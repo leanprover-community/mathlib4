@@ -6,14 +6,15 @@ Authors: Mario Carneiro, Kenny Lau
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.ZeroCons
 public import Mathlib.Order.Directed
+
+import Mathlib.Data.Multiset.ZeroCons
 
 /-!
 # Finsets of ordered types
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -29,6 +30,7 @@ theorem Directed.finset_le {r : α → α → Prop} [IsTrans α r] {ι} [hι : N
       ⟨k, fun _ h ↦ (Multiset.mem_cons.1 h).casesOn (fun h ↦ h.symm ▸ h₁)
         fun h ↦ _root_.trans (H _ h) h₂⟩
 
-theorem Finset.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] (s : Finset α) :
+@[to_dual exists_ge]
+theorem Finset.exists_le [Nonempty α] [Preorder α] [IsDirectedOrder α] (s : Finset α) :
     ∃ M, ∀ i ∈ s, i ≤ M :=
   directed_id.finset_le _

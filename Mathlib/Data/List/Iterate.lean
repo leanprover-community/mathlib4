@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.List.Defs
-public import Mathlib.Data.Set.Function
 
 /-!
 # iterate
@@ -15,7 +14,7 @@ public import Mathlib.Data.Set.Function
 Proves various lemmas about `List.iterate`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 
@@ -38,6 +37,11 @@ theorem getElem?_iterate (f : α → α) (a : α) :
 theorem getElem_iterate (f : α → α) (a : α) (n : ℕ) (i : Nat) (h : i < (iterate f a n).length) :
     (iterate f a n)[i] = f^[i] a :=
   (getElem_eq_iff _).2 <| getElem?_iterate _ _ _ _ <| by rwa [length_iterate] at h
+
+@[simp]
+theorem getLast_iterate (f : α → α) (a : α) (n : ℕ) (h) :
+    (iterate f a n).getLast h = f^[n - 1] a := by
+  simp [getLast_eq_getElem]
 
 @[simp]
 theorem mem_iterate {f : α → α} {a : α} {n : ℕ} {b : α} :

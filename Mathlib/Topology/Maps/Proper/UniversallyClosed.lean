@@ -13,7 +13,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 # A map is proper iff it is continuous and universally closed
 -/
 
-@[expose] public section
+public section
 
 open Filter
 
@@ -49,7 +49,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(x, 𝒰) ∈ F`.
     rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
   -- We already know that `f x = y`, so to finish the proof we just have to check that `𝒰` tends
-  -- to `x`. So, for `U ∈ 𝓝 x` arbitrary, let's show that `U ∈ 𝒰`. Since `𝒰` is a ultrafilter,
+  -- to `x`. So, for `U ∈ 𝓝 x` arbitrary, let's show that `U ∈ 𝒰`. Since `𝒰` is an ultrafilter,
   -- it is enough to show that `Uᶜ` is not in `𝒰`.
     refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_notMem_iff.mp fun hUc ↦ ?_⟩
     rw [mem_closure_iff_nhds] at hx
@@ -59,7 +59,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   -- must contain some element of the form `(z, pure z)`. In other words, we have `z ∈ U` and
   -- `Uᶜ ∈ pure z`, which means `z ∈ Uᶜ` by the definition of pure.
   -- This is a contradiction, which completes the proof.
-    rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU (isOpen_setOf_mem.mem_nhds hUc)) with
+    rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU (isOpen_setOfPred_mem.mem_nhds hUc)) with
       ⟨⟨z, 𝒢⟩, ⟨⟨hz : z ∈ U, hz' : Uᶜ ∈ 𝒢⟩, rfl : 𝒢 = pure z⟩⟩
     exact hz' hz
 

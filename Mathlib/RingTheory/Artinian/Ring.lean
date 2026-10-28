@@ -5,10 +5,11 @@ Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Localization.Defs
+
+import Mathlib.Algebra.Field.Equiv
 
 /-!
 # Artinian rings
@@ -44,7 +45,7 @@ Artinian, artinian, Artinian ring, artinian ring
 
 -/
 
-@[expose] public section
+public section
 
 open Set Submodule IsArtinian
 
@@ -67,7 +68,7 @@ theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
 variable (R) in
 /-- Commutative Artinian reduced local ring is a field. -/
 theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
-  (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
+  (IsArtinianRing.equivPi R).toRingEquiv.trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
     (Ideal.Quotient.field _).toIsField
 
 section Localization

@@ -5,10 +5,12 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.Set.Functor
+
+import Mathlib.Control.Applicative
+import Mathlib.Data.List.Basic
 
 /-!
 # LawfulTraversable instances
@@ -17,7 +19,7 @@ This file provides instances of `LawfulTraversable` for types from the core libr
 `List` and `Sum`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -36,7 +38,8 @@ theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α →
 theorem Option.comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : Option α) :
     Option.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
       Comp.mk (Option.traverse f <$> Option.traverse g x) := by
-  cases x <;> (simp [Option.traverse, Option.mapM, functor_norm] <;> rfl)
+  cases x <;> simp [Option.traverse, Option.mapM, functor_norm]
+  rfl
 
 theorem Option.traverse_eq_map_id {α β} (f : α → β) (x : Option α) :
     Option.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by cases x <;> rfl
@@ -148,7 +151,8 @@ variable [LawfulApplicative G]
 protected theorem comp_traverse {α β γ : Type u} (f : β → F γ) (g : α → G β) (x : σ ⊕ α) :
     Sum.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
     Comp.mk.{u} (Sum.traverse f <$> Sum.traverse g x) := by
-  cases x <;> (simp! [Sum.traverse, map_id, functor_norm] <;> rfl)
+  cases x <;> simp! [Sum.traverse, map_id, functor_norm]
+  rfl
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : σ ⊕ α) :
     Sum.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by

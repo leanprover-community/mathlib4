@@ -5,9 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Monoidal.Functor
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Monoidal natural transformations
@@ -67,6 +65,17 @@ instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' 
       tensor_assoc, ← tensorHom_comp_tensorHom, μ_natural_assoc]
     simp only [← map_comp, tensor]
 
+instance whiskerRight {G₁ : D ⥤ E} [G₁.LaxMonoidal] [IsMonoidal τ] :
+    IsMonoidal (Functor.whiskerRight τ G₁) := by
+  rw [← Functor.hcomp_id]
+  infer_instance
+
+instance whiskerLeft {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal]
+    (τ' : G₁ ⟶ G₂) [IsMonoidal τ'] :
+    IsMonoidal (Functor.whiskerLeft F₁ τ') := by
+  rw [← Functor.id_hcomp]
+  infer_instance
+
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.leftUnitor.hom where
 
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.rightUnitor.hom where
@@ -125,12 +134,12 @@ variable [F.Monoidal] [G.LaxMonoidal] [adj.IsMonoidal]
 instance : NatTrans.IsMonoidal adj.unit where
   unit := by
     dsimp
-    rw [id_comp, ← unit_app_unit_comp_map_η adj, assoc, Monoidal.map_η_ε]
+    rw [id_comp, ← unit_app_unit_comp_map_η adj, assoc, Monoidal.η_ε_map]
     dsimp
     rw [comp_id]
   tensor X Y := by
     dsimp
-    rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.map_δ_μ, comp_id]
+    rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.δ_μ_map, comp_id]
 
 instance : NatTrans.IsMonoidal adj.counit where
   unit := by
@@ -219,7 +228,7 @@ a monoidal natural transformation.
 lemma natTransIsMonoidal_of_transport {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
     letI : G.Monoidal := transport e
     e.hom.IsMonoidal := by
-  letI : G.Monoidal := transport e
+  let : G.Monoidal := transport e
   refine ⟨rfl, fun X Y ↦ ?_⟩
   simp [transport_μ, tensorHom_comp_tensorHom_assoc]
 

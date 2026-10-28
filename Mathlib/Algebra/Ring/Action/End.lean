@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Ring.Action.Group
-public import Mathlib.Algebra.Ring.Aut
 
 /-!
 # Ring automorphisms
@@ -20,7 +19,7 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, but 
 `CategoryTheory.comp`.
 
 This file is kept separate from `Mathlib/Algebra/Ring/Equiv.lean` so that
-`Mathlib/GroupTheory/Perm.lean` is free to use equivalences (and other files that use them) before
+`Mathlib/Data/Fintype/Perm.lean` is free to use equivalences (and other files that use them) before
 the group structure is defined.
 
 ## Tags
@@ -36,7 +35,7 @@ variable {G R : Type*} [Group G] [Semiring R]
 /-- The tautological action by the group of automorphism of a ring `R` on `R`. -/
 instance applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
-  smul := (· <| ·)
+  smul := (· ·)
   smul_zero := map_zero
   smul_add := map_add
   smul_one := map_one

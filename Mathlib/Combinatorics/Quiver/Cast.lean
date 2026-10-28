@@ -5,7 +5,6 @@ Authors: Antoine Labelle, Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
@@ -22,7 +21,7 @@ rewriting arrows and paths along equalities of their endpoints.
 
 universe v v₁ v₂ u u₁ u₂
 
-variable {U : Type*} [Quiver.{u + 1} U]
+variable {U : Type*} [Quiver.{u} U]
 
 
 namespace Quiver

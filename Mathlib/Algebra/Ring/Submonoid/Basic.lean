@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Ring.Defs
 
 /-! # Lemmas about additive closures of `Subsemigroup`. -/
 
-@[expose] public section
+public section
 
 open AddSubmonoid
 

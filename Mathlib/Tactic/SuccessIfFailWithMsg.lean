@@ -7,8 +7,8 @@ module
 
 public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.BuiltinTactic
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.TryThis
+public import Mathlib.Init
 
 /-!
 # Success If Fail With Message
@@ -42,10 +42,10 @@ def successIfFailWithMessage {s α : Type} {m : Type → Type} [Monad m] [MonadL
     catch err => pure (some (← err.toMessageData.toString))
   restoreState s
   if let some err := err then
-    unless msg.trim == err.trim do
+    unless msg.trimAscii == err.trimAscii do
       if let some msgref := msgref then
         let suggestion : TryThis.Suggestion :=
-          { suggestion := s!"\"{err.trim}\""
+          { suggestion := s!"\"{err.trimAscii}\""
             toCodeActionTitle? := some (fun _ => "Update with tactic error message")}
         TryThis.addSuggestion msgref suggestion (header := "Update with tactic error message: ")
 

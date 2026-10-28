@@ -5,11 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Comma
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
-public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.Interval.Set.InitialSeg
+public import Mathlib.Order.SuccPred.Limit
+
+import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # An assumption for constructions by transfinite induction
@@ -20,7 +21,7 @@ a well-ordered type `J` in a category `C` (see `CategoryTheory.SmallObject`).
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 
@@ -99,7 +100,7 @@ lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α]
   hasColimitsOfShape := hasColimitsOfShape_of_initialSeg C h
   hasColimitsOfShape_of_isSuccLimit j hj := by
     have := hj.nonempty_Iio.to_subtype
-    exact hasColimitsOfShape_of_initialSeg  _
+    exact hasColimitsOfShape_of_initialSeg _
       (InitialSeg.trans (Set.principalSegIio j) h)
 
 instance (j : J) : HasIterationOfShape (Set.Iic j) C :=

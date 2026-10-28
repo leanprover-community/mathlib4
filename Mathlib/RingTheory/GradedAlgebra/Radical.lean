@@ -8,8 +8,9 @@ module
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
+# Radicals of homogeneous ideals
 
-This file contains a proof that the radical of any homogeneous ideal is a homogeneous ideal
+This file contains a proof that the radical of any homogeneous ideal is a homogeneous ideal.
 
 ## Main statements
 
@@ -26,7 +27,7 @@ This file contains a proof that the radical of any homogeneous ideal is a homoge
 ## Implementation details
 
 Throughout this file, the indexing type `ι` of grading is assumed to be a
-`LinearOrderedCancelAddCommMonoid`. This might be stronger than necessary but cancelling
+linearly ordered cancellative monoid. This might be stronger than necessary but cancelling
 property is strictly necessary; for a counterexample of how `Ideal.IsHomogeneous.isPrime_iff`
 fails for a non-cancellative set see `Counterexamples/HomogeneousPrimeNotPrime.lean`.
 
@@ -52,8 +53,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     Ideal.IsPrime I :=
   ⟨I_ne_top, by
     intro x y hxy
-    by_contra! rid
-    obtain ⟨rid₁, rid₂⟩ := rid
+    by_contra! ⟨rid₁, rid₂⟩
     classical
       /-
         The idea of the proof is the following :

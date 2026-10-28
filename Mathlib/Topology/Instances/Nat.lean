@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Topology.Instances.Int
 
 /-!
@@ -14,7 +13,7 @@ public import Mathlib.Topology.Instances.Int
 The structure of a metric space on `ℕ` is introduced in this file, induced from `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

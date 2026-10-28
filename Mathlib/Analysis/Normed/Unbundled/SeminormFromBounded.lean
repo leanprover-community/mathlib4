@@ -9,9 +9,10 @@ public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # seminormFromBounded
+
 In this file, we prove [BGR, Proposition 1.2.1/2][bosch-guntzer-remmert] : given a nonzero
 additive group seminorm on a commutative ring `R` such that for some `c : ℝ` and every `x y : R`,
-the inequality `f (x * y) ≤ c * f x * f y)` is satisfied, we create a ring seminorm on `R`.
+the inequality `f (x * y) ≤ c * f x * f y` is satisfied, we create a ring seminorm on `R`.
 
 In the file comments, we will use the expression `f is multiplicatively bounded` to indicate that
 this condition holds.
@@ -143,7 +144,7 @@ theorem seminormFromBounded_ge (f_nonneg : 0 ≤ f)
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
   `seminormFromBounded' f` is nonnegative. -/
 theorem seminormFromBounded_nonneg (f_nonneg : 0 ≤ f)
-    (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)  :
+    (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     0 ≤ seminormFromBounded' f := fun x ↦
   le_csSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul x) ⟨1, rfl⟩
     (div_nonneg (f_nonneg _) (f_nonneg _))
@@ -247,6 +248,7 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
   · rw [← add_div, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
     exact f_add _ _
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `seminormFromBounded'` is a ring seminorm on `R`. -/
 def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)
@@ -328,7 +330,7 @@ theorem seminormFromBounded_of_mul_le (f_nonneg : 0 ≤ f) {x : R}
 
 /-- If `f : R → ℝ` is a nonzero, nonnegative, multiplicatively bounded function, then
   `seminormFromBounded' f` is nonzero. -/
-theorem seminormFromBounded_nonzero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
+theorem seminormFromBounded_ne_zero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     seminormFromBounded' f ≠ 0 := by
   obtain ⟨x, hx⟩ := Function.ne_iff.mp f_ne_zero
@@ -336,6 +338,9 @@ theorem seminormFromBounded_nonzero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
   use x
   rw [ne_eq, Pi.zero_apply, seminormFromBounded_eq_zero_iff f_nonneg f_mul x]
   exact hx
+
+@[deprecated (since := "2026-10-13")]
+alias seminormFromBounded_nonzero := seminormFromBounded_ne_zero
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then the kernel of
   `seminormFromBounded' f` equals the kernel of `f`. -/

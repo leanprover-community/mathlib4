@@ -5,9 +5,8 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
@@ -29,7 +28,7 @@ cases of ℤ being examples of structures in ring theory.
 prime, irreducible, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
 
-@[expose] public section
+public section
 
 namespace Int
 
@@ -115,6 +114,14 @@ theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Idea
   rw [Ideal.span_singleton_eq_span_singleton]
   exact (associated_natAbs _).symm
 
+@[simp]
+theorem isCoprime_two_left {m : ℤ} : IsCoprime 2 m ↔ Odd m := by
+  simp [isCoprime_iff_nat_coprime]
+
+@[simp]
+theorem isCoprime_two_right {m : ℤ} : IsCoprime m 2 ↔ Odd m := by
+  simp [isCoprime_iff_nat_coprime]
+
 theorem eq_pow_of_mul_eq_pow_odd_left {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : ∃ d, a = d ^ k := by
   obtain ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow' hab h
@@ -129,5 +136,13 @@ theorem eq_pow_of_mul_eq_pow_odd_right {a b c : ℤ} (hab : IsCoprime a b) {k : 
 theorem eq_pow_of_mul_eq_pow_odd {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : (∃ d, a = d ^ k) ∧ ∃ e, b = e ^ k :=
   ⟨eq_pow_of_mul_eq_pow_odd_left hab hk h, eq_pow_of_mul_eq_pow_odd_right hab hk h⟩
+
+/-- Two squarefree integers whose product is a square are equal. -/
+theorem eq_of_squarefree_of_isSquare_mul {d₁ d₂ : ℤ} (h₁ : Squarefree d₁)
+    (h₂ : Squarefree d₂) (h : IsSquare (d₁ * d₂)) : d₁ = d₂ := by
+  refine (Int.associated_iff.mp <| h₁.associated_of_isSquare_mul h₂ h).resolve_right fun h' ↦ ?_
+  refine not_isSquare_of_neg (neg_one_lt_zero : -1 < 0) ?_
+  refine IsSquare.of_mul_right (Int.mul_ne_zero h₂.ne_zero h₂.ne_zero) ?_ (IsSquare.mul_self d₂)
+  rwa [Int.neg_one_mul, Int.neg_mul_eq_neg_mul, ← h']
 
 end Int

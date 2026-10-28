@@ -5,9 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.Probability.Moments.Variance
+
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 
 /-!
 # Conditional variance
@@ -18,7 +20,7 @@ This file defines the variance of a real-valued random variable conditional to a
 
 Define the Lebesgue conditional variance. See
 [GibbsMeasure](https://github.com/james18lpc/GibbsMeasure) for a definition of the Lebesgue
-conditional expectation).
+conditional expectation.
 -/
 
 @[expose] public section
@@ -27,7 +29,7 @@ open MeasureTheory Filter
 open scoped ENNReal
 
 namespace ProbabilityTheory
-variable {Ω : Type*} {m₀ m m' : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : Ω → ℝ} {μ : Measure[m₀] Ω}
+variable {Ω : Type*} {m₀ m : MeasurableSpace Ω} {hm : m ≤ m₀} {X Y : Ω → ℝ} {μ : Measure[m₀] Ω}
   {s : Set Ω}
 
 variable (m X μ) in
@@ -62,7 +64,7 @@ lemma condVar_of_sigmaFinite [SigmaFinite (μ.trim hm)] :
       else 0 := condExp_of_sigmaFinite _
 
 lemma condVar_of_stronglyMeasurable [SigmaFinite (μ.trim hm)]
-    (hX : StronglyMeasurable[m] X) (hXint : Integrable ((X - μ[X|m]) ^ 2) μ) :
+    (hX : StronglyMeasurable[m] X) (hXint : Integrable ((X - μ[X | m]) ^ 2) μ) :
     Var[X; μ | m] = fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2 :=
   condExp_of_stronglyMeasurable _ ((hX.sub stronglyMeasurable_condExp).pow _) hXint
 
@@ -87,7 +89,7 @@ lemma condVar_congr_ae (h : X =ᵐ[μ] Y) : Var[X; μ | m] =ᵐ[μ] Var[Y; μ | 
   condExp_congr_ae <| by filter_upwards [h, condExp_congr_ae h] with ω hω hω'; dsimp; rw [hω, hω']
 
 lemma condVar_of_aestronglyMeasurable [hμm : SigmaFinite (μ.trim hm)]
-    (hX : AEStronglyMeasurable[m] X μ) (hXint : Integrable ((X - μ[X|m]) ^ 2) μ) :
+    (hX : AEStronglyMeasurable[m] X μ) (hXint : Integrable ((X - μ[X | m]) ^ 2) μ) :
     Var[X; μ | m] =ᵐ[μ] (X - μ[X | m]) ^ 2 :=
   condExp_of_aestronglyMeasurable' _ ((continuous_pow _).comp_aestronglyMeasurable
     (hX.sub stronglyMeasurable_condExp.aestronglyMeasurable)) hXint
@@ -96,7 +98,7 @@ lemma integrable_condVar : Integrable Var[X; μ | m] μ := integrable_condExp
 
 /-- The integral of the conditional variance `Var[X | m]` over an `m`-measurable set is equal to
 the integral of `(X - μ[X | m]) ^ 2` on that set. -/
-lemma setIntegral_condVar [SigmaFinite (μ.trim hm)] (hX : Integrable ((X - μ[X|m]) ^ 2) μ)
+lemma setIntegral_condVar [SigmaFinite (μ.trim hm)] (hX : Integrable ((X - μ[X | m]) ^ 2) μ)
     (hs : MeasurableSet[m] s) :
     ∫ ω in s, (Var[X; μ | m]) ω ∂μ = ∫ ω in s, (X ω - (μ[X | m]) ω) ^ 2 ∂μ :=
   setIntegral_condExp _ hX hs
@@ -113,8 +115,8 @@ lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure
       have aux₀ : Integrable (X ^ 2) μ := hX.integrable_sq
       have aux₁ : Integrable (2 * X * μ[X | m]) μ := by
         rw [mul_assoc]
-        exact (memLp_one_iff_integrable.1 <| hX.condExp.mul hX).const_mul _
-      have aux₂ : Integrable (μ[X | m] ^ 2) μ := hX.condExp.integrable_sq
+        exact (memLp_one_iff_integrable.1 <| hX.mul (hX.condExp one_le_two)).const_mul _
+      have aux₂ : Integrable (μ[X | m] ^ 2) μ := (hX.condExp one_le_two).integrable_sq
       filter_upwards [condExp_add (m := m) (aux₀.sub aux₁) aux₂, condExp_sub (m := m) aux₀ aux₁,
         condExp_mul_of_stronglyMeasurable_right stronglyMeasurable_condExp aux₁
           ((hX.integrable one_le_two).const_mul _), condExp_ofNat (m := m) 2 X]
@@ -138,10 +140,10 @@ lemma integral_condVar_add_variance_condExp (hm : m ≤ m₀) [IsProbabilityMeas
     _ = μ[(μ[X ^ 2 | m] - μ[X | m] ^ 2 : Ω → ℝ)] + (μ[μ[X | m] ^ 2] - μ[μ[X | m]] ^ 2) := by
       congr 1
       · exact integral_congr_ae <| condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX
-      · exact variance_eq_sub hX.condExp
+      · exact variance_eq_sub (hX.condExp one_le_two)
     _ = μ[X ^ 2] - μ[μ[X | m] ^ 2] + (μ[μ[X | m] ^ 2] - μ[X] ^ 2) := by
       rw [integral_sub' integrable_condExp, integral_condExp hm, integral_condExp hm]
-      exact hX.condExp.integrable_sq
+      exact (hX.condExp one_le_two).integrable_sq
     _ = Var[X; μ] := by rw [variance_eq_sub hX]; ring
 
 lemma condVar_bot' [NeZero μ] (X : Ω → ℝ) :
@@ -155,6 +157,7 @@ lemma condVar_bot_ae_eq (X : Ω → ℝ) :
     exact eventually_bot
   · exact .of_forall <| congr_fun (condVar_bot' X)
 
+@[simp]
 lemma condVar_bot [IsProbabilityMeasure μ] (hX : AEMeasurable X μ) :
     Var[X; μ | ⊥] = fun _ω ↦ Var[X; μ] := by
   simp [condVar_bot', average_eq_integral, variance_eq_integral hX]

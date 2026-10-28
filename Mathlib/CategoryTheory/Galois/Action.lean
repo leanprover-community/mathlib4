@@ -28,9 +28,9 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
-variable {C : Type*} [Category C] (F : C ⥤ FintypeCat.{u})
+variable {C : Type*} [Category* C] (F : C ⥤ FintypeCat.{u})
 
 /-- Any (fiber) functor `F : C ⥤ FintypeCat` naturally factors via
 the forgetful functor from `Action FintypeCat (Aut F)` to `FintypeCat`. -/
@@ -38,7 +38,7 @@ def functorToAction : C ⥤ Action FintypeCat.{u} (Aut F) where
   obj X := Action.FintypeCat.ofMulAction (Aut F) (F.obj X)
   map f := {
     hom := F.map f
-    comm := fun g ↦ symm <| g.hom.naturality f
+    comm g := symm <| g.asIso.hom.naturality f
   }
 
 lemma functorToAction_comp_forget₂_eq : functorToAction F ⋙ forget₂ _ FintypeCat = F := rfl

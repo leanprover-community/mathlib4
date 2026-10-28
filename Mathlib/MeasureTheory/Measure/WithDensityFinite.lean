@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
 public import Mathlib.Probability.ConditionalProbability
 
@@ -53,7 +52,7 @@ noncomputable def Measure.toFiniteAux (μ : Measure α) [SFinite μ] : Measure �
   if IsFiniteMeasure μ then μ else (exists_isFiniteMeasure_absolutelyContinuous μ).choose
 
 /-- A finite measure obtained from an s-finite measure `μ`, such that
-`μ = μ.toFinite.withDensity (μ.rnDeriv µ.toFinite)`
+`μ = μ.toFinite.withDensity (μ.rnDeriv μ.toFinite)`
 (see `MeasureTheory.Measure.withDensity_rnDeriv_eq` along with
 `MeasureTheory.absolutelyContinuous_toFinite`). If `μ` is non-zero, then `μ.toFinite` is a
 probability measure. -/
@@ -91,7 +90,7 @@ lemma toFinite_eq_zero_iff [SFinite μ] : μ.toFinite = 0 ↔ μ = 0 := by
 lemma toFinite_zero : Measure.toFinite (0 : Measure α) = 0 := by simp
 
 lemma toFinite_eq_self [IsProbabilityMeasure μ] : μ.toFinite = μ := by
-  rw [Measure.toFinite, Measure.toFiniteAux, if_pos, ProbabilityTheory.cond_univ]
+  rw [Measure.toFinite, Measure.toFiniteAux, ite_eq_left, ProbabilityTheory.cond_univ]
   infer_instance
 
 instance [SFinite μ] : IsFiniteMeasure μ.toFinite := by

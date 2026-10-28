@@ -5,11 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.CompleteLattice.Lemmas
-public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-public import Mathlib.CategoryTheory.CommSq
-public import Mathlib.Tactic.FinCases
+
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.SetLike
 
 /-!
 # Multicoequalizer diagrams in complete lattices
@@ -48,8 +47,8 @@ variable {T : Type u} (x₁ x₂ x₃ x₄ : T) [Lattice T]
 /-- A bi-Cartesian square in a lattice consists of elements `x₁`, `x₂`, `x₃` and `x₄`
 such that `x₂ ⊔ x₃ = x₄` and `x₂ ⊓ x₃ = x₁`. -/
 structure BicartSq : Prop where
-  max_eq : x₂ ⊔ x₃ = x₄
-  min_eq : x₂ ⊓ x₃ = x₁
+  sup_eq : x₂ ⊔ x₃ = x₄
+  inf_eq : x₂ ⊓ x₃ = x₁
 
 attribute [grind cases] BicartSq
 
@@ -81,7 +80,7 @@ variable {T : Type u} [CompleteLattice T] {ι : Type*} (x : T) (u : ι → T) (v
 and for any `i` and `j`, `v i j` is the minimum of `u i` and `u j`. -/
 structure MulticoequalizerDiagram : Prop where
   iSup_eq : ⨆ (i : ι), u i = x
-  min_eq (i j : ι) : v i j = u i ⊓ u j
+  eq_inf (i j : ι) : v i j = u i ⊓ u j
 
 namespace MulticoequalizerDiagram
 
@@ -119,6 +118,5 @@ lemma Lattice.BicartSq.multicoequalizerDiagram {T : Type u} [CompleteLattice T]
       (fun i ↦ bif i then x₃ else x₂)
       (fun i j ↦ bif i then bif j then x₃ else x₁
         else bif j then x₁ else x₂) where
-  iSup_eq := by rw [← sq.max_eq, sup_comm, sup_eq_iSup]
-  min_eq i j := by
-    grind [inf_idem, inf_comm]
+  iSup_eq := by rw [← sq.sup_eq, sup_comm, sup_eq_iSup]
+  eq_inf i j := by grind

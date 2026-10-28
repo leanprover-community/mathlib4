@@ -5,8 +5,8 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import Mathlib.Order.Atoms
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-! # Simple rings
 
@@ -18,7 +18,7 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 
 -/
 
-@[expose] public section
+public section
 
 
 /--

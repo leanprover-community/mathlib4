@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.LinearAlgebra.Matrix.RowCol
+
 /-!
 # Permanent of a matrix
 
@@ -35,7 +36,7 @@ def permanent (M : Matrix n n R) : R := ∑ σ : Perm n, ∏ i, M (σ i) i
 theorem permanent_diagonal {d : n → R} : permanent (diagonal d) = ∏ i, d i := by
   refine (sum_eq_single 1 (fun σ _ hσ ↦ ?_) (fun h ↦ (h <| mem_univ _).elim)).trans ?_
   · match not_forall.mp (mt Equiv.ext hσ) with
-    | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (if_neg hx)
+    | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (ite_eq_right hx)
   · simp only [Perm.one_apply, diagonal_apply_eq]
 
 @[simp]
@@ -89,7 +90,7 @@ theorem permanent_permute_rows (σ : Perm n) (M : Matrix n n R) :
 @[simp]
 theorem permanent_smul (M : Matrix n n R) (c : R) :
     permanent (c • M) = c ^ Fintype.card n * permanent M := by
-  simp only [permanent, smul_apply, smul_eq_mul, Finset.mul_sum]
+  simp only [permanent, Matrix.smul_apply, smul_eq_mul, Finset.mul_sum]
   congr
   ext
   rw [mul_comm]

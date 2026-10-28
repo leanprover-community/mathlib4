@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
+public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Algebra.Group.Action.Basic
-public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.Ring.Defs
@@ -19,7 +19,7 @@ By default, `M` acts on `α → β` if it acts on `β`, and the action is given 
 
 In some cases, it is useful to consider another action: if `M` acts on `α` on the left, then it acts
 on `α → β` on the right so that `(c • f) a = f (c • a)`. E.g., this action is used to reformulate
-the Mean Ergodic Theorem in terms of an operator on \(L^2\).
+the Mean Ergodic Theorem in terms of an operator on `L²`.
 
 ## Main definitions
 
@@ -182,7 +182,7 @@ instance [SMul M α] [FaithfulSMul M α] [Nontrivial β] : FaithfulSMul Mᵈᵐ�
   eq_of_smul_eq_smul {c₁ c₂} h := mk.symm.injective <| eq_of_smul_eq_smul fun a : α ↦ by
     rcases exists_pair_ne β with ⟨x, y, hne⟩
     contrapose! hne
-    haveI := Classical.decEq α
+    have := Classical.decEq α
     replace h := congr_fun (h (update (const α x) (mk.symm c₂ • a) y)) a
     simpa [smul_apply, hne] using h
 

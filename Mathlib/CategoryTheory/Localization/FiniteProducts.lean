@@ -5,14 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Localization.Adjunction
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Localization.Pi
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
-/-! The localized category has finite products
+import Mathlib.CategoryTheory.Limits.ConeCategory
+
+/-! # The localized category has finite products
 
 In this file, it is shown that if `L : C ⥤ D` is
 a localization functor for `W : MorphismProperty C` and that
@@ -27,7 +28,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 namespace Localization
 
@@ -80,11 +81,12 @@ lemma adj_counit_app (F : Discrete J ⥤ C) :
         whiskerRight (constLimAdj.counit.app F) L := by
   apply constLimAdj.localization_counit_app
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Localization.preservesProductsOfShape`. -/
 noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
     IsLimit (L.mapCone (limit.cone F)) :=
   IsLimit.ofIsoLimit (isLimitConeOfAdj (adj L W J) (F ⋙ L))
-    (Cones.ext ((compLimitFunctorIso L W J).app F) (by simp [adj_counit_app, constLimAdj]))
+    (Cone.ext ((compLimitFunctorIso L W J).app F) (by simp [adj_counit_app, constLimAdj]))
 
 end HasProductsOfShapeAux
 
@@ -98,7 +100,7 @@ lemma hasProductsOfShape (J : Type) [Finite J] [HasProductsOfShape J C]
     (HasProductsOfShapeAux.adj L W J).isLeftAdjoint
 
 /-- When `C` has finite products indexed by `J`, `W : MorphismProperty C` contains
-identities and is stable by products indexed by `J`,
+identities and is stable under products indexed by `J`,
 then any localization functor for `W` preserves finite products indexed by `J`. -/
 lemma preservesProductsOfShape (J : Type) [Finite J]
     [HasProductsOfShape J C] [W.IsStableUnderProductsOfShape J] :
@@ -114,7 +116,7 @@ lemma hasFiniteProducts : HasFiniteProducts D :=
 
 include W in
 /-- When `C` has finite products and `W : MorphismProperty C` contains
-identities and is stable by finite products,
+identities and is stable under finite products,
 then any localization functor for `W` preserves finite products. -/
 lemma preservesFiniteProducts :
     PreservesFiniteProducts L where

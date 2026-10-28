@@ -24,7 +24,7 @@ In this file we define simple and semisimple Lie algebras, together with related
 lie algebra, radical, simple, semisimple
 -/
 
-@[expose] public section
+public section
 
 variable (R L M : Type*)
 variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
@@ -58,7 +58,7 @@ Note that the label 'semisimple' is apparently not universally agreed
 [upon](https://mathoverflow.net/questions/149391/on-radicals-of-a-lie-algebra#comment383669_149391)
 for general coefficients.
 
-For example [Seligman, page 15](seligman1967) uses the label for `LieAlgebra.HasTrivialRadical`,
+For example [Seligman, page 15][seligman1967] uses the label for `LieAlgebra.HasTrivialRadical`,
 whereas we reserve it for Lie algebras that are a direct sum of simple Lie algebras.
 -/
 @[mk_iff] class HasTrivialRadical : Prop where
@@ -99,7 +99,7 @@ Note that the label 'semisimple' is apparently not universally agreed
 [upon](https://mathoverflow.net/questions/149391/on-radicals-of-a-lie-algebra#comment383669_149391)
 for general coefficients.
 
-For example [Seligman, page 15](seligman1967) uses the label for `LieAlgebra.HasTrivialRadical`,
+For example [Seligman, page 15][seligman1967] uses the label for `LieAlgebra.HasTrivialRadical`,
 the weakest of the various properties which are all equivalent over a field of characteristic zero.
 -/
 class IsSemisimple : Prop where

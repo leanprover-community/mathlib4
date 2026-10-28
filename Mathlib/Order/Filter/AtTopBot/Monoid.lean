@@ -6,14 +6,15 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Monoid.OrderDual
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Order.Filter.AtTopBot.Tendsto
+
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Convergence to ±infinity in ordered commutative monoids
 -/
 
-@[expose] public section
+public section
 
 variable {α M : Type*}
 
@@ -21,7 +22,7 @@ namespace Filter
 
 section OrderedCommMonoid
 
-variable [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] {l : Filter α} {f g : α → M}
+variable [CommMonoid M] [Preorder M] [IsOrderedMonoid M] {l : Filter α} {f g : α → M}
 
 @[to_additive]
 theorem Tendsto.one_eventuallyLE_mul_atTop (hf : 1 ≤ᶠ[l] f) (hg : Tendsto g l atTop) :
@@ -96,7 +97,7 @@ end OrderedCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [CommMonoid M] [PartialOrder M] [IsOrderedCancelMonoid M] {l : Filter α} {f g : α → M}
+variable [CommMonoid M] [Preorder M] [IsOrderedCancelMonoid M] {l : Filter α} {f g : α → M}
 
 /-- In an ordered cancellative multiplicative monoid, if `C * f x → +∞`, then `f x → +∞`.
 
@@ -170,12 +171,5 @@ theorem Tendsto.atBot_of_mul_const_le (hg : ∃ C, ∀ x, C ≤ g x)
   Tendsto.atTop_of_mul_le_const (M := Mᵒᵈ) hg hfg
 
 end OrderedCancelCommMonoid
-
-section OrderedCancelAddCommMonoid
-
-variable [AddCommMonoid M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
-  {l : Filter α} {f g : α → M}
-
-end OrderedCancelAddCommMonoid
 
 end Filter

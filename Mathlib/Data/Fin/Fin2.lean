@@ -6,9 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Image
-public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Logic.Function.Basic
 
 /-!
 # Inductive type variant of `Fin`
@@ -125,7 +122,7 @@ def castSucc {n} : Fin2 n → Fin2 (n + 1)
 
 /-- The greatest value of `Fin2 (n+1)`. -/
 def last : {n : Nat} → Fin2 (n + 1)
-  | 0   => fz
+  | 0 => fz
   | n + 1 => fs (@last n)
 
 /-- Maps `0` to `n-1`, `1` to `n-2`, ..., `n-1` to `0`. -/
@@ -149,8 +146,10 @@ theorem rev_involutive {n} : Function.Involutive (@rev n) := rev_rev
 instance : Inhabited (Fin2 1) :=
   ⟨fz⟩
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance instFintype : ∀ n, Fintype (Fin2 n)
-  | 0   => ⟨∅, Fin2.elim0⟩
+  | 0 => ⟨∅, Fin2.elim0⟩
   | n + 1 =>
     let ⟨elems, compl⟩ := instFintype n
     { elems    := elems.map ⟨Fin2.fs, @fs.inj _⟩ |>.cons .fz (by simp)

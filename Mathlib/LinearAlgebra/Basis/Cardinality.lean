@@ -7,18 +7,19 @@ module
 
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
-public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.SetTheory.Cardinal.Pigeonhole
+
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Results relating bases and cardinality.
 -/
 
-@[expose] public section
+public section
 
 section Finite
 
-open Module Basis Cardinal Set Submodule Finsupp
+open Module Cardinal Set Submodule Finsupp
 
 universe u v w w'
 
@@ -53,8 +54,8 @@ Over any nontrivial ring, the existence of a finite spanning set implies that an
 -/
 lemma basis_finite_of_finite_spans [Nontrivial R] {s : Set M} (hs : s.Finite)
     (hsspan : span R s = ⊤) {ι : Type w} (b : Basis ι R M) : Finite ι := by
-  have := congr(($hsspan).map b.repr)
-  rw [← span_image, Submodule.map_top, LinearEquivClass.range] at this
+  have := congr(($hsspan).map b.repr.toLinearMap)
+  rw [← span_image, Submodule.map_top, LinearEquiv.range] at this
   exact finite_of_span_finite_eq_top_finsupp (hs.image _) this
 
 end Semiring
@@ -103,8 +104,8 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     have l₁ : l.some = l'.some := ind <| b.repr.injective <| ext fun j ↦ by
       obtain rfl | ne := eq_or_ne i j
       · simp_rw [repr_eq_zero]
-      classical simpa [single_apply, ne] using congr(b.repr $z j)
-    exact DFunLike.congr_fun l₁ a
+      simpa [single_apply, ne] using congr(b.repr $z j)
+    congrm $l₁ a
   exact r'' (m (range v') i' r)
 
 /-- Over any ring `R`, if `b` is an infinite basis for a module `M`,
@@ -116,7 +117,7 @@ theorem infinite_basis_le_maximal_linearIndependent' {ι : Type w} (b : Basis ι
     Cardinal.lift.{w'} #ι ≤ Cardinal.lift.{w} #κ := by
   let Φ := fun k : κ => (b.repr (v k)).support
   have w₁ : #ι ≤ #(Set.range Φ) := by
-    apply Cardinal.le_range_of_union_finset_eq_top
+    apply Cardinal.le_range_of_union_finset_eq_univ
     exact union_support_maximal_linearIndependent_eq_range_basis b v i m
   have w₂ : Cardinal.lift.{w'} #(Set.range Φ) ≤ Cardinal.lift.{w} #κ := Cardinal.mk_range_le_lift
   exact (Cardinal.lift_le.mpr w₁).trans w₂

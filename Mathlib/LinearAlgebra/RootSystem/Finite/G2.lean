@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Chain
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Properties of the `𝔤₂` root system.
@@ -78,6 +76,7 @@ section IsG2
 
 /-- By making an arbitrary choice of roots pairing to `-3`, we can obtain an embedded `𝔤₂` root
 system just from the knowledge that such a pairs exists. -/
+@[instance_reducible]
 def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
   long := (IsG2.exists_pairingIn_neg_three (P := P)).choose
   short := (IsG2.exists_pairingIn_neg_three (P := P)).choose_spec.choose
@@ -107,8 +106,9 @@ lemma not_isG2_iff_isNotG2 :
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
     aesop
   · specialize h i j
-    cutsat
+    lia
 
+set_option linter.overlappingInstances false in
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
     P.pairingIn ℤ i j ∈ ({-3, -1, 0, 1, 3} : Set ℤ) := by
@@ -119,9 +119,9 @@ lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     have aux₂ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i j h h'
     simp only [mem_insert_iff, mem_singleton_iff, Prod.mk_zero_zero, Prod.mk_eq_zero,
       Prod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at aux₂ ⊢
-    cutsat
+    lia
   obtain ⟨k, l, hkl⟩ := exists_pairingIn_neg_three (P := P)
-  push_neg
+  push Not
   refine ⟨k, l, ?_⟩
   have aux := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed k l
   simp only [mem_insert_iff, mem_singleton_iff, Prod.mk_zero_zero, Prod.mk_eq_zero,
@@ -163,7 +163,7 @@ lemma pairingIn_le_zero_of_root_add_mem [P.IsNotG2] (h : P.root i + P.root j ∈
   have aux₃ : 1 ≤ P.chainTopCoeff j i := by
     rwa [← root_add_nsmul_mem_range_iff_le_chainTopCoeff aux₁, one_smul]
   rw [← P.chainBotCoeff_sub_chainTopCoeff aux₁]
-  cutsat
+  lia
 
 lemma zero_le_pairingIn_of_root_sub_mem [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     0 ≤ P.pairingIn ℤ i j := by
@@ -185,11 +185,11 @@ lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P
   rcases eq_or_ne (P.chainBotCoeff i j) (P.chainTopCoeff i j) with aux₄ | aux₄ <;>
   simp_rw [P.pairingIn_eq_zero_iff (i := i) (j := j), ← P.chainBotCoeff_sub_chainTopCoeff aux₁,
     sub_eq_zero, Nat.cast_inj, aux₄, reduceIte] <;>
-  omega
+  lia
 
 lemma chainTopCoeff_if_one_zero [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     P.chainTopCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
-  letI := P.indexNeg
+  let := P.indexNeg
   replace h : P.root i + P.root (-j) ∈ range P.root := by simpa [← sub_eq_add_neg] using h
   simpa using P.chainBotCoeff_if_one_zero h
 
@@ -198,7 +198,8 @@ end IsNotG2
 namespace EmbeddedG2
 
 /-- A pair of roots which pair to `+3` are also sufficient to distinguish an embedded `𝔤₂`. -/
-@[simps] def ofPairingInThree [CharZero R] [P.IsCrystallographic] [P.IsReduced] (long short : ι)
+@[simps, instance_reducible]
+def ofPairingInThree [CharZero R] [P.IsCrystallographic] [P.IsReduced] (long short : ι)
     (h : P.pairingIn ℤ long short = 3) : P.EmbeddedG2 where
   long := P.reflectionPerm long long
   short := short
@@ -541,7 +542,7 @@ def basis : Module.Basis (Fin 2) R M :=
     refine (IsReduced.linearIndependent_iff P).mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · norm_num [h] at this
     · simp only [root_eq_neg_iff] at h
-      norm_num [h] at this
+      simp [h] at this
   Module.Basis.mk this (by simp)
 
 lemma mem_allRoots (i : ι) :
@@ -558,10 +559,10 @@ lemma mem_allRoots (i : ι) :
     simp only [LinearMap.zero_apply]
     induction hx using Submodule.span_induction with
     | zero => simp
-    | mem => aesop
+    | mem => grind
     | add => simp_all
     | smul => simp_all
-  simpa using LinearMap.congr_fun key (P.root i)
+  simpa using congr($key (P.root i))
 
 open scoped Classical in
 /-- The natural labelling of `RootPairing.EmbeddedG2.allRoots`. -/
@@ -578,13 +579,13 @@ include P in
 lemma card_index_eq_twelve :
     Nat.card ι = 12 := by
   classical
-  have this : Nat.card (allRoots P).toFinset = 12 := by
+  have : Nat.card (allRoots P).toFinset = 12 := by
     rw [Nat.card_eq_fintype_card, Fintype.card_coe, toFinset_card_of_nodup (allRoots_nodup P)]
     simp
   rw [← this]
   exact Nat.card_congr <| indexEquivAllRoots P
 
-lemma setOf_index_eq_univ :
+lemma setOfPred_index_eq_univ :
     letI _i := P.indexNeg
     { long P, -long P,
       short P, -short P,
@@ -593,6 +594,8 @@ lemma setOf_index_eq_univ :
       threeShortAddLong P, -threeShortAddLong P,
       threeShortAddTwoLong P, -threeShortAddTwoLong P } = univ :=
   eq_univ_iff_forall.mpr fun i ↦ by simpa using mem_allRoots P i
+
+@[deprecated (since := "2026-07-09")] alias setOf_index_eq_univ := setOfPred_index_eq_univ
 
 end IsIrreducible
 
@@ -608,7 +611,7 @@ variable [P.IsG2] (b : P.Base) [Finite ι] [CharZero R] [IsDomain R]
   have _i : P.EmbeddedG2 := toEmbeddedG2 P
   have _i : Nonempty ι := IsG2.nonempty P
   rw [← Fintype.card_fin 2, ← Module.finrank_eq_card_basis (EmbeddedG2.basis P),
-    Module.finrank_eq_card_basis (b.toWeightBasis (P := P.toRootSystem)), Fintype.card_coe]
+    Module.finrank_eq_card_basis b.toWeightBasis, Fintype.card_coe]
 
 variable {b} in
 lemma span_eq_rootSpan_int {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j) :

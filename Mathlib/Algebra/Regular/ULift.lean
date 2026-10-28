@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Regular.SMul
 # Results about `IsRegular` and `ULift`
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

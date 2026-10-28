@@ -31,11 +31,11 @@ variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 def fgSystem (N₁ N₂ : {N : Submodule R M // N.FG}) (le : N₁ ≤ N₂) : N₁ →ₗ[R] N₂ :=
   Submodule.inclusion le
 
-open DirectLimit
+open Module.DirectLimit
 
 namespace fgSystem
 
-instance : IsDirected {N : Submodule R M // N.FG} (· ≤ ·) where
+instance : IsDirectedOrder {N : Submodule R M // N.FG} where
   directed N₁ N₂ :=
     ⟨⟨_, N₁.2.sup N₂.2⟩, Subtype.coe_le_coe.mp le_sup_left, Subtype.coe_le_coe.mp le_sup_right⟩
 
@@ -54,6 +54,7 @@ noncomputable def equiv : DirectLimit _ (fgSystem R M) ≃ₗ[R] M :=
 
 variable {R M}
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma equiv_comp_of (N : {N : Submodule R M // N.FG}) :
     (equiv R M).toLinearMap ∘ₗ of _ _ _ _ N = N.1.subtype := by
   ext; simp [equiv]

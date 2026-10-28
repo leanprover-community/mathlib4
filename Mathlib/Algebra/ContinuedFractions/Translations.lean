@@ -6,7 +6,6 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Basic
-public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Data.Seq.Basic
 
 /-!
@@ -18,7 +17,7 @@ Some simple translation lemmas between the different definitions of functions de
 `Algebra.ContinuedFractions.Basic`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace GenContFract

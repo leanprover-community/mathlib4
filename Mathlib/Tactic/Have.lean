@@ -5,10 +5,10 @@ Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Binders
 public meta import Lean.Elab.SyntheticMVars
 public meta import Lean.Meta.Tactic.Assert
+public import Mathlib.Init
 
 /-!
 # Extending `have`, `let` and `suffices`
@@ -53,8 +53,11 @@ def haveIdLhs' : Parser :=
   optBinderIdent >> many (ppSpace >>
     checkColGt "expected to be indented" >> letIdBinder) >> optType
 
+@[tactic_alt Lean.Parser.Tactic.tacticHave__]
 syntax "have" haveIdLhs' : tactic
+@[tactic_alt Lean.Parser.Tactic.tacticLet__]
 syntax "let " haveIdLhs' : tactic
+@[tactic_alt Lean.Parser.Tactic.tacticSuffices_]
 syntax "suffices" haveIdLhs' : tactic
 
 open Elab Term in

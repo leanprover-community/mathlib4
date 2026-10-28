@@ -6,9 +6,11 @@ Authors: Chris Hughes, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Field.GeomSum
-public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.Algebra.Order.CauSeq.Basic
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Data.Rat.Floor
 
 /-!
 # Cauchy sequences and big operators
@@ -16,7 +18,7 @@ public import Mathlib.Algebra.Order.CauSeq.Basic
 This file proves some more lemmas about basic Cauchy sequences that involve finite sums.
 -/
 
-@[expose] public section
+public section
 
 open Finset IsAbsoluteValue
 
