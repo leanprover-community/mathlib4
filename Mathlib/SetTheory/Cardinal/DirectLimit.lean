@@ -20,8 +20,6 @@ This file gives upper and lower bounds for the cardinality of a direct limit of 
   cardinalities of its components.
 * `DirectLimit.mk_le_of_aleph0_le`: an infinite common bound for the index type and the
   components is also a bound for the direct limit.
-* `DirectLimit.iSup_lift_mk_le_mk`: when the canonical maps are injective, the supremum of the
-  component cardinalities is at most the cardinality of the direct limit.
 * `DirectLimit.mk_eq_iSup_lift_mk`: when that supremum is greater than the cardinality of the
   index type and the canonical maps are injective, it equals the cardinality of the direct limit.
 * `DirectLimit.mk_eq_of_forall_lift_mk_eq`: when all components have the same cardinality, under
@@ -54,16 +52,6 @@ theorem mk_le_of_aleph0_le (c : Cardinal.{max u v}) (hc : ℵ₀ ≤ c)
   (mk_le_sum f).trans <| (sum_le_lift_mk_mul_iSup_lift _).trans <|
     Cardinal.mul_le_of_le hc hι (ciSup_le' hF)
 
-/-- If all canonical maps into a direct limit are injective, then the supremum of the
-cardinalities of the components is at most the cardinality of the direct limit. -/
-theorem iSup_lift_mk_le_mk
-    (h : ∀ i, Injective fun x ↦ (⟦⟨i, x⟩⟧ : DirectLimit F (f · · ·))) :
-    (⨆ i, Cardinal.lift.{u} #(F i)) ≤ #(DirectLimit F (f · · ·)) := by
-  refine ciSup_le' fun i ↦ ?_
-  have := lift_mk_le_lift_mk_of_injective (h i)
-  simp only [ge_iff_le]
-  rwa [Cardinal.lift_umax, Cardinal.lift_id'.{v,u}] at this
-
 /-- If all canonical maps into a direct limit are injective and the supremum of the component
 cardinalities is greater than the cardinality of the index type, then it equals the cardinality
 of the direct limit. -/
@@ -71,19 +59,26 @@ theorem mk_eq_iSup_lift_mk
     (hι : Cardinal.lift.{v} #ι ≤ ⨆ i, Cardinal.lift.{u} #(F i))
     (h : ∀ i, Injective fun x ↦ (⟦⟨i, x⟩⟧ : DirectLimit F (f · · ·))) :
     #(DirectLimit F (f · · ·)) = ⨆ i, Cardinal.lift.{u} #(F i) := by
-  refine le_antisymm ?_ (iSup_lift_mk_le_mk f h)
-  by_cases! hc : ℵ₀ ≤ ⨆ i, lift.{u, v} #(F i)
-  · exact mk_le_of_aleph0_le f _ hc hι fun i ↦ le_ciSup Cardinal.bddAbove_of_small i
-  · have : Finite ι := mk_lt_aleph0_iff.mp (lift_lt_aleph0.mp (hι.trans_lt hc))
-    cases isEmpty_or_nonempty ι with
-    | inl hle =>
-      simp
-    | inr hlne =>
-      obtain ⟨m, hm⟩ := Finite.exists_le (id : ι → ι)
-      have he := (equivOfForallLE f m hm).lift_cardinal_eq
-      rw [Cardinal.lift_id'.{v,u}, Cardinal.lift_umax.{v,u}] at he
-      rw [he]
-      exact le_ciSup Cardinal.bddAbove_of_small m
+  apply le_antisymm
+  · by_cases! hc : ℵ₀ ≤ ⨆ i, lift.{u, v} #(F i)
+    · exact mk_le_of_aleph0_le f _ hc hι fun i ↦
+        le_ciSup Cardinal.bddAbove_of_small i
+    · have : Finite ι :=
+        mk_lt_aleph0_iff.mp (lift_lt_aleph0.mp (hι.trans_lt hc))
+      cases isEmpty_or_nonempty ι with
+      | inl hle =>
+        simp
+      | inr hlne =>
+        obtain ⟨m, hm⟩ := Finite.exists_le (id : ι → ι)
+        have he := (equivOfIsTop f m hm).lift_cardinal_eq
+        rw [Cardinal.lift_id'.{v,u}, Cardinal.lift_umax.{v,u}] at he
+        rw [he]
+        exact le_ciSup Cardinal.bddAbove_of_small m
+  · refine ciSup_le' fun i ↦ ?_
+    have := lift_mk_le_lift_mk_of_injective (h i)
+    simp only [DirectLimit, ge_iff_le]
+    rwa [Cardinal.lift_umax, Cardinal.lift_id'.{v,u}] at this
+
 
 /-- If all components have the same cardinality `c`, the cardinality of the index type is at most
 `c`, and all canonical maps are injective, then the direct limit also has cardinality `c`. -/
