@@ -124,12 +124,9 @@ theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
     rcases ENNReal.exists_pos_sum_of_countable' (ne_of_gt hε) ℕ with ⟨δ, hδ1, hδ2⟩
     let u : ℕ → ℕ := fun n ↦ s' n (δ n)
     refine ⟨interUnionBalls seq u t, isCompact_closure_interUnionBalls h_basis.toHasBasis seq u, ?_⟩
-    rw [interUnionBalls, Set.compl_iInter]
-    refine ((measure_iUnion_le _).trans ?_).trans_lt hδ2
-    refine ENNReal.tsum_le_tsum (fun n ↦ ?_)
-    have h'' m : f n m = (t n).ball (seq m) := rfl
-    simp only [← h'', compl_iUnion, ge_iff_le]
-    exact (s'bound n (δ n) (hδ1 n)).le
+    grw [interUnionBalls, Set.compl_iInter, measure_iUnion_le, ← hδ2]
+    gcongr with n
+    simpa [compl_iUnion] using (s'bound n (δ n) (hδ1 n)).le
 
 theorem innerRegularWRT_isCompact_closure [TopologicalSpace α]
     [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]

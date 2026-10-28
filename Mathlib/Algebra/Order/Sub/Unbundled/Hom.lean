@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Ring.Basic
 public import Mathlib.Order.Hom.Basic
 
 import Mathlib.Algebra.Group.Equiv.Defs
+
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/

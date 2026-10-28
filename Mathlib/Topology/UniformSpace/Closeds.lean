@@ -13,7 +13,7 @@ import Mathlib.Topology.UniformSpace.Compact
 /-!
 # Hausdorff uniformity
 
-This file defines the Hausdorff uniformity on the types of closed subsets, compact subsets and
+This file defines the Hausdorff uniformity on the types of closed subsets, compact subsets
 and nonempty compact subsets of a uniform space. This is the generalization of the uniformity
 induced by the Hausdorff metric to hyperspaces of uniform spaces.
 -/

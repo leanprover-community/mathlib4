@@ -219,7 +219,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
     ∫ ξ, M (fourierIntegral e μ L f ξ) (g ξ) ∂ν =
       ∫ x, M (f x) (fourierIntegral e ν L.flip g x) ∂μ := by
-  by_cases hG : CompleteSpace G; swap; · simp [integral, hG]
+  by_cases hG : CompleteSpace G; swap; · simp [integral_of_not_completeSpace hG]
   calc
   ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν
     = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
@@ -255,7 +255,7 @@ theorem integral_sesq_fourierIntegral_eq_neg_flip
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
     ∫ ξ, M (fourierIntegral e μ L f ξ) (g ξ) ∂ν =
       ∫ x, M (f x) (fourierIntegral e ν (-L.flip) g x) ∂μ := by
-  by_cases hG : CompleteSpace G; swap; · simp [integral, hG]
+  by_cases hG : CompleteSpace G; swap; · simp [integral_of_not_completeSpace hG]
   calc
   ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν
     = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
@@ -538,7 +538,7 @@ def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
     { toFun := Lp.fourierTransform
       map_add' f g := by
         ext x
-        simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_add, Pi.add_apply,
+        simp only [Lp.fourierTransform_apply, FunLike.coe_add, Pi.add_apply,
           Real.fourier_eq]
         rw [← integral_add]
         · apply integral_congr_ae
@@ -551,7 +551,7 @@ def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
           exact L1.integrable_coeFn g
       map_smul' c f := by
         ext x
-        simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_smul, Real.fourier_eq]
+        simp only [fourierTransform_apply, fourier_eq, RingHom.id_apply, smul_apply]
         rw [← integral_smul]
         apply integral_congr_ae
         filter_upwards [Lp.coeFn_smul c f] with x h
