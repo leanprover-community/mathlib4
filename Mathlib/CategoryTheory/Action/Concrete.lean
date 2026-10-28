@@ -204,9 +204,12 @@ end FintypeCat
 section ToMulAction
 
 variable {V : Type (u + 1)} [LargeCategory V] {FV : V → V → Type*} {CV : V → Type*}
-variable {_ : ∀ X Y, FunLike (FV X Y) (CV X) (CV Y)} [ConcreteCategory V FV]
+variable [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV]
 
-instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
+-- We use the `{}` binder for the `FunLike` instance in order to get the right synthOrder.
+instance instMulAction {FV : V → V → Type*} {CV : V → Type*}
+    {_ : ∀ X Y, FunLike (FV X Y) (CV X) (CV Y)} [ConcreteCategory V FV]
+    {G : Type*} [Monoid G] (X : Action V G) :
     MulAction G (ToType X) where
   smul g x := ConcreteCategory.hom (X.ρ g) x
   one_smul x := by
