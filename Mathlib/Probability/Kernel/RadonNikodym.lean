@@ -193,7 +193,7 @@ def mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) : Set γ :=
 
 lemma mem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∈ mutuallySingularSetSlice κ η a ↔ 1 ≤ rnDerivAux κ (κ + η) a x := by
-  rw [mutuallySingularSetSlice, mem_setOf]
+  rw [mutuallySingularSetSlice, mem_ofPred]
 
 lemma notMem_mutuallySingularSetSlice (κ η : Kernel α γ) (a : α) (x : γ) :
     x ∉ mutuallySingularSetSlice κ η a ↔ rnDerivAux κ (κ + η) a x < 1 := by
@@ -220,22 +220,22 @@ lemma measure_mutuallySingularSetSlice (κ η : Kernel α γ) [IsFiniteKernel κ
   · fun_prop
   · fun_prop
   refine ae_of_all _ (fun x hx ↦ ?_)
-  simp only [mem_setOf_eq] at hx
+  simp only [mem_ofPred_eq] at hx
   simp [hx]
 
 /-- Radon-Nikodym derivative of the kernel `κ` with respect to the kernel `η`. -/
+@[no_expose]
 noncomputable
-irreducible_def rnDeriv (κ η : Kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
+def rnDeriv (κ η : Kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
   ENNReal.ofReal (rnDerivAux κ (κ + η) a x) / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x)
 
 lemma rnDeriv_def' (κ η : Kernel α γ) :
     rnDeriv κ η = fun a x ↦ ENNReal.ofReal (rnDerivAux κ (κ + η) a x)
-      / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x) := by ext; rw [rnDeriv_def]
+      / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x) := (rfl)
 
 @[fun_prop]
 lemma measurable_rnDeriv (κ η : Kernel α γ) :
     Measurable (fun p : α × γ ↦ rnDeriv κ η p.1 p.2) := by
-  simp_rw [rnDeriv_def]
   exact (measurable_rnDerivAux κ _).ennreal_ofReal.div
     (measurable_const.sub (measurable_rnDerivAux κ _)).ennreal_ofReal
 
@@ -247,16 +247,17 @@ lemma rnDeriv_eq_top_iff (κ η : Kernel α γ) (a : α) (x : γ) :
     rnDeriv κ η a x = ∞ ↔ (a, x) ∈ mutuallySingularSet κ η := by
   simp only [rnDeriv, ENNReal.div_eq_top, ne_eq, ENNReal.ofReal_eq_zero, not_le,
     tsub_le_iff_right, zero_add, ENNReal.ofReal_ne_top, not_false_eq_true, and_true, or_false,
-    mutuallySingularSet, mem_setOf_eq, and_iff_right_iff_imp]
+    mutuallySingularSet, mem_ofPred_eq, and_iff_right_iff_imp]
   exact fun h ↦ zero_lt_one.trans_le h
 
 lemma rnDeriv_eq_top_iff' (κ η : Kernel α γ) (a : α) (x : γ) :
     rnDeriv κ η a x = ∞ ↔ x ∈ mutuallySingularSetSlice κ η a := by
-  rw [rnDeriv_eq_top_iff, mutuallySingularSet, mutuallySingularSetSlice, mem_setOf, mem_setOf]
+  rw [rnDeriv_eq_top_iff, mutuallySingularSet, mutuallySingularSetSlice, mem_ofPred, mem_ofPred]
 
 /-- Singular part of the kernel `κ` with respect to the kernel `η`. -/
+@[no_expose]
 noncomputable
-irreducible_def singularPart (κ η : Kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+def singularPart (κ η : Kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     Kernel α γ :=
   withDensity (κ + η) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x)
     - Real.toNNReal (1 - rnDerivAux κ (κ + η) a x) * rnDeriv κ η a x)
@@ -285,7 +286,7 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : Kernel α γ) [IsSFin
   · exact measurable_singularPart_fun_right κ η a
   · exact measurable_singularPart_fun κ η
   refine ae_of_all _ (fun x hx ↦ ?_)
-  simp only [mem_compl_iff, mutuallySingularSetSlice, mem_setOf, not_le] at hx
+  simp only [mem_compl_iff, mutuallySingularSetSlice, mem_ofPred, not_le] at hx
   simp_rw [rnDeriv]
   rw [← ENNReal.ofReal_div_of_pos, div_eq_inv_mul, ← ENNReal.ofReal_mul, ← mul_assoc,
     mul_inv_cancel₀, one_mul, tsub_self, Pi.zero_apply]
@@ -543,7 +544,7 @@ function of `a`. -/
 lemma measurable_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
     Measurable (fun a ↦ (κ a).singularPart (η a)) := by
   refine Measure.measurable_of_measurable_coe _ (fun s hs ↦ ?_)
-  simp_rw [← κ.singularPart_eq_singularPart_measure, κ.singularPart_def η]
+  simp_rw [← κ.singularPart_eq_singularPart_measure]
   exact Kernel.measurable_coe _ hs
 
 lemma rnDeriv_self (κ : Kernel α γ) [IsFiniteKernel κ] (a : α) : rnDeriv κ κ a =ᵐ[κ a] 1 :=

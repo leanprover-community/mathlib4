@@ -5,10 +5,8 @@ Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Topology.Instances.NNReal.Lemmas
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
@@ -36,18 +34,20 @@ infinite series, absolute convergence, normed group
 
 public section
 
-open Topology ENNReal NNReal
+open ENNReal NNReal
+
+open scoped Topology
 
 open Finset Filter Metric
 
-variable {ι α E F ε : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable {ι α E ε : Type*} [SeminormedAddCommGroup E]
   [TopologicalSpace ε] [ESeminormedAddCommMonoid ε]
 
 theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :
     (CauchySeq fun s : Finset ι => ∑ i ∈ s, f i) ↔
       ∀ ε > (0 : ℝ), ∃ s : Finset ι, ∀ t, Disjoint t s → ‖∑ i ∈ t, f i‖ < ε := by
   rw [cauchySeq_finset_iff_sum_vanishing, nhds_basis_ball.forall_iff]
-  · simp only [ball_zero_eq, Set.mem_setOf_eq]
+  · simp only [ball_zero_eq, Set.mem_ofPred_eq]
   · rintro s t hst ⟨s', hs'⟩
     exact ⟨s', fun t' ht' => hst <| hs' _ ht'⟩
 
@@ -132,7 +132,7 @@ theorem tsum_of_enorm_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ℝ�
 
 theorem enorm_tsum_le_tsum_enorm {f : ι → ε} :
     ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ :=
-  tsum_of_enorm_bounded ENNReal.summable.hasSum fun _i => le_rfl
+  tsum_of_enorm_bounded CompleteLattice.summable.hasSum fun _i => le_rfl
 
 /-- Quantitative result associated to the direct comparison test for series:  If `∑' i, g i` is
 summable, and for all `i`, `‖f i‖ ≤ g i`, then `‖∑' i, f i‖ ≤ ∑' i, g i`. Note that we do not

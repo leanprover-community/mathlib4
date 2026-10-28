@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Order.Filter.Basic
 public import Mathlib.Order.Filter.Map
 
 /-!
@@ -34,7 +33,7 @@ theorem tendsto_def {f : α → β} {l₁ : Filter α} {l₂ : Filter β} :
 
 theorem tendsto_iff_eventually {f : α → β} {l₁ : Filter α} {l₂ : Filter β} :
     Tendsto f l₁ l₂ ↔ ∀ ⦃p : β → Prop⦄, (∀ᶠ y in l₂, p y) → ∀ᶠ x in l₁, p (f x) :=
-  Iff.rfl
+  ⟨fun hf _p h => hf h, fun h s hs => h (p := (· ∈ s)) hs⟩
 
 theorem tendsto_iff_forall_eventually_mem {f : α → β} {l₁ : Filter α} {l₂ : Filter β} :
     Tendsto f l₁ l₂ ↔ ∀ s ∈ l₂, ∀ᶠ x in l₁, f x ∈ s :=
@@ -257,7 +256,7 @@ theorem tendsto_pure_left {f : α → β} {a : α} {l : Filter β} :
 @[simp]
 theorem map_inf_principal_preimage {f : α → β} {s : Set β} {l : Filter α} :
     map f (l ⊓ 𝓟 (f ⁻¹' s)) = map f l ⊓ 𝓟 s :=
-  Filter.ext fun t => by simp only [mem_map', mem_inf_principal, mem_setOf_eq, mem_preimage]
+  Filter.ext fun t => by simp only [mem_map', mem_inf_principal, mem_ofPred_eq, mem_preimage]
 
 /-- If two filters are disjoint, then a function cannot tend to both of them along a non-trivial
 filter. -/

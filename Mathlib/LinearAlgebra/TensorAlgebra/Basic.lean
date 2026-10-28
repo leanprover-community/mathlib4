@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
-public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 public import Mathlib.RingTheory.Congruence.Hom
 
@@ -109,16 +108,15 @@ example : (Ring.toIntAlgebra _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra 
 variable {M}
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
--/
-irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
+/-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`. -/
+@[no_expose] def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingCon.toQuotient (FreeAlgebra.ι R m)
     map_add' := fun x y => by
       rw [← RingCon.coe_add]
       exact Quotient.sound <| RingConGen.Rel.of _ _ Rel.add
     map_smul' := fun r x => by
       rw [← RingCon.coe_smul]
-      exact Quotient.sound <| RingConGen.Rel.of _ _ <| Rel.smul}
+      exact Quotient.sound <| RingConGen.Rel.of _ _ Rel.smul}
 
 theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
     RingCon.mkₐ R (ringCon R M) (FreeAlgebra.ι R m) = ι R m := by

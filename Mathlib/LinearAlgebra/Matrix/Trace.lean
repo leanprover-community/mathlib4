@@ -5,10 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Trace of a matrix
@@ -166,11 +164,34 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 
+/-- The trace of a positive power of `A * B` is unchanged when the factors are reversed.
+The matrices `A` and `B` may be rectangular.
+
+This requires a positive exponent because the identity does not hold at exponent zero when the index
+types have different cardinalities. -/
+theorem trace_mul_pow_comm_of_ne_zero [CommSemiring R] [DecidableEq m] [DecidableEq n]
+    (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
+    trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
+  match k with
+  | k + 1 =>
+    rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, ← Matrix.mul_pow_mul, Matrix.mul_assoc,
+      ← pow_succ]
+
+/-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
+are reversed.
+
+Unlike the rectangular version `trace_mul_pow_comm_of_ne_zero`, this also holds at exponent zero. -/
+theorem trace_mul_pow_comm [CommSemiring R] [DecidableEq n] (A B : Matrix n n R) (k : ℕ) :
+    trace ((A * B) ^ k) = trace ((B * A) ^ k) :=
+  match k with
+  | 0 => rfl
+  | k + 1 => trace_mul_pow_comm_of_ne_zero A B k.add_one_ne_zero
+
 @[simp]
 theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
     (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = a ⬝ᵥ b := by
   apply Finset.sum_congr rfl
-  simp [mul_apply]
+  simp [Matrix.mul_apply]
 
 @[simp]
 theorem trace_vecMulVec [NonUnitalNonAssocSemiring R] (a b : n → R) :
@@ -218,7 +239,7 @@ theorem trace_fin_one (A : Matrix (Fin 1) (Fin 1) R) : trace A = A 0 0 :=
   add_zero _
 
 theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :=
-  congr_arg (_ + ·) (add_zero (A 1 1))
+  congr(_ + $(add_zero (A 1 1)))
 
 theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
   rw [← add_zero (A 2 2), add_assoc]
@@ -241,7 +262,7 @@ end Fin
 
 section single
 
-variable {l m n : Type*} {R α : Type*} [DecidableEq l] [DecidableEq m] [DecidableEq n]
+variable {m n : Type*} {R α : Type*} [DecidableEq m] [DecidableEq n]
 variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
@@ -255,12 +276,12 @@ theorem trace_single_eq_same : trace (single i i c) = c := by
 theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
     (i : n) (j : m) (a : R) (x : Matrix m n R) :
     (single i j a * x).trace = a • x j i := by
-  simp [trace, mul_apply, single, ite_and]
+  simp [trace, Matrix.mul_apply, single, ite_and]
 
 theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
     (x : Matrix m n R) (i : n) (j : m) (a : R) :
     (x * single i j a).trace = MulOpposite.op a • x j i := by
-  simp [trace, mul_apply, single, ite_and]
+  simp [trace, Matrix.mul_apply, single, ite_and]
 
 end single
 

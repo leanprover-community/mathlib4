@@ -39,8 +39,6 @@ lattice, order, group
 
 @[expose] public section
 
-open Function
-
 variable {α : Type*}
 
 section Group

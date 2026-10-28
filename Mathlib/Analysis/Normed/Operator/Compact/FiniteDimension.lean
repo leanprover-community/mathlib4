@@ -17,7 +17,7 @@ The motivation for not including this in the same file as the definition of comp
 is that `Mathlib.Topology.Algebra.Module.FiniteDimension` is quite a heavy import to add there.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   {E : Type*} [AddCommGroup E] [Module 𝕜 E]
@@ -34,6 +34,3 @@ lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E �
     FiniteDimensional 𝕜 E := by
   have := LocallyCompactSpace.of_isCompactOperator_id h
   exact FiniteDimensional.of_locallyCompactSpace 𝕜
-
-@[deprecated (since := "2026-03-05")] alias IsCompactOperator.finiteDimensional :=
-  FiniteDimensional.of_isCompactOperator_id

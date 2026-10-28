@@ -72,7 +72,7 @@ on:
         # Default: the full `Mathlib` library — the representative master shadow.
         # For a cheaper experiment, pass a smaller set, e.g.
         #   Mathlib.Topology.Basic Mathlib.Combinatorics.SimpleGraph.Basic Mathlib.RingTheory.Ideal.Basic
-        # or add `Archive Counterexamples` to also shadow those libraries.
+        # or add `Archive Counterexamples Wanted` to also shadow those libraries.
         default: Mathlib
       toolchain_override:
         description: >-
@@ -104,6 +104,8 @@ env:
   SHADOW_SCOPE: mathlib4-master-shadow
   # NOTE: STAGE_TARGETS is set per-job (not here) from the `targets` input, so
   # it can be overridden per dispatch — see the `build_and_stage`/`consume` env.
+  MATHLIB_CACHE_BASE_URL: ${{ vars.MATHLIB_CACHE_BASE_URL }}
+  MATHLIB_CACHE_PARALLEL_MAX: ${{ vars.MATHLIB_CACHE_PARALLEL_MAX }}
 
 jobs:
   build_and_stage:
@@ -127,17 +129,14 @@ jobs:
         shell: bash -euo pipefail {0}
         run: echo "::notice::Lake cache shadow on ref ${{ inputs.mathlib_ref || 'master' }} run ${{ github.run_id }}"
 
-      - name: Setup jq
-        uses: dcarbone/install-jq-action@4fcb5062d7ce9bc4382d1a352d19ba3ba2c317c1 # v4.0.1
-
       - name: Checkout tools branch
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: master
           path: tools-branch
 
       - name: Checkout mathlib (pr-branch)
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.mathlib_ref || 'master' }}
           fetch-depth: 2
@@ -170,7 +169,6 @@ jobs:
           # errors out if the path is missing. Runs that skip legacy hydration
           # reach the first landrun step with it absent.
           mkdir -p "$HOME/.cache/mathlib/"
-          mkdir -p _work
 
       - name: install elan
         shell: bash -euo pipefail {0}
@@ -182,8 +180,8 @@ jobs:
 
       # `elan which` below does not auto-install non-pinned toolchains. The
       # uninstall forces a fresh download: pr-release tags are republished in
-      # place, and elan skips toolchains it already has, so a persistent
-      # runner would otherwise keep running a stale binary under that name.
+      # place, elan skips toolchains it already has, and the runner's `~/.elan`
+      # can already hold an older build under that name.
       - name: Install override toolchain
         if: ${{ env.TOOLCHAIN_OVERRIDE != '' }}
         shell: bash -euo pipefail {0}
@@ -338,7 +336,7 @@ jobs:
           fi
 
       - name: Upload staging artifact for the next job
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: lake-cache-staging-${{ github.run_id }}
           path: lake-cache-staging/
@@ -359,7 +357,7 @@ jobs:
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT }}
     steps:
       - name: Checkout mathlib (workspace for put-staged)
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
@@ -381,7 +379,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - name: Download staging artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: lake-cache-staging-${{ github.run_id }}
           path: lake-cache-staging
@@ -503,7 +501,7 @@ jobs:
       LAKE_CACHE_REVISION_ENDPOINT: ${{ vars.LAKE_CACHE_REVISION_ENDPOINT_PUBLIC }}
     steps:
       - name: Checkout mathlib
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.build_and_stage.outputs.sha }}
           path: pr-branch
@@ -582,12 +580,12 @@ jobs:
           # (no rebuild). Deps building is expected and excluded from the grep.
           # Emit an explicit health line (consumed by the Zulip report) and fail
           # the run if it's not a full hit.
-          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true)
+          BUILT_ROOT=$(grep -cE '^✔.*Built (Mathlib|Archive|Counterexamples|Wanted)([. ]|$)' "$log" || true)
           if [ "$BUILT_ROOT" -ne 0 ]; then
             health="❌ NOT full cache hits — ${BUILT_ROOT} root-package module(s) rebuilt"
             echo "health=${health}" >> "$GITHUB_OUTPUT"
             echo "::error::${health}"
-            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples)([. ]|$)' "$log" || true
+            grep -E '^✔.*Built (Mathlib|Archive|Counterexamples|Wanted)([. ]|$)' "$log" || true
             exit 1
           fi
           health="✅ full cache hits — 0 root-package modules rebuilt (${FETCHED_ARTIFACTS} served from cache)"

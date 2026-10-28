@@ -5,10 +5,11 @@ Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Order.Filter.AtTopBot.Field
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.Order.Group
+
+import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Topologies on linear ordered fields
@@ -68,7 +69,7 @@ theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (
 theorem tendsto_nhdsGT_zero_of_comp_inv_tendsto_atTop {f : 𝕜 → α}
     (h : Tendsto (fun x ↦ f x⁻¹) atTop l) :
     Tendsto f (𝓝[>] 0) l := by
-  convert! h.comp tendsto_inv_nhdsGT_zero
+  convert h.comp tendsto_inv_nhdsGT_zero
   grind [inv_inv]
 
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
@@ -199,7 +200,7 @@ theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 :
 theorem tendsto_nhdsLT_zero_of_comp_inv_tendsto_atBot {f : 𝕜 → α}
     (h : Tendsto (fun x ↦ f x⁻¹) atBot l) :
     Tendsto f (𝓝[<] 0) l := by
-  convert! h.comp tendsto_inv_nhdsLT_zero
+  convert h.comp tendsto_inv_nhdsLT_zero
   grind
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
@@ -239,7 +240,7 @@ theorem bdd_le_mul_tendsto_zero' {f g : α → 𝕜} (C : 𝕜) (hf : ∀ᶠ x i
     (hg : Tendsto g l (𝓝 0)) : Tendsto (fun x ↦ f x * g x) l (𝓝 0) := by
   rw [tendsto_zero_iff_abs_tendsto_zero]
   have hC : Tendsto (fun x ↦ |C * g x|) l (𝓝 0) := by
-    convert! (hg.const_mul C).abs
+    convert (hg.const_mul C).abs
     simp_rw [mul_zero, abs_zero]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds hC
   · filter_upwards [hf] with x _ using abs_nonneg _

@@ -5,9 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Integral
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 public import Mathlib.Topology.Algebra.Group.Extension
+
+import Mathlib.MeasureTheory.Group.Integral
 
 /-!
 # Haar measures on group extensions
@@ -117,7 +118,7 @@ noncomputable def pushforward :
       have h (a) (ha : a ∈ S) : edist (H.pullback f (t * b) a) (H.pullback f b a) ≤ .ofReal δ := by
         rw [edist_dist]
         exact ENNReal.ofReal_le_ofReal (@hf ⟨t * b * φ a, b * φ a⟩ (by simpa)).le
-      grw [Set.mem_setOf_eq, dist_integral_le_lintegral_edist (H.pullback f (t * b)).integrable
+      grw [Set.mem_ofPred_eq, dist_integral_le_lintegral_edist (H.pullback f (t * b)).integrable
         (H.pullback f b).integrable, ← setLIntegral_eq_of_support_subset]
       · refine ENNReal.toReal_lt_of_lt_ofReal ((setLIntegral_mono measurable_const h).trans_lt ?_)
         rwa [lintegral_const, restrict_apply_univ]
@@ -221,13 +222,13 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     grw [← pos_iff_ne_zero, inducedMeasure,
       ← RealRMK.le_rieszMeasure_tsupport_subset (f := ⟨f, hf2⟩) _ hf4 hf3, ENNReal.ofReal_pos]
     suffices (0 : ℝ) < pushforward H μA ⟨f, hf2⟩ (ψ b) from
-      (pushforward H μA ⟨f, hf2⟩).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
+      (pushforward H μA ⟨f, hf2⟩).continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
         (pushforward H μA ⟨f, hf2⟩).hasCompactSupport hf0 this.ne'
     have : (Function.invFun ψ (ψ b))⁻¹ * b ∈ φ.range := by
       simp [← H.mulExact.monoidHom_ker_eq, Function.apply_invFun_apply]
     obtain ⟨a, ha⟩ := this
     replace ha : f (Function.invFun ψ (ψ b) * φ a) ≠ 0 := by simp [ha, hf1 (interior_subset hb)]
-    exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
+    exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
 set_option backward.isDefEq.respectTransparency.types false in

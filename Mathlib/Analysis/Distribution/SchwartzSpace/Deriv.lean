@@ -5,11 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Derivatives of Schwartz functions
@@ -40,7 +38,7 @@ In this file we define the various notions of derivatives of Schwartz functions.
 
 @[expose] public noncomputable section
 
-variable {ι 𝕜 𝕜' D E F V F F₁ F₂ F₃ : Type*}
+variable {ι 𝕜 D E F V F F₁ F₂ F₃ : Type*}
 
 namespace SchwartzMap
 
@@ -137,7 +135,7 @@ theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : �
     rw [iteratedLineDerivOp_succ_left, iteratedFDeriv_succ_apply_left,
       ← fderiv_continuousMultilinear_apply_const_apply]
     · simp only [lineDerivOp_apply_eq_fderiv, ← ih]
-    · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.coe_lt_top n) x
+    · exact (f.smooth ⊤).differentiable_iteratedFDeriv (mod_cast ENat.natCast_lt_top n) x
 
 end fderiv
 
@@ -216,7 +214,7 @@ section integration_by_parts
 
 variable [NormedSpace ℝ E]
 
-open ENNReal MeasureTheory
+open MeasureTheory
 
 section one_dim
 

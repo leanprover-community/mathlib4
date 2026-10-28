@@ -6,8 +6,9 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.RingTheory.Adjoin.Field
+
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # Splitting fields

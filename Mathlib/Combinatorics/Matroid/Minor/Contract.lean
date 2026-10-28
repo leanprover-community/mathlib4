@@ -6,7 +6,8 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Minor.Delete
-public import Mathlib.Tactic.TautoSet
+
+import Mathlib.Tactic.TautoSet
 
 /-!
 # Matroid Contraction
@@ -46,7 +47,7 @@ to refer to the contraction `M ／ {e}` of a single element `e : α` from `M : M
 
 open Set
 
-variable {α : Type*} {M M' N : Matroid α} {e f : α} {I J R D B X Y Z K : Set α}
+variable {α : Type*} {M : Matroid α} {e : α} {I J R D B X Y K : Set α}
 
 namespace Matroid
 

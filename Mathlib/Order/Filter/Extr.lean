@@ -5,11 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.Tendsto
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Tactic.CrossRefAttribute
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a set
@@ -19,59 +18,62 @@ public import Mathlib.Tactic.CrossRefAttribute
 This file defines six predicates of the form `isAB`, where `A` is `Min`, `Max`, or `Extr`,
 and `B` is `Filter` or `On`.
 
-* `isMinFilter f l a` means that `f a ≤ f x` in some `l`-neighborhood of `a`;
-* `isMaxFilter f l a` means that `f x ≤ f a` in some `l`-neighborhood of `a`;
-* `isExtrFilter f l a` means `isMinFilter f l a` or `isMaxFilter f l a`.
+* `IsMinFilter f l a` means that `f a ≤ f x` in some `l`-neighborhood of `a`;
+* `IsMaxFilter f l a` means that `f x ≤ f a` in some `l`-neighborhood of `a`;
+* `IsExtrFilter f l a` means `IsMinFilter f l a` or `IsMaxFilter f l a`.
 
-Similar predicates with `on` suffix are particular cases for `l = 𝓟 s`.
+Similar predicates with `On` suffix are particular cases for `l = 𝓟 s`.
 
 ## Main statements
 
+We list here the statements for `Extr`; analogous statements exist for the min and max predicates.
+For statements without an `Extr` variant we list the min variant.
+
 ### Change of the filter (set) argument
 
-* `is*Filter.filter_mono` : replace the filter with a smaller one;
-* `is*Filter.filter_inf` : replace a filter `l` with `l ⊓ l'`;
-* `is*On.on_subset` : restrict to a smaller set;
-* `is*Pn.inter` : replace a set `s` with `s ∩ t`.
+* `IsExtrFilter.filter_mono`: replace the filter with a smaller one;
+* `IsExtrFilter.filter_inf`: replace a filter `l` with `l ⊓ l'`;
+* `IsExtrOn.of_subset`: restrict to a smaller set;
+* `IsExtrOn.inter`: replace a set `s` with `s ∩ t`.
 
 ### Composition
 
-* `is**.comp_mono` : if `x` is an extremum for `f` and `g` is a monotone function,
-  then `x` is an extremum for `g ∘ f`;
-* `is**.comp_antitone` : similarly for the case of antitone `g`;
-* `is**.bicomp_mono` : if `x` is an extremum of the same type for `f` and `g`
-  and a binary operation `op` is monotone in both arguments, then `x` is an extremum
-  of the same type for `fun x => op (f x) (g x)`.
-* `is*Filter.comp_tendsto` : if `g x` is an extremum for `f` w.r.t. `l'` and `Tendsto g l l'`,
+* `IsExtrFilter.comp_mono`, `IsExtrOn.comp_mono`: if `x` is an extremum for `f` and `g` is a
+  monotone function, then `x` is an extremum for `g ∘ f`.
+* `IsExtrFilter.comp_antitone`, `IsExtrOn.comp_antitone`: similarly for the case of antitone `g`.
+* `IsMinFilter.bicomp_mono`, `IsMinOn.bicomp_mono`: if `x` is an extremum of the same type
+  for `f` and `g` and a binary operation `op` is monotone in both arguments,
+  then `x` is an extremum of the same type for `fun x ↦ op (f x) (g x)`.
+* `IsExtrFilter.comp_of_tendsto`: if `g x` is an extremum for `f` w.r.t. `l'` and `Tendsto g l l'`,
   then `x` is an extremum for `f ∘ g` w.r.t. `l`.
-* `is*On.on_preimage` : if `g x` is an extremum for `f` on `s`, then `x` is an extremum
-  for `f ∘ g` on `g ⁻¹' s`.
+* `IsExtrOn.preimage`: if `g x` is an extremum for `f` on `s`,
+  then `x` is an extremum for `f ∘ g` on `g ⁻¹' s`.
 
 ### Algebraic operations
 
-* `is**.add` : if `x` is an extremum of the same type for two functions,
-  then it is an extremum of the same type for their sum;
-* `is**.neg` : if `x` is an extremum for `f`, then it is an extremum
-  of the opposite type for `-f`;
-* `is**.sub` : if `x` is a minimum for `f` and a maximum for `g`,
-  then it is a minimum for `f - g` and a maximum for `g - f`;
-* `is**.max`, `is**.min`, `is**.sup`, `is**.inf` : similarly for `is**.add`
-  for pointwise `max`, `min`, `sup`, `inf`, respectively.
-
+* `IsMinFilter.add`, `IsMinOn.add`: if `x` is an extremum of the same type for two functions,
+  then it is an extremum of the same type for their sum.
+* `IsExtrFilter.neg`, `IsExtrOn.neg`: if `x` is an extremum for `f`, then it is an extremum
+  of the opposite type for `-f`.
+* `IsMinFilter.sub`, `IsMinOn.sub`: if `x` is a minimum for `f` and a maximum for `g`,
+  then it is a minimum for `f - g` and a maximum for `g - f`.
+* `IsMinOn.max`, `IsMinOn.min`, `IsMinOn.sup`, `IsMinOn.inf`: similarly for `IsMinOn.add`
+  for pointwise `max`, `min`, `sup`, `inf`, respectively. These also have `Filter` variants.
 
 ### Miscellaneous definitions
 
-* `is**_const` : any point is both a minimum and maximum for a constant function;
-* `isMin/Max*.isExt` : any minimum/maximum point is an extremum;
-* `is**.dual`, `is**.undual`: conversion between codomains `α` and `dual α`;
+* `isExtrFilter_const`, `isExtrOn_const`: any point is an extremum for a constant function.
+* `IsMinFilter.isExtrFilter`, `IsMinOn.isExtrOn`: any minimum/maximum point is an extremum.
+* `IsExtrFilter.undual`, `IsExtrFilter.dual`, `IsExtrOn.undual`, `IsExtrOn.dual`:
+  convert between codomains `α` and `αᵒᵈ`.
 
 ## Missing features (TODO)
 
 * Multiplication and division;
-* `is**.bicompl` : if `x` is a minimum for `f`, `y` is a minimum for `g`, and `op` is a monotone
+* `Is**.bicompl`: if `x` is a minimum for `f`, `y` is a minimum for `g`, and `op` is a monotone
   binary operation, then `(x, y)` is a minimum for `uncurry (bicompl op f g)`. From this point
-  of view, `is**.bicomp` is a composition
-* It would be nice to have a tactic that specializes `comp_(anti)mono` or `bicomp_mono`
+  of view, `Is**.bicomp` is a composition
+* It would be nice to have a tactic that specializes `comp_mono`/`comp_antitone`/`bicomp_mono`
   based on a proof of monotonicity of a given (binary) function. The tactic should maintain a `meta`
   list of known (anti)monotone (binary) functions with their names, as well as a list of special
   types of filters, and define the missing lemmas once one of these two lists grows.
@@ -98,7 +100,7 @@ variable (f : α → β) (s : Set α) (l : Filter α) (a : α)
 def IsMinFilter : Prop :=
   ∀ᶠ x in l, f a ≤ f x
 
-/-- `is_maxFilter f l a` means that `f x ≤ f a` for all `x` in some `l`-neighborhood of `a` -/
+/-- `IsMaxFilter f l a` means that `f x ≤ f a` for all `x` in some `l`-neighborhood of `a`. -/
 def IsMaxFilter : Prop :=
   ∀ᶠ x in l, f x ≤ f a
 
@@ -144,7 +146,7 @@ theorem IsMinOn.isGLB (ha : a ∈ s) (hfsa : IsMinOn f s a) :
     IsGLB {f x | x ∈ s} (f a) := by
   rw [isGLB_iff_le_iff]
   intro b
-  simp only [mem_lowerBounds, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  simp only [mem_lowerBounds, mem_ofPred_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   exact ⟨fun hba x hx ↦ le_trans hba (hfsa hx), fun hb ↦ hb a ha⟩
 
 theorem IsMaxOn.isLUB (ha : a ∈ s) (hfsa : IsMaxOn f s a) :
@@ -164,17 +166,25 @@ theorem IsMaxFilter.tendsto_principal_Iic (h : IsMaxFilter f l a) : Tendsto f l 
 /-! ### Conversion to `IsExtr*` -/
 
 
-theorem IsMinFilter.isExtr : IsMinFilter f l a → IsExtrFilter f l a :=
-  Or.inl
+theorem IsMinFilter.isExtrFilter (h : IsMinFilter f l a) :  IsExtrFilter f l a :=
+  Or.inl h
 
-theorem IsMaxFilter.isExtr : IsMaxFilter f l a → IsExtrFilter f l a :=
-  Or.inr
+@[deprecated (since := "2026-07-17")] alias IsMinFilter.isExtr := IsMinFilter.isExtrFilter
 
-theorem IsMinOn.isExtr (h : IsMinOn f s a) : IsExtrOn f s a :=
-  IsMinFilter.isExtr h
+theorem IsMaxFilter.isExtrFilter (h : IsMaxFilter f l a) : IsExtrFilter f l a :=
+  Or.inr h
 
-theorem IsMaxOn.isExtr (h : IsMaxOn f s a) : IsExtrOn f s a :=
-  IsMaxFilter.isExtr h
+@[deprecated (since := "2026-07-17")] alias IsMaxFilter.isExtr := IsMaxFilter.isExtrFilter
+
+theorem IsMinOn.isExtrOn (h : IsMinOn f s a) : IsExtrOn f s a :=
+  IsMinFilter.isExtrFilter h
+
+@[deprecated (since := "2026-07-17")] alias IsMinOn.isExtr := IsMinOn.isExtrOn
+
+theorem IsMaxOn.isExtrOn (h : IsMaxOn f s a) : IsExtrOn f s a :=
+  IsMaxFilter.isExtrFilter h
+
+@[deprecated (since := "2026-07-17")] alias IsMaxOn.isExtr := IsMaxOn.isExtrOn
 
 /-! ### Constant function -/
 
@@ -186,7 +196,7 @@ theorem isMaxFilter_const {b : β} : IsMaxFilter (fun _ => b) l a :=
   univ_mem' fun _ => le_rfl
 
 theorem isExtrFilter_const {b : β} : IsExtrFilter (fun _ => b) l a :=
-  isMinFilter_const.isExtr
+  isMinFilter_const.isExtrFilter
 
 theorem isMinOn_const {b : β} : IsMinOn (fun _ => b) s a :=
   isMinFilter_const
@@ -248,7 +258,7 @@ theorem IsMaxFilter.filter_mono (h : IsMaxFilter f l a) (hl : l' ≤ l) : IsMaxF
   hl h
 
 theorem IsExtrFilter.filter_mono (h : IsExtrFilter f l a) (hl : l' ≤ l) : IsExtrFilter f l' a :=
-  h.elim (fun h => (h.filter_mono hl).isExtr) fun h => (h.filter_mono hl).isExtr
+  h.elim (fun h => (h.filter_mono hl).isExtrFilter) fun h => (h.filter_mono hl).isExtrFilter
 
 theorem IsMinFilter.filter_inf (h : IsMinFilter f l a) (l') : IsMinFilter f (l ⊓ l') a :=
   h.filter_mono inf_le_left
@@ -259,23 +269,29 @@ theorem IsMaxFilter.filter_inf (h : IsMaxFilter f l a) (l') : IsMaxFilter f (l �
 theorem IsExtrFilter.filter_inf (h : IsExtrFilter f l a) (l') : IsExtrFilter f (l ⊓ l') a :=
   h.filter_mono inf_le_left
 
-theorem IsMinOn.on_subset (hf : IsMinOn f t a) (h : s ⊆ t) : IsMinOn f s a :=
+theorem IsMinOn.of_subset (hf : IsMinOn f t a) (h : s ⊆ t) : IsMinOn f s a :=
   hf.filter_mono <| principal_mono.2 h
 
-theorem IsMaxOn.on_subset (hf : IsMaxOn f t a) (h : s ⊆ t) : IsMaxOn f s a :=
+@[deprecated (since := "2026-07-17")] alias IsMinOn.on_subset := IsMinOn.of_subset
+
+theorem IsMaxOn.of_subset (hf : IsMaxOn f t a) (h : s ⊆ t) : IsMaxOn f s a :=
   hf.filter_mono <| principal_mono.2 h
 
-theorem IsExtrOn.on_subset (hf : IsExtrOn f t a) (h : s ⊆ t) : IsExtrOn f s a :=
+@[deprecated (since := "2026-07-17")] alias IsMaxOn.on_subset := IsMaxOn.of_subset
+
+theorem IsExtrOn.of_subset (hf : IsExtrOn f t a) (h : s ⊆ t) : IsExtrOn f s a :=
   hf.filter_mono <| principal_mono.2 h
+
+@[deprecated (since := "2026-07-17")] alias IsExtrOn.on_subset := IsExtrOn.of_subset
 
 theorem IsMinOn.inter (hf : IsMinOn f s a) (t) : IsMinOn f (s ∩ t) a :=
-  hf.on_subset inter_subset_left
+  hf.of_subset inter_subset_left
 
 theorem IsMaxOn.inter (hf : IsMaxOn f s a) (t) : IsMaxOn f (s ∩ t) a :=
-  hf.on_subset inter_subset_left
+  hf.of_subset inter_subset_left
 
 theorem IsExtrOn.inter (hf : IsExtrOn f s a) (t) : IsExtrOn f (s ∩ t) a :=
-  hf.on_subset inter_subset_left
+  hf.of_subset inter_subset_left
 
 /-! ### Composition with (anti)monotone functions -/
 
@@ -290,7 +306,7 @@ theorem IsMaxFilter.comp_mono (hf : IsMaxFilter f l a) {g : β → γ} (hg : Mon
 
 theorem IsExtrFilter.comp_mono (hf : IsExtrFilter f l a) {g : β → γ} (hg : Monotone g) :
     IsExtrFilter (g ∘ f) l a :=
-  hf.elim (fun hf => (hf.comp_mono hg).isExtr) fun hf => (hf.comp_mono hg).isExtr
+  hf.elim (fun hf => (hf.comp_mono hg).isExtrFilter) fun hf => (hf.comp_mono hg).isExtrFilter
 
 theorem IsMinFilter.comp_antitone (hf : IsMinFilter f l a) {g : β → γ} (hg : Antitone g) :
     IsMaxFilter (g ∘ f) l a :=
@@ -352,41 +368,61 @@ theorem IsMaxOn.bicomp_mono [Preorder δ] {op : β → γ → δ}
 /-! ### Composition with `Tendsto` -/
 
 
-theorem IsMinFilter.comp_tendsto {g : δ → α} {l' : Filter δ} {b : δ} (hf : IsMinFilter f l (g b))
+theorem IsMinFilter.comp_of_tendsto {g : δ → α} {l' : Filter δ} {b : δ} (hf : IsMinFilter f l (g b))
     (hg : Tendsto g l' l) : IsMinFilter (f ∘ g) l' b :=
   hg hf
 
-theorem IsMaxFilter.comp_tendsto {g : δ → α} {l' : Filter δ} {b : δ} (hf : IsMaxFilter f l (g b))
+@[deprecated (since := "2026-07-17")] alias IsMinFilter.comp_tendsto := IsMinFilter.comp_of_tendsto
+
+theorem IsMaxFilter.comp_of_tendsto {g : δ → α} {l' : Filter δ} {b : δ} (hf : IsMaxFilter f l (g b))
     (hg : Tendsto g l' l) : IsMaxFilter (f ∘ g) l' b :=
   hg hf
 
-theorem IsExtrFilter.comp_tendsto {g : δ → α} {l' : Filter δ} {b : δ} (hf : IsExtrFilter f l (g b))
-    (hg : Tendsto g l' l) : IsExtrFilter (f ∘ g) l' b :=
-  hf.elim (fun hf => (hf.comp_tendsto hg).isExtr) fun hf => (hf.comp_tendsto hg).isExtr
+@[deprecated (since := "2026-07-17")] alias IsMaxFilter.comp_tendsto := IsMaxFilter.comp_of_tendsto
 
-theorem IsMinOn.on_preimage (g : δ → α) {b : δ} (hf : IsMinOn f s (g b)) :
+theorem IsExtrFilter.comp_of_tendsto {g : δ → α} {l' : Filter δ} {b : δ}
+    (hf : IsExtrFilter f l (g b)) (hg : Tendsto g l' l) : IsExtrFilter (f ∘ g) l' b :=
+  hf.elim (fun hf => (hf.comp_of_tendsto hg).isExtrFilter) fun hf =>
+    (hf.comp_of_tendsto hg).isExtrFilter
+
+@[deprecated (since := "2026-07-17")] alias IsExtrFilter.comp_tendsto :=
+  IsExtrFilter.comp_of_tendsto
+
+theorem IsMinOn.preimage (g : δ → α) {b : δ} (hf : IsMinOn f s (g b)) :
     IsMinOn (f ∘ g) (g ⁻¹' s) b :=
-  hf.comp_tendsto (tendsto_principal_principal.mpr <| Subset.refl _)
+  hf.comp_of_tendsto (tendsto_principal_principal.mpr <| Subset.refl _)
 
-theorem IsMaxOn.on_preimage (g : δ → α) {b : δ} (hf : IsMaxOn f s (g b)) :
+@[deprecated (since := "2026-07-17")] alias IsMinOn.on_preimage := IsMinOn.preimage
+
+theorem IsMaxOn.preimage (g : δ → α) {b : δ} (hf : IsMaxOn f s (g b)) :
     IsMaxOn (f ∘ g) (g ⁻¹' s) b :=
-  hf.comp_tendsto (tendsto_principal_principal.mpr <| Subset.refl _)
+  hf.comp_of_tendsto (tendsto_principal_principal.mpr <| Subset.refl _)
 
-theorem IsExtrOn.on_preimage (g : δ → α) {b : δ} (hf : IsExtrOn f s (g b)) :
+@[deprecated (since := "2026-07-17")] alias IsMaxOn.on_preimage := IsMaxOn.preimage
+
+theorem IsExtrOn.preimage (g : δ → α) {b : δ} (hf : IsExtrOn f s (g b)) :
     IsExtrOn (f ∘ g) (g ⁻¹' s) b :=
-  hf.elim (fun hf => (hf.on_preimage g).isExtr) fun hf => (hf.on_preimage g).isExtr
+  hf.elim (fun hf => (hf.preimage g).isExtrFilter) fun hf => (hf.preimage g).isExtrOn
 
-theorem IsMinOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMinOn f s a) (hg : MapsTo g t s)
-    (ha : g b = a) : IsMinOn (f ∘ g) t b := fun y hy => by
+@[deprecated (since := "2026-07-17")] alias IsExtrOn.on_preimage := IsExtrOn.preimage
+
+theorem IsMinOn.comp_of_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMinOn f s a)
+    (hg : MapsTo g t s) (ha : g b = a) : IsMinOn (f ∘ g) t b := fun y hy => by
   simpa only [ha, (· ∘ ·)] using! hf (hg hy)
 
-theorem IsMaxOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMaxOn f s a) (hg : MapsTo g t s)
-    (ha : g b = a) : IsMaxOn (f ∘ g) t b :=
-  hf.dual.comp_mapsTo hg ha
+@[deprecated (since := "2026-07-17")] alias IsMinOn.comp_mapsTo := IsMinOn.comp_of_mapsTo
 
-theorem IsExtrOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsExtrOn f s a)
+theorem IsMaxOn.comp_of_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMaxOn f s a)
+    (hg : MapsTo g t s) (ha : g b = a) : IsMaxOn (f ∘ g) t b :=
+  hf.dual.comp_of_mapsTo hg ha
+
+@[deprecated (since := "2026-07-17")] alias IsMaxOn.comp_mapsTo := IsMaxOn.comp_of_mapsTo
+
+theorem IsExtrOn.comp_of_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsExtrOn f s a)
     (hg : MapsTo g t s) (ha : g b = a) : IsExtrOn (f ∘ g) t b :=
-  hf.elim (fun h => Or.inl <| h.comp_mapsTo hg ha) fun h => Or.inr <| h.comp_mapsTo hg ha
+  hf.elim (fun h => Or.inl <| h.comp_of_mapsTo hg ha) fun h => Or.inr <| h.comp_of_mapsTo hg ha
+
+@[deprecated (since := "2026-07-17")] alias IsExtrOn.comp_mapsTo := IsExtrOn.comp_of_mapsTo
 
 end Preorder
 
@@ -431,7 +467,7 @@ theorem IsMaxFilter.neg (hf : IsMaxFilter f l a) : IsMinFilter (fun x => -f x) l
   hf.comp_antitone fun _x _y hx => neg_le_neg hx
 
 theorem IsExtrFilter.neg (hf : IsExtrFilter f l a) : IsExtrFilter (fun x => -f x) l a :=
-  hf.elim (fun hf => hf.neg.isExtr) fun hf => hf.neg.isExtr
+  hf.elim (fun hf => hf.neg.isExtrFilter) fun hf => hf.neg.isExtrFilter
 
 theorem IsMinOn.neg (hf : IsMinOn f s a) : IsMaxOn (fun x => -f x) s a :=
   hf.comp_antitone fun _x _y hx => neg_le_neg hx
@@ -440,7 +476,7 @@ theorem IsMaxOn.neg (hf : IsMaxOn f s a) : IsMinOn (fun x => -f x) s a :=
   hf.comp_antitone fun _x _y hx => neg_le_neg hx
 
 theorem IsExtrOn.neg (hf : IsExtrOn f s a) : IsExtrOn (fun x => -f x) s a :=
-  hf.elim (fun hf => hf.neg.isExtr) fun hf => hf.neg.isExtr
+  hf.elim (fun hf => hf.neg.isExtrOn) fun hf => hf.neg.isExtrOn
 
 theorem IsMinFilter.sub (hf : IsMinFilter f l a) (hg : IsMaxFilter g l a) :
     IsMinFilter (fun x => f x - g x) l a := by simpa only [sub_eq_add_neg] using hf.add hg.neg

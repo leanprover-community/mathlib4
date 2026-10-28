@@ -5,8 +5,8 @@ Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 # The symmetric monoidal structure on `Module R`.

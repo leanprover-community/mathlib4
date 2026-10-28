@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Monotone
-public import Mathlib.Order.Interval.Set.Disjoint
 public import Mathlib.Order.SuccPred.Archimedean
+
+import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
 # Monotonicity on intervals
@@ -156,7 +157,7 @@ theorem iUnion_Ioo_of_mono_of_isGLB_of_isLUB (hf : Antitone f) (hg : Monotone g)
   calc
     ⋃ x, Ioo (f x) (g x) = (⋃ x, Ioi (f x)) ∩ ⋃ x, Iio (g x) :=
       iUnion_inter_of_monotone hf.Ioi hg.Iio
-    _ = Ioi a ∩ Iio b := congr_arg₂ (· ∩ ·) ha.iUnion_Ioi_eq hb.iUnion_Iio_eq
+    _ = Ioi a ∩ Iio b := congr($ha.iUnion_Ioi_eq ∩ $hb.iUnion_Iio_eq)
 
 end iUnion
 

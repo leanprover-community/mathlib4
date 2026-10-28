@@ -5,10 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise star operation on sets
@@ -131,3 +131,16 @@ lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
   ext
   simpa using star_mem_iff
+
+namespace Set.Pairwise
+
+@[simp]
+lemma commute_star_iff {α : Type*} [Mul α] [StarMul α] {s : Set α} :
+    (star s).Pairwise Commute ↔ s.Pairwise Commute := by
+  simp only [Set.Pairwise]
+  conv_rhs => simp +singlePass only [star_involutive.surjective.forall]
+  simp
+
+alias ⟨commute_of_star, commute_star⟩ := commute_star_iff
+
+end Set.Pairwise

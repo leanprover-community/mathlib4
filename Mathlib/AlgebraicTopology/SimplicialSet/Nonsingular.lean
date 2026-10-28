@@ -32,7 +32,9 @@ public section
 
 universe u
 
-open CategoryTheory MonoidalCategory Simplicial Opposite
+open CategoryTheory Opposite
+
+open scoped MonoidalCategory Simplicial
 
 namespace SSet
 
@@ -121,7 +123,7 @@ lemma Nonsingular.isIso_toOfSimplex [X.Nonsingular]
   rw [Subcomplex.isIso_toOfSimplex_iff]
   exact Nonsingular.mono' x hx
 
-/-- If `x : X _⦋n⦌` is a nondegenerate simplex of a nonsingular simplcial set,
+/-- If `x : X _⦋n⦌` is a nondegenerate simplex of a nonsingular simplicial set,
 this is the isomorphism `Δ[n] ≅ Subcomplex.ofSimplex x` induced by `x`. -/
 @[expose, simps! hom]
 noncomputable def Nonsingular.iso

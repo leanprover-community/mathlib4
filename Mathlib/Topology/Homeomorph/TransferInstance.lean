@@ -17,7 +17,7 @@ make the equivalence a homeomorphism between the original space and the transpor
 
 @[expose] public section
 
-variable {R α β : Type*}
+variable {α β : Type*}
 
 namespace Equiv
 
@@ -37,7 +37,7 @@ def homeomorph [TopologicalSpace β] (e : α ≃ β) :
     continuous_toFun := continuous_induced_dom
     continuous_invFun := by
       simp only [Equiv.invFun_as_coe]
-      convert! continuous_coinduced_rng
+      convert continuous_coinduced_rng
       rw [e.coinduced_symm]
       rfl }
 

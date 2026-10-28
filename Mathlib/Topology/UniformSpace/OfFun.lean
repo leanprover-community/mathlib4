@@ -39,7 +39,7 @@ def ofFun [AddCommMonoid M] [PartialOrder M]
     { uniformity := ⨅ r > 0, 𝓟 { x | d x.1 x.2 < r }
       refl := le_iInf₂ fun r hr => principal_mono.2 <| by simp [Set.subset_def, *]
       symm := tendsto_iInf_iInf fun r => tendsto_iInf_iInf fun _ => tendsto_principal_principal.2
-        fun x hx => by rwa [mem_setOf, symm]
+        fun x hx => by rwa [mem_ofPred, symm]
       comp := le_iInf₂ fun r hr => let ⟨δ, h0, hδr⟩ := half r hr; le_principal_iff.2 <|
         mem_of_superset
           (mem_lift' <| mem_iInf_of_mem δ <| mem_iInf_of_mem h0 <| mem_principal_self _)

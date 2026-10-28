@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
@@ -18,7 +16,9 @@ in the reals.
 
 public section
 
-open Filter Finset NNReal Topology
+open Filter Finset NNReal
+
+open scoped Topology
 
 variable {α β : Type*} [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 
@@ -28,8 +28,8 @@ theorem cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f 
     (hd : Summable d) : CauchySeq f := by
   lift d to ℕ → ℝ≥0 using fun n ↦ dist_nonneg.trans (hf n)
   apply cauchySeq_of_edist_le_of_summable d (α := α) (f := f)
-  · exact_mod_cast hf
-  · exact_mod_cast hd
+  · exact mod_cast hf
+  · exact mod_cast hd
 
 theorem cauchySeq_of_summable_dist (h : Summable fun n ↦ dist (f n) (f n.succ)) : CauchySeq f :=
   cauchySeq_of_dist_le_of_summable _ (fun _ ↦ le_rfl) h

@@ -19,11 +19,9 @@ We use this to prove some results on scalar multiplication by integers.
 
 assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Field
 
-open Function Set
-
 universe u v
 
-variable {R S M M₂ : Type*}
+variable {R S M : Type*}
 
 section AddCommMonoid
 

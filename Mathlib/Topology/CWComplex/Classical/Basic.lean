@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Hannah Scholz
 module
 
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Util.AliasIn
 
@@ -71,10 +70,10 @@ together.
   below for a restriction on when we want to create aliases.
 * For types and definitions relevant to CW complexes like `cell`, `openCell`, `closedCell`,
   `cellFrontier`, `skeletonLT` and similar, we want there to exist only one actually used version,
-  namely the version in the `RelCWComplex` namespace (and thus no seperate definition in the
+  namely the version in the `RelCWComplex` namespace (and thus no separate definition in the
   `CWComplex` namespace.) This is to avoid unnecessary duplication of lemmas. To achieve this,
   definitions from the `RelCWComplex` namespace should be added to the `CWComplex` namespace with
-  `export` intead of `alias_in`/`alias`. These will then apply to the absolute CW complex through
+  `export` instead of `alias_in`/`alias`. These will then apply to the absolute CW complex through
   the instance `CWComplex.instRelCWComplex`.
 * For statements, the auxiliary construction `skeletonLT` is preferred over `skeleton` as it makes
   the base case of inductions easier. The statement about `skeleton` should then be derived from the
@@ -460,7 +459,7 @@ lemma CWComplex.exists_cellFrontier_one_eq [CWComplex C] (e : cell C 1) :
     exists_prop] at h
   obtain ⟨⟨u, hu, hun1⟩, v, hv, hv1⟩ := h
   use u, v
-  simp [RelCWComplex.cellFrontier_one_eq, image_pair, RelCWComplex.closedCell_zero_eq_singleton,
+  simp [RelCWComplex.cellFrontier_one_eq, RelCWComplex.closedCell_zero_eq_singleton,
     hun1, hv1, pair_comm]
 
 @[alias_in CWComplex]
@@ -496,17 +495,18 @@ private lemma RelCWComplex.iUnion_openCell_eq_iUnion_closedCell [RelCWComplex C 
     rw [← cellFrontier_union_openCell_eq_closedCell]
     apply union_subset
     · induction m using Nat.case_strong_induction_on with
-      | hz => simp [cellFrontier_zero_eq_empty]
-      | hi m hm' =>
+      | zero => simp [cellFrontier_zero_eq_empty]
+      | succ m hm' =>
         obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell (m + 1) j
         apply hI.trans
         apply union_subset subset_union_left
         apply iUnion₂_subset fun l hl ↦ iUnion₂_subset fun i _ ↦ ?_
         rw [← cellFrontier_union_openCell_eq_closedCell]
         apply union_subset
-        · exact (hm' l (Nat.le_of_lt_succ hl) ((ENat.coe_lt_coe.2 hl).trans hm) i)
+        · exact (hm' l (Nat.le_of_lt_succ hl) ((ENat.natCast_lt_natCast.2 hl).trans hm) i)
         · apply subset_union_of_subset_right
-          exact subset_iUnion₂_of_subset l ((ENat.coe_lt_coe.2 hl).trans hm) <| subset_iUnion _ i
+          exact subset_iUnion₂_of_subset l ((ENat.natCast_lt_natCast.2 hl).trans hm) <|
+            subset_iUnion _ i
     · exact subset_union_of_subset_right (subset_iUnion₂_of_subset m hm (subset_iUnion _ j)) _
 
 lemma RelCWComplex.union_iUnion_openCell_eq_complex [RelCWComplex C D] :
@@ -514,7 +514,7 @@ lemma RelCWComplex.union_iUnion_openCell_eq_complex [RelCWComplex C D] :
   suffices D ∪ ⋃ n, ⋃ (j : cell C n), openCell n j =
       D ∪ ⋃ (m : ℕ) (_ : m < (⊤ : ℕ∞)) (j : cell C m), closedCell m j by
     simpa [union] using this
-  simp_rw [← RelCWComplex.iUnion_openCell_eq_iUnion_closedCell, ENat.coe_lt_top, iUnion_true]
+  simp_rw [← RelCWComplex.iUnion_openCell_eq_iUnion_closedCell, ENat.natCast_lt_top, iUnion_true]
 
 lemma CWComplex.iUnion_openCell_eq_complex [CWComplex C] :
     ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
@@ -570,10 +570,10 @@ lemma RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedC
   refine ⟨?_, hDA⟩
   intro n j
   induction n using Nat.case_strong_induction_on with
-  | hz =>
+  | zero =>
     rw [closedCell_zero_eq_singleton]
     exact isClosed_inter_singleton
-  | hi n hn =>
+  | succ n hn =>
     specialize h n.succ n.zero_lt_succ j
     rcases h with h1 | h2
     · rw [← cellFrontier_union_openCell_eq_closedCell, inter_union_distrib_left]
@@ -614,8 +614,8 @@ lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : �
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ D ∪ (⋃ (m < n) (j ∈ I m), openCell m j) := by
   induction n using Nat.case_strong_induction_on with
-  | hz => simp [cellFrontier_zero_eq_empty]
-  | hi n hn =>
+  | zero => simp [cellFrontier_zero_eq_empty]
+  | succ n hn =>
     -- We apply `cellFrontier_subset_base_union_finite_closedCell` once and then apply
     -- the induction hypothesis to the finitely many cells that
     -- `cellFrontier_subset_base_union_finite_closedCell` gives us.
@@ -680,7 +680,7 @@ instance : SetLike (Subcomplex C) X where
     rw [hE, hF]
     simpa using h
 
-instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C) X
+instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C)
 
 initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
 
@@ -1030,7 +1030,7 @@ lemma RelCWComplex.disjoint_skeletonLT_openCell [RelCWComplex C D] {n : ℕ∞} 
   apply disjoint_openCell_of_ne
   intro
   simp_all only [Sigma.mk.inj_iff]
-  exact (lt_self_iff_false m).mp (ENat.coe_lt_coe.1 (hln.trans_le hnm))
+  exact (lt_self_iff_false m).mp (ENat.natCast_lt_natCast.1 (hln.trans_le hnm))
 
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 @[alias_in CWComplex]

@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Chain
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Properties of the `𝔤₂` root system.
@@ -544,7 +542,7 @@ def basis : Module.Basis (Fin 2) R M :=
     refine (IsReduced.linearIndependent_iff P).mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · norm_num [h] at this
     · simp only [root_eq_neg_iff] at h
-      norm_num [h] at this
+      simp [h] at this
   Module.Basis.mk this (by simp)
 
 lemma mem_allRoots (i : ι) :
@@ -564,7 +562,7 @@ lemma mem_allRoots (i : ι) :
     | mem => grind
     | add => simp_all
     | smul => simp_all
-  simpa using LinearMap.congr_fun key (P.root i)
+  simpa using congr($key (P.root i))
 
 open scoped Classical in
 /-- The natural labelling of `RootPairing.EmbeddedG2.allRoots`. -/
@@ -587,7 +585,7 @@ lemma card_index_eq_twelve :
   rw [← this]
   exact Nat.card_congr <| indexEquivAllRoots P
 
-lemma setOf_index_eq_univ :
+lemma setOfPred_index_eq_univ :
     letI _i := P.indexNeg
     { long P, -long P,
       short P, -short P,
@@ -596,6 +594,8 @@ lemma setOf_index_eq_univ :
       threeShortAddLong P, -threeShortAddLong P,
       threeShortAddTwoLong P, -threeShortAddTwoLong P } = univ :=
   eq_univ_iff_forall.mpr fun i ↦ by simpa using mem_allRoots P i
+
+@[deprecated (since := "2026-07-09")] alias setOf_index_eq_univ := setOfPred_index_eq_univ
 
 end IsIrreducible
 

@@ -6,13 +6,12 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 -/
 module
 
-public import Mathlib.Algebra.Module.Opposite
-public import Mathlib.Topology.Algebra.Group.Quotient
-public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Theory of topological modules
@@ -53,6 +52,16 @@ theorem ContinuousNeg.of_continuousConstSMul [ContinuousConstSMul R M] : Continu
 
 end
 
+section Submodule
+
+variable {S R M : Type*} [SetLike S M] [TopologicalSpace M] [SMul R M] [SMulMemClass S R M]
+    [ContinuousConstSMul R M]
+
+instance (s : S) : ContinuousConstSMul R s :=
+  IsInducing.subtypeVal.continuousConstSMul id fun {_} {_} => rfl
+
+end Submodule
+
 section
 
 variable {R : Type*} {M : Type*} [Ring R] [TopologicalSpace R] [TopologicalSpace M]
@@ -66,9 +75,9 @@ theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }
   rcases hs with ⟨y, hy⟩
   refine Submodule.eq_top_iff'.2 fun x => ?_
   rw [mem_interior_iff_mem_nhds] at hy
-  have : Tendsto (fun c : R => y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + (0 : R) • x)) :=
-    tendsto_const_nhds.add ((tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).smul tendsto_const_nhds)
-  rw [zero_smul, add_zero] at this
+  have : Tendsto (fun c : R ↦ y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + 0)) :=
+    tendsto_const_nhds.add ((tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).zero_smul_const _)
+  rw [add_zero] at this
   obtain ⟨_, hu : y + _ • _ ∈ s, u, rfl⟩ :=
     nonempty_of_mem (inter_mem (Filter.mem_map.1 (this hy)) self_mem_nhdsWithin)
   have hy' : y ∈ ↑s := mem_of_mem_nhds hy
@@ -90,8 +99,8 @@ theorem Module.punctured_nhds_neBot [Nontrivial M] [NeBot (𝓝[≠] (0 : R))] [
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   suffices Tendsto (fun c : R => x + c • y) (𝓝[≠] 0) (𝓝[≠] x) from this.neBot
   refine Tendsto.inf ?_ (tendsto_principal_principal.2 <| ?_)
-  · convert! tendsto_const_nhds.add ((@tendsto_id R _).smul_const y)
-    rw [zero_smul, add_zero]
+  · convert! tendsto_const_nhds.add ((@tendsto_id R _).zero_smul_const y)
+    rw [add_zero]
   · intro c hc
     simpa [hy] using hc
 
@@ -130,9 +139,11 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
 
 namespace Submodule
 
-instance topologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+instance isTopologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [TopologicalSpace M] [IsTopologicalAddGroup M] (S : Submodule R M) : IsTopologicalAddGroup S :=
   inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup)
+
+@[deprecated (since := "2026-08-21")] alias topologicalAddGroup := isTopologicalAddGroup
 
 end Submodule
 
@@ -232,7 +243,7 @@ theorem closure_coe_iSup_map_single (s : ∀ i, Submodule R (M i)) :
       Set.univ.pi fun i ↦ closure (s i) := by
   rw [← closure_pi_set]
   refine (closure_mono ?_).antisymm <| closure_minimal ?_ isClosed_closure
-  · exact SetLike.coe_mono <| iSup_map_single_le
+  · exact SetLike.coe_mono iSup_map_single_le
   · simp only [Set.subset_def, mem_closure_iff]
     intro x hx U hU hxU
     rcases isOpen_pi_iff.mp hU x hxU with ⟨t, V, hV, hVU⟩
@@ -289,7 +300,7 @@ closure of the set of linear maps. -/
 def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (Set.range ((↑) : (M₁ →ₛₗ[σ] M₂) → M₁ → M₂))) : M₁ →ₛₗ[σ] M₂ :=
   { addMonoidHomOfMemClosureRangeCoe f hf with
-    map_smul' := (isClosed_setOf_map_smul M₁ M₂ σ).closure_subset_iff.2
+    map_smul' := (isClosed_setOfPred_map_smul M₁ M₂ σ).closure_subset_iff.2
       (Set.range_subset_iff.2 map_smulₛₗ) hf }
 
 /-- Construct a bundled linear map from a pointwise limit of linear maps -/
@@ -327,8 +338,11 @@ theorem isQuotientMap_mkQ : IsQuotientMap S.mkQ := isQuotientMap_quot_mk
 @[continuity, fun_prop]
 theorem continuous_mkQ : Continuous S.mkQ := continuous_quot_mk
 
-instance topologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
+instance isTopologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
   inferInstanceAs <| IsTopologicalAddGroup (M ⧸ S.toAddSubgroup)
+
+@[deprecated (since := "2026-08-21")]
+alias topologicalAddGroup_quotient := isTopologicalAddGroup_quotient
 
 instance continuousSMul_quotient [TopologicalSpace R] [IsTopologicalAddGroup M]
     [ContinuousSMul R M] : ContinuousSMul R (M ⧸ S) where
