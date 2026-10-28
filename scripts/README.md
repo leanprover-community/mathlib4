@@ -261,6 +261,11 @@ to module `Foo.Bar` (no `srcDir` indirection).
   and Zulip notification. Counts are printed to stdout and, if a second argument is given
   (typically `$GITHUB_OUTPUT`), appended there as `changed_files=`, `added=`, `removed=`.
   Usage: `scripts/parse_shake_output.py <shake-output.txt> [$GITHUB_OUTPUT]`
+- `predict_cascade.py` prints the number of Mathlib modules that a change rebuilds: the changed
+  modules and every module that imports one of them. It reads the `import-graph` artifact of a
+  master build and a list of changed files. The `route` job of `build_template.yml` uses the count
+  to pick the runner label of the `build` job.
+  Usage: `scripts/predict_cascade.py <import_graph.dot> <changed_files.txt>`
 
 **Nightly testing**
 - `nightly-testing-checklist.lean` reports and fixes the state of `nightly-testing` branches
