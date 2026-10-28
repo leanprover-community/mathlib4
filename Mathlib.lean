@@ -883,6 +883,7 @@ public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Module.Torsion.Pi
 public import Mathlib.Algebra.Module.Torsion.PrimaryComponent
 public import Mathlib.Algebra.Module.Torsion.Prod
+public import Mathlib.Algebra.Module.Torsion.Structure
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Algebra.Module.ZLattice.Basic
