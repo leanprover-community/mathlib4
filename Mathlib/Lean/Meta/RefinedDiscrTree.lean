@@ -68,7 +68,7 @@ we have an incremental evaluation function of type
 `LazyEntry → MetaM (Option (List (Key × LazyEntry)))`, which computes the next keys
 and lazy entries, or returns `none` if the last key has been reached already.
 
-The `RefinedDiscrTree` then stores these `LazyEntries` at its leafs, and evaluates them
+The `RefinedDiscrTree` then stores these `LazyEntries` at its leaves, and evaluates them
 only if the lookup algorithm reaches this leaf.
 
 

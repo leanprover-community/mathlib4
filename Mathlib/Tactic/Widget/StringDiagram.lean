@@ -7,15 +7,12 @@ module
 
 public meta import Mathlib.Data.List.Defs
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public meta import ProofWidgets.Component.HtmlDisplay
 public meta import ProofWidgets.Component.Panel.Basic
 public meta import ProofWidgets.Component.PenroseDiagram
+public meta import ProofWidgets.Presentation.Expr
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
-public import ProofWidgets.Component.HtmlDisplay
-public import ProofWidgets.Component.PenroseDiagram
-public import ProofWidgets.Presentation.Expr
-
-import ProofWidgets.Component.Panel.Basic
 
 /-!
 # String Diagram Widget
@@ -323,7 +320,7 @@ def mkKind (e : Expr) : MetaM Kind := do
     | none => return .none
 
 /-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
-def stringM? (e : Expr) : MetaM (Option Html) := do
+def stringM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
   let e ← instantiateMVars e
   let k ← mkKind e
   let x : Option (List (List Node) × List (List Strand)) ← (match k with
@@ -349,7 +346,7 @@ def stringM? (e : Expr) : MetaM (Option Html) := do
       | none => return jsx%{<span>No non-structural morphisms found.</span>}
 
 /-- Help function for displaying two string diagrams in an equality. -/
-def mkEqHtml (lhs rhs : Html) : Html :=
+def mkEqHtml (lhs rhs : ProofWidgets.Html) : ProofWidgets.Html :=
   jsx%{<div className="flex">
     <div className="w-50">
       <details open={true}>
@@ -365,7 +362,7 @@ def mkEqHtml (lhs rhs : Html) : Html :=
 
 /-- Given an equality between 2-morphisms, return a string diagram of the LHS and RHS.
 Otherwise `none`. -/
-def stringEqM? (e : Expr) : MetaM (Option Html) := do
+def stringEqM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
   let e ← whnfR <| ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   let some lhs ← stringM? lhs | return none
@@ -374,7 +371,7 @@ def stringEqM? (e : Expr) : MetaM (Option Html) := do
 
 /-- Given an 2-morphism or equality between 2-morphisms, return a string diagram.
 Otherwise `none`. -/
-def stringMorOrEqM? (e : Expr) : MetaM (Option Html) := do
+def stringMorOrEqM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
   forallTelescopeReducing (← whnfR <| ← inferType e) fun xs a => do
     if let some html ← stringM? (mkAppN e xs) then
       return some html
@@ -395,9 +392,9 @@ def stringPresenter : ExprPresenter where
 
 /-- The RPC method for displaying string diagrams. -/
 @[server_rpc_method]
-def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
+def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.Html) :=
   RequestM.asTask do
-    let html : Option Html ← (do
+    let html : Option ProofWidgets.Html ← (do
       if props.goals.isEmpty then
         return none
       let some g := props.goals[0]? | unreachable!
