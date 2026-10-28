@@ -1031,8 +1031,8 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
 
 @[simp]
 theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m]
-    [DecidableEq m] [Algebra R α] : (transposeAlgEquiv m R α : Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ) =
-    transposeRingEquiv m α := rfl
+    [DecidableEq m] [Algebra R α] :
+    transposeAlgEquiv m R α = transposeRingEquiv m α := rfl
 
 end Transpose
 
