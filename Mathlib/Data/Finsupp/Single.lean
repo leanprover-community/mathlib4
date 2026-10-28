@@ -90,8 +90,7 @@ theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
 
 @[simp, grind =]
 theorem single_zero (a : α) : (single a 0 : α →₀ M) = 0 :=
-  DFunLike.coe_injective <| by
-    classical simpa only [single_eq_update, coe_zero] using! Function.update_eq_self a (0 : α → M)
+  DFunLike.coe_injective <| by classical simp [single_eq_update]
 
 theorem single_of_single_apply (a a' : α) (b : M) :
     single a ((single a' b) a) = single a' (single a' b) a := by

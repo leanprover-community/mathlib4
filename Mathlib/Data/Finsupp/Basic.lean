@@ -174,7 +174,7 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
-  ext; simp only [equivMapDomain_apply, coe_zero, Pi.zero_apply]
+  ext; simp
 
 @[to_additive (attr := simp)]
 theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N) :
@@ -273,7 +273,7 @@ lemma mapDomain_apply (f : α → β) (x : α →₀ M) (b : β) :
   · intro b _ hba
     exact single_eq_of_ne' (hf.ne hba)
   · intro _
-    rw [single_zero, coe_zero, Pi.zero_apply]
+    rw [single_zero, zero_apply]
 
 lemma mapDomain_of_notMem_image_support {f : α → β} {x : α →₀ M} {b : β}
     (hb : b ∉ f '' x.support) : mapDomain f x b = 0 := by
@@ -535,7 +535,7 @@ lemma comapDomain_single_of_notMem_range [Zero M] {f : α → β} {b : β} (hb :
     (m : M) (hf) : comapDomain f (single b m) hf = 0 := by
   classical
   ext a
-  simp only [comapDomain, single_apply, coe_mk, coe_zero, Pi.zero_apply, ite_eq_right_iff]
+  simp only [comapDomain, single_apply, coe_mk, zero_apply, ite_eq_right_iff]
   rintro rfl
   simp at hb
 
@@ -846,7 +846,7 @@ def filterAddHom (p : α → Prop) [DecidablePred p] : (α →₀ M) →+ α →
   toFun := filter p
   map_zero' := filter_zero p
   map_add' f g := DFunLike.coe_injective <| by
-    simp_rw [coe_add, filter_eq_indicator]
+    simp_rw [FunLike.coe_add, filter_eq_indicator]
     exact Set.indicator_add { x | p x } f g
 
 @[simp]
@@ -912,7 +912,7 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
       intro f s ih ha
       by_cases h : a ∈ f.support
       · exact ⟨f, Multiset.mem_cons_self _ _, h⟩
-      · simp_rw [Multiset.sum_cons, mem_support_iff, Finsupp.add_apply, notMem_support_iff.1 h,
+      · simp_rw [Multiset.sum_cons, mem_support_iff, add_apply, notMem_support_iff.1 h,
           zero_add] at ha
         rcases ih (mem_support_iff.2 ha) with ⟨f', h₀, h₁⟩
         exact ⟨f', Multiset.mem_cons_of_mem h₀, h₁⟩)
@@ -1154,9 +1154,7 @@ def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃+ (�
   { sumFinsuppEquivProdFinsupp with
     map_add' := by
       intros
-      ext <;>
-        simp only [Equiv.toFun_as_coe, Prod.fst_add, Prod.snd_add, Finsupp.add_apply,
-          snd_sumFinsuppEquivProdFinsupp, fst_sumFinsuppEquivProdFinsupp] }
+      ext <;> simp }
 
 theorem fst_sumFinsuppAddEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (x : α) :
     (sumFinsuppAddEquivProdFinsupp f).1 x = f (Sum.inl x) :=

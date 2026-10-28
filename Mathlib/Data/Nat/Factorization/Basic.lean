@@ -53,7 +53,7 @@ theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨
 theorem factorization_prod_apply {α : Type*} {p : ℕ}
     {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization p = S.sum fun x => (g x).factorization p := by
-  rw [factorization_prod hS, finsetSum_apply]
+  rw [factorization_prod hS, sum_apply]
 
 /-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
 lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → ℕ → β) :
@@ -293,7 +293,7 @@ theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d �
   rw [dvd_iff_le_div_mul n d]
   by_contra h2
   obtain ⟨p, hp⟩ := exists_factorization_lt_of_lt (mul_ne_zero h1 hd) (not_le.mp h2)
-  rwa [factorization_mul h1 hd, Finsupp.add_apply, ← lt_tsub_iff_right, h, tsub_apply,
+  rwa [factorization_mul h1 hd, add_apply, ← lt_tsub_iff_right, h, tsub_apply,
     lt_self_iff_false] at hp
 
 theorem ordProj_dvd_ordProj_of_dvd {a b : ℕ} (hb0 : b ≠ 0) (hab : a ∣ b) (p : ℕ) :

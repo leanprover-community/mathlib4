@@ -43,10 +43,7 @@ def sumFinsuppLEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃ₗ[R]
   { sumFinsuppAddEquivProdFinsupp with
     map_smul' := by
       intros
-      ext <;>
-        simp only [AddEquiv.toFun_eq_coe, Prod.smul_fst, Prod.smul_snd, Finsupp.smul_apply,
-          snd_sumFinsuppAddEquivProdFinsupp, fst_sumFinsuppAddEquivProdFinsupp,
-          RingHom.id_apply] }
+      ext <;> simp }
 
 theorem fst_sumFinsuppLEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (x : α) :
     (sumFinsuppLEquivProdFinsupp R f).1 x = f (Sum.inl x) :=
