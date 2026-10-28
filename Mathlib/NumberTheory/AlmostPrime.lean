@@ -39,13 +39,16 @@ prime factors, counted with multiplicity. The side condition excludes `0`, so `1
 `0`-almost prime. -/
 def IsAlmostPrime (k n : ℕ) : Prop :=
   n ≠ 0 ∧ Ω n = k
+deriving Decidable
 
 /-- `IsAtMostAlmostPrime k n` means that `n` has at most `k` prime factors,
 counted with multiplicity. -/
 def IsAtMostAlmostPrime (k n : ℕ) : Prop :=
   n ≠ 0 ∧ Ω n ≤ k
+deriving Decidable
 
 /-- A semiprime is a `2`-almost-prime number. -/
+@[oeis A001358]
 abbrev IsSemiprime (n : ℕ) : Prop :=
   IsAlmostPrime 2 n
 

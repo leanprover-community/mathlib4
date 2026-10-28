@@ -113,8 +113,6 @@ def map : Chain β where toOrderHom := f.comp c.toOrderHom
 
 @[simp] lemma coe_map : ⇑(c.map f) = f ∘ c := rfl
 
-@[deprecated (since := "2026-03-27")] alias map_coe := coe_map
-
 variable {f}
 
 theorem mem_map (x : α) : x ∈ c → f x ∈ Chain.map c f :=
@@ -145,8 +143,6 @@ def zip (c₀ : Chain α) (c₁ : Chain β) : Chain (α × β) where
   toOrderHom := c₀.toOrderHom.prod c₁.toOrderHom
 
 @[simp] lemma zip_apply (c₀ : Chain α) (c₁ : Chain β) (n : ℕ) : c₀.zip c₁ n = (c₀ n, c₁ n) := rfl
-
-@[deprecated (since := "2026-03-27")] alias zip_coe := zip_apply
 
 /-- An example of a `Chain` constructed from an ordered pair. -/
 def pair (a b : α) (hab : a ≤ b) : Chain α where
@@ -676,7 +672,6 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
   OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
     (fun _ _ h => h) (fun _ => rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 @[fun_prop]
 lemma ωScottContinuous_apply
     {f : α → β →𝒄 γ} (hf : ωScottContinuous f) {g : α → β} (hg : ωScottContinuous g) :
@@ -689,8 +684,8 @@ lemma ωScottContinuous_apply
     apply le_antisymm
     · apply ωSup_le
       intro i
-      dsimp
-      rw [(f (c i)).continuous]
+      simp only [coe_map, OrderHom.apply_coe, OrderHom.coe_mk, Function.comp_apply, toMono_coe,
+        OrderHomClass.coe_coe, (f (c i)).continuous]
       apply ωSup_le
       intro j
       apply le_ωSup_of_le (i ⊔ j)

@@ -80,4 +80,9 @@ lemma IsCover.of_maximal_isSeparated [U.IsRefl] [U.IsSymm]
 
 @[simp] lemma isCover_id : IsCover .id s N ↔ s ⊆ N := by simp [IsCover, subset_def]
 
+lemma isCover_iff_subset_iUnion_ball : U.IsCover s N ↔ s ⊆ ⋃ y ∈ N, U.ball y := by
+  simp [IsCover, subset_def]
+
+alias ⟨IsCover.subset_iUnion_ball, IsCover.of_subset_iUnion_ball⟩ := isCover_iff_subset_iUnion_ball
+
 end SetRel

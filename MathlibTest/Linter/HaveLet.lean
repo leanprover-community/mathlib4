@@ -1,6 +1,8 @@
-import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Linter.HaveLetLinter
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.Linter.HaveLetLinter
+public import Mathlib.Tactic.Tauto
 
 
 -- #adaptation_note

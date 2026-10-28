@@ -84,7 +84,6 @@ def beckAlgebraCofork : Cofork (FreeCoequalizer.topMap X) (FreeCoequalizer.botto
   Cofork.ofπ _ (FreeCoequalizer.condition X)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cofork constructed is a colimit. This shows that any algebra is a (reflexive) coequalizer of
 free algebras.
 -/
