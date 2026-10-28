@@ -186,11 +186,10 @@ theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
   rw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
     C.hom (h'.trans h) = (C.hom h).hom h' := by
   change C.map _ = (C.map _).map _
-  rw [ConnectedComponent.map_comp, induceHom_comp]
+  rw [ConnectedComponent.map_comp]
   rfl
 
 theorem hom_mk {v : V} (vnL : v ∉ L) (h : K ⊆ L) :
@@ -253,7 +252,6 @@ variable (G)
 
 open CategoryTheory
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The functor assigning, to a finite set in `V`, the set of connected components in its complement.
 -/
@@ -266,7 +264,9 @@ def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
     simp [ComponentCompl.hom_refl]
   map_comp {_ Y Z} h h' := by
     ext C
-    simp
+    simp only [TypeCat.hom_ofHom, TypeCat.Fun.toFun_apply, TypeCat.Fun.coe_mk, comp_apply,
+      ConnectedComponent.map_comp]
+    congr!
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=
