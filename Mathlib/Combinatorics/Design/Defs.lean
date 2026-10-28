@@ -103,16 +103,16 @@ def indiscrete (s : Set α) (b : β) : IncidenceSystem α β where
 /-- An incidence system is simple if there are no duplicate blocks. -/
 @[mk_iff]
 class IsSimple (d : IncidenceSystem α β) : Prop where
-  injOn : d.blockSet.InjOn d.block
+  block_injOn_blockSet : d.blockSet.InjOn d.block
 
 theorem isSimple_ofHypergraph (H : Hypergraph α) : (ofHypergraph H).IsSimple where
-  injOn := by simp
+  block_injOn_blockSet := by simp
 
 theorem isSimple_discrete (s : Set α) : (discrete s).IsSimple where
-  injOn := by simp
+  block_injOn_blockSet := by simp
 
 theorem isSimple_indiscrete (s : Set α) (b : β) : (indiscrete s b).IsSimple where
-  injOn := by simp
+  block_injOn_blockSet := by simp
 
 /-- An incidence system is `k`-uniform if every block has size `k`. -/
 @[mk_iff]
