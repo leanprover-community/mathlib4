@@ -6,6 +6,7 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Topology.Path
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Path connectedness
@@ -497,13 +498,6 @@ theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   rintro y rfl
   exact JoinedIn.refl rfl
 
-/-- The range of every path is path-connected. -/
-theorem Path.range_isPathConnected (γ : Path x y) : IsPathConnected (range γ) := by
-  refine ⟨x, γ.source_mem_range, ?_⟩
-  rintro _ ⟨t, rfl⟩
-  refine ⟨(γ.truncateOfLE t.2.1).cast γ.extend_zero.symm (γ.extend_extends' t).symm, ?_⟩
-  exact fun s ↦ γ.truncate_range (mem_range_self s)
-
 theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn F x) :=
   ⟨x, mem_pathComponentIn_self h, fun _ ⟨γ, hγ⟩ ↦ by
     refine ⟨γ, fun t ↦
@@ -634,6 +628,84 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
   joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by fun_prop⟩, by simp, by simp⟩⟩
   nonempty := inferInstance
+
+/-! ### Intervals and order-connected sets -/
+
+section Lattice
+
+variable {α : Type*} [Lattice α] [TopologicalSpace α] [ContinuousInf α] [ContinuousSup α]
+  {a b x y : α}
+
+/-- A path whose endpoints lie in a closed lattice interval can be clamped into that interval. -/
+theorem Joined.joinedIn_Icc (h : Joined x y) (hx : x ∈ Icc a b) (hy : y ∈ Icc a b) :
+    JoinedIn (Icc a b) x y := by
+  let f : α → α := fun z ↦ a ⊔ (b ⊓ z)
+  have hf : Continuous f := continuous_const.sup (continuous_const.inf continuous_id)
+  exact ⟨(h.somePath.map hf).cast (by simp [f, hx.1, hx.2]) (by simp [f, hy.1, hy.2]),
+    fun _ ↦ ⟨le_sup_left, sup_le (hx.1.trans hx.2) inf_le_left⟩⟩
+
+/-- A closed lattice interval is path-connected exactly when its endpoints are ordered
+and joined. -/
+theorem isPathConnected_Icc_iff : IsPathConnected (Icc a b) ↔ a ≤ b ∧ Joined a b := by
+  refine ⟨fun h ↦ ?_, fun ⟨hab, h⟩ ↦ ⟨a, ⟨le_rfl, hab⟩, fun y hy ↦ ?_⟩⟩
+  · have hab := nonempty_Icc.mp h.nonempty
+    exact ⟨hab, (h.joinedIn a ⟨le_rfl, hab⟩ b ⟨hab, le_rfl⟩).joined⟩
+  have h' : Joined (a ⊓ y) (b ⊓ y) := h.map (continuous_id.inf continuous_const)
+  rw [inf_eq_left.mpr hy.1, inf_eq_right.mpr hy.2] at h'
+  exact h'.joinedIn_Icc ⟨le_rfl, hab⟩ hy
+
+/-- Every nonempty closed interval in a path-connected topological lattice is path-connected. -/
+theorem IsPathConnected.Icc [PathConnectedSpace α] (hab : a ≤ b) : IsPathConnected (Set.Icc a b) :=
+  isPathConnected_Icc_iff.mpr ⟨hab, PathConnectedSpace.joined a b⟩
+
+/-- Every nonempty right-open interval in a path-connected topological lattice is path-connected. -/
+theorem IsPathConnected.Ico [PathConnectedSpace α] (hab : a < b) :
+    IsPathConnected (Set.Ico a b) := by
+  refine ⟨a, ⟨le_rfl, hab⟩, fun y hy ↦ ?_⟩
+  exact ((PathConnectedSpace.joined a y).joinedIn_Icc ⟨le_rfl, hy.1⟩ ⟨hy.1, le_rfl⟩).mono
+    fun _ hz ↦ ⟨hz.1, hz.2.trans_lt hy.2⟩
+
+/-- Every nonempty left-open interval in a path-connected topological lattice is path-connected. -/
+theorem IsPathConnected.Ioc [PathConnectedSpace α] (hab : a < b) :
+    IsPathConnected (Set.Ioc a b) := by
+  refine ⟨b, ⟨hab, le_rfl⟩, fun y hy ↦ ?_⟩
+  exact ((PathConnectedSpace.joined b y).joinedIn_Icc ⟨hy.2, le_rfl⟩ ⟨le_rfl, hy.2⟩).mono
+    fun _ hz ↦ ⟨hy.1.trans_le hz.1, hz.2⟩
+
+end Lattice
+
+section LinearOrder
+
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [ContinuousInf α] [ContinuousSup α]
+  {s : Set α} {a b x y : α}
+
+/-- In an order-connected set, any two points joined in the ambient space are joined in the set. -/
+theorem Set.OrdConnected.joinedIn_iff (hs : OrdConnected s) (hx : x ∈ s) (hy : y ∈ s) :
+    JoinedIn s x y ↔ Joined x y := by
+  refine ⟨JoinedIn.joined, fun h ↦ ?_⟩
+  exact (h.joinedIn_Icc left_mem_uIcc right_mem_uIcc).mono (hs.uIcc_subset hx hy)
+
+/-- In a path-connected linear order with continuous infimum and supremum, an order-connected set
+is path-connected exactly when it is nonempty. -/
+theorem Set.OrdConnected.isPathConnected_iff [PathConnectedSpace α] (hs : OrdConnected s) :
+    IsPathConnected s ↔ s.Nonempty := by
+  refine ⟨IsPathConnected.nonempty, fun ⟨x, hx⟩ ↦ ⟨x, hx, fun y hy ↦ ?_⟩⟩
+  exact (hs.joinedIn_iff hx hy).2 (PathConnectedSpace.joined x y)
+
+/-- Every open interval with distinct ordered endpoints in a path-connected densely ordered
+linear order with continuous infimum and supremum is path-connected. -/
+theorem IsPathConnected.Ioo [PathConnectedSpace α] [DenselyOrdered α] (hab : a < b) :
+    IsPathConnected (Set.Ioo a b) :=
+  ordConnected_Ioo.isPathConnected_iff.mpr (nonempty_Ioo.mpr hab)
+
+end LinearOrder
+
+instance unitInterval.instPathConnectedSpace : PathConnectedSpace I :=
+  isPathConnected_iff_pathConnectedSpace.mp (IsPathConnected.Icc (α := ℝ) zero_le_one)
+
+/-- The range of every path is path-connected. -/
+theorem Path.isPathConnected_range (γ : Path x y) : IsPathConnected (range γ) :=
+  _root_.isPathConnected_range γ.continuous
 
 /-! ### Products and pi types -/
 
