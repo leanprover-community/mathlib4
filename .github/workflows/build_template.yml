@@ -71,19 +71,21 @@ jobs:
       large: ${{ steps.route.outputs.large }}
       modules: ${{ steps.route.outputs.modules }}
     steps:
-      - name: Checkout the cascade script
+      - name: Checkout local actions
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          sparse-checkout: scripts/predict_cascade.py
-          sparse-checkout-cone-mode: false
-          path: workflow-scripts
+          sparse-checkout: .github/actions
+          path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Predicts the cascade from the files the change touches and the import graph
-      # of a master build, and picks the pool. Any error picks the caller's pool.
-      # The compare API lists at most 300 files, so a longer list picks the large pool.
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      # `route_build.py` predicts the cascade from the files the change touches and
+      # the import graph of a master build, and picks the pool. Any error picks the
+      # caller's pool.
       - name: Pick the runner pool
         id: route
         env:
@@ -92,106 +94,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           POOL: ${{ inputs.runs_on }}
           LARGE_POOL: ${{ inputs.large_runs_on }}
-        run: |
-          set -uo pipefail
-          large=false
-          modules=""
-          why="no prediction"
-          api() { timeout 30 gh api "$@"; }
-          # Prints the id of the master build of the given commit, if any.
-          run_of() {
-            api "repos/${REPO}/actions/runs?head_sha=$1&event=push&branch=master" \
-              --jq '[.workflow_runs[] | select(.name=="continuous integration")] | .[0].id // empty'
-          }
-          # Prints the download URL of the import graph of the given run, if it has one.
-          graph_of() {
-            api "repos/${REPO}/actions/runs/$1/artifacts?name=import-graph" \
-              --jq '[.artifacts[] | select(.expired | not)] | .[0].archive_download_url // empty'
-          }
-          route() {
-            local compare mb nfiles run graph base since built text ancestors sha
-            compare="$(api "repos/${REPO}/compare/master...${HEAD_SHA}")" || return
-            mb="$(jq -r '.merge_base_commit.sha // empty' <<< "${compare}")" || return
-            nfiles="$(jq '.files | length' <<< "${compare}")" || return
-            if [ "${nfiles}" -ge 300 ]; then
-              large=true
-              why="${nfiles} or more changed files"
-              return
-            fi
-            [ -n "${mb}" ] || return
-            # The import graph comes from the master build of the merge-base. That build
-            # uploads the graph minutes after its build step, and a failed build uploads
-            # none; then the graph comes from the newest earlier master build that has
-            # one. The cache holds the merge-base once its build step has succeeded.
-            # Before that, the diff starts at the earlier build's commit, so it also
-            # counts the master changes after it.
-            run="$(run_of "${mb}")" || return
-            graph=""
-            if [ -n "${run}" ]; then
-              graph="$(graph_of "${run}")" || return
-            fi
-            base="${mb}"
-            since="${mb}"
-            if [ -z "${graph}" ]; then
-              built=""
-              if [ -n "${run}" ]; then
-                built="$(api "repos/${REPO}/actions/runs/${run}/jobs" \
-                          --jq '[.jobs[] | select(.name | endswith("/ Build"))] | .[0].conclusion // empty')" || return
-              fi
-              text="$(api "repos/${REPO}/commits?sha=${mb}&per_page=10" --jq '.[1:][] | .sha')" || return
-              mapfile -t ancestors <<< "${text}"
-              for sha in "${ancestors[@]}"; do
-                [ -n "${sha}" ] || continue
-                run="$(run_of "${sha}")" || return
-                [ -n "${run}" ] || continue
-                graph="$(graph_of "${run}")" || return
-                if [ -n "${graph}" ]; then
-                  base="${sha}"
-                  break
-                fi
-              done
-              if [ -z "${graph}" ]; then
-                echo "No master build with an import graph at or before the merge-base ${mb}."
-                return
-              fi
-              if [ "${built}" != success ]; then
-                since="${base}"
-                compare="$(api "repos/${REPO}/compare/${base}...${HEAD_SHA}")" || return
-                nfiles="$(jq '.files | length' <<< "${compare}")" || return
-                if [ "${nfiles}" -ge 300 ]; then
-                  large=true
-                  why="${nfiles} or more files changed since the master build ${base}"
-                  return
-                fi
-              fi
-            fi
-            jq -r '.files[] | .filename, (.previous_filename // empty)' <<< "${compare}" > changed.txt || return
-            api "${graph}" > import-graph.zip || return
-            unzip -oq import-graph.zip import_graph.dot || return
-            modules="$(python3 workflow-scripts/scripts/predict_cascade.py import_graph.dot changed.txt)" || return
-            if [ "${since}" = "${base}" ]; then
-              why="${modules} Mathlib modules to rebuild since the master build ${base}"
-            else
-              why="${modules} Mathlib modules to rebuild since the merge-base ${mb} (import graph of the master build ${base})"
-            fi
-            if [ "${modules}" -ge 2000 ]; then
-              large=true
-            fi
-          }
-          route
-          if [ "${large}" = true ]; then
-            pool="${LARGE_POOL}"
-          else
-            pool="${POOL}"
-          fi
-          echo "Runner pool: ${pool} (large: ${large}; ${why})"
-          echo "::notice title=Runner pool::${pool} (large: ${large}; ${why})"
-          echo "Runner pool: \`${pool}\` (large: ${large}; ${why})" >> "$GITHUB_STEP_SUMMARY"
-          {
-            echo "pool=${pool}"
-            echo "large=${large}"
-            echo "modules=${modules}"
-          } >> "$GITHUB_OUTPUT"
+        run: python3 "${CI_SCRIPTS_DIR}/route/route_build.py"
 
   build:
     name: Build
