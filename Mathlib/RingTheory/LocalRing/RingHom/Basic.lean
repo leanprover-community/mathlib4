@@ -30,7 +30,7 @@ theorem isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
 -- see note [lower instance priority]
 @[instance 100]
 theorem isLocalHom_toRingHom {F : Type*} [FunLike F R S]
-    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
+    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom f :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
 @[instance]
@@ -157,7 +157,11 @@ namespace RingEquiv
 protected theorem isLocalRing {A B : Type*} [Semiring A] [IsLocalRing A] [Semiring B]
     (e : A ≃+* B) : IsLocalRing B :=
   haveI := e.symm.toEquiv.nontrivial
-  IsLocalRing.of_surjective (e : A →+* B) e.surjective
+  haveI : IsLocalHom e := by infer_instance
+  haveI : IsLocalHom e.toRingHom := by
+    exact this
+
+  IsLocalRing.of_surjective e.toRingHom e.surjective
 
 end RingEquiv
 

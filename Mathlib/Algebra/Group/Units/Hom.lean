@@ -267,7 +267,7 @@ variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
   whenever `f a` is a unit. See `IsLocalRing.local_hom_TFAE` for other equivalent
   definitions in the local ring case - from where this concept originates, but it is useful in
   other contexts, so we allow this generalisation in mathlib. -/
-class IsLocalHom (f : F) : Prop where
+class IsLocalHom (f : R → S) : Prop where
   /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 

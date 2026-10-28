@@ -465,8 +465,7 @@ irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
 
 @[simp]
 theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s) = mkRingHom s := by
-  simp_rw [mkAlgHom_def, mkRingHom_def]
-  rfl
+  simp [mkAlgHom_def]
 
 theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
     mkAlgHom S s x = mkAlgHom S s y := by

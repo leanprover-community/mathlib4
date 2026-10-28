@@ -147,6 +147,10 @@ def toRingHom {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] (e : R ≃
 instance {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] : CoeTC (R ≃+* S) (R →+* S) where
   coe := toRingHom
 
+@[simp]
+theorem toRingHom_apply {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] (e : R ≃+* S)
+    (x : R) : (e : R →+* S) x = e x := rfl
+
 theorem toRingHom_injective {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] :
     Function.Injective (toRingHom : R ≃+* S → R →+* S) := fun _ _ h =>
   RingEquiv.ext (RingHom.ext_iff.1 h)

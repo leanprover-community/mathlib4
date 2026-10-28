@@ -88,7 +88,7 @@ attribute [local instance] RingHomInvPair.of_ringEquiv
 
 set_option backward.isDefEq.respectTransparency.types false in
 private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
-    {M : ModuleCat.{v} R} {N : ModuleCat.{v} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N)
+    {M : ModuleCat.{v} R} {N : ModuleCat.{v} R'} (e : M ≃ₛₗ[eR.toRingHom] N)
     (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
   induction n generalizing M N with
   | zero =>
@@ -107,7 +107,7 @@ private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
     let I : ModuleCat.{v} R :=
       let := Module.compHom I' eR.toRingHom
       ↧I'
-    let eI : I ≃ₛₗ[RingHomClass.toRingHom eR] I' := {
+    let eI : I ≃ₛₗ[eR.toRingHom] I' := {
       __ := AddEquiv.refl I
       map_smul' r i := rfl }
     have : Injective (ModuleCat.of R I) := by
@@ -119,7 +119,7 @@ private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
       ModuleCat.shortComplexOfCompEqZero _ _ f.exact_map_mkQ_range.linearMap_comp_eq_zero
     have exactS := ModuleCat.shortComplex_shortExact S
       f.exact_map_mkQ_range injf (Submodule.mkQ_surjective _)
-    let eCoker : ModuleCat.of R (I ⧸ f.range) ≃ₛₗ[RingHomClass.toRingHom eR]
+    let eCoker : ModuleCat.of R (I ⧸ f.range) ≃ₛₗ[eR.toRingHom]
       ModuleCat.of R' (I' ⧸ f'.hom.range) :=
       Submodule.Quotient.equiv _ _ eI
         (by simp [f, ← Submodule.map_symm_eq_iff eI, LinearMap.range_comp])
@@ -128,7 +128,7 @@ private lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux [Small.{v} R']
 
 attribute [local instance] small_lift in
 lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv [Small.{v'} R']
-    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N)
+    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[eR.toRingHom] N)
     (n : ℕ) : HasInjectiveDimensionLE M n ↔ HasInjectiveDimensionLE N n := by
   let eM : M ≃ₗ[R] ModuleCat.of R (ULift.{v'} M) := ULift.moduleEquiv.symm
   let eN : N ≃ₗ[R'] ModuleCat.of R' (ULift.{v} N) := ULift.moduleEquiv.symm
@@ -137,7 +137,7 @@ lemma hasInjectiveDimensionLE_iff_of_semiLinearEquiv [Small.{v'} R']
   exact hasInjectiveDimensionLE_iff_of_semiLinearEquiv_aux eR ((eM.symm.trans e).trans eN) n
 
 lemma injectiveDimension_eq_of_semiLinearEquiv [Small.{v'} R']
-    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[RingHomClass.toRingHom eR] N) :
+    {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'} (e : M ≃ₛₗ[eR.toRingHom] N) :
     injectiveDimension M = injectiveDimension N := by
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with

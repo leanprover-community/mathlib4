@@ -253,8 +253,8 @@ lemma comul_includeRight [CommSemiring A] [CommSemiring B] [Bialgebra R B] [Alge
     (RingHomClass.toRingHom (Bialgebra.comulAlgHom A (A ⊗[R] B))).comp
       (RingHomClass.toRingHom Algebra.TensorProduct.includeRight) =
       (Algebra.TensorProduct.mapRingHom (algebraMap R A)
-        (RingHomClass.toRingHom (Algebra.TensorProduct.includeRight (A := A)))
-        (RingHomClass.toRingHom (Algebra.TensorProduct.includeRight (A := A)))
+        (Algebra.TensorProduct.includeRight (A := A)).toRingHom
+        (Algebra.TensorProduct.includeRight (A := A)).toRingHom
         (by simp [← IsScalarTower.algebraMap_eq])
         (by simp [← IsScalarTower.algebraMap_eq])).comp
         (RingHomClass.toRingHom (Bialgebra.comulAlgHom R B)) := by
