@@ -259,7 +259,7 @@ theorem multiplicity_map_eq_ramificationIdx_mul [IsDedekindDomain S] [IsDedekind
         Module.length_quotient, IsDiscreteValuationRing.coheight_bot, ENat.toNat_top]
     rw [hq1, hq2, zero_mul]
   · rw [ramificationIdx_eq_multiplicity p q hp]
-    refine multiplicity_map_eq_mul hpq (prime_of_isPrime hq ‹_›) (mapHom (algebraMap R S)) ?_
+    refine multiplicity_map_eq_mul (prime_of_isPrime hq ‹_›) hpq (mapHom (algebraMap R S)) ?_
     simp [dvd_iff_le, map_le_iff_le_comap, hqp]
 
 end IsDedekindDomain
