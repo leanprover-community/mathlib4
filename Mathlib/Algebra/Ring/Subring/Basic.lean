@@ -1130,7 +1130,7 @@ example {R} [Ring R] [Semiring α] [MulSemiringAction R α] (S : Subring R) :
 
 /-- The center of a semiring acts commutatively on any `R`-module -/
 instance {R M : Type*} [Ring R] [MulAction R M] : SMulCommClass R (center R) M where
-  smul_comm x z _ := by rw[smul_def, smul_smul, smul_def, smul_smul, z.prop.comm x]
+  smul_comm x z _ := by rw [smul_def, smul_smul, smul_def, smul_smul, z.prop.comm x]
 
 /-- The center of a semiring acts commutatively on any `R`-module -/
 instance {R M : Type*} [Ring R] [MulAction R M] : SMulCommClass (center R) R M :=
