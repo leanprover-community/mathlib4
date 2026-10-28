@@ -227,12 +227,13 @@ theorem trivializationAt_baseSet (x : M) :
 
 theorem trivializationAt_apply (x : M) (z : TM) :
     trivializationAt E (TangentSpace I) x z =
-      (z.proj, fderivWithin 𝕜 ((chartAt H x).extend I ∘ ((chartAt H z.proj).extend I).symm) (range I)
-        ((chartAt H z.proj).extend I z.proj) z.snd) :=
+      (z.proj, fderivWithin 𝕜 ((chartAt H x).extend I ∘ ((chartAt H z.proj).extend I).symm)
+        (range I) ((chartAt H z.proj).extend I z.proj) z.snd) :=
   rfl
 
 @[simp, mfld_simps]
-theorem trivializationAt_fst (x : M) (z : TM) : (trivializationAt E (TangentSpace I) x z).1 = z.proj :=
+theorem trivializationAt_fst (x : M) (z : TM) :
+    (trivializationAt E (TangentSpace I) x z).1 = z.proj :=
   rfl
 
 @[simp, mfld_simps]
@@ -365,7 +366,8 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
     (chartAt (ModelProd H E) p).toPartialEquiv = (TotalSpace.toProd H E).toPartialEquiv := by
   ext x : 1
   · ext; · rfl
-    exact (tangentBundleCore I H).coordChange_self (achart _ x.proj) x.proj (mem_achart_source H x.proj) x.snd
+    exact (tangentBundleCore I H).coordChange_self (achart _ x.proj) x.proj
+      (mem_achart_source H x.proj) x.snd
   · ext; · rfl
     apply heq_of_eq
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2

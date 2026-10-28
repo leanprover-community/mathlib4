@@ -169,8 +169,10 @@ Any graph containing an `IsFiveWheelLike r k` structure is not `(r + 1)`-colorab
 -/
 lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
   intro ⟨C⟩
-  have h := C.surjOn_of_card_le_isClique hw.isNClique_fst_left.isClique (by simp [hw.isNClique_fst_left.card_eq])
-  have := C.surjOn_of_card_le_isClique hw.isNClique_snd_right.isClique (by simp [hw.isNClique_snd_right.card_eq])
+  have h := C.surjOn_of_card_le_isClique hw.isNClique_fst_left.isClique
+    (by simp [hw.isNClique_fst_left.card_eq])
+  have := C.surjOn_of_card_le_isClique hw.isNClique_snd_right.isClique
+    (by simp [hw.isNClique_snd_right.card_eq])
   -- Since `C` is an `r + 1`-coloring and `insert w₁ s` is an `r + 1`-clique, it contains a vertex
   -- `x` which shares its color with `v`
   obtain ⟨x, hx, hcx⟩ := h (a := C v) trivial
@@ -318,7 +320,8 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
       · exact haj <| hw.isNClique_fst_left.isClique (mem_insert_self ..) (mem_insert_of_mem has) hax
     · by_cases hbx : x = b <;> rintro rfl
       · grind
-      · exact hbj <| hw.isNClique_snd_right.isClique (mem_insert_self ..) (mem_insert_of_mem hbt) hbx
+      · exact hbj <| hw.isNClique_snd_right.isClique (mem_insert_self ..)
+          (mem_insert_of_mem hbt) hbx
   -- Since `x` is not adjacent to `a` and `b` but is adjacent to all but at most two vertices
   -- from `W` we have `∀ w ∈ W, w ≠ a → w ≠ b → G.Adj w x`
   have wa : ∀ ⦃w⦄, w ∈ W → w ≠ a → w ≠ b → G.Adj w x := by

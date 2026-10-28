@@ -147,7 +147,8 @@ theorem isClopen_setOfPred_rel (x : X) : IsClopen (Set.ofPred (S.toSetoid x)) :=
 alias isClopen_setOf_rel := isClopen_setOfPred_rel
 
 instance : Min (DiscreteQuotient X) :=
-  ⟨fun S₁ S₂ => ⟨S₁.toSetoid ⊓ S₂.toSetoid, fun x => (S₁.isOpen_setOfPred_rel x).inter (S₂.isOpen_setOfPred_rel x)⟩⟩
+  ⟨fun S₁ S₂ => ⟨S₁.toSetoid ⊓ S₂.toSetoid,
+    fun x => (S₁.isOpen_setOfPred_rel x).inter (S₂.isOpen_setOfPred_rel x)⟩⟩
 
 instance : PartialOrder (DiscreteQuotient X) :=
   PartialOrder.lift _ toSetoid_injective

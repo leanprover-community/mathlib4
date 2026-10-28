@@ -352,8 +352,10 @@ noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
   · intro U V i
     dsimp
     rw [Category.comp_id]
-    let U' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop U).1.is_open' (unop U).2 :)⟩
-    let V' : OpenNhds x := ⟨_, (specializes_iff_forall_open.mp h _ (unop V).1.is_open' (unop V).2 :)⟩
+    let U' : OpenNhds x :=
+      ⟨_, (specializes_iff_forall_open.mp h _ (unop U).1.is_open' (unop U).2 :)⟩
+    let V' : OpenNhds x :=
+      ⟨_, (specializes_iff_forall_open.mp h _ (unop V).1.is_open' (unop V).2 :)⟩
     exact colimit.w ((OpenNhds.inclusion x).op ⋙ F) (show V' ⟶ U' from i.unop).op
 
 @[reassoc (attr := simp), elementwise nosimp]
@@ -525,8 +527,8 @@ imply surjectivity of the components of a sheaf morphism. However it does imply 
 is an epi, but this fact is not yet formalized.
 -/
 set_option backward.isDefEq.respectTransparency.types false in
-theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X} (f : F.obj ⟶ G)
-    (U : Opens X) (h : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f)) :
+theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X}
+    (f : F.obj ⟶ G) (U : Opens X) (h : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f)) :
     Function.Injective (f.app (op U)) := fun s t hst =>
   section_ext F _ _ _ fun x hx =>
     h x hx <| by rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply, hst]
@@ -557,7 +559,8 @@ theorem stalk_mono_of_mono {F G : Sheaf C X} (f : F ⟶ G) [Mono f] :
   fun x => Functor.map_mono (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) f
 
 include instCC in
-theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.hom] :
+theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G)
+    [∀ x, Mono <| (stalkFunctor C x).map f.hom] :
     Mono f :=
   (Sheaf.Hom.mono_iff_presheaf_mono _ _ _).mpr <|
     (NatTrans.mono_iff_mono_app _).mpr fun U =>

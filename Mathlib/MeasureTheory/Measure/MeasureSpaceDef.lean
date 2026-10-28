@@ -148,7 +148,8 @@ theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :
 theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
   ⟨by rintro rfl s; rfl, fun h ↦ Measure.ext (fun s _ ↦ h s)⟩
 
-theorem outerMeasure_le_iff {m : OuterMeasure α} : m ≤ μ.toOuterMeasure ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
+theorem outerMeasure_le_iff {m : OuterMeasure α} :
+    m ≤ μ.toOuterMeasure ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
   simpa only [μ.trimmed] using! OuterMeasure.le_trim_iff (m₂ := μ.toOuterMeasure)
 
 lemma mono_null ⦃s t : Set α⦄ (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 := measure_mono_null h ht

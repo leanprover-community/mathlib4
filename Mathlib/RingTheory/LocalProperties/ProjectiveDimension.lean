@@ -82,7 +82,8 @@ lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v,
 
 lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : HasProjectiveDimensionLE M n ↔
-    ∀ (m : MaximalSpectrum R), HasProjectiveDimensionLE (M.localizedModule m.asIdeal.primeCompl) n := by
+    ∀ (m : MaximalSpectrum R),
+      HasProjectiveDimensionLE (M.localizedModule m.asIdeal.primeCompl) n := by
   induction n generalizing M with
   | zero =>
     simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]

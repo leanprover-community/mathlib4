@@ -270,13 +270,15 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   rw [Set.not_univ_subset] at h₂ h₃
   have : Nonempty (⟨Sᶜ, hS.isOpen_compl⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
   have : Nonempty (⟨Tᶜ, hT.isOpen_compl⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
-  have : Nonempty (⟨Sᶜ, hS.isOpen_compl⟩ ⊔ ⟨Tᶜ, hT.isOpen_compl⟩ : X.Opens) := ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
+  have : Nonempty (⟨Sᶜ, hS.isOpen_compl⟩ ⊔ ⟨Tᶜ, hT.isOpen_compl⟩ : X.Opens) :=
+    ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
   let e : Γ(X, _) ≅ ↧_ :=
-    (X.sheaf.isProductOfDisjoint ⟨_, hS.isOpen_compl⟩ ⟨_, hT.isOpen_compl⟩ ?_).conePointUniqueUpToIso
-      (CommRingCat.prodFanIsLimit _ _)
+    (X.sheaf.isProductOfDisjoint ⟨_, hS.isOpen_compl⟩ ⟨_, hT.isOpen_compl⟩
+      ?_).conePointUniqueUpToIso (CommRingCat.prodFanIsLimit _ _)
   · have : IsDomain (Γ(X, ⟨Sᶜ, hS.isOpen_compl⟩) × Γ(X, ⟨Tᶜ, hT.isOpen_compl⟩)) :=
       e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
-    exact false_of_nontrivial_of_product_domain Γ(X, ⟨Sᶜ, hS.isOpen_compl⟩) Γ(X, ⟨Tᶜ, hT.isOpen_compl⟩)
+    exact false_of_nontrivial_of_product_domain Γ(X, ⟨Sᶜ, hS.isOpen_compl⟩)
+      Γ(X, ⟨Tᶜ, hT.isOpen_compl⟩)
   · ext x
     constructor
     · rintro ⟨hS, hT⟩

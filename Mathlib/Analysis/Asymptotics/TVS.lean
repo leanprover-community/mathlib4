@@ -395,7 +395,8 @@ theorem isBigOTVS_map {k : β → α} {l : Filter β} :
   simp [isBigOTVS_iff, EventuallyLE]
 
 lemma IsLittleOTVS.mono (hf : f =o[𝕜; l₁] g) (h : l₂ ≤ l₁) : f =o[𝕜; l₂] g :=
-  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.exists_eventuallyLE_mul U hU; ⟨V, hV0, fun ε hε ↦ (hV ε hε).filter_mono h⟩⟩
+  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.exists_eventuallyLE_mul U hU;
+    ⟨V, hV0, fun ε hε ↦ (hV ε hε).filter_mono h⟩⟩
 
 lemma IsBigOTVS.mono (hf : f =O[𝕜; l₁] g) (h : l₂ ≤ l₁) : f =O[𝕜; l₂] g :=
   ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.exists_eventuallyLE U hU; ⟨V, hV0, hV.filter_mono h⟩⟩

@@ -150,7 +150,8 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
           simpa [-Scheme.Hom.comp_base, Scheme.Hom.normalizationCoprodIso,
             reassoc_of% this] using hab
         exact Set.disjoint_iff_forall_ne.mp
-          (isCompl_range_inl_inr V (W.ι ≫ pullback.snd f fT).normalization).disjoint ⟨_, rfl⟩ ⟨_, rfl⟩ hab
+          (isCompl_range_inl_inr V (W.ι ≫ pullback.snd f fT).normalization).disjoint
+            ⟨_, rfl⟩ ⟨_, rfl⟩ hab
       · rw [← Scheme.Hom.inv_image, ← SetLike.coe_subset_coe]
         simpa [← Scheme.Hom.opensRange_comp, ι, e, Scheme.Hom.normalizationCoprodIso,
           Set.range_comp] using Set.subset_preimage_image _ _
@@ -301,7 +302,8 @@ lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
       have : IsAffine _ := hU
       have : IsAffine _ := hV
       isAffineHom_of_isAffine _
-    refine ⟨_, ?_, V.is_open'.isOpenEmbedding_subtypeVal.isOpenMap _ (this (f.resLE U V hVU) inst), ?_⟩
+    refine ⟨_, ?_,
+      V.is_open'.isOpenEmbedding_subtypeVal.isOpenMap _ (this (f.resLE U V hVU) inst), ?_⟩
     · rintro _ ⟨x : V, hx : (f.resLE U V hVU).QuasiFiniteAt _, rfl⟩
       rwa [← quasiFiniteAt_comp_iff (g := U.ι), resLE_comp_ι,
         quasiFiniteAt_comp_iff_of_isOpenImmersion] at hx

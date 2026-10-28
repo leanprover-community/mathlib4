@@ -145,7 +145,8 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
   obtain ⟨Us, hUs, heq⟩ := TopologicalSpace.Opens.isBasis_iff_cover.mp
     (PrespectralSpace.isBasis_opens X) ⟨f ⁻¹' U, hU.preimage hfc⟩
   obtain ⟨t, ht⟩ := by
-    refine hc.elim_finite_subcover (fun s : Us ↦ f '' s.1) (fun s ↦ h _ s.1.is_open') (fun x hx ↦ ?_)
+    refine hc.elim_finite_subcover (fun s : Us ↦ f '' s.1) (fun s ↦ h _ s.1.is_open')
+      (fun x hx ↦ ?_)
     obtain ⟨x, rfl⟩ := hs hx
     obtain ⟨i, hi, hx⟩ := mem_sSup.mp <| by rwa [← heq]
     exact Set.mem_iUnion.mpr ⟨⟨i, hi⟩, x, hx, rfl⟩

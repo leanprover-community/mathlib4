@@ -350,7 +350,8 @@ theorem localization_comap_range [Algebra R S] (M : Submonoid R) [IsLocalization
   refine Set.ext fun x ↦ ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨p, rfl⟩
     exact ((IsLocalization.isPrime_iff_isPrime_disjoint ..).mp p.isPrime).2
-  · use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.isPrime h⟩
+  · use ⟨x.asIdeal.map (algebraMap R S),
+      IsLocalization.isPrime_of_isPrime_disjoint M S _ x.isPrime h⟩
     ext1
     exact IsLocalization.under_map_of_isPrime_disjoint M S x.isPrime h
 
@@ -1232,7 +1233,8 @@ irreducible component is a zero locus of some minimal prime ideal. -/
 protected def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R) :
     I.minimalPrimes ≃o (irreducibleComponents (zeroLocus (I : Set R)))ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ I ≤ p} ≃o zeroLocus (I : Set R) :=
-    ⟨⟨fun x ↦ ⟨⟨x.1, x.2.1⟩, x.2.2⟩, fun x ↦ ⟨x.1.asIdeal, x.1.isPrime, x.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun x ↦ ⟨⟨x.1, x.2.1⟩, x.2.2⟩, fun x ↦ ⟨x.1.asIdeal, x.1.isPrime, x.2⟩,
+      fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
   exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.zeroLocusEquivIrreducibleCloseds (I : Set R)).trans
@@ -1247,7 +1249,8 @@ irreducible component is a zero locus of some minimal prime ideal. -/
 protected def _root_.minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
-    ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.asIdeal, x.isPrime, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
+    ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.asIdeal, x.isPrime, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩,
+      Iff.rfl⟩
   rw [irreducibleComponents_eq_maximals_closed]
   exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans

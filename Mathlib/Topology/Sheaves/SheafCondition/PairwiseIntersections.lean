@@ -327,7 +327,8 @@ theorem interUnionPullbackCone_snd :
 
 variable
   (s :
-    PullbackCone (F.obj.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op) (F.obj.map (homOfLE inf_le_right).op))
+    PullbackCone (F.obj.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op)
+      (F.obj.map (homOfLE inf_le_right).op))
 
 /-- (Implementation).
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.

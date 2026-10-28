@@ -210,7 +210,8 @@ def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R
   f i := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away (s i))))
   idx x := by
     have : ∃ i, s i ∉ x.asIdeal := by
-      by_contra! h; apply x.isPrime.ne_top; rwa [← top_le_iff, ← hs, Ideal.span_le, Set.range_subset_iff]
+      by_contra! h; apply x.isPrime.ne_top; rwa [← top_le_iff, ← hs, Ideal.span_le,
+        Set.range_subset_iff]
     exact this.choose
   covers x := by
     generalize_proofs H

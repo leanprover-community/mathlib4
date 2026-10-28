@@ -143,7 +143,8 @@ lemma inv_mem_units_iff (S : Submonoid M) {x : Mˣ} : x⁻¹ ∈ S.units ↔ x �
 `S` and the type of additive units of `S`. -/]
 def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
   toFun := fun ⟨_, h⟩ => ⟨⟨_, h.1⟩, ⟨_, h.2⟩, S.mk_mul_mk_inv_eq_one h, S.mk_inv_mul_mk_eq_one h⟩
-  invFun := fun x => ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.val.2, x.inv.2⟩⟩
+  invFun := fun x =>
+    ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.val.2, x.inv.2⟩⟩
   map_mul' := fun _ _ => rfl
 
 @[to_additive (attr := simp)]

@@ -472,7 +472,7 @@ theorem coe_vlt_coe_iff {x y : K} :
   Iff.not coe_vle_coe_iff
 
 instance valuativeExtension : ValuativeExtension K (Completion K) where
-  vle_iff_vle _ _ := coe_vle_coe_iff
+  vle_iff_vle := coe_vle_coe_iff
 
 end UniformSpace.Completion
 

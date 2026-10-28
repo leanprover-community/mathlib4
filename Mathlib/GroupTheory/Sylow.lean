@@ -257,7 +257,8 @@ theorem finite_of_ker_is_pGroup {H : Type*} [Group H] {f : H →* G}
     (hf : IsPGroup p f.ker) [Finite (Sylow p G)] : Finite (Sylow p H) :=
   let h_exists := fun P : Sylow p H => P.exists_comap_eq_of_ker_isPGroup hf
   let g : Sylow p H → Sylow p G := fun P => Classical.choose (h_exists P)
-  have hg : ∀ P : Sylow p H, (g P).toSubgroup.comap f = P := fun P => Classical.choose_spec (h_exists P)
+  have hg : ∀ P : Sylow p H, (g P).toSubgroup.comap f = P := fun P =>
+    Classical.choose_spec (h_exists P)
   Finite.of_injective g fun P Q h => ext (by rw [← hg, h]; exact (h_exists Q).choose_spec)
 
 /-- If `f : H →* G` is injective, then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/

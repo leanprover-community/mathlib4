@@ -439,7 +439,8 @@ theorem continuousWithinAt_continuousAlternatingMap_bundle
     ContinuousWithinAt f s x₀ ↔
       ContinuousWithinAt (fun x ↦ (f x).proj) s x₀ ∧
         ContinuousWithinAt
-          (fun x ↦ inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) s x₀ :=
+          (fun x ↦
+            inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) s x₀ :=
   FiberBundle.continuousWithinAt_totalSpace ..
 
 theorem continuousAt_continuousAlternatingMap_bundle
@@ -447,7 +448,8 @@ theorem continuousAt_continuousAlternatingMap_bundle
     ContinuousAt f x₀ ↔
       ContinuousAt (fun x ↦ (f x).proj) x₀ ∧
         ContinuousAt
-          (fun x ↦ inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
+          (fun x ↦
+            inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   FiberBundle.continuousAt_totalSpace ..
 
 end Continuity

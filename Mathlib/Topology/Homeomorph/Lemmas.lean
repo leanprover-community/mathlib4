@@ -547,10 +547,14 @@ lemma isHomeomorph_iff_continuous_bijective [CompactSpace X] [T2Space Y] :
   rw [eq_true hf.isClosedMap, true_and]
 
 lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Sum.map f g) := ⟨hf.continuous.sumMap hg.continuous, hf.isOpenMap.sumMap hg.isOpenMap, hf.bijective.sumMap hg.bijective⟩
+    IsHomeomorph (Sum.map f g) :=
+  ⟨hf.continuous.sumMap hg.continuous, hf.isOpenMap.sumMap hg.isOpenMap,
+    hf.bijective.sumMap hg.bijective⟩
 
 lemma IsHomeomorph.prodMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
-    IsHomeomorph (Prod.map f g) := ⟨hf.continuous.prodMap hg.continuous, hf.isOpenMap.prodMap hg.isOpenMap, hf.bijective.prodMap hg.bijective⟩
+    IsHomeomorph (Prod.map f g) :=
+  ⟨hf.continuous.prodMap hg.continuous, hf.isOpenMap.prodMap hg.isOpenMap,
+    hf.bijective.prodMap hg.bijective⟩
 
 lemma IsHomeomorph.sigmaMap {ι κ : Type*} {X : ι → Type*} {Y : κ → Type*}
     [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)] {f : ι → κ}

@@ -106,7 +106,8 @@ instance instCompleteLattice : CompleteLattice (Closeds α) :=
     ⟨∅, isClosed_empty⟩ (SetLike.coe_injective closure_empty.symm)
     -- sup
     (fun s t => ⟨s ∪ t, s.isClosed'.union t.isClosed'⟩)
-    (funext fun s => funext fun t => SetLike.coe_injective (s.isClosed'.union t.isClosed').closure_eq.symm)
+    (funext fun s => funext fun t =>
+      SetLike.coe_injective (s.isClosed'.union t.isClosed').closure_eq.symm)
     -- inf
     (fun s t => ⟨s ∩ t, s.isClosed'.inter t.isClosed'⟩) rfl
     -- sSup
@@ -276,7 +277,8 @@ variable {α}
 
 lemma Closeds.coe_eq_singleton_of_isAtom [T0Space α] {s : Closeds α} (hs : IsAtom s) :
     ∃ a, (s : Set α) = {a} := by
-  refine minimal_nonempty_closed_eq_singleton s.isClosed' (coe_nonempty.2 hs.1) fun t hts ht ht' ↦ ?_
+  refine minimal_nonempty_closed_eq_singleton s.isClosed' (coe_nonempty.2 hs.1)
+    fun t hts ht ht' ↦ ?_
   lift t to Closeds α using ht'
   exact SetLike.coe_injective.eq_iff.2 <| (hs.le_iff_eq <| coe_nonempty.1 ht).1 hts
 
@@ -514,7 +516,8 @@ to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
 noncomputable
 def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
     IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
-  toFun T := ⟨map f h.continuous T, nonempty_preimage_closure_image h.continuous T T.isIrreducible'.nonempty⟩
+  toFun T := ⟨map f h.continuous T,
+    nonempty_preimage_closure_image h.continuous T T.isIrreducible'.nonempty⟩
   invFun V :=
     { carrier := f ⁻¹' V
       isIrreducible' := ⟨V.2, V.1.isIrreducible'.isPreirreducible.preimage h⟩
@@ -524,7 +527,8 @@ def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
     simp [h.isOpenMap.preimage_closure_image h.injective h.continuous _ V.isClosed]
   right_inv V := by
     ext
-    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.2 V.1.isIrreducible'.2 V.1.isClosed']
+    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.2 V.1.isIrreducible'.2
+      V.1.isClosed']
   map_rel_iff' {a b} := by
     refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
     simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,

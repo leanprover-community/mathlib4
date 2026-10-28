@@ -114,7 +114,8 @@ theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
 theorem to_Iio (hf : IsNormal f) (a : α) :
     IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
   rw [isNormal_iff]
-  refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.mem_lowerBounds_upperBounds_of_isSuccLimit (hb.subtypeVal (.Iio _)) ?_⟩
+  refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦
+    hf.mem_lowerBounds_upperBounds_of_isSuccLimit (hb.subtypeVal (.Iio _)) ?_⟩
   simpa [upperBounds] using! fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
 
 theorem of_dirSupClosed_range [WellFoundedLT β]

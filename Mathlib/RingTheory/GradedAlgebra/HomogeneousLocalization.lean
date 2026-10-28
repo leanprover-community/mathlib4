@@ -696,7 +696,8 @@ abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
   map (.id _) h
 
 lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
-    map g comap_le (mk x) = mk ⟨x.deg, ⟨_, map_mem g x.num.2⟩, ⟨_, map_mem g x.den.2⟩, comap_le x.den_mem⟩ :=
+    map g comap_le (mk x) =
+      mk ⟨x.deg, ⟨_, map_mem g x.num.2⟩, ⟨_, map_mem g x.den.2⟩, comap_le x.den_mem⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in

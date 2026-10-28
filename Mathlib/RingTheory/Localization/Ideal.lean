@@ -242,7 +242,8 @@ prime ideals disjoint from `M`. -/
 @[simps!] def primeSpectrumOrderIso :
     PrimeSpectrum S ≃o {p : PrimeSpectrum R // Disjoint (M : Set R) p.asIdeal} :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime M S).trans
-    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.asIdeal, p.1.isPrime, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.asIdeal, p.1.isPrime, p.2⟩,
+      fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 include M in
 lemma map_radical (I : Ideal R) :

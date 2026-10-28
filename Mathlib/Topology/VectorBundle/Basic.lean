@@ -682,7 +682,8 @@ instance localTriv.isLinear (i : ι) : (Z.localTriv i).IsLinear R where
 variable (i j : ι)
 
 @[simp, mfld_simps]
-theorem mem_localTriv_source (p : Z.TotalSpace) : p ∈ (Z.localTriv i).source ↔ p.proj ∈ Z.baseSet i :=
+theorem mem_localTriv_source (p : Z.TotalSpace) :
+    p ∈ (Z.localTriv i).source ↔ p.proj ∈ Z.baseSet i :=
   Iff.rfl
 
 @[simp, mfld_simps]

@@ -59,13 +59,13 @@ def coroot : M →ₗ[R] R where
   map_add' a b := by
     refine hx.regular.left ?_
     simp only
-    rw [← (hx.dvd_two_mul (a + b)).choose_spec, mul_add, ← (hx.dvd_two_mul a).choose_spec, ← (hx.dvd_two_mul b).choose_spec,
-      map_add, mul_add]
+    rw [← (hx.dvd_two_mul (a + b)).choose_spec, mul_add, ← (hx.dvd_two_mul a).choose_spec,
+      ← (hx.dvd_two_mul b).choose_spec, map_add, mul_add]
   map_smul' r a := by
     refine hx.regular.left ?_
     simp only [RingHom.id_apply]
-    rw [← (hx.dvd_two_mul (r • a)).choose_spec, smul_eq_mul, mul_left_comm, ← (hx.dvd_two_mul a).choose_spec, map_smul,
-      two_mul, smul_eq_mul, two_mul, mul_add]
+    rw [← (hx.dvd_two_mul (r • a)).choose_spec, smul_eq_mul, mul_left_comm,
+      ← (hx.dvd_two_mul a).choose_spec, map_smul, two_mul, smul_eq_mul, two_mul, mul_add]
 
 @[simp]
 lemma apply_self_mul_coroot_apply {y : M} : B x x * coroot B hx y = 2 * B x y :=

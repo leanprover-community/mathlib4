@@ -47,7 +47,8 @@ theorem of_isOpenMap_isQuotientMap (ho : IsOpenMap f) (hq : IsQuotientMap f) :
 
 theorem comp {g : Y → Z} (hg : IsOpenQuotientMap g) (hf : IsOpenQuotientMap f) :
     IsOpenQuotientMap (g ∘ f) :=
-  ⟨.comp hg.surjective hf.surjective, .comp hg.continuous hf.continuous, .comp hg.isOpenMap hf.isOpenMap⟩
+  ⟨.comp hg.surjective hf.surjective, .comp hg.continuous hf.continuous,
+    .comp hg.isOpenMap hf.isOpenMap⟩
 
 theorem of_comp {g : Y → Z} (hf : Continuous f) (f_surj : Surjective f) (hg : Continuous g)
     (h : IsOpenQuotientMap (g ∘ f)) : IsOpenQuotientMap g :=

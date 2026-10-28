@@ -238,7 +238,8 @@ lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
 lemma isInducing (h : X ≃ₜ Y) : IsInducing h :=
   .of_comp h.continuous h.symm.continuous <| by simp only [symm_comp_self, IsInducing.id]
 
-theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› := h.isInducing.eq_induced.symm
+theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
+  h.isInducing.eq_induced.symm
 
 theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
   IsQuotientMap.of_comp h.symm.continuous h.continuous <| by

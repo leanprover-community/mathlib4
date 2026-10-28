@@ -86,7 +86,7 @@ instance : Min (Face C) where
 
 instance : InfSet (Face C) where
   sInf S :=
-    { toSubmodule := C ⊓ sInf {s.toSubmodule | s ∈ S}
+    { toSubmodule := C ⊓ sInf {(s.toSubmodule) | s ∈ S}
       isFaceOf := IsFaceOf.sInf _ (fun F Fs ↦ by obtain ⟨F, Fss, rfl⟩ := Fs; exact F.isFaceOf) }
 
 instance : SemilatticeInf (Face C) where

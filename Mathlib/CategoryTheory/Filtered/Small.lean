@@ -41,8 +41,8 @@ inductive filteredClosure : ObjectProperty C
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
 instance : IsFilteredOrEmpty (filteredClosure f).FullSubcategory where
   cocone_objs j j' :=
-    ⟨⟨max j.obj j'.obj, filteredClosure.max j.property j'.property⟩, ObjectProperty.homMk (leftToMax _ _),
-      ObjectProperty.homMk (rightToMax _ _), trivial⟩
+    ⟨⟨max j.obj j'.obj, filteredClosure.max j.property j'.property⟩,
+      ObjectProperty.homMk (leftToMax _ _), ObjectProperty.homMk (rightToMax _ _), trivial⟩
   cocone_maps {j j'} f f' :=
     ⟨⟨coeq f.hom f'.hom, filteredClosure.coeq j.property j'.property f.hom f'.hom⟩,
       ObjectProperty.homMk (coeqHom f.hom f'.hom),

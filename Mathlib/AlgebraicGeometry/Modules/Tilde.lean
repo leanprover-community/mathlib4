@@ -65,7 +65,8 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
       PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU U.unop.is_open'
     refine ⟨_, hrU, hxr, ?_⟩
     refine Eq.trans ?_ (N.val.map_smul (homOfLE hrU).op t _).symm
-    change N.val.map (homOfLE hrU).op (f.hom.app _ _) = _ • N.val.map (homOfLE hrU).op (f.hom.app _ _)
+    change N.val.map (homOfLE hrU).op (f.hom.app _ _) =
+      _ • N.val.map (homOfLE hrU).op (f.hom.app _ _)
     have (x : _) :
         f.hom.app _ (M.val.map (homOfLE hrU).op _) = N.val.map (homOfLE hrU).op (f.hom.app _ x) :=
       congr($(f.hom.naturality (homOfLE hrU).op).hom x)
@@ -274,7 +275,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec R).Modules) :
           simp only [Submonoid.powers_le, Submonoid.mem_comap, IsUnit.mem_submonoid_iff]
           obtain ⟨n, a, e⟩ : ∃ n, f.unop ∣ g.unop ^ n := by
             simpa only [Ideal.mem_radical_iff, Ideal.mem_span_singleton] using
-              (basicOpen_le_basicOpen_iff _ _).mp (i.unop.hom.le)
+              (basicOpen_le_basicOpen_iff _ _).mp (Opposite.unop i).hom.le
           refine ((Commute.isUnit_mul_iff (b := algebraMap R _ a) (.map (.all _ _) _)).mp ?_).1
           rw [← map_mul, ← e, map_pow]
           exact (M.isUnit_algebraMap_end_of_le_basicOpen g.unop le_rfl).pow n

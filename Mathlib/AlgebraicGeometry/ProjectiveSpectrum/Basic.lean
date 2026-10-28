@@ -258,7 +258,8 @@ def pullbackAwayιIso :
     IsOpenImmersion.isoOfRangeEq (Limits.pullback.fst _ _ ≫ awayι 𝒜 f f_deg hm)
       (awayι 𝒜 x (hx ▸ SetLike.mul_mem_graded f_deg g_deg) (hm.trans_le (m.le_add_right m'))) <| by
   rw [IsOpenImmersion.range_pullback_to_base_of_left]
-  change ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).carrier = (awayι 𝒜 _ _ _).opensRange.carrier
+  change ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).carrier =
+    (awayι 𝒜 _ _ _).opensRange.carrier
   rw [opensRange_awayι, opensRange_awayι, opensRange_awayι, ← basicOpen_mul, hx]
 
 @[reassoc (attr := simp)]

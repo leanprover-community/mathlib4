@@ -349,7 +349,8 @@ private theorem IsLocalization.height_under_eq_of_isPrime (S : Submonoid R) {A :
   have H (p : Ideal R) (hp : p ≤ J.comap (algebraMap R A)) : Disjoint (S : Set R) p :=
     Set.disjoint_of_subset_right hp (e ⟨_, ‹J.IsPrime›⟩).2.2
   exact Order.krullDim_eq_of_orderIso
-    { toFun I := ⟨⟨I.1.asIdeal.comap (algebraMap R A), (e ⟨_, I.1.isPrime⟩).2.1⟩, Ideal.comap_mono I.2⟩
+    { toFun I := ⟨⟨I.1.asIdeal.comap (algebraMap R A), (e ⟨_, I.1.isPrime⟩).2.1⟩,
+        Ideal.comap_mono I.2⟩
       invFun I := ⟨⟨_, (e.symm ⟨_, I.1.isPrime, H _ I.2⟩).2⟩, Ideal.map_le_iff_le_comap.mpr I.2⟩
       left_inv I := Subtype.ext <| PrimeSpectrum.ext_iff.mpr <|
         congrArg (fun I ↦ I.1) (e.left_inv ⟨_, I.1.isPrime⟩)

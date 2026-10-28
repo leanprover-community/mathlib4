@@ -166,7 +166,8 @@ theorem hasStrictFDerivAt (f : E [⋀^ι]→L[𝕜] F) (x : ι → E) :
     HasStrictFDerivAt f (f.toContinuousMultilinearMap.linearDeriv x) x :=
   f.toContinuousMultilinearMap.hasStrictFDerivAt x
 
-theorem hasFDerivAt (f : E [⋀^ι]→L[𝕜] F) (x : ι → E) : HasFDerivAt f (f.toContinuousMultilinearMap.linearDeriv x) x :=
+theorem hasFDerivAt (f : E [⋀^ι]→L[𝕜] F) (x : ι → E) :
+    HasFDerivAt f (f.toContinuousMultilinearMap.linearDeriv x) x :=
   f.toContinuousMultilinearMap.hasFDerivAt x
 
 theorem hasFDerivWithinAt (f : E [⋀^ι]→L[𝕜] F) (s : Set (ι → E)) (x : ι → E) :

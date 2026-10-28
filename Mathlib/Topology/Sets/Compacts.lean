@@ -844,7 +844,9 @@ variable [QuasiSeparatedSpace α]
 
 instance instInf : Min (CompactOpens α) where
   min U V :=
-    ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.toCompacts.carrier V.toCompacts.carrier U.isOpen' U.toCompacts.isCompact' V.isOpen' V.toCompacts.isCompact'⟩, U.isOpen'.inter V.isOpen'⟩
+    ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.toCompacts.carrier V.toCompacts.carrier
+        U.isOpen' U.toCompacts.isCompact' V.isOpen' V.toCompacts.isCompact'⟩,
+      U.isOpen'.inter V.isOpen'⟩
 
 @[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
 

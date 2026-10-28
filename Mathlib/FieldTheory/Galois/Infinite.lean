@@ -75,7 +75,8 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
       contrapose ne
       simpa [ne, AlgEquiv.eq_symm_apply, eq_comm] using
         (mem_fixingSubgroup_iff Gal(K/k)).mp hf y <| adjoin_simple_le_iff.mp le_rfl
-    · simp only [(IntermediateField.fixingSubgroup_isOpen (adjoin k {y}).toIntermediateField).smul σ, true_and]
+    · simp only [(IntermediateField.fixingSubgroup_isOpen
+        (adjoin k {y}).toIntermediateField).smul σ, true_and]
       use 1
       simp only [SetLike.mem_coe, smul_eq_mul, mul_one, and_true, Subgroup.one_mem]
 
@@ -166,7 +167,8 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
     fun x hx ↦ ((mem_fixingSubgroup_iff Gal(K/k)).mp hσ) x hx.1
   rw [restrict_fixedField H.toSubgroup L'.toIntermediateField] at fix
   have : (restrictNormalHom L') σ ∈ (Subgroup.map (restrictNormalHom L') H.toSubgroup) := by
-    rw [← IntermediateField.fixingSubgroup_fixedField (Subgroup.map (restrictNormalHom L') H.toSubgroup)]
+    rw [← IntermediateField.fixingSubgroup_fixedField
+      (Subgroup.map (restrictNormalHom L') H.toSubgroup)]
     apply (mem_fixingSubgroup_iff (L' ≃ₐ[k] L')).mpr
     intro y hy
     apply Subtype.val_injective
@@ -181,7 +183,8 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
     intro y hy
     simp only [AlgEquiv.smul_def, AlgEquiv.mul_apply]
     have : ((restrictNormalHom L') h ⟨y,hy⟩).1 = ((restrictNormalHom L') σ ⟨y,hy⟩).1 := by rw [eq]
-    rw [restrictNormalHom_apply L'.toIntermediateField h ⟨y, hy⟩, restrictNormalHom_apply L'.toIntermediateField σ ⟨y, hy⟩] at this
+    rw [restrictNormalHom_apply L'.toIntermediateField h ⟨y, hy⟩,
+      restrictNormalHom_apply L'.toIntermediateField σ ⟨y, hy⟩] at this
     simp only [this, ← AlgEquiv.mul_apply, inv_mul_cancel, one_apply]
   absurd compl
   apply Set.not_subset.mpr

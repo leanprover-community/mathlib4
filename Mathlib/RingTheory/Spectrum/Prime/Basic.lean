@@ -403,7 +403,8 @@ instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
 /-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
 lemma isMax_iff {x : PrimeSpectrum R} :
     IsMax x ↔ x.asIdeal.IsMaximal := by
-  refine ⟨fun hx ↦ ⟨⟨x.isPrime.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.isPrime.ne_top e).ge⟩
+  refine ⟨fun hx ↦ ⟨⟨x.isPrime.ne_top, fun I hI ↦ ?_⟩⟩,
+    fun hx y e ↦ (hx.eq_of_le y.isPrime.ne_top e).ge⟩
   by_contra e
   obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
   exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')

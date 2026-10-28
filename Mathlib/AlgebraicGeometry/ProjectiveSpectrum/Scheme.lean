@@ -286,7 +286,8 @@ theorem mem_carrier_iff (q : Spec.T A⁰_ f) (a : A) :
 theorem mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
     a ∈ carrier f_deg q ↔
       ∀ i, (Localization.mk (proj 𝒜 i a ^ m) ⟨f ^ i, ⟨i, rfl⟩⟩ : Localization.Away f) ∈
-          algebraMap (HomogeneousLocalization.Away 𝒜 f) (Localization.Away f) '' { s | s ∈ q.asIdeal } :=
+          algebraMap (HomogeneousLocalization.Away 𝒜 f) (Localization.Away f) ''
+            { s | s ∈ q.asIdeal } :=
   (mem_carrier_iff f_deg q a).trans
     (by
       constructor <;> intro h i <;> specialize h i
@@ -620,7 +621,8 @@ lemma awayToSection_germ (f x hx) :
 set_option backward.isDefEq.respectTransparency.types false in
 lemma awayToSection_apply (f : A) (x p) :
     (((ProjectiveSpectrum.Proj.awayToSection 𝒜 f).hom' x).val p).val =
-      IsLocalization.map (M := Submonoid.powers f) (T := p.1.asHomogeneousIdeal.toIdeal.primeCompl) _
+      IsLocalization.map (M := Submonoid.powers f)
+        (T := p.1.asHomogeneousIdeal.toIdeal.primeCompl) _
         (RingHom.id _) (Submonoid.powers_le.mpr p.2) x.val := by
   obtain ⟨x, rfl⟩ := HomogeneousLocalization.mk_surjective x
   change (HomogeneousLocalization.mapId 𝒜 _ _).val = _
@@ -750,7 +752,8 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
         ⟨f ^ i, SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
       ⟨HomogeneousLocalization.mk ⟨i * m, ⟨b ^ m, mul_comm m i ▸ SetLike.pow_mem_graded _ hb⟩,
         ⟨f ^ i, SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
-        (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem hb' m⟩⟩,
+        (mk_mem_toSpec_base_apply _ _ _).not.mpr <|
+          x.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem hb' m⟩⟩,
         val_injective _ ?_⟩
     · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb)
       rw [← succ_nsmul', tsub_add_cancel_of_le (by lia), mul_comm, smul_eq_mul]
@@ -765,7 +768,8 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
       apply_fun HomogeneousLocalization.val at e
       simp only [RingHom.algebraMap_toAlgebra, map_mk, GradedRingHom.id_apply, val_mk, mk_eq_mk',
         IsLocalization.mk'_eq_iff_eq] at e
-      obtain ⟨⟨c, hcx⟩, hc⟩ := IsLocalization.exists_of_eq (M := x.1.asHomogeneousIdeal.toIdeal.primeCompl) e
+      obtain ⟨⟨c, hcx⟩, hc⟩ :=
+        IsLocalization.exists_of_eq (M := x.1.asHomogeneousIdeal.toIdeal.primeCompl) e
       obtain ⟨i, hi⟩ := not_forall.mp ((x.1.asHomogeneousIdeal.isHomogeneous.mem_iff _).not.mp hcx)
       refine ⟨i, _, (decompose 𝒜 c i).2, hi, ?_⟩
       apply_fun fun x ↦ (decompose 𝒜 x (i + z.deg + y.deg)).1 at hc
@@ -776,7 +780,8 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
       exacts [y.den.2, z.num.2, z.den.2, y.num.2]
     refine ⟨⟨HomogeneousLocalization.mk ⟨m * i, ⟨c ^ m, SetLike.pow_mem_graded _ hc⟩,
       ⟨f ^ i, mul_comm m i ▸ SetLike.pow_mem_graded _ f_deg⟩, ⟨_, rfl⟩⟩,
-      (mk_mem_toSpec_base_apply _ _ _).not.mpr <| x.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem hc' _⟩,
+      (mk_mem_toSpec_base_apply _ _ _).not.mpr <|
+        x.1.asHomogeneousIdeal.toIdeal.primeCompl.pow_mem hc' _⟩,
       val_injective _ ?_⟩
     simp only [val_mul, val_mk, mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk,
       IsLocalization.mk'_eq_iff_eq, mul_assoc]
@@ -856,11 +861,13 @@ def «Proj» : Scheme where
   __ := Proj.toLocallyRingedSpace 𝒜
   local_affine (x : Proj.T) := by
     classical
-    obtain ⟨f, m, f_deg, hm, hx⟩ : ∃ (f : A) (m : ℕ) (_ : f ∈ 𝒜 m) (_ : 0 < m), f ∉ x.asHomogeneousIdeal := by
+    obtain ⟨f, m, f_deg, hm, hx⟩ :
+        ∃ (f : A) (m : ℕ) (_ : f ∈ 𝒜 m) (_ : 0 < m), f ∉ x.asHomogeneousIdeal := by
       by_contra!
       refine x.not_irrelevant_le fun z hz ↦ ?_
       rw [← DirectSum.sum_support_decompose 𝒜 z]
-      exact x.asHomogeneousIdeal.toIdeal.sum_mem fun k hk ↦ this _ k (SetLike.coe_mem _) <| by_contra <| by aesop
+      exact x.asHomogeneousIdeal.toIdeal.sum_mem fun k hk ↦
+        this _ k (SetLike.coe_mem _) <| by_contra <| by aesop
     exact ⟨⟨pbo f, hx⟩, ↧(A⁰_ f), ⟨projIsoSpec 𝒜 f f_deg hm⟩⟩
 
 

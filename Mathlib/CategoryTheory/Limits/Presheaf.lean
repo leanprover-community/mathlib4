@@ -600,10 +600,12 @@ lemma hom_ext {Φ : uliftYoneda.{max w v₂}.LeftExtension (F ⋙ uliftYoneda.{m
   apply (colimitOfRepresentable.{max w v₂} P).hom_ext
   intro x
   have eq := F.op.lanUnit.naturality (uliftYonedaEquiv.{max w v₂}.symm x.unop.val)
-  have eq₁ := congr_hom (CC := fun X ↦ X) (congr_app (congr_app (StructuredArrow.w f) x.unop.obj.unop)
-    (F.op.obj x.unop.obj)) (ULift.up (𝟙 _))
-  have eq₂ := congr_hom (CC := fun X ↦ X) (congr_app (congr_app (StructuredArrow.w g) x.unop.obj.unop)
-    (F.op.obj x.unop.obj)) (ULift.up (𝟙 _))
+  have eq₁ := congr_hom (CC := fun X ↦ X)
+    (congr_app (congr_app (StructuredArrow.w f) x.unop.obj.unop) (F.op.obj x.unop.obj))
+    (ULift.up (𝟙 _))
+  have eq₂ := congr_hom (CC := fun X ↦ X)
+    (congr_app (congr_app (StructuredArrow.w g) x.unop.obj.unop) (F.op.obj x.unop.obj))
+    (ULift.up (𝟙 _))
   dsimp at eq₁ eq₂ eq ⊢
   simp only [reassoc_of% eq, ← Functor.whiskerLeft_comp]
   congr 2

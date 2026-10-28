@@ -287,7 +287,8 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
         exact Or.inl ⟨l0, le_antisymm (balancedSz_zero.1 this) rl0, rr0.symm ▸ zero_le_one⟩
       exact Or.inl ⟨l0, le_antisymm (ablem rr0 <| by rwa [add_comm]) rl0, ablem rl0 H3⟩
     exact
-      Or.inr ⟨l0, not_lt.1 h, H2, Valid'.rotateL_lemma₄ (H3p l0), (hr.bal.1.resolve_left (hlp l0)).1⟩
+      Or.inr ⟨l0, not_lt.1 h, H2, Valid'.rotateL_lemma₄ (H3p l0),
+        (hr.bal.1.resolve_left (hlp l0)).1⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Valid'.rotateR {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
@@ -454,7 +455,8 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
     suffices H₁ : _ by
       refine ⟨Valid'.balanceL_aux v hr.right H₁ H₂ ?_, ?_⟩
       · rw [e]; exact Or.inl (Valid'.merge_lemma h hr₁)
-      · rw [balanceL_eq_balance v.sz hr.sz.2.2 H₁ H₂, balance_eq_balance' v.bal hr.bal.2.2 v.sz hr.sz.2.2,
+      · rw [balanceL_eq_balance v.sz hr.sz.2.2 H₁ H₂,
+          balance_eq_balance' v.bal hr.bal.2.2 v.sz hr.sz.2.2,
           size_balance' v.sz hr.sz.2.2, e, hl.sz.1, hr.sz.1]
         abel
     rw [e, add_right_comm]; rintro ⟨⟩

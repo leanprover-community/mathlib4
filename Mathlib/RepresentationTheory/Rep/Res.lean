@@ -73,7 +73,9 @@ instance : (resFunctor (k := k) f).Faithful where
 /-- Morphism between `X Y : Rep k G` can be lifted from restrictions associated with `f : H →* G`
   when `f` is surjective. -/
 abbrev liftHomOfSurj {X Y : Rep k G} (hf : Function.Surjective f) (f' : res f X ⟶ res f Y) :
-    X ⟶ Y := ofHom ⟨f'.hom.toLinearMap, fun g ↦ by obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.isIntertwining' h⟩
+    X ⟶ Y :=
+  ofHom ⟨f'.hom.toLinearMap, fun g ↦ by
+    obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.isIntertwining' h⟩
 
 @[simp]
 lemma liftHomOfSurj_toLinearMap {X Y : Rep k G} (hf : Function.Surjective f)

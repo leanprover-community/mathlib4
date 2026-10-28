@@ -363,8 +363,9 @@ def pullbackObjIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.
     (pullback C f).obj ℱ ≅ hf.functor.op ⋙ ℱ :=
   NatIso.ofComponents
     (fun U ↦ pullbackObjObjOfImageOpen f ℱ U.unop (hf (unop U).carrier (unop U).is_open'))
-    (fun {U V} i ↦ (pullbackObjObjOfImageOpen_hom_naturality f ℱ (hf (unop V).carrier (unop V).is_open')
-      (hf (unop U).carrier (unop U).is_open') (leOfHom i.unop)))
+    (fun {U V} i ↦ (pullbackObjObjOfImageOpen_hom_naturality f ℱ
+      (hf (unop V).carrier (unop V).is_open') (hf (unop U).carrier (unop U).is_open')
+      (leOfHom i.unop)))
 
 set_option backward.isDefEq.respectTransparency false in
 /--

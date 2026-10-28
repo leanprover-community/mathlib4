@@ -75,7 +75,8 @@ theorem MulAction.isTopologicallyTransitive_iff_dense_iUnion_preimage :
     IsTopologicallyTransitive M α ↔
     ∀ {U : Set α}, IsOpen U → U.Nonempty → Dense (⋃ m : M, (m • ·) ⁻¹' U) := by
   simp only [dense_iff_inter_open, inter_iUnion, nonempty_iUnion, ← image_inter_nonempty_iff]
-  exact ⟨fun h _ h₁ h₂ _ h₃ h₄ ↦ h.exists_smul_inter h₃ h₄ h₁ h₂, fun h ↦ ⟨fun h₁ h₂ h₃ h₄ ↦ h h₃ h₄ _ h₁ h₂⟩⟩
+  exact ⟨fun h _ h₁ h₂ _ h₃ h₄ ↦ h.exists_smul_inter h₃ h₄ h₁ h₂,
+    fun h ↦ ⟨fun h₁ h₂ h₃ h₄ ↦ h h₃ h₄ _ h₁ h₂⟩⟩
 
 @[to_additive]
 theorem IsOpen.dense_iUnion_smul [h : IsTopologicallyTransitive M α] {U : Set α}
@@ -107,7 +108,8 @@ theorem MulAction.isTopologicallyTransitive_iff_dense_of_preimage_invariant
     ∀ {U : Set α}, IsOpen U → U.Nonempty → (∀ m : M, (m • ·) ⁻¹' U ⊆ U) → Dense U := by
   refine ⟨fun _ _ h₀ h₁ h₂ ↦ h₀.dense_of_preimage_smul_invariant M h₁ h₂, fun h₄ ↦ ?_⟩
   refine (isTopologicallyTransitive_iff_dense_iUnion_preimage M).mpr ?_
-  refine fun hU _ ↦ h₄ (isOpen_iUnion fun a ↦ hU.preimage (h.continuous_const_smul a)) ?_ fun b _ ↦ ?_
+  refine fun hU _ ↦ h₄ (isOpen_iUnion fun a ↦ hU.preimage (h.continuous_const_smul a)) ?_
+    fun b _ ↦ ?_
   · exact nonempty_iUnion.mpr ⟨1, by simpa only [one_smul]⟩
   · simp only [preimage_iUnion, mem_iUnion, mem_preimage, smul_smul, forall_exists_index]
     exact fun c hc ↦ ⟨c * b, hc⟩

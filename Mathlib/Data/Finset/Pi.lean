@@ -53,7 +53,8 @@ def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :
   ⟨s.val.pi fun a => (t a).val, s.nodup.pi fun a _ => (t a).nodup⟩
 
 @[simp]
-theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).val = s.val.pi fun a => (t a).val :=
+theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) :
+    (s.pi t).val = s.val.pi fun a => (t a).val :=
   rfl
 
 @[simp, grind =]

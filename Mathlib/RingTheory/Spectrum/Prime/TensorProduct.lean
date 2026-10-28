@@ -56,7 +56,8 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks_aux
   replace h₃ : t ∉ p₁.asIdeal.comap g := by
     rwa [show p₁.asIdeal.comap g = p₂.asIdeal.comap g from congr($h.2.asIdeal)]
   replace h₄ : a ∉ p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) := by
-    rwa [show p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) = p₂.asIdeal.comap _ from congr($h.1.asIdeal)]
+    rwa [show p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) = p₂.asIdeal.comap _ from
+      congr($h.1.asIdeal)]
   exact p₁.asIdeal.primeCompl.mul_mem h₄ h₃ h₁
 
 lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :

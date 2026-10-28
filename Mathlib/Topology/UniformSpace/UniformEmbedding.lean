@@ -77,7 +77,8 @@ theorem IsUniformInducing.cauchy_map_iff {f : α → β} (hf : IsUniformInducing
 theorem IsUniformInducing.of_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f)
     (hg : UniformContinuous g) (hgf : IsUniformInducing (g ∘ f)) : IsUniformInducing f := by
   refine ⟨le_antisymm ?_ hf.le_comap⟩
-  rw [← hgf.comap_uniformity, ← Prod.map_def, ← Prod.map_def, ← Prod.map_comp_map f f g g, ← comap_comap]
+  rw [← hgf.comap_uniformity, ← Prod.map_def, ← Prod.map_def, ← Prod.map_comp_map f f g g,
+    ← comap_comap]
   exact comap_mono hg.le_comap
 
 theorem IsUniformInducing.uniformContinuous {f : α → β} (hf : IsUniformInducing f) :
@@ -101,7 +102,8 @@ theorem IsUniformInducing.isInducing {f : α → β} (h : IsUniformInducing f) :
 theorem IsUniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformInducing e₁) (h₂ : IsUniformInducing e₂) :
     IsUniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  ⟨by simp [Function.comp_def, uniformity_prod, ← h₁.comap_uniformity, ← h₂.comap_uniformity, comap_inf, comap_comap]⟩
+  ⟨by simp [Function.comp_def, uniformity_prod, ← h₁.comap_uniformity, ← h₂.comap_uniformity,
+    comap_inf, comap_comap]⟩
 
 lemma IsUniformInducing.isDenseInducing (h : IsUniformInducing f) (hd : DenseRange f) :
     IsDenseInducing f where

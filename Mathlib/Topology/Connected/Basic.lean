@@ -810,6 +810,7 @@ theorem isPreconnected_iff_preconnectedSpace {s : Set α} : IsPreconnected s ↔
 
 theorem isConnected_iff_connectedSpace {s : Set α} : IsConnected s ↔ ConnectedSpace s :=
   ⟨Subtype.connectedSpace, fun h =>
-    ⟨nonempty_subtype.mp h.toNonempty, isPreconnected_iff_preconnectedSpace.mpr h.toPreconnectedSpace⟩⟩
+    ⟨nonempty_subtype.mp h.toNonempty,
+      isPreconnected_iff_preconnectedSpace.mpr h.toPreconnectedSpace⟩⟩
 
 end Preconnected

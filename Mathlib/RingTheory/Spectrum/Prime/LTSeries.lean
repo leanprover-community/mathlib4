@@ -36,7 +36,8 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
   · exact ⟨p₁, h₀.le hn, h₀, h₁⟩
   let e := p₀.asIdeal.primeSpectrumQuotientOrderIsoZeroLocus.symm
   obtain ⟨q, hq⟩ := (p₀.asIdeal + span {x}).nonempty_minimalPrimes <|
-    sup_le (IsLocalRing.le_maximalIdeal_of_isPrime p₀.asIdeal) ((span_singleton_le_iff_mem 𝔪).mpr hx)
+    sup_le (IsLocalRing.le_maximalIdeal_of_isPrime p₀.asIdeal)
+      ((span_singleton_le_iff_mem 𝔪).mpr hx)
       |>.trans_lt (IsMaximal.isPrime' 𝔪).ne_top'.lt_top |>.ne
   let q : PrimeSpectrum R := ⟨q, hq.1.1⟩
   have : q.asIdeal.IsPrime := q.isPrime
@@ -48,7 +49,8 @@ theorem exist_mem_one_of_mem_maximal_ideal [IsLocalRing R] {p₁ p₀ : PrimeSpe
   simp_rw [show q = closedPoint R from PrimeSpectrum.ext hqm] at h
   have hph : (e ⟨p₁, h₀.le⟩).asIdeal.height ≤ 0 :=
     Order.lt_one_iff_nonpos.mp (height_le_iff.mp h _ inferInstance (by simpa using h₁))
-  refine not_lt_zero (a := (e ⟨p₀, le_refl p₀⟩).asIdeal.height) (height_le_iff.mp hph _ inferInstance ?_)
+  refine not_lt_zero (a := (e ⟨p₀, le_refl p₀⟩).asIdeal.height)
+    (height_le_iff.mp hph _ inferInstance ?_)
   simpa using h₀
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -94,7 +96,8 @@ theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
       rw [Fin.last, hp, h0, zero_add]
       exact Fin.natCast_eq_mk (Nat.one_lt_succ_succ 0)
     simpa [h1, hp] using! hx
-  obtain ⟨q, hxq, h2, hq⟩ : ∃ q : PrimeSpectrum R, x ∈ q.asIdeal ∧ p ⟨p.length - 2, _⟩ < q ∧ q < p.last :=
+  obtain ⟨q, hxq, h2, hq⟩ :
+      ∃ q : PrimeSpectrum R, x ∈ q.asIdeal ∧ p ⟨p.length - 2, _⟩ < q ∧ q < p.last :=
     (p ⟨p.length - 1, p.length.sub_lt_succ 1⟩).exist_mem_one_of_mem_two
       (p.strictMono (Nat.pred_lt (by simpa [hp]))) (p.strictMono (Nat.pred_lt (by simp [hp]))) hx
   obtain ⟨Q, hx, hQ, hh, hl⟩ := hn (p.eraseLast.eraseLast.snoc q h2) (by simpa using! hxq) <| by

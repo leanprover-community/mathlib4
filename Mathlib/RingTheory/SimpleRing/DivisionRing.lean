@@ -44,8 +44,9 @@ lemma DivisionRing.nonempty_linearEquiv_of_isSimpleModule (N : Type*) [AddCommGr
 lemma isSimpleModule_iff_eq_zero_or_injective (R : Type u) (M : Type v) [Ring R] [AddCommGroup M]
     [Module R M] : IsSimpleModule R M ↔ (Nontrivial M ∧ ∀ (N : Type v) [AddCommGroup N]
     [Module R N] (f : M →ₗ[R] N), f = 0 ∨ Function.Injective f) :=
-  ⟨fun hM ↦ ⟨Submodule.nontrivial_iff _|>.1 hM.toIsSimpleOrder.toNontrivial, fun N _ _ f ↦ hM.toIsSimpleOrder.eq_bot_or_eq_top (LinearMap.ker f)|>.elim
-    (fun h ↦ Or.inr <| by rwa [LinearMap.ker_eq_bot] at h) (fun h ↦ Or.inl <|by simp_all)⟩,
+  ⟨fun hM ↦ ⟨Submodule.nontrivial_iff _|>.1 hM.toIsSimpleOrder.toNontrivial,
+    fun N _ _ f ↦ hM.toIsSimpleOrder.eq_bot_or_eq_top (LinearMap.ker f)|>.elim
+      (fun h ↦ Or.inr <| by rwa [LinearMap.ker_eq_bot] at h) (fun h ↦ Or.inl <|by simp_all)⟩,
   fun ⟨hM1, hM2⟩ ↦ isSimpleModule_iff R M|>.2 ⟨fun p ↦ (hM2 (M ⧸ p) p.mkQ).elim
   (fun h ↦ Or.inr <| by simpa [Submodule.ext_iff, LinearMap.ext_iff] using h)
   (fun h ↦ Or.inl <| eq_bot_iff.2 fun x hx ↦ h (by simp [hx]))⟩⟩

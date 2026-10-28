@@ -179,9 +179,12 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[�
   __ := SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
   norm f := ‖f.toContinuousMultilinearMap‖
 
-@[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.toContinuousMultilinearMap‖ = ‖f‖ := rfl
-@[simp] theorem nnnorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.toContinuousMultilinearMap‖₊ = ‖f‖₊ := rfl
-@[simp] theorem enorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.toContinuousMultilinearMap‖ₑ = ‖f‖ₑ := rfl
+@[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) :
+    ‖f.toContinuousMultilinearMap‖ = ‖f‖ := rfl
+@[simp] theorem nnnorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) :
+    ‖f.toContinuousMultilinearMap‖₊ = ‖f‖₊ := rfl
+@[simp] theorem enorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) :
+    ‖f.toContinuousMultilinearMap‖ₑ = ‖f‖ₑ := rfl
 
 /-- The inclusion of `E [⋀^ι]→L[𝕜] F` into `ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F`
 as a linear isometry. -/
@@ -209,7 +212,8 @@ theorem isLeast_opNorm (f : E [⋀^ι]→L[𝕜] F) :
 
 /-- The fundamental property of the operator norm of a continuous alternating map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`. -/
-theorem le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.toContinuousMultilinearMap.le_opNorm m
+theorem le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
+  f.toContinuousMultilinearMap.le_opNorm m
 
 theorem le_mul_prod_of_opNorm_le_of_le
     {m : ι → E} {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
@@ -235,7 +239,8 @@ theorem ratio_le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ 
   f.toContinuousMultilinearMap.ratio_le_opNorm m
 
 /-- The image of the unit ball under a continuous alternating map is bounded. -/
-theorem unit_le_opNorm (f : E [⋀^ι]→L[𝕜] F) (h : ‖m‖ ≤ 1) : ‖f m‖ ≤ ‖f‖ := f.toContinuousMultilinearMap.unit_le_opNorm h
+theorem unit_le_opNorm (f : E [⋀^ι]→L[𝕜] F) (h : ‖m‖ ≤ 1) : ‖f m‖ ≤ ‖f‖ :=
+  f.toContinuousMultilinearMap.unit_le_opNorm h
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `f`. -/
 theorem opNorm_le_bound (f : E [⋀^ι]→L[𝕜] F) {M : ℝ} (hMp : 0 ≤ M)
@@ -465,7 +470,8 @@ see `fderivCompContinuousLinearMap_apply` below.
 -/
 def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
     (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
-  liftCLM (f.toContinuousMultilinearMap.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _) <| by
+  liftCLM (f.toContinuousMultilinearMap.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L
+      .pi fun _ ↦ .id _ _) <| by
     intro dg v a b heq hne
     trans ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j)
     · simp
@@ -485,7 +491,8 @@ def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜]
 lemma toContinuousMultilinearMapCLM_comp_fderivCompContinuousLinearMap
     (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
     toContinuousMultilinearMapCLM 𝕜 ∘L f.fderivCompContinuousLinearMap g =
-      f.toContinuousMultilinearMap.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _ :=
+      f.toContinuousMultilinearMap.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L
+        .pi fun _ ↦ .id _ _ :=
   rfl
 
 @[simp]

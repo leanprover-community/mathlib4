@@ -54,7 +54,8 @@ lemma IsLocalRing.quotient_artinian_of_mem_minimalPrimes_of_isLocalRing
       convert IsLocalRing.maximalIdeal.isMaximal R
       rw [Ideal.minimalPrimes, Set.mem_ofPred] at hp
       have := prime.comap (Ideal.Quotient.mk I)
-      exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩ (le_maximalIdeal this.ne_top')
+      exact hp.eq_of_le ⟨this, .trans (by simp) (Ideal.ker_le_comap _)⟩
+        (le_maximalIdeal this.ne_top')
   IsNoetherianRing.isArtinianRing_of_krullDimLE_zero
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -190,7 +191,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
   rw [I.spanRank_toENat_eq_iInf_finset_card, le_iInf_iff]
   rintro ⟨s, (rfl : span s = I)⟩
   induction hn : s.card using Nat.strong_induction_on generalizing R with
-  | h n H =>
+  | ind n H =>
     replace hn : s.card ≤ n := hn.le
     have := hp.isPrime
     cases n with

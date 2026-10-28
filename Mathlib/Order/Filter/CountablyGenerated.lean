@@ -103,8 +103,9 @@ protected theorem HasAntitoneBasis.mem [Preorder ι] {l : Filter α} {s : ι →
 
 theorem HasAntitoneBasis.hasBasis_ge [Preorder ι] [IsDirectedOrder ι] {l : Filter α}
     {s : ι → Set α} (hs : l.HasAntitoneBasis s) (i : ι) : l.HasBasis (fun j => i ≤ j) s :=
-  hs.toHasBasis.to_hasBasis (fun j _ => (exists_ge_ge i j).imp fun _k hk => ⟨hk.1, hs.antitone hk.2⟩) fun j _ =>
-    ⟨j, trivial, Subset.rfl⟩
+  hs.toHasBasis.to_hasBasis
+    (fun j _ => (exists_ge_ge i j).imp fun _k hk => ⟨hk.1, hs.antitone hk.2⟩)
+    fun j _ => ⟨j, trivial, Subset.rfl⟩
 
 /-- If `f` is countably generated and `f.HasBasis p s`, then `f` admits a decreasing basis
 enumerated by natural numbers such that all sets have the form `s i`. More precisely, there is a

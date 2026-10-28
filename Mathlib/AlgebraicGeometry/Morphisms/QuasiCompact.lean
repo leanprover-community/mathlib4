@@ -259,7 +259,8 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     {U : X.Opens} (hU : IsCompact U.carrier) (x f : Γ(X, U))
     (H : x |_ (X.basicOpen f) = 0) :
     ∃ n : ℕ, f ^ n * x = 0 := by
-  obtain ⟨s, hs, e⟩ := isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU, U.is_open'⟩
+  obtain ⟨s, hs, e⟩ :=
+    isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU, U.is_open'⟩
   replace e : U = iSup fun i : s => (i : X.Opens) := by
     ext1; simpa using e
   have h₁ (i : s) : i.1.1 ≤ U := by

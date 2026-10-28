@@ -151,7 +151,8 @@ private lemma iteratedDerivWithin_tsum_exp_aux_eq {k : ℕ} (hk : 1 ≤ k) (z : 
     (2 * π * I) * ∑' n : ℕ, cexp (2 * π * I * z) ^ n)) ℍₒ z =
     -(2 * π * I) * ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * π * I * s) ^ n) ℍₒ z := by
     rw [iteratedDerivWithin_const_sub hk, iteratedDerivWithin_fun_neg,
-      iteratedDerivWithin_const_mul (by simpa using z.coe_im_pos) (isOpen_upperHalfPlaneSet.uniqueDiffOn)]
+      iteratedDerivWithin_const_mul (by simpa using z.coe_im_pos)
+        (isOpen_upperHalfPlaneSet.uniqueDiffOn)]
     · simp only [iteratedDerivWithin_tsum_cexp_eq, neg_mul]
     · exact (contDiffOn_tsum_cexp k).contDiffWithinAt (by simpa using z.coe_im_pos)
   have h : -(2 * π * I * (2 * π * I) ^ k) * ∑' (n : ℕ), n ^ k * cexp (2 * π * I * z) ^ n =
@@ -228,7 +229,8 @@ lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 :
   case h₁ =>
     nth_rewrite 1 [← tsum_comp_neg]
     exact tsum_congr fun y ↦ by simp [eisSummand, ← neg_add _ (y : ℂ), -neg_add_rev, hk2.neg_pow]
-  have H (b : ℕ+) := qExpansion_identity_pnat (k := k - 1) (by grind) ⟨b * z, by simpa using z.coe_im_pos⟩
+  have H (b : ℕ+) := qExpansion_identity_pnat (k := k - 1) (by grind)
+    ⟨b * z, by simpa using z.coe_im_pos⟩
   simp_rw [show k - 1 + 1 = k by grind, one_div] at H
   simp only [neg_mul] at H
   rw [nsmul_eq_mul, mul_assoc]

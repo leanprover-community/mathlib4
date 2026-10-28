@@ -803,8 +803,8 @@ protected theorem IsOpenMap.piMap {f : ∀ i, A i → B i}
 
 protected theorem IsOpenQuotientMap.piMap
     {f : ∀ i, A i → B i} (hf : ∀ i, IsOpenQuotientMap (f i)) : IsOpenQuotientMap (Pi.map f) :=
-  ⟨.piMap fun i ↦ (hf i).surjective, .piMap fun i ↦ (hf i).continuous, .piMap (fun i ↦ (hf i).isOpenMap) <|
-    .of_forall fun i ↦ (hf i).surjective⟩
+  ⟨.piMap fun i ↦ (hf i).surjective, .piMap fun i ↦ (hf i).continuous,
+    .piMap (fun i ↦ (hf i).isOpenMap) <| .of_forall fun i ↦ (hf i).surjective⟩
 
 theorem tendsto_pi_nhds {f : Y → ∀ i, A i} {g : ∀ i, A i} {u : Filter Y} :
     Tendsto f u (𝓝 g) ↔ ∀ x, Tendsto (fun i => f i x) u (𝓝 (g x)) := by
@@ -1121,11 +1121,13 @@ theorem isClosed_set_pi {i : Set ι} {s : ∀ a, Set (A a)} (hs : ∀ a ∈ i, I
 
 protected lemma Topology.IsClosedEmbedding.piMap {f : ∀ i, A i → B i}
     (hf : ∀ i, IsClosedEmbedding (f i)) : IsClosedEmbedding (Pi.map f) :=
-  ⟨.piMap fun i ↦ (hf i).toIsEmbedding, by simpa using isClosed_set_pi fun i _ ↦ (hf i).isClosed_range⟩
+  ⟨.piMap fun i ↦ (hf i).toIsEmbedding,
+    by simpa using isClosed_set_pi fun i _ ↦ (hf i).isClosed_range⟩
 
 protected lemma Topology.IsOpenEmbedding.piMap [Finite ι] {f : ∀ i, A i → B i}
     (hf : ∀ i, IsOpenEmbedding (f i)) : IsOpenEmbedding (Pi.map f) :=
-  ⟨.piMap fun i ↦ (hf i).toIsEmbedding, by simpa using isOpen_set_pi Set.finite_univ fun i _ ↦ (hf i).isOpen_range⟩
+  ⟨.piMap fun i ↦ (hf i).toIsEmbedding,
+    by simpa using isOpen_set_pi Set.finite_univ fun i _ ↦ (hf i).isOpen_range⟩
 
 theorem mem_nhds_of_pi_mem_nhds {I : Set ι} {s : ∀ i, Set (A i)} (a : ∀ i, A i) (hs : I.pi s ∈ 𝓝 a)
     {i : ι} (hi : i ∈ I) : s i ∈ 𝓝 (a i) := by

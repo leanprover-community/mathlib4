@@ -192,7 +192,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   -- Choose an interval `(a, b)` which contains the range of `f`.
   obtain ⟨a, b, hab⟩ : ∃ a b : ℝ, a < b ∧ range f ⊆ Ioo a b := by
     obtain ⟨r, hr⟩ := (Metric.isCompact_iff_isClosed_bounded.mp
-      (HasCompactSupport.isCompact_range f.hasCompactSupport' f.toContinuousMap.continuous_toFun)).2.subset_ball_lt 0 0
+      (HasCompactSupport.isCompact_range f.hasCompactSupport'
+        f.toContinuousMap.continuous_toFun)).2.subset_ball_lt 0 0
     exact ⟨-r, r, by linarith, hr.2.trans_eq (by simp [Real.ball_eq_Ioo])⟩
   -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
   obtain ⟨N, hN, hε'⟩ := exists_nat_large (b - a) (2 * μ.real K + |a| + b) hε
@@ -231,7 +232,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     have : tsupport f ⊆ ⋃ n, (V n).carrier := calc
       _ = ⋃ j, E j := hE.1
       _ ⊆ _ := by gcongr with n; exact (hV n).1
-    obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n ↦ (V n).is_open') f.hasCompactSupport' this
+    obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n ↦ (V n).is_open')
+      f.hasCompactSupport' this
     exact ⟨fun n ↦ ⟨g' n, hg.2.2.2 n⟩, hg⟩
   -- The proof is completed by a chain of inequalities.
   calc Λ f
@@ -313,14 +315,16 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
       · apply Integrable.integrableOn
         dsimp [μ, rieszMeasure]
-        exact Continuous.integrable_of_hasCompactSupport f.toContinuousMap.continuous_toFun f.hasCompactSupport'
+        exact Continuous.integrable_of_hasCompactSupport f.toContinuousMap.continuous_toFun
+          f.hasCompactSupport'
     calc
       _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
       _ = ∫ x in (⋃ n, E n), f x ∂μ := by
         refine Eq.symm <| integral_iUnion_fintype hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
         dsimp [μ, rieszMeasure]
         exact fun _ ↦
-          Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport f.toContinuousMap.continuous_toFun f.hasCompactSupport'
+          Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport
+            f.toContinuousMap.continuous_toFun f.hasCompactSupport'
       _ = ∫ x in tsupport f, f x ∂μ := by simp_rw [hE.1]
       _ = _ := setIntegral_tsupport
   · -- Rough bound of the sum

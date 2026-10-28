@@ -76,7 +76,8 @@ theorem contMDiffWithinAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) 
     CMDiffAt[s] n f x₀ ↔
       CMDiffAt[s] n (fun x ↦ (f x).proj) x₀ ∧
         CMDiffAt[s] n
-          (fun x ↦ inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
+          (fun x ↦
+            inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   contMDiffWithinAt_totalSpace
 
 theorem contMDiffAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {x₀ : M} :
@@ -105,13 +106,15 @@ theorem mdifferentiableWithinAt_continuousAlternatingMap_bundle
     MDiffAt[s] f x₀ ↔
       MDiffAt[s] (fun x ↦ (f x).proj) x₀ ∧
         MDiffAt[s]
-          (fun x ↦ inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
+          (fun x ↦
+            inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   mdifferentiableWithinAt_totalSpace IB ..
 
 theorem mdifferentiableAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {x₀ : M} :
     MDiffAt f x₀ ↔
       MDiffAt (fun x ↦ (f x).proj) x₀ ∧
-        MDiffAt (fun x ↦ inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
+        MDiffAt (fun x ↦
+          inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   mdifferentiableAt_totalSpace ..
 
 end

@@ -60,8 +60,8 @@ def map (hf : IsSpectralMap f) (c : locallyFinsupp X R) : Function.locallyFinsup
       grind
     suffices (f ⁻¹' (U ∩ {z | (f ⁻¹' {z} ∩ c.support).Nonempty}) ∩ c.support).Finite from
       (this.image f).subset (fun a ha ↦ by grind [Set.Nonempty])
-    exact (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf.isCompact_preimage_of_isOpen hU.1.1 hU.1.2).subset
-      (by simp; grind)
+    exact (c.locallyFiniteSupport.finite_inter_support_of_isCompact <|
+      hf.isCompact_preimage_of_isOpen hU.1.1 hU.1.2).subset (by simp; grind)
 
 @[simp]
 lemma map_apply (hf : IsSpectralMap f) (c : locallyFinsupp X R) (y : Y) :

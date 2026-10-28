@@ -365,7 +365,8 @@ theorem insert_val (a : α) (s : Finset α) : (insert a s).val = ndinsert a s.va
 theorem insert_val' (a : α) (s : Finset α) : (insert a s).val = dedup (a ::ₘ s.val) := by
   rw [dedup_cons, dedup_eq_self]; rfl
 
-theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : (insert a s).val = a ::ₘ s.val := by
+theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) :
+    (insert a s).val = a ::ₘ s.val := by
   rw [insert_val, ndinsert_of_notMem h]
 
 @[simp, grind =]

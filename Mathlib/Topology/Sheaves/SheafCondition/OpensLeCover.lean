@@ -128,7 +128,8 @@ def generateEquivalenceOpensLe_inverse' (hY : Y = iSup U) :
     OpensLeCover U ⥤
     (ObjectProperty.FullSubcategory fun f : Over Y =>
       (Sieve.generate (presieveOfCoveringAux U Y)).arrows f.hom) where
-  obj := fun V => ⟨⟨V.obj, ⟨⟨⟩⟩, homOfLE <| hY ▸ (V.property.choose_spec.trans (le_iSup U (V.property.choose)))⟩,
+  obj := fun V => ⟨⟨V.obj, ⟨⟨⟩⟩,
+      homOfLE <| hY ▸ (V.property.choose_spec.trans (le_iSup U (V.property.choose)))⟩,
     ⟨U V.property.choose, V.property.choose_spec.hom, homOfLE <| hY ▸ le_iSup U V.property.choose,
       ⟨V.property.choose, rfl⟩, rfl⟩⟩
   map g := ObjectProperty.homMk (Over.homMk g.hom)

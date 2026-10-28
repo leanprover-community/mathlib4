@@ -174,7 +174,8 @@ instance : Precoverage.Small.{u} (propQCPrecoverage P) where
     refine ⟨𝒰.forgetQc.qculift.I₀, Sum.elim 𝒰.forgetQc.idx (QuasiCompactCover.uliftHom _).s₀,
       ⟨?_, ?_⟩⟩
     · rw [Scheme.presieve₀_mem_qcPrecoverage_iff]
-      exact .of_hom (𝒱 := QuasiCompactCover.ulift 𝒰.toPreZeroHypercover) ⟨Sum.inr, fun i ↦ 𝟙 _, by cat_disch⟩
+      exact .of_hom (𝒱 := QuasiCompactCover.ulift 𝒰.toPreZeroHypercover)
+        ⟨Sum.inr, fun i ↦ 𝟙 _, by cat_disch⟩
     · rw [Scheme.presieve₀_mem_precoverage_iff]
       exact ⟨fun x ↦ ⟨Sum.inl x, 𝒰.forgetQc.covers _⟩, fun i ↦ 𝒰.forgetQc.map_prop _⟩
 

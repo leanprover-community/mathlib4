@@ -305,7 +305,8 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
                 (emultiplicity ↑p (q.den * r.num * q.den)) :=
           le_min
             (by rw [emultiplicity_mul (a := _ * _) (Nat.prime_iff_prime_int.1 hp.out), add_comm])
-            (by grw [mul_assoc, emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.out), h])
+            (by grw [mul_assoc,
+              emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.out), h])
         _ ≤ _ := min_le_emultiplicity_add
 
 /-- The minimum of the valuations of `q` and `r` is at most the valuation of `q + r`. -/

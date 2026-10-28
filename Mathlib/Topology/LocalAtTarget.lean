@@ -113,7 +113,8 @@ theorem isOpen_iff_inter :
 
 theorem isOpen_iff_coe_preimage :
     IsOpen s ↔ ∀ i, IsOpen ((↑) ⁻¹' s : Set (U i)) := by
-  simp [hU.isOpen_iff_inter (s := s), (U _).is_open'.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen,
+  simp [hU.isOpen_iff_inter (s := s),
+    (U _).is_open'.isOpenEmbedding_subtypeVal.isOpen_iff_image_isOpen,
     image_preimage_eq_inter_range]
 
 theorem isClosed_iff_coe_preimage {s : Set β} :
@@ -155,8 +156,8 @@ theorem isInducing_iff_restrictPreimage (h : Continuous f) :
     rw [Function.comp_apply, ← H, ← IsInducing.subtypeVal.nhds_eq_comap]
   · intro H x
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (show f x ∈ iSup U by simp [hU.iSup_eq_top])
-    simpa [← ((h.isOpen_preimage _ (U i).is_open').isOpenEmbedding_subtypeVal).map_nhds_eq ⟨x, hi⟩, H i ⟨x, hi⟩,
-      subtype_coe_map_comap] using preimage_mem_comap ((U i).is_open'.mem_nhds hi)
+    simpa [← ((h.isOpen_preimage _ (U i).is_open').isOpenEmbedding_subtypeVal).map_nhds_eq ⟨x, hi⟩,
+      H i ⟨x, hi⟩, subtype_coe_map_comap] using preimage_mem_comap ((U i).is_open'.mem_nhds hi)
 
 theorem isEmbedding_iff_restrictPreimage (h : Continuous f) :
     IsEmbedding f ↔ ∀ i, IsEmbedding ((U i).carrier.restrictPreimage f) := by

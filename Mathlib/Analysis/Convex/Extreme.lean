@@ -190,7 +190,8 @@ variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [AddCommGroup F] [
 theorem IsExtreme.convex_sdiff [IsOrderedRing 𝕜] (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) :
     Convex 𝕜 (A \ B) :=
   convex_iff_openSegment_subset.2 fun _ ⟨hx₁A, hx₁B⟩ _ ⟨hx₂A, _⟩ _ hx ↦
-    ⟨hA.openSegment_subset hx₁A hx₂A hx, fun hxB ↦ hx₁B (hAB.left_mem_of_mem_openSegment hx₁A hx₂A hxB hx)⟩
+    ⟨hA.openSegment_subset hx₁A hx₂A hx,
+      fun hxB ↦ hx₁B (hAB.left_mem_of_mem_openSegment hx₁A hx₂A hxB hx)⟩
 
 @[deprecated (since := "2026-06-03")] alias IsExtreme.convex_diff := IsExtreme.convex_sdiff
 

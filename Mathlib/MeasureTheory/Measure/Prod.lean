@@ -899,7 +899,8 @@ thus the choice of a name.
 theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
-  have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.measurable.comp measurable_fst).prodMk hgm
+  have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) :=
+    (hf.measurable.comp measurable_fst).prodMk hgm
   use this
   /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
     to deduce `SFinite μd`. -/

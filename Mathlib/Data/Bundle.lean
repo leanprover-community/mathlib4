@@ -135,7 +135,8 @@ def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' 
 
 /-- The base map `f : B' → B` lifts to a canonical map on the total spaces. -/
 @[simps (attr := mfld_simps)]
-def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E := fun z => ⟨f z.proj, z.snd⟩
+def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E :=
+  fun z => ⟨f z.proj, z.snd⟩
 
 @[simp, mfld_simps]
 theorem Pullback.lift_mk (f : B' → B) (x : B') (y : E (f x)) :

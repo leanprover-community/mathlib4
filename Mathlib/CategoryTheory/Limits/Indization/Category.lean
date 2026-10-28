@@ -278,7 +278,8 @@ instance [HasColimitsOfShape WalkingParallelPair C] :
     HasColimitsOfShape WalkingParallelPair (Ind C) := by
   refine ⟨fun F => ?_⟩
   obtain ⟨P⟩ := nonempty_indParallelPairPresentation (F.obj WalkingParallelPair.zero).property
-    (F.obj WalkingParallelPair.one).property (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
+    (F.obj WalkingParallelPair.one).property
+    (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.left)
     (Ind.inclusion _ |>.map <| F.map WalkingParallelPairHom.right)
   exact hasColimit_of_iso (diagramIsoParallelPair _ ≪≫ P.parallelPairIsoParallelPairCompIndYoneda)
 

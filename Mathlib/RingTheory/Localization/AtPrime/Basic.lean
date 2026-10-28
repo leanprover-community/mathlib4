@@ -149,7 +149,8 @@ def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPri
 order-preserving bijection with the interval $(-∞, I]$ in the prime spectrum of R. -/
 @[simps!] def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime S I).trans
-    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.asIdeal, p.1.isPrime, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.asIdeal, p.1.isPrime, p.2⟩,
+      fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx =>

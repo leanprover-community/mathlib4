@@ -111,7 +111,8 @@ def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
   match stx with
     | .node si k args => .node (capSourceInfo si p) k (args.map (capSyntax · p))
     | .atom si val => .atom (capSourceInfo si p) (val.take p).copy
-    | .ident si r v pr => .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.byteIdx p⟩ } v pr
+    | .ident si r v pr =>
+      .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.byteIdx p⟩ } v pr
     | s => s
 
 namespace PPRoundtrip

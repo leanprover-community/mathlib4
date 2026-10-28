@@ -454,7 +454,7 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton 
   rw [← Spec.map_comp, ← Spec.map_id, Spec.map_injective.eq_iff] at hg
   apply IsClosedImmersion.spec_of_surjective
   apply Function.LeftInverse.surjective (g := φ)
-  exact fun x ↦ congr($hg.hom' x)
+  exact fun x ↦ congr(($hg).hom' x)
 
 instance {X Y : Scheme.{u}} [Subsingleton X] (f : Retract X Y) : IsClosedImmersion f.i :=
   isClosedImmersion_of_comp_eq_id _ _ f.retract

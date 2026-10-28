@@ -70,11 +70,13 @@ theorem contDiffAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
 theorem differentiableAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     DifferentiableAt ℝ f x := (h.contDiffAt hx).differentiableAt two_ne_zero
 
+@[gcongr]
 theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
     HarmonicContOnCl f t := ⟨h.harmonicOnNhd.mono ht, h.continuousOn.mono (closure_mono ht)⟩
 
 @[to_fun] theorem add (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
-    HarmonicContOnCl (f₁ + f₂) s := ⟨hf₁.harmonicOnNhd.add hf₂.harmonicOnNhd, hf₁.continuousOn.add hf₂.continuousOn⟩
+    HarmonicContOnCl (f₁ + f₂) s :=
+  ⟨hf₁.harmonicOnNhd.add hf₂.harmonicOnNhd, hf₁.continuousOn.add hf₂.continuousOn⟩
 
 @[to_fun] theorem add_const (hf : HarmonicContOnCl f s) (c : F) :
     HarmonicContOnCl (f + fun _ ↦ c) s := hf.add harmonicContOnCl_const
@@ -86,7 +88,8 @@ theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
     HarmonicContOnCl (-f) s := ⟨hf.harmonicOnNhd.neg, hf.continuousOn.neg⟩
 
 @[to_fun] theorem sub (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
-    HarmonicContOnCl (f₁ - f₂) s := ⟨hf₁.harmonicOnNhd.sub hf₂.harmonicOnNhd, hf₁.continuousOn.sub hf₂.continuousOn⟩
+    HarmonicContOnCl (f₁ - f₂) s :=
+  ⟨hf₁.harmonicOnNhd.sub hf₂.harmonicOnNhd, hf₁.continuousOn.sub hf₂.continuousOn⟩
 
 @[to_fun] theorem sub_const (hf : HarmonicContOnCl f s) (c : F) :
     HarmonicContOnCl (f - fun _ ↦ c) s := hf.sub harmonicContOnCl_const

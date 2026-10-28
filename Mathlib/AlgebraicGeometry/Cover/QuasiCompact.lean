@@ -185,8 +185,9 @@ lemma exists_hom {S : Scheme.{u}} (𝒰 : S.Cover (Scheme.precoverage P))
     [P.RespectsLeft @IsOpenImmersion] [CompactSpace S] [QuasiCompactCover 𝒰.toPreZeroHypercover] :
     ∃ (𝒱 : Scheme.AffineCover.{w} P S) (f : 𝒱.cover ⟶ 𝒰),
       Finite 𝒱.I₀ ∧ ∀ j, IsOpenImmersion (f.h₀ j) := by
-  obtain ⟨n, f, V, hV, h⟩ := QuasiCompactCover.exists_isAffineOpen_of_isCompact 𝒰.toPreZeroHypercover
-    (show IsCompact (⊤ : TopologicalSpace.Opens S).carrier from isCompact_univ)
+  obtain ⟨n, f, V, hV, h⟩ :=
+    QuasiCompactCover.exists_isAffineOpen_of_isCompact 𝒰.toPreZeroHypercover
+      (show IsCompact (⊤ : TopologicalSpace.Opens S).carrier from isCompact_univ)
   simp only [coe_top, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_iUnion,
     Set.mem_image, SetLike.mem_coe, forall_const] at h
   choose idx x hmem hx using h

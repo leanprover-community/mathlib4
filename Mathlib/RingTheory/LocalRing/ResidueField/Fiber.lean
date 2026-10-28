@@ -194,7 +194,8 @@ noncomputable def PrimeSpectrum.primesOverOrderIsoFiber (R S : Type*) [CommRing 
     [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime] :
     p.primesOver S ≃o PrimeSpectrum (p.Fiber S) :=
   .trans ⟨⟨fun q ↦ ⟨⟨q, q.2.1⟩, PrimeSpectrum.ext q.2.2.over.symm⟩,
-    fun q ↦ ⟨q.1.asIdeal, ⟨q.1.isPrime, ⟨congr($(q.2).asIdeal).symm⟩⟩⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
+    fun q ↦ ⟨q.1.asIdeal, ⟨q.1.isPrime, ⟨congr($(q.2).asIdeal).symm⟩⟩⟩,
+    fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
     (PrimeSpectrum.preimageOrderIsoFiber R S ⟨p, ‹_›⟩)
 
 /-- The `Homeomorph` between the fiber of `PrimeSpectrum S → PrimeSpectrum R`

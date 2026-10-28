@@ -78,9 +78,12 @@ def LinearExtension (α : Type u) : Type u :=
 
 noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α) where
   le := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose
-  le_refl := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.toIsPartialOrder.toIsPreorder.toRefl.refl
-  le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.toIsPartialOrder.toIsPreorder.toIsTrans.trans
-  le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.toIsPartialOrder.toAntisymm.antisymm
+  le_refl := extend_partialOrder ((· ≤ ·) : α → α → Prop)
+    |>.choose_spec.1.toIsPartialOrder.toIsPreorder.toRefl.refl
+  le_trans := extend_partialOrder ((· ≤ ·) : α → α → Prop)
+    |>.choose_spec.1.toIsPartialOrder.toIsPreorder.toIsTrans.trans
+  le_antisymm := extend_partialOrder ((· ≤ ·) : α → α → Prop)
+    |>.choose_spec.1.toIsPartialOrder.toAntisymm.antisymm
   le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.toTotal.total
   toDecidableLE := Classical.decRel _
 

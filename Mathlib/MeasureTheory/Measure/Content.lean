@@ -179,7 +179,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
   · ext1
     rw [Compacts.coe_finset_sup, Finset.sup_eq_iSup]
     exact h3K'
-  refine le_trans (Finset.sum_le_sum ?_) (ENNReal.sum_le_tsum t)
+  refine le_trans (Finset.sum_le_sum ?_) (sum_le_tsum t)
   intro i _
   refine le_trans ?_ (le_iSup _ (L i))
   refine le_trans ?_ (le_iSup _ (h2K' i))
@@ -236,7 +236,8 @@ protected def outerMeasure : OuterMeasure G :=
 variable [R1Space G]
 
 theorem outerMeasure_opens (U : Opens G) : μ.outerMeasure U = μ.innerContent U :=
-  inducedOuterMeasure_eq' (fun _ => isOpen_iUnion) μ.innerContent_iUnion_nat μ.innerContent_mono U.is_open'
+  inducedOuterMeasure_eq' (fun _ => isOpen_iUnion) μ.innerContent_iUnion_nat μ.innerContent_mono
+    U.is_open'
 
 theorem outerMeasure_of_isOpen (U : Set G) (hU : IsOpen U) :
     μ.outerMeasure U = μ.innerContent ⟨U, hU⟩ :=
@@ -332,7 +333,8 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   grw [show μ L ≤ μ L' from μ.mono _ _ subset_closure]
   simp only [subset_inter_iff] at hL
   have hL'U : (L' : Set G) ⊆ U := IsCompact.closure_subset_of_isOpen L.isCompact' hU hL.2
-  have hL'U' : (L' : Set G) ⊆ (U' : Set G) := IsCompact.closure_subset_of_isOpen L.isCompact' U'.is_open' hL.1
+  have hL'U' : (L' : Set G) ⊆ (U' : Set G) :=
+    IsCompact.closure_subset_of_isOpen L.isCompact' U'.is_open' hL.1
   have : ↑U' \ U ⊆ U' \ L' := sdiff_subset_sdiff_right hL'U
   grw [this]
   rw [μ.outerMeasure_of_isOpen (↑U' \ L') (IsOpen.sdiff U'.is_open' isClosed_closure)]

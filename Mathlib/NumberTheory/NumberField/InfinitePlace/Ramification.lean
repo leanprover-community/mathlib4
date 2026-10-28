@@ -539,7 +539,8 @@ lemma IsUnramifiedAtInfinitePlaces.trans
     [h₁ : IsUnramifiedAtInfinitePlaces k K] [h₂ : IsUnramifiedAtInfinitePlaces K F] :
     IsUnramifiedAtInfinitePlaces k F where
   isUnramified w :=
-    Eq.trans (IsScalarTower.algebraMap_eq k K F ▸ h₁.isUnramified (w.comap (algebraMap _ _))) (h₂.isUnramified w)
+    Eq.trans (IsScalarTower.algebraMap_eq k K F ▸ h₁.isUnramified (w.comap (algebraMap _ _)))
+      (h₂.isUnramified w)
 
 lemma IsUnramifiedAtInfinitePlaces.top [h : IsUnramifiedAtInfinitePlaces k F] :
     IsUnramifiedAtInfinitePlaces K F where

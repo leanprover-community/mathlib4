@@ -271,7 +271,8 @@ lemma exists_map_preimage_le_map_preimage
     (H : c.π.app i ⁻¹ᵁ U ≤ c.π.app i ⁻¹ᵁ V) :
     ∃ (j : I) (fji : j ⟶ i), D.map fji ⁻¹ᵁ U ≤ D.map fji ⁻¹ᵁ V := by
   have (j : Over i) : CompactSpace ↥((opensDiagram D i U).obj j) :=
-    isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage (f := (D.map j.hom)) _ U.is_open' hU)
+    isCompact_iff_compactSpace.mp
+      (QuasiCompact.isCompact_preimage (f := (D.map j.hom)) _ U.is_open' hU)
   have H : ((c.π.app i ⁻¹ᵁ U).ι ≫ c.π.app i) ⁻¹ᵁ V = ⊤ := by
     rw [Scheme.Hom.comp_preimage, ← top_le_iff]
     exact .trans (by simp) (Scheme.Hom.preimage_mono _ H)
@@ -1047,7 +1048,8 @@ lemma exists_isAffineOpen_preimage_eq
   have (j : Over i) : CompactSpace ((opensDiagram D i U).obj j) :=
     isCompact_iff_compactSpace.mp (QuasiCompact.isCompact_preimage _ U.is_open' hU')
   have (j : Over i) : QuasiSeparatedSpace ((opensDiagram D i U).obj j) :=
-    (isQuasiSeparated_iff_quasiSeparatedSpace _ (D.map _ ⁻¹ᵁ _).is_open').mp (.of_quasiSeparatedSpace _)
+    (isQuasiSeparated_iff_quasiSeparatedSpace _ (D.map _ ⁻¹ᵁ _).is_open').mp
+      (.of_quasiSeparatedSpace _)
   have : IsAffine (opensCone D c i U).pt := hU
   obtain ⟨j, hj⟩ := Scheme.exists_isAffine_of_isLimit _ _ (isLimitOpensCone D c hc i U)
   exact ⟨_, _, hj, by simp [← Scheme.Hom.comp_preimage]⟩

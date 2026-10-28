@@ -288,8 +288,8 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum, Finset.sum_eq_single 0]
   · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, ite_true]
   · intro i _hi hi0
-    simp only [onePoly, ite_eq_right hi0, zero_pow (pow_ne_zero _ hp.out.ne_zero), mul_zero, map_pow,
-      bind₁_X_right, map_mul]
+    simp only [onePoly, ite_eq_right hi0, zero_pow (pow_ne_zero _ hp.out.ne_zero), mul_zero,
+      map_pow, bind₁_X_right, map_mul]
   · simp
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/

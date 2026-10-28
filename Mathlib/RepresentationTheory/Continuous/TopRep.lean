@@ -187,7 +187,8 @@ section equivAction
 `Action (TopModuleCat k) G`. -/
 def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where
   obj X := ⟨.of k X.V, (TopModuleCat.endRingEquiv (.of k X.V)).symm.toMonoidHom.comp X.ρ⟩
-  map f := ⟨f.toTopModuleCatHom, fun g => by ext1; simp [TopModuleCat.endRingEquiv, f.hom.isIntertwining' g]⟩
+  map f := ⟨f.toTopModuleCatHom, fun g => by
+    ext1; simp [TopModuleCat.endRingEquiv, f.hom.isIntertwining' g]⟩
 
 /-- The functor sending an object in `Action (TopModuleCat k) G` to the corresponding topological
 representation. -/

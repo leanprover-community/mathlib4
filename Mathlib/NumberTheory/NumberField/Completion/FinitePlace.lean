@@ -392,7 +392,8 @@ lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K)
 -- domains `𝓞 K` and `𝓞 L` once we have a ramification theory for finite places set up.
 -- Note that this will mean `FinitePlace.equivHeightOneSpectrum` no longer appears in the statement.
 lemma equivHeightOneSpectrum_symm_apply_algebraMap
-    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.asIdeal.LiesOver v.asIdeal] (x : K) :
+    (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.asIdeal.LiesOver v.asIdeal]
+    (x : K) :
     FinitePlace.equivHeightOneSpectrum.symm w (algebraMap K L x) =
       FinitePlace.equivHeightOneSpectrum.symm v x ^
         (w.asIdeal.ramificationIdx (𝓞 K) * w.asIdeal.inertiaDeg (𝓞 K)) := by

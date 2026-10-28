@@ -998,7 +998,8 @@ we prove the predicate `isLocallyFraction` is preserved by this map, hence it ca
 a morphism between the structure sheaves of `R` and `S`.
 -/
 def comapFun (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpectrum.Top S))
-    (hUV : V.carrier ⊆ PrimeSpectrum.comap σ ⁻¹' U.carrier) (s : ∀ x : U, Localizations M x.1) (y : V) :
+    (hUV : V.carrier ⊆ PrimeSpectrum.comap σ ⁻¹' U.carrier) (s : ∀ x : U, Localizations M x.1)
+    (y : V) :
     Localizations N y.1 :=
   Localizations.comapFun f _ (s ⟨y.1.comap σ, hUV y.2⟩)
 
@@ -1105,8 +1106,8 @@ theorem comap_apply (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
 
 set_option backward.isDefEq.respectTransparency false in
 theorem comap_const (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
-    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.carrier ⊆ PrimeSpectrum.comap f ⁻¹' U.carrier) (a b : R)
-    (hb : ∀ x : PrimeSpectrum R, x ∈ U → b ∈ x.asIdeal.primeCompl) :
+    (V : Opens (PrimeSpectrum.Top S)) (hUV : V.carrier ⊆ PrimeSpectrum.comap f ⁻¹' U.carrier)
+    (a b : R) (hb : ∀ x : PrimeSpectrum R, x ∈ U → b ∈ x.asIdeal.primeCompl) :
     comap f U V hUV (const a b U hb) =
       const (f a) (f b) V fun p hpV => hb (PrimeSpectrum.comap f p) (hUV hpV) :=
   Subtype.ext <| funext fun p => by

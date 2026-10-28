@@ -54,8 +54,8 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     exact nonZeroDivisors.coe_ne_zero x
   surj x := by
     obtain ⟨⟨a, _, d, hd, rfl⟩, h⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) x
-    refine ⟨⟨⟨Ideal.absNorm I.val.num * (algebraMap _ K a), I.val.num_le ?_⟩, d * Ideal.absNorm I.val.num,
-      ?_⟩, ?_⟩
+    refine ⟨⟨⟨Ideal.absNorm I.val.num * (algebraMap _ K a), I.val.num_le ?_⟩,
+      d * Ideal.absNorm I.val.num, ?_⟩, ?_⟩
     · refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.val.num * a, ?_, ?_⟩
       · exact Ideal.mul_mem_right _ _ I.val.num.absNorm_mem
       · rw [map_mul, map_natCast]

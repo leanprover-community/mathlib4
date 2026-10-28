@@ -202,7 +202,8 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
     (algebraMap S S').comp φ := by ext <;>
       simp [-Polynomial.algebraMap_apply, ← Polynomial.algebraMap_eq, ← algebraMap_apply]
   obtain ⟨q, hq⟩ := exists_isIntegral_sub_of_isIntegralElem_of_mul_mem_range (R := R')
-    (aeval (algebraMap S S' (φ X))) (algebraMap S S' t) (C ha.unit⁻¹.val * p.map (algebraMap _ _)) (by
+    (aeval (algebraMap S S' (φ X))) (algebraMap S S' t)
+    (C ha.unit⁻¹.val * p.map (algebraMap _ _)) (by
       obtain ⟨q, hqm, hq⟩ := ht
       refine ⟨q.map (mapRingHom (algebraMap _ _)), hqm.map _, ?_⟩
       rw [eval₂_map, H, ← hom_eval₂, ← AlgHom.toRingHom_eq_coe, hq, map_zero]) (by
@@ -264,8 +265,7 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
   wlog hi : i = p.natDegree generalizing p i
   · clear hi
     simp only [forall_eq, coeff_natDegree] at this
-    induction hpn : p.natDegree using Nat.strong_induction_on generalizing p with
-    | h n IH =>
+    induction hpn : p.natDegree using Nat.strong_induction_on generalizing p with | ind n IH
     cases n with
     | zero =>
       obtain hi' | hi' := lt_or_ge p.natDegree i
@@ -480,7 +480,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     (Polynomial.not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt _ H₀ p)
   obtain ⟨n, hfn⟩ : ∃ x, algebraMap R S (f.coeff x) ∉ p := by simpa [Ideal.mem_map_C_iff] using! hfp
   clear hfp
-  induction hm : f.natDegree using Nat.strong_induction_on generalizing f n with | h m IH =>
+  induction hm : f.natDegree using Nat.strong_induction_on generalizing f n with | ind m IH
   obtain (_ | m) := m
   · obtain ⟨r, rfl⟩ := natDegree_eq_zero.mp hm
     cases n <;> aesop

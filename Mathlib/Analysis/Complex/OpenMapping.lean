@@ -260,8 +260,9 @@ theorem isOpenQuotientMap_pow_compl_zero (n : ℕ) [NeZero n] :
   surjective z := have ⟨w, h⟩ := (isOpenQuotientMap_pow n).surjective z
     ⟨⟨w, by rintro rfl; exact z.2 (by simpa [zero_pow (NeZero.ne n)] using h.symm)⟩, Subtype.ext h⟩
   continuous := by fun_prop
-  isOpenMap := (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.isOpen_compl).isOpenMap_iff.mpr <|
-    (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.isOpen_compl.isOpenMap_subtype_val
+  isOpenMap :=
+    (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.isOpen_compl).isOpenMap_iff.mpr <|
+      (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.isOpen_compl.isOpenMap_subtype_val
 
 theorem isOpenQuotientMap_zpow_compl_zero (n : ℤ) [NeZero n] :
     IsOpenQuotientMap
