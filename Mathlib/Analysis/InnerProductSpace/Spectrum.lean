@@ -206,7 +206,6 @@ section Version2
 
 variable {n : ℕ}
 
-set_option backward.privateInPublic true in
 /-- Unsorted eigenvalues and eigenvectors.  These private definitions should not be used directly.
 Instead use the functions eigenvalues and eigenvectorBasis defined below. -/
 private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
@@ -272,50 +271,45 @@ private theorem hasEigenvector_eigenvectorBasis_helper (hT : T.IsSymmetric)
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The eigenvalues for a self-adjoint operator `T` on a
 finite-dimensional inner product space `E`, sorted in decreasing order -/
-noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
+@[no_expose]
+noncomputable def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Fin n → ℝ :=
-  (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
+  (hT.unsortedEigenvalues hn) ∘ Tuple.sortDesc (hT.unsortedEigenvalues hn)
 
 theorem exists_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
     (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.eigenvalues hn i = μ := by
   obtain ⟨i, hi⟩ := hT.exists_unsortedEigenvalues_eq hn hμ
-  use ((Tuple.sort (hT.unsortedEigenvalues hn)).symm i).revPerm
-  simp [eigenvalues_def, hi]
+  use (Tuple.sortDesc (hT.unsortedEigenvalues hn)).symm i
+  simp [eigenvalues, hi]
 
 theorem card_filter_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (μ : 𝕜) :
     Finset.card {i | hT.eigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
-  rw [← hT.card_filter_unsortedEigenvalues_eq hn, eigenvalues_def]
-  apply Finset.card_equiv (Fin.revPerm.trans (Tuple.sort (hT.unsortedEigenvalues hn)))
+  rw [← hT.card_filter_unsortedEigenvalues_eq hn, eigenvalues]
+  apply Finset.card_equiv (Tuple.sortDesc (hT.unsortedEigenvalues hn))
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
 finite-dimensional inner product space `E`.  Eigenvectors are sorted in decreasing
 order of their eigenvalues. -/
-noncomputable irreducible_def eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
+@[no_expose]
+noncomputable def eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     OrthonormalBasis (Fin n) 𝕜 E :=
   (hT.direct_sum_isInternal.subordinateOrthonormalBasis
     hn hT.orthogonalFamily_eigenspaces').reindex
-      (Tuple.sort (hT.unsortedEigenvalues hn) * @Fin.revPerm n).symm
+      (Tuple.sortDesc (hT.unsortedEigenvalues hn)).symm
 
 theorem hasEigenvector_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
-  rw [eigenvalues_def, eigenvectorBasis_def, OrthonormalBasis.reindex_apply]
+  rw [eigenvalues, eigenvectorBasis, OrthonormalBasis.reindex_apply]
   apply hasEigenvector_eigenvectorBasis_helper
 
 /-- Eigenvalues are sorted in decreasing order. -/
 theorem eigenvalues_antitone (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Antitone (hT.eigenvalues hn) := by
-  rw [eigenvalues_def, ← Function.comp_assoc]
-  refine Monotone.comp_antitone ?_ ?_
-  · apply Tuple.monotone_sort
-  intro _ _ h
-  exact Fin.rev_le_rev.mpr h
+  rw [eigenvalues]
+  exact Tuple.antitone_sortDesc _
 
 theorem hasEigenvalue_eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) (i : Fin n) :
     HasEigenvalue T (hT.eigenvalues hn i) :=
