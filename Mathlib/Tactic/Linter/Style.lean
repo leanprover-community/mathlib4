@@ -599,7 +599,7 @@ these are coercion lemmas violating mathlib's naming convention. -/
   errorsFound := "FOUND most-likely badly named coercion lemmas."
   test declName := do
     let env ← getEnv
-    unless (env.find? declName).get!.isTheorem do return none
+    unless wasOriginallyTheorem env declName do return none
     if (env.isPrivateOrAutoDecl declName) || declName.isInternalDetail ||
         (isDeprecated env declName) then
       return none
