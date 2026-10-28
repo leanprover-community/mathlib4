@@ -11,7 +11,24 @@ public import Mathlib.Data.Int.Log
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 /-!
-# doc
+# `Real.log` extension for tactic `dyadic_interval`
+
+This file implements `Real.log` extension for the tactic `dyadic_interval`.
+
+## Implementation details
+
+We first define `Dyadic.smallArtanh`, which computes `artanh` of a small dyadic number `num / den`
+using the binary splitting method. Then we use the identity
+`log 2 = 6 * artanh (1 / 17) + 4 * artanh (1 / 19) + 4 * artanh (1 / 31)`
+to obtain a dyadic approximation of `log 2`.
+
+With these, `log x` is computed for arbitrary `x` by first bringing `|x|` into the interval
+`[1, 2)` (writing `x = x' * 2 ^ k` with `|x'| ∈ [1, 2)`) and then adding `k * log 2`; this keeps
+the argument of the series small, so that it converges quickly.
+
+We use `artanh` rather than `log` itself because all the terms of its series are positive (for a
+positive argument). Hence every truncated partial sum is a lower bound, and an upper bound is
+obtained by adding a `step prec`.
 
 ## References
 
@@ -27,8 +44,7 @@ section
 
 variable (num den prec : ℤ)
 
---  wait for <https://github.com/DavidLedvinka/mathlib4/tree/inclusion-division>?
-/-- TODO doc -/
+/-- The floor division of two integers with precision `prec`. -/
 def ofIntFdivWithPrec : Dyadic :=
   match prec with
   | .ofNat p => .ofIntWithPrec ((num <<< p).fdiv den) prec
@@ -74,12 +90,14 @@ open Real
 
 section SmallArtanh
 
-/-- TODO doc -/
+/-- The `n`-th partial sum of the `artanh` series at `num / den`,
+returned as `P, Q` with `P / Q` equal to this sum.
+Note that the series converges slowly when input close to `1`. -/
 protected def smallArtanh (num den : ℕ) (n : ℕ) : ℕ × ℕ :=
   let (_, Q, R) := go 0 n
   (num * R, den * Q)
 where
-  /-- TODO doc-/
+  /-- Binary splitting auxiliary function: `go a b` returns `(P, Q, R)` on segment `[a, b)`. -/
   go : ℕ -> ℕ -> ℕ × ℕ × ℕ := fun a b =>
     match h : b - a with
     | 0 => (1, 1, 0)
@@ -211,10 +229,9 @@ section Log
 
 section LogTwo
 
-/-- Computes the lower bound `l : Dyadic` for `log 2` with precision `prec`,
-that is, `l < log 2` and `log 2 - l` < `ulp`. -/
+/-- Computes a lower bound `l : Dyadic` for `log 2` with precision `prec`. -/
 protected def logTwo (prec : ℕ) : Dyadic :=
-  -- use `prec / 8 + 1` instead of `(prec + 7) / 8` to make sure `k ≠ 0`
+  -- use `prec / 8 + 1` instead of `(prec + 7) / 8` to make sure it is nonzero.
   let (P1, Q1) : ℕ × ℕ := Dyadic.smallArtanh 1 17 (prec / 8 + 1)
   let (P2, Q2) : ℕ × ℕ := Dyadic.smallArtanh 1 19 (prec / 8 + 1)
   let (P3, Q3) : ℕ × ℕ := Dyadic.smallArtanh 1 31 (prec / 9 + 1)
@@ -301,7 +318,7 @@ end LogTwo
 
 section LogSum
 
-/-- TODO doc -/
+/-- Computes a lower bound `l : Dyadic` for `log x` when `1 ≤ |x| < 2` with precision `prec`. -/
 protected def logSum (x : Dyadic) (prec : ℕ) : Dyadic :=
   if x = 1 ∨ x = -1 then 0 else
   match x with
@@ -309,6 +326,7 @@ protected def logSum (x : Dyadic) (prec : ℕ) : Dyadic :=
   | ofOdd n _ _ =>
     let e : ℕ := n.natAbs.log2
     let m : ℕ := n.natAbs
+    -- `(x - 1) / (x + 1) = (m - 2 ^ e) / (m + 2 ^ e) ∈ (0, 1 / 3)`
     -- Dyadic.smallArtanh -> δ₁ < (1 / 2) ^ (prec + 2)
     let (P, Q) : ℕ × ℕ := Dyadic.smallArtanh (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
     -- ofIntFdivWithPrec -> δ₂ ≤ (1 / 2) ^ (prec + 2)
@@ -408,7 +426,7 @@ theorem abs_sub_logSum_lt {x : Dyadic} (hx : 1 ≤ |x| ∧ |x| < 2) (prec : ℕ)
 
 end LogSum
 
-/-- Computes the lower bound for `log x`. -/
+/-- Computes a lower bound for `log x` with precision `prec`. -/
 def lowerLog (x : Dyadic) (prec : ℕ) : Dyadic :=
   if x = 1 ∨ x = -1 then 0 else
   match x with
@@ -422,7 +440,7 @@ def lowerLog (x : Dyadic) (prec : ℕ) : Dyadic :=
     else
       Dyadic.logSum x' (prec + 1) + k * (Dyadic.logTwo wp + step wp)
 
-/-- Computes the upper bound for `log x`. -/
+/-- Computes an upper bound for `log x`. -/
 def upperLog (x : Dyadic) (prec : ℕ) : Dyadic :=
   if x = 0 ∨ x = 1 ∨ x = -1 then 0 else lowerLog x prec + step prec
 
@@ -518,7 +536,7 @@ end Dyadic
 
 namespace Inclusion
 
-/-- TODO doc -/
+/-- Logarithm of an Interval. -/
 def Interval.log (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
   match I.abs with
   | ⟨WithBot.some lb, ⊤⟩ =>
