@@ -241,6 +241,9 @@ instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R) :=
 instance : NonUnitalNonAssocCommSemiring (Center R) :=
   {toNonUnitalNonAssocSemiring := inferInstanceAs <| NonUnitalNonAssocSemiring (center R), mul_comm}
 
+instance {R : Type*} [NonUnitalSemiring R] : NonUnitalCommSemiring (Center R) :=
+  {toNonUnitalSemiring := inferInstanceAs <| NonUnitalSemiring (center R), mul_comm}
+
 @[simp]
 lemma _root_.Center.coe_zero : (0 : Center R).val = 0 := rfl
 
@@ -250,6 +253,7 @@ lemma _root_.Center.coe_add (a b : Center R) : (a + b).val = a.val + b.val := rf
 @[simp]
 lemma _root_.Center.coe_nsmul (n : ℕ) (z : Center R) : (n • z).val = n • z.val := rfl
 
+/-- The inclusion `Center R →ₙ+* R` as a `nonUnitalRingHom`. -/
 @[simps!]
 def _root_.Center.nonUnitalRingHom : Center R →ₙ+* R where
   toFun z := z.val

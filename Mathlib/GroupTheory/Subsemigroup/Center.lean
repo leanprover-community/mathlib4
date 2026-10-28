@@ -53,8 +53,8 @@ instance center.commSemigroup : CommSemigroup (center M) where
   mul_comm a _ := Subtype.ext <| a.2.comm _
 
 @[to_additive]
-instance {M} [Semigroup M] : CommSemigroup (Center M) where
-  mul_assoc := Center.mul_assoc'
+instance {M} [Semigroup M] : CommSemigroup (Center M) :=
+  { toSemigroup := inferInstanceAs <| Semigroup (center M), mul_comm}
 
 @[to_additive]
 lemma _root_.Center.subtype_surjective {M} [CommSemigroup M] :

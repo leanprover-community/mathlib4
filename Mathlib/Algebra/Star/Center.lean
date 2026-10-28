@@ -44,3 +44,12 @@ theorem Set.star_mem_centralizer (ha : a ∈ Set.centralizer (s ∪ star s)) :
     star a ∈ Set.centralizer (s ∪ star s) :=
   Set.star_mem_centralizer'
     (fun _x hx => hx.elim (fun hx => Or.inr <| Set.star_mem_star.mpr hx) Or.inl) ha
+
+instance : StarMul (Center R) where
+  star z := Center.mk (star z.val) (Set.star_mem_center z.prop)
+  star_involutive _ := by simp
+  star_mul := by simp
+
+@[simp]
+lemma _root_.Center.coe_star (R) [NonUnitalNonAssocSemiring R] [StarRing R] (a : Center R) :
+    (star a).val = star a.val := rfl

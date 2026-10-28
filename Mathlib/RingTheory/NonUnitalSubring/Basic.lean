@@ -357,6 +357,9 @@ theorem center_toNonUnitalSubsemiring :
 instance : NonUnitalNonAssocCommRing (Center R) :=
   {toNonUnitalNonAssocRing := inferInstanceAs <| NonUnitalNonAssocRing (center R), mul_comm}
 
+instance (R) [NonUnitalRing R] : NonUnitalCommRing (Center R) :=
+  {toNonUnitalRing := inferInstanceAs <| NonUnitalRing (center R), mul_comm}
+
 @[simp] lemma _root_.Center.coe_neg (z : Center R) : (-z).val = -z.val := rfl
 
 @[simp] lemma _root_.Center.coe_zsmul (n : ℤ) (z : Center R) : (n • z).val = n • z.val := rfl
