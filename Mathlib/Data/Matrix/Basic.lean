@@ -860,8 +860,8 @@ variable [Fintype n]
   __ := prodAddEquiv n n α β
   map_mul' _ _ := by ext <;> simp [Matrix.mul_apply, Prod.fst_sum, Prod.snd_sum]
 
-@[simp] theorem toAddEquiv_prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β]
-    {a : Matrix n n (α × β)} : prodRingEquiv n α β = prodAddEquiv n n α β := rfl
+@[simp] theorem toAddEquiv_prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β] :
+    prodRingEquiv n α β = prodAddEquiv n n α β := rfl
 
 variable (R) [CommSemiring R] [DecidableEq n]
 
