@@ -24,9 +24,9 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*}
 
-section LE
-
 namespace WithTop
+
+section LE
 
 /-!
 Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot α`
@@ -36,10 +36,8 @@ variable [LE α]
 
 open scoped Classical in
 @[to_dual]
-noncomputable instance [SupSet α] : SupSet (WithTop α) :=
-  ⟨fun S =>
-    if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
-      ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
+noncomputable instance instSupSet [SupSet α] : SupSet (WithTop α) :=
+  ⟨fun S => if ⊤ ∈ S ∨ ¬BddAbove ((↑) ⁻¹' S : Set α) then ⊤ else ↑(sSup ((↑) ⁻¹' S : Set α))⟩
 
 open scoped Classical in
 @[to_dual]
@@ -47,26 +45,46 @@ noncomputable instance instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
 @[to_dual]
+theorem sSup_eq_top_iff [SupSet α] {s : Set (WithTop α)} :
+    sSup s = ⊤ ↔ ⊤ ∈ s ∨ ¬BddAbove ((↑) ⁻¹' s : Set α) := by
+  classical exact coe_ne_top.symm.ite_eq_left_iff
+
+@[to_dual]
+theorem sSup_eq_coe_iff [SupSet α] {s : Set (WithTop α)} {a : α} :
+    sSup s = a ↔ ⊤ ∉ s ∧ BddAbove ((↑) ⁻¹' s : Set α) ∧ sSup ((↑) ⁻¹' s) = a := by
+  classical exact ite_eq_iff.trans <| by simp [and_assoc]
+
+@[to_dual]
+theorem sInf_eq_top_iff [InfSet α] {s : Set (WithTop α)} :
+    sInf s = ⊤ ↔ s ⊆ {⊤} ∨ ¬BddBelow s := by
+  classical exact coe_ne_top.symm.ite_eq_left_iff
+
+@[to_dual]
+theorem sInf_eq_coe_iff [InfSet α] {s : Set (WithTop α)} {a : α} :
+    sInf s = a ↔ ¬s ⊆ {⊤} ∧ BddBelow s ∧ sInf ((↑) ⁻¹' s) = a := by
+  classical exact ite_eq_iff.trans <| by simp [and_assoc]
+
+@[to_dual]
 theorem sSup_eq [SupSet α] {s : Set (WithTop α)} (hs : ⊤ ∉ s)
     (hs' : BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ↑(sSup ((↑) ⁻¹' s) : α) :=
-  (ite_eq_right hs).trans <| ite_eq_left hs'
+  sSup_eq_coe_iff.2 ⟨hs, hs', rfl⟩
 
 @[to_dual]
 theorem sInf_eq [InfSet α] {s : Set (WithTop α)} (hs : ¬s ⊆ {⊤}) (h's : BddBelow s) :
     sInf s = ↑(sInf ((↑) ⁻¹' s) : α) :=
-  ite_eq_right <| by simp [hs, h's]
+  sInf_eq_coe_iff.2 ⟨hs, h's, rfl⟩
 
 @[to_dual (attr := simp)]
 theorem sInf_empty [InfSet α] : sInf (∅ : Set (WithTop α)) = ⊤ :=
-  ite_eq_left <| by simp
+  sInf_eq_top_iff.2 <| .inl <| empty_subset _
 
 @[to_dual (attr := simp)]
 theorem sInf_singleton_top [InfSet α] : sInf ({⊤} : Set (WithTop α)) = ⊤ :=
-  ite_eq_left <| .inl subset_rfl
+  sInf_eq_top_iff.2 <| .inl subset_rfl
 
 @[to_dual (attr := simp)]
 theorem sSup_of_top_mem [SupSet α] {s : Set (WithTop α)} (h : ⊤ ∈ s) : sSup s = ⊤ :=
-  ite_eq_left h
+  sSup_eq_top_iff.2 <| .inl h
 
 @[to_dual]
 theorem sSup_singleton_top [SupSet α] : sSup ({⊤} : Set (WithTop α)) = ⊤ := by
@@ -74,39 +92,92 @@ theorem sSup_singleton_top [SupSet α] : sSup ({⊤} : Set (WithTop α)) = ⊤ :
 
 @[to_dual]
 theorem sSup_of_not_bddAbove [SupSet α] {s : Set (WithTop α)}
-    (h : ¬BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ⊤ := by
-  by_cases hmem : ⊤ ∈ s
-  · exact sSup_of_top_mem hmem
-  · exact ite_eq_right hmem |>.trans <| ite_eq_right h
+    (h : ¬BddAbove ((↑) ⁻¹' s : Set α)) : sSup s = ⊤ :=
+  sSup_eq_top_iff.2 <| .inr h
 
 @[to_dual (attr := simp)]
 theorem sInf_of_not_bddBelow [InfSet α] {s : Set (WithTop α)} (h : ¬BddBelow s) :
     sInf s = ⊤ :=
-  ite_eq_left <| .inr h
+  sInf_eq_top_iff.2 <| .inr h
 
 @[to_dual (attr := norm_cast)]
 theorem coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
-  classical
-  change _ = ite _ _ _
-  rw [ite_eq_right, preimage_image_eq, ite_eq_left hs]
-  · exact Option.some_injective _
-  · rintro ⟨x, _, ⟨⟩⟩
+  rw [sSup_eq (by simp) (by rwa [preimage_image_eq _ coe_injective]),
+    preimage_image_eq _ coe_injective]
 
-@[to_dual]
-theorem sSup_empty (α : Type*) [CompleteLattice α] : (sSup ∅ : WithTop α) = ⊥ := by
-  rw [sSup_eq (by simp) (OrderTop.bddAbove _), Set.preimage_empty, _root_.sSup_empty, coe_bot]
-
-end WithTop
+@[to_dual (attr := deprecated (since := "2026-10-27"))] alias sSup_empty := sSup_empty
 
 end LE
+
+@[to_dual]
+theorem isCompl_range_coe : IsCompl (range ((↑) : α → WithTop α)) {⊤} :=
+  eq_compl_iff_isCompl.1 <| Set.ext fun _ ↦ ne_top_iff_exists.symm
 
 section Preorder
 
 variable [Preorder α]
 
+@[to_dual]
+theorem lowerBounds_preimage_coe {s : Set (WithTop α)} :
+    lowerBounds (((↑) : α → WithTop α) ⁻¹' s) = (↑) ⁻¹' lowerBounds s := by
+  ext a; simp [mem_lowerBounds, WithTop.forall]
+
+@[to_dual]
+theorem bddBelow_preimage_coe [Nonempty α] {s : Set (WithTop α)} :
+    BddBelow (((↑) : α → WithTop α) ⁻¹' s) ↔ BddBelow s := by
+  simp only [BddBelow, lowerBounds_preimage_coe, Set.Nonempty, mem_preimage, WithTop.exists,
+    iff_or_self]
+  exact fun h ↦ ⟨Classical.arbitrary α, lowerBounds_mono_mem le_top h⟩
+
+@[to_dual]
+theorem isGLB_coe_iff {s : Set (WithTop α)} {a : α} :
+    IsGLB s (a : WithTop α) ↔ ¬s ⊆ {⊤} ∧ IsGLB ((↑) ⁻¹' s) a := by
+  simp [isGLB_iff_le_iff, WithTop.forall, mem_lowerBounds, subset_def]
+
+@[to_dual]
+theorem isLUB_coe_iff {s : Set (WithTop α)} {a : α} :
+    IsLUB s (a : WithTop α) ↔ ⊤ ∉ s ∧ IsLUB ((↑) ⁻¹' s) a := by
+  by_cases hs : ⊤ ∈ s
+  · simpa [hs] using fun h ↦ not_top_le_coe a (h.1 hs)
+  · simp [hs, isLUB_iff_le_iff, WithTop.forall, mem_upperBounds]
+
+@[to_dual]
+theorem isGLB_top_iff {s : Set (WithTop α)} :
+    IsGLB s ⊤ ↔ s ⊆ {⊤} :=
+  ⟨fun h _ hx ↦ WithTop.top_le_iff.mp (h.1 hx),
+    fun h ↦ ⟨fun _ hx ↦ le_of_eq (h hx).symm, fun _ _ ↦ le_top⟩⟩
+
+@[to_dual]
+theorem isLUB_top_iff {s : Set (WithTop α)} :
+    IsLUB s ⊤ ↔ ⊤ ∈ s ∨ ¬BddAbove ((↑) ⁻¹' s : Set α) := by
+  simp [isLUB_iff_le_iff, WithTop.forall, mem_upperBounds, BddAbove, Set.Nonempty,
+    ← or_iff_not_imp_left, forall_or_left]
+
+@[to_dual]
+noncomputable instance instOrderSupSet [OrderSupSet α] :
+    OrderSupSet (WithTop α) where
+  isLUB_sSup_of_isLUB s a h := by
+    cases a with
+    | top => rwa [sSup_eq_top_iff.2 (isLUB_top_iff.1 h)]
+    | coe a =>
+      rw [isLUB_coe_iff] at h
+      rw [sSup_eq h.1 h.2.bddAbove, isLUB_coe_iff]
+      exact ⟨h.1, h.2.isLUB_sSup⟩
+
+@[to_dual]
+noncomputable instance instOrderInfSet [OrderInfSet α] :
+    OrderInfSet (WithTop α) where
+  isGLB_sInf_of_isGLB s a h := by
+    cases a with
+    | top => rwa [sInf_eq_top_iff.2 (.inl (isGLB_top_iff.1 h))]
+    | coe a =>
+      obtain ⟨hs, h'⟩ := isGLB_coe_iff.mp h
+      rw [sInf_eq hs ⟨_, h.1⟩, isGLB_coe_iff]
+      exact ⟨hs, h'.isGLB_sInf⟩
+
 @[to_dual (attr := norm_cast)]
-theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
+theorem coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
     (h's : BddBelow s) : ↑(sInf s) = (sInf ((fun (a : α) ↦ ↑a) '' s) : WithTop α) := by
   classical
   obtain ⟨x, hx⟩ := hs
@@ -120,8 +191,6 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
 
 end Preorder
 
-namespace WithTop
-
 variable [ConditionallyCompleteLinearOrderBot α]
 
 /-- The `sSup` of a non-empty set is its least upper bound for a conditionally
@@ -129,38 +198,12 @@ complete lattice with a top. -/
 @[to_dual]
 theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : s.Nonempty) : IsLUB s (sSup s) := by
-  classical
-  constructor
-  · change ite _ _ _ ∈ _
-    split_ifs with h₁ h₂
-    · intro _ _
-      exact le_top
-    · rintro (⟨⟩ | a) ha
-      · contradiction
-      apply coe_le_coe.2
-      exact le_csSup h₂ ha
-    · intro _ _
-      exact le_top
-  · change ite _ _ _ ∈ _
-    split_ifs with h₁ h₂
-    · rintro (⟨⟩ | a) ha
-      · exact le_rfl
-      · exact False.elim (not_top_le_coe a (ha h₁))
-    · rintro (⟨⟩ | b) hb
-      · exact le_top
-      refine coe_le_coe.2 (csSup_le ?_ ?_)
-      · rcases hs with ⟨⟨⟩ | b, hb⟩
-        · exact absurd hb h₁
-        · exact ⟨b, hb⟩
-      · intro a ha
-        exact coe_le_coe.1 (hb ha)
-    · rintro (⟨⟩ | b) hb
-      · exact le_rfl
-      · exfalso
-        apply h₂
-        use b
-        intro a ha
-        exact coe_le_coe.1 (hb ha)
+  by_cases h : ⊤ ∈ s ∨ ¬BddAbove ((↑) ⁻¹' s : Set β)
+  · rw [sSup_eq_top_iff.2 h]
+    exact isLUB_top_iff.2 h
+  rw [not_or, not_not] at h
+  rw [sSup_eq h.1 h.2, isLUB_coe_iff]
+  exact ⟨h.1, isLUB_csSup (hs.preimage' <| by simp [isCompl_range_coe.eq_compl, h.1]) h.2⟩
 
 theorem isLUB_sSup (s : Set (WithTop α)) : IsLUB s (sSup s) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
@@ -172,49 +215,16 @@ complete lattice with a top. -/
 @[to_dual]
 theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : BddBelow s) : IsGLB s (sInf s) := by
-  classical
-  constructor
-  · change ite _ _ _ ∈ _
-    simp only [hs, not_true_eq_false, or_false]
-    split_ifs with h
-    · intro a ha
-      exact top_le_iff.2 (Set.mem_singleton_iff.1 (h ha))
-    · rintro (⟨⟩ | a) ha
-      · exact le_top
-      refine coe_le_coe.2 (csInf_le ?_ ha)
-      rcases hs with ⟨⟨⟩ | b, hb⟩
-      · exfalso
-        apply h
-        intro c hc
-        rw [mem_singleton_iff, ← top_le_iff]
-        exact hb hc
-      use b
-      intro c hc
-      exact coe_le_coe.1 (hb hc)
-  · change ite _ _ _ ∈ _
-    simp only [hs, not_true_eq_false, or_false]
-    split_ifs with h
-    · intro _ _
-      exact le_top
-    · rintro (⟨⟩ | a) ha
-      · exfalso
-        apply h
-        intro b hb
-        exact Set.mem_singleton_iff.2 (top_le_iff.1 (ha hb))
-      · refine coe_le_coe.2 (le_csInf ?_ ?_)
-        · classical
-            contrapose! h
-            rintro (⟨⟩ | a) ha
-            · exact mem_singleton ⊤
-            · exact (not_nonempty_iff_eq_empty.2 h ⟨a, ha⟩).elim
-        · intro b hb
-          rw [← coe_le_coe]
-          exact ha hb
+  by_cases h : s ⊆ {⊤}
+  · rw [sInf_eq_top_iff.2 (.inl h)]
+    exact isGLB_top_iff.2 h
+  rw [sInf_eq h hs, isGLB_coe_iff]
+  rw [← inter_compl_nonempty_iff, ← isCompl_range_coe.eq_compl, ← nonempty_preimage_iff] at h ⊢
+  have := h.nonempty
+  exact ⟨h, isGLB_csInf h (bddBelow_preimage_coe.mpr hs)⟩
 
-theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
-  by_cases hs : BddBelow s
-  · exact isGLB_sInf' hs
-  · exact isGLB_sInf' (OrderBot.bddBelow _)
+theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) :=
+  isGLB_sInf' (OrderBot.bddBelow _)
 
 noncomputable instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder
@@ -265,7 +275,7 @@ noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
 @[to_dual]
 noncomputable instance [CompleteLattice α] : CompleteLattice (WithTop α) where
   isLUB_sSup s := ⟨fun _ ↦ le_csSup (OrderTop.bddAbove _), fun _ has ↦
-    s.eq_empty_or_nonempty.elim (by simp [·, WithTop.sSup_empty]) (csSup_le · has)⟩
+    s.eq_empty_or_nonempty.elim (by simp [·]) (csSup_le · has)⟩
   isGLB_sInf s := ⟨fun _ ↦ csInf_le (OrderBot.bddBelow _), fun _ hsa ↦
     s.eq_empty_or_nonempty.elim (by simp [·]) (le_csInf · hsa)⟩
 
