@@ -25,7 +25,7 @@ on an absolute value. This is useful when dealing with several absolute values o
 In particular this allows us to define the completion of a field at a given absolute value.
 -/
 
-public section
+@[expose] public section
 
 open Topology
 
@@ -96,13 +96,9 @@ theorem isometry_map : Isometry (WithAbs.map v w (algebraMap K L)) := by
 
 end WithAbs
 
-end
-
 /-!
 ### The completion of a field at an absolute value.
 -/
-
-@[expose] public section
 
 namespace AbsoluteValue
 
@@ -331,10 +327,11 @@ theorem algebraMap_apply_of_liesOver (x : v.Completion) :
     algebraMap v.Completion w.Completion x = map v w x := by
   rw [algebraMap_eq_of_liesOver]
 
-@[deprecated (since := "2026-10-28")] alias algebraMap_apply := algebraMap_apply_of_liesOver
-
-theorem algebra_eq : ‹_› = algebraOfLiesOver v w :=
+theorem algebra_eq_of_liesOver : ‹_› = algebraOfLiesOver v w :=
   Algebra.algebra_ext _ _ (algebraMap_apply_of_liesOver v w)
+
+@[deprecated (since := "2026-10-28")] alias algebraMap_apply := algebraMap_apply_of_liesOver
+@[deprecated (since := "2026-10-28")] alias algebra_eq := algebra_eq_of_liesOver
 
 end LiesOver
 
