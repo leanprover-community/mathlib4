@@ -47,7 +47,7 @@ open Submodule
 theorem ker_id_sub_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) :
     ker (id - p.subtype.comp f) = p := by
   ext x
-  simp only [comp_apply, mem_ker, subtype_apply, sub_apply, id_apply, sub_eq_zero]
+  simp only [comp_apply, mem_ker, subtype_apply, LinearMap.sub_apply, id_apply, sub_eq_zero]
   exact ⟨fun h => h.symm ▸ Submodule.coe_mem _, fun hx => by rw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
 
 theorem range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
@@ -611,7 +611,7 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coe_subtype,
       map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
-      coe_subtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
+      coe_subtype, zero_add, map_coe_ker, prodMap_apply, LinearMap.zero_apply, add_zero]
 
 theorem submodule_unique {f : M →ₗ[S] M} {m₁ m₂ : Submodule S M}
     (hf₁ : IsProj m₁ f) (hf₂ : IsProj m₂ f) : m₁ = m₂ := by
@@ -623,7 +623,7 @@ protected theorem range {f : M →ₗ[S] M} (h : IsProj m f) : range f = m :=
 
 variable (S M) in
 protected theorem bot : IsProj (⊥ : Submodule S M) (0 : M →ₗ[S] M) :=
-  ⟨congrFun rfl, by simp only [mem_bot, zero_apply, forall_eq]⟩
+  ⟨congrFun rfl, by simp only [mem_bot, LinearMap.zero_apply, forall_eq]⟩
 
 variable (S M) in
 protected theorem top : IsProj (⊤ : Submodule S M) (id (R := S)) :=
