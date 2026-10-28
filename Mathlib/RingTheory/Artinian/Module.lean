@@ -37,7 +37,7 @@ itself, or simply Artinian if it is both left and right Artinian.
   iff its Jacobson radical is zero.
 
 * `instIsSemiprimaryRingOfIsArtinianRing`: an Artinian ring `R` is semiprimary, in particular
-  the Jacobson radical of `R` is a nilpotent ideal (`IsArtinianRing.isNilpotent_jacobson_bot`).
+  the Jacobson radical of `R` is a nilpotent ideal (`IsArtinianRing.isNilpotent_jacobson`).
 
 ## References
 
