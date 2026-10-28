@@ -192,25 +192,3 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
   convert! this
   rw [← Module.supportDim_quotient_eq_ringKrullDim,
     Module.supportDim_eq_of_equiv (Shrink.linearEquiv R (R ⧸ P))]
-
-theorem depth_le_supportDim [IsNoetherianRing R] [IsLocalRing R] [Small.{v, u} R]
-    (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
-    IsLocalRing.depth M ≤ Module.supportDim R M := by
-  rcases associatedPrimes.nonempty R M with ⟨p, hp⟩
-  have := depth_le_ringKrullDim_associatedPrime M p hp
-  rw [← WithBot.coe_le_coe, WithBot.coe_unbot] at this
-  rw [Module.supportDim_eq_ringKrullDim_quotient_annihilator]
-  exact this.trans (ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective
-    (le_of_eq_of_le Submodule.annihilator_top.symm hp.annihilator_le)))
-
-theorem depth_le_ringKrullDim [IsNoetherianRing R] [IsLocalRing R] [Small.{v, u} R]
-    (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
-    IsLocalRing.depth M ≤ ringKrullDim R :=
-  (depth_le_supportDim M).trans (Module.supportDim_le_ringKrullDim R M)
-
-theorem depth_ne_top [IsNoetherianRing R] [IsLocalRing R] [Small.{v, u} R]
-    (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] :
-    IsLocalRing.depth M ≠ ⊤ := by
-  have := lt_of_le_of_lt (depth_le_ringKrullDim M) ringKrullDim_lt_top
-  simp only [← WithBot.coe_top, WithBot.coe_lt_coe] at this
-  exact this.ne_top
