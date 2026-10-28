@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.IsBotOne
 
