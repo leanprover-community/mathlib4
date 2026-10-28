@@ -440,7 +440,7 @@ theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
     have hefixed_ne_top : e.fixedSubmodule ≠ ⊤ := by
       rwa [ne_eq, LinearEquiv.fixedSubmodule_eq_top_iff]
     obtain ⟨w : V, hw : w ∉ e.fixedSubmodule⟩ :=
-      SetLike.exists_not_mem_of_ne_top e.fixedSubmodule hefixed_ne_top rfl
+      SetLike.exists_notMem_of_ne_top e.fixedSubmodule hefixed_ne_top rfl
     obtain ⟨f, hfw, hf⟩ := Submodule.exists_dual_map_eq_bot_of_notMem hw inferInstance
     rw [mem_dilatransvections_iff_finrank_quotient] at he
     have hf' : e.fixedSubmodule = LinearMap.ker f := by
@@ -606,7 +606,7 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     · simp [← hxy, hxi]
     · rw [Finsupp.single_eq_of_ne hxi]; simp [hxy]
     · rw [Finsupp.single_eq_of_ne hxy, zero_add, mul_assoc]
-      convert! mul_zero _
+      convert mul_zero _
       by_cases hxi : x = i
       · simp [← hxi, Finsupp.single_eq_of_ne hxy]
       · simp [Finsupp.single_eq_of_ne hxi]

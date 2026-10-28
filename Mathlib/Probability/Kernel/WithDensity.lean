@@ -33,7 +33,7 @@ an s-finite kernel.
 @[expose] public section
 
 
-open MeasureTheory ProbabilityTheory
+open MeasureTheory ProbabilityTheory CompleteLattice
 
 open scoped MeasureTheory ENNReal NNReal
 
@@ -157,7 +157,7 @@ lemma withDensity_sub_add_cancel [IsSFiniteKernel κ] {f g : α → β → ℝ�
 theorem withDensity_tsum [Countable ι] (κ : Kernel α β) [IsSFiniteKernel κ] {f : ι → α → β → ℝ≥0∞}
     (hf : ∀ i, Measurable (Function.uncurry (f i))) :
     withDensity κ (∑' n, f n) = Kernel.sum fun n => withDensity κ (f n) := by
-  have h_sum_a : ∀ a, Summable fun n => f n a := fun a => Pi.summable.mpr fun b => ENNReal.summable
+  have h_sum_a : ∀ a, Summable fun n => f n a := fun a => Pi.summable.mpr fun b => summable
   have h_sum : Summable fun n => f n := Pi.summable.mpr h_sum_a
   ext a s hs
   rw [sum_apply' _ a hs, Kernel.withDensity_apply' κ _ a s]
@@ -166,7 +166,7 @@ theorem withDensity_tsum [Countable ι] (κ : Kernel α β) [IsSFiniteKernel κ]
       ext1 p
       simp only [Function.uncurry_def]
       rw [Pi.tsum_apply h_sum, Pi.tsum_apply (h_sum_a _), Pi.tsum_apply]
-      exact Pi.summable.mpr fun p => ENNReal.summable
+      exact Pi.summable.mpr fun p => summable
     rw [this]
     fun_prop
   have : ∫⁻ b in s, (∑' n, f n) a b ∂κ a = ∫⁻ b in s, ∑' n, (fun b => f n a b) b ∂κ a := by
@@ -216,7 +216,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
       min_eq_left (h_le a b n hn)⟩
   have hf_eq_tsum : f = ∑' n, fs n := by
     have h_sum_a : ∀ a, Summable fun n => fs n a :=
-      fun _ => Pi.summable.mpr fun _ => ENNReal.summable
+      fun _ => Pi.summable.mpr fun _ => summable
     ext a b : 2
     rw [Pi.tsum_apply (Pi.summable.mpr h_sum_a), Pi.tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]

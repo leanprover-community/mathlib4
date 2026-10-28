@@ -107,11 +107,9 @@ theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
   exact ⟨huv, _, _, h ha, rfl, rfl⟩
 
 @[simp] lemma map_id : G.map id = G := by
-  ext
   grind
 
 @[simp] lemma map_map (f : V → W) (g : W → X) : (G.map f).map g = G.map (g ∘ f) := by
-  ext
   grind
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
@@ -674,12 +672,12 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
   left_inv := by
     rintro ⟨e, h⟩
     simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
-    convert! congr_fun Sym2.map_id e
+    convert! congr($Sym2.map_id e)
     exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
     simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Sym2.map_map, comp_apply, Subtype.mk.injEq]
-    convert! congr_fun Sym2.map_id e
+    convert! congr($Sym2.map_id e)
     exact RelIso.apply_symm_apply _ _
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
@@ -695,7 +693,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
 include f in
 theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
-  convert! rfl
+  convert rfl
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/

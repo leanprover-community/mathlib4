@@ -251,7 +251,7 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
   have hmeas : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) :=
     htemp.1.continuous.aestronglyMeasurable
   have : MemLp (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) 2 := by
-    rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by norm_num) (by norm_num) hmeas]
+    rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by simp) (by simp) hmeas]
     suffices h : ∫⁻ a : E, ENNReal.ofReal ‖(1 + ‖a‖ ^ 2) ^ (-s)‖ < ⊤ by
       norm_cast
       simp_rw [ofReal_norm] at h
@@ -268,7 +268,7 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
   use this.toLp • u
   rw [MeasureTheory.Lp.toTemperedDistribution_smul_eq]
   · rw [← hu, smulLeftCLM_smulLeftCLM_apply (by fun_prop) (by fun_prop)]
-    convert! (smulLeftCLM_const 1 (𝓕 f)).symm using 1
+    convert (smulLeftCLM_const 1 (𝓕 f)).symm using 1
     · simp
     · congr
       ext x
@@ -302,7 +302,7 @@ theorem MemSobolev.fourierMultiplierCLM_of_bounded {s : ℝ} {f : 𝓢'(E, F)}
 theorem MemSobolev.mono {s s' : ℝ} (h : s' ≤ s) {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f) :
     MemSobolev s' 2 f := by
   have h' : (s' - s) / 2 ≤ 0 := by
-    rw [div_le_iff₀ (by norm_num)]
+    rw [div_le_iff₀ (by simp)]
     simp [h]
   have hs : s' = (s' - s) + s := by ring
   rw [hs, ← memSobolev_besselPotential_iff]

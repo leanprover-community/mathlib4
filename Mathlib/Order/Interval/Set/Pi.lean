@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Data.Set.BooleanAlgebra
-public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.Interval.Set.UnorderedInterval
+
+import Mathlib.Data.Set.Piecewise
 
 /-!
 # Intervals in `pi`-space

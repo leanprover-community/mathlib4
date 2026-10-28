@@ -36,14 +36,14 @@ theorem mem_dissipate [LE α] {x : α} {z : β} : z ∈ dissipate s x ↔ ∀ y 
   simp [dissipate_def]
 
 theorem dissipate_subset [LE α] {x y : α} (hy : y ≤ x) : dissipate s x ⊆ s y :=
-  biInter_subset_of_mem hy
+  fun _ hz ↦ mem_dissipate.1 hz y hy
 
 theorem iInter_subset_dissipate [LE α] (x : α) : ⋂ i, s i ⊆ dissipate s x := by
   simp only [dissipate, subset_iInter_iff]
   exact fun x h ↦ iInter_subset_of_subset x fun ⦃a⦄ a ↦ a
 
 theorem antitone_dissipate [Preorder α] : Antitone (dissipate s) :=
-  fun _ _ hab ↦ biInter_subset_biInter_left fun _ hz => le_trans hz hab
+  fun _ _ hab _ hz ↦ mem_dissipate.2 fun y hy ↦ mem_dissipate.1 hz y (hy.trans hab)
 
 @[gcongr]
 theorem dissipate_subset_dissipate [Preorder α] {x y} (h : y ≤ x) :

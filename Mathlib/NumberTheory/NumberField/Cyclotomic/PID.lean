@@ -5,9 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.ClassNumber
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+
+import Mathlib.NumberTheory.NumberField.ClassNumber
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.

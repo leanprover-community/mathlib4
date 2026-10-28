@@ -164,7 +164,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
   have : DenseRange (Set.inclusion (le_topologicalClosure S)) := by simp [-SetLike.coe_sort_coe]
   refine Continuous.ext_on this hφ hψ ?_
   rintro _ ⟨x, rfl⟩
-  simpa only using! DFunLike.congr_fun h x
+  simpa only using! congr($h x)
 
 theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
     {S : StarSubalgebra R A} [FunLike F S.topologicalClosure B]
@@ -199,11 +199,11 @@ def elemental (x : A) : StarSubalgebra R A :=
 
 namespace elemental
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ (self_mem_adjoin_singleton R x)
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem star_self_mem (x : A) : star x ∈ elemental R x :=
   star_mem <| self_mem R x
 

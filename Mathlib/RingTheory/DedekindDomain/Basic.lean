@@ -63,6 +63,11 @@ theorem Ideal.IsPrime.isMaximal {R : Type*} [CommRing R] [DimensionLEOne R]
     {p : Ideal R} (h : p.IsPrime) (hp : p ≠ ⊥) : p.IsMaximal :=
   DimensionLEOne.maximalOfPrime hp h
 
+theorem Ideal.mem_minimalPrimes_of_ne_bot {R : Type*} [CommRing R] [Ring.DimensionLEOne R]
+    {p q : Ideal R} [q.IsPrime] (hp : p ≠ ⊥) (hpq : p ≤ q) : q ∈ p.minimalPrimes :=
+  ⟨⟨‹_›, hpq⟩, fun r ⟨hr1, hr2⟩ h ↦
+    ((hr1.isMaximal (ne_bot_of_le_ne_bot hp hr2)).eq_of_le Ideal.IsPrime.ne_top' h).ge⟩
+
 namespace Ring.DimensionLEOne
 
 instance principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
@@ -116,7 +121,7 @@ The integral closure condition is independent of the choice of field of fraction
 use `isDedekindRing_iff` to prove `IsDedekindRing` for a given `fraction_map`.
 -/
 class IsDedekindRing : Prop
-  extends IsNoetherian A A, DimensionLEOne A, IsIntegralClosure A A (FractionRing A)
+  extends IsNoetherianRing A, DimensionLEOne A, IsIntegralClosure A A (FractionRing A)
 
 /-- An integral domain is a Dedekind domain if and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.
