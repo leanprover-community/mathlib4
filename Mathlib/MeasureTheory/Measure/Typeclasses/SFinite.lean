@@ -203,15 +203,6 @@ instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
 
 namespace Measure
 
-/-- A set in a σ-finite space has zero measure if and only if its intersection with
-all members of the countable family of finite measure spanning sets has zero measure. -/
-@[deprecated forall_measure_inter_isCountablySpanning_eq_zero +typeChanged (since := "2026-03-13")]
-theorem forall_measure_inter_spanningSets_eq_zero [MeasurableSpace α] {μ : Measure α}
-    [SigmaFinite μ] (s : Set α) : (∀ n, μ (s ∩ spanningSets μ n) = 0) ↔ μ s = 0 := by
-  nth_rw 2 [show s = ⋃ n, s ∩ spanningSets μ n by
-      rw [← inter_iUnion, iUnion_spanningSets, inter_univ]]
-  rw [measure_iUnion_null_iff]
-
 /-- A set in a σ-finite space has positive measure if and only if its intersection with
 some member of the countable family of finite measure spanning sets has positive measure. -/
 theorem exists_measure_inter_spanningSets_pos [MeasurableSpace α] {μ : Measure α} [SigmaFinite μ]
@@ -247,7 +238,7 @@ theorem _root_.Set.Infinite.meas_eq_top [MeasurableSingletonClass α]
   let ⟨ε, hne, hε⟩ := h'; have := hs.to_subtype
   calc
     ∞ = ∑' _ : s, ε := (ENNReal.tsum_const_eq_top_of_ne_zero hne).symm
-    _ ≤ ∑' x : s, μ {x.1} := ENNReal.tsum_le_tsum fun x ↦ hε x x.2
+    _ ≤ ∑' x : s, μ {x.1} := tsum_le_tsum fun x ↦ hε x x.2
     _ ≤ μ (⋃ x : s, {x.1}) := tsum_meas_le_meas_iUnion_of_disjoint _
       (fun _ ↦ MeasurableSet.singleton _) fun x y hne ↦ by simpa [Subtype.val_inj]
     _ = μ s := by simp
@@ -370,7 +361,6 @@ lemma exists_ae_subset_biUnion_countable [SFinite μ]
   apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
   exact LE.le.eventuallySubset (fun x hx ↦ by simp at hx ⊢; grind)
 
-set_option backward.defeqAttrib.useBackward false in
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
 each `mₙ`, then its measurable superset `toMeasurable μ t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (t ∩ s)`. -/
@@ -390,13 +380,13 @@ theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t
     refine le_antisymm ?_ (by gcongr)
     rw [hμ, sum_apply _ (M.inter hu)]
     apply le_trans _ (le_sum_apply _ _)
-    apply ENNReal.tsum_le_tsum (fun i ↦ ?_)
+    apply tsum_le_tsum (fun i ↦ ?_)
     calc
     m i ((⋂ n, w n) ∩ u) ≤ m i (w i ∩ u) := by gcongr; apply iInter_subset
     _ = m i (t ∩ u) := measure_toMeasurable_inter hu (hv i)
   -- thanks to the definition of `toMeasurable`, the previous property will also be shared
   -- by `toMeasurable μ t`, which is enough to conclude the proof.
-  rw [toMeasurable]
+  rw [toMeasurable_def]
   split_ifs with ht
   · apply measure_congr
     exact ae_eq_set_inter ht.choose_spec.2.2 (ae_eq_refl _)
@@ -463,7 +453,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
       _ = μ (t ∩ u) := by rw [restrict_apply MeasurableSet.univ, univ_inter]
   -- thanks to the definition of `toMeasurable`, the previous property will also be shared
   -- by `toMeasurable μ t`, which is enough to conclude the proof.
-  rw [toMeasurable]
+  rw [toMeasurable_def]
   split_ifs with ht
   · apply measure_congr
     exact ae_eq_set_inter ht.choose_spec.2.2 (ae_eq_refl _)

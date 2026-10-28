@@ -1002,23 +1002,11 @@ lemma iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f μ)
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
 
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_sum_of_notMem := iIndepFun.indepFun_finsetSum_of_notMem
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_prod_of_notMem := iIndepFun.indepFun_finsetProd_of_notMem
-
 @[to_additive]
 lemma iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem₀ hf_Indep (by simp [hf_meas]) hi
-
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_sum_of_notMem₀ := iIndepFun.indepFun_finsetSum_of_notMem₀
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_prod_of_notMem₀ := iIndepFun.indepFun_finsetProd_of_notMem₀
 
 @[to_additive]
 lemma iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β} (hf_Indep : iIndepFun f μ)
