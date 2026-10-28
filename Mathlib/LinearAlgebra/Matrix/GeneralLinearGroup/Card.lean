@@ -154,11 +154,11 @@ matrices with entries in `RingHom.ker f`, via `g ↦ g - 1`. -/
 noncomputable def GeneralLinearGroup.kerMapEquivMatrixKer :
     (map (n := n) f).ker ≃ Matrix n n (RingHom.ker f) where
   toFun g := .of fun i j ↦ ⟨(g.1 - 1 : Matrix n n R) i j, by
-    simpa [RingHom.mem_ker, sub_eq_zero, one_apply, apply_ite f]
+    simpa [RingHom.mem_ker, sub_eq_zero, Matrix.one_apply, apply_ite f]
       using Matrix.ext_iff.mpr (Units.ext_iff.mp (MonoidHom.mem_ker.mp g.2)) i j⟩
   invFun A :=
     have hA : (1 + A.map (↑) : Matrix n n R).map f = 1 := by
-      ext i j; simp [one_apply, apply_ite f, RingHom.mem_ker.mp (A i j).2]
+      ext i j; simp [Matrix.one_apply, apply_ite f, RingHom.mem_ker.mp (A i j).2]
     ⟨mk'' _ <| (isUnit_map_iff f _).mp <| by simp [RingHom.map_det, hA], Units.ext hA⟩
   left_inv g := by ext; simp
   right_inv A := by ext; simp
