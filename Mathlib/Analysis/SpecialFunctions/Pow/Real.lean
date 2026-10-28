@@ -831,14 +831,21 @@ lemma le_log_of_pow_le (hx : 0 < x) (h : x ^ n ≤ y) : n * log x ≤ log y :=
 lemma le_log_of_zpow_le {n : ℤ} (hx : 0 < x) (h : x ^ n ≤ y) : n * log x ≤ log y :=
   le_log_of_rpow_le hx (rpow_intCast _ _ ▸ h)
 
-lemma rpow_le_of_le_log (hx : 0 < x) (hy : 0 < y) (h : z * log x ≤ log y) : x ^ z ≤ y :=
-  (rpow_le_iff_le_log hx hy).2 h
+lemma rpow_le_of_le_log (hy : 0 < y) (h : z * log x ≤ log y) : x ^ z ≤ y := by
+  obtain rfl | hx := eq_or_ne x 0
+  · have hy1 : 1 ≤ y := by simpa [log_nonneg_iff hy] using h
+    exact (zero_rpow_le_one z).trans hy1
+  · calc x ^ z ≤ |x ^ z| := le_abs_self _
+      _ ≤ |x| ^ z := abs_rpow_le_abs_rpow x z
+      _ ≤ y := by
+        rw [rpow_le_iff_le_log (abs_pos.2 hx) hy, log_abs]
+        exact h
 
-lemma pow_le_of_le_log (hx : 0 < x) (hy : 0 < y) (h : n * log x ≤ log y) : x ^ n ≤ y :=
-  (pow_le_iff_le_log hx hy).2 h
+lemma pow_le_of_le_log (hy : 0 < y) (h : n * log x ≤ log y) : x ^ n ≤ y :=
+  rpow_natCast _ _ ▸ rpow_le_of_le_log hy h
 
-lemma zpow_le_of_le_log {n : ℤ} (hx : 0 < x) (hy : 0 < y) (h : n * log x ≤ log y) : x ^ n ≤ y :=
-  (zpow_le_iff_le_log hx hy).2 h
+lemma zpow_le_of_le_log {n : ℤ} (hy : 0 < y) (h : n * log x ≤ log y) : x ^ n ≤ y :=
+  rpow_intCast _ _ ▸ rpow_le_of_le_log hy h
 
 lemma rpow_lt_iff_lt_log (hx : 0 < x) (hy : 0 < y) : x ^ z < y ↔ z * log x < log y := by
   rw [← log_lt_log_iff (rpow_pos_of_pos hx _) hy, log_rpow hx]
@@ -858,14 +865,21 @@ lemma lt_log_of_pow_lt (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
 lemma lt_log_of_zpow_lt {n : ℤ} (hx : 0 < x) (h : x ^ n < y) : n * log x < log y :=
   lt_log_of_rpow_lt hx (rpow_intCast _ _ ▸ h)
 
-lemma rpow_lt_of_lt_log (hx : 0 < x) (hy : 0 < y) (h : z * log x < log y) : x ^ z < y :=
-  (rpow_lt_iff_lt_log hx hy).2 h
+lemma rpow_lt_of_lt_log (hy : 0 < y) (h : z * log x < log y) : x ^ z < y := by
+  obtain rfl | hx := eq_or_ne x 0
+  · have hy1 : 1 < y := by simpa [log_pos_iff hy.le] using h
+    exact (zero_rpow_le_one z).trans_lt hy1
+  · calc x ^ z ≤ |x ^ z| := le_abs_self _
+      _ ≤ |x| ^ z := abs_rpow_le_abs_rpow x z
+      _ < y := by
+        rw [rpow_lt_iff_lt_log (abs_pos.2 hx) hy, log_abs]
+        exact h
 
-lemma pow_lt_of_lt_log (hx : 0 < x) (hy : 0 < y) (h : n * log x < log y) : x ^ n < y :=
-  (pow_lt_iff_lt_log hx hy).2 h
+lemma pow_lt_of_lt_log (hy : 0 < y) (h : n * log x < log y) : x ^ n < y :=
+  rpow_natCast _ _ ▸ rpow_lt_of_lt_log hy h
 
-lemma zpow_lt_of_lt_log {n : ℤ} (hx : 0 < x) (hy : 0 < y) (h : n * log x < log y) : x ^ n < y :=
-  (zpow_lt_iff_lt_log hx hy).2 h
+lemma zpow_lt_of_lt_log {n : ℤ} (hy : 0 < y) (h : n * log x < log y) : x ^ n < y :=
+  rpow_intCast _ _ ▸ rpow_lt_of_lt_log hy h
 
 theorem rpow_le_one_iff_of_pos (hx : 0 < x) : x ^ y ≤ 1 ↔ 1 ≤ x ∧ y ≤ 0 ∨ x ≤ 1 ∧ 0 ≤ y := by
   rw [rpow_def_of_pos hx, exp_le_one_iff, mul_nonpos_iff, log_nonneg_iff hx, log_nonpos_iff hx.le]
