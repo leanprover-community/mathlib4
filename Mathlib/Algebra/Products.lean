@@ -6,7 +6,8 @@ Authors: Viviana del Barco, Gustavo Infanti, Exequiel Rivas, Paul Schwahn
 -/
 module
 
-import Mathlib
+public import Mathlib.Data.Set.Lattice.Bounded
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Products in a magma
@@ -27,6 +28,8 @@ results about their interactions.
   `OrderedLeftProduct` up to a permutation of `a`.
 -/
 
+@[expose] public section
+
 variable {A : Type*} [Mul A]
 open Equiv
 
@@ -35,7 +38,7 @@ set_option linter.unusedVariables false in
 def LeftProducts {n : ℕ} : (a : Fin n → A) → Set A :=
   Nat.rec
   (motive := fun n ↦ (Fin n → A) → Set A)
-  (fun _ ↦ ∅) -- junk value
+  (fun _ ↦ ∅)
   (fun n M ↦ match n with
   | 0 => fun a ↦ {a 0}
   | m + 1 => fun a ↦
