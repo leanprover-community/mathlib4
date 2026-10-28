@@ -39,18 +39,6 @@ namespace Path
 ## Subpaths
 -/
 
-@[deprecated (since := "2026-03-20")]
-alias subpathAux := Icc.convexComb
-
-@[deprecated (since := "2026-03-20")]
-alias subpathAux_zero := Icc.convexComb_zero
-
-@[deprecated (since := "2026-03-20")]
-alias subpathAux_one := Icc.convexComb_one
-
-@[deprecated (since := "2026-03-20")]
-alias subpathAux_continuous := Icc.continuous_convexComb_prod
-
 /-- The subpath of `γ` from `t₀` to `t₁`. -/
 def subpath (γ : Path a b) (t₀ t₁ : I) : Path (γ t₀) (γ t₁) where
   toFun := γ ∘ Icc.convexComb t₀ t₁

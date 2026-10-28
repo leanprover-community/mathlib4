@@ -1,5 +1,7 @@
-import Mathlib.Lean.MessageData.ForExprs
-import Qq
+module
+
+public meta import Mathlib.Lean.MessageData.ForExprs
+public import Qq
 
 open Qq
 

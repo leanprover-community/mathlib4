@@ -60,7 +60,7 @@ lemma h_mem_prod (i : ι₁) :
 
 /-- A distinguished subalgebra of the Lie algebra defined by `LieAlgebra.Basis.prod`.
 
-Subject to the assumtions demanded by `LieAlgebra.Basis.isCartanSubalgebra` this will be a Cartan
+Subject to the assumptions demanded by `LieAlgebra.Basis.isCartanSubalgebra` this will be a Cartan
 subalgebra of `LieAlgebra.Basis.prod`. -/
 def prodCartan :
     LieSubalgebra R (prod eι b₁ b₂) :=
@@ -217,8 +217,9 @@ lemma lie_snd_eq_zero_of_mem_prodCartan
     mem_image_of_mem (prodSymmEquiv eι b₁ b₂).symm hy
   rw [prodCartan, map_lieSpan] at hy
   rw [prodCartan]
-  convert hy
-  ext; simp; grind
+  convert hy with x
+  simp
+  grind
 
 end CommRing
 

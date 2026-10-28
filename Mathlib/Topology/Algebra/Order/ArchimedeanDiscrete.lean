@@ -83,7 +83,7 @@ For a non-exclusive `Or` version with weaker assumptions, see `AddSubgroup.dense
 theorem dense_xor_isCyclic [Nontrivial G] [DenselyOrdered G] (H : Subgroup G) :
     Xor (Dense (H : Set G)) (IsCyclic H) := by
   if hd : Dense (H : Set G) then
-    simp only [hd, xor_true, H.isCyclic_iff_exists_zpowers_eq_top]
+    simp only [hd, xor_true, H.isCyclic_iff_exists_zpowers_eq]
     rintro ⟨a, rfl⟩
     exact not_denseRange_zpow hd
   else
@@ -110,7 +110,7 @@ discrete iff it is cyclic. -/
 subgroup is discrete iff it is cyclic. -/]
 lemma isCyclic_iff_discreteTopology {H : Subgroup G} : IsCyclic H ↔ DiscreteTopology H := by
   refine ⟨fun h ↦ ?_, fun hA ↦ H.dense_or_isCyclic.elim (fun h ↦ ?_) id⟩
-  · rcases H.isCyclic_iff_exists_zpowers_eq_top.mp h with ⟨g, rfl⟩
+  · rcases H.isCyclic_iff_exists_zpowers_eq.mp h with ⟨g, rfl⟩
     infer_instance
   · -- remains to show a contradiction assuming `H` is both dense and discrete
     obtain rfl : H = ⊤ := by

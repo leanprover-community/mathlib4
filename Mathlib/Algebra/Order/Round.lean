@@ -38,7 +38,7 @@ section round
 
 section LinearOrderedRing
 
-variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable [Ring α] [LinearOrder α] [FloorRing α]
 
 /--
 `round x` rounds `x` to the nearest integer, breaking ties towards positive infinity.
@@ -47,6 +47,24 @@ variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 -/
 def round (x : α) : ℤ :=
   if 2 * fract x < 1 then ⌊x⌋ else ⌈x⌉
+
+@[simp]
+theorem round_zero : round (0 : α) = 0 := by simp [round]
+
+@[simp]
+theorem round_one : round (1 : α) = 1 := by simp [round]
+
+@[simp]
+theorem round_natCast (n : ℕ) : round (n : α) = n := by simp [round]
+
+@[simp]
+theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (ofNat(n) : α) = ofNat(n) :=
+  round_natCast n
+
+@[simp]
+theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
+
+variable [IsStrictOrderedRing α]
 
 /-- Formula for `round` in terms of `Int.floor`, a version that works over any ring.
 
@@ -67,22 +85,6 @@ theorem round_eq_div (x : α) : round x = (⌊2 * x⌋ + 1) / 2 := by
     contrapose! h
     grw [h]
     simp
-
-@[simp]
-theorem round_zero : round (0 : α) = 0 := by simp [round]
-
-@[simp]
-theorem round_one : round (1 : α) = 1 := by simp [round]
-
-@[simp]
-theorem round_natCast (n : ℕ) : round (n : α) = n := by simp [round]
-
-@[simp]
-theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (ofNat(n) : α) = ofNat(n) :=
-  round_natCast n
-
-@[simp]
-theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
 
 /-- Away from the points with fractional part `1 / 2`, `round x = ⌈2 * x⌉ / 2`. -/
 theorem round_eq_half_ceil_two_mul {x : α} (hx : 2 * fract x ≠ 1) : round x = ⌈2 * x⌉ / 2 := by

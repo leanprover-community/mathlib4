@@ -82,7 +82,7 @@ theorem intFloor_cast (x : ℚ≥0) : ⌊(x : K)⌋ = ⌊(x : ℚ)⌋ := by
 theorem intCeil_cast (x : ℚ≥0) : ⌈(x : K)⌉ = ⌈(x : ℚ)⌉ := by
   rw [Int.ceil_eq_iff, ← coe_ceil, sub_lt_iff_lt_add]
   constructor
-  · exact_mod_cast NNRat.cast_strictMono <| Nat.ceil_lt_add_one zero_le
+  · exact mod_cast NNRat.cast_strictMono <| Nat.ceil_lt_add_one zero_le
   · rw [Int.cast_natCast, NNRat.cast_le_natCast]
     exact Nat.le_ceil _
 
@@ -102,7 +102,7 @@ open Qq
 ### `norm_num` extension for `Nat.ceil`
 -/
 
-theorem IsNat.natCeil {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem IsNat.natCeil {R : Type*} [Semiring R] [LinearOrder R]
     [FloorSemiring R] (r : R) (m : ℕ) : IsNat r m → IsNat (⌈r⌉₊) m := by
   rintro ⟨⟨⟩⟩
   exact ⟨by simp⟩
@@ -134,7 +134,6 @@ meta def evalNatCeil : NormNumExt where eval {u αZ} e := do
     | .isBool .. => failure
     | .isNat sα nb pb => do
       let instLinearOrder ← synthInstanceQ q(LinearOrder $α)
-      let instIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) nb q(IsNat.natCeil $x _ $pb)
     | .isNegNat sα nb pb => do
