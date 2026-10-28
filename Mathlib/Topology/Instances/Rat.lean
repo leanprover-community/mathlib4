@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Module.Rat
-import Mathlib.Algebra.Order.Ring.NNRat
 public import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Instances.Nat
+
+import Mathlib.Algebra.Order.Ring.NNRat
 
 /-!
 # Topology on the rational numbers

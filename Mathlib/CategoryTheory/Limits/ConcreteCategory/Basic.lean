@@ -6,8 +6,8 @@ Authors: Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.CategoryTheory.Limits.Types.Images
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Images
 public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
@@ -185,7 +185,6 @@ theorem colimit_rep_eq_iff_exists [HasColimit F] {i j : J} (x : ToType (F.obj i)
     colimit.ι F i x = colimit.ι F j y ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
   ⟨Concrete.colimit_exists_of_rep_eq.{s} _ _ _, Concrete.colimit_rep_eq_of_exists _ _ _⟩
 
-set_option backward.defeqAttrib.useBackward true in
 omit [IsFiltered J] in
 theorem exists_hom_ι_eq_of_isColimit [IsFilteredOrEmpty J] {D : Cocone F} (hD : IsColimit D)
     (x : ToType D.pt) (k : J) :

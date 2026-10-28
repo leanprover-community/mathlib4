@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Data.W.Cardinal
+
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -72,7 +73,7 @@ open Cardinal
 
 lemma cardinalMk_closure_le_max : #(closure s) ≤ max #s ℵ₀ :=
   (Cardinal.mk_le_of_surjective <| surjective_ofWType s).trans <| by
-    convert! WType.cardinalMk_le_max_aleph0_of_finite' using 1
+    convert WType.cardinalMk_le_max_aleph0_of_finite' using 1
     · rw [lift_uzero, mk_sum, lift_uzero]
       have : lift.{u, 0} #(Fin 6) < ℵ₀ := lift_lt_aleph0.mpr (lt_aleph0_of_finite _)
       obtain h | h := lt_or_ge #s ℵ₀

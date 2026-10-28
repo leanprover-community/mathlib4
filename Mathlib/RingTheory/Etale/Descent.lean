@@ -5,8 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.Etale
 public import Mathlib.RingTheory.Finiteness.Descent
+public import Mathlib.RingTheory.RingHom.Etale
+
 import Mathlib.RingTheory.Extension.Cotangent.BaseChange
 
 /-!

@@ -5,8 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 
 /-! # Generalized hypergeometric function
 
@@ -67,30 +67,31 @@ variable {a : Multiset ℂ} {b : Multiset ℂ} {n m : ℕ} {j k : ℂ}
 def regularizedHGFunCoeff (a : Multiset ℂ) (b : Multiset ℂ) (n : ℕ) : ℂ :=
   (a.map (ascPochhammer ℂ n).eval).prod / (n ! * (b.map (Gamma <| · + n)).prod)
 
+local notation "C" => regularizedHGFunCoeff
+
 attribute [grind .] Nat.factorial_ne_zero
 
 @[grind =]
 theorem regularizedHGFunCoeff_eq_zero_iff :
-    regularizedHGFunCoeff a b n = 0 ↔
-    (∃ j ∈ a, ∃ k < n, j = -k) ∨ ∃ j ∈ b, ∃ (m : ℕ), j + n = -m := by
+    C a b n = 0 ↔ (∃ j ∈ a, ∃ k < n, j = -k) ∨ ∃ j ∈ b, ∃ (m : ℕ), j + n = -m := by
   unfold regularizedHGFunCoeff
   simp
   grind
 
 variable (a b n m) in
 theorem regularizedHGFunCoeff_eq_zero_right (hb : -(n : ℂ) - m ∈ b := by grind) :
-    regularizedHGFunCoeff a b n = 0 := by grind
+    C a b n = 0 := by grind
 
 variable (a b n m) in
 theorem regularizedHGFunCoeff_eq_zero_left (ha : -(m : ℂ) ∈ a := by grind)
     (hm : m < n := by grind) :
-  regularizedHGFunCoeff a b n = 0 := by grind
+  C a b n = 0 := by grind
 
 /-- Recursion formula for the coefficients of the hypergeometric series.
 
 This is mainly used to calculate the convergence radius. -/
 theorem regularizedHGFunCoeff_add_one (hb : ∀ k ∈ b, k ≠ -n) :
-    regularizedHGFunCoeff a b (n + 1) = regularizedHGFunCoeff a b n *
+    C a b (n + 1) = C a b n *
       ((a.map (· + (n : ℂ))).prod / ((b.map (· + (n : ℂ))).prod  * (n + 1))) := calc
   _ = (a.map fun i ↦ ((ascPochhammer ℂ n).eval i) * (i + n)).prod /
       (n ! * (n + 1) * (b.map fun j ↦ Gamma (j + n) * (j + n)).prod) := by
@@ -111,8 +112,8 @@ theorem regularizedHGFunCoeff_add_one (hb : ∀ k ∈ b, k ≠ -n) :
 /-- Recursion formula for the coefficients of the hypergeometric series.
 
 This is mainly used to calculate the convergence radius. -/
-theorem regularizedHGFunCoeff_add_one_div_self (h : regularizedHGFunCoeff a b n ≠ 0) :
-    regularizedHGFunCoeff a b (n + 1) / regularizedHGFunCoeff a b n =
+theorem regularizedHGFunCoeff_add_one_div_self (h : C a b n ≠ 0) :
+    C a b (n + 1) / C a b n =
       (a.map (· + (n : ℂ))).prod / ((b.map (· + (n : ℂ))).prod * (n + 1)) := by
   by_cases! hb : ∀ k ∈ b, k ≠ -n
   · rw [regularizedHGFunCoeff_add_one hb]
@@ -122,9 +123,28 @@ theorem regularizedHGFunCoeff_add_one_div_self (h : regularizedHGFunCoeff a b n 
       grind [Multiset.prod_eq_zero, Multiset.mem_map]
     simp [regularizedHGFunCoeff_eq_zero_right a b n 0, h₁]
 
+variable (a) in
+theorem mul_regularizedHGFunCoeff_of_mem_right (n : ℕ) {u : ℂ} (h : u ∈ b) :
+    (u - 1 + n) * C a b n = C a ((u - 1) ::ₘ b.erase u) n := by
+  by_cases h0 : u - 1 + n = 0
+  · symm
+    simp [h0, regularizedHGFunCoeff_eq_zero_iff]
+  unfold regularizedHGFunCoeff
+  rw [mul_div, mul_comm, mul_div_assoc]
+  suffices (u - 1 + n) / (n ! * (Multiset.map (fun x ↦ Gamma (x + n)) b).prod) =
+      1 / (n ! * (Multiset.map (fun x ↦ Gamma (x + n)) ((u - 1) ::ₘ b.erase u)).prod) by
+    rw [this]
+    ring
+  calc
+    _ = (u - 1 + n) / (n ! * (Gamma (u - 1 + n + 1)) *
+        (Multiset.map (fun x ↦ Gamma (x + n)) (b.erase u)).prod) := by
+      grind [Multiset.prod_map_erase]
+    _ = 1 / (n ! * (Multiset.map (fun x ↦ Gamma (x + n)) ((u - 1) ::ₘ b.erase u)).prod) := by
+      grind [Multiset.map_cons, Multiset.prod_cons]
+
 @[simp]
 theorem regularizedHGFunCoeff_zero_neg_nat_add_one (n i : ℕ) :
-    regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) = regularizedHGFunCoeff 0 {(n : ℂ) + 1} i := by
+    C 0 {-(n : ℂ) + 1} (i + n) = C 0 {(n : ℂ) + 1} i := by
   simp [regularizedHGFunCoeff, ← Gamma_nat_eq_factorial]
   grind
 
@@ -154,17 +174,17 @@ theorem multiset_prod_div_multiset_prod_mul (a : Multiset ℂ) (b : Multiset ℂ
 variable (a b) in
 /-- The regularized hypergeometric series. -/
 def regularizedHGFunSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
-  .ofScalars ℂ (regularizedHGFunCoeff a b)
+  .ofScalars ℂ (C a b)
 
 @[simp]
 theorem regularizedHGFunSeries_coeff :
-    (regularizedHGFunSeries a b).coeff = regularizedHGFunCoeff a b := by
+    (regularizedHGFunSeries a b).coeff = C a b := by
   unfold regularizedHGFunSeries
   ext; simp
 
 @[simp, grind =]
 theorem regularizedHGFunSeries_eq_zero :
-    regularizedHGFunSeries a b n = 0 ↔ regularizedHGFunCoeff a b n = 0 := by
+    regularizedHGFunSeries a b n = 0 ↔ C a b n = 0 := by
   apply FormalMultilinearSeries.ofScalars_eq_zero
 
 variable (a b) in
@@ -172,7 +192,7 @@ variable (a b) in
 def regularizedHGFun (z : ℂ) : ℂ := (regularizedHGFunSeries a b).sum z
 
 @[simp]
-theorem regularizedHGFun_zero : regularizedHGFun a b 0 = regularizedHGFunCoeff a b 0 := by
+theorem regularizedHGFun_zero : regularizedHGFun a b 0 = C a b 0 := by
   rw [regularizedHGFun, regularizedHGFunSeries, ← FormalMultilinearSeries.ofScalarsSum]
   simp
 
@@ -189,7 +209,7 @@ variable (b) in
 /-- If for all `j` and `k : ℕ`, `a j ≠ -k`, then the coefficients of the hypergeometric series
 are eventually non-vanishing. -/
 theorem eventually_atTop_regularizedHGFunCoeff_ne_zero (h : ∀ j ∈ a, ∀ (k : ℕ), j ≠ -↑k) :
-    ∀ᶠ (n : ℕ) in atTop, regularizedHGFunCoeff a b n ≠ 0 := by
+    ∀ᶠ (n : ℕ) in atTop, C a b n ≠ 0 := by
   rw [Filter.eventually_atTop]
   use b.toFinset.sup (⌈-re ·⌉₊) + 1
   intro n hn h'
@@ -254,6 +274,11 @@ theorem radius_regularizedHGFunSeries_eq_top (h : a.card ≤ b.card) :
 theorem radius_regularizedHGFunSeries_zero_eq_top : (regularizedHGFunSeries 0 b).radius = ⊤ :=
   radius_regularizedHGFunSeries_eq_top (by simp)
 
+@[fun_prop]
+theorem summable_pow_mul_regularizedHGFunCoeff_zero (z : ℂ) :
+    Summable fun n ↦ z ^ n * C 0 b n := by
+  simpa using (regularizedHGFunSeries 0 b).summable (by simp)
+
 theorem analyticOnNhd_regularizedHGFun_of_card_le (h : a.card ≤ b.card) :
     AnalyticOnNhd ℂ (regularizedHGFun a b) .univ := by
   convert! (regularizedHGFunSeries a b).analyticOnNhd
@@ -299,6 +324,50 @@ theorem radius_regularizedHGFunSeries_ge_one (h : a.card = b.card + 1) :
     rw [radius_regularizedHGFunSeries_eq_top_of_finite hj h']
     simp
 
+private theorem mul_regularizedHGFunCoeff_zero_singleton_add_regularizedHGFunCoeff (u : ℂ) (n : ℕ) :
+    u * C 0 {u + 1} (n + 1) + C 0 {u + 2} n = C 0 {u} (n + 1) := by
+  suffices u * ((Gamma (u + 1 + (n + 1)))⁻¹ * ((↑ n !)⁻¹ * (n + 1 : ℂ)⁻¹)) +
+      (Gamma (u + 2 + n))⁻¹ * (↑ n !)⁻¹ = (Gamma (u + (n + 1)))⁻¹ * ((↑ n !)⁻¹ * (n + 1 : ℂ)⁻¹) by
+    simpa [regularizedHGFunCoeff, Nat.factorial_succ]
+  calc
+    _ = (Gamma (u + (n + 1) + 1))⁻¹ * (↑ n !)⁻¹ * (u * (n + 1 : ℂ)⁻¹ + 1) := by
+      grind
+    _ = (Gamma (u + (n + 1)))⁻¹ * ((↑ n !)⁻¹ * (n + 1 : ℂ)⁻¹) := by
+      by_cases h : u + (n + 1) = 0
+      · suffices u * (n + 1 : ℂ)⁻¹ + 1 = 0 by simp [h, this]
+        rw [eq_neg_iff_add_eq_zero.mpr h, neg_mul, mul_inv_cancel₀ (by norm_cast), neg_add_cancel]
+      · rw [Gamma_add_one _ h, mul_inv]
+        field
+
+theorem regularizedHGFun_zero_singleton_eq_mul_add_mul (u : ℂ) (z : ℂ) :
+    regularizedHGFun 0 {u} z =
+      u * regularizedHGFun 0 {u + 1} z + z * regularizedHGFun 0 {u + 2} z := by
+  have hsummable₁: Summable fun n ↦ z ^ n * C 0 {u + 1} n := by fun_prop
+  have hsummable₂ : Summable fun n ↦ u * (z ^ (n + 1) * C 0 {u + 1} (n + 1)) :=
+    (hsummable₁.comp_injective (add_left_injective 1)).mul_left u
+  have hsummable₃ : Summable fun n ↦ z * (z ^ n * C 0 {u + 2} n) := by fun_prop
+  have hsummable₄: Summable fun n ↦ z ^ n * C 0 {u} n := by fun_prop
+  symm
+  suffices u * ∑' n, z ^ n * C 0 {u + 1} n + z * ∑' n, z ^ n * C 0 {u + 2} n =
+      ∑' n, z ^ n * C 0 {u} n by
+    simpa [regularizedHGFun, FormalMultilinearSeries.sum]
+  calc
+    _ = u * C 0 {u + 1} 0 + (∑' n, u * (z ^ (n + 1) * C 0 {u + 1} (n + 1)) +
+        ∑' n, z * (z ^ n * C 0 {u + 2} n)) := by
+      rw [hsummable₁.tsum_eq_zero_add]
+      simp [tsum_mul_left]
+      ring
+    _ = u * C 0 {u + 1} 0 + ∑' n, (u * (z ^ (n + 1) * C 0 {u + 1} (n + 1)) +
+        z * (z ^ n * C 0 {u + 2} n)) := by
+      rw [Summable.tsum_add hsummable₂ hsummable₃]
+    _ = u * C 0 {u + 1} 0 + ∑' n, z ^ (n + 1) * (u * C 0 {u + 1} (n + 1) + C 0 {u + 2} n) :=
+      congr(_ + ∑' n, $(by ring))
+    _ = u * C 0 {u + 1} 0 + ∑' n, z ^ (n + 1) * C 0 {u} (n + 1) :=
+      congr(_ + ∑' n, _ * $(mul_regularizedHGFunCoeff_zero_singleton_add_regularizedHGFunCoeff u n))
+    _ = ∑' n, z ^ n * C 0 {u} n := by
+      conv_rhs => rw [hsummable₄.tsum_eq_zero_add]
+      simpa using mul_regularizedHGFunCoeff_of_mem_right 0 0 (Multiset.mem_singleton_self (u + 1))
+
 theorem analyticOnNhd_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card + 1) :
     AnalyticOnNhd ℂ (regularizedHGFun a b) (Metric.eball 0 1) := by
   apply (regularizedHGFunSeries a b).analyticOnNhd.mono
@@ -313,18 +382,18 @@ theorem analyticAt_regularizedHGFun_of_card_eq_add_one (h : a.card = b.card + 1)
 theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
     regularizedHGFun 0 {-(n : ℂ) + 1} z = z ^ n * regularizedHGFun 0 {(n : ℂ) + 1} z :=
   calc
-    _ = ∑ i ∈ Finset.range n, z ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} i +
-        ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+    _ = ∑ i ∈ Finset.range n, z ^ i * C 0 {-(n : ℂ) + 1} i +
+        ∑' i, z ^ (i + n) * C 0 {-(n : ℂ) + 1} (i + n) := by
       rw [regularizedHGFun, FormalMultilinearSeries.sum,
         ← ((regularizedHGFunSeries 0 {-(n : ℂ) + 1}).summable (by simp)).sum_add_tsum_nat_add n]
       simp
-    _ = 0 + ∑' i, z ^ (i + n) * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+    _ = 0 + ∑' i, z ^ (i + n) * C 0 {-(n : ℂ) + 1} (i + n) := by
       congrm $(Finset.sum_eq_zero fun i hi ↦ mul_eq_zero_of_right _ ?_) + _
       refine regularizedHGFunCoeff_eq_zero_right _ _ _ (n - i - 1) ?_
       rw [Multiset.mem_singleton]
       norm_cast
       grind
-    _ = z ^ n * ∑' i, z ^ i * regularizedHGFunCoeff 0 {-(n : ℂ) + 1} (i + n) := by
+    _ = z ^ n * ∑' i, z ^ i * C 0 {-(n : ℂ) + 1} (i + n) := by
       simp_rw [zero_add, ← tsum_mul_left]
       congr with i
       ring

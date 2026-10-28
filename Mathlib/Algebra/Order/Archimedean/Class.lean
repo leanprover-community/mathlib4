@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Order.Archimedean.Defs
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Rat.Floor
 public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.UpperLower.Principal
-public import Mathlib.Algebra.Order.Archimedean.Defs
-public import Mathlib.Data.Rat.Floor
 
 /-!
 # Archimedean classes of a linearly ordered group
@@ -259,6 +259,11 @@ theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
 @[to_additive]
 instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
   inferInstanceAs (Subsingleton (Antisymmetrization ..))
+
+-- Shortcut instance for computability
+@[to_additive]
+instance : PartialOrder (MulArchimedeanClass M) :=
+  inferInstanceAs <| PartialOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·))
 
 @[to_additive]
 noncomputable
@@ -678,7 +683,7 @@ theorem mem_closedBallSubgroup_iff {a : M} {c : MulArchimedeanClass M} :
 variable (M) in
 @[to_additive (attr := simp)]
 theorem ballSubgroup_top : ballSubgroup (M := M) ⊤ = ⊥ := by
-  convert! subgroup_eq_bot M
+  convert subgroup_eq_bot M
   simp
 
 variable (M) in

@@ -5,9 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.Data.ZMod.Basic
+
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Data.Nat.Prime.Int
-public import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!

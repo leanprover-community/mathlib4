@@ -5,8 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.Preorder.Chain
+
+import Mathlib.Order.Bounds.Basic
 
 /-!
 # Antichains

@@ -115,7 +115,7 @@ instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0�
 theorem isFiniteMeasure_of_le (μ : Measure α) [IsFiniteMeasure μ] (h : ν ≤ μ) : IsFiniteMeasure ν :=
   { measure_univ_lt_top := (h Set.univ).trans_lt (measure_lt_top _ _) }
 
-/-- This is not an instance as it is superseded by the fact that is is a probability measure. -/
+/-- This is not an instance as it is superseded by the fact that it is a probability measure. -/
 theorem isFiniteMeasure_dirac {a : α} : IsFiniteMeasure (dirac a) where
   measure_univ_lt_top := by
     simp [dirac_apply_of_mem <| mem_univ a]
@@ -192,8 +192,9 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     {Es : ℕ → Set X} (Es_mble : ∀ i, NullMeasurableSet (Es i) μ)
     (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
     Tendsto (μ ∘ fun n ↦ ⋃ i ≥ n, Es i) atTop (𝓝 0) := by
-  have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i :=
-    fun n m hnm ↦ biUnion_mono (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
+  have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i := fun n m hnm ↦
+    biUnion_mono (s := {i | i ≥ n}) (s' := {i | i ≥ m})
+      (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
   have nothing : ⋂ n, ⋃ i ≥ n, Es i = ∅ := by
     apply subset_antisymm _ (empty_subset _)
     intro x hx
@@ -205,7 +206,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
   have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
     decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
-  convert! key
+  convert key
 
 open scoped symmDiff
 
@@ -217,7 +218,7 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
   have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset sdiff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
-    convert! abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
+    convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
   rw [measure_sdiff' s ht ht', measure_sdiff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
@@ -607,7 +608,7 @@ open TopologicalSpace
 
 /-- A locally finite measure on a second countable topological space admits a finite spanning
 sequence of open sets. -/
-noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [TopologicalSpace α]
+@[no_expose] noncomputable def MeasureTheory.Measure.finiteSpanningSetsInOpen' [TopologicalSpace α]
   [SecondCountableTopology α] {m : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
   μ.FiniteSpanningSetsIn { K | IsOpen K } := by
   suffices H : Nonempty (μ.FiniteSpanningSetsIn { K | IsOpen K }) from H.some

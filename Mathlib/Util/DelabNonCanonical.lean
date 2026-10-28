@@ -5,8 +5,9 @@ Authors: Robert Maxton
 -/
 module
 
-import Mathlib.Init
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
+
+import Mathlib.Init
 
 /-!
 # Delaborating non-canonical instances

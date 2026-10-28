@@ -5,9 +5,9 @@ Authors: Aaron Anderson, Jalex Stark, Slava Naprienko
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.Algebra.Polynomial.Laurent
-public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.RingTheory.Polynomial.Nilpotent
@@ -158,7 +158,7 @@ lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
   | zero => simp
   | succ n IH =>
     rw [det_succ_row_zero, map_sum, eval_finsetSum]
-    simp only [add_apply, smul_apply, map_apply, smul_eq_mul, X_mul_C, submatrix_add,
+    simp only [Matrix.add_apply, Matrix.smul_apply, map_apply, smul_eq_mul, X_mul_C, submatrix_add,
       submatrix_smul, Pi.add_apply, Pi.smul_apply, submatrix_map, derivative_mul, map_add,
       derivative_C, zero_mul, derivative_X, mul_one, zero_add, eval_add, eval_mul, eval_C, eval_X,
       mul_zero, add_zero, eval_det_add_X_smul, eval_pow, eval_neg, eval_one]
@@ -183,7 +183,7 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
     (derivative <| det (1 + (X : R[X]) • M.map C)).eval 0 = trace M := by
   let e := Matrix.reindexLinearEquiv R R (Fintype.equivFin n) (Fintype.equivFin n)
   rw [← Matrix.det_reindexLinearEquiv_self R[X] (Fintype.equivFin n)]
-  convert! derivative_det_one_add_X_smul_aux (e M)
+  convert derivative_det_one_add_X_smul_aux (e M)
   · ext; simp [map_add, e]
   · delta trace
     rw [← (Fintype.equivFin n).symm.sum_comp]
@@ -200,7 +200,7 @@ lemma det_one_add_X_smul (M : Matrix n n R) :
   rw [Algebra.smul_def (trace M), ← C_eq_algebraMap, pow_two, ← mul_assoc, add_assoc,
     ← add_mul, ← coeff_det_one_add_X_smul_one, ← coeff_divX, add_comm (C _), divX_mul_X_add,
     add_comm (1 : R[X]), ← C.map_one]
-  convert! (divX_mul_X_add _).symm
+  convert (divX_mul_X_add _).symm
   rw [coeff_zero_eq_eval_zero, eval_det_add_X_smul, det_one, eval_one]
 
 /-- The first two terms of the Taylor expansion of `det (1 + r • M)` at `r = 0`. -/
@@ -270,7 +270,7 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   rw [← this]
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
-  · rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, smul_apply,
+  · rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, Matrix.smul_apply,
       smul_eq_mul, coeff_X_mul_zero, coeff_C_zero, zero_sub, neg_mem_iff]
     exact h (c i) i
   · rw [add_comm, tsub_self_add, pow_zero, Ideal.one_eq_top]
@@ -328,7 +328,7 @@ theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
     eval 0 M.charpolyRev = 1 := by
   rw [charpolyRev, ← coe_evalRingHom, RingHom.map_det, ← det_one (R := R) (n := n)]
   have : (1 - (X : R[X]) • M.map C).map (eval 0) = 1 := by
-    ext i j; rcases eq_or_ne i j with hij | hij <;> simp [hij, one_apply]
+    ext i j; rcases eq_or_ne i j with hij | hij <;> simp [hij, Matrix.one_apply]
   congr
 
 @[simp] lemma coeff_charpolyRev_eq_neg_trace (M : Matrix n n R) :
@@ -342,7 +342,7 @@ lemma isUnit_charpolyRev_of_isNilpotent (hM : IsNilpotent M) :
     IsUnit M.charpolyRev := by
   obtain ⟨k, hk⟩ := hM
   replace hk : 1 - (X : R[X]) • M.map C ∣ 1 := by
-    convert! one_sub_dvd_one_sub_pow ((X : R[X]) • M.map C) k
+    convert one_sub_dvd_one_sub_pow ((X : R[X]) • M.map C) k
     rw [← C.mapMatrix_apply, smul_pow, ← map_pow, hk, map_zero, smul_zero, sub_zero]
   apply isUnit_of_dvd_one
   rw [← det_one (R := R[X]) (n := n)]

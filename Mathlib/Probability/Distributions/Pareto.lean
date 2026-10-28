@@ -5,8 +5,8 @@ Authors: Alvan Caleb Arulandu
 -/
 module
 
-public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Probability.CDF
 
 /-! # Pareto distributions over ℝ
 

@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+
+import Mathlib.Analysis.Calculus.Deriv.Mul
 
 /-!
 # Darboux's theorem

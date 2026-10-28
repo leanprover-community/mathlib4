@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Products in `Type`
@@ -214,7 +214,6 @@ namespace Small
 
 variable {J : Type v} (F : J → Type u) [Small.{u} J]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 A variant of `productLimitCone` using a `Small` hypothesis rather than a function to `Type`.
 -/

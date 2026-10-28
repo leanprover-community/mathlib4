@@ -5,8 +5,9 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
+
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
@@ -19,8 +20,6 @@ MDifferentiable.
 -/
 
 public section
-
-noncomputable section
 
 open UpperHalfPlane Filter Function Complex CongruenceSubgroup
 
@@ -55,7 +54,7 @@ theorem eisensteinSeriesSIF_mdifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (
     MDiff (eisensteinSeriesSIF a k) := by
   intro τ
   suffices DifferentiableAt ℂ (↑ₕeisensteinSeriesSIF a k) τ.1 by
-    convert!
+    convert
       MDifferentiableAt.comp τ (DifferentiableAt.mdifferentiableAt this) τ.mdifferentiable_coe
     exact funext fun z ↦ (comp_ofComplex (eisensteinSeriesSIF a k) z).symm
   refine DifferentiableOn.differentiableAt ?_ (isOpen_upperHalfPlaneSet.mem_nhds τ.2)

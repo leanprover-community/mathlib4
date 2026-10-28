@@ -6,6 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Data.ZMod.Basic
+
 import Mathlib.Tactic.NormNum
 
 /-!

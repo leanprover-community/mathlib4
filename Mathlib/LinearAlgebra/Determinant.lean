@@ -126,7 +126,7 @@ there is no good way to generalize over universe parameters, so we can't fully s
 type that it does not depend on the choice of basis. Instead you can use the `detAux_def''` lemma,
 or avoid mentioning a basis at all using `LinearMap.det`.
 -/
-irreducible_def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
+@[no_expose] def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
   Trunc.lift
     (fun b : Basis ι A M => detMonoidHom.comp (toMatrixAlgEquiv b : (M →ₗ[A] M) →* Matrix ι ι A))
     fun b c => MonoidHom.ext <| det_toMatrix_eq_det_toMatrix b c
@@ -136,15 +136,7 @@ irreducible_def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
 See also `detAux_def''` which allows you to vary the basis.
 -/
 theorem detAux_def' (b : Basis ι A M) (f : M →ₗ[A] M) :
-    LinearMap.detAux (Trunc.mk b) f = Matrix.det (LinearMap.toMatrix b b f) := by
-  #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
-  The first line below was previously just `rw [detAux]`.
-  The replacement proof is a short-term fix, and we request that the authors/maintainers of
-  this file review the proof, and either approve it by removing this note, revise
-  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-  needs addressing. -/
-  simp only [detAux_def, Trunc.lift_mk]
-  rfl
+    LinearMap.detAux (Trunc.mk b) f = Matrix.det (LinearMap.toMatrix b b f) := (rfl)
 
 theorem detAux_def'' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (tb : Trunc <| Basis ι A M)
     (b' : Basis ι' A M) (f : M →ₗ[A] M) :
@@ -164,15 +156,20 @@ theorem detAux_comp (b : Trunc <| Basis ι A M) (f g : M →ₗ[A] M) :
 section
 
 open scoped Classical in
--- Discourage the elaborator from unfolding `det` and producing a huge term by marking it
--- as irreducible.
+-- Stop the elaborator from unfolding `det` and producing a huge term by marking it `no_expose`.
 /-- The determinant of an endomorphism independent of basis.
 
 If there is no finite basis on `M`, the result is `1` instead.
 -/
-protected irreducible_def det : (M →ₗ[A] M) →* A :=
+@[no_expose] protected def det : (M →ₗ[A] M) →* A :=
   if H : ∃ s : Finset M, Nonempty (Basis s A M) then LinearMap.detAux (Trunc.mk H.choose_spec.some)
   else 1
+
+open scoped Classical in
+lemma det_def : LinearMap.det =
+    if H : ∃ s : Finset M, Nonempty (Basis s A M)
+    then LinearMap.detAux (Trunc.mk H.choose_spec.some) else 1 :=
+  (rfl)
 
 open scoped Classical in
 theorem coe_det [DecidableEq M] :
@@ -181,7 +178,7 @@ theorem coe_det [DecidableEq M] :
         LinearMap.detAux (Trunc.mk H.choose_spec.some)
       else 1 := by
   ext
-  rw [LinearMap.det_def]
+  rw [LinearMap.det]
   split_ifs
   · congr -- use the correct `DecidableEq` instance
   rfl
@@ -233,7 +230,7 @@ theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
     rw [← det_toMatrix b]
     exact hb s b
   else
-    rwa [LinearMap.det_def, dite_eq_right H]
+    rwa [LinearMap.det, dite_eq_right H]
 
 @[simp]
 theorem det_comp (f g : M →ₗ[A] M) :
@@ -569,7 +566,7 @@ abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCo
 theorem LinearMap.associated_det_of_eq_comp (e : M ≃ₗ[R] M) (f f' : M →ₗ[R] M)
     (h : ∀ x, f x = f' (e x)) : Associated (LinearMap.det f) (LinearMap.det f') := by
   suffices Associated (LinearMap.det (f' ∘ₗ ↑e)) (LinearMap.det f') by
-    convert! this using 2
+    convert this using 2
     ext x
     exact h x
   rw [← mul_one (LinearMap.det f'), LinearMap.det_comp]
@@ -628,7 +625,7 @@ theorem is_basis_iff_det {v : ι → M} :
   · rintro ⟨hli, hspan⟩
     set v' := Basis.mk hli hspan.ge
     rw [e.det_apply]
-    convert! LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
+    convert LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
     ext i j
     simp [v']
   · intro h
@@ -660,7 +657,7 @@ theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis
     cases nonempty_fintype ι
     let := Classical.decEq ι
     simpa [h] using f.eq_smul_basis_det e,
-   fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
+   fun h => h.symm ▸ zero_apply _⟩
 
 theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e ≠ 0 ↔ f ≠ 0 :=

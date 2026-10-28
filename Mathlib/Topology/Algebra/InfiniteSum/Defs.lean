@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
 public import Mathlib.Topology.Separation.Hausdorff
+
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 
 /-!
@@ -108,7 +109,7 @@ def HasProd (f : β → α) (a : α) (L := unconditional β) : Prop :=
 
 /-- `Multipliable f` means that `f` has some (infinite) product with respect to `L`. Use `tprod` to
 get the value. -/
-@[to_additive
+@[to_additive (attr := fun_prop)
 /-- `Summable f` means that `f` has some (infinite) sum with respect to `L`. Use `tsum` to get the
 value. -/]
 def Multipliable (f : β → α) (L := unconditional β) : Prop :=
@@ -129,7 +130,8 @@ More generally, if `L` is a `SummationFilter`, `∏'[L] i, f i` is the product o
 separated. When the multiplicative support of `f` is finite, we make the most reasonable choice,
 to use the product over the multiplicative support. Otherwise, we choose arbitrarily an `a`
 satisfying `HasProd f a`. Similar remarks apply to more general summation filters.) -/
-@[to_additive /-- `∑' i, f i` is the unconditional sum of `f` if it exists, or 0 otherwise.
+@[no_expose, to_additive
+/-- `∑' i, f i` is the unconditional sum of `f` if it exists, or 0 otherwise.
 
 More generally, if `L` is a `SummationFilter`, `∑'[L] i, f i` is the sum of `f` with respect to
 `L` if it exists, and `0` otherwise.
@@ -139,12 +141,14 @@ separated. When the support of `f` is finite, we make the most reasonable choice
 over the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. Similar remarks
 apply to more general summation filters.)
 -/]
-noncomputable irreducible_def tprod (f : β → α) (L := unconditional β) :=
+noncomputable def tprod (f : β → α) (L := unconditional β) :=
   if h : Multipliable f L then
     if L.HasSupport ∧ (mulSupport f ∩ L.support).Finite then finprod (L.support.mulIndicator f)
     else if HasProd f 1 L then 1
     else h.choose
   else 1
+
+@[to_additive] alias tprod_def := tprod.eq_def
 
 variable {L : SummationFilter β}
 
@@ -251,7 +255,7 @@ theorem hasProd_fintype_support [Fintype β] (f : β → α) (L : SummationFilte
     (L.filter.biInter_mem L.support.toFinite).mpr (by tauto)
   have h2 : ⋂ b ∈ L.supportᶜ, {s | b ∉ s} ∈ L.filter :=
     (L.filter.biInter_mem L.supportᶜ.toFinite).mpr
-      (fun b hb ↦ (L.eventually_mem_or_not_mem b).resolve_left hb)
+      (fun b hb ↦ (L.eventually_mem_or_notMem b).resolve_left hb)
   filter_upwards [h1, h2] with s hs hs'
   congr 1
   simp only [Set.mem_iInter, Set.mem_ofPred_eq, Set.mem_compl_iff] at hs hs'
@@ -316,7 +320,7 @@ theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b
       rw [finprod_eq_prod_of_mulSupport_subset (s := h.2.toFinset)]
       · exact Finset.prod_congr rfl (by simp_all)
       · simp
-    · grind [Set.Finite.mem_toFinset, mem_mulSupport]
+    · grind [Set.Finite.mem_toFinset]
     · exact h.1
   · exact h'
   · exact ha.choose_spec

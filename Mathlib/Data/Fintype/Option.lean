@@ -5,20 +5,19 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
-# fintype instances for option
+# Fintype instances for `Option`
+
+This file declares `Fintype` instances for `Option` types, declares induction principles for
+`Fintype` and `Finite`, and proves that `Option α` is (in)finite iff `α` is (in)finite.
 -/
 
 @[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
-
-open Function
-
-open Nat
 
 universe u v
 
@@ -32,6 +31,17 @@ instance {α : Type*} [Fintype α] : Fintype (Option α) :=
 instance {α : Type*} [Finite α] : Finite (Option α) :=
   have := Fintype.ofFinite α
   Finite.of_fintype _
+
+/-- `Option α` is finite if and only if the underlying type `α` is finite. -/
+@[simp]
+theorem Option.finite_iff {α : Type*} : Finite (Option α) ↔ Finite α where
+  mpr _ := inferInstance
+  mp _ := .of_injective _ (Option.some_injective α)
+
+/-- `Option α` is infinite if and only if the underlying type `α` is infinite. -/
+@[simp]
+theorem Option.infinite_iff {α : Type*} : Infinite (Option α) ↔ Infinite α := by
+  simp [← not_finite_iff_infinite]
 
 theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
@@ -92,15 +102,14 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
     [h_fintype : Fintype α] : P α := by
   obtain ⟨p⟩ :=
-    let f_empty := fun i => by convert! h_empty
+    let f_empty := fun i => by convert h_empty
     let h_option : ∀ {α : Type u} [Fintype α] [DecidableEq α],
           (∀ (h : Fintype α), P α) → ∀ (h : Fintype (Option α)), P (Option α) := by
       rintro α hα - Pα hα'
-      convert! h_option α (Pα _)
+      convert h_option α (Pα _)
     @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
   exact p _
-  -- ·
 
 end Fintype
 

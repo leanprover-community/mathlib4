@@ -21,8 +21,6 @@ functions, or require additional imports which are not available in that file.
 public section
 
 
-noncomputable section
-
 namespace Complex
 
 open Set Filter Finset
@@ -143,7 +141,7 @@ theorem tan_sub {x y : ℂ}
     rcases h with ⟨x_ne, minus_y_ne⟩ | ⟨x_eq, minus_y_eq⟩
     · refine .inl ⟨x_ne, fun l => ?_⟩
       rw [Ne, neg_eq_iff_eq_neg]
-      convert! minus_y_ne (-l - 1) using 2
+      convert minus_y_ne (-l - 1) using 2
       push_cast
       ring
     · refine .inr ⟨x_eq, ?_⟩
@@ -152,7 +150,7 @@ theorem tan_sub {x y : ℂ}
       push_cast
       ring
   rw [tan_neg] at this
-  convert! this using 2
+  convert this using 2
   ring
 
 theorem tan_sub' {x y : ℂ}
@@ -179,7 +177,7 @@ theorem tan_eq {z : ℂ}
         (∃ k : ℤ, (z.re : ℂ) = (2 * k + 1) * π / 2) ∧
           ∃ l : ℤ, (z.im : ℂ) * I = (2 * l + 1) * π / 2) :
     tan z = (tan z.re + tanh z.im * I) / (1 - tan z.re * tanh z.im * I) := by
-  convert! tan_add_mul_I h; exact (re_add_im z).symm
+  convert tan_add_mul_I h; exact (re_add_im z).symm
 
 /-- `tan x` takes the junk value `0` when `cos x = 0` -/
 lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 := by
@@ -235,7 +233,7 @@ theorem cos_surjective : Function.Surjective cos := by
     simp only [zero_add, one_ne_zero, mul_zero] at hw
   refine ⟨log w / I, cos_eq_iff_quadratic.2 ?_⟩
   rw [div_mul_cancel₀ _ I_ne_zero, exp_log w₀]
-  convert! hw using 1
+  convert hw using 1
   ring
 
 @[simp]
@@ -349,7 +347,7 @@ theorem tan_eq_zero_iff {θ : ℝ} : tan θ = 0 ↔ ∃ k : ℤ, k * π / 2 = θ
 
 theorem tan_eq_zero_iff' {θ : ℝ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
   revert hθ
-  exact_mod_cast @Complex.tan_eq_zero_iff' θ
+  exact mod_cast @Complex.tan_eq_zero_iff' θ
 
 theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, k * π / 2 ≠ θ :=
   mod_cast @Complex.tan_ne_zero_iff θ
@@ -379,7 +377,7 @@ theorem sin_mul_sum_sin (n : ℕ) (a b : ℝ) :
 
 theorem sum_sin (n : ℕ) {a : ℝ} (h : ∀ k : ℤ, a ≠ k * (2 * π)) (b : ℝ) :
     ∑ i ∈ range n, sin (a * i + b) = sin (n * a / 2) * sin ((n - 1) * a / 2 + b) / sin (a / 2) := by
-  have h := Complex.sum_sin n (a := a) (by exact_mod_cast h) b
+  have h := Complex.sum_sin n (a := a) (mod_cast h) b
   exact_mod_cast congr($(h).re)
 
 theorem sin_mul_sum_cos (n : ℕ) (a b : ℝ) :
@@ -388,7 +386,7 @@ theorem sin_mul_sum_cos (n : ℕ) (a b : ℝ) :
 
 theorem sum_cos (n : ℕ) {a : ℝ} (h : ∀ k : ℤ, a ≠ k * (2 * π)) (b : ℝ) :
     ∑ i ∈ range n, cos (a * i + b) = sin (n * a / 2) * cos ((n - 1) * a / 2 + b) / sin (a / 2) := by
-  have h := Complex.sum_cos n (a := a) (by exact_mod_cast h) b
+  have h := Complex.sum_cos n (a := a) (mod_cast h) b
   exact_mod_cast congr($(h).re)
 
 end Real

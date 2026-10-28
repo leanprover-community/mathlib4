@@ -5,9 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.RatFunc.Defs
 public import Mathlib.RingTheory.Algebraic.Integral
+
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 # The field structure of rational functions
@@ -65,94 +66,86 @@ section Field
 variable [CommRing K]
 
 /-- The zero rational function. -/
-protected irreducible_def zero : K⟮X⟯ :=
+@[no_expose] protected def zero : K⟮X⟯ :=
   ⟨0⟩
 
 instance : Zero K⟮X⟯ :=
   ⟨RatFunc.zero⟩
 
-theorem ofFractionRing_zero : (ofFractionRing 0 : K⟮X⟯) = 0 :=
-  zero_def.symm
+theorem ofFractionRing_zero : (ofFractionRing 0 : K⟮X⟯) = 0 := (rfl)
 
 /-- Addition of rational functions. -/
-protected irreducible_def add : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def add : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p + q⟩
 
 instance : Add K⟮X⟯ :=
   ⟨RatFunc.add⟩
 
 theorem ofFractionRing_add (p q : FractionRing K[X]) :
-    ofFractionRing (p + q) = ofFractionRing p + ofFractionRing q :=
-  (add_def _ _).symm
+    ofFractionRing (p + q) = ofFractionRing p + ofFractionRing q := (rfl)
 
 /-- Subtraction of rational functions. -/
-protected irreducible_def sub : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def sub : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p - q⟩
 
 instance : Sub K⟮X⟯ :=
   ⟨RatFunc.sub⟩
 
 theorem ofFractionRing_sub (p q : FractionRing K[X]) :
-    ofFractionRing (p - q) = ofFractionRing p - ofFractionRing q :=
-  (sub_def _ _).symm
+    ofFractionRing (p - q) = ofFractionRing p - ofFractionRing q := (rfl)
 
 /-- Additive inverse of a rational function. -/
-protected irreducible_def neg : K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def neg : K⟮X⟯ → K⟮X⟯
   | ⟨p⟩ => ⟨-p⟩
 
 instance : Neg K⟮X⟯ :=
   ⟨RatFunc.neg⟩
 
 theorem ofFractionRing_neg (p : FractionRing K[X]) :
-    ofFractionRing (-p) = -ofFractionRing p :=
-  (neg_def _).symm
+    ofFractionRing (-p) = -ofFractionRing p := (rfl)
 
 /-- The multiplicative unit of rational functions. -/
-protected irreducible_def one : K⟮X⟯ :=
+@[no_expose] protected def one : K⟮X⟯ :=
   ⟨1⟩
 
 instance : One K⟮X⟯ :=
   ⟨RatFunc.one⟩
 
-theorem ofFractionRing_one : (ofFractionRing 1 : K⟮X⟯) = 1 :=
-  one_def.symm
+theorem ofFractionRing_one : (ofFractionRing 1 : K⟮X⟯) = 1 := (rfl)
 
 /-- Multiplication of rational functions. -/
-protected irreducible_def mul : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def mul : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p * q⟩
 
 instance : Mul K⟮X⟯ :=
   ⟨RatFunc.mul⟩
 
 theorem ofFractionRing_mul (p q : FractionRing K[X]) :
-    ofFractionRing (p * q) = ofFractionRing p * ofFractionRing q :=
-  (mul_def _ _).symm
+    ofFractionRing (p * q) = ofFractionRing p * ofFractionRing q := (rfl)
 
 section IsDomain
 
 variable [IsDomain K]
 
 /-- Division of rational functions. -/
-protected irreducible_def div : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def div : K⟮X⟯ → K⟮X⟯ → K⟮X⟯
   | ⟨p⟩, ⟨q⟩ => ⟨p / q⟩
 
 instance : Div K⟮X⟯ :=
   ⟨RatFunc.div⟩
 
 theorem ofFractionRing_div (p q : FractionRing K[X]) :
-    ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q :=
-  (div_def _ _).symm
+    ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q := (rfl)
 
 /-- Multiplicative inverse of a rational function. -/
-protected irreducible_def inv : K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def inv : K⟮X⟯ → K⟮X⟯
   | ⟨p⟩ => ⟨p⁻¹⟩
 
 instance : Inv K⟮X⟯ :=
   ⟨RatFunc.inv⟩
 
 theorem ofFractionRing_inv (p : FractionRing K[X]) :
-    ofFractionRing p⁻¹ = (ofFractionRing p)⁻¹ :=
-  (inv_def _).symm
+    ofFractionRing p⁻¹ = (ofFractionRing p)⁻¹ := (rfl)
 
 -- Auxiliary lemma for the `Field` instance
 theorem mul_inv_cancel : ∀ {p : K⟮X⟯}, p ≠ 0 → p * p⁻¹ = 1
@@ -169,15 +162,14 @@ section SMul
 variable {R : Type*}
 
 /-- Scalar multiplication of rational functions. -/
-protected irreducible_def smul [SMul R (FractionRing K[X])] : R → K⟮X⟯ → K⟮X⟯
+@[no_expose] protected def smul [SMul R (FractionRing K[X])] : R → K⟮X⟯ → K⟮X⟯
   | r, ⟨p⟩ => ⟨r • p⟩
 
 instance [SMul R (FractionRing K[X])] : SMul R K⟮X⟯ :=
   ⟨RatFunc.smul⟩
 
 theorem ofFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : FractionRing K[X]) :
-    ofFractionRing (c • p) = c • ofFractionRing p :=
-  (smul_def _ _).symm
+    ofFractionRing (c • p) = c • ofFractionRing p := (rfl)
 
 theorem toFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : K⟮X⟯) :
     toFractionRing (c • p) = c • toFractionRing p := by
@@ -372,11 +364,11 @@ def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.co
       rintro ⟨x⟩ ⟨y⟩
       induction x using Localization.induction_on
       induction y using Localization.induction_on
-      · simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
-          MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul,
-          -- We have to specify `S[X]⁰` to `mk_mul_mk`, otherwise it will try to rewrite
-          -- the wrong occurrence.
-          Submonoid.mk_mul_mk S[X]⁰] }
+      simp only [← ofFractionRing_add, Localization.add_mk, map_add, map_mul,
+        MonoidHom.toFun_eq_coe, map_apply_ofFractionRing_mk, Submonoid.coe_mul,
+        -- We have to specify `S[X]⁰` to `mk_mul_mk`, otherwise it will try to rewrite
+        -- the wrong occurrence.
+        Submonoid.mk_mul_mk S[X]⁰] }
 
 theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     (mapRingHom φ hφ : R⟮X⟯ → S⟮X⟯) = map φ hφ :=
@@ -695,7 +687,7 @@ theorem liftOn_div {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀
 theorem liftOn'_div {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)
     (H) :
     (RatFunc.liftOn' (algebraMap _ K⟮X⟯ p / algebraMap _ _ q)) f @H = f p q := by
-  rw [RatFunc.liftOn', liftOn_div _ _ _ f0]
+  rw [RatFunc.liftOn'_def, liftOn_div _ _ _ f0]
   apply liftOn_condition_of_liftOn'_condition H
 
 /-- Induction principle for `K⟮X⟯`: if `f p q : P (p / q)` for all `p q : K[X]`,
@@ -895,7 +887,7 @@ private theorem num_div' (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
   rw [num, numDenom_div _ hq]
 
 @[simp]
-theorem num_zero : num (0 : K⟮X⟯) = 0 := by convert! num_div' (0 : K[X]) one_ne_zero <;> simp
+theorem num_zero : num (0 : K⟮X⟯) = 0 := by convert num_div' (0 : K[X]) one_ne_zero <;> simp
 
 open scoped Classical in
 @[simp]
@@ -907,10 +899,10 @@ theorem num_div (p q : K[X]) :
   · exact num_div' p hq
 
 @[simp]
-theorem num_one : num (1 : K⟮X⟯) = 1 := by convert! num_div (1 : K[X]) 1 <;> simp
+theorem num_one : num (1 : K⟮X⟯) = 1 := by convert num_div (1 : K[X]) 1 <;> simp
 
 @[simp]
-theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert! num_div p 1 <;> simp
+theorem num_algebraMap (p : K[X]) : num (algebraMap _ _ p) = p := by convert num_div p 1 <;> simp
 
 theorem num_div_dvd (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     num (algebraMap _ _ p / algebraMap _ _ q) ∣ p := by
@@ -949,15 +941,15 @@ theorem denom_ne_zero (x : K⟮X⟯) : denom x ≠ 0 :=
 
 @[simp]
 theorem denom_zero : denom (0 : K⟮X⟯) = 1 := by
-  convert! denom_div (0 : K[X]) one_ne_zero <;> simp
+  convert denom_div (0 : K[X]) one_ne_zero <;> simp
 
 @[simp]
 theorem denom_one : denom (1 : K⟮X⟯) = 1 := by
-  convert! denom_div (1 : K[X]) one_ne_zero <;> simp
+  convert denom_div (1 : K[X]) one_ne_zero <;> simp
 
 @[simp]
 theorem denom_algebraMap (p : K[X]) : denom (algebraMap _ K⟮X⟯ p) = 1 := by
-  convert! denom_div p one_ne_zero <;> simp
+  convert denom_div p one_ne_zero <;> simp
 
 @[simp]
 theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q) ∣ q := by
@@ -1081,12 +1073,12 @@ theorem denom_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := 
 
 theorem associated_num_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
   apply associated_of_dvd_dvd (num_inv_dvd hx)
-  convert! denom_inv_dvd (inv_ne_zero hx)
+  convert denom_inv_dvd (inv_ne_zero hx)
   rw [inv_inv]
 
 theorem associated_denom_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by
   apply Associated.symm
-  convert! associated_num_inv (inv_ne_zero hx)
+  convert associated_num_inv (inv_ne_zero hx)
   rw [inv_inv]
 
 theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClass F K[X] L]

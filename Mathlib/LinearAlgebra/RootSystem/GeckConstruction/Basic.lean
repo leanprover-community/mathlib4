@@ -7,15 +7,16 @@ module
 
 public import Mathlib.Algebra.Lie.Matrix
 public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
+
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
-public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system
 
 This file contains an implementation of Geck's construction of a semisimple Lie algebra from a
-reduced crystallographic root system. It follows [Geck](Geck2017) quite closely.
+reduced crystallographic root system. It follows [Geck][Geck2017] quite closely.
 
 ## Main definitions:
 * `RootPairing.GeckConstruction.lieAlgebra`: the Geck construction of the Lie algebra associated to

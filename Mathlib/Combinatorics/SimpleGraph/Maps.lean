@@ -107,11 +107,9 @@ theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
   exact ⟨huv, _, _, h ha, rfl, rfl⟩
 
 @[simp] lemma map_id : G.map id = G := by
-  ext
   grind
 
 @[simp] lemma map_map (f : V → W) (g : W → X) : (G.map f).map g = G.map (g ∘ f) := by
-  ext
   grind
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
@@ -695,7 +693,7 @@ def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
 include f in
 theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
-  convert! rfl
+  convert rfl
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/

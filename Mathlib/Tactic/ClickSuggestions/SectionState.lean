@@ -5,9 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.Util
-public import ProofWidgets.Component.FilterDetails
+public meta import ProofWidgets.Component.FilterDetails
 public meta import ProofWidgets.Util
+public import Mathlib.Tactic.ClickSuggestions.Util
 
 /-!
 # Infrastructure for searching and displaying sets of lemmas
@@ -18,18 +18,18 @@ This is used for `apply`, `apply at`, `rw` and `grw` suggestions.
 public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
-open Lean Widget ProofWidgets Jsx
+open Lean Widget ProofWidgets
 
 /-- `Result` stores the information from a lemma that was successfully applied. -/
 structure Result (α : Type) where
   /-- `filtered` will be shown in the filtered view. -/
-  filtered : Option Html
+  filtered : Option ProofWidgets.Html
   /-- `unfiltered` will be shown in the unfiltered view. -/
-  unfiltered : Html
+  unfiltered : ProofWidgets.Html
   /-- `key` is used for sorting and comparing theorems. -/
   key : α
   /-- The `pattern` of the first lemma in a section is shown as the header of that section. -/
-  pattern : Html
+  pattern : ProofWidgets.Html
 deriving Inhabited
 
 variable {α : Type} [Ord α] [Inhabited α]
@@ -46,7 +46,7 @@ structure SectionState (α : Type) where
   results : Array (Result α) := #[]
   /-- The results of the theorems that threw an error when trying to apply them.
   Usually, errors will be caught, except for when using `click_suggestions.debug`. -/
-  errors : Array Html := #[]
+  errors : Array ProofWidgets.Html := #[]
   deriving Nonempty
 
 /-- Insert the new result `res` into the array `arr` of already existing results.
@@ -94,7 +94,7 @@ inductive SectionKind where
 
 -- TODO?: add a `⏳️` with hover info that shows which lemmas are still being computed?
 /-- Create the HTML corresponding to `s`. -/
-def renderSection (tactic : String) (kind : SectionKind) (s : SectionState α) : Html := Id.run do
+def renderSection (kind : SectionKind) (s : SectionState α) : ProofWidgets.Html := Id.run do
   let { results, errors } := s
   if results.isEmpty && errors.isEmpty then
     return .text ""
@@ -102,31 +102,32 @@ def renderSection (tactic : String) (kind : SectionKind) (s : SectionState α) :
   let mut all := .element "div" #[] <| results.map (·.unfiltered)
   let mut filtered := .element "div" #[] <| results.filterMap (·.filtered)
   unless errors.isEmpty do
-    all := <div> {all} {renderErrors errors} </div>
-    filtered := <div> {filtered} {renderErrors errors} </div>
+    all := jsx%{<div>{all}{renderErrors errors}</div>}
+    filtered := jsx%{<div>{filtered}{renderErrors errors}</div>}
   let suffix := match kind with
     | .hyp => " (local hypotheses)"
     | .currFile => " (current file)"
     | .imported => ""
-  let header := <span> {.text s!"{tactic} ("} {pattern} {.text ")"} {.text suffix} </span>
+  let header := jsx%{<span>Pattern {pattern}{.text suffix}</span>}
   if kind matches .imported then
-    return <FilterDetails summary={header} all={all} filtered={filtered} initiallyFiltered={true} />
+    return jsx%{<FilterDetails summary={header} all={all} filtered={filtered}
+      initiallyFiltered={true} />}
   else
     -- We don't filter local results, because there aren't that many of them.
-    return <details «open»={true}> <summary> {header} </summary> {all} </details>
+    return jsx%{<details open={true}><summary>{header}</summary>{all}</details>}
 where
-  renderErrors (errors : Array Html) : Html :=
-    <details «open»={true}>
+  renderErrors (errors : Array ProofWidgets.Html) : ProofWidgets.Html :=
+    jsx%{<details open={true}>
       <summary className="mv2 pointer">
-        <span «class»="error"> Failures: </span>
+        <span class="error"> Failures: </span>
       </summary>
       {Html.element "ul" #[("style", json% { "padding-left" : "30px"})] errors}
-    </details>
+    </details>}
 
 /-- Spawn a task that computes a piece of `Html` to be displayed when finished. -/
 @[specialize]
 def spawnTask {α} (premise : Premise) (k : ClickSuggestionsM α) :
-    ClickSuggestionsM <| Task (Except Html (Option α)) := do
+    ClickSuggestionsM <| Task (Except ProofWidgets.Html (Option α)) := do
   let premiseHtml ← premise.toHtml
   let act ← saveCtxM do
     /- Since this task may have been on the queue for a while,
@@ -146,10 +147,10 @@ def spawnTask {α} (premise : Premise) (k : ClickSuggestionsM α) :
           throw ex
         return .ok none
   BaseIO.asTask <| act.catchExceptions fun ex =>
-    return .error <li>
+    return .error jsx%{<li>
         {premiseHtml} failed:
         <br/>
         <InteractiveMessage msg={← Server.WithRpcRef.mk ex.toMessageData} />
-      </li>
+      </li>}
 
 end Mathlib.Tactic.ClickSuggestions

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Evaluation
+
 import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Substitutions in power series
@@ -341,7 +342,7 @@ theorem le_weightedOrder_subst (w : τ → ℕ) (ha : HasSubst a) (f : PowerSeri
   simp only [ne_eq, Function.comp_const, le_iInf_iff]
   intro i hi
   trans i () * MvPowerSeries.weightedOrder w a
-  · exact mul_le_mul_left (f.order_le (i ()) (by delta PowerSeries.coeff; convert! hi; aesop)) _
+  · exact mul_le_mul_left (f.order_le (i ()) (by delta PowerSeries.coeff; convert hi; aesop)) _
   · simp [Finsupp.weight_apply, Finsupp.sum_fintype]
 
 theorem le_order_subst (a : MvPowerSeries τ S) (ha : HasSubst a) (f : PowerSeries R) :
@@ -478,19 +479,19 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
       generalize hk : ⅟(P.coeff 1) * coeff (n + 1 + 1) (subst B P) = k
       trans ∑ᶠ d, P.coeff d * (coeff (n + 1 + 1) (B ^ d) - if d = 1 then k else 0)
       · refine finsum_congr fun i ↦ ?_
-        · congr 1
-          obtain (_ | _ | i) := i
+        congr 1
+        obtain (_ | _ | i) := i
+        · simp
+        · simp [← sub_eq_add_neg]
+        · simp only [add_assoc, Nat.reduceAdd]
+          rw [add_comm B, add_pow, map_sum, Finset.sum_eq_single (a := 0)]
           · simp
-          · simp [← sub_eq_add_neg]
-          · simp only [add_assoc, Nat.reduceAdd]
-            rw [add_comm B, add_pow, map_sum, Finset.sum_eq_single (a := 0)]
-            · simp
-            · rintro (_ | _ | j) hj hj'
-              · simp at hj'
-              · simp [mul_comm (C k), hB', mul_assoc, coeff_X_pow_mul']
-              · rw [← neg_mul, mul_pow, ← pow_mul, mul_comm (_ ^ _)]
-                simp [mul_assoc, coeff_X_pow_mul']
-            · simp
+          · rintro (_ | _ | j) hj hj'
+            · simp at hj'
+            · simp [mul_comm (C k), hB', mul_assoc, coeff_X_pow_mul']
+            · rw [← neg_mul, mul_pow, ← pow_mul, mul_comm (_ ^ _)]
+              simp [mul_assoc, coeff_X_pow_mul']
+          · simp
       · simp_rw [mul_sub]
         rw [finsum_sub_distrib]
         · simp only [mul_ite, mul_zero]

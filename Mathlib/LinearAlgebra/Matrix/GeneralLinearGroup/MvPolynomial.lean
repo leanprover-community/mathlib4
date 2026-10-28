@@ -5,8 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+
+import Mathlib.Algebra.MvPolynomial.Funext
 
 /-!
 # Polynomial identities from evaluation at invertible matrices

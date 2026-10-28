@@ -5,9 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Units.Regulator
+
+import Mathlib.FieldTheory.Galois.IsGaloisGroup
 
 /-!
 # CM-extension of number fields
@@ -196,7 +197,7 @@ An element of `K` is fixed by the complex conjugation iff it lies in `K⁺`.
 @[simp]
 theorem complexConj_eq_self_iff (x : K) :
     complexConj K x = x ↔ x ∈ K⁺ := by
-  convert! (IntermediateField.mem_fixedField_iff (⊤ : Subgroup (K ≃ₐ[K⁺] K)) x).symm using 1
+  convert (IntermediateField.mem_fixedField_iff (⊤ : Subgroup (K ≃ₐ[K⁺] K)) x).symm using 1
   · rw [← zpowers_complexConj_eq_top, Subgroup.forall_mem_zpowers]
     exact (MulAction.mem_fixedBy_zpowers_iff_mem_fixedBy (g := (complexConj K))).symm
   · rw [IsGalois.fixedField_top, IntermediateField.mem_bot]
@@ -359,7 +360,7 @@ noncomputable abbrev indexRealUnits : ℕ := (realUnits K ⊔ torsion K).index
 theorem indexRealUnits_mul_eq :
     indexRealUnits K * (unitsMulComplexConjInv K).range.index = 2 := by
   rw [indexRealUnits, sup_comm]
-  convert! (Subgroup.index_map (torsion K) (unitsMulComplexConjInv K)).symm
+  convert (Subgroup.index_map (torsion K) (unitsMulComplexConjInv K)).symm
   · rw [unitsMulComplexConjInv_ker]
   · rw [map_unitsMulComplexConjInv_torsion, IsCyclic.index_powMonoidHom_range, Nat.gcd_eq_right]
     exact even_iff_two_dvd.mp (even_torsionOrder K)

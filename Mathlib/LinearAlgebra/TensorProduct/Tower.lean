@@ -117,7 +117,7 @@ nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
         LinearMap.ext_iff.1 <|
           TensorProduct.ext' fun x y => by
             simp only [comp_apply, Algebra.lsmul_coe, smul_tmul', lift.tmul,
-              coe_restrictScalars, f.map_smul, smul_apply] }
+              coe_restrictScalars, f.map_smul, LinearMap.smul_apply] }
 
 @[simp]
 theorem lift_apply (f : M →ₗ[A] N →ₗ[R] P) (a : M ⊗[R] N) :
@@ -141,8 +141,8 @@ the given bilinear map `M →[A] N →[R] P`. -/
 @[simps]
 def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
   toFun := lift
-  map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
-  map_smul' _ _ := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
+  map_add' _ _ := ext fun x y => by simp only [lift_tmul, LinearMap.add_apply]
+  map_smul' _ _ := ext fun x y => by simp only [lift_tmul, LinearMap.smul_apply, RingHom.id_apply]
 
 /-- Heterobasic version of `TensorProduct.lcurry`:
 
@@ -206,24 +206,24 @@ protected theorem map_mul (f₁ f₂ : M →ₗ[A] M) (g₁ g₂ : N →ₗ[R] N
 theorem map_add_left (f₁ f₂ : M →ₗ[A] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
-  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, add_apply, map_tmul,
-    add_apply, add_tmul]
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, LinearMap.add_apply,
+    map_tmul, LinearMap.add_apply, add_tmul]
 
 theorem map_add_right (f : M →ₗ[A] P) (g₁ g₂ : N →ₗ[R] Q) :
     map f (g₁ + g₂) = map f g₁ + map f g₂ := by
   ext
-  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, add_apply, map_tmul,
-    add_apply, tmul_add]
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, LinearMap.add_apply,
+    map_tmul, LinearMap.add_apply, tmul_add]
 
 theorem map_smul_right (r : R) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map f (r • g) = r • map f g := by
   ext
-  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
-    smul_apply, tmul_smul]
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, LinearMap.smul_apply,
+    map_tmul, LinearMap.smul_apply, tmul_smul]
 
 theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b • f) g = b • map f g := by
   ext
-  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
-    smul_apply, smul_tmul']
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, LinearMap.smul_apply,
+    map_tmul, LinearMap.smul_apply, smul_tmul']
 
 /-- The heterobasic version of `map` coincides with the regular version. -/
 theorem map_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) : map f g = TensorProduct.map f g := rfl
@@ -661,13 +661,15 @@ def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
 theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ f x :=
   rfl
 
-theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
+theorem baseChange_eq_lTensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
   rfl
+
+@[deprecated (since := "2026-09-28")] alias baseChange_eq_ltensor := baseChange_eq_lTensor
 
 @[simp]
 theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
-  simp [baseChange_eq_ltensor, -baseChange_tmul]
+  simp [baseChange_eq_lTensor, -baseChange_tmul]
 
 @[simp]
 theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
@@ -751,7 +753,7 @@ theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R]
     (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans (f.baseChange R A N P) := by
   ext x
   simp only [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
-    LinearEquiv.coe_trans, baseChange_eq_ltensor, lTensor_comp_apply]
+    LinearEquiv.coe_trans, baseChange_eq_lTensor, lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_mul (e : M ≃ₗ[R] M) (f : M ≃ₗ[R] M) :
     (e * f).baseChange R A M M = (e.baseChange R A M M) * (f.baseChange R A M M) := by
@@ -762,7 +764,7 @@ theorem _root_.LinearEquiv.baseChange_symm (e : M ≃ₗ[R] N) :
   ext x
   rw [LinearEquiv.eq_symm_apply]
   simp [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange,
-    baseChange_eq_ltensor, ← lTensor_comp_apply]
+    baseChange_eq_lTensor, ← lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_inv (e : M ≃ₗ[R] M) :
     (e⁻¹).baseChange R A M M = (e.baseChange R A M M)⁻¹ :=
@@ -788,7 +790,7 @@ variable {R A M N} in
 theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
     (φ.toLinearMap.rTensor N) (f.baseChange A t) =
       (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
-  simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
+  simp [LinearMap.baseChange_eq_lTensor, ← LinearMap.comp_apply]
 
 end Semiring
 
@@ -842,19 +844,42 @@ lemma baseChange_eq_span : p.baseChange A = span A (p.map (TensorProduct.mk R A 
     exact smul_mem _ a (subset_span ⟨m, m.2, rfl⟩)
   · refine span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
 
+variable {A p} in
+theorem baseChange_le_iff_le_comap {q : Submodule A (A ⊗[R] M)} :
+    p.baseChange A ≤ q ↔ p ≤ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) := by
+  rw [baseChange_eq_span, span_le, ← q.coe_restrictScalars R, SetLike.coe_subset_coe,
+    map_le_iff_le_comap]
+
+variable (R M) in
+theorem baseChange_gc : GaloisConnection (baseChange A)
+    fun q ↦ (q.restrictScalars R).comap (TensorProduct.mk R A M 1) :=
+  fun _ _ ↦ baseChange_le_iff_le_comap
+
 @[simp]
-lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange_eq_span]
+lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := (baseChange_gc R M A).l_bot
 
 @[simp]
 lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
+@[simp]
+lemma baseChange_sup : (p ⊔ q).baseChange A = p.baseChange A ⊔ q.baseChange A :=
+  (baseChange_gc R M A).l_sup
+
+@[simp]
+lemma baseChange_iSup {ι : Sort*} (p : ι → Submodule R M) :
+    (⨆ i, p i).baseChange A = ⨆ i, (p i).baseChange A :=
+  (baseChange_gc R M A).l_iSup
+
+@[simp]
+lemma baseChange_sSup (S : Set (Submodule R M)) :
+    (sSup S).baseChange A = ⨆ p ∈ S, p.baseChange A :=
+  (baseChange_gc R M A).l_sSup
+
 variable {p q} in
-theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
-  rw [baseChange, LinearMap.baseChange, ← subtype_comp_inclusion p q h,
-    ← LinearMap.id_comp LinearMap.id, AlgebraTensorModule.map_comp]
-  apply LinearMap.range_comp_le_range
+theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A :=
+  (baseChange_gc R M A).monotone_l h
 
 @[simp]
 lemma baseChange_span (s : Set M) :

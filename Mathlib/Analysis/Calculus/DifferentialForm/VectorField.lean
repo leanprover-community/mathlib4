@@ -6,8 +6,9 @@ Authors: Yury G. Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.DifferentialForm.Basic
-import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 public import Mathlib.Analysis.Calculus.VectorField
+
+import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 
 /-!
 # Evaluation of the derivative of differential forms on vector fields
