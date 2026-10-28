@@ -307,8 +307,7 @@ lemma coe_vadd (v : V) (b : AffineBasis ι k P) : ⇑(v +ᵥ b) = v +ᵥ ⇑b :=
   ext
   simp
 
-instance instAddAction : AddAction V (AffineBasis ι k P) :=
-  FunLike.addAction
+instance instAddAction : AddAction V (AffineBasis ι k P) := fast_instance% FunLike.addAction
 
 @[simp] lemma coord_vadd (v : V) (b : AffineBasis ι k P) :
     (v +ᵥ b).coord i = (b.coord i).comp (AffineEquiv.constVAdd k P v).symm := by
@@ -364,8 +363,7 @@ instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι
 
 /-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
-instance instMulAction : MulAction G (AffineBasis ι k V) :=
-  FunLike.mulAction
+instance instMulAction : MulAction G (AffineBasis ι k V) := fast_instance% FunLike.mulAction
 
 end SMul
 end Ring
