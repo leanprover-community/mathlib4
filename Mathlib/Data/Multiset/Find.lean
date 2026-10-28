@@ -9,9 +9,6 @@ public import Mathlib.Data.List.Find
 public import Mathlib.Data.Multiset.AddSub
 public import Mathlib.Data.Multiset.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Finding subsingleton elements within multisets
 
@@ -81,19 +78,13 @@ theorem find?_eq_some_iff {a : α} {s : Multiset α} (hp) :
     · dsimp [Set.Subsingleton] at hp
       specialize hp ⟨mem_cons_self _ _, ‹p x›⟩
       grind
-    · simp_rw [ih]
-      grind
+    · grind
 
 variable {p} in
 @[simp, grind =]
 theorem find?_eq_none_iff {s : Multiset α} (hp) :
     s.find? p hp = none ↔ ∀ a ∈ s, ¬ p a := by
-  induction s using Multiset.induction_on with
-  | empty => simp
-  | cons x s ih =>
-    rw [find?_cons]
-    dsimp [Set.Subsingleton] at hp
-    grind
+  induction s using Multiset.induction_on <;> grind [find?_zero, find?_cons]
 
 /-- If two predicates agree on all the elements, so does `find?`. -/
 @[congr]

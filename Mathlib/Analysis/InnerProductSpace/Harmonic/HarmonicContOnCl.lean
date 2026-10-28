@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Functions Harmonic on a Domain and Continuous on Its Closure
 
@@ -73,6 +70,7 @@ theorem contDiffAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
 theorem differentiableAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     DifferentiableAt ℝ f x := (h.contDiffAt hx).differentiableAt two_ne_zero
 
+@[gcongr]
 theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
     HarmonicContOnCl f t := ⟨h.harmonicOnNhd.mono ht, h.continuousOn.mono (closure_mono ht)⟩
 

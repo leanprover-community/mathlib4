@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Ring.Pi
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Characteristic of semirings of functions
 -/

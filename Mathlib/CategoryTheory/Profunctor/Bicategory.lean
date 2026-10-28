@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Profunctor.Comp
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The Profunctor Bicategory
 
@@ -26,7 +23,6 @@ universe w v u
 
 namespace CategoryTheory
 
-set_option linter.checkUnivs false in
 /-- The bicategory of categories where the 1-morphisms are profunctors. -/
 structure ProfCat where
   of ::

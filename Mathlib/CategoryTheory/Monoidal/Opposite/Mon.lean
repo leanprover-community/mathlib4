@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Monoid objects internal to monoidal opposites
 

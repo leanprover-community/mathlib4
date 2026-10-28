@@ -10,9 +10,6 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Convex sets
 

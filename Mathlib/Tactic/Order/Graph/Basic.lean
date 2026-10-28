@@ -8,9 +8,6 @@ module
 public meta import Mathlib.Util.AtomM
 public import Mathlib.Tactic.Order.CollectFacts
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Graphs for the `order` tactic
 

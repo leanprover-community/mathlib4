@@ -12,9 +12,6 @@ public import Mathlib.Algebra.Torsor.Defs
 
 import Mathlib.Algebra.Group.Action.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Torsors of group actions
 

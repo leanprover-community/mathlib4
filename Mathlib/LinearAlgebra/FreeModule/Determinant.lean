@@ -7,9 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Determinant
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Determinants in free (finite) modules
 

@@ -10,9 +10,6 @@ public import Mathlib.Algebra.Star.Pi
 
 import Mathlib.Algebra.Group.Submonoid.Finite
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Pi-types of star-ordered rings
 -/

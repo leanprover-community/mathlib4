@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Intervals in ℤ
 

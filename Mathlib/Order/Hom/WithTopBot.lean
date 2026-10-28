@@ -9,9 +9,6 @@ public import Mathlib.Order.Hom.BoundedLattice
 public import Mathlib.Order.WithBot
 public import Mathlib.Tactic.ApplyFun
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Adjoining `⊤` and `⊥` to order maps and lattice homomorphisms
 
@@ -134,7 +131,7 @@ end OrderHom
 
 namespace OrderEmbedding
 
-variable [Preorder α] [Preorder β]
+variable [LE α] [LE β]
 
 /-- A version of `WithBot.map` for order embeddings. -/
 @[to_dual /-- A version of `WithTop.map` for order embeddings. -/]
@@ -151,7 +148,7 @@ end OrderEmbedding
 
 namespace OrderIso
 
-variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
+variable [LE α] [LE β] [LE γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
 @[to_dual /-- A version of `Equiv.optionCongr` for `WithBot`. -/]

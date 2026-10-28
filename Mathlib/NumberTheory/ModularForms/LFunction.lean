@@ -11,9 +11,6 @@ public import Mathlib.NumberTheory.ModularForms.Bounds
 
 import Mathlib.Analysis.PSeries
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The `L`-function of a modular form
 -/
@@ -41,7 +38,7 @@ namespace ModularForm
 
 variable [ModularFormClass F Γ k]
 
-section asymptotics -- private lemmas about aymptotics along `I * ℝ`
+section asymptotics -- private lemmas about asymptotics along `I * ℝ`
 
 private lemma tendsto_ofComplex_I_mul_atTop_atImInfty :
     Tendsto (fun t : ℝ ↦ ofComplex (I * t)) atTop atImInfty := by
@@ -130,7 +127,7 @@ lemma hasSum_Λ (hs : k + 1 < s.re) :
     HasSum (fun n ↦ π ^ (-s) * Gamma s * (qExpansion (h Γ) f).coeff n /
       ↑(2 * n / h Γ : ℝ) ^ s) (Λ hk f s) := by
   refine hasSum_Λ_of_qExpansion_isBigO hk f (r := k)
-    (by linarith [show (0 : ℝ) < k from mod_cast hk]) (by exact_mod_cast hs) ?_ ?_
+    (by linarith [show (0 : ℝ) < k from mod_cast hk]) (mod_cast hs) ?_ ?_
   · rw [Λ, ← ((weakFEPair hk f).hasMellin <| by grind [weakFEPair]).2]
   · simpa using ModularFormClass.qExpansion_isBigO hk.le f
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Flat monomorphisms of finite presentation are open immersions
 

@@ -9,9 +9,6 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Binary (co)products of type-valued functors
 

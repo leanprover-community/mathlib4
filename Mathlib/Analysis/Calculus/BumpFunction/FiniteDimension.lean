@@ -14,9 +14,6 @@ import Mathlib.Analysis.Calculus.SmoothSeries
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Data.Set.Pointwise.Support
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Bump functions in finite-dimensional vector spaces
 

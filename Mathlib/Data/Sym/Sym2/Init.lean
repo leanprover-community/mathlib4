@@ -9,9 +9,6 @@ public meta import Aesop
 
 import Mathlib.Init
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Sym2 Rule Set
 

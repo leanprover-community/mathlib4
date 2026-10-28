@@ -13,9 +13,6 @@ import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.Module.Field
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Order properties of the average over a finset
 -/

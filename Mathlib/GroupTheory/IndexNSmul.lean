@@ -13,9 +13,6 @@ import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lemmas about index and multiplication-by-n
 

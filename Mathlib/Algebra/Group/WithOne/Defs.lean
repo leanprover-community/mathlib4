@@ -12,9 +12,6 @@ public import Mathlib.Tactic.Common
 
 import Mathlib.Basic.Nontrivial.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
 
