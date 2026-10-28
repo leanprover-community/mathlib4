@@ -305,13 +305,8 @@ run on a curl older than 7.71, which rejects `--retry-all-errors`.
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
-/--
-Stall flags for a cache download. A transfer that receives no bytes for 30 s
-ends with curl exit 28. A healthy get has a first-byte time under 1 s, and a
-slow transfer keeps its bytes flowing, so the limit trips on neither. curl
-retries a timed-out transfer on the same connection. The retry pass in
-`downloadFiles` starts a fresh curl process, which opens a new connection.
--/
+/-- Fail a download after 30 s without bytes. curl retries it on the same connection, so
+only the retry pass in `downloadFiles` reaches a new one. -/
 def curlStallArgs : Array String :=
   #["--speed-time", "30", "--speed-limit", "1"]
 
@@ -575,8 +570,8 @@ structure TransferState where
   failed : Nat := 0
   done : Nat := 0
   speed : Nat := 0
-  /-- Hashes of failed downloads. A round in which curl reports fewer transfers than
-  requested adds every unserved hash. -/
+  /-- Failed downloads. When curl reports fewer transfers than requested, every unserved
+  file counts as failed. -/
   failedHashes : Std.HashSet UInt64 := ∅
   /-- Decompression pipeline state; used only when a `DecompConfig` is set. -/
   decomp : DecompState := {}
@@ -804,10 +799,9 @@ def monitorCurl {dir : TransferDirection} (args : Array String) (size : Nat)
     IO.eprintln (mkStatus s)
   return (s, ← servedRef.get)
 
-/-- Download files from one location and return the transfer state and delivered hashes.
-Write delivered files to `CACHEDIR` with their final names. Both modes record
-the hashes of failed downloads in `failedHashes`. Parallel mode continues the
-decompression pipeline in `decompState`. Serial mode returns `decompState` unchanged. -/
+/-- Download files from one location. Returns the transfer state and the delivered hashes.
+Delivered files land in `CACHEDIR` under their final names. Parallel mode continues the
+decompression pipeline in `decompState`; serial mode passes it through. -/
 private def downloadFilesFromLocation (location : Location)
     (hashMap : IO.ModuleHashMap)
     (mode : IO.CurlMode) (decompConfig : Option DecompConfig) (decompState : DecompState) :
@@ -826,8 +820,7 @@ private def downloadFilesFromLocation (location : Location)
       classifyDownload (removeOnError := true)
       decompConfig decompState
     IO.FS.removeFile IO.CURLCFG
-    -- When curl reports fewer transfers than requested, mark every unserved
-    -- hash as failed: a missing report does not name a file.
+    -- curl omitted reports, so every unserved file counts as failed.
     let s := if s.done < size then
         { s with failedHashes := hashMap.fold (init := s.failedHashes) fun acc _ hash =>
             if served.contains hash then acc else acc.insert hash }
@@ -837,8 +830,7 @@ private def downloadFilesFromLocation (location : Location)
     let r ← hashMap.foldM (init := []) fun acc _ hash => do
       pure <| (hash, ← IO.asTask do
         downloadFile location hash) :: acc
-    -- Every result other than a delivery or a 404 miss is a hard failure,
-    -- including a task that threw.
+    -- Anything but a delivery or a 404 miss is a failure, including a task that threw.
     let (served, failedHashes) :=
       r.foldl (init := ((∅ : Std.HashSet UInt64), (∅ : Std.HashSet UInt64)))
         fun (served, failedHashes) (hash, t) =>
@@ -894,23 +886,17 @@ def readLocations (repo : String) (unsafeScopes : List String := []) :
     else pure none
   return readLocationsFrom repo containerBases scope? unsafeScopes headScope?
 
-/-- Outcome of a download. `missing` counts the files that no location served.
-`failed` counts the subset that a location marked as failed in the last pass,
-and it determines the caller's exit code. A hard error marks one file. A curl
-run that reports fewer transfers than requested marks every file it left unserved. -/
+/-- `missing` counts the files no location served. `failed` counts those among them that
+failed in the last pass, and sets the exit code. -/
 structure DownloadResult where
   failed : Nat := 0
   missing : Nat := 0
 
-/-- Download files to `CACHEDIR` and return the failure and missing-file counts
-(see `DownloadResult`). The caller explains missing files. Parallel mode
-decompresses files during download when `decompress` is true.
-
-The first pass tries `locations` in order (see `readLocations`) and drops
-delivered files from the batch after each round. A second pass retries the hard
-failures that no location served, in fresh `curl` processes. With `unsafeMode`,
-the download reports how many files each commit scope served (`cache get --unsafe`).
-`repo` labels the download messages. -/
+/-- Download files to `CACHEDIR`. The first pass tries `locations` in order; a second pass
+retries the failed files in fresh `curl` processes. Parallel mode decompresses files during
+the download when `decompress` is true. With `unsafeMode`, the download reports how many
+files each commit scope served. `repo` labels the messages. The caller explains missing
+files. -/
 def downloadFiles
     (repo : String) (locations : List Location) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (mode : IO.CurlMode)
@@ -934,8 +920,7 @@ def downloadFiles
   else
     pure none
 
-  -- `batch` holds the files the current pass still needs. `missing` counts the
-  -- files that no round has served.
+  -- `batch`: files the current pass still needs. `missing`: files no round has served.
   let mut batch := hashMap
   let mut missing := hashMap.size
   let mut decompState : DecompState := {}
