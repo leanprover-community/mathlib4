@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
+Authors: Joseph Myers, David Iach
 -/
 module
 
@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Affine.Isometry
+
+import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces
@@ -103,6 +105,44 @@ lemma dist_add_dist_eq_iff : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c :
 theorem dist_lt_dist_add_dist_iff {a b c : P} :
     dist a c < dist a b + dist b c ↔ ¬ Wbtw ℝ a b c := by
   rw [← ne_iff_lt_iff_le.mpr (dist_triangle _ _ _), not_iff_not, eq_comm, dist_add_dist_eq_iff]
+
+/-- Uncrossing two segments strictly decreases total length if one resulting triangle is strict. -/
+theorem Wbtw.dist_add_dist_lt {a b c d o : P}
+    (hac : Wbtw ℝ a o c) (hbd : Wbtw ℝ b o d) (h : ¬ Wbtw ℝ a o b) :
+    dist a b + dist c d < dist a c + dist b d := by
+  calc
+    dist a b + dist c d < (dist a o + dist o b) + (dist c o + dist o d) :=
+      add_lt_add_of_lt_of_le (dist_lt_dist_add_dist_iff.mpr h) (dist_triangle c o d)
+    _ = dist a c + dist b d := by
+      rw [dist_comm o b, dist_comm c o, add_add_add_comm,
+        hac.dist_add_dist, hbd.dist_add_dist]
+
+/-- Both strict Kalmanson inequalities for internally crossing, noncollinear diagonals. -/
+theorem Sbtw.strict_kalmanson {a b c d o : P}
+    (hac : Sbtw ℝ a o c) (hbd : Sbtw ℝ b o d)
+    (h : ¬ Collinear ℝ ({a, b, c} : Set P)) :
+    dist a b + dist c d < dist a c + dist b d ∧
+      dist a d + dist b c < dist a c + dist b d := by
+  have hab : ¬ Collinear ℝ ({a, o, b} : Set P) := by
+    intro hh
+    apply h
+    apply collinear_triple_of_mem_affineSpan_pair (p₄ := a) (p₅ := o)
+    · exact left_mem_affineSpan_pair ℝ a o
+    · exact hh.mem_affineSpan_of_mem_of_ne (by simp) (by simp) (by simp) hac.left_ne
+    · exact hac.wbtw.collinear.mem_affineSpan_of_mem_of_ne
+        (by simp) (by simp) (by simp) hac.left_ne
+  have had : ¬ Collinear ℝ ({a, o, d} : Set P) := by
+    intro hh
+    apply hab
+    apply collinear_triple_of_mem_affineSpan_pair (p₄ := o) (p₅ := d)
+    · exact hh.mem_affineSpan_of_mem_of_ne (by simp) (by simp) (by simp) hbd.ne_right
+    · exact left_mem_affineSpan_pair ℝ o d
+    · exact hbd.wbtw.collinear.mem_affineSpan_of_mem_of_ne
+        (by simp) (by simp) (by simp) hbd.ne_right
+  constructor
+  · exact hac.wbtw.dist_add_dist_lt hbd.wbtw (fun hw ↦ hab hw.collinear)
+  · simpa only [dist_comm c b, dist_comm d b] using
+      hac.wbtw.dist_add_dist_lt hbd.wbtw.symm (fun hw ↦ had hw.collinear)
 
 end MetricSpace
 

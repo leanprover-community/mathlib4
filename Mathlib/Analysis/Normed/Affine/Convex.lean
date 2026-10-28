@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp, Yury Kudryashov
+Authors: Alexander Bentkamp, Yury Kudryashov, David Iach
 -/
 module
 
@@ -35,6 +35,17 @@ theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
     dist x y + dist y z = dist x z := by
   obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h
   simp [abs_of_nonneg, ha₀, ha₁, sub_mul]
+
+/-- Uncrossing two segments that meet at a point cannot increase their total length. -/
+theorem Wbtw.dist_add_dist_le {a b c d o : P}
+    (hac : Wbtw ℝ a o c) (hbd : Wbtw ℝ b o d) :
+    dist a b + dist c d ≤ dist a c + dist b d := by
+  calc
+    dist a b + dist c d ≤ (dist a o + dist o b) + (dist c o + dist o d) :=
+      add_le_add (dist_triangle a o b) (dist_triangle c o d)
+    _ = dist a c + dist b d := by
+      rw [dist_comm o b, dist_comm c o, add_add_add_comm,
+        hac.dist_add_dist, hbd.dist_add_dist]
 
 theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
     dist x y + dist y z = dist x z :=
