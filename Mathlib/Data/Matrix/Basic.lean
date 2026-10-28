@@ -72,12 +72,12 @@ protected theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β)
     (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
   congr($(s.sum_apply i g) j).trans (s.sum_apply j _)
 
-@[simp, push]
+@[simp]
 theorem row_sum [AddCommMonoid α] (s : Finset β) (M : β → Matrix m n α) :
     (∑ i ∈ s, M i).row = ∑ i ∈ s, (M i).row :=
   rfl
 
-@[simp, push]
+@[simp]
 theorem col_sum [AddCommMonoid α] (s : Finset β) (M : β → Matrix m n α) :
     (∑ i ∈ s, M i).col = ∑ i ∈ s, (M i).col := by
   ext

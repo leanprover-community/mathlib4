@@ -302,7 +302,7 @@ end
 
 /-! simp-normal form pulls `of` to the outside. -/
 
-@[simp, push]
+@[simp]
 theorem transpose_of (f : m → n → α) : (of f)ᵀ = of (Function.swap f) :=
   rfl
 
@@ -696,28 +696,28 @@ theorem col_zero [Zero α] : (0 : Matrix m n α).col = 0 := rfl
 @[deprecated "by dsimp" (since := "2026-10-23")]
 theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := by dsimp
 
-@[simp, push]
+@[simp]
 theorem row_add [Add α] (A B : Matrix m n α) : (A + B).row = A.row + B.row := rfl
 
-@[simp, push]
+@[simp]
 theorem col_add [Add α] (A B : Matrix m n α) : (A + B).col = A.col + B.col := rfl
 
-@[simp, push]
+@[simp]
 theorem row_sub [Sub α] (A B : Matrix m n α) : (A - B).row = A.row - B.row := rfl
 
-@[simp, push]
+@[simp]
 theorem col_sub [Sub α] (A B : Matrix m n α) : (A - B).col = A.col - B.col := rfl
 
-@[simp, push]
+@[simp]
 theorem row_neg [Neg α] (M : Matrix m n α) : (-M).row = -M.row := rfl
 
-@[simp, push]
+@[simp]
 theorem col_neg [Neg α] (M : Matrix m n α) : (-M).col = -M.col := rfl
 
-@[simp, push]
+@[simp]
 theorem row_smul [SMul R α] (r : R) (M : Matrix m n α) : (r • M).row = r • M.row := rfl
 
-@[simp, push]
+@[simp]
 theorem col_smul [SMul R α] (r : R) (M : Matrix m n α) : (r • M).col = r • M.col := rfl
 
 lemma row_submatrix {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
