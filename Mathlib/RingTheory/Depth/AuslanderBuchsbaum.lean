@@ -66,18 +66,11 @@ lemma ModuleCat.free_of_projective_of_isLocalRing [IsLocalRing R] (M : ModuleCat
 omit [Small.{v} R] in
 lemma nontrivial_ring_of_nontrivial_module (M : Type*) [AddCommGroup M] [Module R M]
     [ntr : Nontrivial M] : Nontrivial R := by
-  by_contra! h
-  absurd ntr
-  apply not_nontrivial_iff_subsingleton.mpr (subsingleton_of_forall_eq 0 (fun m ↦ ?_))
+  contrapose! ntr
+  apply (subsingleton_of_forall_eq 0 (fun m ↦ ?_))
   rw [← one_smul R m, Subsingleton.elim (1 : R) 0, zero_smul]
 
 open Module
-
-lemma subsingleton_of_pi {α β : Type*} [Nonempty α] (h : Subsingleton (α → β)) :
-    Subsingleton β := by
-  contrapose h
-  have : Nontrivial β := not_subsingleton_iff_nontrivial.mp h
-  exact not_subsingleton_iff_nontrivial.mpr Function.nontrivial
 
 lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] (i : ℕ) :
@@ -92,7 +85,9 @@ lemma finte_free_ext_vanish_iff (M N : ModuleCat.{v} R) [Module.Finite R M] [Mod
   let e := (B.repr ≪≫ₗ Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R).symm ≪≫ₗ
     finsuppLEquivDirectSum R (Shrink.{v} R) S).toModuleIso
   apply ((extFunctorObj.{v} N i).mapIso e).addCommGroupIsoToAddEquiv.subsingleton_congr.trans
-  exact h.subsingleton_congr.trans ⟨subsingleton_of_pi, fun _ ↦ Pi.instSubsingleton⟩
+  refine h.subsingleton_congr.trans ⟨fun h ↦ ?_, fun _ ↦ Pi.instSubsingleton⟩
+  contrapose! h
+  exact Function.nontrivial
 
 lemma free_depth_eq_ring_depth (M N : ModuleCat.{v} R) [Module.Finite R M] [Module.Free R M]
     [Nontrivial M] : N.depth M = N.depth (ModuleCat.of R (Shrink.{v} R)) := by
