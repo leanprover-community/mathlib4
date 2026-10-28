@@ -765,20 +765,14 @@ such that it is the actual supremum of the set if one exists, the bottom element
 doesn't exist but a bottom element does, and the default value `d` if neither exists.
 
 The junk value satisfies `sSup s = sSup ∅` for any set `s` without a supremum, which is the same
-as the convention of `ConditionallyCompleteLinearOrder`. In particular, sets that are not bounded
-above get the bottom element as their "supremum" whenever one exists. Using `sSup univ` instead
-would not determine any specific junk value, because every set is bounded above when there is a
-top element. -/
+as the convention of `ConditionallyCompleteLinearOrder`. -/
 @[to_dual (attr := instance_reducible)
 /-- Noncomputably constructs an "infimum" for an arbitrary set using the axiom of choice
 such that it is the actual infimum of the set if one exists, the top element if the infimum
 doesn't exist but a top element does, and the default value `d` if neither exists.
 
 The junk value satisfies `sInf s = sInf ∅` for any set `s` without an infimum, which is the same
-as the convention of `ConditionallyCompleteLinearOrder`. In particular, sets that are not bounded
-below get the top element as their "infimum" whenever one exists. Using `sInf univ` instead
-would not determine any specific junk value, because every set is bounded below when there is a
-bottom element. -/]
+as the convention of `ConditionallyCompleteLinearOrder`. -/]
 noncomputable def OrderSupSet.chooseBot (d : α) : OrderSupSet α :=
   .choose ((OrderSupSet.choose d).sSup ∅)
 
