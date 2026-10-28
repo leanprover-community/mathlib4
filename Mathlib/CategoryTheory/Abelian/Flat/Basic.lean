@@ -39,20 +39,28 @@ both finite limits and finite colimits. -/
 def flat : ObjectProperty A :=
   fun X ↦ exactFunctor _ _ (tensorLeft X) ∧ exactFunctor _ _ (tensorRight X)
 
+lemma flat_eq_min :
+    flat (A := A) =
+      (exactFunctor A A).inverseImage (curriedTensor A) ⊓
+      (exactFunctor A A).inverseImage (curriedTensor A).flip := rfl
+
 namespace flat
 
-variable {X : A}
-
-protected lemma tensorLeft (hX : flat X) :
+protected lemma tensorLeft {X : A} (hX : flat X) :
     exactFunctor _ _ (tensorLeft X) := hX.1
 
-protected lemma tensorRight (hX : flat X) :
+protected lemma tensorRight {X : A} (hX : flat X) :
     exactFunctor _ _ (tensorRight X) := hX.2
 
-instance : (flat (A := A)).IsClosedUnderIsomorphisms where
-  of_iso e h :=
-    ⟨(exactFunctor _ _).prop_of_iso ((curriedTensor A).mapIso e) h.tensorLeft,
-      (exactFunctor _ _).prop_of_iso ((curriedTensor A).flip.mapIso e) h.tensorRight⟩
+instance : (flat (A := A)).IsClosedUnderIsomorphisms := by
+  rw [flat_eq_min]
+  infer_instance
+
+instance : (exactFunctor A A).IsStableUnderRetracts := sorry
+
+instance : (flat (A := A)).IsStableUnderRetracts := by
+  rw [flat_eq_min]
+  infer_instance
 
 instance : (flat (A := A)).IsMonoidal where
   prop_unit := by
