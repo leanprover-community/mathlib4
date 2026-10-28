@@ -591,10 +591,10 @@ these are coercion lemmas violating mathlib's naming convention. -/
   noErrorsFound := "no badly named coercion lemmas found."
   errorsFound := "FOUND most-likely badly named coercion lemmas."
   test declName := do
-    unless ((← getEnv).find? declName).get!.isTheorem &&
-        !(← isPrivateOrAutoDecl declName) do
+    unless ((← getEnv).find? declName).get!.isTheorem do return none
+    if (← isPrivateOrAutoDecl declName) || declName.isInternalDetail || (isDeprecated (← getEnv) declName) then
       return none
-    match ← isBadlynamedCoercion declName with
+    match ← isMisnamedCoercion declName with
     | (true, details) =>
       return m!"The lemma `{.ofConstName declName true}` contains 'coe' in its name, \
         but does not involve any constant named \"coe\": {details}.\n\
