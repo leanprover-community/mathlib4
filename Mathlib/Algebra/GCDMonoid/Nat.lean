@@ -27,8 +27,6 @@ natural numbers, integers, normalization monoid, gcd monoid, greatest common div
 
 @[expose] public section
 
-assert_not_exists IsOrderedMonoid
-
 /-- `ℕ` is a `GCDMonoid`. -/
 instance : GCDMonoid ℕ where
   gcd := Nat.gcd
