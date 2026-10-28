@@ -867,13 +867,10 @@ lemma lt_log_of_zpow_lt {n : ℤ} (hx : 0 < x) (h : x ^ n < y) : n * log x < log
 
 lemma rpow_lt_of_lt_log (hy : 0 < y) (h : z * log x < log y) : x ^ z < y := by
   obtain rfl | hx := eq_or_ne x 0
-  · have hy1 : 1 < y := by simpa [log_pos_iff hy.le] using h
-    exact (zero_rpow_le_one z).trans_lt hy1
-  · calc x ^ z ≤ |x ^ z| := le_abs_self _
-      _ ≤ |x| ^ z := abs_rpow_le_abs_rpow x z
-      _ < y := by
-        rw [rpow_lt_iff_lt_log (abs_pos.2 hx) hy, log_abs]
-        exact h
+  · grw [zero_rpow_le_one]
+    simpa [log_pos_iff hy.le] using h
+  · grw [le_abs_self (x ^ z), abs_rpow_le_abs_rpow, rpow_lt_iff_lt_log (abs_pos.2 hx) hy,
+      log_abs, h]
 
 lemma pow_lt_of_lt_log (hy : 0 < y) (h : n * log x < log y) : x ^ n < y :=
   rpow_natCast _ _ ▸ rpow_lt_of_lt_log hy h
