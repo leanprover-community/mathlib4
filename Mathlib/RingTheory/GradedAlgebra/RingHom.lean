@@ -63,7 +63,7 @@ This should not be used directly. In the future, Mathlib will prefer structural 
 these general constructions from hom classes. -/
 @[coe]
 def ofClass (f : F) : 𝒜 →+*ᵍ ℬ where
-  __ := (f : A →+* B)
+  __ := RingHomClass.toRingHom f
   map_mem := map_mem f
 
 end ofClass

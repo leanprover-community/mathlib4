@@ -328,9 +328,8 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
     (hc : (algebraMap R' S').comp i.toRingHom = j.toRingHom.comp (algebraMap R S)) :
     lift.{v'} (Module.rank R S) = lift.{v} (Module.rank R' S') := by
   refine _root_.lift_rank_eq_of_equiv_equiv i j i.bijective fun r _ ↦ ?_
-  have := congr($hc r)
-  simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
-  simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, this]
+  have : (algebraMap R' S') (i r) = j ((algebraMap R S) r) := by simpa using congr($hc r)
+  simp [smul_def, this]
 
 variable {S' : Type v} [Semiring S'] [Algebra R' S']
 

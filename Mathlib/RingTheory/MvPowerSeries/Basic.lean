@@ -795,10 +795,7 @@ theorem algebraMap_apply {r : R} :
 def mapAlgHom (φ : A →ₐ[R] B) :
     MvPowerSeries σ A →ₐ[R] MvPowerSeries σ B where
   toRingHom := MvPowerSeries.map φ
-  commutes' r := by
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_ofClass, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe,
-      AlgHom.commutes]
+  commutes' r := by simp [MvPowerSeries.algebraMap_apply, map_C]
 
 theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : MvPowerSeries σ A) :
     mapAlgHom (σ := σ) φ f = MvPowerSeries.map φ f := rfl

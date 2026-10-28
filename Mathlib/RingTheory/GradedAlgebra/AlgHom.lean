@@ -256,7 +256,7 @@ end
 section restrictScalars
 
 /-- Restrict the base ring to a "smaller" ring. -/
-@[coe, simps!] def restrictScalars (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
+@[coe] def restrictScalars (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
     [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
     (f : 𝒜 →ₐᵍ[R] ℬ) : (𝒜 · |>.restrictScalars R₀) →ₐᵍ[R₀] (ℬ · |>.restrictScalars R₀) :=
   { f.toAlgHom.restrictScalars R₀, f with }
@@ -264,6 +264,8 @@ section restrictScalars
 variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
     [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
     (f : 𝒜 →ₐᵍ[R] ℬ)
+
+@[simp] theorem restrictScalars_apply (f : 𝒜 →ₐᵍ[R] ℬ) (x : A) : f.restrictScalars R x = f x := rfl
 
 @[simp] lemma coe_restrictScalars : ⇑(f.restrictScalars R₀) = f := rfl
 
