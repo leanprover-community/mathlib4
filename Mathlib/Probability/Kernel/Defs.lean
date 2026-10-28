@@ -42,7 +42,7 @@ Classes of kernels:
 
 assert_not_exists MeasureTheory.integral
 
-open MeasureTheory
+open MeasureTheory CompleteLattice
 
 open scoped ENNReal
 
@@ -328,7 +328,7 @@ theorem sum_fintype [Fintype ι] (κ : ι → Kernel α β) : Kernel.sum κ = �
 theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
   ext a s hs
-  simp [Kernel.sum_apply, Measure.sum_apply _ hs, ENNReal.summable.tsum_add ENNReal.summable]
+  simp [Kernel.sum_apply, Measure.sum_apply _ hs, summable.tsum_add summable]
 
 end Sum
 
@@ -397,7 +397,7 @@ theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel
   simp_rw [Kernel.sum_apply' _ _ hs]
   change (∑' i, ∑' m, seq (κs i) m a s) = ∑' n, (fun im : ι × ℕ => seq (κs im.fst) im.snd a s) (e n)
   rw [e.tsum_eq (fun im : ι × ℕ => seq (κs im.fst) im.snd a s),
-    ENNReal.summable.tsum_prod' fun _ => ENNReal.summable]
+    summable.tsum_prod' fun _ => summable]
 
 instance isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
     [hκs : ∀ n, IsSFiniteKernel (κs n)] : IsSFiniteKernel (Kernel.sum κs) := by

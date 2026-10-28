@@ -670,7 +670,7 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     _ = ∑' m, (1 - μ.toMeasure (⋃ (i ≤ km (m + 1)), closure (ball (D i) (u m)))) := by
       congr! with m; rw [measure_compl (by measurability) (by simp)]; simp
     _ ≤ (∑' (m : ℕ), (ε : ℝ≥0∞) * 2 ^ (-(m + 1) : ℤ)) := by
-      refine ENNReal.tsum_le_tsum fun m ↦ tsub_le_iff_tsub_le.mp ?_
+      refine tsum_le_tsum fun m ↦ tsub_le_iff_tsub_le.mp ?_
       replace hbound := (hbound (m + 1) μ hs).le
       simp_all only [neg_add_rev, Int.reduceNeg, tsub_le_iff_right, Nat.cast_add, Nat.cast_one,
           ← coe_ofNat, ← ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
@@ -693,13 +693,8 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     have ⟨δ_inv, hδ_inv⟩ : ∃ x, u x < δ := (Tendsto.eventually_lt_const δpos hu).exists
     refine ⟨D '' .Iic (km (δ_inv + 1)), (Set.finite_Iic _).image _, ?_⟩
     -- t should be image under D of the set of numbers less than km of δ_inv
-    simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, bigK]
-    calc
-        ⋂ m, ⋃ i ≤ km (m + 1), closure (ball (D i) (u m))
-    _ ⊆ ⋃ i ≤ km (δ_inv + 1), closure (ball (D i) (u δ_inv)) := iInter_subset ..
-    _ ⊆ ⋃ i ≤ km (δ_inv + 1), ball (D i) δ := by
-        gcongr
-        exact closure_ball_subset_closedBall.trans <| closedBall_subset_ball hδ_inv
+    simp only [mem_image, mem_Iic, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, bigK]
+    grw [iInter_subset _ δ_inv, closure_ball_subset_closedBall, hδ_inv]
   -- Closedness
   · simp_rw [bigK, ← Set.mem_Iic]
     exact isClosed_iInter fun n =>

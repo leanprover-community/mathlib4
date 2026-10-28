@@ -497,6 +497,15 @@ theorem bijective_compr₂ₛₗ_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [Ri
   ⟨injective_compr₂ₛₗ_of_injective f g.toLinearMap hf.1 g.bijective.1,
   surjective_compr₂ₛₗ_of_equiv f g hf.2⟩
 
+/-- An auxiliary lemma for proving associativity, turning an equality in terms of bilinear maps into
+an equality of linear maps so that we can use `ext`. -/
+lemma assoc_iff (f : M →ₗ[R] M →ₗ[R] M) :
+    (∀ x y z, f (f x y) z = f x (f y z)) ↔
+      LinearMap.llcomp R M M (M →ₗ[R] M) f ∘ₗ f =
+        (LinearMap.llcomp R M (M →ₗ[R] M →ₗ[R] M) (M →ₗ[R] M →ₗ[R] M) LinearMap.lflip.toLinearMap <|
+          LinearMap.llcomp R M M (M →ₗ[R] M) f.flip ∘ₗ f).flip :=
+  ⟨fun h => by ext x y z; exact h x y z, fun h x y z => congr($h x y z)⟩
+
 end CommSemiringSemilinear
 
 variable (R M)
