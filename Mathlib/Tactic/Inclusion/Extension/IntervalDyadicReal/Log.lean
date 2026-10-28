@@ -19,8 +19,6 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 -/
 
--- TODO: REMOVE ALL THE `toReal`
-
 @[expose] public section
 
 namespace Dyadic
@@ -66,8 +64,7 @@ theorem abs_ofIntFdivWithPrec_le :
   rw [abs_le]
   constructor
   · grw [neg_le_sub_iff_le_add, ofIntFdivWithPrec_le num den prec, le_add_iff_nonneg_right]
-    rw [toRat_step]
-    norm_num [Rat.zpow_nonneg]
+    simp [step]
   · rw [tsub_le_iff_right, _root_.add_comm]
     exact lt_ofIntFdivWithPrec num den prec |>.le
 
@@ -477,61 +474,33 @@ theorem lowerLog_le (x : Dyadic) (prec : ℕ) :
 
 theorem abs_lowerLog_lt (x : Dyadic) (prec : ℕ) :
     |log x.toRat - (x.lowerLog prec).toRat| < (step prec).toRat := by
-  fun_cases lowerLog with
-  | case1 _ hx => rcases hx with rfl | rfl <;> simp [step]
-  | case2 hx' => simp [step]
-  | case3 n k hn k' x' wp hk' hx' =>
-    -- duplicate proof
-    -- not a good proof
+  fun_cases lowerLog x prec
+  · rename_i hx
+    rcases hx with rfl | rfl <;> simp [step]
+  · simp [step]
+  all_goals
+    rename_i n k hn k' x' wp hk' hx'
     simp only [toRat_add, toRat_mul, toRat_intCast, Rat.cast_add, Rat.cast_mul, Rat.cast_intCast]
-    nth_grw 1 [lowerLot_aux2 n k hn, toRat_shiftLeft, Rat.cast_mul,
+    grw [lowerLot_aux2 n k hn, toRat_shiftLeft, Rat.cast_mul,
       log_mul (by simp) (by norm_num [zpow_ne_zero]), add_sub_add_comm, abs_add_le]
     simp only [Rat.cast_zpow, Rat.cast_ofNat, log_zpow]
-    rw [← mul_sub, abs_mul, abs_of_nonneg (a := (k' : ℝ)) (mod_cast hk')]
-    rw [step_eq_add, toRat_add, Rat.cast_add]
+    rw [step_eq_add prec, toRat_add, Rat.cast_add, ← mul_sub (k' : ℝ), abs_mul]
     apply add_lt_add_of_lt_of_le
     · rw [toRat_step]
       convert abs_sub_logSum_lt (lowerLot_aux1 n hn) (prec + 1)
       simp [-neg_add_rev]
       simp only [← Nat.cast_add_one, zpow_natCast]
-    · grw [abs_log_two_sub_lt wp, toRat_step]
-      simp [-neg_add_rev]
-      simp only [← Nat.cast_add_one, zpow_natCast]
-      field_simp
-      suffices k' ≤ 2 ^ (k'.natAbs.log2 + 1) by
-        grw [this]
-        simp [← pow_add, wp]
-        ring_nf
-        rfl
-      grw [k'.le_natAbs]
-      exact_mod_cast Nat.lt_log2_self.le
-  | case4 n k hn k' x' wp hk' hx' =>
-    simp only [toRat_add, toRat_mul, toRat_intCast, Rat.cast_add, Rat.cast_mul, Rat.cast_intCast]
-    nth_grw 1 [lowerLot_aux2 n k hn, toRat_shiftLeft, Rat.cast_mul,
-      log_mul (by simp) (by norm_num [zpow_ne_zero]), add_sub_add_comm, abs_add_le]
-    simp only [Rat.cast_zpow, Rat.cast_ofNat, log_zpow]
-    rw [abs_sub_comm (_ * _), ← mul_sub, abs_mul]
-    nth_rw 2 [step_eq_add]
-    rw [toRat_add, Rat.cast_add]
-    apply add_lt_add_of_lt_of_le
-    · rw [toRat_step]
-      convert abs_sub_logSum_lt (lowerLot_aux1 n hn) (prec + 1)
-      simp [-neg_add_rev]
-      simp only [← Nat.cast_add_one, zpow_natCast]
-    · have : |(Dyadic.logTwo wp).toRat + (step wp).toRat - log 2| < (1 / 2) ^ wp := by
-        rw [abs_of_pos <| sub_pos_of_lt <| lt_logTwo wp, toRat_step, zpow_natCast]
-        simpa [add_sub_right_comm] using logTwo_lt wp
-      grw [this, toRat_step]
-      simp [-neg_add_rev]
-      simp only [← Nat.cast_add_one, zpow_natCast]
-      field_simp
-      suffices |(k' : ℝ)| ≤ 2 ^ (k'.natAbs.log2 + 1) by
-        grw [this]
-        simp [← pow_add, wp]
-        ring_nf
-        rfl
+  all_goals
+    replace hk' : |(k' : ℝ)| ≤ 2 ^ (k'.natAbs.log2 + 1) := by
       rw [← Int.cast_abs, ← Int.natCast_natAbs]
       exact_mod_cast Nat.lt_log2_self.le
+    have H : |↑k'| * (1 / 2 : ℝ) ^ wp ≤ (step (prec + 1)).toRat := by
+      grw [hk']
+      simp [toRat_step, zpow_add_one₀, pow_succ, pow_add, field, -neg_add_rev, wp]
+  · grw [abs_log_two_sub_lt wp, H]
+  · grw [abs_sub_comm, abs_of_pos <| sub_pos_of_lt <| lt_logTwo wp, toRat_step, zpow_natCast,
+      logTwo_lt wp, add_sub_cancel_left, Rat.cast_pow,
+      Rat.cast_div, Rat.cast_one, Rat.cast_ofNat, H]
 
 theorem le_upperLog (x : Dyadic) (prec : ℕ) :
     log x.toRat ≤ (x.upperLog prec).toRat := by
@@ -631,5 +600,3 @@ theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : x.
       ub.le_upperLog prec |>.trans' <| Real.log_le_log (this.trans_le hx.left) hx.right⟩
 
 end Inclusion
-
-#lint

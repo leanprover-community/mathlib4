@@ -47,6 +47,10 @@ lemma ofOdd_pos {n k : ℤ} {hn : n % 2 = 1} : 0 < ofOdd n k hn ↔ 0 < n := by
   simp [← toRat_lt_toRat_iff, toRat_ofOdd_eq_mul_two_pow, zpow_pos]
 
 @[simp]
+lemma ofOdd_nonneg {n k : ℤ} {hn : n % 2 = 1} : 0 ≤ ofOdd n k hn ↔ 0 ≤ n := by
+  simp [← toRat_le_toRat_iff, toRat_ofOdd_eq_mul_two_pow, zpow_pos]
+
+@[simp]
 lemma toRat_one : toRat 1 = 1 := rfl
 
 @[simp]
@@ -55,6 +59,10 @@ lemma toRat_ofNat {n : ℕ} : toRat ofNat(n) = ofNat(n) := toRat_natCast n
 @[simp]
 lemma toRat_pos (x : Dyadic) : 0 < x.toRat ↔ 0 < x := by
   rw [← toRat_zero, toRat_lt_toRat_iff]
+
+@[simp]
+lemma toRat_nonneg (x : Dyadic) : 0 ≤ x.toRat ↔ 0 ≤ x := by
+  rw [← toRat_zero, toRat_le_toRat_iff]
 
 @[simp]
 lemma toRat_abs (x : Dyadic) : |x|.toRat = |x.toRat| := by
