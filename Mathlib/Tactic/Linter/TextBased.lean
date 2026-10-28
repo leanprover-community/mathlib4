@@ -588,9 +588,10 @@ public def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name)
       match badCharsOther with
       | [] => pure ()
       | [char] =>
-        IO.eprintln s!"error: module name `{name}` contains non-alphanumeric character `{char}`."
+        IO.eprintln s!"error: module name `{name}` contains non-ASCII-alphanumeric character \
+          `{char}`."
       | _ =>
-        IO.eprintln s!"error: module name `{name}` contains non-alphanumeric characters \
+        IO.eprintln s!"error: module name `{name}` contains non-ASCII-alphanumeric characters \
           `{badCharsOther}`."
   return badNamesNum
 
