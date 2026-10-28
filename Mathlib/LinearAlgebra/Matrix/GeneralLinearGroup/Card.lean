@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Rank
 
+import Mathlib.Data.ZMod.QuotientRing
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.RingTheory.ZMod.LocalRing
 
@@ -191,7 +192,7 @@ theorem card_GL_zmod_prime_pow {p r n : ℕ} [hp : Fact p.Prime] (hr : r ≠ 0) 
 theorem card_GL_zmod {N n : ℕ} (hN : N ≠ 0) :
     Nat.card (GL (Fin n) (ZMod N)) = ∏ p ∈ N.primeFactors,
       (∏ i : Fin n, (p ^ n - p ^ (i : ℕ))) * (p ^ (N.factorization p - 1)) ^ (n ^ 2) := by
-  rw [Nat.card_congr ((GeneralLinearGroup.mapEquiv (ZMod.equivPi N hN)).trans
+  rw [Nat.card_congr ((GeneralLinearGroup.mapEquiv (Fin n) (ZMod.equivPi N hN)).trans
     (GeneralLinearGroup.piEquiv _)).toEquiv, Nat.card_pi, ← N.primeFactors.prod_coe_sort]
   exact Fintype.prod_congr _ _ fun ⟨p, hp⟩ ↦
     have := Fact.mk (Nat.prime_of_mem_primeFactors hp)
