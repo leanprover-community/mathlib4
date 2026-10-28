@@ -293,18 +293,12 @@ attribute [local instance] MvPolynomial.algebraMvPolynomial in
 instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
   Algebra.IsPushout.isIntegral R _ S _
 
+@[to_additive (dont_translate := R S)]
 instance {M : Type*} [CommMonoid M]
     [Algebra (MonoidAlgebra R M) (MonoidAlgebra S M)]
     [IsScalarTower R (MonoidAlgebra R M) (MonoidAlgebra S M)]
     [Algebra.IsPushout R S (MonoidAlgebra R M) (MonoidAlgebra S M)] :
     Algebra.IsIntegral (MonoidAlgebra R M) (MonoidAlgebra S M) :=
-  Algebra.IsPushout.isIntegral R _ S _
-
-instance {M : Type*} [AddCommMonoid M]
-    [Algebra (AddMonoidAlgebra R M) (AddMonoidAlgebra S M)]
-    [IsScalarTower R (AddMonoidAlgebra R M) (AddMonoidAlgebra S M)]
-    [Algebra.IsPushout R S (AddMonoidAlgebra R M) (AddMonoidAlgebra S M)] :
-    Algebra.IsIntegral (AddMonoidAlgebra R M) (AddMonoidAlgebra S M) :=
   Algebra.IsPushout.isIntegral R _ S _
 
 end Pushout
