@@ -80,10 +80,8 @@ theorem star_centerToCentroidCenter (z : Center α) :
   ext a
   calc
       (star (centerToCentroidCenter z)) a = star (z * star a) := rfl
-      _ = star (star a) * star z := by simp only [star_mul, star_star, Center.coe_star]
-      _ = a * star z.val := by rw [star_star, Center.coe_star]
-      _ = (star z) * a := by rw [(Center.comm a (star z)), Center.coe_star]
-      _ = (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) a := rfl
+      _ = (star z) * a := by rw [star_mul, star_star, (star z).comm a, z.coe_star]
+      _ = (centerToCentroidCenter (star z)) a := rfl
 
 /-- The canonical \*-homomorphism from the center of a non-unital, non-associative \*-semiring
 into the center of its centroid. -/

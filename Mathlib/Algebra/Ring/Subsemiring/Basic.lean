@@ -272,9 +272,6 @@ abbrev center.commSemiring' : CommSemiring (center R) :=
 instance : NonAssocCommSemiring (Center R) :=
   {toNonAssocSemiring := inferInstanceAs <| NonAssocSemiring (center R), mul_comm}
 
-instance (R) [Semiring R] : CommSemiring (Center R) :=
-  { toSemiring := inferInstanceAs <| Semiring (Subsemiring.center R), mul_comm}
-
 variable {R}
 
 /-- The center of isomorphic (not necessarily associative) semirings are isomorphic. -/
