@@ -106,6 +106,7 @@ open WithAbs
 
 variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
+set_option genInjectivity false in
 /-- The completion of a field with respect to a real absolute value, as a one-field structure
 wrapping the uniform-space completion of `WithAbs v`. -/
 structure Completion where
@@ -172,6 +173,14 @@ theorem toCompletion_injective : Function.Injective (toCompletion (v := v)) :=
 
 theorem ofCompletion_injective : Function.Injective (ofCompletion (v := v)) :=
   (equiv v).symm.injective
+
+@[simp] theorem toCompletion_inj {x y : v.Completion} :
+    toCompletion x = toCompletion y ↔ x = y :=
+  (toCompletion_injective v).eq_iff
+
+@[simp] theorem ofCompletion_inj {x y : UniformSpace.Completion (WithAbs v)} :
+    ofCompletion (v := v) x = ofCompletion y ↔ x = y :=
+  (ofCompletion_injective v).eq_iff
 
 theorem toCompletion_surjective : Function.Surjective (toCompletion (v := v)) :=
   (equiv v).surjective
