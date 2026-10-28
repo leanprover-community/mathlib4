@@ -67,8 +67,8 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
         coe_mk, Periodic.lift_coe, zsmul_one, smul_eq_mul]
     -- Transform sum in C(ℝ, ℂ) evaluated at x into pointwise sum of values.
     _ = ∫ x in (0 : ℝ)..1, ∑' n : ℤ, (e * f.comp (ContinuousMap.addRight n)) x := by
-      simp_rw [FunLike.coe_mul, Pi.mul_apply,
-        ← ContinuousMap.tsum_apply (summable_of_locally_summable_norm hf), tsum_mul_left]
+      simp_rw [mul_apply, ← ContinuousMap.tsum_apply (summable_of_locally_summable_norm hf),
+        tsum_mul_left]
     -- Swap sum and integral.
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm ?_).symm
@@ -131,7 +131,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     apply rpow_le_rpow_of_nonpos <;> linarith
   -- Now the main proof.
   obtain ⟨c, hc, hc'⟩ := hf.exists_pos
-  simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
+  simp only [isBigO_iff, isBigOWith_iff, eventually_atTop] at hc' ⊢
   obtain ⟨d, hd⟩ := hc'
   refine ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => ?_⟩⟩
   rw [max_le_iff] at hx

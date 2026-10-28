@@ -54,7 +54,6 @@ open Matrix
 variable {M : Type*} [AddCommGroup M] [Module (Matrix ι ι R) M] [Module R M]
   [IsScalarTower R (Matrix ι ι R) M]
 
-set_option backward.defeqAttrib.useBackward true in
 variable (M) in
 /-- The image of `Eᵢᵢ` (the elementary matrix) acting on all elements in `M`. -/
 def toModuleCatObj (i : ι) : Submodule R M :=
@@ -156,7 +155,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
       AddSubmonoidClass.coe_finsetSum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
     ext i1 j1
-    simp only [mul_apply, smul_single, smul_eq_mul, mul_one, sum_apply]
+    simp only [Matrix.mul_apply, smul_single, smul_eq_mul, mul_one, Matrix.sum_apply]
     rw [Finset.sum_eq_single_of_mem (a := i) (by simp) (fun b _ hb ↦ by simp [single, Ne.symm hb])]
     simp only [single_apply, and_true, ite_mul, one_mul, zero_mul]
     split_ifs with h <;> simp [h]
