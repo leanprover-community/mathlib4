@@ -903,7 +903,7 @@ This is available in bundled forms as:
 
 @[simp] theorem toEquiv_piAddEquiv [Π i, Add (β i)] :
     (piAddEquiv (m := m) (n := n) (ι := ι) (β := β) :
-    Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
+      Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
 
 /-- `piEquiv` as a `LinearEquiv`. -/
 @[simps] def piLinearEquiv (R) [Semiring R] [Π i, AddCommMonoid (β i)] [Π i, Module R (β i)] :
