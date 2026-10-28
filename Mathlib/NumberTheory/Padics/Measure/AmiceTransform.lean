@@ -234,16 +234,9 @@ private lemma amiceTransformₘ_mul (μ ν : D(Multiplicative ℤ_[p], R)) :
 The Amice transform `D(Multiplicative ℤ_[p], R) → R[X]`, as a homomorphism of `R`-algebras.
 -/
 def amiceTransformₐ : D(Multiplicative ℤ_[p], R) →ₐ[R] PowerSeries R :=
-  { amiceTransformₘ with
-    map_one' := by
-      ext
-      simp [coeff_amiceTransformₘ, mulMahler_apply, mahler_apply, Ring.choose_zero_ite]
-    map_mul' := amiceTransformₘ_mul
-    map_zero' := by simp
-    commutes' r := by
-      ext n
-      simp [coeff_amiceTransformₘ, Algebra.algebraMap_eq_smul_one, PowerSeries.coeff_C,
-        mulMahler_apply, mahler_apply, Ring.choose_zero_ite]  }
+  .ofLinearMap amiceTransformₘ
+    (by ext; simp [coeff_amiceTransformₘ, mulMahler_apply, mahler_apply, Ring.choose_zero_ite])
+    amiceTransformₘ_mul
 
 lemma coeff_amiceTransformₐ (μ : D(Multiplicative ℤ_[p], R)) (n : ℕ) :
     (amiceTransformₐ μ).coeff n = μ (mulMahler n) :=
@@ -257,26 +250,8 @@ The Amice transform `D(Multiplicative ℤ_[p], ℤ_[p]) → ℤ_[p][X]`, as an i
 normed ring, as in `amiceTransformEquiv`.)
 -/
 def amiceTransformEquivₐ : D(Multiplicative ℤ_[p], ℤ_[p]) ≃ₐ[ℤ_[p]] PowerSeries ℤ_[p] :=
-  { amiceTransformₐ with
-    invFun := (ofAddMeasureEquiv.trans amiceTransformEquiv).invFun
-    left_inv μ := by
-      suffices amiceTransformₐ μ = amiceTransformEquiv (ofAddMeasureEquiv μ) by
-        simpa [LinearEquiv.symm_apply_eq]
-      ext
-      simp only [coeff_amiceTransformₐ, ofAddMeasureEquiv, coe_arrowCongrLeft,
-        amiceTransformEquiv_apply, coeff_amiceTransform, smul_eq_mul, mul_one, map_apply]
-      congr with x
-      simp [mulMahler_apply]
-    right_inv F := by
-      suffices amiceTransformₐ (ofAddMeasureEquiv.symm (amiceTransformEquiv.symm F)) = F by simpa
-      ext
-      simp only [ofAddMeasureEquiv, arrowCongrLeft_symm, Homeomorph.symm_symm, coe_arrowCongrLeft,
-        coeff_amiceTransformₐ, map_apply]
-      rw [show F = amiceTransformEquiv (amiceTransformEquiv.symm F) by simp]
-      generalize amiceTransformEquiv.symm F = μ
-      simp only [coeff_amiceTransformEquiv, LinearEquiv.symm_apply_apply]
-      congr with x
-      simp [mulMahler_apply] }
+  .ofLinearEquiv (ofAddMeasureEquiv.trans amiceTransformEquiv) (map_one amiceTransformₐ)
+    (map_mul amiceTransformₐ)
 
 end multiplicative
 
