@@ -186,17 +186,12 @@ instance : IsAddApply (ArithmeticFunction R) where
 protected theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n :=
   rfl
 
-instance instAddMonoid : AddMonoid (ArithmeticFunction R) where
-  add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
-  zero_add _ := ext fun _ ↦ zero_add _
-  add_zero _ := ext fun _ ↦ add_zero _
-  nsmul := nsmulRec
+instance : SMul ℕ (ArithmeticFunction R) where
+  smul n f := ⟨n • f, by simp⟩
 
 instance : IsSMulApply ℕ (ArithmeticFunction R) where
-  smul_apply f a b := by
-    induction a with
-    | zero => simp
-    | succ k hk => simp [add_nsmul, hk]
+
+instance instAddMonoid : AddMonoid (ArithmeticFunction R) := fast_instance% FunLike.addMonoid
 
 end AddMonoid
 
@@ -207,7 +202,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
   natCast_succ n := by ext x; by_cases h : x = 1 <;> simp [h]
 
 instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
-  FunLike.addCommMonoid
+  fast_instance% FunLike.addCommMonoid
 
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨-f, by simp⟩
@@ -218,21 +213,20 @@ instance [NegZeroClass R] : IsNegApply (ArithmeticFunction R) where
 protected theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} :
     (-f) n = -f n := rfl
 
-instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
-  neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
-  zsmul := zsmulRec
+instance [AddGroup R] : Sub (ArithmeticFunction R) where
+  sub f g := ⟨f - g, by simp⟩
 
 instance [AddGroup R] : IsSubApply (ArithmeticFunction R) where
-  sub_apply f g x := by
-    rw [sub_eq_add_neg, add_apply, neg_apply, sub_eq_add_neg]
+
+instance [AddGroup R] : SMul ℤ (ArithmeticFunction R) where
+  smul n f := ⟨n • f, by simp⟩
 
 instance [AddGroup R] : IsSMulApply ℤ (ArithmeticFunction R) where
-  smul_apply f a b := by
-    cases a with
-    | ofNat a => rw [Int.ofNat_eq_natCast]; simp
-    | negSucc a => rw [← Int.neg_ofNat_succ]; simp [add_zsmul]
 
-instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) := FunLike.addCommGroup
+instance [AddGroup R] : AddGroup (ArithmeticFunction R) := fast_instance% FunLike.addGroup
+
+instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
+  fast_instance% FunLike.addCommGroup
 
 section SMul
 
