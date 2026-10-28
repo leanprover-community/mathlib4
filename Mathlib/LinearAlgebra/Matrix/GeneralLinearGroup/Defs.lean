@@ -300,7 +300,7 @@ def prodEquiv : GL n (R × S) ≃* GL n R × GL n S :=
 @[simp]
 lemma val_prodEquiv_symm_apply (g : GL n R × GL n S) :
     ((prodEquiv n R S).symm g : Matrix n n (R × S)) =
-      (prodRingEquiv n R S).symm ((g.1 : Matrix n n R), (g.2 : Matrix n n S)) := rfl
+      (prodRingEquiv n R S).symm (g.1, g.2) := rfl
 
 lemma prodEquiv_apply (g : GL n (R × S)) :
     prodEquiv n R S g = (map (RingHom.fst R S) g, map (RingHom.snd R S) g) := rfl
