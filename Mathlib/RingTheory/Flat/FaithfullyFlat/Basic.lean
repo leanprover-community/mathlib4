@@ -402,22 +402,23 @@ lemma lTensor_bijective_iff_bijective [Module.FaithfullyFlat R M] :
   simp [Function.Bijective]
 
 @[simp] lemma _root_.LinearMap.baseChange_injective_iff {A : Type*} [Ring A] [Algebra R A]
-    [Module.FaithfullyFlat R A] {f : M →ₗ[R] N} :
+    [FaithfullyFlat R A] {f : M →ₗ[R] N} :
     Function.Injective (f.baseChange A) ↔ Function.Injective f :=
   lTensor_injective_iff_injective R A f
 
 @[simp] lemma _root_.LinearMap.baseChange_surjective_iff {A : Type*} [Ring A] [Algebra R A]
-    [Module.FaithfullyFlat R A] {f : M →ₗ[R] N} :
+    [FaithfullyFlat R A] {f : M →ₗ[R] N} :
     Function.Surjective (f.baseChange A) ↔ Function.Surjective f :=
   lTensor_surjective_iff_surjective R A f
 
 @[simp] lemma _root_.LinearMap.baseChange_bijective_iff {A : Type*} [Ring A] [Algebra R A]
-    [Module.FaithfullyFlat R A] {f : M →ₗ[R] N} :
+    [FaithfullyFlat R A] {f : M →ₗ[R] N} :
     Function.Bijective (f.baseChange A) ↔ Function.Bijective f :=
   lTensor_bijective_iff_bijective R A f
 
-@[simp] lemma isUnit_baseChange_iff {A : Type*} [Ring A] [Algebra R A] [Module.FaithfullyFlat R A]
-    {f : Module.End R M} : IsUnit (f.baseChange A) ↔ IsUnit f := by simp [Module.End.isUnit_iff]
+@[simp] lemma _root_.Module.End.isUnit_baseChange_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : End R M} : IsUnit (f.baseChange A) ↔ IsUnit f := by
+  simp [End.isUnit_iff]
 
 end
 
