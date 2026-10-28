@@ -255,7 +255,7 @@ private def sigmaPartitionWithPartEquiv (n : ℕ) :
 /-- `Nat.bell n` is equal to the sum of `Multiset.bell m` over all multisets `m : Multiset ℕ` such
 that `m.sum = n`. -/
 theorem bell_eq_sum_partition (n : ℕ) : n.bell = ∑ p : n.Partition, p.parts.bell := by
-  induction n using Nat.case_strong_induction_on with | hz => simp | hi n ih
+  induction n using Nat.case_strong_induction_on with | zero => simp | succ n ih
   rw [Nat.bell_succ]
   calc
   _ = ∑ i ≤ n, ∑ q : (n - i).Partition, n.choose i * q.parts.bell := by
