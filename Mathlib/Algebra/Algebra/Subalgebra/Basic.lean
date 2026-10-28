@@ -960,6 +960,24 @@ def _root_.Center.algHom :
   toRingHom := Center.ringHom A
   commutes' := by simp
 
+instance : Algebra R (Center Aᵐᵒᵖ) where
+  smul r z := Center.mk (MulOpposite.op ((algebraMap R A) r) * z)
+    (MulOpposite.op_mem_center_iff.mpr (Semigroup.mem_center_iff.mpr (fun a => by
+      simp_rw [← mul_assoc, MulOpposite.unop_op, ← Algebra.commutes, mul_assoc,
+        (Center.mk (z.val.unop) (MulOpposite.unop_mem_center_iff.mpr z.prop)).comm])))
+  algebraMap := { toFun r := Center.toMulOpposite (algebraMap R (Center A) r)
+                  map_one' := by simp
+                  map_mul' := by simp
+                  map_zero' := by simp
+                  map_add' := by simp }
+  commutes' a z := by simp [z.comm]
+  smul_def' r z := rfl
+
+@[simps!]
+def _root_.Center.toMulOppositeAlgEquiv : Center A ≃ₐ[R] Center Aᵐᵒᵖ where
+  toRingEquiv := Center.toMulOppositeRingEquiv
+  commutes' _ := rfl
+
 end Center
 
 section Centralizer

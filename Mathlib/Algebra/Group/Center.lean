@@ -422,8 +422,8 @@ def monoidHom [MulOneClass M] : Center M →* M where
   map_mul' _ _ := rfl
   map_one' := rfl
 
-/-- An ismorphism between monoids induces an isomorphism between their centers. -/
-@[simps, to_additive /-- An ismorphism between additive monoids induces an isomorphism between
+/-- An isomorphism between monoids induces an isomorphism between their centers. -/
+@[simps, to_additive /-- An isomorphism between additive monoids induces an isomorphism between
 their centers. -/]
 def _root_.MulEquiv.toCenter [Mul M] [Mul N] (f : M ≃* N) :
     Center M ≃* Center N where

@@ -85,8 +85,7 @@ theorem star_centerToCentroidCenter (z : Center α) :
 
 /-- The canonical \*-homomorphism from the center of a non-unital, non-associative \*-semiring
 into the center of its centroid. -/
-def starCenterToCentroidCenter :
-    Center α →⋆ₙ+* Center (CentroidHom α) where
+def starCenterToCentroidCenter : Center α →⋆ₙ+* Center (CentroidHom α) where
   toNonUnitalRingHom := centerToCentroidCenter
   map_star' _ := (star_centerToCentroidCenter _).symm
 
