@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Johannes Hölzl, Simon Hudon, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Multiset.Bind
-public import Mathlib.Control.Traversable.Lemmas
 public import Mathlib.Control.Traversable.Instances
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Data.Multiset.Bind
 
 /-!
 # Functoriality of `Multiset`.
@@ -51,7 +51,7 @@ def traverse : Multiset α' → F (Multiset β') := by
       Multiset.cons <$> f x <*> ofList <$> Traversable.traverse f l₁ =
         Multiset.cons <$> f x <*> ofList <$> Traversable.traverse f l₂ := by
       rw [h]
-    simpa [functor_norm] using this
+    simpa [functor_norm] using! this
   | swap x y l =>
     have :
       (fun a b (l : List β') ↦ (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
@@ -59,7 +59,7 @@ def traverse : Multiset α' → F (Multiset β') := by
       rw [CommApplicative.commutative_map]
       congr 2
       funext a b l
-      simpa [flip] using Perm.swap a b l
+      simpa [flip] using! Perm.swap a b l
     simp [Function.comp_def, this, functor_norm]
   | trans => simp [*]
 
@@ -95,6 +95,7 @@ theorem id_traverse {α : Type*} (x : Multiset α) : traverse (pure : α → Id 
   induction x using Quotient.inductionOn
   simp [traverse]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] [CommApplicative G]
     [CommApplicative H] {α β γ : Type _} (g : α → G β) (h : β → H γ) (x : Multiset α) :
     traverse (Comp.mk ∘ Functor.map h ∘ g) x =

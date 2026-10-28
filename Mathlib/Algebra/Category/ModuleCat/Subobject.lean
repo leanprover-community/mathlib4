@@ -5,9 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
-public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
@@ -20,14 +18,7 @@ and its submodules. This immediately implies that the category of `R`-modules is
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Subobject
-
-open CategoryTheory.Limits
-
-open ModuleCat
+open CategoryTheory Subobject Limits
 
 universe v u
 
@@ -54,8 +45,9 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         · ext x
           rfl)
       left_inv := fun N => by
-        convert congr_arg LinearMap.range (ModuleCat.hom_ext_iff.mp
-            (underlyingIso_arrow (ofHom N.subtype))) using 1
+        convert
+          congr_arg LinearMap.range
+            (ModuleCat.hom_ext_iff.mp (underlyingIso_arrow (ofHom N.subtype))) using 1
         · have :
             (underlyingIso (ofHom N.subtype)).inv =
               ofHom (underlyingIso (ofHom N.subtype)).symm.toLinearEquiv.toLinearMap := by

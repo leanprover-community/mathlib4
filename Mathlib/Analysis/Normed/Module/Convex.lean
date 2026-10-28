@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Group.Pointwise
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
@@ -27,7 +26,7 @@ We prove the following facts:
   is bounded.
 -/
 
-@[expose] public section
+public section
 
 -- TODO assert_not_exists Cardinal
 
@@ -54,7 +53,7 @@ theorem convexOn_univ_norm : ConvexOn ℝ univ (norm : E → ℝ) :=
   convexOn_norm convex_univ
 
 theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dist z' z := by
-  simpa [dist_eq_norm, preimage_preimage] using
+  simpa [dist_eq_norm, preimage_preimage] using!
     (convexOn_norm (hs.translate (-z))).comp_affineMap (AffineMap.id ℝ E - AffineMap.const ℝ E z)
 
 theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
@@ -70,6 +69,14 @@ theorem convex_eball (a : E) (r : ENNReal) : Convex ℝ (eball a r) := by
 
 theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (closedBall a r) := by
   simpa only [closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
+
+/-- A finite convex combination of vectors of norm at most `r` has norm at most `r`. -/
+theorem norm_sum_smul_le {ι : Type*} {t : Finset ι} {w : ι → ℝ} {r : ℝ} {z : ι → E}
+    (h0 : ∀ i ∈ t, 0 ≤ w i) (h1 : ∑ i ∈ t, w i = 1) (hz : ∀ i ∈ t, ‖z i‖ ≤ r) :
+    ‖∑ i ∈ t, w i • z i‖ ≤ r := by
+  rw [← mem_closedBall_zero_iff]
+  exact (convex_closedBall 0 r).sum_mem h0 h1 fun i hi =>
+    mem_closedBall_zero_iff.mpr (hz i hi)
 
 /-- The segment from `x` to `y` is contained in the closed ball centered at `x` with radius
 `dist x y`. -/
@@ -89,12 +96,12 @@ theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) 
   | top => simp [convex_univ]
   | coe r => simp [closedEBall_coe, convex_closedBall]
 
-open Pointwise in
+open scoped Pointwise in
 theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
     convexHull ℝ (sphere x r) = closedBall x r := by
   suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by
-    rw [← add_zero x, ← vadd_eq_add, ← vadd_sphere, convexHull_vadd,
+    rw [← add_zero x, ← vadd_eq_add, ← Metric.vadd_sphere, convexHull_vadd,
       this, vadd_closedBall_zero, vadd_eq_add, add_zero]
   refine subset_antisymm (convexHull_min sphere_subset_closedBall (convex_closedBall 0 r))
     (fun x h ↦ mem_convexHull_iff.mpr fun U hU_sub hU ↦ ?_)
@@ -169,16 +176,22 @@ instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpa
   IsTopologicalAddGroup.pathConnectedSpace
 
 /-- The set of vectors in the same ray as `x` is connected. -/
-theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
+theorem isConnected_setOfPred_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
   by_cases hx : x = 0; · simpa [hx] using isConnected_univ (α := E)
   simp_rw [← exists_nonneg_left_iff_sameRay hx]
   exact isConnected_Ici.image _ (by fun_prop)
 
+@[deprecated (since := "2026-07-09")]
+alias isConnected_setOf_sameRay := isConnected_setOfPred_sameRay
+
 /-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
-theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
+theorem isConnected_setOfPred_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
     IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (by fun_prop)
+
+@[deprecated (since := "2026-07-09")]
+alias isConnected_setOf_sameRay_and_ne_zero := isConnected_setOfPred_sameRay_and_ne_zero
 
 lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
     ‖y - x‖ ≤ ‖z - x‖ := by

@@ -5,7 +5,6 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Monad.Algebra
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
@@ -17,7 +16,7 @@ preadditive. Dually, if `U` is an additive comonad on `C` then `Coalgebra U` is 
 
 -/
 
-@[expose] public section
+public section
 
 
 universe v₁ u₁

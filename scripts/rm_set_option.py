@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """
-Remove unnecessary `set_option ... false in` from Mathlib.
+Remove unnecessary `set_option ... in` from a Lean project.
 
 Tries removing each occurrence (that isn't followed by a comment), testing
 whether the file still builds. Processes files in reverse import-DAG order
 (downstream first) to minimize unnecessary rebuilds.
+
+Downstream modules are not rebuilt, so options in `EXPORT_AFFECTING_OPTIONS`
+are skipped unless requested explicitly with `--option`.
 """
 
 import argparse
 import hashlib
 import json
 import os
-import subprocess
 import threading
 import time
 from dataclasses import dataclass
@@ -19,20 +21,32 @@ from pathlib import Path
 from threading import Lock
 from typing import Callable
 
-from dag_traversal import (
-    DAG,
-    DAGTraverser,
-    Display,
-    ShutdownError,
-)
-from set_option_utils import (
-    DEFAULT_OPTIONS,
-    PROJECT_DIR,
-    commented_pattern,
-    lake_build_with_progress,
-    lakefile_pattern,
-    removable_pattern,
-)
+try:
+    from dag_traversal import (
+        DAG,
+        DAGTraverser,
+        Display,
+        ShutdownError,
+    )
+    from set_option_utils import (
+        DEFAULT_OPTIONS,
+        EXPORT_AFFECTING_OPTIONS,
+        PROJECT_DIR,
+        commented_pattern,
+        is_annotated,
+        lake_build_with_progress,
+        lakefile_pattern,
+        removable_pattern,
+    )
+except ImportError as _e:
+    raise SystemExit(
+        f"error: {_e}\n\n"
+        f"  This script depends on sibling Python files in {Path(__file__).parent}:\n"
+        "    - dag_traversal.py\n"
+        "    - set_option_utils.py\n"
+        "  These are mathlib scripts, not pip packages.  Copy them into your\n"
+        "  `scripts/` directory alongside this script."
+    )
 
 
 PROGRESS_FILE = PROJECT_DIR / "scripts" / ".rm_set_option_progress.jsonl"
@@ -154,12 +168,18 @@ class _RemoveDisplay(Display):
 
 
 def handle_lakefile(options: list[str]) -> bool:
-    """Check and remove options from lakefile.lean. Returns True if changed."""
+    """Remove `backward.*` options from lakefile.lean. Return True if changed.
+
+    Such an entry is a project-wide switch back to the old behaviour: it must go before the
+    per-declaration `set_option` lines can be tested, and dropping it is the goal of the
+    migration.  Other entries (e.g. linter settings) are deliberate configuration, so we
+    leave them alone.
+    """
     lakefile = PROJECT_DIR / "lakefile.lean"
     content = lakefile.read_text()
     changed = False
     for opt in options:
-        if opt not in content:
+        if not opt.startswith("backward.") or opt not in content:
             continue
         pat = lakefile_pattern(opt)
         new_content = pat.sub("", content)
@@ -173,7 +193,9 @@ def handle_lakefile(options: list[str]) -> bool:
 
 
 def scan_files(dag: DAG, options: list[str]) -> dict[str, list[int]]:
-    """Find files with removable set_option lines.
+    """Find files with removable set_option lines:
+    we support options with Boolean, numeric or string values
+    (provided the string does not contain `"`).
 
     Returns dict of module_name -> list of 0-indexed line numbers.
     """
@@ -189,6 +211,8 @@ def scan_files(dag: DAG, options: list[str]) -> dict[str, list[int]]:
         for i, line in enumerate(lines):
             if any(p.match(line) for p in commented_pats):
                 continue
+            if is_annotated(lines, i):
+                continue
             if any(p.match(line) for p in removable_pats):
                 removable.append(i)
         if removable:
@@ -197,11 +221,15 @@ def scan_files(dag: DAG, options: list[str]) -> dict[str, list[int]]:
 
 
 def count_skipped(filepath: Path, options: list[str]) -> int:
-    """Count set_option lines with trailing comments."""
+    """Count set_option lines with trailing/preceding comments."""
     commented_pats = [commented_pattern(opt) for opt in options]
+    removable_pats = [removable_pattern(opt) for opt in options]
+    lines = filepath.read_text().splitlines()
     count = 0
-    for line in filepath.read_text().splitlines():
+    for i, line in enumerate(lines):
         if any(p.match(line) for p in commented_pats):
+            count += 1
+        elif any(p.match(line) for p in removable_pats) and is_annotated(lines, i):
             count += 1
     return count
 
@@ -321,11 +349,16 @@ def write_github_outputs(summary: Summary):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Remove unnecessary set_option ... false in lines"
+        description="Remove unnecessary `set_option ... in` lines in a Lean project.\n\n"
+                    "To use outside mathlib, copy `rm_set_option.py`, `dag_traversal.py` and "
+                    "`set_option_utils.py` to a subdirectory of your project named `scripts/` "
+                    "and then run from the project root with `scripts/rm_set_option.py`.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--option",
-        help="Only scan/remove this specific option (default: all known options)",
+        help="Only scan/remove this specific option (default: all known options "
+             "except those in EXPORT_AFFECTING_OPTIONS)",
     )
     parser.add_argument(
         "--dry-run",
@@ -350,6 +383,12 @@ def main():
         help="Only process these files (paths relative to project root)",
     )
     parser.add_argument(
+        "--directories",
+        nargs="+",
+        default=None,
+        help="Directories to scan when building the import DAG (default: '.')",
+    )
+    parser.add_argument(
         "--no-initial",
         action="store_true",
         help="Skip the initial lake build (assumes .oleans are already fresh)",
@@ -369,17 +408,34 @@ def main():
     )
     args = parser.parse_args()
 
-    options = [args.option] if args.option else DEFAULT_OPTIONS
+    if args.option:
+        options = [args.option]
+        if args.option in EXPORT_AFFECTING_OPTIONS:
+            print(
+                f"Warning: removing {args.option} can break downstream modules, which\n"
+                "  this script does not rebuild.  Run a full `lake build` afterwards."
+            )
+    else:
+        options = [opt for opt in DEFAULT_OPTIONS if opt not in EXPORT_AFFECTING_OPTIONS]
 
     start_time = time.time()
 
-    # Step 1: lakefile
-    if not args.dry_run:
+    # Step 1: lakefile.lean
+    if not args.dry_run and (PROJECT_DIR / "lakefile.lean").exists():
         handle_lakefile(options)
+    elif (PROJECT_DIR / "lakefile.toml").exists():
+        backward_opts = [opt for opt in options if opt.startswith("backward.")]
+        if backward_opts:
+            opts_str = ", ".join(backward_opts)
+            print(
+                f"Note: lakefile.toml detected.  If {opts_str} is set in `leanOptions`\n"
+                "  there, you'll need to remove the entry manually — this script only\n"
+                "  edits lakefile.lean."
+            )
 
     # Step 2: build DAG
     print("Building import DAG...", flush=True)
-    full_dag = DAG.from_directories(PROJECT_DIR)
+    full_dag = DAG.from_directories(PROJECT_DIR, args.directories)
     print(f"  {len(full_dag.modules)} modules parsed")
 
     # Step 3: scan for removable lines

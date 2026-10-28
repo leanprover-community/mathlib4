@@ -16,7 +16,9 @@ In this file we prove a few results about `ContinuousMap` when the domain is an 
 
 @[expose] public section
 
-open Set ContinuousMap Filter Topology
+open Set ContinuousMap Filter
+
+open scoped Topology
 
 namespace ContinuousMap
 
@@ -47,7 +49,6 @@ theorem IccExtendCM_of_mem {f : C(Icc a b, E)} {x : α} (hx : x ∈ Icc a b) :
     IccExtendCM f x = f ⟨x, hx⟩ := by
   simp [IccExtendCM, projIccCM, projIcc, hx.1, hx.2]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The concatenation of two continuous maps defined on adjacent intervals. If the values of the
 functions on the common bound do not agree, this is defined as an arbitrarily chosen constant
 map. See `concatCM` for the corresponding map on the subtype of compatible function pairs. -/
@@ -95,8 +96,8 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   rw [tendsto_nhds_compactOpen] at hf hg ⊢
   rintro K hK U hU hfgU
   have h : b ∈ Icc a c := ⟨Fact.out, Fact.out⟩
-  let K₁ : Set (Icc a b) := projIccCM '' (Subtype.val '' (K ∩ Iic ⟨b, h⟩))
-  let K₂ : Set (Icc b c) := projIccCM '' (Subtype.val '' (K ∩ Ici ⟨b, h⟩))
+  let K₁ : Set (Icc a b) := projIccCM '' Subtype.val '' (K ∩ Iic ⟨b, h⟩)
+  let K₂ : Set (Icc b c) := projIccCM '' Subtype.val '' (K ∩ Ici ⟨b, h⟩)
   have hK₁ : IsCompact K₁ :=
     hK.inter_right isClosed_Iic |>.image continuous_subtype_val |>.image projIccCM.continuous
   have hK₂ : IsCompact K₂ :=
@@ -105,12 +106,12 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
     rw [← concat_comp_IccInclusionLeft hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : z ≤ b)⟩, rfl⟩, rfl⟩
-    simpa [projIccCM, projIcc, h2, hz.1] using h1
+    simpa [projIccCM, projIcc, h2, hz.1] using! h1
   have hgU : MapsTo g K₂ U := by
     rw [← concat_comp_IccInclusionRight hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : b ≤ z)⟩, rfl⟩, rfl⟩
-    simpa [projIccCM, projIcc, h2, hz.2] using h1
+    simpa [projIccCM, projIcc, h2, hz.2] using! h1
   filter_upwards [hf K₁ hK₁ U hU hfU, hg K₂ hK₂ U hU hgU, hfg] with i hf hg hfg x hx
   by_cases! hxb : x ≤ b
   · rw [concat_left hfg hxb]
@@ -128,8 +129,8 @@ noncomputable def concatCM :
   toFun fg := concat fg.val.1 fg.val.2
   continuous_toFun := by
     let S : Set (C(Icc a b, E) × C(Icc b c, E)) := {fg | fg.1 ⊤ = fg.2 ⊥}
-    change Continuous (S.restrict concat.uncurry)
-    refine continuousOn_iff_continuous_restrict.mp (fun fg hfg => ?_)
+    change Continuous (S.domRestrict concat.uncurry)
+    refine continuousOn_iff_continuous_domRestrict.mp (fun fg hfg => ?_)
     refine tendsto_concat ?_ hfg ?_ ?_
     · exact eventually_nhdsWithin_of_forall (fun _ => id)
     · exact tendsto_nhdsWithin_of_tendsto_nhds continuousAt_fst

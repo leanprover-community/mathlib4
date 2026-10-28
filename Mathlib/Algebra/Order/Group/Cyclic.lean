@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Algebra.Order.Group.Subgroup
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
@@ -15,7 +16,7 @@ This file contains basic results about cyclic linearly ordered groups and cyclic
 linearly ordered groups.
 
 The definitions `LinearOrderedCommGroup.Subgroup.genLTOne` (*resp.*
-`LinearOrderedCommGroup.genLTOone`) yields a generator of a non-trivial subgroup of a linearly
+`LinearOrderedCommGroup.genLTOne`) yields a generator of a non-trivial subgroup of a linearly
 ordered commutative group with (*resp.* of a non-trivial linearly ordered commutative group) that
 is strictly less than `1`. The corresponding additive definitions are also provided.
 -/
@@ -36,7 +37,7 @@ variable (H : Subgroup G) [Nontrivial H] [hH : IsCyclic H]
 
 @[to_additive exists_neg_generator]
 lemma exists_generator_lt_one : ∃ (a : G), a < 1 ∧ Subgroup.zpowers a = H := by
-  obtain ⟨a, ha⟩ := H.isCyclic_iff_exists_zpowers_eq_top.mp hH
+  obtain ⟨a, ha⟩ := H.isCyclic_iff_exists_zpowers_eq.mp hH
   obtain ha1 | rfl | ha1 := lt_trichotomy a 1
   · exact ⟨a, ha1, ha⟩
   · rw [Subgroup.zpowers_one_eq_bot] at ha
@@ -75,13 +76,9 @@ lemma genLTOne_unique_of_zpowers_eq {g1 g2 : G} (hg1 : g1 < 1) (hg2 : g2 < 1)
   rcases (Subgroup.zpowers g2).bot_or_nontrivial with (h' | h')
   · rw [h'] at h
     simp_all only [Subgroup.zpowers_eq_bot]
-  · have h1 : IsCyclic ↥(Subgroup.zpowers g2) := by
-      rw [Subgroup.isCyclic_iff_exists_zpowers_eq_top]; use g2
-    have h2 : Nontrivial ↥(Subgroup.zpowers g1) := by rw [h]; exact h'
-    have h3 : IsCyclic ↥(Subgroup.zpowers g1) := by rw [h]; exact h1
-    simp only [(Subgroup.zpowers g2).genLTOne_unique hg1 h]
-    simp only [← h]
-    simp only [(Subgroup.zpowers g1).genLTOne_unique hg2 h.symm]
+  · have : Nontrivial (Subgroup.zpowers g1) := h ▸ h'
+    rw [(Subgroup.zpowers g2).genLTOne_unique hg1 h]
+    simp_rw [← h, (Subgroup.zpowers g1).genLTOne_unique hg2 h.symm]
 
 end Subgroup
 
@@ -103,3 +100,27 @@ lemma genLTOne_unique {g : G} (hg : g < 1) (htop : Subgroup.zpowers g = ⊤) : g
 end IsCyclic
 
 end LinearOrderedCommGroup
+
+namespace OrderMonoidIso
+
+open LinearOrderedCommGroup.Subgroup
+
+variable {A B : Type*} [LinearOrder A] [CommGroup A] [IsOrderedMonoid A] [Nontrivial A] [IsCyclic A]
+  [LinearOrder B] [CommGroup B] [IsOrderedMonoid B] [Nontrivial B] [IsCyclic B] (f : A ≃*o B)
+
+theorem map_genLTOne : f (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) =
+      LinearOrderedCommGroup.Subgroup.genLTOne ⊤ := by
+  apply genLTOne_unique
+  · simpa [-map_one, ← map_one f, map_lt_map_iff] using genLTOne_lt_one ⊤
+  · rw [Subgroup.eq_top_iff']
+    intro y
+    obtain ⟨x, hx⟩ := EquivLike.surjective f y
+    obtain ⟨k, hk⟩ : x ∈ Subgroup.zpowers (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) := by
+      simp [genLTOne_zpowers_eq_top]
+    exact ⟨k, by simp [← hx, ← hk]⟩
+
+theorem map_genLTOne' :
+    f (LinearOrderedCommGroup.genLTOne A) = LinearOrderedCommGroup.genLTOne B := by
+  simp [LinearOrderedCommGroup.genLTOne_eq_of_top, map_genLTOne]
+
+end OrderMonoidIso

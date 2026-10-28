@@ -55,7 +55,7 @@ partial def proveAscFactorial (n l : ℕ) (en el : Q(ℕ)) :
     let ⟨b, eb, b_prf⟩ := proveAscFactorial (n + m) r enm er
     have eab : Q(ℕ) := mkRawNatLit (a * b)
     have : $eab =Q $ea * $eb := ⟨⟩
-    ⟨a * b, eab, q(by convert asc_factorial_aux $en $em $er $ea $eb $a_prf $b_prf)⟩
+    ⟨a * b, eab, q(by convert asc_factorial_aux «$en» «$em» «$er» «$ea» «$eb» «$a_prf» «$b_prf»)⟩
 
 lemma isNat_factorial {n x : ℕ} (h₁ : IsNat n x) (a : ℕ) (h₂ : (1).ascFactorial x = a) :
     IsNat (n !) a := by

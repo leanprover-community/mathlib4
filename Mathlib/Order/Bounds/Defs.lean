@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Yury Kudryashov
+Authors: Johannes Hölzl, Yury Kudryashov, Yuyang Zhao
 -/
 module
 
 public import Mathlib.Data.Set.Defs
-public import Mathlib.Tactic.ToDual
 
 /-!
 # Definitions about upper/lower bounds
@@ -23,6 +22,10 @@ In this file we define:
 * `IsCofinalFor s t` : for all `a ∈ s` there exists `b ∈ t` such that `a ≤ b`
 * `IsCoinitial s`: for every `a`, there exists a member of `s` less than or equal to it.
 * `IsCoinitialFor s t` : for all `a ∈ s` there exists `b ∈ t` such that `b ≤ a`
+* `SupSet α`, `InfSet α`: typeclasses introducing the operation `SupSet.sSup` and `InfSet.sInf`
+  (exported to the root namespace).
+* `OrderSupSet α`, `OrderInfSet α`: typeclasses expressing that `sSup` (resp., `sInf`) returns
+  the least upper bound (resp., the greatest lower bound) of a set whenever one exists.
 -/
 
 @[expose] public section
@@ -62,14 +65,28 @@ def IsCofinalFor (s t : Set α) := ∀ ⦃a⦄, a ∈ s → ∃ b ∈ t, a ≤ b
 def IsCofinal (s : Set α) : Prop :=
   ∀ x, ∃ y ∈ s, x ≤ y
 
-@[to_dual]
-theorem subset_upperBounds_lowerBounds (s : Set α) : s ⊆ upperBounds (lowerBounds s) :=
-  fun _ hx _ hy => hy hx
+/-- Class for the `sSup` operator -/
+class SupSet (α : Type*) where
+  /-- Supremum of a set -/
+  sSup : Set α → α
 
-@[to_dual]
-theorem IsGreatest.isLUB {s : Set α} {a : α} (h : IsGreatest s a) : IsLUB s a :=
-  ⟨h.2, fun _ hb => hb h.1⟩
+/-- Class for the `sInf` operator -/
+@[to_dual existing]
+class InfSet (α : Type*) where
+  /-- Infimum of a set -/
+  sInf : Set α → α
 
-@[to_dual (attr := simp)]
-theorem isLUB_lowerBounds {s : Set α} {a : α} : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
-  ⟨fun H => ⟨fun _ hx => H.2 <| subset_upperBounds_lowerBounds s hx, H.1⟩, IsGreatest.isLUB⟩
+export SupSet (sSup)
+
+export InfSet (sInf)
+
+/-- `OrderSupSet α` expresses that `α` is equipped with the operation `sSup` that returns
+the least upper bound of a set whenever one exists. -/
+class OrderSupSet (α : Type*) [LE α] extends SupSet α where
+  protected isLUB_sSup_of_isLUB s a : IsLUB s a → IsLUB s (sSup s)
+
+/-- `OrderInfSet α` expresses that `α` is equipped with the operation `sInf` that returns
+the greatest lower bound of a set whenever one exists. -/
+@[to_dual existing]
+class OrderInfSet (α : Type*) [LE α] extends InfSet α where
+  protected isGLB_sInf_of_isGLB s a : IsGLB s a → IsGLB s (sInf s)

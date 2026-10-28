@@ -34,7 +34,6 @@ variable {C D : Type*} [Category* C] [Category* D]
   (hF : CoverPreserving J K F)
   [InitiallySmall (F ⋙ Φ.fiber).Elements]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ D` is a representably flat and cover preserving functor between sites, then
 any point on `D` induces a point on `C` by precomposing the fiber functor with `F`. -/
 @[simps]

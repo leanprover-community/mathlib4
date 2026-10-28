@@ -42,6 +42,10 @@ lemma mem_upperBounds_iff_subset_Iic : a ∈ upperBounds s ↔ s ⊆ Iic a := If
 theorem bddAbove_def : BddAbove s ↔ ∃ x, ∀ y ∈ s, y ≤ x :=
   Iff.rfl
 
+@[to_dual (attr := simp) bounded_ge]
+theorem Set.bounded_le : Set.Bounded LE.le s ↔ BddAbove s :=
+  .rfl
+
 @[to_dual]
 theorem top_mem_upperBounds [OrderTop α] (s : Set α) : ⊤ ∈ upperBounds s := fun _ _ => le_top
 
@@ -103,12 +107,7 @@ lemma IsCofinalFor.of_subset (hst : s ⊆ t) : IsCofinalFor s t :=
   fun a ha ↦ ⟨a, hst ha, le_rfl⟩
 
 @[to_dual]
-alias HasSubset.Subset.isCofinalFor := IsCofinalFor.of_subset
-
-@[deprecated HasSubset.Subset.isCofinalFor (since := "2026-01-08")]
-alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
-@[deprecated HasSubset.Subset.isCoinitialFor (since := "2026-01-08")]
-alias HasSubset.Subset.iscoinitialfor := IsCoinitialFor.of_subset
+alias LE.le.isCofinalFor := IsCofinalFor.of_subset
 
 @[to_dual (attr := refl)]
 protected lemma IsCofinalFor.rfl : IsCofinalFor s s := .of_subset .rfl
@@ -131,6 +130,69 @@ lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β
   rintro ⟨_, _⟩ ⟨⟨x, hx, rfl⟩, y, hy, rfl⟩
   obtain ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   exact ⟨z, hz, hxz.1, hyz.2⟩
+
+@[to_dual]
+lemma IsCofinalFor.nonempty (h : IsCofinalFor s t) (hs : s.Nonempty) : t.Nonempty :=
+  let ⟨_, ha⟩ := hs; let ⟨b, hb, _⟩ := h ha; ⟨b, hb⟩
+
+theorem IsCofinalFor.union_left (hc : IsCofinalFor s t) : IsCofinalFor (s ∪ t) t := by
+  rintro a (has | hat)
+  · exact hc has
+  · exact ⟨a, hat, le_rfl⟩
+
+theorem IsCofinalFor.union_right (hc : IsCofinalFor s t) : IsCofinalFor (t ∪ s) t := by
+  rw [union_comm]
+  exact hc.union_left
+
+theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
+    (hst : s ⊆ t) (hc : IsCofinalFor t s) : DirectedOn (· ≤ ·) s := by
+  intro x hx y hy
+  obtain ⟨z, hz, hxz, hyz⟩ := hd x (hst hx) y (hst hy)
+  obtain ⟨w, hw, hzw⟩ := hc hz
+  exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
+
+theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    IsCofinalFor t s ∨ IsCofinalFor s t := by
+  rw [or_iff_not_imp_left]
+  intro hts x hx
+  simp only [IsCofinalFor, not_forall, not_exists, not_and] at hts
+  obtain ⟨y, hy, hys⟩ := hts
+  obtain ⟨z, (hzs | hzt), hxz, hyz⟩ := h x (.inl hx) y (.inr hy)
+  · cases hys z hzs hyz
+  · exact ⟨z, hzt, hxz⟩
+
+theorem directedOn_union_iff :
+    DirectedOn (· ≤ ·) (s ∪ t) ↔
+      DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s ∨ DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases isCofinalFor_or_isCofinalFor_of_directedOn_union h with hts | hst
+    · exact .inl ⟨DirectedOn.of_isCofinalFor h subset_union_left hts.union_right, hts⟩
+    · exact .inr ⟨DirectedOn.of_isCofinalFor h subset_union_right hst.union_left, hst⟩
+  · rintro (⟨hs, hts⟩ | ⟨ht, hst⟩) x hx y hy
+    · obtain ⟨x', hx', hxx'⟩ := hts.union_right hx
+      obtain ⟨y', hy', hyy'⟩ := hts.union_right hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := hs x' hx' y' hy'
+      exact ⟨z, .inl hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+    · obtain ⟨x', hx', hxx'⟩ := hst.union_left hx
+      obtain ⟨y', hy', hyy'⟩ := hst.union_left hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := ht x' hx' y' hy'
+      exact ⟨z, .inr hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+
+theorem directedOn_or_directedOn_of_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
+  rw [directedOn_union_iff] at h
+  tauto
+
+theorem directedOn_or_directedOn_of_union'
+    (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
+  obtain h | h := directedOn_or_directedOn_of_union h
+  · obtain rfl | hs := s.eq_empty_or_nonempty
+    · aesop
+    · exact .inl ⟨h, hs⟩
+  · obtain rfl | ht := t.eq_empty_or_nonempty
+    · aesop
+    · exact .inr ⟨h, ht⟩
 
 /-!
 ### Monotonicity
@@ -159,6 +221,14 @@ theorem upperBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a �
 theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
   Nonempty.mono <| upperBounds_mono_set h
 
+/-- If the range of a function `g` is bounded above, then `g ∘ f` is bounded above for all functions
+`f`. -/
+@[to_dual /-- If the range of a function `g` is bounded below, then `g ∘ f` is bounded below for all
+functions `f`. -/]
+theorem BddAbove.range_comp_right (f : γ → β) {g : β → α}
+    (hg : BddAbove (Set.range g)) : BddAbove (Set.range (g ∘ f)) :=
+  hg.mono (range_comp_subset_range f g)
+
 /-- If `a` is a least upper bound for sets `s` and `p`, then it is a least upper bound for any
 set `t`, `s ⊆ t ⊆ p`. -/
 @[to_dual /-- If `a` is a greatest lower bound for sets `s` and `p`, then it is a greater lower
@@ -166,6 +236,13 @@ bound for any set `t`, `s ⊆ t ⊆ p`. -/]
 theorem IsLUB.of_subset_of_superset {s t p : Set α} (hs : IsLUB s a) (hp : IsLUB p a) (hst : s ⊆ t)
     (htp : t ⊆ p) : IsLUB t a :=
   ⟨upperBounds_mono_set htp hp.1, lowerBounds_mono_set (upperBounds_mono_set hst) hs.2⟩
+
+/-- The least upper bound of a set is also the least upper bound of any cofinal subset. -/
+@[to_dual /-- The greatest lower bound of a set is also the greatest lower bound of any
+coinitial subset. -/]
+theorem IsLUB.of_isCofinalFor {s t : Set α} (hs : IsLUB s a) (hts : t ⊆ s)
+    (hst : IsCofinalFor s t) : IsLUB t a :=
+  ⟨upperBounds_mono_set hts hs.1, fun _b hb ↦ hs.2 (upperBounds_mono_of_isCofinalFor hst hb)⟩
 
 @[to_dual]
 theorem IsLeast.mono (ha : IsLeast s a) (hb : IsLeast t b) (hst : s ⊆ t) : b ≤ a :=
@@ -176,6 +253,10 @@ theorem IsLUB.mono (ha : IsLUB s a) (hb : IsLUB t b) (hst : s ⊆ t) : a ≤ b :
   IsLeast.mono hb ha <| upperBounds_mono_set hst
 
 @[to_dual]
+theorem subset_lowerBounds_upperBounds (s : Set α) : s ⊆ lowerBounds (upperBounds s) :=
+  fun _ hx _ hy => hy hx
+
+@[to_dual]
 theorem Set.Nonempty.bddAbove_lowerBounds (hs : s.Nonempty) : BddAbove (lowerBounds s) :=
   hs.mono (subset_upperBounds_lowerBounds s)
 
@@ -183,6 +264,18 @@ theorem Set.Nonempty.bddAbove_lowerBounds (hs : s.Nonempty) : BddAbove (lowerBou
 ### Conversions
 -/
 
+
+@[to_dual]
+theorem IsLeast.isGLB (h : IsLeast s a) : IsGLB s a :=
+  ⟨h.2, fun _ hb => hb h.1⟩
+
+@[to_dual]
+theorem IsGLB.isLeast (h : IsGLB s a) (hmem : a ∈ s) : IsLeast s a :=
+  ⟨hmem, h.left⟩
+
+@[to_dual]
+theorem isLeast_iff_isGLB_and_mem : IsLeast s a ↔ IsGLB s a ∧ a ∈ s :=
+  ⟨fun h ↦ ⟨h.isGLB, h.left⟩, fun ⟨h, hmem⟩ ↦ h.isLeast hmem⟩
 
 @[to_dual]
 theorem IsLUB.upperBounds_eq (h : IsLUB s a) : upperBounds s = Ici a :=
@@ -195,6 +288,10 @@ theorem IsLeast.lowerBounds_eq (h : IsLeast s a) : lowerBounds s = Iic a :=
 @[to_dual]
 theorem IsGreatest.lt_iff (h : IsGreatest s a) : a < b ↔ ∀ x ∈ s, x < b :=
   ⟨fun hlt _x hx => (h.2 hx).trans_lt hlt, fun h' => h' _ h.1⟩
+
+@[to_dual]
+theorem IsGreatest.le_iff (h : IsGreatest s a) : b ≤ a ↔ ∃ x ∈ s, b ≤ x :=
+  ⟨fun hle ↦ ⟨a, h.1, hle⟩, fun ⟨_, hxs, hxb⟩ ↦ hxb.trans (h.2 hxs)⟩
 
 @[to_dual le_isGLB_iff]
 theorem isLUB_le_iff (h : IsLUB s a) : a ≤ b ↔ b ∈ upperBounds s := by
@@ -266,6 +363,32 @@ theorem bddAbove_union [IsDirectedOrder α] {s t : Set α} :
   ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 
+@[to_dual]
+theorem bbdAbove_range_sup {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α}
+    (hf : BddAbove <| range f) (hg : BddAbove <| range g) :
+    BddAbove <| range fun x ↦ f x ⊔ g x := by
+  have ⟨af, haf⟩ := hf
+  have ⟨ag, hag⟩ := hg
+  exact ⟨af ⊔ ag, fun a ⟨i, ha⟩ ↦ ha ▸ sup_le_sup (haf ⟨i, rfl⟩) (hag ⟨i, rfl⟩)⟩
+
+@[to_dual]
+theorem bbdAbove_range_left_of_sup {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α}
+    (h : BddAbove <| range fun x ↦ f x ⊔ g x) : BddAbove <| range f := by
+  have ⟨b, hb⟩ := h
+  exact ⟨b, fun a ⟨i, ha⟩ ↦ ha ▸ le_sup_left.trans (hb ⟨i, rfl⟩)⟩
+
+@[to_dual]
+theorem bbdAbove_range_right_of_sup {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α}
+    (h : BddAbove <| range fun x ↦ f x ⊔ g x) : BddAbove <| range g := by
+  have ⟨b, hb⟩ := h
+  exact ⟨b, fun a ⟨i, ha⟩ ↦ ha ▸ le_sup_right.trans (hb ⟨i, rfl⟩)⟩
+
+@[to_dual]
+theorem bbdAbove_range_sup_iff {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α} :
+    BddAbove (range fun x ↦ f x ⊔ g x) ↔ BddAbove (range f) ∧ BddAbove (range g) where
+  mp h := ⟨bbdAbove_range_left_of_sup h, bbdAbove_range_right_of_sup h⟩
+  mpr := fun ⟨hf, hg⟩ ↦ bbdAbove_range_sup hf hg
+
 /-- If `a` is the least upper bound of `s` and `b` is the least upper bound of `t`,
 then `a ⊔ b` is the least upper bound of `s ∪ t`. -/
 @[to_dual /-- If `a` is the greatest lower bound of `s` and `b` is the greatest lower bound of `t`,
@@ -309,6 +432,7 @@ theorem BddAbove.exists_ge [SemilatticeSup γ] {s : Set γ} (hs : BddAbove s) (x
 
 /-!
 ### Specific sets
+
 #### Unbounded intervals
 -/
 
@@ -336,9 +460,6 @@ theorem bddAbove_Iio : BddAbove (Iio a) :=
 @[to_dual]
 theorem le_of_isLUB_Iio (a : α) (hb : IsLUB (Iio a) b) : b ≤ a :=
   (isLUB_le_iff hb).mpr fun _ hk => le_of_lt hk
-
-@[deprecated (since := "2026-01-17")] alias lub_Iio_le := le_of_isLUB_Iio
-@[deprecated (since := "2026-01-17")] alias le_glb_Ioi := le_of_isGLB_Ioi
 
 @[to_dual]
 theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLUB (Iio i) j) :
@@ -397,55 +518,44 @@ theorem upperBounds_singleton : upperBounds {a} = Ici a :=
 -/
 
 
-@[simp] lemma bddAbove_Icc : BddAbove (Icc a b) := ⟨b, fun _ => And.right⟩
-@[simp] lemma bddBelow_Icc : BddBelow (Icc a b) := ⟨a, fun _ => And.left⟩
-@[simp] lemma bddAbove_Ico : BddAbove (Ico a b) := bddAbove_Icc.mono Ico_subset_Icc_self
-@[simp] lemma bddBelow_Ico : BddBelow (Ico a b) := bddBelow_Icc.mono Ico_subset_Icc_self
-@[simp] lemma bddAbove_Ioc : BddAbove (Ioc a b) := bddAbove_Icc.mono Ioc_subset_Icc_self
-@[simp] lemma bddBelow_Ioc : BddBelow (Ioc a b) := bddBelow_Icc.mono Ioc_subset_Icc_self
-@[simp] lemma bddAbove_Ioo : BddAbove (Ioo a b) := bddAbove_Icc.mono Ioo_subset_Icc_self
-@[simp] lemma bddBelow_Ioo : BddBelow (Ioo a b) := bddBelow_Icc.mono Ioo_subset_Icc_self
+@[to_dual (attr := simp)]
+lemma bddAbove_Icc : BddAbove (Icc a b) := ⟨b, fun _ => And.right⟩
+@[to_dual (attr := simp)]
+lemma bddAbove_Ico : BddAbove (Ico a b) := bddAbove_Icc.mono Ico_subset_Icc_self
+@[to_dual (attr := simp)]
+lemma bddBelow_Ico : BddBelow (Ico a b) := bddBelow_Icc.mono Ico_subset_Icc_self
+@[to_dual (attr := simp)]
+lemma bddAbove_Ioo : BddAbove (Ioo a b) := bddAbove_Icc.mono Ioo_subset_Icc_self
 
+@[to_dual]
 theorem isGreatest_Icc (h : a ≤ b) : IsGreatest (Icc a b) b :=
   ⟨right_mem_Icc.2 h, fun _ => And.right⟩
 
+@[to_dual]
 theorem isLUB_Icc (h : a ≤ b) : IsLUB (Icc a b) b :=
   (isGreatest_Icc h).isLUB
 
+@[to_dual]
 theorem upperBounds_Icc (h : a ≤ b) : upperBounds (Icc a b) = Ici b :=
   (isLUB_Icc h).upperBounds_eq
 
-theorem isLeast_Icc (h : a ≤ b) : IsLeast (Icc a b) a :=
-  ⟨left_mem_Icc.2 h, fun _ => And.left⟩
-
-theorem isGLB_Icc (h : a ≤ b) : IsGLB (Icc a b) a :=
-  (isLeast_Icc h).isGLB
-
-theorem lowerBounds_Icc (h : a ≤ b) : lowerBounds (Icc a b) = Iic a :=
-  (isGLB_Icc h).lowerBounds_eq
-
+@[to_dual]
 theorem isGreatest_Ioc (h : a < b) : IsGreatest (Ioc a b) b :=
   ⟨right_mem_Ioc.2 h, fun _ => And.right⟩
 
+@[to_dual]
 theorem isLUB_Ioc (h : a < b) : IsLUB (Ioc a b) b :=
   (isGreatest_Ioc h).isLUB
 
+@[to_dual]
 theorem upperBounds_Ioc (h : a < b) : upperBounds (Ioc a b) = Ici b :=
   (isLUB_Ioc h).upperBounds_eq
-
-theorem isLeast_Ico (h : a < b) : IsLeast (Ico a b) a :=
-  ⟨left_mem_Ico.2 h, fun _ => And.left⟩
-
-theorem isGLB_Ico (h : a < b) : IsGLB (Ico a b) a :=
-  (isLeast_Ico h).isGLB
-
-theorem lowerBounds_Ico (h : a < b) : lowerBounds (Ico a b) = Iic a :=
-  (isGLB_Ico h).lowerBounds_eq
 
 section
 
 variable [SemilatticeSup γ] [DenselyOrdered γ]
 
+@[to_dual]
 theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
   ⟨fun _ hx => hx.1.le, fun x hx => by
     rcases eq_or_lt_of_le (le_sup_right : a ≤ x ⊔ a) with h₁ | h₂
@@ -455,32 +565,17 @@ theorem isGLB_Ioo {a b : γ} (h : a < b) : IsGLB (Ioo a b) a :=
     obtain ⟨u, au, ub⟩ := exists_between h
     apply (hx ⟨au, ub⟩).trans ub.le⟩
 
+@[to_dual]
 theorem lowerBounds_Ioo {a b : γ} (hab : a < b) : lowerBounds (Ioo a b) = Iic a :=
   (isGLB_Ioo hab).lowerBounds_eq
 
+@[to_dual]
 theorem isGLB_Ioc {a b : γ} (hab : a < b) : IsGLB (Ioc a b) a :=
   (isGLB_Ioo hab).of_subset_of_superset (isGLB_Icc hab.le) Ioo_subset_Ioc_self Ioc_subset_Icc_self
 
+@[to_dual]
 theorem lowerBounds_Ioc {a b : γ} (hab : a < b) : lowerBounds (Ioc a b) = Iic a :=
   (isGLB_Ioc hab).lowerBounds_eq
-
-end
-
-section
-
-variable [SemilatticeInf γ] [DenselyOrdered γ]
-
-theorem isLUB_Ioo {a b : γ} (hab : a < b) : IsLUB (Ioo a b) b := by
-  simpa only [Ioo_toDual] using isGLB_Ioo hab.dual
-
-theorem upperBounds_Ioo {a b : γ} (hab : a < b) : upperBounds (Ioo a b) = Ici b :=
-  (isLUB_Ioo hab).upperBounds_eq
-
-theorem isLUB_Ico {a b : γ} (hab : a < b) : IsLUB (Ico a b) b := by
-  simpa only [Ioc_toDual] using isGLB_Ioc hab.dual
-
-theorem upperBounds_Ico {a b : γ} (hab : a < b) : upperBounds (Ico a b) = Ici b :=
-  (isLUB_Ico hab).upperBounds_eq
 
 end
 
@@ -488,6 +583,7 @@ end
 theorem bddBelow_iff_subset_Ici : BddBelow s ↔ ∃ a, s ⊆ Ici a :=
   Iff.rfl
 
+@[to_dual none]
 theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b, s ⊆ Icc a b := by
   simp [Ici_inter_Iic.symm, subset_inter_iff, bddBelow_iff_subset_Ici,
     bddAbove_iff_subset_Iic, exists_and_left, exists_and_right]
@@ -496,8 +592,16 @@ theorem bddBelow_bddAbove_iff_subset_Icc : BddBelow s ∧ BddAbove s ↔ ∃ a b
 #### Univ
 -/
 
+@[to_dual (attr := simp)]
+theorem mem_upperBounds_univ : a ∈ upperBounds univ ↔ IsTop a := by
+  simp [mem_upperBounds, IsTop]
+
 @[to_dual (attr := simp)] theorem isGreatest_univ_iff : IsGreatest univ a ↔ IsTop a := by
   simp [IsGreatest, mem_upperBounds, IsTop]
+
+@[to_dual (attr := simp)]
+theorem isLUB_univ_iff : IsLUB univ a ↔ IsTop a :=
+  ⟨(mem_upperBounds_univ.mp ·.left), (isGreatest_univ_iff.mpr · |>.isLUB)⟩
 
 @[to_dual]
 theorem isGreatest_univ [OrderTop α] : IsGreatest (univ : Set α) ⊤ :=
@@ -526,7 +630,7 @@ theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by sim
 
 @[to_dual (attr := simp)]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
-  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, forall_mem_empty, forall_true_iff]
+  simp only [upperBounds, eq_univ_iff_forall, mem_ofPred_eq, forall_mem_empty, forall_true_iff]
 
 @[to_dual (attr := simp)]
 theorem bddAbove_empty [Nonempty α] : BddAbove (∅ : Set α) := by
@@ -608,6 +712,15 @@ theorem isLUB_pair [SemilatticeSup γ] {a b : γ} : IsLUB {a, b} (a ⊔ b) :=
 theorem isGreatest_pair [LinearOrder γ] {a b : γ} : IsGreatest {a, b} (max a b) :=
   isGreatest_singleton.insert _
 
+/-!
+#### Lower/upper bounds
+-/
+
+
+@[to_dual (attr := simp)]
+theorem isLUB_lowerBounds : IsLUB (lowerBounds s) a ↔ IsGLB s a :=
+  ⟨fun H => ⟨fun _ hx => H.2 <| subset_upperBounds_lowerBounds s hx, H.1⟩, IsGreatest.isLUB⟩
+
 end
 
 section OrderSupSet
@@ -615,21 +728,14 @@ section OrderSupSet
 variable [Preorder α]
 
 @[to_dual]
-theorem isLUB_sSup_of_isLUB [OrderSupSet α] {s : Set α} {a : α} :
+protected theorem IsLUB.isLUB_sSup [OrderSupSet α] {s : Set α} {a : α} :
     IsLUB s a → IsLUB s (sSup s) :=
   OrderSupSet.isLUB_sSup_of_isLUB _ _
-
-@[to_dual] protected alias IsLUB.isLUB_sSup := isLUB_sSup_of_isLUB
-
-@[to_dual]
-theorem isLUB_sSup_of_exists [OrderSupSet α] {s : Set α} :
-    (∃ a, IsLUB s a) → IsLUB s (sSup s) :=
-  fun ⟨_, h⟩ ↦ h.isLUB_sSup
 
 @[to_dual]
 theorem exists_isLUB_iff_isLUB_sSup [OrderSupSet α] {s : Set α} :
     (∃ a, IsLUB s a) ↔ IsLUB s (sSup s) :=
-  ⟨isLUB_sSup_of_exists, fun h ↦ ⟨_, h⟩⟩
+  ⟨fun ⟨_, h⟩ ↦ h.isLUB_sSup, fun h ↦ ⟨_, h⟩⟩
 
 /-- Constructs an `OrderInfSet` from an `OrderSupSet` by defining the infimum of a set as the
 supremum of its lower bounds. -/
@@ -639,18 +745,40 @@ infimum of its upper bounds. -/]
 abbrev OrderInfSet.ofOrderSupSet [OrderSupSet α] :
     OrderInfSet α where
   sInf s := sSup (lowerBounds s)
-  isGLB_sInf_of_isGLB _ _ h := isLUB_lowerBounds.mp (isLUB_sSup_of_isLUB h.isLUB)
+  isGLB_sInf_of_isGLB _ _ h := isLUB_lowerBounds.mp h.isLUB.isLUB_sSup
 
 open Classical in
-/-- Noncomputably constructs an `OrderSupSet` using the axiom of choice,
-where `sSup s` returns `d` if a least upper bound does not exist. -/
-@[to_dual
-/-- Noncomputably constructs an `OrderInfSet` using the axiom of choice,
-where `sInf s` returns `d` if a greatest lower bound does not exist. -/]
-noncomputable abbrev OrderSupSet.choose (d : α) :
+/-- Noncomputably constructs a "supremum" for an arbitrary set using the axiom of choice
+such that it is the actual supremum of the set if one exists, and the default value `d`
+otherwise. -/
+@[to_dual (attr := instance_reducible, simps -isSimp)
+/-- Noncomputably constructs an "infimum" for an arbitrary set using the axiom of choice
+such that it is the actual infimum of the set if one exists, and the default value `d`
+otherwise. -/]
+noncomputable def OrderSupSet.choose (d : α) :
     OrderSupSet α where
   sSup s := if h : ∃ x, IsLUB s x then h.choose else d
-  isLUB_sSup_of_isLUB _ _ h := dif_pos (Exists.intro _ h) ▸ choose_spec _
+  isLUB_sSup_of_isLUB _ _ h := dite_eq_left (Exists.intro _ h) ▸ choose_spec _
+
+/-- Noncomputably constructs a "supremum" for an arbitrary set using the axiom of choice
+such that it is the actual supremum of the set if one exists, the bottom element if the supremum
+doesn't exist but a bottom element does, and the default value `d` if neither exists. -/
+@[to_dual (attr := instance_reducible)
+/-- Noncomputably constructs an "infimum" for an arbitrary set using the axiom of choice
+such that it is the actual infimum of the set if one exists, the top element if the infimum
+doesn't exist but a top element does, and the default value `d` if neither exists. -/]
+noncomputable def OrderSupSet.chooseBot (d : α) : OrderSupSet α :=
+  .choose ((OrderSupSet.choose d).sSup ∅)
+
+@[to_dual]
+theorem OrderSupSet.chooseBot_sSup_of_not_exists {d : α} {s : Set α} (h : ¬∃ x, IsLUB s x) :
+    (chooseBot d).sSup s = (chooseBot d).sSup ∅ := by
+  simp only [choose_sSup]; split_ifs <;> rfl
+
+@[to_dual]
+theorem OrderSupSet.chooseBot_sSup_empty_of_noBotOrder [NoBotOrder α] {d : α} :
+    (chooseBot d).sSup ∅ = d := by
+  simp [choose_sSup]
 
 end OrderSupSet
 
@@ -658,33 +786,23 @@ section Minimal
 
 variable [Preorder α] {s : Set α} {a b : α}
 
+@[to_dual]
 theorem DirectedOn.le_of_minimal (h : DirectedOn (fun x y ↦ y ≤ x) s) (hMin : Minimal (· ∈ s) a)
     (hb : b ∈ s) : a ≤ b := by
   obtain ⟨z, hz, hza, hzb⟩ := h a hMin.1 b hb
   exact (hMin.2 hz hza).trans hzb
 
-theorem DirectedOn.le_of_maximal (h : DirectedOn (· ≤ ·) s) (hMax : Maximal (· ∈ s) a)
-    (hb : b ∈ s) : b ≤ a := by
-  obtain ⟨z, hz, haz, hbz⟩ := h a hMax.1 b hb
-  exact hbz.trans (hMax.2 hz haz)
-
+@[to_dual]
 theorem DirectedOn.minimal_iff_isLeast (h : DirectedOn (fun x y ↦ y ≤ x) s) :
     Minimal (· ∈ s) a ↔ IsLeast s a :=
   ⟨fun hMin ↦ ⟨hMin.1, fun _ hy ↦ h.le_of_minimal hMin hy⟩, fun h ↦ ⟨h.1, fun _ hy _ ↦ h.2 hy⟩⟩
 
-theorem DirectedOn.maximal_iff_isGreatest (h : DirectedOn (· ≤ ·) s) :
-    Maximal (· ∈ s) a ↔ IsGreatest s a :=
-  minimal_iff_isLeast (α := αᵒᵈ) h
-
 end Minimal
 
+@[to_dual]
 theorem minimal_iff_isLeast [LinearOrder α] {s : Set α} {a : α} :
     Minimal (· ∈ s) a ↔ IsLeast s a :=
   (Std.Total.directedOn s).minimal_iff_isLeast
-
-theorem maximal_iff_isGreatest [LinearOrder α] {s : Set α} {a : α} :
-    Maximal (· ∈ s) a ↔ IsGreatest s a :=
-  (Std.Total.directedOn s).maximal_iff_isGreatest
 
 /-!
 ### (In)equalities with the least upper bound and the greatest lower bound
@@ -695,18 +813,22 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {s s' : Set α} {t : Set β} {a b : α}
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s) :
     s.Nonempty → a ≤ b
   | ⟨_, hc⟩ => le_trans (ha hc) (hb hc)
 
+@[to_dual none]
 theorem lowerBounds_le_upperBounds_of_nonempty_inter (h : (s ∩ s').Nonempty)
     (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s') : a ≤ b := by
   have ⟨x, hx, hx'⟩ := h
   exact le_trans (ha hx) (hb hx')
 
+@[to_dual self (reorder := a b, ha hb)]
 theorem isGLB_le_isLUB (ha : IsGLB s a) (hb : IsLUB s b) (hs : s.Nonempty) : a ≤ b :=
   lowerBounds_le_upperBounds ha.1 hb.1 hs
 
+@[to_dual none]
 theorem isGLB_le_isLUB_of_nonempty_inter (h : (s ∩ s').Nonempty) (ha : IsGLB s a)
     (hb : IsLUB s' b) : a ≤ b :=
   lowerBounds_le_upperBounds_of_nonempty_inter h ha.left hb.left
@@ -715,6 +837,7 @@ theorem isGLB_le_isLUB_of_nonempty_inter (h : (s ∩ s').Nonempty) (ha : IsGLB s
 theorem isLUB_lt_iff (ha : IsLUB s a) : a < b ↔ ∃ c ∈ upperBounds s, c < b :=
   ⟨fun hb => ⟨a, ha.1, hb⟩, fun ⟨_, hcs, hcb⟩ => lt_of_le_of_lt (ha.2 hcs) hcb⟩
 
+@[to_dual self (reorder := a b, x y, ha hb, hx hy)]
 theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b ≤ a) (hx : x ∈ s)
     (hy : y ∈ s) : x ≤ y :=
   calc
@@ -722,7 +845,8 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
 
-@[to_dual (attr := simp)] lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+@[to_dual (attr := simp)]
+lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
     upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := by
   ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [upperBounds, Prod.le_def, forall_and])
 
@@ -757,62 +881,72 @@ theorem IsLeast.isLeast_iff_eq (Ha : IsLeast s a) : IsLeast s b ↔ a = b :=
 theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
   IsLeast.unique Ha Hb
 
+section OrderSupSet
+
+variable [OrderSupSet α]
+
 @[to_dual]
-theorem IsLUB.sSup_eq [OrderSupSet α] {s : Set α} {a : α} (h : IsLUB s a) :
+theorem IsLUB.sSup_eq {s : Set α} {a : α} (h : IsLUB s a) :
     sSup s = a :=
   h.isLUB_sSup.unique h
 
 @[to_dual]
-theorem IsLUB.iSup_eq [OrderSupSet α] {f : ι → α} {a : α} (h : IsLUB (.range f) a) :
+theorem IsLUB.iSup_eq {f : ι → α} {a : α} (h : IsLUB (.range f) a) :
     iSup f = a :=
   h.sSup_eq
 
 @[to_dual (attr := simp)]
-theorem sSup_singleton [OrderSupSet α] {a : α} : sSup {a} = a :=
+theorem sSup_singleton {a : α} : sSup {a} = a :=
   isLUB_singleton.sSup_eq
 
 @[to_dual (attr := simp)]
-theorem sSup_empty [OrderBot α] [OrderSupSet α] : sSup ∅ = (⊥ : α) :=
+theorem sSup_empty [OrderBot α] : sSup ∅ = (⊥ : α) :=
   isLUB_empty.sSup_eq
 
 @[to_dual (attr := simp)]
-theorem sSup_univ [OrderTop α] [OrderSupSet α] : sSup univ = (⊤ : α) :=
+theorem sSup_univ [OrderTop α] : sSup univ = (⊤ : α) :=
   isLUB_univ.sSup_eq
 
 @[to_dual]
 theorem sSup_pair {α} [SemilatticeSup α] [OrderSupSet α] {a b : α} : sSup {a, b} = a ⊔ b :=
   isLUB_pair.sSup_eq
 
-@[to_dual iInf_of_isEmpty]
+/-- This `simp` lemma goes well with `sSup_empty` in a complete lattice. -/
+@[to_dual (attr := simp) iInf_of_isEmpty
+/-- This `simp` lemma goes well with `sInf_empty` in a complete lattice. -/]
 theorem iSup_of_empty' {α ι} [SupSet α] [IsEmpty ι] (f : ι → α) : iSup f = sSup (∅ : Set α) :=
   congr_arg sSup (range_eq_empty f)
 
 @[to_dual]
-theorem iSup_of_empty [OrderBot α] [OrderSupSet α] [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
+theorem iSup_of_empty [OrderBot α] [IsEmpty ι] (f : ι → α) : iSup f = ⊥ :=
   (iSup_of_empty' f).trans sSup_empty
 
 @[to_dual]
-theorem iSup_const [OrderSupSet α] [Nonempty ι] : ⨆ _ : ι, a = a := by
+theorem iSup_const [Nonempty ι] : ⨆ _ : ι, a = a := by
   rw [iSup, range_const, sSup_singleton]
 
 @[to_dual le_iInf_const]
-theorem iSup_const_le [OrderBot α] [OrderSupSet α] : ⨆ _ : ι, a ≤ a := by
+theorem iSup_const_le [OrderBot α] : ⨆ _ : ι, a ≤ a := by
   obtain h | h := isEmpty_or_nonempty ι
-  · simp [iSup_of_empty]
+  · simp
   · simp [iSup_const]
 
 @[to_dual]
-lemma iSup_unique [OrderSupSet α] [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
+lemma iSup_unique [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
   simp only [congr_arg f (Unique.eq_default _), iSup_const]
 
 @[to_dual (attr := simp)]
-theorem iSup_bot [OrderBot α] [OrderSupSet α] : (⨆ _ : ι, ⊥ : α) = ⊥ :=
+theorem iSup_bot [OrderBot α] : (⨆ _ : ι, ⊥ : α) = ⊥ :=
   bot_unique iSup_const_le
 
+end OrderSupSet
+
+@[to_dual self (reorder := a b, Ha Hb)]
 theorem Set.subsingleton_of_isLUB_le_isGLB (Ha : IsGLB s a) (Hb : IsLUB s b) (hab : b ≤ a) :
     s.Subsingleton := fun _ hx _ hy =>
   le_antisymm (le_of_isLUB_le_isGLB Ha Hb hab hx hy) (le_of_isLUB_le_isGLB Ha Hb hab hy hx)
 
+@[to_dual self (reorder := a b, Ha Hb)]
 theorem isGLB_lt_isLUB_of_ne (Ha : IsGLB s a) (Hb : IsLUB s b) {x y} (Hx : x ∈ s) (Hy : y ∈ s)
     (Hxy : x ≠ y) : a < b :=
   lt_iff_le_not_ge.2
@@ -873,7 +1007,7 @@ instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p]
     simp [mem_lowerBounds, @imp_not_comm _ (p _)]
 
 /-- An alternative constructor for `SemilatticeSup` using `IsLUB`. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- An alternative constructor for `SemilatticeInf` using `IsGLB`. -/]
 def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
     (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) :
@@ -884,7 +1018,7 @@ def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
   sup_le a b _ hac hbc := (isLUB_pair a b).2 (forall_insert_of_forall (forall_eq.mpr hbc) hac)
 
 /-- An alternative constructor for `Lattice` using `IsLUB` and `IsGLB`. -/
-@[implicit_reducible, to_dual self (reorder := 3 4, 5 6)]
+@[instance_reducible, to_dual self (reorder := 3 4, 5 6)]
 def Lattice.ofIsLUBofIsGLB [PartialOrder α] (sup inf : α → α → α)
     (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) (isGLB_pair : ∀ a b, IsGLB {a, b} (inf a b)) :
     Lattice α where

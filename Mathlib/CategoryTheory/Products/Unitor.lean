@@ -5,7 +5,6 @@ Authors: Shanghe Chen
 -/
 module
 
-public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
@@ -20,7 +19,7 @@ open CategoryTheory
 
 namespace CategoryTheory.prod
 
-open scoped Prod
+open scoped CategoryTheory.Prod
 
 variable (C : Type u) [Category.{v} C]
 
@@ -48,6 +47,7 @@ def rightInverseUnitor : C ⥤ C × Discrete (PUnit : Type w) where
   obj X := ⟨X, ⟨PUnit.unit⟩⟩
   map f := f ×ₘ 𝟙 _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing left unity of products of categories. -/
 @[simps]
 def leftUnitorEquivalence : Discrete (PUnit : Type w) × C ≌ C where
@@ -56,6 +56,7 @@ def leftUnitorEquivalence : Discrete (PUnit : Type w) × C ≌ C where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing right unity of products of categories. -/
 @[simps]
 def rightUnitorEquivalence : C × Discrete (PUnit : Type w) ≌ C where

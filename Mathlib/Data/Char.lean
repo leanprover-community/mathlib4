@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # More `Char` instances
@@ -16,7 +15,7 @@ Provides an additional definition to truncate a `Char` to `UInt8` and a theorem 
 `Nat`.
 -/
 
-@[expose] public section
+public section
 
 /--
 Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.

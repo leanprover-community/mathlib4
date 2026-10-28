@@ -86,9 +86,6 @@ noncomputable def DenseAt.precompOfFinal
     (G ⋙ F).DenseAt Y :=
   (DenseAt.precompEquivOfFinal G).symm hY
 
-@[deprecated (since := "2025-12-17")]
-alias DenseAt.precompEquivalence := DenseAt.precompOfFinal
-
 /-- If `F : C ⥤ D` is dense at `Y : D` and `G : D ⥤ D'` is an equivalence,
 then `F ⋙ G` is dense at `G.obj Y`. -/
 noncomputable def DenseAt.postcompEquivalence
@@ -96,6 +93,10 @@ noncomputable def DenseAt.postcompEquivalence
     (F ⋙ G).DenseAt (G.obj Y) :=
   IsColimit.ofWhiskerEquivalence (CostructuredArrow.post F G Y).asEquivalence
     (IsColimit.ofIsoColimit ((isColimitOfPreserves G hY)) (Cocone.ext (Iso.refl _)))
+
+lemma DenseAt.hasPointwiseLeftKanExtensionAt (hf : F.DenseAt Y) :
+    F.HasPointwiseLeftKanExtensionAt F Y :=
+  ⟨_, hf⟩
 
 variable (F) in
 /-- Given a functor `F : C ⥤ D`, this is the property of objects `Y : D` such

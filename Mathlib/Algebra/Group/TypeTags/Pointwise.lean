@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 
 public section
 
-open Pointwise
+open scoped Pointwise
 
 variable {M : Type*}
 

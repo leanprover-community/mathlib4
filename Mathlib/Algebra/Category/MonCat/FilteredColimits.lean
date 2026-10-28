@@ -5,10 +5,9 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
@@ -123,7 +122,6 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
   simp_rw [map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
     ConcreteCategory.comp_apply, hfg]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive /-- Addition in the colimit is well-defined in the right argument. -/]
 theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
@@ -176,7 +174,7 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
 @[to_additive]
 lemma colimit_mul_mk_eq' {j : J} (x y : F.obj j) :
     M.mk.{v, u} F ⟨j, x⟩ * M.mk.{v, u} F ⟨j, y⟩ = M.mk.{v, u} F ⟨j, x * y⟩ := by
-  simpa using colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)
+  simpa using! colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, y⟩ j (𝟙 _) (𝟙 _)
 
 @[to_additive]
 noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
@@ -209,7 +207,7 @@ noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
 @[to_additive
   /-- The bundled additive monoid giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : MonCat.{max v u} :=
-  MonCat.of (M.{v, u} F)
+  ↧(M.{v, u} F)
 
 /-- The monoid homomorphism from a given monoid in the diagram to the colimit monoid. -/
 @[to_additive
@@ -225,7 +223,7 @@ noncomputable def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
     F.map f ≫ coconeMorphism.{v, u} F j' = coconeMorphism F j :=
   MonCat.ext fun x =>
-    ConcreteCategory.congr_hom ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
+    congr($((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x)
 
 /-- The cocone over the proposed colimit monoid. -/
 @[to_additive /-- The cocone over the proposed colimit additive monoid. -/]
@@ -233,7 +231,7 @@ noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι := { app := coconeMorphism F }
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a cocone `t` of `F`, the induced monoid homomorphism from the colimit to the cocone point.
 As a function, this is simply given by the induced map of the corresponding cocone in `Type`.
 The only thing left to see is that it is a monoid homomorphism.
@@ -264,7 +262,7 @@ noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) wh
   fac t j := rfl
   uniq t m h := MonCat.ext fun y ↦ by
     obtain ⟨j, y, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y
-    exact ConcreteCategory.congr_hom (h j) y
+    congrm $(h j) y
 
 @[to_additive]
 instance forget_preservesFilteredColimits :
@@ -314,7 +312,7 @@ noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
 @[to_additive
 /-- The bundled additive commutative monoid giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : CommMonCat.{max v u} :=
-  CommMonCat.of (M.{v, u} F)
+  ↧(M.{v, u} F)
 
 /-- The cocone over the proposed colimit commutative monoid. -/
 @[to_additive /-- The cocone over the proposed colimit additive commutative monoid. -/]

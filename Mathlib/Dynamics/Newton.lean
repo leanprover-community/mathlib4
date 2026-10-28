@@ -5,9 +5,6 @@ Authors: Antoine Chambert-Loir, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Identities
-public import Mathlib.RingTheory.Nilpotent.Lemmas
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
@@ -34,7 +31,7 @@ as Hensel's lemma and the Jordan-Chevalley decomposition.
 
 @[expose] public section
 
-open Set Function
+open Function
 
 noncomputable section
 

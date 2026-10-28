@@ -102,7 +102,7 @@ theorem LinearMap.eq_of_localization_maximal (g g' : M →ₗ[R] M₁)
       IsLocalizedModule.map P.primeCompl (f P) (f₁ P) g') :
     g = g' :=
   ext fun x ↦ Module.eq_of_localization_maximal _ f₁ _ _ fun P _ ↦ by
-    simpa only [IsLocalizedModule.map_apply] using DFunLike.congr_fun (h P) (f P x)
+    simpa only [IsLocalizedModule.map_apply] using congr($(h P) (f P x))
 
 include f in
 theorem Module.subsingleton_of_localization_maximal
@@ -132,7 +132,7 @@ end maximal
 
 section span
 
-open IsLocalizedModule LocalizedModule Ideal
+open IsLocalizedModule Ideal
 
 variable (s : Set R) (span_eq : Ideal.span s = ⊤)
 include span_eq
@@ -148,7 +148,7 @@ variable
   [∀ r : s, Module (Rₚ r) (Mₚ r)]
   [∀ r : s, IsScalarTower R (Rₚ r) (Mₚ r)]
   (f : ∀ r : s, M →ₗ[R] Mₚ r)
-  [∀ r : s, IsLocalizedModule (.powers r.1) (f r)]
+  [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
 
 theorem Module.eq_of_isLocalized_span (x y : M) (h : ∀ r : s, f r x = f r y) : x = y := by
   suffices Module.eqIdeal R x y = ⊤ by simpa [Module.eqIdeal] using (eq_top_iff_one _).mp this

@@ -65,13 +65,17 @@ theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = s(p
   rfl
 
 @[simp]
+theorem Dart.sym2Mk_fst_snd (d : G.Dart) : s(d.fst, d.snd) = d.edge :=
+  rfl
+
+@[simp]
 theorem Dart.edge_mem (d : G.Dart) : d.edge ∈ G.edgeSet :=
   d.adj
 
 /-- The dart with reversed orientation from a given dart. -/
 @[simps]
 def Dart.symm (d : G.Dart) : G.Dart :=
-  ⟨d.toProd.swap, G.symm d.adj⟩
+  ⟨d.toProd.swap, d.adj.symm⟩
 
 @[simp]
 theorem Dart.symm_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).symm = Dart.mk p.swap h.symm :=
@@ -95,6 +99,9 @@ theorem Dart.symm_involutive : Function.Involutive (Dart.symm : G.Dart → G.Dar
 
 theorem Dart.symm_ne (d : G.Dart) : d.symm ≠ d :=
   ne_of_apply_ne (Prod.snd ∘ Dart.toProd) d.adj.ne
+
+@[simp]
+theorem Dart.fst_symm (d : G.Dart) : d.symm.fst = d.snd := rfl
 
 theorem dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d₁ = d₂ ∨ d₁ = d₂.symm := by
   rintro ⟨p, hp⟩ ⟨q, hq⟩
@@ -130,7 +137,7 @@ theorem dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighb
   fun e₁ e₂ h =>
   Subtype.ext <| by
     injection h with h'
-    convert congr_arg Prod.snd h'
+    convert! congr($(h').snd)
 
 instance nonempty_dart_top [Nontrivial V] : Nonempty (⊤ : SimpleGraph V).Dart := by
   obtain ⟨v, w, h⟩ := exists_pair_ne V

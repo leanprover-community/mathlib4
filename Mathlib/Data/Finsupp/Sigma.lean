@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Data.Finsupp.Basic
-public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Embedding a finitely supported function into a sigma type summand
@@ -53,7 +52,7 @@ theorem embSigma_apply [DecidableEq κ] {k : κ} (f : ι k →₀ M) (i : Σ k, 
     simp only [embSigma, Embedding.sigmaMk]
     apply embDomain_apply_self
   · simp only [embSigma, Embedding.sigmaMk]
-    rw [embDomain_notin_range]
+    rw [embDomain_of_notMem_range]
     simp_all
 
 @[simp]
@@ -65,7 +64,7 @@ theorem embSigma_apply_self {k : κ} (f : ι k →₀ M) (i : ι k) :
 /-- Values of `embSigma f` at indices outside the `k`-th summand are zero. -/
 theorem embSigma_apply_of_ne {k k' : κ} (f : ι k →₀ M) (hk : k' ≠ k) (i : ι k') :
     embSigma f ⟨k', i⟩ = 0 := by
-  apply embDomain_notin_range
+  apply embDomain_of_notMem_range
   grind
 
 @[simp, grind =]

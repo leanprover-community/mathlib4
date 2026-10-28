@@ -5,8 +5,9 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Pi
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+
+import Mathlib.Analysis.Calculus.FDeriv.Pi
 
 /-!
 # One-dimensional derivatives on pi-types.
@@ -18,7 +19,7 @@ variable {𝕜 ι : Type*} [DecidableEq ι] [NontriviallyNormedField 𝕜]
 
 theorem hasDerivAt_update (x : ι → 𝕜) (i : ι) (y : 𝕜) :
     HasDerivAt (Function.update x i) (Pi.single i (1 : 𝕜)) y := by
-  convert (hasFDerivAt_update x y).hasDerivAt
+  convert! (hasFDerivAt_update x y).hasDerivAt
   ext z j
   rw [Pi.single, Function.update_apply]
   split_ifs with h

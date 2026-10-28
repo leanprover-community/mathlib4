@@ -5,9 +5,10 @@ Authors: Chris Hughes, Michael Stoll
 -/
 module
 
-public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+
+import Mathlib.Data.Nat.Squarefree
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # Sums of two squares
@@ -23,7 +24,7 @@ There is an alternative characterization as the numbers of the form `a^2 * b`, w
 natural number such that `-1` is a square modulo `b`; see `Nat.eq_sq_add_sq_iff_eq_sq_mul`.
 -/
 
-@[expose] public section
+public section
 
 
 section Fermat

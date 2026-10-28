@@ -1,0 +1,97 @@
+/-
+Copyright (c) 2021 Floris van Doorn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Floris van Doorn
+-/
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Defs
+public import Mathlib.Order.Int.LeastGreatest
+
+/-!
+# `ℤ` forms a conditionally complete linear order
+
+The integers form a conditionally complete linear order.
+-/
+
+public section
+
+
+open Int
+
+
+noncomputable section
+
+namespace Int
+
+instance : NoBotOrder ℤ := ⟨fun x ↦ ⟨x - 1, (Int.sub_one_lt_of_le le_rfl).not_ge⟩⟩
+instance : NoTopOrder ℤ := ⟨fun x ↦ ⟨x + 1, (Int.lt_add_one_of_le le_rfl).not_ge⟩⟩
+
+open scoped Classical in
+instance : ConditionallyCompleteLinearOrder ℤ where
+  __ := instLinearOrder
+  __ := LinearOrder.toLattice
+  sSup s :=
+    if h : s.Nonempty ∧ BddAbove s then
+      greatestOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
+    else 0
+  sInf s :=
+    if h : s.Nonempty ∧ BddBelow s then
+      leastOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
+    else 0
+  isLUB_sSup_of_isLUB s _ h := by
+    rw [dite_eq_left ⟨h.nonempty, h.bddAbove⟩]
+    exact (isGreatest_coe_greatestOfBdd _ _ h.nonempty).isLUB
+  isGLB_sInf_of_isGLB s _ h := by
+    rw [dite_eq_left ⟨h.nonempty, h.bddBelow⟩]
+    exact (isLeast_coe_leastOfBdd _ _ h.nonempty).isGLB
+  exists_isLUB_cond _ hn hb :=
+    ⟨greatestOfBdd hb.choose hb.choose_spec hn, (isGreatest_coe_greatestOfBdd _ _ hn).isLUB⟩
+  exists_isGLB_cond _ hn hb :=
+    ⟨leastOfBdd hb.choose hb.choose_spec hn, (isLeast_coe_leastOfBdd _ _ hn).isGLB⟩
+  csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
+  csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem csSup_eq_greatestOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, z ≤ b)
+    (Hinh : ∃ z : ℤ, z ∈ s) : sSup s = greatestOfBdd b Hb Hinh := by
+  have : s.Nonempty ∧ BddAbove s := ⟨Hinh, b, Hb⟩
+  simp only [sSup, dite_eq_left this]
+  convert (coe_greatestOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddAbove s)) Hinh).symm
+
+@[simp]
+theorem csSup_empty : sSup (∅ : Set ℤ) = 0 :=
+  dite_eq_right (by simp)
+
+theorem csSup_of_not_bddAbove {s : Set ℤ} (h : ¬BddAbove s) : sSup s = 0 :=
+  dite_eq_right (by simp [h])
+
+set_option backward.isDefEq.respectTransparency false in
+theorem csInf_eq_leastOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, b ≤ z)
+    (Hinh : ∃ z : ℤ, z ∈ s) : sInf s = leastOfBdd b Hb Hinh := by
+  have : s.Nonempty ∧ BddBelow s := ⟨Hinh, b, Hb⟩
+  simp only [sInf, dite_eq_left this]
+  convert (coe_leastOfBdd_eq Hb (Classical.choose_spec (⟨b, Hb⟩ : BddBelow s)) Hinh).symm
+
+@[simp]
+theorem csInf_empty : sInf (∅ : Set ℤ) = 0 :=
+  dite_eq_right (by simp)
+
+theorem csInf_of_not_bddBelow {s : Set ℤ} (h : ¬BddBelow s) : sInf s = 0 :=
+  dite_eq_right (by simp [h])
+
+theorem csSup_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddAbove s) : sSup s ∈ s := by
+  convert (greatestOfBdd _ (Classical.choose_spec h2) h1).2.1
+  exact dite_eq_left ⟨h1, h2⟩
+
+theorem csInf_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddBelow s) : sInf s ∈ s := by
+  convert (leastOfBdd _ (Classical.choose_spec h2) h1).2.1
+  exact dite_eq_left ⟨h1, h2⟩
+
+end Int
+
+end
+
+--  this example tests that the `Lattice ℤ` instance is computable;
+-- i.e., that it is not found via the noncomputable instance in this file.
+example : Lattice ℤ := inferInstance

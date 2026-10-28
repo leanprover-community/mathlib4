@@ -1,10 +1,12 @@
-import Mathlib.Util.PrintSorries
+module
 
-set_option pp.mvars.anonymous false
+public import Mathlib.Util.PrintSorries
 
 /-!
 Direct use of `sorry`
 -/
+
+@[expose] public section
 
 /-- warning: declaration uses `sorry` -/
 #guard_msgs in

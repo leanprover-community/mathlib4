@@ -3,7 +3,9 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker, Heather Macbeth
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # IMO 1962 Q4
@@ -14,9 +16,9 @@ Since Lean does not have a concept of "simplest form", we just express what is
 in fact the simplest form of the set of solutions, and then prove it equals the set of solutions.
 -/
 
-open Real
+@[expose] public section
 
-open scoped Real
+open Real
 
 namespace Imo1962Q4
 

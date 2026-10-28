@@ -5,7 +5,6 @@ Authors: Luke Kershaw
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Triangulated.Basic
 
 /-!
@@ -81,6 +80,7 @@ attribute [local simp] shift_shift_neg' shift_neg_shift'
 
 variable (C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Rotating triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]
@@ -94,7 +94,7 @@ def rotate : Triangle C ⥤ Triangle C where
       dsimp
       simp only [comp_neg, neg_comp, ← Functor.map_comp, f.comm₁] }
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]
@@ -113,6 +113,7 @@ def invRotate : Triangle C ⥤ Triangle C where
 variable {C}
 variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The unit isomorphism of the auto-equivalence of categories `triangleRotation C` of
 `Triangle C` given by the rotation of triangles. -/
@@ -121,6 +122,7 @@ def rotCompInvRot : 𝟭 (Triangle C) ≅ rotate C ⋙ invRotate C :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _
     ((shiftEquiv C (1 : ℤ)).unitIso.app T.obj₁) (Iso.refl _) (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the auto-equivalence of categories `triangleRotation C` of
 `Triangle C` given by the rotation of triangles. -/
@@ -129,6 +131,7 @@ def invRotCompRot : invRotate C ⋙ rotate C ≅ 𝟭 (Triangle C) :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     ((shiftEquiv C (1 : ℤ)).counitIso.app T.obj₃)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 /-- Rotating triangles gives an auto-equivalence on the category of triangles in `C`.

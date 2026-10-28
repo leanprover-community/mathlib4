@@ -5,8 +5,9 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Filtered
+
+import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # Filtered colimits and cofiltered limits in `C` and `Cᵒᵖ`
@@ -15,7 +16,7 @@ We construct filtered colimits and cofiltered limits in the opposite categories.
 
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -30,7 +31,6 @@ open Opposite
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {J : Type u₂} [Category.{v₂} J]
 
 instance has_cofiltered_limits_op_of_has_filtered_colimits [HasFilteredColimitsOfSize.{v₂, u₂} C] :
     HasCofilteredLimitsOfSize.{v₂, u₂} Cᵒᵖ where

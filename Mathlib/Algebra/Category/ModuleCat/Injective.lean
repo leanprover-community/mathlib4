@@ -5,15 +5,15 @@ Authors: Jujian Zhang
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Injective objects in the category of $R$-modules
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 

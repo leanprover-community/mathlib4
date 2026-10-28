@@ -259,8 +259,6 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
   inv.as.naturality {a b} f := by
     simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _
 
-@[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
-
 end OplaxTrans
 
 namespace StrongTrans
@@ -289,6 +287,7 @@ namespace Modification
 
 variable (Γ : Modification η θ)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The modification between the underlying strong transformations of oplax functors -/
 @[simps]
 def toOplax : OplaxTrans.Modification η.toOplax θ.toOplax where
@@ -303,7 +302,7 @@ between the underlying oplax transformations. -/
 @[simps]
 def mkOfOplax (Γ : OplaxTrans.Modification η.toOplax θ.toOplax) : Modification η θ where
   app a := Γ.app a
-  naturality f := by simpa using Γ.naturality f
+  naturality f := by simpa using! Γ.naturality f
 
 /-- Modifications between strong transformations of oplax functors are equivalent to modifications
 between the underlying oplax transformations. -/

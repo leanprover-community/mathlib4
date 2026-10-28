@@ -5,11 +5,12 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.DedekindDomain.Dvr
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.Field
-public import Mathlib.RingTheory.KrullDimension.PID
+
+import Mathlib.Algebra.Module.SpanRankOperations
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.RingTheory.KrullDimension.PID
 
 /-!
 # Regular local rings
@@ -23,7 +24,7 @@ For the next section, we define regular rings as Noetherian rings whose localiza
 are regular local rings.
 (Note that a regular local ring is a regular ring, but this is not immediate under this definition).
 
-# Main Definition and Results
+## Main definitions and results
 
 * `IsRegularLocalRing` : A Noetherian local ring is regular if
   `(maximalIdeal R).spanFinrank = ringKrullDim R`,
@@ -41,7 +42,7 @@ This follows from localizations of regular local rings being regular (@Thmoas-Gu
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing
 
@@ -114,7 +115,7 @@ lemma IsRegularRing.of_ringEquiv {R' : Type*} [CommRing R'] (e : R ≃+* R') [Is
 lemma IsRegularLocalRing.of_isRegularRing_of_isLocalRing [IsLocalRing R] [IsRegularRing R] :
     IsRegularLocalRing R := by
   let e : R ≃ₐ[R] (Localization.AtPrime (maximalIdeal R)) :=
-    IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using fun a ↦ a)
+    IsLocalization.atUnits R (maximalIdeal R).primeCompl (fun x ↦ by simpa using! fun a ↦ a)
   exact IsRegularLocalRing.of_ringEquiv e.toRingEquiv.symm
 
 instance (priority := low) [IsDedekindDomain R] : IsRegularRing R := by

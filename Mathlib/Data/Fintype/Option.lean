@@ -5,20 +5,19 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
-# fintype instances for option
+# Fintype instances for `Option`
+
+This file declares `Fintype` instances for `Option` types, declares induction principles for
+`Fintype` and `Finite`, and proves that `Option α` is (in)finite iff `α` is (in)finite.
 -/
 
 @[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
-
-open Function
-
-open Nat
 
 universe u v
 
@@ -33,6 +32,17 @@ instance {α : Type*} [Finite α] : Finite (Option α) :=
   have := Fintype.ofFinite α
   Finite.of_fintype _
 
+/-- `Option α` is finite if and only if the underlying type `α` is finite. -/
+@[simp]
+theorem Option.finite_iff {α : Type*} : Finite (Option α) ↔ Finite α where
+  mpr _ := inferInstance
+  mp _ := .of_injective _ (Option.some_injective α)
+
+/-- `Option α` is infinite if and only if the underlying type `α` is infinite. -/
+@[simp]
+theorem Option.infinite_iff {α : Type*} : Infinite (Option α) ↔ Infinite α := by
+  simp [← not_finite_iff_infinite]
+
 theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
 
@@ -42,13 +52,13 @@ theorem Fintype.card_option {α : Type*} [Fintype α] :
   (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
 
 /-- If `Option α` is a `Fintype` then so is `α` -/
-@[implicit_reducible]
+@[instance_reducible]
 def fintypeOfOption {α : Type*} [Fintype (Option α)] : Fintype α :=
   ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x =>
     mem_eraseNone.mpr (Fintype.complete (some x))⟩
 
 /-- A type is a `Fintype` if its successor (using `Option`) is a `Fintype`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def fintypeOfOptionEquiv [Fintype α] (f : α ≃ Option β) : Fintype β :=
   haveI := Fintype.ofEquiv _ f
   fintypeOfOption
@@ -100,7 +110,6 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
   exact p _
-  -- ·
 
 end Fintype
 

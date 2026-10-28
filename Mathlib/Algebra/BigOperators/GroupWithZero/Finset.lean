@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Indexed
 
 /-!
 # Big operators on a finset in groups with zero
@@ -77,6 +77,7 @@ lemma prod_boole : ∏ i, (ite (p i) 1 0 : M₀) = ite (∀ i, p i) 1 0 := by si
 
 end Fintype
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Units.mk0_prod [CommGroupWithZero G₀] (s : Finset ι) (f : ι → G₀) (h) :
     Units.mk0 (∏ i ∈ s, f i) h =
       ∏ i ∈ s.attach, Units.mk0 (f i) fun hh ↦ h (Finset.prod_eq_zero i.2 hh) := by

@@ -27,9 +27,9 @@ event.
 Prove the `integral` versions of the `lintegral` lemmas below
 -/
 
-@[expose] public section
+public section
 
-open MeasureTheory ENNReal NNReal Set
+open MeasureTheory ENNReal Set
 open scoped ProbabilityTheory
 
 namespace ProbabilityTheory.Kernel
@@ -107,7 +107,7 @@ private lemma IsProper.lintegral_indicator_mul (hπ : IsProper π) (h𝓑𝓧 : 
     simp_rw [ENNReal.mul_iSup]
     rw [lintegral_iSup (by measurability), lintegral_iSup hf'_meas hf'_mono, ENNReal.mul_iSup]
     · simp_rw [hf']
-    · exact hf'_mono.const_mul (zero_le _)
+    · exact hf'_mono.const_mul zero_le
 
 lemma IsProper.setLIntegral_eq_indicator_mul_lintegral (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)
     (hf : Measurable[𝓧] f) (hB : MeasurableSet[𝓑] B) (x₀ : X) :
@@ -128,15 +128,15 @@ lemma IsProper.lintegral_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) (hf
   · rintro c A hA
     simp_rw [← smul_indicator_one_apply, smul_mul_assoc, smul_eq_mul]
     rw [lintegral_const_mul, hπ.lintegral_indicator_mul h𝓑𝓧 hf hA]
-    · measurability
+    measurability
   · rintro g₁ g₂ - _ hg₂_meas hg₁ hg₂
     simp only [Pi.add_apply, add_mul]
     rw [lintegral_add_right, hg₁, hg₂]
-    · exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf
+    exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf
   · rintro g' hg'_meas hg'_mono hg'
     simp_rw [ENNReal.iSup_mul]
-    rw [lintegral_iSup (fun n ↦ ((hg'_meas _).mono h𝓑𝓧 le_rfl).mul hf)
-      (hg'_mono.mul_const (zero_le _))]
+    rw [lintegral_iSup (fun n ↦ ((hg'_meas _).mono h𝓑𝓧 le_rfl).fun_mul hf)
+      (hg'_mono.mul_const zero_le)]
     simp_rw [hg']
 
 end ProbabilityTheory.Kernel

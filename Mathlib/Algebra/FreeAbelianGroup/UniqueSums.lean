@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Group.UniqueProds.Basic
 # Free abelian groups have unique sums
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Cardinal StarModule
 

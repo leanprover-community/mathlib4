@@ -5,9 +5,9 @@ Authors: Jon Bannon, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
@@ -200,8 +200,7 @@ lemma _root_.cfcₙ_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_ta
     cfcₙ (f ‖·‖) a = cfcₙ f (abs a) := by
   obtain (hf0 | hf0) := em (f 0 = 0)
   · rw [cfcₙ_comp' f (‖·‖) a, ← abs_eq_cfcₙ_coe_norm _ a]
-  · rw [cfcₙ_apply_of_not_map_zero _ hf0,
-      cfcₙ_apply_of_not_map_zero _ (fun h ↦ (hf0 <| by simpa using h).elim)]
+  · grind [norm_zero]
 
 lemma quasispectrum_abs (a : A) (ha : p a := by cfc_tac) :
     quasispectrum 𝕜 (abs a) = (fun z ↦ (‖z‖ : 𝕜)) '' quasispectrum 𝕜 a := by
@@ -243,7 +242,7 @@ lemma abs_natCast (n : ℕ) : abs (n : A) = n := by
 
 @[simp]
 lemma abs_ofNat (n : ℕ) [n.AtLeastTwo] : abs (ofNat(n) : A) = ofNat(n) := by
-  simpa using abs_natCast n
+  simpa using! abs_natCast n
 
 @[simp]
 lemma abs_intCast (n : ℤ) : abs (n : A) = |n| := by
@@ -310,7 +309,7 @@ open CFC
 
 @[simp, grind =]
 lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
-  rw [CFC.abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
+  rw [CFC.abs, sqrt_eq_zero_iff _, star_mul_self_eq_zero]
 
 @[simp, grind =]
 lemma norm_abs {a : A} : ‖abs a‖ = ‖a‖ := by

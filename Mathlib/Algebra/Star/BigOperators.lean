@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-! # Big-operators lemmas about `star` algebraic operations
 
@@ -26,6 +27,7 @@ theorem star_prod [CommMonoid R] [StarMul R] {α : Type*} (s : Finset α) (f : �
 theorem star_sum [AddCommMonoid R] [StarAddMonoid R] {α : Type*} (s : Finset α) (f : α → R) :
     star (∑ x ∈ s, f x) = ∑ x ∈ s, star (f x) := map_sum (starAddEquiv : R ≃+ R) _ _
 
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
 theorem isSelfAdjoint_sum {ι : Type*} [AddCommMonoid R] [StarAddMonoid R] (s : Finset ι)
     {x : ι → R} (h : ∀ i ∈ s, IsSelfAdjoint (x i)) : IsSelfAdjoint (∑ i ∈ s, x i) := by
   simpa [IsSelfAdjoint, star_sum] using Finset.sum_congr rfl fun _ hi => h _ hi

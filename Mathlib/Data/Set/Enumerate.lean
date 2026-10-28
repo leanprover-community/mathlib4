@@ -6,11 +6,14 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Tactic.Common
 public import Mathlib.Data.Set.Insert
+public import Mathlib.Tactic.Attr.Core
+
+import Mathlib.Tactic.Common
 
 /-!
 # Set enumeration
+
 This file allows enumeration of sets given a choice function.
 The definition does not assume `sel` actually is a choice function, i.e. `sel s ∈ s` and
 `sel s = none ↔ s = ∅`. These assumptions are added to the lemmas needing them.
@@ -21,8 +24,6 @@ The definition does not assume `sel` actually is a choice function, i.e. `sel s 
 assert_not_exists RelIso
 
 noncomputable section
-
-open Function
 
 namespace Set
 

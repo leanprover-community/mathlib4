@@ -6,14 +6,15 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
-public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.HopkinsLevitzki
+
+import Mathlib.RingTheory.Filtration
 
 /-!
 # Hausdorff-ness for Noetherian rings
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing Module
 

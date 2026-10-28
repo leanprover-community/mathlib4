@@ -5,9 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.Condensed.Light.Epi
+
+import Mathlib.Algebra.Category.ModuleCat.AB
 
 /-!
 # Grothendieck's AB axioms for light condensed modules
@@ -16,11 +17,11 @@ The category of light condensed `R`-modules over a ring satisfies the countable 
 Grothendieck's AB4\* axiom
 -/
 
-@[expose] public section
+public section
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace LightCondensed
 

@@ -5,8 +5,8 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.SimpleFunc
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import Mathlib.MeasureTheory.Function.SimpleFunc
 
 /-!
 # Density of simple functions
@@ -131,7 +131,7 @@ theorem approxOn_zero {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : �
 
 theorem approxOn_mem {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (n : ℕ) (x : β) : approxOn f hf s y₀ h₀ n x ∈ s := by
-  haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
+  have : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   suffices ∀ n, (Nat.casesOn n y₀ ((↑) ∘ denseSeq s) : α) ∈ s by apply this
   rintro (_ | n)
   exacts [h₀, Subtype.mem _]
@@ -154,7 +154,7 @@ theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Me
 theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] {x : β} (hx : f x ∈ closure s) :
     Tendsto (fun n => approxOn f hf s y₀ h₀ n x) atTop (𝓝 <| f x) := by
-  haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
+  have : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   rw [← @Subtype.range_coe _ s, ← image_univ, ← (denseRange_denseSeq s).closure_eq] at hx
   simp -iota only [approxOn, coe_comp]
   refine tendsto_nearestPt (closure_minimal ?_ isClosed_closure hx)
@@ -171,7 +171,7 @@ theorem edist_approxOn_mono {f : β → α} (hf : Measurable f) {s : Set α} {y�
 
 theorem edist_approxOn_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) : edist (approxOn f hf s y₀ h₀ n x) (f x) ≤ edist y₀ (f x) :=
-  edist_approxOn_mono hf h₀ x (zero_le n)
+  edist_approxOn_mono hf h₀ x zero_le
 
 theorem edist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] (x : β) (n : ℕ) :
@@ -244,7 +244,7 @@ lemma HasCompactSupport.measurable_of_prod
     [TopologicalSpace α] [PseudoMetrizableSpace α] [MeasurableSpace α] [BorelSpace α]
     {f : X × Y → α} (hf : Continuous f) (h'f : HasCompactSupport f) :
     Measurable f := by
-  letI : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
+  let : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
   obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
   have : ∀ n, ∃ (g : SimpleFunc (X × Y) α), ∀ x, dist (f x) (g x) < u n :=

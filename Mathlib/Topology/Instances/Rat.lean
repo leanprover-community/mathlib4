@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Data.NNRat.Order
 public import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Instances.Nat
+
+import Mathlib.Algebra.Order.Ring.NNRat
 
 /-!
 # Topology on the rational numbers
@@ -18,7 +19,7 @@ public import Mathlib.Topology.Instances.Nat
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Set Topology
 

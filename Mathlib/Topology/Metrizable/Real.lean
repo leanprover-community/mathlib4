@@ -6,9 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Topology.MetricSpace.Basic
-public import Mathlib.Topology.Metrizable.Basic
-public import Mathlib.Topology.Order.MonotoneContinuity
 public import Mathlib.Topology.Order.Real
+
+import Mathlib.Topology.Order.MonotoneContinuity
 
 /-!
 # `ENNReal` is metrizable
@@ -19,7 +19,7 @@ This file currently only contains results on `ENNReal` but is named `Real.lean`
 to make it clear we can accept more `(E)(NN)Real` results.
 -/
 
-@[expose] public section
+public section
 
 namespace ENNReal
 

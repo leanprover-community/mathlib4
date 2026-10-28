@@ -6,9 +6,9 @@ Authors: Yury Kudryashov, Malo Jaffré
 module
 
 public import Mathlib.Analysis.Convex.Function
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.Linarith
+
+import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Linarith
 
 /-!
 # Slopes of convex functions
@@ -279,8 +279,6 @@ theorem ConvexOn.strictMonoOn (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x ∈ 
       exact ⟨hxy.le, hu.2⟩
     · rw [openSegment_eq_Ioo (hu2.trans huv)]
       exact ⟨hu2, huv⟩
-
-@[deprecated (since := "2025-11-11")] alias ConvexOn.strict_mono_of_lt := ConvexOn.strictMonoOn
 
 /-- If `f` is convex on a set `s` in a linearly ordered field, and `f y < f x` for two points
 `x < y` in `s`, then `f` is strictly antitone on `s ∩ (∞, x]`. -/

@@ -260,9 +260,6 @@ lemma isHomogeneous_toTupleMvPolynomial (p : R[X]) (i : Fin 2) :
   · simp [toTupleMvPolynomial]
   · simpa [toTupleMvPolynomial] using MvPolynomial.isHomogeneous_X_pow 1 p.natDegree
 
-@[deprecated (since := "2026-04-06")]
-alias isHomogenous_toTupleMvPolynomial := isHomogeneous_toTupleMvPolynomial
-
 lemma eval_X_toTupleMvPolynomial_zero_eq (p : R[X]) :
     MvPolynomial.aeval ![X, 1] (p.toTupleMvPolynomial 0) =
       p * MvPolynomial.aeval ![X, 1] (p.toTupleMvPolynomial 1) := by
@@ -282,7 +279,8 @@ lemma sum_eq_natDegree_of_mem_support_homogenize (p : R[X]) {s : Fin 2 →₀ �
 /-- Summing a function over the coefficients of the homogenization of a polynomial `p`
 (of degree `p.natDegree`) gives the same result as summing over the coefficients of `p`. -/
 lemma finsuppSum_homogenize_eq {M : Type*} [AddCommMonoid M] (p : R[X]) {f : R → M} :
-    (Finsupp.sum (p.homogenize p.natDegree) fun _ c ↦ f c) = p.sum fun _ c ↦ f c := by
+    (AddMonoidAlgebra.coeff <| p.homogenize p.natDegree).sum (fun _ c ↦ f c) =
+      p.sum fun _ c ↦ f c := by
   rw [MvPolynomial.sum_def, sum_def p]
   -- We set up a bijection between the sets indexing the terms on both sides
   -- and show that it maps the terms in the one sum to those in the other.

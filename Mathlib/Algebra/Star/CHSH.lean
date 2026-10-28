@@ -5,10 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Data.Real.Sqrt
-public import Mathlib.Data.Real.Star
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Basic.Real.Star
+
+import Mathlib.Algebra.CharP.Invertible
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.
@@ -74,7 +75,7 @@ There is a CHSH tuple in 4-by-4 matrices such that
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u

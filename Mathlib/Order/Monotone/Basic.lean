@@ -5,13 +5,13 @@ Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.Compare
 public import Mathlib.Order.Max
 public import Mathlib.Order.Monotone.Defs
 public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.Contrapose
 
@@ -57,7 +57,7 @@ open Function OrderDual
 
 universe u v
 
-variable {ι : Type*} {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v}
 
 /-! ### Monotonicity on the dual order
 
@@ -88,6 +88,14 @@ theorem monotone_toDual_comp_iff : Monotone (toDual ∘ f) ↔ Antitone f :=
 
 @[simp]
 theorem antitone_toDual_comp_iff : Antitone (toDual ∘ f) ↔ Monotone f :=
+  Iff.rfl
+
+omit [Preorder β] in
+/-- Stability of `σ` for `f` is unchanged by reversing the order on the codomain of `f`, since it
+only uses equality there. -/
+@[simp]
+theorem isStable_toDual_comp_iff (σ : α → α) :
+    IsStable (toDual ∘ f) σ ↔ IsStable f σ :=
   Iff.rfl
 
 @[simp]
@@ -144,9 +152,11 @@ theorem monotone_dual_iff : Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → β�
 theorem antitone_dual_iff : Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ Antitone f := by
   rw [antitone_toDual_comp_iff, monotone_comp_ofDual_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem monotoneOn_dual_iff : MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ MonotoneOn f s := by
   rw [monotoneOn_toDual_comp_iff, antitoneOn_comp_ofDual_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem antitoneOn_dual_iff : AntitoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ AntitoneOn f s := by
   rw [antitoneOn_toDual_comp_iff, monotoneOn_comp_ofDual_iff]
 
@@ -156,10 +166,12 @@ theorem strictMono_dual_iff : StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ →
 theorem strictAnti_dual_iff : StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictAnti f := by
   rw [strictAnti_toDual_comp_iff, strictMono_comp_ofDual_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem strictMonoOn_dual_iff :
     StrictMonoOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictMonoOn f s := by
   rw [strictMonoOn_toDual_comp_iff, strictAntiOn_comp_ofDual_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem strictAntiOn_dual_iff :
     StrictAntiOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictAntiOn f s := by
   rw [strictAntiOn_toDual_comp_iff, strictMonoOn_comp_ofDual_iff]
@@ -730,7 +742,9 @@ lemma Nat.stabilises_of_antitone {f : ℕ → ℕ} (hfmono : Antitone f)
       exact ⟨0, Nat.zero_le _, fun m _ => by induction m with grind⟩
     · have hlt : f 1 < f 0 := (hfmono (Nat.le_succ 0)).lt_of_ne' heq
       let g (i : ℕ) := f (i + 1)
-      have hg_anti : Antitone g := by grind [Antitone]
+      #adaptation_note /-- Before nightly-2026-09-29, the proof of
+      `Antitone g` was `by grind [Antitone]`; now it fails to find a witness. -/
+      have hg_anti : Antitone g := fun _ _ hab => hfmono (by lia)
       obtain ⟨p, hp, hp'⟩ := ih (f 1) (by grind) hg_anti (by grind) rfl
       refine ⟨p + 1, by omega, fun m hm => ?_⟩
       specialize hp' (m - 1) (by lia)

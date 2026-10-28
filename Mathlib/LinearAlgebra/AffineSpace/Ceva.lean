@@ -18,7 +18,7 @@ This file proves various versions of Ceva's theorem.
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Affine
@@ -39,15 +39,14 @@ private lemma exists_affineCombination_eq_smul_eq_aux {p : ι → P} (hp : Affin
         Set.indicator ((fs' : Set ι) \ {(i : ι)}) w' j := by
   classical
   have hp'' : ∀ i : s, ∃ r : k, (fs i).affineCombination k p
-      (AffineMap.lineMap (Finset.affineCombinationSingleWeights k (i : ι)) (w i) r) = p' := by
+      (AffineMap.lineMap (Pi.single (i : ι) 1) (w i) r) = p' := by
     intro i
     simp_rw [mem_affineSpan_pair_iff_exists_lineMap_eq] at hp'
     obtain ⟨r, rfl⟩ := hp' i
     exact ⟨r, by simp [hfs]⟩
   obtain ⟨i', hi'⟩ := hs
   obtain ⟨ri', hri'⟩ := hp'' ⟨i', hi'⟩
-  let w' : ι → k :=
-    AffineMap.lineMap (Finset.affineCombinationSingleWeights k i') (w ⟨i', hi'⟩) ri'
+  let w' : ι → k := AffineMap.lineMap (Pi.single i' 1) (w ⟨i', hi'⟩) ri'
   refine ⟨w', fs ⟨i', hi'⟩, ?_, ?_, ?_⟩
   · simp [w', AffineMap.lineMap_apply_module, Finset.sum_add_distrib, ← Finset.mul_sum, hw, hfs]
   · simp [w', hri']
@@ -60,7 +59,7 @@ private lemma exists_affineCombination_eq_smul_eq_aux {p : ι → P} (hp : Affin
     · intro j
       by_cases hj : j = i
       · simp [hj]
-      replace hind := congr_fun hind j
+      replace hind := congr($hind j)
       convert hind using 1
       · simp [Set.indicator_apply, hj]
       · simp [Set.indicator_apply, hj, w', AffineMap.lineMap_apply_module]
@@ -95,8 +94,8 @@ lemma exists_affineCombination_eq_smul_eq {p : ι → P} (hp : AffineIndependent
   obtain ⟨r, hr⟩ := h.2.2 i
   refine ⟨r, fun j ↦ ?_⟩
   convert hr j using 2
-  simp only [Set.indicator_apply, Set.mem_diff, SetLike.mem_coe, Set.mem_singleton_iff,
-    Finset.coe_insert, Set.insert_diff_of_mem, fsx, wx]
+  simp only [Set.indicator_apply, Set.mem_sdiff, SetLike.mem_coe, Set.mem_singleton_iff,
+    Finset.coe_insert, Set.insert_sdiff_of_mem, fsx, wx]
   grind
 
 /-- A version of **Ceva's theorem** for a finite indexed affinely independent family of points:

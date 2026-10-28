@@ -32,7 +32,7 @@ with an additional assumption that `s` is bounded below.
 
 open Set
 
-variable {α β γ : Type*} {ι : Sort*}
+variable {α : Type*}
 
 /-- A conditionally complete lattice is a lattice in which
 every nonempty subset which is bounded above has a supremum, and
@@ -81,6 +81,8 @@ class ConditionallyCompleteLinearOrder (α : Type*)
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
     compareOfLessAndEq_rfl
 
+attribute [to_dual existing] ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove
+
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily
 bounded below) has an infimum.  A typical example is the natural numbers.
@@ -110,7 +112,7 @@ instance : ConditionallyCompleteLattice my_T where
   __ := conditionallyCompleteLatticeOfsSup my_T ...
 ```
 -/
-@[to_dual (attr := implicit_reducible) (reorder := 4 5)
+@[to_dual (attr := instance_reducible) (reorder := 4 5)
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sInf` function
 that returns the greatest lower bound of a nonempty set which is bounded below. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they
@@ -144,7 +146,7 @@ def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 :
 /-- A version of `conditionallyCompleteLatticeOfsSup` when we already know that `α` is a lattice.
 
 This should only be used when it is both hard and unnecessary to provide `sInf` explicitly. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- A version of `conditionallyCompleteLatticeOfsInf` when we already know that `α` is a lattice.
 
 This should only be used when it is both hard and unnecessary to provide `sSup` explicitly. -/]
@@ -160,15 +162,15 @@ def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [
 open scoped Classical in
 /-- A well-founded linear order is conditionally complete, with a bottom element. -/
 noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
-    [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
+    [i₁ : LinearOrder α] [i₂ : OrderBot α] [WellFoundedLT α] :
     ConditionallyCompleteLinearOrderBot α where
   __ := i₁
   __ := i₂
   __ := LinearOrder.toLattice
   __ :=
     letI : OrderInfSet α := .choose ⊥
-    conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦ isGLB_sInf_of_isGLB
-      (IsLeast.isGLB ⟨h.wf.min_mem s hn, fun _ hx ↦ h.wf.min_le hx⟩)
+    conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦
+      (IsLeast.isGLB ⟨WellFounded.min_mem ‹_› s hn, fun _ hx ↦ WellFoundedLT.min_le hx⟩).isGLB_sInf
   csSup_of_not_bddAbove _ H :=
-    (dif_neg (fun ⟨_, hx⟩ ↦ H (isGLB_upperBounds.mp hx).bddAbove)).trans sSup_empty.symm
+    (dite_eq_right (fun ⟨_, hx⟩ ↦ H (isGLB_upperBounds.mp hx).bddAbove)).trans sSup_empty.symm
   csInf_of_not_bddBelow s H := (H (OrderBot.bddBelow s)).elim

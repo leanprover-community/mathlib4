@@ -5,7 +5,6 @@ Authors: Jujian Zhang, Kim Morrison, Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!
@@ -76,7 +75,6 @@ noncomputable def InjectiveResolution.isoRightDerivedToHomotopyCategoryObj {X : 
   (F.mapHomotopyCategory _).mapIso I.iso ≪≫
     (F.mapHomotopyCategoryFactors _).app I.cocomplex
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -119,6 +117,7 @@ noncomputable def InjectiveResolution.isoRightDerivedObj {X : C} (I : InjectiveR
     (HomotopyCategory.homologyFunctorFactors D (ComplexShape.up ℕ) n).app _
 
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedObj_hom_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -134,7 +133,6 @@ lemma InjectiveResolution.isoRightDerivedObj_hom_naturality
   erw [(HomotopyCategory.homologyFunctorFactors D (ComplexShape.up ℕ) n).hom.naturality]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma InjectiveResolution.isoRightDerivedObj_inv_naturality
     {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
@@ -263,7 +261,6 @@ noncomputable def toRightDerivedZero' {X : C}
     rw [← F.map_comp, HomologicalComplex.Hom.comm, HomologicalComplex.single_obj_d,
       zero_comp, F.map_zero])
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toRightDerivedZero'_comp_iCycles {C} [Category* C] [Abelian C] {X : C}
     (P : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
@@ -280,12 +277,13 @@ lemma toRightDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f 
     F.map f ≫ Q.toRightDerivedZero' F =
       P.toRightDerivedZero' F ≫
         HomologicalComplex.cyclesMap ((F.mapHomologicalComplex _).map φ) 0 := by
-  simp only [← cancel_mono (HomologicalComplex.iCycles _ _),
-    Functor.mapHomologicalComplex_obj_X, assoc, toRightDerivedZero'_comp_iCycles,
+  simp only [← cancel_mono (HomologicalComplex.iCycles _ _), assoc,
+    toRightDerivedZero'_comp_iCycles,
     CochainComplex.single₀_obj_zero, HomologicalComplex.cyclesMap_i,
     Functor.mapHomologicalComplex_map_f, toRightDerivedZero'_comp_iCycles_assoc,
     ← F.map_comp, comm]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     IsIso ((InjectiveResolution.self X).toRightDerivedZero' F) := by
@@ -299,6 +297,7 @@ instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
 
 end InjectiveResolution
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `F ⟶ F.rightDerived 0`. -/
 noncomputable def Functor.toRightDerivedZero (F : C ⥤ D) [F.Additive] :
@@ -315,6 +314,7 @@ noncomputable def Functor.toRightDerivedZero (F : C ⥤ D) [F.Additive] :
     erw [← NatTrans.naturality]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma InjectiveResolution.toRightDerivedZero_eq
     {X : C} (I : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
@@ -335,6 +335,7 @@ lemma InjectiveResolution.toRightDerivedZero_eq
   erw [← NatTrans.naturality]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     IsIso (F.toRightDerivedZero.app X) := by
   rw [(InjectiveResolution.self X).toRightDerivedZero_eq F]
