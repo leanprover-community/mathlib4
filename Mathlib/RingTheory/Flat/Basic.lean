@@ -274,7 +274,7 @@ lemma _root_.LinearMap.baseChangeHom_injective [FaithfulSMul R S] [Flat R N] :
     f.baseChange S = g.baseChange S ↔ f = g := (baseChangeHom_injective ..).eq_iff
 
 @[simp] lemma _root_.LinearMap.isIdempotentElem_baseChange_iff [FaithfulSMul R S] [Flat R M]
-    {f : End R M} : IsIdempotentElem (f.baseChange S) ↔ IsIdempotentElem f := by
+    {f : M →ₗ[R] M} : IsIdempotentElem (f.baseChange S) ↔ IsIdempotentElem f := by
   simp [IsIdempotentElem, ← baseChange_mul]
 
 end Algebra
