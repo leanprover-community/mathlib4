@@ -433,7 +433,7 @@ lemma antilipschitz_of_forall_le_inner_map {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace 𝕜 H] (f : H →L[𝕜] H) {c : ℝ≥0} (hc : 0 < c)
     (h : ∀ x, ‖x‖ ^ 2 * c ≤ ‖⟪f x, x⟫_𝕜‖) : AntilipschitzWith c⁻¹ f := by
   refine f.antilipschitz_of_bound (K := c⁻¹) fun x ↦ ?_
-  rw [NNReal.coe_inv, inv_mul_eq_div, le_div_iff₀ (by exact_mod_cast hc)]
+  rw [NNReal.coe_inv, inv_mul_eq_div, le_div_iff₀ (mod_cast hc)]
   simp_rw [sq, mul_assoc] at h
   by_cases hx0 : x = 0
   · simp [hx0]
