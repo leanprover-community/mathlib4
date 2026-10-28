@@ -58,7 +58,7 @@ theorem mk_le_of_aleph0_le (c : Cardinal.{max u v}) (hc : ℵ₀ ≤ c)
 cardinalities of the components is at most the cardinality of the direct limit. -/
 theorem iSup_lift_mk_le_mk
     (h : ∀ i, Injective fun x ↦ (⟦⟨i, x⟩⟧ : DirectLimit F (f · · ·))) :
-    (⨆ i, Cardinal.lift.{u} #(F i)) ≤ #(DirectLimit F (f · · ·)) := by
+    ⨆ i, Cardinal.lift.{u} #(F i) ≤ #(DirectLimit F (f · · ·)) := by
   refine ciSup_le' fun i ↦ ?_
   have := lift_mk_le_lift_mk_of_injective (h i)
   simp [DirectLimit]
