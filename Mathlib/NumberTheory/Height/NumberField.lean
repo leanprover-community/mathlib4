@@ -301,7 +301,7 @@ open Finset
 
 /-- If `x : K` (for a number field `K`), then we can find a nonzero `n : ℕ` such that
 `n ≤ mulHeight₁ x` and `n * x` is integral. I.e., the denominator of `x` can be bounded by
-its multplicative height. -/
+its multiplicative height. -/
 lemma exists_nat_le_mulHeight₁ (x : K) :
     ∃ n : ℕ, n ≠ 0 ∧ n ≤ mulHeight₁ x ∧ IsIntegral ℤ (n * x) := by
   obtain ⟨n, hn, a, ha₁, ha₂⟩ := exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow x
@@ -532,7 +532,7 @@ its numerator and its denominator. -/
 lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den := by
   rw [mulHeight₁_eq_mulHeight, mulHeight_self_one_eq_mulHeight_num_den, ← intCast_natCast q.den]
   have : (.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
-    simpa [Finset.univ_fin2, Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
+    simpa [Finset.univ_fin2, Int.normalize_natCast, ← Int.coe_gcd q.num q.den] using
       Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
   convert mulHeight_eq_max_abs_of_gcd_eq_one this
   · ext i; fin_cases i <;> simp

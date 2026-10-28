@@ -82,7 +82,6 @@ lemma ι_map_πQ : ι.map (πQ f₂ β) = f₂ ≫ β :=
 
 variable {f₂ f₃} [Preadditive A] [ι.Faithful]
 
-set_option backward.defeqAttrib.useBackward true in
 include hT in
 @[reassoc]
 lemma ιK_mor₁ : ιK f₃ α ≫ f₁ = 0 :=
@@ -91,7 +90,6 @@ lemma ιK_mor₁ : ιK f₃ α ≫ f₁ = 0 :=
     dsimp at this
     simp [this])
 
-set_option backward.defeqAttrib.useBackward true in
 include hT in
 @[reassoc]
 lemma mor₁_πQ : f₁ ≫ πQ f₂ β = 0 :=
@@ -263,7 +261,6 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
 
 variable (hA : admissibleMorphism ι = ⊤)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hι hA in
 omit [HasFiniteProducts A] in

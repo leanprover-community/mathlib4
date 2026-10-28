@@ -238,7 +238,7 @@ theorem _root_.Set.Infinite.meas_eq_top [MeasurableSingletonClass α]
   let ⟨ε, hne, hε⟩ := h'; have := hs.to_subtype
   calc
     ∞ = ∑' _ : s, ε := (ENNReal.tsum_const_eq_top_of_ne_zero hne).symm
-    _ ≤ ∑' x : s, μ {x.1} := ENNReal.tsum_le_tsum fun x ↦ hε x x.2
+    _ ≤ ∑' x : s, μ {x.1} := tsum_le_tsum fun x ↦ hε x x.2
     _ ≤ μ (⋃ x : s, {x.1}) := tsum_meas_le_meas_iUnion_of_disjoint _
       (fun _ ↦ MeasurableSet.singleton _) fun x y hne ↦ by simpa [Subtype.val_inj]
     _ = μ s := by simp
@@ -361,7 +361,6 @@ lemma exists_ae_subset_biUnion_countable [SFinite μ]
   apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
   exact LE.le.eventuallySubset (fun x hx ↦ by simp at hx ⊢; grind)
 
-set_option backward.defeqAttrib.useBackward false in
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
 each `mₙ`, then its measurable superset `toMeasurable μ t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (t ∩ s)`. -/
@@ -381,7 +380,7 @@ theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t
     refine le_antisymm ?_ (by gcongr)
     rw [hμ, sum_apply _ (M.inter hu)]
     apply le_trans _ (le_sum_apply _ _)
-    apply ENNReal.tsum_le_tsum (fun i ↦ ?_)
+    apply tsum_le_tsum (fun i ↦ ?_)
     calc
     m i ((⋂ n, w n) ∩ u) ≤ m i (w i ∩ u) := by gcongr; apply iInter_subset
     _ = m i (t ∩ u) := measure_toMeasurable_inter hu (hv i)
