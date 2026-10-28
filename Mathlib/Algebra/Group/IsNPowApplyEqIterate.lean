@@ -37,5 +37,6 @@ instance [Monoid F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] : IsNPowApplyEqIte
     | zero => simp
     | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
 
-lemma coe_pow_eq_iterate [NPow F] [IsNPowApplyEqIterate F] (f : F) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+lemma FunLike.coe_pow_eq_iterate [NPow F] [IsNPowApplyEqIterate F] (f : F) (n : ℕ) :
+    ⇑(f ^ n) = f^[n] :=
   funext <| pow_apply_eq_iterate f n
