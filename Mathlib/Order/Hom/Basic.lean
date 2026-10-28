@@ -1085,19 +1085,24 @@ theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e 
 end LE
 
 section Unique
-variable (α β : Type*) [LE α] [Preorder β] [Unique β]
+variable {α β : Type*} [LE α] [Preorder β] [Unique β]
 
+variable (α β) in
 /-- `Equiv.prodUnique` promoted to an order isomorphism. -/
 @[simps! (attr := grind =) toEquiv apply symm_apply]
 def prodUnique : α × β ≃o α where
   toEquiv := .prodUnique α β
   map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
 
+variable (α β) in
 /-- `Equiv.uniqueProd` promoted to an order isomorphism. -/
 @[simps! (attr := grind =) toEquiv apply symm_apply]
 def uniqueProd : β × α ≃o α where
   toEquiv := .uniqueProd α β
   map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+
+@[simp] lemma coe_prodUnique : ⇑(prodUnique α β) = Prod.fst := rfl
+@[simp] lemma coe_uniqueProd : ⇑(uniqueProd α β) = Prod.snd := rfl
 
 @[simp] lemma prodComm_trans_prodUnique : prodComm.trans (prodUnique α β) = uniqueProd α β := rfl
 @[simp] lemma prodComm_trans_uniqueProd : prodComm.trans (uniqueProd α β) = prodUnique α β := rfl
