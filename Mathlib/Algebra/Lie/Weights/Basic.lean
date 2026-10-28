@@ -364,7 +364,7 @@ lemma genWeightSpace_zero_normalizer_eq_self :
   intro y
   obtain ⟨k, hk⟩ := hm y y
   use k + 1
-  simpa only [pow_succ, Module.End.mul_eq_comp, LinearMap.coe_comp, comp_apply, toEnd_apply_apply]
+  simpa [pow_succ, Module.End.mul_eq_comp]
 
 lemma iSup_ucs_le_genWeightSpace_zero :
     ⨆ k, (⊥ : LieSubmodule R L M).ucs k ≤ genWeightSpace M (0 : L → R) := by
@@ -475,8 +475,7 @@ lemma posFittingComp_le_iInf_lowerCentralSeries :
     apply LinearMap.mem_range_self
   suffices (toEnd R L (M ⧸ F) x ^ k) (LieSubmodule.Quotient.mk (N := F) m) =
     LieSubmodule.Quotient.mk (N := F) ((toEnd R L M x ^ k) m)
-      by simpa only [Submodule.Quotient.quot_mk_eq_mk, this, LinearMap.zero_apply,
-        LieSubmodule.Quotient.mk_eq_zero']
+      by simpa [Submodule.Quotient.quot_mk_eq_mk, this]
   have := congr($(Module.End.commute_pow_left_of_commute
     (LieSubmodule.Quotient.toEnd_comp_mk' F x) k) m)
   simpa using this
@@ -514,8 +513,7 @@ lemma map_genWeightSpace_le :
     ext; simp
   obtain ⟨k, h⟩ := (mem_genWeightSpace _ _ _).mp hm x
   refine ⟨k, ?_⟩
-  simpa [h, -FunLike.coe_pow_eq_iterate] using
-    congr($(Module.End.commute_pow_left_of_commute this k) m)
+  simpa [h] using congr($(Module.End.commute_pow_left_of_commute this k) m)
 
 variable {f}
 
@@ -531,8 +529,7 @@ lemma comap_genWeightSpace_eq_of_injective (hf : Injective f) :
     use k
     suffices f (((toEnd R L M x - χ x • ↑1) ^ k) m) = 0 by
       rw [← map_zero f] at this; exact hf this
-    simpa [hk, -FunLike.coe_pow_eq_iterate] using
-      congr($(Module.End.commute_pow_left_of_commute h k) m).symm
+    simpa [hk] using congr($(Module.End.commute_pow_left_of_commute h k) m).symm
   · rw [← LieSubmodule.map_le_iff_le_comap]
     exact map_genWeightSpace_le f
 

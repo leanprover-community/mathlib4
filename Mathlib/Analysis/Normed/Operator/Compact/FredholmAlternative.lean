@@ -145,7 +145,7 @@ private theorem exists_seq {S : End 𝕜 X} (hS_not_surj : ¬ (S : X → X).Surj
       simpa using! (hV_closed (n + 1)).preimage_val
     have h₂ : ∃ x : V n, x ∉ (V (n + 1)).comap (V n).subtype := by
       simpa [iterate_succ, V, (iterate_injective hS_anti.injective n).eq_iff,
-        Function.Surjective, -FunLike.coe_pow_eq_iterate, -pow_apply_eq_iterate] using! hS_not_surj
+        Function.Surjective] using! hS_not_surj
     obtain ⟨⟨x, hx⟩, hxn, hxy⟩ := riesz_lemma_of_norm_lt hc hR h₁ h₂
     simp only [Submodule.mem_comap, Submodule.subtype_apply, Subtype.forall] at hxn hxy
     exact ⟨x, hx, by simpa using! hxy 0, hxn,

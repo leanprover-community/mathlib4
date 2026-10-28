@@ -194,9 +194,8 @@ lemma exists_nat [IsNoetherian R M] [IsTorsionFree R M] [IsDomain R] [CharZero R
   exact hs ((toEnd R L M h).eigenvectors_linearIndependent
     {μ - 2 * n | n : ℕ}
     (fun ⟨s, hs⟩ ↦ ψ Classical.choose hs)
-    (fun ⟨r, hr⟩ ↦ by simp only [End.hasEigenvector_iff, End.mem_genEigenspace_one,
-      toEnd_apply_apply, lie_h_pow_toEnd_f P, Classical.choose_spec hr, ne_eq, contra,
-      not_false_eq_true, and_self])).finite
+    (fun ⟨r, hr⟩ ↦ by simp [lie_h_pow_toEnd_f P, Classical.choose_spec hr, contra,
+      Module.End.hasEigenvector_iff])).finite
 
 lemma pow_toEnd_f_ne_zero_of_eq_nat [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {n : ℕ} (hn : μ = n) {i} (hi : i ≤ n) : (ψ i) ≠ 0 := by
@@ -206,9 +205,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat [CharZero R] [IsDomain R] [IsTorsionFree R M
   · next i IH =>
     have : ((i + 1) * (n - i) : ℤ) • (toEnd R L M f ^ i) m = 0 := by
       have := congr(⁅e, $H⁆)
-      simpa only [← Int.cast_smul_eq_zsmul R, Int.cast_mul, Int.cast_add, Int.cast_natCast,
-        Int.cast_one, Int.cast_sub, smul_eq_zero, mul_eq_zero, P.lie_e_pow_succ_toEnd_f, hn,
-        lie_zero] using this
+      simpa [← Int.cast_smul_eq_zsmul R, P.lie_e_pow_succ_toEnd_f, hn] using this
     rw [← Int.cast_smul_eq_zsmul R, smul_eq_zero, Int.cast_eq_zero, mul_eq_zero, sub_eq_zero,
       Nat.cast_inj, ← @Nat.cast_one ℤ, ← Nat.cast_add, Nat.cast_eq_zero] at this
     simp only [add_eq_zero, one_ne_zero, and_false, false_or] at this
