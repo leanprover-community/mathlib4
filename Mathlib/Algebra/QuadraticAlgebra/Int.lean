@@ -26,7 +26,7 @@ For `a b : ℤ`, `QuadraticAlgebra ℤ a b` is an order in `QuadraticAlgebra ℚ
   `discr a b` is not a square.
 * `QuadraticAlgebra.Int.saturated_iff`: for a prime `p`, every integral element `z` such that
   `p • z` lies in `QuadraticAlgebra ℤ a b` lies itself in `QuadraticAlgebra ℤ a b` iff `discr a b`
-  is not `p ^ 2` times an integer `≡ 0, 1 mod 4`.
+  is not `p ^ 2` times an integer congruent to `0` or `1` modulo `4`.
 -/
 
 public section
@@ -52,6 +52,10 @@ theorem re_algebraMap (x : QuadraticAlgebra ℤ a b) :
 @[simp]
 theorem im_algebraMap (x : QuadraticAlgebra ℤ a b) :
     (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x).im = x.im := rfl
+
+@[simp]
+theorem algebraMap_omega : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) ω = ω :=
+  mapRingHom_omega _ a b
 
 @[simp]
 theorem norm_algebraMap_eq (x : QuadraticAlgebra ℤ a b) :
@@ -109,66 +113,68 @@ instance [Fact (¬ IsSquare (discr a b))] : IsDomain (QuadraticAlgebra ℤ a b) 
 
 /-! ### Maximality of the order -/
 
+/-- The image of `QuadraticAlgebra ℤ a b` in `QuadraticAlgebra ℚ a b`. -/
+local notation "𝒪" => Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b))
+
 /-- If `d ∣ 2 * t + b` and `4 * d ^ 2 ∣ (2 * t + b) ^ 2 - discr a b`, then `(t + ω) / d` is integral
 over `ℤ`. -/
-theorem isIntegral_inv_smul_of_dvd {d t : ℤ} (hs : d ∣ 2 * t + b)
-    (hs' : 4 * d ^ 2 ∣ (2 * t + b) ^ 2 - discr a b) :
+theorem isIntegral_inv_smul_of_dvd {d t : ℤ} (ht₁ : d ∣ 2 * t + b)
+    (ht₂ : 4 * d ^ 2 ∣ (2 * t + b) ^ 2 - discr a b) :
     IsIntegral ℤ ((d : ℚ)⁻¹ • (t • 1 + ω : QuadraticAlgebra ℚ a b)) := by
   by_cases hd : (d : ℚ) = 0
   · simpa [hd] using isIntegral_zero
-  obtain ⟨u, hu⟩ := hs
-  obtain ⟨v, hv⟩ := hs'
-  refine isIntegral_iff.mpr ⟨⟨u, ?_⟩, ⟨v, ?_⟩⟩ <;> rw [algebraMap_int_eq, eq_intCast]
+  obtain ⟨u, hu⟩ := ht₁
+  obtain ⟨v, hv⟩ := ht₂
+  refine isIntegral_iff.mpr ⟨⟨u, ?_⟩, ⟨v, ?_⟩⟩
   · rw [map_smul, smul_eq_mul, eq_inv_mul_iff_mul_eq₀ hd, eq_comm, map_add, trace_omega,
-      zsmul_eq_mul, mul_one, trace_intCast]
+      zsmul_eq_mul, mul_one, trace_intCast, algebraMap_int_eq, eq_intCast]
     exact_mod_cast hu
   · rw [norm_smul, smul_eq_mul, inv_pow, eq_inv_mul_iff_mul_eq₀ (pow_ne_zero 2 hd),
       ← mul_right_inj' four_ne_zero, ← Int.cast_smul_eq_zsmul ℚ, four_mul_norm_smul_one_add_omega,
-      discr_intCast, eq_comm, ← mul_assoc]
+      discr_intCast, eq_comm, ← mul_assoc, algebraMap_int_eq, eq_intCast]
     exact_mod_cast hv
 
-/-- If `discr a b = d ^ 2 * e` with `e ≡ 0, 1 mod 4` and `1 < |d|`, then there is an integral
-element `z` of `QuadraticAlgebra ℚ a b` such that `d • z` lies in `QuadraticAlgebra ℤ a b` but `z`
-does not. -/
+/-- An integral element `z` of `QuadraticAlgebra ℚ a b` lies in `QuadraticAlgebra ℤ a b` iff its
+imaginary part is an integer. -/
+theorem mem_range_iff_im_mem_range {z : QuadraticAlgebra ℚ a b} (hz : IsIntegral ℤ z) :
+    z ∈ 𝒪 ↔ z.im ∈ Set.range (algebraMap ℤ ℚ) := by
+  refine ⟨fun ⟨x, hx⟩ ↦ ⟨x.im, by simp [← hx]⟩, fun ⟨v, hv⟩ ↦ ?_⟩
+  obtain ⟨u, hu⟩ := re_mem_range_of_im_mem_range ⟨a, rfl⟩ ⟨b, rfl⟩ hz ⟨v, hv⟩
+  exact ⟨⟨u, v⟩, by ext <;> simp_all⟩
+
+private theorem exists_dvd_and_four_mul_sq_dvd {d e : ℤ} (he : discr a b = d ^ 2 * e)
+    (he' : 4 ∣ e ^ 2 - e) :
+    ∃ t : ℤ, d ∣ 2 * t + b ∧ 4 * d ^ 2 ∣ (2 * t + b) ^ 2 - discr a b := by
+  have h : (d * e - b) % 2 = (d ^ 2 * e - discr a b) % 2 := by
+    simp [discr_def, Int.sub_emod, Int.mul_emod, Int.add_emod]
+  rw [he, Int.sub_self, Int.zero_emod, ← Int.dvd_iff_emod_eq_zero] at h
+  obtain ⟨t, ht⟩ := h
+  rw [Int.sub_eq_iff_eq_add, eq_comm] at ht
+  refine ⟨t, ⟨e, ht⟩, ?_⟩
+  obtain ⟨f, hf⟩ := he'
+  exact ⟨f, by rw [he, ht, mul_pow, ← mul_sub, hf, mul_left_comm, mul_assoc]⟩
+
+/-- If `discr a b = d ^ 2 * e` with `e` congruent to `0` or `1` modulo `4` and `1 < |d|`, then
+there is an integral element `z` of `QuadraticAlgebra ℚ a b` such that `d • z` lies in
+`QuadraticAlgebra ℤ a b` but `z` does not. -/
 theorem exists_unsaturated_of_sq_mul {d e : ℤ} (hd : 1 < d.natAbs) (he : discr a b = d ^ 2 * e)
     (he' : e % 4 = 0 ∨ e % 4 = 1) :
-    ∃ z : QuadraticAlgebra ℚ a b, IsIntegral ℤ z ∧
-      d • z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) ∧
-        z ∉ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) := by
-  have hd₀ : (d : ℚ) ≠ 0 := Int.cast_ne_zero.mpr (by lia)
-  obtain ⟨t, ht⟩ : ∃ t : ℤ, 2 * t + b = d * e := by
-    suffices Even (d * e - b) by obtain ⟨k, hk⟩ := this; exact ⟨k, by lia⟩
-    have : Even (d ^ 2 * e - b ^ 2) := ⟨2 * a, by rw [← he, discr_def]; ring⟩
-    simp [Int.even_sub, parity_simps] at this ⊢
-    tauto
-  refine ⟨(d : ℚ)⁻¹ • (t • 1 + ω), isIntegral_inv_smul_of_dvd (ht ▸ dvd_mul_right d e) ?_, ?_, ?_⟩
-  · rw [ht, he, mul_pow, ← mul_sub, mul_comm, pow_two e, ← mul_sub_one]
-    refine mul_dvd_mul_left _ ?_
-    obtain _ | _ := he'
-    · exact Int.dvd_mul_of_dvd_left <| by lia
-    · exact Int.dvd_mul_of_dvd_right <| by lia
-  · rw [← Int.cast_smul_eq_zsmul ℚ d, smul_smul, mul_inv_cancel₀ hd₀, one_smul]
-    exact ⟨t • 1 + ω, by ext <;> simp⟩
-  · rintro ⟨x, hx⟩
-    have : (x.im : ℚ) * d = 1 := by
-      simpa [hd₀] using congr_arg (fun w : QuadraticAlgebra ℚ a b ↦ w.im * d) hx
-    rw [← Int.cast_mul, Int.cast_eq_one, Int.mul_eq_one_iff_eq_one_or_neg_one] at this
-    grind
-
-/-- If `z` is integral and `d • z` is the image of an element `x` of `QuadraticAlgebra ℤ a b` with
-`d ∣ x.im`, then `z` lies in `QuadraticAlgebra ℤ a b`. -/
-theorem mem_range_of_dvd_im {z : QuadraticAlgebra ℚ a b} {x : QuadraticAlgebra ℤ a b} {d : ℤ}
-    (hz : IsIntegral ℤ z) (hd : d ≠ 0)
-    (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = d • z) (him : d ∣ x.im) :
-    z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) := by
-  obtain ⟨v, hv⟩ := him
-  replace hv : v = z.im := by
-    have : x.im = d * z.im := by simpa using congr_arg im hx
-    rwa [hv, Int.cast_mul, mul_right_inj' (Int.cast_ne_zero.mpr hd)] at this
-  obtain ⟨u, hu⟩ : z.re ∈ Set.range (algebraMap ℤ ℚ) :=
-    re_mem_range_of_im_mem_range ⟨a, rfl⟩ ⟨b, rfl⟩ hz ⟨v, hv⟩
-  refine ⟨u • 1 + v • ω, ?_⟩
-  simpa [QuadraticAlgebra.ext_iff] using ⟨hu, hv⟩
+    ∃ z : QuadraticAlgebra ℚ a b, IsIntegral ℤ z ∧ d • z ∈ 𝒪 ∧ z ∉ 𝒪 := by
+  replace he' : 4 ∣ e ^ 2 - e := by
+    rw [← Int.modEq_iff_dvd, Int.ModEq, Int.sq_emod_four]
+    cases he' <;> lia
+  obtain ⟨t, ht₁, ht₂⟩ := exists_dvd_and_four_mul_sq_dvd he he'
+  have hz := isIntegral_inv_smul_of_dvd ht₁ ht₂
+  have hd' : (d : ℚ) ≠ 0 := Int.cast_ne_zero.mpr (by lia)
+  refine ⟨(d : ℚ)⁻¹ • (t • 1 + ω : QuadraticAlgebra ℚ a b), hz, ⟨t • 1 + ω, ?_⟩, ?_⟩
+  · rw [← Int.cast_smul_eq_zsmul ℚ d, smul_smul, mul_inv_cancel₀ hd', one_smul, map_add,
+      map_zsmul, map_one, algebraMap_omega]
+  · rw [mem_range_iff_im_mem_range hz, im_smul, im_add, im_smul, im_one, smul_zero, zero_add,
+      im_omega, smul_eq_mul, mul_one, algebraMap_int_eq, Int.coe_castRingHom]
+    rintro ⟨y, hy⟩
+    rw [← mul_eq_one_iff_eq_inv₀ hd', ← Int.cast_mul, Int.cast_eq_one,
+      Int.mul_eq_one_iff_eq_one_or_neg_one] at hy
+    lia
 
 /-- If `z` is integral and `d • z` is the image of an element `x` of `QuadraticAlgebra ℤ a b`, then
 `discr a b * x.im ^ 2` is `d ^ 2` times `t ^ 2 - 4 * n`, where `t` and `n` are the trace and the
@@ -178,40 +184,47 @@ theorem exists_discr_mul_im_sq_eq {z : QuadraticAlgebra ℚ a b} {x : QuadraticA
     (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = d • z) :
     ∃ t n : ℤ, discr a b * x.im ^ 2 = d ^ 2 * (t ^ 2 - 4 * n) := by
   obtain ⟨⟨t, ht⟩, ⟨n, hn⟩⟩ := isIntegral_iff.mp hz
-  simp only [algebraMap_int_eq, eq_intCast] at ht hn
   refine ⟨t, n, ?_⟩
-  apply Int.cast_injective (α := ℚ)
-  have : x.im = d * z.im := by simpa using congr_arg im hx
-  push_cast
-  rw [this, ht, hn, ← discr_intCast (R := ℚ)]
-  linear_combination (d : ℚ) ^ 2 * four_mul_norm_eq z
+  replace hx : algebraMap ℤ ℚ x.im = d • z.im := by
+    simpa using congr_arg im hx
+  apply FaithfulSMul.algebraMap_injective ℤ ℚ
+  simp_rw [map_mul, map_sub, map_pow, ht, map_mul, hn, map_ofNat, four_mul_norm_eq, sub_sub_cancel,
+    discr_intCast, hx, algebraMap_int_eq, eq_intCast, zsmul_eq_mul]
+  ring
+
+/-- Let `p` be a prime and `z` an integral element such that `p • z` is the image of an element `x`
+of `QuadraticAlgebra ℤ a b` with `p ∤ x.im`. Then `discr a b` is `p ^ 2` times an integer
+congruent to `0` or `1` modulo `4`. -/
+theorem exists_sq_mul_of_not_dvd_im {p : ℕ} (hp : p.Prime) {z : QuadraticAlgebra ℚ a b}
+    {x : QuadraticAlgebra ℤ a b} (hz : IsIntegral ℤ z)
+    (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = p • z)
+    (hx' : ¬ (p : ℤ) ∣ x.im) :
+    ∃ e : ℤ, discr a b = p ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
+  obtain ⟨t, n, h⟩ := exists_discr_mul_im_sq_eq hz hx
+  obtain ⟨e, he⟩ : (p : ℤ) ^ 2 ∣ discr a b := by
+    suffices IsCoprime (p : ℤ) x.im by
+      rw [← this.pow.dvd_mul_right_iff, h]
+      exact Int.dvd_mul_right _ _
+    rwa [Prime.coprime_iff_not_dvd (Nat.prime_iff_prime_int.mp hp)]
+  refine ⟨e, he, ?_⟩
+  obtain rfl | hp' := hp.eq_two_or_odd'
+  · obtain ⟨k, hk⟩ : Odd x.im := Int.odd_iff.mpr (by lia)
+    obtain ⟨s, rfl | rfl⟩ := Int.even_or_odd' t <;> rw [he, hk] at h <;> lia
+  · replace he := congr_arg (· % 4) he
+    rw [Int.mul_emod, Int.sq_emod_four, Int.odd_iff.mp hp'.natCast, one_mul, Int.emod_emod] at he
+    exact he ▸ discr_emod_four_eq_zero_or_one a b
 
 /-- Let `p` be a prime. Every integral element `z` such that `p • z` lies in
 `QuadraticAlgebra ℤ a b` lies itself in `QuadraticAlgebra ℤ a b` iff `discr a b` is not `p ^ 2`
-times an integer congruent to `0, 1 mod 4`. -/
+times an integer congruent to `0` or `1` modulo `4`. -/
 theorem saturated_iff {p : ℕ} (hp : p.Prime) :
-    (∀ z : QuadraticAlgebra ℚ a b, IsIntegral ℤ z →
-        p • z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)) →
-          z ∈ Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b))) ↔
+    (∀ z : QuadraticAlgebra ℚ a b, IsIntegral ℤ z → p • z ∈ 𝒪 → z ∈ 𝒪) ↔
       ¬ ∃ e : ℤ, discr a b = (p : ℤ) ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
-  have hq : Prime (p : ℤ) := Nat.prime_iff_prime_int.mp hp
-  refine ⟨fun h ⟨e, he, he'⟩ ↦ ?_, fun h z hz ⟨x, hx⟩ ↦ ?_⟩
-  · obtain ⟨z, hz₁, hz₂, hz₃⟩ := exists_unsaturated_of_sq_mul (d := p) hp.one_lt he he'
-    exact hz₃ (h z hz₁ hz₂)
-  refine mem_range_of_dvd_im hz hq.ne_zero hx <| hq.dvd_of_dvd_pow (n := 2) ?_
-  contrapose h
-  obtain ⟨t, n, htn⟩ := exists_discr_mul_im_sq_eq hz hx
-  obtain ⟨e, he⟩ := (hq.coprime_iff_not_dvd.mpr h).pow_left.dvd_of_dvd_mul_right
-    ⟨t ^ 2 - 4 * n, htn⟩
-  refine ⟨e, he, ?_⟩
-  obtain rfl | hp₂ := hp.eq_two_or_odd'
-  · push_cast at h htn he
-    obtain ⟨k, hk⟩ : Odd x.im := by
-      rwa [← Int.odd_pow' two_ne_zero, ← Int.not_even_iff_odd, even_iff_two_dvd]
-    rw [hk, he] at htn
-    grind [Int.sq_emod_four]
-  · have := he ▸ discr_emod_four_eq_zero_or_one a b
-    rwa [Int.mul_emod, Int.sq_emod_four_eq_one_of_odd hp₂.natCast, one_mul, Int.emod_emod] at this
+  contrapose!
+  refine ⟨fun ⟨z, hz, ⟨x, hx⟩, hz'⟩ ↦ exists_sq_mul_of_not_dvd_im hp hz hx fun ⟨c, hc⟩ ↦ hz' <|
+    (mem_range_iff_im_mem_range hz).mpr ⟨c, ?_⟩,
+    fun ⟨e, he, he'⟩ ↦ exists_unsaturated_of_sq_mul (by simpa using hp.one_lt) he he'⟩
+  simpa [hc, hp.ne_zero] using congr_arg im hx
 
 end Int
 
