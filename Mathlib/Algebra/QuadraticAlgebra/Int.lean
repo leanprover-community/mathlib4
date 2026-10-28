@@ -177,8 +177,8 @@ theorem exists_unsaturated_of_sq_mul {d e : ℤ} (hd : 1 < d.natAbs) (he : discr
     lia
 
 /-- If `z` is integral and `d • z` is the image of an element `x` of `QuadraticAlgebra ℤ a b`, then
-`discr a b * x.im ^ 2` is `d ^ 2` times `t ^ 2 - 4 * n`, where `t` and `n` are the trace and the
-norm of `z`. -/
+`discr a b * x.im ^ 2` is `d ^ 2` times `t ^ 2 - 4 * n` (here `t` and `n` are the trace and the
+norm of `z`). -/
 theorem exists_discr_mul_im_sq_eq {z : QuadraticAlgebra ℚ a b} {x : QuadraticAlgebra ℤ a b}
     {d : ℤ} (hz : IsIntegral ℤ z)
     (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = d • z) :
