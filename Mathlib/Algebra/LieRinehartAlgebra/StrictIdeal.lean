@@ -64,7 +64,7 @@ instance : SetLike (StrictLieRinehartIdeal A L) L where
     congr
     exact SetLike.coe_injective h
 
-instance : PartialOrder (StrictLieRinehartIdeal A L) := .ofSetLike (StrictLieRinehartIdeal A L) L
+instance : PartialOrder (StrictLieRinehartIdeal A L) := .ofSetLike (StrictLieRinehartIdeal A L)
 
 instance : AddSubgroupClass (StrictLieRinehartIdeal A L) L where
   add_mem {s} := s.add_mem
