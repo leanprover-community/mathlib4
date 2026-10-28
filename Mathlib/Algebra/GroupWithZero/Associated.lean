@@ -20,7 +20,7 @@ and prove basic properties of this quotient.
 
 assert_not_exists DenselyOrdered IsOrderedMonoid Multiset Ring
 
-variable {M : Type*}
+variable {M N : Type*}
 
 /-- Two elements of a `Monoid` are `Associated` if one of them is another one
 multiplied by a unit on the right. -/
@@ -476,8 +476,7 @@ theorem mk_injective [Monoid M] [Subsingleton Mˣ] : Function.Injective (@Associ
   fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
 
 section CommMonoid
-
-variable [CommMonoid M]
+variable [CommMonoid M] [CommMonoid N]
 
 instance instMul : Mul (Associates M) :=
   ⟨Quotient.map₂ (· * ·) fun _ _ h₁ _ _ h₂ ↦ h₁.mul_mul h₂⟩
@@ -503,6 +502,27 @@ protected def mkMonoidHom : M →* Associates M where
 @[simp]
 theorem mkMonoidHom_apply (a : M) : Associates.mkMonoidHom a = Associates.mk a :=
   rfl
+
+/-- The monoid homomorphism on associates induced by a monoid homomorphism. -/
+def map (f : M →* N) : Associates M →* Associates N where
+  toFun := Quotient.map' f fun _ _ ↦ .map f
+  map_one' := show Associates.mk (f 1) = 1 by simp
+  map_mul' := by
+    rintro ⟨a⟩ ⟨b⟩
+    change Associates.mk (f (a * b)) = .mk (f a) * .mk (f b)
+    simp [mk_mul_mk]
+
+@[simp] lemma map_mk (f : M →* N) (a : M) : map f (.mk a) = .mk (f a) := rfl
+
+/-- A multiplicative equivalence `M ≃* N` induces a multiplicative equivalence of associates. -/
+def congr (e : M ≃* N) : Associates M ≃* Associates N where
+  toFun := map e.toMonoidHom
+  invFun := map e.symm.toMonoidHom
+  left_inv := mk_surjective.forall.2 <| by simp
+  right_inv := mk_surjective.forall.2 <| by simp
+  map_mul' := map_mul _
+
+@[simp] lemma congr_mk (e : M ≃* N) (x : M) : congr e (.mk x) = .mk (e x) := rfl
 
 theorem associated_map_mk {f : Associates M →* M} (hinv : Function.RightInverse f Associates.mk)
     (a : M) : a ~ᵤ f (Associates.mk a) :=
