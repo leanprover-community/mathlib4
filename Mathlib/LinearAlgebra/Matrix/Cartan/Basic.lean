@@ -479,13 +479,16 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
     (M : Matrix ι ι ℤ) : Prop where
   diag : ∀ i, M i i = 2
   offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
-  zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
   exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
 
 namespace Matrix.IsFiniteCartan
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM : M.IsFiniteCartan)
 include hM
+
+lemma zero_comm (i j : ι) : M i j = 0 ↔ M j i = 0 := by
+  obtain ⟨_, _, h⟩ := hM.exists_posDef
+  grind [h.isHermitian.apply i j, diagonal_mul, star_trivial, mul_eq_zero]
 
 lemma det_pos :
     0 < M.det := by
@@ -508,7 +511,6 @@ protected lemma transpose :
   suffices (diagonal d' * Mᵀ).PosDef from
     { diag i := by simpa using hM.diag i
       offDiag_nonpos i j hij := by simpa using hM.offDiag_nonpos j i hij.symm
-      zero_comm i j := by simpa using hM.zero_comm j i
       exists_posDef := ⟨d', hd'_pos, this⟩ }
   set C : ℤ := ∏ j, d j with hC
   have hCd (i : ι) : d i * d' i = C := Finset.mul_prod_erase _ _ (Finset.mem_univ i)
