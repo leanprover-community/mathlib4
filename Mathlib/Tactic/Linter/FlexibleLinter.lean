@@ -120,6 +120,8 @@ The prototypical non-flexible tactic `rw`.
 def flexible? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
   | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
+  | .node _ ``Lean.Parser.Tactic.simpTrace #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
+  | .node _ ``Lean.Parser.Tactic.simpAllTrace #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
   | _ => false
 
 end Mathlib.Linter
