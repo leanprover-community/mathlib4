@@ -407,7 +407,6 @@ noncomputable def eTruncLTLTIsoLT :
   haveI := t.isIso_eTruncLTLTIsoLT a b hab
   asIso (t.eTruncLTLTToLT a b)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma eTruncLTLTIsoLT_hom_inv_id_app (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncLTι a).app X) ≫
@@ -507,7 +506,6 @@ lemma eTruncLTGEIsoGELT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
       (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLT.obj b).map f) :=
   (t.eTruncLTGEIsoGELT a b).hom.naturality f
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map ((t.eTruncLTι b).app X)) ≫
@@ -521,7 +519,6 @@ lemma eTruncLTGEIsoGELT_hom_app_fac' (a b : EInt) (X : C) :
       (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj X) := by
   simp [eTruncLTGEIsoGELT]
 
-set_option backward.defeqAttrib.useBackward true in
 open ComposableArrows in
 @[reassoc]
 lemma eTruncLTGEIsoGELT_naturality_app (a b : EInt) (hab : a ≤ b)
