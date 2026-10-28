@@ -56,8 +56,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 variable (I n p) in
 /-- If `p` is an interior point of `M`, then `extChartAt I p` can be restricted to an open set
-on which it becomes a `PartialDiffeomorph`.
--/
+on which it becomes a `PartialDiffeomorph`. -/
 def extChartAtPartialDiffeomorph :
     PartialDiffeomorph I 𝓘(𝕜, E) M E n where
   toPartialEquiv := (extChartAt I p).restr ((extChartAt I p) ⁻¹' interior (range I))
@@ -118,7 +117,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-- If `f` is `C^n` on an open set `U` and has invertible strict derivative at `p ∈ U`, then it is a
 local diffeomorphism near `p`. This is a stronger version of `ContDiffAt.toOpenPartialHomeomorph`
-with a slightly stronger differentiability hypothesis.
+with a slightly stronger differentiability hypothesis (and not restricted to `RCLike` fields).
 
 This definition would ideally be located with the calculus API and not be stated in manifold terms,
 but there is not currently a normed vector space version of `PartialDiffeomorph`.
@@ -190,8 +189,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 If `f` is `C^n` on a neighborhood of an interior point `p` and has invertible differential at `p`,
 then `f` is a local diffeomorphism at `p`.
 
-This version holds over arbitrary fields; see `isLocalDiffeomorphAt_of_isInvertible_mfderiv'`
-for a version specialized to real or complex manifolds and assuming only `n ≠ 0`.
+This version holds over any non-trivially normed field; see
+`isLocalDiffeomorphAt_of_isInvertible_mfderiv'` for a version specialized to real or complex
+manifolds and assuming only `n ≠ 0`.
 -/
 theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv {p : M₁} (hp : I₁.IsInteriorPoint p)
     {A : Set M₁} (hA : IsOpen A) (hpA : p ∈ A) {f : M₁ → M₂} (hf : ContMDiffOn I₁ I₂ n f A)
@@ -263,8 +263,8 @@ variable {𝕜 : Type*} [RCLike 𝕜]
 If `f` is `C^n` on a neighborhood of an interior point `p` and has invertible differential at `p`,
 then `f` is a local diffeomorphism at `p`.
 
-This version assumes a real or complex manifolds; see `isLocalDiffeomorphAt_of_isInvertible_mfderiv`
-for a version over arbitrary fields and assuming `minSmoothness 𝕜 1 ≤ n`.
+This version assumes a real or complex manifold; see `isLocalDiffeomorphAt_of_isInvertible_mfderiv`
+for a version over arbitrary non-trivially normed fields and assuming `minSmoothness 𝕜 1 ≤ n`.
 -/
 theorem isLocalDiffeomorphAt_of_isInvertible_mfderiv' {p : M₁} (hp : I₁.IsInteriorPoint p)
     {A : Set M₁} (hA : IsOpen A) (hpA : p ∈ A) {f : M₁ → M₂} (hf : ContMDiffOn I₁ I₂ n f A)
