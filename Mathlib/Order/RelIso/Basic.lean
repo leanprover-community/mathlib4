@@ -206,7 +206,7 @@ theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 structure RelEmbedding {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ↪ β where
-  /-- Elements are related iff they are related after apply a `RelEmbedding` -/
+  /-- Elements are related iff they are related after applying `RelEmbedding` -/
   map_rel_iff' : ∀ {a b}, s (toEmbedding a) (toEmbedding b) ↔ r a b
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
@@ -559,9 +559,10 @@ def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u wh
 
 end RelEmbedding
 
-/-- A relation isomorphism is an equivalence that is also a relation embedding. -/
+/-- A relation isomorphism with respect to a given pair of relations `r` and `s`
+is an equivalence `f : α ≃ β` such that `r a b ↔ s (f a) (f b)`. -/
 structure RelIso {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ≃ β where
-  /-- Elements are related iff they are related after apply a `RelIso` -/
+  /-- Elements are related iff they are related after applying `RelIso` -/
   map_rel_iff' : ∀ {a b}, s (toEquiv a) (toEquiv b) ↔ r a b
 
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
