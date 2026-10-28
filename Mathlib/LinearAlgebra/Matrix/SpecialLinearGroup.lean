@@ -233,31 +233,34 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 @[simp] lemma map_comp (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
 
+section Equiv
+
+variable (n) (e : R ≃+* S) (g : S ≃+* T)
+
 /-- The equivalence between `SL n R` and `SL n S` given by `f : R ≃+* S`. -/
-@[simps! apply_coe]
-def mapEquiv (e : R ≃+* S) : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
+def mapEquiv : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
   toFun := map e
   invFun := map e.symm
   left_inv A := by ext; simp
   right_inv A := by ext; simp
   map_mul' := map_mul _
 
-@[simp] lemma mapEquiv_refl : mapEquiv (.refl R) = .refl (SpecialLinearGroup n R) := rfl
+@[simp] lemma coe_mapEquiv_apply (a : SpecialLinearGroup n R) :
+    (mapEquiv n e a : Matrix n n S) = e.mapMatrix (a : Matrix n n R) := rfl
 
-@[simp] lemma symm_mapEquiv (f : R ≃+* S) :
-    (mapEquiv (n := n) f).symm = mapEquiv f.symm := rfl
+@[simp] lemma mapEquiv_refl : mapEquiv n (.refl R) = .refl (SpecialLinearGroup n R) := rfl
 
-@[simp] lemma mapEquiv_trans (f : R ≃+* S) (g : S ≃+* T) :
-    .trans (mapEquiv f) (mapEquiv g) = mapEquiv (n := n) (f.trans g) := rfl
+@[simp] lemma symm_mapEquiv :
+    (mapEquiv n e).symm = mapEquiv n e.symm := rfl
 
-@[simp] lemma toMonoidHom_mapEquiv (f : R ≃+* S) :
-    (mapEquiv (n := n) f : SpecialLinearGroup n R →* SpecialLinearGroup n S)
-      = map (f : R →+* S) := rfl
+@[simp] lemma mapEquiv_trans_mapEquiv :
+    .trans (mapEquiv n e) (mapEquiv n g) = mapEquiv n (e.trans g) := rfl
 
-@[simp]
-lemma coe_mapEquiv (e : R ≃+* S) (A : SpecialLinearGroup n R) :
-    (mapEquiv e A : Matrix n n S) = (e : R →+* S).mapMatrix A :=
-  rfl
+@[simp] lemma toMonoidHom_mapEquiv :
+    (mapEquiv n e : SpecialLinearGroup n R →* SpecialLinearGroup n S)
+      = map e := rfl
+
+end Equiv
 
 section Reindex
 
@@ -271,7 +274,7 @@ def reindexMulEquiv (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGro
     ⟨reindexRingEquiv R e.symm A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
   left_inv A := by ext; simp
   right_inv A := by ext; simp
-  map_mul' A B := Subtype.ext (map_mul (reindexRingEquiv R e) (A : Matrix m m R) B)
+  map_mul' A B := Subtype.ext (map_mul (reindexRingEquiv R e) (A : Matrix ..) B)
 
 @[simp]
 theorem symm_reindexMulEquiv (e : m ≃ n) :
@@ -291,7 +294,7 @@ end Reindex
 
 section Pi
 
-variable {ι : Type*} (R : ι → Type*) [Π i, CommRing (R i)]
+variable (n) {ι : Type*} (R : ι → Type*) [Π i, CommRing (R i)]
 
 /-- The monoid equivalence between `SL n` of a product of rings,
 and the product of the `SL n` of each ring. -/
@@ -301,7 +304,7 @@ def piEquiv : SpecialLinearGroup n (Π i, R i) ≃* Π i, SpecialLinearGroup n (
   invFun A := ⟨of fun a b i ↦ A i a b, funext fun i ↦
     (RingHom.map_det (Pi.evalRingHom R i) (of fun a b i ↦ A i a b)).trans (A i).det_coe⟩
   left_inv A := by ext; rfl
-  right_inv A := funext fun _ ↦ by ext; rfl
+  right_inv A := by ext; rfl
   map_mul' A B := by ext; simp
 
 end Pi
