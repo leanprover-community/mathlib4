@@ -923,7 +923,7 @@ This is available in bundled forms as:
 
 @[simp] theorem toEquiv_piRingEquiv [Π i, AddCommMonoid (β i)] [Π i, Mul (β i)] [Fintype n] :
     (piRingEquiv (n := n) (ι := ι) (β := β) :
-    Matrix n n (Π i, β i) ≃+ Π i, Matrix n n (β i)) = piAddEquiv := rfl
+      Matrix n n (Π i, β i) ≃+ Π i, Matrix n n (β i)) = piAddEquiv := rfl
 
 /-- `piEquiv` as an `AlgEquiv`. -/
 @[simps!] def piAlgEquiv (R) [CommSemiring R] [Π i, Semiring (β i)] [Π i, Algebra R (β i)]
