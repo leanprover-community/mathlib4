@@ -142,7 +142,7 @@ theorem mem_range_iff_im_mem_range {z : QuadraticAlgebra ℚ a b} (hz : IsIntegr
   obtain ⟨u, hu⟩ := re_mem_range_of_im_mem_range ⟨a, rfl⟩ ⟨b, rfl⟩ hz ⟨v, hv⟩
   exact ⟨⟨u, v⟩, by ext <;> simp_all⟩
 
-private theorem exists_dvd_and_four_mul_sq_dvd {d e : ℤ} (he : discr a b = d ^ 2 * e)
+private theorem exists_unsaturated_of_sq_mul_aux {d e : ℤ} (he : discr a b = d ^ 2 * e)
     (he' : 4 ∣ e ^ 2 - e) :
     ∃ t : ℤ, d ∣ 2 * t + b ∧ 4 * d ^ 2 ∣ (2 * t + b) ^ 2 - discr a b := by
   have h : (d * e - b) % 2 = (d ^ 2 * e - discr a b) % 2 := by
@@ -163,7 +163,7 @@ theorem exists_unsaturated_of_sq_mul {d e : ℤ} (hd : 1 < d.natAbs) (he : discr
   replace he' : 4 ∣ e ^ 2 - e := by
     rw [← Int.modEq_iff_dvd, Int.ModEq, Int.sq_emod_four]
     cases he' <;> lia
-  obtain ⟨t, ht₁, ht₂⟩ := exists_dvd_and_four_mul_sq_dvd he he'
+  obtain ⟨t, ht₁, ht₂⟩ := exists_unsaturated_of_sq_mul_aux he he'
   have hz := isIntegral_inv_smul_of_dvd ht₁ ht₂
   have hd' : (d : ℚ) ≠ 0 := Int.cast_ne_zero.mpr (by lia)
   refine ⟨(d : ℚ)⁻¹ • (t • 1 + ω : QuadraticAlgebra ℚ a b), hz, ⟨t • 1 + ω, ?_⟩, ?_⟩
