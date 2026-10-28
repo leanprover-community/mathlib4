@@ -1,10 +1,17 @@
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Meromorphic.Basic
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
-import Mathlib.NumberTheory.LSeries.RiemannZeta
+/-
+Copyright (c) 2026 chenguang2046. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: chenguang2046
+-/
+module
+
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Meromorphic.Basic
+public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+public import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # The Riemann zeta function is meromorphic
@@ -21,7 +28,7 @@ every point of the complex plane, including its pole at `s = 1`.
 * `meromorphicAt_riemannZeta`: the global statement.
 -/
 
-noncomputable section
+public noncomputable section
 
 open Complex
 
