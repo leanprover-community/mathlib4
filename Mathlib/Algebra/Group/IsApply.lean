@@ -167,20 +167,6 @@ class IsPowApply (M F : Type*) {α β : outParam Type*} [FunLike F α β] [Pow �
 @[to_additive (attr := simp, grind =, to_additive) smul_apply]
 alias pow_apply := IsPowApply.pow_apply
 
-/-- `IsNPowApplyEqIterate F` states for all `x : α`, `(f ^ n) x = f^[n] x`. -/
-class IsNPowApplyEqIterate (F : Type*) {α : outParam Type*} [FunLike F α α] [NPow F] where
-  pow_apply_eq_iterate (f : F) (n : ℕ) (x : α) : (f ^ n) x = f^[n] x := by intros; rfl
-
-@[grind =]
-alias pow_apply_eq_iterate := IsNPowApplyEqIterate.pow_apply_eq_iterate
-
-instance {F α : Type*} [FunLike F α α] [Monoid F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] :
-    IsNPowApplyEqIterate F where
-  pow_apply_eq_iterate f n x := by
-    induction n with
-    | zero => simp
-    | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
-
 end SMul
 
 section Cast
