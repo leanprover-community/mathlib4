@@ -55,6 +55,7 @@ theorem abs_apply (T : E →L[ℂ] F) : |T| = CFC.sqrt (T.adjoint ∘L T) := rfl
 @[simp] theorem abs_abs (T : E →L[ℂ] F) : |(|T|)| = |T| := by
   rw [abs, T.abs_nonneg.isSelfAdjoint.adjoint_eq]
   exact CFC.sqrt_mul_self |T|
+@[simp] theorem adjoint_abs (T : E →L[ℂ] F) : |T|.adjoint = |T| := T.abs_nonneg.isSelfAdjoint
 
 theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
