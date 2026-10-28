@@ -104,8 +104,15 @@ alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_su
 
 /-! ### Order properties -/
 
-theorem one_lt_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
+theorem one_lt_mk_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
   rw [← not_le, le_one_iff_subsingleton, ← not_nontrivial_iff_subsingleton, Classical.not_not]
+
+@[deprecated (since := "2026-10-27")] alias one_lt_iff_nontrivial := one_lt_mk_iff_nontrivial
+
+@[simp]
+theorem one_lt_mk {α : Type*} [Nontrivial α] : 1 < #α :=
+  one_lt_mk_iff_nontrivial.2 ‹_›
+
 
 lemma sInf_eq_zero_iff {s : Set Cardinal} : sInf s = 0 ↔ s = ∅ ∨ ∃ a ∈ s, a = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -597,6 +604,11 @@ theorem mk_int : #ℤ = ℵ₀ :=
 theorem mk_pnat : #ℕ+ = ℵ₀ :=
   mk_denumerable ℕ+
 
+instance {β : Type v} [Countable α] [Infinite α] [Nontrivial β] : Uncountable (α → β) := by
+  rw [← aleph0_lt_mk_iff, ← lift_aleph0.{v}, ← mk_eq_aleph0 α, mk_arrow]
+  apply cantor'
+  simp
+
 /-! ### Cardinalities of basic sets and types -/
 
 @[simp] theorem mk_additive : #(Additive α) = #α := rfl
@@ -946,7 +958,7 @@ theorem mk_range_inr {α : Type u} {β : Type v} : #(range (@Sum.inr α β)) = l
   rw [← lift_id'.{v, u} #_, (Equiv.Set.rangeInr α β).lift_cardinal_eq, lift_umax.{v, u}]
 
 theorem two_le_iff : (2 : Cardinal) ≤ #α ↔ ∃ x y : α, x ≠ y := by
-  rw [two_le_iff_one_lt, one_lt_iff_nontrivial, nontrivial_iff]
+  rw [two_le_iff_one_lt, one_lt_mk_iff_nontrivial, nontrivial_iff]
 
 theorem two_le_iff' (x : α) : (2 : Cardinal) ≤ #α ↔ ∃ y : α, y ≠ x := by
   rw [two_le_iff, ← nontrivial_iff, nontrivial_iff_exists_ne x]

@@ -61,8 +61,7 @@ We use this to prove several versions of the Borel isomorphism theorem.
   are Borel isomorphic.
 -/
 
-@[expose] public section
-
+public noncomputable section
 
 open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter MeasureTheory
 
@@ -95,8 +94,7 @@ a compatible Polish topology.
 Warning: following this with `borelize α` will cause an error. Instead, one can
 rewrite with `eq_borel_upgradeStandardBorel α`.
 TODO: fix the corresponding bug in `borelize`. -/
-@[instance_reducible]
-noncomputable
+@[expose, instance_reducible]
 def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
     UpgradedStandardBorel α := by
   choose τ hb hp using h.polish
@@ -377,6 +375,7 @@ protected lemma AnalyticSet.preimage {X Y : Type*} [TopologicalSpace X] [Topolog
 /-- Two sets `u` and `v` in a measurable space are measurably separable if there
 exists a measurable set containing `u` and disjoint from `v`.
 This is mostly interesting for Borel-separable sets. -/
+@[expose]
 def MeasurablySeparable {α : Type*} [MeasurableSpace α] (s t : Set α) : Prop :=
   ∃ u, s ⊆ u ∧ Disjoint t u ∧ MeasurableSet u
 
@@ -1183,14 +1182,14 @@ variable [MeasurableSpace α] [MeasurableSpace β] [StandardBorelSpace α] [Stan
 
 /-- If two standard Borel spaces admit Borel measurable injections to one another,
 then they are Borel isomorphic. -/
-noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas : Measurable f)
+def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas : Measurable f)
     (finj : Function.Injective f) (gmeas : Measurable g) (ginj : Function.Injective g) : α ≃ᵐ β :=
   letI := upgradeStandardBorel α
   letI := upgradeStandardBorel β
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 
 /-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
-noncomputable def measurableEquivNatBoolOfUncountable (h : Uncountable α) : α ≃ᵐ (ℕ → Bool) := by
+private def measurableEquivNatBoolOfUncountable (h : Uncountable α) : α ≃ᵐ (ℕ → Bool) := by
   apply Nonempty.some
   let := upgradeStandardBorel α
   obtain ⟨f, -, fcts, finj⟩ :=
@@ -1200,14 +1199,14 @@ noncomputable def measurableEquivNatBoolOfUncountable (h : Uncountable α) : α 
     MeasurableSpace.measurable_injection_nat_bool_of_countablySeparated α
   exact ⟨borelSchroederBernstein gmeas ginj fcts.measurable finj⟩
 
-@[deprecated measurableEquivNatBoolOfUncountable +typeChanged (since := "2026-10-27")]
-noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) :=
-  measurableEquivNatBoolOfUncountable (not_countable_iff.1 h)
-
 /-- The **Borel Isomorphism Theorem**: Any two uncountable standard Borel spaces are
 Borel isomorphic. -/
 noncomputable def measurableEquivOfUncountable (hα : Uncountable α) (hβ : Uncountable β) : α ≃ᵐ β :=
   (measurableEquivNatBoolOfUncountable hα).trans (measurableEquivNatBoolOfUncountable hβ).symm
+
+@[deprecated measurableEquivOfUncountable +typeChanged (since := "2026-10-27")]
+noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) :=
+  measurableEquivOfUncountable (not_countable_iff.1 h) inferInstance
 
 @[deprecated measurableEquivOfUncountable +typeChanged (since := "2026-10-27")]
 noncomputable def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬Countable β) : α ≃ᵐ β :=
