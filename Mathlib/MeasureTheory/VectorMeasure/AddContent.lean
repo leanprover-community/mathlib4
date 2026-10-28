@@ -335,7 +335,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     exact (MeasureTheory.trim_measurableSet_eq Mle (measurableSet_generateFrom hs)).symm
   have m'_le : m'.variation ≤ μ' := by
     exact variation_le_of_forall_enorm_le (fun s hs ↦ hm' _)
-  -- next line is to make sure that the default instance is picked below when defininig `m''`.
+  -- next line is to make sure that the default instance is picked below when defining `m''`.
   let : MeasurableSpace α := hα
   let m'' : VectorMeasure α E :=
   { measureOf' s := if MeasurableSet s then ∫ᵛ x, μ[s.indicator 1 | M] x ∂• m' else 0

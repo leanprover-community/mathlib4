@@ -32,7 +32,7 @@ variable (C ι : Type*) [Category C] [Category ι] [Abelian C]
 
 open ComposableArrows
 
-/-- A spectral object in an abelian category category `C` indexed by a category `ι`
+/-- A spectral object in an abelian category `C` indexed by a category `ι`
 consists of a family of functors `H n : ComposableArrows ι 1 ⥤ C` for all `n : ℤ`, and a
 functorial long exact sequence
 `⋯ ⟶ (H n₀).obj (mk₁ f) ⟶ (H n₀).obj (mk₁ (f ≫ g)) ⟶ (H n₀).obj (mk₁ g) ⟶ (H n₁).obj (mk₁ f) ⟶ ⋯`
