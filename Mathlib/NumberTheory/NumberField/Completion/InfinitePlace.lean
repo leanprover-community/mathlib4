@@ -205,7 +205,10 @@ theorem algebraMap_toCompletion (r : R) :
 
 end Algebra
 
-@[simp] theorem algebraMap_apply (k : K) : algebraMap K v.Completion k = (k : v.Completion) := rfl
+@[simp] theorem algebraMap_apply (k : K) : algebraMap K v.Completion k = (k : v.Completion) := by
+  ext
+  rw [algebraMap_toCompletion, AbsoluteValue.Completion.algebraMap_def,
+    WithAbs.algebraMap_right_apply, Algebra.algebraMap_self_apply]
 
 lemma norm_coe (x : WithAbs v.1) :
     ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
@@ -246,12 +249,16 @@ def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Complet
 @[simp]
 theorem extensionEmbedding_coe (x : WithAbs v.1) :
     extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) :=
-  extensionHom_coe _ v.isometry_embedding.continuous _
+  (congrArg (extensionHom _ v.isometry_embedding.continuous)
+    ((AbsoluteValue.Completion.equiv v.1).apply_symm_apply _)).trans
+    (extensionHom_coe _ v.isometry_embedding.continuous x)
 
 @[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
-  extensionHom_coe _ (v.isometry_embedding_of_isReal hv).continuous _
+  (congrArg (extensionHom _ (v.isometry_embedding_of_isReal hv).continuous)
+    ((AbsoluteValue.Completion.equiv v.1).apply_symm_apply _)).trans
+    (extensionHom_coe _ (v.isometry_embedding_of_isReal hv).continuous x)
 
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
@@ -347,18 +354,19 @@ variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
 
 theorem algebraMap_eq_coe (x : WithAbs v.1) :
     algebraMap (WithAbs v.1) w.Completion x = (algebraMap (WithAbs v.1) (WithAbs w.1) x) := by
-  apply ext
-  rw [algebraMap_toCompletion]
-  exact AbsoluteValue.Completion.toCompletion_injective _ <|
-    UniformSpace.Completion.algebraMap_def (WithAbs w.1) (WithAbs v.1) x
+  ext
+  rw [WithAbs.algebraMap_left_apply, algebraMap_toCompletion,
+    AbsoluteValue.Completion.algebraMap_def]
+  exact coe_toCompletion _ _
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
     algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x :=
-  (IsScalarTower.algebraMap_apply (WithAbs v.1) v.Completion w.Completion x).symm.trans
-    (algebraMap_eq_coe w x)
+  (congrArg _ (algebraMap_eq_coe v x)).symm.trans <|
+    (IsScalarTower.algebraMap_apply (WithAbs v.1) v.Completion w.Completion x).symm.trans
+      (algebraMap_eq_coe w x)
 
 end Completion
 

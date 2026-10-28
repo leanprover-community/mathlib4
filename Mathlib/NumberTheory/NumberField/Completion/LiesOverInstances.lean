@@ -47,7 +47,7 @@ noncomputable scoped instance : Algebra v.Completion w.Completion := (completion
 scoped instance : IsScalarTower K v.Completion w.Completion :=
   .of_algebraMap_eq fun x ↦ by
     have h : algebraMap K v.Completion x = ((WithAbs.toAbs v.1 x : WithAbs v.1) : v.Completion) :=
-      rfl
+      Completion.algebraMap_apply v x
     rw [RingHom.algebraMap_toAlgebra, h, completionMap_coe]
     apply Completion.ext
     rw [Completion.algebraMap_toCompletion]
