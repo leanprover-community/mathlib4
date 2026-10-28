@@ -174,7 +174,7 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrder (α : Type*)
     (dite_eq_right (fun ⟨_, hx⟩ ↦ H (isGLB_upperBounds.mp hx).bddAbove)).trans sSup_empty.symm
   csInf_of_not_bddBelow s H := (H (OrderBot.bddBelow s)).elim
 
-@[deprecated WellFoundedLT.conditionallyCompleteLinearOrder +typeChanged (since := "2026-10-29")，
+@[deprecated WellFoundedLT.conditionallyCompleteLinearOrder +typeChanged (since := "2026-10-29"),
   nolint docBlame]
 noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
     [i₁ : LinearOrder α] [i₂ : OrderBot α] [WellFoundedLT α] :
