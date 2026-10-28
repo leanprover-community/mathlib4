@@ -377,7 +377,7 @@ end IsSelfAdjoint
 
 variable (R)
 
-/-- The self-adjoint elements of a star additive group, as an additive submonoid.
+/-- The self-adjoint elements of a star additive monoid, as an additive submonoid.
 
 Prefer `selfAdjoint` over this definition. -/
 def selfAdjointAddSubmonoid [AddMonoid R] [StarAddMonoid R] : AddSubmonoid R where
