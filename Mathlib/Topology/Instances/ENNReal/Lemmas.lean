@@ -5,14 +5,13 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Data.ENNReal.BigOperators
-public import Mathlib.Topology.Order.LiminfLimsup
-public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Basic.ENNReal.Action
+public import Mathlib.Basic.ENNReal.BigOperators
 public import Mathlib.Topology.Instances.NNReal.Lemmas
-public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.Metrizable.Uniformity
+public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Topology on extended non-negative reals
@@ -112,7 +111,7 @@ lemma continuousAt_toReal (hx : x ≠ ∞) : ContinuousAt ENNReal.toReal x :=
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
   toEquiv := neTopEquivNNReal
-  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_toNNReal
+  continuous_toFun := continuousOn_iff_continuous_domRestrict.1 continuousOn_toNNReal
   continuous_invFun := continuous_coe.subtype_mk _
 
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
@@ -278,13 +277,13 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
   constructor <;> intro h ε hε
   · obtain ⟨n, hn⟩ := h (min 1 (ε / 2))
       (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨hε.ne', by finiteness⟩)⟩)
-    · refine ⟨n, hn.trans_lt ?_⟩
-      by_cases hε_top : ε = ∞
-      · simp [hε_top]
-      refine (min_le_right _ _).trans_lt ?_
-      rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
-      conv_lhs => rw [← mul_one ε]
-      gcongr; simp
+    refine ⟨n, hn.trans_lt ?_⟩
+    by_cases hε_top : ε = ∞
+    · simp [hε_top]
+    refine (min_le_right _ _).trans_lt ?_
+    rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
+    conv_lhs => rw [← mul_one ε]
+    gcongr; simp
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -376,9 +375,6 @@ theorem tendsto_finsetProd_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞}
         h' _ (Finset.mem_insert_of_mem hi)
     · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
 
-@[deprecated (since := "2026-04-08")]
-alias tendsto_finset_prod_of_ne_top := tendsto_finsetProd_of_ne_top
-
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
     ContinuousAt (a * ·) b :=
   Tendsto.const_mul tendsto_id h.symm
@@ -390,6 +386,9 @@ protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b
 @[fun_prop]
 protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous (a * ·) :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
+
+instance : ContinuousConstSMul ℝ≥0 ℝ≥0∞ where
+  continuous_const_smul t := ENNReal.continuous_const_mul (by simp)
 
 @[fun_prop]
 protected theorem continuous_mul_const {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous fun x => x * a :=
@@ -465,8 +464,6 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
 protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)
   | (n : ℕ) => mod_cast ENNReal.continuous_pow n
   | .negSucc n => by simpa using (ENNReal.continuous_pow _).fun_inv
-
-@[deprecated (since := "2026-01-15")] protected alias tendsto_inv_iff := tendsto_inv_iff
 
 protected theorem Tendsto.div {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
     (hma : Tendsto ma f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ 0) (hmb : Tendsto mb f (𝓝 b))
@@ -645,17 +642,12 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
 theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closedEBall a r) :=
   isClosed_le (by fun_prop) continuous_const
 
-@[deprecated (since := "2026-01-24")]
-alias EMetric.isClosed_closedBall := Metric.isClosed_closedEBall
-
 @[simp]
 theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
   refine le_antisymm (ediam_le fun x hx y hy => ?_) (ediam_mono subset_closure)
   have : edist x y ∈ closure (Iic (ediam s)) :=
     map_mem_closure₂ continuous_edist hx hy fun x hx y hy => edist_le_ediam_of_mem hx hy
   rwa [closure_Iic] at this
-
-@[deprecated (since := "2026-01-04")] alias EMetric.diam_closure := Metric.ediam_closure
 
 @[simp]
 theorem Metric.diam_closure {α : Type*} [PseudoMetricSpace α] (s : Set α) :

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.HomEquiv
-public import Mathlib.Logic.Small.Defs
 
 /-!
 # Shrinking morphisms in localized categories
@@ -38,7 +37,7 @@ variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C)
 
 section
 
-variable (L : C ⥤ D) [L.IsLocalization W] (X Y Z : C)
+variable (L : C ⥤ D) [L.IsLocalization W] (X Y : C)
 
 /-- This property holds if the type of morphisms between `X` and `Y`
 in the localized category with respect to `W : MorphismProperty C`
@@ -263,7 +262,6 @@ noncomputable def smallHomMap (f : SmallHom.{w} W₁ X Y) :
       ((CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm.app _)
       ((Φ.localizedFunctor W₁.Q W₂.Q).map ((SmallHom.equiv W₁ W₁.Q) f)))
 
-set_option backward.defeqAttrib.useBackward true in
 lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
     (f : SmallHom.{w} W₁ X Y) :
     (SmallHom.equiv W₂ L₂) (Φ.smallHomMap f) =
@@ -290,11 +288,8 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
   simp only [Functor.map_comp, ← NatIso.naturality_1 γ, ← Functor.comp_map,
     ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
     ← cancel_epi (γ.hom.app (W₁.Q.obj X)), assoc, Iso.inv_hom_id_app_assoc,
-    ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp,
-    Iso.hom_inv_id_app_assoc]
-  simp only [hγ, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
-    Functor.map_id, id_comp, Iso.hom_inv_id_app_assoc,
-    Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
+    Iso.hom_inv_id_app_map_assoc, Iso.hom_inv_id_app_assoc]
+  simp [hγ]
 
 @[simp]
 lemma smallHomMap_mk (f : X ⟶ Y) :
@@ -341,7 +336,6 @@ noncomputable def smallHomMap' (f : SmallHom.{w} W₁ X Y) :
   have := hasSmallLocalizedHom_of_isos.{w'} W₂ (Iso.refl X') eX.symm
   (SmallHom.mk _ eX.inv).comp ((Φ.smallHomMap f).comp (SmallHom.mk _ eY.hom))
 
-set_option backward.defeqAttrib.useBackward true in
 lemma equiv_smallHomMap' (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
     (f : SmallHom.{w} W₁ X Y) :
     SmallHom.equiv W₂ L₂ (Φ.smallHomMap' eX eY f) =

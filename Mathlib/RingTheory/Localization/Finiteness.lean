@@ -33,7 +33,7 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w t
 
@@ -41,7 +41,7 @@ section
 
 open scoped Pointwise
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R) (f : R →+* S)
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (M : Submonoid R)
 variable (R' S' : Type*) [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S']
 
@@ -69,7 +69,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   have : algebraMap R S y' • (s : Set S') = y' • (s : Set S') := by
     simp_rw [Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
   rw [← e, this] at hx₁
-  replace hx₁ := congr_arg (Submodule.span R) hx₁
+  replace hx₁ := congr(Submodule.span R $hx₁)
   rw [Submodule.span_smul] at hx₁
   replace hx : _ ∈ y' • Submodule.span R (s : Set S') := Set.smul_mem_smul_set hx
   rw [hx₁, ← g_apply, ← map_smul g, g_apply, ← Algebra.linearMap_apply, ← AlgHom.coe_toLinearMap,
@@ -81,12 +81,12 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   obtain ⟨⟨_, a, ha₁, rfl⟩, ha₂⟩ :=
     (IsLocalization.eq_iff_exists (M.map (algebraMap R S)) S').mp hx''
   use (⟨a, ha₁⟩ : M) * (⟨y', hy'⟩ : M)
-  convert!
+  convert
     (Submodule.span R
           (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s :
             Set S)).smul_mem
       a hx' using 1
-  convert! ha₂.symm using 1
+  convert ha₂.symm using 1
   · rw [Subtype.coe_mk, Submonoid.smul_def, Submonoid.coe_mul, ← smul_smul]
     exact Algebra.smul_def _ _
   · exact Algebra.smul_def _ _

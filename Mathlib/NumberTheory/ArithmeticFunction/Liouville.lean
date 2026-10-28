@@ -24,12 +24,13 @@ namespace ArithmeticFunction
 
 /-- The Liouville function `λ(n)` defined to be `1` if `n` has an even number of prime factors
 (counting multiplicity) and `-1` otherwise. -/
+@[oeis A008836 "the sequence skips `n = 0`"]
 def liouville : ArithmeticFunction ℤ where
   toFun n := if n = 0 then 0 else (-1) ^ cardFactors n
   map_zero' := by simp
 
 theorem liouville_apply {n : ℕ} (h : n ≠ 0) : liouville n = (-1) ^ cardFactors n :=
-  if_neg h
+  ite_eq_right h
 
 theorem liouville_ne_zero {n : ℕ} (h : n ≠ 0) : liouville n ≠ 0 := by
   simp [liouville_apply h]

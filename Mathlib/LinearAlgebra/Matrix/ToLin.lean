@@ -7,16 +7,16 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Module.Projective
-public import Mathlib.Data.Finite.Sum
+public import Mathlib.Basic.Finite.Sum
 public import Mathlib.Data.Matrix.Block
-public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Basis.SMul
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.StdBasis
 public import Mathlib.RingTheory.AlgebraTower
-public import Mathlib.RingTheory.Ideal.Span
+
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Linear maps and matrices
@@ -82,7 +82,7 @@ The definitions in this section are stated with two extra rings, to allow for no
 -/
 
 section Bilinear
-variable {l m n R S A : Type*}
+variable {m n R S A : Type*}
 variable [Semiring R] [Semiring S] [NonUnitalNonAssocSemiring A]
 variable [Module R A] [Module S A]
 variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
@@ -478,7 +478,6 @@ theorem LinearMap.toMatrix'_mul [Fintype m] [DecidableEq m] (f g : (m → R) →
     LinearMap.toMatrix' (f * g) = LinearMap.toMatrix' f * LinearMap.toMatrix' g :=
   LinearMap.toMatrix'_comp f g
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem LinearMap.toMatrix'_algebraMap (x : R) :
     LinearMap.toMatrix' (algebraMap R (Module.End R (n → R)) x) = scalar n x := by
@@ -652,7 +651,6 @@ lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) 
 theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrix_id v₁, Matrix.toLin_toMatrix]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Matrix.toLin_scalar (r : R) : Matrix.toLin v₁ v₁ (scalar n r) = r • LinearMap.id :=
   (LinearMap.toMatrix v₁ v₁).injective (by simp [toMatrix_id, smul_one_eq_diagonal])
 
@@ -662,7 +660,6 @@ theorem LinearMap.toMatrix_reindexRange [DecidableEq M₁] (f : M₁ →ₗ[R] M
       LinearMap.toMatrix v₁ v₂ f k i := by
   simp_rw [LinearMap.toMatrix_apply, Basis.reindexRange_self, Basis.reindexRange_repr]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem LinearMap.toMatrix_algebraMap (x : R) :
     LinearMap.toMatrix v₁ v₁ (algebraMap R (Module.End R M₁) x) = scalar n x := by
@@ -699,7 +696,7 @@ theorem LinearMap.toMatrix_smulBasis_right {G} [Group G] [DistribMulAction G M�
       LinearMap.toMatrix v₁ v₂ (DistribSMul.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
   rfl
 
-variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
+variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃]
 
 theorem LinearMap.toMatrix_map_left (f : M₃ →ₗ[R] M₂) (g : M₁ ≃ₗ[R] M₃) :
     f.toMatrix (v₁.map g) v₂ = (f ∘ₗ g.toLinearMap).toMatrix v₁ v₂ := by
@@ -716,7 +713,6 @@ variable {l m n : Type*} [Fintype n] [DecidableEq n]
 variable {M₁ M₂ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
 variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The matrix of `toSpanSingleton R M₂ x` given by bases `v₁` and `v₂` is equal to
 `vecMulVec (v₂.repr x) v₁`. When `v₁ = Module.Basis.singleton`
 then this is the column matrix of `v₂.repr x`. -/
@@ -724,7 +720,6 @@ theorem LinearMap.toMatrix_toSpanSingleton [Finite m] (v₁ : Basis n R R) (v₂
     (x : M₂) : (toSpanSingleton R M₂ x).toMatrix v₁ v₂ = vecMulVec (v₂.repr x) v₁ := by
   ext; simp [toMatrix_apply, vecMulVec_apply, mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma LinearMap.toMatrix_smulRight [Finite m] (f : M₁ →ₗ[R] R) (x : M₂) :
     toMatrix v₁ v₂ (f.smulRight x) = vecMulVec (v₂.repr x) (f ∘ v₁) := by
@@ -1002,7 +997,6 @@ variable {A M n : Type*} [Fintype n] [DecidableEq n]
   [CommSemiring A] [AddCommMonoid M] [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M]
   (bA : Basis m R A) (bM : Basis n A M)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.LinearMap.restrictScalars_toMatrix (f : M →ₗ[A] M) :
     (f.restrictScalars R).toMatrix (bA.smulTower' bM) (bA.smulTower' bM) =
       ((f.toMatrix bM bM).map (leftMulMatrix bA)).comp _ _ _ _ _ := by
@@ -1018,7 +1012,6 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable (b : Basis m R S) (c : Basis n S T)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem smulTower_leftMulMatrix (x) (ik jk) :
     leftMulMatrix (b.smulTower c) x ik jk =
       leftMulMatrix b (leftMulMatrix c x ik.2 jk.2) ik.1 jk.1 := by
@@ -1046,11 +1039,8 @@ end Algebra
 
 section
 
-variable {R S : Type*} [CommSemiring R] {n : Type*} [DecidableEq n]
-variable {M M₁ M₂ : Type*} [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
-variable [Semiring S] [Module S M₁] [Module S M₂] [SMulCommClass S R M₁] [SMulCommClass S R M₂]
-variable [SMul R S] [IsScalarTower R S M₁] [IsScalarTower R S M₂]
+variable {R : Type*} [CommSemiring R] {n : Type*} [DecidableEq n]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/
@@ -1098,7 +1088,7 @@ lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
   have := Classical.decEq ι₂
   rw [linearMap_apply, Matrix.stdBasis_eq_single, Matrix.toLin_self]
   dsimp only [Matrix.single, of_apply]
-  simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, if_true]
+  simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
 
 /-- The standard basis of the endomorphism algebra of a module
 induced by a basis of the module.
@@ -1123,8 +1113,8 @@ lemma lie_end_of_apply_eq_smul {R M : Type*} [CommRing R] [AddCommGroup M] [Modu
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
   refine b.ext fun k ↦ ?_
-  simp only [Ring.lie_def, LinearMap.sub_apply, End.mul_apply, LinearMap.smul_apply,
-    Basis.end_apply_apply, smul_ite, smul_zero, sub_smul]
+  simp only [Ring.lie_def, LinearMap.sub_apply, mul_apply_eq_comp, end_apply_apply, sub_smul,
+    LinearMap.smul_apply, smul_ite, smul_zero]
   rcases eq_or_ne j k with rfl | hjk
   · simp [hs, Basis.end_apply_apply]
   · simp [hs, Basis.end_apply_apply, hjk]
@@ -1166,7 +1156,7 @@ def endVecRingEquivMatrixEnd :
   right_inv m := by ext; simp [Pi.single_apply, apply_ite]
   map_mul' f g := by
     ext
-    simp only [Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
+    simp only [mul_apply_eq_comp, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
       LinearMap.coe_sum, Finset.sum_apply]
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl

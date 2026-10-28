@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
+# The hom functor
+
 The hom functor, sending `(X, Y)` to the type `X ⟶ Y`.
 -/
 
@@ -26,7 +28,7 @@ variable (C : Type u) [Category.{v} C]
 
 /-- `Functor.hom` is the hom-pairing, sending `(X, Y)` to `X ⟶ Y`, contravariant in `X` and
 covariant in `Y`. -/
-@[simps]
+@[implicit_reducible, simps]
 def hom : Cᵒᵖ × C ⥤ Type v where
   obj p := unop p.1 ⟶ p.2
   map f := ↾fun h => f.1.unop ≫ h ≫ f.2

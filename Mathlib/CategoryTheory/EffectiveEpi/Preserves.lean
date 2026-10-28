@@ -6,8 +6,9 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+
 /-!
 
 # Functors preserving effective epimorphisms
@@ -110,8 +111,6 @@ instance [IsRegularEpiCategory D] (F : C ⥤ D) [F.PreservesEpimorphisms] [Limit
     rw [← isRegularEpi_iff_effectiveEpi]
     apply IsRegularEpiCategory.regularEpiOfEpi
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /--
 Applying a functor which preserves pullbacks and effective epimorphisms to a regular epi diagram
 of the form `X ×_Y X ⇉ X → Y` gives a regular epi diagram.
@@ -179,18 +178,15 @@ section Composition
 
 variable {E : Type*} [Category* E]
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) [PreservesEffectiveEpis F] [PreservesEffectiveEpis G] :
     PreservesEffectiveEpis (F ⋙ G) where
   preserves _ _ := by dsimp; infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteEffectiveEpiFamilies F]
     [PreservesFiniteEffectiveEpiFamilies G] :
     PreservesFiniteEffectiveEpiFamilies (F ⋙ G) where
   preserves _ _ _ := by dsimp; infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) [PreservesEffectiveEpiFamilies.{u} F]
     [PreservesEffectiveEpiFamilies.{u} G] :
     PreservesEffectiveEpiFamilies.{u} (F ⋙ G) where
@@ -264,7 +260,6 @@ instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiv
     have := F.finite_effectiveEpiFamily_of_map _ _ h
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
   reflects {α B} X π _ := by
     let i : (a : α) → X a ⟶ (inv F).obj (F.obj (X a)) := fun a ↦ (asEquivalence F).unit.app _

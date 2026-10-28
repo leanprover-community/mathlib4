@@ -5,8 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 /-!
@@ -133,7 +131,6 @@ def piOpens.isoOfIso (α : F ≅ G) : piOpens F U ≅ piOpens.{v'} G U :=
 def piInters.isoOfIso (α : F ≅ G) : piInters F U ≅ piInters.{v'} G U :=
   Pi.mapIso fun _ => α.app _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic presheaves have isomorphic sheaf condition diagrams. -/
 def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
@@ -152,7 +149,6 @@ def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
         simp [rightRes]
       · simp)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F G : Presheaf C X` are isomorphic presheaves,
 then the `fork F U`, the canonical cone of the sheaf condition diagram for `F`,
@@ -188,7 +184,6 @@ namespace SheafConditionPairwiseIntersections
 
 open CategoryTheory.Pairwise CategoryTheory.Pairwise.Hom
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps]

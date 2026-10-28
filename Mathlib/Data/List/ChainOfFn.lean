@@ -7,9 +7,8 @@ module
 
 public import Batteries.Data.List.Lemmas
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Tactic.ToDual
-public import Mathlib.Util.CompileInductive
+
+import Mathlib.Tactic.Finiteness.Attr
 
 /-!
 # Lemmas about `IsChain` and `ofFn`

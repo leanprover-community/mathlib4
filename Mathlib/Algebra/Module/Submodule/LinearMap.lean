@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Submodule.Defs
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 
@@ -37,7 +37,7 @@ universe u'' u' u v w
 
 section
 
-variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
+variable {R : Type u} {M : Type v} {ι : Type w}
 
 namespace SMulMemClass
 
@@ -74,8 +74,8 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-variable {p q : Submodule R M}
-variable {r : R} {x y : M}
+variable {p : Submodule R M}
+variable {x y : M}
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
@@ -106,7 +106,7 @@ theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i �
 
 section AddAction
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- The action by a submodule is the action by the underlying module. -/
 instance [AddAction M α] : AddAction p α :=
@@ -122,8 +122,8 @@ end
 
 section
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {ι : Type*}
 
 namespace LinearMap
@@ -131,8 +131,8 @@ namespace LinearMap
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [Module R M] [Module R M₁] [Module R₂ M₂] [Module R₃ M₃]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃)
 
@@ -148,7 +148,7 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
   rfl
 
 lemma coe_domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
-    ⇑(f.domRestrict p) = Set.restrict p f := rfl
+    ⇑(f.domRestrict p) = Set.domRestrict p f := rfl
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p.
@@ -185,7 +185,6 @@ section
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
   (p : M₂' →ₗ[R₂] M₂) (hp : Injective p) (h : ∀ c, f c ∈ range p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear map `f : M → M₂` whose values lie in the image of an injective linear map
 `p : M₂' → M₂` admits a unique lift to a linear map `M → M₂'`. -/
 noncomputable def codLift :
@@ -267,7 +266,7 @@ theorem restrict_eq_domRestrict_codRestrict {f : M →ₛₗ[σ₁₂] M₂} {p 
     (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
   rfl
 
-theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
+protected theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (∑ d ∈ t, f d) b = ∑ d ∈ t, f d b :=
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 
@@ -285,7 +284,7 @@ theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R 
     (hG : G ^ k = 0) : g ^ k = 0 := by
   ext m
   have hg : N.subtype.comp (g ^ k) m = 0 := by
-    rw [← Module.End.commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
+    rw [← Module.End.commute_pow_left_of_commute h, hG, zero_comp, LinearMap.zero_apply]
   simpa using hg
 
 section
@@ -304,7 +303,7 @@ theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x 
     (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
   have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ coe_restrict_apply _ _
-  simp [Module.End.coe_pow, this.iterate_right _ _]
+  simp [pow_apply_eq_iterate, this.iterate_right _ _]
 
 end
 

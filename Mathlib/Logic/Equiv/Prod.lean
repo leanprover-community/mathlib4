@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Contrapose
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalence between product types
@@ -95,6 +96,9 @@ theorem prodComm_apply {α β} (x : α × β) : prodComm α β x = x.swap :=
 @[simp, grind =]
 theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm (α β) : (prodComm α β).trans (prodComm β α) = .refl _ := rfl
 
 /-- Type product is associative up to an equivalence. -/
 @[simps (attr := grind =)]
@@ -317,11 +321,11 @@ def prodExtendRight : Perm (α₁ × β₁) where
 
 @[simp]
 theorem prodExtendRight_apply_eq (b : β₁) : prodExtendRight a e (a, b) = (a, e b) :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem prodExtendRight_apply_ne {a a' : α₁} (h : a' ≠ a) (b : β₁) :
     prodExtendRight a e (a', b) = (a', b) :=
-  if_neg h
+  ite_eq_right h
 
 theorem eq_of_prodExtendRight_ne {e : Perm β₁} {a a' : α₁} {b : β₁}
     (h : prodExtendRight a e (a', b) ≠ (a', b)) : a' = a := by
@@ -441,6 +445,13 @@ end
 section
 
 open Subtype
+
+/-- A subtype of a `Sigma`-type defined by componentwise conditions
+is equivalent to a `Sigma`-type of subtypes. -/
+def subtypeSigmaEquivSigma {α} {β : α → Type*} {p : α → Prop} {q : (i : α) → β i → Prop} :
+    { c : Σ i : α, β i // p c.1 ∧ q c.1 c.2 } ≃ Σ i : { a // p a }, { b // q i b } where
+  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
 
 /-- A subtype of a product defined by componentwise conditions
 is equivalent to a product of subtypes. -/

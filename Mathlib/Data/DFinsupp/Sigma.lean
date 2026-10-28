@@ -27,15 +27,13 @@ public import Mathlib.Data.Fintype.Quotient
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
-variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
+variable {ι : Type u} {γ : Type w}
 
 namespace DFinsupp
 
 section Equiv
 
 open Finset
-
-variable {κ : Type*}
 
 section SigmaCurry
 
@@ -50,7 +48,8 @@ def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
   { toFun := fun j ↦ f ⟨i, j⟩,
     support' := f.support'.map (fun ⟨m, hm⟩ ↦
       ⟨m.filterMap (fun ⟨i', j'⟩ ↦ if h : i' = i then some <| h.rec j' else none),
-        fun j ↦ (hm ⟨i, j⟩).imp_left (fun h ↦ (m.mem_filterMap _).mpr ⟨⟨i, j⟩, h, dif_pos rfl⟩)⟩) }
+        fun j ↦ (hm ⟨i, j⟩).imp_left (fun h ↦ (m.mem_filterMap _).mpr
+          ⟨⟨i, j⟩, h, dite_eq_left rfl⟩)⟩) }
   support' := f.support'.map (fun ⟨m, hm⟩ ↦
     ⟨m.map Sigma.fst, fun i ↦ Decidable.or_iff_not_imp_left.mpr (fun h ↦ DFinsupp.ext
       (fun j ↦ (hm ⟨i, j⟩).resolve_left (fun H ↦ (Multiset.mem_map.not.mp h) ⟨⟨i, j⟩, H, rfl⟩)))⟩)

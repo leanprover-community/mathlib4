@@ -17,7 +17,7 @@ induced topology on `Over (X i)`, then the combined family covers the top for `J
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

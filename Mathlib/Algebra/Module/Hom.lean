@@ -5,9 +5,7 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Instances
 public import Mathlib.Algebra.GroupWithZero.Action.End
-public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.Module.End
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
@@ -111,13 +109,6 @@ end AddMonoid.End
 /-! ### Miscellaneous morphisms -/
 
 namespace AddMonoidHom
-
-/-- Scalar multiplication on the left as an additive monoid homomorphism.
-
-See also the linear map version of this `Module.End.smulLeft`. -/
-@[simps! -fullyApplied, deprecated DistribSMul.toAddMonoidHom (since := "2026-01-07")]
-protected def smulLeft [AddMonoid A] [DistribSMul M A] (c : M) : A →+ A :=
-  DistribSMul.toAddMonoidHom _ c
 
 /-- Scalar multiplication as a biadditive monoid homomorphism. We need `M` to be commutative
 to have addition on `M →+ M`. -/

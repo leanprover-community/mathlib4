@@ -60,7 +60,7 @@ lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieAlgebra R L] [LieModule R 
   · ext y z
     rw [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply, LinearMap.zero_apply,
       LinearMap.zero_apply, h, sub_self]
-  · replace h := LinearMap.congr_fun₂ (h x) y z
+  · replace h := congr($(h x) y z)
     simp only [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply,
       LinearMap.zero_apply, sub_eq_zero] at h
     simp [← h]
@@ -117,9 +117,8 @@ end ring
 
 section field
 
-variable {K L M : Type*}
+variable {K L : Type*}
 variable [Field K] [LieRing L] [LieAlgebra K L]
-variable [AddCommGroup M] [Module K M] [LieRingModule L M]
 
 variable [Module.Finite K L]
 variable (Φ : LinearMap.BilinForm K L) (hΦ_nondeg : Φ.Nondegenerate)

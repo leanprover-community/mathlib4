@@ -6,7 +6,6 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
-public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # `C^n` structures
@@ -48,7 +47,6 @@ instance (priority := 100) ContMDiffRing.toLieAddGroup (I : ModelWithCorners �
 
 end ContMDiffRing
 
-set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) instFieldContMDiffRing
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} :

@@ -5,13 +5,18 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Meta.Tactic.Util
 public import Lean.SubExpr
 
-/-! This file defines some functions for dealing with `SubExpr.GoalsLocation`. -/
+import Mathlib.Init
 
-@[expose] public section
+/-!
+# Utilities for `SubExpr.GoalsLocation`
+
+This file defines some functions for dealing with `SubExpr.GoalsLocation`.
+-/
+
+public section
 
 namespace Lean.SubExpr.GoalsLocation
 /-- The root expression of the position specified by the `GoalsLocation`. -/

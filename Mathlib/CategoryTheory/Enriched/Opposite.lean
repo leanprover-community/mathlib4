@@ -6,7 +6,6 @@ Authors: Daniel Carranza
 module
 
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 

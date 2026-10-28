@@ -58,7 +58,7 @@ instance : SetLike (LieRinehartSubalgebra A L) L where
     congr
     exact SetLike.coe_injective h
 
-instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L) L
+instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L)
 
 instance : Top (LieRinehartSubalgebra A L) := ⟨{ (⊤ : Submodule A L) with
       lie_mem' {_ _} _ _ := by aesop }⟩

@@ -6,7 +6,6 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Basics on bilinear maps
@@ -99,7 +98,7 @@ theorem ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m 
   LinearMap.ext fun m => LinearMap.ext fun n => H m n
 
 theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : f = g) (x y) : f x y = g x y :=
-  LinearMap.congr_fun (LinearMap.congr_fun h x) y
+  congr($h x y)
 
 theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
   ⟨congr_fun₂, ext₂⟩
@@ -113,10 +112,10 @@ attribute [local instance] SMulCommClass.symm
 def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P :=
   mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun _ _ m => (f m).map_add _ _)
     (fun _ _ m => (f m).map_smulₛₗ _ _)
-    (fun n m₁ m₂ => by simp only [map_add, add_apply])
+    (fun n m₁ m₂ => by simp only [map_add, LinearMap.add_apply])
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
     -- It looks like we now run out of assignable metavariables.
-    (fun c n m => by simp only [map_smulₛₗ _, smul_apply])
+    (fun c n m => by simp only [map_smulₛₗ _, LinearMap.smul_apply])
 
 @[simp]
 theorem flip_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) : flip f n m = f m n := rfl
@@ -231,9 +230,10 @@ theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
 /-- Restricting a bilinear map in the second entry -/
 def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) : M →ₛₗ[ρ₁₂] q →ₛₗ[σ₁₂] P where
   toFun m := (f m).domRestrict q
-  map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, domRestrict_apply, add_apply]
+  map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, domRestrict_apply,
+    LinearMap.add_apply]
   map_smul' c m :=
-    LinearMap.ext fun _ => by simp only [f.map_smulₛₗ, domRestrict_apply, smul_apply]
+    LinearMap.ext fun _ => by simp only [f.map_smulₛₗ, domRestrict_apply, LinearMap.smul_apply]
 
 theorem domRestrict₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) (x : M) (y : q) :
     f.domRestrict₂ q x y = f x y := rfl
@@ -364,7 +364,7 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     ext x y
     obtain ⟨x', rfl⟩ := hₗ x
     obtain ⟨y', rfl⟩ := hᵣ y
-    convert! LinearMap.congr_fun₂ h x' y' using 0
+    convert! congr($h x' y') using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
@@ -428,8 +428,8 @@ variable [CommSemiring R₂] [CommSemiring R₃] [CommSemiring R₄]
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
 variable {σ₁₂ : R →+* R₂} {σ₁₃ : R →+* R₃} {σ₁₄ : R →+* R₄} {σ₂₃ : R₂ →+* R₃}
-variable {σ₂₄ : R₂ →+* R₄} {σ₃₄ : R₃ →+* R₄} {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
+variable {σ₂₄ : R₂ →+* R₄} {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 variable [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
 
@@ -498,6 +498,15 @@ theorem bijective_compr₂ₛₗ_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [Ri
   ⟨injective_compr₂ₛₗ_of_injective f g.toLinearMap hf.1 g.bijective.1,
   surjective_compr₂ₛₗ_of_equiv f g hf.2⟩
 
+/-- An auxiliary lemma for proving associativity, turning an equality in terms of bilinear maps into
+an equality of linear maps so that we can use `ext`. -/
+lemma assoc_iff (f : M →ₗ[R] M →ₗ[R] M) :
+    (∀ x y z, f (f x y) z = f x (f y z)) ↔
+      LinearMap.llcomp R M M (M →ₗ[R] M) f ∘ₗ f =
+        (LinearMap.llcomp R M (M →ₗ[R] M →ₗ[R] M) (M →ₗ[R] M →ₗ[R] M) LinearMap.lflip.toLinearMap <|
+          LinearMap.llcomp R M M (M →ₗ[R] M) f.flip ∘ₗ f).flip :=
+  ⟨fun h => by ext x y z; exact h x y z, fun h x y z => congr($h x y z)⟩
+
 end CommSemiringSemilinear
 
 variable (R M)
@@ -509,11 +518,11 @@ def lsmul : R →ₗ[R] M →ₗ[R] M :=
 
 variable {R}
 
-lemma lsmul_eq_distribSMultoLinearMap (r : R) :
+lemma lsmul_eq_distribSMulToLinearMap (r : R) :
     lsmul R M r = DistribSMul.toLinearMap R M r := rfl
 
-@[deprecated (since := "2026-01-07")]
-alias lsmul_eq_DistribMulAction_toLinearMap := lsmul_eq_distribSMultoLinearMap
+@[deprecated (since := "2026-09-17")]
+alias lsmul_eq_distribSMultoLinearMap := lsmul_eq_distribSMulToLinearMap
 
 variable {M}
 
@@ -526,6 +535,7 @@ protected abbrev BilinMap : Type _ := M →ₗ[R] M →ₗ[R] Nₗ
 
 variable (R M) in
 /-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
+@[wikidata Q837924]
 protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
 end CommSemiring

@@ -6,7 +6,8 @@ Authors: Kim Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Robert Y. Lewi
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-public import Mathlib.CategoryTheory.Functor.EpiMono
+
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 
@@ -212,7 +213,7 @@ theorem left_inv' :
   Limits.IsInitial.hom_ext h _ (𝟙 A)
 
 theorem left_inv : strInv h ≫ A.str = 𝟙 _ :=
-  congr_arg Hom.f (left_inv' h)
+  congr($(left_inv' h).f)
 
 theorem right_inv : A.str ≫ strInv h = 𝟙 _ := by
   rw [strInv, ← (h.to ⟨F.obj A.1, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]
@@ -410,7 +411,7 @@ theorem right_inv' :
   Limits.IsTerminal.hom_ext h _ (𝟙 A)
 
 theorem right_inv : A.str ≫ strInv h = 𝟙 _ :=
-  congr_arg Hom.f (right_inv' h)
+  congr($(right_inv' h).f)
 
 theorem left_inv : strInv h ≫ A.str = 𝟙 _ := by
   rw [strInv, ← (h.from ⟨F.obj A.V, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]

@@ -5,10 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological group with zero
@@ -155,8 +153,8 @@ def Homeomorph.inv₀ : {g : G₀ // g ≠ 0} ≃ₜ {g : G₀ // g ≠ 0} where
   invFun g := ⟨g⁻¹, inv_ne_zero g.2⟩
   left_inv _ := by simp
   right_inv _ := by simp
-  continuous_toFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
-  continuous_invFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
+  continuous_toFun := continuous_induced_rng.mpr continuousOn_inv₀.domRestrict
+  continuous_invFun := continuous_induced_rng.mpr continuousOn_inv₀.domRestrict
 
 end GroupWithZero
 

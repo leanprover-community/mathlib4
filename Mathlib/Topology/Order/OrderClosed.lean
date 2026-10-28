@@ -112,7 +112,7 @@ section Preorder
 
 variable [TopologicalSpace α] [Preorder α] [ClosedIicTopology α] {f : β → α} {a b : α} {s : Set α}
 
-@[to_dual]
+@[to_dual (attr := closedness .)]
 theorem isClosed_Iic : IsClosed (Iic a) :=
   ClosedIicTopology.isClosed_Iic a
 
@@ -120,7 +120,7 @@ theorem isClosed_Iic : IsClosed (Iic a) :=
 instance : ClosedIciTopology αᵒᵈ where
   isClosed_Ici _ := isClosed_Iic (α := α)
 
-@[to_dual (attr := simp)]
+@[to_dual (attr := simp, closedness =)]
 theorem closure_Iic (a : α) : closure (Iic a) = Iic a :=
   isClosed_Iic.closure_eq
 
@@ -178,9 +178,6 @@ theorem disjoint_nhds_atBot (a : α) : Disjoint (𝓝 a) atBot := by simp
 
 @[to_dual (attr := simp) nhds_inf_atTop]
 theorem nhds_inf_atBot (a : α) : 𝓝 a ⊓ atBot = ⊥ := (disjoint_nhds_atBot a).eq_bot
-
-@[deprecated (since := "2026-04-07")] alias inf_nhds_atBot := nhds_inf_atBot
-@[deprecated (since := "2026-04-07")] alias inf_nhds_atTop := nhds_inf_atTop
 
 @[to_dual]
 theorem not_tendsto_nhds_of_tendsto_atBot (hf : Tendsto f l atBot) (a : α) : ¬Tendsto f l (𝓝 a) :=
@@ -326,11 +323,11 @@ theorem Icc_mem_nhdsLT (H : a < b) : Icc a b ∈ 𝓝[<] b := Icc_mem_nhdsLT_of_
 
 @[to_dual (attr := simp)]
 theorem nhdsWithin_Ico_eq_nhdsLT (h : a < b) : 𝓝[Ico a b] b = 𝓝[<] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
+  nhdsWithin_inter_of_mem (t := Iio b) <| nhdsWithin_le_nhds <| Ici_mem_nhds h
 
 @[to_dual (attr := simp)]
 theorem nhdsWithin_Ioo_eq_nhdsLT (h : a < b) : 𝓝[Ioo a b] b = 𝓝[<] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
+  nhdsWithin_inter_of_mem (t := Iio b) <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
 
 @[to_dual (attr := simp)]
 theorem continuousWithinAt_Ico_iff_Iio (h : a < b) :
@@ -379,11 +376,11 @@ theorem Icc_mem_nhdsLE (H : a < b) : Icc a b ∈ 𝓝[≤] b := Icc_mem_nhdsLE_o
 
 @[to_dual (attr := simp)]
 theorem nhdsWithin_Icc_eq_nhdsLE (h : a < b) : 𝓝[Icc a b] b = 𝓝[≤] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ici_mem_nhds h
+  nhdsWithin_inter_of_mem (t := Iic b) <| nhdsWithin_le_nhds <| Ici_mem_nhds h
 
 @[to_dual (attr := simp)]
 theorem nhdsWithin_Ioc_eq_nhdsLE (h : a < b) : 𝓝[Ioc a b] b = 𝓝[≤] b :=
-  nhdsWithin_inter_of_mem <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
+  nhdsWithin_inter_of_mem (t := Iic b) <| nhdsWithin_le_nhds <| Ioi_mem_nhds h
 
 @[to_dual (attr := simp)]
 theorem continuousWithinAt_Icc_iff_Iic (h : a < b) :
@@ -435,10 +432,11 @@ end Subtype
 
 -- The binder info on both theorems is slightly different, see
 -- https://github.com/leanprover/lean4/issues/9727
+@[closedness .]
 theorem isClosed_le_prod : IsClosed { p : α × α | p.1 ≤ p.2 } :=
   t.isClosed_le'
 
-@[to_dual existing isClosed_le_prod]
+@[to_dual existing isClosed_le_prod, closedness .]
 theorem isClosed_le_prod' : IsClosed { p : α × α | p.2 ≤ p.1 } :=
   (isClosed_le_prod (α := α)).preimage continuous_swap
 
@@ -454,11 +452,11 @@ instance : ClosedIicTopology α where
 instance : OrderClosedTopology αᵒᵈ :=
   ⟨isClosed_le_prod' (α := α)⟩
 
-@[to_dual self]
+@[to_dual self, closedness .]
 theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
   IsClosed.inter isClosed_Ici isClosed_Iic
 
-@[to_dual self, simp]
+@[to_dual self, simp, closedness =]
 theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
   isClosed_Icc.closure_eq
 
@@ -579,6 +577,20 @@ instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
 
 end PartialOrder
 
+section Lattice
+
+variable [TopologicalSpace α] [Lattice α] [OrderClosedTopology α]
+
+@[closedness .]
+theorem isClosed_uIcc {a b : α} : IsClosed (uIcc a b) :=
+  isClosed_Icc
+
+@[simp, closedness =]
+lemma closure_uIcc {a b : α} : closure (uIcc a b) = uIcc a b :=
+  isClosed_uIcc.closure_eq
+
+end Lattice
+
 section LinearOrder
 
 variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
@@ -652,7 +664,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
   rw [frontier_eq_closure_inter_closure, closure_le_eq hf hg]
   rintro b ⟨hb₁, hb₂⟩
   refine le_antisymm hb₁ (closure_lt_subset_le hg hf ?_)
-  convert! hb₂ using 2; simp only [not_le.symm]; rfl
+  convert hb₂ using 2; simp only [not_le.symm]; rfl
 
 @[to_dual]
 theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=

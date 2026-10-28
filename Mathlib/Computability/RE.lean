@@ -135,7 +135,7 @@ variable {α} [Primcodable α]
 
 protected lemma ComputablePred.decide {p : α → Prop} [DecidablePred p] (hp : ComputablePred p) :
     Computable (fun a => decide (p a)) := by
-  convert! hp.choose_spec
+  convert hp.choose_spec
 
 lemma Computable.computablePred {p : α → Prop} [DecidablePred p]
     (hp : Computable (fun a => decide (p a))) : ComputablePred p :=
@@ -212,7 +212,7 @@ theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computa
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
   unfold REPred
-  dsimp only []
+  dsimp only
   refine
     (Partrec.cond hf (Decidable.Partrec.const' (Part.some ())) Partrec.none).of_eq fun n =>
       Part.ext fun a => ?_
