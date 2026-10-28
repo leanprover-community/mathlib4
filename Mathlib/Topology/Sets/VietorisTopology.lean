@@ -840,6 +840,10 @@ instance [T2Space α] : OrderClosedTopology (Compacts α) where
     simp_rw [← sup_eq_right]
     exact isClosed_eq (by fun_prop) (by fun_prop)
 
+@[simp]
+theorem orderClosedTopology_iff : OrderClosedTopology (Compacts α) ↔ T2Space α :=
+  ⟨fun _ => t2Space_iff.mp inferInstance, fun _ => inferInstance⟩
+
 theorem isClosed_setOfPred_mem [T2Space α] : IsClosed {p : α × Compacts α | p.1 ∈ p.2} := by
   simp_rw [← singleton_le_iff]
   exact isClosed_le (by fun_prop) (by fun_prop)
@@ -1195,8 +1199,27 @@ theorem _root_.TopologicalSpace.Compacts.locallyConnectedSpace_iff :
 instance [T1Space α] : ClosedIciTopology (NonemptyCompacts α) where
   isClosed_Ici _ := isClosed_supersets _
 
+@[simp]
+theorem closedIciTopology_iff : ClosedIciTopology (NonemptyCompacts α) ↔ T1Space α := by
+  refine ⟨fun _ => ⟨fun x => ?_⟩, fun _ => inferInstance⟩
+  rw [← isOpen_compl_iff]
+  convert isOpen_biUnion_coe_of_isOpen (isClosed_Ici (a := {x})).isOpen_compl
+  refine le_antisymm (fun y hy => mem_biUnion (x := {y}) ?_ (by rfl)) ?_
+  · simpa [Eq.comm] using hy
+  · simp [← SetLike.coe_subset_coe]
+
+@[simp]
+theorem _root_.TopologicalSpace.Compacts.closedIciTopology_iff :
+    ClosedIciTopology (Compacts α) ↔ T1Space α :=
+  ⟨fun _ => NonemptyCompacts.closedIciTopology_iff.mp
+    ⟨fun _ => isClosed_Ici.preimage continuous_toCompacts⟩, fun _ => inferInstance⟩
+
 instance [T2Space α] : OrderClosedTopology (NonemptyCompacts α) where
   isClosed_le' := isClosed_le_prod.preimage <| continuous_toCompacts.prodMap continuous_toCompacts
+
+@[simp]
+theorem orderClosedTopology_iff : OrderClosedTopology (NonemptyCompacts α) ↔ T2Space α :=
+  ⟨fun _ => t2Space_iff.mp inferInstance, fun _ => inferInstance⟩
 
 theorem isClosed_setOfPred_mem [T2Space α] : IsClosed {p : α × NonemptyCompacts α | p.1 ∈ p.2} := by
   simp_rw [← singleton_le_iff]
