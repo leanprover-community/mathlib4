@@ -184,7 +184,7 @@ end LinearOrder
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
+variable [ConditionallyCompleteLinearOrder ι] [OrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
   {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} {p q : (ι → Ω → E) → Prop}
 
 lemma IsPreLocalizingSequence.isLocalizingSequence_biInf

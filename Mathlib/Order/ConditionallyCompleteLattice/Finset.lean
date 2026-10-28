@@ -236,8 +236,8 @@ lemma sup'_univ_eq_ciSup (f : ι → α) : univ.sup' univ_nonempty f = ⨆ i, f 
 
 end ConditionallyCompleteLattice
 
-section ConditionallyCompleteLinearOrderBot
-variable [ConditionallyCompleteLinearOrderBot α]
+section ConditionallyCompleteLatticeBot
+variable [ConditionallyCompleteLattice α] [OrderBot α]
 
 theorem sup_eq_ciSup (s : Finset ι) (f : ι → α) : s.sup f = ⨆ x ∈ s, f x := by
   apply (ciSup₂_le' fun _ ↦ s.le_sup).antisymm'
@@ -251,13 +251,13 @@ theorem ciSup_union [DecidableEq ι] {f : ι → α} {s t : Finset ι} :
     (⨆ x ∈ s ∪ t, f x) = (⨆ x ∈ s, f x) ⊔ (⨆ x ∈ t, f x) := by
   simp_rw [← sup_eq_ciSup, sup_union]
 
-end ConditionallyCompleteLinearOrderBot
+end ConditionallyCompleteLatticeBot
 
 end Finset
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot α] (f : ι → α)
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α] (f : ι → α)
 
 theorem Finset.Nonempty.ciSup_eq_max'_image {s : Finset ι} (h : s.Nonempty)
     (h' : (s.image f).Nonempty := h.image f) :

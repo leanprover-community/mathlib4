@@ -365,7 +365,7 @@ protected theorem min_const [LinearOrder ι] {f : Filtration ι m} {τ : Ω → 
     (hτ : IsStoppingTime f τ) (i : ι) : IsStoppingTime f fun ω => min (τ ω) i :=
   hτ.min (isStoppingTime_const f i)
 
-protected lemma biInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι]
+protected lemma biInf [ConditionallyCompleteLinearOrder ι] [OrderBot ι] [TopologicalSpace ι]
     [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
     {κ : Type*} {f : Filtration ι m} {τ : κ → Ω → WithTop ι} {s : Set κ} (hs : s.Countable)
     [f.IsRightContinuous] (hτ : ∀ n ∈ s, IsStoppingTime f (τ n)) :
@@ -377,7 +377,7 @@ protected lemma biInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace
   · ext ω
     simp
 
-protected lemma iInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι]
+protected lemma iInf [ConditionallyCompleteLinearOrder ι] [OrderBot ι] [TopologicalSpace ι]
     [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
     {κ : Type*} [Countable κ] {f : Filtration ι m} {τ : κ → Ω → WithTop ι}
     [f.IsRightContinuous] (hτ : ∀ n, IsStoppingTime f (τ n)) :

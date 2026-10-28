@@ -191,7 +191,7 @@ theorem coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
 
 end Preorder
 
-variable [ConditionallyCompleteLinearOrderBot α]
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α]
 
 /-- The `sSup` of a non-empty set is its least upper bound for a conditionally
 complete lattice with a top. -/
@@ -383,7 +383,7 @@ end
 section WithTopBot
 
 namespace WithTop
-variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α}
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α] {f : ι → α}
 
 lemma iSup_coe_eq_top : ⨆ x, (f x : WithTop α) = ⊤ ↔ ¬BddAbove (range f) := by
   rw [iSup_eq_top, not_bddAbove_iff]

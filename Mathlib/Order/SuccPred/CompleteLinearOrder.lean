@@ -91,7 +91,7 @@ lemma IsGLB.exists_of_nonempty_of_not_isPredPrelimit
 end ConditionallyCompleteLinearOrder
 
 section ConditionallyCompleteLinearOrderBot
-variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {s : Set α} {x : α}
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α] {f : ι → α} {s : Set α} {x : α}
 
 /-- See `csSup_mem_of_not_isSuccLimit` for the `ConditionallyCompleteLinearOrder` version. -/
 lemma csSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup s ∈ s := by

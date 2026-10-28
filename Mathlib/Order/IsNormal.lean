@@ -187,7 +187,7 @@ theorem le_iff_le_sSup' [WellFoundedLT α] {f : α → α} (hf : IsNormal f) {x 
 end ConditionallyCompleteLinearOrder
 
 section ConditionallyCompleteLinearOrderBot
-variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOrder β]
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α] [ConditionallyCompleteLinearOrder β]
 
 theorem apply_of_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) :
     f a = ⨆ b : Iio a, f b := by

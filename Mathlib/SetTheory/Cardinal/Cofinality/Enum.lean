@@ -142,7 +142,7 @@ theorem enum_range {f : α → α} (hf : StrictMono f) :
   · exact (Subtype.strictMono_coe _).comp (OrderIso.strictMono _)
   · simp
 
-theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrderBot α] [WellFoundedLT α]
+theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrder α] [OrderBot α] [WellFoundedLT α]
     [IsRegularCardinalOrder α] {s : Set α} {hs : IsCofinal s} : enum s hs ⊥ = sInf s := by
   let : Bot s := ⟨⟨sInf s, csInf_mem hs.nonempty⟩⟩
   let : OrderBot s := .mk fun a ↦ csInf_le' a.2

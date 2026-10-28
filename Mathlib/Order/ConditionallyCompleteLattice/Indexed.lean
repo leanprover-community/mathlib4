@@ -372,15 +372,15 @@ lemma ciInf_eq_iff [Nonempty ι] (f : ι → α) (n : α) :
 end ConditionallyCompleteLinearOrder
 
 /-!
-### Lemmas about a conditionally complete linear order with bottom element
+### Lemmas about a conditionally complete lattice with a bottom element
 
 In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
 -/
 
 
-section ConditionallyCompleteLinearOrderBot
+section ConditionallyCompleteLatticeBot
 
-variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
+variable [ConditionallyCompleteLattice α] [OrderBot α] {f : ι → α} {a : α}
 
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
   simp
@@ -413,20 +413,6 @@ theorem ciSup₂_le' {f : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ a) : ⨆ (
 @[deprecated iSup_bot +typeChanged (since := "2026-10-27")]
 theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := iSup_bot
 
-/-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
-from `lt_ciSup_iff`. -/
-theorem lt_ciSup_iff' {f : ι → α} (h : BddAbove (range f)) : a < iSup f ↔ ∃ i, a < f i := by
-  simpa only [not_le, not_forall] using (ciSup_le_iff' h).not
-
-theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : ∃ i, a < f i := by
-  contrapose! h
-  exact ciSup_le' h
-
-theorem exists_lt_of_lt_ciSup₂' {f : ∀ i, κ i → α} (h : a < ⨆ (i) (j), f i j) :
-    ∃ i j, a < f i j := by
-  contrapose! h
-  exact ciSup₂_le' h
-
 theorem ciSup_mono_of_forall_exists' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove <| range g)
     (h : ∀ i, ∃ i', f i ≤ g i') : ⨆ i, f i ≤ ⨆ i', g i' :=
   ciSup_le' fun i ↦ h i |>.elim <| le_ciSup_of_le hg
@@ -454,6 +440,27 @@ lemma ciSup_or (p q : Prop) (f : p ∨ q → α) :
   simp [hp, hq]
 
 @[deprecated (since := "2026-09-05")] alias ciSup_or' := ciSup_or
+
+end ConditionallyCompleteLatticeBot
+
+
+section ConditionallyCompleteLinearOrderBot
+
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α] {a : α}
+
+/-- In conditionally complete linear orders with a bottom element, the nonempty condition can be
+omitted from `lt_ciSup_iff`. -/
+theorem lt_ciSup_iff' {f : ι → α} (h : BddAbove (range f)) : a < iSup f ↔ ∃ i, a < f i := by
+  simpa only [not_le, not_forall] using (ciSup_le_iff' h).not
+
+theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : ∃ i, a < f i := by
+  contrapose! h
+  exact ciSup_le' h
+
+theorem exists_lt_of_lt_ciSup₂' {f : ∀ i, κ i → α} (h : a < ⨆ (i) (j), f i j) :
+    ∃ i j, a < f i j := by
+  contrapose! h
+  exact ciSup₂_le' h
 
 end ConditionallyCompleteLinearOrderBot
 
@@ -512,7 +519,8 @@ theorem map_ciSup_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddAbo
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrderBot
-variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOrderBot β]
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α] [ConditionallyCompleteLinearOrder β]
+  [OrderBot β]
 
 @[simp]
 lemma map_ciSup' (e : α ≃o β) (f : ι → α) : e (⨆ i, f i) = ⨆ i, e (f i) := by

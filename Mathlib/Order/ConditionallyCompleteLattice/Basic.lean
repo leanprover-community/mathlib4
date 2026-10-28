@@ -393,17 +393,17 @@ theorem Monotone.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : �
 end ConditionallyCompleteLinearOrder
 
 /-!
-### Lemmas about a conditionally complete linear order with bottom element
+### Lemmas about a conditionally complete lattice with a bottom element
 
 In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
 -/
 
 
-section ConditionallyCompleteLinearOrderBot
+section ConditionallyCompleteLatticeBot
 
 @[to_dual (attr := deprecated (since := "2026-10-27"))] alias csInf_univ := sInf_univ
 
-variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
+variable [ConditionallyCompleteLattice α] [OrderBot α] {s : Set α} {a : α}
 
 @[deprecated (since := "2026-10-27")] alias csSup_empty := sSup_empty
 
@@ -420,11 +420,6 @@ theorem csSup_le_iff' {s : Set α} (hs : BddAbove s) {a : α} : sSup s ≤ a ↔
 theorem csSup_le' {s : Set α} {a : α} (h : a ∈ upperBounds s) : sSup s ≤ a :=
   (csSup_le_iff' ⟨a, h⟩).2 h
 
-/-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
-from `lt_csSup_iff`. -/
-theorem lt_csSup_iff' (hb : BddAbove s) : a < sSup s ↔ ∃ b ∈ s, a < b := by
-  simpa only [not_le, not_forall₂, exists_prop] using (csSup_le_iff' hb).not
-
 theorem le_csSup_iff' {s : Set α} {a : α} (h : BddAbove s) :
     a ≤ sSup s ↔ ∀ b, b ∈ upperBounds s → a ≤ b :=
   ⟨fun h _ hb => le_trans h (csSup_le' hb), fun hb => hb _ fun _ => le_csSup h⟩
@@ -436,10 +431,6 @@ theorem le_csInf_iff' {s : Set α} {a : α} (ne : s.Nonempty) :
 @[deprecated (since := "2026-08-25")] alias le_csInf_iff'' := le_csInf_iff'
 
 theorem csInf_le' (h : a ∈ s) : sInf s ≤ a := csInf_le (OrderBot.bddBelow _) h
-
-theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b ∈ s, a < b := by
-  contrapose! h
-  exact csSup_le' h
 
 theorem notMem_of_lt_csInf' {x : α} {s : Set α} (h : x < sInf s) : x ∉ s :=
   notMem_of_lt_csInf h (OrderBot.bddBelow s)
@@ -469,6 +460,21 @@ theorem csSup_inter_le' (hs : BddAbove s := by bddDefault) (ht : BddAbove t := b
 
 theorem csSup_insert' (hs : BddAbove s := by bddDefault) : sSup (insert a s) = a ⊔ sSup s :=
   isLUB_csSup' hs |>.insert a |>.csSup_eq <| insert_nonempty a s
+
+end ConditionallyCompleteLatticeBot
+
+section ConditionallyCompleteLinearOrderBot
+
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α] {s : Set α} {a : α}
+
+/-- In conditionally complete linear orders with a bottom element, the nonempty condition can be
+omitted from `lt_csSup_iff`. -/
+theorem lt_csSup_iff' (hb : BddAbove s) : a < sSup s ↔ ∃ b ∈ s, a < b := by
+  simpa only [not_le, not_forall₂, exists_prop] using (csSup_le_iff' hb).not
+
+theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b ∈ s, a < b := by
+  contrapose! h
+  exact csSup_le' h
 
 end ConditionallyCompleteLinearOrderBot
 
