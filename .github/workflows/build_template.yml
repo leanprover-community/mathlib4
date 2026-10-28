@@ -67,8 +67,8 @@ jobs:
       mk_all-outcome: ${{ steps.mk_all.outcome }}
       noisy-outcome: ${{ steps.noisy.outcome }}
       # shake-outcome: ${{ steps.shake.outcome }}
-      # `test`/`lint` outcomes are exposed by the `test_lint` job (and consumed by
-      # its nightly-testing comment step).
+      # `test`/`lint` outcomes are exposed by the `test_lint` job (and consumed,
+      # with these, by the `batteries_pr_comment` job).
     # PR code can write `pr-branch/.lake/` from setup-build-env's "download dependencies"
     # step onward, so later steps that use it run inside landrun. The one exception is
     # "prune local cache to this commit's set", which runs only on a trusted checkout.
@@ -145,8 +145,15 @@ jobs:
           fi
 
       - name: validate lake-manifest.json inputRevs
-        # Only enforce this on the main mathlib4 repository, not on nightly-testing
-        if: github.repository == 'leanprover-community/mathlib4' && github.ref_name != 'nightly-testing'
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing.
+        # `bump/*` branches, and PRs into them, track the dependencies' `nightly-testing`
+        # branches, so they are exempt too. A PR's base branch is `github.base_ref`:
+        # `pull_request_target` sets `github.ref_name` to the default branch, not the base.
+        if: >-
+          github.repository == 'leanprover-community/mathlib4'
+          && github.ref_name != 'nightly-testing'
+          && !startsWith(github.ref_name, 'bump/')
+          && !startsWith(github.base_ref, 'bump/')
         shell: bash
         run: |
           cd pr-branch
@@ -471,20 +478,6 @@ jobs:
           pr_branch_ref: ${{ inputs.pr_branch_ref }}
           tools_branch_ref: ${{ inputs.tools_branch_ref }}
 
-      # mathlib-ci provides the scripts for the batteries-pr-testing comment at the end
-      # of this job, which runs only on the nightly-testing repo — so check it out only
-      # there. Written twice because a `uses:` step cannot conditionally omit the
-      # single `ref` key (`ref: ''` would override the action's pinned default).
-      - name: Get mathlib-ci
-        if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && inputs.mathlib_ci_ref == '' }}
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
-
-      - name: Get mathlib-ci
-        if: ${{ github.repository == 'leanprover-community/mathlib4-nightly-testing' && inputs.mathlib_ci_ref != '' }}
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
-        with:
-          ref: ${{ inputs.mathlib_ci_ref }}
-
       # Pre-populate the local cache with this commit's freshly-built delta: the
       # `cache-staging` artifact `build` produces holds its newly-built `.ltar` —
       # the oleans not already in the master snapshot. `get-cache` below then warms
@@ -667,10 +660,47 @@ jobs:
           action: remove
           linters: gcc
 
-      # Generate a fresh token just before posting comments.
-      # GitHub App tokens expire after 1 hour, and the build can take longer than that.
+  # Posts the batteries-pr-testing status comment. It is a separate job so that
+  # the `mathlib-nightly-testing` App token is minted on a fresh GitHub-hosted
+  # runner, never in a job that built the branch. It reads the build, test and
+  # lint outcomes from those jobs' outputs; the only files it checks out are this
+  # workflow's own local actions.
+  batteries_pr_comment:
+    name: Comment on batteries-pr-testing branch
+    needs: [build, test_lint]
+    # Only when `test_lint` finished. Its job-level `always()` keeps it running if
+    # the run is cancelled after it started, while a run cancelled before it
+    # started (say, superseded during `build`) records it as `cancelled` with no
+    # steps run, so checking for `!= 'skipped'` would post for an untested run.
+    if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') && (needs.test_lint.result == 'success' || needs.test_lint.result == 'failure') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
+
+      # mathlib-ci provides the comment script. Written twice because a `uses:` step
+      # cannot conditionally omit the single `ref` key (`ref: ''` would override the
+      # action's pinned default).
+      - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref == '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Get mathlib-ci
+        if: ${{ inputs.mathlib_ci_ref != '' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ inputs.mathlib_ci_ref }}
+
       - name: Generate batteries-pr-testing app token
-        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') }}
         id: batteries-pr-testing-token
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
@@ -678,22 +708,22 @@ jobs:
           private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
           owner: leanprover-community
           repositories: batteries
+          permission-pull-requests: write # labels and comments on the Batteries PR
       # The create-github-app-token README states that this token is masked and will not be logged accidentally.
       - name: Post comments for batteries-pr-testing-NNNN branches
-        if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') }}
         shell: bash
         env:
           TOKEN: ${{ steps.batteries-pr-testing-token.outputs.token }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          # build/archive/counterexamples/noisy outcomes come from the `build` job's
-          # outputs; test/lint are produced by this job's own steps.
+          # All outcomes come from the `build` and `test_lint` jobs' outputs, since
+          # this job runs none of those steps itself.
           BUILD_OUTCOME: ${{ needs.build.outputs.build-outcome }}
           NOISY_OUTCOME: ${{ needs.build.outputs.noisy-outcome }}
           ARCHIVE_OUTCOME: ${{ needs.build.outputs.archive-outcome }}
           COUNTEREXAMPLES_OUTCOME: ${{ needs.build.outputs.counterexamples-outcome }}
-          LINT_OUTCOME: ${{ steps.lint.outcome }}
-          TEST_OUTCOME: ${{ steps.test.outcome }}
+          LINT_OUTCOME: ${{ needs.test_lint.outputs.lint-outcome }}
+          TEST_OUTCOME: ${{ needs.test_lint.outputs.test-outcome }}
           NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
           "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
@@ -1109,7 +1139,7 @@ jobs:
           # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
           # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
           lake env lean scripts/export_crossrefs.lean
-          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+          lake exe check-title-labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
@@ -1134,11 +1164,21 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: leanprover-community/lint-style-action@a52329f904d58af9f3e1fc6ef3b986e8f753cc54 # mathlib4-compat
+      # lint-style-action can check out `pr_branch_ref` itself, but its `actions/checkout` refuses
+      # fork PR code under pull_request_target with no input to opt in, so check out here instead.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
+          # This job runs with only `contents: read` and no persisted credentials,
+          # so checking out fork PR code under pull_request_target is safe.
+          allow-unsafe-pr-checkout: true
+      - uses: leanprover-community/lint-style-action@c1e9eda133c7710e4d1c7da18afc4c116e588441 # 2026-10-23
         with:
           mode: check
           lint-bib-file: true
-          ref: ${{ inputs.pr_branch_ref }}
+          checkout: false
 
   final:
     name: Post-CI job
