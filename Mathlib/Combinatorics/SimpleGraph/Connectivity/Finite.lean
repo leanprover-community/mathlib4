@@ -76,7 +76,7 @@ lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ 
     [DecidablePred fun c : G.ConnectedComponent ↦ c.supp ⊆ c'.supp] :
     .disjiUnion {c : ConnectedComponent G | c.supp ⊆ c'.supp} (fun c ↦ c.supp.toFinset) (by
       intro x _ y _ hxy
-      exact Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy)) =
+      simpa using G.pairwise_disjoint_supp_connectedComponent hxy) =
       c'.supp.toFinset :=
   Finset.coe_injective <| by simpa using ConnectedComponent.biUnion_supp_eq_supp h _
 
