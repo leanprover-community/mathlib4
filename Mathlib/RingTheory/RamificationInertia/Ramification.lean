@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.ResidueField.Separable
 public import Mathlib.RingTheory.Unramified.LocalRing
@@ -209,7 +210,7 @@ theorem ramificationIdx_eq_normalizedFactors_count [IsDedekindDomain S]
     q.ramificationIdx R = (normalizedFactors (p.map (algebraMap R S))).count q := by
   by_cases hq : q.IsPrime; swap
   · rw [ramificationIdx_of_not_isPrime q R hq, eq_comm, Multiset.count_eq_zero]
-    contrapose! hq
+    contrapose hq
     exact isPrime_of_prime (prime_of_normalized_factor q hq)
   have hq0 : q ≠ ⊥ := ne_bot_of_le_ne_bot hp0 (map_le_of_le_comap (q.over_def p).le)
   have : q.IsMaximal := hq.isMaximal hq0
