@@ -72,8 +72,6 @@ theorem IsLocalExtrOn.exists_linear_map_of_hasStrictFDerivAt
   rcases e.surjective Λ' with ⟨⟨Λ, Λ₀⟩, rfl⟩
   refine ⟨Λ, Λ₀, e.map_ne_zero_iff.1 h0, fun x => ?_⟩
   convert! congr($(LinearMap.range_le_ker_iff.1 hΛ') x) using 1
-    -- squeezed `simp [mul_comm]` to speed up elaboration
-
   -- squeezed `simp [mul_comm]` to speed up elaboration
   simp only [smul_eq_mul, LinearEquiv.trans_apply, LinearEquiv.prodCongr_apply,
     LinearEquiv.refl_apply, LinearMap.ringLmapEquivSelf_symm_apply, LinearMap.coprodEquiv_apply,
@@ -127,7 +125,7 @@ Suppose that `φ : E → ℝ` has a local extremum on the set `{x | ∀ i, f i x
 Suppose that all functions `f i` as well as `φ` are strictly differentiable at `x₀`.
 Then the derivatives `f' i : E → L[ℝ] ℝ` and `φ' : StrongDual ℝ E` are linearly dependent.
 
-See also `IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt` for a version that
+See also `IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt` for a version
 that states existence of Lagrange multipliers `Λ` and `Λ₀` instead of using
 `¬LinearIndependent ℝ _` -/
 theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite ι] {f : ι → E → ℝ}

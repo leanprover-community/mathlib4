@@ -71,7 +71,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp φ.eventually_iSup_ker_pow_eq
     use n
     ext x
-    rw [zero_apply, ← mem_ker, ← hn n le_rfl]
+    rw [LinearMap.zero_apply, ← mem_ker, ← hn n le_rfl]
     obtain ⟨k, hk⟩ := h x
     rw [← mem_ker] at hk
     exact Submodule.mem_iSup_of_mem _ hk

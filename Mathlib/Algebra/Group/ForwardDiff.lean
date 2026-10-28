@@ -167,7 +167,7 @@ theorem shift_eq_sum_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) :
   convert!
     congr($((Commute.one_right (fwdDiffₗ M G h)).add_pow n) f y) using 1
   · rw [← shiftₗ_pow_apply h f, shiftₗ]
-  · simp [coe_fwdDiffₗ]
+  · simp [coe_fwdDiffₗ, pow_apply_eq_iterate]
 
 end newton_formulae
 

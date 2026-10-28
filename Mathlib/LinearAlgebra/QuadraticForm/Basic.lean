@@ -755,8 +755,8 @@ theorem toQuadraticMap_sub (B₁ B₂ : BilinMap R M N) :
   rfl
 
 theorem polar_toQuadraticMap (x y : M) : polar (toQuadraticMap B) x y = B x y + B y x := by
-  simp only [polar, toQuadraticMap_apply, map_add, add_apply, add_assoc, add_comm (B y x) _,
-    add_sub_cancel_left, sub_eq_add_neg _ (B y y), add_neg_cancel_left]
+  simp only [polar, toQuadraticMap_apply, map_add, LinearMap.add_apply, add_assoc,
+    add_comm (B y x) _, add_sub_cancel_left, sub_eq_add_neg _ (B y y), add_neg_cancel_left]
 
 theorem polarBilin_toQuadraticMap : polarBilin (toQuadraticMap B) = B + flip B :=
   LinearMap.ext₂ polar_toQuadraticMap
@@ -818,14 +818,10 @@ instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
     (1 : Module.End R M)
   invOf_mul_self := by
     ext m
-    simp only [smul_one_mul, LinearMap.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
-      one_apply_eq_self]
-    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
+    simp [Submonoid.smul_def, ← ofNat_smul_eq_nsmul R]
   mul_invOf_self := by
     ext m
-    simp only [mul_smul_one, LinearMap.smul_apply, Module.End.ofNat_apply, Submonoid.smul_def,
-      one_apply_eq_self]
-    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
+    simp [Submonoid.smul_def, ← ofNat_smul_eq_nsmul R]
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
@@ -1364,7 +1360,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
         intro y
         refine ⟨-B x y / B x x, fun z hz => ?_⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
-        rw [map_smul, smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
+        rw [map_smul, LinearMap.smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
           div_mul_cancel₀ _ hx, add_neg_cancel, mul_zero])
   refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]
