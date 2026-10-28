@@ -985,7 +985,7 @@ def transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
 
 @[simp]
 theorem toAddEquiv_transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
-    (transposeLinearEquiv m n R α : Matrix m n α ≃+ Matrix n m α) = transposeAddEquiv m n α :=
+    transposeLinearEquiv m n R α = transposeAddEquiv m n α :=
   rfl
 
 @[simp]
