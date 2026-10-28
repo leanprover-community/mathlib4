@@ -131,7 +131,7 @@ end OrderHom
 
 namespace OrderEmbedding
 
-variable [Preorder α] [Preorder β]
+variable [LE α] [LE β]
 
 /-- A version of `WithBot.map` for order embeddings. -/
 @[to_dual /-- A version of `WithTop.map` for order embeddings. -/]
@@ -148,7 +148,7 @@ end OrderEmbedding
 
 namespace OrderIso
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [LE α] [LE β] [LE γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
 @[to_dual /-- A version of `Equiv.optionCongr` for `WithBot`. -/]
