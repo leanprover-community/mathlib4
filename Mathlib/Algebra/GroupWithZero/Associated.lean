@@ -514,6 +514,11 @@ def map (f : M →* N) : Associates M →* Associates N where
 
 @[simp] lemma map_mk (f : M →* N) (a : M) : map f (.mk a) = .mk (f a) := rfl
 
+@[simp] lemma map_id : map (.id M) = .id (Associates M) := by ext ⟨x⟩; simp
+
+lemma map_comp {P : Type*} [CommMonoid P] (g : N →* P) (f : M →* N) :
+    map (g.comp f) = (map g).comp (map f) := by ext ⟨x⟩; simp
+
 /-- A multiplicative equivalence `M ≃* N` induces a multiplicative equivalence of associates. -/
 def congr (e : M ≃* N) : Associates M ≃* Associates N where
   toFun := map e.toMonoidHom
@@ -523,6 +528,15 @@ def congr (e : M ≃* N) : Associates M ≃* Associates N where
   map_mul' := map_mul _
 
 @[simp] lemma congr_mk (e : M ≃* N) (x : M) : congr e (.mk x) = .mk (e x) := rfl
+
+@[simp] lemma congr_toMonoidHom (e : M ≃* N) : (congr e).toMonoidHom = map e.toMonoidHom := rfl
+
+@[simp] lemma congr_refl : congr (.refl M) = .refl (Associates M) := by ext ⟨x⟩; simp
+
+@[simp, grind =] lemma symm_congr (e : M ≃* N) : (congr e).symm = congr e.symm := rfl
+
+@[simp] lemma congr_trans {P : Type*} [CommMonoid P] (e : M ≃* N) (e' : N ≃* P) :
+    congr (e.trans e') = (congr e).trans (congr e') := by ext ⟨x⟩; simp
 
 theorem associated_map_mk {f : Associates M →* M} (hinv : Function.RightInverse f Associates.mk)
     (a : M) : a ~ᵤ f (Associates.mk a) :=
