@@ -845,7 +845,7 @@ This is available in bundled forms as:
 /-- `prodEquiv` as a `LinearEquiv`. -/
 @[simps!] def prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
     [Module R α] [Module R β] : Matrix m n (α × β) ≃ₗ[R] Matrix m n α × Matrix m n β where
-  __ := prodAddEquiv  m n α β
+  __ := prodAddEquiv m n α β
   map_smul' _ _ := rfl
 
 @[simp] theorem toAddEquiv_prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
