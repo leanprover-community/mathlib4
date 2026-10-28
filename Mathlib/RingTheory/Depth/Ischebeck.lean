@@ -6,7 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
-public import Mathlib.RingTheory.Depth.Basic
+public import Mathlib.RingTheory.Depth.Finite
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.KrullDimension.Field
@@ -107,15 +107,12 @@ theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : Modul
           simp only [← hm, Nat.cast_lt] at dimlt
           apply subsingleton_ext_of_lt_depth
           refine lt_of_lt_of_le ?_ (ihr m dimlt (ModuleCat.of R (QuotSMulTop x L)) hm.symm)
-          by_cases eqtop : IsLocalRing.depth M = ⊤
-          · simp only [Nat.cast_add, eqtop, ENat.top_sub_natCast, ENat.add_lt_top,
-              ENat.natCast_lt_top, true_and]
-          · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨k, hk⟩
-            have : (i + 1 : ℕ) ≤ IsLocalRing.depth M - r := by
-              simpa [ENat.add_one_le_iff (ENat.natCast_ne_top i)] using hi
-            apply lt_of_le_of_lt this
-            simp only [← hk, ← ENat.natCast_sub, Nat.cast_lt] at hi ⊢
-            omega
+          rcases ENat.ne_top_iff_exists.mp (IsLocalRing.depth_ne_top M) with ⟨k, hk⟩
+          have : (i + 1 : ℕ) ≤ IsLocalRing.depth M - r := by
+            simpa [ENat.add_one_le_iff (ENat.natCast_ne_top i)] using hi
+          apply lt_of_le_of_lt this
+          simp only [← hk, ← ENat.natCast_sub, Nat.cast_lt] at hi ⊢
+          omega
         have epi := (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i)).epi_f
           ((AddCommGrpCat.isZero_of_iff_subsingleton.mpr this).eq_zero_of_tgt _)
         have epi' : Function.Surjective (x • LinearMap.id (R := R) (M := (Ext (of R L) M i))) := by
