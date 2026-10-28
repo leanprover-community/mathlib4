@@ -18,8 +18,9 @@ import Mathlib.Tactic.Positivity
 
 For extended nonnegative coefficients and a natural-valued size function, two quantitative
 bounds compare a power-weighted sum with a geometrically weighted sum of tails. These bounds
-hold without finiteness assumptions. At positive order they give an equivalence of finiteness,
-with the unweighted sum controlling the central region.
+hold without finiteness assumptions, for any real geometric base greater than one and any
+positive natural cutoff. At positive order they give an equivalence of finiteness, with the
+unweighted sum controlling the central region.
 
 The real-valued summability results follow by applying these bounds to `ENNReal.ofReal`.
 The reverse bound requires positive order: at order zero, summable coefficients can have
@@ -30,7 +31,7 @@ public section
 
 open scoped ENNReal
 
-variable {b : ℕ}
+variable {b : ℝ}
 
 private theorem ofReal_rpow_one_add_natCast (n : ℕ) (t : ℝ) :
     ENNReal.ofReal ((1 + (n : ℝ)) ^ t) = (1 + (n : ℝ≥0∞)) ^ t := by
@@ -39,59 +40,63 @@ private theorem ofReal_rpow_one_add_natCast (n : ℕ) (t : ℝ) :
     ENNReal.ofReal_natCast]
 
 private theorem ofReal_geometric_weight (hb : 1 < b) (t : ℝ) (k : ℕ) :
-    ENNReal.ofReal (((b : ℝ) ^ t) ^ k) = ((b : ℝ≥0∞) ^ t) ^ k := by
+    ENNReal.ofReal ((b ^ t) ^ k) = (ENNReal.ofReal b ^ t) ^ k := by
   rw [ENNReal.ofReal_pow (Real.rpow_nonneg (by positivity) _) _,
-    ← ENNReal.ofReal_rpow_of_pos (by positivity : (0 : ℝ) < b), ENNReal.ofReal_natCast]
+    ← ENNReal.ofReal_rpow_of_pos (by positivity : (0 : ℝ) < b)]
 
 namespace ENNReal
 
-variable {ι : Type*} {f : ι → ℝ≥0∞} (ν : ι → ℕ) {b M : ℕ} {t : ℝ}
+variable {ι : Type*} {f : ι → ℝ≥0∞} (ν : ι → ℕ) {M : ℕ} {b t : ℝ}
 
 /-- A power-weighted sum is bounded by the mass and geometrically weighted tails.
 This bound also holds at order zero and for infinite sums. -/
 theorem tsum_rpow_mul_le_geometric_tails (hb : 1 < b) (hM : 0 < M) (ht : 0 ≤ t) :
     (∑' i, (1 + (ν i : ℝ≥0∞)) ^ t * f i) ≤
-      (1 + (b : ℝ≥0∞) * M) ^ t * ((∑' i, f i) +
-        ∑' k : ℕ, ((b : ℝ≥0∞) ^ t) ^ k *
+      (1 + ENNReal.ofReal b * M) ^ t * ((∑' i, f i) +
+        ∑' k : ℕ, (ENNReal.ofReal b ^ t) ^ k *
           (∑' i, if b ^ k * M ≤ ν i then f i else 0)) := by
-  have hbR : (1 : ℝ) < b := by exact_mod_cast hb
-  let a (k : ℕ) (i : ι) := ((b : ℝ≥0∞) ^ t) ^ k *
+  let a (k : ℕ) (i : ι) := (ENNReal.ofReal b ^ t) ^ k *
     (if b ^ k * M ≤ ν i then f i else 0)
-  let D := (1 + (b : ℝ≥0∞) * M) ^ t
+  let D := (1 + ENNReal.ofReal b * M) ^ t
   have hpoint (i : ι) : (1 + (ν i : ℝ≥0∞)) ^ t * f i ≤
       D * f i + D * (∑' k, a k i) := by
     by_cases hi : ν i < M
-    · have hiR : (ν i : ℝ) < M := by exact_mod_cast hi
-      have hMR : (0 : ℝ) ≤ M := by positivity
-      have hbase : 1 + (ν i : ℝ) ≤ 1 + (b : ℝ) * M := by nlinarith
-      have hbaseE : 1 + (ν i : ℝ≥0∞) ≤ 1 + (b : ℝ≥0∞) * M := by
-        exact_mod_cast hbase
-      exact (mul_le_mul_left (rpow_le_rpow hbaseE ht) _).trans le_self_add
+    · have hbase : 1 + (ν i : ℝ≥0∞) ≤ 1 + ENNReal.ofReal b * M := by
+        have hiE : (ν i : ℝ≥0∞) ≤ M := by exact_mod_cast hi.le
+        have hbE : (1 : ℝ≥0∞) ≤ ENNReal.ofReal b := by
+          simpa only [ENNReal.ofReal_one] using ENNReal.ofReal_le_ofReal hb.le
+        exact add_le_add le_rfl (hiE.trans (le_mul_of_one_le_left' hbE))
+      exact (mul_le_mul_left (rpow_le_rpow hbase ht) _).trans le_self_add
     · have hMR : (0 : ℝ) < M := by exact_mod_cast hM
       have hiR : (M : ℝ) ≤ ν i := by exact_mod_cast (Nat.le_of_not_gt hi)
       obtain ⟨k, hlo, hhi⟩ := exists_nat_pow_near (x := (ν i : ℝ) / M)
-        ((le_div_iff₀ hMR).mpr (by simpa using hiR)) hbR
-      have hcut : b ^ k * M ≤ ν i := by
-        have hle := (le_div_iff₀ hMR).mp hlo
-        exact_mod_cast hle
-      have hbase : 1 + (ν i : ℝ) ≤ (1 + (b : ℝ) * M) * (b : ℝ) ^ k := by
+        ((le_div_iff₀ hMR).mpr (by simpa using hiR)) hb
+      have hcut : b ^ k * M ≤ ν i := (le_div_iff₀ hMR).mp hlo
+      have hbase : 1 + (ν i : ℝ) ≤ (1 + b * M) * b ^ k := by
         have hlt := (div_lt_iff₀ hMR).mp hhi
-        have hk : (1 : ℝ) ≤ (b : ℝ) ^ k := one_le_pow₀ hbR.le
+        have hk : (1 : ℝ) ≤ b ^ k := one_le_pow₀ hb.le
         rw [pow_succ] at hlt
         nlinarith
       have hbaseE : 1 + (ν i : ℝ≥0∞) ≤
-          (1 + (b : ℝ≥0∞) * M) * (b : ℝ≥0∞) ^ k := by exact_mod_cast hbase
-      have hweight : (1 + (ν i : ℝ≥0∞)) ^ t ≤ D * ((b : ℝ≥0∞) ^ t) ^ k := by
+          (1 + ENNReal.ofReal b * M) * ENNReal.ofReal b ^ k := by
+        have h := ENNReal.ofReal_le_ofReal hbase
+        rw [ENNReal.ofReal_add (by positivity) (by positivity),
+          ENNReal.ofReal_mul (by positivity),
+          ENNReal.ofReal_add (by positivity) (by positivity),
+          ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_pow (by positivity),
+          ENNReal.ofReal_one, ENNReal.ofReal_natCast, ENNReal.ofReal_natCast] at h
+        exact h
+      have hweight : (1 + (ν i : ℝ≥0∞)) ^ t ≤ D * (ENNReal.ofReal b ^ t) ^ k := by
         calc
-          _ ≤ ((1 + (b : ℝ≥0∞) * M) * (b : ℝ≥0∞) ^ k) ^ t :=
+          _ ≤ ((1 + ENNReal.ofReal b * M) * ENNReal.ofReal b ^ k) ^ t :=
             rpow_le_rpow hbaseE ht
           _ = _ := by
             rw [mul_rpow_of_nonneg _ _ ht, ← rpow_natCast_mul,
               mul_comm (k : ℝ) t, rpow_mul, rpow_natCast]
-      have hterm : ((b : ℝ≥0∞) ^ t) ^ k * f i ≤ ∑' j, a j i := by
+      have hterm : (ENNReal.ofReal b ^ t) ^ k * f i ≤ ∑' j, a j i := by
         simpa only [a, ite_eq_left hcut] using (le_tsum (f := fun j ↦ a j i) k)
       calc
-        _ ≤ D * (((b : ℝ≥0∞) ^ t) ^ k * f i) := by
+        _ ≤ D * ((ENNReal.ofReal b ^ t) ^ k * f i) := by
           simpa only [mul_assoc] using mul_le_mul_left hweight (f i)
         _ ≤ D * (∑' j, a j i) := mul_le_mul_right hterm D
         _ ≤ D * f i + D * (∑' j, a j i) := le_add_self
@@ -104,27 +109,27 @@ theorem tsum_rpow_mul_le_geometric_tails (hb : 1 < b) (hM : 0 < M) (ht : 0 ≤ t
 /-- Geometrically weighted tails are bounded by a power-weighted sum at positive order.
 No finiteness assumption is needed. -/
 theorem tsum_geometric_tails_le_rpow_mul (hb : 1 < b) (hM : 0 < M) (ht : 0 < t) :
-    (∑' k : ℕ, ((b : ℝ≥0∞) ^ t) ^ k *
+    (∑' k : ℕ, (ENNReal.ofReal b ^ t) ^ k *
       (∑' i, if b ^ k * M ≤ ν i then f i else 0)) ≤
-      ENNReal.ofReal ((b : ℝ) ^ t / ((b : ℝ) ^ t - 1)) *
+      ENNReal.ofReal (b ^ t / (b ^ t - 1)) *
         ∑' i, (1 + (ν i : ℝ≥0∞)) ^ t * f i := by
-  have hbR : (1 : ℝ) < b := by exact_mod_cast hb
-  let r := (b : ℝ) ^ t
-  have hr : 1 < r := Real.one_lt_rpow hbR ht
-  let a (k : ℕ) (i : ι) := ((b : ℝ≥0∞) ^ t) ^ k *
+  let r := b ^ t
+  have hr : 1 < r := Real.one_lt_rpow hb ht
+  let a (k : ℕ) (i : ι) := (ENNReal.ofReal b ^ t) ^ k *
     (if b ^ k * M ≤ ν i then f i else 0)
   have hcol (i : ι) : (∑' k, a k i) ≤
       ENNReal.ofReal (r / (r - 1)) * ((1 + (ν i : ℝ≥0∞)) ^ t * f i) := by
     obtain ⟨K, hlo, hhi⟩ := exists_nat_pow_near
-      (x := 1 + (ν i : ℝ)) (le_add_of_nonneg_right (Nat.cast_nonneg _)) hbR
+      (x := 1 + (ν i : ℝ)) (le_add_of_nonneg_right (Nat.cast_nonneg _)) hb
     have hsupp (k : ℕ) (hk : k ∉ Finset.range (K + 1)) : a k i = 0 := by
       have hkK : K + 1 ≤ k := by simpa only [Finset.mem_range, not_lt] using hk
       have hnot : ¬b ^ k * M ≤ ν i := by
         intro hcut
-        have hpow : b ^ k ≤ ν i := (Nat.le_mul_of_pos_right _ hM).trans hcut
-        have hpowR : (b : ℝ) ^ k ≤ (ν i : ℝ) := by exact_mod_cast hpow
-        have hpowK : (b : ℝ) ^ (K + 1) ≤ (b : ℝ) ^ k :=
-          pow_le_pow_right₀ hbR.le hkK
+        have hMR : (1 : ℝ) ≤ M := by exact_mod_cast hM
+        have hpowR : b ^ k ≤ (ν i : ℝ) :=
+          (le_mul_of_one_le_right (pow_nonneg (by positivity) _) hMR).trans hcut
+        have hpowK : b ^ (K + 1) ≤ b ^ k :=
+          pow_le_pow_right₀ hb.le hkK
         linarith
       simp only [a, ite_eq_right hnot, mul_zero]
     rw [tsum_eq_sum hsupp]
@@ -142,18 +147,18 @@ theorem tsum_geometric_tails_le_rpow_mul (hb : 1 < b) (hM : 0 < M) (ht : 0 < t) 
         field_simp [sub_ne_zero.mpr hr.ne']
       rw [he, pow_succ]
       nlinarith
-    have hgeoE : (∑ k ∈ Finset.range (K + 1), ((b : ℝ≥0∞) ^ t) ^ k) ≤
+    have hgeoE : (∑ k ∈ Finset.range (K + 1), (ENNReal.ofReal b ^ t) ^ k) ≤
         ENNReal.ofReal (r / (r - 1)) * (1 + (ν i : ℝ≥0∞)) ^ t := by
       have h := ofReal_le_ofReal hgeo
       rw [ofReal_sum_of_nonneg (fun _ _ ↦ pow_nonneg (zero_lt_one.trans hr).le _),
         ofReal_mul (div_nonneg (zero_lt_one.trans hr).le (sub_pos.mpr hr).le)] at h
-      change (∑ k ∈ Finset.range (K + 1), ENNReal.ofReal (((b : ℝ) ^ t) ^ k)) ≤
+      change (∑ k ∈ Finset.range (K + 1), ENNReal.ofReal ((b ^ t) ^ k)) ≤
         ENNReal.ofReal (r / (r - 1)) * ENNReal.ofReal ((1 + (ν i : ℝ)) ^ t) at h
       simpa only [ofReal_geometric_weight hb, ofReal_rpow_one_add_natCast] using h
     calc
-      _ ≤ ∑ k ∈ Finset.range (K + 1), ((b : ℝ≥0∞) ^ t) ^ k * f i :=
+      _ ≤ ∑ k ∈ Finset.range (K + 1), (ENNReal.ofReal b ^ t) ^ k * f i :=
         Finset.sum_le_sum (fun k _ ↦ by dsimp only [a]; split <;> simp)
-      _ = (∑ k ∈ Finset.range (K + 1), ((b : ℝ≥0∞) ^ t) ^ k) * f i :=
+      _ = (∑ k ∈ Finset.range (K + 1), (ENNReal.ofReal b ^ t) ^ k) * f i :=
         (Finset.sum_mul _ _ _).symm
       _ ≤ (ENNReal.ofReal (r / (r - 1)) * (1 + (ν i : ℝ≥0∞)) ^ t) * f i :=
         mul_le_mul_left hgeoE _
@@ -168,7 +173,7 @@ theorem tsum_geometric_tails_le_rpow_mul (hb : 1 < b) (hM : 0 < M) (ht : 0 < t) 
 and of its geometrically weighted tails. -/
 theorem tsum_rpow_mul_lt_top_iff_geometric_tails (hb : 1 < b) (hM : 0 < M) (ht : 0 < t) :
     (∑' i, (1 + (ν i : ℝ≥0∞)) ^ t * f i) < ∞ ↔
-      (∑' i, f i) < ∞ ∧ (∑' k : ℕ, ((b : ℝ≥0∞) ^ t) ^ k *
+      (∑' i, f i) < ∞ ∧ (∑' k : ℕ, (ENNReal.ofReal b ^ t) ^ k *
         (∑' i, if b ^ k * M ≤ ν i then f i else 0)) < ∞ := by
   constructor
   · intro hw
@@ -184,13 +189,13 @@ theorem tsum_rpow_mul_lt_top_iff_geometric_tails (hb : 1 < b) (hM : 0 < M) (ht :
 
 end ENNReal
 
-variable {ι : Type*} {f : ι → ℝ} (ν : ι → ℕ) {b M : ℕ} {t : ℝ}
+variable {ι : Type*} {f : ι → ℝ} (ν : ι → ℕ) {M : ℕ} {b t : ℝ}
 
 private theorem ofReal_geometric_tail (hf : ∀ i, 0 ≤ f i) (hs : Summable f)
     (hb : 1 < b) (k : ℕ) :
-    ENNReal.ofReal (((b : ℝ) ^ t) ^ k *
+    ENNReal.ofReal ((b ^ t) ^ k *
       (∑' i, if b ^ k * M ≤ ν i then f i else 0)) =
-      ((b : ℝ≥0∞) ^ t) ^ k *
+      (ENNReal.ofReal b ^ t) ^ k *
         (∑' i, if b ^ k * M ≤ ν i then ENNReal.ofReal (f i) else 0) := by
   have hnonneg (i : ι) : 0 ≤ if b ^ k * M ≤ ν i then f i else 0 := by
     split <;> simp [hf]
@@ -207,10 +212,10 @@ private theorem ofReal_geometric_tail (hf : ∀ i, 0 ≤ f i) (hs : Summable f)
 The unweighted coefficients must also be summable. -/
 theorem summable_rpow_mul_of_summable_geometric_tails
     (hf : ∀ i, 0 ≤ f i) (hs : Summable f) (hb : 1 < b) (hM : 0 < M) (ht : 0 ≤ t)
-    (h : Summable (fun k : ℕ ↦ ((b : ℝ) ^ t) ^ k *
+    (h : Summable (fun k : ℕ ↦ (b ^ t) ^ k *
       (∑' i, if b ^ k * M ≤ ν i then f i else 0))) :
     Summable (fun i ↦ (1 + (ν i : ℝ)) ^ t * f i) := by
-  have htail : (∑' k : ℕ, ((b : ℝ≥0∞) ^ t) ^ k *
+  have htail : (∑' k : ℕ, (ENNReal.ofReal b ^ t) ^ k *
       (∑' i, if b ^ k * M ≤ ν i then ENNReal.ofReal (f i) else 0)) < ∞ := by
     simpa only [ofReal_geometric_tail ν hf hs hb] using h.tsum_ofReal_lt_top
   have hfinite := lt_of_le_of_lt
@@ -232,7 +237,7 @@ geometric rate. The positivity of the order is essential. -/
 theorem summable_geometric_tails_of_summable_rpow_mul
     (hf : ∀ i, 0 ≤ f i) (hb : 1 < b) (hM : 0 < M) (ht : 0 < t)
     (hw : Summable (fun i ↦ (1 + (ν i : ℝ)) ^ t * f i)) :
-    Summable (fun k : ℕ ↦ ((b : ℝ) ^ t) ^ k *
+    Summable (fun k : ℕ ↦ (b ^ t) ^ k *
       (∑' i, if b ^ k * M ≤ ν i then f i else 0)) := by
   have hs : Summable f := hw.of_nonneg_of_le hf (fun i ↦
     le_mul_of_one_le_left (hf i)
@@ -245,7 +250,7 @@ theorem summable_geometric_tails_of_summable_rpow_mul
     simpa only [heq] using hw.tsum_ofReal_lt_top
   have htail := ((ENNReal.tsum_rpow_mul_lt_top_iff_geometric_tails ν hb hM ht).mp hfinite).2
   simp_rw [← ofReal_geometric_tail ν hf hs hb] at htail
-  have hnonneg (k : ℕ) : 0 ≤ ((b : ℝ) ^ t) ^ k *
+  have hnonneg (k : ℕ) : 0 ≤ (b ^ t) ^ k *
       (∑' i, if b ^ k * M ≤ ν i then f i else 0) := by
     apply mul_nonneg (pow_nonneg (Real.rpow_nonneg (by positivity) _) _)
     exact tsum_nonneg (fun i ↦ by split <;> simp [hf])
@@ -256,7 +261,7 @@ of geometrically weighted tails, for any natural-valued size function. -/
 theorem summable_rpow_mul_iff_summable_geometric_tails
     (hf : ∀ i, 0 ≤ f i) (hb : 1 < b) (hM : 0 < M) (ht : 0 < t) :
     Summable (fun i ↦ (1 + (ν i : ℝ)) ^ t * f i) ↔
-      Summable f ∧ Summable (fun k : ℕ ↦ ((b : ℝ) ^ t) ^ k *
+      Summable f ∧ Summable (fun k : ℕ ↦ (b ^ t) ^ k *
         (∑' i, if b ^ k * M ≤ ν i then f i else 0)) := by
   constructor
   · intro hw
