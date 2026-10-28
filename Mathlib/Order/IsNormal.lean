@@ -90,7 +90,7 @@ theorem leftOrdContinuous (hf : IsNormal f) : LeftOrdContinuous f := by
       simp_rw [mem_upperBounds, forall_mem_image] at hb
       exact (hf.strictMono hcd).le.trans (hb hd)
 
-@[deprecated leftOrdContinuous +typeChanged (since := "2026-10-17")]
+@[deprecated LeftOrdContinuous.map_isLUB +typeChanged (since := "2026-10-17")]
 theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty) :
     IsLUB (f '' s) (f a) :=
   hf.leftOrdContinuous hs' hs
