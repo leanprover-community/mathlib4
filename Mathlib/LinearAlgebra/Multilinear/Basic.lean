@@ -102,22 +102,6 @@ structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁)
 
 section Meta
 
-/-- Eta-reduce `fun (x : dom) => f x` to `f` when `f` has the same `BinderInfo` and domain `dom`. -/
-meta partial def Lean.Meta.etaReduce (e : Expr) : MetaM Expr := do
-  match e with
-  | .lam name dom body bi =>
-    let body' ← withLocalDecl name bi dom fun x => do
-      return (← etaReduce (body.instantiate1 x)).abstract #[x]
-    if let .app f (.bvar 0) := body' then
-      if !f.hasLooseBVar 0 then
-        let f := f.lowerLooseBVars 1 1
-        if let .forallE _ fDom _ fBi ← whnfR (← inferType f) then
-          if fBi == bi
-              && (← instantiateMVars fDom).cleanupAnnotations == dom.cleanupAnnotations then
-            return f
-    return e.updateLambdaE! dom body'
-  | _ => return e
-
 open Lean Meta Elab Term PrettyPrinter Delaborator SubExpr
 local syntax "pi_to_lam% " term : term
 
@@ -126,7 +110,7 @@ elab_rules : term
     let eM ← whnfR (← elabType M)
     let .forallE name dom body bi := eM
       | throwErrorAt M "expected a function or Pi type, got{indentExpr eM}"
-    etaReduce (.lam name dom body bi)
+    return .lam name dom body bi
 
 /-- `(Π i, M i) →ₘₗ[R] N` is the type of `R`-multilinear maps from `Π i, M i` to `N`. -/
 notation:25 M " →ₘₗ[" R:25 "] " N:0 => MultilinearMap R (pi_to_lam% M) N
