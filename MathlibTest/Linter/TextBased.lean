@@ -513,6 +513,15 @@ public lemma coe_f {M N : Type*} (f : M → N) : (f : M → N) = f := rfl
 #guard_msgs in
 #eval isMisnamedCoercionAux `coe_f
 
+-- This lemma involves the name `coe` and a coercion, but the coercion in question is `Int.ofNat`.
+public lemma coe_n (a : ℕ) (b : ℤ) (ha : a = 0) (hb : b = 0) : a = b := by simp [*]
+/--
+info: (true,
+  "This declaration statement references the constant(s) [Nat,\n Int,\n Eq,\n OfNat.ofNat,\n instOfNatNat,\n instOfNat,\n Nat.cast,\n instNatCastInt]")
+-/
+#guard_msgs in
+#eval isMisnamedCoercionAux `coe_n
+
 end
 
 /- Tests for the `openClassical` linter -/
