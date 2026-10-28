@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Nat.Cast.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lemmas about nonzero elements of an `AddMonoidWithOne`
 -/

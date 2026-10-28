@@ -11,9 +11,6 @@ public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Complex.HasPrimitives
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Analyticity of Harmonic Functions
 

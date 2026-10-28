@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Topology.Order.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Bounded monotone sequences converge
 

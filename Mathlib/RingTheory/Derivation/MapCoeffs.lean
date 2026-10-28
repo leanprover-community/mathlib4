@@ -10,9 +10,6 @@ public import Mathlib.Algebra.Polynomial.Module.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.Derivation.DifferentialRing
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Coefficient-wise derivation on polynomials
 

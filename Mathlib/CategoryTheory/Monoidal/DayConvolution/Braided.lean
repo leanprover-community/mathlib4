@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.DayConvolution
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Braidings for Day convolution
 

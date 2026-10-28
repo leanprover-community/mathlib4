@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Order.SuccPred
 public import Mathlib.Data.PNat.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Order related instances for `ℕ+`
 -/

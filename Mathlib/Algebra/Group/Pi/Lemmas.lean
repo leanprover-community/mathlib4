@@ -11,9 +11,6 @@ public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Util.Delaborators
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Extra lemmas about products of monoids and groups
 

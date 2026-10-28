@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Group.Int.Even
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Commute
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Even and odd elements in rings
 

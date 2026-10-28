@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.CategoryTheory.Yoneda
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Yoneda embeddings
 

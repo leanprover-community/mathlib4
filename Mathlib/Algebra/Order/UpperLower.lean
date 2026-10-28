@@ -13,9 +13,6 @@ import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Algebraic operations on upper/lower sets
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.Ring.Action.Group
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Ring automorphisms
 

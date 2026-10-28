@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.Convex.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Convex hull
 

@@ -8,9 +8,6 @@ module
 public import Mathlib.Data.Vector.Basic
 public import Mathlib.Logic.Small.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Instances for `Small (List α)` and `Small (Vector α)`.
 

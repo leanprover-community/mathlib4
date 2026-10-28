@@ -7,9 +7,6 @@ module
 
 public import Mathlib.RingTheory.Derivation.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Differential and Algebras
 

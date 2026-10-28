@@ -125,6 +125,10 @@
   title  : Pascal’s Hexagon Theorem
 29:
   title  : Feuerbach’s Theorem
+  authors: "Daniele Cappello (UNICO/NOUS)"
+  links  :
+    incircle: https://github.com/Solarys431/unico-lean-proofs/blob/794568d279e377c34e3ab93a5e0626467f7d9e0d/UnicoProofs/Feuerbach/Main.lean#L133-L136
+    excircles: https://github.com/Solarys431/unico-lean-proofs/blob/794568d279e377c34e3ab93a5e0626467f7d9e0d/UnicoProofs/Feuerbach/Main.lean#L181-L185
 30:
   title  : The Ballot Problem
   authors: Bhavik Mehta and Kexing Ying
@@ -136,10 +140,23 @@
     result: https://github.com/b-mehta/combinatorics/blob/extras/src/inf_ramsey.lean
 32:
   title  : The Four Color Problem
+  authors: "Robert D. Barish (Lean port); Georges Gonthier and contributors (original Rocq proof)"
+  links  :
+    result: https://github.com/RBarish-UTokyo/FourColorTheorem-Lean4/blob/20fa34599f5189dd569d96dd22f306c94ab1c446/Solution.lean#L27-L30
+  note   : >-
+    The Lean port was produced using Claude Opus 5.5 (Anthropic),
+    under Robert D. Barish’s direction.
 33:
   title  : Fermat’s Last Theorem
   statement: FermatLastTheorem
-  note: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
+  authors: "Anthropic"
+  links  :
+    result: https://github.com/anthropics/fermats-last-theorem/blob/6e837e75355538c7f80bab5b956861e86c4eacc2/FinalCheck.lean#L7
+    attribution: https://github.com/anthropics/fermats-last-theorem/blob/6e837e75355538c7f80bab5b956861e86c4eacc2/NOTICE
+  note   : >-
+    External Lean proof of FermatLastTheorem, building on the Imperial College FLT project,
+    flt-regular, and mathlib. The Imperial College FLT project is at
+    https://imperialcollegelondon.github.io/FLT/.
 34:
   title  : Divergence of the Harmonic Series
   decl   : Real.tendsto_sum_range_one_div_nat_succ_atTop
@@ -177,6 +194,9 @@
   authors: Alex J. Best and Yaël Dillies
 41:
   title  : Puiseux’s Theorem
+  authors: "Dean Cureton"
+  links  :
+    result: https://github.com/deancureton/Puiseux/blob/73e78681d7bb78ddb202e29cb92ab3c16b723126/Puiseux/AlgClosed.lean#L389-L395
 42:
   title  : Sum of the Reciprocals of the Triangular Numbers
   authors: Jalex Stark and Yury Kudryashov
@@ -209,6 +229,9 @@
   authors: Kim Morrison
 50:
   title  : The Number of Platonic Solids
+  authors: "UNICO / NOUS project (Solarys431)"
+  links  :
+    result: https://github.com/Solarys431/unico-lean-proofs/blob/794568d279e377c34e3ab93a5e0626467f7d9e0d/UnicoProofs/Platonici/TeoremaPlatonici.lean#L48-L56
 51:
   title  : Wilson’s Lemma
   decl   : ZMod.wilsons_lemma
@@ -219,6 +242,10 @@
   authors: mathlib
 53:
   title  : Pi is Transcendental
+  authors: "Trevor Morris and Yuyang Zhao (independent formalizations)"
+  links  :
+    Trevor Morris's proof: https://github.com/gotrevor/lean-formalizations/blob/f656d414ec768d1c809e235cdbeef00e3c5fbd81/src/LeanFormalizations/NumberTheory/Transcendence/PiTranscendental.lean#L26-L32
+    Yuyang Zhao's proof: https://github.com/astrainfinita/mathlib4/blob/5a0057ccc26b13a4e361f503f5f765bf56a8d353/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L243-L244
 54:
   title  : Königsberg Bridges Problem
   decl   : Konigsberg.not_isEulerian
@@ -229,6 +256,10 @@
   authors: Manuel Candales
 56:
   title  : The Hermite-Lindemann Transcendence Theorem
+  authors: "Yuyang Zhao"
+  links  :
+    result: https://github.com/astrainfinita/mathlib4/blob/5a0057ccc26b13a4e361f503f5f765bf56a8d353/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L225-L226
+    pull request: https://github.com/leanprover-community/mathlib4/pull/28013
 57:
   title  : Heron’s Formula
   decl   : Theorems100.heron
@@ -367,6 +398,9 @@
   authors: Aaron Anderson and Jalex Stark and Kyle Miller
 84:
   title  : Morley’s Theorem
+  authors: "UNICO / NOUS project (Solarys431)"
+  links  :
+    result: https://github.com/Solarys431/unico-lean-proofs/blob/794568d279e377c34e3ab93a5e0626467f7d9e0d/UnicoProofs/Morley.lean#L1034-L1044
 85:
   title  : Divisibility by 3 Rule
   authors: Kim Morrison
@@ -401,6 +435,9 @@
   authors: Zhouhang Zhou
 92:
   title  : Pick’s Theorem
+  authors: "Rado Kirov"
+  links  :
+    result: https://github.com/rkirov/jordan_pick/blob/b3c9b7cf7358bf81a077d78ad67e6e8247869ddd/JordanPick/PicksTheorem/EvalBridgeMain.lean#L102-L107
 93:
   title  : The Birthday Problem
   decls  :
