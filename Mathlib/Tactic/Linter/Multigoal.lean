@@ -6,10 +6,10 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
+public meta import Lean.Parser.Term
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public meta import Lean.Parser.Term
 
 /-!
 # The "multiGoal" linter

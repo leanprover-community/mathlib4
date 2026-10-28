@@ -291,7 +291,6 @@ end Cokernels
 
 variable (X Y : C) (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
-set_option backward.defeqAttrib.useBackward true in
 instance preservesKernel_zero :
     PreservesLimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := ⟨by
@@ -300,7 +299,6 @@ instance preservesKernel_zero :
     refine IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) ?_
     exact (Fork.ext (G.mapIso (asIso (Fork.ι c))).symm (by simp))⟩
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance preservesCokernel_zero :
     PreservesColimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := ⟨by
