@@ -68,7 +68,7 @@ theorem natCast_eq_one (n : ℕ) : ∀ [NeZero n], (n : NatMaxAdd) = 1 := by
     · intro; rfl
     · rw [Nat.cast_succ, ih]; intro; rfl
 
-theorem not_isCancelAdd : ¬ IsCancelAdd NatMaxAdd := fun h ↦ by cases @h.1.1 1 0 1 rfl
+theorem not_isCancelAdd : ¬ IsCancelAdd NatMaxAdd := fun h ↦ by cases @h.toIsLeftCancelAdd.add_left_cancel 1 0 1 rfl
 
 theorem not_isDomain_polynomial : ¬ IsDomain NatMaxAdd[X] :=
   Polynomial.isDomain_iff.not.mpr fun h ↦ not_isCancelAdd h.2
