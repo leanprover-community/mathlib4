@@ -239,8 +239,8 @@ theorem exists_map_le_lt_map_succ_of_exists_ge [NoMaxOrder α] [OrderBot α] [We
     ∃ a, f a ≤ x ∧ x < f (succ a) := by
   have : Nonempty β := ⟨x⟩
   let := WellFoundedLT.toOrderBot β
-  let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
-  let := WellFoundedLT.conditionallyCompleteLinearOrderBot β
+  let := WellFoundedLT.conditionallyCompleteLinearOrder α
+  let := WellFoundedLT.conditionallyCompleteLinearOrder β
   have H : BddAbove (f ⁻¹' Iic x) :=
     have ⟨y, hy⟩ := hf'
     ⟨y, fun z hz ↦ hf.strictMono.le_iff_le.1 <| hz.trans hy⟩
@@ -265,7 +265,7 @@ theorem dirSupClosed_range_of_isCofinal {f : α → β} (hf : IsNormal f) (hf' :
     exact ⟨c, hb⟩
   have := hfn.to_type
   let := WellFoundedLT.toOrderBot α
-  let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
+  let := WellFoundedLT.conditionallyCompleteLinearOrder α
   have hfl : IsLUB (f ⁻¹' s) (sSup (f ⁻¹' s)) := by
     apply isLUB_csSup hfn _
     obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
