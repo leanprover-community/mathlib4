@@ -357,7 +357,7 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
       ?_, ?_, ⟨he₁, rfl⟩, ⟨he₂, rfl⟩, Set.disjoint_left.mpr fun x h₁ h₂ ↦ hne (t.injOn he₁ he₂ ?_)⟩
     on_goal 1 2 =>
       exact t.continuousOn_toFun.isOpen_inter_preimage t.open_source
-        (continuous_snd.isOpen_preimage _ <| isOpen_discrete _)
+        (continuous_snd.isOpen_preimage {_} <| isOpen_discrete _)
     refine Prod.ext ?_ (h₁.2.symm.trans h₂.2)
     rwa [t.proj_toFun e₁ he₁, t.proj_toFun e₂ he₂]
 

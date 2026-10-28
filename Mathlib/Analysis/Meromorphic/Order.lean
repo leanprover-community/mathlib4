@@ -119,7 +119,7 @@ lemma meromorphicOrderAt_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : meromor
         ← zpow_add₀ (sub_ne_zero.mpr hz), ← add_sub_assoc, add_sub_cancel_left, zpow_natCast,
         zpow_natCast]
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
-      AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
+      AnalyticAt.unique_eventuallyEq_zpow_smul_ne_zero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
 /--
 The order of a meromorphic function `f` at `z₀` is finite iff `f` can locally be
@@ -762,8 +762,7 @@ theorem isClopen_setOfPred_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     use t' \ {z.1}, fun y h₁y _ ↦ h₁t' y (mem_of_mem_sdiff h₁y) (mem_of_mem_inter_right h₁y)
     constructor
     · exact h₂t'.sdiff isClosed_singleton
-    · apply (mem_sdiff w).1
-      exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+    · exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
 @[deprecated (since := "2026-07-09")]
 alias isClopen_setOf_meromorphicOrderAt_eq_top := isClopen_setOfPred_meromorphicOrderAt_eq_top
@@ -1056,7 +1055,7 @@ theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜] (hf : Meromorphic
     meromorphicOrderAt (logDeriv f) x = -1 := by
   lift meromorphicOrderAt f x to ℤ using h₂ with n hn
   rw [logDeriv, meromorphicOrderAt_div hf.deriv hf,
-    meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (by exact_mod_cast h₁)) hn.symm,
+    meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (mod_cast h₁)) hn.symm,
     ← hn]
   norm_cast
   simp
@@ -1069,7 +1068,7 @@ theorem meromorphicOrderAt_logDeriv_nonneg (hf : MeromorphicAt f x)
     (h : meromorphicOrderAt f x = 0) :
     0 ≤ meromorphicOrderAt (logDeriv f) x := by
   obtain ⟨g, h₁g, h₂g, h₃g⟩ :=
-    (meromorphicOrderAt_eq_int_iff (n := 0) hf).1 (by exact_mod_cast h)
+    (meromorphicOrderAt_eq_int_iff (n := 0) hf).1 (mod_cast h)
   have h₄ : f =ᶠ[𝓝[≠] x] g := by
     filter_upwards [h₃g] with z hz using by simpa using hz
   rw [meromorphicOrderAt_congr (logDeriv_congr_nhdsNE h₄)]
