@@ -113,7 +113,7 @@ elab_rules : term
     return .lam name dom body bi
 
 /-- `(Π i, M i) →ₘₗ[R] N` is the type of `R`-multilinear maps from `Π i, M i` to `N`. -/
-notation:25 M " →ₘₗ[" R:25 "] " N:0 => MultilinearMap R (pi_to_lam% M) N
+notation:25 piM " →ₘₗ[" R:25 "] " N:0 => MultilinearMap R (pi_to_lam% piM) N
 
 /-- Delaborator for `MultilinearMap`. -/
 @[app_delab MultilinearMap]
