@@ -374,11 +374,6 @@ theorem isNClique_induce_iff (s : Set α) (t : Finset s) (n : ℕ) :
     (G.induce s).IsNClique n t ↔ G.IsNClique n (t.map (.subtype _)) := by
   simp [isNClique_iff, isClique_induce_iff]
 
---theorem Hom.isNClique_image {G' : SimpleGraph β} {f : G →g G'} {s : Finset α} (hfs : Set.InjOn f s)
---    {n : ℕ}  (hG : G.IsNClique n s) :
---    G'.IsNClique n (s.image f) := by
---  simp [isNClique_iff, f.isClique_image]
-
 theorem Embedding.isNClique_map {G' : SimpleGraph β} {f : G ↪g G'} {n : ℕ} {s : Finset α} :
     G'.IsNClique n (s.map f.toEmbedding) ↔ G.IsNClique n s := by
   simp [isNClique_iff, f.isClique_image]
