@@ -165,12 +165,12 @@ lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
   apply injective_of_mono ((uliftYonedaIsoShrinkYoneda.hom.app (F.obj X)).app (op (F.obj X)))
   dsimp [compULiftYonedaIsoULiftYonedaCompLan]
   simp only [← ConcreteCategory.comp_apply,
-    Category.assoc, Iso.inv_hom_id_app_app, Category.comp_id,
-    uliftYonedaIsoShrinkYoneda_hom_app_app,
-    ← compShrinkYonedaIsoShrinkYonedaCompLan_inv_app_app_eq_id.{max w v₁ v₂} F X]
+    Category.assoc, Iso.inv_hom_id_app_app, Category.comp_id]
+  rw [uliftYonedaIsoShrinkYoneda_hom_app_app,
+    ← compShrinkYonedaIsoShrinkYonedaCompLan_inv_app_app_eq_id]
   simp [← dsimp% ConcreteCategory.congr_hom
     (F.op.lanUnit.naturality_app (op X) (uliftYonedaIsoShrinkYoneda.{max w v₂}.hom.app X))
-        (ULift.up (𝟙 X) :), uliftYonedaIsoShrinkYoneda_hom_app_app]
+        (ULift.up (𝟙 X) :), uliftYonedaIsoShrinkYoneda_hom_app_app.{max w v₂}]
 
 instance : F.op.lan.IsLeftKanExtension (compULiftYonedaIsoULiftYonedaCompLan.{w} F).hom := by
   dsimp [compULiftYonedaIsoULiftYonedaCompLan]
