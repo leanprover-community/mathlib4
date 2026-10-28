@@ -16,7 +16,13 @@ public import Mathlib.GroupTheory.Torsion
 # Vitali set and its non-measurability
 
 This file defines a Vitali set and proves that it is not measurable.
-The proof constructs it by taking a representative of each coset
+
+The construction is made by taking a representative of each coset of the subgroup of rational
+numbers in the unit circle. This set is a fundamental domain for the left action of the subgroup,
+meaning its translates form a partition of the unit circle.
+
+A similar construction would work for any countable infinite subgroup of a group with a
+left-invariant non-zero finite measure.
 -/
 
 public section
