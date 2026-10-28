@@ -262,9 +262,7 @@ def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
     simp [ComponentCompl.hom_refl]
   map_comp {_ Y Z} h h' := by
     ext C
-    simp only [TypeCat.hom_ofHom, TypeCat.Fun.toFun_apply, TypeCat.Fun.coe_mk, comp_apply,
-      ConnectedComponent.map_comp]
-    congr!
+    simp
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=
