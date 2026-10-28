@@ -6,16 +6,17 @@ Authors: Jose Francisco Antonio Balderas, Vincent Beffara, Alex Kontorovich, Ter
 -/
 module
 
+public import Mathlib.MeasureTheory.Group.Circle
 public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.LSeries.PrimesInAP
-public import Mathlib.MeasureTheory.Group.Circle
 
-import Mathlib.Geometry.Manifold.PartitionOfUnity
-import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
-import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Algebra.Order.Chebyshev
-import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.Analysis.Distribution.SchwartzSpace.CompactSupport
+import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
+import Mathlib.Analysis.Normed.Group.Tannery
+import Mathlib.Analysis.SumIntegralComparisons
+import Mathlib.Geometry.Manifold.PartitionOfUnity
+
 /-!
 # The Wiener-Ikehara Tauberian theorem
 
@@ -105,6 +106,11 @@ class WienerIkehara where
   hG' : EqOn G (fun s ↦ LSeries f s - A / (s - 1)) {s | 1 < s.re}
   hf : ∀ (σ : ℝ), 1 < σ → LSeriesSummable f σ
   hpos : 0 ≤ f
+
+-- `WienerIkehara` is a bundle of hypotheses rather than a structure on a type, so it is
+-- deliberately assumed locally: a global instance would assert the theorem's hypotheses
+-- unconditionally.  Callers discharge it at the use site, as `WeakPNT` does below.
+set_option linter.concreteInstances false
 
 namespace WienerIkehara
 
@@ -416,8 +422,10 @@ private theorem lim_integ_G_mul {Ψ : 𝓢(ℝ, ℂ)} (hΨ : HasCompactSupport �
     refine Metric.isCompact_iff_isClosed_bounded.mpr ⟨?_, ?_⟩
     · exact isClosed_Icc.reProdIm (isClosed_tsupport Ψ)
     · exact (Metric.isBounded_Icc 1 2).reProdIm hΨ.isBounded
+  have hsub : reProdIm (Icc 1 2) (tsupport Ψ) ⊆ {s : ℂ | 1 ≤ s.re} :=
+    fun z hz ↦ (mem_reProdIm.mp hz).1.1
   obtain ⟨z, -, hmax⟩ := l1.exists_isMaxOn ⟨1 + a₀ * I, by simp [mem_reProdIm, ha₀]⟩
-    (hG.mono (fun z hz ↦ (mem_reProdIm.mp hz).1.1)).norm
+    (hG.mono hsub).norm
   apply tendsto_integral_filter_of_dominated_convergence (bound := (‖G z‖ * ‖Ψ ·‖))
   · refine eventually_of_mem (U := Icc 1 2) (Icc_mem_nhdsGT_of_mem (by simp))
       fun u hu ↦ (Continuous.mul ?_ ?_).aestronglyMeasurable
