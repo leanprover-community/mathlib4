@@ -527,13 +527,10 @@ theorem symm_dual_comp (g : βᵒᵈ →o γᵒᵈ) (f : αᵒᵈ →o βᵒᵈ)
   rfl
 
 /-- `OrderHom.dual` as an order isomorphism. -/
+@[simps toEquiv]
 def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
-
-@[simp]
-theorem dualIso_toEquiv (α β : Type*) [Preorder α] [Preorder β] :
-    (dualIso α β).toEquiv = OrderHom.dual.trans OrderDual.toDual := rfl
 
 /-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o ULift β` in a
 higher universe. -/
@@ -1016,23 +1013,25 @@ def prodAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] :
   map_rel_iff' := @fun ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ ↦ by simp [Equiv.prodAssoc, and_assoc]
 
 /-- `Equiv.prodCongr` promoted to an order isomorphism. -/
-@[simps! (attr := grind =) toEquiv apply symm_apply]
-def prodCongr {α' β' : Type*} [LE α'] [LE β'] (e : α ≃o α') (f : β ≃o β') :
-    α × β ≃o α' × β' where
-  toEquiv := e.toEquiv.prodCongr f.toEquiv
+@[simps! (attr := grind =) toEquiv apply]
+def prodCongr (e₁ : α ≃o γ) (e₂ : β ≃o δ) : α × β ≃o γ × δ where
+  toEquiv := e₁.toEquiv.prodCongr e₂.toEquiv
   map_rel_iff' := by simp [Prod.le_def]
 
-/-- `Equiv.prodUnique` promoted to an order isomorphism. -/
-@[simps! (attr := grind =) toEquiv apply symm_apply]
-def prodUnique (α β : Type*) [LE α] [Preorder β] [Unique β] : α × β ≃o α where
-  toEquiv := .prodUnique α β
-  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+@[simp, grind =]
+lemma symm_prodCongr (e₁ : α ≃o γ) (e₂ : β ≃o δ) :
+    (prodCongr e₁ e₂).symm = prodCongr e₁.symm e₂.symm := rfl
 
-/-- `Equiv.uniqueProd` promoted to an order isomorphism. -/
-@[simps! (attr := grind =) toEquiv apply symm_apply]
-def uniqueProd (α β : Type*) [Preorder α] [LE β] [Unique α] : α × β ≃o β where
-  toEquiv := .uniqueProd β α
-  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+@[simp]
+lemma prodCongr_refl_refl : prodCongr (.refl α) (.refl β) = .refl (α × β) := rfl
+
+@[simp]
+lemma prodCongr_trans_prodCongr {ε ζ : Type*} [LE ε] [LE ζ]
+    (e₁ : α ≃o γ) (e₂ : β ≃o δ) (e₁' : γ ≃o ε) (e₂' : δ ≃o ζ) :
+    (prodCongr e₁ e₂).trans (prodCongr e₁' e₂') = prodCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
+
+lemma prodComm_trans_prodCongr (e₁ : α ≃o γ) (e₂ : β ≃o δ) :
+    prodComm.trans (prodCongr e₁ e₂) = (prodCongr e₂ e₁).trans prodComm := rfl
 
 @[simp]
 theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
@@ -1084,6 +1083,32 @@ theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e 
   e.rel_symm_apply
 
 end LE
+
+section Unique
+variable (α β : Type*) [LE α] [Preorder β] [Unique β]
+
+/-- `Equiv.prodUnique` promoted to an order isomorphism. -/
+@[simps! (attr := grind =) toEquiv apply symm_apply]
+def prodUnique : α × β ≃o α where
+  toEquiv := .prodUnique α β
+  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+
+/-- `Equiv.uniqueProd` promoted to an order isomorphism. -/
+@[simps! (attr := grind =) toEquiv apply symm_apply]
+def uniqueProd : β × α ≃o α where
+  toEquiv := .uniqueProd α β
+  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+
+@[simp] lemma prodComm_trans_prodUnique : prodComm.trans (prodUnique α β) = uniqueProd α β := rfl
+@[simp] lemma prodComm_trans_uniqueProd : prodComm.trans (uniqueProd α β) = prodUnique α β := rfl
+
+lemma symm_prodUnique_trans_prodComm :
+    (prodUnique α β).symm.trans prodComm = (uniqueProd α β).symm := rfl
+
+lemma symm_uniqueProd_trans_prodComm :
+    (uniqueProd α β).symm.trans prodComm = (prodUnique α β).symm := rfl
+
+end Unique
 
 variable [Preorder α] [Preorder β]
 
@@ -1203,12 +1228,9 @@ noncomputable def ofUnique
   map_rel_iff' := by simp
 
 /-- `Equiv.equivOfIsEmpty` promoted to an `OrderIso`. -/
+@[simps toEquiv]
 def ofIsEmpty (α β : Type*) [Preorder α] [Preorder β] [IsEmpty α] [IsEmpty β] : α ≃o β :=
   ⟨Equiv.equivOfIsEmpty α β, @isEmptyElim _ _ _⟩
-
-@[simp]
-theorem ofIsEmpty_toEquiv (α β : Type*) [Preorder α] [Preorder β] [IsEmpty α] [IsEmpty β] :
-    (ofIsEmpty α β).toEquiv = Equiv.equivOfIsEmpty α β := rfl
 
 end OrderIso
 
@@ -1246,12 +1268,6 @@ def orderIsoOfRightInverse (g : β → α) (hg : Function.RightInverse g f) : α
     invFun := g,
     left_inv := fun _ => h_mono.injective <| hg _,
     right_inv := hg }
-
-@[simp]
-theorem orderIsoOfRightInverse_toEquiv (g : β → α) (hg : Function.RightInverse g f) :
-    (orderIsoOfRightInverse f h_mono g hg).toEquiv =
-      { toFun := f, invFun := g, left_inv := fun _ => h_mono.injective <| hg _,
-        right_inv := hg } := rfl
 
 end StrictMono
 
