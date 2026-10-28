@@ -5,6 +5,9 @@ Remove unnecessary `set_option ... in` from a Lean project.
 Tries removing each occurrence (that isn't followed by a comment), testing
 whether the file still builds. Processes files in reverse import-DAG order
 (downstream first) to minimize unnecessary rebuilds.
+
+Downstream modules are not rebuilt, so options in `EXPORT_AFFECTING_OPTIONS`
+are skipped unless requested explicitly with `--option`.
 """
 
 import argparse
@@ -27,6 +30,7 @@ try:
     )
     from set_option_utils import (
         DEFAULT_OPTIONS,
+        EXPORT_AFFECTING_OPTIONS,
         PROJECT_DIR,
         commented_pattern,
         is_annotated,
@@ -164,12 +168,18 @@ class _RemoveDisplay(Display):
 
 
 def handle_lakefile(options: list[str]) -> bool:
-    """Check and remove options from lakefile.lean. Return True if changed."""
+    """Remove `backward.*` options from lakefile.lean. Return True if changed.
+
+    Such an entry is a project-wide switch back to the old behaviour: it must go before the
+    per-declaration `set_option` lines can be tested, and dropping it is the goal of the
+    migration.  Other entries (e.g. linter settings) are deliberate configuration, so we
+    leave them alone.
+    """
     lakefile = PROJECT_DIR / "lakefile.lean"
     content = lakefile.read_text()
     changed = False
     for opt in options:
-        if opt not in content:
+        if not opt.startswith("backward.") or opt not in content:
             continue
         pat = lakefile_pattern(opt)
         new_content = pat.sub("", content)
@@ -347,7 +357,8 @@ def main():
     )
     parser.add_argument(
         "--option",
-        help="Only scan/remove this specific option (default: all known options)",
+        help="Only scan/remove this specific option (default: all known options "
+             "except those in EXPORT_AFFECTING_OPTIONS)",
     )
     parser.add_argument(
         "--dry-run",
@@ -397,7 +408,15 @@ def main():
     )
     args = parser.parse_args()
 
-    options = [args.option] if args.option else DEFAULT_OPTIONS
+    if args.option:
+        options = [args.option]
+        if args.option in EXPORT_AFFECTING_OPTIONS:
+            print(
+                f"Warning: removing {args.option} can break downstream modules, which\n"
+                "  this script does not rebuild.  Run a full `lake build` afterwards."
+            )
+    else:
+        options = [opt for opt in DEFAULT_OPTIONS if opt not in EXPORT_AFFECTING_OPTIONS]
 
     start_time = time.time()
 
@@ -405,12 +424,14 @@ def main():
     if not args.dry_run and (PROJECT_DIR / "lakefile.lean").exists():
         handle_lakefile(options)
     elif (PROJECT_DIR / "lakefile.toml").exists():
-        opts_str = ", ".join(options)
-        print(
-            f"Note: lakefile.toml detected.  If {opts_str} is set in `leanOptions`\n"
-            "  there, you'll need to remove the entry manually — this script only\n"
-            "  edits lakefile.lean."
-        )
+        backward_opts = [opt for opt in options if opt.startswith("backward.")]
+        if backward_opts:
+            opts_str = ", ".join(backward_opts)
+            print(
+                f"Note: lakefile.toml detected.  If {opts_str} is set in `leanOptions`\n"
+                "  there, you'll need to remove the entry manually — this script only\n"
+                "  edits lakefile.lean."
+            )
 
     # Step 2: build DAG
     print("Building import DAG...", flush=True)
