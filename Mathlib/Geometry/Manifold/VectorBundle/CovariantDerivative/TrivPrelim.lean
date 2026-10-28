@@ -40,12 +40,11 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e]
 
-lemma mdifferentiableAt
+lemma mdifferentiableAt'
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) (v : V x) :
-    MDiffAt e v := by
-  apply ContMDiffAt.mdifferentiableAt ?_ zero_ne_one.symm
-  exact e.contMDiffAt (e.coe_mem_source.mpr hx)
+    MDiffAt e v :=
+  e.mdifferentiableAt (IB := I) (e.coe_mem_source.mpr hx)
 
 lemma mdifferentiableAt_invFun
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
@@ -77,7 +76,7 @@ lemma derivInv_deriv
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     (e.derivInv I v) ∘L (e.deriv I v) = .id 𝕜 _ := by
   have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
-  have D₂ : MDiffAt e v := e.mdifferentiableAt (I := I) hv v.2
+  have D₂ : MDiffAt e v := e.mdifferentiableAt' (I := I) hv v.2
   have D1' := D₁
   simp only [PartialEquiv.invFun_as_coe, OpenPartialHomeomorph.coe_toPartialEquiv_symm] at D1'
   rw [e.mk_proj_snd' hv] at D₁
@@ -140,7 +139,7 @@ lemma deriv_derivInv
     (e.deriv I v) ∘L (e.derivInv I v) = .id 𝕜 _ := by
   have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
   rw [e.mk_proj_snd' hv] at D₁
-  have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
+  have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt' (I := I) hv v.2
   have : e.invFun (e v) = v := by simp [e.mem_source.mpr hv]
   rw [← this] at D₂
   have comp := mfderiv_comp (e v) D₂ D₁
@@ -262,7 +261,7 @@ lemma mfderiv_comp_section
   -- have : mfderiv% (e ∘ T%σ) x = (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
   --  mfderiv_comp x (e.mdifferentiableAt hx _) hσ
   have : mfderiv% (e ∘ T%σ) x u = e.deriv I (σ x) ((mfderiv% T%σ x) u) := by
-    rw [mfderiv_comp x (e.mdifferentiableAt hx _) hσ]
+    rw [mfderiv_comp x (e.mdifferentiableAt' hx _) hσ]
     rfl
   erw [← this]
   rw [(e.apply_total_eventuallyEq hx _).mfderiv_eq]

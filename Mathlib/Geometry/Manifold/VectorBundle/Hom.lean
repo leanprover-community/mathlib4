@@ -147,7 +147,7 @@ theorem mdifferentiableWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x�
       MDiffAt[s] (fun x ↦ (f x).1) x₀ ∧
         MDiffAt[s]
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
-  mdifferentiableWithinAt_totalSpace IB ..
+  mdifferentiableWithinAt_totalSpace
 
 theorem mdifferentiableAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     MDiffAt f x₀ ↔
