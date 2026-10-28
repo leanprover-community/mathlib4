@@ -266,7 +266,7 @@ theorem restrict_eq_domRestrict_codRestrict {f : M →ₛₗ[σ₁₂] M₂} {p 
     (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
   rfl
 
-theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
+protected theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (∑ d ∈ t, f d) b = ∑ d ∈ t, f d b :=
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 
@@ -284,7 +284,7 @@ theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R 
     (hG : G ^ k = 0) : g ^ k = 0 := by
   ext m
   have hg : N.subtype.comp (g ^ k) m = 0 := by
-    rw [← Module.End.commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
+    rw [← Module.End.commute_pow_left_of_commute h, hG, zero_comp, LinearMap.zero_apply]
   simpa using hg
 
 section
