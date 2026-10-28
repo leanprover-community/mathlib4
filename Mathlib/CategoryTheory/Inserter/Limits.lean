@@ -119,7 +119,7 @@ noncomputable def coneOfPreserves
       exact ((isLimitOfPreserves G hc).fac p j).symm }
   π.naturality {_ _} f := by
     ext
-    simpa using (c.π.naturality f)
+    simp [dsimp% c.w f]
 
 @[reassoc (attr := simp)]
 lemma coneOfPreserves_pt_hom_map_π_app {K : J ⥤ Inserter F G}
