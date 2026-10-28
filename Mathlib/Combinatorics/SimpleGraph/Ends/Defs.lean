@@ -155,7 +155,7 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
 If `K ⊆ L`, the components outside of `L` are all contained in a single component outside of `K`.
 -/
 abbrev hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
-  C.map <| induceHom Hom.id <| (by rwa [← Set.compl_subset_compl] at h)
+  C.map <| induceHom Hom.id <| by rwa [← Set.compl_subset_compl] at h
 
 theorem subset_hom (C : G.ComponentCompl L) (h : K ⊆ L) : (C : Set V) ⊆ (C.hom h : Set V) := by
   rintro c ⟨cL, rfl⟩
