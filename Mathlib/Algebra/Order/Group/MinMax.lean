@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Order.Group.Abs
+
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 
 /-!

@@ -5,11 +5,12 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Star.Module
-public import Mathlib.Algebra.Star.StarProjection
-public import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.Tactic.Abel
 public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
+public import Mathlib.Algebra.Star.StarProjection
+
+import Mathlib.Tactic.Abel
 
 /-!
 # Unitization of a non-unital algebra

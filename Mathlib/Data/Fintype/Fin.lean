@@ -5,8 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Fin
 public import Mathlib.Data.Vector.Basic
+public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
 # The structure of `Fintype (Fin n)`

@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
+
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!

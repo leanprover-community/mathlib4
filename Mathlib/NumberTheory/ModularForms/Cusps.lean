@@ -5,11 +5,12 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
-import Mathlib.RingTheory.Localization.NumDen
 public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.RingTheory.Localization.NumDen
 
 /-!
 # Cusps
@@ -317,7 +318,7 @@ open scoped Classical in
 noncomputable def strictWidthInfty : ℝ :=
   if h : DiscreteTopology 𝒢.strictPeriods then
     |Exists.choose <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
-      <| AddSubgroup.discrete_iff_addCyclic.mpr h|
+      <| AddSubgroup.isAddCyclic_iff_discreteTopology.mpr h|
   else 0
 
 lemma strictWidthInfty_nonneg : 0 ≤ 𝒢.strictWidthInfty := by
@@ -334,7 +335,7 @@ lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strict
     𝒢.strictPeriods = AddSubgroup.zmultiples 𝒢.strictWidthInfty := by
   simp [Subgroup.strictWidthInfty, dite_eq_left,
     Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
-      <| AddSubgroup.discrete_iff_addCyclic.mpr inferInstance]
+      <| AddSubgroup.isAddCyclic_iff_discreteTopology.mpr inferInstance]
 
 lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
     strictWidthInfty (Γ : Subgroup (GL (Fin 2) ℝ)) = 1 := by

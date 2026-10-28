@@ -6,8 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Tactic.Positivity
+
+import Mathlib.Analysis.Analytic.Linear
 
 /-!
 

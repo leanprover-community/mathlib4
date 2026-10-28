@@ -5,9 +5,9 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Complex.Exponential
+public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!

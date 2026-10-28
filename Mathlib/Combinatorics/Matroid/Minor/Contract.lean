@@ -6,6 +6,7 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Minor.Delete
+
 import Mathlib.Tactic.TautoSet
 
 /-!

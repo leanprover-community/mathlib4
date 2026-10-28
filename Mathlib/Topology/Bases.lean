@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.NhdsWithin
+
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -764,11 +765,6 @@ theorem _root_.MapClusterPt.tendsto_subseq {u : ℕ → α} (hx : MapClusterPt x
     ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
   subseq_tendsto_of_neBot hx
 
-@[deprecated MapClusterPt.tendsto_subseq (since := "2026-03-29")]
-theorem FirstCountableTopology.tendsto_subseq {x : α} {u : ℕ → α}
-    (hx : MapClusterPt x atTop u) : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
-  subseq_tendsto_of_neBot hx
-
 end FirstCountableTopology
 
 instance {β} [TopologicalSpace β] [FirstCountableTopology α] [FirstCountableTopology β] :
@@ -857,9 +853,10 @@ variable (α)
 -- see Note [lower instance priority]
 instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
     [SecondCountableTopology α] : FirstCountableTopology α :=
-  ⟨fun _ => HasCountableBasis.isCountablyGenerated
+  ⟨fun x => HasCountableBasis.isCountablyGenerated
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
-        (countable_countableBasis α).mono inter_subset_left⟩⟩
+        (countable_countableBasis α).mono
+          (inter_subset_left (s := countableBasis α) (t := {t | x ∈ t}))⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) [Countable α] [FirstCountableTopology α] :

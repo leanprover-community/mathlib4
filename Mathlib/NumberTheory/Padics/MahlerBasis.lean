@@ -70,9 +70,6 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
     ← Ring.factorial_nsmul_multichoose_eq_ascPochhammer, smul_eq_mul, Nat.cast_mul, norm_mul]
   exact mul_le_of_le_one_right (norm_nonneg _) (norm_le_one _)
 
-instance : IsAddTorsionFree ℤ_[p] where
-  nsmul_right_injective _ := smul_right_injective ℤ_[p]
-
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
@@ -359,12 +356,10 @@ noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℤ_[p]] C₀(ℕ, E) wh
   invFun a := mahlerSeries a
   map_add' f g := by
     ext x
-    simp only [ContinuousMap.coe_add, fwdDiff_iter_add, Pi.add_apply,
-      ZeroAtInftyContinuousMap.coe_mk, ZeroAtInftyContinuousMap.coe_add]
+    simp
   map_smul' r f := by
     ext n
-    simp only [ContinuousMap.coe_smul, RingHom.id_apply, ZeroAtInftyContinuousMap.coe_mk,
-      ZeroAtInftyContinuousMap.coe_smul, Pi.smul_apply, fwdDiff_iter_const_smul]
+    simp
   left_inv f := (hasSum_mahler f).tsum_eq
   right_inv a := ZeroAtInftyContinuousMap.ext <|
     fwdDiff_mahlerSeries (cocompact_eq_atTop (α := ℕ) ▸ zero_at_infty a)

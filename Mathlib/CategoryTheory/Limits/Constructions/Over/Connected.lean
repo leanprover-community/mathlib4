@@ -5,8 +5,8 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
 public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Opposites
 
 /-!
 # Connected limits in the over category
@@ -35,7 +35,6 @@ namespace CategoryTheory.CostructuredArrow
 
 namespace CreatesConnected
 
-set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation) Given a diagram in `CostructuredArrow K B`, produce a natural transformation
 from the diagram legs to the specific object.
 -/
@@ -44,7 +43,6 @@ def natTransInCostructuredArrow {B : D} (F : J ⥤ CostructuredArrow K B) :
     F ⋙ CostructuredArrow.proj K B ⋙ K ⟶ (CategoryTheory.Functor.const J).obj B where
   app j := (F.obj j).hom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation) Given a cone in the base category, raise it to a cone in
 `CostructuredArrow K B`. Note this is where the connected assumption is used.
 -/
@@ -155,7 +153,6 @@ instance hasLimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasLimitsOfSha
     HasLimitsOfShape J (Over B) where
   has_limit F := hasLimit_of_created F (forget B)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`.
 This takes limit cones to limit cones when `J` is cofiltered. See `isLimitConePost` -/
 @[simps]

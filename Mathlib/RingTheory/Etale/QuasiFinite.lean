@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.ZariskisMainTheorem
+
 import Mathlib.RingTheory.Ideal.Quotient.Over
 
 /-!

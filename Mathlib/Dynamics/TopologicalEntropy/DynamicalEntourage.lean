@@ -5,8 +5,9 @@ Authors: Damien Thomine, Pietro Monticone
 -/
 module
 
-import Mathlib.Order.Lattice.Nat
 public import Mathlib.Topology.UniformSpace.Basic
+
+import Mathlib.Order.Lattice.Nat
 
 /-!
 # Dynamical entourages
@@ -60,7 +61,7 @@ lemma mem_dynEntourage : (x, y) ∈ dynEntourage T U n ↔ ∀ k < n, (T^[k] x, 
 
 lemma mem_ball_dynEntourage :
     y ∈ ball x (dynEntourage T U n) ↔ ∀ k < n, T^[k] y ∈ ball (T^[k] x) U := by
-  simp only [ball, mem_preimage, mem_dynEntourage]
+  simp only [ball, SetRel.mem_ball, SetRel.mem_inv, mem_dynEntourage]
 
 lemma dynEntourage_mem_uniformity [UniformSpace X] (h : UniformContinuous T)
     (U_uni : U ∈ 𝓤 X) (n : ℕ) :

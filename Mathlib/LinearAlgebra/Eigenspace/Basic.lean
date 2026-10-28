@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Nilpotent.Lemmas

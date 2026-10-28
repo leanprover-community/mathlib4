@@ -5,9 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.Topology.ContinuousMap.Periodic
+
+import Mathlib.Analysis.PSeries
 
 /-!
 # Poisson's summation formula
@@ -26,8 +27,6 @@ easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which
 
 public section
 
-
-noncomputable section
 
 open Function hiding comp_apply
 
@@ -55,7 +54,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   have neK : ∀ (K : Compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
     have (x : ℝ) : ‖e x‖ = 1 := (AddCircle.toCircle (-m • x)).norm_coe
     intro K g
-    simp_rw [norm_eq_iSup_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
+    simp_rw [norm_eq_iSup_norm, restrict_apply, ContinuousMap.mul_apply, norm_mul, this, one_mul]
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
     intro n; ext1 x
     have : Periodic e 1 := Periodic.comp (fun x => AddCircle.coe_add_period 1 x) (fourier (-m))
@@ -68,7 +67,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
         coe_mk, Periodic.lift_coe, zsmul_one, smul_eq_mul]
     -- Transform sum in C(ℝ, ℂ) evaluated at x into pointwise sum of values.
     _ = ∫ x in (0 : ℝ)..1, ∑' n : ℤ, (e * f.comp (ContinuousMap.addRight n)) x := by
-      simp_rw [coe_mul, Pi.mul_apply,
+      simp_rw [ContinuousMap.coe_mul, Pi.mul_apply,
         ← ContinuousMap.tsum_apply (summable_of_locally_summable_norm hf), tsum_mul_left]
     -- Swap sum and integral.
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by

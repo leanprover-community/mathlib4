@@ -5,10 +5,11 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Algebra.Order.BigOperators.Expect
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Analysis.Real.Sqrt
+
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!

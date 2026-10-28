@@ -289,7 +289,7 @@ lemma coeff_preΨ (n : ℤ) : (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 
 lemma coeff_preΨ_ne_zero {n : ℤ} (h : (n : R) ≠ 0) :
     (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 4 else 1) / 2) ≠ 0 := by
   induction n using Int.negInduction with
-  | nat n => simpa only [preΨ_ofNat, Int.even_coe_nat]
+  | nat n => simpa only [preΨ_ofNat, Int.even_natCast]
       using! W.coeff_preΨ'_ne_zero <| by exact_mod_cast h
   | neg ih n => simpa only [preΨ_neg, coeff_neg, neg_ne_zero, Int.natAbs_neg, even_neg]
         using! ih n <| neg_ne_zero.mp <| by exact_mod_cast h
@@ -392,7 +392,7 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
   let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_add_eq_of_natDegree_le
   let h {n} := W.natDegree_coeff_preΨ' n
   rcases n with _ | _ | n
-  iterate 2 simp [natDegree_X_le]
+  on_goal 1 2 => simp [natDegree_X_le]
   have hd : (n + 1 + 1) ^ 2 = 1 + 2 * expDegree (n + 2) + if Even (n + 1) then 0 else 3 := by
     push_cast [← @Nat.cast_inj ℤ, expDegree_cast (n + 1).succ_ne_zero, Nat.even_add_one, ite_not]
     split_ifs <;> ring1

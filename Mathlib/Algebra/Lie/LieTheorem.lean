@@ -6,6 +6,7 @@ Authors: Lucas Whitfield, Johan Commelin
 module
 
 public import Mathlib.Algebra.Lie.Weights.Basic
+
 import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!

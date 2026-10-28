@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+
 import Mathlib.Data.Finset.Density
 
 /-!

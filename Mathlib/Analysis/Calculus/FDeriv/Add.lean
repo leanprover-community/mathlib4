@@ -5,9 +5,9 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
 public import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # Additive operations on derivatives
@@ -27,8 +27,6 @@ public section
 
 
 open Filter Asymptotics ContinuousLinearMap
-
-noncomputable section
 
 section
 
@@ -86,6 +84,18 @@ theorem DifferentiableOn.const_smul (h : DifferentiableOn 𝕜 f s) (c : R) :
 theorem Differentiable.const_smul (h : Differentiable 𝕜 f) (c : R) :
     Differentiable 𝕜 (c • f) := fun x => (h x).const_smul c
 
+/-- If `c` is invertible, `c • f` is differentiable at `x` within `s` if and only if `f` is. -/
+lemma differentiableWithinAt_smul_iff (c : R) [Invertible c] :
+    DifferentiableWithinAt 𝕜 (c • f) s x ↔ DifferentiableWithinAt 𝕜 f s x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.const_smul c⟩
+  apply (h.const_smul ⅟c).congr_of_eventuallyEq ?_ (by simp)
+  filter_upwards with x using by simp
+
+/-- If `c` is invertible, `c • f` is differentiable at `x` if and only if `f` is. -/
+lemma differentiableAt_smul_iff (c : R) [Invertible c] :
+    DifferentiableAt 𝕜 (c • f) x ↔ DifferentiableAt 𝕜 f x := by
+  rw [← differentiableWithinAt_univ, differentiableWithinAt_smul_iff, differentiableWithinAt_univ]
+
 theorem fderivWithin_fun_const_smul (hxs : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f s x) (c : R) :
     fderivWithin 𝕜 (fun y => c • f y) s x = c • fderivWithin 𝕜 f s x :=
@@ -95,13 +105,6 @@ theorem fderivWithin_const_smul (hxs : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f s x) (c : R) :
     fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x :=
   fderivWithin_fun_const_smul hxs h c
-
-/-- If `c` is invertible, `c • f` is differentiable at `x` within `s` if and only if `f` is. -/
-lemma differentiableWithinAt_smul_iff (c : R) [Invertible c] :
-    DifferentiableWithinAt 𝕜 (c • f) s x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.const_smul c⟩
-  apply (h.const_smul ⅟c).congr_of_eventuallyEq ?_ (by simp)
-  filter_upwards with x using by simp
 
 /-- A version of `fderivWithin_const_smul` without differentiability hypothesis:
 in return, the constant `c` must be invertible, i.e. if `R` is a field. -/
@@ -123,11 +126,6 @@ theorem fderiv_fun_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
 theorem fderiv_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x :=
   (h.hasFDerivAt.const_smul c).fderiv
-
-/-- If `c` is invertible, `c • f` is differentiable at `x` if and only if `f` is. -/
-lemma differentiableAt_smul_iff (c : R) [Invertible c] :
-    DifferentiableAt 𝕜 (c • f) x ↔ DifferentiableAt 𝕜 f x := by
-  rw [← differentiableWithinAt_univ, differentiableWithinAt_smul_iff, differentiableWithinAt_univ]
 
 /-- A version of `fderiv_const_smul` without differentiability hypothesis: in return, the constant
 `c` must be invertible, i.e. if `R` is a field. -/
@@ -241,6 +239,10 @@ theorem fderiv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 
 theorem fderiv_fun_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (fun y => f y + g y) x = fderiv 𝕜 f x + fderiv 𝕜 g x :=
   fderiv_add hf hg
+
+end Add
+
+section AddConst
 
 @[simp]
 theorem hasFDerivAtFilter_add_const_iff (c : F) :
@@ -384,7 +386,7 @@ theorem fderivWithin_const_add (c : F) :
 theorem fderiv_const_add (c : F) : fderiv 𝕜 (fun y => c + f y) x = fderiv 𝕜 f x := by
   simp only [add_comm c, fderiv_add_const]
 
-end Add
+end AddConst
 
 section Sum
 
@@ -681,6 +683,10 @@ theorem fderiv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 
     fderiv 𝕜 (f - g) x = fderiv 𝕜 f x - fderiv 𝕜 g x :=
   fderiv_fun_sub hf hg
 
+end Sub
+
+section SubConst
+
 @[simp]
 theorem hasFDerivAtFilter_sub_const_iff (c : F) :
     HasFDerivAtFilter (f · - c) f' L ↔ HasFDerivAtFilter f f' L := by
@@ -798,7 +804,7 @@ theorem fderivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
 theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv 𝕜 f x := by
   simp [← fderivWithin_univ, fderivWithin_const_sub]
 
-end Sub
+end SubConst
 
 section CompAdd
 

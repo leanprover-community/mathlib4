@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Instances.Shrink
+
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Data.EReal.Operations
 import Mathlib.Topology.MetricSpace.Bounded

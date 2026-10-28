@@ -6,12 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.Flat.EquationalCriterion
 public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
 public import Mathlib.RingTheory.LocalProperties.Exactness
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Support
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Finite modules over local rings
@@ -203,7 +203,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
     · apply Module.Flat.lTensor_preserves_injective_linearMap
       exact Subtype.val_injective
     · apply hi'.injective
-      rw [LinearMap.baseChange_eq_ltensor]
+      rw [LinearMap.baseChange_eq_lTensor]
       erw [← LinearMap.comp_apply (i.lTensor k), ← LinearMap.lTensor_comp]
       rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
       simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]

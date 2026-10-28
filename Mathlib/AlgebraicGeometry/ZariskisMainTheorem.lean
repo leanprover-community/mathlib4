@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Etale
 public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiFinite
 public import Mathlib.AlgebraicGeometry.Normalization
+
 import Mathlib.RingTheory.Etale.QuasiFinite
 
 /-!
@@ -40,7 +41,6 @@ universe u
 
 variable {X Y S : Scheme.{u}} (f : X ⟶ S) [LocallyOfFiniteType f]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 -- Note: This is weaker than stacks#02LN but is enough to proof Zariski's main.

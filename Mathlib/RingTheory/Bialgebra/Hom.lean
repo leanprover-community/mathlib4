@@ -5,8 +5,8 @@ Authors: Kenny Lau, Yury Kudryashov, Amelia Livingston
 -/
 module
 
-public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.Basic
+public import Mathlib.RingTheory.Coalgebra.Hom
 
 /-!
 # Homomorphisms of `R`-bialgebras

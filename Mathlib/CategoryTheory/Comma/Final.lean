@@ -6,6 +6,7 @@ Authors: Jakob von Raumer
 module
 
 public import Mathlib.CategoryTheory.Filtered.Final
+
 import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
 /-!
@@ -135,7 +136,6 @@ connected. -/
 instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected (Comma L R) := by
   rwa [isConnected_iff_of_initial (snd L R)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Let the following diagram commute up to isomorphism:
 
 ```

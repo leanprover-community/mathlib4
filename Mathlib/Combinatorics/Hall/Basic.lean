@@ -6,6 +6,7 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 module
 
 public import Mathlib.CategoryTheory.CofilteredSystem
+
 import Mathlib.Combinatorics.Hall.Finite
 
 /-!

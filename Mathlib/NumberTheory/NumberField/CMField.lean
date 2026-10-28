@@ -5,9 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Units.Regulator
+
+import Mathlib.FieldTheory.Galois.IsGaloisGroup
 
 /-!
 # CM-extension of number fields

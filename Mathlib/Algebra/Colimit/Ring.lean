@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Colimit.DirectLimit
 public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
 import Mathlib.Tactic.SuppressCompilation
 
 /-!

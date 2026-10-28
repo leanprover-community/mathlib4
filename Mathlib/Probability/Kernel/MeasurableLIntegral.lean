@@ -131,10 +131,10 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
     (motive := fun f => Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) ?_ ?_ (F n)
   · intro c t ht
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
-      SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
+      FunLike.coe_zero, Set.piecewise_eq_indicator]
     exact Kernel.measurable_lintegral_indicator_const (κ := κ) ht c
   · intro g₁ g₂ _ hm₁ hm₂
-    simp only [SimpleFunc.coe_add, Pi.add_apply]
+    simp only [FunLike.coe_add, Pi.add_apply]
     have h_add :
       (fun a => ∫⁻ b, g₁ (a, b) + g₂ (a, b) ∂κ a) =
         (fun a => ∫⁻ b, g₁ (a, b) ∂κ a) + fun a => ∫⁻ b, g₂ (a, b) ∂κ a := by

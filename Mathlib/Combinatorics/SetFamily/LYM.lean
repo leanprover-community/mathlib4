@@ -5,11 +5,12 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Combinatorics.SetFamily.Shadow
+
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Ring.NNRat
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Combinatorics.SetFamily.Shadow
 import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!

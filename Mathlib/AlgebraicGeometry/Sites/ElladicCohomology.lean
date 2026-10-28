@@ -5,14 +5,15 @@ Authors: Jiedong Jiang, Christian Merten
 -/
 module
 
-import Mathlib.Algebra.Category.Grp.AB
 public import Mathlib.Algebra.Category.Grp.Ulift
 public import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
 public import Mathlib.AlgebraicGeometry.Sites.Proetale
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HasExt
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
+
+import Mathlib.Algebra.Category.Grp.AB
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 
 /-!
 

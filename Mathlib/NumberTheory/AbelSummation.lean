@@ -5,10 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.MeasureTheory.Function.Floor
 public import Mathlib.MeasureTheory.Integral.Asymptotics
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.Topology.Order.IsLocallyClosed
+
+import Mathlib.MeasureTheory.Function.Floor
 
 /-!
 # Abel's summation formula
@@ -44,8 +45,6 @@ Primed versions of the three results above are also stated for when the endpoint
 -/
 
 public section
-
-noncomputable section
 
 open Finset MeasureTheory
 

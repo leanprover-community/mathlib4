@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.AlgHom
+
 import Mathlib.Data.Nat.Prime.Int
 
 /-!
@@ -52,10 +53,34 @@ def discr [CommSemiring R] (a b : R) : R := b ^ 2 + 4 * a
 
 theorem discr_def [CommSemiring R] (a b : R) : discr a b = b ^ 2 + 4 * a := by rfl
 
+/-- The discriminant `discr a b` of integers is congruent to `0` or `1` modulo `4`. -/
+theorem discr_emod_four_eq_zero_or_one (a b : ℤ) : discr a b % 4 = 0 ∨ discr a b % 4 = 1 := by
+  grind [discr_def, Int.sq_emod_four]
+
 /-- `z.im ^ 2` times the discriminant of the algebra equals `trace z ^ 2 - 4 * norm z`. -/
 theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     z.im ^ 2 * discr a b = trace z ^ 2 - 4 * norm z := by
   rw [trace_def, norm_def, discr_def]; ring
+
+/-- Four times the norm of `z` is `trace z ^ 2 - discr a b * z.im ^ 2`. -/
+theorem four_mul_norm_eq [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
+    4 * norm z = trace z ^ 2 - discr a b * z.im ^ 2 := by
+  rw [trace_def, norm_def, discr_def]; ring
+
+/-- Four times the norm of `t • 1 + ω` is `(2 * t + b) ^ 2 - discr a b`. -/
+theorem four_mul_norm_smul_one_add_omega [CommRing R] {a b : R} (t : R) :
+    4 * norm (t • 1 + ω : QuadraticAlgebra R a b) = (2 * t + b) ^ 2 - discr a b := by
+  simp [four_mul_norm_eq, trace_def]
+
+/-- The discriminant commutes with a base change `R → S`. -/
+@[simp]
+theorem discr_algebraMap {S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] (a b : R) :
+    discr (algebraMap R S a) (algebraMap R S b) = algebraMap R S (discr a b) := by
+  simp [discr_def, map_ofNat]
+
+/-- The discriminant commutes with the coercion from `ℤ`. -/
+theorem discr_intCast [CommRing R] (a b : ℤ) : discr (a : R) (b : R) = discr a b := by
+  simp [discr_def]
 
 /-- Under the change of generator `ω ↦ u • ω + k` (see `QuadraticAlgebra.changeGenerator`), the
 discriminant is multiplied by `u ^ 2`. -/
