@@ -7,8 +7,6 @@ Authors: Olivia Röhrig
 module
 
 public import Mathlib.Geometry.Convex.Set
-public import Mathlib.Geometry.Convex.Hull
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Segments in convex spaces
@@ -141,15 +139,11 @@ theorem right_mem_Icc (x y : X) : y ∈ Icc R x y :=
 theorem left_mem_Ico (x y : X) : x ∈ Ico R x y :=
   ⟨1, 0, zero_lt_one, le_refl 0, add_zero 1, convexCombPair_one⟩
 
-section Convexity
-
 theorem Icc_subset_iff_mem_of_isConvexSet (hs : IsConvexSet R s) (x y : X) :
     Icc R x y ⊆ s ↔ x ∈ s ∧ y ∈ s := by
   refine ⟨fun h ↦ ⟨h <| left_mem_Icc R x y, h <| right_mem_Icc R x y⟩, ?_⟩
   rintro ⟨hx, hy⟩ z ⟨a, b, ha, hb, hab, rfl⟩
   apply hs.convexCombPair_mem hx hy
-
-end Convexity
 
 @[simp]
 theorem Icc_self (x : X) : Icc R x x = {x} :=
