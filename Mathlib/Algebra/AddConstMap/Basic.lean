@@ -419,7 +419,9 @@ instance : IsOneApplyEqSelf (G →+c[a, a] G) where
 instance : Pow (G →+c[a, a] G) ℕ where
   pow f n := ⟨f^[n], Commute.iterate_left (AddConstMapClass.semiconj f) _⟩
 
-instance : Monoid (G →+c[a, a] G) := FunLike.compMonoid
+instance : IsNPowApplyEqIterate (G →+c[a, a] G) where
+
+instance : Monoid (G →+c[a, a] G) := fast_instance% FunLike.compMonoid
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
 
