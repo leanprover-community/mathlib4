@@ -752,8 +752,6 @@ private theorem coe_ennReal_top_mul (x : ℝ≥0) : ((⊤ * x : ℝ≥0∞) : ER
   · rw [ENNReal.top_mul (ENNReal.coe_ne_zero.2 h0)]
     exact Eq.symm <| ite_eq_left <| NNReal.coe_pos.2 h0.bot_lt
 
-@[deprecated (since := "2026-10-27")] alias coe_ennreal_top_mul := coe_ennReal_top_mul
-
 @[simp, norm_cast]
 theorem coe_ennReal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) = (x : EReal) * y
   | ⊤, ⊤ => rfl
