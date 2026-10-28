@@ -103,6 +103,9 @@ theorem iInter_of_cof_le_one {ι : Type*} {f : ι → Set α} (hα : cof α ≤ 
 section WellFoundedLT
 variable [WellFoundedLT α]
 
+attribute [local instance]
+  WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrderBot
+
 protected theorem sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s < cof α)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   cases isEmpty_or_nonempty α; · simp
@@ -110,8 +113,6 @@ protected theorem sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s
   · exact .sInter_of_cof_le_one (cof_lt_aleph0_iff.1 hα) hs
   refine ⟨.sInter fun x hx ↦ (hs x hx).dirSupClosed, fun a ↦ ?_⟩
   choose f hf using fun x : s ↦ (hs _ x.2).isCofinal
-  let := WellFoundedLT.toOrderBot α
-  let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
   let g : ℕ → α := Nat.rec a fun _ IH ↦ sSup (.range (f · IH))
   have hg : BddAbove (.range g) := by
     refine .of_not_isCofinal fun hg ↦ (cof_le hg).not_gt (hα.trans_le' ?_)
@@ -175,8 +176,6 @@ protected theorem diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : co
       apply strictMono_of_lt_add_one fun n _ ↦ ?_
       rw [← n.succ_eq_add_one, g.iterate_succ_apply']
       exact (hg _).2
-    let := WellFoundedLT.toOrderBot α
-    let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
     have hg' : IsLUB (.range fun n ↦ g^[n] a) (⨆ n, g^[n] a) := by
       refine isLUB_ciSup (.of_not_isCofinal fun h ↦ ?_)
       apply (Order.cof_le h).not_gt (hα.trans_le' _)
@@ -218,8 +217,6 @@ theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α �
     | inl => use ⊤; simpa using! hf.strictMono.id_le ⊤
     | inr h =>
       rw [noTopOrder_iff_noMaxOrder] at h
-      let := WellFoundedLT.toOrderBot α
-      let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
       suffices BddAbove (.range fun n ↦ f^[n] a) from
         ⟨_, hf.iSup_iterate_mem_fixedPoints a this, le_csSup this ⟨0, rfl⟩⟩
       refine .of_not_isCofinal fun h ↦ (cof_le h).not_gt
