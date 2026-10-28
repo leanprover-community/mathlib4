@@ -23,7 +23,7 @@ on:
         required: true
       large_runs_on:
         # The runner label for builds with a large predicted cascade. The `route` job
-        # sends `build` there when the change rebuilds at least 3,000 Mathlib modules.
+        # sends `build` there when the change rebuilds at least 2,000 Mathlib modules.
         # Empty disables the routing.
         type: string
         required: false
@@ -116,7 +116,7 @@ jobs:
             gh run download "${run}" --repo "${REPO}" --name import-graph --dir import-graph || return
             modules="$(python3 workflow-scripts/scripts/predict_cascade.py import-graph/import_graph.dot changed.txt)" || return
             echo "The change rebuilds ${modules} Mathlib modules (merge-base ${mb})."
-            if [ "${modules}" -ge 3000 ]; then
+            if [ "${modules}" -ge 2000 ]; then
               pool="${LARGE_POOL}"
             fi
           }
