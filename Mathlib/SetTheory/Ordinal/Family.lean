@@ -122,7 +122,7 @@ theorem sSup_ord (s : Set Cardinal) : (sSup s).ord = sSup (ord '' s) := by
   obtain rfl | hn := s.eq_empty_or_nonempty
   · simp
   · by_cases hs : BddAbove s
-    · exact isNormal_ord.map_sSup hn hs
+    · exact isNormal_ord.leftOrdContinuous.map_csSup hn hs
     · rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (bddAbove_ord_image_iff.not.2 hs)]
       simp
 
@@ -243,17 +243,17 @@ theorem iSup_natCast : iSup Nat.cast = ω :=
 
 theorem apply_omega0_of_isNormal {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by
-  rw [← iSup_natCast, hf.map_iSup bddAbove_of_small]
+  rw [← iSup_natCast, hf.leftOrdContinuous.map_ciSup bddAbove_of_small]
 
 @[simp]
 theorem add_iSup (o : Ordinal.{u}) {ι} [Small.{u} ι] [Nonempty ι] (f : ι → Ordinal) :
     o + ⨆ i, f i = ⨆ i, o + f i :=
-  (isNormal_add_right o).map_iSup bddAbove_of_small
+  (isNormal_add_right o).leftOrdContinuous.map_ciSup bddAbove_of_small
 
 @[simp]
 theorem add_sSup (o : Ordinal.{u}) {s : Set Ordinal} [Small.{u} s] (hs : s.Nonempty) :
     o + sSup s = sSup ((o + ·) '' s) :=
-  (isNormal_add_right o).map_sSup hs bddAbove_of_small
+  (isNormal_add_right o).leftOrdContinuous.map_csSup hs bddAbove_of_small
 
 @[simp]
 lemma mul_sSup (o : Ordinal) (s : Set Ordinal) : o * sSup s = sSup ((o * ·) '' s) := by
@@ -262,7 +262,7 @@ lemma mul_sSup (o : Ordinal) (s : Set Ordinal) : o * sSup s = sSup ((o * ·) '' 
   rcases eq_zero_or_pos o with (rfl | ho)
   · simp [hs.image_const]
   by_cases bdd : BddAbove s
-  · exact (isNormal_mul_right ho).map_sSup hs bdd
+  · exact (isNormal_mul_right ho).leftOrdContinuous.map_csSup hs bdd
   · rw [csSup_of_not_bddAbove bdd, csSup_empty, csSup_of_not_bddAbove]
     · simp
     exact fun ⟨u, hu⟩ ↦ bdd ⟨u, fun x hx ↦ (x.le_mul_right ho).trans (hu ⟨x, hx, rfl⟩)⟩

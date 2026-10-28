@@ -52,7 +52,7 @@ theorem measurableEquivRealProd_symm_apply (p : ℝ × ℝ) :
 
 theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
   convert! (measurableEquivPi.symm.measurable.measurePreserving volume).symm
-  rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar,
+  rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
     measurableEquivPi, Homeomorph.toMeasurableEquiv_symm_coe,
     ContinuousLinearEquiv.coe_symm_toHomeomorph, Basis.map_addHaar, eq_comm]
   exact (Basis.addHaar_eq_iff _ _).mpr Complex.orthonormalBasisOneI.volume_parallelepiped
