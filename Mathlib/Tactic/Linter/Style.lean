@@ -571,13 +571,13 @@ such names violate the naming convention. -/
 /-- Checks for lemmas which very probably involve a coercion, but are misnamed.
 If the latter, return a message describing more details (such as, all relevant constants
 that *do* occur in the lemma). -/
-public def isBadlynamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
+public def isMisnamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
   -- Does the final name component contain a part `coe` (or `coe'`)?
   let parts := name.components.getLast!.toString.split "_" |>.toList
   unless parts.contains "coe" || parts.contains "coe'" do return (false, "")
   -- Does the declaration reference a constant called `coe`? If so, we are fine.
   let coercion_constants := ((← getEnv).find? name).get!.type.getUsedConstants.filter
-    fun c ↦ (c.components.getLast?.getD `foo == `coe) || c == `UniformSpace.Completion.coe'
+    fun c ↦ c.components.getLast? == some `coe || c == `UniformSpace.Completion.coe'
   if coercion_constants.isEmpty then
     return (true, "")
   else
