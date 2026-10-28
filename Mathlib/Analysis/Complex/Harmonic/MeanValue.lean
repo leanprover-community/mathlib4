@@ -111,7 +111,7 @@ theorem HarmonicContOnCl.circleAverage_eq (hf : HarmonicContOnCl f (ball c |R|))
   intro r hr
   apply HarmonicOnNhd.circleAverage_eq
   grw [abs_of_pos hr.1, hr.2]
-  exact (hf.comp_CLM g).1
+  exact (hf.comp_CLM g).harmonicOnNhd
 
 end InnerProductSpace
 
