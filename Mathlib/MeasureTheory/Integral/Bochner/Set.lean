@@ -82,8 +82,6 @@ theorem setIntegral_union₀ (hst : AEDisjoint μ s t) (ht : NullMeasurableSet t
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ := by
   simp only [Measure.restrict_union₀ hst ht, integral_add_measure hfs hft]
 
-@[deprecated (since := "2026-03-04")] alias integral_union_ae := setIntegral_union₀
-
 theorem setIntegral_union (hst : Disjoint s t) (ht : MeasurableSet t) (hfs : IntegrableOn f s μ)
     (hft : IntegrableOn f t μ) : ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ :=
   setIntegral_union₀ hst.aedisjoint ht.nullMeasurableSet hfs hft
@@ -100,8 +98,6 @@ theorem setIntegral_sdiff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (ht
   setIntegral_sdiff₀ ht.nullMeasurableSet hfs hts
 
 @[deprecated (since := "2026-06-03")] alias setIntegral_diff := setIntegral_sdiff
-
-@[deprecated (since := "2026-03-04")] alias integral_diff := setIntegral_sdiff
 
 theorem integral_inter_add_sdiff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) :
     ∫ x in s ∩ t, f x ∂μ + ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ := by
@@ -1028,11 +1024,15 @@ open Measure
 variable [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
   {μ : Measure X} [IsOpenPosMeasure μ]
 
-theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMeasureOnCompacts μ]
+theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero [IsFiniteMeasureOnCompacts μ]
     {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
     (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
-  integral_pos_of_integrable_nonneg_nonzero f_cont (f_cont.integrable_of_hasCompactSupport f_comp)
+  integral_pos_of_integrable_nonneg_ne_zero f_cont (f_cont.integrable_of_hasCompactSupport f_comp)
     f_nonneg f_x
+
+@[deprecated (since := "2026-10-13")]
+alias Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero :=
+  Continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
 
 end OpenPos
 
@@ -1092,10 +1092,10 @@ theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) 
   refine
     SimpleFunc.induction (fun c s hs => ?_)
       (fun g₁ g₂ _ h_int₁ h_int₂ =>
-        (h_int₁.add h_int₂).congr (by rw [SimpleFunc.coe_add, add_mul]))
+        (h_int₁.add h_int₂).congr (by rw [FunLike.coe_add, add_mul]))
       g
   simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
-    SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
+    FunLike.coe_zero, Set.piecewise_eq_indicator]
   have : Set.indicator s (Function.const X c) * f = s.indicator (c • f) := by
     ext1 x
     by_cases hx : x ∈ s

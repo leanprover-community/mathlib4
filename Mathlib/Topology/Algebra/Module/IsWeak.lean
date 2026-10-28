@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Weak topologies on modules
 
@@ -34,8 +34,8 @@ It would then be tempting to create theorems such as:
 example (y : F) : Continuous (fun x : E ↦ B' x y) := sorry
 ```
 
-However, this statement contains an abuse of the the definitional equality `E := E'` since `x : E`,
-but `B'` has domain `E'`. Moreover, one might be tempted to say that `B'.IsWeak`, but this is
+However, this statement contains an abuse of the definitional equality `E := E'` since `x : E`, but
+`B'` has domain `E'`. Moreover, one might be tempted to say that `B'.IsWeak`, but this is
 impossible because the domain of `B'` is `E'`, which is equipped with the incorrect topology.
 Instead, what one should do is to first define a new bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜` by
 composing `B'` with the linear equivalence between `E` and `E'`, and then establish `B.IsWeak`.
@@ -135,6 +135,7 @@ protected theorem congr [AddCommMonoid E'] [Module 𝕜 E']
     rw [f.toEquiv.iInf_congr]
     simp
 
+set_option fun_prop.projDefaultTransparency true in
 /-- Map `F` into the topological dual of `E` with the weak topology induced by `F` -/
 def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] : F →ₗ[𝕜] StrongDual 𝕜 E where
   toFun f := ⟨B.flip f, by fun_prop⟩

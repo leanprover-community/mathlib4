@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Lagrange multipliers
@@ -126,7 +127,7 @@ Suppose that `φ : E → ℝ` has a local extremum on the set `{x | ∀ i, f i x
 Suppose that all functions `f i` as well as `φ` are strictly differentiable at `x₀`.
 Then the derivatives `f' i : E → L[ℝ] ℝ` and `φ' : StrongDual ℝ E` are linearly dependent.
 
-See also `IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt` for a version that
+See also `IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt` for a version
 that states existence of Lagrange multipliers `Λ` and `Λ₀` instead of using
 `¬LinearIndependent ℝ _` -/
 theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite ι] {f : ι → E → ℝ}

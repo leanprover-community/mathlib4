@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Data.Finset.Image
+public import Mathlib.Order.Category.PartOrd
 
 /-!
 # Nonempty finite chains in a partially ordered type

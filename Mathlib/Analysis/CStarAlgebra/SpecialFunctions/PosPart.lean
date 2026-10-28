@@ -5,8 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
 
 /-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
 

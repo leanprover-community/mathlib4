@@ -6,6 +6,7 @@ Authors: Artie Khovanov
 module
 
 public import Mathlib.Algebra.Ring.SumsOfSquares
+
 import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!

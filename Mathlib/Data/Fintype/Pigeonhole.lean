@@ -5,8 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Data.Finset.Union
 public import Mathlib.Data.Fintype.EquivFin
+
+import Mathlib.Data.Finset.Union
 
 /-!
 # Pigeonhole principles in finite types

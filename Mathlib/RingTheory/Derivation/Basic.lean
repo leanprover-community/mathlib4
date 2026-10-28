@@ -5,6 +5,7 @@ Authors: Nicolò Cavalleri, Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
 
@@ -171,7 +172,9 @@ instance : Zero (Derivation R A M) :=
       map_one_eq_zero' := rfl
       leibniz' := fun a b => by simp only [add_zero, LinearMap.zero_apply, smul_zero] }⟩
 
-@[simp]
+instance : IsZeroApply (Derivation R A M) where
+
+@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-26")]
 theorem coe_zero : ⇑(0 : Derivation R A M) = 0 :=
   rfl
 
@@ -179,7 +182,8 @@ theorem coe_zero : ⇑(0 : Derivation R A M) = 0 :=
 theorem coe_zero_linearMap : ↑(0 : Derivation R A M) = (0 : A →ₗ[R] M) :=
   rfl
 
-theorem zero_apply (a : A) : (0 : Derivation R A M) a = 0 :=
+@[deprecated zero_apply +typeChanged (since := "2026-10-26")]
+protected theorem zero_apply (a : A) : (0 : Derivation R A M) a = 0 :=
   rfl
 
 instance : Add (Derivation R A M) :=
@@ -189,7 +193,9 @@ instance : Add (Derivation R A M) :=
       leibniz' := fun a b => by
         simp only [leibniz, LinearMap.add_apply, coeFn_coe, smul_add, add_add_add_comm] }⟩
 
-@[simp]
+instance : IsAddApply (Derivation R A M) where
+
+@[deprecated FunLike.coe_add +typeChanged (since := "2026-10-26")]
 theorem coe_add (D1 D2 : Derivation R A M) : ⇑(D1 + D2) = D1 + D2 :=
   rfl
 
@@ -197,7 +203,8 @@ theorem coe_add (D1 D2 : Derivation R A M) : ⇑(D1 + D2) = D1 + D2 :=
 theorem coe_add_linearMap (D1 D2 : Derivation R A M) : ↑(D1 + D2) = (D1 + D2 : A →ₗ[R] M) :=
   rfl
 
-theorem add_apply : (D1 + D2) a = D1 a + D2 a :=
+@[deprecated add_apply +typeChanged (since := "2026-10-26")]
+protected theorem add_apply : (D1 + D2) a = D1 a + D2 a :=
   rfl
 
 instance : Inhabited (Derivation R A M) :=
@@ -216,7 +223,9 @@ instance : SMul S (Derivation R A M) :=
       leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
         smul_comm r (_ : A) (_ : M)] }⟩
 
-@[simp]
+instance : IsSMulApply S (Derivation R A M) where
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-26")]
 theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • ⇑D :=
   rfl
 
@@ -224,11 +233,11 @@ theorem coe_smul (r : S) (D : Derivation R A M) : ⇑(r • D) = r • ⇑D :=
 theorem coe_smul_linearMap (r : S) (D : Derivation R A M) : ↑(r • D) = r • (D : A →ₗ[R] M) :=
   rfl
 
-theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
+@[deprecated smul_apply +typeChanged (since := "2026-10-26")]
+protected theorem smul_apply (r : S) (D : Derivation R A M) : (r • D) a = r • D a :=
   rfl
 
-instance : AddCommMonoid (Derivation R A M) :=
-  coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+instance : AddCommMonoid (Derivation R A M) := fast_instance% FunLike.addCommMonoid
 
 /-- `coe` as an `AddMonoidHom`. -/
 def coeAddMonoidHom : Derivation R A M →+ A →ₗ[R] M where
@@ -240,40 +249,34 @@ def coeAddMonoidHom : Derivation R A M →+ A →ₗ[R] M where
 lemma coeAddMonoidHom_apply (D : Derivation R A M) : coeAddMonoidHom D = D := rfl
 
 /-- `coeFn` as an `AddMonoidHom`. -/
+@[deprecated FunLike.coeAddMonoidHom +typeChanged (since := "2026-10-26")]
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
 
-@[simp]
+@[deprecated FunLike.coeAddMonoidHom_apply +typeChanged (since := "2026-10-26")]
 lemma coeFnAddMonoidHom_apply (D : Derivation R A M) : coeFnAddMonoidHom D = D := rfl
 
-instance : DistribMulAction S (Derivation R A M) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
+instance : DistribMulAction S (Derivation R A M) := fast_instance% FunLike.distribMulAction
 
 instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
-    IsCentralScalar S (Derivation R A M) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+    IsCentralScalar S (Derivation R A M) := FunLike.isCentralScalar
 
 instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (Derivation R A M) :=
-  ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
+  FunLike.isScalarTower
 
 instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
-  ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
+  FunLike.smulCommClass
 
 theorem coe_sum_linearMap {ι : Type*} (t : Finset ι) (f : ι → Derivation R A M) :
     ∑ i ∈ t, f i = ∑ i ∈ t, (f i : A →ₗ[R] M) :=
   _root_.map_sum coeAddMonoidHom f t
 
-instance : IsZeroApply (Derivation R A M) A M where
-
-instance : IsAddApply (Derivation R A M) A M where
-
 end Scalar
 
 instance instModule {S : Type*} [Semiring S] [Module S M] [SMulCommClass R S M]
-    [SMulCommClass S A M] : Module S (Derivation R A M) :=
-  Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
+    [SMulCommClass S A M] : Module S (Derivation R A M) := fast_instance% FunLike.module
 
 section PushForward
 
@@ -292,7 +295,7 @@ def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
         simp only [coeFn_coe, LinearMap.comp_apply, map_add, leibniz,
           LinearMap.coe_restrictScalars, LinearMap.map_smul] }
   map_add' D₁ D₂ := by ext; exact LinearMap.map_add _ _ _
-  map_smul' r D := by ext; dsimp; simp only [_root_.map_smul]
+  map_smul' r D := by ext; simp
 
 @[simp]
 theorem coe_to_linearMap_comp : (f.compDer D : A →ₗ[R] N) = (f : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
@@ -533,7 +536,9 @@ instance : Neg (Derivation R A M) :=
     mk' (-D) fun a b => by
       simp only [LinearMap.neg_apply, smul_neg, neg_add_rev, leibniz, coeFn_coe, add_comm]⟩
 
-@[simp]
+instance : IsNegApply (Derivation R A M) where
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-26")]
 theorem coe_neg (D : Derivation R A M) : ⇑(-D) = -D :=
   rfl
 
@@ -541,7 +546,8 @@ theorem coe_neg (D : Derivation R A M) : ⇑(-D) = -D :=
 theorem coe_neg_linearMap (D : Derivation R A M) : ↑(-D) = (-D : A →ₗ[R] M) :=
   rfl
 
-theorem neg_apply : (-D) a = -D a :=
+@[deprecated neg_apply +typeChanged (since := "2026-10-26")]
+protected theorem neg_apply : (-D) a = -D a :=
   rfl
 
 instance : Sub (Derivation R A M) :=
@@ -549,7 +555,9 @@ instance : Sub (Derivation R A M) :=
     mk' (D1 - D2 : A →ₗ[R] M) fun a b => by
       simp only [LinearMap.sub_apply, leibniz, coeFn_coe, smul_sub, add_sub_add_comm]⟩
 
-@[simp]
+instance : IsSubApply (Derivation R A M) where
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-26")]
 theorem coe_sub (D1 D2 : Derivation R A M) : ⇑(D1 - D2) = D1 - D2 :=
   rfl
 
@@ -557,11 +565,11 @@ theorem coe_sub (D1 D2 : Derivation R A M) : ⇑(D1 - D2) = D1 - D2 :=
 theorem coe_sub_linearMap (D1 D2 : Derivation R A M) : ↑(D1 - D2) = (D1 - D2 : A →ₗ[R] M) :=
   rfl
 
-theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
+@[deprecated sub_apply +typeChanged (since := "2026-10-26")]
+protected theorem sub_apply : (D1 - D2) a = D1 a - D2 a :=
   rfl
 
-instance : AddCommGroup (Derivation R A M) :=
-  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+instance : AddCommGroup (Derivation R A M) := fast_instance% FunLike.addCommGroup
 
 end
 

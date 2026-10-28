@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Multiset.Count
 public import Mathlib.Data.List.Count
+public import Mathlib.Data.Multiset.Count
 
 /-!
 # Sum and difference of multisets

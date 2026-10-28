@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Tactic.ENatToNat
+
 import Mathlib.Tactic.ApplyFun
 
 /-!

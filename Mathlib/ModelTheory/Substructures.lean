@@ -5,10 +5,11 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
-import Mathlib.Data.Fintype.Order
-public import Mathlib.Order.Closure
-public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.Encoding
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.Order.Closure
+
+import Mathlib.Data.Fintype.Order
 
 /-!
 # First-Order Substructures

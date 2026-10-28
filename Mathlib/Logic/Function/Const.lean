@@ -83,6 +83,8 @@ theorem isConst_iff_exists_eq_const [Nonempty β] {f : α → β} :
     IsConst f ↔ ∃ b, f = const α b := by
   simp only [isConst_iff_exists_forall_eq, funext_iff, const_apply]
 
+alias ⟨IsConst.exists_eq_const, _⟩ := isConst_iff_exists_eq_const
+
 /-- A function `α → β` is constant on a non-empty domain if and only if there is `b : β` so that
 the function can be written as `Function.const α b`. -/
 theorem isConst_iff_exists_eq_const_of_nonempty_domain [Nonempty α] {f : α → β} :
@@ -120,6 +122,11 @@ theorem _root_.Setoid.ker_eq_top {α β : Type*} {f : α → β} :
 theorem _root_.Set.subsingleton_range_iff {β : Type*} {f : α → β} :
     (Set.range f).Subsingleton ↔ f.IsConst := by
   simp [Set.Subsingleton, isConst_iff]
+
+@[simp]
+theorem _root_.Set.nontrivial_range_iff {β : Type*} {f : α → β} :
+    (Set.range f).Nontrivial ↔ ¬f.IsConst := by
+  rw [← Set.not_subsingleton_iff, Set.subsingleton_range_iff]
 
 theorem isConst_and_injective_iff (f : α → β) : f.IsConst ∧ f.Injective ↔ Subsingleton α where
   mp := fun ⟨hc, hinj⟩ ↦ ⟨(hinj <| hc · ·)⟩

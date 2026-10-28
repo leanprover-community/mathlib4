@@ -5,9 +5,9 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Data.Finsupp.Interval
 public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-!

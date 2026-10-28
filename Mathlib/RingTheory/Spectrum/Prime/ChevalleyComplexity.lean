@@ -6,10 +6,11 @@ Authors: Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.CoeffMem
-import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
 public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Data.DFinsupp.WellFounded
 
 /-!
 # Chevalley's theorem with complexity bound
@@ -478,10 +479,10 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
       have deg_bound₁ : c'.degBound ≤ c.degBound := by
         dsimp [InductionObj.degBound, c']
         gcongr with k
-        · rw [update_apply]
-          split_ifs with hkj
-          · subst hkj; exact (degree_modByMonic_le _ hi).trans hle
-          · rfl
+        rw [update_apply]
+        split_ifs with hkj
+        · subst hkj; exact (degree_modByMonic_le _ hi).trans hle
+        · rfl
       refine ⟨(hS' C hC).1.trans deg_bound₁, fun k ↦ mem_of_le_of_mem ?_ ((hS' C hC).2 k)⟩
       change c'.coeffSubmodule R₀ ^ c'.powBound ≤ _
       delta powBound

@@ -5,11 +5,12 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 module
 
-import Mathlib.Algebra.Group.Submonoid.Finsupp
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.RingHom
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
+
+import Mathlib.Algebra.Group.Submonoid.Finsupp
 
 /-!
 # Homogeneous Localization
@@ -1047,15 +1048,15 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
       simp [this]
     exact fun i ↦ (Nat.mod_lt _ hd).le
   apply prod_mem
-  · classical
-    rintro j -
-    apply pow_mem
-    apply Algebra.subset_adjoin
-    refine ⟨dv j, Pi.single j d, ?_, ?_, ?_⟩
-    · simp [Pi.single_apply, mul_comm]
-    · aesop (add simp Pi.single_apply)
-    ext
-    simp [Pi.single_apply]
+  classical
+  rintro j -
+  apply pow_mem
+  apply Algebra.subset_adjoin
+  refine ⟨dv j, Pi.single j d, ?_, ?_, ?_⟩
+  · simp [Pi.single_apply, mul_comm]
+  · aesop (add simp Pi.single_apply)
+  ext
+  simp [Pi.single_apply]
 
 variable [AddSubgroupClass σ A] {𝒜 : ℕ → σ} [GradedRing 𝒜] in
 /--

@@ -6,8 +6,9 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-! # Module version of Chinese remainder theorem
 -/

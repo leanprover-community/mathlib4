@@ -6,6 +6,7 @@ Authors: Chris Wong
 module
 
 public import Mathlib.Computability.DFA
+
 import Mathlib.Data.Set.Finite.Basic
 
 /-!

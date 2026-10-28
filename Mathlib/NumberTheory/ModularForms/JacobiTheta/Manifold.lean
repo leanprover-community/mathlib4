@@ -6,8 +6,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
+
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
 # Manifold differentiability of the Jacobi theta function

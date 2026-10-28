@@ -5,9 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
+public import Mathlib.Probability.Notation
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
 
@@ -339,8 +339,6 @@ theorem condLExp_finsetSum (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
   convert condLExp_tsum mΩ (fun i : s ↦ hX i)
   · simp [Finset.sum_attach]
   · simp [Finset.sum_attach _ (f := (P⁻[X ·|mΩ]))]
-
-@[deprecated (since := "2026-04-08")] alias condLExp_finset_sum := condLExp_finsetSum
 
 end Sum
 

@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
+
 import Mathlib.Analysis.Calculus.FDeriv.Const
 
 /-!

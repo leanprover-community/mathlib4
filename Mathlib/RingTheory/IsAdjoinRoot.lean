@@ -5,8 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
-import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+
+import Mathlib.FieldTheory.Minpoly.Finite
 
 /-!
 # A predicate on adjoining roots of polynomial

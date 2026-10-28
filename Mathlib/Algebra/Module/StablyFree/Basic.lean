@@ -6,8 +6,9 @@ Authors: Yongle Hu
 module
 
 public import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.RingTheory.Finiteness.Small
+
+import Mathlib.LinearAlgebra.Basis.Prod
 
 /-!
 # Stably free modules

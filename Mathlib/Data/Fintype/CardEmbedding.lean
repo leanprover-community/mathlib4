@@ -6,8 +6,9 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Logic.Equiv.Embedding
+
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Number of embeddings

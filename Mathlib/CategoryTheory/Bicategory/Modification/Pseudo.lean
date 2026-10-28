@@ -5,8 +5,8 @@ Authors: Calle Sönne
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 /-!
 # Modifications between transformations of pseudofunctors

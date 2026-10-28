@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Topology.Metrizable.Basic
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
-public import Mathlib.Topology.Metrizable.Basic
 
 import Mathlib.Topology.UniformSpace.Compact
 
@@ -87,13 +87,6 @@ theorem controlled_of_isUniformInducing [PseudoEMetricSpace β] {f : γ → β}
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ :=
   ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
-
-@[deprecated controlled_of_isUniformInducing +typeChanged (since := "2026-04-01")]
-theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : γ → β}
-    (h : IsUniformEmbedding f) :
-    (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
-      ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ :=
-  controlled_of_isUniformInducing h.toIsUniformInducing
 
 /-- ε-δ characterization of Cauchy sequences on pseudoemetric spaces -/
 protected theorem cauchy_iff {f : Filter γ} :
@@ -315,28 +308,33 @@ variable {s : Set γ}
 
 theorem lebesgue_number_lemma_of_emetric {ι : Sort*} {c : ι → Set γ} (hs : IsCompact s)
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, eball x δ ⊆ c i := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, UniformSpace.ball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, edist_comm,
+    Set.preimage, Prod.swap, mem_ofPred_eq]
     using uniformity_basis_edist.lebesgue_number_lemma hs hc₁ hc₂
 
 theorem lebesgue_number_lemma_of_emetric_nhds' {c : (x : γ) → x ∈ s → Set γ} (hs : IsCompact s)
     (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ⊆ c y y.2 := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, UniformSpace.ball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, edist_comm,
+    Set.preimage, Prod.swap, mem_ofPred_eq]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds' hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhds {c : γ → Set γ} (hs : IsCompact s)
     (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ⊆ c y := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, UniformSpace.ball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, edist_comm,
+    Set.preimage, Prod.swap, mem_ofPred_eq]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhdsWithin' {c : (x : γ) → x ∈ s → Set γ}
     (hs : IsCompact s) (hc : ∀ x hx, c x hx ∈ 𝓝[s] x) :
     ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ∩ s ⊆ c y y.2 := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, UniformSpace.ball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, edist_comm,
+    Set.preimage, Prod.swap, mem_ofPred_eq]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin' hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhdsWithin {c : γ → Set γ} (hs : IsCompact s)
     (hc : ∀ x ∈ s, c x ∈ 𝓝[s] x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ∩ s ⊆ c y := by
-  simpa only [eball, UniformSpace.ball, preimage_ofPred_eq, edist_comm]
+  simpa only [eball, UniformSpace.ball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, edist_comm,
+    Set.preimage, Prod.swap, mem_ofPred_eq]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin hs hc
 
 theorem lebesgue_number_lemma_of_emetric_sUnion {c : Set (Set γ)} (hs : IsCompact s)

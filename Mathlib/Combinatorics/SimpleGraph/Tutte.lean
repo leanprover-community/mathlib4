@@ -5,8 +5,9 @@ Authors: Pim Otte
 -/
 module
 
-import Mathlib.Combinatorics.SimpleGraph.Metric
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
+
+import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Tutte's theorem

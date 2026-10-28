@@ -5,8 +5,9 @@ Authors: Yongle Hu
 -/
 module
 
-import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+
+import Mathlib.GroupTheory.MonoidLocalization.UniqueFactorization
 import Mathlib.RingTheory.Localization.Away.Lemmas
 import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
 

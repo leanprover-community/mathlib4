@@ -41,7 +41,6 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
     (fun _ => hom_ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
       hom_ext <| LinearMap.ext fun x => Subtype.ext_iff.2 (by simp [← h]; rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct an `IsLimit` structure of kernels given `Function.Exact`. -/
 noncomputable
@@ -51,7 +50,7 @@ def isLimitKernelFork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.hom g.ho
   refine IsLimit.ofIsoLimit (kernelIsLimit g) <|
     Cone.ext ((LinearEquiv.ofInjective _ H₂).trans
         (LinearEquiv.ofEq _ _ (LinearMap.exact_iff.mp H).symm)).toModuleIso.symm ?_
-  · rintro ⟨⟩ <;> ext x <;> simp [kernelCone]
+  rintro ⟨⟩ <;> ext x <;> simp [kernelCone]
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
@@ -76,9 +75,9 @@ def isColimitCokernelCofork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.ho
   refine IsColimit.ofIsoColimit (ModuleCat.cokernelIsColimit f) <|
     Cocone.ext (((Submodule.quotEquivOfEq _ _ (LinearMap.exact_iff.mp H)).toModuleIso).symm
     ≪≫ ((LinearMap.quotKerEquivOfSurjective _ H₂).toModuleIso)) ?_
-  · rintro ⟨⟩ <;> ext x
-    · simpa using! (Function.Exact.apply_apply_eq_zero H x).symm
-    · rfl
+  rintro ⟨⟩ <;> ext x
+  · simpa using! (Function.Exact.apply_apply_eq_zero H x).symm
+  · rfl
 
 end
 

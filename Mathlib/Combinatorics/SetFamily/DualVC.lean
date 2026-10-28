@@ -6,6 +6,7 @@ Authors: Dhruv Gupta
 module
 
 public import Mathlib.Combinatorics.SetFamily.Shatter
+
 import Mathlib.Data.Fintype.BigOperators
 
 /-!

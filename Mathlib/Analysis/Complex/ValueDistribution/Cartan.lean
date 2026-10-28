@@ -6,8 +6,9 @@ Authors: Matteo Cipollina, Stefan Kebekus
 
 module
 
-import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
+
+import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 
 /-!
 # Cartan's Formula

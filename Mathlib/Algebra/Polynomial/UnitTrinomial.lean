@@ -6,8 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Polynomial.Mirror
-import Mathlib.Data.Int.Order.Units
 public import Mathlib.RingTheory.Coprime.Basic
+
+import Mathlib.Data.Int.Order.Units
 
 /-!
 # Unit Trinomials
@@ -153,10 +154,10 @@ theorem coeff_isUnit (hp : p.IsUnitTrinomial) {k : ℕ} (hk : k ∈ p.support) :
   · refine ⟨w, by rw [trinomial_leading_coeff' hkm hmn]⟩
 
 theorem leadingCoeff_isUnit (hp : p.IsUnitTrinomial) : IsUnit p.leadingCoeff :=
-  hp.coeff_isUnit (natDegree_mem_support_of_nonzero hp.ne_zero)
+  hp.coeff_isUnit (natDegree_mem_support_of_ne_zero hp.ne_zero)
 
 theorem trailingCoeff_isUnit (hp : p.IsUnitTrinomial) : IsUnit p.trailingCoeff :=
-  hp.coeff_isUnit (natTrailingDegree_mem_support_of_nonzero hp.ne_zero)
+  hp.coeff_isUnit (natTrailingDegree_mem_support_of_ne_zero hp.ne_zero)
 
 end IsUnitTrinomial
 

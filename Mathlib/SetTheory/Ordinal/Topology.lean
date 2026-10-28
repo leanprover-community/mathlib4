@@ -7,8 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Ordinal.Enum
-import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Order.SuccPred
+
+import Mathlib.Topology.Order.Monotone
 
 /-!
 # Topology of ordinals
@@ -84,25 +85,6 @@ theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
-@[deprecated mem_closure_iff_iSup +typeChanged (since := "2026-04-05")]
-theorem mem_closure_iff_bsup :
-    a ∈ closure s ↔
-      ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
-        (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a := by
-  rw [mem_closure_iff_iSup]
-  constructor
-  · rintro ⟨ι, _, f, hf, rfl⟩
-    exact ⟨_, by simp, bfamilyOfFamily f, fun i hi ↦ hf .., bsup_eq_iSup f⟩
-  · rintro ⟨o, ho, f, hf, rfl⟩
-    exact ⟨_, by simpa, familyOfBFamily _ f, fun i ↦ hf .., iSup_eq_bsup f⟩
-
-@[deprecated mem_closure_iff_iSup +typeChanged (since := "2026-04-05")]
-theorem mem_closed_iff_bsup (hs : IsClosed s) :
-    a ∈ s ↔
-      ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
-        (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a := by
-  rw [← mem_closure_iff_bsup, hs.closure_eq]
-
 theorem isClosed_iff_iSup :
     IsClosed s ↔
       ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
@@ -111,18 +93,6 @@ theorem isClosed_iff_iSup :
   intro h x hx
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
-
-@[deprecated isClosed_iff_iSup +typeChanged (since := "2026-04-05")]
-theorem isClosed_iff_bsup :
-    IsClosed s ↔
-      ∀ {o : Ordinal}, o ≠ 0 → ∀ f : ∀ a < o, Ordinal,
-        (∀ i hi, f i hi ∈ s) → bsup.{u, u} o f ∈ s := by
-  rw [isClosed_iff_iSup]
-  refine ⟨fun H o ho f hf => H (nonempty_toType_iff.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
-  · exact fun i => hf _ _
-  · rw [← bsup_eq_iSup]
-    apply H (type_ne_zero_iff_nonempty.2 hι)
-    exact fun i hi => hf _
 
 @[deprecated isNormal_enum_iff_dirSupClosed +typeChanged (since := "2026-05-25")]
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
@@ -189,11 +159,6 @@ theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc
 @[deprecated SuccOrder.accPt_principal +typeChanged (since := "2026-05-24")]
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
     {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt p hp
-
-@[deprecated IsOpenEmbedding.accPt_comap_iff +typeChanged (since := "2026-03-30")]
-theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
-    AccPt p (𝓟 S) ↔ AccPt ⟨p, hpo⟩ (𝓟 (Iio o ↓∩ S)) := by
-  rw [← comap_principal, isOpen_Iio.isOpenEmbedding_subtypeVal.accPt_comap_iff]
 
 @[deprecated isClosed_iff_accPt +typeChanged (since := "2026-05-24")]
 theorem isClosedBelow_iff {S : Set Ordinal} {o : Ordinal} : IsClosedBelow S o ↔

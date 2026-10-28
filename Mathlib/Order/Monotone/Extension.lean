@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+import Mathlib.Data.Set.Monotone
 
 /-!
 # Extension of a monotone function from a set to the whole space

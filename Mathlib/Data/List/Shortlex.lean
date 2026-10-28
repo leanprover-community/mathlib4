@@ -5,8 +5,9 @@ Authors: Hannah Fechtner
 -/
 module
 
-import Mathlib.Data.List.Lex
 public import Mathlib.Tactic.NormNum
+
+import Mathlib.Data.List.Lex
 
 /-!
 # Shortlex ordering of lists.

@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.LinearAlgebra.Matrix.Notation -- shake: keep (!![] elaboration)
 public import Mathlib.Data.Fin.VecNotation
+
 import Mathlib.Data.Finset.Attr
 import Mathlib.LinearAlgebra.Matrix.Defs
 import Mathlib.Tactic.Bound.Init

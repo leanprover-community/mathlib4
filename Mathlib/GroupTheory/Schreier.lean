@@ -5,9 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Commutator.Finite
 public import Mathlib.GroupTheory.Transfer
+
+import Mathlib.GroupTheory.Abelianization.Defs
 
 /-!
 # Schreier's Lemma
@@ -208,7 +209,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   apply card_dvd_exponent_pow_rank'
   intro g
   -- `Z(G)` is abelian, so `g ∈ Z(G) ∩ G' ≤ G' ≤ ker (transfer : G → Z(G))`
-  have := Abelianization.commutator_subset_ker (MonoidHom.transferCenterPow G) g.1.2
+  have := Abelianization.commutator_le_ker (MonoidHom.transferCenterPow G) g.1.2
   -- `transfer g` is defeq to `g ^ [G : Z(G)]`, so we are done
   simpa only [MonoidHom.mem_ker, Subtype.ext_iff] using! this
 
@@ -230,13 +231,13 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
   replace h2 := h2.trans (pow_dvd_pow _ (add_le_add_left (mul_le_mul_left h1 _) 1))
   rw [← pow_succ] at h2
   refine (Nat.le_of_dvd ?_ h2).trans (Nat.pow_le_pow_left h1 _)
-  exact pow_pos (Nat.pos_of_ne_zero FiniteIndex.index_ne_zero) _
+  exact pow_pos (Nat.pos_of_ne_zero index_ne_zero) _
 
 /-- A theorem of Schur: A group with finitely many commutators has finite commutator subgroup. -/
 instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)
   refine Nat.finite_of_card_ne_zero fun h => ?_
   rw [card_commutator_closureCommutatorRepresentatives, h, zero_dvd_iff] at h2
-  exact FiniteIndex.index_ne_zero (eq_zero_of_pow_eq_zero h2)
+  exact index_ne_zero (eq_zero_of_pow_eq_zero h2)
 
 end Subgroup

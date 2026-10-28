@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Instances.RealVectorSpace
 public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
 # Mazur-Ulam Theorem

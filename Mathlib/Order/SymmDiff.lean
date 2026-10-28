@@ -5,8 +5,8 @@ Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Order.BooleanAlgebra.Basic
 
 /-!
 # Symmetric difference and bi-implication

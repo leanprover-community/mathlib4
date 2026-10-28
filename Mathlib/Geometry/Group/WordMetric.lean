@@ -72,7 +72,9 @@ lemma IsGeodesic.eq {l : List (ι × Bool)} (hl : P.IsGeodesic l) :
 
 /-- Every group element has a geodesic word representative. -/
 theorem exists_isGeodesic : ∃ l, P.IsGeodesic l ∧ P.wordProd l = g := by
-  obtain ⟨l, rfl, hlen⟩ := Nat.sInf_mem (Set.Nonempty.image List.length (P.wordProd_surjective g))
+  obtain ⟨l, rfl, hlen⟩ :
+      sInf (List.length '' {l | P.wordProd l = g}) ∈ List.length '' {l | P.wordProd l = g} :=
+    Nat.sInf_mem <| .image List.length (P.wordProd_surjective g)
   exact ⟨l, hlen.symm, rfl⟩
 
 /-! ### Word length -/
@@ -100,7 +102,7 @@ lemma wordLength_eq_zero_iff : P.wordLength g = 0 ↔ g = 1 := by
 lemma wordLength_one : P.wordLength (1 : G) = 0 := by
   rw [wordLength_eq_zero_iff]
 
--- This is superceded by `wordLength_inv`.
+-- This is superseded by `wordLength_inv`.
 private lemma wordLength_inv_le : P.wordLength g⁻¹ ≤ P.wordLength g := by
   obtain ⟨l, hl, rfl⟩ := P.exists_isGeodesic g
   simpa [wordProd_invRev, hl.eq] using P.wordLength_wordProd_le (FreeGroup.invRev l)
