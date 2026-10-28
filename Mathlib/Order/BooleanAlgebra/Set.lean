@@ -565,8 +565,8 @@ lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_sdiff_self_of_mem ha, fun _s ↦ insert_sdiff_self_of_notMem⟩
 
-lemma union_left_inj (hs : Disjoint u s) (ht : Disjoint u t) : s ∪ u = t ∪ u ↔ s = t := by
-  grind [union_sdiff_right, Disjoint.sdiff_eq_left]
+lemma union_left_inj (hs : Disjoint u s) (ht : Disjoint u t) : s ∪ u = t ∪ u ↔ s = t :=
+  sup_left_inj_of_disjoint hs ht
 
 lemma disjoint_injOn_union_left (s : Set α) : {t | Disjoint s t}.InjOn (· ∪ s) := by
   grind [Set.InjOn, union_sdiff_right, Disjoint.sdiff_eq_left]
