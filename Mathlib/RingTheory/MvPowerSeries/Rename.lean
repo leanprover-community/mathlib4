@@ -289,8 +289,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R] (p : MvPowerSeries σ R) {a : τ → MvPowerSeries γ R}
 
-theorem HasSubst.comp_tendstoCofinite {a : τ → MvPowerSeries γ R} (ha : HasSubst a) :
-    HasSubst (a ∘ f) where
+theorem HasSubst.comp_tendstoCofinite (ha : HasSubst a) : HasSubst (a ∘ f) where
   const_coeff i := ha.const_coeff (f i)
   coeff_zero d := Filter.TendstoCofinite.finite_preimage f (ha.coeff_zero d)
 
