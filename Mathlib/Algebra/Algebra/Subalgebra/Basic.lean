@@ -973,6 +973,7 @@ instance : Algebra R (Center Aᵐᵒᵖ) where
   commutes' a z := by simp [z.comm]
   smul_def' r z := rfl
 
+/-- The center of an `R`-algera is isomorphic to the center of its opposite. -/
 @[simps!]
 def _root_.Center.toMulOppositeAlgEquiv : Center A ≃ₐ[R] Center Aᵐᵒᵖ where
   toRingEquiv := Center.toMulOppositeRingEquiv
