@@ -53,7 +53,6 @@ theorem card_filter_univ_succ' (p : Fin (n + 1) → Prop) [DecidablePred p] :
     #{x | p x} = ite (p 0) 1 0 + #{x | p (.succ x)} := by
   rw [card_filter_univ_succ]; split_ifs <;> simp [add_comm]
 
-@[simp]
 theorem _root_.List.Vector.countP_toList (p : α → Bool) (v : List.Vector α n) :
     v.toList.countP p = #{i | p (v.get i)} := by
   induction v with
@@ -62,10 +61,9 @@ theorem _root_.List.Vector.countP_toList (p : α → Bool) (v : List.Vector α n
     simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Vector.get_cons_succ,
       ← hxs, List.countP_cons, add_comm (ite (p x = true) 1 0)]
 
-@[simp]
 theorem _root_.List.Vector.count_toList [DecidableEq α] (a : α) (v : List.Vector α n) :
     v.toList.count a = #{i | v.get i = a} := by
-  simp [List.count_eq_countP]
+  simp [List.count_eq_countP, List.Vector.countP_toList]
 
 @[deprecated List.Vector.count_toList (since := "2026-10-19")]
 alias card_filter_univ_eq_vector_get_eq_count := List.Vector.count_toList
@@ -107,11 +105,11 @@ variable {α : Type*} {n : ℕ}
 @[simp]
 theorem countP_ofFn (f : Fin n → α) (p : α → Bool) :
     (ofFn f).countP p = #{i | p (f i)} := by
-  simp [← Vector.toList_ofFn]
+  simp [← Vector.toList_ofFn, Vector.countP_toList]
 
 @[simp]
 theorem count_ofFn [DecidableEq α] (f : Fin n → α) (a : α) :
     (ofFn f).count a = #{i | f i = a} := by
-  simp [← Vector.toList_ofFn]
+  simp [← Vector.toList_ofFn, Vector.count_toList]
 
 end List
