@@ -160,39 +160,6 @@ example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : 
 
 end Arithmetic
 
-section Log
-
-open Real
-
-example {x : ℝ} (hx : x ∈ Set.Icc 0.5 4) : log x ∈ Set.Icc (-0.693148) 1.38630 := by
-  dyadic_interval [prec := 30]
-
-example : log 1 = 0 := by
-  dyadic_interval
-
-example : log 0 = 0 := by
-  dyadic_interval
-
-example :
-  log 2 ∈ Set.Icc
-    0.69314718055994530941723212145817656807550013436025
-    0.69314718055994530941723212145817656807550013436026 := by
-  dyadic_interval [prec := 170]
-
-example {x : ℝ} (hx : x ∈ Set.Icc 0 1) :
-    log (log (x ^ 2 + 1) + 2) ∈ Set.Icc 0.693 0.991 := by
-  dyadic_interval [prec := 20]
-
-example {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
-    x ^ 3 + log (x + 2) ∈ Set.Icc (-1) 2.1 := by
-  dyadic_interval [prec := 20]
-
-example {x y : ℝ} (hx : x ∈ Set.Icc 1 2) (hy : y ∈ Set.Icc 1 2) :
-    x ^ 2 + y ^ 2 + log (x + y) ∈ Set.Icc 2.69 9.39 := by
-  dyadic_interval [prec := 20]
-
-end Log
-
 section Splitting
 
 example {x : ℝ} (hx : x ∈ Set.Icc (-4) 4) :

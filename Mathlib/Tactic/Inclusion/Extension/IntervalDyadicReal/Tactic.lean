@@ -9,7 +9,6 @@ public meta import Mathlib.Tactic.Inclusion.Core.Elab
 public meta import Mathlib.Tactic.Inclusion.Extension.Core.Core
 public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 
-import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Log
 import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 /-!
