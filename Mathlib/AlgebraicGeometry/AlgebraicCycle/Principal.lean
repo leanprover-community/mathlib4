@@ -68,7 +68,7 @@ theorem isWeilDivisor_divisor [IsIntegral X] [IsLocallyNoetherian X] {f : X.func
   simp_all
 
 /-- The principal divisor of a unit on `U` vanishes on `U`. -/
-@[simp]
+@[simp, grind =]
 theorem filter_divisor_germToFunctionField_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X]
     {U : X.Opens} [Nonempty U] {g : Γ(X, U)} (hg : IsUnit g) :
     (divisor (X.germToFunctionField U g)).filter U = 0 := by
@@ -78,7 +78,7 @@ theorem filter_divisor_germToFunctionField_eq_zero_of_isUnit [IsIntegral X] [IsL
   · simp [hz]
 
 /-- The principal divisor of a global unit is zero. -/
-@[simp]
+@[simp, grind =]
 lemma divisor_germToFunctionField_top_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X]
     {g : Γ(X, ⊤)} (hg : IsUnit g) : divisor (X.germToFunctionField ⊤ g) = 0 := by
   simpa using filter_divisor_germToFunctionField_eq_zero_of_isUnit hg
