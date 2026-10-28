@@ -375,7 +375,7 @@ private theorem isJacobsonRing_polynomial_of_domain (R : Type*) [CommRing R] [Is
     let P' := P.comap (C : R →+* R[X])
     have : P'.IsPrime := comap_isPrime C P
     have hR' : IsJacobsonRing (R ⧸ P') := by infer_instance
-    obtain ⟨p, pP, p0⟩ := exists_nonzero_mem_of_ne_bot Pb hP
+    obtain ⟨p, pP, p0⟩ := exists_ne_zero_mem_of_ne_bot Pb hP
     let x := (Polynomial.map (Ideal.Quotient.mk P') p).leadingCoeff
     have hx : x ≠ 0 := by rwa [Ne, leadingCoeff_eq_zero]
     let φ : R ⧸ P' →+* R[X] ⧸ P := Ideal.quotientMap P (C : R →+* R[X]) le_rfl
@@ -478,7 +478,7 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
     ((Ideal.Quotient.mk P).comp C : R →+* R[X] ⧸ P).IsIntegral := by
   refine (isIntegral_quotientMap_iff _).mp ?_
   let P' : Ideal R := P.comap C
-  obtain ⟨pX, hpX, hp0⟩ := exists_nonzero_mem_of_ne_bot
+  obtain ⟨pX, hpX, hp0⟩ := exists_ne_zero_mem_of_ne_bot
     (ne_of_lt (bot_lt_of_maximal P (Polynomial.not_isField R))).symm hP'
   let a : R ⧸ P' := (pX.map (Ideal.Quotient.mk P')).leadingCoeff
   let M : Submonoid (R ⧸ P') := Submonoid.powers a

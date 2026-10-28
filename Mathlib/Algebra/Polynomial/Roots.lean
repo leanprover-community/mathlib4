@@ -244,12 +244,14 @@ theorem _root_.Associated.roots_eq {p q : R[X]} (h : Associated p q) : p.roots =
     roots_C_mul _ <| coeff_coe_units_zero_ne_zero u]
 
 @[simp]
-theorem roots_smul_nonzero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots := by
+theorem roots_smul_of_ne_zero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots := by
   rw [smul_eq_C_mul, roots_C_mul _ ha]
+
+@[deprecated (since := "2026-10-13")] alias roots_smul_nonzero := roots_smul_of_ne_zero
 
 @[simp]
 lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
-  rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
+  rw [← neg_one_smul R p, roots_smul_of_ne_zero p (neg_ne_zero.mpr one_ne_zero)]
 
 @[simp]
 theorem map_roots_comp_C_mul_X_add_C (p : R[X]) (a b : R) (ha : IsUnit a) :
@@ -553,10 +555,12 @@ theorem aroots_C_mul [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
   exact FaithfulSMul.algebraMap_injective T S
 
 @[simp]
-theorem aroots_smul_nonzero [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
+theorem aroots_smul_of_ne_zero [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] {a : T} (p : T[X]) (ha : a ≠ 0) :
     (a • p).aroots S = p.aroots S := by
   rw [smul_eq_C_mul, aroots_C_mul _ ha]
+
+@[deprecated (since := "2026-10-13")] alias aroots_smul_nonzero := aroots_smul_of_ne_zero
 
 @[simp]
 theorem aroots_pow [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) (n : ℕ) :

@@ -53,11 +53,12 @@ variable (f : R →+* S) (x : S)
 
 /-- Evaluate a polynomial `p` given a ring hom `f` from the scalar ring
   to the target and a value `x` for the variable in the target -/
-irreducible_def eval₂ (p : R[X]) : S :=
+@[no_expose] def eval₂ (p : R[X]) : S :=
   p.sum fun e a => f a * x ^ e
 
-theorem eval₂_eq_sum {f : R →+* S} {x : S} : p.eval₂ f x = p.sum fun e a => f a * x ^ e := by
-  rw [eval₂_def]
+theorem eval₂_eq_sum {f : R →+* S} {x : S} : p.eval₂ f x = p.sum fun e a => f a * x ^ e := (rfl)
+
+@[deprecated (since := "2026-10-20")] alias eval₂_def := eval₂_eq_sum
 
 theorem eval₂_congr {R S : Type*} [Semiring R] [Semiring S] {f g : R →+* S} {s t : S}
     {φ ψ : R[X]} : f = g → s = t → φ = ψ → eval₂ f s φ = eval₂ g t ψ := by
@@ -383,7 +384,7 @@ theorem comp_eq_sum_left : p.comp q = p.sum fun e a => C a * q ^ e := by rw [com
 
 @[simp]
 theorem comp_X : p.comp X = p := by
-  simp only [comp, eval₂_def, C_mul_X_pow_eq_monomial]
+  simp only [comp, eval₂_eq_sum, C_mul_X_pow_eq_monomial]
   exact sum_monomial_eq _
 
 @[simp]
