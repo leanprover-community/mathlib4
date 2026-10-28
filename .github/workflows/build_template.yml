@@ -1139,7 +1139,7 @@ jobs:
           # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
           # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
           lake env lean scripts/export_crossrefs.lean
-          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
+          lake exe check-title-labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
@@ -1174,7 +1174,7 @@ jobs:
           # This job runs with only `contents: read` and no persisted credentials,
           # so checking out fork PR code under pull_request_target is safe.
           allow-unsafe-pr-checkout: true
-      - uses: leanprover-community/lint-style-action@c1e9eda133c7710e4d1c7da18afc4c116e588441 # 2026-10-23
+      - uses: leanprover-community/lint-style-action@a5e3ef275cc682ba79c1f8ba34ae2ade5d8d2101 # 2026-10-28
         with:
           mode: check
           lint-bib-file: true
