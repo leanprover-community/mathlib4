@@ -50,6 +50,4 @@ instance : StarMul (Center R) where
   star_involutive _ := by simp
   star_mul := by simp
 
-@[simp]
-lemma _root_.Center.coe_star (R) [NonUnitalNonAssocSemiring R] [StarRing R] (a : Center R) :
-    (star a).val = star a.val := rfl
+@[simp] lemma _root_.Center.coe_star (a : Center R) : (star a).val = star a.val := rfl
