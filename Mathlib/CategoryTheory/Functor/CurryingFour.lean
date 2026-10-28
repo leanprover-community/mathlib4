@@ -28,7 +28,7 @@ variable {C₁ C₂ C₃ C₄ D₁ D₂ D₃ D₄ E : Type*}
 
 /-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ≌ C₁ × C₂ × C₃ × C₄ ⥤ E`
 given by the curryfication of functors in four variables. -/
-@[implicit_reducible, simps!]
+@[implicit_reducible]
 def currying₄ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E) ≌ C₁ × C₂ × C₃ × C₄ ⥤ E :=
   currying.trans (currying.trans (currying.trans
     (((prod.associativity (C₁ × C₂) C₃ C₄).trans
@@ -71,6 +71,48 @@ instance : (curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤
 instance : (curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤
     C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E).Faithful :=
   fullyFaithfulCurry₄.faithful
+
+
+@[simp]
+lemma curry₄_obj_map_app_app_app (F : C₁ × C₂ × C₃ × C₄ ⥤ E)
+    {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
+    ((((curry₄.obj F).map f).app X₂).app X₃).app X₄ = F.map ⟨f, 𝟙 X₂, 𝟙 X₃, 𝟙 X₄⟩ := rfl
+
+@[simp]
+lemma curry₄_obj_obj_map_app_app (F : C₁ × C₂ × C₃ × C₄ ⥤ E)
+    (X₁ : C₁) {X₂ Y₂ : C₂} (f : X₂ ⟶ Y₂) (X₃ : C₃) (X₄ : C₄) :
+    ((((curry₄.obj F).obj X₁).map f).app X₃).app X₄ = F.map ⟨𝟙 X₁, f, 𝟙 X₃, 𝟙 X₄⟩ := rfl
+
+@[simp]
+lemma curry₄_obj_obj_obj_map_app (F : C₁ × C₂ × C₃ × C₄ ⥤ E)
+    (X₁ : C₁) (X₂ : C₂) {X₃ Y₃ : C₃} (f : X₃ ⟶ Y₃) (X₄ : C₄) :
+    ((((curry₄.obj F).obj X₁).obj X₂).map f).app X₄ = F.map ⟨𝟙 X₁, 𝟙 X₂, f, 𝟙 X₄⟩ := rfl
+
+@[simp]
+lemma curry₄_obj_obj_obj_obj_map (F : C₁ × C₂ × C₃ × C₄ ⥤ E)
+    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) {X₄ Y₄ : C₄} (f : X₄ ⟶ Y₄) :
+    ((((curry₄.obj F).obj X₁).obj X₂).obj X₃).map f = F.map ⟨𝟙 X₁, 𝟙 X₂, 𝟙 X₃, f⟩ := rfl
+
+@[simp]
+lemma curry₄_map_app_app_app_app {F G : C₁ × C₂ × C₃ × C₄ ⥤ E} (f : F ⟶ G)
+    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
+    ((((curry₄.map f).app X₁).app X₂).app X₃).app X₄ = f.app ⟨X₁, X₂, X₃, X₄⟩ := rfl
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma currying₄_unitIso_hom_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
+    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
+    ((((currying₄.unitIso.hom.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
+  simp [currying₄, Equivalence.unit]
+
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma currying₄_unitIso_inv_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
+    (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
+    ((((currying₄.unitIso.inv.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
+  simp [currying₄, Equivalence.unitInv]
 
 /-- Given functors `F₁ : C₁ ⥤ D₁`, `F₂ : C₂ ⥤ D₂`, `F₃ : C₃ ⥤ D₃`,
 `F₄ : C₄ ⥤ D₄` and `G : D₁ × D₂ × D₃ × D₄ ⥤ E`, this is the isomorphism between

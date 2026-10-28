@@ -25,6 +25,7 @@ variable {C₁ C₂ C₃ C₄ D₁ D₂ D₃ D₄ H : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₄]
   [Category D₁] [Category D₂] [Category D₃] [Category D₄] [Category H]
 
+attribute [local simp] currying₄ uncurry₄ in
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 --@[simps!]
@@ -135,23 +136,13 @@ lemma leftDerived₄_fac_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄
     ((((leftDerived₄Lift LF α W₁ W₂ W₃ W₄ G β).app (L₁.obj X₁)).app (L₂.obj X₂)).app
       (L₃.obj X₃)).app (L₄.obj X₄) ≫
       (((α.app X₁).app X₂).app X₃).app X₄ = (((β.app X₁).app X₂).app X₃).app X₄ := by
-  simp only [leftDerived₄Lift, fullyFaithfulUncurry₄, Equivalence.fullyFaithfulFunctor,
-    comp_obj, NatTrans.comp_app, currying₄_inverse_obj_obj_obj_obj_obj,
-    currying₄_functor_obj_obj, currying₄_unitIso_hom_app_app_app_app_app,
-    currying₄_inverse_map_app_app_app_app, currying₄_unitIso_inv_app_app_app_app_app,
-    Category.assoc]
-  have := (leftDerived_fac_app (LF := uncurry₄.obj LF)
-    (whiskeringLeft₄Equiv α) (W₁.prod (W₂.prod (W₃.prod W₄))) (uncurry₄.obj G)
-    (whiskeringLeft₄Equiv β)) (X₁, X₂, X₃, X₄)
-  dsimp at this
-  sorry /-
   simp only [leftDerived₄Lift, fullyFaithfulUncurry₄, Equivalence.fullyFaithfulFunctor, comp_obj,
     NatTrans.comp_app, currying₄_unitIso_hom_app_app_app_app_app, id_obj,
     curry₄_map_app_app_app_app, currying₄_unitIso_inv_app_app_app_app_app, Category.comp_id,
     Category.id_comp]
   exact (leftDerived_fac_app (LF := uncurry₄.obj LF)
     (whiskeringLeft₄Equiv α) (W₁.prod (W₂.prod (W₃.prod W₄))) (uncurry₄.obj G)
-    (whiskeringLeft₄Equiv β)) (X₁, X₂, X₃, X₄)-/
+    (whiskeringLeft₄Equiv β)) (X₁, X₂, X₃, X₄)
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]

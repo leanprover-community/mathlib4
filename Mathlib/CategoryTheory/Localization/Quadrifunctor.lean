@@ -128,12 +128,11 @@ theorem lift₄NatTrans_app_app_app_app (X₁ : C₁) (X₂ : C₂) (X₃ : C₃
           (((τ.app X₁).app X₂).app X₃).app X₄ ≫
           ((((Lifting₄.iso L₁ L₂ L₃ L₄ W₁ W₂ W₃ W₄ F₂ F₂').inv.app X₁).app X₂).app X₃).app X₄ := by
   dsimp [lift₄NatTrans, fullyFaithfulUncurry₄, Equivalence.fullyFaithfulFunctor]
-  sorry
-  /-simp only [currying₄_unitIso_hom_app_app_app_app_app, Functor.id_obj,
+  simp only [currying₄_unitIso_hom_app_app_app_app_app, Functor.id_obj,
     currying₄_unitIso_inv_app_app_app_app_app, Functor.comp_obj, Category.comp_id,
     Category.id_comp]
   exact liftNatTrans_app _ _ _ _ (uncurry₄.obj F₁') (uncurry₄.obj F₂') (uncurry₄.map τ)
-    ⟨X₁, X₂, X₃, X₄⟩-/
+    ⟨X₁, X₂, X₃, X₄⟩
 
 variable {F₁' F₂'} in
 include W₁ W₂ W₃ W₄ in
