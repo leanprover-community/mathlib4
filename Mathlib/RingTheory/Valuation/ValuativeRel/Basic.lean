@@ -318,6 +318,12 @@ lemma vle_neg_iff {x y : R} : x ≤ᵥ -y ↔ x ≤ᵥ y where
   mp h := vle_trans h (neg_vle_self y)
   mpr h := vle_trans h (self_vle_neg y)
 
+@[simp]
+lemma neg_vlt_iff {x y : R} : -x <ᵥ y ↔ x <ᵥ y := by simp [← not_vle]
+
+@[simp]
+lemma vlt_neg_iff {x y : R} : x <ᵥ -y ↔ x <ᵥ y := by simp [← not_vle]
+
 end Ring
 
 variable (R) in
