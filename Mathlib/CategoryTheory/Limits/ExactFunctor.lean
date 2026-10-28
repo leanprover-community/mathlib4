@@ -34,7 +34,7 @@ section
 variable (C) (D)
 
 /-- Left-exactness, as a property of objects in `C ⥤ D`. -/
-def leftExactFunctor : ObjectProperty (C ⥤ D) :=
+abbrev leftExactFunctor : ObjectProperty (C ⥤ D) :=
   fun F ↦ PreservesFiniteLimits F
 
 variable {C D} in
@@ -62,7 +62,7 @@ abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaith
   ObjectProperty.fullyFaithfulι _
 
 /-- Right-exactness, as a property of objects in `C ⥤ D`. -/
-def rightExactFunctor : ObjectProperty (C ⥤ D) :=
+abbrev rightExactFunctor : ObjectProperty (C ⥤ D) :=
   fun F ↦ PreservesFiniteColimits F
 
 variable {C D} in
@@ -92,6 +92,14 @@ abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFai
 /-- Exactness, as a property of objects in `C ⥤ D`. -/
 def exactFunctor : ObjectProperty (C ⥤ D) :=
   leftExactFunctor C D ⊓ rightExactFunctor C D
+
+variable {C D} in
+lemma exactFunctor.preservesFiniteLimits {F : C ⥤ D} (hF : exactFunctor _ _ F) :
+    PreservesFiniteLimits F := hF.1
+
+variable {C D} in
+lemma exactFunctor.preservesFiniteColimits {F : C ⥤ D} (hF : exactFunctor _ _ F) :
+    PreservesFiniteColimits F := hF.2
 
 variable {C D} in
 @[simp]
