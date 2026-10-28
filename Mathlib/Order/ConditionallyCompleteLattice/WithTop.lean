@@ -201,7 +201,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
   by_cases h : ⊤ ∈ s ∨ ¬BddAbove ((↑) ⁻¹' s : Set β)
   · rw [sSup_eq_top_iff.2 h]
     exact isLUB_top_iff.2 h
-  rw [not_or, not_not] at h
+  push Not at h
   rw [sSup_eq h.1 h.2, isLUB_coe_iff]
   exact ⟨h.1, isLUB_csSup (hs.preimage' <| by simp [isCompl_range_coe.eq_compl, h.1]) h.2⟩
 
