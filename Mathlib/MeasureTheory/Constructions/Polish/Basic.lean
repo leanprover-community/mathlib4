@@ -181,7 +181,7 @@ in `analyticSet_iff_exists_polishSpace_range`.
 Warning: these are analytic sets in the context of descriptive set theory (which is why they are
 registered in the namespace `MeasureTheory`). They have nothing to do with analytic sets in the
 context of complex analysis. -/
-@[no_expose] def AnalyticSet (s : Set α) : Prop :=
+def AnalyticSet (s : Set α) : Prop :=
   s = ∅ ∨ ∃ f : (ℕ → ℕ) → α, Continuous f ∧ range f = s
 
 theorem analyticSet_empty : AnalyticSet (∅ : Set α) := by
@@ -1205,11 +1205,14 @@ Borel isomorphic. -/
 def measurableEquivOfUncountable [Uncountable α] [Uncountable β] : α ≃ᵐ β :=
   measurableEquivNatBoolOfUncountable.trans measurableEquivNatBoolOfUncountable.symm
 
+/-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
 @[deprecated measurableEquivOfUncountable +typeChanged (since := "2026-10-27")]
 def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) :=
   have := not_countable_iff.1 h
   measurableEquivOfUncountable ..
 
+/-- The **Borel Isomorphism Theorem**: Any two uncountable standard Borel spaces are
+Borel isomorphic. -/
 @[deprecated measurableEquivOfUncountable +typeChanged (since := "2026-10-27")]
 def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬Countable β) : α ≃ᵐ β :=
   (measurableEquivNatBoolOfNotCountable hα).trans (measurableEquivNatBoolOfNotCountable hβ).symm
