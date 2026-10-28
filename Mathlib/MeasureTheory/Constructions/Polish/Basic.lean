@@ -1189,7 +1189,7 @@ def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas : Measurable 
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 
 /-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
-private def measurableEquivNatBoolOfUncountable (h : Uncountable α) : α ≃ᵐ (ℕ → Bool) := by
+private def measurableEquivNatBoolOfUncountable [h : Uncountable α] : α ≃ᵐ (ℕ → Bool) := by
   apply Nonempty.some
   let := upgradeStandardBorel α
   obtain ⟨f, -, fcts, finj⟩ :=
@@ -1199,14 +1199,16 @@ private def measurableEquivNatBoolOfUncountable (h : Uncountable α) : α ≃ᵐ
     MeasurableSpace.measurable_injection_nat_bool_of_countablySeparated α
   exact ⟨borelSchroederBernstein gmeas ginj fcts.measurable finj⟩
 
+variable (α β) in
 /-- The **Borel Isomorphism Theorem**: Any two uncountable standard Borel spaces are
 Borel isomorphic. -/
-noncomputable def measurableEquivOfUncountable (hα : Uncountable α) (hβ : Uncountable β) : α ≃ᵐ β :=
-  (measurableEquivNatBoolOfUncountable hα).trans (measurableEquivNatBoolOfUncountable hβ).symm
+noncomputable def measurableEquivOfUncountable [Uncountable α] [Uncountable β] : α ≃ᵐ β :=
+  measurableEquivNatBoolOfUncountable.trans measurableEquivNatBoolOfUncountable.symm
 
 @[deprecated measurableEquivOfUncountable +typeChanged (since := "2026-10-27")]
 noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) :=
-  measurableEquivOfUncountable (not_countable_iff.1 h) inferInstance
+  have := not_countable_iff.1 h
+  measurableEquivOfUncountable ..
 
 @[deprecated measurableEquivOfUncountable +typeChanged (since := "2026-10-27")]
 noncomputable def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬Countable β) : α ≃ᵐ β :=
@@ -1215,10 +1217,11 @@ noncomputable def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬
 /-- The **Borel Isomorphism Theorem**: If two standard Borel spaces have the same cardinality,
 they are Borel isomorphic. -/
 noncomputable def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
-  by_cases h : Countable α
-  · letI := Countable.of_equiv α e
-    refine ⟨e, ?_, ?_⟩ <;> apply measurable_of_countable
-  refine measurableEquivOfUncountable (not_countable_iff.1 h) ?_
-  rwa [← e.uncountable_iff, ← not_countable_iff]
+  apply Nonempty.some
+  obtain h | h := countable_or_uncountable α
+  · have := Countable.of_equiv α e
+    refine ⟨e, ?_, ?_⟩ <;> exact measurable_of_countable _
+  · have := Uncountable.of_equiv α e
+    exact ⟨measurableEquivOfUncountable _ _⟩
 
 end PolishSpace
