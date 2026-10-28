@@ -189,9 +189,8 @@ end lift
 component at `m`. -/
 def equivOfIsTop (m : ι) (hm : IsTop m) : DirectLimit F f ≃ F m where
   toFun := DirectLimit.lift f (fun i x ↦ f i m (hm i) x) (by simp [map_map'])
-  invFun := fun x ↦ ⟦⟨m,x⟩⟧
-  left_inv := by
-    intro z
+  invFun x := ⟦⟨m, x⟩⟧
+  left_inv z := by
     induction z using DirectLimit.induction with
     | _ i x => simp only [lift_def, mk_apply]
   right_inv := fun _ ↦ by simp only [lift_def, map_self']
