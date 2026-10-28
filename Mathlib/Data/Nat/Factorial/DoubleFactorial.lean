@@ -28,7 +28,7 @@ open Nat
 namespace Nat
 
 /-- `Nat.doubleFactorial n` is the double factorial of `n`. -/
-@[simp]
+@[simp, oeis A006882]
 def doubleFactorial : ℕ → ℕ
   | 0 => 1
   | 1 => 1

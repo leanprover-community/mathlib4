@@ -266,7 +266,8 @@ Then you can endow `ι` with the order topology by writing
   letI := Preorder.topology ι
   haveI : OrderTopology ι := ⟨rfl⟩
 ``` -/
-noncomputable irreducible_def rightCont [PartialOrder ι] (𝓕 : Filtration ι m) : Filtration ι m :=
+@[no_expose]
+noncomputable def rightCont [PartialOrder ι] (𝓕 : Filtration ι m) : Filtration ι m :=
   letI : TopologicalSpace ι := Preorder.topology ι
   { seq i := if (𝓝[>] i).NeBot then ⨅ j > i, 𝓕 j else 𝓕 i
     mono' i j hij := by
