@@ -416,8 +416,8 @@ lemma lTensor_bijective_iff_bijective [Module.FaithfullyFlat R M] :
     Function.Bijective (f.baseChange A) ↔ Function.Bijective f :=
   lTensor_bijective_iff_bijective R A f
 
-@[simp] lemma _root_.Module.End.isUnit_baseChange_iff {A : Type*} [Ring A] [Algebra R A]
-    [FaithfullyFlat R A] {f : End R M} : IsUnit (f.baseChange A) ↔ IsUnit f := by
+@[simp] lemma _root_.LinearMap.isUnit_baseChange_iff {A : Type*} [Ring A] [Algebra R A]
+    [FaithfullyFlat R A] {f : M →ₗ[R] M} : IsUnit (f.baseChange A) ↔ IsUnit f := by
   simp [End.isUnit_iff]
 
 end
