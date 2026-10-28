@@ -5,7 +5,6 @@ Authors: Rémi Bottinelli
 -/
 module
 
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
@@ -122,7 +121,7 @@ instance : Category (Quiver.FreeGroupoid V) :=
 
 /-- The inverse of an arrow in the free groupoid -/
 def quotInv {X Y : Quiver.FreeGroupoid V} (f : X ⟶ Y) : Y ⟶ X :=
-  Quot.liftOn f (fun pp => Quot.mk _ <| pp.reverse) fun pp qq con =>
+  Quot.liftOn f (fun pp => Quot.mk _ pp.reverse) fun pp qq con =>
     Quot.sound <| congr_reverse pp qq con
 
 instance instGroupoid : Groupoid (Quiver.FreeGroupoid V) where
@@ -198,7 +197,7 @@ theorem lift_unique (φ : V ⥤q V') (Φ : Quiver.FreeGroupoid V ⥤ V')
     change Φ.map (Groupoid.inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
       Groupoid.inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)
-    convert! this <;> simp only [Groupoid.inv_eq_inv]
+    convert this <;> simp only [Groupoid.inv_eq_inv]
 
 end UniversalProperty
 

@@ -5,8 +5,8 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Mathlib.CategoryTheory.PUnit
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+public import Mathlib.CategoryTheory.PUnit
 
 /-!
 # Fundamental groupoid of punit

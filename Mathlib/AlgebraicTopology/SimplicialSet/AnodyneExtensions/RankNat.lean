@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
-public import Mathlib.Basic.Finite.Sigma
+
+import Mathlib.Basic.Finite.Sigma
 
 /-!
 # Existence of a rank function to natural numbers

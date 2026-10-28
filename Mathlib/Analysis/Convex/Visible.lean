@@ -5,13 +5,14 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-public import Mathlib.Topology.Order.Monotone
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.Topology.Order.Monotone
 
 /-!
 # Points in sight
@@ -78,7 +79,7 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
     (hi : i ∈ t) (hwi : 0 < w i) : IsVisible 𝕜 (convexHull 𝕜 s) x (a i) := by
   classical
   obtain hwi | hwi : w i = 1 ∨ w i < 1 := eq_or_lt_of_le <| (single_le_sum hw₀ hi).trans_eq hw₁
-  · convert! hw
+  · convert hw
     rw [← one_smul 𝕜 (a i), ← hwi, eq_comm]
     rw [← hwi, ← sub_eq_zero, ← sum_erase_eq_sub hi,
       sum_eq_zero_iff_of_nonneg fun j hj ↦ hw₀ _ <| erase_subset _ _ hj] at hw₁

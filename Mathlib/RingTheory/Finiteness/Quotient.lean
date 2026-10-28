@@ -5,9 +5,7 @@ Authors: Anne Baanen, Yongle Hu
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Ideal.Pointwise
 public import Mathlib.RingTheory.Ideal.Over
 
 /-!

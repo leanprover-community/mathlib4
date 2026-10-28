@@ -630,7 +630,7 @@ theorem norm_integral_le_integral_norm :
     _ ≤ ‖B‖ * ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ.variation) :=
       norm_integral_le_lintegral_norm
     _ = ‖B‖ * ∫ a, ‖f a‖ ∂μ.variation := by
-      rw [integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm]
+      rw [integral_eq_lintegral_of_nonneg_ae le_ae h.norm]
   · rw [integral_non_aestronglyMeasurable h, norm_zero]
     positivity
 

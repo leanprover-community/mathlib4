@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Whiskering
 public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
@@ -26,7 +25,6 @@ open CategoryTheory CategoryTheory.Functor
 
 variable (C : Type*) {D E : Type*} [Category* C] [Category* D] [Category* E] {F : D ⥤ E} {G : E ⥤ D}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringRight C _ _).obj F ⊣ (whiskeringRight C _ _).obj G`. -/
 @[simps! unit_app_app counit_app_app]
@@ -41,7 +39,6 @@ protected def whiskerRight (adj : F ⊣ G) :
         (associator _ _ _).hom ≫ whiskerLeft X adj.counit ≫ (rightUnitor _).hom
       naturality := by intros; ext; simp }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
 @[simps! unit_app_app counit_app_app]

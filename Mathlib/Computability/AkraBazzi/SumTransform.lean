@@ -5,12 +5,12 @@ Authors: Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Computability.AkraBazzi.GrowsPolynomially
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Tactic.Positivity
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Tactic.Positivity
 
 /-!
 # Akra-Bazzi theorem: the sum transform
@@ -116,7 +116,7 @@ lemma isLittleO_self_div_log_id :
       calc
         _ = (fun (_ : ℕ) => ((1 : ℝ) ^ 2)) := by simp
         _ =o[atTop] (fun (n : ℕ) => (log n) ^ 2) :=
-          IsLittleO.pow (IsLittleO.natCast_atTop <| isLittleO_const_log_atTop) (by simp)
+          IsLittleO.pow (IsLittleO.natCast_atTop isLittleO_const_log_atTop) (by simp)
     _ = (fun (n : ℕ) => (n : ℝ)) := by ext; simp
 
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
@@ -195,7 +195,7 @@ lemma tendsto_atTop_r (i : α) : Tendsto (r i) atTop atTop := by
   intro b
   have := R.eventually_r_ge b
   rw [Filter.eventually_all] at this
-  exact_mod_cast this i
+  exact mod_cast this i
 
 lemma tendsto_atTop_r_real (i : α) : Tendsto (fun n => (r i n : ℝ)) atTop atTop :=
   Tendsto.comp tendsto_natCast_atTop_atTop (R.tendsto_atTop_r i)
@@ -435,7 +435,7 @@ lemma strictAntiOn_smoothingFn : StrictAntiOn ε (Set.Ioi 1) := by
 lemma strictMonoOn_one_sub_smoothingFn :
     StrictMonoOn (fun (x : ℝ) => (1 : ℝ) - ε x) (Set.Ioi 1) := by
   simp_rw [sub_eq_add_neg]
-  exact StrictMonoOn.const_add (StrictAntiOn.neg <| strictAntiOn_smoothingFn) 1
+  exact StrictMonoOn.const_add (StrictAntiOn.neg strictAntiOn_smoothingFn) 1
 
 lemma strictAntiOn_one_add_smoothingFn : StrictAntiOn (fun (x : ℝ) => (1 : ℝ) + ε x) (Set.Ioi 1) :=
   StrictAntiOn.const_add strictAntiOn_smoothingFn 1
@@ -530,7 +530,7 @@ end
 
 variable (a b) in
 /-- The exponent `p` associated with a particular Akra-Bazzi recurrence. -/
-noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
+@[no_expose] noncomputable def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
 include R in
 -- Cannot be @[simp] because `T`, `g`, `r`, and `R` cannot be inferred by `simp`.
@@ -612,7 +612,7 @@ lemma eventually_atTop_sumTransform_le :
           rw [Set.mem_Icc]
           refine ⟨?_, by norm_cast; lia⟩
           calc c₁ * n ≤ r i n := by exact hn₁ i
-                    _ ≤ u := by exact_mod_cast hu'.1
+                    _ ≤ u := mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
           gcongr with u hu; rw [Finset.mem_Ico] at hu; exact hu.1
          _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
@@ -644,7 +644,7 @@ lemma eventually_atTop_sumTransform_le :
         rw [Set.mem_Icc]
         refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u := by exact_mod_cast hu'.1
+                  _ ≤ u := mod_cast hu'.1
       _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
         rw [Finset.mem_Ico] at hu
@@ -652,7 +652,7 @@ lemma eventually_atTop_sumTransform_le :
           0 < r i n := by exact hrpos_i
           _ ≤ u := by exact hu.1
         exact rpow_le_rpow_of_nonpos (by positivity)
-          (by exact_mod_cast (le_of_lt hu.2)) (le_of_lt hp)
+          (mod_cast (le_of_lt hu.2)) (le_of_lt hp)
       _ ≤ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / n ^ (p a b + 1)) := by
         gcongr; exact Finset.sum_le_card_nsmul _ _ _ (fun x _ => by rfl)
       _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / n ^ (p a b + 1)) := by
@@ -691,7 +691,7 @@ lemma eventually_atTop_sumTransform_ge :
         rw [Set.mem_Icc]
         refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u := by exact_mod_cast hu'.1
+                  _ ≤ u := mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr with u hu
         · rw [Finset.mem_Ico] at hu
@@ -725,7 +725,7 @@ lemma eventually_atTop_sumTransform_ge :
         rw [Set.mem_Icc]
         refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u := by exact_mod_cast hu'.1
+                  _ ≤ u := mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
         gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
         · rw [Finset.mem_Ico] at hu
@@ -734,7 +734,7 @@ lemma eventually_atTop_sumTransform_ge :
           positivity
         · rw [Finset.mem_Ico] at hu
           exact rpow_le_rpow_of_nonpos (by positivity)
-            (by exact_mod_cast hu.1) (le_of_lt hp)
+            (mod_cast hu.1) (le_of_lt hp)
       _ ≥ n ^ p a b * #(Ico (r i n) n) • (c₂ * g n / r i n ^ (p a b + 1)) := by
           gcongr; exact Finset.card_nsmul_le_sum _ _ _ (fun x _ => by rfl)
       _ = n ^ p a b * #(Ico (r i n) n) * (c₂ * g n / r i n ^ (p a b + 1)) := by

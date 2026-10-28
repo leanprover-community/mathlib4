@@ -1,8 +1,8 @@
 module
-import Mathlib.Tactic.FBinop
-import Mathlib.Data.Set.Prod
+import Mathlib.Basic.SetLike.Basic
 import Mathlib.Data.Finset.Prod
-import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Set.Prod
+import Mathlib.Tactic.FBinop
 
 private axiom test_sorry : ∀ {α}, α
 universe u v w

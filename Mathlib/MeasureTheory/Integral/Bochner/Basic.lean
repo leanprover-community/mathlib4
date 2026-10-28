@@ -155,7 +155,7 @@ variable [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
 
 open scoped Classical in
 /-- The Bochner integral -/
-irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
+@[no_expose] def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
   if _ : CompleteSpace G then
     if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0
   else 0
@@ -192,13 +192,13 @@ theorem integral_eq [hE : CompleteSpace E] (f : α → E) (hf : Integrable f μ)
 theorem integral_eq_setToFun (f : α → E) :
     ∫ a, f a ∂μ = setToFun μ (weightedSMul μ) (dominatedFinMeasAdditive_weightedSMul μ) f := by
   by_cases hE : CompleteSpace E
-  · simp only [integral, hE, ↓reduceDIte, L1.integral, setToFun]
+  · simp only [integral, hE, ↓reduceDIte, L1.integral_eq, setToFun]
     rfl
   · simp [integral, hE, setToFun]
 
 theorem L1.integral_eq_integral [CompleteSpace E] (f : α →₁[μ] E) :
     L1.integral f = ∫ a, f a ∂μ := by
-  simp only [integral, L1.integral, integral_eq_setToFun]
+  simp only [L1.integral_eq, integral_eq_setToFun]
   exact (L1.setToFun_eq_setToL1 (dominatedFinMeasAdditive_weightedSMul μ) f).symm
 
 theorem integral_undef {f : α → G} (h : ¬Integrable f μ) : ∫ a, f a ∂μ = 0 := by
@@ -249,8 +249,6 @@ theorem integral_finsetSum {ι} (s : Finset ι) {f : ι → α → G} (hf : ∀ 
     ∫ a, ∑ i ∈ s, f i a ∂μ = ∑ i ∈ s, ∫ a, f i a ∂μ := by
   simp only [integral_eq_setToFun]
   exact setToFun_finsetSum (dominatedFinMeasAdditive_weightedSMul _) s hf
-
-@[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
 
 @[integral_simps]
 theorem integral_neg (f : α → G) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
@@ -545,6 +543,11 @@ theorem ofReal_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup 
   rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, ENNReal.ofReal_toReal]
   exact lt_top_iff_ne_top.mp (hasFiniteIntegral_iff_enorm.mpr hf.2)
 
+theorem enorm_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
+    (hf : Integrable f μ) : ‖∫ x, ‖f x‖ ∂μ‖ₑ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
+  convert ofReal_integral_norm_eq_lintegral_enorm hf
+  rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, Real.enorm_eq_ofReal toReal_nonneg]
+
 theorem SimpleFunc.integral_eq_integral [CompleteSpace E] (f : α →ₛ E) (hfi : Integrable f μ) :
     f.integral μ = ∫ x, f x ∂μ := by
   rw [MeasureTheory.integral_eq f hfi, ← L1.SimpleFunc.toLp_one_eq_toL1,
@@ -561,7 +564,7 @@ theorem tendsto_integral_approxOn_of_measurable [CompleteSpace E] [MeasurableSpa
     Tendsto (fun n => (SimpleFunc.approxOn f hfm s y₀ h₀ n).integral μ)
       atTop (𝓝 <| ∫ x, f x ∂μ) := by
   have hfi' := SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i
-  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, L1.integral]
+  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, L1.integral_eq]
   exact tendsto_setToFun_approxOn_of_measurable (dominatedFinMeasAdditive_weightedSMul μ)
     hfi hfm hs h₀ h₀i
 
@@ -970,7 +973,7 @@ theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ �
   · calc
       ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) :=
         norm_integral_le_lintegral_norm _
-      _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm
+      _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae h.norm).symm
   · rw [integral_non_aestronglyMeasurable h, norm_zero]
     exact integral_nonneg_of_ae le_ae
 
@@ -1033,9 +1036,6 @@ theorem integral_finsetSum_measure {ι} {m : MeasurableSpace α} {f : α → G} 
     rw [Finset.forall_mem_cons] at hf
     rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
     exact integral_add_measure hf.1 (integrable_finsetSum_measure.2 hf.2)
-
-@[deprecated (since := "2026-04-08")]
-alias integral_finset_sum_measure := integral_finsetSum_measure
 
 theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
@@ -1158,6 +1158,13 @@ theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f 
   · exact integral_dirac _ _
   · exact integral_zero_measure _
 
+lemma withDensity_real_apply_eq_integral {f : α → ℝ≥0∞} {s : Set α}
+    (hf : AEMeasurable f (μ.restrict s)) (hf_lt_top : ∀ᵐ x ∂μ, x ∈ s → f x < ∞)
+    (hs : NullMeasurableSet s μ) :
+    (μ.withDensity f).real s = ∫ a in s, (f a).toReal ∂μ := by
+  rw [withDensity_real_apply₀ f hs, ← integral_toReal hf]
+  rwa [ae_restrict_iff'₀ hs]
+
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)
     (hf_int : Integrable f μ) (ε : ℝ) : ε * μ.real { x | ε ≤ f x } ≤ ∫ x, f x ∂μ := by
@@ -1203,13 +1210,13 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
   -- we can now apply `ENNReal.lintegral_mul_le_Lp_mul_Lq` (up to the `toReal` application)
   refine ENNReal.toReal_mono ?_ ?_
   · refine ENNReal.mul_ne_top ?_ ?_
-    · convert! hf.eLpNorm_ne_top
+    · convert hf.eLpNorm_ne_top
       rw [eLpNorm_eq_lintegral_rpow_enorm_toReal _ _ hf.aestronglyMeasurable]
       · rw [ENNReal.toReal_ofReal hpq.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.pos
       · finiteness
-    · convert! hg.eLpNorm_ne_top
+    · convert hg.eLpNorm_ne_top
       rw [eLpNorm_eq_lintegral_rpow_enorm_toReal _ _ hg.aestronglyMeasurable]
       · rw [ENNReal.toReal_ofReal hpq.symm.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
@@ -1255,11 +1262,14 @@ theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = μ.real 
     ∫ x, f x ∂μ = ∫ _, f default ∂μ := by congr with x; congr; exact Unique.uniq _ x
     _ = μ.real univ • f default := by rw [integral_const]
 
-theorem integral_pos_of_integrable_nonneg_nonzero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
+theorem integral_pos_of_integrable_nonneg_ne_zero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
     {f : α → ℝ} {x : α} (f_cont : Continuous f) (f_int : Integrable f μ) (f_nonneg : 0 ≤ f)
     (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
   (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
     (IsOpen.measure_pos μ f_cont.isOpen_support ⟨x, f_x⟩)
+
+@[deprecated (since := "2026-10-13")]
+alias integral_pos_of_integrable_nonneg_nonzero := integral_pos_of_integrable_nonneg_ne_zero
 
 end Properties
 

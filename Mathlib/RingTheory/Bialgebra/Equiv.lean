@@ -5,8 +5,8 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.Hom
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
 # Isomorphisms of `R`-bialgebras
@@ -164,10 +164,6 @@ theorem toCoalgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toCoalgEquiv = f :=
 theorem toBialgHom_eq_coe (f : A ≃ₐc[R] B) : f.toBialgHom = f :=
   rfl
 
-@[deprecated "Now a syntactic tautology" (since := "2026-04-09"), nolint synTaut]
-theorem toAlgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toAlgEquiv = f :=
-  rfl
-
 @[simp]
 theorem coe_toCoalgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
@@ -198,7 +194,7 @@ protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 
 protected theorem congr_fun (h : e = e') (x : A) : e x = e' x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 end
 

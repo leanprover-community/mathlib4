@@ -42,7 +42,7 @@ Classes of kernels:
 
 assert_not_exists MeasureTheory.integral
 
-open MeasureTheory
+open MeasureTheory CompleteLattice
 
 open scoped ENNReal
 
@@ -92,14 +92,11 @@ noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + �
 noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
   smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.2⟩
 
-instance : IsZeroApply (Kernel α β) α (Measure β) where
-  zero_apply _ := rfl
+instance : IsZeroApply (Kernel α β) where
 
-instance : IsAddApply (Kernel α β) α (Measure β) where
-  add_apply _ _ _ := rfl
+instance : IsAddApply (Kernel α β) where
 
-instance : IsSMulApply ℕ (Kernel α β) α (Measure β) where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply ℕ (Kernel α β) where
 
 @[deprecated (since := "2026-06-30")] alias coe_zero := FunLike.coe_zero
 @[deprecated (since := "2026-06-30")] alias coe_add := FunLike.coe_add
@@ -130,16 +127,10 @@ instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] 
 
 @[deprecated (since := "2026-06-30")] alias coe_finsetSum := FunLike.coe_sum
 
-@[deprecated (since := "2026-04-08")] alias coe_finset_sum := FunLike.coe_sum
-
 @[deprecated (since := "2026-06-30")] alias finsetSum_apply := sum_apply
-
-@[deprecated (since := "2026-04-08")] alias finset_sum_apply := sum_apply
 
 theorem finsetSum_apply' (I : Finset ι) (κ : ι → Kernel α β) (a : α) (s : Set β) :
     (∑ i ∈ I, κ i) a s = ∑ i ∈ I, κ i a s := by rw [sum_apply, Measure.finsetSum_apply]
-
-@[deprecated (since := "2026-04-08")] alias finset_sum_apply' := finsetSum_apply'
 
 end Kernel
 
@@ -338,7 +329,7 @@ theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
   ext a s hs
   simp only [add_apply, sum_apply, Measure.sum_apply _ hs, Pi.add_apply,
-    Measure.coe_add, ENNReal.summable.tsum_add ENNReal.summable]
+    Measure.coe_add, summable.tsum_add summable]
 
 end Sum
 
@@ -375,7 +366,7 @@ instance isFiniteKernel_seq (κ : Kernel α β) [h : IsSFiniteKernel κ] (n : �
     IsFiniteKernel (Kernel.seq κ n) :=
   h.tsum_finite.choose_spec.1 n
 
-instance _root_.ProbabilityTheory.IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) :
+instance _root_.ProbabilityTheory.IsSFiniteKernel.sfinite [IsSFiniteKernel κ] (a : α) :
     SFinite (κ a) :=
   ⟨⟨fun n ↦ seq κ n a, inferInstance, (measure_sum_seq κ a).symm⟩⟩
 
@@ -396,8 +387,6 @@ theorem IsSFiniteKernel.finsetSum {κs : ι → Kernel α β} (I : Finset ι)
       h_ind fun i hiI => h i (Finset.mem_insert_of_mem hiI)
     exact IsSFiniteKernel.add _ _
 
-@[deprecated (since := "2026-04-08")] alias IsSFiniteKernel.finset_sum := IsSFiniteKernel.finsetSum
-
 theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel α β}
     (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (Kernel.sum κs) := by
   let e : ℕ ≃ ι × ℕ := (Denumerable.eqv (ι × ℕ)).symm
@@ -409,7 +398,7 @@ theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel
   simp_rw [Kernel.sum_apply' _ _ hs]
   change (∑' i, ∑' m, seq (κs i) m a s) = ∑' n, (fun im : ι × ℕ => seq (κs im.fst) im.snd a s) (e n)
   rw [e.tsum_eq (fun im : ι × ℕ => seq (κs im.fst) im.snd a s),
-    ENNReal.summable.tsum_prod' fun _ => ENNReal.summable]
+    summable.tsum_prod' fun _ => summable]
 
 instance isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
     [hκs : ∀ n, IsSFiniteKernel (κs n)] : IsSFiniteKernel (Kernel.sum κs) := by

@@ -45,20 +45,39 @@ theorem smul_strictMono_right [SMul M α] [Preorder α] [CovariantClass M α HSM
     (m : M) : StrictMono (HSMul.hSMul m : α → α) :=
   fun _ _ => CovariantClass.elim _
 
-lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
-    (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
-  induction n with
-  | zero => rw [pow_zero, one_smul]
-  | succ n hn =>
-    rw [pow_succ', mul_smul]
-    exact h.trans (smul_mono_right g hn)
+section Monoid
 
-lemma pow_smul_le {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
-    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
-    (h : g • a ≤ a) (n : ℕ) : g ^ n • a ≤ a := by
+variable [Monoid M] [Preorder α] [MulAction M α] [CovariantClass M α HSMul.hSMul LE.le]
+
+lemma le_pow_smul {m : M} {a : α} (h : a ≤ m • a) (n : ℕ) : a ≤ m ^ n • a := by
   induction n with
   | zero => rw [pow_zero, one_smul]
   | succ n hn =>
     rw [pow_succ', mul_smul]
-    exact (smul_mono_right g hn).trans h
+    exact h.trans (smul_mono_right m hn)
+
+lemma pow_smul_le {m : M} {a : α} (h : m • a ≤ a) (n : ℕ) : m ^ n • a ≤ a := by
+  induction n with
+  | zero => rw [pow_zero, one_smul]
+  | succ n hn =>
+    rw [pow_succ', mul_smul]
+    exact (smul_mono_right m hn).trans h
+
+end Monoid
+
+section Group
+
+variable {G : Type*} [Group G] [PartialOrder α] [MulAction G α]
+  [CovariantClass G α HSMul.hSMul LE.le]
+
+/-- A group acting monotonically fixes `⊥`. -/
+@[simp]
+theorem smul_bot [OrderBot α] (g : G) : g • (⊥ : α) = ⊥ := by
+  simpa using smul_le_smul_left g (bot_le : (⊥ : α) ≤ g⁻¹ • ⊥)
+
+/-- A group acting monotonically fixes `⊤`. -/
+@[simp]
+theorem smul_top [OrderTop α] (g : G) : g • (⊤ : α) = ⊤ := by
+  simpa using smul_le_smul_left g (le_top : g⁻¹ • (⊤ : α) ≤ ⊤)
+
+end Group

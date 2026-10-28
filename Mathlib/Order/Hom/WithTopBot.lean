@@ -65,9 +65,6 @@ theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual := by
   ext (- | x) <;> rfl
 
-@[deprecated (since := "2026-03-27")]
-alias _root_.WithBot.coe_toDualTopEquiv_eq := WithBot.coe_toDualTopEquiv
-
 /-- Embedding into `WithTop α`. -/
 @[to_dual (attr := simps) /-- Embedding into `WithBot α`. -/]
 def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
@@ -134,7 +131,7 @@ end OrderHom
 
 namespace OrderEmbedding
 
-variable [Preorder α] [Preorder β]
+variable [LE α] [LE β]
 
 /-- A version of `WithBot.map` for order embeddings. -/
 @[to_dual /-- A version of `WithTop.map` for order embeddings. -/]
@@ -151,7 +148,7 @@ end OrderEmbedding
 
 namespace OrderIso
 
-variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
+variable [LE α] [LE β] [LE γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
 @[to_dual /-- A version of `Equiv.optionCongr` for `WithBot`. -/]

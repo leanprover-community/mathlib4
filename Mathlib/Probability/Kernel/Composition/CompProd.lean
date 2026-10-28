@@ -38,7 +38,7 @@ that convention because it fits better with the use of the name `comp` elsewhere
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory
@@ -66,7 +66,7 @@ variable {s : Set (β × γ)}
 `∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
 (see `ProbabilityTheory.Kernel.lintegral_compProd`).
 If either of the kernels is not s-finite, `compProd` is given the junk value 0. -/
-noncomputable irreducible_def compProd (κ : Kernel α β) (η : Kernel (α × β) γ) : Kernel α (β × γ) :=
+noncomputable def compProd (κ : Kernel α β) (η : Kernel (α × β) γ) : Kernel α (β × γ) :=
   swap γ β ∘ₖ (η ∥ₖ Kernel.id)
     ∘ₖ deterministic MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _)
     ∘ₖ (Kernel.id ∥ₖ copy β) ∘ₖ (Kernel.id ∥ₖ κ) ∘ₖ copy α
@@ -202,7 +202,7 @@ lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β �
   let t := {b | (b, f (x, b)) ∈ s}
   have ht : MeasurableSet t := (measurable_id.prodMk (hf.comp measurable_prodMk_left)) hs
   rw [← lintegral_add_compl _ ht]
-  convert! add_zero _
+  convert add_zero _
   · suffices ∀ b ∈ tᶜ, (if f (x, b) ∈ Prod.mk b ⁻¹' s then (1 : ℝ≥0∞) else 0) = 0 by
       rw [setLIntegral_congr_fun ht.compl this, lintegral_zero]
     intro b hb
@@ -344,7 +344,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   refine SimpleFunc.induction ?_ ?_ (F n)
   · intro c s hs
     simp +unfoldPartialApp only [SimpleFunc.const_zero,
-      SimpleFunc.coe_piecewise, SimpleFunc.coe_const, SimpleFunc.coe_zero,
+      SimpleFunc.coe_piecewise, SimpleFunc.coe_const, FunLike.coe_zero,
       Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
     rw [compProd_apply hs, ← lintegral_const_mul c _]
     swap
@@ -354,7 +354,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
     ext1 b
     rw [lintegral_indicator_const_comp measurable_prodMk_left hs]
   · intro f f' _ hf_eq hf'_eq
-    simp_rw [SimpleFunc.coe_add, Pi.add_apply]
+    simp_rw [FunLike.coe_add, Pi.add_apply]
     change
       ∫⁻ x, (f : β × γ → ℝ≥0∞) x + f' x ∂(κ ⊗ₖ η) a =
         ∫⁻ b, ∫⁻ c : γ, f (b, c) + f' (b, c) ∂η (a, b) ∂κ a
@@ -409,12 +409,12 @@ end Lintegral
 
 theorem compProd_eq_sum_compProd_left (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ) :
     κ ⊗ₖ η = Kernel.sum fun n ↦ seq κ n ⊗ₖ η := by
-  simp_rw [compProd_def]
+  simp_rw [compProd]
   rw [← comp_sum_left, ← comp_sum_right, ← parallelComp_sum_right, kernel_sum_seq]
 
 theorem compProd_eq_sum_compProd_right (κ : Kernel α β) (η : Kernel (α × β) γ)
     [IsSFiniteKernel η] : κ ⊗ₖ η = Kernel.sum fun n => κ ⊗ₖ seq η n := by
-  simp_rw [compProd_def]
+  simp_rw [compProd]
   rw [← comp_sum_left, ← comp_sum_left, ← comp_sum_left, ← comp_sum_left, ← comp_sum_right,
     ← parallelComp_sum_left, kernel_sum_seq]
 
@@ -434,7 +434,7 @@ instance IsMarkovKernel.compProd (κ : Kernel α β) [IsMarkovKernel κ] (η : K
 
 instance IsZeroOrMarkovKernel.compProd (κ : Kernel α β) [IsZeroOrMarkovKernel κ]
     (η : Kernel (α × β) γ) [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (κ ⊗ₖ η) := by
-  rw [compProd_def]
+  rw [Kernel.compProd]
   infer_instance
 
 theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [IsFiniteKernel η] (a : α) :
@@ -453,12 +453,12 @@ theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [
 
 instance IsFiniteKernel.compProd (κ : Kernel α β) [IsFiniteKernel κ] (η : Kernel (α × β) γ)
     [IsFiniteKernel η] : IsFiniteKernel (κ ⊗ₖ η) := by
-  rw [compProd_def]
+  rw [Kernel.compProd]
   infer_instance
 
 instance IsSFiniteKernel.compProd (κ : Kernel α β) (η : Kernel (α × β) γ) :
     IsSFiniteKernel (κ ⊗ₖ η) := by
-  rw [compProd_def]
+  rw [Kernel.compProd]
   infer_instance
 
 /-- `Kernel.compProd` is associative. We have to insert `MeasurableEquiv.prodAssoc` in two places

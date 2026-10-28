@@ -9,10 +9,10 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.FunLike.IsApply
+
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Big operators for Pi Types
@@ -42,7 +42,7 @@ theorem multiset_prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (
 end Pi
 
 @[to_additive (attr := simp)]
-theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M a)] (a : α)
+protected theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M a)] (a : α)
     (s : Finset ι) (g : ι → ∀ a, M a) : (∏ c ∈ s, g c) a = ∏ c ∈ s, g c a :=
   map_prod (Pi.evalMonoidHom M a) _ _
 
@@ -53,8 +53,8 @@ theorem Finset.prod_fn {α : Type*} {M : α → Type*} {ι} [∀ a, CommMonoid (
   funext fun _ ↦ Finset.prod_apply _ _ _
 
 @[to_additive]
-theorem Fintype.prod_apply {α : Type*} {M : α → Type*} [Fintype ι] [∀ a, CommMonoid (M a)] (a : α)
-    (g : ι → ∀ a, M a) : (∏ c, g c) a = ∏ c, g c a :=
+protected theorem Fintype.prod_apply {α : Type*} {M : α → Type*} [Fintype ι] [∀ a, CommMonoid (M a)]
+    (a : α) (g : ι → ∀ a, M a) : (∏ c, g c) a = ∏ c, g c a :=
   Finset.prod_apply a Finset.univ g
 
 @[to_additive prod_mk_sum]
@@ -226,7 +226,7 @@ end EqOn
 section FunLike
 
 variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
-  [IsOneApply F α β] [IsMulApply F α β]
+  [IsOneApply F] [IsMulApply F]
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_apply (s : Finset ι) (f : ι → F) (x : α) : (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by

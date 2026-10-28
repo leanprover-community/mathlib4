@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Order.Filter.Basic
+
+import Mathlib.Data.Set.Piecewise
 
 /-!
 # Definition of `Filter.atTop` and `Filter.atBot` filters
