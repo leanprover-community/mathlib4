@@ -45,10 +45,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
     classical
     refine Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) ?_) (union_subset hp hq)
     rw [Finset.coe_union]
-  zero_mem' := by
-    simp only [subset_def, Finset.mem_coe, Set.mem_ofPred_eq, mem_support_iff, Finsupp.zero_apply]
-    intro h ha
-    exact (ha rfl).elim
+  zero_mem' := by simp
   smul_mem' _ _ hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
 
 variable {M}

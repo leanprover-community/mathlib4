@@ -421,7 +421,7 @@ lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
 lemma leadingCoeff_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).leadingCoeff D = p.leadingCoeff D := by
   obtain ⟨a, he⟩ := supDegree_mem_range D (ne_zero_of_not_supDegree_le h.not_ge)
-  rw [leadingCoeff, supDegree_add_eq_left h, coeff_add, Finsupp.add_apply, ← leadingCoeff,
+  rw [leadingCoeff, supDegree_add_eq_left h, coeff_add, add_apply, ← leadingCoeff,
     coeff_eq_zero_of_not_le_supDegree (D := D), add_zero]
   rw [← he, Function.apply_invFun_apply (f := D), he]; exact h.not_ge
 
@@ -451,7 +451,7 @@ lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [Ring R] {p q :
   · rw [hd, sup_idem]
   · rw [← sub_eq_zero, ← leadingCoeff_eq_zero hD, leadingCoeff] at he
     refine fun h => he ?_
-    rwa [h, coeff_sub, Finsupp.sub_apply, ← leadingCoeff, hd, ← leadingCoeff, sub_eq_zero]
+    rwa [h, coeff_sub, sub_apply, ← leadingCoeff, hd, ← leadingCoeff, sub_eq_zero]
 
 lemma supDegree_leadingCoeff_sum_eq
     (hi : i ∈ s) (hmax : ∀ j ∈ s, j ≠ i → (f j).supDegree D < (f i).supDegree D) :
