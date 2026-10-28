@@ -395,7 +395,7 @@ end ConditionallyCompleteLinearOrder
 /-!
 ### Lemmas about a conditionally complete lattice with a bottom element
 
-In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
+In this case we have `sSup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
 -/
 
 
