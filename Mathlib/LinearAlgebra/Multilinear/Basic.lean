@@ -122,9 +122,9 @@ public meta def delabMultilinearMap : Delab := whenPPOption getPPNotation do
   guard <| e.isAppOfArity ``MultilinearMap 9
   let R ← withNaryArg 0 delab
   let M ← withNaryArg 2 do
-    let piExpr : Expr := match ← getExpr with
-      | .lam name dom body bi => .forallE name dom body bi
-      | eM => .forallE `i (e.getArg! 1) (.app (eM.liftLooseBVars 0 1) (.bvar 0)) .default
+    let .lam name dom body bi ← etaExpand (← getExpr)
+      | failure
+    let piExpr := Expr.forallE name dom body bi
     withTheReader SubExpr (fun cfg => { cfg with expr := piExpr }) delab
   let N ← withNaryArg 3 delab
   `($M →ₘₗ[$R] $N)
