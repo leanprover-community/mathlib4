@@ -1036,38 +1036,38 @@ theorem Summable.tendsto_alternating_series_tsum
     Tendsto (fun n => (∑ i ∈ range n, (-1) ^ i * f i)) atTop (𝓝 (∑' i : ℕ, (-1) ^ i * f i)) :=
   Summable.tendsto_sum_tsum_nat hfs.alternating
 
--- TODO: generalize to conditionally-convergent sums
--- see https://github.com/leanprover-community/mathlib4/pull/29577#discussion_r2343447344
+/-- The error of an alternating series with antitone coefficients is bounded by the first
+omitted term. This version assumes convergence of the partial sums, so it also applies to
+conditionally convergent series. -/
+theorem Antitone.abs_sub_le_alternating_series
+    {E : Type*} [Ring E] [LinearOrder E] [IsOrderedRing E]
+    [TopologicalSpace E] [OrderClosedTopology E]
+    {l : E} {f : ℕ → E}
+    (hfl : Tendsto (fun n ↦ ∑ i ∈ range n, (-1) ^ i * f i) atTop (𝓝 l))
+    (hfa : Antitone f) (n : ℕ) :
+    |l - (∑ i ∈ range n, (-1) ^ i * f i)| ≤ f n := by
+  obtain (h | h) := even_or_odd n
+  · obtain ⟨k, rfl⟩ := even_iff_exists_two_mul.mp h
+    have lower := hfa.alternating_series_le_tendsto hfl k
+    have upper := hfa.tendsto_le_alternating_series hfl k
+    rw [abs_of_nonneg (sub_nonneg.mpr lower), sub_le_iff_le_add]
+    simp only [sum_range_succ, even_two, Even.mul_right, Even.neg_pow, one_pow, one_mul] at upper
+    simpa only [add_comm] using upper
+  · obtain ⟨k, rfl⟩ := odd_iff_exists_bit1.mp h
+    have lower := hfa.alternating_series_le_tendsto hfl (k + 1)
+    have upper := hfa.tendsto_le_alternating_series hfl k
+    rw [abs_of_nonpos (sub_nonpos.mpr upper), neg_sub, sub_le_iff_le_add]
+    rw [Nat.mul_add, Finset.sum_range_succ] at lower
+    simpa [Finset.sum_range_succ, add_comm, pow_add] using lower
+
+/-- The error bound for an alternating series with summable coefficients. For a version
+requiring only convergence of the partial sums, see `Antitone.abs_sub_le_alternating_series`. -/
 theorem alternating_series_error_bound
     {E} [Ring E] [LinearOrder E] [IsOrderedRing E]
     [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E] [OrderClosedTopology E]
     (f : ℕ → E) (hfa : Antitone f) (hfs : Summable f) (n : ℕ) :
     |(∑' i : ℕ, (-1) ^ i * f i) - (∑ i ∈ range n, (-1) ^ i * f i)| ≤ f n := by
-  obtain h := hfs.tendsto_alternating_series_tsum
-  have upper := hfa.alternating_series_le_tendsto h
-  have lower := hfa.tendsto_le_alternating_series h
-  have I (n : ℕ) : 0 ≤ f n := by
-    apply le_of_tendsto hfs.tendsto_atTop_zero
-    filter_upwards [Ici_mem_atTop n] with m hm using hfa hm
-  obtain (h | h) := even_or_odd n
-  · obtain ⟨n, rfl⟩ := even_iff_exists_two_mul.mp h
-    specialize upper n
-    specialize lower n
-    simp only [sum_range_succ, even_two, Even.mul_right, Even.neg_pow, one_pow, one_mul] at lower
-    rw [abs_sub_le_iff]
-    constructor
-    · rwa [sub_le_iff_le_add, add_comm]
-    · rw [sub_le_iff_le_add, add_comm]
-      exact upper.trans (le_add_of_nonneg_right (I (2 * n)))
-  · obtain ⟨n, rfl⟩ := odd_iff_exists_bit1.mp h
-    specialize upper (n + 1)
-    specialize lower n
-    rw [Nat.mul_add, Finset.sum_range_succ] at upper
-    rw [abs_sub_le_iff]
-    constructor
-    · rw [sub_le_iff_le_add, add_comm]
-      exact lower.trans (le_add_of_nonneg_right (I (2 * n + 1)))
-    · simpa [Finset.sum_range_succ, add_comm, pow_add] using upper
+  exact hfa.abs_sub_le_alternating_series hfs.tendsto_alternating_series_tsum n
 
 end
 
