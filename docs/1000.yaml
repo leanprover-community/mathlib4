@@ -1575,7 +1575,7 @@ Q1249069:
 
 Q1259814:
   title: Nielsen–Schreier theorem
-  decl: subgroupIsFreeOfIsFree
+  decl: Subgroup.isFreeGroupOfIsFreeGroup
 
 Q1276318:
   title: Schwartz kernel theorem
