@@ -937,7 +937,7 @@ This is available in bundled forms as:
 
 @[simp] theorem toLinearEquiv_piAlgEquiv (R) [CommSemiring R] [Π i, Semiring (β i)]
     [Π i, Algebra R (β i)] [Fintype n] [DecidableEq n] : (piAlgEquiv (n := n) (ι := ι) (β := β) R :
-    Matrix n n (Π i, β i) ≃ₗ[R] Π i, Matrix n n (β i)) = piLinearEquiv R := rfl
+      Matrix n n (Π i, β i) ≃ₗ[R] Π i, Matrix n n (β i)) = piLinearEquiv R := rfl
 
 end Pi
 
