@@ -324,6 +324,12 @@ lemma neg_vlt_iff {x y : R} : -x <ᵥ y ↔ x <ᵥ y := by simp [← not_vle]
 @[simp]
 lemma vlt_neg_iff {x y : R} : x <ᵥ -y ↔ x <ᵥ y := by simp [← not_vle]
 
+@[simp]
+lemma neg_veq_iff {x y : R} : -x =ᵥ y ↔ x =ᵥ y := by simp [veq_def]
+
+@[simp]
+lemma veq_neg_iff {x y : R} : x =ᵥ -y ↔ x =ᵥ y := by simp [veq_def]
+
 end Ring
 
 variable (R) in
