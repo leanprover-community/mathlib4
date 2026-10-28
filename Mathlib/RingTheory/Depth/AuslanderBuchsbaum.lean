@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Products
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-public import Mathlib.RingTheory.Depth.Basic
+public import Mathlib.RingTheory.Depth.Finite
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.Tactic.ENatToNat
 
@@ -334,37 +334,26 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
           apply (AddCommGrpCat.isZero_of_iff_subsingleton.mpr ?_).eq_zero_of_tgt
           simpa [finte_free_ext_vanish_iff] using subsingleton_ext_of_lt_depth lt
       have eq_add1 : IsLocalRing.depth S.X₁ = IsLocalRing.depth M + 1 := by
-        by_cases eqtop : IsLocalRing.depth S.X₁ = ⊤
-        · --might be able to removed using Ischbeck theorem
-          simp only [eqtop, add_top, S] at h_ker'
-          have M_depth_eqtop : IsLocalRing.depth M = ⊤ := by
-            apply (depth_eq_top_iff _ _).mpr (fun i ↦ ?_)
-            have := ext_iso i (by simp [← h_ker', ENat.add_lt_top])
+        rcases ENat.ne_top_iff_exists.mp (IsLocalRing.depth_ne_top S.X₁) with ⟨k, hk⟩
+        simp only [← hk, gt_iff_lt, Nat.cast_pos] at depth_pos
+        have eq : k - 1 + 1 = k := Nat.sub_one_add_one depth_pos.ne.symm
+        have : IsLocalRing.depth M = (k - 1 : ℕ) := by
+          simp only [IsLocalRing.depth, Ideal.depth, depth_eq_iff]
+          have lt : (k - 1 : ℕ) + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
+            simp only [← h_ker', ← ENat.natCast_one, ← ENat.natCast_add, eq, ← hk,
+              ENat.natCast_lt_natCast]
+            omega
+          refine ⟨?_, fun i hi ↦ ?_⟩
+          · have := ext_iso (k - 1) lt
+            rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
+              (Eq.refl (k - 1 + 1))))).addCommGroupIsoToAddEquiv.nontrivial_congr, eq]
+            exact ((depth_eq_iff _ _ k).mp hk.symm).1
+          · have := ext_iso i (lt_trans ((WithTop.add_lt_add_iff_right WithTop.one_ne_top).mpr
+              (ENat.natCast_lt_natCast.mpr hi)) lt)
             rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
               (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
-            apply subsingleton_ext_of_lt_depth
-            exact lt_of_lt_of_eq (ENat.natCast_lt_top (i + 1)) eqtop.symm
-          simp [M_depth_eqtop, eqtop]
-        · rcases ENat.ne_top_iff_exists.mp eqtop with ⟨k, hk⟩
-          simp only [← hk, gt_iff_lt, Nat.cast_pos] at depth_pos
-          have eq : k - 1 + 1 = k := Nat.sub_one_add_one depth_pos.ne.symm
-          have : IsLocalRing.depth M = (k - 1 : ℕ) := by
-            simp only [IsLocalRing.depth, Ideal.depth, depth_eq_iff]
-            have lt : (k - 1 : ℕ) + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) := by
-              simp only [← h_ker', ← ENat.natCast_one, ← ENat.natCast_add, eq, ← hk,
-                ENat.natCast_lt_natCast]
-              omega
-            refine ⟨?_, fun i hi ↦ ?_⟩
-            · have := ext_iso (k - 1) lt
-              rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
-                (Eq.refl (k - 1 + 1))))).addCommGroupIsoToAddEquiv.nontrivial_congr, eq]
-              exact ((depth_eq_iff _ _ k).mp hk.symm).1
-            · have := ext_iso i (lt_trans ((WithTop.add_lt_add_iff_right WithTop.one_ne_top).mpr
-                (ENat.natCast_lt_natCast.mpr hi)) lt)
-              rw [(asIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K
-                (Eq.refl (i + 1))))).addCommGroupIsoToAddEquiv.subsingleton_congr]
-              exact ((depth_eq_iff _ _ k).mp hk.symm).2 _ (Nat.add_lt_of_lt_sub hi)
-          simpa [hk, this] using ENat.natCast_inj.mpr eq.symm
+            exact ((depth_eq_iff _ _ k).mp hk.symm).2 _ (Nat.add_lt_of_lt_sub hi)
+        simpa [hk, this] using ENat.natCast_inj.mpr eq.symm
       rw [hn, Nat.cast_add, Nat.cast_one, add_assoc, add_comm 1, ← WithBot.coe_one,
         ← WithBot.coe_add, ← eq_add1, ← projdim]
       exact h_ker
