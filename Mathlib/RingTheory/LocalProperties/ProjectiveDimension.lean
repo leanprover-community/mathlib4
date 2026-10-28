@@ -6,10 +6,11 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Localization
-public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 public import Mathlib.RingTheory.LocalProperties.Projective
+
+import Mathlib.Algebra.Category.ModuleCat.Projective
 
 /-!
 # The Projective Dimension Equal to Supremum over Localizations

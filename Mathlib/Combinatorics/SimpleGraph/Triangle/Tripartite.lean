@@ -159,7 +159,7 @@ lemma graph_triple ⦃x y z⦄ :
     ({in₀ a, in₁ b, in₂ c} : Finset (α ⊕ β ⊕ γ)) = {x, y, z} ∧ (graph t).Adj (in₀ a) (in₁ b) ∧
       (graph t).Adj (in₀ a) (in₂ c) ∧ (graph t).Adj (in₁ b) (in₂ c) := by
   rintro (_ | _ | _) (_ | _ | _) (_ | _ | _) <;>
-    refine ⟨_, _, _, by ext; simp only [Finset.mem_insert, Finset.mem_singleton]; try tauto,
+    refine ⟨_, _, _, by ext; simp only [Finset.mem_insert, Finset.mem_singleton]; tauto,
       ?_, ?_, ?_⟩ <;> constructor <;> assumption
 
 /-- The map that turns a triangle index into an explicit triangle. -/
@@ -247,7 +247,7 @@ lemma locallyLinear [ExplicitDisjoint t] [NoAccidental t] : (graph t).LocallyLin
   classical
   refine ⟨?_, fun x y hxy ↦ ?_⟩
   · unfold EdgeDisjointTriangles
-    convert! map_toTriangle_disjoint t
+    convert map_toTriangle_disjoint t
     rw [cliqueSet_eq_image, coe_map]
   · obtain ⟨z, hz, hxy⟩ := exists_mem_toTriangle hxy
     exact ⟨_, toTriangle_is3Clique hz, hxy⟩

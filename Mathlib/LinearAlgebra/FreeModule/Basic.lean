@@ -10,7 +10,8 @@ public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Data.Finsupp.Fintype
 public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.Logic.Small.Basic
+
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Free modules
@@ -188,7 +189,7 @@ variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Free R M]
 
 theorem mem_center_iff {f : End R M} :
     f ∈ Set.center (End R M) ↔ ∃ (α : R) (hα : α ∈ Set.center R), f = smulLeft α hα := by
-  simp only [Semigroup.mem_center_iff, LinearMap.ext_iff, mul_apply]
+  simp only [Semigroup.mem_center_iff, LinearMap.ext_iff, mul_apply_eq_comp]
   refine ⟨fun h ↦ ?_, by simp_all⟩
   by_cases! Subsingleton M
   · exact ⟨0, by simp, fun _ ↦ Subsingleton.allEq _ _⟩

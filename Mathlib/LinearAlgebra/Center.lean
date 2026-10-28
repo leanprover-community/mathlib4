@@ -82,7 +82,7 @@ theorem commute_transvections_iff_of_basis
   have h_allEq (i j : ι) : b.coord i (f (b i)) = b.coord j (f (b j)) := by
     by_cases hij : j = i
     · simp [hij]
-    simpa using congr_arg (b.coord i) (hcomm j i hij 1)
+    simpa using congr(b.coord i $(hcomm j i hij 1))
   replace hcomm (i : ι) (r : R) : r • f (b i) = b.coord i (f (b i)) • r • b i := by
     obtain ⟨j, hji⟩ := exists_ne i
     simpa [h_allEq j i] using hcomm j i hji r
@@ -90,7 +90,7 @@ theorem commute_transvections_iff_of_basis
   refine ⟨b.coord i (f (b i)), fun r ↦ by simpa using congr(b.coord i $(hcomm i r)), ?_⟩
   ext x
   rw [← b.linearCombination_repr x, linearCombination_apply, map_finsuppSum]
-  simp only [smul_apply, End.one_apply, smul_sum]
+  simp only [LinearMap.smul_apply, one_apply_eq_self, smul_sum]
   apply sum_congr
   intro j _
   simp [Subring.smul_def, h_allEq i j, hcomm j]
@@ -181,7 +181,7 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
   refine ⟨⟨b.coord i (f (b i)), ?_⟩, ?_⟩
   · simpa [Subring.mem_center_iff, commute_iff_eq, eq_comm] using ha
   apply b.ext
-  simpa only [smul_apply, End.one_apply, Subring.smul_def] using feq i
+  simpa only [LinearMap.smul_apply, one_apply_eq_self, Subring.smul_def] using feq i
 
 /-- Over a domain `R`, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,

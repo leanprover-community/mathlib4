@@ -5,10 +5,10 @@ Authors: Chris Birkbeck
 -/
 module
 
+public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -185,7 +185,7 @@ variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
 @[simps! apply_val]
-def map (f : R →+* S) : GL n R →* GL n S := Units.map <| (RingHom.mapMatrix f).toMonoidHom
+def map (f : R →+* S) : GL n R →* GL n S := Units.map (RingHom.mapMatrix f).toMonoidHom
 
 @[simp]
 theorem map_id : map (RingHom.id R) = MonoidHom.id (GL n R) :=
@@ -205,6 +205,101 @@ theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
     (map g).comp (map f) x = map g (map f x) :=
   rfl
 
+section Equiv
+
+variable (n) (f : R ≃+* S) (g : S ≃+* T)
+
+/-- The equivalence between `GL n R` and `GL n S` given by `f : R ≃+* S`. -/
+def mapEquiv : GL n R ≃* GL n S :=
+  Units.mapEquiv f.mapMatrix.toMulEquiv
+
+@[simp] lemma coe_mapEquiv_apply (a : GL n R) :
+    (mapEquiv n f a : Matrix n n S) = f.mapMatrix (a : Matrix n n R) := rfl
+
+@[simp] lemma mapEquiv_refl : mapEquiv n (.refl R) = .refl (GL n R) := rfl
+
+@[simp] lemma symm_mapEquiv :
+    (mapEquiv n f).symm = mapEquiv n f.symm := rfl
+
+@[simp] lemma mapEquiv_trans_mapEquiv :
+    .trans (mapEquiv n f) (mapEquiv n g) = mapEquiv n (f.trans g) := rfl
+
+@[simp] lemma toMonoidHom_mapEquiv :
+    (mapEquiv n f : GL n R →* GL n S) = map (f : R →+* S) := rfl
+
+end Equiv
+
+section Transpose
+
+variable (n)
+
+/-- The equivalence between `GL n R` and `(GL n R)ᵐᵒᵖ`. -/
+def transposeMulEquiv : GL n R ≃* (GL n R)ᵐᵒᵖ :=
+  (Units.mapEquiv (Matrix.transposeRingEquiv n R).toMulEquiv).trans Units.opEquiv
+
+@[simp] lemma coe_unop_transposeMulEquiv (a : GL n R) :
+    ((transposeMulEquiv n a).unop : Matrix n n R) = aᵀ := rfl
+
+open MulOpposite in
+@[simp] lemma transposeMulEquiv_symm_apply_op (a : GL n R) :
+    (transposeMulEquiv n).symm (op a) = (transposeMulEquiv n a).unop := rfl
+
+end Transpose
+
+section ULift
+
+universe w
+
+variable (n) (R)
+
+/-- The equivalence between `GL n (ULift R)` and `GL n R`. -/
+def uliftMulEquiv : GL n (ULift.{w} R) ≃* GL n R :=
+  mapEquiv n ULift.ringEquiv
+
+@[simp] lemma uliftMulEquiv_apply (a : GL n (ULift.{w} R)) :
+    uliftMulEquiv n R a = a.map ULift.ringEquiv.toRingHom := rfl
+
+@[simp] lemma uliftMulEquiv_symm (a : GL n R) :
+    (uliftMulEquiv n R).symm a  =
+      a.map ULift.ringEquiv.symm.toRingHom := rfl
+
+end ULift
+
+section Reindex
+
+variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
+
+/-- The equivalence between `GL m R` and `GL n R` given by an equivalence `e : m ≃ n`. -/
+@[simps! apply]
+def reindex (e : m ≃ n) : GL m R ≃* GL n R := Units.mapEquiv (Matrix.reindexRingEquiv R e)
+
+@[simp]
+theorem symm_reindexMulEquiv (e : m ≃ n) :
+    (reindex R e).symm = reindex R e.symm :=
+  rfl
+
+@[simp]
+theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindex R e) (reindex R e') = reindex R (.trans e e') :=
+  rfl
+
+@[simp]
+theorem reindexMulEquiv_refl : reindex R (.refl n) = .refl (GL n R) := rfl
+
+end Reindex
+
+section Pi
+
+variable {ι : Type*} (R : ι → Type*)
+
+/-- The monoid equivalence between `GL n` of a product of rings,
+and the product of the `GL n` of each ring. -/
+@[simps! apply symm_apply]
+def piEquiv [Π i, CommRing (R i)] : GL n (Π i, R i) ≃* Π i, GL n (R i) :=
+  (Units.mapEquiv piRingEquiv.toMulEquiv).trans MulEquiv.piUnits
+
+end Pi
+
 variable (f : R →+* S)
 
 @[simp]
@@ -221,7 +316,7 @@ protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
   ext
   simp only [map,
-    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_coe]
+    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_ofClass]
   exact Eq.symm (RingHom.map_det f g.1)
 
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
@@ -295,6 +390,22 @@ theorem coeToGL_det (g : SpecialLinearGroup n R) :
 
 @[simp]
 lemma coe_GL_coe_matrix (g : SpecialLinearGroup n R) : ((toGL g) : Matrix n n R) = g := rfl
+
+lemma range_toGL_eq_ker_det :
+    (toGL : SpecialLinearGroup n R →* GL n R).range = GeneralLinearGroup.det.ker := by
+  ext A
+  simp only [MonoidHom.mem_range, MonoidHom.mem_ker]
+  refine ⟨fun ⟨g, hg⟩ ↦ by simp [← hg], fun hA ↦ ⟨⟨A, ?_⟩, by ext; rfl⟩⟩
+  rw [← GeneralLinearGroup.val_det_apply, hA, Units.val_one]
+
+/-- `Matrix.SpecialLinearGroup` is isomorphic to `GeneralLinearGroup.det.ker`. -/
+@[simps]
+def toGLKerEquiv : SpecialLinearGroup n R ≃* (GeneralLinearGroup.det : GL n R →* Rˣ).ker where
+  toFun g := ⟨toGL g, coeToGL_det g⟩
+  invFun A := ⟨A.val.val, by simpa using congrArg Units.val A.2⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
+  map_mul' _ _ := by ext; rfl
 
 variable (S) in
 /-- `mapGL` is the map from the special linear group over `R` to the general linear group over
@@ -397,8 +508,8 @@ variable {n : Type u} [DecidableEq n] [Fintype n]
 /-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where
   toFun A := ⟨(A : GL n R), show 0 < (↑A : Matrix n n R).det from A.prop.symm ▸ zero_lt_one⟩
-  map_one' := Subtype.ext <| Units.ext <| rfl
-  map_mul' _ _ := Subtype.ext <| Units.ext <| rfl
+  map_one' := Subtype.ext <| Units.ext rfl
+  map_mul' _ _ := Subtype.ext <| Units.ext rfl
 
 instance : Coe (SpecialLinearGroup n R) (GLPos n R) :=
   ⟨toGLPos⟩

@@ -53,7 +53,7 @@ theorem _root_.Directed.measure_iUnion [Countable ι] (hd : Directed (· ⊆ ·)
   calc
     μ (⋃ n, t n) = μ (⋃ n, Td n) := by rw [iUnion_disjointed, measure_iUnion_toMeasurable]
     _ ≤ ∑' n, μ (Td n) := measure_iUnion_le _
-    _ = ⨆ I : Finset ℕ, ∑ n ∈ I, μ (Td n) := ENNReal.tsum_eq_iSup_sum
+    _ = ⨆ I : Finset ℕ, ∑ n ∈ I, μ (Td n) := tsum_eq_iSup_sum
     _ ≤ ⨆ n, μ (t n) := iSup_le fun I => by
       rcases hd.finset_le I with ⟨N, hN⟩
       calc
@@ -241,8 +241,9 @@ theorem tendsto_measure_iInter_le [Countable ι] [Preorder ι] (hm : ∀ i, Null
   refine .of_neBot_imp fun hne ↦ ?_
   cases atTop_neBot_iff.mp hne
   rw [measure_iInter_eq_iInf_measure_iInter_le hm hf]
-  exact tendsto_atTop_iInf
-    fun i j hij ↦ measure_mono <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
+  exact tendsto_atTop_iInf fun i j hij ↦ measure_mono <|
+    biInter_subset_biInter_left (s := {k | k ≤ j}) (s' := {k | k ≤ i})
+      fun k hki ↦ le_trans hki hij
 
 /-- Some version of continuity of a measure in the empty set using the intersection along a set of
 sets. -/
@@ -250,8 +251,9 @@ theorem exists_measure_iInter_lt [SemilatticeSup ι] [Countable ι]
     (hm : ∀ i, NullMeasurableSet (s i) μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hfin : ∃ i, μ (s i) ≠ ∞)
     (hfem : ⋂ n, s n = ∅) : ∃ m, μ (⋂ n ≤ m, s n) < ε := by
   let F m := μ (⋂ n ≤ m, s n)
-  have hFAnti : Antitone F :=
-      fun i j hij => measure_mono (biInter_subset_biInter_left fun k hki => le_trans hki hij)
+  have hFAnti : Antitone F := fun i j hij => measure_mono <|
+    biInter_subset_biInter_left (s := {k | k ≤ j}) (s' := {k | k ≤ i})
+      fun k hki => le_trans hki hij
   suffices Filter.Tendsto F Filter.atTop (𝓝 0) by
     let _ := hfin.nonempty
     rw [ENNReal.tendsto_atTop_zero_iff_lt_of_antitone hFAnti] at this

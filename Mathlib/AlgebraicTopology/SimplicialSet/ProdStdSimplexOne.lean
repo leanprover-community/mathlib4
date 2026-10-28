@@ -59,18 +59,18 @@ noncomputable def nonDegenerateEquiv :
         rw [Fin.predAbove_of_castSucc_lt _ _ hj, Fin.val_pred]
         lia⟩) (by
     refine ⟨fun _ _ h ↦ ?_, fun ⟨⟨s₁, s₂⟩, hs⟩ ↦ ?_⟩
-    · simpa using stdSimplex.objMk₁_injective (congr_arg (Prod.snd ∘ Subtype.val) h)
+    · simpa using stdSimplex.objMk₁_injective congr((Prod.snd ∘ Subtype.val) $h)
     · rw [nonDegenerate_max_dim_iff _ rfl] at hs
       obtain ⟨i, rfl⟩ := stdSimplex.objMk₁_surjective s₂
       obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero (i := i) (by
         rintro rfl
-        have := DFunLike.congr_fun hs 0
+        have := congr($hs 0)
         simp only [orderHomOfSimplex_coe,
           stdSimplex.objMk₁_of_le_castSucc (0 : Fin (p + 3)) 0 (by simp)] at this
         simp at this)
       obtain ⟨i, rfl⟩ | rfl := i.eq_castSucc_or_eq_last
       · exact ⟨i, nonDegenerate_ext₂ rfl rfl⟩
-      · have := DFunLike.congr_fun hs (Fin.last _)
+      · have := congr($hs (Fin.last _))
         simp only [Fin.succ_last, orderHomOfSimplex_coe,
           OrderHom.id_coe, id_eq, Fin.ext_iff, Fin.val_last,
           stdSimplex.objMk₁_of_castSucc_lt (Fin.last (p + 2))
@@ -129,7 +129,7 @@ noncomputable abbrev intersectionNondeg (i j : Fin (p + 1)) :
   .ofSimplex (nonDegenerateEquiv i).val ⊓ .ofSimplex (nonDegenerateEquiv j).val
 
 /-- Given `j : Fin (p + 2)`, this is the non-degenerate `p`-simplex of `Δ[p] ⊗ Δ[1]`
-which correspond to the stricly monotone map `Fin (p + 1) → Fin (p + 1) × Fin 2`
+which correspond to the strictly monotone map `Fin (p + 1) → Fin (p + 1) × Fin 2`
 whose first projection is the identity, and whose second projection takes `j`-times
 the value `0`. -/
 @[simps coe_fst coe_snd]

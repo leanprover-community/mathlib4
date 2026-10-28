@@ -156,11 +156,11 @@ theorem tfae_equational_criterion : List.TFAE [
     obtain ⟨k, a', y', ha'y', ha'⟩ := h₅ this
     refine ⟨k, fun i ↦ a' (single i 1), fun j ↦ y' (single j 1), fun i ↦ ?_, fun j ↦ ?_⟩
     · simpa [x', ← map_smul, ← map_sum, smul_single] using
-        LinearMap.congr_fun ha'y' (Finsupp.single i 1)
+        congr($ha'y' (.single i 1))
     · simp_rw [← smul_eq_mul, ← Finsupp.smul_apply, ← map_smul, ← finsetSum_apply, ← map_sum,
         smul_single, smul_eq_mul, mul_one,
         ← (fun _ ↦ equivFunOnFinite_symm_apply_apply _ _ : ∀ x, f' x = f x), univ_sum_single]
-      simpa using DFunLike.congr_fun ha' j
+      simpa using congr($ha' j)
   tfae_finish
 
 /-- **Equational criterion for flatness**:
@@ -235,7 +235,7 @@ private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K :
       (y : (Fin k →₀ R) →ₗ[R] M), x = y ∘ₗ a ∧ K' ≤ LinearMap.ker (a ∘ₗ f) := by
     induction K', hK' using Submodule.fg_induction generalizing n with
     | singleton k =>
-      have : x (f k) = 0 := by simpa using LinearMap.congr_fun h k
+      have : x (f k) = 0 := by simpa using congr($h k)
       simpa using exists_factorization_of_apply_eq_zero_of_free this
     | sup K₁ K₂ _ _ ih₁ ih₂ =>
       obtain ⟨k₁, a₁, y₁, rfl, ha₁⟩ := ih₁ h

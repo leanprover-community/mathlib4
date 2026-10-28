@@ -5,12 +5,13 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+
+import Mathlib.Analysis.Complex.TaylorSeries
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # q-expansions of functions on the upper half plane
@@ -43,7 +44,16 @@ and bounded at infinity.
   determined.
 * There are also more specialized versions of some of these lemmas in the `ModularFormClass`
   namespace.
+
+## See also
+
+* Lemmas relating q-expansion coefficients to Fourier series, such as
+  `UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn`, are placed in `Bounds.lean`, since
+  the present file does not import Fourier theory.
+
 -/
+
+assert_not_exists fourierCoeffOn -- guard against import creep
 
 @[expose] public noncomputable section
 
@@ -135,7 +145,7 @@ open SlashInvariantFormClass
 
 namespace ModularFormClass
 
-@[deprecated ModularFormClass.bdd_at_infty (since := "2026-04-19")]
+@[deprecated ModularFormClass.bdd_at_infty +typeChanged (since := "2026-04-19")]
 theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] (hi : IsCusp OnePoint.infty Γ) :
     BoundedAtFilter I∞ (f ∘ ofComplex) :=
   (OnePoint.isBoundedAt_infty_iff.mp (bdd_at_cusps f hi)).comp_tendsto tendsto_comap_im_ofComplex
@@ -227,7 +237,7 @@ private lemma hasSum_cuspFunction_of_hasSum_punctured {f : ℍ → ℂ} (hh : 0 
     (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) := by
   have h1 := Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1
   let τ : ℍ := ⟨Periodic.invQParam h q, h1⟩
-  have h2 := (Periodic.cuspFunction_eq_of_nonzero h (f ∘ ofComplex) hq1)
+  have h2 := (Periodic.cuspFunction_eq_of_ne_zero h (f ∘ ofComplex) hq1)
   have : cuspFunction h f q = f τ := by simpa [UpperHalfPlane.ofComplex_apply_of_im_pos h1]
     using! h2
   grind [hf τ, Periodic.qParam_right_inv]
@@ -546,7 +556,7 @@ lemma qExpansion_one (h) : qExpansion h (1 : ℍ → ℂ) = 1 := by
     ext q
     rcases eq_or_ne q 0 with rfl | hq
     · simpa [cuspFunction, Periodic.cuspFunction] using! tendsto_const_nhds.limUnder_eq
-    · simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero h _ hq]
+    · simp [cuspFunction, Periodic.cuspFunction_eq_of_ne_zero h _ hq]
   have h2 : iteratedDeriv m (1 : ℂ → ℂ) 0 = if m = 0 then 1 else 0 := by
     simpa [ite_apply] using! iteratedDeriv_const
   simp +contextual [qExpansion_coeff, h1, h2]
@@ -778,7 +788,7 @@ lemma qExpansion_coeff_unique {c : ℕ → ℂ} (hh : 0 < h)
     c m = (qExpansion h f).coeff m := by
   have h1 := (hasFPowerSeriesOnBall_cuspFunction hh hfanalytic hf).hasFPowerSeriesAt
   have h2 := (hasFPowerSeries_cuspFunction f hh hfanalytic hf).hasFPowerSeriesAt
-  simpa using congr_arg (FormalMultilinearSeries.coeff · m) (h1.eq_formalMultilinearSeries h2)
+  simpa using congr(FormalMultilinearSeries.coeff $(h1.eq_formalMultilinearSeries h2) m)
 
 end UpperHalfPlane
 

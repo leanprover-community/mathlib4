@@ -61,7 +61,7 @@ def openOfElementHom : FrameHom L (Set (PT L)) where
   toFun u := {x | x u}
   map_inf' a b := by simp [Set.ofPred_and]
   map_top' := by simp
-  map_sSup' S := by ext; simp [Prop.exists_iff]
+  map_sSup' S := by ext; simp [Prop.exists]
 
 namespace PT
 
@@ -102,7 +102,7 @@ def localePointOfSpacePoint (x : X) : PT (Opens X) where
   toFun := (x ∈ ·)
   map_inf' _ _ := rfl
   map_top' := rfl
-  map_sSup' S := by simp [Prop.exists_iff]
+  map_sSup' S := by simp [Prop.exists]
 
 /-- The counit is a frame homomorphism. -/
 def counitAppCont : FrameHom L (Opens <| PT L) where

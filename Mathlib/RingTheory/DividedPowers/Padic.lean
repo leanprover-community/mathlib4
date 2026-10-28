@@ -92,17 +92,17 @@ private lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
     simp [inverse_eq_inv', coe_zero, ne_eq, hn, not_false_eq_true, zero_pow, mul_zero,
       norm_zero, inv_nonneg, cast_nonneg]
   · have hlt : (padicValNat p n.factorial : ℤ) < n := by
-      exact_mod_cast padicValNat_factorial_lt_of_ne_zero p hn
+      exact mod_cast padicValNat_factorial_lt_of_ne_zero p hn
     have hnorm : 0 < ‖(n ! : ℚ_[p])‖ := by
       simp only [norm_pos_iff, ne_eq, cast_eq_zero]
       exact factorial_ne_zero n
     rw [← zpow_neg_one, ← Nat.cast_one (R := ℤ), Padic.norm_le_pow_iff_norm_lt_pow_add_one]
     simp only [inverse_eq_inv', Padic.padicNormE.mul, norm_inv, _root_.norm_pow,
-      padic_norm_e_of_padicInt, cast_one, Int.reduceNeg, neg_add_cancel, zpow_zero]
+      norm_coe, cast_one, Int.reduceNeg, neg_add_cancel, zpow_zero]
     rw [norm_eq_zpow_neg_valuation hx0, inv_mul_lt_one₀ hnorm, Padic.norm_eq_zpow_neg_valuation
       (cast_ne_zero.mpr n.factorial_ne_zero), ← zpow_natCast, ← zpow_mul]
     gcongr
-    · exact_mod_cast Nat.Prime.one_lt hp.elim
+    · exact mod_cast Nat.Prime.one_lt hp.elim
     · simp only [neg_mul, Padic.valuation_natCast, neg_lt_neg_iff]
       apply lt_of_lt_of_le hlt
       conv_lhs => rw [← one_mul (n : ℤ)]
@@ -119,8 +119,8 @@ private lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ
   · apply le_trans (dpow'_norm_le_of_ne_zero p hn hx)
     rw [← zpow_neg_one, ← zpow_zero ↑p]
     gcongr
-    · exact_mod_cast Nat.Prime.one_le hp.elim
-    · norm_num
+    · exact mod_cast Nat.Prime.one_le hp.elim
+    · simp
 
 set_option backward.privateInPublic true in
 private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ideal.span {↑p}) :
@@ -139,7 +139,7 @@ set_option backward.privateInPublic.warn false in
 noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := by
   classical
   refine ofInjective (Ideal.span {(p : ℤ_[p])}) (⊤)
-    PadicInt.Coe.ringHom ((Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a)
+    PadicInt.Coe.ringHom (subring p).subtype_injective
     (RatAlgebra.dividedPowers (⊤ : Ideal ℚ_[p])) ?_ ?_
   · rw [Ideal.map_span, Set.image_singleton, map_natCast]
     simp only [Ideal.span_singleton_eq_top, isUnit_iff_ne_zero, ne_eq, cast_eq_zero]
@@ -157,8 +157,7 @@ private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
       if hx : x ∈ Ideal.span {(p : ℤ_[p])} then ⟨dpow' p n x, dpow'_int p n hx⟩ else 0 := by
   simp only [dividedPowers, ofInjective]
   split_ifs with hx
-  · have hinj : Injective (PadicInt.Coe.ringHom (p := p)) :=
-      (Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
+  · have hinj : Injective (PadicInt.Coe.ringHom (p := p)) := (subring p).subtype_injective
     have heq : Coe.ringHom ⟨dpow' p n x, dpow'_int p n hx⟩ =
         inverse (n ! : ℚ_[p]) * Coe.ringHom x ^ n := by
       simp [dpow', inverse_eq_inv', Coe.ringHom_apply]

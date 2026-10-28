@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Set.Card
-public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Sym2
 
 import Mathlib.Data.Sym.Card
@@ -47,7 +46,7 @@ end Sym
 namespace Sym2
 
 instance [Infinite α] : Infinite (Sym2 α) :=
-  .of_injective Sym2.diag <| Sym2.diag_injective
+  .of_injective Sym2.diag Sym2.diag_injective
 
 instance [Infinite α] : Infinite {a : Sym2 α // a.IsDiag} :=
   .of_injective (fun a : α => ⟨.diag a, rfl⟩) fun _ _ h => Sym2.diag_injective congr($h)

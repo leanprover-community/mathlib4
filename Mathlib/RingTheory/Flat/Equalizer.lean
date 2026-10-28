@@ -6,7 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.Algebra.Module.SnakeLemma
+
+import Mathlib.Algebra.Module.SnakeLemma
 
 /-!
 # Base change along flat modules preserves equalizers
@@ -178,10 +179,14 @@ lemma LinearMap.tensorEqLocusEquiv_apply [Module.Flat R M] (x : M ⊗[R] LinearM
   rfl
 
 @[simp]
-lemma LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm [Module.Flat R M]
+lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusEquiv_symm [Module.Flat R M]
     (x : eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g)) :
     (lTensor M (eqLocus f g).subtype) ((tensorEqLocusEquiv S M f g).symm x) = x :=
   lTensor_eqLocus_subtype_tensorEqLocusInv S M f g x
+
+@[deprecated (since := "2026-09-17")]
+alias LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm :=
+  LinearMap.lTensor_eqLocus_subtype_tensorEqLocusEquiv_symm
 
 variable {M}
 

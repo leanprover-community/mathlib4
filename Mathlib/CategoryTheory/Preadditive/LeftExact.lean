@@ -5,9 +5,10 @@ Authors: Markus Himmel, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
 # Left exactness of functors between preadditive categories

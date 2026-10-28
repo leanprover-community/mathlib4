@@ -6,7 +6,6 @@ Authors: Jingting Wang, Wanyi He, Nailin Guan
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Categorical constructions for `IsSMulRegular`
@@ -24,9 +23,6 @@ lemma LinearMap.exact_lsmul_mkQ_smul_top (M : Type v) [AddCommGroup M] [Module R
     Function.Exact (LinearMap.lsmul _ M r) (r • (⊤ : Submodule R M)).mkQ := by
   intro x
   simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_smul_pointwise_iff_exists]
-
-@[deprecated (since := "2026-04-13")]
-alias LinearMap.exact_smul_id_smul_top_mkQ := LinearMap.exact_lsmul_mkQ_smul_top
 
 namespace ModuleCat
 

@@ -54,7 +54,7 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
   rw [squarefree_iff_emultiplicity_le_one] at hn
   by_cases hp : p.Prime
   · have := hn p
-    rw [← multiplicity_eq_factorization hp hn']
+    rw [← multiplicity_eq_factorization hp]
     simp only [Nat.isUnit_iff, hp.ne_one, or_false] at this
     exact multiplicity_le_of_emultiplicity_le this
   · rw [factorization_eq_zero_of_not_prime _ hp]
@@ -344,7 +344,7 @@ lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFac
     List.map_id', Nat.prod_primeFactorsList hn.ne_zero]
 
 theorem squarefree_and_primeFactors_card_eq_two_iff (n : ℕ) :
-    Squarefree n ∧ (primeFactors n).card = 2 ↔
+    Squarefree n ∧ #(primeFactors n) = 2 ↔
       ∃ p q : ℕ, p < q ∧ p.Prime ∧ q.Prime ∧ p * q = n := by
   refine ⟨fun ⟨sq, nc⟩ ↦ ?_, fun ⟨p, q, pq, hp, hq, hn⟩ ↦ ?_⟩
   · obtain ⟨p, q, pq, eq⟩ := Finset.card_eq_two.mp nc

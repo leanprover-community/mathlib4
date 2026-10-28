@@ -6,9 +6,7 @@ Amelia Livingston, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
-public import Mathlib.Tactic.FastInstance
 public import Mathlib.Data.Set.Insert
 
 /-!
@@ -74,7 +72,7 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
+attribute [simp, aesop safe (rule_sets := [SetLike]), membership .] one_mem zero_mem
 
 /-- The underlying set of a term of a `OneMemClass` is nonempty. -/
 @[to_additive (attr := simp)
@@ -121,7 +119,7 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]), membership .)]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
@@ -146,7 +144,7 @@ instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective := SetLike.coe_injective.comp toSubsemigroup_injective
 
-@[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M) M
+@[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M)
 
 initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)

@@ -5,9 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.Polynomial.CancelLeads
-public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
