@@ -25,41 +25,6 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
 namespace Dyadic
 
-@[simp]
-lemma ofOdd_pos {n k : ℤ} {hn : n % 2 = 1} : 0 < ofOdd n k hn ↔ 0 < n := by
-  simp [← toRat_lt_toRat_iff, toRat_ofOdd_eq_mul_two_pow, field]
-
-@[simp]
-lemma toReal_zero : toReal 0 = 0 := by
-  simp [toReal]
-
-@[simp]
-lemma toRat_one : toRat 1 = 1 := rfl
-
-@[simp]
-lemma toRat_ofNat {n : ℕ} : toRat ofNat(n) = ofNat(n) := toRat_natCast n
-
-@[simp]
-lemma toRat_abs (x : Dyadic) : |x|.toRat = |x.toRat| := by
-  rcases abs_choice x with h | h
-  · grind [toRat_le_toRat_iff.mpr <| sup_eq_left.mp h, toRat_neg x]
-  · grind [toRat_le_toRat_iff.mpr <| sup_eq_right.mp h, toRat_neg x]
-
-@[simp]
-lemma toRat_pos (x : Dyadic) : 0 < x.toRat ↔ 0 < x := by
-  rw [← toRat_zero, toRat_lt_toRat_iff]
-
-lemma step_pos (prec : ℤ) : 0 < step prec := ofOdd_pos.mpr zero_lt_one
-
-lemma step_eq_add (prec : ℤ) : step prec = step (prec + 1) + step (prec + 1) := by
-  norm_num [← toRat_inj, toRat_ofOdd_eq_mul_two_pow, zpow_add₀, step, field, -neg_add_rev]
-
-theorem toRat_step (prec : ℤ) : (step prec).toRat = (1 / 2) ^ prec := by
-  simp [← ofIntWithPrec_one, toRat_ofIntWithPrec_eq_mul_two_pow]
-
-theorem toRat_step_real (prec : ℤ) : (step prec).toRat = (1 / 2 : ℝ) ^ prec := by
-  simp [toRat_step]
-
 section
 
 variable (num den prec : ℤ)
@@ -70,18 +35,6 @@ def ofIntFdivWithPrec : Dyadic :=
   match prec with
   | .ofNat p => .ofIntWithPrec ((num <<< p).fdiv den) prec
   | .negSucc p => .ofIntWithPrec (num.fdiv (den <<< (p + 1))) prec
-
-#find_home for
-theorem _root_.Int.fdiv_eq_floor : num.fdiv den = ⌊(num / den : ℚ)⌋ := by
-  rcases lt_trichotomy den 0 with hden | rfl | hden
-  · rw [← neg_div_neg_eq, ← Int.neg_fdiv_neg, Int.fdiv_eq_ediv,
-      ite_eq_left (by omega), sub_zero, ← Int.cast_neg, ← Int.cast_neg]
-    lift -den to ℕ using le_of_lt <| neg_pos.mpr hden with den
-    rw [Int.cast_natCast, Rat.floor_intCast_div_natCast]
-  · simp
-  · rw [Int.fdiv_eq_ediv, ite_eq_left (by omega), sub_zero]
-    lift den to ℕ using hden.le
-    rw [Int.cast_natCast, Rat.floor_intCast_div_natCast]
 
 private theorem ofIntFdivWithPrec_spec :
     (ofIntFdivWithPrec num den prec).toRat ≤ num / den ∧
@@ -203,14 +156,6 @@ end «to new PR»
 
 open Real
 
--- move to `Mathlib.Analysis.SpecialFunctions.Artanh`
-theorem _root_.Real.log_eq_two_mul_artanh {x : ℝ} (hx : 0 < x) :
-    log x = 2 * artanh ((x - 1) / (x + 1)) := by
-  rw [artanh_eq_half_log (by constructor <;> field_simp <;> grind)]
-  simp
-  congr
-  field
-
 section SmallArtanh
 
 /-- TODO doc -/
@@ -302,17 +247,16 @@ theorem smallArtanh.spec (num den n : ℕ) :
   push_cast
   rw [mul_div_mul_comm, go_spec' hden, Finset.mul_sum]
   simp only [Nat.Ico_zero_eq_range]
-  apply Finset.sum_congr rfl fun i hi => ?_
+  refine Finset.sum_congr rfl fun i hi => ?_
   induction i with
   | zero => simp
   | succ i ih =>
     specialize ih (by grind)
     rw [Finset.prod_range_succ, ← _root_.mul_assoc, ih]
-    simp [div_pow]
-    field_simp
+    simp [div_pow, field]
     ring
 
-theorem smallArtanh.spec' (num den n : ℕ) :
+theorem smallArtanh.spec_real (num den n : ℕ) :
     let (P, Q) : ℕ × ℕ := Dyadic.smallArtanh num den n
     P / Q = ∑ k ∈ Finset.range n, (num / den : ℝ) ^ (2 * k + 1) / (2 * k + 1) := by
   have := congrArg ((↑) : ℚ -> ℝ) <| smallArtanh.spec num den n
@@ -321,8 +265,8 @@ theorem smallArtanh.spec' (num den n : ℕ) :
 
 private theorem sum_lt_of_pos {n : ℕ} {x : ℝ} (hx : x ∈ Set.Ioo 0 1) :
     ∑ k ∈ Finset.range n, x ^ (2 * k + 1) / (2 * k + 1) < artanh x := by
-  have h : ∀ k : ℕ, 0 < x ^ (2 * k + 1) / (2 * k + 1) :=
-    fun k => div_pos (pow_succ_pos hx.left (2 * k)) (by grind)
+  have h (k : ℕ) : 0 < x ^ (2 * k + 1) / (2 * k + 1) :=
+    div_pos (pow_succ_pos hx.left (2 * k)) (mod_cast by omega)
   suffices HasSum (fun k : ℕ => x ^ (2 * k + 1) / (2 * k + 1)) (artanh x) by
     rw [← this.tsum_eq, ← this.summable.sum_add_tsum_nat_add n, lt_add_iff_pos_right]
     exact summable_nat_add_iff n |>.mpr this.summable |>.tsum_pos
@@ -340,11 +284,10 @@ private theorem sum_lt_of_pos {n : ℕ} {x : ℝ} (hx : x ∈ Set.Ioo 0 1) :
   grind [sq_lt_one_iff_abs_lt_one]
 
 private theorem abs_artanh_sub_le {n : ℕ} {x : ℝ} (hx : x ∈ Set.Ioo (-1) 1) :
-    |artanh x - ∑ k ∈ Finset.range n, x ^ (2 * k + 1) / (2 * ↑k + 1)| ≤
+    |artanh x - ∑ k ∈ Finset.range n, x ^ (2 * k + 1) / (2 * k + 1)| ≤
       |x| ^ (2 * n + 1) / (1 - x ^ 2) := by
-  have := sum_range_sub_log_div_le (x := x) (abs_lt.mpr (mod_cast hx)) n
   rw [artanh_eq_half_log <| Set.Ioo_subset_Icc_self (by simpa using mod_cast hx)]
-  simpa [Dyadic.smallArtanh] using this
+  simpa [Dyadic.smallArtanh] using sum_range_sub_log_div_le (x := x) (abs_lt.mpr (mod_cast hx)) n
 
 end SmallArtanh
 
@@ -378,9 +321,9 @@ private theorem logTwo_aux_le (num den prec : ℤ) :
 theorem abs_log_two_sub_lt (prec : ℕ) :
     |log 2 - (Dyadic.logTwo prec).toRat| < (1 / 2) ^ prec := by
   unfold Dyadic.logTwo
-  have hartanh17 := smallArtanh.spec' 1 17 (prec / 8 + 1)
-  have hartanh19 := smallArtanh.spec' 1 19 (prec / 8 + 1)
-  have hartanh31 := smallArtanh.spec' 1 31 (prec / 9 + 1)
+  have hartanh17 := smallArtanh.spec_real 1 17 (prec / 8 + 1)
+  have hartanh19 := smallArtanh.spec_real 1 19 (prec / 8 + 1)
+  have hartanh31 := smallArtanh.spec_real 1 31 (prec / 9 + 1)
   have hartanh17₀ := smallArtanh.den_ne_zero 1 17 (prec / 8 + 1) (by simp)
   have hartanh19₀ := smallArtanh.den_ne_zero 1 19 (prec / 8 + 1) (by simp)
   have hartanh31₀ := smallArtanh.den_ne_zero 1 31 (prec / 9 + 1) (by simp)
@@ -412,12 +355,12 @@ theorem abs_log_two_sub_lt (prec : ℕ) :
   <;> norm_num [pow_mul]
   <;> exact pow_lt_pow_left₀ (by norm_num) (by norm_num) (by simp)
 
-theorem log_two_lt (prec : ℕ) :
+theorem logTwo_lt (prec : ℕ) :
     (Dyadic.logTwo prec).toRat < log 2 := by
   unfold Dyadic.logTwo
-  have hartanh17 := smallArtanh.spec' 1 17 (prec / 8 + 1)
-  have hartanh19 := smallArtanh.spec' 1 19 (prec / 8 + 1)
-  have hartanh31 := smallArtanh.spec' 1 31 (prec / 9 + 1)
+  have hartanh17 := smallArtanh.spec_real 1 17 (prec / 8 + 1)
+  have hartanh19 := smallArtanh.spec_real 1 19 (prec / 8 + 1)
+  have hartanh31 := smallArtanh.spec_real 1 31 (prec / 9 + 1)
   have hartanh17₀ := smallArtanh.den_ne_zero 1 17 (prec / 8 + 1) (by simp)
   have hartanh19₀ := smallArtanh.den_ne_zero 1 19 (prec / 8 + 1) (by simp)
   have hartanh31₀ := smallArtanh.den_ne_zero 1 31 (prec / 9 + 1) (by simp)
@@ -433,7 +376,7 @@ theorem log_two_lt (prec : ℕ) :
   iterate 3 grw [sum_lt_of_pos (by norm_num)]
   simp only [Nat.cast_one, Nat.cast_ofNat, logTwo_aux, le_rfl]
 
-theorem lt_log_two (prec : ℕ) :
+theorem lt_logTwo (prec : ℕ) :
     log 2 < (Dyadic.logTwo prec).toRat + (step prec).toRat := by
   rw [toRat_step_real prec, zpow_natCast]
   grind [abs_sub_lt_iff, abs_log_two_sub_lt prec]
@@ -474,13 +417,9 @@ theorem logSum_lt {x : Dyadic} (hx : 1 < |x| ∧ |x| < 2) (prec : ℕ) :
   | case3 n k hn e m P Q hPQ hx' =>
     have hk : k = n.natAbs.log2 := eq_log2_of_and n k hn <| hx.imp_left le_of_lt
     subst k
-    have hem : m ≥ 2 ^ e := by
-      refine Nat.log2_self_le ?_
-      omega
-    replace hem : m > 2 ^ e := by
-      apply lt_of_le_of_ne hem
-      simp [← toRat_lt_toRat_iff, toRat_ofOdd_eq_mul_two_pow, ← Int.cast_abs,
-        ← Nat.cast_natAbs, field] at hx
+    have hem : m > 2 ^ e := by
+      apply lt_of_le_of_ne <| Nat.log2_self_le <| by omega
+      simp [← toRat_lt_toRat_iff, toRat_ofOdd_eq_mul_two_pow, field] at hx
       norm_cast at hx
       grind
     have hem' : (↑(m - 2 ^ e) / ↑(m + 2 ^ e) : ℝ) ∈ Set.Ioo 0 1 := by
@@ -490,12 +429,12 @@ theorem logSum_lt {x : Dyadic} (hx : 1 < |x| ∧ |x| < 2) (prec : ℕ) :
     simp only [toRat_mul, toRat_ofNat, Rat.cast_mul, Rat.cast_ofNat]
     grw [ofIntFdivWithPrec_le P Q (prec + 2)]
     simp only [Int.cast_natCast, Rat.cast_div, Rat.cast_natCast]
-    have hartanh := smallArtanh.spec' (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
+    have hartanh := smallArtanh.spec_real (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
     simp only [hPQ] at hartanh
     grw [hartanh, sum_lt_of_pos hem', artanh_eq_half_log (by grind),
       one_div, mul_inv_cancel_left₀ (by simp)]
     apply le_of_eq
-    nth_rw 2 [← Real.log_abs]
+    nth_rw 2 [← log_abs]
     congr
     simp [hem.le, field, toRat_ofOdd_eq_mul_two_pow, m]
 
@@ -511,13 +450,11 @@ theorem abs_sub_logSum_lt {x : Dyadic} (hx : 1 ≤ |x| ∧ |x| < 2) (prec : ℕ)
   | case1 _ hx' => rcases hx' with rfl | rfl <;> simp
   | case2 _ => simp
   | case3 n k hn e m P Q hPQ hx' =>
-    have hem : m ≥ 2 ^ e := by
-      refine Nat.log2_self_le ?_
-      omega
+    have hem : m ≥ 2 ^ e := Nat.log2_self_le <| by omega
     grw [show (1 / 2 : ℝ) ^ prec = (1 / 2) ^ (prec + 1) + (1 / 2) ^ (prec + 1) by ring,
       abs_sub_le (b := (2 * (P / Q) : ℝ))]
     apply add_lt_add_of_lt_of_le
-    · rw [← Real.log_abs, Real.log_eq_two_mul_artanh (by simp), ← mul_sub, abs_mul, Nat.abs_ofNat]
+    · rw [← log_abs, log_eq_two_mul_artanh (by simp), ← mul_sub, abs_mul, Nat.abs_ofNat]
       set X : ℝ := (m - 2 ^ e : ℕ) / (m + 2 ^ e : ℕ)
       have hX1 : X < 1 / 3 := by
         unfold X
@@ -528,11 +465,11 @@ theorem abs_sub_logSum_lt {x : Dyadic} (hx : 1 ≤ |x| ∧ |x| < 2) (prec : ℕ)
         grind [n.natAbs.lt_log2_self]
       have hX2 : |X| < 1 / 3 := by
         rw [abs_lt]
-        refine ⟨lt_of_lt_of_le (b := 0) (by norm_num) ?_, hX1⟩
+        refine ⟨lt_of_lt_of_le (b := 0) (by simp) ?_, hX1⟩
         simp [X, field]
       have hX3 : X = (|↑(ofOdd n k hn).toRat| - 1) / (|↑(ofOdd n k hn).toRat| + 1) := by
         simp [toRat_ofOdd_eq_mul_two_pow, field, eq_log2_of_and n k hn hx, hem, m, e]
-      have H := smallArtanh.spec' (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
+      have H := smallArtanh.spec_real (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
       simp only [hPQ] at H
       rw [← hX3, H]
       set N : ℕ := prec / 3 + 1
@@ -573,40 +510,42 @@ def lowerLog (x : Dyadic) (prec : ℕ) : Dyadic :=
 def upperLog (x : Dyadic) (prec : ℕ) : Dyadic :=
   if x = 0 ∨ x = 1 ∨ x = -1 then 0 else lowerLog x prec + step prec
 
+private theorem lowerLot_aux1 (n : ℤ) (hn : n % 2 = 1) :
+    1 ≤ |ofOdd n n.natAbs.log2 hn| ∧ |ofOdd n n.natAbs.log2 hn| < 2 := by
+  rw [← toRat_le_toRat_iff, ← toRat_lt_toRat_iff]
+  simp only [toRat_abs, toRat_ofOdd_eq_mul_two_pow, zpow_neg, zpow_natCast, abs_pow,
+    Nat.abs_ofNat, toRat_ofNat, ← div_eq_mul_inv, abs_div, ← Int.cast_abs, ← Nat.cast_natAbs]
+  rw [le_div_iff₀ (by positivity), _root_.one_mul, div_lt_iff₀ (by positivity), ← pow_succ']
+  exact ⟨mod_cast Nat.log2_self_le (by omega), mod_cast Nat.lt_log2_self⟩
+
+private theorem lowerLot_aux2 (n k : ℤ) (hn : n % 2 = 1) :
+    ofOdd n k hn = ofOdd n n.natAbs.log2 hn <<< (n.natAbs.log2 - k) := by
+  grind [shiftLeft_ofOdd]
+
 theorem lowerLog_lt {x : Dyadic} (hx : x ≠ 0 ∧ x ≠ 1 ∧ x ≠ -1) (prec : ℕ) :
     (x.lowerLog prec).toRat < log x.toRat := by
-  -- duplicate `have`s
-  have H (n : ℤ) (hn : n % 2 = 1) :
-      1 ≤ |ofOdd n n.natAbs.log2 hn| ∧ |ofOdd n n.natAbs.log2 hn| < 2 := by
-    rw [← toRat_le_toRat_iff, ← toRat_lt_toRat_iff]
-    simp only [toRat_abs, toRat_ofOdd_eq_mul_two_pow, zpow_neg, zpow_natCast, abs_pow,
-      Nat.abs_ofNat, toRat_ofNat, ← div_eq_mul_inv, abs_div, ← Int.cast_abs, ← Nat.cast_natAbs]
-    rw [le_div_iff₀ (by positivity), _root_.one_mul, div_lt_iff₀ (by positivity), ← pow_succ']
-    exact ⟨mod_cast Nat.log2_self_le (by omega), mod_cast Nat.lt_log2_self⟩
-  have H' (n k : ℤ) (hn : n % 2 = 1) :
-      ofOdd n k hn = ofOdd n n.natAbs.log2 hn <<< (n.natAbs.log2 - k) := by
-    grind [shiftLeft_ofOdd]
   fun_cases lowerLog with
   | case1 | case2 => tauto
   | case3 n k hn k' x' wp hk' hx' =>
-    rw [H' n k hn, toRat_shiftLeft, Rat.cast_mul,
+    rw [lowerLot_aux2 n k hn, toRat_shiftLeft, Rat.cast_mul,
       log_mul (by simp) (by norm_num [zpow_ne_zero]), Rat.cast_zpow, Rat.cast_ofNat, log_zpow,
       toRat_add, Rat.cast_add, toRat_mul, Rat.cast_mul, toRat_intCast, Rat.cast_intCast]
     rcases lt_or_eq_of_le hk' with hk' | hk'
-    · exact add_lt_add_of_le_of_lt (logSum_le (H n hn) (prec + 1)) <|
-        mul_lt_mul_of_pos_left (log_two_lt wp) (mod_cast hk')
+    · exact add_lt_add_of_le_of_lt (logSum_le (lowerLot_aux1 n hn) (prec + 1)) <|
+        mul_lt_mul_of_pos_left (logTwo_lt wp) (mod_cast hk')
     · have : k = n.natAbs.log2 := sub_eq_zero.mp hk'.symm |>.symm
-      subst this
+      subst k
       refine add_lt_add_of_lt_of_le ?_ ?_
-      · exact logSum_lt ⟨lt_of_le_of_ne (H n hn).1 (Ne.symm (by grind)), (H n hn).2⟩ (prec + 1)
+      · exact logSum_lt ⟨lt_of_le_of_ne (lowerLot_aux1 n hn).left (by grind),
+          (lowerLot_aux1 n hn).right⟩ (prec + 1)
       · simp [← hk']
   | case4 n k hn k' x' wp hk' hx' =>
-    rw [H' n k hn, toRat_shiftLeft, Rat.cast_mul,
+    rw [lowerLot_aux2 n k hn, toRat_shiftLeft, Rat.cast_mul,
       log_mul (by simp) (by norm_num [zpow_ne_zero]), Rat.cast_zpow, Rat.cast_ofNat, log_zpow,
       toRat_add, Rat.cast_add]
-    apply add_lt_add_of_le_of_lt (logSum_le (H n hn) (prec + 1))
+    apply add_lt_add_of_le_of_lt (logSum_le (lowerLot_aux1 n hn) (prec + 1))
     rw [toRat_mul, Rat.cast_mul, toRat_intCast, Rat.cast_intCast, toRat_add, Rat.cast_add]
-    exact mul_lt_mul_of_neg_left (lt_log_two wp) (mod_cast not_le.mp hk')
+    exact mul_lt_mul_of_neg_left (lt_logTwo wp) (mod_cast not_le.mp hk')
 
 theorem lowerLog_le (x : Dyadic) (prec : ℕ) :
     (x.lowerLog prec).toRat ≤ log x.toRat := by
@@ -619,16 +558,6 @@ theorem lowerLog_le (x : Dyadic) (prec : ℕ) :
 
 theorem abs_lowerLog_lt (x : Dyadic) (prec : ℕ) :
     |log x.toRat - (x.lowerLog prec).toRat| < (step prec).toRat := by
-  have H (n : ℤ) (hn : n % 2 = 1) :
-      1 ≤ |ofOdd n n.natAbs.log2 hn| ∧ |ofOdd n n.natAbs.log2 hn| < 2 := by
-    rw [← toRat_le_toRat_iff, ← toRat_lt_toRat_iff]
-    simp only [toRat_abs, toRat_ofOdd_eq_mul_two_pow, zpow_neg, zpow_natCast, abs_pow,
-      Nat.abs_ofNat, toRat_ofNat, ← div_eq_mul_inv, abs_div, ← Int.cast_abs, ← Nat.cast_natAbs]
-    rw [le_div_iff₀ (by positivity), _root_.one_mul, div_lt_iff₀ (by positivity), ← pow_succ']
-    exact ⟨mod_cast Nat.log2_self_le (by omega), mod_cast Nat.lt_log2_self⟩
-  have H' (n k : ℤ) (hn : n % 2 = 1) :
-      ofOdd n k hn = ofOdd n n.natAbs.log2 hn <<< (n.natAbs.log2 - k) := by
-    grind [shiftLeft_ofOdd]
   fun_cases lowerLog with
   | case1 _ hx => rcases hx with rfl | rfl <;> simp [step]
   | case2 hx' => simp [step]
@@ -636,14 +565,14 @@ theorem abs_lowerLog_lt (x : Dyadic) (prec : ℕ) :
     -- duplicate proof
     -- not a good proof
     simp only [toRat_add, toRat_mul, toRat_intCast, Rat.cast_add, Rat.cast_mul, Rat.cast_intCast]
-    nth_grw 1 [H' n k hn, toRat_shiftLeft, Rat.cast_mul,
+    nth_grw 1 [lowerLot_aux2 n k hn, toRat_shiftLeft, Rat.cast_mul,
       log_mul (by simp) (by norm_num [zpow_ne_zero]), add_sub_add_comm, abs_add_le]
     simp only [Rat.cast_zpow, Rat.cast_ofNat, log_zpow]
     rw [← mul_sub, abs_mul, abs_of_nonneg (a := (k' : ℝ)) (mod_cast hk')]
     rw [step_eq_add, toRat_add, Rat.cast_add]
     apply add_lt_add_of_lt_of_le
     · rw [toRat_step]
-      convert abs_sub_logSum_lt (H n hn) (prec + 1)
+      convert abs_sub_logSum_lt (lowerLot_aux1 n hn) (prec + 1)
       simp [-neg_add_rev]
       simp only [← Nat.cast_add_one, zpow_natCast]
     · grw [abs_log_two_sub_lt wp, toRat_step]
@@ -659,7 +588,7 @@ theorem abs_lowerLog_lt (x : Dyadic) (prec : ℕ) :
       exact_mod_cast Nat.lt_log2_self.le
   | case4 n k hn k' x' wp hk' hx' =>
     simp only [toRat_add, toRat_mul, toRat_intCast, Rat.cast_add, Rat.cast_mul, Rat.cast_intCast]
-    nth_grw 1 [H' n k hn, toRat_shiftLeft, Rat.cast_mul,
+    nth_grw 1 [lowerLot_aux2 n k hn, toRat_shiftLeft, Rat.cast_mul,
       log_mul (by simp) (by norm_num [zpow_ne_zero]), add_sub_add_comm, abs_add_le]
     simp only [Rat.cast_zpow, Rat.cast_ofNat, log_zpow]
     rw [abs_sub_comm (_ * _), ← mul_sub, abs_mul]
@@ -667,12 +596,12 @@ theorem abs_lowerLog_lt (x : Dyadic) (prec : ℕ) :
     rw [toRat_add, Rat.cast_add]
     apply add_lt_add_of_lt_of_le
     · rw [toRat_step]
-      convert abs_sub_logSum_lt (H n hn) (prec + 1)
+      convert abs_sub_logSum_lt (lowerLot_aux1 n hn) (prec + 1)
       simp [-neg_add_rev]
       simp only [← Nat.cast_add_one, zpow_natCast]
     · have : |(Dyadic.logTwo wp).toRat + (step wp).toRat - log 2| < (1 / 2) ^ wp := by
-        rw [abs_of_pos <| sub_pos_of_lt <| lt_log_two wp, toRat_step, zpow_natCast]
-        simpa [add_sub_right_comm] using log_two_lt wp
+        rw [abs_of_pos <| sub_pos_of_lt <| lt_logTwo wp, toRat_step, zpow_natCast]
+        simpa [add_sub_right_comm] using logTwo_lt wp
       grw [this, toRat_step]
       simp [-neg_add_rev]
       simp only [← Nat.cast_add_one, zpow_natCast]

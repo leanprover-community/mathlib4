@@ -42,11 +42,42 @@ instance : AddCommGroup Dyadic where
 
 namespace Dyadic
 
+@[simp]
+lemma ofOdd_pos {n k : ℤ} {hn : n % 2 = 1} : 0 < ofOdd n k hn ↔ 0 < n := by
+  simp [← toRat_lt_toRat_iff, toRat_ofOdd_eq_mul_two_pow, zpow_pos]
+
+@[simp]
+lemma toRat_one : toRat 1 = 1 := rfl
+
+@[simp]
+lemma toRat_ofNat {n : ℕ} : toRat ofNat(n) = ofNat(n) := toRat_natCast n
+
+@[simp]
+lemma toRat_pos (x : Dyadic) : 0 < x.toRat ↔ 0 < x := by
+  rw [← toRat_zero, toRat_lt_toRat_iff]
+
+@[simp]
+lemma toRat_abs (x : Dyadic) : |x|.toRat = |x.toRat| := by
+  rcases abs_choice x with h | h
+  · grind [toRat_le_toRat_iff.mpr <| sup_eq_left.mp h, toRat_neg x]
+  · grind [toRat_le_toRat_iff.mpr <| sup_eq_right.mp h, toRat_neg x]
+
 /-- One unit on the dyadic grid with precision `prec`. -/
 def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)
 
 theorem ofIntWithPrec_one (prec : Int) : ofIntWithPrec 1 prec = step prec := by
   simp [step, ofIntWithPrec, Int.trailingZeros_eq_zero_of_mod_eq (show 1 % 2 = 1 by decide)]
+
+lemma step_pos (prec : ℤ) : 0 < step prec := ofOdd_pos.mpr zero_lt_one
+
+lemma step_eq_add (prec : ℤ) : step prec = step (prec + 1) + step (prec + 1) := by
+  norm_num [← toRat_inj, toRat_ofOdd_eq_mul_two_pow, zpow_add₀, ← _root_.add_mul, ← one_div, step]
+
+lemma toRat_step (prec : ℤ) : (step prec).toRat = (1 / 2) ^ prec := by
+  simp [← ofIntWithPrec_one, toRat_ofIntWithPrec_eq_mul_two_pow]
+
+lemma toRat_step_real (prec : ℤ) : (step prec).toRat = (1 / 2 : ℝ) ^ prec := by
+  simp [toRat_step]
 
 section Real
 
@@ -55,6 +86,10 @@ def toReal (d : Dyadic) : ℝ := d.toRat
 
 @[simp]
 lemma toReal_natCast (n : ℕ) : toReal (n : Dyadic) = (n : ℝ) := by simp [toReal]
+
+@[simp]
+lemma toReal_zero : toReal 0 = 0 := by
+  simp [toReal]
 
 @[simp]
 lemma toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
