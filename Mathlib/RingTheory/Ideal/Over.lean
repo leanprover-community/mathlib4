@@ -10,9 +10,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 import Mathlib.Algebra.Algebra.Tower
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Ideals over/under ideals
 

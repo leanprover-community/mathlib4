@@ -8,9 +8,6 @@ module
 public import Mathlib.Data.Int.Cast.Basic
 public import Mathlib.Data.Nat.Cast.Prod
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The product of two `AddGroupWithOne`s.
 -/

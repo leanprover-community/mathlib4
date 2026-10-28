@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Products.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Curry and uncurry, as functors.
 

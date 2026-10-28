@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Order.SuccPred.Archimedean
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Relations on types with a `SuccOrder`
 

@@ -11,9 +11,6 @@ public import Mathlib.NumberTheory.ModularForms.Bounds
 
 import Mathlib.Analysis.PSeries
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The `L`-function of a modular form
 -/
@@ -41,7 +38,7 @@ namespace ModularForm
 
 variable [ModularFormClass F Γ k]
 
-section asymptotics -- private lemmas about aymptotics along `I * ℝ`
+section asymptotics -- private lemmas about asymptotics along `I * ℝ`
 
 private lemma tendsto_ofComplex_I_mul_atTop_atImInfty :
     Tendsto (fun t : ℝ ↦ ofComplex (I * t)) atTop atImInfty := by

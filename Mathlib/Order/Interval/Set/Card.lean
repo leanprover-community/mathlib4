@@ -8,9 +8,6 @@ module
 public import Mathlib.Data.Set.Card
 public import Mathlib.Order.Interval.Finset.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Cardinalities of intervals
 

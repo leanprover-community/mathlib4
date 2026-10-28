@@ -1,9 +1,11 @@
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Combinatorics.Optimization.ValuedCSP
-import Mathlib.Data.Fin.Tuple.Curry
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Combinatorics.Optimization.ValuedCSP
+public import Mathlib.Data.Fin.Tuple.Curry
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Tactic.Positivity
 
 /-!
 # VCSP examples

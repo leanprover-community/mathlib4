@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Rat.Cast.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Casts of rational numbers into characteristic zero fields (or division rings).
 -/

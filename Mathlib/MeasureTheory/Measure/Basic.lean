@@ -156,7 +156,7 @@ the sum of the measures of the sets. -/
 theorem tsum_meas_le_meas_iUnion_of_disjoint₀ (μ : Measure α)
     {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
-  rw [ENNReal.tsum_eq_iSup_sum, iSup_le_iff]
+  rw [tsum_eq_iSup_sum, iSup_le_iff]
   intro s
   simp only [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
   gcongr
@@ -398,7 +398,7 @@ theorem sum_measure_le_measure_univ {s : Finset ι} {t : ι → Set α}
 
 theorem tsum_measure_le_measure_univ {s : ι → Set α} (hs : ∀ i, NullMeasurableSet (s i) μ)
     (H : Pairwise (AEDisjoint μ on s)) : ∑' i, μ (s i) ≤ μ (univ : Set α) := by
-  rw [ENNReal.tsum_eq_iSup_sum]
+  rw [tsum_eq_iSup_sum]
   exact iSup_le fun s =>
     sum_measure_le_measure_univ (fun i _hi => hs i) fun i _hi j _hj hij => H hij
 

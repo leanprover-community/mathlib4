@@ -8,9 +8,6 @@ module
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Basic.Sign.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Normalized vector
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of `R`-modules has finite biproducts
 -/
@@ -84,7 +81,6 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → ModuleCat.{max w v} R)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the Cartesian product of those groups.
 -/

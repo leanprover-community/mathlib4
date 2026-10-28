@@ -9,9 +9,6 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 
 import Mathlib.CategoryTheory.Comma.Final
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Morphisms between (co)filtered (co)limits
 
@@ -98,7 +95,6 @@ lemma Limits.exists_eq_isLimitMap_of_preservesColimit_yoneda
   rw [IsLimit.map_π]
   exact (Under.w A.hom).symm
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A morphism `f` between filtered colimits, where every object of the source diagram is
 presentable relative to the target diagram, is finally induced by a natural transformation of
 diagrams.is induced by a natural transformation of diagrams. -/

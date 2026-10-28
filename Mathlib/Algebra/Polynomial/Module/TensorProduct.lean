@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.Module.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Lift
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # PolynomialModule is isomorphic to a tensor product
 

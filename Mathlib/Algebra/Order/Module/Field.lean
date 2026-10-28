@@ -9,9 +9,6 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Tactic.Positivity.Core
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Ordered vector spaces
 -/

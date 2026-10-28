@@ -10,9 +10,6 @@ public import Mathlib.Logic.Small.Basic
 
 import Mathlib.Data.Set.Lattice.Bounded
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Results about `Small` on coerced sets
 -/

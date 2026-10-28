@@ -8,9 +8,6 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The category of module objects over a monoid object.
 -/

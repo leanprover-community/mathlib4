@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Order.Zorn
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Extend a partial order to a linear order
 

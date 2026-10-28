@@ -8,9 +8,6 @@ module
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 public import Mathlib.Topology.Homeomorph.Lemmas
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Topological space structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
 

@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Yoneda embedding of `CommMon C`
 -/
