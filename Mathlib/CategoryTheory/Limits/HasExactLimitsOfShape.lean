@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
 We introduce a typeclass `HasExactColimitsOfShape J C` in order to express
 that colimits of shape `J` in a category `C` are exact. The dual notion
-is `HasExactLimitsOfShape J C`. That `HasExactColimitsOfShape J C` ss invariant under
+is `HasExactLimitsOfShape J C`. That `HasExactColimitsOfShape J C` is invariant under
 equivalences in both parameters is shown in the lemmas
 `HasExactColimitsOfShape.of_domain_equivalence` and
 `HasExactColimitsOfShape.of_codomain_equivalence`.
