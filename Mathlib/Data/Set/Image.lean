@@ -376,6 +376,10 @@ theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ 
   rw [sdiff_subset_iff, ← image_union, union_sdiff_self]
   exact image_mono subset_union_right
 
+open scoped symmDiff in
+lemma subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t := by
+  grw [Set.symmDiff_def, Set.symmDiff_def, subset_image_sdiff, subset_image_sdiff, image_union]
+
 theorem image_sdiff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
   Subset.antisymm
     (Subset.trans (image_sdiff_subset f s t) <| inter_subset_inter_right _ <| image_compl_subset hf)
@@ -1132,7 +1136,7 @@ theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f)
 
 theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=
-  ⟨fun ⟨a, h⟩ => ⟨a, h, fun _ ha => hf (ha.trans h.symm)⟩, ExistsUnique.exists⟩
+  hf.existsUnique_iff_exists.symm
 
 alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
 

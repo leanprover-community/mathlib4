@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.CategoryTheory.Sites.Equivalence
+
 /-!
 
 # Coherence and equivalence of categories

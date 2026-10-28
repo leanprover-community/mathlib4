@@ -136,6 +136,7 @@ ensures that we do not get a diamond when doing
 `[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/
+@[wikidata Q1397059]
 class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x
@@ -552,6 +553,7 @@ theorem closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
     _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
+@[gcongr strict]
 theorem closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
   fun y (yh : dist y x ≤ ε₁) => lt_of_le_of_lt yh h
 
@@ -1078,6 +1080,14 @@ uniformity are defeq in the pseudometric space and the emetric space. -/
 abbrev PseudoEMetricSpace.toPseudoMetricSpace {α : Type u} [PseudoEMetricSpace α]
     (h : ∀ x y : α, edist x y ≠ ⊤) : PseudoMetricSpace α :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist (ENNReal.toReal <| edist · ·) (by simp) (by simp [h])
+
+/-- The bounded component of an element forms a pseudometric space. -/
+abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a : X) :
+    PseudoMetricSpace (boundedComponent a) :=
+  PseudoEMetricSpace.toPseudoMetricSpace fun p q ↦ by
+    refine ((edist_triangle p.1 a q.1).trans_lt (ENNReal.add_lt_top.2 ⟨?_, q.2.lt_top⟩)).ne
+    rw [edist_comm]
+    exact p.2.lt_top
 
 /-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionally) equal to some given bornology structure.
