@@ -213,6 +213,9 @@ The function is used to extract "location" information about `stx`: either expli
 Whether or not what this function extracts really is a location will be determined by the linter
 using data embedded in the `InfoTree`s. -/
 partial def toStained : Syntax → Std.HashSet Stained
+  -- A declaration's name introduces a local, rather than referring to an existing one.
+  | .node _ ``Lean.Parser.Term.letIdDecl arg =>
+    ((arg.extract 1 arg.size).map toStained).foldl (.union) {}
   | .node _ _ arg => (arg.map toStained).foldl (.union) {}
   | .ident _ _ val _ => {.name val}
   | .atom _ val => match val with
