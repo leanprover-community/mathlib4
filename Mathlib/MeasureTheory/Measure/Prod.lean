@@ -169,11 +169,14 @@ namespace Measure
 /-- The binary product of measures `μ.prod ν`. It is defined for arbitrary measures, but we
 basically prove all properties under the assumption that `ν` is s-finite. To make sure
 that the measure is always reasonable, we use the junk value `0` when `ν` is not s-finite. -/
-protected irreducible_def prod (μ : Measure α) (ν : Measure β) : Measure (α × β) :=
+@[no_expose] protected def prod (μ : Measure α) (ν : Measure β) : Measure (α × β) :=
   open scoped Classical in if SFinite ν then bind μ (fun x : α => map (Prod.mk x) ν) else 0
 
 lemma prod_eq_of_sfinite (μ : Measure α) (ν : Measure β) [hν : SFinite ν] :
     μ.prod ν = bind μ (fun x : α => map (Prod.mk x) ν) := by
+  simp [Measure.prod, hν]
+
+lemma prod_eq_zero_of_not_sfinite (hν : ¬ SFinite ν) : μ.prod ν = 0 := by
   simp [Measure.prod, hν]
 
 instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β) where
@@ -461,7 +464,7 @@ theorem prod_apply₀ {s : Set (α × β)} (hs : NullMeasurableSet s (μ.prod ν
   rw [measure_congr hst, prod_apply htm]
   refine lintegral_congr_ae ?_
   filter_upwards [ae_ae_of_ae_prod hst] with x hx
-  exact (measure_congr hx).symm
+  exact measure_congr <| Filter.eventuallyEqSet_iff.2 <| by simpa [iff_comm] using hx
 
 omit hν in
 @[fun_prop]

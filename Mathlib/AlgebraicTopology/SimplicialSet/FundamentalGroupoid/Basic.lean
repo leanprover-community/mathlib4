@@ -299,6 +299,37 @@ lemma desc_map_homMk {x y : X _⦋0⦌} (e : Edge x y) :
 
 end
 
+section
+
+variable {D : Type*} [Category* D] {F G : FundamentalGroupoid X ⥤ D}
+
+open MorphismProperty in
+/-- Constructor for natural transformations between functors from the
+fundamental groupoid of a simplicial set. -/
+@[simps!]
+def natTransMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ⟶ G.obj (mk x))
+    (naturality : ∀ {x y : X _⦋0⦌} (e : Edge x y),
+      F.map (homMk e) ≫ app y = app x ≫ G.map (homMk e) := by cat_disch) : F ⟶ G where
+  app x := app x.pt
+  naturality _ _ f := by
+    change naturalityProperty (fun x ↦ app x.pt) f
+    induction f with
+    | homMk e => exact naturality e
+    | inv f hf => exact (naturalityProperty.stableUnderInverse _) (asIso f) hf
+    | comp f g hf hg => exact comp_mem _ _ _ hf hg
+
+/-- Constructor for natural isomorphisms between functors from the
+fundamental groupoid of a simplicial set. -/
+@[simps!]
+def natIsoMk (app : ∀ (x : X _⦋0⦌), F.obj (mk x) ≅ G.obj (mk x))
+    (naturality : ∀ {x y : X _⦋0⦌} (e : Edge x y),
+      F.map (homMk e) ≫ (app y).hom =
+        (app x).hom ≫ G.map (homMk e) := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (fun x ↦ app x.pt)
+    (fun f ↦ (natTransMk _ naturality).naturality f)
+
+end
+
 lemma functor_ext {D : Type*} [Groupoid D] {F G : FundamentalGroupoid X ⥤ D}
     (h₁ : ∀ (x : X _⦋0⦌), F.obj (mk x) = G.obj (mk x))
     (h₂ : ∀ {x y : X _⦋0⦌} (e : Edge x y), F.map (homMk e) =

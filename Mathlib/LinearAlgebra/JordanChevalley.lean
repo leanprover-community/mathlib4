@@ -45,7 +45,7 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V] {f : End K V}
 
 theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : ℕ}
     (sep : P.Separable) (nil : minpoly K f ∣ P ^ k) :
-    ∃ᵉ (n ∈ adjoin K {f}) (s ∈ adjoin K {f}), IsNilpotent n ∧ IsSemisimple s ∧ f = n + s := by
+    ∃ n ∈ adjoin K {f}, ∃ s ∈ adjoin K {f}, IsNilpotent n ∧ IsSemisimple s ∧ f = n + s := by
   set ff : adjoin K {f} := ⟨f, self_mem_adjoin_singleton K f⟩
   set P' := derivative P
   have nil' : IsNilpotent (aeval ff P) := by
@@ -75,7 +75,7 @@ over a perfect field may be written as a sum of nilpotent and semisimple endomor
 these nilpotent and semisimple components are polynomial expressions in the original endomorphism.
 -/
 theorem exists_isNilpotent_isSemisimple [PerfectField K] :
-    ∃ᵉ (n ∈ adjoin K {f}) (s ∈ adjoin K {f}), IsNilpotent n ∧ IsSemisimple s ∧ f = n + s := by
+    ∃ n ∈ adjoin K {f}, ∃ s ∈ adjoin K {f}, IsNilpotent n ∧ IsSemisimple s ∧ f = n + s := by
   obtain ⟨g, k, sep, -, nil⟩ := exists_squarefree_dvd_pow_of_ne_zero (minpoly.ne_zero_of_finite K f)
   rw [← PerfectField.separable_iff_squarefree] at sep
   exact exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow sep nil

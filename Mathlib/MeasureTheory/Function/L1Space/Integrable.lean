@@ -306,9 +306,6 @@ theorem integrable_finsetSum_measure [PseudoMetrizableSpace ε]
   classical
   induction s using Finset.induction_on <;> simp [*]
 
-@[deprecated (since := "2026-04-08")]
-alias integrable_finset_sum_measure := integrable_finsetSum_measure
-
 section
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
@@ -442,14 +439,10 @@ theorem integrable_finsetSum' {ι} (s : Finset ι) {f : ι → α → ε'}
   Finset.sum_induction f (fun g => Integrable g μ) (fun _ _ => Integrable.add)
     (integrable_zero _ _ _) hf
 
-@[deprecated (since := "2026-04-08")] alias integrable_finset_sum' := integrable_finsetSum'
-
 @[fun_prop]
 theorem integrable_finsetSum {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using integrable_finsetSum' s hf
-
-@[deprecated (since := "2026-04-08")] alias integrable_finset_sum := integrable_finsetSum
 
 end ESeminormedAddCommMonoid
 
