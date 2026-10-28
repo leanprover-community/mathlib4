@@ -6,8 +6,9 @@ Authors: Olivia Röhrig
 
 module
 
-public import Mathlib.Data.Set.Insert
-public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.Set
+public import Mathlib.Geometry.Convex.Hull
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Segments in convex spaces
@@ -19,8 +20,8 @@ In an R-convex space, we define the following objects:
 
 ## Implementation notes
 
-We don't provide the left-open equivalent to `Set.Ioc` since `Ico x y = Ioc y x`. This is in contrast to `Set.Ico` and `Set.Ioc`.
-See also `Ioo_insert_left` and `Ioo_insert_right`.
+We don't provide the left-open equivalent to `Set.Ioc` since `Ico x y = Ioc y x`. This is in
+contrast to `Set.Ico` and `Set.Ioc`. See also `Ioo_insert_left` and `Ioo_insert_right`.
 
 -/
 
@@ -28,7 +29,9 @@ namespace Convexity
 
 open Convexity Function
 
-@[expose] public section Semiring
+@[expose] public section
+
+section Semiring
 
 variable (R) {X} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X] {s : Set X}
   {x y z : X}
@@ -137,6 +140,16 @@ theorem right_mem_Icc (x y : X) : y ∈ Icc R x y :=
 @[simp]
 theorem left_mem_Ico (x y : X) : x ∈ Ico R x y :=
   ⟨1, 0, zero_lt_one, le_refl 0, add_zero 1, convexCombPair_one⟩
+
+section Convexity
+
+theorem Icc_subset_iff_mem_of_isConvexSet (hs : IsConvexSet R s) (x y : X) :
+    Icc R x y ⊆ s ↔ x ∈ s ∧ y ∈ s := by
+  refine ⟨fun h ↦ ⟨h <| left_mem_Icc R x y, h <| right_mem_Icc R x y⟩, ?_⟩
+  rintro ⟨hx, hy⟩ z ⟨a, b, ha, hb, hab, rfl⟩
+  apply hs.convexCombPair_mem hx hy
+
+end Convexity
 
 @[simp]
 theorem Icc_self (x : X) : Icc R x x = {x} :=
@@ -261,5 +274,20 @@ theorem Ioo_self (x : X) : Ioo R x x = {x} := by
   rw [convexCombPair_same, Set.mem_singleton_iff.mp h]
 
 end DenselyOrdered
+
+section Field
+
+variable (K) {X} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X] {s : Set X}
+
+theorem isConvexSet_iff_Icc_subset_iff_mem :
+    IsConvexSet K s ↔ ∀ x y, (Icc K x y ⊆ s ↔ x ∈ s ∧ y ∈ s) := by
+  refine ⟨Icc_subset_iff_mem_of_isConvexSet K, fun h ↦ IsConvexSet.of_convexCombPair_mem ?_⟩
+  intro a b ha hb hab x hx y hy
+  apply h x y|>.mpr ⟨hx, hy⟩
+  exact ⟨a, b, ha, hb, hab, by simp⟩
+
+end Field
+
+end
 
 end Convexity
