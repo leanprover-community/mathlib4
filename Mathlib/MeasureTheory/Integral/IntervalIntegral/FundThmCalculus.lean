@@ -264,7 +264,7 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae' [IsMeasurablyGenera
     (fun t => (∫ x in u t..v t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt] fun t =>
       ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
   by_cases hE : CompleteSpace E; swap
-  · simp [intervalIntegral, integral, hE]
+  · simp [intervalIntegral, integral_of_not_completeSpace hE]
   have A := hf.integral_sub_linear_isLittleO_ae hfm hl (hu.Ioc hv)
   have B := hf.integral_sub_linear_isLittleO_ae hfm hl (hv.Ioc hu)
   simp_rw [integral_const', sub_smul]
@@ -948,7 +948,7 @@ that `∫ x in a..b, f' x = f b - f a` under suitable assumptions.
 
 The most classical version of this theorem assumes that `f'` is continuous. However, this is
 unnecessarily strong: the result holds if `f'` is just integrable. We prove the strong version,
-following [Rudin, *Real and Complex Analysis* (Theorem 7.21)][rudin2006real]. The proof is first
+following [Rudin, *Real and Complex Analysis* (Theorem 7.21)][rudin1987]. The proof is first
 given for real-valued functions, and then deduced for functions with a general target space. For
 a real-valued function `g`, it suffices to show that `g b - g a ≤ (∫ x in a..b, g' x) + ε` for all
 positive `ε`. To prove this, choose a lower-semicontinuous function `G'` with `g' < G'` and with

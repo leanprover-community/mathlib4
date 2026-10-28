@@ -194,7 +194,7 @@ lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
   induction n with
   | zero => simp
   | succ n ih =>
-  · grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, ih]
+    grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, ih]
 
 end IsDomain
 
@@ -422,7 +422,7 @@ If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should
 @[positivity _]
 meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
-  let (.app f a) ← whnfR e | throwError "not abv ·"
+  let (.app f a) ← whnf e | throwError "not abv ·"
   if !f.getAppFn.isFVar then
     throwError "abv: function is not a variable"
   let pa' ← mkAppM ``abv_nonneg #[f, a]
