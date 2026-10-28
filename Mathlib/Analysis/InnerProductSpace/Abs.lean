@@ -34,7 +34,7 @@ namespace ContinuousLinearMap
 
 section Abs
 
-open scoped ENNReal NNReal
+open scoped ENNReal NNReal InnerProduct
 
 variable {E F : Type*}
   [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
@@ -42,12 +42,12 @@ variable {E F : Type*}
 
 /-- The abs `|T| = √(T†∘T)` of a continuous linear map `T : E →L[ℂ] F`. -/
 @[expose]
-def abs (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T.adjoint ∘L T)
+def abs (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T† ∘L T)
 
 @[inherit_doc]
 local notation "|" T "|" => abs T
 
-theorem abs_apply (T : E →L[ℂ] F) : |T| = CFC.sqrt (T.adjoint ∘L T) := rfl
+theorem abs_apply (T : E →L[ℂ] F) : |T| = CFC.sqrt (T† ∘L T) := rfl
 
 @[simp] theorem abs_zero : |(0 : E →L[ℂ] F)| = 0 := by simp [abs]
 @[simp] theorem abs_neg (T : E →L[ℂ] F) : |-T| = |T| := by simp [abs]
@@ -55,12 +55,12 @@ theorem abs_apply (T : E →L[ℂ] F) : |T| = CFC.sqrt (T.adjoint ∘L T) := rfl
 @[simp] theorem abs_abs (T : E →L[ℂ] F) : |(|T|)| = |T| := by
   rw [abs, T.abs_nonneg.isSelfAdjoint.adjoint_eq]
   exact CFC.sqrt_mul_self |T|
-@[simp] theorem adjoint_abs (T : E →L[ℂ] F) : |T|.adjoint = |T| := T.abs_nonneg.isSelfAdjoint
+@[simp] theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.abs_nonneg.isSelfAdjoint
 
 theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
 @[simp]
-theorem adjoint_comp_self_nonneg (T : E →L[ℂ] F) : 0 ≤ T.adjoint ∘L T :=
+theorem adjoint_comp_self_nonneg (T : E →L[ℂ] F) : 0 ≤ T† ∘L T :=
     nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self T)
 
 @[simp]
@@ -68,7 +68,7 @@ theorem abs_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
   simp [abs, CFC.sqrt_eq_zero_iff, adjoint_comp_self_eq_zero_iff]
 
 @[simp]
-theorem abs_comp_abs (T : E →L[ℂ] F) : |T| ∘L |T| = T.adjoint ∘L T := by
+theorem abs_comp_abs (T : E →L[ℂ] F) : |T| ∘L |T| = T† ∘L T := by
   simp [abs, ← mul_def, CFC.sqrt_mul_sqrt_self]
 
 @[simp]
@@ -89,16 +89,16 @@ theorem ker_abs_eq (T : E →L[ℂ] F) : |T|.ker = T.ker := by
 theorem norm_abs (T : E →L[ℂ] F) : ‖|T|‖ = ‖T‖ := by
   simp_rw [norm_def |T|, norm_abs_apply, norm_def]
 
-theorem abs_nnrpow_two (T : E →L[ℂ] F) : |T| ^ (2 : ℝ≥0) = T.adjoint ∘L T := by
+theorem abs_nnrpow_two (T : E →L[ℂ] F) : |T| ^ (2 : ℝ≥0) = T† ∘L T := by
   rw [CFC.nnrpow_two _ T.abs_nonneg, ContinuousLinearMap.mul_def]
   exact abs_comp_abs T
 
 theorem abs_nnrpow_two_mul (T : E →L[ℂ] F) (x : ℝ≥0) :
-    |T| ^ (2 * x) = (T.adjoint ∘L T) ^ x := by
+    |T| ^ (2 * x) = (T† ∘L T) ^ x := by
   rw [← CFC.nnrpow_nnrpow, abs_nnrpow_two]
 
 theorem abs_nnrpow (T : E →L[ℂ] F) (x : ℝ≥0) :
-    |T| ^ x = (T.adjoint ∘L T) ^ (x / 2) := by
+    |T| ^ x = (T† ∘L T) ^ (x / 2) := by
   simp [← abs_nnrpow_two_mul, mul_div_left_comm]
 
 theorem abs_of_nonneg (S : E →L[ℂ] E) (hS : 0 ≤ S := by cfc_tac) : |S| = S := by
@@ -109,7 +109,7 @@ theorem abs_of_nonpos (S : E →L[ℂ] E) (hS : S ≤ 0 := by cfc_tac) : |S| = -
   rw [abs_eq_cfcAbs]
   exact CFC.abs_of_nonpos _ hS
 
-theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T.adjoint ∘L T| = |T| ∘L |T| := by
+theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = |T| ∘L |T| := by
   rw [abs_comp_abs]
   exact abs_of_nonneg _
 
