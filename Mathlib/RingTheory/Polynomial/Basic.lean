@@ -995,7 +995,7 @@ theorem ker_map (f : R →+* S) :
     Ideal.map (C : R →+* MvPolynomial σ R) (RingHom.ker f) := by
   ext
   rw [MvPolynomial.mem_map_C_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
-  simp_rw [coeff_map, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply, RingHom.mem_ker]
+  simp_rw [coeff_map, AddMonoidAlgebra.coeff_zero, zero_apply, RingHom.mem_ker]
 
 lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
     [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :

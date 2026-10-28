@@ -392,12 +392,12 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     eval_zero, one_pow, mul_one, map_sum, Finset.sum_range_succ, Finset.sum_eq_zero aux, zero_add]
   contrapose hFn
   ext d
-  rw [AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
+  rw [AddMonoidAlgebra.coeff_zero, zero_apply]
   obtain rfl | hd := eq_or_ne d 0
   · apply hFn
   · contrapose! hd
     ext i
-    rw [Finsupp.coe_zero, Pi.zero_apply]
+    rw [zero_apply]
     by_cases hi : i ∈ d.support
     · have := hF.finSuccEquiv_coeff_isHomogeneous n 0 (add_zero _) hd
       simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum] at this

@@ -163,10 +163,9 @@ lemma CotangentSpace.compEquiv_symm_inr :
     Function.comp_apply, LinearEquiv.trans_apply, Basis.repr_symm_apply, pderiv_X, toComp_val,
     Basis.repr_linearCombination, LinearMap.liftBaseChange_tmul, one_smul, repr_CotangentSpaceMap]
   obtain (j | j) := j <;>
-    simp only [Basis.prod_repr_inr, Basis.baseChange_repr_tmul,
-      Basis.repr_self, Basis.prod_repr_inl, map_zero, Finsupp.coe_zero,
-      Pi.zero_apply, ne_eq, not_false_eq_true, Pi.single_eq_of_ne, Pi.single_apply,
-      Finsupp.single_apply, ite_smul, one_smul, zero_smul, Sum.inr.injEq,
+    simp only [Basis.prod_repr_inr, Basis.baseChange_repr_tmul, Basis.repr_self,
+      Basis.prod_repr_inl, map_zero, zero_apply, ne_eq, not_false_eq_true, Pi.single_eq_of_ne,
+      Pi.single_apply, Finsupp.single_apply, ite_smul, one_smul, zero_smul, Sum.inr.injEq,
       MonoidWithZeroHom.map_ite_one_zero, reduceCtorEq]
 
 lemma CotangentSpace.compEquiv_symm_zero (x) :
@@ -189,7 +188,7 @@ lemma CotangentSpace.fst_compEquiv :
       LinearMap.coe_inl, LinearMap.coe_inr, Sum.elim_inl, Function.comp_apply, one_smul,
       Basis.repr_self, Finsupp.single_apply, pderiv_X, Pi.single_apply,
       Sum.elim_inr, Function.comp_apply, Basis.baseChange_apply, one_smul,
-      MonoidWithZeroHom.map_ite_one_zero, map_zero, Finsupp.coe_zero, Pi.zero_apply, derivation_C]
+      MonoidWithZeroHom.map_ite_one_zero, map_zero, zero_apply, derivation_C]
 
 lemma CotangentSpace.fst_compEquiv_apply (x) :
     (compEquiv Q P x).1 = Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom x :=

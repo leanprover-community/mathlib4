@@ -69,11 +69,11 @@ protected theorem norm_zero : B.norm 0 = 0 := by
 
 /-- For any `K`-basis of `L`, and any `x : L`, we have `B.norm (-x) = B.norm x`. -/
 protected theorem norm_neg (x : L) : B.norm (-x) = B.norm x := by
-  simp [norm, map_neg, Pi.neg_apply, _root_.norm_neg]
+  simp [norm]
 
 /-- For any `K`-basis of `L`, and any `x : L`, we have `0 ≤ B.norm x`. -/
 protected theorem norm_nonneg (x : L) : 0 ≤ B.norm x := by
-  simp only [norm, le_sup'_iff, mem_univ, norm_nonneg, and_self, exists_const]
+  simp [norm, le_sup'_iff]
 
 variable {B}
 
@@ -91,7 +91,7 @@ theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
     IsNonarchimedean B.norm := fun x y ↦ by
   obtain ⟨ixy, _, hixy⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x + y)) i‖)
   have hxy : ‖B.repr (x + y) ixy‖ ≤ max ‖B.repr x ixy‖ ‖B.repr y ixy‖ := by
-    rw [map_add, Finsupp.coe_add, Pi.add_apply]; exact hna _ _
+    rw [map_add, add_apply]; exact hna _ _
   rw [Basis.norm, hixy]
   rcases le_max_iff.mp hxy with (hx | hy)
   · exact le_max_of_le_left (le_trans hx (norm_repr_le_norm B ixy))
@@ -121,8 +121,7 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
       B.repr y i_1 • B.repr (B i * B i_1)) ixy‖ ≤
       ‖(B.repr x k • ∑ j : ι, B.repr y j • B.repr (B k * B j)) ixy‖)⟩ :=
       hna'.finset_image_add _ (univ : Finset ι) <| map_zero_le (NormedField.toMulRingNorm K)
-    simp only [Finsupp.coe_smul, Finsupp.coe_finsetSum, Pi.smul_apply, Finset.sum_apply,
-      smul_eq_mul, norm_mul] at hk ⊢
+    simp only [_root_.smul_apply, sum_apply, smul_eq_mul, norm_mul, ge_iff_le] at hk ⊢
     apply le_trans hk
     -- We use the above property again.
     obtain ⟨k', hk'⟩ : ∃ (k' : ι),
