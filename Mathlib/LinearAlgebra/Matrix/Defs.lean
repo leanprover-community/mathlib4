@@ -5,7 +5,6 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Tactic.Attr.Core
@@ -98,28 +97,6 @@ theorem of_apply (f : m → n → α) (i j) : of f i j = f i j :=
 @[simp]
 theorem of_symm_apply (f : Matrix m n α) (i j) : of.symm f i j = f i j :=
   rfl
-
-/-- Construct a matrix from an array in row-major ordering. -/
-def ofArray {m n : ℕ} (A : Array R) (hA : A.size = m * n) : Matrix (Fin m) (Fin n) R :=
-  fun i j => A[Fin.mkDivMod i j]
-
-@[simp]
-theorem ofArray_apply {m n : ℕ} (A : Array R) (hA : A.size = m * n) (i : Fin m) (j : Fin n) :
-    ofArray A hA i j = A[Fin.mkDivMod i j] := rfl
-
-/-- The matrix constructed from the row-major array of `A`'s entries is `A`. -/
-@[simp]
-theorem ofArray_ofFn {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
-    ofArray (.ofFn fun k : Fin (m * n) ↦ A k.divNat k.modNat) Array.size_ofFn = A := by
-  ext i j
-  rw [ofArray_apply, Fin.getElem_fin, Array.getElem_ofFn, Fin.divNat_mkDivMod,
-    Fin.modNat_mkDivMod]
-
-lemma ofArray_eq_of_getD [Zero R] {m n : ℕ} (A : Array R) (hA : A.size = m * n) :
-    ofArray A hA = .of fun i j ↦ A.getD (n * i.val + j.val) 0 := by
-  ext i j
-  have : n * i.val + j.val < m * n := (Fin.mkDivMod i j).isLt
-  simp [ofArray, hA, this]
 
 /-- `M.map f` is the matrix obtained by applying `f` to each entry of the matrix `M`.
 
@@ -293,25 +270,25 @@ instance [AddCancelCommMonoid α] : AddCancelCommMonoid <| Matrix m n α :=
 section
 
 @[simp]
-theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
+protected theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]
 theorem of_symm_zero [Zero α] : of.symm (0 : Matrix m n α) = (0 : m → n → α) := rfl
 
 @[simp]
-theorem add_apply [Add α] (A B : Matrix m n α) (i : m) (j : n) :
+protected theorem add_apply [Add α] (A B : Matrix m n α) (i : m) (j : n) :
     (A + B) i j = (A i j) + (B i j) := rfl
 
 @[simp]
-theorem smul_apply [SMul β α] (r : β) (A : Matrix m n α) (i : m) (j : n) :
+protected theorem smul_apply [SMul β α] (r : β) (A : Matrix m n α) (i : m) (j : n) :
     (r • A) i j = r • (A i j) := rfl
 
 @[simp]
-theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
+protected theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
     (A - B) i j = (A i j) - (B i j) := rfl
 
 @[simp]
-theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
+protected theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
     (-A) i j = -(A i j) := rfl
 
 protected theorem dite_apply (P : Prop) [Decidable P]
@@ -419,7 +396,7 @@ def ofAddEquiv [Add α] : (m → n → α) ≃+ Matrix m n α where
 @[simp] lemma isAddUnit_iff [AddMonoid α] {A : Matrix m n α} :
     IsAddUnit A ↔ ∀ i j, IsAddUnit (A i j) := by
   simp_rw [isAddUnit_iff_exists, Classical.skolem, forall_and,
-    ← Matrix.ext_iff, add_apply, zero_apply]
+    ← Matrix.ext_iff, Matrix.add_apply, Matrix.zero_apply]
   rfl
 
 end Matrix
