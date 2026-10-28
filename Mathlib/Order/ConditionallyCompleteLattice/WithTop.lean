@@ -15,7 +15,7 @@ are conditionally complete lattices when `α` is. We also show that `WithTop (Wi
 `WithBot (WithTop α)` are complete lattices.
 -/
 
-@[expose] public section
+public noncomputable section
 
 -- Guard against import creep
 assert_not_exists Multiset
@@ -35,13 +35,13 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 variable [LE α]
 
 open scoped Classical in
-@[to_dual]
-noncomputable instance instSupSet [SupSet α] : SupSet (WithTop α) :=
+@[to_dual, no_expose]
+instance instSupSet [SupSet α] : SupSet (WithTop α) :=
   ⟨fun S => if ⊤ ∈ S ∨ ¬BddAbove ((↑) ⁻¹' S : Set α) then ⊤ else ↑(sSup ((↑) ⁻¹' S : Set α))⟩
 
 open scoped Classical in
-@[to_dual]
-noncomputable instance instInfSet [InfSet α] : InfSet (WithTop α) :=
+@[to_dual, no_expose]
+instance instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
 @[to_dual]
@@ -155,7 +155,7 @@ theorem isLUB_top_iff {s : Set (WithTop α)} :
     ← or_iff_not_imp_left, forall_or_left]
 
 @[to_dual]
-noncomputable instance instOrderSupSet [OrderSupSet α] :
+instance instOrderSupSet [OrderSupSet α] :
     OrderSupSet (WithTop α) where
   isLUB_sSup_of_isLUB s a h := by
     cases a with
@@ -166,7 +166,7 @@ noncomputable instance instOrderSupSet [OrderSupSet α] :
       exact ⟨h.1, h.2.isLUB_sSup⟩
 
 @[to_dual]
-noncomputable instance instOrderInfSet [OrderInfSet α] :
+instance instOrderInfSet [OrderInfSet α] :
     OrderInfSet (WithTop α) where
   isGLB_sInf_of_isGLB s a h := by
     cases a with
@@ -226,7 +226,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
 theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) :=
   isGLB_sInf' (OrderBot.bddBelow _)
 
-noncomputable instance : CompleteLinearOrder (WithTop α) where
+instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder
   __ := linearOrder.toBiheytingAlgebra
   isLUB_sSup := isLUB_sSup
@@ -267,24 +267,24 @@ gives a conditionally complete lattice -/
 @[to_dual
 /-- Adding a bottom element to a conditionally complete lattice
 gives a conditionally complete lattice -/]
-noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
+instance WithTop.conditionallyCompleteLattice {α : Type*}
     [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice (WithTop α) where
   isLUB_csSup _ hS _ := WithTop.isLUB_sSup' hS
   isGLB_csInf _ _ hS := WithTop.isGLB_sInf' hS
 
 @[to_dual]
-noncomputable instance [CompleteLattice α] : CompleteLattice (WithTop α) where
+instance [CompleteLattice α] : CompleteLattice (WithTop α) where
   isLUB_sSup s := ⟨fun _ ↦ le_csSup (OrderTop.bddAbove _), fun _ has ↦
     s.eq_empty_or_nonempty.elim (by simp [·]) (csSup_le · has)⟩
   isGLB_sInf s := ⟨fun _ ↦ csInf_le (OrderBot.bddBelow _), fun _ hsa ↦
     s.eq_empty_or_nonempty.elim (by simp [·]) (le_csInf · hsa)⟩
 
-noncomputable instance [CompleteLinearOrder α] : CompleteLinearOrder (WithBot α) where
+instance [CompleteLinearOrder α] : CompleteLinearOrder (WithBot α) where
   __ := WithBot.linearOrder
   __ := WithBot.linearOrder.toBiheytingAlgebra
   __ := show CompleteLattice (WithBot α) from inferInstance
 
-noncomputable instance [ConditionallyCompleteLinearOrder α] :
+instance [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrder (WithTop α) where
   le_total
   toDecidableLE := inferInstance
@@ -293,7 +293,7 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] :
   csSup_of_not_bddAbove s := absurd <| OrderTop.bddAbove s
   csInf_of_not_bddBelow s h := by simp [h]
 
-noncomputable instance [ConditionallyCompleteLinearOrder α] :
+instance [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrderBot (WithBot α) where
   le_total
   toDecidableLE := inferInstance
@@ -305,14 +305,14 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] :
 
 open scoped Classical in
 @[to_dual WithBot.WithTop.completeLattice]
-noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
+instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) where
   isLUB_sSup S := ⟨fun a haS ↦ (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS, fun a ha ↦ by
     rcases S.eq_empty_or_nonempty with h | h
     · change ite _ _ _ ≤ a
       simp [h]
     · exact (WithTop.isLUB_sSup' h).2 ha⟩
-  isGLB_sInf S := ⟨fun a haS ↦
+  isGLB_sInf S := private ⟨fun a haS ↦
     show ite _ _ _ ≤ a by
       simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
       split_ifs with h₁
@@ -328,7 +328,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
           exact bot_le,
     fun a haS ↦ (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS⟩
 
-noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
+instance WithBot.WithTop.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) where
   __ := completeLattice
   __ := linearOrder
