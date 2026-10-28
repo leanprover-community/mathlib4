@@ -380,7 +380,7 @@ theorem exists_mem_nhds_finite_coheight_one_of_closure_ne_univ [IrreducibleSpace
   have : NoetherianSpace ((W : Set X) ∩ closure Z : Set X) := NoetherianSpace.inter_of_left _ _
   have hsub : closure ((W : Set X) ∩ closure Z) ⊆ closure Z :=
     (closure_mono inter_subset_right).trans isClosed_closure.closure_eq.le
-  have hne : closure ((W : Set X) ∩ closure Z) ≠ univ := by
+  have hne : closure (W ∩ closure Z) ≠ univ := by
     intro h
     rw [h] at hsub
     exact hZ (univ_subset_iff.mp hsub)
