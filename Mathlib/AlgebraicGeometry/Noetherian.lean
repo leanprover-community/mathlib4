@@ -378,7 +378,7 @@ theorem exists_mem_nhds_finite_coheight_one_of_closure_ne_univ [IrreducibleSpace
   have : QuasiSober (W ∩ closure Z : Set X) :=
     QuasiSober.inter_of_isClosed_of_quasiSober_left _ isClosed_closure
   have : NoetherianSpace ((W : Set X) ∩ closure Z : Set X) := NoetherianSpace.inter_of_left _ _
-  have hsub : closure ((W : Set X) ∩ closure Z) ⊆ closure Z :=
+  have hsub : closure (W ∩ closure Z) ⊆ closure Z :=
     (closure_mono inter_subset_right).trans isClosed_closure.closure_eq.le
   have hne : closure (W ∩ closure Z) ≠ univ := by
     intro h
