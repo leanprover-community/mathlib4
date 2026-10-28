@@ -548,20 +548,20 @@ public def isBadNameWithUnderscore (name : Name) : Bool := Id.run do
   if declName.toString.contains "_" then return true
   else return false
 
-open Batteries.Tactic.Lint in
 /-- Linter that checks for definitions whose name contains an underscore:
 such names violate the naming convention. -/
 @[env_linter] public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
   noErrorsFound := "no definitions with an underscore in their name found."
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
-    unless ((← getEnv).find? declName).get!.isDefinition &&
+    let env ← getEnv
+    unless (env.find? declName).get!.isDefinition &&
         -- TODO: lint private definitions with underscores for readability.
-        !(← isPrivateOrAutoDecl declName) do
+        !(env.isPrivateOrAutoDecl declName) do
       return none
     -- We also exclude simprocs: these should be named like normal lemmas.
     -- check if their type is `Lean.Meta.Simp.Simproc`.
-    if ((← getEnv).find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
+    if (env.find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
     if isBadNameWithUnderscore declName then
       return m!"The definition `{.ofConstName declName true}` contains an underscore. \
         This almost surely violates mathlib's naming convention; \
@@ -583,7 +583,6 @@ public def isMisnamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
   else
     return (false, m!"This declaration statement references the constant(s) {coercion_constants}")
 
-open Batteries.Tactic.Lint in
 /-- Linter that checks for lemmas whose name contains the string "coe",
 but which don't reference any declaration named like this: most likely,
 these are coercion lemmas violating mathlib's naming convention. -/
@@ -591,8 +590,10 @@ these are coercion lemmas violating mathlib's naming convention. -/
   noErrorsFound := "no badly named coercion lemmas found."
   errorsFound := "FOUND most-likely badly named coercion lemmas."
   test declName := do
-    unless ((← getEnv).find? declName).get!.isTheorem do return none
-    if (← isPrivateOrAutoDecl declName) || declName.isInternalDetail || (isDeprecated (← getEnv) declName) then
+    let env ← getEnv
+    unless (env.find? declName).get!.isTheorem do return none
+    if (env.isPrivateOrAutoDecl declName) || declName.isInternalDetail ||
+        (isDeprecated env declName) then
       return none
     match ← isMisnamedCoercion declName with
     | (true, details) =>
