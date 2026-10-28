@@ -41,18 +41,18 @@ alias measurableEquiv_range_coe_nat_of_infinite_of_countable :=
 
 /-- Any standard Borel space is measurably equivalent to a subset of the reals. -/
 theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s ∧ Nonempty (α ≃ᵐ s) := by
-  by_cases hα : Countable α
+  obtain hα | hα := countable_or_uncountable α
   · cases finite_or_infinite α
     · obtain ⟨n, h_nonempty_equiv⟩ := exists_nat_measurableEquiv_range_coe_fin_of_finite α
       refine ⟨_, ?_, h_nonempty_equiv⟩
       exact (Set.finite_range ((↑) : Fin n → ℝ)).measurableSet
     · refine ⟨_, ?_, measurableEquiv_range_natCast_of_infinite_of_countable α⟩
       exact Nat.isClosedEmbedding_coe_real.isClosed_range.measurableSet
-  · refine
-      ⟨univ, MeasurableSet.univ,
-        ⟨(PolishSpace.measurableEquivOfNotCountable hα ?_ : α ≃ᵐ (univ : Set ℝ))⟩⟩
-    rw [countable_coe_iff]
-    exact Cardinal.not_countable_real
+  · -- TODO: we should make `Set.Uncountable`
+    have : Uncountable (univ : Set ℝ) := by
+      rw [← not_countable_iff, countable_coe_iff]
+      exact Cardinal.not_countable_real
+    exact ⟨_, .univ, ⟨PolishSpace.measurableEquivOfUncountable ..⟩⟩
 
 /-- Any standard Borel space embeds measurably into the reals. -/
 theorem exists_measurableEmbedding_real : ∃ f : α → ℝ, MeasurableEmbedding f := by
