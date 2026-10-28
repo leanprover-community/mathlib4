@@ -305,13 +305,15 @@ run on a curl older than 7.71, which rejects `--retry-all-errors`.
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
-/-- Fail a download that averages under 1 byte/s (`--speed-limit`) for 30 s (`--speed-time`),
-curl exit 28. The limit is the lowest possible, so a slow transfer that still moves bytes
-passes, and curl measures each transfer on its own. The `--retry`-triggered attempts reuse the
+/-- Fail a download whose connection takes over 30 s to set up (`--connect-timeout`), or that
+averages under 1 byte/s for 30 s after that (`--speed-limit`, `--speed-time`); both give curl
+exit 28. The speed limit is the lowest possible, so a slow transfer that still moves bytes
+passes, and curl measures each transfer on its own. A connect timeout leaves no connection, so
+`--retry` opens a new one. The `--retry`-triggered attempts of a stalled transfer reuse the
 frozen connection, so we rely on the second download pass in `downloadFiles` to actually
 retry these. -/
 def curlStallArgs : Array String :=
-  #["--speed-time", "30", "--speed-limit", "1"]
+  #["--connect-timeout", "30", "--speed-time", "30", "--speed-limit", "1"]
 
 /-- The `--parallel-max` flag from `MATHLIB_CACHE_PARALLEL_MAX`; empty when the
 variable is unset or not a number. -/
