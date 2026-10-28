@@ -143,7 +143,6 @@ theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b :=
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, hx⟩ => hx.1.trans_lt hx.2, fun h => ⟨a, left_mem_Ico.2 h⟩⟩
 
-
 @[simp, to_dual self]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, ha, hb⟩ => ha.trans hb, exists_between⟩
@@ -441,6 +440,18 @@ section matched_intervals
   eq_comm.trans Ioo_eq_Ioc_same_iff
 
 end matched_intervals
+
+@[to_dual] protected theorem _root_.IsUpperSet.Ici (a : α) : IsUpperSet (Ici a) :=
+  fun _ _ => ge_trans
+
+@[to_dual] protected theorem _root_.IsUpperSet.Ioi (a : α) : IsUpperSet (Ioi a) :=
+  fun _ _ => flip lt_of_lt_of_le
+
+@[to_dual (attr := deprecated (since := "2026-10-16"))]
+alias _root_.isUpperSet_Ici := IsUpperSet.Ici
+
+@[to_dual (attr := deprecated (since := "2026-10-16"))]
+alias _root_.isUpperSet_Ioi := IsUpperSet.Ioi
 
 @[to_additive (attr := simp)]
 lemma Ici_one_eq_univ [One α] [IsBotOneClass α] : Ici (1 : α) = univ := by ext; simp

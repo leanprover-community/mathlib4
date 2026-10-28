@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Meromorphic.Order
 /-!
 # Meromorphic Functions over the Real and Complex Numbers
 
-This file gathers results on meromorphic functions specifict to the real and complex numbers.
+This file gathers results on meromorphic functions specific to the real and complex numbers.
 -/
 
 public section
