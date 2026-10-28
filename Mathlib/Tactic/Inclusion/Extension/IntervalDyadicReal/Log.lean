@@ -73,87 +73,6 @@ theorem abs_ofIntFdivWithPrec_le :
 
 end
 
-section «to new PR»
-
-variable (k e : ℤ) (hk : k % 2 = 1) (d x y : Dyadic) (a b : ℤ) (m n : ℕ)
-
-@[simp] theorem shiftLeft_zero : (0 : Dyadic) <<< a = 0 := rfl
-
-@[simp] theorem shiftRight_zero : (0 : Dyadic) >>> a = 0 := rfl
-
-@[simp] theorem shiftLeft_ofOdd {k e : ℤ} {hk : k % 2 = 1} {a : ℤ} :
-    ofOdd k e hk <<< a = ofOdd k (e - a) hk := rfl
-
-@[simp] theorem shiftRight_ofOdd {k e : ℤ} {hk : k % 2 = 1} {a : ℤ} :
-    ofOdd k e hk >>> a = ofOdd k (e + a) hk := rfl
-
-theorem shiftLeft_add : d <<< (a + b) = d <<< a <<< b := by
-  induction d <;> simp [Int.sub_sub]
-
-theorem shiftRight_add : d >>> (a + b) = d >>> a >>> b := by
-  induction d <;> simp [Int.add_assoc]
-
-@[simp] theorem shiftLeft_neg : d <<< (-a) = d >>> a := by
-  induction d <;> simp
-
-@[simp] theorem shiftRight_neg : d >>> (-a) = d <<< a := by
-  induction d <;> simp [Int.sub_eq_add_neg]
-
-theorem shiftLeft_shiftRight : d <<< a >>> b = d <<< (a - b) := by
-  rw [Int.sub_eq_add_neg, shiftLeft_add, shiftLeft_neg]
-
-theorem shiftRight_shiftLeft : d >>> a <<< b = d >>> (a - b) := by
-  rw [Int.sub_eq_add_neg, shiftRight_add, shiftRight_neg]
-
-theorem shiftLeft_shiftRight' : d <<< a >>> b = d >>> (b - a) := by
-  rw [← Int.neg_sub, shiftRight_neg, shiftLeft_shiftRight]
-
-theorem shiftRight_shiftLeft' : d >>> a <<< b = d <<< (b - a) := by
-  rw [← Int.neg_sub, shiftLeft_neg, shiftRight_shiftLeft]
-
-@[simp] theorem neg_shiftLeft : (-d) <<< a = -(d <<< a) := by
-  induction d <;> simp
-
-@[simp] theorem neg_shiftRight : (-d) >>> a = -(d >>> a) := by
-  induction d <;> simp
-
-section toRat
-
-theorem toRat_shiftLeft : (d <<< a).toRat = d.toRat * 2 ^ a := by
-  rcases d with _ | ⟨d, k, hd⟩
-  · simp
-  · norm_num [toRat_ofOdd_eq_mul_two_pow, sub_eq_add_neg, zpow_add₀, field]
-
-theorem toRat_shiftRight : (d >>> a).toRat = d.toRat * 2 ^ (-a) := by
-  rcases d with _ | ⟨d, k, hd⟩
-  · simp
-  · norm_num [toRat_ofOdd_eq_mul_two_pow, zpow_add₀, field]
-
-theorem toRat_shiftRight' : (d >>> a).toRat = d.toRat / 2 ^ a := by
-  rw [toRat_shiftRight, zpow_neg, div_eq_mul_inv]
-
-theorem toRat_shiftLeft_nat : (d <<< n).toRat = d.toRat * 2 ^ n :=
-  toRat_shiftLeft d n
-
-theorem toRat_shiftRight_nat : (d >>> n).toRat = d.toRat / 2 ^ n :=
-  toRat_shiftRight' d n
-
-end toRat
-
-@[simp] theorem shiftLeft_inj : x <<< a = y <<< a ↔ x = y := by
-  simp [← toRat_inj, toRat_shiftLeft, zpow_ne_zero]
-
-@[simp] theorem shiftRight_inj : x >>> a = y >>> a ↔ x = y := by
-  simp [← toRat_inj, toRat_shiftRight, zpow_ne_zero]
-
-theorem add_shiftLeft : (x + y) <<< a = x <<< a + y <<< a := by
-  simp [← toRat_inj, toRat_shiftLeft, Rat.add_mul]
-
-theorem add_shiftRight : (x + y) >>> a = x >>> a + y >>> a := by
-  simp [← toRat_inj, toRat_shiftRight, Rat.add_mul]
-
-end «to new PR»
-
 open Real
 
 section SmallArtanh
@@ -520,7 +439,7 @@ private theorem lowerLot_aux1 (n : ℤ) (hn : n % 2 = 1) :
 
 private theorem lowerLot_aux2 (n k : ℤ) (hn : n % 2 = 1) :
     ofOdd n k hn = ofOdd n n.natAbs.log2 hn <<< (n.natAbs.log2 - k) := by
-  grind [shiftLeft_ofOdd]
+  grind [ofOdd_shiftLeft]
 
 theorem lowerLog_lt {x : Dyadic} (hx : x ≠ 0 ∧ x ≠ 1 ∧ x ≠ -1) (prec : ℕ) :
     (x.lowerLog prec).toRat < log x.toRat := by
