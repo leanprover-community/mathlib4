@@ -336,9 +336,8 @@ variable {e : Trivialization F (π F E)} [MemTrivializationAtlas e]
 
 theorem mdifferentiableWithinAt_iff {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (he : f x₀ ∈ e.source) :
-    MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F)) f s x₀ ↔
-      MDifferentiableWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
-      MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun x ↦ (e (f x)).2) s x₀ :=
+    MDiffAt[s] f x₀ ↔
+      MDiffAt[s] (fun x ↦ (f x).proj) x₀ ∧ MDiffAt[s] (fun x ↦ (e (f x)).2) x₀ :=
   mdifferentiableWithinAt_totalSpace.trans <| and_congr_right fun h ↦
     (Trivialization.mdifferentiableWithinAt_snd_comp_iff₂ IB
     FiberBundle.mem_trivializationAt_proj_source he h)
