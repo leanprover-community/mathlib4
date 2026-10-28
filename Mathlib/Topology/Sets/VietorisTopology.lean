@@ -832,13 +832,8 @@ instance [T1Space α] : ClosedIciTopology (Compacts α) where
 
 instance [T2Space α] : OrderClosedTopology (Compacts α) where
   isClosed_le' := by
-    simp_rw +singlePass [← isOpen_compl_iff, Set.compl_ofPred, SetLike.not_le_iff_exists,
-      isOpen_iff_forall_mem_open]
-    intro ⟨K, L⟩ ⟨x, hxK, hxL⟩
-    obtain ⟨U, V, hU, hV, hLU, hxV, hUV⟩ := L.isCompact.separation_of_notMem hxL
-    exact ⟨{K' : Compacts α | (↑K' ∩ V).Nonempty} ×ˢ {L' : Compacts α | ↑L' ⊆ U},
-      by grind [SetLike.mem_coe, Set.Nonempty],
-      (isOpen_inter_nonempty_of_isOpen hV).prod (isOpen_subsets_of_isOpen hU), ⟨x, hxK, hxV⟩, hLU⟩
+    simp_rw [← sup_eq_right]
+    exact isClosed_eq (by fun_prop) (by fun_prop)
 
 theorem isClosed_setOfPred_mem [T2Space α] : IsClosed {p : α × Compacts α | p.1 ∈ p.2} := by
   simp_rw [← singleton_le_iff]
