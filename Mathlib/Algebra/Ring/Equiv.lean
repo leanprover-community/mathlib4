@@ -139,6 +139,18 @@ instance : RingEquivClass (R ≃+* S) R S where
 theorem ext {f g : R ≃+* S} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
+/-- Reinterpret a ring equivalence as a ring homomorphism. -/
+@[coe]
+def toRingHom {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] (e : R ≃+* S) : R →+* S :=
+  { e.toMulEquiv.toMonoidHom, e.toAddEquiv.toAddMonoidHom with }
+
+instance {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] : CoeTC (R ≃+* S) (R →+* S) where
+  coe := toRingHom
+
+theorem toRingHom_injective {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S] :
+    Function.Injective (toRingHom : R ≃+* S → R →+* S) := fun _ _ h =>
+  RingEquiv.ext (RingHom.ext_iff.1 h)
+
 protected theorem congr_arg {f : R ≃+* S} {x x' : R} : x = x' → f x = f x' :=
   DFunLike.congr_arg f
 
@@ -761,14 +773,8 @@ section SemiringHom
 
 variable [NonAssocSemiring R] [NonAssocSemiring S] [NonAssocSemiring S']
 
-/-- Reinterpret a ring equivalence as a ring homomorphism. -/
-def toRingHom (e : R ≃+* S) : R →+* S :=
-  { e.toMulEquiv.toMonoidHom, e.toAddEquiv.toAddMonoidHom with }
-
-theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R →+* S) := fun _ _ h =>
-  RingEquiv.ext (RingHom.ext_iff.1 h)
-
-@[simp] theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
+@[deprecated "syntactic equality" (since := "2026-10-28")]
+theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 
 @[simp, norm_cast]

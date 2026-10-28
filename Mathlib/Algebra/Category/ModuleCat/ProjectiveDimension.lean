@@ -55,7 +55,7 @@ variable {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
 
 set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma hasProjectiveDimensionLE_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N)
+lemma hasProjectiveDimensionLE_of_semiLinearEquiv (e' : M ≃ₛₗ[e.toRingHom] N)
     (n : ℕ) [HasProjectiveDimensionLE M n] : HasProjectiveDimensionLE N n := by
   induction n generalizing M N e' with
   | zero =>
@@ -68,9 +68,9 @@ lemma hasProjectiveDimensionLE_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass
     let S' := N.projectiveShortComplex
     have S_exact := M.shortExact_projectiveShortComplex
     have S'_exact := N.shortExact_projectiveShortComplex
-    let eR : Shrink.{v} R ≃ₛₗ[RingHomClass.toRingHom e] Shrink.{v'} R' :=
+    let eR : Shrink.{v} R ≃ₛₗ[e.toRingHom] Shrink.{v'} R' :=
       ((Shrink.linearEquiv R R).trans e.toSemilinearEquiv).trans (Shrink.linearEquiv R' R').symm
-    let e2 : S.X₂ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₂ :=
+    let e2 : S.X₂ ≃ₛₗ[e.toRingHom] S'.X₂ :=
       (Finsupp.mapDomain.linearEquiv (Shrink R) R e').trans (Finsupp.mapRange.linearEquiv eR)
     have comm : S'.g.hom.comp e2.toLinearMap = e'.toLinearMap.comp S.g.hom := by
       ext m r
@@ -78,13 +78,13 @@ lemma hasProjectiveDimensionLE_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass
     have : S.g.hom.ker = Submodule.comap e2.toLinearMap S'.g.hom.ker := by
       rw [← LinearMap.ker_comp, comm, LinearEquiv.ker_comp]
     rw [Submodule.comap_equiv_eq_map_symm] at this
-    let eker : S.X₁ ≃ₛₗ[RingHomClass.toRingHom e] S'.X₁ :=
+    let eker : S.X₁ ≃ₛₗ[e.toRingHom] S'.X₁ :=
       (LinearEquiv.ofEq _ _ this).trans (e2.symm.submoduleMap S'.g.hom.ker).symm
     have := (S_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mp ‹_›
     exact (S'_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mpr (ih eker)
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma projectiveDimension_eq_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N) :
+lemma projectiveDimension_eq_of_semiLinearEquiv (e' : M ≃ₛₗ[e.toRingHom] N) :
     projectiveDimension M = projectiveDimension N := by
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with

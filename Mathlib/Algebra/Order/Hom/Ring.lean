@@ -58,8 +58,14 @@ structure OrderRingHom (α β : Type*) [NonAssocSemiring α] [Preorder α] [NonA
 /-- Reinterpret an ordered ring homomorphism as a ring homomorphism. -/
 add_decl_doc OrderRingHom.toRingHom
 
+attribute [coe] OrderRingHom.toRingHom
+
 @[inherit_doc]
 infixl:25 " →+*o " => OrderRingHom
+
+instance (α β : Type*) [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
+    [Preorder β] : CoeTC (α →+*o β) (α →+* β) where
+  coe := OrderRingHom.toRingHom
 
 /-- `OrderRingIso α β`, denoted as `α ≃+*o β`,
 is the type of order-preserving semiring isomorphisms between `α` and `β`.
@@ -88,7 +94,7 @@ This is declared as the default coercion from `F` to `α →+*o β`. -/
 @[coe]
 def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
     [Preorder β] [OrderHomClass F α β] [RingHomClass F α β] (f : F) : α →+*o β :=
-  { (f : α →+* β) with monotone' := OrderHomClass.monotone f }
+  { (RingHomClass.toRingHom f) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
   `OrderRingHomClass.toOrderRingHom`. -/

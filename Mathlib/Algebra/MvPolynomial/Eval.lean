@@ -544,8 +544,7 @@ theorem mapAlgHom_id [Algebra R S₁] :
 @[simp]
 theorem toRingHom_mapAlgHom [CommSemiring S₂] [Algebra R S₁] [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
     ↑(mapAlgHom f : _ →ₐ[R] MvPolynomial σ S₂) =
-      (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) :=
-  RingHom.mk_coe _ _ _ _ _
+      (map ↑f : MvPolynomial σ S₁ →+* MvPolynomial σ S₂) := rfl
 
 @[deprecated toRingHom_mapAlgHom (since := "2026-05-05")]
   alias mapAlgHom_coe_ringHom := toRingHom_mapAlgHom
@@ -626,7 +625,7 @@ theorem map_aeval {B : Type*} [CommSemiring B] (g : σ → S₁) (φ : S₁ →+
 theorem aeval_range : (aeval f).range = Algebra.adjoin R (Set.range f) := by
   apply le_antisymm
   · rintro x ⟨p, rfl⟩
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
+    simp only [AlgHom.coe_toRingHom]
     induction p using induction_on with
     | C a => exact aeval_C f a ▸ Subsemiring.subset_closure (Or.inl (Set.mem_range_self a))
     | add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq

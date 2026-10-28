@@ -481,11 +481,11 @@ universe u' in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 theorem Module.Injective.of_ringEquiv {R : Type u} [Ring R] [Small.{v} R] {S : Type u'} [Ring S]
     {M : Type v} {N : Type v'} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module S N]
-    (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
+    (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[e₁.toRingHom] N)
     [inj : Module.Injective R M] : Module.Injective S N := by
   apply Module.Baer.injective (fun I g ↦ ?_)
   let I' := Submodule.map e₁.symm.toSemilinearEquiv.toLinearMap I
-  let e : I' ≃ₛₗ[RingHomClass.toRingHom e₁] I := (e₁.symm.toSemilinearEquiv.submoduleMap I).symm
+  let e : I' ≃ₛₗ[e₁.toRingHom] I := (e₁.symm.toSemilinearEquiv.submoduleMap I).symm
   let f : I' →ₗ[R] M := e₂.symm.toLinearMap.comp (g.comp e.toLinearMap)
   have hf (x) (hx : x ∈ I') : f ⟨x, hx⟩ = e₂.symm (g ⟨e₁ x, by simp_all [I']⟩) := rfl
   obtain ⟨f', hf'⟩ := Module.Baer.of_injective ‹_› I' f

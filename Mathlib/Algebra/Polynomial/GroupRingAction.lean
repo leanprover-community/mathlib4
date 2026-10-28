@@ -113,23 +113,16 @@ open Polynomial
 
 /-- An equivariant map induces an equivariant map on polynomials. -/
 protected noncomputable def polynomial (g : P →+*[M] Q) : P[X] →+*[M] Q[X] where
-  toFun := map g
+  toFun := map g.toRingHom
   map_smul' m p :=
     Polynomial.induction_on p
-      (fun b ↦ by rw [MonoidHom.id_apply, smul_C, map_C, coe_fn_coe, g.map_smul, map_C,
-          coe_fn_coe, smul_C])
-      (fun p q ihp ihq ↦ by
-        rw [smul_add, Polynomial.map_add, ihp, ihq, Polynomial.map_add, smul_add])
-      fun n b _ ↦ by rw [MonoidHom.id_apply, smul_mul', smul_C, smul_pow', smul_X,
-        Polynomial.map_mul, map_C, Polynomial.map_pow,
-        map_X, coe_fn_coe, g.map_smul, Polynomial.map_mul, map_C, Polynomial.map_pow, map_X,
-        smul_mul', smul_C, smul_pow', smul_X, coe_fn_coe]
-  map_zero' := Polynomial.map_zero (g : P →+* Q)
-  map_add' _ _ := Polynomial.map_add (g : P →+* Q)
-  map_one' := Polynomial.map_one (g : P →+* Q)
-  map_mul' _ _ := Polynomial.map_mul (g : P →+* Q)
+      (by simp) (fun p q ihp ihq ↦ by simp [Polynomial.map_add, ihp, ihq]) (by simp)
+  map_zero' := Polynomial.map_zero _
+  map_add' _ _ := Polynomial.map_add _
+  map_one' := Polynomial.map_one _
+  map_mul' _ _ := Polynomial.map_mul _
 
 @[simp]
-theorem coe_polynomial (g : P →+*[M] Q) : (g.polynomial : P[X] → Q[X]) = map g := rfl
+theorem coe_polynomial (g : P →+*[M] Q) : (g.polynomial : P[X] → Q[X]) = map g.toRingHom := rfl
 
 end MulSemiringActionHom

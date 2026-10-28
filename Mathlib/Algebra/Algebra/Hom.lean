@@ -68,7 +68,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 @[coe]
 def _root_.AlgHom.ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     A →ₐ[R] B where
-  __ := (f : A →+* B)
+  __ := (RingHomClass.toRingHom f : A →+* B)
   toFun := f
   commutes' := AlgHomClass.commutes f
 
@@ -113,6 +113,11 @@ def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
 
 initialize_simps_projections AlgHom (toFun → apply)
 
+attribute [coe] AlgHom.toRingHom
+
+instance : CoeTC (A →ₐ[R] B) (A →+* B) where
+  coe := toRingHom
+
 @[simp]
 protected theorem coe_ofClass {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     ⇑(ofClass f) = f :=
@@ -126,14 +131,14 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
 
 /-- Turn an algebra homomorphism into the corresponding multiplicative monoid homomorphism. -/
 @[coe]
-def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
+def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (RingHomClass.toRingHom f : A →+* B)
 
 instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 
 /-- Turn an algebra homomorphism into the corresponding additive monoid homomorphism. -/
 @[coe]
-def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
+def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := f
 
 instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
@@ -152,8 +157,7 @@ theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := toRingHom_mk
 
--- make the coercion the simp-normal form
-@[simp]
+@[deprecated "syntactic equality" (since := "2026-10-28")]
 theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
   rfl
 
