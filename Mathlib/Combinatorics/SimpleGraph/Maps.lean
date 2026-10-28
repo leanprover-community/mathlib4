@@ -612,10 +612,9 @@ def induceHomOfLE (h : s ≤ s') : G.induce s ↪g G.induce s' where
 
 @[simp] lemma induceHomOfLE_apply (v : s) : (G.induceHomOfLE h) v = Set.inclusion h v := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induceHomOfLE_toHom :
-    (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) := by
-  ext; simp
+    (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) :=
+  RelHom.ext fun _ ↦ rfl
 
 end induceHomLE
 

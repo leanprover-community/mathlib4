@@ -1130,11 +1130,10 @@ theorem deleteEdges_spanningCoe_eq :
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     G'.coe.deleteEdges s = (G'.deleteEdges (Sym2.map (↑) '' s)).coe := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
-  simp only [SimpleGraph.deleteEdges_adj, coe_adj, deleteEdges_adj, Set.mem_image, not_exists,
+  simp only [Subgraph.coe, SimpleGraph.deleteEdges_adj, deleteEdges_adj, Set.mem_image, not_exists,
     not_and, and_congr_right_iff]
   intro
   constructor
@@ -1147,11 +1146,10 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   · intro h' hs
     exact h' _ hs rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_deleteEdges_eq (s : Set (Sym2 V)) :
     (G'.deleteEdges s).coe = G'.coe.deleteEdges (Sym2.map (↑) ⁻¹' s) := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
-  simp
+  simp [Subgraph.coe]
 
 theorem deleteEdges_le : G'.deleteEdges s ≤ G' := by
   constructor <;> simp +contextual
@@ -1172,10 +1170,9 @@ theorem deleteEdges_inter_edgeSet_right_eq :
     G'.deleteEdges (s ∩ G'.edgeSet) = G'.deleteEdges s := by
   ext <;> simp +contextual [imp_false]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_deleteEdges_le : (G'.deleteEdges s).coe ≤ (G'.coe : SimpleGraph G'.verts) := by
   intro v w
-  simp +contextual
+  simp +contextual [Subgraph.coe]
 
 theorem spanningCoe_deleteEdges_le (G' : G.Subgraph) (s : Set (Sym2 V)) :
     (G'.deleteEdges s).spanningCoe ≤ G'.spanningCoe :=
@@ -1200,11 +1197,10 @@ def induce (G' : G.Subgraph) (s : Set V) : G.Subgraph where
   edge_vert h := h.1
   symm.symm _ _ h := ⟨h.2.1, h.1, h.2.2.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
     G.induce s = ((⊤ : G.Subgraph).induce s).coe := by
   ext
-  simp
+  simp [Subgraph.coe]
 
 lemma _root_.SimpleGraph.spanningCoe_induce_top (s : Set V) :
     ((⊤ : G.Subgraph).induce s).spanningCoe = (G.induce s).spanningCoe := by
@@ -1295,13 +1291,15 @@ instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [D
     DecidableRel (G'.induce s).Adj :=
   fun _ _ ↦ instDecidableAnd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between an induced subgraph and its corresponding simple graph. -/
 def coeInduceIso (s : Set V) (h : s ⊆ G'.verts) :
     (G'.induce s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∈ s} where
   toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, h hv⟩, by simp at hv; aesop⟩
   invFun := fun ⟨v, hv⟩ ↦ ⟨v, hv⟩
-  map_rel_iff' := by simp
+  map_rel_iff' := by
+    rintro ⟨a, ma⟩ ⟨b, mb⟩
+    rw [induce_verts] at ma mb
+    simp_all
 
 end Induce
 
@@ -1338,12 +1336,11 @@ theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
   induce_mono h (Set.sdiff_subset_sdiff_left h.1)
 
-set_option backward.isDefEq.respectTransparency false in
 @[mono]
 lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
-    ((⊤ : Subgraph G).deleteVerts u).coe ≤ ((⊤ : Subgraph G').deleteVerts u).coe := by
-  intro v w hvw
-  aesop
+    ((⊤ : Subgraph G).deleteVerts u).coe ≤ ((⊤ : Subgraph G').deleteVerts u).coe := fun v w hvw ↦ by
+  simp_rw [Subgraph.coe, induce_adj] at hvw ⊢
+  exact ⟨hvw.1, hvw.2.1, h hvw.2.2⟩
 
 @[gcongr, mono]
 theorem deleteVerts_anti {s s' : Set V} (h : s ⊆ s') : G'.deleteVerts s' ≤ G'.deleteVerts s :=
@@ -1368,13 +1365,12 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     else
       .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
 def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
   toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_sdiff hv⟩, by aesop⟩
   invFun := fun ⟨v, hv⟩ ↦ ⟨v, by simp_all⟩
-  map_rel_iff' := by simp
+  map_rel_iff' := by rintro ⟨a, ma, na⟩ ⟨b, mb, nb⟩; simp_all
 
 end DeleteVerts
 
