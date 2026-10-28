@@ -1,11 +1,12 @@
 module
 
 import all Batteries.Data.List.Basic
+import Mathlib.Basic.FunLike.Basic
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Linter.Style
 import all Mathlib.Tactic.Linter.TextBased
 import all Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 -- This import line is longer than a 100 characters, and used to trigger the longLine linter.
@@ -472,6 +473,33 @@ open Mathlib.Linter.Style.nameCheck
 #guard isBadNameWithUnderscore `Nat.fooBar_2 == false
 #guard isBadNameWithUnderscore `Nat.foo_bar_2 == false
 #guard isBadNameWithUnderscore `LibraryNote.coercion_into_rings == false
+
+end
+
+/-! Tests for the `misnamedCoercionLemmas` linter -/
+section
+
+-- This lemma is misnamed: the name contains "coe".
+public lemma foo_coe : 2 = 2 := rfl
+/-- info: (true, "This declaration statement references the constant(s) []") -/
+#guard_msgs in
+#eval Mathlib.Linter.Style.isMisnamedCoercionAux `foo_coe
+
+-- The next two lemmas are fine: their names involves the string "coe", but not as a name component.
+public lemma foo_coeBar : 2 = 2 := rfl
+public lemma coeFoo_bar_eq_baz : 2 = 2 := rfl
+
+/-- info: (false, "") -/
+#guard_msgs in
+#eval Mathlib.Linter.Style.isMisnamedCoercionAux `foo_coeBar
+/-- info: (false, "") -/
+#guard_msgs in
+#eval Mathlib.Linter.Style.isMisnamedCoercionAux `coeFoo_bar_eq_baz
+
+-- This lemma involves the name `coe`, but also the coercion `DFunLike.coe`.
+lemma coe_f {M N : Type*} (f : M → N) : (f : M → N) = f := rfl
+/-- info: (false, "") -/ #guard_msgs in
+#eval Mathlib.Linter.Style.isMisnamedCoercionAux `coeFoo_bar_eq_baz
 
 end
 
