@@ -641,7 +641,7 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
     exact fun y hy h2y => (hvf' y hy).fderivWithin h2y
   | ∞ =>
     rw [contDiffWithinAt_infty]
-    exact fun k ↦ this k (by exact_mod_cast le_top)
+    exact fun k ↦ this k (mod_cast le_top)
   | (m : ℕ) => exact this _ le_rfl
 
 /-- A special case of `ContDiffWithinAt.fderivWithin''` where we require that `s ⊆ g⁻¹(t)`. -/
@@ -704,6 +704,28 @@ theorem ContDiffWithinAt.iteratedFDerivWithin_right {i : ℕ} (hf : ContDiffWith
     exact ((hi hmn).fderivWithin_right hs le_rfl hx₀s).continuousLinearMap_comp
       ((continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (i + 1) ↦ E) F).symm :
         _ →L[𝕜] E [×(i + 1)]→L[𝕜] F)
+
+/-- Continuous differentiability of the partial derivative of a function `E × F → G` (given by its
+curried form `f : E → F → G`) with respect to the right factor `F`. If `f` is Cⁿ⁺¹ on `s ×ˢ u` and
+`u` is open, `fun x : E × F ↦ fderiv 𝕜 (f x.1) x.2` is at least Cⁿ on `s ×ˢ u`. -/
+lemma ContDiffOn.fderiv_right {f : E → F → G} {s : Set E} {u : Set F} (hu : IsOpen u) {n : ℕ∞ω}
+    (hf : ContDiffOn 𝕜 (n + 1) f.uncurry (s ×ˢ u)) :
+    ContDiffOn 𝕜 n (fun x : E × F ↦ fderiv 𝕜 (f x.1) x.2) (s ×ˢ u) := by
+  refine .congr (fun x hx ↦ ?_) fun x hx ↦ (fderivWithin_of_isOpen hu hx.2).symm
+  exact .fderivWithin (f := fun x y ↦ f x.1 y)
+    ((hf x hx).comp (f := fun x ↦ (x.1.1, x.2)) (x, x.2) (by fun_prop) (by grind [MapsTo]))
+      contDiffWithinAt_snd hu.uniqueDiffOn le_rfl hx (by grind)
+
+/-- Continuous differentiability of the partial derivative of a function `E × F → G` (given by its
+curried form `f : E → F → G`) with respect to the left factor `E`. If `f` is Cⁿ⁺¹ on `u ×ˢ s` and
+`u` is open, `fun x : E × F ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1` is at least Cⁿ on `u ×ˢ s`. -/
+lemma ContDiffOn.fderiv_left {f : E → F → G} {u : Set E} (hu : IsOpen u) {s : Set F} {n : ℕ∞ω}
+    (hf : ContDiffOn 𝕜 (n + 1) f.uncurry (u ×ˢ s)) :
+    ContDiffOn 𝕜 n (fun x : E × F ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1) (u ×ˢ s) := by
+  have hf' : ContDiffOn 𝕜 (n + 1) (fun x y ↦ f y x).uncurry (s ×ˢ u) := by
+    exact hf.comp (ContinuousLinearEquiv.prodComm _ _ _).contDiff.contDiffOn <| mapsTo_swap_prod _ _
+  exact (hf'.fderiv_right hu).comp (ContinuousLinearEquiv.prodComm _ _ _).contDiff.contDiffOn <|
+    mapsTo_swap_prod _ _
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is smooth at `x₀`. -/
 protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F}

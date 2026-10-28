@@ -101,7 +101,7 @@ scoped instance : Fact (K + K').PosSemidef :=
   ⟨Matrix.PosSemidef.add (Fact.out : K.PosSemidef) (Fact.out : K'.PosSemidef)⟩
 
 /-- The RKHSs constructed from the sum of two kernels is linearly isometrically isomorphic to the
-sum of the RKHSs created by the consituant kernels. -/
+sum of the RKHSs created by the constituent kernels. -/
 def OfKernelAddEquiv : OfKernel (K + K') ≃ₗᵢ[𝕜] OfKernel K + OfKernel K' := equiv
   (by simp [OfKernel.kernel_ofKernel, kernel_sum_eq_sum_of_kernel])
 

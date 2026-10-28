@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.Topology.Category.CompHausLike.Limits
+
 /-!
 
 # The sigma-comparison map
@@ -43,7 +44,6 @@ values on the components.
 def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.obj ⟨of P (σ a)⟩) :=
   ↾fun x a ↦ X.map (ofHom _ ⟨Sigma.mk a, continuous_sigmaMk⟩).op x
 
-set_option backward.defeqAttrib.useBackward true in
 theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
     (X.mapIso (opCoproductIsoProduct'
       (finiteCoproduct.isColimit.{u, u} (fun a ↦ of P (σ a)))
