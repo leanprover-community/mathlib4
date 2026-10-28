@@ -218,7 +218,6 @@ lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
 
 variable {α}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `isLimitMultifork` -/
 def lift : s.pt ⟶ R.obj (op X) :=
   (hR (op X)).lift (Cone.mk _
@@ -243,7 +242,6 @@ lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   rw [Category.assoc, eq]
   simpa using liftAux_map hF α s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 include hR hF in
 variable (K) in
 lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
@@ -346,7 +344,6 @@ lemma sheafAdjunctionCocontinuous_counit_app_hom (F : Sheaf J A) :
     (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans
       (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_homEquiv_apply_hom {F : Sheaf K A} {H : Sheaf J A}
     (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :

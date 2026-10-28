@@ -49,7 +49,7 @@ private lemma serreDerivative_eq_smul {k' : ℤ} {k l L : ℂ} {g F : ModularFor
     serreDerivative k f = L • g := by
   have hg : g ≠ 0 := fun h ↦ one_ne_zero (tendsto_nhds_unique (h ▸ hg1) tendsto_const_nhds)
   obtain ⟨c, hc⟩ :=
-    (finrank_eq_one_iff_of_nonzero' g hg).mp (Module.rank_eq_one_iff_finrank_eq_one.mp hrank) F
+    (finrank_eq_one_iff_of_ne_zero' g hg).mp (Module.rank_eq_one_iff_finrank_eq_one.mp hrank) F
   have hfg : serreDerivative k f = c • g := hF ▸ congrArg DFunLike.coe hc.symm
   have hlim : Tendsto (c • ⇑g) atImInfty (𝓝 (-(k * 12⁻¹ * l))) := hfg ▸ by
     simpa using (isZeroAtImInfty_normalizedDerivOfComplex hf (hl.isBigO_one ℝ)).sub
