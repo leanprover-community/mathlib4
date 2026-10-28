@@ -402,8 +402,7 @@ theorem coe_vadd {K : Type*} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G �
   rfl
 
 instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
-    AddAction K (G →+c[a, b] H) :=
-  FunLike.addAction
+    AddAction K (G →+c[a, b] H) := fast_instance% FunLike.addAction
 
 /-!
 ### Monoid structure on endomorphisms `G →+c[a, a] G`
@@ -420,8 +419,7 @@ instance : IsOneApplyEqSelf (G →+c[a, a] G) where
 instance : Pow (G →+c[a, a] G) ℕ where
   pow f n := ⟨f^[n], Commute.iterate_left (AddConstMapClass.semiconj f) _⟩
 
-instance : Monoid (G →+c[a, a] G) :=
-  FunLike.compMonoid
+instance : Monoid (G →+c[a, a] G) := FunLike.compMonoid
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
 
