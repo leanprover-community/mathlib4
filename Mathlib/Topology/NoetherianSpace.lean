@@ -18,7 +18,7 @@ A Noetherian space is a topological space that satisfies any of the following eq
 - `∀ s : TopologicalSpace.Opens α, IsCompact s`
 
 The first is chosen as the definition, and the equivalence is shown in
-`TopologicalSpace.noetherianSpace_TFAE`.
+`TopologicalSpace.noetherianSpace_tfae`.
 
 Many examples of Noetherian spaces come from algebraic topology. For example, the underlying space
 of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
@@ -27,7 +27,7 @@ of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
 
 - `TopologicalSpace.NoetherianSpace.set`: Every subspace of a Noetherian space is Noetherian.
 - `TopologicalSpace.NoetherianSpace.isCompact`: Every set in a Noetherian space is a compact set.
-- `TopologicalSpace.noetherianSpace_TFAE`: Describes the equivalent definitions of Noetherian
+- `TopologicalSpace.noetherianSpace_tfae`: Describes the equivalent definitions of Noetherian
   spaces.
 - `TopologicalSpace.NoetherianSpace.range`: The image of a Noetherian space under a continuous map
   is Noetherian.
@@ -78,7 +78,7 @@ instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace
 
 variable (α) in
 open List in
-theorem noetherianSpace_TFAE :
+theorem noetherianSpace_tfae :
     TFAE [NoetherianSpace α,
       WellFoundedLT (Closeds α),
       ∀ s : Set α, IsCompact s,
@@ -90,11 +90,13 @@ theorem noetherianSpace_TFAE :
   tfae_have 3 → 4 := fun h s => h s
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias noetherianSpace_TFAE := noetherianSpace_tfae
+
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
-  (noetherianSpace_TFAE α).out 1 3
+  (noetherianSpace_tfae α).out 1 3
 
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
-  Iff.mp ((noetherianSpace_TFAE α).out 1 2) ‹_›
+  Iff.mp ((noetherianSpace_tfae α).out 1 2) ‹_›
 
 instance {α} : NoetherianSpace (CofiniteTopology α) := by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,
