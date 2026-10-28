@@ -111,7 +111,7 @@ private abbrev sets :=
 
 /-- The cardinals are well-ordered. We express it here by the fact that in any set of cardinals
 there is an element that injects into the others.
-See `Cardinal.conditionallyCompleteLinearOrder` for (one of) the lattice instances. -/
+See `Cardinal.conditionallyCompleteLinearOrderBot` for (one of) the lattice instances. -/
 theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j) :=
   let ⟨s, hs⟩ := show ∃ s, Maximal (· ∈ sets β) s by
     refine zorn_subset _ fun c hc hcc ↦
@@ -141,7 +141,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
 end Wo
 
 /-- The cardinals are totally ordered. See
-`Cardinal.conditionallyCompleteLinearOrder` for (one of) the lattice
+`Cardinal.conditionallyCompleteLinearOrderBot` for (one of) the lattice
 instance. -/
 theorem total (α : Type u) (β : Type v) : Nonempty (α ↪ β) ∨ Nonempty (β ↪ α) :=
   match @min_injective Bool (fun b => cond b (ULift α) (ULift.{max u v, v} β)) ⟨true⟩

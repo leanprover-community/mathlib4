@@ -91,10 +91,11 @@ To differentiate the statements from the corresponding statements in (unconditio
 complete linear orders, we prefix `sInf` and `sSup` by a `c` everywhere. The same statements should
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
-@[deprecated "Use `[ConditionallyCompleteLinearOrder α] [OrderBot α]` instead."
-  (since := "2026-10-29")]
-structure ConditionallyCompleteLinearOrderBot (α : Type*) extends
-  ConditionallyCompleteLinearOrder α, OrderBot α where
+class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyCompleteLinearOrder α,
+    OrderBot α where
+
+-- see Note [lower instance priority]
+attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sup` function
 that returns the least upper bound of a nonempty set which is bounded above. Usually this
@@ -159,24 +160,17 @@ def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [
       isLUB_sSup with }
 
 open scoped Classical in
-/-- A well-founded linear order is conditionally complete. -/
-noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrder (α : Type*)
-    [i₁ : LinearOrder α] [Nonempty α] [wf : WellFoundedLT α] :
-    ConditionallyCompleteLinearOrder α where
+/-- A well-founded linear order is conditionally complete, with a bottom element. -/
+noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
+    [i₁ : LinearOrder α] [i₂ : OrderBot α] [WellFoundedLT α] :
+    ConditionallyCompleteLinearOrderBot α where
   __ := i₁
-  __ := WellFoundedLT.toOrderBot α
+  __ := i₂
   __ := LinearOrder.toLattice
   __ :=
     letI : OrderInfSet α := .choose ⊥
     conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦
-      (IsLeast.isGLB ⟨wf.min_mem s hn, fun _ hx ↦ WellFoundedLT.min_le hx⟩).isGLB_sInf
+      (IsLeast.isGLB ⟨WellFounded.min_mem ‹_› s hn, fun _ hx ↦ WellFoundedLT.min_le hx⟩).isGLB_sInf
   csSup_of_not_bddAbove _ H :=
     (dite_eq_right (fun ⟨_, hx⟩ ↦ H (isGLB_upperBounds.mp hx).bddAbove)).trans sSup_empty.symm
   csInf_of_not_bddBelow s H := (H (OrderBot.bddBelow s)).elim
-
-@[deprecated WellFoundedLT.conditionallyCompleteLinearOrder +typeChanged (since := "2026-10-29")]
-noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
-    [i₁ : LinearOrder α] [i₂ : OrderBot α] [WellFoundedLT α] :
-    ConditionallyCompleteLinearOrderBot α where
-  toConditionallyCompleteLinearOrder := WellFoundedLT.conditionallyCompleteLinearOrder α
-  toOrderBot := i₂

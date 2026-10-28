@@ -13,7 +13,7 @@ public import Mathlib.Order.Interval.Finset.Nat
 
 In this file we
 
-* define a `ConditionallyCompleteLinearOrder` structure on `ℕ`;
+* define a `ConditionallyCompleteLinearOrderBot` structure on `ℕ`;
 * prove a few lemmas about `iSup`/`iInf`/`Set.iUnion`/`Set.iInter` and natural numbers.
 -/
 
@@ -118,13 +118,14 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
     exact ⟨H, fun n hnk hns ↦ H' <| hs n k (Nat.lt_succ_iff.mp hnk) hns⟩
 
 /-- This instance is necessary, otherwise the lattice operations would be derived via
-`ConditionallyCompleteLinearOrder` and marked as noncomputable. -/
+`ConditionallyCompleteLinearOrderBot` and marked as noncomputable. -/
 instance : Lattice ℕ :=
   LinearOrder.toLattice
 
 open scoped Classical in
-noncomputable instance : ConditionallyCompleteLinearOrder ℕ :=
-  { (LinearOrder.toLattice : Lattice ℕ), (inferInstance : LinearOrder ℕ) with
+noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
+  { (inferInstance : OrderBot ℕ), (LinearOrder.toLattice : Lattice ℕ),
+    (inferInstance : LinearOrder ℕ) with
     isLUB_sSup_of_isLUB s _ h := by
       rw [sSup_def h.bddAbove]
       exact Nat.isLeast_find _

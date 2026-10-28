@@ -294,7 +294,7 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] :
   csInf_of_not_bddBelow s h := by simp [h]
 
 noncomputable instance [ConditionallyCompleteLinearOrder α] :
-    ConditionallyCompleteLinearOrder (WithBot α) where
+    ConditionallyCompleteLinearOrderBot (WithBot α) where
   le_total
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance

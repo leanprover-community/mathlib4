@@ -104,7 +104,7 @@ section WellFoundedLT
 variable [WellFoundedLT α]
 
 attribute [local instance]
-  WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrder
+  WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrderBot
 
 protected theorem sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s < cof α)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by

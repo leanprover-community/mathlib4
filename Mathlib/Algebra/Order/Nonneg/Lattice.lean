@@ -51,12 +51,13 @@ protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCo
   haveI : Inhabited (Ici a) := ⟨a, le_rfl⟩
   inferInstanceAs <| ConditionallyCompleteLinearOrder (Ici a)
 
+
+set_option backward.isDefEq.respectTransparency false in
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
 
 This instance uses data fields from `Subtype.linearOrder` to help type-class inference.
 The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
-@[deprecated Nonneg.conditionallyCompleteLinearOrder +typeChanged (since := "2026-10-29")]
 protected noncomputable abbrev conditionallyCompleteLinearOrderBot
     [ConditionallyCompleteLinearOrder α] (a : α) :
     ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
