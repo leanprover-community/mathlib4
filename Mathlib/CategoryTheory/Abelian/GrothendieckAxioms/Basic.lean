@@ -13,6 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.Logic.Equiv.List
 
 /-!
 

@@ -3361,6 +3361,7 @@ public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.NatTrans
 public import Mathlib.CategoryTheory.Noetherian
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.BinaryProducts
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.ObjectProperty.ClosureShift
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
@@ -3375,6 +3376,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.ExactColimits
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.HasFiniteResolution.Basic
