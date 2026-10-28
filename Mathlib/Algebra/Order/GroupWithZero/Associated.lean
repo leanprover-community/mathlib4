@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Jens Wagemaker
+Authors: Johannes Hölzl, Jens Wagemaker, Paul Lezeau
 -/
 module
 
@@ -23,9 +23,7 @@ assert_not_exists Multiset Ring
 variable {M : Type*}
 
 namespace Associates
-
-section CommMonoidWithZero
-variable [CommMonoidWithZero M] {a b c d : Associates M}
+variable [CommMonoidWithZero M] {p a b c d : Associates M}
 
 instance instOrderTop : OrderTop (Associates M) where
   top := 0
@@ -33,10 +31,7 @@ instance instOrderTop : OrderTop (Associates M) where
 
 @[simp] protected lemma le_zero (a : Associates M) : a ≤ 0 := le_top
 
-instance instBoundedOrder : BoundedOrder (Associates M) where
-
-lemma Prime.le_or_le {p : Associates M} (hp : Prime p) (h : p ≤ a * b) : p ≤ a ∨ p ≤ b :=
-  hp.2.2 a b h
+lemma Prime.le_or_le (hp : Prime p) (h : p ≤ a * b) : p ≤ a ∨ p ≤ b := hp.2.2 a b h
 
 lemma dvdNotUnit_of_lt (hlt : a < b) : DvdNotUnit a b := by
   constructor
@@ -47,10 +42,17 @@ lemma dvdNotUnit_of_lt (hlt : a < b) : DvdNotUnit a b := by
   rintro ⟨u, rfl⟩
   simp at ndvd
 
-end CommMonoidWithZero
+instance instBoundedOrder : BoundedOrder (Associates M) where
 
-section CancelCommMonoidWithZero
-variable [CommMonoidWithZero M] [IsCancelMulZero M] {p a b : Associates M}
+instance instIsOrderedMonoid : IsOrderedMonoid (Associates M) where
+  mul_le_mul_left := by rintro a _ ⟨d, rfl⟩ c; exact ⟨d, mul_right_comm ..⟩
+
+instance : CanonicallyOrderedMul (Associates M) where
+  exists_mul_of_le h := h
+  le_mul_self _ b := ⟨b, mul_comm ..⟩
+  le_self_mul _ b := ⟨b, rfl⟩
+
+variable [IsCancelMulZero M]
 
 instance instPartialOrder : PartialOrder (Associates M) where
   le_antisymm := mk_surjective.forall₂.2 fun _a _b hab hba => mk_eq_mk_iff_associated.2 <|
@@ -69,13 +71,4 @@ lemma dvdNotUnit_iff_lt : DvdNotUnit a b ↔ a < b := dvd_and_not_dvd_iff.symm
 
 lemma le_one_iff : p ≤ 1 ↔ p = 1 := by rw [← Associates.bot_eq_one, le_bot_iff]
 
-instance instIsOrderedMonoid : IsOrderedMonoid (Associates M) where
-  mul_le_mul_left := by rintro a _ ⟨d, rfl⟩ c; exact ⟨d, mul_right_comm ..⟩
-
-instance : CanonicallyOrderedMul (Associates M) where
-  exists_mul_of_le h := h
-  le_mul_self _ b := ⟨b, mul_comm ..⟩
-  le_self_mul _ b := ⟨b, rfl⟩
-
-end CancelCommMonoidWithZero
 end Associates
