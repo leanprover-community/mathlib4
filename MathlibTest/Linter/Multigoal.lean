@@ -147,7 +147,6 @@ example : True ∧ True := by
   focus
     exact .intro
 
-set_option linter.unusedTactic false in
 example : 1 = 1 := by
   sleep_heartbeats 1000
   rfl
