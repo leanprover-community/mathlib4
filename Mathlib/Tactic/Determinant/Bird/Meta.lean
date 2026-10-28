@@ -57,7 +57,7 @@ structure Ctx {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
   dimensionLit : Q(ℕ)
   /-- The array of matrix entries as an Expr -/
   arrayExpr : Q(Array $α)
-  /-- An array of matrix entry `Expr`s` -/
+  /-- An array of matrix entry `Expr`s -/
   arrayEntries : Array Q($α)
 
 /-- The ring instance and evaluator context parsed by `reifyBirdDet`. -/
