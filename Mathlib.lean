@@ -6653,10 +6653,14 @@ public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Martingale.BorelCantelli
 public import Mathlib.Probability.Martingale.Centering
 public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Martingale.Exponential
+public import Mathlib.Probability.Martingale.Freedman
 public import Mathlib.Probability.Martingale.OptionalSampling
 public import Mathlib.Probability.Martingale.OptionalStopping
 public import Mathlib.Probability.Martingale.Upcrossing
+public import Mathlib.Probability.Martingale.Ville
 public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Moments.Bernstein
 public import Mathlib.Probability.Moments.ComplexMGF
 public import Mathlib.Probability.Moments.Covariance
 public import Mathlib.Probability.Moments.CovarianceBilin
