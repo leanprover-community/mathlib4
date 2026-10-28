@@ -5,9 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 public import Mathlib.MeasureTheory.Measure.TotalVariation.Defs
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym

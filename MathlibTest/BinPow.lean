@@ -1,4 +1,8 @@
-import Mathlib.Data.ZMod.Defs
+module
+
+public meta import Mathlib.Data.ZMod.Defs
+
+@[expose] public section
 
 -- A 1024-bit prime number
 set_option linter.style.longLine false in
