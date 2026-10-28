@@ -305,6 +305,17 @@ run on a curl older than 7.71, which rejects `--retry-all-errors`.
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
+/--
+Stall flags for a cache download. A transfer that receives no bytes for 30 s
+ends with curl exit 28, so a frozen connection fails the transfer instead of
+holding the process. A healthy get has a first-byte time under 1 s, and a slow
+transfer keeps its bytes flowing, so neither trips the limit. curl retries a
+timed-out transfer on the same connection, so the fresh-process retry pass in
+`downloadFiles` is what moves a frozen file to a new connection.
+-/
+def curlStallArgs : Array String :=
+  #["--speed-time", "30", "--speed-limit", "1"]
+
 /-- The `--parallel-max` flag from `MATHLIB_CACHE_PARALLEL_MAX`; empty when the
 variable is unset or not a number. -/
 def curlParallelMaxArgs : IO (Array String) := do
@@ -493,7 +504,7 @@ def downloadFile (location : Location) (hash : UInt64) : IO (TransferVerdict .do
   let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
     { cmd := (← IO.getCurl),
-      args := #[url, "--silent"] ++ curlFollowRedirectArgs ++
+      args := #[url, "--silent"] ++ curlFollowRedirectArgs ++ curlStallArgs ++
         curlRetryArgs (supportLegacyCurl := true) ++
         #["--write-out", "%{http_code}", "-o", partPath.toString] }
   -- Anything short of a delivery leaves at most an error body in the part file.
@@ -808,7 +819,7 @@ private def downloadFilesFromLocation (location : Location)
       (← curlParallelMaxArgs) ++
       -- Avoid passing `--fail` here: it slows parallel transfers on curl
       -- 8.13.0, and it makes `--retry-all-errors` retry every 404 miss.
-      curlFollowRedirectArgs ++
+      curlFollowRedirectArgs ++ curlStallArgs ++
       (if mode.retry then curlRetryArgs (supportLegacyCurl := false) else #[]) ++
       #["--write-out", curlGetWriteOut, "--config", IO.CURLCFG.toString]
     let (s, served) ← monitorCurl args size "Downloaded" "speed_download"
