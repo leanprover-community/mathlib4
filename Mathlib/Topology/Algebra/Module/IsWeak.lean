@@ -149,7 +149,7 @@ theorem continuousAdd [ContinuousAdd 𝕜] : ContinuousAdd E where
     let t₁ : TopologicalSpace E := .induced (B · ·) Pi.topologicalSpace
     have : B.IsWeak := ⟨rfl⟩
     rw [hB.eq_induced, continuous_induced_rng]
-    simp only [Function.comp_def, map_add, add_apply]
+    simp only [Function.comp_def, map_add, LinearMap.add_apply]
     fun_prop
 
 include hB in
@@ -172,7 +172,7 @@ theorem isTopologicalAddGroup {𝕜 E F : Type*} [CommRing 𝕜] [TopologicalSpa
     let t₁ : TopologicalSpace E := .induced (B · ·) Pi.topologicalSpace
     have : B.IsWeak := ⟨rfl⟩
     rw [hB.eq_induced, continuous_induced_rng, continuous_pi_iff]
-    simp_rw [Function.comp_apply, map_neg, neg_apply, ← map_neg (B _)]
+    simp_rw [Function.comp_apply, map_neg, LinearMap.neg_apply, ← map_neg (B _)]
     fun_prop
 
 end LinearMap.IsWeak

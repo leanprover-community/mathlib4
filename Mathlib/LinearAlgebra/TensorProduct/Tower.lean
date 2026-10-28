@@ -204,14 +204,14 @@ protected theorem map_mul (f₁ f₂ : M →ₗ[A] M) (g₁ g₂ : N →ₗ[R] N
 theorem map_add_left (f₁ f₂ : M →ₗ[A] P) (g : N →ₗ[R] Q) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
-  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, add_apply, map_tmul,
-    add_apply, add_tmul]
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, LinearMap.add_apply,
+    map_tmul, LinearMap.add_apply, add_tmul]
 
 theorem map_add_right (f : M →ₗ[A] P) (g₁ g₂ : N →ₗ[R] Q) :
     map f (g₁ + g₂) = map f g₁ + map f g₂ := by
   ext
-  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, add_apply, map_tmul,
-    add_apply, tmul_add]
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, LinearMap.add_apply,
+    map_tmul, LinearMap.add_apply, tmul_add]
 
 theorem map_smul_right (r : R) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map f (r • g) = r • map f g := by
   ext

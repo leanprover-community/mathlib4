@@ -755,8 +755,8 @@ theorem toQuadraticMap_sub (B₁ B₂ : BilinMap R M N) :
   rfl
 
 theorem polar_toQuadraticMap (x y : M) : polar (toQuadraticMap B) x y = B x y + B y x := by
-  simp only [polar, toQuadraticMap_apply, map_add, add_apply, add_assoc, add_comm (B y x) _,
-    add_sub_cancel_left, sub_eq_add_neg _ (B y y), add_neg_cancel_left]
+  simp only [polar, toQuadraticMap_apply, map_add, LinearMap.add_apply, add_assoc,
+    add_comm (B y x) _, add_sub_cancel_left, sub_eq_add_neg _ (B y y), add_neg_cancel_left]
 
 theorem polarBilin_toQuadraticMap : polarBilin (toQuadraticMap B) = B + flip B :=
   LinearMap.ext₂ polar_toQuadraticMap
@@ -818,12 +818,10 @@ instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
     (1 : Module.End R M)
   invOf_mul_self := by
     ext m
-    dsimp [Submonoid.smul_def]
-    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
+    simp [Submonoid.smul_def, ← ofNat_smul_eq_nsmul R]
   mul_invOf_self := by
     ext m
-    dsimp [Submonoid.smul_def]
-    rw [← ofNat_smul_eq_nsmul R, smul_invOf_smul (2 : R) m]
+    simp [Submonoid.smul_def, ← ofNat_smul_eq_nsmul R]
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
@@ -865,7 +863,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
   dsimp [associated_apply]
-  rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', Module.End.one_apply,
+  rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', one_apply_eq_self,
     polar]
 
 theorem associated_isSymm (Q : QuadraticMap R M N) (x y : M) :

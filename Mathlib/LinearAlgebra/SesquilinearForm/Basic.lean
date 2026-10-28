@@ -82,7 +82,7 @@ theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ
     (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, B (v i) (v i) ≠ 0) : LinearIndependent K₁ v := by
   rw [linearIndependent_iff']
   intro s w hs i hi
-  have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, zero_apply]
+  have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, LinearMap.zero_apply]
   have hsum : (s.sum fun j : n ↦ I₁ (w j) • B (v j) (v i)) = I₁ (w i) • B (v i) (v i) := by
     apply Finset.sum_eq_single_of_mem i hi
     intro j _hj hij
@@ -288,11 +288,11 @@ theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛ�
     B.IsAlt ↔ B = -B.flip := by
   constructor <;> intro h
   · ext
-    simp_rw [neg_apply, flip_apply]
+    simp_rw [LinearMap.neg_apply, flip_apply]
     exact (h.neg _ _).symm
   intro x
   let h' := congr($h x x)
-  simp only [neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
+  simp only [LinearMap.neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
   exact add_self_eq_zero.mp h'
 
 end Semiring
@@ -335,7 +335,7 @@ theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp 
     rw [← compl₂_apply, ← comp_apply, h]
 
 theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by
-  simp only [Pi.zero_apply, map_zero, zero_apply]
+  simp only [Pi.zero_apply, map_zero, LinearMap.zero_apply]
 
 theorem isAdjointPair_id : IsAdjointPair B B (_root_.id : M → M) (_root_.id : M → M) :=
   fun _ _ ↦ rfl
@@ -610,10 +610,10 @@ theorem flip_nondegenerate : B.flip.Nondegenerate ↔ B.Nondegenerate :=
 
 theorem separatingLeft_iff_linear_nontrivial : B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
-  · simpa only [hB, zero_apply, eq_self_iff_true, forall_const] using h x
+  · simpa only [hB, LinearMap.zero_apply, eq_self_iff_true, forall_const] using h x
   have h' : B x = 0 := by
     ext
-    rw [zero_apply]
+    rw [LinearMap.zero_apply]
     exact hB _
   exact h x h'
 

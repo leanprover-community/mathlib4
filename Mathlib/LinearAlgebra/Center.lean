@@ -90,7 +90,7 @@ theorem commute_transvections_iff_of_basis
   refine ⟨b.coord i (f (b i)), fun r ↦ by simpa using congr(b.coord i $(hcomm i r)), ?_⟩
   ext x
   rw [← b.linearCombination_repr x, linearCombination_apply, map_finsuppSum]
-  simp only [LinearMap.smul_apply, End.one_apply, smul_sum]
+  simp only [LinearMap.smul_apply, one_apply_eq_self, smul_sum]
   apply sum_congr
   intro j _
   simp [Subring.smul_def, h_allEq i j, hcomm j]
