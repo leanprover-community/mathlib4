@@ -66,7 +66,7 @@ set_option backward.inferInstanceAs.wrap.data false in
 lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
-  have hmR : mR ≤ maximalIdeal S := ((local_hom_TFAE (algebraMap R S)).out 1 3 rfl rfl).mp ‹_›
+  have hmR : mR ≤ maximalIdeal S := ((local_hom_tfae (algebraMap R S)).out 1 3 rfl rfl).mp ‹_›
   let : Algebra (ResidueField R) (S ⧸ mR) := (inferInstanceAs <| Algebra (R ⧸ _) _)
   have : IsScalarTower R (ResidueField R) (S ⧸ mR) := (inferInstanceAs <| IsScalarTower R (R ⧸ _) _)
   have : FormallyUnramified (ResidueField R) (S ⧸ mR) := .of_restrictScalars R _ _
@@ -145,6 +145,10 @@ lemma isUnramifiedAt_iff_map_eq :
 
 instance [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
   ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1
+
+lemma IsUnramifiedAt.map_eq [Algebra.IsUnramifiedAt R q] :
+    p.map (algebraMap R (Localization.AtPrime q)) = maximalIdeal _ :=
+  ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).2
 
 instance [Algebra.IsUnramifiedAt R q] : Module.Finite p.ResidueField q.ResidueField :=
   Algebra.FormallyUnramified.finite_of_free _ _
