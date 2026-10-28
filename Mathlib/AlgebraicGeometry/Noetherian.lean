@@ -375,7 +375,7 @@ theorem exists_mem_nhds_finite_coheight_one_of_closure_ne_univ [IrreducibleSpace
   have : IsNoetherianRing Γ(X, W) := IsLocallyNoetherian.component_noetherian ⟨W, hWa⟩
   have : NoetherianSpace (W : Set X) := noetherianSpace_of_isAffineOpen W hWa
   have : QuasiSober (W : Set X) := W.isOpenEmbedding'.quasiSober
-  have : QuasiSober ((W : Set X) ∩ closure Z : Set X) :=
+  have : QuasiSober (W ∩ closure Z : Set X) :=
     QuasiSober.inter_of_isClosed_of_quasiSober_left _ isClosed_closure
   have : NoetherianSpace ((W : Set X) ∩ closure Z : Set X) := NoetherianSpace.inter_of_left _ _
   have hsub : closure ((W : Set X) ∩ closure Z) ⊆ closure Z :=
