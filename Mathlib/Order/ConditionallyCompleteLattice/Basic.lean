@@ -407,6 +407,7 @@ variable [ConditionallyCompleteLattice α] [OrderBot α] {s : Set α} {a : α}
 
 @[deprecated (since := "2026-10-27")] alias csSup_empty := sSup_empty
 
+@[to_dual]
 theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · simp only [sSup_empty, isLUB_empty]
@@ -477,6 +478,19 @@ theorem exists_lt_of_lt_csSup' {s : Set α} {a : α} (h : a < sSup s) : ∃ b �
   exact csSup_le' h
 
 end ConditionallyCompleteLinearOrderBot
+
+/-- A bounded conditionally complete lattice is a complete lattice. -/
+instance (priority := 100) ConditionallyCompleteLattice.toCompleteLattice
+    [ConditionallyCompleteLattice α] [BoundedOrder α] : CompleteLattice α where
+  isLUB_sSup s := isLUB_csSup' (OrderTop.bddAbove s)
+  isGLB_sInf s := isGLB_csInf' (OrderBot.bddBelow s)
+
+/-- A bounded conditionally complete linear order is a complete linear order. -/
+instance (priority := 100) ConditionallyCompleteLinearOrder.toCompleteLinearOrder
+    [ConditionallyCompleteLinearOrder α] [BoundedOrder α] : CompleteLinearOrder α where
+  __ := ConditionallyCompleteLattice.toCompleteLattice
+  __ := ‹ConditionallyCompleteLinearOrder α›
+  __ := LinearOrder.toBiheytingAlgebra α
 
 namespace Monotone
 

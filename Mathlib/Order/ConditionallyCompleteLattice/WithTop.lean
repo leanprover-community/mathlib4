@@ -273,16 +273,7 @@ noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
   exists_isGLB_cond _ _ hS := ⟨_, WithTop.isGLB_sInf' hS⟩
 
 @[to_dual]
-noncomputable instance [CompleteLattice α] : CompleteLattice (WithTop α) where
-  isLUB_sSup s := ⟨fun _ ↦ le_csSup (OrderTop.bddAbove _), fun _ has ↦
-    s.eq_empty_or_nonempty.elim (by simp [·]) (csSup_le · has)⟩
-  isGLB_sInf s := ⟨fun _ ↦ csInf_le (OrderBot.bddBelow _), fun _ hsa ↦
-    s.eq_empty_or_nonempty.elim (by simp [·]) (le_csInf · hsa)⟩
-
-noncomputable instance [CompleteLinearOrder α] : CompleteLinearOrder (WithBot α) where
-  __ := WithBot.linearOrder
-  __ := WithBot.linearOrder.toBiheytingAlgebra
-  __ := show CompleteLattice (WithBot α) from inferInstance
+noncomputable instance [CompleteLattice α] : CompleteLattice (WithTop α) := inferInstance
 
 noncomputable instance [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrder (WithTop α) where
@@ -302,36 +293,18 @@ noncomputable instance [ConditionallyCompleteLinearOrder α] :
   csSup_of_not_bddAbove s h := by simp [h]
   csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
 
-open scoped Classical in
+noncomputable instance [CompleteLinearOrder α] : CompleteLinearOrder (WithBot α) := inferInstance
+
 @[to_dual WithBot.WithTop.completeLattice]
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
-    [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) where
-  isLUB_sSup S := ⟨fun a haS ↦ (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS, fun a ha ↦ by
-    rcases S.eq_empty_or_nonempty with h | h
-    · change ite _ _ _ ≤ a
-      simp [h]
-    · exact (WithTop.isLUB_sSup' h).2 ha⟩
-  isGLB_sInf S := ⟨fun a haS ↦
-    show ite _ _ _ ≤ a by
-      simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
-      split_ifs with h₁
-      · cases a
-        · exact le_rfl
-        cases h₁ haS
-      · cases a
-        · exact le_top
-        · apply WithTop.coe_le_coe.2
-          refine csInf_le ?_ haS
-          use ⊥
-          intro b _
-          exact bot_le,
-    fun a haS ↦ (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS⟩
+    [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) := inferInstance
+
+noncomputable instance {α : Type*} [ConditionallyCompleteLattice α] :
+    CompleteLattice (WithBot (WithTop α)) := inferInstance
 
 noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
-    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) where
-  __ := completeLattice
-  __ := linearOrder
-  __ := linearOrder.toBiheytingAlgebra
+    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) :=
+  inferInstance
 
 end WithTopBot
 
