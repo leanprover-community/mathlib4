@@ -1202,21 +1202,21 @@ private def measurableEquivNatBoolOfUncountable [h : Uncountable α] : α ≃ᵐ
 variable (α β) in
 /-- The **Borel Isomorphism Theorem**: Any two uncountable standard Borel spaces are
 Borel isomorphic. -/
-noncomputable def measurableEquivOfUncountable [Uncountable α] [Uncountable β] : α ≃ᵐ β :=
+def measurableEquivOfUncountable [Uncountable α] [Uncountable β] : α ≃ᵐ β :=
   measurableEquivNatBoolOfUncountable.trans measurableEquivNatBoolOfUncountable.symm
 
 @[deprecated measurableEquivOfUncountable +typeChanged (since := "2026-10-27")]
-noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) :=
+def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) :=
   have := not_countable_iff.1 h
   measurableEquivOfUncountable ..
 
 @[deprecated measurableEquivOfUncountable +typeChanged (since := "2026-10-27")]
-noncomputable def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬Countable β) : α ≃ᵐ β :=
+def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬Countable β) : α ≃ᵐ β :=
   (measurableEquivNatBoolOfNotCountable hα).trans (measurableEquivNatBoolOfNotCountable hβ).symm
 
 /-- The **Borel Isomorphism Theorem**: If two standard Borel spaces have the same cardinality,
 they are Borel isomorphic. -/
-noncomputable def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
+def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
   apply Nonempty.some
   obtain h | h := countable_or_uncountable α
   · have := Countable.of_equiv α e
