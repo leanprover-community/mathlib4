@@ -6,9 +6,9 @@ Authors: Jose Francisco Antonio Balderas, Vincent Beffara, Alex Kontorovich, Ter
 -/
 module
 
-public import Mathlib.NumberTheory.LSeries.WienerIkehara
-public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
+public import Mathlib.NumberTheory.LSeries.Dirichlet
+public import Mathlib.NumberTheory.LSeries.WienerIkehara
 
 import Mathlib.NumberTheory.LSeries.Linearity
 
