@@ -535,8 +535,8 @@ def congr (e : M ≃* N) : Associates M ≃* Associates N where
 
 @[simp, grind =] lemma symm_congr (e : M ≃* N) : (congr e).symm = congr e.symm := rfl
 
-@[simp] lemma congr_trans {P : Type*} [CommMonoid P] (e : M ≃* N) (e' : N ≃* P) :
-    congr (e.trans e') = (congr e).trans (congr e') := by ext ⟨x⟩; simp
+@[simp] lemma congr_trans_congr {P : Type*} [CommMonoid P] (e : M ≃* N) (e' : N ≃* P) :
+    (congr e).trans (congr e') = congr (e.trans e') := by ext ⟨x⟩; simp
 
 theorem associated_map_mk {f : Associates M →* M} (hinv : Function.RightInverse f Associates.mk)
     (a : M) : a ~ᵤ f (Associates.mk a) :=
