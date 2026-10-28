@@ -354,7 +354,7 @@ theorem im_eq_conj_sub (z : K) : ↑(im z) = I * (conj z - z) / 2 := by
 
 open List in
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
-theorem is_real_TFAE (z : K) :
+theorem is_real_tfae (z : K) :
     TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0, IsSelfAdjoint z] := by
   tfae_have 1 → 4
   | h => by
@@ -369,24 +369,26 @@ theorem is_real_TFAE (z : K) :
   tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias is_real_TFAE := is_real_tfae
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
-    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 1 2
+    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_tfae z).out 1 2
     _ ↔ _                    := by simp only [eq_comm]
 
 theorem conj_eq_iff_re {z : K} : conj z = z ↔ (re z : K) = z :=
-  (is_real_TFAE z).out 1 3
+  (is_real_tfae z).out 1 3
 
 theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
-  (is_real_TFAE z).out 1 4
+  (is_real_tfae z).out 1 4
 
 @[simp]
 theorem star_def : (Star.star : K → K) = conj :=
   rfl
 
 lemma im_eq_zero_iff_isSelfAdjoint {x : K} : im x = 0 ↔ IsSelfAdjoint x :=
-  is_real_TFAE x |>.out 4 5
+  is_real_tfae x |>.out 4 5
 
 lemma re_eq_ofReal_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
     re x = y ↔ x = y := by
@@ -973,7 +975,7 @@ lemma toPosMulReflectLT : PosMulReflectLT K where
     rintro ⟨x, hx⟩ y z hyz
     dsimp at *
     rw [RCLike.le_iff_re_im, map_zero, map_zero, eq_comm] at hx
-    obtain ⟨r, rfl⟩ := ((is_real_TFAE x).out 4 2).1 hx.2
+    obtain ⟨r, rfl⟩ := ((is_real_tfae x).out 4 2).1 hx.2
     simp only [RCLike.lt_iff_re_im (K := K), mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero,
       mul_im, add_zero, mul_eq_mul_left_iff] at hyz ⊢
     refine ⟨lt_of_mul_lt_mul_of_nonneg_left hyz.1 <| by simpa using hx, hyz.2.resolve_right ?_⟩
@@ -1359,7 +1361,8 @@ end
 namespace LinearIsometryEquiv
 variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module 𝕜 V]
   [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-
+-- attribute [-simp] smul_apply
+attribute [simp] LinearEquiv.smul_apply
 /-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
 as a linear isometric equivalence. -/
 instance : SMul (unitary 𝕜) (V ≃ₗᵢ[𝕜] W) where smul α e :=

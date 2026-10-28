@@ -86,7 +86,9 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
 lemma one_eq_refl : (1 : M ≃ₗ[R] M) = refl R M := rfl
 lemma mul_eq_trans (f g : M ≃ₗ[R] M) : f * g = g.trans f := rfl
 
-@[simp]
+instance : IsOneApplyEqSelf (M ≃ₗ[R] M) where
+
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-10-27")]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
 
 @[simp] lemma coe_inv (f : M ≃ₗ[R] M) : ⇑f⁻¹ = ⇑f.symm := rfl
@@ -99,11 +101,17 @@ lemma coe_toLinearMap_mul {e₁ e₂ : M ≃ₗ[R] M} :
     (↑(e₁ * e₂) : M →ₗ[R] M) = (e₁ : M →ₗ[R] M) * (e₂ : M →ₗ[R] M) :=
   rfl
 
+instance : IsMulApplyEqComp (M ≃ₗ[R] M) where
+
+@[deprecated FunLike.coe_pow_eq_iterate +typeChanged (since := "2026-10-27")]
 theorem coe_pow (e : M ≃ₗ[R] M) (n : ℕ) : ⇑(e ^ n) = e^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
-theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m := congr($(coe_pow e n) m)
+@[deprecated pow_apply_eq_iterate +typeChanged (since := "2026-10-27")]
+protected theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m :=
+  congr($(coe_pow e n) m)
 
-@[simp] lemma mul_apply (f : M ≃ₗ[R] M) (g : M ≃ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
+@[deprecated mul_apply_eq_comp +typeChanged (since := "2026-10-27")]
+protected lemma mul_apply (f : M ≃ₗ[R] M) (g : M ≃ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
 
 /-- Restriction from `R`-linear automorphisms of `M` to `R`-linear endomorphisms of `M`,
 promoted to a monoid hom. -/
@@ -417,17 +425,20 @@ instance : Zero (M ≃ₛₗ[σ₁₂] M₂) :=
       right_inv := Subsingleton.elim _
       left_inv := Subsingleton.elim _ }⟩
 
+instance : IsZeroApply (M ≃ₛₗ[σ₁₂] M₂) where
+
 -- Even though these are implied by `Subsingleton.elim` via the `Unique` instance below, they're
 -- nice to have as `rfl`-lemmas for `dsimp`.
 @[simp]
 theorem zero_symm : (0 : M ≃ₛₗ[σ₁₂] M₂).symm = 0 :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-27")]
 theorem coe_zero : ⇑(0 : M ≃ₛₗ[σ₁₂] M₂) = 0 :=
   rfl
 
-theorem zero_apply (x : M) : (0 : M ≃ₛₗ[σ₁₂] M₂) x = 0 :=
+@[deprecated zero_apply +typeChanged (since := "2026-10-27")]
+protected theorem zero_apply (x : M) : (0 : M ≃ₛₗ[σ₁₂] M₂) x = 0 :=
   rfl
 
 /-- Between two zero modules, the zero map is the only equivalence. -/
