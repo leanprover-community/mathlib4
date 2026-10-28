@@ -297,7 +297,7 @@ theorem normDet_sq [FiniteDimensional 𝕜 V] (f : U →ₗ[𝕜] V) :
   have : CompleteSpace V := FiniteDimensional.complete 𝕜 V
   exact f.toContinuousLinearMap.normDet_sq
 
-/--us
+/--
 The square of `f.normDet` equals the determinant of the Gram matrix formed by vectors mapped from
 an orthonormal basis.
 -/
