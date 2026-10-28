@@ -253,9 +253,11 @@ theorem T_ne_zero (n : ℤ) [IsDomain R] [NeZero (2 : R)] : T R n ≠ 0 :=
   (T R n).degree_ne_bot.mp (by simp [degree_T R n])
 
 /-- ChebyshevT as a polynomial sequence. -/
-noncomputable def chebyshevTsequence [IsDomain R] [NeZero (2 : R)] : Polynomial.Sequence R where
+noncomputable def chebyshevTSequence [IsDomain R] [NeZero (2 : R)] : Polynomial.Sequence R where
   elems' n := T R n
   degree_eq' n := by simp [degree_T]
+
+@[deprecated (since := "2026-10-08")] alias chebyshevTsequence := chebyshevTSequence
 
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
 noncomputable def U : ℤ → R[X]

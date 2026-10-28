@@ -335,8 +335,9 @@ theorem type_mono [LinearOrder α] [WellFoundedLT α] {s t : Set α} (h : s ⊆ 
 
 This is registered as a principal segment embedding into the ordinals, with top `type r`. -/
 def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordinal.{u} r (· < ·) := by
-  refine ⟨RelEmbedding.ofMonotone _ fun a b ha ↦
-    ((PrincipalSeg.ofElement r a).codRestrict _ ?_ ?_).ordinal_type_lt, type r, fun a ↦ ⟨?_, ?_⟩⟩
+  refine ⟨RelEmbedding.ofMonotone (fun a ↦ type (Subrel r (r · a))) fun a b ha ↦
+    ((PrincipalSeg.ofElement r a).codRestrict {x | r x b} ?_ ?_).ordinal_type_lt, type r,
+    fun a ↦ ⟨?_, ?_⟩⟩
   · rintro ⟨c, hc⟩
     exact trans hc ha
   · exact ha
@@ -700,34 +701,6 @@ theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.ToType) :
   rw [← not_lt]
   apply enum_zero_le
 
-/-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
-`α.ToType` into `β.ToType`. -/
-@[deprecated type_le_iff +typeChanged (since := "2026-04-12")]
-noncomputable def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
-  apply Classical.choice (type_le_iff.mp _)
-  rwa [type_toType, type_toType]
-
-/-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
-of `α.ToType` into `β.ToType`. -/
-@[deprecated type_lt_iff +typeChanged (since := "2026-04-12")]
-noncomputable def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
-  apply Classical.choice (type_lt_iff.mp _)
-  rwa [type_toType, type_toType]
-
-/-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
-@[instance_reducible, deprecated WellFoundedLT.toOrderBot +typeChanged (since := "2026-04-12")]
-noncomputable def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
-  bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
-
-@[deprecated "use `WellFoundedLT.toOrderBot` if you need an `OrderBot` instance"
-(since := "2026-04-12")]
-theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
-    enum (α := o.ToType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
-      have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
-      (⊥ : o.ToType) :=
-  rfl
-
 @[simp]
 theorem _root_.Cardinal.mk_toType (o : Ordinal) : #o.ToType = o.card :=
   (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_toType]
@@ -776,10 +749,12 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
   liftInitialSeg.lt_apply_iff
 
 @[simp]
-theorem _root_.Cardinal.mk_Iio_ordinal (o : Ordinal.{u}) :
+theorem cardinalMk_Iio (o : Ordinal.{u}) :
     #(Iio o) = Cardinal.lift.{u + 1} o.card := by
   rw [lift_card, ← typein_ordinal]
   rfl
+
+@[deprecated (since := "2026-10-20")] alias _root_.Cardinal.mk_Iio_ordinal := cardinalMk_Iio
 
 /-! ### The first infinite ordinal ω -/
 
@@ -918,14 +893,6 @@ instance : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) (by exact succ_le_iff')
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
-
-@[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
-theorem succ_pos (o : Ordinal) : 0 < succ o :=
-  add_pos_of_right zero_lt_one o
-
-@[deprecated add_pos_of_right +typeChanged (since := "2026-04-04")]
-theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
-  (add_pos_of_right zero_lt_one o).ne'
 
 @[deprecated Nat.cast_add_one +typeChanged (since := "2026-05-21")]
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
@@ -1075,17 +1042,23 @@ theorem ord_card_le (o : Ordinal) : o.card.ord ≤ o :=
 theorem lt_ord_succ_card (o : Ordinal) : o < (succ o.card).ord :=
   lt_ord.2 <| lt_succ _
 
-theorem card_le_iff {o : Ordinal} {c : Cardinal} : o.card ≤ c ↔ o < (succ c).ord := by
+theorem _root_.Ordinal.card_le_iff {o : Ordinal} {c : Cardinal} :
+    o.card ≤ c ↔ o < (succ c).ord := by
   rw [lt_ord, lt_succ_iff]
+
+@[deprecated (since := "2026-10-20")] protected alias card_le_iff := Ordinal.card_le_iff
 
 /--
 A variation on `Cardinal.lt_ord` using `≤`: If `o` is no greater than the
 initial ordinal of cardinality `c`, then its cardinal is no greater than `c`.
 
-The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
+The converse, however, is false (for instance, `o = ω + 1` and `c = ℵ₀`).
 -/
-lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) : o.card ≤ c := by
+lemma _root_.Ordinal.card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) :
+    o.card ≤ c := by
   rw [← card_ord c]; exact Ordinal.card_le_card ho
+
+@[deprecated (since := "2026-10-20")] protected alias card_le_of_le_ord := Ordinal.card_le_of_le_ord
 
 @[gcongr, mono]
 theorem ord_strictMono : StrictMono ord :=
@@ -1166,10 +1139,6 @@ theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h :
     #(Ioi i) < #α :=
   mk_Iio_lt (OrderDual.toDual i) h
 
-@[deprecated mk_Iio_lt +typeChanged (since := "2026-04-12")]
-theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
-  simpa using mk_Iio_lt i
-
 @[simp]
 theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=
   ord_injective.eq_iff' ord_zero
@@ -1214,11 +1183,13 @@ lemma exists_le_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u}) 
   simpa [T] using Cardinal.mk_le_of_injective
     (sigma_mk_injective (β := fun i ↦ (κ ((equivShrink _).symm i)).ord.ToType))
 
-lemma mk_iio_le_lift (κ : Cardinal.{u}) :
+lemma mk_Iio_le_lift (κ : Cardinal.{u}) :
     Cardinal.mk (Set.Iio κ) ≤ Cardinal.lift.{u + 1} κ := by
-  conv_rhs => rw [← card_ord κ, ← mk_Iio_ordinal]
+  conv_rhs => rw [← card_ord κ, ← cardinalMk_Iio]
   rw [Cardinal.le_def]
   exact ⟨⟨fun ⟨a, ha⟩ ↦ ⟨a.ord, by simpa⟩, fun _ _ h ↦ by aesop⟩⟩
+
+@[deprecated (since := "2026-10-20")] alias mk_iio_le_lift := mk_Iio_le_lift
 
 end Cardinal
 

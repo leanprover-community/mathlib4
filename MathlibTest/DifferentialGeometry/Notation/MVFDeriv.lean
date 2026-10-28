@@ -1,4 +1,6 @@
-import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 /-!
 # Tests for the differential geometry delaborators for `mvfderiv(Within)`

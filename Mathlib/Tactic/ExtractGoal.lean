@@ -12,7 +12,7 @@ public meta import Lean.Meta.Tactic.Cleanup
 public meta import Lean.PrettyPrinter
 public import Mathlib.Tactic.MinImports
 
-import Lean.Elab.Command
+meta import Lean.Elab.Command
 
 /-!
 # `extract_goal`: Format the current goal as a stand-alone example

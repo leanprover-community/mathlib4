@@ -33,6 +33,7 @@ open Nat
 
 /-- The primorial `n#` of `n` is the product of the primes less than or equal to `n`.
 -/
+@[oeis A034386]
 def primorial (n : ℕ) : ℕ := ∏ p ∈ range (n + 1) with p.Prime, p
 
 local notation x "#" => primorial x
@@ -116,7 +117,7 @@ lemma le_primorial_self {n : ℕ} : n ≤ n# := by
   · exact (lt_primorial_self hn).le
 
 theorem primorial_lt_four_pow (n : ℕ) (hn : n ≠ 0) : n# < 4 ^ n := by
-  induction n using Nat.strong_induction_on with | h n ihn =>
+  induction n using Nat.strong_induction_on with | ind n ihn
   rcases n with - | n; · grind
   rcases n.even_or_odd with ⟨m, rfl⟩ | ho
   · rcases m.eq_zero_or_pos with rfl | hm
