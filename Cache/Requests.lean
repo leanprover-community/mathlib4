@@ -305,8 +305,10 @@ run on a curl older than 7.71, which rejects `--retry-all-errors`.
 def curlRetryArgs (supportLegacyCurl : Bool) : Array String :=
   #["--retry", "5"] ++ (if supportLegacyCurl then #[] else #["--retry-all-errors"])
 
-/-- Fail a download after 30 s without bytes. curl retries it on the same connection, so
-only the retry pass in `downloadFiles` reaches a new one. -/
+/-- Fail a download that averages under 1 byte/s (`--speed-limit`) for 30 s (`--speed-time`),
+curl exit 28. The limit is the lowest possible, so a slow transfer that still moves bytes
+passes, and curl measures each transfer on its own. curl retries a failed transfer on the
+same connection, so only the retry pass in `downloadFiles` reaches a new one. -/
 def curlStallArgs : Array String :=
   #["--speed-time", "30", "--speed-limit", "1"]
 
