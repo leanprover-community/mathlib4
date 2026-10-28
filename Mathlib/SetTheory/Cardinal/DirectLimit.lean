@@ -79,7 +79,6 @@ theorem mk_eq_iSup_lift_mk
     simp only [DirectLimit, ge_iff_le]
     rwa [Cardinal.lift_umax, Cardinal.lift_id'.{v,u}] at this
 
-
 /-- If all components have the same cardinality `c`, the cardinality of the index type is at most
 `c`, and all canonical maps are injective, then the direct limit also has cardinality `c`. -/
 theorem mk_eq_of_forall_lift_mk_eq [Nonempty ι] (c : Cardinal.{max u v})
