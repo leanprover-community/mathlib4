@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Order.CompleteBooleanAlgebra
 public import Mathlib.Order.ConditionallyCompleteLattice.Finsupp
 public import Mathlib.Order.Lattice.Nat
-public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Multisets form a conditionally complete lattice
