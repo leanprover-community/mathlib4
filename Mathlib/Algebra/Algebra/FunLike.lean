@@ -60,7 +60,7 @@ theorem coeAlgHom_apply (f : F) : coeAlgHom R F f = f := rfl
 theorem coe_coeAlgHom : (coeAlgHom R F : F → α → β) = DFunLike.coe := rfl
 
 @[simp]
-theorem toRingHom_coeAlgHom : (coeAlgHom R F).toRingHom = coeRingHom F := rfl
+theorem toRingHom_coeAlgHom : (coeAlgHom R F : F →+* α → β) = coeRingHom F := rfl
 
 @[simp]
 theorem toLinearMap_coeAlgHom : (coeAlgHom R F).toLinearMap = coeₗ R F := rfl

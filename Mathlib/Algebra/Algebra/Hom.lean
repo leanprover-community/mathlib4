@@ -152,6 +152,8 @@ theorem toRingHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →
 
 @[deprecated (since := "2026-05-05")] alias coe_ringHom_mk := toRingHom_mk
 
+-- make the coercion the simp-normal form
+@[simp]
 theorem toRingHom_eq_coe (f : A →ₐ[R] B) : f.toRingHom = f :=
   rfl
 

@@ -30,32 +30,33 @@ variable [Semiring R] [AddCommMonoid F] [AddCommMonoid β] [IsAddApply F] [Modul
 variable (R F) in
 /-- Coercion as a linear map. -/
 @[expose]
-def coeₗ : F →ₗ[R] α → β where
+def coeLinearMap : F →ₗ[R] α → β where
   toFun f := f
   map_add' := by simp
   map_smul' := by simp
 
 @[simp]
-theorem coeₗ_apply (f : F) : coeₗ R F f = f := rfl
+theorem coeLinearMap_apply (f : F) : coeLinearMap R F f = f := rfl
 
 @[norm_cast]
-theorem coe_coeₗ : (coeₗ R F : F → α → β) = DFunLike.coe := rfl
+theorem coe_coeLinearMap : (coeLinearMap R F : F → α → β) = DFunLike.coe := rfl
 
 @[simp]
-theorem toAddMonoidHom_coeₗ [IsZeroApply F] : (coeₗ R F).toAddMonoidHom = coeAddMonoidHom F α β :=
+theorem toAddMonoidHom_coeLinearMap [IsZeroApply F] :
+    (coeLinearMap R F).toAddMonoidHom = coeAddMonoidHom F α β :=
   rfl
 
 variable (R F) in
 /-- Evaluation as a linear map. -/
 @[expose]
-def evalₗ (x : α) : F →ₗ[R] β := (LinearMap.proj x).comp (coeₗ R F)
+def evalLinearMap (x : α) : F →ₗ[R] β := (LinearMap.proj x).comp (coeLinearMap R F)
 
 @[simp]
-theorem evalₗ_apply (x : α) (f : F) : evalₗ R F x f = f x := rfl
+theorem evalLinearMap_apply (x : α) (f : F) : evalLinearMap R F x f = f x := rfl
 
 @[simp]
-theorem toAddMonoidHom_evalₗ [IsZeroApply F] (x : α) :
-    (evalₗ R F x).toAddMonoidHom = evalAddMonoidHom F x := rfl
+theorem toAddMonoidHom_evalLinearMap [IsZeroApply F] (x : α) :
+    (evalLinearMap R F x).toAddMonoidHom = evalAddMonoidHom F x := rfl
 
 end LinearMap
 
