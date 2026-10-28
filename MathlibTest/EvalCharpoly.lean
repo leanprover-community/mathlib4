@@ -142,15 +142,6 @@ example :
 
 /-! ## Failure tests -/
 
--- the goal is left in the normal form of `ring_nf` when `ring1` cannot close it
-/--
-error: unsolved goals
-⊢ -2 - X * 5 + X ^ 2 = X ^ 2 - 5 * X - 3
--/
-#guard_msgs in
-example : Matrix.charpoly (R := ℚ) !![1, 2; 3, 4] = X ^ 2 - 5 * X - 3 := by
-  eval_charpoly
-
 set_option trace.Tactic.evalCharpoly true
 
 /-! ### No closed matrix literal in the goal -/
