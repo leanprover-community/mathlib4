@@ -63,8 +63,8 @@ lemma ofNat_eq_zero' (a : ℕ) [a.AtLeastTwo] (h : p ∣ a) : (ofNat(a) : R) = 0
 lemma ofNat_eq_zero [p.AtLeastTwo] : (ofNat(p) : R) = 0 := cast_eq_zero R p
 
 lemma eq {p q : ℕ} (hp : CharP R p) (hq : CharP R q) : p = q :=
-  Nat.dvd_antisymm (have := hp; (cast_eq_zero_iff R p q).1 (@cast_eq_zero _ _ _ hq))
-    ((cast_eq_zero_iff R q p).1 (@cast_eq_zero _ _ _ hp))
+  Nat.dvd_antisymm ((hp.cast_eq_zero_iff R p q).mp hq.cast_eq_zero)
+    ((cast_eq_zero_iff R q p).mp hp.cast_eq_zero)
 
 instance ofCharZero [CharZero R] : CharP R 0 where
   cast_eq_iff_mod_eq := by simp
@@ -96,7 +96,7 @@ lemma of_minimal_cast_eq_zero {p : ℕ} (hp : p ≠ 0) (hp0 : (p : R) = 0)
     rw [← h0, h, Nat.cast_add, ← add_assoc, h0, zero_add, ← hp2]
   rw [← Nat.add_mod_mod, hp1 _ (Nat.mod_lt _ (Nat.pos_of_ne_zero hp)) h, Nat.add_zero]
 
-lemma _root_.CharP_iff_minimal_cast_eq_zero {p : ℕ} (hp : p ≠ 0) :
+lemma _root_.charP_iff_minimal_cast_eq_zero {p : ℕ} (hp : p ≠ 0) :
     CharP R p ↔ (p : R) = 0 ∧ ∀ n < p, (n : R) = 0 → n = 0 :=
   ⟨fun _ => ⟨cast_eq_zero R p, fun n hnp hn =>
     Nat.eq_zero_of_dvd_of_lt ((cast_eq_zero_iff R p n).mp hn) hnp⟩,
@@ -108,8 +108,8 @@ lemma of_cast_eq_zero_iff_dvd' {p : ℕ} (hp : p ≠ 0) (hp0 : ∀ x : ℕ, (x :
   of_minimal_cast_eq_zero R hp ((hp0 p).mpr dvd_rfl) fun n hnp hn =>
     Nat.eq_zero_of_dvd_of_lt ((hp0 n).mp hn) hnp
 
-/-- See `CharP_iff_cast_eq_zero_iff_dvd` for a version that works for rings, even if `p = 0`. -/
-lemma _root_.CharP_iff_cast_eq_zero_iff_dvd' {p : ℕ} (hp : p ≠ 0) :
+/-- See `charP_iff_cast_eq_zero_iff_dvd` for a version that works for rings, even if `p = 0`. -/
+lemma _root_.charP_iff_cast_eq_zero_iff_dvd' {p : ℕ} (hp : p ≠ 0) :
     CharP R p ↔ ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x :=
   ⟨fun _ => cast_eq_zero_iff R p, of_cast_eq_zero_iff_dvd' R hp⟩
 
@@ -121,7 +121,7 @@ lemma exists_of_exists_ne_zero_cast_eq_zero (h : ∃ p : ℕ, (p : R) = 0 ∧ p 
   ⟨p, hp, of_minimal_cast_eq_zero R hp (Nat.find_spec h).1 fun _ hnp hn =>
     by_contra fun hn0 => Nat.find_min h hnp ⟨hn, hn0⟩⟩
 
-lemma exists_CharP_dvd_of_cast_eq_zero {p : ℕ} (hp : p ≠ 0) (hp0 : (p : R) = 0) :
+lemma exists_charP_dvd_of_cast_eq_zero {p : ℕ} (hp : p ≠ 0) (hp0 : (p : R) = 0) :
     ∃ q, q ∣ p ∧ CharP R q := by
   obtain ⟨q, -, Hq⟩ := exists_of_exists_ne_zero_cast_eq_zero R ⟨p, hp0, hp⟩
   exact ⟨q, (cast_eq_zero_iff R q p).mp hp0, Hq⟩
@@ -133,7 +133,7 @@ lemma of_cast_eq_zero_iff_dvd {p : ℕ} (hp : ∀ x : ℕ, (x : R) = 0 ↔ p ∣
   exacts [(charP_zero_iff_charZero R).mpr (charZero_of_inj_zero fun n => by simp [hp]),
     of_cast_eq_zero_iff_dvd' R hp0 hp]
 
-lemma _root_.CharP_iff_cast_eq_zero_iff_dvd {p : ℕ} : CharP R p ↔ ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x :=
+lemma _root_.charP_iff_cast_eq_zero_iff_dvd {p : ℕ} : CharP R p ↔ ∀ x : ℕ, (x : R) = 0 ↔ p ∣ x :=
   ⟨fun _ => cast_eq_zero_iff R p, of_cast_eq_zero_iff_dvd R⟩
 
 lemma «exists» : ∃ p, CharP R p := by

@@ -43,11 +43,11 @@ variable {R : Type*}
 
 theorem charZero_of_inj_zero [AddMonoidWithOne R] [IsLeftCancelAdd R]
     (H : ∀ n : ℕ, (n : R) = 0 → n = 0) : CharZero R := by
-  refine ⟨fun m n h => ?_⟩
-  wlog h0 : m ≤ n generalizing m n
+  refine ⟨fun m n h ↦ ?_⟩
+  wlog h0 : n ≤ m generalizing m n
   · exact (this n m h.symm (Nat.le_of_not_le h0)).symm
-  rw [← add_zero (m : R), ← Nat.add_sub_cancel' h0, Nat.cast_add, add_left_cancel_iff] at h
-  exact Nat.le_antisymm h0 (Nat.le_of_sub_eq_zero (H _ h.symm))
+  rw [← add_zero (n : R), ← Nat.add_sub_cancel' h0, Nat.cast_add, add_left_cancel_iff] at h
+  exact Nat.le_antisymm (Nat.le_of_sub_eq_zero (H _ h)) h0
 
 namespace Nat
 
