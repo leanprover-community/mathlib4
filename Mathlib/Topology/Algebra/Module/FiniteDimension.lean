@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.Finiteness.Cofinite
+public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.Module.Determinant
@@ -505,27 +506,31 @@ end NormedField
 section IsModuleTopology
 
 variable {𝕜 E : Type*} [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [UniformSpace 𝕜] [CompleteSpace 𝕜]
-  [IsUniformAddGroup 𝕜] [IsTopologicalRing 𝕜] [Nontrivial 𝕜]
+  [IsUniformAddGroup 𝕜] [IsTopologicalRing 𝕜]
 
 variable (𝕜 E) in
 theorem FiniteDimensional.completeSpace_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
-    [Module.Finite 𝕜 E] [Module.Free 𝕜 E] [IsModuleTopology 𝕜 E] : CompleteSpace E := by
-  let e := (Module.finBasis 𝕜 E).equivFun
-  have h₁ : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
-  have h₂ : Continuous e.symm := IsModuleTopology.continuous_of_linearMap e.symm.toLinearMap
-  have he : IsUniformEmbedding e.toEquiv := e.isUniformEmbedding h₁ h₂
-  exact (completeSpace_congr he).mpr inferInstance
+    [Module.Finite 𝕜 E] [Module.Projective 𝕜 E] [IsModuleTopology 𝕜 E] : CompleteSpace E := by
+  obtain ⟨_, f, g, -, -, hps⟩ := Module.Finite.exists_comp_eq_id_of_projective 𝕜 E
+  replace hfg : f ∘ g = id := congr(↑$hps)
+  have hg : UniformContinuous g :=
+    uniformContinuous_addMonoidHom_of_continuous (IsModuleTopology.continuous_of_linearMap g)
+  refine ⟨fun h ↦ ?_⟩
+  obtain ⟨x, hx⟩ := CompleteSpace.complete (h.map hg)
+  have hf : (𝓝 x).map f ≤ 𝓝 (f x) := (IsModuleTopology.continuous_of_linearMap f).tendsto x
+  use f x
+  grw [← hf, ← hx, map_map, hfg, map_id]
 
 theorem Submodule.isComplete_of_finiteDimensional_of_isModuleTopology
     [UniformSpace E] [IsUniformAddGroup E]
-    (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Free 𝕜 s] [IsModuleTopology 𝕜 s] :
+    (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Projective 𝕜 s] [IsModuleTopology 𝕜 s] :
     IsComplete (s : Set E) :=
   haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
   completeSpace_coe_iff_isComplete.1 (FiniteDimensional.completeSpace_of_isModuleTopology 𝕜 s)
 
 theorem Submodule.isisClosed_of_finiteDimensional_of_isModuleTopology
     [TopologicalSpace E] [IsTopologicalAddGroup E] [T0Space E]
-    (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Free 𝕜 s] [IsModuleTopology 𝕜 s] :
+    (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Projective 𝕜 s] [IsModuleTopology 𝕜 s] :
     IsClosed (s : Set E) :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
