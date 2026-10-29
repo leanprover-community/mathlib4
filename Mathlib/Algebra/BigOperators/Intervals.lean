@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Algebra.Order.Sub.Basic
+
 import Mathlib.Data.Fintype.BigOperators
 
 /-!
@@ -230,7 +231,7 @@ theorem prod_Ico_div (hmn : m ≤ n) : ∏ i ∈ Ico m n, f (i + 1) / f i = f n 
 theorem prod_Icc_div (hmn : m ≤ n) (f : ℕ → M) :
     ∏ i ∈ Icc m n, f (i + 1) / f i = f (n + 1) / f m := by
   rw [← Finset.Ico_add_one_right_eq_Icc, prod_Ico_div]
-  omega
+  lia
 
 end Group
 

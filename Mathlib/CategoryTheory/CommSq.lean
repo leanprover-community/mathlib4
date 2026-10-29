@@ -50,22 +50,15 @@ structure CommSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y 
   /-- The square commutes. -/
   w : f ≫ h = g ≫ i := by cat_disch
 
+to_dual_for CommSq.w := self.w.symm
+to_dual_for CommSq.mk := ⟨w.symm⟩
+
 attribute [simp] CommSq.mk
+attribute [reassoc] CommSq.w
 
 namespace CommSq
 
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
-
-@[to_dual existing w]
-lemma w' (self : CommSq f g h i) : g ≫ i = f ≫ h := self.w.symm
-
-/-- `CommSq.mk'` is the dual of `CommSq.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-lemma mk' (w : g ≫ i = f ≫ h := by cat_disch) : CommSq f g h i :=
-  ⟨w.symm⟩
-
-attribute [reassoc] CommSq.w
 
 @[to_dual self]
 theorem flip (p : CommSq f g h i) : CommSq g f i h :=

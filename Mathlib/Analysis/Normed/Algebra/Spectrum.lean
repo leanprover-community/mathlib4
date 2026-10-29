@@ -5,13 +5,14 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
+
+import Mathlib.Analysis.Normed.Ring.Units
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!
@@ -757,7 +758,7 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     obtain ⟨y, hy, rfl⟩ : ∃ y ∈ spectrum ℝ a, ↑t - y = x := by simpa using hx
     obtain ⟨hty, hyt⟩ := Set.mem_Icc.mp <| this hy
     lift y to ℝ≥0 using h y hy
-    rw [← NNReal.coe_sub (by exact_mod_cast hyt)]
+    rw [← NNReal.coe_sub (mod_cast hyt)]
     simp
   · replace h : ∀ x ∈ spectrum ℝ a, ‖t - x‖₊ ≤ t := by
       simpa [spectralRadius, iSup₂_le_iff, ← spectrum.singleton_sub_eq] using h

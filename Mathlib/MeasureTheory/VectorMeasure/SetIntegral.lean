@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.MeasureTheory.VectorMeasure.Integral
+
+import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Set integral
@@ -500,7 +501,7 @@ private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
   · simp only [Finset.mem_range, disjoint_iUnion_right, disjoint_iUnion_left]
     intro i j hi
     apply hd (by grind)
-  · apply MeasurableSet.biUnion (Finset.countable_toSet _) (fun i hi ↦ hm i)
+  · exact Finset.measurableSet_biUnion _ (fun i hi ↦ hm i)
   · apply MeasurableSet.iUnion (fun i ↦ hm _)
   · apply hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])
   · apply hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])

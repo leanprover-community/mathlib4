@@ -5,19 +5,18 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Order.Interval.Basic
 public import Mathlib.Tactic.Positivity.Core
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Interval arithmetic
 
 This file defines arithmetic operations on intervals and prove their correctness. Note that this is
-full precision operations. The essentials of float operations can be found
-in `Data.FP.Basic`. We have not yet integrated these with the rest of the library.
+full precision operations.
 -/
 
 @[expose] public section

@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.Basic
+
 import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!

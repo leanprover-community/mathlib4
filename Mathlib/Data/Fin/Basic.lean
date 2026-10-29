@@ -5,12 +5,12 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 module
 
+public import Batteries.Data.Fin.Basic
 public import Mathlib.Data.Int.DivMod
 public import Mathlib.Data.Nat.Init
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Common
-public import Batteries.Data.Fin.Basic
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # The finite type with `n` elements
@@ -468,7 +468,7 @@ lemma strong_induction_on {n : ℕ} {motive : Fin n → Prop}
     motive i := by
   obtain ⟨i, hi⟩ := i
   induction i using Nat.strong_induction_on with
-  | h j hj => exact h _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
+  | ind j hj => exact h _ (fun ⟨k, hk₁⟩ hk₂ ↦ hj _ hk₂ hk₁)
 
 end Rec
 

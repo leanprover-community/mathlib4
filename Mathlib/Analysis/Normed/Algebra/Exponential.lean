@@ -5,12 +5,13 @@ Authors: Anatole Dedecker, Eric Wieser, Yuyang Zhao
 -/
 module
 
-import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Analysis.Analytic.ChangeOrigin
-public import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.Complex.Basic
+
+import Mathlib.Algebra.Algebra.TransferInstance
+import Mathlib.Data.Nat.Choose.Cast
 
 /-!
 # Exponential in a Banach algebra
@@ -124,7 +125,7 @@ this approach is taken, see the module documentation for
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
 `Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean` for lemmas
 specific to that case. -/
-noncomputable irreducible_def exp (x : 𝔸) : 𝔸 :=
+@[no_expose] noncomputable def exp (x : 𝔸) : 𝔸 :=
   if h : Nonempty (Algebra ℚ 𝔸) then
     letI _ := h.some
     (NormedSpace.expSeries ℚ 𝔸).sum x

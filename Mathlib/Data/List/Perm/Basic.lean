@@ -6,10 +6,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Data.List.Perm
-public import Mathlib.Logic.Relation
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.InsertIdx
 public import Mathlib.Logic.OpClass
+public import Mathlib.Logic.Relation
 
 /-!
 # List Permutations

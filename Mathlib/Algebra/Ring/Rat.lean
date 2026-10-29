@@ -5,11 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Ring.Basic
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Rat.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # The rational numbers are a commutative ring

@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Analysis.BoxIntegral.UnitPartition
+
 import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 

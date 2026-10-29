@@ -1,0 +1,336 @@
+/-
+Copyright (c) 2018 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+
+/-!
+# Subgroups of cyclic groups
+
+Develop properties of finite cyclic groups and subgroups of cyclic groups.
+
+## Main statements
+
+* `isCyclic_of_prime_card` proves that a finite group of prime order is cyclic.
+* `Subgroup.isCyclic` proves that subgroups of cyclic groups are cyclic.
+
+## Tags
+
+cyclic group
+-/
+
+@[expose] public section
+
+assert_not_exists Ideal TwoSidedIdeal Field
+
+variable {α G G' : Type*} {a : α}
+
+section Cyclic
+
+open Subgroup
+
+@[to_additive]
+theorem IsCyclic.exists_generator [Group α] [IsCyclic α] : ∃ g : α, ∀ x, x ∈ zpowers g :=
+  exists_zpow_surjective α
+
+@[to_additive]
+theorem isCyclic_iff_exists_zpowers_eq_top [Group α] : IsCyclic α ↔ ∃ g : α, zpowers g = ⊤ := by
+  simp only [eq_top_iff', mem_zpowers_iff]
+  exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+@[to_additive]
+protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq [Group α] (H : Subgroup α) :
+    IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
+  rw [isCyclic_iff_exists_zpowers_eq_top]
+  simp_rw [← map_subtype_inj, Subgroup.map_top,
+    H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coe_subtype, exists_prop]
+  exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
+
+@[to_additive (attr := deprecated (since := "2026-10-10"))]
+protected alias Subgroup.isCyclic_iff_exists_zpowers_eq_top :=
+  Subgroup.isCyclic_iff_exists_zpowers_eq
+
+@[to_additive]
+instance Subgroup.isCyclic_zpowers [Group G] (g : G) :
+    IsCyclic (Subgroup.zpowers g) :=
+  (Subgroup.isCyclic_iff_exists_zpowers_eq _).mpr ⟨g, rfl⟩
+
+variable [Group α] [Group G] [Group G']
+
+@[to_additive]
+lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :
+    IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
+  simp_rw [isCyclic_iff_exists_zpowers_eq_top, ← card_eq_iff_eq_top, Nat.card_zpowers]
+
+@[to_additive]
+lemma isCyclic_iff_exists_natCard_le_orderOf [Finite α] :
+    IsCyclic α ↔ ∃ g : α, Nat.card α ≤ orderOf g := by
+  rw [isCyclic_iff_exists_orderOf_eq_natCard]
+  apply exists_congr
+  intro g
+  exact ⟨Eq.ge, le_antisymm orderOf_le_card⟩
+
+@[to_additive]
+theorem isCyclic_of_orderOf_eq_card [Finite α] (x : α) (hx : orderOf x = Nat.card α) :
+    IsCyclic α :=
+  isCyclic_iff_exists_orderOf_eq_natCard.mpr ⟨x, hx⟩
+
+@[to_additive]
+theorem isCyclic_of_card_le_orderOf [Finite α] (x : α) (hx : Nat.card α ≤ orderOf x) :
+    IsCyclic α :=
+  isCyclic_iff_exists_natCard_le_orderOf.mpr ⟨x, hx⟩
+
+@[to_additive]
+theorem Subgroup.eq_bot_or_eq_top_of_prime_card
+    (H : Subgroup G) [hp : Fact (Nat.card G).Prime] : H = ⊥ ∨ H = ⊤ := by
+  have : Finite G := Nat.finite_of_card_ne_zero hp.1.ne_zero
+  have := card_subgroup_dvd_card H
+  rwa [Nat.dvd_prime hp.1, ← eq_bot_iff_card, card_eq_iff_eq_top] at this
+
+/-- Any non-identity element of a finite group of prime order generates the group. -/
+@[to_additive /-- Any non-identity element of a finite group of prime order generates the group. -/]
+theorem zpowers_eq_top_of_prime_card {p : ℕ}
+    [hp : Fact p.Prime] (h : Nat.card G = p) {g : G} (hg : g ≠ 1) : zpowers g = ⊤ := by
+  subst h
+  have := (zpowers g).eq_bot_or_eq_top_of_prime_card
+  rwa [zpowers_eq_bot, or_iff_right hg] at this
+
+@[to_additive]
+theorem mem_zpowers_of_prime_card {p : ℕ} [hp : Fact p.Prime]
+    (h : Nat.card G = p) {g g' : G} (hg : g ≠ 1) : g' ∈ zpowers g := by
+  simp_rw [zpowers_eq_top_of_prime_card h hg, Subgroup.mem_top]
+
+@[to_additive]
+theorem mem_powers_of_prime_card {p : ℕ} [hp : Fact p.Prime]
+    (h : Nat.card G = p) {g g' : G} (hg : g ≠ 1) : g' ∈ Submonoid.powers g := by
+  have : Finite G := Nat.finite_of_card_ne_zero (h ▸ hp.1.ne_zero)
+  rw [mem_powers_iff_mem_zpowers]
+  exact mem_zpowers_of_prime_card h hg
+
+@[to_additive]
+theorem powers_eq_top_of_prime_card {p : ℕ}
+    [hp : Fact p.Prime] (h : Nat.card G = p) {g : G} (hg : g ≠ 1) : Submonoid.powers g = ⊤ := by
+  ext x
+  simp [mem_powers_of_prime_card h hg]
+
+/-- A finite group of prime order is cyclic. -/
+@[to_additive /-- A finite group of prime order is cyclic. -/]
+theorem isCyclic_of_prime_card {p : ℕ} [hp : Fact p.Prime]
+    (h : Nat.card α = p) : IsCyclic α := by
+  have : Finite α := Nat.finite_of_card_ne_zero (h ▸ hp.1.ne_zero)
+  have : Nontrivial α := Finite.one_lt_card_iff_nontrivial.mp (h ▸ hp.1.one_lt)
+  obtain ⟨g, hg⟩ : ∃ g : α, g ≠ 1 := exists_ne 1
+  exact ⟨g, fun g' ↦ mem_zpowers_of_prime_card h hg⟩
+
+/-- A finite group of order dividing a prime is cyclic. -/
+@[to_additive /-- A finite group of order dividing a prime is cyclic. -/]
+theorem isCyclic_of_card_dvd_prime {p : ℕ} [hp : Fact p.Prime]
+    (h : Nat.card α ∣ p) : IsCyclic α := by
+  rcases (Nat.dvd_prime hp.out).mp h with h | h
+  · exact @isCyclic_of_subsingleton α _ (Nat.card_eq_one_iff_unique.mp h).1
+  · exact isCyclic_of_prime_card h
+
+@[to_additive]
+theorem orderOf_eq_card_of_forall_mem_zpowers {g : α} (hx : ∀ x, x ∈ zpowers g) :
+    orderOf g = Nat.card α := by
+  rw [← Nat.card_zpowers, (zpowers g).eq_top_iff'.mpr hx, card_top]
+
+@[to_additive]
+theorem orderOf_eq_card_of_forall_mem_powers {g : α} (hx : ∀ x, x ∈ Submonoid.powers g) :
+    orderOf g = Nat.card α := by
+  rw [orderOf_eq_card_of_forall_mem_zpowers]
+  exact fun x ↦ Submonoid.powers_le_zpowers _ (hx _)
+
+@[to_additive]
+theorem orderOf_eq_card_of_zpowers_eq_top {g : G} (h : Subgroup.zpowers g = ⊤) :
+    orderOf g = Nat.card G :=
+  orderOf_eq_card_of_forall_mem_zpowers fun _ ↦ h.ge (Subgroup.mem_top _)
+
+@[to_additive]
+theorem exists_pow_ne_one_of_isCyclic [G_cyclic : IsCyclic G]
+    {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Nat.card G) : ∃ a : G, a ^ k ≠ 1 := by
+  have : Finite G := Nat.finite_of_card_ne_zero (Nat.ne_zero_of_lt k_lt_card_G)
+  rcases G_cyclic with ⟨a, ha⟩
+  use a
+  contrapose! k_lt_card_G
+  convert orderOf_le_of_pow_eq_one k_pos.bot_lt k_lt_card_G
+  rw [← Nat.card_zpowers, eq_comm, card_eq_iff_eq_top, eq_top_iff]
+  exact fun x _ ↦ ha x
+
+@[to_additive]
+theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
+    (h : ∀ x, x ∈ zpowers g) : orderOf g = 0 := by
+  rw [orderOf_eq_card_of_forall_mem_zpowers h, Nat.card_eq_zero_of_infinite]
+
+@[to_additive]
+instance Bot.isCyclic : IsCyclic (⊥ : Subgroup α) :=
+  ⟨⟨1, fun x => ⟨0, Subtype.ext <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
+
+@[to_additive]
+instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H := by
+  let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
+  rcases eq_or_ne H ⊥ with rfl | hH
+  · infer_instance
+  have ⟨n, hmin⟩ := exists_minimal_of_wellFoundedLT (fun n ↦ 0 < n ∧ g ^ n ∈ H) <| by
+    obtain ⟨x, hx₁, hx₂⟩ := H.bot_or_exists_ne_one.resolve_left hH
+    obtain ⟨k, rfl⟩ := hg x
+    use k.natAbs
+    contrapose hx₂
+    cases k <;> simp_all
+  refine ⟨⟨⟨g ^ n, hmin.1.2⟩, fun ⟨x, hx⟩ ↦ ?_⟩⟩
+  obtain ⟨k, rfl⟩ := hg x
+  refine ⟨k / n, Subtype.ext ?_⟩
+  suffices ↑n ∣ k by simpa [zpow_mul] using congr(g ^ $(Int.mul_ediv_cancel' this))
+  rw [Int.ofNat_dvd_left, Nat.dvd_iff_mod_eq_zero]
+  suffices g ^ (k.natAbs % n) ∈ H by grind [hmin.not_prop_of_lt (k.natAbs.mod_lt hmin.1.1)]
+  rw [← H.mul_mem_cancel_left (H.pow_mem hmin.1.2 (k.natAbs / n)),
+    ← pow_mul, ← pow_add, Nat.div_add_mod]
+  cases k <;> simpa using hx
+
+@[to_additive]
+theorem isCyclic_of_injective [IsCyclic G'] (f : G →* G') (hf : Function.Injective f) :
+    IsCyclic G :=
+  isCyclic_of_surjective (MonoidHom.ofInjective hf).symm (MonoidHom.ofInjective hf).symm.surjective
+
+@[to_additive]
+lemma Subgroup.isCyclic_of_le {H H' : Subgroup G} (h : H ≤ H') [IsCyclic H'] : IsCyclic H :=
+  isCyclic_of_injective (Subgroup.inclusion h) (Subgroup.inclusion_injective h)
+
+@[to_additive]
+theorem Subgroup.le_zpowers_iff (g : G) (H : Subgroup G) :
+    H ≤ Subgroup.zpowers g ↔ ∃ n : ℕ, H = Subgroup.zpowers (g ^ n) := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨x, rfl⟩ := H.isCyclic_iff_exists_zpowers_eq.mp (isCyclic_of_le h)
+    obtain ⟨k, rfl⟩ := mem_zpowers_iff.mp <| h (mem_zpowers x)
+    obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg k
+    · exact ⟨n, by rw [zpow_natCast]⟩
+    · exact ⟨n, by simp⟩
+  · rintro ⟨k, rfl⟩
+    exact zpowers_le_of_mem <| npow_mem_zpowers g k
+
+open Finset Nat
+
+section Classical
+
+open scoped Classical in
+@[to_additive IsAddCyclic.card_nsmul_eq_zero_le]
+theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] {n : ℕ} (hn0 : 0 < n) :
+    #{a : α | a ^ n = 1} ≤ n :=
+  let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
+  calc
+    #{a : α | a ^ n = 1} ≤
+        #(zpowers (g ^ (Fintype.card α / Nat.gcd n (Fintype.card α))) : Set α).toFinset := by
+      gcongr
+      intro x hx
+      let ⟨m, hm⟩ := show x ∈ Submonoid.powers g from mem_powers_iff_mem_zpowers.2 <| hg x
+      refine Set.mem_toFinset.2 ⟨(m / (Fintype.card α / Nat.gcd n (Fintype.card α)) : ℕ), ?_⟩
+      dsimp only at ⊢ hm
+      rw [zpow_natCast, ← pow_mul, Nat.mul_div_cancel_left', hm]
+      refine Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) ?_
+      conv_lhs =>
+        rw [Nat.div_mul_cancel (Nat.gcd_dvd_right _ _), ← Nat.card_eq_fintype_card,
+          ← orderOf_eq_card_of_forall_mem_zpowers hg]
+      exact orderOf_dvd_of_pow_eq_one <| by simpa [pow_mul, hm] using (mem_filter.1 hx).2
+    _ ≤ n := by
+      let ⟨m, hm⟩ := Nat.gcd_dvd_right n (Fintype.card α)
+      have hm0 : 0 < m :=
+        Nat.pos_of_ne_zero fun hm0 => by
+          rw [hm0, mul_zero, Fintype.card_eq_zero_iff] at hm
+          exact hm.elim' 1
+      simp only [Set.toFinset_card, SetLike.coe_sort_coe]
+      rw [Fintype.card_zpowers, orderOf_pow g, orderOf_eq_card_of_forall_mem_zpowers hg,
+        Nat.card_eq_fintype_card]
+      nth_rw 2 [hm]; nth_rw 3 [hm]
+      rw [Nat.mul_div_cancel_left _ (gcd_pos_of_pos_left _ hn0), gcd_mul_left_left, hm,
+        Nat.mul_div_cancel _ hm0]
+      exact le_of_dvd hn0 (Nat.gcd_dvd_left _ _)
+
+end Classical
+
+@[to_additive]
+theorem IsCyclic.exists_monoid_generator [Finite α] [IsCyclic α] :
+    ∃ x : α, ∀ y : α, y ∈ Submonoid.powers x := by
+  simp_rw [mem_powers_iff_mem_zpowers]
+  exact IsCyclic.exists_generator
+
+@[to_additive]
+lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf g = Nat.card α := by
+  obtain ⟨g, hg⟩ := h.exists_generator
+  use g
+  rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
+  exact Nat.card_congr (Equiv.Set.univ α)
+
+variable (G) in
+/-- A distributive action of a monoid on a finite cyclic group of order `n` factors through an
+action on `ZMod n`. -/
+noncomputable def MulDistribMulAction.toMonoidHomZModOfIsCyclic (M : Type*) [Monoid M]
+    [IsCyclic G] [MulDistribMulAction M G] {n : ℕ} (hn : Nat.card G = n) : M →* ZMod n where
+  toFun m := (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose
+  map_one' := by
+    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
+    rw [← Int.cast_one, ZMod.intCast_eq_intCast_iff, ← hn, ← hg, ← zpow_eq_zpow_iff_modEq,
+      zpow_one, ← (MulDistribMulAction.toMonoidHom G 1).map_cyclic.choose_spec,
+      MulDistribMulAction.toMonoidHom_apply, one_smul]
+  map_mul' m n := by
+    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
+    rw [← Int.cast_mul, ZMod.intCast_eq_intCast_iff, ← hn, ← hg, ← zpow_eq_zpow_iff_modEq,
+      zpow_mul', ← (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose_spec,
+      ← (MulDistribMulAction.toMonoidHom G n).map_cyclic.choose_spec,
+      ← (MulDistribMulAction.toMonoidHom G (m * n)).map_cyclic.choose_spec,
+      MulDistribMulAction.toMonoidHom_apply, MulDistribMulAction.toMonoidHom_apply,
+      MulDistribMulAction.toMonoidHom_apply, mul_smul]
+
+theorem MulDistribMulAction.toMonoidHomZModOfIsCyclic_apply {M : Type*} [Monoid M] [IsCyclic G]
+    [MulDistribMulAction M G] {n : ℕ} (hn : Nat.card G = n) (m : M) (g : G) (k : ℤ)
+    (h : toMonoidHomZModOfIsCyclic G M hn m = k) : m • g = g ^ k := by
+  rw [← MulDistribMulAction.toMonoidHom_apply,
+    (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose_spec g, zpow_eq_zpow_iff_modEq]
+  apply Int.ModEq.of_dvd (Int.natCast_dvd_natCast.mpr (orderOf_dvd_natCard g))
+  rwa [hn, ← ZMod.intCast_eq_intCast_iff]
+
+section
+
+variable [Fintype α]
+
+@[to_additive]
+theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
+    ∃! n : ZMod (Fintype.card α), x = a ^ n.val := by
+  obtain ⟨n, rfl⟩ := ha x
+  refine ⟨n, (?_ : a ^ n = _), fun y (hy : a ^ n = _) ↦ ?_⟩
+  · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
+      Int.modEq_comm, Int.modEq_iff_add_fac, Nat.card_eq_fintype_card, ← ZMod.intCast_eq_iff]
+  · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
+      Nat.card_eq_fintype_card, ← ZMod.intCast_eq_intCast_iff] at hy
+    simp [hy]
+
+variable [DecidableEq α]
+
+@[to_additive]
+theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
+    Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
+  simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
+
+@[to_additive]
+theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
+    Finset.image (fun i => a ^ i) (range (Nat.card α)) = univ := by
+  rw [← orderOf_eq_card_of_forall_mem_zpowers ha, IsCyclic.image_range_orderOf ha]
+
+@[to_additive]
+lemma IsCyclic.ext [Finite G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
+    (hGcard : Nat.card G = d) (h : ∀ t : G, t ^ a.val = t ^ b.val) : a = b := by
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
+  specialize h g
+  subst hGcard
+  rw [pow_eq_pow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers hg,
+    ← ZMod.natCast_eq_natCast_iff] at h
+  simpa [ZMod.natCast_val, ZMod.cast_id'] using h
+
+end
+
+end Cyclic
+
+end

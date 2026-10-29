@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.Group.Monoid
 public import Batteries.Data.List.Lemmas
+public import Mathlib.Algebra.Group.Monoid
 
 /-!
 # Sums and products from lists

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
+
 import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!

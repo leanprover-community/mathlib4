@@ -6,8 +6,9 @@ Authors: Christian Merten, Junyan Xu
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Purely inseparable extensions are universal homeomorphisms

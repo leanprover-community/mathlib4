@@ -66,29 +66,24 @@ variable
 
 namespace Homogenization
 
-/- TODO: define the `AddCommGroup` and `Module` instances using `inferInstanceAs` once
-https://github.com/leanprover/lean4/issues/14470 is fixed -/
-
-/-- Auxiliary definition used for defining the module structure on `Homogenization`. -/
-def equivProdAux : Homogenization R P ≃ V × R :=
-  .refl _
-
--- This instance must be exposed to avoid publicly non-defeq instances for `NSMul`.
-instance : AddCommGroup (Homogenization R P) :=
-  equivProdAux.addCommGroup
-
-section SMul
-
 /- The `[IsScalarTower S R V]` assumption implies that this instance does not depend on the
 arbitrary choice made in the definition of `Homogenization`. -/
 @[nolint unusedArguments]
-instance instModule {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V] :
-    Module S (Homogenization R P) :=
-  equivProdAux.addEquiv.module S
+instance instSMul {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V] :
+    SMul S (Homogenization R P) :=
+  inferInstanceAs (SMul S (V × R))
+
+instance : AddCommGroup (Homogenization R P) :=
+  inferInstanceAs (AddCommGroup (V × R))
+
+section SMul
 
 variable
   {S : Type*} [Semiring S] [Module S R] [Module S V] [IsScalarTower S R V]
   {T : Type*} [Semiring T] [Module T R] [Module T V] [IsScalarTower T R V]
+
+instance : Module S (Homogenization R P) :=
+  inferInstanceAs (Module S (V × R))
 
 instance [SMul S T] [IsScalarTower S T R] [IsScalarTower S T V] :
     IsScalarTower S T (Homogenization R P) :=

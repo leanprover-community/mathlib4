@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.KrullDimension.Zero
+
 import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
@@ -14,7 +15,8 @@ import Mathlib.RingTheory.LocalProperties.Reduced
 In this file, we provide basic properties for strongly transcendental elements in an algebra.
 This is a relatively niche notion, but is useful for proving Zariski's main theorem.
 
-## Reference
+## References
+
 - https://stacks.math.columbia.edu/tag/00PZ
 
 -/

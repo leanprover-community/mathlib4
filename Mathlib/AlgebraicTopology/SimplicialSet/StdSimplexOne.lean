@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+
 import Mathlib.AlgebraicTopology.SimplexCategory.ToMkOne
 
 /-!

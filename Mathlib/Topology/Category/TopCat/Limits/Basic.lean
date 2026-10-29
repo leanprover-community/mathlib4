@@ -5,10 +5,10 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Adjunctions
-public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.Topology.Category.TopCat.Adjunctions
 
 /-!
 # The category of topological spaces has all limits and colimits
@@ -140,6 +140,7 @@ theorem induced_of_isLimit :
 
 end IsLimit
 
+set_option fun_prop.projDefaultTransparency true in
 lemma nonempty_isLimit_iff_eq_induced {F : J ⥤ TopCat.{u}} (c : Cone F)
     (hc : IsLimit ((forget).mapCone c)) :
     Nonempty (IsLimit c) ↔ c.pt.str = ⨅ j, (F.obj j).str.induced (c.π.app j) := by
@@ -261,7 +262,6 @@ lemma isOpen_iff_of_isColimit (X : Set c.pt) :
   · simp only [← isOpen_coinduced]
     apply isOpen_iSup_iff
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isClosed_iff_of_isColimit (X : Set c.pt) :
     IsClosed X ↔ ∀ (j : J), IsClosed (c.ι.app j ⁻¹' X) := by
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
@@ -274,6 +274,7 @@ lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt �
 
 end IsColimit
 
+set_option fun_prop.projDefaultTransparency true in
 lemma nonempty_isColimit_iff_eq_coinduced (c : Cocone F) (hc : IsColimit ((forget).mapCocone c)) :
     Nonempty (IsColimit c) ↔ c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   refine ⟨fun ⟨hc⟩ ↦ coinduced_of_isColimit _ hc, fun h ↦ ⟨?_⟩⟩

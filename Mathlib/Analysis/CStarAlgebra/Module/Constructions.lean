@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Module.Defs
 public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 public import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Topology.MetricSpace.Bilipschitz
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+import Mathlib.Topology.MetricSpace.Bilipschitz
 
 /-! # Constructions of Hilbert C⋆-modules
 

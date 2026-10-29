@@ -6,10 +6,11 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
-import Mathlib.Topology.UniformSpace.Matrix
 public import Mathlib.Topology.Instances.Matrix
+
+import Mathlib.Analysis.Matrix.Normed
+import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Lemmas about the matrix exponential

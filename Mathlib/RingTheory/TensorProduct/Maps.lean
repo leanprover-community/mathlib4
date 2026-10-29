@@ -864,16 +864,13 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
     (fun a b f g ↦ by
       apply LinearMap.ext
       intro x
-      simp only [tensorProduct, mul_comm a b, Module.End.mul_eq_comp,
-        TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul, coe_restrictScalars,
-        coe_mk, AddHom.coe_mk, mul_smul, smul_apply, baseChangeHom_apply, baseChange_comp,
-        comp_apply, Algebra.mul_smul_comm, Algebra.smul_mul_assoc])
+      simp [tensorProduct, mul_comm a b, End.mul_eq_comp, mul_smul, baseChange_comp])
     (by
       apply LinearMap.ext
       intro x
       simp only [tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
         TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
-        baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_eq_id,
+        baseChangeHom_apply, baseChange_eq_lTensor, Module.End.one_eq_id,
         lTensor_id, LinearMap.id_apply])
 
 /-- If `R →+* S` is surjective, the multiplication map `S ⊗[R] S →+* S` is an isomorphism. This

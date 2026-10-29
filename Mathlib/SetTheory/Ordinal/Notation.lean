@@ -5,10 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Data.Ordering.Lemmas
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.SetTheory.Ordinal.Principal
+
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Data.Ordering.Lemmas
 import Mathlib.Tactic.NormNum
 
 /-!

@@ -205,9 +205,6 @@ theorem sup_support_coeff_finsetProd_le (degb0 : degb 0 ≤ 0)
 @[deprecated (since := "2026-06-18")]
 alias sup_support_finsetProd_le := sup_support_coeff_finsetProd_le
 
-@[deprecated (since := "2026-04-08")]
-alias sup_support_finset_prod_le := sup_support_coeff_finsetProd_le
-
 theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → R[A]) :
     (∑ i ∈ s, (f i).coeff.support.inf degt) ≤ (∏ i ∈ s, f i).coeff.support.inf degt :=
@@ -215,9 +212,6 @@ theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
 
 @[deprecated (since := "2026-06-18")]
 alias le_inf_support_finsetProd := le_inf_support_coeff_finsetProd
-
-@[deprecated (since := "2026-04-08")]
-alias le_inf_support_finset_prod := le_inf_support_coeff_finsetProd
 
 end CommutativeLemmas
 

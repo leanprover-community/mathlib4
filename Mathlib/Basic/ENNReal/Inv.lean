@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Basic.ENNReal.Operations
+
 import Mathlib.Tactic.Basify.Attr
 
 /-!

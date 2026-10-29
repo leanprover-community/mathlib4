@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+
 import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.SimpleModule.Basic
 
@@ -37,9 +38,6 @@ open scoped Pointwise nonZeroDivisors
 namespace FractionalIdeal
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
-
--- A nontrivial free `ℤ`-module is infinite; local to this file to supply `Infinite R`.
-local instance : Infinite R := Module.Free.infinite ℤ R
 
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
@@ -94,6 +92,7 @@ theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert abs
 
 theorem absNorm_eq_zero_iff [IsDomain K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
+  have : Ring.HasFiniteQuotients R := .of_module_finite ℤ R
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_

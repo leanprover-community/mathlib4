@@ -267,16 +267,22 @@ theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
       let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_eq_one ha.1 ha.2 ha₁ hb.1 (hb.2 ⟨j, .inr rfl⟩
         (by grind))
       refine ⟨c, hc.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (by grind)
+      rcases eq_or_ne k j with (rfl | h)
+      · exact hc.2.2
+      · exact hc.2.1 ⟨k, h⟩ (by grind)
     rcases ha₁.lt_or_gt with (ha_lt | ha_gt)
     · -- If `v j a < 1` then `a` works as the divergent point.
       refine ⟨a, ha.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact ha_lt; exact ha.2 ⟨k, h⟩ (by grind)
+      rcases eq_or_ne k j with (rfl | h)
+      · exact ha_lt
+      · exact ha.2 ⟨k, h⟩ (by grind)
     · -- If `1 < v j a` then take a large enough value from the sequence `b / (1 + a ^ (-n))`.
       let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_one_lt ha.1 ha.2 ha_gt hb.1 (hb.2 ⟨j, .inr rfl⟩
         (by grind))
       refine ⟨c, hc.1, fun k hk ↦ ?_⟩
-      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (by grind)
+      rcases eq_or_ne k j with (rfl | h)
+      · exact hc.2.2
+      · exact hc.2.1 ⟨k, h⟩ (by grind)
 
 end LinearOrderedField
 

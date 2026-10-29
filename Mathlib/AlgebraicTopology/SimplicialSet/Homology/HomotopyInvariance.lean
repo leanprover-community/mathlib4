@@ -22,7 +22,7 @@ First, in the case where the homotopy between two morphisms of simplicial sets
 we use the fact that we still have a similar kind of homotopy between
 the corresponding morphisms on the simplicial objects in `C` that are
 obtained after applying the "free object" functor `sigmaConst.obj R : Type _ ⥤ C`
-degreewise, and that a combinatoral homotopy of simplicial objects
+degreewise, and that a combinatorial homotopy of simplicial objects
 in a preadditive category induces a homotopy on the alternating face map
 complexes (see `SimplicialObject.Homotopy.toChainHomotopy`, which is defined
 in the file `Mathlib/AlgebraicTopology/SimplicialObject/ChainHomotopy.lean`).
@@ -45,7 +45,7 @@ assert_not_exists TopologicalSpace
 
 universe v u w
 
-open CategoryTheory Limits AlgebraicTopology.SSet
+open CategoryTheory Limits
 
 variable {C : Type u} [Category.{v} C] [Preadditive C] [HasCoproducts.{w} C]
   {X Y : SSet.{w}} {f g : X ⟶ Y}
@@ -64,14 +64,6 @@ noncomputable def sSetChainComplexMap
     _root_.Homotopy (SSet.chainComplexMap f R) (SSet.chainComplexMap g R) :=
   toChainHomotopy (H.whiskerRight _)
 
-@[deprecated (since := "2026-04-05")]
-alias singularChainComplexFunctorObjMap :=
-  sSetChainComplexMap
-
-@[deprecated (since := "2026-03-24")]
-alias _root_.singularChainComplexFunctor_mapHomotopy_of_simplicialHomotopy :=
-  sSetChainComplexMap
-
 open HomologicalComplex in
 /--
 Simplicially homotopic maps of simplicial sets induce the same map on
@@ -84,13 +76,6 @@ theorem congr_sSetHomologyMap [CategoryWithHomology C]
     (H : SimplicialObject.Homotopy f g) (R : C) (n : ℕ) :
     SSet.homologyMap f R n = SSet.homologyMap g R n :=
   (H.sSetChainComplexMap R).homologyMap_eq n
-
-@[deprecated (since := "2026-03-24")]
-alias singularChainComplexFunctor_map_homology_eq_of_simplicialHomotopy :=
-  congr_sSetHomologyMap
-
-@[deprecated (since := "2026-04-05")] alias congr_homologyMap_singularChainComplexFunctor :=
-  congr_sSetHomologyMap
 
 end CategoryTheory.SimplicialObject.Homotopy
 
@@ -105,9 +90,6 @@ noncomputable def chainComplexMap
     _root_.Homotopy (SSet.chainComplexMap f R) (SSet.chainComplexMap g R)  :=
   H.toSimplicialObjectHomotopy.sSetChainComplexMap R
 
-@[deprecated (since := "2026-04-05")]
-alias singularChainComplexFunctorObjMap := chainComplexMap
-
 open HomologicalComplex in
 /--
 Homotopic maps of simplicial sets induce the same map on homology of the singular
@@ -117,8 +99,5 @@ theorem congr_homologyMap [CategoryWithHomology C]
     (H : SSet.Homotopy f g) (R : C) (n : ℕ) :
     SSet.homologyMap f R n = SSet.homologyMap g R n :=
   (H.chainComplexMap R).homologyMap_eq n
-
-@[deprecated (since := "2026-04-05")]
-alias congr_homologyMap_singularChainComplexFunctor := congr_homologyMap
 
 end SSet.Homotopy

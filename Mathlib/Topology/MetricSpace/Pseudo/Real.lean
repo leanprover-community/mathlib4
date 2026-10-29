@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
+
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-!
 # Lemmas about distances between points in intervals in `ℝ`.

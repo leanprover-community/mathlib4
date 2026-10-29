@@ -207,8 +207,9 @@ private theorem lintegral_liminf_nat_le' {f : ℕ → α → ℝ≥0∞} (h_meas
     ∫⁻ a, liminf (fun n => f n a) atTop ∂μ = ∫⁻ a, ⨆ n : ℕ, ⨅ i ≥ n, f i a ∂μ := by
       simp only [liminf_eq_iSup_iInf_of_nat]
     _ = ⨆ n : ℕ, ∫⁻ a, ⨅ i ≥ n, f i a ∂μ :=
-      (lintegral_iSup' (fun _ => .biInf _ (to_countable _) (fun i _ ↦ h_meas i))
-        (ae_of_all μ fun _ _ _ hnm => iInf_le_iInf_of_subset fun _ hi => le_trans hnm hi))
+      (lintegral_iSup' (fun n => .biInf {i | i ≥ n} (to_countable _) (fun i _ ↦ h_meas i))
+        (ae_of_all μ fun _ n m hnm => iInf_le_iInf_of_subset (s := {i | i ≥ m})
+          (t := {i | i ≥ n}) fun _ hi => le_trans hnm hi))
     _ ≤ ⨆ n : ℕ, ⨅ i ≥ n, ∫⁻ a, f i a ∂μ := iSup_mono fun _ => le_iInf₂_lintegral _
     _ = atTop.liminf fun n => ∫⁻ a, f n a ∂μ := Filter.liminf_eq_iSup_iInf_of_nat.symm
 
@@ -272,7 +273,7 @@ lemma measure_support_eapprox_lt_top {f : α → ℝ≥0∞} (hf_meas : Measurab
 of their sum. The other inequality needs one of these functions to be (a.e.-)measurable. -/
 theorem le_lintegral_add (f g : α → ℝ≥0∞) :
     ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ ≤ ∫⁻ a, f a + g a ∂μ := by
-  simp only [lintegral]
+  simp only [lintegral_def]
   refine ENNReal.biSup_add_biSup_le' (p := fun h : α →ₛ ℝ≥0∞ => h ≤ f)
     (q := fun h : α →ₛ ℝ≥0∞ => h ≤ g) ⟨0, zero_le⟩ ⟨0, zero_le⟩ fun f' hf' g' hg' => ?_
   exact le_iSup₂_of_le (f' + g') (add_le_add hf' hg') (add_lintegral _ _).ge
@@ -297,7 +298,7 @@ theorem lintegral_add_aux {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Me
       · congr
         funext n
         rw [← SimpleFunc.add_lintegral, ← SimpleFunc.lintegral_eq_lintegral]
-        simp only [Pi.add_apply, SimpleFunc.coe_add]
+        simp only [Pi.add_apply, FunLike.coe_add]
       · fun_prop
       · intro i j h a
         dsimp
@@ -351,18 +352,14 @@ theorem lintegral_finsetSum' (s : Finset β) {f : β → α → ℝ≥0∞}
     rw [Finset.forall_mem_insert] at hf
     rw [lintegral_add_left' hf.1, ih hf.2]
 
-@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum' := lintegral_finsetSum'
-
 theorem lintegral_finsetSum (s : Finset β) {f : β → α → ℝ≥0∞} (hf : ∀ b ∈ s, Measurable (f b)) :
     ∫⁻ a, ∑ b ∈ s, f b a ∂μ = ∑ b ∈ s, ∫⁻ a, f b a ∂μ :=
   lintegral_finsetSum' s fun b hb => (hf b hb).aemeasurable
 
-@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum := lintegral_finsetSum
-
 theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i, AEMeasurable (f i) μ) :
     ∫⁻ a, ∑' i, f i a ∂μ = ∑' i, ∫⁻ a, f i a ∂μ := by
   classical
-  simp only [ENNReal.tsum_eq_iSup_sum]
+  simp only [tsum_eq_iSup_sum]
   rw [lintegral_iSup_directed]
   · simp [lintegral_finsetSum' _ fun i _ => hf i]
   · intro b
@@ -394,7 +391,7 @@ theorem lintegral_const_mul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measu
       · intro n
         exact SimpleFunc.measurable _
       · intro i j h a
-        dsimp
+        simp only [mul_apply, coe_const, Function.const_apply]
         gcongr
         exact monotone_eapprox _ h _
     _ = r * ∫⁻ a, f a ∂μ := by rw [← ENNReal.mul_iSup, lintegral_eq_iSup_eapprox_lintegral hf]
@@ -408,13 +405,13 @@ theorem lintegral_const_mul'' (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : AEM
 
 theorem lintegral_const_mul_le (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
     r * ∫⁻ a, f a ∂μ ≤ ∫⁻ a, r * f a ∂μ := by
-  rw [lintegral, ENNReal.mul_iSup]
+  rw [lintegral_def, ENNReal.mul_iSup]
   refine iSup_le fun s => ?_
   rw [ENNReal.mul_iSup, iSup_le_iff]
   intro hs
-  rw [← SimpleFunc.const_mul_lintegral, lintegral]
+  rw [← SimpleFunc.const_mul_lintegral, lintegral_def]
   refine le_iSup_of_le (const α r * s) (le_iSup_of_le (fun x => ?_) le_rfl)
-  dsimp
+  simp only [mul_apply, coe_const, Function.const_apply]
   grw [hs x]
 
 theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :

@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+
 import Mathlib.Topology.MetricSpace.Equicontinuity
 
 /-!
