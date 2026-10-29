@@ -89,28 +89,34 @@ inductive Ind | mk (x y : Nat)
 #guard_msgs in
 example (i : Ind) := i.2
 
-/-- Elaborates `cmd`, then reports how many `TermInfo`s the linter reads (those on
-`identProj`-wrapped field indices) and lists any whose raw `expr` is not a constant.
+open Elab Command in
+/-- Elaborates `cmd`, then reports how many `TermInfo`s are numeric projections. The
+`numericProjections` linter expects the `expr`s of all such infos to be constants (no metavariables
+or metadata/annotations), so this ensures that this is indeed the case (and that we capture all the
+projection infos we expect to).
 
-The linter relies on this `expr` being a bare constant: it is the projection function, built by
-`Term.mkConst` and recorded via `addProjTermInfo` before anything is applied to it. -/
-elab tk:"#numeric_proj_infos" " in " cmd:command : command => do
-  Elab.Command.elabCommand cmd
-  let mut n := 0
+If this output changes, consider following the advice in the body of `numericProjFn?` in the linter
+and accounting for metavariables and annotations. -/
+elab tk:"#numeric_proj_infos" " in " ppLine cmd:command : command => do
+  elabCommand cmd
+  let mut numInfos := 0
   let mut bad : Array MessageData := #[]
-  for t in ← Elab.getInfoTrees do
-    for i in t.foldInfo (init := #[]) fun _ info (acc : Array Elab.TermInfo) => match info with
-        | .ofTermInfo i =>
-          if i.stx.isOfKind Parser.Term.identProjKind && i.stx[0].isOfKind fieldIdxKind then
-            acc.push i
-          else acc
-        | _ => acc do
-      n := n + 1
-      unless i.expr.isConst do bad := bad.push m!"{i.stx[0]}: {i.expr.ctorName}"
+  for t in (← getInfoState).substituteLazy.get.trees do
+    let numericProjInfos := t.foldInfo (init := #[]) fun _ info acc => match info with
+      | .ofTermInfo i =>
+        if i.stx.isOfKind Parser.Term.identProjKind && i.stx[0].isOfKind fieldIdxKind then
+          acc.push i
+        else acc
+      | _ => acc
+    numInfos := numInfos + numericProjInfos.size
+    for i in numericProjInfos do
+      unless i.expr.constName?.isSome do
+        bad := bad.push m!"{i.stx}: {i.expr}"
   if bad.isEmpty then
-    logInfoAt tk m!"{n} numeric projection infos, all constants"
+    logInfoAt tk m!"Found {numInfos} numeric projection infos, all of which were `Expr.const`s"
   else
-    logInfoAt tk m!"{n} numeric projection infos, non-constant:{indentD (.joinSep bad.toList "\n")}"
+    logWarningAt tk m!"Found {numInfos} numeric projection infos, but some were not `Expr.const`s:\
+      {indentD <| m!"\n".joinSep bad.toList}"
 
 def MyBar := Bar
 class C (α : Type) where c : α
@@ -120,7 +126,7 @@ notation, binders and structure instances. -/
 
 /--
 @ +1:0...19
-info: 19 numeric projection infos, all constants
+info: Found 19 numeric projection infos, all of which were `Expr.const`s
 ---
 @ +3:15...16
 warning: Numeric projections are disallowed.
@@ -306,7 +312,7 @@ example (l : List Bar) (x : MyBar) [inst : C Nat] : List Nat × Prop := (
 
 /--
 @ +2:0...19
-info: 5 numeric projection infos, all constants
+info: Found 5 numeric projection infos, all of which were `Expr.const`s
 ---
 @ +3:30...31
 warning: Numeric projections are disallowed.
@@ -364,7 +370,7 @@ example (h : bar.b = 2) : bar.2 = 2 := by
 
 /--
 @ +1:0...19
-info: 5 numeric projection infos, all constants
+info: Found 5 numeric projection infos, all of which were `Expr.const`s
 ---
 @ +3:49...50
 warning: Numeric projections are disallowed.
@@ -422,7 +428,7 @@ where g (n : Nat) := n + x.2
 
 /--
 @ +1:0...19
-info: 2 numeric projection infos, all constants
+info: Found 2 numeric projection infos, all of which were `Expr.const`s
 ---
 @ +2:70...71
 warning: Numeric projections are disallowed.
