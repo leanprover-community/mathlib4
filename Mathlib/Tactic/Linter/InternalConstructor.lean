@@ -65,12 +65,13 @@ def internalConstructor : Linter where
       -- than (interpreted, specialized) `foldInfoM`.
       let warnings := t.foldInfo (init := #[]) fun ctx info w => Id.run do
         if let .ofTermInfo i := info then
-          if let .const n _ := i.expr then
-            if
-              -- Putting the conjuncts in this order provides a performance benefit.
-              n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
-            then
-              return w.push (n, i.stx)
+          if i.elaborator.isAnonymous then
+            if let .const n _ := i.expr then
+              if
+                -- Putting the conjuncts in this order provides a performance benefit.
+                n.isInternal && !isPrivateName n && ctx.env.isImportedConst n && ctx.env.isConstructor n
+              then
+                return w.push (n, i.stx)
         return w
       for (name, stx) in warnings do
         logLintError linter.internalConstructors stx
