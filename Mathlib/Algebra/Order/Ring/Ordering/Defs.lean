@@ -31,9 +31,6 @@ All orderings are preorderings.
 
 open scoped Pointwise
 
-/-!
-#### Preorderings
-=======
 namespace Subsemiring
 
 variable {R : Type*} [CommRing R] {S : Subsemiring R}
