@@ -86,7 +86,7 @@ theorem not_nullMeasurableSet_vitaliSet : ¬ NullMeasurableSet vitaliSet volume 
 
 /-- `vitaliSet` is not measurable. -/
 theorem not_measurableSet_vitaliSet : ¬ MeasurableSet vitaliSet :=
-  fun hm ↦ not_nullMeasurableSet_vitaliSet hm.nullMeasurableSet
+  MeasurableSet.nullMeasurableSet.mt not_nullMeasurableSet_vitaliSet
 
 /-! ### A non-measurable subset of `ℝ` -/
 
@@ -107,4 +107,4 @@ theorem not_nullMeasurableSet_preimage_vitaliSet :
 /-- The preimage of `vitaliSet` in `ℝ` is not measurable. -/
 theorem not_measurableSet_preimage_vitaliSet :
     ¬ MeasurableSet (((↑) : ℝ → UnitAddCircle) ⁻¹' vitaliSet) :=
-  fun hm ↦ not_nullMeasurableSet_preimage_vitaliSet hm.nullMeasurableSet
+  MeasurableSet.nullMeasurableSet.mt not_nullMeasurableSet_preimage_vitaliSet
