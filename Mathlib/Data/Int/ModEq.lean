@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Data.Nat.ModEq
 
 import Mathlib.Data.Int.Cast.Lemmas
 

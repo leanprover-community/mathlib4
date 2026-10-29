@@ -99,7 +99,7 @@ lemma cast_ne_zero_of_ne_of_prime [Nontrivial R]
 
 lemma of_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : Nat.Prime p) (hp0 : (p : R) = 0) :
     CharP R p := by
-  obtain ⟨q, hqp, hq⟩ := exists_CharP_dvd_of_cast_eq_zero R hp.ne_zero hp0
+  obtain ⟨q, hqp, hq⟩ := exists_charP_dvd_of_cast_eq_zero R hp.ne_zero hp0
   obtain rfl | rfl : q = 1 ∨ q = p := (Nat.dvd_prime hp).mp hqp
   exacts [absurd rfl (char_ne_one R 1), hq]
 

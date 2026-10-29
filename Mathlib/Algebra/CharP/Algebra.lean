@@ -45,7 +45,7 @@ theorem CharP.of_ringHom_of_ne_zero [NonAssocSemiring R] [NoZeroDivisors R]
     (f : R →+* A) (p : ℕ) (hp : p ≠ 0) [CharP R p] : CharP A p := by
   have := f.domain_nontrivial
   have hp0 := (CharP.char_is_prime_or_zero R p).resolve_right hp
-  obtain ⟨q, hqp, hq⟩ := CharP.exists_CharP_dvd_of_cast_eq_zero A hp
+  obtain ⟨q, hqp, hq⟩ := CharP.exists_charP_dvd_of_cast_eq_zero A hp
     (by rw [← map_natCast f, cast_eq_zero, map_zero])
   obtain rfl | rfl : q = 1 ∨ q = p := (Nat.dvd_prime hp0).mp hqp
   exacts [absurd rfl (char_ne_one A 1), hq]
