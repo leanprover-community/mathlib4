@@ -6,8 +6,8 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-public import Mathlib.Analysis.Calculus.ParametricIntegral
-public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+
+import Mathlib.Analysis.Calculus.ParametricIntegral
 
 /-! # The Mellin transform
 
@@ -370,24 +370,24 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
         IntegrableOn (fun t : ℝ => t ^ (j - 1) * (|log t| * ‖f t‖)) (Ioi 0) volume by
       refine Integrable.add (this ?_ ?_) (this ?_ ?_)
       all_goals linarith
-    · intro j hj hj'
-      obtain ⟨w, hw1, hw2⟩ := exists_between hj
-      obtain ⟨w', hw1', hw2'⟩ := exists_between hj'
-      refine mellin_convergent_of_isBigO_scalar ?_ ?_ hw1' ?_ hw2
-      · simp_rw [mul_comm]
-        refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi.isLocallyClosed
-        refine Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono ?_)
-        exact subset_compl_singleton_iff.mpr self_notMem_Ioi
-      · refine (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr_left fun t ↦ ?_
-        simp only [norm_smul, Real.norm_eq_abs]
-      · refine (isBigO_rpow_zero_log_smul hw1 hf_bot).norm_left.congr_left fun t ↦ ?_
-        simp only [norm_smul, Real.norm_eq_abs]
+    intro j hj hj'
+    obtain ⟨w, hw1, hw2⟩ := exists_between hj
+    obtain ⟨w', hw1', hw2'⟩ := exists_between hj'
+    refine mellin_convergent_of_isBigO_scalar ?_ ?_ hw1' ?_ hw2
+    · simp_rw [mul_comm]
+      refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi.isLocallyClosed
+      refine Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono ?_)
+      exact subset_compl_singleton_iff.mpr self_notMem_Ioi
+    · refine (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr_left fun t ↦ ?_
+      simp [norm_smul]
+    · refine (isBigO_rpow_zero_log_smul hw1 hf_bot).norm_left.congr_left fun t ↦ ?_
+      simp [norm_smul]
   have h6 : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0),
       ∀ y : ℂ, y ∈ Metric.ball s v → HasDerivAt (fun z : ℂ => F z t) (F' y t) y := by
     refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht y _ => ?_
     have ht' : (t : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt ht)
     have u1 : HasDerivAt (fun z : ℂ => (t : ℂ) ^ (z - 1)) (t ^ (y - 1) * log t) y := by
-      convert! ((hasDerivAt_id' y).sub_const 1).const_cpow (Or.inl ht') using 1
+      convert ((hasDerivAt_id' y).sub_const 1).const_cpow (Or.inl ht') using 1
       rw [ofReal_log (le_of_lt ht)]
       ring
     exact u1.smul_const (f t)

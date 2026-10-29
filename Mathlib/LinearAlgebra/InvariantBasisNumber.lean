@@ -7,9 +7,7 @@ module
 
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.Noetherian.Orzech
-public import Mathlib.RingTheory.OrzechProperty
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Invariant basis number property
@@ -135,7 +133,7 @@ theorem strongRankCondition_iff_succ :
   · exact Nat.not_succ_le_self n (le_of_fin_injective R f hf)
   · by_contra H
     exact
-      h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
+      h m (f.comp (Function.ExtendByZero.linearMap R R (Fin.castLE (not_le.1 H))))
         (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
 
 /-- Any nontrivial ring satisfying Orzech property also satisfies strong rank condition. -/
@@ -234,9 +232,12 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
     (.funCongrLeft R R (Fintype.equivFin α) ≪≫ₗ f ≪≫ₗ
       .symm (.funCongrLeft R R (Fintype.equivFin β)))
 
-theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
+instance (priority := 100) : Nontrivial R := by
   by_contra! h
   exact zero_ne_one (eq_of_fin_equiv R <| .ofSubsingleton ..)
+
+@[deprecated "use infer_instance instead" (since := "2026-10-08")]
+theorem nontrivial_of_invariantBasisNumber : Nontrivial R := inferInstance
 
 end
 

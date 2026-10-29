@@ -5,8 +5,8 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.Sub
 
 /-!
@@ -457,7 +457,7 @@ theorem singularPart_smul_right (μ ν : Measure α) (r : ℝ≥0) (hr : r ≠ 0
         smul_absolutelyContinuous
     · rw [ENNReal.smul_def r, withDensity_smul_measure, ← withDensity_smul]
       swap; · exact (measurable_rnDeriv _ _).const_smul _
-      convert! haveLebesgueDecomposition_add μ ν
+      convert haveLebesgueDecomposition_add μ ν
       ext x
       simp only [Pi.smul_apply]
       rw [← ENNReal.smul_def, smul_inv_smul₀ hr]
@@ -1086,5 +1086,24 @@ lemma add_sub_of_mutuallySingular {ξ : Measure α} (h : μ ⟂ₘ ξ) : μ + (�
   _ = μ + ν - ξ := by rw [restrict_add_restrict_compl hs]
 
 end Measure
+
+lemma isHahnDecomposition_withDensity_of_ae_le_one {α : Type*} {_ : MeasurableSpace α}
+    {μ : Measure α} {f : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
+    (h_le : ∀ᵐ x ∂μ.restrict s, f x ≤ 1) (h_ge : ∀ᵐ x ∂μ.restrict sᶜ, 1 ≤ f x) :
+    IsHahnDecomposition (μ.withDensity f) μ s where
+  measurableSet := hs
+  le_on := by
+    rw [restrict_withDensity hs]
+    exact (withDensity_mono h_le).trans_eq withDensity_one
+  ge_on_compl := by
+    rw [restrict_withDensity hs.compl]
+    exact withDensity_one.symm.trans_le (withDensity_mono h_ge)
+
+lemma isHahnDecomposition_withDensity_le_one {α : Type*} {_ : MeasurableSpace α} {μ : Measure α}
+    {f : α → ℝ≥0∞} (hf : Measurable f) :
+    IsHahnDecomposition (μ.withDensity f) μ {x | f x ≤ 1} :=
+  have hs : MeasurableSet {x | f x ≤ 1} := measurableSet_le hf measurable_const
+  isHahnDecomposition_withDensity_of_ae_le_one hs (ae_restrict_of_forall_mem hs fun _ hx ↦ hx)
+    (ae_restrict_of_forall_mem hs.compl fun _ hx ↦ le_of_lt (by simpa using hx))
 
 end MeasureTheory

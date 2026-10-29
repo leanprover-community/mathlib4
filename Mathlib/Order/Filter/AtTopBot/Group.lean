@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Group.MinMax
 public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.Order.Filter.AtTopBot.Map
 public import Mathlib.Order.Filter.AtTopBot.Monoid
+
+import Mathlib.Order.Filter.AtTopBot.Map
 
 /-!
 # Convergence to ±infinity in ordered commutative groups

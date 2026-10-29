@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Submodule.LinearMap
 public import Mathlib.LinearAlgebra.Finsupp.Defs
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Sums as a linear map
@@ -152,7 +151,6 @@ theorem lift_symm_apply (f) (x) : ((lift M R X).symm f) x = f (single x 1) :=
 theorem lift_apply (f) (g) : ((lift M R X) f) g = g.sum fun x r => r • f x :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given compatible `S` and `R`-module structures on `M` and a type `X`, the set of functions
 `X → M` is `S`-linearly equivalent to the `R`-linear maps from the free `R`-module
 on `X` to `M`. -/

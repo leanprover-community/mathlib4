@@ -6,11 +6,10 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.Complex.AbsMax
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.Notation
 
 /-! # Holomorphic functions on complex manifolds
 
@@ -89,7 +88,7 @@ that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `‖f x‖ = 
 theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
     (hd : MDiff[U] f) (hc : IsPreconnected U) (ho : IsOpen U)
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const M ‖f c‖) U := by
-  set V := {z ∈ U | ‖f z‖ = ‖f c‖}
+  set V := U ∩ {z | ‖f z‖ = ‖f c‖}
   suffices U ⊆ V from fun x hx ↦ (this hx).2
   have hVo : IsOpen V := by
     refine isOpen_iff_mem_nhds.2 fun x hx ↦ inter_mem (ho.mem_nhds hx.1) ?_

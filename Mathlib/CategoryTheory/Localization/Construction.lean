@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
-public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 public import Mathlib.CategoryTheory.Category.Quiv
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-!
 
@@ -158,7 +157,7 @@ def lift : W.Localization ⥤ D :=
   Quotient.lift (relations W) (liftToPathCategory G hG)
     (by
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
-      rcases r with ⟨⟩ <;> all_goals aesop)
+      rcases r with ⟨⟩ <;> aesop)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

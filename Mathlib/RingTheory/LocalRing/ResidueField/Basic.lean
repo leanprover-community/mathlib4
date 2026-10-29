@@ -5,11 +5,10 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Ring.Action.End
 public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 
@@ -44,6 +43,8 @@ lemma residue_ne_zero_iff_isUnit (x : R) : residue R x ≠ 0 ↔ IsUnit x := by
 lemma residue_surjective :
     Function.Surjective (IsLocalRing.residue R) :=
   Ideal.Quotient.mk_surjective
+
+instance : RingHomSurjective (residue R) := ⟨residue_surjective⟩
 
 variable (R)
 

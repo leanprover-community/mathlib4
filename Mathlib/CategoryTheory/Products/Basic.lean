@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Functor.Const
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.Data.Prod.Basic
 
 /-!

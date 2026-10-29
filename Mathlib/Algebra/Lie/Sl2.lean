@@ -5,9 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
@@ -86,7 +83,7 @@ structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a simultaneous
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
-lemma HasPrimitiveVectorWith.mk' [IsAddTorsionFree M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
+lemma HasPrimitiveVectorWith.mk' [HasUniqueDiv M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
     HasPrimitiveVectorWith t m μ where
   ne_zero := hm

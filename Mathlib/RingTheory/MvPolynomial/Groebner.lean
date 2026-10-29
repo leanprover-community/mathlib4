@@ -5,11 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.Lex
-public import Mathlib.Data.Finsupp.MonomialOrder
-public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Data.List.TFAE
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
 /-! # Division algorithm with respect to monomial orders
@@ -198,7 +193,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · intro c hc i
         by_cases hc' : c ∈ r'.support
         · exact H'.2.2 c hc' i
-        · convert! hf i
+        · convert hf i
           classical
           have := MvPolynomial.support_add hc
           rw [Finset.mem_union, Classical.or_iff_not_imp_left] at this

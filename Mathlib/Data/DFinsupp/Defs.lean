@@ -5,12 +5,11 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Dependent functions with finite support
@@ -1003,7 +1002,7 @@ theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.sup
 
 theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
-  ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; simp [h2]
+  ext i; by_cases h2 : f i ≠ 0 <;> simp at h2 <;> simp [h2]
 
 @[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :

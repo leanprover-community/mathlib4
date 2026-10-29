@@ -6,7 +6,6 @@ Authors: Vasily Nesterov
 module
 
 public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.Data.Set.Card
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.Topology.Separation.Hausdorff
 

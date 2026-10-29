@@ -5,8 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Factorial
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
+
+import Mathlib.Data.Nat.Prime.Factorial
 
 /-!
 # Lemmas of Gauss and Eisenstein

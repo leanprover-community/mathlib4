@@ -5,8 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Data.PNat.Basic
 public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Data.PNat.Basic
 
 
 /-!

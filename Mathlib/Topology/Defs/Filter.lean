@@ -5,11 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Topology.Defs.Basic
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
-public import Mathlib.Tactic.IrreducibleDef
-public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Order.Setoid.Basic
+public import Mathlib.Topology.Defs.Basic
+
+import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Definitions about filters in topological spaces
@@ -127,6 +127,7 @@ open scoped Topology
 /-- A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all
 neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the
 infimum over the principal filters of all open sets containing `x`. -/
+@[wikidata Q3275652]
 irreducible_def nhds (x : X) : Filter X :=
   ⨅ s ∈ { s : Set X | x ∈ s ∧ IsOpen s }, 𝓟 s
 
@@ -242,6 +243,7 @@ def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparabl
 
 /-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov
 quotient. This quotient is guaranteed to be a T₀ space. -/
+@[implicit_reducible]
 def SeparationQuotient := Quotient (inseparableSetoid X)
 
 variable {X}

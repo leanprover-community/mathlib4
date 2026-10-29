@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # The “almost everywhere” filter of co-null sets.
@@ -47,7 +46,7 @@ variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
 /-- The “almost everywhere” filter of co-null sets. -/
 @[wikidata Q1139334]
 def ae (μ : F) : Filter α :=
-  .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
+  .ofCountableUnion {s | μ s = 0} (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
     measure_mono_null hs ht
 deriving CountableInterFilter
 
@@ -299,7 +298,6 @@ theorem ae_eq_set_biUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
     ⋃ b ∈ s, t b =ᵐ[μ] ⋃ b ∈ s, t' b :=
   .countable_bUnion hs h
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :
     s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by

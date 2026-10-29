@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
@@ -290,7 +289,7 @@ instance :
   trans := .trans
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
-lemma IsContained.of_isEmpty [IsEmpty W] : H ⊑ G :=
+@[simp] lemma IsContained.of_isEmpty [IsEmpty W] : H ⊑ G :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
 /-- `⊥` is contained in any simple graph having sufficiently many vertices. -/
@@ -551,7 +550,7 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
 @[simp] lemma copyCount_bot (G : SimpleGraph V) : copyCount G (⊥ : SimpleGraph V) = 1 := by
   classical
   rw [copyCount]
-  convert!
+  convert
     card_singleton (α := G.Subgraph)
       { verts := .univ
         Adj := ⊥

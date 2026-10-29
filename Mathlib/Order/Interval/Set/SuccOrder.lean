@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.SuccPred.Basic
+
+import Mathlib.Order.LatticeIntervals
 
 /-!
 # Successors in intervals

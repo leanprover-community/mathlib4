@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!
@@ -239,7 +238,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
                   · exact IH.2
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
-          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert! Jcf' using 1; ring
+          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
           simp [field, pow_succ, -mul_eq_mul_left_iff]
           ring
     refine ⟨?_, Ign⟩
@@ -319,7 +318,7 @@ protected theorem antilipschitzWith (hf : ApproximatesLinearOn f (f' : E →L[�
     (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.domRestrict f) := by
   rcases hc with hE | hc
   · exact AntilipschitzWith.of_subsingleton
-  convert! (f'.antilipschitz.domRestrict s).add_lipschitzWith hf.lipschitzWith_sub hc
+  convert! (f'.antilipschitzWith.domRestrict s).add_lipschitzWith hf.lipschitzWith_sub hc
   simp [domRestrict]
 
 @[deprecated (since := "2026-09-26")]
@@ -377,7 +376,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
   rw [← Af x', ← Af y', A.left_inv x's, A.left_inv y's]
   calc
     ‖x' - y' - f'.symm (A x' - A y')‖ ≤ N * ‖f' (x' - y' - f'.symm (A x' - A y'))‖ :=
-      (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitz _
+      (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitzWith _
     _ = N * ‖A y' - A x' - f' (y' - x')‖ := by
       congr 2
       simp only [ContinuousLinearEquiv.apply_symm_apply, map_sub]

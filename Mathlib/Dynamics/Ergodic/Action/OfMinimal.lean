@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Dynamics.Ergodic.Action.Regular
-public import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
+
+import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
 /-!
 # Ergodicity from minimality
@@ -153,7 +154,7 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
   refine aeconst_of_dense_aestabilizer_smul hsm.nullMeasurableSet (hg.mono ?_)
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
     MulAction.mem_aestabilizer, ← preimage_smul]
-  exact hs.eventuallyEq
+  exact .of_eq hs
 
 end MulActionGroup
 
@@ -191,7 +192,8 @@ theorem DenseRange.zpow_of_ergodic_mul_left [OpensMeasurableSpace G]
     simp only [s, preimage_iUnion, ← smul_eq_mul, preimage_smul]
     refine iUnion_congr_of_surjective _ (add_left_surjective (-1)) fun m ↦ ?_
     simp [zpow_add, mul_smul]
-  cases hg.measure_self_or_compl_eq_zero hso.measurableSet.nullMeasurableSet hgs.eventuallyEq with
+  cases hg.measure_self_or_compl_eq_zero hso.measurableSet.nullMeasurableSet
+    hgs.eventuallyEqSet with
   | inl h => exact hso.measure_ne_zero _ hsne h
   | inr h =>
     refine (hVo.smul a).measure_ne_zero μ (.image _ ⟨1, hV₁⟩) (measure_mono_null ?_ h)
@@ -234,7 +236,7 @@ then it is pre-ergodic with respect to any finite inner regular left invariant m
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1))
-    (hqmp : Measure.QuasiMeasurePreserving f μ μ) :
+    (hqmp : QuasiMeasurePreserving f μ μ) :
     PreErgodic f μ := by
   refine .of_preimage_eq hqmp fun s hsm hs ↦
     aeconst_of_dense_setOfPred_preimage_smul_eq (M := G) hsm.nullMeasurableSet ?_

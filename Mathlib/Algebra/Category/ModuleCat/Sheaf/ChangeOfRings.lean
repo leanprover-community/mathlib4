@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 
 /-!
 # Change of sheaf of rings

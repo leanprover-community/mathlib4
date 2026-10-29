@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Ring
 
 /-!
 # Theory of univariate polynomials

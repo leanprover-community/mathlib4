@@ -8,12 +8,9 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Units
-public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.End
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Module.Prod
 
 /-!
@@ -278,7 +275,7 @@ variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} {modM₃ : Module ℤ
 equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
   refine e.toLinearEquiv fun c a ↦ ?_
-  convert! e.toAddMonoidHom.map_zsmul c a using 1
+  convert e.toAddMonoidHom.map_zsmul c a using 1
   · congrm e $(int_smul_eq_zsmul ..)
   · exact int_smul_eq_zsmul ..
 
@@ -455,10 +452,9 @@ variable (V V₂ R M)
 
 /-- Linear equivalence between a curried and uncurried function.
   Differs from `TensorProduct.curry`. -/
-protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M :=
-  { Equiv.curry _ _ _ with
-    map_add' := fun _ _ ↦ rfl
-    map_smul' := fun _ _ ↦ rfl }
+protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M where
+  toAddEquiv := .curry V V₂ M
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
@@ -466,6 +462,10 @@ theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
 
 @[simp]
 theorem coe_curry_symm : ⇑(LinearEquiv.curry R M V V₂).symm = uncurry :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_curry : (LinearEquiv.curry R M V V₂).toAddEquiv = AddEquiv.curry V V₂ M :=
   rfl
 
 end Uncurry

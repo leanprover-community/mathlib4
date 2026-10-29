@@ -31,6 +31,8 @@ public import Mathlib.LinearAlgebra.Finsupp.Supported
 function with finite support, module, linear algebra
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 noncomputable section
@@ -499,7 +501,7 @@ lemma Submodule.mem_span_set' {m : M} {s : Set M} :
       ∑ i, f i • (g i : M) = m := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · rcases mem_span_set.1 h with ⟨c, cs, rfl⟩
-    have A : c.support ≃ Fin c.support.card := Finset.equivFin _
+    have A : c.support ≃ Fin #c.support := Finset.equivFin _
     refine ⟨_, fun i ↦ c (A.symm i), fun i ↦ ⟨A.symm i, cs (A.symm i).2⟩, ?_⟩
     rw [Finsupp.sum, ← Finset.sum_coe_sort c.support]
     exact Fintype.sum_equiv A.symm _ (fun j ↦ c j • (j : M)) (fun i ↦ rfl)

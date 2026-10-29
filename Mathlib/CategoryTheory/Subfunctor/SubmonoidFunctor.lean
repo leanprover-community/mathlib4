@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.CategoryTheory.Subfunctor.Basic
+
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Functors of submonoids
