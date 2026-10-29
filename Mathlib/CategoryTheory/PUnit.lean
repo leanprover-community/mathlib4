@@ -35,12 +35,12 @@ variable {C}
 /-- Any two functors to `Discrete PUnit` are isomorphic. -/
 @[simps!]
 def punitExt (F G : C ⥤ Discrete PUnit.{w + 1}) : F ≅ G :=
-  NatIso.ofComponents fun X => eqToIso (by simp only [eq_iff_true_of_subsingleton])
+  NatIso.ofComponents fun X => eqToIso rfl
 
 /-- Any two functors to `Discrete PUnit` are *equal*.
 You probably want to use `punitExt` instead of this. -/
 theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
-  Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
+  Functor.ext fun X => rfl
 
 /-- The functor from `Discrete PUnit` sending everything to the given object. -/
 abbrev fromPUnit (X : C) : Discrete PUnit.{w + 1} ⥤ C :=
@@ -72,13 +72,14 @@ theorem equiv_punit_iff_unique :
       exact hx ≫ hy
     suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
-      simp
+      #adaptation_note /-- Since nightly-2026-10-21, `Discrete.functor_map_id` applies in more
+      situations, which makes Lean simplify away `z` from the right hand side. -/
+      simp [-Discrete.functor_map_id]
     apply Subsingleton.intro
     intro a b
     rw [this a, this b]
     simp only [Functor.comp_map]
-    congr 3
-    simp [eq_iff_true_of_subsingleton]
+    rfl
   · rintro ⟨⟨p⟩, h⟩
     have := fun x y => (h x y).some
     refine
