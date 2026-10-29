@@ -125,7 +125,6 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
   let some onGoal := props.goals.findFinIdx? (·.mvarId == loc.mvarId) |
     return .text "#click_suggestions: please reload the tactic state"
   let goal := props.goals[onGoal]
-  let onGoal := if onGoal.val != 0 then some onGoal.val else none
   let some (goalsAt, cmd) :=
     (findGoalsAndSyntaxAt? doc (doc.meta.text.lspPosToUtf8Pos props.pos)).get |
     return .text "Internal #click_suggestions error: could not find any goal at the cursor position"
@@ -135,7 +134,6 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
       goals.contains loc.mvarId
     | return .text "#click_suggestions: Please reload the tactic state"
   -- Focus with a `·` if there are multiple goals, or the previous tactic was also a `·`.
-  let focus := onGoal.isNone && (2 ≤ props.goals.size || stx.isOfKind ``cdot)
   let calcWidget? ← getCalcWidget? stx cmd props
   let suggestionWidget ←
     goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
@@ -149,7 +147,9 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
     let html ← mkRefreshComponentM
       (.text "#click_suggestions has started searching.") fun masterToken ↦ do
       (generateSuggestions loc parentDecl? masterToken).run {
-        onGoal, focus, masterToken, statusToken, solvedToken
+        masterToken, statusToken, solvedToken
+        onGoal := if onGoal.val != 0 then some onGoal.val else none
+        focus := onGoal.val == 0 && (2 ≤ props.goals.size || stx.isOfKind ``cdot)
         stx := if useAfter then some ⟨stx⟩ else none
         «meta» := doc.meta
         cursorPos := props.pos
