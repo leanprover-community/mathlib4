@@ -107,7 +107,7 @@ def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a
     f ⊣ t.extension :=
   H.isKan.adjunction (H f)
 
-theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
+theorem isLeftAdjoint_tfae (f : a ⟶ b) :
     List.TFAE [
       IsLeftAdjoint f,
       HasAbsLeftKanExtension f (𝟙 a),
@@ -119,6 +119,8 @@ theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
   tfae_have 3 → 1
   | ⟨h, h'⟩ => .mk <| (lanIsKan f (𝟙 a)).adjunction <| Lan.CommuteWith.isKan f (𝟙 a) f
   tfae_finish
+
+@[deprecated (since := "2026-10-27")] alias isLeftAdjoint_TFAE := isLeftAdjoint_tfae
 
 end LeftExtension
 
@@ -189,7 +191,7 @@ def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : Is
     t.lift ⊣ u :=
   H.isKan.adjunction (H u)
 
-theorem isRightAdjoint_TFAE (u : b ⟶ a) :
+theorem isRightAdjoint_tfae (u : b ⟶ a) :
     List.TFAE [
       IsRightAdjoint u,
       HasAbsLeftKanLift u (𝟙 a),
@@ -201,6 +203,8 @@ theorem isRightAdjoint_TFAE (u : b ⟶ a) :
   tfae_have 3 → 1
   | ⟨h, h'⟩ => .mk <| (lanLiftIsKan u (𝟙 a)).adjunction <| LanLift.CommuteWith.isKan u (𝟙 a) u
   tfae_finish
+
+@[deprecated (since := "2026-10-27")] alias isRightAdjoint_TFAE := isRightAdjoint_tfae
 
 end LeftLift
 
