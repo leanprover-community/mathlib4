@@ -64,22 +64,26 @@ jobs:
         shell: bash
         run: |
           cd tools-branch
+          # This job runs outside a sandbox and produces the tools that CI trusts, so Lake builds
+          # them and their dependencies from this commit's sources. The empty `LAKE_CACHE_DIR`
+          # selects the empty artifact cache in `.lake/cache` instead of the runner's shared Lake
+          # cache, and `LAKE_NO_CACHE` stops the download of dependency builds (Reservoir, GitHub
+          # releases). The Mathlib cache (`lake exe cache get`) is not used.
+          export LAKE_CACHE_DIR='' LAKE_NO_CACHE=1
           # `check-yaml` and `graph` are built as a smoke test that the tools at this
           # commit compile; `cache`, `mk_all` and `runLinter` are consumed by path.
           lake build cache check-yaml graph
           ls .lake/build/bin/cache
-          # `mk_all` is built from this commit's sources, not from the cache: this job runs
-          # outside a sandbox and produces the tools that CI trusts. Without `mk_all`, the
-          # artifact ships `cache` alone and the build job runs `lake exe mk_all`.
+          # Without `mk_all`, the artifact ships `cache` alone and the build job runs
+          # `lake exe mk_all`.
           if lake build mk_all; then
             ls .lake/build/bin/mk_all
           else
             echo "::warning::mk_all did not build; the tools artifact ships without it."
             rm -f .lake/build/bin/mk_all
           fi
-          # `runLinter`, the lint driver from Batteries, is built from source for the same reason
-          # as `mk_all`. Without it, the artifact ships without the driver and the lint step runs
-          # `lake lint`.
+          # `runLinter` is the lint driver from Batteries. Without it, the artifact ships without
+          # the driver and the lint step runs `lake lint`.
           if lake build batteries/runLinter; then
             ls .lake/packages/batteries/.lake/build/bin/runLinter
           else
