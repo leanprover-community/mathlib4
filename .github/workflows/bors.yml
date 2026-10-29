@@ -43,4 +43,7 @@ jobs:
       tools_branch_ref: ${{ github.sha }}
       # We don't want 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
       runs_on: ${{ github.ref_name == 'trying' && 'pr' || 'bors' }}
+      # A merge candidate on `staging` writes the `master` container, which serves everyone
+      # once it lands. A `trying` run writes the `forks` container, as a PR build does.
+      gate_cache_verification: ${{ github.ref_name == 'staging' }}
     secrets: inherit
