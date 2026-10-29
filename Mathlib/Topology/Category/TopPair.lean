@@ -219,16 +219,6 @@ theorem equivalence : Equivalence (Homotopic (X := X) (Y := Y)) :=
 
 end Homotopic
 
-section Embedding
-
-/-- A morphism `f : X ⟶ Y` in `TopPair` is an embedding if its first and second component are
-embeddings. -/
-structure IsEmbedding {X Y : TopPair} (f : X ⟶ Y) : Prop where
-  fst : Topology.IsEmbedding (Hom.fst f)
-  snd : Topology.IsEmbedding (Hom.snd f)
-
-end Embedding
-
 /-- A morphism `g : (V, C) ⟶ (X, A)` in `TopPair` is excisive if it is an embedding,
 `g(C) = g(V) ∩ C`, and `cl(g(V)ᶜ) ⊆ int(A)`. -/
 class IsExcisive ⦃V X : TopPair.{u}⦄ (g : V ⟶ X) : Prop where
