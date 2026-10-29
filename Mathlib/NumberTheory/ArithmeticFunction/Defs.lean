@@ -319,14 +319,7 @@ instance [CommRing R] : CommRing (ArithmeticFunction R) where
   mul_comm := mul_comm
 
 instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
-    Module R (ArithmeticFunction S) where
-  smul x f := ⟨x • f, by simp⟩
-  smul_zero x := ext fun n ↦ smul_zero x
-  smul_add x f g := ext fun n ↦ smul_add x (f n) (g n)
-  zero_smul f := ext fun n ↦ zero_smul R (f n)
-  one_smul f := ext fun n ↦ one_smul R (f n)
-  add_smul x y f := ext fun n ↦ add_smul x y (f n)
-  mul_smul x y f := ext fun n ↦ mul_smul x y (f n)
+    Module R (ArithmeticFunction S) := fast_instance% FunLike.module
 
 -- note that `smul_apply` would be a more suitable name, but is already in use for the action of
 -- `ArithmeticFunction R` on `ArithmeticFunction S`
