@@ -64,11 +64,11 @@ universe u v
 open Polynomial IsLocalRing Function List
 open scoped Ring
 
-@[deprecated isLocalHom_of_le_jacobson +typeChanged (since := "2026-10-12")]
+@[deprecated isLocalHom_of_le_jacobson +typeChanged (since := "2026-10-29")]
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
   rw [Ideal.jacobson_bot] at h
-  exact isLocalHom_of_le_jacobson I h
+  exact isLocalHom_of_le_jacobson h
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
@@ -182,7 +182,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
-        have := isLocalHom_of_le_jacobson I (IsAdicComplete.le_jacobson I)
+        have := isLocalHom_of_le_jacobson (IsAdicComplete.le_jacobson I)
         apply IsUnit.of_map (Ideal.Quotient.mk I)
         convert h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
