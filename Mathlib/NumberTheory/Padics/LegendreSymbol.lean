@@ -16,21 +16,19 @@ This file contains results about Legendre symbols for `p`-adic integers.
 
 ## Main definitions
 
-We define the Legendre symbol $\Bigl(\frac{a}{p}\Bigr)$ is `PadicInt.legendreSym p a`, which defines
-the Legendre symbol for a `p`-adic integer `a` as the composition of reduction map modulo `p` and
-the usual Legendre symbol for the integers.
+We define `PadicInt.legendreSym p a`, where `p` is a prime and `a : ℤ_[p]ˣ`, as the composition
+of the reduction map modulo `p` and the usual Legendre symbol `legendreSym`, which is defined
+over `ℤ`.
 
 ## Main results
 
 The main results are
 
-`PadicInt.legendreSym.eq_one_or_neg_one` shows the Legendre symbol is 1 or -1.
+- `PadicInt.legendreSym.eq_one_or_neg_one` shows the Legendre symbol of a `p`-adic unit is 1 or -1.
 
-`PadicInt.legendreSym.eq_zero_iff` shows the Legendre symbol is 0 if and only if `p` divides `a`.
+- `PadicInt.legendreSym.eq_zero_iff` shows the Legendre symbol is 0 if and only if `p` divides `a`.
 
-`PadicInt.legendreSym.sq_one` shows square of the symbol is 1 if `a` is a unit.
-
-`PadicInt.legendreSym.eq_one_iff` shows that if `a` is a unit, then the Legendre symbol is 1
+- `PadicInt.legendreSym.eq_one_iff` shows that if `a` is a unit, then the Legendre symbol is 1
 if and only if `a` is a square mod `p`.
 
 ## Tags
@@ -44,10 +42,10 @@ namespace PadicInt
 
 variable {p : ℕ} [Fact (Nat.Prime p)]
 
-/-- The Legendre symbol of a `p`-adic integer is the quadratic character on ℤ_[p] precomposed with
+/-- The Legendre symbol of a `p`-adic integer is the quadratic character on `ℤ_[p]` precomposed with
 the reduction modulo p. -/
 noncomputable
-def legendreSym : MulChar ℤ_[p] ℤ := (quadraticChar (ZMod p)).compMonoidHom toZMod
+def legendreSym : MulChar ℤ_[p] ℤ := (quadraticChar (ZMod p)).compLocalHom toZMod
 
 variable {a b : ℤ_[p]}
 namespace legendreSym
@@ -68,7 +66,7 @@ theorem eq_pow : (legendreSym a : ZMod p) = (a.toZMod) ^ (p / 2) := by
 
 /-- If `a` is a `p`-adic unit, then `legendreSym a` is `1` or `-1`. -/
 theorem eq_one_or_neg_one (ha : IsUnit a) : legendreSym a = 1 ∨ legendreSym a = -1 :=
-  Int.isUnit_eq_one_or (IsUnit.map ((quadraticChar (ZMod p)).compMonoidHom toZMod) ha)
+  Int.isUnit_eq_one_or (IsUnit.map ((quadraticChar (ZMod p)).compLocalHom toZMod) ha)
 
 /-- If a is a `p`-adic unit, then `legendreSym a = -1` iff `legendreSym a ≠ 1`. -/
 theorem eq_neg_one_iff_not_one (ha : IsUnit a) :
@@ -90,7 +88,7 @@ theorem sq_one (ha : IsUnit a) : legendreSym a ^ 2 = 1 := MonoidWithZeroHom.sq_o
 
 /-- If `a` is a unit, then `legendreSym a = 1` iff `a` is a square mod `p`. -/
 theorem eq_one_iff (ha : IsUnit a) : legendreSym a = 1 ↔ IsSquare (a.toZMod) := by
-  rw [legendreSym, MulChar.compMonoidHom_apply, quadraticChar_one_iff_isSquare]
+  rw [legendreSym, MulChar.compLocalHom_apply, quadraticChar_one_iff_isSquare]
   rw [← (toZMod a).val_ne_zero, val_toZMod_eq_zmodRepr, ← norm_natCast_zmodRepr_eq_one_iff_ne,
     norm_natCast_zmodRepr_eq_one_iff.mpr (isUnit_iff.mp ha)]
 

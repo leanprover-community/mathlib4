@@ -220,9 +220,9 @@ theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
     χ a = 0 ↔ ¬ IsUnit a := by
   simpa using χ.apply_ne_zero_iff.not
 
-/-- We can define a MulChar as a composition of a MulChar and a local homomorphism. -/
+/-- Composing a `MulChar` with a local homomorphism gives another `MulChar`. -/
 @[simps]
-def compMonoidHom {S F : Type*} [CommMonoid S] [FunLike F S R] [MonoidHomClass F S R]
+def compLocalHom {S F : Type*} [CommMonoid S] [FunLike F S R] [MonoidHomClass F S R]
     (χ : MulChar R R') (f : F) [IsLocalHom f] : MulChar S R' where
   toFun m' := χ (f m')
   map_one' := by simp
