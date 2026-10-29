@@ -195,14 +195,14 @@ theorem FiniteMultiplicity.not_isUnit (h : FiniteMultiplicity a b) : ¬IsUnit a 
 @[deprecated (since := "2026-08-02")]
 alias FiniteMultiplicity.not_unit := FiniteMultiplicity.not_isUnit
 
-theorem FiniteMultiplicity.mul_left {c : α} :
-    FiniteMultiplicity a (b * c) → FiniteMultiplicity a b := fun ⟨n, hn⟩ =>
-  ⟨n, fun h => hn (h.trans (dvd_mul_right _ _))⟩
-
 /-- Finiteness of the multiplicity passes to divisors. -/
 theorem FiniteMultiplicity.of_dvd {c : α} (h : b ∣ c) :
     FiniteMultiplicity a c → FiniteMultiplicity a b := fun ⟨n, hn⟩ ↦
   ⟨n, fun h' ↦ hn (h'.trans h)⟩
+
+theorem FiniteMultiplicity.mul_left {c : α} :
+    FiniteMultiplicity a (b * c) → FiniteMultiplicity a b :=
+  .of_dvd (dvd_mul_right b c)
 
 /-- Finiteness of the multiplicity in a nonzero power passes to the base. -/
 theorem FiniteMultiplicity.of_pow {k : ℕ} (hk : k ≠ 0) :
@@ -471,7 +471,8 @@ section CommMonoid
 variable [CommMonoid α]
 
 theorem FiniteMultiplicity.mul_right {a b c : α} (hf : FiniteMultiplicity a (b * c)) :
-    FiniteMultiplicity a c := (mul_comm b c ▸ hf).mul_left
+    FiniteMultiplicity a c :=
+  hf.of_dvd (dvd_mul_left c b)
 
 theorem emultiplicity_of_isUnit_right {a b : α} (ha : ¬IsUnit a)
     (hb : IsUnit b) : emultiplicity a b = 0 :=
@@ -784,8 +785,7 @@ theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
   | zero => simp [emultiplicity_of_one_right hp.not_isUnit]
   | succ k hk => simp [pow_succ, emultiplicity_mul hp, hk, add_mul]
 
-/-- The multiplicity of a prime in a power. Unlike `emultiplicity_pow`, this needs no finiteness
-hypothesis, since both sides are `0` when the multiplicity is infinite. -/
+/-- The multiplicity of a prime in a power. -/
 theorem multiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     multiplicity p (a ^ k) = k * multiplicity p a := by
   by_cases ha : FiniteMultiplicity p a
