@@ -1,6 +1,8 @@
-import Mathlib.Data.Finsupp.Notation
-import Mathlib.Data.DFinsupp.Notation -- to ensure it does not interfere
-import Mathlib.Data.Nat.Factorization.Basic
+module
+
+public meta import Mathlib.Data.Finsupp.Notation
+public meta import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.DFinsupp.Notation -- to ensure it does not interfere
 
 example : (fun₀ | 1 => 3) 1 = 3 := by
   simp

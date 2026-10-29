@@ -35,7 +35,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
     apply top_le_iff.1
     have : eLpNorm (f n) p μ = ∞ := eLpNorm_of_not_aestronglyMeasurable h'f
     rw [← this]
-    exact ENNReal.le_tsum (f := fun i ↦ eLpNorm (f i) p μ) _
+    exact le_tsum (fun i ↦ eLpNorm (f i) p μ) _
   suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
     filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
   -- the result is straightforward in `L^∞`.
@@ -79,7 +79,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
   have B n : ∃ s, MeasurableSet s ∧ (f n =ᵐ[μ.restrict sᶜ] 0) ∧ SigmaFinite (μ.restrict s) := by
     apply AEFinStronglyMeasurable.exists_set_sigmaFinite
     have : MemLp (f n) p μ := by
-      simpa [MemLp, hf] using lt_of_le_of_lt (ENNReal.le_tsum n) h'f.lt_top
+      simpa [MemLp, hf] using lt_of_le_of_lt (le_tsum _ n) h'f.lt_top
     exact this.aefinStronglyMeasurable (zero_lt_one.trans_le hp).ne' h'p.ne
   choose! s s_meas hs h's using B
   /- Covering `s n` by countably many sets of finite measure, we deduce using the above that

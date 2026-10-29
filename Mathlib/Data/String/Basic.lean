@@ -83,9 +83,8 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.R
   simp
 
 theorem lt_iff_toList_lt {s₁ s₂ : String} : s₁ < s₂ ↔ s₁.toList < s₂.toList :=
-  Iff.rfl
+  toList_lt_toList_iff.symm
 
-@[simp]
 theorem lt_iff_ltb {s₁ s₂ : String} :
     s₁ < s₂ ↔ ltb (String.Legacy.iter s₁) (String.Legacy.iter s₂) := by
   rw [Iff.comm]
@@ -130,22 +129,21 @@ theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList �
   rw [String.le_iff_not_lt, lt_iff_toList_lt, not_lt]
 
 instance : LinearOrder String where
-  le_refl _ := le_iff_toList_le.mpr le_rfl
-  le_trans a b c := by
-    simp only [le_iff_toList_le]
-    apply le_trans
-  lt_iff_le_not_ge a b := by
-    simp only [lt_iff_toList_lt, le_iff_toList_le, lt_iff_le_not_ge]
-  le_antisymm a b := by
-    simp only [le_iff_toList_le, ← toList_inj]
-    apply le_antisymm
-  le_total a b := by
-    simp only [le_iff_toList_le]
-    apply le_total
+  le_refl _ := Std.le_refl _
+  le_trans a b c := Std.le_trans
+  lt_iff_le_not_ge a b := Std.lt_iff_le_and_not_ge
+  le_antisymm a b := Std.le_antisymm
+  le_total a b := Std.le_total
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
   toDecidableLT := String.decidableLT
-  compare_eq_compareOfLessAndEq a b := by simp [Ord.compare, String.compare]
+  compare_eq_compareOfLessAndEq a b := Std.LawfulLTCmp.eq_compareOfLessAndEq a b
+  min_def a b := Std.min_eq_ite
+  max_def a b := by
+    obtain h | rfl | h := Std.lt_trichotomy a b
+    · simp [Std.le_of_lt h, Std.max_eq_ite, Std.not_le.2 h]
+    · simp [Std.max_eq_ite]
+    · simp [Std.not_le.2 h, Std.max_eq_ite, Std.le_of_lt h]
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by
   simp [← toList_inj]
