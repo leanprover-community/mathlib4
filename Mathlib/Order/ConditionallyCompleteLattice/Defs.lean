@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.WellFounded
+public import Mathlib.Order.WithLT
 
 /-!
 # Definitions of conditionally complete lattices
@@ -178,3 +179,8 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
     rw [BddAbove] at H
     simp [sSup, H, bot_unique (WellFoundedLT.min_le (mem_univ _))]
   csInf_of_not_bddBelow s H := (H (OrderBot.bddBelow s)).elim
+
+@[no_expose]
+noncomputable instance {r : α → α → Prop} [IsWellOrder α r] [Nonempty α] :
+    ConditionallyCompleteLinearOrderBot (WithLT α r) :=
+  WellFoundedLT.conditionallyCompleteLinearOrderBot _
