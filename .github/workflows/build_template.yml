@@ -38,14 +38,14 @@ on:
         required: false
         default: false
       gate_cache_verification:
-        # A failure of the `cache_verify` job fails the run. Set by the callers whose
-        # cache serves everyone once it lands: bors and release tags. Elsewhere a gap
-        # in the cache is a warning.
+        # A failure of the `cache_verify` job fails the run. Set by the callers whose cache
+        # must be complete: bors `staging` runs, master pushes, release tags, and every
+        # build in the nightly-testing repository. Elsewhere a gap in the cache is a warning.
         type: boolean
         required: false
         default: false
       revalidate:
-        # Run the `test_lint` and `cache_verify` jobs. The master push build turns them
+        # Run the `test_lint` and `cache_verify` jobs. A bors push to master turns them
         # off: bors validated the same commit on `staging`.
         type: boolean
         required: false
