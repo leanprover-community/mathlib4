@@ -157,21 +157,6 @@ def Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
   toFun f := f.hom
   invFun f := ofHom f
 
-/--
-Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
-equal function coercion for a continuous map `C(X, Y)`.
--/
-@[deprecated "No replacement" (since := "2026-04-23")]
-theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : C(X, Y)} {x} :
-    @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj ↧Y) ConcreteCategory.instFunLike
-      (ofHom f) x =
-    @DFunLike.coe C(X, Y) X
-      (fun _ ↦ Y) _
-      f x :=
-  rfl
-
 instance inhabited : Inhabited TopCat :=
   ⟨↧Empty⟩
 

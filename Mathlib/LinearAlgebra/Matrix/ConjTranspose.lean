@@ -439,8 +439,6 @@ instance [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] : StarRing (Ma
   star_add := conjTranspose_add
   star_mul := conjTranspose_mul
 
-@[deprecated (since := "2026-04-20")] protected alias star_mul := StarMul.star_mul
-
 end Star
 
 @[simp]

@@ -529,8 +529,6 @@ theorem map_quotientMk' [Finite G] [IsGaloisGroup G K L] (h : E ≤ F) :
       exact ⟨a, FaithfulSMul.algebraMap_injective F L
         (by rw [← IsScalarTower.algebraMap_apply, ha])⟩⟩ }
 
-@[deprecated (since := "2026-04-21")] alias quotientMap := map_quotientMk'
-
 end IntermediateField
 
 end Quotient

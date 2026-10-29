@@ -74,9 +74,6 @@ theorem FractionalIdeal.one_mem_inv_coe_ideal [IsDomain A] {I : Ideal A} (hI : I
   rw [one_mul]
   exact coeIdeal_le_one hy
 
-@[deprecated (since := "2026-04-16")]
-alias one_mem_inv_coe_ideal := FractionalIdeal.one_mem_inv_coe_ideal
-
 /-- Specialization of `exists_primeSpectrum_prod_le_and_ne_bot_of_domain` to Dedekind domains:
 Let `I : Ideal A` be a nonzero ideal, where `A` is a Dedekind domain that is not a field.
 Then `exists_primeSpectrum_prod_le_and_ne_bot_of_domain` states we can find a product of prime
@@ -111,10 +108,6 @@ theorem PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDo
       rw [this, Multiset.cons_erase hPZ']
     · refine fun h => h_eraseZ (Z.erase P) ⟨h, ?_⟩ (Multiset.erase_lt.mpr hPZ)
       exact hZP0
-
-@[deprecated (since := "2026-04-16")]
-alias exists_multiset_prod_cons_le_and_prod_not_le :=
-  PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le
 
 namespace FractionalIdeal
 variable [IsDedekindDomain A] {I : Ideal A}
