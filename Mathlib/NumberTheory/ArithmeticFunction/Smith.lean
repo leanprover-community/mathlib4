@@ -83,9 +83,9 @@ theorem gcdMatrix_eq_transpose_mul_mul (n : ℕ) (f g : ℕ → R)
       (zetaMatrix R n)ᵀ * (diagonal (fun i : Fin n ↦ g ((i : ℕ) + 1)) * zetaMatrix R n) := by
   ext i j
   rw [gcdMatrix_apply, hfg _ (Nat.gcd_pos_of_pos_left _ (by omega)),
-    ← Nat.sum_fin_dvd_dvd_eq_sum_divisors_gcd n g i j, mul_apply]
+    ← Nat.sum_fin_dvd_dvd_eq_sum_divisors_gcd n g i j, Matrix.mul_apply]
   refine sum_congr rfl fun k _ ↦ ?_
-  rw [transpose_apply, zetaMatrix_apply, mul_apply]
+  rw [transpose_apply, zetaMatrix_apply, Matrix.mul_apply]
   simp only [diagonal_apply, zetaMatrix_apply]
   rw [sum_eq_single k (fun b _ hb ↦ by simp [Ne.symm hb]) (by simp)]
   by_cases h1 : (k : ℕ) + 1 ∣ (i : ℕ) + 1 <;> by_cases h2 : (k : ℕ) + 1 ∣ (j : ℕ) + 1 <;>
