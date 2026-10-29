@@ -144,34 +144,25 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
 theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
     (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : n ≠ 0) :
     ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d := by
-  set P := ∏ p ∈ n.primeFactors, p with hP
-  have hPsq : Squarefree P := by
-    refine Finset.squarefree_prod_of_pairwise_isCoprime (fun p hp q hq hpq ↦ ?_)
-      fun p hp ↦ (mem_primeFactors.mp hp).1.prime.squarefree
-    exact coprime_iff_isRelPrime.mp
-      ((coprime_primes (mem_primeFactors.mp hp).1 (mem_primeFactors.mp hq).1).mpr hpq)
-  have hP0 : P ≠ 0 := hPsq.ne_zero
-  -- over the squarefree `P` this is `prodPrimeFactors_one_add_of_squarefree` applied to `μ * f`;
-  -- the divisors of `n` that are not divisors of `P` are not squarefree, so `μ` kills them
+  -- `P` is squarefree with the prime factors of `n`, and `μ` vanishes on the divisors of `n`
+  -- that do not divide `P`
+  set P := ∏ p ∈ n.primeFactors, p
+  have hP : Squarefree P := n.squarefree_prod_primeFactors
   calc ∏ p ∈ n.primeFactors, (1 - f p)
-    _ = ∏ p ∈ P.primeFactors,
-          (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p) := by
-      rw [hP, primeFactors_prod_primeFactors]
-      refine prod_congr rfl fun p hp ↦ ?_
-      rw [pmul_apply, intCoe_apply, moebius_apply_prime (prime_of_mem_primeFactors hp)]
-      ring
+    _ = ∏ p ∈ P.primeFactors, (1 + ArithmeticFunction.pmul (μ : ArithmeticFunction R) f p) := by
+      rw [primeFactors_prod_primeFactors]
+      exact prod_congr rfl fun p hp ↦ by
+        simp [moebius_apply_prime (prime_of_mem_primeFactors hp), sub_eq_add_neg]
     _ = ∑ d ∈ P.divisors, μ d * f d := by
-      rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hPsq]
+      rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hP]
       simp_rw [pmul_apply, intCoe_apply]
     _ = ∑ d ∈ n.divisors, μ d * f d := by
-      refine Finset.sum_subset (divisors_subset_of_dvd hn n.prod_primeFactors_dvd)
-        fun d hd hno ↦ ?_
+      refine sum_subset (divisors_subset_of_dvd hn n.prod_primeFactors_dvd) fun d hd hdP ↦ ?_
       suffices ¬ Squarefree d by simp [moebius_eq_zero_of_not_squarefree this]
-      -- a squarefree divisor of `n` divides `P`: it is the product of its own prime factors
-      refine fun hsq ↦ hno (mem_divisors.mpr ⟨?_, hP0⟩)
-      rw [← prod_primeFactors_of_squarefree hsq, prod_primeFactors_dvd_iff hP0, hP,
-        primeFactors_prod_primeFactors]
-      exact primeFactors_mono (mem_divisors.mp hd).1 hn
+      -- a squarefree divisor of `n` is the product of its own prime factors, so it divides `P`
+      refine fun hsq ↦ hdP (mem_divisors.mpr ⟨?_, hP.ne_zero⟩)
+      rw [← prod_primeFactors_of_squarefree hsq]
+      exact prod_dvd_prod_of_subset _ _ _ (primeFactors_mono (dvd_of_mem_divisors hd) hn)
 
 @[deprecated IsMultiplicative.prodPrimeFactors_one_sub +typeChanged (since := "2026-09-14")]
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
