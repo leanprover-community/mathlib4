@@ -126,6 +126,12 @@ private def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) wher
   left_inv _ := rfl
   right_inv _ := rfl
 
+-- This instance exists to avoid a zsmul diamond.
+@[no_expose]
+noncomputable instance (R : Type*) [CommSemiring R] [Algebra R (WithAbs v)] :
+    SMul R v.Completion where
+  smul r x := ofCompletion' (r • x.toCompletion')
+
 @[no_expose]
 noncomputable instance : NormedField v.Completion := fast_instance% (equivAux v).normedField
 
@@ -216,6 +222,7 @@ noncomputable instance : Inhabited v.Completion := ⟨0⟩
 
 variable {v}
 
+/-- The coercion from `WithAbs v` to `v.Completion`. -/
 @[coe] noncomputable def coe (x : WithAbs v) : v.Completion :=
   ofCompletion (x : UniformSpace.Completion (WithAbs v))
 
