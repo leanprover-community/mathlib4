@@ -4,7 +4,7 @@ import Mathlib.Init
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.InfoTree.Util
 
-set_option linter.style.numericProjection true
+set_option linter.style.numericProjections true
 
 open Lean
 
@@ -24,7 +24,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Rat`, add `@[allow_numeric_proj]` at the declaration site of `Rat`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 -/
 #guard_msgs in
 example := r.2
@@ -36,7 +36,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 -/
 #guard_msgs in
 example := bar.2
@@ -48,7 +48,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 warning: Numeric projections are disallowed.
 
@@ -56,7 +56,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Foo`, add `@[allow_numeric_proj]` at the declaration site of `Foo`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 -/
 #guard_msgs in
 example := bar.1.1
@@ -70,7 +70,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Fn`, add `@[allow_numeric_proj]` at the declaration site of `Fn`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 -/
 #guard_msgs in
 example (g : Fn) := g.1 3
@@ -129,7 +129,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +3:38...39
 warning: Numeric projections are disallowed.
@@ -138,7 +138,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +3:68...69
 warning: Numeric projections are disallowed.
@@ -147,7 +147,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +4:28...29
 warning: Numeric projections are disallowed.
@@ -156,7 +156,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +4:52...53
 warning: Numeric projections are disallowed.
@@ -165,7 +165,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +4:79...80
 warning: Numeric projections are disallowed.
@@ -174,7 +174,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +4:9...10
 warning: Numeric projections are disallowed.
@@ -183,7 +183,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +5:14...15
 warning: Numeric projections are disallowed.
@@ -192,7 +192,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `C`, add `@[allow_numeric_proj]` at the declaration site of `C`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +5:24...25
 warning: Numeric projections are disallowed.
@@ -201,7 +201,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +5:39...40
 warning: Numeric projections are disallowed.
@@ -210,7 +210,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +5:59...60
 warning: Numeric projections are disallowed.
@@ -219,7 +219,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +5:6...7
 warning: Numeric projections are disallowed.
@@ -228,7 +228,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +6:25...26
 warning: Numeric projections are disallowed.
@@ -237,7 +237,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +6:45...46
 warning: Numeric projections are disallowed.
@@ -246,7 +246,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +6:52...53
 warning: Numeric projections are disallowed.
@@ -255,7 +255,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +6:72...73
 warning: Numeric projections are disallowed.
@@ -264,7 +264,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +7:15...16
 warning: Numeric projections are disallowed.
@@ -273,7 +273,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +7:36...37
 warning: Numeric projections are disallowed.
@@ -282,7 +282,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +7:42...43
 warning: Numeric projections are disallowed.
@@ -291,7 +291,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 -/
 #guard_msgs (positions := true, ordering := sorted) in
 #numeric_proj_infos in
@@ -315,7 +315,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +4:13...14
 warning: Numeric projections are disallowed.
@@ -324,7 +324,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +4:21...22
 warning: Numeric projections are disallowed.
@@ -333,7 +333,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +5:20...21
 warning: Numeric projections are disallowed.
@@ -342,7 +342,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +5:44...45
 warning: Numeric projections are disallowed.
@@ -351,7 +351,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 -/
 #guard_msgs (positions := true, ordering := sorted) in
 set_option linter.unusedTactic false in
@@ -373,7 +373,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +3:63...64
 warning: Numeric projections are disallowed.
@@ -382,7 +382,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +3:7...8
 warning: Numeric projections are disallowed.
@@ -391,7 +391,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +4:17...18
 warning: Numeric projections are disallowed.
@@ -400,7 +400,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 ---
 @ +5:27...28
 warning: Numeric projections are disallowed.
@@ -409,7 +409,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 -/
 #guard_msgs (positions := true, ordering := sorted) in
 #numeric_proj_infos in
@@ -431,7 +431,7 @@ warning: Numeric projections are disallowed.
 
 To exempt terms of type `Bar`, add `@[allow_numeric_proj]` at the declaration site of `Bar`.
 
-Note: This linter can be disabled with `set_option linter.style.numericProjection false`
+Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 -/
 #guard_msgs (positions := true, ordering := sorted) in
 #numeric_proj_infos in
