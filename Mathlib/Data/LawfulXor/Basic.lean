@@ -9,6 +9,9 @@ module
 public import Mathlib.Data.Fin.Init
 public import Mathlib.Logic.Function.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `LawfulXor` typeclass
 

@@ -147,7 +147,7 @@ theorem invertible_of_principal (I : FractionalIdeal R₁⁰ K)
   mul_div_self_cancel_iff.mpr
     ⟨spanSingleton _ (generator (I : Submodule R₁ K))⁻¹, mul_generator_self_inv _ I h⟩
 
-theorem invertible_iff_generator_nonzero (I : FractionalIdeal R₁⁰ K)
+theorem invertible_iff_generator_ne_zero (I : FractionalIdeal R₁⁰ K)
     [Submodule.IsPrincipal (I : Submodule R₁ K)] :
     I * I⁻¹ = 1 ↔ generator (I : Submodule R₁ K) ≠ 0 := by
   constructor
@@ -161,6 +161,9 @@ theorem invertible_iff_generator_nonzero (I : FractionalIdeal R₁⁰ K)
     have := mem_spanSingleton_self R₁⁰ (generator (I : Submodule R₁ K))
     rw [hI, mem_zero_iff] at this
     contradiction
+
+@[deprecated (since := "2026-10-13")]
+alias invertible_iff_generator_nonzero := invertible_iff_generator_ne_zero
 
 theorem isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)]
     (h : I ≠ 0) : Submodule.IsPrincipal I⁻¹.1 := by

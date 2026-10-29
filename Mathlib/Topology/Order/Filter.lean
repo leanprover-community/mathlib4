@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Filter
 public import Mathlib.Topology.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on filters of a space with order topology
 

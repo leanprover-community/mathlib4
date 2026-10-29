@@ -133,7 +133,7 @@ theorem frequently_eq_iff_eventually_eq (hf : AnalyticAt 𝕜 f z₀) (hg : Anal
 neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at
 `z₀`. We formulate this with `n : ℤ`, and deduce the case `n : ℕ` later, for applications to
 meromorphic functions. -/
-lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
+lemma unique_eventuallyEq_zpow_smul_ne_zero {m n : ℤ}
     (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ m • g z)
     (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ n • g z) :
     m = n := by
@@ -154,22 +154,28 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
   conv => enter [2, z, 1]; rw [← Int.toNat_sub_of_le h_le, zpow_natCast]
   exact ((analyticAt_id.sub analyticAt_const).pow _).smul hg_an
 
+@[deprecated (since := "2026-10-13")]
+alias unique_eventuallyEq_zpow_smul_nonzero := unique_eventuallyEq_zpow_smul_ne_zero
+
 /-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a
 neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at
 `z₀`. -/
-lemma unique_eventuallyEq_pow_smul_nonzero {m n : ℕ}
+lemma unique_eventuallyEq_pow_smul_ne_zero {m n : ℕ}
     (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ m • g z)
     (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) :
     m = n := by
   simp_rw [← zpow_natCast] at hm hn
-  exact Int.ofNat_inj.mp <| unique_eventuallyEq_zpow_smul_nonzero
+  exact Int.ofNat_inj.mp <| unique_eventuallyEq_zpow_smul_ne_zero
     (let ⟨g, h₁, h₂, h₃⟩ := hm; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
     (let ⟨g, h₁, h₂, h₃⟩ := hn; ⟨g, h₁, h₂, h₃.filter_mono nhdsWithin_le_nhds⟩)
+
+@[deprecated (since := "2026-10-13")]
+alias unique_eventuallyEq_pow_smul_nonzero := unique_eventuallyEq_pow_smul_ne_zero
 
 /-- If `f` is analytic at `z₀`, then exactly one of the following two possibilities occurs: either
 `f` vanishes identically near `z₀`, or locally around `z₀` it has the form `z ↦ (z - z₀) ^ n • g z`
 for some `n` and some `g` which is analytic and non-vanishing at `z₀`. -/
-theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
+theorem exists_eventuallyEq_pow_smul_ne_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     (∃ (n : ℕ), ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
     ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z) ↔ (¬∀ᶠ z in 𝓝 z₀, f z = 0) := by
   constructor
@@ -186,6 +192,9 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
     exact ⟨p.order, _, ⟨_, hp.has_fpower_series_iterate_dslope_fslope p.order⟩,
       hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
       .of_forall hp.eq_pow_order_mul_iterate_dslope⟩
+
+@[deprecated (since := "2026-10-13")]
+alias exists_eventuallyEq_pow_smul_nonzero_iff := exists_eventuallyEq_pow_smul_ne_zero_iff
 
 end AnalyticAt
 
