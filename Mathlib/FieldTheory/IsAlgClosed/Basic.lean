@@ -201,14 +201,13 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
 If `k` has no nontrivial finite extension, then `k` is algebraically closed.
 -/
 theorem of_finiteDimensional_imp_finrank_eq_one
-    (H : ∀ (l : Type u), [Field l] → [Algebra k l] → [FiniteDimensional k l] →
-          Module.finrank k l = 1) :
+    (H : ∀ (l : Type u) [Field l] [Algebra k l] [FiniteDimensional k l], Module.finrank k l = 1) :
     IsAlgClosed k :=
-  .of_exists_root _ fun f f_monic f_irr ↦ by
+  .of_exists_root _ fun f f_monic f_irr ↦
     have := Fact.mk f_irr
     have := f_monic.finite_adjoinRoot
-    use (Module.nonempty_algEquiv_iff_finrank_eq_one.mpr (H <| AdjoinRoot f)).some.symm (.root f)
-    simp [← Polynomial.coe_aeval_eq_eval, Polynomial.aeval_algHom_apply]
+    exists_root_of_natDegree_eq_one
+      (by simpa [finrank_quotient_span_eq_natDegree.symm] using this)
 
 theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
     [IsAlgClosed k] : IsAlgClosed k' := by
