@@ -143,7 +143,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
     let (solvedHtml, solvedToken) ← mkRefreshComponent
     let targetHtml ←
       if let .hyp h := loc.loc then
-        pure jsx%{<span> hypothesis {← exprToHtml (.fvar h)}</span>}
+        pure jsx%{<span>hypothesis {← exprToHtml (.fvar h)}</span>}
       else
         Meta.viewSubexpr (fun _ e ↦ exprToHtml e) loc.pos (← loc.rootExpr)
     let html ← mkRefreshComponentM
