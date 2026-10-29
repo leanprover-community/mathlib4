@@ -261,7 +261,7 @@ example : degree (-1 + X : ℤ[X]) = 1 := by compute_degree!
 
 example : natDegree (-1 + 8 * X ^ 7 : ℤ[X]) = 7 := by compute_degree!
 
-example : coeff (-1 + 8 * X ^ 7 : ℤ[X]) 7 = 8 := by compute_degree!
+example : (-1 + 8 * X ^ 7 : ℤ[X]).coeff 7 = 8 := by compute_degree!
 
 example : natDegree (-X + 8 * X ^ 7 : ℤ[X]) = 7 := by compute_degree!
 
