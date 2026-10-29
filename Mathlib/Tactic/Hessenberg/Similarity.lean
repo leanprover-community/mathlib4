@@ -20,7 +20,8 @@ public import Mathlib.Tactic.Matrix.Swaps
 # Certificate construction for Hessenberg similarity
 
 `mkHessenbergSimilarity` constructs a `Hessenberg.Similarity` certificate and corresponding
-Hessenberg reduction from a literal matrix over ℚ.
+Hessenberg reduction from a literal matrix over `ℚ` (or more generally a ring `S` with
+`f : S → ℚ`).
 
 ## Main definitions
 
@@ -35,8 +36,8 @@ triangular matrix, `σ` a permutation corresponding to the row and column swaps,
 Hessenberg matrix.
 
 The `mkHessenbergSimilarity` function certifies `Aσ * L = L * H` (where `Aσ` is the reindexing of
-`A` by `σ`) via the products `Aσ * L = P` and `L * H = P`, each proved by `certifyProductEq` on the
-lists of rows.
+`A.map f` by `σ`) via the products `Aσ * L = P` and `L * H = P`, each proved by `certifyProductEq`
+on the lists of rows.
 
 The conditions that `L` is lower triangular with nonzero diagonal and `H` is
 upper Hessenberg are decided by the kernel.
