@@ -323,7 +323,7 @@ instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
 
 -- note that `smul_apply` would be a more suitable name, but is already in use for the action of
 -- `ArithmeticFunction R` on `ArithmeticFunction S`
-@[simp]
+@[deprecated smul_apply +typeChanged (since := "2026-10-29")]
 theorem smul_map {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
     (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := by
   rfl
