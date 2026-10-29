@@ -115,7 +115,7 @@ theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X
   have : Nontrivial (End X) := (End.homEquiv (X := X)).nontrivial
   have : FiniteDimensional 𝕜 (End X) :=
     End.linearEquiv.symm.finiteDimensional
-  obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgisClosed_of_finiteDimensional 𝕜 (End.of f)
+  obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgClosed_of_finiteDimensional 𝕜 (End.of f)
   use c
   rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne,
     Classical.not_not, Algebra.algebraMap_eq_smul_one,
