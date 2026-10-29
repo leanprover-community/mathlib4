@@ -220,16 +220,8 @@ theorem separableSpace_image_of_continuousWithinAt_Ioi [SecondCountableTopology 
   rintro _ ⟨x, hxs, rfl⟩
   refine closure_mono (s := f '' (d ∩ Ici x)) ?_ ?_
   · exact image_mono inter_subset_left
-  · exact ((continuousWithinAt_inter_Ioi_iff_Ici.1 (hf x hxs)).mono fun _ hy ↦
-      ⟨hds hy.1, hy.2⟩).mem_closure_image (hd x hxs)
-
-/-- The range of a right-continuous function on a second-countable linear order is separable. -/
-@[to_dual /-- The range of a left-continuous function on a second-countable linear order is
-separable. -/]
-theorem separableSpace_range_of_continuousWithinAt_Ioi [SecondCountableTopology α]
-    [TopologicalSpace β] {f : α → β} (hf : ∀ x, ContinuousWithinAt f (Ioi x) x) :
-    SeparableSpace (range f) :=
-  image_univ ▸ separableSpace_image_of_continuousWithinAt_Ioi fun x _ ↦ by simpa using hf x
+  · exact ((continuousWithinAt_inter_Ioi_iff_Ici.1 (hf x hxs)).mono
+      (inter_subset_inter_left _ hds)).mem_closure_image (hd x hxs)
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/

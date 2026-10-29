@@ -166,6 +166,13 @@ lemma IsCadlag.tendsto_nhdsLT_leftLim [OrderTopology X] (hf : IsCadlag f) (x : X
     Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
   tendsto_leftLim_of_tendsto (hf.tendsto_nhdsLT x)
 
+/-- The range of a right-continuous function on a second-countable linear order is separable. -/
+@[to_dual /-- The range of a left-continuous function on a second-countable linear order is
+separable. -/]
+lemma IsRightContinuous.separableSpace_range [OrderTopology X] [SecondCountableTopology X]
+    (hf : IsRightContinuous f) : SeparableSpace (Set.range f) :=
+  Set.image_univ ▸ separableSpace_image_of_continuousWithinAt_Ioi fun x _ ↦ by simpa using hf x
+
 end LinearOrder
 
 section PseudoMetricSpace

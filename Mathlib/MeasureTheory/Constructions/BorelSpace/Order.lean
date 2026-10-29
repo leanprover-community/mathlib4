@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Order.Lattice
+public import Mathlib.Topology.Order.Cadlag
 public import Mathlib.Topology.Order.Lattice
 
 /-!
@@ -853,13 +854,10 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
 theorem MeasurableSet.of_mem_nhdsLT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[<] x) : MeasurableSet s :=
   of_mem_nhdsGT (α := αᵒᵈ) h
 
-/-- A function which is right continuous at every point of a second-countable linear order is
-measurable. -/
-@[to_dual /-- A function which is left continuous at every point of a second-countable linear order
-is measurable. -/]
-theorem measurable_of_continuousWithinAt_Ioi {f : α → β}
-    (hf : ∀ x, ContinuousWithinAt f (Ioi x) x) : Measurable f :=
-  measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ (hf x (hu.mem_nhds hx))
+/-- A right-continuous function on a second-countable linear order is measurable. -/
+@[to_dual /-- A left-continuous function on a second-countable linear order is measurable. -/]
+theorem IsRightContinuous.measurable {f : α → β} (hf : IsRightContinuous f) : Measurable f :=
+  measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ hf x (hu.mem_nhds hx)
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
