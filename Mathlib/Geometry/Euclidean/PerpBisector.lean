@@ -9,8 +9,6 @@ public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.InnerProductSpace.Affine
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
-import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-
 /-!
 # Perpendicular bisector of a segment
 
@@ -126,8 +124,12 @@ theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisecto
 theorem collinear_perpBisector [FiniteDimensional ℝ V] (hdim : Module.finrank ℝ V ≤ 2)
     {a b : P} (hab : a ≠ b) : Collinear ℝ (perpBisector a b : Set P) := by
   rw [collinear_iff_finrank_le_one, ← direction_eq_vectorSpan, direction_perpBisector]
-  have hh := (ℝ ∙ (b -ᵥ a)).finrank_add_finrank_orthogonal
-  rw [finrank_span_singleton (vsub_ne_zero.mpr hab.symm)] at hh
+  have hproper : (ℝ ∙ (b -ᵥ a))ᗮ ≠ ⊤ := by
+    intro htop
+    have hzero := Submodule.span_singleton_eq_bot.mp
+      ((Submodule.orthogonal_eq_top_iff _).mp htop)
+    exact hab.symm (vsub_eq_zero_iff_eq.mp hzero)
+  have hlt := Submodule.finrank_lt hproper
   omega
 
 /-- The line through two distinct equidistant apices is the base's perpendicular bisector. -/
