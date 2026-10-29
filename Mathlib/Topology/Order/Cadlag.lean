@@ -23,8 +23,8 @@ Using the `to_dual` machinery we also define *càglàd functions* (left-continuo
 open Filter TopologicalSpace Bornology
 open scoped Topology ENNReal
 
--- Allow `to_fun` to eta-expand `g ∘ f`; see the same workaround in
--- `Mathlib/Order/ScottContinuity.lean`.
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 
 variable {X Y : Type*} [TopologicalSpace X] {f g : X → Y}
