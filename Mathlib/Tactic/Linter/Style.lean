@@ -555,7 +555,7 @@ such names violate the naming convention. -/
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
     let env ← getEnv
-    unless (env.find? declName).get!.isDefinition &&
+    unless wasOriginallyDefn env declName &&
         -- TODO: lint private definitions with underscores for readability.
         !(env.isPrivateOrAutoDecl declName) do
       return none
@@ -577,8 +577,7 @@ if its name contains the component `coe`, but the statement involves no such dec
 most likely it needs renaming.
 Upon error, return a message describing more details (such as, all relevant constants
 that *do* occur in the lemma). -/
-public def isMisnamedCoercion (name : Name) :
-  MetaM (Bool × MessageData) := do
+public def isMisnamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
   -- Does the final name component contain a part `coe` (or `coe'`)?
   let parts := name.components.getLast!.toString.split "_" |>.toList
   unless parts.contains "coe" || parts.contains "coe'" do return (false, "")
@@ -599,8 +598,8 @@ these are coercion lemmas violating mathlib's naming convention. -/
   test declName := do
     let env ← getEnv
     unless wasOriginallyTheorem env declName do return none
-    if (env.isPrivateOrAutoDecl declName) || declName.isInternalDetail ||
-        (isDeprecated env declName) then
+    if env.isPrivateOrAutoDecl declName || declName.isInternalDetail ||
+        isDeprecated env declName then
       return none
     match ← isMisnamedCoercion declName with
     | (true, details) =>
