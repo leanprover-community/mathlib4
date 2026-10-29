@@ -82,7 +82,7 @@ theorem measurable_eVariationOn_of_countable {m : MeasurableSpace Ω} {s : Set �
 
 variable [TopologicalSpace ι] [OrderTopology ι]
 
-section Separable
+section SeparableSpace
 
 variable [SeparableSpace ι]
 
@@ -114,7 +114,7 @@ theorem MeasureTheory.StronglyAdapted.adapted_variationProcess_of_continuous [Or
     (hcont : ∀ ω, Continuous (X · ω)) : Adapted 𝓕 (variationProcess X ⊥) :=
   fun _ ↦ hX.measurable_variationProcess_of_continuous (by simpa) bot_le
 
-end Separable
+end SeparableSpace
 
 section SecondCountableTopology
 
