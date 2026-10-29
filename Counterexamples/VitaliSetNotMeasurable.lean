@@ -81,13 +81,8 @@ instance : Infinite ratAddCircle := by
   omega
 
 /-- `vitaliSet` is not null-measurable. -/
-theorem not_nullMeasurableSet_vitaliSet : ¬ NullMeasurableSet vitaliSet volume := by
-  intro hm
-  have h := one_eq_tsum_volume_vitaliSet hm
-  rcases eq_or_ne (volume vitaliSet) 0 with hz | hnz
-  · simp [hz] at h
-  · rw [ENNReal.tsum_const_eq_top_of_ne_zero hnz] at h
-    exact ENNReal.one_ne_top h
+theorem not_nullMeasurableSet_vitaliSet : ¬ NullMeasurableSet vitaliSet volume :=
+  fun hm ↦ by simpa [ENNReal.top_mul', apply_ite] using one_eq_tsum_volume_vitaliSet hm
 
 /-- `vitaliSet` is not measurable. -/
 theorem not_measurableSet_vitaliSet : ¬ MeasurableSet vitaliSet :=
