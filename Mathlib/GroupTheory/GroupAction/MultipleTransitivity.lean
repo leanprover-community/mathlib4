@@ -146,7 +146,7 @@ theorem IsPretransitive.of_embedding {n : Type*}
     use σ g
     ext i
     rw [DFunLike.ext_iff] at hg
-    rw [smul_apply]
+    rw [Function.Embedding.smul_apply]
     simp [← aux_apply, ← hg, MulActionHom.map_smul']
 
 @[to_additive]
@@ -212,8 +212,8 @@ theorem is_two_pretransitive_iff :
   · intro _ a b c d h h'
     obtain ⟨m, e⟩ := exists_smul_eq (M := G) (embFinTwo h) (embFinTwo h')
     exact ⟨m,
-      by rw [← embFinTwo_apply_zero h, ← smul_apply, e, embFinTwo_apply_zero],
-      by rw [← embFinTwo_apply_one h, ← smul_apply, e, embFinTwo_apply_one]⟩
+      by rw [← embFinTwo_apply_zero h, ← Function.Embedding.smul_apply, e, embFinTwo_apply_zero],
+      by rw [← embFinTwo_apply_one h, ← Function.Embedding.smul_apply, e, embFinTwo_apply_one]⟩
   · intro H
     constructor
     intro j j'
@@ -359,8 +359,9 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
       simp [ofStabilizer.snoc_last]
     use ⟨g, hg⟩
     ext i
-    simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
-    rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc]
+    simp only [Function.Embedding.smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+    rw [← ofStabilizer.snoc_castSucc x, ← Function.Embedding.smul_apply, hgxy,
+      ofStabilizer.snoc_castSucc]
   · -- gx • x = x1 :: a
     obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
     -- gy • y = y1 :: a
@@ -369,9 +370,9 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
     use gy⁻¹ * g * gx
     ext i
-    simp only [mul_smul, smul_apply, inv_smul_eq_iff]
-    simp only [← smul_apply _ _ i, hgy, hgx]
-    simp only [smul_apply]
+    simp only [mul_smul, Function.Embedding.smul_apply, inv_smul_eq_iff]
+    simp only [← Function.Embedding.smul_apply _ _ i, hgy, hgx]
+    simp only [Function.Embedding.smul_apply]
     rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
     · simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
     · simp only [ofStabilizer.snoc_last, ← hg]
@@ -401,14 +402,14 @@ theorem isMultiplyPretransitive {m n : ℕ} [Hn : IsMultiplyPretransitive G α n
     suffices g ∈ fixingSubgroup G s by
       use ⟨g, this⟩
       ext i
-      rw [smul_apply, SetLike.val_smul, Subgroup.mk_smul]
-      simp [← ofFixingSubgroup.append_right, ← smul_apply, ← hx, ← hy, hg]
+      rw [Function.Embedding.smul_apply, SetLike.val_smul, Subgroup.mk_smul]
+      simp [← ofFixingSubgroup.append_right, ← Function.Embedding.smul_apply, ← hx, ← hy, hg]
     intro a
     set i := (Classical.choice Hs).symm a
     have ha : (Classical.choice Hs) i = a := by simp [i]
     rw [← ha]
     nth_rewrite 1 [← ofFixingSubgroup.append_left x i]
-    rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, smul_apply, ← hx]
+    rw [← ofFixingSubgroup.append_left y i, ← hy, ← hg, Function.Embedding.smul_apply, ← hx]
 
 /-- The fixator of a finite subset of cardinal d in an n-transitive action
 acts m transitively on the complement if d + m ≤ n. -/
