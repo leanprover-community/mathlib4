@@ -6,11 +6,11 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
-public import Mathlib.Algebra.QuadraticAlgebra.Integral
-public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 public import Mathlib.RingTheory.Localization.FractionRing
 
-import Mathlib.Data.Nat.Prime.Int
+import Mathlib.Algebra.QuadraticAlgebra.Integral
+import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
@@ -24,9 +24,9 @@ For `a b : ℤ`, `QuadraticAlgebra ℤ a b` is an order in `QuadraticAlgebra ℚ
   integers and its fraction ring.
 * `QuadraticAlgebra.Int.isDomain_iff`: `QuadraticAlgebra ℤ a b` is an integral domain iff
   `discr a b` is not a square.
-* `QuadraticAlgebra.Int.saturated_iff`: for a prime `p`, every integral element `z` such that
-  `p • z` lies in `QuadraticAlgebra ℤ a b` lies itself in `QuadraticAlgebra ℤ a b` iff `discr a b`
-  is not `p ^ 2` times an integer congruent to `0` or `1` modulo `4`.
+* `QuadraticAlgebra.Int.exists_den_sq_mul`: if `z` is an integral element of
+  `QuadraticAlgebra ℚ a b`, then `discr a b` is the square of the denominator of `z.im` times an
+  integer congruent to `0` or `1` modulo `4`.
 -/
 
 public section
@@ -142,6 +142,12 @@ theorem mem_range_iff_im_mem_range {z : QuadraticAlgebra ℚ a b} (hz : IsIntegr
   obtain ⟨u, hu⟩ := re_mem_range_of_im_mem_range ⟨a, rfl⟩ ⟨b, rfl⟩ hz ⟨v, hv⟩
   exact ⟨⟨u, v⟩, by ext <;> simp_all⟩
 
+/-- If `z` is an integral element of `QuadraticAlgebra ℚ a b`, then the denominator of `z.im` times
+`z` lies in `QuadraticAlgebra ℤ a b`. -/
+theorem den_smul_mem {z : QuadraticAlgebra ℚ a b} (hz : IsIntegral ℤ z) :
+    (z.im.den : ℤ) • z ∈ 𝒪 :=
+  (mem_range_iff_im_mem_range (hz.zsmul _)).mpr (by simp)
+
 private theorem exists_unsaturated_of_sq_mul_aux {d e : ℤ} (he : discr a b = d ^ 2 * e)
     (he' : 4 ∣ e ^ 2 - e) :
     ∃ t : ℤ, d ∣ 2 * t + b ∧ 4 * d ^ 2 ∣ (2 * t + b) ^ 2 - discr a b := by
@@ -192,39 +198,36 @@ theorem exists_discr_mul_im_sq_eq {z : QuadraticAlgebra ℚ a b} {x : QuadraticA
     discr_intCast, hx, algebraMap_int_eq, eq_intCast, zsmul_eq_mul]
   ring
 
-/-- Let `p` be a prime and `z` an integral element such that `p • z` is the image of an element `x`
-of `QuadraticAlgebra ℤ a b` with `p ∤ x.im`. Then `discr a b` is `p ^ 2` times an integer
-congruent to `0` or `1` modulo `4`. -/
-theorem exists_sq_mul_of_not_dvd_im {p : ℕ} (hp : p.Prime) {z : QuadraticAlgebra ℚ a b}
-    {x : QuadraticAlgebra ℤ a b} (hz : IsIntegral ℤ z)
-    (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = p • z)
-    (hx' : ¬ (p : ℤ) ∣ x.im) :
-    ∃ e : ℤ, discr a b = p ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
+/-- Let `z` be an integral element such that `d • z` is the image of an element `x` of
+`QuadraticAlgebra ℤ a b`, with `d ≠ 0` coprime to `x.im`. Then `discr a b` is `d ^ 2` times an
+integer congruent to `0` or `1` modulo `4`. -/
+theorem exists_sq_mul_of_isCoprime {z : QuadraticAlgebra ℚ a b} {x : QuadraticAlgebra ℤ a b}
+    {d : ℤ} (hd₀ : d ≠ 0) (hz : IsIntegral ℤ z) (hd : IsCoprime d x.im)
+    (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = d • z) :
+    ∃ e : ℤ, discr a b = d ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
   obtain ⟨t, n, h⟩ := exists_discr_mul_im_sq_eq hz hx
-  obtain ⟨e, he⟩ : (p : ℤ) ^ 2 ∣ discr a b := by
-    suffices IsCoprime (p : ℤ) x.im by
-      rw [← this.pow.dvd_mul_right_iff, h]
-      exact Int.dvd_mul_right _ _
-    rwa [Prime.coprime_iff_not_dvd (Nat.prime_iff_prime_int.mp hp)]
+  obtain ⟨e, he⟩ : d ^ 2 ∣ discr a b := hd.pow.dvd_of_dvd_mul_right ⟨_, h⟩
   refine ⟨e, he, ?_⟩
-  obtain rfl | hp' := hp.eq_two_or_odd'
-  · obtain ⟨k, hk⟩ : Odd x.im := Int.odd_iff.mpr (by lia)
-    obtain ⟨s, rfl | rfl⟩ := Int.even_or_odd' t <;> rw [he, hk] at h <;> lia
+  obtain hd' | hd' := d.even_or_odd
+  · have him : Odd x.im :=
+      Int.isCoprime_two_left.mp <| IsCoprime.of_isCoprime_of_dvd_left hd hd'.two_dvd
+    rw [he, mul_assoc, mul_right_inj' (Int.pow_ne_zero hd₀)] at h
+    replace h := congr_arg (· % 4) h
+    rw [Int.mul_emod, Int.sq_emod_four, Int.odd_iff.mp him, mul_one, Int.sub_mul_emod_self_left,
+      Int.emod_emod, Int.sq_emod_four] at h
+    lia
   · replace he := congr_arg (· % 4) he
-    rw [Int.mul_emod, Int.sq_emod_four, Int.odd_iff.mp hp'.natCast, one_mul, Int.emod_emod] at he
+    rw [Int.mul_emod, Int.sq_emod_four, Int.odd_iff.mp hd', one_mul, Int.emod_emod] at he
     exact he ▸ discr_emod_four_eq_zero_or_one a b
 
-/-- Let `p` be a prime. Every integral element `z` such that `p • z` lies in
-`QuadraticAlgebra ℤ a b` lies itself in `QuadraticAlgebra ℤ a b` iff `discr a b` is not `p ^ 2`
-times an integer congruent to `0` or `1` modulo `4`. -/
-theorem saturated_iff {p : ℕ} (hp : p.Prime) :
-    (∀ z : QuadraticAlgebra ℚ a b, IsIntegral ℤ z → p • z ∈ 𝒪 → z ∈ 𝒪) ↔
-      ¬ ∃ e : ℤ, discr a b = (p : ℤ) ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
-  contrapose!
-  refine ⟨fun ⟨z, hz, ⟨x, hx⟩, hz'⟩ ↦ exists_sq_mul_of_not_dvd_im hp hz hx fun ⟨c, hc⟩ ↦ hz' <|
-    (mem_range_iff_im_mem_range hz).mpr ⟨c, ?_⟩,
-    fun ⟨e, he, he'⟩ ↦ exists_unsaturated_of_sq_mul (by simpa using hp.one_lt) he he'⟩
-  simpa [hc, hp.ne_zero] using congr_arg im hx
+/-- If `z` is an integral element of `QuadraticAlgebra ℚ a b`, then `discr a b` is the square of
+the denominator of `z.im` times an integer congruent to `0` or `1` modulo `4`. -/
+theorem exists_den_sq_mul {z : QuadraticAlgebra ℚ a b} (hz : IsIntegral ℤ z) :
+    ∃ e : ℤ, discr a b = (z.im.den : ℤ) ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
+  obtain ⟨x, hx⟩ := den_smul_mem hz
+  refine exists_sq_mul_of_isCoprime (by simp) hz ?_ hx
+  rw [show x.im = z.im.num by simpa using congr_arg im hx]
+  exact (Rat.isCoprime_num_den z.im).symm
 
 end Int
 

@@ -140,7 +140,7 @@ theorem natCast_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 
 
 @[simp]
 theorem sq_emod_two (x : ℤ) : x ^ 2 % 2 = x % 2 := by
-  rcases emod_two_eq_zero_or_one x with h | h <;> simp [pow_two, mul_emod, h]
+  obtain h | h := emod_two_eq_zero_or_one x <;> simp [pow_two, mul_emod, h]
 
 lemma sq_emod_four (b : ℤ) : b ^ 2 % 4 = b % 2 := by
   rcases even_or_odd' b with ⟨k, rfl | rfl⟩ <;> grind
