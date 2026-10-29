@@ -817,7 +817,6 @@ public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.FunLike
-public import Mathlib.Algebra.Module.FunLikeSMul
 public import Mathlib.Algebra.Module.GradedModule
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.Injective

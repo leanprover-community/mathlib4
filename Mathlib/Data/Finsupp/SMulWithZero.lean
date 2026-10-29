@@ -5,11 +5,10 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.Finsupp
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.GroupWithZero.FunLike
-public import Mathlib.Algebra.Module.FunLikeSMul
 
 /-!
 # Scalar multiplication on `Finsupp`
