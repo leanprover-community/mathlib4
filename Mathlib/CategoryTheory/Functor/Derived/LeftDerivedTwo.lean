@@ -57,7 +57,7 @@ makes `LF` the left derived bifunctor of `F` if it is so for the corresponding
 uncurried functors `C₁ × C₂ ⥤ H` and `D₁ × D₂ ⥤ H`. -/
 @[reducible]
 def IsLeftDerivedFunctor₂ : Prop :=
-  (uncurry.obj LF).IsLeftDerivedFunctor (whiskeringLeft₂Equiv α) (W₁.prod W₂)
+  (uncurry.obj LF).IsLeftDerivedFunctor (whiskeringLeft₂HomEquiv α) (W₁.prod W₂)
 
 section
 
@@ -76,7 +76,7 @@ a left derived bifunctor. -/
 @[no_expose]
 noncomputable def leftDerivedCounit₂ :
     (((whiskeringLeft₂ H).obj L₁).obj L₂).obj (leftDerived₂ F L₁ L₂ W₁ W₂) ⟶ F :=
-  whiskeringLeft₂Equiv.symm (whiskerLeft _ (currying.counitIso.hom.app _) ≫
+  whiskeringLeft₂HomEquiv.symm (whiskerLeft _ (currying.counitIso.hom.app _) ≫
     ((uncurry.obj F).totalLeftDerivedCounit (L₁.prod L₂) (W₁.prod W₂)))
 
 instance : (leftDerived₂ F L₁ L₂ W₁ W₂).IsLeftDerivedFunctor₂
@@ -98,11 +98,12 @@ variable [LF.IsLeftDerivedFunctor₂ α W₁ W₂]
 
 /-- A natural transformation of bifunctors that is constructed as part
 of the universal property of left derived bifunctors. -/
+@[no_expose]
 noncomputable def leftDerived₂Lift : G ⟶ LF :=
   fullyFaithfulUncurry.preimage
     (leftDerivedLift (LF := uncurry.obj LF)
-      (whiskeringLeft₂Equiv α) (W₁.prod W₂) (uncurry.obj G)
-      (whiskeringLeft₂Equiv β))
+      (whiskeringLeft₂HomEquiv α) (W₁.prod W₂) (uncurry.obj G)
+      (whiskeringLeft₂HomEquiv β))
 
 @[reassoc (attr := simp)]
 lemma leftDerived₂_fac_app_app (X₁ : C₁) (X₂ : C₂) :
@@ -110,8 +111,8 @@ lemma leftDerived₂_fac_app_app (X₁ : C₁) (X₂ : C₂) :
       (α.app X₁).app X₂ = (β.app X₁).app X₂ := by
   simpa [leftDerived₂Lift, fullyFaithfulUncurry, Equivalence.fullyFaithfulFunctor]
     using leftDerived_fac_app (LF := uncurry.obj LF)
-      (whiskeringLeft₂Equiv α) (W₁.prod W₂) (uncurry.obj G)
-      (whiskeringLeft₂Equiv β) (X₁, X₂)
+      (whiskeringLeft₂HomEquiv α) (W₁.prod W₂) (uncurry.obj G)
+      (whiskeringLeft₂HomEquiv β) (X₁, X₂)
 
 @[reassoc (attr := simp)]
 lemma leftDerived₂_fac :
@@ -119,13 +120,13 @@ lemma leftDerived₂_fac :
   cat_disch
 
 include W₁ W₂ in
-lemma leftDerived₂_ext (G : D₁ ⥤ D₂ ⥤ H) (γ₁ γ₂ : G ⟶ LF)
+lemma leftDerived₂_ext {G : D₁ ⥤ D₂ ⥤ H} {γ₁ γ₂ : G ⟶ LF}
     (hγ : (((whiskeringLeft₂ H).obj L₁).obj L₂).map γ₁ ≫ α =
-      (((whiskeringLeft₂ H).obj L₁).obj L₂).map γ₂ ≫ α) : γ₁ = γ₂ := by
+      (((whiskeringLeft₂ H).obj L₁).obj L₂).map γ₂ ≫ α := by cat_disch) : γ₁ = γ₂ := by
   apply uncurry.map_injective
-  apply leftDerived_ext (α := (whiskeringLeft₂Equiv α)) (W := W₁.prod W₂)
+  apply leftDerived_ext (α := whiskeringLeft₂HomEquiv α) (W := W₁.prod W₂)
   ext ⟨X₁, X₂⟩
-  exact congr_app (congr_app hγ X₁) X₂
+  exact congr(($(hγ).app X₁).app X₂)
 
 end
 

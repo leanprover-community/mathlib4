@@ -239,7 +239,7 @@ the natural transformations `(((whiskeringLeft₂ E).obj L₁).obj L₂).obj F �
 bifunctors, and the natural transformations of functors
 `L₁.prod L₂ ⋙ uncurry.obj F ⟶ uncurry.obj G`. -/
 @[simps]
-def whiskeringLeft₂Equiv {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂]
+def whiskeringLeft₂HomEquiv {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂]
     [Category* D₁] [Category* D₂] {F : D₁ ⥤ D₂ ⥤ E} {G : C₁ ⥤ C₂ ⥤ E}
     {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} :
     ((((whiskeringLeft₂ E).obj L₁).obj L₂).obj F ⟶ G) ≃
