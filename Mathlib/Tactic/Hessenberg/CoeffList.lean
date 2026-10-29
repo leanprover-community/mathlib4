@@ -15,8 +15,8 @@ meta import Mathlib.Tactic.Hessenberg.Similarity
 # Coefficient lists of characteristic polynomials from Hessenberg certificates
 
 This file contains the computation of the coefficient list of the characteristic polynomial of a
-matrix literal, by the recurrence coeffHessCharpoly on the Hessenberg matrix of a
-`Hessenberg.Similarity` certificate of the matrix, with a proof that Matrix.charpoly is the
+matrix literal, by the recurrence `coeffHessCharpoly` on the Hessenberg matrix of a
+`Hessenberg.Similarity` certificate of the matrix, with a proof that `Matrix.charpoly` is the
 polynomial with these coefficients.
 
 ## Main definitions
@@ -38,9 +38,9 @@ namespace Mathlib.Tactic.Hessenberg
 structure CharpolyRing {u : Level} (S : Q(Type u)) where
   /-- The commutative ring instance on `S`. -/
   cS : Q(CommRing $S)
-  /-- The algebra instance of `ℚ` over `S`. -/
+  /-- `ℚ` is an `S`-algebra. -/
   aS : Q(Algebra $S ℚ)
-  /-- The faithfulness of the action of `S` on `ℚ`. -/
+  /-- The algebra map `S → ℚ` is injective. -/
   fS : Q(FaithfulSMul $S ℚ)
 
 /-- Check that `S` has the instances available for the characteristic polynomial to be computed. -/
@@ -76,7 +76,7 @@ def charpolyCoeffList {u : Level} (S : Q(Type u)) (r : CharpolyRing S) (n : ℕ)
     return v
   let ⟨cert, Harr, hH, red⟩ ← mkHessenbergSimilarity q(algebraMap $S ℚ) n A entries evalEntry
 
-  -- The coefficients of the characteristic polynomial pulled by to `S`.
+  -- The coefficients of the characteristic polynomial pulled back to `S`.
   have cs : Q(List $S) :=
     mkListLitQ (← (coeffHessCharpoly n red.H.flatten).mapM (mkRatNumeralQ S))
 
