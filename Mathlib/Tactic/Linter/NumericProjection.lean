@@ -16,8 +16,12 @@ import Lean.Elab.App
 /-!
 # Linting against numeric projections
 
-This linter lints against syntax of the form `foo.42`, with exceptions determined by whether the head of the type is either in a hardcoded exemptions list (if upstream) or tagged with
-`@[allow_numeric_proj]`.
+This linter lints against numeric projections in syntax, i.e. syntax of the form `foo.2`, and
+suggests replacing it with the corresponding field name projection.
+
+Structures tagged with `@[allow_numeric_proj]` are exempt from this linter, as are structures from
+upstream that are hardcoded into the linter (since tag attributes do not allow tagging declarations
+downstream).
 
 ## TODO
 
@@ -29,33 +33,45 @@ open Lean Elab Command
 
 namespace Mathlib.Linter
 
-public meta section
+meta section
 
-/-- Stores type names which may be the head of terms that are allowed to use numeric projections. -/
-initialize allowNumericProjExt : TagAttribute ← do
-  registerTagAttribute (`allow_numeric_proj)
-    "Allow terms of this type to use numeric projections."
-    (validate := fun n => unless (getStructureInfo? (← getEnv) n).isSome do
+/-- Structures whose projections are exempt from the `numericProjections` linter, and thus are
+allowed to appear as numeric projections in syntax. -/
+public initialize allowNumericProjExt : TagAttribute ←
+  registerTagAttribute `allow_numeric_proj
+    "Allow terms of the tagged structure type to use numeric projections in syntax."
+    (validate := fun n => unless isStructure (← getEnv) n do
       throwError "Expected `{.ofConstName n}` to be a structure.")
 
 /-- We can't add to a tag attribute later on, so hardcode the upstream exempt declarations here. -/
+@[inline]
 def upstreamAllowed := #[``Prod, ``PProd, ``Sigma, ``PSigma, ``And, ``Iff, ``Subtype, ``Fin]
 
-/-- Lints against numeric projections such as `foo.42` unless the type's head has been registered
-via `@[allow_numeric_proj]`. -/
+/-- Whether a term whose type has a head of `structName` is allowed to use numeric projections. -/
+@[inline] public def allowsNumericProj (env : Environment) (structName : Name) :=
+  upstreamAllowed.contains structName || allowNumericProjExt.hasTag env structName
+
+/-- Lints against numeric structure projections such as `foo.2`, unless the projection acts on a
+structure which has been registered as exempt from this linter via `@[allow_numeric_proj]`. -/
 public register_option linter.style.numericProjections : Bool := {
   defValue := false
-  descr := "Lints against numeric projections such as `foo.42`."
+  descr := "Lints against numeric structure projections such as `foo.2`."
 }
 
--- TODO: rewrite
-/-- If `stx` is the `identProj`-wrapped field index of a numeric projection which the elaborator
-resolved to the projection function `projFn`, returns the field index syntax and `projFn`.
+/--
+When Lean elaborates projection syntax and associates an info node with the projection, Lean
+creates synthetic syntax for that info (which is not present in the original parsed syntax) with
+"faked" syntax nodekind `identProjKind`. `numericProjFn?` detects infos created in this way which
+use additionally use number instead of a field name (`fieldIdx`) and returns the projection syntax
+along with the projection function's constant name (which is recorded in the info's `expr`).
 
-The elaborator records this info for every numeric projection on a `structure`, including ones not
-elaborated by `elabProj` (e.g. `f.1 x` and the inner projection of `x.1.2`). Since the structure has
-already been found by reducing the type, we don't need to reduce it again. -/
-@[inline] def numericProjFn? (i : Elab.TermInfo) : Option (Lean.Syntax × Name) := do
+Note that the projection name from the `expr` is guaranteed to be the projection function Lean has
+actually found for the projection syntax being used.
+
+Note also that not every projection goes through the `elabProj` elaborator, and so we do not gate
+on that.
+-/
+@[inline] def numericProjFn? (i : TermInfo) : Option (Lean.Syntax × Name) := do
   guard <| i.stx.isOfKind Parser.Term.identProjKind
   let idxStx := i.stx[0]
   guard <| idxStx.isOfKind fieldIdxKind
@@ -67,7 +83,7 @@ already been found by reducing the type, we don't need to reduce it again. -/
 
 open Meta in
 @[inherit_doc linter.style.numericProjections]
-def numericProjection : Linter where
+def numericProjections : Linter where
   run stx := stx |> withSetOptionIn fun _ => do
     unless Linter.getLinterValue linter.style.numericProjections (← Linter.getLinterOptions) do
       return
@@ -77,34 +93,38 @@ def numericProjection : Linter where
         -- than (interpreted, specialized) `foldInfoM`.
         let warnings := t.foldInfo (init := #[]) fun _ info w => Id.run do
           if let .ofTermInfo i := info then
-            if let some proj := numericProjFn? i then
-              return w.push proj
+            if let some projFn := numericProjFn? i then
+              return w.push projFn
           return w
         unless warnings.isEmpty do
-          -- Deduplicate by range; likely only a small number of warnings, so an `Array` is fast
-          let mut ranges := Array.emptyWithCapacity warnings.size
+          -- Deduplicate by range; likely only a small number of potential warnings, so a linear
+          -- `Array.contains` check is fast
+          let mut loggedRanges := Array.emptyWithCapacity warnings.size
           for (stx, projFn) in warnings do
-            if let some range := stx.getRange? (canonicalOnly := true) then
-              if ranges.contains range then continue else ranges := ranges.push range
-            else continue
+            let some range := stx.getRange? (canonicalOnly := true) | continue
+              if loggedRanges.contains range then continue else
+                loggedRanges := loggedRanges.push range
             let env ← getEnv
+            -- Note: we silently skip if these fail, since the numeric projection may be for a
+            -- one-constructor inductive (which has no fields to suggest replacing it with).
             let some { ctorName, i, .. } := env.getProjectionFnInfo? projFn | continue
             let some (.ctorInfo { induct := structName, .. }) := env.find? ctorName | continue
-            if upstreamAllowed.contains structName || allowNumericProjExt.hasTag env structName then
-              continue
+            if allowsNumericProj env structName then continue
             let some fieldName := (getStructureInfo? env structName).bind (·.fieldNames[i]?)
               | continue
             let msg ← liftCoreM <|
-              Hint.mkSuggestionsMessage
+              Hint.mkSuggestionsMessage (ref := stx)
+                (codeActionPrefix? := none) (forceList := false)
                 #[{
-                  suggestion := toString fieldName,
                   preInfo? := "Instead, use `.",
-                  postInfo? := "`.", diffGranularity := .none }]
-                stx none false
+                  suggestion := toString fieldName,
+                  postInfo? := "`.",
+                  diffGranularity := .none
+                }]
             Linter.logLint linter.style.numericProjections stx
               m!"Numeric projections are disallowed.\n\
                 {msg}\n\n\
                 To exempt terms of type `{.ofConstName structName}`, add \
                 `@[allow_numeric_proj]` at the declaration site of `{.ofConstName structName}`."
 
-initialize addLinter numericProjection
+initialize addLinter numericProjections
