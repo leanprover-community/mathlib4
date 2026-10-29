@@ -149,15 +149,21 @@ jobs:
           && !startsWith(github.ref_name, 'bump/')
           && !startsWith(github.base_ref, 'bump/')
         shell: bash
+        env:
+          IS_PR: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
         run: |
           cd pr-branch
 
           # Check that all inputRevs in lake-manifest.json match the required pattern
           echo "Validating lake-manifest.json inputRevs..."
 
+          # PR tests can pin unmerged dependencies. Bors requires stable references.
+          pattern='main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?'
+          if [ "$IS_PR" = true ]; then pattern="$pattern|[0-9a-f]{40}"; fi
+
           # Extract all inputRevs from the manifest
           invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
-            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?)$' || true)
+            grep -v -E "^($pattern)$" || true)
 
           if [ -n "$invalid_revs" ]; then
             echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
@@ -167,10 +173,36 @@ jobs:
             echo "  - 'main'"
             echo "  - 'master'"
             echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3, v1.2.3-pre, or v1.2.3+build)"
+            if [ "$IS_PR" = true ]; then echo "  - a full commit SHA (PR tests only)"; fi
             exit 1
           else
             echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
+
+      - name: Check that the Batteries pin moves forward
+        if: >-
+          github.repository == 'leanprover-community/mathlib4' &&
+          (github.base_ref == 'master' || github.ref_name == 'staging' || github.ref_name == 'trying')
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const fs = require('node:fs');
+            const batteries = manifest => manifest.packages.find(p => p.name === 'batteries');
+            const proposed = batteries(JSON.parse(fs.readFileSync('pr-branch/lake-manifest.json', 'utf8')));
+            const tracksMain = p => p.url === 'https://github.com/leanprover-community/batteries' && p.inputRev === 'main';
+            // Draft adaptations test unmerged Batteries commits.
+            if (!tracksMain(proposed)) return;
+            const { data: file } = await github.rest.repos.getContent({
+              ...context.repo, path: 'lake-manifest.json', ref: 'master',
+            });
+            const current = batteries(JSON.parse(Buffer.from(file.content, 'base64').toString()));
+            if (!tracksMain(current) || proposed.rev === current.rev) return;
+            const { data: comparison } = await github.rest.repos.compareCommits({
+              owner: 'leanprover-community', repo: 'batteries', base: current.rev, head: proposed.rev,
+            });
+            if (comparison.status !== 'ahead') {
+              core.setFailed('The Batteries pin must include Mathlib master’s current pin. Run `lake update batteries` and commit the manifest.');
+            }
 
       # Get this commit's oleans into the local cache — see the action for the steps.
       - name: Get cache
@@ -686,6 +718,20 @@ jobs:
             core.setOutput('batteries-sha', manifest.packages.find(p => p.name === 'batteries').rev);
             core.setOutput('batteries-pr', match[1]);
 
+      - name: Checkout local actions
+        if: steps.adaptation.outputs.batteries-pr != ''
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false
+
+      - name: Get mathlib-ci
+        if: steps.adaptation.outputs.batteries-pr != ''
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
       - name: Generate Batteries status token
         if: steps.adaptation.outputs.batteries-pr != ''
         id: token
@@ -699,59 +745,23 @@ jobs:
 
       - name: Update the Batteries status comment and labels
         if: steps.adaptation.outputs.batteries-pr != ''
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        shell: bash
         env:
-          BATTERIES_PR: ${{ steps.adaptation.outputs.batteries-pr }}
+          TOKEN: ${{ steps.token.outputs.token }}
+          BOT_LOGIN: mathlib-batteries-status[bot]
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
           BATTERIES_SHA: ${{ steps.adaptation.outputs.batteries-sha }}
-          RESULTS: ${{ toJSON(needs) }}
-        with:
-          github-token: ${{ steps.token.outputs.token }}
-          script: |
-            const target = { owner: 'leanprover-community', repo: 'batteries', issue_number: Number(process.env.BATTERIES_PR) };
-            const { data: source } = await github.rest.pulls.get({
-              owner: target.owner, repo: target.repo, pull_number: target.issue_number,
-            });
-            // A newer Batteries commit can arrive before its adaptation branch updates.
-            if (source.state === 'open' && source.head.sha !== process.env.BATTERIES_SHA) return;
-            const labels = source.labels.map(label => label.name);
-            const results = JSON.parse(process.env.RESULTS);
-            const build = results.build.outputs;
-            const test = results.test_lint.outputs;
-            const checks = [
-              ['build', build['build-outcome']], ['lint', test['lint-outcome']],
-              ['counterexamples', build['counterexamples-outcome']], ['archive', build['archive-outcome']],
-              ['Wanted', build['wanted-outcome']], ['import check', build['mk_all-outcome']],
-              ['output check', build['noisy-outcome']], ['tests', test['test-outcome']],
-            ];
-            const failed = checks.find(([, outcome]) => outcome === 'failure');
-            const passed = checks.every(([, outcome]) => outcome === 'success');
-            const pr = context.payload.pull_request;
-            const status = failed ? `❌ Mathlib ${failed[0]} failed` :
-              passed ? '✅ Mathlib built and passed tests and lint' : '🟡 Mathlib CI did not complete';
-            const run = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const message = `- ${status}. [Mathlib #${pr.number}](${pr.html_url}) · [CI log](${run}) (${new Date().toISOString()})`;
-            const marker = '<!-- batteries-mathlib-ci -->';
-            const comments = await github.paginate(github.rest.issues.listComments, { ...target, per_page: 100 });
-            const comment = comments.reverse().find(c =>
-              c.user.login === 'mathlib-batteries-status[bot]' && c.body.includes(marker));
-            if (comment && !labels.includes('awaiting-mathlib')) {
-              await github.rest.issues.updateComment({
-                owner: target.owner, repo: target.repo, comment_id: comment.id, body: `${comment.body}\n${message}`,
-              });
-            } else {
-              await github.rest.issues.createComment({ ...target, body: `${marker}\nMathlib CI status:\n${message}` });
-            }
-
-            // Clear awaiting-mathlib only after its notification succeeds.
-            const label = failed ? 'breaks-mathlib' : passed ? 'builds-mathlib' : '';
-            for (const name of ['builds-mathlib', 'breaks-mathlib', ...(passed ? ['awaiting-mathlib'] : [])]) {
-              if (name !== label && labels.includes(name)) {
-                await github.rest.issues.removeLabel({ ...target, name }).catch(error => {
-                  if (error.status !== 404) throw error;
-                });
-              }
-            }
-            if (label && !labels.includes(label)) await github.rest.issues.addLabels({ ...target, labels: [label] });
+          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BUILD_OUTCOME: ${{ needs.build.outputs.build-outcome }}
+          NOISY_OUTCOME: ${{ needs.build.outputs.noisy-outcome }}
+          ARCHIVE_OUTCOME: ${{ needs.build.outputs.archive-outcome }}
+          COUNTEREXAMPLES_OUTCOME: ${{ needs.build.outputs.counterexamples-outcome }}
+          WANTED_OUTCOME: ${{ needs.build.outputs.wanted-outcome }}
+          MK_ALL_OUTCOME: ${{ needs.build.outputs.mk_all-outcome }}
+          LINT_OUTCOME: ${{ needs.test_lint.outputs.lint-outcome }}
+          TEST_OUTCOME: ${{ needs.test_lint.outputs.test-outcome }}
+        run: |
+          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
 
   upload_cache:
     name: Upload to cache
