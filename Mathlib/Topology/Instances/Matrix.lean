@@ -493,7 +493,7 @@ section tsum_possemidef
 variable [Ring R] [TopologicalSpace R] [StarRing R] [IsTopologicalRing R] [ContinuousStar R]
 variable [PartialOrder R] [OrderClosedTopology R]
 
-lemma isClosed_ofPred_posSemidef : IsClosed {A : Matrix n n R | PosSemidef A} := by
+lemma isClosed_setOfPred_posSemidef : IsClosed {A : Matrix n n R | PosSemidef A} := by
   simp only [PosSemidef, Set.ofPred_and, Set.ofPred_forall]
   refine isClosed_ofPred_isHermitian.inter
     (isClosed_iInter fun x => isClosed_le continuous_const ?_)
@@ -503,11 +503,11 @@ lemma PosSemidef.of_hasSum [IsOrderedAddMonoid R]
     {f : α → Matrix n n R} {a : Matrix n n R} {L : SummationFilter α} [L.NeBot] (h : HasSum f a L)
     (hf : ∀ i, (f i).PosSemidef) :
     a.PosSemidef :=
-  h.mem (s := PosSemidef.addSubmonoid n R) isClosed_ofPred_posSemidef hf
+  h.mem (s := PosSemidef.addSubmonoid n R) isClosed_setOfPred_posSemidef hf
 
 lemma PosSemidef.tsum [IsOrderedAddMonoid R]
     {f : α → Matrix n n R} {L : SummationFilter α} (hf : ∀ i, (f i).PosSemidef) :
     (∑'[L] a, f a).PosSemidef :=
-  tsum_mem (s := PosSemidef.addSubmonoid n R) isClosed_ofPred_posSemidef hf L
+  tsum_mem (s := PosSemidef.addSubmonoid n R) isClosed_setOfPred_posSemidef hf L
 
 end tsum_possemidef
