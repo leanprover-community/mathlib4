@@ -5,10 +5,10 @@ Authors: Edison Xie, Richard Hill
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
 public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.RepresentationTheory.Continuous.Basic
-public import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
 
 /-!
 # Topological representations
@@ -183,7 +183,6 @@ end Linear
 
 section equivAction
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The functor sending a topological representation to the corresponding object in
 `Action (TopModuleCat k) G`. -/
 def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where

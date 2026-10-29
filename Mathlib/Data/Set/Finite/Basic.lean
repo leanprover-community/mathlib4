@@ -502,6 +502,7 @@ theorem finite_univ_iff : (@univ α).Finite ↔ Finite α := (Equiv.Set.univ α)
 
 alias ⟨_root_.Finite.of_finite_univ, _⟩ := finite_univ_iff
 
+@[gcongr]
 theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) : t.Finite := by
   have := hs.to_subtype
   exact Finite.Set.subset _ ht
@@ -764,7 +765,7 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
   set u : ℕ → γ := fun n ↦ Nat.strongRecOn n f
   refine ⟨u, fun n ↦ ?_⟩
-  convert! hc (u '' Iio n) ((finite_lt_nat _).image _)
+  convert hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn_eq f n
 
@@ -837,6 +838,9 @@ theorem infinite_univ_iff : (@univ α).Infinite ↔ Infinite α := by
 
 theorem infinite_univ [h : Infinite α] : (@univ α).Infinite :=
   infinite_univ_iff.2 h
+
+theorem Infinite.to_type (hs : s.Infinite) : Infinite α :=
+  infinite_univ_iff.mp <| hs.mono s.subset_univ
 
 lemma Infinite.exists_notMem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
   by_contra! h; exact hs <| ht.subset h

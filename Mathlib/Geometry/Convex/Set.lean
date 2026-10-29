@@ -127,7 +127,7 @@ protected lemma IsConvexSet.image (hf : IsAffineMap R f) (hs : IsConvexSet R s) 
     obtain ⟨x, hx, rfl⟩ := hy
     convert mapDomain_apply' _ _ support_onFinset_subset hfu hx
     exact (ite_eq_left hx).symm
-  · rw [mapDomain_of_not_mem_image_support (by simp [← huw] at ⊢ hy; tauto)]
+  · rw [mapDomain_of_notMem_image_support (by simp [← huw] at ⊢ hy; tauto)]
     simp_all
 
 /-- A convex subset of a convex space is a convex space. -/

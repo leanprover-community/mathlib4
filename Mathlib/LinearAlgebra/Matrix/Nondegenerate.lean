@@ -53,12 +53,12 @@ variable {m n R : Type*} [CommSemiring R] {M : Matrix m n R}
 lemma separatingRight_def [Fintype m] [Fintype n] :
     M.SeparatingRight ↔ (∀ w, (∀ v, v ⬝ᵥ M *ᵥ w = 0) → w = 0) := by
   refine forall_congr' fun w ↦ ⟨fun hM hw ↦ hM ?_, fun hM hw ↦ hM ?_⟩ <;>
-  convert! hw
+  convert hw
 
 lemma separatingLeft_def [Fintype m] [Fintype n] :
     M.SeparatingLeft ↔ (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0) := by
   refine forall_congr' fun v ↦ ⟨fun hM hv ↦ hM ?_, fun hM hv ↦ hM ?_⟩ <;>
-  convert! hv
+  convert hv
 
 lemma nondegenerate_def [Fintype m] [Fintype n] :
     M.Nondegenerate ↔

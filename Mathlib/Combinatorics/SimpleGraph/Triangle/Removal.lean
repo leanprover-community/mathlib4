@@ -5,9 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
 import Mathlib.Data.Finset.CastCard
 

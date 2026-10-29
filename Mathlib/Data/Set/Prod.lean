@@ -265,7 +265,7 @@ theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s �
 theorem image_prodMk_subset_prod_right (ha : a ∈ s) : Prod.mk a '' t ⊆ s ×ˢ t := by grind
 
 theorem prod_subset_preimage_fst (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.fst ⁻¹' s :=
-  inter_subset_left
+  inter_subset_left (s := Prod.fst ⁻¹' s) (t := Prod.snd ⁻¹' t)
 
 theorem fst_image_prod_subset (s : Set α) (t : Set β) : Prod.fst '' s ×ˢ t ⊆ s :=
   image_subset_iff.2 <| prod_subset_preimage_fst s t
@@ -279,7 +279,7 @@ lemma mapsTo_fst_prod {s : Set α} {t : Set β} : MapsTo Prod.fst (s ×ˢ t) s :
   fun _ hx ↦ (mem_prod.1 hx).1
 
 theorem prod_subset_preimage_snd (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.snd ⁻¹' t :=
-  inter_subset_right
+  inter_subset_right (s := Prod.fst ⁻¹' s) (t := Prod.snd ⁻¹' t)
 
 theorem snd_image_prod_subset (s : Set α) (t : Set β) : Prod.snd '' s ×ˢ t ⊆ t :=
   image_subset_iff.2 <| prod_subset_preimage_snd s t
@@ -682,6 +682,14 @@ theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
 
 section Nonempty
 
+lemma pi_image_pi_of_subset {C : (i : ι) → Set (Set (α i))} (hC : ∀ i, (C i).Nonempty)
+    (hs : s₁ ⊆ s₂) : s₁.pi '' s₁.pi C = s₁.pi '' s₂.pi C := by
+  ext
+  choose C_mem _ using hC
+  classical
+  exact ⟨fun ⟨x, _⟩ ↦ ⟨fun i ↦ if i ∈ s₁ then x i else C_mem i, by grind⟩,
+    fun ⟨w, _⟩ ↦ ⟨w, by grind⟩⟩
+
 variable [∀ i, Nonempty (α i)]
 
 theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [pi_eq_empty_iff]
@@ -857,7 +865,7 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
     (hf : ∀ j ∈ s, j ≠ i → f j ∈ t j) : update f i ⁻¹' s.pi t = t i := by
   ext x
   refine ⟨fun h => ?_, fun hx j hj => ?_⟩
-  · convert! h i hi
+  · convert h i hi
     simp
   · obtain rfl | h := eq_or_ne j i
     · simpa

@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!

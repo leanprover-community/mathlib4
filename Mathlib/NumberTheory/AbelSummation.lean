@@ -5,10 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.MeasureTheory.Function.Floor
 public import Mathlib.MeasureTheory.Integral.Asymptotics
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.Topology.Order.IsLocallyClosed
+
+import Mathlib.MeasureTheory.Function.Floor
 
 /-!
 # Abel's summation formula
@@ -44,8 +45,6 @@ Primed versions of the three results above are also stated for when the endpoint
 -/
 
 public section
-
-noncomputable section
 
 open Finset MeasureTheory
 
@@ -178,7 +177,7 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul' {n m : ℕ} (h : n ≤ m)
     ∑ k ∈ Ioc n m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) - f n * (∑ k ∈ Icc 0 n, c k) -
         ∫ t in Set.Ioc (n : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert! sum_mul_eq_sub_sub_integral_mul c n.cast_nonneg (Nat.cast_le.mpr h) hf_diff hf_int
+  convert sum_mul_eq_sub_sub_integral_mul c n.cast_nonneg (Nat.cast_le.mpr h) hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 end abelSummationProof
@@ -203,7 +202,7 @@ theorem sum_mul_eq_sub_integral_mul' (m : ℕ)
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
         ∫ t in Set.Ioc (0 : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert! sum_mul_eq_sub_integral_mul c m.cast_nonneg hf_diff hf_int
+  convert sum_mul_eq_sub_integral_mul c m.cast_nonneg hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when the first coefficient of the sequence
@@ -232,7 +231,7 @@ theorem sum_mul_eq_sub_integral_mul₀' (hc : c 0 = 0) (m : ℕ)
     ∑ k ∈ Icc 0 m, f k * c k =
       f m * (∑ k ∈ Icc 0 m, c k) -
         ∫ t in Set.Ioc (1 : ℝ) m, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
-  convert! sum_mul_eq_sub_integral_mul₀ c hc m hf_diff hf_int
+  convert sum_mul_eq_sub_integral_mul₀ c hc m hf_diff hf_int
   all_goals rw [Nat.floor_natCast]
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when `c 0 = c 1 = 0`. -/
@@ -373,7 +372,7 @@ theorem summable_mul_of_bigO_atTop
     (hg₂ : IntegrableAtFilter g atTop) :
     Summable (fun n : ℕ ↦ f n * c n) := by
   refine summable_mul_of_bigO_atTop_aux c 0 h_bdd (by rwa [Nat.cast_zero]) (fun n ↦ ?_) hg₁ hg₂
-  exact_mod_cast sum_mul_eq_sub_integral_mul' _ _ (fun _ ht ↦ hf_diff _ ht.1)
+  exact mod_cast sum_mul_eq_sub_integral_mul' _ _ (fun _ ht ↦ hf_diff _ ht.1)
     (hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc)
 
 /-- A version of `summable_mul_of_bigO_atTop` that can be useful to avoid difficulties near zero. -/
@@ -393,7 +392,7 @@ theorem summable_mul_of_bigO_atTop'
   simp_rw [h] at h_bdd hg₁
   refine Summable.congr_atTop (summable_mul_of_bigO_atTop_aux (fun n ↦ if n = 0 then 0 else c n) 1
     h_bdd (by rwa [Nat.cast_one]) (fun n ↦ ?_) hg₁ hg₂) ?_
-  · exact_mod_cast sum_mul_eq_sub_integral_mul₀' _ (by simp only [reduceIte, norm_zero]) n
+  · exact mod_cast sum_mul_eq_sub_integral_mul₀' _ (by simp only [reduceIte, norm_zero]) n
       (fun _ ht ↦ hf_diff _ ht.1)
       (hf_int.integrableOn_compact_subset Set.Icc_subset_Ici_self isCompact_Icc)
   · filter_upwards [eventually_ne_atTop 0] with k hk

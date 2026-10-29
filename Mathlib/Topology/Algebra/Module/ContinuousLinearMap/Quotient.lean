@@ -5,8 +5,8 @@ Authors: Anatole Dedecker, Sharvil Kesarwani
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Continuous linear maps and quotient topological modules

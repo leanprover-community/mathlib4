@@ -185,7 +185,7 @@ lemma sigmaFinite_restrict_sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeas
     rw [Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT', Set.compl_inter_self,
       Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT']
     simp only [measure_empty, ENNReal.zero_lt_top, true_and]
-    refine (measure_mono Set.inter_subset_left).trans_lt ?_
+    grw [Set.inter_subset_left]
     rw [← Measure.restrict_apply' (measurableSet_sigmaFiniteSetGE _)]
     exact measure_spanningSets_lt_top _ _
   · simp only [Nat.pairEquiv_symm_apply, f, e]
@@ -278,8 +278,7 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [SFinite ν]
 lemma restrict_compl_sigmaFiniteSetWRT [SFinite ν] (hμν : μ ≪ ν) :
     μ.restrict (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ • ν.restrict (μ.sigmaFiniteSetWRT ν)ᶜ := by
   ext s
-  rw [Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT.compl,
-    Measure.smul_apply, smul_eq_mul,
+  rw [Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT.compl, smul_apply, smul_eq_mul,
     Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT.compl]
   by_cases hνs : ν (s ∩ (μ.sigmaFiniteSetWRT ν)ᶜ) = 0
   · rw [hνs, mul_zero]

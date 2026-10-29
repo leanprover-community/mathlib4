@@ -5,8 +5,9 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.RingTheory.PowerSeries.Basic
+
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -72,7 +73,7 @@ theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
 theorem trunc_C (n) (a : R) : trunc (n + 1) (C a) = Polynomial.C a :=
   Polynomial.ext fun m => by
     rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
-    split_ifs with H <;> first | rfl | try simp_all
+    split_ifs with H <;> first | rfl | simp_all
 
 theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
     trunc n.succ f = trunc n f + Polynomial.monomial n (coeff n f) := by

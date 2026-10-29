@@ -117,7 +117,7 @@ abbrev toToΓSpecMapBasicOpen :
 set_option backward.isDefEq.respectTransparency false in
 /-- `r` is a unit as a section on the basic open defined by `r`. -/
 theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) := by
-  convert!
+  convert
     (X.presheaf.map (eqToHom <| X.toΓSpecMapBasicOpen_eq r).op).hom.isUnit_map
       (X.toRingedSpace.isUnit_res_basicOpen r)
   rw [← CommRingCat.comp_apply, ← Functor.map_comp]
@@ -456,7 +456,6 @@ theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
     f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map f.appTop :=
   ΓSpec.adjunction.unit.naturality f
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem Scheme.toSpecΓ_appTop (X : Scheme.{u}) :
     X.toSpecΓ.appTop = (Scheme.ΓSpecIso Γ(X, ⊤)).hom := by
@@ -466,7 +465,6 @@ theorem Scheme.toSpecΓ_appTop (X : Scheme.{u}) :
   simp only [Category.id_comp] at this
   rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, IsIso.Iso.inv_inv]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
     Spec.map ((Scheme.ΓSpecIso R).hom) = (Spec R).toSpecΓ := by
@@ -491,7 +489,6 @@ lemma Scheme.toSpecΓ_preimage_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
   rw [Scheme.toSpecΓ_appTop]
   exact Iso.inv_hom_id_apply (C := CommRingCat) _ _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
     (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = φ := by

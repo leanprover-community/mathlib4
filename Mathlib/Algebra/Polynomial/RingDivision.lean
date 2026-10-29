@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Coprime.Basic
+
 import Mathlib.Tactic.ComputeDegree
 
 /-!
@@ -139,13 +140,13 @@ section nonZeroDivisors
 open scoped nonZeroDivisors
 
 theorem Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
+  mem_nonZeroDivisors_of_coeff_mem _ (h.coeff_natDegree ▸ one_mem R⁰)
 
 theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ h
+  mem_nonZeroDivisors_of_coeff_mem _ h
 
 theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈ R⁰) : p ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem _ h
+  mem_nonZeroDivisors_of_coeff_mem _ h
 
 end nonZeroDivisors
 
@@ -238,7 +239,7 @@ theorem prime_X_sub_C (r : R) : Prime (X - C r) :=
     exact id⟩
 
 theorem prime_X : Prime (X : R[X]) := by
-  convert! prime_X_sub_C (0 : R)
+  convert prime_X_sub_C (0 : R)
   simp
 
 theorem Monic.prime_of_degree_eq_one (hp1 : degree p = 1) (hm : Monic p) : Prime p :=
@@ -311,6 +312,12 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
   rw [rootMultiplicity_eq_multiplicity (p * q), ite_eq_right hpq,
     rootMultiplicity_eq_multiplicity p, ite_eq_right hp, rootMultiplicity_eq_multiplicity q,
     ite_eq_right hq, multiplicity_mul (prime_X_sub_C x) (finiteMultiplicity_X_sub_C _ hpq)]
+
+theorem rootMultiplicity_C_mul {p : R[X]} {x c : R} (hc : c ≠ 0) :
+    rootMultiplicity x (C c * p) = rootMultiplicity x p := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  rw [rootMultiplicity_mul (mul_ne_zero (C_ne_zero.2 hc) hp), rootMultiplicity_C, zero_add]
 
 open Multiset in
 theorem exists_multiset_roots [DecidableEq R] :

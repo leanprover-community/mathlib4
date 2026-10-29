@@ -5,11 +5,12 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Pi
 public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+
+import Mathlib.Analysis.Calculus.Deriv.Pi
 import Mathlib.Analysis.InnerProductSpace.NormPow
 import Mathlib.Data.Finset.Interval
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
@@ -224,7 +225,7 @@ theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
   rw [Finset.antitone_iff_forall_insert_le]
   intro s i hi
   -- apply the lemma designed to encapsulate the inductive step
-  convert! T_insert_le_T_lmarginal_singleton μ hp₀ s ?_ i hi (hf.lmarginal μ) using 2
+  convert T_insert_le_T_lmarginal_singleton μ hp₀ s ?_ i hi (hf.lmarginal μ) using 2
   · rw [← lmarginal_union μ f hf]
     · rw [← insert_compl_insert hi]
       rfl
@@ -275,7 +276,7 @@ theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
     ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂.pi μ
     ≤ (∫⁻ x, f x ∂.pi μ) ^ p := by
   have : Nontrivial ι :=
-    Fintype.one_lt_card_iff_nontrivial.mp (by exact_mod_cast hp.lt)
+    Fintype.one_lt_card_iff_nontrivial.mp (mod_cast hp.lt)
   have h0 : (1 : ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
   have h1 : (0 : ℝ) < #ι - 1 := by linarith
   have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
@@ -312,7 +313,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
   we get the inequality `∫ |u| ^ (n/(n-1)) ≤ ∫ x, ∏ i, (∫ xᵢ, |Du(update x i xᵢ)|)^(n-1)⁻¹`.
   The result then follows from the grid-lines lemma. -/
   have : (1 : ℝ) ≤ ↑#ι - 1 := by
-    have hι : (2 : ℝ) ≤ #ι := by exact_mod_cast hp.lt
+    have hι : (2 : ℝ) ≤ #ι := mod_cast hp.lt
     linarith
   calc ∫⁻ x, ‖u x‖ₑ ^ p
       = ∫⁻ x, (‖u x‖ₑ ^ (1 / (#ι - 1 : ℝ))) ^ (#ι : ℝ) := by
@@ -334,7 +335,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
   calc ‖u x‖ₑ
     _ ≤ ∫⁻ xᵢ in Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖ₑ := by
         apply le_trans (by simp) (HasCompactSupport.enorm_le_lintegral_Ici_deriv _ _ _)
-        · exact hu.comp (by convert! contDiff_update 1 x i)
+        · exact hu.comp (by convert contDiff_update 1 x i)
         · exact h2u.comp_isClosedEmbedding (isClosedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ := ?_
   gcongr with y
@@ -355,7 +356,7 @@ open Module
 It only depends on `E`, `μ` and `p`.
 It is determined by the ratio of the measures on `E` and `ℝⁿ` and
 the operator norm of a chosen equivalence `E ≃ ℝⁿ` (raised to suitable powers involving `p`). -/
-irreducible_def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
+@[no_expose] def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
   let ι := Fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by
     rw [finrank_fintype_fun_eq_card, Fintype.card_fin (finrank ℝ E)]
@@ -429,7 +430,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
 
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_one`.
 It only depends on `E`, `μ` and `p`. -/
-irreducible_def eLpNormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 :=
+@[no_expose] def eLpNormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 :=
   lintegralPowLePowLIntegralFDerivConst μ p ^ p⁻¹
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
@@ -481,7 +482,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
       NNReal.coe_lt_coe.mpr (pos_iff_ne_zero.mpr (inv_ne_zero hp'0)) |>.trans_eq hp'
     rwa [NNReal.coe_inv, sub_pos,
       inv_lt_inv₀ _ (zero_lt_one.trans_le (NNReal.coe_le_coe.mpr hp))] at this
-    exact_mod_cast hn
+    exact mod_cast hn
   have h0n : 2 ≤ n := Nat.succ_le_of_lt <| Nat.one_lt_cast.mp <| hp.trans_lt h2p
   have hn : NNReal.HolderConjugate n n' := .conjExponent (by norm_cast)
   have h1n : 1 ≤ (n : ℝ≥0) := hn.lt.le
@@ -489,7 +490,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have hnp : (0 : ℝ) < n - p := by simp_rw [sub_pos]; exact h2p
   rcases hp.eq_or_lt with rfl | hp
   -- the case `p = 1`
-  · convert! eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
+  · convert eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
     · suffices (p' : ℝ) = n' by simpa using this
       rw [← inv_inj, hp']
       simp [field, n', NNReal.conjExponent, *]
@@ -585,7 +586,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
 variable (F) in
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_eq`.
 It only depends on `E`, `F`, `μ` and `p`. -/
-irreducible_def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) : ℝ≥0 :=
+@[no_expose] def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) : ℝ≥0 :=
   let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
   let e : F ≃L[ℝ] F' := toEuclidean
   ‖(e.symm : F' →L[ℝ] F)‖₊ * eLpNormLESNormFDerivOfEqInnerConst μ p * ‖(e : F →L[ℝ] F')‖₊
@@ -643,7 +644,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
 variable (F) in
 /-- The constant factor occurring in the conclusion of `eLpNorm_le_eLpNorm_fderiv_of_le`.
 It only depends on `F`, `μ`, `s`, `p` and `q`. -/
-irreducible_def eLpNormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set E) (p q : ℝ≥0) :
+@[no_expose] def eLpNormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set E) (p q : ℝ≥0) :
     ℝ≥0 :=
   let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
   (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ) * SNormLESNormFDerivOfEqConst F μ p
@@ -686,7 +687,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
         rw [eLpNorm_restrict_eq_of_support_subset hu.continuous.aestronglyMeasurable h2u]
     _ ≤ eLpNorm u p' (μ.restrict s) * t := by
         have hqpos : (0 : ℝ≥0∞) < q := ENNReal.coe_pos.2 (by positivity)
-        convert! eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos this hqpos
+        convert eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos this hqpos
         rw [ENNReal.coe_rpow_of_nonneg]
         · simp [ENNReal.coe_toNNReal hs.measure_lt_top.ne]
         · rw [one_div, one_div]

@@ -5,9 +5,10 @@ Authors: Chris Birkbeck
 -/
 module
 
-import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Int.Interval
+
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Sums/products over integer intervals

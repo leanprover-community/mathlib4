@@ -390,7 +390,7 @@ lemma isUnit_basicOpen_end (f : R) :
   have := (isUnit_basicOpen f).map
     (algebraMap _ (Module.End Γ(R, basicOpen f) Γ(M, basicOpen f)))
   rw [Module.End.isUnit_iff] at this ⊢
-  convert! this
+  convert this
   ext a
   simp
 
@@ -508,7 +508,7 @@ theorem toBasicOpenₗ_surjective (f : R) : Function.Surjective (toBasicOpenₗ 
 
 set_option backward.isDefEq.respectTransparency.types false in
 public instance (f : R) : IsLocalizedModule.Away f (toOpenₗ R M (basicOpen f)) := by
-  convert!
+  convert
     IsLocalizedModule.of_linearEquiv (.powers f) (LocalizedModule.mkLinearMap (.powers f) M)
       (.ofBijective _ ⟨toBasicOpenₗ_injective _, toBasicOpenₗ_surjective _⟩)
   ext x
@@ -520,7 +520,7 @@ instance isIso_toBasicOpenₗ (f : R) :
 
 public lemma toOpenₗ_top_bijective : Function.Bijective (toOpenₗ R M ⊤) := by
   have : IsLocalizedModule ⊥ (toOpenₗ R M ⊤) := by
-    convert! (inferInstance : IsLocalizedModule (.powers 1) (toOpenₗ R M (basicOpen 1)))
+    convert (inferInstance : IsLocalizedModule (.powers 1) (toOpenₗ R M (basicOpen 1)))
     rw [PrimeSpectrum.basicOpen_one, Submonoid.powers_one]
   refine ⟨fun x y e ↦ by simpa using (IsLocalizedModule.eq_iff_exists ⊥ _).mp e, fun x ↦ ?_⟩
   obtain ⟨⟨x, _, rfl⟩, rfl⟩ := IsLocalizedModule.mk'_surjective ⊥ (toOpenₗ R M ⊤) x
@@ -638,7 +638,7 @@ theorem toOpenₗ_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top 
 
 theorem isUnit_toStalk (x : PrimeSpectrum.Top R) (f : R) (hf : x ∈ basicOpen f) :
     IsUnit (toStalk R x f) := by
-  convert! (isUnit_basicOpen f).map ((structurePresheafInCommRingCat R).germ _ x hf).hom
+  convert (isUnit_basicOpen f).map ((structurePresheafInCommRingCat R).germ _ x hf).hom
   exact ((structurePresheafInCommRingCat R).germ_res_apply (homOfLE (le_top : basicOpen f ≤ ⊤))
     x hf (algebraMap R Γ(R, ⊤) f)).symm
 
@@ -648,7 +648,7 @@ theorem isUnit_toStalkₗ' (x : PrimeSpectrum.Top R) (f : R) (hf : x ∈ basicOp
     (Module.End ((structurePresheafInCommRingCat R).stalk x)
       ((structurePresheafInModuleCat R M).stalk x)))
   rw [Module.End.isUnit_iff] at this ⊢
-  convert! this
+  convert this
   ext a
   simp only [Module.algebraMap_end_apply]
   rw [toStalk_smul]
@@ -764,7 +764,7 @@ theorem localizationToStalk_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
 
 instance (x : PrimeSpectrum.Top R) :
     IsLocalizedModule x.asIdeal.primeCompl (toStalkₗ' R M x).hom := by
-  convert!
+  convert
     IsLocalizedModule.of_linearEquiv x.asIdeal.primeCompl
       (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M) (stalkIsoₗ R M x).toLinearEquiv.symm
   ext m
@@ -792,7 +792,7 @@ def toStalkₗ (x : PrimeSpectrum.Top R) :
 
 public
 instance (x : PrimeSpectrum.Top R) : IsLocalizedModule x.asIdeal.primeCompl (toStalkₗ R M x) := by
-  convert!
+  convert
     IsLocalizedModule.of_linearEquiv x.asIdeal.primeCompl (toStalkₗ' R M x).hom
       (modulePresheafStalkIso R M x).symm
   ext m
@@ -961,7 +961,7 @@ def Localizations.comapFun (y : PrimeSpectrum.Top S) :
       have := IsLocalizedModule.map_units (S := y.asIdeal.primeCompl)
         (LocalizedModule.mkLinearMap y.asIdeal.primeCompl N) ⟨σ x, x.2⟩
       rw [Module.End.isUnit_iff] at this ⊢
-      convert! this using 2 with a
+      convert this using 2 with a
       exact (IsScalarTower.algebraMap_smul ..).symm)
   { __ := g,
     map_smul' r x := by simpa [Localizations] using! (IsScalarTower.algebraMap_smul ..).symm }

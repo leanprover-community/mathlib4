@@ -5,10 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Scheme
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Limits.Preorder
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
 /-!
 # Open immersions of schemes
@@ -239,7 +239,6 @@ theorem appIso_hom' (U) :
     (f.appIso U).hom = f.appLE (f ''ᵁ U) U (preimage_image_eq f U).ge :=
   f.appIso_hom U
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma appIso_hom_naturality {U V : X.Opens} (i : op U ⟶ op V) :
     dsimp% Y.presheaf.map (f.opensFunctor.op.map i) ≫ (f.appIso V).hom =
@@ -266,7 +265,6 @@ theorem appIso_inv_app (U) :
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise nosimp]
 lemma appLE_appIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U : Y.Opens}
     {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U) :
@@ -605,7 +603,6 @@ instance [IsOpenImmersion g] :
   change IsOpenImmersion (_ ≫ f)
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance : PreservesLimit (cospan f g) Scheme.forgetToTop := by
   delta Scheme.forgetToTop
   refine @Limits.comp_preservesLimit _ _ _ _ _ _ (K := cospan f g) _ _ (F := forget)
@@ -709,7 +706,7 @@ theorem isPullback_lift_id
     {X U Y : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) [IsOpenImmersion g]
     (H : Set.range f ⊆ Set.range g) :
     IsPullback (IsOpenImmersion.lift g f H) (𝟙 _) g f := by
-  convert! IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
+  convert IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
   · exact (Category.comp_id _).symm
   · simp
 

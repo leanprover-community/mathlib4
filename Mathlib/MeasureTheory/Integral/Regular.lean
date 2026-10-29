@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
+
 import Mathlib.Topology.UrysohnsLemma
 
 /-!

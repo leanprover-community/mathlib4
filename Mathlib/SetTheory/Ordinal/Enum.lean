@@ -70,10 +70,12 @@ theorem enumOrd_injective (hs : ¬ BddAbove s) : Function.Injective (enumOrd s) 
 theorem enumOrd_inj (hs : ¬ BddAbove s) {a b : Ordinal} : enumOrd s a = enumOrd s b ↔ a = b :=
   (enumOrd_injective hs).eq_iff
 
+@[gcongr]
 theorem enumOrd_le_enumOrd (hs : ¬ BddAbove s) {a b : Ordinal} :
     enumOrd s a ≤ enumOrd s b ↔ a ≤ b :=
   (enumOrd_strictMono hs).le_iff_le
 
+@[gcongr]
 theorem enumOrd_lt_enumOrd (hs : ¬ BddAbove s) {a b : Ordinal} :
     enumOrd s a < enumOrd s b ↔ a < b :=
   (enumOrd_strictMono hs).lt_iff_lt
@@ -134,12 +136,13 @@ theorem isNormal_enumOrd (H : ∀ t ⊆ s, t.Nonempty → BddAbove t → sSup t 
     IsNormal (enumOrd s) := by
   refine isNormal_iff.2 ⟨enumOrd_strictMono hs, fun o ho a ha ↦ ?_⟩
   trans ⨆ b : Iio o, enumOrd s b
-  · refine enumOrd_le_of_forall_lt ?_ (fun b hb ↦ (enumOrd_strictMono hs (lt_succ b)).trans_le ?_)
+  · refine enumOrd_le_of_forall_lt ?_ (fun b hb ↦ ?_)
     · have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
       apply H _ _ (range_nonempty _) bddAbove_of_small
       rintro _ ⟨c, rfl⟩
       exact enumOrd_mem hs c
-    · exact Ordinal.le_iSup _ (⟨_, ho.succ_lt hb⟩ : Iio o)
+    · grw [lt_succ b]
+      exact Ordinal.le_iSup _ (⟨_, ho.succ_lt hb⟩ : Iio o)
   · exact Ordinal.iSup_le fun x ↦ ha _ x.2
 
 @[simp]

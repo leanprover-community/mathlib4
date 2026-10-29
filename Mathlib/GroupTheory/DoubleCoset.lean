@@ -169,9 +169,6 @@ lemma iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K
     iff_true]
   exact ⟨mk H K x, eq.mp (out_eq' (mk H K x))⟩
 
-@[deprecated (since := "2026-04-03")]
-alias union_quotToDoubleCoset := iUnion_quotToDoubleCoset
-
 lemma doubleCoset_union_rightCoset (H K : Subgroup G) (a : G) :
     ⋃ k : K, op (a * k) • ↑H = doubleCoset a H K := by
   ext x

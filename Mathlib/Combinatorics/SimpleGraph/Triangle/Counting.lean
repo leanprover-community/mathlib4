@@ -8,6 +8,7 @@ module
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
+
 import Mathlib.Tactic.Linarith
 
 /-!

@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Basic
+
 import Mathlib.Algebra.Module.SnakeLemma
 
 /-!

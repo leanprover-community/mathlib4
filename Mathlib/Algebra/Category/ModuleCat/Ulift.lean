@@ -5,12 +5,13 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.Algebra.Category.ModuleCat.Projective
 
 /-!
 
@@ -73,7 +74,6 @@ instance : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R) :=
 instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) :=
   Limits.PreservesLimitsOfSize.preservesFiniteLimits _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) :
     (S.map (uliftFunctor R)).Exact := by

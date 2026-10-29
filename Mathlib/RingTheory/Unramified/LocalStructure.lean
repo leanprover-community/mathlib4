@@ -6,10 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.StandardEtale
-import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.RingHom.StandardSmooth
-import Mathlib.RingTheory.Unramified.LocalRing
 public import Mathlib.RingTheory.ZariskisMainTheorem
+
+import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 
@@ -90,7 +91,7 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
       P.ResidueField[X] ⧸ I.map (mapRingHom (algebraMap _ P.ResidueField)) :=
     Polynomial.fiberEquivQuotient (aeval (R := R) x) hx' _
   rw [← RingHom.ker_comp_of_injective _ (f := e.toRingHom) e.injective]
-  convert! Ideal.mk_ker.symm
+  convert Ideal.mk_ker.symm
   ext a
   · dsimp [-TensorProduct.algebraMap_apply]
     rw [aeval_C, AlgEquiv.commutes]
@@ -119,7 +120,7 @@ private theorem exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_e
   have : Function.Surjective (aeval (R := P.ResidueField) ((1 : P.ResidueField) ⊗ₜ[R] x)) := by
     rw [← AlgHom.range_eq_top, ← adjoin_singleton_eq_range_aeval]
     simpa using TensorProduct.adjoin_one_tmul_image_eq_top (A := P.ResidueField) _ hp₂
-  convert! IsUnramifiedAt.not_minpoly_sq_dvd (A := P.Fiber S) Q' (1 ⊗ₜ x) _ hp₁ this
+  convert IsUnramifiedAt.not_minpoly_sq_dvd (A := P.Fiber S) Q' (1 ⊗ₜ x) _ hp₁ this
   rw [← minpoly.algHom_eq _
     (IsScalarTower.toAlgHom P.ResidueField Q.ResidueField Q'.ResidueField).injective]
   congr 1
@@ -233,13 +234,13 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
   set φ : p.Fiber S →ₐ[p.ResidueField] Q.ResidueField := TensorProduct.lift
       (Algebra.ofId _ _) (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
   obtain ⟨r, hrQ, hrid, hr⟩ :=
-    IsArtinianRing.exists_not_mem_forall_mem_of_ne (α ⟨Q, ‹_›, ⟨rfl⟩⟩).asIdeal
+    IsArtinianRing.exists_notMem_forall_mem_of_ne (α ⟨Q, ‹_›, ⟨rfl⟩⟩).asIdeal
   obtain ⟨s, hsQ, t, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ (r * x)
   have hrQ' : φ r ≠ 0 := by
     have : Ideal.ResidueField.mapₐ p Q (ofId R S) (Ideal.over_def Q p) =
       AlgHom.restrictScalars R (ofId p.ResidueField Q.ResidueField) := by ext
     rw [← AlgHom.restrictScalars_apply R, Algebra.TensorProduct.restrictScalars_lift]
-    convert! hrQ
+    convert hrQ
     rw [← SetLike.mem_coe, PrimeSpectrum.coe_primesOverOrderIsoFiber_apply_asIdeal]
     simp [this]
   have hsQ' : algebraMap R Q.ResidueField s ≠ 0 := by

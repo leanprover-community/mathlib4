@@ -128,7 +128,7 @@ variable (S : Subalgebra R A)
 instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
   smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem _root_.algebraMap_mem {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
     algebraMap R A r ∈ s :=
@@ -725,7 +725,7 @@ scoped instance faithfulSMul :
     letI := (inclusion h).toModule; FaithfulSMul S T :=
   letI := (inclusion h).toModule
   ⟨fun {x y} h ↦ Subtype.ext <| by
-    convert! Subtype.ext_iff.mp (h 1) using 1 <;> exact (mul_one _).symm⟩
+    convert Subtype.ext_iff.mp (h 1) using 1 <;> exact (mul_one _).symm⟩
 
 end inclusion
 

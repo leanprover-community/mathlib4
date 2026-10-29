@@ -5,10 +5,11 @@ Authors: Kexing Ying
 -/
 module
 
-import Mathlib.Algebra.Order.Archimedean.IndicatorCard
 public import Mathlib.Probability.Martingale.Centering
-import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Martingale.OptionalStopping
+
+import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+import Mathlib.Probability.Martingale.Convergence
 
 /-!
 
@@ -155,7 +156,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
     simpa only [g, sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
-  convert! hω using 1
+  convert hω using 1
   · refine ⟨fun h => ?_, fun h => ?_⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine ⟨b + |f 0 ω|, fun y hy => ?_⟩ <;> obtain ⟨n, rfl⟩ := hy
     · simp_rw [g, sub_eq_add_neg]

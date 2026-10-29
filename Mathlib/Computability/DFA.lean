@@ -5,11 +5,12 @@ Authors: Fox Thomson, Chris Wong, Rudy Peterson
 -/
 module
 
-import Mathlib.Basic.Countable.Small
 public import Mathlib.Computability.Language
+public import Mathlib.Tactic.NormNum
+
+import Mathlib.Basic.Countable.Small
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Prod
-public import Mathlib.Tactic.NormNum
 
 /-!
 # Deterministic Finite Automata
@@ -136,16 +137,8 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
       (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by simp)
   wlog hle : (n : ℕ) ≤ m generalizing n m
   · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
-  refine
-    ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n,
-                    x.drop m, ?_, ?_, ?_, by rfl, ?_⟩
-  · rw [List.take_append_drop, List.take_append_drop]
-  · simp only [List.length_drop, List.length_take]
-    omega
-  · intro h
-    have hlen' := congr($(h).length)
-    simp only [List.length_drop, List.length, List.length_take] at hlen'
-    omega
+  refine ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n, x.drop m, ?_⟩
+  refine ⟨by simp, by grind, fun h ↦ by grind [congr($(h).length)], rfl, ?_⟩
   have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =
       M.evalFrom s ((x.take m).take n) := by
     rw [List.take_take, min_eq_left hle, ← evalFrom_of_append, heq, ← min_eq_left hle, ←

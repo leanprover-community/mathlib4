@@ -5,8 +5,8 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Pseudoelements in abelian categories
@@ -239,7 +239,6 @@ theorem pseudoZero_iff {P : C} (a : Over P) : a = (0 : P) ↔ a.hom = 0 := by
 end Zero
 
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Morphisms map the zero pseudoelement to the zero pseudoelement. -/
 @[simp]
 theorem apply_zero {P Q : C} (f : P ⟶ Q) : f 0 = 0 := by
@@ -349,7 +348,6 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : a ≫ f = 0 → f a = 0 :=
   fun h => by simp [over_coe_def, pseudoApply_mk', h]
 

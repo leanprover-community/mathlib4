@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Localization.Module
-public import Mathlib.Algebra.Algebra.Operations
 
 /-!
 # Localization of Submodules

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Algebra.Order.Sub.Basic
+
 import Mathlib.Data.Fintype.BigOperators
 
 /-!
@@ -230,7 +231,7 @@ theorem prod_Ico_div (hmn : m ≤ n) : ∏ i ∈ Ico m n, f (i + 1) / f i = f n 
 theorem prod_Icc_div (hmn : m ≤ n) (f : ℕ → M) :
     ∏ i ∈ Icc m n, f (i + 1) / f i = f (n + 1) / f m := by
   rw [← Finset.Ico_add_one_right_eq_Icc, prod_Ico_div]
-  omega
+  lia
 
 end Group
 
@@ -250,8 +251,7 @@ lemma Finset.prod_fin_Icc_eq_prod_nat_Icc [CommMonoid α] {n : ℕ} (a b : Fin n
 lemma Fin.prod_Iic_div [CommGroup M] {n : ℕ} (a : Fin n) (f : Fin (n + 1) → M) :
     ∏ i ∈ Iic a, (f i.succ / f i.castSucc) = f a.succ / f 0 := by
   rw [← prod_ite_mem_eq, prod_fin_eq_prod_range]
-  convert! prod_range_div (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1) (a + 1) using 1 with k
-    hk
+  convert prod_range_div (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1) (a + 1) using 1 with k hk
   · exact prod_congr_of_eq_on_inter (by grind) (by grind) (by simp_all; grind)
   · grind
 

@@ -6,8 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.GroupWithZero.ULift
-public import Mathlib.Algebra.Ring.ULift
 public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Ring.ULift
+
 import Mathlib.Data.ULift
 
 /-!

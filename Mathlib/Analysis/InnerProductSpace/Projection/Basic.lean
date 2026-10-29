@@ -461,7 +461,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
-  convert! key using 1 <;> match_scalars <;> field_simp [hv']
+  convert key using 1 <;> match_scalars <;> field_simp [hv']
 
 /-- Formula for orthogonal projection onto a single unit vector. -/
 theorem starProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
@@ -570,7 +570,7 @@ theorem _root_.LinearMap.IsSymmetricProjection.hasOrthogonalProjection_range
     (range p).HasOrthogonalProjection :=
   ⟨fun v => ⟨p v, by
     simp [hp.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hp.isSymmetric,
-      ← Module.End.mul_apply, hp.isIdempotentElem.eq]⟩⟩
+      ← mul_apply_eq_comp, hp.isIdempotentElem.eq]⟩⟩
 
 /-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
 theorem orthogonalProjectionOnto_orthogonalComplement_singleton_eq_zero (v : E) :

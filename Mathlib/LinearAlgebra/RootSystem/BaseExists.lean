@@ -6,11 +6,12 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Group.Irreducible.Indecomposable
+public import Mathlib.LinearAlgebra.RootSystem.Base
+
 import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.LinearAlgebra.QuadraticForm.Dual
-public import Mathlib.LinearAlgebra.RootSystem.Base
 
 /-!
 # Existence of bases for crystallographic root systems
@@ -205,7 +206,7 @@ private lemma baseOf_root_eq_baseOf_coroot_aux
   let s := baseOf P.root f
   refine fun i hi ↦ ⟨by obtain ⟨hi, -⟩ := hi; aesop, fun j hj k hk contra ↦ ?_⟩
   suffices i = j by grind
-  obtain ⟨u, hu, v, hv, huv⟩ : ∃ᵉ (u > (0 : ℚ)) (v > (0 : ℚ)),
+  obtain ⟨u, hu, v, hv, huv⟩ : ∃ u > (0 : ℚ), ∃ v > (0 : ℚ),
       P.root i = u • P.root j + v • P.root k := by
     let l (i : ι) := P.RootFormIn ℚ (P.rootSpanMem ℚ i) (P.rootSpanMem ℚ i)
     have hl (i : ι) : 0 < l i := by

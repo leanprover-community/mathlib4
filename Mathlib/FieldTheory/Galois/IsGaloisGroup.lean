@@ -5,9 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-import Mathlib.FieldTheory.Galois.Infinite
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.IsGaloisGroup.Basic
+
+import Mathlib.FieldTheory.Galois.Infinite
 
 /-!
 # Galois Groups of Fields
@@ -174,7 +175,7 @@ theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGalo
 theorem of_fixedPoints_eq [hGKL : IsGaloisGroup G K L] (hF : FixedPoints.intermediateField H = F) :
     IsGaloisGroup H F L := by
   rw [eq_comm] at hF
-  convert! IsGaloisGroup.subgroup G K L H
+  convert IsGaloisGroup.subgroup G K L H
 
 variable {G K L H F} in
 theorem subgroup_iff [hGKL : IsGaloisGroup G K L] :
@@ -282,7 +283,7 @@ theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : S
 @[simp]
 theorem fixedPoints_top :
     (FixedPoints.intermediateField (⊤ : Subgroup G) : IntermediateField K L) = ⊥ := by
-  convert! IsGaloisGroup.fixedPoints_eq_bot G K L
+  convert IsGaloisGroup.fixedPoints_eq_bot G K L
   ext; simp
 
 /-- The Galois correspondence from intermediate fields to subgroups. -/

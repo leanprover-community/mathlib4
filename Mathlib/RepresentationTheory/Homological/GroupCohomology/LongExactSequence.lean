@@ -5,9 +5,10 @@ Authors: Amelia Livingston
 -/
 module
 
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 /-!
 # Long exact sequence in group cohomology
@@ -106,7 +107,6 @@ theorem isIso_δ_of_isZero (n : ℕ) (h : IsZero (groupCohomology X.X₂ n))
     (hs : IsZero (groupCohomology X.X₂ (n + 1))) :
     IsIso (δ hX n (n + 1) rfl) := SnakeInput.isIso_δ _ h hs
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given an exact sequence of `G`-representations `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0`, this expresses an
 `n + 1`-cochain `x : Gⁿ⁺¹ → X₁` such that `f ∘ x ∈ Bⁿ⁺¹(G, X₂)` as a cocycle.
 Stated for readability of `δ_apply`. -/

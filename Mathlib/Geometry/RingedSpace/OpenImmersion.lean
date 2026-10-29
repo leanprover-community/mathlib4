@@ -130,7 +130,6 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
       rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
       congr 1
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f := by
@@ -177,7 +176,6 @@ noncomputable def invApp (U : Opens X) :
   X.presheaf.map (eqToHom (by simp [Opens.map_def, Set.preimage_image_eq _ H.base_open.injective]))
     ≫ inv (f.c.app (op (opensFunctor f |>.obj U)))
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
     X.presheaf.map i ≫ H.invApp _ (unop V) =
@@ -191,7 +189,6 @@ theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
 
 instance (U : Opens X) : IsIso (invApp f U) := by delta invApp; infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 theorem inv_invApp (U : Opens X) :
     inv (H.invApp _ U) =
       f.c.app (op (opensFunctor f |>.obj U)) ≫
@@ -413,7 +410,6 @@ theorem pullbackConeOfLeftLift_fst :
     erw [← this, hf.invApp_app_assoc, s.fst.c.naturality_assoc]
     simp [eqToHom_map]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 -- this lemma is not a `simp` lemma, because it is an implementation detail
 theorem pullbackConeOfLeftLift_snd :
@@ -618,7 +614,7 @@ theorem isIso_of_subset {X Y : PresheafedSpace C} (f : X ⟶ Y)
   have : U = H.base_open.functor.obj ((Opens.map f.base).obj U) := by
     ext1
     exact (Set.inter_eq_left.mpr hU).symm.trans Set.image_preimage_eq_inter_range.symm
-  convert! H.c_iso ((Opens.map f.base).obj U)
+  convert H.c_iso ((Opens.map f.base).obj U)
 
 end PresheafedSpace.IsOpenImmersion
 
@@ -685,7 +681,6 @@ instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
     (eqToIso (show pullback _ _ = pullback _ _ by congr) ≪≫
       HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 instance sheafedSpace_forgetPreserves_of_left :
     PreservesLimit (cospan f g) (SheafedSpace.forget C) :=
   @Limits.comp_preservesLimit _ _ _ _ _ _ (cospan f g) _ _ forget (PresheafedSpace.forget C)
@@ -952,7 +947,6 @@ instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     convert! image_preimage_is_empty F i j (fun h => hj congr(op $h.symm)) U using 6
     congrm $(h₁).base
 
-set_option backward.defeqAttrib.useBackward true in
 instance sigma_ι_isOpenImmersion {ι : Type w} [Small.{v} ι]
     (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F] (i : Discrete ι)
     [HasStrictTerminalObjects C] :
@@ -1082,7 +1076,6 @@ instance forgetToPresheafedSpacePreservesOpenImmersion :
       ((LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map f) :=
   H
 
-set_option backward.defeqAttrib.useBackward true in
 instance forgetToTop_preservesPullback_of_left :
     PreservesLimit (cospan f g)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) := by

@@ -13,8 +13,6 @@ public import Mathlib.SetTheory.Ordinal.Univ
 
 public section
 
-noncomputable section
-
 universe u v
 
 open Cardinal
