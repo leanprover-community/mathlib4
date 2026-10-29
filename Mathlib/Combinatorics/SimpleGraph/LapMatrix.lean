@@ -257,19 +257,14 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   obtain ⟨i, h'⟩ : ∃ i : V, G.connectedComponentMk i = c := Quot.exists_rep c
   exact h' ▸ congr($h0 i)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
   rw [Submodule.mem_span_range_iff_exists_fun]
-  use Quot.lift x.val (by rw [← lapMatrix_mulVec_eq_zero_iff_forall_reachable,
+  use ConnectedComponent.lift x.val (by rw [← lapMatrix_mulVec_eq_zero_iff_forall_reachable,
     ← toLin'_apply, LinearMap.map_coe_ker])
   ext j
-  simp only [lapMatrix_ker_basis_aux]
-  rw [AddSubmonoid.coe_finsetSum]
-  simp only [SetLike.mk_smul_mk, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one,
-    mul_zero, sum_ite_eq, mem_univ, ↓reduceIte]
-  rfl
+  simp [lapMatrix_ker_basis_aux]
 
 /-- `lapMatrix_ker_basis G` is a basis of the nullspace indexed by its connected components,
 the basis is made up of the functions `V → ℝ` which are `1` on the vertices of the given
