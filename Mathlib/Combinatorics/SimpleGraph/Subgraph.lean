@@ -1096,6 +1096,7 @@ lemma coeSubgraph_restrict_eq {H : G.Subgraph} (H' : G.Subgraph) :
 from its edge set, if present.
 
 See also: `SimpleGraph.deleteEdges`. -/
+@[implicit_reducible]
 def deleteEdges (G' : G.Subgraph) (s : Set (Sym2 V)) : G.Subgraph where
   verts := G'.verts
   Adj := G'.Adj \ Sym2.ToRel s
@@ -1130,7 +1131,6 @@ theorem deleteEdges_spanningCoe_eq :
   ext
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     G'.coe.deleteEdges s = (G'.deleteEdges (Sym2.map (↑) '' s)).coe := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
@@ -1147,7 +1147,6 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
   · intro h' hs
     exact h' _ hs rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_deleteEdges_eq (s : Set (Sym2 V)) :
     (G'.deleteEdges s).coe = G'.coe.deleteEdges (Sym2.map (↑) ⁻¹' s) := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
@@ -1172,7 +1171,6 @@ theorem deleteEdges_inter_edgeSet_right_eq :
     G'.deleteEdges (s ∩ G'.edgeSet) = G'.deleteEdges s := by
   ext <;> simp +contextual [imp_false]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_deleteEdges_le : (G'.deleteEdges s).coe ≤ (G'.coe : SimpleGraph G'.verts) := by
   intro v w
   simp +contextual
@@ -1192,7 +1190,7 @@ unlike for subgraphs, results in a graph with a different vertex type. -/
 /-- The induced subgraph of a subgraph. The expectation is that `s ⊆ G'.verts` for the usual
 notion of an induced subgraph, but, in general, `s` is taken to be the new vertex set and edges
 are induced from the subgraph `G'`. -/
-@[simps]
+@[implicit_reducible, simps]
 def induce (G' : G.Subgraph) (s : Set V) : G.Subgraph where
   verts := s
   Adj u v := u ∈ s ∧ v ∈ s ∧ G'.Adj u v
@@ -1200,7 +1198,6 @@ def induce (G' : G.Subgraph) (s : Set V) : G.Subgraph where
   edge_vert h := h.1
   symm.symm _ _ h := ⟨h.2.1, h.1, h.2.2.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
     G.induce s = ((⊤ : G.Subgraph).induce s).coe := by
   ext
@@ -1353,7 +1350,6 @@ instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [D
     DecidableRel (G'.induce s).Adj :=
   fun _ _ ↦ instDecidableAnd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between an induced subgraph and its corresponding simple graph. -/
 def coeInduceIso (s : Set V) (h : s ⊆ G'.verts) :
     (G'.induce s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∈ s} where
@@ -1396,7 +1392,6 @@ theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
   induce_mono h (Set.sdiff_subset_sdiff_left h.1)
 
-set_option backward.isDefEq.respectTransparency false in
 @[mono]
 lemma deleteVerts_mono' {G' : SimpleGraph V} (u : Set V) (h : G ≤ G') :
     ((⊤ : Subgraph G).deleteVerts u).coe ≤ ((⊤ : Subgraph G').deleteVerts u).coe := by
@@ -1426,7 +1421,6 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     else
       .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
 def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
