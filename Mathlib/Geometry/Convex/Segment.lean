@@ -139,6 +139,7 @@ theorem right_mem_Icc (x y : X) : y ∈ Icc R x y :=
 theorem left_mem_Ico (x y : X) : x ∈ Ico R x y :=
   ⟨1, 0, zero_lt_one, le_refl 0, add_zero 1, convexCombPair_one⟩
 
+variable {R} in
 theorem Icc_subset_iff_mem_of_isConvexSet (hs : IsConvexSet R s) (x y : X) :
     Icc R x y ⊆ s ↔ x ∈ s ∧ y ∈ s := by
   refine ⟨fun h ↦ ⟨h <| left_mem_Icc R x y, h <| right_mem_Icc R x y⟩, ?_⟩
@@ -273,12 +274,12 @@ section Field
 
 variable (K) {X} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [ConvexSpace K X] {s : Set X}
 
-theorem isConvexSet_iff_Icc_subset_iff_mem :
-    IsConvexSet K s ↔ ∀ x y, (Icc K x y ⊆ s ↔ x ∈ s ∧ y ∈ s) := by
-  refine ⟨Icc_subset_iff_mem_of_isConvexSet K, fun h ↦ IsConvexSet.of_convexCombPair_mem ?_⟩
-  intro a b ha hb hab x hx y hy
-  apply h x y|>.mpr ⟨hx, hy⟩
-  exact ⟨a, b, ha, hb, hab, by simp⟩
+theorem isConvexSet_iff_Icc_subset_of_mem : IsConvexSet K s ↔ ∀ x ∈ s, ∀ y ∈ s, Icc K x y ⊆ s := by
+  refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ IsConvexSet.of_convexCombPair_mem ?_⟩
+  · exact (Icc_subset_iff_mem_of_isConvexSet h x y).mpr ⟨hx, hy⟩
+  · intro a b ha hb hab x hx y hy
+    apply h x hx y hy
+    exact ⟨a, b, ha, hb, hab, by simp⟩
 
 end Field
 
