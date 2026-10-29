@@ -161,8 +161,6 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : W ↪ V) : Copy (⊥ : SimpleGraph W) G := ⟨⟨f, False.elim⟩, f.injective⟩
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism from a subgraph of `H` to its map under a copy `f : Copy H G`. -/
 noncomputable def isoSubgraphMap (f : Copy H G) (A' : H.Subgraph) :
     A'.coe ≃g (A'.map f.toHom).coe := by
