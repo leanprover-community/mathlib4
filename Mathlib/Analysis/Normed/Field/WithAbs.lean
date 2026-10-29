@@ -110,6 +110,7 @@ set_option genSizeOfSpec false in
 set_option genInjectivity false in
 /-- The completion of a field with respect to a real absolute value, as a one-field structure
 wrapping the uniform-space completion of `WithAbs v`. -/
+@[nolint structureInType]
 structure Completion where
   /-- Wrap an element of the underlying completion `UniformSpace.Completion (WithAbs v)` into
   `v.Completion`. -/
@@ -125,12 +126,6 @@ private def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) wher
   invFun := ofCompletion'
   left_inv _ := rfl
   right_inv _ := rfl
-
--- This instance exists to avoid a zsmul diamond.
-@[no_expose]
-noncomputable instance (R : Type*) [CommSemiring R] [Algebra R (WithAbs v)] :
-    SMul R v.Completion where
-  smul r x := ofCompletion' (r • x.toCompletion')
 
 @[no_expose]
 noncomputable instance : NormedField v.Completion := fast_instance% (equivAux v).normedField
