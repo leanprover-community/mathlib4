@@ -5617,6 +5617,7 @@ public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 public import Mathlib.MeasureTheory.Constructions.SimpleGraph
 public import Mathlib.MeasureTheory.Constructions.SubmoduleQuotient
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
+public import Mathlib.MeasureTheory.Constructions.WeakDual
 public import Mathlib.MeasureTheory.Covering.Besicovitch
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 public import Mathlib.MeasureTheory.Covering.DensityTheorem
