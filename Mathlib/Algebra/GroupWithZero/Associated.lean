@@ -529,7 +529,8 @@ def congr (e : M ≃* N) : Associates M ≃* Associates N where
 
 @[simp] lemma congr_mk (e : M ≃* N) (x : M) : congr e (.mk x) = .mk (e x) := rfl
 
-@[simp] lemma congr_toMonoidHom (e : M ≃* N) : (congr e).toMonoidHom = map e.toMonoidHom := rfl
+-- TODO: Make `simp` once `MonoidHomClass.toMonoidHom` isn't simp nf anymore.
+lemma congr_toMonoidHom (e : M ≃* N) : (congr e).toMonoidHom = map e.toMonoidHom := rfl
 
 @[simp] lemma congr_refl : congr (.refl M) = .refl (Associates M) := by ext ⟨x⟩; simp
 
