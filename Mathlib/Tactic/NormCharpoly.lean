@@ -18,6 +18,19 @@ meta import Mathlib.Tactic.Hessenberg.CoeffList
 This module defines the `norm_charpoly` simproc and the `eval_charpoly` tactic, which evaluate the
 characteristic polynomial of a matrix literal over a commutative ring that embeds in `ℚ` (such as
 `ℚ` itself and `ℤ`) via a `Matrix.Hessenberg.Similarity` certificate checked by the kernel.
+
+## Implementation notes
+
+The Hessenberg reduction algorithm used internally by the tactic divides by pivots, so the
+`Matrix.Hessenberg.Similarity` certificate is constructed over `ℚ` and the characteristic polynomial
+is pulled back to the coefficient ring `R` along the injective `algebraMap R ℚ`. Restricting to
+rings that embed in `ℚ` is a pragmatic choice made to support `ℤ` and `ℚ` first.
+
+## TODO
+
+- Support `ℤ` directly by a fraction-free Hessenberg reduction.
+- Support more general coefficient rings (such as `ZMod p`) by registering computational models
+  per ring, as the Bareiss tactics do with `bareiss_ext`.
 -/
 
 public meta section
