@@ -27,7 +27,7 @@ Angelo Vistoli
 
 namespace CategoryTheory.Pseudofunctor.CoGrothendieck
 
-open Functor Opposite Bicategory Fiber
+open CategoryTheory.Functor Opposite Bicategory Fiber
 
 variable {𝒮 : Type*} [Category* 𝒮] {F : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat}
 
@@ -44,6 +44,8 @@ abbrev cartesianLift : domainCartesianLift a f ⟶ ⟨S, a⟩ := ⟨f, 𝟙 _⟩
 instance isHomLift_cartesianLift : IsHomLift (forget F) f (cartesianLift a f) :=
   IsHomLift.map (forget F) (cartesianLift a f)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 variable {a} in
 /-- Given some lift `φ'` of `g ≫ f`, the canonical map from the domain of `φ'` to the domain of
 the Cartesian lift of `f`. -/
@@ -91,6 +93,9 @@ def ι : F.obj ⟨op S⟩ ⥤ ∫ᶜ F where
     · simp [← (F.mapId ⟨op S⟩).inv.toNatTrans.naturality_assoc ψ, F.whiskerRight_mapId_inv_app,
         Strict.leftUnitor_eqToIso, ← Cat.Hom₂.comp_app]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The natural isomorphism encoding `comp_const`. -/
 @[simps!]
 def compIso : (ι F S) ⋙ forget F ≅ (const (F.obj ⟨op S⟩)).obj S :=
@@ -99,6 +104,7 @@ def compIso : (ι F S) ⋙ forget F ≅ (const (F.obj ⟨op S⟩)).obj S :=
 lemma comp_const : (ι F S) ⋙ forget F = (const (F.obj ⟨op S⟩)).obj S :=
   Functor.ext_of_iso (compIso F S) (fun _ ↦ rfl) (fun _ => rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).Full where
   map_surjective {X Y} f := by
@@ -116,10 +122,11 @@ instance : (Fiber.inducedFunctor (comp_const F S)).Faithful where
     simpa [cancel_mono, ← Cat.Hom.toNatIso_hom,
       ← Cat.Hom.toNatIso_inv] using ((Hom.ext_iff _ _).mp heq).2
 
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).EssSurj := by
   apply essSurj_of_surj
   intro Y
-  have hYS : (fiberInclusion.obj Y).base = S := by simpa using Y.2
+  have hYS : (fiberInclusion.obj Y).base = S := by simpa using! Y.2
   use hYS ▸ (fiberInclusion.obj Y).fiber
   apply fiberInclusion_obj_inj
   ext <;> simp [hYS]

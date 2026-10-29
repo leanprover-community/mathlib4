@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Data.Part
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monotonicity of monadic operations on `Part`
@@ -51,10 +55,10 @@ section seq
 variable {β γ : Type _} {f : α → Part (β → γ)} {g : α → Part β}
 
 lemma Monotone.partSeq (hf : Monotone f) (hg : Monotone g) : Monotone fun x ↦ f x <*> g x := by
-  simpa only [seq_eq_bind_map] using hf.partBind <| Monotone.of_apply₂ fun _ ↦ hg.partMap
+  simpa only [seq_eq_bind_map] using! hf.partBind <| Monotone.of_apply₂ fun _ ↦ hg.partMap
 
 lemma Antitone.partSeq (hf : Antitone f) (hg : Antitone g) : Antitone fun x ↦ f x <*> g x := by
-  simpa only [seq_eq_bind_map] using hf.partBind <| Antitone.of_apply₂ fun _ ↦ hg.partMap
+  simpa only [seq_eq_bind_map] using! hf.partBind <| Antitone.of_apply₂ fun _ ↦ hg.partMap
 
 end seq
 

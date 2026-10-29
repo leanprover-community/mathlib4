@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
 
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences
@@ -98,8 +98,8 @@ noncomputable def CommSq.isColimitEquivIsColimitCokernelCofork (sq : CommSq f g 
                   (by simp [s.condition])) .one)
       (fun s m hm₁ hm₂ ↦ by
         apply Cofork.IsColimit.hom_ext h
-        convert (h.fac (CokernelCofork.ofπ (biprod.desc s.inl s.inr)
-          (by simp [s.condition])) .one).symm
+        convert!
+          (h.fac (CokernelCofork.ofπ (biprod.desc s.inl s.inr) (by simp [s.condition])) .one).symm
         cat_disch)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
@@ -176,8 +176,8 @@ noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g)
         (by simp [s.condition])) .zero =≫ biprod.snd)
       (fun s m hm₁ hm₂ ↦ by
         apply Fork.IsLimit.hom_ext h
-        convert (h.fac (KernelFork.ofι (biprod.lift s.fst s.snd)
-          (by simp [s.condition])) .zero).symm
+        convert!
+          (h.fac (KernelFork.ofι (biprod.lift s.fst s.snd) (by simp [s.condition])) .zero).symm
         cat_disch)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _

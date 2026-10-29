@@ -7,7 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Tactic.ApplyFun
+
 /-!
 
 # Effective epimorphic families and coproducts
@@ -25,7 +27,6 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given an `EffectiveEpiFamily X π` and a corresponding coproduct cocone, the family descends to an
 `EffectiveEpi` from the coproduct.
@@ -51,7 +52,6 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
 example {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
     [HasCoproduct X] : Epi (Sigma.desc π) := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This is an auxiliary lemma used twice in the definition of  `EffectiveEpiFamilyOfEffectiveEpiDesc`.
 It is the `h` hypothesis of `EffectiveEpi.desc` and `EffectiveEpi.fac`.
@@ -68,29 +68,28 @@ theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X :
   apply_fun ((Sigma.desc fun a ↦ pullback.fst g₁ (Sigma.ι X a)) ≫ ·) using
     (fun a b ↦ (cancel_epi _).mp)
   ext a
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app]
   rw [← Category.assoc, pullback.condition]
-  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_ι_app]
   apply_fun ((Sigma.desc fun a ↦ pullback.fst (pullback.fst _ _ ≫ g₂) (Sigma.ι X a)) ≫ ·)
     using (fun a b ↦ (cancel_epi _).mp)
   ext b
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app]
   simp only [← Category.assoc]
   rw [(Category.assoc _ _ g₂), pullback.condition]
-  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_ι_app]
   rw [← Category.assoc]
   apply h
   apply_fun (pullback.fst g₁ (Sigma.ι X a) ≫ ·) at hg
   rw [← Category.assoc, pullback.condition] at hg
-  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_ι_app] at hg
   apply_fun ((Sigma.ι (fun a ↦ pullback _ _) b) ≫ (Sigma.desc fun a ↦
     pullback.fst (pullback.fst _ _ ≫ g₂) (Sigma.ι X a)) ≫ ·) at hg
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app] at hg
   simp only [← Category.assoc] at hg
   rw [(Category.assoc _ _ g₂), pullback.condition] at hg
   simpa using hg
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If a coproduct interacts well enough with pullbacks, then a family whose domains are the terms of
 the coproduct is effective epimorphic whenever `Sigma.desc` induces an effective epimorphism from

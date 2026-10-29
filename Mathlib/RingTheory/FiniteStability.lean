@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
+
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 
@@ -18,7 +19,7 @@ stable under base change.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped TensorProduct
 

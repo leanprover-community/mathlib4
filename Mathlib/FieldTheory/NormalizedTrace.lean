@@ -138,17 +138,9 @@ theorem normalizedTrace_eq_of_finiteDimensional_apply [FiniteDimensional F K] (a
     normalizedTrace F K a = (Module.finrank F K : F)⁻¹ • trace F K a :=
   normalizedTraceAux_eq_of_finiteDimensional F a
 
-@[deprecated (since := "2025-10-22")]
-alias normalizedTrace_eq_of_fininteDimensional_apply :=
-  normalizedTrace_eq_of_finiteDimensional_apply
-
 theorem normalizedTrace_eq_of_finiteDimensional [FiniteDimensional F K] :
     normalizedTrace F K = (Module.finrank F K : F)⁻¹ • trace F K :=
   LinearMap.ext <| normalizedTrace_eq_of_finiteDimensional_apply F
-
-@[deprecated (since := "2025-10-22")]
-alias normalizedTrace_eq_of_fininteDimensional :=
-  normalizedTrace_eq_of_finiteDimensional
 
 /-- The normalized trace transfers via (injective) maps. -/
 @[simp]
@@ -254,6 +246,6 @@ theorem normalizedTrace_surjective : Function.Surjective (normalizedTrace F K) :
 /-- The normalized trace map is non-trivial. -/
 theorem normalizedTrace_ne_zero : normalizedTrace F K ≠ 0 :=
   let ⟨a, ha⟩ := normalizedTrace_surjective F K 1
-  DFunLike.ne_iff.mpr <| ⟨a, ha ▸ one_ne_zero⟩
+  DFunLike.ne_iff.mpr ⟨a, ha ▸ one_ne_zero⟩
 
 end Algebra

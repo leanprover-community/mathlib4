@@ -6,9 +6,8 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
-public import Mathlib.LinearAlgebra.Matrix.Symmetric
-public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
@@ -47,7 +46,7 @@ open Matrix
 
 open Finset SimpleGraph
 
-variable {α V : Type*}
+variable {α V W : Type*}
 
 namespace Matrix
 
@@ -78,18 +77,74 @@ theorem apply_ne_one_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A
 theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
     ¬A i j = 0 ↔ A i j = 1 := by rw [← apply_ne_one_iff h, Classical.not_not]
 
+@[simp]
+theorem diag_eq_zero [Zero α] [One α] (h : IsAdjMatrix A) : A.diag = 0 := by
+  ext
+  simp [h.apply_diag]
+
+protected theorem submatrix [Zero α] [One α] (h : IsAdjMatrix A) (f : W → V) :
+    A.submatrix f f |>.IsAdjMatrix where
+  zero_or_one i j := by simp [h.zero_or_one]
+  symm := h.symm.submatrix f
+  apply_diag i := by simp [h.apply_diag]
+
+theorem _root_.Matrix.isAdjMatrix_submatrix_iff [Zero α] [One α] {f : W → V} (hf : f.Surjective) :
+    (A.submatrix f f).IsAdjMatrix ↔ A.IsAdjMatrix := by
+  refine ⟨fun h ↦ ?_, (·.submatrix f)⟩
+  rw [← A.submatrix_id_id, ← f.comp_surjInv hf]
+  apply h.submatrix
+
+theorem reindex [Zero α] [One α] (h : IsAdjMatrix A) (f : V ≃ W) : A.reindex f f |>.IsAdjMatrix :=
+  h.submatrix f.symm
+
+theorem _root_.Matrix.isAdjMatrix_reindex_iff [Zero α] [One α] {f : V ≃ W} :
+    (A.reindex f f).IsAdjMatrix ↔ A.IsAdjMatrix :=
+  isAdjMatrix_submatrix_iff f.symm.surjective
+
 /-- For `A : Matrix V V α` and `h : IsAdjMatrix A`,
 `h.toGraph` is the simple graph whose adjacency matrix is `A`. -/
 @[simps]
 def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGraph V where
   Adj i j := A i j = 1
-  symm i j hij := by simp only; rwa [h.symm.apply i j]
-  loopless := ⟨fun i ↦ by simp [h]⟩
+  symm.symm i j hij := by rwa [h.symm.apply i j]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
     DecidableRel h.toGraph.Adj := by
   simp only [toGraph]
   infer_instance
+
+variable (A) in
+/-- A homomorphism of the graph of a submatrix of an adjacency matrix to the graph of the
+adjacency matrix itself -/
+@[simps]
+def toGraphSubmatrixHom [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : W → V) :
+    (h.submatrix f).toGraph →g h.toGraph where
+  toFun := f
+  map_rel' := by simp
+
+variable (A) in
+/-- An embedding of the graph of a submatrix of an adjacency matrix to the graph of the
+adjacency matrix itself, when the submatrix is given by an embedding -/
+def toGraphSubmatrixEmbedding [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : W ↪ V) :
+    (h.submatrix f).toGraph ↪g h.toGraph where
+  __ := f
+  map_rel_iff' := by simp
+
+variable (A) in
+@[simp]
+theorem toGraphSubmatrixEmbedding_apply [MulZeroOneClass α] [Nontrivial α] (h : A.IsAdjMatrix)
+    (f : W → V) (v : W) : (toGraphSubmatrixHom A h f) v = f v :=
+  rfl
+
+variable (A) in
+/-- An isomorphism of the graph of a reindexing of an adjacency matrix to the graph of the
+adjacency matrix itself -/
+@[simps!]
+def toGraphReindexIso [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (f : V ≃ W) :
+    (h.reindex f).toGraph ≃g h.toGraph where
+  __ := f.symm
+  map_rel_iff' := by simp
 
 @[simp] theorem hadamard_self [MulZeroOneClass α] {A : Matrix V V α} (hA : A.IsAdjMatrix) :
     A ⊙ A = A := by ext i j; have := hA.zero_or_one i j; aesop
@@ -117,7 +172,12 @@ theorem compl_apply_diag [Zero α] [One α] (i : V) : A.compl i i = 0 := by simp
 
 @[simp]
 theorem compl_apply [Zero α] [One α] (i j : V) : A.compl i j = 0 ∨ A.compl i j = 1 := by
-  grind [compl, of]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `simp`. This is probably a problem at Mathlib's end rather than `grind`'s,
+  as we are relying on seeing through the definition of `Matrix`, and `of`. -/
+  simp [compl]
+  grind
 
 @[simp]
 theorem isSymm_compl [Zero α] [One α] (h : A.IsSymm) : A.compl.IsSymm := by
@@ -130,10 +190,23 @@ theorem isAdjMatrix_compl [Zero α] [One α] (h : A.IsSymm) : IsAdjMatrix A.comp
 
 theorem IsAdjMatrix.compl_inj [Zero α] [One α] {A B : Matrix V V α}
     (hA : A.IsAdjMatrix) (hB : B.IsAdjMatrix) : A.compl = B.compl ↔ A = B :=
-  ⟨fun h ↦ ext fun i j ↦ by grind [of, congr($h i j), compl, IsAdjMatrix], fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ ext fun i j ↦ by
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `simp`. This is probably a problem at Mathlib's end rather than `grind`'s,
+    as we are relying on seeing through the definition of `Matrix`, and `of`.
+    The original proof was: `grind [of, congr($h i j), compl, IsAdjMatrix]` -/
+    simp [compl] at h; grind [congr($h i j), IsAdjMatrix], fun h ↦ h ▸ rfl⟩
 
 @[simp] theorem IsAdjMatrix.compl_compl [Zero α] [One α] {A : Matrix V V α} (hA : A.IsAdjMatrix) :
-    A.compl.compl = A := by ext; grind [of, compl, IsAdjMatrix]
+    A.compl.compl = A := by
+  ext
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `simp`. This is probably a problem at Mathlib's end rather than `grind`'s,
+  as we are relying on seeing through the definition of `Matrix`, and `of`. The original proof was:
+  `grind [of, compl, IsAdjMatrix]` -/
+  simp [compl]; grind [compl, IsAdjMatrix]
 
 namespace IsAdjMatrix
 
@@ -192,14 +265,16 @@ theorem isSymm_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsSymm :=
 
 variable (α)
 
-@[simp] theorem diag_adjMatrix [Zero α] [One α] : (G.adjMatrix α).diag = 0 := by ext; simp
-
 /-- The adjacency matrix of `G` is an adjacency matrix. -/
 @[simp]
 theorem isAdjMatrix_adjMatrix [Zero α] [One α] : (G.adjMatrix α).IsAdjMatrix where
   zero_or_one := by grind [adjMatrix_apply]
 
+theorem diag_adjMatrix [Zero α] [One α] : (G.adjMatrix α).diag = 0 := by
+  simp
+
 /-- The graph induced by the adjacency matrix of `G` is `G` itself. -/
+@[simp]
 theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
     (G.isAdjMatrix_adjMatrix α).toGraph = G := by
   ext
@@ -208,6 +283,18 @@ theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
 
 theorem compl_adjMatrix_eq_adjMatrix_compl [DecidableEq V] [DecidableEq α] [Zero α] [One α] :
     (G.adjMatrix α).compl = Gᶜ.adjMatrix α := by aesop (add simp [Matrix.compl])
+
+variable {G} in
+@[simp]
+theorem Embedding.submatrix_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [DecidableRel H.Adj]
+    (f : G ↪g H) : (H.adjMatrix α).submatrix f f = G.adjMatrix α := by
+  ext
+  simp
+
+variable {G} in
+theorem Iso.reindex_adjMatrix [Zero α] [One α] {H : SimpleGraph W} [DecidableRel H.Adj]
+    (f : G ≃g H) : (G.adjMatrix α).reindex f f = H.adjMatrix α :=
+  f.symm.toEmbedding.submatrix_adjMatrix α
 
 variable {G} in
 theorem IsCompl.adjMatrix_add_adjMatrix_eq_adjMatrix_completeGraph [DecidableEq V] [AddZeroClass α]
@@ -227,9 +314,6 @@ theorem one_add_adjMatrix_add_compl_adjMatrix_eq_of_one [DecidableEq V] [Decidab
     [AddMonoid α] [One α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = of 1 := by
   aesop (add simp [add_assoc])
 
-@[deprecated (since := "2026-01-30")] alias one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes :=
-  one_add_adjMatrix_add_compl_adjMatrix_eq_of_one
-
 variable (V)
 
 @[simp] theorem compl_adjMatrix_completeGraph [Zero α] [One α] [DecidableEq α] [DecidableEq V] :
@@ -239,7 +323,7 @@ variable (V)
     (0 : Matrix V V α).compl = (completeGraph V).adjMatrix α := by simp [← IsAdjMatrix.compl_inj]
 
 theorem adjMatrix_completeGraph_eq_of_one_sub_one [AddGroup α] [One α] [DecidableEq V] :
-    (completeGraph V).adjMatrix α = of 1 - 1 := by ext; simp [one_apply, sub_ite]
+    (completeGraph V).adjMatrix α = of 1 - 1 := by ext; simp [Matrix.one_apply, sub_ite]
 
 theorem _root_.Matrix.compl_zero_eq_of_one_sub_one [AddGroup α] [One α] [DecidableEq V]
     [DecidableEq α] : (0 : Matrix V V α).compl = of 1 - 1 := by
@@ -284,12 +368,12 @@ theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
 @[simp]
 theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
     (G.adjMatrix α * M) v w = ∑ u ∈ G.neighborFinset v, M u w := by
-  simp [mul_apply, neighborFinset_eq_filter, sum_filter]
+  simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter]
 
 @[simp]
 theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
     (M * G.adjMatrix α) v w = ∑ u ∈ G.neighborFinset w, M v u := by
-  simp [mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
+  simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
 
 variable (α) in
 @[simp]
@@ -330,7 +414,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
       rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
-      simp only [inf_eq_inter, mem_inter, mem_map, Function.Embedding.coeFn_mk] at hp
+      simp only [inf_eq_inter, mem_inter, mem_map] at hp
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
       cases hp
       simp at hxy

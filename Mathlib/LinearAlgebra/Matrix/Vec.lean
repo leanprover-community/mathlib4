@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
-public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-! # Vectorization of matrices
 
@@ -131,16 +130,18 @@ theorem kronecker_mulVec_vec_of_commute (A : Matrix l m R) (X : Matrix m n R) (B
     (hB : ∀ x i j, Commute x (B i j)) :
     (B ⊗ₖ A) *ᵥ vec X = vec (A * X * Bᵀ) := by
   ext ⟨k, l⟩
-  simp_rw [vec, mulVec, mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul, transpose_apply,
-    ← Finset.univ_product_univ, Finset.sum_product, (hB ..).right_comm, vec, (hB ..).eq]
+  simp_rw [vec, mulVec, Matrix.mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul,
+    transpose_apply, ← Finset.univ_product_univ, Finset.sum_product, (hB ..).right_comm, vec,
+    (hB ..).eq]
 
 /-- Technical lemma shared with `vec_vecMul_kronecker` and `vec_mul_eq_vecMul`. -/
 theorem vec_vecMul_kronecker_of_commute (A : Matrix m l R) (X : Matrix m n R) (B : Matrix n p R)
     (hA : ∀ x i j, Commute (A i j) x) :
     vec X ᵥ* (B ⊗ₖ A) = vec (Aᵀ * X * B) := by
   ext ⟨k, l⟩
-  simp_rw [vec, vecMul, mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul, transpose_apply,
-    ← Finset.univ_product_univ, Finset.sum_product, (hA ..).eq, (hA ..).right_comm, mul_assoc, vec]
+  simp_rw [vec, vecMul, Matrix.mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul,
+    transpose_apply, ← Finset.univ_product_univ, Finset.sum_product, (hA ..).eq, (hA ..).right_comm,
+    mul_assoc, vec]
 
 end NonUnitalSemiring
 
@@ -173,6 +174,25 @@ theorem vec_mul_eq_vecMul [DecidableEq m] (A : Matrix m n R) (B : Matrix n p R) 
   obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
 end Semiring
+
+section Hadamard
+
+variable [NonUnitalSemiring R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
+
+/-- The Hadamard bilinear form equals the Kronecker bilinear form on diagonal embeddings. -/
+theorem dotProduct_hadamard_mulVec_eq_kronecker
+    (x : m → R) (A B : Matrix m n R) (x' : n → R) :
+    x ⬝ᵥ (A ⊙ B) *ᵥ x' = vec (diagonal x) ⬝ᵥ (A ⊗ₖ B) *ᵥ vec (diagonal x') := by
+  simp [diagonal, mulVec, dotProduct, Fintype.sum_prod_type]
+
+/-- The starred Hadamard bilinear form equals the starred Kronecker bilinear form on diagonal
+embeddings. -/
+theorem star_dotProduct_hadamard_mulVec_eq_kronecker [StarAddMonoid R]
+    (x : m → R) (A B : Matrix m n R) (x' : n → R) :
+    star x ⬝ᵥ (A ⊙ B) *ᵥ x' = star (vec (diagonal x)) ⬝ᵥ (A ⊗ₖ B) *ᵥ vec (diagonal x') := by
+  rw [dotProduct_hadamard_mulVec_eq_kronecker, ← map_diagonal_star, star_vec]
+
+end Hadamard
 
 end Kronecker
 

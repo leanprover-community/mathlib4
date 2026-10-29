@@ -8,13 +8,18 @@ module
 public import Mathlib.Topology.ExtendFrom
 public import Mathlib.Topology.Order.DenselyOrdered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `extendFrom` in an order topology.
 -/
 
 public section
 
-open Filter Set Topology
+open Filter Set
+
+open scoped Topology
 
 variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α] [OrderTopology α]
   [TopologicalSpace β] {f : α → β} {a b : α} {la lb : β}

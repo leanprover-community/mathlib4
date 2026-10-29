@@ -82,6 +82,8 @@ instance [Small.{w} C] : ObjectProperty.Small.{w} (pointsBot C) := by
   dsimp [pointsBot]
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 lemma isConservative_pointsBot :
     (pointsBot.{w} C).IsConservativeFamilyOfPoints :=

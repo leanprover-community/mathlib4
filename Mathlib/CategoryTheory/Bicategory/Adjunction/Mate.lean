@@ -52,8 +52,6 @@ namespace CategoryTheory
 
 namespace Bicategory
 
-open Bicategory
-
 variable {B : Type u} [Bicategory.{w, v} B]
 
 namespace Adjunction
@@ -174,6 +172,7 @@ variable {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁
   {l₂ : c ⟶ d} {r₂ : d ⟶ c} (adj₂ : l₂ ⊣ r₂)
   {f : a ⟶ c} {g : b ⟶ d}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mateEquiv_id_comp_right (φ : f ≫ 𝟙 _ ≫ l₂ ⟶ l₁ ≫ g) :
     mateEquiv adj₁ ((Adjunction.id _).comp adj₂) φ =
       mateEquiv adj₁ adj₂ (f ◁ (λ_ l₂).inv ≫ φ) ≫ (ρ_ _).inv ≫ (α_ _ _ _).hom := by
@@ -182,6 +181,7 @@ lemma mateEquiv_id_comp_right (φ : f ≫ 𝟙 _ ≫ l₂ ⟶ l₁ ≫ g) :
   dsimp
   bicategory
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mateEquiv_comp_id_right (φ : f ≫ l₂ ≫ 𝟙 d ⟶ l₁ ≫ g) :
     mateEquiv adj₁ (adj₂.comp (Adjunction.id _)) φ =
       mateEquiv adj₁ adj₂ ((ρ_ _).inv ≫ (α_ _ _ _).hom ≫ φ) ≫ g ◁ (λ_ r₂).inv := by
@@ -267,6 +267,7 @@ def rightAdjointSquare.hcomp (α : r₁ ≫ g ⟶ h ≫ r₂) (β : r₃ ≫ h �
     (r₃ ≫ r₁) ≫ g ⟶ k ≫ (r₄ ≫ r₂) :=
   (α_ _ _ _).hom ≫ r₃ ◁ α ≫ (α_ _ _ _).inv ≫ β ▷ r₂ ≫ (α_ _ _ _).hom
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The mates equivalence commutes with horizontal composition of squares. -/
 theorem mateEquiv_hcomp (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : h ≫ l₄ ⟶ l₃ ≫ k) :
     (mateEquiv (adj₁.comp adj₃) (adj₂.comp adj₄)) (leftAdjointSquare.hcomp α β) =
@@ -507,16 +508,18 @@ lemma conjugateEquiv_whiskerRight
     leftUnitor_inv_whiskerRight, Iso.inv_hom_id, triangle_assoc_comp_right_assoc] at this
   simp [conjugateEquiv_apply, this]
 
-set_option linter.flexible false in -- simp followed by bicategory
 lemma conjugateEquiv_associator_hom
     {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
     {l₃ : c ⟶ d} {r₃ : d ⟶ c} (adj₃ : l₃ ⊣ r₃) :
     conjugateEquiv (adj₁.comp (adj₂.comp adj₃))
       ((adj₁.comp adj₂).comp adj₃) (α_ _ _ _).hom = (α_ _ _ _).hom := by
-  simp [← cancel_epi (ρ_ ((r₃ ≫ r₂) ≫ r₁)).hom, ← cancel_mono (λ_ (r₃ ≫ r₂ ≫ r₁)).inv,
-    conjugateEquiv_apply, mateEquiv_eq_iff, Adjunction.homEquiv₁_symm_apply,
-    Adjunction.homEquiv₂_apply]
+  simp only [conjugateEquiv_apply, ← cancel_epi (ρ_ ((r₃ ≫ r₂) ≫ r₁)).hom, Iso.hom_inv_id_assoc,
+    ← cancel_mono (λ_ (r₃ ≫ r₂ ≫ r₁)).inv, Category.assoc, Iso.hom_inv_id, Category.comp_id,
+    mateEquiv_eq_iff, Adjunction.homEquiv₁_symm_apply, unitors_inv_equal, Adjunction.comp_unit,
+    Adjunction.compUnit, whiskerRight_id, whiskerLeft_comp, whiskerLeft_rightUnitor,
+    comp_whiskerLeft, Iso.inv_hom_id_assoc, whiskerLeft_inv_hom_assoc, Adjunction.homEquiv₂_apply,
+    whiskerRight_comp, id_whiskerLeft, unitors_equal, comp_whiskerRight, leftUnitor_whiskerRight]
   bicategory
 
 end conjugateEquiv

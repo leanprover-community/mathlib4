@@ -25,6 +25,7 @@ This file defines the [superfactorial](https://en.wikipedia.org/wiki/Superfactor
 namespace Nat
 
 /-- `Nat.superFactorial n` is the superfactorial of `n`. -/
+@[oeis A000178]
 def superFactorial : ℕ → ℕ
   | 0 => 1
   | succ n => factorial n.succ * superFactorial n
@@ -60,7 +61,7 @@ theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x ∈ Icc 1 n, x ! = sf n
 
 @[simp]
 theorem prod_range_factorial_succ (n : ℕ) : ∏ x ∈ range n, (x + 1)! = sf n :=
-  (prod_Icc_factorial n) ▸ range_eq_Ico ▸ Finset.prod_Ico_add' _ _ _ _
+  prod_Icc_factorial n ▸ range_eq_Ico n ▸ Finset.prod_Ico_add' _ _ _ _
 
 @[simp]
 theorem prod_range_succ_factorial : ∀ n : ℕ, ∏ x ∈ range (n + 1), x ! = sf n

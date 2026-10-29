@@ -55,7 +55,7 @@ noncomputable def mapOfMeasurable (κ : Kernel α β) (f : β → γ) (hf : Meas
   toFun a := (κ a).map f
   measurable' := by fun_prop
 
-open Classical in
+open scoped Classical in
 /-- The pushforward of a kernel along a function.
 If the function is not measurable, we use zero instead. This choice of junk
 value ensures that typeclass inference can infer that the `map` of a kernel
@@ -274,12 +274,12 @@ lemma prodMkRight_add (κ η : Kernel α β) :
 lemma sum_prodMkLeft {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
     Kernel.sum (fun i ↦ Kernel.prodMkLeft γ (κ i)) = Kernel.prodMkLeft γ (Kernel.sum κ) := by
   ext
-  simp_rw [sum_apply, prodMkLeft_apply, sum_apply]
+  simp_rw [Kernel.sum_apply, prodMkLeft_apply, Kernel.sum_apply]
 
 lemma sum_prodMkRight {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
     Kernel.sum (fun i ↦ Kernel.prodMkRight γ (κ i)) = Kernel.prodMkRight γ (Kernel.sum κ) := by
   ext
-  simp_rw [sum_apply, prodMkRight_apply, sum_apply]
+  simp_rw [Kernel.sum_apply, prodMkRight_apply, Kernel.sum_apply]
 
 theorem lintegral_prodMkLeft (κ : Kernel α β) (ca : γ × α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd := rfl
@@ -454,10 +454,10 @@ lemma fst_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hg : Mea
   by_cases hf : Measurable f
   · ext x s hs
     rw [fst_apply' _ _ hs, map_apply' _ (hf.prod hg) _, map_apply' _ hf _ hs]
-    · simp only [Set.preimage, Set.mem_setOf]
+    · simp only [Set.preimage, Set.mem_ofPred]
     · exact measurable_fst hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
-      contrapose! hf; exact hf.fst
+      contrapose hf; exact hf.fst
     simp [map_of_not_measurable _ hf, map_of_not_measurable _ this]
 
 lemma fst_map_id_prod (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :
@@ -516,10 +516,10 @@ lemma snd_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hf : Mea
   by_cases hg : Measurable g
   · ext x s hs
     rw [snd_apply' _ _ hs, map_apply' _ (hf.prod hg), map_apply' _ hg _ hs]
-    · simp only [Set.preimage, Set.mem_setOf]
+    · simp only [Set.preimage, Set.mem_ofPred]
     · exact measurable_snd hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
-      contrapose! hg; exact hg.snd
+      contrapose hg; exact hg.snd
     simp [map_of_not_measurable _ hg, map_of_not_measurable _ this]
 
 lemma snd_map_prod_id (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :

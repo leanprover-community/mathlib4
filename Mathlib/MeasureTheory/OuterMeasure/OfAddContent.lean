@@ -5,7 +5,6 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.MeasureTheory.SetSemiring
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.Measure.Trim
 
@@ -42,7 +41,7 @@ the outer measure induced by `m`. The induced outer measure is equal to `m` on `
 
 @[expose] public section
 
-open Set
+open Set CompleteLattice
 
 open scoped ENNReal
 
@@ -64,7 +63,7 @@ theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent ℝ≥0∞ C)
       refine m_sigma_subadd (fun i ↦ hC.inter_mem _ hs _ (hf i)) ?_
       rwa [← inter_iUnion, inter_eq_self_of_subset_left hs_subset]
     _ ≤ ∑' i, m (f i) := by
-      refine ENNReal.summable.tsum_le_tsum (fun i ↦ ?_) ENNReal.summable
+      refine summable.tsum_le_tsum (fun i ↦ ?_) summable
       exact addContent_mono hC (hC.inter_mem _ hs _ (hf i)) (hf i) Set.inter_subset_right
 
 /-- For `m : AddContent C` sigma-sub-additive, finite on `C`, the `inducedOuterMeasure` given by `m`
@@ -92,22 +91,20 @@ theorem isCaratheodory_ofFunction_of_mem (hC : IsSetSemiring C) (m : AddContent 
   refine le_iInf fun f ↦ le_iInf fun hf ↦ le_iInf fun hf_subset ↦ ?_
   let A : ℕ → Finset (Set α) := fun i ↦ hC.disjointOfDiff (hf i) (hC.inter_mem _ (hf i) _ hs)
   have h_diff_eq_sUnion i : f i \ s = ⋃₀ A i := by simp [A, IsSetSemiring.sUnion_disjointOfDiff]
-  classical
   have h_m_eq i : m (f i) = m (f i ∩ s) + ∑ u ∈ A i, m u :=
     eq_add_disjointOfDiff_of_subset hC (hC.inter_mem (f i) (hf i) s hs) (hf i) inter_subset_left
   simp_rw [h_m_eq]
-  rw [ENNReal.tsum_add]
+  rw [tsum_add]
   refine add_le_add ?_ ?_
   · refine iInf_le_of_le (fun i ↦ f i ∩ s) <| iInf_le_of_le ?_ le_rfl
     rw [← iUnion_inter]
     exact Set.inter_subset_inter_left _ hf_subset
   · apply le_trans <| (OuterMeasure.ofFunction m addContent_empty).mono
-      <| (iUnion_diff s f) ▸ diff_subset_diff_left hf_subset
+      <| (iUnion_sdiff s f) ▸ sdiff_subset_sdiff_left hf_subset
     simp only [OuterMeasure.measureOf_eq_coe, A]
     apply le_trans <| measure_iUnion_le (μ := OuterMeasure.ofFunction m addContent_empty)
       (fun i ↦ f i \ s)
-    apply ENNReal.tsum_le_tsum
-    intro i
+    refine tsum_le_tsum fun i ↦ ?_
     simp_rw [sUnion_eq_biUnion] at h_diff_eq_sUnion
     rw [h_diff_eq_sUnion]
     obtain h6 := MeasureTheory.measure_biUnion_finset_le
@@ -168,6 +165,7 @@ noncomputable def measure [mα : MeasurableSpace α] (m : AddContent ℝ≥0∞ 
   (m.measureCaratheodory hC m_sigma_subadd).trim <|
     fun s a ↦ isCaratheodory_inducedOuterMeasure hC m s (hC_gen s a)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The measure defined through a sigma-subadditive
   content on a semiring coincides with the content on the semiring. -/
 theorem measure_eq [mα : MeasurableSpace α] (m : AddContent ℝ≥0∞ C) (hC : IsSetSemiring C)

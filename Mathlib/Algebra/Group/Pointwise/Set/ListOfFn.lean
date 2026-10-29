@@ -5,9 +5,13 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Data.List.OfFn
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+
+import Mathlib.Data.List.OfFn
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pointwise operations with lists of sets
@@ -21,7 +25,7 @@ namespace Set
 
 variable {α : Type*} [Monoid α] {s : Set α} {n : ℕ}
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem mem_prod_list_ofFn {a : α} {s : Fin n → Set α} :

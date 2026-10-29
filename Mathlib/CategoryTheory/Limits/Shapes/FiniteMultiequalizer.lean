@@ -8,13 +8,17 @@ module
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Tactic.ProxyType
+
+import Mathlib.Tactic.ProxyType
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finiteness instances on multi-spans
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 

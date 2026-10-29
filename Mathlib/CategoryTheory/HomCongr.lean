@@ -38,7 +38,7 @@ variable {C : Type u} [Category.{v} C]
 
 /-- If `X` is isomorphic to `X₁` and `Y` is isomorphic to `Y₁`, then
 there is a natural bijection between `X ⟶ Y` and `X₁ ⟶ Y₁`. See also `Equiv.arrowCongr`. -/
-@[simps]
+@[simps apply]
 def homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) : (X ⟶ Y) ≃ (X₁ ⟶ Y₁) where
   toFun f := α.inv ≫ f ≫ β.hom
   invFun f := α.hom ≫ f ≫ β.inv
@@ -71,8 +71,8 @@ attribute [local grind =] Function.LeftInverse Function.RightInverse in
 there is a bijection between `X ≅ Y` and `X₁ ≅ Y₁`. -/
 @[simps]
 def isoCongr {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ≅ X₂) (g : Y₁ ≅ Y₂) : (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂) where
-  toFun h := f.symm.trans <| h.trans <| g
-  invFun h := f.trans <| h.trans <| g.symm
+  toFun h := f.symm.trans <| h.trans g
+  invFun h := f.trans <| h.trans g.symm
   left_inv := by cat_disch
   right_inv := by cat_disch
 

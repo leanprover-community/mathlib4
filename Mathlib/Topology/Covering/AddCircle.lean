@@ -43,6 +43,8 @@ open Topology
 
 variable {𝕜 : Type*} [TopologicalSpace 𝕜] [Ring 𝕜] [IsTopologicalRing 𝕜]
 variable (p : 𝕜) [T0Space (AddCircle p)]
+
+-- TODO: this comment seems outdated?
 /- This instance can be supplied from:
 - `[NormedSpace ℚ 𝕜]` (with import `Mathlib.Analysis.Normed.Module.Basic`), or
 - `[LinearOrder 𝕜] [IsOrderedMonoid 𝕜] [OrderTopology 𝕜]`
@@ -62,7 +64,7 @@ theorem isAddQuotientCoveringMap_zsmul {n : ℤ} (hn : IsUnit (n : 𝕜)) :
 theorem isAddQuotientCoveringMap_nsmul {n : ℕ} (hn : IsUnit (n : 𝕜)) :
     IsAddQuotientCoveringMap (n • · : AddCircle p → _)
       (nsmulAddMonoidHom (α := AddCircle p) n).ker := by
-  convert isAddQuotientCoveringMap_zsmul p (n := n) (mod_cast hn)
+  convert! isAddQuotientCoveringMap_zsmul p (n := n) (mod_cast hn)
   all_goals ext; simp
 
 theorem isAddQuotientCoveringMap_zsmul_of_ne_zero [Algebra ℚ 𝕜] (n : ℤ) [NeZero n] :

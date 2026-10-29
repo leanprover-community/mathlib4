@@ -5,14 +5,12 @@ Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Opposite
-public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.ImageToKernel
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Opposite categories of complexes
+
 Given a preadditive category `V`, the opposite of its category of chain complexes is equivalent to
 the category of cochain complexes of objects in `Vᵒᵖ`. We define this equivalence, and another
 analogous equivalence (for a general category of homological complexes with a general
@@ -59,10 +57,7 @@ theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f 
               (by rw [← cancel_mono (image.ι g), Category.assoc, image.fac, w, zero_comp])).unop ≫
           (kernelSubobjectIso _ ≪≫ kernelUnopUnop _).inv := by
   ext
-  dsimp only [imageUnopUnop]
-  simp only [Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, kernelUnopUnop_inv, Category.assoc,
-    imageToKernel_arrow, kernelSubobject_arrow', kernel.lift_ι, cokernel.π_desc, Iso.unop_inv,
-    ← unop_comp, factorThruImage_comp_imageUnopOp_inv, Quiver.Hom.unop_op, imageSubobject_arrow]
+  simp [imageUnopUnop, ← unop_comp, factorThruImage_comp_imageUnopOp_inv]
 
 end
 
@@ -75,7 +70,7 @@ section
 variable [HasZeroMorphisms V]
 
 /-- Sends a complex `X` with objects in `V` to the corresponding complex with objects in `Vᵒᵖ`. -/
-@[simps]
+@[implicit_reducible, simps]
 protected def op (X : HomologicalComplex V c) : HomologicalComplex Vᵒᵖ c.symm where
   X i := op (X.X i)
   d i j := (X.d j i).op
@@ -83,7 +78,7 @@ protected def op (X : HomologicalComplex V c) : HomologicalComplex Vᵒᵖ c.sym
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
 
 /-- Sends a complex `X` with objects in `V` to the corresponding complex with objects in `Vᵒᵖ`. -/
-@[simps]
+@[implicit_reducible, simps]
 protected def opSymm (X : HomologicalComplex V c.symm) : HomologicalComplex Vᵒᵖ c where
   X i := op (X.X i)
   d i j := (X.d j i).op
@@ -91,7 +86,7 @@ protected def opSymm (X : HomologicalComplex V c.symm) : HomologicalComplex Vᵒ
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
-@[simps]
+@[implicit_reducible, simps]
 protected def unop (X : HomologicalComplex Vᵒᵖ c) : HomologicalComplex V c.symm where
   X i := unop (X.X i)
   d i j := (X.d j i).unop
@@ -99,34 +94,35 @@ protected def unop (X : HomologicalComplex Vᵒᵖ c) : HomologicalComplex V c.s
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
-@[simps]
+@[implicit_reducible, simps]
 protected def unopSymm (X : HomologicalComplex Vᵒᵖ c.symm) : HomologicalComplex V c where
   X i := unop (X.X i)
   d i j := (X.d j i).unop
   shape i j hij := by rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
 
+@[simp] lemma op_unop (K : HomologicalComplex Vᵒᵖ c) : K.unop.op = K := rfl
+
+@[simp] lemma unop_op (K : HomologicalComplex V c) : K.op.unop = K := rfl
+
 variable (V c)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
-@[simps]
+@[implicit_reducible, simps]
 def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.symm where
   obj X := (unop X).op
-  map f :=
+  map {K L} f :=
     { f := fun i => (f.unop.f i).op
-      comm' := fun i j _ => by simp only [op_d, ← op_comp, f.unop.comm] }
+      comm' := fun i j _ => by ext; simp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
-@[simps]
+@[implicit_reducible, simps]
 def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)ᵒᵖ where
   obj X := op X.unopSymm
   map f := Quiver.Hom.op
     { f := fun i => (f.f i).unop
-      comm' := fun i j _ => by simp only [unopSymm_d, ← unop_comp, f.comm] }
+      comm' := fun i j _ => by simp [← unop_comp]}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `opEquivalence`. -/
 def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInverse V c :=
   NatIso.ofComponents
@@ -135,11 +131,7 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
             simp only [Iso.refl_hom, Category.id_comp, unopSymm_d, op_d, Quiver.Hom.unop_op,
               Category.comp_id] :
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
-    (by
-      intro X Y f
-      refine Quiver.Hom.unop_inj ?_
-      ext x
-      simp)
+    (fun _ ↦ by ext; simp)
 
 /-- Auxiliary definition for `opEquivalence`. -/
 def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex Vᵒᵖ c.symm) :=
@@ -154,31 +146,27 @@ def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒ�
   inverse := opInverse V c
   unitIso := opUnitIso V c
   counitIso := opCounitIso V c
-  functor_unitIso_comp X := by
-    ext
-    simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
-      opFunctor_map_f, Hom.isoOfComponents_hom_f]
-    exact Category.comp_id _
+  functor_unitIso_comp _ := Category.comp_id (𝟙 _)
 
-set_option backward.isDefEq.respectTransparency false in
+instance : (opFunctor V c).IsEquivalence := (opEquivalence V c).isEquivalence_functor
+instance : (opInverse V c).IsEquivalence := (opEquivalence V c).isEquivalence_inverse
+
 /-- Auxiliary definition for `unopEquivalence`. -/
-@[simps]
+@[implicit_reducible, simps]
 def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V c.symm where
   obj X := (unop X).unop
   map f :=
     { f := fun i => (f.unop.f i).unop
-      comm' := fun i j _ => by simp only [unop_d, ← unop_comp, f.unop.comm] }
+      comm' := fun i j _ => by simp [← unop_comp]}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
-@[simps]
+@[implicit_reducible, simps]
 def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)ᵒᵖ where
   obj X := op X.opSymm
   map f := Quiver.Hom.op
     { f := fun i => (f.f i).op
-      comm' := fun i j _ => by simp only [opSymm_d, ← op_comp, f.comm] }
+      comm' := fun i j _ => by simp [← op_comp] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c ⋙ unopInverse V c :=
   NatIso.ofComponents
@@ -187,11 +175,7 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
             simp only [Iso.refl_hom, Category.id_comp, unopSymm_d, op_d, Quiver.Hom.unop_op,
               Category.comp_id] :
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
-    (by
-      intro X Y f
-      refine Quiver.Hom.unop_inj ?_
-      ext x
-      simp)
+    (fun _ ↦ by ext; simp)
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalComplex V c.symm) :=
@@ -206,10 +190,10 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
   inverse := unopInverse V c
   unitIso := unopUnitIso V c
   counitIso := unopCounitIso V c
-  functor_unitIso_comp X := by
-    ext
-    simp only [comp_f]
-    exact Category.comp_id _
+  functor_unitIso_comp X := by ext; simp [unopUnitIso, unopCounitIso]
+
+instance : (unopFunctor V c).IsEquivalence := (unopEquivalence V c).isEquivalence_functor
+instance : (unopInverse V c).IsEquivalence := (unopEquivalence V c).isEquivalence_inverse
 
 instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.HasHomology i :=
@@ -337,7 +321,6 @@ def opcyclesOpIso : K.op.opcycles i ≅ op (K.cycles i) :=
 
 variable (j : ι)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opcyclesOpIso_hom_toCycles_op :
     (K.opcyclesOpIso i).hom ≫ (K.toCycles j i).op = K.op.fromOpcycles i j := by
@@ -346,7 +329,6 @@ lemma opcyclesOpIso_hom_toCycles_op :
     exact (K.sc i).opcyclesOpIso_hom_toCycles_op
   · rw [K.toCycles_eq_zero hij, K.op.fromOpcycles_eq_zero hij, op_zero, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma fromOpcycles_op_cyclesOpIso_inv :
     (K.fromOpcycles i j).op ≫ (K.cyclesOpIso i).inv = K.op.toCycles j i := by
@@ -374,7 +356,6 @@ lemma opcyclesOpIso_hom_naturality :
       (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op :=
   ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed in Algebra/Homology/Embedding/TruncLE.lean
 @[reassoc]
 lemma opcyclesOpIso_inv_naturality :
     (cyclesMap φ i).op ≫ (K.opcyclesOpIso i).inv =
@@ -426,12 +407,45 @@ section
 
 variable [Preadditive V]
 
-set_option backward.isDefEq.respectTransparency false in
+example : Preadditive (HomologicalComplex Vᵒᵖ c) := inferInstance
+
 instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
 
-set_option backward.isDefEq.respectTransparency false in
 instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
 
 end
 
 end HomologicalComplex
+
+namespace Homotopy
+
+open HomologicalComplex
+
+variable {V : Type*} [Category* V] {ι : Type*} {c : ComplexShape ι} [Preadditive V]
+
+/-- The opposite of a homotopy between morphisms of homological complexes. -/
+@[simps]
+def op {F G : HomologicalComplex V c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+    Homotopy ((opFunctor V c).map φ₁.op) ((opFunctor V c).map φ₂.op) where
+  hom i j := (h.hom j i).op
+  zero i j hij := Quiver.Hom.unop_inj (h.zero _ _ hij)
+  comm n := Quiver.Hom.unop_inj (by
+    dsimp
+    rw [h.comm n]
+    nth_rw 2 [add_comm]
+    rfl)
+
+/-- The homotopy between morphisms of homological complexes that is deduced
+from a homotopy in the opposite category. -/
+@[simps]
+def unop {F G : HomologicalComplex Vᵒᵖ c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+    Homotopy ((unopFunctor V c).map φ₁.op) ((unopFunctor V c).map φ₂.op) where
+  hom i j := (h.hom j i).unop
+  zero i j hij := Quiver.Hom.op_inj (h.zero _ _ hij)
+  comm n := Quiver.Hom.op_inj (by
+    dsimp
+    rw [h.comm n]
+    nth_rw 2 [add_comm]
+    rfl)
+
+end Homotopy

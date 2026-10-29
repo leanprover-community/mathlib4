@@ -18,14 +18,13 @@ public import Mathlib.RingTheory.Unramified.Basic
 
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra.FormallyUnramified
 
 variable {R : Type*} {I : Type*} [Finite I] (f : I → Type*)
 variable [CommRing R] [∀ i, CommRing (f i)] [∀ i, Algebra R (f i)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pi_iff :
     FormallyUnramified R (∀ i, f i) ↔ ∀ i, FormallyUnramified R (f i) := by
   classical
@@ -43,7 +42,7 @@ theorem pi_iff :
     have hf : ∀ x, f₁ x - f₂ x ∈ J := by
       intro g
       rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero]
-      exact AlgHom.congr_fun e g
+      congrm $e g
     let e : ∀ i, f i := Pi.single x 1
     have he : IsIdempotentElem e := by simp [IsIdempotentElem, e, ← Pi.single_mul]
     have h₁ : (f₁ e) * (1 - f₂ e) = 0 := by
@@ -78,7 +77,7 @@ theorem pi_iff :
           Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton, H]
       · intro r s; simp [Pi.single_mul]
     suffices f₁' = f₂' by
-      have := AlgHom.congr_fun this (g x)
+      have := congr($this (g x))
       simp only [AlgHom.comp_toLinearMap, AlgHom.ofLinearMap_apply, LinearMap.coe_comp,
         LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply, ← map_sub,
         Ideal.Quotient.mkₐ_eq_mk, ← sub_eq_zero (b := Ideal.Quotient.mk J' _), f₁', f₂',

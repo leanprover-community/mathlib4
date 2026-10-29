@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 module
 
-public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Data.Nat.Basic
 
 /-!
@@ -74,7 +74,7 @@ theorem cast_natCast (n : ℕ) : ((n : ℤ) : R) = n :=
 @[simp, norm_cast]
 theorem cast_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((ofNat(n) : ℤ) : R) = ofNat(n) := by
-  simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
+  simpa only [OfNat.ofNat] using! AddGroupWithOne.intCast_ofNat (R := R) n
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by

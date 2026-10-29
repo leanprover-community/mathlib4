@@ -5,9 +5,8 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Independence.Basic
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+public import Mathlib.Probability.Notation
 
 /-!
 
@@ -60,20 +59,12 @@ theorem condExp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
     rw [memLp_one_iff_integrable] at huint hvint
     rw [integral_add' huint hvint, smul_add, hu_eq, hv_eq,
       integral_add' huint.integrableOn hvint.integrableOn]
-  · have heq₁ : (fun f : lpMeas E ℝ m₁ 1 μ => ∫ x, (f : Ω → E) x ∂μ) =
-        (fun f : Lp E 1 μ => ∫ x, f x ∂μ) ∘ Submodule.subtypeL _ := by
-      refine funext fun f => integral_congr_ae ?_
-      simp_rw [Submodule.coe_subtypeL', Submodule.coe_subtype]; norm_cast
-    have heq₂ : (fun f : lpMeas E ℝ m₁ 1 μ => ∫ x in s, (f : Ω → E) x ∂μ) =
-        (fun f : Lp E 1 μ => ∫ x in s, f x ∂μ) ∘ Submodule.subtypeL _ := by
-      refine funext fun f => integral_congr_ae (ae_restrict_of_ae ?_)
-      simp_rw [Submodule.coe_subtypeL', Submodule.coe_subtype]
-      exact Eventually.of_forall fun _ => (by trivial)
-    refine isClosed_eq (Continuous.const_smul ?_ _) ?_
-    · rw [heq₁]
-      exact continuous_integral.comp (ContinuousLinearMap.continuous _)
-    · rw [heq₂]
-      exact (continuous_setIntegral _).comp (ContinuousLinearMap.continuous _)
+  · have h_integral : Continuous fun f : lpMeas E ℝ m₁ 1 μ => ∫ x, (f : Ω → E) x ∂μ := by
+      simpa using! continuous_integral.comp (ContinuousLinearMap.continuous (Submodule.subtypeL _))
+    have h_setIntegral : Continuous fun f : lpMeas E ℝ m₁ 1 μ => ∫ x in s, (f : Ω → E) x ∂μ := by
+      simpa using! (continuous_setIntegral s).comp
+        (ContinuousLinearMap.continuous (Submodule.subtypeL _))
+    exact isClosed_eq (Continuous.const_smul h_integral _) h_setIntegral
   · intro u v huv _ hueq
     rwa [← integral_congr_ae huv, ←
       (setIntegral_congr_ae (hle₂ _ hms) _ : ∫ x in s, u x ∂μ = ∫ x in s, v x ∂μ)]

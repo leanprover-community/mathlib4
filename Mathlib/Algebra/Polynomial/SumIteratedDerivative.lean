@@ -6,10 +6,11 @@ Authors: Yuyang Zhao
 module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.BigOperators
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.Polynomial.Eval.SMul
+
+import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Sum of iterated derivatives
@@ -144,7 +145,7 @@ theorem aeval_iterate_derivative_self (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
   rw [sum_range_succ', Nat.choose_zero_right, one_mul, tsub_zero, Nat.descFactorial_self, tsub_self,
     pow_zero, smul_mul_assoc, one_mul, Function.iterate_zero_apply, eval_add, eval_smul]
   convert zero_add _
-  rw [eval_finset_sum]
+  rw [eval_finsetSum]
   apply sum_eq_zero
   intro x hx
   rw [h (x + 1) le_add_self (Nat.add_one_le_iff.mpr (mem_range.mp hx)), pow_one,
@@ -216,7 +217,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     · exact (aeval_iterate_derivative_of_ge A p q h).choose_spec.1
     · rw [natDegree_zero]; exact Nat.zero_le _
   have hc (k) (hk : q ≤ k) : ∀ (r : A), aeval r (derivative^[k] p) = q ! • aeval r (c k) := by
-    simp_rw [c, dif_pos hk]
+    simp_rw [c, dite_eq_left hk]
     exact (aeval_iterate_derivative_of_ge A p q hk).choose_spec.2
   refine ⟨∑ x ∈ Ico q (p.natDegree + 1), c x, ?_, ?_⟩
   · refine (natDegree_sum_le _ _).trans ?_
@@ -224,7 +225,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     exact ⟨Nat.zero_le _, fun i hi => (c_le i).trans (tsub_le_tsub_left (mem_Ico.mp hi).1 _)⟩
   intro r p' hp
   have : range (p.natDegree + 1) = range q ∪ Ico q (p.natDegree + 1) := by
-    rw [range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
+    rw [range_eq_Ico, range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
     rw [← tsub_le_iff_right]
     calc
       q - 1 ≤ q - 1 + p'.natDegree := le_self_add

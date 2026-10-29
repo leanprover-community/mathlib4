@@ -6,6 +6,7 @@ Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Topology.InductiveDimension.Classes
 
 /-!
 # Totally disconnected and totally separated topological spaces
@@ -61,7 +62,7 @@ instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     [∀ a, TopologicalSpace (β a)] [∀ a, TotallyDisconnectedSpace (β a)] :
     TotallyDisconnectedSpace (∀ a : α, β a) :=
   ⟨fun t _ h2 =>
-    have this : ∀ a, IsPreconnected ((fun x : ∀ a, β a => x a) '' t) := fun a =>
+    have : ∀ a, IsPreconnected ((fun x : ∀ a, β a => x a) '' t) := fun a =>
       h2.image (fun x => x a) (continuous_apply a).continuousOn
     fun x x_in y y_in => funext fun a => (this a).subsingleton ⟨x, x_in, rfl⟩ ⟨y, y_in, rfl⟩⟩
 
@@ -293,9 +294,35 @@ def Continuous.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α
     (h : Continuous f) : ConnectedComponents α → ConnectedComponents β :=
   Continuous.connectedComponentsLift (ConnectedComponents.continuous_coe.comp h)
 
+@[simp]
+lemma Continuous.connectedComponentsMap_mk {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (x : α) :
+    hf.connectedComponentsMap (.mk x) = .mk (f x) :=
+  rfl
+
 theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSpace β] {f : α → β}
     (h : Continuous f) : Continuous h.connectedComponentsMap :=
   Continuous.connectedComponentsLift_continuous (ConnectedComponents.continuous_coe.comp h)
+
+lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : IsCoinducing f) :
+    IsCoinducing hf.continuous.connectedComponentsMap := by
+  rw [← ConnectedComponents.isQuotientMap_coe.isCoinducing.of_comp_iff]
+  exact ConnectedComponents.isQuotientMap_coe.isCoinducing.comp hf
+
+@[simp]
+lemma Continuous.connectedComponentsMap_surjective {β : Type*} [TopologicalSpace β] {f : α → β}
+    (hf : Continuous f) (h : Surjective f) :
+    Surjective hf.connectedComponentsMap :=
+  Quotient.lift_surjective _ _ <| ConnectedComponents.surjective_coe.comp h
+
+lemma Topology.IsCoinducing.connectedComponentsMap_bijective {β : Type*} [TopologicalSpace β]
+    {f : α → β} (hf : IsCoinducing f) (hf' : ∀ y, IsConnected (f ⁻¹' {y})) :
+    hf.continuous.connectedComponentsMap.Bijective := by
+  refine ⟨fun x y h ↦ ?_, Continuous.connectedComponentsMap_surjective _ fun y ↦ (hf' y).nonempty⟩
+  obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe x
+  obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
+  simp_all [← hf.preimage_connectedComponent hf']
 
 /-- A preconnected set `s` has the property that every map to a
 discrete space that is continuous on `s` is constant on `s` -/
@@ -327,3 +354,28 @@ theorem IsPreconnected.eqOn_const_of_mapsTo {S : Set α} (hS : IsPreconnected S)
   rcases S.eq_empty_or_nonempty with (rfl | ⟨x, hx⟩)
   · exact hne.imp fun _ hy => ⟨hy, eqOn_empty _ _⟩
   · exact ⟨f x, hTm hx, fun x' hx' => hS.constant_of_mapsTo hT hc hTm hx' hx⟩
+
+theorem IsPreconnected.isDiscrete_iff_subsingleton {S : Set α} (hS : IsPreconnected S) :
+    IsDiscrete S ↔ S.Subsingleton where
+  mp h := by
+    have : DiscreteTopology S := isDiscrete_iff_discreteTopology.mp h
+    have : PreconnectedSpace S := isPreconnected_iff_preconnectedSpace.mp hS
+    have : Subsingleton S := subsingleton_of_preconnected_totallyDisconnected
+    simpa using this
+  mpr h := h.isDiscrete
+
+instance [T0Space α] [ZeroDimensionalSpace α] : TotallySeparatedSpace α := by
+  simp_rw [totallySeparatedSpace_iff_exists_isClopen, mem_compl_iff]
+  intro x y hxy
+  contrapose! hxy
+  apply Inseparable.eq
+  rw [isTopologicalBasis_isClopen.inseparable_iff]
+  exact fun V hV ↦ ⟨hxy V hV, (hxy Vᶜ hV.compl).mtr⟩
+
+@[deprecated instTotallySeparatedSpaceOfT0SpaceOfZeroDimensionalSpace +typeChanged
+(since := "2026-10-08")]
+theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space α]
+    (h : TopologicalSpace.IsTopologicalBasis { s : Set α | IsClopen s }) :
+    TotallySeparatedSpace α := by
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen] at h
+  infer_instance

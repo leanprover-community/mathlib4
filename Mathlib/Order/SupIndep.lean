@@ -5,14 +5,14 @@ Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Sigma
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.ModularLattice
 public import Mathlib.Tactic.FinCases
+
+import Mathlib.Data.Finset.Lattice.Union
 
 /-!
 # Supremum independence
@@ -154,7 +154,7 @@ theorem supIndep_univ_fin_two (f : Fin 2 → α) :
 
 @[simp]
 theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by
-  simpa [Finset.attach_map_val] using (supIndep_map (s := s.attach) (g := .subtype _)).symm
+  simpa [Finset.attach_map_val] using! (supIndep_map (s := s.attach) (g := .subtype _)).symm
 
 alias ⟨_, SupIndep.attach⟩ := supIndep_attach
 
@@ -196,8 +196,8 @@ protected theorem SupIndep.sigma {β : ι → Type*} {s : Finset ι} {g : ∀ i,
   classical
   rw [Finset.sigma_eq_biUnion]
   apply Finset.SupIndep.biUnion
-  · simpa using hs
-  · simpa [Finset.supIndep_map] using hg
+  · simpa using! hs
+  · simpa [Finset.supIndep_map] using! hg
 
 protected theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α}
     (hs : s.SupIndep fun i => t.sup fun i' => f (i, i'))
@@ -205,7 +205,7 @@ protected theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × �
   classical
   rw [Finset.product_eq_biUnion]
   apply Finset.SupIndep.biUnion
-  · simpa using hs
+  · simpa using! hs
   · exact fun i' hi' ↦ (ht.mono fun i hi ↦ Finset.le_sup (f := fun i' ↦ f (i', i)) hi').image
 
 protected theorem SupIndep.disjoint_sup_sup {s : Finset ι} {f : ι → α} {u v : Finset ι}
@@ -251,6 +251,29 @@ protected theorem SupIndep.insert [DecidableEq ι] {i : ι} {s : Finset ι} {f :
     (hs : s.SupIndep f) (h : Disjoint (f i) (s.sup f)) : (insert i s).SupIndep f := by
   grind [insert_eq, SupIndep.union, sup_singleton]
 
+protected theorem SupIndep.sup_inter [DecidableEq ι] {s₁ s₂ : Finset ι} (hs : s.SupIndep f)
+    (hs₁ : s₁ ⊆ s) (hs₂ : s₂ ⊆ s) : (s₁ ∩ s₂).sup f = s₁.sup f ⊓ s₂.sup f := by
+  conv_rhs => rw [← sup_inf_sdiff s₁ s₂, inf_eq_inter, sup_eq_union, sup_union]
+  rw [sup_inf_assoc_of_le _ <| sup_mono inter_subset_right,
+    (hs.disjoint_sup_sup (sdiff_subset.trans hs₁) hs₂ disjoint_sdiff_self_left).eq_bot,
+    sup_bot_eq]
+
+theorem supIndep_iff_sup_inter_eq [DecidableEq ι] :
+    s.SupIndep f ↔ ∀ s₁ ⊆ s, ∀ s₂ ⊆ s, (s₁ ∩ s₂).sup f = s₁.sup f ⊓ s₂.sup f := by
+  refine ⟨fun hs s₁ hs₁ s₂ hs₂ ↦ hs.sup_inter hs₁ hs₂, fun h t ht i hi hit ↦ ?_⟩
+  simpa [hit, disjoint_iff] using (h {i} (singleton_subset_iff.mpr hi) t ht).symm
+
+protected theorem SupIndep.sup_inf' [DecidableEq ι] {t : Finset ι'} {g : ι' → Finset ι}
+    (hs : s.SupIndep f) (ht : t.Nonempty) (hg : ∀ j ∈ t, g j ⊆ s) :
+    (t.inf' ht g).sup f = t.inf' ht fun x ↦ (g x).sup f := by
+  induction ht using Finset.Nonempty.cons_induction with
+  | singleton => simp
+  | cons j t _ ht ih =>
+    rw [forall_mem_cons] at hg
+    simp_rw [inf'_cons ht, inf_eq_inter]
+    rw [hs.sup_inter hg.1 ?_, ih hg.2]
+    grw [inf'_mono_fun hg.2, inf'_const]
+
 end IsModularLattice
 
 section DistribLattice
@@ -287,12 +310,12 @@ theorem sSupIndep_empty : sSupIndep (∅ : Set α) := fun x hx =>
 
 include hs in
 theorem sSupIndep.mono {t : Set α} (hst : t ⊆ s) : sSupIndep t := fun _ ha =>
-  (hs (hst ha)).mono_right (sSup_le_sSup (diff_subset_diff_left hst))
+  (hs (hst ha)).mono_right (sSup_le_sSup (sdiff_subset_sdiff_left hst))
 
 include hs in
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
 theorem sSupIndep.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
-  disjoint_sSup_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
+  disjoint_sSup_right (hs hx) ((mem_sdiff y).mpr ⟨hy, h.symm⟩)
 
 theorem sSupIndep_singleton (a : α) : sSupIndep ({a} : Set α) := fun i hi ↦ by
   simp_all
@@ -314,7 +337,7 @@ subset of the rest. -/
 theorem sSupIndep.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : y ⊆ s) (hxy : x ∉ y) :
     Disjoint x (sSup y) := by
   have := (hs.mono <| insert_subset_iff.mpr ⟨hx, hy⟩) (mem_insert x _)
-  rw [insert_diff_of_mem _ (mem_singleton _), diff_singleton_eq_self hxy] at this
+  rw [insert_sdiff_of_mem _ (mem_singleton _), sdiff_singleton_eq_self hxy] at this
   exact this
 
 /-- An independent indexed family of elements in a complete lattice is one in which every element
@@ -462,7 +485,7 @@ theorem iSupIndep.map_orderIso {ι : Sort*} {α β : Type*} [CompleteLattice α]
 theorem iSupIndep_map_orderIso_iff {ι : Sort*} {α β : Type*} [CompleteLattice α]
     [CompleteLattice β] (f : α ≃o β) {a : ι → α} : iSupIndep (f ∘ a) ↔ iSupIndep a :=
   ⟨fun h =>
-    have hf : f.symm ∘ f ∘ a = a := congr_arg (· ∘ a) f.left_inv.comp_eq_id
+    have hf : f.symm ∘ f ∘ a = a := congr($f.left_inv.comp_eq_id ∘ a)
     hf ▸ h.map_orderIso f.symm,
     fun h => h.map_orderIso f⟩
 

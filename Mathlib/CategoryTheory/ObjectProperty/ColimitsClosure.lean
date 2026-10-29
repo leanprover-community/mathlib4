@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 
 /-!
 # Closure of a property of objects under colimits of certain shapes
@@ -21,7 +21,7 @@ results in the file `Mathlib/CategoryTheory/ObjectProperty/LimitsClosure.lean`.)
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' t v' u' v u
 
@@ -43,6 +43,9 @@ inductive colimitsClosure : ObjectProperty C
 @[simp]
 lemma le_colimitsClosure : P ≤ P.colimitsClosure J :=
   fun X hX ↦ .of_mem X hX
+
+instance [P.Nonempty] : (P.colimitsClosure J).Nonempty :=
+  .mono (P.le_colimitsClosure J)
 
 instance : (P.colimitsClosure J).IsClosedUnderIsomorphisms where
   of_iso e hX := .of_isoClosure e hX

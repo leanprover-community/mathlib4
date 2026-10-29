@@ -85,6 +85,7 @@ instance (α : Type*) [LT α] [h : DecidableLT α] : DecidableLT (αᵒᵈ) :=
 instance (α : Type*) [LE α] [h : DecidableLE α] : DecidableLE (αᵒᵈ) :=
   fun a b ↦ h b a
 
+set_option backward.isDefEq.respectTransparency false in
 instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   le_total a b := le_total (α := α) b a
   min_def := max_def' (α := α)
@@ -95,13 +96,6 @@ instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
-
--- TODO: This declaration really shouldn't exist.
-set_option backward.inferInstanceAs.wrap.reuseSubInstances false in  -- otherwise we get an identity!
-/-- The opposite linear order to a given linear order -/
-@[implicit_reducible]
-def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
-  inferInstanceAs <| LinearOrder (OrderDual α)
 
 instance [h : Inhabited α] : Inhabited αᵒᵈ := ⟨h.default⟩
 
@@ -187,4 +181,60 @@ instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
 
 @[simp]
 theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
-  ⟨by convert @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
+  ⟨by convert! @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
+
+/-! ### Pushing order definitions through `Equiv` -/
+
+namespace Equiv
+
+variable {β : Type*} (e : α ≃ β)
+
+/-- Transfer `Top` across an `Equiv`. -/
+protected abbrev top [Top β] : Top α where
+  top := e.symm ⊤
+
+lemma top_def [Top β] :
+    letI := e.top
+    ⊤ = e.symm ⊤ := rfl
+
+/-- Transfer `Bot` across an `Equiv`. -/
+protected abbrev bot [Bot β] : Bot α where
+  bot := e.symm ⊥
+
+lemma bot_def [Bot β] :
+    letI := e.bot
+    ⊥ = e.symm ⊥ := rfl
+
+/-- Transfer `Compl` across an `Equiv`. -/
+protected abbrev compl [Compl β] : Compl α where
+  compl a := e.symm (e a)ᶜ
+
+lemma compl_def [Compl β] (a : α) :
+    letI := e.compl
+    aᶜ = e.symm (e a)ᶜ := rfl
+
+/-- Transfer `SDiff` across an `Equiv`. -/
+protected abbrev sdiff [SDiff β] : SDiff α where
+  sdiff a b := e.symm (e a \ e b)
+
+lemma sdiff_def [SDiff β] (a b : α) :
+    letI := e.sdiff
+    a \ b = e.symm (e a \ e b) := rfl
+
+/-- Transfer `HImp` across an `Equiv`. -/
+protected abbrev himp [HImp β] : HImp α where
+  himp a b := e.symm (e a ⇨ e b)
+
+lemma himp_def [HImp β] (a b : α) :
+    letI := e.himp
+    a ⇨ b = e.symm (e a ⇨ e b) := rfl
+
+/-- Transfer `HNot` across an `Equiv`. -/
+protected abbrev hnot [HNot β] : HNot α where
+  hnot a := e.symm (￢e a)
+
+lemma hnot_def [HNot β] (a : α) :
+    letI := e.hnot
+    ￢a = e.symm (￢e a) := rfl
+
+end Equiv

@@ -5,16 +5,16 @@ Authors: Jonas van der Schaaf, Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.RegularEpi
 public import Mathlib.Condensed.Light.Epi
-public import Mathlib.Condensed.Light.Functors
+
+import Mathlib.CategoryTheory.Sites.RegularEpi
 
 /-!
 
 # The functor from light profinite sets to light condensed sets preserves effective epimorphisms
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory CompHausLike
 

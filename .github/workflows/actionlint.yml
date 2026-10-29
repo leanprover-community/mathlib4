@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: suggester / actionlint
-        uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d # v1.72.0
+        uses: reviewdog/action-actionlint@419a49378266e892f40c773b4f2fc6de9aa87499 # v1.80.4
         with:
           tool_name: actionlint
           fail_level: any
@@ -21,10 +21,53 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # Using our fork's PR branch until upstream merges the improved error reporting:
-      # https://github.com/zgosalvez/github-actions-ensure-sha-pinned-actions/pull/288
-      # TODO: Update to upstream release once merged.
+      # Our fork of zgosalvez/github-actions-ensure-sha-pinned-actions. It reports every
+      # violation (not just the first) and checks the steps inside `parallel` groups.
       - name: Ensure all actions are pinned to SHA
-        uses: kim-em/github-actions-ensure-sha-pinned-actions@00f51cdb5bbc21f5bc873ef3a2dceef45df213af # improve-error-reporting
+        uses: leanprover-community/github-actions-ensure-sha-pinned-actions@538f919501d732b8cd7f5215aec5896df7d1df22 # improve-error-reporting
+
+  # Nothing in this repository uses the Actions cache. Runs on every ref can restore what runs
+  # on the default branch saved, and the jobs that used to restore from it opened or pushed to
+  # pull requests. Rather than vet every job that can save entries, we don't use the cache at
+  # all. GitHub already stops runs of low-trust triggers such as `pull_request_target` from
+  # saving entries for the default branch, unless a workflow asks for `cache-mode: write`.
+  # This job checks that nothing uses the cache, and that nothing asks for more than
+  # `cache-mode: read`.
+  no-actions-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check that nothing uses the Actions cache
+        run: |
+          status=0
+          # `actions/cache`, and its `restore` and `save` actions.
+          if grep -rnE '^\s*(-\s+)?uses:\s*["'\'']?actions/cache(/|@)' .github; then
+            echo "::error::Don't use actions/cache: see the comment on the no-actions-cache job."
+            status=1
+          fi
+          # The `cache` input of actions/setup-python, actions/setup-node and the like.
+          if grep -rnE '^\s*cache:' .github |
+              grep -vE '^[^:]+:[0-9]+:\s*cache:\s*["'\'']?false["'\'']?\s*(#.*)?$'; then
+            echo "::error::Don't turn on an action's caching: see the comment on the no-actions-cache job."
+            status=1
+          fi
+          # `cache-mode: write` or `write-only` would let low-trust triggers save entries again.
+          if grep -rnE '^\s*cache-mode:' .github |
+              grep -vE '^[^:]+:[0-9]+:\s*cache-mode:\s*["'\'']?(read|none)["'\'']?\s*(#.*)?$'; then
+            echo "::error::Only \`cache-mode: read\` and \`cache-mode: none\` are allowed: see the comment on the no-actions-cache job."
+            status=1
+          fi
+          # leanprover/lean-action uses the Actions cache unless `use-github-cache` is false.
+          while IFS= read -r f; do
+            uses=$(grep -cE 'uses:\s*["'\'']?leanprover/lean-action@' "${f}")
+            off=$(grep -cE '^\s*use-github-cache:\s*["'\'']?false["'\'']?\s*(#.*)?$' "${f}")
+            if [ "${uses}" != "${off}" ]; then
+              echo "::error file=${f}::Every leanprover/lean-action step needs \`use-github-cache: false\`: see the comment on the no-actions-cache job."
+              status=1
+            fi
+          done < <(grep -rlE 'uses:\s*["'\'']?leanprover/lean-action@' .github)
+          exit "${status}"

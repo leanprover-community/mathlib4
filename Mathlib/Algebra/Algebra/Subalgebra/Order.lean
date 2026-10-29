@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order instances on subalgebras
 -/
 
-@[expose] public section
+public section
 
 namespace Subalgebra
 

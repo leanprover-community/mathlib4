@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # `lim : (J ⥤ C) ⥤ C` is lax monoidal when `C` is a monoidal category.
@@ -15,13 +15,14 @@ When `C` is a monoidal category, the limit functor `lim : (J ⥤ C) ⥤ C` is la
 i.e. there are morphisms
 * `(𝟙_ C) → limit (𝟙_ (J ⥤ C))`
 * `limit F ⊗ limit G ⟶ limit (F ⊗ G)`
+
 satisfying the laws of a lax monoidal functor.
 
 ## TODO
 Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 
@@ -90,6 +91,9 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
       erw [limit.lift_π]
       rw [whiskerLeft_id, Category.id_comp]))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma lim_ε_π (j : J) : ε (lim (J := J) (C := C)) ≫ limit.π _ j = 𝟙 _ :=
   limit.lift_π _ _

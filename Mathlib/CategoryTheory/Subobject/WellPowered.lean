@@ -6,7 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Subobject.Basic
-public import Mathlib.CategoryTheory.EssentiallySmall
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Well-powered categories
@@ -28,7 +30,7 @@ and
 `equivShrink (Subobject X) : Subobject X ≃ Shrink (Subobject X)`.
 -/
 
-@[expose] public section
+public section
 
 
 universe w v v₂ u₁ u₂

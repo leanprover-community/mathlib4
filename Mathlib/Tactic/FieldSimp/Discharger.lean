@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel, David Renshaw
 -/
 module
 
-import all Lean.Meta.Tactic.Simp.Rewrite
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Util.DischargerAsTactic
+
+import all Lean.Meta.Tactic.Simp.Rewrite -- for `Simp.dischargeUsingAssumption?`
 
 /-!
 # Discharger for `field_simp` tactic
@@ -47,8 +48,7 @@ open Qq
 /-- Constructs a trace message for the `discharge` function. -/
 private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
-| .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
-| .ok (some _) => return m!"{checkEmoji} discharge {prop}"
+| _ => return m!"discharge {prop}"
 
 /-- Default discharge strategy for `field` and `field_simp`: try to solve the (in)equality `prop`,
 of the form `t = 0` or `t > 0`, by one of the following strategies:
