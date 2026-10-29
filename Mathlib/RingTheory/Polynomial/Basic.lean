@@ -219,7 +219,6 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
   exact one_ne_zero this
 
-set_option backward.defeqAttrib.useBackward true in
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
       (Finset.range n).sum fun i : ℕ => (n.choose (i + 1) : R[X]) * X ^ i := by
@@ -851,9 +850,9 @@ theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hp
   rw [Submodule.mem_sup]
   rcases hpq with ⟨p', q', hpq'⟩
   use aeval f (p * p') v
-  use LinearMap.mem_range.2 ⟨aeval f p' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
+  use LinearMap.mem_range.2 ⟨aeval f p' v, by simp⟩
   use aeval f (q * q') v
-  use LinearMap.mem_range.2 ⟨aeval f q' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
+  use LinearMap.mem_range.2 ⟨aeval f q' v, by simp⟩
   simpa only [mul_comm p p', mul_comm q q', aeval_one, aeval_add] using!
     congr(aeval f $hpq' v)
 
@@ -862,9 +861,9 @@ theorem sup_ker_aeval_le_ker_aeval_mul {f : M →ₗ[R] M} {p q : R[X]} :
   intro v hv
   rcases Submodule.mem_sup.1 hv with ⟨x, hx, y, hy, hxy⟩
   have h_eval_x : aeval f (p * q) x = 0 := by
-    rw [mul_comm, aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hx, map_zero]
+    rw [mul_comm, aeval_mul, mul_apply_eq_comp, LinearMap.mem_ker.1 hx, map_zero]
   have h_eval_y : aeval f (p * q) y = 0 := by
-    rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hy, map_zero]
+    rw [aeval_mul, mul_apply_eq_comp, LinearMap.mem_ker.1 hy, map_zero]
   rw [LinearMap.mem_ker, ← hxy, map_add, h_eval_x, h_eval_y, add_zero]
 
 theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X]}
@@ -878,11 +877,11 @@ theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X
     calc
       aeval f (q * (p * p')) v = aeval f (p' * (p * q)) v := by
         rw [mul_comm, mul_assoc, mul_comm, mul_assoc, mul_comm q p]
-      _ = 0 := by rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hv, map_zero]
+      _ = 0 := by rw [aeval_mul, mul_apply_eq_comp, LinearMap.mem_ker.1 hv, map_zero]
   have h_eval₂_pqq' :=
     calc
       aeval f (p * (q * q')) v = aeval f (q' * (p * q)) v := by rw [← mul_assoc, mul_comm]
-      _ = 0 := by rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hv, map_zero]
+      _ = 0 := by rw [aeval_mul, mul_apply_eq_comp, LinearMap.mem_ker.1 hv, map_zero]
   rw [aeval_mul] at h_eval₂_qpp' h_eval₂_pqq'
   refine
     ⟨aeval f (q * q') v, LinearMap.mem_ker.1 h_eval₂_pqq', aeval f (p * p') v,

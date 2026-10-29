@@ -61,7 +61,7 @@ end CharP
 section CharZero
 
 instance [CharZero R] : CharZero (MvPolynomial σ R) where
-  cast_injective x y hxy := by rwa [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, Nat.cast_inj] at hxy
+  cast_injective x y hxy := by rwa [← C_eq_natCast, ← C_eq_natCast, C_inj, Nat.cast_inj] at hxy
 
 end CharZero
 
