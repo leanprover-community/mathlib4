@@ -46,7 +46,7 @@ noncomputable def coconeOfPreserves
     comm := (isColimitOfPreserves F hc).fac .. }
   ι.naturality {_ _} f := by
     ext
-   simp [dsimp% c.w f]
+    simp [dsimp% c.w f]
 
 @[reassoc (attr := simp)]
 lemma map_ι_coconeOfPreserves_pt_hom {K : J ⥤ Inserter F G}
