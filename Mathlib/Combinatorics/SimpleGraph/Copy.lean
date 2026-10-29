@@ -631,31 +631,19 @@ protected lemma Free.killCopies_eq_left (hHG : H.Free G) : G.killCopies H = G :=
   · exact killCopies_bot _
   · exact (killCopies_eq_left hH).2 hHG
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Removing an edge from `G` for each subgraph isomorphic to `H` results in a graph that doesn't
 contain `H`. -/
 lemma free_killCopies (hH : H ≠ ⊥) : H.Free (G.killCopies H) := by
   rw [killCopies_of_ne_bot hH, deleteEdges, Free, isContained_iff_exists_iso_subgraph]
   rintro ⟨G', hHG'⟩
-  have hG' : (G'.map <| .ofLE (sdiff_le : G \ _ ≤ G)).edgeSet.Nonempty := by
-    rw [Subgraph.edgeSet_map]
-    exact (aux hH hHG').image _
-  set e := hG'.some with he
-  have : e ∈ _ := hG'.some_mem
-  clear_value e
-  rw [← Subgraph.image_coe_edgeSet_coe] at this
-  subst he
-  obtain ⟨e, he₀, he₁⟩ := this
-  let e' : Sym2 G'.verts := Sym2.map (Copy.isoSubgraphMap (.ofLE _ _ _) _).symm e
-  have he' : e' ∈ G'.coe.edgeSet := (Iso.map_mem_edgeSet_iff _).2 he₀
-  rw [Subgraph.edgeSet_coe] at he'
-  have := Subgraph.edgeSet_subset _ he'
+  let A := G'.map (Hom.ofLE sdiff_le)
+  have hA : Nonempty (H ≃g A.coe) := ⟨((Copy.ofLE ..).isoSubgraphMap G').comp hHG'.some⟩
+  have he := (aux hH hA).some_mem
+  have he' : (aux hH hA).some ∈ G'.edgeSet := by simpa [A] using he
+  have := G'.edgeSet_subset he'
   simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_sdiff,
     Set.mem_iUnion, not_exists] at this
-  refine this.2 (G'.map <| .ofLE sdiff_le) ⟨((Copy.ofLE _ _ _).isoSubgraphMap _).comp hHG'.some⟩ ?_
-  rw [Sym2.map_map, Set.mem_singleton_iff, ← he₁]
-  congr 1 with x
-  exact congr_arg _ (Equiv.Set.image_symm_apply _ _ injective_id _ _)
+  exact this.2 A hA rfl
 
 variable [Fintype G.edgeSet]
 

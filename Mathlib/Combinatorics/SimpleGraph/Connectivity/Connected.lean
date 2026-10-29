@@ -494,7 +494,7 @@ def recOn
 
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
-  C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p ↦ ConnectedComponent.eq.mpr (p.map φ)
+  C.lift (fun v ↦ G'.connectedComponentMk (φ v)) fun _ _ p ↦ ConnectedComponent.eq.mpr (p.map φ)
 
 @[simp]
 theorem map_mk (φ : G →g G') (v : V) :
