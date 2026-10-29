@@ -91,11 +91,13 @@ protected lemma lift_mk {α : Type*} (f : { v : V // v ≠ 0 } → α)
 protected noncomputable def rep (v : ℙ K V) : V :=
   v.out
 
-theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
+theorem rep_ne_zero (v : ℙ K V) : v.rep ≠ 0 :=
   v.out.2
 
+@[deprecated (since := "2026-10-13")] alias rep_nonzero := rep_ne_zero
+
 @[simp]
-theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _
+theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_ne_zero = v := Quotient.out_eq' _
 
 open Module
 
@@ -123,8 +125,22 @@ theorem mk_eq_mk_iff' (v w : V) (hv : v ≠ 0) (hw : w ≠ 0) :
     refine ⟨Units.mk0 a fun c => hv.symm ?_, ha⟩
     rwa [c, zero_smul] at ha
 
+/-- Two nonzero vectors have the same image under `mk'` iff one is a unit multiple of the other,
+for the action of `Kˣ` on `{ v : V // v ≠ 0 }`. -/
+theorem mk'_eq_mk'_iff (v w : { v : V // v ≠ 0 }) :
+    mk' K v = mk' K w ↔ ∃ a : Kˣ, a • w = v :=
+  Quotient.eq''.trans (Units.orbitRel_nonZero_iff K V v w).symm
+
+/-- The saturation of a set of nonzero vectors under `mk'` is the union of its translates by the
+units of `K`. -/
+theorem preimage_image_mk' (U : Set { v : V // v ≠ 0 }) :
+    mk' K ⁻¹' (mk' K '' U) = ⋃ a : Kˣ, (a • ·) '' U := by
+  ext v
+  simp only [Set.mem_image, Set.mem_iUnion]
+  grind [mk'_eq_mk'_iff]
+
 theorem exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (mk K v hv).rep :=
-  (mk_eq_mk_iff K _ _ (rep_nonzero _) hv).1 (mk_rep _)
+  (mk_eq_mk_iff K _ _ (rep_ne_zero _) hv).1 (mk_rep _)
 
 variable {K}
 
@@ -143,7 +159,7 @@ theorem submodule_eq (v : ℙ K V) : v.submodule = K ∙ v.rep := by
 
 theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by
   rw [submodule_eq]
-  exact finrank_span_singleton v.rep_nonzero
+  exact finrank_span_singleton v.rep_ne_zero
 
 instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
   rw [← v.mk_rep]
@@ -232,16 +248,16 @@ section linearIndependent
 
 theorem linearIndependent_pair_iff_ne {D D' : ℙ K V} :
   LinearIndependent K ![D.rep, D'.rep] ↔ D ≠ D' := by
-    rw [LinearIndependent.pair_iff' (rep_nonzero _)]
+    rw [LinearIndependent.pair_iff' (rep_ne_zero _)]
     refine ⟨fun h hD ↦ h 1 (by simp [hD]), fun h a hD ↦ h ?_⟩
     rw [eq_comm, ← mk_rep D, ← mk_rep D', mk_eq_mk_iff]
     suffices a ≠ 0 by refine ⟨(Ne.isUnit this).unit, by simp [← hD]⟩
-    exact fun ha ↦ D'.rep_nonzero (by simp [← hD, ha])
+    exact fun ha ↦ D'.rep_ne_zero (by simp [← hD, ha])
 
 theorem linearIndepOn_pair (D D' : ℙ K V) :
     LinearIndepOn K id {D.rep, D'.rep} := by
   by_cases h : D = D'
-  · simpa [h] using D'.rep_nonzero
+  · simpa [h] using D'.rep_ne_zero
   rw [← ne_eq, ← linearIndependent_pair_iff_ne, LinearIndependent.pair_symm_iff,
     ← linearIndepOn_id_range_iff h.injective] at h
   simpa using h

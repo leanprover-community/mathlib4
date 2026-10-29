@@ -98,7 +98,6 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
 noncomputable def iterationFunctorObjBotIso : (Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀ :=
   eqToIso (Φ.iter ⊥).obj_bot
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural map `Φ.X₀ ⟶ (Φ.iterationFunctor J).obj j`. -/
 noncomputable def ιIterationFunctor :
     (Functor.const _).obj Φ.X₀ ⟶ Φ.iterationFunctor J where

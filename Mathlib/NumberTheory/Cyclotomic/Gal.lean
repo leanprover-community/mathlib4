@@ -73,7 +73,6 @@ variable {K} (L)
 
 /-- The `MulEquiv` that takes an automorphism `f` to the element `k : (ZMod n)ˣ` such that
   `f μ = μ ^ k` for any root of unity `μ`. A strengthening of `IsPrimitiveRoot.autToPow`. -/
-@[simps]
 noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃* (ZMod n)ˣ :=
   let hζ := zeta_spec n K L
   let hμ t := hζ.pow_of_coprime _ (ZMod.val_coe_unit_coprime t)
@@ -109,6 +108,37 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
       simp only [ZMod.natCast_val, ZMod.cast_id', id] at key
       exact Units.ext key }
 
+theorem autEquivPow_apply (h : Irreducible (cyclotomic n K)) (f : Gal(L/K)) :
+    autEquivPow L h f = (zeta_spec n K L).autToPow K f :=
+  rfl
+
+theorem autEquivPow_spec (h : Irreducible (cyclotomic n K)) (f : Gal(L/K)) :
+    f (zeta n K L) = zeta n K L ^ (autEquivPow L h f : ZMod n).val :=
+  ((zeta_spec n K L).autToPow_spec K f).symm
+
+theorem autEquivPow_apply_of_pow_eq_one (h : Irreducible (cyclotomic n K)) (f : Gal(L/K))
+    {x : L} (hx : x ^ n = 1) : f x = x ^ (autEquivPow L h f : ZMod n).val := by
+  obtain ⟨a, -, rfl⟩ := (zeta_spec n K L).eq_pow_of_pow_eq_one hx
+  rw [map_pow, pow_right_comm, autEquivPow_spec L h]
+
+theorem autEquivPow_symm_apply_zeta (h : Irreducible (cyclotomic n K)) (t : (ZMod n)ˣ) :
+    (autEquivPow L h).symm t (zeta n K L) = zeta n K L ^ (t : ZMod n).val := by
+  rw [autEquivPow_spec L h, MulEquiv.apply_symm_apply]
+
+@[deprecated autEquivPow_symm_apply_zeta +typeChanged (since := "2026-10-19")]
+theorem autEquivPow_symm_apply (h : Irreducible (cyclotomic n K)) (t : (ZMod n)ˣ) :
+    (autEquivPow L h).symm t =
+      ((zeta_spec n K L).powerBasis K).equivOfMinpoly
+        (((zeta_spec n K L).pow_of_coprime _ (ZMod.val_coe_unit_coprime t)).powerBasis K)
+        (by
+          have := IsCyclotomicExtension.neZero' n K L
+          simp only [IsPrimitiveRoot.powerBasis_gen]
+          have hr :=
+            IsPrimitiveRoot.minpoly_eq_cyclotomic_of_irreducible
+              ((zeta_spec n K L).pow_of_coprime _ (ZMod.val_coe_unit_coprime t)) h
+          exact ((zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible h).symm.trans hr) :=
+  rfl
+
 variable (h : Irreducible (cyclotomic n K)) {L}
 
 /-- Maps `μ` to the `AlgEquiv` that sends `IsCyclotomicExtension.zeta` to `μ`. -/
@@ -119,10 +149,8 @@ noncomputable def fromZetaAut : Gal(L/K) :=
       ((zeta_spec n K L).pow_iff_coprime (NeZero.pos _) hζ.choose).mp <| hζ.choose_spec.2.symm ▸ hμ
 
 theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
-  simp_rw [fromZetaAut, autEquivPow_symm_apply]
-  generalize_proofs hζ h _ hμ _
-  nth_rewrite 4 [← hζ.powerBasis_gen K]
-  rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
+  rw [fromZetaAut, autEquivPow_symm_apply_zeta]
+  generalize_proofs h
   convert h.choose_spec.2
   exact ZMod.val_cast_of_lt h.choose_spec.1
 
