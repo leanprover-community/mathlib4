@@ -106,7 +106,7 @@ this is a cyclic subgroup. -/]
 theorem Subgroup.isCyclic_of_disjoint_Ioo_one {G : Type*} [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [MulArchimedean G] {H : Subgroup G} {a : G} (h₀ : 1 < a)
     (hd : Disjoint (H : Set G) (Ioo 1 a)) : IsCyclic H := by
-  rw [H.isCyclic_iff_exists_zpowers_eq_top]
+  rw [H.isCyclic_iff_exists_zpowers_eq]
   rcases eq_or_ne H ⊥ with rfl | hbot
   · simp
   · exact (exists_isLeast_one_lt hbot h₀ hd).imp fun _ => zpowers_eq_of_isLeast_mem_and_one_lt

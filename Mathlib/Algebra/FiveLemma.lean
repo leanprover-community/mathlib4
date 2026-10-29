@@ -202,7 +202,7 @@ lemma surjective_of_surjective_of_injective_of_left_exact (hi₂ : Function.Surj
   refine surjective_of_surjective_of_surjective_of_injective (0 : Unit →ₗ[R] M₁) f₁ f₂
     (0 : Unit →ₗ[R] N₁) g₁ g₂ 0 i₁ i₂ i₃ (by simp) hc₁ hc₂ hf₁ (fun y ↦ ?_) hg₁
     (fun | .unit => ⟨0, rfl⟩) hi₂ hi₃
-  simp only [Set.mem_range, zero_apply, exists_const]
+  simp only [Set.mem_range, LinearMap.zero_apply, exists_const]
   exact ⟨fun h ↦ (hg₀ ((map_zero _).trans h.symm)), fun h ↦ h ▸ (map_zero _)⟩
 
 include hf₁ hf₂ hg₁ hc₁ hc₂ hc₃ in
