@@ -30,3 +30,6 @@ protected theorem IsLocalHom.isField [FunLike F A B] [MonoidWithZeroHomClass F A
 
 protected theorem MulEquiv.isField (hB : IsField B) (e : A ≃* B) : IsField A :=
   IsLocalHom.isField e.injective hB
+
+protected theorem MulEquiv.isField_congr (e : A ≃* B) : IsField A ↔ IsField B :=
+  ⟨e.symm.isField, e.isField⟩

@@ -6,8 +6,9 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.LinearAlgebra.Center
 public import Mathlib.LinearAlgebra.Transvection.Basic
+
+import Mathlib.LinearAlgebra.Center
 
 /-!
 # Dilatransvections generate the special linear group
@@ -55,7 +56,7 @@ Let `K` be a division ring and `V` be a `K`-module.
 
 -/
 
-@[expose] public section
+public section
 
 namespace LinearEquiv
 
@@ -316,7 +317,7 @@ private theorem exists_dual_of_fixedReduce_ne_smul
     obtain ⟨a, ha⟩ :=
       LinearMap.exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent h.ne' he
     refine ⟨a, fun x ↦ by
-      simp only [← coe_toLinearMap, ha, LinearMap.smul_apply, one_apply, Subring.smul_def]⟩
+      simp only [← coe_toLinearMap, ha, LinearMap.smul_apply, one_apply_eq_self, Subring.smul_def]⟩
   obtain ⟨v, hu⟩ := this
   -- We lift `v` to `u : V`.
   obtain ⟨u, rfl⟩ := e.fixedSubmodule.mkQ_surjective v

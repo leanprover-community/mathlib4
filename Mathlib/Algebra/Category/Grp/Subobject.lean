@@ -5,8 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 public import Mathlib.Algebra.Category.ModuleCat.Subobject
+
+import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 
 /-!
 # The category of abelian groups is well-powered

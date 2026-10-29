@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.CategoryTheory.Abelian.Ext
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
@@ -116,7 +115,7 @@ def cechNerveTerminalFromIsoCompForget :
     cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ := by
   refine NatIso.ofComponents (fun _ => Types.productIso _) fun _ => ?_
   ext : 2
-  exact Matrix.ext fun _ _ => Pi.lift_π_apply (f := fun _ ↦ G) _ _ _
+  exact Matrix.ext fun _ _ => Pi.lift_comp_π_apply (f := fun _ ↦ G) _ _ _
 
 variable (k)
 
@@ -128,7 +127,6 @@ def compForgetAugmented : SimplicialObject.Augmented (Type u) :=
   SimplicialObject.augment (classifyingSpaceUniversalCover G ⋙ forget _) (terminal _)
     (terminal.from _) fun _ _ _ => Subsingleton.elim _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The augmented Čech nerve of the map from `Fin 1 → G` to the terminal object in `Type u` has an
 extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
@@ -276,7 +274,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     AlgebraicTopology.AlternatingFaceMapComplex.ε_app_f_zero, compForgetAugmentedIso, eqToIso.inv,
     HomologicalComplex.eqToHom_f, compForgetAugmented, compForgetAugmented.toModule, ε,
     SimplicialObject.augment, Unique.eq_default (terminal.from _), MonoidAlgebra.coeff_single,
-    Finsupp.single_apply, if_pos (Subsingleton.elim _ _)]
+    Finsupp.single_apply, ite_eq_left (Subsingleton.elim _ _)]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
@@ -294,7 +292,6 @@ def εToSingle₀ :
     standardComplex k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
   ((standardComplex k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
 
-set_option backward.defeqAttrib.useBackward true in
 theorem εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
         (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _ =

@@ -5,13 +5,9 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Limits.Unit
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
+public import Mathlib.CategoryTheory.Limits.Unit
 
 /-!
 # Limits and colimits in comma categories
@@ -49,7 +45,6 @@ in the comma category. -/
 def limitAuxiliaryCone (c₁ : Cone (F ⋙ fst L R)) : Cone ((F ⋙ snd L R) ⋙ R) :=
   (Cone.postcompose (whiskerLeft F (Comma.natTrans L R) :)).obj (L.mapCone c₁)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `R` preserves the appropriate limit, then given a cone for `F ⋙ fst L R : J ⥤ L` and a
 limit cone for `F ⋙ snd L R : J ⥤ R` we can build a cone for `F` which will turn out to be a limit
 cone.
@@ -71,8 +66,6 @@ noncomputable def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Con
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Let `F : J ⥤ Comma L R`. If `R` preserves the limit of
 `F ⋙ snd _ _`, then `Comma.fst L R` and `Comma.snd L R` jointly
 reflect the limit of `F`, i.e. if `c` is a cone for `F` which
@@ -112,7 +105,6 @@ in the comma category. -/
 def colimitAuxiliaryCocone (c₂ : Cocone (F ⋙ snd L R)) : Cocone ((F ⋙ fst L R) ⋙ L) :=
   (Cocone.precompose (whiskerLeft F (Comma.natTrans L R) :)).obj (R.mapCocone c₂)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 If `L` preserves the appropriate colimit, then given a colimit cocone for `F ⋙ fst L R : J ⥤ L` and
 a cocone for `F ⋙ snd L R : J ⥤ R` we can build a cocone for `F` which will turn out to be a
@@ -135,8 +127,6 @@ noncomputable def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ :
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Let `F : J ⥤ Comma L R`. If `L` preserves the colimit of
 `F ⋙ fst _ _`, then `Comma.fst L R` and `Comma.snd L R` jointly
 reflect the colimit of `F`, i.e. if `c` is a cocone for `F` which
@@ -266,7 +256,6 @@ variable {X : T} {G : A ⥤ T} (F : J ⥤ StructuredArrow X G)
 instance [G.Faithful] [G.Full] {Y : A} : HasInitial (StructuredArrow (G.obj Y) G) :=
   StructuredArrow.mkIdInitial.hasInitial
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasLimit [i₁ : HasLimit (F ⋙ proj X G)] [i₂ : PreservesLimit (F ⋙ proj X G) G] :
     HasLimit F := by
   have : HasLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) := i₁
@@ -284,7 +273,6 @@ instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} A] [PreservesLimitsOfSize.{w, 
     HasLimitsOfSize.{w, w'} (StructuredArrow X G) :=
   ⟨fun J hJ => by infer_instance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance createsLimit [i : PreservesLimit (F ⋙ proj X G) G] :
     CreatesLimit F (proj X G) :=
   letI : PreservesLimit (F ⋙ Comma.snd (Functor.fromPUnit X) G) G := i
@@ -321,7 +309,6 @@ instance hasTerminal [G.Faithful] [G.Full] {Y : A} :
     HasTerminal (CostructuredArrow G (G.obj Y)) :=
   CostructuredArrow.mkIdTerminal.hasTerminal
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasColimit [i₁ : HasColimit (F ⋙ proj G X)] [i₂ : PreservesColimit (F ⋙ proj G X) G] :
     HasColimit F := by
   have : HasColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) := i₁
@@ -339,7 +326,6 @@ instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [PreservesColimitsOfSiz
     HasColimitsOfSize.{w, w'} (CostructuredArrow G X) :=
   ⟨fun _ _ => inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance createsColimit [i : PreservesColimit (F ⋙ proj G X) G] :
     CreatesColimit F (proj G X) :=
   letI : PreservesColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) G := i

@@ -29,13 +29,12 @@ Uniform limit, uniform convergence, tends uniformly to
 
 public section
 
+open Filter SetRel Set Uniform
 
-noncomputable section
-
-open Topology Uniformity Filter SetRel Set Uniform
+open scoped Topology Uniformity
 
 variable {α β ι : Type*} [TopologicalSpace α] [UniformSpace β]
-variable {F : ι → α → β} {f : α → β} {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
+variable {F : ι → α → β} {f : α → β} {s : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
 /-- A function which can be locally uniformly approximated by functions which are continuous
 within a set at a point is continuous within this set at this point. -/

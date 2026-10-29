@@ -5,14 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
-public import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
-public import Mathlib.CategoryTheory.MorphismProperty.Retract
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
+
+import Mathlib.CategoryTheory.Abelian.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
 
 /-!
 # The class of isomorphisms modulo a Serre class
@@ -146,12 +146,10 @@ instance : P.isoModSerre.IsMultiplicative := by
   dsimp only [isoModSerre]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : P.monoModSerre.IsStableUnderRetracts where
   of_retract {X' Y' X Y} f' f h hf :=
     P.prop_of_mono (kernel.map f' f h.left.i h.right.i (by simp)) hf
 
-set_option backward.isDefEq.respectTransparency false in
 instance : P.epiModSerre.IsStableUnderRetracts where
   of_retract {X' Y' X Y} f' f h hf :=
     P.prop_of_epi (cokernel.map f f' h.left.r h.right.r (by simp)) hf

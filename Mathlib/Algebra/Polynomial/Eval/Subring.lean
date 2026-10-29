@@ -5,9 +5,10 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.Algebra.Ring.Subring.Basic
+
+import Mathlib.Algebra.Polynomial.Degree.Support
 
 /-!
 # Evaluation of polynomials in subrings
@@ -25,9 +26,9 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v} {n : ℕ}
 
-variable [Semiring R] {p q r : R[X]} [Semiring S]
+variable [Semiring R] {p : R[X]} [Semiring S]
 variable (f : R →+* S)
 
 theorem mem_map_rangeS {p : S[X]} : p ∈ (mapRingHom f).rangeS ↔ ∀ n, p.coeff n ∈ f.rangeS := by

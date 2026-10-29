@@ -31,10 +31,14 @@ theorem Tendsto.atTop_mul_atTop₀ (hf : Tendsto f l atTop) (hg : Tendsto g l at
 theorem tendsto_mul_self_atTop : Tendsto (fun x : α => x * x) atTop atTop :=
   tendsto_id.atTop_mul_atTop₀ tendsto_id
 
+theorem Tendsto.atTop_pow₀ (hf : Tendsto f l atTop) {n : ℕ} (hn : n ≠ 0) :
+    Tendsto (fun x => f x ^ n) l atTop :=
+  tendsto_atTop_mono' _ ((hf.eventually_ge_atTop 1).mono fun _ hx ↦ le_self_pow₀ hx hn) hf
+
 /-- The monomial function `x^n` tends to `+∞` at `+∞` for any positive natural `n`.
 A version for positive real powers exists as `tendsto_rpow_atTop`. -/
 theorem tendsto_pow_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (fun x : α => x ^ n) atTop atTop :=
-  tendsto_atTop_mono' _ ((eventually_ge_atTop 1).mono fun _x hx => le_self_pow₀ hx hn) tendsto_id
+  tendsto_id.atTop_pow₀ hn
 
 end OrderedSemiring
 

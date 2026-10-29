@@ -5,11 +5,13 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public meta import Lean.Server.FileWorker.RequestHandling
+public meta import Lean.Widget.InteractiveGoal
+public meta import Mathlib.Lean.GoalsLocation
+public meta import Mathlib.Lean.Meta.KAbstractPositions
 public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
-public import Mathlib.Tactic.Widget.Conv
-public meta import Mathlib.Lean.Meta.KAbstractPositions
-public meta import Lean.Server.FileWorker.RequestHandling
+public import ProofWidgets.Component.OfRpcMethod
 
 /-!
 # Point & click suggestions
@@ -56,7 +58,7 @@ meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta Server Widget ProofWidgets Jsx
+open Lean Meta Server Widget ProofWidgets
 
 /-- Run `k` with the `RwKind` of the selected position, and the subexpression at that position.
 If the subexpression contains bound variables, then they are introduced as free variables. -/
@@ -93,7 +95,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
     | some fvarId => fvarId.getType
     | none => loc.mvarId.getType
   viewKAbstractSubExpr' rootExpr pos fun subExpr rwKind ↦ do
-  let mut htmls : Array Html := #[]
+  let mut htmls : Array ProofWidgets.Html := #[]
 
   -- In a follow-up PR: suggestions for
   -- `induction`/`cases`, `contrapose`, if `subExpr` is an fvar.
@@ -112,7 +114,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
 
 /-- Rpc function for the `#click_suggestions` widget. -/
 @[server_rpc_method]
-public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
+public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.Html) :=
   RequestM.asTask do
   let some loc := props.selectedLocations.back? |
     return .text "Shift-click an expression in the tactic state to get suggestions."
@@ -130,18 +132,20 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       let goals := if useAfter then tacticInfo.goalsAfter else tacticInfo.goalsBefore
       goals.contains loc.mvarId
     | return .text "#click_suggestions: Please reload the tactic state"
+  -- Focus with a `·` if there are multiple goals, or the previous tactic was also a `·`.
+  let focus := onGoal.isNone && (2 ≤ props.goals.size || stx.isOfKind ``cdot)
   goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
     let (solvedHtml, solvedToken) ← mkRefreshComponent
     let targetHtml ←
       if let .hyp h := loc.loc then
-        pure <span> hypothesis {← exprToHtml (.fvar h)} </span>
+        pure jsx%{<span> hypothesis {← exprToHtml (.fvar h)}</span>}
       else
         Meta.viewSubexpr (fun _ e ↦ exprToHtml e) loc.pos (← loc.rootExpr)
     let html ← mkRefreshComponentM
       (.text "#click_suggestions has started searching.") fun masterToken ↦ do
       (generateSuggestions loc parentDecl? masterToken).run {
-        onGoal, masterToken, statusToken, solvedToken
+        onGoal, focus, masterToken, statusToken, solvedToken
         stx := if useAfter then some ⟨stx⟩ else none
         «meta» := doc.meta
         cursorPos := props.pos
@@ -149,13 +153,13 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
         hyp? := loc.fvarId?
         pos := loc.pos
       } |>.run (← IO.mkRef {})
-    return <details «open»={true}>
+    return jsx%{<details open={true}>
       <summary className="mv2 pointer">
         Suggestions for {targetHtml}: {statusHtml}
       </summary>
       {solvedHtml}
       {html}
-    </details>
+    </details>}
 
 /-- The component called by the `#click_suggestions` command. -/
 @[widget_module]
@@ -164,10 +168,12 @@ public def clickSuggestionsComponent : Component PanelWidgetProps :=
 
 /--
 `#click_suggestions` enables a widget in the infoview that gives tactic suggestions for
-the expression in the tactic state that was (most recently) selected with shift-click.
-Each suggestion has an insert button for pasting it into the editor, at the position of the cursor.
+the (most recently) selected expression in the tactic state.
+To select an expression, use `shift`+click in VS Code, and `ctrl`+click or `gK` in Neovim.
+Each suggestion starts with a button for pasting the tactic into the editor
+at the position of the cursor.
 
-Theorems are searched for use in `apply`, `apply at`, `rw` and `grw`.
+Theorems are searched for the `apply`, `apply at`, `rw` and `grw` tactics.
 These suggestions are grouped and sorted by the pattern that the lemmas match with.
 Rewrites that don't change the goal and rewrites that create the same goal as another rewrite
 are filtered out, as well as suggestions that create new goal(s) with metavariables in them.

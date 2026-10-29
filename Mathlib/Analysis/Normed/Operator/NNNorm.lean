@@ -6,7 +6,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Operator norm as an `NNNorm`
@@ -19,7 +18,6 @@ public section
 
 suppress_compilation
 
-open Bornology
 open Filter hiding map_smul
 open scoped NNReal Topology Uniformity ENNReal
 open Metric ContinuousLinearMap
@@ -45,7 +43,7 @@ theorem nnnorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, �
 
 @[simp, nontriviality]
 theorem opNNNorm_subsingleton [Subsingleton E] (f : E →SL[σ₁₂] F) : ‖f‖₊ = 0 :=
-  NNReal.eq <| f.opNorm_subsingleton
+  NNReal.eq f.opNorm_subsingleton
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
 theorem opNNNorm_le_bound (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, ‖f x‖₊ ≤ M * ‖x‖₊) : ‖f‖₊ ≤ M :=
@@ -62,9 +60,12 @@ theorem opNNNorm_le_of_unit_nnnorm [NormedAlgebra ℝ 𝕜] {f : E →SL[σ₁�
     (hf : ∀ x, ‖x‖₊ = 1 → ‖f x‖₊ ≤ C) : ‖f‖₊ ≤ C :=
   opNorm_le_of_unit_norm C.coe_nonneg fun x hx => hf x <| by rwa [← NNReal.coe_eq_one]
 
-theorem opNNNorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) :
+theorem opNNNorm_le_of_lipschitzWith {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖₊ ≤ K :=
-  opNorm_le_of_lipschitz hf
+  opNorm_le_of_lipschitzWith hf
+
+@[deprecated (since := "2026-09-27")]
+alias opNNNorm_le_of_lipschitz := opNNNorm_le_of_lipschitzWith
 
 theorem opNNNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above : ∀ x, ‖φ x‖₊ ≤ M * ‖x‖₊)
     (h_below : ∀ N, (∀ x, ‖φ x‖₊ ≤ N * ‖x‖₊) → M ≤ N) : ‖φ‖₊ = M :=
@@ -120,12 +121,18 @@ theorem nndist_le_opNNNorm (f : E →SL[σ₁₂] F) (x y : E) : nndist (f x) (f
   dist_le_opNorm f x y
 
 /-- continuous linear maps are Lipschitz continuous. -/
-theorem lipschitz (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f :=
+theorem lipschitzWith (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f :=
   AddMonoidHomClass.lipschitz_of_bound_nnnorm f _ f.le_opNNNorm
 
+/-- continuous linear maps are Lipschitz continuous. -/
+@[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
+
 /-- Evaluation of a continuous linear map `f` at a point is Lipschitz continuous in `f`. -/
-theorem lipschitz_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁₂] F => f x :=
+theorem lipschitzWith_apply (x : E) : LipschitzWith ‖x‖₊ fun f : E →SL[σ₁₂] F => f x :=
   lipschitzWith_iff_norm_sub_le.2 fun f g => ((f - g).le_opNorm x).trans_eq (mul_comm _ _)
+
+/-- Evaluation of a continuous linear map `f` at a point is Lipschitz continuous in `f`. -/
+@[deprecated (since := "2026-08-16")] alias lipschitz_apply := lipschitzWith_apply
 
 theorem exists_mul_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖₊) :
     ∃ x, r * ‖x‖₊ < ‖f x‖₊ := by
@@ -143,8 +150,10 @@ end ContinuousLinearMap
 namespace ContinuousLinearEquiv
 variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 
-protected theorem lipschitz (e : E ≃SL[σ₁₂] F) : LipschitzWith ‖(e : E →SL[σ₁₂] F)‖₊ e :=
-  (e : E →SL[σ₁₂] F).lipschitz
+protected theorem lipschitzWith (e : E ≃SL[σ₁₂] F) : LipschitzWith ‖(e : E →SL[σ₁₂] F)‖₊ e :=
+  (e : E →SL[σ₁₂] F).lipschitzWith
+
+@[deprecated (since := "2026-08-16")] alias lipschitz := lipschitzWith
 
 end ContinuousLinearEquiv
 

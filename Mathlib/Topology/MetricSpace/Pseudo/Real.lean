@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
+
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-!
 # Lemmas about distances between points in intervals in `ℝ`.
@@ -14,7 +15,7 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
 public section
 
-open Bornology Filter Metric Set
+open Set
 open scoped NNReal Topology
 
 namespace Real

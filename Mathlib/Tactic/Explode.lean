@@ -60,7 +60,7 @@ partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bo
               if start
               then Status.sintro
               else if i == 0 then Status.intro else Status.cintro
-            thm      := ← addMessageContext <| arg
+            thm      := ← addMessageContext arg
             deps     := []
             useAsDep := ← select arg }
         entries' := entries''

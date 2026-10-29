@@ -5,10 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Category.AlgCat.Basic
-public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Category.Ring.Limits
 
@@ -96,7 +94,7 @@ namespace HasLimits
 (Internal use only; use the limits API.)
 -/
 def limitCone : Cone F where
-  pt := AlgCat.of R (Types.Small.limitCone (F ⋙ forget _)).pt
+  pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
     { app := fun j ↦ ofHom <| limitπAlgHom F j
       naturality := fun _ _ f => by

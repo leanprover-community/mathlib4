@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
-public import Mathlib.Data.Finite.Sigma
+
+import Mathlib.Basic.Finite.Sigma
 
 /-!
 # Existence of a rank function to natural numbers
@@ -21,7 +22,7 @@ then there exists a rank function for `P` with values in `ℕ`.
 
 universe u
 
-open Simplicial
+open scoped Simplicial
 
 namespace SSet.Subcomplex
 

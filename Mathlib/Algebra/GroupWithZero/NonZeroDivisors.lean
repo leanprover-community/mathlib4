@@ -5,11 +5,14 @@ Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Algebra.GroupWithZero.Associated
-public import Mathlib.Algebra.GroupWithZero.Regular
-public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Regular.SMul
+
+import Mathlib.Algebra.GroupWithZero.Action.Regular
+import Mathlib.Algebra.GroupWithZero.Regular
 
 /-!
 # Non-zero divisors and smul-divisors
@@ -55,7 +58,7 @@ lemma mem_nonZeroDivisorsLeft_iff : x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, x 
 
 lemma notMem_nonZeroDivisorsLeft_iff :
     x ∉ nonZeroDivisorsLeft M₀ ↔ {y | x * y = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsLeft_iff] using! Set.nonempty_def.symm
+  simp [mem_nonZeroDivisorsLeft_iff, Set.Nonempty]
 
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
@@ -69,7 +72,7 @@ lemma mem_nonZeroDivisorsRight_iff : x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, 
 
 lemma notMem_nonZeroDivisorsRight_iff :
     x ∉ nonZeroDivisorsRight M₀ ↔ {y | y * x = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsRight_iff] using! Set.nonempty_def.symm
+  simp [mem_nonZeroDivisorsRight_iff, Set.Nonempty]
 
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
@@ -152,16 +155,6 @@ lemma IsUnit.mem_nonZeroDivisors (hx : IsUnit x) : x ∈ M₀⁰ :=
 
 variable (M₀) in
 lemma isUnit_le_nonZeroDivisors : IsUnit.submonoid M₀ ≤ M₀⁰ := fun _ ↦ (·.mem_nonZeroDivisors)
-
-@[deprecated "Use `Submonoid.mul_mem _ hx hy` instead." (since := "2026-01-07")]
-lemma mul_mem_nonZeroDivisorsLeft_of_mem_nonZeroDivisorsLeft (hx : x ∈ nonZeroDivisorsLeft M₀)
-    (hy : y ∈ nonZeroDivisorsLeft M₀) :
-    x * y ∈ nonZeroDivisorsLeft M₀ := Submonoid.mul_mem _ hx hy
-
-@[deprecated "Use `Submonoid.mul_mem _ hx hy` instead." (since := "2026-01-07")]
-lemma mul_mem_nonZeroDivisorsRight_of_mem_nonZeroDivisorsRight (hx : x ∈ nonZeroDivisorsRight M₀)
-    (hy : y ∈ nonZeroDivisorsRight M₀) :
-    x * y ∈ nonZeroDivisorsRight M₀ := Submonoid.mul_mem _ hx hy
 
 lemma mul_mem_nonZeroDivisors_of_mem_nonZeroDivisors (hx : x ∈ M₀⁰) (hy : y ∈ M₀⁰) :
     x * y ∈ M₀⁰ :=
@@ -412,18 +405,60 @@ theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀
 of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
 def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
   toEquiv := .subtypeQuotientEquivQuotientSubtype _ (s₂ := Associated.setoid _)
-    (· ∈ nonZeroDivisors _)
-    (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
+    (· ∈ nonZeroDivisors _ : Associates M₀ → Prop)
+    (by simp [mem_nonZeroDivisors_iff, Associates.forall_associated, Associates.mk_mul_mk])
     (by simp +instances [Associated.setoid])
-  map_mul' := by simp [Quotient.forall, Associates.mk_mul_mk]
+  map_mul' := by
+    simp_rw [Subtype.forall, Associates.forall_associated, Equiv.toFun_as_coe,
+      Submonoid.mk_mul_mk, Associates.mk_mul_mk, ← Associates.quotient_mk_eq_mk]
+    intros
+    repeat rw [Equiv.subtypeQuotientEquivQuotientSubtype_mk]
+    simp [Associates.mk_mul_mk]
 
 @[simp]
 lemma associatesNonZeroDivisorsEquiv_mk_mk (a : M₀) (ha) :
-    associatesNonZeroDivisorsEquiv ⟨⟦a⟧, ha⟩ = ⟦⟨a, mk_mem_nonZeroDivisors_associates.1 ha⟩⟧ := rfl
+    associatesNonZeroDivisorsEquiv ⟨.mk a, ha⟩ = .mk ⟨a, mk_mem_nonZeroDivisors_associates.1 ha⟩ :=
+  rfl
 
 @[simp]
 lemma associatesNonZeroDivisorsEquiv_symm_mk_mk (a : M₀) (ha) :
-    associatesNonZeroDivisorsEquiv.symm ⟦⟨a, ha⟩⟧ = ⟨⟦a⟧, mk_mem_nonZeroDivisors_associates.2 ha⟩ :=
+    associatesNonZeroDivisorsEquiv.symm (.mk ⟨a, ha⟩) =
+      ⟨.mk a, mk_mem_nonZeroDivisors_associates.2 ha⟩ :=
   rfl
 
 end CommMonoidWithZero
+
+section MulDistribMulAction
+
+variable {G M : Type*} [Group G] [MonoidWithZero M] [MulDistribMulAction G M]
+
+theorem smul_mem_nonZeroDivisorsLeft (g : G) {m : M} (hm : m ∈ nonZeroDivisorsLeft M) :
+    g • m ∈ nonZeroDivisorsLeft M := by
+  intro y hy
+  rw [← smul_eq_zero_iff_eq' g⁻¹] at hy ⊢
+  exact hm _ <| by simpa [smul_mul'] using hy
+
+theorem smul_mem_nonZeroDivisorsRight (g : G) {m : M} (hm : m ∈ nonZeroDivisorsRight M) :
+    g • m ∈ nonZeroDivisorsRight M := by
+  intro y hy
+  rw [← smul_eq_zero_iff_eq' g⁻¹] at hy ⊢
+  exact hm _ <| by simpa [smul_mul'] using hy
+
+theorem smul_mem_nonZeroDivisors (g : G) {m : M} (hm : m ∈ nonZeroDivisors M) :
+    g • m ∈ nonZeroDivisors M :=
+  ⟨smul_mem_nonZeroDivisorsLeft g hm.1, smul_mem_nonZeroDivisorsRight g hm.2⟩
+
+instance : SMul G M⁰ where
+  smul g m := ⟨g • m, smul_mem_nonZeroDivisors g m.prop⟩
+
+@[simp]
+theorem nonZeroDivisors.val_smul (g : G) (m : M⁰) :
+    (g • m : M⁰).val = g • m.val := rfl
+
+instance : MulDistribMulAction G M⁰ where
+  one_smul m := Subtype.val_injective (by simp)
+  mul_smul g h m := Subtype.val_injective (by simp [mul_smul])
+  smul_one g := Subtype.val_injective (by simp [MulDistribMulAction.smul_one])
+  smul_mul g m n := Subtype.val_injective (by simp [smul_mul'])
+
+end MulDistribMulAction

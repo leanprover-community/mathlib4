@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # Multiset coercion to type
@@ -110,6 +110,11 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
 
 @[simp] lemma map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
   ext a; simp [count_map, ← Finset.filter_val, eq_comm (a := a)]
+
+@[to_additive]
+theorem prod_map_eq_prod_toEnumFinset {M : Type*} [CommMonoid M] (m : Multiset α) (f : α → M) :
+    (m.map f).prod = ∏ i ∈ m.toEnumFinset, f i.1 := by
+  grind [m.map_toEnumFinset_fst, map_map, Finset.prod_map_val]
 
 @[simp] lemma image_toEnumFinset_fst (m : Multiset α) :
     m.toEnumFinset.image Prod.fst = m.toFinset := by
@@ -253,9 +258,9 @@ def consEquiv {v : α} : v ::ₘ m ≃ Option m where
     by_cases hv : x.1 = v
     · simp only [hv, true_and] at h ⊢
       apply lt_of_le_of_ne (Nat.le_of_lt_add_one _) h
-      convert! x.2.2 using 1
+      convert x.2.2 using 1
       simp [hv]
-    · convert! x.2.2 using 1
+    · convert x.2.2 using 1
       exact (count_cons_of_ne hv _).symm
     ⟩⟩
   invFun x := x.elim ⟨v, ⟨m.count v, by simp⟩⟩ (fun x ↦ ⟨x.1, x.2.castLE (count_le_count_cons ..)⟩)

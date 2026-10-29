@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Hom.BoundedLattice
 public import Mathlib.Order.WithBot
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Adjoining `⊤` and `⊥` to order maps and lattice homomorphisms
@@ -32,8 +33,14 @@ This is the order iso form of `WithTop.ofDual`, as proven by `coe_toDualBotEquiv
 @[to_dual
 /-- Taking the dual then adding `⊥` is the same as adding `⊤` then taking the dual.
 This is the order iso form of `WithBot.ofDual`, as proven by `coe_toDualTopEquiv`. -/]
-protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ :=
-  OrderIso.refl _
+protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ where
+  toFun a := toDual (a.recTopCoe ⊥ fun a ↦ ↑(ofDual a))
+  invFun a := (ofDual a).recBotCoe ⊤ fun a ↦ ↑(toDual a)
+  left_inv a := by cases a <;> simp
+  right_inv a := by apply_fun ofDual; dsimp; generalize ofDual a = a; cases a <;> simp
+  map_rel_iff' {a b} := by
+    simp only [Equiv.coe_fn_mk, toDual_le_toDual]
+    cases a <;> cases b <;> simp
 
 @[to_dual (attr := simp)]
 theorem toDualBotEquiv_coe [LE α] (a : α) :
@@ -55,11 +62,8 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
 
 @[to_dual]
 theorem coe_toDualBotEquiv [LE α] :
-    (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
-  funext fun _ => rfl
-
-@[deprecated (since := "2026-03-27")]
-alias _root_.WithBot.coe_toDualTopEquiv_eq := WithBot.coe_toDualTopEquiv
+    (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual := by
+  ext (- | x) <;> rfl
 
 /-- Embedding into `WithTop α`. -/
 @[to_dual (attr := simps) /-- Embedding into `WithBot α`. -/]
@@ -127,7 +131,7 @@ end OrderHom
 
 namespace OrderEmbedding
 
-variable [Preorder α] [Preorder β]
+variable [LE α] [LE β]
 
 /-- A version of `WithBot.map` for order embeddings. -/
 @[to_dual /-- A version of `WithTop.map` for order embeddings. -/]
@@ -144,7 +148,7 @@ end OrderEmbedding
 
 namespace OrderIso
 
-variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
+variable [LE α] [LE β] [LE γ]
 
 /-- A version of `Equiv.optionCongr` for `WithTop`. -/
 @[to_dual /-- A version of `Equiv.optionCongr` for `WithBot`. -/]

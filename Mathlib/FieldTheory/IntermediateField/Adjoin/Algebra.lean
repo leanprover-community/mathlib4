@@ -19,7 +19,7 @@ This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 
 public section
 
-open Module Polynomial
+open Module
 
 namespace IntermediateField
 
@@ -93,7 +93,6 @@ lemma fg_top_iff :
     (⊤ : IntermediateField F E).FG ↔ Algebra.EssFiniteType F E := by
   constructor
   · intro ⟨s, hs⟩
-    have : Algebra.FiniteType F (Algebra.adjoin F (s : Set E)) := .adjoin_of_finite s.finite_toSet
     have : Algebra.EssFiniteType (Algebra.adjoin F (s : Set E)) (adjoin F (s : Set E)) :=
       .of_isLocalization _ (nonZeroDivisors _)
     have : Algebra.EssFiniteType F (adjoin F (s : Set E)) :=
@@ -124,6 +123,9 @@ lemma essFiniteType_iff {K : IntermediateField F E} :
       adjoin_map, ← Set.range_comp, Function.comp_def, ← AlgHom.fieldRange_eq_map] using! this
   exact ⟨fun ⟨s, _, hs⟩ ↦ ⟨s, hs⟩, fun ⟨s, hs⟩ ↦ ⟨s, hs ▸ subset_adjoin _ _, hs⟩⟩
 
+instance [Finite S] : Algebra.EssFiniteType F (adjoin F S) :=
+  essFiniteType_iff.mpr (fg_adjoin_of_finite S.toFinite)
+
 /-- A field is finitely generated if and only if it is essentially of finite type over its prime
 subfield. -/
 theorem _root_.Field.fg_iff_essFiniteType : Field.FG F ↔ Algebra.EssFiniteType (⊥ : Subfield F) F :=
@@ -140,7 +142,7 @@ variable (α : E)
 @[simp]
 theorem AdjoinSimple.isIntegral_gen : IsIntegral F (AdjoinSimple.gen F α) ↔ IsIntegral F α := by
   conv_rhs => rw [← AdjoinSimple.algebraMap_gen F α]
-  rw [isIntegral_algebraMap_iff (algebraMap F⟮α⟯ E).injective]
+  rw [isIntegral_algebraMap_iff]
 
 variable {F} {α}
 
@@ -298,11 +300,13 @@ theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian
 
-theorem induction_on_adjoin [FiniteDimensional F E] (P : IntermediateField F E → Prop)
-    (base : P ⊥) (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
-    (K : IntermediateField F E) : P K :=
+theorem induction_on_adjoin [FiniteDimensional F E]
+    {motive : IntermediateField F E → Prop} (bot : motive ⊥)
+    (adjoin_simple : ∀ (K : IntermediateField F E) (x : E),
+      motive K → motive (K⟮x⟯.restrictScalars F))
+    (K : IntermediateField F E) : motive K :=
   letI : IsNoetherian F E := IsNoetherian.iff_fg.2 inferInstance
-  induction_on_adjoin_fg P base ih K K.fg_of_noetherian
+  induction_on_adjoin_fg bot adjoin_simple K K.fg_of_noetherian
 
 end Induction
 
@@ -322,7 +326,7 @@ theorem algHom_fieldRange_eq_of_comp_eq (h : RingHom.comp f (algebraMap A K) = (
     f.fieldRange = IntermediateField.adjoin F g.range := by
   apply IntermediateField.toSubfield_injective
   simp_rw [AlgHom.fieldRange_toSubfield, IntermediateField.adjoin_toSubfield]
-  convert! ringHom_fieldRange_eq_of_comp_eq h using 2
+  convert ringHom_fieldRange_eq_of_comp_eq h using 2
   exact Set.union_eq_self_of_subset_left fun _ ⟨x, hx⟩ ↦ ⟨algebraMap F A x, by simp [← hx]⟩
 
 /-- If `F` is a field, `A` is an `F`-algebra with fraction field `K`, `L` is a field,
