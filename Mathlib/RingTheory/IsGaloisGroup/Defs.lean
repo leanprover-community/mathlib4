@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Operations
 public import Mathlib.RingTheory.Invariant.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Predicate for Galois Groups
 

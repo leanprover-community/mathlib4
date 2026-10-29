@@ -179,7 +179,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
   · ext1
     rw [Compacts.coe_finset_sup, Finset.sup_eq_iSup]
     exact h3K'
-  refine le_trans (Finset.sum_le_sum ?_) (ENNReal.sum_le_tsum t)
+  refine le_trans (Finset.sum_le_sum ?_) (sum_le_tsum t)
   intro i _
   refine le_trans ?_ (le_iSup _ (L i))
   refine le_trans ?_ (le_iSup _ (h2K' i))

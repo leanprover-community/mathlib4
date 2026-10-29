@@ -994,7 +994,7 @@ theorem norm_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := by
 
 theorem abs_one_sub_rexp_re_le (x : ℂ) : |1 - Real.exp x.re| ≤ ‖1 - exp x‖ := by
   rw [← norm_exp]
-  exact_mod_cast abs_norm_sub_norm_le (1 : ℂ) (exp x)
+  exact mod_cast abs_norm_sub_norm_le (1 : ℂ) (exp x)
 
 theorem one_sub_rexp_re_le (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ :=
   (le_abs_self _).trans (abs_one_sub_rexp_re_le x)
