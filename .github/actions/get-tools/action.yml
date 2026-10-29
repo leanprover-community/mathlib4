@@ -63,11 +63,14 @@ runs:
           # prebuilt tools do not match the workflow that invokes them, so drop
           # the artifact and build from source. These are the source paths that
           # determine the bundled tools (the `cache` binary and the build-helper
-          # scripts in publish_tools.yml); they live here so callers don't have
-          # to duplicate the list. The comparison reads tree entries only, so
-          # the fetch skips all file contents.
+          # scripts in publish_tools.yml): the tool sources, and the Lake
+          # configuration, dependency revisions and toolchain that build the
+          # `cache` binary. They live here so callers don't have to duplicate the
+          # list. The comparison reads tree entries only, so the fetch skips all
+          # file contents.
           if [[ -n "$run_id" ]]; then
-            tool_paths=(Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py)
+            tool_paths=(Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py
+              lakefile.lean lake-manifest.json lean-toolchain)
             repo_dir="${RUNNER_TEMP}/get-tools-trees"
             rm -rf "$repo_dir"
             # A failed command or an empty listing selects the source build.
@@ -98,9 +101,9 @@ runs:
         github-token: ${{ inputs.github_token }}
 
     # Unpack the tools and install the toolchain the `cache` binary was linked
-    # against (the one guarantee the old `lake build` of the tools gave us for
-    # free). If the tarball is missing, the unpack fails, or the toolchain won't
-    # install, wipe any partial state and signal a source build.
+    # against; on the source-build path, elan installs it when Lake runs. If the
+    # tarball is missing, the unpack fails, or the toolchain won't install, wipe
+    # any partial state and signal a source build.
     - name: Unpack tools
       id: finalize
       shell: bash
