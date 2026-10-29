@@ -150,7 +150,7 @@ theorem coe_mk_mul_mk (A B : Matrix n n R) (hA : det A = 1) (hB : det B = 1) :
     ↑(⟨A, hA⟩ * ⟨B, hB⟩ : SpecialLinearGroup n R) = A * B :=
   rfl
 
-theorem coe_inv_mk (A : Matrix n n R) (h : det A = 1) :
+theorem coe_mk_inv (A : Matrix n n R) (h : det A = 1) :
     ↑(⟨A, h⟩⁻¹ : SpecialLinearGroup n R) = adjugate A :=
   rfl
 
