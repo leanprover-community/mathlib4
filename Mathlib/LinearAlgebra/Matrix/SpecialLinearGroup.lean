@@ -257,8 +257,8 @@ def mapEquiv : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
     .trans (mapEquiv n e) (mapEquiv n g) = mapEquiv n (e.trans g) := rfl
 
 @[simp] lemma toMonoidHom_mapEquiv :
-    (mapEquiv n e : SpecialLinearGroup n R →* SpecialLinearGroup n S)
-      = map e := rfl
+    (mapEquiv n e : SpecialLinearGroup n R →* SpecialLinearGroup n S) =
+      map e := rfl
 
 end Equiv
 
