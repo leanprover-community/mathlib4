@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic forms are line (Gateaux) differentiable
 

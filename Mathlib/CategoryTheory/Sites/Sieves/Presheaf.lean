@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Sieves.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The presheaf associated to a sieve
 
