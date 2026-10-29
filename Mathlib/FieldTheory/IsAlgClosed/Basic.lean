@@ -197,6 +197,8 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
   obtain ⟨x, hx⟩ := H f h
   exact Splits.of_degree_eq_one (degree_eq_one_of_irreducible_of_root h hx)
 
+
+-- TODO : add universe-polymorphic version (algebraic extensions have the same cardinality)
 /--
 If `k` has no nontrivial finite extension, then `k` is algebraically closed.
 -/
