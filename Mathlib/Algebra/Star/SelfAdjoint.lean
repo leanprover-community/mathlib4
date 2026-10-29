@@ -694,6 +694,11 @@ instance (priority := 100) CommMonoid.isStarNormal [CommMonoid R] [StarMul R] {x
     IsStarNormal x :=
   ⟨mul_comm _ _⟩
 
+-- named to match `Commute.all`
+/-- All elements of a commutative star magma are normal. -/
+lemma IsStarNormal.all [CommMagma R] [StarMul R] (a : R) : IsStarNormal a where
+  star_comm_self := .all _ _
+
 theorem Commute.isStarNormal_add [NonUnitalNonAssocSemiring R] [StarRing R] {a b : R}
     (hab : Commute a (star b)) [ha : IsStarNormal a] [hb : IsStarNormal b] :
     IsStarNormal (a + b) := by
