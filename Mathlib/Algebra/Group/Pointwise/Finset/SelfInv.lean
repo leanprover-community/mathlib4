@@ -21,6 +21,9 @@ See also `Algebra/Group/Pointwise/Set/SelfInv.lean` for the set version.
 
 open scoped Pointwise
 
+/- Ensure that `@[to_additive]` uses the right namespace. -/
+insert_to_additive_translation Finset.IsSelfInv Finset.IsSelfNeg
+
 namespace Finset
 
 variable {α : Type*} [DecidableEq α] [InvolutiveInv α] {s : Finset α}
