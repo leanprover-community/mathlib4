@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Dialectica.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Subobject.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Dialectica category is symmetric monoidal
 

@@ -196,3 +196,24 @@ theorem natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X {n : ℕ} :
   simpa using hpeval
 
 end Irreducible
+
+namespace Polynomial
+
+variable {k}
+
+theorem irreducible_iff_dvd_X_pow_card_pow_sub_X_and_isCoprime {f : k[X]} (hd : 0 < f.natDegree) :
+    Irreducible f ↔ f ∣ X ^ Nat.card k ^ f.natDegree - X ∧
+      ∀ m, m ∣ f.natDegree → m ≠ f.natDegree → IsCoprime f (X ^ Nat.card k ^ m - X) := by
+  constructor
+  · intro hi
+    simp_rw [hi.coprime_iff_not_dvd, ← hi.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X]
+    exact ⟨dvd_rfl, fun m hm hmne h ↦ hmne (dvd_antisymm hm h)⟩
+  · rintro ⟨hfdvd, h⟩
+    obtain ⟨a, hai, advd⟩ := exists_irreducible_of_natDegree_pos hd
+    refine (associated_of_dvd_of_natDegree_le advd (ne_zero_of_natDegree_gt hd) ?_).irreducible hai
+    by_contra! hlt
+    refine hai.not_isUnit ((h _ ?_ hlt.ne).isUnit_of_dvd' advd ?_)
+    · exact hai.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.mpr (advd.trans hfdvd)
+    · exact hai.natDegree_dvd_iff_dvd_X_pow_card_pow_sub_X.mp dvd_rfl
+
+end Polynomial
