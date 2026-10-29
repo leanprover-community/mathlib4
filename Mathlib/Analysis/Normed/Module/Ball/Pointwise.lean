@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of pointwise scalar multiplication of sets in normed spaces.
 

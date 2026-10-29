@@ -14,6 +14,9 @@ public import Mathlib.Data.Vector.Defs
 import Batteries.Data.Fin.Lemmas
 import Mathlib.Data.List.Nodup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional theorems and definitions about the `Vector` type
 
