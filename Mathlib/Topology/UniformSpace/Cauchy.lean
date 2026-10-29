@@ -375,6 +375,13 @@ theorem isComplete_univ {α : Type u} [UniformSpace α] [CompleteSpace α] :
   rcases CompleteSpace.complete hf with ⟨x, hx⟩
   exact ⟨x, mem_univ x, hx⟩
 
+theorem CompleteSpace.of_comp_eq_id [UniformSpace β] (f : α → β) (g : β → α)
+    (hfg : f ∘ g = id) (hf : Continuous f) (hg : UniformContinuous g) [CompleteSpace α] :
+    CompleteSpace β := by
+  refine ⟨fun h ↦ ?_⟩
+  obtain ⟨x, hx⟩ := CompleteSpace.complete (h.map hg)
+  exact ⟨f x, by simpa [hfg, Filter.tendsto_id'] using (hf.tendsto x).comp hx⟩
+
 @[deprecated (since := "2026-07-27")] alias complete_univ := isComplete_univ
 
 instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace β] :

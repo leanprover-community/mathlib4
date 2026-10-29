@@ -511,15 +511,11 @@ variable {𝕜 E : Type*} [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [Unif
 variable (𝕜 E) in
 theorem FiniteDimensional.completeSpace_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
     [Module.Finite 𝕜 E] [Module.Projective 𝕜 E] [IsModuleTopology 𝕜 E] : CompleteSpace E := by
-  obtain ⟨_, f, g, -, -, hps⟩ := Module.Finite.exists_comp_eq_id_of_projective 𝕜 E
-  replace hfg : f ∘ g = id := congr(↑$hps)
-  have hg : UniformContinuous g :=
-    uniformContinuous_addMonoidHom_of_continuous (IsModuleTopology.continuous_of_linearMap g)
-  refine ⟨fun h ↦ ?_⟩
-  obtain ⟨x, hx⟩ := CompleteSpace.complete (h.map hg)
-  have hf : (𝓝 x).map f ≤ 𝓝 (f x) := (IsModuleTopology.continuous_of_linearMap f).tendsto x
-  use f x
-  grw [← hf, ← hx, map_map, hfg, map_id]
+  obtain ⟨_, f, g, -, -, hfg⟩ := Module.Finite.exists_comp_eq_id_of_projective 𝕜 E
+  apply CompleteSpace.of_comp_eq_id f g congr(↑$hfg) (IsModuleTopology.continuous_of_linearMap f)
+    (uniformContinuous_addMonoidHom_of_continuous (IsModuleTopology.continuous_of_linearMap g))
+
+#exit
 
 theorem Submodule.isComplete_of_finiteDimensional_of_isModuleTopology
     [UniformSpace E] [IsUniformAddGroup E]
