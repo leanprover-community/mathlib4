@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 public import Mathlib.MeasureTheory.Measure.Trim
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Almost everywhere measurable functions
 

@@ -9,6 +9,9 @@ public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Logic.Relator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coinductive formalization of unbounded computations.
 

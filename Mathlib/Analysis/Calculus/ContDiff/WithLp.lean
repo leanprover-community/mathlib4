@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Normed.Lp.PiLp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives on `WithLp`
 -/

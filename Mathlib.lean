@@ -367,6 +367,7 @@ public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Equidecomp
 public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.Group.Action.Option
@@ -527,6 +528,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Center
 public import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.GroupWithZero.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
@@ -5969,6 +5971,7 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
 public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.AddCharacter.Trace
 public import Mathlib.NumberTheory.AlmostPrime
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
