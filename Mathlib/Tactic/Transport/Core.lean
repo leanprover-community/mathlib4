@@ -494,19 +494,34 @@ def translateGiven (translations : Array (Expr × Expr)) (type : Expr) : MetaM (
       return after
   return none
 
+#check collectFVars
 
-elab tk:"transport" translations:(term "to" term),* : tactic => do
-  withRef tk do withMainContext do
-  let translations ← translations.getElems.mapM fun ⟨stx⟩ ↦
+public syntax transportClause := term "to" term
+
+syntax "transport" transportClause,* (" generalizing" (ppSpace colGt ident)*)? : tactic
+
+elab_rules : tactic
+| `(tactic| transport $clauses:transportClause,* $[ generalizing $xs*]?) => do
+  let mvarId ← getMainGoal
+  let tag ← mvarId.getTag
+  let (mvarId, intros) ← mvarId.withContext do
+    let fvarIds ← (xs.getD #[]).mapM (getFVarId ·.raw)
+    let fvarIds ← sortFVarIds fvarIds
+    let (fvarIds, mvarId) ← mvarId.revert fvarIds (preserveOrder := true)
+    pure (mvarId, fvarIds.size)
+  mvarId.withContext do
+  let translations ← clauses.getElems.mapM fun ⟨stx⟩ ↦
     return (← elabTerm stx[0] none, ← elabTerm stx[2] none)
   let translateType := translateDefault (translateGiven translations)
-  let mvarId ← getMainGoal
-  withReducible do
-    let type ← mvarId.getType
-    let (some (e, pf), s) ← transportCore .imp none type false |>.run { translateType } |>.run |
-      throwError "transport made no progress"
-    let newGoal ← mkFreshExprMVar e
-    mvarId.assign (.app pf newGoal)
-    replaceMainGoal (newGoal.mvarId! :: s.newGoals.toList)
+  let type ← mvarId.getType
+  let (some (e, pf), s) ← withReducible <|
+    transportCore .imp none type false |>.run { translateType } |>.run
+    | throwError "transport made no progress on `{type}`"
+  let newGoal ← mkFreshExprMVar e .syntheticOpaque
+  mvarId.assign (pf.app newGoal)
+  let (_, newGoal) ← newGoal.mvarId!.introNP intros
+  newGoal.setTag tag
+  replaceMainGoal (newGoal :: s.newGoals.toList)
+
 
 end Test

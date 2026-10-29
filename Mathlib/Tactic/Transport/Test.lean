@@ -441,9 +441,9 @@ example [DecidableEq α] (a : α) : ¬ ∀ s : Set α, insert a ∅ = s := by
 
 -- Yay, this now works
 example [DecidableEq α] (a : α) (s : Option (Finset α)) : s.elim {a} (·.erase a) = ∅ := by
-  revert s a
-  transport Finset α to Set α
-  guard_target = ∀ a : α, ∀ s : Option (Set α), s.elim {a} (· \ {a}) = ∅
+  transport Finset α to Set α generalizing s
+  guard_hyp s : Option (Set α)
+  guard_target = s.elim {a} (· \ {a}) = ∅
   sorry
 
 
