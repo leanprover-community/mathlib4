@@ -64,7 +64,7 @@ namespace ValuativeRel
 /-- The topology induced by a valuative relation. Note that this is not made into a global instance
 to avoid diamonds. If desired, one can equip a ring with a topological space from a valuative
 relation by hand. But as long as they do so, the fact that the topology is valuative and
-nonarchemidean can be automatically inferred. -/
+nonarchimedean can be automatically inferred. -/
 local instance topologicalSpace : TopologicalSpace R := (valuation R).subgroups_basis.topology
 
 instance nonarchimedeanRing : NonarchimedeanRing R :=
@@ -289,7 +289,7 @@ theorem toUniformSpace_eq : _u =
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : v.ValueGroup₀ˣ,
-      ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), v.restrict (y - x) < γ.1 := by
+      ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, v.restrict (y - x) < γ.1 := by
   rw [v.toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
   simp_rw [v.subgroups_basis.mem_addGroupFilterBasis_iff]

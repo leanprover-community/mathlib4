@@ -6,10 +6,12 @@ Authors: Oliver Nash, Jonathan Reich
 module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormDet
+import Mathlib.Tactic.Simproc.IsIndecomposable
 
 /-!
 # Cartan matrices
@@ -452,6 +454,21 @@ off-diagonal entries that are neither 0 nor -1. -/
 theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by decide
 
 theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by decide
+
+theorem isIndecomposable_E_six : (E 6).IsIndecomposable := by
+  simp only [E_six_eq, reduceIsIndecomposable]
+
+theorem isIndecomposable_E_seven : (E 7).IsIndecomposable := by
+  simp only [E_seven_eq, reduceIsIndecomposable]
+
+theorem isIndecomposable_E_eight : (E 8).IsIndecomposable := by
+  simp only [E_eight_eq, reduceIsIndecomposable]
+
+theorem isIndecomposable_F₄ : F₄.IsIndecomposable := by
+  simp only [F₄, reduceIsIndecomposable]
+
+theorem isIndecomposable_G₂ : G₂.IsIndecomposable := by
+  simp only [G₂, reduceIsIndecomposable]
 
 end Properties
 

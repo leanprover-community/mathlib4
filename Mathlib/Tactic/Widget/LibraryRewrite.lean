@@ -9,12 +9,11 @@ public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
-public import Mathlib.Lean.Meta.RefinedDiscrTree
+public meta import ProofWidgets.Component.FilterDetails
 public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import ProofWidgets.Component.FilterDetails
 
+meta import ProofWidgets.Component.OfRpcMethod
 import Mathlib.Tactic.NthRewrite
-import ProofWidgets.Component.OfRpcMethod
 
 /-!
 # Point & click library rewriting
@@ -377,7 +376,7 @@ def tacticSyntax (rw : Rewrite) (occ : Option Nat) (loc : Option Name) :
   let proof ← withOptions (pp.mvars.anonymous.set · false) (PrettyPrinter.delab rw.proof)
   mkRewrite occ rw.symm proof loc
 
-open Widget ProofWidgets Jsx Server
+open Widget ProofWidgets Server
 
 /-- The structure with all data necessary for rendering a rewrite suggestion -/
 structure RewriteInterface where
@@ -462,49 +461,51 @@ def pattern {α} (type : Expr) (symm : Bool) (k : Expr → MetaM α) : MetaM α 
 /-- Render the given rewrite results. -/
 def renderRewrites (e : Expr) (results : Array (Array RewriteInterface × Kind))
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) (showNames : Bool) :
-    MetaM Html := do
+    MetaM ProofWidgets.Html := do
   let htmls ← results.filterMapM (renderSection showNames)
   if htmls.isEmpty then
-    return <p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/> </p>
+    return jsx%{<p> No rewrites found for <InteractiveCode fmt={← ppExprTagged e}/></p>}
   else
     return .element "div" #[("style", json% {"marginLeft" : "4px"})] htmls
 where
   /-- Render one section of rewrite results. -/
-  renderSection (showNames : Bool) (sec : Array RewriteInterface × Kind) : MetaM (Option Html) := do
+  renderSection (showNames : Bool) (sec : Array RewriteInterface × Kind) :
+      MetaM (Option ProofWidgets.Html) := do
     let some head := sec.1[0]? | return none
     let suffix := match sec.2 with
       | .hypothesis => " (local hypotheses)"
       | .fromFile => " (lemmas from current file)"
       | .fromCache => ""
-    return <details «open»={true}>
+    let pat ← pattern head.lemmaType head.symm
+      (return jsx%{<InteractiveCode fmt={← ppExprTagged ·}/>})
+    return jsx%{<details open={true}>
       <summary className="mv2 pointer">
-        Pattern
-        {← pattern head.lemmaType head.symm (return <InteractiveCode fmt={← ppExprTagged ·}/>)}
-        {.text suffix}
+        Pattern {pat}{.text suffix}
       </summary>
       {renderSectionCore showNames sec.1}
-    </details>
+    </details>}
 
   /-- Render the list of rewrite results in one section. -/
-  renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : Html :=
+  renderSectionCore (showNames : Bool) (sec : Array RewriteInterface) : ProofWidgets.Html :=
     .element "ul" #[("style", json% { "padding-left" : "30px"})] <|
     sec.map fun rw =>
-      <li> { .element "p" #[] <|
+      jsx%{<li>{ .element "p" #[] <|
         let button :=
-          <span className="font-code"> {
+          jsx%{<span className="font-code">{
             Html.ofComponent MakeEditLink
               (.ofReplaceRange doc.meta range rw.tactic)
               #[.text rw.replacementString] }
-          </span>
+          </span>}
         let extraGoals := rw.extraGoals.flatMap fun extraGoal =>
-          #[<br/>, <strong className="goal-vdash">⊢ </strong>, <InteractiveCode fmt={extraGoal}/>]
+          #[jsx%{<br/>}, jsx%{<strong className="goal-vdash">⊢ </strong>},
+            jsx%{<InteractiveCode fmt={extraGoal}/>}]
         #[button] ++ extraGoals ++
-          if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
-      </li>
+          if showNames then #[jsx%{<br/>}, jsx%{<InteractiveCode fmt={rw.prettyLemma}/>}] else #[] }
+      </li>}
 
 /-- The rpc method of the `rw??` widget. -/
 @[server_rpc_method]
-def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
+def rpc (props : SelectInsertParams) : RequestM (RequestTask ProofWidgets.Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back? |
@@ -531,11 +532,11 @@ def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
       let (filtered, all) ← getRewriteInterfaces subExpr occ location loc.fvarId? props.replaceRange
       let filtered ← renderRewrites subExpr filtered props.replaceRange doc false
       let all      ← renderRewrites subExpr all      props.replaceRange doc true
-      return <FilterDetails
+      return jsx%{<FilterDetails
         summary={.text "Rewrite suggestions:"}
         all={all}
         filtered={filtered}
-        initiallyFiltered={true} />
+        initiallyFiltered={true} />}
 
 /-- The component called by the `rw??` tactic -/
 @[widget_module]
