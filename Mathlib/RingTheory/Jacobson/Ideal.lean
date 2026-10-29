@@ -425,7 +425,7 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 
 theorem RingHom.ker_le_jacobson_of_isLocalHom (g : R →+* S) [IsLocalHom g] :
     ker g ≤ Ring.jacobson R := fun x (hx : g x = 0) ↦ by
-  rw [← jacobson_bot, mem_jacobson_bot]
+  rw [Ring.mem_jacobson_iff]
   exact fun _ ↦ ‹IsLocalHom g›.map_nonunit _ (by simp [hx])
 
 theorem RingHom.isLocalHom_iff_ker_le_jacobson {g : R →+* S} (h : Function.Surjective g) :
