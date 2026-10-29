@@ -269,7 +269,7 @@ noncomputable def extension : Valuation (Completion K) Γ₀ where
           (v.continuous_extensionFun.comp continuous_snd)
       exact isClosed_eq c1 c2
     · intro x y
-      exact_mod_cast Valuation.map_mul _ _ _
+      exact mod_cast Valuation.map_mul _ _ _
   map_add_le_max' x y := by
     rw [le_max_iff]
     simp only [Function.comp_apply]
@@ -280,7 +280,7 @@ noncomputable def extension : Valuation (Completion K) Γ₀ where
       exact (isClosed_le (by fun_prop) <| cont.comp continuous_fst).union
           (isClosed_le (by fun_prop) <| cont.comp continuous_snd)
     · intro x y
-      exact_mod_cast le_max_iff.mp (v.restrict.map_add x y)
+      exact mod_cast le_max_iff.mp (v.restrict.map_add x y)
 
 private lemma extension_def (x : Completion K) : v.extension x =
     embedding (v.extensionFun x) := rfl
@@ -473,7 +473,7 @@ theorem coe_vlt_coe_iff {x y : K} :
   Iff.not coe_vle_coe_iff
 
 instance valuativeExtension : ValuativeExtension K (Completion K) where
-  vle_iff_vle _ _ := coe_vle_coe_iff
+  vle_iff_vle := coe_vle_coe_iff
 
 end UniformSpace.Completion
 

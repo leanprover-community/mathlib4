@@ -446,7 +446,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let some (decl, f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
-      let .data fData ← getFunctionData? f (← unfoldNamePred)
+      let .data fData ← getFunctionData? f (← getUnfoldPred)
         | return none
       unless (fData.getFnOrigin == funOrigin) do return none
 
@@ -679,7 +679,7 @@ mutual
     if f.isLet then
       return ← funProp (← mapLetTelescope f fun _ b => pure <| e.setArg funPropDecl.funArgId b)
 
-    match ← getFunctionData? f (← unfoldNamePred) with
+    match ← getFunctionData? f (← getUnfoldPred) with
     | .letE f =>
       trace[Debug.Meta.Tactic.fun_prop] "let case on {← ppExpr f}"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f

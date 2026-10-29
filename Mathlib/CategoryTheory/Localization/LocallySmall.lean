@@ -48,7 +48,8 @@ set_option warn.classDefReducibility false in
 a `HasLocalization.{w} W` instance. This should be used only in the
 unlikely situation where the types of objects of `C` and `D` are in
 different universes. Otherwise, use `hasLocalizationOfLocallySmall`. -/
-noncomputable irreducible_def hasLocalizationOfLocallySmall'
+@[no_expose]
+noncomputable def hasLocalizationOfLocallySmall'
     {D : Type u₂} [Category.{v₂} D] [LocallySmall.{w} D]
     (L : C ⥤ D) [L.IsLocalization W] :
     HasLocalization.{w} W := by
