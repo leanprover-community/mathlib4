@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Star.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugation-negation operator
 
