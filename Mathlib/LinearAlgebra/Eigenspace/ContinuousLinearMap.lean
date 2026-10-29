@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eigenspaces of continuous linear maps
 

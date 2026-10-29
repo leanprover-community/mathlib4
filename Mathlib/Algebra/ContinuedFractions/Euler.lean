@@ -266,7 +266,7 @@ theorem convs_toEuler_of_forall_le (hB : ∀ m ≤ n, g.dens m ≠ 0) :
   conv_lhs => simp [convs]
   induction m using Nat.strong_induction_on with | ind m ih
   cases m with | zero => simp [toEuler, euler_h] | succ m
-  replace ih := fun m hm => ih m hm <| by omega
+  replace ih := fun m hm => ih m hm <| by lia
   rw [← sub_left_inj (a := g.convs m), ← ih m m.lt_add_one]
   rcases Decidable.em <| TerminatedAt g m with terminatedAt_m | not_terminatedAt_m
   · rw [nums_stable_of_terminated m.le_succ <| terminatedAt_toEuler.mpr terminatedAt_m,
