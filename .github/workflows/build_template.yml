@@ -27,6 +27,11 @@ on:
         type: string
         required: false
         default: ''
+      always_large:
+        # Sends `build` to `large_runs_on` without a prediction; `route` does not run.
+        type: boolean
+        required: false
+        default: false
       mathlib_ci_ref:
         type: string
         required: false
@@ -57,7 +62,7 @@ env:
 jobs:
   route:
     name: Route
-    if: ${{ inputs.large_runs_on != '' }}
+    if: ${{ inputs.large_runs_on != '' && !inputs.always_large }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     # A failure sets no pool, and `build` runs on `runs_on`.
@@ -98,10 +103,11 @@ jobs:
   build:
     name: Build
     needs: [route]
-    # `route` runs only when `large_runs_on` is set. A skipped or failed `route` sets
-    # no pool, and `build` runs on `runs_on`.
+    # `always_large` picks `large_runs_on`. Otherwise `route` picks the pool when
+    # `large_runs_on` is set; a skipped or failed `route` sets no pool, and `build`
+    # runs on `runs_on`.
     if: ${{ !cancelled() }}
-    runs-on: ${{ needs.route.outputs.pool || inputs.runs_on }}
+    runs-on: ${{ (inputs.always_large && inputs.large_runs_on) || needs.route.outputs.pool || inputs.runs_on }}
     # This job builds (potentially fork) PR code, so it must not inherit any
     # write-capable token. `actions: read` lets get-tools and get-cache download
     # artifacts from master's runs.
@@ -135,7 +141,7 @@ jobs:
           RUN_ID: ${{ github.run_id }}
           CONCURRENCY_GROUP: ${{ inputs.concurrency_group }}
           ROUTE_POOL: ${{ needs.route.outputs.pool }}
-          ROUTE_LARGE: ${{ needs.route.outputs.large }}
+          ROUTE_LARGE: ${{ inputs.always_large || needs.route.outputs.large }}
           ROUTE_MODULES: ${{ needs.route.outputs.modules }}
         shell: bash # there is no script body, so this is safe to "run" outside landrun.
         run: |
