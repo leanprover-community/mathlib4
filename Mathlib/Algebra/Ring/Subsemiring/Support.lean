@@ -54,20 +54,7 @@ def supportIdeal (hS : S.IsSpanning) : Ideal R where
 @[simp] theorem supportIdeal_toAddSubgroup {S : Subsemiring R} (hS : S.IsSpanning) :
     (S.supportIdeal hS).toAddSubgroup = S.support := rfl
 
-variable {R' : Type*} [Ring R'] {f : R →+* R'} {S' : Subsemiring R'}
-
-variable (f) in
-theorem isSpanning_comap (hS' : S'.IsSpanning) : (S'.comap f).IsSpanning :=
-  hS'.comap f.toAddMonoidHom
-
-theorem isSpanning_map (hS : S.IsSpanning) (hf : Function.Surjective f) :
-    (S.map f).IsSpanning :=
-  hS.map (f := f.toAddMonoidHom) hf
-
 end Subsemiring
-
-theorem AddSubmonoid.IsPointed.neg_one_notMem [Nontrivial R] (hS : S.IsPointed) :
-    -1 ∉ S := by grind [Subsemiring.isPointed_def, one_mem, zero_ne_one']
 
 end Ring
 
