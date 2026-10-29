@@ -223,32 +223,6 @@ theorem separableSpace_image_of_continuousWithinAt_Ioi [SecondCountableTopology 
   · exact ((continuousWithinAt_inter_Ioi_iff_Ici.1 (hf x hxs)).mono
       (inter_subset_inter_left _ hds)).mem_closure_image (hd x hxs)
 
-/-- In a second-countable space with the order topology and a top element, every point `x` is the
-limit of `w n x` for a sequence `w` of monotone functions with finite range satisfying `x ≤ w n x`.
--/
-theorem exists_seq_monotone_finite_range_le_tendsto [SecondCountableTopology α] [OrderTop α] :
-    ∃ w : ℕ → α → α, (∀ n, Monotone (w n)) ∧ (∀ n, (range (w n)).Finite) ∧ (∀ n x, x ≤ w n x) ∧
-      ∀ x, Tendsto (w · x) atTop (𝓝 x) := by
-  classical
-  obtain ⟨S, -, hSc, hS⟩ := exists_countable_subset_mem_closure_inter_Ici (univ : Set α)
-  obtain ⟨e, he⟩ := countable_iff_exists_subset_range.1 hSc
-  -- `w n x` is the smallest of the points `e 0, …, e (n - 1), ⊤` lying above `x`
-  have hw_le (n : ℕ) (x : α) : x ≤ {k ∈ Finset.range n | x ≤ e k}.inf e :=
-    Finset.le_inf fun k hk ↦ (Finset.mem_filter.1 hk).2
-  refine ⟨fun n x ↦ {k ∈ Finset.range n | x ≤ e k}.inf e, fun n x y hxy ↦
-    Finset.inf_mono (Finset.monotone_filter_right _ fun k _ ↦ hxy.trans),
-    fun n ↦ ((Finset.range n).finite_toSet.image e |>.insert ⊤).subset ?_, hw_le, fun x ↦ ?_⟩
-  · rintro _ ⟨x, rfl⟩
-    rcases {k ∈ Finset.range n | x ≤ e k}.eq_empty_or_nonempty with hF | hF
-    · simp [hF]
-    · obtain ⟨k, hk, hk'⟩ := Finset.exists_mem_eq_inf _ hF e
-      exact Or.inr ⟨k, (Finset.mem_filter.1 hk).1, hk'.symm⟩
-  · refine tendsto_order.2 ⟨fun a ha ↦ .of_forall fun n ↦ ha.trans_le (hw_le n x), fun b hb ↦ ?_⟩
-    obtain ⟨_, hdb, hdS, hxd⟩ := mem_closure_iff.1 (hS x (mem_univ x)) _ isOpen_Iio hb
-    obtain ⟨k, rfl⟩ := he hdS
-    exact eventually_atTop.2 ⟨k + 1, fun n hn ↦
-      (Finset.inf_le (Finset.mem_filter.2 ⟨Finset.mem_range.2 hn, hxd⟩)).trans_lt hdb⟩
-
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
 @[to_dual /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval

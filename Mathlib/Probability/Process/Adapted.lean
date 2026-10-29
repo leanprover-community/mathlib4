@@ -34,6 +34,8 @@ of `Measurable`:
   strongly progressive.
 * `StronglyAdapted.isStronglyProgressive_of_isRightContinuous`: a right-continuous strongly
   adapted process is strongly progressive.
+* `StronglyAdapted.isStronglyProgressive_of_isLeftContinuous`: a left-continuous strongly
+  adapted process is strongly progressive.
 
 ## Tags
 
@@ -385,34 +387,38 @@ theorem StronglyAdapted.isStronglyProgressive_of_isRightContinuous [TopologicalS
     (hu_cont : ∀ ω, IsRightContinuous (u · ω)) :
     IsStronglyProgressive f u := by
   intro t
-  -- approximate each `s ∈ Iic t` from above by monotone finitely-valued functions `w n s → s`
-  obtain ⟨w, hw_mono, hw_fin, hw_le, hw_tendsto⟩ :=
-    exists_seq_monotone_finite_range_le_tendsto (α := Set.Iic t)
-  refine stronglyMeasurable_of_tendsto atTop (f := fun n (p : Set.Iic t × Ω) => u (w n p.1) p.2)
-    (fun n => ?_) (tendsto_pi_nhds.2 fun p => ?_)
-  · -- `w n` is a simple function: it has finite range and its fibers are order-connected. (We only
-    -- assume `OpensMeasurableSpace ι`, so `Monotone.measurable` does not apply: its codomain must
-    -- be a `BorelSpace`.) Hence the finitely many `f t`-strongly measurable functions `u (w n s)`
-    -- assemble into the strongly measurable `(s, ω) ↦ u (w n s) ω`
-    let _ : MeasurableSpace Ω := f t
-    have hwm : Measurable (w n) :=
-      (SimpleFunc.mk (w n) (fun c => (Set.ordConnected_singleton.preimage_mono
-        (hw_mono n)).measurableSet) (hw_fin n)).measurable
-    have := (hw_fin n).to_subtype
-    have hg : Measurable fun p : Set.Iic t × Ω => (Set.rangeFactorization (w n) p.1, p.2) :=
-      (hwm.comp measurable_fst).subtype_mk.prodMk measurable_snd
-    exact (stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable
-      (u := fun (r : Set.range (w n)) ω => u r ω) (fun _ => continuous_of_discreteTopology)
-      fun r => (h r).mono (f.mono r.1.2)).comp_measurable hg
-  · obtain ⟨s, ω⟩ := p
-    -- `w n s → s` in `ι`, and from above since `s ≤ w n s`
-    have hw : Tendsto (fun n => (w n s : ι)) atTop (𝓝[≥] s) :=
-      tendsto_nhdsWithin_iff.2
-        ⟨(continuous_subtype_val.tendsto s).comp (hw_tendsto s), .of_forall fun n => hw_le n s⟩
-    -- right-continuity of `u · ω` at `s`, in the form of continuity within `Ici s`
-    have hu : Tendsto (fun i => u i ω) (𝓝[≥] s) (𝓝 (u s ω)) :=
-      (continuousWithinAt_Ioi_iff_Ici.1 (hu_cont ω s)).tendsto
-    exact hu.comp hw
+  obtain ⟨w, -, hw_le, hw_tendsto⟩ :=
+    SimpleFunc.exists_seq_monotone_le_tendsto (α := Set.Iic t)
+  refine stronglyMeasurable_of_tendsto atTop (f := fun n (p : Set.Iic t × Ω) ↦ u (w n p.1) p.2)
+    (fun n ↦ ?_) (tendsto_pi_nhds.2 fun p ↦ ?_)
+  · let _ : MeasurableSpace Ω := f t
+    exact (stronglyMeasurable_uncurry_of_countable (ι := (w n).range)
+      fun r ↦ (h r).mono (f.mono r.1.2)).comp_measurable
+        ((((w n).measurable.comp measurable_fst).subtype_mk
+          (h := fun p ↦ (w n).mem_range_self p.1)).prodMk measurable_snd)
+  · refine (continuousWithinAt_Ioi_iff_Ici.1 (hu_cont p.2 p.1)).tendsto.comp ?_
+    exact tendsto_nhdsWithin_iff.2 ⟨(continuous_subtype_val.tendsto p.1).comp (hw_tendsto p.1),
+      .of_forall fun n => hw_le n p.1⟩
+
+/-- A left-continuous and strongly adapted process is strongly progressive. -/
+theorem StronglyAdapted.isStronglyProgressive_of_isLeftContinuous [TopologicalSpace ι]
+    [OrderTopology ι] [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
+    [PseudoMetrizableSpace β] (h : StronglyAdapted f u)
+    (hu_cont : ∀ ω, IsLeftContinuous (u · ω)) : IsStronglyProgressive f u := by
+  intro t
+  obtain ⟨w, hw⟩ := SimpleFunc.exists_seq_tendsto_nhdsLE (α := Set.Iic t)
+  refine stronglyMeasurable_of_tendsto atTop (f := fun n (p : Set.Iic t × Ω) ↦ u (w n p.1) p.2)
+    (fun n ↦ ?_) (tendsto_pi_nhds.2 fun p ↦ ?_)
+  · let _ : MeasurableSpace Ω := f t
+    exact (stronglyMeasurable_uncurry_of_countable (ι := (w n).range)
+      fun r ↦ (h r).mono (f.mono r.1.2)).comp_measurable
+        ((((w n).measurable.comp measurable_fst).subtype_mk
+          (h := fun p ↦ (w n).mem_range_self p.1)).prodMk measurable_snd)
+  · refine (continuousWithinAt_Iio_iff_Iic.1 (hu_cont p.2 p.1)).tendsto.comp ?_
+    refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
+    · exact (continuous_subtype_val.tendsto p.1).comp
+        ((hw p.1).mono_right nhdsWithin_le_nhds)
+    · exact (hw p.1).eventually self_mem_nhdsWithin
 
 end LinearOrder
 
