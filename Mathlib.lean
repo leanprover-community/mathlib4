@@ -1153,6 +1153,7 @@ public import Mathlib.Algebra.Order.Round
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Order.Star.Conjneg
 public import Mathlib.Algebra.Order.Star.Int
+public import Mathlib.Algebra.Order.Star.Orthogonal
 public import Mathlib.Algebra.Order.Star.Pi
 public import Mathlib.Algebra.Order.Star.Prod
 public import Mathlib.Algebra.Order.Star.Rat
