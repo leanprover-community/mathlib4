@@ -9,8 +9,6 @@ public meta import Mathlib.Tactic.Hessenberg.Charpoly
 public import Mathlib.Tactic.Hessenberg.Charpoly  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Hessenberg.Similarity
 
-meta import Mathlib.Tactic.Hessenberg.Similarity
-
 /-!
 # Coefficient lists of characteristic polynomials from Hessenberg certificates
 
