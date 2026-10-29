@@ -54,9 +54,9 @@ theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
   · intro p a coeff_eq_zero a_ne_zero _ _ hp
     refine ⟨0, ?_, coeff_zero_mem_comap_of_root_mem hr hp⟩
     simp [coeff_eq_zero, a_ne_zero]
-  · intro p p_nonzero ih _ hp
+  · intro p p_ne_zero ih _ hp
     rw [eval₂_mul, eval₂_X] at hp
-    obtain ⟨i, hi, mem⟩ := ih p_nonzero (r_non_zero_divisor hp)
+    obtain ⟨i, hi, mem⟩ := ih p_ne_zero (r_non_zero_divisor hp)
     refine ⟨i + 1, ?_, ?_⟩
     · simp [hi]
     · simpa [hi] using mem
@@ -101,7 +101,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
 that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
 `P ≠ 0` and `P ∩ R = (0)`.
 -/
-theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :
+theorem exists_ne_zero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :
     ∃ p : R[X], p ∈ P ∧ Polynomial.map (Quotient.mk (P.comap (C : R →+* R[X]))) p ≠ 0 := by
   obtain ⟨m, hm⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr Pb)
   refine ⟨m, Submodule.coe_mem m, fun pp0 => hm (Submodule.coe_eq_zero.mp ?_)⟩
@@ -112,6 +112,9 @@ theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀
   refine map_injective _ ((RingHom.injective_iff_ker_eq_bot (Ideal.Quotient.mk (P.comap C))).mpr ?_)
   rw [mk_ker]
   exact (Submodule.eq_bot_iff _).mpr fun x hx => hP x (mem_comap.mp hx)
+
+@[deprecated (since := "2026-10-13")]
+alias exists_nonzero_mem_of_ne_bot := exists_ne_zero_mem_of_ne_bot
 
 end
 
