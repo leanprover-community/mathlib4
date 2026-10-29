@@ -89,6 +89,32 @@ def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
 This is a Qq version of `Lean.mkIntLit`. -/
 def mkIntLitQ (n : Int) : Q(Int) := mkIntLit n
 
+/-- Build the numeral of the integer `i` in `α`: `mkNumeral` on the absolute value, negated if
+`i` is negative. -/
+def mkIntNumeralQ {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
+  let n ← mkNumeral α i.natAbs
+  have n : Q($α) := n
+  if i < 0 then
+    let _ ← synthInstanceQ q(Neg $α)
+    return q(-$n)
+  else
+    return n
+
+/-- Build the numeral of the rational `r` in `α`: the integer numeral of `r.num` if `r` is an
+integer, and otherwise `p / q` on the numerals of `|r.num|` and `r.den`, negated if `r` is
+negative, which is the form in which `norm_num` displays rationals. -/
+def mkRatNumeralQ {u : Level} (α : Q(Type u)) (r : Rat) : MetaM Q($α) := do
+  if r.den == 1 then mkIntNumeralQ α r.num
+  else
+    have p : Q($α) := ← mkNumeral α r.num.natAbs
+    have q : Q($α) := ← mkNumeral α r.den
+    let _ ← synthInstanceQ q(Div $α)
+    if r.num < 0 then
+      let _ ← synthInstanceQ q(Neg $α)
+      return q(-($p / $q))
+    else
+      return q($p / $q)
+
 /-- Build the numeral `i : Fin n`. -/
 def mkFinLitQ (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
   if h : i < n then return toExpr (⟨i, h⟩ : Fin n)

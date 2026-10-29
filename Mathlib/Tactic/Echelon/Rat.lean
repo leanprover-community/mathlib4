@@ -35,17 +35,6 @@ def evalRatEntry (charZero : Bool) (e : Expr) : MetaM Rat := do
       return v
   throwError "the following entry cannot be simplified to a numeral{indentExpr e}"
 
-/-- Build the numeral of an integer in `α`: `mkNumeral` on the absolute value, negated if
-`i` is negative. -/
-def mkIntNumeral {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
-  let n ← mkNumeral α i.natAbs
-  have n : Q($α) := n
-  if i < 0 then
-    let _ ← synthInstanceQ q(Neg $α)
-    return q(-$n)
-  else
-    return n
-
 /-- Check whether the kernel can reduce `decide ((2 : α) ≠ 0)` to a boolean result (would be `false`
 in characteristic 2).
 Synthesizing the `Decidable` instance alone does not settle this, since types such as `ℝ`
@@ -53,7 +42,7 @@ have classical instances defined for them.
 This check tests 2 against 0 (instead of 1), because some rings might have decidable equality
 facts between 0 and 1, but not for general entries against 0. -/
 def checkDecideEq {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) : MetaM Bool := do
-  let two : Q($α) ← mkIntNumeral α 2
+  let two : Q($α) ← mkIntNumeralQ α 2
   -- `Decidable` of the single disequality rather than `DecidableEq`: a ring where equality
   -- is only decidable against zero should pass.
   let some _inst ← synthInstanceQ? q(Decidable ($two ≠ 0)) | return false
@@ -100,7 +89,7 @@ def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
       let v ← evalRatEntry (p == 0) e
       return (v.num, if v.den == 1 then none else some (v.den : Int))
     commonMultiple := fun a b => (Int.lcm a b : Int)
-    mkEntry := mkIntNumeral α
+    mkEntry := mkIntNumeralQ α
     entryCertifier? }
 
 end Mathlib.Tactic.Echelon
