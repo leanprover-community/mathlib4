@@ -114,8 +114,8 @@ lemma Walk.IsCircuit.isCycle_of_length_le_egirth {a} {w : G.Walk a a} (hw : w.Is
 
 lemma Walk.IsTrail.isCycle_of_length_eq_egirth {a} {w : G.Walk a a} (hw : w.IsTrail)
     (hwg : w.length = G.egirth) : w.IsCycle :=
-  have hw' : w.IsCircuit := ⟨hw, eq_nil_iff_nil.not.mpr (not_nil_of_length_eq_egirth hwg)⟩
-  hw'.isCycle_of_length_le_egirth hwg.le
+  have : 3 ≤ w.length := by simpa [← hwg] using G.three_le_egirth
+  IsCircuit.isCycle_of_length_le_egirth ⟨hw, by grind⟩ hwg.le
 
 @[gcongr only]
 lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
