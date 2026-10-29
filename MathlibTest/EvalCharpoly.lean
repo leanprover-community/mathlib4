@@ -179,3 +179,14 @@ trace: [Tactic.evalCharpoly] expected an `Algebra ℝ ℚ` instance
 -/
 #guard_msgs in
 example : Matrix.charpoly (R := ℝ) !![1, 2; 3, 4] = X ^ 2 - 5 * X - 2 := by eval_charpoly
+
+-- TODO: support coefficient rings that do not embed in `ℚ`, such as `ZMod 5`
+/--
+error: `eval_charpoly` made no progress.
+Additional information may be available using `set_option trace.Tactic.evalCharpoly true`.
+---
+trace: [Tactic.evalCharpoly] expected an `Algebra (ZMod 5) ℚ` instance
+      !![1, 2; 3, 4]
+-/
+#guard_msgs in
+example : Matrix.charpoly (R := ZMod 5) !![1, 2; 3, 4] = X ^ 2 + 3 := by eval_charpoly
