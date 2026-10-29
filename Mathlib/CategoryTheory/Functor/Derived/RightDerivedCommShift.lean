@@ -114,7 +114,6 @@ noncomputable def commShift : RF.CommShift A where
       ← NatTrans.naturality]
     dsimp
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma comp_map_commShiftIso_hom_app (a : A) (X : C) :
     letI := commShift RF α W A
@@ -124,7 +123,6 @@ lemma comp_map_commShiftIso_hom_app (a : A) (X : C) :
   simpa using! (rightDerivedNatTrans_app _ _ (precomposeShiftNatTrans RF α a)
       (postcomposeShiftNatTrans RF α _) W (F.commShiftIso _).hom X)
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] commShiftIso_comp_hom_app in
 instance natTrans_commShift :
     letI := commShift RF α W A
