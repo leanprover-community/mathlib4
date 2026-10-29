@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Module.FunLikeSMul
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -36,26 +37,39 @@ instance smul [Group G] [MulAction G β] : SMul G (α ↪ β) :=
   ⟨fun g f => f.trans (MulAction.toPerm g).toEmbedding⟩
 
 @[to_additive]
+instance [Group G] [MulAction G β] : IsSMulApply G (α ↪ β) where
+
+@[to_additive]
 theorem smul_def [Group G] [MulAction G β] (g : G) (f : α ↪ β) :
     g • f = f.trans (MulAction.toPerm g).toEmbedding :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) : (g • f) a = g • f a :=
+@[deprecated vadd_apply +typeChanged (since := "2026-10-29")]
+protected theorem vadd_apply [AddGroup G] [AddAction G β] (g : G) (f : α ↪ β) (a : α) :
+    (g +ᵥ f) a = g +ᵥ f a :=
   rfl
 
-@[to_additive]
+@[deprecated smul_apply +typeChanged (since := "2026-10-29")]
+protected theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) :
+    (g • f) a = g • f a :=
+  rfl
+
+@[deprecated FunLike.coe_vadd +typeChanged (since := "2026-10-29")]
+theorem coe_vadd [AddGroup G] [AddAction G β] (g : G) (f : α ↪ β) : ⇑(g +ᵥ f) = g +ᵥ ⇑f :=
+  rfl
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-29")]
 theorem coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • f) = g • ⇑f :=
   rfl
 
 instance [Group G] [Group G'] [SMul G G'] [MulAction G β] [MulAction G' β]
     [IsScalarTower G G' β] : IsScalarTower G G' (α ↪ β) :=
-  ⟨fun x y z => Function.Embedding.ext fun i => smul_assoc x y (z i)⟩
+  FunLike.isScalarTower
 
 @[to_additive]
 instance [Group G] [Group G'] [MulAction G β] [MulAction G' β] [SMulCommClass G G' β] :
     SMulCommClass G G' (α ↪ β) :=
-  ⟨fun x y z => Function.Embedding.ext fun i => smul_comm x y (z i)⟩
+  FunLike.smulCommClass
 
 instance [Group G] [MulAction G β] [MulAction Gᵐᵒᵖ β] [IsCentralScalar G β] :
     IsCentralScalar G (α ↪ β) :=
