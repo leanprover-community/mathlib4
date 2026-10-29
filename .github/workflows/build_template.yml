@@ -298,10 +298,15 @@ jobs:
           rm -rf cache-staging
           mkdir -p cache-staging
           # The CPUs and memory that the stage step below packs with, and the pressure counters
-          # before it starts.
+          # before it starts. `/proc/pressure` holds the counters of the whole host, and the
+          # cgroup files hold the counters of the cgroup that runs this step. Each read is
+          # best-effort.
           echo "nproc: $(nproc)"
           free -m || true
-          cat /sys/fs/cgroup/cpu.pressure /sys/fs/cgroup/io.pressure 2>/dev/null || true
+          cg="/sys/fs/cgroup$(sed -n 's/^0:://p' /proc/self/cgroup 2>/dev/null || true)"
+          for f in /proc/pressure/{cpu,io,memory} "${cg%/}"/{cpu,io,memory}.pressure; do
+            sed "s|^|${f}: |" "${f}" 2>/dev/null || true
+          done
 
       - name: stage Mathlib cache files
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
@@ -330,7 +335,12 @@ jobs:
       - name: report the pressure counters after the stage step
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
         shell: bash
-        run: cat /sys/fs/cgroup/cpu.pressure /sys/fs/cgroup/io.pressure 2>/dev/null || true
+        # The same best-effort reads as in `prepare staging directory`.
+        run: |
+          cg="/sys/fs/cgroup$(sed -n 's/^0:://p' /proc/self/cgroup 2>/dev/null || true)"
+          for f in /proc/pressure/{cpu,io,memory} "${cg%/}"/{cpu,io,memory}.pressure; do
+            sed "s|^|${f}: |" "${f}" 2>/dev/null || true
+          done
 
       - name: stage Archive cache files
         if: ${{ steps.archive.outcome == 'success' }}
