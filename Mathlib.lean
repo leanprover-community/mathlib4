@@ -238,6 +238,7 @@ public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Algebra.Category.Ring.Epi
 public import Mathlib.Algebra.Category.Ring.EqualizerPushout
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Algebra.Category.Ring.FilteredColimitsLocal
 public import Mathlib.Algebra.Category.Ring.FinitePresentation
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
@@ -268,6 +269,7 @@ public import Mathlib.Algebra.CharP.Pi
 public import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.Algebra.CharP.Reduced
 public import Mathlib.Algebra.CharP.Subring
+public import Mathlib.Algebra.CharP.Synonym
 public import Mathlib.Algebra.CharP.Two
 public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.Algebra.CharZero.Defs
@@ -832,6 +834,7 @@ public import Mathlib.Algebra.Module.LocalizedModule.Int
 public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.Algebra.Module.MinimalAxioms
+public import Mathlib.Algebra.Module.MinimalGenerators
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Module.PID
@@ -1031,6 +1034,7 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+public import Mathlib.Algebra.Order.GroupWithZero.Associated
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Bounds
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
@@ -1210,6 +1214,7 @@ public import Mathlib.Algebra.Polynomial.Homogenize
 public import Mathlib.Algebra.Polynomial.Identities
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.Algebra.Polynomial.Laurent.Roots
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.Algebra.Polynomial.Mirror
 public import Mathlib.Algebra.Polynomial.Module.AEval
@@ -1242,8 +1247,10 @@ public import Mathlib.Algebra.QuadraticAlgebra.Defs
 public import Mathlib.Algebra.QuadraticAlgebra.Discr
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 public import Mathlib.Algebra.QuadraticAlgebra.Int
+public import Mathlib.Algebra.QuadraticAlgebra.Integral
 public import Mathlib.Algebra.QuadraticAlgebra.IsQuadraticExtension
 public import Mathlib.Algebra.QuadraticAlgebra.NormDeterminant
+public import Mathlib.Algebra.QuadraticAlgebra.Rat
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Algebra.Quandle
 public import Mathlib.Algebra.Quaternion
@@ -1332,6 +1339,7 @@ public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 public import Mathlib.Algebra.Ring.Subsemiring.Order
 public import Mathlib.Algebra.Ring.Subsemiring.Pointwise
+public import Mathlib.Algebra.Ring.Subsemiring.Support
 public import Mathlib.Algebra.Ring.SumsOfSquares
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Ring.TransferInstance
@@ -2062,6 +2070,7 @@ public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.FourierMultiplier
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+public import Mathlib.Analysis.Distribution.SchwartzSpace.CompactSupport
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.Analysis.Distribution.Sobolev
@@ -2923,6 +2932,7 @@ public import Mathlib.CategoryTheory.Idempotents.Karoubi
 public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 public import Mathlib.CategoryTheory.InducedCategory
+public import Mathlib.CategoryTheory.Inserter.Basic
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.IsoCat
@@ -4499,6 +4509,7 @@ public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Data.Rat.NatSqrt.Defs
 public import Mathlib.Data.Rat.NatSqrt.Real
 public import Mathlib.Data.Rat.Sqrt
+public import Mathlib.Data.Rat.Squarefree
 public import Mathlib.Data.Rat.Star
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
@@ -4833,6 +4844,7 @@ public import Mathlib.Geometry.Euclidean.Volume.Basic
 public import Mathlib.Geometry.Euclidean.Volume.Def
 public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
+public import Mathlib.Geometry.Euclidean.Volume.Triangle
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
 public import Mathlib.Geometry.Group.WordMetric
@@ -5227,6 +5239,7 @@ public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Dimension.Basic
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.LinearAlgebra.Dimension.Domain
 public import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.Dimension.Finrank
@@ -7696,6 +7709,7 @@ public import Mathlib.Tactic.Inclusion.Extension.Core.Init
 public import Mathlib.Tactic.Inclusion.Extension.Interval
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
@@ -7759,10 +7773,12 @@ public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UpstreamableDecl
 public import Mathlib.Tactic.Linter.ValidatePRTitle
 public import Mathlib.Tactic.Linter.Whitespace
+public import Mathlib.Tactic.Matrix.Cert
 public import Mathlib.Tactic.Matrix.ListMatrix
 public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.Parsing
+public import Mathlib.Tactic.Matrix.Swaps
 public import Mathlib.Tactic.Measurability
 public import Mathlib.Tactic.Measurability.Init
 public import Mathlib.Tactic.MinImports
@@ -8072,6 +8088,7 @@ public import Mathlib.Topology.Algebra.Order.Support
 public import Mathlib.Topology.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Algebra.PontryaginDual
+public import Mathlib.Topology.Algebra.Projectivization
 public import Mathlib.Topology.Algebra.ProperAction.AddTorsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
@@ -8218,6 +8235,7 @@ public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Connected.Basic
 public import Mathlib.Topology.Connected.CardComponents
 public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Topology.Connected.HausdorffMeasure
 public import Mathlib.Topology.Connected.LocPathConnected
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Connected.LocallyPathConnected
@@ -8495,6 +8513,7 @@ public import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.Order.Rolle
 public import Mathlib.Topology.Order.ScottTopology
+public import Mathlib.Topology.Order.Separable
 public import Mathlib.Topology.Order.SuccPred
 public import Mathlib.Topology.Order.T5
 public import Mathlib.Topology.Order.UpperLowerSetTopology
@@ -8653,5 +8672,6 @@ public import Mathlib.Util.SynthesizeUsing
 public import Mathlib.Util.Tactic
 public import Mathlib.Util.TermReduce
 public import Mathlib.Util.TransImports
+public import Mathlib.Util.VersoRoles
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
