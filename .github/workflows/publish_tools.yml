@@ -114,10 +114,10 @@ jobs:
           #                                     `mk_all`; the build job runs the prebuilt
           #                                     binary only when the branch has the same.
           #   - .lake/packages/batteries/.lake/build/bin/runLinter: the lint driver.
-          #   - lakefile.lean, lake-manifest.json: the lint configuration and the Batteries
-          #                                     revision of `runLinter`; the lint step runs
-          #                                     the prebuilt driver only when the branch has
-          #                                     the same.
+          #   - lakefile.lean, lake-manifest.json: the Lake configuration and the Batteries
+          #                                     and Cli revisions of `runLinter` and `mk_all`;
+          #                                     the build job runs a prebuilt binary only when
+          #                                     the branch has the same.
           #   - lean-toolchain:                 the toolchain this binary was built with;
           #                                     the consumer installs it (via elan) so the
           #                                     binary has a matching Lean to run against,
