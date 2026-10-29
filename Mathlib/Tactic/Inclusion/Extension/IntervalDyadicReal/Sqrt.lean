@@ -14,12 +14,15 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 This file implements sqrt extension for the tactic `dyadic_interval` using `Nat.sqrt`
 -/
 
-@[expose] public section
+public section
 
 namespace Inclusion
 
+namespace IntervalDyadicReal
+
 /-- Square root of an interval. -/
-def Interval.sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
+@[expose]
+def sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
   lb := match I.lb with
     | ⊥ => 0
     | WithBot.some lb =>
@@ -37,10 +40,10 @@ private theorem toRat_shiftLeft_two_mul (d : Dyadic) (n : ℕ) :
     (d <<< (2 * n)).toRat = d.toRat * 4 ^ n := by
   norm_num [Dyadic.toRat_shiftLeft_nat, pow_mul]
 
-theorem Interval.sqrt_mem
+private theorem sqrt_mem_aux
     (f : Dyadic ↪o ℝ) (map_zero : f 0 = 0) (map_sq : ∀ x, f (x ^ 2) = f x ^ 2)
     {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I.map f) (prec : ℕ) :
-    √x ∈ (I.sqrt prec).map f := by
+    √x ∈ (sqrt I prec).map f := by
   have H (n : ℤ) (q : Dyadic) :
       (f q ≤ f (.ofIntWithPrec n prec) ^ 2 ↔ (q <<< (2 * prec)).toRat ≤ n ^ 2) ∧
       (f (.ofIntWithPrec n prec) ^ 2 ≤ f q ↔ n ^ 2 ≤ (q <<< (2 * prec)).toRat) := by
@@ -51,9 +54,9 @@ theorem Interval.sqrt_mem
     rw [Nat.ceil_le] at h
     refine Real.sqrt_le_iff.mpr ⟨map_zero ▸ f.monotone ?_, hq.trans ((H n q).left.mpr (mod_cast h))⟩
     simp [← Dyadic.toRat_le_toRat_iff, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow, Dyadic.toRat_zero]
-  obtain ⟨hl, hu⟩ := (mem_map_iff f).mp hx
-  refine (mem_map_iff f).mpr ⟨fun a ha => ?_, fun a ha => ?_⟩
-  · rcases I with ⟨_ | lb, ub⟩ <;> simp only [Interval.sqrt] at ha
+  obtain ⟨hl, hu⟩ := (Interval.mem_map_iff f).mp hx
+  refine (Interval.mem_map_iff f).mpr ⟨fun a ha => ?_, fun a ha => ?_⟩
+  · rcases I with ⟨_ | lb, ub⟩ <;> simp only [sqrt] at ha
     · simp [map_zero, ← WithBot.coe_eq_coe.mp ha]
     · split_ifs at ha with h0
       · cases ha
@@ -62,15 +65,17 @@ theorem Interval.sqrt_mem
         rw [toRat_shiftLeft_two_mul]
         exact mul_nonneg (Dyadic.toRat_le_toRat_iff.mpr h0) (by simp)
       · simp [map_zero, ← WithBot.coe_eq_coe.mp ha]
-  · rcases I with ⟨lb, _ | ub⟩ <;> simp only [Interval.sqrt] at ha
+  · rcases I with ⟨lb, _ | ub⟩ <;> simp only [sqrt] at ha
     · cases ha
     · split_ifs at ha with h1 <;> cases ha
       · exact hub _ ub (hu ub rfl) h1
       · exact_mod_cast hub _ ub (hu ub rfl) (Nat.lt_succ_sqrt' _).le
 
 @[inclusion_op interval_dyadic_real]
-theorem sqrt_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : √x ∈ I.sqrt prec :=
-  Interval.sqrt_mem Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
+theorem sqrt_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : √x ∈ sqrt I prec :=
+  sqrt_mem_aux Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
     (Dyadic.toReal_pow (n := 2)) hx prec
+
+end IntervalDyadicReal
 
 end Inclusion
