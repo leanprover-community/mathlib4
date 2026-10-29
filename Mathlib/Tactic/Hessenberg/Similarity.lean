@@ -104,7 +104,7 @@ def mkHessenbergSimilarity {u : Level} {S : Q(Type u)} (f : Q($S → ℚ)) (n : 
 
   -- The similarity `M.reindex σ σ * L = L * H`
   have hmul : Q((Matrix.reindex $σ $σ $M) * $Lm = $Lm * $Hm) :=
-    q($hAσ ▸ ($hAL).trans ($hLH).symm)
+    q((congrArg (· * $Lm) $hAσ).trans (($hAL).trans ($hLH).symm))
 
   -- Check the certificate fields by decide
   let hhess ← mkDecideProofQ q(($Hm).IsUpperHessenberg)
