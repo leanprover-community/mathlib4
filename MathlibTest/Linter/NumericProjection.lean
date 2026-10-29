@@ -424,13 +424,11 @@ def withAux (x : Bar) : Nat :=
 termination_by x.2
 where g (n : Nat) := n + x.2
 
-/-! Inaccessible patterns are elaborated twice, leaving two infos but producing one warning. -/
+/-! At the time of writing, inaccessible patterns are elaborated twice, creating two infos. We
+ensure we deduplicate by range so that there is only one warning. (Note: we don't count the number
+of infos with `#numeric_proj_infos` in case the internal info behavior changes in the future.) -/
 
 /--
-@ +1:0...19
-info: Found 2 numeric projection infos, all of which were `Expr.const`s
----
-@ +2:70...71
 warning: Numeric projections are disallowed.
 
   [apply] Instead, use `.b`.
@@ -439,6 +437,5 @@ To allow numeric projections for all terms of type `Bar`, add `@[allow_numeric_p
 
 Note: This linter can be disabled with `set_option linter.style.numericProjections false`
 -/
-#guard_msgs (positions := true, ordering := sorted) in
-#numeric_proj_infos in
+#guard_msgs in
 example (y : Foo) (h : y.a = bar.b) : Nat := match y, h with | ⟨.(bar.2)⟩, rfl => 0
