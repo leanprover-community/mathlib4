@@ -678,6 +678,23 @@ lemma StrictMono.mul [PosMulStrictMono M₀] [MulPosStrictMono M₀] (hf : Stric
 end PartialOrder
 
 section LinearOrder
+variable [LinearOrder M₀] [PosMulMono M₀] [MulPosMono M₀] {a b : M₀}
+
+lemma max_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
+    max a b ^ n = max (a ^ n) (b ^ n) := by
+  obtain (h | h) := le_total a b
+  · rw [max_eq_right h, max_eq_right (pow_le_pow_left₀ ha h n)]
+  · rw [max_eq_left h, max_eq_left (pow_le_pow_left₀ hb h n)]
+
+lemma min_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
+    min a b ^ n = min (a ^ n) (b ^ n) := by
+  obtain (h | h) := le_total a b
+  · rw [min_eq_left h, min_eq_left (pow_le_pow_left₀ ha h n)]
+  · rw [min_eq_right h, min_eq_right (pow_le_pow_left₀ hb h n)]
+
+end LinearOrder
+
+section LinearOrder
 variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀}
   {m n : ℕ}
 
