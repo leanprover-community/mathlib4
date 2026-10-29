@@ -36,8 +36,8 @@ change of signs in the "action" part of the Lie bracket.
 
 ## References
 * [Chevalley, Eilenberg, *Cohomology Theory of Lie Groups and Lie
-  Algebras*](chevalley_eilenberg_1948)
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
+  Algebras*][chevalley_eilenberg_1948]
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975]
 
 -/
 

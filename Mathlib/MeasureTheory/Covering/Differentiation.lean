@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+
+import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 
 /-!
 # Differentiation of measures
@@ -140,7 +141,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
   have : Countable h.index := h.index_countable
   calc
     ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
-    _ ≤ ∑' x : h.index, ν (h.covering x) := ENNReal.tsum_le_tsum fun x => (h.covering_mem x.2).1
+    _ ≤ ∑' x : h.index, ν (h.covering x) := tsum_le_tsum fun x => (h.covering_mem x.2).1
     _ = ν (⋃ x : h.index, h.covering x) := by
       rw [measure_iUnion h.covering_disjoint_subtype fun i => h.measurableSet_u i.2]
     _ ≤ ν U := (measure_mono (iUnion_subset fun i => (h.covering_mem i.2).2))
@@ -179,7 +180,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
       _ ≤ μ (s ∩ o) + μ oᶜ := measure_union_le _ _
       _ = μ (s ∩ o) := by rw [μo, add_zero]
       _ = ε⁻¹ * (ε • μ) (s ∩ o) := by
-        rw [μ.smul_apply, smul_eq_mul, ← mul_assoc, ENNReal.inv_mul_cancel hε.ne' hε'.ne, one_mul]
+        rw [smul_apply, smul_eq_mul, ← mul_assoc, ENNReal.inv_mul_cancel hε.ne' hε'.ne, one_mul]
       _ ≤ ε⁻¹ * ρ (s ∩ o) := by
         gcongr _ * ?_
         refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
@@ -329,7 +330,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
       _ = μ (⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
         have : μ sᶜ = 0 := v.ae_tendsto_div hρ; rw [measure_toMeasurable, this, zero_add]
       _ ≤ ∑' (m) (n), μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
-        ((measure_iUnion_le _).trans (ENNReal.tsum_le_tsum fun m => measure_iUnion_le _))
+        ((measure_iUnion_le _).trans (tsum_le_tsum fun m => measure_iUnion_le _))
       _ = 0 := by simp only [H, tsum_zero]
   -- now starts the nontrivial part of the argument. We fix `m` and `n`, and show that the
   -- measurable supersets of `u m` and `w n` have zero measure intersection by using the lemmas
@@ -358,8 +359,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         apply I.frequently.mono fun a ha ↦ ?_
         exact (ENNReal.div_le_iff_le_mul (.inr hpq.lt_top.ne) (.inr ha.bot_lt.ne')).1 ha.le
       _ = p * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
-        simp only [μ.smul_apply, smul_eq_mul,
-          measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) I]
+        simp [measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) I]
   have B :
     q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≤
       ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
@@ -369,7 +369,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         conv_rhs => rw [inter_comm]
         rw [inter_comm, measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) J]
       _ ≤ ρ (toMeasurable (ρ + μ) (u m) ∩ w n) := by
-        rw [← smul_eq_mul, ← μ.smul_apply]
+        rw [← smul_eq_mul, ← smul_apply]
         refine v.measure_le_of_frequently_le _ (.smul_left .rfl _) _ ?_
         intro x hx
         have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) :=
@@ -390,7 +390,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
     _ < q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
       gcongr
       suffices H : (ρ + μ) (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≠ ∞ by
-        simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at H
+        simp only [Ne, add_apply, ENNReal.add_eq_top, not_or] at H
         exact H.2
       apply (lt_of_le_of_lt (measure_mono inter_subset_left) _).ne
       rw [measure_toMeasurable]
@@ -554,7 +554,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
     _ ≤
         (t ^ 2 • ρ) (s ∩ f ⁻¹' {0}) + (t ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) +
           ∑' n : ℤ, (t ^ 2 • ρ :) (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) :=
-      (add_le_add (add_le_add A B) (ENNReal.tsum_le_tsum C))
+      (add_le_add (add_le_add A B) (tsum_le_tsum C))
     _ = (t ^ 2 • ρ) s :=
       (measure_eq_measure_preimage_add_measure_tsum_Ico_zpow (t ^ 2 • ρ) f_meas hs ht ht').symm
 
@@ -586,7 +586,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
     intro n
     let I := Ico (t ^ n) (t ^ (n + 1))
     have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
-    simp only [ν.smul_apply, smul_eq_mul, ν, I, M, withDensity_apply]
+    simp only [smul_apply, M, withDensity_apply, smul_eq_mul, ge_iff_le, ν, I]
     calc
       ρ (s ∩ f ⁻¹' I) ≤ t ^ (n + 1) * μ (s ∩ f ⁻¹' I) := by
         apply v.measure_le_mul_of_subset_limRatioMeas_lt hρ
@@ -607,7 +607,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
     _ ≤
         (t • ν) (s ∩ f ⁻¹' {0}) + (t • ν) (s ∩ f ⁻¹' {∞}) +
           ∑' n : ℤ, (t • ν) (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) :=
-      (add_le_add (add_le_add A B) (ENNReal.tsum_le_tsum C))
+      (add_le_add (add_le_add A B) (tsum_le_tsum C))
     _ = (t • ν) s :=
       (measure_eq_measure_preimage_add_measure_tsum_Ico_zpow (t • ν) f_meas hs ht ht').symm
 
@@ -668,7 +668,7 @@ theorem ae_tendsto_rnDeriv :
   convert Ax.add Cx using 1
   · ext1 a
     conv_lhs => rw [eq_add]
-    simp only [Pi.add_apply, coe_add, ENNReal.add_div]
+    simp [ENNReal.add_div]
   · simp only [Bx, zero_add]
 
 /-! ### Lebesgue density points -/
@@ -707,7 +707,7 @@ theorem ae_tendsto_measure_inter_div (s : Set α) :
   apply hx.congr' _
   filter_upwards [v.eventually_filterAt_measurableSet x] with _ ha
   congr 1
-  exact measure_toMeasurable_inter_of_sFinite ha _
+  exact measure_toMeasurable_inter_of_sfinite ha _
 
 /-! ### Lebesgue differentiation theorem -/
 
@@ -748,7 +748,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
   rcases h'f.isSeparable_range with ⟨t, t_count, ht⟩
   have main :
     ∀ᵐ x ∂μ,
-      ∀ᵉ (n : ℕ) (c ∈ t),
+      ∀ n : ℕ, ∀ c ∈ t,
         Tendsto (fun a => (∫⁻ y in a, ‖f y - (A.set n).indicator (fun _ => c) y‖ₑ ∂μ) / μ a)
           (v.filterAt x) (𝓝 ‖f x - (A.set n).indicator (fun _ => c) x‖ₑ) := by
     simp_rw [ae_all_iff, ae_ball_iff t_count]

@@ -5,8 +5,9 @@ Authors: Jz Pan
 -/
 module
 
-import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.IntermediateField.Basic
+
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 

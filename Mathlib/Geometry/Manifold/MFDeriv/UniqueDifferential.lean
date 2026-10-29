@@ -22,8 +22,6 @@ In this file, we prove various properties of unique derivative sets in manifolds
 
 public section
 
-noncomputable section
-
 open scoped Manifold
 open Set
 

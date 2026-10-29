@@ -5,9 +5,10 @@ Authors: Jujian Zhang, Junyan Xu
 -/
 module
 
-import Mathlib.Topology.Sheaves.PUnit
-public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.Topology.Sheaves.Functors
+public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.Topology.Sheaves.PUnit
 
 /-!
 # Skyscraper (pre)sheaves
@@ -287,7 +288,6 @@ def toSkyscraperPresheaf {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ 
     · split_ifs
       exact ((ite_eq_right hV).symm.ndrec terminalIsTerminal).hom_ext ..
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : 𝓕 ⟶ skyscraperPresheaf p₀ c` is a natural transformation, then there is a morphism
 `𝓕.stalk p₀ ⟶ c` defined as the morphism from colimit to cocone at `c`.

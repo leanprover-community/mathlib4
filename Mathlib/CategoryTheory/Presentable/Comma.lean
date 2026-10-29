@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Comma
-import Mathlib.CategoryTheory.Presentable.IsDiscrete
 public import Mathlib.CategoryTheory.Presentable.Uniformization
+
+import Mathlib.CategoryTheory.Comma.LocallySmall
+import Mathlib.CategoryTheory.Presentable.IsDiscrete
 
 /-!
 # Comma categories are accessible
@@ -185,11 +186,11 @@ variable {F₁ F₂} (f : Comma F₁ F₂)
 where both the first and second objects of `g` are `κ`-presentable. -/
 private abbrev J := CostructuredArrow (Comma.isCardinalPresentable F₁ F₂ κ).ι f
 
-/-- Given `f : Comma F₁ F₂`, this is the category of morpshims `X ⟶ f.left`
+/-- Given `f : Comma F₁ F₂`, this is the category of morphisms `X ⟶ f.left`
 where `X` is `κ`-presentable. -/
 private abbrev J₁ := CostructuredArrow (isCardinalPresentable C₁ κ).ι f.left
 
-/-- Given `f : Comma F₁ F₂`, this is the category of morpshims `Y ⟶ f.right`
+/-- Given `f : Comma F₁ F₂`, this is the category of morphisms `Y ⟶ f.right`
 where `Y` is `κ`-presentable. -/
 private abbrev J₂ := CostructuredArrow (isCardinalPresentable C₂ κ).ι f.right
 

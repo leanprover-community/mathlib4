@@ -5,9 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Interval.Finset.Defs
+
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Preorder.Finite
 
 /-!

@@ -6,13 +6,13 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
-import Mathlib.Analysis.Normed.Module.Connected
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
+import Mathlib.Analysis.Normed.Module.Connected
+import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Integrability of Functions Prominently Involving the Logarithm
@@ -76,9 +76,6 @@ theorem MeromorphicOn.intervalIntegrable_log_norm (hf : MeromorphicOn f [[a, b]]
     rw [intervalIntegrable_congr_codiscreteWithin this]
     apply Iff.mpr _root_.intervalIntegrable_const_iff
     tauto
-
-@[deprecated (since := "2026-03-28")]
-alias intervalIntegrable_log_norm_meromorphicOn := MeromorphicOn.intervalIntegrable_log_norm
 
 /--
 If `f` is real-meromorphic on a compact interval, then `log ∘ f` is interval integrable on this
@@ -153,9 +150,6 @@ theorem MeromorphicOn.circleIntegrable_log_norm (hf : MeromorphicOn f (sphere c 
       simp_all [← h₁x.meromorphicOrderAt_eq_zero_iff, t₀ ⟨x, h₂x⟩]
     apply CircleIntegrable.congr_codiscreteWithin this.symm (circleIntegrable_const 0 c R)
 
-@[deprecated (since := "2026-03-28")]
-alias circleIntegrable_log_norm_meromorphicOn := MeromorphicOn.circleIntegrable_log_norm
-
 /--
 Variant of `MeromorphicOn.circleIntegrable_log_norm` for non-negative radii.
 -/
@@ -164,10 +158,6 @@ theorem MeromorphicOn.circleIntegrable_log_norm_of_nonneg (hf : MeromorphicOn f 
     CircleIntegrable (log ‖f ·‖) c R := by
   rw [← abs_of_nonneg hR] at hf
   exact hf.circleIntegrable_log_norm
-
-@[deprecated (since := "2026-03-28")]
-alias circleIntegrable_log_norm_meromorphicOn_of_nonneg :=
-    MeromorphicOn.circleIntegrable_log_norm_of_nonneg
 
 /--
 Variant of `MeromorphicOn.circleIntegrable_log_norm` for factorized rational functions.

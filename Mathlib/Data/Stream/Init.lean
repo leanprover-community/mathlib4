@@ -6,9 +6,13 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Stream.Defs
-import Mathlib.Data.Nat.Basic
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Nat.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences

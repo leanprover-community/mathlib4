@@ -5,12 +5,12 @@ Authors: Rémy Degenne, Etienne Marion
 -/
 module
 
-public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.Matrix.MeasurableSpace
+public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Probability.Distributions.Gaussian.CharFun
 
-import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Measurable
+import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
 # Multivariate Gaussian distributions
@@ -169,10 +169,7 @@ def multivariateGaussian (μ : EuclideanSpace ℝ ι) (S : Matrix ι ι ℝ) :
 
 lemma multivariateGaussian_of_not_posSemidef (μ : EuclideanSpace ℝ ι) {S : Matrix ι ι ℝ}
     (hS : ¬ S.PosSemidef) : multivariateGaussian μ S = .dirac μ := by
-  rw [multivariateGaussian, CFC.sqrt, cfcₙ_apply_of_not_predicate]
-  · simp
-  change ¬ (S - 0).PosSemidef
-  simpa
+  simp [multivariateGaussian, CFC.sqrt_of_not_nonneg, nonneg_iff_posSemidef, hS]
 
 @[simp]
 lemma multivariateGaussian_zero_one :

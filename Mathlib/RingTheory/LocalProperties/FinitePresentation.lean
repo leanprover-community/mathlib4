@@ -6,6 +6,7 @@ Authors: Sihan Su, Yongle Hu, Yi Song
 module
 
 public import Mathlib.Algebra.Module.FinitePresentation
+
 import Mathlib.RingTheory.Localization.Finiteness
 
 /-!

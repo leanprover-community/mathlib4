@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Multiset.NatAntidiagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonals in ℕ × ℕ as finsets
 
@@ -62,7 +65,7 @@ lemma antidiagonal_eq_image' (n : ℕ) :
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
-theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [antidiagonal]
+theorem card_antidiagonal (n : ℕ) : #(antidiagonal n) = n + 1 := by simp [antidiagonal]
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
 @[simp]

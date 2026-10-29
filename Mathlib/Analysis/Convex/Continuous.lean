@@ -6,7 +6,11 @@ Authors: Yaël Dillies, Zichen Wang
 module
 
 public import Mathlib.Analysis.Convex.Intrinsic
+
 import Mathlib.Analysis.Normed.Affine.Convex
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convex functions are continuous

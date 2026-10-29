@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Generator.Type
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.CategoryTheory.Types.Set
+
+import Mathlib.CategoryTheory.Generator.Type
 
 /-!
 # Presentable objects in Type
@@ -28,7 +29,6 @@ namespace HasCardinalLT
 
 variable (X : Type u) (κ : Cardinal.{u})
 
-set_option backward.defeqAttrib.useBackward true in
 variable {X κ} in
 lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
     IsCardinalPresentable X κ where
@@ -149,11 +149,11 @@ lemma isStrongGenerator_punit :
     (ObjectProperty.singleton (PUnit.{u + 1})).IsStrongGenerator  := by
   rw [ObjectProperty.isStrongGenerator_iff]
   refine ⟨isSeparator_punit, fun _ _ i hi₁ hi₂ ↦ ?_⟩
-  · rw [mono_iff_injective] at hi₁
-    rw [isIso_iff_bijective]
-    refine ⟨hi₁, fun y ↦ ?_⟩
-    obtain ⟨f, hf⟩ := hi₂ PUnit ⟨.unit⟩ (↾fun _ ↦ y)
-    exact ⟨f .unit, ConcreteCategory.congr_hom hf .unit⟩
+  rw [mono_iff_injective] at hi₁
+  rw [isIso_iff_bijective]
+  refine ⟨hi₁, fun y ↦ ?_⟩
+  obtain ⟨f, hf⟩ := hi₂ PUnit ⟨.unit⟩ (↾fun _ ↦ y)
+  exact ⟨f .unit, ConcreteCategory.congr_hom hf .unit⟩
 
 instance (κ : Cardinal.{u}) [Fact κ.IsRegular] :
     IsCardinalLocallyPresentable (Type u) κ := by

@@ -5,7 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
+public import Lean.Linter.Deprecated
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+
 import Lean.Meta.CompletionName
 
 /-!

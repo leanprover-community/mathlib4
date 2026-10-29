@@ -12,9 +12,9 @@ public import Mathlib.Data.Set.Insert
 
 This file defines the `ToSet` class and its API needed for the `inclusion` tactic.
 
-## Implimentation Notes
+## Implementation notes
 
-* `Inclusion.IntervalBool` is nearly identical to `Lean.LBool` but with a seperate API and
+* `Inclusion.IntervalBool` is nearly identical to `Lean.LBool` but with a separate API and
 documentation which is catered to the needs of the inclusion tactic.
 
 -/
@@ -32,7 +32,7 @@ class ToSet (Iα : Type*) (α : outParam Type*) where
   toSet : Iα → Set α
 
 instance {Iα α : Type*} [ToSet Iα α] : Membership α Iα where
-  mem s a := ToSet.toSet s a
+  mem s a := a ∈ ToSet.toSet s
 
 lemma ToSet.mem_def {Iα α : Type*} [ToSet Iα α] (a : α) (s : Iα) :
     a ∈ s ↔ a ∈ ToSet.toSet s := Iff.rfl

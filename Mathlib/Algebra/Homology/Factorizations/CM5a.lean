@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
+
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Category.Factorisation
@@ -110,7 +111,7 @@ variable (K L) in
 noncomputable abbrev mid := S K n₁ ⊞ L
 
 variable (K) in
-/-- The morphim `K ⟶ S K n₁` which in degree `n₁` corresponds to
+/-- The morphism `K ⟶ S K n₁` which in degree `n₁` corresponds to
 the composition `K.X n₁ ⟶ K.opcycles n₁ ⟶ Injective.under (K.opcycles n₁)`. -/
 noncomputable def i : K ⟶ S K n₁ := mkHomToSingle (K.pOpcycles n₁ ≫ Injective.ι _) (by simp)
 
@@ -499,7 +500,6 @@ sequence of morphisms `CofFibFactorizationQuasiIsoLE.toSequenceNext`. -/
 noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
   (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ) (hi : i ≤ n₀ + q₁) :
     IsIso (((functor f n₀).map (homOfLE hq).op).hom.h.f i) := by
   wlog hq' : q₁ + 1 = q₂ generalizing q₁ q₂

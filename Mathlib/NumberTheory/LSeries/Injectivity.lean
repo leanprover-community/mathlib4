@@ -5,10 +5,14 @@ Authors: Michael Stoll
 -/
 module
 
-import Mathlib.Analysis.Normed.Group.Tannery
 public import Mathlib.NumberTheory.LSeries.Convergence
-import Mathlib.NumberTheory.LSeries.Linearity
+
+import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.NumberTheory.LSeries.Linearity
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # A converging L-series determines its coefficients

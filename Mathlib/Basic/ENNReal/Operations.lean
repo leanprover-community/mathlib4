@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Basic.ENNReal.Real
 public import Mathlib.Tactic.Finiteness
+
 import Mathlib.Tactic.Basify.Attr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
@@ -160,17 +164,19 @@ theorem toNNReal_add {r₁ r₂ : ℝ≥0∞} (h₁ : r₁ ≠ ∞) (h₂ : r₂
 /-- If `a ≤ b + c` and `a = ∞` whenever `b = ∞` or `c = ∞`, then
 `ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
 triangle-like inequalities from `ENNReal`s to `Real`s. -/
-theorem toReal_le_add' (hle : a ≤ b + c) (hb : b = ∞ → a = ∞) (hc : c = ∞ → a = ∞) :
+theorem toReal_le_add_of_top_imp_top (hle : a ≤ b + c) (hb : b = ∞ → a = ∞) (hc : c = ∞ → a = ∞) :
     a.toReal ≤ b.toReal + c.toReal := by
-  refine le_trans (toReal_mono' hle ?_) toReal_add_le
+  refine le_trans (toReal_mono_of_top_imp_top hle ?_) toReal_add_le
   simpa only [add_eq_top, or_imp] using And.intro hb hc
+
+@[deprecated (since := "2026-09-15")] alias toReal_le_add' := toReal_le_add_of_top_imp_top
 
 /-- If `a ≤ b + c`, `b ≠ ∞`, and `c ≠ ∞`, then
 `ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
 triangle-like inequalities from `ENNReal`s to `Real`s. -/
 theorem toReal_le_add (hle : a ≤ b + c) (hb : b ≠ ∞) (hc : c ≠ ∞) :
     a.toReal ≤ b.toReal + c.toReal :=
-  toReal_le_add' hle (flip absurd hb) (flip absurd hc)
+  toReal_le_add_of_top_imp_top hle (flip absurd hb) (flip absurd hc)
 
 @[basify_simp]
 theorem not_lt_top {x : ℝ≥0∞} : ¬x < ∞ ↔ x = ∞ := by rw [lt_top_iff_ne_top, Classical.not_not]
@@ -251,12 +257,14 @@ section Cancel
 /-- An element `a` is `AddLECancellable` if `a + b ≤ a + c` implies `b ≤ c` for all `b` and `c`.
   This is true in `ℝ≥0∞` for all elements except `∞`. -/
 @[simp]
-theorem addLECancellable_iff_ne {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
+theorem addLECancellable_iff_ne_top {a : ℝ≥0∞} : AddLECancellable a ↔ a ≠ ∞ :=
   WithTop.addLECancellable_iff_ne_top
+
+@[deprecated (since := "2026-09-25")] alias addLECancellable_iff_ne := addLECancellable_iff_ne_top
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_ne {a : ℝ≥0∞} (h : a ≠ ∞) : AddLECancellable a :=
-  addLECancellable_iff_ne.mpr h
+  addLECancellable_iff_ne_top.mpr h
 
 /-- This lemma has an abbreviated name because it is used frequently. -/
 theorem cancel_of_lt {a : ℝ≥0∞} (h : a < ∞) : AddLECancellable a :=

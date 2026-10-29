@@ -5,10 +5,11 @@ Authors: Antoine Chambert-Loir, Richard Copley
 -/
 module
 
-import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
+
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Rat
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
@@ -359,7 +360,7 @@ theorem exists_index_le_card_of_leftCoset_cover :
     | inl hindex =>
       rwa [hindex, Nat.cast_zero, inv_zero, inv_pos, Nat.cast_pos]
     | inr hindex =>
-      exact inv_strictAnti₀ (by exact_mod_cast hs') (by exact_mod_cast h i hi ⟨hindex⟩)
+      exact inv_strictAnti₀ (mod_cast hs') (mod_cast h i hi ⟨hindex⟩)
   apply (Finset.sum_lt_sum_of_nonempty hs hlt).trans_eq
   rw [Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr hs'.ne')]
 

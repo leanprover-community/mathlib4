@@ -6,8 +6,12 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Ring.Commute
+
+import Mathlib.Algebra.Group.Torsion
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Torsion-free rings

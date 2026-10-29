@@ -6,6 +6,7 @@ Authors: Paul Reichert
 module
 
 public import Mathlib.CategoryTheory.Limits.Final
+
 import Mathlib.CategoryTheory.HomCongr
 
 /-!

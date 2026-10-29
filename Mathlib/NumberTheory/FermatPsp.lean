@@ -5,8 +5,9 @@ Authors: Niels Voss
 -/
 module
 
-import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.FieldTheory.Finite.Basic
+
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Fermat Pseudoprimes

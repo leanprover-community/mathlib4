@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.Convex.StrictConvexBetween
 public import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.Normed.Affine.Convex
 public import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Geometry.Euclidean.Projection
+
+import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Spheres

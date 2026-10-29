@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Eval.Degree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mapping irreducible polynomials
 
@@ -18,7 +21,6 @@ public import Mathlib.Algebra.Polynomial.Eval.Degree
 
 public section
 
-noncomputable section
 
 open Polynomial
 
