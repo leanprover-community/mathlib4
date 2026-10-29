@@ -155,11 +155,11 @@ theorem bddAbove_range_norm_comp : BddAbove <| Set.range <| norm ∘ f :=
   (@isBounded_range _ _ _ _ f.normComp).bddAbove
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ := by
-  simp_rw [norm_def, dist_eq_iSup, coe_zero, Pi.zero_apply, dist_zero_right]
+  simp_rw [norm_def, dist_eq_iSup, FunLike.coe_zero, Pi.zero_apply, dist_zero_right]
 
 /-- If `‖(1 : β)‖ = 1`, then `‖(1 : α →ᵇ β)‖ = 1` if `α` is nonempty. -/
 instance instNormOneClass [Nonempty α] [One β] [NormOneClass β] : NormOneClass (α →ᵇ β) where
-  norm_one := by simp only [norm_eq_iSup_norm, coe_one, Pi.one_apply, norm_one, ciSup_const]
+  norm_one := by simp only [norm_eq_iSup_norm, FunLike.coe_one, Pi.one_apply, norm_one, ciSup_const]
 
 /-- The pointwise opposite of a bounded continuous function is again bounded continuous. -/
 instance : Neg (α →ᵇ β) :=
@@ -167,10 +167,11 @@ instance : Neg (α →ᵇ β) :=
     ofNormedAddCommGroup (-f) f.continuous.neg ‖f‖ fun x =>
       norm_neg ((⇑f) x) ▸ f.norm_coe_le_norm x⟩
 
-@[simp]
-theorem coe_neg : ⇑(-f) = -f := rfl
+instance : IsNegApply (α →ᵇ β) where
 
-theorem neg_apply : (-f) x = -f x := rfl
+@[deprecated (since := "2026-10-20")] alias coe_neg := FunLike.coe_neg
+
+@[deprecated (since := "2026-10-20")] protected alias neg_apply := neg_apply
 
 @[simp]
 theorem mkOfCompact_neg [CompactSpace α] (f : C(α, β)) : mkOfCompact (-f) = -mkOfCompact f := rfl
@@ -181,23 +182,21 @@ theorem mkOfCompact_sub [CompactSpace α] (f g : C(α, β)) :
 
 @[simp]
 theorem coe_zsmulRec : ∀ z, ⇑(zsmulRec (· • ·) z f) = z • ⇑f
-  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_natCast, coe_nsmul, natCast_zsmul]
-  | Int.negSucc n => by rw [zsmulRec, negSucc_zsmul, coe_neg, coe_nsmul]
+  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_natCast, FunLike.coe_smul, natCast_zsmul]
+  | Int.negSucc n => by rw [zsmulRec, negSucc_zsmul, FunLike.coe_neg, FunLike.coe_smul]
 
 instance instSMulInt : SMul ℤ (α →ᵇ β) where
   smul n f :=
     { toContinuousMap := n • f.toContinuousMap
       map_bounded' := by simpa using (zsmulRec (· • ·) n f).map_bounded' }
 
-@[simp]
-theorem coe_zsmul (r : ℤ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f := rfl
+instance : IsSMulApply ℤ (α →ᵇ β) where
 
-@[simp]
-theorem zsmul_apply (r : ℤ) (f : α →ᵇ β) (v : α) : (r • f) v = r • f v := rfl
+@[deprecated (since := "2026-10-20")] alias coe_zsmul := FunLike.coe_smul
 
-instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
-    fun _ _ => coe_zsmul _ _
+@[deprecated (since := "2026-10-20")] alias zsmul_apply := smul_apply
+
+instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance% FunLike.addCommGroup
 
 instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
@@ -336,9 +335,7 @@ section Seminormed
 
 variable [NonUnitalSeminormedRing R]
 
-instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance%
-  DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
+instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance% FunLike.nonUnitalRing
 
 instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
   __ := instSeminormedAddCommGroup
@@ -406,19 +403,22 @@ variable [SeminormedRing R]
 
 @[simp]
 theorem coe_npowRec (f : α →ᵇ R) : ∀ n, ⇑(npowRec n f) = (⇑f) ^ n
-  | 0 => by rw [npowRec, pow_zero, coe_one]
-  | n + 1 => by rw [npowRec, pow_succ, coe_mul, coe_npowRec f n]
+  | 0 => by rw [npowRec, pow_zero, FunLike.coe_one]
+  | n + 1 => by rw [npowRec, pow_succ, FunLike.coe_mul, coe_npowRec f n]
 
 instance hasNatPow : Pow (α →ᵇ R) ℕ where
   pow f n :=
     { toContinuousMap := f.toContinuousMap ^ n
       map_bounded' := by simpa [coe_npowRec] using (npowRec n f).map_bounded' }
 
+instance : IsPowApply ℕ (α →ᵇ R) where
+
 instance : NatCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩
 
-@[simp, norm_cast]
-theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
+instance : IsNatCastApply (α →ᵇ R) where
+
+@[deprecated (since := "2026-10-20")] alias coe_natCast := FunLike.coe_natCast
 
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -428,13 +428,11 @@ theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
 instance : IntCast (α →ᵇ R) :=
   ⟨fun n => BoundedContinuousFunction.const _ n⟩
 
-@[simp, norm_cast]
-theorem coe_intCast (n : ℤ) : ((n : α →ᵇ R) : α → R) = n := rfl
+instance : IsIntCastApply (α →ᵇ R) where
 
-instance instRing : Ring (α →ᵇ R) := fast_instance%
-  DFunLike.coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_natCast
-    coe_intCast
+@[deprecated (since := "2026-10-20")] alias coe_intCast := FunLike.coe_intCast
+
+instance instRing : Ring (α →ᵇ R) := fast_instance% FunLike.ring
 
 instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
   __ := instRing
@@ -511,7 +509,7 @@ instance instAlgebra : Algebra 𝕜 (α →ᵇ γ) where
 
 @[simp]
 theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k a = k • (1 : γ) := by
-  simp only [Algebra.algebraMap_eq_smul_one, coe_smul, coe_one, Pi.one_apply]
+  simp only [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply]
 
 instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra
@@ -657,16 +655,14 @@ theorem nnnorm_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnnorm = NNNorm.nnnorm ∘ �
 theorem self_eq_nnrealPart_sub_nnrealPart_neg (f : α →ᵇ ℝ) :
     ⇑f = (↑) ∘ f.nnrealPart - (↑) ∘ (-f).nnrealPart := by
   funext x
-  dsimp
-  simp only [max_zero_sub_max_neg_zero_eq_self]
+  simp
 
 /-- Express the absolute value of a bounded continuous function in terms of its
 positive and negative parts. -/
 theorem abs_self_eq_nnrealPart_add_nnrealPart_neg (f : α →ᵇ ℝ) :
     abs ∘ ⇑f = (↑) ∘ f.nnrealPart + (↑) ∘ (-f).nnrealPart := by
   funext x
-  dsimp
-  simp only [max_zero_add_max_neg_zero_eq_abs_self]
+  simp
 
 end NonnegativePart
 
@@ -678,15 +674,14 @@ variable {α : Type*} [TopologicalSpace α]
 lemma add_norm_nonneg (f : α →ᵇ ℝ) :
     0 ≤ f + const _ ‖f‖ := by
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_zero, Pi.zero_apply, coe_add,
-    const_apply, Pi.add_apply]
+  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, zero_apply, add_apply, const_apply]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).1]
 
 lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
     0 ≤ const _ ‖f‖ - f := by
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_zero, Pi.zero_apply, coe_sub,
-    const_apply, Pi.sub_apply]
+  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, zero_apply, sub_apply, const_apply,
+    sub_nonneg]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end
