@@ -189,12 +189,18 @@ jobs:
         id: mk_all
         continue-on-error: true # Allow workflow to continue, outcome checked later
         # This runs `mk_all --check` from the `pr-branch` inside landrun. The prebuilt tool runs
-        # when its toolchain and sources match the branch's; otherwise Lake builds the branch's own.
+        # when its toolchain, lakefile, Cli revision and sources match the branch's; otherwise Lake
+        # builds the branch's own. A missing Cli revision on either side selects Lake.
         run: |
           cd pr-branch
           tools=../tools-branch
+          cli_rev() { jq -r '.packages[] | select(.name == "Cli") | .rev // empty' "$1"; }
+          tools_cli=$(cli_rev "${tools}/lake-manifest.json" || true)
+          branch_cli=$(cli_rev lake-manifest.json || true)
           if [ -x "${tools}/.lake/build/bin/mk_all" ] \
+            && [ -n "${tools_cli}" ] && [ "${tools_cli}" = "${branch_cli}" ] \
             && cmp -s "${tools}/lean-toolchain" lean-toolchain \
+            && cmp -s "${tools}/lakefile.lean" lakefile.lean \
             && cmp -s "${tools}/scripts/mk_all.lean" scripts/mk_all.lean \
             && cmp -s "${tools}/Mathlib/Util/GetAllModules.lean" Mathlib/Util/GetAllModules.lean; then
             echo "Running the prebuilt mk_all --check (from pr-branch)..."
