@@ -521,7 +521,7 @@ elab_rules : tactic
   mvarId.assign (pf.app newGoal)
   let (_, newGoal) ← newGoal.mvarId!.introNP intros
   newGoal.setTag tag
-  replaceMainGoal (newGoal :: s.newGoals.toList)
+  replaceMainGoal (s.newGoals.toList ++ [newGoal])
 
 
 end Test

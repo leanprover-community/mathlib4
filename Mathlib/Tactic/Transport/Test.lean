@@ -98,21 +98,26 @@ variable {α β : Type*} (map : α → β)
 
 def MapRel (a : α) (b : β) : Prop := map a = b
 
-@[implicit_reducible]
+@[expose, implicit_reducible]
 def MapRel.instMapClass : MapClass (MapRel map) where
   map
   rel_map _ := by rfl
   map_eq_of_rel := by exact id
 
-@[implicit_reducible]
+lemma MapRel.map_eq :
+    let := MapRel.instMapClass map
+    SemiMapClass.map (r := MapRel map) = map :=
+  (rfl)
+
+@[expose, implicit_reducible]
 def MapRel.instInjMapClass (h : Function.Injective map) : InjMapClass (MapRel map) :=
   let := MapRel.instMapClass map
-  ⟨h⟩
+  ⟨by exact h⟩
 
-@[implicit_reducible]
+@[expose, implicit_reducible]
 def MapRel.instSurjMapClass (h : Function.Surjective map) : SurjMapClass (MapRel map) :=
   let := MapRel.instMapClass map
-  ⟨h⟩
+  ⟨by exact h⟩
 
 end MapRel
 
@@ -226,10 +231,10 @@ def PiRel (r : ∀ i, α i → β i → Prop) (a : ∀ i, α i) (b : ∀ i, β i
 
 instance (r : ∀ i, α i → β i → Prop) [∀ i, SemiMapClass (r i)] : SemiMapClass (PiRel r) where
   map x := (map <| x ·)
-  rel_map x := by exact (rel_map <| x ·)
+  rel_map x := (rel_map <| x ·)
 
 instance (r : ∀ i, α i → β i → Prop) [∀ i, MapClass (r i)] : MapClass (PiRel r) where
-  map_eq_of_rel h := by exact congr(fun i ↦ $(map_eq_of_rel (h i)))
+  map_eq_of_rel h := congr(fun i ↦ $(map_eq_of_rel (h i)))
 
 instance (r : ∀ i, α i → β i → Prop) [∀ i, InjMapClass (r i)] : InjMapClass (PiRel r) where
   map_injective a b h := by
@@ -252,6 +257,7 @@ section Function
 variable {α β γ : Type*}
 
 -- TODO: make a relation that generalizes both `PiRel` and `FunctionRel`?
+@[implicit_reducible]
 def FunctionRel (r : α → β → Prop) (g : β → γ) (f : α → γ) : Prop :=
   ∀ {a b}, r a b → f a = g b
 
@@ -397,11 +403,8 @@ theorem Finset.transport_inter (hs : FinsetSetRel s s') (ht : FinsetSetRel t t')
 
 -- TODO: Nonempty, membership, cardinality.
 
-instance : InjMapClass (FinsetSetRel (α := α)) where
-  map := (↑)
-  rel_map _ := by rfl
-  map_eq_of_rel h := by exact h
-  map_injective := Finset.coe_injective
+instance : InjMapClass (FinsetSetRel (α := α)) :=
+  MapRel.instInjMapClass SetLike.coe Finset.coe_injective
 
 end Finset
 
@@ -415,10 +418,10 @@ variable {α : Type*} (s t : Finset α) (s' t' : Set α)
 -- set_option trace.Meta.isDefEq true in
 -- set_option trace.Meta.synthInstance true in
 -- set_option trace.Meta.grewrite true in
-example [DecidableEq α] (s : Finset α) (a : α) : insert a (∅ : Finset α) = {a} := by
+example [DecidableEq α] (a : α) : insert a (∅ : Finset α) = {a} := by
   transport Finset α to Set α
   guard_target = insert a (∅ : Set α) = {a}
-  sorry
+  apply insert_empty_eq
 
 example [DecidableEq α] (a : α) : ∀ s : Finset α, insert a ∅ = s := by
   transport Finset α to Set α
@@ -467,8 +470,9 @@ example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f)
   unfold MyCompact
   let := MapRel.instSurjMapClass f hf
   transport Y to X
-  · exact hX
-  · exact hf_cont
+  · rw [MapRel.map_eq]
+    exact hf_cont
+  exact hX
 
 end Transport
 
