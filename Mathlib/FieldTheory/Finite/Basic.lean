@@ -705,6 +705,7 @@ def Subfield.botFinset : Finset F :=
 theorem Subfield.mem_botFinset {x : F} : x ∈ Subfield.botFinset F p ↔ x ∈ (⊥ : Subfield F) := by
   simp [botFinset, ← fieldRange_castHom_eq_bot p]
 
+/-- `Subfield.botFinset`, coerced to a `Set`, equals the `⊥` subfield coerced to a `Set`. -/
 @[simp]
 theorem Subfield.coe_botFinset : (Subfield.botFinset F p : Set F) = (⊥ : Subfield F) := by
   ext; simp
@@ -756,7 +757,7 @@ theorem Polynomial.roots_X_pow_char_sub_X :
   simpa [Subfield.roots_X_pow_char_sub_X_bot, ← image_val_of_injOn Set.injOn_subtype_val, this]
     using (splits_X_pow_char_sub_X (⊥ : Subfield F) p).roots_map (⊥ : Subfield F).subtype
 
-@[deprecated Polynomial.splits_X_pow_char_sub_X +typeChanged (since := "2026-10-09")]
+@[deprecated Polynomial.splits_X_pow_char_sub_X +typeChanged (since := "2026-10-29")]
 theorem Subfield.splits_bot : Splits (X ^ p - X : (⊥ : Subfield F)[X]) :=
   Polynomial.splits_X_pow_char_sub_X _ p
 

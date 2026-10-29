@@ -120,7 +120,7 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
-@[deprecated splits_X_pow_char_sub_X +typeChanged (since := "2026-10-09")]
+@[deprecated splits_X_pow_char_sub_X +typeChanged (since := "2026-10-29")]
 theorem splits_zmod_X_pow_sub_X : Splits (X ^ p - X : (ZMod p)[X]) := by
   exact splits_X_pow_char_sub_X _ p
 
