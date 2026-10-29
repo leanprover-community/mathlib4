@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Wen Yang
+Authors: Anne Baanen, Wen Yang, Shirin Shafaie
 -/
 module
 
 public import Mathlib.Data.Fintype.Parity
 public import Mathlib.LinearAlgebra.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.RingTheory.RootsOfUnity.Basic
@@ -187,6 +188,59 @@ instance : Group (SpecialLinearGroup n R) :=
     inv_mul_cancel := fun A => by
       ext1
       simp [adjugate_mul] }
+
+/-- Relabelling rows and columns by the same equivalence gives a group equivalence
+between the corresponding special linear groups. -/
+def reindex
+    {m n : Type*} [Fintype m] [Fintype n]
+    [DecidableEq m] [DecidableEq n]
+    (R : Type*) [CommRing R] (e : m ≃ n) :
+    Matrix.SpecialLinearGroup m R ≃*
+      Matrix.SpecialLinearGroup n R where
+  __ := (Matrix.reindex e e).subtypeEquiv fun A => by
+    rw [Matrix.det_reindex_self]
+  map_mul' A B :=
+    Subtype.ext ((Matrix.reindexRingEquiv R e).map_mul A.val B.val)
+
+section Reindex
+
+variable {m : Type*} [Fintype m] [DecidableEq m]
+
+/-- Reindexing a special linear matrix reindexes its underlying matrix. -/
+@[simp]
+theorem reindex_apply_coe (e : m ≃ n) (A : SpecialLinearGroup m R) :
+    (reindex R e A : Matrix n n R) = Matrix.reindex e e (A : Matrix m m R) := rfl
+
+/-- Reindexing by the identity equivalence is the identity group equivalence. -/
+@[simp]
+theorem reindex_refl :
+    reindex R (Equiv.refl n) = MulEquiv.refl (SpecialLinearGroup n R) := by
+  apply MulEquiv.ext
+  intro A
+  apply Subtype.ext
+  rfl
+
+/-- The inverse of reindexing reindexes by the inverse index equivalence. -/
+@[simp]
+theorem reindex_symm (e : m ≃ n) :
+    (reindex R e).symm = reindex R e.symm := by
+  apply MulEquiv.ext
+  intro A
+  apply Subtype.ext
+  rfl
+
+variable {k : Type*} [Fintype k] [DecidableEq k]
+
+/-- Successive reindexings compose their index equivalences. -/
+@[simp]
+theorem reindex_trans (e : m ≃ n) (f : n ≃ k) :
+    (reindex R e).trans (reindex R f) = reindex R (e.trans f) := by
+  apply MulEquiv.ext
+  intro A
+  apply Subtype.ext
+  rfl
+
+end Reindex
 
 /-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
 def toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R where
