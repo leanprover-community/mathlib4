@@ -15,8 +15,8 @@ optionally, a commit. Files use the scope as a directory under `f`. A commit
 marker uses the same scope as a file under `m`. Flat locations and repo
 scopes without a commit have no marker.
 
-`Container.location` selects the layout of a known container.
-`Location.ofEndpoint` selects the layout of a user-supplied endpoint.
+`Container.location` and `Container.locationAt` select the layout of a known
+container. `Location.ofEndpoint` selects the layout of a user-supplied endpoint.
 Both constructors trim whitespace and remove trailing slashes from URLs.
 The location constructs the file paths and derives its marker. Reads try
 locations in trust order (`readLocations`). Uploads write to one location
@@ -100,12 +100,18 @@ def ofEndpoint (url label repo : String) (sha? : Option String) : Location :=
 
 end Location
 
-/-- The location of container `c` under `base`. The constructor adds the
-container segment and selects a flat layout or a repo scope. The location
-constructs the file and marker paths. -/
+/-- The location of container `c` at `root`, the URL that holds the
+container's `f` and `m` trees. The container selects a flat layout or a repo
+scope. The location constructs the file and marker paths. -/
+def Container.locationAt (c : Container) (root repo : String)
+    (sha? : Option String) : Location :=
+  { root := Location.normalizeRoot root, label := c.name,
+    scope? := if c.flatPath then none else some { repo, sha? } }
+
+/-- The location of container `c` under `base`: `Container.locationAt` with
+the container segment added to `base`. -/
 def Container.location (c : Container) (base repo : String)
     (sha? : Option String) : Location :=
-  { root := c.urlUnder (Location.normalizeRoot base), label := c.name,
-    scope? := if c.flatPath then none else some { repo, sha? } }
+  c.locationAt (c.urlUnder (Location.normalizeRoot base)) repo sha?
 
 end Cache.Requests
