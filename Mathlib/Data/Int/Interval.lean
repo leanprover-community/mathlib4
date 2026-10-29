@@ -125,9 +125,7 @@ theorem card_Ioo_of_lt (h : a < b) : (#(Ioo a b) : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 
 theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
-  ext
-  simp
-  omega
+  grind
 
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   simp [h]
@@ -175,26 +173,18 @@ section Nat
 
 lemma Finset.Icc_succ_succ (m n : ℕ) :
     Icc (-(m + 1) : ℤ) (n + 1) = Icc (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n + 1 : ℤ)} := by
-  ext
-  simp only [mem_Icc, union_insert, union_singleton, mem_insert]
-  omega
+  grind
 
 lemma Finset.Ico_succ_succ (m n : ℕ) :
     Ico (-(m + 1) : ℤ) (n + 1) = Ico (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n : ℤ)} := by
-  ext
-  simp only [mem_Ico, union_insert, union_singleton, mem_insert]
-  omega
+  grind
 
 lemma Finset.Ioc_succ_succ (m n : ℕ) :
     Ioc (-(m + 1) : ℤ) (n + 1) = Ioc (-m : ℤ) n ∪ {-(m : ℤ), (n + 1 : ℤ)} := by
-  ext
-  simp only [mem_Ioc, union_insert, union_singleton, mem_insert]
-  lia
+  grind
 
 lemma Finset.Ioo_succ_succ (m n : ℕ) :
     Ioo (-(m + 1) : ℤ) (n + 1) = Ioo (-m : ℤ) n ∪ {-(m : ℤ), (n : ℤ)} := by
-  ext
-  simp only [mem_Ioo, union_insert, union_singleton, mem_insert]
-  lia
+  grind
 
 end Nat

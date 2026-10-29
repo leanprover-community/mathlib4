@@ -105,7 +105,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
   rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_mul]
   ext
   dsimp [PiToModule.fromEnd]
-  rw [← h'.congr_fun, ← h.congr_fun]
+  rw [mul_apply_eq_comp, mul_apply_eq_comp, ← h'.congr_fun, ← h.congr_fun]
   rfl
 
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
@@ -222,13 +222,6 @@ theorem LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_z
     congr 1
     ext1
     rw [Polynomial.aeval_subalgebra_coe, Matrix.aeval_self_charpoly, Subalgebra.coe_zero]
-
-@[deprecated
-"strengthened conclusion to
-`LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_zero`"
-(since := "2026-04-10")] alias
-LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_smul :=
-  LinearMap.exists_monic_and_natDegree_eq_and_coeff_mem_pow_and_aeval_eq_zero
 
 theorem LinearMap.exists_monic_and_natDegree_eq_and_aeval_eq_zero
     [Module.Finite R M] (f : Module.End R M) :

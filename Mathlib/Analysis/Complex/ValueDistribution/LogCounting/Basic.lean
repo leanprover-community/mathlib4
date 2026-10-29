@@ -185,8 +185,8 @@ lemma logCounting_mono [ProperSpace E] {D : locallyFinsupp E ℤ} (hD : 0 ≤ D)
       have : z ∈ closedBall 0 |a| := mem_of_indicator_ne_zero h₁
       rw [toClosedBall_eval_within _ this] at h₁
       rwa [toClosedBall_eval_within]
-      · simp_all only [abs_of_pos ha, mem_closedBall, dist_zero_right, abs_of_pos hb]
-        linarith
+      simp_all only [abs_of_pos ha, mem_closedBall, dist_zero_right, abs_of_pos hb]
+      linarith
   · exact Int.cast_nonneg (hD 0)
 
 /--
@@ -295,7 +295,7 @@ theorem sum_toClosedBall_le_logCounting {D : Function.locallyFinsupp ℂ ℤ} {�
       rw [ite_eq_left rfl, toClosedBall_eval_within _ (by simp),
         toClosedBall_eval_within _ (by simp)]
       simp only [norm_zero, inv_zero, mul_zero, log_zero, mul_zero, zero_add]
-      apply mul_le_mul_of_nonneg_left _ (by exact_mod_cast hD' 0)
+      apply mul_le_mul_of_nonneg_left _ (mod_cast hD' 0)
       apply Real.log_le_log (by positivity)
       exact div_le_self hr₀.le hρ
     · rw [ite_eq_right hz0, add_zero]
@@ -306,14 +306,14 @@ theorem sum_toClosedBall_le_logCounting {D : Function.locallyFinsupp ℂ ℤ} {�
           rw [mem_closedBall_zero_iff, habsr]
           exact hz_norm.trans hρr.le
         rw [toClosedBall_eval_within _ hzρ, toClosedBall_eval_within _ this]
-        apply mul_le_mul_of_nonneg_left _ (by exact_mod_cast hD' z)
+        apply mul_le_mul_of_nonneg_left _ (mod_cast hD' z)
         rw [div_eq_mul_inv]
         apply Real.log_le_log (by positivity)
         gcongr
       · rw [locallyFinsuppWithin.apply_eq_zero_of_notMem _ hzρ, Int.cast_zero, zero_mul]
         by_cases hzr : D.toClosedBall r z = 0
         · simp [hzr]
-        · apply mul_nonneg (by exact_mod_cast hpos)
+        · apply mul_nonneg (mod_cast hpos)
           have hz_le : ‖z‖ ≤ r := by
             rw [← mem_closedBall_zero_iff, ← habsr]
             exact toClosedBall_support_subset_closedBall (r := r) D (mem_support.2 hzr)

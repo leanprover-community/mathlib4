@@ -86,7 +86,6 @@ theorem isCauSeq_iff_cauchySeq {α : Type u} [NormedField α] {u : ℕ → α} :
     IsCauSeq norm u ↔ CauchySeq u :=
   ⟨fun h => CauSeq.cauchySeq ⟨u, h⟩, fun h => h.isCauSeq⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 -- see Note [lower instance priority]
 /-- A complete normed field is complete as a metric space, as Cauchy sequences converge by
 assumption and this suffices to characterize completeness. -/
@@ -95,9 +94,9 @@ instance (priority := 100) completeSpace_of_cauSeq_isComplete [CauSeq.IsComplete
   apply complete_of_cauchySeq_tendsto
   intro u hu
   have C : IsCauSeq norm u := isCauSeq_iff_cauchySeq.2 hu
-  exists CauSeq.lim ⟨u, C⟩
+  exists (CauSeq.mk u C).lim
   rw [Metric.tendsto_atTop]
   intro ε εpos
-  obtain ⟨N, hN⟩ := (CauSeq.equiv_lim ⟨u, C⟩) _ εpos
+  obtain ⟨N, hN⟩ := (CauSeq.mk u C).equiv_lim _ εpos
   exists N
-  simpa [dist_eq_norm] using hN
+  simpa [dist_eq_norm]

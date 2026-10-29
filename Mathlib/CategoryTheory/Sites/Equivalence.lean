@@ -77,7 +77,6 @@ lemma eq_inducedTopology_of_isDenseSubsite [e.inverse.IsDenseSubsite K J] :
   rw [mem_inducedTopology_iff_of_isCoverDense]
   exact (e.inverse.functorPushforward_mem_iff K J).symm
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isDenseSubsite_functor_of_isCocontinuous
     [e.functor.IsCocontinuous J K] [e.inverse.IsCocontinuous K J] :
     e.functor.IsDenseSubsite J K where

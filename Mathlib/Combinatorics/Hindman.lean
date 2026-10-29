@@ -254,11 +254,6 @@ theorem FP.finsetProd {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : 
     rw [hd, ← Stream'.drop_drop, add_comm] at this
     exact FP_drop_subset_FP _ _ this
 
-@[deprecated (since := "2026-04-08")] alias FS.finset_sum := FS.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias FP.finset_prod := FP.finsetProd
-
 @[deprecated (since := "2026-08-14")] alias FS.head' := FS.head
 
 @[to_additive existing, deprecated (since := "2026-08-14")]
