@@ -93,6 +93,7 @@ instance instUnique [Subsingleton M] : Unique (PolynomialModule R M) := fast_ins
 instance instDecidableEq [DecidableEq M] : DecidableEq (PolynomialModule R M) :=
   (coeffEquiv R).decidableEq
 
+@[nolint instanceDiamonds] -- TODO: fix the one with the NSMul and ZSMul instance here
 instance instAddCommGroup : AddCommGroup (PolynomialModule R M) := fast_instance%
   (coeffEquiv R).addCommGroup
 
