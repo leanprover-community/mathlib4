@@ -104,7 +104,7 @@ lemma maximalIdeal_eq_iSup_of_isColimit (hc : IsColimit c) :
     apply Set.iUnion_subset fun j ↦ le_trans ?_ (SetLike.coe_mono (le_iSup _ j))
     exact Ideal.subset_span
   · have : IsLocalRing (((Functor.const J).obj c.pt).obj j) := isLocalRing_of_isColimit F hc
-    exact ((IsLocalRing.local_hom_TFAE (c.ι.app j).hom).out 1 3).mp (isLocalHom_ι F hc j)
+    exact ((IsLocalRing.local_hom_tfae (c.ι.app j).hom).out 1 3).mp (isLocalHom_ι F hc j)
 
 instance : IsLocalRing (colimit F : CommRingCat) := isLocalRing_of_isColimit F (colimit.isColimit F)
 
@@ -183,7 +183,7 @@ variable (s : Cocone F) [s_pt : IsLocalRing s.pt] [s_ι : ∀ j, IsLocalHom (s.�
 
 theorem isLocalHom_desc (hc : IsColimit c) : IsLocalHom (hc.desc s).hom := by
   have : IsLocalRing c.pt := isLocalRing_of_isColimit F hc
-  refine ((IsLocalRing.local_hom_TFAE (hc.desc s).hom).out 1 2).mpr ?_
+  refine ((IsLocalRing.local_hom_tfae (hc.desc s).hom).out 1 2).mpr ?_
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp ((maximalIdeal_eq_iUnion_of_isColimit F hc).le hx)
   rw [← comp_apply, hc.fac]

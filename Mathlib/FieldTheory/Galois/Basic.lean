@@ -433,11 +433,11 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 open IntermediateField
 
 open scoped Pointwise
-
+-- #count_heartbeats in
 lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
     (restrictNormalHom E).ker = E.fixingSubgroup := by
-  simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, one_apply, Subtype.ext_iff,
-    restrictNormalHom_apply, Subtype.forall, mem_fixingSubgroup_iff, implies_true]
+  simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, AlgEquiv.one_apply,
+    Subtype.ext_iff, restrictNormalHom_apply, Subtype.forall, mem_fixingSubgroup_iff, implies_true]
 
 namespace IsGalois
 

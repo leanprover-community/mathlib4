@@ -8,6 +8,9 @@ module
 public import Mathlib.Dynamics.Ergodic.Ergodic
 public import Mathlib.MeasureTheory.Function.AEEqFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functions invariant under a (quasi)ergodic map
 

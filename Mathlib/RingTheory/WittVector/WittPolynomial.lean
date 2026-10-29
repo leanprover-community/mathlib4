@@ -161,7 +161,7 @@ theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
     refine vars_monomial_single i (pow_ne_zero _ hp.out) ?_
-    exact_mod_cast pow_ne_zero i hp.out
+    exact mod_cast pow_ne_zero i hp.out
   rw [wittPolynomial, vars_sum_of_disjoint]
   · simp only [this, biUnion_singleton_eq_self]
   · simp only [this]
