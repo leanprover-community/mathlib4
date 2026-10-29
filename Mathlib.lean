@@ -4692,6 +4692,7 @@ public import Mathlib.Dynamics.Transitive
 public import Mathlib.FieldTheory.AbelRuffini
 public import Mathlib.FieldTheory.AbsoluteGaloisGroup
 public import Mathlib.FieldTheory.AlgebraicClosure
+public import Mathlib.FieldTheory.ArtinSchreierExtension
 public import Mathlib.FieldTheory.AxGrothendieck
 public import Mathlib.FieldTheory.CardinalEmb
 public import Mathlib.FieldTheory.Cardinality
@@ -4728,6 +4729,7 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.IsAlgClosed.Classification
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.FieldTheory.IsPerfectClosure
+public import Mathlib.FieldTheory.IsRealClosed.ArtinSchreier
 public import Mathlib.FieldTheory.IsRealClosed.Basic
 public import Mathlib.FieldTheory.IsRealClosed.Real
 public import Mathlib.FieldTheory.IsSepClosed
