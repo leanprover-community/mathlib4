@@ -43,15 +43,14 @@ structure CharpolyRing {u : Level} (S : Q(Type u)) where
   /-- The algebra map `S → ℚ` is injective. -/
   fS : Q(FaithfulSMul $S ℚ)
 
-/-- Check that `S` has the instances available for the characteristic polynomial to be computed. -/
-def inferCharpolyRing {u : Level} (S : Q(Type u)) :
+/-- Check that the commutative ring `S` has the instances available for the characteristic
+polynomial to be computed. -/
+def inferCharpolyRing {u : Level} (S : Q(Type u)) (cS : Q(CommRing $S)) :
     MetaM (Except MessageData (CharpolyRing S)) := do
-  let .some cS ← trySynthInstanceQ q(CommRing $S)
-    | return .error m!"expected the element type to be a commutative ring"
   let .some aS ← trySynthInstanceQ q(Algebra $S ℚ)
-    | return .error m!"expected an `Algebra {S} ℚ` instance"
+    | return .error m!"expected an `{q(Algebra $S ℚ)}` instance"
   let .some fS ← trySynthInstanceQ q(FaithfulSMul $S ℚ)
-    | return .error m!"expected a `FaithfulSMul {S} ℚ` instance"
+    | return .error m!"expected a `{q(FaithfulSMul $S ℚ)}` instance"
   return .ok { cS, aS, fS }
 
 /-- The coefficient list of the characteristic polynomial of the matrix literal `A` and a proof that

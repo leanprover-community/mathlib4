@@ -49,13 +49,14 @@ private def normalizeCharpoly {u : Level} (S : Q(Type u)) (r : CharpolyRing S) (
 
 /-- Core of the `norm_charpoly` simproc -/
 private def normCharpolyCore : Simp.Simproc := fun e => do
-  let_expr Matrix.charpoly R _ _ _ _ A := e | return .continue
+  let_expr Matrix.charpoly R cR _ _ _ A := e | return .continue
   let A ← instantiateMVars A
   let some (n, _, _, entries) ← Matrix.matchMatrixLit? A
     | trace[Tactic.evalCharpoly] "not a closed matrix literal{indentExpr A}"
       return .continue
   let ⟨_u, S⟩ ← getLevelQ' R
-  match ← inferCharpolyRing S with
+  have cS : Q(CommRing $S) := cR
+  match ← inferCharpolyRing S cS with
   | .ok r => return .done (← normalizeCharpoly S r n A entries)
   | .error err =>
     trace[Tactic.evalCharpoly] "{err}{indentExpr A}"
