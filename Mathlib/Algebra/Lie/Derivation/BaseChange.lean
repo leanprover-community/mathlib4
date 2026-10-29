@@ -34,7 +34,9 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (L) in
 /-- A derivation of an associative `R`-algebra `A`, induces a Lie derivation of `A ⊗[R] L` for any
-Lie algebra `L` over `R`. -/
+Lie algebra `L` over `R`.
+
+Note that this map is even `A`-linear: see `Lie.Derivation.ofDerivation_smul`. -/
 def ofDerivation : Derivation R A A →ₗ⁅R⁆ LieDerivation R (A ⊗[R] L) (A ⊗[R] L) where
   toFun d :=
     { toFun := d.rTensor L
@@ -60,15 +62,15 @@ lemma ofDerivation_apply (d : Derivation R A A) (x : A ⊗[R] L) :
     ofDerivation L d x = d.toLinearMap.rTensor L x :=
   rfl
 
-lemma ofDerivation_comp_leibniz (d : Derivation R A A) (a : A) :
-    (ofDerivation L d).toLinearMap ∘ₗ DistribSMul.toLinearMap _ _ a =
-      a • (ofDerivation L d).toLinearMap + DistribSMul.toLinearMap _ _ (d a) := by
+lemma ofDerivation_comp_smul (d : Derivation R A A) (a : A) :
+    letI f : A → A ⊗[R] L →ₗ[R] A ⊗[R] L  := DistribSMul.toLinearMap _ _
+    (ofDerivation L d).toLinearMap ∘ₗ f a = a • ofDerivation L d + f (d a) := by
   ext
   simp [smul_tmul', add_tmul, mul_comm]
 
 lemma ofDerivation_leibniz (d : Derivation R A A) (a : A) (x : A ⊗[R] L) :
     ofDerivation L d (a • x) = a • ofDerivation L d x + (d a) • x :=
-  DFunLike.congr_fun (ofDerivation_comp_leibniz d a) x
+  DFunLike.congr_fun (ofDerivation_comp_smul d a) x
 
 lemma ofDerivation_smul (d : Derivation R A A) (a : A) :
     ofDerivation L (a • d) = a • ofDerivation L d := by
