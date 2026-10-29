@@ -162,16 +162,23 @@ variable {α β : Type*} [Unique β]
 
 variable (α β) in
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
-@[simps! (attr := grind =) apply symm_apply]
 def prodUnique : α × β ≃ α := ((Equiv.refl α).prodCongr <| equivPUnit.{_, 1} β).trans <| prodPUnit α
 
 variable (α β) in
 /-- Any `Unique` type is a left identity for type product up to equivalence. -/
-@[simps! (attr := grind =) apply symm_apply]
 def uniqueProd : β × α ≃ α := ((equivPUnit.{_, 1} β).prodCongr <| .refl α).trans <| punitProd α
 
 @[simp] lemma coe_prodUnique : ⇑(prodUnique α β) = Prod.fst := rfl
 @[simp] lemma coe_uniqueProd : ⇑(uniqueProd α β) = Prod.snd := rfl
+
+@[grind =] lemma prodUnique_apply (x : α × β) : prodUnique α β x = x.1 := rfl
+@[grind =] lemma uniqueProd_apply (x : β × α) : uniqueProd α β x = x.2 := rfl
+
+@[simp, grind =]
+lemma prodUnique_symm_apply (x : α) : (prodUnique α β).symm x = (x, default) := rfl
+
+@[simp, grind =]
+lemma uniqueProd_symm_apply (x : α) : (uniqueProd α β).symm x = (default, x) := rfl
 
 @[simp]
 lemma prodComm_trans_prodUnique : (prodComm β α).trans (prodUnique α β) = uniqueProd α β := rfl
