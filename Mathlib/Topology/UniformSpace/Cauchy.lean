@@ -392,18 +392,16 @@ instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace 
     ⟨(x1, x2), by rw [nhds_prod_eq, le_prod]; constructor <;> assumption⟩
 
 lemma CompleteSpace.fst_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty β] :
-    CompleteSpace α where
-  complete hf :=
-    let ⟨y⟩ := h
-    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| hf.prod <| cauchy_pure (a := y)
-    ⟨a, by simpa only [map_fst_prod, nhds_prod_eq] using map_mono (m := Prod.fst) hab⟩
+    CompleteSpace α :=
+  let ⟨y⟩ := h
+  CompleteSpace.of_comp_eq_id Prod.fst (·, y) rfl continuous_fst
+    (uniformContinuous_id.prodMk uniformContinuous_const)
 
 lemma CompleteSpace.snd_of_prod [UniformSpace β] [CompleteSpace (α × β)] [h : Nonempty α] :
-    CompleteSpace β where
-  complete hf :=
-    let ⟨x⟩ := h
-    let ⟨(a, b), hab⟩ := CompleteSpace.complete <| (cauchy_pure (a := x)).prod hf
-    ⟨b, by simpa only [map_snd_prod, nhds_prod_eq] using map_mono (m := Prod.snd) hab⟩
+    CompleteSpace β :=
+  let ⟨x⟩ := h
+  CompleteSpace.of_comp_eq_id Prod.snd (x, ·) rfl continuous_snd
+    (uniformContinuous_const.prodMk uniformContinuous_id)
 
 lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty β] :
     CompleteSpace (α × β) ↔ CompleteSpace α ∧ CompleteSpace β :=
