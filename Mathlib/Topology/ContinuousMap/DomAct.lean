@@ -12,10 +12,11 @@ public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
-# Action of `Mᵈᵐᵃ` on `C(α, β)`
+# Action of `Mᵈᵐᵃ` and `Mᵈᵃᵃ` on `C(α, β)`
 
 If `M` acts continuously on `α`, then `Mᵈᵐᵃ` acts on `C(α, β)` by
-`(c • f) a = f (mk.symm c • a)`.
+`(c • f) a = f (mk.symm c • a)`. The additive analogue (`Mᵈᵃᵃ` acting on `C(α, β)`) is generated
+by `to_additive`.
 
 ## Tags
 
@@ -35,7 +36,7 @@ section SMul
 
 variable [SMul M α] [ContinuousConstSMul M α]
 
-@[to_additive]
+@[to_additive /-- Scalar action of `Mᵈᵃᵃ` on `C(α, β)` by precomposition on the domain. -/]
 instance instSMulContinuousMap : SMul Mᵈᵐᵃ C(α, β) where
   smul c f := ⟨c • (f : α → β), f.continuous.comp (continuous_const_smul (mk.symm c))⟩
 
@@ -74,7 +75,7 @@ section MulAction
 
 variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
-@[to_additive]
+@[to_additive /-- Additive action of `Mᵈᵃᵃ` on `C(α, β)` by precomposition on the domain. -/]
 instance instMulActionContinuousMap : MulAction Mᵈᵐᵃ C(α, β) where
   one_smul f := by ext; simp [smul_continuousMap_apply]
   mul_smul x y f := by ext; simp [smul_continuousMap_apply, mul_smul]
@@ -85,7 +86,7 @@ section ContinuousSMul
 
 variable [SMul M α] [TopologicalSpace M] [ContinuousSMul M α] [LocallyCompactSpace α]
 
-@[to_additive]
+@[to_additive /-- Continuity of the additive domain action of `Mᵈᵃᵃ` on `C(α, β)`. -/]
 instance instContinuousSMulContinuousMap : ContinuousSMul Mᵈᵐᵃ C(α, β) where
   continuous_smul := by
     let h : C(Mᵈᵐᵃ, C(α, α)) :=
