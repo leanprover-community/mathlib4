@@ -317,7 +317,7 @@ private theorem exists_dual_of_fixedReduce_ne_smul
     obtain ⟨a, ha⟩ :=
       LinearMap.exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent h.ne' he
     refine ⟨a, fun x ↦ by
-      simp only [← coe_toLinearMap, ha, LinearMap.smul_apply, one_apply_eq_self, Subring.smul_def]⟩
+      simp [← coe_toLinearMap, ha, Subring.smul_def]⟩
   obtain ⟨v, hu⟩ := this
   -- We lift `v` to `u : V`.
   obtain ⟨u, rfl⟩ := e.fixedSubmodule.mkQ_surjective v
