@@ -158,12 +158,21 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
+        shopt -s nullglob
         dir="${RUNNER_TEMP}/staging-ltar"
-        count=$(find "${dir}" -maxdepth 1 -type f -name '*.ltar' | wc -l)
-        find "${dir}" -maxdepth 1 -type f -name '*.ltar' -exec sh -c \
-          'for f; do [ -e "$0/${f##*/}" ] || mv "$f" "$0/"; done' /home/lean/.cache/mathlib {} +
+        cache=/home/lean/.cache/mathlib
+        moved=0
+        skipped=0
+        for f in "${dir}"/*.ltar; do
+          if [ -e "${cache}/${f##*/}" ]; then
+            skipped=$((skipped + 1))
+          else
+            mv "${f}" "${cache}/"
+            moved=$((moved + 1))
+          fi
+        done
         rm -rf "${dir}"
-        echo "The staging artifact holds ${count} .ltar file(s); the ones the local cache lacked were moved into it."
+        echo "Moved ${moved} .ltar file(s) from the staging artifact into the local cache; skipped ${skipped} that the local cache already held."
 
     # 2. Fetch this commit's oleans from the remote cache with the trusted `cache` binary.
     #    Runs on every repo; the warm above just gives the canonical repo a local head
