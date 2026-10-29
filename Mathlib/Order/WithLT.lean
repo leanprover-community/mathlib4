@@ -12,15 +12,9 @@ public import Mathlib.Order.SuccPred.Basic
 /-!
 # Type alias for overriding order instances
 
-In mathematics, a common proof technique is to consider a well-ordering on a type with certain
-properties. This can happen even if the type already has some "canonical" order relation defined on
-it. In Lean, this means that we're forced to use unbundled relations, which then lose us the
-conveniences provided by the order hierarchy.
-
-This file defines `WithLT α r`, for a well-ordered relation less-than relation `r`, as a type alias
-for `α` where `toLT r x < toLT r y ↔ r x y`. This lets us set up the API for well-ordered relations
-(e.g. the `Ordinal` API) using the more convenient bundled relations, while still letting us use
-unbundled relations if need be.
+This file defines `WithLT α r`, for a partially ordered less-than relation `r`, as a type alias
+for `α` where `toLT r x < toLT r y ↔ r x y`. This lets us override the order instance of a type, or
+apply API for bundled relations to unbundled ones.
 -/
 
 public section
