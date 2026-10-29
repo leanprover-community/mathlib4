@@ -477,7 +477,7 @@ instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo
 instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
 instance lt_wf : WellFoundedLT Ordinal := by
-  rw [wellFoundedLT_iff_wellFoundedLT_Iio]
+  rw [wellFoundedLT_iff_forall_wellFoundedLT_Iio]
   intro o
   induction o using inductionOnWellOrder with | type α
   exact RelHomClass.wellFounded enum.toRelIsoLT wellFounded_lt

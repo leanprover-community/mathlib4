@@ -226,7 +226,7 @@ theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) :
 
 theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup ((· + 1) '' s) < a := by
-  let f := (enum (α := s))
+  let f := enum (α := s)
   have : Small.{u} (Iio (typeLT s)) := by
     refine small_of_injective (β := Iio a) (f := fun x ↦ ⟨_, mem_Iio.2 <| hs _ (f x).2⟩) fun _ ↦ ?_
     simp [Subtype.val_inj]

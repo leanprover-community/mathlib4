@@ -156,6 +156,6 @@ theorem wellFounded_iff_wellFounded_subrel {r : α → α → Prop} [IsTrans α 
   mpr h := ⟨fun a ↦ ⟨_, fun b hr ↦ ((h a).apply _).of_subrel ⟨b, hr⟩⟩⟩
 
 @[to_dual]
-theorem wellFoundedLT_iff_wellFoundedLT_Iio [Preorder α] :
+theorem wellFoundedLT_iff_forall_wellFoundedLT_Iio [Preorder α] :
     WellFoundedLT α ↔ ∀ b : α, WellFoundedLT (Set.Iio b) :=
   wellFounded_iff_wellFounded_subrel
