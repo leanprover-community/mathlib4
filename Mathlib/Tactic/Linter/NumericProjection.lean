@@ -122,7 +122,7 @@ def numericProjections : Linter where
             Linter.logLint linter.style.numericProjections stx m!"\
               Numeric projections are disallowed.\n\
               {msg}\n\n\
-              To exempt terms of type `{.ofConstName structName}`, add \
+              To allow numeric projections for all terms of type `{.ofConstName structName}`, add \
               `@[allow_numeric_proj]` at the declaration site of `{.ofConstName structName}`."
 
 initialize addLinter numericProjections
