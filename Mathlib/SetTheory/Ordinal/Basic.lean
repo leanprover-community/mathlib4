@@ -969,17 +969,18 @@ theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrd
 
 -- TODO: replace this with a lemma `IsBot x → typein x = 0`.
 @[simp]
-theorem typein_one_toType (x : ToType 1) : typein (α := ToType 1) x = 0 := by
+theorem typein_one_toType (x : ToType 1) : typein x = 0 := by
   rw [one_toType_eq x, typein_enum]
 
+@[deprecated PrincipalSeg.le_iff_le +typeChanged (since := "2026-10-29")]
 theorem typein_le_typein' (o : Ordinal) {x y : o.ToType} :
-    typein (α := o.ToType) x ≤ typein (α := o.ToType) y ↔ x ≤ y := by
+    typein x ≤ typein y ↔ x ≤ y := by
   simp
 
 -- TODO: replace this with some kind of `OrderTop` instance?
 set_option backward.isDefEq.respectTransparency false in
 theorem le_enum_succ {o : Ordinal} (a : (succ o).ToType) : a ≤ enum ⟨o, by simp⟩ := by
-  rw [← enum_typein (α := (succ o).ToType) a, OrderIso.le_iff_le, Subtype.mk_le_mk, ← lt_succ_iff]
+  rw [← enum_typein a, OrderIso.le_iff_le, Subtype.mk_le_mk, ← lt_succ_iff]
   apply typein_lt_self
 
 end Ordinal

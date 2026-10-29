@@ -65,7 +65,7 @@ theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.li
     ← Cardinal.lift_umax, ← ULift.orderIso.lift_cof_congr]
 
 theorem _root_.Order.cof_Iio [LinearOrder α] [WellFoundedLT α] (x : α) :
-    Order.cof (Iio x) = cof (typein (α := α) x) :=
+    Order.cof (Iio x) = cof (typein x) :=
   (cof_type _).symm
 
 @[simp]
