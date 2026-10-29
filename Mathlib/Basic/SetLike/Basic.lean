@@ -6,6 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.SetLike
 
@@ -268,6 +269,8 @@ section LE
 variable [LE A] [IsConcreteLE A B] {p q : A}
 
 @[gcongr] alias ⟨_root_.mem_of_le_of_mem, _⟩ := le_iff
+
+grind_pattern [membership] mem_of_le_of_mem => S ≤ T, x ∈ T
 
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simp [le_iff]
