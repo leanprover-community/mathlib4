@@ -584,6 +584,64 @@ theorem measurableSet_uIcc [OrderClosedTopology α] : MeasurableSet (uIcc a b) :
 theorem measurableSet_uIoc [ClosedIicTopology α] : MeasurableSet (uIoc a b) :=
   measurableSet_Ioc
 
+section OrderTopology
+
+variable [OrderTopology α] [SecondCountableTopology α]
+variable [TopologicalSpace β] {mβ : MeasurableSpace β} [BorelSpace β]
+
+theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
+    (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
+  choose! M hM using h'
+  suffices H : (s \ interior s).Countable by
+    have : s = interior s ∪ s \ interior s := by rw [union_sdiff_cancel interior_subset]
+    rw [this]
+    exact isOpen_interior.measurableSet.union H.measurableSet
+  have A : ∀ x ∈ s, ∃ y ∈ Ioi x, Ioo x y ⊆ s := fun x hx =>
+    (mem_nhdsGT_iff_exists_Ioo_subset' (hM x hx)).1 (h x hx)
+  choose! y hy h'y using A
+  have B : Set.PairwiseDisjoint (s \ interior s) fun x => Ioo x (y x) := by
+    intro x hx x' hx' hxx'
+    rcases lt_or_gt_of_ne hxx' with (h' | h')
+    · refine disjoint_left.2 fun z hz h'z => ?_
+      have : x' ∈ interior s :=
+        mem_interior.2 ⟨Ioo x (y x), h'y _ hx.1, isOpen_Ioo, ⟨h', h'z.1.trans hz.2⟩⟩
+      exact False.elim (hx'.2 this)
+    · refine disjoint_left.2 fun z hz h'z => ?_
+      have : x ∈ interior s :=
+        mem_interior.2 ⟨Ioo x' (y x'), h'y _ hx'.1, isOpen_Ioo, ⟨h', hz.1.trans h'z.2⟩⟩
+      exact False.elim (hx.2 this)
+  exact B.countable_of_Ioo fun x hx => hy x hx.1
+
+/-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
+theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
+  by_cases H : ∃ x ∈ s, IsTop x
+  · rcases H with ⟨x₀, x₀s, h₀⟩
+    have : s = { x₀ } ∪ s \ { x₀ } := by rw [union_sdiff_cancel (singleton_subset_iff.2 x₀s)]
+    rw [this]
+    refine (measurableSet_singleton _).union ?_
+    have A : ∀ x ∈ s \ { x₀ }, x < x₀ := fun x hx => lt_of_le_of_ne (h₀ _) (by simpa using hx.2)
+    refine .of_mem_nhdsGT_aux (fun x hx => ?_) fun x hx => ⟨x₀, A x hx⟩
+    obtain ⟨u, hu, us⟩ : ∃ (u : α), u ∈ Ioi x ∧ Ioo x u ⊆ s :=
+      (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).1 (h x hx.1)
+    refine (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).2 ⟨u, hu, fun y hy => ⟨us hy, ?_⟩⟩
+    exact ne_of_lt (hy.2.trans_le (h₀ _))
+  · refine .of_mem_nhdsGT_aux h ?_
+    simp only [IsTop] at H
+    push Not at H
+    exact H
+
+/-- If a set is a left-neighborhood of all of its points, then it is measurable. -/
+@[to_dual existing]
+theorem MeasurableSet.of_mem_nhdsLT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[<] x) : MeasurableSet s :=
+  of_mem_nhdsGT (α := αᵒᵈ) h
+
+/-- A right-continuous function on a second-countable linear order is measurable. -/
+@[to_dual /-- A left-continuous function on a second-countable linear order is measurable. -/]
+theorem IsRightContinuous.measurable {f : α → β} (hf : IsRightContinuous f) : Measurable f :=
+  measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ hf x (hu.mem_nhds hx)
+
+end OrderTopology
+
 variable [SecondCountableTopology α] [OrderClosedTopology α]
 
 @[fun_prop]
@@ -807,57 +865,6 @@ theorem aemeasurable_restrict_of_antitoneOn [LinearOrder β] [OrderClosedTopolog
     {s : Set β} (hs : MeasurableSet s) {f : β → α} (hf : AntitoneOn f s) :
     AEMeasurable f (μ.restrict s) :=
   @aemeasurable_restrict_of_monotoneOn αᵒᵈ β _ _ ‹_› _ _ _ _ _ ‹_› _ _ _ _ hs _ hf
-
-theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
-    (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
-  choose! M hM using h'
-  suffices H : (s \ interior s).Countable by
-    have : s = interior s ∪ s \ interior s := by rw [union_sdiff_cancel interior_subset]
-    rw [this]
-    exact isOpen_interior.measurableSet.union H.measurableSet
-  have A : ∀ x ∈ s, ∃ y ∈ Ioi x, Ioo x y ⊆ s := fun x hx =>
-    (mem_nhdsGT_iff_exists_Ioo_subset' (hM x hx)).1 (h x hx)
-  choose! y hy h'y using A
-  have B : Set.PairwiseDisjoint (s \ interior s) fun x => Ioo x (y x) := by
-    intro x hx x' hx' hxx'
-    rcases lt_or_gt_of_ne hxx' with (h' | h')
-    · refine disjoint_left.2 fun z hz h'z => ?_
-      have : x' ∈ interior s :=
-        mem_interior.2 ⟨Ioo x (y x), h'y _ hx.1, isOpen_Ioo, ⟨h', h'z.1.trans hz.2⟩⟩
-      exact False.elim (hx'.2 this)
-    · refine disjoint_left.2 fun z hz h'z => ?_
-      have : x ∈ interior s :=
-        mem_interior.2 ⟨Ioo x' (y x'), h'y _ hx'.1, isOpen_Ioo, ⟨h', hz.1.trans h'z.2⟩⟩
-      exact False.elim (hx.2 this)
-  exact B.countable_of_Ioo fun x hx => hy x hx.1
-
-/-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
-theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
-  by_cases H : ∃ x ∈ s, IsTop x
-  · rcases H with ⟨x₀, x₀s, h₀⟩
-    have : s = { x₀ } ∪ s \ { x₀ } := by rw [union_sdiff_cancel (singleton_subset_iff.2 x₀s)]
-    rw [this]
-    refine (measurableSet_singleton _).union ?_
-    have A : ∀ x ∈ s \ { x₀ }, x < x₀ := fun x hx => lt_of_le_of_ne (h₀ _) (by simpa using hx.2)
-    refine .of_mem_nhdsGT_aux (fun x hx => ?_) fun x hx => ⟨x₀, A x hx⟩
-    obtain ⟨u, hu, us⟩ : ∃ (u : α), u ∈ Ioi x ∧ Ioo x u ⊆ s :=
-      (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).1 (h x hx.1)
-    refine (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).2 ⟨u, hu, fun y hy => ⟨us hy, ?_⟩⟩
-    exact ne_of_lt (hy.2.trans_le (h₀ _))
-  · refine .of_mem_nhdsGT_aux h ?_
-    simp only [IsTop] at H
-    push Not at H
-    exact H
-
-/-- If a set is a left-neighborhood of all of its points, then it is measurable. -/
-@[to_dual existing]
-theorem MeasurableSet.of_mem_nhdsLT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[<] x) : MeasurableSet s :=
-  of_mem_nhdsGT (α := αᵒᵈ) h
-
-/-- A right-continuous function on a second-countable linear order is measurable. -/
-@[to_dual /-- A left-continuous function on a second-countable linear order is measurable. -/]
-theorem IsRightContinuous.measurable {f : α → β} (hf : IsRightContinuous f) : Measurable f :=
-  measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ hf x (hu.mem_nhds hx)
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
