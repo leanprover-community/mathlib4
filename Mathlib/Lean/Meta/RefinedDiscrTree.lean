@@ -68,7 +68,7 @@ we have an incremental evaluation function of type
 `LazyEntry → MetaM (Option (List (Key × LazyEntry)))`, which computes the next keys
 and lazy entries, or returns `none` if the last key has been reached already.
 
-The `RefinedDiscrTree` then stores these `LazyEntries` at its leafs, and evaluates them
+The `RefinedDiscrTree` then stores these `LazyEntries` at its leaves, and evaluates them
 only if the lookup algorithm reaches this leaf.
 
 
@@ -109,7 +109,7 @@ variable {α : Type}
 
 /-- Creates the core context used for initializing a tree using the current context. -/
 private def withTreeCtx (ctx : Core.Context) : Core.Context :=
-  { ctx with maxHeartbeats := 0, diag := getDiag ctx.options }
+  { ctx with maxHeartbeats := 0 }
 
 /-- Returns candidates from all imported modules that match the expression. -/
 def findImportMatches

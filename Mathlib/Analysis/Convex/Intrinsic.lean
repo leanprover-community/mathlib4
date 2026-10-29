@@ -37,7 +37,7 @@ The main results are:
 ## References
 
 * Chapter 8 of [Barry Simon, *Convexity*][simon2011]
-* Chapter 1 of [Rolf Schneider, *Convex Bodies: The Brunn-Minkowski theory*][schneider2013].
+* Chapter 1 of [Rolf Schneider, *Convex Bodies: The Brunn-Minkowski theory*][schneider2014].
 
 ## TODO
 

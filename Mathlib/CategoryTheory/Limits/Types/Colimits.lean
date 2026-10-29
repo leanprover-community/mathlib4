@@ -48,7 +48,6 @@ def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
 
 variable {F}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     c.IsColimit ↔ Nonempty (Limits.IsColimit (F.coconeTypesEquiv c)) := by
@@ -180,24 +179,6 @@ theorem colimitEquivColimitType_apply (j : J) (x : F.obj j) :
 attribute [elementwise] colimit.ι_map
 attribute [simp] colimit.ι_map_apply
 
-variable {F} in
-@[deprecated colimit.w_apply +typeChanged (since := "2026-03-06")]
-theorem Colimit.w_apply {j j' : J} {x : F.obj j} (f : j ⟶ j') :
-    colimit.ι F j' (F.map f x) = colimit.ι F j x := by
-  rw [← comp_apply]
-  exact congr_hom (colimit.w F f) x
-
-@[deprecated colimit.ι_desc_apply +typeChanged (since := "2026-03-06")]
-theorem Colimit.ι_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
-    colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
-  congr_hom (colimit.ι_desc s j) x
-
-@[deprecated colimit.ι_map_apply +typeChanged (since := "2026-03-06")]
-theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J (Type u)]
-    (α : F ⟶ G) (j : J) (x : F.obj j) :
-    colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
-  congr_hom (colimit.ι_map α j) x
-
 -- These were variations of the aliased lemmas with different universe variables.
 -- It appears those are now strictly more powerful.
 variable {F} in
@@ -218,7 +199,6 @@ theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}
   apply Quot.eq.1
   simpa using! congr(colimitEquivColimitType F $w)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : IsColimit t)
     (x : t.pt) : ∃ j y, t.ι.app j y = x := by
   by_contra hx

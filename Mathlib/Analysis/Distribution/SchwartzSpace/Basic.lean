@@ -140,7 +140,7 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
     f =O[cocompact E] (‖·‖ ^ (-k : ℤ)) := by
   obtain ⟨d, _, hd'⟩ := f.decay k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
-  simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
+  simp_rw [isBigO_iff]
   refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
   refine (Filter.eventually_cofinite_ne 0).mono fun x hx ↦ ?_
   rw [Real.norm_of_nonneg (by positivity), zpow_neg, ← div_eq_mul_inv, le_div_iff₀' (by positivity)]
@@ -153,7 +153,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
   refine (isBigO_cocompact_zpow_neg_nat f k).trans ?_
   suffices (fun x : ℝ ↦ x ^ (-k : ℤ)) =O[atTop] fun x : ℝ ↦ x ^ s
     from this.comp_tendsto tendsto_norm_cocompact_atTop
-  simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
+  simp_rw [Asymptotics.isBigO_iff]
   refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx ↦ ?_⟩
   rw [one_mul, Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity),
     ← Real.rpow_intCast, Int.cast_neg, Int.cast_natCast]
@@ -246,7 +246,7 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
             gcongr
             apply f.le_seminormAux }⟩
 
-instance : IsSMulApply 𝕜 𝓢(E, F) E F where
+instance : IsSMulApply 𝕜 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -270,7 +270,7 @@ instance instNSMul : SMul ℕ 𝓢(E, F) :=
       smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
 
-instance : IsSMulApply ℕ 𝓢(E, F) E F where
+instance : IsSMulApply ℕ 𝓢(E, F) where
 
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
@@ -278,7 +278,7 @@ instance instZSMul : SMul ℤ 𝓢(E, F) :=
       smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using! ((c : ℝ) • f).decay' }⟩
 
-instance : IsSMulApply ℤ 𝓢(E, F) E F where
+instance : IsSMulApply ℤ 𝓢(E, F) where
 
 end SMul
 
@@ -292,7 +292,7 @@ instance instZero : Zero 𝓢(E, F) :=
 instance instInhabited : Inhabited 𝓢(E, F) :=
   ⟨0⟩
 
-instance : IsZeroApply 𝓢(E, F) E F where
+instance : IsZeroApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] alias coe_zero := FunLike.coe_zero
 
@@ -315,7 +315,7 @@ instance instNeg : Neg 𝓢(E, F) :=
       intro x
       grw [f.decay_neg_aux k n x, f.le_seminormAux k n x]⟩⟩
 
-instance : IsNegApply 𝓢(E, F) E F where
+instance : IsNegApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -330,7 +330,7 @@ instance instAdd : Add 𝓢(E, F) :=
       intro x
       grw [decay_add_le_aux k n f g x, f.le_seminormAux k n x, g.le_seminormAux k n x]⟩⟩
 
-instance : IsAddApply 𝓢(E, F) E F where
+instance : IsAddApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
@@ -355,7 +355,7 @@ instance instSub : Sub 𝓢(E, F) :=
       rw [← decay_neg_aux k n g x]
       exact decay_add_le_aux k n f (-g) x⟩⟩
 
-instance : IsSubApply 𝓢(E, F) E F where
+instance : IsSubApply 𝓢(E, F) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 

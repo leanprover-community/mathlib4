@@ -107,11 +107,7 @@ then deprecate the rest of them.
 
 namespace unitInterval
 
-/-- The path 0 ⟶ 1 in `I` -/
-def path01 : Path (0 : I) 1 where
-  toFun := id
-  source' := rfl
-  target' := rfl
+@[deprecated (since := "2026-10-07")] alias path01 := Path.id
 
 /-- The path 0 ⟶ 1 in `ULift I` -/
 def upath01 : Path (ULift.up 0 : ULift.{u} I) (ULift.up 1) where

@@ -1113,8 +1113,8 @@ lemma lie_end_of_apply_eq_smul {R M : Type*} [CommRing R] [AddCommGroup M] [Modu
     (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
     ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
   refine b.ext fun k ↦ ?_
-  simp only [Ring.lie_def, LinearMap.sub_apply, End.mul_apply, LinearMap.smul_apply,
-    Basis.end_apply_apply, smul_ite, smul_zero, sub_smul]
+  simp only [Ring.lie_def, LinearMap.sub_apply, mul_apply_eq_comp, end_apply_apply, sub_smul,
+    LinearMap.smul_apply, smul_ite, smul_zero]
   rcases eq_or_ne j k with rfl | hjk
   · simp [hs, Basis.end_apply_apply]
   · simp [hs, Basis.end_apply_apply, hjk]
@@ -1156,7 +1156,7 @@ def endVecRingEquivMatrixEnd :
   right_inv m := by ext; simp [Pi.single_apply, apply_ite]
   map_mul' f g := by
     ext
-    simp only [Module.End.mul_apply, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
+    simp only [mul_apply_eq_comp, LinearMap.coe_mk, AddHom.coe_mk, Matrix.mul_apply,
       LinearMap.coe_sum, Finset.sum_apply]
     rw [← Fintype.sum_apply, ← map_sum]
     exact congr_arg₂ _ (by aesop) rfl
