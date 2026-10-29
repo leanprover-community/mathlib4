@@ -18,15 +18,6 @@ universe u v
 
 section CharP
 
-instance subsemiring (R : Type u) [Semiring R] (p : ℕ) [CharP R p] (S : Subsemiring R) :
-    CharP S p :=
-  ⟨fun a b => Subtype.ext_iff.trans (cast_eq_iff_mod_eq R p a b)⟩
-
-instance subring (R : Type u) [Ring R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
-  ⟨fun a b => Subtype.ext_iff.trans (cast_eq_iff_mod_eq R p a b)⟩
-
-instance subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
-  CharP.subring R p S
 theorem SubsemiringClass.charP_iff {R : Type u} {S : Type v} [SetLike S R]
     [NonAssocSemiring R] [SubsemiringClass S R] {p : ℕ} {s : S} :
     CharP s p ↔ CharP R p :=
