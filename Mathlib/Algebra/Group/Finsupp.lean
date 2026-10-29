@@ -108,17 +108,28 @@ instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀
 
 instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (ι →₀ M) where
 
+/-- Evaluation of a function `f : ι →₀ M` at a point as an additive monoid homomorphism.
+
+See `Finsupp.lapply` in `Mathlib/LinearAlgebra/Finsupp/Defs.lean` for the stronger version as a
+linear map. -/
 @[deprecated FunLike.evalAddMonoidHom +typeChanged (since := "2026-10-27")]
 def applyAddHom (a : ι) : (ι →₀ M) →+ M where
   toFun g := g a
   map_zero' := Finsupp.zero_apply
   map_add' _ _ := Finsupp.add_apply _ _ _
 
+@[deprecated FunLike.evalAddMonoidHom_apply +typeChanged (since := "2026-10-29")]
+lemma applyAddHom_apply (a : ι) (g : ι →₀ M) : (applyAddHom a) g = g a := rfl
+
+/-- Coercion from a `Finsupp` to a function type is an `AddMonoidHom`. -/
 @[deprecated FunLike.coeAddMonoidHom +typeChanged (since := "2026-10-27")]
 noncomputable def coeFnAddHom : (ι →₀ M) →+ ι → M where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[deprecated FunLike.coeAddMonoidHom_apply +typeChanged (since := "2026-10-29")]
+lemma coeFnAddHom_apply (f : ι →₀ M) (a : ι) : coeFnAddHom f a = f a := rfl
 
 lemma mapRange_add {hf : f 0 = 0} (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v₂ : ι →₀ M) :
     mapRange f hf (v₁ + v₂) = mapRange f hf v₁ + mapRange f hf v₂ :=
