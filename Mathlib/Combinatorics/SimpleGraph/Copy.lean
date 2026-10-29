@@ -601,8 +601,8 @@ set_option backward.privateInPublic.warn false in
 `H` in `G`. By construction, it doesn't contain `H` (unless `H` had no edges) and has at most the
 number of copies of `H` edges less than `G`. See `free_killCopies` and
 `le_card_edgeFinset_killCopies` for these two properties. -/
-noncomputable irreducible_def killCopies (G : SimpleGraph V) (H : SimpleGraph W) :
-    SimpleGraph V := by
+@[no_expose]
+noncomputable def killCopies (G : SimpleGraph V) (H : SimpleGraph W) : SimpleGraph V := by
   classical exact
   if hH : H = ⊥ then G
   else G.deleteEdges <| ⋃ (G' : G.Subgraph) (hG' : Nonempty (H ≃g G'.coe)), {(aux hH hG').some}

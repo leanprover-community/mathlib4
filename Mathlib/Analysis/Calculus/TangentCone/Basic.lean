@@ -203,7 +203,7 @@ variable [(𝓝[≠] (0 : 𝕜)).NeBot]
 
 @[simp]
 theorem tangentConeAt_univ : tangentConeAt 𝕜 univ x = univ := by
-  simp [tangentConeAt]
+  simp [tangentConeAt_def]
 
 theorem tangentConeAt_of_mem_nhds [ContinuousAdd E] (h : s ∈ 𝓝 x) : tangentConeAt 𝕜 s x = univ := by
   rw [← s.univ_inter, tangentConeAt_inter_nhds h, tangentConeAt_univ]

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Sets.Closeds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closed submodules of a topological module
 

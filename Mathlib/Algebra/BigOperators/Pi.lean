@@ -192,8 +192,7 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
     exact Fintype.prod_pi_mulSingle' ..
   map_mul' φ ψ := by
     ext
-    simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-      MonoidHom.mul_apply, mul_apply]
+    simp
 
 end MulEquiv
 

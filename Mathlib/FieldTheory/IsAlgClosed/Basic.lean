@@ -195,6 +195,21 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
   obtain ⟨x, hx⟩ := H f h
   exact Splits.of_degree_eq_one (degree_eq_one_of_irreducible_of_root h hx)
 
+
+-- TODO : add universe-polymorphic version (algebraic extensions have the same cardinality)
+/--
+If `k` has no nontrivial finite extension, then `k` is algebraically closed.
+-/
+theorem of_finiteDimensional_imp_finrank_eq_one
+    (H : ∀ (l : Type u) [Field l] [Algebra k l] [FiniteDimensional k l], Module.finrank k l = 1) :
+    IsAlgClosed k :=
+  .of_exists_root _ fun f f_monic f_irr ↦
+    have := Fact.mk f_irr
+    have := f_monic.finite_adjoinRoot
+    exists_root_of_natDegree_eq_one <| by
+      rw [← finrank_quotient_span_eq_natDegree]
+      exact H (AdjoinRoot f)
+
 theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
     [IsAlgClosed k] : IsAlgClosed k' := by
   apply IsAlgClosed.of_exists_root

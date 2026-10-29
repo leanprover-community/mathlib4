@@ -309,10 +309,10 @@ theorem eqvGen_mono {r s : α → α → Prop} (h : ∀ x y, r x y → s x y) :
 /-- There is a Galois insertion of equivalence relations on α into binary relations
 on α, with equivalence closure the lower adjoint. -/
 def gi : @GaloisInsertion (α → α → Prop) (Setoid α) _ _ EqvGen.setoid (⇑) where
-  choice r _ := EqvGen.setoid r
+  choice r hr := { r, iseqv := le_antisymm hr EqvGen.rel ▸ (EqvGen.setoid r).iseqv }
   gc _ s := ⟨fun H _ _ h => H <| EqvGen.rel _ _ h, fun H => eqvGen_of_setoid s ▸ eqvGen_mono H⟩
   le_l_u x := (eqvGen_of_setoid x).symm ▸ le_refl x
-  choice_eq _ _ := rfl
+  choice_eq _ _ := (eqvGen_of_setoid _).symm
 
 end EqvGen
 

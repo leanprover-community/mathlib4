@@ -8,6 +8,9 @@ module
 public meta import Lean.Elab.Command
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The "ppRoundtrip" linter
 

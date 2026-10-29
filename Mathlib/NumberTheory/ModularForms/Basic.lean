@@ -13,6 +13,9 @@ public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 import Mathlib.Analysis.Calculus.FDeriv.Star
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modular forms
 

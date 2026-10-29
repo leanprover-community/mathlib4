@@ -1018,7 +1018,7 @@ protected theorem continuousAt_eval₂ [TopologicalSpace α] {f : α →ᵤ[𝔖
   intro U hU
   rcases h𝔖 with ⟨V, hV, hVx⟩
   filter_upwards [prod_mem_nhds (UniformOnFun.gen_mem_nhds _ _ _ hV hU)
-    (inter_mem hVx <| hc <| UniformSpace.ball_mem_nhds _ hU)]
+    (inter_mem hVx <| hc <| mem_nhds_left _ hU)]
     with ⟨g, y⟩ ⟨hg, hyV, hy⟩ using ⟨toFun 𝔖 f y, hy, hg y hyV⟩
 
 /-- If each point of `α` admits a neighbourhood `V ∈ 𝔖`,

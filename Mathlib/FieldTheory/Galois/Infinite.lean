@@ -185,7 +185,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
     have : ((restrictNormalHom L') h ⟨y,hy⟩).1 = ((restrictNormalHom L') σ ⟨y,hy⟩).1 := by rw [eq]
     rw [restrictNormalHom_apply L'.toIntermediateField h ⟨y, hy⟩,
       restrictNormalHom_apply L'.toIntermediateField σ ⟨y, hy⟩] at this
-    simp only [this, ← AlgEquiv.mul_apply, inv_mul_cancel, one_apply]
+    simp only [this, ← AlgEquiv.mul_apply, inv_mul_cancel, AlgEquiv.one_apply]
   absurd compl
   apply Set.not_subset.mpr
   use h

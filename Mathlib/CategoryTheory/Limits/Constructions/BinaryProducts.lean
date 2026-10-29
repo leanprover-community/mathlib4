@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing binary product from pullbacks and terminal object.
 

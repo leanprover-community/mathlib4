@@ -472,7 +472,7 @@ theorem ker_dualMap_eq_dualAnnihilator_range :
     LinearMap.ker f.dualMap = (range f).dualAnnihilator := by
   ext
   simp_rw [mem_ker, LinearMap.ext_iff, Submodule.mem_dualAnnihilator,
-    ← SetLike.mem_coe, coe_range, Set.forall_mem_range, dualMap_apply, zero_apply]
+    ← SetLike.mem_coe, coe_range, Set.forall_mem_range, dualMap_apply, LinearMap.zero_apply]
 
 theorem range_dualMap_le_dualAnnihilator_ker :
     LinearMap.range f.dualMap ≤ (ker f).dualAnnihilator := by

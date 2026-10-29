@@ -92,7 +92,7 @@ open List in
 
 NB: For backwards compatibility, if you add more items to the list, please append them at the end of
 the list. -/
-theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
+theorem tfae_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     TFAE
       [∃ a ∈ Ioo (-R) R, f =o[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =o[atTop] (a ^ ·),
         ∃ a ∈ Ioo (-R) R, f =O[atTop] (a ^ ·), ∃ a ∈ Ioo 0 R, f =O[atTop] (a ^ ·),
@@ -140,6 +140,9 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     refine ⟨a, A ⟨?_, ha⟩, .of_norm_eventuallyLE H⟩
     exact nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)
   tfae_finish
+
+@[deprecated (since := "2026-10-27")]
+alias TFAE_exists_lt_isLittleO_pow := tfae_exists_lt_isLittleO_pow
 
 /-- For any natural `k` and a real `r > 1` we have `n ^ k = o(r ^ n)` as `n → ∞`. -/
 theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormedRing R] (k : ℕ) {r : ℝ}

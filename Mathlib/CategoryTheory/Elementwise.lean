@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Use the `elementwise` attribute to create applied versions of lemmas.
 
