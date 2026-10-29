@@ -92,7 +92,7 @@ some order making the group into a partially ordered group. -/
 structure GroupCone (G : Type*) [CommGroup G] extends Submonoid G where
   eq_one_of_mem_of_inv_mem' {a} : a ∈ carrier → a⁻¹ ∈ carrier → a = 1
 
--- these `set_option` are required due to a bug with deprecations and `to_addtive`. See
+-- these `set_option` are required due to a bug with deprecations and `to_additive`. See
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/spurious.20.60linter.2Edeprecated.60.20when.20using.20.60to_additive.60/with/627452051
 set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-10-28"))]
