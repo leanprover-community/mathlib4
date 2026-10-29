@@ -6,6 +6,7 @@ Authors: Kexing Ying, Rémy Degenne
 module
 
 public import Mathlib.Probability.Process.Filtration
+public import Mathlib.Topology.Order.Cadlag
 
 /-!
 # Adapted and progressively measurable processes
@@ -31,6 +32,8 @@ of `Measurable`:
 
 * `StronglyAdapted.isStronglyProgressive_of_continuous`: a continuous strongly adapted process is
   strongly progressive.
+* `StronglyAdapted.isStronglyProgressive_of_isRightContinuous`: a right-continuous strongly
+  adapted process is strongly progressive.
 
 ## Tags
 
@@ -46,7 +49,11 @@ open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} [Preorder ι] {f : Filtration ι m}
+variable {Ω ι : Type*} {m : MeasurableSpace Ω}
+
+section Preorder
+
+variable [Preorder ι] {f : Filtration ι m}
 
 section Adapted
 
@@ -364,6 +371,44 @@ theorem StronglyAdapted.isStronglyProgressive_of_discrete [TopologicalSpace ι] 
     [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
     [PseudoMetrizableSpace β] (h : StronglyAdapted f u) : IsStronglyProgressive f u :=
   h.isStronglyProgressive_of_continuous fun _ => continuous_of_discreteTopology
+
+end Preorder
+
+section LinearOrder
+
+variable [LinearOrder ι] {f : Filtration ι m} {β : Type*} [TopologicalSpace β] {u : ι → Ω → β}
+
+/-- A right-continuous and strongly adapted process is strongly progressive. -/
+theorem StronglyAdapted.isStronglyProgressive_of_isRightContinuous [TopologicalSpace ι]
+    [OrderTopology ι] [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
+    [PseudoMetrizableSpace β] (h : StronglyAdapted f u)
+    (hu_cont : ∀ ω, IsRightContinuous (u · ω)) :
+    IsStronglyProgressive f u := by
+  intro t
+  -- approximate each `s ∈ Iic t` from above by monotone finitely-valued functions `w n s → s`
+  obtain ⟨w, hw_mono, hw_fin, hw_le, hw_tendsto⟩ :=
+    exists_seq_monotone_finite_range_le_tendsto (α := Set.Iic t)
+  refine stronglyMeasurable_of_tendsto atTop (f := fun n (p : Set.Iic t × Ω) => u (w n p.1) p.2)
+    (fun n => ?_) (tendsto_pi_nhds.2 fun p => ?_)
+  · -- `w n` is a simple function (monotone with finite range; `Monotone.measurable` would need a
+    -- `BorelSpace`), so the finitely many `f t`-strongly measurable functions `u (w n s)` assemble
+    -- into the strongly measurable `(s, ω) ↦ u (w n s) ω`
+    let _ : MeasurableSpace Ω := f t
+    have hwm : Measurable (w n) :=
+      (SimpleFunc.mk (w n) (fun c => (Set.ordConnected_singleton.preimage_mono
+        (hw_mono n)).measurableSet) (hw_fin n)).measurable
+    have := (hw_fin n).to_subtype
+    have hg : Measurable fun p : Set.Iic t × Ω => (Set.rangeFactorization (w n) p.1, p.2) :=
+      (hwm.comp measurable_fst).subtype_mk.prodMk measurable_snd
+    exact (stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable
+      (u := fun (r : Set.range (w n)) ω => u r ω) (fun _ => continuous_of_discreteTopology)
+      fun r => (h r).mono (f.mono r.1.2)).comp_measurable hg
+  · -- `u (w n s) ω → u s ω` by right-continuity, since `w n s → s` from above
+    exact (continuousWithinAt_Ioi_iff_Ici.1 (hu_cont p.2 p.1)).tendsto.comp
+      (tendsto_nhdsWithin_iff.2 ⟨(continuous_subtype_val.tendsto _).comp (hw_tendsto p.1),
+        .of_forall fun n => hw_le n p.1⟩)
+
+end LinearOrder
 
 @[deprecated (since := "2026-04-24")] alias ProgMeasurable := IsStronglyProgressive
 

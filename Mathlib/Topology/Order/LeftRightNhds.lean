@@ -189,6 +189,47 @@ alias countable_setOf_isolated_right_within := countable_setOfPred_isolated_righ
 @[deprecated (since := "2026-07-09")]
 alias countable_setOf_isolated_left_within := countable_setOfPred_isolated_left_within
 
+/-- In a second-countable space with the order topology, there is a countable set meeting every
+interval `[x, y)` with `x < y`. -/
+@[to_dual /-- In a second-countable space with the order topology, there is a countable set meeting
+every interval `(y, x]` with `y < x`. -/]
+theorem exists_countable_inter_Ico_nonempty [SecondCountableTopology α] :
+    ∃ S : Set α, S.Countable ∧ ∀ ⦃x y⦄, x < y → (S ∩ Ico x y).Nonempty := by
+  obtain ⟨D, hDc, hDd⟩ := exists_countable_dense α
+  refine ⟨D ∪ {x | 𝓝[>] x = ⊥}, hDc.union countable_setOfPred_isolated_right, fun x y hxy ↦ ?_⟩
+  by_cases hx : 𝓝[>] x = ⊥
+  · exact ⟨x, Or.inr hx, left_mem_Ico.2 hxy⟩
+  · have := neBot_iff.2 hx
+    obtain ⟨d, hd, hdD⟩ :=
+      hDd.inter_open_nonempty _ isOpen_Ioo (nonempty_of_mem (Ioo_mem_nhdsGT hxy))
+    exact ⟨d, Or.inl hdD, Ioo_subset_Ico_self hd⟩
+
+/-- In a second-countable space with the order topology and a top element, every point `x` is the
+limit of `w n x` for a sequence `w` of monotone functions with finite range satisfying `x ≤ w n x`.
+-/
+theorem exists_seq_monotone_finite_range_le_tendsto [SecondCountableTopology α] [OrderTop α] :
+    ∃ w : ℕ → α → α, (∀ n, Monotone (w n)) ∧ (∀ n, (range (w n)).Finite) ∧ (∀ n x, x ≤ w n x) ∧
+      ∀ x, Tendsto (w · x) atTop (𝓝 x) := by
+  classical
+  obtain ⟨S, hSc, hS⟩ := exists_countable_inter_Ico_nonempty (α := α)
+  obtain ⟨e, he⟩ := countable_iff_exists_subset_range.1 hSc
+  -- `w n x` is the smallest of the points `e 0, …, e (n - 1), ⊤` lying above `x`
+  have hw_le (n : ℕ) (x : α) : x ≤ {k ∈ Finset.range n | x ≤ e k}.inf e :=
+    Finset.le_inf fun k hk ↦ (Finset.mem_filter.1 hk).2
+  refine ⟨fun n x ↦ {k ∈ Finset.range n | x ≤ e k}.inf e, fun n x y hxy ↦
+    Finset.inf_mono (Finset.monotone_filter_right _ fun k _ ↦ hxy.trans),
+    fun n ↦ ((Finset.range n).finite_toSet.image e |>.insert ⊤).subset ?_, hw_le, fun x ↦ ?_⟩
+  · rintro _ ⟨x, rfl⟩
+    rcases {k ∈ Finset.range n | x ≤ e k}.eq_empty_or_nonempty with hF | hF
+    · simp [hF]
+    · obtain ⟨k, hk, hk'⟩ := Finset.exists_mem_eq_inf _ hF e
+      exact Or.inr ⟨k, (Finset.mem_filter.1 hk).1, hk'.symm⟩
+  · refine tendsto_order.2 ⟨fun a ha ↦ .of_forall fun n ↦ ha.trans_le (hw_le n x), fun b hb ↦ ?_⟩
+    obtain ⟨_, hdS, hxd, hdb⟩ := hS hb
+    obtain ⟨k, rfl⟩ := he hdS
+    exact eventually_atTop.2 ⟨k + 1, fun n hn ↦
+      (Finset.inf_le (Finset.mem_filter.2 ⟨Finset.mem_range.2 hn, hxd⟩)).trans_lt hdb⟩
+
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
 @[to_dual /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval
