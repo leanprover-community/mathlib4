@@ -120,9 +120,10 @@ runs:
         api() { local out; out=$(gh api "$@" 2>/dev/null) && printf '%s\n' "${out}"; }
         cutoff=$(date -u -d '2 days ago' +%Y-%m-%dT%H:%M:%SZ)
         # bors fast-forwards master once the required jobs pass, so the staging run can still
-        # be in progress: select runs by commit, not by conclusion.
+        # be in progress: select runs by commit, not by conclusion. Only a run that bors
+        # started, and that nobody else re-ran, qualifies.
         run_ids=$(api "repos/leanprover-community/mathlib4/actions/workflows/bors.yml/runs?branch=staging&event=push&head_sha=${GITHUB_SHA}&created=>=${cutoff}&per_page=10" \
-          --jq '.workflow_runs[].id')
+          --jq '.workflow_runs[] | select(.actor.login == "mathlib-bors[bot]" and .triggering_actor.login == "mathlib-bors[bot]") | .id')
         run_id=""
         for id in ${run_ids}; do
           if api "repos/leanprover-community/mathlib4/actions/runs/${id}/artifacts?name=cache-staging&per_page=100" \
