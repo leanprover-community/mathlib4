@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Localization.Prod
 # Left derived bifunctors
 
 This files introduces a basic API for left derived bifunctors. In order
-to state that a bifunctor `LF : D₁ ⥤ D₂ ⥤ H` is a left derived functor
+to state that a bifunctor `LF : D₁ ⥤ D₂ ⥤ H` is a left derived bifunctor
 of `F : C₁ ⥤ C₂ ⥤ H` with respect to localization functors
 `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` for `W₁ : MorphismProperty C₁` and
 `W₂ : MorphismProperty C₂` respectively, we translate the situation
@@ -40,7 +40,7 @@ variable {C₁ C₂ D₁ D₂ H : Type*} [Category* C₁] [Category* C₂]
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
 
 /-- If `F : C₁ ⥤ C₂ ⥤ H` is a bifunctor, `W₁ : MorphismProperty C₁` and
-`W₂ : MorphismProperty C₂`, this is the property that `F` admits a derived functors
+`W₂ : MorphismProperty C₂`, this is the property that `F` admits a derived functor
 in two variables, which is defined by saying that the corresponding uncurried
 functor `C₁ × C₂ ⥤ H` admits a left derived functor with respect to `W₁.prod W₂`.
 (This should be used only when both `W₁` and `W₂` contain identities.) -/
@@ -53,7 +53,7 @@ variable {F} [W₁.ContainsIdentities] [W₂.ContainsIdentities]
 `L₂ : C₂ ⥤ D₂` is localization functor for `W₂`, `F : C₁ ⥤ C₂ ⥤ H`
 and `LF : D₁ ⥤ D₂ ⥤ H` are bifunctors related by a natural transformation
 `α : (((whiskeringLeft₂ H).obj L₁).obj L₂).obj LF ⟶ F`, we say that `α`
-makes `LF` the left derived bifunctor of `F`, if it is so for the corresponding
+makes `LF` the left derived bifunctor of `F` if it is so for the corresponding
 uncurried functors `C₁ × C₂ ⥤ H` and `D₁ × D₂ ⥤ H`. -/
 @[reducible]
 def IsLeftDerivedFunctor₂ : Prop :=
@@ -65,7 +65,7 @@ variable (F L₁ L₂) [HasLeftDerivedFunctor₂ F W₁ W₂]
 
 /-- When it exists, this is a choice of a left derived bifunctor `D₁ ⥤ D₂ ⥤ H`
 of a bifunctor `F : C₁ ⥤ C₂ ⥤ H` with respect to localization functors
-`L₁ : C₁ ⥤ D₁` for `W₁ : : MorphismProperty C₁` and
+`L₁ : C₁ ⥤ D₁` for `W₁ : MorphismProperty C₁` and
 `L₂ : C₂ ⥤ D₂` for `W₂ : MorphismProperty C₂`. -/
 @[no_expose, local implicit_reducible]
 noncomputable def leftDerived₂ : D₁ ⥤ D₂ ⥤ H :=
