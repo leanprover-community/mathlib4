@@ -33,7 +33,10 @@ lemma isSelfInv_coe_iff : IsSelfInv (s : Set α) ↔ IsSelfInv s := by
   simp [isSelfInv_iff, Set.ext_iff, Finset.ext_iff]
 
 @[to_additive]
+alias ⟨IsSelfInv.of_coe_finset, IsSelfInv.coe_finset⟩ := isSelfInv_coe_iff
+
+@[to_additive]
 lemma isSelfInv_iff_forall_inv_mem : IsSelfInv s ↔ ∀ ⦃x⦄, x ∈ s → x⁻¹ ∈ s := by
-  simp only [← isSelfInv_coe_iff, Set.isSelfInv_iff_forall_inv_mem, mem_coe]
+  simp [← isSelfInv_coe_iff, Set.isSelfInv_iff_forall_inv_mem]
 
 end Finset
