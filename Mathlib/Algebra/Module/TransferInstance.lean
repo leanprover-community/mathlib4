@@ -9,9 +9,6 @@ public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Transfer algebraic structures across `Equiv`s or `AddEquiv`s
 

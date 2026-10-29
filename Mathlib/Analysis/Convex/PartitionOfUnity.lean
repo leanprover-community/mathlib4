@@ -8,9 +8,6 @@ module
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Topology.PartitionOfUnity
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Partition of unity and convex sets
 

@@ -12,9 +12,6 @@ public import Batteries.Data.List.Pairwise
 public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Tactic.Order.CollectFacts
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Translating linear orders to ℤ
 

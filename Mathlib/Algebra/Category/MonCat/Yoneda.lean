@@ -9,9 +9,6 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.CategoryTheory.Yoneda
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Yoneda embeddings
 
@@ -31,7 +28,6 @@ def CommMonCat.coyoneda : CommMonCatᵒᵖ ⥤ CommMonCat ⥤ CommMonCat where
   obj M := { obj N := of (M.unop →* N), map f := ofHom (.compHom f.hom) }
   map f := { app N := ofHom (.compHom' f.unop.hom) }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The `CommMonCat`-valued coyoneda embedding composed with the forgetful functor is the usual
 coyoneda embedding. -/
 @[to_additive (attr := simps!)

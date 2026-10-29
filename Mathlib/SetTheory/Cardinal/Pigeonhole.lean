@@ -7,9 +7,6 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Regular
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Infinite pigeonhole principle
 

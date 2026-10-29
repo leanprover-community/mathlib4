@@ -9,9 +9,6 @@ public import Mathlib.RingTheory.Ideal.Height
 
 import Mathlib.RingTheory.KrullDimension.Zero
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The Krull dimension of a principal ideal domain
 

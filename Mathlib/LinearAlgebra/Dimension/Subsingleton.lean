@@ -7,9 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Dimension of trivial modules
 -/
@@ -24,7 +21,7 @@ variable [Nontrivial R]
 
 /-- See `rank_subsingleton` that assumes `Subsingleton R` instead. -/
 @[simp, nontriviality] theorem rank_subsingleton' [Subsingleton M] : Module.rank R M = 0 := by
-  rw [Module.rank, ← bot_eq_zero, eq_bot_iff]
+  rw [Module.rank_def, ← bot_eq_zero, eq_bot_iff]
   exact ciSup_le fun s ↦ by simp [(linearIndependent_subsingleton_iff _).mp s.2]
 
 theorem rank_punit : Module.rank R PUnit = 0 := rank_subsingleton' _ _

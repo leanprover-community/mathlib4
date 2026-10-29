@@ -490,6 +490,77 @@ example {h : False} : 0 = 1 ∧ 0 = 1 := by
     rw [← Classical.not_not (a := False)] at h
     rwa [← Classical.not_not (a := False)]
 
+-- Declaring a fresh local with the same name does not use the stained hypothesis.
+#guard_msgs in
+example (x y : Nat) (h : x + 0 = y) : True := by
+  simp at h
+  let h := 3
+  trivial
+
+#guard_msgs in
+example (x y : Nat) (h : x + 0 = y) : True := by
+  simp at h
+  have h := 3
+  trivial
+
+-- The right-hand side may still refer to the old hypothesis with the same name.
+/--
+warning: `simp at h` is a flexible tactic modifying `h`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `let h := h`
+uses `h`, which was modified by the flexible tactic `simp` on line
+-/
+#guard_msgs (substring := true) in
+example (x y : Nat) (h : x + 0 = y) : True := by
+  simp at h
+  let h := h
+  trivial
+
+/--
+warning: `simp at h` is a flexible tactic modifying `h`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `have h := h`
+uses `h`, which was modified by the flexible tactic `simp` on line
+-/
+#guard_msgs (substring := true) in
+example (x y : Nat) (h : x + 0 = y) : True := by
+  simp at h
+  have h := h
+  trivial
+
+-- References in a declaration's type also count as uses of the old hypothesis.
+/--
+warning: `simp at h` is a flexible tactic modifying `h`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `let h : h = h := rfl`
+uses `h`, which was modified by the flexible tactic `simp` on line
+-/
+#guard_msgs (substring := true) in
+example (x y : Nat) (h : x + 0 = y) : True := by
+  simp at h
+  let h : h = h := rfl
+  trivial
+
+/--
+warning: `simp at h` is a flexible tactic modifying `h`. Try `simp?` and use the suggested `simp only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `have h : h = h := rfl`
+uses `h`, which was modified by the flexible tactic `simp` on line
+-/
+#guard_msgs (substring := true) in
+example (x y : Nat) (h : x + 0 = y) : True := by
+  simp at h
+  have h : h = h := rfl
+  trivial
+
 section test_internals
 open Lean Mathlib.Linter Flexible
 

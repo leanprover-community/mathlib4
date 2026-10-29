@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Data.BitVec
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
 
 /-!
 # Adds Mathlib specific instances to the `UIntX` data types.

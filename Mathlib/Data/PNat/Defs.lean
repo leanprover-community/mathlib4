@@ -14,9 +14,6 @@ public import Mathlib.Tactic.Lift
 
 import Mathlib.Tactic.Basify.Attr
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The positive natural numbers
 

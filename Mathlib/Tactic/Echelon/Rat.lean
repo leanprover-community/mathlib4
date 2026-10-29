@@ -9,9 +9,6 @@ public import Mathlib.Algebra.CharP.Defs  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.Echelon.Core
 public import Mathlib.Tactic.NormNum.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # The rational model for the Bareiss elimination
 
@@ -72,7 +69,7 @@ def normNumCertifier {u : Level} (α : Q(Type u)) : EntryCertifier α :=
 
 /-- The rational model. -/
 def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
-    MetaM (Model α Int) := do
+    MetaM (Model α) := do
   let entryCertifier? ← do
     if ← checkDecideEq α rα then pure none
     else
@@ -94,7 +91,7 @@ def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
     sub := (· - ·)
     divExact := (· / ·)
     isZero := if p == 0 then (· == 0) else fun v => v % p == 0 }
-  return {
+  return .mk Int {
     ops
     evalEntry := fun e => do
       let v ← evalRatEntry (p == 0) e

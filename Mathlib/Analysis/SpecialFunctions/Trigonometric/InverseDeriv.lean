@@ -8,9 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # derivatives of the inverse trigonometric functions
 

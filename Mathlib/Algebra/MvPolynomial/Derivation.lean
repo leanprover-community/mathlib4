@@ -8,9 +8,6 @@ module
 public import Mathlib.Algebra.MvPolynomial.Supported
 public import Mathlib.RingTheory.Derivation.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Derivations of multivariate polynomials
 

@@ -8,9 +8,6 @@ module
 public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Identities of ModularForms and SlashInvariantForms
 

@@ -10,9 +10,6 @@ public import Mathlib.Topology.InductiveDimension.Classes
 
 import Mathlib.Data.Nat.Cast.Order.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Small inductive dimension
 
@@ -43,7 +40,7 @@ private theorem hasSmallInductiveDimensionLT_of_smallInductiveDimension_lt {n : 
 private theorem hasSmallInductiveDimensionLE_of_smallInductiveDimension_le {n : ℕ}
     (h : smallInductiveDimension X ≤ n) : HasSmallInductiveDimensionLE X n := by
   apply hasSmallInductiveDimensionLT_of_smallInductiveDimension_lt (h.trans_lt _)
-  exact_mod_cast n.lt_add_one
+  exact mod_cast n.lt_add_one
 
 theorem smallInductiveDimension_le_iff {n : ℕ} :
     smallInductiveDimension X ≤ n ↔ HasSmallInductiveDimensionLE X n where
@@ -61,7 +58,7 @@ theorem smallInductiveDimension_lt_iff {n : ℕ} :
       · exact fun _ _ ↦ h.mono zero_le
     | succ n =>
       apply (smallInductiveDimension_le_iff.2 h).trans_lt
-      exact_mod_cast n.lt_add_one
+      exact mod_cast n.lt_add_one
 
 variable (X) in
 theorem smallInductiveDimension_le (n : ℕ) [H : HasSmallInductiveDimensionLE X n] :

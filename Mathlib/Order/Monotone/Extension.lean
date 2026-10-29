@@ -9,9 +9,6 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 import Mathlib.Data.Set.Monotone
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Extension of a monotone function from a set to the whole space
 

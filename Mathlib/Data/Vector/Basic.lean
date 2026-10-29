@@ -14,9 +14,6 @@ public import Mathlib.Data.Vector.Defs
 import Batteries.Data.Fin.Lemmas
 import Mathlib.Data.List.Nodup
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Additional theorems and definitions about the `Vector` type
 
@@ -667,13 +664,12 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     rw [Vector.traverse_def, ih]
     simp [functor_norm, Function.comp_def]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = pure (map f x) := by
-  rintro ⟨x, rfl⟩
-  simp!
-  induction x <;> simp! [*, functor_norm]
-  rfl
+  intro x
+  induction x with
+  | nil => rfl
+  | cons ih => simp [Vector.traverse_def, ih, functor_norm]
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 

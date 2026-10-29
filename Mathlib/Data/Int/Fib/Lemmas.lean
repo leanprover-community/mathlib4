@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Data.Int.Fib.Basic
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Cassini and Catalan identities for the Fibonacci numbers
 

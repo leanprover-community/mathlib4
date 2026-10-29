@@ -316,7 +316,9 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
   simp only [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
 
-theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+theorem conj_natCast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+
+@[deprecated (since := "2026-10-13")] alias conj_nat_cast := conj_natCast
 
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : K) = ofNat(n) :=
   map_ofNat _ _
@@ -352,7 +354,7 @@ theorem im_eq_conj_sub (z : K) : ↑(im z) = I * (conj z - z) / 2 := by
 
 open List in
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
-theorem is_real_TFAE (z : K) :
+theorem is_real_tfae (z : K) :
     TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0, IsSelfAdjoint z] := by
   tfae_have 1 → 4
   | h => by
@@ -367,24 +369,26 @@ theorem is_real_TFAE (z : K) :
   tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias is_real_TFAE := is_real_tfae
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
-    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 1 2
+    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_tfae z).out 1 2
     _ ↔ _                    := by simp only [eq_comm]
 
 theorem conj_eq_iff_re {z : K} : conj z = z ↔ (re z : K) = z :=
-  (is_real_TFAE z).out 1 3
+  (is_real_tfae z).out 1 3
 
 theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
-  (is_real_TFAE z).out 1 4
+  (is_real_tfae z).out 1 4
 
 @[simp]
 theorem star_def : (Star.star : K → K) = conj :=
   rfl
 
 lemma im_eq_zero_iff_isSelfAdjoint {x : K} : im x = 0 ↔ IsSelfAdjoint x :=
-  is_real_TFAE x |>.out 4 5
+  is_real_tfae x |>.out 4 5
 
 lemma re_eq_ofReal_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
     re x = y ↔ x = y := by
@@ -535,15 +539,17 @@ theorem div_re_ofReal {z : K} {r : ℝ} : re (z / r) = re z / r := by
 theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
   map_zpow₀ (algebraMap ℝ K) r n
 
-theorem I_mul_I_of_nonzero : (I : K) ≠ 0 → (I : K) * I = -1 :=
+theorem I_mul_I_of_ne_zero : (I : K) ≠ 0 → (I : K) * I = -1 :=
   I_mul_I_ax.resolve_left
+
+@[deprecated (since := "2026-10-13")] alias I_mul_I_of_nonzero := I_mul_I_of_ne_zero
 
 @[simp, rclike_simps]
 theorem inv_I : (I : K)⁻¹ = -I := by
   by_cases h : (I : K) = 0
   · simp [h]
   · field_simp
-    linear_combination I_mul_I_of_nonzero h
+    linear_combination I_mul_I_of_ne_zero h
 
 @[simp, rclike_simps]
 theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]
@@ -725,7 +731,7 @@ theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
 
 theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
-    I_mul_I_of_nonzero hI, norm_neg, norm_one]
+    I_mul_I_of_ne_zero hI, norm_neg, norm_one]
 
 theorem norm_I : ‖(I : K)‖ = if (I : K) = 0 then 0 else 1 := by
   grind [norm_I_of_ne_zero, norm_eq_zero]
@@ -969,7 +975,7 @@ lemma toPosMulReflectLT : PosMulReflectLT K where
     rintro ⟨x, hx⟩ y z hyz
     dsimp at *
     rw [RCLike.le_iff_re_im, map_zero, map_zero, eq_comm] at hx
-    obtain ⟨r, rfl⟩ := ((is_real_TFAE x).out 4 2).1 hx.2
+    obtain ⟨r, rfl⟩ := ((is_real_tfae x).out 4 2).1 hx.2
     simp only [RCLike.lt_iff_re_im (K := K), mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero,
       mul_im, add_zero, mul_eq_mul_left_iff] at hyz ⊢
     refine ⟨lt_of_mul_lt_mul_of_nonneg_left hyz.1 <| by simpa using hx, hyz.2.resolve_right ?_⟩
@@ -1269,7 +1275,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
   · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
     convert norm_le_re_iff_eq_norm (z := -I * z) using 2
-    all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
+    all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_ne_zero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
     im z ≤ -‖z‖ ↔ z = -(I * ‖z‖) := by
