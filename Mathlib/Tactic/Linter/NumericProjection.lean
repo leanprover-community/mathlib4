@@ -121,10 +121,10 @@ def numericProjections : Linter where
                   postInfo? := "`.",
                   diffGranularity := .none
                 }]
-            Linter.logLint linter.style.numericProjections stx
-              m!"Numeric projections are disallowed.\n\
-                {msg}\n\n\
-                To exempt terms of type `{.ofConstName structName}`, add \
-                `@[allow_numeric_proj]` at the declaration site of `{.ofConstName structName}`."
+            Linter.logLint linter.style.numericProjections stx m!"\
+              Numeric projections are disallowed.\n\
+              {msg}\n\n\
+              To exempt terms of type `{.ofConstName structName}`, add \
+              `@[allow_numeric_proj]` at the declaration site of `{.ofConstName structName}`."
 
 initialize addLinter numericProjections
