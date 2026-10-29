@@ -108,11 +108,11 @@ variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] 
 theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 
 -- TODO: remove `set_option` and use dot notation after leanprover/lean4#16044 is fixed
-set_option linter.style.numericProjection false in
+set_option linter.style.numericProjections false in
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
 -- TODO: remove `set_option` and use dot notation after leanprover/lean4#16044 is fixed
-set_option linter.style.numericProjection false in
+set_option linter.style.numericProjections false in
 instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.1
 
 theorem isAssociatedPrime_iff [IsNoetherianRing R] :
@@ -120,7 +120,7 @@ theorem isAssociatedPrime_iff [IsNoetherianRing R] :
   (⊥ : Submodule R M).isAssociatedPrime_iff
 
 -- TODO: remove `set_option` and use dot notation after leanprover/lean4#16044 is fixed
-set_option linter.style.numericProjection false in
+set_option linter.style.numericProjections false in
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
     IsAssociatedPrime I M' := by
   obtain ⟨x, rfl⟩ := h.2

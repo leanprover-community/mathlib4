@@ -109,7 +109,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.openClassical
   linter.style.maxHeartbeats
   linter.style.missingEnd
-  linter.style.numericProjection
+  linter.style.numericProjections
   linter.style.setOption
   linter.style.show
   linter.style.whitespace

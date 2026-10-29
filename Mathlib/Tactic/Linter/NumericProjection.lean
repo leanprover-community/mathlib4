@@ -43,7 +43,7 @@ def upstreamAllowed := #[``Prod, ``PProd, ``Sigma, ``PSigma, ``And, ``Iff, ``Sub
 
 /-- Lints against numeric projections such as `foo.42` unless the type's head has been registered
 via `@[allow_numeric_proj]`. -/
-public register_option linter.style.numericProjection : Bool := {
+public register_option linter.style.numericProjections : Bool := {
   defValue := false
   descr := "Lints against numeric projections such as `foo.42`."
 }
@@ -66,10 +66,10 @@ already been found by reducing the type, we don't need to reduce it again. -/
   return (idxStx, ← i.expr.constName?)
 
 open Meta in
-@[inherit_doc linter.style.numericProjection]
+@[inherit_doc linter.style.numericProjections]
 def numericProjection : Linter where
   run stx := stx |> withSetOptionIn fun _ => do
-    unless Linter.getLinterValue linter.style.numericProjection (← Linter.getLinterOptions) do
+    unless Linter.getLinterValue linter.style.numericProjections (← Linter.getLinterOptions) do
       return
     if (stx.find? (·.isOfKind fieldIdxKind)).isSome then
       for t in ← getInfoTrees do
@@ -101,7 +101,7 @@ def numericProjection : Linter where
                   preInfo? := "Instead, use `.",
                   postInfo? := "`.", diffGranularity := .none }]
                 stx none false
-            Linter.logLint linter.style.numericProjection stx
+            Linter.logLint linter.style.numericProjections stx
               m!"Numeric projections are disallowed.\n\
                 {msg}\n\n\
                 To exempt terms of type `{.ofConstName structName}`, add \
