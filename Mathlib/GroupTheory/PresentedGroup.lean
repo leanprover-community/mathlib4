@@ -45,7 +45,6 @@ deriving Group
 -- Manual setup for PresentedAddGroup
 instance (rels : Set (FreeAddGroup α)) : AddGroup (PresentedAddGroup rels) :=
   QuotientAddGroup.Quotient.addGroup (AddSubgroup.normalClosure rels)
-run_meta Lean.enableRealizationsForConst ``instGroupPresentedGroup
 attribute [to_additive existing] instGroupPresentedGroup
 
 namespace PresentedGroup
