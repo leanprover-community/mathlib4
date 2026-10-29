@@ -18,7 +18,7 @@ typeclass searches.
 
 public section
 
-variable {R M M' F α β : Type*} [i : FunLike F α β]
+variable {R M F α β : Type*} [i : FunLike F α β]
 
 namespace FunLike
 
