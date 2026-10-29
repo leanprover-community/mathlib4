@@ -189,6 +189,11 @@ private def checkLongProofs : Syntax → CommandElabM Unit := withSetOptionIn fu
   if (← get).messages.hasErrors || !(← getInfoState).enabled then return
   let fileMap ← getFileMap
   let limit := linter.longProof.maxLines.get (← getOptions)
+  -- If the entire command fits, so does every proof inside it, even before removing comments.
+  -- Check this before traversing info trees or looking up declaration ranges. Without a
+  -- canonical source range, fall through to the existing checks.
+  if let some range := stx.getRange? true then
+    if proofLineCount fileMap {} range ≤ limit then return
   let trees ← getInfoTrees
   -- Most declarations fit under the limit even before removing comments. Avoid the syntax
   -- traversal and proof classification entirely when all their recorded ranges are short.
