@@ -142,7 +142,7 @@ lemma single_add (n : ℕ) (m₁ m₂ : M) :
     single R n (m₁ + m₂) = single R n m₁ + single R n m₂ := by ext; simp
 
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
-instance : Module S (PolynomialModule R M) := coeffAddEquiv.module _
+instance : Module S (PolynomialModule R M) := fast_instance% coeffAddEquiv.module _
 
 instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) := coeffAddEquiv.isScalarTower _ _
