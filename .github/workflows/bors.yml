@@ -43,14 +43,12 @@ jobs:
       tools_branch_ref: ${{ github.sha }}
       # We don't want 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
       runs_on: ${{ github.ref_name == 'trying' && 'pr' || 'bors' }}
-      # The label of large builds: the same as `runs_on`, so every build stays in its pool.
-      # A `trying` build is routed by its predicted cascade, like a PR build, in the main
-      # repository only. A `staging` batch merges several PRs and is always large.
-      large_runs_on: >-
+      # A `staging` batch merges several PRs and is always large. A `trying` build is
+      # marked large by its predicted cascade, like a PR build, in the main repository.
+      route: >-
         ${{
-             github.ref_name != 'trying' && 'bors'
-          || github.repository == 'leanprover-community/mathlib4' && 'pr'
+             github.ref_name != 'trying' && 'large'
+          || github.repository == 'leanprover-community/mathlib4' && 'predict'
           || ''
         }}
-      always_large: ${{ github.ref_name != 'trying' }}
     secrets: inherit
