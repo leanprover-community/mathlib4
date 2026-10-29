@@ -1,9 +1,18 @@
 # Polls the current run for the artifact of the Build job's first-error watch while Build runs.
-# On the first error it creates a failed `first error` check run on the head commit. When Build
-# succeeds, it marks every `first error` check run on the head commit neutral, including those
-# of earlier attempts. When Build fails, the step fails too, so "Re-run failed jobs" re-runs it.
+# On the first error it creates a failed `first error` check run on the head commit. The step
+# ends when Build ends. When Build fails, the step fails too, so "Re-run failed jobs" re-runs it.
+# The caller's `first_error_clear` job runs after this job and marks the check runs neutral when
+# Build succeeds.
+#
+# Each poll makes one API request, with the ETag of the previous response of the same listing.
+# An unchanged listing gets `304 Not Modified`, which does not count against the rate limit.
+# Every third poll, and every poll after the artifact, reads the jobs listing; the other polls
+# read the artifact listing.
+#
 # The artifact is data that PR code influenced, and PR code in another job of the run can upload
-# an artifact of the same name, so the title and summary use only its validated fields.
+# an artifact of the same name. Thus the step accepts only the keys, value shapes and lengths that
+# the `first-error` watcher writes. The message loses its control characters, separators and
+# backticks, so it cannot leave its code block in the check run summary.
 
 name: Report the first build error
 description: Report the first error of the running Build job as a check run.
@@ -29,42 +38,68 @@ runs:
         HEAD_SHA: ${{ inputs.head_sha }}
       run: |
         set -uo pipefail
-        neutralize() {
-          gh api "repos/${REPO}/commits/${HEAD_SHA}/check-runs?check_name=first%20error&per_page=100" \
-              --jq '.check_runs[] | select(.conclusion == "failure") | .id' 2>/dev/null |
-            while read -r id; do
-              gh api -X PATCH "repos/${REPO}/check-runs/${id}" -f conclusion=neutral \
-                -f 'output[title]=The build succeeded' \
-                -f 'output[summary]=The build reported an error, then succeeded on a later attempt.' > /dev/null
-            done
+        dir="${RUNNER_TEMP}/early-signal"
+        mkdir -p "$dir"
+        # Reads a listing with the ETag of its previous `200 OK` response. Succeeds with the body
+        # in "$dir/<name>.json" on `200 OK`; fails on `304 Not Modified` and on errors.
+        fetch() {
+          local name="$1" url="$2" code
+          local etag=()
+          if [ -s "$dir/$name.etag" ]; then etag=(-H "If-None-Match: $(cat "$dir/$name.etag")"); fi
+          code="$(curl -sS --max-time 60 -o "$dir/$name.json" -D "$dir/$name.headers" -w '%{http_code}' \
+                    -H @<(printf 'Authorization: Bearer %s\n' "$GH_TOKEN") \
+                    -H 'Accept: application/vnd.github+json' "${etag[@]}" \
+                    "${GITHUB_API_URL}/repos/${REPO}/${url}")" || return 1
+          case "$code" in
+            200) awk 'tolower($1) == "etag:" { sub(/\r$/, ""); print $2 }' "$dir/$name.headers" > "$dir/$name.etag" ;;
+            304) return 1 ;;
+            *) echo "::warning::Could not read ${url}: HTTP ${code}."; return 1 ;;
+          esac
         }
-        read_artifact=""
+        report() {
+          local record file line summary check
+          rm -rf "$dir/artifact"
+          if ! gh run download "$RUN_ID" --repo "$REPO" --name "$ARTIFACT" --dir "$dir/artifact"; then
+            echo "::warning::Could not download the artifact ${ARTIFACT}."
+            return
+          fi
+          # The keys and value shapes of the watcher's file, with the message on one line
+          # without backticks, cut to 300 characters.
+          if ! record="$(head -c 65536 "$dir/artifact/first_error.json" | jq -ec '
+                select(type == "object" and keys == ["elapsed", "file", "line", "message"]
+                       and (.file | type == "string" and test("^[A-Za-z0-9_./'"'"'-]{1,200}\\.lean$"))
+                       and ([.line, .elapsed] | all(type == "number" and . == floor and . >= 0 and . < 1e9))
+                       and (.message | type == "string"))
+                | .line |= floor | .elapsed |= floor
+                | .message |= (gsub("[\\p{C}\\p{Z}`]"; " ") | .[:300])')"; then
+            echo "::warning::The artifact ${ARTIFACT} does not hold a valid first error."
+            return
+          fi
+          file="$(jq -r .file <<< "$record")"
+          line="$(jq -r .line <<< "$record")"
+          summary="$(jq -r '"The build of this commit reported its first error after \(.elapsed) s; the build continues.\n\n```\n\(.message)\n```"' <<< "$record")"
+          if check="$(gh api -X POST "repos/${REPO}/check-runs" -f name='first error' -f head_sha="$HEAD_SHA" \
+                       -f status=completed -f conclusion=failure \
+                       -f "output[title]=${file}:${line}" -f "output[summary]=${summary}" --jq .id)"; then
+            echo "First error ${file}:${line}; check run ${check}."
+          else
+            echo "::warning::Could not create the check run for the first error ${file}:${line}."
+          fi
+        }
+        reported=""
         polls=0
         while true; do
           sleep 120
           polls=$((polls + 1))
-          if [ -z "$read_artifact" ] && [ -n "$(gh api "repos/${REPO}/actions/runs/${RUN_ID}/artifacts?name=${ARTIFACT}" --jq '.artifacts[0].id // empty' 2>/dev/null)" ]; then
-            read_artifact=true
-            rm -rf first-error
-            if gh run download "$RUN_ID" --repo "$REPO" --name "$ARTIFACT" --dir first-error \
-               && record="$(jq -ec 'select((.file | type == "string" and test("^[A-Za-z0-9_./'"'"'-]{1,200}\\.lean$"))
-                                           and (.line | type == "number") and (.elapsed | type == "number") and (.message | type == "string"))' \
-                            first-error/first_error.json)"; then
-              file="$(jq -r .file <<< "$record")"
-              line="$(jq -r '.line | floor' <<< "$record")"
-              summary="$(jq -r '"The build of this commit reported its first error after \(.elapsed | floor) s; the build continues.\n\n```\n\(.message[:300])\n```"' <<< "$record")"
-              check="$(gh api -X POST "repos/${REPO}/check-runs" -f name='first error' -f head_sha="$HEAD_SHA" \
-                        -f status=completed -f conclusion=failure \
-                        -f "output[title]=${file}:${line}" -f "output[summary]=${summary}" --jq .id)" || check=""
-              echo "First error ${file}:${line}; check run ${check:-not created}."
+          if [ -z "$reported" ] && [ $((polls % 3)) -ne 0 ]; then
+            if fetch artifacts "actions/runs/${RUN_ID}/artifacts?name=${ARTIFACT}" \
+               && jq -e '.total_count > 0' "$dir/artifacts.json" > /dev/null; then
+              reported=true
+              report
             fi
-          fi
-          # The jobs listing is read every second poll, or every poll once the error is reported.
-          if [ -n "$read_artifact" ] || [ $((polls % 2)) -eq 0 ]; then
-            build="$(gh api "repos/${REPO}/actions/runs/${RUN_ID}/jobs?per_page=100" \
-                      --jq '[.jobs[] | select(.name | endswith("/ Build"))][0] | "\(.status) \(.conclusion)"' 2>/dev/null)" || build=""
+          elif fetch jobs "actions/runs/${RUN_ID}/jobs?per_page=100"; then
+            build="$(jq -r '[.jobs[] | select(.name | endswith("/ Build"))][0] | "\(.status) \(.conclusion)"' "$dir/jobs.json")"
             case "$build" in
-              "completed success") neutralize; exit 0 ;;
               "completed failure") exit 1 ;;
               completed*) exit 0 ;;
             esac
