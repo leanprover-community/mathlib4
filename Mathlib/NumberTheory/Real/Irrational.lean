@@ -85,9 +85,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr
   subst m
-  have : y ≠ 0 := by rintro rfl; rw [zero_pow hnpos.ne'] at hm; exact hm rfl
-  rw [(Int.finiteMultiplicity_iff.2 ⟨by simp [hp.1.ne_one], this⟩).multiplicity_pow
-    (Nat.prime_iff_prime_int.1 hp.1), Nat.mul_mod_right] at hv
+  rw [multiplicity_pow (Nat.prime_iff_prime_int.1 hp.1), Nat.mul_mod_right] at hv
   exact hv rfl
 
 theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp : Fact p.Prime]
