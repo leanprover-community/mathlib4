@@ -412,7 +412,6 @@ variable {W} {κ} [Fact κ.IsRegular]
 
 include hW
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isLocal_reflectionObj :
     W.isLocal (reflectionObj W Z κ) := by
   let H := transfiniteCompositionOfShapeReflection W Z κ

@@ -44,6 +44,8 @@ attribute [nolint docBlame] FloatCfg.prec FloatCfg.emax FloatCfg.precPos FloatCf
 set_option linter.deprecated false
 variable [C : FloatCfg]
 
+set_option linter.concreteInstances false
+
 @[nolint docBlame, deprecated "no replacement" (since := "2026-10-02")]
 def prec :=
   C.prec
