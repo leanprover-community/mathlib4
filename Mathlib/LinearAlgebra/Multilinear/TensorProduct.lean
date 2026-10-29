@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructions relating multilinear maps and tensor products.
 -/
