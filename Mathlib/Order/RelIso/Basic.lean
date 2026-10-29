@@ -206,7 +206,7 @@ theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 structure RelEmbedding {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ↪ β where
-  /-- Elements are related iff they are related after applying a `RelEmbedding` -/
+  /-- Elements are related iff they are related after applying a `RelEmbedding`. -/
   map_rel_iff' : ∀ {a b}, s (toEmbedding a) (toEmbedding b) ↔ r a b
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
