@@ -18,7 +18,6 @@ public import Mathlib.Algebra.Polynomial.Eval.Degree
 
 public section
 
-noncomputable section
 
 open Polynomial
 

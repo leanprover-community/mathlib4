@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
+
 import Mathlib.Algebra.Order.Algebra
 
 /-!

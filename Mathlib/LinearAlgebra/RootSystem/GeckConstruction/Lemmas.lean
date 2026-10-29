@@ -30,7 +30,7 @@ namespace Base
 variable {b : P.Base} (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
 include hij hi hj
 
-/-- This is Lemma 2.5 (a) from [Geck](Geck2017). -/
+/-- This is Lemma 2.5 (a) from [Geck][Geck2017]. -/
 lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :
     α k - α j ∈ Φ := by
@@ -79,7 +79,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
   omega
 
-/-- This is Lemma 2.5 (b) from [Geck](Geck2017). -/
+/-- This is Lemma 2.5 (b) from [Geck][Geck2017]. -/
 lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : α k ≠ -α i) (hk' : α k - α j ∈ Φ) :
     α k + α i ∈ Φ := by
@@ -105,7 +105,7 @@ end Base
 
 section chainBotCoeff_mul_chainTopCoeff
 
-/-! The proof of Lemma 2.6 from [Geck](Geck2017). -/
+/-! The proof of Lemma 2.6 from [Geck][Geck2017]. -/
 
 variable {b : P.Base} {i j k l m : ι}
 
@@ -129,7 +129,7 @@ include hi hj hij h₁ h₂ h₃
 
 lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   rw [← P.not_isG2_iff_isNotG2]
   intro contra
   obtain ⟨n, h₃⟩ := h₃
@@ -211,7 +211,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   /- Setup some typeclasses and name the 6th root `n`. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
   let := P.indexNeg
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   obtain ⟨n, hn⟩ := h₃
   /- Establish basic relationships about roots and their sums / differences. -/
   have hnk_ne : n ≠ k := by rintro rfl; simp [sub_eq_zero, hij, add_sub_assoc] at hn
@@ -274,7 +274,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   let := P.indexNeg
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : HasUniqueDiv M := .of_isTorsionFree R M
   /- Establish basic relationships about roots and their sums / differences. -/
   have hkj_ne : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
     P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m
@@ -331,7 +331,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   lia
 
 open chainBotCoeff_mul_chainTopCoeff in
-/-- This is Lemma 2.6 from [Geck](Geck2017). -/
+/-- This is Lemma 2.6 from [Geck][Geck2017]. -/
 lemma chainBotCoeff_mul_chainTopCoeff :
     (P.chainBotCoeff i m + 1) * (P.chainTopCoeff j k + 1) =
       (P.chainTopCoeff j l + 1) * (P.chainBotCoeff i k + 1) := by

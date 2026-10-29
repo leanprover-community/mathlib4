@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Star.Basic
+
 /-!
 # Morphisms of star monoids
 

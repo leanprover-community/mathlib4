@@ -7,7 +7,6 @@ module
 
 public import Cache.Cli
 import Cache.Requests
-import Cache.Marker
 import Cache.Upload
 import Cache.Query
 import Cache.Warning
@@ -33,7 +32,7 @@ Commands:
   clean          Delete non-linked files
   clean!         Delete everything on the local cache
   lookup [ARGS]  Show information about cache files for the given Lean files
-  query [REF]    Without REF: find most recent cached commit on this branch.
+  query [REF]    Without REF: find the most recent cached Mathlib commit.
                  With REF (e.g. HEAD, a SHA): boolean probe; exit 0 if cached, 1 if not.
 
   # Staging
@@ -57,12 +56,13 @@ Options:
   --scope=REF        The per-commit namespace (any git ref `git rev-parse`
                      accepts: HEAD, branch, tag, SHA). For reads: the fork
                      SHA-scoped namespace to read instead of the default, the
-                     checked-out HEAD. Use the SHA reported by `cache query`.
+                     Mathlib checkout's HEAD. Refs resolve in that checkout.
+                     Use the SHA reported by `cache query`.
                      Reading another commit's scope means trusting the
                      artifacts produced at that commit; `cache get` prints a
                      security notice when the scope differs from HEAD.
   --unsafe           (get only) Instead of pinning one --scope, automatically walk
-                     this branch's history and try the most recent cached fork
+                     Mathlib's history and try the most recent cached fork
                      commits as scopes, in order, until the cache is satisfied.
                      Trusts the artifacts of every commit it tries. Mutually
                      exclusive with --scope; always prints a security notice.
@@ -93,13 +93,12 @@ Valid arguments are:
 # Environment variables
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
-* MATHLIB_CACHE_DEBUG_USE_LEGACY
-                          Set to 1 or true to read from the Azure storage
-                          account instead of https://cache.mathlib.org.
-                          For troubleshooting only.
 * MATHLIB_CACHE_GET_URL   Download from this single URL as a flat namespace.
                           Allows third parties to use their own cache endpoint.
                           An empty value means unset.
+* MATHLIB_CACHE_PARALLEL_MAX
+                          Number of simultaneous curl transfers (default: 50).
+                          Keep it well below the open-file limit (`ulimit -n`).
 "
 
 /-- Commands which download with `curl`. Uploads validate curl inside the
@@ -124,8 +123,9 @@ def main (args : List String) : IO Unit := do
       IO.eprintln help
       Process.exit 1
 
-  -- Resolve the legacy switch once, before anything builds a read URL.
-  useLegacy.set (← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false))
+  if ← getEnvFlag "MATHLIB_CACHE_DEBUG_USE_LEGACY" (ifUnset := false) then
+    IO.eprintln "Warning: MATHLIB_CACHE_DEBUG_USE_LEGACY is retired; \
+      cache reads use https://cache.mathlib.org"
 
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
@@ -136,9 +136,9 @@ def main (args : List String) : IO Unit := do
   let unsafeWindowStr? ← parseNamedOpt "unsafe-window" options
   let backendStr? ← parseNamedOpt "backend" options
 
-  -- Parse `--backend=NAME`; `azure` is the default.
+  -- Parse `--backend=NAME`; `s3` is the default.
   let backend ← match backendStr? with
-    | none => pure UploadBackend.azure
+    | none => pure UploadBackend.s3
     | some s => match UploadBackend.parse? s with
       | some b => pure b
       | none =>
@@ -176,7 +176,7 @@ def main (args : List String) : IO Unit := do
     let resolved ← try resolveGitRef s catch _ => pure s
     scopeOverride.set (some resolved)
 
-  -- Apply `--cache-from` to the process-wide override read by `effectiveGetURLs`.
+  -- Apply `--cache-from` to the process-wide override read by `effectiveGetBases`.
   if let some s := cacheFromStr? then
     match parseCacheFromList s with
     | none =>
@@ -185,8 +185,8 @@ def main (args : List String) : IO Unit := do
       Process.exit 1
     | some cs => cacheFromOverride.set (some cs)
 
-  -- Parse `--container=NAME`. Validation is unconditional; `put` enforces that
-  -- the flag is set (via `stagedUploadDest`).
+  -- Parse `--container=NAME`. Validation is unconditional; `put` requires the
+  -- flag where the backend needs it (`uploadLocation`).
   let container? ← match containerStr? with
     | none => pure none
     | some s => match Container.parse? s with
@@ -246,13 +246,14 @@ def main (args : List String) : IO Unit := do
 
   let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
-  let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
+  let curlMode ← if curlArgs.contains (args.headD "") then validateCurl
+    else pure { parallel := true }
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
     -- Resolve the repo once (single git-remote probe) and thread it through the
     -- read path, the non-default-scope warning, and the missing-files hint below.
     let cliOverride? ← cacheFromOverride.get
-    let (detectedRepo?, resolvedRepo) ← resolveRepo repo? (← read).mathlibDepPath
+    let (detectedRepo?, resolvedRepo) ← resolveRepo repo?
     -- Warn before reading if the scope is non-default (`--unsafe` always is).
     warnIfNonDefaultScope repo? detectedRepo? cliOverride? resolvedRepo unsafeWindow?
     -- In `--unsafe` mode, walk history for recent cached fork commits to try
@@ -269,10 +270,10 @@ def main (args : List String) : IO Unit := do
           for s in scopes do IO.eprintln s!"  {s}"
         pure scopes
       | none => pure []
-    let missing ← getFiles resolvedRepo hashMap force force goodCurl decompress
+    let missing ← getFiles resolvedRepo hashMap force force curlMode decompress
       (unsafeScopes := unsafeScopes)
-    -- Explain any files no container served — keyed on the actual outcome, so
-    -- a read fully served by higher-trust containers stays silent even when
+    -- Explain any files no location served — keyed on the actual outcome, so
+    -- a read fully served by the configured locations stays silent even when
     -- HEAD has no fork cache of its own.
     warnIfMissingFiles resolvedRepo missing (unsafeMode := unsafeWindow?.isSome)
   let pack (overwrite verbose unpackedOnly := false) := do

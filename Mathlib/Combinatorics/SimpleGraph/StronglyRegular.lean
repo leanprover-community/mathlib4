@@ -5,9 +5,10 @@ Authors: Alena Gusakov, Jeremy Tan
 -/
 module
 
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Diam
+
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
 /-!
 # Strongly regular graphs

@@ -5,12 +5,13 @@ Authors: Jakob von Raumer
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Final
+
 import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
-public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Inferring Filteredness from Filteredness of Costructured Arrow Categories

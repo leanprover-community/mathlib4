@@ -5,9 +5,9 @@ Authors: Benjamin Davidson
 -/
 module
 
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
@@ -245,8 +245,7 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
     · intro s ⟨hs, _⟩
       simp at *
       simpa using! (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
-    · intro s ⟨hs₁, hs₂⟩
-      grind [Pi.neg_apply, log_nonpos_iff]
+    · grind [Pi.neg_apply, log_nonpos_iff]
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
     apply Real.continuousOn_log.mono

@@ -6,8 +6,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
-import Mathlib.Topology.Algebra.Indicator
 public import Mathlib.Topology.ContinuousMap.Algebra
+
+import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.Separation.DisjointCover
 
 /-!

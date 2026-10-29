@@ -160,10 +160,6 @@ instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) where coe := toRingEqu
 theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
   rfl
 
-@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
-theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
-  rfl
-
 @[simp]
 lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
   rfl

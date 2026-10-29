@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # Stability properties of morphism properties on functor categories

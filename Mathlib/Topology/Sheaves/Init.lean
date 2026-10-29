@@ -5,8 +5,9 @@ Authors: Jujian Zhang
 -/
 module
 
+public meta import Aesop
+
 import Mathlib.Init
-public import Aesop
 
 /-!
 # Rule sets related to topological (pre)sheaves

@@ -5,12 +5,13 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.Defs.Sequences
+public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.UniformSpace.Closeds
 public import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.Compact
+
 import Mathlib.Topology.Sequences
+import Mathlib.Topology.UniformSpace.Compact
 
 /-! # Hemicontinuity
 

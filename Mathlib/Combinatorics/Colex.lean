@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Order.Ring.GeomSum
 public import Mathlib.Data.Finset.Slice
 public import Mathlib.Data.Nat.BitIndices
-import Mathlib.Order.SupClosed
 public import Mathlib.Order.UpperLower.Closure
+
+import Mathlib.Order.SupClosed
 
 /-!
 # Colexicographic order

@@ -133,8 +133,8 @@ variable [Preorder α]
 instance : Mul (α →o α) where mul f g := f.comp g
 instance : One (α →o α) where one := .id
 instance : NPow (α →o α) where npow n f := { toFun := f^[n], monotone' := f.monotone.iterate n }
-instance : IsMulApplyEqComp (α →o α) α where
-instance : IsOneApplyEqSelf (α →o α) α where
+instance : IsMulApplyEqComp (α →o α) where
+instance : IsOneApplyEqSelf (α →o α) where
 
 lemma mul_eq_comp (f g : α →o α) : (f * g : α →o α) = f.comp g := rfl
 lemma one_eq_id : (1 : α →o α) = .id := rfl

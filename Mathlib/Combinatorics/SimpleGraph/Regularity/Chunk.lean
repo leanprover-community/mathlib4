@@ -269,7 +269,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
     rw [div_mul_eq_mul_div, ← mul_assoc, mul_assoc]
     refine div_le_one_of_le₀ ?_ (by positivity)
     refine (mul_le_mul_of_nonneg_right (one_sub_le_m_div_m_add_one_sq hPα hPε) ?_).trans ?_
-    · exact_mod_cast _root_.zero_le
+    · exact mod_cast _root_.zero_le
     rw [sq, mul_mul_mul_comm, mul_comm ((m : ℝ) / _), mul_comm ((m : ℝ) / _)]
     gcongr
     · apply le_sum_card_subset_chunk_parts hA hx
@@ -308,7 +308,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
         gcongr
         exacts [sum_card_subset_chunk_parts_le (by sz_positivity) hA hx,
           sum_card_subset_chunk_parts_le (by sz_positivity) hB hy]
-      · exact_mod_cast _root_.zero_le
+      · exact mod_cast _root_.zero_le
     rw [← cast_mul, cast_pos]
     apply mul_pos <;> rw [Finset.card_pos, sup_eq_biUnion, biUnion_nonempty]
     · exact ⟨_, hx, nonempty_of_mem_parts _ (hA hx)⟩
@@ -495,8 +495,8 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
         simpa using edgeDensity_star_not_uniform hPα hPε hε₁ hUVne hUV
       · rw [sp, card_product]
         apply (edgeDensity_chunk_aux hP hPα hPε hU hV).trans
-        · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← mul_pow]
-          simp
+        rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← mul_pow]
+        simp
 
 /-- Lower bound on the edge densities between parts of `SzemerediRegularity.increment`. This is the
 blanket lower bound used the uniform parts. -/

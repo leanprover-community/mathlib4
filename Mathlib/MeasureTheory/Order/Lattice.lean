@@ -43,7 +43,7 @@ class MeasurableSup (M : Type*) [MeasurableSpace M] [Max M] : Prop where
 /-- We say that a type has `MeasurableSup₂` if `uncurry (· ⊔ ·)` is a measurable functions.
 For a typeclass assuming measurability of `(c ⊔ ·)` and `(· ⊔ c)` see `MeasurableSup`. -/
 class MeasurableSup₂ (M : Type*) [MeasurableSpace M] [Max M] : Prop where
-  measurable_sup : Measurable fun p : M × M => p.1 ⊔ p.2 := by intro p; fun_prop
+  measurable_sup : Measurable fun p : M × M => p.1 ⊔ p.2
 
 export MeasurableSup₂ (measurable_sup)
 
@@ -58,7 +58,7 @@ class MeasurableInf (M : Type*) [MeasurableSpace M] [Min M] : Prop where
 /-- We say that a type has `MeasurableInf₂` if `uncurry (· ⊓ ·)` is a measurable functions.
 For a typeclass assuming measurability of `(c ⊓ ·)` and `(· ⊓ c)` see `MeasurableInf`. -/
 class MeasurableInf₂ (M : Type*) [MeasurableSpace M] [Min M] : Prop where
-  measurable_inf : Measurable fun p : M × M => p.1 ⊓ p.2 := by intro p; fun_prop
+  measurable_inf : Measurable fun p : M × M => p.1 ⊓ p.2
 
 export MeasurableInf₂ (measurable_inf)
 
@@ -135,6 +135,9 @@ theorem AEMeasurable.sup (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
 
 instance (priority := 100) MeasurableSup₂.toMeasurableSup : MeasurableSup M where
 
+instance {α : Type*} : MeasurableSup₂ (Set α) where
+  measurable_sup := measurable_union
+
 end MeasurableSup₂
 
 end Sup
@@ -185,6 +188,9 @@ theorem AEMeasurable.inf (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
 @[deprecated (since := "2026-06-26")] alias AEMeasurable.inf' := AEMeasurable.inf
 
 instance (priority := 100) MeasurableInf₂.to_hasMeasurableInf : MeasurableInf M where
+
+instance {α : Type*} : MeasurableInf₂ (Set α) where
+  measurable_inf := measurable_inter
 
 end MeasurableInf₂
 

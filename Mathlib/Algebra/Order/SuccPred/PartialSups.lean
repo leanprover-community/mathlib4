@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.SuccPred
 public import Mathlib.Order.PartialSups
+
 import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!

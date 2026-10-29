@@ -6,6 +6,7 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Trace
+
 import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!

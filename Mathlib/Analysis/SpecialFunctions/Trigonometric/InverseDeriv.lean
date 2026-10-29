@@ -5,8 +5,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
 # derivatives of the inverse trigonometric functions
@@ -15,8 +15,6 @@ Derivatives of `arcsin` and `arccos`.
 -/
 
 public section
-
-noncomputable section
 
 open scoped Topology Filter Real ContDiff
 open Set

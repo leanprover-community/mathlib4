@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodr
 module
 
 public import Mathlib.Data.Set.Finite.Basic
+
 import Mathlib.Algebra.Group.Nat.Defs
 
 /-!

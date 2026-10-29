@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.SpectralObject.Cycles
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.SpectralObject.Cycles
 public import Mathlib.CategoryTheory.Abelian.Refinements
 public import Mathlib.CategoryTheory.ComposableArrows.Three
 
@@ -160,7 +160,6 @@ lemma δ_eq_zero_of_isIso₂ (hg : IsIso g) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isZero_H_obj_of_isIso {i j : ι} (f : i ⟶ j) (hf : IsIso f) (n : ℤ) :
     IsZero ((X.H n).obj (mk₁ f)) := by
   let e : mk₁ (𝟙 i) ≅ mk₁ f := isoMk₁ (Iso.refl _) (asIso f) (by simp)
@@ -473,7 +472,7 @@ lemma kernelSequenceE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 
     (X.kernelSequenceOpcyclesE_exact f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).exact_up_to_refinements
       (X.liftOpcycles f₂ f₃ f₂₃ h₂₃ x₂ (by simpa using hx₂ =≫ biprod.fst)) (by
         dsimp
-        rw [← X.fromOpcyles_δ f₁ f₂ f₃ f₂₃ h₂₃ n₁ n₂,
+        rw [← X.fromOpcycles_δ f₁ f₂ f₃ f₂₃ h₂₃ n₁ n₂,
           X.liftOpcycles_fromOpcycles_assoc]
         simpa using hx₂ =≫ biprod.snd)
   dsimp at x₁ hx₁
@@ -708,7 +707,6 @@ noncomputable def EIsoH (n₀ n₁ n₂ : ℤ)
     X.E (𝟙 i) f (𝟙 j) n₀ n₁ n₂ hn₁ hn₂ ≅ (X.H n₁).obj (mk₁ f) :=
   (X.homologyDataIdId ..).left.homologyIso
 
-set_option backward.defeqAttrib.useBackward true in
 lemma EIsoH_hom_naturality
     (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))
     (n₀ n₁ n₂ : ℤ)
@@ -736,7 +734,6 @@ noncomputable def cyclesIsoH (hn₁ : n₀ + 1 = n₁ := by lia) :
   (X.cyclesIso (𝟙 i₀) f (𝟙 i₁) (n₀ - 1) n₀ n₁ (by lia) hn₁).symm ≪≫
     (X.homologyDataIdId ..).left.cyclesIso
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma cyclesIsoH_inv (hn₁ : n₀ + 1 = n₁ := by lia) :
@@ -766,7 +763,6 @@ noncomputable def opcyclesIsoH (hn₁ : n₀ + 1 = n₁ := by lia) :
   (X.opcyclesIso (𝟙 i₀) f (𝟙 i₁) n₀ n₁ (n₁ + 1) hn₁ (by lia)).symm ≪≫
     (X.homologyDataIdId ..).right.opcyclesIso
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma opcyclesIsoH_hom (hn₁ : n₀ + 1 = n₁ := by lia) :
@@ -918,7 +914,6 @@ variable {i₀ i₁ i₂ i₃ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂
   {i₀' i₁' i₂' i₃' : ι} (f₁' : i₀' ⟶ i₁') (f₂' : i₁' ⟶ i₂') (f₃' : i₂' ⟶ i₃')
   (f₁₂' : i₀' ⟶ i₂') (h₁₂' : f₁' ≫ f₂' = f₁₂')
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma opcyclesToE_map (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (β : mk₂ f₁₂ f₃ ⟶ mk₂ f₁₂' f₃')
     (n₀ n₁ n₂ : ℤ) (h₀ : β.app 0 = α.app 0 := by cat_disch) (h₁ : β.app 1 = α.app 2 := by cat_disch)

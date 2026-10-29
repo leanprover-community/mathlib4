@@ -312,8 +312,8 @@ instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α
       split_ifs with h
       · dsimp only at h ⊢
         apply hi _ _ _ hn
-        · rw [← hn]
-          apply Order.pred_iterate_le
+        rw [← hn]
+        apply Order.pred_iterate_le
       · have : Order.pred (⟨c, hc⟩ : s) = ⟨c, hc⟩ := by
           change dite .. = _
           simp [h]

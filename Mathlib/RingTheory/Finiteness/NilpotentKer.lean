@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Noetherian.Nilpotent
+
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.RingTheory.Finiteness.Subalgebra
 import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Noetherian.Nilpotent
 import Mathlib.RingTheory.TensorProduct.Finite
 
 /-! # Descend finiteness along quotients by nilpotent ideals -/

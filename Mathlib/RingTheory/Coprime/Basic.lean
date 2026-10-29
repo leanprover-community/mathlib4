@@ -6,10 +6,11 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 module
 
 public import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Tactic.Ring
+
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.Ring.Divisibility.Basic
 
 /-!
 # Coprime elements of a ring or monoid

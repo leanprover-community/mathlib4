@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.ZariskisMainTheorem
+
 import Mathlib.RingTheory.Ideal.Quotient.Over
 
 /-!
@@ -527,7 +528,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
       ∀ (P'' : Ideal (R' ⊗[R] S)), P''.IsPrime → P''.LiesOver P →
         e (.last n) ∈ P'' ∧ ∀ i, e i.castSucc ∉ P'' → P'' = P' i := by
   induction h : (p.primesOver S).ncard using Nat.strong_induction_on generalizing R S with
-  | h n IH =>
+  | ind n IH =>
     have : IsArtinianRing (p.ResidueField ⊗[R] S) := IsArtinianRing.of_finite p.ResidueField _
     have hpSfin : (p.primesOver S).Finite :=
       (PrimeSpectrum.primesOverOrderIsoFiber R S p).finite_iff.mpr inferInstance

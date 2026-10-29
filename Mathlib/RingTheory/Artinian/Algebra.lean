@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
