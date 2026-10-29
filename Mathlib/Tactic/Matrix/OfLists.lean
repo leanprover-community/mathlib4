@@ -102,13 +102,12 @@ private theorem getD_flatten_of_forall_length_eq {n i j : ℕ} {rows : List (Lis
     | succ i => grind [ih (i := i) hrows]
 
 /-- The row-major array of the entries of the matrix of `m` rows of `n` entries is the array of
-their concatenation `l`. -/
-theorem toArray_ofLists [Zero α] {m n : ℕ} {rows : List (List α)} {l : List α}
-    (hrows : ∀ row ∈ rows, row.length = n) (h : rows.flatten = l)
-    (hl : l.toArray.size = m * n) : (ofLists m n rows).toArray = l.toArray := by
-  rw [← Matrix.toArray_ofArray l.toArray hl]
+their concatenation. -/
+theorem toArray_ofLists [Zero α] {m n : ℕ} {rows : List (List α)}
+    (hrows : ∀ row ∈ rows, row.length = n) (hl : rows.flatten.toArray.size = m * n) :
+    (ofLists m n rows).toArray = rows.flatten.toArray := by
+  rw [← Matrix.toArray_ofArray _ hl]
   congrm Matrix.toArray ?_
-  subst h
   ext i j
   rw [Matrix.ofArray_eq_of_getD, ofLists_apply, ofList_apply,
     ← getD_flatten_of_forall_length_eq hrows j.isLt]

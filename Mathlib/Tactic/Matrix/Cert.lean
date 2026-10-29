@@ -94,13 +94,10 @@ def ListMatrixLit.array {u : Level} {m n : Nat} {α : Q(Type u)} (L : ListMatrix
 /-- Prove that the row-major array of the `m × n` matrix literal `L` is the literal `L.array`. -/
 def certifyOfArray {u : Level} {m n : Nat} {α : Q(Type u)} (zα : Q(Zero $α))
     (L : ListMatrixLit α m n) : MetaM Q(($(L.matrix)).toArray = $(L.array)) := do
-  let l : Q(List $α) := mkListLitQ L.rows.flatten
   have : $(L.matrix) =Q ofLists $m $n $(L.lit) := ⟨⟩
-  let hsize ← mkDecideProofQ q((List.toArray $l).size = $m * $n)
+  let hsize ← mkDecideProofQ q(($(L.lit)).flatten.toArray.size = $m * $n)
   let hrows ← mkDecideProofQ q(∀ row ∈ $(L.lit), row.length = $n)
-  have hflat : Q(($(L.lit)).flatten = $l) :=
-    mkExpectedPropHint q(Eq.refl $l) q(($(L.lit)).flatten = $l)
-  return q(toArray_ofLists $hrows $hflat $hsize)
+  return mkExpectedPropHint q(toArray_ofLists $hrows $hsize) q(($(L.matrix)).toArray = $(L.array))
 
 end Mathlib.Tactic.Matrix
 
