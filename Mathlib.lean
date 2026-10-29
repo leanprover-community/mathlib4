@@ -7901,6 +7901,8 @@ public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 public import Mathlib.Tactic.Translate.ToAdditive
 public import Mathlib.Tactic.Translate.ToDual
 public import Mathlib.Tactic.Translate.UnfoldBoundary
+public import Mathlib.Tactic.Transport.Core
+public import Mathlib.Tactic.Transport.Test
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Tactic.TypeCheck
 public import Mathlib.Tactic.TypeStar
