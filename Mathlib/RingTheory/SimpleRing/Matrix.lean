@@ -7,8 +7,11 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-The matrix ring over a simple ring is simple
+# The matrix ring over a simple ring is simple
 -/
 
 public section
