@@ -162,7 +162,7 @@ private lemma sum_term_mul_fourier_eq (hx : 0 < x) (hσ : 1 < σ) :
       · exact (hf σ hσ).of_re_le_re (by simp)
 
 private lemma integral_exp_mul_fourier_eq (hx : 0 < x) (hσ : 1 < σ) :
-    S₂ σ (𝓕 ψ) x = A * ∫ t, (1 / (σ + t * I - 1)) * ψ t * x^(t * I) ∂volume := by
+    S₂ σ (𝓕 ψ) x = A * ∫ t, (1 / (σ + t * I - 1)) * ψ t * x ^ (t * I) ∂volume := by
   unfold S₂; rw [mul_assoc]; congr 1
   calc
   _ = ↑(x ^ (1 - σ)) * ∫ u in Ici (-log x),
@@ -310,7 +310,7 @@ private lemma C₀_nonneg : 0 ≤ C₀ :=
 
 variable {x : ℝ} (Ψ : 𝓢(ℝ, ℂ)) [WienerIkehara]
 
-private lemma bound_sum_log_range (hx : 1 ≤ x) n :
+private lemma bound_sum_log_range (hx : 1 ≤ x) (n : ℕ) :
     ∑ i ∈ .range n, ‖f i‖ / i * (1 + (c₀ * log (i / x)) ^ 2)⁻¹ ≤ C * C₀ := by
   have hxne : x ≠ 0 := by linarith
   have := C_nonneg
@@ -327,9 +327,9 @@ private lemma bound_sum_log_range (hx : 1 ≤ x) n :
           unfold w
           by_cases hi : i = 0
           · simp [hi]
-          · grw [← sq_nonneg, ← (mod_cast by omega : 1 ≤ (i : ℝ))]; simp [field]
+          · grw [← sq_nonneg, ← (mod_cast by lia : 1 ≤ (i : ℝ))]; simp [field]
         intro i _ j _ _; by_cases i = 0 <;> by_cases j = 0 <;> simp only [↓reduceIte, le_refl, *]
-        · omega
+        · lia
         · gcongr; apply w_antitone _ _ (by gcongr) <;> rw [mem_Ioi] <;> positivity
     _ ≤ _ := by
       gcongr
@@ -377,7 +377,7 @@ private theorem lim_S_fourier (hx : 1 ≤ x) : Tendsto (fun σ ↦ S σ (𝓕 Ψ
       simp only [norm_mul, ofReal_re, h, ↓reduceIte, norm_term_eq]
       grw [Ψ.norm_fourier_le_Q_mul, ← hσ]
       · simp; grind
-      · exact_mod_cast (by omega)
+      · exact_mod_cast (by lia)
       · positivity [Ψ.Q_nonneg]
   · apply Tendsto.mul
     · suffices Tendsto (fun σ : ℝ ↦ x ^ (1 - σ)) (𝓝[>] 1) (𝓝 1) by
@@ -393,7 +393,7 @@ private theorem lim_S_fourier (hx : 1 ≤ x) : Tendsto (fun σ ↦ S σ (𝓕 Ψ
         (by positivity)).const_mul _).const_mul _).restrict
     refine tendsto_integral_filter_of_dominated_convergence _ ?_ ?_ this ?_
     · have := (𝓕 Ψ).continuous
-      exact Eventually.of_forall (fun _ ↦ Continuous.aestronglyMeasurable (by continuity))
+      exact Eventually.of_forall (fun _ ↦ Continuous.aestronglyMeasurable (by fun_prop))
     · apply eventually_of_mem (U := Ioo 1 2)
       · apply Ioo_mem_nhdsGT_of_mem; simp
       · intro σ ⟨_, _⟩
@@ -410,7 +410,7 @@ private theorem lim_S_fourier (hx : 1 ≤ x) : Tendsto (fun σ ↦ S σ (𝓕 Ψ
       suffices Tendsto (fun n ↦ ((rexp (-x * (n - 1))) : ℂ)) (𝓝 1) (𝓝 1) by
         simpa using Tendsto.mono_left (this.mul_const _) nhdsWithin_le_nhds
       suffices Continuous (fun n ↦ ((rexp (-x * (n - 1))) : ℂ)) by simpa using this.tendsto 1
-      continuity
+      fun_prop
 
 private theorem lim_integ_G_mul {Ψ : 𝓢(ℝ, ℂ)} (hΨ : HasCompactSupport Ψ) (hx : 1 ≤ x) :
     Tendsto (fun σ : ℝ ↦ ∫ t : ℝ, G (σ + t * I) * Ψ t * x ^ (t * I)) (𝓝[>] 1)
@@ -463,7 +463,8 @@ section LimitingFourierIdentitySchwartz
 
 variable (Ψ : 𝓢(ℝ, ℂ))
 
-private lemma norm_term_mul_le x (f : ℕ → ℂ) n : ‖(term f 1 n) * 𝓕 Ψ (c₀ * log (n / x))‖ ≤
+private lemma norm_term_mul_le (x : ℝ) (f : ℕ → ℂ) (n : ℕ) :
+    ‖(term f 1 n) * 𝓕 Ψ (c₀ * log (n / x))‖ ≤
       Ψ.Q * (‖f n‖ / n * (1 + (c₀ * log (n / x)) ^ 2)⁻¹) := by
   convert! mul_le_mul_of_nonneg_left (Ψ.norm_fourier_le_Q_mul (1 / (2 * π) * log (n / x)))
     (norm_nonneg (f n / n)) using 1
@@ -721,7 +722,7 @@ theorem tendsto_sum_div : Tendsto (fun x : ℝ ↦ (∑ n ∈ .Icc 0 ⌊x⌋₊,
   apply this.congr'
   filter_upwards [eventually_gt_atTop 0] with x
   have : (⌊x⌋₊ : ℝ) + 1 ≠ 0 := by positivity
-  rw [Nat.range_eq_Icc_zero_sub_one _ (by omega)]
+  rw [Nat.range_eq_Icc_zero_sub_one _ (by lia)]
   simp [field]
 
 end WienerIkehara
