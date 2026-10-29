@@ -207,22 +207,17 @@ theorem isometry_ofCompletion : Isometry (ofCompletion (v := v)) :=
   Isometry.of_dist_eq fun _ _ ↦ rfl
 
 /-- `Completion.toCompletion` as an isometry equivalence onto the underlying completion. -/
-@[simps! apply]
-noncomputable def isometryEquivCompletion :
+@[simps!]
+noncomputable def isometryEquiv :
     v.Completion ≃ᵢ UniformSpace.Completion (WithAbs v) where
   toEquiv := equiv v
   isometry_toFun := isometry_toCompletion v
-
-@[simp]
-theorem isometryEquivCompletion_symm_apply (x : UniformSpace.Completion (WithAbs v)) :
-    (isometryEquivCompletion v).symm x = .ofCompletion x := by
-  rfl
 
 theorem continuous_toCompletion : Continuous (toCompletion (v := v)) :=
   (isometry_toCompletion v).continuous
 
 theorem continuous_ofCompletion : Continuous (ofCompletion (v := v)) :=
-  (isometryEquivCompletion v).symm.continuous
+  (isometryEquiv v).symm.continuous
 
 instance : CompleteSpace v.Completion :=
   ((isometry_toCompletion v).isUniformInducing.completeSpace_congr
@@ -318,7 +313,7 @@ noncomputable def map : v.Completion →+* w.Completion :=
     (equiv v).toRingHom
 
 theorem isometry_map : Isometry (map v w) :=
-  (isometryEquivCompletion w).symm.isometry.comp <|
+  (isometryEquiv w).symm.isometry.comp <|
     (UniformSpace.Completion.isometry_mapRingHom (WithAbs.isometry_map v w)).comp
       (isometry_toCompletion v)
 
