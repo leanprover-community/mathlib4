@@ -126,6 +126,5 @@ jobs:
       pr_branch_ref: ${{ github.event.pull_request.head.sha }}
       cache_environment: cache-upload-forks
       runs_on: pr
-      # Builds are marked large by their predicted cascade.
       route: predict
     secrets: inherit

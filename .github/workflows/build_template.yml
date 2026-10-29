@@ -22,11 +22,9 @@ on:
         type: string
         required: true
       route:
-        # How `build` is marked large. `predict` runs the `route` job, which marks the
-        # build large when the change rebuilds 2,000 Mathlib modules or more. `large`
-        # marks it large without a prediction. Empty marks nothing. A large build runs
-        # on the label `large` when the repository variable MATHLIB_CI_LARGE_BUILDS is
-        # `true`, and on `runs_on` otherwise.
+        # `predict` runs the `route` job, which marks `build` large by its predicted
+        # cascade; `large` marks it large; empty marks nothing. A large build runs on
+        # the label `large` when the repository variable MATHLIB_CI_LARGE_BUILDS is `true`.
         type: string
         required: false
         default: ''
@@ -85,9 +83,6 @@ jobs:
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-      # `route_build.py` counts the Mathlib modules that the change rebuilds, from the
-      # changed files and the import graph of a master build. Its README in mathlib-ci
-      # describes the heuristic. Any error marks the build as not large.
       - name: Predict the build size
         id: route
         env:
@@ -99,11 +94,7 @@ jobs:
   build:
     name: Build
     needs: [route]
-    # A large build runs on the label `large` when the repository variable
-    # MATHLIB_CI_LARGE_BUILDS is `true`. Every other build, and every build while the
-    # variable is not `true`, runs on `runs_on`. A skipped or failed `route` marks
-    # nothing.
-    if: ${{ !cancelled() }}
+    if: ${{ !cancelled() }} # also after a skipped or failed `route`
     runs-on: ${{ (vars.MATHLIB_CI_LARGE_BUILDS == 'true' && (inputs.route == 'large' || needs.route.outputs.large == 'true')) && 'large' || inputs.runs_on }}
     # This job builds (potentially fork) PR code, so it must not inherit any
     # write-capable token. `actions: read` lets get-tools and get-cache download
@@ -281,9 +272,8 @@ jobs:
           cd pr-branch
           du .lake/build/lib/lean/Mathlib || echo "This code should be unreachable"
 
-      # The `route` job of later builds reads the graph of the master build at their
-      # merge-base (mathlib-ci, `scripts/route/README.md`). The upload sits here, right
-      # after the build step, so the graph exists a few minutes after the push.
+      # The `route` job of later builds reads this graph. The upload follows the build
+      # step, so the graph exists a few minutes after the push.
       - name: generate the import graph
         if: ${{ inputs.publish_cache }}
         run: |
