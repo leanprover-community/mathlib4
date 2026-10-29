@@ -1134,6 +1134,12 @@ theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f)
     range (g ∘ f) = range g :=
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 
+/-- A factor has exactly the same range as the original function. -/
+theorem FactorsThrough.range_factor {ι ι' : Sort*} {γ : Type*} {f : ι → ι'} {g : ι → γ}
+    (h : g.FactorsThrough f) (hf : Surjective f) : Set.range (hf.factor g) = Set.range g := by
+  have := hf.range_comp (hf.factor g)
+  rwa [h.factor_comp hf, eq_comm] at this
+
 theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=
   hf.existsUnique_iff_exists.symm
