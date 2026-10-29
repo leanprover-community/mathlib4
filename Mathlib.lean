@@ -1210,6 +1210,7 @@ public import Mathlib.Algebra.Polynomial.Expand
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Polynomial.GroupRingAction
 public import Mathlib.Algebra.Polynomial.HasseDeriv
+public import Mathlib.Algebra.Polynomial.HermiteInterpolation
 public import Mathlib.Algebra.Polynomial.Homogenize
 public import Mathlib.Algebra.Polynomial.Identities
 public import Mathlib.Algebra.Polynomial.Inductions
