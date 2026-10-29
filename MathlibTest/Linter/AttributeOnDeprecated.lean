@@ -16,7 +16,13 @@ namespace N
 
 @[deprecated bar (since := "2026-01-01")] theorem baz : True := trivial
 
+theorem newQux : True := trivial
+
+@[deprecated newQux (since := "2026-01-01")] theorem oldInN : True := trivial
+
 end N
+
+@[deprecated N.newQux (since := "2026-01-01")] theorem oldQux : True := trivial
 
 -- Attributes on non-deprecated declarations are fine.
 #guard_msgs in
@@ -33,8 +39,11 @@ theorem laterDeprecated : True := trivial
 attribute [deprecated bar (since := "2026-01-01")] laterDeprecated
 
 /--
-warning: `foo` is deprecated: this `attribute` command will break when `foo` is removed.
-Consider adding the attribute directly to the declaration of `foo`, applying it to the replacement `bar`, or removing it.
+warning: `foo` has been deprecated in favor of `bar`: this `attribute` command will break when `foo` is removed.
+Consider adding the attribute directly to the declaration of `foo`, applying it to `bar` instead, or removing it.
+
+Hint: Replace the deprecated name:
+  f̵o̵o̵b̲a̲r̲
 
 Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
 -/
@@ -42,7 +51,7 @@ Note: This linter can be disabled with `set_option linter.attributeOnDeprecated 
 attribute [simp] foo
 
 /--
-warning: `noReplacement` is deprecated: this `attribute` command will break when `noReplacement` is removed.
+warning: `noReplacement` has been deprecated: this `attribute` command will break when `noReplacement` is removed.
 Consider adding the attribute directly to the declaration of `noReplacement` or removing it.
 
 Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
@@ -52,8 +61,11 @@ attribute [simp] noReplacement
 
 -- Only the deprecated targets are flagged.
 /--
-warning: `foo` is deprecated: this `attribute` command will break when `foo` is removed.
-Consider adding the attribute directly to the declaration of `foo`, applying it to the replacement `bar`, or removing it.
+warning: `foo` has been deprecated in favor of `bar`: this `attribute` command will break when `foo` is removed.
+Consider adding the attribute directly to the declaration of `foo`, applying it to `bar` instead, or removing it.
+
+Hint: Replace the deprecated name:
+  f̵o̵o̵b̲a̲r̲
 
 Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
 -/
@@ -61,8 +73,11 @@ Note: This linter can be disabled with `set_option linter.attributeOnDeprecated 
 attribute [-simp] bar foo
 
 /--
-warning: `foo` is deprecated: this `attribute` command will break when `foo` is removed.
-Consider adding the attribute directly to the declaration of `foo`, applying it to the replacement `bar`, or removing it.
+warning: `foo` has been deprecated in favor of `bar`: this `attribute` command will break when `foo` is removed.
+Consider adding the attribute directly to the declaration of `foo`, applying it to `bar` instead, or removing it.
+
+Hint: Replace the deprecated name:
+  f̵o̵o̵b̲a̲r̲
 
 Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
 -/
@@ -76,10 +91,26 @@ attribute [local simp] bar in
 set_option linter.deprecated false in
 example : True := foo
 
+-- The suggested replacement is a name that resolves at the `attribute` command.
+/--
+warning: `oldQux` has been deprecated in favor of `N.newQux`: this `attribute` command will break when `oldQux` is removed.
+Consider adding the attribute directly to the declaration of `oldQux`, applying it to `N.newQux` instead, or removing it.
+
+Hint: Replace the deprecated name:
+  o̵l̵d̵N̲.̲n̲e̲w̲Qux
+
+Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
+-/
+#guard_msgs in
+attribute [simp] oldQux
+
 -- The targets are resolved in the scope of the `attribute` command.
 /--
-warning: `N.baz` is deprecated: this `attribute` command will break when `N.baz` is removed.
-Consider adding the attribute directly to the declaration of `N.baz`, applying it to the replacement `bar`, or removing it.
+warning: `N.baz` has been deprecated in favor of `bar`: this `attribute` command will break when `N.baz` is removed.
+Consider adding the attribute directly to the declaration of `N.baz`, applying it to `bar` instead, or removing it.
+
+Hint: Replace the deprecated name:
+  baz̵r̲
 
 Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
 -/
@@ -90,13 +121,41 @@ attribute [simp] baz
 namespace N
 
 /--
-warning: `baz` is deprecated: this `attribute` command will break when `baz` is removed.
-Consider adding the attribute directly to the declaration of `baz`, applying it to the replacement `bar`, or removing it.
+warning: `baz` has been deprecated in favor of `bar`: this `attribute` command will break when `baz` is removed.
+Consider adding the attribute directly to the declaration of `baz`, applying it to `bar` instead, or removing it.
+
+Hint: Replace the deprecated name:
+  baz̵r̲
 
 Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
 -/
 #guard_msgs in
 attribute [simp] baz
+
+-- The suggested replacement is fully qualified if and only if the deprecated name is.
+/--
+warning: `oldInN` has been deprecated in favor of `newQux`: this `attribute` command will break when `oldInN` is removed.
+Consider adding the attribute directly to the declaration of `oldInN`, applying it to `newQux` instead, or removing it.
+
+Hint: Replace the deprecated name:
+  o̵l̵d̵I̵n̵N̵n̲e̲w̲Q̲u̲x̲
+
+Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
+-/
+#guard_msgs in
+attribute [simp] oldInN
+
+/--
+warning: `oldInN` has been deprecated in favor of `newQux`: this `attribute` command will break when `oldInN` is removed.
+Consider adding the attribute directly to the declaration of `oldInN`, applying it to `newQux` instead, or removing it.
+
+Hint: Replace the deprecated name:
+  N̵.̵o̵l̵d̵I̵n̵N̵N̲.̲n̲e̲w̲Q̲u̲x̲
+
+Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
+-/
+#guard_msgs in
+attribute [simp] N.oldInN
 
 end N
 

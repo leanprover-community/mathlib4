@@ -123,15 +123,22 @@ def attributeOnDeprecatedLinter : Linter where run stx := do
       let targets := attr[4].getArgs
       let found := trees.foldl (init := #[]) fun acc t => deprecatedTargets env rg targets t acc
       for (id, n) in found do
-        let replacement := match Linter.deprecatedAttr.getParam? env n with
-          | some { newName? := some new, .. } =>
-            m!", applying it to the replacement `{.ofConstName new}`,"
-          | _ => m!""
-        logLint linter.attributeOnDeprecated id
-          m!"`{.ofConstName n}` is deprecated: this `attribute` command will break when \
-            `{.ofConstName n}` is removed.\n\
-            Consider adding the attribute directly to the declaration of `{.ofConstName n}`\
-            {replacement} or removing it.") stx
+        let breaks := m!"this `attribute` command will break when `{.ofConstName n}` is removed."
+        let consider :=
+          m!"Consider adding the attribute directly to the declaration of `{.ofConstName n}`"
+        let msg ← match Linter.deprecatedAttr.getParam? env n with
+          | some { newName? := some new, .. } => do
+            -- If the deprecated name is fully qualified, then so is the suggested replacement.
+            let fullNames := id.getId.eraseMacroScopes == privateToUserName n
+            let hint ← Command.liftCoreM do
+              MessageData.hint "Replace the deprecated name:"
+                #[(← unresolveNameGlobal new (fullNames := fullNames)).toString] (ref? := id)
+            pure <| m!"`{.ofConstName n}` has been deprecated in favor of \
+              `{.ofConstName new}`: {breaks}\n\
+              {consider}, applying it to `{.ofConstName new}` instead, or removing it." ++ hint
+          | _ =>
+            pure m!"`{.ofConstName n}` has been deprecated: {breaks}\n{consider} or removing it."
+        logLint linter.attributeOnDeprecated id msg) stx
 
 initialize addLinter attributeOnDeprecatedLinter
 
