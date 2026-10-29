@@ -741,6 +741,11 @@ theorem setIntegral_le_integral [OrderClosedTopology E] (hfi : Integrable f μ) 
 
 variable [ClosedIciTopology E]
 
+theorem integral_le_setIntegral (hs : NullMeasurableSet s μ) (hfi : Integrable f μ)
+    (hf : f ≤ᵐ[μ.restrict sᶜ] 0) : ∫ x, f x ∂μ ≤ ∫ x in s, f x ∂μ := by
+  rw [← integral_add_compl₀ hs hfi]
+  exact add_le_of_nonpos_right (integral_nonpos_of_ae hf)
+
 section
 variable (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ)
 include hf hg

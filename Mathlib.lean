@@ -6665,6 +6665,7 @@ public import Mathlib.Probability.Moments.CovarianceBilin
 public import Mathlib.Probability.Moments.CovarianceBilinDual
 public import Mathlib.Probability.Moments.IntegrableExpMul
 public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Probability.Moments.PaleyZygmund
 public import Mathlib.Probability.Moments.SubGaussian
 public import Mathlib.Probability.Moments.Tilted
 public import Mathlib.Probability.Moments.Variance
