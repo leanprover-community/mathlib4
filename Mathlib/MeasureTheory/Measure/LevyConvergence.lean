@@ -5,10 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.MeasureTheory.Measure.Tight
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 import Mathlib.MeasureTheory.Measure.IntegralCharFun
@@ -167,7 +165,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
     isCompact_closure_of_isTightMeasureSet (by simpa using h_tight)
   obtain ⟨μ', -, hμ' : Tendsto _ _ _⟩ := h_compact.ultrafilter_le_nhds (U.map μ)
     (.trans (by simp) (monotone_principal subset_closure))
-  suffices (μ' : Measure E) = μ₀ by convert! hμ'; ext; rw [this]
+  suffices (μ' : Measure E) = μ₀ by convert hμ'; ext; rw [this]
   refine ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA
     fun g hg ↦ tendsto_nhds_unique ?_ ((hμ g hg).comp hU)
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜] at hμ'

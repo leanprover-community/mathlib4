@@ -5,11 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Localization.Finiteness
-public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
 public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.LocalProperties.Basic
+
+import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
+import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
 

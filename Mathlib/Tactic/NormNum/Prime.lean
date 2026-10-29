@@ -5,8 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Basic
 public meta import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Tactic.NormNum.Basic
 
 /-!

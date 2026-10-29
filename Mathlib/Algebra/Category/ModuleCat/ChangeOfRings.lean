@@ -5,10 +5,10 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
-public import Mathlib.Algebra.Category.ModuleCat.Colimits
-public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
@@ -102,7 +102,7 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).Faithful where
   map_injective h := by
     ext x
-    simpa only using! DFunLike.congr_fun (ModuleCat.hom_ext_iff.mp h) x
+    simpa only using! congr($(ModuleCat.hom_ext_iff.mp h) x)
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).PreservesMonomorphisms where
@@ -154,7 +154,7 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     (M →ₛₗ[f] N) ≃+ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  toFun g := ofHom (Y := (ModuleCat.restrictScalars f).obj N) <|
+  toFun g := ofHom (Y := (ModuleCat.restrictScalars f).obj N)
     { toFun := g
       map_add' := by simp
       map_smul' := by simp }
@@ -334,7 +334,7 @@ namespace Algebra
 
 instance {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
     (f : R →ₐ[R₀] S) : (restrictScalars f.toRingHom).Linear R₀ where
-  map_smul {M N} g r₀ := by ext m; exact congr_arg (· • g.hom m) (f.commutes r₀).symm
+  map_smul {M N} g r₀ := by ext m; congrm $((f.commutes r₀).symm) • g.hom m
 
 instance restrictScalarsEquivalenceOfRingEquiv_linear
     {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
@@ -567,7 +567,7 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
     (g : (restrictScalars f).obj Y ⟶ X) : Y ⟶ (coextendScalars f).obj X :=
   ofHom
   { toFun := fun y : Y => (CoextendScalars.equiv _ _).symm
-      { toFun := fun s : S => g <| (s • y : Y)
+      { toFun := fun s : S => g (s • y : Y)
         map_add' := fun s1 s2 : S => by simp [add_smul]
         map_smul' := fun r (s : S) => by
           rw [← g.hom.map_smul]
@@ -786,7 +786,6 @@ def homEquiv {X : ModuleCat R} {Y : ModuleCat S} :
     dsimp
     rw [one_smul]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 For any `R`-module X, there is a natural `R`-linear map from `X` to `X ⨂ S` by sending `x ↦ x ⊗ 1`
@@ -847,7 +846,6 @@ lemma Counit.map_apply_one_tmul {Y : ModuleCat S} (y : Y) :
   change (1 : S) • y = y
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation from the composition of restriction and extension of scalars to the
 identity functor on `S`-module.
@@ -909,7 +907,6 @@ lemma extendRestrictScalarsAdj_unit_app_apply
     (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma extendRestrictScalarsAdj_counit_app_apply_one_tmul (M : ModuleCat S) (m : M) :
     dsimp% (extendRestrictScalarsAdj f).counit.app M ((1 : S) ⊗ₜ[R] m) = m := by
@@ -1002,7 +999,6 @@ lemma extendScalarsComp_hom_app_one_tmul (M : ModuleCat R₁) (m : M) :
   rw [← extendRestrictScalarsAdj_homEquiv_apply, homEquiv_extendScalarsComp]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma extendScalars_assoc :
@@ -1034,7 +1030,6 @@ lemma extendScalars_assoc' :
   simp only [Iso.inv_hom_id_assoc, ← Functor.whiskerLeft_comp_assoc, Iso.hom_inv_id,
     Functor.whiskerLeft_id', Category.id_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma extendScalars_id_comp :

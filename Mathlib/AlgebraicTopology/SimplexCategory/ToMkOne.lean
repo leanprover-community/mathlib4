@@ -10,7 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 /-!
 # Morphisms to `⦋1⦌`
 
-We define a bijective map `SimplexCategory.toMk₁ : Fin (n + 2) → `⦋n⦌ ⟶ ⦋1⦌`.
+We define a bijective map `SimplexCategory.toMk₁ : Fin (n + 2) → ⦋n⦌ ⟶ ⦋1⦌`.
 This is used in the file `Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne`
 in the study of simplices in the simplicial set `Δ[1]`.
 
@@ -70,7 +70,6 @@ lemma δ_comp_toMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i
   rw [Fin.castPred_castSucc]
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   change toMk₁ i.castSucc (j.succAbove k) = _
-  dsimp
   grind [Fin.succAbove]
 
 lemma δ_comp_toMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j.castSucc < i) :
@@ -79,7 +78,6 @@ lemma δ_comp_toMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j
   rw [Fin.pred_succ]
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   change toMk₁ i.succ (j.succAbove k) = _
-  dsimp
   grind [Fin.succAbove]
 
 lemma σ_comp_toMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :
@@ -112,7 +110,7 @@ lemma toMk₁_injective {n : ℕ} : Function.Injective (toMk₁ (n := n)) := by
   intro i j h
   wlog hij : i < j generalizing i j
   · grind
-  have := ConcreteCategory.congr_hom h ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩
+  have := congr($h ⟨i.1, lt_of_lt_of_le hij (by dsimp; lia)⟩)
   simp [toMk₁_apply, ite_eq_left hij] at this
 
 lemma toMk₁_surjective {n : ℕ} : Function.Surjective (toMk₁ (n := n)) := by

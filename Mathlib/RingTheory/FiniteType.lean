@@ -136,8 +136,8 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, SetLike.mem_coe, hs]
-    apply mem_top
+    rw [← AlgHom.mem_range, ← adjoin_eq_range, hs]
+    exact mem_top
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
@@ -197,6 +197,9 @@ lemma adjoin_of_finite {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} (h
     FiniteType R (Algebra.adjoin R t) := by
   rw [← Subalgebra.fg_iff_finiteType]
   exact ⟨h.toFinset, by simp⟩
+
+instance {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} [Finite t] :
+    FiniteType R (Algebra.adjoin R t) := adjoin_of_finite t.toFinite
 
 end FiniteType
 
@@ -641,12 +644,12 @@ instance (priority := 100) CommRing.orzechProperty
   have : IsNoetherianRing A := is_noetherian_subring_closure _
     (.union (Set.finite_range _) (Set.finite_range _))
   have : Module.Finite A M' := span_of_finite A (Set.finite_range _)
-  refine congr($((LinearMap.ker_eq_bot'.1 <| LinearMap.ker_eq_bot.2 <|
-    IsNoetherian.injective_of_surjective_of_injective
-      ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
-      ((f.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
-      (fun _ _ h ↦ injective_subtype _ (hi congr(($h).1)))
-      fun ⟨x, hx⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1)
+  congrm $((LinearMap.ker_eq_bot'.1 <| LinearMap.ker_eq_bot.2 <|
+   IsNoetherian.injective_of_surjective_of_injective
+     ((i.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
+     ((f.restrictScalars A).restrict fun x hx ↦ ?_ : N' →ₗ[A] M')
+     (fun _ _ h ↦ injective_subtype _ (hi congr(($h).1)))
+     fun ⟨x, hx⟩ ↦ ?_) ⟨n, (subset_span (by simp))⟩ (Subtype.val_injective hn)).1
   · induction hx using span_induction with
     | mem x hx =>
       change i x ∈ M'

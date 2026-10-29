@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Functor.Quadrifunctor
 public import Mathlib.CategoryTheory.Products.Associator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Currying of functors in four variables
 
@@ -76,13 +79,15 @@ instance : (curry₄ : (C₁ × C₂ × C₃ × C₄ ⥤ E) ⥤
 lemma currying₄_unitIso_hom_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((currying₄.unitIso.hom.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
-  simp [currying₄, Equivalence.unit]
+  dsimp [currying₄]
+  simp [Equivalence.unit]
 
 @[simp]
 lemma currying₄_unitIso_inv_app_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ ⥤ E)
     (X₁ : C₁) (X₂ : C₂) (X₃ : C₃) (X₄ : C₄) :
     ((((currying₄.unitIso.inv.app F).app X₁).app X₂).app X₃).app X₄ = 𝟙 _ := by
-  simp [currying₄, Equivalence.unitInv]
+  dsimp [currying₄]
+  simp [Equivalence.unitInv]
 
 /-- Given functors `F₁ : C₁ ⥤ D₁`, `F₂ : C₂ ⥤ D₂`, `F₃ : C₃ ⥤ D₃`,
 `F₄ : C₄ ⥤ D₄` and `G : D₁ × D₂ × D₃ × D₄ ⥤ E`, this is the isomorphism between

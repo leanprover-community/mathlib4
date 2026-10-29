@@ -5,8 +5,8 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+public import Mathlib.CategoryTheory.Sites.Plus
 
 /-!
 
@@ -62,7 +62,7 @@ lemma congr_apply {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) {Y}
 @[ext]
 theorem ext {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x y : Meq P S) (h : ∀ I : S.Arrow, x I = y I) :
     x = y :=
-  Subtype.ext <| funext <| h
+  Subtype.ext <| funext h
 
 theorem condition {X} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (I : S.Relation) :
     P.map I.r.g₁.op (x (S.shape.fst I)) = P.map I.r.g₂.op (x (S.shape.snd I)) :=
@@ -369,8 +369,8 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
       (by
         intro Y f hf
         apply Sieve.le_pullback_bind _ _ _ I.hf
-        · cases I
-          exact hf)
+        cases I
+        exact hf)
   use e0, 𝟙 _
   ext IV
   let IA : B.Arrow := ⟨_, (IV.f ≫ II.f) ≫ I.f,
@@ -592,7 +592,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
     { homEquiv := fun P Q =>
         { toFun := fun e => J.toSheafify P ≫ e.hom
           invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
-          left_inv := fun _ => Sheaf.hom_ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
+          left_inv := fun _ => Sheaf.hom_ext (J.sheafifyLift_unique _ _ _ rfl).symm
           right_inv := fun _ => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vertical line test for group homs
 
@@ -120,7 +123,7 @@ graph of some monoid homomorphism `f : H → I`. -/]
 lemma Submonoid.exists_eq_mgraph {G : Submonoid (H × I)} (hG₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →* I, G = f.mgraph := by
   simpa using MonoidHom.exists_mrange_eq_mgraph hG₁.surjective
-    fun a b h ↦ congr_arg (Prod.snd ∘ G.subtype) (hG₁.injective h)
+    fun a b h ↦ congr($(hG₁.injective h).val.snd)
 
 /-- **Goursat's lemma** for monoid isomorphisms.
 

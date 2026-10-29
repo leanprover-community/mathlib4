@@ -9,6 +9,9 @@ public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.RingTheory.IsTensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoid algebras commute with base change
 

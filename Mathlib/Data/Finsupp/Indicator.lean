@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finsupp.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Building finitely supported functions off finsets
 
@@ -51,7 +54,7 @@ theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f
   intro a b h
   ext i hi
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
-  exact DFunLike.congr_fun h i
+  congrm $h i
 
 theorem support_indicator_subset : (indicator s f).support ⊆ s := support_onFinset_subset
 

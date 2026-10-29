@@ -35,7 +35,7 @@ noncomputable def toNat : Cardinal →*₀ ℕ :=
 
 @[simp]
 theorem toNat_ofENat (n : ℕ∞) : toNat n = ENat.toNat n :=
-  congr_arg ENat.toNat <| toENat_ofENat n
+  congr($(toENat_ofENat n).toNat)
 
 @[simp, norm_cast] theorem toNat_natCast (n : ℕ) : toNat n = n := toNat_ofENat n
 

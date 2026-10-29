@@ -5,8 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Filtered
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Functor categories have filtered colimits when the target category does

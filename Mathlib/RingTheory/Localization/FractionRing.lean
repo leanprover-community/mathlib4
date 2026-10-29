@@ -9,10 +9,8 @@ public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.RingTheory.Localization.Basic
-public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization
@@ -115,6 +113,14 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
       (eq_div_iff_mul_eq <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
   exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
 
+theorem of_semifield_isLocalization
+    {R : Type*} [CommSemiring R] [NoZeroDivisors R] (S : Submonoid R)
+    (K : Type*) [Semifield K] [Algebra R K] [IsLocalization S K] :
+    IsFractionRing R K :=
+  of_le S R⁰
+    (fun s hs ↦ mem_nonZeroDivisors_of_ne_zero <| ne_zero_of_map <| (map_units K ⟨s, hs⟩).ne_zero)
+    (fun _ hr ↦ isUnit_of_mem_nonZeroDivisors <| nonZeroDivisors_le_comap S K hr)
+
 variable {R K}
 
 section CommSemiring
@@ -201,7 +207,8 @@ protected theorem isDomain : IsDomain K :=
   isDomain_of_le_nonZeroDivisors _ (le_refl (nonZeroDivisors A))
 
 /-- The inverse of an element in the field of fractions of an integral domain. -/
-protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical in
+@[no_expose]
+protected noncomputable def inv (z : K) : K := open scoped Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
@@ -243,6 +250,12 @@ lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K)
     (IsLocalization.atUnits R _ (S := K)
       (fun _ hx ↦ Ne.isUnit (mem_nonZeroDivisors_iff_ne_zero.mp hx))).surjective
 
+/-- The ring `R` is an integral domain iff its fraction ring `K` is a field. -/
+theorem isDomain_iff_isField : IsDomain R ↔ IsField K := by
+  refine ⟨fun h ↦ (IsFractionRing.toField R).toIsField K, fun h ↦ ?_⟩
+  let := h.toField
+  exact IsDomain.of_faithfulSMul _ K
+
 end CommRing
 
 variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
@@ -251,7 +264,7 @@ variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
     mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
   haveI := (algebraMap A K).domain_nontrivial
-  mk'_eq_iff_eq_mul.2 <|
+  mk'_eq_iff_eq_mul.2
     (div_mul_cancel₀ (algebraMap A K r)
         (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hs)).symm
 
@@ -363,7 +376,7 @@ theorem ringHom_ext {f1 f2 : K →+* L}
 
 theorem injective_comp_algebraMap :
     Function.Injective fun (f : K →+* L) => f.comp (algebraMap A K) :=
-  fun _ _ h => ringHom_ext (fun x => RingHom.congr_fun h x)
+  fun _ _ h => ringHom_ext (fun x => congr($h x))
 
 section liftAlgHom
 
@@ -515,7 +528,7 @@ lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [Comm
       (semilinearEquivOfRingEquiv K L f)
       (semilinearEquivOfRingEquiv L M g) := by
   ext a
-  simp [-RingEquiv.coe_ringHom_trans, semilinearEquivOfRingEquiv_apply,
+  simp [-RingEquiv.toRingHom_trans, semilinearEquivOfRingEquiv_apply,
     semilinearEquivOfRingEquiv_apply K M, ringEquivOfRingEquiv_comp K L M]
 
 end semilinearEquivOfRingEquiv
@@ -630,7 +643,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔
       @IsFractionRing P _ S _ ((algebraMap R S).comp h.symm.toRingHom).toAlgebra := by
   delta IsFractionRing
-  convert! isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
+  convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   exact (MulEquivClass.map_nonZeroDivisors h).symm
 
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]

@@ -183,7 +183,7 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
   inv :=
     { app := fun X => (app X).inv,
       naturality := fun X Y f => by
-        have h := congr_arg (fun f => (app X).inv ≫ f ≫ (app Y).inv) (naturality f).symm
+        have h := congr((app X).inv ≫ $((naturality f).symm) ≫ (app Y).inv)
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }
 
@@ -194,6 +194,7 @@ theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X
 -- Making this an instance would cause a typeclass inference loop with `isIso_app_of_isIso`.
 /-- A natural transformation is an isomorphism if all its components are isomorphisms.
 -/
+@[to_dual self]
 theorem isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
   (ofComponents (fun X => asIso (α.app X)) (by simp)).isIso_hom
 

@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Products
 public import Mathlib.Topology.UnitInterval
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # The cartesian monoidal structure on `TopCat`

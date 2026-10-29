@@ -5,7 +5,6 @@ Authors: Anne Baanen, Yongle Hu
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Integral
 
@@ -55,9 +54,9 @@ theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
   · intro p a coeff_eq_zero a_ne_zero _ _ hp
     refine ⟨0, ?_, coeff_zero_mem_comap_of_root_mem hr hp⟩
     simp [coeff_eq_zero, a_ne_zero]
-  · intro p p_nonzero ih _ hp
+  · intro p p_ne_zero ih _ hp
     rw [eval₂_mul, eval₂_X] at hp
-    obtain ⟨i, hi, mem⟩ := ih p_nonzero (r_non_zero_divisor hp)
+    obtain ⟨i, hi, mem⟩ := ih p_ne_zero (r_non_zero_divisor hp)
     refine ⟨i + 1, ?_, ?_⟩
     · simp [hi]
     · simpa [hi] using mem
@@ -102,7 +101,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
 that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
 `P ≠ 0` and `P ∩ R = (0)`.
 -/
-theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :
+theorem exists_ne_zero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :
     ∃ p : R[X], p ∈ P ∧ Polynomial.map (Quotient.mk (P.comap (C : R →+* R[X]))) p ≠ 0 := by
   obtain ⟨m, hm⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr Pb)
   refine ⟨m, Submodule.coe_mem m, fun pp0 => hm (Submodule.coe_eq_zero.mp ?_)⟩
@@ -113,6 +112,9 @@ theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀
   refine map_injective _ ((RingHom.injective_iff_ker_eq_bot (Ideal.Quotient.mk (P.comap C))).mpr ?_)
   rw [mk_ker]
   exact (Submodule.eq_bot_iff _).mpr fun x hx => hP x (mem_comap.mp hx)
+
+@[deprecated (since := "2026-10-13")]
+alias exists_nonzero_mem_of_ne_bot := exists_ne_zero_mem_of_ne_bot
 
 end
 
@@ -139,7 +141,7 @@ theorem exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff [IsPrime I] (hIJ : 
     (p.map (Ideal.Quotient.mk (I.comap f))).eval₂ (Quotient.lift (I.comap f) _ quotient_f)
         (Ideal.Quotient.mk I r) =
       0 := by
-    convert! Quotient.eq_zero_iff_mem.mpr hpI
+    convert Quotient.eq_zero_iff_mem.mpr hpI
     exact _root_.trans (eval₂_map _ _ _) (hom_eval₂ p f (Ideal.Quotient.mk I) r).symm
   obtain ⟨i, ne_zero, mem⟩ :=
     exists_coeff_ne_zero_mem_comap_of_root_mem rbar_ne_zero rbar_mem_J p_ne_zero rbar_root
@@ -162,7 +164,7 @@ theorem under_lt_under_of_integral_mem_sdiff [Algebra R S] [hI : I.IsPrime] (hIJ
     I.under R < J.under R := by
   obtain ⟨p, p_monic, hpx⟩ := integral
   refine comap_lt_comap_of_root_mem_sdiff hIJ mem (map_monic_ne_zero p_monic) ?_
-  convert! I.zero_mem
+  convert I.zero_mem
 
 @[deprecated (since := "2026-09-03")] alias comap_lt_comap_of_integral_mem_sdiff :=
   under_lt_under_of_integral_mem_sdiff
@@ -258,7 +260,7 @@ theorem IsIntegral.isMaximal_of_isMaximal_under (I : Ideal A) [I.IsPrime]
 theorem IsIntegral.mem_minimalPrimes_map_under (I : Ideal A) [I.IsPrime] :
     I ∈ ((I.under R).map (algebraMap R A)).minimalPrimes := by
   refine ⟨⟨inferInstance, map_comap_le⟩, fun r ⟨hr, hpr⟩ hrq ↦ ?_⟩
-  contrapose! hpr
+  contrapose hpr
   exact mt map_le_iff_le_comap.mp (not_le_of_gt (IsIntegral.under_lt_under (hrq.lt_of_not_ge hpr)))
 
 variable [IsDomain A]
@@ -319,7 +321,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
   have : Algebra.IsIntegral Rₚ Sₚ := ⟨isIntegral_localization⟩
   have Qₚ_max : IsMaximal (Qₚ.under Rₚ) := isMaximal_under_of_isIntegral_of_isMaximal Qₚ
   refine ⟨Qₚ.under S, ⟨inferInstance, ?_⟩⟩
-  convert! Localization.AtPrime.under_maximalIdeal (I := P)
+  convert Localization.AtPrime.under_maximalIdeal (I := P)
   rw [under_under, ← IsLocalRing.eq_maximalIdeal Qₚ_max, under_under]
 
 end
@@ -339,10 +341,10 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
         bot_le)
   refine ⟨Q'.under S, le_trans (le_of_eq mk_ker.symm) (ker_le_comap _), ⟨inferInstance, ?_⟩⟩
   rw [under_under]
-  refine _root_.trans ?_ (_root_.trans (congr_arg (comap (Ideal.Quotient.mk
-    (comap (algebraMap R S) I))) hQ') ?_)
+  refine _root_.trans ?_ (_root_.trans congr(comap (Ideal.Quotient.mk
+    (comap (algebraMap R S) I)) $hQ') ?_)
   · rw [comap_comap]
-    exact congr_arg (comap · Q') (RingHom.ext fun r => rfl)
+    congrm comap $(RingHom.ext fun r => rfl) Q'
   · refine _root_.trans (comap_map_of_surjective _ Quotient.mk_surjective _) (sup_eq_left.2 ?_)
     simpa [← RingHom.ker_eq_comap_bot] using hIP
 
@@ -436,7 +438,7 @@ theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
 variable (A) in
 theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ : Ideal A)] :
     P = ⊥ :=
-  eq_bot_of_under_eq_bot <| ((liesOver_iff _ _).mp h).symm
+  eq_bot_of_under_eq_bot ((liesOver_iff _ _).mp h).symm
 
 variable (A) {P} in
 theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=

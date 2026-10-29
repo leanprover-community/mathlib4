@@ -15,6 +15,9 @@ public import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Make `fun_prop` work for finite (multiplicative) support
 
@@ -189,7 +192,7 @@ lemma HasFiniteMulSupport.of_comp [One β] (hfg : (f ∘ g).HasFiniteMulSupport)
 lemma HasFiniteSupport.hasFiniteMulSupport_fun_pow {M : Type*} [Monoid M] (f : α → M) {g : α → ℕ}
     (hg : g.HasFiniteSupport) :
     (fun a : α ↦ f a ^ g a).HasFiniteMulSupport :=
-  Set.Finite.subset hg fun a ha ↦ by contrapose! ha; simp_all
+  Set.Finite.subset hg fun a ha ↦ by contrapose ha; simp_all
 
 @[to_additive]
 lemma HasFiniteMulSupport.of_eq_one_iff {N : Type*} [One N] {f : α → M} {g : α → N}

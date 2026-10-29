@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Asymptotics.Theta
-public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 
 /-!
 # Vanishing Order of Analytic Functions
@@ -48,7 +49,7 @@ If `f` isn't analytic at `z₀`, then `analyticOrderAt f z₀` returns a junk va
 noncomputable def analyticOrderAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ∞ :=
   if hf : AnalyticAt 𝕜 f z₀ then
     if h : ∀ᶠ z in 𝓝 z₀, f z = 0 then ⊤
-    else ↑(hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
+    else ↑(hf.exists_eventuallyEq_pow_smul_ne_zero_iff.mpr h).choose
   else 0
 
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ`.
@@ -95,11 +96,11 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
   split_ifs with h
   · simp only [ENat.top_ne_natCast, false_iff]
     contrapose h
-    rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
+    rw [← hf.exists_eventuallyEq_pow_smul_ne_zero_iff]
     exact ⟨n, h⟩
-  · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
+  · rw [← hf.exists_eventuallyEq_pow_smul_ne_zero_iff] at h
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
-    rw [AnalyticAt.unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
+    rw [AnalyticAt.unique_eventuallyEq_pow_smul_ne_zero h.choose_spec h']
 
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
@@ -169,8 +170,8 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
   unfold analyticOrderAt
   split_ifs with h
   · simpa using ⟨0, analyticAt_const .., by simpa⟩
-  · let m := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
-    obtain ⟨g, hg, hg_ne, hm⟩ := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose_spec
+  · let m := (hf.exists_eventuallyEq_pow_smul_ne_zero_iff.mpr h).choose
+    obtain ⟨g, hg, hg_ne, hm⟩ := (hf.exists_eventuallyEq_pow_smul_ne_zero_iff.mpr h).choose_spec
     rw [ENat.natCast_le_natCast]
     refine ⟨fun hmn ↦ ⟨fun z ↦ (z - z₀) ^ (m - n) • g z, by fun_prop, ?_⟩, fun ⟨h, hh, hfh⟩ ↦ ?_⟩
     · filter_upwards [hm] with z hz using by rwa [← mul_smul, ← pow_add, Nat.add_sub_of_le hmn]
