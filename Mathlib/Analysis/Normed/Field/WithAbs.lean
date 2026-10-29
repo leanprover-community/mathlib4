@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Normed.Ring.WithAbs
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.MetricSpace.Completion
 
+import Mathlib.Analysis.Normed.Field.Instances
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.Algebra.UniformField
 
@@ -102,7 +103,10 @@ namespace AbsoluteValue
 
 open WithAbs
 
-variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
+variable {J K L : Type*} [Field J] [Field K] [Field L]
+  [Algebra J K] [Algebra J L] [Algebra K L] [IsScalarTower J K L]
+  (u : AbsoluteValue J ℝ) (v : AbsoluteValue K ℝ) (w : AbsoluteValue L ℝ)
+  [v.LiesOver u] [w.LiesOver u] [w.LiesOver v]
 
 /-- The completion of a field with respect to a real absolute value. -/
 abbrev Completion := UniformSpace.Completion (WithAbs v)
@@ -113,8 +117,6 @@ noncomputable instance : Coe K v.Completion where
   coe k : v.Completion := ↑(toAbs v k)
 
 section Algebra
-
-variable {L : Type*} [Field L] [Algebra K L] (w : AbsoluteValue L ℝ) [w.LiesOver v]
 
 /-- If `w` lies over `v` with completions `K_v` and `L_w`, then there is a unique `K_v`-algebra
 structure on `L_w` satisfying both `IsScalarTower K K_v L_w` and `ContinuousSMul K_v L_w`,
@@ -136,7 +138,12 @@ instance : letI := algebraOfLiesOver v w
   continuousSMul_of_algebraMap v.Completion w.Completion
     (UniformSpace.Completion.isometry_mapRingHom (WithAbs.isometry_map v w)).continuous
 
-variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+variable
+  [Algebra u.Completion v.Completion] [IsScalarTower J u.Completion v.Completion]
+  [Algebra u.Completion w.Completion] [IsScalarTower J u.Completion w.Completion]
+  [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul u.Completion v.Completion]
+  [ContinuousSMul u.Completion w.Completion]
   [ContinuousSMul v.Completion w.Completion]
 
 open UniformSpace.Completion in
@@ -156,6 +163,11 @@ theorem algebraMap_apply (x : v.Completion) :
 theorem algebra_eq : ‹_› = algebraOfLiesOver v w :=
   Algebra.algebra_ext _ _ (algebraMap_apply v w)
 
+instance : IsScalarTower u.Completion v.Completion w.Completion := by
+  apply IsScalarTower.of_algebraMap_eq'
+  simp_rw [AbsoluteValue.Completion.algebraMap_eq, UniformSpace.Completion.mapRingHom_comp,
+    ← WithAbs.map_comp, ← IsScalarTower.algebraMap_eq]
+
 end Algebra
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
@@ -166,4 +178,31 @@ theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometry f) :
     LocallyCompactSpace v.Completion :=
   h.completion_extension.isClosedEmbedding.locallyCompactSpace
 
-end AbsoluteValue.Completion
+end Completion
+
+section degree
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul v.Completion w.Completion]
+
+variable (K) in
+/-- The degree of an extension of absolute values is the degree of their completions. -/
+noncomputable def degree : ℕ :=
+  letI v := w.under K
+  letI := Completion.algebraOfLiesOver v w
+  Module.finrank v.Completion w.Completion
+
+theorem degree_eq : w.degree K = Module.finrank v.Completion w.Completion := by
+  have := LiesOver.under_eq w v
+  subst this
+  rw [degree, Completion.algebra_eq (w.under K) w]
+
+theorem degree_mul_degree : v.degree J * w.degree K = w.degree J := by
+  let u := v.under J
+  let : Algebra u.Completion v.Completion := Completion.algebraOfLiesOver u v
+  let : Algebra u.Completion w.Completion := Completion.algebraOfLiesOver u w
+  rw [degree_eq u v, degree_eq v w, degree_eq u w, Module.finrank_mul_finrank]
+
+end degree
+
+end AbsoluteValue
