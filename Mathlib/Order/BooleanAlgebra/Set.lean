@@ -574,12 +574,12 @@ lemma disjoint_injOn_union_left (s : Set α) : {t | Disjoint s t}.InjOn (· ∪ 
 lemma superset_injOn_sdiff (s : Set α) : {t | s ⊆ t}.InjOn (· \ s) := by
   grind [Set.InjOn, sdiff_union_of_subset]
 
-lemma insert_inj_right (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t := by
+lemma insert_right_inj (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t := by
   grind
 
 lemma insert_injOn_notMem (a : α) : {s : Set α | a ∉ s}.InjOn (insert a) := by
   intro s hs t ht h
-  exact (insert_inj_right hs ht).1 h
+  exact (insert_right_inj hs ht).1 h
 
 lemma sdiff_singleton_injOn_mem (a : α) : {s : Set α | a ∈ s}.InjOn (· \ {a}) := by
   intro s hs t ht h
