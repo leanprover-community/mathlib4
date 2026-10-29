@@ -41,7 +41,8 @@ on:
         type: string
         required: true
       publish_cache:
-        # On a successful build, publish this run's `.ltar` set as `cache-snapshot`.
+        # On a successful build, publish this run's `.ltar` set as `cache-snapshot` and
+        # its import graph as `import-graph-dot`.
         # Set by callers ONLY for the master-`push` build — the single producer.
         type: boolean
         required: false
@@ -279,6 +280,24 @@ jobs:
         run: |
           cd pr-branch
           du .lake/build/lib/lean/Mathlib || echo "This code should be unreachable"
+
+      # The `route` job of later builds reads the graph of the master build at their
+      # merge-base (mathlib-ci, `scripts/route/README.md`). The upload sits here, right
+      # after the build step, so the graph exists a few minutes after the push.
+      - name: generate the import graph
+        if: ${{ inputs.publish_cache }}
+        run: |
+          cd pr-branch
+          lake exe graph .lake/import_graph.dot
+          [ -f .lake/import_graph.dot ] && [ ! -L .lake/import_graph.dot ]
+
+      - name: upload the import graph
+        if: ${{ inputs.publish_cache }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: import-graph-dot
+          path: pr-branch/.lake/import_graph.dot
+          retention-days: 90
 
       # Note: we should not be including `Archive` and `Counterexamples` in the cache.
       # We do this for now for the sake of not rebuilding them in every CI run
@@ -1134,10 +1153,6 @@ jobs:
           python3 scripts/yaml_check.py docs/100.yaml docs/1000.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe check-yaml
 
-      - name: generate our import graph
-        run: |
-          lake exe graph
-
       - name: Checkout local actions
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -1162,7 +1177,7 @@ jobs:
 
       - name: ensure dump outputs are regular files
         run: |
-          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
+          for f in decls.txt imports.json pr_number.txt; do
             if [ -L "$f" ] || [ ! -f "$f" ]; then
               echo "Refusing to upload: $f is not a regular file." >&2
               ls -la -- "$f" >&2 || true
@@ -1170,12 +1185,12 @@ jobs:
             fi
           done
 
-      - name: upload the import graph
+      # `decls-diff.yml` downloads the artifact by this name.
+      - name: upload the declaration dumps
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: import-graph
           path: |
-            import_graph.dot
             decls.txt
             imports.json
             pr_number.txt
@@ -1183,8 +1198,8 @@ jobs:
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
-      - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
+      - name: clean up the declaration dumps
+        run: rm -f decls.txt imports.json pr_number.txt
 
       - name: check all scripts build successfully
         run: |
