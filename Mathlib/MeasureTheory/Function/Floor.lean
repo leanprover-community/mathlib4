@@ -42,18 +42,18 @@ theorem Measurable.ceil [OpensMeasurableSpace R] {f : α → R} (hf : Measurable
     Measurable fun x => ⌈f x⌉ :=
   Int.measurable_ceil.comp hf
 
-theorem measurable_fract [IsStrictOrderedRing R] [BorelSpace R] :
+theorem measurable_fract [IsOrderedAddMonoid R] [BorelSpace R] :
     Measurable (Int.fract : R → R) := by
   intro s hs
   rw [Int.preimage_fract]
   exact MeasurableSet.iUnion fun z => measurable_id.sub_const _ (hs.inter measurableSet_Ico)
 
 @[fun_prop]
-theorem Measurable.fract [IsStrictOrderedRing R] [BorelSpace R] {f : α → R} (hf : Measurable f) :
+theorem Measurable.fract [IsOrderedAddMonoid R] [BorelSpace R] {f : α → R} (hf : Measurable f) :
     Measurable fun x => Int.fract (f x) :=
   measurable_fract.comp hf
 
-theorem MeasurableSet.image_fract [IsStrictOrderedRing R] [BorelSpace R]
+theorem MeasurableSet.image_fract [IsOrderedAddMonoid R] [BorelSpace R]
     {s : Set R} (hs : MeasurableSet s) :
     MeasurableSet (Int.fract '' s) := by
   simp only [Int.image_fract, sub_eq_add_neg, image_add_right']
@@ -66,12 +66,12 @@ section FloorSemiring
 variable {α R : Type*} [MeasurableSpace α] [Semiring R] [LinearOrder R] [FloorSemiring R]
   [TopologicalSpace R] [OrderTopology R] [MeasurableSpace R] [OpensMeasurableSpace R] {f : α → R}
 
-theorem Nat.measurable_floor [IsStrictOrderedRing R] : Measurable (Nat.floor : R → ℕ) :=
+theorem Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=
   measurable_to_countable fun n => by
     rcases eq_or_ne ⌊n⌋₊ 0 with h | h <;> simp [h, Nat.preimage_floor_of_ne_zero, -floor_eq_zero]
 
 @[fun_prop]
-theorem Measurable.nat_floor [IsStrictOrderedRing R] (hf : Measurable f) :
+theorem Measurable.nat_floor (hf : Measurable f) :
     Measurable fun x => ⌊f x⌋₊ :=
   Nat.measurable_floor.comp hf
 

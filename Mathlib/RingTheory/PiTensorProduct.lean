@@ -5,8 +5,8 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 /-!
 # Tensor product of `R`-algebras and rings
@@ -124,11 +124,7 @@ variable [CommSemiring R] [∀ i, NonUnitalSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
 protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul y z) := by
-  -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
-        LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    congrm $this x y z
+  apply mul.assoc_iff.mpr
   ext x y z
   dsimp [← mul_def]
   simpa only [tprod_mul_tprod] using congr(tprod R $(mul_assoc x y z))

@@ -346,7 +346,7 @@ section
 In this section, we check that in an `R`-algebra `A` over a ring equipped with a topology,
 a basis of `R`-submodules which is compatible with the topology on `R` is also a submodule basis
 in the sense of `R`-modules (forgetting about the ring structure on `A`) and those two points of
-view definitionaly gives the same topology on `A`.
+view definitionally gives the same topology on `A`.
 -/
 variable [TopologicalSpace R] {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
   (hsmul : ∀ (m : A) (i : ι), ∀ᶠ a : R in 𝓝 0, a • m ∈ B i)

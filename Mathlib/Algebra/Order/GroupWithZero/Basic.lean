@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.Int.Order.Basic
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
-public import Mathlib.Data.Int.Order.Basic
 
 import Mathlib.Data.Set.Function
 

@@ -9,6 +9,7 @@ public import Mathlib.Condensed.Discrete.Basic
 public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 public import Mathlib.Topology.FiberPartition
+
 /-!
 
 # The sheaf of locally constant maps on `CompHausLike P`
@@ -199,7 +200,6 @@ lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The counit is natural in `S : CompHausLike P` -/
 @[simps! app]
 noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
@@ -238,9 +238,6 @@ def functor :
     rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIso P hs X)]
     exact ((TopCat.discrete.obj X).toSheafCompHausLike P hs).property)
 
-@[deprecated (since := "2026-03-20")] alias functor_obj_obj := functor_obj_obj_obj
-@[deprecated (since := "2026-03-20")] alias functor_map_hom := functor_map_hom_app
-
 /--
 `CompHausLike.LocallyConstant.functor` is naturally isomorphic to the restriction of
 `topCatToSheafCompHausLike` to discrete topological spaces.
@@ -250,7 +247,6 @@ noncomputable def functorIso :
   NatIso.ofComponents (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
     (functorToPresheavesIso P hs X))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit is natural in both `S : CompHausLike P` and
 `Y : Sheaf (coherentTopology (CompHausLike P)) (Type (max u w))` -/

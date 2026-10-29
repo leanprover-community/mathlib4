@@ -292,7 +292,7 @@ Single Variable Real Analysis:
     Bolzano-Weierstrass theorem: 'tendsto_subseq_of_bounded'
     compact subsets of $\R$: 'Metric.isCompact_iff_isClosed_bounded'
     connected subsets of $\R$: 'setOfPred_isPreconnected_eq_of_ordered'
-    additive subgroups of $\R$: 'AddSubgroup.dense_or_cyclic'
+    additive subgroups of $\R$: 'AddSubgroup.dense_or_isCyclic'
   Numerical series:
     Convergence of real-valued series: 'https://en.wikipedia.org/wiki/Series_(mathematics)#Convergent_series'
     Geometric series: 'tsum_geometric_of_norm_lt_one'

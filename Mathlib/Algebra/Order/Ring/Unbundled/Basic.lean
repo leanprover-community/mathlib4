@@ -6,8 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Ring.Defs
 

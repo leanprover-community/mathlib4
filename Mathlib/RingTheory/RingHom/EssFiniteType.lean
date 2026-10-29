@@ -5,8 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # Meta properties of essentially of finite type ring homomorphisms

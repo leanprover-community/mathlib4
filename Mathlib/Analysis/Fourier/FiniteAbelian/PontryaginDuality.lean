@@ -9,9 +9,9 @@ public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 
 import Mathlib.Algebra.DirectSum.AddChar
+import Mathlib.Algebra.Field.ModEq
 import Mathlib.GroupTheory.FiniteAbelian.Basic
 import Mathlib.Topology.Instances.AddCircle.Real
-import Mathlib.Algebra.Field.ModEq
 
 /-!
 # Pontryagin duality for finite abelian groups

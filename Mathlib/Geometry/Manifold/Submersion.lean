@@ -5,13 +5,13 @@ Authors: Michael Rothgang, Samantha Naranjo Guevara
 -/
 module
 
-public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 
-import Mathlib.Topology.Algebra.Module.TransferInstance
 import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 import Mathlib.Geometry.Manifold.Notation
+import Mathlib.Topology.Algebra.Module.TransferInstance
 
 /-! # Smooth submersions
 
@@ -515,7 +515,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     |>.isSubmersionAt
 
 /-- If `f` is a submersion at `x`, then `f` is `C^n` on its domain chart's source,
-in particular on an open neighbourhood of `x`.`
+in particular on an open neighbourhood of `x`.
 
 Prefer using `IsSubmersionAt.contMDiffAt` instead -/
 theorem contMDiffOn (h : IsSubmersionAt I J n f x) : CMDiff[h.domChart.source] n f :=

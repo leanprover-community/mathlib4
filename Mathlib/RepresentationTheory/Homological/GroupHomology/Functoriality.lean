@@ -268,7 +268,6 @@ theorem H0π_comp_map :
     H0π A ≫ map f φ 0 = φ.toModuleCatHom ≫ H0π B := by
   simp [H0π]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
     map (MonoidHom.id G) f 0 ≫ (H0Iso B).hom =
@@ -509,13 +508,13 @@ previous assumptions. -/
       LinearMap.add_apply, LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply,
       lsingle_apply, sum_add, sum_sub, mul_inv_cancel_left, ← add_assoc, add_sub_cancel, e]
     intro w hw
-    · obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
+    obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
     /- The first sum clearly has support in `S`: -/
-      · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
-        apply support_single_subset at ht
-        simp_all [← QuotientGroup.eq]
+    · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
+      apply support_single_subset at ht
+      simp_all [← QuotientGroup.eq]
     /- The third sum is 0, by `hv`. -/
-      · simp_all [mapDomain]
+    · simp_all [mapDomain]
   /- Now `v + d(ve)` has support in `S` and agrees with `x` in `H₁(G, A)`: -/
   use H1π _ ⟨comapDomain Subtype.val (v + d₂₁ _ ve) <|
     Set.injOn_of_injective Subtype.val_injective, ?_⟩
