@@ -186,21 +186,9 @@ lemma mulMahler_mul (n : ℕ) (x y : Multiplicative ℤ_[p]) :
   simp only [mulMahler_apply, toAdd_mul, smul_one_mul, ← mul_smul, ← Finset.sum_smul]
   simp [mahler_apply, Ring.add_choose_eq n (Commute.all x.toAdd y.toAdd)]
 
-private lemma mulMahler_mul' (n : ℕ) (x y : Multiplicative ℤ_[p]) :
-    (mulMahler n (x * y) : R) = ∑ i ∈ .antidiagonal n, mulMahler i.2 x * mulMahler i.1 y := by
-  rw [mulMahler_mul, ← Finset.Nat.sum_antidiagonal_swap]
-  simp
-
 variable [IsTopologicalRing R]
 
 section MultiplicativeEquivs
-
-@[simps]
-private def ofAddFunEquiv : C(Multiplicative ℤ_[p], R) ≃L[R] C(ℤ_[p], R) where
-  toFun f := f.comp ⟨_, continuous_ofAdd⟩
-  invFun f := f.comp ⟨_, continuous_toAdd⟩
-  map_add' f g := rfl
-  map_smul' r g := rfl
 
 private def ofAddMeasureEquiv : D(Multiplicative ℤ_[p], R) ≃ₗ[R] D(ℤ_[p], R) :=
   AbstractMeasure.arrowCongrLeft Homeomorph.ofAdd.symm
@@ -218,16 +206,8 @@ private lemma coeff_amiceTransformₘ (μ : D(Multiplicative ℤ_[p], R)) (n : �
 private lemma amiceTransformₘ_mul (μ ν : D(Multiplicative ℤ_[p], R)) :
     amiceTransformₘ (μ * ν : AbstractMeasure (Multiplicative ℤ_[p]) R R) =
       amiceTransformₘ μ * amiceTransformₘ ν := by
-  ext n -- check coefficient-wise
-  simp_rw [mul_comm (amiceTransformₘ μ) (amiceTransformₘ ν), coeff_amiceTransformₘ,
-    AbstractMeasure.mul_apply, PowerSeries.coeff_mul, coeff_amiceTransformₘ, ← smul_eq_mul,
-    ← map_smul, ← map_sum]
-  congr 1 with x -- peel away μ
-  simp only [AbstractMeasure.convolveFunRight_apply, ContinuousMap.coe_sum, ContinuousMap.coe_smul,
-    Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
-  simp only [mul_comm (ν _), ← smul_eq_mul (α := R), ← map_smul, ← map_sum]
-  congr 1 with y -- peel away ν
-  simp [mulMahler_mul']
+  ext n
+  simp [coeff_amiceTransformₘ, PowerSeries.coeff_mul, mul_apply_eq_sum μ ν (mulMahler_mul n)]
 
 /--
 The Amice transform `D(Multiplicative ℤ_[p], R) → R[X]`, as a homomorphism of `R`-algebras.
