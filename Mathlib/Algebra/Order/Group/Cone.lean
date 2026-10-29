@@ -64,14 +64,12 @@ def LinearOrder.ofSubmonoid (hMs : M.IsMulSpanning) [dec : DecidablePred (· ∈
   toDecidableLE a b := dec (b / a)
 
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
-@[deprecated "Unbundled to `AddSubmonoid.IsPointed`" (since := "2026-10-28")]
 class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLike S G] : Prop
     extends AddSubmonoidClass S G where
   eq_zero_of_mem_of_neg_mem {C : S} {a : G} : a ∈ C → -a ∈ C → a = 0
 
-set_option linter.existingAttributeWarning false in
 /-- `GroupConeClass S G` says that `S` is a type of cones in `G`. -/
-@[to_additive, deprecated "Unbundled to `Submonoid.IsMulPointed`" (since := "2026-10-28")]
+@[to_additive (attr := deprecated Submonoid.IsMulPointed +typeChanged (since := "2026-10-28"))]
 class GroupConeClass (S : Type*) (G : outParam Type*) [CommGroup G] [SetLike S G] : Prop
     extends SubmonoidClass S G where
   eq_one_of_mem_of_inv_mem {C : S} {a : G} : a ∈ C → a⁻¹ ∈ C → a = 1
@@ -83,19 +81,19 @@ export AddGroupConeClass (eq_zero_of_mem_of_neg_mem)
 does not contain both `a` and `-a` for any nonzero `a`.
 This is equivalent to being the set of non-negative elements of
 some order making the group into a partially ordered group. -/
-@[deprecated "Unbundled to `AddSubmonoid.IsPointed`" (since := "2026-10-28")]
 structure AddGroupCone (G : Type*) [AddCommGroup G] extends AddSubmonoid G where
   eq_zero_of_mem_of_neg_mem' {a} : a ∈ carrier → -a ∈ carrier → a = 0
 
-set_option linter.existingAttributeWarning false in
 /-- A (positive) cone in an abelian group is a submonoid that
 does not contain both `a` and `a⁻¹` for any non-identity `a`.
 This is equivalent to being the set of elements that are at least 1 in
 some order making the group into a partially ordered group. -/
-@[to_additive, deprecated "Unbundled to `Submonoid.IsMulPointed`" (since := "2026-10-28")]
+@[to_additive (attr := deprecated Submonoid.IsMulPointed +typeChanged (since := "2026-10-28"))]
 structure GroupCone (G : Type*) [CommGroup G] extends Submonoid G where
   eq_one_of_mem_of_inv_mem' {a} : a ∈ carrier → a⁻¹ ∈ carrier → a = 1
 
+-- these `set_option` are required due to a bug with deprecations and `to_addtive`. See
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/spurious.20.60linter.2Edeprecated.60.20when.20using.20.60to_additive.60/with/627452051
 set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-10-28"))]
 instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G) G where
@@ -123,7 +121,7 @@ variable {H : Type*} [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] {a : H}
 set_option linter.deprecated false in
 variable (H) in
 /-- The cone of elements that are at least 1. -/
-@[to_additive (attr := deprecated "Use `Submonoid.IsMulPointed.oneLE`" (since := "2026-10-28"))
+@[to_additive (attr := deprecated Submonoid.IsMulPointed.oneLE +typeChanged (since := "2026-10-28"))
 /-- The cone of non-negative elements. -/]
 def oneLE : GroupCone H where
   __ := Submonoid.oneLE H
@@ -142,7 +140,8 @@ set_option linter.deprecated false in
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated "Use `Submonoid.IsMulSpanning.oneLE`" (since := "2026-10-28"))]
+@[to_additive
+(attr := deprecated Submonoid.IsMulSpanning.oneLE +typeChanged (since := "2026-10-28"))]
 instance oneLE.hasMemOrInvMem {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
     HasMemOrInvMem (oneLE H) where
   mem_or_inv_mem := by simpa using le_total 1
@@ -153,7 +152,7 @@ variable {S G : Type*} [CommGroup G] [SetLike S G] (C : S)
 
 set_option linter.deprecated false in
 /-- Construct a partial order by designating a cone in an abelian group. -/
-@[to_additive (attr := deprecated "Use `PartialOrder.ofSubmonoid`" (since := "2026-10-28"))
+@[to_additive (attr := deprecated PartialOrder.ofSubmonoid +typeChanged (since := "2026-10-28"))
 /-- Construct a partial order by designating a cone in an abelian group. -/]
 abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
   le a b := b / a ∈ C
@@ -163,14 +162,15 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
     simpa [div_eq_one, eq_comm] using eq_one_of_mem_of_inv_mem nab (by simpa using nba)
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated "Use `PartialOrder.ofSubmonoid_le_iff`" (since := "2026-10-28"))]
+@[to_additive
+(attr := deprecated PartialOrder.ofSubmonoid_le_iff +typeChanged (since := "2026-10-28"))]
 lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G]
     [GroupConeClass S G] {C : S} {a b : G} :
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
 
 set_option linter.deprecated false in
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
-@[to_additive (attr := deprecated "Use `LinearOrder.ofSubmonoid`" (since := "2026-10-28"))
+@[to_additive (attr := deprecated LinearOrder.ofSubmonoid +typeChanged (since := "2026-10-28"))
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/]
 abbrev LinearOrder.mkOfGroupCone
     [GroupConeClass S G] [HasMemOrInvMem C] [DecidablePred (· ∈ C)] : LinearOrder G where
@@ -180,7 +180,7 @@ abbrev LinearOrder.mkOfGroupCone
 
 set_option linter.deprecated false in
 /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
-@[to_additive (attr := deprecated "Use `IsOrderedMonoid.ofSubmonoid`" (since := "2026-10-28"))
+@[to_additive (attr := deprecated IsOrderedMonoid.ofSubmonoid +typeChanged (since := "2026-10-28"))
   /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/]
 lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
     let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
