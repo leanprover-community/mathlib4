@@ -230,7 +230,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
-@[simp] lemma map_comp (f : R →+* S) (g : S →+* T) :
+@[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
 
 section Equiv
