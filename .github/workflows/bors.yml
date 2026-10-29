@@ -43,4 +43,11 @@ jobs:
       tools_branch_ref: ${{ github.sha }}
       # We don't want 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
       runs_on: ${{ github.ref_name == 'trying' && 'pr' || 'bors' }}
+      # A `staging` batch merges several PRs, so it is large without a prediction.
+      route: >-
+        ${{
+             github.ref_name != 'trying' && 'large'
+          || github.repository == 'leanprover-community/mathlib4' && 'predict'
+          || ''
+        }}
     secrets: inherit

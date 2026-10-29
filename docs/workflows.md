@@ -37,7 +37,7 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 ### The main CI pipelines above all use this reusable workflow for the base logic:
 | File  | Description |
 |---|---|
-| [`build_template.yml`](../.github/workflows/build_template.yml) | Reusable CI workflow (`workflow_call`) that performs Lean setup, build/test/lint steps, cache/artifact handling, and reporting. Cache uploads have a 20-minute timeout; post-build checks have a 30-minute timeout. |
+| [`build_template.yml`](../.github/workflows/build_template.yml) | Reusable CI workflow (`workflow_call`) that performs Lean setup, build/test/lint steps, cache/artifact handling, and reporting. Cache uploads have a 20-minute timeout; post-build checks have a 30-minute timeout. With the input `route: predict`, the `route` job runs `scripts/route/route_build.py` from [mathlib-ci](https://github.com/leanprover-community/mathlib-ci/tree/master/scripts/route) before the build. The script predicts how many modules the build compiles, and marks the build large at 2,000 modules or more. A large build runs on the runner label `large` when the repository variable `MATHLIB_CI_LARGE_BUILDS` is `true`. |
 
 ## Pull requests
 
