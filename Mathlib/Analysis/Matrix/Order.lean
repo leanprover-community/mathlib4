@@ -84,13 +84,13 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
-@[deprecated isClosed_ofPred_posSemidef +typeChanged (since := "2026-10-28")]
+@[deprecated isClosed_setOfPred_posSemidef +typeChanged (since := "2026-10-28")]
 lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} :=
-  isClosed_ofPred_posSemidef
+  isClosed_setOfPred_posSemidef
 
 lemma instOrderClosedTopology : OrderClosedTopology (Matrix n n 𝕜) where
   isClosed_le' := isClosed_le_of_isClosed_nonneg <| by
-    simpa [nonneg_iff_posSemidef] using isClosed_ofPred_posSemidef
+    simpa [nonneg_iff_posSemidef] using isClosed_setOfPred_posSemidef
 
 scoped[MatrixOrder] attribute [instance] Matrix.instOrderClosedTopology
 
