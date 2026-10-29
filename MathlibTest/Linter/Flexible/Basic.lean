@@ -592,7 +592,6 @@ end
   let hc ← `(Lean.Parser.Tactic.elimTarget|$h:ident)
   IO.println s!"{(toStained (← `(tactic| cases $hc))).toArray}"
 
-
 /-!
 ## Tests for `simp?`, `simp!`, etc
 -/
