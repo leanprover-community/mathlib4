@@ -36,8 +36,8 @@ namespace Mathlib.Linter
 meta section
 
 /-- Structures `Foo` tagged with `@[allow_numeric_proj]` are exempt from the `numericProjections`
-linter, and thus their projections are allowed to appear as numeric projections in syntax (e.g., if
-`foo : Foo`, the linter will not warn on `foo.2`). -/
+linter, and thus their projections are allowed to appear as numeric projections in syntax. E.g., if
+`foo : Foo`, the linter will not warn on `foo.2`. -/
 public initialize allowNumericProjExt : TagAttribute ←
   registerTagAttribute `allow_numeric_proj
     "Allow numeric projections of the tagged structure type to appear in syntax."
