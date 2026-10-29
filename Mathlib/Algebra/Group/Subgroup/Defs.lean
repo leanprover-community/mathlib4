@@ -93,13 +93,11 @@ namespace HasMemOrInvMem
 
 variable {S G : Type*} [Inv G] [SetLike S G] (s : S)
 
-set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-10-23"), aesop unsafe 70% apply)]
 theorem inv_mem_of_notMem [HasMemOrInvMem s] (x : G) (h : x ∉ s) : x⁻¹ ∈ s := by
   have := mem_or_inv_mem s x
   simp_all
 
-set_option linter.deprecated false in
 @[to_additive (attr := deprecated "no replacement" (since := "2026-10-23"), aesop unsafe 70% apply)]
 theorem mem_of_inv_notMem [HasMemOrInvMem s] (x : G) (h : x⁻¹ ∉ s) : x ∈ s := by
   have := mem_or_inv_mem s x
