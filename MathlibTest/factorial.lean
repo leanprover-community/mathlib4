@@ -1,4 +1,6 @@
-import Mathlib.Data.Nat.Factorial.Basic
+module
+
+public meta import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 We check that `1_000_000 !` evaluates in less than 10 seconds.

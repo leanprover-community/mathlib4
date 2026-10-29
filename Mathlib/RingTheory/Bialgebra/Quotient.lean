@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Bialgebra structure on quotients

@@ -104,7 +104,6 @@ def mopEquiv : Mon C ≌ Mon Cᴹᵒᵖ where
   unitIso := .refl _
   counitIso := .refl _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence of categories between monoids internal to `C`
 and monoids internal to the monoidal opposite of `C` lies over
 the equivalence `C ≌ Cᴹᵒᵖ` via the forgetful functors. -/

@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 /-!
@@ -14,12 +13,10 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 ## Main results
 * `Polynomial.as_sum_support`: write `p : R[X]` as a sum over its support
 * `Polynomial.as_sum_range`: write `p : R[X]` as a sum over `{0, ..., natDegree p}`
-* `Polynomial.natDegree_mem_support_of_nonzero`: `natDegree p ∈ support p` if `p ≠ 0`
+* `Polynomial.natDegree_mem_support_of_ne_zero`: `natDegree p ∈ support p` if `p ≠ 0`
 -/
 
 public section
-
-noncomputable section
 
 open Finsupp Finset
 
@@ -29,11 +26,11 @@ namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {S : Type v} {a c : R} {n m : ℕ}
 
 section Semiring
 
-variable [Semiring R] {p q r : R[X]}
+variable [Semiring R] {p : R[X]}
 
 theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
   obtain rfl | h := eq_or_ne p 0
@@ -119,15 +116,18 @@ end Semiring
 
 section Semiring
 
-variable [Semiring R] {p q : R[X]} {ι : Type*}
+variable [Semiring R] {p : R[X]}
 
-theorem natDegree_mem_support_of_nonzero (H : p ≠ 0) : p.natDegree ∈ p.support := by
+theorem natDegree_mem_support_of_ne_zero (H : p ≠ 0) : p.natDegree ∈ p.support := by
   rw [mem_support_iff]
   exact (not_congr leadingCoeff_eq_zero).mpr H
 
+@[deprecated (since := "2026-10-13")]
+alias natDegree_mem_support_of_nonzero := natDegree_mem_support_of_ne_zero
+
 theorem natDegree_eq_support_max' (h : p ≠ 0) :
     p.natDegree = p.support.max' (nonempty_support_iff.mpr h) :=
-  (le_max' _ _ <| natDegree_mem_support_of_nonzero h).antisymm <|
+  (le_max' _ _ <| natDegree_mem_support_of_ne_zero h).antisymm <|
     max'_le _ _ _ le_natDegree_of_mem_supp
 
 end Semiring

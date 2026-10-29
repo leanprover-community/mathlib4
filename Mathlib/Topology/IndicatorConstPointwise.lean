@@ -34,7 +34,9 @@ The results stating these in the case when the indicators take values in a Fréc
 public section
 
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 variable {α : Type*} {A : Set α}
 variable {β : Type*} [Zero β] [TopologicalSpace β]

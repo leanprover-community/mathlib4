@@ -5,10 +5,9 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled non-unital subsemirings
@@ -29,13 +28,13 @@ variable {R S : Type*} [Mul R] [HasDistribNeg R] [SetLike S R] [MulMemClass S R]
 
 /-- This lemma exists for `aesop`, as `aesop` simplifies `-x * y` to `-(x * y)` before applying
 unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
-@[aesop unsafe 80% (rule_sets := [SetLike])]
+@[aesop unsafe 80% (rule_sets := [SetLike]), membership .]
 theorem neg_mul_mem {x y : R} (hx : -x ∈ s) (hy : y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
 
 /-- This lemma exists for `aesop`, as `aesop` simplifies `x * -y` to `-(x * y)` before applying
 unsafe rules like `mul_mem`, leading to a dead end in cases where `neg_mem` does not hold. -/
-@[aesop unsafe 80% (rule_sets := [SetLike])]
+@[aesop unsafe 80% (rule_sets := [SetLike]), membership .]
 theorem mul_neg_mem {x y : R} (hx : x ∈ s) (hy : -y ∈ s) : -(x * y) ∈ s := by
   simpa using mul_mem hx hy
 
@@ -148,7 +147,7 @@ lemma toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
   | _, _, h => SetLike.ext (SetLike.ext_iff.mp h :)
 
-instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R) R
+instance : PartialOrder (NonUnitalSubsemiring R) := .ofSetLike (NonUnitalSubsemiring R)
 
 /-- The actual `NonUnitalSubsemiring` obtained from an element of a `NonUnitalSubsemiringClass`. -/
 @[simps]
@@ -230,7 +229,7 @@ end NonUnitalSubsemiring
 namespace NonUnitalSubsemiring
 
 variable [NonUnitalNonAssocSemiring S]
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S] (s : NonUnitalSubsemiring R)
+variable (s : NonUnitalSubsemiring R)
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : s) : R) = (0 : R) :=

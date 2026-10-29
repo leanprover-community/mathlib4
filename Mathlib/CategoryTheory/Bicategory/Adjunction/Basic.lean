@@ -5,10 +5,8 @@ Authors: Yuma Mizuno, Fernando Chu
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
-public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # Adjunctions in bicategories
@@ -281,6 +279,14 @@ def mkOfAdjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : a
   unit := η
   counit := adjointifyCounit η ε
   left_triangle := adjointifyCounit_left_triangle η ε
+
+/-- The adjunction induced by an equivalence in a bicategory. -/
+@[implicit_reducible, simps]
+def adj (e : a ≌ b) : e.hom ⊣ e.inv where
+  unit := e.unit.hom
+  counit := e.counit.hom
+  left_triangle := e.left_triangle_hom
+  right_triangle := e.right_triangle_hom
 
 end Equivalence
 

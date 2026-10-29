@@ -5,10 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Topology.Algebra.Constructions
-public import Mathlib.Topology.Bases
 public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
@@ -19,8 +17,9 @@ public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 universe u v
 
-open Filter Function TopologicalSpace Topology Set UniformSpace Uniformity
-open scoped SetRel
+open Filter Function TopologicalSpace Set UniformSpace
+
+open scoped Topology Uniformity SetRel
 
 variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 
@@ -176,7 +175,7 @@ lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : C
     (hm : UniformContinuousOn m s) (hfs : f ≤ 𝓟 s) :
     Cauchy (map m f) := by
   suffices Cauchy (comap (Subtype.val : s → α) f) by
-    simpa [Set.domRestrict_def, ← Function.comp_def, ← map_map,
+    simpa [Set.domRestrict_def, ← Function.comp_def, ← Filter.map_map,
       subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
   exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
@@ -269,7 +268,7 @@ theorem CauchySeq.subseq_mem {V : ℕ → SetRel α α} (hV : ∀ n, V n ∈ �
 theorem Filter.Tendsto.subseq_mem_entourage {V : ℕ → SetRel α α} (hV : ∀ n, V n ∈ 𝓤 α) {u : ℕ → α}
     {a : α} (hu : Tendsto u atTop (𝓝 a)) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ (u (φ 0), a) ∈ V 0 ∧
       ∀ n, (u <| φ (n + 1), u <| φ n) ∈ V (n + 1) := by
-  rcases mem_atTop_sets.1 (hu (ball_mem_nhds a (symm_le_uniformity <| hV 0))) with ⟨n, hn⟩
+  rcases mem_atTop_sets.1 (hu (SetRel.ball_mem_nhds a (hV 0))) with ⟨n, hn⟩
   rcases (hu.comp (tendsto_add_atTop_nat n)).cauchySeq.subseq_mem fun n => hV (n + 1) with
     ⟨φ, φ_mono, hφV⟩
   exact ⟨fun k => φ k + n, φ_mono.add_const _, hn _ le_add_self, hφV⟩
@@ -288,7 +287,7 @@ theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n +
     obtain ⟨N, h⟩ := h V mV
     use N + k
     intro a ha b hb
-    convert! h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
+    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
   · exact h.comp_tendsto (tendsto_add_atTop_nat k)
 
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}
@@ -371,10 +370,12 @@ class CompleteSpace (α : Type u) [UniformSpace α] : Prop where
   /-- In a complete uniform space, every Cauchy filter converges. -/
   complete : ∀ {f : Filter α}, Cauchy f → ∃ x, f ≤ 𝓝 x
 
-theorem complete_univ {α : Type u} [UniformSpace α] [CompleteSpace α] :
+theorem isComplete_univ {α : Type u} [UniformSpace α] [CompleteSpace α] :
     IsComplete (univ : Set α) := fun f hf _ => by
   rcases CompleteSpace.complete hf with ⟨x, hx⟩
   exact ⟨x, mem_univ x, hx⟩
+
+@[deprecated (since := "2026-07-27")] alias complete_univ := isComplete_univ
 
 instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace β] :
     CompleteSpace (α × β) where
@@ -401,19 +402,12 @@ lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty �
     CompleteSpace (α × β) ↔ CompleteSpace α ∧ CompleteSpace β :=
   ⟨fun _ ↦ ⟨.fst_of_prod (β := β), .snd_of_prod (α := α)⟩, fun ⟨_, _⟩ ↦ .prod⟩
 
-@[to_additive]
-instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
-  complete hf :=
-    MulOpposite.op_surjective.exists.mpr <|
-      let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)
-      ⟨x, (map_le_iff_le_comap.mp hx).trans_eq <| MulOpposite.comap_unop_nhds _⟩
-
 /-- If `univ` is complete, the space is a complete space -/
 theorem completeSpace_of_isComplete_univ (h : IsComplete (univ : Set α)) : CompleteSpace α :=
   ⟨fun hf => let ⟨x, _, hx⟩ := h _ hf ((@principal_univ α).symm ▸ le_top); ⟨x, hx⟩⟩
 
 theorem completeSpace_iff_isComplete_univ : CompleteSpace α ↔ IsComplete (univ : Set α) :=
-  ⟨@complete_univ α _, completeSpace_of_isComplete_univ⟩
+  ⟨@isComplete_univ α _, completeSpace_of_isComplete_univ⟩
 
 theorem completeSpace_iff_ultrafilter :
     CompleteSpace α ↔ ∀ l : Ultrafilter α, Cauchy (l : Filter α) → ∃ x : α, ↑l ≤ 𝓝 x := by
@@ -470,8 +464,6 @@ instance : CompleteSpace α where
   complete {f} hf := by
     obtain ⟨x, rfl⟩ := eq_pure_of_cauchy hf
     exact ⟨x, pure_le_nhds x⟩
-
-variable {X}
 
 /-- A constant to which a Cauchy filter in a discrete uniform space converges. -/
 noncomputable def cauchyConst {f : Filter α} (hf : Cauchy f) : α :=
@@ -536,10 +528,9 @@ theorem Filter.HasBasis.filter_totallyBounded_iff {ι} {p : ι → Prop} {U : ι
     h.imp fun _ ht => ⟨ht.1, f.mem_of_superset ht.2 <| by gcongr⟩
 
 theorem totallyBounded_of_forall_isSymm {s : Set α}
-    (h : ∀ V ∈ 𝓤 α, SetRel.IsSymm V → ∃ t : Set α, Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y V) :
+    (h : ∀ V ∈ 𝓤 α, SetRel.IsSymm V → ∃ t : Set α, Set.Finite t ∧ s ⊆ ⋃ y ∈ t, SetRel.ball V y) :
     TotallyBounded s :=
-  UniformSpace.hasBasis_symmetric.totallyBounded_iff.2 fun V ⟨_, _⟩ => by
-    simpa only [ball_eq_of_symmetry] using! h V ‹_› ‹_›
+  UniformSpace.hasBasis_symmetric.totallyBounded_iff.2 fun V ⟨_, _⟩ => h V ‹_› ‹_›
 
 theorem TotallyBounded.subset {s₁ s₂ : Set α} (hs : s₁ ⊆ s₂) (h : TotallyBounded s₂) :
     TotallyBounded s₁ := fun d hd =>
@@ -698,7 +689,7 @@ protected theorem Filter.totallyBounded_iff_filter {g : Filter α} :
     have hb : Antitone fun t : Finset α ↦ g ⊓ 𝓟 (d.preimage t)ᶜ :=
       fun s t (h : s ⊆ t) => by beta_reduce; gcongr
     have : Filter.NeBot f :=
-      (Filter.iInf_neBot_iff_of_directed' <| hb.directed_ge).mpr fun t =>
+      (Filter.iInf_neBot_iff_of_directed' hb.directed_ge).mpr fun t =>
         Filter.notMem_iff_inf_principal_compl.mp <| hd_cover t t.finite_toSet
     have : f ≤ g := iInf_le_of_le ∅ (by simp)
     refine ⟨f, ‹_›, ‹_›, fun c hcf hc => ?_⟩
@@ -787,7 +778,7 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
 natural numbers `u n`, the intersection over `n` of the `V n`-neighborhood of `xs 1, ..., xs (u n)`.
 Designed to be relatively compact when `V n` tends to the diagonal. -/
 def interUnionBalls (xs : ℕ → α) (u : ℕ → ℕ) (V : ℕ → SetRel α α) : Set α :=
-  ⋂ n, ⋃ m ≤ u n, UniformSpace.ball (xs m) (Prod.swap ⁻¹' V n)
+  ⋂ n, ⋃ m ≤ u n, (V n).ball (xs m)
 
 lemma totallyBounded_interUnionBalls {p : ℕ → Prop} {U : ℕ → SetRel α α}
     (H : (uniformity α).HasBasis p U) (xs : ℕ → α) (u : ℕ → ℕ) :
@@ -795,7 +786,7 @@ lemma totallyBounded_interUnionBalls {p : ℕ → Prop} {U : ℕ → SetRel α �
   rw [Filter.HasBasis.totallyBounded_iff H]
   intro i _
   have h_subset : interUnionBalls xs u U
-      ⊆ ⋃ m ≤ u i, UniformSpace.ball (xs m) (Prod.swap ⁻¹' U i) :=
+      ⊆ ⋃ m ≤ u i, (U i).ball (xs m) :=
     fun x hx ↦ Set.mem_iInter.1 hx i
   classical
   refine ⟨Finset.image xs (Finset.range (u i + 1)), Finset.finite_toSet _, fun x hx ↦ ?_⟩
@@ -829,7 +820,7 @@ namespace SequentiallyComplete
 
 variable {f : Filter α} (hf : Cauchy f) {U : ℕ → SetRel α α} (U_mem : ∀ n, U n ∈ 𝓤 α)
 
-open Set Finset
+open Set
 
 noncomputable section
 
@@ -934,7 +925,7 @@ instance secondCountable_of_separable [SeparableSpace α] : SecondCountableTopol
       h_basis : (𝓤 α).HasAntitoneBasis t⟩ :=
     (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
   choose ht_mem hto hts using hto
-  refine ⟨⟨⋃ x ∈ s, range fun k => ball x (t k), hsc.biUnion fun x _ => countable_range _, ?_⟩⟩
+  refine ⟨⟨⋃ x ∈ s, range fun k => (t k).ball x, hsc.biUnion fun x _ => countable_range _, ?_⟩⟩
   refine (isTopologicalBasis_of_isOpen_of_nhds ?_ ?_).eq_generateFrom
   · simp only [mem_iUnion₂, mem_range]
     rintro _ ⟨x, _, k, rfl⟩
@@ -944,22 +935,22 @@ instance secondCountable_of_separable [SeparableSpace α] : SecondCountableTopol
     rcases UniformSpace.mem_nhds_iff.1 (IsOpen.mem_nhds hVo hxV) with ⟨U, hU, hUV⟩
     rcases comp_symm_of_uniformity hU with ⟨U', hU', _, hUU'⟩
     rcases h_basis.toHasBasis.mem_iff.1 hU' with ⟨k, -, hk⟩
-    rcases hsd.inter_open_nonempty (ball x <| t k) (isOpen_ball x (hto k))
-        ⟨x, UniformSpace.mem_ball_self _ (ht_mem k)⟩ with
+    rcases hsd.inter_open_nonempty ((t k).ball x) (isOpen_ball x (hto k))
+        ⟨x, refl_mem_uniformity (ht_mem k)⟩ with
       ⟨y, hxy, hys⟩
     refine ⟨_, ⟨y, hys, k, rfl⟩, (t k).symm hxy, fun z hz => ?_⟩
-    exact hUV (ball_subset_of_comp_subset (hk hxy) hUU' (hk hz))
+    exact hUV (SetRel.ball_subset_ball_of_comp_subset (hk hxy) hUU' (hk hz))
 
 variable {α}
 
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
-    (hs : ∀ U ∈ 𝓤 α, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, ball x U) :
+    (hs : ∀ U ∈ 𝓤 α, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, SetRel.ball U x) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   obtain ⟨B, hB, _⟩ := has_seq_basis α
   replace hs (n : ℕ) := hs (B n) (hB.mem n)
   choose t tC ht using hs
   have := fun n => (tC n).to_subtype
-  choose o hox hos using fun (n : ℕ) (x : t n) (hx : (ball x.1 (B n) ∩ s).Nonempty) => hx
+  choose o hox hos using fun (n : ℕ) (x : t n) (hx : ((B n).ball x.1 ∩ s).Nonempty) => hx
   refine ⟨⋃ (n) (x), range (o n x), iUnion₂_subset fun _ _ => range_subset_iff.2 (hos _ _),
     countable_iUnion fun _ => countable_iUnion fun _ => countable_range _, fun x hx => ?_⟩
   rw [mem_closure_iff_ball]
@@ -970,15 +961,15 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   rw [mem_iUnion₂] at ht
   obtain ⟨y, hy, hyx⟩ := ht
   refine ⟨o n ⟨y, hy⟩ ⟨x, hyx, hx⟩, ?_, ?_⟩
-  · apply ball_mono ((SetRel.comp_subset_comp hn hn).trans hVU)
-    exact mem_ball_comp (mem_ball_symmetry.2 hyx) (hox n ⟨y, hy⟩ ⟨x, hyx, hx⟩)
+  · apply SetRel.ball_mono ((SetRel.comp_subset_comp hn hn).trans hVU)
+    exact SetRel.prodMk_mem_comp (hox n ⟨y, hy⟩ ⟨x, hyx, hx⟩) ((B n).symm hyx)
   · exact mem_iUnion₂_of_mem ⟨y, hy⟩ (mem_range_self ⟨x, hyx, hx⟩)
 
 theorem secondCountable_of_almost_dense_set
-    (hs : ∀ U ∈ 𝓤 α, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, ball x U = univ) :
+    (hs : ∀ U ∈ 𝓤 α, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, SetRel.ball U x = univ) :
     SecondCountableTopology α := by
   suffices SeparableSpace α from UniformSpace.secondCountable_of_separable α
-  have : ∀ U ∈ 𝓤 α, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, ball x U := by
+  have : ∀ U ∈ 𝓤 α, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, SetRel.ball U x := by
     simpa only [univ_subset_iff] using hs
   rcases subset_countable_closure_of_almost_dense_set (univ : Set α) this with ⟨t, -, htc, ht⟩
   exact ⟨⟨t, htc, fun x => ht (mem_univ x)⟩⟩
@@ -988,8 +979,7 @@ from the more general `UniformSpace.subset_countable_closure_of_almost_dense_set
 lemma _root_.TotallyBounded.isSeparable {s : Set α} (h : TotallyBounded s) :
     TopologicalSpace.IsSeparable s := by
   obtain ⟨t, -, htc, hts⟩ := subset_countable_closure_of_almost_dense_set s fun U hU => by
-    obtain ⟨t, ht, hst⟩ := h (SetRel.inv U)
-      (mem_of_superset (symmetrize_mem_uniformity hU) SetRel.symmetrize_subset_inv)
+    obtain ⟨t, ht, hst⟩ := h U hU
     exact ⟨t, ht.countable, hst⟩
   exact ⟨t, htc, hts⟩
 

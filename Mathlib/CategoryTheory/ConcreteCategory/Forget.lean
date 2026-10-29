@@ -7,6 +7,7 @@ Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryash
 module
 
 public import Mathlib.CategoryTheory.Types.Basic
+
 /-!
 # Forgetful functors
 
@@ -50,7 +51,7 @@ abbrev forget : C ⥤ Type w where
   map f := ↾f
 
 instance : (forget C).Faithful where
-  map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ ConcreteCategory.congr_hom h x
+  map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ congr($h x)
 
 variable {C}
 
@@ -59,16 +60,13 @@ lemma ConcreteCategory.forget_map_eq_ofHom {X Y : C} (f : X ⟶ Y) :
     (forget C).map f = ↾f :=
   rfl
 
-@[deprecated (since := "2026-04-11")] alias ConcreteCategory.forget_map_eq_coe :=
-  ConcreteCategory.forget_map_eq_ofHom
-
 theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
 -/
 protected theorem congr_fun {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : ToType X) : f x = g x :=
-  congrFun (congrArg (fun k : X ⟶ Y => (k : ToType X → ToType Y)) h) x
+  congr($h x)
 
 /-- Analogue of `congr_arg f h`,
 when `h : x = x'` is an equality between elements of objects in a concrete category.
@@ -106,7 +104,6 @@ lemma forget₂_comp_apply [HasForget₂ C D] {X Y Z : C}
 instance forget₂_faithful [HasForget₂ C D] : (forget₂ C D).Faithful :=
   HasForget₂.forget_comp.faithful_of_comp
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance InducedCategory.hasForget₂ (f : C → D) : HasForget₂ (InducedCategory D f) D where
   forget₂ := inducedFunctor f
   forget_comp := rfl

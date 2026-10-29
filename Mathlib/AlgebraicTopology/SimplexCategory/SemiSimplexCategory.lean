@@ -18,7 +18,9 @@ as simplicial objects are functors from `SimplexCategory`.
 
 @[expose] public section
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 /-- The category whose objects are denoted `⦋n⦌ₛ` for `n : ℕ` and
 morphisms `⦋n⦌ₛ ⟶ ⦋m⦌ₛ` are order embeddings `Fin (n.len + 1) ↪o Fin (m.len + 1)`.

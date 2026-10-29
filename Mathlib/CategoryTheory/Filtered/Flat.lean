@@ -5,8 +5,9 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Filtered.CostructuredArrow
 public import Mathlib.CategoryTheory.Functor.Flat
+
+import Mathlib.CategoryTheory.Filtered.CostructuredArrow
 
 /-!
 # Pulling back filteredness along representably flat functors
@@ -25,8 +26,6 @@ public section
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
-
-open Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]

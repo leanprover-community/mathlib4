@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 public import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.ResidueField
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 
@@ -46,9 +45,6 @@ class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOn
   isClosedEmbedding (f) : IsClosedEmbedding f
 
 alias Scheme.Hom.isClosedEmbedding := IsClosedImmersion.isClosedEmbedding
-
-@[deprecated (since := "2026-01-20")]
-alias IsClosedImmersion.base_closed := Scheme.Hom.isClosedEmbedding
 
 namespace IsClosedImmersion
 
@@ -240,8 +236,6 @@ section Affine
 
 variable {X Y : Scheme.{u}} [IsAffine Y] {f : X ⟶ Y}
 
-open IsClosedImmersion LocallyRingedSpace
-
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target,
 `f` induces an injection on global sections, then `f` is dominant. -/
@@ -326,7 +320,6 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
   exact (ConcreteCategory.bijective_of_isIso _).2.comp
     ((ConcreteCategory.bijective_of_isIso _).2.comp Ideal.Quotient.mk_surjective)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
     IsClosedImmersion f ↔ ∃ I : Ideal R, ∃ e : X ≅ Spec (.of <| R ⧸ I),
       f = e.hom ≫ Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I)) := by

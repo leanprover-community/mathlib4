@@ -5,8 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+
+import Mathlib.Algebra.Order.Ring.Abs
+
 /-!
 # The Möbius function and Möbius inversion
 
@@ -21,13 +23,13 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 * `sum_eq_iff_sum_mul_moebius_eq` for functions to a `CommRing`
 * `sum_eq_iff_sum_smul_moebius_eq` for functions to an `AddCommGroup`
 * `prod_eq_iff_prod_pow_moebius_eq` for functions to a `CommGroup`
-* `prod_eq_iff_prod_pow_moebius_eq_of_nonzero` for functions to a `CommGroupWithZero`
+* `prod_eq_iff_prod_pow_moebius_eq_of_ne_zero` for functions to a `CommGroupWithZero`
 * And variants that apply when the equalities only hold on a set `S : Set ℕ` such that
   `m ∣ n → n ∈ S → m ∈ S`:
 * `sum_eq_iff_sum_mul_moebius_eq_on` for functions to a `CommRing`
 * `sum_eq_iff_sum_smul_moebius_eq_on` for functions to an `AddCommGroup`
 * `prod_eq_iff_prod_pow_moebius_eq_on` for functions to a `CommGroup`
-* `prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero` for functions to a `CommGroupWithZero`
+* `prod_eq_iff_prod_pow_moebius_eq_on_of_ne_zero` for functions to a `CommGroupWithZero`
 
 ## Tags
 
@@ -48,6 +50,7 @@ open scoped zeta
 /-- `μ` is the Möbius function. If `n` is squarefree with an even number of distinct prime factors,
   `μ n = 1`. If `n` is squarefree with an odd number of distinct prime factors, `μ n = -1`.
   If `n` is not squarefree, `μ n = 0`. -/
+@[oeis A008683 "the sequence skips `n = 0`"]
 def moebius : ArithmeticFunction ℤ :=
   ⟨fun n => if Squarefree n then (-1) ^ cardFactors n else 0, by simp⟩
 
@@ -58,11 +61,11 @@ open scoped Moebius
 
 @[simp]
 theorem moebius_apply_of_squarefree {n : ℕ} (h : Squarefree n) : μ n = (-1) ^ cardFactors n :=
-  if_pos h
+  ite_eq_left h
 
 @[simp]
 theorem moebius_eq_zero_of_not_squarefree {n : ℕ} (h : ¬Squarefree n) : μ n = 0 :=
-  if_neg h
+  ite_eq_right h
 
 theorem moebius_apply_one : μ 1 = 1 := by simp
 
@@ -120,7 +123,7 @@ theorem moebius_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) :
 theorem moebius_apply_isPrimePow_not_prime {n : ℕ} (hn : IsPrimePow n) (hn' : ¬n.Prime) :
     μ n = 0 := by
   obtain ⟨p, k, hp, hk, rfl⟩ := (isPrimePow_nat_iff _).1 hn
-  rw [moebius_apply_prime_pow hp hk.ne', if_neg]
+  rw [moebius_apply_prime_pow hp hk.ne', ite_eq_right]
   rintro rfl
   exact hn' (by simpa)
 
@@ -151,8 +154,6 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     ring
   · rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
     simp_rw [pmul_apply, intCoe_apply]
-
-open UniqueFactorizationMonoid
 
 @[simp]
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
@@ -208,8 +209,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     (∀ n > 0, ∑ i ∈ n.divisors, f i = g n) ↔
       ∀ n > 0, ∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd = f n := by
-  let f' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else f x, if_pos rfl⟩
-  let g' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else g x, if_pos rfl⟩
+  let f' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else f x, ite_eq_left rfl⟩
+  let g' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else g x, ite_eq_left rfl⟩
   trans (ζ : ArithmeticFunction ℤ) • f' = g'
   · rw [ArithmeticFunction.ext_iff]
     apply forall_congr'
@@ -219,7 +220,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     | succ n =>
       rw [coe_zeta_smul_apply]
       simp only [forall_prop_of_true, succ_pos', f', g', coe_mk, succ_ne_zero, ite_false]
-      rw [sum_congr rfl fun x hx => if_neg (pos_of_mem_divisors hx).ne']
+      rw [sum_congr rfl fun x hx => ite_eq_right (pos_of_mem_divisors hx).ne']
   trans μ • g' = f'
   · constructor <;> intro h <;>
       simp only [← h, ← mul_smul, moebius_mul_coe_zeta, coe_zeta_mul_moebius, one_smul]
@@ -232,7 +233,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
       simp only [forall_prop_of_true, succ_pos', smul_apply, f', g', coe_mk, succ_ne_zero,
         ite_false]
       rw [sum_congr rfl fun x hx => ?_]
-      rw [if_neg (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)).ne']
+      rw [ite_eq_right (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)).ne']
 
 /-- Möbius inversion for functions to a `Ring`. -/
 theorem sum_eq_iff_sum_mul_moebius_eq [NonAssocRing R] {f g : ℕ → R} :
@@ -250,7 +251,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq [CommGroup R] {f g : ℕ → R} :
   @sum_eq_iff_sum_smul_moebius_eq (Additive R) _ _ _
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`. -/
-theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : ℕ → R}
+theorem prod_eq_iff_prod_pow_moebius_eq_of_ne_zero [CommGroupWithZero R] {f g : ℕ → R}
     (hf : ∀ n : ℕ, 0 < n → f n ≠ 0) (hg : ∀ n : ℕ, 0 < n → g n ≠ 0) :
     (∀ n > 0, ∏ i ∈ n.divisors, f i = g n) ↔
       ∀ n > 0, ∏ x ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n := by
@@ -262,15 +263,18 @@ theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : 
             if h : 0 < n then Units.mk0 (g n) (hg n h) else 1))
         (forall_congr' fun n => ?_) <;>
     refine imp_congr_right fun hn => ?_
-  · rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+  · rw [dite_eq_left hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
-    rw [dif_pos (pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
-  · rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+    rw [dite_eq_left (pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
+  · rw [dite_eq_left hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
-    rw [dif_pos (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)), Units.coeHom_apply,
-      Units.val_zpow_eq_zpow_val, Units.val_mk0]
+    rw [dite_eq_left (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)),
+      Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
+
+@[deprecated (since := "2026-10-13")]
+alias prod_eq_iff_prod_pow_moebius_eq_of_nonzero := prod_eq_iff_prod_pow_moebius_eq_of_ne_zero
 
 /-- Möbius inversion for functions to an `AddCommGroup`, where the equalities only hold on a
 well-behaved set. -/
@@ -332,7 +336,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on [CommGroup R] {f g : ℕ → R}
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`, where the equalities only hold on
 a well-behaved set. -/
-theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
+theorem prod_eq_iff_prod_pow_moebius_eq_on_of_ne_zero [CommGroupWithZero R]
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) {f g : ℕ → R}
     (hf : ∀ n > 0, f n ≠ 0) (hg : ∀ n > 0, g n ≠ 0) :
     (∀ n > 0, n ∈ s → (∏ i ∈ n.divisors, f i) = g n) ↔
@@ -346,14 +350,17 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
             s hs))
         (forall_congr' fun n => ?_) <;>
     refine imp_congr_right fun hn => ?_
-  · rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+  · rw [dite_eq_left hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
-    rw [dif_pos (pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
-  · rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+    rw [dite_eq_left (pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
+  · rw [dite_eq_left hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
-    rw [dif_pos (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)),
+    rw [dite_eq_left (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)),
       Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
+
+@[deprecated (since := "2026-10-13")]
+alias prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero := prod_eq_iff_prod_pow_moebius_eq_on_of_ne_zero
 
 end ArithmeticFunction

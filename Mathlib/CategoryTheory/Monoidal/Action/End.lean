@@ -67,10 +67,10 @@ open MonoidalOpposite in
 composition monoidal structure. -/
 @[simps!]
 instance curriedActionMopMonoidal : (curriedActionMop C D).Monoidal where
-  ε := .mop <| (actionUnitNatIso C D).inv
-  μ _ _ := .mop <| { app _ := αₗ _ _ _ |>.inv }
-  δ _ _ := .mop <| { app _ := αₗ _ _ _ |>.hom }
-  η := .mop <| (actionUnitNatIso C D).hom
+  ε := .mop (actionUnitNatIso C D).inv
+  μ _ _ := .mop { app _ := αₗ _ _ _ |>.inv }
+  δ _ _ := .mop { app _ := αₗ _ _ _ |>.hom }
+  η := .mop (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     apply (mopEquiv (D ⥤ D)).fullyFaithfulInverse.map_injective
     ext d
@@ -106,6 +106,7 @@ def actionOfMonoidalFunctorToEndofunctorMop (F : C ⥤ (D ⥤ D)ᴹᵒᵖ) [F.Mo
     have e := congrArg (fun t ↦ t.unmop.app c₃) <|
       Functor.OplaxMonoidal.δ_natural F f g
     dsimp at e
+    rw [endofunctorMonoidalCategory_tensorMap_app] at e
     simp [reassoc_of% e]
   whiskerRight_actionHomLeft {x y} c f d := by
     have e := congrArg (fun t ↦ t.unmop.app d) <|
@@ -195,6 +196,7 @@ def actionOfMonoidalFunctorToEndofunctor (F : C ⥤ D ⥤ D) [F.Monoidal] :
     have e := congrArg (fun t ↦ t.app c₁) <|
       Functor.OplaxMonoidal.δ_natural F g h
     dsimp at e
+    rw [endofunctorMonoidalCategory_tensorMap_app] at e
     simp [reassoc_of% e]
 
 /-- If the action of `C` on `D` comes from a monoidal functor `C ⥤ (D ⥤ D)`,

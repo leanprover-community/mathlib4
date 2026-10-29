@@ -5,9 +5,8 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Data.ENNReal.Lemmas
-public import Mathlib.Topology.MetricSpace.Thickening
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Thickened indicators
@@ -37,7 +36,9 @@ members of the approximating sequence are nonnegative bounded continuous functio
 
 @[expose] public section
 
-open NNReal ENNReal Topology BoundedContinuousFunction Set Metric Filter
+open NNReal ENNReal BoundedContinuousFunction Set Metric Filter
+
+open scoped Topology
 
 noncomputable section thickenedIndicator
 
@@ -60,7 +61,7 @@ theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
   rw [show (fun x : α => (1 : ℝ≥0∞) - infEDist x E / ENNReal.ofReal δ) = sub ∘ f by rfl]
   apply (@ENNReal.continuous_nnreal_sub 1).comp
   apply (ENNReal.continuous_div_const (ENNReal.ofReal δ) _).comp continuous_infEDist
-  norm_num [δ_pos]
+  simp [δ_pos]
 
 theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
     thickenedIndicatorAux δ E x ≤ 1 := by
@@ -117,9 +118,6 @@ lemma thickenedIndicatorAux_mono_infEDist (δ : ℝ) {E : Set α} {x y : α}
     gcongr
   · rw [tsub_eq_zero_of_le hle, tsub_eq_zero_of_le]
     exact hle.trans (by gcongr)
-
-@[deprecated (since := "2026-01-08")]
-alias thickenedIndicatorAux_mono_infEdist := thickenedIndicatorAux_mono_infEDist
 
 /-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise (i.e., w.r.t. the product topology on `α → ℝ≥0∞`) to the indicator function of the
@@ -237,9 +235,6 @@ lemma thickenedIndicator_mono_infEDist {δ : ℝ} (δ_pos : 0 < δ) {E : Set α}
   · finiteness
   · exact thickenedIndicatorAux_mono_infEDist δ h
 
-@[deprecated (since := "2026-01-08")]
-alias thickenedIndicator_mono_infEdist := thickenedIndicator_mono_infEDist
-
 /-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise to the indicator function of the closure of E.
 
@@ -255,7 +250,7 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
   intro x
   rw [show indicator (closure E) (fun _ => (1 : ℝ≥0)) x =
         (indicator (closure E) (fun _ => (1 : ℝ≥0∞)) x).toNNReal
-      by refine (congr_fun (comp_indicator_const 1 ENNReal.toNNReal toNNReal_zero) x).symm]
+      by refine congr($(comp_indicator_const 1 ENNReal.toNNReal toNNReal_zero) x).symm]
   refine Tendsto.comp (tendsto_toNNReal ?_) (key x)
   by_cases x_mem : x ∈ closure E <;> simp [x_mem]
 

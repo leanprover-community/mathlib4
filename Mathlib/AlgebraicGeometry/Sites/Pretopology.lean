@@ -5,7 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
@@ -26,7 +25,7 @@ because the former does not have `HasPullbacks Scheme`.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 

@@ -5,12 +5,15 @@ Authors: Markus Himmel, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-public import Mathlib.Algebra.Category.Grp.EpiMono
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+
+import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
+# Injective objects
+
 An object is injective iff the preadditive yoneda functor on it preserves epimorphisms.
 -/
 
