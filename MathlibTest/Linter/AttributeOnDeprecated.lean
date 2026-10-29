@@ -106,8 +106,8 @@ attribute [simp] oldQux
 
 -- The targets are resolved in the scope of the `attribute` command.
 /--
-warning: `N.baz` has been deprecated in favor of `bar`: this `attribute` command will break when `N.baz` is removed.
-Consider adding the attribute directly to the declaration of `N.baz`, applying it to `bar` instead, or removing it.
+warning: `baz` has been deprecated in favor of `bar`: this `attribute` command will break when `baz` is removed.
+Consider adding the attribute directly to the declaration of `baz`, applying it to `bar` instead, or removing it.
 
 Hint: Replace the deprecated name:
   baz̵r̲
