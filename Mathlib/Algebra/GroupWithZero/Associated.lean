@@ -20,7 +20,7 @@ and prove basic properties of this quotient.
 
 assert_not_exists DenselyOrdered IsOrderedMonoid Multiset Ring
 
-variable {M N : Type*}
+variable {M N P : Type*}
 
 /-- Two elements of a `Monoid` are `Associated` if one of them is another one
 multiplied by a unit on the right. -/
@@ -476,7 +476,7 @@ theorem mk_injective [Monoid M] [Subsingleton Mˣ] : Function.Injective (@Associ
   fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
 
 section CommMonoid
-variable [CommMonoid M] [CommMonoid N]
+variable [CommMonoid M] [CommMonoid N] [CommMonoid P]
 
 instance instMul : Mul (Associates M) :=
   ⟨Quotient.map₂ (· * ·) fun _ _ h₁ _ _ h₂ ↦ h₁.mul_mul h₂⟩
@@ -516,8 +516,8 @@ def map (f : M →* N) : Associates M →* Associates N where
 
 @[simp] lemma map_id : map (.id M) = .id (Associates M) := by ext ⟨x⟩; simp
 
-lemma map_comp {P : Type*} [CommMonoid P] (g : N →* P) (f : M →* N) :
-    map (g.comp f) = (map g).comp (map f) := by ext ⟨x⟩; simp
+@[simp] lemma map_comp_map (g : N →* P) (f : M →* N) : (map g).comp (map f) = map (g.comp f) := by
+  ext ⟨x⟩; simp
 
 /-- A multiplicative equivalence `M ≃* N` induces a multiplicative equivalence of associates. -/
 def congr (e : M ≃* N) : Associates M ≃* Associates N where
@@ -535,7 +535,7 @@ def congr (e : M ≃* N) : Associates M ≃* Associates N where
 
 @[simp, grind =] lemma symm_congr (e : M ≃* N) : (congr e).symm = congr e.symm := rfl
 
-@[simp] lemma congr_trans_congr {P : Type*} [CommMonoid P] (e : M ≃* N) (e' : N ≃* P) :
+@[simp] lemma congr_trans_congr (e : M ≃* N) (e' : N ≃* P) :
     (congr e).trans (congr e') = congr (e.trans e') := by ext ⟨x⟩; simp
 
 theorem associated_map_mk {f : Associates M →* M} (hinv : Function.RightInverse f Associates.mk)
