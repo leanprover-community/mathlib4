@@ -304,6 +304,16 @@ jobs:
           # Clean the staging directory first, though it should be empty at this point, to be safe
           rm -rf cache-staging
           mkdir -p cache-staging
+          # The CPUs and memory that the stage step below packs with, and the pressure counters
+          # before it starts. `/proc/pressure` holds the counters of the whole host, and the
+          # cgroup files hold the counters of the cgroup that runs this step. Each read is
+          # best-effort.
+          echo "nproc: $(nproc)"
+          free -m || true
+          cg="/sys/fs/cgroup$(sed -n 's/^0:://p' /proc/self/cgroup 2>/dev/null || true)"
+          for f in /proc/pressure/{cpu,io,memory} "${cg%/}"/{cpu,io,memory}.pressure; do
+            sed "s|^|${f}: |" "${f}" 2>/dev/null || true
+          done
 
       - name: stage Mathlib cache files
         if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
@@ -315,7 +325,29 @@ jobs:
           # `lean`/`leantar` (see setup-build-env).
           export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+          # `time -v` reports the user, system and elapsed time, the percent of CPU, the context
+          # switches and the file system inputs of the packing. A percent of CPU near 100 times
+          # `nproc` means the packing uses every CPU; far below it, with many file system inputs or
+          # involuntary context switches, means it waits on the disk or on other processes.
+          # Without `/usr/bin/time`, `cache stage` runs without this report. Either way, the step
+          # exits with the status of `cache stage`.
+          stage=(../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage)
+          if [ -x /usr/bin/time ]; then
+            /usr/bin/time -v "${stage[@]}"
+          else
+            echo "/usr/bin/time not found: running cache stage without the time report."
+            "${stage[@]}"
+          fi
+
+      - name: report the pressure counters after the stage step
+        if: ${{ always() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
+        shell: bash
+        # The same best-effort reads as in `prepare staging directory`.
+        run: |
+          cg="/sys/fs/cgroup$(sed -n 's/^0:://p' /proc/self/cgroup 2>/dev/null || true)"
+          for f in /proc/pressure/{cpu,io,memory} "${cg%/}"/{cpu,io,memory}.pressure; do
+            sed "s|^|${f}: |" "${f}" 2>/dev/null || true
+          done
 
       - name: stage Archive cache files
         if: ${{ steps.archive.outcome == 'success' }}
