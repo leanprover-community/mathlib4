@@ -43,7 +43,7 @@ partial def inCalcStep? (pos : String.Pos.Raw) (stx : Syntax) : Option (Syntax Ã
 
 /-- Return a `calc` widget if `stx` is a `by` appearing as a proof in a `calc` step. -/
 public def getCalcWidget? (stx cmd : Syntax) (props : PanelWidgetProps) :
-    RequestM (Option Html) := do
+    RequestM (Option ProofWidgets.Html) := do
   unless isBy stx do return none
   let some pos := stx.getPos? | return none
   let some (calcStep, isFirst) := inCalcStep? pos cmd | return none
