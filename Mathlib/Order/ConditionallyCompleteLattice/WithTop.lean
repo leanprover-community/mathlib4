@@ -302,9 +302,6 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   .ofConditionallyCompleteLattice
 
-noncomputable instance {α : Type*} [ConditionallyCompleteLattice α] :
-    CompleteLattice (WithBot (WithTop α)) := inferInstance
-
 noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) :=
   .ofConditionallyCompleteLinearOrder
