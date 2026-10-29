@@ -310,28 +310,20 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
         rw [← forall_pow_eq_one_iff, DFunLike.ext_iff]
         apply forall_congr'; intro x; simp [φ, Units.ext_iff]
 
-/-- A sum over the nonzero elements of a finite field is a sum over its units. -/
-theorem sum_sdiff_zero {M : Type*} [AddCommMonoid M] [DecidableEq K] (f : K → M) :
-    ∑ x ∈ univ \ {0}, f x = ∑ x : Kˣ, f x := by
-  rw [← Fintype.sum_equiv unitsEquivNeZero.symm (fun x ↦ f x) _ (fun _ ↦ rfl),
-    ← sum_subtype (univ \ {0}) (by simp)]
-
 /-- The sum of `x ^ i`, with `i ≠ 0`, as `x` ranges over a finite field of cardinality `q`
 is equal to `-1` if `q - 1 ∣ i`, and to `0` otherwise. -/
 theorem sum_pow_of_ne_zero (i : ℕ) (hi : i ≠ 0) :
     ∑ x : K, x ^ i = if q - 1 ∣ i then -1 else 0 := by
   classical
-  rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton, zero_pow hi, add_zero,
-    sum_sdiff_zero, sum_pow_units K i]
+  rw [Fintype.sum_eq_sum_compl_add 0, zero_pow hi, add_zero, Fintype.sum_compl_zero,
+    sum_pow_units]
 
 /-- The sum of `x ^ i` as `x` ranges over a finite field of cardinality `q`
 is equal to `0` if `i < q - 1`. -/
 theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0 := by
   obtain rfl | hi := eq_or_ne i 0
   · simp
-  rw [sum_pow_of_ne_zero K _ hi, ite_eq_right]
-  contrapose! h
-  exact Nat.le_of_dvd (Nat.pos_of_ne_zero hi) h
+  simp [sum_pow_of_ne_zero K _ hi, Nat.not_dvd_of_pos_of_lt (by lia) h]
 
 /-- The sum of all the elements of a finite field of cardinality `q` is equal to `1` if `q = 2`,
 and to `0` otherwise. -/
