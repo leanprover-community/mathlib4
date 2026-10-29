@@ -31,12 +31,12 @@ section
 open Widget PrettyPrinter.Delaborator
 
 /-- Turn an `Expr` into an HTML with hover info. -/
-def exprToHtml (e : Expr) : MetaM Html :=
+def exprToHtml (e : Expr) : MetaM ProofWidgets.Html :=
   return jsx%{<InteractiveCode fmt={← Widget.ppExprTagged e}/>}
 
 /-- Turn a constant into an HTML with hover info.
 This avoids the `@` that may appear when using `exprToHtml`. -/
-def constToHtml (n : Name) : MetaM Html := do
+def constToHtml (n : Name) : MetaM ProofWidgets.Html := do
   let delab := withOptionAtCurrPos `pp.tagAppFns true delabConst
   let ⟨fmt, infos⟩ ← PrettyPrinter.ppExprWithInfos (delab := delab) (← mkConstWithLevelParams n)
   let tt := TaggedText.prettyTagged fmt
@@ -52,7 +52,7 @@ def constToHtml (n : Name) : MetaM Html := do
   return jsx%{<InteractiveCode fmt={← tagCodeInfos ctx infos tt}/>}
 
 /-- Display `fmt` with a docstring as if it is the constant `n`. -/
-def formatToHtmlWithDoc (fmt : Format) (n : Name) : MetaM Html := do
+def formatToHtmlWithDoc (fmt : Format) (n : Name) : MetaM ProofWidgets.Html := do
   let tag := 0
   -- Hack: use `.ofCommandInfo` instead of `.ofTacticInfo` to avoid printing `n` and its type.
   -- Unfortunately, there is still a loose dangling ` : `.
@@ -79,7 +79,7 @@ def formatToHtmlWithDoc (fmt : Format) (n : Name) : MetaM Html := do
 I would love to print `tac` with another colour, e.g. the keyword highlighting used by the editor,
 but I have no idea how to do this.
 -/
-def tacticToHtml (tac : TSyntax `tactic) : MetaM Html := do
+def tacticToHtml (tac : TSyntax `tactic) : MetaM ProofWidgets.Html := do
   formatToHtmlWithDoc (← PrettyPrinter.ppTactic tac) tac.1.getKind
 
 end
@@ -136,7 +136,7 @@ def toMessageData : Premise → MessageData
   | .fvar fvarId => .ofExpr (.fvar fvarId)
 
 /-- Print a premise using HTML. -/
-def toHtml : Premise → MetaM Html
+def toHtml : Premise → MetaM ProofWidgets.Html
   | .const name => constToHtml name
   | .fvar fvarId => exprToHtml (.fvar fvarId)
 
@@ -150,7 +150,7 @@ structure State where
   and no progress has been made, then inform the user. -/
   progress : Bool := false
   /-- The suggestions that close the goal. -/
-  solvedSuggestions : Array Html := #[]
+  solvedSuggestions : Array ProofWidgets.Html := #[]
 
 /-- The information required for pasting a suggestion into the editor. -/
 structure Context where
@@ -162,6 +162,8 @@ structure Context where
   cursorPos : Lsp.Position
   /-- Whether to use the `on_goal n =>` combinator. -/
   onGoal : Option Nat
+  /-- Whether to use the `·` combinator. -/
+  focus : Bool
   /-- The preceding piece of syntax, if available. It is not available if the cursor is
   at the start of the next tactic. This is used for merging consecutive `rw` tactics. -/
   stx : Option (TSyntax `tactic)
@@ -338,6 +340,9 @@ def tacticPasteString (tac : TSyntax `tactic) : ClickSuggestionsM String := do
 /-- Given tactic syntax `tac`, compute the text edit that will paste it into the editor.
 We return the range that should be replaced, and the new text that will replace it. -/
 def mkInsertion (tac : TSyntax `tactic) : ClickSuggestionsM (Lsp.Range × String) := do
+  let tac ← match (← read).onGoal with
+    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
+    | none => pure tac
   if let some stx := (← read).stx then
     if let some tac ← mergeTactics? stx tac then
       if let some range := stx.raw.getRange? then
@@ -346,6 +351,7 @@ def mkInsertion (tac : TSyntax `tactic) : ClickSuggestionsM (Lsp.Range × String
         let extraWhitespace := range.stop.extract text.source endPos
         let tactic ← tacticPasteString tac
         return (text.utf8RangeToLspRange ⟨range.start, endPos⟩, tactic ++ extraWhitespace)
+  let tac ← if (← read).focus then `(tactic| · $tac:tactic) else pure tac
   return (⟨(← read).cursorPos, (← read).cursorPos⟩,
     s!"{← tacticPasteString tac}\n{String.replicate (← read).cursorPos.character ' '}")
 
@@ -358,11 +364,8 @@ open Widget
 /-- Generate a suggestion for inserting `tac`, with message `html`.
 `button` will be used as the text on the clickable button.
 If `solves := true`, then a `🎉️` emoji is added. -/
-def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : Html) (solves : Bool) :
-    ClickSuggestionsM Html := do
-  let tac ← match (← read).onGoal with
-    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
-    | none => pure tac
+def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : ProofWidgets.Html)
+    (solves : Bool) : ClickSuggestionsM ProofWidgets.Html := do
   let (range, newText) ← mkInsertion tac (← read)
   let buttonText := s!"{if solves then "🎉️" else ""}[{button}] "
   let button :=
