@@ -47,6 +47,12 @@ theorem coeRingHom_apply (f : F) : coeRingHom F f = f := rfl
 @[norm_cast]
 theorem coe_coeRingHom : (coeRingHom F : F → α → β) = DFunLike.coe := rfl
 
+@[norm_cast]
+theorem toMonoidHom_coeRingHom : (coeRingHom F : F →* α → β) = coeMonoidHom F α β := rfl
+
+@[norm_cast]
+theorem toAddMonoidHom_coeRingHom : (coeRingHom F : F →+ α → β) = coeAddMonoidHom F α β := rfl
+
 variable (F) in
 /-- Evaluation as a ring homomorphism. -/
 @[expose]
@@ -54,6 +60,13 @@ def evalRingHom (x : α) : F →+* β := (Pi.evalRingHom _ x).comp (coeRingHom F
 
 @[simp]
 theorem evalRingHom_apply (x : α) (f : F) : evalRingHom F x f = f x := rfl
+
+@[norm_cast]
+theorem toMonoidHom_evalRingHom (x : α) : (evalRingHom F x: F →* β) = evalMonoidHom F x := rfl
+
+@[norm_cast]
+theorem toAddMonoidHom_evalRingHom (x : α) : (evalRingHom F x : F →+ β) = evalAddMonoidHom F x :=
+  rfl
 
 end RingHom
 

@@ -85,7 +85,7 @@ theorem coeMonoidHom_apply (f : F) : coeMonoidHom F α β f = f := rfl
 theorem coe_coeMonoidHom : (coeMonoidHom F α β : F → α → β) = DFunLike.coe := rfl
 
 @[to_additive (attr := norm_cast)]
-theorem coe_coeMonoidHom' : (coeMonoidHom F α β : F →ₙ* α → β) = coeMulHom F α β := rfl
+theorem toMulHom_coeMonoidHom : (coeMonoidHom F α β : F →ₙ* α → β) = coeMulHom F α β := rfl
 
 @[to_additive]
 theorem coeMonoidHom_injective : Function.Injective (coeMonoidHom F α β) := by
@@ -100,6 +100,9 @@ def evalMonoidHom (x : α) : F →* β := (Pi.evalMonoidHom _ x).comp (coeMonoid
 
 @[to_additive (attr := simp)]
 theorem evalMonoidHom_apply (x : α) (f : F) : evalMonoidHom F x f = f x := rfl
+
+@[to_additive (attr := simp)]
+theorem toMulHom_evalMonoidHom (x : α) : (evalMonoidHom F x : F →ₙ* β) = evalMulHom F x := rfl
 
 end MonoidHom
 
