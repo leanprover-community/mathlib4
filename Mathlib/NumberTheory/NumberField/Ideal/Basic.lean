@@ -113,9 +113,8 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
       refine P.mul_mem_right d ?_
       rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one, sub_eq_zero]
       simpa [Units.ext_iff] using hζ₁
-    have : (n : ℤ) ∈ under ℤ P := by simpa using hnP
-    rw [← Int.ideal_span_absNorm_eq_self (under ℤ P), Ideal.mem_span_singleton] at this
-    exact_mod_cast this
+    rw [← Int.natCast_dvd_natCast, ← Ideal.mem_span_singleton, Int.ideal_span_absNorm_eq_self]
+    simpa using hnP
   have hζ_pow := IsPrimitiveRoot.pow (by positivity) hζ₃ (by rwa [mul_comm])
   let F := ℚ⟮(ζ : K) ^ c⟯
   have : IsCyclotomicExtension {p} ℚ F :=

@@ -64,10 +64,7 @@ end Ideal
 
 section absNorm
 
-variable [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {I}
-
--- A nontrivial free `ℤ`-module is infinite; local to this section to supply `Infinite R`.
-local instance : Infinite R := Module.Free.infinite ℤ R
+variable [IsDedekindDomain R] {I}
 
 namespace Ideal
 
@@ -77,10 +74,21 @@ theorem rootsOfUnityMapQuot_injective (n : ℕ) (hI₁ : absNorm I ≠ 1)
     (hI₂ : (absNorm I).Coprime n) :
     Function.Injective (rootsOfUnityMapQuot I n) := by
   refine rootsOfUnityMapQuot_injective_of_notMem I fun hn ↦ hI₁ ?_
-  refine (hI₂.pow_right (Module.finrank ℤ R)).eq_one_of_dvd ?_
-  have := absNorm_dvd_norm_of_mem hn
-  rw [← map_natCast (algebraMap ℤ R), Algebra.norm_algebraMap] at this
-  exact_mod_cast this
+  obtain h₀ | h₀ := eq_or_ne (absNorm I) 0
+  · rw [h₀, Nat.coprime_zero_left] at hI₂
+    rw [(I.eq_top_iff_one).mpr (by simpa [hI₂] using hn), absNorm_top]
+  have hI : I ≠ ⊥ := fun h ↦ h₀ (h ▸ absNorm_bot)
+  rw [absNorm_of_ne_bot hI, Submodule.cardQuot_apply] at hI₂ h₀ ⊢
+  have := Nat.finite_of_card_ne_zero h₀
+  by_contra h
+  obtain ⟨p, hp, hpd⟩ := Nat.exists_prime_and_dvd h
+  have : Fact p.Prime := ⟨hp⟩
+  obtain ⟨x, hx⟩ := exists_prime_addOrderOf_dvd_card' p hpd
+  refine hp.not_dvd_one (hI₂ ▸ Nat.dvd_gcd hpd (hx ▸ addOrderOf_dvd_of_nsmul_eq_zero ?_))
+  obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
+  rw [nsmul_eq_mul, ← map_natCast (Ideal.Quotient.mk I), ← map_mul,
+    Ideal.Quotient.eq_zero_iff_mem]
+  exact I.mul_mem_right r hn
 
 theorem rootsOfUnityMapQuot_inj (n : ℕ) (hI₁ : absNorm I ≠ 1)
     (hI₂ : (absNorm I).Coprime n) {x y : rootsOfUnity n R} :
