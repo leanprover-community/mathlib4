@@ -85,25 +85,6 @@ theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
-@[deprecated mem_closure_iff_iSup +typeChanged (since := "2026-04-05")]
-theorem mem_closure_iff_bsup :
-    a ∈ closure s ↔
-      ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
-        (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a := by
-  rw [mem_closure_iff_iSup]
-  constructor
-  · rintro ⟨ι, _, f, hf, rfl⟩
-    exact ⟨_, by simp, bfamilyOfFamily f, fun i hi ↦ hf .., bsup_eq_iSup f⟩
-  · rintro ⟨o, ho, f, hf, rfl⟩
-    exact ⟨_, by simpa, familyOfBFamily _ f, fun i ↦ hf .., iSup_eq_bsup f⟩
-
-@[deprecated mem_closure_iff_iSup +typeChanged (since := "2026-04-05")]
-theorem mem_closed_iff_bsup (hs : IsClosed s) :
-    a ∈ s ↔
-      ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
-        (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a := by
-  rw [← mem_closure_iff_bsup, hs.closure_eq]
-
 theorem isClosed_iff_iSup :
     IsClosed s ↔
       ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
@@ -112,18 +93,6 @@ theorem isClosed_iff_iSup :
   intro h x hx
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
-
-@[deprecated isClosed_iff_iSup +typeChanged (since := "2026-04-05")]
-theorem isClosed_iff_bsup :
-    IsClosed s ↔
-      ∀ {o : Ordinal}, o ≠ 0 → ∀ f : ∀ a < o, Ordinal,
-        (∀ i hi, f i hi ∈ s) → bsup.{u, u} o f ∈ s := by
-  rw [isClosed_iff_iSup]
-  refine ⟨fun H o ho f hf => H (nonempty_toType_iff.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
-  · exact fun i => hf _ _
-  · rw [← bsup_eq_iSup]
-    apply H (type_ne_zero_iff_nonempty.2 hι)
-    exact fun i hi => hf _
 
 @[deprecated isNormal_enum_iff_dirSupClosed +typeChanged (since := "2026-05-25")]
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :

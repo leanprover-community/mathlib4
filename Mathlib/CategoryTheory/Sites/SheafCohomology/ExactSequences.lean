@@ -80,12 +80,12 @@ open ComposableArrows
 theorem longSequence_exact : (longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
 
-/-- The induced homomorphism of long exact equences obtained by applying `H.map` everywhere. -/
+/-- The induced homomorphism of long exact sequences obtained by applying `H.map` everywhere. -/
 noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
     longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := by
   refine ComposableArrows.homMk₅ (ofHom (map f.τ₁ n₀)) (ofHom (map f.τ₂ n₀)) (ofHom (map f.τ₃ n₀))
     (ofHom (map f.τ₁ n₁)) (ofHom (map f.τ₂ n₁)) (ofHom (map f.τ₃ n₁)) ?_ ?_ ?_ ?_ ?_
-  any_goals
+  all_goals
     dsimp
     ext
     simp [← H.map_comp_apply, f.comm₁₂, f.comm₂₃, ← δ_naturality n₀ n₁ h h₁ h₂ f]

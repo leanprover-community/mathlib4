@@ -6,11 +6,11 @@ Authors: Damiano Testa, Moritz Firsching
 module
 
 public meta import Lean.DeclarationRange
+public meta import Lean.Message
 public meta import Lean.ResolveName
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Message
 
 /-!
 This file contains functions that are used by multiple linters.

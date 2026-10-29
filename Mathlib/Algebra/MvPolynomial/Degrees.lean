@@ -542,8 +542,6 @@ theorem totalDegree_finsetProd {ι : Type*} (s : Finset ι) (f : ι → MvPolyno
     (s.prod f).totalDegree ≤ ∑ i ∈ s, (f i).totalDegree :=
   s.apply_prod_le_sum_apply _ totalDegree_one.le totalDegree_mul
 
-@[deprecated (since := "2026-04-08")] alias totalDegree_finset_prod := totalDegree_finsetProd
-
 theorem totalDegree_finsetSum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.sum f).totalDegree ≤ Finset.sup s fun i => (f i).totalDegree := by
   induction s using Finset.cons_induction with
@@ -551,8 +549,6 @@ theorem totalDegree_finsetSum {ι : Type*} (s : Finset ι) (f : ι → MvPolynom
   | cons a s has hind =>
     rw [Finset.sum_cons, Finset.sup_cons]
     exact (MvPolynomial.totalDegree_add _ _).trans (max_le_max le_rfl hind)
-
-@[deprecated (since := "2026-04-08")] alias totalDegree_finset_sum := totalDegree_finsetSum
 
 lemma totalDegree_finsetSum_le {ι : Type*} {s : Finset ι} {f : ι → MvPolynomial σ R} {d : ℕ}
     (hf : ∀ i ∈ s, (f i).totalDegree ≤ d) : (s.sum f).totalDegree ≤ d :=

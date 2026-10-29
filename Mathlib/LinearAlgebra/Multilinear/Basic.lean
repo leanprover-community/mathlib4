@@ -186,14 +186,14 @@ instance : Add (MultilinearMap R M₁ M₂) :=
     ⟨fun x => f x + f' x, fun m i x y => by simp [add_left_comm, add_assoc], fun m i c x => by
       simp [smul_add]⟩⟩
 
-instance : IsAddApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsAddApply (MultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias add_apply := add_apply
 
 instance : Zero (MultilinearMap R M₁ M₂) :=
   ⟨⟨fun _ => 0, fun _ _ _ _ => by simp, fun _ _ c _ => by simp⟩⟩
 
-instance : IsZeroApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsZeroApply (MultilinearMap R M₁ M₂) where
 
 instance : Inhabited (MultilinearMap R M₁ M₂) :=
   ⟨0⟩
@@ -209,7 +209,7 @@ instance : SMul S (MultilinearMap R M₁ M₂) :=
     ⟨fun m => c • f m, fun m i x y => by simp [smul_add], fun l i x d => by
       simp [← smul_comm x c (_ : M₂)]⟩⟩
 
-instance : IsSMulApply S (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsSMulApply S (MultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias smul_apply := smul_apply
 
@@ -484,7 +484,7 @@ coordinate. Here, we give an auxiliary statement tailored for an inductive proof
 theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, #(A i)) = n) :
     (f fun i => ∑ j ∈ A i, g i j) = ∑ r ∈ piFinset A, f fun i => g i (r i) := by
   let := fun i => Classical.decEq (α i)
-  induction n using Nat.strong_induction_on generalizing A with | h n IH =>
+  induction n using Nat.strong_induction_on generalizing A with | ind n IH
   -- If one of the sets is empty, then all the sums are zero
   by_cases! Ai_empty : ∃ i, A i = ∅
   · obtain ⟨i, hi⟩ : ∃ i, ∑ j ∈ A i, g i j = 0 := Ai_empty.imp fun i hi ↦ by simp [hi]
@@ -1285,7 +1285,7 @@ variable [Semiring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommGroup M₂] [∀ i
 instance : Neg (MultilinearMap R M₁ M₂) :=
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
 
-instance : IsNegApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsNegApply (MultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias neg_apply := neg_apply
 
@@ -1296,7 +1296,7 @@ instance : Sub (MultilinearMap R M₁ M₂) :=
       abel,
       fun m i c x => by simp only [MultilinearMap.map_update_smul, smul_sub]⟩⟩
 
-instance : IsSubApply (MultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : IsSubApply (MultilinearMap R M₁ M₂) where
 
 @[deprecated (since := "2026-06-10")] protected alias sub_apply := sub_apply
 
