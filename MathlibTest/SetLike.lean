@@ -62,6 +62,11 @@ example [Monoid M] (x y z : M) (S : Submonoid M) (hxy : x * y ∈ S) (hz : z ∈
     z * (x * y) ∈ S := by
   membership
 
+example [NonUnitalRing R] (x y z : R) (S : Subsemiring R)
+    (hx : x ∈ S) (hy : -y ∈ S) (hz : z ∈ S) :
+    x * -y * z ∈ s := by
+  membership
+
 example [Field F] (S : Subfield F) (q : ℚ) : (q : F) ∈ S := by
   membership
 

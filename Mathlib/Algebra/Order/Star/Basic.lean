@@ -459,7 +459,7 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   refine ⟨f p, ?_, map_add f _ _⟩
   have hf : ∀ r, f (star r) = star (f r) := map_star _
   induction hp using AddSubmonoid.closure_induction
-  all_goals aesop
+  all_goals grind [membership]
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
     [NonUnitalRingHomClass F R S] [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where

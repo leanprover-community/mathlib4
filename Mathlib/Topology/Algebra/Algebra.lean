@@ -660,7 +660,7 @@ def Algebra.elemental (x : A) : Subalgebra R A :=
 
 namespace Algebra.elemental
 
-@[simp, aesop safe (rule_sets := [SetLike]), membership .]
+@[simp, membership .]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 

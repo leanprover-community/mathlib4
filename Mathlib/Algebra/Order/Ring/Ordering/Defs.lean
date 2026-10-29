@@ -45,8 +45,8 @@ variable (R : Type*) [CommRing R]
 but not containing `-1`. -/
 @[ext]
 structure RingPreordering extends Subsemiring R where
-  mem_of_isSquare' {x : R} (hx : IsSquare x) : x ∈ carrier := by aesop
-  neg_one_notMem' : -1 ∉ carrier := by aesop
+  mem_of_isSquare' {x : R} (hx : IsSquare x) : x ∈ carrier := by membership
+  neg_one_notMem' : -1 ∉ carrier := by membership
 
 namespace RingPreordering
 
@@ -68,19 +68,22 @@ instance : SubsemiringClass (RingPreordering R) R where
 
 variable {R}
 
-@[aesop unsafe 80% (rule_sets := [SetLike]), membership .]
+@[membership .]
 protected theorem mem_of_isSquare (P : RingPreordering R) {x : R} (hx : IsSquare x) : x ∈ P :=
   RingPreordering.mem_of_isSquare' _ hx
 
 @[simp]
-protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x ∈ P := by aesop
+protected theorem mul_self_mem (P : RingPreordering R) (x : R) : x * x ∈ P := by
+  grind [membership, IsSquare.mul_self]
 
 @[simp]
-protected theorem pow_two_mem (P : RingPreordering R) (x : R) : x ^ 2 ∈ P := by aesop
+protected theorem pow_two_mem (P : RingPreordering R) (x : R) : x ^ 2 ∈ P := by
+  grind [membership, IsSquare.sq]
 
-@[aesop unsafe 20% forward (rule_sets := [SetLike])]
 protected theorem neg_one_notMem (P : RingPreordering R) : -1 ∉ P :=
   RingPreordering.neg_one_notMem' _
+
+grind_pattern [membership] RingPreordering.neg_one_notMem => -1 ∈ P
 
 theorem toSubsemiring_injective :
     Function.Injective (toSubsemiring : RingPreordering R → _) := fun A B h => by ext; rw [h]
@@ -112,10 +115,10 @@ equalities. -/
 @[simps]
 protected def copy : RingPreordering R where
   carrier := S
-  zero_mem' := by aesop
-  add_mem' ha hb := by aesop
-  one_mem' := by aesop
-  mul_mem' ha hb := by aesop
+  zero_mem' := by membership
+  add_mem' ha hb := by membership
+  one_mem' := by membership
+  mul_mem' ha hb := by membership
 
 attribute [norm_cast] coe_copy
 @[simp] theorem mem_copy {x} : x ∈ P.copy S hS ↔ x ∈ S := .rfl
@@ -138,9 +141,9 @@ the set of elements `x` in `R` such that both `x` and `-x` lie in `P`.
 -/
 def supportAddSubgroup : AddSubgroup R where
   carrier := P ∩ -P
-  zero_mem' := by aesop
-  add_mem' := by aesop
-  neg_mem' := by aesop
+  zero_mem' := by simp_all
+  add_mem' := by simp_all [add_mem]
+  neg_mem' := by simp_all
 
 theorem mem_supportAddSubgroup {x} : x ∈ P.supportAddSubgroup ↔ x ∈ P ∧ -x ∈ P := .rfl
 theorem coe_supportAddSubgroup : P.supportAddSubgroup = (P ∩ -P : Set R) := rfl

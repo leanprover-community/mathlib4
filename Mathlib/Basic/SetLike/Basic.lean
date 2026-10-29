@@ -176,7 +176,7 @@ theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 theorem ext_iff : p = q ↔ ∀ x, x ∈ p ↔ x ∈ q :=
   coe_injective.eq_iff.symm.trans Set.ext_iff
 
-@[simp, push]
+@[simp, push, membership =]
 theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
   Iff.rfl
 
@@ -188,7 +188,6 @@ theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
 
-@[aesop 5% (rule_sets := [SetLike!])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
 @[simp]

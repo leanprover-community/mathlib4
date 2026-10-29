@@ -64,7 +64,7 @@ class VAddMemClass (S : Type*) (R : outParam Type*) (M : Type*) [VAdd R M] [SetL
 
 attribute [to_additive] SMulMemClass
 
-attribute [aesop 90% (rule_sets := [SetLike]), membership .]
+attribute [membership .]
   SMulMemClass.smul_mem VAddMemClass.vadd_mem
 
 /-- Not registered as an instance because `R` is an `outParam` in `SMulMemClass S R M`. -/
@@ -254,19 +254,19 @@ instance : Top (SubMulAction R M) :=
 
 @[to_additive]
 instance : Max (SubMulAction R M) :=
-  ⟨fun s t => ⟨s ∪ t, by aesop⟩⟩
+  ⟨fun s t => ⟨s ∪ t, by grind [membership]⟩⟩
 
 @[to_additive]
 instance : Min (SubMulAction R M) :=
-  ⟨fun s t => ⟨s ∩ t, by aesop⟩⟩
+  ⟨fun s t => ⟨s ∩ t, by grind [membership]⟩⟩
 
 @[to_additive]
 instance : SupSet (SubMulAction R M) :=
-  ⟨fun S => ⟨⋃ s ∈ S, s, by aesop⟩⟩
+  ⟨fun S => ⟨⋃ s ∈ S, s, by grind [membership]⟩⟩
 
 @[to_additive]
 instance : InfSet (SubMulAction R M) :=
-  ⟨fun S => ⟨⋂ s ∈ S, ↑s, by aesop⟩⟩
+  ⟨fun S => ⟨⋂ s ∈ S, ↑s, by grind [membership]⟩⟩
 
 @[to_additive]
 instance : CompleteLattice (SubMulAction R M) :=

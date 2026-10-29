@@ -246,7 +246,7 @@ lemma norm_add_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
   have := (adjoin ℂ {a, b}).isClosed_topologicalClosure
   have := CStarAlgebra.isMulCommutative_nonUnital_adjoin_pair hcomm ha hb
   refine CommCStarAlgebra.norm_add_eq_max (A := S) (a := ⟨a, ?_⟩) (b := ⟨b, ?_⟩) (by ext; simpa)
-  all_goals apply le_topologicalClosure; aesop
+  all_goals apply le_topologicalClosure; membership
 
 lemma nnnorm_add_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
