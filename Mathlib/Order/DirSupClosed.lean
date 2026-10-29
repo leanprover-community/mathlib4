@@ -258,17 +258,17 @@ protected theorem DirSupClosedOn.Iic (a : α) : DirSupClosedOn D (Iic a) :=
 
 @[deprecated (since := "2026-10-16")] alias dirSupClosedOn_Iic := DirSupClosedOn.Iic
 
-protected theorem DirSupClosed.Ici (a : α) : DirSupClosed (Ici a) :=
-  IsUpperSet.Ici a |>.dirSupClosed
-
-protected theorem DirSupClosedOn.Ici (a : α) : DirSupClosedOn D (Ici a) :=
-  DirSupClosed.Ici a |>.dirSupClosedOn
-
-protected theorem DirSupClosed.Ioi (a : α) : DirSupClosed (Ioi a) :=
+protected lemma DirSupClosed.Ioi (a : α) : DirSupClosed (Ioi a) :=
   IsUpperSet.Ioi a |>.dirSupClosed
 
-protected theorem DirSupClosedOn.Ioi (a : α) : DirSupClosedOn D (Ioi a) :=
+protected lemma DirSupClosedOn.Ioi (a : α) : DirSupClosedOn D (Ioi a) :=
   DirSupClosed.Ioi a |>.dirSupClosedOn
+
+protected lemma DirSupClosed.Ici (a : α) : DirSupClosed (Ici a) :=
+  IsUpperSet.Ici a |>.dirSupClosed
+
+protected lemma DirSupClosedOn.Ici (a : α) : DirSupClosedOn D (Ici a) :=
+  (DirSupClosed.Ici a).dirSupClosedOn
 
 protected theorem DirSupClosed.Ioc (a b : α) : DirSupClosed (Ioc a b) :=
   .inter (.Ioi a) (.Iic b)
@@ -334,10 +334,10 @@ theorem dirSupInacc_iff_of_linearOrder :
     DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInacc]
 
-protected theorem DirSupInacc.Ioi (a : α) : DirSupInacc (Ioi a) := by
-  simpa using DirSupClosed.Iic a |>.compl
+protected lemma DirSupInacc.Ioi (a : α) : DirSupInacc (Ioi a) := by
+  simpa using (DirSupClosed.Iic a).compl
 
-protected theorem DirSupInaccOn.Ioi (a : α) : DirSupInaccOn D (Ioi a) :=
+protected lemma DirSupInaccOn.Ioi (a : α) : DirSupInaccOn D (Ioi a) :=
   DirSupInacc.Ioi a |>.dirSupInaccOn
 
 protected theorem DirSupInacc.Ioo (a b : α) : DirSupInacc (Ioo a b) :=

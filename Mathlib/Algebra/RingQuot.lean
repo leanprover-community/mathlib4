@@ -320,7 +320,7 @@ instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot 
 
 /-- The quotient map from a ring to its quotient, as a homomorphism of rings.
 -/
-irreducible_def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
+@[no_expose] def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
   { toFun := fun x ↦ ⟨Quot.mk _ x⟩
     map_one' := by simp [← one_quot]
     map_mul' := by simp [mul_quot]
@@ -328,10 +328,10 @@ irreducible_def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
     map_add' := by simp [add_quot] }
 
 theorem mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r x = mkRingHom r y := by
-  simp [mkRingHom_def, Quot.sound (Rel.of w)]
+  simp [mkRingHom, Quot.sound (Rel.of w)]
 
 theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRingHom r) := by
-  simp only [mkRingHom_def, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  simp only [mkRingHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
   rintro ⟨⟨⟩⟩
   simp
 
@@ -344,7 +344,7 @@ theorem ringQuot_ext [NonAssocSemiring T] {r : R → R → Prop} (f g : RingQuot
 
 variable [Semiring T]
 
-irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
+@[no_expose] def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
   RingQuot r →+* T :=
   { toFun := fun x ↦ Quot.lift f
         (by
@@ -367,25 +367,16 @@ irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y�
 /-- Any ring homomorphism `f : R →+* T` which respects a relation `r : R → R → Prop`
 factors uniquely through a morphism `RingQuot r →+* T`.
 -/
-irreducible_def lift {r : R → R → Prop} :
+@[no_expose] def lift {r : R → R → Prop} :
   { f : R →+* T // ∀ ⦃x y⦄, r x y → f x = f y } ≃ (RingQuot r →+* T) :=
   { toFun := fun f ↦ preLift f.prop
     invFun := fun F ↦ ⟨F.comp (mkRingHom r), fun _ _ h ↦ congr(F $(mkRingHom_rel h))⟩
-    left_inv := fun f ↦ by
-      ext
-      simp only [preLift_def, mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk,
-                 OneHom.coe_mk, Function.comp_apply]
-    right_inv := fun F ↦ by
-      simp only [preLift_def]
-      ext
-      simp only [mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-        Function.comp_apply] }
+    left_inv := fun f ↦ by rfl
+    right_inv := fun F ↦ by ext; rfl }
 
 @[simp]
 theorem lift_mkRingHom_apply (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y) (x) :
-    lift ⟨f, w⟩ (mkRingHom r x) = f x := by
-  simp_rw [lift_def, preLift_def, mkRingHom_def]
-  rfl
+    lift ⟨f, w⟩ (mkRingHom r x) = f x := (rfl)
 
 -- note this is essentially `lift.symm_apply_eq.mp h`
 theorem lift_unique (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y)
@@ -415,9 +406,7 @@ def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Idea
 
 @[simp]
 theorem ringQuotToIdealQuotient_apply (r : B → B → Prop) (x : B) :
-    ringQuotToIdealQuotient r (mkRingHom r x) = Ideal.Quotient.mk (Ideal.ofRel r) x := by
-  simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
-  rfl
+    ringQuotToIdealQuotient r (mkRingHom r x) = Ideal.Quotient.mk (Ideal.ofRel r) x := (rfl)
 
 /-- The universal ring homomorphism from `B ⧸ Ideal.ofRel r` to `RingQuot r`. -/
 def idealQuotientToRingQuot (r : B → B → Prop) : B ⧸ Ideal.ofRel r →+* RingQuot r :=
@@ -459,22 +448,19 @@ variable (S)
 
 /-- The quotient map from an `S`-algebra to its quotient, as a homomorphism of `S`-algebras.
 -/
-irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
+@[no_expose] def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
   { mkRingHom s with
-    commutes' := fun _ ↦ by simp [mkRingHom_def]; rfl }
+    commutes' _ := by rfl }
 
 @[simp]
-theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s) = mkRingHom s := by
-  simp_rw [mkAlgHom_def, mkRingHom_def]
-  rfl
+theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s) = mkRingHom s := (rfl)
 
 theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
     mkAlgHom S s x = mkAlgHom S s y := by
-  simp [mkAlgHom_def, mkRingHom_def, Quot.sound (Rel.of w)]
+  simp [mkAlgHom, mkRingHom, Quot.sound (Rel.of w)]
 
 theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by
-  suffices Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s) by
-    simpa [mkAlgHom_def, mkRingHom_def]
+  change Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s)
   rintro ⟨⟨a⟩⟩
   use a
 
@@ -487,7 +473,7 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
   rcases mkAlgHom_surjective S s x with ⟨x, rfl⟩
   congrm $w x
 
-irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
+@[no_expose] def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   (h : ∀ ⦃x y⦄, s x y → f x = f y) : RingQuot s →ₐ[S] B :=
 { toFun := fun x ↦ Quot.lift f
             (by
@@ -513,26 +499,16 @@ irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
 /-- Any `S`-algebra homomorphism `f : A →ₐ[S] B` which respects a relation `s : A → A → Prop`
 factors uniquely through a morphism `RingQuot s →ₐ[S] B`.
 -/
-irreducible_def liftAlgHom {s : A → A → Prop} :
+@[no_expose] def liftAlgHom {s : A → A → Prop} :
   { f : A →ₐ[S] B // ∀ ⦃x y⦄, s x y → f x = f y } ≃ (RingQuot s →ₐ[S] B) :=
   { toFun := fun f' ↦ preLiftAlgHom _ f'.prop
     invFun := fun F ↦ ⟨F.comp (mkAlgHom S s), fun _ _ h ↦ congr(F $(mkAlgHom_rel S h))⟩
-    left_inv := fun f ↦ by
-      ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
-        AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-        Function.comp_apply]
-    right_inv := fun F ↦ by
-      ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def,
-                 AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
-                 MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply] }
+    left_inv := fun f ↦ by rfl
+    right_inv := fun F ↦ by ext; rfl }
 
 @[simp]
 theorem liftAlgHom_mkAlgHom_apply (f : A →ₐ[S] B) {s : A → A → Prop}
-    (w : ∀ ⦃x y⦄, s x y → f x = f y) (x) : (liftAlgHom S ⟨f, w⟩) ((mkAlgHom S s) x) = f x := by
-  simp_rw [liftAlgHom_def, preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def]
-  rfl
+    (w : ∀ ⦃x y⦄, s x y → f x = f y) (x) : (liftAlgHom S ⟨f, w⟩) ((mkAlgHom S s) x) = f x := (rfl)
 
 -- note this is essentially `(liftAlgHom S).symm_apply_eq.mp h`
 theorem liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ ⦃x y⦄, s x y → f x = f y)
@@ -558,11 +534,11 @@ def algEquivQuotAlgEquiv (f : A ≃ₐ[S] B) (rel : A → A → Prop) :
     (RingQuot.liftAlgHom S (s := rel)
       ⟨AlgHom.comp (RingQuot.mkAlgHom S (rel on f.symm)) f,
       fun x y h_rel ↦ by
-        apply RingQuot.mkAlgHom_rel
+        apply RingQuot.mkAlgHom_rel S
         simpa [Function.onFun]⟩)
     ((RingQuot.liftAlgHom S (s := rel on f.symm)
       ⟨AlgHom.comp (RingQuot.mkAlgHom S rel) f.symm,
-      fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
+      fun x y h ↦ by apply RingQuot.mkAlgHom_rel S; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
 /-- If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
