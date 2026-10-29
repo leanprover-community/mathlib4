@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.Simps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semigroups and algebraic structures without identities
 

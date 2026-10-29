@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.DFinsupp.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locus of unequal values of finitely supported dependent functions
 

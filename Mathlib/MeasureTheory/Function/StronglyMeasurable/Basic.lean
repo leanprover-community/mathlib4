@@ -736,7 +736,7 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
 @[to_dual /-- A left-continuous function on a second-countable linear order is strongly
 measurable. -/]
 theorem _root_.IsRightContinuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSpace α]
-    [LinearOrder α] [OrderTopology α] [SecondCountableTopology α] [OpensMeasurableSpace α]
+    [LinearOrder α] [OrderTopology α] [SecondCountableTopology α] [BorelSpace α]
     [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β} (hf : IsRightContinuous f) :
     StronglyMeasurable f := by
   borelize β

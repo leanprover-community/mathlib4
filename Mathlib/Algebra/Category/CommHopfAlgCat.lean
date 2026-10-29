@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.CommBialgCat
 public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of commutative Hopf algebras over a commutative ring
 
