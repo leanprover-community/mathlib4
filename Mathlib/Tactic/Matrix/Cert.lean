@@ -82,7 +82,8 @@ def certifyProductEq {u : Level} {m n : Nat} {α : Q(Type u)}
   -- `hmul` is stated with the `Zero` and `Add` given to `proveMul`, while `ofLists_mul` uses those
   -- derived from `cα`.
   assertInstancesCommute
-  return mkExpectedPropHint q(ofLists_mul $hmul)
+  return mkExpectedPropHint
+    q((ofLists_mul ..).trans (congrArg (ofLists $m $n) $hmul))
     q((ofLists $m $m $(mulEq.A)) * ofLists $m $n $(mulEq.B) = $(U.matrix))
 
 /-- The literal of the row-major array of the entries of the matrix literal `L`. -/

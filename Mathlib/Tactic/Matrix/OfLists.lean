@@ -83,9 +83,8 @@ theorem ofLists_transpose [Zero α] (m n : ℕ) (rows : List (List α)) :
   ext j i
   simpa using ListMatrix.getD_transpose rows i j.isLt
 
-theorem ofLists_mul [Mul α] [AddCommMonoid α] {l m n : ℕ} {A B C : List (List α)}
-    (h : ListMatrix.mul l m n A B = C) : ofLists l m A * ofLists m n B = ofLists l n C := by
-  subst h
+theorem ofLists_mul [Mul α] [AddCommMonoid α] (l m n : ℕ) (A B : List (List α)) :
+    ofLists l m A * ofLists m n B = ofLists l n (ListMatrix.mul l m n A B) := by
   ext i j
   rw [mul_apply', ← col_apply' (ofLists m n B) j]
   simp only [← row_transpose, ← ofLists_transpose, row_apply', ofLists_apply, ofList_apply,
