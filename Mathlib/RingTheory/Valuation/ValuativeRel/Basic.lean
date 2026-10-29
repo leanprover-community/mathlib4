@@ -295,6 +295,11 @@ theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   grw [show (0 : R) = x * 0 by simp, veq_mul_comm, veq_mul_comm x] at hy
   exact vle_mul_cancel hx hy
 
+lemma add_vlt_of_vlt_of_vlt {x y z : R} (hx : x <ᵥ z) (hy : y <ᵥ z) : x + y <ᵥ z := by
+  rcases ValuativeRel.vle_add_cases x y with h | h
+  · apply h.trans_vlt hx
+  · apply h.trans_vlt hy
+
 section Ring
 
 variable {R : Type*} [Ring R] [ValuativeRel R]
@@ -941,6 +946,10 @@ lemma vle_div_iff (hc : c ≠ 0) : a ≤ᵥ b / c ↔ a * c ≤ᵥ b := by
 
 lemma div_vle_iff (hc : c ≠ 0) : a / c ≤ᵥ b ↔ a ≤ᵥ b * c := by
   rw [← mul_vle_mul_iff_left (by simpa), div_mul_cancel₀ _ (by lia)]
+
+lemma vlt_div_iff (hc : c ≠ 0) : a <ᵥ b / c ↔ a * c <ᵥ b := (div_vle_iff hc).not
+
+lemma div_vlt_iff (hc : c ≠ 0) : a / c <ᵥ b ↔ a <ᵥ b * c := (vle_div_iff hc).not
 
 lemma one_vle_div_iff (hb : b ≠ 0) : 1 ≤ᵥ a / b ↔ b ≤ᵥ a := by
   simp [vle_div_iff hb]

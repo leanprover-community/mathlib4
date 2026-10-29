@@ -7,6 +7,7 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.RingTheory.Valuation.Integers
+public import Mathlib.RingTheory.Valuation.ValuationRing
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
@@ -48,5 +49,23 @@ variable (R) in
 @[simp]
 theorem valuationInteger_valuation_eq_integer : (ValuativeRel.valuation R).integer = integer R :=
   (integer_eq_valuationInteger (ValuativeRel.valuation R)).symm
+
+variable {K : Type*} [Field K] [ValuativeRel K]
+instance : ValuationRing (integer K) where
+  cond' a b := by
+    have hc {a b : integer K} (h : b.val ≤ᵥ a.val) : ∃ c, a * c = b ∨ b * c = a := by
+      by_cases ha : a = 0
+      · exact ⟨0, by simp [ha]⟩
+      refine ⟨⟨b.val / a.val, ?_⟩, Or.inl ?_⟩
+      · rw [mem_integer_iff, div_vle_one_iff (by simpa using ha)]
+        exact h
+      · ext
+        exact mul_div_cancel₀ _ (by simpa using ha)
+    rcases vle_total a.val b.val with h | h
+    · obtain ⟨c, h⟩ := hc h
+      use c
+      grind
+    · obtain ⟨c, h⟩ := hc h
+      use c
 
 end ValuativeRel

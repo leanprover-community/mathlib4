@@ -59,6 +59,22 @@ class IsValuativeTopology [TopologicalSpace R] where
   mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
 
+theorem IsValuativeTopology.mem_nhds_iff_exists_image_vlt_subset [TopologicalSpace R]
+    [IsValuativeTopology R] {s : Set R} {x : R} :
+    s ∈ 𝓝 x ↔ ∃ (a b : posSubmonoid R), (x + ·) '' {z | z * b <ᵥ a} ⊆ s := by
+  rw [IsValuativeTopology.mem_nhds_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨γ, h⟩ := h
+    obtain ⟨a, b, hab⟩ := ValuativeRel.exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq γ
+    use a, b
+    convert h with x
+    rw [← hab, lt_div_iff₀ (by simp), ← map_mul, (valuation R).vlt_iff_lt]
+  · obtain ⟨a, b, hab⟩ := h
+    use Units.mk0 (valuation R a / valuation R b) (by simp)
+    convert hab with x
+    simp_rw [Units.val_mk0]
+    rw [lt_div_iff₀ (by simp), ← map_mul, (valuation R).vlt_iff_lt]
+
 namespace ValuativeRel
 
 /-- The topology induced by a valuative relation. Note that this is not made into a global instance
@@ -159,6 +175,50 @@ lemma hasBasis_nhds_zero' :
     (𝓝 0).HasBasis (· ≠ 0) ({ x | valuation R x < · }) :=
   (hasBasis_nhds_zero R).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
     fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
+
+theorem isOpen_vlt (r : R) : IsOpen {x | x <ᵥ r} := by
+  rw [isOpen_iff_mem_nhds]
+  intro x hx
+  rw [mem_ofPred_eq] at hx
+  by_cases hr : r ≤ᵥ 0
+  · have := hx.trans_vle hr
+    simp at this
+  rw [mem_nhds_iff_exists_image_vlt_subset]
+  use ⟨r, hr⟩, 1
+  suffices ∀ (a : R), -x + a <ᵥ r → a <ᵥ r by simpa
+  intro a ha
+  simpa using add_vlt_of_vlt_of_vlt hx ha
+
+theorem isClosed_vle (r : R) : IsClosed {x | x ≤ᵥ r} := by
+  rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
+  simp only [mem_compl_iff, mem_ofPred_eq, not_vle]
+  intro x hrx
+  rw [mem_nhds_iff_exists_image_vlt_subset]
+  use ⟨x, ValuativeRel.vle.trans_vlt (by simp) hrx⟩, 1
+  intro a
+  suffices -x + a <ᵥ x → r <ᵥ -a by simpa
+  intro h h'
+  have : x <ᵥ x := by simpa using add_vlt_of_vlt_of_vlt h (h'.trans_vlt hrx)
+  exact this (vle_refl x)
+
+section Field
+
+variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
+
+theorem mem_nhds_iff_exists_image_vlt_subset' {s : Set K} {x : K} :
+    s ∈ 𝓝 x ↔ ∃ y ≠ 0, (x + ·) '' {z | z <ᵥ y} ⊆ s := by
+  rw [mem_nhds_iff_exists_image_vlt_subset]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨a, b, h⟩ := h
+    use a.val / b.val, (by simp)
+    convert h using 4 with z
+    rw [vlt_div_iff (by simp)]
+  · obtain ⟨y, hy, h⟩ := h
+    use ⟨y, by simpa using hy⟩, 1
+    convert h
+    simp
+
+end Field
 
 end IsValuativeTopology
 
