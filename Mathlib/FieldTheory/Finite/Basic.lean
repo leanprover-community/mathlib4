@@ -697,7 +697,7 @@ theorem Subfield.card_bot : Nat.card (⊥ : Subfield F) = p := by
   rw [← fieldRange_castHom_eq_bot p,
     ← Nat.card_eq_of_bijective _ (RingHom.rangeRestrictField_bijective _), Nat.card_zmod]
 
-/-- The subfield `⊥ : Subfield F` as a `Finset F`. -/
+/-- The prime subfield `⊥ : Subfield F` as a `Finset F`. -/
 def Subfield.botFinset : Finset F :=
   univ.map ⟨_, (ZMod.castHom dvd_rfl F).injective⟩
 
