@@ -497,8 +497,7 @@ lemma isClosed_ofPred_posSemidef : IsClosed {A : Matrix n n R | PosSemidef A} :=
   simp only [PosSemidef, Set.ofPred_and, Set.ofPred_forall]
   refine isClosed_ofPred_isHermitian.inter
     (isClosed_iInter fun x => isClosed_le continuous_const ?_)
-  refine continuous_finsetSum _ fun i _ => continuous_finsetSum _ fun j _ => ?_
-  fun_prop
+  fun_prop [Finsupp.sum]
 
 lemma PosSemidef.of_hasSum [IsOrderedAddMonoid R]
     {f : α → Matrix n n R} {a : Matrix n n R} {L : SummationFilter α} [L.NeBot] (h : HasSum f a L)
