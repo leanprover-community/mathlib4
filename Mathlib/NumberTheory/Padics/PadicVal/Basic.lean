@@ -70,9 +70,6 @@ namespace Nat
 
 variable {p : ℕ}
 
-@[deprecated (since := "2026-10-27")]
-protected alias multiplicity_eq_zero_of_not_dvd := multiplicity_eq_zero_of_not_dvd
-
 theorem multiplicity_dvd_of_ne_zero {n : ℕ} (h : multiplicity p n ≠ 0) : p ∣ n :=
   not_not.mp (mt multiplicity_eq_zero_of_not_dvd h)
 
