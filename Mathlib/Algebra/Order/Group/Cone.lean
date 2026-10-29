@@ -22,11 +22,11 @@ variable (G : Type*) [CommGroup G]
 
 @[to_additive]
 protected theorem Submonoid.IsMulPointed.oneLE [PartialOrder G] [IsOrderedMonoid G] :
-    (oneLE G).IsMulPointed := by simp_all [IsMulPointed.mk, ge_antisymm_iff]
+    (oneLE G).IsMulPointed := by simp_all [IsMulPointed, ge_antisymm_iff]
 
 @[to_additive]
 protected theorem Submonoid.IsMulSpanning.oneLE [LinearOrder G] [IsOrderedMonoid G] :
-    (oneLE G).IsMulSpanning := by simp_all [IsMulSpanning.mk, le_total]
+    (oneLE G).IsMulSpanning := by simp_all [IsMulSpanning, le_total]
 
 variable {G} {M : Submonoid G} (hM : M.IsMulPointed)
 
