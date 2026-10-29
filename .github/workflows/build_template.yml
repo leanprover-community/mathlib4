@@ -61,6 +61,7 @@ jobs:
       wanted-outcome: ${{ steps.wanted.outcome }}
       cache-staging-has-files: ${{ steps.cache_staging_check.outputs.has_files }}
       mk_all-outcome: ${{ steps.mk_all.outcome }}
+      noisy-outcome: ${{ steps.noisy.outcome }}
       # shake-outcome: ${{ steps.shake.outcome }}
     # PR code can write `pr-branch/.lake/` from setup-build-env's "download dependencies"
     # step onward, so later steps that use it run inside landrun. The one exception is
@@ -442,6 +443,8 @@ jobs:
       contents: read
       actions: read
     outputs:
+      lint-outcome: ${{ steps.lint.outcome }}
+      test-outcome: ${{ steps.test.outcome }}
       test-cache-staging-has-files: ${{ steps.test_cache_staging.outputs.has_files }}
     # `RUN_TESTS` is true on a clean build: `build` itself, the `mk_all` check, and
     # the archive, counterexamples, and Wanted builds all succeeded. It reads these
@@ -650,6 +653,105 @@ jobs:
         with:
           action: remove
           linters: gcc
+
+  # Report from a fresh runner so the Batteries write token never reaches PR code.
+  batteries_pr_comment:
+    name: Report Mathlib CI to Batteries
+    needs: [build, test_lint]
+    if: >-
+      !cancelled() && github.repository == 'leanprover-community/mathlib4' &&
+      github.event.pull_request.head.repo.full_name == 'leanprover-community/mathlib4-adaptations' &&
+      startsWith(github.head_ref, 'batteries-pr-testing-') &&
+      (needs.test_lint.result == 'success' || needs.test_lint.result == 'failure')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Check the adaptation PR and read its Batteries pin
+        id: adaptation
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const match = /^batteries-pr-testing-([0-9]+)$/.exec(pr.head.ref);
+            if (!match) return;
+            const { data: current } = await github.rest.pulls.get({ ...context.repo, pull_number: pr.number });
+            if (current.state !== 'open' || current.head.sha !== pr.head.sha) return;
+            const { data: file } = await github.rest.repos.getContent({
+              ...context.repo, path: 'lake-manifest.json', ref: pr.head.sha,
+            });
+            const manifest = JSON.parse(Buffer.from(file.content, 'base64').toString());
+            core.setOutput('batteries-sha', manifest.packages.find(p => p.name === 'batteries').rev);
+            core.setOutput('batteries-pr', match[1]);
+
+      - name: Generate Batteries status token
+        if: steps.adaptation.outputs.batteries-pr != ''
+        id: token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.BATTERIES_STATUS_APP_ID }}
+          private-key: ${{ secrets.BATTERIES_STATUS_PRIVATE_KEY }}
+          owner: leanprover-community
+          repositories: batteries
+          permission-pull-requests: write
+
+      - name: Update the Batteries status comment and labels
+        if: steps.adaptation.outputs.batteries-pr != ''
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          BATTERIES_PR: ${{ steps.adaptation.outputs.batteries-pr }}
+          BATTERIES_SHA: ${{ steps.adaptation.outputs.batteries-sha }}
+          RESULTS: ${{ toJSON(needs) }}
+        with:
+          github-token: ${{ steps.token.outputs.token }}
+          script: |
+            const target = { owner: 'leanprover-community', repo: 'batteries', issue_number: Number(process.env.BATTERIES_PR) };
+            const { data: source } = await github.rest.pulls.get({
+              owner: target.owner, repo: target.repo, pull_number: target.issue_number,
+            });
+            // A newer Batteries commit can arrive before its adaptation branch updates.
+            if (source.state === 'open' && source.head.sha !== process.env.BATTERIES_SHA) return;
+            const labels = source.labels.map(label => label.name);
+            const results = JSON.parse(process.env.RESULTS);
+            const build = results.build.outputs;
+            const test = results.test_lint.outputs;
+            const checks = [
+              ['build', build['build-outcome']], ['lint', test['lint-outcome']],
+              ['counterexamples', build['counterexamples-outcome']], ['archive', build['archive-outcome']],
+              ['Wanted', build['wanted-outcome']], ['import check', build['mk_all-outcome']],
+              ['output check', build['noisy-outcome']], ['tests', test['test-outcome']],
+            ];
+            const failed = checks.find(([, outcome]) => outcome === 'failure');
+            const passed = checks.every(([, outcome]) => outcome === 'success');
+            const pr = context.payload.pull_request;
+            const status = failed ? `❌ Mathlib ${failed[0]} failed` :
+              passed ? '✅ Mathlib built and passed tests and lint' : '🟡 Mathlib CI did not complete';
+            const run = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const message = `- ${status}. [Mathlib #${pr.number}](${pr.html_url}) · [CI log](${run}) (${new Date().toISOString()})`;
+            const marker = '<!-- batteries-mathlib-ci -->';
+            const comments = await github.paginate(github.rest.issues.listComments, { ...target, per_page: 100 });
+            const comment = comments.reverse().find(c =>
+              c.user.login === 'mathlib-batteries-status[bot]' && c.body.includes(marker));
+            if (comment && !labels.includes('awaiting-mathlib')) {
+              await github.rest.issues.updateComment({
+                owner: target.owner, repo: target.repo, comment_id: comment.id, body: `${comment.body}\n${message}`,
+              });
+            } else {
+              await github.rest.issues.createComment({ ...target, body: `${marker}\nMathlib CI status:\n${message}` });
+            }
+
+            // Clear awaiting-mathlib only after its notification succeeds.
+            const label = failed ? 'breaks-mathlib' : passed ? 'builds-mathlib' : '';
+            for (const name of ['builds-mathlib', 'breaks-mathlib', ...(passed ? ['awaiting-mathlib'] : [])]) {
+              if (name !== label && labels.includes(name)) {
+                await github.rest.issues.removeLabel({ ...target, name }).catch(error => {
+                  if (error.status !== 404) throw error;
+                });
+              }
+            }
+            if (label && !labels.includes(label)) await github.rest.issues.addLabels({ ...target, labels: [label] });
 
   upload_cache:
     name: Upload to cache

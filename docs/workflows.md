@@ -36,6 +36,8 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 
 Batteries adaptation PRs come from `leanprover-community/mathlib4-adaptations`.
 They use `build_fork.yml`, including while they are drafts. The shared fork has Actions disabled.
+A separate job reports build, test, and lint results on the Batteries PR, with status comments and `builds-mathlib` / `breaks-mathlib` labels.
+It posts a fresh comment when `awaiting-mathlib` is present and removes that label after success.
 Read the [Batteries contributor guide](https://github.com/leanprover-community/batteries#mathlib-adaptations)
 for the adaptation process and the [workflow reference](https://github.com/leanprover-community/batteries/blob/main/docs/ci/mathlib-adaptations.md)
 for fork permissions and recovery procedures.
