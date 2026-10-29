@@ -391,8 +391,8 @@ theorem StronglyAdapted.isStronglyProgressive_of_isRightContinuous [TopologicalS
   refine stronglyMeasurable_of_tendsto atTop (f := fun n (p : Set.Iic t × Ω) => u (w n p.1) p.2)
     (fun n => ?_) (tendsto_pi_nhds.2 fun p => ?_)
   · -- `w n` is a simple function: it has finite range and its fibers are order-connected. (We only
-    -- assume `OpensMeasurableSpace ι`, so `Monotone.measurable` does not apply: its codomain must be
-    -- a `BorelSpace`.) Hence the finitely many `f t`-strongly measurable functions `u (w n s)`
+    -- assume `OpensMeasurableSpace ι`, so `Monotone.measurable` does not apply: its codomain must
+    -- be a `BorelSpace`.) Hence the finitely many `f t`-strongly measurable functions `u (w n s)`
     -- assemble into the strongly measurable `(s, ω) ↦ u (w n s) ω`
     let _ : MeasurableSpace Ω := f t
     have hwm : Measurable (w n) :=
