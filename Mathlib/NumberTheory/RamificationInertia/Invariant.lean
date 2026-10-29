@@ -85,38 +85,14 @@ lemma mk_inertiaIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
 
 end Algebra.FormallyUnramified
 
--- PRed
 namespace Algebra.FormallyUnramified
 
 variable (R S M : Type*) [CommRing R] [CommRing S] [Algebra R S] [FormallyUnramified R S]
   [EssFiniteType R S] [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 
-lemma sec_apply (x : M) :
-    sec R S M x = ((LinearMap.toSpanSingleton S M x).restrictScalars R).baseChange S (elem R S) :=
-  rfl
-
 @[simp]
 lemma sec_one : sec R S S 1 = elem R S := by
   simp [sec_apply, LinearMap.toSpanSingleton_one_eq_algebraLinearMap]
-
-variable {M} in
-lemma sec_comp {N : Type*} [AddCommGroup N]
-    [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[S] N) :
-    (sec R S N).comp f = ((f.restrictScalars R).baseChange S).comp (sec R S M) := by
-  ext x
-  simp [sec_apply, ← f.comp_toSpanSingleton, LinearMap.baseChange_comp]
-
-variable {M} in
-@[simp]
-lemma baseChange_sec {N : Type*} [AddCommGroup N]
-    [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[S] N) (x : M) :
-    (f.restrictScalars R).baseChange S (sec R S M x) = sec R S N (f x) :=
-  (congr($(sec_comp R S f) x)).symm
-
-variable {M} in
-lemma sec_mem_baseChange (P : Submodule S M) {x : M} (hx : x ∈ P) :
-    sec R S M x ∈ (P.restrictScalars R).baseChange S :=
-  ⟨sec R S P ⟨x, hx⟩, baseChange_sec R S P.subtype ⟨x, hx⟩⟩
 
 end Algebra.FormallyUnramified
 
