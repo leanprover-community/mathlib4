@@ -52,7 +52,7 @@ scoped instance : IsScalarTower K v.Completion w.Completion :=
     apply Completion.ext
     rw [Completion.algebraMap_toCompletion]
     apply AbsoluteValue.Completion.toCompletion_injective
-    rw [AbsoluteValue.Completion.algebraMap_toCompletion, UniformSpace.Completion.algebraMap_def]
+    rw [AbsoluteValue.Completion.toCompletion_algebraMap, UniformSpace.Completion.algebraMap_def]
     simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
 
 scoped instance : ContinuousSMul v.Completion w.Completion where
