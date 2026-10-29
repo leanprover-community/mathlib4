@@ -130,8 +130,8 @@ theorem _root_.Subgroup.mulSupport_eq (H : Subgroup G) : H.mulSupport = H :=
   Subgroup.gciToSubmonoidMulSupport.u_l_eq H
 
 @[to_additive (attr := simp)]
-theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ :=
-  Subgroup.gciToSubmonoidMulSupport.u_bot
+theorem mulSupport_bot : (⊥ : Submonoid G).mulSupport = ⊥ := by
+  simpa using (⊥ : Subgroup G).mulSupport_eq
 
 @[to_additive (attr := simp)]
 theorem mulSupport_top : (⊤ : Submonoid G).mulSupport = ⊤ :=
