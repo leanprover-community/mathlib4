@@ -5,8 +5,8 @@ Authors: David Iach
 -/
 module
 
-public import Mathlib.Analysis.Convex.Independent
 public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.Independent
 
 /-!
 # Betweenness in convex independent sets
