@@ -186,7 +186,6 @@ instance : IsClosedUnderIsomorphisms (isHomotopyInvariant.{u} C c) where
     simp only [← cancel_epi ((e.hom.homₚ _).app _), ← NatTrans.naturality,
       map_eq_of_homotopy _ F _]⟩
 
-set_option linter.unusedVariables false in
 /-- A `HomologyPretheory` has the excision-isomorphism, if cutting out a sufficiently nice subspace
 `U` from a space `X` yields an isomorphism `Hₚ i X ≅ Hₚ i (X \ U)`. -/
 @[mk_iff]
