@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
-public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Order.GroupWithZero.Associated
 
 import Mathlib.Algebra.Group.Submonoid.Membership
 

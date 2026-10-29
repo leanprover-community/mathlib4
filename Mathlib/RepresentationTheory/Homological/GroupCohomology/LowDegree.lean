@@ -307,7 +307,7 @@ theorem mem_cocycles₁_iff (f : G → A) :
 
 @[simp] theorem cocycles₁_map_one (f : cocycles₁ A) : f 1 = 0 := by
   have := (mem_cocycles₁_def f).1 f.2 1 1
-  simpa only [map_one, Module.End.one_apply, mul_one, sub_self, zero_add] using this
+  simpa
 
 @[simp] theorem cocycles₁_map_inv (f : cocycles₁ A) (g : G) :
     A.ρ g (f g⁻¹) = -f g := by
@@ -379,7 +379,7 @@ theorem mem_cocycles₂_iff (f : G × G → A) :
 theorem cocycles₂_map_one_fst (f : cocycles₂ A) (g : G) :
     f (1, g) = f (1, 1) := by
   have := ((mem_cocycles₂_iff f).1 f.2 1 1 g).symm
-  simpa only [map_one, Module.End.one_apply, one_mul, add_right_inj, this]
+  simpa
 
 theorem cocycles₂_map_one_snd (f : cocycles₂ A) (g : G) :
     f (g, 1) = A.ρ g (f (1, 1)) := by
