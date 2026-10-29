@@ -562,7 +562,7 @@ end RelEmbedding
 /-- A relation isomorphism with respect to a given pair of relations `r` and `s`
 is an equivalence `f : α ≃ β` such that `r a b ↔ s (f a) (f b)`. -/
 structure RelIso {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends α ≃ β where
-  /-- Elements are related iff they are related after applying a `RelIso` -/
+  /-- Elements are related iff they are related after applying a `RelIso`. -/
   map_rel_iff' : ∀ {a b}, s (toEquiv a) (toEquiv b) ↔ r a b
 
 /-- A relation isomorphism is an equivalence that is also a relation embedding. -/
