@@ -509,7 +509,7 @@ instance instAlgebra : Algebra 𝕜 (α →ᵇ γ) where
 
 @[deprecated FunLike.algebraMap_apply +typeChanged (since := "2026-10-27")]
 theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k a = k • (1 : γ) := by
-  simp
+  simp [Algebra.algebraMap_eq_smul_one]
 
 instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra
