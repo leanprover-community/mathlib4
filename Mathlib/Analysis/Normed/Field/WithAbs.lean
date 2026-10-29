@@ -25,7 +25,7 @@ on an absolute value. This is useful when dealing with several absolute values o
 In particular this allows us to define the completion of a field at a given absolute value.
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
@@ -141,7 +141,6 @@ private def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) wher
 noncomputable instance : NormedField v.Completion := fast_instance% (equivAux v).normedField
 
 /-- `Completion.toCompletion'` and `Completion.ofCompletion'` as an equivalence. -/
-@[no_expose]
 def equiv : v.Completion ≃+* UniformSpace.Completion (WithAbs v) where
   toEquiv := equivAux v
   map_mul' _ _ := rfl
@@ -158,12 +157,12 @@ noncomputable def ofCompletion : UniformSpace.Completion (WithAbs v) →+* v.Com
   (equiv v).symm
 
 @[simp]
-theorem equiv_apply (x : v.Completion) : equiv v x = x.toCompletion :=
+theorem equiv_apply (x : v.Completion) : equiv v x = x.toCompletion := by
   rfl
 
 @[simp]
 theorem equiv_symm_apply (x : UniformSpace.Completion (WithAbs v)) :
-    (equiv v).symm x = .ofCompletion x :=
+    (equiv v).symm x = .ofCompletion x := by
   rfl
 
 @[simp] theorem toCompletion'_eq (x : v.Completion) : x.toCompletion' = toCompletion x := by rfl
@@ -206,7 +205,7 @@ noncomputable def isometryEquivCompletion :
 
 @[simp]
 theorem isometryEquivCompletion_symm_apply (x : UniformSpace.Completion (WithAbs v)) :
-    (isometryEquivCompletion v).symm x = .ofCompletion x :=
+    (isometryEquivCompletion v).symm x = .ofCompletion x := by
   rfl
 
 theorem continuous_toCompletion : Continuous (toCompletion (v := v)) :=
