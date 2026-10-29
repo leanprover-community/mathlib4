@@ -109,7 +109,7 @@ elab_rules : term
   | `(pi_to_lam% $M) => do
     let eM ← whnfR (← elabType M)
     let .forallE name dom body bi := eM
-      | throwErrorAt M "expected a function or Pi type, got{indentExpr eM}"
+      | throwErrorAt M "expected a function type or Pi type, got{indentExpr eM}"
     return .lam name dom body bi
 
 /-- `(Π i, M i) →ₘₗ[R] N` is the type of `R`-multilinear maps from `Π i, M i` to `N`. -/
@@ -124,8 +124,8 @@ public meta def delabMultilinearMap : Delab := whenPPOption getPPNotation do
   let M ← withNaryArg 2 do
     let .lam name dom body bi ← etaExpand (← getExpr)
       | failure
-    let piExpr := Expr.forallE name dom body bi
-    withTheReader SubExpr (fun cfg => { cfg with expr := piExpr }) delab
+    let piExpr := Expr.forallE name dom body.headBeta bi
+    withTheReader SubExpr (fun cfg => { cfg with expr := piExpr }) PiNotation.delabPi'
   let N ← withNaryArg 3 delab
   `($M →ₘₗ[$R] $N)
 
