@@ -6,42 +6,47 @@ Authors: Tomaz Mascarenhas, Pedro Saccomani, Sarah Pereira
 module
 
 public import Mathlib.Analysis.Polynomial.SignRight
+public import Mathlib.FieldTheory.RatFunc.Basic
 
 /-!
 # The Cauchy index of a real rational function
 
-The Cauchy index of `q / p` on `(a, b)` counts the jumps of the rational function
-`q / p` from `-∞` to `+∞` minus those from `+∞` to `-∞` at the poles in `(a, b)`.
-It is the central quantity in Sturm's theorem and the Sturm–Tarski theorem
-(via Tarski queries), and also underlies the Routh–Hurwitz stability criterion and
-the counting of complex roots through winding numbers
+The Cauchy index of a rational function `f` on `(a, b)` counts the jumps of `f` from `-∞` to `+∞`
+minus those from `+∞` to `-∞` at the poles of `f` in `(a, b)`. It is the central quantity in
+Sturm's theorem and the Sturm–Tarski theorem (via Tarski queries), and also underlies the
+Routh–Hurwitz stability criterion and the counting of complex roots through winding numbers.
 
 ## Main definitions
 
-* `Polynomial.rootsInInterval p a b`: the distinct roots of `p` in `(a, b)`.
-* `Polynomial.jumpVal p q x`: the jump of `q / p` at `x`.
-* `Polynomial.cauchyIndex p q a b`: the Cauchy index of `q / p` on `(a, b)`, the sum of the jumps
-  `jumpVal p q x` over the roots `x` of `p` in `(a, b)`.
+* `RatFunc.jump f x`: the jump of `f` at `x`.
+* `RatFunc.cauchyIndex f a b`: the Cauchy index of `f` on `(a, b)`, the sum of the jumps of `f` at
+  its poles in `(a, b)`.
 
 ## Main results
 
-* `Polynomial.jumpVal_of_eval_ne_zero`: `q / p` has no jump away from the roots of `p`.
-* `Polynomial.jumpVal_mul_mul`, `Polynomial.cauchyIndex_mul_mul`: a common factor of `p` and `q`
-  does not change the jump or the Cauchy index.
-* `Polynomial.jumpVal_mod`, `Polynomial.cauchyIndex_mod`: `q` can be replaced by `q % p`.
-* `Polynomial.jumpVal_C_mul`, `Polynomial.cauchyIndex_C_mul`: scaling `q` by a constant `c` scales
-  the jump and the Cauchy index by `sign c`.
-* `Polynomial.jumpVal_derivative_mul`: at a root `x` of `p`, the jump of `derivative p * q / p` is
+* `RatFunc.jump_div`: the jump of `q / p` computed from `p` and `q`, for any representation of the
+  rational function as a quotient of polynomials.
+* `RatFunc.jump_of_eval_denom_ne_zero`, `RatFunc.jump_algebraMap`: there is no jump away from the
+  poles; in particular polynomials have no jumps.
+* `RatFunc.jump_add_algebraMap`, `RatFunc.cauchyIndex_add_algebraMap`: adding a polynomial does not
+  change the jump or the Cauchy index. In particular `q / p` can be replaced by `(q % p) / p`
+  (`RatFunc.cauchyIndex_div_mod`).
+* `RatFunc.jump_algebraMap_mul`: multiplying by a polynomial that does not vanish at `x` multiplies
+  the jump at `x` by the sign of that polynomial at `x`.
+* `RatFunc.jump_derivative_mul_div`: at a root `x` of `p`, the jump of `p' * q / p` is
   `sign (q.eval x)`. This links the Cauchy index to the sign of `q` at the roots of `p`, as needed
   for the Sturm–Tarski theorem.
 
 ## Implementation notes
 
-We follow the definition of [li2014]: the function `q / p` has a pole of odd order at `x` exactly
-when `rootMultiplicity x p - rootMultiplicity x q` is odd (with truncated subtraction, so that this
-difference is `0` when `q / p` has no pole at `x`), and only poles of odd order make the function
-change sign. At such a pole the direction of the jump is the sign of `p * q` (which is equal to the
-sign of `q / p`) immediately to the right of `x`, that is `signRight x (p * q)`.
+The jump is defined algebraically, through the reduced representation `f = f.num / f.denom`. Since
+`f.num` and `f.denom` are coprime, `f` has a pole of odd order at `x` exactly when
+`rootMultiplicity x f.denom` is odd, and only poles of odd order make `f` change sign. At such a
+pole the direction of the jump is the sign of `f.num * f.denom` (which is equal to the sign of `f`)
+immediately to the right of `x`, that is `signRight x (f.num * f.denom)`. For an arbitrary
+representation `f = q / p`, `RatFunc.jump_div` recovers the formula of [li2014]: the jump is
+`signRight x (p * q)` when `rootMultiplicity x p - rootMultiplicity x q` is odd (with truncated
+subtraction), and `0` otherwise.
 
 All definitions and results are stated over `ℝ` because `signRight` is. Apart from `signRight`,
 the proofs here only use the algebra of polynomials over a field, so they should generalise to
@@ -55,213 +60,188 @@ real closed fields together with `signRight` (see the implementation notes of
 -/
 
 open Polynomial Set SignType
+open scoped RatFunc
 
 public noncomputable section
 
-namespace Polynomial
-
-/-! ### Roots in an interval -/
-
-/-- The distinct roots of `p` in the open interval `(a, b)`. -/
-def rootsInInterval (p : ℝ[X]) (a b : ℝ) : Finset ℝ :=
-  p.roots.toFinset.filter (fun x => x ∈ Ioo a b)
-
-@[simp]
-lemma rootsInInterval_zero (a b : ℝ) : rootsInInterval 0 a b = ∅ := by simp [rootsInInterval]
-
-lemma mem_rootsInInterval {p : ℝ[X]} {a b x : ℝ} :
-    x ∈ rootsInInterval p a b ↔ (p ≠ 0 ∧ eval x p = 0) ∧ a < x ∧ x < b := by
-  simp [rootsInInterval, mem_roots']
-
-lemma rootsInInterval_mul {p q : ℝ[X]} (a b : ℝ) (hpq : p * q ≠ 0) :
-    rootsInInterval (p * q) a b = rootsInInterval p a b ∪ rootsInInterval q a b := by
-  unfold rootsInInterval
-  rw [roots_mul hpq, Multiset.toFinset_add]
-  exact Finset.filter_union (fun x => x ∈ Ioo a b) p.roots.toFinset q.roots.toFinset
+namespace RatFunc
 
 /-! ### The jump of a rational function at a point -/
 
-/-- The jump of the rational function `q / p` at `x`: `1` if it goes from `-∞` to `+∞`, `-1` if it
-goes from `+∞` to `-∞`, and `0` otherwise (in particular when `q / p` has no pole at `x`). -/
-def jumpVal (p q : ℝ[X]) (x : ℝ) : ℤ :=
-  if Odd (rootMultiplicity x p - rootMultiplicity x q) then signRight x (p * q) else 0
+/-- The jump of the rational function `f` at `x`: `1` if it goes from `-∞` to `+∞`, `-1` if it
+goes from `+∞` to `-∞`, and `0` otherwise (in particular when `f` has no pole at `x`). -/
+def jump (f : ℝ⟮X⟯) (x : ℝ) : ℤ :=
+  if Odd (rootMultiplicity x f.denom) then signRight x (f.num * f.denom) else 0
+
+/-- There is no jump at a point that is not a pole. -/
+lemma jump_of_eval_denom_ne_zero {f : ℝ⟮X⟯} {x : ℝ} (h : f.denom.eval x ≠ 0) : jump f x = 0 := by
+  simp [jump, rootMultiplicity_eq_zero h]
 
 @[simp]
-lemma jumpVal_zero_right (p : ℝ[X]) (x : ℝ) : jumpVal p 0 x = 0 := by simp [jumpVal]
+lemma jump_algebraMap (p : ℝ[X]) (x : ℝ) : jump (algebraMap _ _ p) x = 0 :=
+  jump_of_eval_denom_ne_zero (by simp)
 
 @[simp]
-lemma jumpVal_zero_left (q : ℝ[X]) (x : ℝ) : jumpVal 0 q x = 0 := by simp [jumpVal]
+lemma jump_zero (x : ℝ) : jump 0 x = 0 := by
+  simpa using jump_algebraMap 0 x
 
-@[simp]
-lemma jumpVal_of_eval_ne_zero {p q : ℝ[X]} {x : ℝ} (hp : eval x p ≠ 0) : jumpVal p q x = 0 := by
-  simp [jumpVal, rootMultiplicity_eq_zero hp]
-
-lemma jumpVal_mul_mul {p q r : Polynomial ℝ} {x : ℝ} (hr : r ≠ 0) :
-                    jumpVal (r * p) (r* q) x = jumpVal p q x := by
+/-- The jump of `q / p` at `x`, computed from any representation of the rational function as a
+quotient of polynomials. -/
+theorem jump_div {p : ℝ[X]} (q : ℝ[X]) (hp : p ≠ 0) (x : ℝ) :
+    jump (algebraMap _ _ q / algebraMap _ _ p) x =
+      if Odd (rootMultiplicity x p - rootMultiplicity x q) then (signRight x (p * q) : ℤ)
+      else 0 := by
   rcases eq_or_ne q 0 with rfl | hq
   · simp
-  rcases eq_or_ne p 0 with rfl | hp
-  · simp
-  have h_sign : signRight x (r * p * (r * q)) = signRight x (p * q) := by
-    rw [show r * p * (r * q) = (r * r) * (p * q) by ring, signRight_mul,
-      signRight_mul_self hr, one_mul]
-  have h_odd : Odd (rootMultiplicity x (r * p) - rootMultiplicity x (r * q)) =
-               Odd (rootMultiplicity x p - rootMultiplicity x q) := by
-    have hp'p : r * p ≠ 0 := mul_ne_zero hr hp
-    have hp'q : r * q ≠ 0 := mul_ne_zero hr hq
-    simp only [rootMultiplicity_mul hp'p, rootMultiplicity_mul hp'q, eq_iff_iff]
-    rw [Nat.add_sub_add_left]
-  simp only [jumpVal, h_sign, h_odd]
+  set f := algebraMap ℝ[X] ℝ⟮X⟯ q / algebraMap _ _ p
+  have hn : f.num ≠ 0 := num_ne_zero (div_ne_zero (algebraMap_ne_zero hq) (algebraMap_ne_zero hp))
+  have hd := f.denom_ne_zero
+  have key : f.num * p = q * f.denom := (num_mul_eq_mul_denom_iff hp).2 rfl
+  have hmult : rootMultiplicity x p - rootMultiplicity x q = rootMultiplicity x f.denom := by
+    have h := congrArg (rootMultiplicity x) key
+    rw [rootMultiplicity_mul (mul_ne_zero hn hp), rootMultiplicity_mul (mul_ne_zero hq hd)] at h
+    have hcop : f.num.eval x ≠ 0 ∨ f.denom.eval x ≠ 0 :=
+      aeval_ne_zero_of_isCoprime f.isCoprime_num_denom x
+    have := hcop.imp rootMultiplicity_eq_zero rootMultiplicity_eq_zero
+    omega
+  have hsign : signRight x (f.num * f.denom) = signRight x (p * q) := by
+    rw [← one_mul (signRight x (f.num * f.denom)), ← signRight_mul_self (x := x) hp,
+      ← signRight_mul, show p * p * (f.num * f.denom) = f.denom * f.denom * (p * q) by
+        linear_combination (p * f.denom) * key,
+      signRight_mul, signRight_mul_self hd, one_mul]
+  simp only [jump, hmult, hsign]
 
-/-- There is no jump at `x` when `q / p` has no pole there. -/
-lemma jumpVal_of_rootMultiplicity_le {p q : ℝ[X]} {x : ℝ}
-    (h : rootMultiplicity x p ≤ rootMultiplicity x q) : jumpVal p q x = 0 := by
-  simp [jumpVal, Nat.sub_eq_zero_of_le h]
+/-- Adding a polynomial does not change the jump. -/
+@[simp]
+theorem jump_add_algebraMap (f : ℝ⟮X⟯) (g : ℝ[X]) (x : ℝ) :
+    jump (f + algebraMap _ _ g) x = jump f x := by
+  have hd := f.denom_ne_zero
+  have hf : f + algebraMap _ _ g =
+      algebraMap ℝ[X] ℝ⟮X⟯ (f.num + g * f.denom) / algebraMap _ _ f.denom := by
+    rw [map_add, map_mul, add_div, mul_div_cancel_right₀ _ (algebraMap_ne_zero hd), num_div_denom]
+  rw [hf, jump_div _ hd]
+  conv_rhs => rw [← num_div_denom f, jump_div _ hd]
+  by_cases hx : f.denom.eval x = 0
+  · have hn : f.num.eval x ≠ 0 :=
+      (aeval_ne_zero_of_isCoprime f.isCoprime_num_denom x).resolve_right (not_not.mpr hx)
+    have hng : (f.num + g * f.denom).eval x ≠ 0 := by simpa [hx] using hn
+    simp only [rootMultiplicity_eq_zero hn, rootMultiplicity_eq_zero hng, signRight_mul,
+      signRight_of_eval_ne_zero hn, signRight_of_eval_ne_zero hng, eval_add, eval_mul, hx,
+      mul_zero, add_zero]
+  · simp [rootMultiplicity_eq_zero hx]
 
-/-- If `q` does not vanish at `x`, reducing `q` modulo `p` does not change the jump at `x`. -/
-lemma jumpVal_mod_of_eval_ne_zero {p q : ℝ[X]} {x : ℝ} (hq : eval x q ≠ 0) :
-    jumpVal p q x = jumpVal p (q % p) x := by
-  by_cases hp : eval x p = 0
-  · have hqp : eval x (q % p) ≠ 0 := by rwa [eval_mod_eq_self_of_root]
-    simp only [jumpVal, rootMultiplicity_eq_zero hq, rootMultiplicity_eq_zero hqp, signRight_mul,
-      signRight_mod hp hq]
-  · rw [jumpVal_of_eval_ne_zero hp, jumpVal_of_eval_ne_zero hp]
+/-- Multiplying by a polynomial `g` that does not vanish at `x` multiplies the jump at `x` by the
+sign of `g` at `x`. -/
+theorem jump_algebraMap_mul {g : ℝ[X]} {x : ℝ} (hg : g.eval x ≠ 0) (f : ℝ⟮X⟯) :
+    jump (algebraMap _ _ g * f) x = sign (g.eval x) * jump f x := by
+  have hd := f.denom_ne_zero
+  have hg0 : g ≠ 0 := by rintro rfl; simp at hg
+  have hf : algebraMap _ _ g * f = algebraMap ℝ[X] ℝ⟮X⟯ (g * f.num) / algebraMap _ _ f.denom := by
+    rw [map_mul, mul_div_assoc, num_div_denom]
+  rw [hf, jump_div _ hd]
+  conv_rhs => rw [← num_div_denom f, jump_div _ hd]
+  rcases eq_or_ne f.num 0 with h0 | h0
+  · simp [h0]
+  rw [rootMultiplicity_mul (mul_ne_zero hg0 h0), rootMultiplicity_eq_zero hg, zero_add,
+    mul_left_comm f.denom g f.num, signRight_mul, signRight_of_eval_ne_zero hg]
+  split_ifs <;> simp
 
-lemma jumpVal_mod (p q : ℝ[X]) (x : ℝ) : jumpVal p q x = jumpVal p (q % p) x := by
-  rcases eq_or_ne q 0 with rfl | hq
-  · simp
-  rcases le_or_gt (rootMultiplicity x p) (rootMultiplicity x q) with h | h
-  · -- No pole on either side: `(X - C x) ^ rootMultiplicity x p` also divides `q % p`.
-    rw [jumpVal_of_rootMultiplicity_le h]
-    rcases eq_or_ne (q % p) 0 with h0 | h0
-    · rw [h0, jumpVal_zero_right]
-    refine (jumpVal_of_rootMultiplicity_le ?_).symm
-    rw [le_rootMultiplicity_iff h0, EuclideanDomain.dvd_mod_iff (pow_rootMultiplicity_dvd p x)]
-    exact (le_rootMultiplicity_iff hq).mp h
-  · -- Cancel `(X - C x) ^ rootMultiplicity x q` from `p` and `q`.
-    have hp : p ≠ 0 := by rintro rfl; simp at h
-    generalize hk : rootMultiplicity x q = k at h
-    obtain ⟨p', rfl⟩ := (le_rootMultiplicity_iff hp).mp h.le
-    obtain ⟨q', rfl, hq'⟩ : ∃ q', q = (X - C x) ^ k * q' ∧ eval x q' ≠ 0 :=
-      hk ▸ ⟨_, (pow_mul_divByMonic_rootMultiplicity_eq q x).symm,
-        eval_divByMonic_pow_rootMultiplicity_ne_zero x hq⟩
-    have hX : (X - C x) ^ k ≠ 0 := pow_ne_zero k (X_sub_C_ne_zero x)
-    rw [mul_mod_mul_left, jumpVal_mul_mul hX, jumpVal_mul_mul hX]
-    exact jumpVal_mod_of_eval_ne_zero hq'
-
-lemma jumpVal_C_mul (p q : ℝ[X]) (c x : ℝ) :
-    jumpVal p (C c * q) x = sign c * jumpVal p q x := by
+/-- Scaling by a constant `c` scales the jump by `sign c`. -/
+theorem jump_smul (c : ℝ) (f : ℝ⟮X⟯) (x : ℝ) : jump (c • f) x = sign c * jump f x := by
   rcases eq_or_ne c 0 with rfl | hc
   · simp
-  simp only [jumpVal, ← rootMultiplicity_C_mul (p := q) hc, mul_left_comm p (C c) q,
-    signRight_C_mul]
-  split_ifs <;> simp
+  rw [Algebra.smul_def, IsScalarTower.algebraMap_apply ℝ ℝ[X] ℝ⟮X⟯, Polynomial.algebraMap_eq,
+    jump_algebraMap_mul (by simpa using hc), eval_C]
 
-lemma jumpVal_of_isCoprime {p q : Polynomial ℝ} {x : ℝ} (hp : eval x p = 0)
-    (hpq_coprime : IsCoprime p q) :
-    jumpVal p q x = jumpVal (q*p) 1 x := by
-  if hpqz: (p = 0 ∨ q = 0) then
-    rcases hpqz with h | h <;> simp [h]
-  else
-    push Not at hpqz
-    have ⟨hpz, hqz⟩ := hpqz
-    have hroot : eval x p ≠ 0 ∨ eval x q ≠ 0 := aeval_ne_zero_of_isCoprime hpq_coprime x
-    have hq_root : eval x q ≠ 0 := hroot.resolve_left (not_not.mpr hp)
-    have hq_multiplicity : rootMultiplicity x q = 0 := rootMultiplicity_eq_zero hq_root
-    have h: rootMultiplicity x p - rootMultiplicity x q = rootMultiplicity x (p * q) := by
-      have : p * q ≠ 0 := mul_ne_zero_iff.mpr hpqz
-      have := rootMultiplicity_mul (x := x) this
-      rw [hq_multiplicity] at this ⊢
-      simp [this]
-    have h_one : rootMultiplicity x 1 = 0 := rootMultiplicity_C 1 x
-    simp only [jumpVal, h, h_one, tsub_zero, mul_one, mul_comm p q]
+@[simp]
+theorem jump_neg (f : ℝ⟮X⟯) (x : ℝ) : jump (-f) x = -jump f x := by
+  rw [← neg_one_smul ℝ f, jump_smul]
+  simp
 
-/-- The jump of `p * q` at a point where `p` does not vanish is the jump of `q`, signed by `p`. -/
-lemma jumpVal_mul_one_of_eval_ne_zero {p q : Polynomial ℝ} {x : ℝ} (hp : eval x p ≠ 0) :
-    jumpVal (p * q) 1 x = sign (eval x p) * jumpVal q 1 x := by
+/-- At a root `x` of `p`, the jump of `derivative p * q / p` is the sign of `q` at `x`. -/
+theorem jump_derivative_mul_div {p : ℝ[X]} {x : ℝ} (hp : p ≠ 0) (hx : p.eval x = 0) (q : ℝ[X]) :
+    jump (algebraMap _ _ (derivative p * q) / algebraMap _ _ p) x = sign (q.eval x) := by
+  rw [jump_div _ hp]
   rcases eq_or_ne q 0 with rfl | hq
   · simp
-  have hp0 : p ≠ 0 := by rintro rfl; simp at hp
-  have hmul : rootMultiplicity x (p * q) = rootMultiplicity x q := by
-    rw [rootMultiplicity_mul (mul_ne_zero hp0 hq), rootMultiplicity_eq_zero hp, zero_add]
-  have h1 : rootMultiplicity x (1 : ℝ[X]) = 0 := rootMultiplicity_eq_zero (by simp)
-  simp only [jumpVal, mul_one, hmul, h1, Nat.sub_zero, signRight_mul, signRight_of_eval_ne_zero hp]
-  split_ifs <;> simp
-
-lemma jumpVal_mul_one {p q : Polynomial ℝ} {x : ℝ} (hnroot : eval x p ≠ 0 ∨ eval x q ≠ 0) :
-      jumpVal (p * q) 1 x =
-        sign (eval x q) * jumpVal p 1 x + sign (eval x p) * jumpVal q 1 x := by
-  rcases hnroot with h | h
-  · rw [jumpVal_mul_one_of_eval_ne_zero h, jumpVal_of_eval_ne_zero h, mul_zero, zero_add]
-  · rw [mul_comm p q, jumpVal_mul_one_of_eval_ne_zero h, jumpVal_of_eval_ne_zero h, mul_zero,
-      add_zero]
-
-lemma jumpVal_derivative_mul (p q : ℝ[X]) (x : ℝ) :
-    p ≠ 0 → p.eval x = 0 → jumpVal p (derivative p * q) x = sign (q.eval x) := by
-  intro hp hev
-  rcases eq_or_ne q 0 with rfl | hq
-  · simp
-  have deriv_ne_0 : derivative p ≠ 0 :=
-    derivative_ne_zero.mpr (natDegree_pos_iff_degree_pos.mpr (degree_pos_of_root hp hev)).ne'
-  have elim_p_order :
+  have hp' : derivative p ≠ 0 :=
+    derivative_ne_zero.mpr (natDegree_pos_iff_degree_pos.mpr (degree_pos_of_root hp hx)).ne'
+  have hmult :
       rootMultiplicity x p - rootMultiplicity x (derivative p * q) = 1 - rootMultiplicity x q := by
-    rw [rootMultiplicity_mul (mul_ne_zero deriv_ne_0 hq), derivative_rootMultiplicity_of_root hev]
-    have : 1 ≤ rootMultiplicity x p := (rootMultiplicity_pos hp).mpr hev
+    rw [rootMultiplicity_mul (mul_ne_zero hp' hq), derivative_rootMultiplicity_of_root hx]
+    have : 1 ≤ rootMultiplicity x p := (rootMultiplicity_pos hp).mpr hx
     omega
   have hsign : signRight x (p * (derivative p * q)) = signRight x q := by
-    rw [← mul_assoc, mul_comm p, signRight_mul, signRight_derivative_mul hp hev, one_mul]
-  simp only [jumpVal, elim_p_order, hsign]
-  rcases eq_or_ne (eval x q) 0 with hq0 | hq0
+    rw [← mul_assoc, mul_comm p, signRight_mul, signRight_derivative_mul hp hx, one_mul]
+  simp only [hmult, hsign]
+  rcases eq_or_ne (q.eval x) 0 with hq0 | hq0
   · have : 1 - rootMultiplicity x q = 0 := by
-      have := (rootMultiplicity_pos hq).mpr hq0; omega
+      have := (rootMultiplicity_pos hq).mpr hq0
+      omega
     simp [this, hq0]
   · simp [rootMultiplicity_eq_zero hq0, signRight_of_eval_ne_zero hq0]
 
 /-! ### The Cauchy index -/
 
-/-- The Cauchy index of the rational function `q / p` on the open interval `(a, b)`: the sum of the
-jumps of `q / p` at the roots of `p` in `(a, b)`. -/
-def cauchyIndex (p q : ℝ[X]) (a b : ℝ) : ℤ :=
-  ∑ x ∈ rootsInInterval p a b, jumpVal p q x
+/-- The Cauchy index of the rational function `f` on the open interval `(a, b)`: the sum of the
+jumps of `f` at its poles in `(a, b)`. The roots of `f.denom` are exactly the poles of `f`. -/
+def cauchyIndex (f : ℝ⟮X⟯) (a b : ℝ) : ℤ :=
+  ∑ x ∈ f.denom.roots.toFinset with (x ∈ Ioo a b), jump f x
+
+/-- The Cauchy index can be computed as a sum over the roots of any nonzero multiple of the
+denominator. -/
+theorem cauchyIndex_eq_sum {f : ℝ⟮X⟯} {p : ℝ[X]} {a b : ℝ} (hp : p ≠ 0) (h : f.denom ∣ p) :
+    cauchyIndex f a b = ∑ x ∈ p.roots.toFinset with (x ∈ Ioo a b), jump f x := by
+  refine Finset.sum_subset (fun x hx => ?_) (fun x hx hx' => ?_)
+  · rw [Finset.mem_filter, Multiset.mem_toFinset, mem_roots'] at hx ⊢
+    exact ⟨⟨hp, eval_eq_zero_of_dvd_of_eval_eq_zero h hx.1.2⟩, hx.2⟩
+  · rw [Finset.mem_filter, Multiset.mem_toFinset, mem_roots'] at hx hx'
+    exact jump_of_eval_denom_ne_zero fun h0 => hx' ⟨⟨f.denom_ne_zero, h0⟩, hx.2⟩
+
+/-- The Cauchy index of `q / p` is the sum of its jumps at the roots of `p`. -/
+theorem cauchyIndex_div {p : ℝ[X]} (q : ℝ[X]) (hp : p ≠ 0) (a b : ℝ) :
+    cauchyIndex (algebraMap _ _ q / algebraMap _ _ p) a b =
+      ∑ x ∈ p.roots.toFinset with (x ∈ Ioo a b), jump (algebraMap _ _ q / algebraMap _ _ p) x :=
+  cauchyIndex_eq_sum hp (denom_div_dvd q p)
 
 @[simp]
-theorem cauchyIndex_zero_left (q : ℝ[X]) (a b : ℝ) : cauchyIndex 0 q a b = 0 := by
-  simp [cauchyIndex]
+theorem cauchyIndex_algebraMap (p : ℝ[X]) (a b : ℝ) : cauchyIndex (algebraMap _ _ p) a b = 0 :=
+  Finset.sum_eq_zero fun x _ => jump_algebraMap p x
 
 @[simp]
-theorem cauchyIndex_zero_right (p : ℝ[X]) (a b : ℝ) : cauchyIndex p 0 a b = 0 := by
-  simp [cauchyIndex]
+theorem cauchyIndex_zero (a b : ℝ) : cauchyIndex 0 a b = 0 := by
+  simpa using cauchyIndex_algebraMap 0 a b
 
-/-- A constant polynomial has no roots, so `q / C c` has Cauchy index `0`. -/
+/-- Adding a polynomial does not change the Cauchy index. -/
 @[simp]
-theorem cauchyIndex_C (c : ℝ) (q : ℝ[X]) (a b : ℝ) : cauchyIndex (C c) q a b = 0 := by
-  simp [cauchyIndex, rootsInInterval]
-
-/-- A common factor of `p` and `q` does not change the Cauchy index of `q / p`. -/
-theorem cauchyIndex_mul_mul {p q r : ℝ[X]} {a b : ℝ} (hr : r ≠ 0) :
-    cauchyIndex (r * p) (r * q) a b = cauchyIndex p q a b := by
-  rcases eq_or_ne p 0 with rfl | hp
-  · simp
-  unfold cauchyIndex
-  simp only [jumpVal_mul_mul hr]
-  have hsum : ∑ x ∈ rootsInInterval r a b \ rootsInInterval p a b, jumpVal p q x = 0 := by
-    apply Finset.sum_eq_zero
-    intro x hx
-    rw [Finset.mem_sdiff, mem_rootsInInterval, mem_rootsInInterval] at hx
-    exact jumpVal_of_eval_ne_zero fun h => hx.2 ⟨⟨hp, h⟩, hx.1.2⟩
-  have h_interval : rootsInInterval (r * p) a b =
-      rootsInInterval p a b ∪ (rootsInInterval r a b \ rootsInInterval p a b) := by
-    rw [Finset.union_sdiff_self_eq_union, mul_comm, rootsInInterval_mul a b (mul_ne_zero hp hr)]
-  rw [h_interval, Finset.sum_union Finset.disjoint_sdiff, hsum, add_zero]
+theorem cauchyIndex_add_algebraMap (f : ℝ⟮X⟯) (g : ℝ[X]) (a b : ℝ) :
+    cauchyIndex (f + algebraMap _ _ g) a b = cauchyIndex f a b := by
+  have h : (f + algebraMap _ _ g).denom ∣ f.denom := by
+    simpa using denom_add_dvd f (algebraMap _ _ g)
+  rw [cauchyIndex_eq_sum f.denom_ne_zero h, cauchyIndex]
+  simp only [jump_add_algebraMap]
 
 /-- The Cauchy index of `q / p` only depends on `q` modulo `p`. -/
-theorem cauchyIndex_mod (p q : ℝ[X]) (a b : ℝ) :
-    cauchyIndex p q a b = cauchyIndex p (q % p) a b :=
-  Finset.sum_congr rfl fun x _ => jumpVal_mod p q x
+theorem cauchyIndex_div_mod (p q : ℝ[X]) (a b : ℝ) :
+    cauchyIndex (algebraMap _ _ q / algebraMap _ _ p) a b =
+      cauchyIndex (algebraMap _ _ (q % p) / algebraMap _ _ p) a b := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  conv_rhs => rw [← cauchyIndex_add_algebraMap _ (q / p)]
+  rw [div_add' _ _ _ (algebraMap_ne_zero hp), ← map_mul, ← map_add, EuclideanDomain.mod_add_div']
 
-/-- Scaling `q` by a constant `c` scales the Cauchy index of `q / p` by `sign c`. -/
-theorem cauchyIndex_C_mul (p q : ℝ[X]) (c : ℝ) (a b : ℝ) :
-    cauchyIndex p (C c * q) a b = sign c * cauchyIndex p q a b := by
-  simp only [cauchyIndex, Finset.mul_sum, jumpVal_C_mul]
+/-- Scaling by a constant `c` scales the Cauchy index by `sign c`. -/
+theorem cauchyIndex_smul (c : ℝ) (f : ℝ⟮X⟯) (a b : ℝ) :
+    cauchyIndex (c • f) a b = sign c * cauchyIndex f a b := by
+  have h : (c • f).denom ∣ f.denom := by
+    simpa [Algebra.smul_def, IsScalarTower.algebraMap_apply ℝ ℝ[X] ℝ⟮X⟯] using
+      denom_mul_dvd (algebraMap ℝ[X] ℝ⟮X⟯ (C c)) f
+  rw [cauchyIndex_eq_sum f.denom_ne_zero h, cauchyIndex, Finset.mul_sum]
+  simp only [jump_smul]
 
-end Polynomial
+@[simp]
+theorem cauchyIndex_neg (f : ℝ⟮X⟯) (a b : ℝ) : cauchyIndex (-f) a b = -cauchyIndex f a b := by
+  rw [← neg_one_smul ℝ f, cauchyIndex_smul]
+  simp
+
+end RatFunc
