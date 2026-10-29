@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.OuterMeasure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `ℝ≥0∞`-module of measures
 
