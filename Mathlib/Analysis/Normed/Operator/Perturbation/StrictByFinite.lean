@@ -114,7 +114,7 @@ theorem step1 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   replace S_compl_A : IsTopCompl S A :=
     S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
   replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
-    uS_compl_uA.symm.isTopCompl_of_isClosed_of_finiteDimensional
+    uS_compl_uA.symm.isTopCompl_of_isisClosed_of_finiteDimensional
       (by simpa using range_u_restr) |>.symm
   -- In particular, `S` and `map u S` are T2.
   have : T2Space (map u.toLinearMap S) := uS_compl_uA.t2Space (by simpa using range_u_restr)

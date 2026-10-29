@@ -508,7 +508,7 @@ variable {𝕜 E : Type*} [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [Unif
   [IsUniformAddGroup 𝕜] [IsTopologicalRing 𝕜] [Nontrivial 𝕜]
 
 variable (𝕜 E) in
-theorem FiniteDimensional.complete_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
+theorem FiniteDimensional.completeSpace_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
     [Module.Finite 𝕜 E] [Module.Free 𝕜 E] [IsModuleTopology 𝕜 E] : CompleteSpace E := by
   let e := (Module.finBasis 𝕜 E).equivFun
   have h₁ : Continuous e := IsModuleTopology.continuous_of_linearMap e.toLinearMap
@@ -516,20 +516,20 @@ theorem FiniteDimensional.complete_of_isModuleTopology [UniformSpace E] [IsUnifo
   have he : IsUniformEmbedding e.toEquiv := e.isUniformEmbedding h₁ h₂
   exact (completeSpace_congr he).mpr inferInstance
 
-theorem Submodule.complete_of_finiteDimensional_of_isModuleTopology
+theorem Submodule.isComplete_of_finiteDimensional_of_isModuleTopology
     [UniformSpace E] [IsUniformAddGroup E]
     (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Free 𝕜 s] [IsModuleTopology 𝕜 s] :
     IsComplete (s : Set E) :=
   haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
-  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.complete_of_isModuleTopology 𝕜 s)
+  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.completeSpace_of_isModuleTopology 𝕜 s)
 
-theorem Submodule.closed_of_finiteDimensional_of_isModuleTopology
+theorem Submodule.isisClosed_of_finiteDimensional_of_isModuleTopology
     [TopologicalSpace E] [IsTopologicalAddGroup E] [T0Space E]
     (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Free 𝕜 s] [IsModuleTopology 𝕜 s] :
     IsClosed (s : Set E) :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
-  s.complete_of_finiteDimensional_of_isModuleTopology.isClosed
+  s.isComplete_of_finiteDimensional_of_isModuleTopology.isClosed
 
 end IsModuleTopology
 
@@ -541,16 +541,22 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
 
 include 𝕜 in
 attribute [local instance] isModuleTopologyOfFiniteDimensional in
-theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E :=
-  FiniteDimensional.complete_of_isModuleTopology 𝕜 E
+theorem FiniteDimensional.completeSpace [FiniteDimensional 𝕜 E] : CompleteSpace E :=
+  FiniteDimensional.completeSpace_of_isModuleTopology 𝕜 E
+
+@[deprecated (since := "2026-10-29")]
+alias FiniteDimensional.complete := FiniteDimensional.completeSpace
 
 variable {𝕜 E}
 
 attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- A finite-dimensional subspace is complete. -/
-theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
+theorem Submodule.isComplete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsComplete (s : Set E) :=
-  s.complete_of_finiteDimensional_of_isModuleTopology
+  s.isComplete_of_finiteDimensional_of_isModuleTopology
+
+@[deprecated (since := "2026-10-29")]
+alias Submodule.complete_of_finiteDimensional := Submodule.isComplete_of_finiteDimensional
 
 end IsUniformAddGroup
 
@@ -562,10 +568,13 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 
 attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- A finite-dimensional subspace is closed. -/
-theorem Submodule.closed_of_finiteDimensional
+theorem Submodule.isClosed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
-  s.closed_of_finiteDimensional_of_isModuleTopology
+  s.isisClosed_of_finiteDimensional_of_isModuleTopology
+
+@[deprecated (since := "2026-10-29")]
+alias Submodule.closed_of_finiteDimensional := Submodule.isClosed_of_finiteDimensional
 
 /-- If `s` is a closed subspace with finite codimension, any subspace containing `s` is closed. -/
 theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
@@ -573,14 +582,14 @@ theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
     (s_le_t : s ≤ t) :
     IsClosed (t : Set E) := by
   rw [show t = comap s.mkQ (map s.mkQ t) by simpa]
-  exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
+  exact (map s.mkQ t).isClosed_of_finiteDimensional.preimage continuous_quot_mk
 
 /-- The supremum of a closed subspace and a finite dimensional subspace is closed. -/
 theorem Submodule.isClosed_sup_finiteDimensional
     (s t : Submodule 𝕜 E) (hs : IsClosed (s : Set E)) [ht : FiniteDimensional 𝕜 t] :
     IsClosed ((s ⊔ t : Submodule 𝕜 E) : Set E) := by
   rw [← comap_map_mkQ]
-  exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
+  exact (map s.mkQ t).isClosed_of_finiteDimensional.preimage continuous_quot_mk
 
 /-- A sufficient condition for a linear map taking values in a TVS to have closed range is that
 there exists a finite-codimension subspace of the domain whose image is closed. -/
@@ -599,7 +608,7 @@ theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
   { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
     isClosed_range := by
-      simpa [LinearMap.coe_range f] using (LinearMap.range f).closed_of_finiteDimensional }
+      simpa [LinearMap.coe_range f] using (LinearMap.range f).isClosed_of_finiteDimensional }
 
 theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
     IsClosedEmbedding fun x : 𝕜 => x • c :=
@@ -713,7 +722,7 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : 
       exact (tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
     have hm_tendsto : Tendsto m atTop (𝓝 x) := by
       simpa [show m = fun n ↦ x - u n by grind] using! tendsto_const_nhds.sub hu_tendsto
-    exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Eventually.of_forall hm)
+    exact M.isClosed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Eventually.of_forall hm)
   have hM_top : M = ⊤ := absorbent_nhds_zero (𝕜 := 𝕜) hU_nhds |>.mono hU_sub_M |>.submodule_eq_top
   exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
 
@@ -782,7 +791,7 @@ has finite dimension, then they are in fact topological complements.
 Note that this theorem does not help you to build a closed complement to a finite dimensional
 subspace. That requires the Hahn-Banach theorem, and you don't get much control over what the
 complement is. See `Submodule.ClosedComplemented.of_finiteDimensional`. -/
-theorem Submodule.IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
+theorem Submodule.IsCompl.isTopCompl_of_isisClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
     (h : IsCompl p q) (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 q] :
     IsTopCompl p q := by
   suffices FiniteDimensional 𝕜 (E ⧸ p) from h.isTopCompl_of_finiteDimensional_quotient hp

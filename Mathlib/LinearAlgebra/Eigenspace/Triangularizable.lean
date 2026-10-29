@@ -62,7 +62,7 @@ eigenvalue. -/
 theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
     ∃ c : K, f.HasEigenvalue c := by
   simp_rw [hasEigenvalue_iff_mem_spectrum]
-  exact spectrum.nonempty_of_isAlgClosed_of_finiteDimensional K f
+  exact spectrum.nonempty_of_isAlgisClosed_of_finiteDimensional K f
 
 noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
     Inhabited f.Eigenvalues :=
