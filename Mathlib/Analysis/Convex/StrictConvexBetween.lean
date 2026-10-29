@@ -10,8 +10,6 @@ public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Affine.Isometry
 
-import Mathlib.Analysis.Normed.Affine.Convex
-
 /-!
 # Betweenness in affine spaces for strictly convex spaces
 
@@ -115,7 +113,7 @@ theorem Wbtw.dist_add_dist_lt {a b c d o : P}
       add_lt_add_of_lt_of_le (dist_lt_dist_add_dist_iff.mpr h) (dist_triangle c o d)
     _ = dist a c + dist b d := by
       rw [dist_comm o b, dist_comm c o, add_add_add_comm,
-        hac.dist_add_dist, hbd.dist_add_dist]
+        dist_add_dist_eq_iff.mpr hac, dist_add_dist_eq_iff.mpr hbd]
 
 /-- Both strict Kalmanson inequalities for internally crossing, noncollinear diagonals. -/
 theorem Sbtw.strict_kalmanson {a b c d o : P}
