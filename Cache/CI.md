@@ -51,6 +51,11 @@ The curl tool's non-overwrite guard relies on the store honoring
 `If-None-Match: *`. The jobs that run the tool on a GitHub runner install a
 pinned curl release from [static-curl](https://github.com/leanprover-community/static-curl).
 
+A store can refuse every overwrite, for example under a bucket lock rule, and
+answer 409. A non-overwrite upload counts that answer as an existing object:
+curl skips the file, and rclone skips it on its next pass. An overwrite upload
+(`put!`) fails on such a store.
+
 ## Environment variables
 
 | Variable | Description |

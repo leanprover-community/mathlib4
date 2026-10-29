@@ -50,7 +50,9 @@ def rcloneAvailable : IO Bool := do
     return false
 
 /-- The rclone flags every `put` transfer carries. `--s3-no-check-bucket`
-skips the bucket-creation probe a scoped credential cannot pass. -/
+skips the bucket-creation probe a scoped credential cannot pass. `--retries`
+also covers a file that a concurrent upload writes first: a store that refuses
+overwrites answers 409, and the next pass skips the file. -/
 def rcloneCommonFlags : Array String := #["--s3-no-check-bucket", "--retries", "5"]
 
 /-- Copy the listed files to the resolved location. `--no-traverse` uses per-file
