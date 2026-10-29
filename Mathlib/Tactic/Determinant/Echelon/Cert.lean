@@ -65,7 +65,7 @@ def certifyDiagProd {u : Level} {m : Nat} {α : Q(Type u)} (rα : Q(CommRing $α
 /-- The value of the determinant read off the decomposition `data`, computed by `s * u / l`,
 where `u` and `l` are the diagonal products of `U` and `L` and `s` is the sign of the swaps.
 -/
-def detValue {u : Level} {α : Q(Type u)} (m : Nat) {V : Type} (model : Model α V)
+def detValue {u : Level} {α : Q(Type u)} (m : Nat) {V : Type} (model : ModelAux α V)
     (data : BareissData V) : MetaM (Option Q($α)) := do
   let ops := model.ops
   -- In positive characteristic a missing pivot leaves a diagonal entry that is a nonzero multiple
