@@ -62,8 +62,10 @@ variable (k e : ℤ) (hk : k % 2 = 1) (d x y : Dyadic) (a b : ℤ) (m n : ℕ)
 @[simp] theorem ofOdd_shiftRight {k e : ℤ} {hk : k % 2 = 1} {a : ℤ} :
     ofOdd k e hk >>> a = ofOdd k (e + a) hk := rfl
 
+@[simp, norm_cast]
 theorem shiftLeft_natCast : d <<< (m : ℤ) = d <<< m := rfl
 
+@[simp, norm_cast]
 theorem shiftRight_natCast : d >>> (m : ℤ) = d >>> m := rfl
 
 theorem shiftLeft_add : d <<< (a + b) = d <<< a <<< b := by
@@ -92,6 +94,7 @@ theorem shiftRight_shiftLeft' : d >>> a <<< b = d <<< (b - a) := by
 
 section toRat
 
+@[simp]
 theorem toRat_shiftLeft : (d <<< a).toRat = d.toRat * 2 ^ a := by
   rcases d with _ | ⟨d, k, hd⟩
   · simp
@@ -99,11 +102,9 @@ theorem toRat_shiftLeft : (d <<< a).toRat = d.toRat * 2 ^ a := by
     ac_rfl
 
 theorem toRat_shiftRight : (d >>> a).toRat = d.toRat * 2 ^ (-a) := by
-  rcases d with _ | ⟨d, k, hd⟩
-  · simp
-  · norm_num [toRat_ofOdd_eq_mul_two_pow, zpow_add₀]
-    ac_rfl
+  rw [← shiftLeft_neg, toRat_shiftLeft]
 
+@[simp]
 theorem toRat_shiftRight' : (d >>> a).toRat = d.toRat / 2 ^ a := by
   rw [toRat_shiftRight, zpow_neg, div_eq_mul_inv]
 
@@ -116,10 +117,10 @@ theorem toRat_shiftRight_nat : (d >>> n).toRat = d.toRat / 2 ^ n :=
 end toRat
 
 @[simp] theorem shiftLeft_inj : x <<< a = y <<< a ↔ x = y := by
-  simp [← toRat_inj, toRat_shiftLeft, zpow_ne_zero]
+  simp [← toRat_inj, zpow_ne_zero]
 
 @[simp] theorem shiftRight_inj : x >>> a = y >>> a ↔ x = y := by
-  simp [← toRat_inj, toRat_shiftRight, zpow_ne_zero]
+  simp [← toRat_inj, zpow_ne_zero]
 
 @[simp] theorem shiftLeft_eq_zero : d <<< a = 0 ↔ d = 0 := by
   simpa using shiftLeft_inj d 0 a
@@ -134,10 +135,10 @@ end toRat
   induction d <;> simp
 
 theorem add_shiftLeft : (x + y) <<< a = x <<< a + y <<< a := by
-  simp [← toRat_inj, toRat_shiftLeft, Rat.add_mul]
+  simp [← toRat_inj, Rat.add_mul]
 
 theorem add_shiftRight : (x + y) >>> a = x >>> a + y >>> a := by
-  simp [← toRat_inj, toRat_shiftRight, Rat.add_mul]
+  simp [← toRat_inj, add_div]
 
 theorem sub_shiftLeft : (x - y) <<< a = x <<< a - y <<< a := by
   simp [sub_eq_add_neg, add_shiftLeft, neg_shiftLeft]
