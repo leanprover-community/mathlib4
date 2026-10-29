@@ -32,6 +32,29 @@ the info trees, so that `open ... in` and the current namespaces are taken into 
 When traversing the info trees, the linter skips the subtrees whose syntax lies outside of the
 `attribute` command: in `attribute [...] foo in theorem bar ...`, this avoids inspecting the info
 trees of `bar`.
+
+## TODO
+
+The `attribute` command is not the only place where a deprecated declaration can be referenced
+without triggering a deprecation warning.
+The following references also do not warn, and break once the deprecated declaration is removed.
+* `open A (foo)`, `open A hiding foo`, `open A renaming foo → bar` and `export A (foo)`.
+  These are commands and the info trees record the resolved names, so the linter could handle them
+  with the same early exit and the same info tree traversal.
+* `alias bar := foo`, where `foo` is deprecated and `bar` is not: the `alias` command does not
+  check its target.
+  As for `open`, the linter could handle this with the same early exit and info tree traversal.
+* Declarations named in attribute arguments, such as `@[inherit_doc foo]`, and possibly
+  `to_additive existing` and `to_dual existing` (untested).
+  Handling these requires inspecting the attributes of every declaration, so the early exit would
+  not be as quick.
+* Name literals ``` ``foo ``` in meta code.
+  Finding these requires traversing the syntax of every command, so they are probably better
+  handled upstream, by having the name literal elaborator check for deprecations.
+* The `delta foo` tactic, which is rare in Mathlib.
+
+Ideally, all of these would be fixed upstream, by checking for deprecations when resolving the
+names.
 -/
 
 meta section
