@@ -174,7 +174,6 @@ variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep k G) (B : R
 
 open Representation
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
 `(Ind(φ)(A) ⊗ B)_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧` for all
 `h : H`, `a : A`, and `b : B`. -/
@@ -192,14 +191,12 @@ noncomputable def coinvariantsTensorIndHom :
       tprod_apply, ind_apply]
     ext; simp
 
-set_option backward.defeqAttrib.useBackward true in
 variable {A B} in
 lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
     coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (IndV.mk φ _ h x) y) =
       coinvariantsTensorMk _ _ x (B.ρ h y) := by
   simp [coinvariantsTensorIndHom, coinvariantsTensorMk]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
 `(A ⊗ Res(φ)(B))_G ⟶ (Ind(φ)(A) ⊗ B)_H` sending `⟦a ⊗ₜ b⟧` to `⟦1 ⊗ₜ a⟧ ⊗ₜ b` for all
 `a : A`, and `b : B`. -/
@@ -215,7 +212,6 @@ noncomputable def coinvariantsTensorIndInv :
       Coinvariants.mem_ker_of_eq (φ s) (IndV.mk φ A.ρ (1 : H) x ⊗ₜ[k] y) _ <| by
       simp [← Coinvariants.mk_inv_tmul]
 
-set_option backward.defeqAttrib.useBackward true in
 variable {A B} in
 lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
     coinvariantsTensorIndInv φ A B (Coinvariants.mk
@@ -223,7 +219,6 @@ lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
       coinvariantsTensorMk _ _ (IndV.mk φ _ 1 x) y := by
   simp [coinvariantsTensorIndInv, coinvariantsTensorMk]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear
 isomorphism `(Ind(φ)(A) ⊗ B)_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧`
 for all `h : H`, `a : A`, and `b : B`. -/
@@ -242,7 +237,6 @@ noncomputable def coinvariantsTensorIndIso :
     ext
     simp [coinvariantsTensorIndInv, coinvariantsTensorMk, coinvariantsTensorIndHom]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a group hom `φ : G →* H` and `A : Rep k G`, the functor `Rep k H ⥤ ModuleCat k` sending
 `B ↦ (Ind(φ)(A) ⊗ B)_H` is naturally isomorphic to the one sending `B ↦ (A ⊗ Res(φ)(B))_G`. -/
 @[simps! hom_app inv_app]
