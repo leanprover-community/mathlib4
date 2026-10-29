@@ -51,9 +51,8 @@ This file is adapted from the `PrimeNumberTheoremAnd` project.
 
 noncomputable section
 
-open ArithmeticFunction hiding log
 open Complex hiding log
-open Real BigOperators MeasureTheory Filter Set FourierTransform LSeries Asymptotics SchwartzMap
+open Real MeasureTheory Filter Set FourierTransform LSeries Asymptotics SchwartzMap
   Function
 open scoped Topology ContDiff ComplexConjugate
 
