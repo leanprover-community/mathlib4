@@ -5,8 +5,8 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+public import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
 

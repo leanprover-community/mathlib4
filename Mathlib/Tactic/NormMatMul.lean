@@ -5,11 +5,11 @@ Authors: Rao Xiaojia
 -/
 module
 
+public meta import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.Parsing
 public import Mathlib.Tactic.NormNum.Basic  -- shake: keep (`+`/`*` extensions run by `norm_matmul`)
-public meta import Mathlib.Tactic.Matrix.MulExpand
 
 /-!
 # The `norm_matmul` simproc

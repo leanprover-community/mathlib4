@@ -6,8 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Polynomial.Taylor
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # Henselian rings
@@ -66,6 +66,12 @@ open scoped Ring
 
 @[deprecated (since := "2026-10-08")]
 alias isLocalHom_of_le_jacobson_bot := isLocalHom_of_le_jacobson
+
+@[deprecated isLocalHom_of_le_jacobson +typeChanged (since := "2026-10-12")]
+theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
+    (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
+  rw [Ideal.jacobson_bot] at h
+  exact isLocalHom_of_le_jacobson I h
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
@@ -137,10 +143,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
 
 instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     HenselianRing R (maximalIdeal R) where
-  jac := by
-    rw [Ring.jacobson_eq_sInf_isMaximal, le_sInf_iff]
-    rintro I hI
-    exact (eq_maximalIdeal hI).ge
+  jac := (ringJacobson_eq_maximalIdeal R).ge
   is_henselian := by
     intro f hf a₀ h₁ h₂
     refine HenselianLocalRing.is_henselian f hf a₀ h₁ ?_
@@ -182,7 +185,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
-        have := isLocalHom_of_le_jacobson (IsAdicComplete.le_jacobson I)
+        have := isLocalHom_of_le_jacobson I (IsAdicComplete.le_jacobson I)
         apply IsUnit.of_map (Ideal.Quotient.mk I)
         convert h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)

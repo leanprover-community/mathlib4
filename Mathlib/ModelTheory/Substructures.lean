@@ -5,9 +5,9 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
-public import Mathlib.Order.Closure
-public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.Encoding
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.Order.Closure
 
 import Mathlib.Data.Fintype.Order
 

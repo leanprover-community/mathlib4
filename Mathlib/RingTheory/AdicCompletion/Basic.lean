@@ -880,7 +880,7 @@ open Finset
 
 theorem le_jacobson [IsAdicComplete I R] : I ≤ Ring.jacobson R := by
   intro x hx
-  rw [← Ideal.neg_mem_iff, ← Ideal.jacobson_bot, Ideal.mem_jacobson_bot]
+  rw [← Ideal.neg_mem_iff, Ring.mem_jacobson_iff]
   intro y
   rw [add_comm]
   let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
@@ -911,6 +911,8 @@ theorem le_jacobson [IsAdicComplete I R] : I ≤ Ring.jacobson R := by
       sub_self, zero_sub, @neg_mem_iff, mul_pow]
     exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)
 
-@[deprecated (since := "2026-10-08")] alias le_jacobson_bot := le_jacobson
+@[deprecated le_jacobson +typeChanged (since := "2026-10-12")]
+theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
+  simpa only [Ideal.jacobson_bot] using (le_jacobson I)
 
 end IsAdicComplete

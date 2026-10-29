@@ -9,11 +9,11 @@ public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Basic
 public import Mathlib.Topology.Homotopy.Affine
 
+import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 import Mathlib.Analysis.Calculus.Deriv.Prod
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.TangentCone.Prod
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 
 /-!
 # Poincaré lemma for 1-forms

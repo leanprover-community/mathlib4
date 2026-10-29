@@ -359,7 +359,7 @@ def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃�
     invFun := smulRight (1 : R →ₗ[R] R)
     left_inv := fun f ↦ by
       ext
-      simp only [coe_smulRight, Module.End.one_apply, smul_eq_mul, ← map_smul f, mul_one]
+      simp
     right_inv := fun x ↦ by simp }
 
 end LinearMap
@@ -452,10 +452,9 @@ variable (V V₂ R M)
 
 /-- Linear equivalence between a curried and uncurried function.
   Differs from `TensorProduct.curry`. -/
-protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M :=
-  { Equiv.curry _ _ _ with
-    map_add' := fun _ _ ↦ rfl
-    map_smul' := fun _ _ ↦ rfl }
+protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M where
+  toAddEquiv := .curry V V₂ M
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
@@ -463,6 +462,10 @@ theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
 
 @[simp]
 theorem coe_curry_symm : ⇑(LinearEquiv.curry R M V V₂).symm = uncurry :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_curry : (LinearEquiv.curry R M V V₂).toAddEquiv = AddEquiv.curry V V₂ M :=
   rfl
 
 end Uncurry
@@ -575,7 +578,7 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
     simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
   map_add' f g := by
     ext x
-    simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
+    simp only [map_add, LinearMap.add_apply, Function.comp_apply, coe_comp, coe_coe]
 
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.

@@ -6,8 +6,8 @@ Authors: Oliver Nash, Bhavik Mehta, Daniel Weber, Stefan Kebekus
 module
 
 public import Mathlib.Tactic.TautoSet
-public import Mathlib.Topology.Separation.Basic
 public import Mathlib.Topology.LocallyClosed
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Discrete subsets of topological spaces
@@ -144,9 +144,6 @@ lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsInducing f) : IsDiscrete (f '
 lemma Topology.IsInducing.isDiscrete_range [DiscreteTopology X] (hf : IsInducing f) :
     IsDiscrete (Set.range f) := by
   simpa using IsDiscrete.univ.image hf
-
-@[deprecated (since := "2026-03-30")] alias
-IsEmbedding.isDiscrete_range := IsInducing.isDiscrete_range
 
 lemma IsDiscrete.preimage {s : Set Y} (hs : IsDiscrete s)
     (hf : ContinuousOn f (f ⁻¹' s)) (hf' : Function.Injective f) :

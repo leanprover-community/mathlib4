@@ -5,7 +5,6 @@ Authors: Johan Commelin, Simon Hudon
 -/
 module
 
-import Batteries.Tactic.Alias
 import Mathlib.Init
 
 /-!

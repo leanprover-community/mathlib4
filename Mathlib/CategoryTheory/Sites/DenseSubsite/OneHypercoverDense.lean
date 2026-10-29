@@ -697,7 +697,6 @@ lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     (presheafObj_mapPreimage_condition _ _ _ _ _ _ _
       ((Sieve.ofArrows.fac ha).trans fac.symm))
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (F.obj X₀)).I₀}
     (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
