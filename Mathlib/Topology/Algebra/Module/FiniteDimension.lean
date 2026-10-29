@@ -515,8 +515,6 @@ theorem FiniteDimensional.completeSpace_of_isModuleTopology [UniformSpace E] [Is
   apply CompleteSpace.of_comp_eq_id f g congr(↑$hfg) (IsModuleTopology.continuous_of_linearMap f)
     (uniformContinuous_addMonoidHom_of_continuous (IsModuleTopology.continuous_of_linearMap g))
 
-#exit
-
 theorem Submodule.isComplete_of_finiteDimensional_of_isModuleTopology
     [UniformSpace E] [IsUniformAddGroup E]
     (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Projective 𝕜 s] [IsModuleTopology 𝕜 s] :
