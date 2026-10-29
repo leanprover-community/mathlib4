@@ -453,6 +453,7 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Finset.Density
 public import Mathlib.Algebra.Group.Pointwise.Finset.Interval
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Group.Pointwise.Finset.SelfInv
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Set.Card
@@ -1342,6 +1343,7 @@ public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 public import Mathlib.Algebra.Ring.Subsemiring.Order
 public import Mathlib.Algebra.Ring.Subsemiring.Pointwise
+public import Mathlib.Algebra.Ring.Subsemiring.Support
 public import Mathlib.Algebra.Ring.SumsOfSquares
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Ring.TransferInstance
@@ -2935,6 +2937,7 @@ public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.Inserter.Basic
+public import Mathlib.CategoryTheory.Inserter.Limits
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.IsoCat

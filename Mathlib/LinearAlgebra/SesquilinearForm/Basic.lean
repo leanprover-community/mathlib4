@@ -772,9 +772,7 @@ lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
     (B : LinearMap.BilinForm R M) (x y : M) :
     B ((B x y) • x - (B x x) • y) ((B x y) • x - (B x x) • y) =
       (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
-  simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul, mul_sub,
-    mul_comm (B x y) (B x x), mul_left_comm (B x y) (B x x)]
-  abel
+  simp [mul_comm, mul_sub]
 
 variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
   [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
