@@ -6,6 +6,7 @@ Authors: Yongxi Lin
 module
 
 public import Mathlib.Probability.Process.Adapted
+public import Mathlib.Topology.Order.Cadlag
 public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 public import Mathlib.Topology.Order.Separable
 
@@ -22,8 +23,8 @@ public import Mathlib.Topology.Order.Separable
 * `monotone_variationProcess`: the variation process of a path of locally bounded variation is
   monotone in time.
 * `MeasureTheory.StronglyAdapted.measurable_variationProcess_of_continuous`,
-  `..._of_continuousWithinAt_Ioi` and `..._of_continuousWithinAt_Iio`: for `a ≤ t`, the value at
-  time `t` of the variation process of a strongly adapted process is `𝓕 t`-measurable.
+  `..._of_isRightContinuous` and `..._of_isLeftContinuous`: for `a ≤ t`, the value at time `t` of
+  the variation process of a strongly adapted process is `𝓕 t`-measurable.
 
 -/
 
@@ -138,9 +139,9 @@ theorem measurable_eVariationOn_of_continuousWithinAt_Ioi {m : MeasurableSpace �
 
 /-- For `a ≤ t`, the value at time `t` of the variation process of a strongly adapted process with
 right-continuous paths is `𝓕 t`-measurable. -/
-theorem MeasureTheory.StronglyAdapted.measurable_variationProcess_of_continuousWithinAt_Ioi
+theorem MeasureTheory.StronglyAdapted.measurable_variationProcess_of_isRightContinuous
     {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} (hX : StronglyAdapted 𝓕 X)
-    (hcont : ∀ ω, ∀ i, ContinuousWithinAt (X · ω) (Ioi i) i) {a t : ι} (hat : a ≤ t) :
+    (hcont : ∀ ω, IsRightContinuous (X · ω)) {a t : ι} (hat : a ≤ t) :
     Measurable[𝓕 t] (variationProcess X a t) := by
   rw [funext fun ω ↦ variationProcess_eq_toReal_eVariationOn_Icc X hat ω]
   exact Measurable.ennreal_toReal <| measurable_eVariationOn_of_continuousWithinAt_Ioi
@@ -148,11 +149,10 @@ theorem MeasureTheory.StronglyAdapted.measurable_variationProcess_of_continuousW
 
 /-- If the index set has a bottom element, then the variation process of a strongly adapted process
 with right-continuous paths is adapted. -/
-theorem MeasureTheory.StronglyAdapted.adapted_variationProcess_of_continuousWithinAt_Ioi
+theorem MeasureTheory.StronglyAdapted.adapted_variationProcess_of_isRightContinuous
     [OrderBot ι] {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} (hX : StronglyAdapted 𝓕 X)
-    (hcont : ∀ ω, ∀ i, ContinuousWithinAt (X · ω) (Ioi i) i) :
-    Adapted 𝓕 (variationProcess X ⊥) :=
-  fun _ ↦ hX.measurable_variationProcess_of_continuousWithinAt_Ioi hcont bot_le
+    (hcont : ∀ ω, IsRightContinuous (X · ω)) : Adapted 𝓕 (variationProcess X ⊥) :=
+  fun _ ↦ hX.measurable_variationProcess_of_isRightContinuous hcont bot_le
 
 /-- The variation of a process with left-continuous paths over the times in a set `s` is
 measurable. -/
@@ -167,9 +167,9 @@ theorem measurable_eVariationOn_of_continuousWithinAt_Iio {m : MeasurableSpace �
 
 /-- For `a ≤ t`, the value at time `t` of the variation process of a strongly adapted process with
 left-continuous paths is `𝓕 t`-measurable. -/
-theorem MeasureTheory.StronglyAdapted.measurable_variationProcess_of_continuousWithinAt_Iio
+theorem MeasureTheory.StronglyAdapted.measurable_variationProcess_of_isLeftContinuous
     {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} (hX : StronglyAdapted 𝓕 X)
-    (hcont : ∀ ω, ∀ i, ContinuousWithinAt (X · ω) (Iio i) i) {a t : ι} (hat : a ≤ t) :
+    (hcont : ∀ ω, IsLeftContinuous (X · ω)) {a t : ι} (hat : a ≤ t) :
     Measurable[𝓕 t] (variationProcess X a t) := by
   rw [funext fun ω ↦ variationProcess_eq_toReal_eVariationOn_Icc X hat ω]
   exact Measurable.ennreal_toReal <| measurable_eVariationOn_of_continuousWithinAt_Iio
@@ -177,11 +177,10 @@ theorem MeasureTheory.StronglyAdapted.measurable_variationProcess_of_continuousW
 
 /-- If the index set has a bottom element, then the variation process of a strongly adapted process
 with left-continuous paths is adapted. -/
-theorem MeasureTheory.StronglyAdapted.adapted_variationProcess_of_continuousWithinAt_Iio
+theorem MeasureTheory.StronglyAdapted.adapted_variationProcess_of_isLeftContinuous
     [OrderBot ι] {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} (hX : StronglyAdapted 𝓕 X)
-    (hcont : ∀ ω, ∀ i, ContinuousWithinAt (X · ω) (Iio i) i) :
-    Adapted 𝓕 (variationProcess X ⊥) :=
-  fun _ ↦ hX.measurable_variationProcess_of_continuousWithinAt_Iio hcont bot_le
+    (hcont : ∀ ω, IsLeftContinuous (X · ω)) : Adapted 𝓕 (variationProcess X ⊥) :=
+  fun _ ↦ hX.measurable_variationProcess_of_isLeftContinuous hcont bot_le
 
 end SecondCountableTopology
 
