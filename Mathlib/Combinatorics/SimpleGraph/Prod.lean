@@ -79,14 +79,14 @@ def boxProdAssoc (I : SimpleGraph γ) : G □ H □ I ≃g G □ (H □ I) :=
       and_assoc, @and_comm (x.fst.fst = _)]⟩
 
 /-- The embedding of `G` into `G □ H` given by `b`. -/
-@[simps]
+@[implicit_reducible, simps]
 def boxProdLeft (b : β) : G ↪g G □ H where
   toFun a := (a, b)
   inj' _ _ := congr_arg Prod.fst
   map_rel_iff' {_ _} := boxProd_adj_left
 
 /-- The embedding of `H` into `G □ H` given by `a`. -/
-@[simps]
+@[implicit_reducible, simps]
 def boxProdRight (a : α) : H ↪g G □ H where
   toFun := Prod.mk a
   inj' _ _ := congr_arg Prod.snd
@@ -130,40 +130,49 @@ variable {G}
 def ofBoxProdLeft [DecidableEq β] [DecidableRel G.Adj] {x y : α × β} :
     (G □ H).Walk x y → G.Walk x.1 y.1
   | nil => nil
-  | cons h w =>
-    Or.by_cases h
-      (fun hG => w.ofBoxProdLeft.cons hG.1)
-      (fun hH => hH.2 ▸ w.ofBoxProdLeft)
+  | cons h w => h.by_cases (fun hG ↦ w.ofBoxProdLeft.cons hG.1) fun hH ↦ hH.2 ▸ w.ofBoxProdLeft
 
 /-- Project a walk on `G □ H` to a walk on `H` by discarding the moves in the direction of `G`. -/
 def ofBoxProdRight [DecidableEq α] [DecidableRel H.Adj] {x y : α × β} :
     (G □ H).Walk x y → H.Walk x.2 y.2
   | nil => nil
   | cons h w =>
-    (Or.symm h).by_cases
-      (fun hH => w.ofBoxProdRight.cons hH.1)
-      (fun hG => hG.2 ▸ w.ofBoxProdRight)
+    (Or.symm h).by_cases (fun hH ↦ w.ofBoxProdRight.cons hH.1) fun hG ↦ hG.2 ▸ w.ofBoxProdRight
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp] lemma ofBoxProdLeft_nil [DecidableEq β] [DecidableRel G.Adj] {x : α × β} :
+    ofBoxProdLeft (nil : (G □ H).Walk x x) = nil := rfl
+
+@[simp] lemma ofBoxProdLeft_cons [DecidableEq β] [DecidableRel G.Adj] {x y z : α × β}
+    (h : (G □ H).Adj x y) (w : (G □ H).Walk y z) :
+    ofBoxProdLeft (cons h w) =
+      h.by_cases (fun hG ↦ w.ofBoxProdLeft.cons hG.1) fun hH ↦ hH.2 ▸ w.ofBoxProdLeft := rfl
+
+@[simp] lemma ofBoxProdRight_nil [DecidableEq α] [DecidableRel H.Adj] {x : α × β} :
+    ofBoxProdRight (nil : (G □ H).Walk x x) = nil := rfl
+
+@[simp] lemma ofBoxProdRight_cons [DecidableEq α] [DecidableRel H.Adj] {x y z : α × β}
+    (h : (G □ H).Adj x y) (w : (G □ H).Walk y z) :
+    ofBoxProdRight (cons h w) =
+      (Or.symm h).by_cases (fun hG ↦ w.ofBoxProdRight.cons hG.1) fun hH ↦ hH.2 ▸ w.ofBoxProdRight :=
+  rfl
+
 @[simp]
 theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a₂ : α} {b : β} :
     ∀ (w : G.Walk a₁ a₂), (w.boxProdLeft H b).ofBoxProdLeft = w
   | nil => rfl
   | cons' x y z h w => by
-    rw [Walk.boxProdLeft, map_cons, ofBoxProdLeft, Or.by_cases, dite_eq_left, ← Walk.boxProdLeft]
-    · simp [ofBoxProdLeft_boxProdLeft]
-    · exact ⟨h, rfl⟩
+    suffices (Walk.map (G.boxProdLeft H b).toHom w).ofBoxProdLeft = w by
+      simp [*, Walk.boxProdLeft, Or.by_cases]
+    rw [← Walk.boxProdLeft, ofBoxProdLeft_boxProdLeft]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
-    ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
+theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel H.Adj] {a : α} {b₁ b₂ : β} :
+    ∀ (w : H.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
   | nil => rfl
   | cons' x y z h w => by
-    rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dite_eq_left, ←
-      Walk.boxProdRight]
-    · simp [ofBoxProdRight_boxProdRight]
-    · exact ⟨h, rfl⟩
+    suffices (Walk.map (G.boxProdRight H a).toHom w).ofBoxProdRight = w by
+      simp [*, Walk.boxProdRight, Or.by_cases]
+    rw [← Walk.boxProdRight, ofBoxProdRight_boxProdRight]
 
 lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
@@ -261,7 +270,6 @@ lemma reachable_boxProd {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma edist_boxProd (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
@@ -277,7 +285,7 @@ lemma edist_boxProd (x y : α × β) :
     have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
     let w_app := (wG.boxProdLeft _ _).append (wH.boxProdRight _ _)
     have w_len : w_app.length = wG.length + wH.length := by
-      unfold w_app Walk.boxProdLeft Walk.boxProdRight; simp
+      simp [w_app, Walk.boxProdLeft, Walk.boxProdRight]
     refine le_antisymm ?_ ?_
     · calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := mod_cast w_len
