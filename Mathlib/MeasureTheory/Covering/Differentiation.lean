@@ -180,7 +180,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
       _ ≤ μ (s ∩ o) + μ oᶜ := measure_union_le _ _
       _ = μ (s ∩ o) := by rw [μo, add_zero]
       _ = ε⁻¹ * (ε • μ) (s ∩ o) := by
-        rw [μ.smul_apply, smul_eq_mul, ← mul_assoc, ENNReal.inv_mul_cancel hε.ne' hε'.ne, one_mul]
+        rw [smul_apply, smul_eq_mul, ← mul_assoc, ENNReal.inv_mul_cancel hε.ne' hε'.ne, one_mul]
       _ ≤ ε⁻¹ * ρ (s ∩ o) := by
         gcongr _ * ?_
         refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
@@ -359,8 +359,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         apply I.frequently.mono fun a ha ↦ ?_
         exact (ENNReal.div_le_iff_le_mul (.inr hpq.lt_top.ne) (.inr ha.bot_lt.ne')).1 ha.le
       _ = p * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
-        simp only [μ.smul_apply, smul_eq_mul,
-          measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) I]
+        simp [measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) I]
   have B :
     q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≤
       ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
@@ -370,7 +369,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         conv_rhs => rw [inter_comm]
         rw [inter_comm, measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) J]
       _ ≤ ρ (toMeasurable (ρ + μ) (u m) ∩ w n) := by
-        rw [← smul_eq_mul, ← μ.smul_apply]
+        rw [← smul_eq_mul, ← smul_apply]
         refine v.measure_le_of_frequently_le _ (.smul_left .rfl _) _ ?_
         intro x hx
         have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) :=
@@ -391,7 +390,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
     _ < q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
       gcongr
       suffices H : (ρ + μ) (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≠ ∞ by
-        simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at H
+        simp only [Ne, add_apply, ENNReal.add_eq_top, not_or] at H
         exact H.2
       apply (lt_of_le_of_lt (measure_mono inter_subset_left) _).ne
       rw [measure_toMeasurable]
@@ -587,7 +586,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
     intro n
     let I := Ico (t ^ n) (t ^ (n + 1))
     have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
-    simp only [ν.smul_apply, smul_eq_mul, ν, I, M, withDensity_apply]
+    simp only [smul_apply, M, withDensity_apply, smul_eq_mul, ge_iff_le, ν, I]
     calc
       ρ (s ∩ f ⁻¹' I) ≤ t ^ (n + 1) * μ (s ∩ f ⁻¹' I) := by
         apply v.measure_le_mul_of_subset_limRatioMeas_lt hρ
@@ -669,7 +668,7 @@ theorem ae_tendsto_rnDeriv :
   convert Ax.add Cx using 1
   · ext1 a
     conv_lhs => rw [eq_add]
-    simp only [Pi.add_apply, coe_add, ENNReal.add_div]
+    simp [ENNReal.add_div]
   · simp only [Bx, zero_add]
 
 /-! ### Lebesgue density points -/
