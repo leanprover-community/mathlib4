@@ -9,6 +9,9 @@ public import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
 public import Mathlib.Geometry.RingedSpace.Stalks
 public import Mathlib.Topology.Sheaves.Functors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheafed spaces
 
