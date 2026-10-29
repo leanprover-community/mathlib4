@@ -22,9 +22,8 @@ on:
         type: string
         required: true
       large_runs_on:
-        # The runner label for builds with a large predicted cascade. The `route` job
-        # sends `build` there when the change rebuilds at least 2,000 Mathlib modules.
-        # Empty disables the routing.
+        # The runner label of `build` when the change rebuilds 2,000 Mathlib modules or
+        # more, as the `route` job predicts. Empty turns the routing off.
         type: string
         required: false
         default: ''
@@ -61,7 +60,7 @@ jobs:
     if: ${{ inputs.large_runs_on != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    # A failure sets no pool, and `build` runs on the caller's pool.
+    # A failure sets no pool, and `build` runs on `runs_on`.
     continue-on-error: true
     permissions:
       contents: read
@@ -83,9 +82,9 @@ jobs:
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
-      # `route_build.py` predicts the cascade from the files the change touches and
-      # the import graph of a master build, and picks the pool. Any error picks the
-      # caller's pool.
+      # `route_build.py` counts the Mathlib modules that the change rebuilds, from the
+      # changed files and the import graph of a master build, and picks the pool. Its
+      # README in mathlib-ci describes the heuristic. Any error picks `runs_on`.
       - name: Pick the runner pool
         id: route
         env:
@@ -99,8 +98,8 @@ jobs:
   build:
     name: Build
     needs: [route]
-    # `route` runs only when the caller enables the routing. A skipped or failed `route`
-    # sets no pool, and the job runs on the caller's pool.
+    # `route` runs only when `large_runs_on` is set. A skipped or failed `route` sets
+    # no pool, and `build` runs on `runs_on`.
     if: ${{ !cancelled() }}
     runs-on: ${{ needs.route.outputs.pool || inputs.runs_on }}
     # This job builds (potentially fork) PR code, so it must not inherit any

@@ -126,7 +126,8 @@ jobs:
       pr_branch_ref: ${{ github.event.pull_request.head.sha }}
       cache_environment: cache-upload-forks
       runs_on: pr
-      # The label for builds with a large predicted cascade. The label `pr` keeps every
-      # build in one pool while the verdicts of the `route` job are checked against the builds.
+      # The label of builds with a large predicted cascade. The label is `pr`, the same
+      # as `runs_on`: every build stays in one pool, and the `route` job records its
+      # verdict in the run.
       large_runs_on: pr
     secrets: inherit
