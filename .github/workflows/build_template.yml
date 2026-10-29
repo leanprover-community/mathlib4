@@ -637,28 +637,48 @@ jobs:
         run: |
           cd pr-branch
           set -o pipefail
-          # `lake lint` builds `runLinter` from the branch's Batteries. When the branch has the
-          # toolchain, lakefile and Batteries revision of the CI tools, the prebuilt driver from
-          # the tools runs instead, after the builtin lints that `lake lint` runs before its driver.
+          # `lake lint` runs the builtin lints, then the `runLinter` driver, which it builds from the
+          # branch's Batteries. When the branch has the toolchain, lakefile and Batteries revision of
+          # the CI tools, the step runs the builtin lints and then the prebuilt driver from the tools.
+          # A missing Batteries revision on either side selects `lake lint`. Like `lake lint`, the
+          # step runs the driver also when the builtin lints fail, and fails if either fails.
+          builtin_lint=()
           lint=(lake lint -- --trace)
-          runlinter=../tools-branch/.lake/packages/batteries/.lake/build/bin/runLinter
-          batteries_rev() { jq -r '.packages[] | select(.name == "batteries") | .rev' "$1"; }
-          if [[ -x "${runlinter}" ]] && cmp -s ../tools-branch/lean-toolchain lean-toolchain \
-              && cmp -s ../tools-branch/lakefile.lean lakefile.lean \
-              && [[ "$(batteries_rev ../tools-branch/lake-manifest.json)" == "$(batteries_rev lake-manifest.json)" ]]; then
+          tools=../tools-branch
+          runlinter=${tools}/.lake/packages/batteries/.lake/build/bin/runLinter
+          batteries_rev() { jq -r '.packages[] | select(.name == "batteries") | .rev // empty' "$1"; }
+          tools_batteries=$(batteries_rev "${tools}/lake-manifest.json" || true)
+          branch_batteries=$(batteries_rev lake-manifest.json || true)
+          if [[ -x "${runlinter}" && -n "${tools_batteries}" && "${tools_batteries}" == "${branch_batteries}" ]] \
+              && cmp -s "${tools}/lean-toolchain" lean-toolchain \
+              && cmp -s "${tools}/lakefile.lean" lakefile.lean; then
             echo "Linting with the prebuilt runLinter of the CI tools."
-            lake lint --builtin-only
+            builtin_lint=(lake lint --builtin-only)
             lint=(lake env "${runlinter}" Mathlib --trace)
           fi
+          # Runs a lint command under the timeout and appends its output to the file in $1.
+          run_lint() {
+            local output=$1
+            shift
+            timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL "$@" 2>&1 | tee -a "${output}"
+            return "${PIPESTATUS[0]}"
+          }
           # If lint fails because the PR predates lake-lint configuration or the
           # old --trace argument-parsing behavior, ask the author to merge master.
           # We use .lake/ for the output file because landrun restricts /tmp access
           for attempt in 1 2; do
-            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL "${lint[@]}" 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+            output=".lake/lint_output_attempt_${attempt}.txt"
+            : > "${output}"
+            builtin_status=0
+            if [[ ${#builtin_lint[@]} -gt 0 ]]; then
+              run_lint "${output}" "${builtin_lint[@]}" || builtin_status=$?
+            fi
+            lint_status=0
+            run_lint "${output}" "${lint[@]}" || lint_status=$?
+            if [[ ${builtin_status} -eq 0 && ${lint_status} -eq 0 ]]; then
               break
             fi
-            status=${PIPESTATUS[0]}
-            if grep -qE "cannot parse arguments|no lint driver configured" ".lake/lint_output_attempt_${attempt}.txt"; then
+            if grep -qE "cannot parse arguments|no lint driver configured" "${output}"; then
               echo ""
               echo "=============================================================================="
               echo "ERROR: Your branch predates the current 'lake lint' configuration."
@@ -672,14 +692,19 @@ jobs:
               echo ""
               exit 1
             fi
-            if [ "$status" -eq 124 ]; then
-              echo "runLinter timed out (attempt $attempt)."
+            if [[ ${builtin_status} -eq 124 || ${lint_status} -eq 124 ]]; then
+              echo "Linting timed out (attempt $attempt)."
               if [ "$attempt" -lt 2 ]; then
-                echo "Retrying runLinter after timeout..."
+                echo "Retrying linting after timeout..."
                 continue
               fi
             fi
-            exit $status
+            # Like `lake lint`, exit with the driver's status, or with the builtin lints' status
+            # when the driver passes.
+            if [[ ${lint_status} -ne 0 ]]; then
+              exit "${lint_status}"
+            fi
+            exit "${builtin_status}"
           done
 
       - name: end gh-problem-match-wrap for shake and lint steps
