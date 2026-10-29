@@ -201,8 +201,8 @@ theorem support_ne_top (P : RingPreordering R) [P.HasIdealSupport] : P.support �
   apply_fun Submodule.toAddSubgroup
   simpa using supportAddSubgroup_ne_top P
 
-@[deprecated
-"no replacement; use `Subsemiring.IsPreordering.support_ne_top`" (since := "2026-10-28")]
+@[deprecated "use the default constructor and
+`Subsemiring.IsPreordering.support_ne_top`" (since := "2026-10-28")]
 theorem IsOrdering.mk' (P : RingPreordering R) [HasMemOrNegMem P]
     (h : ∀ {x y}, x * y ∈ P.support → x ∈ P.support ∨ y ∈ P.support) : P.IsOrdering where
   ne_top' := support_ne_top P
@@ -250,7 +250,7 @@ section Field
 variable {F : Type*} [Field F]
 
 set_option linter.deprecated false in
-@[deprecated "use `Subsemiring.IsPreordering.isPointed`" (since := "2026-10-28"),
+@[deprecated Subsemiring.IsPreordering.isPointed +typeChanged (since := "2026-10-28"),
   aesop unsafe 70% apply]
 protected theorem eq_zero_of_mem_of_neg_mem
     {P : RingPreordering F} {x} (h : x ∈ P) (h2 : -x ∈ P) : x = 0 := by
@@ -259,7 +259,7 @@ protected theorem eq_zero_of_mem_of_neg_mem
   field_simp at mem
   exact RingPreordering.neg_one_notMem P mem
 
-@[deprecated "use `Subsemiring.IsPreordering.isPointed`" (since := "2026-10-28")]
+@[deprecated Subsemiring.IsPreordering.isPointed +typeChanged (since := "2026-10-28")]
 theorem supportAddSubgroup_eq_bot (P : RingPreordering F) : P.supportAddSubgroup = ⊥ := by
   ext; aesop (add simp mem_supportAddSubgroup)
 
@@ -267,7 +267,7 @@ theorem supportAddSubgroup_eq_bot (P : RingPreordering F) : P.supportAddSubgroup
 instance (P : RingPreordering F) : P.HasIdealSupport where
   smul_mem_support := by simp [supportAddSubgroup_eq_bot]
 
-@[deprecated "use `Subsemiring.IsPreordering.isPointed`" (since := "2026-10-28"), simp]
+@[deprecated Subsemiring.IsPreordering.isPointed +typeChanged (since := "2026-10-28"), simp]
 theorem support_eq_bot (P : RingPreordering F) : P.support = ⊥ := by
   simpa [← Submodule.toAddSubgroup_inj] using supportAddSubgroup_eq_bot P
 

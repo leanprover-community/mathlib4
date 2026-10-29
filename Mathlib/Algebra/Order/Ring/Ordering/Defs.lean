@@ -111,7 +111,7 @@ variable (R : Type*) [CommRing R]
 
 /-- A preordering on a ring `R` is a subsemiring of `R` containing all squares,
 but not containing `-1`. -/
-@[deprecated "use `Subsemiring.IsPreordering`" (since := "2026-10-28"), ext]
+@[deprecated Subsemiring.IsPreordering +typeChanged (since := "2026-10-28"), ext]
 structure RingPreordering extends Subsemiring R where
   mem_of_isSquare' {x : R} (hx : IsSquare x) : x ∈ carrier := by aesop
   neg_one_notMem' : -1 ∉ carrier := by aesop
@@ -245,7 +245,7 @@ theorem hasIdealSupport_iff {P : RingPreordering R} :
   mp _ := by simpa [mem_supportAddSubgroup] using P.smul_mem_support
   mpr _ := ⟨by simpa [mem_supportAddSubgroup]⟩
 
-@[deprecated "use `Subsemiring.supportIdeal`" (since := "2026-10-28")]
+@[deprecated Subsemiring.supportIdeal +typeChanged (since := "2026-10-28")]
 instance {P : RingPreordering R} [HasMemOrNegMem P] : P.HasIdealSupport where
   smul_mem_support x a ha :=
     match mem_or_neg_mem P x with
