@@ -189,20 +189,39 @@ alias countable_setOf_isolated_right_within := countable_setOfPred_isolated_righ
 @[deprecated (since := "2026-07-09")]
 alias countable_setOf_isolated_left_within := countable_setOfPred_isolated_left_within
 
-/-- In a second-countable space with the order topology, there is a countable set meeting every
-interval `[x, y)` with `x < y`. -/
-@[to_dual /-- In a second-countable space with the order topology, there is a countable set meeting
-every interval `(y, x]` with `y < x`. -/]
-theorem exists_countable_inter_Ico_nonempty [SecondCountableTopology α] :
-    ∃ S : Set α, S.Countable ∧ ∀ ⦃x y⦄, x < y → (S ∩ Ico x y).Nonempty := by
-  obtain ⟨D, hDc, hDd⟩ := exists_countable_dense α
-  refine ⟨D ∪ {x | 𝓝[>] x = ⊥}, hDc.union countable_setOfPred_isolated_right, fun x y hxy ↦ ?_⟩
-  by_cases hx : 𝓝[>] x = ⊥
-  · exact ⟨x, Or.inr hx, left_mem_Ico.2 hxy⟩
-  · have := neBot_iff.2 hx
-    obtain ⟨d, hd, hdD⟩ :=
-      hDd.inter_open_nonempty _ isOpen_Ioo (nonempty_of_mem (Ioo_mem_nhdsGT hxy))
-    exact ⟨d, Or.inl hdD, Ioo_subset_Ico_self hd⟩
+theorem exists_countable_subset_mem_closure_inter_Ici [SecondCountableTopology α] (s : Set α) :
+    ∃ d, d ⊆ s ∧ d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Ici x) := by
+  obtain ⟨d, hdc, hd⟩ := exists_countable_dense s
+  refine ⟨(↑) '' d ∪ {x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥}, by grind, ?_, fun x hxs ↦ ?_⟩
+  · exact (hdc.image _).union countable_setOfPred_isolated_right_within
+  refine mem_closure_iff.2 fun u hu hxu ↦ ?_
+  rcases (u ∩ (s ∩ Ioi x)).eq_empty_or_nonempty with h | ⟨y, hyu, hys, hyx⟩
+  · exact ⟨x, hxu, .inr ⟨hxs, empty_mem_iff_bot.1 <| h ▸ inter_mem
+      (mem_nhdsWithin_of_mem_nhds (hu.mem_nhds hxu)) self_mem_nhdsWithin⟩, le_rfl⟩
+  · obtain ⟨z, hzd, hz⟩ := hd.exists_mem_open
+      ((hu.inter isOpen_Ioi).preimage continuous_subtype_val) ⟨⟨y, hys⟩, hyu, hyx⟩
+    exact ⟨z, hz.1, .inl ⟨z, hzd, rfl⟩, hz.2.le⟩
+
+@[to_dual existing]
+theorem exists_countable_subset_mem_closure_inter_Iic [SecondCountableTopology α] (s : Set α) :
+    ∃ d, d ⊆ s ∧ d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Iic x) :=
+  exists_countable_subset_mem_closure_inter_Ici (α := αᵒᵈ) s
+
+/-- The image of a set of a second-countable linear order under a right-continuous function is a
+separable space. -/
+@[to_dual /-- The image of a set of a second-countable linear order under a left-continuous function
+is a separable space. -/]
+theorem separableSpace_image_of_continuousWithinAt_Ioi [SecondCountableTopology α] {s : Set α}
+    [TopologicalSpace β] {f : α → β} (hf : ∀ x ∈ s, ContinuousWithinAt f (s ∩ Ioi x) x) :
+    SeparableSpace (f '' s) := by
+  obtain ⟨d, hds, hdc, hd⟩ := exists_countable_subset_mem_closure_inter_Ici s
+  refine ⟨Subtype.val ⁻¹' (f '' d), (hdc.image _).preimage Subtype.val_injective, ?_⟩
+  rw [Subtype.dense_iff, Subtype.image_preimage_coe, inter_eq_self_of_subset_right (image_mono hds)]
+  rintro _ ⟨x, hxs, rfl⟩
+  refine closure_mono (s := f '' (d ∩ Ici x)) ?_ ?_
+  · exact image_mono inter_subset_left
+  · exact ((continuousWithinAt_inter_Ioi_iff_Ici.1 (hf x hxs)).mono
+      (inter_subset_inter_left _ hds)).mem_closure_image (hd x hxs)
 
 /-- In a second-countable space with the order topology and a top element, every point `x` is the
 limit of `w n x` for a sequence `w` of monotone functions with finite range satisfying `x ≤ w n x`.
@@ -211,7 +230,7 @@ theorem exists_seq_monotone_finite_range_le_tendsto [SecondCountableTopology α]
     ∃ w : ℕ → α → α, (∀ n, Monotone (w n)) ∧ (∀ n, (range (w n)).Finite) ∧ (∀ n x, x ≤ w n x) ∧
       ∀ x, Tendsto (w · x) atTop (𝓝 x) := by
   classical
-  obtain ⟨S, hSc, hS⟩ := exists_countable_inter_Ico_nonempty (α := α)
+  obtain ⟨S, -, hSc, hS⟩ := exists_countable_subset_mem_closure_inter_Ici (univ : Set α)
   obtain ⟨e, he⟩ := countable_iff_exists_subset_range.1 hSc
   -- `w n x` is the smallest of the points `e 0, …, e (n - 1), ⊤` lying above `x`
   have hw_le (n : ℕ) (x : α) : x ≤ {k ∈ Finset.range n | x ≤ e k}.inf e :=
@@ -225,7 +244,7 @@ theorem exists_seq_monotone_finite_range_le_tendsto [SecondCountableTopology α]
     · obtain ⟨k, hk, hk'⟩ := Finset.exists_mem_eq_inf _ hF e
       exact Or.inr ⟨k, (Finset.mem_filter.1 hk).1, hk'.symm⟩
   · refine tendsto_order.2 ⟨fun a ha ↦ .of_forall fun n ↦ ha.trans_le (hw_le n x), fun b hb ↦ ?_⟩
-    obtain ⟨_, hdS, hxd, hdb⟩ := hS hb
+    obtain ⟨_, hdb, hdS, hxd⟩ := mem_closure_iff.1 (hS x (mem_univ x)) _ isOpen_Iio hb
     obtain ⟨k, rfl⟩ := he hdS
     exact eventually_atTop.2 ⟨k + 1, fun n hn ↦
       (Finset.inf_le (Finset.mem_filter.2 ⟨Finset.mem_range.2 hn, hxd⟩)).trans_lt hdb⟩

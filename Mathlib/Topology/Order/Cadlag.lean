@@ -5,7 +5,8 @@ Authors: Rémy Degenne, Nick Kuhn, Yongxi Lin, Rohit Manokaran, Etienne Marion, 
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.Order.LeftRightLim
 
 /-! # Càdlàg functions
@@ -21,6 +22,10 @@ Using the `to_dual` machinery we also define *càglàd functions* (left-continuo
 
 open Filter TopologicalSpace Bornology
 open scoped Topology ENNReal
+
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
+attribute [local push ←] Function.comp_def
 
 variable {X Y : Type*} [TopologicalSpace X] {f g : X → Y}
 
@@ -165,6 +170,13 @@ lemma IsCaglad.tendsto_nhdsGT_rightLim [OrderTopology X] (hf : IsCaglad f) (x : 
 lemma IsCadlag.tendsto_nhdsLT_leftLim [OrderTopology X] (hf : IsCadlag f) (x : X) :
     Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
   tendsto_leftLim_of_tendsto (hf.tendsto_nhdsLT x)
+
+/-- The range of a right-continuous function on a second-countable linear order is separable. -/
+@[to_dual /-- The range of a left-continuous function on a second-countable linear order is
+separable. -/]
+lemma IsRightContinuous.separableSpace_range [OrderTopology X] [SecondCountableTopology X]
+    (hf : IsRightContinuous f) : SeparableSpace (Set.range f) :=
+  Set.image_univ ▸ separableSpace_image_of_continuousWithinAt_Ioi fun x _ ↦ by simpa using hf x
 
 end LinearOrder
 
