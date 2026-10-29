@@ -308,4 +308,44 @@ theorem ext_iff_trace_mul_right [NonAssocSemiring R] {A B : Matrix m n R} :
   classical
   simpa [trace_mul_single] using h (single j i (1 : R))
 
+/-- The ordered words in the noncommutative expansion of `(A + B)^p`.
+The recursive list appends one of the two possible factors on the right, so
+the order of factors is preserved. Every choice word is retained, including
+repeated products that happen to be equal as matrices. -/
+def orderedWordExpansion [DecidableEq n] [Semiring R]
+    (A B : Matrix n n R) : ℕ → List (Matrix n n R)
+  | 0 => [1]
+  | p + 1 =>
+      (orderedWordExpansion A B p).map (fun X => X * A) ++
+      (orderedWordExpansion A B p).map (fun X => X * B)
+
+private theorem list_sum_map_mul_right [DecidableEq n] [Semiring R]
+    (xs : List (Matrix n n R)) (A : Matrix n n R) :
+    (xs.map (fun X => X * A)).sum = xs.sum * A := by
+  induction xs with
+  | nil => simp
+  | cons X xs ih =>
+      simp only [List.map_cons, List.sum_cons, ih, add_mul]
+
+/-- The list of ordered choice words sums to the corresponding power of a sum. -/
+theorem sum_orderedWordExpansion [DecidableEq n] [Semiring R]
+    (A B : Matrix n n R) (p : ℕ) :
+    (orderedWordExpansion A B p).sum = (A + B) ^ p := by
+  induction p with
+  | zero => simp [orderedWordExpansion]
+  | succ p ih =>
+      simp only [orderedWordExpansion, List.sum_append,
+        list_sum_map_mul_right, ih]
+      rw [pow_succ, mul_add]
+
+/-- Trace-level ordered expansion of a power of a sum of matrices.
+The right-hand side is a list sum rather than a set or a sum over cyclic
+classes, so word order and multiplicity are preserved exactly. -/
+theorem trace_orderedWordExpansion [DecidableEq n] [Semiring R]
+    (A B : Matrix n n R) (p : ℕ) :
+    trace ((A + B) ^ p) =
+      ((orderedWordExpansion A B p).map trace).sum := by
+  rw [← sum_orderedWordExpansion A B p]
+  exact trace_list_sum _
+
 end Matrix
