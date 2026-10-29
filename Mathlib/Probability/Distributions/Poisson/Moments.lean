@@ -5,6 +5,7 @@ Authors: Le Chen
 -/
 module
 
+public import Mathlib.Combinatorics.Enumerative.Stirling
 public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.IntegrableExpMul
@@ -21,6 +22,9 @@ distribution with rate `r : ℝ≥0`.
 * `integral_descFactorial_poissonMeasure`: the factorial moments of the Poisson distribution,
   `∫ n, n (n - 1) ⋯ (n - k + 1) ∂Po(r) = r ^ k`.
 * `memLp_id_map_cast_poissonMeasure`: a Poisson random variable has moments of all orders.
+* `integral_pow_map_cast_poissonMeasure`: the raw moments of the Poisson distribution are given by
+  the Touchard polynomials, `∫ x, x ^ k ∂Po(ℝ, r) = ∑ j ∈ range (k + 1), S(k, j) * r ^ j`, where
+  `S(k, j) = Nat.stirlingSecond k j` are the Stirling numbers of the second kind.
 * `integral_id_map_cast_poissonMeasure`, `integral_pow_two_map_cast_poissonMeasure`,
   `integral_pow_three_map_cast_poissonMeasure`, `integral_pow_four_map_cast_poissonMeasure`:
   the raw moments of order `1` to `4`.
@@ -94,60 +98,52 @@ private lemma integral_map_cast_poissonMeasure_of_hasSum {r : ℝ≥0} {f : ℝ 
   rw [integral_map .of_discrete hf.aestronglyMeasurable, integral_poissonMeasure]
   exact h.tsum_eq
 
-private lemma cast_descFactorial_one (n : ℕ) : (n.descFactorial 1 : ℝ) = n := by simp
+/-- The raw moments of the Poisson distribution, as a sum: the sequence
+`n ↦ exp (-r) * r ^ n / n! * n ^ k` has sum `∑ j ∈ range (k + 1), S(k, j) * r ^ j`, where
+`S(k, j) = Nat.stirlingSecond k j`. -/
+lemma hasSum_mul_pow_poissonMeasure (r : ℝ≥0) (k : ℕ) :
+    HasSum (fun n ↦ exp (-r) * r ^ n / n ! * (n : ℝ) ^ k)
+      (∑ j ∈ Finset.range (k + 1), (Nat.stirlingSecond k j : ℝ) * r ^ j) := by
+  convert hasSum_sum fun j _ ↦
+    (hasSum_mul_descFactorial_poissonMeasure r j).mul_left (Nat.stirlingSecond k j : ℝ) with n
+  rw [← Nat.cast_pow, Nat.pow_eq_sum_stirlingSecond_mul_descFactorial, Nat.cast_sum,
+    Finset.mul_sum]
+  push_cast
+  exact Finset.sum_congr rfl fun j _ ↦ by ring
 
-private lemma cast_descFactorial_three (n : ℕ) :
-    (n.descFactorial 3 : ℝ) = n * (n - 1) * (n - 2) := by
-  rw [← descPochhammer_eval_eq_descFactorial]
-  simp [descPochhammer_succ_right]
-
-private lemma cast_descFactorial_four (n : ℕ) :
-    (n.descFactorial 4 : ℝ) = n * (n - 1) * (n - 2) * (n - 3) := by
-  rw [← descPochhammer_eval_eq_descFactorial]
-  simp [descPochhammer_succ_right]
+/-- The raw moments of the Poisson distribution are given by the Touchard polynomials:
+`∫ x, x ^ k ∂Po(ℝ, r) = ∑ j ∈ range (k + 1), S(k, j) * r ^ j`, where
+`S(k, j) = Nat.stirlingSecond k j` are the Stirling numbers of the second kind. -/
+lemma integral_pow_map_cast_poissonMeasure (r : ℝ≥0) (k : ℕ) :
+    ∫ x, x ^ k ∂Po(ℝ, r) = ∑ j ∈ Finset.range (k + 1), (Nat.stirlingSecond k j : ℝ) * r ^ j :=
+  integral_map_cast_poissonMeasure_of_hasSum (by fun_prop) (hasSum_mul_pow_poissonMeasure r k)
 
 /-- The mean of the Poisson distribution with rate `r` is `r`. -/
 lemma integral_id_map_cast_poissonMeasure (r : ℝ≥0) : ∫ x, x ∂Po(ℝ, r) = r := by
-  refine integral_map_cast_poissonMeasure_of_hasSum (by fun_prop) ?_
-  simpa using hasSum_mul_descFactorial_poissonMeasure r 1
+  simpa [Finset.sum_range_succ, Nat.stirlingSecond_self] using
+    integral_pow_map_cast_poissonMeasure r 1
 
 /-- The second moment of the Poisson distribution with rate `r` is `r ^ 2 + r`. -/
 lemma integral_pow_two_map_cast_poissonMeasure (r : ℝ≥0) :
     ∫ x, x ^ 2 ∂Po(ℝ, r) = r ^ 2 + r := by
-  refine integral_map_cast_poissonMeasure_of_hasSum (by fun_prop) ?_
-  convert (hasSum_mul_descFactorial_poissonMeasure r 2).add
-    (hasSum_mul_descFactorial_poissonMeasure r 1) using 1
-  · ext n
-    rw [Nat.cast_descFactorial_two, cast_descFactorial_one]
-    ring
-  · ring
+  rw [integral_pow_map_cast_poissonMeasure]
+  simp [Finset.sum_range_succ, Nat.stirlingSecond]
+  ring
 
 /-- The third moment of the Poisson distribution with rate `r` is `r ^ 3 + 3 * r ^ 2 + r`. -/
 lemma integral_pow_three_map_cast_poissonMeasure (r : ℝ≥0) :
     ∫ x, x ^ 3 ∂Po(ℝ, r) = r ^ 3 + 3 * r ^ 2 + r := by
-  refine integral_map_cast_poissonMeasure_of_hasSum (by fun_prop) ?_
-  convert ((hasSum_mul_descFactorial_poissonMeasure r 3).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 2).mul_left 3)).add
-    (hasSum_mul_descFactorial_poissonMeasure r 1) using 1
-  · ext n
-    rw [cast_descFactorial_three, Nat.cast_descFactorial_two, cast_descFactorial_one]
-    ring
-  · ring
+  rw [integral_pow_map_cast_poissonMeasure]
+  simp [Finset.sum_range_succ, Nat.stirlingSecond]
+  ring
 
 /-- The fourth moment of the Poisson distribution with rate `r` is
 `r ^ 4 + 6 * r ^ 3 + 7 * r ^ 2 + r`. -/
 lemma integral_pow_four_map_cast_poissonMeasure (r : ℝ≥0) :
     ∫ x, x ^ 4 ∂Po(ℝ, r) = r ^ 4 + 6 * r ^ 3 + 7 * r ^ 2 + r := by
-  refine integral_map_cast_poissonMeasure_of_hasSum (by fun_prop) ?_
-  convert (((hasSum_mul_descFactorial_poissonMeasure r 4).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 3).mul_left 6)).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 2).mul_left 7)).add
-    (hasSum_mul_descFactorial_poissonMeasure r 1) using 1
-  · ext n
-    rw [cast_descFactorial_four, cast_descFactorial_three, Nat.cast_descFactorial_two,
-      cast_descFactorial_one]
-    ring
-  · ring
+  rw [integral_pow_map_cast_poissonMeasure]
+  simp [Finset.sum_range_succ, Nat.stirlingSecond]
+  ring
 
 /-- The variance of the Poisson distribution with rate `r` is `r`. -/
 lemma variance_id_map_cast_poissonMeasure (r : ℝ≥0) : Var[id; Po(ℝ, r)] = r := by
@@ -162,15 +158,14 @@ lemma centralMoment_three_map_cast_poissonMeasure (r : ℝ≥0) :
   simp only [centralMoment, Pi.pow_apply, Pi.sub_apply, id_eq,
     integral_id_map_cast_poissonMeasure]
   refine integral_map_cast_poissonMeasure_of_hasSum (by fun_prop) ?_
-  convert (((hasSum_mul_descFactorial_poissonMeasure r 3).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 2).mul_left (3 - 3 * (r : ℝ)))).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 1).mul_left (1 - 3 * (r : ℝ) + 3 * r ^ 2))).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 0).mul_left (-(r : ℝ) ^ 3)) using 1
+  convert (((hasSum_mul_pow_poissonMeasure r 3).add
+    ((hasSum_mul_pow_poissonMeasure r 2).mul_left (-3 * (r : ℝ)))).add
+    ((hasSum_mul_pow_poissonMeasure r 1).mul_left (3 * (r : ℝ) ^ 2))).add
+    ((hasSum_mul_pow_poissonMeasure r 0).mul_left (-(r : ℝ) ^ 3)) using 1
   · ext n
-    rw [cast_descFactorial_three, Nat.cast_descFactorial_two, cast_descFactorial_one,
-      Nat.descFactorial_zero, Nat.cast_one]
     ring
-  · ring
+  · simp [Finset.sum_range_succ, Nat.stirlingSecond]
+    ring
 
 /-- The fourth central moment of the Poisson distribution with rate `r` is `3 * r ^ 2 + r`. -/
 lemma centralMoment_four_map_cast_poissonMeasure (r : ℝ≥0) :
@@ -178,16 +173,14 @@ lemma centralMoment_four_map_cast_poissonMeasure (r : ℝ≥0) :
   simp only [centralMoment, Pi.pow_apply, Pi.sub_apply, id_eq,
     integral_id_map_cast_poissonMeasure]
   refine integral_map_cast_poissonMeasure_of_hasSum (by fun_prop) ?_
-  convert ((((hasSum_mul_descFactorial_poissonMeasure r 4).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 3).mul_left (6 - 4 * (r : ℝ)))).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 2).mul_left (7 - 12 * (r : ℝ) + 6 * r ^ 2))).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 1).mul_left
-      (1 - 4 * (r : ℝ) + 6 * r ^ 2 - 4 * r ^ 3))).add
-    ((hasSum_mul_descFactorial_poissonMeasure r 0).mul_left ((r : ℝ) ^ 4)) using 1
+  convert ((((hasSum_mul_pow_poissonMeasure r 4).add
+    ((hasSum_mul_pow_poissonMeasure r 3).mul_left (-4 * (r : ℝ)))).add
+    ((hasSum_mul_pow_poissonMeasure r 2).mul_left (6 * (r : ℝ) ^ 2))).add
+    ((hasSum_mul_pow_poissonMeasure r 1).mul_left (-4 * (r : ℝ) ^ 3))).add
+    ((hasSum_mul_pow_poissonMeasure r 0).mul_left ((r : ℝ) ^ 4)) using 1
   · ext n
-    rw [cast_descFactorial_four, cast_descFactorial_three, Nat.cast_descFactorial_two,
-      cast_descFactorial_one, Nat.descFactorial_zero, Nat.cast_one]
     ring
-  · ring
+  · simp [Finset.sum_range_succ, Nat.stirlingSecond]
+    ring
 
 end ProbabilityTheory
