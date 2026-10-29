@@ -319,7 +319,7 @@ def orderedWordExpansion [DecidableEq n] [Semiring R]
       (orderedWordExpansion A B p).map (fun X => X * A) ++
       (orderedWordExpansion A B p).map (fun X => X * B)
 
-private theorem list_sum_map_mul_right [DecidableEq n] [Semiring R]
+private theorem list_sum_map_mul_right [Semiring R]
     (xs : List (Matrix n n R)) (A : Matrix n n R) :
     (xs.map (fun X => X * A)).sum = xs.sum * A := by
   induction xs with
