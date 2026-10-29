@@ -121,7 +121,7 @@ variable [CommRing R]
 
 theorem moebiusMatrix_mul_zetaMatrix (n : ℕ) : moebiusMatrix R n * zetaMatrix R n = 1 := by
   ext i j
-  simp only [mul_apply, moebiusMatrix_apply, zetaMatrix_apply, one_apply]
+  simp only [Matrix.mul_apply, moebiusMatrix_apply, zetaMatrix_apply, Matrix.one_apply]
   by_cases hij : (i : ℕ) + 1 ∣ (j : ℕ) + 1
   · simp only [ite_mul, zero_mul]
     simp only [mul_ite, mul_one, mul_zero, ← ite_and]
