@@ -32,10 +32,10 @@ lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
   refine ⟨k, hk₀, ?_⟩
   ext m
   have hm : m ∈ span R Φ := hΦ₂ ▸ Submodule.mem_top
-  simp only [mul_left_iterate, mul_one, LinearEquiv.coe_one, id_eq]
+  simp only [mul_left_iterate, mul_one, FunLike.coe_one_eq_id]
   refine Submodule.span_induction (fun x hx ↦ ?_) (by simp)
     (fun x y _ _ hx hy ↦ by simp [map_add, hx, hy]) (fun t x _ hx ↦ by simp [hx]) hm
-  rw [LinearEquiv.pow_apply, ← he.1.coe_iterate_restrict ⟨x, hx⟩ k]
+  rw [pow_apply_eq_iterate, ← he.1.coe_iterate_restrict ⟨x, hx⟩ k]
   replace hk : (e') ^ k = 1 := by simpa [IsPeriodicPt, IsFixedPt] using hk
   replace hk := congr($hk ⟨x, hx⟩)
   rwa [Equiv.Perm.coe_one, id_eq, Subtype.ext_iff, Equiv.Perm.coe_pow] at hk

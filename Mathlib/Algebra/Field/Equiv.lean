@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.GroupWithZero.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # If a semiring is a field, any isomorphic semiring is also a field.
 

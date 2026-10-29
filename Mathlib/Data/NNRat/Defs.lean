@@ -142,7 +142,8 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 @[simp] lemma num_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).num = q.num ^ n := by simp [num, Int.natAbs_pow]
 @[simp] lemma den_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
 
-@[simp, norm_cast]
+-- We want this lemma to have higher priority than `NNRat.cast_sub`.
+@[simp high, norm_cast]
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
   max_eq_left <| le_sub_comm.2 <| by rwa [sub_zero]
 
