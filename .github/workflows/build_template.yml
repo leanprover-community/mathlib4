@@ -271,6 +271,8 @@ jobs:
           # Clean the staging directory first, though it should be empty at this point, to be safe
           rm -rf cache-staging
           mkdir -p cache-staging
+          # Mark the start of the staging: see "stage Mathlib cache files after a cancellation".
+          touch "${{ runner.temp }}/staging-start"
 
       # The library build and the Mathlib staging are independent: `lake build`
       # writes only the three library targets, and `cache stage` reads
@@ -298,6 +300,27 @@ jobs:
               export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
               cd pr-branch
               ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
+
+      # A cancelled run does not start the members of a parallel group,
+      # including the members with `always()`, and the runner reports the
+      # outcome `success` for a member that it did not start. Thus this step
+      # stages the Mathlib cache files of every cancelled run, so the next run
+      # can use the modules that this run built. `cache stage` copies only the
+      # `.ltar` files that it packs in the same call. Thus the step first
+      # deletes the `.ltar` files that "stage Mathlib cache files" packed,
+      # which are the files newer than the mark of "prepare staging
+      # directory", and `cache stage` packs them again. `cp` overwrites the
+      # staged files, so the step can follow a complete or an interrupted
+      # staging.
+      - name: stage Mathlib cache files after a cancellation
+        if: ${{ cancelled() && (steps.build.outcome == 'success' || steps.build.outcome == 'failure' || steps.build.outcome == 'cancelled') }}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --rw cache-staging/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI --env LEAN_SRC_PATH --env TRUSTED_LEAN_PREFIX -- bash -euxo pipefail {0}
+        run: |
+          # No `lake env`, trusted toolchain: see "stage Mathlib cache files".
+          export PATH="${TRUSTED_LEAN_PREFIX:?trusted toolchain sysroot not set}/bin:${PATH}"
+          find "$HOME/.cache/mathlib" -maxdepth 1 -name '*.ltar' -newer "${{ runner.temp }}/staging-start" -delete
+          cd pr-branch
+          ../tools-branch/.lake/build/bin/cache --staging-dir="../cache-staging" stage
 
       # The three checks ask Lake whether each target is up to date and free
       # of warnings, so each target reports its own outcome to the staging
@@ -334,16 +357,9 @@ jobs:
             id: noisy
             run: |
               cd pr-branch
-              buildMsgs="$(
-                ##  we exploit `lake`s replay feature: since the cache is present, running
-                ##  `lake build` will reproduce all the outputs without having to recompute
-                lake build -q --iofail Mathlib Archive Counterexamples Wanted
-              )"
-              if [ -n "${buildMsgs}" ]
-              then
-                printf $'%s\n' "${buildMsgs}"
-                exit 1
-              fi
+              ## `lake` replays the saved output of every module, and `--iofail`
+              ## fails the step if any module logged anything.
+              lake build --no-build -q --iofail Mathlib Archive Counterexamples Wanted
 
           - name: stage Archive cache files
             if: ${{ steps.archive.outcome == 'success' }}
