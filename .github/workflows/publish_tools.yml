@@ -1,5 +1,6 @@
-# Builds the trusted CI tooling (the `cache` and `mk_all` binaries + the `lake-build-*`
-# helper scripts) from `master` and publishes it as a small artifact (`tools-bin`).
+# Builds the trusted CI tooling (the `cache`, `mk_all` and `runLinter` binaries + the
+# `lake-build-*` helper scripts) from the pushed `master` commit (`github.sha`) and
+# publishes it as a small artifact (`tools-bin`).
 #
 # CI runs (build_template.yml, via the `get-tools` composite action) download this
 # artifact and use the tools directly, saving a full `master` checkout plus a ~30s
@@ -10,14 +11,15 @@
 #
 # Trust model: get-tools downloads the artifact only from this workflow's `push`
 # runs on `master` of the canonical repository, so a CI run that uses the artifact
-# runs tools built from `master` code.
+# runs tools built from `master` code. get-tools does not consume the artifacts of
+# `workflow_dispatch` runs.
 name: publish CI tools
 
 on:
   push:
     branches:
       - master
-  # Allow manual rebuilds (e.g. after fixing a broken tools build).
+  # Manual runs check that the tools build; get-tools does not download their artifacts.
   workflow_dispatch:
 
 concurrency:
@@ -62,8 +64,8 @@ jobs:
         shell: bash
         run: |
           cd tools-branch
-          # `check-yaml` and `graph` are built as a smoke test that master's tools
-          # still compile; `cache` and `mk_all` are consumed by path.
+          # `check-yaml` and `graph` are built as a smoke test that the tools at this
+          # commit compile; `cache`, `mk_all` and `runLinter` are consumed by path.
           lake build cache check-yaml graph
           ls .lake/build/bin/cache
           # `mk_all` is built from this commit's sources, not from the cache: this job runs
