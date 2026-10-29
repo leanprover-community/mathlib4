@@ -214,6 +214,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Invertible
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.LocallyFree
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.LocallyFreeOfInvertible
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Monoidal
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.OfCommRing
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
@@ -221,6 +222,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackFree
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Submodule
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.TensorTrivialization
 public import Mathlib.Algebra.Category.ModuleCat.Simple
 public import Mathlib.Algebra.Category.ModuleCat.Stalk
 public import Mathlib.Algebra.Category.ModuleCat.Subobject
@@ -247,6 +249,7 @@ public import Mathlib.Algebra.Category.Ring.FinitePresentation
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.Algebra.Category.Ring.LinearAlgebra
+public import Mathlib.Algebra.Category.Ring.Sheaf.Local
 public import Mathlib.Algebra.Category.Ring.Small
 public import Mathlib.Algebra.Category.Ring.Topology
 public import Mathlib.Algebra.Category.Ring.Under.Basic
@@ -1428,6 +1431,8 @@ public import Mathlib.AlgebraicGeometry.IdealSheaf.IrreducibleComponent
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.AlgebraicGeometry.LimitsOver
+public import Mathlib.AlgebraicGeometry.Modules.Monoidal
+public import Mathlib.AlgebraicGeometry.Modules.Pic
 public import Mathlib.AlgebraicGeometry.Modules.Presheaf
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 public import Mathlib.AlgebraicGeometry.Modules.Tilde
@@ -4881,6 +4886,7 @@ public import Mathlib.Geometry.Manifold.VectorField.Pullback
 public import Mathlib.Geometry.Manifold.WhitneyEmbedding
 public import Mathlib.Geometry.Polygon.Basic
 public import Mathlib.Geometry.RingedSpace.Basic
+public import Mathlib.Geometry.RingedSpace.IsLocallyRinged
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField

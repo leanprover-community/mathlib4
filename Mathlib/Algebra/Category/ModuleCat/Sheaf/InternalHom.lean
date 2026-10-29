@@ -117,8 +117,9 @@ def internalHomAdjunction (F : SheafOfModulesOfCommRing.{u} R) :
     (Functor.isoWhiskerLeft (internalHomFunctor F) (asIso adj.counit) ≪≫
       (internalHomFunctor F).rightUnitor)
 
+variable (R) in
 /-- Sheaves of modules form a closed monoidal category. -/
-instance : MonoidalClosed (SheafOfModulesOfCommRing.{u} R) where
+instance monoidalClosed : MonoidalClosed (SheafOfModulesOfCommRing.{u} R) where
   closed F := { rightAdj := internalHomFunctor F, adj := internalHomAdjunction F }
 
 @[simp]

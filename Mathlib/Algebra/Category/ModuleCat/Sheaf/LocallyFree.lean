@@ -67,6 +67,11 @@ instance IsLocallyFreeData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGenerat
     [q.IsLocallyFreeData] : q.shrink.IsLocallyFreeData where
   isIso i := inferInstanceAs (IsIso (q.generators i.2.choose).π)
 
+instance IsLocallyFreeDataOfRank.shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
+    (n : ℕ) [q.IsLocallyFreeDataOfRank n] : q.shrink.IsLocallyFreeDataOfRank n where
+  isFiniteType i := IsFiniteType.isFiniteType i.2.choose
+  rank i := IsLocallyFreeDataOfRank.rank i.2.choose
+
 end LocalGeneratorsData
 
 /-- A sheaf of modules is locally free if it is locally isomorphic to free sheaves:
@@ -131,6 +136,37 @@ instance (I : Type u) :
 
 instance (I : Type u) : (free (R := R) I).IsLocallyFree where
   exists_isLocallyFreeData := ⟨(free.generatingSections I).localGeneratorsData, inferInstance⟩
+
+end
+
+section
+
+variable [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- A sheaf of modules is locally free of rank one if it is isomorphic to the unit
+over a family of objects covering the terminal object. -/
+theorem isLocallyFreeOfRank_one_of_coversTop {M : SheafOfModules.{u} R}
+    {I : Type*} {U : I → C} (h : J.CoversTop U)
+    (e : ∀ i, M.over (U i) ≅ unit (R.over (U i))) : M.IsLocallyFreeOfRank 1 := by
+  let e' (i : I) : free PUnit.{u + 1} ≅ M.over (U i) :=
+    coproductUniqueIso _ ≪≫ (e i).symm
+  let q : M.LocalGeneratorsData :=
+    { I := I
+      X := U
+      coversTop := h
+      generators i := (free.generatingSections PUnit).ofEpi (e' i).hom }
+  have : q.IsLocallyFreeDataOfRank 1 :=
+    { isIso i := by
+        change IsIso ((free.generatingSections PUnit).ofEpi _).π
+        simp only [GeneratingSections.ofEpi_π, free.generatingSections_π]
+        infer_instance
+      isFiniteType i := ⟨inferInstanceAs (Finite PUnit)⟩
+      rank i := by
+        change Nat.card PUnit.{u + 1} = 1
+        exact Nat.card_unique }
+  exact ⟨q.shrink, inferInstance⟩
 
 end
 
