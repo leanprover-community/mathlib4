@@ -133,7 +133,8 @@ theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : K∞} (hx : ¬IsUnit x) 
 `NumberField.InfinitePlace.prod_eq_abs_norm`. -/
 theorem coe_norm_eq_abs_norm [NumberField K] (x : K) :
     ‖algebraMap K K∞ x‖ = |Algebra.norm ℚ x| := by
-  simpa [-Rat.cast_abs, norm_def] using! InfinitePlace.prod_eq_abs_norm x
+  simpa [-Rat.cast_abs, norm_def, AbsoluteValue.Completion.norm_coe] using!
+    InfinitePlace.prod_eq_abs_norm x
 
 /-- The embedding of the completion `Kᵥ` at an infinite place `v` into the infinite adele ring. -/
 @[simps!]
