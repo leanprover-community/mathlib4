@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Kaehler.Basic
 public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.Algebra.Polynomial.Derivation
+public import Mathlib.RingTheory.Kaehler.Basic
 
 /-!
 # The Kähler differential module of polynomial algebras

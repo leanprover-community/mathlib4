@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.Adjunction
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
+
 /-!
 
 # Light condensed `R`-modules

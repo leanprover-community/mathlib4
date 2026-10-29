@@ -5,9 +5,9 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 module
 
-public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.NumberTheory.Divisors
 
 /-!
 # `p`-adic Valuation

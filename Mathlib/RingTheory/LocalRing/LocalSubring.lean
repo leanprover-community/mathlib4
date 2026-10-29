@@ -5,9 +5,9 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
 module
 
-public import Mathlib.Tactic.FieldSimp
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Local subrings of fields

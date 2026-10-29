@@ -6,12 +6,12 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Module.RieszLemma
+public import Mathlib.LinearAlgebra.Dimension.LinearMap
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Instances.Matrix
-public import Mathlib.LinearAlgebra.Dimension.LinearMap
 
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Topology.Algebra.InfiniteSum.Module
@@ -185,14 +185,14 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
     exact
       ((LinearMap.toMatrix b b).toLinearMap.comp
           (ContinuousLinearMap.coeLM 𝕜)).continuous_of_finiteDimensional
-  · rw [LinearMap.det]
+  · rw [LinearMap.det_def]
     simpa only [h, MonoidHom.one_apply, dite_eq_right, not_false_iff] using continuous_const
 
 /-- Any `K`-Lipschitz map from a subset `s` of a metric space `α` to a finite-dimensional real
 vector space `E'` can be extended to a Lipschitz map on the whole space `α`, with a slightly worse
 constant `C * K` where `C` only depends on `E'`. We record a working value for this constant `C`
 as `lipschitzExtensionConstant E'`. -/
-irreducible_def lipschitzExtensionConstant (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
+@[no_expose] def lipschitzExtensionConstant (E' : Type*) [NormedAddCommGroup E'] [NormedSpace ℝ E']
   [FiniteDimensional ℝ E'] : ℝ≥0 :=
   let A := (Basis.ofVectorSpace ℝ E').equivFun.toContinuousLinearEquiv
   max (‖A.symm.toContinuousLinearMap‖₊ * ‖A.toContinuousLinearMap‖₊) 1
@@ -331,7 +331,7 @@ alias isOpen_setOf_linearIndependent := isOpen_setOfPred_linearIndependent
 theorem isOpen_setOfPred_nat_le_rank (n : ℕ) :
     IsOpen { f : E →L[𝕜] F | ↑n ≤ (f : E →ₗ[𝕜] F).rank } := by
   simp only [LinearMap.le_rank_iff_exists_linearIndependent_finset, ofPred_exists, ← exists_prop]
-  refine isOpen_biUnion fun t _ => ?_
+  refine isOpen_iUnion fun t => isOpen_iUnion fun _ => ?_
   have : Continuous fun f : E →L[𝕜] F => fun x : (t : Set E) => f x :=
     continuous_pi fun x => (ContinuousLinearMap.apply 𝕜 F (x : E)).continuous
   exact isOpen_setOfPred_linearIndependent.preimage this

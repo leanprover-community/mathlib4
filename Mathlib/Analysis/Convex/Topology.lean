@@ -5,8 +5,8 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Topology.Algebra.Affine
 

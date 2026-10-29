@@ -5,9 +5,9 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Rooted trees
