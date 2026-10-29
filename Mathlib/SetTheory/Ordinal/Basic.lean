@@ -749,10 +749,12 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
   liftInitialSeg.lt_apply_iff
 
 @[simp]
-theorem _root_.Cardinal.mk_Iio_ordinal (o : Ordinal.{u}) :
+theorem cardinalMk_Iio (o : Ordinal.{u}) :
     #(Iio o) = Cardinal.lift.{u + 1} o.card := by
   rw [lift_card, ← typein_ordinal]
   rfl
+
+@[deprecated (since := "2026-10-20")] alias _root_.Cardinal.mk_Iio_ordinal := cardinalMk_Iio
 
 /-! ### The first infinite ordinal ω -/
 
@@ -1040,17 +1042,23 @@ theorem ord_card_le (o : Ordinal) : o.card.ord ≤ o :=
 theorem lt_ord_succ_card (o : Ordinal) : o < (succ o.card).ord :=
   lt_ord.2 <| lt_succ _
 
-theorem card_le_iff {o : Ordinal} {c : Cardinal} : o.card ≤ c ↔ o < (succ c).ord := by
+theorem _root_.Ordinal.card_le_iff {o : Ordinal} {c : Cardinal} :
+    o.card ≤ c ↔ o < (succ c).ord := by
   rw [lt_ord, lt_succ_iff]
+
+@[deprecated (since := "2026-10-20")] protected alias card_le_iff := Ordinal.card_le_iff
 
 /--
 A variation on `Cardinal.lt_ord` using `≤`: If `o` is no greater than the
 initial ordinal of cardinality `c`, then its cardinal is no greater than `c`.
 
-The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
+The converse, however, is false (for instance, `o = ω + 1` and `c = ℵ₀`).
 -/
-lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) : o.card ≤ c := by
+lemma _root_.Ordinal.card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) :
+    o.card ≤ c := by
   rw [← card_ord c]; exact Ordinal.card_le_card ho
+
+@[deprecated (since := "2026-10-20")] protected alias card_le_of_le_ord := Ordinal.card_le_of_le_ord
 
 @[gcongr, mono]
 theorem ord_strictMono : StrictMono ord :=
@@ -1175,11 +1183,13 @@ lemma exists_le_of_small {ι : Type*} [Small.{u} ι] (κ : ι → Cardinal.{u}) 
   simpa [T] using Cardinal.mk_le_of_injective
     (sigma_mk_injective (β := fun i ↦ (κ ((equivShrink _).symm i)).ord.ToType))
 
-lemma mk_iio_le_lift (κ : Cardinal.{u}) :
+lemma mk_Iio_le_lift (κ : Cardinal.{u}) :
     Cardinal.mk (Set.Iio κ) ≤ Cardinal.lift.{u + 1} κ := by
-  conv_rhs => rw [← card_ord κ, ← mk_Iio_ordinal]
+  conv_rhs => rw [← card_ord κ, ← cardinalMk_Iio]
   rw [Cardinal.le_def]
   exact ⟨⟨fun ⟨a, ha⟩ ↦ ⟨a.ord, by simpa⟩, fun _ _ h ↦ by aesop⟩⟩
+
+@[deprecated (since := "2026-10-20")] alias mk_iio_le_lift := mk_Iio_le_lift
 
 end Cardinal
 
