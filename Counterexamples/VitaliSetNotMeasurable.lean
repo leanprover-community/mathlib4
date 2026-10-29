@@ -52,7 +52,7 @@ lemma existsUnique_vadd_mem_vitaliSet (x : UnitAddCircle) :
     ∃! g : ratAddCircle, g + x ∈ vitaliSet :=
   isComplement_vitaliSet.existsUnique_add_mem_right x
 
-/-- If `vitaliSet` is null-measurable, then it is a fundamental domain for the action of
+/-- If `vitaliSet` were null-measurable, then it would be a fundamental domain for the action of
 `ratAddCircle` on `UnitAddCircle`. -/
 lemma isAddFundamentalDomain_vitaliSet (hm : NullMeasurableSet vitaliSet volume) :
     IsAddFundamentalDomain ratAddCircle vitaliSet volume :=
@@ -61,8 +61,8 @@ lemma isAddFundamentalDomain_vitaliSet (hm : NullMeasurableSet vitaliSet volume)
 /-- `ratAddCircle` is countable, being the image of the countable type `ℚ`. -/
 instance : Countable ratAddCircle := (Set.countable_range _).image _
 
-/-- If `vitaliSet` is null-measurable, then the volume of `UnitAddCircle` is the sum of countably
-many copies of the volume of `vitaliSet`. -/
+/-- If `vitaliSet` were null-measurable, then the volume of `UnitAddCircle` would be the sum of
+countably many copies of the volume of `vitaliSet`. -/
 lemma one_eq_tsum_volume_vitaliSet (hm : NullMeasurableSet vitaliSet volume) :
     1 = ∑' _ : ratAddCircle, volume vitaliSet := by
   simpa [Set.vadd_set_univ] using (isAddFundamentalDomain_vitaliSet hm).measure_eq_tsum Set.univ
