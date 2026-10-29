@@ -78,13 +78,13 @@ measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compa
 applies to any measurable `g : α → β` but requires that `f` is measurable as well. -/
 theorem _root_.MeasurableEmbedding.lintegral_map {g : α → β}
     (hg : MeasurableEmbedding g) (f : β → ℝ≥0∞) : ∫⁻ a, f a ∂map g μ = ∫⁻ a, f (g a) ∂μ := by
-  rw [lintegral, lintegral]
+  rw [lintegral_def, lintegral_def]
   refine le_antisymm (iSup₂_le fun f₀ hf₀ => ?_) (iSup₂_le fun f₀ hf₀ => ?_)
   · rw [SimpleFunc.lintegral_map _ hg.measurable]
     have : (f₀.comp g hg.measurable : α → ℝ≥0∞) ≤ f ∘ g := fun x => hf₀ (g x)
     exact le_iSup_of_le (comp f₀ g hg.measurable) (by grw [← le_iSup _ this])
   · rw [← f₀.extend_comp_eq hg (const _ 0), ← SimpleFunc.lintegral_map, ←
-      SimpleFunc.lintegral_eq_lintegral, ← lintegral]
+      SimpleFunc.lintegral_eq_lintegral, ← lintegral_def]
     refine lintegral_mono_ae (hg.ae_map_iff.2 <| Eventually.of_forall fun x => ?_)
     exact (extend_apply _ _ _ _).trans_le (hf₀ _)
 

@@ -149,22 +149,22 @@ protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
 theorem map_add_left (f₁ f₂ : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map (f₁ + f₂) g = map f₁ g + map f₂ g := by
   ext
-  simp only [add_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, add_apply]
+  simp only [add_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.add_apply]
 
 theorem map_add_right (f : M →ₛₗ[σ₁₂] M₂) (g₁ g₂ : N →ₛₗ[σ₁₂] N₂) :
     map f (g₁ + g₂) = map f g₁ + map f g₂ := by
   ext
-  simp only [tmul_add, compr₂ₛₗ_apply, mk_apply, map_tmul, add_apply]
+  simp only [tmul_add, compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.add_apply]
 
 theorem map_smul_left (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map (r • f) g = r • map f g := by
   ext
-  simp only [smul_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [smul_tmul, compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.smul_apply, tmul_smul]
 
 theorem map_smul_right (r : R₂) (f : M →ₛₗ[σ₁₂] M₂) (g : N →ₛₗ[σ₁₂] N₂) :
     map f (r • g) = r • map f g := by
   ext
-  simp only [compr₂ₛₗ_apply, mk_apply, map_tmul, smul_apply, tmul_smul]
+  simp only [compr₂ₛₗ_apply, mk_apply, map_tmul, LinearMap.smul_apply, tmul_smul]
 
 variable (M N P M₂ N₂ σ₁₂)
 
@@ -410,11 +410,11 @@ def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
   toFun := lTensor M
   map_add' f g := by
     ext x y
-    simp only [compr₂ₛₗ_apply, mk_apply, add_apply, lTensor_tmul, tmul_add]
+    simp only [compr₂ₛₗ_apply, mk_apply, LinearMap.add_apply, lTensor_tmul, tmul_add]
   map_smul' r f := by
     dsimp
     ext x y
-    simp only [compr₂ₛₗ_apply, mk_apply, tmul_smul, smul_apply, lTensor_tmul]
+    simp only [compr₂ₛₗ_apply, mk_apply, tmul_smul, LinearMap.smul_apply, lTensor_tmul]
 
 /-- `rTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `f ⊗ M`.
 
@@ -423,11 +423,11 @@ def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   toFun f := f.rTensor M
   map_add' f g := by
     ext x y
-    simp only [compr₂ₛₗ_apply, mk_apply, add_apply, rTensor_tmul, add_tmul]
+    simp only [compr₂ₛₗ_apply, mk_apply, LinearMap.add_apply, rTensor_tmul, add_tmul]
   map_smul' r f := by
     dsimp
     ext x y
-    simp only [compr₂ₛₗ_apply, mk_apply, smul_tmul, tmul_smul, smul_apply, rTensor_tmul]
+    simp only [compr₂ₛₗ_apply, mk_apply, smul_tmul, tmul_smul, LinearMap.smul_apply, rTensor_tmul]
 
 @[simp]
 theorem coe_lTensorHom : (lTensorHom M : (N →ₗ[R] P) → M ⊗[R] N →ₗ[R] M ⊗[R] P) = lTensor M :=

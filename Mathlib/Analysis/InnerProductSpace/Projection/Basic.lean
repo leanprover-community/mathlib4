@@ -570,7 +570,7 @@ theorem _root_.LinearMap.IsSymmetricProjection.hasOrthogonalProjection_range
     (range p).HasOrthogonalProjection :=
   ⟨fun v => ⟨p v, by
     simp [hp.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hp.isSymmetric,
-      ← Module.End.mul_apply, hp.isIdempotentElem.eq]⟩⟩
+      ← mul_apply_eq_comp, hp.isIdempotentElem.eq]⟩⟩
 
 /-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
 theorem orthogonalProjectionOnto_orthogonalComplement_singleton_eq_zero (v : E) :

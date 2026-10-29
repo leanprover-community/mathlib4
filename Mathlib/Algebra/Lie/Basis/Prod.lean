@@ -60,7 +60,7 @@ lemma h_mem_prod (i : ι₁) :
 
 /-- A distinguished subalgebra of the Lie algebra defined by `LieAlgebra.Basis.prod`.
 
-Subject to the assumtions demanded by `LieAlgebra.Basis.isCartanSubalgebra` this will be a Cartan
+Subject to the assumptions demanded by `LieAlgebra.Basis.isCartanSubalgebra` this will be a Cartan
 subalgebra of `LieAlgebra.Basis.prod`. -/
 def prodCartan :
     LieSubalgebra R (prod eι b₁ b₂) :=
