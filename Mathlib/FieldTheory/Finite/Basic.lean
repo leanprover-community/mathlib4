@@ -30,9 +30,12 @@ cyclic group, as well as the fact that every finite integral domain is a field
 
 1. `Fintype.card_units`: The unit group of a finite field has cardinality `q - 1`.
 2. `sum_pow_units`: The sum of `x^i`, where `x` ranges over the units of `K`, is
-  - `q-1` if `q-1 ∣ i`
+  - `-1` if `q-1 ∣ i`
   - `0`   otherwise
-3. `FiniteField.card`: The cardinality `q` is a power of the characteristic of `K`.
+3. `sum_pow_of_ne_zero`: The sum of `x^i`, with `i ≠ 0`, where `x` ranges over `K`, is
+  - `-1` if `q-1 ∣ i`
+  - `0`   otherwise
+4. `FiniteField.card`: The cardinality `q` is a power of the characteristic of `K`.
   See `FiniteField.card'` for a variant.
 
 ## Notation
@@ -287,7 +290,7 @@ theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣
     rw [← pow_mul, mul_comm, pow_mul, h, one_pow]
 
 /-- The sum of `x ^ i` as `x` ranges over the units of a finite field of cardinality `q`
-is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
+is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `-1`. -/
 theorem sum_pow_units [DecidableEq K] (i : ℕ) :
     (∑ x : Kˣ, (x ^ i : K)) = if q - 1 ∣ i then -1 else 0 := by
   let φ : Kˣ →* K :=
@@ -307,23 +310,38 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
         rw [← forall_pow_eq_one_iff, DFunLike.ext_iff]
         apply forall_congr'; intro x; simp [φ, Units.ext_iff]
 
+/-- A sum over the nonzero elements of a finite field is a sum over its units. -/
+theorem sum_sdiff_zero {M : Type*} [AddCommMonoid M] [DecidableEq K] (f : K → M) :
+    ∑ x ∈ univ \ {0}, f x = ∑ x : Kˣ, f x := by
+  rw [← Fintype.sum_equiv unitsEquivNeZero.symm (fun x ↦ f x) _ (fun _ ↦ rfl),
+    ← sum_subtype (univ \ {0}) (by simp)]
+
+/-- The sum of `x ^ i`, with `i ≠ 0`, as `x` ranges over a finite field of cardinality `q`
+is equal to `-1` if `q - 1 ∣ i`, and to `0` otherwise. -/
+theorem sum_pow_of_ne_zero (i : ℕ) (hi : i ≠ 0) :
+    ∑ x : K, x ^ i = if q - 1 ∣ i then -1 else 0 := by
+  classical
+  rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton, zero_pow hi, add_zero,
+    sum_sdiff_zero, sum_pow_units K i]
+
 /-- The sum of `x ^ i` as `x` ranges over a finite field of cardinality `q`
 is equal to `0` if `i < q - 1`. -/
 theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0 := by
-  by_cases hi : i = 0
-  · simp only [hi, nsmul_one, sum_const, pow_zero, card_univ, cast_card_eq_zero]
-  classical
-    have hiq : ¬q - 1 ∣ i := by contrapose! h; exact Nat.le_of_dvd (Nat.pos_of_ne_zero hi) h
-    let φ : Kˣ ↪ K := ⟨fun x ↦ x, Units.val_injective⟩
-    have : univ.map φ = univ \ {0} := by
-      ext x
-      simpa only [mem_map, mem_univ, Function.Embedding.coeFn_mk, true_and, mem_sdiff,
-        mem_singleton, φ] using! isUnit_iff_ne_zero
-    calc
-      ∑ x : K, x ^ i = ∑ x ∈ univ \ {(0 : K)}, x ^ i := by
-        rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton, zero_pow hi, add_zero]
-      _ = ∑ x : Kˣ, (x ^ i : K) := by simp [φ, ← this, univ.sum_map φ]
-      _ = 0 := by rw [sum_pow_units K i, ite_eq_right]; exact hiq
+  obtain rfl | hi := eq_or_ne i 0
+  · simp
+  rw [sum_pow_of_ne_zero K _ hi, ite_eq_right]
+  contrapose! h
+  exact Nat.le_of_dvd (Nat.pos_of_ne_zero hi) h
+
+/-- The sum of all the elements of a finite field of cardinality `q` is equal to `1` if `q = 2`,
+and to `0` otherwise. -/
+theorem sum_univ_id_eq_ite :
+    ∑ x : K, x = if q = 2 then 1 else 0 := by
+  rw [show ∑ x : K, x = ∑ x : K, x ^ 1 by simp, sum_pow_of_ne_zero K 1 one_ne_zero]
+  simp only [Nat.dvd_one, Nat.pred_eq_succ_iff, zero_add]
+  split_ifs with hq
+  · rw [neg_eq_iff_add_eq_zero, one_add_one_eq_two, ← Nat.cast_ofNat, ← hq, cast_card_eq_zero]
+  · rfl
 
 section frobenius
 
