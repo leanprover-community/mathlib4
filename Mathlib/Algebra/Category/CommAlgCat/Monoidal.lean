@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The co-Cartesian monoidal category structure on commutative `R`-algebras
 

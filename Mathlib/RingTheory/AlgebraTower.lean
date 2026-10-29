@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.LinearAlgebra.Basis.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Towers of algebras
 

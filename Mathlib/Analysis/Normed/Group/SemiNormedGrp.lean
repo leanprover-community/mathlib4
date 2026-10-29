@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of seminormed groups
 
