@@ -209,7 +209,7 @@ theorem of_finiteDimensional_imp_finrank_eq_one
     have := Fact.mk f_irr
     have := f_monic.finite_adjoinRoot
     exists_root_of_natDegree_eq_one
-      (by simpa [finrank_quotient_span_eq_natDegree.symm] using this)
+      (by simpa [finrank_quotient_span_eq_natDegree.symm] using H (AdjoinRoot f))
 
 theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
     [IsAlgClosed k] : IsAlgClosed k' := by
