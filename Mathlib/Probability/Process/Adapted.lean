@@ -404,10 +404,15 @@ theorem StronglyAdapted.isStronglyProgressive_of_isRightContinuous [TopologicalS
     exact (stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable
       (u := fun (r : Set.range (w n)) ω => u r ω) (fun _ => continuous_of_discreteTopology)
       fun r => (h r).mono (f.mono r.1.2)).comp_measurable hg
-  · -- `u (w n s) ω → u s ω` by right-continuity, since `w n s → s` from above
-    exact (continuousWithinAt_Ioi_iff_Ici.1 (hu_cont p.2 p.1)).tendsto.comp
-      (tendsto_nhdsWithin_iff.2 ⟨(continuous_subtype_val.tendsto _).comp (hw_tendsto p.1),
-        .of_forall fun n => hw_le n p.1⟩)
+  · obtain ⟨s, ω⟩ := p
+    -- `w n s → s` in `ι`, and from above since `s ≤ w n s`
+    have hw : Tendsto (fun n => (w n s : ι)) atTop (𝓝[≥] s) :=
+      tendsto_nhdsWithin_iff.2
+        ⟨(continuous_subtype_val.tendsto s).comp (hw_tendsto s), .of_forall fun n => hw_le n s⟩
+    -- right-continuity of `u · ω` at `s`, in the form of continuity within `Ici s`
+    have hu : Tendsto (fun i => u i ω) (𝓝[≥] s) (𝓝 (u s ω)) :=
+      (continuousWithinAt_Ioi_iff_Ici.1 (hu_cont ω s)).tendsto
+    exact hu.comp hw
 
 end LinearOrder
 
