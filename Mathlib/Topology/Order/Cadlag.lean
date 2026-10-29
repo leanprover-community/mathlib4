@@ -5,7 +5,8 @@ Authors: Rémy Degenne, Nick Kuhn, Yongxi Lin, Rohit Manokaran, Etienne Marion, 
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.Order.LeftRightLim
 
 /-! # Càdlàg functions
@@ -21,6 +22,10 @@ Using the `to_dual` machinery we also define *càglàd functions* (left-continuo
 
 open Filter TopologicalSpace Bornology
 open scoped Topology ENNReal
+
+-- Allow `to_fun` to eta-expand `g ∘ f`; see the same workaround in
+-- `Mathlib/Order/ScottContinuity.lean`.
+attribute [local push ←] Function.comp_def
 
 variable {X Y : Type*} [TopologicalSpace X] {f g : X → Y}
 
