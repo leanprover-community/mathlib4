@@ -30,9 +30,9 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 ## Main statements
 
 * `IsDedekindDomain.IsLocalizationSInteger`: The ring of `S`-integers is a localization of `R` if
-  the class group of `R` is finite.
+  every class in the class group has finite order.
 * `IsDedekindDomain.isDedekindDomainSInteger`: The ring of `S`-integers of a Dedekind domain with
-  finite class group is a Dedekind domain.
+  every class in the class group of finite order is a Dedekind domain.
 * `Set.unitEquivUnitsInteger`: `S`-units are units of `S`-integers.
 * `IsDedekindDomain.integer_empty`: `∅`-integers is the usual ring of integers.
 * TODO: proof that `S`-units is the kernel of a map to a product.

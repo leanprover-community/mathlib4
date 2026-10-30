@@ -131,7 +131,7 @@ def sInfPrimeCompl {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) : Submonoi
   ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption))
 
 lemma sInfPrimeCompl_def {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) :
-    sInfPrimeCompl hS = ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption)) := by rfl
+    sInfPrimeCompl hS = ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption)) := rfl
 
 @[simp]
 theorem mem_sInfPrimeCompl_iff {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) {x : α} :
@@ -159,7 +159,7 @@ theorem sInfPrimeCompl_le_primeCompl {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.I
     {P : Ideal α} (hP : P ∈ S) : sInfPrimeCompl hS ≤ P.primeCompl (hp := hS P hP) :=
   fun _ hx ↦ (mem_sInfPrimeCompl_iff hS).mp hx P hP
 
-theorem sInfPrimeCompl_antitone {S T : Set (Ideal α)} (hP : ∀ P ∈ S ∪ T, P.IsPrime) (hST : S ⊆ T) :
+theorem sInfPrimeCompl_anti {S T : Set (Ideal α)} (hP : ∀ P ∈ S ∪ T, P.IsPrime) (hST : S ⊆ T) :
     sInfPrimeCompl (by simp_all : ∀ P ∈ T, P.IsPrime) ≤
     sInfPrimeCompl (by simp_all  : ∀ P ∈ S, P.IsPrime) := by
   intro x hx
