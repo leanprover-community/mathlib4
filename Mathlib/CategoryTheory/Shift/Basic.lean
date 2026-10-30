@@ -61,7 +61,7 @@ variable (A C) [AddMonoid A]
 
 /-- A category has a shift indexed by an additive monoid `A`
 if there is a monoidal functor from `A` to `C ⥤ C`. -/
-class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
+class HasShift (C : Type u) (A : outParam (Type*)) [Category.{v} C] [AddMonoid A] where
   /-- a shift is a monoidal functor from `A` to `C ⥤ C` -/
   shift : Discrete A ⥤ C ⥤ C
   /-- `shift` is monoidal -/
@@ -190,7 +190,7 @@ lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
 
 variable (A) in
 /-- Shifting by zero is the identity functor. -/
-def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
+def shiftFunctorZero : shiftFunctor C 0 ≅ 𝟭 C :=
   (εIso (shiftMonoidalFunctor C A)).symm
 
 /-- Shifting by `a` such that `a = 0` identifies to the identity functor. -/
