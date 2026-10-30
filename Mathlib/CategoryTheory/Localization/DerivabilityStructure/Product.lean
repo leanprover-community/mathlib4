@@ -57,8 +57,7 @@ instance [Φ₁.IsRightDerivabilityStructure] [Φ₂.IsRightDerivabilityStructur
   rw [(Φ₁.prod Φ₂).isRightDerivabilityStructure_iff (W₁.Q.prod W₂.Q) (W₁'.Q.prod W₂'.Q)
     ((Φ₁.localizedFunctor W₁.Q W₁'.Q).prod (Φ₂.localizedFunctor W₂.Q W₂'.Q))
     (NatIso.prod e₁ e₂)]
-  change TwoSquare.GuitartExact (TwoSquare.prod e₁.hom e₂.hom)
-  infer_instance
+  exact inferInstanceAs <| TwoSquare.GuitartExact (TwoSquare.prod e₁.hom e₂.hom)
 
 instance [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure] :
     (Φ₁.prod Φ₂).IsLeftDerivabilityStructure := by
