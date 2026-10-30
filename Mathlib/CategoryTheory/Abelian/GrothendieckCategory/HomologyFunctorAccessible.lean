@@ -84,6 +84,15 @@ instance : Functor.IsCardinalAccessible.{w} (ShortComplex.homologyFunctor C) .al
     have : IsFiltered J := isFiltered_of_isCardinalFiltered J Cardinal.aleph0
     infer_instance
 
+instance : Functor.IsAccessible.{w} (ShortComplex.cyclesFunctor C) :=
+  Functor.isAccessible_of_isCardinalAccessible _ .aleph0
+
+instance : Functor.IsAccessible.{w} (ShortComplex.opcyclesFunctor C) :=
+  Functor.isAccessible_of_isCardinalAccessible _ .aleph0
+
+instance : Functor.IsAccessible.{w} (ShortComplex.homologyFunctor C) :=
+  Functor.isAccessible_of_isCardinalAccessible _ .aleph0
+
 end
 
 end CategoryTheory.ShortComplex
@@ -103,5 +112,14 @@ instance : Functor.IsCardinalAccessible.{w} (opcyclesFunctor C c i) .aleph0 :=
 instance : Functor.IsCardinalAccessible.{w} (homologyFunctor C c i) .aleph0 :=
   inferInstanceAs (Functor.IsCardinalAccessible (shortComplexFunctor C c i ⋙
     ShortComplex.homologyFunctor C) _)
+
+instance : Functor.IsAccessible.{w} (cyclesFunctor C c i) :=
+  Functor.isAccessible_of_isCardinalAccessible _ .aleph0
+
+instance : Functor.IsAccessible.{w} (opcyclesFunctor C c i) :=
+  Functor.isAccessible_of_isCardinalAccessible _ .aleph0
+
+instance : Functor.IsAccessible.{w} (homologyFunctor C c i) :=
+  Functor.isAccessible_of_isCardinalAccessible _ .aleph0
 
 end HomologicalComplex
