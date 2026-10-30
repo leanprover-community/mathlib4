@@ -83,10 +83,6 @@ namespace Completion
 instance : Coe K v.Completion where
   coe k := (WithAbs.toAbs v.1 k : v.1.Completion)
 
-section Deprecated
-
-/-! ### Deprecated API from when `InfinitePlace.Completion` was a one-field structure -/
-
 /-- The identity map `v.1.Completion → v.Completion`. -/
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 def ofCompletion {v : InfinitePlace K} (x : v.1.Completion) : v.Completion := x
@@ -203,8 +199,6 @@ theorem algebraMap_apply (k : K) :
 
 @[deprecated (since := "2026-10-30")]
 alias norm_coe := AbsoluteValue.Completion.norm_coe
-
-end Deprecated
 
 example : NormedField v.Completion := inferInstance
 example : Algebra K v.Completion := inferInstance
