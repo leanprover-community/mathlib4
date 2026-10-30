@@ -5,6 +5,7 @@ Authors: Justus Springer
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.BinaryProductsClosure
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 import Mathlib.CategoryTheory.ObjectProperty.ClosureShift

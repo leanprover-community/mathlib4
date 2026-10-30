@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Invariant.Basic
 public import Mathlib.RingTheory.IsGaloisGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Galois Groups of Rings
 

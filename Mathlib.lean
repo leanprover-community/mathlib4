@@ -451,6 +451,7 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Finset.Density
 public import Mathlib.Algebra.Group.Pointwise.Finset.Interval
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Group.Pointwise.Finset.SelfInv
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Set.Card
@@ -1034,6 +1035,7 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Order.Group.Units
 public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+public import Mathlib.Algebra.Order.GroupWithZero.Associated
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Bounds
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
@@ -1338,6 +1340,7 @@ public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 public import Mathlib.Algebra.Ring.Subsemiring.Order
 public import Mathlib.Algebra.Ring.Subsemiring.Pointwise
+public import Mathlib.Algebra.Ring.Subsemiring.Support
 public import Mathlib.Algebra.Ring.SumsOfSquares
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Ring.TransferInstance
@@ -2068,6 +2071,7 @@ public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.FourierMultiplier
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+public import Mathlib.Analysis.Distribution.SchwartzSpace.CompactSupport
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.Analysis.Distribution.Sobolev
@@ -2930,6 +2934,7 @@ public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.Inserter.Basic
+public import Mathlib.CategoryTheory.Inserter.Limits
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.IsoCat
@@ -3000,6 +3005,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.HasExactLimitsOfShape
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.IndYoneda
 public import Mathlib.CategoryTheory.Limits.Indization.Category
@@ -3360,6 +3366,7 @@ public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.NatTrans
 public import Mathlib.CategoryTheory.Noetherian
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.BinaryProductsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.ObjectProperty.ClosureShift
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
@@ -3374,6 +3381,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.ExactColimits
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.HasFiniteResolution.Basic
@@ -5964,6 +5972,7 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
 public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.AddCharacter.Trace
 public import Mathlib.NumberTheory.AlmostPrime
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
@@ -6099,6 +6108,7 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 public import Mathlib.NumberTheory.ModularForms.LevelOne.GradedRing
 public import Mathlib.NumberTheory.ModularForms.NormTrace
+public import Mathlib.NumberTheory.ModularForms.OrderAtInfty
 public import Mathlib.NumberTheory.ModularForms.Petersson
 public import Mathlib.NumberTheory.ModularForms.ProperlyDiscontinuous
 public import Mathlib.NumberTheory.ModularForms.QExpansion
@@ -7686,7 +7696,9 @@ public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.Have
 public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.Hessenberg.Charpoly
+public import Mathlib.Tactic.Hessenberg.CoeffList
 public import Mathlib.Tactic.Hessenberg.Reduce
+public import Mathlib.Tactic.Hessenberg.Similarity
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
@@ -7788,6 +7800,7 @@ public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Tactic.NoncommRing
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Tactic.Nontriviality.Core
+public import Mathlib.Tactic.NormCharpoly
 public import Mathlib.Tactic.NormDet
 public import Mathlib.Tactic.NormMatMul
 public import Mathlib.Tactic.NormNum
@@ -8666,5 +8679,6 @@ public import Mathlib.Util.SynthesizeUsing
 public import Mathlib.Util.Tactic
 public import Mathlib.Util.TermReduce
 public import Mathlib.Util.TransImports
+public import Mathlib.Util.VersoRoles
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
