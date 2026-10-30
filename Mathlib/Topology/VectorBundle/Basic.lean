@@ -357,7 +357,7 @@ theorem zeroSection_proj [∀ x, Zero (E x)] (x : B) : (zeroSection F E x).proj 
   rfl
 
 @[simp, mfld_simps]
-theorem zeroSection_snd [∀ x, Zero (E x)] (x : B) : (zeroSection F E x).2 = 0 :=
+theorem zeroSection_snd [∀ x, Zero (E x)] (x : B) : (zeroSection F E x).snd = 0 :=
   rfl
 
 end Bundle
@@ -477,7 +477,7 @@ theorem symm_continuousLinearEquivAt_eq' (e : Trivialization F (π F E)) [e.IsLi
 @[simp]
 theorem continuousLinearEquivAt_apply' (e : Trivialization F (π F E)) [e.IsLinear R]
     (x : TotalSpace F E) (hx : x ∈ e.source) :
-    e.continuousLinearEquivAt R x.proj (e.mem_source.1 hx) x.2 = (e x).2 := rfl
+    e.continuousLinearEquivAt R x.proj (e.mem_source.1 hx) x.snd = (e x).2 := rfl
 
 variable (R)
 
@@ -669,7 +669,7 @@ def localTriv (i : ι) : Trivialization F (π F Z.Fiber) :=
 
 @[simp, mfld_simps]
 theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
-    (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
+    (Z.localTriv i) p = ⟨p.proj, Z.coordChange (Z.indexAt p.proj) i p.proj p.snd⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -682,7 +682,8 @@ instance localTriv.isLinear (i : ι) : (Z.localTriv i).IsLinear R where
 variable (i j : ι)
 
 @[simp, mfld_simps]
-theorem mem_localTriv_source (p : Z.TotalSpace) : p ∈ (Z.localTriv i).source ↔ p.1 ∈ Z.baseSet i :=
+theorem mem_localTriv_source (p : Z.TotalSpace) :
+    p ∈ (Z.localTriv i).source ↔ p.proj ∈ Z.baseSet i :=
   Iff.rfl
 
 @[simp, mfld_simps]
@@ -727,7 +728,7 @@ theorem mem_source_at : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source
   exact Z.mem_baseSet_at b
 
 @[simp, mfld_simps]
-theorem localTrivAt_apply (p : Z.TotalSpace) : Z.localTrivAt p.1 p = ⟨p.1, p.2⟩ :=
+theorem localTrivAt_apply (p : Z.TotalSpace) : Z.localTrivAt p.proj p = ⟨p.proj, p.snd⟩ :=
   Z.toFiberBundleCore.localTrivAt_apply p
 
 @[simp, mfld_simps]

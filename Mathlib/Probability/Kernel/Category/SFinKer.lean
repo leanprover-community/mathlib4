@@ -65,7 +65,7 @@ noncomputable section
 instance : LargeCategory SFinKer where
   Hom X Y := Hom X Y
   id X := ⟨Kernel.id, inferInstance⟩
-  comp κ η := ⟨η.1 ∘ₖ κ.1, inferInstance⟩
+  comp κ η := ⟨η.hom ∘ₖ κ.hom, inferInstance⟩
   assoc κ η ξ := by simp [Kernel.comp_assoc]
 
 @[ext]
@@ -76,8 +76,8 @@ open MeasurableEquiv in
 @[simps (attr := scoped simp) -isSimp]
 instance : MonoidalCategory SFinKer.{u} where
   tensorObj X Y := SFinKer.of (X × Y)
-  whiskerLeft X Y₁ Y₂ κ := ⟨Kernel.id ∥ₖ κ.1, inferInstance⟩
-  whiskerRight κ Y := ⟨κ.1 ∥ₖ Kernel.id, inferInstance⟩
+  whiskerLeft X Y₁ Y₂ κ := ⟨Kernel.id ∥ₖ κ.hom, inferInstance⟩
+  whiskerRight κ Y := ⟨κ.hom ∥ₖ Kernel.id, inferInstance⟩
   tensorUnit := SFinKer.of PUnit
   associator X Y Z := by
     refine ⟨⟨Kernel.deterministic prodAssoc (by fun_prop), inferInstance⟩,
@@ -125,7 +125,7 @@ instance : MonoidalCategory SFinKer.{u} where
     rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop)]
     simp only [Kernel.deterministic_comp_eq_map, Kernel.comp_deterministic_eq_comap]
     ext _ _ hs
-    have := κ.2
+    have := κ.property
     rw [Kernel.map_apply' _ (by fun_prop) _ hs, Kernel.comap_apply' _ (by fun_prop),
       Kernel.parallelComp_apply' <| measurable_snd hs]
     simp only [Kernel.id_apply, lintegral_dirac]
@@ -135,7 +135,7 @@ instance : MonoidalCategory SFinKer.{u} where
     rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop)]
     simp only [Kernel.deterministic_comp_eq_map, Kernel.comp_deterministic_eq_comap]
     ext _ _ hs
-    have := κ.2
+    have := κ.property
     rw [Kernel.map_apply' _ (by fun_prop) _ hs, Kernel.comap_apply' _ (by fun_prop),
       Kernel.parallelComp_apply' <| measurable_fst hs]
     simp only [Kernel.id_apply, MeasurableSpace.measurableSet_top, Measure.dirac_apply']

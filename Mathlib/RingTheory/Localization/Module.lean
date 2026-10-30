@@ -79,7 +79,7 @@ theorem LinearIndependent.of_isLocalizedModule_of_isRegular {ι : Type*} {v : ι
     congr; ext i
     have ⟨s, eq⟩ := IsLocalizedModule.exists_of_eq (S := S) eq
     simp_rw [Submonoid.smul_def, ← map_smul] at eq
-    exact (h s).1 congr($(hv eq) i)
+    exact (h s).left congr($(hv eq) i)
 
 theorem LinearIndependent.localization [Module Rₛ M] [IsScalarTower R Rₛ M]
     {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
@@ -97,7 +97,7 @@ lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → Mₛ} (hf : Line
   use fun i ↦ (sec (v i)).1
   rw [linearIndependent_iff'ₛ] at hf ⊢
   intro t g g' eq i hit
-  refine (isRegular_of_smul_left_injective f inj (sec (v i)).2).2 <|
+  refine (isRegular_of_smul_left_injective f inj (sec (v i)).2).right <|
     hf t (fun i ↦ _ * (sec (v i)).2) (fun i ↦ _ * (sec (v i)).2) ?_ i hit
   simp_rw [mul_smul, ← Submonoid.smul_def, hsec, ← map_smul, ← map_sum, eq]
 

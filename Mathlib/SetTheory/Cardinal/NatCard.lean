@@ -101,7 +101,7 @@ theorem card_le_of_injective' {f : α → β} (hf : Function.Injective f)
   `Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_le_of_embedding' (f : α ↪ β) (h : Nat.card β = 0 → Nat.card α = 0) :
     Nat.card α ≤ Nat.card β :=
-  card_le_of_injective' f.2 h
+  card_le_of_injective' f.inj' h
 
 /-- If `f` is surjective, then `Nat.card β ≤ Nat.card α`. We must also assume
   `Nat.card α = 0 → Nat.card β = 0` since `Nat.card` is defined to be `0` for infinite types. -/
@@ -127,7 +127,7 @@ theorem card_eq_zero_of_injective [Nonempty α] {f : α → β} (hf : Function.I
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_eq_zero_of_embedding [Nonempty α] (f : α ↪ β) (h : Nat.card α = 0) : Nat.card β = 0 :=
-  card_eq_zero_of_injective f.2 h
+  card_eq_zero_of_injective f.inj' h
 
 theorem card_image_le {s : Set α} [Finite s] (f : α → β) : Nat.card (f '' s) ≤ Nat.card s :=
   Nat.card_le_card_of_surjective _ Set.imageFactorization_surjective

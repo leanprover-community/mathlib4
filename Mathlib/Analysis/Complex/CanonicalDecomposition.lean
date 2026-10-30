@@ -415,7 +415,7 @@ theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R)
         (η₁.meromorphicAt.smul (D.meromorphicNFOn.meromorphicOn x (by aesop))) (by aesop) ?_
         D.eventuallyEq
       rw [← closure_ball 0 hR.ne']
-      exact isOpen_ball.perfect_closure.2
+      exact isOpen_ball.perfect_closure.acc
     have : meromorphicOrderAt (∏ᶠ u, canonicalFactor R u ^ (-(divisor f (ball 0 R)) u)) x = 0 := by
       refine η₁.meromorphicNFAt.meromorphicOrderAt_eq_zero_iff.2 (finprod_apply_ne_zero fun a ↦ ?_)
       by_cases ha : a ∈ ball 0 R
@@ -551,7 +551,7 @@ lemma ECanonicalDecomp.eq_smul_meromorphicTrailingCoeffAt
         (by fun_prop) hw ?η₁ D.eventuallyEq)]
       case η₁ =>
         rw [← closure_ball _ hR.ne']
-        exact isOpen_ball.perfect_closure.2
+        exact isOpen_ball.perfect_closure.acc
     _ = ((∏ i ∈ t₂, meromorphicTrailingCoeffAt (canonicalFactor R i) w ^ (divisor f B₀R) i)
       * ∏ i ∈ t₁, meromorphicTrailingCoeffAt (· - i) w ^ (-divisor f S₀R) i)
       • meromorphicTrailingCoeffAt (((∏ i ∈ t₂, canonicalFactor R i ^ (-(divisor f B₀R) i))

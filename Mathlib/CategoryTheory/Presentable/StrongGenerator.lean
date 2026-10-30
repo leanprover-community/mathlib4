@@ -118,7 +118,7 @@ lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
           apply ObjectProperty.prop_colimit
           rintro (_ | _)
           · exact P.le_colimitsCardinalClosure _ _ hG
-          · exact j.left.2⟩
+          · exact j.left.property⟩
       let a : (P.colimitsCardinalClosure κ).ι.obj obj ⟶ X :=
         coequalizer.desc ((E.coconeAt X).ι.app j) (by simpa using h)
       let ψ : j ⟶ CostructuredArrow.mk a :=
@@ -151,7 +151,7 @@ lemma IsStrongGenerator.colimitsCardinalClosure_eq_isCardinalPresentable
   rw [← (P.colimitsCardinalClosure κ).retractClosure_eq_self]
   obtain ⟨j, φ, hφ⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
     ((P.colimitsCardinalClosure κ).ι.denseAt X) (𝟙 X)
-  exact ⟨_, j.left.2, ⟨{ i := _, r := _, retract := hφ }⟩⟩
+  exact ⟨_, j.left.property, ⟨{ i := _, r := _, retract := hφ }⟩⟩
 
 namespace IsCardinalLocallyPresentable
 

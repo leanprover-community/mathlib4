@@ -202,7 +202,8 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
     (algebraMap S S').comp φ := by ext <;>
       simp [-Polynomial.algebraMap_apply, ← Polynomial.algebraMap_eq, ← algebraMap_apply]
   obtain ⟨q, hq⟩ := exists_isIntegral_sub_of_isIntegralElem_of_mul_mem_range (R := R')
-    (aeval (algebraMap S S' (φ X))) (algebraMap S S' t) (C ha.unit⁻¹.1 * p.map (algebraMap _ _)) (by
+    (aeval (algebraMap S S' (φ X))) (algebraMap S S' t)
+    (C ha.unit⁻¹.val * p.map (algebraMap _ _)) (by
       obtain ⟨q, hqm, hq⟩ := ht
       refine ⟨q.map (mapRingHom (algebraMap _ _)), hqm.map _, ?_⟩
       rw [eval₂_map, H, ← hom_eval₂, ← AlgHom.toRingHom_eq_coe, hq, map_zero]) (by
@@ -210,7 +211,7 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
       simp [Monic, leadingCoeff_C_mul_of_isUnit,
         leadingCoeff_map_of_leadingCoeff_ne_zero _ ha.ne_zero, a]) (by
       obtain ⟨r, hr : φ r = _⟩ := hp
-      use C ha.unit⁻¹.1 * mapRingHom (algebraMap R R') r
+      use C ha.unit⁻¹.val * mapRingHom (algebraMap R R') r
       simp [aeval_algebraMap_apply, aeval_algHom_apply, hr, mul_assoc])
   obtain ⟨_, ⟨n, rfl⟩, e⟩ := IsLocalization.integerNormalization_spec (.powers a) q
   generalize IsLocalization.integerNormalization (.powers a) q = q' at e
@@ -394,7 +395,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_au
     not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrallyClosed H₂ Q H₁
   have : Algebra.WeaklyQuasiFiniteAt R' (Q.comap g.toRingHom) := .baseChange P _ <| by
     rw [Ideal.comap_comap]
-    convert congr(($hQ.symm).1)
+    convert congr(($hQ.symm).asIdeal)
     ext; simp [g]
   exact .of_surjectiveOnStalks (Q.comap g.toRingHom) _ g
     (RingHom.surjectiveOnStalks_of_surjective hf₁) rfl

@@ -67,7 +67,7 @@ theorem ι_obj {X} : P.ι.obj X = X.obj :=
 theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f.hom :=
   rfl
 
-lemma prop_ι_obj (X) : P (P.ι.obj X) := X.2
+lemma prop_ι_obj (X) : P (P.ι.obj X) := X.property
 
 @[simp]
 lemma FullSubcategory.id_hom (X : P.FullSubcategory) :
@@ -131,7 +131,7 @@ variable {P' : ObjectProperty C}
 an induced functor `P.FullSubcategory ⥤ P'.FullSubcategory`. -/
 @[simps, implicit_reducible]
 def ιOfLE (h : P ≤ P') : P.FullSubcategory ⥤ P'.FullSubcategory where
-  obj X := ⟨X.1, h _ X.2⟩
+  obj X := ⟨X.obj, h _ X.property⟩
   map f := homMk f.hom
 
 /-- If `h : P ≤ P'`, then `ιOfLE h` is fully faithful. -/

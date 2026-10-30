@@ -164,7 +164,7 @@ theorem isIrreducible_iff_exists_pow_pos
   let : Quiver n := toQuiver A
   constructor
   · intro h_irr i j
-    obtain ⟨p, hp_len⟩ := h_irr.2 i j
+    obtain ⟨p, hp_len⟩ := h_irr.connected i j
     refine ⟨p.length, hp_len, ?_⟩
     have : Nonempty {q : Path i j // q.length = p.length} := ⟨⟨p, rfl⟩⟩
     have hpos :=

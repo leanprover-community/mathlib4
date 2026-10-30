@@ -45,11 +45,12 @@ theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
     ∃ U : Clopens X, a.1 ∈ U ∧ ∃ V : Clopens Y, a.2 ∈ V ∧ U ×ˢ V ≤ W := by
   have hp : Continuous (fun y : Y ↦ (a.1, y)) := .prodMk_right _
   let V : Set Y := {y | (a.1, y) ∈ W}
-  have hV : IsCompact V := (W.2.1.preimage hp).isCompact
+  have hV : IsCompact V := (W.isClopen'.1.preimage hp).isCompact
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
-  exact ⟨⟨U, (ContinuousMap.isClopen_setOfPred_mapsTo hV W.2).preimage
-    (ContinuousMap.id (X × Y)).curry.2⟩, by simp [U, V, MapsTo], ⟨V, W.2.preimage hp⟩, h, hUV⟩
+  exact ⟨⟨U, (ContinuousMap.isClopen_setOfPred_mapsTo hV W.isClopen').preimage
+    (ContinuousMap.id (X × Y)).curry.continuous_toFun⟩, by simp [U, V, MapsTo],
+    ⟨V, W.isClopen'.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
 
@@ -58,8 +59,8 @@ is a union of finitely many clopen boxes. -/
 theorem exists_finset_eq_sup_prod (W : Clopens (X × Y)) :
     ∃ (I : Finset (Clopens X × Clopens Y)), W = I.sup fun i ↦ i.1 ×ˢ i.2 := by
   choose! U hxU V hxV hUV using fun x ↦ W.exists_prod_subset (a := x)
-  rcases W.2.1.isCompact.elim_nhds_subcover (fun x ↦ U x ×ˢ V x) (fun x hx ↦
-    (U x ×ˢ V x).2.isOpen.mem_nhds ⟨hxU x hx, hxV x hx⟩) with ⟨I, hIW, hWI⟩
+  rcases W.isClopen'.1.isCompact.elim_nhds_subcover (fun x ↦ U x ×ˢ V x) (fun x hx ↦
+    (U x ×ˢ V x).isClopen'.isOpen.mem_nhds ⟨hxU x hx, hxV x hx⟩) with ⟨I, hIW, hWI⟩
   classical
   use I.image fun x ↦ (U x, V x)
   rw [Finset.sup_image]
@@ -87,9 +88,10 @@ lemma countable_iff_secondCountable [T2Space X] [TotallyDisconnectedSpace X] :
   refine ⟨fun h ↦ ⟨_, ?_, isTopologicalBasis_isClopen.eq_generateFrom⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
     exact Injective.of_eq_imp_le (f := f) (·.le) |>.countable
-  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = (SetLike.coe t).sUnion :=
+  · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)),
+        s.carrier = (SetLike.coe t).sUnion :=
       fun s ↦ eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _
-        (isBasis_countableBasis X) s.1 s.2.1.isCompact s.2.2
+        (isBasis_countableBasis X) s.carrier s.isClopen'.1.isCompact s.isClopen'.2
     let f : Clopens X → Finset (countableBasis X) := fun s ↦ (this s).choose
     have hf : f.Injective := by
       intro s t (h : Exists.choose _ = Exists.choose _)

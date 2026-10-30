@@ -162,7 +162,7 @@ lemma isClosedMap_restrict :
   simp only [isClosed_iff, mem_image, map_eq_zero, exists_eq_right, ne_eq, image_subset_iff]
   refine (em _).imp_right fun h ↦ ?_
   obtain ⟨γ, h⟩ := hU _ h
-  exact ⟨γ.1, γ.ne_zero, h.trans fun h ↦ by simp⟩
+  exact ⟨γ.val, γ.ne_zero, h.trans fun h ↦ by simp⟩
 
 end WithZeroTopology
 
@@ -180,7 +180,7 @@ namespace IsValuativeTopology
 instance (priority := 100) [IsUniformAddGroup K] : CompletableTopField K where
   nice F hF h0 := by
     obtain ⟨γ₀, M₀, M₀_in, H₀⟩ : ∃ γ₀ : ((valuation K).ValueGroup₀)ˣ, ∃ M ∈ F,
-        ∀ x ∈ M, (γ₀.1) ≤ (valuation K).restrict x := by
+        ∀ x ∈ M, (γ₀.val) ≤ (valuation K).restrict x := by
       rcases inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
       rcases ((valuation K).mem_nhds_zero_iff _).mp U_in with ⟨γ₀, hU⟩
       exact ⟨γ₀, M, M_in, fun x xM ↦ le_of_not_gt (fun hyp ↦ Set.mem_empty_iff_false x|>.1 <| H ▸
@@ -418,9 +418,9 @@ theorem embedding_valueGroup₀ExtensionEquiv_symm (a : v.extension.ValueGroup�
 
 /-- `Valuation.closure_image_coe_ofPred_map_lt`, stated for the open balls of `v.restrict`. -/
 theorem closure_image_coe_ofPred_restrict_lt (γ : v.ValueGroup₀ˣ) :
-    closure ((↑) '' {x : K | v.restrict x < γ.1}) =
-      {x : Completion K | v.extension x < embedding γ.1} := by
-  rw [show {x : K | v.restrict x < γ.1} = {x : K | v x < embedding γ.1} from
+    closure ((↑) '' {x : K | v.restrict x < γ.val}) =
+      {x : Completion K | v.extension x < embedding γ.val} := by
+  rw [show {x : K | v.restrict x < γ.val} = {x : K | v x < embedding γ.val} from
     Set.ext fun _ ↦ v.restrict_lt_iff_lt_embedding]
   exact v.closure_image_coe_ofPred_map_lt (by simp)
 
@@ -429,11 +429,11 @@ theorem closure_image_coe_ofPred_restrict_lt (γ : v.ValueGroup₀ˣ) :
 the instance `IsValuativeTopology (Completion K)` is available. -/
 theorem hasBasis_nhds_coe_zero :
     (𝓝 (0 : Completion K)).HasBasis (fun _ ↦ True)
-      fun γ : v.extension.ValueGroup₀ˣ ↦ {x | v.extension.restrict x < γ.1} := by
+      fun γ : v.extension.ValueGroup₀ˣ ↦ {x | v.extension.restrict x < γ.val} := by
   have h := v.hasBasis_nhds_zero.hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
   simp only [Completion.coe_zero, closure_image_coe_ofPred_restrict_lt] at h
-  refine h.to_hasBasis (fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀ExtensionEquiv γ.1) (by simp),
-      trivial, fun x hx ↦ ?_⟩) fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀ExtensionEquiv.symm γ.1)
+  refine h.to_hasBasis (fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀ExtensionEquiv γ.val) (by simp),
+      trivial, fun x hx ↦ ?_⟩) fun γ _ ↦ ⟨Units.mk0 (v.valueGroup₀ExtensionEquiv.symm γ.val)
       (by simp), trivial, fun x hx ↦ ?_⟩
   · simpa [v.extension.restrict_lt_iff_lt_embedding] using hx
   · exact v.extension.restrict_lt_iff_lt_embedding.2 (by simpa using hx)

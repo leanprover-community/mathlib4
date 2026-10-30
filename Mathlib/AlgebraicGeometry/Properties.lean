@@ -36,7 +36,7 @@ variable (X : Scheme)
 
 instance : T0Space X :=
   T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
-    (X.affineCover.f _).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
+    (X.affineCover.f _).opensRange.is_open', IsEmbedding.t0Space (Y := PrimeSpectrum _)
     (isAffineOpen_opensRange (X.affineCover.f _)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
@@ -54,7 +54,7 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
   have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
     .of_isClosedEmbedding (Y := PrimeSpectrum _) _
       Y.isoSpec.hom.homeomorph.isClosedEmbedding
-  have (i : _) : PrespectralSpace (X.affineCover.f i).opensRange.1 :=
+  have (i : _) : PrespectralSpace (X.affineCover.f i).opensRange.carrier :=
     this (X.affineCover.f i).opensRange (isAffineOpen_opensRange (X.affineCover.f i))
   .of_isOpenCover X.affineCover.isOpenCover_opensRange
 
@@ -248,7 +248,7 @@ instance [IsIntegral X] : IsDomain Γ(X, ⊤) :=
 instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X := by
   constructor
   intro U
-  rcases U.1.eq_empty_or_nonempty with h | h
+  rcases U.carrier.eq_empty_or_nonempty with h | h
   · have : U = ⊥ := SetLike.ext' h
     have : Subsingleton Γ(X, U) :=
       CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty this)
@@ -268,15 +268,17 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   simp_rw [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at H
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
   rw [Set.not_univ_subset] at h₂ h₃
-  have : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
-  have : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
-  have : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
+  have : Nonempty (⟨Sᶜ, hS.isOpen_compl⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec⟩⟩
+  have : Nonempty (⟨Tᶜ, hT.isOpen_compl⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec⟩⟩
+  have : Nonempty (⟨Sᶜ, hS.isOpen_compl⟩ ⊔ ⟨Tᶜ, hT.isOpen_compl⟩ : X.Opens) :=
+    ⟨⟨_, Or.inl h₂.choose_spec⟩⟩
   let e : Γ(X, _) ≅ ↧_ :=
-    (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
-      (CommRingCat.prodFanIsLimit _ _)
-  · have : IsDomain (Γ(X, ⟨Sᶜ, hS.1⟩) × Γ(X, ⟨Tᶜ, hT.1⟩)) :=
+    (X.sheaf.isProductOfDisjoint ⟨_, hS.isOpen_compl⟩ ⟨_, hT.isOpen_compl⟩
+      ?_).conePointUniqueUpToIso (CommRingCat.prodFanIsLimit _ _)
+  · have : IsDomain (Γ(X, ⟨Sᶜ, hS.isOpen_compl⟩) × Γ(X, ⟨Tᶜ, hT.isOpen_compl⟩)) :=
       e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
-    exact false_of_nontrivial_of_product_domain Γ(X, ⟨Sᶜ, hS.1⟩) Γ(X, ⟨Tᶜ, hT.1⟩)
+    exact false_of_nontrivial_of_product_domain Γ(X, ⟨Sᶜ, hS.isOpen_compl⟩)
+      Γ(X, ⟨Tᶜ, hT.isOpen_compl⟩)
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
@@ -288,14 +290,14 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     IsIntegral X := by
   constructor; · infer_instance
   intro U hU
-  have := (@LocallyRingedSpace.component_nontrivial X.toLocallyRingedSpace U hU).1
+  have := (@LocallyRingedSpace.component_nontrivial X.toLocallyRingedSpace U hU).exists_pair_ne
   have : NoZeroDivisors
       (X.toLocallyRingedSpace.toSheafedSpace.toPresheafedSpace.presheaf.obj (op U)) := by
     refine ⟨fun {a b} e => ?_⟩
     simp_rw [← basicOpen_eq_bot_iff, ← Opens.not_nonempty_iff_eq_bot]
     by_contra! h
     obtain ⟨x, ⟨hxU, hx₁⟩, _, hx₂⟩ :=
-      nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
+      nonempty_preirreducible_inter (X.basicOpen a).is_open' (X.basicOpen b).is_open' h.1 h.2
     replace e := congr(X.presheaf.germ U x hxU $e)
     rw [map_mul, map_zero] at e
     refine zero_ne_one' (X.presheaf.stalk x) (isUnit_zero_iff.1 ?_)

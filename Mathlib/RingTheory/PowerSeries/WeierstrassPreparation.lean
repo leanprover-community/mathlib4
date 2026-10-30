@@ -136,7 +136,7 @@ namespace IsWeierstrassDivisionAt
 theorem coeff_f_sub_r_mem (H : f.IsWeierstrassDivisionAt g q r I)
     {i : ℕ} (hi : i < (g.map (Ideal.Quotient.mk I)).order.toNat) :
     coeff i (f - r : A⟦X⟧) ∈ I := by
-  replace H := H.2
+  replace H := H.eq_mul_add
   rw [← sub_eq_iff_eq_add] at H
   rw [H]
   refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal i (fun j hj ↦ ?_) i le_rfl
@@ -445,7 +445,7 @@ theorem mk_mod'_eq_self [IsAdicComplete I A] {f : A⟦X⟧ ⧸ Ideal.span {g}} :
   obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
   rw [mod'_mk_eq_mod, Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
   use H.div f
-  rw [eq_sub_iff_add_eq, mul_comm, (H.isWeierstrassDivisionAt_div_mod f).2.symm]
+  rw [eq_sub_iff_add_eq, mul_comm, (H.isWeierstrassDivisionAt_div_mod f).eq_mul_add.symm]
 
 end IsWeierstrassDivisorAt
 
@@ -568,7 +568,7 @@ theorem eq_mul_weierstrassDiv_add_weierstrassMod
     [IsAdicComplete (IsLocalRing.maximalIdeal A) A] :
     f = g * (f /ʷ g) + (f %ʷ g) := by
   simp_rw [weierstrassDiv, weierstrassMod, dite_eq_left hg]
-  exact ((IsWeierstrassDivisor.of_map_ne_zero hg).isWeierstrassDivisionAt_div_mod f).2
+  exact ((IsWeierstrassDivisor.of_map_ne_zero hg).isWeierstrassDivisionAt_div_mod f).eq_mul_add
 
 variable {f} in
 /-- The quotient `q` and the remainder `r` in the Weierstrass division are unique.
@@ -580,7 +580,8 @@ instead, which requires the ring being complete with respect to the maximal idea
 theorem IsWeierstrassDivision.elim [IsHausdorff (IsLocalRing.maximalIdeal A) A]
     {q q' : A⟦X⟧} {r r' : A[X]}
     (H : f.IsWeierstrassDivision g q r) (H2 : f.IsWeierstrassDivision g q' r') : q = q' ∧ r = r' :=
-  (IsWeierstrassDivisor.of_map_ne_zero hg).eq_of_mul_add_eq_mul_add H.1 H2.1 (H.2.symm.trans H2.2)
+  (IsWeierstrassDivisor.of_map_ne_zero hg).eq_of_mul_add_eq_mul_add H.degree_lt H2.degree_lt
+    (H.eq_mul_add.symm.trans H2.eq_mul_add)
 
 /-- If `q` and `r` are quotient and remainder in the Weierstrass division `0 / g`, then they are
 equal to `0`. -/
@@ -757,7 +758,7 @@ theorem IsWeierstrassDivision.isWeierstrassFactorization
     g.IsWeierstrassFactorization
       (Polynomial.X ^ (g.map (IsLocalRing.residue A)).order.toNat - r)
       ↑(H.isUnit_of_map_ne_zero hg).unit⁻¹ := by
-  have H1 : r.degree < (g.map (IsLocalRing.residue A)).order.toNat := H.1
+  have H1 : r.degree < (g.map (IsLocalRing.residue A)).order.toNat := H.degree_lt
   set n := (g.map (IsLocalRing.residue A)).order.toNat
   set f := Polynomial.X ^ n - r
   replace H1 : r.degree < (Polynomial.X (R := A) ^ n).degree := by rwa [Polynomial.degree_X_pow]
@@ -771,7 +772,7 @@ theorem IsWeierstrassDivision.isWeierstrassFactorization
     have := H.coeff_f_sub_r_mem hi
     rwa [map_sub, coeff_X_pow, ite_eq_right hi.ne, zero_sub, neg_mem_iff,
       Polynomial.coeff_coe] at this
-  · have := congr($(H.2) * ↑(H.isUnit_of_map_ne_zero hg).unit⁻¹)
+  · have := congr($(H.eq_mul_add) * ↑(H.isUnit_of_map_ne_zero hg).unit⁻¹)
     rw [add_mul, mul_assoc, IsUnit.mul_val_inv, mul_one, ← sub_eq_iff_eq_add] at this
     simp_rw [← this, f, Polynomial.coe_sub, Polynomial.coe_pow, Polynomial.coe_X, sub_mul]
 

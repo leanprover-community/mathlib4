@@ -647,8 +647,8 @@ variable [Module R M] [Module R M₂]
 /-- Convert an `IsLinearMap` predicate to a `LinearMap` -/
 def mk' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ where
   toFun := f
-  map_add' := lin.1
-  map_smul' := lin.2
+  map_add' := lin.map_add
+  map_smul' := lin.map_smul
 
 @[simp]
 theorem mk'_apply {f : M → M₂} (lin : IsLinearMap R f) (x : M) : mk' f lin x = f x :=

@@ -168,7 +168,7 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
     projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
   have mem_max : ∀ x ∈ rs, x ∈ maximalIdeal R := by
     intro x hx
-    apply IsLocalRing.le_maximalIdeal reg.2.symm
+    apply IsLocalRing.le_maximalIdeal reg.top_ne_smul.symm
     simpa using (Ideal.mem_span x).mpr fun p a ↦ a hx
   let e : (Shrink.{v} (R ⧸ Ideal.ofList rs)) ≃ₗ[R]
     (Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)) :=
@@ -177,7 +177,7 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
       simp )))
   rw [projectiveDimension_eq_of_iso e.toModuleIso,
     projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular ↧(Shrink.{v} R) rs
-    (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
+    (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.toIsWeaklyRegular) mem_max,
     ModuleCat.projectiveDimension_eq_zero_of_projective, zero_add]
 
 end ModuleCat

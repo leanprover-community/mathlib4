@@ -100,7 +100,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hpr, hrg⟩ := PrimeSpectrum.isBasis_basic_opens
     |>.exists_subset_of_mem_open (a := ⟨p, ‹_›⟩) (ou := this.isOpen_compl) <| by
     rintro ⟨q, hq, e⟩
-    have : q.asIdeal.LiesOver p := ⟨congr(($e).1).symm⟩
+    have : q.asIdeal.LiesOver p := ⟨congr(($e).asIdeal).symm⟩
     have : 1 ⊗ₜ g ∉ (PrimeSpectrum.preimageEquivFiber R S ⟨p, ‹_›⟩ ⟨q, e⟩).asIdeal :=
       fun h ↦ Ideal.IsPrime.ne_top' (Ideal.eq_top_of_isUnit_mem _ h hgp)
     rw [PrimeSpectrum.preimageEquivFiber_apply_asIdeal] at this
@@ -415,7 +415,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
   have : P'f.LiesOver Pf := ⟨congr($(PrimeSpectrum.localization_comap_injective
       (Localization.Away f) (.powers f) (a₁ := ⟨Pf, ‹_›⟩)
       (a₂ := ⟨P'f.under _, inferInstance⟩)
-      (PrimeSpectrum.ext ((Pf.over_def P).symm.trans (P'f.over_def P)))).1)⟩
+      (PrimeSpectrum.ext ((Pf.over_def P).symm.trans (P'f.over_def P)))).asIdeal)⟩
   refine ⟨Localization.Away f, inferInstance, inferInstance, inferInstance, Pf, inferInstance,
     .trans _ P _, Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _) e,
     he.map _, P'f, ‹_›, ‹_›, ?_, ?_, ?_, hf, ?_⟩
@@ -433,7 +433,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     have : P''.LiesOver P := .trans _ Pf _
     congrm $(PrimeSpectrum.localization_comap_injective (R := R' ⊗[R] S)
      (Localization.Away f ⊗[R] S) (.powers (f ⊗ₜ 1)) (a₁ := ⟨P'', ‹_›⟩)
-     (a₂ := ⟨P'f, ‹_›⟩) (PrimeSpectrum.ext ?_)).1
+     (a₂ := ⟨P'f, ‹_›⟩) (PrimeSpectrum.ext ?_)).asIdeal
     exact (H (P''.under _) inferInstance inferInstance hP'').trans (P'f.over_def P')
 
 open TensorProduct

@@ -103,10 +103,10 @@ theorem app_hom {P Q : C} (f : P ⟶ Q) (a : Over P) : (app f a).hom = a.hom ≫
 /-- Two arrows `f : X ⟶ P` and `g : Y ⟶ P` are called pseudo-equal if there is some object
 `R` and epimorphisms `p : R ⟶ X` and `q : R ⟶ Y` such that `p ≫ f = q ≫ g`. -/
 def PseudoEqual (P : C) (f g : Over P) : Prop :=
-  ∃ (R : C) (p : R ⟶ f.1) (q : R ⟶ g.1) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
+  ∃ (R : C) (p : R ⟶ f.left) (q : R ⟶ g.left) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
 
 instance pseudoEqual_refl {P : C} : Std.Refl (PseudoEqual P) where
-  refl f := ⟨f.1, 𝟙 f.1, 𝟙 f.1, inferInstance, inferInstance, by simp⟩
+  refl f := ⟨f.left, 𝟙 f.left, 𝟙 f.left, inferInstance, inferInstance, by simp⟩
 
 instance pseudoEqual_symm {P : C} : Std.Symm (PseudoEqual P) where
   symm _ _ := fun ⟨R, p, q, ep, Eq, comm⟩ ↦ ⟨R, q, p, Eq, ep, comm.symm⟩
@@ -206,7 +206,7 @@ attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 /-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms. -/
 theorem pseudoZero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
   ⟨fun ⟨R, p, q, _, _, comm⟩ => zero_of_epi_comp p (by simp [comm]), fun hf =>
-    ⟨biprod f.1 Q, biprod.fst, biprod.snd, inferInstance, inferInstance, by
+    ⟨biprod f.left Q, biprod.fst, biprod.snd, inferInstance, inferInstance, by
       rw [hf, Over.coe_hom, HasZeroMorphisms.comp_zero, HasZeroMorphisms.comp_zero]⟩⟩
 
 end

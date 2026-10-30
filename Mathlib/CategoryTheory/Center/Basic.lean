@@ -73,8 +73,8 @@ lemma smul_eq' (z : CatCenter C) {X Y : C} (f : X ⟶ Y) : z • f = z.app X ≫
 
 instance {X Y : C} : SMul (CatCenter C)ˣ (X ≅ Y) where
   smul z e :=
-    { hom := z.1 • e.hom
-      inv := (z⁻¹).1 • e.inv
+    { hom := z.val • e.hom
+      inv := (z⁻¹).val • e.inv
       hom_inv_id := by
         rw [smul_eq, smul_eq', Category.assoc, ← mul_app_assoc]
         simp
@@ -84,21 +84,21 @@ instance {X Y : C} : SMul (CatCenter C)ˣ (X ≅ Y) where
 
 @[reassoc]
 lemma smul_iso_hom_eq (z : (CatCenter C)ˣ) {X Y : C} (f : X ≅ Y) :
-    (z • f).hom = f.hom ≫ z.1.app Y := rfl
+    (z • f).hom = f.hom ≫ z.val.app Y := rfl
 
 @[reassoc]
 lemma smul_iso_hom_eq' (z : (CatCenter C)ˣ) {X Y : C} (f : X ≅ Y) :
-    (z • f).hom = z.1.app X ≫ f.hom :=
-  z.1.naturality f.hom
+    (z • f).hom = z.val.app X ≫ f.hom :=
+  z.val.naturality f.hom
 
 @[reassoc]
 lemma smul_iso_inv_eq (z : (CatCenter C)ˣ) {X Y : C} (f : X ≅ Y) :
-    (z • f).inv = f.inv ≫ (z⁻¹.1).app X := rfl
+    (z • f).inv = f.inv ≫ (z⁻¹.val).app X := rfl
 
 @[reassoc]
 lemma smul_iso_inv_eq' (z : (CatCenter C)ˣ) {X Y : C} (f : X ≅ Y) :
-    (z • f).inv = (z⁻¹.1).app Y ≫ f.inv :=
-  z.2.naturality f.inv
+    (z • f).inv = (z⁻¹.val).app Y ≫ f.inv :=
+  z.inv.naturality f.inv
 
 end CatCenter
 

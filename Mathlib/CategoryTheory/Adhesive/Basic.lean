@@ -105,7 +105,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
         simp only [Cocone.w]
       rw [(IsColimit.equivOfNatIsoOfIso (diagramIsoSpan F') c' (PushoutCocone.mk _ _ this)
             _).nonempty_congr]
-      · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.2⟩
+      · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.isColimit'⟩
       · refine Cocone.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [c'.w, Category.id_comp, Category.comp_id]
@@ -136,7 +136,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · rintro ⟨h₁, h₂⟩ (_ | _ | _)
         · dsimp; rw [PushoutCocone.condition_zero]; exact hf.paste_horiz h₁
         exacts [h₁, h₂]
-    · exact ⟨fun h => h.2, fun h => ⟨w, h⟩⟩
+    · exact ⟨fun h => h.isColimit', fun h => ⟨w, h⟩⟩
 
 /-- A pushout is van Kampen if and only if whenever it forms the bottom face of a commutative
 "half-cube", the front faces are pullbacks if and only if there exist back faces which are pullbacks
@@ -221,7 +221,7 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
 theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryExtensive C]
     [HasPullbacks C] (hc : IsColimit c) (f : W ⟶ X) (h : X ⟶ Z) (i : c.pt ⟶ Z)
     (H : IsPushout f c.inl h i) : H.IsVanKampen := by
-  obtain ⟨hc₁⟩ := (is_coprod_iff_isPushout c hc H.1).mpr H
+  obtain ⟨hc₁⟩ := (is_coprod_iff_isPushout c hc H.toCommSq).mpr H
   introv W' hf hg hh hi w
   obtain ⟨hc₂⟩ := ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen c hc)
     (BinaryCofan.mk _ (pullback.fst _ _)) _ _ _ hg.w.symm pullback.condition.symm).mpr
@@ -261,27 +261,27 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
 theorem IsPushout.IsVanKampen.isPullback_of_mono_left [Mono f] {H : IsPushout f g h i}
     (H' : H.IsVanKampen) : IsPullback f g h i :=
   ((H' (𝟙 _) g g (𝟙 Y) (𝟙 _) f (𝟙 _) i (IsKernelPair.id_of_mono f)
-      (IsPullback.of_vert_isIso ⟨by simp⟩) H.1.flip ⟨rfl⟩ ⟨by simp⟩).mp
+      (IsPullback.of_vert_isIso ⟨by simp⟩) H.toCommSq.flip ⟨rfl⟩ ⟨by simp⟩).mp
     (IsPushout.of_horiz_isIso ⟨by simp⟩)).1.flip
 
 theorem IsPushout.IsVanKampen.isPullback_of_mono_right [Mono g] {H : IsPushout f g h i}
     (H' : H.IsVanKampen) : IsPullback f g h i :=
   ((H' f (𝟙 _) (𝟙 _) f (𝟙 _) (𝟙 _) g h (IsPullback.of_vert_isIso ⟨by simp⟩)
-      (IsKernelPair.id_of_mono g) ⟨rfl⟩ H.1 ⟨by simp⟩).mp
+      (IsKernelPair.id_of_mono g) ⟨rfl⟩ H.toCommSq ⟨by simp⟩).mp
     (IsPushout.of_vert_isIso ⟨by simp⟩)).2
 
 theorem IsPushout.IsVanKampen.mono_of_mono_left [Mono f] {H : IsPushout f g h i}
     (H' : H.IsVanKampen) : Mono i :=
   IsKernelPair.mono_of_isIso_fst
     ((H' (𝟙 _) g g (𝟙 Y) (𝟙 _) f (𝟙 _) i (IsKernelPair.id_of_mono f)
-        (IsPullback.of_vert_isIso ⟨by simp⟩) H.1.flip ⟨rfl⟩ ⟨by simp⟩).mp
+        (IsPullback.of_vert_isIso ⟨by simp⟩) H.toCommSq.flip ⟨rfl⟩ ⟨by simp⟩).mp
       (IsPushout.of_horiz_isIso ⟨by simp⟩)).2
 
 theorem IsPushout.IsVanKampen.mono_of_mono_right [Mono g] {H : IsPushout f g h i}
     (H' : H.IsVanKampen) : Mono h :=
   IsKernelPair.mono_of_isIso_fst
     ((H' f (𝟙 _) (𝟙 _) f (𝟙 _) (𝟙 _) g h (IsPullback.of_vert_isIso ⟨by simp⟩)
-        (IsKernelPair.id_of_mono g) ⟨rfl⟩ H.1 ⟨by simp⟩).mp
+        (IsKernelPair.id_of_mono g) ⟨rfl⟩ H.toCommSq ⟨by simp⟩).mp
       (IsPushout.of_vert_isIso ⟨by simp⟩)).1
 
 /-- A category is adhesive if it has pushouts and pullbacks along monomorphisms,

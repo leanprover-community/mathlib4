@@ -77,7 +77,7 @@ theorem HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
   apply ContinuousOn.eq_of_eqOn_Ioo (r := ‖w - c‖)
   · apply ContinuousOn.circleAverage
     · rw [herglotzRieszKernel_fun_def]
-      apply (continuousOn_herglotz_riesz hw).smul (hf.2.mono _)
+      apply (continuousOn_herglotz_riesz hw).smul (hf.continuousOn.mono _)
       grind [closure_ball c (pos_of_mem_ball hw).ne', mem_closedBall_iff_norm]
     · grind [norm_nonneg (w - c)]
   · grind [mem_ball_iff_norm]

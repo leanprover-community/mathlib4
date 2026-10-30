@@ -109,7 +109,7 @@ theorem isLittleO_one_left_iff : (fun _x => 1 : α → F) =o[l] f ↔ Tendsto (f
     _ ↔ ∀ n : ℕ, True → ∀ᶠ x in l, ‖f x‖ ∈ Ici (n : ℝ) := by
       simp only [norm_one, mul_one, true_imp_iff, mem_Ici]
     _ ↔ Tendsto (fun x => ‖f x‖) l atTop :=
-      atTop_hasCountableBasis_of_archimedean.1.tendsto_right_iff.symm
+      atTop_hasCountableBasis_of_archimedean.toHasBasis.tendsto_right_iff.symm
 
 theorem _root_.Filter.Tendsto.isBigO_one {c : E'} (h : Tendsto f' l (𝓝 c)) :
     f' =O[l] (fun _x => 1 : α → F) :=

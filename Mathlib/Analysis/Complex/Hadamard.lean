@@ -471,8 +471,8 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ (f : ℂ → E) {z : 
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :
     ‖f z‖ ≤ ‖interpStrip f z‖ := by
   apply le_on_closure (fun w hw ↦ norm_le_interpStrip_of_mem_verticalStrip_zero f w hd hB hw)
-    (Continuous.comp_continuousOn' continuous_norm hd.2)
-    (Continuous.comp_continuousOn' continuous_norm (diffContOnCl_interpStrip f).2)
+    (Continuous.comp_continuousOn' continuous_norm hd.continuousOn)
+    (Continuous.comp_continuousOn' continuous_norm (diffContOnCl_interpStrip f).continuousOn)
   rwa [verticalClosedStrip, ← closure_Ioo zero_ne_one, ← closure_preimage_re] at hz
 
 /-- **Hadamard three-line theorem** on `re ⁻¹' [0, 1]` (Variant in simpler terms): Let `f` be a

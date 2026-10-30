@@ -58,7 +58,7 @@ theorem imageOfDf_eq_comap_C_compl_zeroLocus :
     obtain ⟨i, hi⟩ := hx
     exact fun a => hi (mem_map_C_iff.mp a i)
   · ext x
-    refine ⟨fun h => ?_, fun h => subset_span (mem_image_of_mem C.1 h)⟩
+    refine ⟨fun h => ?_, fun h => subset_span (mem_image_of_mem C.toMonoidHom h)⟩
     rw [← @coeff_C_zero R x _]
     exact mem_map_C_iff.mp h 0
   · rintro ⟨xli, complement, rfl⟩

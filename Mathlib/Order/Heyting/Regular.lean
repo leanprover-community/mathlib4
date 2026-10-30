@@ -87,8 +87,8 @@ abbrev _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) 
     GeneralizedHeytingAlgebra.toDistribLattice with
     himp_eq := fun _ _ =>
       eq_of_forall_le_iff fun _ => le_himp_iff.trans (this _).le_sup_right_iff_inf_left_le.symm
-    inf_compl_le_bot := fun _ => (this _).1.le_bot
-    top_le_sup_compl := fun _ => (this _).2.top_le }
+    inf_compl_le_bot := fun _ => (this _).disjoint.le_bot
+    top_le_sup_compl := fun _ => (this _).codisjoint.top_le }
 
 variable (α)
 

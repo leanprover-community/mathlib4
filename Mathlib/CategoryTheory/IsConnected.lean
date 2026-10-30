@@ -115,7 +115,7 @@ The converse is given in `IsConnected.of_any_functor_const_on_obj`.
 -/
 theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j j' : J) :
     F.obj j = F.obj j' := by
-  ext; exact ((isoConstant F j').hom.app j).1
+  ext; exact ((isoConstant F j').hom.app j).eq
 
 /-- If any functor to a discrete category is constant on objects, J is connected.
 The converse of `any_functor_const_on_obj`.
@@ -410,8 +410,8 @@ theorem equiv_relation [IsPreconnected J] (r : J → J → Prop) (hr : _root_.Eq
     (h : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), r j₁ j₂) : ∀ j₁ j₂ : J, r j₁ j₂ := by
   intro j₁ j₂
   have z : ∀ j : J, r j₁ j :=
-    induct_on_objects {k | r j₁ k} (hr.1 j₁)
-      fun f => ⟨fun t => hr.3 t (h f), fun t => hr.3 t (hr.2 (h f))⟩
+    induct_on_objects {k | r j₁ k} (hr.refl j₁)
+      fun f => ⟨fun t => hr.trans t (h f), fun t => hr.trans t (hr.symm (h f))⟩
   exact z j₂
 
 /-- In a connected category, any two objects are related by `Zigzag`. -/

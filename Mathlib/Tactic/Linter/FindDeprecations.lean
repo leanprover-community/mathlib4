@@ -142,7 +142,7 @@ def deprecatedHashMap (oldDate newDate : String) :
       let fm := FileMap.ofString file
       let rg : Lean.Syntax.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
       fin := fin.alter (modName, lean) fun a =>
-        (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
+        (a.getD #[]).binInsert (·.2.start < ·.2.start) (decl, rg)
   return fin
 
 /--
@@ -263,7 +263,7 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × Lean.Syntax.Range)) :
   let rems : Std.HashSet _ := removals.fold (init := ∅) fun tot ↦ fun
     | [a, b, _c] => tot.insert (⟨a, b⟩ : Lean.Syntax.Range)
     | _ => tot
-  return (fname_with_option, ← removeDeprecations fname (rems.toArray.qsort (·.1 < ·.1)))
+  return (fname_with_option, ← removeDeprecations fname (rems.toArray.qsort (·.start < ·.start)))
 
 /-- The `<` partial order on modules: `importLT env mod₁ mod₂` means that `mod₂` imports `mod₁`. -/
 def importLT (env : Environment) (f1 f2 : Name) : Bool :=

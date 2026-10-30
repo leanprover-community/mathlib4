@@ -24,7 +24,7 @@ lemma not_weaklyQuasiFiniteAt (P : Ideal R[X]) [P.IsPrime] : ¬ Algebra.WeaklyQu
     obtain ⟨Q, hQ⟩ := (PrimeSpectrum.preimageEquivFiber R R[X]
         ⟨p, inferInstance⟩).symm.surjective ⟨⟨P, ‹_›⟩, rfl⟩
     have inst : Algebra.WeaklyQuasiFiniteAt p.ResidueField Q.asIdeal :=
-      .baseChange P Q.asIdeal congr($(hQ.symm).1.1)
+      .baseChange P Q.asIdeal congr($(hQ.symm).1.asIdeal)
     exact this (Q.asIdeal.comap (polyEquivTensor' R p.ResidueField).toRingHom)
       inferInstance (Field.toIsField _)
   let := hR.toField
@@ -79,7 +79,7 @@ lemma not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt
   obtain ⟨Q, hQ⟩ := (PrimeSpectrum.preimageEquivFiber _ _
       ⟨p, inferInstance⟩).symm.surjective ⟨⟨P, ‹_›⟩, PrimeSpectrum.ext (P.over_def p).symm⟩
   have inst : Algebra.WeaklyQuasiFiniteAt p.ResidueField Q.asIdeal :=
-    .baseChange P Q.asIdeal congr($(hQ.symm).1.1)
+    .baseChange P Q.asIdeal congr($(hQ.symm).1.asIdeal)
   exact Polynomial.not_weaklyQuasiFiniteAt (Q.asIdeal.comap g'.toRingHom) inferInstance
 
 /--

@@ -64,7 +64,7 @@ private lemma G2_partial_sum_eq (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summan
     Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, mul_comm, mul_sum]
   congr with a
   have H2 := qExpansion_identity_pnat (k := 1) (by grind)
-    ⟨(a + 1) * z, by simpa [show 0 < ((a + 1) : ℝ) by positivity] using z.2⟩
+    ⟨(a + 1) * z, by simpa [show 0 < ((a + 1) : ℝ) by positivity] using z.coe_im_pos⟩
   simp only [add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
     Even.neg_pow, Nat.factorial_one, Nat.cast_one, div_one, pow_one] at H2
   simp_rw [zpow_ofNat, H2, ← tsum_mul_left, ← tsum_neg, ← exp_nsmul]
@@ -180,9 +180,9 @@ private lemma aux_sum_Ico_S_identity (N : ℕ) :
 
 lemma tendsto_double_sum_S_act :
     Tendsto (fun N : ℕ ↦ (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
-    (𝓝 ((z.1 ^ 2)⁻¹ * G2 (S • z))) := by
+    (𝓝 ((z.coe ^ 2)⁻¹ * G2 (S • z))) := by
   rw [G2_eq_tsum_symmetricIco, ← tsum_mul_left]
-  have := ((summable_e2Summand_symmetricIco (S • z)).mul_left (z.1 ^ 2)⁻¹).hasSum
+  have := ((summable_e2Summand_symmetricIco (S • z)).mul_left (z.coe ^ 2)⁻¹).hasSum
   simp only [HasSum, symmetricIco, tendsto_map'_iff, modular_S_smul, ← Nat.map_cast_int_atTop] at *
   apply this.congr (fun N ↦ ?_)
   simpa [e2Summand, eisSummand, ← mul_sum] using! aux_sum_Ico_S_identity z N

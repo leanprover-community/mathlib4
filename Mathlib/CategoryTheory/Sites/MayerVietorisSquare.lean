@@ -124,7 +124,7 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
   mk' sq (fun F ↦ by
     apply Square.IsPullback.mk
     refine PullbackCone.IsLimit.mk _
-      (fun s ↦ F.2.amalgamateOfArrows _ h₂
+      (fun s ↦ F.property.amalgamateOfArrows _ h₂
         (fun j ↦ WalkingPair.casesOn j s.fst s.snd)
         (fun W ↦ by
           rintro (_ | _) (_ | _) a b fac
@@ -136,13 +136,13 @@ noncomputable def mk_of_isPullback (sq : Square C) [Mono sq.f₂₄] [Mono sq.f�
             simpa using s.condition.symm =≫ F.obj.map φ.op
           · obtain rfl : a = b := by simpa only [← cancel_mono sq.f₃₄] using fac
             rfl)) (fun _ ↦ ?_) (fun _ ↦ ?_) (fun s m hm₁ hm₂ ↦ ?_)
-    · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left
-    · exact F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right
-    · apply F.2.hom_ext_ofArrows _ h₂
+    · exact F.property.amalgamateOfArrows_map _ _ _ _ WalkingPair.left
+    · exact F.property.amalgamateOfArrows_map _ _ _ _ WalkingPair.right
+    · apply F.property.hom_ext_ofArrows _ h₂
       rintro (_ | _)
-      · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.left]
+      · rw [F.property.amalgamateOfArrows_map _ _ _ _ WalkingPair.left]
         exact hm₁
-      · rw [F.2.amalgamateOfArrows_map _ _ _ _ WalkingPair.right]
+      · rw [F.property.amalgamateOfArrows_map _ _ _ _ WalkingPair.right]
         exact hm₂)
 
 variable (S : J.MayerVietorisSquare)

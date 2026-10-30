@@ -107,7 +107,7 @@ instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ 
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y] :
     IsIso f := by
-  have : IsEmpty X := f.base.hom.1.isEmpty
+  have : IsEmpty X := f.base.hom.toFun.isEmpty
   have : Epi f.base := by
     rw [TopCat.epi_iff_surjective]; rintro (x : Y)
     exact isEmptyElim x
@@ -318,7 +318,7 @@ variable (X Y : Scheme.{u})
 /-- (Implementation Detail)
 The coproduct of the two schemes is given by indexed coproducts over `WalkingPair`. -/
 noncomputable
-def coprodIsoSigma : X ⨿ Y ≅ ∐ fun i : ULift.{u} WalkingPair ↦ i.1.casesOn X Y :=
+def coprodIsoSigma : X ⨿ Y ≅ ∐ fun i : ULift.{u} WalkingPair ↦ i.down.casesOn X Y :=
   Sigma.whiskerEquiv Equiv.ulift.symm (fun _ ↦ by exact Iso.refl _)
 
 lemma ι_left_coprodIsoSigma_inv : Sigma.ι _ ⟨.left⟩ ≫ (coprodIsoSigma X Y).inv = coprod.inl :=
@@ -410,11 +410,12 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
   convert nonempty_isColimit_cofanMk_of fi _ _
   · intro i
     cases i <;> (simp only [fi]; infer_instance)
-  · simpa [← WalkingPair.equivBool.symm.iSup_comp, iSup_bool_eq, ← codisjoint_iff] using hf.2
+  · simpa [← WalkingPair.equivBool.symm.iSup_comp, iSup_bool_eq, ← codisjoint_iff]
+      using hf.codisjoint
   · intro i j hij
     match i, j with
-    | .left, .right => simpa [fi] using hf.1
-    | .right, .left => simpa [fi] using hf.1.symm
+    | .left, .right => simpa [fi] using hf.disjoint
+    | .right, .left => simpa [fi] using hf.disjoint.symm
 
 lemma isPullback_inl_inl_coprodMap {X Y X' Y' : Scheme.{u}}
     (f : X ⟶ X') (g : Y ⟶ Y') : IsPullback f coprod.inl coprod.inl (coprod.map f g) := by
@@ -424,7 +425,7 @@ lemma isPullback_inl_inl_coprodMap {X Y X' Y' : Scheme.{u}}
     obtain ⟨(x | x), rfl⟩ := (coprodMk _ _).surjective x
     · rw [← SetLike.mem_coe]; simp -- TODO : add `Scheme.Hom.mem_opensRange`
     · simp only [coprodMk_inr, ← Scheme.Hom.comp_apply, coprod.inr_map] at hxy
-      cases Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr _ _).1 ⟨y, rfl⟩ ⟨_, rfl⟩ hxy
+      cases Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr _ _).disjoint ⟨y, rfl⟩ ⟨_, rfl⟩ hxy
   · rintro _ ⟨x, rfl⟩
     exact ⟨f x, by simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]⟩
 
@@ -613,7 +614,7 @@ instance (R : ι → CommRingCat.{u}) : IsOpenImmersion (sigmaSpec R) := by
   have : DFinsupp.single (β := (R ·)) iy 1 iy ∈ y.asIdeal :=
     (PrimeSpectrum.ext_iff.mp e).le (x := DFinsupp.single iy 1)
       (show DFinsupp.single (β := (R ·)) iy 1 ix ∈ x.asIdeal by simp [h.symm])
-  simp [← Ideal.eq_top_iff_one, y.2.ne_top] at this
+  simp [← Ideal.eq_top_iff_one, y.isPrime.ne_top] at this
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Finite ι] (R : ι → CommRingCat.{u}) : IsIso (sigmaSpec R) := by

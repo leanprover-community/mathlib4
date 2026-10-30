@@ -58,11 +58,11 @@ variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a : α}
 
 /-- `s ∪ t` is the set such that `a ∈ s ∪ t` iff `a ∈ s` or `a ∈ t`. -/
 instance : Union (Finset α) :=
-  ⟨fun s t => ⟨_, t.2.ndunion s.1⟩⟩
+  ⟨fun s t => ⟨_, t.nodup.ndunion s.val⟩⟩
 
 /-- `s ∩ t` is the set such that `a ∈ s ∩ t` iff `a ∈ s` and `a ∈ t`. -/
 instance : Inter (Finset α) :=
-  ⟨fun s t => ⟨_, s.2.ndinter t.1⟩⟩
+  ⟨fun s t => ⟨_, s.nodup.ndinter t.val⟩⟩
 
 instance : Lattice (Finset α) where
   sup := (· ∪ ·)
@@ -92,12 +92,12 @@ theorem inf_eq_inter {s t : Finset α} : s ⊓ t = s ∩ t :=
 
 /-! #### union -/
 
-theorem union_val_nd (s t : Finset α) : (s ∪ t).1 = ndunion s.1 t.1 :=
+theorem union_val_nd (s t : Finset α) : (s ∪ t).val = ndunion s.val t.val :=
   rfl
 
 @[simp]
-theorem union_val (s t : Finset α) : (s ∪ t).1 = s.1 ∪ t.1 :=
-  ndunion_eq_union s.2
+theorem union_val (s t : Finset α) : (s ∪ t).val = s.val ∪ t.val :=
+  ndunion_eq_union s.nodup
 
 @[simp, grind =]
 theorem mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
@@ -186,12 +186,12 @@ theorem union_eq_union_iff_left : s ∪ t = s ∪ u ↔ t ⊆ s ∪ u ∧ u ⊆ 
 theorem union_eq_union_iff_right : s ∪ u = t ∪ u ↔ s ⊆ t ∪ u ∧ t ⊆ s ∪ u :=
   sup_eq_sup_iff_right
 
-theorem inter_val_nd (s₁ s₂ : Finset α) : (s₁ ∩ s₂).1 = ndinter s₁.1 s₂.1 :=
+theorem inter_val_nd (s₁ s₂ : Finset α) : (s₁ ∩ s₂).val = ndinter s₁.val s₂.val :=
   rfl
 
 @[simp]
-theorem inter_val (s₁ s₂ : Finset α) : (s₁ ∩ s₂).1 = s₁.1 ∩ s₂.1 :=
-  ndinter_eq_inter s₁.2
+theorem inter_val (s₁ s₂ : Finset α) : (s₁ ∩ s₂).val = s₁.val ∩ s₂.val :=
+  ndinter_eq_inter s₁.nodup
 
 @[simp, grind =]
 theorem mem_inter {a : α} {s₁ s₂ : Finset α} : a ∈ s₁ ∩ s₂ ↔ a ∈ s₁ ∧ a ∈ s₂ :=

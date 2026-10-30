@@ -174,7 +174,7 @@ variable [TopologicalSpace β] (x : α)
 
 instance [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
-            continuous_toFun := (0 : C(α, β)).2
+            continuous_toFun := (0 : C(α, β)).continuous_toFun
             hasCompactSupport' := by simp [HasCompactSupport, tsupport] }
 
 instance [Zero β] : Inhabited C_c(α, β) :=
@@ -188,7 +188,7 @@ theorem zero_apply [Zero β] : (0 : C_c(α, β)) x = 0 :=
   rfl
 
 instance [MulZeroClass β] [ContinuousMul β] : Mul C_c(α, β) :=
-  ⟨fun f g => ⟨f * g, HasCompactSupport.mul_left g.2⟩⟩
+  ⟨fun f g => ⟨f * g, HasCompactSupport.mul_left g.hasCompactSupport'⟩⟩
 
 @[simp]
 theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f * g) = f * g :=
@@ -223,7 +223,7 @@ instance [SemigroupWithZero β] [ContinuousMul β] :
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 instance [AddZeroClass β] [ContinuousAdd β] : Add C_c(α, β) :=
-  ⟨fun f g => ⟨f + g, HasCompactSupport.add f.2 g.2⟩⟩
+  ⟨fun f g => ⟨f + g, HasCompactSupport.add f.hasCompactSupport' g.hasCompactSupport'⟩⟩
 
 @[simp]
 theorem coe_add [AddZeroClass β] [ContinuousAdd β] (f g : C_c(α, β)) : ⇑(f + g) = f + g :=
@@ -243,7 +243,8 @@ def coeFnMonoidHom [AddMonoid β] [ContinuousAdd β] : C_c(α, β) →+ α → �
 
 instance [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] :
     SMul R C_c(α, β) := fast_instance%
-  ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩, HasCompactSupport.smul_left f.2⟩⟩
+  ⟨fun r f => ⟨⟨r • ⇑f, (map_continuous f).const_smul r⟩,
+    HasCompactSupport.smul_left f.hasCompactSupport'⟩⟩
 
 @[simp, norm_cast]
 theorem coe_smul [Zero β] {R : Type*} [SMulZeroClass R β] [ContinuousConstSMul R β] (r : R)
@@ -277,9 +278,10 @@ section AddGroup
 variable [AddGroup β] [IsTopologicalAddGroup β] (f g : C_c(α, β))
 
 instance : Neg C_c(α, β) where
-  neg f := { toFun := -f.1
-             continuous_toFun := map_continuous (-f.1)
-             hasCompactSupport' := by simpa [HasCompactSupport, tsupport] using f.2 }
+  neg f := { toFun := -f.toContinuousMap
+             continuous_toFun := map_continuous (-f.toContinuousMap)
+             hasCompactSupport' := by
+               simpa [HasCompactSupport, tsupport] using f.hasCompactSupport' }
 
 @[simp]
 theorem coe_neg : ⇑(-f) = -f :=
@@ -289,10 +291,11 @@ theorem neg_apply : (-f) x = -f x :=
   rfl
 
 instance : Sub C_c(α, β) where
-  sub f g := { toFun := f.1 - g.1
-               continuous_toFun := map_continuous (f.1 - g.1)
+  sub f g := { toFun := f.toContinuousMap - g.toContinuousMap
+               continuous_toFun := map_continuous (f.toContinuousMap - g.toContinuousMap)
                hasCompactSupport' := by
-                 simpa [sub_eq_add_neg] using HasCompactSupport.add f.2 (-g).2 }
+                 simpa [sub_eq_add_neg] using
+                   HasCompactSupport.add f.hasCompactSupport' (-g).hasCompactSupport' }
 
 @[simp]
 theorem coe_sub : ⇑(f - g) = f - g :=
@@ -394,7 +397,7 @@ instance : Star C_c(α, β) where
           ext x
           simp only [Function.mem_support, ne_eq, star_eq_zero]
         rw [support_star]
-        exact f.2 }
+        exact f.hasCompactSupport' }
 
 @[simp]
 theorem coe_star (f : C_c(α, β)) : ⇑(star f) = star (⇑f) :=
@@ -558,13 +561,14 @@ yields another continuous function with compact support. -/
 def comp (f : C_c(γ, δ)) (g : β →co γ) : C_c(β, δ) where
   toContinuousMap := (f : C(γ, δ)).comp g
   hasCompactSupport' := by
-    apply IsCompact.of_isClosed_subset (g.isCompact_preimage_of_isClosed f.2 (isClosed_tsupport _))
+    apply IsCompact.of_isClosed_subset
+      (g.isCompact_preimage_of_isClosed f.hasCompactSupport' (isClosed_tsupport _))
       (isClosed_tsupport (f ∘ g))
     intro x hx
     rw [tsupport, Set.mem_preimage, _root_.mem_closure_iff]
     intro o ho hgxo
     rw [tsupport, _root_.mem_closure_iff] at hx
-    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage g.1.2 ho) hgxo
+    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage g.toContinuousMap.continuous_toFun ho) hgxo
     exact ⟨g y, hy⟩
 
 @[simp]
@@ -671,7 +675,7 @@ namespace CompactlySupportedContinuousMap
 set_option backward.isDefEq.respectTransparency.types false in
 protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f₂) : ∃ (g : C_c(α, ℝ≥0)),
     f₁ + g = f₂ := by
-  refine ⟨⟨f₂.1 - f₁.1, ?_⟩, ?_⟩
+  refine ⟨⟨f₂.toContinuousMap - f₁.toContinuousMap, ?_⟩, ?_⟩
   · apply (f₁.hasCompactSupport'.union f₂.hasCompactSupport').of_isClosed_subset isClosed_closure
     rw [tsupport, tsupport, ← closure_union]
     apply closure_mono

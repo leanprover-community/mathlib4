@@ -122,7 +122,7 @@ theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card 
   let P : Sylow p G := default
   rw [← hp.pow_dvd_iff_le_factorization Monoid.exponent_ne_zero_of_finite,
       ← P.card_eq_multiplicity, ← (isZGroup p hp P).exponent_eq_card]
-  exact Monoid.exponent_dvd_of_monoidHom P.1.subtype P.1.subtype_injective
+  exact Monoid.exponent_dvd_of_monoidHom P.toSubgroup.subtype P.toSubgroup.subtype_injective
 
 open scoped IsMulCommutative in
 instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
@@ -234,7 +234,7 @@ variable [Finite G] (P : Sylow p G) [IsCyclic P]
 /-- If a normal cyclic Sylow `p`-subgroup `P` has a complement `K`, then either `⁅K, P⁆ = ⊥` or
   `⁅K, P⁆ = P`. -/
 theorem commutator_eq_bot_or_commutator_eq_self [P.Normal] {K : Subgroup G}
-    (h : K.IsComplement' P) : ⁅K, P.1⁆ = ⊥ ∨ ⁅K, P.1⁆ = P :=
+    (h : K.IsComplement' P) : ⁅K, P.toSubgroup⁆ = ⊥ ∨ ⁅K, P.toSubgroup⁆ = P :=
   P.isPGroup.commutator_eq_bot_or_commutator_eq_self (P.normalizer_eq_top ▸ le_top)
     (h.index_eq_card ▸ P.card_coprime_index)
 

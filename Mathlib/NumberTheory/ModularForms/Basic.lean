@@ -157,14 +157,14 @@ theorem ModularForm.toFun_eq_coe (f : ModularForm Γ k) : f.toFun = (f : ℍ →
   rfl
 
 @[simp]
-theorem ModularForm.toSlashInvariantForm_coe (f : ModularForm Γ k) : ⇑f.1 = f :=
+theorem ModularForm.toSlashInvariantForm_coe (f : ModularForm Γ k) : ⇑f.toSlashInvariantForm = f :=
   rfl
 
 theorem CuspForm.toFun_eq_coe {f : CuspForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
   rfl
 
 @[simp]
-theorem CuspForm.toSlashInvariantForm_coe (f : CuspForm Γ k) : ⇑f.1 = f := rfl
+theorem CuspForm.toSlashInvariantForm_coe (f : CuspForm Γ k) : ⇑f.toSlashInvariantForm = f := rfl
 
 @[ext]
 theorem ModularForm.ext {f g : ModularForm Γ k} (h : ∀ x, f x = g x) : f = g :=
@@ -243,7 +243,7 @@ local instance : IsScalarTower α ℂ ℂ where
 
 instance instSMulℝ : SMul α (ModularForm Γ k) where
   smul c f :=
-  { toSlashInvariantForm := c • f.1
+  { toSlashInvariantForm := c • f.toSlashInvariantForm
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     bdd_at_cusps' hc g hg := by
       simpa only [IsBoundedAtImInfty, Filter.BoundedAtFilter, SlashInvariantForm.toFun_eq_coe,
@@ -264,7 +264,7 @@ variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ] [Γ.HasDetOne]
 
 instance instSMulℂ : SMul α (ModularForm Γ k) where
   smul c f :=
-  { toSlashInvariantForm := c • f.1
+  { toSlashInvariantForm := c • f.toSlashInvariantForm
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     bdd_at_cusps' hc g hg := by
       simp_rw [IsBoundedAtImInfty, Filter.BoundedAtFilter, SlashInvariantForm.toFun_eq_coe,
@@ -281,7 +281,7 @@ end
 
 instance instNeg : Neg (ModularForm Γ k) :=
   ⟨fun f =>
-    { toSlashInvariantForm := -f.1
+    { toSlashInvariantForm := -f.toSlashInvariantForm
       holo' := f.holo'.neg
       bdd_at_cusps' hc g hg := by simpa using! (f.bdd_at_cusps' hc g hg).neg }⟩
 
@@ -316,7 +316,7 @@ instance : Inhabited (ModularForm Γ k) :=
 @[simps! -fullyApplied coe]
 def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : ModularForm Γ k_2) :
     ModularForm Γ (k_1 + k_2) where
-  toSlashInvariantForm := f.1.mul g.1
+  toSlashInvariantForm := f.toSlashInvariantForm.mul g.toSlashInvariantForm
   holo' := f.holo'.mul g.holo'
   bdd_at_cusps' hc γ hγ := by
     simpa [mul_slash] using! ((f.bdd_at_cusps' hc γ hγ).mul (g.bdd_at_cusps' hc γ hγ)).smul _
@@ -410,7 +410,7 @@ local instance : IsScalarTower α ℂ ℂ where
   smul_assoc a y z := by simpa using smul_assoc (a • (1 : ℝ)) y z
 
 instance instSMul : SMul α (CuspForm Γ k) where smul c f :=
-  { toSlashInvariantForm := c • f.1
+  { toSlashInvariantForm := c • f.toSlashInvariantForm
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     zero_at_cusps' hc g hg := by
       simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
@@ -431,7 +431,7 @@ section
 variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ] [Γ.HasDetOne]
 
 instance IsGLPos.instSMul : SMul α (CuspForm Γ k) where smul c f :=
-  { toSlashInvariantForm := c • f.1
+  { toSlashInvariantForm := c • f.toSlashInvariantForm
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     zero_at_cusps' hc g hg := by
       simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
@@ -449,7 +449,7 @@ end
 
 instance instNeg : Neg (CuspForm Γ k) :=
   ⟨fun f =>
-    { toSlashInvariantForm := -f.1
+    { toSlashInvariantForm := -f.toSlashInvariantForm
       holo' := f.holo'.neg
       zero_at_cusps' hc g hg := by simpa using! (f.zero_at_cusps' hc g hg).neg }⟩
 
@@ -491,7 +491,7 @@ preserved since a function tending to zero times a bounded function tends to zer
 @[simps! -fullyApplied coe]
 def mulModularForm [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : CuspForm Γ k₁) (g : ModularForm Γ k₂) :
     CuspForm Γ (k₁ + k₂) where
-  toSlashInvariantForm := f.1.mul g.1
+  toSlashInvariantForm := f.toSlashInvariantForm.mul g.toSlashInvariantForm
   holo' := f.holo'.mul g.holo'
   zero_at_cusps' hc γ hγ := by
     simpa [mul_slash] using!
@@ -619,7 +619,7 @@ def prod {ι : Type*} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
     (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
   toSlashInvariantForm := SlashInvariantForm.prod m hm (fun i ↦ (F i))
-  holo' := MDifferentiable.prod (t := s) (f := fun (i : ι) ↦ (F i).1)
+  holo' := MDifferentiable.prod (t := s) (f := fun (i : ι) ↦ (F i).toSlashInvariantForm)
       (by intro (i : ι) hi; simpa using! (F i).holo')
   bdd_at_cusps' hc γ hγ := by
     simp only [SlashInvariantForm.toFun_eq_coe, coe_prod, SlashInvariantForm.coe_mk, hm,

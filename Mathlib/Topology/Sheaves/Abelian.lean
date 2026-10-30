@@ -79,7 +79,7 @@ instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
     have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 4 1).mp
       (inferInstance : (PreservesFiniteColimits _))
     refine ShortComplex.ShortExact.mk' (this S h).left ?_ (this S h).right
-    have := h.2
+    have := h.mono_f
     exact Functor.map_mono (forget C X ⋙ stalkFunctor C p₀) _
   (forget C X ⋙ stalkFunctor C p₀).preservesFiniteLimits_of_preservesHomology
 

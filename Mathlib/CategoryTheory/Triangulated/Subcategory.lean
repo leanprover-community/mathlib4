@@ -644,7 +644,7 @@ instance [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] :
       (binaryProductTriangle_distinguished _ _)
       (p.prop_diag_obj (.mk .left)) (p.prop_diag_obj (.mk .right)))
     exact IsLimit.conePointUniqueUpToIso (prodIsProd _ _)
-      ((IsLimit.postcomposeHomEquiv (diagramIsoPair p.diag) _).2 p.isLimit)
+      ((IsLimit.postcomposeHomEquiv (diagramIsoPair p.diag) _).invFun p.isLimit)
 
 instance [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] :
     P.IsClosedUnderFiniteProducts := .mk'
@@ -673,7 +673,7 @@ noncomputable instance : Pretriangulated P.FullSubcategory where
       (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) P.ι.mapZeroObject)
   distinguished_cocone_triangle {X Y} f := by
     obtain ⟨Z', g', h', mem⟩ := distinguished_cocone_triangle (P.ι.map f)
-    obtain ⟨Z'', hZ'', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ mem X.2 Y.2
+    obtain ⟨Z'', hZ'', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ mem X.property Y.property
     exact ⟨⟨Z'', hZ''⟩, P.fullyFaithfulι.preimage (g' ≫ e.hom),
       P.fullyFaithfulι.preimage (e.inv ≫ h' ≫ (P.ι.commShiftIso (1 : ℤ)).inv.app X),
       isomorphic_distinguished _ mem _ (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm)⟩

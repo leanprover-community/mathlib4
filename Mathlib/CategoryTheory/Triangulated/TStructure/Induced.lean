@@ -61,7 +61,7 @@ noncomputable def tStructure : TStructure P.FullSubcategory where
   ge_one_le X hX := t.ge_one_le _ hX
   exists_triangle_zero_one A := by
     obtain ⟨X, Y, hX, hY, f, g, h, hT, ⟨X', hX', ⟨e⟩⟩, ⟨Y', hY', ⟨e'⟩⟩⟩ :=
-      h.exists_triangle_zero_one A.1 A.2
+      h.exists_triangle_zero_one A.obj A.property
     exact ⟨⟨X', hX'⟩, ⟨Y', hY'⟩, (t.le 0).prop_of_iso e hX.le,
       (t.ge 1).prop_of_iso e' hY.ge,
       P.fullyFaithfulι.preimage (e.inv ≫ f),
@@ -72,11 +72,11 @@ noncomputable def tStructure : TStructure P.FullSubcategory where
 
 lemma tStructure_isLE_iff (X : P.FullSubcategory) (n : ℤ) :
     (P.tStructure t).IsLE X n ↔ t.IsLE X.obj n :=
-  ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩
+  ⟨fun h => ⟨h.le⟩, fun h => ⟨h.le⟩⟩
 
 lemma tStructure_isGE_iff (X : P.FullSubcategory) (n : ℤ) :
     (P.tStructure t).IsGE X n ↔ t.IsGE X.obj n :=
-  ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩
+  ⟨fun h => ⟨h.ge⟩, fun h => ⟨h.ge⟩⟩
 
 /-- Constructor for `HasInducedTStructure`. -/
 lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TStructure C}

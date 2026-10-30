@@ -106,7 +106,8 @@ instance : (toOpensFunctor X).IsLocallyFull (Opens.grothendieckTopology X) where
 instance : (toOpensFunctor X).IsCoverDense (Opens.grothendieckTopology X) where
   is_cover := by
     intro U x hx
-    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open hx U.2
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
+      X.isBasis_affineOpens.exists_subset_of_mem_open hx U.is_open'
     exact ⟨V, homOfLE hVU, ⟨⟨V, hV⟩, 𝟙 _, homOfLE hVU, rfl⟩, hxV⟩
 
 variable (X) in
@@ -191,7 +192,7 @@ lemma generate_presieveOfSections_mem_grothendieckTopology
 
 lemma mem_grothendieckTopology_iff_sectionsOfPresieve
     {U : X.AffineZariskiSite} {S : Sieve U} :
-    S ∈ grothendieckTopology X U ↔ Ideal.span (sectionsOfPresieve S.1) = ⊤ := by
+    S ∈ grothendieckTopology X U ↔ Ideal.span (sectionsOfPresieve S.arrows) = ⊤ := by
   rw [← generate_presieveOfSections_mem_grothendieckTopology, presieveOfSections_sectionsOfPresieve,
     Sieve.generate_sieve]
 
@@ -329,7 +330,7 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
       (U.2.isoSpec.hom ≫ colimit.ι F U) <| by
       rw [Pullback.range_fst, Opens.range_ι, ← Hom.coe_opensRange, Hom.opensRange_comp_of_isIso,
         ← Scheme.Hom.coe_preimage]
-      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).1)
+      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).carrier)
       · delta cocone
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]

@@ -147,7 +147,8 @@ theorem mem_top {x : M} : x ∈ (⊤ : SaturatedSubmonoid M) := trivial
 variable (M) in
 @[to_additive]
 instance : Min (SaturatedSubmonoid M) where
-  min s₁ s₂ := { s₁.toSubmonoid ⊓ s₂.toSubmonoid with mulSaturated := .inf s₁.2 s₂.2 }
+  min s₁ s₂ :=
+    { s₁.toSubmonoid ⊓ s₂.toSubmonoid with mulSaturated := .inf s₁.mulSaturated s₂.mulSaturated }
 
 variable (M) in
 @[to_additive]
@@ -228,7 +229,7 @@ theorem saturation_induction {s : Submonoid M}
     (mem : ∀ (x) (hx : x ∈ s), p x (le_toSubmonoid_saturation hx))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (of_mul : ∀ (x y) (hxy : x * y ∈ s.saturation),
-      p (x * y) hxy → p x (s.saturation.2 hxy).1 ∧ p y (s.saturation.2 hxy).2)
+      p (x * y) hxy → p x (s.saturation.mulSaturated hxy).1 ∧ p y (s.saturation.mulSaturated hxy).2)
     {x : M} (hx : x ∈ s.saturation) : p x hx := by
   let s' : SaturatedSubmonoid M :=
   { carrier := { x | ∃ hx, p x hx }
@@ -246,7 +247,7 @@ variable {s : Submonoid M} {x : M}
 
 @[to_additive]
 theorem mem_saturation_iff : x ∈ s.saturation ↔ ∃ y, x * y ∈ s := by
-  refine ⟨fun h ↦ ?_, fun ⟨y, hxy⟩ ↦ (s.saturation.2 <| le_toSubmonoid_saturation hxy).1⟩
+  refine ⟨fun h ↦ ?_, fun ⟨y, hxy⟩ ↦ (s.saturation.mulSaturated <| le_toSubmonoid_saturation hxy).1⟩
   induction h using saturation_induction with
   | mem _ hx => exact ⟨1, by simpa⟩
   | mul _ _ _ _ ih₁ ih₂ =>

@@ -67,7 +67,7 @@ theorem tfae [IsBezout R] [IsDomain R] :
       rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
       refine RelEmbedding.wellFounded ?_ h
       have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=
-        fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_FG I hI).1
+        fun ⟨I, hI⟩ => (IsBezout.isPrincipal_of_FG I hI).principal
       choose f hf using this
       exact
         { toFun := f

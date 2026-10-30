@@ -157,7 +157,7 @@ theorem toUniformOnFun_toFun (f : C(α, β)) :
 
 theorem range_toUniformOnFunIsCompact :
     range (toUniformOnFunIsCompact) = {f : UniformOnFun α β {K | IsCompact K} | Continuous f} :=
-  Set.ext fun f ↦ ⟨fun g ↦ g.choose_spec ▸ g.choose.2, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+  Set.ext fun f ↦ ⟨fun g ↦ g.choose_spec ▸ g.choose.continuous_toFun, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
 open UniformSpace in
 /-- Uniform space structure on `C(α, β)`.

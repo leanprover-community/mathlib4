@@ -327,9 +327,9 @@ lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
   · intro H
     obtain ⟨h₁, h₂⟩ := IsClosedImmersion.isAffine_surjective_of_isAffine f
     let φ := (Scheme.ΓSpecIso R).inv ≫ f.appTop
-    refine ⟨RingHom.ker φ.1, Scheme.isoSpec _ ≪≫ Scheme.Spec.mapIso
-        (.op (RingEquiv.ofBijective φ.1.kerLift ?_).toCommRingCatIso), ?_⟩
-    · exact ⟨φ.1.kerLift_injective, Ideal.Quotient.lift_surjective_of_surjective _ _
+    refine ⟨RingHom.ker φ.hom', Scheme.isoSpec _ ≪≫ Scheme.Spec.mapIso
+        (.op (RingEquiv.ofBijective φ.hom'.kerLift ?_).toCommRingCatIso), ?_⟩
+    · exact ⟨φ.hom'.kerLift_injective, Ideal.Quotient.lift_surjective_of_surjective _ _
         (h₂.comp (Scheme.ΓSpecIso R).commRingCatIsoToRingEquiv.symm.surjective)⟩
     · simp only [Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, Scheme.Spec_map,
         Quiver.Hom.unop_op, Category.assoc, ← Spec.map_comp]
@@ -454,7 +454,7 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton 
   rw [← Spec.map_comp, ← Spec.map_id, Spec.map_injective.eq_iff] at hg
   apply IsClosedImmersion.spec_of_surjective
   apply Function.LeftInverse.surjective (g := φ)
-  exact fun x ↦ congr($hg.1 x)
+  exact fun x ↦ congr(($hg).hom' x)
 
 instance {X Y : Scheme.{u}} [Subsingleton X] (f : Retract X Y) : IsClosedImmersion f.i :=
   isClosedImmersion_of_comp_eq_id _ _ f.retract

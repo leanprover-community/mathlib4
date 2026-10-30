@@ -39,7 +39,7 @@ set_option backward.isDefEq.respectTransparency false in
 def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where
   lift S := ofHom
     { toFun := fun s i => S.π.app ⟨i⟩ s
-      continuous_toFun := continuous_pi (fun i => (S.π.app ⟨i⟩).hom.2) }
+      continuous_toFun := continuous_pi (fun i => (S.π.app ⟨i⟩).hom.continuous_toFun) }
   uniq := by
     intro S m h
     ext x
@@ -306,7 +306,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
         · congrm g $(Equiv.ofInjective_symm_apply ..)
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
-          rwa [disjoint_iff.mp h₃.1] at this
+          rwa [disjoint_iff.mp h₃.disjoint] at this
       · rintro T _ _ m rfl rfl
         ext x
         change m x = dite _ _ _

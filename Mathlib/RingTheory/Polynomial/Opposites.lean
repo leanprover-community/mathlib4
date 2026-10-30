@@ -108,7 +108,8 @@ theorem isLeftCancelMulZero_iff :
         simp only [trinomial, mul_add, add_mul, ← C_mul', C_1, one_mul, ← mul_assoc, X_mul_C, C_add]
         noncomm_ring
       simpa [trinomial] using congr_arg (coeff · 1) <|
-        h.1 (a₁ := trinomial b) (a₂ := trinomial c) (X_add_C_ne_zero 1) <| by simp_rw [ht, eq]
+        h.mul_left_cancel_of_ne_zero (a₁ := trinomial b) (a₂ := trinomial c)
+          (X_add_C_ne_zero 1) <| by simp_rw [ht, eq]
     AddCommMagma.IsLeftCancelAdd.toIsCancelAdd R
   mpr := fun ⟨_, _⟩ ↦ inferInstance
 

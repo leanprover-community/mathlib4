@@ -35,7 +35,7 @@ theorem hasAntitoneBasis_atTop [Nonempty α] : (@atTop α _).HasAntitoneBasis Ic
   .iInf_principal fun _ _ ↦ Ici_subset_Ici.2
 
 theorem atTop_basis [Nonempty α] : (@atTop α _).HasBasis (fun _ => True) Ici :=
-  hasAntitoneBasis_atTop.1
+  hasAntitoneBasis_atTop.toHasBasis
 
 @[to_dual existing]
 lemma atBot_basis {α : Type*} [Preorder α] [IsCodirectedOrder α] [Nonempty α] :
@@ -374,7 +374,7 @@ end NeBot
 
 theorem HasAntitoneBasis.eventually_subset [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hl : l.HasAntitoneBasis s) {t : Set α} (ht : t ∈ l) : ∀ᶠ i in atTop, s i ⊆ t :=
-  let ⟨i, _, hi⟩ := hl.1.mem_iff.1 ht
+  let ⟨i, _, hi⟩ := hl.toHasBasis.mem_iff.1 ht
   (eventually_ge_atTop i).mono fun _j hj => (hl.antitone hj).trans hi
 
 protected theorem HasAntitoneBasis.tendsto [Preorder ι] {l : Filter α} {s : ι → Set α}
@@ -385,7 +385,7 @@ theorem HasAntitoneBasis.comp_mono [Nonempty ι] [Preorder ι] [IsDirectedOrder 
     {l : Filter α}
     {s : ι' → Set α} (hs : l.HasAntitoneBasis s) {φ : ι → ι'} (φ_mono : Monotone φ)
     (hφ : Tendsto φ atTop atTop) : l.HasAntitoneBasis (s ∘ φ) :=
-  ⟨hs.1.to_hasBasis
+  ⟨hs.toHasBasis.to_hasBasis
       (fun n _ => (hφ.eventually_ge_atTop n).exists.imp fun _m hm => ⟨trivial, hs.antitone hm⟩)
       fun n _ => ⟨φ n, trivial, Subset.rfl⟩,
     hs.antitone.comp_monotone φ_mono⟩

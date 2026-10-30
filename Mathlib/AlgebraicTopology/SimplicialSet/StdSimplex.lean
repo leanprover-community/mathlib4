@@ -753,7 +753,7 @@ lemma nonDegenerate_top_dim (n : ℕ) :
 lemma not_hasDimensionLT (n : ℕ) (_ : HasDimensionLT.{u} Δ[n] n := by infer_instance) :
     False :=
   (lt_self_iff_false n).1 (Δ[n].dim_lt_of_nonDegenerate
-    (nonDegenerateEquiv.2 (.refl _)) n)
+    (nonDegenerateEquiv.invFun (.refl _)) n)
 
 /-- The bijection `(stdSimplex.obj n).op.obj d ≃ (stdSimplex.obj n).obj d` for any
 `n : ℕ` and `d : ℕ`. See also `stdSimplex.opIso`. -/

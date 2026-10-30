@@ -152,7 +152,7 @@ of the two face maps `δ (0 : Fin 2)` and `δ 1`, considered
 as natural transformations. -/
 def isColimitCoforkπ₀Functor : IsColimit coforkπ₀Functor.{u} :=
   evaluationJointlyReflectsColimits _ (fun X ↦
-    (isColimitMapCoconeCoforkEquiv _ _).2 X.isColimitCoforkπ₀)
+    (isColimitMapCoconeCoforkEquiv _ _).invFun X.isColimitCoforkπ₀)
 
 variable (X)
 

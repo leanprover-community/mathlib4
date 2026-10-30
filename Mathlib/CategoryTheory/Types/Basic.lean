@@ -273,7 +273,7 @@ end FunctorToTypes
 and the original type.
 -/
 def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
-  hom := ofHom fun a ↦ a.1
+  hom := ofHom fun a ↦ a.down
   inv := ofHom fun a ↦ .up a
 
 /-- The functor embedding `Type u` into `Type (max u v)`.

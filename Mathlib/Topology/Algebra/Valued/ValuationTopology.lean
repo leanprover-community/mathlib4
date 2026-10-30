@@ -60,8 +60,8 @@ theorem subgroups_basis :
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      have hmin : embedding (min γ₀.1 γ₁.1) = min (embedding γ₀.1) (embedding γ₁.1) :=
-        embedding_strictMono.monotone.map_inf γ₀.1 γ₁.1
+      have hmin : embedding (min γ₀.val γ₁.val) = min (embedding γ₀.val) (embedding γ₁.val) :=
+        embedding_strictMono.monotone.map_inf γ₀.val γ₁.val
       simp [ltAddSubgroup, hmin]
       tauto
     mul := by
@@ -75,7 +75,7 @@ theorem subgroups_basis :
       rw [← restrict_lt_iff_lt_embedding] at *
       calc
         v.restrict (r * s) = v.restrict r * v.restrict s := Valuation.map_mul _ _ _
-        _ < γ₀.1 * γ₀.1 := by gcongr <;> exact zero_le
+        _ < γ₀.val * γ₀.val := by gcongr <;> exact zero_le
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
@@ -87,10 +87,10 @@ theorem subgroups_basis :
         exact Units.zero_lt _
       · set u : v.ValueGroup₀ˣ := Units.mk0 (restrict₀ (v : R →*₀ Γ₀) x)
           (by simp [restrict₀_apply]; aesop) with hu_def
-        have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by
+        have hu : ValueGroup₀.embedding u⁻¹.val = γx⁻¹ := by
           simp [restrict₀_apply, embedding_apply, hu_def, Hx]
         use u⁻¹ * γ
-        rintro y (vy_lt : v y < ValueGroup₀.embedding (u⁻¹ * γ).1)
+        rintro y (vy_lt : v y < ValueGroup₀.embedding (u⁻¹ * γ).val)
         simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq]
         rw [Valuation.map_mul, Hx, mul_comm]
         rw [Units.val_mul, mul_comm, map_mul, hu] at vy_lt
@@ -104,10 +104,10 @@ theorem subgroups_basis :
           mul_zero, Units.zero_lt]
       · set u : v.ValueGroup₀ˣ := Units.mk0 (restrict₀ (v : R →*₀ Γ₀) x)
           (by simp [restrict₀_apply]; aesop) with hu_def
-        have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by simp [restrict₀_apply, embedding_apply,
+        have hu : ValueGroup₀.embedding u⁻¹.val = γx⁻¹ := by simp [restrict₀_apply, embedding_apply,
           hu_def, Hx]
         use u⁻¹ * γ
-        rintro y (vy_lt : v y < ValueGroup₀.embedding (u⁻¹ * γ).1)
+        rintro y (vy_lt : v y < ValueGroup₀.embedding (u⁻¹ * γ).val)
         simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq, Valuation.map_mul, Hx]
         rw [Units.val_mul, mul_comm, map_mul, hu] at vy_lt
         simpa using mul_inv_lt_of_lt_mul₀ vy_lt }
@@ -125,7 +125,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔
-    ∃ γ : v.ValueGroup₀ˣ, { x : R | v.restrict x < γ.1 } ⊆ s
+    ∃ γ : v.ValueGroup₀ˣ, { x : R | v.restrict x < γ.val } ⊆ s
 
 namespace Valued
 
@@ -146,13 +146,13 @@ variable [_i : Valued R Γ₀]
 
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ ↦ True)
-      fun γ : _i.v.ValueGroup₀ˣ ↦ { x | v.restrict x < γ.1 } := by
+      fun γ : _i.v.ValueGroup₀ˣ ↦ { x | v.restrict x < γ.val } := by
   simp [Filter.hasBasis_iff, is_topological_valuation]
 
 open Uniformity in
 theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
     fun γ : _i.v.ValueGroup₀ˣ ↦
-      { p : R × R | v.restrict (p.2 - p.1) < γ.1 } := by
+      { p : R × R | v.restrict (p.2 - p.1) < γ.val } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
@@ -167,12 +167,12 @@ variable {R Γ₀}
 
 theorem mem_nhds {s : Set R} {x : R} : s ∈ 𝓝 x ↔
     ∃ γ : _i.v.ValueGroup₀ˣ,
-    { y | (v.restrict (y - x) ) < γ.1 } ⊆ s := by
+    { y | (v.restrict (y - x) ) < γ.val } ⊆ s := by
   simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_ofPred_eq, true_and,
     ((hasBasis_nhds_zero R Γ₀).comap fun y ↦ y - x).mem_iff]
 
 theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
-    ∃ γ : _i.v.ValueGroup₀ˣ, { x | v.restrict x < γ.1 } ⊆ s := by
+    ∃ γ : _i.v.ValueGroup₀ˣ, { x | v.restrict x < γ.val } ⊆ s := by
   simp only [mem_nhds, sub_zero]
 
 /-- The set `{ y : R | v y = v x }` is a neighbourhood of `x`.
@@ -211,7 +211,7 @@ end Discrete
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : _i.v.ValueGroup₀ˣ,
-      ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, _i.v.restrict (y - x) < γ.1 := by
+      ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, _i.v.restrict (y - x) < γ.val := by
   rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
   simp_rw [Valued.v.subgroups_basis.mem_addGroupFilterBasis_iff]

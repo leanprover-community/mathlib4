@@ -123,7 +123,8 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff_isAlgebraic
   have ⟨a, has, hax⟩ := not_subset.mp this
   rw [show range x = Subtype.val '' range (Set.inclusion hxs) by
     rw [← range_comp, val_comp_inclusion, Subtype.range_val]] at alg
-  refine ind_s.transcendental_adjoin (s := range (inclusion hxs)) (i := ⟨a, has⟩) ?_ (alg.1 _)
+  refine ind_s.transcendental_adjoin (s := range (inclusion hxs)) (i := ⟨a, has⟩) ?_
+    (alg.isAlgebraic _)
   simpa using hax
 
 theorem isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic [Nontrivial R] :
@@ -213,7 +214,7 @@ theorem IsTranscendenceBasis.sumElim_comp [NoZeroDivisors A] {x : ι → S} {y :
       (fun _ _ _ _ ↦ .add) (fun _ _ _ _ ↦ .mul) ha⟩
     · rintro _ ⟨i, rfl⟩; exact isAlgebraic_algebraMap (⟨y i, subset_adjoin ⟨i, rfl⟩⟩ : Rxy)
     · exact fun _ _ ↦ (Subtype.ext <| hy.1.algebraMap_injective <| Subtype.ext_iff.mp ·)
-    · exact (hx.isAlgebraic.1 _).algHom (IsScalarTower.toAlgHom Rx S Sy)
+    · exact (hx.isAlgebraic.isAlgebraic _).algHom (IsScalarTower.toAlgHom Rx S Sy)
   exact .trans _ Sy _
 
 /-- If `x` is a transcendence basis of `A/R`, then it is empty if and only if
@@ -270,7 +271,7 @@ private def indepMatroid : IndepMatroid A where
     replace B_base := B_base.isAlgebraic
     simp_rw +instances [id_eq]
     rw [Subtype.range_val] at B_base ⊢
-    refine ⟨fun a ↦ (B_base.1 a).adjoin_of_forall_isAlgebraic fun x hx ↦ ?_⟩
+    refine ⟨fun a ↦ (B_base.isAlgebraic a).adjoin_of_forall_isAlgebraic fun x hx ↦ ?_⟩
     contrapose! h
     exact ⟨x, hx, I_ind.insert <| by rwa [image_id]⟩
   indep_maximal X _ I ind hIX := exists_maximal_algebraicIndependent I X hIX ind

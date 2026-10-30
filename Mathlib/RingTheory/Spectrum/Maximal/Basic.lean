@@ -29,7 +29,7 @@ namespace MaximalSpectrum
 /-- The prime spectrum is in bijection with the set of prime ideals. -/
 @[simps]
 def equivSubtype : MaximalSpectrum R ≃ {I : Ideal R // I.IsMaximal} where
-  toFun I := ⟨I.asIdeal, I.2⟩
+  toFun I := ⟨I.asIdeal, I.isMaximal⟩
   invFun I := ⟨I, I.2⟩
 
 theorem range_asIdeal : Set.range MaximalSpectrum.asIdeal = {J : Ideal R | J.IsMaximal} :=
@@ -50,7 +50,8 @@ def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
   simpa only [MaximalSpectrum.mk.injEq] using! PrimeSpectrum.ext_iff.mp h
 
-theorem isCoprime_of_ne {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.1 J.1 :=
-  Ideal.isCoprime_iff_sup_eq.mpr <| I.2.coprime_of_ne J.2 <| mt MaximalSpectrum.ext h
+theorem isCoprime_of_ne {I J : MaximalSpectrum R} (h : I ≠ J) : IsCoprime I.asIdeal J.asIdeal :=
+  Ideal.isCoprime_iff_sup_eq.mpr <|
+    I.isMaximal.coprime_of_ne J.isMaximal <| mt MaximalSpectrum.ext h
 
 end MaximalSpectrum

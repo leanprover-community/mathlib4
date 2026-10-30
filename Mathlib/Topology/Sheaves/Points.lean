@@ -87,7 +87,7 @@ def pointGrothendieckTopologyHomEquiv {x y : X} :
     (pointGrothendieckTopology x ⟶ pointGrothendieckTopology y) ≃ x ⤳ y where
   toFun f := specializes_iff_forall_open.2 (fun U h₁ h₂ ↦ (f.hom.app ⟨U, h₁⟩ ⟨⟨h₂⟩⟩).down.down)
   invFun s := { hom.app U := ↾fun hU ↦
-    ⟨⟨specializes_iff_forall_open.1 s _ U.2 hU.down.down⟩⟩ }
+    ⟨⟨specializes_iff_forall_open.1 s _ U.is_open' hU.down.down⟩⟩ }
   left_inv _ := by subsingleton
   right_inv _ := rfl
 

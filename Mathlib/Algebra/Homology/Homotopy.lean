@@ -793,7 +793,7 @@ def trans (f : HomotopyEquiv C D) (g : HomotopyEquiv D E) :
 /-- An isomorphism of complexes induces a homotopy equivalence. -/
 def ofIso {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : ComplexShape ι}
     {C D : HomologicalComplex V c} (f : C ≅ D) : HomotopyEquiv C D :=
-  ⟨f.hom, f.inv, Homotopy.ofEq f.3, Homotopy.ofEq f.4⟩
+  ⟨f.hom, f.inv, Homotopy.ofEq f.hom_inv_id, Homotopy.ofEq f.inv_hom_id⟩
 
 lemma homotopyEquivalences_hom (f : HomotopyEquiv C D) :
     homotopyEquivalences _ _ f.hom := ⟨f, rfl⟩

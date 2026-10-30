@@ -137,7 +137,8 @@ section Functorial
 /-- `C(X, ·)` is a functor. -/
 @[fun_prop]
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
-  continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOfPred_mapsTo hK (hU.preimage g.2)
+  continuous_compactOpen.2 fun _K hK _U hU ↦
+    isOpen_setOfPred_mapsTo hK (hU.preimage g.continuous_toFun)
 
 /-- If `g : C(Y, Z)` is injective,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is injective too. -/
@@ -157,13 +158,13 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
     IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
-  ⟨isInducing_postcomp g hg.1, postcomp_injective g hg.2⟩
+  ⟨isInducing_postcomp g hg.toIsInducing, postcomp_injective g hg.injective⟩
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
 theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
-    simpa only [mapsTo_image_iff] using! isOpen_setOfPred_mapsTo (hK.image f.2) hU
+    simpa only [mapsTo_image_iff] using! isOpen_setOfPred_mapsTo (hK.image f.continuous_toFun) hU
 
 variable (Z) in
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
@@ -439,7 +440,7 @@ theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) 
 `α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
     (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
-  (curry ⟨_, h⟩).2
+  (curry ⟨_, h⟩).continuous_toFun
 
 theorem continuousOn_of_continuousOn_uncurry {s : Set X} (f : X → C(Y, Z))
     (h : ContinuousOn (Function.uncurry fun x y => f x y) (s ×ˢ univ)) : ContinuousOn f s :=

@@ -59,7 +59,7 @@ class IsGalois : Prop where
 variable {F E}
 
 theorem isGalois_iff : IsGalois F E ↔ Algebra.IsSeparable F E ∧ Normal F E :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h =>
+  ⟨fun h => ⟨h.to_isSeparable, h.to_normal⟩, fun h =>
     { to_isSeparable := h.1
       to_normal := h.2 }⟩
 

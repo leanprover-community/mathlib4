@@ -298,7 +298,7 @@ instance : StrongNormalizationMonoid k⟦X⟧ where
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
       Units.ext_iff, Units.val_mul, ← divXPowOrder_mul]
   normUnit_coe_units u := by
-    set u₀ := u.1 with hu
+    set u₀ := u.val with hu
     have h₀ : IsUnit u₀ := ⟨u, hu.symm⟩
     rw [inv_inj, Units.ext_iff, ← hu, Unit_of_divided_by_X_pow_order_nonzero h₀.ne_zero]
     exact ((eq_divided_by_X_pow_order_Iff_Unit h₀.ne_zero).mpr h₀).symm

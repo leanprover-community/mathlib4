@@ -228,8 +228,8 @@ variable (F)
 /-- The forgetful functor from `Grothendieck F` to the source category. -/
 @[simps!]
 def forget : Grothendieck F ⥤ C where
-  obj X := X.1
-  map f := f.1
+  obj X := X.base
+  map f := f.base
 
 end
 

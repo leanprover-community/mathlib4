@@ -490,7 +490,7 @@ instance (priority := 10) Subsingleton.lindelofSpace [Subsingleton X] : Lindelof
   ⟨subsingleton_univ.isLindelof⟩
 
 theorem isLindelof_univ_iff : IsLindelof (univ : Set X) ↔ LindelofSpace X :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.isLindelof_univ⟩
 
 theorem isLindelof_univ [h : LindelofSpace X] : IsLindelof (univ : Set X) :=
   h.isLindelof_univ

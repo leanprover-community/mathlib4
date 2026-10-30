@@ -212,7 +212,7 @@ theorem isCountablyCompact_iff_isCountablyCompact_univ :
   rw [Subtype.isCountablyCompact_iff, image_univ, Subtype.range_coe]
 
 theorem isCountablyCompact_univ_iff : IsCountablyCompact (univ : Set E) ↔ CountablyCompactSpace E :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.isCountablyCompact_univ⟩
 
 theorem isCountablyCompact_iff_countablyCompactSpace :
     IsCountablyCompact A ↔ CountablyCompactSpace A :=
@@ -279,7 +279,7 @@ theorem isSeqCompact_iff_isSeqCompact_univ : IsSeqCompact A ↔ IsSeqCompact (un
   rw [Subtype.isSeqCompact_iff, image_univ, Subtype.range_coe]
 
 theorem isSeqCompact_univ_iff : IsSeqCompact (univ : Set E) ↔ SeqCompactSpace E :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h => ⟨h⟩, fun h => h.isSeqCompact_univ⟩
 
 theorem isSeqCompact_iff_seqCompactSpace : IsSeqCompact A ↔ SeqCompactSpace A :=
   isSeqCompact_iff_isSeqCompact_univ.trans isSeqCompact_univ_iff
