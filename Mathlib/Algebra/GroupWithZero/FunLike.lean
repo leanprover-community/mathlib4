@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Group.FunLike
+public import Mathlib.Algebra.Group.IsNPowApplyEqIterate
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.GroupWithZero.Pi

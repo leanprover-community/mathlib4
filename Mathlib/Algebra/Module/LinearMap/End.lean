@@ -7,7 +7,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 module
 
 public import Mathlib.Algebra.Group.Center
-public import Mathlib.Algebra.Group.IsApply
+public import Mathlib.Algebra.Group.IsNPowApplyEqIterate
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.Module.Torsion.Free
 

@@ -84,18 +84,13 @@ lemma instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
 
 scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
-lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} := by
-  rw [show {A | A.PosSemidef} = {A : Matrix n n 𝕜 | A.IsHermitian} ∩
-    ⋂ x : n →₀ 𝕜, {A | 0 ≤ x.sum fun i xi ↦ x.sum fun j xj ↦ star xi * A i j * xj} by aesop]
-  refine IsClosed.inter ?_ ?_
-  · exact isClosed_eq (by fun_prop) (by fun_prop)
-  · refine isClosed_iInter <| fun _ ↦ isClosed_le continuous_const ?_
-    simp only [Finsupp.sum]
-    fun_prop
+@[deprecated isClosed_setOfPred_posSemidef +typeChanged (since := "2026-10-28")]
+lemma posSemidef_is_closed : IsClosed {A : Matrix n n 𝕜 | A.PosSemidef} :=
+  isClosed_setOfPred_posSemidef
 
 lemma instOrderClosedTopology : OrderClosedTopology (Matrix n n 𝕜) where
   isClosed_le' := isClosed_le_of_isClosed_nonneg <| by
-    simpa [nonneg_iff_posSemidef] using posSemidef_is_closed
+    simpa [nonneg_iff_posSemidef] using isClosed_setOfPred_posSemidef
 
 scoped[MatrixOrder] attribute [instance] Matrix.instOrderClosedTopology
 
