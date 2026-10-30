@@ -25,51 +25,6 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
-section
-
-/-!
-Extension of `iSup` and `iInf` from a preorder `α` to `WithTop α` and `WithBot α`
--/
-
-variable [Preorder α]
-
-@[to_dual]
-theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
-    ⨅ i, f i = ⊤ := by
-  simp
-
-@[to_dual (attr := norm_cast)]
-theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
-    ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
-  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
-
-@[to_dual (attr := norm_cast)]
-theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
-    ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
-  rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
-
-@[deprecated (since := "2026-05-04")] alias WithBot.ciSup_empty := WithBot.iSup_empty
-
-@[to_dual]
-theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
-    {α : Type*} [CompleteLattice α] (f : ι → α) :
-    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot α) := by
-  rcases hs with ⟨j, hj⟩
-  have : Nonempty ι := Nonempty.intro j
-  refine le_antisymm ((WithBot.coe_iSup (OrderTop.bddAbove _)).trans_le <|
-    iSup_le_iff.mpr fun i ↦ ?_) <| iSup_le_iff.mpr <| fun _ ↦ iSup_le_iff.mpr <|
-      fun hi ↦ WithBot.coe_le_coe.mpr (le_biSup _ hi)
-  by_cases h : i ∈ s
-  · simpa only [iSup_pos h] using by apply le_biSup _ h
-  · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
-
-@[to_dual]
-theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattice α] (f : ι → α) :
-    ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot α) := by
-  simp [coe_iInf]
-
-end
-
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {a b : α}
@@ -417,15 +372,15 @@ lemma ciInf_eq_iff [Nonempty ι] (f : ι → α) (n : α) :
 end ConditionallyCompleteLinearOrder
 
 /-!
-### Lemmas about a conditionally complete linear order with bottom element
+### Lemmas about a conditionally complete lattice with a bottom element
 
-In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
+In this case we have `sSup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
 -/
 
 
-section ConditionallyCompleteLinearOrderBot
+section ConditionallyCompleteLatticeBot
 
-variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
+variable [ConditionallyCompleteLattice α] [OrderBot α] {f : ι → α} {a : α}
 
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
   simp
@@ -455,22 +410,8 @@ theorem ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i �
 theorem ciSup₂_le' {f : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ a) : ⨆ (i) (j), f i j ≤ a :=
   ciSup_le' fun i ↦ ciSup_le' <| h i
 
-@[simp]
-theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := le_bot_iff.mp (ciSup_le' fun _ ↦ bot_le)
-
-/-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
-from `lt_ciSup_iff`. -/
-theorem lt_ciSup_iff' {f : ι → α} (h : BddAbove (range f)) : a < iSup f ↔ ∃ i, a < f i := by
-  simpa only [not_le, not_forall] using (ciSup_le_iff' h).not
-
-theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : ∃ i, a < f i := by
-  contrapose! h
-  exact ciSup_le' h
-
-theorem exists_lt_of_lt_ciSup₂' {f : ∀ i, κ i → α} (h : a < ⨆ (i) (j), f i j) :
-    ∃ i j, a < f i j := by
-  contrapose! h
-  exact ciSup₂_le' h
+@[deprecated iSup_bot +typeChanged (since := "2026-10-27")]
+theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := iSup_bot
 
 theorem ciSup_mono_of_forall_exists' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove <| range g)
     (h : ∀ i, ∃ i', f i ≤ g i') : ⨆ i, f i ≤ ⨆ i', g i' :=
@@ -499,6 +440,27 @@ lemma ciSup_or (p q : Prop) (f : p ∨ q → α) :
   simp [hp, hq]
 
 @[deprecated (since := "2026-09-05")] alias ciSup_or' := ciSup_or
+
+end ConditionallyCompleteLatticeBot
+
+
+section ConditionallyCompleteLinearOrderBot
+
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α] {a : α}
+
+/-- In conditionally complete linear orders with a bottom element, the nonempty condition can be
+omitted from `lt_ciSup_iff`. -/
+theorem lt_ciSup_iff' {f : ι → α} (h : BddAbove (range f)) : a < iSup f ↔ ∃ i, a < f i := by
+  simpa only [not_le, not_forall] using (ciSup_le_iff' h).not
+
+theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : ∃ i, a < f i := by
+  contrapose! h
+  exact ciSup_le' h
+
+theorem exists_lt_of_lt_ciSup₂' {f : ∀ i, κ i → α} (h : a < ⨆ (i) (j), f i j) :
+    ∃ i j, a < f i j := by
+  contrapose! h
+  exact ciSup₂_le' h
 
 end ConditionallyCompleteLinearOrderBot
 
@@ -557,7 +519,8 @@ theorem map_ciSup_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddAbo
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrderBot
-variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOrderBot β]
+variable [ConditionallyCompleteLinearOrder α] [OrderBot α] [ConditionallyCompleteLinearOrder β]
+  [OrderBot β]
 
 @[simp]
 lemma map_ciSup' (e : α ≃o β) (f : ι → α) : e (⨆ i, f i) = ⨆ i, e (f i) := by
@@ -571,28 +534,3 @@ lemma map_ciSup' (e : α ≃o β) (f : ι → α) : e (⨆ i, f i) = ⨆ i, e (f
 
 end ConditionallyCompleteLinearOrderBot
 end OrderIso
-
-section WithTopBot
-
-namespace WithTop
-variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α}
-
-lemma iSup_coe_eq_top : ⨆ x, (f x : WithTop α) = ⊤ ↔ ¬BddAbove (range f) := by
-  rw [iSup_eq_top, not_bddAbove_iff]
-  refine ⟨fun hf r => ?_, fun hf a ha => ?_⟩
-  · rcases hf r (WithTop.coe_lt_top r) with ⟨i, hi⟩
-    exact ⟨f i, ⟨i, rfl⟩, WithTop.coe_lt_coe.mp hi⟩
-  · rcases hf (a.untop ha.ne) with ⟨-, ⟨i, rfl⟩, hi⟩
-    exact ⟨i, by simpa only [WithTop.coe_untop _ ha.ne] using WithTop.coe_lt_coe.mpr hi⟩
-
-lemma iSup_coe_lt_top : ⨆ x, (f x : WithTop α) < ⊤ ↔ BddAbove (range f) :=
-  lt_top_iff_ne_top.trans iSup_coe_eq_top.not_left
-
-lemma iInf_coe_eq_top : ⨅ x, (f x : WithTop α) = ⊤ ↔ IsEmpty ι := by simp [isEmpty_iff]
-
-lemma iInf_coe_lt_top : ⨅ i, (f i : WithTop α) < ⊤ ↔ Nonempty ι := by
-  rw [lt_top_iff_ne_top, Ne, iInf_coe_eq_top, not_isEmpty_iff]
-
-end WithTop
-
-end WithTopBot

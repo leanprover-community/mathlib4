@@ -61,8 +61,6 @@ definitions, so type-class inference won't see this. -/
 protected noncomputable abbrev conditionallyCompleteLinearOrderBot
     [ConditionallyCompleteLinearOrder α] (a : α) :
     ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
-  { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
-    csSup_empty := by
-      rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }
+  { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with }
 
 end Nonneg
