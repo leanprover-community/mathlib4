@@ -50,7 +50,7 @@ lemma zero_left (q : R) : (0 : R) ⋆⟂ q := by simp [isStarOrtho_iff]
 lemma zero_right (p : R) : p ⋆⟂ 0 := by simp [isStarOrtho_iff]
 
 protected lemma star (h : p ⋆⟂ q) : star p ⋆⟂ star q :=
-  ⟨by rw [star_star, h.star_mul_eq_zero'], by rw [star_star, h.mul_star_eq_zero']⟩
+  ⟨by rw [star_star, h.symm.star_mul_eq_zero], by rw [star_star, h.symm.mul_star_eq_zero]⟩
 
 @[simp]
 lemma star_iff : star p ⋆⟂ star q ↔ p ⋆⟂ q :=
@@ -86,7 +86,7 @@ protected lemma star_right_conjugate (h : p ⋆⟂ q) (a b : R) :
     (p * a * star p) ⋆⟂ (q * b * star q) where
   mul_star_eq_zero := by
     simp only [star_mul, star_star, mul_assoc]
-    rw [← mul_assoc (star p) q, h.star_mul_eq_zero']
+    rw [← mul_assoc (star p) q, h.symm.star_mul_eq_zero]
     simp
   star_mul_eq_zero := by
     simp only [star_mul, star_star, mul_assoc]
@@ -115,7 +115,7 @@ lemma mul_mul {p₁ p₂ q₁ q₂ : R} (h₁ : p₁ ⋆⟂ q₁) (h₂ : p₂ �
   mul_mul' h₁.star_mul_eq_zero h₂.mul_star_eq_zero a b
 
 lemma mul_star_self (h : p ⋆⟂ q) : (p * star p) ⋆⟂ (q * star q) where
-  mul_star_eq_zero := by simp [mul_assoc, ← mul_assoc (star p) q, h.star_mul_eq_zero']
+  mul_star_eq_zero := by simp [mul_assoc, ← mul_assoc (star p) q, h.symm.star_mul_eq_zero]
   star_mul_eq_zero := by simp [mul_assoc, ← mul_assoc (star q) p, h.star_mul_eq_zero]
 
 lemma star_mul_self (h : p ⋆⟂ q) : (star p * p) ⋆⟂ (star q * q) := by
@@ -128,7 +128,7 @@ lemma map {S F : Type*} [NonUnitalSemiring S] [StarRing S] [FunLike F R S]
 
 lemma star_add_mul_add (h : p ⋆⟂ q) :
     star (p + q) * (p + q) = star p * p + star q * q := by
-  simp [mul_add, add_mul, h.star_mul_eq_zero', h.star_mul_eq_zero]
+  simp [mul_add, add_mul, h.symm.star_mul_eq_zero, h.star_mul_eq_zero]
 
 lemma add_mul_star_add (h : p ⋆⟂ q) :
     (p + q) * star (p + q) = p * star p + q * star q := by

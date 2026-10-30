@@ -690,16 +690,4 @@ instead moves the `star`. -/
 lemma isStarOrtho_iff' : p ⋆⟂ q ↔ p * star q = 0 ∧ star p * q = 0 := by
   rw [isStarOrtho_iff, ← star_eq_zero (x := star p * q), star_mul, star_star]
 
-namespace IsStarOrtho
-
-/-- The equation `IsStarOrtho.mul_star_eq_zero` with the roles of `p` and `q` interchanged. -/
-lemma mul_star_eq_zero' (h : p ⋆⟂ q) : q * star p = 0 :=
-  h.symm.mul_star_eq_zero
-
-/-- The equation `IsStarOrtho.star_mul_eq_zero` with the roles of `p` and `q` interchanged. -/
-lemma star_mul_eq_zero' (h : p ⋆⟂ q) : star p * q = 0 :=
-  h.symm.star_mul_eq_zero
-
-end IsStarOrtho
-
 end IsStarOrtho
