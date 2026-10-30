@@ -43,6 +43,12 @@ instance {P₁ P₂ : ObjectProperty C} [P₁.IsStableUnderRetracts] [P₂.IsSta
     (P₁ ⊓ P₂).IsStableUnderRetracts where
   of_retract r h := ⟨P₁.prop_of_retract r h.1, P₂.prop_of_retract r h.2⟩
 
+instance {ι : Sort*} (P : ι → ObjectProperty C) [∀ i, (P i).IsStableUnderRetracts] :
+    (⨅ i, P i).IsStableUnderRetracts where
+  of_retract r h := by
+    simp only [iInf_apply, iInf_Prop_eq] at h ⊢
+    exact fun i ↦ (P i).prop_of_retract r (h i)
+
 namespace IsStableUnderRetracts
 
 open scoped ZeroObject

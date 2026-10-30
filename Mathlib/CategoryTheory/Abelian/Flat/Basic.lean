@@ -56,8 +56,6 @@ instance : (flat (A := A)).IsClosedUnderIsomorphisms := by
   rw [flat_eq_min]
   infer_instance
 
-instance : (exactFunctor A A).IsStableUnderRetracts := sorry
-
 instance : (flat (A := A)).IsStableUnderRetracts := by
   rw [flat_eq_min]
   infer_instance

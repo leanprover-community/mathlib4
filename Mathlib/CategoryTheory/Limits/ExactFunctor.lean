@@ -83,6 +83,8 @@ abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFai
 /-- Exactness, as a property of objects in `C ⥤ D`. -/
 def exactFunctor : ObjectProperty (C ⥤ D) :=
   .preservesFiniteLimits ⊓ .preservesFiniteColimits
+deriving ObjectProperty.IsClosedUnderIsomorphisms,
+  ObjectProperty.IsStableUnderRetracts
 
 variable {C D} in
 lemma exactFunctor.preservesFiniteLimits {F : C ⥤ D} (hF : exactFunctor _ _ F) :
@@ -96,10 +98,6 @@ variable {C D} in
 @[simp]
 lemma exactFunctor_iff (F : C ⥤ D) :
     exactFunctor C D F ↔ PreservesFiniteLimits F ∧ PreservesFiniteColimits F := Iff.rfl
-
-instance : (exactFunctor C D).IsClosedUnderIsomorphisms := by
-  dsimp [exactFunctor]
-  infer_instance
 
 /-- Bundled exact functors. -/
 abbrev ExactFunctor := (exactFunctor C D).FullSubcategory
