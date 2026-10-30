@@ -5,12 +5,8 @@ Authors: Fox Thomson, Martin Dvorak, Rudy Peterson
 -/
 module
 
-public import Mathlib.Algebra.FreeMonoid.Basic
-public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Data.Set.Semiring
+public import Mathlib.Algebra.Star.Free
 public import Mathlib.Tactic.DeriveFintype
-
-import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Languages
@@ -228,13 +224,19 @@ theorem mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, iSup_mul, ← pow_succ, ← pow_succ']
 
 @[simp]
-theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ := by
+theorem one_sup_self_mul_kstar_eq_kstar (l : Language α) : 1 ⊔ l * l∗ = l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, ← pow_succ', ← pow_zero l]
   exact sup_iSup_nat_succ (l ^ ·)
 
+lemma one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ :=
+  one_sup_self_mul_kstar_eq_kstar _
+
 @[simp]
-theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ := by
-  rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
+theorem one_sup_kstar_mul_self_eq_kstar (l : Language α) : 1 ⊔ l∗ * l = l∗ := by
+  rw [mul_self_kstar_comm, one_sup_self_mul_kstar_eq_kstar]
+
+lemma one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ :=
+  one_sup_kstar_mul_self_eq_kstar _
 
 instance : KleeneAlgebra (Language α) where
   one_le_kstar a _ hl := ⟨[], hl, by simp⟩
@@ -283,16 +285,18 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : 1 ∉ m.toSet) :
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
-def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
+def reverse (l : Language α) : Language α := {w | star w ∈ l.toSet}
 
 @[simp]
-lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := Iff.rfl
+lemma mem_reverse : a ∈ l.reverse.toSet ↔ star a ∈ l.toSet := Iff.rfl
 
-lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
-  rw [mem_reverse, List.reverse_reverse]
+lemma star_mem_reverse : star a ∈ l.reverse.toSet ↔ a ∈ l.toSet := by
+  rw [mem_reverse, star_star]
 
-lemma reverse_eq_image (l : Language α) : l.reverse = List.reverse '' l :=
-  ((List.reverse_involutive.toPerm _).image_eq_preimage_symm _).symm
+@[deprecated (since := "2026-10-30")] alias reverse_mem_reverse := star_mem_reverse
+
+lemma reverse_eq_image (l : Language α) : l.reverse = .ofSet (star '' l.toSet) := by
+  ext; simp [star_eq_iff_star_eq]
 
 @[simp]
 lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
@@ -301,8 +305,8 @@ lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
 lemma reverse_one : (1 : Language α).reverse = 1 := by
   simp [reverse, ← one_def]
 
-lemma reverse_involutive : Function.Involutive (reverse : Language α → _) :=
-  List.reverse_involutive.preimage
+lemma reverse_involutive : Function.Involutive (reverse : Language α → _) := by
+  intro; ext; simp
 
 lemma reverse_bijective : Function.Bijective (reverse : Language α → _) :=
   reverse_involutive.bijective
@@ -369,7 +373,6 @@ inductive Symbol (T N : Type*)
   | terminal (t : T) : Symbol T N
   /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
   | nonterminal (n : N) : Symbol T N
-deriving
-  DecidableEq, Repr, Fintype
+deriving DecidableEq, Repr, Fintype
 
 attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv
