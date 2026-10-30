@@ -164,13 +164,12 @@ end IsStarOrtho
 lemma Set.Pairwise.star_sum_mul_sum_of_isStarOrtho {ι : Type*} {s : Finset ι} {f : ι → R}
     (h : (s : Set ι).Pairwise ((· ⋆⟂ ·) on f)) :
     star (∑ i ∈ s, f i) * (∑ i ∈ s, f i) = ∑ i ∈ s, star (f i) * f i := by
-  classical
-  induction s using Finset.induction_on with
+  induction s using Finset.cons_induction_on with
   | empty => simp
-  | insert a s ha ih =>
+  | cons a s ha ih =>
     have ha' : f a ⋆⟂ ∑ i ∈ s, f i :=
       .sum_right fun j hj ↦ h (by simp) (by simp [hj]) (fun h' ↦ ha (h' ▸ hj))
-    rw [sum_insert ha, sum_insert ha, ha'.star_add_mul_add, ih (h.mono (by simp))]
+    rw [sum_cons, sum_cons, ha'.star_add_mul_add, ih (h.mono (by simp))]
 
 lemma Set.Pairwise.sum_mul_star_sum_of_isStarOrtho {ι : Type*} {s : Finset ι} {f : ι → R}
     (h : (s : Set ι).Pairwise ((· ⋆⟂ ·) on f)) :
@@ -219,11 +218,10 @@ not assuming the intermediate sums (i.e., over a subset of `s`) are star project
 lemma isStarProjection_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hf : ∀ i ∈ s, IsStarProjection (f i)) (h : (s : Set ι).Pairwise ((· ⋆⟂ ·) on f)) :
     IsStarProjection (∑ i ∈ s, f i) := by
-  classical
-  induction s using Finset.induction_on with
+  induction s using Finset.cons_induction_on with
   | empty => simp
-  | insert a s ha ih =>
-    rw [Finset.sum_insert ha]
+  | cons a s ha ih =>
+    rw [Finset.sum_cons]
     refine IsStarOrtho.isStarProjection_add ?_ (hf a (by simp)) ?_
     · exact .sum_right fun j hj ↦ h (by simp) (by simp [hj]) (fun h' ↦ ha (h' ▸ hj))
     · exact ih (fun i hi ↦ hf i (by simp [hi])) <| h.mono <| by simp
