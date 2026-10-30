@@ -171,7 +171,7 @@ end NonUnitalSubsemiring
 
 @[simp, aesop safe, grind .]
 theorem IsSumSq.natCast {R : Type*} [NonAssocSemiring R] (n : ℕ) : IsSumSq (n : R) := by
-  induction n <;> grind
+  induction n <;> grind [natCast_zero, natCast_succ]
 
 @[simp, grind .]
 theorem Nat.isSumSq (n : ℕ) : IsSumSq n := IsSumSq.natCast n
