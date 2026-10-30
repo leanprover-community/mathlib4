@@ -12,6 +12,9 @@ public import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Independence of random variables with respect to a kernel and a measure
 
@@ -646,12 +649,6 @@ theorem iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f κ μ)
     (hf_Indep.indepFun_finset s {i} (Finset.disjoint_singleton_left.mpr hi).symm hf_meas).comp
       h_meas_left h_meas_right
 
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_sum_of_notMem := iIndepFun.indepFun_finsetSum_of_notMem
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_prod_of_notMem := iIndepFun.indepFun_finsetProd_of_notMem
-
 @[to_additive]
 theorem iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
@@ -668,13 +665,6 @@ theorem iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f κ μ
     simp only [Finset.prod_apply]
     exact Finset.prod_congr rfl fun i hi ↦ (hω ⟨i, hi⟩).symm
   · exact Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk.symm
-
-@[deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_sum_of_notMem₀ := iIndepFun.indepFun_finsetSum_of_notMem₀
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iIndepFun.indepFun_finset_prod_of_notMem₀ := iIndepFun.indepFun_finsetProd_of_notMem₀
-
 
 @[to_additive]
 theorem iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β}

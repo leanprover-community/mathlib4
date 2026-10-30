@@ -14,12 +14,12 @@ public import Mathlib.Init
 This file provides an API for scoped environment extensions whose declarations are indexed by
 elaborated expression patterns in a `DiscrTree`.
 
-## Implimentation Notes
+## Implementation notes
 
-The inclusion tactic uses two seperate types of `DiscrTree` indexed environment extensions. These
+The inclusion tactic uses two separate types of `DiscrTree` indexed environment extensions. These
 have nearly identical APIs except the stored values are different types (one is `InclusionExt`s
 and the other is `HypothesisExt`s). This file essentially generalizes the `DiscrTree` valued
-environment extension API from the implimentation for the `norm_num` tactic so that it can take
+environment extension API from the implementation for the `norm_num` tactic so that it can take
 arbitrary values.
 
 ## TODO

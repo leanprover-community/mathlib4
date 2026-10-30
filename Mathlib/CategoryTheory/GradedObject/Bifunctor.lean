@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GradedObject
+
 /-!
 # The action of bifunctors on graded objects
 

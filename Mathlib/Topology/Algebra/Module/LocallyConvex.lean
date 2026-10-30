@@ -146,13 +146,14 @@ theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
     ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
   let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
-  have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.2 - x.1
-  rw [← uniformity_eq_comap_nhds_zero] at this
+  have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.1 - x.2
+  rw [← uniformity_eq_comap_nhds_zero_swapped] at this
   rcases disj.exists_uniform_thickening_of_basis this hs₂ ht₂ with ⟨V, ⟨hV0, hVopen, hVconvex⟩, hV⟩
   refine ⟨s + V, t + V, hVopen.add_left, hVopen.add_left, hs₁.add hVconvex, ht₁.add hVconvex,
     subset_add_left _ hV0, subset_add_left _ hV0, ?_⟩
   simp_rw [← iUnion_add_left_image, image_add_left]
-  simp_rw [UniformSpace.ball, ← preimage_comp, sub_eq_neg_add] at hV
+  simp_rw [show ∀ (W : SetRel E E) (y : E), W.ball y = (fun a ↦ (a, y)) ⁻¹' W from
+    fun _ _ ↦ rfl, ← preimage_comp, sub_eq_neg_add] at hV
   exact hV
 
 /-- In a locally convex space, every point `x` and closed convex set `s ∌ x` admit disjoint convex

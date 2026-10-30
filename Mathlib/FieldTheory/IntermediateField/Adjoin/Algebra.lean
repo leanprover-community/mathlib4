@@ -11,6 +11,9 @@ public import Mathlib.FieldTheory.IntermediateField.Algebraic
 public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.EssentialFiniteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining Elements to Fields
 
