@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Covering.OneDim
 
 import Mathlib.Order.Monotone.Extension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability of monotone functions
 
