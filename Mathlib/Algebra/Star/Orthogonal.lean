@@ -38,8 +38,11 @@ section NonUnitalSemiring
 
 variable {R : Type*} [NonUnitalSemiring R] [StarRing R] {p q : R}
 
-lemma IsStarOrtho.commute (h : p ⋆⟂ q) : Commute p (star q) :=
+lemma IsStarOrtho.commute_star (h : p ⋆⟂ q) : Commute p (star q) :=
   h.mul_star_eq_zero.trans h.star_mul_eq_zero.symm
+
+lemma IsStarOrtho.star_commute (h : p ⋆⟂ q) : Commute (star p) q :=
+  h.symm.commute_star.symm
 
 namespace IsStarOrtho
 
