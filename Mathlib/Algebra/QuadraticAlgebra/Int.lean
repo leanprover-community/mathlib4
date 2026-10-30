@@ -27,6 +27,9 @@ For `a b : ℤ`, `QuadraticAlgebra ℤ a b` is an order in `QuadraticAlgebra ℚ
 * `QuadraticAlgebra.Int.exists_im_den_sq_mul`: if `z` is an integral element of
   `QuadraticAlgebra ℚ a b`, then `discr a b` is the square of the denominator of `z.im` times an
   integer congruent to `0` or `1` modulo `4`.
+* `QuadraticAlgebra.Int.exists_isIntegral_notMem_of_sq_mul`: conversely, if
+  `discr a b = d ^ 2 * e` with `1 < |d|` and `e` congruent to `0` or `1` modulo `4`, then there is
+  an integral element `z` not in `QuadraticAlgebra ℤ a b` such that `d • z` lies in it.
 -/
 
 public section
@@ -175,17 +178,15 @@ theorem exists_isIntegral_notMem_of_sq_mul {d e : ℤ} (hd : 1 < d.natAbs)
   refine ⟨(d : ℚ)⁻¹ • (t • 1 + ω : QuadraticAlgebra ℚ a b), hz, ⟨t • 1 + ω, ?_⟩, ?_⟩
   · rw [← Int.cast_smul_eq_zsmul ℚ d, smul_smul, mul_inv_cancel₀ hd', one_smul, map_add,
       map_zsmul, map_one, algebraMap_omega]
-  · rw [mem_range_iff_im_mem_range hz, im_smul, im_add, im_smul, im_one, smul_zero, zero_add,
-      im_omega, smul_eq_mul, mul_one, algebraMap_int_eq, Int.coe_castRingHom]
-    rintro ⟨y, hy⟩
-    rw [← mul_eq_one_iff_eq_inv₀ hd', ← Int.cast_mul, Int.cast_eq_one,
-      Int.mul_eq_one_iff_eq_one_or_neg_one] at hy
+  · rintro ⟨y, hy⟩
+    have : (y.im : ℚ) * d = 1 := by simpa [← mul_eq_one_iff_eq_inv₀ hd'] using congr_arg im hy
+    rw [← Int.cast_mul, Int.cast_eq_one, Int.mul_eq_one_iff_eq_one_or_neg_one] at this
     lia
 
 /-- If `z` is integral and `d • z` is the image of an element `x` of `QuadraticAlgebra ℤ a b`, then
 `discr a b * x.im ^ 2` is `d ^ 2` times `t ^ 2 - 4 * n` (here `t` and `n` are the trace and the
 norm of `z`). -/
-theorem exists_discr_mul_im_sq_eq {z : QuadraticAlgebra ℚ a b} {x : QuadraticAlgebra ℤ a b}
+theorem exists_mul_im_sq_eq {z : QuadraticAlgebra ℚ a b} {x : QuadraticAlgebra ℤ a b}
     {d : ℤ} (hz : IsIntegral ℤ z)
     (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = d • z) :
     ∃ t n : ℤ, discr a b * x.im ^ 2 = d ^ 2 * (t ^ 2 - 4 * n) := by
@@ -205,7 +206,7 @@ theorem exists_sq_mul_of_isCoprime {z : QuadraticAlgebra ℚ a b} {x : Quadratic
     {d : ℤ} (hz : IsIntegral ℤ z) (hd : IsCoprime d x.im)
     (hx : algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x = d • z) :
     ∃ e : ℤ, discr a b = d ^ 2 * e ∧ (e % 4 = 0 ∨ e % 4 = 1) := by
-  obtain ⟨t, n, h⟩ := exists_discr_mul_im_sq_eq hz hx
+  obtain ⟨t, n, h⟩ := exists_mul_im_sq_eq hz hx
   obtain ⟨e, he⟩ : d ^ 2 ∣ discr a b := hd.pow.dvd_of_dvd_mul_right ⟨_, h⟩
   refine ⟨e, he, ?_⟩
   obtain hd' | hd' := d.even_or_odd
