@@ -11,7 +11,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Monomorphisms
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonemptyFiniteChains
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonsingularColimit
 public import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
-public import Mathlib.CategoryTheory.MorphismProperty.PreserveLimits
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!

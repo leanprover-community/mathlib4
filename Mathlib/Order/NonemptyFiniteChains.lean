@@ -128,23 +128,6 @@ def complSingleton : NonemptyFiniteChains Z where
   nonempty := ⟨(exists_ne x₀).choose, by simpa using (exists_ne x₀).choose_spec⟩
   comparable := le_total
 
---lemma complSingleton_le_iff {s : NonemptyFiniteChains Z} :
---    complSingleton x₀ ≤ s ↔ s = complSingleton x₀ ∨ s = ⊤ := by
---  simp [NonemptyFiniteChains.ext_iff]
-
---lemma complSingleton_lt_top :
---    complSingleton x₀ < ⊤ := by
---  simp
-
---lemma complSingleton_lt_iff {s : NonemptyFiniteChains Z} :
---    complSingleton x₀ < s ↔ s = ⊤ := by
---  simp [NonemptyFiniteChains.ext_iff]
-
---lemma eq_complSingleton_iff (s : NonemptyFiniteChains Z) :
---    s = complSingleton x₀ ↔ s < ⊤ ∧ s.finset ∪ {x₀} = ⊤ := by
---  simp [NonemptyFiniteChains.ext_iff, Finset.eq_compl_singleton_iff]
-
-
 end
 
 end NonemptyFiniteChains
