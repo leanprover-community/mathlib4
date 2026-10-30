@@ -258,6 +258,7 @@ instance NonUnitalSubring.nonUnitalSeminormedRing {E : Type*}
 
 /-- A non-unital subalgebra of a non-unital seminormed ring is also a non-unital seminormed ring,
 with the restriction of the norm. -/
+@[nolint instanceDiamonds]
 instance NonUnitalSubalgebra.nonUnitalSeminormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalSeminormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) :
     NonUnitalSeminormedRing s :=
@@ -273,6 +274,7 @@ instance NonUnitalSubring.nonUnitalNormedRing {E : Type*}
 
 /-- A non-unital subalgebra of a non-unital normed ring is also a non-unital normed ring, with the
 restriction of the norm. -/
+@[nolint instanceDiamonds]
 instance NonUnitalSubalgebra.nonUnitalNormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalNormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) : NonUnitalNormedRing s :=
   fast_instance% s.toNonUnitalSubring.nonUnitalNormedRing
@@ -318,6 +320,7 @@ instance Subring.seminormedRing {E : Type*} [SeminormedRing E] (s : Subring E) :
 
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the
 norm. -/
+@[nolint instanceDiamonds]
 instance Subalgebra.seminormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [SeminormedRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : SeminormedRing s :=
   fast_instance% s.toSubring.seminormedRing
@@ -329,6 +332,7 @@ instance Subring.normedRing {E : Type*} [NormedRing E] (s : Subring E) : NormedR
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- A subalgebra of a normed ring is also a normed ring, with the restriction of the norm. -/
+@[nolint instanceDiamonds]
 instance Subalgebra.normedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [NormedRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : NormedRing s :=
   fast_instance% s.toSubring.normedRing
