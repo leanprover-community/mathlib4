@@ -232,7 +232,6 @@ instance : sd'.{u}.PreservesMonomorphisms where
   preserves {X Y} f hf := by
     rw [NatTrans.mono_iff_mono_app]
     rintro ⟨n⟩
-    induction n with | _ n
     rw [mono_iff_injective]
     intro s t h
     rw [nerve.ext_of_isThin_iff]
