@@ -292,9 +292,7 @@ def parallelPair.ext {F G : WalkingParallelPair ⥤ C} (zero : F.obj zero ≅ G.
       exacts [zero, one])
     (by rintro _ _ ⟨_⟩ <;> simp [left, right])
 
-/-- Construct an isomorphism between parallel pairs; the isomorphism version of `parallelPairHom`.
-Unlike `parallelPair.ext`, the diagrams are fixed by the explicit arrows, so no expected type is
-needed, and the compatibility conditions are hypotheses rather than `cat_disch` auto-params. -/
+/-- Construct a isomorphism between parallel pairs. -/
 def parallelPairIso {X' Y' : C} (f g : X ⟶ Y) (f' g' : X' ⟶ Y') (p : X ≅ X') (q : Y ≅ Y')
     (wf : f ≫ q.hom = p.hom ≫ f') (wg : g ≫ q.hom = p.hom ≫ g') :
     parallelPair f g ≅ parallelPair f' g' := parallelPair.ext p q wf wg

@@ -520,10 +520,7 @@ end HasZeroObject
 section Transport
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Transport an `IsKernel` across isomorphisms: if `s` is a limit kernel fork of `f` and
-`eX`, `eY`, `e` identify `f` with `f'` (`H`) and `s.ι` with `s'.ι` (`H'`), then `s'` is a limit
-kernel fork of `f'`. This is the kernel case of `Fork.isLimitOfIsos`; to change only the
-target of `f` or only `s.pt`, see `IsKernel.ofCompIso` and `IsKernel.isoKernel`. -/
+/-- Transport an `IsKernel` across isomorphisms. -/
 def IsKernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : KernelFork f} (hs : IsLimit s)
     (s' : KernelFork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
     (H : eX.hom ≫ f' = f ≫ eY.hom) (H' : e.hom ≫ s'.ι = s.ι ≫ eX.hom) : IsLimit s' :=
@@ -1157,10 +1154,7 @@ def IsCokernel.cokernelIso {Z : C} (l : Y ⟶ Z) {s : CokernelCofork f} (hs : Is
       · exact h
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Transport an `IsCokernel` across isomorphisms: if `s` is a colimit cokernel cofork of `f` and
-`eX`, `eY`, `e` identify `f` with `f'` (`H`) and `s.π` with `s'.π` (`H'`), then `s'` is a colimit
-cokernel cofork of `f'`. This is the cokernel case of `Cofork.isColimitOfIsos`; to change only the
-source of `f` or only `s.pt`, see `IsCokernel.ofIsoComp` and `IsCokernel.cokernelIso`. -/
+/-- Transport an `IsCokernel` across isomorphisms. -/
 def IsCokernel.ofIso {X' Y' : C} {f' : X' ⟶ Y'} {s : CokernelCofork f} (hs : IsColimit s)
     (s' : CokernelCofork f') (eX : X ≅ X') (eY : Y ≅ Y') (e : s.pt ≅ s'.pt)
     (H : eX.hom ≫ f' = f ≫ eY.hom) (H' : eY.hom ≫ s'.π = s.π ≫ e.hom) : IsColimit s' :=

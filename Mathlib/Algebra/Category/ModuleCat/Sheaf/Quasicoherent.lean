@@ -169,11 +169,9 @@ theorem Presentation.mapRelations_mapGenerators :
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- The presentation of `F.obj M` obtained from a presentation `P` of `M` by applying a functor
-`F` from sheaves of `R`-modules to sheaves of `S`-modules which preserves colimits, given an
-isomorphism `η : unit S ≅ F.obj (unit R)`. Its generators and relations are indexed by the same
-types as those of `P`, and its projection onto `F.obj M` is described by `Presentation.map_π_eq`;
-see `GeneratingSections.map` for the version for generators only. -/
+/-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
+colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
+`Presentation (F.obj M)`. -/
 @[simps! generators_I relations_I]
 def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
