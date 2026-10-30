@@ -77,15 +77,14 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
       monotone' i j e := Ideal.map_mono (Ideal.comap_mono (Ideal.pow_le_pow_right e)) }
   obtain ⟨n, hn⟩ := IsArtinian.monotone_stabilizes qs
   refine ⟨n, ?_⟩
-  apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (q.map f) _ (IsNoetherian.noetherian _)
+  apply Submodule.eq_bot_of_le_smul_of_le_jacobson (q.map f) _ (IsNoetherian.noetherian _)
   rotate_left
-  · rw [IsLocalRing.jacobson_eq_maximalIdeal, Localization.AtPrime.map_eq_maximalIdeal]
-    exact bot_ne_top
+  · rw [IsLocalRing.ringJacobson_eq_maximalIdeal, Localization.AtPrime.map_eq_maximalIdeal]
   rw [smul_eq_mul, ← pow_succ',
     ← (IsLocalization.orderEmbedding q.primeCompl (Localization.AtPrime q)).map_rel_iff]
-  refine Submodule.le_of_le_smul_of_le_jacobson_bot (I := I) (IsNoetherian.noetherian _) ?_ ?_
-  · rw [IsLocalRing.jacobson_eq_maximalIdeal]
-    exacts [hp.le, bot_ne_top]
+  refine Submodule.le_of_le_smul_of_le_jacobson (I := I) (IsNoetherian.noetherian _) ?_ ?_
+  · rw [IsLocalRing.ringJacobson_eq_maximalIdeal]
+    exact hp.le
   · replace hn := congr(Ideal.comap (Ideal.Quotient.mk I) $(hn _ n.le_succ))
     simp only [qs, OrderHom.coe_mk, ← RingHom.ker_eq_comap_bot, Ideal.mk_ker,
       Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective] at hn

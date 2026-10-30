@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset  -- shake: keep (Q
 public import Mathlib.Data.Finset.Density  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Positivity extensions for finsets
 

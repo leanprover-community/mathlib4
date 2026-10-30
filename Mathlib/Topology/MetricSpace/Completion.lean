@@ -11,6 +11,9 @@ public import Mathlib.Topology.MetricSpace.Isometry
 
 import Mathlib.Topology.Algebra.Ring.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The completion of a metric space
 
