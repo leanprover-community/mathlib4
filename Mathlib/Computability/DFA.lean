@@ -76,20 +76,20 @@ def evalFrom (s : σ) (x : FreeMonoid α) : σ :=
   x.toList.foldl M.step s
 
 @[simp]
-theorem evalFrom_nil (s : σ) : M.evalFrom s 1 = s :=
+theorem evalFrom_one (s : σ) : M.evalFrom s 1 = s :=
   rfl
 
 @[simp]
-theorem evalFrom_cons (s : σ) (a : α) (x : FreeMonoid α) :
+theorem evalFrom_of_mul (s : σ) (a : α) (x : FreeMonoid α) :
     M.evalFrom s (.of a * x) = M.evalFrom (M.step s a) x :=
   rfl
 
 @[simp]
-theorem evalFrom_singleton (s : σ) (a : α) : M.evalFrom s (.of a) = M.step s a :=
+theorem evalFrom_of (s : σ) (a : α) : M.evalFrom s (.of a) = M.step s a :=
   rfl
 
 @[simp]
-theorem evalFrom_append_singleton (s : σ) (x : FreeMonoid α) (a : α) :
+theorem evalFrom_mul_of (s : σ) (x : FreeMonoid α) (a : α) :
     M.evalFrom s (x * .of a) = M.step (M.evalFrom s x) a := by
   simp [evalFrom]
 
@@ -98,20 +98,29 @@ def eval : FreeMonoid α → σ :=
   M.evalFrom M.start
 
 @[simp]
-theorem eval_nil : M.eval 1 = M.start :=
+theorem eval_one : M.eval 1 = M.start :=
   rfl
 
 @[simp]
-theorem eval_singleton (a : α) : M.eval (.of a) = M.step M.start a :=
+theorem eval_of (a : α) : M.eval (.of a) = M.step M.start a :=
   rfl
 
 @[simp]
-theorem eval_append_singleton (x : FreeMonoid α) (a : α) :
-    M.eval (x * .of a) = M.step (M.eval x) a := evalFrom_append_singleton ..
+theorem eval_mul_of (x : FreeMonoid α) (a : α) : M.eval (x * .of a) = M.step (M.eval x) a :=
+  evalFrom_mul_of ..
 
-theorem evalFrom_of_append (start : σ) (x y : FreeMonoid α) :
-    M.evalFrom start (x * y) = M.evalFrom (M.evalFrom start x) y :=
+theorem evalFrom_mul (s : σ) (x y : FreeMonoid α) :
+    M.evalFrom s (x * y) = M.evalFrom (M.evalFrom s x) y :=
   List.foldl_append
+
+@[deprecated (since := "2026-10-30")] alias evalFrom_nil := evalFrom_one
+@[deprecated (since := "2026-10-30")] alias evalFrom_cons := evalFrom_of_mul
+@[deprecated (since := "2026-10-30")] alias evalFrom_singleton := evalFrom_of
+@[deprecated (since := "2026-10-30")] alias evalFrom_append_singleton := evalFrom_mul_of
+@[deprecated (since := "2026-10-30")] alias eval_nil := eval_one
+@[deprecated (since := "2026-10-30")] alias eval_singleton := eval_of
+@[deprecated (since := "2026-10-30")] alias eval_append_singleton := eval_mul_of
+@[deprecated (since := "2026-10-30")] alias evalFrom_of_append := evalFrom_mul
 
 /--
 `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
@@ -142,11 +151,11 @@ theorem evalFrom_split [Fintype σ] {x : FreeMonoid α} {s t : σ}
     grind [FreeMonoid.toList_one, congr($(h).toList.length)], rfl, ?_⟩
   have hq : M.evalFrom (M.evalFrom s ⟨(x.toList.take m).take n⟩) ⟨(x.toList.take m).drop n⟩ =
       M.evalFrom s ⟨(x.toList.take m).take n⟩ := by
-    rw [List.take_take, min_eq_left hle, ← evalFrom_of_append, heq, ← min_eq_left hle,
-      ← List.take_take, min_eq_left hle]
+    rw [List.take_take, min_eq_left hle, ← evalFrom_mul, heq, ← min_eq_left hle, ← List.take_take,
+      min_eq_left hle]
     congr; ext1; simp
   use hq
-  rw [← hq, ← evalFrom_of_append, ← evalFrom_of_append, ← hx]
+  rw [← hq, ← evalFrom_mul, ← evalFrom_mul, ← hx]
   congr; ext1; simp [FreeMonoid.toList_mul, ← List.append_assoc]
 
 theorem evalFrom_of_pow {x y : FreeMonoid α} {s : σ} (hx : M.evalFrom s x = s)
@@ -158,7 +167,7 @@ theorem evalFrom_of_pow {x y : FreeMonoid α} {s : σ} (hx : M.evalFrom s x = s)
   | cons a S ih =>
     have ha := hS a List.mem_cons_self
     rw [Set.mem_singleton_iff] at ha
-    rw [List.prod_cons, evalFrom_of_append, ha, hx]
+    rw [List.prod_cons, evalFrom_mul, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)
@@ -174,7 +183,7 @@ theorem pumping_lemma [Fintype σ] {x : FreeMonoid α} (hx : x ∈ M.accepts.toS
   rw [SetSemiring.toSet_ofSet] at ha' hc'
   subst ha' hc'
   have h := M.evalFrom_of_pow hb hb'
-  rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
+  rwa [mem_accepts, eval, evalFrom_mul, evalFrom_mul, h, hc]
 
 section Maps
 
