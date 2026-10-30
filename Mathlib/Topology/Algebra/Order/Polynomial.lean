@@ -37,7 +37,7 @@ section PolynomialAtTop
 variable (P) in
 theorem tendsTo_atTop_div_nhds_leadingCoeff [TopologicalSpace F] [OrderTopology F] :
     Tendsto (fun x ↦ P.eval x / x ^ P.natDegree) atTop (𝓝 P.leadingCoeff) := by
-  induction P using horner_induction with
+  induction P using induction_horner with
   | hC _ => simp
   | ha _ a _ hdeg _ ih =>
     convert ih.add ((tendsto_pow_neg_atTop hdeg.ne').const_mul a)
