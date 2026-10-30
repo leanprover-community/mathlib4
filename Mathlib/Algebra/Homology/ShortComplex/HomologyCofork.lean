@@ -46,7 +46,7 @@ noncomputable def cyclesFunctorFork :
 noncomputable def isLimitCyclesFunctorFork :
     IsLimit (cyclesFunctorFork C) :=
   evaluationJointlyReflectsLimits _
-    (fun S ↦ (KernelFork.isLimitMapConeEquiv _ _).2 S.cyclesIsKernel)
+    (fun S ↦ (KernelFork.isLimitMapConeEquiv _ _).symm S.cyclesIsKernel)
 
 /-- The colimit cokernel cofork expressing `opcyclesFunctor C : ShortComplex C ⥤ C`
 as the cokernel of `π₁Toπ₂ : π₁ ⟶ π₂`. -/
