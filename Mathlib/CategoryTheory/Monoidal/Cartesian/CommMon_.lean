@@ -16,8 +16,6 @@ set_option doc.verso.suggestions false
 
 public section
 
-assert_not_exists MonoidWithZero
-
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 namespace CategoryTheory

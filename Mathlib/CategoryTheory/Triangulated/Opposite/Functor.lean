@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 /-!
-# Opposites of functors between pretriangulated categories,
+# Opposites of functors between pretriangulated categories
 
 If `F : C ⥤ D` is a functor between pretriangulated categories, we prove that
 `F` is a triangulated functor if and only if `F.op` is a triangulated functor.

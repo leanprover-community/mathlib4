@@ -116,6 +116,30 @@ lemma mk' [Φ.IsLocalizedEquivalence] : Φ.IsRightDerivabilityStructure := by
 
 end
 
+section
+
+variable (Φ : LocalizerMorphism W₁ W₂) {D₁ D₂ : Type*} [Category D₁] [Category D₂]
+  (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+  (F : D₁ ⥤ D₂)
+  [F.Full] [F.Faithful] [W₂.ContainsIdentities]
+  [∀ X₂, IsConnected (Φ.RightResolution X₂)]
+  [HasRightResolutions Φ.arrow]
+
+-- Kahn-Maltsiniotis, Lemme 6.5
+/-- Constructor for right derivability structures. -/
+lemma mk'' [CatCommSq Φ.functor L₁ L₂ F] : Φ.IsRightDerivabilityStructure := by
+  have : Φ.IsLocalizedEquivalence := by
+    have := Localization.essSurj L₂ W₂
+    have : F.EssSurj := ⟨fun Y => by
+      let R : Φ.RightResolution (L₂.objPreimage Y) := Classical.arbitrary _
+      exact ⟨L₁.obj R.X₁, ⟨(CatCommSq.iso Φ.functor L₁ L₂ F).symm.app R.X₁ ≪≫
+        (Localization.isoOfHom L₂ W₂ R.w R.hw).symm ≪≫ L₂.objObjPreimageIso Y⟩⟩⟩
+    have : F.IsEquivalence := { }
+    exact IsLocalizedEquivalence.mk' Φ L₁ L₂ F
+  apply mk'
+
+end
+
 end IsRightDerivabilityStructure
 
 /-- If a localizer morphism `Φ` is a localized equivalence, then it is a left

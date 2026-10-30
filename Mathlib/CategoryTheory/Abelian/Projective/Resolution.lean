@@ -299,7 +299,21 @@ lemma ofComplex_d_1_0 :
     (ofComplex Z).d 1 0 = d (Projective.π Z) := by
   simp [ofComplex]
 
-set_option backward.isDefEq.respectTransparency.types false in
+/-- The isomorphism `(ofComplex Z).X (n + 2) ≅ syzygies ((ofComplex Z).d (n + 1) n)` given
+by the induction construction. -/
+def ofComplexXIso (n : ℕ) : (ofComplex Z).X (n + 2) ≅ syzygies ((ofComplex Z).d (n + 1) n) := by
+  apply ChainComplex.mk'XIso
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+/-- Isomorphism describing the (exact) short complex `(ofComplex Z).sc' (n + 2) (n + 1) n`. -/
+def ofComplexSc'Iso (n : ℕ) : (ofComplex Z).sc' (n + 2) (n + 1) n ≅
+    ShortComplex.mk (d ((ofComplex Z).d (n + 1) n)) ((ofComplex Z).d (n + 1) n) (by simp) :=
+  ShortComplex.isoMk (ofComplexXIso Z n) (Iso.refl _) (Iso.refl _) (by
+    dsimp [ofComplex, ofComplexXIso]
+    rw [comp_id, ChainComplex.mk'_d]) (by simp)
+
+set_option backward.isDefEq.respectTransparency false in
 lemma ofComplex_exactAt_succ (n : ℕ) :
     (ofComplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 1 + 1) (n + 1) n (by simp) (by simp)]

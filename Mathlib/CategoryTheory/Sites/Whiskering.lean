@@ -59,6 +59,9 @@ instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
 instance [F.Faithful] [F.Full] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Full :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Full from inferInstance
 
+instance [HasZeroMorphisms A] [HasZeroMorphisms B] [F.PreservesZeroMorphisms] :
+    (sheafCompose J F).PreservesZeroMorphisms where
+
 variable {F} in
 /-- If `F : A ⥤ B` is fully faithful, then `sheafCompose J F ⋙ sheafToPresheaf J B` is fully
 faithful. -/
@@ -84,6 +87,12 @@ instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms wher
       ← isIso_iff_of_reflects_iso _ ((whiskeringRight Cᵒᵖ A B).obj F)]
     change IsIso ((sheafToPresheaf _ _).map ((sheafCompose J F).map f))
     infer_instance
+
+instance [F.Faithful] : (sheafCompose J F).Faithful where
+  map_injective h := by
+    ext X
+    apply F.map_injective
+    exact (sheafToPresheaf _ _ ⋙ (evaluation _ _).obj X).congr_map h
 
 variable {F G}
 

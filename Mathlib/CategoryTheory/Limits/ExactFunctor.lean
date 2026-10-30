@@ -120,6 +120,18 @@ lemma exactFunctor_le_rightExactFunctor :
     exactFunctor C D ≤ rightExactFunctor C D :=
   fun _ h ↦ h.2
 
+variable {C D} in
+lemma exactFunctor.preservesFiniteLimits {F : C ⥤ D} (hF : exactFunctor _ _ F) :
+    PreservesFiniteLimits F := hF.1
+
+variable {C D} in
+lemma exactFunctor.preservesFiniteColimits {F : C ⥤ D} (hF : exactFunctor _ _ F) :
+    PreservesFiniteColimits F := hF.2
+
+instance : (exactFunctor (C := C) (D := D)).IsClosedUnderIsomorphisms := by
+  dsimp only [exactFunctor]
+  infer_instance
+
 /-- Turn an exact functor into a left exact functor. -/
 abbrev LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
   ObjectProperty.ιOfLE (exactFunctor_le_leftExactFunctor C D)

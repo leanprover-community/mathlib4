@@ -29,8 +29,8 @@ namespace CategoryTheory
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
-  (A : Type w) [AddMonoid A] [HasShift C A]
-  (G : Type w) [AddGroup G] [HasShift C G]
+  (A : Type w) [AddMonoid A] [HasShift C A] [HasShift E A]
+  (G : Type w) [AddGroup G] [HasShift C G] [HasShift E G]
 
 namespace MorphismProperty
 
@@ -134,7 +134,7 @@ section
 open Localization
 
 variable (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
-  [HasShift D A] [HasShift E A] [L.CommShift A] [F.CommShift A]
+  [HasShift D A] [L.CommShift A] [F.CommShift A]
 
 namespace Functor
 
@@ -333,7 +333,7 @@ instance : NatTrans.CommShift (Lifting.iso L W L (𝟭 D)).hom A := by
   dsimp [Lifting.iso]
   infer_instance
 
-instance liftNatTrans [HasShift E A]
+instance liftNatTrans
     (F₁ F₂ : C ⥤ E) [F₁.CommShift A] [F₂.CommShift A]
     (F₁' F₂' : D ⥤ E) [F₁'.CommShift A] [F₂'.CommShift A]
     [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']

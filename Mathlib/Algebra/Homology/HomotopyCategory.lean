@@ -51,6 +51,10 @@ def HomotopyCategory :=
 instance : Category (HomotopyCategory V c) :=
   inferInstanceAs <| Category (CategoryTheory.Quotient (homotopic V c))
 
+instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
+  rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
+  exact ⟨Homotopy.add h h'⟩)
+
 namespace HomotopyCategory
 
 instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
@@ -70,7 +74,7 @@ instance : (quotient V c).Full := Quotient.full_functor _
 
 instance : (quotient V c).EssSurj := Quotient.essSurj_functor _
 
-instance : (quotient V c).Additive where
+instance quotient_additive : (quotient V c).Additive where
 
 instance : Functor.Additive (Quotient.functor (homotopic V c)) where
 

@@ -6,7 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
+public import Mathlib.CategoryTheory.ComposableArrows.One
+public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
 
 /-!
 # Spectral objects in triangulated categories
@@ -129,8 +132,6 @@ end
 
 end
 
-section
-
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
 attribute [local simp] Precomp.map Precomp.obj δ in
@@ -173,8 +174,6 @@ def precomp : SpectralObject C ι' where
       · congr; cat_disch
       · cat_disch
 
-end
-
 section
 
 variable (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
@@ -210,16 +209,12 @@ instance : Category (SpectralObject C ι) where
   id X := { hom := 𝟙 _ }
   comp f g := { hom := f.hom ≫ g.hom }
 
-section
+attribute [simp] id_hom
+attribute [reassoc (attr := simp)] comp_hom
 
-variable {X} {Y Z : SpectralObject C ι}
-
+variable {X} in
 @[ext]
-lemma hom_ext {α β : X ⟶ Y} (h : α.hom = β.hom) : α = β := Hom.ext h
-
-attribute [reassoc] comp_hom
-
-end
+lemma hom_ext {Y : SpectralObject C ι} {α β : X ⟶ Y} (h : α.hom = β.hom) : α = β := Hom.ext h
 
 variable {X} in
 /-- If `φ : X ⟶ Y` is a morphism of spectral objects indexed by `ι`

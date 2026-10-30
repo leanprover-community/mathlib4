@@ -50,9 +50,25 @@ derived functors.
 
 @[expose] public section
 
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe v₁ v₂ v₃ v₄ v₁' v₂' v₃' v₄' u₁ u₂ u₃ u₄ u₁' u₂' u₃' u₄'
 
 namespace CategoryTheory
+
+open Limits
+
+namespace IsConnected
+
+variable {C D : Type*} [Category C] [Category D]
+
+instance [IsConnected C] [IsConnected D] : IsConnected (C × D) := by
+  apply zigzag_isConnected
+  intro ⟨X₁, Y₁⟩ ⟨X₂, Y₂⟩
+  exact (zigzag_obj_of_zigzag (Functor.prod' (𝟭 C) ((Functor.const C).obj Y₁))
+      (isPreconnected_zigzag X₁ X₂)).trans
+    (zigzag_obj_of_zigzag (Functor.prod' ((Functor.const D).obj X₂) (𝟭 D))
+      (isPreconnected_zigzag Y₁ Y₂))
+
+end IsConnected
 
 open Category
 
@@ -268,6 +284,19 @@ instance [hw : w.GuitartExact] (X₂ : C₂) :
   rw [guitartExact_iff_initial] at hw
   apply hw
 
+set_option backward.isDefEq.respectTransparency false in
+instance [L.IsEquivalence] [R.IsEquivalence] [IsIso w] : GuitartExact w := by
+  rw [guitartExact_iff_initial]
+  intro X₂
+  have := StructuredArrow.isEquivalence_post X₂ T R
+  have : (Comma.mapRight _ w : StructuredArrow (R.obj X₂) _ ⥤
+    StructuredArrow (R.obj X₂) _).IsEquivalence :=
+    (Comma.mapRightIso _ (asIso w)).isEquivalence_functor
+  have := StructuredArrow.isEquivalence_pre (R.obj X₂) L B
+  dsimp only [structuredArrowDownwards]
+  infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
 /-- When the left and right functors of a 2-square are equivalences, and the natural
 transformation of the 2-square is an isomorphism, then the 2-square is Guitart exact. -/
 instance (priority := 100) guitartExact_of_isEquivalence_of_isIso

@@ -6,9 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.CochainComplexPlus
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+public import Mathlib.Algebra.Homology.HomotopyFiber
 public import Mathlib.Algebra.Homology.Precylinder
+public import Mathlib.CategoryTheory.Localization.OfQuotient
 public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 import Mathlib.CategoryTheory.Localization.OfQuotient
 

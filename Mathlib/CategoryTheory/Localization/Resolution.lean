@@ -128,7 +128,34 @@ lemma hom_ext {R R' : Φ.RightResolution X₂} {φ₁ φ₂ : R ⟶ R'} (h : φ�
     φ₁ = φ₂ :=
   Hom.ext h
 
+@[simps]
+def isoMk {R R' : Φ.RightResolution X₂} (e : R.X₁ ≅ R'.X₁)
+    (comm : R.w ≫ Φ.functor.map e.hom = R'.w := by aesop_cat) : R ≅ R' where
+  hom :=
+    { f := e.hom
+      --hf := W₁.of_isIso _
+      comm := comm }
+  inv :=
+    { f := e.inv
+      --hf := W₁.of_isIso _
+      comm := by
+        rw [← comm, Category.assoc, Iso.hom_inv_id_map, Category.comp_id] }
+
+/-- The external product of two right resolutions, as a right resolution
+for the external product of two localizer morphisms. -/
+@[simps, implicit_reducible]
+def prod {Φ' : LocalizerMorphism W₁' W₂'} {X₂' : D₂}
+    (R : Φ.RightResolution X₂) (R' : Φ'.RightResolution X₂') :
+    (Φ.prod Φ').RightResolution (X₂, X₂') where
+  X₁ := ⟨R.X₁, R'.X₁⟩
+  w := ⟨R.w, R'.w⟩
+  hw := ⟨R.hw, R'.hw⟩
+
 end RightResolution
+
+instance (Φ' : LocalizerMorphism W₁' W₂') [Φ.HasRightResolutions] [Φ'.HasRightResolutions] :
+    (Φ.prod Φ').HasRightResolutions :=
+  fun _ ↦ ⟨RightResolution.prod (Classical.arbitrary _) (Classical.arbitrary _)⟩
 
 namespace LeftResolution
 
@@ -172,7 +199,57 @@ lemma hom_ext {L L' : Φ.LeftResolution X₂} {φ₁ φ₂ : L ⟶ L'} (h : φ�
     φ₁ = φ₂ :=
   Hom.ext h
 
+@[simps]
+def isoMk {L L' : Φ.LeftResolution X₂} (e : L.X₁ ≅ L'.X₁)
+    (comm : Φ.functor.map e.hom ≫ L'.w = L.w := by aesop_cat) : L ≅ L' where
+  hom :=
+    { f := e.hom
+      --hf := W₁.of_isIso _
+      comm := comm }
+  inv :=
+    { f := e.inv
+      --hf := W₁.of_isIso _
+      comm := by
+        rw [← comm, Iso.inv_hom_id_map_assoc] }
+
+variable (Φ)
+
+@[simps!]
+def chgObj {X₂' : C₂} [W₂.IsStableUnderComposition] (π : X₂ ⟶ X₂') (hπ : W₂ π) :
+    Φ.LeftResolution X₂ ⥤ Φ.LeftResolution X₂' where
+  obj R :=
+    { X₁ := R.X₁
+      w := R.w ≫ π
+      hw := W₂.comp_mem _ _ R.hw hπ }
+  map φ :=
+    { f := φ.f }
+
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
+@[simps]
+def chgObjEquivalence {X₂' : C₂} (e : X₂ ≅ X₂') [W₂.IsMultiplicative] [W₂.RespectsIso] :
+    Φ.LeftResolution X₂ ≌ Φ.LeftResolution X₂' where
+  functor := chgObj Φ e.hom (W₂.of_isIso _)
+  inverse := chgObj Φ e.inv (W₂.of_isIso _)
+  unitIso := NatIso.ofComponents (fun R ↦ isoMk (Iso.refl _))
+  counitIso := NatIso.ofComponents (fun R ↦ isoMk (Iso.refl _))
+
+variable {Φ} in
+/-- The external product of two left resolutions, as a left resolution
+for the external product of two localizer morphisms. -/
+@[simps, implicit_reducible]
+def prod {Φ' : LocalizerMorphism W₁' W₂'} {X₂' : D₂}
+    (R : Φ.LeftResolution X₂) (R' : Φ'.LeftResolution X₂') :
+    (Φ.prod Φ').LeftResolution (X₂, X₂') where
+  X₁ := ⟨R.X₁, R'.X₁⟩
+  w := ⟨R.w, R'.w⟩
+  hw := ⟨R.hw, R'.hw⟩
+
 end LeftResolution
+
+instance (Φ' : LocalizerMorphism W₁' W₂') [Φ.HasLeftResolutions] [Φ'.HasLeftResolutions] :
+    (Φ.prod Φ').HasLeftResolutions :=
+  fun _ ↦ ⟨LeftResolution.prod (Classical.arbitrary _) (Classical.arbitrary _)⟩
 
 variable {Φ}
 
@@ -308,6 +385,12 @@ lemma isIso_iff_of_hasLeftResolutions [Φ.HasLeftResolutions] {F G : D₂ ⥤ H}
 
 end
 
+lemma hasRightResolutions_of_arrow [Φ.arrow.HasRightResolutions] :
+    Φ.HasRightResolutions := fun X₂ => by
+  let R : Φ.arrow.RightResolution (Arrow.mk (𝟙 X₂)) := Classical.arbitrary _
+  exact
+   ⟨{ w := R.w.left
+      hw := R.hw.1 } ⟩
 section
 
 variable {T : LocalizerMorphism W₁ W₂} {L : LocalizerMorphism W₁ W₁'}

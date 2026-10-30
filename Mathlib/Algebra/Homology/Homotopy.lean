@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Tactic.Abel
 
 /-!
 # Chain homotopies

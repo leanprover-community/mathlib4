@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.DerivabilityStructureInjectives
-
-import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
+public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.DerivesTriangulated
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TExact
 
 /-!
 # The right derived functor on the bounded below derived category
@@ -25,11 +26,36 @@ We also show that `F.rightDerivedFunctorPlus` may also be thought of
 as a derived functor of the functor `F.mapCochainComplexPlus`
 that `F` induces on the categories of bounded below cochain complexes.
 
-TODO(@joelriou): refactor the definition of `Functor.rightDerived`
-
 -/
 
 @[expose] public section
+
+open CategoryTheory Category Limits
+
+def HomotopyCategory.Plus.mk {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
+    [HasBinaryBiproducts C] (K : CochainComplex C ℤ) (hK : ∃ n, K.IsStrictlyGE n) :
+    HomotopyCategory.Plus C :=
+  ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, by simpa⟩
+
+namespace CochainComplex
+
+variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
+
+open ComplexShape
+
+set_option backward.defeqAttrib.useBackward true in
+lemma isIso_πStupidTrunc_f (K : CochainComplex C ℤ) (n i : ℤ) (hi : i ≤ n) :
+    IsIso ((K.πStupidTrunc (embeddingUpIntLE n)).f i) := by
+  have ⟨k, hk⟩ := Int.le.dest hi
+  exact HomologicalComplex.isIso_πStupidTrunc_f K _ (i := k) (by dsimp; omega)
+
+set_option backward.defeqAttrib.useBackward true in
+lemma isIso_ιStupidTrunc_f (K : CochainComplex C ℤ) (n i : ℤ) (hi : n ≤ i) :
+    IsIso ((K.ιStupidTrunc (embeddingUpIntGE n)).f i) := by
+  have ⟨k, hk⟩ := Int.le.dest hi
+  exact HomologicalComplex.isIso_ιStupidTrunc_f K _ (i := k) (by dsimp; omega)
+
+end CochainComplex
 
 namespace CategoryTheory
 
@@ -141,6 +167,43 @@ example (K : CochainComplex.Plus (InjectiveObject C)) :
         ((InjectiveObject.ι C).mapCochainComplexPlus.obj K))) := by
   infer_instance
 
+lemma isIso_rightDerivedFunctorPlusUnit_app_of_injective (K : CochainComplex.Plus C)
+    (n : ℤ) (_ : K.obj.IsStrictlyGE n := by infer_instance)
+    (hK' : ∀ (q : ℤ), Injective (K.obj.X q)) :
+    IsIso (F.rightDerivedFunctorPlusUnit.app K) := by
+  obtain ⟨L, ⟨e⟩⟩ := K.mem_essImage_mapCochainComplexPlus_injectiveObjectι_iff.mpr hK'
+  rw [← NatTrans.isIso_app_iff_of_iso _ e]
+  infer_instance
+
+section
+
+open DerivedCategory.Plus.TStructure
+
+instance : F.rightDerivedFunctorPlus.LeftTExact t t :=
+  Functor.LeftTExact.mk (fun X _ ↦ by
+    obtain ⟨L, _, ⟨e⟩⟩ := DerivedCategory.Plus.exists_injective_nonempty_iso X 0
+    let iso :
+        DerivedCategory.Plus.Q.obj
+          ((InjectiveObject.ι C ⋙ F).mapCochainComplexPlus.obj L) ≅
+        F.rightDerivedFunctorPlus.obj (DerivedCategory.Plus.Q.obj
+          ((InjectiveObject.ι C).mapCochainComplexPlus.obj L)) :=
+      asIso (F.rightDerivedFunctorPlusUnit.app
+        ((InjectiveObject.ι C).mapCochainComplexPlus.obj L))
+    rw [← t.isGE_iff_of_iso (F.rightDerivedFunctorPlus.mapIso e), ← t.isGE_iff_of_iso iso]
+    simp only [← DerivedCategory.Plus.isGE_ι_obj_iff]
+    dsimp [DerivedCategory.Plus.Q]
+    infer_instance)
+
+instance (K : DerivedCategory.Plus C) (n : ℤ) [K.IsGE n] :
+    (F.rightDerivedFunctorPlus.obj K).IsGE n :=
+  F.rightDerivedFunctorPlus.isGE_obj t t K n
+
+example (X : C) (n : ℤ) :
+    (F.rightDerivedFunctorPlus.obj ((DerivedCategory.Plus.singleFunctor C n).obj X)).IsGE n := by
+  infer_instance
+
+end
+
 end Functor
 
 namespace NatTrans
@@ -196,7 +259,7 @@ lemma rightDerivedFunctorPlus_fac (τ : F₁ ⟶ F₂) :
 
 /-- The additive map from `F₁ ⟶ F₂` to `F₁.rightDerivedFunctorPlus ⟶ F₂.rightDerivedFunctorPlus`
 that is given by `NatTrans.rightDerivedFunctorPlus`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 noncomputable def rightDerivedFunctorPlusAddMonoidHom :
     (F₁ ⟶ F₂) →+ (F₁.rightDerivedFunctorPlus ⟶ F₂.rightDerivedFunctorPlus) :=
   AddMonoidHom.mk' rightDerivedFunctorPlus

@@ -287,6 +287,28 @@ lemma πStupidTrunc_f_naturality (i' : ι') :
 
 end
 
+section
+
+variable (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsRelIff] (i' : ι')
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma ιStupidTruncf_πStupidTruncf :
+    K.ιStupidTruncf e i' ≫ K.πStupidTruncf e i' = 𝟙 _ := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, rfl⟩ := hi'
+    rw [ιStupidTruncf_eq, πStupidTruncf_eq, Iso.hom_inv_id]
+  · apply IsZero.eq_of_src
+    apply isZero_stupidTrunc_X
+    simpa using hi'
+
+noncomputable def stupidTruncRetract :
+    Retract ((K.stupidTrunc e).X i') (K.X i') where
+  i := K.ιStupidTruncf e i'
+  r := K.πStupidTruncf e i'
+
+end
+
 end HomologicalComplex
 
 namespace ComplexShape.Embedding

@@ -142,6 +142,10 @@ instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory 
   add_comp _ _ _ _ _ _ := by ext; apply add_comp
   comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
+@[simp]
+lemma _root_.CategoryTheory.ObjectProperty.hom_zero {Z : ObjectProperty C}
+    (X Y : Z.FullSubcategory) : (0 : X ⟶ Y).hom = 0 := rfl
+
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
   mk' (fun g => f ≫ g) fun g g' => by simp
