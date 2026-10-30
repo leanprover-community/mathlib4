@@ -66,7 +66,8 @@ variable (K : Type*) [Field K]
 instance [NumberField K] : Nontrivial K∞ :=
   (inferInstance : Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
 
-@[simp] theorem algebraMap_apply (x : K) (v : InfinitePlace K) : algebraMap K K∞ x v = x := rfl
+@[simp] theorem algebraMap_apply (x : K) (v : InfinitePlace K) : algebraMap K K∞ x v = x :=
+  Completion.algebraMap_apply v x
 
 /-- The infinite adele ring is locally compact. -/
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace K∞ :=
@@ -105,8 +106,11 @@ theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
 
 The number field $K$ is dense in the infinite adele ring $\prod_v K_v$.
 -/
-theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K K∞ :=
-  (DenseRange.piMap fun v => Completion.denseRange_coe v).comp
+theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K K∞ := by
+  have h : ⇑(algebraMap K K∞) = (Pi.map fun v (x : WithAbs v.1) => (x : v.Completion)) ∘
+      algebraMap K ((v : InfinitePlace K) → WithAbs v.1) :=
+    funext₂ (algebraMap_apply K)
+  exact h ▸ (DenseRange.piMap fun v => Completion.denseRange_coe v).comp
     (InfinitePlace.denseRange_algebraMap_pi K) (.piMap fun v => Completion.continuous_coe v)
 
 /-- The norm on the infinite adele ring is given by the product of the normalized norms
@@ -128,7 +132,7 @@ theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : K∞} (hx : ¬IsUnit x) 
 `NumberField.InfinitePlace.prod_eq_abs_norm`. -/
 theorem coe_norm_eq_abs_norm [NumberField K] (x : K) :
     ‖algebraMap K K∞ x‖ = |Algebra.norm ℚ x| := by
-  simpa [-Rat.cast_abs, norm_def] using! InfinitePlace.prod_eq_abs_norm x
+  simpa [norm_def, AbsoluteValue.Completion.norm_coe] using! InfinitePlace.prod_eq_abs_norm x
 
 /-- The embedding of the completion `Kᵥ` at an infinite place `v` into the infinite adele ring. -/
 @[simps!]
