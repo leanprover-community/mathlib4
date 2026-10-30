@@ -94,7 +94,7 @@ the kernel of `fromOpcyclesNatTrans C : opcyclesFunctor C ⟶ π₃`. -/
 noncomputable def isLimitHomologyFunctorFork :
     IsLimit (homologyFunctorFork C) :=
   evaluationJointlyReflectsLimits _
-    (fun S ↦ (KernelFork.isLimitMapConeEquiv _ _).2 S.homologyIsKernel)
+    (fun S ↦ (KernelFork.isLimitMapConeEquiv _ _).symm S.homologyIsKernel)
 
 end
 
