@@ -548,6 +548,10 @@ theorem transpose_reindex (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) 
     (reindex eₘ eₙ M)ᵀ = reindex eₙ eₘ Mᵀ :=
   rfl
 
+theorem reindex_map (eₘ : m ≃ l) (eₙ : n ≃ o) (f : α → β) (A : Matrix m n α) :
+    reindex eₘ eₙ (A.map f) = (reindex eₘ eₙ A).map f :=
+  rfl
+
 /-- The left `n × l` part of an `n × (l+r)` matrix. -/
 abbrev subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)

@@ -286,6 +286,10 @@ theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
 @[simp]
 theorem reindexMulEquiv_refl : reindex R (.refl n) = .refl (GL n R) := rfl
 
+theorem reindex_comp_map (e : m ≃ n) (f : R →+* S) :
+    (reindex S e : GL m S →* GL n S).comp (map f) = (map f).comp (reindex R e) :=
+  rfl
+
 end Reindex
 
 section Pi
