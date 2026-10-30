@@ -64,7 +64,7 @@ universe u v
 open Polynomial IsLocalRing Function List
 open scoped Ring
 
-@[deprecated isLocalHom_of_le_jacobson +typeChanged (since := "2026-10-29")]
+@[deprecated isLocalHom_of_le_jacobson +typeChanged (since := "2026-10-12")]
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
   rw [Ideal.jacobson_bot] at h
