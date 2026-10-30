@@ -110,7 +110,7 @@ variable {d}
 
 /-- If `d : MultispanIndex J C`, `c : Multicofork d` and `F : C ⥤ D`,
 this is the induced multicofork of `d.map F`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def Multicofork.map : Multicofork (d.map F) :=
   Multicofork.ofπ _ (F.obj c.pt) (fun i ↦ F.map (c.π i)) (fun j ↦ by
     dsimp

@@ -371,7 +371,7 @@ identifies to the inclusion of `PartialOrder.horn (ULift.up i)` in the nerve of 
 partially ordered type `ULift.{u} (Fin (n + 2))`. -/
 def hornArrowIso (n : ℕ) (i : Fin (n + 2)) :
     Arrow.mk (horn.{u} (ULift.up i)).ι ≅ Arrow.mk (SSet.horn (n + 1) i).ι :=
-  SSet.Subcomplex.congrArrowι' (SSet.stdSimplex.isoNerve _).symm (by
+  SSet.Subcomplex.congrArrowι (SSet.stdSimplex.isoNerve _).symm (by
     ext d x
     simp only [SSet.Subcomplex.preimage_obj, nerve_obj, Set.mem_preimage,
       SSet.mem_horn_iff_not_subset, Set.subset_def, Set.mem_compl_iff,

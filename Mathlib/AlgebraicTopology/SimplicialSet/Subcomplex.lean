@@ -390,18 +390,14 @@ lemma fromPreimage_ι (A : X.Subcomplex) (p : Y ⟶ X) :
 
 @[simps! hom_left hom_right hom_right inv_right]
 def congrArrowι (e : X ≅ Y) {A : X.Subcomplex} {B : Y.Subcomplex}
-    (h : A.image e.hom = B) :
-    Arrow.mk A.ι ≅ Arrow.mk B.ι :=
-  Arrow.isoMk
-    { hom := Subcomplex.lift (A.ι ≫ e.hom) (by simp [range_comp, h])
-      inv := Subcomplex.lift (B.ι ≫ e.inv) (by simp [range_comp, ← h, ← image_comp])
-      hom_inv_id := by simp [← cancel_mono A.ι]
-      inv_hom_id := by simp [← cancel_mono B.ι] } e
-
-abbrev congrArrowι' (e : X ≅ Y) {A : X.Subcomplex} {B : Y.Subcomplex}
     (h : B.preimage e.hom = A) :
     Arrow.mk A.ι ≅ Arrow.mk B.ι :=
-  congrArrowι e (by simp [← h])
+  Arrow.isoMk
+    { hom := Subcomplex.lift (A.ι ≫ e.hom) (by simp [range_comp, ← h])
+      inv := Subcomplex.lift (B.ι ≫ e.inv)
+        (by simp [← h, range_comp, image_le_iff, ← preimage_comp])
+      hom_inv_id := by simp [← cancel_mono A.ι]
+      inv_hom_id := by simp [← cancel_mono B.ι] } e
 
 end Subcomplex
 

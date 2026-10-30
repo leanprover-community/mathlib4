@@ -10,11 +10,22 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.Order.NonemptyFiniteChains
 
 /-!
-# ...
+# The nerve of a partial order and nonempty finite chains
+
+If `X` is a partially ordered type, we show that there is an order
+isomorphism `(nerve X).N ≃o NonemptyFiniteChains X`
+(see `PartialOrder.NonemptyFiniteChains.nerveNEquiv`) between
+the type of nondegenerate simplices if the nerve of `X` and
+the type of nonempty finite chains in `X`.
+
+If `X` a finite nontrivial linearly ordered type and `x₀ : X`,
+we introduce a subcomplex `PartialOrder.NonemptyFiniteChains.sdHorn x₀`
+of `nerve (NonemptyFiniteChains X)` which shall identify to the
+subdivision of the horn `PartialOrder.horn x₀`,
+see `PartialOrder.NonemptyFiniteChains.hornArrowIsoRangeSd'` in the file
+`Mathlib/AlgebraicTopology/SimplicialSet/Subdivision.lean`.
 
 -/
-
-universe u
 
 @[expose] public section
 
@@ -24,7 +35,7 @@ namespace PartialOrder.NonemptyFiniteChains
 
 section
 
-variable {X : Type u} [PartialOrder X]
+variable {X : Type*} [PartialOrder X]
 
 @[simp]
 lemma range_toN_simplex_obj {n : ℕ} (x : (nerve X) _⦋n⦌) :
@@ -113,8 +124,7 @@ lemma injective_ofN : Function.Injective (ofN (X := X)) := by
 open Classical in
 lemma surjective_ofN : Function.Surjective (ofN (X := X)) := by
   intro s
-  let U : Type u := s.1
-  let : LinearOrder U :=
+  let : LinearOrder s.1 :=
     { le_total := s.comparable
       toDecidableLE := by infer_instance }
   obtain ⟨n, ⟨e⟩⟩ : ∃ (n : ℕ), Nonempty (Fin (n + 1) ≃o s.1) := by
@@ -146,7 +156,7 @@ end
 
 section
 
-variable {X : Type u} [LinearOrder X] [Fintype X] [Nontrivial X] (x₀ : X)
+variable {X : Type*} [LinearOrder X] [Fintype X] [Nontrivial X] (x₀ : X)
 
 /-- If `X` is a nontrivial finite linearly ordered type and `x₀ : X`, this
 is the subcomplex of the nerve of `NonemptyFiniteChains X` which consists
@@ -154,6 +164,7 @@ of the union of the images of `nerve (NonemptyFiniteChains {y}ᶜ)` for `y ≠ x
 This identifies to the subdivision of the horn `PartialOrder.horn x₀`,
 see `PartialOrder.NonemptyFiniteChains.hornArrowIsoRangeSd'` in the file
 `Mathlib/AlgebraicTopology/SimplicialSet/Subdivision.lean`. -/
+@[no_expose]
 def sdHorn : (nerve (NonemptyFiniteChains X)).Subcomplex where
   obj _ := Set.ofPred (fun s ↦ ∀ i, ¬ complSingleton x₀ ≤ s.obj i)
   map _ _ hs _ := hs _

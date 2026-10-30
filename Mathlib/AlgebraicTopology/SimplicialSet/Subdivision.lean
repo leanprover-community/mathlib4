@@ -55,15 +55,18 @@ def SSet.stdSimplex.toPartOrdCompNerveFunctorIso :
 namespace SSet
 
 /-- The subdivision functor on simplicial sets. -/
+@[no_expose]
 noncomputable def sd : SSet.{u} ⥤ SSet.{u} :=
   stdSimplex.leftKanExtension SimplexCategory.sd
 
 /-- The right adjoint to the subdivision functor on simplicial sets. -/
+@[no_expose]
 noncomputable def ex : SSet.{u} ⥤ SSet.{u} :=
   Presheaf.restrictedULiftYoneda.{0} SimplexCategory.sd
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] stdSimplex in
 /-- The adjunction between the subdivision functor `sd` and `ex`. -/
+@[no_expose]
 noncomputable def sdExAdjunction : sd.{u} ⊣ ex :=
   Presheaf.uliftYonedaAdjunction.{0}
     (SSet.stdSimplex.{u}.leftKanExtension SimplexCategory.sd)
@@ -74,7 +77,7 @@ instance : sd.{u}.IsLeftAdjoint := sdExAdjunction.isLeftAdjoint
 instance : ex.{u}.IsRightAdjoint := sdExAdjunction.isRightAdjoint
 
 /-- An alternative subdivision functor for simplicial sets. It sends `X : SSet` to
-the nerve of the partially ordered type `X.N` of nondegenerate simplices in `X`.li
+the nerve of the partially ordered type `X.N` of nondegenerate simplices in `X`.
 There is a natural transformation `sdToSd' : sd ⟶ sd'` which is an isomorphism when
 evaluated on a nonsingular simplicial set. -/
 @[simps!, implicit_reducible]
@@ -84,6 +87,7 @@ noncomputable def sd' : SSet.{u} ⥤ SSet.{u} :=
 namespace stdSimplex
 
 /-- The natural isomorphism `stdSimplex ⋙ sd ≅ SimplexCategory.sd`. -/
+@[no_expose]
 noncomputable def sdIso : stdSimplex.{u} ⋙ sd ≅ SimplexCategory.sd :=
   Presheaf.isExtensionAlongULiftYoneda _
 
@@ -99,21 +103,45 @@ instance : sd.{u}.IsLeftKanExtension stdSimplex.sdIso.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.leftKanExtensionUnit SimplexCategory.sd.{u}))
 
+@[no_expose]
 noncomputable def sdToSd' : sd.{u} ⟶ sd'.{u} :=
   sd.{u}.descOfIsLeftKanExtension stdSimplex.sdIso.inv _ stdSimplex.sd'Iso.{u}.inv
 
+@[reassoc (attr := simp)]
+lemma stdSimplex.sdIso_inv_comp_whiskerLeft_sdToSd' :
+    stdSimplex.sdIso.{u}.inv ≫ stdSimplex.whiskerLeft sdToSd' =
+      stdSimplex.sd'Iso.inv := by
+  simp [sdToSd']
+
+@[reassoc (attr := simp)]
+lemma stdSimplex.sdIso_inv_app_comp_sdToSd'_app (n : SimplexCategory) :
+    stdSimplex.sdIso.{u}.inv.app n ≫ sdToSd'.app _ =
+      stdSimplex.sd'Iso.inv.app n :=
+  congr($(sdIso_inv_comp_whiskerLeft_sdToSd').app n)
+
+@[reassoc (attr := simp)]
+lemma stdSimplex.whiskerLeft_sdToSd'_comp_sd'Iso_hom :
+    stdSimplex.whiskerLeft sdToSd' ≫ stdSimplex.sd'Iso.{u}.hom =
+      stdSimplex.sdIso.{u}.hom := by
+  simp [← cancel_epi stdSimplex.sdIso.{u}.inv]
+
+@[reassoc (attr := simp)]
+lemma stdSimplex.sdToSd'_app_comp_sd'Iso_hom_app (n : SimplexCategory) :
+    sdToSd'.app _ ≫ stdSimplex.sd'Iso.{u}.hom.app n =
+      stdSimplex.sdIso.hom.app n :=
+  congr($(whiskerLeft_sdToSd'_comp_sd'Iso_hom).app n)
+
 @[reassoc]
-lemma sdToSd'_app_stdSimplex_obj (n : SimplexCategory) :
+lemma stdSimplex.sdToSd'_app (n : SimplexCategory) :
     sdToSd'.{u}.app (stdSimplex.obj n) =
       stdSimplex.sdIso.hom.app n ≫ stdSimplex.sd'Iso.inv.app n := by
-  simp only [← sd.{u}.descOfIsLeftKanExtension_fac_app
-    stdSimplex.sdIso.inv _ stdSimplex.sd'Iso.{u}.inv n, Iso.hom_inv_id_app_assoc, sdToSd']
+  simp [← stdSimplex.sdToSd'_app_comp_sd'Iso_hom_app]
 
 instance (n : SimplexCategory) : IsIso (sdToSd'.{u}.app (stdSimplex.obj n)) := by
-  rw [sdToSd'_app_stdSimplex_obj]
+  rw [stdSimplex.sdToSd'_app]
   infer_instance
 
-instance : IsIso (Functor.whiskerLeft stdSimplex sdToSd') := by
+instance : IsIso (stdSimplex.whiskerLeft sdToSd') := by
   rw [NatTrans.isIso_iff_isIso_app]
   dsimp
   infer_instance
@@ -256,25 +284,25 @@ namespace PartialOrder
 
 open SSet
 
-noncomputable def nerveNonemptyFiniteChainsIso (X : Type u) [PartialOrder X] :
+noncomputable def sd'ObjNerveIso (X : Type u) [PartialOrder X] :
     sd'.obj (nerve X) ≅ nerve (NonemptyFiniteChains X) :=
   PartOrd.nerveFunctor.mapIso (PartOrd.Iso.mk (α := .of _) (β := .of _)
     NonemptyFiniteChains.nerveNEquiv)
 
-lemma nerveNonemptyFiniteChainsIso_hom_app_obj_finset
+lemma sd'ObjNerveIso_hom_app_obj_finset
     {X : Type u} [DecidableEq X] [PartialOrder X] {n : ℕ}
     (t : ComposableArrows (nerve X).N n) (i : Fin (n + 1)) :
-    dsimp% (((nerveNonemptyFiniteChainsIso X).hom.app (op ⦋n⦌) t).obj i).finset =
+    dsimp% (((sd'ObjNerveIso X).hom.app (op ⦋n⦌) t).obj i).finset =
       Finset.image (t.obj i).simplex.obj .univ := by
   ext x
-  simp [nerveNonemptyFiniteChainsIso, nerveMap_app]
+  simp [sd'ObjNerveIso, nerveMap_app]
 
-lemma finsetImage_nerveNonemptyFiniteChainsIso_inv_app_simplex_obj_univ
+lemma finsetImage_sd'ObjNerveIso_inv_app_simplex_obj_univ
     {X : Type u} [DecidableEq X] [PartialOrder X] {n : ℕ}
     (s : (nerve (NonemptyFiniteChains X)) _⦋n⦌) (i : Fin (n + 1)) :
-    dsimp% Finset.image (((nerveNonemptyFiniteChainsIso X).inv.app _ s).obj i).simplex.obj .univ =
+    dsimp% Finset.image (((sd'ObjNerveIso X).inv.app _ s).obj i).simplex.obj .univ =
       (s.obj i).finset := by
-  simp [← nerveNonemptyFiniteChainsIso_hom_app_obj_finset]
+  simp [← sd'ObjNerveIso_hom_app_obj_finset]
 
 namespace NonemptyFiniteChains
 
@@ -283,13 +311,13 @@ variable {X : Type u} [LinearOrder X] [Fintype X] [Nontrivial X] (x₀ : X)
 noncomputable def sdHornArrowIsoRangeSd' :
     Arrow.mk (NonemptyFiniteChains.sdHorn x₀).ι ≅
       Arrow.mk (Subcomplex.range (sd'.map (PartialOrder.horn x₀).ι)).ι :=
-  Subcomplex.congrArrowι' (nerveNonemptyFiniteChainsIso _).symm (by
+  Subcomplex.congrArrowι (sd'ObjNerveIso _).symm (by
     ext ⟨n⟩ x
-    trans (((nerveNonemptyFiniteChainsIso X).inv.app _ x).obj (Fin.last _)).simplex ∈
+    trans (((sd'ObjNerveIso X).inv.app _ x).obj (Fin.last _)).simplex ∈
       (PartialOrder.horn x₀).obj _
     · apply SSet.mem_range_sd'_map_ι_app_iff
     · simp [mem_sdHorn_iff.{u}, ← Set.toFinset_subset_toFinset,
-        finsetImage_nerveNonemptyFiniteChainsIso_inv_app_simplex_obj_univ.{u}])
+        finsetImage_sd'ObjNerveIso_inv_app_simplex_obj_univ.{u}])
 
 noncomputable def sdHornArrowIsoSd' :
     Arrow.mk (NonemptyFiniteChains.sdHorn x₀).ι ≅
