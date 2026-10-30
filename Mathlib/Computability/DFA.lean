@@ -203,24 +203,20 @@ def comap (f : α' → α) (M : DFA α σ) : DFA α' σ where
 theorem comap_id : M.comap id = M := rfl
 
 @[simp]
-theorem evalFrom_comap (f : α' → α) (s : σ) (x : List α') :
+theorem evalFrom_comap (f : α' → α) (s : σ) (x : FreeMonoid α') :
     (M.comap f).evalFrom s x = M.evalFrom s (x.map f) := by
-  induction x using List.reverseRecOn with
-  | nil => simp
-  | append_singleton x a ih => simp [ih]
+  induction x using FreeMonoid.reverseMulRecOn with
+  | one => simp
+  | mul_of x a ih => simp [ih]
 
 @[simp]
-theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by
+theorem eval_comap (f : α' → α) (x : FreeMonoid α') : (M.comap f).eval x = M.eval (x.map f) := by
   simp [eval]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem accepts_comap (f : α' → α) : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
-  ext x
-  conv =>
-    rhs
-    rw [Set.mem_preimage, mem_accepts]
-  simp [mem_accepts]
+theorem accepts_comap (f : α' → α) :
+    (M.comap f).accepts = .ofSet (FreeMonoid.map f ⁻¹' M.accepts.toSet) := by
+  ext; simp [mem_accepts]
 
 /-- Lifts an equivalence on states to an equivalence on DFAs. -/
 @[simps apply_step apply_start apply_accept]
@@ -245,14 +241,14 @@ theorem reindex_refl : reindex (Equiv.refl σ) M = M := rfl
 theorem symm_reindex (g : σ ≃ σ') : (reindex (α := α) g).symm = reindex g.symm := rfl
 
 @[simp]
-theorem evalFrom_reindex (g : σ ≃ σ') (s : σ') (x : List α) :
+theorem evalFrom_reindex (g : σ ≃ σ') (s : σ') (x : FreeMonoid α) :
     (reindex g M).evalFrom s x = g (M.evalFrom (g.symm s) x) := by
-  induction x using List.reverseRecOn with
-  | nil => simp
-  | append_singleton x a ih => simp [ih]
+  induction x using FreeMonoid.reverseMulRecOn with
+  | one => simp
+  | mul_of x a ih => simp [ih]
 
 @[simp]
-theorem eval_reindex (g : σ ≃ σ') (x : List α) : (reindex g M).eval x = g (M.eval x) := by
+theorem eval_reindex (g : σ ≃ σ') (x : FreeMonoid α) : (reindex g M).eval x = g (M.eval x) := by
   simp [eval]
 
 @[simp]
@@ -297,17 +293,14 @@ def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∨ s.2 ∈ M2.accept}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : σ2) :
     (M1.union M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
   ext x
-  simp only [acceptsFrom]
-  rw [Language.add_def, Set.mem_union]
-  simp_rw [↑Set.mem_ofPred]
-  induction x generalizing s1 s2 with
-  | nil => simp
-  | cons a x ih => simp only [evalFrom_cons, union_step, ih]
+  simp_rw [acceptsFrom, SetSemiring.add_def, SetSemiring.toSet_ofSet, Set.mem_union, Set.mem_ofPred]
+  induction x using FreeMonoid.mulRecOn generalizing s1 s2 with
+  | one => simp
+  | of_mul a x ih => simp only [evalFrom_of_mul, union_step, ih]
 
 @[simp]
 theorem accepts_union (M1 : DFA α σ1) (M2 : DFA α σ2) :
@@ -327,16 +320,15 @@ def inter : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
     (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
   ext x
-  simp only [acceptsFrom, Language.mem_inf]
-  simp_rw [↑Set.mem_ofPred]
-  induction x generalizing s1 s2 with
-  | nil => simp
-  | cons a x ih => simp only [evalFrom_cons, inter_step, ih]
+  rw [Language.mem_inf]
+  simp_rw [acceptsFrom, SetSemiring.toSet_ofSet, Set.mem_ofPred]
+  induction x using FreeMonoid.mulRecOn generalizing s1 s2 with
+  | one => simp
+  | of_mul a x ih => simp only [evalFrom_of_mul, inter_step, ih]
 
 @[simp]
 theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ⊓ M2.accepts := by

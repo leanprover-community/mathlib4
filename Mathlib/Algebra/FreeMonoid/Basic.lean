@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.Induction
 public import Mathlib.Util.CompileInductive
 
 /-!
@@ -271,6 +272,13 @@ theorem mulRecOn_one {motive : FreeMonoid α → Sort*} (one : motive 1)
 theorem mulRecOn_of_mul {motive : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α) (one : motive 1)
     (of_mul : ∀ x xs, motive xs → motive (of x * xs)) :
     @mulRecOn α motive (of x * xs) one of_mul = of_mul x xs (mulRecOn xs one of_mul) := rfl
+
+/-- Recursor for `FreeMonoid` using `1` and `xs * FreeMonoid.of x`. -/
+@[to_additive (attr := elab_as_elim, induction_eliminator)
+/-- Recursor for `FreeAddMonoid` using `0` and `xs + FreeAddMonoid.of x`. -/]
+def reverseMulRecOn {motive : FreeMonoid α → Sort*} (xs : FreeMonoid α) (one : motive 1)
+    (mul_of : ∀ xs x, motive xs → motive (xs * of x)) : motive xs := by
+  cases xs with | _ xs => exact List.reverseRecOn xs one fun xs x ↦ mul_of ⟨xs⟩ x
 
 @[to_additive, deprecated (since := "2026-10-23")] alias recOn_one := mulRecOn_one
 @[to_additive, deprecated (since := "2026-10-23")] alias recOn_of_mul := mulRecOn_of_mul
