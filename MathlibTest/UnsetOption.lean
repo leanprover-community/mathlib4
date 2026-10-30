@@ -1,4 +1,6 @@
-import Mathlib.Tactic.UnsetOption
+module
+
+public import Mathlib.Tactic.UnsetOption
 
 set_option linter.style.setOption false
 set_option linter.unusedTactic false

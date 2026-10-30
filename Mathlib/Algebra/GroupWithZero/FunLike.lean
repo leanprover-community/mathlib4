@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Algebra.Group.FunLike
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.GroupWithZero.Pi
 
@@ -22,12 +23,12 @@ typeclass searches.
 
 namespace FunLike
 
-variable {F α β : Type*}
+variable {F α β R : Type*}
 
 section Comp
 
-variable [FunLike F α α] [Zero F] [One F] [Mul F] [Zero α]
-  [IsZeroApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [NPow F] [Zero α]
+  [IsZeroApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] [IsNPowApplyEqIterate F]
   [ZeroHomClass F α α]
 
 /-- A `FunLike` type with `(f * g) x = f (g x)` is a `MonoidWithZero` -/
@@ -37,8 +38,28 @@ protected abbrev compMonoidWithZero : MonoidWithZero F where
   mul_one _ := by apply DFunLike.ext; simp
   one_mul _ := by apply DFunLike.ext; simp
   mul_assoc _ _ _ := by apply DFunLike.ext; simp
+  npow_zero _ := by apply DFunLike.ext; simp [pow_apply_eq_iterate]
+  npow_succ _ _ := by apply DFunLike.ext; simp [pow_apply_eq_iterate]
 
 end Comp
+
+section SMulWithZero
+
+variable [FunLike F α β] [Zero β] [Zero F] [IsZeroApply F]
+
+/-- A `FunLike` type with `(r • f) x = r • f x` is a `SMulWithZero` if `β` is a `SMulWithZero`. -/
+protected abbrev smulWithZero [Zero R] [SMulWithZero R β] [SMul R F] [IsSMulApply R F] :
+    SMulWithZero R F :=
+  Function.Injective.smulWithZero ⟨_, FunLike.coe_zero⟩ DFunLike.coe_injective FunLike.coe_smul
+
+/-- A `FunLike` type with `(r • f) x = r • f x` is a `MulActionWithZero` if `β` is a
+`MulActionWithZero`. -/
+protected abbrev mulActionWithZero [MonoidWithZero R] [MulActionWithZero R β] [SMul R F]
+    [IsSMulApply R F] :
+    MulActionWithZero R F :=
+  Function.Injective.mulActionWithZero ⟨_, FunLike.coe_zero⟩ DFunLike.coe_injective FunLike.coe_smul
+
+end SMulWithZero
 
 section PointwiseMul
 

@@ -155,7 +155,7 @@ variable [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
 
 open scoped Classical in
 /-- The Bochner integral -/
-irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
+@[no_expose] def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
   if _ : CompleteSpace G then
     if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0
   else 0
@@ -192,13 +192,13 @@ theorem integral_eq [hE : CompleteSpace E] (f : α → E) (hf : Integrable f μ)
 theorem integral_eq_setToFun (f : α → E) :
     ∫ a, f a ∂μ = setToFun μ (weightedSMul μ) (dominatedFinMeasAdditive_weightedSMul μ) f := by
   by_cases hE : CompleteSpace E
-  · simp only [integral, hE, ↓reduceDIte, L1.integral, setToFun]
+  · simp only [integral, hE, ↓reduceDIte, L1.integral_eq, setToFun]
     rfl
   · simp [integral, hE, setToFun]
 
 theorem L1.integral_eq_integral [CompleteSpace E] (f : α →₁[μ] E) :
     L1.integral f = ∫ a, f a ∂μ := by
-  simp only [integral, L1.integral, integral_eq_setToFun]
+  simp only [L1.integral_eq, integral_eq_setToFun]
   exact (L1.setToFun_eq_setToL1 (dominatedFinMeasAdditive_weightedSMul μ) f).symm
 
 theorem integral_undef {f : α → G} (h : ¬Integrable f μ) : ∫ a, f a ∂μ = 0 := by
@@ -249,8 +249,6 @@ theorem integral_finsetSum {ι} (s : Finset ι) {f : ι → α → G} (hf : ∀ 
     ∫ a, ∑ i ∈ s, f i a ∂μ = ∑ i ∈ s, ∫ a, f i a ∂μ := by
   simp only [integral_eq_setToFun]
   exact setToFun_finsetSum (dominatedFinMeasAdditive_weightedSMul _) s hf
-
-@[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
 
 @[integral_simps]
 theorem integral_neg (f : α → G) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
@@ -566,7 +564,7 @@ theorem tendsto_integral_approxOn_of_measurable [CompleteSpace E] [MeasurableSpa
     Tendsto (fun n => (SimpleFunc.approxOn f hfm s y₀ h₀ n).integral μ)
       atTop (𝓝 <| ∫ x, f x ∂μ) := by
   have hfi' := SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i
-  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, L1.integral]
+  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, L1.integral_eq]
   exact tendsto_setToFun_approxOn_of_measurable (dominatedFinMeasAdditive_weightedSMul μ)
     hfi hfm hs h₀ h₀i
 
@@ -1013,7 +1011,7 @@ theorem integral_add_measure {f : α → G} (hμ : Integrable f μ) (hν : Integ
     ∫ x, f x ∂(μ + ν) = ∫ x, f x ∂μ + ∫ x, f x ∂ν := by
   simp only [integral_eq_setToFun]
   apply setToFun_add_left'' (fun s hs h's ↦ ?_) hμ hν le_rfl zero_le_one zero_le_one zero_le_one
-  simp only [Measure.coe_add, Pi.add_apply, add_lt_top] at h's
+  simp only [add_apply, add_lt_top] at h's
   simp [weightedSMul, Measure.real, toReal_add, h's.1.ne, h's.2.ne, add_smul]
 
 @[simp]
@@ -1038,9 +1036,6 @@ theorem integral_finsetSum_measure {ι} {m : MeasurableSpace α} {f : α → G} 
     rw [Finset.forall_mem_cons] at hf
     rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
     exact integral_add_measure hf.1 (integrable_finsetSum_measure.2 hf.2)
-
-@[deprecated (since := "2026-04-08")]
-alias integral_finset_sum_measure := integral_finsetSum_measure
 
 theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
@@ -1267,11 +1262,14 @@ theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = μ.real 
     ∫ x, f x ∂μ = ∫ _, f default ∂μ := by congr with x; congr; exact Unique.uniq _ x
     _ = μ.real univ • f default := by rw [integral_const]
 
-theorem integral_pos_of_integrable_nonneg_nonzero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
+theorem integral_pos_of_integrable_nonneg_ne_zero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
     {f : α → ℝ} {x : α} (f_cont : Continuous f) (f_int : Integrable f μ) (f_nonneg : 0 ≤ f)
     (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
   (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
     (IsOpen.measure_pos μ f_cont.isOpen_support ⟨x, f_x⟩)
+
+@[deprecated (since := "2026-10-13")]
+alias integral_pos_of_integrable_nonneg_nonzero := integral_pos_of_integrable_nonneg_ne_zero
 
 end Properties
 

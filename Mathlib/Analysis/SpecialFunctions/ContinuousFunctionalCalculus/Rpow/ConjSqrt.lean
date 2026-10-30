@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugating by the square root of a positive element in a C⋆-algebra
 

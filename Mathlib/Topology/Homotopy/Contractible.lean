@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Homotopy.Equiv
 public import Mathlib.Topology.Homotopy.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Contractible spaces
 

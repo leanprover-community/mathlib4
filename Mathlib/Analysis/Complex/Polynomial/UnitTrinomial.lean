@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.UnitTrinomial
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducibility of unit trinomials
 

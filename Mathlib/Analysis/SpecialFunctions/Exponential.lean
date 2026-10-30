@@ -208,7 +208,7 @@ end DerivRCLike
 
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp := by
   refine funext fun x => ?_
-  rw [Complex.exp, exp_eq_tsum_div]
+  rw [Complex.exp_def, exp_eq_tsum_div]
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable x).hasSum.tendsto_sum_nat
 
 theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp := by

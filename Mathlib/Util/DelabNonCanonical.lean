@@ -9,6 +9,9 @@ public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Delaborating non-canonical instances
 

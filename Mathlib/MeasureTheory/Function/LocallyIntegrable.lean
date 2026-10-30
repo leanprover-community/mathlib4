@@ -431,17 +431,11 @@ theorem locallyIntegrable_finsetSum' {ι} (s : Finset ι) {f : ι → X → ε''
   Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
     locallyIntegrable_zero hf
 
-@[deprecated (since := "2026-04-08")]
-alias locallyIntegrable_finset_sum' := locallyIntegrable_finsetSum'
-
 variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
   [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finsetSum {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using locallyIntegrable_finsetSum' s hf
-
-@[deprecated (since := "2026-04-08")]
-alias locallyIntegrable_finset_sum := locallyIntegrable_finsetSum
 
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `g • f` is integrable. -/
