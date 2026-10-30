@@ -10,8 +10,8 @@ public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.AlgebraicIndependent.Defs
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
-import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Complex.IsIntegral
+import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
