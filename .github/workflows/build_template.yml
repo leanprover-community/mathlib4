@@ -98,18 +98,20 @@ jobs:
           persist-credentials: false # no later step needs git credentials
 
       # Validate lake-manifest.json before "Set up build environment" downloads the dependencies.
-      # Package rules fail the step on every run:
+      # On every run, the step fails when a package breaks one of these rules:
       # - `inputRev` is `main`, `master` or a version tag.
       # - `url` is a GitHub repository in `leanprover-community` or `leanprover`.
       # - `rev` is a full commit hash.
-      # Pin rules apply to each `rev` that differs from the manifest at the merge base with master.
-      # They warn on ordinary pushes, so a PR can test an unmerged dependency commit, and fail the
-      # step on `staging` and `trying`, where the merge base is master:
-      # - A `rev` that tracks a branch is on that branch. GitHub serves commits from unmerged
-      #   pull requests by SHA, so this rule keeps such commits out of master.
-      # - A `rev` that tracks a tag is the tag's commit.
+      # The step also checks each `rev` that differs from the manifest at the merge base with
+      # master. On `staging` and `trying`, where the merge base is master, the step fails when a
+      # `rev` breaks one of these rules. On other pushes, the step only warns, so a PR can test
+      # an unmerged dependency commit.
+      # - A `rev` that tracks a branch is on that branch. GitHub also serves commits from
+      #   unmerged pull requests by SHA, and this rule rejects them.
+      # - A `rev` that tracks a tag is the commit of that tag.
       # - When `url` and `inputRev` are unchanged, a `rev` that tracks a branch descends from the
-      #   merge-base `rev`. This rule stops a merge conflict from bringing back an older `rev`.
+      #   `rev` at the merge base. This rule catches a contributor who keeps an older `rev` when
+      #   they resolve a merge conflict.
       - name: Checkout lake-manifest.json
         id: manifest_checkout
         # Only enforce this on the main mathlib4 repository, not on nightly-testing.
@@ -191,17 +193,17 @@ jobs:
                 const sha = await tagCommit(p.owner, p.repo, p.inputRev);
                 if (sha !== p.rev) {
                   pinError(`Dependency commit does not match tag ${p.inputRev}`,
-                    `Package \`${p.name}\` pins \`${p.rev}\`, but tag \`${p.inputRev}\` of ${p.url} ` +
+                    `lake-manifest.json pins \`${p.name}\` to \`${p.rev}\`, but tag \`${p.inputRev}\` of ${p.url} ` +
                     (sha ? `points to \`${sha}\`.\n` : 'does not exist.\n') + updateHint(p.name));
                 }
               } else if (!await contains(p.owner, p.repo, p.inputRev, p.rev)) {
                 pinError(`Dependency commit is not on branch ${p.inputRev}`,
-                  `Package \`${p.name}\` pins \`${p.rev}\`, which is not on the \`${p.inputRev}\` branch of ${p.url}.\n` +
+                  `lake-manifest.json pins \`${p.name}\` to \`${p.rev}\`, which is not on the \`${p.inputRev}\` branch of ${p.url}.\n` +
                   `Note: lakefile.lean makes \`${p.name}\` track \`${p.inputRev}\`, and Bors merges only commits on that branch.\n` +
                   updateHint(p.name));
               } else if (sameSource && !await contains(p.owner, p.repo, p.rev, old.rev)) {
-                pinError('Dependency pin moves backwards',
-                  `Package \`${p.name}\` moves its pin backwards: \`${p.rev}\` does not descend from ` +
+                pinError('Older dependency pin',
+                  `This branch moves the \`${p.name}\` pin backwards: \`${p.rev}\` does not descend from ` +
                   `\`${old.rev}\`, the pin at the merge base with master.\n` + updateHint(p.name));
               }
             };
@@ -213,19 +215,19 @@ jobs:
               const pinsCommit = fullSha.test(p.rev);
               if (!tracksAllowedRev) {
                 packageError('Invalid dependency revision',
-                  `Package \`${p.name}\` tracks \`${p.inputRev}\`, which is not an allowed revision.\n` +
-                  'Note: Each package must track `main`, `master` or a version tag such as `v4.25.0` or `v4.25.0-rc1`.\n' +
+                  `lake-manifest.json makes \`${p.name}\` track \`${p.inputRev}\`, which is not an allowed revision.\n` +
+                  'Note: The step accepts only `main`, `master` or a version tag such as `v4.25.0` or `v4.25.0-rc1`.\n' +
                   requireHint(p.name));
               }
               if (!source) {
                 packageError('Invalid dependency repository',
-                  `Package \`${p.name}\` comes from \`${p.url}\`, which is not an allowed repository.\n` +
-                  'Note: Each package must come from https://github.com/leanprover-community or https://github.com/leanprover.\n' +
+                  `lake-manifest.json sets the repository of \`${p.name}\` to \`${p.url}\`, which is not an allowed repository.\n` +
+                  'Note: The step accepts only repositories in https://github.com/leanprover-community and https://github.com/leanprover.\n' +
                   requireHint(p.name));
               }
               if (!pinsCommit) {
                 packageError('Invalid dependency pin',
-                  `Package \`${p.name}\` pins \`${p.rev}\`, which is not a full commit hash.\n` + updateHint(p.name));
+                  `lake-manifest.json pins \`${p.name}\` to \`${p.rev}\`, which is not a full commit hash.\n` + updateHint(p.name));
               }
               if (tracksAllowedRev && source && pinsCommit) pinned.push({ ...p, owner: source[1], repo: source[2] });
             }
