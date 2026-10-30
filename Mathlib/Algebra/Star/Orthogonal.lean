@@ -176,6 +176,16 @@ lemma Set.Pairwise.sum_mul_star_sum_of_isStarOrtho {ι : Type*} {s : Finset ι} 
     (∑ i ∈ s, f i) * star (∑ i ∈ s, f i) = ∑ i ∈ s, f i * star (f i) := by
   simpa using h.imp (fun _ _ ↦ IsStarOrtho.star) |>.star_sum_mul_sum_of_isStarOrtho
 
+lemma Pairwise.star_sum_mul_sum_of_isStarOrtho {ι : Type*} [Fintype ι] {f : ι → R}
+    (h : Pairwise ((· ⋆⟂ ·) on f)) :
+    star (∑ i, f i) * (∑ i, f i) = ∑ i, star (f i) * f i :=
+  (h.set_pairwise _).star_sum_mul_sum_of_isStarOrtho
+
+lemma Pairwise.sum_mul_star_sum_of_isStarOrtho {ι : Type*} [Fintype ι] {f : ι → R}
+    (h : Pairwise ((· ⋆⟂ ·) on f)) :
+    (∑ i, f i) * star (∑ i, f i) = ∑ i, f i * star (f i) :=
+  (h.set_pairwise _).sum_mul_star_sum_of_isStarOrtho
+
 protected lemma IsSelfAdjoint.isStarOrtho_iff (hq : IsSelfAdjoint q) :
     p ⋆⟂ q ↔ p * q = 0 ∧ q * p = 0 := by
   rw [isStarOrtho_iff, hq.star_eq]
