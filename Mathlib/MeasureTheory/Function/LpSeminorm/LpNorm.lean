@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Tactic.Positivity.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real-valued Lᵖ norm
 

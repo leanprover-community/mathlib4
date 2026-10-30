@@ -45,7 +45,7 @@ abbrev homMk {X Y : SSetPair.{u}} (left : X.left ⟶ Y.left) (right : X.right �
 
 end SSetPair
 
-/-- Given a subcomplex `A` of a simplical set `X`, this is the pair in `SSetPair`
+/-- Given a subcomplex `A` of a simplicial set `X`, this is the pair in `SSetPair`
 corresponding to the inclusion `A.ι : (A : SSet) ⟶ X`. -/
 abbrev SSet.Subcomplex.pair {X : SSet.{u}} (A : X.Subcomplex) : SSetPair.{u} := .of A.ι
 

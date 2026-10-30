@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Cones
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bicones
 

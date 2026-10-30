@@ -87,14 +87,14 @@ theorem add_left_measure {ν : Measure α} (hT : FinMeasAdditive μ T) :
 theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : FinMeasAdditive (c • μ) T) :
     FinMeasAdditive μ T := by
   refine of_eq_top_imp_eq_top (fun s _ hμs => ?_) hT
-  rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top] at hμs
+  rw [smul_apply, smul_eq_mul, ENNReal.mul_eq_top] at hμs
   simp only [hc_ne_top, or_false, Ne, false_and] at hμs
   exact hμs.2
 
 theorem smul_measure (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hT : FinMeasAdditive μ T) :
     FinMeasAdditive (c • μ) T := by
   refine of_eq_top_imp_eq_top (fun s _ hμs => ?_) hT
-  rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top]
+  rw [smul_apply, smul_eq_mul, ENNReal.mul_eq_top]
   simp only [hc_ne_zero, true_and, Ne, not_false_iff]
   exact Or.inl hμs
 
@@ -195,7 +195,7 @@ theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α
 theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
     T s = 0 :=
-  eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
+  eq_zero_of_measure_zero hT hs (by simp)
 
 theorem of_le (hT : DominatedFinMeasAdditive μ T C) (hC : C ≤ C') :
     DominatedFinMeasAdditive μ T C' :=
@@ -482,7 +482,7 @@ theorem setToSimpleFunc_sub (T : Set α → E →L[ℝ] F) (h_add : FinMeasAddit
     sub_eq_add_neg]
   rw [integrable_iff] at hg ⊢
   intro x hx_ne
-  rw [SimpleFunc.coe_neg, Pi.neg_def, ← Function.comp_def, preimage_comp, neg_preimage,
+  rw [FunLike.coe_neg, Pi.neg_def, ← Function.comp_def, preimage_comp, neg_preimage,
     Set.neg_singleton]
   refine hg (-x) ?_
   simp [hx_ne]
@@ -556,7 +556,7 @@ theorem setToSimpleFunc_mono [IsOrderedAddMonoid G']
   rw [← sub_nonneg, ← setToSimpleFunc_sub T h_add hgi hfi]
   refine setToSimpleFunc_nonneg' T hT_nonneg _ ?_ (hgi.sub hfi)
   intro x
-  simp only [coe_sub, sub_nonneg, coe_zero, Pi.zero_apply, Pi.sub_apply]
+  simp only [FunLike.coe_sub, sub_nonneg, FunLike.coe_zero, Pi.zero_apply, Pi.sub_apply]
   exact hfg x
 
 end Order
