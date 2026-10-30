@@ -335,6 +335,7 @@ variable {f g} in
 lemma equalizerIdempotent_eq_one_iff : equalizerIdempotent f g = 1 ↔ f = g := by
   simpa [AlgHom.ext_iff] using equalizerIdempotent_mul_eq_iff (f := f) (g := g) (a := 1)
 
+@[simp]
 lemma equalizerIdempotent_self : equalizerIdempotent f f = 1 :=
   equalizerIdempotent_eq_one_iff.mpr rfl
 
