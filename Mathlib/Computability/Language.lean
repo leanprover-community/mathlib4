@@ -10,7 +10,6 @@ public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Set.Semiring
 public import Mathlib.Tactic.DeriveFintype
 
-import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Data.Set.Lattice.Image
 
 /-!
@@ -29,7 +28,7 @@ with respect to other language operations.
 
 * `l + m`: union of languages `l` and `m`
 * `l - m`: difference of languages `l` and `m`
-* `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
+* `l * m`: language of strings `x * y` such that `x ∈ l` and `y ∈ m`
 * `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
 * `1`: language consisting of only the empty string. This is because it is the unit of the `*`
   operator.
@@ -50,7 +49,6 @@ with respect to other language operations.
 * `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
   `l = m * l + n`, and `m` doesn't contain the empty string,
   then `l` is the language `m∗ * n`
-
 -/
 
 @[expose] public section
@@ -143,28 +141,23 @@ theorem add_self (l : Language α) : l + l = l :=
   sup_idem _
 
 /-- Maps the alphabet of a language. -/
-def map (f : α → β) : Language α →+* Language β where
-  toFun := image (FreeMonoid.map f)
-  map_zero' := image_empty _
-  map_one' := image_singleton
-  map_add' := image_union _
-  map_mul' _ _ := image_image2_distrib <| (FreeMonoid.map f).map_mul
+def map (f : α → β) : Language α →+* Language β :=
+  SetSemiring.imageHom (FreeMonoid.map f)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_id (l : Language α) : l.map id = l := by simp [map]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
-  simp [map, image_image]
+  unfold map
+  rw [FreeMonoid.map_comp, ← RingHom.comp_apply, ← SetSemiring.imageHom_comp]
 
 lemma mem_kstar_iff_exists_ne_one {x : FreeMonoid α} :
     x ∈ l∗.toSet ↔ ∃ S : List (FreeMonoid α), x = S.prod ∧ ∀ y ∈ S, y ∈ l.toSet ∧ y ≠ 1 := by
   constructor
   · rintro ⟨S, rfl, h⟩
     classical
-    refine ⟨S.filter fun l ↦ l ≠ 1, (prod_filter_bne_one S).symm, fun y hy ↦ ?_⟩
+    refine ⟨S.filter fun l ↦ l ≠ 1, by induction S <;> grind, fun y hy ↦ ?_⟩
     rw [mem_filter, decide_eq_true_iff] at hy
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
