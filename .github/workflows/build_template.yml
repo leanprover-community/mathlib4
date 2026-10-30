@@ -111,7 +111,9 @@ jobs:
       # - A `rev` that tracks a tag is the commit of that tag.
       # - When `url` and `inputRev` are unchanged, a `rev` that tracks a branch descends from the
       #   base `rev`. This rule catches a contributor who keeps an older `rev` when they resolve
-      #   a merge conflict.
+      #   a merge conflict. For an intentional revert, such as the revert of a toolchain bump, a
+      #   repository admin sets the variable `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`, and
+      #   the rule only warns. The admin should delete the variable after the revert merges.
       - name: Checkout lake-manifest.json
         id: manifest_checkout
         # Only enforce this on the main mathlib4 repository, not on nightly-testing.
@@ -141,6 +143,7 @@ jobs:
         env:
           PR_BRANCH_REF: ${{ inputs.pr_branch_ref }}
           STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
+          ALLOW_OLDER_PINS: ${{ vars.MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS }}
         with:
           retries: 3
           script: |
@@ -203,9 +206,17 @@ jobs:
                   `lake-manifest.json pins \`${p.name}\` to \`${p.rev}\`, which is not on the \`${p.inputRev}\` branch of ${p.url}.\n` +
                   'Note: On `staging`, this check fails the Build job.\n' + updateHint(p.name));
               } else if (sameSource && !await contains(p.owner, p.repo, p.rev, old.rev)) {
-                pinError('Older dependency pin',
+                const message =
                   `This branch moves the \`${p.name}\` pin backwards: \`${p.rev}\` does not descend from ` +
-                  `\`${old.rev}\`, the pin on master.\n` + updateHint(p.name));
+                  `\`${old.rev}\`, the pin on master.\n`;
+                if (process.env.ALLOW_OLDER_PINS === 'true') {
+                  annotate('warning', 'Older dependency pin', message +
+                    'Note: The variable `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` is `true`, so this check only warns.');
+                } else {
+                  pinError('Older dependency pin', message + updateHint(p.name) + '\n' +
+                    'Hint: For an intentional revert, ask a repository admin to set the variable ' +
+                    '`MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`.');
+                }
               }
             };
 
