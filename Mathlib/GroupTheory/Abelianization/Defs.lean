@@ -90,8 +90,9 @@ theorem commutator_le_ker : commutator G ≤ f.ker := by
 @[deprecated (since := "2026-10-17")] alias commutator_subset_ker := commutator_le_ker
 
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
-  from the abelianization of a `G` to `A` that factors through `f`. -/
-@[to_additive]
+  from the abelianization of `G` to `A` that factors through `f`. -/
+@[to_additive /-- If `f : G → A` is an additive group homomorphism to an abelian group, then
+`lift f` is the unique map from the abelianization of `G` to `A` that factors through `f`. -/]
 def lift : (G →* A) ≃ (Abelianization G →* A) where
   toFun f := QuotientGroup.lift _ f fun _ h => MonoidHom.mem_ker.2 <| commutator_le_ker _ h
   invFun F := F.comp of
