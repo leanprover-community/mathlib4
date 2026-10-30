@@ -590,6 +590,7 @@ public import Mathlib.Algebra.Homology.BifunctorAssociator
 public import Mathlib.Algebra.Homology.BifunctorFlip
 public import Mathlib.Algebra.Homology.BifunctorHomotopy
 public import Mathlib.Algebra.Homology.BifunctorShift
+public import Mathlib.Algebra.Homology.CochainComplexMinus
 public import Mathlib.Algebra.Homology.CochainComplexOpposite
 public import Mathlib.Algebra.Homology.CochainComplexPlus
 public import Mathlib.Algebra.Homology.CommSq
@@ -1388,6 +1389,7 @@ public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Algebra.Symmetrized
 public import Mathlib.Algebra.Torsor.Basic
 public import Mathlib.Algebra.Torsor.Defs
+public import Mathlib.Algebra.TotalMonoidAlgebra.Defs
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.Algebra.TrivSqZeroExt.Ideal
 public import Mathlib.Algebra.Tropical.Basic
@@ -2848,6 +2850,7 @@ public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Functor.Derived.Adjunction
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTriangulated
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerivedTwo
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
@@ -3009,6 +3012,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.HasExactLimitsOfShape
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.IndYoneda
 public import Mathlib.CategoryTheory.Limits.Indization.Category
@@ -3189,6 +3193,7 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfFuncto
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseLeftDerived
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Product
 public import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.CategoryTheory.Localization.FiniteProducts
 public import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -3369,6 +3374,7 @@ public import Mathlib.CategoryTheory.NatIso
 public import Mathlib.CategoryTheory.NatTrans
 public import Mathlib.CategoryTheory.Noetherian
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.BinaryProductsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.ObjectProperty.ClosureShift
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
@@ -3383,6 +3389,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.ExactColimits
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.HasFiniteResolution.Basic
@@ -7487,6 +7494,7 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
 public import Mathlib.SetTheory.Cardinal.Defs
+public import Mathlib.SetTheory.Cardinal.DirectLimit
 public import Mathlib.SetTheory.Cardinal.Divisibility
 public import Mathlib.SetTheory.Cardinal.ENNReal
 public import Mathlib.SetTheory.Cardinal.ENat

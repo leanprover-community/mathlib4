@@ -369,6 +369,12 @@ theorem primeFactors_prod_primeFactors (n : ℕ) :
     (∏ p ∈ n.primeFactors, p).primeFactors = n.primeFactors :=
   primeFactors_prod fun _ hp ↦ n.mem_primeFactors.mp hp |>.left
 
+theorem squarefree_prod_primeFactors (n : ℕ) : Squarefree (∏ p ∈ n.primeFactors, p) :=
+  squarefree_prod_of_pairwise_isCoprime
+    (fun _ hp _ hq hpq ↦ coprime_iff_isRelPrime.mp <|
+      (coprime_primes (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq)).mpr hpq)
+    fun _ hp ↦ (prime_of_mem_primeFactors hp).prime.squarefree
+
 theorem prod_primeFactors_dvd_iff {n k : ℕ} (hk : k ≠ 0) :
     (∏ p ∈ n.primeFactors, p) ∣ k ↔ n.primeFactors ⊆ k.primeFactors := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩

@@ -173,6 +173,17 @@ theorem intCoe_one [AddGroupWithOne R] : ((1 : ArithmeticFunction ℤ) :
   ext n
   simp [ArithmeticFunction.one_apply]
 
+section SMul
+
+variable {S : Type*} [Zero R] [SMulZeroClass S R]
+
+instance : SMul S (ArithmeticFunction R) where
+  smul n f := ⟨n • f, by simp⟩
+
+instance : IsSMulApply S (ArithmeticFunction R) where
+
+end SMul
+
 section AddMonoid
 
 variable [AddMonoid R]
@@ -186,11 +197,7 @@ instance : IsAddApply (ArithmeticFunction R) where
 protected theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n :=
   rfl
 
-instance instAddMonoid : AddMonoid (ArithmeticFunction R) where
-  add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
-  zero_add _ := ext fun _ ↦ zero_add _
-  add_zero _ := ext fun _ ↦ add_zero _
-  nsmul := nsmulRec
+instance instAddMonoid : AddMonoid (ArithmeticFunction R) := fast_instance% FunLike.addMonoid
 
 instance : IsSMulApply ℕ (ArithmeticFunction R) where
   smul_apply f a b := by
@@ -207,7 +214,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
   natCast_succ n := by ext x; by_cases h : x = 1 <;> simp [h]
 
 instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
-  FunLike.addCommMonoid
+  fast_instance% FunLike.addCommMonoid
 
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨-f, by simp⟩
@@ -216,23 +223,17 @@ instance [NegZeroClass R] : IsNegApply (ArithmeticFunction R) where
 
 @[deprecated neg_apply +typeChanged (since := "2026-10-27")]
 protected theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} :
-  (-f) n = -f n := rfl
+    (-f) n = -f n := rfl
 
-instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
-  neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
-  zsmul := zsmulRec
+instance [SubNegZeroMonoid R] : Sub (ArithmeticFunction R) where
+  sub f g := ⟨f - g, by simp⟩
 
-instance [AddGroup R] : IsSubApply (ArithmeticFunction R) where
-  sub_apply f g x := by
-    rw [sub_eq_add_neg, add_apply, neg_apply, sub_eq_add_neg]
+instance [SubNegZeroMonoid R] : IsSubApply (ArithmeticFunction R) where
 
-instance [AddGroup R] : IsSMulApply ℤ (ArithmeticFunction R) where
-  smul_apply f a b := by
-    cases a with
-    | ofNat a => rw [Int.ofNat_eq_natCast]; simp
-    | negSucc a => rw [← Int.neg_ofNat_succ]; simp [add_zsmul]
+instance [AddGroup R] : AddGroup (ArithmeticFunction R) := fast_instance% FunLike.addGroup
 
-instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) := FunLike.addCommGroup
+instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
+  fast_instance% FunLike.addCommGroup
 
 section SMul
 
@@ -324,18 +325,11 @@ instance [CommRing R] : CommRing (ArithmeticFunction R) where
   mul_comm := mul_comm
 
 instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
-    Module R (ArithmeticFunction S) where
-  smul x f := ⟨x • f, by simp⟩
-  smul_zero x := ext fun n ↦ smul_zero x
-  smul_add x f g := ext fun n ↦ smul_add x (f n) (g n)
-  zero_smul f := ext fun n ↦ zero_smul R (f n)
-  one_smul f := ext fun n ↦ one_smul R (f n)
-  add_smul x y f := ext fun n ↦ add_smul x y (f n)
-  mul_smul x y f := ext fun n ↦ mul_smul x y (f n)
+    Module R (ArithmeticFunction S) := fast_instance% FunLike.module
 
 -- note that `smul_apply` would be a more suitable name, but is already in use for the action of
 -- `ArithmeticFunction R` on `ArithmeticFunction S`
-@[simp]
+@[deprecated smul_apply +typeChanged (since := "2026-10-29")]
 theorem smul_map {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
     (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := by
   rfl
