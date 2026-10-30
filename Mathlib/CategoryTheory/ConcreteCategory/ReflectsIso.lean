@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Forgetful functors that reflect isomorphisms
 

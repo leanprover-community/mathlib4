@@ -54,6 +54,11 @@ noncomputable def leastGE [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
     (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
   hittingAfter f (Set.Ici r) ⊥
 
+/-- `leastGT f r` is the stopping time corresponding to the first time `f > r`. -/
+noncomputable def leastGT [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
+    (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
+  hittingAfter f (Set.Ioi r) ⊥
+
 theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrderBot ι]
     {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
     [Preorder β] [ClosedIciTopology β] [TopologicalSpace.PseudoMetrizableSpace β]
@@ -61,6 +66,19 @@ theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrder
     {f : ι → Ω → β} (r : β) (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (leastGE f r) :=
   hf.adapted.isStoppingTime_hittingAfter measurableSet_Ici
+
+theorem StronglyAdapted.isStoppingTime_leastGT [ConditionallyCompleteLinearOrderBot ι]
+    {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
+    [LinearOrder β] [ClosedIicTopology β] [TopologicalSpace.PseudoMetrizableSpace β]
+    [MeasurableSpace β] [BorelSpace β]
+    {f : ι → Ω → β} (r : β) (hf : StronglyAdapted ℱ f) :
+    IsStoppingTime ℱ (leastGT f r) :=
+  hf.adapted.isStoppingTime_hittingAfter measurableSet_Ioi
+
+lemma leastGT_lt_iff [ConditionallyCompleteLinearOrder ι] [OrderBot ι] [Preorder β]
+    {f : ι → Ω → β} {r : β} {t : ι} {ω : Ω} :
+    leastGT f r ω < t ↔ ∃ s < t, r < f s ω := by
+  simp [leastGT, hittingAfter_lt_iff]
 
 /-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
 (the first time `f` passes above `r`), and then is constant afterwards. -/

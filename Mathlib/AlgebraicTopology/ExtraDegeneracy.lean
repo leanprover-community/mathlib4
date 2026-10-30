@@ -99,7 +99,6 @@ def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : Extra
   s' := F.map ed.s'
   s n := F.map (ed.s n)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
 degeneracy for `X` gives also an extra degeneracy for `Y` -/
 def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegeneracy X) :
@@ -143,7 +142,7 @@ lemma section_app_comp_hom_app (n : SimplexCategoryᵒᵖ) :
 lemma section_comp_hom : ed.section_ ≫ X.hom = 𝟙 _ := by cat_disch
 
 /-- If an augmented simplicial object has an extradegeneracy, then
-then augmentation is a split epimorphism. -/
+the augmentation is a split epimorphism. -/
 def splitEpi : SplitEpi X.hom where
   section_ := ed.section_
 

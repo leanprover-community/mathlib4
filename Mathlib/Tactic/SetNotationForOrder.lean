@@ -138,7 +138,7 @@ public def delabMin : Delab :=
 
 /-! ## Elaboration -/
 
-/-- Linter for ambiguous use of subset notation notation. -/
+/-- Linter for ambiguous use of subset notation. -/
 register_option linter.setNotationForOrder : Bool := {
   defValue := true
   descr := "Linter for ambiguous use of subset notation notation" }
