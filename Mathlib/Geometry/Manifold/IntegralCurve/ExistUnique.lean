@@ -37,7 +37,7 @@ We state simpler versions of the theorem for boundaryless manifolds as corollari
 * The case where the integral curve may venture to the boundary of the manifold. See Theorem 9.34,
   Lee. May require submanifolds.
 
-## Reference
+## References
 
 * [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
 
@@ -204,7 +204,7 @@ theorem isMIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     rw [hs, inter_comm, ← Subtype.image_preimage_val, inter_comm, ← Subtype.image_preimage_val,
       image_subset_image_iff Subtype.val_injective, preimage_ofPred_eq]
     intro t ht
-    rw [mem_preimage, ← closure_subtype] at ht
+    rw [mem_ofPred_eq, Set.mem_eq_mem, ← closure_subtype] at ht
     revert ht t
     apply IsClosed.closure_subset (isClosed_eq _ _)
     · rw [continuous_iff_continuousAt]

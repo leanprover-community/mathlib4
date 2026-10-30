@@ -201,10 +201,9 @@ open Finset
 
 namespace Fintype
 
-instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
+instance decidablePiFintype {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
-  decidable_of_iff (∀ a ∈ @univ α _, f a = g a)
-    (by simp [funext_iff])
+  decidable_of_iff (∀ a ∈ @univ α _, f a = g a) (by simp [funext_iff])
 
 instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
@@ -258,6 +257,13 @@ instance decidableRightInverseFintype [DecidableEq α] [Fintype α] (f : α → 
 instance decidableLeftInverseFintype [DecidableEq β] [Fintype β] (f : α → β) (g : β → α) :
     Decidable (Function.LeftInverse f g) :=
   inferInstanceAs <| Decidable (∀ x, f (g x) = x)
+
+instance [Fintype α] [Preorder α] [DecidableLE α] : DecidableRel (WCovBy : α → α → Prop) :=
+  have := decidableLTOfDecidableLE (α := α)
+  inferInstanceAs <| DecidableRel fun a b ↦ a ≤ b ∧ ∀ ⦃c : α⦄, a < c → ¬c < b
+
+instance [Fintype α] [LT α] [DecidableLT α] : DecidableRel (CovBy : α → α → Prop) :=
+  inferInstanceAs <| DecidableRel fun a b ↦ a < b ∧ ∀ ⦃c : α⦄, a < c → ¬c < b
 
 instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩

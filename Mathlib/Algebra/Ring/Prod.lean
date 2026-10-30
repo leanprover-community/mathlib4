@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Chris Hughes, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Int.Cast.Prod
 public import Mathlib.Algebra.GroupWithZero.Prod
 public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.Data.Int.Cast.Prod
 
 /-!
 # Semiring, ring etc. structures on `R × S`

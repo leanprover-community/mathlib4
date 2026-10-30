@@ -77,13 +77,17 @@ theorem IsIsotypicOfType.of_isSimpleModule [IsSimpleModule R M] : IsIsotypicOfTy
 
 variable {R}
 
-theorem IsIsotypic.of_self [IsSemisimpleRing R] (h : IsIsotypic R R) : IsIsotypic R M :=
-  fun m _ m' _ ↦
-    have ⟨_, ⟨e⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m
-    have ⟨_, ⟨e'⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m'
+theorem IsIsotypic.isIsotypicOfType [IsSemisimpleRing R] [IsSimpleModule R S] (h : IsIsotypic R R) :
+    IsIsotypicOfType R M S :=
+  fun m ↦
+    have ⟨_, ⟨e⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R S
+    have ⟨_, ⟨e'⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m
     have := IsSimpleModule.congr e.symm
     have := IsSimpleModule.congr e'.symm
     ⟨e'.trans <| (h _ _).some.trans e.symm⟩
+
+theorem IsIsotypic.of_self [IsSemisimpleRing R] (h : IsIsotypic R R) : IsIsotypic R M :=
+  fun m _ ↦ h.isIsotypicOfType M m
 
 variable {M N S}
 
@@ -209,7 +213,9 @@ instance (c : isotypicComponents R M) : IsSemisimpleModule R c := by
 variable {S} in
 theorem LinearEquiv.isotypicComponent_eq (e : N ≃ₗ[R] S) :
     isotypicComponent R M N = isotypicComponent R M S :=
-  congr(sSup $(Set.ext fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)))
+  congr(sSup $(Set.ext (a := {m : Submodule R M | Nonempty (m ≃ₗ[R] N)})
+    (b := {m : Submodule R M | Nonempty (m ≃ₗ[R] S)})
+    fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)))
 
 section SimpleSubmodule
 

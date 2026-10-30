@@ -134,8 +134,7 @@ theorem _root_.Similar.angle_eq (h : ![a, b, c] ∼ ![a', b', c']) :
       rw [dist_eq_zero] at h_dist_cb h2
       simp_rw [h_dist_cb, h2, angle_self_right]
   rw [mul_right_inj' heq] at h_cos
-  apply Real.injOn_cos at h_cos
-  repeat grind [angle_nonneg, angle_le_pi]
+  apply Real.injOn_cos at h_cos <;> grind [angle_nonneg, angle_le_pi]
 
 /-- In two similar triangles, all three corresponding angles are equal. -/
 theorem _root_.Similar.angle_eq_all (h : ![a, b, c] ∼ ![a', b', c']) :

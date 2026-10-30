@@ -176,7 +176,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
       obtain rfl | h'' := ν.eq_zero_or_pos
       · simp
       · have : n - 1 - (ν - 1) = n - ν := by lia
-        rw [this, ascPochhammer_eval_succ, Nat.sub_zero]
+        rw [this, ascPochhammer_eval_succ, mul_comm, Nat.sub_zero]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
     simp [pos_iff_ne_zero.mp (pos_of_gt h)]
@@ -245,7 +245,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       simp only [not_exists, not_and, Submodule.mem_map, Submodule.span_image _]
       intro p m
       apply_fun Polynomial.eval (1 : ℚ)
-      simp only [Module.End.pow_apply]
+      simp only [pow_apply_eq_iterate, ne_eq]
       -- The right-hand side is nonzero,
       -- so it will suffice to show the left-hand side is always zero.
       suffices (Polynomial.derivative^[n - k] p).eval 1 = 0 by

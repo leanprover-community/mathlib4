@@ -5,9 +5,9 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Data.Nat.Find
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Nat.Find
 
 /-!
 # Basic properties of holors
