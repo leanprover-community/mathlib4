@@ -275,9 +275,9 @@ lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
       (span {(m : 𝓞 K)}).toAddSubgroup.nsmul_relIndex_mem <| Submodule.mem_span_of_mem <| by grind
     simpa [mem_span_singleton', mul_comm] using this
   have ha : n * x = a := mul_left_cancel₀ (mod_cast hm : (m : K) ≠ 0) <| by
-    simpa [-nsmul_eq_mul, mul_left_comm (m : K) (n : K), ← nsmul_eq_mul m, hmr,
-      RingOfIntegers.ext_iff, Subalgebra.coe_mul _,  Subalgebra.coe_smul _,
-      Subalgebra.coe_natCast _] using ha'.symm
+    rw [← mul_assoc, mul_comm (m : K) n, mul_assoc, ← nsmul_eq_mul m, hmr, eq_comm,
+      ← Subalgebra.coe_natCast (integralClosure ℤ K),  ← Subalgebra.coe_mul, ha',
+      Subalgebra.coe_mul, Subalgebra.coe_natCast]
   refine ⟨n, hn, a, ha, mul_left_cancel₀ hn ?_⟩
   nth_rewrite 1 [hndef]
   rw [absNorm_eq_index, mul_pow_sub_one finrank_pos.ne', ← RingOfIntegers.rank,
