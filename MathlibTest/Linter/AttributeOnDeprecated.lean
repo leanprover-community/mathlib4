@@ -38,6 +38,31 @@ theorem laterDeprecated : True := trivial
 #guard_msgs in
 attribute [deprecated bar (since := "2026-01-01")] laterDeprecated
 
+-- Deprecations added in the current file with `attribute` are taken into account.
+/--
+warning: `laterDeprecated` has been deprecated in favor of `bar`: this `attribute` command will break when `laterDeprecated` is removed.
+Consider adding the attribute directly to the declaration of `laterDeprecated`, applying it to `bar` instead, or removing it.
+
+Hint: Replace the deprecated name:
+  l̵a̵t̵e̵r̵D̵e̵p̵r̵e̵c̵a̵t̵e̵d̵b̲a̲r̲
+
+Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
+-/
+#guard_msgs in
+attribute [simp] laterDeprecated
+
+-- Attributes added together with the deprecation by `attribute` are flagged.
+theorem deprecatedWithSimp : True := trivial
+
+/--
+warning: `deprecatedWithSimp` has been deprecated: this `attribute` command will break when `deprecatedWithSimp` is removed.
+Consider adding the attribute directly to the declaration of `deprecatedWithSimp` or removing it.
+
+Note: This linter can be disabled with `set_option linter.attributeOnDeprecated false`
+-/
+#guard_msgs in
+attribute [deprecated bar (since := "2026-01-01"), simp] deprecatedWithSimp
+
 /--
 warning: `foo` has been deprecated in favor of `bar`: this `attribute` command will break when `foo` is removed.
 Consider adding the attribute directly to the declaration of `foo`, applying it to `bar` instead, or removing it.

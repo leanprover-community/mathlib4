@@ -21,6 +21,7 @@ However, once `foo` is removed, for instance by the `remove_deprecated_decls` au
 the `attribute` command referring to it stops working.
 
 `attribute [deprecated ...] foo` commands are ignored, since they are what makes `foo` deprecated.
+However, `attribute [deprecated ..., simp] foo` is flagged, since it also adds `simp` to `foo`.
 
 ## Implementation notes
 
@@ -131,9 +132,14 @@ def attributeOnDeprecatedLinter : Linter where run stx := do
     let env ← getEnv
     let trees ← getInfoTrees
     for attr in attrs do
-      -- `attribute [deprecated ...] foo` is what makes `foo` deprecated.
-      if attr[2].getSepArgs.any (·[1].isOfKind ``Lean.deprecated) then
+      -- `attribute [deprecated ...] foo` is what makes `foo` deprecated, so we only flag the
+      -- commands that also add other attributes, such as `attribute [deprecated ..., simp] foo`.
+      let (deprecations, others) := attr[2].getSepArgs.partition (·[1].isOfKind ``Lean.deprecated)
+      if others.isEmpty then
         continue
+      -- If the command adds the deprecation, then replacing the target would deprecate the
+      -- replacement as well, so we do not suggest the replacement.
+      let addsDeprecation := !deprecations.isEmpty
       let some rg := attr.getRange? | continue
       let targets := attr[4].getArgs
       let found := trees.foldl (init := #[]) fun acc t =>
@@ -145,7 +151,8 @@ def attributeOnDeprecatedLinter : Linter where run stx := do
           let breaks := m!"this `attribute` command will break when `{.ofConstName n}` is removed."
           let consider :=
             m!"Consider adding the attribute directly to the declaration of `{.ofConstName n}`"
-          let msg ← match Linter.deprecatedAttr.getParam? env n with
+          let param? := if addsDeprecation then none else Linter.deprecatedAttr.getParam? env n
+          let msg ← match param? with
             | some { newName? := some new, .. } => do
               -- If the deprecated name is fully qualified, then so is the suggested replacement.
               let fullNames := id.getId.eraseMacroScopes == privateToUserName n
