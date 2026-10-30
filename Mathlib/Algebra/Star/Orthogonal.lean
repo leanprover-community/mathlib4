@@ -301,13 +301,13 @@ end IsAddTorsionFree
 
 namespace IsStarOrtho
 
--- TODO: add `PNat` version
+-- TODO: add a `PNat` version once #40785 is merged
 lemma pow_left (h : p ⋆⟂ q) {n : ℕ} (hn : n ≠ 0) : p ^ n ⋆⟂ q := by
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
   exact ⟨by rw [pow_succ, mul_assoc, h.mul_star_eq_zero, mul_zero],
     by rw [pow_succ', ← mul_assoc, h.star_mul_eq_zero, zero_mul]⟩
 
--- TODO: add `PNat` version
+-- TODO: add a `PNat` version once #40785 is merged
 lemma pow_right (h : p ⋆⟂ q) {n : ℕ} (hn : n ≠ 0) : p ⋆⟂ q ^ n :=
   (h.symm.pow_left hn).symm
 
