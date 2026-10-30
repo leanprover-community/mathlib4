@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 
 /-!
 # `S`-integers and `S`-units of fraction fields of Dedekind domains

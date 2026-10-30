@@ -6,8 +6,8 @@ Authors: Kim Morrison, Sina Hazratpour
 module
 
 public import Mathlib.CategoryTheory.Category.Cat.AsSmall
-public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Elements
 
 /-!
 # The Grothendieck construction
@@ -116,7 +116,6 @@ def comp {X Y Z : Grothendieck F} (f : Hom X Y) (g : Hom Y Z) : Hom X Z where
 attribute [local simp] eqToHom_map
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 instance : Category (Grothendieck F) where
   Hom X Y := Grothendieck.Hom X Y
   id X := Grothendieck.id X
@@ -195,7 +194,6 @@ def toTransport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) : x ⟶ x.transp
   ⟨t, 𝟙 _⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /--
 Construct an isomorphism in a Grothendieck construction from isomorphisms in its base and fiber.
 -/
@@ -240,7 +238,6 @@ section
 variable {G : C ⥤ Cat}
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The Grothendieck construction is functorial: a natural transformation `α : F ⟶ G` induces
 a functor `Grothendieck.map : Grothendieck F ⥤ Grothendieck G`.
 -/
@@ -277,7 +274,7 @@ theorem functor_comp_forget {α : F ⟶ G} :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-theorem map_id_eq : map (𝟙 F) = Functor.id (Grothendieck <| F) := by
+theorem map_id_eq : map (𝟙 F) = Functor.id (Grothendieck F) := by
   fapply Functor.ext
   · intro X
     rfl
@@ -287,7 +284,7 @@ theorem map_id_eq : map (𝟙 F) = Functor.id (Grothendieck <| F) := by
 
 /-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
 if possible, and we should prefer `mapIdIso` to `map_id_eq` whenever we can. -/
-def mapIdIso : (map (𝟙 F)).toCatHom ≅ 𝟙 (Cat.of <| Grothendieck <| F) :=
+def mapIdIso : (map (𝟙 F)).toCatHom ≅ 𝟙 (Cat.of <| Grothendieck F) :=
   eqToIso congr(($map_id_eq).toCatHom)
 
 variable {H : C ⥤ Cat}
@@ -547,7 +544,6 @@ instance faithful_ι (c : C) : (ι F c).Faithful where
     injection f with _ f
     rwa [cancel_epi] at f
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Every morphism `f : X ⟶ Y` in the base category induces a natural transformation from the fiber
 inclusion `ι F X` to the composition `F.map f ⋙ ι F Y`. -/

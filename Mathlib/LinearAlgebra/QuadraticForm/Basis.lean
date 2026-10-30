@@ -5,10 +5,14 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Sym
 public import Mathlib.Data.Finsupp.Pointwise
 public import Mathlib.Data.Sym.Sym2.Finsupp
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+import Mathlib.Algebra.BigOperators.Sym
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis

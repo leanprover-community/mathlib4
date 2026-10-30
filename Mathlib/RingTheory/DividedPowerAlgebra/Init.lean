@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos—Fernández
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.RingTheory.Congruence.Hom
-public import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.DividedPowers.Basic
+
+import Mathlib.RingTheory.Congruence.BigOperators
 
 /-!
 # The universal divided power algebra
@@ -95,7 +95,7 @@ end DividedPowerAlgebra
 
 /-- The divided power algebra of a module M is defined as the ring quotient of the polynomial ring
   in the variables `ℕ × M` by the ring relation defined by `DividedPowerAlgebra.Rel`.
-  We will later show that that `DividedPowerAlgebra R M` has divided powers.
+  We will later show that `DividedPowerAlgebra R M` has divided powers.
   It satisfies a weak universal property for morphisms to rings with divided powers. -/
 abbrev DividedPowerAlgebra := DividedPowerAlgebra.ringCon R M |>.Quotient
 
@@ -113,12 +113,12 @@ lemma coe_C (a : R) :
     ↑(C (σ := ℕ × M) a) = algebraMap R (DividedPowerAlgebra R M) a := by
   rw [← MvPolynomial.algebraMap_eq, RingCon.coe_algebraMap]
 
-@[deprecated coe_C (since := "2026-06-19")]
+@[deprecated coe_C +typeChanged (since := "2026-06-19")]
 lemma mkAlgHom_C (a : R) :
     RingCon.mkₐ R (ringCon R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a := by
   rw [← MvPolynomial.algebraMap_eq, AlgHom.commutes]
 
-@[deprecated coe_C (since := "2026-06-19")]
+@[deprecated coe_C +typeChanged (since := "2026-06-19")]
 lemma mkRingHom_C (a : R) :
     RingCon.mk' (ringCon R M) (C a) = algebraMap R (DividedPowerAlgebra R M) a :=
   mkAlgHom_C _

@@ -189,12 +189,14 @@ theorem cons_bagInter_of_mem (l₁ : List α) (h : a ∈ l₂) :
 alias cons_bagInter_of_pos := cons_bagInter_of_mem
 
 @[simp]
-theorem cons_bagInter_of_not_mem (l₁ : List α) (h : a ∉ l₂) :
+theorem cons_bagInter_of_notMem (l₁ : List α) (h : a ∉ l₂) :
     (a :: l₁).bagInter l₂ = l₁.bagInter l₂ := by
   cases l₂ with grind [List.bagInter]
 
+@[deprecated (since := "2026-09-28")] alias cons_bagInter_of_not_mem := cons_bagInter_of_notMem
+
 @[deprecated (since := "2026-05-13")]
-alias cons_bagInter_of_neg := cons_bagInter_of_not_mem
+alias cons_bagInter_of_neg := cons_bagInter_of_notMem
 
 @[grind =]
 theorem cons_bagInter :
@@ -205,9 +207,11 @@ theorem cons_bagInter :
 alias cons_bagInteger := cons_bagInter
 
 @[simp]
-theorem bagInter_cons_of_not_mem (l₂ : List α) (h : a ∉ l₁) :
+theorem bagInter_cons_of_notMem (l₂ : List α) (h : a ∉ l₁) :
     l₁.bagInter (a :: l₂) = l₁.bagInter l₂ := by
   induction l₁ generalizing l₂ <;> grind
+
+@[deprecated (since := "2026-09-28")] alias bagInter_cons_of_not_mem := bagInter_cons_of_notMem
 
 @[simp]
 theorem mem_bagInter {a : α} {l₁ l₂ : List α} : a ∈ l₁.bagInter l₂ ↔ a ∈ l₁ ∧ a ∈ l₂ := by
@@ -228,14 +232,18 @@ theorem bagInter_singleton (a : α) : l₁.bagInter [a] = if a ∈ l₁ then [a]
   induction l₁ <;> grind
 
 @[simp]
-theorem bagInter_erase_of_not_mem (h : a ∉ l₁) :
+theorem bagInter_erase_of_notMem (h : a ∉ l₁) :
     l₁.bagInter (l₂.erase a) = l₁.bagInter l₂ := by
   induction l₁ generalizing l₂ <;> grind
 
+@[deprecated (since := "2026-09-28")] alias bagInter_erase_of_not_mem := bagInter_erase_of_notMem
+
 @[simp]
-theorem erase_bagInter_of_not_mem (h : a ∉ l₂) :
+theorem erase_bagInter_of_notMem (h : a ∉ l₂) :
     (l₁.erase a).bagInter l₂ = l₁.bagInter l₂ := by
   induction l₁ generalizing l₂ <;> grind
+
+@[deprecated (since := "2026-09-28")] alias erase_bagInter_of_not_mem := erase_bagInter_of_notMem
 
 theorem bagInter_nil_iff_inter_nil : ∀ l₁ l₂ : List α, l₁.bagInter l₂ = [] ↔ l₁ ∩ l₂ = []
   | [], l₂ => by simp

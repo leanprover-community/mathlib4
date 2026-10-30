@@ -69,7 +69,7 @@ theorem determinant :
       nums_stable_of_terminated n.le_succ terminatedAt_n, Finset.prod_range_succ,
       partNum_none_iff_s_none.mpr terminatedAt_n]
     grind
-  · exact determinant_aux <| Or.inr <| not_terminatedAt_n
+  · exact determinant_aux <| Or.inr not_terminatedAt_n
 end GenContFract
 
 namespace SimpContFract

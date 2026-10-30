@@ -6,8 +6,8 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.Algebra.Category.Grp.Colimits
-public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.Algebra.Group.Equiv.Basic
+
+import Mathlib.Algebra.Module.CharacterModule
 
 /-!
 # Existence of "big" colimits in the category of additive commutative groups
@@ -47,7 +47,7 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
     refine hc.hom_ext (fun j ↦ ?_)
     ext x
     erw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, ← Quot.ι_desc _ c j x]
-    exact DFunLike.congr_fun eq (Quot.ι F j x)
+    congrm $eq (Quot.ι F j x)
   · set c' : Cocone F :=
       { pt := ↧(ULift (AddCircle (1 : ℚ)))
         ι :=

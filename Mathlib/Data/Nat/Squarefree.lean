@@ -344,7 +344,7 @@ lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFac
     List.map_id', Nat.prod_primeFactorsList hn.ne_zero]
 
 theorem squarefree_and_primeFactors_card_eq_two_iff (n : ℕ) :
-    Squarefree n ∧ (primeFactors n).card = 2 ↔
+    Squarefree n ∧ #(primeFactors n) = 2 ↔
       ∃ p q : ℕ, p < q ∧ p.Prime ∧ q.Prime ∧ p * q = n := by
   refine ⟨fun ⟨sq, nc⟩ ↦ ?_, fun ⟨p, q, pq, hp, hq, hn⟩ ↦ ?_⟩
   · obtain ⟨p, q, pq, eq⟩ := Finset.card_eq_two.mp nc
@@ -368,6 +368,12 @@ lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s,
 theorem primeFactors_prod_primeFactors (n : ℕ) :
     (∏ p ∈ n.primeFactors, p).primeFactors = n.primeFactors :=
   primeFactors_prod fun _ hp ↦ n.mem_primeFactors.mp hp |>.left
+
+theorem squarefree_prod_primeFactors (n : ℕ) : Squarefree (∏ p ∈ n.primeFactors, p) :=
+  squarefree_prod_of_pairwise_isCoprime
+    (fun _ hp _ hq hpq ↦ coprime_iff_isRelPrime.mp <|
+      (coprime_primes (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq)).mpr hpq)
+    fun _ hp ↦ (prime_of_mem_primeFactors hp).prime.squarefree
 
 theorem prod_primeFactors_dvd_iff {n k : ℕ} (hk : k ≠ 0) :
     (∏ p ∈ n.primeFactors, p) ∣ k ↔ n.primeFactors ⊆ k.primeFactors := by

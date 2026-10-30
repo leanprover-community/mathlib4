@@ -5,10 +5,14 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Coverage
-public import Mathlib.CategoryTheory.Sites.Precoverage.Subsheaf
-public import Mathlib.Logic.Small.Set
+
+import Mathlib.CategoryTheory.Sites.Closed
+import Mathlib.CategoryTheory.Sites.Precoverage.Subsheaf
+import Mathlib.Logic.Small.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Generators of a Grothendieck topology

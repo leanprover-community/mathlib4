@@ -9,6 +9,9 @@ public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.SetNotation
 public import Mathlib.Order.WellFounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions of conditionally complete lattices
 
@@ -169,11 +172,11 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
   __ := i₂
   __ := LinearOrder.toLattice
   __ :=
-    letI : InfSet α := ⟨fun s => if hs : s.Nonempty then WellFoundedLT.min s hs else ⊥⟩
+    let : InfSet α := ⟨fun s => if hs : s.Nonempty then WellFoundedLT.min s hs else ⊥⟩
     conditionallyCompleteLatticeOfLatticeOfsInf _ fun s _ hn ↦ by
       simp only [dite_eq_left hn]
-      exact IsLeast.isGLB ⟨wellFounded_lt.min_mem s hn, fun _ hx ↦ WellFoundedLT.min_le hx⟩
-  csSup_empty := by simp [sSup, bot_unique (WellFoundedLT.min_le (mem_univ _))]
+      exact IsLeast.isGLB ⟨WellFounded.min_mem ‹_› s hn, fun _ hx ↦ WellFoundedLT.min_le hx⟩
+  csSup_empty := by simpa [sSup] using bot_unique (WellFoundedLT.min_le (mem_univ _))
   csSup_of_not_bddAbove s H := by
     rw [BddAbove] at H
     simp [sSup, H, bot_unique (WellFoundedLT.min_le (mem_univ _))]

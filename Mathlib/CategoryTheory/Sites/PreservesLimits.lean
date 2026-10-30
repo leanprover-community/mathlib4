@@ -5,10 +5,7 @@ Authors: Dagur Asgeirsson, Jonas van der Schaaf
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Subcanonical
-public import Mathlib.CategoryTheory.Sites.Sheafification
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 

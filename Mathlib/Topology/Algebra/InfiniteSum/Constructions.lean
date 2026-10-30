@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Order.Filter.AtTopBot.Finset
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
 public import Mathlib.Topology.Algebra.Star
@@ -18,8 +19,6 @@ types, `MulOpposite`, etc.
 -/
 
 public section
-
-noncomputable section
 
 open Filter Finset Function
 
@@ -90,8 +89,10 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
     simp
   simpa [Tendsto, ← Filter.map_map] using! this
 
+/-- For the statement that `tprod` commutes with `Finset.prod`,
+see `Multipliable.tprod_finsetProd`. -/
 @[to_additive /-- For the statement that `tsum` commutes with `Finset.sum`,
-  see `Summable.tsum_finsetSum`. -/]
+see `Summable.tsum_finsetSum`. -/]
 protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M]
     [ContinuousMul M] [T2Space M] {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl))
     (h₂ : Multipliable (f ∘ .inr)) : ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
@@ -362,5 +363,16 @@ theorem summable_star_iff' : Summable (star f) L ↔ Summable f L :=
 
 theorem tsum_star [T2Space α] : star (∑'[L] b, f b) = ∑'[L] b, star (f b) :=
   Function.LeftInverse.map_tsum (g := starAddEquiv) f continuous_star continuous_star star_star
+
+theorem isClosed_setOfPred_isSelfAdjoint [T2Space α] : IsClosed {a : α | IsSelfAdjoint a} :=
+  isClosed_eq continuous_star continuous_id
+
+theorem HasSum.isSelfAdjoint [T2Space α] [L.NeBot] (hf : HasSum f a L)
+    (h : ∀ b, IsSelfAdjoint (f b)) : IsSelfAdjoint a :=
+  hf.mem (s := selfAdjoint.addSubmonoid α) (L := L) isClosed_setOfPred_isSelfAdjoint h
+
+theorem IsSelfAdjoint.tsum [T2Space α] (h : ∀ b, IsSelfAdjoint (f b)) :
+    IsSelfAdjoint (∑'[L] b, f b) :=
+  tsum_mem (s := selfAdjoint.addSubmonoid α) (L := L) isClosed_setOfPred_isSelfAdjoint h
 
 end ContinuousStar

@@ -5,9 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Aesop
-public import Mathlib.CategoryTheory.Category.Basic
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.CategoryTheory.Category.Basic
 
 /-!
 The `check_compositions` tactic,

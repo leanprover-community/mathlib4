@@ -12,7 +12,6 @@ theorem foo : True := trivial
 
 def bar : Bool := true
 
--- Run the linter on artificial `eoi` syntax so that we can actually guard the message
 open Mathlib.Linter Parser in
 /--
 warning: The current module only contains private declarations.
@@ -22,9 +21,7 @@ Consider adding `public section` at the beginning of the module, or selectively 
 Note: This linter can be disabled with `set_option linter.privateModule false`
 -/
 #guard_msgs in
-run_cmd do
-  let eoi := mkNode ``Command.eoi #[mkAtom .none ""]
-  privateModule.run eoi
+run_cmd privateModule.run #[]
 
 -- Disable so that this test is silent
 set_option linter.privateModule false
