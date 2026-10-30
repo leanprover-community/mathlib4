@@ -892,7 +892,7 @@ end Monotone
 
 /-- A right-continuous function on a second-countable linear order is measurable. -/
 @[to_dual /-- A left-continuous function on a second-countable linear order is measurable. -/]
-theorem IsRightContinuous.measurable [TopologicalSpace β] {mβ : MeasurableSpace β} [BorelSpace β]
+theorem IsRightContinuous.measurable [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
     {f : α → β} (hf : IsRightContinuous f) : Measurable f :=
   measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ hf x (hu.mem_nhds hx)
 
