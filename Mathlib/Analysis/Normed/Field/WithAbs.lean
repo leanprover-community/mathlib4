@@ -311,8 +311,18 @@ section Algebra
 variable {R : Type*} [CommSemiring R] [Algebra R (WithAbs v)]
   [UniformContinuousConstSMul R (WithAbs v)]
 
-@[no_expose]
-noncomputable instance : Algebra R v.Completion := fast_instance% (equiv v).algebra R
+omit [UniformContinuousConstSMul R (WithAbs v)] in
+@[simp]
+theorem toCompletion_smul (r : R) (x : v.Completion) :
+    (r • x).toCompletion = r • x.toCompletion := by
+  rfl
+
+-- `toSMul` is inferred as the `SMul` instance declared earlier, so that `Algebra.toSMul` agrees
+-- with it reducibly in downstream modules (needed e.g. for `IsScalarTower` hypotheses).
+noncomputable instance : Algebra R v.Completion where
+  algebraMap := (equiv v).symm.toRingHom.comp (algebraMap R (UniformSpace.Completion (WithAbs v)))
+  commutes' r x := (equiv v).injective <| by simp [Algebra.commutes]
+  smul_def' r x := (equiv v).injective <| by simp [Algebra.smul_def]
 
 theorem toCompletion_algebraMap (r : R) :
     (algebraMap R v.Completion r).toCompletion =
