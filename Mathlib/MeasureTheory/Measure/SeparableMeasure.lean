@@ -655,12 +655,12 @@ lemma separableSpace_of_separableSpace_Lp [hp : Fact (1 ≤ p)]
     [TopologicalSpace.SeparableSpace (Lp E p μ)] [Nontrivial (Lp E p μ)] :
     TopologicalSpace.SeparableSpace E := by
   have hp_zero : p ≠ 0 := ne_of_gt (lt_of_lt_of_le zero_lt_one hp.out)
-  haveI : SecondCountableTopology (Lp E p μ) := UniformSpace.secondCountable_of_separable _
+  have : SecondCountableTopology (Lp E p μ) := UniformSpace.secondCountable_of_separable _
   by_cases hp_top : p = ∞
   · subst p
     have hμ : μ ≠ 0 := by
       obtain ⟨f, hf⟩ : ∃ f : Lp E ∞ μ, f ≠ 0 := exists_ne 0
-      contrapose! hf
+      contrapose hf
       subst hf
       exact norm_eq_zero.1 (Lp.norm_measure_zero f)
     exact (isEmbedding_toLp_const_top (E := E) hμ).separableSpace
@@ -669,7 +669,7 @@ lemma separableSpace_of_separableSpace_Lp [hp : Fact (1 ≤ p)]
         nontrivial_Lp_real_of_nontrivial_Lp (E := E) (p := p) (μ := μ)
       exact exists_ne 0
     have hfne : ¬ (f =ᵐ[μ] 0) := by
-      contrapose! hf
+      contrapose hf
       ext
       grw [hf, Lp.coeFn_zero ℝ p μ]
     have h'f : AEFinStronglyMeasurable f μ :=
