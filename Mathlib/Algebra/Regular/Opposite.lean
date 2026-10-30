@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about `IsRegular` and `MulOpposite`
 -/

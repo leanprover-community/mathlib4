@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Sequences
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of the norm on (semi)normed groups
 

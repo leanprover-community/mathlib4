@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Small sets in the category of structured arrows
 
