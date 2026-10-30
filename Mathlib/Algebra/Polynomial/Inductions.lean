@@ -127,14 +127,14 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
         rw [degree_add_eq_left_of_degree_lt this]; exact degree_lt_degree_mul_X hXp0
     _ = degree p := congr_arg _ (divX_mul_X_add _)
 
-/-- A property holds for all polynomials over a semiring `R` if it holds for
+/-- A Sort-valued induction principle for polynomials over a semiring `R`, with cases
 * `0`,
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 * `p * X`, with `p ∈ R[X]`,
 
 with appropriate restrictions on each term.
 
-See `horner_induction` for a variant with a constant base case.
+See `induction_horner` for a variant with a constant base case.
 -/
 @[elab_as_elim]
 noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
@@ -168,7 +168,7 @@ with appropriate restrictions on each term.
 See `recOnHorner` for a variant with a zero base case.
 -/
 @[elab_as_elim]
-theorem horner_induction {motive : R[X] → Prop}
+theorem induction_horner {motive : R[X] → Prop}
     (hC : ∀ a, motive (C a))
     (ha : ∀ p a, (hp : p.coeff 0 = 0) → (hdeg : 0 < p.natDegree) → (ha : a ≠ 0) →
       (ih : motive p) → motive (p + C a))
