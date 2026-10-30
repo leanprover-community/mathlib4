@@ -105,8 +105,9 @@ jobs:
       # - The pin is a full commit hash.
       # The base manifest is master's manifest at the merge base of master and the commit under
       # test. The step also checks each dependency whose `url`, `inputRev` or pin differs from the
-      # base. On `staging` and `trying`, the step fails when a dependency breaks one of these
-      # rules. On other runs, the step only warns, so a PR can test an unmerged dependency commit.
+      # base. On bors runs (`staging` and `trying`), the step fails when a dependency breaks one of
+      # these rules. On other runs, the step only warns, so a PR can test an unmerged dependency
+      # commit.
       # - A dependency that tracks a branch pins a commit on that branch. GitHub also serves
       #   commits from unmerged pull requests by SHA, and this rule rejects them.
       # - A dependency that tracks a tag pins the commit of that tag.
@@ -116,7 +117,7 @@ jobs:
       #   intentional revert, such as the revert of a toolchain bump, a repository admin sets the
       #   variable `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`, and this rule only warns. The
       #   admin should delete the variable after the revert merges.
-      # An API error in these pin checks also fails `staging` and `trying`, and warns elsewhere.
+      # An API error in these pin checks also fails bors runs, and warns on other runs.
       - name: Validate lake-manifest.json
         # The step runs only in leanprover-community/mathlib4. `bump/*` branches and PRs into them
         # track the dependencies' `nightly-testing` branches, so the step skips them. A PR's base
@@ -143,7 +144,7 @@ jobs:
               ? `Hint: Fix the \`require\` for \`${p.name}\` in the dependency that requires it, then run \`lake update\`.`
               : `Hint: Fix the \`require\` for \`${p.name}\` in lakefile.lean, then run \`lake update ${p.name}\`.`;
             const updateHint = name => `Hint: Run \`lake update ${name}\` and commit lake-manifest.json.`;
-            const strictNote = 'Note: This check fails the Build job on `staging` and `trying`.';
+            const strictNote = 'Note: This check fails the Build job on bors runs.';
 
             let failed = false;
             const annotate = (level, title, ...lines) => {
