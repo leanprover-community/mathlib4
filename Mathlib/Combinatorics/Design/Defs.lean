@@ -57,7 +57,8 @@ structure IncidenceSystem where
   /-- The blocks must be subsets of the ambient set. -/
   block_subset {b} (hb : b ∈ blockSet) : block b ⊆ carrier
 
-initialize_simps_projections IncidenceSystem (as_prefix carrier)
+initialize_simps_projections IncidenceSystem (as_prefix carrier, as_prefix blockSet,
+  as_prefix block)
 
 attribute [grind →] IncidenceSystem.block_subset
 
