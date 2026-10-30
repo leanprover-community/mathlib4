@@ -394,23 +394,30 @@ variable [Preorder ι] {𝓕 : Filtration ι m} {μ ν : Measure Ω}
 
 /-- A filtration `𝓕` is complete with respect to a measure `μ` if for all `i`, `𝓕 i` contains all
 the `μ`-null sets. -/
-class IsComplete (𝓕 : Filtration ι m) (μ : Measure Ω := by volume_tac) where
+protected class IsComplete (𝓕 : Filtration ι m) (μ : Measure Ω := by volume_tac) where
   /-- For all `t`, `𝓕 t` contains all the null sets. -/
   measurableSet_of_null ⦃s : Set Ω⦄ (hs : μ s = 0) (t : ι) : MeasurableSet[𝓕 t] s
 
 /-- If a filtration `𝓕` is complete with respect to `μ`, then the measure `μ` restricted to the
 σ-algebra `𝓕 i` is complete. -/
-instance [IsComplete 𝓕 μ] {i : ι} : (μ.trim (𝓕.le i)).IsComplete :=
+instance [𝓕.IsComplete μ] {i : ι} : (μ.trim (𝓕.le i)).IsComplete :=
   ⟨fun _ hs ↦ IsComplete.measurableSet_of_null (measure_eq_zero_of_trim_eq_zero (𝓕.le i) hs) i⟩
+
+variable (𝓕) in
+/-- If a filtration `𝓕` on a nonempty type is complete with respect to `μ`, then `μ` is complete.
+
+This is not an instance since `𝓕` cannot be inferred from the goal. -/
+lemma IsComplete.measure_isComplete [Nonempty ι] [𝓕.IsComplete μ] : μ.IsComplete :=
+  ⟨fun _ hs ↦ 𝓕.le (Classical.arbitrary ι) _ (IsComplete.measurableSet_of_null hs _)⟩
 
 /-- A filtration that is complete with respect to `μ` is complete with respect to any measure `ν`
 such that `μ ≪ ν`. -/
-lemma IsComplete.of_absolutelyContinuous [IsComplete 𝓕 μ] (hμν : μ ≪ ν) : IsComplete 𝓕 ν :=
+lemma IsComplete.of_absolutelyContinuous [𝓕.IsComplete μ] (hμν : μ ≪ ν) : 𝓕.IsComplete ν :=
   ⟨fun _ hs t ↦ IsComplete.measurableSet_of_null (hμν hs) t⟩
 
 /-- If a filtration `𝓕` is complete with respect to `μ`, then a set that is `μ`-almost everywhere
 equal to a set of `𝓕 i` belongs to `𝓕 i`. -/
-lemma IsComplete.measurableSet_of_ae_eq [IsComplete 𝓕 μ] {s t : Set Ω} {i : ι}
+lemma IsComplete.measurableSet_of_ae_eq [𝓕.IsComplete μ] {s t : Set Ω} {i : ι}
     (ht : MeasurableSet[𝓕 i] t) (hst : s =ᵐ[μ] t) :
     MeasurableSet[𝓕 i] s := by
   rw [← symmDiff_symmDiff_cancel_left t s]
