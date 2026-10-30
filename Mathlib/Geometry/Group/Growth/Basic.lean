@@ -22,6 +22,8 @@ the number of elements of word length at most `n`.
 * `Group.Generators.growth`: the growth function `n ↦ #(wordBall n)`.
 * `Function.GrowthDominates`: `f` dominates `g` if `g n ≤ C * f (α * n)` for some `C, α`.
 * `Function.GrowthEquivalent`: mutual domination of two functions.
+* `Function.HasPolynomialGrowth`: `f` is dominated by `n ↦ (n + 1)^d` for some `d`.
+* `Function.HasExponentialGrowth`: `f` dominates `n ↦ 2^n`.
 
 ## Implementation notes
 
@@ -79,6 +81,31 @@ lemma GrowthEquivalent.trans {f g h : ℕ → ℕ} (hfg : f.GrowthEquivalent g)
 lemma GrowthEquivalent.equivalence : Equivalence GrowthEquivalent :=
   ⟨GrowthEquivalent.refl, GrowthEquivalent.symm, GrowthEquivalent.trans⟩
 
+/-- `f` has polynomial growth if it is dominated by `n ↦ (n + 1) ^ d` for some `d`.
+We use `n + 1` so that the bound is positive at `n = 0`. -/
+def HasPolynomialGrowth (f : ℕ → ℕ) : Prop :=
+  ∃ d : ℕ, (fun n ↦ (n + 1) ^ d).GrowthDominates f
+
+/-- `f` has exponential growth if it dominates `n ↦ 2 ^ n`. -/
+def HasExponentialGrowth (f : ℕ → ℕ) : Prop :=
+  f.GrowthDominates (2 ^ ·)
+
+lemma HasPolynomialGrowth.of_growthDominates {f g : ℕ → ℕ} (hf : f.HasPolynomialGrowth)
+    (hfg : f.GrowthDominates g) : g.HasPolynomialGrowth :=
+  hf.imp fun _ hd ↦ hd.trans hfg
+
+lemma HasPolynomialGrowth.of_growthEquivalent {f g : ℕ → ℕ} (h : f.GrowthEquivalent g)
+    (hf : f.HasPolynomialGrowth) : g.HasPolynomialGrowth :=
+  hf.of_growthDominates h.1
+
+lemma HasExponentialGrowth.of_growthDominates {f g : ℕ → ℕ} (hf : f.HasExponentialGrowth)
+    (hgf : g.GrowthDominates f) : g.HasExponentialGrowth :=
+  hgf.trans hf
+
+lemma HasExponentialGrowth.of_growthEquivalent {f g : ℕ → ℕ} (h : f.GrowthEquivalent g)
+    (hf : f.HasExponentialGrowth) : g.HasExponentialGrowth :=
+  hf.of_growthDominates h.2
+
 end Function
 
 namespace Group.Generators
@@ -129,5 +156,13 @@ lemma growth_eq_ncard (n : ℕ) : P.growth n = (P.wordBall n).ncard :=
 @[to_additive (attr := simp)]
 lemma growth_zero : P.growth 0 = 1 := by
   simp [growth]
+
+/-- A generating family has polynomial growth if its growth function does. -/
+@[to_additive /-- A generating family has polynomial growth if its growth function does. -/]
+def HasPolynomialGrowth : Prop := Function.HasPolynomialGrowth P.growth
+
+/-- A generating family has exponential growth if its growth function does. -/
+@[to_additive /-- A generating family has exponential growth if its growth function does. -/]
+def HasExponentialGrowth : Prop := Function.HasExponentialGrowth P.growth
 
 end Group.Generators
