@@ -177,7 +177,7 @@ theorem sub_isBigO_norm_rpow_add_one_of_fderiv (hr : 0 ≤ r)
     (hdf : ∀ᶠ x in 𝓝 a, DifferentiableAt ℝ f x) (hderiv : fderiv ℝ f =O[𝓝 a] (‖· - a‖ ^ r)) :
     (f · - f a) =O[𝓝 a] (‖· - a‖ ^ (r + 1)) := by
   rcases hderiv.exists_pos with ⟨C, hC₀, hC⟩
-  rw [Asymptotics.IsBigOWith_def] at hC
+  rw [Asymptotics.isBigOWith_iff] at hC
   rcases eventually_nhds_iff_ball.mp (hdf.and hC) with ⟨ε, hε₀, hε⟩
   refine .of_bound C ?_
   rw [eventually_nhds_iff_ball]

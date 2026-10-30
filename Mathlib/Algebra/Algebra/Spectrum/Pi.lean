@@ -76,7 +76,7 @@ lemma Pi.spectrum_eq [CommSemiring R] [∀ i, Ring (κ i)] [∀ i, Algebra R (κ
     (a : ∀ i, κ i) : spectrum R a = ⋃ i, spectrum R (a i) := by
   apply compl_injective
   simp_rw [spectrum, Set.compl_iUnion, compl_compl, resolventSet, Set.iInter_ofPred,
-    Pi.isUnit_iff, sub_apply, algebraMap_apply]
+    Pi.isUnit_iff, Pi.sub_apply, algebraMap_apply]
 
 lemma Prod.spectrum_eq [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
     (a : A) (b : B) : spectrum R (⟨a, b⟩ : A × B) = spectrum R a ∪ spectrum R b := by
