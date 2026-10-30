@@ -942,8 +942,8 @@ def centerCongr (e : A ≃ₐ[R] B) :
   commutes' r := Subtype.ext <| e.commutes r
 
 @[simp]
-lemma centerCongr_symm_apply_coe (e : A ≃ₐ[R] B) (a : Subalgebra.center R B) :
-    Subalgebra.centerCongr e.symm a = e.symm a :=
+lemma centerCongr_symm_apply_coe (e : A ≃ₐ[R] B) (a : center R B) :
+    centerCongr e.symm a = e.symm a :=
   rfl
 
 end Center
