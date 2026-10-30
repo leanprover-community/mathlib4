@@ -55,13 +55,11 @@ the `NonUnitalRingHomClass` instance. -/
 add_decl_doc NonUnitalStarRingHom.toNonUnitalRingHom
 
 /-- `NonUnitalStarRingHomClass F A B` states that `F` is a type of non-unital ⋆-ring homomorphisms.
-
-This class is deprecated: it adds nothing to `StarHomClass`, so use
-`[NonUnitalRingHomClass F A B] [StarHomClass F A B]` instead. -/
+You should also extend this typeclass when you extend `NonUnitalStarRingHom`. -/
 @[deprecated StarHomClass +typeChanged (since := "2026-10-07")]
-class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*) [NonUnitalNonAssocSemiring A]
-    [Star A] [NonUnitalNonAssocSemiring B] [Star B] [FunLike F A B] [NonUnitalRingHomClass F A B] :
-    Prop extends StarHomClass F A B
+class NonUnitalStarRingHomClass (F : Type*) (A B : outParam Type*)
+    [NonUnitalNonAssocSemiring A] [Star A] [NonUnitalNonAssocSemiring B] [Star B]
+    [FunLike F A B] [NonUnitalRingHomClass F A B] : Prop extends StarHomClass F A B
 
 namespace NonUnitalStarRingHomClass
 
