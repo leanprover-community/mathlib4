@@ -583,7 +583,7 @@ private lemma eventually_setIntegral_Ioi_inv_eq (hψ : ∀ᶠ x in 𝓝 0, ψ x 
   have hx0 : 0 < x := (inv_pos.mpr hε).trans hx
   refine (setIntegral_eq_of_subset_of_forall_sdiff_eq_zero measurableSet_Ioi
     (Ioi_subset_Ioi (inv_pos.mpr hx0).le) fun y ⟨hy, hy'⟩ ↦ h ?_).symm
-  rw [dist_eq, sub_zero, abs_of_pos hy]
+  rw [Real.dist_eq, sub_zero, abs_of_pos hy]
   exact (not_lt.mp hy').trans_lt (inv_lt_of_inv_lt₀ hε hx)
 
 include bound hG hG' hpos in
