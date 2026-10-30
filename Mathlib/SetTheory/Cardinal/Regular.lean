@@ -198,7 +198,7 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
     intro hb'
     rw [derivFamily_limit f hb]
     apply Ordinal.lift_iSup_lt_of_lt_cof
-    · rwa [← lift_cof, hc.cof_ord, mk_Iio_ordinal, lift_lift, lift_lt, ← lt_ord]
+    · rwa [← lift_cof, hc.cof_ord, cardinalMk_Iio, lift_lift, lift_lt, ← lt_ord]
     · exact fun i ↦ H i.1 i.2 <| i.2.trans hb'
 
 theorem derivFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c)
@@ -340,7 +340,7 @@ theorem IsInaccessible.preBeth_ord (hc : IsInaccessible c) : preBeth c.ord = c :
   induction a using WellFoundedLT.induction with | ind a IH
   rw [preBeth]
   apply lift_iSup_lt_of_lt_cof_ord _ _
-  · rwa [mk_Iio_ordinal, lift_lift, hc.isRegular.lift.cof_ord, lift_lt, ← lt_ord]
+  · rwa [cardinalMk_Iio, lift_lift, hc.isRegular.lift.cof_ord, lift_lt, ← lt_ord]
   · rintro ⟨b, hb⟩
     exact hc.isStrongPrelimit <| IH _ hb (hb.trans ha)
 

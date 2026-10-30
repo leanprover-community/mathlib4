@@ -148,16 +148,18 @@ def DifferentiableAt (f : E → F) (x : E) :=
 open scoped Classical in
 /-- If `f` has a derivative at `x` within `s`, then `fderivWithin 𝕜 f s x` is such a derivative.
 Otherwise, it is set to `0`. We also set it to be zero, if zero is one of possible derivatives. -/
-irreducible_def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
+@[no_expose] def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
   if HasFDerivWithinAt f (0 : E →L[𝕜] F) s x
     then 0
   else if h : DifferentiableWithinAt 𝕜 f s x
     then Classical.choose h
   else 0
 
+alias fderivWithin_def := fderivWithin.eq_def
+
 /-- If `f` has a derivative at `x`, then `fderiv 𝕜 f x` is such a derivative. Otherwise, it is
 set to `0`. -/
-irreducible_def fderiv (f : E → F) (x : E) : E →L[𝕜] F :=
+@[no_expose] def fderiv (f : E → F) (x : E) : E →L[𝕜] F :=
   fderivWithin 𝕜 f univ x
 
 /-- `DifferentiableOn 𝕜 f s` means that `f` is differentiable within `s` at any point of `s`. -/

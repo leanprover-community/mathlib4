@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 public import Mathlib.GroupTheory.Perm.Cycle.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hamiltonian graphs from cyclic permutations
 
