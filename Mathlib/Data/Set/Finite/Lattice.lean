@@ -14,6 +14,10 @@ import Mathlib.Data.Fintype.Option
 /-!
 # Finiteness of unions and intersections
 
+Directed families admit finite-stage witnesses for containment when the difference from one
+member is finite. This gives intersection and union attainment, including the cases of a finite
+member in a downward directed family or a cofinite member in an upward directed family.
+
 ## Implementation notes
 
 Each result in this file should come in three forms: a `Fintype` instance, a `Finite` instance
@@ -477,3 +481,99 @@ theorem DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {α : Type*} {c 
   exact hs.coe_toFinset ▸ this
 
 end LinearOrder
+
+variable {s : ι → Set α} {S : Set (Set α)} {t u : Set α} {i₀ : ι}
+
+lemma Directed.iInter_subset_iff_of_finite_sdiff (hdir : Directed (· ⊇ ·) s)
+    (hfin : (s i₀ \ t).Finite) : (⋂ i, s i) ⊆ t ↔ ∃ j, s j ⊆ t := by
+  refine ⟨fun hsub ↦ ?_, fun ⟨j, hj⟩ ↦ (iInter_subset s j).trans hj⟩
+  let : Nonempty (PLift ι) := ⟨⟨i₀⟩⟩
+  have hd : Directed (· ⊆ ·) (fun i : PLift ι ↦ (s i.down)ᶜ) := by
+    intro i j
+    obtain ⟨k, hki, hkj⟩ := hdir i.down j.down
+    exact ⟨⟨k⟩, compl_subset_compl.mpr hki, compl_subset_compl.mpr hkj⟩
+  have hcover : s i₀ \ t ⊆ ⋃ i : PLift ι, (s i.down)ᶜ := by
+    intro a ha
+    simp only [mem_iUnion, mem_compl_iff]
+    by_contra! h
+    exact ha.2 (hsub (mem_iInter.mpr fun i ↦ h ⟨i⟩))
+  obtain ⟨j, hj⟩ :=
+    hd.exists_mem_subset_of_finset_subset_biUnion (s := hfin.toFinset) (by simpa using hcover)
+  obtain ⟨k, hki, hkj⟩ := hdir i₀ j.down
+  exact ⟨k, fun a ha ↦ by_contra fun hat ↦ hj (by simpa using And.intro (hki ha) hat) (hkj ha)⟩
+
+lemma Directed.subset_iUnion_iff_of_finite_sdiff (hdir : Directed (· ⊆ ·) s)
+    (hfin : (t \ s i₀).Finite) : t ⊆ ⋃ i, s i ↔ ∃ j, t ⊆ s j := by
+  have hd : Directed (· ⊇ ·) (fun i ↦ (s i)ᶜ) :=
+    hdir.mono_comp _ fun _ _ ↦ compl_subset_compl.mpr
+  simpa only [← compl_iUnion, compl_subset_compl] using
+    hd.iInter_subset_iff_of_finite_sdiff (t := tᶜ)
+      (by simpa only [sdiff_eq, compl_compl, inter_comm] using hfin)
+
+lemma DirectedOn.sInter_subset_iff_of_finite_sdiff (hdir : DirectedOn (· ⊇ ·) S) (hu : u ∈ S)
+    (hfin : (u \ t).Finite) : ⋂₀ S ⊆ t ↔ ∃ v ∈ S, v ⊆ t := by
+  simpa only [sInter_eq_iInter, Subtype.exists, exists_prop] using
+    hdir.directed_val.iInter_subset_iff_of_finite_sdiff (i₀ := ⟨u, hu⟩) hfin
+
+lemma DirectedOn.subset_sUnion_iff_of_finite_sdiff (hdir : DirectedOn (· ⊆ ·) S) (hu : u ∈ S)
+    (hfin : (t \ u).Finite) : t ⊆ ⋃₀ S ↔ ∃ v ∈ S, t ⊆ v := by
+  simpa only [sUnion_eq_iUnion, Subtype.exists, exists_prop] using
+    hdir.directed_val.subset_iUnion_iff_of_finite_sdiff (i₀ := ⟨u, hu⟩) hfin
+
+lemma Directed.iInter_mem_of_finite_sdiff (hdir : Directed (· ⊇ ·) s)
+    (hfin : (s i₀ \ ⋂ i, s i).Finite) : ∃ j, s j = ⋂ i, s i := by
+  obtain ⟨j, hj⟩ := (hdir.iInter_subset_iff_of_finite_sdiff hfin).mp Subset.rfl
+  exact ⟨j, hj.antisymm (iInter_subset s j)⟩
+
+lemma Directed.iUnion_mem_of_finite_sdiff (hdir : Directed (· ⊆ ·) s)
+    (hfin : ((⋃ i, s i) \ s i₀).Finite) : ∃ j, s j = ⋃ i, s i := by
+  obtain ⟨j, hj⟩ := (hdir.subset_iUnion_iff_of_finite_sdiff hfin).mp Subset.rfl
+  exact ⟨j, (subset_iUnion s j).antisymm hj⟩
+
+lemma DirectedOn.sInter_mem_of_finite_sdiff (hdir : DirectedOn (· ⊇ ·) S) (hu : u ∈ S)
+    (hfin : (u \ ⋂₀ S).Finite) : ⋂₀ S ∈ S := by
+  obtain ⟨v, hv, hsub⟩ := (hdir.sInter_subset_iff_of_finite_sdiff hu hfin).mp Subset.rfl
+  exact hsub.antisymm (sInter_subset_of_mem hv) ▸ hv
+
+lemma DirectedOn.sUnion_mem_of_finite_sdiff (hdir : DirectedOn (· ⊆ ·) S) (hu : u ∈ S)
+    (hfin : (⋃₀ S \ u).Finite) : ⋃₀ S ∈ S := by
+  obtain ⟨v, hv, hsub⟩ := (hdir.subset_sUnion_iff_of_finite_sdiff hu hfin).mp Subset.rfl
+  exact (subset_sUnion_of_mem hv).antisymm hsub ▸ hv
+
+lemma Directed.iInter_mem_of_finite_mem (hdir : Directed (· ⊇ ·) s) (hfin : (s i₀).Finite) :
+    ∃ j, s j = ⋂ i, s i :=
+  hdir.iInter_mem_of_finite_sdiff hfin.sdiff
+
+lemma DirectedOn.sInter_mem_of_finite_mem (hdir : DirectedOn (· ⊇ ·) S) (ht : t ∈ S)
+    (hfin : t.Finite) : ⋂₀ S ∈ S :=
+  hdir.sInter_mem_of_finite_sdiff ht hfin.sdiff
+
+lemma Directed.iUnion_mem_of_cofinite_mem (hdir : Directed (· ⊆ ·) s) (hfin : (s i₀)ᶜ.Finite) :
+    ∃ j, s j = ⋃ i, s i :=
+  hdir.iUnion_mem_of_finite_sdiff (hfin.subset fun _ h ↦ h.2)
+
+lemma DirectedOn.sUnion_mem_of_cofinite_mem (hdir : DirectedOn (· ⊆ ·) S) (hu : u ∈ S)
+    (hfin : uᶜ.Finite) : ⋃₀ S ∈ S :=
+  hdir.sUnion_mem_of_finite_sdiff hu (hfin.subset fun _ h ↦ h.2)
+
+lemma Directed.disjoint_iInter_iff_of_finite_inter (hdir : Directed (· ⊇ ·) s)
+    (hfin : (s i₀ ∩ u).Finite) : Disjoint (⋂ i, s i) u ↔ ∃ j, Disjoint (s j) u := by
+  simpa only [le_compl_iff_disjoint_right] using
+    hdir.iInter_subset_iff_of_finite_sdiff (t := uᶜ) (by simpa only [sdiff_compl] using hfin)
+
+lemma DirectedOn.disjoint_sInter_iff_of_finite_inter (hdir : DirectedOn (· ⊇ ·) S) (ht : t ∈ S)
+    (hfin : (t ∩ u).Finite) : Disjoint (⋂₀ S) u ↔ ∃ v ∈ S, Disjoint v u := by
+  simpa only [le_compl_iff_disjoint_right] using
+    hdir.sInter_subset_iff_of_finite_sdiff ht (t := uᶜ) (by simpa only [sdiff_compl] using hfin)
+
+lemma Directed.codisjoint_iUnion_iff_of_cofinite_union (hdir : Directed (· ⊆ ·) s)
+    (hfin : (s i₀ ∪ u)ᶜ.Finite) : Codisjoint (⋃ i, s i) u ↔ ∃ j, Codisjoint (s j) u := by
+  simpa only [codisjoint_iff_compl_le_left] using
+    hdir.subset_iUnion_iff_of_finite_sdiff (t := uᶜ)
+      (by simpa only [compl_union, sdiff_eq, inter_comm] using hfin)
+
+lemma DirectedOn.codisjoint_sUnion_iff_of_cofinite_union (hdir : DirectedOn (· ⊆ ·) S) (ht : t ∈ S)
+    (hfin : (t ∪ u)ᶜ.Finite) : Codisjoint (⋃₀ S) u ↔ ∃ v ∈ S, Codisjoint v u := by
+  simpa only [codisjoint_iff_compl_le_left] using
+    hdir.subset_sUnion_iff_of_finite_sdiff ht (t := uᶜ)
+      (by simpa only [compl_union, sdiff_eq, inter_comm] using hfin)
