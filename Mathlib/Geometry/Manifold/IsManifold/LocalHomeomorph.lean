@@ -111,6 +111,43 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse
   exact (hg (f y)).symm
 
 
+lemma smooth_localInverseAt (x : M)
+    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
+    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiffOn I I n (↑(hf.localInverseAt x)) (hf.localInverseAt x).source := by
+  sorry
+
+
+-- f -> F
+-- Quotient.lift f hf -> φ
+-- Quotient.mk' = π -> f
+lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
+    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
+    {φ : M' → N} (hφ : ContMDiff I J n (φ ∘ f)) :
+    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiff I J n φ := by
+  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  apply contMDiff_of_locally_contMDiffOn
+  intro x'
+  have : ∀ y ∈ (hf.localInverseAt (g x')).source,
+      φ y = ((φ ∘ f) ∘ (hf.localInverseAt (g x'))) y := by
+    intro y hy
+    congr
+    have aux := hf.localInverseAt_symm (g x')
+    sorry
+  refine ⟨(hf.localInverseAt (g x')).source, (hf.localInverseAt (g x')).open_source,
+      ?_, ?_⟩
+  · sorry
+  · apply ContMDiffOn.congr (h₁ := this)
+    apply ContMDiffOn.comp (I' := I) (t := Set.univ)
+    -- note : it does not know how to synthetize I' because
+    -- it never appears in the goal, only in hg and hf
+    -- same with t
+    · exact contMDiffOn_univ.mpr hφ
+    · exact smooth_localInverseAt hf hg (g x')
+    · simp
+
+-- maybe this could be just dropped
 /-- Suppose `F : M → N` is `C^n` and invariant under `f`,
 the induced map `F ∘ g : M' → N` is also `C^n`. -/
 lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff
@@ -119,7 +156,11 @@ lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff
     (hF' : CMDiff n F) :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I J n (F ∘ g) := by
-  sorry
+  apply IsLocalHomeomorph.contMDiff_of_contMDiff_comp hf hg h
+  apply hF'.congr
+  intro y
+  apply hF
+  exact hg (f y)
 
 /-- Suppose `f : M → N` is `G`-invariant, then `f` is `C^n` if and only if the induced map
 `M ⧸ G → N` is. -/
