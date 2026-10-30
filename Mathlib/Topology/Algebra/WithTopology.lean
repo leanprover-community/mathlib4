@@ -381,7 +381,7 @@ lemma coe_symm_mulEquiv [Mul X] : ⇑(WithTopology.mulEquiv X t).symm = toTopolo
 
 @[to_additive (attr := simp)]
 lemma toEquiv_mulEquiv [Mul X] :
-    (WithTopology.mulEquiv X t).toEquiv = WithTopology.equiv X t :=
+    (WithTopology.mulEquiv X t : WithTopology X t ≃ X) = WithTopology.equiv X t :=
   rfl
 
 /-- `WithTopology.equiv` as a ring equivalence. -/
@@ -400,12 +400,12 @@ lemma coe_symm_ringEquiv [Add X] [Mul X] :
 
 @[simp]
 lemma toMulEquiv_ringEquiv [Add X] [Mul X] :
-    (WithTopology.ringEquiv X t).toMulEquiv = WithTopology.mulEquiv X t :=
+    (WithTopology.ringEquiv X t : WithTopology X t ≃* X) = WithTopology.mulEquiv X t :=
   rfl
 
 @[simp]
 lemma toAddEquiv_ringEquiv [Add X] [Mul X] :
-    (WithTopology.ringEquiv X t).toAddEquiv = WithTopology.addEquiv X t :=
+    (WithTopology.ringEquiv X t : WithTopology X t ≃+ X) = WithTopology.addEquiv X t :=
   rfl
 
 /-- `WithTopology.equiv` as a linear equivalence. -/
