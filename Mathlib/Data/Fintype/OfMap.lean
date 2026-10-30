@@ -5,8 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.Finset.Image
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Constructors for `Fintype`

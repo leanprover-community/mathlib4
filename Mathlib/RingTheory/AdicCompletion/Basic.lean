@@ -5,11 +5,12 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
 module
 
-public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Jacobson.Ideal
 public import Mathlib.Tactic.SuppressCompilation
+
+import Mathlib.Algebra.Ring.GeomSum
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -877,9 +878,9 @@ instance (priority := 100) of_subsingleton [Subsingleton M] : IsAdicComplete I M
 
 open Finset
 
-theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
+theorem le_jacobson [IsAdicComplete I R] : I ≤ Ring.jacobson R := by
   intro x hx
-  rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
+  rw [← Ideal.neg_mem_iff, Ring.mem_jacobson_iff]
   intro y
   rw [add_comm]
   let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
@@ -902,12 +903,16 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] at hL ⊢
   rw [sub_zero]
   suffices (1 - x * y) * f n - 1 ∈ I ^ n by
-    convert! Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
+    convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1
     ring
   cases n
   · simp only [Ideal.one_eq_top, pow_zero, mem_top]
   · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm (_ ^ _), ← sub_sub,
       sub_self, zero_sub, @neg_mem_iff, mul_pow]
     exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)
+
+@[deprecated le_jacobson +typeChanged (since := "2026-10-12")]
+theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson := by
+  simpa only [Ideal.jacobson_bot] using (le_jacobson I)
 
 end IsAdicComplete

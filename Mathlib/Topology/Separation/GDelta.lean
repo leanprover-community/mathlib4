@@ -5,11 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Topology.Compactness.Lindelof
-public import Mathlib.Topology.Compactness.SigmaCompact
-public import Mathlib.Topology.Inseparable
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.GDelta.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Separation properties of topological spaces.
@@ -55,7 +52,7 @@ protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X)
     IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
-  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
+  exact .biInter (to_countable {_n : ℕ | True}) fun n _ => (hU n).2.isGδ
 
 theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
     IsGδ s :=

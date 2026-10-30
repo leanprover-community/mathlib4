@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
@@ -384,7 +383,6 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_counitIso_hom_app
   Functor.asEquivalence_counitIso_inv_app in
 /-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
@@ -416,7 +414,6 @@ instance : Φ.inv.IsInduced where
       (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
         (Φ.functor.asEquivalence.counitIso.app _))
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isLocalizedEquivalence_of_isInduced :
     Φ.IsLocalizedEquivalence := by
   refine IsLocalizedEquivalence.of_equivalence _ (fun X Y f hf ↦ ?_)

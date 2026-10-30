@@ -5,10 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Invariant.Basic
-public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.RingTheory.Unramified.Locus
+
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Frobenius elements
@@ -274,7 +275,7 @@ lemma _root_.isConj_arithFrobAt
     (H : Q.under R = Q'.under R) : IsConj (arithFrobAt R G Q) (arithFrobAt R G Q') := by
   obtain ⟨P, hP, h₁, h₂⟩ : ∃ P : Ideal R, P.IsPrime ∧ P = Q.under R ∧ P = Q'.under R :=
     ⟨Q.under R, inferInstance, rfl, H⟩
-  convert!
+  convert
     (exists_primesOver_isConj S G P ⟨⟨Q, ‹_›, ⟨h₁⟩⟩, ‹Finite (S ⧸ Q)›⟩).choose_spec.2 ⟨Q, ‹_›, ⟨h₁⟩⟩
       ⟨Q', ‹_›, ⟨h₂⟩⟩
   · subst h₁; rfl

@@ -8,7 +8,8 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Const
 public import Mathlib.Analysis.Calculus.TangentCone.DimOne
 public import Mathlib.Analysis.Calculus.TangentCone.Real
-public import Mathlib.Analysis.Normed.Operator.Bilinear
+
+import Mathlib.Analysis.Normed.Operator.Bilinear
 
 /-!
 
@@ -355,7 +356,7 @@ alias ⟨HasDerivWithinAt.Iic_of_Iio, HasDerivWithinAt.Iio_of_Iic⟩ := hasDeriv
 
 theorem HasDerivWithinAt.Ioi_iff_Ioo [LinearOrder 𝕜] [OrderClosedTopology 𝕜] {x y : 𝕜} (h : x < y) :
     HasDerivWithinAt f f' (Ioo x y) x ↔ HasDerivWithinAt f f' (Ioi x) x :=
-  hasFDerivWithinAt_inter <| Iio_mem_nhds h
+  hasFDerivWithinAt_inter (s := Ioi x) <| Iio_mem_nhds h
 
 alias ⟨HasDerivWithinAt.Ioi_of_Ioo, HasDerivWithinAt.Ioo_of_Ioi⟩ := HasDerivWithinAt.Ioi_iff_Ioo
 

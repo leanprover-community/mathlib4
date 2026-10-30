@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-public import Mathlib.RingTheory.Artinian.Instances
-public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-public import Mathlib.RingTheory.SimpleModule.Basic
+
+import Mathlib.RingTheory.Artinian.Instances
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
 # Semisimple linear endomorphisms
@@ -145,7 +145,7 @@ lemma eq_zero_of_isNilpotent_of_isFinitelySemisimple
     rintro - ⟨i, hi, rfl⟩
     apply Submodule.subset_span
     rcases lt_or_eq_of_le hi with hik | rfl
-    · exact ⟨i + 1, hik, by simpa [Module.End.pow_apply] using iterate_succ_apply' f i x⟩
+    · exact ⟨i + 1, hik, by simpa [pow_apply_eq_iterate] using iterate_succ_apply' f i x⟩
     · exact ⟨i, by simp [hk]⟩
   have hp₂ : Module.Finite R p := by
     let g : ℕ → M := fun i ↦ (f ^ i) x

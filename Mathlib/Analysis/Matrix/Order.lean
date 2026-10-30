@@ -6,13 +6,11 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
 public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
-public import Mathlib.LinearAlgebra.Matrix.Vec
-public import Mathlib.Analysis.CStarAlgebra.Matrix
 
 /-!
 # The partial order on matrices
@@ -168,7 +166,7 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
   · simp only [h.isHermitian.spectrum_eq_image_range, Set.mem_image, Set.mem_range,
       exists_exists_eq_and, Set.mem_ofPred_eq, forall_exists_index]
     rintro i rfl
-    exact_mod_cast h.eigenvalues_nonneg _
+    exact mod_cast h.eigenvalues_nonneg _
   · rw [h1.posSemidef_iff_eigenvalues_nonneg]
     intro i
     simpa [h1.spectrum_eq_image_range] using @h2 (h1.eigenvalues i)

@@ -6,11 +6,13 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Module.Shrink
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.RingTheory.Finiteness.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Basic results on finitely generated (sub)modules

@@ -5,12 +5,11 @@ Authors: Joël Riou, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.Order.OrderIsoNat
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.Simple
+
+import Mathlib.Order.OrderIsoNat
 
 /-!
 # Artinian objects
@@ -86,7 +85,6 @@ lemma not_strictAnti_of_isArtinianObject
   (isArtinianObject_iff_not_strictAnti X).1 inferInstance f
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma isArtinianObject_iff_isEventuallyConstant :
     IsArtinianObject X ↔ ∀ (F : ℕ ⥤ (MonoOver X)ᵒᵖ),
       IsFiltered.IsEventuallyConstant F := by

@@ -6,15 +6,11 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Tactic.FastInstance
-public import Mathlib.LinearAlgebra.Finsupp.LSum
-public import Mathlib.Algebra.Order.Group.Nat
 
 
 /-!
@@ -819,7 +815,7 @@ theorem smul_X_eq_monomial {n} : a • X ^ n = monomial n (a : R) := by
 
 @[simp]
 theorem support_X_pow [Nontrivial R] (n : ℕ) : (X ^ n : R[X]).support = singleton n := by
-  convert! support_monomial n (NeZero.out (n := (1 : R)))
+  convert support_monomial n (NeZero.out (n := (1 : R)))
   exact X_pow_eq_monomial n
 
 theorem support_X_empty (H : (1 : R) = 0) : (X : R[X]).support = ∅ := by
@@ -931,7 +927,7 @@ protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, m
     | succ n ih => exact monomial _ _ ih
   have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ ↦ Polynomial.C (p.coeff n) * X ^ n) := by
     apply Finset.induction
-    · convert! C 0
+    · convert C 0
       exact C_0.symm
     · intro n s ns ih
       rw [sum_insert ns]
@@ -951,17 +947,15 @@ protected theorem induction_on' {motive : R[X] → Prop} (p : R[X])
     by rw [C_mul_X_pow_eq_monomial]; exact monomial _ _
 
 /-- `erase p n` is the polynomial `p` in which the `X^n` term has been erased. -/
-irreducible_def erase (n : ℕ) : R[X] → R[X]
+@[no_expose] def erase (n : ℕ) : R[X] → R[X]
   | ⟨p⟩ => ⟨p.erase n⟩
 
 @[simp]
-theorem toFinsupp_erase (p : R[X]) (n : ℕ) : toFinsupp (p.erase n) = p.toFinsupp.erase n := by
-  simp only [erase_def]
+theorem toFinsupp_erase (p : R[X]) (n : ℕ) : toFinsupp (p.erase n) = p.toFinsupp.erase n := (rfl)
 
 @[simp]
 theorem ofFinsupp_erase (p : R[ℕ]) (n : ℕ) :
-    (⟨p.erase n⟩ : R[X]) = (⟨p⟩ : R[X]).erase n := by
-  simp only [erase_def]
+    (⟨p.erase n⟩ : R[X]) = (⟨p⟩ : R[X]).erase n := (rfl)
 
 @[simp]
 theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).erase n := by
@@ -973,10 +967,8 @@ theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.era
   exact AddMonoidAlgebra.single_add_erase ..
 
 theorem coeff_erase (p : R[X]) (n i : ℕ) :
-    (p.erase n).coeff i = if i = n then 0 else p.coeff i := by
-  rcases p with ⟨⟩
-  simp only [erase_def, coeff]
-  exact ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (p.erase n).coeff i = if i = n then 0 else p.coeff i :=
+  ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
@@ -1044,9 +1036,17 @@ theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
 theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
   simp [coeffs, eq_comm, (Finset.mem_image)]
 
+theorem coe_coeffs_subset_iff {s : Set R} :
+    (p.coeffs : Set R) ⊆ s ↔ ∀ n, p.coeff n ≠ 0 → p.coeff n ∈ s := by
+  grind [mem_coeffs_iff]
+
+theorem coeffs_subset_iff {s : Finset R} :
+    p.coeffs ⊆ s ↔ ∀ n, p.coeff n ≠ 0 → p.coeff n ∈ s := by
+  simpa using coe_coeffs_subset_iff (s := (s : Set R))
+
 theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
-  simp_rw [coeffs, Finset.image_subset_iff]
-  simp_all [coeff_one]
+  rw [coeffs_subset_iff]
+  simp [coeff_one]
 
 theorem coeff_mem_coeffs {p : R[X]} {n : ℕ} (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   simp only [coeffs, mem_support_iff, Finset.mem_image, Ne]
@@ -1054,13 +1054,7 @@ theorem coeff_mem_coeffs {p : R[X]} {n : ℕ} (h : p.coeff n ≠ 0) : p.coeff n 
 
 @[simp]
 theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
-  refine ⟨?_, fun h ↦ by simp [h]⟩
-  contrapose!
-  intro h
-  rw [← support_nonempty] at h
-  obtain ⟨n, hn⟩ := h
-  rw [mem_support_iff] at hn
-  exact ⟨p.coeff n, coeff_mem_coeffs hn⟩
+  simp [← Finset.subset_empty, coeffs_subset_iff, Polynomial.ext_iff]
 
 @[simp]
 theorem coeffs_nonempty_iff {p : R[X]} : p.coeffs.Nonempty ↔ p ≠ 0 := by

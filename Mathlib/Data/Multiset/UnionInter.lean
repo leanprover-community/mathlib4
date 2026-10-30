@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.Multiset.Filter
 public import Mathlib.Order.MinMax
-public import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets
@@ -103,7 +102,7 @@ lemma cons_inter_of_pos (s : Multiset α) : a ∈ t → (a ::ₘ s) ∩ t = a ::
 
 @[simp]
 lemma cons_inter_of_neg (s : Multiset α) : a ∉ t → (a ::ₘ s) ∩ t = s ∩ t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr(ofList $(cons_bagInter_of_not_mem _ h))
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr(ofList $(cons_bagInter_of_notMem _ h))
 
 lemma inter_le_left : s ∩ t ≤ s :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => bagInter_sublist_left.subperm

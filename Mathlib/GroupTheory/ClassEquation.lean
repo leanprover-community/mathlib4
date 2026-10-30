@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.Group.ConjFinite
-public import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Subgroup.Center
+
+import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
 # Class Equation
@@ -56,7 +57,7 @@ theorem Group.nat_card_center_add_sum_card_noncenter_eq_card [Finite G] :
   simp only [Nat.card_eq_fintype_card, Set.toFinset_card]
   congr 1
   swap
-  · convert! finsum_cond_eq_sum_of_cond_iff _ _
+  · convert finsum_cond_eq_sum_of_cond_iff _ _
     simp [Set.mem_toFinset]
   calc
     Fintype.card (Subgroup.center G) = Fintype.card ((noncenter G)ᶜ : Set _) :=
@@ -76,7 +77,7 @@ theorem Group.card_center_add_sum_card_noncenter_eq_card (G) [Group G]
     [∀ x : ConjClasses G, Fintype x.carrier] [Fintype G] [Fintype <| Subgroup.center G]
     [Fintype <| noncenter G] : Fintype.card (Subgroup.center G) +
     ∑ x ∈ (noncenter G).toFinset, x.carrier.toFinset.card = Fintype.card G := by
-  convert! Group.nat_card_center_add_sum_card_noncenter_eq_card G using 2
+  convert Group.nat_card_center_add_sum_card_noncenter_eq_card G using 2
   · simp
   · rw [← finsum_set_coe_eq_finsum_mem (noncenter G), finsum_eq_sum_of_fintype,
       ← Finset.sum_set_coe]

@@ -5,8 +5,9 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Eval.Irreducible
 public import Mathlib.RingTheory.Polynomial.Nilpotent
+
+import Mathlib.Algebra.Polynomial.Eval.Irreducible
 
 /-!
 
@@ -30,8 +31,6 @@ polynomial, irreducible ring, nilradical, prime ideal
 public section
 
 open Polynomial
-
-noncomputable section
 
 /-- A polynomial over an irreducible ring `R` is irreducible if it is monic and irreducible after
 mapping into an integral domain `S` (https://math.stackexchange.com/a/4843432/235999).

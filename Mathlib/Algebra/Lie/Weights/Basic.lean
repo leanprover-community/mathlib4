@@ -5,13 +5,11 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Ring.Divisibility.Lemmas
-public import Mathlib.Algebra.Lie.Nilpotent
 public import Mathlib.Algebra.Lie.Engel
+public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 public import Mathlib.LinearAlgebra.Eigenspace.Pi
-public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras
@@ -40,7 +38,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*](bourbaki1975b)
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*][bourbaki1975b]
 
 ## Tags
 
@@ -101,7 +99,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   have h_comm_square : F ∘ₗ ↑g = (g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (f₁ + f₂) := by
     ext m₁ m₂
     simp only [f₁, f₂, F, ← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul,
-      lie_tmul_right, tmul_smul, toEnd_apply_apply, map_smul, Module.End.one_apply,
+      lie_tmul_right, tmul_smul, toEnd_apply_apply, map_smul, one_apply_eq_self,
       LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, map_add, LinearMap.add_apply, map_sub, LinearMap.sub_apply,
       LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
@@ -123,7 +121,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   use k₁ + k₂ - 1
   have hf_comm : Commute f₁ f₂ := by
     ext m₁ m₂
-    simp only [f₁, f₂, Module.End.mul_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
+    simp only [f₁, f₂, mul_apply_eq_comp, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
       AlgebraTensorModule.curry_apply, LinearMap.lTensor_tmul, TensorProduct.curry_apply,
       LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
@@ -135,9 +133,9 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   suffices (f₁ ^ i * f₂ ^ j) (m₁ ⊗ₜ m₂) = 0 by rw [this]; apply smul_zero
   -- Finish off with appropriate case analysis.
   rcases Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi | hj
-  · rw [(hf_comm.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hf₁,
+  · rw [(hf_comm.pow_pow i j).eq, mul_apply_eq_comp, Module.End.pow_map_zero_of_le hi hf₁,
       map_zero]
-  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hf₂, map_zero]
+  · rw [mul_apply_eq_comp, Module.End.pow_map_zero_of_le hj hf₂, map_zero]
 
 lemma lie_mem_maxGenEigenspace_toEnd
     {χ₁ χ₂ : R} {x y : L} {m : M} (hy : y ∈ 𝕎(L, χ₁, x)) (hm : m ∈ 𝕎(M, χ₂, x)) :
@@ -238,7 +236,7 @@ instance [Subsingleton M] : IsEmpty (Weight R L M) :=
 instance [Nontrivial (genWeightSpace M (0 : L → R))] : Zero (Weight R L M) :=
   ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
 
-instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L M) L R where
+instance [Nontrivial (genWeightSpace M (0 : L → R))] : IsZeroApply (Weight R L M) where
 
 @[deprecated (since := "2026-07-27")] alias coe_zero := FunLike.coe_zero
 
@@ -428,7 +426,7 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
   induction l with
   | zero => simp
   | succ l ih =>
-    simp only [lowerCentralSeries_succ, pow_succ', Module.End.mul_apply]
+    simp only [lowerCentralSeries_succ, pow_succ', mul_apply_eq_comp]
     exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
@@ -554,7 +552,7 @@ lemma map_posFittingComp_eq (e : M ≃ₗ⁅R,L⁆ M₂) :
     rw [this]
     exact LieSubmodule.map_mono (map_posFittingComp_le _)
   rw [← LieSubmodule.map_comp]
-  convert! LieSubmodule.map_id
+  convert LieSubmodule.map_id
   ext
   simp
 

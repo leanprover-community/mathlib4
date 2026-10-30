@@ -10,8 +10,6 @@ public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Logic.Equiv.Nat
-public import Mathlib.Order.Directed
-public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Encodable types
@@ -193,8 +191,6 @@ theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
 
 theorem decode₂_isPartialInv [Encodable α] : IsPartialInv encode (decode₂ α) := fun _ _ =>
   mem_decode₂
-
-@[deprecated (since := "2026-03-11")] alias decode₂_is_partial_inv := decode₂_isPartialInv
 
 theorem decode₂_inj [Encodable α] {n : ℕ} {a₁ a₂ : α} (h₁ : a₁ ∈ decode₂ α n)
     (h₂ : a₂ ∈ decode₂ α n) : a₁ = a₂ :=

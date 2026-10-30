@@ -256,7 +256,7 @@ theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : 
 @[to_additive (attr := simp)]
 theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk g : Q) = φ g :=
   rfl
--- TODO: replace `mk` with `mk'`)
+-- TODO: replace `mk` with `mk'`
 
 @[to_additive (attr := simp)]
 theorem lift_comp_mk' (φ : G →* M) (HN : N ≤ φ.ker) :

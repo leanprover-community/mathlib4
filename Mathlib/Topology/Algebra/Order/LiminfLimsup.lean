@@ -6,9 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-public import Mathlib.Algebra.Order.Group.DenselyOrdered
 public import Mathlib.Topology.Algebra.Group.ContinuousDiv
 public import Mathlib.Topology.Order.LiminfLimsup
+
+import Mathlib.Algebra.Order.Group.DenselyOrdered
 
 /-!
 # Lemmas about liminf and limsup in an order topology.

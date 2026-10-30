@@ -5,14 +5,12 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.Category.GaloisConnection
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Skeleton
 public import Mathlib.CategoryTheory.Subobject.MonoOver
-public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
-public import Mathlib.Tactic.ApplyFun
-public import Mathlib.Tactic.CategoryTheory.Elementwise
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.Category.GaloisConnection
+
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Subobjects
@@ -248,7 +246,7 @@ theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
 
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :
     X ≤ Y := by
-  convert! mk_le_mk_of_comm _ w <;> simp
+  convert mk_le_mk_of_comm _ w <;> simp
 
 theorem le_mk_of_comm {B A : C} {X : Subobject B} {f : A ⟶ B} [Mono f] (g : (X : C) ⟶ A)
     (w : g ≫ f = X.arrow) : X ≤ mk f :=
@@ -419,7 +417,7 @@ theorem ofMkLEMk_refl {B A₁ : C} (f : A₁ ⟶ B) [Mono f] : ofMkLEMk f f le_r
 
 -- As with `ofLE`, we have `X` and `Y` as explicit arguments for readability.
 /-- An equality of subobjects gives an isomorphism of the corresponding objects.
-(One could use `underlying.mapIso (eqToIso h))` here, but this is more readable.) -/
+(One could use `underlying.mapIso (eqToIso h)` here, but this is more readable.) -/
 @[simps]
 def isoOfEq {B : C} (X Y : Subobject B) (h : X = Y) : (X : C) ≅ (Y : C) where
   hom := ofLE _ _ h.le
@@ -451,7 +449,7 @@ lemma mk_lt_mk_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X}
   · assumption
   · exfalso
     apply hf
-    convert! (isoOfMkEqMk i₁ i₂ h).isIso_hom
+    convert (isoOfMkEqMk i₁ i₂ h).isIso_hom
     rw [← cancel_mono i₂, isoOfMkEqMk_hom, ofMkLEMk_comp, fac]
 
 lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
@@ -530,12 +528,12 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
   inverse := lower e.inverse
   unitIso := by
     apply eqToIso
-    convert! ThinSkeleton.map_iso_eq e.unitIso
+    convert ThinSkeleton.map_iso_eq e.unitIso
     · exact ThinSkeleton.map_id_eq.symm
     · exact (ThinSkeleton.map_comp_eq _ _).symm
   counitIso := by
     apply eqToIso
-    convert! ThinSkeleton.map_iso_eq e.counitIso
+    convert ThinSkeleton.map_iso_eq e.counitIso
     · exact (ThinSkeleton.map_comp_eq _ _).symm
     · exact ThinSkeleton.map_id_eq.symm
 

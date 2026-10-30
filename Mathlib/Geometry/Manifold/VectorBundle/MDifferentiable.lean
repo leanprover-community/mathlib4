@@ -5,9 +5,7 @@ Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Differentiability of functions in vector bundles
@@ -643,6 +641,9 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableWithinAt`. We also give a version for `MDifferentiableAt`, but no
 version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates,
 only makes sense around a point.
+
+For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
+`inCoordinates`, see `MDifferentiableWithinAt.clm_bundle_apply`.
 -/
 lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
     (hϕ : MDiffAt[s] (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
@@ -676,6 +677,9 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableAt`. We also give a version for `MDifferentiableWithinAt`,
 but no version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written
 in coordinates, only makes sense around a point.
+
+For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
+`inCoordinates`, see `MDifferentiableAt.clm_bundle_apply`.
 -/
 lemma MDifferentiableAt.clm_apply_of_inCoordinates
     (hϕ : MDiffAt (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)

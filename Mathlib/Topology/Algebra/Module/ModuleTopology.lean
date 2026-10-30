@@ -5,11 +5,10 @@ Authors: Kevin Buzzard, Will Sawin
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv.Pi
-public import Mathlib.RingTheory.Finiteness.Cardinality
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.Algebra.Group.Basic
 
 /-!
 # A "module topology" for modules over a topological ring
@@ -55,7 +54,7 @@ and now the pullback of `U` under `•` is just the pullback along the continuou
 so it's open. The proof for `+` is similar.
 
 As a consequence of this, we see that if `φ : A → M` is a linear map between topological `R`-modules
-modules and if `A` has the module topology, then `φ` is automatically continuous.
+and if `A` has the module topology, then `φ` is automatically continuous.
 Indeed the argument above shows that if `A → M` is linear then the module
 topology on `A` is `≤` the pullback of the module topology on `M` (because it's the inf of a set
 containing this topology) which is the definition of continuity.

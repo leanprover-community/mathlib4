@@ -6,10 +6,11 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Ring.Hom.InjSurj
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.Localization.Integral
+
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Algebraically Closed Field
@@ -87,18 +88,18 @@ theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z
   simp only [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def] at hz
   exact sub_eq_zero.1 hz
 
-theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
+theorem isSquare [IsAlgClosed k] (x : k) : IsSquare x := by
   rcases exists_pow_nat_eq x zero_lt_two with ⟨z, rfl⟩
   exact ⟨z, sq z⟩
 
+@[deprecated (since := "2026-09-28")] alias exists_eq_mul_self := isSquare
+
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
-  rcases le_or_gt (degree p) 0 with hd | hd
-  · exact eq_C_of_degree_le_zero hd
-  · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
-    rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
-    simp at hz
+  refine ⟨fun h => eq_C_of_degree_le_zero ?_, fun hp => by rw [hp, roots_C]⟩
+  contrapose! h
+  rw [roots_ne_zero_iff_exists_isRoot (ne_zero_of_degree_gt h)]
+  exact IsAlgClosed.exists_root p h.ne'
 
 theorem roots_eq_zero_iff_natDegree_eq_zero [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p.natDegree = 0 :=
@@ -193,6 +194,21 @@ theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p
   let h := UniqueFactorizationMonoid.irreducible_of_factor f hf
   obtain ⟨x, hx⟩ := H f h
   exact Splits.of_degree_eq_one (degree_eq_one_of_irreducible_of_root h hx)
+
+
+-- TODO : add universe-polymorphic version (algebraic extensions have the same cardinality)
+/--
+If `k` has no nontrivial finite extension, then `k` is algebraically closed.
+-/
+theorem of_finiteDimensional_imp_finrank_eq_one
+    (H : ∀ (l : Type u) [Field l] [Algebra k l] [FiniteDimensional k l], Module.finrank k l = 1) :
+    IsAlgClosed k :=
+  .of_exists_root _ fun f f_monic f_irr ↦
+    have := Fact.mk f_irr
+    have := f_monic.finite_adjoinRoot
+    exists_root_of_natDegree_eq_one <| by
+      rw [← finrank_quotient_span_eq_natDegree]
+      exact H (AdjoinRoot f)
 
 theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
     [IsAlgClosed k] : IsAlgClosed k' := by

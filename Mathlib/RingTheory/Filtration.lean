@@ -6,9 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.RingTheory.Finiteness.Nakayama
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.ReesAlgebra
+
+import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!
 
@@ -203,7 +204,7 @@ theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
   obtain ⟨n₀, hn₀⟩ := h.exists_pow_smul_eq
   use n₀
   intro n hn
-  convert! hn₀ (n - n₀)
+  convert hn₀ (n - n₀)
   rw [add_comm, tsub_add_cancel_of_le hn]
 
 theorem stable_iff_exists_pow_smul_eq_of_ge :
@@ -413,11 +414,11 @@ theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [Module.Finite R
       exact Submodule.smul_mem_smul r.prop hi
 
 theorem Ideal.iInf_pow_smul_eq_bot_of_le_jacobson [IsNoetherianRing R]
-    [Module.Finite R M] (h : I ≤ Ideal.jacobson ⊥) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
+    [Module.Finite R M] (h : I ≤ Ring.jacobson R) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
   obtain ⟨r, hr⟩ := (I.mem_iInf_smul_pow_eq_bot_iff x).mp hx
-  have := isUnit_of_sub_one_mem_jacobson_bot (1 - r.1) (by simpa using h r.2)
+  have := isUnit_of_sub_one_mem_jacobson (1 - r.1) (by simpa using h r.2)
   apply this.smul_left_cancel.mp
   simp [sub_smul, hr]
 
@@ -425,7 +426,7 @@ open IsLocalRing in
 theorem Ideal.iInf_pow_smul_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R]
     [Module.Finite R M] (h : I ≠ ⊤) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ :=
   Ideal.iInf_pow_smul_eq_bot_of_le_jacobson _
-    ((le_maximalIdeal h).trans (maximalIdeal_le_jacobson _))
+    ((le_maximalIdeal h).trans (ringJacobson_eq_maximalIdeal R).ge)
 
 /-- **Krull's intersection theorem** for Noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R] (h : I ≠ ⊤) :

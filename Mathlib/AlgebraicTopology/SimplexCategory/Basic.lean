@@ -203,7 +203,8 @@ lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
   unfold subinterval intervalEdge diag mkOfLe
   ext (i : Fin 2)
-  match i with | 0 | 1 => simp <;> lia
+  match i with | 0 | 1 => ?_ <;> simp
+  lia
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
@@ -246,7 +247,8 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
   rcases k with ⟨k, _⟩
-  split_ifs <;> · simp at * <;> lia
+  split_ifs <;> simp at *
+  all_goals lia
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : i.castSucc < j) :
     δ i ≫ δ j =
@@ -667,7 +669,7 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                 by_cases h' : y₁ < y₂
                 · by_contra h''
                   apply not_le.mpr h'
-                  convert! f.toOrderHom.monotone (le_of_not_ge h'')
+                  convert f.toOrderHom.monotone (le_of_not_ge h'')
                   all_goals
                     exact congr($(Iso.inv_hom_id (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }

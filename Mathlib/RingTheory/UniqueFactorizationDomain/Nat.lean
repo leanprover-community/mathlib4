@@ -5,10 +5,14 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.ENat.Basic
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-public import Mathlib.Data.ENat.Monoid
+
+import Mathlib.Data.ENat.Basic
+import Mathlib.Data.ENat.Monoid
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Unique factorization of natural numbers

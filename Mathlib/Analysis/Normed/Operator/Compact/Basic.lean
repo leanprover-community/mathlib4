@@ -5,8 +5,6 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
@@ -84,9 +82,6 @@ theorem isCompactOperator_id_iff_locallyCompactSpace {E : Type*}
 
 alias ⟨LocallyCompactSpace.of_isCompactOperator_id, _⟩ :=
   isCompactOperator_id_iff_locallyCompactSpace
-
-@[deprecated (since := "2026-03-04")] alias IsCompactOperator.locallyCompactSpace :=
-  LocallyCompactSpace.of_isCompactOperator_id
 
 lemma isCompactOperator_id {E : Type*} [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
     [LocallyCompactSpace E] : IsCompactOperator (id : E → E) :=
@@ -447,7 +442,7 @@ theorem isClosed_setOfPred_isCompactOperator {𝕜₁ 𝕜₂ : Type*} [Nontrivi
   rcases hTv with ⟨t, ht, htx⟩
   refine ⟨t, ht, ?_⟩
   rw [mem_preimage, mem_vadd_set_iff_neg_vadd_mem, vadd_eq_add, neg_add_eq_sub] at htx ⊢
-  convert! hVU _ htx _ (huv x hx) using 1
+  convert hVU _ htx _ (huv x hx) using 1
   rw [sub_apply]
   abel
 

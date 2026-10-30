@@ -5,13 +5,8 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.Algebra.Group.SelfInv
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Group.Units.Hom
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Logic.Equiv.Prod
 public import Mathlib.Tactic.TermCongr
@@ -106,6 +101,13 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
 @[to_additive]
 instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
+  eq_of_pow_eq_pow_of_commute n hn a b h hab := by
+    rw [commute_iff_eq, Prod.ext_iff] at *
+    exact ⟨eq_of_pow_eq_pow_of_commute hn h.1 hab.1, eq_of_pow_eq_pow_of_commute hn h.2 hab.2⟩
+
+@[to_additive]
+instance [Monoid M] [Monoid N] [HasUniqueRoots M] [HasUniqueRoots N] :
+    HasUniqueRoots (M × N) where
   pow_left_injective n hn a b hab := by
     ext <;> apply pow_left_injective hn; exacts [congr(($hab).1), congr(($hab).2)]
 
@@ -522,6 +524,9 @@ theorem coe_prodComm : ⇑(prodComm : M × N ≃* N × M) = Prod.swap :=
 theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap :=
   rfl
 
+@[to_additive (attr := simp) prodComm_trans_prodComm]
+theorem prodComm_trans_prodComm : (prodComm : M × N ≃* N × M).trans prodComm = .refl _ := rfl
+
 variable [MulOneClass P]
 
 /-- The equivalence between `(M × N) × P` and `M × (N × P)` is multiplicative. -/
@@ -594,6 +599,29 @@ def prodUnique [Unique N] : M × N ≃* M :=
   { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }
 
 end
+
+section curry
+
+variable {α β M : Type*} [Mul M]
+
+variable (α β M) in
+/-- `MulEquiv` version of `Equiv.curry`. -/
+@[to_additive /-- `AddEquiv` version of `Equiv.curry`. -/]
+protected def curry : (α × β → M) ≃* (α → β → M) where
+  toEquiv := .curry α β M
+  map_mul' _ _ := rfl
+
+@[to_additive (attr := simp)]
+lemma toEquiv_curry :
+    (MulEquiv.curry α β M : (α × β → M) ≃ (α → β → M)) = .curry α β M := rfl
+
+@[to_additive (attr := simp)]
+lemma curry_apply (x) : MulEquiv.curry α β M x = Function.curry x := rfl
+
+@[to_additive (attr := simp)]
+lemma curry_symm_apply (x) : (MulEquiv.curry α β M).symm x = Function.uncurry x := rfl
+
+end curry
 
 section
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.Algebra.Order.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pulling back ordered rings along injective maps
 -/

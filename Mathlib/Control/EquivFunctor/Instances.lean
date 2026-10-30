@@ -5,8 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Control.EquivFunctor
 public import Mathlib.Data.Fintype.OfMap
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `EquivFunctor` instances
