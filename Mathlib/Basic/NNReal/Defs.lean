@@ -351,9 +351,9 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 section
 variable {a b : ℝ} {ha : 0 ≤ a} {hb : 0 ≤ b}
 
-@[gcongr] theorem mk_le_mk : NNReal.mk a ha ≤ NNReal.mk b hb ↔ a ≤ b := Iff.rfl
+@[gcongr, simp] theorem mk_le_mk : NNReal.mk a ha ≤ NNReal.mk b hb ↔ a ≤ b := Iff.rfl
 
-@[gcongr] theorem mk_lt_mk : NNReal.mk a ha < NNReal.mk b hb ↔ a < b := Iff.rfl
+@[gcongr, simp] theorem mk_lt_mk : NNReal.mk a ha < NNReal.mk b hb ↔ a < b := Iff.rfl
 
 @[simp] theorem mk_pos : 0 < NNReal.mk a ha ↔ 0 < a := Iff.rfl
 
