@@ -101,16 +101,31 @@ lemma IsDense.of_fullyFaithful_restrictedShrinkYoneda [LocallySmall.{w} D] [F.Fu
         apply shrinkYonedaObjObjEquiv.{w}.injective
         simp [φ, ← hm, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]) }⟩
 
+lemma IsDense.of_full_of_faithful_restrictedShrinkYoneda [LocallySmall.{w} D] [F.Full]
+    [(restrictedShrinkYoneda.{w} F).Full] [(restrictedShrinkYoneda.{w} F).Faithful] :
+    F.IsDense :=
+  of_fullyFaithful_restrictedShrinkYoneda (.ofFullyFaithful _)
+
 lemma IsDense.of_fullyFaithful_restrictedYoneda [F.Full]
     (h : (restrictedYoneda F).FullyFaithful) :
     F.IsDense :=
   IsDense.of_fullyFaithful_restrictedShrinkYoneda.{v₂} (h.ofIso (restrictedYonedaIso F))
+
+lemma IsDense.of_full_of_faithful_restrictedYoneda [F.Full]
+    [(restrictedYoneda F).Full] [(restrictedYoneda F).Faithful] :
+    F.IsDense :=
+  of_fullyFaithful_restrictedYoneda (.ofFullyFaithful _)
 
 lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
     (h : (restrictedULiftYoneda.{w} F).FullyFaithful) :
     F.IsDense :=
   IsDense.of_fullyFaithful_restrictedShrinkYoneda.{max w v₂}
     (h.ofIso (restrictedULiftYonedaIso F))
+
+lemma IsDense.of_full_of_faithful_restrictedULiftYoneda [F.Full]
+    [(restrictedULiftYoneda.{w} F).Full] [(restrictedULiftYoneda.{w} F).Faithful] :
+    F.IsDense :=
+  of_fullyFaithful_restrictedULiftYoneda (.ofFullyFaithful _)
 
 lemma isDense_iff_fullyFaithful_restrictedShrinkYoneda [LocallySmall.{w} D] [F.Full] :
     F.IsDense ↔ Nonempty (restrictedShrinkYoneda.{w} F).FullyFaithful :=
