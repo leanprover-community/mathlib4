@@ -683,11 +683,11 @@ variable [LinearOrder M₀] [PosMulMono M₀] [MulPosMono M₀] {a b : M₀}
 
 lemma max_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
     max a b ^ n = max (a ^ n) (b ^ n) :=
-  MonotoneOn.map_max pow_left_monotoneOn ha hb
+  pow_left_monotoneOn.map_max ha hb
 
 lemma min_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
     min a b ^ n = min (a ^ n) (b ^ n) :=
-  MonotoneOn.map_min pow_left_monotoneOn ha hb
+  pow_left_monotoneOn.map_min ha hb
 
 end LinearOrder
 
