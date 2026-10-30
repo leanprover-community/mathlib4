@@ -60,7 +60,7 @@ noncomputable def opcyclesFunctorCofork :
 noncomputable def isColimitOpcyclesFunctorCofork :
     IsColimit (opcyclesFunctorCofork C) :=
   evaluationJointlyReflectsColimits _
-    (fun S ↦ (CokernelCofork.isColimitMapCoconeEquiv _ _).2 S.opcyclesIsCokernel)
+    (fun S ↦ (CokernelCofork.isColimitMapCoconeEquiv _ _).symm S.opcyclesIsCokernel)
 
 end
 
