@@ -240,11 +240,13 @@ noncomputable instance : Coe (WithAbs v) v.Completion where coe := coe
 
 @[simp]
 theorem toCompletion_coe (x : WithAbs v) :
-    (x : v.Completion).toCompletion = (x : UniformSpace.Completion (WithAbs v)) := by rfl
+    (x : v.Completion).toCompletion = (x : UniformSpace.Completion (WithAbs v)) := by
+  rfl
 
 @[simp]
 theorem ofCompletion_coe (x : WithAbs v) :
-    ofCompletion (x : UniformSpace.Completion (WithAbs v)) = (x : v.Completion) := by rfl
+    ofCompletion (x : UniformSpace.Completion (WithAbs v)) = (x : v.Completion) := by
+  rfl
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : WithAbs v) : v.Completion) = 0 :=
@@ -272,7 +274,7 @@ theorem coe_sub (x y : WithAbs v) : ((x - y : WithAbs v) : v.Completion) = x - y
 
 @[simp, norm_cast]
 theorem coe_inv (x : WithAbs v) : ((x⁻¹ : WithAbs v) : v.Completion) = (↑x)⁻¹ :=
-  toCompletion_injective v <| (UniformSpace.Completion.coe_inv x).symm
+  toCompletion_injective v (UniformSpace.Completion.coe_inv x).symm
 
 theorem norm_coe (x : WithAbs v) : ‖(x : v.Completion)‖ = v x.ofAbs :=
   UniformSpace.Completion.norm_coe x
@@ -293,7 +295,7 @@ holds on the image of `K` holds everywhere. -/
 @[elab_as_elim]
 theorem induction_on {p : v.Completion → Prop} (x : v.Completion) (hp : IsClosed {x | p x})
     (ih : ∀ a : WithAbs v, p a) : p x :=
-  UniformSpace.Completion.induction_on (p := fun y ↦ p (ofCompletion y)) x.toCompletion
+  UniformSpace.Completion.induction_on (p := p ∘ ofCompletion) x.toCompletion
     (hp.preimage (continuous_ofCompletion v)) ih
 
 /-- Two continuous functions out of `v.Completion` into a Hausdorff space that agree on `K`
@@ -306,7 +308,7 @@ variable (v)
 
 section Algebra
 
-variable (R : Type*) [CommSemiring R] [Algebra R (WithAbs v)]
+variable {R : Type*} [CommSemiring R] [Algebra R (WithAbs v)]
   [UniformContinuousConstSMul R (WithAbs v)]
 
 @[no_expose]
@@ -314,10 +316,17 @@ noncomputable instance : Algebra R v.Completion := fast_instance% (equiv v).alge
 
 theorem toCompletion_algebraMap (r : R) :
     (algebraMap R v.Completion r).toCompletion =
-      algebraMap R (UniformSpace.Completion (WithAbs v)) r := by rfl
+      algebraMap R (UniformSpace.Completion (WithAbs v)) r := by
+  rfl
+
+theorem ofCompletion_algebraMap (r : R) :
+    ofCompletion (algebraMap R (UniformSpace.Completion (WithAbs v)) r) =
+      algebraMap R v.Completion r := by
+  rfl
 
 theorem algebraMap_def (r : R) :
-    algebraMap R v.Completion r = (algebraMap R (WithAbs v) r : v.Completion) := by rfl
+    algebraMap R v.Completion r = (algebraMap R (WithAbs v) r : v.Completion) := by
+  rfl
 
 end Algebra
 

@@ -246,17 +246,13 @@ def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Complet
 
 @[simp]
 theorem extensionEmbedding_coe (x : WithAbs v.1) :
-    extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) :=
-  (congrArg (extensionHom _ v.isometry_embedding.continuous)
-    (AbsoluteValue.Completion.toCompletion_coe x)).trans
-    (extensionHom_coe _ v.isometry_embedding.continuous x)
+    extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) := by
+  simp [extensionEmbedding, extensionHom_coe]
 
 @[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
-    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
-  (congrArg (extensionHom _ (v.isometry_embedding_of_isReal hv).continuous)
-    (AbsoluteValue.Completion.toCompletion_coe x)).trans
-    (extensionHom_coe _ (v.isometry_embedding_of_isReal hv).continuous x)
+    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) := by
+  simp [extensionEmbeddingOfIsReal, extensionHom_coe]
 
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
