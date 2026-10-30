@@ -5,10 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Combinatorics.Additive.FreimanHom
 public import Mathlib.Order.Interval.Finset.Fin
-public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.Group.Action.Defs
 
 import Mathlib.Algebra.Order.Interval.Finset.Basic
 

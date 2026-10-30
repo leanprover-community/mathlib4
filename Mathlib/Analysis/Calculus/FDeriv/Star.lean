@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 

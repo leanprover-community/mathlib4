@@ -431,8 +431,8 @@ a diamond with this instance, and constructs data from data. We should consider 
 example [Fintype α] [Preorder α] [Preorder β] [OrderBot α] [OrderBot β] [OrderTop α]
     [LocallyFiniteOrder α] [LocallyFiniteOrder β] :
     LocallyFiniteOrder.toLocallyFiniteOrderBot = instLocallyFiniteOrderBot (α := α) (β := β) := by
-  try with_reducible_and_instances rfl -- fails
-  try rfl -- fails
+  fail_if_success with_reducible_and_instances rfl -- fails
+  fail_if_success rfl -- fails
   exact Subsingleton.elim _ _
 
 section LocallyFiniteOrderTop

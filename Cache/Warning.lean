@@ -223,7 +223,7 @@ HEAD has no published fork cache:
   a scope and the non-default-scope warning did the talking)
 - no `--cache-from` override (the user has taken explicit responsibility for
   the lookup chain)
-- the repo is a fork, not a first-party repo: the canonical repos don't build
+- the repo is a fork, not the canonical repo: the canonical repo doesn't build
   into the per-commit `forks` namespace this hint points at
 - HEAD is not an ancestor of `master`: misses there are master-container lag
   (CI still building master), which no fork scope can serve

@@ -1,4 +1,6 @@
-import Mathlib
+module
+
+public import Mathlib
 
 universe u
 

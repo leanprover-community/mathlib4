@@ -5,9 +5,12 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Preservation of pointwise left Kan extensions by external products

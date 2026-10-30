@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.IsTensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change of polynomial algebras
 

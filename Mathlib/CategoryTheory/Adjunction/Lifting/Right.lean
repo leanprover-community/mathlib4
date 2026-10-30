@@ -76,7 +76,6 @@ namespace LiftRightAdjoint
 variable {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (U' : A ⥤ C)
 variable (adj₁ : F ⊣ U) (adj₂ : L ⋙ F ⊣ U')
 
-set_option backward.defeqAttrib.useBackward true in
 /-- To show that `η_X` is an equalizer for `(UFη_X, η_UFX)`, it suffices to assume it's always an
 equalizer of something (i.e. a regular mono).
 -/
@@ -96,7 +95,11 @@ def unitEqualizes (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
       rw [← cancel_mono (adj₁.unit.app X)]
       apply hm.trans ((h X).lift' s.ι _).2.symm
 
-@[deprecated (since := "2026-10-05")] alias unitEqualises := unitEqualizes
+/-- Deprecated alias for `unitEqualizes`. -/
+@[deprecated unitEqualizes (since := "2026-10-05")]
+abbrev unitEqualises (h : ∀ X : B, RegularMono (adj₁.unit.app X)) (X : B) :
+    IsLimit (Fork.ofι (adj₁.unit.app X) (adj₁.unit_naturality _)) :=
+  unitEqualizes adj₁ h X
 
 /-- (Implementation)
 To construct the right adjoint, we use the equalizer of `U' F η_X` with the composite
@@ -126,7 +129,6 @@ variable [HasCoreflexiveEqualizers C]
 noncomputable def constructRightAdjointObj (Y : B) : C :=
   equalizer (U'.map (F.map (adj₁.unit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The homset equivalence which helps show that `L` is a left adjoint. -/
 @[simps!]
@@ -154,7 +156,6 @@ noncomputable def constructRightAdjointEquiv (h : ∀ X : B, RegularMono (adj₁
       simp
     _ ≃ (L.obj Y ⟶ X) := (Fork.IsLimit.homIso (unitEqualizes adj₁ h X) _).symm
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct the right adjoint to `L`, with object map `constructRightAdjointObj`. -/
 noncomputable def constructRightAdjoint (h : ∀ X : B, RegularMono (adj₁.unit.app X)) : B ⥤ C := by

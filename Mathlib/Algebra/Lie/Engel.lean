@@ -51,7 +51,7 @@ that this result has not previously been established at this level of generality
 
 The second part of the traditional statement of Engel's theorem concerns nilpotency of the Lie
 algebra and a proof of this for general coefficients appeared in the literature as long ago
-[as 1937](zorn1937). This also follows trivially from `LieModule.isNilpotent_iff_forall` simply by
+[as 1937][zorn1937]. This also follows trivially from `LieModule.isNilpotent_iff_forall` simply by
 taking `M = L`.
 
 It is pleasing that the two parts of the traditional statements of Engel's theorem are thus unified

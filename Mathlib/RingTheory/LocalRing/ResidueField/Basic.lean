@@ -6,9 +6,9 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 module
 
 public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 
@@ -183,7 +183,7 @@ section FiniteDimensional
 variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 
 instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
-  ⟨(((local_hom_TFAE (algebraMap R S)).out 1 5 rfl rfl).mp inferInstance).symm⟩
+  ⟨(((local_hom_tfae (algebraMap R S)).out 1 5 rfl rfl).mp inferInstance).symm⟩
 
 instance : Algebra (ResidueField R) (ResidueField S) :=
   Ideal.Quotient.algebraOfLiesOver _ _
