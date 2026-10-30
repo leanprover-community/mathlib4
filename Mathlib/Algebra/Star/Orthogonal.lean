@@ -145,6 +145,12 @@ lemma map {S F : Type*} [NonUnitalSemiring S] [StarRing S] [FunLike F R S]
   mul_star_eq_zero := by rw [← map_star, ← map_mul, h.mul_star_eq_zero, map_zero]
   star_mul_eq_zero := by rw [← map_star, ← map_mul, h.star_mul_eq_zero, map_zero]
 
+lemma map_iff {S F : Type*} [NonUnitalSemiring S] [StarRing S] [FunLike F R S]
+    [NonUnitalRingHomClass F R S] [StarHomClass F R S] {f : F} (hf : Function.Injective f) :
+    f p ⋆⟂ f q ↔ p ⋆⟂ q where
+  mp h := by constructor <;> apply hf <;> simp [map_star, h.mul_star_eq_zero, h.star_mul_eq_zero]
+  mpr := map f
+
 lemma star_add_mul_add (h : p ⋆⟂ q) :
     star (p + q) * (p + q) = star p * p + star q * q := by
   simp [mul_add, add_mul, h.symm.star_mul_eq_zero, h.star_mul_eq_zero]
