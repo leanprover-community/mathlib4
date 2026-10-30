@@ -25,6 +25,8 @@ This file defines filtrations of a measurable space and σ-finite filtrations.
 * `MeasureTheory.Filtration.rightCont`: the right-continuation of a filtration.
 * `MeasureTheory.Filtration.IsRightContinuous`: a filtration is right-continuous if it is equal
   to its right-continuation.
+* `MeasureTheory.Filtration.IsComplete`: a filtration is complete with respect to a measure `μ` if
+  all its σ-algebras contain the `μ`-null sets.
 
 ## Main results
 
@@ -385,6 +387,43 @@ lemma IsRightContinuous.measurableSet {𝓕 : Filtration ι m} [IsRightContinuou
     MeasurableSet[𝓕 i] s := IsRightContinuous.eq (𝓕 := 𝓕) ▸ hs
 
 end IsRightContinuous
+
+section IsComplete
+
+variable [Preorder ι] {𝓕 : Filtration ι m} {μ ν : Measure Ω}
+
+/-- A filtration `𝓕` is complete with respect to a measure `μ` if for all `i`, `𝓕 i` contains all
+the `μ`-null sets. -/
+protected class IsComplete (𝓕 : Filtration ι m) (μ : Measure Ω := by volume_tac) where
+  /-- For all `t`, `𝓕 t` contains all the null sets. -/
+  measurableSet_of_null ⦃s : Set Ω⦄ (hs : μ s = 0) (t : ι) : MeasurableSet[𝓕 t] s
+
+/-- If a filtration `𝓕` is complete with respect to `μ`, then the measure `μ` restricted to the
+σ-algebra `𝓕 i` is complete. -/
+instance [𝓕.IsComplete μ] {i : ι} : (μ.trim (𝓕.le i)).IsComplete :=
+  ⟨fun _ hs ↦ IsComplete.measurableSet_of_null (measure_eq_zero_of_trim_eq_zero (𝓕.le i) hs) i⟩
+
+variable (𝓕) in
+/-- If a filtration `𝓕` on a nonempty type is complete with respect to `μ`, then `μ` is complete.
+
+This is not an instance since `𝓕` cannot be inferred from the goal. -/
+lemma IsComplete.isComplete_measure [Nonempty ι] [𝓕.IsComplete μ] : μ.IsComplete :=
+  ⟨fun _ hs ↦ 𝓕.le (Classical.arbitrary ι) _ (IsComplete.measurableSet_of_null hs _)⟩
+
+/-- A filtration that is complete with respect to `μ` is complete with respect to any measure `ν`
+such that `μ ≪ ν`. -/
+lemma IsComplete.of_absolutelyContinuous [𝓕.IsComplete μ] (hμν : μ ≪ ν) : 𝓕.IsComplete ν :=
+  ⟨fun _ hs t ↦ IsComplete.measurableSet_of_null (hμν hs) t⟩
+
+/-- If a filtration `𝓕` is complete with respect to `μ`, then a set that is `μ`-almost everywhere
+equal to a set of `𝓕 i` belongs to `𝓕 i`. -/
+lemma IsComplete.measurableSet_of_ae_eq [𝓕.IsComplete μ] {s t : Set Ω} {i : ι}
+    (ht : MeasurableSet[𝓕 i] t) (hst : s =ᵐ[μ] t) :
+    MeasurableSet[𝓕 i] s := by
+  rw [← symmDiff_symmDiff_cancel_left t s]
+  exact ht.symmDiff (IsComplete.measurableSet_of_null (measure_symmDiff_eq_zero_iff.mpr hst.symm) i)
+
+end IsComplete
 
 variable {β : ι → Type*} [∀ i, TopologicalSpace (β i)] [∀ i, MetrizableSpace (β i)]
   [mβ : ∀ i, MeasurableSpace (β i)] [∀ i, BorelSpace (β i)]

@@ -697,6 +697,10 @@ theorem measurable_of_Iio {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Iio _)
   · rintro _ ⟨x, rfl⟩; exact hf x
 
+theorem nullMeasurable_of_Iio {μ : Measure δ} {f : δ → α}
+    (hf : ∀ x, NullMeasurableSet (f ⁻¹' Iio x) μ) : NullMeasurable f μ :=
+  measurable_of_Iio hf
+
 theorem UpperSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : UpperSemicontinuous f) : Measurable f :=
   measurable_of_Iio fun y => (hf.isOpen_preimage y).measurableSet
@@ -705,6 +709,10 @@ theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
   convert measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ioi _)
   · rintro _ ⟨x, rfl⟩; exact hf x
+
+theorem nullMeasurable_of_Ioi {μ : Measure δ} {f : δ → α}
+    (hf : ∀ x, NullMeasurableSet (f ⁻¹' Ioi x) μ) : NullMeasurable f μ :=
+  measurable_of_Ioi hf
 
 section CompleteLinearOrder
 
@@ -746,10 +754,18 @@ theorem measurable_of_Iic {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
   simp_rw [← compl_Iic, preimage_compl, MeasurableSet.compl_iff]
   assumption
 
+theorem nullMeasurable_of_Iic {μ : Measure δ} {f : δ → α}
+    (hf : ∀ x, NullMeasurableSet (f ⁻¹' Iic x) μ) : NullMeasurable f μ :=
+  measurable_of_Iic hf
+
 theorem measurable_of_Ici {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ici x)) : Measurable f := by
   apply measurable_of_Iio
   simp_rw [← compl_Ici, preimage_compl, MeasurableSet.compl_iff]
   assumption
+
+theorem nullMeasurable_of_Ici {μ : Measure δ} {f : δ → α}
+    (hf : ∀ x, NullMeasurableSet (f ⁻¹' Ici x) μ) : NullMeasurable f μ :=
+  measurable_of_Ici hf
 
 /-- If a function is the least upper bound of countably many measurable functions,
 then it is measurable. -/

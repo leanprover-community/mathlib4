@@ -98,7 +98,6 @@ deprecated; it should always be used via the `SlashAction` instance. -/
 private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
   σ γ (f (γ • x)) * |γ.det.val| ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
--- Why is `noncomputable` flag needed here, when we're in a noncomputable section already?
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "] " γ:100 => ModularForm.privateSlash k γ f
 
@@ -155,6 +154,16 @@ theorem smul_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) (c : ℂ) :
     (c • f) ∣[k] A = σ A c • f ∣[k] A := by
   ext τ : 1
   simp only [slash_apply, Pi.smul_apply, smul_eq_mul, map_mul, mul_assoc]
+
+theorem slash_neg_one (f : ℍ → ℂ) (k : ℤ) :
+    f ∣[k] (-1 : GL (Fin 2) ℝ) = (-1) ^ k * f := by
+  ext
+  simp [slash_apply, σ, Matrix.GeneralLinearGroup.val_det_apply, Matrix.det_neg, mul_comm,
+    ← inv_zpow]
+
+theorem slash_neg (f : ℍ → ℂ) (k : ℤ) (g : GL (Fin 2) ℝ) :
+    f ∣[k] (-g) = (-1) ^ k * f ∣[k] g := by
+  rw [← mul_neg_one g, SlashAction.slash_mul, slash_neg_one]
 
 instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) :=
   monoidHomSlashAction (Matrix.SpecialLinearGroup.mapGL ℝ)
