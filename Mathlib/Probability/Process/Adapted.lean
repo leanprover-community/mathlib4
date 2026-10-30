@@ -6,6 +6,7 @@ Authors: Kexing Ying, Rémy Degenne
 module
 
 public import Mathlib.Probability.Process.Filtration
+public import Mathlib.Topology.Order.Cadlag
 
 /-!
 # Adapted and progressively measurable processes
@@ -31,6 +32,10 @@ of `Measurable`:
 
 * `StronglyAdapted.isStronglyProgressive_of_continuous`: a continuous strongly adapted process is
   strongly progressive.
+* `StronglyAdapted.isStronglyProgressive_of_isRightContinuous`: a right-continuous strongly
+  adapted process is strongly progressive.
+* `StronglyAdapted.isStronglyProgressive_of_isLeftContinuous`: a left-continuous strongly
+  adapted process is strongly progressive.
 
 ## Tags
 
@@ -46,7 +51,11 @@ open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
-variable {Ω ι : Type*} {m : MeasurableSpace Ω} [Preorder ι] {f : Filtration ι m}
+variable {Ω ι : Type*} {m : MeasurableSpace Ω}
+
+section Preorder
+
+variable [Preorder ι] {f : Filtration ι m}
 
 section Adapted
 
@@ -364,6 +373,54 @@ theorem StronglyAdapted.isStronglyProgressive_of_discrete [TopologicalSpace ι] 
     [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
     [PseudoMetrizableSpace β] (h : StronglyAdapted f u) : IsStronglyProgressive f u :=
   h.isStronglyProgressive_of_continuous fun _ => continuous_of_discreteTopology
+
+end Preorder
+
+section LinearOrder
+
+variable [LinearOrder ι] {f : Filtration ι m} {β : Type*} [TopologicalSpace β] {u : ι → Ω → β}
+
+/-- A right-continuous and strongly adapted process is strongly progressive. -/
+theorem StronglyAdapted.isStronglyProgressive_of_isRightContinuous [TopologicalSpace ι]
+    [OrderTopology ι] [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
+    [PseudoMetrizableSpace β] (h : StronglyAdapted f u)
+    (hu_cont : ∀ ω, IsRightContinuous (u · ω)) :
+    IsStronglyProgressive f u := by
+  intro t
+  obtain ⟨w, -, hw_le, hw_tendsto⟩ :=
+    SimpleFunc.exists_seq_monotone_le_tendsto (α := Set.Iic t)
+  refine stronglyMeasurable_of_tendsto atTop (f := fun n (p : Set.Iic t × Ω) ↦ u (w n p.1) p.2)
+    (fun n ↦ ?_) (tendsto_pi_nhds.2 fun p ↦ ?_)
+  · let _ : MeasurableSpace Ω := f t
+    exact (stronglyMeasurable_uncurry_of_countable (ι := (w n).range)
+      fun r ↦ (h r).mono (f.mono r.1.2)).comp_measurable
+        ((((w n).measurable.comp measurable_fst).subtype_mk
+          (h := fun p ↦ (w n).mem_range_self p.1)).prodMk measurable_snd)
+  · refine (continuousWithinAt_Ioi_iff_Ici.1 (hu_cont p.2 p.1)).tendsto.comp ?_
+    exact tendsto_nhdsWithin_iff.2 ⟨(continuous_subtype_val.tendsto p.1).comp (hw_tendsto p.1),
+      .of_forall fun n => hw_le n p.1⟩
+
+/-- A left-continuous and strongly adapted process is strongly progressive. -/
+theorem StronglyAdapted.isStronglyProgressive_of_isLeftContinuous [TopologicalSpace ι]
+    [OrderTopology ι] [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
+    [PseudoMetrizableSpace β] (h : StronglyAdapted f u)
+    (hu_cont : ∀ ω, IsLeftContinuous (u · ω)) : IsStronglyProgressive f u := by
+  intro t
+  obtain ⟨w, hw⟩ := SimpleFunc.exists_seq_tendsto_nhdsLE (α := Set.Iic t)
+  refine stronglyMeasurable_of_tendsto atTop (f := fun n (p : Set.Iic t × Ω) ↦ u (w n p.1) p.2)
+    (fun n ↦ ?_) (tendsto_pi_nhds.2 fun p ↦ ?_)
+  · let _ : MeasurableSpace Ω := f t
+    exact (stronglyMeasurable_uncurry_of_countable (ι := (w n).range)
+      fun r ↦ (h r).mono (f.mono r.1.2)).comp_measurable
+        ((((w n).measurable.comp measurable_fst).subtype_mk
+          (h := fun p ↦ (w n).mem_range_self p.1)).prodMk measurable_snd)
+  · refine (continuousWithinAt_Iio_iff_Iic.1 (hu_cont p.2 p.1)).tendsto.comp ?_
+    refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
+    · exact (continuous_subtype_val.tendsto p.1).comp
+        ((hw p.1).mono_right nhdsWithin_le_nhds)
+    · exact (hw p.1).eventually self_mem_nhdsWithin
+
+end LinearOrder
 
 @[deprecated (since := "2026-04-24")] alias ProgMeasurable := IsStronglyProgressive
 

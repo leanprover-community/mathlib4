@@ -86,6 +86,31 @@ def ofFinite [Finite α] [MeasurableSingletonClass α] (f : α → β) : α →�
   finite_range' := Set.finite_range f
 
 
+/-- A monotone function with finite range, viewed as a simple function. The codomain only needs
+an order; no topology or measurable space on it is required. -/
+def ofMonotone [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
+    [OpensMeasurableSpace α] [PartialOrder β] (f : α → β) (hf : Monotone f)
+    (hfin : (Set.range f).Finite) : α →ₛ β where
+  toFun := f
+  measurableSet_fiber' _ := (Set.ordConnected_singleton.preimage_mono hf).measurableSet
+  finite_range' := hfin
+
+@[simp]
+theorem coe_ofMonotone [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
+    [OpensMeasurableSpace α] [PartialOrder β] (f : α → β) (hf : Monotone f)
+    (hfin : (Set.range f).Finite) : ⇑(ofMonotone f hf hfin) = f := rfl
+
+/-- An antitone function with finite range, viewed as a simple function. -/
+def ofAntitone [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
+    [OpensMeasurableSpace α] [PartialOrder β] (f : α → β) (hf : Antitone f)
+    (hfin : (Set.range f).Finite) : α →ₛ β :=
+  ofMonotone (β := βᵒᵈ) f hf hfin
+
+@[simp]
+theorem coe_ofAntitone [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
+    [OpensMeasurableSpace α] [PartialOrder β] (f : α → β) (hf : Antitone f)
+    (hfin : (Set.range f).Finite) : ⇑(ofAntitone f hf hfin) = f := rfl
+
 /-- Simple function defined on the empty type. -/
 def ofIsEmpty [IsEmpty α] : α →ₛ β := ofFinite isEmptyElim
 
