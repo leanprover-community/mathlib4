@@ -661,7 +661,7 @@ section IsStarOrtho
 
 /-- Two elements `p` and `q` in a ⋆-ring are *star-orthogonal* if `p * star q = 0`
 and `star q * p = 0`. If `p` and `q` are both selfadjoint, this reduces to `p * q = 0`
-(see `isStarOrtho_iff_mul_eq_zero`).
+(see `IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero`).
 
 This is denoted `p ⋆⟂ q` with the notation available in the `StarRing` namespace. -/
 @[mk_iff]

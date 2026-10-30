@@ -19,8 +19,8 @@ of a ⋆-ring are *star-orthogonal*, i.e., `p * star q = 0` and `star q * p = 0`
 
 ## Main declarations
 
-+ `isStarOrtho_iff_mul_eq_zero`: selfadjoint elements are star-orthogonal if and only if their
-  product is zero.
++ `IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero`: selfadjoint elements are star-orthogonal if and
+  only if their product is zero.
 + `IsStarOrtho.star_add_mul_add`: if `p ⋆⟂ q`, then
   `star (p + q) * (p + q) = star p * p + star q * q`.
 + `IsStarProjection.add_iff_isStarOrtho`: the sum of star projections is a star projection if and
@@ -196,8 +196,8 @@ protected lemma IsSelfAdjoint.isStarOrtho_iff' (hp : IsSelfAdjoint p) :
 
 /-- Selfadjoint elements are star-orthogonal if and only if their product is zero. -/
 @[grind =]
-lemma isStarOrtho_iff_mul_eq_zero (hp : IsSelfAdjoint p) (hq : IsSelfAdjoint q) :
-    p ⋆⟂ q ↔ p * q = 0 := by
+lemma IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero (hp : IsSelfAdjoint p)
+    (hq : IsSelfAdjoint q) : p ⋆⟂ q ↔ p * q = 0 := by
   rw [hq.isStarOrtho_iff, and_iff_left_iff_imp]
   intro h
   simpa [hp.star_eq, hq.star_eq] using congr(star $h)
@@ -301,7 +301,7 @@ section Ring
 variable {R : Type*} [Ring R] [StarRing R] {p : R}
 
 lemma IsStarProjection.isStarOrtho_one_sub (hp : IsStarProjection p) : p ⋆⟂ (1 - p) :=
-  (isStarOrtho_iff_mul_eq_zero hp.isSelfAdjoint hp.one_sub.isSelfAdjoint).mpr
+  (hp.isSelfAdjoint.isStarOrtho_iff_mul_eq_zero hp.one_sub.isSelfAdjoint).mpr
     hp.mul_one_sub_self
 
 lemma IsStarProjection.one_sub_isStarOrtho (hp : IsStarProjection p) : (1 - p) ⋆⟂ p :=
