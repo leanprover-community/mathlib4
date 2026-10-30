@@ -201,8 +201,7 @@ theorem exists_sum_conjRootClass_eq_add_sum_map_aroots (A : Type*) {R F K S : Ty
     · simp at hc
     rw [ConjRootClass.minpoly_mk]
     exact minpoly.coeff_zero_ne_zero (Algebra.IsIntegral.isIntegral x) hx
-  · conv_lhs => rw [← Finsupp.single_add_erase 0 v]
-    rw [Finsupp.sum_add_index' (by simp) (by simp [add_smul]), Finsupp.sum_single_index (by simp),
+  · rw [← Finsupp.add_sum_erase' v 0 _ (by simp),
       Finsupp.sum_mapDomain_index (by simp) (by simp [add_smul])]
     congr 1
     · simp
@@ -233,20 +232,15 @@ public theorem exists_add_sum_map_aroots_eq_zero {S : Type*}
     apply IntermediateField.subset_adjoin
     rw [mem_rootSet, map_prod, prod_eq_zero_iff]
     exact ⟨prod_ne_zero_iff.mpr fun x hx ↦ minpoly.ne_zero (hs x hx), x, hx, minpoly.aeval _ _⟩
-  have u_mem (i) : u i ∈ K := mem_K (mem_union_left _ (mem_image_of_mem _ (mem_univ i)))
-  have v_mem (i) : v i ∈ K := mem_K (mem_union_right _ (mem_image_of_mem _ (mem_univ i)))
-  let u' : ι → K := fun i : ι ↦ ⟨u i, u_mem i⟩
-  let v' : ι → K := fun i : ι ↦ ⟨v i, v_mem i⟩
+  let u' : ι → K := fun i ↦ ⟨u i, mem_K (by simp [s])⟩
+  let v' : ι → K := fun i ↦ ⟨v i, mem_K (by simp [s])⟩
   obtain ⟨f, f0, hf⟩ : ∃ (f : K[K]), f ≠ 0 ∧
     AddMonoidAlgebra.lift _ _ _
       (φ.comp (algebraMap K S).toAddMonoidHom.toMultiplicative) f = 0 := by
     refine exists_ne_zero_lift_eq_zero _ u' ?_ v' ?_ ?_
     · exact fun i j hij ↦ u_inj (Subtype.mk.inj hij)
-    · simp_rw [Function.ne_iff, Pi.zero_apply] at v0 ⊢
-      exact v0.imp fun i hvi ↦ by rwa [Ne, ← ZeroMemClass.coe_eq_zero]
+    · exact fun h ↦ v0 congr(($h ·))
     · simpa [u', v']
-  have : IsDomain K[K] := NoZeroDivisors.to_isDomain _
-  have : IsDomain ℚ[K] := NoZeroDivisors.to_isDomain _
   open scoped AlgebraMonoidAlgebra in
   obtain ⟨f, f0, hf⟩ := (Algebra.IsIntegral.isIntegral (R := ℚ[K]) f).isAlgebraic
     |>.exists_ne_zero_map_algebraMap_eq_zero _ f0 hf

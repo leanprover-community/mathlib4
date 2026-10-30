@@ -32,22 +32,23 @@ open Complex Finset Polynomial
 
 variable {ι : Type*}
 
-private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
-    (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i))
-    (h : ∑ i, v i * exp (u i) = 0) : v = 0 := by
+theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.Injective) :
+    LinearIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) := by
   -- Start of proof of theorem 4.22 (Jacobson, p. 281).
+  refine linearIndependent_iff_finset_linearIndependent.mpr fun s ↦
+    Fintype.linearIndependent_iff.mpr fun v h ↦ ?_
   -- Assume v is not identically zero.
-  by_contra! v0
+  by_contra v0
   -- This implies we have a similar sum `w + ∑ p, w' p • ∑ u ∈ p.aroots ℂ, exp u = 0` where
   -- `w` and `w' p` are integers, `w ≠ 0`, and the `p` in the support of `w'` are integral
   -- polynomials with nonzero constant coefficients.
   obtain ⟨w, w0, w'', p0, h⟩ :=
-    LindemannWeierstrass.exists_add_sum_map_aroots_eq_zero expMonoidHom u hu u_inj v hv v0 h
+    LindemannWeierstrass.exists_add_sum_map_aroots_eq_zero (ι := s)
+      expMonoidHom (u ·) (u · |>.2) (Subtype.val_injective.comp (u_inj.comp Subtype.val_injective))
+      (v ·) (v · |>.2) (by simpa [funext_iff] using v0) (by simpa [Algebra.smul_def] using h)
   simp_rw [expMonoidHom_apply, toAdd_ofAdd] at h
   let p : w''.support → ℤ[X] := Subtype.val
   let w' := w'' ∘ p
-  -- Note that none of the `p j` are zero.
-  have p0' : ∀ j, p j ≠ 0 := by intro ⟨_, hp⟩ rfl; simpa using p0 _ hp
   -- Let `P` be the product of the `p j`, which has a nonzero constant coefficient as well.
   let P := ∏ j, p j
   have P0 : P.eval 0 ≠ 0 := by
@@ -60,10 +61,11 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   replace h : ↑w + ∑ j, w' j • (((p j).aroots ℂ).map exp).sum = 0 := by
     rwa [Finsupp.sum, ← Finset.sum_coe_sort] at h
   -- The following roughly matches Jacobson, p. 286.
-  -- Let `k` be the product of the leading coefficients of the `p j` (i.e., `P.leadingCoeff`).
-  let k : ℤ := ∏ j, (p j).leadingCoeff
-  have k0 : k ≠ 0 := prod_ne_zero_iff.mpr fun j _hj => leadingCoeff_ne_zero.mpr (p0' j)
-  have sz_h (j) : (p j).leadingCoeff ∣ k := dvd_prod_of_mem _ (mem_univ _)
+  -- Let `k` be the leading coefficient of `P`, i.e. the product of those of the `p j`.
+  let k := P.leadingCoeff
+  have k0 : k ≠ 0 := leadingCoeff_ne_zero.mpr P0'
+  have sz_h (j) : (p j).leadingCoeff ∣ k :=
+    leadingCoeff_dvd_leadingCoeff (dvd_prod_of_mem _ (mem_univ j))
   -- Now there exists a constant `c : ℝ`, such that for each prime `p > |P₀|` we have `nₚ : ℤ` and
   -- `gₚ : ℤ[X]` such that
   -- * `p` does not divide `nₚ`
@@ -164,13 +166,6 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
     contradiction
   · order [Nat.le_of_dvd (Int.natAbs_pos.mpr w0) H]
 
-theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.Injective) :
-    LinearIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) :=
-  linearIndependent_iff'.mpr fun s v h ↦ by
-    simpa [funext_iff] using linearIndependent_exp' (ι := s) (u ·) (u · |>.2)
-      (fun i j ↦ by simpa [Subtype.coe_inj] using @u_inj i j)
-      (v ·) (v · |>.2) (by simpa [sum_attach _ fun x ↦ v x * cexp (u x)])
-
 theorem algebraicIndependent_exp (u : ι → integralClosure ℚ ℂ) (hu : LinearIndependent ℕ u) :
     AlgebraicIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) := by
   rw [algebraicIndependent_iff]
@@ -185,17 +180,11 @@ theorem algebraicIndependent_exp (u : ι → integralClosure ℚ ℂ) (hu : Line
 theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
     Transcendental ℤ (exp a) := by
   intro h
-  have is_integral_a : IsIntegral ℚ a :=
-    isAlgebraic_iff_isIntegral.mp (ha.extendScalars (algebraMap ℤ ℚ).injective_int)
-  have is_integral_expa : IsIntegral ℚ (exp a) :=
-    isAlgebraic_iff_isIntegral.mp (h.extendScalars (algebraMap ℤ ℚ).injective_int)
-  refine by
-    simpa [Fin.forall_fin_succ] using linearIndependent_exp' ![a, 0] ?_ ?_ ![1, -exp a] ?_ ?_
-  · intro i; fin_cases i
-    exacts [is_integral_a, isIntegral_zero]
-  · intro i j; fin_cases i, j <;> simp [a0.symm, *]
-  · intro i; fin_cases i; exacts [isIntegral_one, is_integral_expa.neg]
-  · simp
+  let a' : integralClosure ℚ ℂ := ⟨_, (ha.extendScalars (algebraMap ℤ ℚ).injective_int).isIntegral⟩
+  let expa : integralClosure ℚ ℂ := ⟨_, (h.extendScalars (algebraMap ℤ ℚ).injective_int).isIntegral⟩
+  have hli := linearIndependent_exp ![a', 0] (by simpa [a', Subtype.ext_iff])
+  have := Fintype.linearIndependent_iff.mp hli ![1, -expa] (by simp [expa, a', Algebra.smul_def])
+  simp at this
 
 theorem transcendental_e : Transcendental ℤ (exp 1) :=
   transcendental_exp one_ne_zero isAlgebraic_one
