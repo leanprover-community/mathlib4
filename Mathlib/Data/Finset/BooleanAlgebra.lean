@@ -224,6 +224,26 @@ theorem image_univ_equiv [Fintype β] (f : β ≃ α) : univ.image f = univ :=
 
 @[simp] lemma inter_eq_univ : s ∩ t = univ ↔ s = univ ∧ t = univ := inf_eq_top_iff
 
+lemma compl_singleton_ssubset_univ (x : α) :
+    {x}ᶜ ⊂ Finset.univ := by
+  rw [lt_iff_le_and_ne]
+  aesop
+
+lemma compl_singleton_ssubset_iff (s : Finset α) (x : α) :
+    {x}ᶜ ⊂ s ↔ s = .univ := by
+  simp [ssubset_iff]
+
+lemma compl_singleton_subset_iff (s : Finset α) (x : α) :
+    {x}ᶜ ⊆ s ↔ s = {x}ᶜ ∨ s = .univ := by
+  rw [← s.compl_singleton_ssubset_iff x, le_iff_eq_or_lt']
+
+lemma eq_compl_singleton_iff (s : Finset α) (x : α) :
+    s = {x}ᶜ ↔ s < .univ ∧ s ∪ {x} = .univ := by
+  refine ⟨by rintro rfl; simp [compl_singleton_ssubset_iff], fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  replace h₂ (z : α) : z = x ∨ z ∈ s := by
+    simpa [← h₂] using Finset.mem_univ z
+  grind [mem_compl]
+
 end BooleanAlgebra
 
 -- @[simp] --Note this would loop with `Finset.univ_unique`

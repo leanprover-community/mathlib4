@@ -25,33 +25,6 @@ universe v u
 
 open CategoryTheory
 
--- to be moved
-namespace Finset
-
-variable {X : Type*}
-
-lemma compl_singleton_ssubset_univ [Fintype X] [DecidableEq X] (x : X) :
-    {x}ᶜ ⊂ Finset.univ := by
-  rw [lt_iff_le_and_ne]
-  aesop
-
-lemma compl_singleton_ssubset_iff [Fintype X] [DecidableEq X] (s : Finset X) (x : X) :
-    {x}ᶜ ⊂ s ↔ s = .univ := by
-  simp [ssubset_iff]
-
-lemma compl_singleton_subset_iff [Fintype X] [DecidableEq X] (s : Finset X) (x : X) :
-    {x}ᶜ ⊆ s ↔ s = {x}ᶜ ∨ s = .univ := by
-  rw [← s.compl_singleton_ssubset_iff x, le_iff_eq_or_lt']
-
-lemma eq_compl_singleton_iff [Fintype X] [DecidableEq X] (s : Finset X) (x : X) :
-    s = {x}ᶜ ↔ s < ⊤ ∧ s ∪ {x} = .univ := by
-  refine ⟨by rintro rfl; simp [compl_singleton_ssubset_iff], fun ⟨h₁, h₂⟩ ↦ ?_⟩
-  replace h₂ (z : X) : z = x ∨ z ∈ s := by
-    simpa [← h₂] using Finset.mem_univ z
-  grind [mem_compl]
-
-end Finset
-
 namespace PartialOrder
 
 /-- Given a partially ordered type `X`, this is the type of nonempty finite

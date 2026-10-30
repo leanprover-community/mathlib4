@@ -945,6 +945,17 @@ theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
     dite_eq_ite, apply_ite Fin.val, val_succ]
   split_ifs <;> lia
 
+@[simp]
+lemma predAbove_succAbove_succ {n : ℕ} (i j : Fin (n + 1)) :
+    i.predAbove (i.succ.succAbove j) = j := by
+  by_cases hi : j ≤ i
+  · rw [Fin.succAbove_of_succ_le _ _ (by grind),
+      Fin.predAbove_of_le_castSucc _ _ (by grind)]
+    simp
+  · rw [Fin.succAbove_of_lt_succ _ _ (by grind),
+      Fin.predAbove_of_succ_le _ _ (by grind)]
+    simp
+
 end PredAbove
 
 end Fin
