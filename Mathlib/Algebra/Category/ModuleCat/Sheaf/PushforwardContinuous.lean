@@ -215,9 +215,8 @@ lemma pushforwardNatTrans_comp (α : F ⟶ G) (β : G ⟶ H)
     pushforwardNatTrans φ (α ≫ β) = pushforwardNatTrans φ β ≫ pushforwardNatTrans _ α ≫
       (pushforwardCongr (by cat_disch)).hom := by cat_disch
 
-@[simp]
-lemma pushforwardNatTrans_app_val_app_apply (α : F ⟶ G) (X U x) :
-    ((pushforwardNatTrans φ α).app X).val.app U x = X.val.map (α.app U.unop).op x := rfl
+@[deprecated (since := "2026-10-07")]
+alias pushforwardNatTrans_app_val_app_apply := pushforwardNatTrans_app_val_app
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
