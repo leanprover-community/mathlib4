@@ -836,6 +836,98 @@ theorem toBlock_mul_eq_add {m n k : Type*} [Fintype n] (p : m → Prop) (q : n �
 
 end
 
+section ExtendByOne
+
+open Function
+
+variable [DecidableEq m] [Semiring R] (e : n ↪ m)
+
+/-- Extend a matrix `A : Matrix n n R` along an embedding `e : n ↪ m`: the entry at `(e i, e j)`
+is `A i j`, and every other entry is that of the identity matrix. -/
+noncomputable def extendedByOne (A : Matrix n n R) : Matrix m m R :=
+  of <| extend e (fun i ↦ extend e (A i) 0) (1 : Matrix m m R)
+
+@[simp]
+theorem extendedByOne_apply_embedding {i j : n} (A : Matrix n n R) :
+    A.extendedByOne e (e i) (e j) = A i j := by
+  simp only [extendedByOne, of_apply]
+  exact (congr_fun (e.injective.extend_apply (fun _ ↦ extend e _ _) ..) _).trans
+    (e.injective.extend_apply ..)
+
+@[simp]
+theorem submatrix_extendedByOne (A : Matrix n n R) :
+    (A.extendedByOne e).submatrix e e = A := by
+  ext
+  simp
+
+theorem extendedByOne_injective : Function.Injective (extendedByOne (R := R) e) := by
+  intro _ _ h
+  ext
+  simpa using congr_fun (congr_fun h (e _)) (e _)
+
+lemma extendedByOne_apply_of_notMem_left (A : Matrix n n R) {i : m} (hi : i ∉ Set.range e) (j : m) :
+    A.extendedByOne e i j = (1 : Matrix m m R) i j := by
+  simp only [extendedByOne, of_apply]
+  exact congr_fun (extend_apply' _ _ _ fun i ↦ hi i) _
+
+lemma extendedByOne_apply_of_notMem_right (A : Matrix n n R) {j : m} (hj : j ∉ Set.range e)
+    (i : m) : A.extendedByOne e i j = (1 : Matrix m m R) i j := by
+  by_cases hi : i ∈ Set.range e
+  · obtain ⟨_, rfl⟩ := hi
+    simp only [extendedByOne, of_apply]
+    exact ((congr_fun (e.injective.extend_apply ..) _).trans (extend_apply' _ _ _ hj)).trans
+      (one_apply_ne fun h ↦ hj ⟨_, h⟩).symm
+  · exact extendedByOne_apply_of_notMem_left _ _ hi _
+
+theorem extendedByOne_inl [DecidableEq n] (A : Matrix n n R) :
+    A.extendedByOne .inl = fromBlocks A 0 0 (1 : Matrix m m R) := by
+  ext (i | i) (j | j) <;>
+  first
+  | exact extendedByOne_apply_embedding ..
+  | simp [extendedByOne_apply_of_notMem_left, extendedByOne_apply_of_notMem_right, Matrix.one_apply]
+
+theorem extendedByOne_inr [DecidableEq n] (A : Matrix n n R) :
+    A.extendedByOne .inr = fromBlocks (1 : Matrix m m R) 0 0 A := by
+  ext (i | i) (j | j) <;>
+  first
+  | exact extendedByOne_apply_embedding ..
+  | simp [extendedByOne_apply_of_notMem_left, extendedByOne_apply_of_notMem_right, Matrix.one_apply]
+
+theorem extendedByOne_one [DecidableEq n] : extendedByOne e (1 : Matrix n n R) = 1 := by
+  ext i j
+  by_cases hi : i ∈ Set.range e
+  · obtain ⟨-, rfl⟩ := hi
+    by_cases hj : j ∈ Set.range e
+    · obtain ⟨-, rfl⟩ := hj
+      simp [Matrix.one_apply]
+    · exact extendedByOne_apply_of_notMem_right _ _ hj _
+  · exact extendedByOne_apply_of_notMem_left _ _ hi _
+
+theorem extendedByOne_mul [Fintype n] [Fintype m] (A B : Matrix n n R) :
+    (A * B).extendedByOne e = (A.extendedByOne e) * (B.extendedByOne e) := by
+  ext i j
+  by_cases hi : i ∈ Set.range e
+  · by_cases hj : j ∈ Set.range e
+    · obtain ⟨a, rfl⟩ := hi
+      obtain ⟨-, rfl⟩ := hj
+      rw [extendedByOne_apply_embedding]
+      refine Fintype.sum_of_injective e e.injective _ _ (fun k hk ↦ ?_) (by simp)
+      have : e a ≠ k := fun h ↦ hk ⟨_, h⟩
+      simp [extendedByOne_apply_of_notMem_right _ _ hk, this]
+    · simp [Matrix.mul_apply, extendedByOne_apply_of_notMem_right _ _ hj, Matrix.one_apply]
+  · simp [Matrix.mul_apply, extendedByOne_apply_of_notMem_left _ _ hi, Matrix.one_apply]
+
+variable [DecidableEq n] [Fintype n] [Fintype m] in
+/-- The `MonoidHom` induced by `extendedByOne`. -/
+@[simps!]
+noncomputable def extendedByOneMonoidHom : Matrix n n R →* Matrix m m R where
+  toFun := extendedByOne e
+  map_mul' := extendedByOne_mul _
+  map_one' := extendedByOne_one _
+
+end ExtendByOne
+
+
 end Matrix
 
 section Maps
