@@ -53,10 +53,7 @@ instance (F : K ⥤ J) : (preservesLimit (C := C) F).IsStableUnderRetracts where
     lift s :=
       (isLimitOfPreserves G₂ hc).lift
         ((Cone.postcompose (Functor.whiskerLeft F r.i)).obj s) ≫ r.r.app _
-    fac s j := by
-      dsimp
-      rw [Category.assoc, ← r.r.naturality, dsimp% (isLimitOfPreserves G₂ hc).fac_assoc]
-      simp
+    fac s j := by simp [← NatTrans.naturality, dsimp% (isLimitOfPreserves G₂ hc).fac_assoc]
     uniq s m hm := by
       rw [← cancel_mono (r.i.app c.pt)]
       refine (isLimitOfPreserves G₂ hc).hom_ext (fun j ↦ ?_)
@@ -87,10 +84,7 @@ instance (F : K ⥤ J) : (preservesColimit (C := C) F).IsStableUnderRetracts whe
     desc s :=
       r.i.app _ ≫ (isColimitOfPreserves G₂ hc).desc
         ((Cocone.precompose (Functor.whiskerLeft F r.r)).obj s)
-    fac s j := by
-      dsimp
-      rw [r.i.naturality_assoc, dsimp% (isColimitOfPreserves G₂ hc).fac]
-      simp
+    fac s j := by simp [dsimp% (isColimitOfPreserves G₂ hc).fac]
     uniq s m hm := by
       rw [← cancel_epi (r.r.app c.pt)]
       refine (isColimitOfPreserves G₂ hc).hom_ext (fun j ↦ ?_)
