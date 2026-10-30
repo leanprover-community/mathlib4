@@ -939,7 +939,7 @@ theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
 def centerCongr (e : A ≃ₐ[R] B) :
     center R A ≃ₐ[R] center R B where
   toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
-  commutes' r := by rw [Subtype.ext_iff]; exact AlgEquiv.commutes e r
+  commutes' r := Subtype.ext <| e.commutes r
 
 @[simp]
 lemma centerCongr_symm_apply_coe (e : A ≃ₐ[R] B) (a : Subalgebra.center R B) :
