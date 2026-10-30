@@ -37,13 +37,9 @@ in terms of such regular pairings, and using the main result of the file
 we show that a strong anodyne extension is an anodyne extension.
 
 ## TODO
-* introduce inner variants of these definitions
 * show that strong anodyne extensions are indeed stable under coproducts,
   transfinite compositions and pushouts (the proof should reduce to the
   construction of pairings)
-* study the interaction between anodyne extension and binary products:
-  the critical case consists in showing that inclusions
-  `Λ[m, i] ⊗ Δ[n] ∪ Δ[m] ⊗ ∂Δ[n] ⟶ Δ[m] ⊗ Δ[n]` are strong anodyne extensions (@joelriou)
 
 ## References
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*, IV.2][gabriel-zisman-1967]
