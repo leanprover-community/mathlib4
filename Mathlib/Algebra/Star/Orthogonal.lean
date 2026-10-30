@@ -407,6 +407,7 @@ lemma isStarOrtho_star_right_iff : a ⋆⟂ star b ↔ a ⋆⟂ b :=
 alias ⟨_, IsStarOrtho.star_right⟩ := isStarOrtho_star_right_iff
 
 /-- When the ring is commutative, `a ⋆⟂ b` if and only if `a * b = 0`. -/
+@[simp]
 lemma isStarOrtho_iff_mul_eq_zero_of_comm : a ⋆⟂ b ↔ a * b = 0 :=
   (IsStarNormal.all a).isStarOrtho_iff_mul_eq_zero (.all a b)
 
