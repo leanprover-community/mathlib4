@@ -10,13 +10,13 @@ public import Mathlib.Algebra.Group.Monoid
 
 /-!
 
-# Lemmas about monoid of functions
+# Powers on monoid of functions
 
 If `F` is a type of functions from `α` onto itself equipped with a monoid structure such that
-`1` is the identity and the multiplication is given by the composition, then natural exponentiation
+`1` is the identity and multiplication is given by composition, then natural exponentiation
 corresponds to iteration of composition.
 
-This is separated from the `IsApply` file to avoid importing `Monoid` there.
+This is separated from the `Mathlib.Algebra.Group.IsApply` file to avoid importing `Monoid` there.
 
 -/
 
