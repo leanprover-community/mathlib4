@@ -5,14 +5,17 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 module
 
+public meta import Lean.DocString.Parser
+public meta import Lean.Parser.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public meta import Std.Data.Iterators.Combinators.Zip
-public import Lean.DocString.Parser
-public import Lean.Parser.Command
 
 meta import Std.Data.Iterators.Producers.Range
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The "DocString" style linter

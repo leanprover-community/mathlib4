@@ -6,8 +6,8 @@ Authors: David Loeffler
 
 module
 
-public import Mathlib.NumberTheory.ModularForms.OrderAtInfty
 public import Mathlib.NumberTheory.ModularForms.NormTrace
+public import Mathlib.NumberTheory.ModularForms.OrderAtInfty
 
 /-!
 # Order at a cusp

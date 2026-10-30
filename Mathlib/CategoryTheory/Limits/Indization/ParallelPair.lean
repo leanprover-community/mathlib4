@@ -107,7 +107,6 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
       CostructuredArrow.hom_eq_iff] at this
     exact this.1
 
-set_option backward.defeqAttrib.useBackward true in
 theorem hf : f = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ϕ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
@@ -123,7 +122,6 @@ def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
       CostructuredArrow.hom_eq_iff] at this
     exact this.2
 
-set_option backward.defeqAttrib.useBackward true in
 theorem hg : g = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ψ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)

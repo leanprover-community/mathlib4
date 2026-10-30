@@ -5,9 +5,9 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.OrderChangeLevel
-public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
+public import Mathlib.NumberTheory.ModularForms.OrderChangeLevel
 
 /-!
 # Sturm bounds and finite-dimensionality

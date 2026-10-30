@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Slash actions
 
@@ -95,7 +98,6 @@ deprecated; it should always be used via the `SlashAction` instance. -/
 private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
   σ γ (f (γ • x)) * |γ.det.val| ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
--- Why is `noncomputable` flag needed here, when we're in a noncomputable section already?
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "] " γ:100 => ModularForm.privateSlash k γ f
 
@@ -152,6 +154,16 @@ theorem smul_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f : ℍ → ℂ) (c : ℂ) :
     (c • f) ∣[k] A = σ A c • f ∣[k] A := by
   ext τ : 1
   simp only [slash_apply, Pi.smul_apply, smul_eq_mul, map_mul, mul_assoc]
+
+theorem slash_neg_one (f : ℍ → ℂ) (k : ℤ) :
+    f ∣[k] (-1 : GL (Fin 2) ℝ) = (-1) ^ k * f := by
+  ext
+  simp [slash_apply, σ, Matrix.GeneralLinearGroup.val_det_apply, Matrix.det_neg, mul_comm,
+    ← inv_zpow]
+
+theorem slash_neg (f : ℍ → ℂ) (k : ℤ) (g : GL (Fin 2) ℝ) :
+    f ∣[k] (-g) = (-1) ^ k * f ∣[k] g := by
+  rw [← mul_neg_one g, SlashAction.slash_mul, slash_neg_one]
 
 instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) :=
   monoidHomSlashAction (Matrix.SpecialLinearGroup.mapGL ℝ)
@@ -247,9 +259,7 @@ theorem inv_slash_SL2 (k : ℤ) (A : SL(2, ℤ)) (f : ℍ → ℂ) :
 
 theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
-  ext τ
-  simp [SL_slash_apply, zpow_sub₀ (denom_ne_zero A τ)]
-  grind
+  simp [div_eq_mul_inv, sub_eq_add_neg, mul_slash_SL2, inv_slash_SL2]
 
 open Finset
 
@@ -258,11 +268,7 @@ lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} 
     (∏ i ∈ s, f i) ∣[∑ i ∈ s, k i] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k i] g) := by
   classical
   induction s using Finset.induction_on with
-  | empty =>
-    simp only [sum_empty, prod_empty, Matrix.GeneralLinearGroup.val_det_apply, card_empty,
-      CharP.cast_eq_zero, zero_sub, Int.reduceNeg, zpow_neg, zpow_one]
-    ext _
-    simp [slash_apply]
+  | empty => simpa using pow_slash 0 0 g 1
   | insert i t hi IH =>
     rcases t.eq_empty_or_nonempty with rfl | ht
     · simp

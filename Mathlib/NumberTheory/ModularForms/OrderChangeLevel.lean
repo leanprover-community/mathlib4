@@ -5,11 +5,11 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Data.EReal.BigOperators
-
 public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.NumberTheory.ModularForms.NormTrace
 public import Mathlib.NumberTheory.ModularForms.OrderAtCusp
+
+import Mathlib.Data.EReal.BigOperators
 
 /-!
 # Total cusp orders under change of level
