@@ -80,6 +80,7 @@ variable (A : Type*) [CommRing A] [Algebra ℚ A]
 /-- The Bernoulli numbers:
 the $n$-th Bernoulli number $B_n$ is defined recursively via
 $$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
+@[oeis A164555 "numerators", oeis A027642 "denominators"]
 def bernoulli' (n : ℕ) : ℚ :=
   1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k
 
@@ -192,6 +193,7 @@ theorem bernoulli'_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bern
   congr
 
 /-- The Bernoulli numbers are defined to be `bernoulli'` with a parity sign. -/
+@[oeis A027641 "numerators", oeis A027642 "denominators"]
 def bernoulli (n : ℕ) : ℚ :=
   (-1) ^ n * bernoulli' n
 
@@ -516,7 +518,7 @@ private lemma choose_two_mul_succ_mul_div_eq {k m : ℕ} (x : ℚ) (hm_lt : m < 
   rw [div_eq_div_iff (by norm_cast) (by norm_cast; lia), mul_right_comm _ x, mul_right_comm _ x]
   refine congrArg (· * x) ?_
   rw [show (2 * (k : ℚ) - 2 * (m : ℚ) + 1) = (↑(2 * k + 1 - 2 * m) : ℚ) by norm_cast; lia]
-  exact_mod_cast Nat.choose_mul_succ_eq (2 * k) (2 * m) |>.symm
+  exact mod_cast Nat.choose_mul_succ_eq (2 * k) (2 * m) |>.symm
 
 /- `p`-integrality of the core even-index summand after denominator normalization. -/
 private lemma choose_mul_pow_div_mem_pIntegrals {k m p : ℕ} (hm_lt : m < k) [Fact p.Prime]
@@ -575,7 +577,7 @@ private lemma faulhaber_sum_mem_pIntegrals {k p : ℕ} (hk : k > 0) [Fact p.Prim
   rw [Finset.mem_range] at hi
   rcases i with _ | _ | i
   · simp only [bernoulli_zero, one_mul, Nat.choose_zero_right, Nat.cast_one, Nat.sub_zero]
-    exact_mod_cast pow_div_mem_pIntegrals (by lia)
+    exact mod_cast pow_div_mem_pIntegrals (by lia)
       (factorization_succ_le_sub_one (by lia) |>.trans tsub_le_self)
   · rw [zero_add, Nat.choose_one_right, bernoulli_one]
     push_cast
@@ -583,7 +585,7 @@ private lemma faulhaber_sum_mem_pIntegrals {k p : ℕ} (hk : k > 0) [Fact p.Prim
     obtain rfl | hp2 := eq_or_ne p 2
     · push_cast
       rw [show 2 * k - 1 = (2 * k - 2) + 1 by lia, pow_succ, mul_div_cancel_right₀ _ two_ne_zero]
-      exact_mod_cast Int.padicValuation_le_one ..
+      exact mod_cast Int.padicValuation_le_one ..
     · rw [Valuation.map_neg]
       refine pow_div_mem_pIntegrals two_ne_zero <|
          (factorization_eq_zero_of_lt ?_).trans_le (by lia)
@@ -629,7 +631,7 @@ private lemma bernoulli_add_indicator_eq_sub {k p : ℕ} (hk : k > 0) [Fact p.Pr
   obtain ⟨T, hT_int⟩ := (ZMod.intCast_zmod_eq_zero_iff_dvd _ _).mp hcast
   use T
   have hT : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) + vonStaudtIndicator (2 * k) p =
-      p * T := by unfold vonStaudtIndicator; exact_mod_cast hT_int
+      p * T := by unfold vonStaudtIndicator; exact mod_cast hT_int
   have hp_ne : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (Fact.out : p.Prime).ne_zero
   have hAlg : bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
       T - (∑ i ∈ range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
@@ -669,7 +671,7 @@ theorem vonStaudt_clausen (k : ℕ) :
   rcases Nat.eq_zero_or_pos k with rfl | hk
   · exact ⟨1, by decide +kernel⟩
   · rw [Set.mem_range]
-    refine ⟨_, Rat.coe_int_num_of_den_eq_one ?_⟩
+    refine ⟨_, Rat.intCast_num_of_den_eq_one ?_⟩
     by_contra h
     obtain ⟨p, hp, hdvd⟩ := ne_one_iff_exists_prime_dvd.mp h
     exact (let : Fact p.Prime := ⟨hp⟩; not_dvd_den_vonStaudt_sum hk) hdvd

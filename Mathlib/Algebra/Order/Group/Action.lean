@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about `CovariantClass G α HSMul.hSMul LE.le`
 

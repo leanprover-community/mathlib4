@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Monoidal.Category
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Endomorphisms of an object in a bicategory, as a monoidal category.
 -/

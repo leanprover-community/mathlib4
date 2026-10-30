@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Ray
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Local) maximums in a normed space
 

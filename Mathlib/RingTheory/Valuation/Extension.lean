@@ -243,18 +243,18 @@ The definition is not exposed. -/
 noncomputable def mapValueGroup₀ :
     (ValueGroup₀ (vR : R →*₀ ΓR)) →*₀o (ValueGroup₀ (vA : A →*₀ ΓA)) := by
   have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
-  refine .mk ((WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso.toMonoidWithZeroHom) ?_
+  refine .mk ((WithZero.map' (Subgroup.inclusion ?_)).comp h.orderMonoidIso₀.toMonoidWithZeroHom) ?_
   · intro r hr
     rw [mem_valueGroup_iff_of_comm] at hr ⊢
     obtain ⟨a, ha0, x, hr⟩ := hr
     exact ⟨algebraMap R A a, ha0, algebraMap R A x, hr⟩
-  · refine (WithZero.map'_strictMono ?_).comp h.orderMonoidIso.toOrderIso.strictMono |>.monotone
+  · refine (WithZero.map'_strictMono ?_).comp h.orderMonoidIso₀.toOrderIso.strictMono |>.monotone
     intro a b hab
     simpa [← Subtype.coe_lt_coe] using hab
 
 theorem mapValueGroup₀_strictMono : StrictMono (mapValueGroup₀ vR vA) := by
   have h : vR.IsEquiv (vA.comap (algebraMap R A)) := HasExtension.val_isEquiv_comap
-  refine (WithZero.map'_strictMono ?_).comp h.orderMonoidIso.toOrderIso.strictMono
+  refine (WithZero.map'_strictMono ?_).comp h.orderMonoidIso₀.toOrderIso.strictMono
   intro a b hab
   simpa [← Subtype.coe_lt_coe] using hab
 
@@ -268,7 +268,7 @@ theorem restrict_map_mapValueGroup₀ :
   unfold mapValueGroup₀
   simp only [OrderMonoidIso.toMulEquiv_eq_coe, map_apply, OrderMonoidWithZeroHom.coe_mk,
     MonoidWithZeroHom.coe_comp, MulEquiv.coe_toMonoidWithZeroHom, OrderMonoidIso.coe_mulEquiv,
-    Function.comp_apply, IsEquiv.orderMonoidIso_spec, comap_apply]
+    Function.comp_apply, IsEquiv.orderMonoidIso₀_spec, comap_apply]
   generalize hc : (vA.comap (algebraMap R A)).restrict x = c
   cases c using WithZero.cases_on with
   | zero =>

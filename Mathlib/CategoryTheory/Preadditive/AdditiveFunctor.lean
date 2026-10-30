@@ -155,14 +155,12 @@ instance : (Functor.whiskeringRight C D E).Additive where
 omit [Preadditive C] [Preadditive D] in
 instance (F : C ⥤ D) : ((Functor.whiskeringLeft C D E).obj F).Additive where
 
-set_option backward.defeqAttrib.useBackward true in
 omit [Preadditive D] in
 instance {E' : Type*} [Category* E'] [Preadditive E'] (G : C ⥤ D ⥤ E) (F : E ⥤ E')
     [F.Additive] [G.Additive] : ((Functor.postcompose₂.obj F).obj G).Additive := by
   dsimp [Functor.postcompose₂]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 universe w in
 instance [HasCoproducts.{w} C] : (sigmaConst.{w} (C := C)).Additive where
 
@@ -245,7 +243,6 @@ namespace Equivalence
 
 variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
 
-set_option backward.defeqAttrib.useBackward true in
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
 
@@ -318,30 +315,35 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
 
-lemma leftExactFunctor_le_additiveFunctor :
-    leftExactFunctor C D ≤ additiveFunctor C D :=
+lemma preservesFiniteLimits_le_additiveFunctor :
+    .preservesFiniteLimits ≤ additiveFunctor C D :=
   fun F h ↦ by
-    simp only [leftExactFunctor_iff] at h
+    simp only [ObjectProperty.preservesFiniteLimits_iff] at h
     exact Functor.additive_of_preservesBinaryBiproducts F
 
-lemma rightExactFunctor_le_additiveFunctor :
-    rightExactFunctor C D ≤ additiveFunctor C D :=
+lemma preservesFiniteColimits_le_additiveFunctor :
+    .preservesFiniteColimits ≤ additiveFunctor C D :=
   fun F h ↦ by
-    simp only [rightExactFunctor_iff] at h
+    simp only [ObjectProperty.preservesFiniteColimits_iff] at h
     exact Functor.additive_of_preservesBinaryBiproducts F
+
+@[deprecated (since := "2026-10-28")] alias leftExactFunctor_le_additiveFunctor :=
+  preservesFiniteLimits_le_additiveFunctor
+@[deprecated (since := "2026-10-28")] alias rightExactFunctor_le_additiveFunctor :=
+  preservesFiniteColimits_le_additiveFunctor
 
 lemma exactFunctor_le_additiveFunctor :
     exactFunctor C D ≤ additiveFunctor C D :=
-  (exactFunctor_le_leftExactFunctor C D).trans
-    (leftExactFunctor_le_additiveFunctor C D)
+  (exactFunctor_le_preservesFiniteColimits C D).trans
+    (preservesFiniteColimits_le_additiveFunctor C D)
 
 /-- Turn a left exact functor into an additive functor. -/
 abbrev AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=
-  ObjectProperty.ιOfLE (leftExactFunctor_le_additiveFunctor C D)
+  ObjectProperty.ιOfLE (preservesFiniteLimits_le_additiveFunctor C D)
 
 /-- Turn a right exact functor into an additive functor. -/
 abbrev AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
-  ObjectProperty.ιOfLE (rightExactFunctor_le_additiveFunctor C D)
+  ObjectProperty.ιOfLE (preservesFiniteColimits_le_additiveFunctor C D)
 
 /-- Turn an exact functor into an additive functor. -/
 abbrev AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
