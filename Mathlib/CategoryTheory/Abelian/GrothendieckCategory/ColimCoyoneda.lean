@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
+
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
 
