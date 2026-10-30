@@ -81,8 +81,12 @@ theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFi
   have h := toFinite s
   rw [h.encard_eq_coe_toFinset_card, toFinite_toFinset]
 
-@[simp] theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
+theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
 
+theorem encard_ofPred (P : α → Prop) : {x | P x}.encard = ENat.card {x // P x} :=
+  rfl
+
+@[deprecated encard_ofPred +typeChanged (since := "2026-10-01")]
 theorem toENat_cardinalMk_subtype (P : α → Prop) :
     (Cardinal.mk {x // P x}).toENat = {x | P x}.encard :=
   rfl
@@ -335,7 +339,7 @@ theorem encard_singleton_inter (s : Set α) (x : α) : ({x} ∩ s).encard ≤ 1 
 
 theorem encard_sdiff_singleton_add_one (h : a ∈ s) :
     (s \ {a}).encard + 1 = s.encard := by
-  rw [← encard_insert_of_notMem (fun h ↦ h.2 rfl), insert_sdiff_singleton, insert_eq_of_mem h]
+  rw [← encard_insert_of_notMem (a := a) (by simp), insert_sdiff_singleton, insert_eq_of_mem h]
 
 @[deprecated (since := "2026-06-03")]
 alias encard_diff_singleton_add_one := encard_sdiff_singleton_add_one
@@ -427,7 +431,7 @@ theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b 
 theorem encard_eq_two : s.encard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   refine ⟨fun h ↦ ?_, fun ⟨x, y, hne, hs⟩ ↦ by rw [hs, encard_pair hne]⟩
   obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
-  rw [← insert_eq_of_mem hx, ← insert_sdiff_singleton, encard_insert_of_notMem (fun h ↦ h.2 rfl),
+  rw [← insert_eq_of_mem hx, ← insert_sdiff_singleton, encard_insert_of_notMem (a := x) (by simp),
     ← one_add_one_eq_two, (ENat.addLECancellable_of_ne_top ENat.one_ne_top).inj_left,
     encard_eq_one] at h
   obtain ⟨y, h⟩ := h
@@ -439,7 +443,7 @@ theorem encard_eq_three {α : Type u_1} {s : Set α} :
   refine ⟨fun h ↦ ?_, fun ⟨x, y, z, hxy, hyz, hxz, hs⟩ ↦ ?_⟩
   · obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
     rw [← insert_eq_of_mem hx, ← insert_sdiff_singleton,
-      encard_insert_of_notMem (fun h ↦ h.2 rfl), (by exact rfl : (3 : ℕ∞) = 2 + 1),
+      encard_insert_of_notMem (fun h : x ∈ s \ {x} ↦ h.2 rfl), (by exact rfl : (3 : ℕ∞) = 2 + 1),
       (ENat.addLECancellable_of_ne_top ENat.one_ne_top).inj_left, encard_eq_two] at h
     obtain ⟨y, z, hne, hs⟩ := h
     refine ⟨x, y, z, ?_, ?_, hne, ?_⟩
@@ -453,7 +457,7 @@ theorem encard_eq_four {α : Type u_1} {s : Set α} :
   refine ⟨fun h ↦ ?_, fun ⟨x, y, z, w, hxy, hxz, hxw, hyz, hyw, hzw, hs⟩ ↦ ?_⟩
   · obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
     rw [← insert_eq_of_mem hx, ← insert_sdiff_singleton,
-      encard_insert_of_notMem (fun h ↦ h.2 rfl), (by exact rfl : (4 : ℕ∞) = 3 + 1),
+      encard_insert_of_notMem (a := x) (by simp), (by exact rfl : (4 : ℕ∞) = 3 + 1),
       (ENat.addLECancellable_of_ne_top ENat.one_ne_top).inj_left, encard_eq_three] at h
     obtain ⟨y, z, w, hyz, hyw, hzw, hs⟩ := h
     refine ⟨x, y, z, w, ?_, ?_, ?_, hyz, hyw, hzw, ?_⟩
@@ -586,7 +590,7 @@ theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β}
   simp only [preimage_sdiff, subset_def, mem_sdiff, mem_singleton_iff, mem_preimage, and_imp]
     at hf₀s
   use Function.update f₀ a b
-  rw [← insert_eq_of_mem has, ← insert_sdiff_singleton, injOn_insert (fun h ↦ h.2 rfl)]
+  rw [← insert_eq_of_mem has, ← insert_sdiff_singleton, injOn_insert (a := a) (by simp)]
   simp only [mem_sdiff, mem_singleton_iff, insert_sdiff_singleton, subset_def,
     mem_insert_iff, mem_preimage, Function.update_apply, forall_eq_or_imp, ite_true, and_imp,
     mem_image, ite_eq_left_iff, not_exists, not_and, not_forall, exists_prop, and_iff_right hbt]
@@ -609,7 +613,7 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
 `Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
 lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : MapsTo f s t) :
-    ∃ᵉ (a₁ ∈ s) (a₂ ∈ s), a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
+    ∃ a₁ ∈ s, ∃ a₂ ∈ s, a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
   contrapose! hc
   suffices Function.Injective (hf.restrict f) by
     let f' : s ↪ t := ⟨hf.restrict, this⟩
@@ -639,6 +643,9 @@ macro_rules
 noncomputable def ncard (s : Set α) : ℕ := ENat.toNat s.encard
 
 theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
+
+theorem ncard_ofPred (P : α → Prop) : {x | P x}.ncard = Nat.card {x // P x} :=
+  rfl
 
 theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
   rwa [ncard, ENat.natCast_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
@@ -773,7 +780,7 @@ theorem ncard_pair {a b : α} (h : a ≠ b) : ({a, b} : Set α).ncard = 2 := by
 @[simp]
 theorem ncard_pair_eq_two_iff {a b : α} : Set.ncard {a, b} = 2 ↔ a ≠ b := by
   refine ⟨fun h ↦ ?_, by simp +contextual⟩
-  by_contra!
+  by_contra
   simp [this] at h
 
 -- removing `@[simp]` because the LHS is not in simp normal form
@@ -883,7 +890,7 @@ theorem map_eq_of_subset {f : α ↪ α} (h : f '' s ⊆ s) (hs : s.Finite := by
 
 theorem sep_of_ncard_eq {a : α} {P : α → Prop} (h : { x ∈ s | P x }.ncard = s.ncard) (ha : a ∈ s)
     (hs : s.Finite := by toFinite_tac) : P a :=
-  sep_eq_self_iff_mem_true.mp (eq_of_subset_of_ncard_le (by simp) h.symm.le hs) _ ha
+  sep_eq_self_iff_mem_true.mp (eq_of_subset_of_ncard_le (sep_subset ..) h.symm.le hs) _ ha
 
 theorem ncard_lt_ncard (h : s ⊂ t) (ht : t.Finite := by toFinite_tac) :
     s.ncard < t.ncard := by

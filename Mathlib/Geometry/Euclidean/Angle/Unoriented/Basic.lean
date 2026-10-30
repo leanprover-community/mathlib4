@@ -120,14 +120,18 @@ theorem angle_self {x : V} (hx : x ≠ 0) : angle x x = 0 := by
 
 /-- The angle between a nonzero vector and its negation. -/
 @[simp]
-theorem angle_self_neg_of_nonzero {x : V} (hx : x ≠ 0) : angle x (-x) = π := by
+theorem angle_self_neg_of_ne_zero {x : V} (hx : x ≠ 0) : angle x (-x) = π := by
   rw [angle_neg_right, angle_self hx, sub_zero]
+
+@[deprecated (since := "2026-10-13")] alias angle_self_neg_of_nonzero := angle_self_neg_of_ne_zero
 
 /-- The angle between the negation of a nonzero vector and that
 vector. -/
 @[simp]
-theorem angle_neg_self_of_nonzero {x : V} (hx : x ≠ 0) : angle (-x) x = π := by
-  rw [angle_comm, angle_self_neg_of_nonzero hx]
+theorem angle_neg_self_of_ne_zero {x : V} (hx : x ≠ 0) : angle (-x) x = π := by
+  rw [angle_comm, angle_self_neg_of_ne_zero hx]
+
+@[deprecated (since := "2026-10-13")] alias angle_neg_self_of_nonzero := angle_neg_self_of_ne_zero
 
 /-- The angle between a vector and a positive multiple of a vector. -/
 @[simp]

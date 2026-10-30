@@ -5,8 +5,8 @@ Authors: Jovan Gerbscheid, Chu Zheng
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Congruence
 public import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Topology.MetricSpace.Congruence
 
 /-!
 # Triangle congruence

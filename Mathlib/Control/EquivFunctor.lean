@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Convert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functions functorial with respect to equivalences
 

@@ -501,8 +501,8 @@ theorem expMapBasis_apply' (x : realSpace K) :
          ∏ i : {w // w ≠ w₀}, w (fundSystem K (equivFinRank.symm i)) ^ x i := by
   simp_rw [expMapBasis_apply, Basis.equivFun_symm_apply, Fintype.sum_eq_add_sum_subtype_ne _ w₀,
     expMap_add, expMap_smul, expMap_basis_of_eq, Pi.pow_def, Real.exp_one_rpow, Pi.mul_def,
-    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, prod_apply, Pi.pow_apply,
-    normAtAllPlaces_mixedEmbedding]
+    expMap_sum, expMap_smul, expMap_basis_of_ne, Pi.smul_def, smul_eq_mul, Finset.prod_apply,
+    Pi.pow_apply, normAtAllPlaces_mixedEmbedding]
 
 open scoped Classical in
 theorem expMapBasis_apply'' (x : realSpace K) :
@@ -668,9 +668,9 @@ theorem normAtAllPlaces_normLeOne_eq_image :
       pow_le_one_iff_of_nonneg (Real.exp_nonneg _) Module.finrank_pos.ne', Real.exp_le_one_iff,
       ne_eq, pow_eq_zero_iff', Real.exp_ne_zero, false_and, not_false_eq_true, Set.mem_univ_pi]
     refine ⟨fun ⟨h₁, h₂⟩ w ↦ ?_, fun h ↦ ⟨fun w hw ↦ by simpa [hw] using h w, by simpa using h w₀⟩⟩
-    · split_ifs with hw
-      · exact hw ▸ h₂
-      · exact h₁ w hw
+    split_ifs with hw
+    · exact hw ▸ h₂
+    · exact h₁ w hw
   · refine ⟨?_, ?_⟩
     · rintro ⟨a, ⟨ha, _⟩, rfl⟩
       exact (hx fun w ↦ fundamentalCone.normAtPlace_pos_of_mem ha w).elim

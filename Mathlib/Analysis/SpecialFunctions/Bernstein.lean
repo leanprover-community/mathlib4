@@ -26,7 +26,7 @@ This statement directly applies to the cases when the codomain is a (semi)normed
 or, more generally, has a topology defined by a family of seminorms.
 
 Our proof follows [Richard Beals' *Analysis, an introduction*][beals-analysis], §7D.
-The original proof, due to [Bernstein](bernstein1912) in 1912, is probabilistic,
+The original proof, due to [Bernstein][bernstein1912] in 1912, is probabilistic,
 and relies on Bernoulli's theorem,
 which gives bounds for how quickly the observed frequencies in a
 Bernoulli trial approach the underlying probability.
@@ -83,7 +83,7 @@ open Lean Meta Qq Function
 @[positivity DFunLike.coe (bernstein _ _) _]
 meta def evalBernstein : PositivityExt where eval {_ _} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
-  let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
+  let .app (.app _coe (.app (.app _ n) ν)) x ← whnf e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
   pure (.nonnegative p)
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.Algebra.Group.AddChar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Direct sum of additive characters
 

@@ -6,9 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Action.Basic
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Category.TopCat.Basic
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Category.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Kleisli construction on the Type category
 
