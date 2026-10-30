@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Tropical.Basic
+public import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
@@ -60,10 +61,16 @@ instance [InfSet R] : InfSet (MinTropical R) where sInf s := trop (sInf (untrop 
 @[to_dual]
 instance [ConditionallyCompleteLattice R] :
     ConditionallyCompleteLattice (MinTropical R) where
-  isLUB_csSup _ hn hb :=
-    .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)
-  isGLB_csInf _ hn hb :=
-    .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb)
+  isLUB_sSup_of_isLUB _ _ hx := by
+    rw [← tropOrderIso.symm.isLUB_image'] at hx ⊢
+    exact hx.isLUB_sSup
+  isGLB_sInf_of_isGLB _ _ hx := by
+    rw [← tropOrderIso.symm.isGLB_image'] at hx ⊢
+    exact hx.isGLB_sInf
+  exists_isLUB_cond s hn hb := ⟨sSup s,
+    .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)⟩
+  exists_isGLB_cond s hn hb := ⟨sInf s,
+    .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb)⟩
 
 instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (MinTropical R) :=
   { instConditionallyCompleteLattice, instLinearOrder with
