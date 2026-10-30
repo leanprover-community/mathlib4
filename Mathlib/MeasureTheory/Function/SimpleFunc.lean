@@ -86,8 +86,7 @@ def ofFinite [Finite α] [MeasurableSingletonClass α] (f : α → β) : α →�
   finite_range' := Set.finite_range f
 
 
-/-- A monotone function with finite range, viewed as a simple function. The codomain only needs
-an order; no topology or measurable space on it is required. -/
+/-- A monotone function with finite range, viewed as a simple function. -/
 def ofMonotone [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
     [OpensMeasurableSpace α] [PartialOrder β] (f : α → β) (hf : Monotone f)
     (hfin : (Set.range f).Finite) : α →ₛ β where
