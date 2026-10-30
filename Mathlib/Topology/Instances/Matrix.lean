@@ -367,9 +367,9 @@ theorem Matrix.conjTranspose_tsum [StarAddMonoid R] [ContinuousStar R] [T2Space 
     continuous_id.matrix_conjTranspose continuous_id.matrix_conjTranspose
     conjTranspose_conjTranspose
 
-lemma Matrix.isClosed_ofPred_isHermitian [StarAddMonoid R] [ContinuousStar R] [T2Space R] :
+lemma Matrix.isClosed_setOfPred_isHermitian [StarAddMonoid R] [ContinuousStar R] [T2Space R] :
     IsClosed {X : Matrix n n R | X.IsHermitian} :=
-  isClosed_ofPred_isSelfAdjoint
+  isClosed_setOfPred_isSelfAdjoint
 
 lemma Matrix.IsHermitian.of_hasSum [StarAddMonoid R] [ContinuousStar R] [T2Space R] [L.NeBot]
     {f : X → Matrix n n R} {a : Matrix n n R} (h : HasSum f a L) (hf : ∀ i, (f i).IsHermitian) :
@@ -495,7 +495,7 @@ variable [PartialOrder R] [OrderClosedTopology R]
 
 lemma isClosed_setOfPred_posSemidef : IsClosed {A : Matrix n n R | PosSemidef A} := by
   simp only [PosSemidef, Set.ofPred_and, Set.ofPred_forall]
-  refine isClosed_ofPred_isHermitian.inter
+  refine isClosed_setOfPred_isHermitian.inter
     (isClosed_iInter fun x => isClosed_le continuous_const ?_)
   fun_prop [Finsupp.sum]
 
