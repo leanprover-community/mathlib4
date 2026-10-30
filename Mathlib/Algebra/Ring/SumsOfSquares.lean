@@ -84,7 +84,7 @@ def sumSq : AddSubmonoid T where
 
 attribute [norm_cast] coe_sumSq
 
-@[simp] theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := Iff.rfl
+@[simp, membership =] theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := Iff.rfl
 
 end AddSubmonoid
 
@@ -158,7 +158,7 @@ def sumSq : NonUnitalSubsemiring T := (Subsemigroup.square T).nonUnitalSubsemiri
   simp [sumSq, ← AddSubmonoid.closure_isSquare,
     Subsemigroup.nonUnitalSubsemiringClosure_toAddSubmonoid]
 
-@[simp]
+@[simp, membership =]
 theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
   simp [← NonUnitalSubsemiring.mem_toAddSubmonoid]
 
@@ -203,7 +203,7 @@ def sumSq : Subsemiring T where
 @[simp] theorem sumSq_toNonUnitalSubsemiring :
     (sumSq T).toNonUnitalSubsemiring = .sumSq T := rfl
 
-@[simp]
+@[simp, membership =]
 theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
   simp [← Subsemiring.mem_toNonUnitalSubsemiring]
 
