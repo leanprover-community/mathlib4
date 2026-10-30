@@ -415,7 +415,7 @@ jobs:
   manifest:
     name: Validate manifest
     runs-on: ubuntu-latest
-    # This job reads (potentially fork) PR data as JSON and runs no PR code.
+    # This job parses the (potentially fork) PR's lake-manifest.json and runs no PR code.
     permissions:
       contents: read
     steps:
@@ -460,8 +460,9 @@ jobs:
             const repoUrl = /^https:\/\/github\.com\/(leanprover|leanprover-community)\/([A-Za-z0-9._-]+)$/;
             const hint = name => `Hint: Run \`lake update ${name}\` and commit lake-manifest.json.`;
 
-            // The `inputRev` and `url` rules fail every run. The `rev` rules warn on ordinary
-            // pushes, so a PR can test an unmerged dependency commit, and fail the Bors candidate.
+            // The package rules (`inputRev`, `url`) fail every run. The pin rules (`rev`) warn on
+            // ordinary pushes, so a PR can test an unmerged dependency commit. On `staging` and
+            // `trying`, the pin rules fail the run.
             let failed = false;
             const report = (revRule, title, message) => {
               if (revRule && !strict) {
@@ -472,7 +473,7 @@ jobs:
               }
             };
 
-            // True when `commit` is `tip` or an ancestor of `tip`.
+            // True when `commit` is `tip` or an ancestor of `tip`. False for a commit GitHub does not know.
             const contains = async (owner, repo, tip, commit) => {
               try {
                 const { data } = await github.rest.repos.compareCommits({
@@ -513,12 +514,12 @@ jobs:
               if (valid) pinned.push(p);
             }
 
-            // Check the pins that differ from the merge base with master.
+            // Check each pin that differs from the manifest at the merge base with master.
             // On `staging` and `trying`, the merge base is master.
             const { data: comparison } = await github.rest.repos.compareCommits({
               ...context.repo, base: 'master', head: process.env.PR_BRANCH_REF, per_page: 1,
             });
-            // The compare API lists at most 300 files.
+            // The compare API lists at most 300 files, so a full list can omit lake-manifest.json.
             const files = comparison.files ?? [];
             if (files.length >= 300 || files.some(f => f.filename === 'lake-manifest.json')) {
               const { data: file } = await github.rest.repos.getContent({
@@ -544,8 +545,8 @@ jobs:
                     'Note: Bors merges only pins that are on the tracked branch.\n' + hint(p.name));
                 } else if (sameSource && !await contains(owner, repo, p.rev, old.rev)) {
                   report(true, 'Dependency pin moves backwards',
-                    `Package \`${p.name}\` pins \`${p.rev}\`, which does not include \`${old.rev}\`, ` +
-                    'the pin at the merge base with master.\n' + hint(p.name));
+                    `Package \`${p.name}\` moves its pin backwards: \`${p.rev}\` does not descend from ` +
+                    `\`${old.rev}\`, the pin at the merge base with master.\n` + hint(p.name));
                 }
               }
             }
