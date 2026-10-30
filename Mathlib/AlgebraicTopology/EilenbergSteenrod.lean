@@ -215,7 +215,7 @@ class IsAdditive where
   preserves_coproducts (J : Type u) (i : ι) :
     PreservesColimitsOfShape (Discrete J) (HP.H i) := by infer_instance
 
-attribute [instance] IsAdditive.preserves_coproducts_u
+attribute [instance] IsAdditive.preserves_coproducts
 
 export IsAdditive (preserves_coproducts_u)
 
