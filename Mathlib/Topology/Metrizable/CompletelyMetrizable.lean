@@ -155,10 +155,11 @@ theorem _root_.IsClosed.isCompletelyPseudoMetrizableSpace
 theorem _root_.IsOpen.isCompletelyPseudoMetrizableSpace
     [hX : TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
     {s : Set X} (hs : IsOpen s) : IsCompletelyPseudoMetrizableSpace s := by
-  letI := upgradeIsCompletelyPseudoMetrizable X
+  let := upgradeIsCompletelyPseudoMetrizable X
   let ms : PseudoMetricSpace s := by sorry
   let cs : @CompleteSpace s ms.toUniformSpace := by sorry
-  have eq : instTopologicalSpaceSubtype (p := s) = ms.toUniformSpace.toTopologicalSpace := by sorry
+  have eq : instTopologicalSpaceSubtype (p := (· ∈ s)) =
+      ms.toUniformSpace.toTopologicalSpace := by sorry
   convert @PseudoMetricSpace.toIsCompletelyPseudoMetrizableSpace s ms cs
 
 /-- An Gδ subset of a completely pseudometrizable space is also completely pseudometrizable. -/
