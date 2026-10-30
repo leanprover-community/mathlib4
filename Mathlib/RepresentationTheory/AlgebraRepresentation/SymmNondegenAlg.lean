@@ -83,8 +83,8 @@ public section
 
 section definitions
 
-variable {k : Type*} (A : Type*) [CommSemiring k] [NonUnitalNonAssocSemiring A]
-  [Module k A] [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k)
+variable {k : Type*} (A : Type*) [CommSemiring k] [NonUnitalNonAssocSemiring A] [Module k A]
+  (Φ : A →ₗ[k] k)
 
 /-- `(A, Φ)` is symmetric if the bilinear form `⟨x, y⟩ := Φ (x * y)` is symmetric. -/
 class IsSymmAlg where isSymm : ∀ a b : A, Φ (a * b) = Φ (b * a)
@@ -106,13 +106,20 @@ instance [IsSymmNondegenAlg A Φ] : IsNondegenAlg A Φ where
   separatingRight := fun a ha => IsSeparatingLeftAlg.separatingLeft a <| fun b => by
     rw [IsSymmAlg.isSymm a b (Φ := Φ), ha]
 
+lemma IsSeparatingLeftAlg.eq_iff {k A : Type*} [CommRing k] [NonUnitalNonAssocRing A]
+  [Module k A] (Φ : A →ₗ[k] k) [IsSeparatingLeftAlg A Φ] {a b : A} :
+    a = b ↔ (∀ c, Φ (a * c) = Φ (b * c)) := by
+  apply Iff.intro
+  · exact fun h _ => by rw [h]
+  rw [← sub_eq_zero]
+  exact fun h => separatingLeft (a - b) (Φ := Φ) fun c => by simp [sub_mul, h, map_sub]
+
 end definitions
 
 section CommRing
 
-variable {k A V W : Type*} [CommRing k] [Ring A] [Algebra k A] {Φ : A →ₗ[k] k}
+variable {k A V W : Type*} [CommRing k] [Semiring A] [Algebra k A] {Φ : A →ₗ[k] k}
   [AddCommGroup V] [Module k V] [Module A V] [IsScalarTower k A V]
-  [AddCommGroup W] [Module k W] [Module A W] [IsScalarTower k A W]
 
 variable (Φ V) in
 /-- `f : A` is the trace representative of a `k`-linear `A`-module `V` if
@@ -131,13 +138,9 @@ lemma IsTraceRepresentative.ne_zero_of_charZero [CharZero k] [Nontrivial V] [Mod
   rw [← mul_one f, hf 1] at this
   simp_all [Module.finrank_eq_zero_iff_of_free, ← not_nontrivial_iff_subsingleton]
 
-variable (Φ) in
-lemma IsSeparatingLeftAlg.eq_iff [IsSeparatingLeftAlg A Φ] {a b : A} :
-    a = b ↔ (∀ c, Φ (a * c) = Φ (b * c)) := by
-  apply Iff.intro
-  · exact fun h _ => by rw [h]
-  rw [← sub_eq_zero]
-  exact fun h => separatingLeft (a - b) (Φ := Φ) fun c => by simp [sub_mul, h]
+variable {k A V W : Type*} [CommRing k] [Ring A] [Algebra k A] {Φ : A →ₗ[k] k}
+  [AddCommGroup V] [Module k V] [Module A V] [IsScalarTower k A V]
+  [AddCommGroup W] [Module k W] [Module A W] [IsScalarTower k A W]
 
 lemma IsTraceRepresentative.unique [IsSeparatingLeftAlg A Φ] {f g : A}
     (hf : IsTraceRepresentative V Φ f) (hg : IsTraceRepresentative V Φ g) : f = g :=
