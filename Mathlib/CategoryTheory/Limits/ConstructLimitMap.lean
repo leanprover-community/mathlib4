@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Comma.Final
 import Mathlib.CategoryTheory.Limits.ConeCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms between (co)filtered (co)limits
 
