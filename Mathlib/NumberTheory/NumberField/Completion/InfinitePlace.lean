@@ -170,13 +170,10 @@ instance : Coe K v.Completion where
 @[simp] lemma coe_toCompletion (x : WithAbs v.1) :
     (x : v.Completion).toCompletion = (x : v.1.Completion) := rfl
 
-@[norm_cast] lemma coe_zero : ((0 : K) : v.Completion) = 0 := by ext; simp; norm_cast
-@[norm_cast] lemma coe_one : ((1 : K) : v.Completion) = 1 := by
-  ext; simp; norm_cast
-@[norm_cast] lemma coe_add (x y : K) : ((x + y : K) : v.Completion) = ↑x + ↑y := by
-  ext; simp; norm_cast
-@[norm_cast] lemma coe_mul (x y : K) : ((x * y : K) : v.Completion) = ↑x * ↑y := by
-  ext; simp; norm_cast
+@[norm_cast] lemma coe_zero : ((0 : K) : v.Completion) = 0 := by ext; simp
+@[norm_cast] lemma coe_one : ((1 : K) : v.Completion) = 1 := by ext; simp
+@[norm_cast] lemma coe_add (x y : K) : ((x + y : K) : v.Completion) = ↑x + ↑y := by ext; simp
+@[norm_cast] lemma coe_mul (x y : K) : ((x * y : K) : v.Completion) = ↑x * ↑y := by ext; simp
 
 theorem continuous_coe : Continuous ((↑) : WithAbs v.1 → v.Completion) :=
   (continuous_ofCompletion v).comp (AbsoluteValue.Completion.continuous_coe _)
@@ -190,7 +187,7 @@ holds on the image of `K` holds everywhere. -/
 @[elab_as_elim]
 theorem induction_on {p : v.Completion → Prop} (x : v.Completion) (hp : IsClosed {x | p x})
     (ih : ∀ a : WithAbs v.1, p a) : p x :=
-  AbsoluteValue.Completion.induction_on v.1 (p := fun y ↦ p (ofCompletion y)) x.toCompletion
+  AbsoluteValue.Completion.induction_on (p := fun y ↦ p (ofCompletion y)) x.toCompletion
     (hp.preimage (continuous_ofCompletion v)) ih
 
 section Algebra

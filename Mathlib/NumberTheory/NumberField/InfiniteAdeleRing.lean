@@ -109,9 +109,8 @@ The number field $K$ is dense in the infinite adele ring $\prod_v K_v$.
 theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K K∞ := by
   have h : ⇑(algebraMap K K∞) = (Pi.map fun v (x : WithAbs v.1) => (x : v.Completion)) ∘
       algebraMap K ((v : InfinitePlace K) → WithAbs v.1) :=
-    funext fun x => funext fun v => algebraMap_apply K x v
-  rw [h]
-  exact (DenseRange.piMap fun v => Completion.denseRange_coe v).comp
+    funext₂ (algebraMap_apply K)
+  exact h ▸ (DenseRange.piMap fun v => Completion.denseRange_coe v).comp
     (InfinitePlace.denseRange_algebraMap_pi K) (.piMap fun v => Completion.continuous_coe v)
 
 /-- The norm on the infinite adele ring is given by the product of the normalized norms
