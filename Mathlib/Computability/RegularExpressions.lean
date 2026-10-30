@@ -99,7 +99,7 @@ Not named `matches` since that is a reserved word.
 def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
-  | char a => {[a]}
+  | char a => .ofSet {.of a}
   | P + Q => P.matches' + Q.matches'
   | P * Q => P.matches' * Q.matches'
   | star P => P.matches'∗
@@ -110,7 +110,7 @@ theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
 theorem matches'_epsilon : (1 : RegularExpression α).matches' = 1 :=
   rfl
 
-theorem matches'_char (a : α) : (char a).matches' = {[a]} :=
+theorem matches'_char (a : α) : (char a).matches' = .ofSet {.of a} :=
   rfl
 
 theorem matches'_add (P Q : RegularExpression α) : (P + Q).matches' = P.matches' + Q.matches' :=

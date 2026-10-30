@@ -72,110 +72,106 @@ instance [Inhabited σ] : Inhabited (DFA α σ) :=
   ⟨DFA.mk (fun _ _ => default) default ∅⟩
 
 /-- `M.evalFrom s x` evaluates `M` with input `x` starting from the state `s`. -/
-def evalFrom (s : σ) : List α → σ :=
-  List.foldl M.step s
+def evalFrom (s : σ) (x : FreeMonoid α) : σ :=
+  x.toList.foldl M.step s
 
 @[simp]
-theorem evalFrom_nil (s : σ) : M.evalFrom s [] = s :=
+theorem evalFrom_nil (s : σ) : M.evalFrom s 1 = s :=
   rfl
 
 @[simp]
-theorem evalFrom_cons (s : σ) (a : α) (x : List α) :
-    M.evalFrom s (a :: x) = M.evalFrom (M.step s a) x :=
+theorem evalFrom_cons (s : σ) (a : α) (x : FreeMonoid α) :
+    M.evalFrom s (.of a * x) = M.evalFrom (M.step s a) x :=
   rfl
 
 @[simp]
-theorem evalFrom_singleton (s : σ) (a : α) : M.evalFrom s [a] = M.step s a :=
+theorem evalFrom_singleton (s : σ) (a : α) : M.evalFrom s (.of a) = M.step s a :=
   rfl
 
 @[simp]
-theorem evalFrom_append_singleton (s : σ) (x : List α) (a : α) :
-    M.evalFrom s (x ++ [a]) = M.step (M.evalFrom s x) a := by
-  simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
+theorem evalFrom_append_singleton (s : σ) (x : FreeMonoid α) (a : α) :
+    M.evalFrom s (x * .of a) = M.step (M.evalFrom s x) a := by
+  simp [evalFrom]
 
 /-- `M.eval x` evaluates `M` with input `x` starting from the state `M.start`. -/
-def eval : List α → σ :=
+def eval : FreeMonoid α → σ :=
   M.evalFrom M.start
 
 @[simp]
-theorem eval_nil : M.eval [] = M.start :=
+theorem eval_nil : M.eval 1 = M.start :=
   rfl
 
 @[simp]
-theorem eval_singleton (a : α) : M.eval [a] = M.step M.start a :=
+theorem eval_singleton (a : α) : M.eval (.of a) = M.step M.start a :=
   rfl
 
 @[simp]
-theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.step (M.eval x) a :=
-  evalFrom_append_singleton _ _ _ _
+theorem eval_append_singleton (x : FreeMonoid α) (a : α) :
+    M.eval (x * .of a) = M.step (M.eval x) a := evalFrom_append_singleton ..
 
-theorem evalFrom_of_append (start : σ) (x y : List α) :
-    M.evalFrom start (x ++ y) = M.evalFrom (M.evalFrom start x) y :=
+theorem evalFrom_of_append (start : σ) (x y : FreeMonoid α) :
+    M.evalFrom start (x * y) = M.evalFrom (M.evalFrom start x) y :=
   List.foldl_append
 
 /--
 `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
 -/
-def acceptsFrom (s : σ) : Language α := {x | M.evalFrom s x ∈ M.accept}
+def acceptsFrom (s : σ) : Language α := .ofSet {x | M.evalFrom s x ∈ M.accept}
 
-theorem mem_acceptsFrom {s : σ} {x : List α} :
-    x ∈ M.acceptsFrom s ↔ M.evalFrom s x ∈ M.accept := by rfl
+theorem mem_acceptsFrom {s : σ} {x : FreeMonoid α} :
+    x ∈ (M.acceptsFrom s).toSet ↔ M.evalFrom s x ∈ M.accept := by rfl
 
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
 def accepts : Language α := M.acceptsFrom M.start
 
-theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ M.eval x ∈ M.accept := by rfl
+theorem mem_accepts {x : FreeMonoid α} : x ∈ M.accepts.toSet ↔ M.eval x ∈ M.accept := by rfl
 
-theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.card σ ≤ x.length)
-    (hx : M.evalFrom s x = t) :
+theorem evalFrom_split [Fintype σ] {x : FreeMonoid α} {s t : σ}
+    (hlen : Fintype.card σ ≤ x.toList.length) (hx : M.evalFrom s x = t) :
     ∃ q a b c,
-      x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card σ ∧
-          b ≠ [] ∧ M.evalFrom s a = q ∧ M.evalFrom q b = q ∧ M.evalFrom q c = t := by
+      x = a * b * c ∧ a.toList.length + b.toList.length ≤ Fintype.card σ ∧
+      b ≠ 1 ∧ M.evalFrom s a = q ∧ M.evalFrom q b = q ∧ M.evalFrom q c = t := by
   obtain ⟨n, m, hneq, heq⟩ :=
     Fintype.exists_ne_map_eq_of_card_lt
-      (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by simp)
+      (fun n : Fin (Fintype.card σ + 1) ↦ M.evalFrom s ⟨x.toList.take n⟩) (by simp)
   wlog hle : (n : ℕ) ≤ m generalizing n m
   · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
-  refine ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n, x.drop m, ?_⟩
-  refine ⟨by simp, by grind, fun h ↦ by grind [congr($(h).length)], rfl, ?_⟩
-  have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =
-      M.evalFrom s ((x.take m).take n) := by
-    rw [List.take_take, min_eq_left hle, ← evalFrom_of_append, heq, ← min_eq_left hle, ←
-      List.take_take, min_eq_left hle, List.take_append_drop]
+  refine ⟨M.evalFrom s ⟨(x.toList.take m).take n⟩, ⟨(x.toList.take m).take n⟩,
+    ⟨(x.toList.take m).drop n⟩, ⟨x.toList.drop m⟩, ?_⟩
+  refine ⟨by ext1; simp, by grind, fun h ↦ by
+    grind [FreeMonoid.toList_one, congr($(h).toList.length)], rfl, ?_⟩
+  have hq : M.evalFrom (M.evalFrom s ⟨(x.toList.take m).take n⟩) ⟨(x.toList.take m).drop n⟩ =
+      M.evalFrom s ⟨(x.toList.take m).take n⟩ := by
+    rw [List.take_take, min_eq_left hle, ← evalFrom_of_append, heq, ← min_eq_left hle,
+      ← List.take_take, min_eq_left hle]
+    congr; ext1; simp
   use hq
-  rwa [← hq, ← evalFrom_of_append, ← evalFrom_of_append, ← List.append_assoc,
-    List.take_append_drop, List.take_append_drop]
+  rw [← hq, ← evalFrom_of_append, ← evalFrom_of_append, ← hx]
+  congr; ext1; simp [FreeMonoid.toList_mul, ← List.append_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
-theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
-    (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
-  rw [Language.mem_kstar] at hy
+theorem evalFrom_of_pow {x y : FreeMonoid α} {s : σ} (hx : M.evalFrom s x = s)
+    (hy : y ∈ (SetSemiring.ofSet {x})∗.toSet) : M.evalFrom s y = s := by
+  rw [Language.mem_kstar, SetSemiring.toSet_ofSet] at hy
   rcases hy with ⟨S, rfl, hS⟩
   induction S with
   | nil => rfl
   | cons a S ih =>
     have ha := hS a List.mem_cons_self
     rw [Set.mem_singleton_iff] at ha
-    rw [List.flatten_cons, evalFrom_of_append, ha, hx]
+    rw [List.prod_cons, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)
 
-set_option backward.isDefEq.respectTransparency false in
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
-    (hlen : Fintype.card σ ≤ List.length x) :
+theorem pumping_lemma [Fintype σ] {x : FreeMonoid α} (hx : x ∈ M.accepts.toSet)
+    (hlen : Fintype.card σ ≤ x.toList.length) :
     ∃ a b c,
-      x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card σ ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
+      x = a * b * c ∧ a.toList.length + b.toList.length ≤ Fintype.card σ ∧
+      b ≠ 1 ∧ .ofSet {a} * (.ofSet {b})∗ * .ofSet {c} ≤ M.accepts := by
   obtain ⟨_, a, b, c, hx, hlen, hnil, rfl, hb, hc⟩ := M.evalFrom_split (s := M.start) hlen rfl
-  use a, b, c, hx, hlen, hnil
-  intro y hy
-  rw [Language.mem_mul] at hy
-  rcases hy with ⟨ab, hab, c', hc', rfl⟩
-  rw [Language.mem_mul] at hab
-  rcases hab with ⟨a', ha', b', hb', rfl⟩
-  rw [Set.mem_singleton_iff] at ha' hc'
+  refine ⟨a, b, c, hx, hlen, hnil, fun y hy ↦ (?_ : y ∈ M.accepts.toSet)⟩
+  obtain ⟨ab, ⟨a', ha', b', hb', rfl⟩, c', hc', rfl⟩ := hy
+  rw [SetSemiring.toSet_ofSet] at ha' hc'
   subst ha' hc'
   have h := M.evalFrom_of_pow hb hb'
   rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
