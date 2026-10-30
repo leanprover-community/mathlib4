@@ -16,6 +16,16 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 We prove various theorems about unramified algebras. In fact we work in the more general setting
 of formally unramified algebras which are essentially of finite type.
 
+## Main definitions
+
+Let `S/R` be formally unramified and essentially of finite type.
+
+- `Algebra.FormallyUnramified.elem R S`: the idempotent of the diagonal.
+- `Algebra.FormallyUnramified.sec R S M`: For an `S`-module `M`, this is an `S`-linear section of
+  the map `S ⊗[R] M →ₗ[S] M` defined by `s ⊗ m ↦ s • m`
+- `Algebra.FormallyUnramified.equalizerIdempotent f g`: For algebra homomorphisms `f g : S →ₐ[R] A`,
+  this is the idempotent defining the subset of `Spec A` where `f` and `g` agree.
+
 ## Main results
 
 - `Algebra.FormallyUnramified.iff_exists_tensorProduct`:
