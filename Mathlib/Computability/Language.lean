@@ -160,10 +160,6 @@ theorem kstar_def_ne_one (l : Language α) :
     l∗ = {x | ∃ S : List (FreeMonoid α), x = S.prod ∧ ∀ y ∈ S, y ∈ l.toSet ∧ y ≠ 1} := by
   ext x; apply mem_kstar_iff_exists_ne_one
 
-@[deprecated (since := "2026-10-30")]
-alias mem_kstar_iff_exists_nonempty := mem_kstar_iff_exists_ne_one
-@[deprecated (since := "2026-10-30")] alias kstar_def_nonempty := kstar_def_ne_one
-
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
 
@@ -261,17 +257,18 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : 1 ∉ m.toSet) :
   mp h := by
     apply le_antisymm
     · intro x hx
-      induction hlen : x.length using Nat.strong_induction_on generalizing x with | _ _ ih
+      induction hlen : x.toList.length using Nat.strong_induction_on generalizing x with | _ _ ih
       subst hlen
       rw [h] at hx
       obtain hx | hx := hx
       · obtain ⟨a, ha, b, hb, rfl⟩ := mem_mul.mp hx
-        rw [length_append] at ih
-        have hal : 0 < a.length := length_pos_iff.mpr <| ne_of_mem_of_not_mem ha hm
-        specialize ih b.length (Nat.lt_add_left_iff_pos.mpr hal) hb rfl
+        rw [FreeMonoid.toList_mul, length_append] at ih
+        have hal : a.toList ≠ [] :=
+          FreeMonoid.toListEquiv.injective.ne_iff.mpr (ne_of_mem_of_not_mem ha hm)
+        rw [ne_nil_iff_length_pos] at hal
+        specialize ih b.toList.length (by lia) hb rfl
         rw [← one_add_self_mul_kstar_eq_kstar, one_add_mul, mul_assoc]
-        right
-        exact ⟨_, ha, _, ih, rfl⟩
+        exact .inr ⟨_, ha, _, ih, rfl⟩
       · exact ⟨1, nil_mem_kstar _, _, ⟨hx, one_mul _⟩⟩
     · rw [kstar_eq_iSup_pow, iSup_mul, iSup_le_iff]
       intro i
@@ -292,8 +289,6 @@ lemma mem_reverse : a ∈ l.reverse.toSet ↔ star a ∈ l.toSet := Iff.rfl
 
 lemma star_mem_reverse : star a ∈ l.reverse.toSet ↔ a ∈ l.toSet := by
   rw [mem_reverse, star_star]
-
-@[deprecated (since := "2026-10-30")] alias reverse_mem_reverse := star_mem_reverse
 
 lemma reverse_eq_image (l : Language α) : l.reverse = .ofSet (star '' l.toSet) := by
   ext; simp [star_eq_iff_star_eq]
@@ -364,6 +359,11 @@ lemma mem_inf {x : FreeMonoid α} {l m : Language α} :
 
 lemma compl_compl (l : Language α) : lᶜᶜ = l :=
   _root_.compl_compl l
+
+@[deprecated (since := "2026-10-30")]
+alias mem_kstar_iff_exists_nonempty := mem_kstar_iff_exists_ne_one
+@[deprecated (since := "2026-10-30")] alias kstar_def_nonempty := kstar_def_ne_one
+@[deprecated (since := "2026-10-30")] alias reverse_mem_reverse := star_mem_reverse
 
 end Language
 
