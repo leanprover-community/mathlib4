@@ -486,7 +486,7 @@ end CompleteLattice
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot ι] [WellFoundedLT ι]
+variable [ConditionallyCompleteLinearOrder ι] [OrderBot ι] [WellFoundedLT ι]
 variable {u : ι → Ω → β} {s : Set β}
 
 theorem hittingBtwn_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :
