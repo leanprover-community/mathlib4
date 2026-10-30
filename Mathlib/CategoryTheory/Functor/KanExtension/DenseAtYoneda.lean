@@ -157,7 +157,7 @@ end Functor.Elements
 instance [LocallySmall.{w} C] : (shrinkYoneda.{w} (C := C)).IsDense where
   isDenseAt P :=
     ⟨(IsColimit.whiskerEquivalenceEquiv
-      (Functor.Elements.costructuredArrowShrinkYonedaEquivalence P)).2
+      (Functor.Elements.costructuredArrowShrinkYonedaEquivalence P)).symm
         (Functor.Elements.isColimitShrinkYonedaCocone.{w} P)⟩
 
 instance : (uliftYoneda.{w} (C := C)).IsDense :=
