@@ -200,7 +200,8 @@ theorem abelianizationCongr_trans {I : Type v} [Group I] (e : G ≃* H) (e₂ : 
 end AbelianizationCongr
 
 /-- An Abelian group is equivalent to its own abelianization. -/
-@[to_additive /-- An additive Abelian group is equivalent to its own abelianization. -/]
+@[to_additive (attr := simps) /-- An additive Abelian group is equivalent to its own abelianization.
+ -/]
 def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization H :=
   { Abelianization.of with
     toFun := Abelianization.of
