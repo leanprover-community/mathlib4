@@ -400,8 +400,6 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
 theorem not_cliqueFree_iff_top_isContained (n : ℕ) : ¬G.CliqueFree n ↔ completeGraph (Fin n) ⊑ G :=
   ⟨(topEmbeddingOfNotCliqueFree · |>.isContained), IsContained.not_cliqueFree⟩
 
-@[deprecated (since := "2026-03-23")] alias not_cliqueFree_iff := not_cliqueFree_iff_top_isContained
-
 theorem cliqueFree_iff_free_top_fin : G.CliqueFree n ↔ (completeGraph (Fin n)).Free G :=
   not_cliqueFree_iff_top_isContained n |>.not_right
 
@@ -771,10 +769,9 @@ theorem cliqueNum_top : (⊤ : SimpleGraph α).cliqueNum = Nat.card α := by
     apply cliqueNum_le_natCard _ |>.antisymm
     grw [Nat.card_eq_fintype_card, ← Finset.card_univ, IsClique.card_le_cliqueNum]
     apply IsClique.top
-  · rw [Nat.card_eq_zero_of_infinite]
-    apply Set.Infinite.Nat.sSup_eq_zero
-    rw [Set.eq_univ_of_forall (Finset.exists_card_eq · |>.imp fun _ hn ↦ ⟨.top _, hn⟩)]
-    exact Set.infinite_univ
+  · rw [Nat.card_eq_zero_of_infinite, cliqueNum]
+    convert Set.Infinite.Nat.sSup_eq_zero Set.infinite_univ using 2
+    exact Set.eq_univ_of_forall (Finset.exists_card_eq · |>.imp fun _ hn ↦ ⟨.top _, hn⟩)
 
 -- TODO: generalize from `Finite α` to `Finite G.edgeSet`
 variable (α) in

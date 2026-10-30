@@ -36,8 +36,12 @@ instance : HImp (Set α) where
 
 @[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := .rfl
 
-instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
-  fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
+instance instBooleanAlgebra : BooleanAlgebra (Set α) where
+  __ := instBoundedOrder
+  inf_compl_le_bot _ _ h := h.2 h.1
+  top_le_sup_compl s x _ := em (x ∈ s)
+  sdiff_eq _ _ := rfl
+  himp_eq _ _ := ext fun _ => imp_iff_or_not
 
 theorem himp_def : s ⇨ t = t ∪ sᶜ := himp_eq
 
@@ -197,7 +201,7 @@ lemma mem_compl_singleton_iff : a ∈ ({b} : Set α)ᶜ ↔ a ≠ b := .rfl
 lemma compl_singleton_eq (a : α) : {a}ᶜ = {x | x ≠ a} := rfl
 
 @[simp]
-lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl _
+lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl {a}
 
 @[simp]
 lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm.trans singleton_subset_iff
@@ -560,6 +564,26 @@ lemma insert_sdiff_subset : insert a s \ t ⊆ insert a (s \ t) := by
 lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_sdiff_self_of_mem ha, fun _s ↦ insert_sdiff_self_of_notMem⟩
+
+lemma union_left_inj (hs : Disjoint u s) (ht : Disjoint u t) : s ∪ u = t ∪ u ↔ s = t :=
+  sup_left_inj_of_disjoint hs ht
+
+lemma disjoint_injOn_union_left (s : Set α) : {t | Disjoint s t}.InjOn (· ∪ s) := by
+  grind [Set.InjOn, union_sdiff_right, Disjoint.sdiff_eq_left]
+
+lemma superset_injOn_sdiff (s : Set α) : {t | s ⊆ t}.InjOn (· \ s) := by
+  grind [Set.InjOn, sdiff_union_of_subset]
+
+lemma insert_right_inj (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t := by
+  grind
+
+lemma insert_injOn_notMem (a : α) : {s : Set α | a ∉ s}.InjOn (insert a) := by
+  intro s hs t ht h
+  exact (insert_right_inj hs ht).1 h
+
+lemma sdiff_singleton_injOn_mem (a : α) : {s : Set α | a ∈ s}.InjOn (· \ {a}) := by
+  intro s hs t ht h
+  exact superset_injOn_sdiff {a} (singleton_subset_iff.2 hs) (singleton_subset_iff.2 ht) h
 
 @[simp]
 lemma sdiff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=

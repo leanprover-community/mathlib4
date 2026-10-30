@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Gluing
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
+public import Mathlib.Topology.Gluing
 
 /-!
 # Gluing structured spaces
@@ -167,7 +167,6 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   erw [(D.V (i, k)).presheaf.map_id]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- We can prove the `eq` along with the lemma. Thus this is bundled together here, and the
 lemma itself is separated below.
@@ -279,13 +278,13 @@ theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
   · delta opensImagePreimageMap
     simp_rw [Category.assoc]
     rw [(D.f j k).c.naturality, f_invApp_f_app_assoc]
-    · erw [← (D.V (j, k)).presheaf.map_comp]
-      · simp_rw [← Category.assoc]
-        erw [← comp_c_app, ← comp_c_app]
-        · simp_rw [Category.assoc]
-          dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
-          rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
-          congr
+    erw [← (D.V (j, k)).presheaf.map_comp]
+    simp_rw [← Category.assoc]
+    erw [← comp_c_app, ← comp_c_app]
+    simp_rw [Category.assoc]
+    dsimp only [Functor.op, unop_op, Quiver.Hom.unop_op]
+    rw [eqToHom_map (Opens.map _), eqToHom_op, eqToHom_trans]
+    congr
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/mBzV1Rx.png) commute. -/
 theorem opensImagePreimageMap_app (i j k : D.J) (U : Opens (D.U i).carrier) :
@@ -316,7 +315,6 @@ The projection from the limit of `diagram_over_open` to a component of `D.U j`. 
 abbrev diagramOverOpenπ {i : D.J} (U : Opens (D.U i).carrier) (j : D.J) :=
   limit.π (D.diagramOverOpen U) (op (WalkingMultispan.right j))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) We construct the map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_V, U_V)` for each `V` in the gluing
 diagram. We will lift these maps into `ιInvApp`. -/
 def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :

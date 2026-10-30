@@ -1026,7 +1026,7 @@ end Nat
 end Finset
 
 namespace Fintype
-variable {ι κ ι : Type*} [Fintype ι] [Fintype κ]
+variable {ι κ : Type*} [Fintype ι] [Fintype κ]
 
 open Finset
 
@@ -1161,6 +1161,10 @@ lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
 @[to_additive]
 lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by simp
+
+@[simp] theorem Int.natAbs_prod (s : Finset ι) (f : ι → ℤ) :
+    (∏ i ∈ s, f i).natAbs = ∏ i ∈ s, (f i).natAbs := by
+  induction s using Finset.cons_induction with grind [natAbs_mul]
 
 theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
