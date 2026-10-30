@@ -153,7 +153,7 @@ noncomputable def monoidHomMonoidHomEquiv :
   have : HasEnoughRootsOfUnity M (Monoid.exponent (G →* Mˣ)) := by
     rwa [Monoid.exponent_eq_of_mulEquiv (monoidHom_mulEquiv_of_hasEnoughRootsOfUnity G M).some]
   (MulEquiv.mk' (Equiv.ofBijective
-    (fun g ↦ MonoidHom.mk ⟨fun φ ↦ φ g, one_apply _⟩ (by simp))
+    (fun g ↦ MonoidHom.mk ⟨fun φ ↦ φ g, MonoidHom.one_apply _⟩ (by simp))
     (by
       refine (Nat.bijective_iff_injective_and_card _).mpr ⟨fun _ _ h ↦ ?_, ?_⟩
       · rwa [mk.injEq, OneHom.mk.injEq, funext_iff, forall_apply_eq_apply_iff] at h
