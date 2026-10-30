@@ -233,7 +233,7 @@ instance IsAdditive.preserves_coproducts_of_small
   preservesColimitsOfShape_of_equiv (Discrete.equivalence (equivShrink _).symm) _
 
 instance : IsClosedUnderIsomorphisms (isAdditive.{u} C c) where
-  of_iso {HP HP'} e _ := { preserves_coproducts_u _ _ :=
+  of_iso {HP HP'} e _ := { preserves_coproducts _ _ :=
     preservesColimitsOfShape_of_natIso ((HP.iso _) ≪≫
       Functor.isoWhiskerLeft incl ((hₚFunctor _).mapIso e) ≪≫ (HP'.iso _).symm) }
 
