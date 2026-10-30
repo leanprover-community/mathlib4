@@ -248,8 +248,8 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     cases n with
     | zero => simp
     | succ n =>
-      simp only [forall_prop_of_true, succ_pos', smul_apply, f', g', coe_mk, succ_ne_zero,
-        ite_false]
+      simp only [forall_prop_of_true, succ_pos', ArithmeticFunction.smul_apply, f', g', coe_mk,
+        succ_ne_zero, ite_false]
       rw [sum_congr rfl fun x hx => ?_]
       rw [ite_eq_right (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)).ne']
 
