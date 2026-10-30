@@ -293,7 +293,7 @@ noncomputable def costructuredArrowShrinkYonedaEquivalenceFunctorCompProjIso
 /-- Given `F : C ⥤ Type w` where `C` is a locally `w`-small category, this is the
 equivalence between the opposite of the category of elements of `F` and
 `CostructuredArrow shrinkCoyoneda.{w} F`. -/
-@[implicit_reducible, simps!]
+@[implicit_reducible, simps]
 noncomputable def costructuredArrowShrinkCoyonedaEquivalence
     [LocallySmall.{w} C] (F : C ⥤ Type w) :
     F.Elementsᵒᵖ ≌ CostructuredArrow shrinkCoyoneda.{w} F where
