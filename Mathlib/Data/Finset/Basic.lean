@@ -176,6 +176,15 @@ theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := b
 theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => s.erase a :=
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
 
+theorem insert_right_inj (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t :=
+  ⟨fun h ↦ by rw [← erase_insert hs, h, erase_insert ht], congrArg _⟩
+
+theorem insert_injOn_notMem (a : α) : { s : Finset α | a ∉ s }.InjOn (insert a) :=
+  fun _s hs _t ht ↦ (insert_right_inj hs ht).1
+
+theorem sdiff_singleton_injOn_mem (a : α) : { s : Finset α | a ∈ s }.InjOn (· \ {a}) :=
+  fun _s hs _t ht ↦ superset_injOn_sdiff _ (singleton_subset_iff.2 hs) (singleton_subset_iff.2 ht)
+
 end Erase
 
 lemma Nontrivial.exists_cons_eq {s : Finset α} (hs : s.Nontrivial) :

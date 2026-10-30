@@ -6,8 +6,8 @@ Authors: Timo Kraenzle, Judith Ludwig, Bryan Wang, Christian Merten,
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Fiber
+public import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Geometrically-`P` schemes over a field

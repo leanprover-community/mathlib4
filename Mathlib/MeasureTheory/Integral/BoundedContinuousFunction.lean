@@ -6,8 +6,8 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.Algebra.Order.LiminfLimsup
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Integration of bounded continuous functions
@@ -32,7 +32,7 @@ variable {X : Type*} [TopologicalSpace X]
 lemma apply_le_nndist_zero (f : X →ᵇ ℝ≥0) (x : X) :
     f x ≤ nndist 0 f := by
   convert nndist_coe_le_nndist x
-  simp only [coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
+  simp only [FunLike.coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
 
 lemma apply_le_edist_zero (f : X →ᵇ ℝ≥0) (x : X) :
     f x ≤ edist 0 f := by

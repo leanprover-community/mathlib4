@@ -247,40 +247,35 @@ theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ �
   rw [mul_comm]
   exact norm_mul_le y x
 
+/-- A non-unital subring of a non-unital seminormed ring is also a non-unital seminormed ring,
+with the restriction of the norm. -/
+instance NonUnitalSubring.nonUnitalSeminormedRing {E : Type*}
+    [NonUnitalSeminormedRing E] (s : NonUnitalSubring E) :
+    NonUnitalSeminormedRing s :=
+  fast_instance%
+  { s.seminormedAddCommGroup, s.toNonUnitalRing with
+    norm_mul_le a b := norm_mul_le a.1 b.1 }
+
 /-- A non-unital subalgebra of a non-unital seminormed ring is also a non-unital seminormed ring,
 with the restriction of the norm. -/
 instance NonUnitalSubalgebra.nonUnitalSeminormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalSeminormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) :
     NonUnitalSeminormedRing s :=
-  { s.toSubmodule.seminormedAddCommGroup, s.toNonUnitalRing with
-    norm_mul_le a b := norm_mul_le a.1 b.1 }
+  fast_instance% s.toNonUnitalSubring.nonUnitalSeminormedRing
 
-/-- A non-unital subalgebra of a non-unital seminormed ring is also a non-unital seminormed ring,
-with the restriction of the norm. -/
--- necessary to require `SMulMemClass S 𝕜 E` so that `𝕜` can be determined as an `outParam`
-@[nolint unusedArguments]
-instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalSeminormedRing {S 𝕜 E : Type*}
-    [CommRing 𝕜] [NonUnitalSeminormedRing E] [Module 𝕜 E] [SetLike S E] [NonUnitalSubringClass S E]
-    [SMulMemClass S 𝕜 E] (s : S) :
-    NonUnitalSeminormedRing s :=
-  { AddSubgroupClass.seminormedAddCommGroup s, NonUnitalSubringClass.toNonUnitalRing s with
-    norm_mul_le a b := norm_mul_le a.1 b.1 }
+/-- A non-unital subring of a non-unital normed ring is also a non-unital normed ring, with the
+restriction of the norm. -/
+instance NonUnitalSubring.nonUnitalNormedRing {E : Type*}
+  [NonUnitalNormedRing E] (s : NonUnitalSubring E) : NonUnitalNormedRing s :=
+  fast_instance%
+  { s.nonUnitalSeminormedRing with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- A non-unital subalgebra of a non-unital normed ring is also a non-unital normed ring, with the
 restriction of the norm. -/
 instance NonUnitalSubalgebra.nonUnitalNormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalNormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) : NonUnitalNormedRing s :=
-  { s.nonUnitalSeminormedRing with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-/-- A non-unital subalgebra of a non-unital normed ring is also a non-unital normed ring,
-with the restriction of the norm. -/
-instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalNormedRing {S 𝕜 E : Type*}
-    [CommRing 𝕜] [NonUnitalNormedRing E] [Module 𝕜 E] [SetLike S E] [NonUnitalSubringClass S E]
-    [SMulMemClass S 𝕜 E] (s : S) :
-    NonUnitalNormedRing s :=
-  { nonUnitalSeminormedRing s with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+  fast_instance% s.toNonUnitalSubring.nonUnitalNormedRing
 
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
   { ULift.seminormedAddCommGroup, ULift.nonUnitalRing with
@@ -314,37 +309,29 @@ section SeminormedRing
 
 variable [SeminormedRing α] {a b c : α}
 
+/-- A subring of a seminormed ring is also a seminormed ring, with the restriction of the norm. -/
+instance Subring.seminormedRing {E : Type*} [SeminormedRing E] (s : Subring E) :
+    SeminormedRing s :=
+  fast_instance%
+  { s.seminormedAddCommGroup, s.toRing with
+    norm_mul_le a b := norm_mul_le a.1 b.1 }
+
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the
 norm. -/
 instance Subalgebra.seminormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [SeminormedRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : SeminormedRing s :=
-  { s.toSubmodule.seminormedAddCommGroup, s.toRing with
-    norm_mul_le a b := norm_mul_le a.1 b.1 }
+  fast_instance% s.toSubring.seminormedRing
 
-/-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the
-norm. -/
--- necessary to require `SMulMemClass S 𝕜 E` so that `𝕜` can be determined as an `outParam`
-@[nolint unusedArguments]
-instance (priority := 75) SubalgebraClass.seminormedRing {S 𝕜 E : Type*} [CommRing 𝕜]
-    [SeminormedRing E] [Algebra 𝕜 E] [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E]
-    (s : S) : SeminormedRing s :=
-  { AddSubgroupClass.seminormedAddCommGroup s, SubringClass.toRing s with
-    norm_mul_le a b := norm_mul_le a.1 b.1 }
+/-- A subring of a normed ring is also a normed ring, with the restriction of the norm. -/
+instance Subring.normedRing {E : Type*} [NormedRing E] (s : Subring E) : NormedRing s :=
+  fast_instance%
+  { s.seminormedRing with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- A subalgebra of a normed ring is also a normed ring, with the restriction of the norm. -/
 instance Subalgebra.normedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [NormedRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : NormedRing s :=
-  { s.seminormedRing with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-/-- A subalgebra of a normed ring is also a normed ring, with the restriction of the
-norm. -/
-instance (priority := 75) SubalgebraClass.normedRing {S 𝕜 E : Type*} [CommRing 𝕜]
-    [NormedRing E] [Algebra 𝕜 E] [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E]
-    (s : S) : NormedRing s :=
-  { seminormedRing s with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
+  fast_instance% s.toSubring.normedRing
 
 theorem Nat.norm_cast_le : ∀ n : ℕ, ‖(n : α)‖ ≤ n * ‖(1 : α)‖
   | 0 => by simp
@@ -573,19 +560,33 @@ section NonUnitalNormedCommRing
 
 variable [NonUnitalNormedCommRing α]
 
+/-- A non-unital subring of a non-unital seminormed commutative ring is also a non-unital
+seminormed commutative ring, with the restriction of the norm. -/
+instance NonUnitalSubring.nonUnitalSeminormedCommRing {E : Type*}
+    [NonUnitalSeminormedCommRing E] (s : NonUnitalSubring E) :
+    NonUnitalSeminormedCommRing s :=
+  fast_instance% { s.nonUnitalSeminormedRing, s.toNonUnitalCommRing with }
+
 /-- A non-unital subalgebra of a non-unital seminormed commutative ring is also a non-unital
 seminormed commutative ring, with the restriction of the norm. -/
 instance NonUnitalSubalgebra.nonUnitalSeminormedCommRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalSeminormedCommRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) :
     NonUnitalSeminormedCommRing s :=
-  { s.nonUnitalSeminormedRing, s.toNonUnitalCommRing with }
+  fast_instance% s.toNonUnitalSubring.nonUnitalSeminormedCommRing
+
+/-- A non-unital subring of a non-unital normed commutative ring is also a non-unital normed
+commutative ring, with the restriction of the norm. -/
+instance NonUnitalSubring.nonUnitalNormedCommRing {E : Type*}
+    [NonUnitalNormedCommRing E] (s : NonUnitalSubring E) :
+    NonUnitalNormedCommRing s :=
+  fast_instance% { s.nonUnitalSeminormedCommRing, s.nonUnitalNormedRing with }
 
 /-- A non-unital subalgebra of a non-unital normed commutative ring is also a non-unital normed
 commutative ring, with the restriction of the norm. -/
 instance NonUnitalSubalgebra.nonUnitalNormedCommRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
     [NonUnitalNormedCommRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) :
     NonUnitalNormedCommRing s :=
-  { s.nonUnitalSeminormedCommRing, s.nonUnitalNormedRing with }
+  fast_instance% s.toNonUnitalSubring.nonUnitalNormedCommRing
 
 instance ULift.nonUnitalNormedCommRing : NonUnitalNormedCommRing (ULift α) :=
   { ULift.nonUnitalSeminormedCommRing, ULift.normedAddCommGroup with }
@@ -933,30 +934,60 @@ theorem NormMulClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
 
 end Induced
 
+namespace NonUnitalSubringClass
+
+variable {S R : Type*} [SetLike S R]
+
+instance (priority := 75) toNonUnitalSeminormedRing [NonUnitalSeminormedRing R]
+    [NonUnitalSubringClass S R] (s : S) :
+    NonUnitalSeminormedRing s :=
+  fast_instance% NonUnitalSeminormedRing.induced s R (subtype s)
+
+instance (priority := 75) toNonUnitalNormedRing [NonUnitalNormedRing R]
+    [NonUnitalSubringClass S R] (s : S) :
+    NonUnitalNormedRing s :=
+  fast_instance% NonUnitalNormedRing.induced s R (subtype s) Subtype.val_injective
+
+instance (priority := 75) toNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing R]
+    [NonUnitalSubringClass S R] (s : S) :
+    NonUnitalSeminormedCommRing s :=
+  fast_instance% NonUnitalSeminormedCommRing.induced s R (subtype s)
+
+instance (priority := 75) toNonUnitalNormedCommRing [NonUnitalNormedCommRing R]
+    [NonUnitalSubringClass S R] (s : S) :
+    NonUnitalNormedCommRing s :=
+  fast_instance% NonUnitalNormedCommRing.induced s R (subtype s) Subtype.val_injective
+
+end NonUnitalSubringClass
+
 namespace SubringClass
 
 variable {S R : Type*} [SetLike S R]
 
-instance toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) : SeminormedRing s :=
-  fast_instance% SeminormedRing.induced s R (SubringClass.subtype s)
+instance (priority := 75) toSeminormedRing [SeminormedRing R] [SubringClass S R] (s : S) :
+    SeminormedRing s :=
+  fast_instance% SeminormedRing.induced s R (subtype s)
 
-instance toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
-  fast_instance% NormedRing.induced s R (SubringClass.subtype s) Subtype.val_injective
+instance (priority := 75) toNormedRing [NormedRing R] [SubringClass S R] (s : S) : NormedRing s :=
+  fast_instance% NormedRing.induced s R (subtype s) Subtype.val_injective
 
-instance toSeminormedCommRing [SeminormedCommRing R] [_h : SubringClass S R] (s : S) :
+instance (priority := 75) toSeminormedCommRing [SeminormedCommRing R] [SubringClass S R] (s : S) :
     SeminormedCommRing s :=
-  fast_instance% SeminormedCommRing.induced s R (SubringClass.subtype s)
+  fast_instance% SeminormedCommRing.induced s R (subtype s)
 
-instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : NormedCommRing s :=
-  fast_instance% NormedCommRing.induced s R (SubringClass.subtype s) Subtype.val_injective
+instance (priority := 75) toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) :
+    NormedCommRing s :=
+  fast_instance% NormedCommRing.induced s R (subtype s) Subtype.val_injective
 
-instance toNormOneClass [SeminormedRing R] [NormOneClass R] [SubringClass S R] (s : S) :
+instance (priority := 75) toNormOneClass [SeminormedRing R] [NormOneClass R]
+    [SubringClass S R] (s : S) :
     NormOneClass s :=
-  .induced s R <| SubringClass.subtype _
+  .induced s R <| subtype _
 
-instance toNormMulClass [SeminormedRing R] [NormMulClass R] [SubringClass S R] (s : S) :
+instance (priority := 75) toNormMulClass [SeminormedRing R] [NormMulClass R]
+    [SubringClass S R] (s : S) :
     NormMulClass s :=
-  .induced s R <| SubringClass.subtype _
+  .induced s R <| subtype _
 
 end SubringClass
 

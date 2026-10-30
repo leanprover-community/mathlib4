@@ -141,6 +141,18 @@ protected theorem _root_.Matrix.posSemidef_intCast_iff
 lemma diag_nonneg {A : Matrix n n R} (hA : A.PosSemidef) {i : n} : 0 ≤ A i i := by
   simpa using hA.2 <| .single i 1
 
+variable (n R) in
+/-- The set of matrices that are positive semidefinite form an additive submonoid. -/
+@[simps]
+def addSubmonoid [AddLeftMono R] : AddSubmonoid (Matrix n n R) where
+  carrier := .ofPred PosSemidef
+  add_mem' := .add
+  zero_mem' := .zero
+
+@[simp]
+theorem mem_addSubmonoid [AddLeftMono R] {A : Matrix n n R} : A ∈ addSubmonoid n R ↔ A.PosSemidef :=
+  Iff.rfl
+
 end PosSemidef
 
 @[simp]
@@ -152,7 +164,7 @@ theorem posSemidef_sum {ι : Type*} [AddLeftMono R]
     {x : ι → Matrix n n R} (s : Finset ι) (h : ∀ i ∈ s, PosSemidef (x i)) :
     PosSemidef (∑ i ∈ s, x i) := by
   refine ⟨isSelfAdjoint_sum s fun _ hi => h _ hi |>.1, fun y => ?_⟩
-  simp [sum_apply, Finset.mul_sum, Finset.sum_mul, Finsupp.sum_finsetSum_comm,
+  simp [Matrix.sum_apply, Finset.mul_sum, Finset.sum_mul, Finsupp.sum_finsetSum_comm,
     Finset.sum_nonneg fun _ hi => (h _ hi).2 _]
 
 /-!
@@ -213,7 +225,7 @@ theorem of_subsingleton (h : Subsingleton R) (M : Matrix n n R) : M.PosDef :=
 
 protected theorem one [StarOrderedRing R] [DecidableEq n] [IsProperStar R] :
     PosDef (1 : Matrix n n R) :=
-  ⟨isHermitian_one, fun x hx ↦ Finsupp.sum_pos (by aesop (add simp one_apply)) hx⟩
+  ⟨isHermitian_one, fun x hx ↦ Finsupp.sum_pos (by aesop (add simp Matrix.one_apply)) hx⟩
 
 protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℕ) (hd : d ≠ 0) :

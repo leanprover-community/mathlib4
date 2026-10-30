@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 public import Mathlib.CategoryTheory.Presentable.Dense
-public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 
 /-!
 # Ind and pro-properties
