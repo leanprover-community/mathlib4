@@ -269,7 +269,7 @@ variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype 
 /-- The equivalence between `SL m R` and `SL n R` given by an equivalence `e : m ≃ n`. -/
 @[simps! apply_coe]
 def reindex (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
-  toEquiv := (Matrix.reindex e e).subtypeEquiv fun A => by rw [Matrix.det_reindex_self]
+  toEquiv := (Matrix.reindex e e).subtypeEquiv fun A ↦ by rw [det_reindex_self]
   map_mul' A B := Subtype.ext (map_mul (reindexRingEquiv R e) A.val B.val)
 
 @[simp]
