@@ -685,6 +685,8 @@ alias ⟨IsStarOrtho.symm, _⟩ := isStarOrtho_comm
 instance : Std.Symm (· ⋆⟂ · : R → R → Prop) where
   symm _ _ := .symm
 
+/-- A variant of `isStarOrtho_iff` which retains the ordering of the factors in the product, but
+instead moves the `star`. -/
 lemma isStarOrtho_iff' : p ⋆⟂ q ↔ p * star q = 0 ∧ star p * q = 0 := by
   rw [isStarOrtho_iff, ← star_eq_zero (x := star p * q), star_mul, star_star]
 
