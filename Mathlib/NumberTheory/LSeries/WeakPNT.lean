@@ -6,8 +6,10 @@ Authors: Jose Francisco Antonio Balderas, Vincent Beffara, Alex Kontorovich, Ter
 -/
 module
 
+public import Mathlib.NumberTheory.Chebyshev
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.LSeries.Dirichlet
+public import Mathlib.NumberTheory.LSeries.PrimesInAP
 public import Mathlib.NumberTheory.LSeries.WienerIkehara
 
 import Mathlib.NumberTheory.LSeries.Linearity
@@ -51,27 +53,18 @@ open scoped Topology
 class `a` mod `q`: the average of `residueClass a` over `[0, x]` tends to `(q.totient)⁻¹`. -/
 private theorem tendsto_residueClass_sum_div {q : ℕ} [NeZero q] {a : ZMod q} (ha : IsUnit a) :
     Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊, residueClass a n) / x) atTop (𝓝 q.totient⁻¹) :=
-  @WienerIkehara.tendsto_sum_div
-    { f := residueClass a
-      C := log 4 + 4
-      bound N := calc
-        _ ≤ ∑ i ∈ range N, Λ i := by
-          simp_rw [abs_of_nonneg (residueClass_nonneg _ _)]
-          grw [residueClass_le]
-        _ ≤ (log 4 + 4) * N := by
-          rcases eq_or_ne N 0 with rfl | h
-          · simp
-          grw [range_eq_Icc_zero_sub_one _ h, (by simp : N - 1 = ⌊(N : ℝ) - 1⌋₊),
-            ← psi_eq_sum_Icc, psi_le_const_mul_self <| sub_nonneg_of_le <|
-            one_le_cast_iff_ne_zero.mpr h, (by linarith : (N : ℝ) - 1 ≤ N)]
-      A := q.totient⁻¹
-      hA := by positivity
-      G := LFunctionResidueClassAux a
-      hG := continuousOn_LFunctionResidueClassAux a
-      hG' s hs := by rw [eqOn_LFunctionResidueClassAux ha hs]; push_cast; ring
-      hf σ hσ := LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
-        (abscissaOfAbsConv_residueClass_le_one a).trans_lt <| mod_cast hσ
-      hpos := residueClass_nonneg a }
+  WienerIkehara.tendsto_sum_div (C := log 4 + 4) (G := LFunctionResidueClassAux a)
+    (fun N ↦ calc
+      _ ≤ ∑ i ∈ range N, Λ i := by grw [residueClass_le]
+      _ ≤ (log 4 + 4) * N := by
+        rcases eq_or_ne N 0 with rfl | h
+        · simp
+        grw [range_eq_Icc_zero_sub_one _ h, (by simp : N - 1 = ⌊(N : ℝ) - 1⌋₊),
+          ← psi_eq_sum_Icc, psi_le_const_mul_self <| sub_nonneg_of_le <|
+          one_le_cast_iff_ne_zero.mpr h, (by linarith : (N : ℝ) - 1 ≤ N)])
+    (continuousOn_LFunctionResidueClassAux a)
+    (fun s hs ↦ by rw [eqOn_LFunctionResidueClassAux ha hs]; push_cast; ring)
+    (residueClass_nonneg a)
 
 /-- **The weak prime number theorem in arithmetic progressions.**  For `a` coprime to `q`, the
 von Mangoldt function summed over `n ≤ x` with `n ≡ a mod q` grows like `x / q.totient`. -/
@@ -231,17 +224,16 @@ theorem tendsto_M_div_atTop : Tendsto (fun x ↦ (M x : ℝ) / x) atTop (𝓝 0)
     · grind [riemannZeta_eq_inv_sub_mul hs1, riemannZeta_ne_zero_of_one_le_re]
   have e : (fun n ↦ ofReal (1 + μ n)) = 1 + fun n ↦ (μ n : ℂ) := by push_cast; funext; simp
   have hWI : Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊, ((1 : ℝ) + μ n)) / x) atTop (𝓝 1) :=
-    @WienerIkehara.tendsto_sum_div
-      { f n := 1 + μ n
-        C := 2
-        bound _ := mod_cast by
-          grw [abs_add_le, ArithmeticFunction.abs_moebius_le_one]; simp; grind
-        A := 1
-        hA := zero_le_one
-        G s := riemannZeta₀ s + (s - 1) * (riemannZeta₁ s)⁻¹
-        hG := .add differentiable_riemannZeta₀.continuous.continuousOn <|
-          .mul (by fun_prop) (differentiable_riemannZeta₁.continuous.continuousOn.inv₀ this)
-        hG' s hs := by
+    WienerIkehara.tendsto_sum_div (f := fun n ↦ 1 + μ n) (C := 2)
+      (G := fun s ↦ riemannZeta₀ s + (s - 1) * (riemannZeta₁ s)⁻¹)
+      (fun n ↦ by
+        calc ∑ i ∈ range n, ((1 : ℝ) + μ i)
+            ≤ ∑ _i ∈ range n, (2 : ℝ) := Finset.sum_le_sum fun i _ ↦ by
+              grw [(abs_le.mp ArithmeticFunction.abs_moebius_le_one).2]; norm_num
+          _ = 2 * n := by simp [mul_comm])
+      (.add differentiable_riemannZeta₀.continuous.continuousOn <|
+        .mul (by fun_prop) (differentiable_riemannZeta₁.continuous.continuousOn.inv₀ this))
+      (fun s hs ↦ by
           have : s ≠ 1 := by rintro rfl; simp at hs
           have : LSeries (fun n ↦ (μ n : ℂ)) s = (riemannZeta s)⁻¹ := by
             grind [LSeries_one_eq_riemannZeta hs, LSeries_one_mul_Lseries_moebius]
@@ -251,14 +243,8 @@ theorem tendsto_M_div_atTop : Tendsto (fun x ↦ (M x : ℝ) / x) atTop (𝓝 0)
               ArithmeticFunction.LSeriesSummable_moebius_iff.mpr hs]
           change riemannZeta₀ s + (s - 1) * (riemannZeta₁ s)⁻¹
             = LSeries (fun n ↦ ofReal (1 + μ n)) s - 1 / (s - 1)
-          grind [inv_riemannZeta_eq_sub_mul_of_ne_one, riemannZeta_eq_inv_sub_add]
-        hf σ hσ := by
-          have : 1 < (σ : ℂ).re := by simpa using hσ
-          change LSeriesSummable (fun n ↦ ofReal (1 + μ n)) (σ : ℂ)
-          rw [e]
-          exact (LSeriesSummable_of_bounded_of_one_lt_re (m := 1) (fun n _ ↦ by simp) this).add
-            (ArithmeticFunction.LSeriesSummable_moebius_iff.mpr this)
-        hpos n := by dsimp; grw [← (abs_le.mp ArithmeticFunction.abs_moebius_le_one).1]; simp }
+          grind [inv_riemannZeta_eq_sub_mul_of_ne_one, riemannZeta_eq_inv_sub_add])
+      (fun n ↦ by dsimp; grw [← (abs_le.mp ArithmeticFunction.abs_moebius_le_one).1]; simp)
   have : Tendsto (fun x : ℝ ↦ (⌊x⌋₊ + 1) / x) atTop (𝓝 1) := by
     convert ((tendsto_nat_floor_div_atTop (R := ℝ)).add tendsto_inv_atTop_zero).congr' ?_
     · simp
