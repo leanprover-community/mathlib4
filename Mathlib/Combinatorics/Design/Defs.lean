@@ -57,6 +57,8 @@ structure IncidenceSystem where
   /-- The blocks must be subsets of the ambient set. -/
   block_subset {b} (hb : b ∈ blockSet) : block b ⊆ carrier
 
+initialize_simps_projections IncidenceSystem (as_prefix carrier)
+
 attribute [grind →] IncidenceSystem.block_subset
 
 namespace IncidenceSystem
@@ -113,13 +115,13 @@ class IsSimple (d : IncidenceSystem α β) : Prop where
   block_injOn_blockSet : d.blockSet.InjOn d.block := by simp
 
 @[simp, grind .]
-theorem IsSimple.ofHypergraph (H : Hypergraph α) : (ofHypergraph H).IsSimple where
+protected theorem IsSimple.ofHypergraph (H : Hypergraph α) : (ofHypergraph H).IsSimple where
 
 @[simp, grind .]
-theorem IsSimple.discrete (s : Set α) : (discrete s).IsSimple where
+protected theorem IsSimple.discrete (s : Set α) : (discrete s).IsSimple where
 
 @[simp, grind .]
-theorem IsSimple.indiscrete (s : Set α) (b : β) : (indiscrete s b).IsSimple where
+protected theorem IsSimple.indiscrete (s : Set α) (b : β) : (indiscrete s b).IsSimple where
 
 /-- An incidence system is `k`-uniform if every block has size `k`. -/
 @[mk_iff]
@@ -128,10 +130,13 @@ structure IsUniform (d : IncidenceSystem α β) (k : ℕ) : Prop where
 
 attribute [grind .] IsUniform.uniform
 
-theorem isUniform_discrete (s : Set α) : (discrete s).IsUniform 1 where
+@[simp, grind .]
+protected theorem IsUniform.discrete (s : Set α) : (discrete s).IsUniform 1 where
   uniform {x} _ := by simp
 
-theorem isUniform_indiscrete (s : Set α) (b : β) : (indiscrete s b).IsUniform s.ncard where
+@[simp, grind .]
+protected theorem IsUniform.indiscrete (s : Set α) (b : β) :
+    (indiscrete s b).IsUniform s.ncard where
   uniform _ := by simp
 
 theorem IsUniform.nonempty_block {d : IncidenceSystem α β}
