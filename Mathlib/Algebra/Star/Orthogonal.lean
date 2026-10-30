@@ -75,10 +75,26 @@ lemma smul_right {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] [SMulComm
     (h : p ⋆⟂ q) (c : S) : p ⋆⟂ (c • q) :=
   (h.symm.smul_left c).symm
 
+lemma list_sum_left {l : List R} (h : ∀ x ∈ l, x ⋆⟂ q) : l.sum ⋆⟂ q := by
+  induction l with
+  | nil => simp
+  | cons x l ih =>
+    rw [List.sum_cons]
+    exact (h x List.mem_cons_self).add_left <| ih fun y hy ↦ h y <| List.mem_cons_of_mem x hy
+
+lemma list_sum_right {l : List R} (h : ∀ x ∈ l, p ⋆⟂ x) : p ⋆⟂ l.sum :=
+  (list_sum_left fun x hx ↦ (h x hx).symm).symm
+
+lemma multiset_sum_left {s : Multiset R} (h : ∀ x ∈ s, x ⋆⟂ q) : s.sum ⋆⟂ q := by
+  induction s using Quotient.inductionOn
+  exact list_sum_left h
+
+lemma multiset_sum_right {s : Multiset R} (h : ∀ x ∈ s, p ⋆⟂ x) : p ⋆⟂ s.sum :=
+  (multiset_sum_left fun x hx ↦ (h x hx).symm).symm
+
 lemma sum_left {ι : Type*} {s : Finset ι} {f : ι → R} (h : ∀ i ∈ s, f i ⋆⟂ q) :
-    (∑ i ∈ s, f i) ⋆⟂ q where
-  mul_star_eq_zero := by rw [sum_mul]; exact sum_eq_zero fun i hi ↦ (h i hi).mul_star_eq_zero
-  star_mul_eq_zero := by rw [mul_sum]; exact sum_eq_zero fun i hi ↦ (h i hi).star_mul_eq_zero
+    (∑ i ∈ s, f i) ⋆⟂ q :=
+  multiset_sum_left <| Multiset.forall_mem_map_iff.mpr h
 
 lemma sum_right {ι : Type*} {s : Finset ι} {f : ι → R} (h : ∀ i ∈ s, p ⋆⟂ f i) :
     p ⋆⟂ (∑ i ∈ s, f i) :=
