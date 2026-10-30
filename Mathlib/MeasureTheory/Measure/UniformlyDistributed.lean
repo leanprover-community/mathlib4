@@ -135,7 +135,7 @@ private lemma le_smul (μ ν : Measure X) [OpensMeasurableSpace X]
   _ ≤ liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (ball x r) ∂ν) (𝓝[>] 0) := by
     refine liminf_le_liminf ?_
     filter_upwards [self_mem_nhdsWithin] with r hr
-    gcongr ?_ * (∫⁻ a in U, ?_ ∂ν)
+    gcongr _ * (∫⁻ a in U, ?_ ∂ν)
     exact (measure_mono inter_subset_right).trans (eq_measure hr _ _).le
   _ = liminf (fun r => (ν (ball x r))⁻¹ * μ (ball x r) * ν U) (𝓝[>] 0) := by
     congr with r
