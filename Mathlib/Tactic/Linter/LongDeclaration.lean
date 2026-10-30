@@ -49,36 +49,6 @@ namespace Mathlib.Linter.LongDeclaration
 
 open Lean Elab Command
 
-/-- Update the nesting depth of block comments after scanning one line of token trivia.
-
-The input must consist only of whitespace and comments, as supplied by a token's leading or
-trailing source slice. Comment markers inside strings and quoted identifiers therefore never
-reach this scanner. -/
-private def commentDepthAfter (depth : Nat) : List Char → Nat
-  | '/' :: '-' :: cs => commentDepthAfter (depth + 1) cs
-  | '-' :: '/' :: cs => commentDepthAfter (depth - 1) cs
-  -- Outside a block comment, `--` consumes the rest of the line. Inside one, consume only
-  -- the first hyphen so that `--/` still closes the block at its second hyphen.
-  | '-' :: '-' :: cs => if depth == 0 then 0 else commentDepthAfter depth ('-' :: cs)
-  | _ :: cs => commentDepthAfter depth cs
-  | [] => depth
-
-/-- Add the source lines containing comments in a leading or trailing token slice to `lines`.
-Blank lines inside block comments are included; blank lines between comments are not. -/
-private def addCommentLines (fileMap : FileMap) (str : Substring.Raw)
-    (lines : Std.HashSet Nat) : Std.HashSet Nat := Id.run do
-  let mut lines := lines
-  let mut depth := 0
-  let mut lineNumber := (fileMap.toPosition str.startPos).line
-  for line in str.toString.splitOn "\n" do
-    -- Every non-whitespace character in this slice belongs to a comment. A line that begins
-    -- inside a block comment also belongs to that comment, even if it contains only whitespace.
-    if depth > 0 || line.toList.any (!·.isWhitespace) then
-      lines := lines.insert lineNumber
-    depth := commentDepthAfter depth line.toList
-    lineNumber := lineNumber + 1
-  return lines
-
 /-- Add every source line touched by the half-open range `range` to `lines`. -/
 private def addSourceLines (fileMap : FileMap) (range : Syntax.Range)
     (lines : Std.HashSet Nat) : Std.HashSet Nat := Id.run do
@@ -91,12 +61,42 @@ private def addSourceLines (fileMap : FileMap) (range : Syntax.Range)
     lines := lines.insert line
   return lines
 
+/-- Add comment lines from a token's leading or trailing whitespace and comments.
+Lean's parser finds each comment's endpoint, handling nested block comments itself. -/
+private def addCommentLines (fileMap : FileMap) (pmctx : Parser.ParserModuleContext)
+    (str : Substring.Raw) (lines : Std.HashSet Nat) : Std.HashSet Nat := Id.run do
+  let input := fileMap.source
+  let ictx := Parser.InputContext.mk input "" (fileMap := fileMap)
+  let mut pos := str.startPos
+  let mut lines := lines
+  while pos < str.stopPos do
+    let next := pos.next input
+    -- These slices contain no strings or identifiers: any non-whitespace text is a comment.
+    let parser? :=
+      if pos.get input == '/' && next.get input == '-' then
+        some (Parser.finishCommentBlock (pushMissingOnError := false) 1)
+      else if pos.get input == '-' && next.get input == '-' then
+        some (Parser.takeUntilFn (· == '\n'))
+      else none
+    if let some parser := parser? then
+      -- Both parsers start after the two-character opening marker. Parsing a whole block
+      -- gives a range including its interior blank lines, without counting gaps between comments.
+      let state := (Parser.mkParserState input).setPos (next.next input)
+      let state := parser.run ictx pmctx (Parser.getTokenTable pmctx.env) state
+      if state.hasError then return lines
+      lines := addSourceLines fileMap ⟨pos, state.pos⟩ lines
+      pos := state.pos
+    else
+      pos := next
+  return lines
+
 /-- Collect the lines containing original code tokens and comments in `stx`.
 
 The two sets may overlap: a line containing both code and a comment must still count toward
 the body length. Multiline tokens, including string literals, contribute all their lines as code.
 -/
-private partial def sourceLines (fileMap : FileMap) (stx : Syntax)
+private partial def sourceLines (fileMap : FileMap) (pmctx : Parser.ParserModuleContext)
+    (stx : Syntax)
     (code comments : Std.HashSet Nat) : Std.HashSet Nat × Std.HashSet Nat := Id.run do
   match stx with
   | .node _ kind args =>
@@ -108,12 +108,12 @@ private partial def sourceLines (fileMap : FileMap) (stx : Syntax)
     let mut code := code
     let mut comments := comments
     for arg in args do
-      (code, comments) := sourceLines fileMap arg code comments
+      (code, comments) := sourceLines fileMap pmctx arg code comments
     return (code, comments)
   | .atom (.original leading pos trailing endPos) _
   | .ident (.original leading pos trailing endPos) .. =>
     return (addSourceLines fileMap ⟨pos, endPos⟩ code,
-      addCommentLines fileMap trailing (addCommentLines fileMap leading comments))
+      addCommentLines fileMap pmctx trailing (addCommentLines fileMap pmctx leading comments))
   -- Synthetic and missing tokens do not describe code written in the source file.
   | _ => return (code, comments)
 
@@ -151,7 +151,8 @@ private def checkLongDeclarations : Syntax → CommandElabM Unit := withSetOptio
     if bodyLineCount fileMap {} range ≤ limit then return
   let some range := declarationBodyRange? stx | return
   if bodyLineCount fileMap {} range ≤ limit then return
-  let (code, comments) := sourceLines fileMap stx {} {}
+  let pmctx : Parser.ParserModuleContext := { env := ← getEnv, options := ← getOptions }
+  let (code, comments) := sourceLines fileMap pmctx stx {} {}
   let commentOnly := comments.filter (!code.contains ·)
   let lines := bodyLineCount fileMap commentOnly range
   if lines > limit then
