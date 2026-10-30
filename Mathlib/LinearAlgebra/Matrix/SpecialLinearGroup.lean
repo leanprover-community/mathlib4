@@ -291,6 +291,10 @@ theorem reindex_comp_map (e : m ≃ n) (f : R →+* S) :
       (map f).comp (reindex R e) :=
   rfl
 
+theorem reindex_trans_mapEquiv (e : m ≃ n) (f : R ≃+* S) : 
+    (reindex S e).trans (mapEquiv f) = (mapEquiv f).trans (reindex S e) :=
+  rfl
+
 end Reindex
 
 section Pi
