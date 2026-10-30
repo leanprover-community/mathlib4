@@ -34,8 +34,16 @@ open Limits Opposite
 section shrinkYoneda
 
 variable [LocallySmall.{w} C] [LocallySmall.{w} D] (F : C ⥤ D)
-  [∀ (P : Cᵒᵖ ⥤ Type w), F.op.HasLeftKanExtension P]
 
+@[simp]
+lemma shrinkYonedaEquiv_right_of_leftExtension_hom
+    {X : C} {Y : F.op.LeftExtension (shrinkYoneda.{w}.obj X)}
+    (φ : Functor.LeftExtension.mk _ (shrinkYonedaMap.{w} F X) ⟶ Y) :
+    shrinkYonedaEquiv φ.right = shrinkYonedaEquiv Y.hom := by
+  simp [← dsimp% StructuredArrow.w φ, shrinkYonedaEquiv_apply,
+    shrinkYonedaMap_app_hom_apply.{w}]
+
+@[no_expose]
 noncomputable instance (X : C) (Y : F.op.LeftExtension (shrinkYoneda.{w}.obj X)) :
     Unique (Functor.LeftExtension.mk _ (shrinkYonedaMap.{w} F X) ⟶ Y) where
   default :=
@@ -45,17 +53,15 @@ noncomputable instance (X : C) (Y : F.op.LeftExtension (shrinkYoneda.{w}.obj X))
       simp [shrinkYonedaEquiv_apply, shrinkYonedaMap_app_hom_apply.{w}, shrinkYonedaEquiv_symm_app,
         ← dsimp% Y.hom.naturality_apply f.op (shrinkYonedaObjObjEquiv.symm (𝟙 X)),
         shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}])
-  uniq φ := by
-    ext : 1
-    apply shrinkYonedaEquiv.injective
-    simp [← dsimp% StructuredArrow.w φ, shrinkYonedaEquiv_apply,
-      shrinkYonedaMap_app_hom_apply.{w}]
+  uniq φ := by ext : 1; exact shrinkYonedaEquiv.injective (by simp)
 
 /-- If `F : C ⥤ D` and `X : C`, the functor `shrinkYoneda.obj (F.obj X)` is
 a left Kan extension of `shrinkYoneda.obj X` along `F.op`. -/
 instance (X : C) :
     (shrinkYoneda.{w}.obj (F.obj X)).IsLeftKanExtension (shrinkYonedaMap.{w} F X) :=
   ⟨⟨Limits.IsInitial.ofUnique _⟩⟩
+
+variable [∀ (P : Cᵒᵖ ⥤ Type w), F.op.HasLeftKanExtension P]
 
 /-- `F ⋙ shrinkYoneda` is naturally isomorphic to `shrinkYoneda ⋙ F.op.lan`. -/
 @[no_expose]
