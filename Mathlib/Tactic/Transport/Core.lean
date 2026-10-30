@@ -1,6 +1,11 @@
+/-
+Copyright (c) 2026 Jovan Gerbscheid. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jovan Gerbscheid
+-/
 module
 
-public import Mathlib.Tactic
+public import Mathlib.Tactic.Common
 
 /-!
 ## haha
@@ -227,6 +232,10 @@ def makeTransportLemma (hyps : Array Expr) (target : Expr) (declName : Name) (pr
   let rhsVars := rhsVars'.diff lhsVars'
   -- iterate over antecedents `hyp` to the lemma
   for hyp in hyps, i in 0...* do
+    -- TODO: find a way around this hard encoding
+    if let .str _ s ← hyp.fvarId!.getUserName then
+      if s.startsWith "map" then
+        continue
     -- Checks if `∀ xs, lhs ~ rhs` is a valid "main goal".
     let isMainGoal? (lhs rhs : Expr) (xs : Array Expr) : Option GCongrHyp :=
       lhs.withApp fun lhs lhsArgs => rhs.withApp fun rhs rhsArgs => do
@@ -402,8 +411,13 @@ unless the relation is `→`: `relName` is `_Implies` and `rel?` is `none`.
 Returns the new expression and a proof that it is related to `e`, if a rewrite was found. -/
 partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (forward : Bool)
     (inSimp := false) :
-    TransportM (Option (Expr × Expr)) :=
-  withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"visiting `{e}` in the \
+    TransportM (Option (Expr × Expr)) := do
+  if !inSimp && relKind matches .eq then
+    if forward then
+      transportEqCore e
+    else
+      (← transportEqCore e).mapM fun (e', pf) ↦ return (e', ← mkAppM ``Eq.symm #[pf])
+  else withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"visiting `{e}` in the \
     {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
   -- Try all applicable `@[gcongr]` lemmas.
   let e := e.cleanupAnnotations
@@ -452,22 +466,23 @@ partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (f
               | .forallE n _ _ bi, .forallE _ d b _ => return some (.forallE n d b bi, goal)
               | _, _ => return some (result, goal)
           setMCtx mctx
-  if relKind matches .eq | .imp && !inSimp then
-    let methods ← fun c c' s ↦ return { pre e := do
-      unless e.isApp do return .continue
-      let α ← inferType e
-      let some (e', pf) ←
-          transportCore .eq (Expr.app (.const `Eq [← getLevel α]) α) e true true c c' s  |
-        return .continue
-      return .done { expr := e', proof? := pf }
-      }
-    let (r, _) ← Simp.main e (← Simp.mkContext Simp.neutralConfig) (methods := methods)
-    if let some proof := r.proof? then
-      if relKind matches .eq then
-        return some (r.expr, ← if forward then pure proof else mkAppM ``Eq.symm #[proof])
-      else
-        return some (r.expr, ← mkAppM (if forward then ``Eq.mp else ``Eq.mpr) #[proof])
+  if relKind matches .imp then
+    if let some (e', pf) ← transportEqCore e then
+      return some (e', ← mkAppM (if forward then ``Eq.mp else ``Eq.mpr) #[pf])
   return none
+
+partial def transportEqCore (e : Expr) : TransportM (Option (Expr × Expr)) := fun c c' s ↦ do
+  let methods := { pre e := do
+    unless e.isApp || e.isForall do return .continue
+    -- TODO: avoid running `inferType` on each visited expression.
+    let α ← inferType e
+    let some (e', pf) ←
+        transportCore .eq (Expr.app (.const `Eq [← getLevel α]) α) e true true c c' s |
+      return .continue
+    return .done { expr := e', proof? := pf }
+    }
+  let (r, _) ← Simp.main e (← Simp.mkContext Simp.neutralConfig) (methods := methods)
+  return r.proof?.map (r.expr, ·)
 
 end
 
@@ -494,8 +509,6 @@ def translateGiven (translations : Array (Expr × Expr)) (type : Expr) : MetaM (
       return after
   return none
 
-#check collectFVars
-
 public syntax transportClause := term "to" term
 
 syntax "transport" transportClause,* (" generalizing" (ppSpace colGt ident)*)? : tactic
@@ -513,7 +526,7 @@ elab_rules : tactic
   let translations ← clauses.getElems.mapM fun ⟨stx⟩ ↦
     return (← elabTerm stx[0] none, ← elabTerm stx[2] none)
   let translateType := translateDefault (translateGiven translations)
-  let type ← mvarId.getType
+  let type ← instantiateMVars (← mvarId.getType)
   let (some (e, pf), s) ← withReducible <|
     transportCore .imp none type false |>.run { translateType } |>.run
     | throwError "transport made no progress on `{type}`"
