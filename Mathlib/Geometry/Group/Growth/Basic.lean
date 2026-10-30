@@ -24,6 +24,8 @@ the number of elements of word length at most `n`.
 * `Function.GrowthEquivalent`: mutual domination of two functions.
 * `Function.HasPolynomialGrowth`: `f` is dominated by `n ↦ (n + 1)^d` for some `d`.
 * `Function.HasExponentialGrowth`: `f` dominates `n ↦ 2^n`.
+* `Function.HasSuperpolynomialGrowth`: `f` eventually exceeds every polynomial.
+* `Function.HasSubexponentialGrowth`: `log f n / n → 0`, stated with natural numbers.
 
 ## Implementation notes
 
@@ -89,6 +91,15 @@ def HasPolynomialGrowth (f : ℕ → ℕ) : Prop :=
 /-- `f` has exponential growth if it dominates `n ↦ 2 ^ n`. -/
 def HasExponentialGrowth (f : ℕ → ℕ) : Prop :=
   f.GrowthDominates (2 ^ ·)
+
+/-- `f` has superpolynomial growth if it eventually exceeds every polynomial bound. -/
+def HasSuperpolynomialGrowth (f : ℕ → ℕ) : Prop :=
+  ∀ d : ℕ, ∃ n₀, ∀ n ≥ n₀, (n + 1) ^ d < f n
+
+/-- `f` has subexponential growth if `log (f n) / n → 0`. Equivalently, for every `k`
+we have `f n ^ k ≤ 2 ^ n` for all sufficiently large `n`. -/
+def HasSubexponentialGrowth (f : ℕ → ℕ) : Prop :=
+  ∀ k : ℕ, ∃ n₀, ∀ n ≥ n₀, f n ^ k ≤ 2 ^ n
 
 lemma HasPolynomialGrowth.of_growthDominates {f g : ℕ → ℕ} (hf : f.HasPolynomialGrowth)
     (hfg : f.GrowthDominates g) : g.HasPolynomialGrowth :=
@@ -164,5 +175,13 @@ def HasPolynomialGrowth : Prop := Function.HasPolynomialGrowth P.growth
 /-- A generating family has exponential growth if its growth function does. -/
 @[to_additive /-- A generating family has exponential growth if its growth function does. -/]
 def HasExponentialGrowth : Prop := Function.HasExponentialGrowth P.growth
+
+/-- A generating family has superpolynomial growth if its growth function does. -/
+@[to_additive /-- A generating family has superpolynomial growth if its growth function does. -/]
+def HasSuperpolynomialGrowth : Prop := Function.HasSuperpolynomialGrowth P.growth
+
+/-- A generating family has subexponential growth if its growth function does. -/
+@[to_additive /-- A generating family has subexponential growth if its growth function does. -/]
+def HasSubexponentialGrowth : Prop := Function.HasSubexponentialGrowth P.growth
 
 end Group.Generators
