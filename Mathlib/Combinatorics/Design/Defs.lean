@@ -12,15 +12,18 @@ public import Mathlib.Combinatorics.Hypergraph.Basic
 
 This file defines incidence systems and combinatorial designs.
 
+An incidence system consists of a carrier set and subsets called blocks. We index our blocks
+by a subset of an indexing type to make it easy to add and remove blocks if desired.
+Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is imposed.
+
+Note the similarity with `Hypergraph` which consists of a carrier set and subsets called sets.
+The primary difference is that `Hypergraph` edges are not indexed and do not allow for duplication.
+
 ## Main definitions
 
 * `IncidenceSystem`: An incidence system consists of a carrier set and subsets called blocks.
 * `IncidenceSystem.IsSimple`: An incidence system is simple if there are no duplicate blocks.
 * `IncidenceSystem.IsUniform`: An incidence system is `k`-uniform if every block has size `k`.
-* `IncidenceSystem.ofHypergraph`: Every hypergraph can be viewed as an incidence system where
-  the hyperedges become the blocks.
-* `IncidenceSystem.toHypergraph`: Every incidence system can be viewed as a hypergraph where
-  the blocks become the hyperedges.
 
 ## Implementation details
 
@@ -30,15 +33,13 @@ We place everything in the `IncidenceSystem` namespace, because this still allow
 We index our blocks by a subset of an indexing type `β` to make it easy to add and remove blocks
 if desired. Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is imposed.
 
-In contrast, `Hypergraph` does not use an indexing type and does not allow duplicate edges.
-
 ## TODO
 
 * Define regular (number of blocks containing a given point is fixed)
 * Define equidistance (pairwise intersections have a given size)
 -/
 
-
+#check Hypergraph
 @[expose] public section
 
 variable (α β : Type*)
