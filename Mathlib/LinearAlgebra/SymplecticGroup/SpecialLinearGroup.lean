@@ -62,7 +62,7 @@ theorem det_unique_sum_unique (ι R : Type*)
       rw [Matrix.det_fin_two]
       rfl
 
-/-- The two-by-two determinant formula for matrices indexed by `Fin 1 ⊕ Fin 1`. -/
+/-- The usual two-by-two determinant formula, indexed by `Fin 1 ⊕ Fin 1`. -/
 theorem det_fin_one_sum_fin_one
     {R : Type*} [CommRing R]
     (M : Matrix (Fin 1 ⊕ Fin 1) (Fin 1 ⊕ Fin 1) R) :
@@ -96,7 +96,7 @@ theorem mem_unique_iff_det_eq_one
       Matrix.toBlocks₁₁, Matrix.toBlocks₁₂, Matrix.toBlocks₂₁, Matrix.toBlocks₂₂,
       Matrix.sub_apply, Matrix.one_apply, mul_comm] using hdet
 
-/-- A matrix indexed by `Fin 1 ⊕ Fin 1` is symplectic exactly when its determinant is one. -/
+/-- In dimension two, a matrix is symplectic if and only if its determinant is one. -/
 theorem mem_fin_one_iff_det_eq_one
     {R : Type*} [CommRing R]
     (M : Matrix (Fin 1 ⊕ Fin 1) (Fin 1 ⊕ Fin 1) R) :
@@ -120,7 +120,6 @@ def finOneEquivSL2 (R : Type*) [CommRing R] :
     (Matrix.SpecialLinearGroup.reindex R
       (finSumFinEquiv : (Fin 1 ⊕ Fin 1) ≃ Fin 2))
 
-/-- On underlying matrices, the forward equivalence relabels both indices. -/
 @[simp]
 theorem finOneEquivSL2_apply_coe
     (R : Type*) [CommRing R]
@@ -131,7 +130,6 @@ theorem finOneEquivSL2_apply_coe
         (finSumFinEquiv : (Fin 1 ⊕ Fin 1) ≃ Fin 2)
         (A : Matrix (Fin 1 ⊕ Fin 1) (Fin 1 ⊕ Fin 1) R) := rfl
 
-/-- On underlying matrices, the inverse equivalence reverses the relabelling. -/
 @[simp]
 theorem finOneEquivSL2_symm_apply_coe
     (R : Type*) [CommRing R]
