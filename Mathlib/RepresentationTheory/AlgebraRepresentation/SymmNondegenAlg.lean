@@ -104,7 +104,7 @@ class IsNondegenAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k
 /-- `(A, Φ)` is symmetric nondegenerate if the bilinear form `⟨x, y⟩ := Φ (x * y)` is symmetric
 nondegenerate. -/
 class IsSymmNondegenAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) extends
-  IsSymmAlg A Φ, IsSeparatingLeftAlg A Φ where
+  IsSymmAlg A Φ, IsSeparatingLeftAlg A Φ
 
 instance [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) [IsSymmNondegenAlg A Φ] :
   IsNondegenAlg A Φ where
@@ -312,9 +312,10 @@ lemma normalization_smul_of_charZero [CharZero k] {f : A} (hf : IsTraceRepresent
   simp [isTraceRepresentative_iff.mp hf, hc, this, Module.finrank_eq_zero_iff_of_free,
     ← not_nontrivial_iff_subsingleton, IsSimpleModule.nontrivial A V]
 
-omit [IsAlgClosed k] [Module.Finite k V] in
-theorem normalization_smul_eq_zero_of_isEmpty [IsSimpleModule A W] [IsEmpty (V ≃ₗ[A] W)]
-    [Module.Finite (Module.End A V) V] {f : A} (hf : IsTraceRepresentative V Φ f) (a : A) (w : W) :
+omit [IsAlgClosed k] [Module.Finite k V] [IsSymmNondegenAlg A Φ] in
+theorem normalization_smul_eq_zero_of_isEmpty [IsSeparatingLeftAlg A Φ] [IsSimpleModule A W]
+    [IsEmpty (V ≃ₗ[A] W)] [Module.Finite (Module.End A V) V] {f : A}
+    (hf : IsTraceRepresentative V Φ f) (a : A) (w : W) :
     hf.normalization a • w = 0 := by
   simp [normalization_def, smul_eq_zero_of_isEmpty hf]
 
