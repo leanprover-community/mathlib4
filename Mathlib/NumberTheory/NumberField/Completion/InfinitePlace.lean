@@ -177,14 +177,19 @@ theorem coe_add (x y : K) : ((x + y : K) : v.Completion) = ↑x + ↑y := by sim
 @[deprecated AbsoluteValue.Completion.coe_mul +typeChanged (since := "2026-10-30")]
 theorem coe_mul (x y : K) : ((x * y : K) : v.Completion) = ↑x * ↑y := by simp
 
-@[deprecated (since := "2026-10-30")]
-alias continuous_coe := AbsoluteValue.Completion.continuous_coe
+@[deprecated AbsoluteValue.Completion.continuous_coe +typeChanged (since := "2026-10-30")]
+theorem continuous_coe : Continuous ((↑) : WithAbs v.1 → v.Completion) :=
+  AbsoluteValue.Completion.continuous_coe v.1
 
-@[deprecated (since := "2026-10-30")]
-alias denseRange_coe := AbsoluteValue.Completion.denseRange_coe
+@[deprecated AbsoluteValue.Completion.denseRange_coe +typeChanged (since := "2026-10-30")]
+theorem denseRange_coe : DenseRange ((↑) : WithAbs v.1 → v.Completion) :=
+  AbsoluteValue.Completion.denseRange_coe v.1
 
-@[deprecated (since := "2026-10-30")]
-alias induction_on := AbsoluteValue.Completion.induction_on
+@[elab_as_elim, deprecated AbsoluteValue.Completion.induction_on +typeChanged
+  (since := "2026-10-30")]
+theorem induction_on {p : v.Completion → Prop} (x : v.Completion) (hp : IsClosed {x | p x})
+    (ih : ∀ a : WithAbs v.1, p a) : p x :=
+  AbsoluteValue.Completion.induction_on x hp ih
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem algebraMap_toCompletion (R : Type*) [CommSemiring R] [Algebra R (WithAbs v.1)]
@@ -197,8 +202,9 @@ theorem algebraMap_apply (k : K) :
   rw [AbsoluteValue.Completion.algebraMap_def, WithAbs.algebraMap_right_apply,
     Algebra.algebraMap_self_apply]
 
-@[deprecated (since := "2026-10-30")]
-alias norm_coe := AbsoluteValue.Completion.norm_coe
+@[deprecated AbsoluteValue.Completion.norm_coe +typeChanged (since := "2026-10-30")]
+theorem norm_coe (x : WithAbs v.1) : ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
+  AbsoluteValue.Completion.norm_coe x
 
 example : NormedField v.Completion := inferInstance
 example : Algebra K v.Completion := inferInstance
