@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Hom.End
 public import Mathlib.Algebra.Module.NatInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Module structure and endomorphisms
 
@@ -19,11 +22,9 @@ We use this to prove some results on scalar multiplication by integers.
 
 assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Field
 
-open Function Set
-
 universe u v
 
-variable {R S M M₂ : Type*}
+variable {R S M : Type*}
 
 section AddCommMonoid
 
@@ -35,6 +36,7 @@ theorem AddMonoid.End.natCast_def (n : ℕ) :
 
 variable (R M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `(•)` as an `AddMonoidHom`.
 
 This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/

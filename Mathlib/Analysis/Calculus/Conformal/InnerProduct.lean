@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 public import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conformal maps between inner product spaces
 
@@ -24,7 +27,7 @@ variable {E F : Type*}
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 /-- A real differentiable map `f` is conformal at point `x` if and only if its
 differential `fderiv ℝ f x` at that point scales every inner product by a positive scalar. -/

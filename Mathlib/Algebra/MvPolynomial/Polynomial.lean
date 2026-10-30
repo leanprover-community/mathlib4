@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some lemmas relating polynomials and multivariable polynomials.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 

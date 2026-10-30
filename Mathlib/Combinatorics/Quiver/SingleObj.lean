@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Quiver.Cast
 public import Mathlib.Combinatorics.Quiver.Symmetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Single-object quiver
 
@@ -28,7 +31,7 @@ itself using `pathEquivList`.
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, implicit_reducible]
 def SingleObj (_ : Type*) : Type :=
   Unit
 deriving Unique

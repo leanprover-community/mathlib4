@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.ContinuedFractions.Translations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stabilisation of gcf Computations Under Termination
 
@@ -15,7 +18,7 @@ public import Mathlib.Algebra.ContinuedFractions.Translations
 We show that the continuants and convergents of a gcf stabilise once the gcf terminates.
 -/
 
-@[expose] public section
+public section
 
 
 namespace GenContFract

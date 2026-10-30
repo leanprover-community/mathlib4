@@ -1,4 +1,6 @@
-import Mathlib.Algebra.Category.MonCat.Basic
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
 
 -- We verify that the coercions of morphisms to functions work correctly:
 example {R S : MonCat} (f : R ⟶ S) : ↑R → ↑S := f
@@ -14,7 +16,7 @@ example {R S : CommMonCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by sim
 -- when we construct the `toFun` field, the types are presented as `↑R`.
 example (R : CommMonCat.{u}) : R ⟶ R := CommMonCat.ofHom
   { toFun := fun x => by
-      match_target (R : Type u)
+      guard_target =~ (R : Type u)
       guard_hyp x : (R : Type u)
       exact x * x
     map_one' := by simp

@@ -5,12 +5,10 @@ Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury K
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Rat.Sqrt
-public import Mathlib.Data.Real.Sqrt
 public import Mathlib.RingTheory.Algebraic.Basic
-public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Irrational real numbers
@@ -19,7 +17,7 @@ In this file we define a predicate `Irrational` on `ℝ`, prove that the `n`-th 
 number is irrational if it is not integer, and that `√(q : ℚ)` is irrational if and only if
 `¬IsSquare q ∧ 0 ≤ q`.
 
-We also provide dot-style constructors like `Irrational.add_rat`, `Irrational.rat_sub` etc.
+We also provide dot-style constructors like `Irrational.add_ratCast`, `Irrational.ratCast_sub` etc.
 
 With the `Decidable` instances in this file, is possible to prove `Irrational √n` using `decide`,
 when `n` is a numeric literal or cast;
@@ -32,6 +30,7 @@ but this only works if you `unseal Nat.sqrt.iter in` before the theorem where yo
 open Rat Real
 
 /-- A real number is irrational if it is not equal to any rational number. -/
+@[wikidata Q607728]
 def Irrational (x : ℝ) :=
   x ∉ Set.range ((↑) : ℚ → ℝ)
 
@@ -40,6 +39,9 @@ theorem irrational_iff_ne_rational (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, b
 
 theorem Irrational.ne_rational {x : ℝ} (hx : Irrational x) (a b : ℤ) : x ≠ a / b := by
   rintro rfl; exact hx ⟨a / b, by simp⟩
+
+theorem exists_rat_of_not_irrational {x : ℝ} (hx : ¬ Irrational x) : ∃ (q : ℚ), x = q := by
+  grind [Irrational]
 
 /-- A transcendental real number is irrational. -/
 theorem Transcendental.irrational {r : ℝ} (tr : Transcendental ℚ r) : Irrational r := by
@@ -78,8 +80,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
     Irrational x := by
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · rw [eq_comm, pow_zero, ← Int.cast_one, Int.cast_inj] at hxr
-    simp [hxr, multiplicity_of_one_right (mt isUnit_iff_dvd_one.1
-      (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one))] at hv
+    simp [hxr, multiplicity_one_right] at hv
   refine irrational_nrt_of_notint_nrt _ _ hxr ?_ hnpos
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr

@@ -5,11 +5,15 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Algebra.Ring.Units
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Logic.Embedding.Basic
+
+import Mathlib.Algebra.GroupWithZero.Units.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Characteristic zero rings
@@ -80,18 +84,22 @@ variable [Semiring R] [CharZero R]
 variable [IsCancelMulZero R]
 
 /-- A characteristic zero domain is torsion-free. -/
-instance (priority := 100) IsAddTorsionFree.of_isCancelMulZero_charZero : IsAddTorsionFree R where
-  nsmul_right_injective n hn a b hab := by let : CancelMonoidWithZero R := {}; simpa [hn] using hab
+instance (priority := 100) HasUniqueDiv.of_isCancelMulZero_charZero : HasUniqueDiv R where
+  nsmul_right_injective n hn a b hab := by simpa [hn] using hab
 
 end Semiring
 
 section NonAssocRing
 variable [NonAssocRing R] [NoZeroDivisors R] [CharZero R]
 
-@[scoped simp] theorem CharZero.neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
+@[scoped simp]
+theorem CharZero.neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
   neg_eq_iff_add_eq_zero.trans add_self_eq_zero
 
-@[scoped simp] theorem CharZero.eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
+@[scoped simp]
+theorem CharZero.eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
   eq_neg_iff_add_eq_zero.trans add_self_eq_zero
 
 theorem nat_mul_inj {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) : n = 0 ∨ a = b := by

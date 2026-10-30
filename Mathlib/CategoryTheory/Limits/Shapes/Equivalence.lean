@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transporting existence of specific limits across equivalences
 
@@ -15,7 +18,7 @@ For now, we only treat the case of initial and terminal objects, but other speci
 added in the future.
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory CategoryTheory.Limits

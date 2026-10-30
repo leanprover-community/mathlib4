@@ -25,11 +25,12 @@ universe u
 
 namespace CategoryTheory
 
-open CategoryTheory MonoidalCategory Functor Monoidal LaxMonoidal OplaxMonoidal
+open CategoryTheory MonoidalCategory CategoryTheory.Functor MonoidalCategory.Functor Monoidal
+open LaxMonoidal OplaxMonoidal
 
 namespace Localization.Monoidal
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [MonoidalCategory C] [MonoidalCategory D] [MonoidalCategory E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [L.Monoidal]
   (F : D ⥤ E) (G : C ⥤ E) [G.Monoidal] [W.ContainsIdentities] [Lifting L W G F]
@@ -67,7 +68,7 @@ lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     ((curriedTensorPreIsoPost L W F G).hom.app Y₁).app Y₂ =
       ((F.map e₁.hom ≫ e.hom.app _) ⊗ₘ (F.map e₂.hom ≫ e.hom.app _)) ≫
         LaxMonoidal.μ G X₁ X₂ ≫ e.inv.app _ ≫
-        F.map (OplaxMonoidal.δ L _ _≫ (e₁.inv ⊗ₘ e₂.inv)) := by
+        F.map (OplaxMonoidal.δ L _ _ ≫ (e₁.inv ⊗ₘ e₂.inv)) := by
   have h₁ := ((curriedTensorPreIsoPost L W F G).hom.app Y₁).naturality e₂.hom
   have h₂ := congr_app ((curriedTensorPreIsoPost L W F G).hom.naturality e₁.hom)
   dsimp at h₁ h₂ ⊢
@@ -78,6 +79,7 @@ lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     tensorHom_comp_tensorHom, Iso.inv_hom_id, Iso.inv_hom_id, tensorHom_id, id_whiskerRight,
     Category.comp_id]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
@@ -102,7 +104,7 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
     -/
     simp only [comp_obj, μIso_hom, Iso.refl_hom, map_id, Category.id_comp, μIso_inv, Iso.refl_inv,
       MonoidalCategory.whiskerLeft_id, Category.comp_id, map_comp, Category.assoc,
-      ← comp_whiskerRight_assoc, map_δ_μ_assoc, Iso.inv_hom_id_app, id_whiskerRight,
+      ← comp_whiskerRight_assoc, δ_μ_map_assoc, Iso.inv_hom_id_app, id_whiskerRight,
       whisker_exchange_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, whiskerRight_tensor]
     simp [← whisker_exchange_assoc, tensor_whiskerLeft_symm, -tensor_whiskerLeft,
       ← LaxMonoidal.associativity_assoc G, ← Functor.map_comp]
@@ -124,6 +126,7 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
 -/
+@[instance_reducible]
 noncomputable def functorMonoidalOfComp : F.Monoidal :=
   (functorCoreMonoidalOfComp L W F G).toMonoidal
 
@@ -148,7 +151,7 @@ transformation.
 instance lifting_isMonoidal :
     letI : F.Monoidal := functorMonoidalOfComp L W F G
     (Lifting.iso L W G F).hom.IsMonoidal := by
-  letI : F.Monoidal := functorMonoidalOfComp L W F G
+  let : F.Monoidal := functorMonoidalOfComp L W F G
   refine ⟨?_, fun _ _ ↦ ?_⟩
   · simp [functorMonoidalOfComp_ε]
   · simp [functorMonoidalOfComp_μ]

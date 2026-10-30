@@ -6,8 +6,8 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
-public import Mathlib.RingTheory.Polynomial.GaussLemma
-public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Irreducibility of Selmer Polynomials
@@ -21,7 +21,7 @@ This file proves irreducibility of the Selmer polynomials `X ^ n - X - 1`.
 TODO: Show that the Selmer polynomials have full Galois group.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial

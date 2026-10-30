@@ -7,10 +7,11 @@ module
 
 public meta import Mathlib.Control.Basic
 public meta import Mathlib.Lean.Meta.Tactic.Rewrite
-public meta import Mathlib.Tactic.CancelDenoms.Core
 public meta import Mathlib.Tactic.Linarith.Datatypes
-public meta import Mathlib.Tactic.Zify
 public meta import Mathlib.Util.AtomM
+public import Mathlib.Tactic.CancelDenoms.Core
+public import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Zify
 
 /-!
 # Linarith preprocessing
@@ -54,47 +55,23 @@ where
 
 /--
 Removes any expressions that are not proofs of inequalities, equalities, or negations thereof.
+Negations are pushed into inequalities when possible.
 -/
 partial def filterComparisons : Preprocessor where
   description := "filter terms that are not proofs of comparisons"
   transform h := do
     let tp ← instantiateMVars (← inferType h)
     try
-      let (b, rel, _) ← tp.ineqOrNotIneq?
-      if b || rel != Ineq.eq then pure [h] else pure []
-    catch _ => pure []
-
-section removeNegations
-
-/--
-If `prf` is a proof of `¬ e`, where `e` is a comparison,
-`flipNegatedComparison prf e` flips the comparison in `e` and returns a proof.
-For example, if `prf : ¬ a < b`, ``flipNegatedComparison prf q(a < b)`` returns a proof of `a ≥ b`.
--/
-def flipNegatedComparison (prf : Expr) (e : Expr) : MetaM (Option Expr) :=
-  match e.getAppFnArgs with
-  | (``LE.le, #[_, _, _, _]) => try? <| mkAppM ``lt_of_not_ge #[prf]
-  | (``LT.lt, #[_, _, _, _]) => try? <| mkAppM ``le_of_not_gt #[prf]
-  | _ => throwError "Not a comparison (flipNegatedComparison): {e}"
-
-/--
-Replaces proofs of negations of comparisons with proofs of the reversed comparisons.
-For example, a proof of `¬ a < b` will become a proof of `a ≥ b`.
--/
-def removeNegations : Preprocessor where
-  description := "replace negations of comparisons"
-  transform h := do
-    let t : Q(Prop) ← whnfR (← inferType h)
-    match t with
-    | ~q(¬ $p) =>
-      match ← flipNegatedComparison h (← whnfR p) with
-      | some h' =>
-        trace[linarith] "removing negation in {h}"
-        return [h']
-      | _ => return [h]
-    | _ => return [h]
-
-end removeNegations
+      match tp.not? with
+      | some p => match (← p.ineq?).1 with
+        | .le => return [← mkAppM ``lt_of_not_ge #[h]]
+        | .lt => return [← mkAppM ``le_of_not_gt #[h]]
+        | .eq => return []
+      | none =>
+        _ ← tp.ineq?
+        return [h]
+    catch _ =>
+      return []
 
 section natToInt
 
@@ -127,20 +104,14 @@ partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
     | _ => []
 
 /-- If `e : ℕ`, returns a proof of `0 ≤ (e : C)`. -/
-def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
+def mkNatCastNonnegProof? (p : Expr × Expr) : MetaM (Option Expr) :=
   match p with
   | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``natCast_nonneg #[target, e])
     catch e => do
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
 
-/-- Ordering on `Expr`. -/
-@[deprecated
-  "Use `Expr.lt` and `Expr.equal` or `Expr.eqv` directly. \
-  If you need to order expressions, consider ordering them by order seen, with AtomM."
-  (since := "2025-08-31")]
-def Expr.Ord : Ord Expr :=
-⟨fun a b => if Expr.lt a b then .lt else if a.equal b then .eq else .gt⟩
+@[deprecated (since := "2026-05-27")] alias mk_natCast_nonneg_prf := mkNatCastNonnegProof?
 
 /--
 If `h` is an equality or inequality between natural numbers,
@@ -177,9 +148,9 @@ def natToInt : GlobalBranchingPreprocessor where
         pure <| (es.insertMany indices_a).insertMany indices_b
       catch _ => pure es
     let atoms : Array Expr := (← get).atoms
-    let nonneg_pfs : List Expr ← nonnegs.toList.filterMapM fun p => do
-      mk_natCast_nonneg_prf (atoms[p.1]!, atoms[p.2]!)
-    pure [(g, nonneg_pfs ++ l)]
+    let nonnegProofs : List Expr ← nonnegs.toList.filterMapM fun p => do
+      mkNatCastNonnegProof? (atoms[p.1]!, atoms[p.2]!)
+    pure [(g, nonnegProofs ++ l)]
 
 end natToInt
 
@@ -190,7 +161,7 @@ If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 `mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`,
 and similarly if `pf` proves a negated weak inequality.
 -/
-def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
+def mkNonstrictIntProof? (pf : Expr) : MetaM (Option Expr) := do
   match ← (← inferType pf).ineqOrNotIneq? with
   | (true, Ineq.lt, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
@@ -199,11 +170,13 @@ def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
       (← mkAppM ``lt_of_not_ge #[pf])
   | _ => return none
 
+@[deprecated (since := "2026-05-27")] alias mkNonstrictIntProof := mkNonstrictIntProof?
+
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
 into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
   description := "strengthen strict inequalities over int"
-  transform h := return [(← mkNonstrictIntProof h).getD h]
+  transform h := return [(← mkNonstrictIntProof? h).getD h]
 
 end strengthenStrictInt
 
@@ -213,11 +186,13 @@ section compWithZero
 `rearrangeComparison e` takes a proof `e` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
 -/
-partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
+partial def rearrangeComparison? (e : Expr) : MetaM (Option Expr) := do
   match ← (← inferType e).ineq? with
   | (Ineq.le, _) => try? <| mkAppM ``Linarith.sub_nonpos_of_le #[e]
   | (Ineq.lt, _) => try? <| mkAppM ``Linarith.sub_neg_of_lt #[e]
   | (Ineq.eq, _) => try? <| mkAppM ``sub_eq_zero_of_eq #[e]
+
+@[deprecated (since := "2026-05-27")] alias rearrangeComparison := rearrangeComparison?
 
 /--
 `compWithZero h` takes a proof `h` of an equality, inequality, or negation thereof,
@@ -225,7 +200,7 @@ and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
 -/
 def compWithZero : Preprocessor where
   description := "make comparisons with zero"
-  transform e := return (← rearrangeComparison e).toList
+  transform e := return (← rearrangeComparison? e).toList
 
 end compWithZero
 
@@ -299,7 +274,7 @@ partial def findSquares (s : TreeSet (Nat × Bool) lexOrd.compare) (e : Expr) :
 
 /-- Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls` -/
 private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) :=
-  withTraceNode `linarith (return m!"{exceptEmoji ·} finding squares") do
+  withTraceNode `linarith (fun _ => return m!" finding squares") do
   -- find the squares in `AtomM` to ensure deterministic behavior
   let s ← AtomM.run .reducible do
     let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h))) ∅
@@ -318,7 +293,7 @@ Note that the length of the resulting list is proportional to `ls.length^2`, whi
 amount of work for the linarith oracle.
 -/
 private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) :=
-  withTraceNode `linarith (return m!"{exceptEmoji ·} adding product terms") do
+  withTraceNode `linarith (fun _ => return m!" adding product terms") do
   let with_comps ← ls.mapM (fun e => do
     let tp ← inferType e
     try
@@ -361,39 +336,53 @@ end nlinarith
 
 section removeNe
 /--
-`removeNe_aux` case splits on any proof `h : a ≠ b` in the input,
-turning it into `a < b ∨ a > b`.
+`removeNeAux` case splits on any proof `h : a ≠ b` in the input,
+turning it into `a < b ∨ a > b`, provided the type has a `LinearOrder` instance.
 This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
-partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
+partial def removeNeAux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
   let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
     let some (α, a, b) := (← instantiateMVars (← inferType e)).ne?' | return none
+    unless (← synthInstance? (← mkAppM ``LinearOrder #[α])).isSome do return none
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
   let do_goal : MVarId → MetaM (List Branch) := fun g => do
     let (f, h) ← g.intro1
     h.withContext do
-      let ls ← removeNe_aux h <| hs.removeAll [e]
+      let ls ← removeNeAux h <| hs.removeAll [e]
       return ls.map (fun b : Branch => (b.1, (.fvar f)::b.2))
   return ((← do_goal ng1) ++ (← do_goal ng2))
 
+@[deprecated (since := "2026-06-06")] alias removeNe_aux := removeNeAux
+
 /--
 `removeNe` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`,
-by calling `linarith.removeNe_aux`.
+by calling `linarith.removeNeAux`, provided the type has a `LinearOrder` instance.
 This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 def removeNe : GlobalBranchingPreprocessor where
   description := "case split on ≠"
-  transform := removeNe_aux
+  transform := removeNeAux
 end removeNe
 
+/-- Definition overridden in `Mathlib.Tactic.Linarith.NNRealPreprocessor`. -/
+initialize nnrealToRealTransform : IO.Ref (List Expr → MetaM (List Expr)) ← IO.mkRef pure
+
+/--
+If `h` is an equality or inequality between NNReals, `nnrealToReal` lifts this inequality to the
+Reals. It also adds the facts that the reals involved are nonnegative. To avoid adding the same
+nonnegativity facts many times, it is a global preprocessor. This preprocessor does nothing unless
+`Mathlib.Tactic.Linarith.NNRealPreprocessor` is imported -/
+def nnrealToReal : GlobalPreprocessor where
+  description := "move nnreals to reals"
+  transform l := do (← nnrealToRealTransform.get) l
 
 /--
 The default list of preprocessors, in the order they should typically run.
 -/
 def defaultPreprocessors : List GlobalBranchingPreprocessor :=
-  [filterComparisons, removeNegations, natToInt, strengthenStrictInt,
+  [filterComparisons, nnrealToReal, natToInt, strengthenStrictInt,
     compWithZero, cancelDenoms]
 
 /--
@@ -405,7 +394,7 @@ so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
     MetaM (List Branch) := do
-  withTraceNode `linarith (fun e => return m!"{exceptEmoji e} Running preprocessors") <|
+  withTraceNode `linarith (fun _ => return m!"Running preprocessors") <|
     g.withContext <|
       pps.foldlM (init := [(g, l)]) fun ls pp => do
         return (← ls.mapM fun (g, l) => do pp.process g l).flatten

@@ -5,8 +5,9 @@ Authors: Yongshun Ye
 -/
 module
 
-public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.Prime.Defs
+
+import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Lemmas related to `Nat.Prime` and `lcm`
@@ -22,7 +23,7 @@ These lemmas are kept separate from `Mathlib/Data/Nat/GCD/Basic.lean` in order t
 
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

@@ -9,11 +9,14 @@ public import Mathlib.Algebra.Order.Monoid.Prod
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of ordered rings
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

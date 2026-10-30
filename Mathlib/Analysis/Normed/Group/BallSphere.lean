@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Negation on spheres and balls
 
@@ -14,7 +17,7 @@ In this file we define `InvolutiveNeg` and `ContinuousNeg` instances for spheres
 closed balls in a seminormed group.
 -/
 
-@[expose] public section
+public section
 
 open Metric Set Topology
 
@@ -50,4 +53,4 @@ instance {r : ℝ} : InvolutiveNeg (closedBall (0 : E) r) where
 
 @[simp] theorem coe_neg_closedBall {r : ℝ} (v : closedBall (0 : E) r) : ↑(-v) = (-v : E) := rfl
 
-instance : ContinuousNeg (closedBall (0 : E) r) := IsInducing.subtypeVal.continuousNeg  fun _ => rfl
+instance : ContinuousNeg (closedBall (0 : E) r) := IsInducing.subtypeVal.continuousNeg fun _ => rfl

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.Topology.Algebra.Ring.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate polynomials and continuity
 
@@ -20,7 +23,7 @@ In this file we prove the following lemma:
 multivariate polynomial, continuity
 -/
 
-@[expose] public section
+public section
 
 variable {X σ : Type*} [TopologicalSpace X] [CommSemiring X] [IsTopologicalSemiring X]
   (p : MvPolynomial σ X)

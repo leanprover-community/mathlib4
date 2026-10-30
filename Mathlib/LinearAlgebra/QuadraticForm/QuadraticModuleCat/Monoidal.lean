@@ -5,10 +5,12 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
 public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct.Isometries
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The monoidal category structure on quadratic R-modules
@@ -26,7 +28,7 @@ For now, we simplify by insisting both universe levels are the same.
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Monoidal.lean`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 open scoped MonoidalCategory
@@ -52,8 +54,6 @@ We want this up front so that we can re-use it to define `whiskerLeft` and `whis
 abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
   ⟨f.toIsometry.tmul g.toIsometry⟩
-
-open MonoidalCategory
 
 end instMonoidalCategory
 

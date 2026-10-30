@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `PUnit` is a commutative ring
 
@@ -15,7 +18,7 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -30,7 +33,8 @@ instance commRing : CommRing PUnit where
   mul_zero := by intros; rfl
   natCast _ := unit
 
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit where
+instance : IsCancelMulZero PUnit where
   mul_left_cancel_of_ne_zero := by simp
+  mul_right_cancel_of_ne_zero := by simp
 
 end PUnit

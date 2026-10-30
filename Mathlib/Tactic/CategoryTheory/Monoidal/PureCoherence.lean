@@ -5,8 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 
 /-!
 # Coherence tactic for monoidal categories
@@ -266,7 +267,7 @@ open Elab.Tactic
 /-- Close the goal of the form `η = θ`, where `η` and `θ` are 2-isomorphisms made up only of
 associators, unitors, and identities.
 ```lean
-example {C : Type} [Category C] [MonoidalCategory C] :
+example {C : Type} [Category* C] [MonoidalCategory C] :
   (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
   monoidal_coherence
 ```

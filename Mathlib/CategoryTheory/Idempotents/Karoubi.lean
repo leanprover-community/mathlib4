@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Idempotents.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # The Karoubi envelope of a category
@@ -17,9 +16,9 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
 ## Main constructions and definitions
 
 - `Karoubi C` is the Karoubi envelope of a category `C`: it is an idempotent
-complete category. It is also preadditive when `C` is preadditive.
+  complete category. It is also preadditive when `C` is preadditive.
 - `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
-(`toKaroubiIsEquivalence`) when `C` is idempotent complete.
+  (`toKaroubiIsEquivalence`) when `C` is idempotent complete.
 
 -/
 
@@ -31,7 +30,7 @@ open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 namespace Idempotents
 
@@ -127,7 +126,7 @@ theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
 
 @[simp]
 theorem eqToHom_f {P Q : Karoubi C} (h : P = Q) :
-    Karoubi.Hom.f (eqToHom h) = P.p ≫ eqToHom (congr_arg Karoubi.X h) := by
+    Karoubi.Hom.f (eqToHom h) = P.p ≫ eqToHom congr(Karoubi.X $h) := by
   subst h
   simp only [eqToHom_refl, Karoubi.id_f, comp_id]
 
@@ -135,15 +134,18 @@ end Karoubi
 
 /-- The obvious fully faithful functor `toKaroubi` sends an object `X : C` to the obvious
 formal direct factor of `X` given by `𝟙 X`. -/
-@[simps]
+@[simps, implicit_reducible]
 def toKaroubi : C ⥤ Karoubi C where
   obj X := ⟨X, 𝟙 X, by rw [comp_id]⟩
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
 
-instance : (toKaroubi C).Full where map_surjective f := ⟨f.f, rfl⟩
+/-- The functor `toKaroubi C : C ⥤ Karoubi C` is fully faithful. -/
+def fullyFaithfulToKaroubi : (toKaroubi C).FullyFaithful where
+  preimage f := f.f
 
-instance : (toKaroubi C).Faithful where
-  map_injective := fun h => congr_arg Karoubi.Hom.f h
+instance : (toKaroubi C).Full := (fullyFaithfulToKaroubi C).full
+
+instance : (toKaroubi C).Faithful := (fullyFaithfulToKaroubi C).faithful
 
 variable {C}
 
@@ -234,7 +236,7 @@ def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
 
 instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
     (toKaroubiEquivalence C).functor.Additive :=
-  (inferInstance : (toKaroubi C).Additive)
+  inferInstanceAs <| (toKaroubi C).Additive
 
 namespace Karoubi
 

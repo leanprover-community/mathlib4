@@ -5,8 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Batteries.Tactic.Alias
-public import Mathlib.Tactic.TypeStar
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Boolean quantifiers
@@ -15,7 +17,7 @@ This proves a few properties about `List.all` and `List.any`, which are the `Boo
 existential quantifiers. Their definitions are in core Lean.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*} {p : α → Prop} [DecidablePred p] {l : List α} {a : α}

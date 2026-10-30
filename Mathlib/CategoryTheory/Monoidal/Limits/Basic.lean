@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # `lim : (J ⥤ C) ⥤ C` is lax monoidal when `C` is a monoidal category.
@@ -15,13 +15,14 @@ When `C` is a monoidal category, the limit functor `lim : (J ⥤ C) ⥤ C` is la
 i.e. there are morphisms
 * `(𝟙_ C) → limit (𝟙_ (J ⥤ C))`
 * `limit F ⊗ limit G ⟶ limit (F ⊗ G)`
+
 satisfying the laws of a lax monoidal functor.
 
 ## TODO
 Now that we have oplax monoidal functors, assemble `Limits.colim` into an oplax monoidal functor.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 
@@ -36,6 +37,7 @@ variable {J : Type w} [SmallCategory J] {C : Type u} [Category.{v} C] [HasLimits
 
 open Functor.LaxMonoidal
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (lim (J := J) (C := C)).LaxMonoidal :=
   Functor.LaxMonoidal.ofTensorHom
     (ε :=
@@ -52,7 +54,7 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
                 simp only [Category.id_comp, tensorHom_comp_tensorHom, limit.w] } })
     (μ_natural := fun f g ↦ limit.hom_ext (fun j ↦ by
       dsimp
-      simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,
+      simp only [limit.lift_π, Cone.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,
         NatTrans.comp_app, Category.assoc, tensorHom_comp_tensorHom, limMap_π]))
     (associativity := fun F G H ↦ limit.hom_ext (fun j ↦ by
       dsimp
@@ -89,6 +91,9 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
       erw [limit.lift_π]
       rw [whiskerLeft_id, Category.id_comp]))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma lim_ε_π (j : J) : ε (lim (J := J) (C := C)) ≫ limit.π _ j = 𝟙 _ :=
   limit.lift_π _ _

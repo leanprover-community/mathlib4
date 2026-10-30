@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Canonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators on a list in ordered rings
 
 This file contains the results concerning the interaction of list big operators with ordered rings.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

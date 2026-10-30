@@ -5,10 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
+
 /-!
 # Base change for the dual of a module
 
@@ -17,10 +15,10 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 If `f : Module.Dual R V` and `Algebra R A`, then
 
 * `Module.Dual.baseChange A f` is the element
-of `Module.Dual A (A ⊗[R] V)` deduced by base change.
+  of `Module.Dual A (A ⊗[R] V)` deduced by base change.
 
 * `Module.Dual.baseChangeHom` is the `R`-linear map
-given by `Module.Dual.baseChange`.
+  given by `Module.Dual.baseChange`.
 
 * `IsBaseChange.dual` : for finite free modules, taking dual commutes with base change.
 
@@ -84,6 +82,7 @@ theorem toDual_apply (f : Dual R V) :
   intro v
   simp [toDual_comp_apply, Algebra.algebraMap_eq_smul_one]
 
+set_option backward.privateInPublic true in
 /-- The linear map underlying `IsBaseChange.toDualBaseChangeLinearEquiv`. -/
 private noncomputable def toDualBaseChangeAux :
     A ⊗[R] Dual R V →ₗ[A] Dual A W where
@@ -92,17 +91,19 @@ private noncomputable def toDualBaseChangeAux :
     map_add' a b := by simp [add_smul]
     map_smul' r a := by simp }).toAddHom
   map_smul' a g := by
-    induction g using TensorProduct.induction_on with
-    | zero => simp
+    induction g using TensorProduct.inductionOn with
     | add x y hx hy => aesop
     | tmul b f => simp [TensorProduct.smul_tmul', mul_smul]
 
+set_option backward.privateInPublic true in
 private theorem toDualBaseChangeAux_tmul (a : A) (f : Dual R V) (v : V) :
     (ibc.toDualBaseChangeAux (a ⊗ₜ[R] f)) (j v) = a * algebraMap R A (f v) := by
   simp [toDualBaseChangeAux, toDual_comp_apply]
 
 variable [Free R V] [Module.Finite R V]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The linear equivalence underlying `IsBaseChange.dual`. -/
 noncomputable def toDualBaseChange :
     A ⊗[R] Dual R V ≃ₗ[A] Dual A W := by
@@ -117,7 +118,6 @@ noncomputable def toDualBaseChange :
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearEquiv.trans_apply]
   induction w using ibc.inductionOn with
-  | zero => simp
   | tmul v =>
     simp only [toDualBaseChangeAux_tmul, one_mul]
     conv_lhs => rw [← Basis.sum_equivFun b v, map_sum]

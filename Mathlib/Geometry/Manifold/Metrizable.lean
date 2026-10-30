@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
-public import Mathlib.Topology.Compactness.Paracompact
-public import Mathlib.Topology.Metrizable.Urysohn
+
+import Mathlib.Topology.Compactness.Paracompact
+import Mathlib.Topology.Metrizable.Urysohn
 
 /-!
 # Metrizability of a σ-compact manifold
@@ -17,7 +18,7 @@ In this file we show that a σ-compact Hausdorff topological manifold over a fin
 vector space is metrizable.
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace
@@ -28,7 +29,7 @@ theorem Manifold.metrizableSpace {E : Type*} [NormedAddCommGroup E] [NormedSpace
     [FiniteDimensional ℝ E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [SigmaCompactSpace M] [T2Space M] :
     MetrizableSpace M := by
-  haveI := I.locallyCompactSpace; haveI := ChartedSpace.locallyCompactSpace H M
-  haveI := I.secondCountableTopology
-  haveI := ChartedSpace.secondCountable_of_sigmaCompact H M
+  have := I.locallyCompactSpace; have := ChartedSpace.locallyCompactSpace H M
+  have := I.secondCountableTopology
+  have := ChartedSpace.secondCountable_of_sigmaCompact H M
   exact metrizableSpace_of_t3_secondCountable M

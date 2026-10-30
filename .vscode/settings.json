@@ -14,7 +14,8 @@
   "git.branchProtection": [
     "master",
     "stable",
-    "staging"
+    "staging",
+    "trying"
   ],
   "files.readonlyInclude": {
     "**/.elan/**": true,

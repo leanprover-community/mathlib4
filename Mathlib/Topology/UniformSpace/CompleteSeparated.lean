@@ -13,7 +13,7 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 This file is for elementary lemmas that depend on both Cauchy filters and separation.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter

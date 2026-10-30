@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Abs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about units in `ℤ`, which interact with the order structure.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Int

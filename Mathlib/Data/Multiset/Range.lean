@@ -48,13 +48,11 @@ theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n :=
 theorem notMem_range_self {n : ℕ} : n ∉ range n :=
   List.not_mem_range_self
 
-@[deprecated (since := "2025-05-23")] alias not_mem_range_self := notMem_range_self
-
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   List.self_mem_range_succ
 
 theorem range_add (a b : ℕ) : range (a + b) = range a + (range b).map (a + ·) :=
-  congr_arg ((↑) : List ℕ → Multiset ℕ) List.range_add
+  congr($List.range_add)
 
 theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
     Disjoint (range a) (m.map (a + ·)) := by

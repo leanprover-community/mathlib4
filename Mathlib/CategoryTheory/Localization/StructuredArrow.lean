@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.HomEquiv
-public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Localization.HomEquiv
 
 /-!
 # Induction principles for structured and costructured arrows
@@ -30,7 +29,7 @@ namespace CategoryTheory
 
 open Opposite
 
-variable {C D D' : Type*} [Category C] [Category D] [Category D']
+variable {C D D' : Type*} [Category* C] [Category* D] [Category* D']
 
 namespace Localization
 
@@ -80,9 +79,9 @@ private lemma induction_structuredArrow'
   induction f with
   | nil => exact hP₀
   | cons f g hf =>
-      obtain (g|⟨w, hw⟩) := g
+      obtain (g | ⟨w, hw⟩) := g
       · exact hP₁ g _ hf
-      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using hP₂ w hw _ hf
+      · simpa only [← Construction.wInv_eq_isoOfHom_inv w hw] using! hP₂ w hw _ hf
 
 end
 
@@ -133,7 +132,7 @@ lemma induction_costructuredArrow
   induction g' using induction_structuredArrow L.op W.op with
   | hP₀ => exact hP₀
   | hP₁ f φ hφ => exact hP₁ f.unop φ.unop hφ
-  | hP₂ w hw φ hφ => simpa [isoOfHom_op_inv L W w hw] using hP₂ w.unop hw φ.unop hφ
+  | hP₂ w hw φ hφ => simpa [isoOfHom_op_inv L W w hw] using! hP₂ w.unop hw φ.unop hφ
 
 end
 

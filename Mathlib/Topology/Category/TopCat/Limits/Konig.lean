@@ -49,12 +49,16 @@ variable {J : Type u} [SmallCategory J]
 
 variable (F : J ⥤ TopCat.{v})
 
+set_option backward.privateInPublic true in
 private abbrev FiniteDiagramArrow {J : Type u} [SmallCategory J] (G : Finset J) :=
   Σ' (X Y : J) (_ : X ∈ G) (_ : Y ∈ G), X ⟶ Y
 
+set_option backward.privateInPublic true in
 private abbrev FiniteDiagram (J : Type u) [SmallCategory J] :=
   Σ G : Finset J, Finset (FiniteDiagramArrow G)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Partial sections of a cofiltered limit are sections when restricted to
 a finite subset of objects and morphisms of `J`.
 -/
@@ -62,21 +66,26 @@ def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{v}) {G : F
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
   {u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempty (F.obj j)]
     {G : Finset J} (H : Finset (FiniteDiagramArrow G)) : (partialSections F H).Nonempty := by
   classical
   cases isEmpty_or_nonempty J
   · exact ⟨isEmptyElim, fun {j} => IsEmpty.elim' inferInstance j.1⟩
-  haveI : IsCofiltered J := ⟨⟩
+  have : IsCofiltered J := ⟨⟩
   use fun j : J =>
     if hj : j ∈ G then F.map (IsCofiltered.infTo G H hj) (h (IsCofiltered.inf G H)).some
     else (h _).some
   rintro ⟨X, Y, hX, hY, f⟩ hf
   dsimp only
-  rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
+  rwa [dite_eq_left hX, dite_eq_left hY, ← comp_app, ← F.map_comp,
+    @IsCofiltered.infTo_commutes _ _ _ G H]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem partialSections.directed :
-    Directed Superset fun G : FiniteDiagram J => partialSections F G.2 := by
+    Directed GE.ge fun G : FiniteDiagram J => partialSections F G.2 := by
   classical
   intro A B
   let ιA : FiniteDiagramArrow A.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>
@@ -97,13 +106,15 @@ theorem partialSections.directed :
       exact ⟨f, hf, rfl⟩
     exact hu this
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
   have :
     partialSections F H =
       ⋂ (f : FiniteDiagramArrow G) (_ : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} := by
     ext1
-    simp only [Set.mem_iInter, Set.mem_setOf_eq]
+    simp only [Set.mem_iInter, Set.mem_ofPred_eq]
     rfl
   rw [this]
   apply isClosed_biInter

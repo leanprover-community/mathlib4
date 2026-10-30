@@ -6,6 +6,10 @@ Authors: Vasily Nesterov
 module
 
 public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Gaussian Elimination algorithm
@@ -64,13 +68,13 @@ def getTableauImp : GaussM n m matType <| Tableau matType := do
   for i in [col:m] do
     free := free.push i
 
-  let ansMatrix : matType basic.size free.size := ← do
+  let ansMatrix : matType basic.size free.size ← do
     let vals := getValues (← get) |>.filterMap fun (i, j, v) =>
       if j == basic[i]! then
         none
       else
         some (i, free.findIdx? (· == j) |>.get!, -v)
-    return ofValues vals
+    pure <| ofValues vals
 
   return ⟨basic, free, ansMatrix⟩
 

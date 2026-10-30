@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Hom.ContinuousEvalConst
-public import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Bundled maps with evaluation continuous in both variables
@@ -16,7 +15,7 @@ saying that `F` is a bundled morphism class (in the sense of `FunLike`)
 with a topology such that `fun (f, x) : F × X ↦ f x` is a continuous function.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Filter

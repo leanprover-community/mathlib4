@@ -1,7 +1,10 @@
-import Mathlib.Tactic.Widget.LibraryRewrite
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Subtype
-import Batteries.Data.Nat.Gcd
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.Widget.LibraryRewrite
+
+@[expose] public section
 
 -- set_option trace.profiler true
 -- set_option trace.rw?? true
@@ -82,10 +85,14 @@ Pattern ∀ (p : P), Q p
 info: Pattern n + 1
 · n.succ
   Nat.add_one
+· (*...=n).size
+  Nat.size_ric
+· (*...=n).toArray.size
+  Nat.size_toArray_ric
+· (*...=n).toList.length
+  Nat.length_toList_ric
 · Std.PRange.succ n
   Std.PRange.Nat.succ_eq
-· (*...=n).size
-  Std.PRange.Nat.size_ric
 · (↑n + 1).toNat
   Int.toNat_natCast_add_one
 
@@ -106,12 +113,15 @@ Pattern n + m
   Nat.add_right_max_self
 · max n (n + 1)
   Nat.max_add_right_self
+· Std.PRange.succMany 1 n
+  Std.PRange.Nat.succMany_eq
 
 Pattern a + b
 · 1 + n
   add_comm
-· [n, 1].sum
-  List.sum_pair
+· 0
+  ⊢ 1 + n = 0
+  IsDedekindFiniteAddMonoid.add_eq_zero_symm
 -/
 #guard_msgs in
 #rw?? n + 1
@@ -123,7 +133,7 @@ info: Pattern n / 2
 
 Pattern x / y
 · if 0 < 2 ∧ 2 ≤ n then (n - 2) / 2 + 1 else 0
-  Nat.div_eq
+  Nat.div_eq_ite
 · (n - n % 2) / 2
   Nat.div_eq_sub_mod_div
 · 0

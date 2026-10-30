@@ -5,10 +5,11 @@ Authors: Chris Birkbeck, David Loeffler, Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Complex.TaylorSeries
-public import Mathlib.Analysis.Complex.Positivity
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Deriv
+
+import Mathlib.Analysis.Complex.Positivity
+import Mathlib.Analysis.Complex.TaylorSeries
 
 /-!
 # Positivity of values of L-series
@@ -25,7 +26,7 @@ The main results of this file are as follows.
   `ArithmeticFunction.LSeries_positive_of_eq_differentiable`.
 -/
 
-@[expose] public section
+public section
 
 open scoped ComplexOrder
 
@@ -46,9 +47,9 @@ lemma iteratedDeriv_alternating {a : ℕ → ℂ} (hn : 0 ≤ a) {x : ℝ}
   rw [LSeries.term_def]
   split
   · exact le_rfl
-  · refine mul_nonneg ?_ <| (inv_natCast_cpow_ofReal_pos (by assumption) x).le
+  · refine mul_nonneg ?_ (inv_natCast_cpow_ofReal_pos (by assumption) x).le
     induction n with
-    | zero => simpa only [Function.iterate_zero, id_eq] using hn k
+    | zero => simpa only [Function.iterate_zero, id_eq] using! hn k
     | succ n IH =>
         rw [Function.iterate_succ_apply']
         refine mul_nonneg ?_ IH
@@ -72,14 +73,14 @@ lemma positive_of_differentiable_of_eqOn {a : ℕ → ℂ} (ha₀ : 0 ≤ a) (ha
   have hxy : x < max x y + 1 := (le_max_left x y).trans_lt (lt_add_one _)
   have hxy' : abscissaOfAbsConv a < max x y + 1 := hx.trans_lt <| mod_cast hxy
   have hys : (max x y + 1 : ℂ) ∈ {s | x < s.re} := by
-    simp only [Set.mem_setOf_eq, add_re, ofReal_re, one_re, hxy]
+    simp only [Set.mem_ofPred_eq, add_re, ofReal_re, one_re, hxy]
   have hfx : 0 < f (max x y + 1) := by
     simpa only [hf' hys, ofReal_add, ofReal_one] using positive ha₀ ha₁ hxy'
   refine (hfx.trans_le <| hf.apply_le_of_iteratedDeriv_alternating (fun n _ ↦ ?_) ?_)
   · have hs : IsOpen {s : ℂ | x < s.re} := continuous_re.isOpen_preimage _ isOpen_Ioi
     simpa only [hf'.iteratedDeriv_of_isOpen hs n hys, ofReal_add, ofReal_one] using
       iteratedDeriv_alternating ha₀ hxy' n
-  · exact_mod_cast (le_max_right x y).trans (lt_add_one _).le
+  · exact mod_cast (le_max_right x y).trans (lt_add_one _).le
 
 end LSeries
 

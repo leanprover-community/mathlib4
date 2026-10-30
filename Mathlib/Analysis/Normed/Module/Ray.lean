@@ -5,9 +5,8 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.LinearAlgebra.Ray
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.LinearAlgebra.Ray
 
 /-!
 # Rays in a real normed vector space
@@ -17,13 +16,13 @@ this case, for two vectors `x y` in the same ray, the norm of their sum is equal
 norms and `‖y‖ • x = ‖x‖ • y`.
 -/
 
-@[expose] public section
+public section
 
 
 open Real
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*}
-[NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 namespace SameRay
 

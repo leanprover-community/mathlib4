@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Localization.Linear
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 # Localization of the linearity of the shift functors
@@ -18,14 +18,14 @@ then the shift functors on `D` are `R`-linear.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
 namespace Shift
 
-variable (R : Type*) [Ring R] {C : Type _} [Category C] [Preadditive C] [Linear R C]
-  {D : Type*} [Category D] [Preadditive D] [Linear R D]
+variable (R : Type*) [Ring R] {C : Type _} [Category* C] [Preadditive C] [Linear R C]
+  {D : Type*} [Category* D] [Preadditive D] [Linear R D]
   {M : Type*} [AddMonoid M] [HasShift C M]
   [∀ (n : M), (shiftFunctor C n).Linear R]
   (L : C ⥤ D) (W : MorphismProperty C)

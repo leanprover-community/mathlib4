@@ -5,9 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.UpperLower.Closure
+
+import Mathlib.Data.Set.Finite.Lattice
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Upper and lower sets in a locally finite order
@@ -15,7 +19,7 @@ public import Mathlib.Order.UpperLower.Closure
 In this file we characterise the interaction of `UpperSet`/`LowerSet` and `LocallyFiniteOrder`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Set

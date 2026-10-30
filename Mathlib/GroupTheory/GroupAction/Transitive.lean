@@ -30,7 +30,7 @@ Given `MulAction G X` where `G` is a group,
 
 -/
 
-@[expose] public section
+public section
 
 variable {G X : Type*} [Group G] [MulAction G X]
 

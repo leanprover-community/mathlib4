@@ -5,10 +5,10 @@ Authors: Kim Morrison, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.CategoryTheory.Whiskering
-public import Mathlib.Control.EquivFunctor
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The core of a category
@@ -27,7 +27,7 @@ but this is not functorial with respect to `F`.
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -47,7 +47,7 @@ structure CoreHom (X Y : Core C) where
   /-- The isomorphism of objects of `C` underlying a morphism in `Core C`. -/
   iso : X.of ≅ Y.of
 
-@[simps!]
+@[simps! id_iso inv_iso]
 instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : Core C) := CoreHom X Y
   id (X : Core C) := .mk <| Iso.refl X.of
@@ -62,7 +62,7 @@ namespace Core
 
 variable (C) in
 /-- The core of a category is naturally included in the category. -/
-@[simps!]
+@[implicit_reducible, simps]
 def inclusion : Core C ⥤ C where
   obj := of
   map f := f.iso.hom
@@ -73,6 +73,11 @@ theorem hom_ext {X Y : Core C} {f g : X ⟶ Y} (h : f.iso.hom = g.iso.hom) :
   apply CoreHom.ext
   exact Iso.ext h
 
+/-- Construct an isomorphism in `Core C` from an isomorphism in `C`. -/
+@[simps! hom_iso inv_iso]
+def isoMk {x y : Core C} (e : x.of ≅ y.of) : x ≅ y :=
+  Groupoid.isoEquivHom _ _ |>.symm (.mk e)
+
 variable (C)
 
 instance : (inclusion C).Faithful where
@@ -82,10 +87,10 @@ variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 -- Note that this function is not functorial
 -- (consider the two functors from [0] to [1], and the natural transformation between them).
 /-- A functor from a groupoid to a category C factors through the core of C. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def functorToCore (F : G ⥤ C) : G ⥤ Core C where
   obj X := .mk <| F.obj X
-  map f := .mk <| { hom := F.map f, inv := F.map (Groupoid.inv f) }
+  map f := .mk { hom := F.map f, inv := F.map (Groupoid.inv f) }
 
 /-- We can functorially associate to any functor from a groupoid to the core of a category `C`,
 a functor from the groupoid to `C`, simply by composing with the embedding `Core C ⥤ C`.
@@ -103,7 +108,7 @@ namespace Functor
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- A functor `C ⥤ D` induces a functor `Core C ⥤ Core D`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def core (F : C ⥤ D) : Core C ⥤ Core D := Core.functorToCore (Core.inclusion _ ⋙ F)
 
 variable (C) in
@@ -147,7 +152,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 @[simps!]
 def core {F G : C ⥤ D} (α : F ≅ G) : F.core ≅ G.core :=
   NatIso.ofComponents
-    (fun x ↦ Groupoid.isoEquivHom _ _|>.symm <| .mk <| α.app x.of)
+    (fun x ↦ Groupoid.isoEquivHom _ _ |>.symm <| .mk <| α.app x.of)
 
 @[simp]
 lemma coreComp {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) : (α ≪≫ β).core = α.core ≪≫ β.core := rfl
@@ -161,7 +166,7 @@ lemma coreWhiskerLeft {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G H : D
   cat_disch
 
 lemma coreWhiskerRight {E : Type u₃} [Category.{v₃} E] {F G : C ⥤ D} (η : F ≅ G) (H : D ⥤ E) :
-    (isoWhiskerRight η H ).core =
+    (isoWhiskerRight η H).core =
     F.coreComp H ≪≫ isoWhiskerRight η.core H.core ≪≫ (G.coreComp H).symm := by
   cat_disch
 
@@ -189,7 +194,7 @@ namespace Core
 
 variable {G : Type u₂} [Groupoid.{v₂} G]
 
-/-- The functor `functorToCore (F ⋙ H)` factors through `functortoCore H`. -/
+/-- The functor `functorToCore (F ⋙ H)` factors through `functorToCore H`. -/
 def functorToCoreCompLeftIso {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
     functorToCore (F ⋙ H) ≅ F ⋙ functorToCore H :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
@@ -251,12 +256,13 @@ end
 /-- `ofEquivFunctor m` lifts a type-level `EquivFunctor`
 to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 -/
-def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂) where
+def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] :
+    Core (Type u₁) ⥤ Core (Type u₂) where
   obj x := .mk <| m x.of
-  map f := .mk <| (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
-  map_id α := by ext x; exact congr_fun (EquivFunctor.map_refl' _) x
+  map f := .mk (EquivFunctor.mapEquiv m f.iso.toEquiv).toIso
+  map_id α := by ext x; congrm $(EquivFunctor.map_refl' _) x
   map_comp f g := by
     ext
-    simp [EquivFunctor.map_trans', Function.comp]
+    simp [Equiv.toIso, EquivFunctor.map_trans']
 
 end CategoryTheory

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Coalgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # MulOpposite of coalgebras
 
@@ -14,7 +17,7 @@ Suppose `R` is a commutative semiring, and `A` is an `R`-coalgebra,
 then `Aᵐᵒᵖ` is an `R`-coalgebra, where we define the comultiplication and counit maps naturally.
 -/
 
-@[expose] public section
+public section
 
 namespace MulOpposite
 

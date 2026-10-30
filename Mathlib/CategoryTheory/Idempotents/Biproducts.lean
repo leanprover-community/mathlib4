@@ -72,11 +72,12 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
 
 end Biproducts
 
+set_option backward.defeqAttrib.useBackward true in
 theorem karoubi_hasFiniteBiproducts [HasFiniteBiproducts C] : HasFiniteBiproducts (Karoubi C) :=
   { out := fun n =>
       { has_biproduct := fun F => by
           apply hasBiproduct_of_total (Biproducts.bicone F)
-          simpa using biproduct.map_eq.symm } }
+          simpa using! biproduct.map_eq.symm } }
 
 attribute [instance] karoubi_hasFiniteBiproducts
 
@@ -88,6 +89,8 @@ def complement (P : Karoubi C) : Karoubi C where
   p := 𝟙 _ - P.p
   idem := idem_of_id_sub_idem P.p P.idem
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
   hasBinaryBiproduct_of_total
     { pt := P.X
@@ -110,6 +113,8 @@ instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
 
 attribute [-simp] hom_ext_iff
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- A formal direct factor `P : Karoubi C` of an object `P.X : C` in a
 preadditive category is actually a direct factor of the image `(toKaroubi C).obj P.X`
 of `P.X` in the category `Karoubi C` -/

@@ -40,23 +40,21 @@ def cartesianComon : C ⥤ Comon C where
       counit := toUnit _
     }
   }
-  map f := .mk' f
-
-@[deprecated (since := "2025-09-15")] alias cartesianComon_ := cartesianComon
+  map f := .mk' f (f_comul := by
+    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+    this argument was provided by the auto_param. -/
+    simp +instances)
 
 variable {C}
 
 @[simp] theorem counit_eq_toUnit (A : C) [ComonObj A] : ε[A] = toUnit _ := by ext
-
-@[deprecated (since := "2025-05-09")] alias counit_eq_from := counit_eq_toUnit
 
 @[simp] theorem comul_eq_lift (A : C) [ComonObj A] : Δ[A] = lift (𝟙 _) (𝟙 _) := by
   ext
   · simpa using comul_counit A =≫ fst _ _
   · simpa using counit_comul A =≫ snd _ _
 
-@[deprecated (since := "2025-05-09")] alias comul_eq_diag := comul_eq_lift
-
+set_option backward.isDefEq.respectTransparency false in
 /--
 Every comonoid object in a Cartesian monoidal category is equivalent to
 the canonical comonoid structure on the underlying object.
@@ -65,8 +63,7 @@ the canonical comonoid structure on the underlying object.
   { hom := .mk' (𝟙 _)
     inv := .mk' (𝟙 _) }
 
-@[deprecated (since := "2025-09-15")] alias iso_cartesianComon_ := isoCartesianComon
-
+set_option backward.isDefEq.respectTransparency false in
 /--
 The category of comonoid objects in a Cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.

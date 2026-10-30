@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Data.Finset.NatAntidiagonal
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Invertibility of factorials
@@ -18,7 +17,7 @@ to be a unit.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsUnit
 

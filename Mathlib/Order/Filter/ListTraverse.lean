@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Control.Traversable.Instances
 public import Mathlib.Order.Filter.Map
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of `Traversable.traverse` on `List`s and `Filter`s
 
@@ -14,7 +18,7 @@ In this file we prove basic properties (monotonicity, membership)
 for `Traversable.traverse f l`, where `f : β → Filter α` and `l : List β`.
 -/
 
-@[expose] public section
+public section
 
 open Set List
 

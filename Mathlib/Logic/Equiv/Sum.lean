@@ -24,8 +24,9 @@ In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/
     satisfy the distributive law up to a canonical equivalence;
 
 More definitions of this kind can be found in other files.
-E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-`Group`, `Module`, etc.
+E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+`Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+other algebraic type classes.
 
 ## Tags
 
@@ -245,7 +246,7 @@ def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
   snd.left_inv a := by dsimp only; split_ifs <;> simp [*]
   snd.right_inv
     | none => by simp
-    | some ⟨_, ha⟩ => dif_neg ha
+    | some ⟨_, ha⟩ => dite_eq_right ha
 
 end
 
@@ -263,8 +264,8 @@ def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
   invFun a := if h : p a then Sum.inl ⟨a, h⟩ else Sum.inr ⟨a, h⟩
   left_inv := by
     rintro (⟨x, hx⟩ | ⟨x, hx⟩) <;> dsimp
-    · rw [dif_pos]
-    · rw [dif_neg]
+    · rw [dite_eq_left]
+    · rw [dite_eq_right]
   right_inv a := by
     dsimp
     split_ifs <;> rfl
@@ -282,17 +283,12 @@ theorem sumCompl_apply_inr {α} {p : α → Prop} [DecidablePred p] (x : { a // 
 @[simp]
 theorem sumCompl_symm_apply_of_pos {α} {p : α → Prop} [DecidablePred p] {a : α} (h : p a) :
     (sumCompl p).symm a = Sum.inl ⟨a, h⟩ :=
-  dif_pos h
+  dite_eq_left h
 
 @[simp]
 theorem sumCompl_symm_apply_of_neg {α} {p : α → Prop} [DecidablePred p] {a : α} (h : ¬p a) :
     (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
-  dif_neg h
-
-@[deprecated (since := "2025-10-28")]
-alias sumCompl_apply_symm_of_pos := sumCompl_symm_apply_of_pos
-@[deprecated (since := "2025-10-28")]
-alias sumCompl_apply_symm_of_neg := sumCompl_symm_apply_of_neg
+  dite_eq_right h
 
 @[simp]
 theorem sumCompl_symm_apply_pos {α} {p : α → Prop} [DecidablePred p] (x : {x // p x}) :

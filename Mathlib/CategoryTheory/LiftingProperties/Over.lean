@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.LiftingProperties.Basic
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
@@ -21,7 +20,7 @@ the left lifting property with respect to `p.left`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

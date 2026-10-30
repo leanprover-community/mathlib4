@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Ideal.Maximal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximal spectrum of a commutative (semi)ring
 
@@ -19,7 +22,7 @@ It is naturally a subset of the prime spectrum endowed with the subspace topolog
   i.e., the set of all maximal ideals of `R`.
 -/
 
-@[expose] public section
+public section
 
 /-- The maximal spectrum of a commutative (semi)ring `R` is the type of all
 maximal ideals of `R`. -/
@@ -29,3 +32,6 @@ structure MaximalSpectrum (R : Type*) [CommSemiring R] where
   isMaximal : asIdeal.IsMaximal
 
 attribute [instance] MaximalSpectrum.isMaximal
+
+instance (R : Type*) [CommSemiring R] : Coe (MaximalSpectrum R) (Ideal R) where
+  coe P := P.asIdeal

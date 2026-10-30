@@ -88,11 +88,19 @@ theorem mongePoint_eq_smul_vsub_vadd_circumcenter {n : ℕ} (s : Simplex ℝ P n
 
 @[simp] lemma mongePoint_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
     (s.reindex e).mongePoint = s.mongePoint := by
-  simp_rw [mongePoint, circumcenter_reindex, centroid, reindex]
-  have h : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
-  subst h
+  simp_rw [mongePoint, circumcenter_reindex, centroid_def, reindex]
+  obtain rfl : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
   congr 3
-  convert Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
+  convert! Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
+
+@[simp]
+theorem mongePoint_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+    [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
+    {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).mongePoint = f s.mongePoint := by
+  simp_rw [mongePoint_eq_smul_vsub_vadd_circumcenter]
+  rw [← Simplex.centroid, ← Simplex.centroid]
+  simp [centroid_map, circumcenter_map]
 
 /-- **Sylvester's theorem**: The position of the Monge point relative to the circumcenter via the
 sum of vectors to the vertices. -/
@@ -103,7 +111,7 @@ theorem smul_mongePoint_vsub_circumcenter_eq_sum_vsub {n : ℕ} (s : Simplex ℝ
   field_simp
   have h : Invertible (n + 2 + 1 : ℝ) := by norm_cast; apply invertibleOfPos
   rw [smul_eq_iff_eq_invOf_smul, smul_sum]
-  unfold Finset.centroid
+  rw [univ_centroid_eq, centroid_eq_affineCombination]
   rw [← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by simp)]
   simp only [centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add, Nat.cast_ofNat,
     Nat.cast_one, invOf_eq_inv]
@@ -113,6 +121,16 @@ theorem mongePoint_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
     s.mongePoint ∈ affineSpan ℝ (Set.range s.points) :=
   smul_vsub_vadd_mem _ _ (centroid_mem_affineSpan_of_card_eq_add_one ℝ _ (card_fin (n + 1)))
     s.circumcenter_mem_affineSpan s.circumcenter_mem_affineSpan
+
+@[simp]
+theorem mongePoint_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).mongePoint = s.mongePoint := by
+  have := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  simp_rw [mongePoint]
+  rw [← Simplex.centroid, ← Simplex.centroid]
+  simp [centroid_restrict, circumcenter_restrict]
 
 /-- Two simplices with the same points have the same Monge point. -/
 theorem mongePoint_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex ℝ P n}
@@ -152,7 +170,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
       simp_rw [centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
         mongePointWeightsWithCircumcenter] <;>
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
-  · rw [if_pos (mem_univ _), card_fin]
+  · rw [ite_eq_left (mem_univ _), card_fin]
     field
   · simp [field]
     ring
@@ -258,9 +276,8 @@ theorem mongePlane_def {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (n
 lemma mongePlane_reindex {m n : ℕ} (s : Simplex ℝ P (n + 2)) (e : Fin (n + 3) ≃ Fin (m + 3))
     (i₁ i₂ : Fin (m + 3)) :
     (s.reindex e).mongePlane i₁ i₂ = s.mongePlane (e.symm i₁) (e.symm i₂) := by
-  have h : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
-  subst h
-  simp_rw [mongePlane, reindex_points, reindex_range_points, Function.comp_apply, centroid,
+  obtain rfl : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
+  simp_rw [mongePlane, reindex_points, reindex_range_points, Function.comp_apply, centroid_def,
     reindex]
   congr 2
   convert Finset.affineCombination_map {e.symm i₁, e.symm i₂}ᶜ e.toEmbedding _ _ using 3
@@ -317,10 +334,10 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
   rw [Submodule.iInf_orthogonal, ← Submodule.span_iUnion] at hi
   have hu :
     ⋃ i : { i // i₁ ≠ i }, ({s.points i₁ -ᵥ s.points i} : Set V) =
-      (s.points i₁ -ᵥ ·) '' (s.points '' (Set.univ \ {i₁})) := by
+      (s.points i₁ -ᵥ ·) '' s.points '' (Set.univ \ {i₁}) := by
     rw [Set.image_image]
     ext x
-    simp_rw [Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff, Set.mem_diff_singleton]
+    simp_rw [Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff, Set.mem_sdiff_singleton]
     constructor
     · rintro ⟨i, rfl⟩
       use i, ⟨Set.mem_univ _, i.property.symm⟩
@@ -471,6 +488,14 @@ theorem affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3
   rw [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨t.orthocenter_mem_altitude, t.mem_altitude i⟩
 
+/-- The affine span of the orthocenter and a vertex is equal to the
+altitude if the orthocenter is not the vertex. -/
+theorem affineSpan_orthocenter_point_eq_altitude (t : Triangle ℝ P) (i : Fin 3)
+    (h : t.orthocenter ≠ t.points i) : line[ℝ, t.orthocenter, t.points i] = t.altitude i := by
+  rw [← affineSpan_pair_altitudeFoot_eq_altitude, affineSpan_pair_eq_of_left_mem_of_ne _ h]
+  rw [affineSpan_pair_altitudeFoot_eq_altitude]
+  exact orthocenter_mem_altitude t
+
 /-- Suppose we are given a triangle `t₁`, and replace one of its
 vertices by its orthocenter, yielding triangle `t₂` (with vertices not
 necessarily listed in the same order).  Then an altitude of `t₂` from
@@ -575,8 +600,8 @@ theorem exists_of_range_subset_orthocentricSystem {t : Triangle ℝ P}
       exact h₂₃.symm (hpi h₂)
     exact ⟨i₁, i₂, i₃, j₂, j₃, h₁₂, h₁₃, h₂₃, h₁₂₃, h₁, hj₂₃, h₂, h₃⟩
   · right
-    have hs := Set.subset_diff_singleton hps h
-    rw [Set.insert_diff_self_of_notMem ho] at hs
+    have hs := Set.subset_sdiff_singleton hps h
+    rw [Set.insert_sdiff_self_of_notMem ho] at hs
     classical
     refine Set.eq_of_subset_of_card_le hs ?_
     rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.independent.injective]

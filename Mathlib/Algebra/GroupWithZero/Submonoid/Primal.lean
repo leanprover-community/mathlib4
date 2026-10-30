@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoid of primal elements
 -/
@@ -17,7 +20,8 @@ public import Mathlib.Algebra.GroupWithZero.Divisibility
 assert_not_exists RelIso Ring
 
 /-- The submonoid of primal elements in a cancellative commutative monoid with zero. -/
-def Submonoid.isPrimal (M₀ : Type*) [CancelCommMonoidWithZero M₀] : Submonoid M₀ where
+def Submonoid.isPrimal (M₀ : Type*) [CommMonoidWithZero M₀] [IsCancelMulZero M₀] :
+    Submonoid M₀ where
   carrier := {a | IsPrimal a}
   mul_mem' := .mul
   one_mem' := isUnit_one.isPrimal

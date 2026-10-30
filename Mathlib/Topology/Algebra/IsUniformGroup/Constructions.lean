@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.UniformSpace.Pi
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Constructions of new uniform groups from old ones
 -/
 
-@[expose] public section
+public section
 
 variable {G H hom : Type*} [Group G] [Group H]
 

@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extension for `Nat.sqrt`
 
@@ -14,7 +14,7 @@ This module defines a `norm_num` extension for `Nat.sqrt`.
 
 public meta section
 
-namespace Tactic
+namespace Mathlib.Meta
 
 namespace NormNum
 
@@ -47,7 +47,7 @@ def proveNatSqrt (ex : Q(ℕ)) : (ey : Q(ℕ)) × Q(Nat.sqrt $ex = $ey) :=
 @[norm_num Nat.sqrt _]
 def evalNatSqrt : NormNumExt where eval {_ _} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, pf⟩ := proveNatSqrt ex
   let pf' : Q(IsNat (Nat.sqrt $x) $ey) := q(isNat_sqrt $p $pf)
@@ -55,4 +55,4 @@ def evalNatSqrt : NormNumExt where eval {_ _} e := do
 
 end NormNum
 
-end Tactic
+end Mathlib.Meta

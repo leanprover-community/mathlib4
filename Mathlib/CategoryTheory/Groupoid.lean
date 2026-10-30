@@ -5,13 +5,9 @@ Authors: Reid Barton, Kim Morrison, David Wärn
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-public import Mathlib.CategoryTheory.Products.Basic
-public import Mathlib.CategoryTheory.Pi.Basic
-public import Mathlib.CategoryTheory.Category.Basic
-public import Mathlib.Combinatorics.Quiver.Symmetric
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Combinatorics.Quiver.Symmetric
 
 /-!
 # Groupoids
@@ -34,7 +30,6 @@ See also `CategoryTheory.Core` for the groupoid of isomorphisms in a category.
 -/
 
 @[expose] public section
-
 
 namespace CategoryTheory
 
@@ -97,18 +92,22 @@ instance functorMapReverse {D : Type*} [Groupoid D] (F : C ⥤ D) : F.toPrefunct
 variable (X Y)
 
 /-- In a groupoid, isomorphisms are equivalent to morphisms. -/
-@[simps!]
+@[implicit_reducible, simps]
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
   invFun f := { hom := f, inv := Groupoid.inv f }
 
 variable (C)
 
-/-- The functor from a groupoid `C` to its opposite sending every morphism to its inverse. -/
+/-- The equivalence from a groupoid `C` to its opposite sending every morphism to its inverse. -/
 @[simps]
-noncomputable def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
-  obj := Opposite.op
-  map {_ _} f := (inv f).op
+def Groupoid.invEquivalence : C ≌ Cᵒᵖ where
+  functor.obj := Opposite.op
+  functor.map {_ _} f := (inv f).op
+  inverse.obj := Opposite.unop
+  inverse.map {x y} f := inv f.unop
+  unitIso := NatIso.ofComponents (fun _ ↦ .refl _)
+  counitIso := NatIso.ofComponents (fun _ ↦ .refl _)
 
 end
 
@@ -125,28 +124,31 @@ noncomputable instance {C : Type u} [Groupoid.{v} C] : IsGroupoid C where
 variable {C : Type u} [Category.{v} C]
 
 /-- Promote (noncomputably) an `IsGroupoid` to a `Groupoid` structure. -/
+@[instance_reducible]
 noncomputable def Groupoid.ofIsGroupoid [IsGroupoid C] :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
 
 /-- A category where every morphism `IsIso` is a groupoid. -/
+@[instance_reducible]
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) :
     Groupoid.{v} C where
   inv := fun f => CategoryTheory.inv f
-  inv_comp := fun f => Classical.choose_spec (all_is_iso f).out|>.right
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
+@[instance_reducible]
 def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupoid.{v} C where
   inv _ := all_unique.default
 
 end
 
-lemma isGroupoid_of_reflects_iso {C D : Type*} [Category C] [Category D]
+lemma isGroupoid_of_reflects_iso {C D : Type*} [Category* C] [Category* D]
     (F : C ⥤ D) [F.ReflectsIsomorphisms] [IsGroupoid D] :
     IsGroupoid C where
   all_isIso _ := isIso_of_reflects_iso _ F
 
 /-- A category equipped with a fully faithful functor to a groupoid is fully faithful -/
+@[instance_reducible]
 def Groupoid.ofFullyFaithfulToGroupoid {C : Type*} [𝒞 : Category C] {D : Type u} [Groupoid.{v} D]
     (F : C ⥤ D) (h : F.FullyFaithful) : Groupoid C :=
   { 𝒞 with
@@ -192,7 +194,7 @@ instance isGroupoidProd {α : Type u} {β : Type u₂} [Category.{v} α] [Catego
 end
 
 open MorphismProperty in
-lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category C] :
+lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category* C] :
     IsGroupoid C ↔ isomorphisms C = ⊤ := by
   constructor
   · rw [eq_top_iff]
@@ -201,5 +203,7 @@ lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category C] :
     infer_instance
   · intro h
     exact ⟨of_eq_top h⟩
+
+instance {I : Type*} : IsGroupoid (Discrete I) where
 
 end CategoryTheory

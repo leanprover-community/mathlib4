@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 
 /-!
@@ -22,7 +21,7 @@ noncomputable section
 
 open CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace CategoryTheory.Limits
 

@@ -53,9 +53,9 @@ def smul_pow : ℕ → R → S := fun n r => r • x ^ n
 
 /-- Evaluate a polynomial `p` in the scalar semiring `R` at an element `x` in the target `S` using
 scalar multiple `R`-action. -/
-irreducible_def smeval : S := p.sum (smul_pow x)
+@[no_expose] def smeval : S := p.sum (smul_pow x)
 
-theorem smeval_eq_sum : p.smeval x = p.sum (smul_pow x) := by rw [smeval_def]
+theorem smeval_eq_sum : p.smeval x = p.sum (smul_pow x) := (rfl)
 
 @[simp]
 theorem smeval_C : (C r).smeval x = r • x ^ 0 := by
@@ -290,16 +290,7 @@ variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [Semiring S]
 theorem smeval_commute_left (hc : Commute x y) : Commute (p.smeval x) y := by
   induction p using Polynomial.induction_on' with
   | add r s hr hs => exact (smeval_add R r s x) ▸ Commute.add_left hr hs
-  | monomial n a =>
-    simp only [smeval_monomial]
-    refine Commute.smul_left ?_ a
-    induction n with
-    | zero => simp only [npow_zero, Commute.one_left]
-    | succ n ih =>
-      refine (commute_iff_eq (x ^ (n + 1)) y).mpr ?_
-      rw [commute_iff_eq (x ^ n) y] at ih
-      rw [pow_succ, ← mul_assoc, ← ih]
-      exact Commute.right_comm hc (x ^ n)
+  | monomial n a => simpa [smeval_monomial] using Commute.smul_left (Commute.pow_left hc _) _
 
 theorem smeval_commute (hc : Commute x y) : Commute (p.smeval x) (q.smeval y) := by
   induction p using Polynomial.induction_on' with
@@ -323,7 +314,7 @@ section Algebra
 
 theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
     (x : S) (p : R[X]) : aeval x p = p.smeval x := by
-  rw [aeval_def, eval₂_def, Algebra.algebraMap_eq_smul_one', smeval_def]
+  rw [aeval_def, eval₂_eq_sum, Algebra.algebraMap_eq_smul_one', smeval_eq_sum]
   simp only [Algebra.smul_mul_assoc, one_mul]
   exact rfl
 

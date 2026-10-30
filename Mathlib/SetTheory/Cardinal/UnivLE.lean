@@ -5,16 +5,16 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Logic.UnivLE
-public import Mathlib.SetTheory.Ordinal.Basic
+public import Mathlib.SetTheory.Ordinal.Univ
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # UnivLE and cardinals
 -/
 
-@[expose] public section
-
-noncomputable section
+public section
 
 universe u v
 

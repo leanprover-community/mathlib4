@@ -17,7 +17,7 @@ In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 
@@ -37,12 +37,8 @@ theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a :=
 theorem notMem_nil : a ∉ (Vector.nil : Vector α 0).toList := by
   simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
-
 theorem notMem_zero (v : Vector α 0) : a ∉ v.toList :=
   (Vector.eq_nil v).symm ▸ notMem_nil a
-
-@[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
 
 theorem mem_cons_iff (v : Vector α n) : a' ∈ (a ::ᵥ v).toList ↔ a' = a ∨ a' ∈ v.toList := by
   rw [Vector.toList_cons, List.mem_cons]
@@ -66,14 +62,26 @@ theorem mem_of_mem_tail (v : Vector α n) (ha : a ∈ v.tail.toList) : a ∈ v.t
   | zero => exact False.elim (Vector.notMem_zero a v.tail ha)
   | succ n _ => exact (mem_succ_iff a v).2 (Or.inr ha)
 
+@[simp]
+theorem head_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).head = f v.head (hp _ v.head_mem) := by
+  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
+  simp_rw [h, pmap_cons, head_cons]
+
+@[simp]
+theorem tail_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).tail = v.tail.pmap f (fun x hx ↦ hp _ (v.mem_of_mem_tail x hx)) := by
+  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
+  simp_rw [h, pmap_cons, tail_cons]
+
 theorem mem_map_iff (b : β) (v : Vector α n) (f : α → β) :
     b ∈ (v.map f).toList ↔ ∃ a : α, a ∈ v.toList ∧ f a = b := by
   rw [Vector.toList_map, List.mem_map]
 
 theorem notMem_map_zero (b : β) (v : Vector α 0) (f : α → β) : b ∉ (v.map f).toList := by
   simpa only [Vector.eq_nil v, Vector.map_nil, Vector.toList_nil] using List.not_mem_nil
-
-@[deprecated (since := "2025-05-23")] alias not_mem_map_zero := notMem_map_zero
 
 theorem mem_map_succ_iff (b : β) (v : Vector α (n + 1)) (f : α → β) :
     b ∈ (v.map f).toList ↔ f v.head = b ∨ ∃ a : α, a ∈ v.tail.toList ∧ f a = b := by

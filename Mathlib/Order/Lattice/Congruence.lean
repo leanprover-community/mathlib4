@@ -5,9 +5,8 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Data.Setoid.Basic
-public import Mathlib.Order.Lattice
 public import Mathlib.Order.Hom.Lattice
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Lattice Congruences
@@ -79,7 +78,7 @@ private lemma transitive {r : α → α → Prop}
           ((h₄ inf_le_sup (h₂.mp hxy)).2 : r (x ⊓ y ⊔ (y ⊔ z)) (x ⊔ y ⊔ (y ⊔ z)))))
 
 /-- Alternative conditions for a lattice congruence. -/
-def mk' [Lattice α] (r : α → α → Prop) [h₁ : IsRefl α r]
+@[no_expose] def mk' (r : α → α → Prop) [h₁ : Std.Refl r]
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : LatticeCon α where
@@ -113,9 +112,9 @@ open Function
 
 /-- The kernel of a lattice homomorphism as a lattice congruence. -/
 @[simps!]
-def ker [Lattice α] [Lattice β] [LatticeHomClass F α β] (f : F) : LatticeCon α where
+def ker [LatticeHomClass F α β] (f : F) : LatticeCon α where
   toSetoid := Setoid.ker f
-  inf _ _ := by simp_all only [Setoid.ker, onFun, map_inf]
-  sup _ _ := by simp_all only [Setoid.ker, onFun, map_sup]
+  inf _ _ := by simp_all +instances only [Setoid.ker, onFun, map_inf]
+  sup _ _ := by simp_all +instances only [Setoid.ker, onFun, map_sup]
 
 end LatticeCon

@@ -7,13 +7,17 @@ module
 
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Order.AddGroupWithTop
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances on PUnit
 
 This file collects facts about ordered algebraic structures on the one-element type.
 -/
 
-@[expose] public section
+public section
 
 namespace PUnit
 
@@ -30,5 +34,6 @@ instance : LinearOrderedAddCommMonoidWithTop PUnit where
   top := ()
   le_top _ := le_rfl
   top_add' _ := rfl
+  isAddLeftRegular_of_ne_top := by simp
 
 end PUnit

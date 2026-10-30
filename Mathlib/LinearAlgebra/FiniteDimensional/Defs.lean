@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Finite-dimensional vector spaces
@@ -47,7 +46,7 @@ We make use of `finrank`, the dimension of a finite-dimensional space, returning
 opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite dimension, its
 `finrank` is by convention set to `0`. `finrank` is not defined using `FiniteDimensional`.
 For basic results that do not need the `FiniteDimensional` class, import
-`Mathlib/LinearAlgebra/Finrank.lean`.
+`Mathlib/LinearAlgebra/Dimension/Finrank.lean`.
 
 Preservation of finite-dimensionality and formulas for the dimension are given for
 - submodules (`FiniteDimensional.finiteDimensional_submodule`)
@@ -57,8 +56,9 @@ Preservation of finite-dimensionality and formulas for the dimension are given f
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
-Plenty of the results hold for general fg modules or Noetherian modules, and they can be found in
-`Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
+Plenty of the results hold for general finitely generated modules (see
+`Mathlib/RingTheory/Finiteness/Basic.lean`) or Noetherian modules (see
+`Mathlib/RingTheory/Noetherian/Basic.lean`).
 -/
 
 @[expose] public section
@@ -106,10 +106,8 @@ theorem _root_.Module.Basis.finiteDimensional_of_finite {ι : Type w} [Finite ι
     FiniteDimensional K V :=
   Module.Finite.of_basis h
 
-@[deprecated (since := "2025-11-12")]
-alias of_fintype_basis := Module.Basis.finiteDimensional_of_finite
-
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
+@[instance_reducible]
 noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Basis ι K V) :
     Fintype ι :=
   @Fintype.ofFinite _ (Module.Finite.finite_basis b)
@@ -236,7 +234,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
 theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
-  (fg_top s).symm.trans Module.finite_def.symm
+  Module.Finite.iff_fg.symm
 
 end DivisionRing
 

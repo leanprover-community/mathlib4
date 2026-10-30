@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Set.Equitable
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Partition.Finpartition
-public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Finite equipartitions
@@ -86,7 +87,7 @@ theorem IsEquipartition.card_large_parts_eq_mod (hP : P.IsEquipartition) :
     hP.filter_ne_average_add_one_eq_average, sum_const_nat (m := #s / #P.parts + 1) (by simp),
     sum_const_nat (m := #s / #P.parts) (by simp), ← hP.filter_ne_average_add_one_eq_average,
     mul_add, add_comm, ← add_assoc, ← add_mul, mul_one, add_comm #_,
-    filter_card_add_filter_neg_card_eq_card, add_comm] at z
+    card_filter_add_card_filter_not, add_comm] at z
   rw [← add_left_inj, Nat.mod_add_div, z]
 
 /-- An equipartition of a finset with `n` elements into `k` parts has
@@ -95,7 +96,7 @@ theorem IsEquipartition.card_small_parts_eq_mod (hP : P.IsEquipartition) :
     #{p ∈ P.parts | #p = #s / #P.parts} = #P.parts - #s % #P.parts := by
   conv_rhs =>
     arg 1
-    rw [← filter_card_add_filter_neg_card_eq_card (p := fun p ↦ #p = #s / #P.parts + 1)]
+    rw [← card_filter_add_card_filter_not (p := fun p ↦ #p = #s / #P.parts + 1)]
   rw [hP.card_large_parts_eq_mod, add_tsub_cancel_left, hP.filter_ne_average_add_one_eq_average]
 
 /-- There exists an enumeration of an equipartition's parts where
@@ -118,7 +119,7 @@ theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
   let f := (Equiv.sumCompl _).symm.trans ((el.sumCongr es).trans finSumFinEquiv)
   use f.trans (finCongr (Nat.add_sub_of_le P.card_mod_card_parts_le))
   intro ⟨p, _⟩
-  simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.coe_cast]
+  simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.val_cast]
   by_cases hc : #p = #s / #P.parts + 1 <;> simp [hc]
 
 /-- Given a finset equipartitioned into `k` parts, its elements can be enumerated such that
@@ -142,7 +143,7 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
   have bij : z'.Bijective := by
     refine (bijective_iff_injective_and_card z').mpr ⟨fun a b e ↦ ?_, by simp⟩
     simp_rw [z', z, Fin.mk.injEq, mul_comm #P.parts] at e
-    haveI : NeZero #P.parts := ⟨((Nat.zero_le _).trans_lt (gl a)).ne'⟩
+    have : NeZero #P.parts := ⟨((Nat.zero_le _).trans_lt (gl a)).ne'⟩
     change (#P.parts).divModEquiv.symm (_, _) = (#P.parts).divModEquiv.symm (_, _) at e
     simp only [Equiv.apply_eq_iff_eq, Prod.mk.injEq] at e
     apply_fun f
@@ -155,12 +156,12 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
 /-! ### Discrete and indiscrete finpartitions -/
 
 
-variable (s) -- [Decidable (a = ⊥)]
+variable (s)
 
 theorem bot_isEquipartition : (⊥ : Finpartition s).IsEquipartition :=
   Set.equitableOn_iff_exists_eq_eq_add_one.2 ⟨1, by simp⟩
 
-theorem top_isEquipartition [Decidable (s = ⊥)] : (⊤ : Finpartition s).IsEquipartition :=
+theorem top_isEquipartition [Decidable (s = ∅)] : (⊤ : Finpartition s).IsEquipartition :=
   Set.Subsingleton.isEquipartition (parts_top_subsingleton _)
 
 theorem indiscrete_isEquipartition {hs : s ≠ ∅} : (indiscrete hs).IsEquipartition := by

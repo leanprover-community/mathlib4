@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Data.Finsupp.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation for `DFinsupp`
 
@@ -19,7 +22,7 @@ Note that this syntax is for `Finsupp` by default, but works for `DFinsupp` if t
 is correct.
 -/
 
-@[expose] public section
+public section
 
 namespace DFinsupp
 
@@ -75,9 +78,8 @@ unsafe instance {α : Type*} {β : α → Type*} [Repr α] [∀ i, Repr (β i)] 
     if vals.length = 0 then
       "0"
     else
-      let ret : Std.Format := f!"fun₀" ++ .nest 2 (
-        .group (.join <| vals_dedup.map fun a =>
+      let ret : Std.Format := f!"fun₀" ++ .nest 2 (.group (.join <| vals_dedup.map fun a =>
           .line ++ .group (f!"| {a.1} =>" ++ .line ++ a.2)))
-      if p ≥ leadPrec then Format.paren ret else ret
+      if p ≥ eval_prec lead then Format.paren ret else ret
 
 end DFinsupp

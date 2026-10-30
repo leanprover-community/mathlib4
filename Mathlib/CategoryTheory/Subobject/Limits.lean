@@ -81,6 +81,10 @@ theorem equalizerSubobject_arrow_comp :
     (equalizerSubobject f g).arrow ≫ f = (equalizerSubobject f g).arrow ≫ g := by
   rw [← equalizerSubobject_arrow, Category.assoc, Category.assoc, equalizer.condition]
 
+@[simp]
+theorem equalizerSubobject_of_self : equalizerSubobject f f = ⊤ := by
+  apply mk_eq_top_of_isIso
+
 theorem equalizerSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = h ≫ g) :
     (equalizerSubobject f g).Factors h :=
   ⟨equalizer.lift h w, by simp⟩
@@ -115,6 +119,11 @@ variable [HasZeroMorphisms C] (f : X ⟶ Y) [HasKernel f]
 /-- The kernel of a morphism `f : X ⟶ Y` as a `Subobject X`. -/
 abbrev kernelSubobject : Subobject X :=
   Subobject.mk (kernel.ι f)
+
+lemma _root_.CategoryTheory.Subobject.pullback_kernelSubobject {W : C} (h : W ⟶ X)
+    [HasPullbacks C] [HasKernel (h ≫ f)] :
+    (Subobject.pullback h).obj (kernelSubobject f) = kernelSubobject (h ≫ f) := by
+  simpa only [kernelSubobject, comp_zero] using pullback_equalizer f 0 h
 
 /-- The underlying object of `kernelSubobject f` is (up to isomorphism!)
 the same as the chosen object `kernel f`. -/
@@ -172,6 +181,9 @@ def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
   Subobject.factorThru _ ((kernelSubobject f).arrow ≫ sq.left)
     (kernelSubobject_factors _ _ (by simp))
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernelSubobjectMap sq ≫ (kernelSubobject f').arrow = (kernelSubobject f).arrow ≫ sq.left := by
@@ -199,12 +211,11 @@ theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
 
 end
 
-@[simp]
-theorem kernelSubobject_zero {A B : C} : kernelSubobject (0 : A ⟶ B) = ⊤ :=
-  (isIso_iff_mk_eq_top _).mp (by infer_instance)
+theorem kernelSubobject_zero {A B : C} : kernelSubobject (0 : A ⟶ B) = ⊤ := by
+  simp
 
 instance isIso_kernelSubobject_zero_arrow : IsIso (kernelSubobject (0 : X ⟶ Y)).arrow :=
-  (isIso_arrow_iff_eq_top _).mpr kernelSubobject_zero
+  (isIso_arrow_iff_eq_top _).mpr (by simp)
 
 theorem le_kernelSubobject (A : Subobject X) (h : A.arrow ≫ f = 0) : A ≤ kernelSubobject f :=
   Subobject.le_mk_of_comm (kernel.lift f A.arrow h) (by simp)
@@ -245,6 +256,7 @@ instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h 
   · infer_instance
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking cokernels is an order-reversing map from the subobjects of `X` to the quotient objects
 of `X`. -/
 @[simps]
@@ -267,6 +279,8 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
       · rw [← Subobject.ofMkLEMk_comp h, Category.assoc, cokernel.condition, comp_zero]
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking kernels is an order-reversing map from the quotient objects of `X` to the subobjects of
 `X`. -/
 @[simps]
@@ -313,6 +327,16 @@ theorem imageSubobject_arrow :
 theorem imageSubobject_arrow' :
     (imageSubobjectIso f).inv ≫ (imageSubobject f).arrow = image.ι f := by simp [imageSubobjectIso]
 
+lemma _root_.CategoryTheory.Subobject.exists_eq_imageSubobject [HasImages C]
+    (f : X ⟶ Y) (X' : Subobject X) : («exists» f).obj X' = imageSubobject (X'.arrow ≫ f) := by
+  apply eq_of_comm ((existsIsoImage f X').trans (imageSubobjectIso (X'.arrow ≫ f)).symm)
+  simp only [Iso.trans_hom, Iso.symm_hom, assoc, imageSubobject_arrow']
+  exact ((Subobject.existsCompRepresentativeIso f).app X').hom.hom.w
+
+lemma _root_.CategoryTheory.Subobject.exists_mk_eq_imageSubobject [HasImages C]
+    {A : C} (g : A ⟶ X) [Mono g] (f : X ⟶ Y) :
+    («exists» f).obj (mk g) = imageSubobject (g ≫ f) := rfl
+
 /-- A factorisation of `f : X ⟶ Y` through `imageSubobject f`. -/
 def factorThruImageSubobject : X ⟶ imageSubobject f :=
   factorThruImage f ≫ (imageSubobjectIso f).inv
@@ -350,9 +374,26 @@ theorem imageSubobject_comp_le {X' : C} (h : X' ⟶ X) (f : X ⟶ Y) [HasImage f
     imageSubobject (h ≫ f) ≤ imageSubobject f :=
   Subobject.mk_le_mk_of_comm (image.preComp h f) (by simp)
 
-section
+theorem imageSubobject_comp_of_strongEpi [HasStrongEpiMonoFactorisations C] {X Y X' : C}
+    (e : X' ⟶ X) (f : X ⟶ Y) [StrongEpi e] [Mono f] :
+    imageSubobject (e ≫ f) = imageSubobject f :=
+  mk_eq_mk_of_comm (image.ι (e ≫ f)) (image.ι f)
+    ((image.isoStrongEpiMono e f rfl).symm ≪≫
+      (image.isoStrongEpiMono (𝟙 _) f (Category.id_comp _))) (by simp)
 
-open ZeroObject
+lemma _root_.CategoryTheory.Subobject.sup_eq_imageSubobject [HasImages C] [HasBinaryCoproducts C]
+    {A : C} (X Y : Subobject A) :
+    X ⊔ Y = imageSubobject (coprod.desc X.arrow Y.arrow) :=
+  eq_mk_of_comm (image.ι (coprod.desc X.arrow Y.arrow)) (supIsoImage X Y) (ofLEMk_comp _)
+
+lemma _root_.CategoryTheory.Subobject.mk_eq_imageSubobject_of_mono
+    [HasStrongEpiMonoFactorisations C] {X Y : C} {f : X ⟶ Y} {I' : C} (e : X ⟶ I') (m : I' ⟶ Y)
+    (comm : e ≫ m = f := by cat_disch) [StrongEpi e] [Mono m] :
+    mk m = imageSubobject f :=
+  mk_eq_mk_of_comm m (image.ι f) (image.isoStrongEpiMono e m comm)
+    (image.isoStrongEpiMono_hom_comp_ι e m comm)
+
+section
 
 variable [HasZeroMorphisms C] [HasZeroObject C]
 
@@ -437,12 +478,17 @@ def imageSubobjectMap {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [Ha
     (imageSubobject f : C) ⟶ (imageSubobject g : C) :=
   (imageSubobjectIso f).hom ≫ image.map sq ≫ (imageSubobjectIso g).inv
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 theorem imageSubobjectMap_arrow {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [HasImage g]
     (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     imageSubobjectMap sq ≫ (imageSubobject g).arrow = (imageSubobject f).arrow ≫ sq.right := by
-  simp only [imageSubobjectMap, Category.assoc, imageSubobject_arrow']
-  erw [image.map_ι, ← Category.assoc, imageSubobject_arrow]
+  simp only [imageSubobjectMap, Category.assoc, Arrow.mk_left, Arrow.mk_right,
+    Arrow.mk_hom, imageSubobject_arrow']
+  rw [dsimp% image.map_ι sq]
+  simp
 
 theorem image_map_comp_imageSubobjectIso_inv {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z}
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :

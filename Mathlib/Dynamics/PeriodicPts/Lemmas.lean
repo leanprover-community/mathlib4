@@ -6,33 +6,29 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Data.Fintype.Card
-public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.PNat.Basic
-public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Dynamics.PeriodicPts.Defs
+public import Mathlib.Order.Lattice.Nat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extra lemmas about periodic points
 -/
 
-@[expose] public section
+public section
 
 open Nat Set
 
 namespace Function
-variable {α : Type*} {f : α → α} {x y : α}
+variable {α : Type*} {f : α → α} {x : α}
 
 open Function (Commute)
 
 theorem directed_ptsOfPeriod_pnat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
   fun m n => ⟨m * n, fun _ hx => hx.mul_const n, fun _ hx => hx.const_mul m⟩
-
-@[deprecated (since := "2025-04-27")]
-alias directed_ptsOfPeriod_pNat := directed_ptsOfPeriod_pnat
 
 variable (f) in
 theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
@@ -48,8 +44,15 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
 
 theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
     minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
-  dsimp [minimalPeriod, periodicPts, sInf]
-  grind
+  dsimp +instances [minimalPeriod, periodicPts, sInf]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/14727 (replacing
+  grind's `ToInt` machinery with homomorphism-based translation), `grind` closed this.
+  Both sides are the same `dite`, differing only in the `DecidablePred` instance fed to
+  `Nat.find`: `instDecidableAnd .. (IsPeriodicPt.instDecidableOfDecidableEq ..)` on the
+  left, `Classical.propDecidable` on the right. `grind` cannot do that subsingleton
+  reasoning on its own — an opaque analogue fails on nightly-2026-08-12 too — so it was
+  only ever discharged as a side effect of cutsat internalizing the `Nat.find` term. -/
+  congr!
 
 /-- The backward direction of `minimalPeriod_eq_prime_iff`. -/
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
@@ -69,8 +72,7 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
     (hco : Coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
   apply h.minimalPeriod_of_comp_dvd_mul.antisymm
-  suffices
-    ∀ {f g : α → α},
+  suffices ∀ {f g : α → α},
       Commute f g →
         Coprime (minimalPeriod f x) (minimalPeriod g x) →
           minimalPeriod f x ∣ minimalPeriod (f ∘ g) x from
@@ -106,16 +108,10 @@ theorem Injective.mem_periodicPts [Finite α] (h : Injective f) (x : α) : x ∈
   · exact mk_mem_periodicPts (by lia) (iterate_cancel h heq.symm)
   · exact mk_mem_periodicPts (by lia) (iterate_cancel h heq)
 
-@[deprecated (since := "2025-04-27")]
-alias mem_periodicPts_of_injective :=  Injective.mem_periodicPts
-
 theorem injective_iff_periodicPts_eq_univ [Finite α] : Injective f ↔ periodicPts f = univ := by
   refine ⟨fun h ↦ eq_univ_iff_forall.mpr h.mem_periodicPts, fun h ↦ ?_⟩
   rw [Finite.injective_iff_surjective, ← range_eq_univ, ← univ_subset_iff, ← h]
   apply periodicPts_subset_range
-
-@[deprecated (since := "2025-04-27")]
-alias injective_iff_forall_mem_periodicPts := injective_iff_periodicPts_eq_univ
 
 theorem injective_iff_iterate_factorial_card_eq_id [Fintype α] :
     Injective f ↔ f^[(card α)!] = id := by
@@ -130,7 +126,7 @@ namespace Function
 
 section Prod
 
-variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
+variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {m n : ℕ}
 
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
     minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=

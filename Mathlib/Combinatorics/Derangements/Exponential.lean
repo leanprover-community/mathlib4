@@ -5,10 +5,11 @@ Authors: Henry Swanson, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite
-public import Mathlib.Data.Nat.Cast.Field
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # Derangement exponential series
@@ -17,7 +18,7 @@ This file proves that the probability of a permutation on n elements being a der
 The specific lemma is `numDerangements_tendsto_inv_e`.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter NormedSpace
@@ -40,7 +41,7 @@ theorem numDerangements_tendsto_inv_e :
     -- there's no specific lemma for ℝ that ∑ x^k/k! sums to exp(x), but it's
     -- true in more general fields, so use that lemma
     rw [Real.exp_eq_exp_ℝ]
-    exact expSeries_div_hasSum_exp ℝ (-1 : ℝ)
+    exact expSeries_div_hasSum_exp (-1 : ℝ)
   intro n
   rw [← Int.cast_natCast, numDerangements_sum]
   push_cast

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.BooleanAlgebra.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indicator function valued in bool
 
@@ -34,8 +37,6 @@ theorem mem_iff_boolIndicator (x : α) : x ∈ s ↔ s.boolIndicator x = true :=
 theorem notMem_iff_boolIndicator (x : α) : x ∉ s ↔ s.boolIndicator x = false := by
   unfold boolIndicator
   split_ifs with h <;> simp [h]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_iff_boolIndicator := notMem_iff_boolIndicator
 
 theorem preimage_boolIndicator_true : s.boolIndicator ⁻¹' {true} = s :=
   ext fun x ↦ (s.mem_iff_boolIndicator x).symm

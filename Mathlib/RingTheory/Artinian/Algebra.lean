@@ -7,7 +7,11 @@ module
 
 public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebras over Artinian rings
@@ -15,7 +19,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 In this file we collect results about algebras over Artinian rings.
 -/
 
-@[expose] public section
+public section
 
 namespace IsArtinianRing
 

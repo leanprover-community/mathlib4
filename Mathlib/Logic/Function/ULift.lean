@@ -5,13 +5,16 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `ULift` and `PLift`
 -/
 
-@[expose] public section
+public section
 
 theorem ULift.down_injective {α : Type*} : Function.Injective (@ULift.down α)
   | ⟨a⟩, ⟨b⟩, _ => by congr

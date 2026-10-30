@@ -10,7 +10,6 @@ public import Mathlib.Analysis.InnerProductSpace.Orientation
 public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Orientation
-public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Oriented two-dimensional real inner product spaces
@@ -88,7 +87,7 @@ namespace Orientation
 /-- An antisymmetric bilinear form on an oriented real inner product space of dimension 2 (usual
 notation `ω`). When evaluated on two vectors, it gives the oriented area of the parallelogram they
 span. -/
-irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
+@[no_expose] def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
   let z : E [⋀^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
     AlternatingMap.constLinearEquivOfIsEmpty.symm
   let y : E [⋀^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
@@ -166,7 +165,7 @@ theorem areaForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
 
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
-irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
+@[no_expose] def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
   let to_dual : E ≃ₗ[ℝ] E →ₗ[ℝ] ℝ :=
     (InnerProductSpace.toDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
@@ -206,7 +205,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : Finset.card {x} = 1 := Finset.card_singleton x
           have : finrank ℝ K + finrank ℝ Kᗮ = finrank ℝ E := K.finrank_add_finrank_orthogonal
           have : finrank ℝ E = 2 := Fact.out
-          omega
+          lia
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
@@ -228,7 +227,7 @@ theorem rightAngleRotationAux₁_rightAngleRotationAux₁ (x : E) :
 /-- An isometric automorphism of an oriented real inner product space of dimension 2 (usual notation
 `J`). This automorphism squares to -1. We will define rotations in such a way that this
 automorphism is equal to rotation by 90 degrees. -/
-irreducible_def rightAngleRotation : E ≃ₗᵢ[ℝ] E :=
+@[no_expose] def rightAngleRotation : E ≃ₗᵢ[ℝ] E :=
   LinearIsometryEquiv.ofLinearIsometry o.rightAngleRotationAux₂ (-o.rightAngleRotationAux₁)
     (by ext; simp [rightAngleRotationAux₂]) (by ext; simp [rightAngleRotationAux₂])
 
@@ -289,7 +288,7 @@ theorem rightAngleRotation_neg_orientation (x : E) :
 @[simp]
 theorem rightAngleRotation_trans_neg_orientation :
     (-o).rightAngleRotation = o.rightAngleRotation.trans (LinearIsometryEquiv.neg ℝ) :=
-  LinearIsometryEquiv.ext <| o.rightAngleRotation_neg_orientation
+  LinearIsometryEquiv.ext o.rightAngleRotation_neg_orientation
 
 theorem rightAngleRotation_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x : F) :
@@ -355,7 +354,7 @@ theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫`. -/
 theorem inner_mul_inner_add_areaForm_mul_areaForm (a x y : E) :
     ⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫ :=
-  congr_arg (fun f : E →ₗ[ℝ] ℝ => f y) (o.inner_mul_inner_add_areaForm_mul_areaForm' a x)
+  congr($(o.inner_mul_inner_add_areaForm_mul_areaForm' a x) y)
 
 theorem inner_sq_add_areaForm_sq (a b : E) : ⟪a, b⟫ ^ 2 + ω a b ^ 2 = ‖a‖ ^ 2 * ‖b‖ ^ 2 := by
   simpa [sq, real_inner_self_eq_norm_sq] using o.inner_mul_inner_add_areaForm_mul_areaForm a b b
@@ -373,7 +372,7 @@ theorem inner_mul_areaForm_sub' (a x : E) : ⟪a, x⟫ • ω a - ω a x • inn
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y`. -/
 theorem inner_mul_areaForm_sub (a x y : E) : ⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y :=
-  congr_arg (fun f : E →ₗ[ℝ] ℝ => f y) (o.inner_mul_areaForm_sub' a x)
+  congr($(o.inner_mul_areaForm_sub' a x) y)
 
 theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
     0 ≤ ⟪x, y⟫ ∧ ω x y = 0 ↔ SameRay ℝ x y := by
@@ -391,11 +390,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
         mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
         real_inner_self_eq_norm_sq]
       exact this
-    rintro ⟨ha, hb⟩
-    have hx' : 0 < ‖x‖ := by simpa using hx
-    have ha' : 0 ≤ a := nonneg_of_mul_nonneg_left ha (by positivity)
-    have hb' : b = 0 := eq_zero_of_ne_zero_of_mul_right_eq_zero (pow_ne_zero 2 hx'.ne') hb
-    exact (SameRay.sameRay_nonneg_smul_right x ha').add_right <| by simp [hb']
+    simp_all
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, map_smulₛₗ, areaForm_apply_self,

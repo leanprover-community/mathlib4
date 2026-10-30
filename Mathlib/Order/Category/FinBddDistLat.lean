@@ -9,6 +9,9 @@ public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.Category.BddDistLat
 public import Mathlib.Order.Category.FinPartOrd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite bounded distributive lattices
 
@@ -44,6 +47,11 @@ attribute [instance] FinBddDistLat.isFintype
 abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat where
   carrier := α
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FinBddDistLat.of X` as `↧X`. -/
+@[app_delab FinBddDistLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 /-- Construct a bundled `FinBddDistLat` from a `Nonempty` `Fintype` `DistribLattice`. -/
 abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat where
   carrier := α
@@ -52,7 +60,7 @@ abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddD
 /-- The type of morphisms in `FinBddDistLat R`. -/
 @[ext]
 structure Hom (X Y : FinBddDistLat.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
@@ -63,7 +71,7 @@ instance : Category FinBddDistLat.{u} where
 
 instance : ConcreteCategory FinBddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `FinBddDistLat` back into a `BoundedLatticeHom`. -/
 abbrev Hom.hom {X Y : FinBddDistLat.{u}} (f : Hom X Y) :=
@@ -95,7 +103,7 @@ lemma coe_comp {X Y Z : FinBddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : 
 
 @[simp]
 lemma forget_map {X Y : FinBddDistLat} (f : X ⟶ Y) :
-    (forget FinBddDistLat).map f = f := rfl
+    (forget FinBddDistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : FinBddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -154,12 +162,12 @@ instance : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩
 
 instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
-  forget₂.obj X := .of X
-  forget₂.map f := PartOrd.ofHom (OrderHomClass.toOrderHom f.hom)
+  forget₂.obj X := ↧X
+  forget₂.map f := ConcreteCategory.ofHom (.ofClass f.hom)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism
 between them. -/

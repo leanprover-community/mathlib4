@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 
 /-!
@@ -28,7 +27,7 @@ and `W₁.rlp = W₂` if `W₂` is.
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- If `i ≫ p = f`, and `f` has the left lifting property with respect to `p`,
 then `f` is a retract of `i`. -/

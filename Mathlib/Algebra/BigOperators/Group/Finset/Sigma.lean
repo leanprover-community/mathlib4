@@ -5,21 +5,21 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.Sigma
 
 /-!
 # Product and sums indexed by finite sets in sigma types.
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι κ α β γ : Type*}
 
-open Fin Function
+open Function
 
-variable {s s₁ s₂ : Finset α} {a : α} {f g : α → β}
+variable {s : Finset α} {a : α} {f : α → β}
 
 namespace Finset
 

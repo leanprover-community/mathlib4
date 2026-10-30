@@ -5,11 +5,12 @@ Authors: Bhavik Mehta, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Connected limits
@@ -50,13 +51,13 @@ section
 variable (J)
 
 /-- The obvious cone of a constant functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def constCone : Cone ((Functor.const J).obj X) where
   pt := X
   π := 𝟙 _
 
 /-- The obvious cocone of a constant functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def constCocone : Cocone ((Functor.const J).obj X) where
   pt := X
   ι := 𝟙 _
@@ -102,10 +103,10 @@ limit it is sufficient to check that `limMap c.π` is an isomorphism. The conver
 true, see `Cone.isLimit_iff_isIso_limMap_π`. -/
 def Cone.isLimitOfIsIsoLimMapπ {F : J ⥤ C} [HasLimit F] (c : Cone F)
     [IsIso (limMap c.π)] : IsLimit c := by
-  refine IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext ((asIso (limMap c.π)).symm ≪≫
+  refine IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext ((asIso (limMap c.π)).symm ≪≫
     (limit.isLimit _).conePointUniqueUpToIso (isLimitConstCone J c.pt)) ?_)
   intro j
-  simp only [limit.cone_x, Functor.const_obj_obj, limit.cone_π, Iso.trans_hom, Iso.symm_hom,
+  simp only [limit.cone_x, limit.cone_π, Iso.trans_hom, Iso.symm_hom,
     asIso_inv, assoc, IsIso.eq_inv_comp, limMap_π]
   congr 1
   simp [← Iso.inv_comp_eq_id]
@@ -116,7 +117,7 @@ theorem IsLimit.isIso_limMap_π {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : Is
       hc.conePointUniqueUpToIso (limit.isLimit _)).hom by
     rw [this]; infer_instance
   ext j
-  simp only [limMap_π, Functor.const_obj_obj, limit.cone_x, constCone_pt, Iso.trans_hom, assoc,
+  simp only [limMap_π, limit.cone_x, Iso.trans_hom, assoc,
     limit.conePointUniqueUpToIso_hom_comp]
   congr 1
   simp [← Iso.inv_comp_eq_id]
@@ -130,7 +131,7 @@ colimit it is sufficient to check that `colimMap c.ι` is an isomorphism. The co
 true, see `Cocone.isColimit_iff_isIso_colimMap_ι`. -/
 def Cocone.isColimitOfIsIsoColimMapι {F : J ⥤ C} [HasColimit F] (c : Cocone F)
     [IsIso (colimMap c.ι)] : IsColimit c :=
-  IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (asIso (colimMap c.ι) ≪≫
+  IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (asIso (colimMap c.ι) ≪≫
     (colimit.isColimit _).coconePointUniqueUpToIso (isColimitConstCocone J c.pt)) (by simp))
 
 theorem IsColimit.isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] {c : Cocone F} (hc : IsColimit c) :
@@ -139,7 +140,7 @@ theorem IsColimit.isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] {c : Cocone F} 
       (isColimitConstCocone J c.pt).coconePointUniqueUpToIso (colimit.isColimit _)).hom by
     rw [this]; infer_instance
   ext j
-  simp only [ι_colimMap, Functor.const_obj_obj, colimit.cocone_x, Iso.trans_hom,
+  simp only [ι_colimMap, colimit.cocone_x, Iso.trans_hom,
     colimit.comp_coconePointUniqueUpToIso_hom_assoc]
   congr 1
   simp [← Iso.comp_inv_eq_id]
@@ -169,9 +170,6 @@ instance widePushoutShape_connected (J : Type v₁) : IsConnected (WidePushoutSh
     cases j
     · exact hp
     · rwa [← t (WidePushoutShape.Hom.init _)]
-
-instance parallelPairInhabited : Inhabited WalkingParallelPair :=
-  ⟨WalkingParallelPair.one⟩
 
 instance parallel_pair_connected : IsConnected WalkingParallelPair := by
   apply IsConnected.of_induct
@@ -208,6 +206,7 @@ end ProdPreservesConnectedLimits
 
 open ProdPreservesConnectedLimits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `(X × -)` preserves any connected limit.
 Note that this functor does not preserve the two most obvious disconnected limits - that is,
 `(X × -)` does not preserve products or terminal object, e.g. `(X ⨯ A) ⨯ (X ⨯ B)` is not isomorphic

@@ -5,10 +5,12 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Option.Defs
-public import Mathlib.Control.Functor
 public import Batteries.Data.List.Basic
 public import Mathlib.Control.Basic
+public import Mathlib.Control.Functor
+public import Mathlib.Data.Option.Defs
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Traversable type class
@@ -117,10 +119,7 @@ theorem coe_inj ⦃η η' : ApplicativeTransformation F G⦄ (h : (η : ∀ α, 
 
 @[ext]
 theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) (x : F α), η x = η' x) :
-    η = η' := by
-  apply coe_inj
-  ext1 α
-  exact funext (h α)
+    η = η' := coe_inj (by grind)
 
 section Preserves
 

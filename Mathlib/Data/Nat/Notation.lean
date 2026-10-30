@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation `ℕ` for the natural numbers.
 -/
 
-@[expose] public section
+public section
 
 @[inherit_doc] notation "ℕ" => Nat

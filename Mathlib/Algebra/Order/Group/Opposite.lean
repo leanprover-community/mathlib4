@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Order.Monoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order instances for `MulOpposite`/`AddOpposite`
 
@@ -15,7 +18,7 @@ This file transfers order instances and ordered monoid/group instances from `α`
 `αᵃᵒᵖ`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

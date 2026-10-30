@@ -19,7 +19,7 @@ as `N[X]` for the normalized subcomplex in the case `C` is an abelian category.
 
 -/
 
-@[expose] public section
+public section
 
 
 @[inherit_doc]

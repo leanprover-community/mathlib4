@@ -5,8 +5,12 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of types satisfies Grothendieck's AB5 axiom
@@ -15,7 +19,7 @@ This is of course just the well-known fact that filtered colimits commute with f
 the category of types.
 -/
 
-@[expose] public section
+public section
 
 universe v
 

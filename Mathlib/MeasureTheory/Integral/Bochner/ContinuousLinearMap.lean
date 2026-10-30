@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
@@ -19,7 +20,7 @@ the composition, as we are dealing with classes of functions, but it has already
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory RCLike
 open scoped ENNReal NNReal
@@ -73,11 +74,11 @@ theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
-  · rcases subsingleton_or_nontrivial H with hH|hH
+  · rcases subsingleton_or_nontrivial H with hH | hH
     · simp [Subsingleton.eq_zero v]
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
         rwa [SeparatingDual.completeSpace_continuousLinearMap_iff]
-      simp [integral, hE, this]
+      simp [integral_of_not_completeSpace, hE, this]
 
 theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι] {M : ι → Type*}
     [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
@@ -88,7 +89,7 @@ theorem _root_.ContinuousMultilinearMap.integral_apply {ι : Type*} [Fintype ι]
   · by_cases! hm : ∀ i, m i ≠ 0
     · have : ¬ CompleteSpace (ContinuousMultilinearMap 𝕜 M E) := by
         rwa [SeparatingDual.completeSpace_continuousMultilinearMap_iff _ _ hm]
-      simp [integral, hE, this]
+      simp [integral_of_not_completeSpace, hE, this]
     · rcases hm with ⟨i, hi⟩
       simp [ContinuousMultilinearMap.map_coord_zero _ i hi]
 
@@ -100,7 +101,7 @@ theorem integral_comp_comm' (L : E →L[𝕜] Fₗ) {K} (hL : AntilipschitzWith 
   · exact integral_comp_comm L h
   have : ¬Integrable (fun x => L (φ x)) μ := by
     rwa [← Function.comp_def,
-      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
+      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitzWith hL L.map_zero]
   simp [integral_undef, h, this]
 
 theorem integral_comp_L1_comm (L : E →L[𝕜] Fₗ) (φ : X →₁[μ] E) :
@@ -114,7 +115,7 @@ namespace LinearIsometry
 variable [CompleteSpace F] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace E] [NormedSpace ℝ E]
 
 theorem integral_comp_comm (L : E →ₗᵢ[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) :=
-  L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
+  L.toContinuousLinearMap.integral_comp_comm' L.antilipschitzWith _
 
 end LinearIsometry
 
@@ -125,9 +126,9 @@ variable [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace ℝ E]
 theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   have : CompleteSpace E ↔ CompleteSpace F :=
     completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
-  obtain ⟨_, _⟩|⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
-  · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
-  · simp [integral, *]
+  obtain ⟨_, _⟩ | ⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
+  · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitzWith _
+  · simp [integral_of_not_completeSpace, *]
 
 end ContinuousLinearEquiv
 
@@ -158,6 +159,7 @@ end ContinuousMap
 theorem integral_ofReal {f : X → ℝ} : ∫ x, (f x : 𝕜) ∂μ = ↑(∫ x, f x ∂μ) :=
   (@RCLike.ofRealLI 𝕜 _).integral_comp_comm f
 
+@[norm_cast]
 theorem integral_complex_ofReal {f : X → ℝ} : ∫ x, (f x : ℂ) ∂μ = ∫ x, f x ∂μ := integral_ofReal
 
 theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :
@@ -201,7 +203,7 @@ theorem fst_integral [CompleteSpace F] {f : X → E × F} (hf : Integrable f μ)
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.fst ℝ E F).integral_comp_comm hf).symm
   · have : ¬(CompleteSpace (E × F)) := fun h ↦ hE <| .fst_of_prod (β := F)
-    simp [integral, *]
+    simp [integral_of_not_completeSpace, *]
 
 theorem snd_integral [CompleteSpace E] {f : X → E × F} (hf : Integrable f μ) :
     (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ := by
@@ -235,7 +237,7 @@ lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
   by_cases hA : CompleteSpace A
   · change ∫ x, ContinuousLinearMap.mul ℝ _ c (f x) ∂μ = ContinuousLinearMap.mul ℝ _ c (∫ x, f x ∂μ)
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
-  · simp [integral, hA]
+  · simp [integral_of_not_completeSpace hA]
 
 lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
     [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
@@ -244,11 +246,11 @@ lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
   · change ∫ x, (ContinuousLinearMap.mul ℝ _).flip c (f x) ∂μ
       = (ContinuousLinearMap.mul ℝ _).flip c (∫ x, f x ∂μ)
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
-  · simp [integral, hA]
+  · simp [integral_of_not_completeSpace hA]
 
 theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
     ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
-  by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
+  by_cases hE : CompleteSpace E; swap; · simp [integral_of_not_completeSpace hE]
   by_cases hg : Integrable g (μ.withDensity fun x => f x); swap
   · rw [integral_undef hg, integral_undef]
     rwa [← integrable_withDensity_iff_integrable_smul f_meas]
@@ -278,7 +280,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     have C2 : Continuous fun u : Lp E 1 (μ.withDensity fun x => f x) => ∫ x, f x • u x ∂μ := by
       have : Continuous ((fun u : Lp E 1 μ => ∫ x, u x ∂μ) ∘ withDensitySMulLI (E := E) μ f_meas) :=
         continuous_integral.comp (withDensitySMulLI (E := E) μ f_meas).continuous
-      convert this with u
+      convert! this with u
       simp only [Function.comp_apply, withDensitySMulLI_apply]
       exact integral_congr_ae (memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp.symm
     exact isClosed_eq C1 C2

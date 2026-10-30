@@ -5,18 +5,15 @@ Authors: Jovan Gerbscheid, Chu Zheng
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Congruence
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Topology.MetricSpace.Congruence
 
 /-!
 # Triangle congruence
 
 This file proves the classical triangle congruence criteria for (possibly degenerate) triangles
 in real inner product spaces and Euclidean affine spaces.
-We prove SSS, SAS ASA, and AAS congruence.
+We prove SSS, SAS, ASA, and AAS congruence.
 
 ## Implementation notes
 
@@ -32,7 +29,7 @@ then reduces to ASA.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Congruent
 

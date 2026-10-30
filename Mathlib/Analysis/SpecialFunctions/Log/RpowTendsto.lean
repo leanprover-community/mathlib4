@@ -15,13 +15,13 @@ This file shows that the logarithm can be expressed as a limit of powers, namely
 
 ## Main declarations
 
-* `tendstoUniformlyOn_rpow_sub_one_log`: `p⁻¹ * (x ^ p - 1)` tends uniformly to `log x` on
-  compact subsets of `Ioi 0` as `p` tends to zero
+* `Real.tendstoLocallyUniformlyOn_rpow_sub_one_log`: `p⁻¹ * (x ^ p - 1)` tends uniformly to
+  `log x` on compact subsets of `Ioi 0` as `p` tends to zero
 * `tendsto_rpow_sub_one_log`: `p⁻¹ * (x ^ p - 1)`: the analogous statement for pointwise
   convergence.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Real Filter
@@ -62,10 +62,8 @@ lemma Real.tendstoLocallyUniformlyOn_rpow_sub_one_log :
   have h₁ : ∀ᶠ p : ℝ in 𝓝[>] 0, 0 < p ∧ p < pbound := nhdsGT_basis 0 |>.mem_of_mem pbound_pos
   have h₂ : ∀ᶠ p : ℝ in 𝓝[>] 0, p ≤ 1 / (sSup ((fun x => ‖log x‖) '' s) + 1) :=
     Eventually.filter_mono nhdsWithin_le_nhds <| eventually_le_nhds (by positivity)
-  have hcont : ContinuousOn (fun x => ‖log x‖ ^ 2) s := by
-    fun_prop (disch := assumption)
-  have hcont' : ContinuousOn (fun x => ‖log x‖) s := by
-    fun_prop (disch := assumption)
+  have hcont : ContinuousOn (fun x => ‖log x‖ ^ 2) s := by fun_prop
+  have hcont' : ContinuousOn (fun x => ‖log x‖) s := by fun_prop
   filter_upwards [h₁, h₂] with p ⟨hp₁,hp₂⟩ hp₃
   intro x hx
   have hx' : ‖p * log x‖ ≤ 1 := calc

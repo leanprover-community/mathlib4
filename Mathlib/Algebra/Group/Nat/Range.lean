@@ -9,14 +9,17 @@ public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Finset.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finset.range` and addition of natural numbers
 -/
 
-@[expose] public section
+public section
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 namespace Finset
 

@@ -7,13 +7,16 @@ module
 
 public import Mathlib.RingTheory.KrullDimension.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Krull dimension of a field
 
 This file proves that the Krull dimension of a field is zero.
 -/
 
-@[expose] public section
+public section
 
 open Order
 

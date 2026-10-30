@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective Special Linear Group
 
@@ -17,13 +20,13 @@ In the `MatrixGroups` locale:
 * `PSL(n, R)` is a shorthand for `Matrix.ProjectiveSpecialLinearGroup (Fin n) R`
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 
 universe u v
 
-open Matrix LinearMap
+open Matrix
 
 open scoped MatrixGroups
 

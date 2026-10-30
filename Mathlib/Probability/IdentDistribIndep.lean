@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.IdentDistrib
+
 import Mathlib.Probability.Independence.InfinitePi
 
 /-!
@@ -15,7 +16,7 @@ import Mathlib.Probability.Independence.InfinitePi
 
 * `IdentDistrib.prodMk`: if `X` and `Y` are independent random variables on `Ω`, `Z` and `W` are
   independent random variables on `Ω'`, such that `X` and `Z` are identically distributed
-  and `Y` and `W` are identically distributed, then the pairs `(X, Y)`  and `(Z, W)` are
+  and `Y` and `W` are identically distributed, then the pairs `(X, Y)` and `(Z, W)` are
   identically distributed.
 * `IdentDistrib.pi`: if `(X i)` and `(Y i)` are families of independent random variables indexed by
   a countable type `ι`, such that for each `i`, `X i` and `Y i` are identically distributed, then
@@ -23,7 +24,7 @@ import Mathlib.Probability.Independence.InfinitePi
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 
@@ -47,8 +48,8 @@ lemma IdentDistrib.prodMk [IsFiniteMeasure μ]
     have : IsFiniteMeasure ν := by
       have : IsFiniteMeasure (ν.map Z) := by rw [← hXZ.map_eq]; infer_instance
       exact Measure.isFiniteMeasure_of_map hXZ.aemeasurable_snd
-    rw [(indepFun_iff_map_prod_eq_prod_map_map hXZ.aemeasurable_fst hYW.aemeasurable_fst).mp hXY,
-      (indepFun_iff_map_prod_eq_prod_map_map hXZ.aemeasurable_snd hYW.aemeasurable_snd).mp hZW,
+    rw [hXY.map_prod_eq_prod_map_map hXZ.aemeasurable_fst hYW.aemeasurable_fst,
+      hZW.map_prod_eq_prod_map_map hXZ.aemeasurable_snd hYW.aemeasurable_snd,
       hXZ.map_eq, hYW.map_eq]
 
 /-- If `(X i)` and `(Y i)` are families of independent random variables indexed by a countable
@@ -58,8 +59,8 @@ lemma IdentDistrib.pi [Countable ι] {E : ι → Type*} {mE : ∀ i, MeasurableS
     {X : (i : ι) → Ω → E i} {Y : (i : ι) → Ω' → E i}
     (h : ∀ i, IdentDistrib (X i) (Y i) μ ν) (hX_ind : iIndepFun X μ) (hY_ind : iIndepFun Y ν) :
     IdentDistrib (fun ω ↦ (X · ω)) (fun ω ↦ (Y · ω)) μ ν where
-  aemeasurable_fst := aemeasurable_pi_lambda _ fun i ↦ (h i).aemeasurable_fst
-  aemeasurable_snd := aemeasurable_pi_lambda _ fun i ↦ (h i).aemeasurable_snd
+  aemeasurable_fst := .of_eval fun i ↦ (h i).aemeasurable_fst
+  aemeasurable_snd := .of_eval fun i ↦ (h i).aemeasurable_snd
   map_eq := by
     have : IsProbabilityMeasure μ := hX_ind.isProbabilityMeasure
     have : IsProbabilityMeasure ν := hY_ind.isProbabilityMeasure

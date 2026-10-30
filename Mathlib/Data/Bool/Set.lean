@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Data.Set.Insert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Booleans and set operations
 
 This file contains three trivial lemmas about `Bool`, `Set.univ`, and `Set.range`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

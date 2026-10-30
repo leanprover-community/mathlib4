@@ -5,10 +5,9 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Basic
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.Data.ULift
+
+import Mathlib.Data.ULift
 
 /-!
 # Basic API for ULift
@@ -24,7 +23,7 @@ instance on `ULift C` where `C` is a type with a category instance.
 ## ULiftHom
 
 Given a type `C : Type u`, `ULiftHom.{w} C` is just an alias for `C`.
-If we have `category.{v} C`, then `ULiftHom.{w} C` is endowed with a category instance
+If we have `Category.{v} C`, then `ULiftHom.{w} C` is endowed with a category instance
 whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 
 This is a category equivalent to `C`. The forward direction of the equivalence is `ULiftHom.up`,
@@ -62,6 +61,7 @@ def ULift.downFunctor : ULift.{u₂} C ⥤ C where
   obj := ULift.down
   map f := f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The categorical equivalence between `C` and `ULift C`. -/
 @[simps]
 def ULift.equivalence : C ≌ ULift.{u₂} C where
@@ -124,6 +124,8 @@ def ULiftHom.down : ULiftHom C ⥤ C where
   obj := ULiftHom.objDown
   map f := f.down
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between `C` and `ULiftHom C`. -/
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up
@@ -173,13 +175,14 @@ theorem eqToHom_down {X Y : AsSmall C} (h : X = Y) :
   subst h
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between `C` and `AsSmall C`. -/
 @[simps]
 def AsSmall.equiv : C ≌ AsSmall C where
   functor := AsSmall.up
   inverse := AsSmall.down
   unitIso := NatIso.ofComponents fun _ => eqToIso rfl
-  counitIso := NatIso.ofComponents fun _ => eqToIso <| ULift.ext _ _ rfl
+  counitIso := NatIso.ofComponents fun _ => eqToIso <| ULift.ext rfl
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩

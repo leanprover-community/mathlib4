@@ -45,7 +45,7 @@ def stepBound (n : ℕ) : ℕ :=
 theorem le_stepBound : id ≤ stepBound := fun n =>
   Nat.le_mul_of_pos_right _ <| pow_pos (by simp) n
 
-theorem stepBound_mono : Monotone stepBound := fun _ _ h => by unfold stepBound; gcongr; decide
+theorem stepBound_mono : Monotone stepBound := fun _ _ h => by unfold stepBound; gcongr
 
 theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
   mul_pos_iff_of_pos_right <| by positivity
@@ -68,13 +68,15 @@ local notation3 "a" => (card α / #P.parts - m * 4 ^ #P.parts : ℕ)
 
 namespace SzemerediRegularity.Positivity
 
+set_option backward.privateInPublic true in
 private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5) : 0 < ε :=
   (Odd.pow_pos_iff (by decide)).mp
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by simp).trans_le h) (by positivity))
 
+set_option backward.privateInPublic true in
 private theorem m_pos [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α) : 0 < m :=
   Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; simp) <|
-    stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos
+    stepBound_pos (P.parts_nonempty univ_nonempty.ne_empty).card_pos
 
 /-- Local extension for the `positivity` tactic: A few facts that are needed many times for the
 proof of Szemerédi's regularity lemma. -/
@@ -121,7 +123,7 @@ theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : #P.parts * 16 ^ #P.pa
     (hPε : 100 ≤ (4 : ℝ) ^ #P.parts * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
   (div_le_of_le_mul₀ (eps_pow_five_pos hPε).le (by positivity) hPε).trans <| by
     norm_cast
-    rwa [Nat.le_div_iff_mul_le (stepBound_pos (P.parts_nonempty <|
+    rwa [Nat.le_div_iff_mul_le (stepBound_pos (P.parts_nonempty
       univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow]
 
 theorem hundred_le_m [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)
@@ -237,7 +239,8 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.initialBound` is always positive. -/
 @[positivity SzemerediRegularity.initialBound _ _]
-meta def evalInitialBound : PositivityExt where eval {u α} _ _ e := do
+meta def evalInitialBound : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.initialBound $ε $l) =>
     assertInstancesCommute
@@ -249,7 +252,8 @@ example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.initialBound ε l := by p
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.bound` is always positive. -/
 @[positivity SzemerediRegularity.bound _ _]
-meta def evalBound : PositivityExt where eval {u α} _ _ e := do
+meta def evalBound : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.bound $ε $l) =>
     assertInstancesCommute

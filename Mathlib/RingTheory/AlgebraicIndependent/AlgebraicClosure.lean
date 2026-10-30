@@ -6,7 +6,6 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.FieldTheory.AlgebraicClosure
-public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
@@ -22,7 +21,7 @@ public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
   algebraically independent over the algebraic closure.
 -/
 
-@[expose] public section
+public section
 
 open Function Algebra
 

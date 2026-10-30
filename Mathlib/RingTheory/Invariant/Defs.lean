@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariant Extensions of Rings
 
@@ -18,7 +21,7 @@ of some finite Galois extension of number fields, and `A := ğ“K` and `B := ğ“
 integers.
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra
 

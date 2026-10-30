@@ -5,11 +5,14 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.Tactic.ArithMult
+
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution
@@ -61,6 +64,7 @@ section Zero
 
 variable [Zero R]
 
+@[macro_inline]
 instance : FunLike (ArithmeticFunction R) ℕ R :=
   inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ R)
 
@@ -78,8 +82,14 @@ theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
 theorem coe_inj {f g : ArithmeticFunction R} : (f : ℕ → R) = g ↔ f = g :=
   DFunLike.coe_fn_eq
 
-@[simp]
-theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
+theorem range_coe : Set.range ((↑) : ArithmeticFunction R → (ℕ → R)) = {f | f 0 = 0} := by
+  ext f
+  exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+
+instance : IsZeroApply (ArithmeticFunction R) where
+
+@[deprecated zero_apply +typeChanged (since := "2026-10-27")]
+protected theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
   rfl
 
 @[ext]
@@ -93,7 +103,7 @@ variable [One R]
 instance one : One (ArithmeticFunction R) :=
   ⟨⟨fun x => ite (x = 1) 1 0, rfl⟩⟩
 
-theorem one_apply {x : ℕ} : (1 : ArithmeticFunction R) x = ite (x = 1) 1 0 :=
+protected theorem one_apply {x : ℕ} : (1 : ArithmeticFunction R) x = ite (x = 1) 1 0 :=
   rfl
 
 @[simp]
@@ -102,7 +112,7 @@ theorem one_one : (1 : ArithmeticFunction R) 1 = 1 :=
 
 @[simp]
 theorem one_apply_ne {x : ℕ} (h : x ≠ 1) : (1 : ArithmeticFunction R) x = 0 :=
-  if_neg h
+  ite_eq_right h
 
 end One
 
@@ -155,56 +165,69 @@ theorem coe_coe [AddGroupWithOne R] {f : ArithmeticFunction ℕ} :
 theorem natCoe_one [AddMonoidWithOne R] :
     ((1 : ArithmeticFunction ℕ) : ArithmeticFunction R) = 1 := by
   ext n
-  simp [one_apply]
+  simp [ArithmeticFunction.one_apply]
 
 @[simp]
 theorem intCoe_one [AddGroupWithOne R] : ((1 : ArithmeticFunction ℤ) :
     ArithmeticFunction R) = 1 := by
   ext n
-  simp [one_apply]
+  simp [ArithmeticFunction.one_apply]
+
+section SMul
+
+variable {S : Type*} [Zero R] [SMulZeroClass S R]
+
+instance : SMul S (ArithmeticFunction R) where
+  smul n f := ⟨n • f, by simp⟩
+
+instance : IsSMulApply S (ArithmeticFunction R) where
+
+end SMul
 
 section AddMonoid
 
 variable [AddMonoid R]
 
-instance add : Add (ArithmeticFunction R) :=
-  ⟨fun f g => ⟨fun n => f n + g n, by simp⟩⟩
+instance add : Add (ArithmeticFunction R) where
+  add f g := ⟨f + g, by simp⟩
 
-@[simp]
-theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n :=
+instance : IsAddApply (ArithmeticFunction R) where
+
+@[deprecated add_apply +typeChanged (since := "2026-10-27")]
+protected theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n :=
   rfl
 
-instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
-  { ArithmeticFunction.zero R,
-    ArithmeticFunction.add with
-    add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
-    zero_add := fun _ => ext fun _ => zero_add _
-    add_zero := fun _ => ext fun _ => add_zero _
-    nsmul := nsmulRec }
+instance instAddMonoid : AddMonoid (ArithmeticFunction R) := fast_instance% FunLike.addMonoid
 
 end AddMonoid
 
-instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoid,
-    ArithmeticFunction.one with
-    natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
-    natCast_zero := by ext; simp
-    natCast_succ := fun n => by ext x; by_cases h : x = 1 <;> simp [h] }
+set_option backward.isDefEq.respectTransparency false in
+instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) where
+  natCast n := ⟨fun x ↦ if x = 1 then (n : R) else 0, by simp⟩
+  natCast_zero := by ext; simp
+  natCast_succ n := by ext x; by_cases h : x = 1 <;> simp [h]
 
 instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
+  fast_instance% FunLike.addCommMonoid
 
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
-  neg f := ⟨fun n => -f n, by simp⟩
+  neg f := ⟨-f, by simp⟩
 
-instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoid with
-    neg_add_cancel := fun _ => ext fun _ => neg_add_cancel _
-    zsmul := zsmulRec }
+instance [NegZeroClass R] : IsNegApply (ArithmeticFunction R) where
+
+@[deprecated neg_apply +typeChanged (since := "2026-10-27")]
+protected theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} :
+    (-f) n = -f n := rfl
+
+instance [SubNegZeroMonoid R] : Sub (ArithmeticFunction R) where
+  sub f g := ⟨f - g, by simp⟩
+
+instance [SubNegZeroMonoid R] : IsSubApply (ArithmeticFunction R) where
+
+instance [AddGroup R] : AddGroup (ArithmeticFunction R) := fast_instance% FunLike.addGroup
 
 instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
-  { show AddGroup (ArithmeticFunction R) by infer_instance with
-    add_comm := fun _ _ ↦ add_comm _ _ }
+  fast_instance% FunLike.addCommGroup
 
 section SMul
 
@@ -212,11 +235,11 @@ variable {M : Type*} [Zero R] [AddCommMonoid M] [SMul R M]
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
-instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) :=
-  ⟨fun f g => ⟨fun n => ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd, by simp⟩⟩
+instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) where
+  smul f g := ⟨fun n ↦ ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd, by simp⟩
 
 @[simp]
-theorem smul_apply {f : ArithmeticFunction R} {g : ArithmeticFunction M} {n : ℕ} :
+protected theorem smul_apply {f : ArithmeticFunction R} {g : ArithmeticFunction M} {n : ℕ} :
     (f • g) n = ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd :=
   rfl
 
@@ -224,11 +247,11 @@ end SMul
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
-instance [Semiring R] : Mul (ArithmeticFunction R) :=
-  ⟨(· • ·)⟩
+instance [Semiring R] : Mul (ArithmeticFunction R) where
+  mul f g := f • g
 
 @[simp]
-theorem mul_apply [Semiring R] {f g : ArithmeticFunction R} {n : ℕ} :
+protected theorem mul_apply [Semiring R] {f g : ArithmeticFunction R} {n : ℕ} :
     (f * g) n = ∑ x ∈ divisorsAntidiagonal n, f x.fst * g x.snd :=
   rfl
 
@@ -253,21 +276,15 @@ variable {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
     (f * g) • h = f • g • h := by
   ext n
-  simp only [mul_apply, smul_apply, sum_smul, mul_smul, smul_sum, sum_sigma']
+  simp only [ArithmeticFunction.smul_apply, ArithmeticFunction.mul_apply, sum_smul, mul_smul,
+    sum_sigma', smul_sum]
   apply sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l * j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i * k, l), (i, k)⟩) <;> aesop (add simp mul_assoc)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b = b := by
   ext x
-  rw [smul_apply]
-  by_cases x0 : x = 0
-  · simp [x0]
-  have h : {(1, x)} ⊆ divisorsAntidiagonal x := by simp [x0]
-  rw [← sum_subset h]
-  · simp
-  intro y ymem ynotMem
-  have y1ne : y.fst ≠ 1 := fun con => by simp_all [Prod.ext_iff]
-  simp [y1ne]
+  simp_all [← map_div_right_divisors, sum_eq_single 1]
 
 end Module
 
@@ -275,54 +292,53 @@ section Semiring
 
 variable [Semiring R]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance instMonoid : Monoid (ArithmeticFunction R) where
   one_mul := one_smul'
-  mul_one := fun f => by
+  mul_one f := by
     ext x
-    rw [mul_apply]
-    by_cases x0 : x = 0
-    · simp [x0]
-    have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
-    rw [← sum_subset h]
-    · simp
-    intro ⟨y₁, y₂⟩ ymem ynotMem
-    have y2ne : y₂ ≠ 1 := by
-      intro con
-      simp_all
-    simp [y2ne]
+    simp_all [← map_div_left_divisors, sum_eq_single 1]
   mul_assoc := mul_smul'
 
-instance instSemiring : Semiring (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoidWithOne,
-    ArithmeticFunction.instMonoid,
-    ArithmeticFunction.instAddCommMonoid with
-    zero_mul := fun f => by
-      ext
-      simp
-    mul_zero := fun f => by
-      ext
-      simp
-    left_distrib := fun a b c => by
-      ext
-      simp [← sum_add_distrib, mul_add]
-    right_distrib := fun a b c => by
-      ext
-      simp [← sum_add_distrib, add_mul] }
+instance instSemiring : Semiring (ArithmeticFunction R) where
+  zero_mul f := by ext; simp
+  mul_zero f := by ext; simp
+  left_distrib a b c := by ext; simp [← sum_add_distrib, mul_add]
+  right_distrib a b c := by ext; simp [← sum_add_distrib, add_mul]
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) :=
-  { ArithmeticFunction.instSemiring with
-    mul_comm := fun f g => by
-      ext
-      rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
-      simp [mul_comm] }
+instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) where
+  mul_comm f g := by
+    ext
+    rw [ArithmeticFunction.mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
+    simp [mul_comm]
 
-instance [CommRing R] : CommRing (ArithmeticFunction R) :=
-  { ArithmeticFunction.instSemiring with
-    neg_add_cancel := neg_add_cancel
-    mul_comm := mul_comm
-    zsmul := (· • ·) }
+instance [CommRing R] : CommRing (ArithmeticFunction R) where
+  neg_add_cancel := neg_add_cancel
+  mul_comm := mul_comm
+
+instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
+    Module R (ArithmeticFunction S) := fast_instance% FunLike.module
+
+-- note that `smul_apply` would be a more suitable name, but is already in use for the action of
+-- `ArithmeticFunction R` on `ArithmeticFunction S`
+@[deprecated smul_apply +typeChanged (since := "2026-10-29")]
+theorem smul_map {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
+    (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := by
+  rfl
+
+-- We can deduce the `Algebra` structure from the `Module` structure here due to the lack of
+-- a more natural definition of `algebraMap`.
+instance {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] :
+    Algebra R (ArithmeticFunction S) :=
+  .ofModule (fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum])
+    fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum]
+
+@[simp]
+theorem algebraMap_apply_one {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (x : R) :
+    algebraMap R (ArithmeticFunction S) x 1 = algebraMap R S x := by
+  simp [Algebra.algebraMap_eq_smul_one]
 
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
@@ -330,17 +346,89 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
   mul_smul := mul_smul'
   smul_add r x y := by
     ext
-    simp only [sum_add_distrib, smul_add, smul_apply, add_apply]
+    simp only [ArithmeticFunction.smul_apply, add_apply, smul_add, sum_add_distrib]
   smul_zero r := by
     ext
-    simp only [smul_apply, sum_const_zero, smul_zero, zero_apply]
+    simp only [ArithmeticFunction.smul_apply, zero_apply, smul_zero, sum_const_zero]
   add_smul r s x := by
     ext
-    simp only [add_smul, sum_add_distrib, smul_apply, add_apply]
+    simp only [ArithmeticFunction.smul_apply, add_apply, add_smul, sum_add_distrib]
   zero_smul r := by
     ext
-    simp only [smul_apply, sum_const_zero, zero_smul, zero_apply]
+    simp only [ArithmeticFunction.smul_apply, zero_apply, zero_smul, sum_const_zero]
 
+section DirichletInverse
+
+section Ring
+
+/- We use `(hf : Invertible (f 1))` instead of `[hf : Invertible (f 1)]` because in practice such
+an instance is unlikely to be automatically synthesized due to the presence of `f`. -/
+variable [Ring R] (f : ℕ → R) (hf : Invertible (f 1))
+
+/-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. We use `Invertible` to make
+this definition computable when `f` is computable. -/
+def dirichletInverseFun (n : ℕ) : R :=
+  if n = 0 then 0
+  else if n = 1 then ⅟(f 1)
+  else - ⅟(f 1) * ∑ d : n.properDivisors,
+    have : d < n := (Nat.mem_properDivisors.mp d.2).2
+    f (n / d) * dirichletInverseFun d
+
+@[simp]
+theorem dirichletInverseFun_apply_zero : dirichletInverseFun f hf 0 = 0 := by
+  rw [dirichletInverseFun, ite_eq_left rfl]
+
+@[simp]
+theorem dirichletInverseFun_apply_one : dirichletInverseFun f hf 1 = ⅟(f 1) := by
+  rw [dirichletInverseFun, ite_eq_right one_ne_zero, ite_eq_left rfl]
+
+@[simp]
+theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
+    dirichletInverseFun f hf n =
+      - ⅟(f 1) * ∑ d ∈ n.properDivisors, f (n / d) * dirichletInverseFun f hf d := by
+  rw [dirichletInverseFun, ite_eq_right hn0, ite_eq_right hn1]
+  conv_rhs => rw [← Finset.sum_attach, Finset.attach_eq_univ]
+
+/-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. -/
+@[simp]
+def dirichletInverse : ArithmeticFunction R :=
+  ⟨dirichletInverseFun f hf, dirichletInverseFun_apply_zero f hf⟩
+
+set_option backward.isDefEq.respectTransparency false in
+theorem self_mul_dirichletInverse (f : ArithmeticFunction R) (hf : Invertible (f 1)) :
+    f * dirichletInverse f hf = 1 := by
+  ext n
+  by_cases hn0 : n = 0
+  · simp [hn0]
+  by_cases hn1 : n = 1
+  · simp [hn1]
+  rw [dirichletInverse, ArithmeticFunction.mul_apply, coe_mk,
+    Nat.sum_divisorsAntidiagonal' fun x y ↦ f x * dirichletInverseFun f hf y,
+    ← Nat.cons_self_properDivisors hn0]
+  simp [hn0, hn1, pos_of_ne_zero]
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] (f : ArithmeticFunction R)
+
+theorem dirichletInverse_mul_self (hf : Invertible (f 1)) : dirichletInverse f hf * f = 1 := by
+  rw [mul_comm, self_mul_dirichletInverse]
+
+variable {f} in
+theorem isUnit_iff_isUnit_apply_one : IsUnit f ↔ IsUnit (f 1) := by
+  constructor
+  · rintro ⟨f, rfl⟩
+    refine ⟨⟨f.val 1, f⁻¹.val 1, ?_, ?_⟩, rfl⟩
+    · rw [← ArithmeticFunction.mul_apply_one, Units.mul_inv, one_one]
+    · rw [← ArithmeticFunction.mul_apply_one, Units.inv_mul, one_one]
+  · suffices Invertible (f 1) → Invertible f by simpa using Nonempty.map this
+    exact fun hf ↦ ⟨_, dirichletInverse_mul_self f hf, self_mul_dirichletInverse f hf⟩
+
+end CommRing
+
+end DirichletInverse
 
 /-- Multiplicative functions -/
 def IsMultiplicative [MonoidWithZero R] (f : ArithmeticFunction R) : Prop :=
@@ -371,7 +459,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
     induction s using Finset.induction_on with
     | empty => simp [hf]
     | insert _ _ has ih =>
-      rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
+      rw [coe_insert, Set.pairwise_insert_of_symm] at hs
       rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
       exact Coprime.prod_right fun i hi => hs.2 _ hi (hi.ne_of_notMem has).symm
 
@@ -413,7 +501,7 @@ theorem intCast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f * g) := by
   refine ⟨by simp [hf.1, hg.1], ?_⟩
-  simp only [mul_apply]
+  simp only [ArithmeticFunction.mul_apply]
   intro m n cop
   rw [sum_mul_sum, ← sum_product']
   symm
@@ -543,10 +631,29 @@ theorem eq_zero_of_squarefree_of_dvd_eq_zero [MonoidWithZero R] {f : ArithmeticF
 
 end IsMultiplicative
 
-@[arith_mult]
+@[simp, arith_mult]
 theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : ArithmeticFunction R) :=
   IsMultiplicative.iff_ne_zero.2 ⟨by simp, by
     intro m n hm hn hmn
     by_cases h : m = 1 <;> aesop⟩
+
+@[arith_mult]
+theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
+    (f : ι → ArithmeticFunction R) (s : Finset ι) (hf : ∀ i ∈ s, IsMultiplicative (f i)) :
+    IsMultiplicative (∏ i ∈ s, f i) := by
+  induction s using Finset.cons_induction
+  case empty => simp
+  case cons a s ha ih =>
+    rw [Finset.prod_cons]
+    exact (hf a (by grind)).mul (by grind)
+
+@[arith_mult]
+theorem IsMultiplicative.pow [CommSemiring R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {k : ℕ} : IsMultiplicative (f ^ k) := by
+  induction k
+  case zero => simp
+  case succ k hk =>
+    rw [pow_succ]
+    exact hk.mul hf
 
 end ArithmeticFunction

@@ -6,7 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Module.Ray
-public import Mathlib.Topology.Order.LocalExtr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # (Local) maximums in a normed space
@@ -23,7 +25,7 @@ Then we specialize it to the case `y = f c` and to different special cases of `I
 local maximum, normed space
 -/
 
-@[expose] public section
+public section
 
 
 variable {α X E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]

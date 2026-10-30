@@ -7,9 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Elementwise
-public import Mathlib.Order.Hom.Basic
-public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Category of preorders
@@ -38,6 +35,11 @@ initialize_simps_projections Preord (carrier → coe, -str)
 
 namespace Preord
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `Preord.of X` as `↧X`. -/
+@[app_delab Preord.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : CoeSort Preord (Type u) :=
   ⟨Preord.carrier⟩
 
@@ -46,7 +48,7 @@ attribute [coe] Preord.carrier
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
 structure Hom (X Y : Preord.{u}) where
-  private mk ::
+  _mkInternal ::
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
@@ -57,7 +59,7 @@ instance : Category Preord.{u} where
 
 instance : ConcreteCategory Preord (· →o ·) where
   hom := Hom.hom'
-  ofHom := Hom.mk
+  ofHom := Hom._mkInternal
 
 /-- Turn a morphism in `Preord` back into a `OrderHom`. -/
 abbrev Hom.hom {X Y : Preord.{u}} (f : Hom X Y) :=
@@ -78,15 +80,9 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
 lemma coe_id {X : Preord} : (𝟙 X : X → X) = id := rfl
 
-@[simp]
 lemma coe_comp {X Y Z : Preord} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[simp]
-lemma forget_map {X Y : Preord} (f : X ⟶ Y) :
-    (forget Preord).map f = f := rfl
 
 @[ext]
 lemma ext {X Y : Preord} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -167,11 +163,12 @@ end Preord
 -/
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
-  obj X := .of X.1
-  map f := f.hom.monotone.functor
+  obj X := ↧X.1
+  map f := f.hom.monotone.functor.toCatHom
 
 instance : preordToCat.{u}.Faithful where
-  map_injective h := by ext x; exact Functor.congr_obj h x
+  map_injective h := by ext x; exact Functor.congr_obj congr(($h).toFunctor) x
 
 instance : preordToCat.{u}.Full where
-  map_surjective {X Y} f := ⟨⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩, rfl⟩
+  map_surjective {X Y} f := ⟨⟨f.toFunctor.obj,
+    @CategoryTheory.Functor.monotone X Y _ _ f.toFunctor⟩, rfl⟩

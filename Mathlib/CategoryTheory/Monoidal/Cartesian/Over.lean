@@ -8,8 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
-public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Grp
 
 /-!
 
@@ -24,9 +25,9 @@ public noncomputable section
 
 namespace CategoryTheory.Over
 
-open Functor Limits CartesianMonoidalCategory
+open CategoryTheory.Functor Limits CartesianMonoidalCategory
 
-variable {C : Type*} [Category C] [HasPullbacks C]
+variable {C : Type*} [Category* C] [HasPullbacks C]
 
 /-- A choice of finite products of `Over X` given by `Limits.pullback`. -/
 abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
@@ -35,9 +36,6 @@ abbrev cartesianMonoidalCategory (X : C) : CartesianMonoidalCategory (Over X) :=
       fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
     fun Y Z ↦ ⟨pullbackConeEquivBinaryFan.functor.obj (pullback.cone Y.hom Z.hom),
     (pullback.isLimit _ _).pullbackConeEquivBinaryFanFunctor⟩
-
-@[deprecated (since := "2025-05-15")]
-noncomputable alias chosenFiniteProducts := cartesianMonoidalCategory
 
 attribute [local instance] cartesianMonoidalCategory
 
@@ -72,6 +70,12 @@ lemma tensorUnit_hom : (𝟙_ (Over X)).hom = 𝟙 X := rfl
 @[simp]
 lemma lift_left {R S T : Over X} (f : R ⟶ S) (g : R ⟶ T) :
     (lift f g).left = pullback.lift f.left g.left (f.w.trans g.w.symm) := rfl
+
+@[simp]
+lemma fst_left {R S : Over X} : (fst R S).left = pullback.fst _ _ := rfl
+
+@[simp]
+lemma snd_left {R S : Over X} : (snd R S).left = pullback.snd _ _ := rfl
 
 @[simp]
 lemma toUnit_left {R : Over X} : (toUnit R).left = R.hom := rfl
@@ -300,6 +304,7 @@ instance isCommMonObj_mk_pullbackSnd [MonObj (Over.mk f)] [IsCommMonObj (Over.mk
 abbrev grpObjMkPullbackSnd [GrpObj (Over.mk f)] : GrpObj (Over.mk (pullback.snd f g)) :=
   ((Over.pullback g).mapGrp.obj <| .mk <| .mk f).grp
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] monObjMkPullbackSnd_one in
 instance isMonHom_pullbackFst_id_right [MonObj (Over.mk f)] :
     IsMonHom <| Over.homMk (U := Over.mk <| pullback.snd f (𝟙 X)) (V := Over.mk f)

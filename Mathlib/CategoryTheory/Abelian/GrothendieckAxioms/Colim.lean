@@ -5,10 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.CategoryTheory.Limits.Connected
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
 # Exactness of colimits
@@ -44,7 +45,7 @@ lemma colim.map_mono' [HasColimitsOfShape J C]
     {c₁ : Cocone X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
     (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j) : Mono f := by
   refine ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff ?_).2
-    (inferInstanceAs (Mono (colim.map φ)))
+    ((inferInstance : Mono (colim.map φ)))
   exact Arrow.isoMk
     (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
     (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
@@ -102,12 +103,12 @@ short complex `c₁.pt ⟶ c₂.pt ⟶ c₃.pt`. -/
 @[simps]
 def colim.mapShortComplex : ShortComplex C :=
   ShortComplex.mk f g (hc₁.hom_ext (fun j ↦ by
-    dsimp
     rw [reassoc_of% (hf j), hg j, comp_zero, ← NatTrans.comp_app_assoc, S.zero,
       zero_app, zero_comp]))
 
 variable {S c₂ c₃}
 
+set_option backward.defeqAttrib.useBackward true in
 include hc₂ hc₃ hS in
 /-- Assuming `HasExactColimitsOfShape J C`, this lemma rephrases the exactness
 of the functor `colim : (J ⥤ C) ⥤ C` by saying that if `S : ShortComplex (J ⥤ C)`

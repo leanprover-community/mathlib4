@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
+public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
@@ -114,9 +115,7 @@ theorem isUnit_den_iff (x : K) : IsUnit (den A x : A) ↔ IsLocalization.IsInteg
     · simp only [map_mul, h]
       rw [mul_comm, ← div_eq_iff]
       · simp only [mk'_num_den']
-      intro h
-      replace h : algebraMap A K (den A x : A) = algebraMap A K 0 := by convert h; simp
-      exact nonZeroDivisors.coe_ne_zero _ <| FaithfulSMul.algebraMap_injective A K h
+      simp
     exact FaithfulSMul.algebraMap_injective A K
 
 theorem isUnit_den_zero : IsUnit (den A (0 : K) : A) := by
@@ -152,6 +151,17 @@ theorem num_den_unique (x : K) (n : A) (d : nonZeroDivisors A) (pr : IsRelPrime 
       ((num_den_reduced A x).symm.dvd_of_dvd_mul_left <| h ▸ dvd_mul_left _ _)
       (pr.symm.dvd_of_dvd_mul_left <| h ▸ dvd_mul_left _ _)⟩
 
+
+variable (A) in
+/-- Every element of the fraction field of a unique factorization domain is a square times a
+squarefree element. -/
+theorem exists_sq_mul_squarefree (q : K) :
+    ∃ (r : K) (d : A), r ^ 2 * algebraMap A K d = q ∧ Squarefree d := by
+  obtain ⟨x, y, hy, rfl⟩ := div_surjective A q
+  obtain ⟨e, d, hed, hd⟩ := _root_.exists_sq_mul_squarefree (x * y)
+  refine ⟨algebraMap A K e / algebraMap A K y, d, ?_, hd⟩
+  rw [div_pow, div_mul_eq_mul_div, ← map_pow, ← map_mul, hed, map_mul, sq,
+    mul_div_mul_right _ _ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hy)]
 
 end NumDen
 

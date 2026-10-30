@@ -5,8 +5,12 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Dirac
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+public import Mathlib.MeasureTheory.Measure.Dirac.Basic
+
+import Mathlib.SetTheory.Cardinal.ENNReal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Counting measure
@@ -36,7 +40,7 @@ def count : Measure α :=
 theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc
     (∑' _ : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
-    _ ≤ ∑' i, dirac i s := ENNReal.tsum_le_tsum fun _ => le_dirac_apply
+    _ ≤ ∑' i, dirac i s := tsum_le_tsum fun _ => le_dirac_apply
     _ ≤ count s := le_sum_apply _ _
 
 theorem count_apply (hs : MeasurableSet s) : count s = s.encard := by
@@ -100,7 +104,7 @@ theorem count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.F
 @[simp]
 theorem count_eq_zero_iff : count s = 0 ↔ s = ∅ where
   mp h := eq_empty_of_forall_notMem fun x hx ↦ by
-    simpa [hx] using ((ENNReal.le_tsum x).trans <| le_sum_apply _ _).trans_eq h
+    simpa [hx] using ((le_tsum _ x).trans <| le_sum_apply _ _).trans_eq h
   mpr := by rintro rfl; exact measure_empty
 
 lemma count_ne_zero_iff : count s ≠ 0 ↔ s.Nonempty :=
@@ -118,8 +122,7 @@ lemma ae_count_iff {p : α → Prop} : (∀ᵐ x ∂count, p x) ↔ ∀ x, p x :
 @[simp]
 theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({a} : Set α) = 1 := by
   rw [count_apply_finite' (Set.finite_singleton a) ha, Set.Finite.toFinset]
-  simp [
-    ]
+  simp
 
 theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Set α) = 1 :=
   count_singleton' (measurableSet_singleton a)
@@ -163,6 +166,28 @@ instance count.isFiniteMeasure [Finite α] :
 
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
+
+@[simp] lemma count_real_univ : count.real (.univ : Set α) = Nat.card α := by simp [Measure.real]
+
+instance neZero_count [Nonempty α] : NeZero (count : Measure α) where
+  out := by rintro h; simpa using congr($h .univ)
+
+lemma _root_.Subsingleton.count_eq_dirac [Subsingleton α] (i : α) :
+    count = dirac i := by
+  calc count
+      = count.restrict univ := by simp
+    _ = count.restrict {i} := by congr; ext j; simp [Subsingleton.elim j i]
+    _ = dirac i := by simp
+
+lemma _root_.Unique.count_eq_dirac [Unique α] : count = dirac (default : α) :=
+  Subsingleton.count_eq_dirac _
+
+lemma _root_.Function.Injective.map_count_le {f : α → β}
+    (hf : f.Injective) (h2f : Measurable f) : count.map f ≤ count := by
+  refine le_intro fun s hs _ ↦ ?_
+  rw [map_apply h2f hs, count_apply (hs.preimage h2f), count_apply hs, ← hf.encard_image]
+  have := image_preimage_subset f s
+  gcongr
 
 end Measure
 

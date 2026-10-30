@@ -51,7 +51,7 @@ Version for `circle`.
 additive combinatorics, number theory, sumset, cauchy-davenport
 -/
 
-@[expose] public section
+public section
 
 open Finset Function Monoid MulOpposite Subgroup
 open scoped Pointwise
@@ -124,7 +124,7 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     min (minOrder α) ↑(#x.1 + #x.2 - 1) ≤ #(x.1 * x.2)) ⟨hs, ht⟩ ?_
   clear! x
   rintro ⟨s, t⟩ ⟨hs, ht⟩ ih
-  simp only [min_le_iff, tsub_le_iff_right, Prod.forall, Set.mem_setOf_eq, and_imp,
+  simp only [min_le_iff, tsub_le_iff_right, Prod.forall, Set.mem_ofPred_eq, and_imp,
     Nat.cast_le] at *
   -- If `#t < #s`, we're done by the induction hypothesis on `(t⁻¹, s⁻¹)`.
   obtain hts | hst := lt_or_ge #t #s
@@ -149,8 +149,7 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
         ⟨_, ha, inv_mul_cancel _⟩ (fun c hc ↦ ?_) fun c hc ↦ ?_
       · rw [← hsg, coe_smul_finset, smul_comm]
         exact Set.smul_mem_smul_set hc
-      · simp only
-        rwa [← op_smul_eq_mul, op_inv, ← Set.mem_smul_set_iff_inv_smul_mem, smul_comm,
+      · rwa [← op_smul_eq_mul, op_inv, ← Set.mem_smul_set_iff_inv_smul_mem, smul_comm,
           ← coe_smul_finset, hsg]
     refine Or.inl ((minOrder_le_natCard (zpowers_ne_bot.2 hg) <|
       s.finite_toSet.smul_set.subset hS).trans <| WithTop.coe_le_coe.2 <|
@@ -191,9 +190,6 @@ lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsi
     {s t : Finset G} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
   simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
     using cauchy_davenport_minOrder_mul hs ht
-
-@[to_additive (attr := deprecated cauchy_davenport_of_isMulTorsionFree (since := "2025-04-23"))]
-alias cauchy_davenport_mul_of_isTorsionFree := cauchy_davenport_of_isMulTorsionFree
 
 /-! ### $ℤ/nℤ$ -/
 

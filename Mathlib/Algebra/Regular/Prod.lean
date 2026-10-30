@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Regular.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about `IsRegular` and `Prod`
 -/
 
-@[expose] public section
+public section
 
 variable {α R S : Type*}
 

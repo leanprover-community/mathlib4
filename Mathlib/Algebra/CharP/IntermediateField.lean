@@ -5,8 +5,9 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.IntermediateField.Basic
+
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 
@@ -18,19 +19,9 @@ covered by `SubsemiringClass.instCharZero`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {F E : Type*} [Field F] [Field E] [Algebra F E]
-
-namespace Subfield
-
-variable (L : Subfield F) (p : ℕ)
-
-instance charP [CharP F p] : CharP L p := RingHom.charP _ (algebraMap _ F).injective p
-
-instance expChar [ExpChar F p] : ExpChar L p := RingHom.expChar _ (algebraMap _ F).injective p
-
-end Subfield
 
 namespace IntermediateField
 

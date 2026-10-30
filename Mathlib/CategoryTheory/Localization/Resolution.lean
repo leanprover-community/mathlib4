@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
+import Mathlib.CategoryTheory.Comma.CatCommSq
+
 /-!
 # Resolutions for a morphism of localizers
 
 Given a morphism of localizers `Φ : LocalizerMorphism W₁ W₂` (i.e. `W₁` and `W₂` are
 morphism properties on categories `C₁` and `C₂`, and we have a functor
 `Φ.functor : C₁ ⥤ C₂` which sends morphisms in `W₁` to morphisms in `W₂`), we introduce
-the notion of right resolutions of objects in `C₂`: if `X₂ : C₂`.
+the notion of right resolutions of objects in `C₂`, for `X₂ : C₂`.
 A right resolution consists of an object `X₁ : C₁` and a morphism
 `w : X₂ ⟶ Φ.functor.obj X₁` that is in `W₂`. Then, the typeclass
 `Φ.HasRightResolutions` holds when any `X₂ : C₂` has a right resolution.
@@ -23,7 +25,7 @@ structure.
 
 Similar definitions are done for left resolutions.
 
-## Future works
+## Future work
 
 * show that if `C` is an abelian category with enough injectives, there is a derivability
   structure associated to the inclusion of the full subcategory of complexes of injective
@@ -41,10 +43,10 @@ universe v₁ v₂ v₂' u₁ u₂ u₂'
 
 namespace CategoryTheory
 
-open Category Localization
-
-variable {C₁ C₂ D₂ H : Type*} [Category C₁] [Category C₂] [Category D₂] [Category H]
+variable {C₁ C₂ D₁ D₂ H : Type*}
+  [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂] [Category* H]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
+  {W₁' : MorphismProperty D₁} {W₂' : MorphismProperty D₂}
 
 namespace LocalizerMorphism
 
@@ -81,7 +83,7 @@ lemma LeftResolution.mk_surjective (L : Φ.LeftResolution X₂) :
 /-- A localizer morphism has right resolutions when any object has a right resolution. -/
 abbrev HasRightResolutions := ∀ (X₂ : C₂), Nonempty (Φ.RightResolution X₂)
 
-/-- A localizer morphism has right resolutions when any object has a right resolution. -/
+/-- A localizer morphism has left resolutions when any object has a left resolution. -/
 abbrev HasLeftResolutions := ∀ (X₂ : C₂), Nonempty (Φ.LeftResolution X₂)
 
 namespace RightResolution
@@ -126,7 +128,21 @@ lemma hom_ext {R R' : Φ.RightResolution X₂} {φ₁ φ₂ : R ⟶ R'} (h : φ�
     φ₁ = φ₂ :=
   Hom.ext h
 
+/-- The external product of two right resolutions, as a right resolution
+for the external product of two localizer morphisms. -/
+@[simps, implicit_reducible]
+def prod {Φ' : LocalizerMorphism W₁' W₂'} {X₂' : D₂}
+    (R : Φ.RightResolution X₂) (R' : Φ'.RightResolution X₂') :
+    (Φ.prod Φ').RightResolution (X₂, X₂') where
+  X₁ := ⟨R.X₁, R'.X₁⟩
+  w := ⟨R.w, R'.w⟩
+  hw := ⟨R.hw, R'.hw⟩
+
 end RightResolution
+
+instance (Φ' : LocalizerMorphism W₁' W₂') [Φ.HasRightResolutions] [Φ'.HasRightResolutions] :
+    (Φ.prod Φ').HasRightResolutions :=
+  fun _ ↦ ⟨RightResolution.prod (Classical.arbitrary _) (Classical.arbitrary _)⟩
 
 namespace LeftResolution
 
@@ -170,7 +186,21 @@ lemma hom_ext {L L' : Φ.LeftResolution X₂} {φ₁ φ₂ : L ⟶ L'} (h : φ�
     φ₁ = φ₂ :=
   Hom.ext h
 
+/-- The external product of two left resolutions, as a left resolution
+for the external product of two localizer morphisms. -/
+@[simps, implicit_reducible]
+def prod {Φ' : LocalizerMorphism W₁' W₂'} {X₂' : D₂}
+    (R : Φ.LeftResolution X₂) (R' : Φ'.LeftResolution X₂') :
+    (Φ.prod Φ').LeftResolution (X₂, X₂') where
+  X₁ := ⟨R.X₁, R'.X₁⟩
+  w := ⟨R.w, R'.w⟩
+  hw := ⟨R.hw, R'.hw⟩
+
 end LeftResolution
+
+instance (Φ' : LocalizerMorphism W₁' W₂') [Φ.HasLeftResolutions] [Φ'.HasLeftResolutions] :
+    (Φ.prod Φ').HasLeftResolutions :=
+  fun _ ↦ ⟨LeftResolution.prod (Classical.arbitrary _) (Classical.arbitrary _)⟩
 
 variable {Φ}
 
@@ -252,6 +282,8 @@ def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) :
     { f := φ.unop.f.unop
       comm := Quiver.Hom.op_inj φ.unop.comm }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories
 `(Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂)`. -/
 @[simps]
@@ -301,6 +333,113 @@ lemma isIso_iff_of_hasLeftResolutions [Φ.HasLeftResolutions] {F G : D₂ ⥤ H}
       rw [← NatTrans.isIso_app_iff_of_iso α ((Φ.functor ⋙ L₂).objObjPreimageIso X₂)]
       apply hα
     exact NatIso.isIso_of_isIso_app α
+
+end
+
+section
+
+variable {T : LocalizerMorphism W₁ W₂} {L : LocalizerMorphism W₁ W₁'}
+  {R : LocalizerMorphism W₂ W₂'} {B : LocalizerMorphism W₁' W₂'}
+
+lemma hasRightResolutions_of_iso_of_essSurj
+    [R.functor.EssSurj] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.HasRightResolutions] :
+    B.HasRightResolutions := by
+  intro Y₂
+  obtain ⟨X₂, ⟨e⟩⟩ := Functor.EssSurj.mem_essImage (F := R.functor) Y₂
+  let ρ : T.RightResolution X₂ := Classical.arbitrary _
+  exact ⟨{
+    X₁ := L.functor.obj ρ.X₁
+    w := e.inv ≫ R.functor.map ρ.w ≫ iso.hom.app _
+    hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk e (iso.app _))).1 (R.map _ ρ.hw) }⟩
+
+lemma hasLeftResolutions_of_iso_of_essSurj
+    [R.functor.EssSurj] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.HasLeftResolutions] :
+    B.HasLeftResolutions := by
+  intro Y₂
+  obtain ⟨X₂, ⟨e⟩⟩ := Functor.EssSurj.mem_essImage (F := R.functor) Y₂
+  let ρ : T.LeftResolution X₂ := Classical.arbitrary _
+  exact ⟨{
+    X₁ := L.functor.obj ρ.X₁
+    w := iso.inv.app _ ≫ R.functor.map ρ.w ≫ e.hom
+    hw := (W₂'.arrow_mk_iso_iff (Arrow.isoMk (iso.app _) e)).1 (R.map _ ρ.hw) }⟩
+
+lemma hasRightResolutions_of_iso_of_essSurj_of_full
+    [L.functor.EssSurj] [R.functor.Full] [R.IsInduced] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [B.HasRightResolutions] :
+    T.HasRightResolutions := by
+  intro X₂
+  let ρ : B.RightResolution (R.functor.obj X₂) := Classical.arbitrary _
+  obtain ⟨X₁, ⟨e⟩⟩ := Functor.EssSurj.mem_essImage L.functor ρ.X₁
+  exact ⟨{
+    X₁ := X₁
+    w := R.functor.preimage (ρ.w ≫ B.functor.map e.inv ≫ iso.inv.app X₁)
+    hw := by
+      simp only [← R.inverseImage_eq, MorphismProperty.inverseImage_iff, Functor.map_preimage]
+      refine (W₂'.arrow_mk_iso_iff ?_).2 ρ.hw
+      exact Arrow.isoMk (Iso.refl _) (iso.app _ ≪≫ B.functor.mapIso e)}⟩
+
+lemma hasLeftResolutions_of_iso_of_essSurj_of_full
+    [L.functor.EssSurj] [R.functor.Full] [R.IsInduced] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [B.HasLeftResolutions] :
+    T.HasLeftResolutions := by
+  intro X₂
+  let ρ : B.LeftResolution (R.functor.obj X₂) := Classical.arbitrary _
+  obtain ⟨X₁, ⟨e⟩⟩ := Functor.EssSurj.mem_essImage L.functor ρ.X₁
+  exact ⟨{
+    X₁ := X₁
+    w := R.functor.preimage (iso.hom.app X₁ ≫ B.functor.map e.hom ≫ ρ.w)
+    hw := by
+      simp only [← R.inverseImage_eq, MorphismProperty.inverseImage_iff, Functor.map_preimage]
+      refine (W₂'.arrow_mk_iso_iff ?_).2 ρ.hw
+      exact Arrow.isoMk (iso.app _ ≪≫ B.functor.mapIso e) (Iso.refl _) }⟩
+
+lemma hasRightResolutions_iff_iso_of_essSurj_of_full
+    [R.functor.EssSurj] [R.functor.Full] [R.IsInduced] [L.functor.EssSurj] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
+    T.HasRightResolutions ↔ B.HasRightResolutions :=
+  ⟨fun _ ↦ hasRightResolutions_of_iso_of_essSurj iso,
+    fun _ ↦ hasRightResolutions_of_iso_of_essSurj_of_full iso⟩
+
+lemma hasLeftResolutions_iff_iso_of_essSurj_of_full
+    [R.functor.EssSurj] [R.functor.Full] [R.IsInduced] [L.functor.EssSurj] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
+    T.HasLeftResolutions ↔ B.HasLeftResolutions :=
+  ⟨fun _ ↦ hasLeftResolutions_of_iso_of_essSurj iso,
+    fun _ ↦ hasLeftResolutions_of_iso_of_essSurj_of_full iso⟩
+
+lemma hasRightResolutions_arrow_of_essSurj_of_full
+    [R.functor.EssSurj] [R.functor.Full] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.arrow.HasRightResolutions] :
+    B.arrow.HasRightResolutions := by
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  exact hasRightResolutions_of_iso_of_essSurj
+    (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
+
+lemma hasLeftResolutions_arrow_of_essSurj_of_full
+    [R.functor.EssSurj] [R.functor.Full] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.arrow.HasLeftResolutions] :
+    B.arrow.HasLeftResolutions := by
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  exact hasLeftResolutions_of_iso_of_essSurj
+    (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
+
+lemma hasRightResolutions_arrow_iff_of_equivalences
+    [R.functor.IsEquivalence] [R.IsInduced] [L.functor.IsEquivalence] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
+    T.arrow.HasRightResolutions ↔ B.arrow.HasRightResolutions := by
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  exact hasRightResolutions_iff_iso_of_essSurj_of_full
+    (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
+
+lemma hasLeftResolutions_arrow_iff_of_equivalences
+    [R.functor.IsEquivalence] [R.IsInduced] [L.functor.IsEquivalence] [W₂'.RespectsIso]
+    (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :
+    T.arrow.HasLeftResolutions ↔ B.arrow.HasLeftResolutions := by
+  let : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
+  exact hasLeftResolutions_iff_iso_of_essSurj_of_full
+    (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 
 end
 

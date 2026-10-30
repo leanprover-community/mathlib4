@@ -6,7 +6,10 @@ Authors: Ilmārs Cīrulis, Alex Meiburg
 module
 
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Sign.Defs
+public import Mathlib.Basic.Sign.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Normalized vector
@@ -54,7 +57,7 @@ theorem normalize_normalize (x : V) : normalize (normalize x) = normalize x := b
   · simp [normalize_eq_self_of_norm_eq_one, hx]
 
 @[simp]
-theorem normalize_neg (x : V) : normalize (- x) = - normalize x := by
+theorem normalize_neg (x : V) : normalize (-x) = - normalize x := by
   simp [normalize]
 
 theorem normalize_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :

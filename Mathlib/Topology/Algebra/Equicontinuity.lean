@@ -8,16 +8,19 @@ module
 public import Mathlib.Topology.Algebra.UniformConvergence
 public import Mathlib.Topology.UniformSpace.Equicontinuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebra-related equicontinuity criteria
 -/
 
-@[expose] public section
+public section
 
 
 open Function
 
-open UniformConvergence
+open scoped UniformConvergence
 
 @[to_additive]
 theorem equicontinuous_of_equicontinuousAt_one {ι G M hom : Type*} [TopologicalSpace G]

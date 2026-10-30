@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Contrapose
-public import Mathlib.Data.Prod.PProd
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalence between product types
@@ -96,6 +96,9 @@ theorem prodComm_apply {α β} (x : α × β) : prodComm α β x = x.swap :=
 @[simp, grind =]
 theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm (α β) : (prodComm α β).trans (prodComm β α) = .refl _ := rfl
 
 /-- Type product is associative up to an equivalence. -/
 @[simps (attr := grind =)]
@@ -233,6 +236,7 @@ variable {α₁ α₂ β₁ β₂ : Type*} (e : α₁ → β₁ ≃ β₂)
 
 /-- A family of equivalences `∀ (a : α₁), β₁ ≃ β₂` generates an equivalence
 between `β₁ × α₁` and `β₂ × α₁`. -/
+@[simps apply_fst apply_snd]
 def prodCongrLeft : β₁ × α₁ ≃ β₂ × α₁ where
   toFun ab := ⟨e ab.2 ab.1, ab.2⟩
   invFun ab := ⟨(e ab.2).symm ab.1, ab.2⟩
@@ -244,12 +248,13 @@ theorem prodCongrLeft_apply (b : β₁) (a : α₁) : prodCongrLeft e (b, a) = (
   rfl
 
 theorem prodCongr_refl_right (e : β₁ ≃ β₂) :
-    prodCongr e (Equiv.refl α₁) = prodCongrLeft fun _ => e := by
-  ext ⟨a, b⟩ : 1
-  simp
+    prodCongr e (Equiv.refl α₁) = prodCongrLeft fun _ ↦ e := rfl
+
+@[simp] lemma prodCongrLeft_symm : (prodCongrLeft e).symm = prodCongrLeft (.symm ∘ e) := rfl
 
 /-- A family of equivalences `∀ (a : α₁), β₁ ≃ β₂` generates an equivalence
 between `α₁ × β₁` and `α₁ × β₂`. -/
+@[simps apply_fst apply_snd]
 def prodCongrRight : α₁ × β₁ ≃ α₁ × β₂ where
   toFun ab := ⟨ab.1, e ab.1 ab.2⟩
   invFun ab := ⟨ab.1, (e ab.1).symm ab.2⟩
@@ -261,9 +266,9 @@ theorem prodCongrRight_apply (a : α₁) (b : β₁) : prodCongrRight e (a, b) =
   rfl
 
 theorem prodCongr_refl_left (e : β₁ ≃ β₂) :
-    prodCongr (Equiv.refl α₁) e = prodCongrRight fun _ => e := by
-  ext ⟨a, b⟩ : 1
-  simp
+    prodCongr (Equiv.refl α₁) e = prodCongrRight fun _ ↦ e := rfl
+
+@[simp] lemma prodCongrRight_symm : (prodCongrRight e).symm = prodCongrRight (.symm ∘ e) := rfl
 
 @[simp]
 theorem prodCongrLeft_trans_prodComm :
@@ -316,11 +321,11 @@ def prodExtendRight : Perm (α₁ × β₁) where
 
 @[simp]
 theorem prodExtendRight_apply_eq (b : β₁) : prodExtendRight a e (a, b) = (a, e b) :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem prodExtendRight_apply_ne {a a' : α₁} (h : a' ≠ a) (b : β₁) :
     prodExtendRight a e (a', b) = (a', b) :=
-  if_neg h
+  ite_eq_right h
 
 theorem eq_of_prodExtendRight_ne {e : Perm β₁} {a a' : α₁} {b : β₁}
     (h : prodExtendRight a e (a', b) ≠ (a', b)) : a' = a := by
@@ -441,6 +446,13 @@ section
 
 open Subtype
 
+/-- A subtype of a `Sigma`-type defined by componentwise conditions
+is equivalent to a `Sigma`-type of subtypes. -/
+def subtypeSigmaEquivSigma {α} {β : α → Type*} {p : α → Prop} {q : (i : α) → β i → Prop} :
+    { c : Σ i : α, β i // p c.1 ∧ q c.1 c.2 } ≃ Σ i : { a // p a }, { b // q i b } where
+  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+
 /-- A subtype of a product defined by componentwise conditions
 is equivalent to a product of subtypes. -/
 def subtypeProdEquivProd {α β} {p : α → Prop} {q : β → Prop} :
@@ -500,3 +512,29 @@ def subsingletonProdSelfEquiv {α} [Subsingleton α] : α × α ≃ α where
   invFun a := (a, a)
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
+
+section
+
+variable {α β : Type*} (a : α) (b : β)
+
+/-- `(1 + α) × β = β + α × β` -/
+def optionProdEquiv : Option α × β ≃ β ⊕ α × β where
+  toFun x := x.1.casesOn (.inl x.2) (fun a ↦ .inr (a, x.2))
+  invFun x := x.casesOn (.mk none) (.map some id)
+  left_inv
+  | (none, _) => rfl
+  | (some _, _) => rfl
+  right_inv
+  | .inl _ => rfl
+  | .inr (_, _) => rfl
+
+@[simp] lemma optionProdEquiv_mk_none : optionProdEquiv (α := α) (.none, b) = .inl b := rfl
+
+@[simp] lemma optionProdEquiv_mk_some : optionProdEquiv (.some a, b) = .inr (a, b) := rfl
+
+@[simp] lemma optionProdEquiv_symm_inl : optionProdEquiv (α := α).symm (.inl b) = (.none, b) := rfl
+
+@[simp] lemma optionProdEquiv_symm_inr (p : α × β) :
+  optionProdEquiv.symm (.inr p) = p.map some id := rfl
+
+end

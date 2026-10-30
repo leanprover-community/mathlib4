@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Additive Haar measure constructed from a basis
@@ -58,7 +58,7 @@ theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
     parallelepiped b = {x | ∀ i, b.repr x i ∈ Set.Icc 0 1} := by
   classical
   ext x
-  simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
+  simp_rw [mem_parallelepiped_iff, mem_ofPred_eq, b.ext_elem_iff, _root_.map_sum,
     map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
     mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
     Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
@@ -124,7 +124,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
 
 theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
   ext
-  simp only [mem_parallelepiped_iff, Set.mem_finset_sum, Finset.mem_univ, forall_true_left,
+  simp only [mem_parallelepiped_iff, Set.mem_finsetSum, Finset.mem_univ, forall_true_left,
     segment_eq_image, smul_zero, zero_add, ← Set.pi_univ_Icc, Set.mem_univ_pi]
   constructor
   · rintro ⟨t, ht, rfl⟩
@@ -186,12 +186,12 @@ namespace Module.Basis
 def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   carrier := _root_.parallelepiped b
   isCompact' := IsCompact.image isCompact_Icc
-      (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) =>
-        (continuous_apply i).smul continuous_const)
+      (continuous_finsetSum Finset.univ
+        fun (i : ι) (_H : i ∈ Finset.univ) ↦ by fun_prop)
   interior_nonempty' := by
     suffices H : Set.Nonempty (interior (b.equivFunL.symm.toHomeomorph '' Icc 0 1)) by
       dsimp only [_root_.parallelepiped]
-      convert H
+      convert! H
       exact (b.equivFun_symm_apply _).symm
     have A : Set.Nonempty (interior (Icc (0 : ι → ℝ) 1)) := by
       rw [← pi_univ_Icc, interior_pi_set (@finite_univ ι _)]
@@ -251,31 +251,32 @@ variable [MeasurableSpace E] [BorelSpace E]
 
 /-- The Lebesgue measure associated to a basis, giving measure `1` to the parallelepiped spanned
 by the basis. -/
-irreducible_def addHaar (b : Basis ι ℝ E) : Measure E :=
+@[no_expose] def addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 
-instance _root_.isAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
-  rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
+lemma addHaar_def (b : Basis ι ℝ E) : addHaar b = Measure.addHaarMeasure b.parallelepiped := (rfl)
 
-instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := by
+instance _root_.isAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar :=
+  Measure.isAddHaarMeasure_addHaarMeasure _
+
+instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar :=
   have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
-  rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
+  sigmaFinite_addHaarMeasure
 
 /-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
 defined by `b` iff the parallelepiped defined by `b` has measure `1` for `μ`. -/
 theorem addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (μ : Measure E)
     [SigmaFinite μ] [IsAddLeftInvariant μ] :
-    b.addHaar = μ ↔ μ b.parallelepiped = 1 := by
-  rw [Basis.addHaar_def]
-  exact addHaarMeasure_eq_iff b.parallelepiped μ
+    b.addHaar = μ ↔ μ b.parallelepiped = 1 :=
+  addHaarMeasure_eq_iff b.parallelepiped μ
 
 @[simp]
 theorem addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
     (b.reindex e).addHaar = b.addHaar := by
   rw [Basis.addHaar, b.parallelepiped_reindex e, ← Basis.addHaar]
 
-theorem addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
-  rw [Basis.addHaar]; exact addHaarMeasure_self
+theorem addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 :=
+  addHaarMeasure_self
 
 variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopologyEither E F]
 

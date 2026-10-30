@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
-public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.CovarianceBilinDual
+
+import Mathlib.Probability.Moments.Basic
 
 /-!
 # Covariance in Hilbert spaces
@@ -90,8 +91,7 @@ lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (x y : ℝ) :
   by_cases h : MemLp id 2 μ
   · simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
     rw [covariance_const_mul_left, covariance_const_mul_right, ← mul_assoc,
-      covariance_self aemeasurable_id']
-    rfl
+      covariance_self aemeasurable_id', Function.id_def]
   · simp [h, variance_of_not_memLp, aestronglyMeasurable_id]
 
 lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ) :
@@ -128,7 +128,7 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
     rw [covarianceBilin_apply h_Lp,
       covarianceBilin_apply h, integral_map (by fun_prop) (by fun_prop)]
     congr with z
-    rw [integral_map (by fun_prop) h_Lp.1]
+    rw [integral_map (by fun_prop) h_Lp.aestronglyMeasurable]
     simp only [id_eq]
     rw [integral_add (integrable_const _)]
     · simp
@@ -136,7 +136,7 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
   · ext
     rw [covarianceBilin_of_not_memLp, covarianceBilin_of_not_memLp h]
     rw [(measurableEmbedding_addLeft _).memLp_map_measure_iff.not]
-    contrapose! h
+    contrapose h
     convert (memLp_const (-c)).add h
     ext; simp
 
@@ -215,7 +215,7 @@ lemma covarianceOperator_apply (hμ : MemLp id 2 μ) (x : E) :
   rw [real_inner_comm, ← integral_inner]
   · simp_rw [inner_smul_right, ← continuousLinearMapOfBilin_apply, ← covarianceOperator_inner hμ]
     rfl
-  exact memLp_one_iff_integrable.1 <| hμ.smul (hμ.const_inner x)
+  exact memLp_one_iff_integrable.1 <| (hμ.const_inner x).smul hμ
 
 lemma isPositive_covarianceOperator : (covarianceOperator μ).toLinearMap.IsPositive := by
   by_cases hμ : MemLp id 2 μ

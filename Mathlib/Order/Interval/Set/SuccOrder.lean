@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.SuccPred.Basic
+
+import Mathlib.Order.LatticeIntervals
 
 /-!
 # Successors in intervals
@@ -17,7 +18,7 @@ which is not the maximum, we have `↑(Order.succ i) = Order.succ ↑i`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Set
 

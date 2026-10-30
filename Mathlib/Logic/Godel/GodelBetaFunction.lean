@@ -5,14 +5,14 @@ Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
 module
 
-public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.ChineseRemainder
-public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Nat.Pairing
-public import Mathlib.Order.Fin.Basic
-public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.Nat.Factorial.Basic
+
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Gödel's Beta Function Lemma
@@ -67,7 +67,7 @@ private def supOfSeq (a : Fin m → ℕ) : ℕ := max m (Finset.sup .univ a) + 1
 
 private def coprimes (a : Fin m → ℕ) : Fin m → ℕ := fun i => (i + 1) * (supOfSeq a)! + 1
 
-lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
+private lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
   have h₁ : a i < supOfSeq a :=
     Nat.lt_add_one_iff.mpr (le_max_of_le_right <| Finset.le_sup (by simp))
   have h₂ : supOfSeq a ≤ (i + 1) * (supOfSeq a)! + 1 :=
@@ -92,11 +92,11 @@ def beta (n i : ℕ) : ℕ := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
 /-- Inverse of Gödel's Beta Function. This is similar to `Encodable.encodeList`, but it is easier
 to prove that it is arithmetically definable. -/
-def unbeta (l : List ℕ) : ℕ :=
-  (chineseRemainderOfFinset (l[·]) (coprimes (l[·])) Finset.univ
+@[no_expose] def unbeta (l : List ℕ) : ℕ :=
+  (chineseRemainderOfFinset (ι := Fin l.length) (l[·]) (coprimes (l[·])) Finset.univ
     (by simp [coprimes])
     (by simpa using Set.pairwise_univ.mpr (pairwise_coprime_coprimes _)) : ℕ).pair
-  (supOfSeq (l[·]))!
+  (supOfSeq (m := l.length) (l[·]))!
 
 /-- **Gödel's Beta Function Lemma** -/
 lemma beta_unbeta_coe (l : List ℕ) (i : Fin l.length) : beta (unbeta l) i = l[i] := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.Images
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of coimage-image comparisons
 
@@ -81,7 +84,7 @@ theorem PreservesCoimage.iso_hom_π :
 
 @[reassoc (attr := simp)]
 theorem PreservesCoimage.factorThruCoimage_iso_inv :
-    (PreservesCoimage.iso F f).inv ≫ F.map (Abelian.factorThruCoimage f)  =
+    (PreservesCoimage.iso F f).inv ≫ F.map (Abelian.factorThruCoimage f) =
       Abelian.factorThruCoimage (F.map f) := by
   ext; simp [iso]
 

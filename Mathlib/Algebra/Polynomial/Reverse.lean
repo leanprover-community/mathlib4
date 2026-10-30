@@ -64,8 +64,9 @@ theorem revAt_invol {N i : ℕ} : (revAt N) (revAt N i) = i :=
 
 @[simp]
 theorem revAt_le {N i : ℕ} (H : i ≤ N) : revAt N i = N - i :=
-  if_pos H
+  ite_eq_left H
 
+set_option backward.isDefEq.respectTransparency false in
 lemma revAt_eq_self_of_lt {N i : ℕ} (h : N < i) : revAt N i = i := by simp [revAt, Nat.not_le.mpr h]
 
 theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
@@ -85,30 +86,28 @@ In practice, `reflect` is only used when `N` is at least as large as the degree 
 
 Eventually, it will be used with `N` exactly equal to the degree of `f`. -/
 noncomputable def reflect (N : ℕ) : R[X] → R[X]
-  | ⟨f⟩ => ⟨Finsupp.embDomain (revAt N) f⟩
+  | ⟨f⟩ => ⟨.ofCoeff <| f.coeff.embDomain (revAt N)⟩
 
 theorem reflect_support (N : ℕ) (f : R[X]) :
-    (reflect N f).support = Finset.image (revAt N) f.support := by
-  rcases f with ⟨⟩
-  ext1
-  simp only [reflect, support_ofFinsupp, support_embDomain, Finset.mem_map, Finset.mem_image]
+    (reflect N f).support = Finset.image (revAt N) f.support := by cases f; ext1; simp [reflect]
 
 @[simp, grind =]
 theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f.coeff (revAt N i) := by
   rcases f with ⟨f⟩
   simp only [reflect, coeff]
   calc
-    Finsupp.embDomain (revAt N) f i = Finsupp.embDomain (revAt N) f (revAt N (revAt N i)) := by
-      rw [revAt_invol]
-    _ = f (revAt N i) := Finsupp.embDomain_apply_self _ _ _
+    f.coeff.embDomain (revAt N) i
+      = f.coeff.embDomain (revAt N) (revAt N (revAt N i)) := by rw [revAt_invol]
+    _ = f.coeff (revAt N i) := Finsupp.embDomain_apply_self _ _ _
+
+@[simp] lemma reflect_reflect {N : ℕ} {p : R[X]} : (p.reflect N).reflect N = p := by ext; simp
 
 @[simp]
 theorem reflect_zero {N : ℕ} : reflect N (0 : R[X]) = 0 :=
   rfl
 
 @[simp]
-theorem reflect_eq_zero_iff {N : ℕ} {f : R[X]} : reflect N (f : R[X]) = 0 ↔ f = 0 := by
-  rw [ofFinsupp_eq_zero, reflect, embDomain_eq_zero, ofFinsupp_eq_zero]
+lemma reflect_eq_zero_iff {N : ℕ} {f : R[X]} : reflect N (f : R[X]) = 0 ↔ f = 0 := by simp [reflect]
 
 @[simp]
 theorem reflect_add (f g : R[X]) (N : ℕ) : reflect N (f + g) = reflect N f + reflect N g := by
@@ -123,7 +122,6 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
   grind
-
 
 @[simp]
 theorem reflect_C (r : R) (N : ℕ) : reflect N (C r) = C r * X ^ N := by
@@ -158,8 +156,7 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
     | succ cg hcg =>
       by_cases g0 : g = 0
       · rw [g0, reflect_zero, mul_zero, mul_zero, reflect_zero]
-      rw [← eraseLead_add_C_mul_X_pow g, mul_add, reflect_add, reflect_add, mul_add, hcg, hcg] <;>
-        try assumption
+      rw [← eraseLead_add_C_mul_X_pow g, mul_add, reflect_add, reflect_add, mul_add, hcg, hcg]
       · exact le_add_left card_support_C_mul_X_pow_le_one
       · exact le_trans (natDegree_C_mul_X_pow_le g.leadingCoeff g.natDegree) Og
       · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt g0) Cg)
@@ -167,8 +164,7 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
   | succ cf hcf =>
     by_cases f0 : f = 0
     · rw [f0, reflect_zero, zero_mul, zero_mul, reflect_zero]
-    rw [← eraseLead_add_C_mul_X_pow f, add_mul, reflect_add, reflect_add, add_mul, hcf, hcf] <;>
-      try assumption
+    rw [← eraseLead_add_C_mul_X_pow f, add_mul, reflect_add, reflect_add, add_mul, hcf, hcf]
     · exact le_add_left card_support_C_mul_X_pow_le_one
     · exact le_trans (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree) Nf
     · exact Nat.lt_succ_iff.mp (lt_of_lt_of_le (eraseLead_support_card_lt f0) Cf)
@@ -177,7 +173,13 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
 @[simp]
 theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.natDegree ≤ G) :
     reflect (F + G) (f * g) = reflect F f * reflect G g :=
-  reflect_mul_induction _ _ F G f g f.support.card.le_succ g.support.card.le_succ Ff Gg
+  reflect_mul_induction _ _ F G f g (#f.support).le_succ (#g.support).le_succ Ff Gg
+
+set_option backward.isDefEq.respectTransparency false in
+lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
+    (p.reflect N).natDegree ≤ max N p.natDegree := by
+  simp +contextual [-le_max_iff, natDegree_le_iff_coeff_eq_zero,
+    revAt, not_le_of_gt, coeff_eq_zero_of_natDegree_lt]
 
 section Eval₂
 
@@ -218,7 +220,7 @@ theorem coeff_reverse (f : R[X]) (n : ℕ) : f.reverse.coeff n = f.coeff (revAt 
 
 @[simp]
 theorem coeff_zero_reverse (f : R[X]) : coeff (reverse f) 0 = leadingCoeff f := by
-  rw [coeff_reverse, revAt_le (zero_le f.natDegree), tsub_zero, leadingCoeff]
+  rw [coeff_reverse, revAt_le zero_le, tsub_zero, leadingCoeff]
 
 @[simp]
 theorem reverse_zero : reverse (0 : R[X]) = 0 :=
@@ -227,11 +229,12 @@ theorem reverse_zero : reverse (0 : R[X]) = 0 :=
 @[simp]
 theorem reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
   rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
   intro n hn
   rw [Nat.cast_lt] at hn
-  rw [coeff_reverse, revAt, Function.Embedding.coeFn_mk, if_neg (not_le_of_gt hn),
+  rw [coeff_reverse, revAt, Function.Embedding.coeFn_mk, ite_eq_right (not_le_of_gt hn),
     coeff_eq_zero_of_natDegree_lt hn]
 
 theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :
@@ -242,7 +245,7 @@ theorem natDegree_eq_reverse_natDegree_add_natTrailingDegree (f : R[X]) :
   · refine tsub_le_iff_right.mp ?_
     apply le_natDegree_of_ne_zero
     rw [reverse, coeff_reflect, ← revAt_le f.natTrailingDegree_le_natDegree, revAt_invol]
-    exact trailingCoeff_nonzero_iff_nonzero.mpr hf
+    exact trailingCoeff_ne_zero.mpr hf
   · rw [← le_tsub_iff_left f.reverse_natDegree_le]
     apply natTrailingDegree_le_of_ne_zero
     have key := mt leadingCoeff_eq_zero.mp (mt reverse_eq_zero.mp hf)

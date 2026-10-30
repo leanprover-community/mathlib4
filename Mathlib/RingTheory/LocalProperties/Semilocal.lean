@@ -5,8 +5,9 @@ Authors: Yiming Fu
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.RingTheory.KrullDimension.PID
+
+import Mathlib.RingTheory.DedekindDomain.PID
 
 /-!
 # Local properties for semilocal rings
@@ -24,7 +25,7 @@ finitely many maximal ideals).
   integral domain `A` is a PID if its localization at every maximal ideal is a PID.
 -/
 
-@[expose] public section
+public section
 
 section CommSemiring
 

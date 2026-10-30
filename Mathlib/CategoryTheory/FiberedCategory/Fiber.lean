@@ -6,11 +6,10 @@ Authors: Calle Sönne, Paul Lezeau
 module
 
 public import Mathlib.CategoryTheory.FiberedCategory.HomLift
-public import Mathlib.CategoryTheory.Functor.Const
 
 /-!
 
-# Fibers of a functors
+# Fibers of functors
 
 In this file we define, for a functor `p : 𝒳 ⥤ 𝒴`, the fiber categories `Fiber p S` for every
 `S : 𝒮` as follows
@@ -63,6 +62,7 @@ instance : (fiberInclusion : Fiber p S ⥤ _).Faithful where
 lemma fiberInclusion_obj_inj : (fiberInclusion : Fiber p S ⥤ _).obj.Injective :=
   fun _ _ f ↦ Subtype.val_inj.1 f
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For fixed `S : 𝒮` this is the natural isomorphism between `fiberInclusion ⋙ p` and the constant
 function valued at `S`. -/
 @[simps!]
@@ -81,6 +81,7 @@ lemma fiberInclusion_mk {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a : 𝒳} (ha : p.obj a 
     fiberInclusion.obj (mk ha) = a :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism in the fiber over `S` corresponding to a morphism in `𝒳` lifting `𝟙 S`. -/
 def homMk (p : 𝒳 ⥤ 𝒮) (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsHomLift p (𝟙 S) φ] :
     mk (domain_eq p (𝟙 S) φ) ⟶ mk (codomain_eq p (𝟙 S) φ) :=

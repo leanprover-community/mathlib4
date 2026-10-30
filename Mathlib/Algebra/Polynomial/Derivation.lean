@@ -5,11 +5,11 @@ Authors: Kevin Buzzard, Richard M. Hill
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Module.AEval
-public import Mathlib.RingTheory.Adjoin.Polynomial
 public import Mathlib.RingTheory.Derivation.Basic
+
+import Mathlib.RingTheory.Adjoin.Polynomial.Basic
+
 /-!
 # Derivations of univariate polynomials
 
@@ -81,7 +81,7 @@ lemma mkDerivation_one_eq_derivative (f : R[X]) : mkDerivation R (1 : R[X]) f = 
 
 /-- `Polynomial.mkDerivation` as a linear equivalence. -/
 def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
-  LinearEquiv.symm <|
+  LinearEquiv.symm
     { invFun := mkDerivation R
       toFun := fun D => D X
       map_add' := fun _ _ => rfl
@@ -106,6 +106,7 @@ variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCom
 
 open Polynomial Module
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 For a derivation `d : A → M` and an element `a : A`, `d.compAEval a` is the
 derivation of `R[X]` which takes a polynomial `f` to `d(aeval a f)`.
