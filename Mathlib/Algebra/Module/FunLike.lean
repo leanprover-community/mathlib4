@@ -18,13 +18,10 @@ typeclass searches.
 
 public section
 
-variable {R M M' F α β : Type*} [i : FunLike F α β]
-
 namespace FunLike
 
-section ModuleInstance
-
-variable [Semiring M] [AddCommMonoid β] [Module M β] [AddCommMonoid F]
+variable {M F α β : Type*} [FunLike F α β]
+  [Semiring M] [AddCommMonoid β] [Module M β] [AddCommMonoid F]
 
 /-- A `FunLike` type is a `Module` if `β` is a `Module`. -/
 protected abbrev module [IsZeroApply F] [IsAddApply F] [SMul M F] [IsSMulApply M F] :
@@ -34,7 +31,5 @@ protected abbrev module [IsZeroApply F] [IsAddApply F] [SMul M F] [IsSMulApply M
 protected theorem moduleIsTorsionFree [Module M F] [IsSMulApply M F]
     [Module.IsTorsionFree M β] : Module.IsTorsionFree M F :=
   DFunLike.coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
-
-end ModuleInstance
 
 end FunLike
