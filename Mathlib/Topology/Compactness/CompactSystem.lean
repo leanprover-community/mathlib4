@@ -315,7 +315,7 @@ protected theorem sigma {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSyst
   obtain rfl : S = fun n ↦ (s n : Set ι).sigma (x n) := funext fun n ↦ (hxS n).symm
   -- for each `i`, the fibers over `i` of the first sets have empty intersection
   have key (i : ι) : ∃ N, ∀ y, ⟨i, y⟩ ∉ dissipate (fun n ↦ (s n : Set ι).sigma (x n)) N := by
-    by_cases hi : ∀ n, i ∈ s n
+    by_cases! hi : ∀ n, i ∈ s n
     · -- `C i` is a compact system and the intersection of the fibers over `i` is empty
       obtain ⟨N, hN⟩ := hC i (fun n ↦ x n i) (fun n ↦ hx n i) <| by
         refine eq_empty_iff_forall_notMem.mpr fun y hy ↦ ?_
@@ -326,7 +326,6 @@ protected theorem sigma {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSyst
       simp only [mem_dissipate, mem_sigma_iff] at hy ⊢
       exact fun n hn ↦ (hy n hn).2
     · -- `i ∉ s n` for some `n`
-      push Not at hi
       obtain ⟨n, hn⟩ := hi
       refine ⟨n, fun y hy ↦ hn ?_⟩
       simp only [mem_dissipate, mem_sigma_iff] at hy
