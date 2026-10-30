@@ -34,10 +34,15 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 | [`build.yml`](../.github/workflows/build.yml) | continuous integration<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/build.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml) | High | `push` | On non-fork PRs, this workflow builds, lints and tests Mathlib using the reusable build template (`build_template.yml`). |
 | [`release_cache.yml`](../.github/workflows/release_cache.yml) | publish release cache<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/release_cache.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/release_cache.yml) | High | `push (v4.* tags), workflow_dispatch` | On every `v4.*` release tag, this workflow builds the tagged commit using the reusable build template (`build_template.yml`) and publishes its cache to the `master` container. When the cache is already complete, the build uploads nothing. |
 
-For canonical `batteries @ main` updates, the required Build job checks the final Bors candidate against Mathlib `master`'s pin.
-The proposed revision must equal or descend from the current revision.
-This check runs on `staging` and `trying`.
-To refresh an older pin, run `lake update batteries` and commit the manifest.
+The required "Validate manifest" job checks `lake-manifest.json` with these rules:
+- Each package tracks `main`, `master` or a version tag `vX.Y.Z`.
+- Each package comes from a repository in `leanprover-community` or `leanprover`.
+- A changed pin is on the tracked branch, or is the commit of the tracked tag.
+- A changed pin on a branch includes the pin at the merge base with `master`.
+
+A failure of the first two rules fails every run.
+A failure of the last two rules is a warning on ordinary pushes and fails the Bors candidate on `staging` and `trying`.
+To fix a pin, run `lake update <package>` and commit the manifest.
 
 ### The main CI pipelines above all use this reusable workflow for the base logic:
 | File  | Description |
