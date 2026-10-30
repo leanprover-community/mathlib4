@@ -58,7 +58,9 @@ Results for completed L-functions:
 
 @[expose] public section
 
-open HurwitzZeta Complex ZMod Finset Topology Filter Set
+open HurwitzZeta Complex ZMod Finset Filter Set
+
+open scoped Topology
 
 open scoped Real
 
@@ -322,7 +324,7 @@ zeta function.
 -/
 lemma completedLFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
     completedLFunction Φ s = Φ 1 * completedRiemannZeta s := by
-  rw [completedLFunction_def_even (show Φ.Even from fun _ ↦ congr_arg Φ (Subsingleton.elim ..)),
+  rw [completedLFunction_def_even (show Φ.Even from fun _ ↦ congr(Φ $(Subsingleton.elim ..))),
     Nat.cast_one, one_cpow, one_mul, ← singleton_eq_univ 0, sum_singleton, map_zero,
     completedHurwitzZetaEven_zero, Subsingleton.elim 0 1]
 
@@ -478,7 +480,7 @@ theorem completedLFunction_one_sub_even (hΦ : Φ.Even) (s : ℂ)
       apply Countable.union <;>
       split_ifs <;>
       simp only [countable_singleton, countable_empty]
-    convert! (this.isConnected_compl_of_one_lt_rank ?_).isPreconnected using 1
+    convert (this.isConnected_compl_of_one_lt_rank ?_).isPreconnected using 1
     · ext x
       by_cases h : Φ 0 = 0 <;>
       by_cases h' : ∑ j, Φ j = 0 <;>
@@ -523,7 +525,7 @@ theorem completedLFunction_one_sub_odd (hΦ : Φ.Odd) (s : ℂ) :
     using completedLFunction_one_sub_of_one_lt_odd hΦ ht
   -- now apply the big hammer to finish
   rw [← analyticOnNhd_univ_iff_differentiable] at hF hG
-  exact congr_fun (hF.eq_of_eventuallyEq hG hFG) s
+  congrm $(hF.eq_of_eventuallyEq hG hFG) s
 
 end signed
 

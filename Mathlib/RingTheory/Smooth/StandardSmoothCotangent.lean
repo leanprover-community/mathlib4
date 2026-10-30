@@ -6,10 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.LinearAlgebra.Basis.Exact
-public import Mathlib.RingTheory.Extension.Cotangent.Basic
-public import Mathlib.RingTheory.Smooth.StandardSmooth
-public import Mathlib.RingTheory.Smooth.Kaehler
 public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmooth
 
 /-!
 # Cotangent complex of a submersive presentation
@@ -114,6 +112,7 @@ lemma cotangentComplexAux_injective : Function.Injective P.cotangentComplexAux :
     simpa using this i
   · exact P.relation_mem_ker i
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma cotangentComplexAux_surjective : Function.Surjective P.cotangentComplexAux := by
   rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← P.basisDeriv.span_eq, Submodule.span_le]
   rintro - ⟨i, rfl⟩
@@ -205,7 +204,7 @@ noncomputable def basisKaehlerOfIsCompl {κ : Type*} {f : κ → ι}
     simp [← hcompl.compl_eq]
   · simp only [sectionCotangent, LinearMap.coe_comp, Function.comp_assoc, LinearEquiv.coe_coe]
     apply LinearIndependent.map' _ _ P.cotangentEquiv.symm.ker
-    convert! (Pi.basisFun S σ).linearIndependent
+    convert (Pi.basisFun S σ).linearIndependent
     classical
     ext i j
     simp only [Function.comp_apply, Basis.repr_self, Finsupp.linearEquivFunOnFinite_apply,
@@ -329,7 +328,7 @@ instance IsStandardSmoothOfRelativeDimension.subsingleton_kaehlerDifferential
     [IsStandardSmoothOfRelativeDimension 0 R S] : Subsingleton Ω[S⁄R] := by
   cases subsingleton_or_nontrivial S
   · exact Module.subsingleton S _
-  haveI : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
+  have : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
   exact Module.subsingleton_of_rank_zero
     (IsStandardSmoothOfRelativeDimension.rank_kaehlerDifferential 0)
 

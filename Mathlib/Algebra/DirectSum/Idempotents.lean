@@ -5,8 +5,11 @@ Authors: Yunzhou Xie, Jujian Zhang, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Idempotents
 public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.RingTheory.Idempotents
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Decomposition of the identity of a semiring into orthogonal idempotents
@@ -37,7 +40,6 @@ lemma decompose_eq_mul_idempotent (x : R) (i : I) : decompose V x i = x * idempo
 lemma isIdempotentElem_idempotent (i : I) : IsIdempotentElem (idempotent V i : R) := by
   rw [IsIdempotentElem, ← decompose_eq_mul_idempotent, idempotent, decompose_coe, of_eq_same]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a semiring can be decomposed into direct sum of finite left ideals `Vᵢ`
   where `1 = e₁ + ... + eₙ` and `eᵢ ∈ Vᵢ`, then `eᵢ` is a family of complete
   orthogonal idempotents. -/

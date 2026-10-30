@@ -5,9 +5,9 @@ Authors: Kalle Kytölä, Moritz Doll
 -/
 module
 
+public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.IsWeak
-public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Weak dual topology
@@ -21,21 +21,23 @@ such that for all `y : F` every map `fun x => B x y` is continuous.
 The main definition is the type `WeakBilin B`.
 
 * Given `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, the type `WeakBilin B` is a type synonym for `E`.
+* `WeakBilin.linearEquiv`: the canonical linear equivalence `WeakBilin B ≃ₗ[𝕝] E`.
+* `WeakBilin.pairing`: the bilinear form `B`, viewed as a map out of `WeakBilin B`. Use this in
+  place of `B` to avoid abusing the definitional equality between `WeakBilin B` and `E`.
 * The instance `WeakBilin.instTopologicalSpace` is the weak topology induced by the bilinear form
-  `B`.
+  `WeakBilin.pairing B`.
 
 ## Main results
 
-We establish that `WeakBilin B` has the following structure:
+* `WeakBilin.isWeak`: the topology on `WeakBilin B` is the weak topology induced by
+  `WeakBilin.pairing B`, in the sense of `LinearMap.IsWeak`. Consequently, the general API for
+  `LinearMap.IsWeak` (e.g., `LinearMap.IsWeak.continuous_eval` and
+  `LinearMap.IsWeak.tendsto_iff_forall_eval_tendsto`) applies to `WeakBilin B`.
+* `WeakBilin.continuous_of_continuous_eval`: For a mapping to `WeakBilin B` to be continuous,
+  it suffices that its compositions with pairing with `B` at all points `y : F` is continuous.
+  Unlike its `LinearMap.IsWeak` counterpart, this is suitable for `fun_prop`.
 * `WeakBilin.instContinuousAdd`: The addition in `WeakBilin B` is continuous.
 * `WeakBilin.instContinuousSMul`: The scalar multiplication in `WeakBilin B` is continuous.
-
-We prove the following results characterizing the weak topology:
-* `eval_continuous`: For any `y : F`, the evaluation mapping `fun x => B x y` is continuous.
-* `continuous_of_continuous_eval`: For a mapping to `WeakBilin B` to be continuous,
-  it suffices that its compositions with pairing with `B` at all points `y : F` is continuous.
-* `tendsto_iff_forall_eval_tendsto`: Convergence in `WeakBilin B` can be characterized
-  in terms of convergence of the evaluations at all points `y : F`.
 
 ## References
 
@@ -64,21 +66,23 @@ section WeakTopology
 @[nolint unusedArguments]
 def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
     (_ : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) := E
-deriving AddCommMonoid, Module 𝕜
 
 namespace WeakBilin
+
+variable [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
+  (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) [CommSemiring 𝕝] [Module 𝕝 E] in
+deriving instance SMul 𝕝, AddCommMonoid, Module 𝕝 for WeakBilin B
 
 instance instAddCommGroup [CommSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) :=
   inferInstanceAs <| AddCommGroup E
 
-instance (priority := 100) instModule' [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommMonoid E]
-    [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F] [Module 𝕝 E] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
-    Module 𝕝 (WeakBilin B) :=
-  inferInstanceAs <| Module 𝕝 E
+instance [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
+    (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : Module 𝕜 (WeakBilin B) :=
+  inferInstance
 
 instance instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommMonoid E] [Module 𝕜 E]
-    [AddCommMonoid F] [Module 𝕜 F] [SMul 𝕝 𝕜] [Module 𝕝 E] [s : IsScalarTower 𝕝 𝕜 E]
+    [AddCommMonoid F] [Module 𝕜 F] [SMul 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E]
     (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : IsScalarTower 𝕝 𝕜 (WeakBilin B) :=
   inferInstanceAs <| IsScalarTower 𝕝 𝕜 E
 
@@ -131,11 +135,11 @@ instance isWeak : (pairing B).IsWeak where eq_induced := rfl
 open LinearMap
 
 /-- The coercion `(fun x y => B x y) : E → (F → 𝕜)` is continuous. -/
-@[deprecated IsWeak.coeFn_continuous (since := "2026-06-15")]
+@[deprecated IsWeak.coeFn_continuous +typeChanged (since := "2026-10-30")]
 theorem coeFn_continuous : Continuous (pairing B · ·) :=
   IsWeak.coeFn_continuous (pairing B)
 
-@[deprecated IsWeak.continuous_eval (since := "2026-06-15")]
+@[deprecated IsWeak.continuous_eval +typeChanged (since := "2026-10-30")]
 theorem eval_continuous (y : F) : Continuous (pairing B · y) := by
   fun_prop
 
@@ -145,12 +149,12 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakBili
   IsWeak.continuous_of_continuous_eval (pairing B) h
 
 /-- The coercion `(fun x y => B x y) : E → (F → 𝕜)` is an embedding. -/
-@[deprecated IsWeak.isEmbedding (since := "2026-06-15")]
+@[deprecated IsWeak.isEmbedding +typeChanged (since := "2026-10-30")]
 theorem isEmbedding {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (hB : Function.Injective B) :
     IsEmbedding (pairing B · ·) :=
   IsWeak.isEmbedding hB
 
-@[deprecated IsWeak.tendsto_iff_forall_eval_tendsto (since := "2026-06-15")]
+@[deprecated IsWeak.tendsto_iff_forall_eval_tendsto +typeChanged (since := "2026-10-30")]
 theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B} {x : WeakBilin B}
     (hB : Function.Injective B) :
     Tendsto f l (𝓝 x) ↔ ∀ y, Tendsto (fun i => pairing B (f i) y) l (𝓝 (pairing B x y)) :=
@@ -161,16 +165,13 @@ instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) :=
   IsWeak.continuousAdd (pairing B)
 
 /-- Scalar multiplication by `𝕜` on `WeakBilin B` is continuous. -/
-instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) := by
-  refine ⟨continuous_induced_rng.2 ?_⟩
-  refine cast (congr_arg _ ?_) (continuous_fst.fun_smul ((coeFn_continuous B).comp continuous_snd))
-  ext
-  simp only [Function.comp_apply, Pi.smul_apply, map_smulₛₗ, RingHom.id_apply, LinearMap.smul_apply]
+instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) :=
+  IsWeak.continuousSMul (pairing B)
 
 /--
 Map `F` into the topological dual of `E` with the weak topology induced by `F`
 -/
-@[deprecated IsWeak.eval (since := "2026-06-15")]
+@[deprecated IsWeak.eval +typeChanged (since := "2026-10-30")]
 def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
     F →ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) :=
   IsWeak.eval (pairing B)

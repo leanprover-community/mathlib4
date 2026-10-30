@@ -8,21 +8,22 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Degree.SmallDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Degree of polynomials that are units
 -/
 
 public section
 
-noncomputable section
-
-open Finsupp Finset Polynomial
+open Polynomial
 
 namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {a : R}
 
 section Semiring
 

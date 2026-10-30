@@ -5,8 +5,6 @@ Authors: Kalle Kytölä, Moritz Doll
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!
@@ -59,8 +57,41 @@ functionals `fun v => v x` are continuous. -/
 def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
-deriving AddCommMonoid, TopologicalSpace, ContinuousAdd, Inhabited,
-  FunLike, ContinuousLinearMapClass, Module 𝕜
+deriving TopologicalSpace, Inhabited, FunLike, ContinuousLinearMapClass
+
+namespace WeakDual
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+
+/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
+multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
+instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
+  inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
+
+instance (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : IsSMulApply M (WeakDual 𝕜 E) where
+  smul_apply _ _ _ := rfl
+
+deriving instance AddCommMonoid, ContinuousAdd for WeakDual
+
+/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
+multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
+instance instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+    [ContinuousConstSMul M 𝕜] : DistribMulAction M (WeakDual 𝕜 E) :=
+  inferInstanceAs <| DistribMulAction M (E →L[𝕜] 𝕜)
+
+/-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
+multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
+instance (priority := 950) instModule'
+    (R : Type*) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
+    Module R (WeakDual 𝕜 E) :=
+  inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
+
+instance instModule : Module 𝕜 (WeakDual 𝕜 E) := inferInstance
+
+end WeakDual
 
 namespace StrongDual
 
@@ -136,22 +167,6 @@ lemma pairing_apply_apply (f : WeakDual 𝕜 E) (x : E) :
 
 instance isWeak : (pairing 𝕜 E).IsWeak where eq_induced := rfl
 
-/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
-multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
-instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
-  inferInstanceAs <| MulAction M (E →L[𝕜] 𝕜)
-
-instance (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : IsSMulApply M (WeakDual 𝕜 E) E 𝕜 where
-  smul_apply _ _ _ := rfl
-
-/-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
-multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
-instance instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
-    [ContinuousConstSMul M 𝕜] : DistribMulAction M (WeakDual 𝕜 E) :=
-  inferInstanceAs <| DistribMulAction M (E →L[𝕜] 𝕜)
-
 theorem coeFn_continuous : Continuous fun (x : WeakDual 𝕜 E) y => x y :=
   isWeak.coeFn_continuous _
 
@@ -160,7 +175,7 @@ theorem continuous_eval {α : Type*} [TopologicalSpace α] {f : α → WeakDual 
     (y : E) : Continuous fun x ↦ f x y :=
   isWeak.continuous_eval _ y |>.comp hf
 
-@[deprecated continuous_eval (since := "2026-06-15")]
+@[deprecated continuous_eval +typeChanged (since := "2026-10-30")]
 theorem eval_continuous (y : E) : Continuous fun x : WeakDual 𝕜 E => x y :=
   continuous_pi_iff.mp coeFn_continuous y
 
@@ -169,16 +184,21 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
     (h : ∀ y, Continuous fun a ↦ g a y) : Continuous g :=
   isWeak.continuous_of_continuous_eval _ h
 
-@[deprecated IsWeak.tendsto_iff_forall_eval_tendsto (since := "2026-06-15")]
+theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakDual 𝕜 E}
+    {x : WeakDual 𝕜 E} :
+    Tendsto f l (𝓝 x) ↔ ∀ y, Tendsto (fun i ↦ f i y) l (𝓝 (x y)) :=
+  isWeak.tendsto_iff_forall_eval_tendsto ContinuousLinearMap.coe_injective
+
+@[deprecated WeakDual.tendsto_iff_forall_eval_tendsto +typeChanged (since := "2026-10-30")]
 theorem _root_.tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
     {x : WeakDual 𝕜 E} :
     Tendsto f l (𝓝 x) ↔
       ∀ y, Tendsto (fun i => topDualPairing 𝕜 E (f i) y) l (𝓝 (topDualPairing 𝕜 E x y)) :=
-  isWeak.tendsto_iff_forall_eval_tendsto ContinuousLinearMap.coe_injective
+  tendsto_iff_forall_eval_tendsto
 
 instance instContinuousConstSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : ContinuousConstSMul M (WeakDual 𝕜 E) where
-  continuous_const_smul _ :=  continuous_of_continuous_eval <| by
+  continuous_const_smul _ := continuous_of_continuous_eval <| by
     simp only [_root_.smul_apply]; fun_prop
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
@@ -187,13 +207,6 @@ instance instContinuousSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommCl
     [TopologicalSpace M] [ContinuousSMul M 𝕜] : ContinuousSMul M (WeakDual 𝕜 E) where
   continuous_smul := continuous_of_continuous_eval <| by
     simp only [_root_.smul_apply]; fun_prop
-
-/-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
-multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
-instance (priority := 950) instModule'
-    (R : Type*) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
-    Module R (WeakDual 𝕜 E) :=
-  inferInstanceAs <| Module R (E →L[𝕜] 𝕜)
 
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
   isWeak.isEmbedding ContinuousLinearMap.coe_injective |>.t2Space
@@ -215,12 +228,12 @@ end Ring
 
 end WeakDual
 
-/-- The weak topology is the topology coarsest topology on `E` such that all functionals
+/-- The weak topology is the coarsest topology on `E` such that all functionals
 `fun x => v x` are continuous. -/
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
-deriving AddCommMonoid, TopologicalSpace, ContinuousAdd, Module 𝕜
+deriving TopologicalSpace
 
 section Semiring
 
@@ -228,12 +241,23 @@ variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
+-- The `SMul` instance exists to avoid an nsmul diamond.
+variable [CommSemiring 𝕝] [Module 𝕝 E] in
+deriving instance SMul 𝕝 for WeakSpace 𝕜 E
+
+deriving instance AddCommMonoid, ContinuousAdd for WeakSpace
+
+namespace WeakSpace
+
+instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
+  inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
+
+instance instModule : Module 𝕜 (WeakSpace 𝕜 E) := inferInstance
+
 variable (𝕜 E) in
 /-- There is a canonical map `E → WeakSpace 𝕜 E` (the "identity"
 mapping). It is a linear equivalence. -/
-def toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
-
-namespace WeakSpace
+def _root_.toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
 
 variable (𝕜 E) in
 /-- The canonical bilinear pairing between an element `x : WeakSpace 𝕜 E` and `f : StrongDual 𝕜 E`
@@ -267,9 +291,6 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {x : α → WeakSpac
 lemma continuous_toWeakSpace : Continuous (toWeakSpace 𝕜 E) :=
   continuous_of_continuous_eval fun f => by simp only [pairing_apply_toWeakSpace_apply]; fun_prop
 
-instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
-  inferInstanceAs <| Module 𝕝 (WeakBilin (topDualPairing 𝕜 E).flip)
-
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
   WeakBilin.instIsScalarTower (topDualPairing 𝕜 E).flip
@@ -291,7 +312,7 @@ theorem map_apply (f : E →L[𝕜] F) (x : E) :
   rfl
 
 @[deprecated map_apply "this lemma should not be used, it constitutes abuse of
-definitional equality" (since := "2026-06-15")]
+definitional equality" +typeChanged (since := "2026-10-30")]
 theorem coe_map (f : E →L[𝕜] F) : (WeakSpace.map f : E → F) = f :=
   rfl
 
@@ -309,7 +330,7 @@ theorem toWeakSpaceCLM_apply (x : E) :
     toWeakSpaceCLM 𝕜 E x = toWeakSpace 𝕜 E x :=
   rfl
 
-@[deprecated toWeakSpaceCLM_eq_toWeakSpace (since := "2026-06-15")]
+@[deprecated (since := "2026-10-30")]
 alias toWeakSpaceCLM_eq_toWeakSpace := toWeakSpaceCLM_apply
 
 theorem toWeakSpaceCLM_bijective :
@@ -339,7 +360,7 @@ instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
   inferInstanceAs <| AddCommGroup (WeakBilin (topDualPairing 𝕜 E).flip)
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (WeakSpace 𝕜 E) :=
-  WeakBilin.instIsTopologicalAddGroup (topDualPairing 𝕜 E).flip
+  isWeak.isTopologicalAddGroup _
 
 end WeakSpace
 

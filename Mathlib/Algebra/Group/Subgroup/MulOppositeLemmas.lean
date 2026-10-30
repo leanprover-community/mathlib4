@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Subgroup.MulOpposite
-public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Logic.Encodable.Basic
 
 /-!
@@ -107,7 +106,7 @@ theorem unop_iInf (S : ι → Subgroup Gᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i
 
 @[to_additive]
 theorem op_closure (s : Set G) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, Subgroup.coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, Subgroup.coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 

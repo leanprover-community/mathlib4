@@ -5,9 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
 /-! # Closures of convex sets in locally convex spaces
@@ -30,6 +28,7 @@ variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [LocallyConvexSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (𝕜) in
 /-- If `E` is a locally convex space over `𝕜` (with `RCLike 𝕜`), and `s : Set E` is `ℝ`-convex, then
 the closure of `s` and the weak closure of `s` coincide. More precisely, the topological closure
@@ -47,7 +46,7 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
   obtain ⟨f, u, hus, hux⟩ := RCLike.geometric_hahn_banach_closed_point (𝕜 := 𝕜)
     hs.closure isClosed_closure (by simpa using hx)
   let f' : StrongDual 𝕜 (WeakSpace 𝕜 E) :=
-    { toLinearMap := (f : E →ₗ[𝕜] 𝕜).comp (SemilinearMapClass.semilinearMap (toWeakSpace 𝕜 E).symm)
+    { toLinearMap := (f : E →ₗ[𝕜] 𝕜).comp ((toWeakSpace 𝕜 E).symm : WeakSpace 𝕜 E →ₗ[𝕜] E)
       cont := LinearMap.IsWeak.continuous_eval (WeakSpace.pairing 𝕜 E) _ }
   have hux' : u < RCLike.reCLM.comp (f'.restrictScalars ℝ) (toWeakSpace 𝕜 E x) := by simpa [f']
   have hus' : closure (toWeakSpace 𝕜 E '' s) ⊆
@@ -91,7 +90,7 @@ theorem LinearEquiv.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e :
     (he₂ : ∀ f : StrongDual 𝕜 E, Continuous (e.symm.dualMap f)) :
     e '' (closure s) = closure (e '' s) := by
   refine le_antisymm ((e : E →ₗ[𝕜] F).image_closure_of_convex hs he₁) ?_
-  simp only [Set.le_eq_subset, ← Set.image_subset_image_iff e.symm.injective]
+  simp only [← Set.image_subset_image_iff e.symm.injective]
   simpa [Set.image_image]
     using (e.symm : F →ₗ[𝕜] E).image_closure_of_convex (hs.linear_image (e : E →ₗ[𝕜] F)) he₂
 
@@ -117,7 +116,7 @@ theorem LinearEquiv.image_closure_of_convex' {s : Set E} (hs : Convex ℝ s) (e 
   · simpa [← he'] using fun f ↦ map_continuous (e_dual.symm f)
 
 /-- The weak topology on a space with separating dual itself has a separating dual. -/
-instance {R V : Type*} [CommRing R] [TopologicalSpace R] [T2Space R]
+instance {R V : Type*} [CommRing R] [TopologicalSpace R]
     [IsTopologicalAddGroup R] [ContinuousConstSMul R R] [AddCommGroup V] [Module R V]
     [TopologicalSpace V] [SeparatingDual R V] : SeparatingDual R (WeakSpace R V) where
   exists_ne_zero' x hx := by

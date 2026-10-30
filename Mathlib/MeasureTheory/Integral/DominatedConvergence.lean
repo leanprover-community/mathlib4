@@ -5,8 +5,8 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Patrick Massot, Louis (Yiyang) Liu
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
 
 /-!
@@ -90,7 +90,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖ₑ ∂μ ≠ ∞) :
     ∫ a, ∑' i, f i a ∂μ = ∑' i, ∫ a, f i a ∂μ := by
   by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
+  · simp [integral_of_not_completeSpace hG]
   simp only [integral_eq_setToFun]
   exact setToFun_tsum _ hf hf'
 
@@ -98,7 +98,7 @@ lemma hasSum_integral_of_summable_integral_norm {ι} [Countable ι] {F : ι → 
     (hF_int : ∀ i : ι, Integrable (F i) μ) (hF_sum : Summable fun i ↦ ∫ a, ‖F i a‖ ∂μ) :
     HasSum (∫ a, F · a ∂μ) (∫ a, (∑' i, F i a) ∂μ) := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE, hasSum_zero]
+  · simp [integral_of_not_completeSpace hE, hasSum_zero]
   rw [integral_tsum (fun i ↦ (hF_int i).1)]
   · exact (hF_sum.of_norm_bounded fun i ↦ norm_integral_le_integral_norm _).hasSum
   have (i : ι) : ∫⁻ a, ‖F i a‖ₑ ∂μ = ‖∫ a, ‖F i a‖ ∂μ‖ₑ := by
@@ -151,7 +151,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
     refine fun n => Eventually.of_forall fun x => ?_
-    grw [(h_anti zero_le).subset]
+    grw [h_anti zero_le]
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
 end TendstoMono
@@ -200,6 +200,21 @@ theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_of_continuousOn
   case h_lim =>
     exact .of_forall fun x hx ↦ h_lim.tendsto_at <| uIoc_subset_uIcc hx
 
+theorem _root_.TendstoUniformlyOn.tendsto_intervalIntegral_nhds_zero {l : Filter ι}
+    [IsLocallyFiniteMeasure μ]
+    {F : ι → ℝ → E} (h : TendstoUniformlyOn F 0 l [[a, b]]) :
+    Tendsto (fun i ↦ ∫ x in a..b, F i x ∂μ) l (𝓝 0) := by
+  set M := μ.real (Ι a b)
+  simp_rw [NormedAddGroup.tendsto_nhds_zero, norm_integral_eq_norm_integral_uIoc]
+  intro ε hε
+  filter_upwards [Metric.tendstoUniformlyOn_iff.mp h (ε / (M + 1)) (by positivity)] with i hi
+  calc ‖∫ x in Ι a b, F i x ∂μ‖
+      ≤ ε / (M + 1) * M := norm_setIntegral_le_of_norm_le_const measure_Ioc_lt_top
+        fun x hx ↦ by simpa using (hi x (uIoc_subset_uIcc hx)).le
+    _ < ε := by
+      rw [div_mul_eq_mul_div, div_lt_iff₀ (by positivity)]
+      exact mul_lt_mul_of_pos_left (lt_add_one M) hε
+
 /-- Lebesgue dominated convergence theorem for parametric interval integrals. -/
 nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
     (bound : ι → ℝ → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) (μ.restrict (Ι a b)))
@@ -221,7 +236,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
     (hf_sum : Summable fun i : ι => ‖(f i).restrict (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖) :
     HasSum (fun i : ι => ∫ x in a..b, f i x) (∫ x in a..b, ∑' i : ι, f i x) := by
   by_cases hE : CompleteSpace E; swap
-  · simp [intervalIntegral, integral, hE, hasSum_zero]
+  · simp [intervalIntegral, integral_of_not_completeSpace hE, hasSum_zero]
   apply hasSum_integral_of_dominated_convergence
     (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
     (fun i => (map_continuous <| f i).aestronglyMeasurable)

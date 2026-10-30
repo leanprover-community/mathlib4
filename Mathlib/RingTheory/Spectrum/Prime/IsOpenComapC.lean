@@ -5,10 +5,11 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
+# `Spec R[X] → Spec R` is an open map
+
 The morphism `Spec R[x] --> Spec R` induced by the natural inclusion `R --> R[x]` is an open map.
 
 The main result is the first part of the statement of Lemma 00FB in the Stacks Project.
@@ -36,7 +37,7 @@ def imageOfDf (f : R[X]) : Set (PrimeSpectrum R) :=
   { p : PrimeSpectrum R | ∃ i : ℕ, coeff f i ∉ p.asIdeal }
 
 theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
-  rw [imageOfDf, setOf_exists fun i (x : PrimeSpectrum R) => coeff f i ∉ x.asIdeal]
+  rw [imageOfDf, ofPred_exists fun i (x : PrimeSpectrum R) => coeff f i ∉ x.asIdeal]
   exact isOpen_iUnion fun i => isOpen_basicOpen
 
 /-- If a point of `Spec R[x]` is not contained in the vanishing set of `f`, then its image in

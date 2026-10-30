@@ -5,10 +5,9 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Data.Set.Lattice
 
 /-!
 # Character space of a topological algebra
@@ -56,6 +55,7 @@ section NonUnitalNonAssocSemiring
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
   [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A]
 
+@[macro_inline]
 noncomputable instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
   coe_injective φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
@@ -103,6 +103,7 @@ noncomputable def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[�
 theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgHom φ) = φ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
   ⟨fun φ => φ.prop.1 <|
     ContinuousLinearMap.ext fun x => by
@@ -121,11 +122,11 @@ theorem union_zero :
 /-- The `characterSpace 𝕜 A` along with `0` is always a closed set in `WeakDual 𝕜 A`. -/
 theorem union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A ∪ {0}) := by
-  simp only [union_zero, Set.setOf_forall]
+  simp only [union_zero, Set.ofPred_forall]
   exact
     isClosed_iInter fun x =>
       isClosed_iInter fun y =>
-        isClosed_eq (eval_continuous _) <| (eval_continuous _).mul (eval_continuous _)
+        isClosed_eq (by fun_prop) (by fun_prop)
 
 end NonUnitalNonAssocSemiring
 
@@ -171,8 +172,8 @@ theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
 `WeakDual 𝕜 A`. -/
 protected theorem isClosed [Nontrivial 𝕜] [T2Space 𝕜] [ContinuousMul 𝕜] :
     IsClosed (characterSpace 𝕜 A) := by
-  rw [eq_set_map_one_map_mul, Set.setOf_and]
-  refine IsClosed.inter (isClosed_eq (eval_continuous _) continuous_const) ?_
+  rw [eq_set_map_one_map_mul, Set.ofPred_and]
+  refine IsClosed.inter (isClosed_eq (by fun_prop) continuous_const) ?_
   simpa only [(union_zero 𝕜 A).symm] using union_zero_isClosed _ _
 
 end Unital
@@ -220,7 +221,7 @@ The character space itself consists of all algebra homomorphisms from `A` to `�
 noncomputable def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
   toFun a :=
     { toFun := fun φ => φ a
-      continuous_toFun := (eval_continuous a).comp continuous_induced_dom }
+      continuous_toFun := continuous_eval continuous_induced_dom a }
   map_one' := by ext a; simp only [coe_mk, coe_one, Pi.one_apply, map_one a]
   map_mul' a b := by ext; simp only [map_mul, coe_mk, coe_mul, Pi.mul_apply]
   map_zero' := by ext; simp only [map_zero, coe_mk, coe_zero, Pi.zero_apply]

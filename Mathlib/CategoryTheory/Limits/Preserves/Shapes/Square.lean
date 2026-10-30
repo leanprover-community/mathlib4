@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
-public import Mathlib.CategoryTheory.Limits.Yoneda
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Preservation of pullback/pushout squares
@@ -91,6 +89,7 @@ variable {sq₁ : Square (Type v)} {sq₂ : Square (Type u)}
   (comm₃₄ : e₄ ∘ sq₁.f₃₄ = sq₂.f₃₄ ∘ e₃)
 include comm₁₂ comm₁₃ comm₂₄ comm₃₄
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable (sq₁ sq₂) in
 lemma IsPullback.iff_of_equiv : sq₁.IsPullback ↔ sq₂.IsPullback := by
@@ -103,10 +102,10 @@ lemma IsPullback.iff_of_equiv : sq₁.IsPullback ↔ sq₂.IsPullback := by
     (((Equiv.trans Equiv.ulift e₄).trans Equiv.ulift.symm).toIso)
     ?_ ?_ ?_ ?_)
   all_goals ext; apply ULift.down_injective
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₁₂ _
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₁₃ _
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₂₄ _
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₃₄ _
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₁₂ _)
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₁₃ _)
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₂₄ _)
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₃₄ _)
 
 lemma IsPullback.of_equiv (h₁ : sq₁.IsPullback) : sq₂.IsPullback :=
   (iff_of_equiv sq₁ sq₂ e₁ e₂ e₃ e₄ comm₁₂ comm₁₃ comm₂₄ comm₃₄).1 h₁

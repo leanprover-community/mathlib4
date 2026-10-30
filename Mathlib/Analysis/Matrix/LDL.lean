@@ -22,11 +22,7 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 ## Main result
 
 * `LDL.lower_conj_diag` states that any positive definite matrix can be decomposed as `LDLᴴ`.
-
-## TODO
-
-* Prove that `LDL.lower` is lower triangular from `LDL.lowerInv_triangular`.
-
+* `LDL.isLowerTriangular_lower` states that `L` is lower triangular.
 -/
 
 @[expose] public section
@@ -34,7 +30,7 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 open Module
 
 variable {𝕜 : Type*} [RCLike 𝕜]
-variable {n : Type*} [LinearOrder n] [WellFoundedLT n] [LocallyFiniteOrderBot n]
+variable {n : Type*} [LinearOrder n] [LocallyFiniteOrderBot n]
 
 section set_options
 
@@ -52,15 +48,15 @@ applying Gram-Schmidt-Orthogonalization w.r.t. the inner product induced by `S�
 basis vectors `Pi.basisFun`. -/
 noncomputable def LDL.lowerInv : Matrix n n 𝕜 :=
   @gramSchmidt 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
-    (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ (Pi.basisFun 𝕜 n)
+    (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ (Pi.basisFun 𝕜 n)
 
 theorem LDL.lowerInv_eq_gramSchmidtBasis :
     LDL.lowerInv hS =
       ((Pi.basisFun 𝕜 n).toMatrix
           (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
-            (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ (Pi.basisFun 𝕜 n)))ᵀ := by
-  letI := (Sᵀ.toNormedAddCommGroup hS.transpose)
-  letI := (Sᵀ.toInnerProductSpace hS.transpose.posSemidef)
+            (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ (Pi.basisFun 𝕜 n)))ᵀ := by
+  let := (Sᵀ.toNormedAddCommGroup hS.transpose)
+  let := (Sᵀ.toInnerProductSpace hS.transpose.posSemidef)
   ext i j
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
   rfl
@@ -70,13 +66,13 @@ noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := 
   haveI :=
     Basis.invertibleToMatrix (Pi.basisFun 𝕜 n)
       (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
-        (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ (Pi.basisFun 𝕜 n))
+        (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ (Pi.basisFun 𝕜 n))
   infer_instance
 
 theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
     ⟪LDL.lowerInv hS i, Sᵀ *ᵥ LDL.lowerInv hS j⟫ₑ = 0 :=
   @gramSchmidt_orthogonal 𝕜 _ _ (Sᵀ.toNormedAddCommGroup hS.transpose)
-    (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) _ _ _ _ _ _ _ h₀
+    (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) _ _ _ _ _ _ h₀
 
 /-- The entries of the diagonal matrix `D` of the LDL decomposition. -/
 noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
@@ -86,9 +82,11 @@ noncomputable def LDL.diagEntries : n → 𝕜 := fun i =>
 noncomputable def LDL.diag : Matrix n n 𝕜 :=
   Matrix.diagonal (LDL.diagEntries hS)
 
-theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
+theorem LDL.isLowerTriangular_lowerInv : (LDL.lowerInv hS).IsLowerTriangular := by
+  intro i j hij
+  simp only [OrderDual.toDual_lt_toDual] at hij
   rw [← @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
-      (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ i j hij (Pi.basisFun 𝕜 n),
+      (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ i j hij (Pi.basisFun 𝕜 n),
     Pi.basisFun_repr, LDL.lowerInv]
 
 /-- Inverse statement of **LDL decomposition**: we can conjugate a positive definite matrix
@@ -109,6 +107,9 @@ theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.low
 /-- The lower triangular matrix `L` of the LDL decomposition. -/
 noncomputable def LDL.lower :=
   (LDL.lowerInv hS)⁻¹
+
+theorem LDL.isLowerTriangular_lower : (LDL.lower hS).IsLowerTriangular :=
+  blockTriangular_inv_of_blockTriangular (isLowerTriangular_lowerInv hS)
 
 /-- **LDL decomposition**: any positive definite matrix `S` can be
 decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix. -/

@@ -199,6 +199,9 @@ theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegre
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
     (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
 
+theorem coeff_neg_of_eq {n : ℕ} {a : R} {f : R[X]} (hf : f.coeff n = a) :
+    (-f).coeff n = -a := by subst hf; apply coeff_neg
+
 theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
   simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
 
@@ -241,7 +244,12 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
   let (ndeg_or_deg_or_coeff, pol, and?) ← match lhs.getAppFnArgs with
     | (na@``Polynomial.natDegree, #[_, _, pol])     => (na, pol, [rhs.isMVar])
     | (na@``Polynomial.degree,    #[_, _, pol])     => (na, pol, [rhs.isMVar])
-    | (na@``Polynomial.coeff,     #[_, _, pol, c])  => (na, pol, [rhs.isMVar, c.isMVar])
+    -- Since `Polynomial.coeff` returns a `Finsupp`, `coeff p n` is the `DFunLike.coe` of the
+    -- `Finsupp` `coeff p` applied to `n`.
+    | (``DFunLike.coe, #[_, _, _, _, cf, c]) =>
+      match cf.getAppFnArgs with
+        | (``Polynomial.coeff, #[_, _, pol]) => (``Polynomial.coeff, pol, [rhs.isMVar, c.isMVar])
+        | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
     | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
   let head := match pol.numeral? with
     -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
@@ -347,7 +355,7 @@ def dispatchLemma
         | .inr ``HPow.hPow =>
           π ``natDegree_pow_le_of_le ``degree_pow_le_of_le ``coeff_pow_of_natDegree_le_of_eq_ite'
         | .inr ``Neg.neg =>
-          π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``coeff_neg
+          π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``coeff_neg_of_eq
         | .inr ``Polynomial.X =>
           π ``natDegree_X_le ``degree_X_le ``coeff_X
         | .inr ``Nat.cast =>
@@ -411,7 +419,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
     return dispatchLemma (twoHeadsArgs (← mv.getType'')) != ``id
   let progress ← can_progress.mapM fun mv => do
     let lem := dispatchLemma <| twoHeadsArgs (← mv.getType'')
-    mv.applyConst <| lem
+    mv.applyConst lem
   return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
@@ -530,7 +538,7 @@ end Tactic
 end Mathlib.Tactic.ComputeDegree
 
 /-!
- We register `compute_degree` with the `hint` tactic.
- -/
+We register `compute_degree` with the `hint` tactic.
+-/
 register_hint 1000 compute_degree
 register_try?_tactic (priority := 1000) compute_degree

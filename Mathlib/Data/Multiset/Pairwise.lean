@@ -5,8 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Multiset.Defs
+
+import Mathlib.Data.List.Pairwise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pairwise relations on a multiset

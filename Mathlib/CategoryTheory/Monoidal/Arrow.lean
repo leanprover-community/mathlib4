@@ -6,8 +6,9 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
-public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
+
+import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 
 /-!
 # Monoidal structure on the arrow category of a cartesian closed category.
@@ -27,7 +28,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Limits MonoidalCategory Functor PushoutObjObj
+open Limits MonoidalCategory CategoryTheory.Functor PushoutObjObj
 
 variable {C : Type u} [Category.{v} C]
 
@@ -52,6 +53,7 @@ scoped instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [Mo
 variable [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
   [BraidedCategory C]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Arrow C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
@@ -80,14 +82,12 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C}
       simp [← whisker_exchange_assoc, reassoc_of% this]
     cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_naturality {X Y : Arrow C} (f : X ⟶ Y) :
     𝟙_ _ ◁ f ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   refine Arrow.hom_ext _ _ (pushout.hom_ext (by simp) ?_) (by simp)
   apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor_naturality {X Y : Arrow C} (f : X ⟶ Y) :
     f ▷ 𝟙_ _ ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
@@ -114,6 +114,7 @@ lemma triangle (X Y : Arrow C) :
     exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
   · simp [← comp_whiskerRight_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The monoidal category instance induced by the pushout-product. -/
 scoped instance : MonoidalCategory (Arrow C) where
   tensorHom_comp_tensorHom := tensorHom_comp_tensorHom
@@ -149,7 +150,6 @@ scoped instance braidedCategory : BraidedCategory (Arrow C) where
   hexagon_reverse := hexagon_reverse
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] braidedCategory_braiding in
 /-- The symmetric category instance induced by the pushout-product. -/
 @[simps! -isSimp]

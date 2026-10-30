@@ -5,9 +5,7 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 
@@ -143,7 +141,7 @@ theorem unop_iInf (S : ι → Subsemiring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
@@ -157,14 +155,12 @@ def addEquivOp (S : Subsemiring R) : S ≃+ S.op where
   toEquiv := S.toSubmonoid.equivOp
   map_add' _ _ := rfl
 
--- TODO: Add this for `[Add]Submonoid` and `[Add]Subgroup`
 /-- Bijection between a subsemiring `S` and `MulOpposite` of its opposite. -/
 @[simps!]
 def ringEquivOpMop (S : Subsemiring R) : S ≃+* (S.op)ᵐᵒᵖ where
   __ := S.addEquivOp.trans MulOpposite.opAddEquiv
   map_mul' _ _ := rfl
 
--- TODO: Add this for `[Add]Submonoid` and `[Add]Subgroup`
 /-- Bijection between `MulOpposite` of a subsemiring `S` and its opposite. -/
 @[simps!]
 def mopRingEquivOp (S : Subsemiring R) : Sᵐᵒᵖ ≃+* S.op where

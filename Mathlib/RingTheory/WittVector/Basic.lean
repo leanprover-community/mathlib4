@@ -71,14 +71,14 @@ def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff
 namespace mapFun
 
 theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) :=
-  fun _ _ h => ext fun n => hf (congr_arg (fun x => coeff x n) h :)
+  fun _ _ h => ext fun n => hf congr(coeff $h n)
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
-macro "map_fun_tac" : tactic => `(tactic| (
+local macro "map_fun_tac" : tactic => `(tactic| (
   -- TODO: the Lean 3 version of this tactic was more functional
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
@@ -240,8 +240,6 @@ private local instance comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.natCast _) (mapFun.intCast _)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The commutative ring structure on `𝕎 R`. -/
 instance : CommRing (𝕎 R) :=
   (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)

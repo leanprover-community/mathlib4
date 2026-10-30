@@ -5,14 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Measure.EverywherePos
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
-public import Mathlib.Topology.Metrizable.Urysohn
 public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.Topology.Metrizable.Urysohn
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
@@ -69,7 +67,7 @@ the measures but discarding the assumption that they are finite on compact sets.
 
 @[expose] public section
 
-open Filter Set TopologicalSpace Function MeasureTheory Measure
+open Filter Set TopologicalSpace Function MeasureTheory
 open scoped Uniformity Topology ENNReal Pointwise NNReal
 
 namespace MeasureTheory
@@ -77,7 +75,9 @@ namespace MeasureTheory
 /-- The parameterized integral `x ↦ ∫ y, g (y⁻¹ * x) ∂μ` depends continuously on `y` when `g` is a
 compactly supported continuous function on a topological group `G`, and `μ` is finite on compact
 sets. -/
-@[to_additive]
+@[to_additive /-- The parameterized integral `x ↦ ∫ y, g (-y + x) ∂μ` depends continuously on `y`
+when `g` is a compactly supported continuous function on a topological additive group `G`, and `μ`
+is finite on compact sets. -/]
 lemma continuous_integral_apply_inv_mul
     {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [IsTopologicalGroup G]
     [MeasurableSpace G] [BorelSpace G]
@@ -123,7 +123,10 @@ measures will give the same integral, up to some fixed scalar.
 integrals with respect to `μ` as integrals with respect to `ν` up to a constant scaling factor
 (given in the statement as `∫ x, g x ∂μ` where `g` is a fixed reference function) and an
 explicit density `y ↦ 1/∫ z, g (z⁻¹ * y) ∂ν`. -/
-@[to_additive]
+@[to_additive /-- In an additive group with a left invariant measure `μ` and a right invariant
+measure `ν`, one can express integrals with respect to `μ` as integrals with respect to `ν` up to a
+constant scaling factor (given in the statement as `∫ x, g x ∂μ` where `g` is a fixed reference
+function) and an explicit density `y ↦ 1/∫ z, g (-z + y) ∂ν`. -/]
 lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
     {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν]
     [IsMulLeftInvariant μ] [IsMulRightInvariant ν] [IsOpenPosMeasure ν]
@@ -217,7 +220,10 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
 /-- Given two left-invariant measures which are finite on
 compacts, they coincide in the following sense: they give the same value to the integral of
 continuous compactly supported functions, up to a multiplicative constant. -/
-@[to_additive exists_integral_isAddLeftInvariant_eq_smul_of_hasCompactSupport]
+@[to_additive exists_integral_isAddLeftInvariant_eq_smul_of_hasCompactSupport
+/-- Given two left-invariant measures which are finite on
+compacts, they coincide in the following sense: they give the same value to the integral of
+continuous compactly supported functions, up to a multiplicative constant. -/]
 lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : Measure G)
     [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] :
     ∃ (c : ℝ≥0), ∀ (f : G → ℝ), Continuous f → HasCompactSupport f →
@@ -232,7 +238,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
     ∃ (g : C(G, ℝ)), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
   have int_g_pos : 0 < ∫ x, g x ∂μ :=
-    g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one
+    g_cont.integral_pos_of_hasCompactSupport_nonneg_ne_zero g_comp g_nonneg g_one
   -- The proportionality constant we are looking for will be the ratio of the integrals of `g`
   -- with respect to `μ'` and `μ`.
   let c : ℝ := (∫ x, g x ∂μ)⁻¹ * (∫ x, g x ∂μ')
@@ -288,7 +294,6 @@ theorem integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f) :
     ∫ x, f x ∂μ' = ∫ x, f x ∂(haarScalarFactor μ' μ • μ) := by
-  classical
   rcases h'f.eq_zero_or_locallyCompactSpace_of_group hf with Hf | Hf
   · simp [Hf]
   · simp only [haarScalarFactor, Hf, not_true_eq_false, ite_false]
@@ -312,7 +317,7 @@ lemma haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos
     haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
   obtain ⟨f_comp, f_nonneg, f_one⟩ := hf
   have int_f_ne_zero : ∫ (x : G), f x ∂μ ≠ 0 :=
-    ne_of_gt (f.2.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_one)
+    ne_of_gt (f.2.integral_pos_of_hasCompactSupport_nonneg_ne_zero f_comp f_nonneg f_one)
   exact haarScalarFactor_eq_integral_div _ _ f.2 f_comp int_f_ne_zero
 
 @[to_additive (attr := simp) addHaarScalarFactor_smul]
@@ -363,7 +368,7 @@ lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
   · simp [haarScalarFactor, hG]
   obtain ⟨g, hg⟩ := exists_continuous_nonneg_pos (1 : G)
   have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
-    ne_of_gt (g.2.integral_pos_of_hasCompactSupport_nonneg_nonzero hg.1 hg.2.1 hg.2.2)
+    ne_of_gt (g.2.integral_pos_of_hasCompactSupport_nonneg_ne_zero hg.1 hg.2.1 hg.2.2)
   apply NNReal.coe_injective
   calc
     haarScalarFactor μ μ = (∫ x, g x ∂μ) / ∫ x, g x ∂μ :=
@@ -400,7 +405,7 @@ lemma haarScalarFactor_map (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasur
   · simp [haarScalarFactor, hG]
   obtain ⟨⟨f, f_cont⟩, hf⟩ := exists_continuous_nonneg_pos (1 : G)
   have int_f_ne_zero : ∫ (x : G), f x ∂(map φ μ) ≠ 0 :=
-    ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero hf.1 hf.2.1 hf.2.2)
+    ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_ne_zero hf.1 hf.2.1 hf.2.2)
   rw [← NNReal.coe_inj, haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hf,
     haarScalarFactor_eq_integral_div μ' μ (f_cont.comp φ.continuous),
     integral_map (by fun_prop) (by fun_prop),
@@ -412,7 +417,8 @@ lemma haarScalarFactor_map (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasur
 
 /-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
-@[to_additive]
+@[to_additive /-- The scalar factor between two left-invariant measures is non-zero when both
+measures are positive on open sets. -/]
 lemma haarScalarFactor_pos_of_isHaarMeasure (μ' μ : Measure G) [IsHaarMeasure μ]
     [IsHaarMeasure μ'] : 0 < haarScalarFactor μ' μ :=
   pos_iff_ne_zero.2 (fun H ↦ by simpa [H] using haarScalarFactor_eq_mul μ' μ μ')
@@ -556,7 +562,7 @@ lemma smul_measure_isMulInvariant_le_of_isCompact_closure [LocallyCompactSpace G
   obtain ⟨-, hf, ⟨f, f_cont, f_comp, rfl⟩, νf⟩ :
       ∃ K ⊆ s, (∃ f, Continuous f ∧ HasCompactSupport f ∧ K = f ⁻¹' {1}) ∧ r < ν K :=
     innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group ⟨hs, this⟩ r
-      (by convert! hr)
+      (by convert hr)
   calc
   r < ν (f ⁻¹' {1}) := νf
   _ = μ' (f ⁻¹' {1}) :=
@@ -664,7 +670,9 @@ theorem measure_isMulInvariant_eq_smul_of_isCompact_closure [LocallyCompactSpace
 
 /-- **Uniqueness of Haar measures**:
 Two Haar measures on a compact group coincide up to a multiplicative factor. -/
-@[to_additive isAddInvariant_eq_smul_of_compactSpace]
+@[to_additive isAddInvariant_eq_smul_of_compactSpace
+/-- **Uniqueness of additive Haar measures**:
+Two additive Haar measures on a compact additive group coincide up to a multiplicative factor. -/]
 lemma isMulInvariant_eq_smul_of_compactSpace [CompactSpace G] (μ' μ : Measure G)
     [IsHaarMeasure μ] [IsMulLeftInvariant μ'] [IsFiniteMeasureOnCompacts μ'] :
     μ' = haarScalarFactor μ' μ • μ := by
@@ -687,7 +695,8 @@ instance (priority := 100) instRegularOfIsHaarMeasureOfCompactSpace
 
 /-- **Uniqueness of Haar measures**:
 Two Haar measures which are probability measures coincide. -/
-@[to_additive]
+@[to_additive /-- **Uniqueness of additive Haar measures**:
+Two additive Haar measures which are probability measures coincide. -/]
 lemma isHaarMeasure_eq_of_isProbabilityMeasure [LocallyCompactSpace G] (μ' μ : Measure G)
     [IsProbabilityMeasure μ] [IsProbabilityMeasure μ'] [IsHaarMeasure μ] [IsHaarMeasure μ'] :
     μ' = μ := by
@@ -733,7 +742,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     refine ⟨⋃ a ∈ c, a, ⟨?_, ?_⟩, ?_⟩
     · simp only [iUnion_subset_iff]
       intro a ac x hx
-      simp only [A, subset_def, mem_setOf_eq] at cA
+      simp only [A, subset_def, mem_ofPred_eq] at cA
       exact (cA _ ac).1 x hx
     · rintro x hx y hy hxy
       simp only [mem_iUnion, exists_prop] at hx hy
@@ -831,7 +840,11 @@ Given two left-invariant measures which are finite on
 compacts and inner regular for finite measure sets with respect to compact sets,
 they coincide in the following sense: they give the same value to finite measure sets,
 up to a multiplicative constant. -/
-@[to_additive]
+@[to_additive /-- **Uniqueness of left-invariant measures**:
+Given two left-invariant measures which are finite on
+compacts and inner regular for finite measure sets with respect to compact sets,
+they coincide in the following sense: they give the same value to finite measure sets,
+up to a multiplicative constant. -/]
 lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ'] {s : Set G}
@@ -869,7 +882,10 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top [LocallyCompactSpace G]
 /-- **Uniqueness of left-invariant measures**:
 Given two left-invariant measures which are finite
 on compacts and inner regular, they coincide up to a multiplicative constant. -/
-@[to_additive isAddLeftInvariant_eq_smul_of_innerRegular]
+@[to_additive isAddLeftInvariant_eq_smul_of_innerRegular
+/-- **Uniqueness of left-invariant measures**:
+Given two left-invariant measures which are finite
+on compacts and inner regular, they coincide up to a multiplicative constant. -/]
 lemma isMulLeftInvariant_eq_smul_of_innerRegular [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
     [InnerRegular μ] [InnerRegular μ'] :
@@ -883,7 +899,10 @@ lemma isMulLeftInvariant_eq_smul_of_innerRegular [LocallyCompactSpace G]
 /-- **Uniqueness of left-invariant measures**:
 Given two left-invariant measures which are finite
 on compacts and regular, they coincide up to a multiplicative constant. -/
-@[to_additive isAddLeftInvariant_eq_smul_of_regular]
+@[to_additive isAddLeftInvariant_eq_smul_of_regular
+/-- **Uniqueness of left-invariant measures**:
+Given two left-invariant measures which are finite
+on compacts and regular, they coincide up to a multiplicative constant. -/]
 lemma isMulLeftInvariant_eq_smul_of_regular [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsMulLeftInvariant μ'] [Regular μ] [Regular μ'] :
     μ' = haarScalarFactor μ' μ • μ := by
@@ -897,7 +916,9 @@ lemma isMulLeftInvariant_eq_smul_of_regular [LocallyCompactSpace G]
 
 /-- **Uniqueness of left-invariant measures**:
 Two Haar measures coincide up to a multiplicative constant in a second countable group. -/
-@[to_additive isAddLeftInvariant_eq_smul]
+@[to_additive isAddLeftInvariant_eq_smul
+/-- **Uniqueness of left-invariant measures**:
+Two additive Haar measures coincide up to a multiplicative constant in a second countable group. -/]
 lemma isMulLeftInvariant_eq_smul [LocallyCompactSpace G] [SecondCountableTopology G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ'] :
     μ' = haarScalarFactor μ' μ • μ :=
@@ -964,7 +985,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
   let c : ℝ≥0∞ := haarScalarFactor μ.inv μ
   have hc : μ.inv = c • μ := isMulLeftInvariant_eq_smul_of_regular μ.inv μ
   have : map Inv.inv (map Inv.inv μ) = c ^ 2 • μ := by
-    rw [← inv_def μ, hc, Measure.map_smul, ← inv_def μ, hc, smul_smul, pow_two]
+    rw [← inv_def μ, hc, Measure.map_smul _ (by fun_prop), ← inv_def μ, hc, smul_smul, pow_two]
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
     simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]
@@ -990,7 +1011,7 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
   let c : ℝ≥0∞ := haarScalarFactor μ.inv μ
   have hc : μ.inv = c • μ := isMulLeftInvariant_eq_smul_of_innerRegular μ.inv μ
   have : map Inv.inv (map Inv.inv μ) = c ^ 2 • μ := by
-    rw [← inv_def μ, hc, Measure.map_smul, ← inv_def μ, hc, smul_smul, pow_two]
+    rw [← inv_def μ, hc, Measure.map_smul _ (by fun_prop), ← inv_def μ, hc, smul_smul, pow_two]
   have μeq : μ = c ^ 2 • μ := by
     rw [map_map continuous_inv.measurable continuous_inv.measurable] at this
     simpa only [inv_involutive, Involutive.comp_self, Measure.map_id]
@@ -1030,14 +1051,14 @@ lemma addHaarScalarFactor_domSMul (g : Gᵈᵐᵃ) :
   obtain ⟨⟨f, f_cont⟩, f_comp, f_nonneg, f_zero⟩ :
     ∃ f : C(A, ℝ), HasCompactSupport f ∧ 0 ≤ f ∧ f 0 ≠ 0 := exists_continuous_nonneg_pos 0
   have int_f_ne_zero : ∫ x, f x ∂g • ν ≠ 0 :=
-    (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_zero).ne'
+    (f_cont.integral_pos_of_hasCompactSupport_nonneg_ne_zero f_comp f_nonneg f_zero).ne'
   apply NNReal.coe_injective
   rw [addHaarScalarFactor_eq_integral_div (g • μ) (g • ν) f_cont f_comp int_f_ne_zero,
     integral_domSMul, integral_domSMul]
   refine (addHaarScalarFactor_eq_integral_div _ _ (by fun_prop) ?_ ?_).symm
   · exact f_comp.comp_isClosedEmbedding (Homeomorph.smul _).isClosedEmbedding
   · rw [← integral_domSMul]
-    exact (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_zero).ne'
+    exact (f_cont.integral_pos_of_hasCompactSupport_nonneg_ne_zero f_comp f_nonneg f_zero).ne'
 
 variable (μ) in
 lemma addHaarScalarFactor_smul_congr (g : Gᵈᵐᵃ) :

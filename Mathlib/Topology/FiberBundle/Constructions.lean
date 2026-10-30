@@ -29,7 +29,7 @@ fiber bundle, fibre bundle, fiberwise product, pullback
 
 @[expose] public section
 
-open Bundle Filter Set TopologicalSpace Topology
+open Bundle Set TopologicalSpace Topology
 
 /-! ### The trivial bundle -/
 
@@ -65,6 +65,7 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   proj_toFun _ _ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma trivialization_symm_apply [Zero F] (b : B) (f : F) :
     (trivialization B F).symm b f = f := by
   simp [trivialization, homeomorphProd, TotalSpace.toProd, Trivialization.symm,
@@ -202,7 +203,7 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   left_inv' _ := Prod.left_inv
   right_inv' _ := Prod.right_inv
   open_source := by
-    convert!
+    convert
       (e₁.open_source.prod e₂.open_source).preimage
         (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
     ext x
@@ -221,7 +222,7 @@ theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
 
 end Bundle.Trivialization
 
-open Bundle Trivialization
+open Bundle
 
 variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSpace (E₁ x)]
   [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
@@ -263,31 +264,26 @@ instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f 
 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)]
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
-/-- Definition of `Pullback.TotalSpace.topologicalSpace`, which we make irreducible. -/
-irreducible_def pullbackTopology : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
+/-- The topology on the total space of a pullback bundle is the coarsest topology for which both
+the projections to the base and the map to the original bundle are continuous. -/
+@[no_expose]
+instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
   induced TotalSpace.proj ‹TopologicalSpace B'› ⊓
     induced (Pullback.lift f) ‹TopologicalSpace (TotalSpace F E)›
 
-/-- The topology on the total space of a pullback bundle is the coarsest topology for which both
-the projections to the base and the map to the original bundle are continuous. -/
-instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
-  pullbackTopology F E f
-
 theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace]
   exact inf_le_left
 
 theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F E B' f) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace]
   exact inf_le_right
 
 theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     IsInducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
   constructor
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
-    Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+    Pullback.TotalSpace.topologicalSpace]
   rfl
 
 section FiberBundle
@@ -297,12 +293,13 @@ variable [TopologicalSpace F] [TopologicalSpace B]
 theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     {f : B' → B} {x : B'} : Continuous (@TotalSpace.mk _ F (f *ᵖ E) x) := by
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
-    induced_inf, Function.comp_def, induced_const, top_inf_eq, pullbackTopology_def]
+    induced_inf, Function.comp_def, induced_const, top_inf_eq]
   exact (FiberBundle.totalSpaceMk_isInducing F E (f x)).eq_induced.le
 
 variable {E F}
 variable [∀ _b, Nonempty (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 @[simps]
 noncomputable def Bundle.Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :

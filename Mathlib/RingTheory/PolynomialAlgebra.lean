@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.IsTensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change of polynomial algebras
 
@@ -67,7 +70,7 @@ theorem toFunLinear_tmul_apply (a : A) (p : R[X]) :
 -- in order to successfully rewrite by this lemma.
 theorem toFunLinear_mul_tmul_mul_aux_1 (p : R[X]) (k : ℕ) (h : Decidable ¬p.coeff k = 0) (a : A) :
     ite (¬coeff p k = 0) (a * (algebraMap R A) (coeff p k)) 0 =
-    a * (algebraMap R A) (coeff p k) := by classical split_ifs <;> simp [*]
+    a * (algebraMap R A) (coeff p k) := by split_ifs <;> simp [*]
 
 theorem toFunLinear_mul_tmul_mul_aux_2 (k : ℕ) (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     a₁ * a₂ * (algebraMap R A) ((p₁ * p₂).coeff k) =
@@ -126,8 +129,7 @@ theorem invFun_monomial (n : ℕ) (a : A) :
   eval₂_monomial _ _
 
 theorem left_inv (x : A ⊗ R[X]) : invFun R A ((toFunAlgHom R A) x) = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp [invFun]
+  refine TensorProduct.inductionOn x ?_ ?_
   · intro a p
     dsimp only [invFun]
     rw [toFunAlgHom_apply_tmul, eval₂_sum]

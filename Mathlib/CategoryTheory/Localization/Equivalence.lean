@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Localization functors are preserved through equivalences
@@ -108,7 +108,7 @@ lemma of_equivalences (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L�
     (E : C₁ ≌ C₂) (E' : D₁ ≌ D₂) [CatCommSq E.functor L₁ L₂ E'.functor]
     (hW₁ : W₁ ≤ W₂.isoClosure.inverseImage E.functor) (hW₂ : W₂.IsInvertedBy L₂) :
     L₂.IsLocalization W₂ := by
-  haveI : (E.functor ⋙ L₂).IsLocalization W₁ :=
+  have : (E.functor ⋙ L₂).IsLocalization W₁ :=
     of_equivalence_target L₁ W₁ _ E' ((CatCommSq.iso _ _ _ _).symm)
   exact of_equivalence_source (E.functor ⋙ L₂) W₁ L₂ W₂ E hW₁ hW₂ (Iso.refl _)
 

@@ -5,10 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.Finsupp.Span
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!
@@ -51,7 +49,7 @@ weak dual, seminorm
 
 variable {𝕜 E F : Type*}
 
-open Topology
+open scoped Topology
 
 section BilinForm
 
@@ -89,14 +87,15 @@ theorem toSeminormFamily_apply {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {x y} : 
   rfl
 
 lemma dualEmbedding_injective_of_separatingRight (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) (hr : B.SeparatingRight) :
-    Function.Injective (WeakBilin.eval B) :=
+    Function.Injective (IsWeak.eval (WeakBilin.pairing B)) :=
   (injective_iff_map_eq_zero _).mpr (fun f hf ↦
     (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
 
 variable {ι 𝕜 E F : Type*}
 
-open Topology TopologicalSpace
-open scoped NNReal
+open TopologicalSpace
+
+open scoped Topology NNReal
 
 section
 
@@ -137,18 +136,18 @@ functionals. -/
 theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     Continuous[⨅ i, induced (f i) inferInstance, inferInstance] φ := by
-  letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
-  letI t₁ : TopologicalSpace E := ⨅ i, induced (f i) t𝕜
-  letI t₂ (s : Finset ι) : TopologicalSpace E := ⨅ i : s, induced (f i) t𝕜
+  let t𝕜 : TopologicalSpace 𝕜 := inferInstance
+  let t₁ : TopologicalSpace E := ⨅ i, induced (f i) t𝕜
+  let t₂ (s : Finset ι) : TopologicalSpace E := ⨅ i : s, induced (f i) t𝕜
   suffices
       Continuous[t₁, t𝕜] φ ↔ ∃ s : Finset ι, Continuous[t₂ s, t𝕜] φ by
     simp_rw [this, ← mem_span_iff_continuous_of_finite, Submodule.span_range_eq_iSup,
       iSup_subtype]
     rw [Submodule.mem_iSup_iff_exists_finset]
   have t₁_group : @IsTopologicalAddGroup E t₁ _ :=
-    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+    isTopologicalAddGroup_iInf fun _ ↦ isTopologicalAddGroup_induced _
   have t₂_group (s : Finset ι) : @IsTopologicalAddGroup E (t₂ s) _ :=
-    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+    isTopologicalAddGroup_iInf fun _ ↦ isTopologicalAddGroup_induced _
   have t₁_smul : @ContinuousSMul 𝕜 E _ _ t₁ :=
     continuousSMul_iInf fun _ ↦ continuousSMul_induced _
   have t₂_smul (s : Finset ι) : @ContinuousSMul 𝕜 E _ _ (t₂ s) :=
@@ -163,9 +162,10 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     ∃ s : Finset ι, ∃ c : ℝ≥0, φ.toSeminorm ≤
       c • (s.sup fun i ↦ (f i).toSeminorm) := by
-  letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
+  let t𝕜 : TopologicalSpace 𝕜 := inferInstance
   let t := ⨅ i, induced (f i) t𝕜
-  have : IsTopologicalAddGroup E := topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
+  have : IsTopologicalAddGroup E := isTopologicalAddGroup_iInf fun _ ↦
+    isTopologicalAddGroup_induced _
   have : WithSeminorms (fun i ↦ (f i).toSeminorm) := by
     simp_rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, nhds_iInf, nhds_induced, map_zero,
       ← comap_norm_nhds_zero (E := 𝕜), Filter.comap_comap]
@@ -181,9 +181,10 @@ variable [AddCommGroup F] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] �
 
 /-- The Weak Representation Theorem: Every continuous functional on `E` endowed with
 the `σ(E, F; B)`-topology is of the form `x ↦ B(x, y)` for some `y : F`. -/
-theorem dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := fun f ↦ by
-  have : f.toLinearMap ∈
-      Submodule.span 𝕜 (ContinuousLinearMap.coeLM 𝕜 ∘ₗ WeakBilin.eval B).range := by
+theorem dualEmbedding_surjective :
+    Function.Surjective (IsWeak.eval (WeakBilin.pairing B)) := fun f ↦ by
+  have : f.toLinearMap ∈ Submodule.span 𝕜
+      (ContinuousLinearMap.coeLM 𝕜 ∘ₗ IsWeak.eval (WeakBilin.pairing B)).range := by
     simpa [coe_range, mem_span_iff_continuous, continuous_iff_le_induced, ← induced_to_pi] using!
       f.continuous.le_induced
   simpa
@@ -191,7 +192,7 @@ theorem dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := fun
 /-- When `B` is right-separating, `F` is linearly equivalent to the strong dual of `E` with the
 weak topology. -/
 noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) :=
-  LinearEquiv.ofBijective (WeakBilin.eval B)
+  LinearEquiv.ofBijective (IsWeak.eval (WeakBilin.pairing B))
     ⟨dualEmbedding_injective_of_separatingRight B hr, dualEmbedding_surjective B⟩
 
 /-- When `B` is left-separating, `E` is linearly equivalent to the strong dual of `F` with the
@@ -213,7 +214,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [M
 
 theorem LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     WithSeminorms (LinearMap.toSeminormFamily B : F → Seminorm 𝕜 (WeakBilin B)) :=
-  let e : F ≃ (Σ _ : F, Fin 1) := .symm <| .sigmaUnique _ _
+  let e : F ≃ (Σ _ : F, Unit) := .symm <| .sigmaUnique _ _
   withSeminorms_induced (withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜 𝕜))
     (LinearMap.ltoFun 𝕜 F 𝕜 𝕜 ∘ₗ B : (WeakBilin B) →ₗ[𝕜] (F → 𝕜)) |>.congr_equiv e
 

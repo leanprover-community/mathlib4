@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.Normed.Module.Ray
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Strictly convex spaces
@@ -56,7 +57,7 @@ convex, strictly convex
 
 public section
 
-open Convex Pointwise Set Metric
+open Convex Set Metric
 
 /-- A *strictly convex space* is a normed space where the closed balls are strictly convex. We only
 require balls of positive radius with center at the origin to be strictly convex in the definition,

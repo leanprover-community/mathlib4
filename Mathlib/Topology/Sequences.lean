@@ -65,7 +65,7 @@ sequentially closed, sequentially compact, sequential space
 public section
 
 
-open Bornology Filter Function Set TopologicalSpace Topology
+open Filter Function Set TopologicalSpace Topology
 open scoped Uniformity
 
 variable {X Y : Type*}
@@ -230,9 +230,9 @@ theorem SequentialSpace.coinduced [SequentialSpace X] {Y} (f : X → Y) :
 
 protected theorem SequentialSpace.iSup {X} {ι : Sort*} {t : ι → TopologicalSpace X}
     (h : ∀ i, @SequentialSpace X (t i)) : @SequentialSpace X (⨆ i, t i) := by
-  letI : TopologicalSpace X := ⨆ i, t i
+  let : TopologicalSpace X := ⨆ i, t i
   refine ⟨fun s hs ↦ isClosed_iSup_iff.2 fun i ↦ ?_⟩
-  letI := t i
+  let := t i
   exact IsSeqClosed.isClosed fun u x hus hux ↦ hs hus <| hux.mono_right <| nhds_mono <| le_iSup _ _
 
 protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
@@ -355,7 +355,8 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
   intro V V_in
   unfold IsSeqCompact at h
   contrapose! h
-  obtain ⟨u, u_in, hu⟩ : ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u m ∉ ball (u n) V := by
+  obtain ⟨u, u_in, hu⟩ :
+      ∃ u : ℕ → X, (∀ n, u n ∈ s) ∧ ∀ n m, m < n → u n ∉ SetRel.ball V (u m) := by
     simp only [not_subset, mem_iUnion₂, not_exists, exists_prop] at h
     simpa only [forall_and, forall_mem_image, not_and] using! seq_of_forall_finite_exists h
   refine ⟨u, u_in, fun x _ φ hφ huφ => ?_⟩
@@ -383,18 +384,19 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
     choose t htl htW hts using this
     have : ∀ n : ℕ, ⋂ k ≤ n, t k ⊆ t n := fun n => by apply iInter₂_subset; rfl
     exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
-      biInter_subset_biInter_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
+      biInter_subset_biInter_left (s := {k | k ≤ n}) (s' := {k | k ≤ m})
+        fun k (hk : k ≤ m) => hk.trans h, fun n =>
       (biInter_mem (finite_le_nat n)).2 fun k _ => htl k, fun n =>
       (prod_mono (this n) (this n)).trans (htW n), fun n => (this n).trans (hts n)⟩
   choose u hu using fun n => Filter.nonempty_of_mem (htl n)
   have huc : CauchySeq u := hV.toHasBasis.cauchySeq_iff.2 fun N _ =>
       ⟨N, fun m hm n hn => hWV' _ <| @htW N (_, _) ⟨ht_anti hm (hu _), ht_anti hn (hu _)⟩⟩
   rcases hs.exists_tendsto (fun n => hts n (hu n)) huc with ⟨x, hxs, hx⟩
-  refine ⟨x, hxs, (nhds_basis_uniformity' hV.toHasBasis).ge_iff.2 fun N _ => ?_⟩
-  obtain ⟨n, hNn, hn⟩ : ∃ n, N ≤ n ∧ u n ∈ ball x (W N) :=
-    ((eventually_ge_atTop N).and (hx <| ball_mem_nhds x (hW N))).exists
-  refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, hn, htW N ?_⟩
-  exact ⟨ht_anti hNn (hu n), ht_anti hNn hy⟩
+  refine ⟨x, hxs, (nhds_basis_uniformity hV.toHasBasis).ge_iff.2 fun N _ => ?_⟩
+  obtain ⟨n, hNn, hn⟩ : ∃ n, N ≤ n ∧ u n ∈ SetRel.ball (W N) x :=
+    ((eventually_ge_atTop N).and (hx <| SetRel.ball_mem_nhds x (hW N))).exists
+  refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, htW N ?_, hn⟩
+  exact ⟨ht_anti hNn hy, ht_anti hNn (hu n)⟩
 
 end UniformSpaceSeqCompact
 
@@ -413,13 +415,7 @@ only if it is sequentially compact. -/
 theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.isCompact_iff_isSeqCompact := isCompact_iff_isSeqCompact
-
 theorem compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
   simp only [← isCompact_univ_iff, seqCompactSpace_iff, isCompact_iff_isSeqCompact]
-
-@[deprecated (since := "2025-12-23")]
-protected alias UniformSpace.compactSpace_iff_seqCompactSpace := compactSpace_iff_seqCompactSpace
 
 end MetrizableSpaceSeqCompact

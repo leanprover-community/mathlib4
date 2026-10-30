@@ -6,7 +6,6 @@ Authors: Fabian Odermatt
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 
 /-!
 # Simplicial homotopies of simplicial objects
@@ -37,7 +36,9 @@ universe v u v' u'
 
 noncomputable section
 
-open SimplexCategory Simplicial Opposite
+open SimplexCategory Opposite
+
+open scoped Simplicial
 
 namespace CategoryTheory.SimplicialObject
 

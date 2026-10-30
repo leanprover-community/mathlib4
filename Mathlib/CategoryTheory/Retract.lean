@@ -5,7 +5,6 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.EpiMono
 
 /-!
@@ -118,9 +117,15 @@ set_option backward.isDefEq.respectTransparency false in -- This is needed for `
 @[to_dual none, reassoc]
 lemma i_w : h.i.left ≫ g = f ≫ h.i.right := h.i.w
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_dual none, reassoc]
 lemma r_w : h.r.left ≫ f = g ≫ h.r.right := h.r.w
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The top of a retract diagram of morphisms determines a retract of objects. -/
 @[to_dual (attr := simps!)
 /-- The bottom of a retract diagram of morphisms determines a retract of objects. -/]
@@ -143,8 +148,6 @@ def map (F : C ⥤ D) : RetractArrow (F.map f) (F.map g) :=
 
 attribute [to_dual existing] map_i_left map_i_right
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a morphism `f` is a retract of `g`, then `f.op` is a retract of `g.op`. -/
 @[to_dual self, simps]
 def op : RetractArrow f.op g.op where
@@ -154,8 +157,6 @@ def op : RetractArrow f.op g.op where
 
 attribute [to_dual existing (reorder := X Y, Z W)] op_i
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If a morphism `f` in the opposite category is a retract of `g`,
 then `f.unop` is a retract of `g.unop`. -/
 @[to_dual self, simps]
@@ -181,7 +182,6 @@ attribute [to_dual existing] retract_i
 
 end Iso
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `X` is a retract of `Y`, then for any natural transformation `τ`,
 the natural transformation `τ.app X` is a retract of `τ.app Y`. -/
 @[to_dual self, simps]

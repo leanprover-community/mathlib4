@@ -45,6 +45,7 @@ noncomputable def affineOverMk {P : MorphismProperty Scheme.{u}} {R : CommRingCa
 variable (P : MorphismProperty Scheme.{u}) [P.IsMultiplicative] [IsZariskiLocalAtSource P]
   [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The `Spec` functor from affine `P`-schemes over `S` to `P`-schemes over `S` is dense
 if `P` is local at the source. -/
@@ -64,6 +65,7 @@ instance isCoverDense_toOver_Spec :
       CostructuredArrow.homMk (𝟙 _) ⟨⟩ rfl, Over.homMk (𝒰.f i) (by simp) trivial,
       by cat_disch⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance isOneHypercoverDense_toOver_Spec :
     Functor.IsOneHypercoverDense.{u} (CostructuredArrow.toOver P Scheme.Spec S)
       ((CostructuredArrow.toOver P Scheme.Spec S).inducedTopology (S.smallGrothendieckTopology P))

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Filtered.Basic
-public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Limits of eventually constant functors
@@ -100,7 +99,6 @@ lemma coneπApp_eq (j j' : J) (α : j' ⟶ i₀) (β : j' ⟶ j) :
 lemma coneπApp_eq_id : h.coneπApp i₀ = 𝟙 _ := by
   rw [h.coneπApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_inv_hom_id]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `h : F.IsEventuallyConstantTo i₀`, this is the (limit) cone for `F` whose
 point is `F.obj i₀`. -/
 @[simps]
@@ -116,6 +114,7 @@ noncomputable def cone : Cone F where
         let β : i ⟶ j := IsCofiltered.minToRight _ _
         rw [h.coneπApp_eq j _ α β, assoc, h.coneπApp_eq j' _ α (β ≫ φ), map_comp] }
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- When `h : F.IsEventuallyConstantTo i₀`, the limit of `F` exists and is `F.obj i₀`. -/
 noncomputable def isLimitCone : IsLimit h.cone where
@@ -128,6 +127,7 @@ noncomputable def isLimitCone : IsLimit h.cone where
 
 lemma hasLimit : HasLimit F := ⟨_, h.isLimitCone⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isIso_π_of_isLimit {c : Cone F} (hc : IsLimit c) :
     IsIso (c.π.app i₀) := by
@@ -209,7 +209,6 @@ lemma coconeιApp_eq (j j' : J) (α : j ⟶ j') (β : i₀ ⟶ j') :
 lemma coconeιApp_eq_id : h.coconeιApp i₀ = 𝟙 _ := by
   rw [h.coconeιApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_hom_inv_id]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `h : F.IsEventuallyConstantFrom i₀`, this is the (limit) cocone for `F` whose
 point is `F.obj i₀`. -/
 @[simps]

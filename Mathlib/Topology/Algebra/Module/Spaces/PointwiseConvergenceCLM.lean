@@ -115,6 +115,9 @@ variable (𝕜 E F) in
 @[simps!]
 def coeLM [ContinuousConstSMul 𝕜 F] : (E →Lₚₜ[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F := ContinuousLinearMap.coeLM 𝕜
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 variable (σ F) in
 /-- The evaluation map `(f : E →SLₚₜ[σ] F) ↦ f a` for `a : E` as a continuous linear map. -/
 @[simps!]
@@ -162,7 +165,7 @@ def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
   __ := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
   continuous_toFun :=
     WeakDual.continuous_of_continuous_eval (fun y ↦ (evalCLM _ 𝕜 y).continuous)
-  continuous_invFun := continuous_of_continuous_eval WeakDual.eval_continuous
+  continuous_invFun := continuous_of_continuous_eval (WeakDual.continuous_eval continuous_id)
 
 section Pi
 

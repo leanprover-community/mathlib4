@@ -6,7 +6,8 @@ Authors: Moritz Firsching, Ralf Stephan
 module
 
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
-public import Mathlib.NumberTheory.LucasPrimality
+
+import Mathlib.NumberTheory.LucasPrimality
 
 /-!
 # Fermat numbers
@@ -31,6 +32,7 @@ namespace Nat
 open Finset Nat ZMod
 
 /-- Fermat numbers: the `n`-th Fermat number is defined as `2^(2^n) + 1`. -/
+@[oeis A000215]
 def fermatNumber (n : ℕ) : ℕ := 2 ^ (2 ^ n) + 1
 
 @[simp] theorem fermatNumber_zero : fermatNumber 0 = 3 := rfl
@@ -127,11 +129,11 @@ theorem pow_of_pow_add_prime {a n : ℕ} (ha : 1 < a) (hn : n ≠ 0) (hP : (a ^ 
   rw [one_pow, hP.dvd_iff_eq (Nat.lt_add_right 1 ha).ne', add_left_inj, pow_eq_self_iff ha] at h
   rw [h, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Fₙ = 2^(2^n)+1` is prime if `3^(2^(2^n-1)) = -1 mod Fₙ` (**Pépin's test**). -/
 lemma pepin_primality (n : ℕ) (h : 3 ^ (2 ^ (2 ^ n - 1)) = (-1 : ZMod (fermatNumber n))) :
     (fermatNumber n).Prime := by
   have := Fact.mk (two_lt_fermatNumber n)
+  unfold fermatNumber at h this
   have key : 2 ^ n = 2 ^ n - 1 + 1 := (Nat.sub_add_cancel Nat.one_le_two_pow).symm
   apply lucas_primality (p := 2 ^ (2 ^ n) + 1) (a := 3)
   · rw [Nat.add_sub_cancel, key, pow_succ, pow_mul, ← pow_succ, ← key, h, neg_one_sq]
@@ -157,7 +159,7 @@ lemma pow_pow_add_primeFactors_one_lt {a n p : ℕ} (hp : p.Prime) (hp2 : p ≠ 
   have : Fact p.Prime := Fact.mk hp
   have ha1 : (a : ZMod p) ^ (2 ^ n) = -1 := by
     rw [eq_neg_iff_add_eq_zero]
-    exact_mod_cast (natCast_eq_zero_iff (a ^ (2 ^ n) + 1) p).mpr hpdvd
+    exact mod_cast (natCast_eq_zero_iff (a ^ (2 ^ n) + 1) p).mpr hpdvd
   have ha0 : (a : ZMod p) ≠ 0 := by
     intro h
     rw [h, zero_pow (pow_ne_zero n two_ne_zero), zero_eq_neg] at ha1

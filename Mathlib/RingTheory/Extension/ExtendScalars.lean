@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Kaehler.JacobiZariski
 This file provides APIs for extending the base ring of an algebra extension `P : Extension R S`
 to its own extension ring `P.Ring`. We introduce canonical maps and isomorphisms between
 the cotangent spaces and the first homology of naive cotangent complex associated with
-`P.extendScalars` and `P`. We provide commutativity results of these maps and ismorphisms
+`P.extendScalars` and `P`. We provide commutativity results of these maps and isomorphisms
 (See https://github.com/leanprover-community/mathlib4/pull/39520 for an image of the full diagram).
 In particular, we show the boundary map of the Jacobi-Zariski sequence of `R → P.Ring → S`
 coincides with `P.cotangentComplex` via a canonical isomorphism `P.h1CotangentEquivCotangent`.
@@ -125,6 +125,7 @@ def h1CotangentEquivCotangent {R : Type u} {S : Type v} [CommRing R] [CommRing S
     P.extendScalars.h1CotangentEquivOfSurjective Function.surjective_id ≪≫ₗ
     P.cotangentExtendScalarsEquiv
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem cotangentComplex_comp_h1CotangentEquivCotangent (P : Extension.{w} R S) :
     P.cotangentComplex.comp P.h1CotangentEquivCotangent.toLinearMap =
       H1Cotangent.δ R P.Ring S := by
@@ -141,6 +142,7 @@ theorem cotangentComplex_comp_h1CotangentEquivCotangent (P : Extension.{w} R S) 
   rw [← Generators.H1Cotangent.δ_C _ _ u.prop]
   congr
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem h1CotangentEquivCotangent_comp_map (P : Extension.{w} R S) :
     P.h1CotangentEquivCotangent.toLinearMap.comp (Algebra.H1Cotangent.map R P.Ring S S) =
       h1Cotangentι.comp (H1Cotangent.map P.defaultHom) := by

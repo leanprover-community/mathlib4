@@ -39,7 +39,7 @@ with respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
 @[expose] public section
 
 
-open TopologicalSpace Filter
+open Filter
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 
@@ -460,7 +460,7 @@ theorem Submartingale.zero_le_of_predictable [SigmaFiniteFiltration μ 𝒢] {f 
   | zero => rfl
   | succ k ih =>
     exact ih.trans ((hfmgle.2.1 k (k + 1) k.le_succ).trans_eq <| Germ.coe_eq.mp <|
-    congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _) <| hfmgle.integrable _)
+    congr($(condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _) <| hfmgle.integrable _)))
 
 /-- A predictable supermartingale is a.e. less than or equal to its initial state. -/
 theorem Supermartingale.le_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
@@ -469,8 +469,8 @@ theorem Supermartingale.le_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {
   induction n with
   | zero => rfl
   | succ k ih =>
-    exact ((Germ.coe_eq.mp <| congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _)
-      (hfadp _) <| hfmgle.integrable _).symm.trans_le (hfmgle.2.1 k (k + 1) k.le_succ)).trans ih
+    exact ((Germ.coe_eq.mp <| congr(Germ.ofFun $(condExp_of_stronglyMeasurable (𝒢.le _)
+      (hfadp _) <| hfmgle.integrable _))).symm.trans_le (hfmgle.2.1 k (k + 1) k.le_succ)).trans ih
 
 end Preorder
 
@@ -517,8 +517,8 @@ theorem Martingale.eq_zero_of_predictable [CompleteSpace E] [SigmaFiniteFiltrati
   induction n with
   | zero => rfl
   | succ k ih =>
-    exact ((Germ.coe_eq.mp (congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
-      (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
+    exact ((Germ.coe_eq.mp congr(Germ.ofFun $(condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
+      (hfmgle.integrable _)))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
 section IsStronglyPredictable
 
@@ -547,7 +547,7 @@ end IsStronglyPredictable
 namespace Submartingale
 
 protected theorem integrable_stoppedValue [LE E] {f : ℕ → Ω → E} (hf : Submartingale f 𝒢 μ)
-    {τ : Ω → ℕ∞} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
+    {τ : Ω → WithTop ℕ} (hτ : IsStoppingTime 𝒢 τ) {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) :
     Integrable (stoppedValue f τ) μ :=
   integrable_stoppedValue ℕ hτ hf.integrable hbdd
 

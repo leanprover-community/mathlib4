@@ -6,11 +6,15 @@ Authors: Michael Stoll, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Add
-public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.Deriv.CompMul
 
+import Mathlib.Analysis.Calculus.Deriv.Comp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-### Invariance of the derivative under translation
+# Invariance of the derivative under translation
 
 We show that if a function `f` has derivative `f'` at a point `a + x`, then `f (a + ·)`
 has derivative `f'` at `x`. Similarly for `x + a`.

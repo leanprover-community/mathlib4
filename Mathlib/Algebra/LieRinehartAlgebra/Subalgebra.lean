@@ -53,7 +53,7 @@ instance : SetLike (LieRinehartSubalgebra A L) L where
     congr
     exact SetLike.coe_injective h
 
-instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L) L
+instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L)
 
 instance : AddSubgroupClass (LieRinehartSubalgebra A L) L where
   add_mem := Submodule.add_mem _
@@ -207,7 +207,7 @@ section LieModule
 variable {M : Type*} [AddCommGroup M] [LieRingModule L M] [Module R M]
 
 /-- Given a Lie-Rinehart algebra  `L` containing a LieRinehart subalgebra `L' ⊆ L`, together with a
- Lie module `M` of `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
+Lie module `M` of `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
 instance lieModule [LieModule R L M] : LieModule R L' M where
   smul_lie t x m := by
     rw [coe_bracket_of_module, Submodule.coe_smul_of_tower, smul_lie, coe_bracket_of_module]

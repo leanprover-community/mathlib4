@@ -5,8 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+
+import Mathlib.Algebra.MvPolynomial.Funext
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Polynomial identities from evaluation at invertible matrices
@@ -16,7 +20,7 @@ infinite field `k` are equal if their evaluations agree at every invertible matr
 uses that the set of invertible matrices is Zariski-dense in `Matrix m m k`.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 

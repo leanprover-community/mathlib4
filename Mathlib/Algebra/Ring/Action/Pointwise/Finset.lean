@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 
 /-!
@@ -31,7 +30,7 @@ variable {R G M : Type*}
 namespace Finset
 section Semiring
 variable [Semiring R] [IsDomain R] [AddCommMonoid M] [DecidableEq M] [Module R M]
-  [IsTorsionFree R M] {s : Finset R} {t : Finset M} {r : R} {m : M}
+  [IsTorsionFree R M] {s : Finset R} {t : Finset M} {r : R}
 
 lemma zero_mem_smul_finset_iff (hr : r ≠ 0) : 0 ∈ r • t ↔ 0 ∈ t := by
   rw [← mem_coe, coe_smul_finset, Set.zero_mem_smul_set_iff hr, mem_coe]

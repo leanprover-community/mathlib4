@@ -71,7 +71,7 @@ instance (S : FiniteEtale.{v} R) : Module.Finite R S :=
 abbrev FiniteEtale.of (S : Type v) [CommRing S] [Algebra R S]
     [Module.Finite R S] [Algebra.Etale R S] :
     FiniteEtale.{v} R where
-  obj := .of R S
+  obj := ↧S
   property := ⟨‹_›, ‹_›⟩
 
 variable {R}
@@ -101,7 +101,7 @@ variable (Ω : Type w) [Field Ω] [Algebra R Ω]
 /-- If `S` is an `R`-algebra, this is the base change functor `A ↦ S ⊗[R] A`. -/
 @[expose, simps]
 def FiniteEtale.baseChange : FiniteEtale.{v} R ⥤ FiniteEtale.{max w v} S where
-  obj A := .of S (S ⊗[R] A)
+  obj A := ↧(S ⊗[R] A)
   map {A B} f := FiniteEtale.ofHom (Algebra.TensorProduct.map (.id _ _) f.hom.hom)
 
 /-- Base change from `R` to `R` is isomorphic to the identity. -/
@@ -117,14 +117,14 @@ functor sending `S` to `R`-algebra homomorphisms `S →ₐ[R] Ω`. -/
 @[expose, simps]
 def FiniteEtale.fiber (R : Type u) [CommRing R] (Ω : Type w) [Field Ω] [Algebra R Ω] :
     (FiniteEtale.{v} R)ᵒᵖ ⥤ FintypeCat.{max v w} where
-  obj S := .of (S.unop →ₐ[R] Ω)
+  obj S := ↧(S.unop →ₐ[R] Ω)
   map {S T} f := FintypeCat.homMk (·.comp f.unop.hom.hom)
 
 /-- If `k` is a field, this is the `Spec` functor sending a finite étale `k`-algebra `R`
 to its finite prime spectrum. -/
 @[expose, simps]
 def FiniteEtale.finiteSpec (k : Type u) [Field k] : (FiniteEtale.{v} k)ᵒᵖ ⥤ FintypeCat.{v} where
-  obj R := .of (PrimeSpectrum R.unop.obj)
+  obj R := ↧(PrimeSpectrum R.unop.obj)
   map f := FintypeCat.homMk (PrimeSpectrum.comap f.unop.hom.hom)
 
 set_option backward.defeqAttrib.useBackward true in
@@ -160,7 +160,7 @@ anti-equivalent to `FintypeCat`. -/
 @[expose, simps! functor inverse_obj inverse_map]
 noncomputable def FiniteEtale.equivOfIsSepClosed (Ω : Type u) [Field Ω] [IsSepClosed Ω] :
     (FiniteEtale.{u} Ω)ᵒᵖ ≌ FintypeCat.{u} := .symm
-  { functor.obj X := .op (.of _ (X → Ω))
+  { functor.obj X := .op ↧(X → Ω)
     functor.map {X Y} f := .op (FiniteEtale.ofHom <| AlgHom.pi fun i ↦ Pi.evalAlgHom _ _ (f i))
     inverse := FiniteEtale.finiteSpec Ω
     counitIso :=

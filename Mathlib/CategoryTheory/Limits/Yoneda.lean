@@ -6,7 +6,6 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.ShrinkYoneda
 
@@ -33,6 +32,9 @@ namespace Coyoneda
 
 variable {C : Type u} [Category.{v} C]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The colimit cocone over `coyoneda.obj X`, with cocone point `PUnit`.
 -/
 @[simps]
@@ -40,7 +42,6 @@ def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
   ι := { app _ := ↾fun _ ↦ by cat_disch }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/
@@ -76,8 +77,6 @@ section
 
 variable {J : Type w} [Category.{t} J]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cone of `F` corresponding to an element in `(F ⋙ yoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompYoneda (F : J ⥤ Cᵒᵖ) (X : C)
@@ -102,7 +101,6 @@ variable (J) in
 noncomputable instance yoneda_preservesLimitsOfShape (X : C) :
     PreservesLimitsOfShape J (yoneda.obj X) where
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embeddings jointly reflect limits. -/
 def yonedaJointlyReflectsLimits (F : J ⥤ Cᵒᵖ) (c : Cone F)
     (hc : ∀ X : C, IsLimit ((yoneda.obj X).mapCone c)) : IsLimit c where
@@ -125,8 +123,6 @@ noncomputable def Limits.Cocone.isColimitYonedaEquiv {F : J ⥤ C} (c : Cocone F
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := by ext; apply Subsingleton.elim
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cone of `F` corresponding to an element in `(F ⋙ coyoneda.obj X).sections`. -/
 @[simps]
 def Limits.coneOfSectionCompCoyoneda (F : J ⥤ C) (X : Cᵒᵖ)
@@ -148,7 +144,6 @@ variable (J) in
 noncomputable instance coyonedaPreservesLimitsOfShape (X : Cᵒᵖ) :
     PreservesLimitsOfShape J (coyoneda.obj X) where
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The coyoneda embeddings jointly reflect limits. -/
 def coyonedaJointlyReflectsLimits (F : J ⥤ C) (c : Cone F)
     (hc : ∀ X : Cᵒᵖ, IsLimit ((coyoneda.obj X).mapCone c)) : IsLimit c where

@@ -58,9 +58,6 @@ class FormallyUnramified (f : X ⟶ Y) : Prop where
 
 alias Scheme.Hom.formallyUnramified_appLE := FormallyUnramified.formallyUnramified_appLE
 
-@[deprecated (since := "2026-01-20")]
-alias FormallyUnramified.formallyUnramified_of_affine_subset := Scheme.Hom.formallyUnramified_appLE
-
 namespace FormallyUnramified
 
 instance : HasRingHomProperty @FormallyUnramified RingHom.FormallyUnramified where
@@ -72,6 +69,7 @@ instance : HasRingHomProperty @FormallyUnramified RingHom.FormallyUnramified whe
 instance : MorphismProperty.IsStableUnderComposition @FormallyUnramified :=
   HasRingHomProperty.stableUnderComposition RingHom.FormallyUnramified.stableUnderComposition
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- `f : X ⟶ S` is formally unramified if `X ⟶ X ×ₛ X` is an open immersion.
 In particular, monomorphisms (e.g. immersions) are formally unramified.
 The converse is true if `f` is locally of finite type. -/
@@ -119,6 +117,7 @@ instance : MorphismProperty.IsMultiplicative @FormallyUnramified where
 instance : MorphismProperty.IsStableUnderBaseChange @FormallyUnramified :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.FormallyUnramified.isStableUnderBaseChange
 
+set_option backward.isDefEq.respectTransparency.types false in
 open MorphismProperty in
 /-- The diagonal of a formally unramified morphism of finite type is an open immersion. -/
 instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f] :
@@ -175,6 +174,7 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     exact stalkMap f x
   infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given any commuting diagram
 ```
@@ -200,7 +200,7 @@ protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) 
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f (g₁ x))) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU : V ≤ f ⁻¹ᵁ U⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
-  have : g₁.base = g₂.base := by ext x; obtain ⟨x, rfl⟩ := i.surjective x; exact congr($hig x)
+  have : g₁.base = g₂.base := by ext x; obtain ⟨x, rfl⟩ := i.surjective x; congrm $hig x
   obtain ⟨_, ⟨W, hW, rfl⟩, hxW, hWV : W ≤ _⟩ := Z.isBasis_affineOpens.exists_subset_of_mem_open
     (And.intro hxV (by simpa [← this])) (g₁ ⁻¹ᵁ V ⊓ g₂ ⁻¹ᵁ V).isOpen
   refine ⟨W, hxW, ?_⟩
@@ -240,7 +240,7 @@ protected lemma of_hom_ext (f : X ⟶ Y)
       (_ : Spec.map φ ≫ g₁ = Spec.map φ ≫ g₂) (_ : g₁ ≫ f = g₂ ≫ f), g₁ = g₂) :
     FormallyUnramified f := by
   refine ⟨fun {U hU V hV hVU} ↦ ?_⟩
-  letI := (f.appLE U V hVU).hom.toAlgebra
+  let := (f.appLE U V hVU).hom.toAlgebra
   refine Algebra.FormallyUnramified.iff_comp_injective.mpr fun R _ _ I hI g₁ g₂ hg₁g₂ ↦ ?_
   have hg₁ : f.appLE U V hVU ≫ CommRingCat.ofHom g₁ = CommRingCat.ofHom (algebraMap _ R) :=
     CommRingCat.hom_ext g₁.comp_algebraMap
