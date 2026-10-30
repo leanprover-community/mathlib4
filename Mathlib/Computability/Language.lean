@@ -100,11 +100,9 @@ lemma kstar_def (l : Language α) :
 theorem ext (h : ∀ x, x ∈ l.toSet ↔ x ∈ m.toSet) : l = m :=
   Set.ext h
 
-@[simp]
 theorem notMem_zero (x : FreeMonoid α) : x ∉ (0 : Language α).toSet :=
   id
 
-@[simp]
 theorem mem_one (x : FreeMonoid α) : x ∈ (1 : Language α).toSet ↔ x = 1 := by rfl
 
 theorem nil_mem_one : 1 ∈ (1 : Language α).toSet :=
@@ -136,7 +134,6 @@ theorem nil_mem_kstar (l : Language α) : 1 ∈ l∗.toSet :=
 instance : OrderedSub (Language α) where
   tsub_le_iff_right _ _ _ := sdiff_le_iff'
 
-@[simp]
 theorem add_self (l : Language α) : l + l = l :=
   sup_idem _
 
@@ -148,7 +145,7 @@ def map (f : α → β) : Language α →+* Language β :=
 theorem map_id (l : Language α) : l.map id = l := by simp [map]
 
 @[simp]
-theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
+theorem map_map (g : β → γ) (f : α → β) (l : Language α) : (l.map f).map g = l.map (g ∘ f) := by
   unfold map
   rw [FreeMonoid.map_comp, ← RingHom.comp_apply, ← SetSemiring.imageHom_comp]
 
@@ -222,7 +219,7 @@ theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   grind
 
 @[simp]
-theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
+theorem map_kstar (f : α → β) (l : Language α) : l∗.map f = (l.map f)∗ := by
   rw [kstar_eq_iSup_pow, kstar_eq_iSup_pow]
   simp_rw [← map_pow]
   exact image_iUnion
