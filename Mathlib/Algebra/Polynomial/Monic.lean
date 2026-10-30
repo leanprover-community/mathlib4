@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Reverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of monic polynomials
 
