@@ -6,9 +6,9 @@ Authors: Jose Francisco Antonio Balderas, Vincent Beffara, Alex Kontorovich, Ter
 -/
 module
 
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.MeasureTheory.Group.Circle
-public import Mathlib.NumberTheory.Chebyshev
-public import Mathlib.NumberTheory.LSeries.PrimesInAP
+public import Mathlib.NumberTheory.LSeries.Basic
 
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Analysis.Distribution.SchwartzSpace.CompactSupport
@@ -27,30 +27,27 @@ continuously to `Re s ≥ 1` after subtracting `A / (s - 1)`.  Then
 
 ## Main results
 
-* `WienerIkehara.tendsto_sum_div`: the Wiener-Ikehara Tauberian theorem.
-
-The weak prime number theorem and its version in arithmetic progressions, and the
-`ψ`/`θ` forms of the prime number theorem, are in `Mathlib.NumberTheory.LSeries.WeakPNT`.
+* `WienerIkehara.tendsto_sum_div`, `WienerIkeharatendsto_sum_range_div`: the Wiener-Ikehara
+Tauberian theorem.
+* `WienerIkehara.tendsto_sum_div_smooth`: a version for smooth cutoffs
 
 ## Proof outline
 
 Writing `ψ̂` for the Fourier transform, the proof studies `S f A σ ψ̂ x`, the difference
 between `∑' n, term f σ n * ψ̂ (log (n / x) / (2 * π))` and its polar counterpart.  Rewriting both
 halves as Fourier integrals (`sum_term_mul_fourier_eq`, `integral_exp_mul_fourier_eq`) cancels the
-pole and expresses the S through `G` (`sum_term_mul_sub_mul_integral_eq`); letting `σ → 1`
+pole and expresses `S` through `G` (`sum_term_mul_sub_mul_integral_eq`); letting `σ → 1`
 and applying the Riemann-Lebesgue lemma gives `S f A 1 ψ̂ x → 0`, first for compactly supported
-test functions (`limiting_cor`) and then for all Schwartz functions (`limiting_cor_schwartz`).
+test functions (`lim_integ_G_mul`) and then for all Schwartz functions (`lim_S_one_fourier`).
 Surjectivity of the Fourier transform on Schwartz space upgrades this to a smoothed form of the
-theorem (`wiener_ikehara_smooth`), and non-negativity of `f` together with a smooth Urysohn lemma
-(`exists_contDiff_one_on_Icc_support_eq_Ioo`) replaces the smooth cutoff by the indicator of an
-interval, whence the theorem (`tendsto_sum_div`).
+theorem (`tendsto_sum_div_smooth_real`), and non-negativity of `f` together with a smooth Urysohn
+lemma (`exists_cutoff`) replaces the smooth cutoff by the indicator of
+an interval, whence the theorem (`tendsto_sum_div`).
 
 This file is adapted from the `PrimeNumberTheoremAnd` project.
 -/
 
-@[expose] public section
-
-noncomputable section
+public noncomputable section
 
 open Complex hiding log
 open Real MeasureTheory Filter Set FourierTransform LSeries Asymptotics SchwartzMap
@@ -88,31 +85,28 @@ namespace WienerIkehara
 a nonnegative function `f` (`hpos`) obeying a Chebyshev-type bound with constant `C` (`bound`),
 an asymptotic constant `A`, and a continuous extension `G` of `s ↦ LSeries f s - A / (s - 1)`
 to `re s ≥ 1` (`hG`, `hG'`). -/
-variable {f : ℕ → ℝ} {C A : ℝ} {G : ℂ → ℂ} (bound : ∀ n, ∑ i ∈ .range n, |f i| ≤ C * n)
+variable {f : ℕ → ℝ} {C A : ℝ} {G : ℂ → ℂ} (bound : ∀ n, ∑ i ∈ .range n, f i ≤ C * n)
   (hG : ContinuousOn G {s | 1 ≤ s.re})
   (hG' : EqOn G (fun s ↦ LSeries ↗f s - A / (s - 1)) {s | 1 < s.re}) (hpos : 0 ≤ f)
 
 private abbrev c₀ := π⁻¹ * 2⁻¹
 
-include bound in
-private lemma C_nonneg : 0 ≤ C := (abs_nonneg (f 0)).trans (by simpa using bound 1)
+include bound hpos in
+private lemma C_nonneg : 0 ≤ C := (hpos 0).trans (by simpa using bound 1)
 
 include hpos bound in
 private lemma lSeriesSummable {σ : ℝ} (hσ : 1 < σ) : LSeriesSummable ↗f (σ : ℂ) := by
   refine LSeriesSummable_of_sum_norm_bigO_and_nonneg (r := 1) ?_ hpos zero_le_one (by simpa)
-  have := C_nonneg bound
+  have := C_nonneg bound hpos
   refine .of_bound (2 * C) <| (eventually_ge_atTop 1).mono fun n hn ↦ ?_
   rw [norm_of_nonneg (Finset.sum_nonneg fun k _ ↦ hpos k), rpow_one, Real.norm_natCast]
-  calc ∑ k ∈ .Icc 1 n, f k
+  calc
     _ ≤ ∑ k ∈ .range (n + 1), f k :=
       Finset.sum_le_sum_of_subset_of_nonneg (by grind) fun k _ _ ↦ hpos k
-    _ ≤ C * (n + 1) :=
-      (Finset.sum_le_sum fun k _ ↦ le_abs_self (f k)).trans (by simpa using bound (n + 1))
-    _ ≤ 2 * C * n := by nlinarith [(Nat.one_le_cast (α := ℝ)).mpr hn]
+    _ ≤ C * (n + 1) := by simpa using bound (n + 1)
+    _ ≤ _ := by nlinarith [(Nat.one_le_cast (α := ℝ)).mpr hn]
 
 section FourierIdentities
-
-variable (σ : ℝ) (φ : 𝓢(ℝ, ℂ)) (x : ℝ)
 
 private def S₁ (f : ℕ → ℝ) (σ : ℝ) (φ : 𝓢(ℝ, ℂ)) (x : ℝ) :=
   ∑' n, term ↗f σ n * φ (c₀ * log (n / x))
@@ -234,10 +228,10 @@ end FourierIdentities
 
 section Weight
 
-variable {a c t x : ℝ} {n : ℕ}
-
 /-- A weight function appearing in the analysis -/
 private def w (t : ℝ) := (t * (1 + (c₀ * log t) ^ 2))⁻¹
+
+variable {a c t x : ℝ} {n : ℕ}
 
 private lemma w_nonneg (ht : 0 ≤ t) : 0 ≤ w t := by unfold w; positivity
 
@@ -309,18 +303,19 @@ private lemma C₀_nonneg : 0 ≤ C₀ :=
 
 variable {x : ℝ} (Ψ : 𝓢(ℝ, ℂ))
 
-include bound in
+include bound hpos in
 private lemma bound_sum_log_range (hx : 1 ≤ x) (n : ℕ) :
     ∑ i ∈ .range n, ‖f i‖ / i * (1 + (c₀ * log (i / x)) ^ 2)⁻¹ ≤ C * C₀ := by
   have hxne : x ≠ 0 := by linarith
-  have := C_nonneg bound
+  have := C_nonneg bound hpos
   calc
     _ ≤ ∑ i ∈ .range n, ‖f i‖ * (if i = 0 then 1 else x⁻¹ * w (i / x)) := by
       gcongr 1 with i
       by_cases i = 0 <;> simp [*, w, field]
     _ ≤ C * ∑ i ∈ .range n, (if i = 0 then 1 else x⁻¹ * w (i / x)):= by
       rw [Finset.mul_sum]
-      apply Finset.sum_mul_le_sum_mul_of_sum_range_le (fun k _ ↦ by simpa [mul_comm] using bound k)
+      apply Finset.sum_mul_le_sum_mul_of_sum_range_le
+        (fun k _ ↦ by simpa [mul_comm, Real.norm_of_nonneg (hpos _)] using bound k)
       · intro i
         by_cases i = 0 <;> simp only [w, *, ↓reduceIte, Pi.zero_apply] <;> positivity
       · have (i : ℕ) : x⁻¹ * w (i / x) ≤ 1 := by
@@ -355,18 +350,18 @@ private lemma bound_sum_log_range (hx : 1 ≤ x) (n : ℕ) :
       · exact eventually_of_mem (self_mem_ae_restrict measurableSet_Ioi) fun x hx ↦ w_nonneg hx.le
       · simpa using! (w_integrable (a := 1) zero_lt_one).mono_set Ioi_subset_Ici_self
 
-include bound in
+include bound hpos in
 private lemma summable_sum_log_range (hx : 1 ≤ x) :
     Summable fun n ↦ ‖f n‖ / n * (1 + (c₀ * log (n / x)) ^ 2)⁻¹ := summable_of_sum_range_le
-  (fun _ ↦ by positivity) (fun n ↦ by simpa using bound_sum_log_range bound hx n)
+  (fun _ ↦ by positivity) (fun n ↦ by simpa using bound_sum_log_range bound hpos hx n)
 
-include bound in
+include bound hpos in
 private theorem lim_S_fourier (hx : 1 ≤ x) : Tendsto (fun σ ↦ S f A σ (𝓕 Ψ) x) (𝓝[>] 1)
       (𝓝 (S f A 1 (𝓕 Ψ) x)) := by
   unfold S S₁
   apply Tendsto.sub
-  · refine tendsto_tsum_of_dominated_convergence ((summable_sum_log_range bound hx).mul_left Ψ.Q)
-      (fun n ↦ ?_) ?_
+  · refine tendsto_tsum_of_dominated_convergence
+      ((summable_sum_log_range bound hpos hx).mul_left Ψ.Q) (fun n ↦ ?_) ?_
     · apply Tendsto.mul_const
       by_cases h : n = 0 <;> simp only [term, h, ↓reduceIte, tendsto_const_nhds_iff]
       refine tendsto_const_nhds.div ?_ (by simp [h])
@@ -457,7 +452,7 @@ private lemma lim_S_one_fourier {Ψ : 𝓢(ℝ, ℂ)} (hΨ : HasCompactSupport �
   apply (limiting_cor_aux (ψ := fun t ↦ G (1 + t * I) * (Ψ t))).congr'
   filter_upwards [eventually_ge_atTop 1] with x hx
   unfold S
-  apply (tendsto_nhds_unique_of_eventuallyEq (lim_S_fourier bound Ψ hx)
+  apply (tendsto_nhds_unique_of_eventuallyEq (lim_S_fourier bound hpos Ψ hx)
     (lim_integ_G_mul hG hΨ hx) _).symm
   simpa [eventuallyEq_nhdsWithin_iff] using!
     Eventually.of_forall (sum_term_mul_sub_mul_integral_eq bound hG' hpos hΨ hx)
@@ -488,13 +483,11 @@ private lemma integ_fourier_bound (x : ℝ) :
   · simp [abs_eq_self.mpr (by simp [pi_nonneg] : 0 ≤ 2 * π)]; grind
   · exact Eventually.of_forall fun _ ↦ by positivity
 
-variable {x : ℝ}
-
-include bound in
-private lemma summable_term_mul (hx : 1 ≤ x) :
+include bound hpos in
+private lemma summable_term_mul {x : ℝ} (hx : 1 ≤ x) :
     Summable fun n ↦ ‖(term ↗f 1 n) * 𝓕 Ψ (c₀ * log (n / x))‖ :=
   .of_nonneg_of_le (fun _ ↦ norm_nonneg _) (norm_term_mul_le Ψ x ↗f)
-    (by simpa using (summable_sum_log_range bound hx).const_smul Ψ.Q)
+    (by simpa using (summable_sum_log_range bound hpos hx).const_smul Ψ.Q)
 
 include bound hG hG' hpos in
 private lemma lim_S_one_fourier_schwartz : Tendsto (S f A 1 (𝓕 Ψ)) atTop (𝓝 0) := by
@@ -512,8 +505,8 @@ private lemma lim_S_one_fourier_schwartz : Tendsto (S f A 1 (𝓕 Ψ)) atTop (�
   have : S₁ f 1 (𝓕 (Ψ - φ)) x = S₁ f 1 (𝓕 Ψ) x - S₁ f 1 (𝓕 φ) x := by
     unfold S₁; rw [ofReal_one, ← Summable.tsum_sub]
     · exact tsum_congr fun _ ↦ by rw [hFsub]; ring
-    · simpa [← summable_norm_iff] using summable_term_mul bound Ψ hx
-    · simpa [← summable_norm_iff] using summable_term_mul bound φ hx
+    · simpa [← summable_norm_iff] using summable_term_mul bound hpos Ψ hx
+    · simpa [← summable_norm_iff] using summable_term_mul bound hpos φ hx
   have : S₂ A 1 (𝓕 (Ψ - φ)) x = S₂ A 1 (𝓕 Ψ) x - S₂ A 1 (𝓕 φ) x := by
     simp only [S₂, sub_self, rpow_zero, ofReal_one, mul_one, mul_zero, Real.exp_zero,
       one_mul]
@@ -529,19 +522,19 @@ private lemma lim_S_one_fourier_schwartz : Tendsto (S f A 1 (𝓕 Ψ)) atTop (�
     have : ‖S₁ f 1 (𝓕 (Ψ - φ)) x‖ ≤ (Ψ - φ).Q * C * C₀ := calc
       _ ≤ (Ψ - φ).Q • ∑' n, ‖f n‖ / n * (1 + (c₀ * log (n / x)) ^ 2)⁻¹ := by
         have : Summable fun n ↦ ‖f n‖ / n * ((1 + (c₀ * (log (n / x))) ^ 2)⁻¹) := by
-          simpa using summable_sum_log_range bound hx
+          simpa using summable_sum_log_range bound hpos hx
         unfold S₁
-        grw [ofReal_one, norm_tsum_le_tsum_norm (summable_term_mul bound _ hx),
-          (summable_term_mul bound _ hx).tsum_mono (by simpa using this.const_smul (Ψ - φ).Q)
+        grw [ofReal_one, norm_tsum_le_tsum_norm (summable_term_mul bound hpos _ hx),
+          (summable_term_mul bound hpos _ hx).tsum_mono (by simpa using this.const_smul (Ψ - φ).Q)
           (norm_term_mul_le _ x ↗f), ← Summable.tsum_const_smul _ this]
         simp
       _ ≤ _ := by
         grw [smul_eq_mul, mul_assoc, tsum_le_of_sum_range_le (fun _ ↦ by positivity)]
-        exacts [(Ψ - φ).Q_nonneg, bound_sum_log_range bound hx]
+        exacts [(Ψ - φ).Q_nonneg, bound_sum_log_range bound hpos hx]
     grw [norm_sub_le, this, norm_mul]
     simp only [sub_self, rpow_zero, ofReal_one, mul_one, norm_real, norm_eq_abs, mul_zero,
       Real.exp_zero, one_mul]
-    have := C_nonneg bound
+    have := C_nonneg bound hpos
     have := C₀_nonneg
     grw [integ_fourier_bound (Ψ - φ) x, hφQ]
     field_simp; grind
@@ -561,7 +554,6 @@ private theorem comp_exp_support (hsupp : HasCompactSupport ψ)
   simp only [hasCompactSupport_iff_eventuallyEq, coclosedCompact_eq_cocompact,
     cocompact_eq_atBot_atTop] at hsupp ⊢
   exact ⟨tendsto_exp_atBot <| comp_exp_support0 hplus, tendsto_exp_atTop hsupp.2⟩
-
 
 include bound hG hG' hpos in
 /-- A smoothed *Wiener-Ikehara Tauberian Theorem*: If `f` is a nonnegative arithmetic
@@ -637,12 +629,10 @@ lemma tendsto_sum_div_smooth_real {Ψ : ℝ → ℝ} (hsmooth : ContDiff ℝ ∞
 
 end Smooth
 
-variable {a b c d : ℝ}
-
 /-- A smooth Urysohn lemma for cutoffs supported away from the
 origin, additionally controlling the integral of the cutoff from above and below by the lengths of
 `Ioo a d` and `Icc b c` respectively. -/
-private lemma exists_cutoff (ha : 0 < a) (hab : a < b) (hbc : b ≤ c) (hcd : c < d) :
+private lemma exists_cutoff {a b c d : ℝ} (ha : 0 < a) (hab : a < b) (hbc : b ≤ c) (hcd : c < d) :
     ∃ ψ, ContDiff ℝ ∞ ψ ∧ HasCompactSupport ψ ∧ closure (support ψ) ⊆ Ioi 0 ∧
       indicator (Icc b c) 1 ≤ ψ ∧ ψ ≤ indicator (Ioo a d) 1 ∧
       c - b ≤ ∫ y in Ioi 0, ψ y ∧ ∫ y in Ioi 0, ψ y ≤ d - a := by
@@ -675,9 +665,7 @@ private lemma A_nonneg : 0 ≤ A := by
   filter_upwards [eventually_ge_atTop 0] with x hx
   exact div_nonneg (tsum_nonneg fun n ↦ mul_nonneg (hpos n) (hψ _)) hx
 
-variable {x : ℝ} {g : ℝ → ℝ}
-
-private lemma summable_mul (hg : HasCompactSupport g) (hx : 0 < x) :
+private lemma summable_mul {x : ℝ} {g : ℝ → ℝ} (hg : HasCompactSupport g) (hx : 0 < x) :
     Summable fun n ↦ f n * g (n / x) := by
   obtain ⟨M, hM⟩ := hg.bddAbove.mono subset_closure
   apply summable_of_hasFiniteSupport
@@ -727,9 +715,9 @@ theorem tendsto_sum_range_div : Tendsto (fun N ↦ (∑ i ∈ .range N, f i) / N
     grw [← Finset.sum_range_add_sum_Ico _ (by rw [Nat.ceil_le]; nlinarith : ⌈2 * ε * N⌉₊ ≤ N),
       add_div, ← hsum hN, ((indicator_le_indicator_of_subset Ico_subset_Icc_self
       (by simp)).trans h4) _, (by exact hN1 : (∑' n, f n * ψ (n / N)) / N < _),
-      le_abs_self (f _), bound, Nat.ceil_lt_add_one, mul_add, add_div, mul_one, hN3]
+      bound, Nat.ceil_lt_add_one, mul_add, add_div, mul_one, hN3]
     · field_simp; grind
-    · exact C_nonneg bound
+    · exact C_nonneg bound hpos
     · positivity
     exacts [hpos _, summable_mul (hI (by linarith)) hN, summable_mul h2 hN]
 
