@@ -5,9 +5,10 @@ Authors: Chris Hughes, Thomas Browning, Snir Broshi
 -/
 module
 
-public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+
+import Mathlib.Data.Fintype.Lattice
 
 /-!
 # p-groups
@@ -108,6 +109,15 @@ theorem _root_.isPGroup_iff_exponent_eq_pow [Finite G] [Fact p.Prime] :
 
 @[to_additive exists_exponent_eq_pow]
 alias ⟨exists_exponent_eq_pow, _⟩ := isPGroup_iff_exponent_eq_pow
+
+variable (G) in
+@[to_additive (attr := simp)]
+theorem _root_.Group.primeFactors_exponent_eq_primeFactors_card [Finite G] :
+    (Monoid.exponent G).primeFactors = (Nat.card G).primeFactors := by
+  refine (Nat.primeFactors_mono Group.exponent_dvd_nat_card Nat.card_pos.ne').antisymm fun p hp ↦ ?_
+  have : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
+  obtain ⟨g, rfl⟩ := exists_prime_orderOf_dvd_card' p (Nat.dvd_of_mem_primeFactors hp)
+  exact Nat.prime_of_mem_primeFactors hp |>.mem_primeFactors' <| Monoid.order_dvd_exponent g
 
 @[to_additive isAddPGroup_iff_card_dvd_pow]
 theorem _root_.isPGroup_iff_card_dvd_pow [Finite G] : IsPGroup p G ↔ ∃ n, Nat.card G ∣ p ^ n := by
