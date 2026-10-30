@@ -278,7 +278,7 @@ theorem symm_reindex (e : m ≃ n) :
   rfl
 
 @[simp]
-theorem reindex_trans_reindex(e : m ≃ n) (e' : n ≃ o) :
+theorem reindex_trans_reindex (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindex R e) (reindex R e') = reindex R (.trans e e') :=
   rfl
 
