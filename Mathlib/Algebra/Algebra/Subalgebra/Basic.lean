@@ -937,7 +937,7 @@ theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
 /-- An isomorphism of `R`-algebras induces an `R`-algebra isomorphism between their centers. -/
 @[simps! apply_coe]
 def centerCongr (e : A ≃ₐ[R] B) :
-    Subalgebra.center R A ≃ₐ[R] Subalgebra.center R B where
+    center R A ≃ₐ[R] center R B where
   toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
   commutes' r := by rw [Subtype.ext_iff]; exact AlgEquiv.commutes e r
 
