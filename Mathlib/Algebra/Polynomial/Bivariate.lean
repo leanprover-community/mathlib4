@@ -9,6 +9,9 @@ public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Derivation.MapCoeffs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bivariate polynomials
 
