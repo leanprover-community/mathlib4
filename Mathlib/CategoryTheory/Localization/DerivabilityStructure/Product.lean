@@ -65,8 +65,8 @@ instance [Φ₁.IsLeftDerivabilityStructure] [Φ₂.IsLeftDerivabilityStructure]
   let e₂ := (Φ₂.catCommSq W₂.Q W₂'.Q).iso
   rw [(Φ₁.prod Φ₂).isLeftDerivabilityStructure_iff (W₁.Q.prod W₂.Q) (W₁'.Q.prod W₂'.Q)
     ((Φ₁.localizedFunctor W₁.Q W₁'.Q).prod (Φ₂.localizedFunctor W₂.Q W₂'.Q))
-  exact (inferInstance : TwoSquare.GuitartExact (TwoSquare.prod e₁.inv e₂.inv))
-  infer_instance
+    (NatIso.prod e₁ e₂)]
+  exact inferInstanceAs <| TwoSquare.GuitartExact (TwoSquare.prod e₁.inv e₂.inv)
 
 end LocalizerMorphism
 
