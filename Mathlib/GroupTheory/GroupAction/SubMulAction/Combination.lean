@@ -274,7 +274,7 @@ theorem isPretransitive_alternatingGroup [Fintype α] (hα : 3 ≤ Nat.card α) 
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) <;> grind
 
 /-- The action of `alternatingGroup α` on `Set.powersetCard α n` is preprimitive
-provided `1 ≤ n < Nat.card α` and `Nat.card α ≠ 2 * n`. -/
+provided `0 < n < Nat.card α` and `Nat.card α ≠ 2 * n`. -/
 theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ} (hn₀ : n ≠ 0) (hn : n < Nat.card α)
     (hα : Nat.card α ≠ 2 * n) : IsPreprimitive (alternatingGroup α) (powersetCard α n) := by
   have : IsPretransitive (alternatingGroup α) (powersetCard α n) :=
