@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Equivalence
 
 /-!
@@ -47,6 +45,11 @@ def topEquivalence : ObjectProperty.FullSubcategory (C := C) ⊤ ≌ C where
   inverse := ObjectProperty.lift _ (𝟭 _) (by simp)
   unitIso := Iso.refl _
   counitIso := Iso.refl _
+  functor_unitIso_comp := by cat_disch
+
+lemma isEquivalence_ι (h : P = ⊤) : P.ι.IsEquivalence := by
+  rw [h]
+  exact (topEquivalence C).isEquivalence_functor
 
 end CategoryTheory.ObjectProperty
 

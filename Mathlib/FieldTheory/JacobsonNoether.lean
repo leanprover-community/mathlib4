@@ -6,11 +6,12 @@ Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Y
 module
 
 public import Mathlib.Algebra.Central.Defs
-public import Mathlib.Algebra.CharP.LinearMaps
-public import Mathlib.Algebra.CharP.Subring
-public import Mathlib.Algebra.GroupWithZero.Conj
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
+
+import Mathlib.Algebra.CharP.LinearMaps
+import Mathlib.Algebra.CharP.Subring
+import Mathlib.Algebra.GroupWithZero.Conj
 
 /-!
 # The Jacobson-Noether theorem
@@ -44,11 +45,12 @@ The difference however, is that the former takes `D` as the only variable
 and fixing `D` would forces `k`. Whereas the later takes `D` and `L` as
 separate variables constrained by certain relations.
 
-## Reference
+## References
+
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 
-@[expose] public section
+public section
 
 namespace JacobsonNoether
 
@@ -56,18 +58,17 @@ variable {D : Type*} [DivisionRing D] [Algebra.IsAlgebraic (Subring.center D) D]
 
 local notation3 "k" => Subring.center D
 
-open Polynomial LinearMap LieAlgebra
+open LinearMap LieAlgebra
 
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
   then for every element `a` of `D`, there exists a natural number `n`
   such that `a ^ (p ^ n)` is contained in `k`. -/
 lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
-  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.expChar_center_iff.2 hchar)).1
-  have pure : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, fun x hx ↦ by
+  have insep : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, fun x hx ↦ by
     rw [RingHom.mem_range, Subtype.exists]
     exact ⟨x, ⟨hinsep x hx, rfl⟩⟩⟩
-  obtain ⟨n, ⟨m, hm⟩⟩ := this pure a
+  obtain ⟨n, ⟨m, hm⟩⟩ := (isPurelyInseparable_iff_pow_mem k p).1 insep a
   have := Subalgebra.range_subset (R := k) ⟨(k).toSubsemiring, fun r ↦ r.2⟩
   exact ⟨n, Set.mem_of_subset_of_mem this <| Set.mem_range.2 ⟨m, hm⟩⟩
 
@@ -83,6 +84,8 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
     exact ha hn
   exact ⟨n, ⟨Nat.one_le_iff_ne_zero.mpr nzero, hn⟩⟩
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 /-- If `D` is a purely inseparable extension of `k` of characteristic `p`,
   then for every element `a` of `D \ k`, there exists a natural number `m`
   greater than 0 such that `(a * x - x * a) ^ n = 0` (as linear maps) for
@@ -94,8 +97,8 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
   refine ⟨m, ⟨hm.1, fun n hn ↦ ?_⟩⟩
   have inter : (ad k D a)^[p ^ m] = 0 := by
     ext x
-    rw [ad_eq_lmul_left_sub_lmul_right, ← Module.End.pow_apply, Pi.sub_apply,
-      sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a), sub_apply,
+    rw [ad_eq_lmul_left_sub_lmul_right, ← pow_apply_eq_iterate, Pi.sub_apply,
+      sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a), LinearMap.sub_apply,
       pow_mulLeft, mulLeft_apply, pow_mulRight, mulRight_apply, Pi.zero_apply,
       Subring.mem_center_iff.1 hm.2 x]
     exact sub_eq_zero_of_eq rfl

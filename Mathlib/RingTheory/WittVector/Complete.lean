@@ -5,9 +5,10 @@ Authors: Jiedong Jiang
 -/
 module
 
-public import Mathlib.RingTheory.WittVector.Domain
-public import Mathlib.RingTheory.WittVector.Truncated
 public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.WittVector.Domain
+public import Mathlib.RingTheory.WittVector.Teichmuller
+public import Mathlib.RingTheory.WittVector.Truncated
 
 /-!
 # The ring of Witt vectors is p-torsion free and p-adically complete
@@ -21,9 +22,6 @@ when `k` is a perfect ring of characteristic `p`.
   then the Witt vector `𝕎 k` is `p`-torsion free.
 * `isAdicCompleteIdealSpanP` : If `k` is a perfect ring of characteristic `p`,
   then the Witt vector `𝕎 k` is `p`-adically complete.
-
-## TODO
-Define the map `𝕎 k / p ≃+* k`.
 -/
 
 @[expose] public section
@@ -96,6 +94,20 @@ theorem mem_span_p_pow_iff_le_coeff_eq_zero (x : 𝕎 k) (n : ℕ) :
         simp
       · rw [Function.Commute, Function.Semiconj, ← WittVector.frobeniusEquiv_apply]
         simp only [RingEquiv.apply_symm_apply, RingEquiv.symm_apply_apply, implies_true]
+
+lemma ker_constantCoeff : RingHom.ker constantCoeff = Ideal.span {(p : 𝕎 k)} := by
+  ext
+  simp [mem_span_p_iff_coeff_zero_eq_zero]
+
+/-- If `k` is a perfect ring of characteristic `p`, there is an isomorphism between the quotient
+`𝕎 k / p` and `k`.
+-/
+noncomputable def quotientPEquiv : 𝕎 k ⧸ Ideal.span {(p : 𝕎 k)} ≃+* k :=
+  (Ideal.quotEquivOfEq ker_constantCoeff.symm).trans
+    (RingHom.quotientKerEquivOfSurjective (constantCoeff_surjective p))
+
+@[simp]
+lemma quotientPEquiv_mk (x : 𝕎 k) : quotientPEquiv (Quot.mk _ x) = constantCoeff x := rfl
 
 /--
 If `k` is a perfect ring of characteristic `p`, then the ring of Witt vectors `𝕎 k`

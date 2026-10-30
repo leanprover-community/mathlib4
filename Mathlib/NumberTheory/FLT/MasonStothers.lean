@@ -20,9 +20,9 @@ but slightly different.
 
 -/
 
-@[expose] public section
+public section
 
-open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
+open Polynomial UniqueFactorizationMonoid EuclideanDomain
 
 variable {k : Type*} [Field k] [DecidableEq k]
 

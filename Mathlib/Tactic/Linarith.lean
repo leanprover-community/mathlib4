@@ -5,9 +5,12 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Tactic.Linarith.Frontend
-public meta import Mathlib.Tactic.NormNum
 public meta import Mathlib.Tactic.Hint
+public import Mathlib.Tactic.Linarith.Frontend
+public import Mathlib.Tactic.NormNum
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 We register `linarith` with the `hint` tactic.

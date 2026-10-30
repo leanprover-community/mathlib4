@@ -5,16 +5,17 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
-public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Order.Interval.Finset.Defs
+
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-! # Pointwise operations on intervals
 
-This should be kept in sync with `Mathlib/Data/Set/Pointwise/Interval.lean`.
+This should be kept in sync with `Mathlib/Algebra/Order/Group/Pointwise/Interval.lean`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

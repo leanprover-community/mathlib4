@@ -28,7 +28,7 @@ the fibers of connected objects.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -36,7 +36,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type*} [Category* C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
 
@@ -86,7 +86,7 @@ lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (Aut F))
       simpa [is2, u']
     simp only [h, Iso.inv_hom_id_assoc]
   refine ⟨∐ gZ, Sigma.desc gf, t.symm ≪≫ u' ≪≫ is2.symm, ?_, by simp [heq]⟩
-  · exact mono_of_mono_map (functorToAction F) (heq ▸ mono_comp _ _)
+  exact mono_of_mono_map (functorToAction F) (heq ▸ mono_comp _ _)
 
 /-- The by a fiber functor `F : C ⥤ FintypeCat` induced functor `functorToAction F` to
 finite `Aut F`-sets is full. -/

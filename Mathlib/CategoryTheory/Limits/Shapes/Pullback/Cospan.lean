@@ -5,8 +5,8 @@ Authors: Kim Morrison, Markus Himmel, Bhavik Mehta
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.WalkingPair
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Cospan & Span
@@ -136,7 +136,7 @@ of the cone points and check it commutes with the legs to `left` and `right`. -/
 def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.pt)
     (w₁ : s.π.app WalkingCospan.left = i.hom ≫ t.π.app WalkingCospan.left)
     (w₂ : s.π.app WalkingCospan.right = i.hom ≫ t.π.app WalkingCospan.right) : s ≅ t := by
-  apply Cones.ext i _
+  apply Cone.ext i _
   rintro (⟨⟩ | ⟨⟨⟩⟩)
   · have h₁ := s.π.naturality WalkingCospan.Hom.inl
     dsimp at h₁
@@ -154,7 +154,7 @@ of the cocone points and check it commutes with the legs from `left` and `right`
 def WalkingSpan.ext {F : WalkingSpan ⥤ C} {s t : Cocone F} (i : s.pt ≅ t.pt)
     (w₁ : s.ι.app WalkingCospan.left ≫ i.hom = t.ι.app WalkingCospan.left)
     (w₂ : s.ι.app WalkingCospan.right ≫ i.hom = t.ι.app WalkingCospan.right) : s ≅ t := by
-  apply Cocones.ext i _
+  apply Cocone.ext i _
   rintro (⟨⟩ | ⟨⟨⟩⟩)
   · have h₁ := s.ι.naturality WalkingSpan.Hom.fst
     dsimp at h₁
@@ -167,11 +167,13 @@ def WalkingSpan.ext {F : WalkingSpan ⥤ C} {s t : Cocone F} (i : s.pt ≅ t.pt)
   · exact w₂
 
 /-- `cospan f g` is the functor from the walking cospan hitting `f` and `g`. -/
+@[implicit_reducible]
 def cospan {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) : WalkingCospan ⥤ C :=
   WidePullbackShape.wideCospan Z (fun j => WalkingPair.casesOn j X Y) fun j =>
     WalkingPair.casesOn j f g
 
 /-- `span f g` is the functor from the walking span hitting `f` and `g`. -/
+@[implicit_reducible]
 def span {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) : WalkingSpan ⥤ C :=
   WidePushoutShape.wideSpan X (fun j => WalkingPair.casesOn j Y Z) fun j =>
     WalkingPair.casesOn j f g
@@ -335,7 +337,7 @@ def cospanHomMk {F G : WalkingCospan ⥤ C}
     (hl : F.map inl ≫ z = l ≫ G.map inl := by cat_disch)
     (hr : F.map inr ≫ z = r ≫ G.map inr := by cat_disch) : F ⟶ G where
   app := by rintro (_ | _ | _); exacts [z, l, r]
-  naturality := by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch
+  naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
 
 /-- Constructor for natural isomorphisms between cospans. -/
 @[simps!]
@@ -401,7 +403,7 @@ def spanHomMk {F G : WalkingSpan ⥤ C}
     (hl : F.map fst ≫ l = z ≫ G.map fst := by cat_disch)
     (hr : F.map snd ≫ r = z ≫ G.map snd := by cat_disch) : F ⟶ G where
   app := by rintro (_ | _ | _); exacts [z, l, r]
-  naturality := by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch
+  naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
 
 /-- Constructor for natural isomorphisms between spans. -/
 @[simps!]

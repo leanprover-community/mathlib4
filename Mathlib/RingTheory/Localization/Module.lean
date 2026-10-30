@@ -79,7 +79,7 @@ theorem LinearIndependent.of_isLocalizedModule_of_isRegular {ι : Type*} {v : ι
     congr; ext i
     have ⟨s, eq⟩ := IsLocalizedModule.exists_of_eq (S := S) eq
     simp_rw [Submonoid.smul_def, ← map_smul] at eq
-    exact (h s).1 (DFunLike.congr_fun (hv eq) i)
+    exact (h s).1 congr($(hv eq) i)
 
 theorem LinearIndependent.localization [Module Rₛ M] [IsScalarTower R Rₛ M]
     {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
@@ -119,7 +119,7 @@ theorem ofIsLocalizedModule_repr_apply (m : M) (i : ι) :
     ((b.ofIsLocalizedModule Rₛ S f).repr (f m)) i = algebraMap R Rₛ (b.repr m i) := by
   suffices ((b.ofIsLocalizedModule Rₛ S f).repr.toLinearMap.restrictScalars R) ∘ₗ f =
       Finsupp.mapRange.linearMap (Algebra.linearMap R Rₛ) ∘ₗ b.repr.toLinearMap by
-    exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
+    congrm $this m i
   refine ext b fun i ↦ ?_
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, ← b.ofIsLocalizedModule_apply Rₛ S f, repr_self, LinearMap.coe_comp,
@@ -179,7 +179,8 @@ theorem localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A)
 
 theorem localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
-      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := b.ofIsLocalizedModule_span Rₛ S _
+      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ : A →ₗ[R] Aₛ) :=
+  b.ofIsLocalizedModule_span Rₛ S _
 
 end Module.Basis
 end LocalizationLocalization
@@ -235,7 +236,7 @@ def LinearMap.extendScalarsOfIsLocalizationEquiv : (M →ₗ[R] N) ≃ₗ[A] (M 
 /-- An `R`-linear isomorphism between `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
 @[simps!]
 def LinearEquiv.extendScalarsOfIsLocalization (f : M ≃ₗ[R] N) : M ≃ₗ[A] N :=
-  .ofLinear (LinearMap.extendScalarsOfIsLocalization S A f)
+  .ofLinearMap (LinearMap.extendScalarsOfIsLocalization S A f)
     (LinearMap.extendScalarsOfIsLocalization S A f.symm)
     (by ext; simp) (by ext; simp)
 
@@ -273,7 +274,7 @@ def mapExtendScalars : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[Rₛ] N') :=
 @[simps!]
 noncomputable
 def mapEquiv (e : M ≃ₗ[R] N) : M' ≃ₗ[Rₛ] N' :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (IsLocalizedModule.mapExtendScalars S f g Rₛ e)
     (IsLocalizedModule.mapExtendScalars S g f Rₛ e.symm)
     (by
@@ -309,7 +310,7 @@ lemma LocalizedModule.map_mk (f : M →ₗ[R] N) (x y) :
 @[simp]
 lemma LocalizedModule.map_id :
     LocalizedModule.map S (.id (R := R) (M := M)) = LinearMap.id :=
-  LinearMap.ext fun x ↦ LinearMap.congr_fun (IsLocalizedModule.map_id S (mkLinearMap S M)) x
+  LinearMap.ext fun x ↦ congr($(IsLocalizedModule.map_id S (mkLinearMap S M)) x)
 
 lemma LocalizedModule.map_injective (l : M →ₗ[R] N) (hl : Function.Injective l) :
     Function.Injective (map S l) :=
@@ -331,4 +332,38 @@ lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddCommMonoid M'] 
   ext
   simp
 
+variable {S} in
+lemma LocalizedModule.coe_map_eq {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N']
+    [Module R M'] [Module R N'] (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
+    [IsLocalizedModule S g₁] [IsLocalizedModule S g₂] (l : M →ₗ[R] N) :
+    ⇑(map S l) = (IsLocalizedModule.iso S g₂).symm ∘
+      IsLocalizedModule.map S g₁ g₂ l ∘ IsLocalizedModule.iso S g₁ := by
+  rw [← LinearMap.coe_restrictScalars R, restrictScalars_map_eq _ g₁ g₂ l]
+  simp
+
 end LocalizedModule
+
+namespace IsLocalizedModule
+
+variable {R M N M' N' : Type*} [CommSemiring R] {S : Submonoid R}
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+  [AddCommMonoid M'] [Module R M'] [AddCommMonoid N'] [Module R N']
+  (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
+  [IsLocalizedModule S g₁] [IsLocalizedModule S g₂] {l : M →ₗ[R] N}
+
+lemma map_injective_iff_localizedModuleMap_injective :
+    Function.Injective (IsLocalizedModule.map S g₁ g₂ l) ↔
+      Function.Injective (LocalizedModule.map S l) := by
+  simp [LocalizedModule.coe_map_eq g₁ g₂]
+
+lemma map_surjective_iff_localizedModuleMap_surjective :
+    Function.Surjective (IsLocalizedModule.map S g₁ g₂ l) ↔
+      Function.Surjective (LocalizedModule.map S l) := by
+  simp [LocalizedModule.coe_map_eq g₁ g₂]
+
+lemma map_bijective_iff_localizedModuleMap_bijective :
+    Function.Bijective (IsLocalizedModule.map S g₁ g₂ l) ↔
+      Function.Bijective (LocalizedModule.map S l) := by
+  simp [LocalizedModule.coe_map_eq g₁ g₂]
+
+end IsLocalizedModule

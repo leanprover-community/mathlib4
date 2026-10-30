@@ -5,12 +5,15 @@ Authors: Patrick Massot
 -/
 module
 
+public meta import Batteries.CodeAction.Attr
 public meta import Lean.Elab.Tactic.Calc
 public meta import Lean.Meta.Tactic.TryThis
-
 public meta import Mathlib.Data.String.Defs
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
-public meta import Batteries.CodeAction.Attr
+public meta import ProofWidgets.Component.OfRpcMethod
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+
+meta import ProofWidgets.Component.Basic
 
 /-! # Calc widget
 
@@ -119,7 +122,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
 @[server_rpc_method]
 def CalcPanel.rpc := mkSelectionPanelRPC suggestSteps
   "Please select subterms using Shift-click."
-  "Calc 🔍"
+  "Calc 🔍️"
 
 /-- The calc widget. -/
 @[widget_module]

@@ -5,11 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Basic.NNReal.Basic
+public import Mathlib.Basic.Real.ENatENNReal
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.NNReal.Basic
-public import Mathlib.Data.Real.ENatENNReal
 
-import Mathlib.Data.ENNReal.Operations
+import Mathlib.Basic.ENNReal.Operations
 
 /-!
 # Extended floor and ceil
@@ -60,18 +60,27 @@ variable {r s : ℝ≥0∞} {n : ℕ∞}
 @[inherit_doc] notation "⌈" r "⌉ₑ" => ENat.ceil r
 
 @[simp] lemma floor_top : ⌊∞⌋ₑ = ⊤ := rfl
+
 @[simp] lemma ceil_top : ⌈∞⌉ₑ = ⊤ := rfl
+
 @[simp, norm_cast] lemma floor_coe (r : ℝ≥0) : ⌊r⌋ₑ = ⌊r⌋₊ := rfl
+
 @[simp, norm_cast] lemma ceil_coe (r : ℝ≥0) : ⌈r⌉ₑ = ⌈r⌉₊ := rfl
 
 @[simp] lemma floor_eq_top : ⌊r⌋ₑ = ⊤ ↔ r = ∞ := by cases r <;> simp
+
 @[simp] lemma ceil_eq_top : ⌈r⌉ₑ = ⊤ ↔ r = ∞ := by cases r <;> simp
+
 lemma floor_lt_top : ⌊r⌋ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
+
 @[simp] lemma ceil_lt_top : ⌈r⌉ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 
 @[simp] lemma le_floor : n ≤ ⌊r⌋ₑ ↔ n ≤ r := by cases r <;> cases n <;> simp [Nat.le_floor_iff]
+
 @[simp] lemma ceil_le : ⌈r⌉ₑ ≤ n ↔ r ≤ n := by cases r <;> cases n <;> simp
+
 @[simp] lemma floor_lt : ⌊r⌋ₑ < n ↔ r < n := lt_iff_lt_of_le_iff_le le_floor
+
 @[simp] lemma lt_ceil : n < ⌈r⌉ₑ ↔ n < r := lt_iff_lt_of_le_iff_le ceil_le
 
 lemma gc_toENNReal_floor : GaloisConnection (↑) floor := fun _ _ ↦ le_floor.symm
@@ -137,14 +146,14 @@ lemma ceil_congr (h : ∀ n : ℕ∞, r ≤ n ↔ s ≤ n) : ⌈r⌉ₑ = ⌈s�
   | _, ⊤ => by simp
   | (r : ℝ≥0), (n : ℕ) => by
     -- FIXME: Why does `norm_cast` not use `ENNReal.ofNNReal_add_natCast`?
-    norm_cast; rw [← ENNReal.ofNNReal_add_natCast]; norm_cast; exact n.floor_add_natCast zero_le'
+    norm_cast; rw [← ENNReal.ofNNReal_add_natCast]; norm_cast; exact n.floor_add_natCast zero_le
 
 @[simp] lemma ceil_add_toENNReal : ∀ (r : ℝ≥0∞) (n : ℕ∞), ⌈r + n⌉ₑ = ⌈r⌉ₑ + n
   | ∞, _ => by simp
   | _, ⊤ => by simp
   | (r : ℝ≥0), (n : ℕ) => by
     -- FIXME: Why does `norm_cast` not use `ENNReal.ofNNReal_sub_natCast`?
-    norm_cast; rw [← ENNReal.ofNNReal_add_natCast]; norm_cast; exact Nat.ceil_add_natCast zero_le' _
+    norm_cast; rw [← ENNReal.ofNNReal_add_natCast]; norm_cast; exact Nat.ceil_add_natCast zero_le _
 
 @[simp] lemma floor_toENNReal_add (r : ℝ≥0∞) (n : ℕ∞) : ⌊n + r⌋ₑ = n + ⌊r⌋ₑ := by
   simp [add_comm, floor_add_toENNReal]
@@ -200,7 +209,7 @@ lemma floor_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌊r - ofNat(n
 
 @[bound]
 lemma ceil_lt_add_one (hr : r ≠ ∞) : (⌈r⌉ₑ : ℝ≥0∞) < r + 1 := by
-  lift r to ℝ≥0 using hr; simpa using mod_cast Nat.ceil_lt_add_one (zero_le r)
+  lift r to ℝ≥0 using hr; simpa using mod_cast Nat.ceil_lt_add_one zero_le
 
 @[bound]
 lemma ceil_add_le : ∀ (r s : ℝ≥0∞), ⌈r + s⌉ₑ ≤ ⌈r⌉ₑ + ⌈s⌉ₑ
@@ -214,21 +223,44 @@ lemma ceil_add_le : ∀ (r s : ℝ≥0∞), ⌈r + s⌉ₑ ≤ ⌈r⌉ₑ + ⌈s
 @[simp] lemma toENNReal_iInf {ι : Sort*} (f : ι → ℕ∞) :
     toENNReal (⨅ i, f i) = ⨅ i, toENNReal (f i) := eq_of_forall_le_iff fun _ ↦ by simp [← ceil_le]
 
+@[simp] lemma preimage_toENNReal_Ioi (a : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ioi a = Set.Ioi ⌊a⌋ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Iio (a : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Iio a = Set.Iio ⌈a⌉ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Iic (a : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Iic a = Set.Iic ⌊a⌋ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Ici (a : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ici a = Set.Ici ⌈a⌉ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Icc (a b : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Icc a b = Set.Icc ⌈a⌉ₑ ⌊b⌋ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Ico (a b : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ico a b = Set.Ico ⌈a⌉ₑ ⌈b⌉ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Ioc (a b : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ioc a b = Set.Ioc ⌊a⌋ₑ ⌊b⌋ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Ioo (a b : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ioo a b = Set.Ioo ⌊a⌋ₑ ⌈b⌉ₑ := by ext; simp
+
 end ENat
 
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
-set_option backward.privateInPublic true in
-private alias ⟨_, natCeil_pos⟩ := ENat.ceil_pos
+alias ⟨_, natCeil_pos⟩ := ENat.ceil_pos
 
 /-- Extension for the `positivity` tactic: `ENat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉ₑ]
-meta def evalENatCeil : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENatCeil : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ∞), ~q(ENat.ceil $r) =>
-    assertInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) r with
+    match ← core q(inferInstance) (some q(inferInstance)) r with
     | .positive pr =>
       assertInstancesCommute
       pure (.positive q(natCeil_pos $pr))

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Lattice
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Types.Set
 
@@ -18,7 +17,7 @@ which sends `A : Set X` to its underlying type preserves filtered colimits.
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' u
 
@@ -26,6 +25,8 @@ open CategoryTheory Limits CompleteLattice
 
 namespace Set
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 open CompleteLattice in
 instance {J : Type w} [Category.{w'} J] {X : Type u} [IsFilteredOrEmpty J] :
     PreservesColimitsOfShape J (functorToTypes (X := X)) where

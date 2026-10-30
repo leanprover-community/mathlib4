@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Thomas Read, Andrew Yang, Dagur Asgeirsson, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Mates
+
 /-!
 
 # Uniqueness of adjoints

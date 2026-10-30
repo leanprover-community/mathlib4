@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Michał Mrugała
 -/
 module
 
-public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.GroupTheory.MonoidLocalization.Maps
 
 /-!
 # Submonoid of pairs with quotient in a submonoid

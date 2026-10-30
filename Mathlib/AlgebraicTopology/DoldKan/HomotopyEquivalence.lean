@@ -21,7 +21,9 @@ normalized Moore complex and the alternating face map complex of a simplicial ob
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-  CategoryTheory.Preadditive Simplicial DoldKan
+  CategoryTheory.Preadditive
+
+open scoped Simplicial DoldKan
 
 noncomputable section
 
@@ -47,6 +49,7 @@ noncomputable def homotopyPToId : ∀ q : ℕ, Homotopy (P q : K[X] ⟶ _) (𝟙
 def homotopyQToZero (q : ℕ) : Homotopy (Q q : K[X] ⟶ _) 0 :=
   Homotopy.equivSubZero.toFun (homotopyPToId X q).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem homotopyPToId_eventually_constant {q n : ℕ} (hqn : n < q) :
     ((homotopyPToId X (q + 1)).hom n (n + 1) : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
       (homotopyPToId X q).hom n (n + 1) := by

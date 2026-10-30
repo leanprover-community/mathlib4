@@ -1,92 +1,145 @@
 /-
 Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Josha Dekker
+Authors: Josha Dekker, Etienne Marion
 -/
 module
 
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
-/-! # Geometric distributions over ℕ
+import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 
-Define the geometric measure over the natural numbers
+/-! # Geometric distributions
 
-## Main definitions
-* `geometricPMFReal`: the function `p n ↦ (1-p) ^ n * p`
-  for `n ∈ ℕ`, which is the probability density function of a geometric distribution with
-  success probability `p ∈ (0,1]`.
-* `geometricPMF`: `ℝ≥0∞`-valued pmf,
-  `geometricPMF p = ENNReal.ofReal (geometricPMFReal p)`.
-* `geometricMeasure`: a geometric measure on `ℕ`, parametrized by its success probability `p`.
+We define the geometric distributions over natural numbers. For `0 < p ≤ 1`, `geometricMeasure p`
+is the measure which to `{n}` associates `(1 - p) ^ n * p`.
+
+As the parameter `p` needs to lie between `0` and `1`, we define `geometricMeasure p` with
+`p : unitInterval`.
+
+Imagine a certain experiment which has success probability `p`. If you repeat this experiment
+infinitely many times and independently, the number of failures before the first success
+follows a geometric distribution with parameter `p`.
+
+## Main definition
+
+* `geometricMeasure p`: a geometric measure on `ℕ`,
+  parametrized by its success probability `p`.
+
+## Implementation note
+
+To avoid having to carry around a hypothesis `p ≠ 0`, we define
+`geometricMeasure 0 := Measure.dirac 0`. That way `IsProbabilityMeasure (geometricMeasure p)`
+can be automatically inferred.
+
+## Tags
+
+geometric distribution
 -/
 
 @[expose] public section
 
 open scoped ENNReal NNReal
 
-open MeasureTheory Real Set Filter Topology
+open MeasureTheory Real Set
 
 namespace ProbabilityTheory
 
-variable {p : ℝ}
+variable {p : unitInterval}
 
-section GeometricPMF
+/-- The geometric measure with success probability `p` as a measure over `ℕ`. -/
+noncomputable def geometricMeasure (p : unitInterval) : Measure ℕ := if p ≠ 0
+  then
+    Measure.sum (fun n ↦ ENNReal.ofReal ((1 - p) ^ n * p) • .dirac n)
+  else
+    .dirac 0
 
-/-- The pmf of the geometric distribution depending on its success probability. -/
-noncomputable
-def geometricPMFReal (p : ℝ) (n : ℕ) : ℝ := (1 - p) ^ n * p
+lemma geometricMeasure_eq (hp : p ≠ 0) :
+    geometricMeasure p =
+      Measure.sum (fun n ↦ ENNReal.ofReal ((1 - p) ^ n * p) • .dirac n) :=
+  ite_eq_left hp
 
-lemma geometricPMFRealSum (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
-    HasSum (fun n ↦ geometricPMFReal p n) 1 := by
-  unfold geometricPMFReal
-  have := hasSum_geometric_of_lt_one (sub_nonneg.mpr hp_le_one) (sub_lt_self 1 hp_pos)
-  apply (hasSum_mul_right_iff (hp_pos.ne')).mpr at this
-  simp only [sub_sub_cancel] at this
-  rw [inv_mul_eq_div, div_self hp_pos.ne'] at this
-  exact this
+/-- The `positivity` tactic does not work for this goal. Use this lemma to rewrite
+`(ENNReal.ofReal ((1 - p) ^ n * p)).toReal = (1 - p) ^ n * p`. -/
+lemma geometricMeasure_nonneg (p : unitInterval) n :
+    0 ≤ (1 - p : ℝ) ^ n * p := mul_nonneg (pow_nonneg (by grind) n) p.2.1
 
-/-- The geometric pmf is positive for all natural numbers -/
-lemma geometricPMFReal_pos {n : ℕ} (hp_pos : 0 < p) (hp_lt_one : p < 1) :
-    0 < geometricPMFReal p n := by
-  rw [geometricPMFReal]
-  positivity [sub_pos.mpr hp_lt_one]
+lemma geometricMeasure_pos (h1 : p ≠ 0) (h2 : p ≠ 1) n :
+    0 < (1 - p : ℝ) ^ n * p := mul_pos (pow_pos (by grind) n) (by grind)
 
-lemma geometricPMFReal_nonneg {n : ℕ} (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
-    0 ≤ geometricPMFReal p n := by
-  rw [geometricPMFReal]
-  positivity [sub_nonneg.mpr hp_le_one]
+lemma geometricMeasure_singleton (hp : p ≠ 0) n :
+    geometricMeasure p {n} = ENNReal.ofReal ((1 - p) ^ n * p) := by
+  rw [geometricMeasure_eq hp, Measure.sum_smul_dirac_singleton]
 
-/-- Geometric distribution with success probability `p`. -/
-noncomputable
-def geometricPMF (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : PMF ℕ :=
-  ⟨fun n ↦ ENNReal.ofReal (geometricPMFReal p n), by
-    apply ENNReal.hasSum_coe.mpr
-    rw [← toNNReal_one]
-    exact (geometricPMFRealSum hp_pos hp_le_one).toNNReal
-      (fun n ↦ geometricPMFReal_nonneg hp_pos hp_le_one)⟩
+lemma geometricMeasure_real_singleton (hp : p ≠ 0) n :
+    (geometricMeasure p).real {n} = (1 - p) ^ n * p := by
+  rw [measureReal_def, geometricMeasure_singleton hp,
+    ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
 
-/-- The geometric pmf is measurable. -/
-@[fun_prop]
-lemma measurable_geometricPMFReal : Measurable (geometricPMFReal p) := by
-  fun_prop
+lemma geometricMeasure_real_singleton_pos (h1 : p ≠ 0) (h2 : p ≠ 1) n :
+    0 < (geometricMeasure p).real {n} := by
+  rw [geometricMeasure_real_singleton h1]
+  exact geometricMeasure_pos h1 h2 n
 
-@[fun_prop]
-lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal p) :=
-  stronglyMeasurable_iff_measurable.mpr measurable_geometricPMFReal
+lemma hasSum_one_geometricMeasure (hp : p ≠ 0) :
+    HasSum (fun n ↦ (1 - p : ℝ) ^ n * p) 1 := by
+  convert (hasSum_geometric_of_lt_one (r := 1 - p) (by grind) (by grind)).mul_right (p : ℝ)
+  grind
 
-end GeometricPMF
+instance isProbabilityMeasure_geometricMeasure :
+    IsProbabilityMeasure (geometricMeasure p) := by
+  rw [geometricMeasure]
+  split_ifs with h
+  · exact (hasSum_one_geometricMeasure h).isProbabilityMeasure_sum_dirac
+      (geometricMeasure_nonneg p)
+  · infer_instance
 
-/-- Measure defined by the geometric distribution -/
-noncomputable
-def geometricMeasure (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : Measure ℕ :=
-  (geometricPMF hp_pos hp_le_one).toMeasure
+section Integral
 
-lemma isProbabilityMeasure_geometricMeasure (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
-    IsProbabilityMeasure (geometricMeasure hp_pos hp_le_one) :=
-  PMF.toMeasure.isProbabilityMeasure (geometricPMF hp_pos hp_le_one)
+variable {E : Type*} [NormedAddCommGroup E] {f : ℕ → E}
 
-@[deprecated (since := "2025-08-28")] alias isProbabilityMeasureGeometric :=
-  isProbabilityMeasure_geometricMeasure
+lemma integrable_geometricMeasure_iff (hp : p ≠ 0) :
+    Integrable f (geometricMeasure p) ↔ Summable (fun n ↦ (1 - p : ℝ) ^ n * p * ‖f n‖) := by
+  rw [geometricMeasure_eq hp, integrable_sum_dirac_iff (by simp)]
+  congrm Summable (fun n ↦ ?_ * _)
+  rw [ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
+
+variable [NormedSpace ℝ E]
+
+lemma hasSum_integral_geometricMeasure [CompleteSpace E]
+    (hp : p ≠ 0) (hf : Integrable f (geometricMeasure p)) :
+    HasSum (fun n ↦ ((1 - p : ℝ) ^ n * p) • f n) (∫ n, f n ∂geometricMeasure p) := by
+  have : (fun n ↦ ((1 - p : ℝ) ^ n * p) • f n) =
+      fun n ↦ (ENNReal.ofReal ((1 - p) ^ n * p)).toReal • f n := by
+    ext n; rw [ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
+  rw [this, geometricMeasure_eq hp]
+  apply hasSum_integral_sum_dirac (by simp)
+  convert! (integrable_geometricMeasure_iff hp).1 hf with n
+  rw [ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
+
+/-- If a function is integrable with respect to `geometricMeasure p`, then its integral
+against this measure is given by its sum weighted by `(1 - p) ^ n * p`.
+
+See `integral_geometricMeasure` for a version where the codomain is finite-dimensional
+and does not require the integrability hypothesis. -/
+lemma integral_geometricMeasure' [CompleteSpace E] (hp : p ≠ 0)
+    (hf : Integrable f (geometricMeasure p)) :
+    ∫ n, f n ∂geometricMeasure p = ∑' n : ℕ, ((1 - p : ℝ) ^ n * p) • f n :=
+  (hasSum_integral_geometricMeasure hp hf).tsum_eq.symm
+
+/-- The integral of a function taking values in a finite-dimensional space
+against `geometricMeasure p` is given by its sum weighted by `(1 - p) ^ n * p`. This version
+does not require integrability, as the integral exists if and only if the sum exists, and otherwise
+they are both defined to be zero.
+
+See `integral_geometricMeasure'` with a general codomain which assumes integrability. -/
+lemma integral_geometricMeasure [FiniteDimensional ℝ E] (hp : p ≠ 0) (f : ℕ → E) :
+    ∫ n, f n ∂geometricMeasure p = ∑' n : ℕ, ((1 - p : ℝ) ^ n * p) • f n := by
+  rw [geometricMeasure_eq hp, integral_sum_dirac (by simp)]
+  congr with n
+  rw [ENNReal.toReal_ofReal (geometricMeasure_nonneg p n)]
+
+end Integral
 
 end ProbabilityTheory

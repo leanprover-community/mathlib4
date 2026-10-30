@@ -28,12 +28,13 @@ namespace CategoryTheory
 
 namespace Adjunction
 
-open CategoryTheory Category Functor
+open CategoryTheory CategoryTheory.Functor
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] [Preadditive C]
   [Preadditive D] {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
 include adj
+
 lemma right_adjoint_additive [F.Additive] : G.Additive where
   map_add {X Y} f g := (adj.homEquiv _ _).symm.injective (by simp [homEquiv_counit])
 

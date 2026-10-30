@@ -5,15 +5,17 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 public import Mathlib.Algebra.Ring.Basic
 public import Mathlib.Order.Hom.Basic
+
+import Mathlib.Algebra.Group.Equiv.Defs
+
 /-!
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

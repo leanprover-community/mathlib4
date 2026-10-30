@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Prime.Basic
-public import Mathlib.Algebra.Group.Int.Units
-public import Mathlib.Data.Int.Basic
+
+import Mathlib.Algebra.Group.Int.Units
 
 /-!
 # Prime numbers in the naturals and the integers
@@ -16,7 +16,7 @@ public import Mathlib.Data.Int.Basic
 TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

@@ -21,7 +21,7 @@ kernels.
   the identity function.
 * `ProbabilityTheory.Kernel.copy α`: the deterministic kernel that maps `x : α` to
   the Dirac measure at `(x, x) : α × α`.
-* `ProbabilityTheory.Kernel.discard α`: the Markov kernel to the type `Unit`.
+* `ProbabilityTheory.Kernel.discard α`: the Markov kernel to the type `PUnit`.
 * `ProbabilityTheory.Kernel.swap α β`: the deterministic kernel that maps `(x, y)` to
   the Dirac measure at `(y, x)`.
 * `ProbabilityTheory.Kernel.const α (μβ : measure β)`: constant kernel `a ↦ μβ`.
@@ -130,7 +130,7 @@ section Copy
 /-- The deterministic kernel that maps `x : α` to the Dirac measure at `(x, x) : α × α`. -/
 noncomputable
 def copy (α : Type*) [MeasurableSpace α] : Kernel α (α × α) :=
-  Kernel.deterministic (fun x ↦ (x, x)) (measurable_id.prod measurable_id)
+  Kernel.deterministic Function.diag (measurable_id.prod measurable_id)
 
 instance : IsMarkovKernel (copy α) := by rw [copy]; infer_instance
 
@@ -140,15 +140,15 @@ end Copy
 
 section Discard
 
-/-- The Markov kernel to the `Unit` type. -/
+/-- The Markov kernel to the `PUnit` type. -/
 noncomputable
-def discard (α : Type*) [MeasurableSpace α] : Kernel α Unit :=
-  Kernel.deterministic (fun _ ↦ ()) measurable_const
+def discard (α : Type*) [MeasurableSpace α] : Kernel α PUnit :=
+  Kernel.deterministic (fun _ ↦ PUnit.unit) measurable_const
 
 instance : IsMarkovKernel (discard α) := by rw [discard]; infer_instance
 
 @[simp]
-lemma discard_apply (a : α) : discard α a = Measure.dirac () := deterministic_apply _ _
+lemma discard_apply (a : α) : discard α a = Measure.dirac PUnit.unit := deterministic_apply _ _
 
 end Discard
 
@@ -215,7 +215,7 @@ instance const.instIsZeroOrMarkovKernel {μβ : Measure β} [hμβ : IsZeroOrPro
 
 lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
     IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
-  ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
+  ⟨fun h ↦ h.sfinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
 
 instance [Nonempty β] : Nonempty {κ : Kernel α β // IsMarkovKernel κ} :=
   nonempty_subtype.2 ⟨Kernel.const _ (Measure.dirac Classical.ofNonempty), inferInstance⟩
@@ -228,7 +228,7 @@ theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
 theorem setLIntegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {s : Set β} :
     ∫⁻ x in s, f x ∂const α μ a = ∫⁻ x in s, f x ∂μ := by rw [const_apply]
 
-lemma discard_eq_const : discard α = const α (Measure.dirac ()) := rfl
+lemma discard_eq_const : discard α = const α (Measure.dirac PUnit.unit) := rfl
 
 end Const
 
@@ -291,7 +291,8 @@ instance IsSFiniteKernel.restrict (κ : Kernel α β) [IsSFiniteKernel κ] (hs :
     IsSFiniteKernel (κ.restrict hs) := by
   refine ⟨⟨fun n => Kernel.restrict (seq κ n) hs, inferInstance, ?_⟩⟩
   ext1 a
-  simp_rw [sum_apply, restrict_apply, ← Measure.restrict_sum _ hs, ← sum_apply, kernel_sum_seq]
+  simp_rw [Kernel.sum_apply, restrict_apply, ← Measure.restrict_sum _ hs, ← Kernel.sum_apply,
+    kernel_sum_seq]
 
 end Restrict
 
@@ -342,7 +343,7 @@ protected instance IsSFiniteKernel.comapRight (κ : Kernel α β) [IsSFiniteKern
     (hf : MeasurableEmbedding f) : IsSFiniteKernel (comapRight κ hf) := by
   refine ⟨⟨fun n => comapRight (seq κ n) hf, inferInstance, ?_⟩⟩
   ext1 a
-  rw [sum_apply]
+  rw [Kernel.sum_apply]
   simp_rw [comapRight_apply _ hf]
   have :
     (Measure.sum fun n => Measure.comap f (seq κ n a)) =
@@ -388,7 +389,7 @@ protected instance IsSFiniteKernel.piecewise [IsSFiniteKernel κ] [IsSFiniteKern
     IsSFiniteKernel (piecewise hs κ η) := by
   refine ⟨⟨fun n => piecewise hs (seq κ n) (seq η n), inferInstance, ?_⟩⟩
   ext1 a
-  simp_rw [sum_apply, Kernel.piecewise_apply]
+  simp_rw [Kernel.sum_apply, Kernel.piecewise_apply]
   split_ifs <;> exact (measure_sum_seq _ a).symm
 
 theorem lintegral_piecewise (a : α) (g : β → ℝ≥0∞) :
@@ -409,19 +410,19 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
   obtain ⟨s, s_meas, μs, hs⟩ : ∃ s, MeasurableSet s ∧ μ s = 0
       ∧ ∀ a ∉ s, IsProbabilityMeasure (κ a) := by
     refine ⟨toMeasurable μ {a | ¬ IsProbabilityMeasure (κ a)}, measurableSet_toMeasurable _ _,
-      by simpa [measure_toMeasurable] using h, ?_⟩
+      by simpa [measure_toMeasurable] using! h, ?_⟩
     intro a ha
-    contrapose! ha
+    contrapose ha
     exact subset_toMeasurable _ _ ha
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
-    contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)
+    contrapose! h'; simpa [μs, h'] using! measure_univ_le_add_compl s (μ := μ)
   refine ⟨Kernel.piecewise s_meas (Kernel.const _ (κ a)) κ, ?_, ?_⟩
   · filter_upwards [measure_eq_zero_iff_ae_notMem.1 μs] with b hb
     simp [hb, piecewise]
   · refine ⟨fun b ↦ ?_⟩
     by_cases hb : b ∈ s
-    · simpa [hb, piecewise] using hs _ ha
-    · simpa [hb, piecewise] using hs _ hb
+    · simpa [hb, piecewise] using! hs _ ha
+    · simpa [hb, piecewise] using! hs _ hb
 
 section Bool
 

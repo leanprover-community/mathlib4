@@ -1,8 +1,14 @@
+module
+import Mathlib.CategoryTheory.Bicategory.Coherence
+import Mathlib.CategoryTheory.Bicategory.End
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 
 open CategoryTheory
 
 universe w v u
+
+set_option warn.refl_coherence false
 
 section Monoidal
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
@@ -10,7 +16,7 @@ open scoped MonoidalCategory
 
 -- Internal tactics
 
-example (X₁ X₂ : C) :
+theorem t (X₁ X₂ : C) :
     ((λ_ (𝟙_ C)).inv ⊗ₘ 𝟙 (X₁ ⊗ X₂)) ≫ (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫
       (𝟙 (𝟙_ C) ⊗ₘ (α_ (𝟙_ C) X₁ X₂).inv) =
     𝟙 (𝟙_ C) ⊗ₘ ((λ_ X₁).inv ⊗ₘ 𝟙 X₂) := by
@@ -90,21 +96,20 @@ variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
 example {a : B} (f : a ⟶ a) : 𝟙 f ▷ f = 𝟙 (f ≫ f) := by whisker_simps
 
-example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by bicategory_coherence
-example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by bicategory_coherence
+example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by pure_coherence
+example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by pure_coherence
 example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
   (α_ f g h).inv ≫ (α_ f g h).hom = 𝟙 (f ≫ g ≫ h) := by
-  bicategory_coherence
+  pure_coherence
 example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :
   f ◁ (α_ g h i).hom ≫ (α_ f g (h ≫ i)).inv ≫ (α_ (f ≫ g) h i).inv =
     (α_ f (g ≫ h) i).inv ≫ (α_ f g h).inv ▷ i := by
-  bicategory_coherence
+  pure_coherence
 example (f : a ⟶ b) (g : b ⟶ c) :
   f ◁ (λ_ g).inv ≫ (α_ f (𝟙 b) g).inv = (ρ_ f).inv ▷ g := by
-  bicategory_coherence
-
-example : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
-  bicategory_coherence
+  pure_coherence
+theorem s : 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (λ_ (𝟙 a)).hom = 𝟙 (𝟙 a ≫ 𝟙 a) ≫ (ρ_ (𝟙 a)).hom := by
+  pure_coherence
 
 set_option linter.unusedVariables false in
 example (f g : a ⟶ a) (η : 𝟙 a ⟶ f) (θ : f ⟶ g) (w : false) :

@@ -6,11 +6,9 @@ Authors: Antoine Labelle
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Transport
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Full monoidal subcategories
@@ -27,7 +25,7 @@ braided/symmetric structure.
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -83,7 +81,7 @@ instance : MonoidalCategoryStruct P.FullSubcategory where
   tensorHom f g := ObjectProperty.homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
   associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
-  leftUnitor X :=  P.isoMk (λ_ X.1)
+  leftUnitor X := P.isoMk (λ_ X.1)
   rightUnitor X := P.isoMk (ρ_ X.1)
 
 /--
@@ -194,8 +192,6 @@ theorem ihom_obj (X Y : P.FullSubcategory) :
 theorem ihom_map_hom (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
     (f : Y ⟶ Z) : ((ihom X).map f).hom = (ihom X.obj).map f.hom :=
   rfl
-
-@[deprecated (since := "2025-12-18")] alias ihom_map := ihom_map_hom
 
 end Closed
 

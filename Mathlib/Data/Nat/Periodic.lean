@@ -15,7 +15,7 @@ This file identifies a few functions on `ℕ` which are periodic, and also prove
 periodic predicates which helps determine their cardinality when filtering intervals over them.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -44,8 +44,9 @@ open Multiset
 equal to the number naturals below `a` for which `p a` is true. -/
 theorem filter_multiset_Ico_card_eq_of_periodic (n a : ℕ) (p : ℕ → Prop) [DecidablePred p]
     (pp : Periodic p a) : card (filter p (Ico n (n + a))) = a.count p := by
+  classical
   rw [count_eq_card_filter_range, Finset.card, Finset.filter_val, Finset.range_val, ←
-    multiset_Ico_map_mod n, ← map_count_True_eq_filter_card, ← map_count_True_eq_filter_card,
+    multiset_Ico_map_mod n, ← map_count_true_eq_filter_card, ← map_count_true_eq_filter_card,
     map_map]
   congr; funext n
   exact (pp.map_mod_nat n).symm

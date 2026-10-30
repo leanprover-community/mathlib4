@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 
-/-! Shifted morphisms in the opposite category
+/-! # Shifted morphisms in the opposite category
 
 If `C` is a category equipped with a shift by `ℤ`, `X` and `Y` are objects
 of `C`, and `n : ℤ`, we define a bijection
@@ -117,6 +117,7 @@ lemma opEquiv'_zero_add_symm (a : ℤ) (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite
   simp [opEquiv'_symm_apply, opEquiv_symm_apply, shiftFunctorAdd'_add_zero,
     opShiftFunctorEquivalence_zero_unitIso_inv_app]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma opEquiv'_add_symm (n m a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' = a'')
     (x : (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦m + n⟧)) :
     (opEquiv' (m + n) a a'' (by lia)).symm x =
@@ -139,7 +140,6 @@ lemma opEquiv_symm_add {n : ℤ} (x y : ShiftedHom (Opposite.op Y) (Opposite.op 
     (opEquiv n).symm (x + y) = (opEquiv n).symm x + (opEquiv n).symm y := by
   dsimp [opEquiv_symm_apply]
   rw [← Preadditive.comp_add, ← Functor.map_add]
-  rfl
 
 @[simp]
 lemma opEquiv'_symm_add {n a : ℤ} (x y : (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧))
@@ -147,9 +147,7 @@ lemma opEquiv'_symm_add {n a : ℤ} (x y : (Opposite.op (Y⟦a⟧) ⟶ (Opposite
     (opEquiv' n a a' h).symm (x + y) =
       (opEquiv' n a a' h).symm x + (opEquiv' n a a' h).symm y := by
   dsimp [opEquiv']
-  erw [opEquiv_symm_add, Iso.homToEquiv_apply, Iso.homToEquiv_apply, Iso.homToEquiv_apply]
-  rw [Preadditive.add_comp]
-  rfl
+  rw [opEquiv_symm_add, Preadditive.add_comp]
 
 end Preadditive
 

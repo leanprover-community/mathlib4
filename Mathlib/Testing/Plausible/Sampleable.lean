@@ -5,17 +5,25 @@ Authors: Henrik Böving, Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Int.Order.Basic
 public meta import Mathlib.Data.List.Monad
 public meta import Mathlib.Data.PNat.Defs
+public meta import Plausible.Sampleable
+public import Mathlib.Data.Int.Order.Basic
 public import Plausible.Sampleable
+
+import Plausible.Arbitrary
+import Plausible.Gen
+import Plausible.Random
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instances for mathlib
 types.
 -/
 
-@[expose] public section
+public section
 
 namespace Plausible
 

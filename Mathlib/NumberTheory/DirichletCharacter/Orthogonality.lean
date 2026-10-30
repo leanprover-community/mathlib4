@@ -5,9 +5,11 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Orthogonality relations for Dirichlet characters
@@ -19,7 +21,7 @@ when `a ≠ b` and has the value `n.totient` otherwise. This requires `R` to hav
 enough roots of unity (e.g., `R` could be an algebraically closed field of characteristic zero).
 -/
 
-@[expose] public section
+public section
 
 namespace DirichletCharacter
 

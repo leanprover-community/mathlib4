@@ -5,6 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
@@ -23,11 +24,11 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
-open Set Function
+open Set
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 
@@ -36,6 +37,7 @@ namespace Ideal
 variable [Semiring α] (I : Ideal α) {a b : α}
 
 /-- An ideal `P` of a ring `R` is prime if `P ≠ R` and `xy ∈ P → x ∈ P ∨ y ∈ P` -/
+@[wikidata Q863912]
 class IsPrime (I : Ideal α) : Prop where
   /-- The prime ideal is not the entire ring. -/
   ne_top' : I ≠ ⊤
@@ -48,8 +50,11 @@ theorem isPrime_iff {I : Ideal α} : IsPrime I ↔ I ≠ ⊤ ∧ ∀ {x y : α},
 theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
   hI.1
 
+lemma notMem_of_isUnit (I : Ideal α) [I.IsPrime] {x : α} (hx : IsUnit x) : x ∉ I :=
+  fun h ↦ ‹I.IsPrime›.ne_top (eq_top_of_isUnit_mem _ h hx)
+
 theorem IsPrime.one_notMem {I : Ideal α} (hI : I.IsPrime) : 1 ∉ I :=
-  mt (eq_top_iff_one I).2 hI.1
+  notMem_of_isUnit _ isUnit_one
 
 theorem one_notMem (I : Ideal α) [hI : I.IsPrime] : 1 ∉ I :=
   hI.one_notMem
@@ -60,8 +65,6 @@ theorem IsPrime.mem_or_mem {I : Ideal α} (hI : I.IsPrime) {x y : α} : x * y �
 theorem IsPrime.mul_notMem {I : Ideal α} (hI : I.IsPrime) {x y : α} :
     x ∉ I → y ∉ I → x * y ∉ I := fun hx hy h ↦
   hy ((hI.mem_or_mem h).resolve_left hx)
-
-@[deprecated (since := "2025-05-23")] alias IsPrime.mul_not_mem := IsPrime.mul_notMem
 
 theorem IsPrime.mem_or_mem_of_mul_eq_zero {I : Ideal α} (hI : I.IsPrime) {x y : α} (h : x * y = 0) :
     x ∈ I ∨ y ∈ I :=
@@ -85,7 +88,7 @@ theorem not_isPrime_iff {I : Ideal α} :
       ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
         ⟨x, y, hxy, hx, hy⟩⟩
 
-theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
+instance isPrime_bot [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
@@ -101,7 +104,7 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
 
 lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
     {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
-  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
+  grind [Ideal.IsPrime.mul_mem_iff_mem_or_mem]
 
 lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
     {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by
@@ -116,6 +119,11 @@ def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
 @[simp]
 theorem mem_primeCompl_iff {P : Ideal α} [P.IsPrime] {x : α} :
     x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
+
+theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
+    (⊥ : Ideal α).primeCompl = nonZeroDivisors α := by
+  ext
+  simp
 
 end Ideal
 

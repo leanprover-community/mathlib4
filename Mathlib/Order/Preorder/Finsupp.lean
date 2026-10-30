@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finsupp.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise order on finitely supported functions
 
@@ -51,7 +54,7 @@ section Preorder
 variable [Preorder M] {f g : ι →₀ M} {i : ι} {a b : M}
 
 instance preorder : Preorder (ι →₀ M) where
-  le_refl  _ _ := le_rfl
+  le_refl _ _ := le_rfl
   le_trans _ _ _ hfg hgh i := (hfg i).trans (hgh i)
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
@@ -59,7 +62,7 @@ lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 
 lemma coe_mono : Monotone (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
 
-lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
+lemma coe_strictMono : StrictMono (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
 
 end Preorder
 

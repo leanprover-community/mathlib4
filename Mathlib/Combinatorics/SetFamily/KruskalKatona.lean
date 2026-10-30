@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.Colex
 public import Mathlib.Combinatorics.SetFamily.Compression.UV
 public import Mathlib.Combinatorics.SetFamily.Intersecting
-public import Mathlib.Data.Finset.Fin
 
 /-!
 # Kruskal-Katona theorem
@@ -44,7 +43,7 @@ The key results proved here are:
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
 
-@[expose] public section
+public section
 
 open Nat
 open scoped FinsetFamily
@@ -109,7 +108,7 @@ protected lemma IsInitSeg.shadow [Finite α] (h₁ : IsInitSeg 𝒜 r) : IsInitS
   obtain rfl | hr := Nat.eq_zero_or_pos r
   · have : 𝒜 ⊆ {∅} := fun s hs ↦ by rw [mem_singleton, ← Finset.card_eq_zero]; exact h₁.1 hs
     have := shadow_monotone this
-    simp only [subset_empty, le_eq_subset, shadow_singleton_empty] at this
+    simp only [subset_empty, shadow_singleton_empty] at this
     simp [this]
   obtain rfl | h𝒜 := 𝒜.eq_empty_or_nonempty
   · simp
@@ -119,7 +118,7 @@ protected lemma IsInitSeg.shadow [Finite α] (h₁ : IsInitSeg 𝒜 r) : IsInitS
 
 end Colex
 
-open Colex UV
+open Finset.Colex UV
 open scoped FinsetFamily
 
 variable {α : Type*} [LinearOrder α] {s U V : Finset α} {n : ℕ}
@@ -131,7 +130,7 @@ the set is being "shifted down" as `max U < max V`. -/
 lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' U hU < max' V hV)
     (hA : compress U V s ≠ s) : toColex (compress U V s) < toColex s := by
   rw [compress, ite_ne_right_iff] at hA
-  rw [compress, if_pos hA.1, lt_iff_exists_filter_lt]
+  rw [compress, ite_eq_left hA.1, lt_iff_exists_filter_lt]
   simp_rw [mem_sdiff (s := s), filter_inj, and_assoc]
   refine ⟨_, hA.1.2 <| max'_mem _ hV, notMem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
   have : a ∉ V := fun H ↦ ha.not_ge (le_max' _ _ H)
@@ -324,7 +323,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
         rw [mem_powersetCard] at Ah
         refine ⟨hBA.trans Ah.1, eq_tsub_of_add_eq ?_⟩
         rw [← Ah.2, ← card_sdiff_i, add_comm, card_sdiff_add_card_eq_card hBA]
-    _ ≤ #(∂ ^[i] 𝒜) := by
+    _ ≤ #(∂^[i] 𝒜) := by
       refine iterated_kk h₁ ?_ ⟨‹_›, ?_⟩
       · rwa [card_powersetCard, card_attachFin, card_range]
       simp_rw [𝒞, mem_powersetCard]

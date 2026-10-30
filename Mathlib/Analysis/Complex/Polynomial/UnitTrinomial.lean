@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.UnitTrinomial
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducibility of unit trinomials
 
@@ -17,7 +20,7 @@ Develop more theory (e.g., it suffices to check that `aeval z p ≠ 0` for `z = 
 unity).
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial.IsUnitTrinomial
 variable {p : ℤ[X]}

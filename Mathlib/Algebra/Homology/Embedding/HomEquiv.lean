@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Embedding.Restriction
-public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Boundary
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Algebra.Homology.Embedding.Extend
+public import Mathlib.Algebra.Homology.Embedding.Restriction
 
 /-!
 # Relations between `extend` and `restriction`
@@ -54,7 +53,7 @@ variable (φ : K.restriction e ⟶ L)
 
 variable {e}
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for `liftExtend`. -/
 noncomputable def f (i' : ι') : K.X i' ⟶ (L.extend e).X i' :=
   if hi' : ∃ i, e.f i = i' then

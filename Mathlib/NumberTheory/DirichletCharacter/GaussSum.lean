@@ -8,11 +8,14 @@ module
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.GaussSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gauss sums for Dirichlet characters
 -/
 
-@[expose] public section
+public section
 variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
 
 open AddChar DirichletCharacter
@@ -27,11 +30,10 @@ lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
       ZMod.intCast_cast, ZMod.cast_id', id_eq, Int.cast_one]
     rw [this, ha]
     ext1 y
-    simpa only [Int.cast_mul, Int.cast_natCast, mulShift_apply, mul_assoc, one_apply]
-      using DFunLike.ext_iff.mp he (a * y)
+    simpa [mul_assoc] using DFunLike.ext_iff.mp he (a * y)
   rw [← Units.val_inj, Units.val_one, ZMod.unitsMap_def, Units.coe_map] at hu
   have : ZMod.castHom hd (ZMod d) u.val = ((u.val.val : ℤ) : ZMod d) := by simp
-  rwa [MonoidHom.coe_coe, this, ← Int.cast_one, eq_comm,
+  rwa [MonoidHom.coe_ofClass, this, ← Int.cast_one, eq_comm,
     ZMod.intCast_eq_intCast_iff_dvd_sub] at hu
 
 /-- If `gaussSum χ e ≠ 0`, and `d` is such that `e.mulShift d = 1`, then `χ` must factor through
@@ -40,10 +42,8 @@ lemma factorsThrough_of_gaussSum_ne_zero [IsDomain R] {χ : DirichletCharacter R
     (hd : d ∣ N) (he : e.mulShift d = 1) (h_ne : gaussSum χ e ≠ 0) :
     χ.FactorsThrough d := by
   rw [DirichletCharacter.factorsThrough_iff_ker_unitsMap hd]
-  intro u hu
-  rw [MonoidHom.mem_ker, ← Units.val_inj, MulChar.coe_toUnitHom]
-  simpa only [Units.val_one, ne_eq, h_ne, not_false_eq_true, mul_eq_right₀] using
-    gaussSum_aux_of_mulShift e χ hd he hu
+  intro _ hu
+  simpa [← Units.val_inj, h_ne] using gaussSum_aux_of_mulShift e χ hd he hu
 
 /-- If `χ` is primitive, but `e` is not, then `gaussSum χ e = 0`. -/
 lemma gaussSum_eq_zero_of_isPrimitive_of_not_isPrimitive [IsDomain R]
@@ -60,7 +60,6 @@ lemma gaussSum_mulShift_of_isPrimitive [IsDomain R] {χ : DirichletCharacter R N
     (hχ : IsPrimitive χ) (a : ZMod N) :
     gaussSum χ (e.mulShift a) = χ⁻¹ a * gaussSum χ e := by
   by_cases ha : IsUnit a
-  · conv_rhs => rw [← gaussSum_mulShift χ e ha.unit]
-    rw [IsUnit.unit_spec, MulChar.inv_apply_eq_inv, Ring.inverse_mul_cancel_left _ _ (ha.map χ)]
+  · simpa [ha.unit_spec] using gaussSum_mulShift_eq χ e ha.unit
   · rw [MulChar.map_nonunit _ ha, zero_mul]
     exact gaussSum_eq_zero_of_isPrimitive_of_not_isPrimitive _ hχ (not_isPrimitive_mulShift e ha)

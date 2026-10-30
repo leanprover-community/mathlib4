@@ -6,8 +6,11 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Comma.Presheaf.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Yoneda
 public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.CategoryTheory.Limits.Preserves.Yoneda
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Relative Yoneda preserves certain colimits

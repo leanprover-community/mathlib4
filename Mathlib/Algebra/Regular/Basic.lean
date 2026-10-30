@@ -6,16 +6,15 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Algebra.Regular.Defs
 
 /-!
 # Regular elements
 
 By definition, a regular element in a commutative ring is a non-zero divisor.
-Lemma `isRegular_of_ne_zero` implies that every non-zero element of an integral domain is regular.
-Since it assumes that the ring is a `CancelMonoidWithZero` it applies also, for instance, to `ℕ`.
+Lemma `IsRegular.of_ne_zero` implies that every non-zero element of an integral domain is regular.
+Since it assumes that the ring is a cancellative `MonoidWithZero` it applies also,
+for instance, to `ℕ`.
 
 The lemmas in Section `MulZeroClass` show that the `0` element is (left/right-)regular if and
 only if the `MulZeroClass` is trivial.  This is useful when figuring out stopping conditions for
@@ -25,7 +24,7 @@ by adding one further `0`.
 The final goal is to develop part of the API to prove, eventually, results about non-zero-divisors.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 
@@ -35,12 +34,12 @@ variable [Mul R]
 
 @[to_additive] theorem IsLeftRegular.right_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
-  fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+  fun x y xy => h <| (ca x).trans <| xy.trans (ca y).symm
 
 @[to_additive] theorem IsRightRegular.left_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsRightRegular a) : IsLeftRegular a := by
   simp only [@Commute.symm_iff R _ a] at ca
-  exact fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+  exact fun x y xy => h <| (ca x).trans <| xy.trans (ca y).symm
 
 @[to_additive] theorem Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
     IsRightRegular a ↔ IsLeftRegular a :=
@@ -153,6 +152,16 @@ variable [CommSemigroup R] {a b : R}
 theorem isRegular_mul_iff : IsRegular (a * b) ↔ IsRegular a ∧ IsRegular b := by
   refine Iff.trans ?_ isRegular_mul_and_mul_iff
   exact ⟨fun ab => ⟨ab, by rwa [mul_comm]⟩, fun rab => rab.1⟩
+
+/-- If a product is regular, so is its left factor. -/
+@[to_additive /-- If a sum is add-regular, so is its left summand. -/]
+theorem IsRegular.of_mul_left (h : IsRegular (a * b)) : IsRegular a :=
+  (isRegular_mul_iff.mp h).1
+
+/-- If a product is regular, so is its right factor. -/
+@[to_additive /-- If a sum is add-regular, so is its right summand. -/]
+theorem IsRegular.of_mul_right (h : IsRegular (a * b)) : IsRegular b :=
+  (isRegular_mul_iff.mp h).2
 
 end CommSemigroup
 

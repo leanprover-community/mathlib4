@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Faces
-public import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!
 
@@ -35,7 +34,7 @@ in order to define `PInfty : K[X] ⟶ K[X]`.
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive
   CategoryTheory.SimplicialObject Opposite CategoryTheory.Idempotents
 
-open Simplicial DoldKan
+open scoped Simplicial DoldKan
 
 noncomputable section
 
@@ -52,7 +51,7 @@ noncomputable def P : ℕ → (K[X] ⟶ K[X])
   | q + 1 => P q ≫ (𝟙 _ + Hσ q)
 
 lemma P_zero : (P 0 : K[X] ⟶ K[X]) = 𝟙 _ := rfl
-lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
+lemma P_succ (q : ℕ) : (P (q + 1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
 
 /-- All the `P q` coincide with `𝟙 _` in degree 0. -/
 @[simp]
@@ -72,7 +71,7 @@ theorem P_add_Q (q : ℕ) : P q + Q q = 𝟙 K[X] := by
   abel
 
 theorem P_add_Q_f (q n : ℕ) : (P q).f n + (Q q).f n = 𝟙 (X _⦋n⦌) :=
-  HomologicalComplex.congr_hom (P_add_Q q) n
+  congr($(P_add_Q q).f n)
 
 @[simp]
 theorem Q_zero : (Q 0 : K[X] ⟶ _) = 0 :=
@@ -164,10 +163,11 @@ def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
       erw [(natTransHσ q).naturality f]
       rfl
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed in AlgebraicTopology/DoldKan/Decomposition.lean
 @[reassoc (attr := simp)]
 theorem P_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
     f.app (op ⦋n⦌) ≫ (P q).f n = (P q).f n ≫ f.app (op ⦋n⦌) :=
-  HomologicalComplex.congr_hom ((natTransP q).naturality f) n
+  congr($((natTransP q).naturality f).f n)
 
 @[reassoc (attr := simp)]
 theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :

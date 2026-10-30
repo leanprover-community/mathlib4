@@ -5,11 +5,10 @@ Authors: Henry Swanson
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.GroupTheory.Perm.Option
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Logic.Equiv.Option
-public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Derangements on types
@@ -18,7 +17,7 @@ In this file we define `derangements α`, the set of derangements on a type `α`
 
 We also define some equivalences involving various subtypes of `Perm α` and `derangements α`:
 * `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
-  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixed_points f ⊆ a}`.
+  `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixedPoints f ⊆ a}`.
 * `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
   sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type*) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.
@@ -39,8 +38,8 @@ def derangements (α : Type*) : Set (Perm α) :=
 variable {α β : Type*}
 
 theorem mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
-    f ∈ derangements α ↔ fixedPoints f = ∅ :=
-  Set.eq_empty_iff_forall_notMem.symm
+    f ∈ derangements α ↔ fixedPoints f = ∅ := by
+  simp [derangements, Set.eq_empty_iff_forall_notMem, IsFixedPt]
 
 /-- If `α` is equivalent to `β`, then `derangements α` is equivalent to `derangements β`. -/
 def Equiv.derangementsCongr (e : α ≃ β) : derangements α ≃ derangements β :=

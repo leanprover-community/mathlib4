@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.HasLocalization
-public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Center.Linear
+public import Mathlib.CategoryTheory.Center.Localization
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Localization.HasLocalization
 
 /-!
 # Localization of linear categories
@@ -34,13 +34,14 @@ variable (R : Type w) [Ring R] {C : Type u₁} [Category.{v₁} C] {D : Type u�
 
 /-- If `L : C ⥤ D` is a localization functor and `C` is `R`-linear, then `D` is
 `R`-linear if we already know that `D` is preadditive and `L` is additive. -/
+@[instance_reducible]
 noncomputable def linear : Linear R D := Linear.ofRingMorphism
   ((CatCenter.localizationRingHom L W).comp (Linear.toCatCenter R C))
 
 lemma functor_linear :
     letI := linear R L W
     Functor.Linear R L := by
-  letI := linear R L W
+  let := linear R L W
   constructor
   intro X Y f r
   change L.map (r • f) = ((Linear.toCatCenter R C r).localization L W).app (L.obj X) ≫ L.map f

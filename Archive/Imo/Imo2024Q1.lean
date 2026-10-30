@@ -3,13 +3,14 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Recall
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Tactic.Peel
 
 /-!
 # IMO 2024 Q1
@@ -26,6 +27,8 @@ First reducing modulo 2, any answer that is not a multiple of 2 is inductively s
 contained in a decreasing sequence of intervals, with empty intersection.
 -/
 
+@[expose] public section
+
 open Finset
 
 namespace Imo2024Q1
@@ -40,19 +43,20 @@ lemma condition_two_mul_int (m : ℤ) : Condition (2 * m) := by
   rintro n -
   suffices (n : ℤ) ∣ ∑ i ∈ Finset.Icc 0 n, ⌊((i * (2 * m) : ℤ) : ℝ)⌋ by
     rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert_zero (by simp)] at this
-    exact_mod_cast this
+    exact mod_cast this
   simp_rw [Int.floor_intCast, ← sum_mul, ← Ico_succ_right_eq_Icc, ← range_eq_Ico, ← mul_assoc]
   apply dvd_mul_of_dvd_left
   rw [← Nat.cast_sum, ← Nat.cast_ofNat (n := 2), ← Nat.cast_mul, Finset.sum_range_id_mul_two]
   simp
 
 lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m) ↔ Condition α := by
-  peel with n hn
+  unfold Condition
+  congr! 2 with n hn
   apply dvd_iff_dvd_of_dvd_sub
   simp_rw [← Finset.sum_sub_distrib, mul_sub]
   norm_cast
   simp_rw [Int.floor_sub_intCast, sub_sub_cancel_left]
-  convert condition_two_mul_int (-m) n hn
+  convert! condition_two_mul_int (-m) n hn
   norm_cast
   rw [Int.floor_intCast]
   simp
@@ -72,13 +76,13 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
   by_contra! hn
   have hr : 1 < ⌈α⁻¹⌉₊ := by
     rw [Nat.lt_ceil]
-    exact_mod_cast (one_lt_inv₀ h0).2 hn
+    exact mod_cast (one_lt_inv₀ h0).2 hn
   apply hr.ne'
   suffices ⌈α⁻¹⌉₊ = (1 : ℤ) from mod_cast this
   apply Int.eq_one_of_dvd_one (Int.zero_le_ofNat _)
-  convert hc ⌈α⁻¹⌉₊ (zero_lt_one.trans hr)
+  convert! hc ⌈α⁻¹⌉₊ (zero_lt_one.trans hr)
   rw [← Finset.add_sum_Ico_eq_sum_Icc hr.le]
-  convert (add_zero _).symm
+  convert! (add_zero _).symm
   · rw [Int.floor_eq_iff]
     constructor
     · rw [Int.cast_one]
@@ -129,7 +133,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
       by_contra
       rw [show ⌊(k + 1 : ℕ) * α⌋ = 2 * k by lia] at hc
       have hc' : ((k + 1 : ℕ) : ℤ) ∣ ((k + 1 : ℕ) : ℤ) * ((k + 1 : ℕ) : ℤ) - 1 := by
-        convert hc using 1
+        convert! hc using 1
         push_cast
         ring
       rw [dvd_sub_right (dvd_mul_right _ _), ← isUnit_iff_dvd_one, Int.isUnit_iff] at hc'
@@ -140,7 +144,7 @@ lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
       ring
     · rw [Int.floor_eq_iff] at hk'
       rw [div_le_iff₀ (by norm_cast; lia), mul_comm α]
-      convert hk'.1
+      convert! hk'.1
       push_cast
       ring
 
@@ -153,12 +157,12 @@ lemma not_condition_of_mem_Ioo {α : ℝ} (h : α ∈ Set.Ioo 0 2) : ¬Condition
   have hna := (hc.mem_Ico_n_of_mem_Ioo h hn).1
   rcases h with ⟨-, h2⟩
   have hna' : 2 - (n : ℝ)⁻¹ ≤ α := by
-    convert hna using 1
+    convert! hna using 1
     field
   rw [sub_eq_add_neg, ← le_sub_iff_add_le', neg_le, neg_sub] at hna'
   rw [le_inv_comm₀ (by linarith) (mod_cast hn), ← not_lt] at hna'
   apply hna'
-  exact_mod_cast Nat.lt_floor_add_one (_ : ℝ)
+  exact mod_cast Nat.lt_floor_add_one (_ : ℝ)
 
 lemma condition_iff_of_mem_Ico {α : ℝ} (h : α ∈ Set.Ico 0 2) : Condition α ↔ α = 0 := by
   constructor
@@ -167,7 +171,7 @@ lemma condition_iff_of_mem_Ico {α : ℝ} (h : α ∈ Set.Ico 0 2) : Condition �
     | inl h => exact h
     | inr ho => exact False.elim (not_condition_of_mem_Ioo ho hc)
   · rintro rfl
-    convert condition_two_mul_int 0
+    convert! condition_two_mul_int 0
     norm_num
 
 recall Imo2024Q1.Condition (α : ℝ) := (∀ n : ℕ, 0 < n → (n : ℤ) ∣ ∑ i ∈ Finset.Icc 1 n, ⌊i * α⌋)
@@ -176,7 +180,7 @@ recall Imo2024Q1.solutionSet := {α : ℝ | ∃ m : ℤ, α = 2 * m}
 theorem result (α : ℝ) : Condition α ↔ α ∈ solutionSet := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · rw [← condition_toIcoMod_iff, condition_iff_of_mem_Ico (toIcoMod_mem_Ico' _ _),
-        ← AddCommGroup.modEq_iff_toIcoMod_eq_left, AddCommGroup.ModEq] at h
+        ← AddCommGroup.modEq_iff_toIcoMod_eq_left, AddCommGroup.modEq_iff_zsmul'] at h
     simp_rw [sub_zero] at h
     rcases h with ⟨m, rfl⟩
     rw [zsmul_eq_mul, mul_comm]

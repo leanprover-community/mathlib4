@@ -6,8 +6,9 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Analysis.Complex.Trigonometric
-public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.RingTheory.Polynomial.Chebyshev
+
+import Mathlib.LinearAlgebra.Complex.Module
 
 /-!
 # Multiple angle formulas in terms of Chebyshev polynomials
@@ -17,14 +18,12 @@ This file gives the trigonometric characterizations of Chebyshev polynomials, fo
 (`Complex.cosh`) hyperbolic cosine.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial.Chebyshev
 
 open Polynomial
-
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 @[simp, norm_cast]
 theorem complex_ofReal_eval_T : ∀ (x : ℝ) n, (((T ℝ n).eval x : ℝ) : ℂ) = (T ℂ n).eval (x : ℂ) :=
@@ -98,6 +97,7 @@ evaluates on `2 * cos θ` to the value `sin ((n + 1) * θ) / sin θ`. -/
 theorem S_two_mul_complex_cos (n : ℤ) : (S ℂ n).eval (2 * cos θ) * sin θ = sin ((n + 1) * θ) := by
   simp [S_eq_U_comp_half_mul_X]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cosh θ` to the
 value `cosh (n * θ)`. -/
 @[simp]
@@ -108,6 +108,7 @@ theorem T_complex_cosh (n : ℤ) : (T ℂ n).eval (cosh θ) = cosh (n * θ) := c
   _ = cos (n * θ * I)                   := by rw [mul_assoc]
   _ = cosh (n * θ)                      := cos_mul_I (n * θ)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cosh θ` to the
 value `sinh ((n + 1) * θ) / sinh θ`. -/
 @[simp]
@@ -144,12 +145,12 @@ variable (θ : ℝ) (n : ℤ)
 
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cos θ` to the
 value `cos (n * θ)`. -/
-@[simp]
+@[simp, dlmf 18.5.E1]
 theorem T_real_cos : (T ℝ n).eval (cos θ) = cos (n * θ) := mod_cast T_complex_cos θ n
 
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cos θ` to the
 value `sin ((n + 1) * θ) / sin θ`. -/
-@[simp]
+@[simp, dlmf 18.5.E2]
 theorem U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) :=
   mod_cast U_complex_cos θ n
 
@@ -167,12 +168,12 @@ theorem S_two_mul_real_cos : (S ℝ n).eval (2 * cos θ) * sin θ = sin ((n + 1)
 
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cosh θ` to the
 value `cosh (n * θ)`. -/
-@[simp]
+@[simp, dlmf 18.5.E1]
 theorem T_real_cosh (n : ℤ) : (T ℝ n).eval (cosh θ) = cosh (n * θ) := mod_cast T_complex_cosh θ n
 
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cosh θ` to the
 value `sinh ((n + 1) * θ) / sinh θ`. -/
-@[simp]
+@[simp, dlmf 18.5.E2]
 theorem U_real_cosh (n : ℤ) : (U ℝ n).eval (cosh θ) * sinh θ = sinh ((n + 1) * θ) :=
   mod_cast U_complex_cosh θ n
 

@@ -7,19 +7,23 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.Polynomial.Wronskian
-public import Mathlib.RingTheory.Radical
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
+public import Mathlib.RingTheory.Radical.Basic
+
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Radical of a polynomial
 
 This file proves some theorems on `radical` and `divRadical` of polynomials.
-See `RingTheory.Radical` for the definition of `radical` and `divRadical`.
+See `Mathlib.RingTheory.Radical.Basic` for the definition of `radical` and `divRadical`.
 -/
 
-@[expose] public section
+public section
 
-open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
+open Polynomial UniqueFactorizationMonoid EuclideanDomain
 
 variable {k : Type*} [Field k] [DecidableEq k]
 

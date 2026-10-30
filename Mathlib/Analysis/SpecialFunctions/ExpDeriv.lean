@@ -21,11 +21,9 @@ In this file we prove that `Complex.exp` and `Real.exp` are analytic functions.
 exp, derivative
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsConformalMap Conformal
-
-noncomputable section
 
 open Filter Asymptotics Set Function
 open scoped Topology
@@ -36,11 +34,12 @@ section
 
 open Complex
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
-variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {f : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- The function `Complex.exp` is complex analytic. -/
-theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
+@[fun_prop]
+theorem analyticOnNhd_cexp {u : Set ℂ} : AnalyticOnNhd ℂ exp u := by
   rw [Complex.exp_eq_exp_ℂ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
 
@@ -115,7 +114,7 @@ theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp :=
   analyticOnNhd_cexp.restrictScalars.contDiff
 
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
-  contDiff_exp.contDiffAt.hasStrictDerivAt' (hasDerivAt_exp x) le_rfl
+  contDiff_exp.contDiffAt.hasStrictDerivAt (hasDerivAt_exp x) one_ne_zero
 
 theorem hasStrictFDerivAt_exp_real (x : ℂ) : HasStrictFDerivAt exp (exp x • (1 : ℂ →L[ℝ] ℂ)) x :=
   (hasStrictDerivAt_exp x).complexToReal_fderiv
@@ -165,7 +164,7 @@ theorem HasFDerivWithinAt.cexp (hf : HasFDerivWithinAt f f' s x) :
 
 theorem HasFDerivAt.cexp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
-  hasFDerivWithinAt_univ.1 <| hf.hasFDerivWithinAt.cexp
+  hasFDerivWithinAt_univ.1 hf.hasFDerivWithinAt.cexp
 
 theorem DifferentiableWithinAt.cexp (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (fun x => Complex.exp (f x)) s x :=
@@ -219,7 +218,8 @@ open Real
 variable {x : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
 
 /-- The function `Real.exp` is real analytic. -/
-theorem analyticOnNhd_rexp : AnalyticOnNhd ℝ exp univ := by
+@[fun_prop]
+theorem analyticOnNhd_rexp {u : Set ℝ} : AnalyticOnNhd ℝ exp u := by
   rw [Real.exp_eq_exp_ℝ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
 

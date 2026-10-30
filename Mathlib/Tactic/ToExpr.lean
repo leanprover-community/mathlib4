@@ -5,8 +5,10 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Util.WhatsNew
-public meta import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `ToExpr` instances for Mathlib
@@ -31,9 +33,6 @@ deriving instance ToExpr for Substring.Raw
 deriving instance ToExpr for SourceInfo
 deriving instance ToExpr for Syntax
 
-set_option backward.privateInPublic true
-set_option backward.privateInPublic.warn false
-
 open DataValue in
 /-- Core of a hand-written `ToExpr` handler for `MData`.
 Uses the `KVMap.set*` functions rather than going into the internals
@@ -51,6 +50,7 @@ private def toExprMData (md : MData) : Expr := Id.run do
           | ofSyntax v => mkApp3 (mkConst ``KVMap.setSyntax) e k (toExpr v)
   return e
 
+@[no_expose]
 instance : ToExpr MData where
   toExpr := toExprMData
   toTypeExpr := mkConst ``MData

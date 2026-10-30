@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Init
-public import Batteries.Tactic.Lint
 
 /-!
 # A parser for superscripts and subscripts
@@ -194,7 +193,7 @@ def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
   node kind {
     info.firstTokens := .tokens tokens
     info.collectTokens := (tokens ++ ·)
-    fn := withAntiquotFn antiquotP.fn p (isCatAntiquot := true)
+    fn := withAntiquotFn antiquotP.fn p (antiquotBehavior := .acceptLhs)
   }
 
 /-- Parenthesizer for the script parser. -/

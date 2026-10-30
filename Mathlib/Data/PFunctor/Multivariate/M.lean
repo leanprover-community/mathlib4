@@ -191,6 +191,7 @@ theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type v} (g₀ : β → P.A)
     M.dest P (M.corec' P g₀ g₁ g₂ x) = ⟨g₀ x, splitFun (g₁ x) (M.corec' P g₀ g₁ g₂ ∘ g₂ x)⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) (x : β) :
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
@@ -200,6 +201,7 @@ theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β
   conv_rhs => rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ ⟹ α} {a' : P.A}
     {f' : (P.B a').drop ⟹ α} {f₁' : (P.B a').last → M P α}
     (e₁ : M.dest P ⟨a₁, f₁⟩ = ⟨a', splitFun f' f₁'⟩) :
@@ -242,10 +244,11 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     cases h'.symm.trans e₁'
     cases h'.symm.trans e₂')
   | root x a f h' i c =>
-    exact congr_fun (congr_fun e₃ i) c
+    congrm $e₃ i c
   | child x a f h' i c p IH =>
     exact IH _ _ (h'' _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
@@ -263,13 +266,13 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   subst ay
   simp only [heq_eq_eq] at h₁
   have Hdrop : dropFun fx = dropFun fy := by
-    replace h₁ := congr_arg dropFun h₁
-    simpa using h₁
+    replace h₁ := congr(dropFun $h₁)
+    simpa using! h₁
   exists ax, dropFun fx, lastFun fx, lastFun fy
   rw [split_dropFun_lastFun, Hdrop, split_dropFun_lastFun]
   simp only [true_and]
   intro i
-  replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
+  replace h₁ := congr($h₁ Fin2.fz i)
   simp only [TypeVec.comp, appendFun, splitFun] at h₁
   replace h₁ := Quot.eqvGen_exact h₁
   rw [h₀.eqvGen_iff] at h₁
@@ -289,6 +292,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
     all_goals simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
     M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
   obtain ⟨a, f⟩ := x
@@ -298,6 +302,7 @@ theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
     rw [M.dest, M.dest', map_eq, appendFun_comp_splitFun]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β)) (x : P.M α)
     (h : ∀ x : P.M α, lastFun g x = (dropFun g <$$> x : P.M β)) :
     g <$$> M.dest P x = M.dest P (dropFun g <$$> x) := by

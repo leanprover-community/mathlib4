@@ -5,13 +5,13 @@ Authors: Sebastian Ullrich
 -/
 module
 
-public import Mathlib.Tactic.Basic
+import Mathlib.Init
 
 /-!
 # Functor Laws, applicative laws, and monad Laws
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

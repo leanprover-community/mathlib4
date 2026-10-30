@@ -8,11 +8,14 @@ module
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Wedderburn–Artin Theorem over an algebraically closed field
 -/
 
-@[expose] public section
+public section
 
 variable (F R : Type*) [Field F] [IsAlgClosed F] [Ring R] [Algebra F R]
 

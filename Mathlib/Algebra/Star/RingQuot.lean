@@ -8,8 +8,11 @@ module
 public import Mathlib.Algebra.RingQuot
 public import Mathlib.Algebra.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# The *-ring structure on suitable quotients of a *-ring.
+# The \*-ring structure on suitable quotients of a \*-ring.
 -/
 
 public section
@@ -24,6 +27,7 @@ section StarRing
 
 variable [StarRing R]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem Rel.star (hr : ∀ a b, r a b → r (star a) (star b))
     ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
   induction h with
@@ -41,7 +45,8 @@ private def star' (hr : ∀ a b, r a b → r (star a) (star b)) : RingQuot r →
 private theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
     (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := rfl
 
-/-- Transfer a star_ring instance through a quotient, if the quotient is invariant to `star` -/
+/-- Transfer a `StarRing` instance through a quotient, if the quotient is invariant to `star` -/
+@[instance_reducible]
 def starRing {R : Type u} [Semiring R] [StarRing R] (r : R → R → Prop)
     (hr : ∀ a b, r a b → r (star a) (star b)) : StarRing (RingQuot r) where
   star := star' r hr

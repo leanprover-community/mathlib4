@@ -5,8 +5,9 @@ Authors: Kevin Buzzard, Xavier Roblot
 -/
 module
 
-public import Mathlib.FieldTheory.PrimeField
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+
+import Mathlib.FieldTheory.PrimeField
 
 /-!
 # Totally real and totally complex number fields
@@ -77,8 +78,6 @@ theorem isTotallyReal_iff_ofRingEquiv (f : F ≃+* K) : IsTotallyReal F ↔ IsTo
 @[simp]
 theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyReal K :=
   isTotallyReal_iff_ofRingEquiv Subfield.topEquiv
-
-@[deprecated (since := "2025-05-19")] alias IsTotally.of_algebra := IsTotallyReal.of_algebra
 
 instance [IsTotallyReal K] [CharZero K] (F : IntermediateField ℚ K) [Algebra.IsAlgebraic F K] :
     IsTotallyReal F :=

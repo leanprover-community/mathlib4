@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 
 /-!
 # Consequences of model category axioms
@@ -16,7 +16,7 @@ and weak equivalences from the axioms of model categories.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe w v u

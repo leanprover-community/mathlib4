@@ -6,7 +6,6 @@ Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Data.Finset.Sym
 public import Mathlib.Data.Matrix.Mul
 
 /-!
@@ -86,9 +85,6 @@ theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.
 theorem incMatrix_of_notMem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
   rw [incMatrix_apply, Set.indicator_of_notMem h]
 
-@[deprecated (since := "2025-05-23")]
-alias incMatrix_of_not_mem_incidenceSet := incMatrix_of_notMem_incidenceSet
-
 theorem incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix R a e = 1 := by
   rw [incMatrix_apply, Set.indicator_of_mem h, Pi.one_apply]
 
@@ -98,7 +94,7 @@ theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenc
   simp only [incMatrix_apply, Set.indicator_apply_eq_zero, Pi.one_apply, one_ne_zero]
 
 theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
-  convert one_ne_zero.ite_eq_left_iff
+  convert! one_ne_zero.ite_eq_left_iff
   infer_instance
 
 end MulZeroOneClass
@@ -109,12 +105,13 @@ variable [NonAssocSemiring R] [DecidableEq α] [DecidableRel G.Adj] {a : α} {e 
 
 theorem sum_incMatrix_apply [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     ∑ e, G.incMatrix R a e = G.degree a := by
-  simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
+  simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset, card_incidenceSet_eq_degree,
+    -Set.fintypeCard_eq_ncard]
 
 theorem incMatrix_mul_transpose_diag [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
   rw [← sum_incMatrix_apply]
-  simp only [mul_apply, incMatrix_apply', transpose_apply, mul_ite, mul_one, mul_zero]
+  simp only [Matrix.mul_apply, incMatrix_apply', transpose_apply, mul_ite, mul_one, mul_zero]
   simp_all only [ite_true, sum_boole]
 
 theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
@@ -131,9 +128,6 @@ theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
 theorem sum_incMatrix_apply_of_notMem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=
   sum_eq_zero fun _ _ => G.incMatrix_of_notMem_incidenceSet fun he => h he.1
-
-@[deprecated (since := "2025-05-23")]
-alias sum_incMatrix_apply_of_not_mem_edgeSet := sum_incMatrix_apply_of_notMem_edgeSet
 
 theorem incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] :
     ((G.incMatrix R)ᵀ * G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by
@@ -168,7 +162,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
   rw [← coe_eq_singleton, coe_filter_univ]
   exact G.incidenceSet_inter_incidenceSet_of_adj h
 
-theorem incMatrix_mul_transpose [∀ a, Fintype (neighborSet G a)] :
+theorem incMatrix_mul_transpose [G.LocallyFinite] :
     G.incMatrix R * (G.incMatrix R)ᵀ =
       of fun a b => if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
   ext a b

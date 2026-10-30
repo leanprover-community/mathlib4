@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Notation.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support of a function
 
@@ -15,7 +18,7 @@ In this file we prove basic properties of `Function.support f = {x | f x ≠ 0}`
 `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists CompleteLattice MonoidWithZero
 
@@ -49,9 +52,6 @@ theorem mulSupport_fun_inv : (mulSupport fun x => (f x)⁻¹) = mulSupport f :=
 @[to_additive (attr := simp)]
 theorem mulSupport_inv : mulSupport f⁻¹ = mulSupport f :=
   mulSupport_fun_inv f
-
-@[deprecated (since := "2025-07-31")] alias support_neg' := support_neg
-@[deprecated (since := "2025-07-31")] alias mulSupport_inv' := mulSupport_inv
 
 @[to_additive]
 theorem mulSupport_mul_inv : (mulSupport fun x => f x * (g x)⁻¹) ⊆ mulSupport f ∪ mulSupport g :=

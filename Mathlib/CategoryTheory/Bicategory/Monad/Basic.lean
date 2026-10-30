@@ -5,9 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 public import Mathlib.CategoryTheory.Bicategory.End
+public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
@@ -45,9 +45,9 @@ abbrev Comonad.counit {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ 𝟙 a := ComonO
 abbrev Comonad.comul {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ t ≫ t := ComonObj.comul
 
 @[inherit_doc] scoped notation "ε" => Comonad.counit
-@[inherit_doc] scoped notation "ε["x"]" => Comonad.counit (t := x)
+@[inherit_doc] scoped notation "ε[" x "]" => Comonad.counit (t := x)
 @[inherit_doc] scoped notation "Δ" => Comonad.comul
-@[inherit_doc] scoped notation "Δ["x"]" => Comonad.comul (t := x)
+@[inherit_doc] scoped notation "Δ[" x "]" => Comonad.comul (t := x)
 
 namespace Comonad
 
@@ -77,6 +77,7 @@ instance {a : B} : Comonad (𝟙 a) :=
   ComonObj.instTensorUnit (a ⟶ a)
 
 /-- An oplax functor from the trivial bicategory to `B` defines a comonad in `B`. -/
+@[instance_reducible]
 def ofOplaxFromUnit (F : LocallyDiscrete (Discrete Unit) ⥤ᵒᵖᴸ B) :
     Comonad (F.map (𝟙 ⟨⟨Unit.unit⟩⟩)) where
   comul := F.map₂ (ρ_ _).inv ≫ F.mapComp _ _
@@ -137,13 +138,11 @@ def hom (m : ComonadBicat B) : m.obj ⟶ m.obj :=
   m.toOplax.map (𝟙 (⟨⟨PUnit.unit⟩⟩ : LocallyDiscrete (Discrete PUnit)))
 
 instance (m : ComonadBicat B) : Comonad m.hom :=
-  Comonad.ofOplaxFromUnit <| m.toOplax
+  Comonad.ofOplaxFromUnit m.toOplax
 
 /-- Construct a comonad as an object in `ComonadBicat B`. -/
 def mkOfComonad {a : B} (t : a ⟶ a) [Comonad t] : ComonadBicat B :=
   Comonad.toOplax t
-
-open Comonad
 
 section
 

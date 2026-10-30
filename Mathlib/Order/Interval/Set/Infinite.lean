@@ -6,7 +6,11 @@ Authors: Reid Barton
 module
 
 public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Order.Interval.Set.Basic
+
+import Mathlib.Order.Interval.Set.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Infinitude of intervals
@@ -16,7 +20,7 @@ in orders that are unbounded on the appropriate side. We also prove that an unbo
 preorder is an infinite type.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*} [Preorder α]

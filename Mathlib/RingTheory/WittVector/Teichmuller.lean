@@ -42,7 +42,7 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 The `0`-th coefficient of `teichmullerFun p r` is `r`, and all others are `0`.
 -/
 def teichmullerFun (r : R) : 𝕎 R :=
-  ⟨fun n => if n = 0 then r else 0⟩
+  mk p fun n => if n = 0 then r else 0
 
 /-!
 ## `teichmuller` is a monoid homomorphism
@@ -124,5 +124,10 @@ theorem map_teichmuller (f : R →+* S) (r : R) : map f (teichmuller p r) = teic
 theorem ghostComponent_teichmuller (r : R) (n : ℕ) :
     ghostComponent n (teichmuller p r) = r ^ p ^ n :=
   ghostComponent_teichmullerFun _ _ _
+
+/-- The Teichmüller lift is set-theoretically right inverse to the constant coefficient map,
+showing that the latter is surjective. -/
+lemma constantCoeff_surjective : Function.Surjective (constantCoeff : 𝕎 R → R) :=
+  fun r ↦ ⟨teichmuller p r, rfl⟩
 
 end WittVector

@@ -5,9 +5,10 @@ Authors: Paul Lezeau
 -/
 module
 
-public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Data.Nat.Cast.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Transporting `CharZero` across injective `AddMonoidHom`s
@@ -15,7 +16,7 @@ public import Mathlib.Data.Nat.Cast.Basic
 This file exists in order to avoid adding extra imports to other files in this subdirectory.
 -/
 
-@[expose] public section
+public section
 
 theorem CharZero.of_addMonoidHom {M N : Type*} [AddCommMonoidWithOne M] [AddCommMonoidWithOne N]
     [CharZero M] (e : M →+ N) (he : e 1 = 1) (he' : Function.Injective e) : CharZero N where

@@ -29,12 +29,12 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
-@[expose] public section
+public section
 
 
-open Set Filter Pointwise
+open Filter
 
-open IsNoetherian Submodule Function
+open IsNoetherian Submodule
 
 section Semiring
 

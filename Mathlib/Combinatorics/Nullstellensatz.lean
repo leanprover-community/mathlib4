@@ -5,13 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
-public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.MvPolynomial.Groebner
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+
+import Mathlib.RingTheory.MvPolynomial.Groebner
 
 /-! # Alon's Combinatorial Nullstellensatz
 
@@ -32,8 +28,8 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
   for some `h : σ →₀ MvPolynomial σ R` such that
   `((∏ r ∈ S s, (X i - C r)) * h i).totalDegree ≤ f.totalDegree` for all `s`.
 
-- `combinatorial_nullstellensatz_exists_eval_nonzero`
-  a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,
+- `combinatorial_nullstellensatz_exists_eval_ne_zero`
+  a multi-index `t : σ →₀ ℕ` such that `t s < #(S s)` for all `s`,
   `f.totalDegree = t.degree` and `f.coeff t ≠ 0`,
   there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
 
@@ -46,12 +42,12 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
 - [Alon, *Combinatorial Nullstellensatz*][Alon_1999]
 
-- [Rote, *The Generalized Combinatorial Lason-Alon-Zippel-Schwartz
+- [Rote, *The Generalized Combinatorial Lasoń-Alon-Zippel-Schwartz
   Nullstellensatz Lemma*][Rote_2023]
 
 -/
 
-@[expose] public section
+public section
 
 open Finsupp
 
@@ -77,7 +73,6 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rwa [← RingHom.mem_ker, that] at this
     apply h _ (fun i ↦ S (e i))
     · intro i
-      classical
       convert Hdeg (e i)
       conv_lhs => rw [← e.symm_apply_apply i, degreeOf_rename_of_injective e.symm.injective]
     · intro x hx
@@ -93,7 +88,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rw [this, eval_C] at Heval
       rw [this, Heval, C_0]
     ext m
-    suffices m = 0 by simp [this, ← constantCoeff_eq]
+    suffices m = 0 by simp [this, constantCoeff_eq]
     ext d; exact PEmpty.elim d
   | @h_option σ _ h =>
     set Q := optionEquivLeft R σ P with hQ
@@ -113,10 +108,10 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         rw [MvPolynomial.coeff_eval_eq_eval_coeff]
         convert map_zero (MvPolynomial.eval x)
         ext m
-        simp only [coeff_zero]
+        simp only [AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
         set n := (embDomain Function.Embedding.some m).update none d with hn
         rw [eq_option_embedding_update_none_iff] at hn
-        rw [← hn.1, ← hn.2, optionEquivLeft_coeff_coeff]
+        rw [← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none]
         by_contra hm
         apply not_le.mpr hd
         rw [MvPolynomial.degreeOf_eq_sup]
@@ -124,8 +119,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         convert Finset.le_sup hm
         exact hn.1.symm
     ext m d
-    simp only [Polynomial.coeff_zero, coeff_zero]
-    suffices Q.coeff m = 0 by simp only [this, coeff_zero]
+    suffices Q.coeff m = 0 by simp [this]
     apply h _ (fun i ↦ S (some i))
     · intro i
       apply lt_of_le_of_lt _ (Hdeg (some i))
@@ -133,7 +127,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       intro e he
       set n := (embDomain Function.Embedding.some e).update none m with hn
       rw [eq_option_embedding_update_none_iff] at hn
-      rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_coeff, ← ne_eq,
+      rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_some_coeff_none, ← ne_eq,
         ← MvPolynomial.mem_support_iff] at he
       convert Finset.le_sup he
       rw [← hn.2, some_apply]
@@ -164,21 +158,21 @@ private theorem Alon.degree_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset 
     exact isRegular_one
 
 /-- The leading coefficient of `Alon.P S i` is `1`. -/
-private theorem Alon.monic_P [Nontrivial R] (m : MonomialOrder σ) (S : Finset R) (i : σ) :
+private theorem Alon.monic_P (m : MonomialOrder σ) (S : Finset R) (i : σ) :
     m.Monic (P S i) :=
   Monic.prod (fun r _ ↦ m.monic_X_sub_C i r)
 
 /-- The support of `Alon.P S i` is the set of exponents of the form `single i e`,
-  for `e ≤ S.card`. -/
+  for `e ≤ #S`. -/
 private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι →₀ ℕ)
     (hm : m ∈ (Alon.P S i).support) :
-    ∃ e ≤ S.card, m = single i e := by
+    ∃ e ≤ #S, m = single i e := by
   classical
-  have hP : Alon.P S i = .rename (fun _ ↦ i) (Alon.P S ()) := by simp [Alon.P, map_prod]
+  have hP : Alon.P S i = .rename (fun _ ↦ i) (Alon.P S ()) := by simp [Alon.P]
   rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
   simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
   obtain ⟨e, he, hm⟩ := hm
-  haveI : Nontrivial R := nontrivial_of_ne _ _ he
+  have : Nontrivial R := nontrivial_of_ne _ _ he
   refine ⟨e (), ?_, ?_⟩
   · suffices e ≼[lex] single () #S by
       simpa [MonomialOrder.lex_le_iff_of_unique] using this
@@ -189,13 +183,11 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
   · rw [← hm]
     ext j
     by_cases hj : j = i
-    · rw [hj, mapDomain_apply (Function.injective_of_subsingleton _), single_eq_same]
-    · rw [mapDomain_notin_range, single_eq_of_ne hj]
+    · rw [hj, mapDomain_apply_of_injective (Function.injective_of_subsingleton _), single_eq_same]
+    · rw [mapDomain_of_notMem_range, single_eq_of_ne hj]
       simp [Set.range_const, Set.mem_singleton_iff, hj]
 
 variable [Finite σ]
-
-open scoped BigOperators
 
 /-- The **Combinatorial Nullstellensatz**.
 
@@ -212,7 +204,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     ∃ (h : σ →₀ MvPolynomial σ R),
       (∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree) ∧
       f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
-  letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
+  let : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
       (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
   use h
@@ -222,16 +214,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
   apply eq_zero_of_eval_zero_at_prod_finset r S
   · intro i
     rw [degreeOf_eq_sup, Finset.sup_lt_iff (by simp [Sne i])]
-    intro c hc
-    rw [← not_le]
-    intro h'
-    apply hr c hc i
-    intro j
-    rw [Alon.degree_P, single_apply]
-    split_ifs with hj
-    · rw [← hj]
-      exact h'
-    · exact zero_le _
+    aesop (add simp [Alon.degree_P])
   · intro x hx
     rw [Iff.symm sub_eq_iff_eq_add'] at hf
     rw [← hf, map_sub, Heval x hx, zero_sub, neg_eq_zero,
@@ -239,24 +222,23 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     intro i _
     rw [smul_eq_mul, map_mul]
     convert mul_zero _
-    rw [Alon.P, map_prod]
+    rw [Alon.P, _root_.map_prod]
     apply Finset.prod_eq_zero (hx i)
     simp
 
 /-- The **Combinatorial Nullstellensatz**.
 
-Given a multi-index `t : σ →₀ ℕ` such that `t s < (S s).card` for all `s`,
+Given a multi-index `t : σ →₀ ℕ` such that `t s < #(S s)` for all `s`,
 `f.totalDegree = t.degree` and `f.coeff t ≠ 0`,
 there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
 
 [Alon_1999], theorem 2 -/
-theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
+theorem combinatorial_nullstellensatz_exists_eval_ne_zero [IsDomain R]
     (f : MvPolynomial σ R)
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)
     (S : σ → Finset R) (htS : ∀ i, t i < #(S i)) :
     ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
-  classical
   by_contra! Heval
   apply ht
   obtain ⟨h, hh, hf⟩ := combinatorial_nullstellensatz_exists_linearCombination S
@@ -289,5 +271,9 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   rw [← hpq, map_add, add_lt_add_iff_left, hq, degree_single]
   apply lt_of_le_of_lt _ (htS i)
   simp [← hpq, hq]
+
+@[deprecated (since := "2026-10-13")]
+alias combinatorial_nullstellensatz_exists_eval_nonzero :=
+  combinatorial_nullstellensatz_exists_eval_ne_zero
 
 end MvPolynomial

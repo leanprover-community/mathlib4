@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Multilinear.Curry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formal multilinear series
 
@@ -29,7 +32,7 @@ multilinear, formal series
 
 noncomputable section
 
-open Set Fin Topology
+open Set Fin
 
 universe u u' v w x y
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x} {H : Type y}
@@ -49,14 +52,29 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
     [Module 𝕜 E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
     [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=
-  ∀ n : ℕ, E[×n]→L[𝕜] F
-deriving AddCommMonoid, Inhabited
+  ∀ n : ℕ, E [×n]→L[𝕜] F
+deriving Inhabited
+
+-- This instance exists to avoid an nsmul diamond.
+instance (𝕜') [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
+    SMul 𝕜' (FormalMultilinearSeries 𝕜 E F) where
+  smul k x n := k • x n
+
+section AddCommMonoid
+
+/-- Copy `Pi.addCommMonoid`, ensuring the pointwise operations hold by defeq. -/
+instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) := fast_instance% {
+  __ := Pi.addCommMonoid
+  zero _ := 0
+  add x y n := x n + y n }
+
+end AddCommMonoid
 
 section Module
 
 instance (𝕜') [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
     Module 𝕜' (FormalMultilinearSeries 𝕜 E F) :=
-  inferInstanceAs <| Module 𝕜' <| ∀ n : ℕ, E[×n]→L[𝕜] F
+  inferInstanceAs <| Module 𝕜' <| ∀ n : ℕ, E [×n]→L[𝕜] F
 
 end Module
 
@@ -166,7 +184,7 @@ variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTo
   [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 instance : AddCommGroup (FormalMultilinearSeries 𝕜 E F) :=
-  inferInstanceAs <| AddCommGroup <| ∀ n : ℕ, E[×n]→L[𝕜] F
+  inferInstanceAs <| AddCommGroup <| ∀ n : ℕ, E [×n]→L[𝕜] F
 
 @[simp]
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
@@ -269,7 +287,7 @@ theorem order_zero : (0 : FormalMultilinearSeries 𝕜 E F).order = 0 := by simp
 theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
 
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
-    p.order = Nat.find hp := by convert Nat.sInf_def hp
+    p.order = Nat.find hp := by convert! Nat.sInf_def (s := {n | p n ≠ 0}) hp
 
 theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
     p.order = Nat.find (FormalMultilinearSeries.ne_iff.mp hp) :=
@@ -283,7 +301,7 @@ theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
   simp [order_eq_zero_iff', hp]
 
 theorem apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 :=
-  Nat.sInf_mem (FormalMultilinearSeries.ne_iff.1 hp)
+  Nat.sInf_mem (s := {n | p n ≠ 0}) (FormalMultilinearSeries.ne_iff.1 hp)
 
 theorem apply_order_ne_zero' (hp : p.order ≠ 0) : p p.order ≠ 0 :=
   apply_order_ne_zero (ne_zero_of_order_ne_zero hp)
@@ -296,7 +314,7 @@ end Order
 section Coef
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z : 𝕜} {y : Fin n → 𝕜}
+  {p : FormalMultilinearSeries 𝕜 𝕜 E} {n : ℕ} {z : 𝕜} {y : Fin n → 𝕜}
 
 /-- The `n`th coefficient of `p` when seen as a power series. -/
 def coeff (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) : E :=
@@ -308,7 +326,7 @@ theorem mkPiRing_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
 
 @[simp]
 theorem apply_eq_prod_smul_coeff : p n y = (∏ i, y i) • p.coeff n := by
-  convert (p n).toMultilinearMap.map_smul_univ y 1
+  convert! (p n).toMultilinearMap.map_smul_univ y 1
   simp only [Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem coeff_eq_zero : p.coeff n = 0 ↔ p n = 0 := by
@@ -372,24 +390,20 @@ theorem constFormalMultilinearSeries_apply_succ [NontriviallyNormedField 𝕜] [
     constFormalMultilinearSeries 𝕜 E c (n + 1) = 0 :=
   rfl
 
-theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField 𝕜]
+theorem constFormalMultilinearSeries_apply_of_ne_zero [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F}
     {n : ℕ} (hn : n ≠ 0) : constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
 
-@[deprecated (since := "2025-06-23")]
-alias constFormalMultilinearSeries_apply := constFormalMultilinearSeries_apply_of_nonzero
+@[deprecated (since := "2026-10-13")]
+alias constFormalMultilinearSeries_apply_of_nonzero := constFormalMultilinearSeries_apply_of_ne_zero
 
 @[simp]
 lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
     constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
-  ext n x
-  simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
-    constFormalMultilinearSeries]
-  induction n
-  · simp only [ContinuousMultilinearMap.uncurry0_apply]
-  · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
+  ext n
+  induction n <;> simp
 
 @[simp]
 lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
@@ -406,7 +420,7 @@ lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
     congr
     apply Subsingleton.allEq
   | succ =>
-    simp [ContinuousLinearMap.coe_zero']
+    simp [FunLike.coe_zero]
 
 end Const
 

@@ -5,8 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 public import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
+
+import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 
 /-!
 # Ind-objects are closed under products
@@ -19,7 +20,7 @@ creates products indexed by `α` and that the functor `C ⥤ Ind C` preserves th
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Prop. 6.1.16(ii)
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

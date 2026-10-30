@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Aristotle AI
+Authors: Yury Kudryashov
 -/
 module
 
@@ -16,7 +16,7 @@ are included in the convex hull of the roots of the polynomial.
 -/
 
 @[expose] public section
-open scoped BigOperators Polynomial ComplexConjugate
+open scoped Polynomial ComplexConjugate
 
 namespace Polynomial
 
@@ -40,7 +40,7 @@ theorem sum_derivRootWeight_pos (hP : 0 < degree P) (z : ℂ) :
   have hP₀ : P ≠ 0 := by rintro rfl; simp at hP
   by_cases hPz : P.eval z = 0
   · simp [derivRootWeight, hPz, hP₀]
-  · simp only [derivRootWeight, if_neg hPz]
+  · simp only [derivRootWeight, ite_eq_right hPz]
     apply Finset.sum_pos
     · intro w hw
       apply div_pos (by simp_all)
@@ -60,7 +60,6 @@ See also `rootSet_derivative_subset_convexHull_rootSet` below.
 theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
     (hz : P.derivative.eval z = 0) :
     z = P.roots.toFinset.centerMass (P.derivRootWeight z) id := by
-  have hP₀ : P ≠ 0 := by rintro rfl; simp at hP
   set weight : ℂ → ℝ := P.derivRootWeight z
   set s := P.roots.toFinset
   suffices ∑ x ∈ s, weight x • (z - x) = 0 by calc
@@ -72,11 +71,11 @@ theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
     _ = s.centerMass weight id := by
       simp only [add_eq_right, Finset.centerMass, this, smul_zero]
   by_cases hzP : P.eval z = 0
-  · simp only [weight, derivRootWeight, if_pos hzP]
+  · simp only [weight, derivRootWeight, ite_eq_left hzP]
     rw [Finset.sum_eq_single z] <;> simp_all
   calc
     ∑ x ∈ s, weight x • (z - x) = conj (∑ x ∈ s, P.rootMultiplicity x • (1 / (z - x))) := by
-      simp only [map_sum, weight, derivRootWeight, if_neg hzP]
+      simp only [map_sum, weight, derivRootWeight, ite_eq_right hzP]
       refine Finset.sum_congr rfl fun x hx ↦ ?_
       have : z - x ≠ 0 := by
         rw [sub_ne_zero]

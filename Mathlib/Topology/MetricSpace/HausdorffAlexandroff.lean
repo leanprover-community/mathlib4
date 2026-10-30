@@ -49,7 +49,7 @@ theorem fromBinary_continuous : Continuous fromBinary :=
   Continuous.subtype_mk (continuous_ofDigits.comp' (Homeomorph.continuous _)) _
 
 theorem fromBinary_surjective : fromBinary.Surjective := by
-  refine Subtype.coind_surjective _ ((ofDigits_SurjOn (by norm_num)).comp ?_)
+  refine Subtype.coind_surjective _ ((ofDigits_SurjOn (by simp)).comp ?_)
   simp only [Set.surjOn_univ, Homeomorph.surjective _]
 
 end Real
@@ -87,7 +87,7 @@ theorem exists_nat_bool_continuous_surjective_of_compact (X : Type*) [Nonempty X
   let KC : Set (ℕ → Bool) := cantorToHilbert ⁻¹' KH
   have hKC_closed : IsClosed KC :=
     IsClosed.preimage cantorToHilbert_continuous (Topology.IsClosedEmbedding.isClosed_range
-    <|Continuous.isClosedEmbedding (Topology.IsEmbedding.continuous h_emb) h_emb.injective)
+    <| Continuous.isClosedEmbedding (Topology.IsEmbedding.continuous h_emb) h_emb.injective)
   -- Take a retraction `f'` from the Cantor space to `KC`.
   obtain ⟨f, hf_continuous, hf_surjective⟩ := exists_retractionCantorSet hKC_closed
     <| Set.Nonempty.preimage (Set.range_nonempty emb) cantorToHilbert_surjective

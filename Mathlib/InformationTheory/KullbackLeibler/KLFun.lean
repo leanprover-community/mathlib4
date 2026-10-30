@@ -27,7 +27,7 @@ extend to other finite measures: it is nonnegative and zero iff the two measures
 
 * `klFun`: the function `fun x : ℝ ↦ x * log x + 1 - x`.
 
-This is a continuous nonnegative, strictly convex function on [0,∞), with minimum value 0 at 1.
+This is a continuous nonnegative, strictly convex function on $[0,∞)$, with minimum value 0 at 1.
 
 ## Main statements
 
@@ -58,16 +58,16 @@ lemma klFun_zero : klFun 0 = 1 := by simp [klFun]
 
 lemma klFun_one : klFun 1 = 0 := by simp [klFun]
 
-/-- `klFun` is strictly convex on [0,∞). -/
+/-- `klFun` is strictly convex on $[0,∞)$. -/
 lemma strictConvexOn_klFun : StrictConvexOn ℝ (Ici 0) klFun :=
   (strictConvexOn_mul_log.add_convexOn (convexOn_const _ (convex_Ici _))).sub_concaveOn
     (concaveOn_id (convex_Ici _))
 
-/-- `klFun` is convex on [0,∞). -/
+/-- `klFun` is convex on $[0,∞)$. -/
 lemma convexOn_klFun : ConvexOn ℝ (Ici 0) klFun := strictConvexOn_klFun.convexOn
 
-/-- `klFun` is convex on (0,∞).
-This is an often useful consequence of `convexOn_klFun`, which states convexity on [0, ∞). -/
+/-- `klFun` is convex on $(0,∞)$.
+This is an often useful consequence of `convexOn_klFun`, which states convexity on $[0, ∞)$. -/
 lemma convexOn_Ioi_klFun : ConvexOn ℝ (Ioi 0) klFun :=
   convexOn_klFun.subset (Ioi_subset_Ici le_rfl) (convex_Ioi _)
 
@@ -87,7 +87,7 @@ section Derivatives
 
 /-- The derivative of `klFun` at `x ≠ 0` is `log x`. -/
 lemma hasDerivAt_klFun (hx : x ≠ 0) : HasDerivAt klFun (log x) x := by
-  convert ((hasDerivAt_mul_log hx).add (hasDerivAt_const x 1)).sub (hasDerivAt_id x) using 1
+  convert! ((hasDerivAt_mul_log hx).add (hasDerivAt_const x 1)).sub (hasDerivAt_id x) using 1
   ring
 
 lemma not_differentiableAt_klFun_zero : ¬ DifferentiableAt ℝ klFun 0 := by
@@ -170,7 +170,7 @@ lemma integrable_klFun_rnDeriv_iff (hμν : μ ≪ ν) :
     Integrable (fun x ↦ klFun (μ.rnDeriv ν x).toReal) ν ↔ Integrable (llr μ ν) μ := by
   suffices Integrable (fun x ↦ (μ.rnDeriv ν x).toReal * log (μ.rnDeriv ν x).toReal
       + (1 - (μ.rnDeriv ν x).toReal)) ν ↔ Integrable (llr μ ν) μ by
-    convert this using 3 with x
+    convert! this using 3 with x
     rw [klFun, add_sub_assoc]
   rw [integrable_add_iff_integrable_left', integrable_rnDeriv_mul_log_iff hμν]
   fun_prop

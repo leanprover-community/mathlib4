@@ -6,7 +6,8 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-public import Mathlib.FieldTheory.Finite.Basic
+
+import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Torsion group of `ZMod p` for prime `p`
@@ -15,7 +16,7 @@ This file shows that the `ZMod p` has `p - 1` roots-of-unity.
 
 -/
 
-@[expose] public section
+public section
 
 namespace ZMod
 
@@ -28,7 +29,6 @@ instance {p : ℕ} [Fact p.Prime] : HasEnoughRootsOfUnity (ZMod p) (p - 1) := by
   have : NeZero (p - 1) := ⟨by have : 2 ≤ p := Nat.Prime.two_le Fact.out; grind⟩
   refine HasEnoughRootsOfUnity.of_card_le ?_
   have := Nat.card_congr (MulEquiv.subgroupCongr (ZMod.rootsOfUnity_eq_top (p := p))).toEquiv
-  rw [Nat.card_eq_fintype_card] at this
   rw [this]
   simp [Fintype.card_units]
 

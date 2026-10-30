@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

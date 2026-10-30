@@ -6,12 +6,13 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Batteries.Tactic.Lint.Basic
-public meta import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public meta import Mathlib.Algebra.Order.Ring.Defs
-public meta import Mathlib.Algebra.Order.ZeroLEOne
-public meta import Mathlib.Data.Nat.Cast.Order.Ring
-public meta import Mathlib.Data.Int.Order.Basic
-public meta import Mathlib.Data.Ineq
+public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Data.Ineq
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Tactic.Ineq
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas for `linarith`.
@@ -82,9 +83,9 @@ theorem mul_neg [IsStrictOrderedRing α] {a b : α} (ha : a < 0) (hb : 0 < b) : 
   have : (-b)*a > 0 := mul_pos_of_neg_of_neg (neg_neg_of_pos hb) ha
   neg_of_neg_pos (by simpa)
 
-theorem mul_nonpos [IsOrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 :=
+theorem mul_nonpos [IsOrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 := by
   have : (-b)*a ≥ 0 := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_of_pos hb)) ha
-  by simpa
+  simpa
 
 theorem sub_nonpos_of_le [IsOrderedRing α] {a b : α} : a ≤ b → a - b ≤ 0 :=
   _root_.sub_nonpos_of_le
@@ -116,13 +117,3 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
   simp [h]
 
 end Mathlib.Tactic.Linarith
-
-section
-
-@[deprecated GT.gt.lt (since := "2025-06-16")]
-theorem lt_zero_of_zero_gt {α : Type*} [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
-
-@[deprecated GE.ge.le (since := "2025-06-16")]
-theorem le_zero_of_zero_ge {α : Type*} [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
-
-end

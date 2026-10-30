@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Center.NegOnePow
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.CategoryTheory.Shift.Twist
 public import Mathlib.CategoryTheory.Shift.Pullback
+public import Mathlib.CategoryTheory.Shift.Twist
+
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Commutation with shifts of functors in two variables
@@ -26,9 +27,9 @@ a `TwistShiftData` structure (see the file `Mathlib.CategoryTheory.Shift.Twist`)
 
 ## TODO (@joelriou)
 * Show that `G : C₁ ⥤ C₂ ⥤ D` satisfies `Functor.CommShift₂Int` iff the uncurried
-functor `C₁ × C₂ ⥤ D` commutes with the shift by `ℤ × ℤ`, where `C₁ × C₂` is
-equipped with the obvious product shift, and `D` is equipped with
-the twisted shift.
+  functor `C₁ × C₂ ⥤ D` commutes with the shift by `ℤ × ℤ`, where `C₁ × C₂` is
+  equipped with the obvious product shift, and `D` is equipped with
+  the twisted shift.
 
 -/
 
@@ -66,7 +67,9 @@ noncomputable def CommShift₂Setup.int [Preadditive D] [HasShift D ℤ]
   assoc _ _ _ := by
     dsimp
     rw [← zpow_add, ← zpow_add]
-    lia
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/13593
+    we need to re-enable model-based theory combination in `lia` for this to go through. -/
+    lia +mbtc
   commShift _ _ := ⟨by cat_disch⟩
   ε p q := (-1) ^ (p * q)
 
@@ -108,6 +111,7 @@ abbrev CommShift₂Int [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift D ℤ] 
 
 namespace CommShift₂
 
+attribute [instance_reducible] commShiftObj commShiftFlipObj
 attribute [instance] commShiftObj commShiftFlipObj commShift_map commShift_flip_map
 
 instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C₁' M]
@@ -116,7 +120,7 @@ instance precomp₁ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
     (F ⋙ G).CommShift₂ h where
   commShiftObj (X₁' : C₁') := inferInstanceAs ((G.obj (F.obj X₁')).CommShift M)
   commShift_map {X₁' Y₁' : C₁'} (f : X₁' ⟶ Y₁') := by dsimp; infer_instance
-  commShiftFlipObj (X₂ : C₂) := inferInstanceAs ((F ⋙ G.flip.obj X₂).CommShift M)
+  commShiftFlipObj (X₂ : C₂) := CommShift.comp F (G.flip.obj X₂)
   commShift_flip_map {X₂ Y₂ : C₂} (g : X₂ ⟶ Y₂) :=
     inferInstanceAs (NatTrans.CommShift (whiskerLeft F (G.flip.map g)) M)
   comm X₁' X₂ m n := by
@@ -130,7 +134,7 @@ instance precomp₂ {M : Type*} [AddCommMonoid M] [HasShift C₁ M] [HasShift C�
     [HasShift C₂ M] [HasShift D M] (F : C₂' ⥤ C₂) [F.CommShift M]
     (G : C₁ ⥤ C₂ ⥤ D) (h : CommShift₂Setup D M) [G.CommShift₂ h] :
     (G ⋙ (whiskeringLeft C₂' C₂ D).obj F).CommShift₂ h where
-  commShiftObj (X₁ : C₁) := inferInstanceAs ((F ⋙ G.obj X₁).CommShift M)
+  commShiftObj (X₁ : C₁) := CommShift.comp F (G.obj X₁)
   commShift_map {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) := by dsimp; infer_instance
   commShiftFlipObj (X₂' : C₂') := inferInstanceAs ((G.flip.obj (F.obj X₂')).CommShift M)
   commShift_flip_map {X₂' Y₂' : C₂'} (g : X₂' ⟶ Y₂') :=

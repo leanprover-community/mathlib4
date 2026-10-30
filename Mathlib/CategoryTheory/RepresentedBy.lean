@@ -74,7 +74,7 @@ noncomputable def IsRepresentedBy.uliftYonedaIso (h : F.IsRepresentedBy x) :
 noncomputable def IsRepresentedBy.representableBy (h : F.IsRepresentedBy x) :
     F.RepresentableBy X :=
   Functor.representableByUliftFunctorEquiv.{v}
-    ((RepresentableBy.equivUliftYonedaIso _ _).symm <| h.uliftYonedaIso)
+    ((RepresentableBy.equivUliftYonedaIso _ _).symm h.uliftYonedaIso)
 
 @[simp]
 lemma IsRepresentedBy.representableBy_homEquiv_apply (h : F.IsRepresentedBy x)
@@ -85,10 +85,11 @@ lemma IsRepresentedBy.representableBy_homEquiv_apply (h : F.IsRepresentedBy x)
 lemma RepresentableBy.isRepresentedBy (R : F.RepresentableBy X) :
     F.IsRepresentedBy (R.homEquiv (𝟙 X)) := by
   rw [IsRepresentedBy.iff_isIso_uliftYonedaEquiv]
-  convert (RepresentableBy.equivUliftYonedaIso _ _ <|
-    representableByUliftFunctorEquiv.{v}.symm R).isIso_hom
+  convert
+    (RepresentableBy.equivUliftYonedaIso _ _ <|
+        representableByUliftFunctorEquiv.{v}.symm R).isIso_hom
   ext
-  simp [uliftYonedaEquiv, ← homEquiv_eq]
+  simpa [uliftYonedaEquiv] using (homEquiv_eq _ _).symm
 
 lemma IsRepresentedBy.iff_exists_representableBy :
     F.IsRepresentedBy x ↔ ∃ (R : F.RepresentableBy X), R.homEquiv (𝟙 X) = x :=
@@ -115,7 +116,7 @@ lemma IsRepresentedBy.iff_of_isoObj {Y : C} (e : Y ≅ X) :
     F.IsRepresentedBy (F.map e.hom.op x) ↔ F.IsRepresentedBy x := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.of_isoObj e⟩
   have : x = F.map e.inv.op (F.map e.hom.op x) := by
-    simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+    simp [← comp_apply, ← map_comp, ← op_comp]
   exact this ▸ .of_isoObj h e.symm
 
 lemma IsRepresentedBy.of_isRepresentable [F.IsRepresentable] : F.IsRepresentedBy F.reprx :=

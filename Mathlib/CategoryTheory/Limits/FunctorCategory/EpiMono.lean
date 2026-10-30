@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Monomorphisms and epimorphisms in functor categories
@@ -18,13 +17,13 @@ see `NatTrans.mono_iff_mono_app` and `NatTrans.epi_iff_epi_app`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' v'' u u' u''
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {K : Type u} [Category.{v} K] {C : Type u'} [Category.{v'} C]
   {D : Type u''} [Category.{v''} D] {F G : K ⥤ C} (f : F ⟶ G)
@@ -42,6 +41,10 @@ instance [Mono f] (H : C ⥤ D) [H.PreservesMonomorphisms] :
     Mono (whiskerRight f H) := by
   have : ∀ X, Mono ((whiskerRight f H).app X) := by intros; dsimp; infer_instance
   apply NatTrans.mono_of_mono_app
+
+instance (F : C ⥤ D) [F.PreservesMonomorphisms] :
+    ((Functor.whiskeringRight K C D).obj F).PreservesMonomorphisms where
+  preserves f _ := by dsimp; infer_instance
 
 end
 

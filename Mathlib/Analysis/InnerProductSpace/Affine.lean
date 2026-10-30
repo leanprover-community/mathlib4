@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+
 /-!
 # Normed affine spaces over an inner product space
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 V P : Type*}
 

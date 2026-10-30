@@ -29,7 +29,7 @@ fiber bundle, fibre bundle, fiberwise product, pullback
 
 @[expose] public section
 
-open Bundle Filter Set TopologicalSpace Topology
+open Bundle Set TopologicalSpace Topology
 
 /-! ### The trivial bundle -/
 
@@ -64,6 +64,8 @@ def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   target_eq := univ_prod_univ.symm
   proj_toFun _ _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma trivialization_symm_apply [Zero F] (b : B) (f : F) :
     (trivialization B F).symm b f = f := by
   simp [trivialization, homeomorphProd, TotalSpace.toProd, Trivialization.symm,
@@ -122,7 +124,7 @@ variable [TopologicalSpace B] (F₁ : Type*) [TopologicalSpace F₁] (E₁ : B �
   [TopologicalSpace (TotalSpace F₁ E₁)] (F₂ : Type*) [TopologicalSpace F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)]
 
-namespace Trivialization
+namespace Bundle.Trivialization
 
 variable {F₁ E₁ F₂ E₂}
 variable (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))
@@ -169,14 +171,14 @@ theorem Prod.left_inv {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
     Prod.invFun' e₁ e₂ (Prod.toFun' e₁ e₂ x) = x := by
   obtain ⟨x, v₁, v₂⟩ := x
   obtain ⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩ := h
-  simp only [Prod.toFun', Prod.invFun', symm_apply_apply_mk, h₁, h₂]
+  simp [Prod.toFun', Prod.invFun', h₁, h₂]
 
 theorem Prod.right_inv {x : B × F₁ × F₂}
     (h : x ∈ (e₁.baseSet ∩ e₂.baseSet) ×ˢ (univ : Set (F₁ × F₂))) :
     Prod.toFun' e₁ e₂ (Prod.invFun' e₁ e₂ x) = x := by
   obtain ⟨x, w₁, w₂⟩ := x
   obtain ⟨⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩, -⟩ := h
-  simp only [Prod.toFun', Prod.invFun', apply_mk_symm, h₁, h₂]
+  simp [Prod.toFun', Prod.invFun', h₁, h₂]
 
 theorem Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by
@@ -201,7 +203,8 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   left_inv' _ := Prod.left_inv
   right_inv' _ := Prod.right_inv
   open_source := by
-    convert (e₁.open_source.prod e₂.open_source).preimage
+    convert
+      (e₁.open_source.prod e₂.open_source).preimage
         (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
     ext x
     simp only [Trivialization.source_eq, mfld_simps]
@@ -214,14 +217,12 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   target_eq := rfl
   proj_toFun _ _ := rfl
 
-@[deprecated (since := "2025-06-19")] alias baseSet_prod := prod_baseSet
-
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl
 
-end Trivialization
+end Bundle.Trivialization
 
-open Trivialization
+open Bundle
 
 variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSpace (E₁ x)]
   [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
@@ -250,6 +251,8 @@ end Prod
 
 /-! ### Pullbacks of fiber bundles -/
 
+open Bundle
+
 section
 
 universe u v w₁ w₂ U
@@ -261,29 +264,26 @@ instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f 
 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)]
 
-/-- Definition of `Pullback.TotalSpace.topologicalSpace`, which we make irreducible. -/
-irreducible_def pullbackTopology : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
+/-- The topology on the total space of a pullback bundle is the coarsest topology for which both
+the projections to the base and the map to the original bundle are continuous. -/
+@[no_expose]
+instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
   induced TotalSpace.proj ‹TopologicalSpace B'› ⊓
     induced (Pullback.lift f) ‹TopologicalSpace (TotalSpace F E)›
 
-/-- The topology on the total space of a pullback bundle is the coarsest topology for which both
-the projections to the base and the map to the original bundle are continuous. -/
-instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
-  pullbackTopology F E f
-
 theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace]
   exact inf_le_left
 
 theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F E B' f) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace]
   exact inf_le_right
 
 theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     IsInducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
   constructor
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
-    Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+    Pullback.TotalSpace.topologicalSpace]
   rfl
 
 section FiberBundle
@@ -293,18 +293,19 @@ variable [TopologicalSpace F] [TopologicalSpace B]
 theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     {f : B' → B} {x : B'} : Continuous (@TotalSpace.mk _ F (f *ᵖ E) x) := by
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
-    induced_inf, Function.comp_def, induced_const, top_inf_eq, pullbackTopology_def]
+    induced_inf, Function.comp_def, induced_const, top_inf_eq]
   exact (FiberBundle.totalSpaceMk_isInducing F E (f x)).eq_induced.le
 
 variable {E F}
-variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
+variable [∀ _b, Nonempty (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 @[simps]
-noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
+noncomputable def Bundle.Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
     Trivialization F (π F ((f : B' → B) *ᵖ E)) where
   toFun z := (z.proj, (e (Pullback.lift f z)).2)
-  invFun y := @TotalSpace.mk _ F (f *ᵖ E) y.1 (e.symm (f y.1) y.2)
+  invFun y := TotalSpace.mk' F y.1 (e.symm (f y.1) y.2)
   source := Pullback.lift f ⁻¹' e.source
   baseSet := f ⁻¹' e.baseSet
   target := (f ⁻¹' e.baseSet) ×ˢ univ

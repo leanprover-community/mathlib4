@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.BumpFunction.Basic
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed bump function
 
@@ -82,7 +85,7 @@ theorem hasCompactSupport_normed : HasCompactSupport (f.normed μ) := by
 theorem tendsto_support_normed_smallSets {ι} {φ : ι → ContDiffBump c} {l : Filter ι}
     (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) :
     Tendsto (fun i => Function.support fun x => (φ i).normed μ x) l (𝓝 c).smallSets := by
-  simp_rw [NormedAddCommGroup.tendsto_nhds_zero, Real.norm_eq_abs,
+  simp_rw [NormedAddGroup.tendsto_nhds_zero, Real.norm_eq_abs,
     abs_eq_self.mpr (φ _).rOut_pos.le] at hφ
   rw [nhds_basis_ball.smallSets.tendsto_right_iff]
   refine fun ε hε ↦ (hφ ε hε).mono fun i hi ↦ ?_

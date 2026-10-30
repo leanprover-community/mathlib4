@@ -8,12 +8,11 @@ module
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # Subobjects in Grothendieck abelian categories
 
-We study the complete lattice of subjects of `X : C`
+We study the complete lattice of subobjects of `X : C`
 when `C` is a Grothendieck abelian category. In particular,
 for a functor `F : J ⥤ MonoOver X` from a filtered category,
 we relate the colimit of `F` (computed in `C`) and the
@@ -61,7 +60,7 @@ the objects in the image of the functor `F`. -/
 lemma subobjectMk_of_isColimit_eq_iSup :
     haveI := mono_of_isColimit_monoOver F hc f hf
     Subobject.mk f = ⨆ j, Subobject.mk (F.obj j).obj.hom := by
-  haveI := mono_of_isColimit_monoOver F hc f hf
+  have := mono_of_isColimit_monoOver F hc f hf
   apply le_antisymm
   · rw [le_iSup_iff]
     intro s H
@@ -80,6 +79,7 @@ lemma subobjectMk_of_isColimit_eq_iSup :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Let `X : C` be an object in a Grothendieck abelian category,
 `F : J ⥤ MonoOver X` a functor from a filtered category, `c` a cocone for
 the composition `F ⋙ MonoOver.forget _ : J ⥤ Over X`. We assume
@@ -99,7 +99,7 @@ noncomputable def isColimitMapCoconeOfSubobjectMkEqISup
   have := subobjectMk_of_isColimit_eq_iSup F (colimit.isColimit _) f (by simp [f])
   rw [← h] at this
   refine IsColimit.ofIsoColimit (colimit.isColimit _)
-    (Cocones.ext (Subobject.isoOfMkEqMk _ _ this) (fun j ↦ ?_))
+    (Cocone.ext (Subobject.isoOfMkEqMk _ _ this) (fun j ↦ ?_))
   rw [← cancel_mono (c.pt.hom)]
   dsimp
   rw [Category.assoc, Subobject.ofMkLEMk_comp, Over.w]

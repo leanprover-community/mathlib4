@@ -5,15 +5,16 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Conjneg
+
+import Mathlib.Algebra.Order.Pi
 
 /-!
 # Order properties of conjugation-negation
 -/
 
-@[expose] public section
+public section
 
 open scoped ComplexConjugate
 

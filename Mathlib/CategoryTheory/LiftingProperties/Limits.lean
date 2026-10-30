@@ -5,7 +5,8 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Lifting properties and (co)limits
@@ -15,7 +16,7 @@ certain (co)limits.
 
 -/
 
-@[expose] public section
+public section
 
 universe v
 

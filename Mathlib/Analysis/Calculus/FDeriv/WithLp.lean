@@ -5,15 +5,19 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Prod
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 public import Mathlib.Analysis.Normed.Lp.PiLp
+
+import Mathlib.Analysis.Calculus.FDeriv.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Derivatives on `WithLp`
 -/
 
-@[expose] public section
+public section
 
 open ContinuousLinearMap PiLp WithLp
 
@@ -69,22 +73,10 @@ theorem hasStrictFDerivAt_ofLp (f : PiLp p E) :
   have := Fintype.ofFinite ι
   .of_isLittleO <| (Asymptotics.isLittleO_zero _ _).congr_left fun _ => (sub_self _).symm
 
-@[deprecated hasStrictFDerivAt_ofLp (since := "2025-05-07")]
-theorem hasStrictFDerivAt_equiv (f : PiLp p E) :
-    HasStrictFDerivAt (WithLp.equiv p _)
-      (continuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
-  hasStrictFDerivAt_ofLp _ f
-
 theorem hasStrictFDerivAt_toLp (f : ∀ i, E i) :
     HasStrictFDerivAt (toLp p) (continuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
   have := Fintype.ofFinite ι
   .of_isLittleO <| (Asymptotics.isLittleO_zero _ _).congr_left fun _ => (sub_self _).symm
-
-@[deprecated hasStrictFDerivAt_toLp (since := "2025-05-07")]
-theorem hasStrictFDerivAt_equiv_symm (f : ∀ i, E i) :
-    HasStrictFDerivAt (WithLp.equiv p _).symm
-      (continuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
-  hasStrictFDerivAt_toLp _ f
 
 nonrec theorem hasStrictFDerivAt_apply (f : PiLp p E) (i : ι) :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=
@@ -96,21 +88,10 @@ theorem hasFDerivAt_ofLp (f : PiLp p E) :
   have := Fintype.ofFinite ι
   (hasStrictFDerivAt_ofLp p f).hasFDerivAt
 
-@[deprecated hasFDerivAt_ofLp (since := "2025-05-07")]
-theorem hasFDerivAt_equiv (f : PiLp p E) :
-    HasFDerivAt (WithLp.equiv _ _) (continuousLinearEquiv p 𝕜 _).toContinuousLinearMap f :=
-  hasFDerivAt_ofLp _ f
-
 theorem hasFDerivAt_toLp (f : ∀ i, E i) :
     HasFDerivAt (toLp p) (continuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
   have := Fintype.ofFinite ι
   (hasStrictFDerivAt_toLp p f).hasFDerivAt
-
-@[deprecated hasFDerivAt_toLp (since := "2025-05-07")]
-theorem hasFDerivAt_equiv_symm (f : ∀ i, E i) :
-    HasFDerivAt (WithLp.equiv _ _).symm
-      (continuousLinearEquiv p 𝕜 _).symm.toContinuousLinearMap f :=
-  hasFDerivAt_toLp _ f
 
 nonrec theorem hasFDerivAt_apply (f : PiLp p E) (i : ι) :
     HasFDerivAt (𝕜 := 𝕜) (fun f : PiLp p E => f i) (proj p E i) f :=

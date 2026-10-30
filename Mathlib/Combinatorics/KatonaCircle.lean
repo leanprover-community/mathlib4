@@ -6,9 +6,10 @@ Authors: Ching-Tsun Chou, Chris Wong, Yaël Dillies
 module
 
 public import Mathlib.Data.Finset.Density
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.Data.Nat.Choose.Cast
+
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # The Katona circle method
@@ -42,7 +43,7 @@ lemma IsPrefix.subset_of_card_le_card (hs : IsPrefix f s) (ht : IsPrefix f t) (h
 
 variable [DecidableEq X]
 
-instance : Decidable (IsPrefix f s) := by unfold IsPrefix; infer_instance
+instance : Decidable (IsPrefix f s) := inferInstanceAs <| Decidable (∀ _, _)
 
 /-- The set of numberings of which `s` is a prefix. -/
 def prefixed (s : Finset X) : Finset (Numbering X) := {f | IsPrefix f s}
@@ -62,7 +63,7 @@ def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(s
       snd.toFun x := ⟨f.1 x - #s, by
         have := (mem_prefixed.1 f.2 x).not.1 (Finset.mem_compl.1 x.2)
         simp at this ⊢
-        omega⟩
+        lia⟩
       snd.invFun n :=
         ⟨f.1.symm ⟨n + #s, Nat.add_lt_of_lt_sub <| by simpa using n.2⟩, by
           rw [s.mem_compl, mem_prefixed.1 f.2]; simp⟩
@@ -81,7 +82,7 @@ def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(s
         if hn : n < #s then
           g.symm ⟨n, by simpa using hn⟩
         else
-          g'.symm ⟨n - #s, by simp; omega⟩
+          g'.symm ⟨n - #s, by simp; lia⟩
       val.left_inv x := by
         by_cases hx : x ∈ s
         · have : g ⟨x, hx⟩ < #s := by simpa using (g ⟨x, hx⟩).2

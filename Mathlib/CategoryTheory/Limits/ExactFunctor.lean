@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 
 /-!
 # Bundled exact functors
@@ -33,16 +33,17 @@ section
 variable (C) (D)
 
 /-- Left-exactness, as a property of objects in `C ⥤ D`. -/
-def leftExactFunctor : ObjectProperty (C ⥤ D) :=
-  fun F ↦ PreservesFiniteLimits F
+@[deprecated (since := "2026-10-28")] alias leftExactFunctor :=
+  ObjectProperty.preservesFiniteLimits
 
 variable {C D} in
-@[simp]
+@[deprecated ObjectProperty.preservesFiniteLimits_iff +typeChanged (since := "2026-10-28"), simp]
 lemma leftExactFunctor_iff (F : C ⥤ D) :
-    leftExactFunctor C D F ↔ PreservesFiniteLimits F := Iff.rfl
+    leftExactFunctor F ↔ PreservesFiniteLimits F := Iff.rfl
 
 /-- Bundled left-exact functors. -/
-abbrev LeftExactFunctor := (leftExactFunctor C D).FullSubcategory
+abbrev LeftExactFunctor :=
+  (ObjectProperty.preservesFiniteLimits (J := C) (C := D)).FullSubcategory
 
 /-- `C ⥤ₗ D` denotes left exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₗ " => LeftExactFunctor
@@ -56,16 +57,17 @@ abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaith
   ObjectProperty.fullyFaithfulι _
 
 /-- Right-exactness, as a property of objects in `C ⥤ D`. -/
-def rightExactFunctor : ObjectProperty (C ⥤ D) :=
-  fun F ↦ PreservesFiniteColimits F
+@[deprecated (since := "2026-10-28")] alias rightExactFunctor :=
+  ObjectProperty.preservesFiniteColimits
 
 variable {C D} in
-@[simp]
+@[deprecated ObjectProperty.preservesFiniteColimits_iff +typeChanged (since := "2026-10-28"), simp]
 lemma rightExactFunctor_iff (F : C ⥤ D) :
-    rightExactFunctor C D F ↔ PreservesFiniteColimits F := Iff.rfl
+    rightExactFunctor F ↔ PreservesFiniteColimits F := Iff.rfl
 
 /-- Bundled right-exact functors. -/
-abbrev RightExactFunctor := (rightExactFunctor C D).FullSubcategory
+abbrev RightExactFunctor :=
+  (ObjectProperty.preservesFiniteColimits (J := C) (C := D)).FullSubcategory
 
 /-- `C ⥤ᵣ D` denotes right exact functors `C ⥤ D` -/
 infixr:26 " ⥤ᵣ " => RightExactFunctor
@@ -78,14 +80,18 @@ abbrev RightExactFunctor.forget : (C ⥤ᵣ D) ⥤ C ⥤ D :=
 abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
-/-- Rxactness, as a property of objects in `C ⥤ D`. -/
+/-- Exactness, as a property of objects in `C ⥤ D`. -/
 def exactFunctor : ObjectProperty (C ⥤ D) :=
-  leftExactFunctor C D ⊓ rightExactFunctor C D
+  .preservesFiniteLimits ⊓ .preservesFiniteColimits
 
 variable {C D} in
 @[simp]
 lemma exactFunctor_iff (F : C ⥤ D) :
     exactFunctor C D F ↔ PreservesFiniteLimits F ∧ PreservesFiniteColimits F := Iff.rfl
+
+instance : (exactFunctor C D).IsClosedUnderIsomorphisms := by
+  dsimp [exactFunctor]
+  infer_instance
 
 /-- Bundled exact functors. -/
 abbrev ExactFunctor := (exactFunctor C D).FullSubcategory
@@ -97,21 +103,26 @@ infixr:26 " ⥤ₑ " => ExactFunctor
 abbrev ExactFunctor.forget : (C ⥤ₑ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
-lemma exactFunctor_le_leftExactFunctor :
-    exactFunctor C D ≤ leftExactFunctor C D :=
+lemma exactFunctor_le_preservesFiniteLimits :
+    exactFunctor C D ≤ .preservesFiniteLimits :=
   fun _ h ↦ h.1
 
-lemma exactFunctor_le_rightExactFunctor :
-    exactFunctor C D ≤ rightExactFunctor C D :=
+lemma exactFunctor_le_preservesFiniteColimits :
+    exactFunctor C D ≤ .preservesFiniteColimits :=
   fun _ h ↦ h.2
+
+@[deprecated (since := "2026-10-28")] alias exactFunctor_le_leftExactFunctor :=
+  exactFunctor_le_preservesFiniteLimits
+@[deprecated (since := "2026-10-28")] alias exactFunctor_le_rightExactFunctor :=
+  exactFunctor_le_preservesFiniteColimits
 
 /-- Turn an exact functor into a left exact functor. -/
 abbrev LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
-  ObjectProperty.ιOfLE (exactFunctor_le_leftExactFunctor C D)
+  ObjectProperty.ιOfLE (exactFunctor_le_preservesFiniteLimits C D)
 
-/-- Turn an exact functor into a left exact functor. -/
+/-- Turn an exact functor into a right exact functor. -/
 abbrev RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
-  ObjectProperty.ιOfLE (exactFunctor_le_rightExactFunctor C D)
+  ObjectProperty.ιOfLE (exactFunctor_le_preservesFiniteColimits C D)
 
 variable {C D}
 
@@ -251,6 +262,7 @@ def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤
   map {F G} η :=
     { app H := ObjectProperty.homMk (((Functor.whiskeringRight C D E).map η.hom).app H.obj) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]
 def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E) where
@@ -260,6 +272,7 @@ def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E)
   map {F G} η :=
     { app H := ObjectProperty.homMk (((Functor.whiskeringLeft C D E).map η.hom).app H.obj) }
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps! obj_obj_obj obj_map map_app]
 def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E) where
@@ -272,11 +285,5 @@ def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E
 end
 
 end
-
-@[deprecated (since := "2025-12-18")] alias LeftExactFunctor.ofExact_map :=
-  LeftExactFunctor.ofExact_map_hom
-
-@[deprecated (since := "2025-12-18")] alias RightExactFunctor.ofExact_map :=
-  RightExactFunctor.ofExact_map_hom
 
 end CategoryTheory

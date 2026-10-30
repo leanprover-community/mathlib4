@@ -6,8 +6,9 @@ Authors: Chris Birkbeck, David Loeffler
 module
 
 public import Mathlib.Order.Filter.AtTopBot.Archimedean
-public import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.Interval.Finset.Defs
+
+import Mathlib.Order.Filter.Prod
 
 /-!
 # Limits of intervals along filters
@@ -16,7 +17,7 @@ This file contains some lemmas about how filters `Ixx` behave as the endpoints t
 
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 

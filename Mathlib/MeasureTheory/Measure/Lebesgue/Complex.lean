@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lebesgue measure on `ℂ`
@@ -48,11 +51,11 @@ theorem measurableEquivRealProd_apply (a : ℂ) : measurableEquivRealProd a = (a
 
 @[simp]
 theorem measurableEquivRealProd_symm_apply (p : ℝ × ℝ) :
-    measurableEquivRealProd.symm p = {re := p.1, im := p.2} := rfl
+    measurableEquivRealProd.symm p = { re := p.1, im := p.2 } := rfl
 
 theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
-  convert (measurableEquivPi.symm.measurable.measurePreserving volume).symm
-  rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar,
+  convert! (measurableEquivPi.symm.measurable.measurePreserving volume).symm
+  rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
     measurableEquivPi, Homeomorph.toMeasurableEquiv_symm_coe,
     ContinuousLinearEquiv.coe_symm_toHomeomorph, Basis.map_addHaar, eq_comm]
   exact (Basis.addHaar_eq_iff _ _).mpr Complex.orthonormalBasisOneI.volume_parallelepiped

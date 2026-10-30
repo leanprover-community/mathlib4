@@ -7,11 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.ImageToKernel
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.CategoryTheory.Abelian.Opposite
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.Tactic.TFAE
 
 /-!
 # Exact sequences in abelian categories
@@ -23,7 +18,7 @@ true in more general settings.
 * A short complex `S` is exact iff `imageSubobject S.f = kernelSubobject S.g`.
 * If `(f, g)` is exact, then `image.ι f` has the universal property of the kernel of `g`.
 * `f` is a monomorphism iff `kernel.ι f = 0` iff `Exact 0 f`, and `f` is an epimorphism iff
-  `cokernel.π = 0` iff `Exact f 0`.
+  `cokernel.π f = 0` iff `Exact f 0`.
 * A faithful functor between abelian categories that preserves zero morphisms reflects exact
   sequences.
 * `X ⟶ Y ⟶ Z ⟶ 0` is exact if and only if the second map is a cokernel of the first, and
@@ -143,6 +138,7 @@ def Exact.isColimitCoimage (h : S.Exact) :
   ext
   rw [hm, cokernel.π_desc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `(f, g)` is exact, then `factorThruImage g` is a cokernel of `f`. -/
 def Exact.isColimitImage (h : S.Exact) :
     IsColimit (CokernelCofork.ofπ (Limits.factorThruImage S.g)
@@ -244,15 +240,15 @@ open ZeroObject
 /-- A functor which preserves exactness preserves monomorphisms. -/
 theorem preservesMonomorphisms_of_map_exact : L.PreservesMonomorphisms where
   preserves f hf := by
-    apply ((Abelian.tfae_mono (L.map f) (L.obj 0)).out 2 0).mp
-    refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_mono f 0).out 0 2).mp hf))
+    apply ((Abelian.tfae_mono (L.map f) (L.obj 0)).out 3 1).mp
+    refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_mono f 0).out 1 3).mp hf))
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
 /-- A functor which preserves exactness preserves epimorphisms. -/
 theorem preservesEpimorphisms_of_map_exact : L.PreservesEpimorphisms where
   preserves f hf := by
-    apply ((Abelian.tfae_epi (L.map f) (L.obj 0)).out 2 0).mp
-    refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_epi f 0).out 0 2).mp hf))
+    apply ((Abelian.tfae_epi (L.map f) (L.obj 0)).out 3 1).mp
+    refine ShortComplex.exact_of_iso ?_ (hL _ (((tfae_epi f 0).out 1 3).mp hf))
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
 
 /-- A functor which preserves the exactness of short complexes preserves homology. -/

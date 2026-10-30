@@ -1,7 +1,10 @@
-import Mathlib.Tactic.Widget.LibraryRewrite
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Subtype
-import Batteries.Data.Nat.Gcd
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.Widget.LibraryRewrite
+
+@[expose] public section
 
 -- set_option trace.profiler true
 -- set_option trace.rw?? true
@@ -116,8 +119,6 @@ Pattern n + m
 Pattern a + b
 · 1 + n
   add_comm
-· [n, 1].sum
-  List.sum_pair
 · 0
   ⊢ 1 + n = 0
   IsDedekindFiniteAddMonoid.add_eq_zero_symm
@@ -132,7 +133,7 @@ info: Pattern n / 2
 
 Pattern x / y
 · if 0 < 2 ∧ 2 ≤ n then (n - 2) / 2 + 1 else 0
-  Nat.div_eq
+  Nat.div_eq_ite
 · (n - n % 2) / 2
   Nat.div_eq_sub_mod_div
 · 0

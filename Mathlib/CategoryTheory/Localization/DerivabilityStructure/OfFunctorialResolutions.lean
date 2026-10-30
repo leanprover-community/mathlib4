@@ -16,7 +16,7 @@ a fully faithful functor `Φ.functor : C₁ ⥤ C₂` and that we have a resolut
 functor `ρ : C₂ ⥤ C₁` with a natural transformation `i : 𝟭 C₂ ⟶ ρ ⋙ Φ.functor`
 such that `W₂ (i.app X₂)` for any `X₂ : C₂`. If we assume
 that `W₁` is induced by `W₂`, that `W₂` is multiplicative and has
-the two out of three property, then `Φ` is a right derivability structure.
+the two-out-of-three property, then `Φ` is a right derivability structure.
 
 -/
 
@@ -42,7 +42,7 @@ lemma hasRightResolutions_arrow_of_functorial_resolutions :
        hw := ⟨hi _, hi _⟩ }⟩
 
 namespace functorialRightResolutions
-open Functor
+open CategoryTheory.Functor
 
 variable {Φ i}
 
@@ -77,8 +77,8 @@ noncomputable def ι : 𝟭 C₁ ⟶ Φ.functor ⋙ ρ :=
 @[simp]
 lemma Φ_functor_map_ι_app (X₁ : C₁) :
     Φ.functor.map ((ι i).app X₁) = i.app (Φ.functor.obj X₁) :=
-  NatTrans.congr_app (((whiskeringRight C₁ C₁ C₂).obj Φ.functor).map_preimage
-    (X := 𝟭 C₁) (Y := Φ.functor ⋙ ρ) (whiskerLeft Φ.functor i)) X₁
+  congr($(((whiskeringRight C₁ C₁ C₂).obj Φ.functor).map_preimage
+    (X := 𝟭 C₁) (Y := Φ.functor ⋙ ρ) (whiskerLeft Φ.functor i)).app X₁)
 
 include hW₁ hi in
 lemma W₁_ι_app (X₁ : C₁) : W₁ ((ι i).app X₁) := by

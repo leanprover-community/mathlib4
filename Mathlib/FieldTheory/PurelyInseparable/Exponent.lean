@@ -67,10 +67,10 @@ noncomputable def exponent [HasExponent K L] : ℕ :=
 
 variable {L}
 
-open Classical in
 theorem exponent_def [HasExponent K L] (a : L) :
-    a ^ ringExpChar K ^ exponent K L ∈ (algebraMap K L).range :=
-  Nat.find_spec ‹HasExponent K L›.has_exponent a
+    a ^ ringExpChar K ^ exponent K L ∈ (algebraMap K L).range := by
+  classical
+  exact Nat.find_spec ‹HasExponent K L›.has_exponent a
 
 /-- Version of `exponent_def` using `ExpChar`. -/
 theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] (a : L) :
@@ -79,10 +79,10 @@ theorem exponent_def' [HasExponent K L] (p : ℕ) [ExpChar K p] (a : L) :
 
 variable {K}
 
-open Classical in
 theorem exponent_min [HasExponent K L] {e : ℕ} (h : e < exponent K L) :
-    ∃ a, a ^ ringExpChar K ^ e ∉ (algebraMap K L).range :=
-  not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
+    ∃ a, a ^ ringExpChar K ^ e ∉ (algebraMap K L).range := by
+  classical
+  exact not_forall.mp <| Nat.find_min ‹HasExponent K L›.has_exponent h
 
 /-- Version of `exponent_min` using `ExpChar`. -/
 theorem exponent_min' [HasExponent K L] (p : ℕ) [ExpChar K p] {e : ℕ} (h : e < exponent K L) :
@@ -108,16 +108,16 @@ open Polynomial
 variable [Field K] [Field L] [Algebra K L] [IsPurelyInseparable K L]
 variable {L}
 
-open Classical in
+open scoped Classical in
 /-- The exponent of an element `a ∈ L` of a purely inseparable field extension `L / K`
 is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`. -/
 noncomputable def elemExponent (a : L) : ℕ :=
   Nat.find <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open Classical in
 variable {K} in
 theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
     elemExponent K a = 0 := by
+  classical
   apply (Nat.find_eq_zero _).mpr
   rw [pow_zero, pow_one]
   obtain ⟨y, hy⟩ := h
@@ -127,19 +127,18 @@ theorem elemExponent_eq_zero_of_charZero (a : L) [CharZero K] :
     elemExponent K a = 0 :=
   elemExponent_eq_zero_of_mem_range <| surjective_algebraMap_of_isSeparable K L a
 
-open Classical in
+open scoped Classical in
 /-- The element `y` of the base field `K` such that
 `a ^ ringExpChar K ^ elemExponent K a = algebraMap K L y`.
 See `IsPurelyInseparable.algebraMap_elemReduct_eq`. -/
 noncomputable def elemReduct (a : L) : K :=
   Classical.choose <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open Classical in
 theorem minpoly_eq (a : L) :
-    minpoly K a = X ^ ringExpChar K ^ elemExponent K a - C (elemReduct K a) :=
-  Classical.choose_spec <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
+    minpoly K a = X ^ ringExpChar K ^ elemExponent K a - C (elemReduct K a) := by
+  classical
+  exact Classical.choose_spec <| Nat.find_spec <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
-open Classical in
 /-- Version of `minpoly_eq` using `ExpChar`. -/
 theorem minpoly_eq' (p : ℕ) [ExpChar K p] (a : L) :
     minpoly K a = X ^ p ^ elemExponent K a - C (elemReduct K a) :=
@@ -168,7 +167,7 @@ theorem algebraMap_elemReduct_eq' (p : ℕ) [ExpChar K p] (a : L) :
 
 theorem elemExponent_def (a : L) :
     a ^ ringExpChar K ^ elemExponent K a ∈ (algebraMap K L).range :=
-  RingHom.mem_range.mpr <| ⟨_, algebraMap_elemReduct_eq K a⟩
+  RingHom.mem_range.mpr ⟨_, algebraMap_elemReduct_eq K a⟩
 
 /-- Version of `elemExponent_def` using `ExpChar`. -/
 theorem elemExponent_def' (p : ℕ) [ExpChar K p] (a : L) :
@@ -181,7 +180,7 @@ theorem elemExponent_le_of_pow_mem {a : L} {n : ℕ}
   let ⟨p, _⟩ := ExpChar.exists K
   rcases ‹ExpChar K p› with _ | ⟨hp⟩
   · exact elemExponent_eq_zero_of_charZero K a ▸ Nat.zero_le _
-  · obtain ⟨y, hy⟩ := RingHom.mem_range.mp <| h
+  · obtain ⟨y, hy⟩ := RingHom.mem_range.mp h
     let f := X ^ ringExpChar K ^ n - C y
     have hf₁ : f.aeval a = 0 := by rwa [map_sub, aeval_C, aeval_X_pow, sub_eq_zero, eq_comm]
     have hf₂ : f.Monic := monic_X_pow_sub_C y <| Nat.pos_iff_ne_zero.mp <| expChar_pow_pos K _ _
@@ -213,7 +212,7 @@ theorem elemExponent_le_exponent [HasExponent K L] (a : L) :
   elemExponent_le_of_pow_mem <| exponent_def K a
 
 variable {K} in
-instance hasExponent_of_finiteDimensional [IsPurelyInseparable K L] [FiniteDimensional K L] :
+instance hasExponent_of_finiteDimensional [FiniteDimensional K L] :
     HasExponent K L := by
   let ⟨p, _⟩ := ExpChar.exists K
   rcases ‹ExpChar K p› with _ | ⟨hp⟩

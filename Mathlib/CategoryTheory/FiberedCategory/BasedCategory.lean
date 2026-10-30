@@ -5,9 +5,8 @@ Authors: Paul Lezeau, Calle Sönne
 -/
 module
 
-public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
-public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
@@ -32,12 +31,11 @@ universe v₅ u₅ v₄ u₄ v₃ u₃ v₂ u₂ v₁ u₁
 
 namespace CategoryTheory
 
-open Functor Category NatTrans IsHomLift
+open CategoryTheory.Functor Category NatTrans IsHomLift
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
 /-- A based category over `𝒮` is a category `𝒳` together with a functor `p : 𝒳 ⥤ 𝒮`. -/
-@[nolint checkUnivs]
 structure BasedCategory (𝒮 : Type u₁) [Category.{v₁} 𝒮] where
   /-- The type of objects in a `BasedCategory` -/
   obj : Type u₂
@@ -198,6 +196,7 @@ def forgetful (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v�
   obj := fun F ↦ F.toFunctor
   map := fun α ↦ α.toNatTrans
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
   reflects {F G} α _ := by
     constructor
@@ -206,6 +205,7 @@ instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
       isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
     aesop
 
+set_option backward.isDefEq.respectTransparency false in
 instance {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso α] : IsIso (X := F.toFunctor) α.toNatTrans := by
   rw [← forgetful_map]; infer_instance
 
@@ -237,6 +237,7 @@ def mkNatIso (α : F.toFunctor ≅ G.toFunctor)
       rw [← Iso.app_inv]
       apply IsHomLift.lift_id_inv }
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_of_toNatTrans_isIso (α : F ⟶ G) [IsIso (X := F.toFunctor) α.toNatTrans] : IsIso α :=
   have : IsIso ((forgetful 𝒳 𝒴).map α) := by simp_all
   Functor.ReflectsIsomorphisms.reflects (forgetful 𝒳 𝒴) α
@@ -276,9 +277,11 @@ instance : Category (BasedCategory.{v₂, u₂} 𝒮) where
   id := id
   comp := comp
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The bicategory of based categories. -/
 instance bicategory : Bicategory (BasedCategory.{v₂, u₂} 𝒮) where
-  Hom 𝒳 𝒴 :=  𝒳 ⥤ᵇ 𝒴
+  Hom 𝒳 𝒴 := 𝒳 ⥤ᵇ 𝒴
   id 𝒳 := 𝟭 𝒳
   comp F G := F ⋙ G
   homCategory 𝒳 𝒴 := homCategory 𝒳 𝒴

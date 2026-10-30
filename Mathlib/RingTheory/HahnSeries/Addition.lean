@@ -5,17 +5,13 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Group.Support
-public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.RingTheory.HahnSeries.Basic
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Additive properties of Hahn series
+
 If `Γ` is ordered and `R` has zero, then `R⟦Γ⟧` consists of formal series over `Γ` with coefficients
 in `R`, whose supports are partially well-ordered. With further structure on `R` and `Γ`, we can add
 further structure on `R⟦Γ⟧`.  When `R` has an addition operation, `R⟦Γ⟧` also has addition by adding
@@ -175,7 +171,6 @@ lemma addOppositeEquiv_symm_orderTop (x : R⟦Γ⟧ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : Rᵃᵒᵖ⟦Γ⟧) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
-  classical
   obtain rfl | hx := eq_or_ne x 0
   · simp
   simp only [ne_eq, AddOpposite.unop_eq_zero_iff, EmbeddingLike.map_eq_zero_iff, hx,
@@ -267,16 +262,12 @@ theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [Add
     exact hyne rfl
   refine lt_of_le_of_ne ?_ this
   simp only [order, ne_zero_of_eq_add_single hxy hy, ↓reduceDIte, hy]
-  have : y.support ⊆ x.support := by
-    intro g hg
-    by_cases hgx : g = x.order
-    · refine (mem_support x g).mpr ?_
-      have : x.coeff x.order ≠ 0 := coeff_order_ne_zero <| ne_zero_of_eq_add_single hxy hy
-      rwa [← hgx] at this
-    · have : x.coeff g = (y + (single x.order) x.leadingCoeff).coeff g := by rw [← hxy]
-      rw [coeff_add, coeff_single_of_ne hgx, add_zero] at this
-      simpa [this] using hg
-  exact Set.IsWF.min_le_min_of_subset this
+  refine Set.IsWF.min_le_min_of_subset fun g hg ↦ ?_
+  obtain rfl | hgx := eq_or_ne g x.order
+  · simpa using coeff_order_eq_zero.not.2 <| ne_zero_of_eq_add_single hxy hy
+  · have : x.coeff g = (y + (single x.order) x.leadingCoeff).coeff g := by rw [← hxy]
+    rw [coeff_add, coeff_single_of_ne hgx, add_zero] at this
+    simpa [this] using hg
 
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
@@ -301,7 +292,7 @@ theorem embDomain_add (f : Γ ↪o Γ') (x y : R⟦Γ⟧) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [embDomain_notin_range hg]
+  · simp [embDomain_of_notMem_range hg]
 
 end Domain
 
@@ -541,7 +532,7 @@ theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : R⟦Γ⟧) :
   by_cases hg : g ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hg
     simp
-  · simp [embDomain_notin_range hg]
+  · simp [embDomain_of_notMem_range hg]
 
 /-- Extending the domain of Hahn series is a linear map. -/
 @[simps]

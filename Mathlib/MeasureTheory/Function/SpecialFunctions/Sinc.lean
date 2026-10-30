@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
-public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!
@@ -19,7 +18,7 @@ public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

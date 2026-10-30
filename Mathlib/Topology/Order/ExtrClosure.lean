@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.OrderClosed
 public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.OrderClosed
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Maximum/minimum on the closure of a set
@@ -16,12 +19,10 @@ not) maximum (or minimum) on a set `s` at a point `a` and is continuous on the c
 `f` has an extremum of the same type on `Closure s` at `a`.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Set
-
-open Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
   [OrderClosedTopology Y] {f : X → Y} {s : Set X} {a : X}

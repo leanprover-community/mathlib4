@@ -5,12 +5,13 @@ Authors: Jineon Baek, Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
-public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.Tactic.GCongr
+
+import Mathlib.RingTheory.Polynomial.IsIntegral
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
@@ -30,7 +31,7 @@ The proof uses the Mason-Stothers theorem (Polynomial ABC theorem) and infinite 
 (in the characteristic p case).
 -/
 
-@[expose] public section
+public section
 
 open Polynomial UniqueFactorizationMonoid
 
@@ -166,11 +167,9 @@ private theorem Polynomial.flt_catalan_aux
   · generalize eq_d : a.natDegree = d
     -- set up infinite descent
     -- strong induct on `d := a.natDegree`
-    induction d
-      using Nat.case_strong_induction_on
-      generalizing a b c ha hb hc hab heq with
-    | hz => rfl
-    | hi d ih_d => -- have derivatives of `a, b, c` zero
+    induction d using Nat.case_strong_induction_on generalizing a b c ha hb hc hab heq with
+    | zero => rfl
+    | succ d ih_d => -- have derivatives of `a, b, c` zero
       obtain ⟨ad, bd, cd⟩ := flt_catalan_deriv
         hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
       -- find contracts `ca, cb, cc` so that `a(k) = ca(k^ch)`
@@ -245,12 +244,8 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
   set d := gcd a b
   have hd : d ≠ 0 := gcd_ne_zero_of_left ha
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
-  have hdc : d ∣ c := by
-    -- TODO: This is basically reproving `IsIntegrallyClosed.pow_dvd_pow_iff`
-    have hn : 0 < n := by lia
-    have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
-    simpa [dvd_iff_normalizedFactors_le_normalizedFactors, Multiset.le_iff_count, *] using hdncn
-  obtain ⟨c', eq_c⟩ := hdc
+  obtain ⟨c', eq_c⟩ : ∃ c', c = d * c' :=
+    (IsIntegrallyClosed.pow_dvd_pow_iff (by lia)).mp ⟨_, heq.symm⟩
   rw [eq_a, mul_ne_zero_iff] at ha
   rw [eq_b, mul_ne_zero_iff] at hb
   rw [eq_c, mul_ne_zero_iff] at hc

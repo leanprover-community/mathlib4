@@ -6,16 +6,17 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 
 /-!
 # Lemmas about quotients in characteristic zero
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} [DivisionRing R] [CharZero R] {p : R}

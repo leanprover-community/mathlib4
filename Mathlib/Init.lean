@@ -1,34 +1,47 @@
-module
+module  -- shake: keep-all, shake: keep-downstream
 
-public import Lean.Linter.Sets -- for the definition of linter sets
-public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
-public import Mathlib.Tactic.Linter.CommandStart
-public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
-public import Mathlib.Tactic.Linter.DirectoryDependency
-public import Mathlib.Tactic.Linter.DocPrime
-public import Mathlib.Tactic.Linter.DocString
-public import Mathlib.Tactic.Linter.EmptyLine
-public import Mathlib.Tactic.Linter.GlobalAttributeIn
-public import Mathlib.Tactic.Linter.HashCommandLinter
-public import Mathlib.Tactic.Linter.Header
-public import Mathlib.Tactic.Linter.FlexibleLinter
--- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
-public import Mathlib.Tactic.Linter.Lint
-public import Mathlib.Tactic.Linter.Multigoal
-public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Linter.PrivateModule
--- The following import contains the environment extension for the unused tactic linter.
-public import Mathlib.Tactic.Linter.UnusedTacticExtension
-public import Mathlib.Tactic.Linter.UnusedTactic
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
-public import Mathlib.Tactic.Linter.Style
--- This import makes the `#min_imports` command available globally.
-public import Mathlib.Tactic.MinImports
-public import Mathlib.Tactic.TacticAnalysis.Declarations
--- This is a redundant import, but it is needed so that
--- the linter doesn't complain about `ParseCommand` not importing `Header`.
--- This can be removed after https://github.com/leanprover-community/mathlib4/pull/32419
-public import Mathlib.Util.ParseCommand
+-- This import makes the `#help` command available globally.
+public meta import Batteries.Tactic.HelpCmd
+-- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
+-- available globally.
+public meta import ImportGraph.Tools
+public meta import Lean.Linter.Sets -- for the definition of linter sets
+public meta import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
+public meta import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
+public meta import Mathlib.Tactic.Lemma
+public meta import Mathlib.Tactic.Linter.AuxLemma
+public meta import Mathlib.Tactic.Linter.DeclType
+public meta import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+public meta import Mathlib.Tactic.Linter.DirectoryDependency
+public meta import Mathlib.Tactic.Linter.DocPrime
+public meta import Mathlib.Tactic.Linter.DocString
+public meta import Mathlib.Tactic.Linter.EmptyLine
+public meta import Mathlib.Tactic.Linter.FlexibleLinter
+public meta import Mathlib.Tactic.Linter.HashCommandLinter
+public meta import Mathlib.Tactic.Linter.HaveILetI
+public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.InternalConstructor
+-- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
+public meta import Mathlib.Tactic.Linter.Lint
+public meta import Mathlib.Tactic.Linter.Multigoal
+public meta import Mathlib.Tactic.Linter.OldObtain
+public meta import Mathlib.Tactic.Linter.PrivateModule
+public meta import Mathlib.Tactic.Linter.Style
+public meta import Mathlib.Tactic.Linter.TacticDocumentation
+public meta import Mathlib.Tactic.Linter.UnusedTactic
+public meta import Mathlib.Tactic.Linter.Whitespace
+-- This import makes the `#min_imports in` command available globally.
+public meta import Mathlib.Tactic.MinImports
+public meta import Mathlib.Tactic.TacticAnalysis.Declarations
+public meta import Mathlib.Tactic.TypeStar
+-- This import makes the binder plicity code action available globally
+public meta import Mathlib.Util.CodeActions
+-- This import makes the custom syntax used in Mathlib's Verso docstrings available globally.
+public meta import Mathlib.Util.VersoRoles
+-- This import makes the `alias` command available globally.
+public import Batteries.Tactic.Alias
+-- This import makes the `proof_wanted` command available globally.
+public import Batteries.Util.ProofWanted
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -44,6 +57,9 @@ Here are some general guidelines:
 A linter verifies that every file in Mathlib imports `Mathlib.Init`
 (perhaps indirectly) --- except for the imports in this file, of course.
 
+If you're adding a new import to ensure that some command is available in all of mathlib,
+add a line to `MathlibTest/BasicFiles/Init.lean` to ensure this stays true.
+
 ## Linters
 
 All syntax linters defined in Mathlib which are active by default are imported here.
@@ -52,7 +68,7 @@ as early as possible.
 
 All linters imported here have no bulk imports;
 **Not** imported in this file are
-- the text-based linters in `Linters/TextBased.lean`, as they can be imported later
+- the text-based linters in `Mathlib/Tactic/Linter/TextBased.lean`, as they can be imported later
 - the `haveLet` linter, as it is currently disabled by default due to crashes
 - the `ppRoundTrip` linter, which is currently disabled (as this is not mature enough)
 - the `minImports` linter, as that linter is disabled by default (and has an informational function;
@@ -61,7 +77,7 @@ All linters imported here have no bulk imports;
 
 -/
 
-@[expose] public section
+public section
 
 /-- Define a linter set of all mathlib syntax linters which are enabled by default.
 
@@ -71,6 +87,7 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
+  linter.auxLemma
   linter.flexible
   linter.hashCommand
   linter.oldObtain
@@ -78,23 +95,25 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.cases
   linter.style.induction
   linter.style.refine
-  linter.style.commandStart
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax
   linter.style.emptyLine
+  linter.style.extendedBinder
   linter.style.header
   linter.style.lambdaSyntax
   linter.style.longLine
   linter.style.longFile
   linter.style.multiGoal
-  linter.style.nativeDecide
+  linter.style.native
   linter.style.openClassical
+  linter.style.maxHeartbeats
   linter.style.missingEnd
   linter.style.setOption
   linter.style.show
-  linter.style.maxHeartbeats
+  linter.style.whitespace
   linter.unusedDecidableInType
+  linter.unusedFintypeInType
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
 /-- Define a set of linters that are used in the `nightly-testing` branch
@@ -110,15 +129,17 @@ register_linter_set linter.nightlyRegressionSet :=
 -/
 register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.mergeWithGrind
+  linter.style.docStringVerso
+  linter.tacticAnalysis.verifyGrindOnly
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
-open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
+open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType AuxLemma
 
 run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=
     #[`linter.checkInitImports, `linter.allScriptsDocumented]
   let env ← getEnv
-  let ls := linterSetsExt.getEntries env
+  let ls := (linterSetsExt.getState env).localEntries
   let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
     throwError m!"'linter.mathlibStandardSet' is not defined."
   let some (_, nrLinters) := ls.find? (·.1 == ``linter.nightlyRegressionSet) |
@@ -132,3 +153,5 @@ run_cmd liftTermElabM do
     let some cinfo := env.find? mlRes | throwError "{mlRes}: this code should be unreachable."
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
+
+allow_unused_tactic Mathlib.Linter.Style.show

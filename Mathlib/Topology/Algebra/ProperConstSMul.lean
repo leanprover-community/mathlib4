@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Maps.Proper.Basic
+
 /-!
 # Actions by proper maps
 
@@ -23,7 +24,7 @@ We also provide 4 instances:
 - for the action on `∀ i, X i`.
 -/
 
-@[expose] public section
+public section
 
 /-- A mixin typeclass saying that the `(c +ᵥ ·)` is a proper map for all `c`.
 

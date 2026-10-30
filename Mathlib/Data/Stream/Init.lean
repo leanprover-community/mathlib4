@@ -6,9 +6,13 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Stream.Defs
-public import Mathlib.Logic.Function.Basic
-public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Nat.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
@@ -466,7 +470,7 @@ lemma get_append_left (h : n < x.length) : (x ++ₛ a).get n = x[n] := by
 @[simp] lemma get_append_length : (x ++ₛ a).get x.length = a.get 0 := get_append_right 0 x a
 
 lemma append_right_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
-  ext n; replace h := congr_arg (fun a ↦ a.get (x.length + n)) h; simpa using h
+  ext n; replace h := congr($(h).get (x.length + n)); simpa using h
 
 @[simp] lemma append_right_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
   ⟨append_right_injective x a b, by simp +contextual⟩
@@ -551,7 +555,7 @@ theorem getElem?_take_succ (n : ℕ) (s : Stream' α) :
 theorem append_take_drop (n : ℕ) (s : Stream' α) : appendStream' (take n s) (drop n s) = s := by
   induction n generalizing s with
   | zero => rfl
-  | succ n ih =>rw [take_succ, drop_succ, cons_append_stream, ih (tail s), Stream'.eta]
+  | succ n ih => rw [take_succ, drop_succ, cons_append_stream, ih (tail s), Stream'.eta]
 
 lemma append_take : x ++ (a.take n) = (x ++ₛ a).take (x.length + n) := by
   induction x <;> simp [take, Nat.add_comm, cons_append_stream, *]

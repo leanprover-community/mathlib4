@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integration with respect to a finite product of measures
 
@@ -16,7 +19,7 @@ that its integral is the product of the individual integrals,
 in `MeasureTheory.integral_fintype_prod_eq_prod`.
 -/
 
-@[expose] public section
+public section
 
 open Fintype MeasureTheory MeasureTheory.Measure
 
@@ -42,7 +45,7 @@ theorem fin_nat_prod {n : ℕ} {E : Fin n → Type*}
       rw [← this.integrable_comp_emb (MeasurableEquiv.measurableEmbedding _)]
       simp_rw [MeasurableEquiv.piFinSuccAbove_symm_apply, Fin.insertNthEquiv,
         Fin.prod_univ_succ, Fin.insertNth_zero]
-      simp only [Fin.zero_succAbove, cast_eq, Function.comp_def]
+      simp only [Fin.zero_succAbove, Function.comp_def]
       have : Integrable (fun (x : (j : Fin n) → E (Fin.succ j)) ↦ ∏ j, f (Fin.succ j) (x j))
           (Measure.pi (fun i ↦ μ i.succ)) :=
         n_ih (fun i ↦ hf _)
@@ -74,6 +77,7 @@ end Integrable
 
 variable [RCLike 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of **Fubini's theorem** in `n` variables, for a natural number `n`. -/
 theorem integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Type*}
     {mE : ∀ i, MeasurableSpace (E i)} {μ : (i : Fin n) → Measure (E i)} [∀ i, SigmaFinite (μ i)]
@@ -135,11 +139,22 @@ lemma integrable_comp_eval [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i →
   rw [Measure.pi_map_eval]
   exact hf.smul_measure <| ENNReal.prod_ne_top (by finiteness)
 
+lemma integrable_eval [∀ i, NormedAddCommGroup (X i)] [∀ i, IsFiniteMeasure (μ i)] {i : ι}
+    (h : Integrable id (μ i)) :
+    Integrable (fun x ↦ x i) (Measure.pi μ) :=
+  integrable_comp_eval h
+
 lemma integral_comp_eval [NormedSpace ℝ E] [∀ i, IsProbabilityMeasure (μ i)] {i : ι} {f : X i → E}
     (hf : AEStronglyMeasurable f (μ i)) :
     ∫ x : Π i, X i, f (x i) ∂Measure.pi μ = ∫ x, f x ∂μ i := by
   rw [← (measurePreserving_eval μ i).map_eq, integral_map]
   · exact Measurable.aemeasurable (by fun_prop)
   · rwa [(measurePreserving_eval μ i).map_eq]
+
+lemma integral_eval [∀ i, NormedAddCommGroup (X i)] [∀ i, NormedSpace ℝ (X i)]
+    [∀ i, IsProbabilityMeasure (μ i)] {i : ι} [OpensMeasurableSpace (X i)]
+    [SecondCountableTopology (X i)] :
+    ∫ x, x i ∂Measure.pi μ = ∫ x, x ∂μ i :=
+  integral_comp_eval aestronglyMeasurable_id
 
 end MeasureTheory

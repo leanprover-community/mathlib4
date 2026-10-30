@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mapping divisibility across multiplication-preserving homomorphisms
 
@@ -21,7 +24,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 divisibility, divides
 -/
 
-@[expose] public section
+public section
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 

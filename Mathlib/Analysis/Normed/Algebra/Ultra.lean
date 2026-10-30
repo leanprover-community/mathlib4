@@ -8,13 +8,16 @@ module
 public import Mathlib.Analysis.Normed.Field.Ultra
 public import Mathlib.Analysis.Normed.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed algebra preserves ultrametricity
 
 This file contains the proof that a normed division ring over an ultrametric field is ultrametric.
 -/
 
-@[expose] public section
+public section
 
 variable {K L : Type*} [NormedField K]
 

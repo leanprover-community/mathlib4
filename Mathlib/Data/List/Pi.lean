@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Multiset.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Cartesian product of lists
 
@@ -86,6 +89,7 @@ def pi : ∀ l : List ι, (∀ i, List (α i)) → List (∀ i, i ∈ l → α i
     pi (i :: l) t = ((t i).flatMap fun b ↦ (pi l t).map <| Pi.cons _ _ b) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Multiset.pi_coe (l : List ι) (fs : ∀ i, List (α i)) :
     (l : Multiset ι).pi (fs ·) = (↑(pi l fs) : Multiset (∀ i ∈ l, α i)) := by
   induction l with
@@ -99,6 +103,6 @@ lemma _root_.Multiset.pi_coe (l : List ι) (fs : ∀ i, List (α i)) :
 
 lemma mem_pi {l : List ι} (fs : ∀ i, List (α i)) (f : ∀ i ∈ l, α i) :
     (f ∈ pi l fs) ↔ (∀ i (hi : i ∈ l), f i hi ∈ fs i) := by
-  simpa [Multiset.pi_coe] using Multiset.mem_pi ↑l (fs ·) f
+  simpa [Multiset.pi_coe] using! Multiset.mem_pi ↑l (fs ·) f
 
 end List

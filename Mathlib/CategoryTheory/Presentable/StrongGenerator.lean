@@ -5,11 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
-public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 /-!
 # Locally presentable categories and strong generators
@@ -26,7 +24,7 @@ locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v' v u' u
 
@@ -102,7 +100,7 @@ lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
         (h : g₁ ≫ colimit.desc Φ (E.coconeAt X) = g₂ ≫ colimit.desc Φ (E.coconeAt X))
       have : IsCardinalPresentable G κ := hS₂ _ hG
       obtain ⟨j, φ₁, φ₂, rfl, rfl⟩ :
-          ∃ (j :  CostructuredArrow (P.colimitsCardinalClosure κ).ι X)
+          ∃ (j : CostructuredArrow (P.colimitsCardinalClosure κ).ι X)
             (φ₁ φ₂ : G ⟶ Φ.obj j), φ₁ ≫ colimit.ι _ _ = g₁ ∧ φ₂ ≫ colimit.ι _ _ = g₂ := by
         obtain ⟨j₁, f₁, hf₁⟩ :=
           IsCardinalPresentable.exists_hom_of_isColimit κ (colimit.isColimit _) g₁
@@ -132,7 +130,7 @@ lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
         CostructuredArrow.mk (Y := ⟨Y, P.le_colimitsCardinalClosure  _ _ hY⟩) (by exact g)
       exact ⟨colimit.ι (CostructuredArrow.proj _ _ ⋙ (P.colimitsCardinalClosure κ).ι) γ,
         by simp [γ, E]⟩)
-    exact ⟨IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext
+    exact ⟨IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext
       (asIso (colimit.desc _ (E.coconeAt X))))⟩
 
 lemma ObjectProperty.colimitsCardinalClosure_le_isCardinalPresentable

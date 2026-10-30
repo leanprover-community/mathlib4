@@ -5,12 +5,12 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearForm.Basic
 public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
-public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.LinearAlgebra.RootSystem.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+
+import Mathlib.LinearAlgebra.Dimension.Localization
 
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
@@ -25,7 +25,8 @@ options for each pair.
 Another application is to the faithfulness of the Weyl group action on roots, and finiteness of the
 Weyl group.
 
-## Main results:
+## Main results
+
 * `RootPairing.IsAnisotropic`: We say a finite root pairing is anisotropic if there are no roots /
   coroots which have length zero w.r.t. the root / coroot forms.
 * `RootPairing.rootForm_pos_of_nonzero`: `RootForm` is strictly positive on non-zero linear
@@ -37,11 +38,13 @@ Weyl group.
 * `RootPairing.rootForm_restrict_nondegenerate_of_isAnisotropic`: the root form is
   non-degenerate if the coefficients are a field and the pairing is crystallographic.
 
-## References:
+## References
+
 * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
-## Todo
+## TODO
+
 * Weyl-invariance of `RootForm` and `CorootForm`
 * Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
 * Relation to Coxeter weight.
@@ -95,8 +98,8 @@ instance instIsAnisotropicOfIsCrystallographic [CharZero R] [P.IsCrystallographi
   ne_zero := IsAnisotropic.rootForm_root_ne_zero
   isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
 
-lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [NoZeroSMulDivisors R N] {i j k : ι}
-    {m n : R} (hk : m • P.root i + n • P.root j = P.root k) :
+lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [IsDomain R] [IsTorsionFree R N]
+    {i j k : ι} {m n : R} (hk : m • P.root i + n • P.root j = P.root k) :
     letI Q :=
       (m * m) * P.pairing i j + (m * n) * (P.pairing i j * P.pairing j i) + (n * n) * P.pairing j i
     Q • P.coroot k = m • P.pairing i j • P.coroot i + n • P.pairing j i • P.coroot j := by
@@ -122,17 +125,15 @@ lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [NoZeroSMulDivisors R
         (m * (P.pairing j i * lsq i)) • P.coroot i +
         (n * (P.pairing j i * lsq j)) • P.coroot j := by
     rw [h₂, h₃] at h₁
-    replace h₁ := congr_arg (fun n ↦ P.pairing j i • n) h₁
+    replace h₁ := congr(P.pairing j i • $h₁)
     simp only [add_smul, smul_add, ← mul_smul, smul_eq_mul] at h₁
-    convert h₁ using 1
-    · module
-    · ring_nf
+    module_nf at h₁ ⊢
+    exact h₁
   simp only [h₄] at h₁
-  apply smul_right_injective _ (c := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
+  apply smul_right_injective _ (r := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
   simp only
-  convert h₁ using 1
-  · module
-  · module
+  module_nf at h₁ ⊢
+  exact h₁
 
 section DomainAlg
 
@@ -143,7 +144,7 @@ lemma finrank_range_polarization_eq_finrank_span_coroot [P.IsAnisotropic] :
     finrank S (LinearMap.range (P.PolarizationIn S)) = finrank S (P.corootSpan S) := by
   apply (Submodule.finrank_mono (P.range_polarizationIn_le_span_coroot S)).antisymm
   have : IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
-  have : NoZeroSMulDivisors S N := NoZeroSMulDivisors.trans_faithfulSMul S R N
+  have : Module.IsTorsionFree S N := .trans_faithfulSMul S R N
   have h_ne : ∏ i, (P.RootFormIn S (P.rootSpanMem S i) (P.rootSpanMem S i)) ≠ 0 := by
     refine Finset.prod_ne_zero_iff.mpr fun i _ h ↦ ?_
     have := (FaithfulSMul.algebraMap_eq_zero_iff S R).mpr h
@@ -172,7 +173,7 @@ lemma finrank_corootSpan_eq [P.IsAnisotropic] :
 lemma polarizationIn_Injective [P.IsAnisotropic] :
     Function.Injective (P.PolarizationIn S) := by
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : NoZeroSMulDivisors S M := NoZeroSMulDivisors.trans_faithfulSMul S R M
+  have : Module.IsTorsionFree S M := .trans_faithfulSMul S R M
   rw [← LinearMap.ker_eq_bot, ← top_disjoint]
   refine Submodule.disjoint_ker_of_finrank_le (L := ⊤) (P.PolarizationIn S) ?_
   rw [finrank_top, ← finrank_corootSpan_eq, ← finrank_range_polarization_eq_finrank_span_coroot]
@@ -216,12 +217,10 @@ lemma posRootForm_posForm_anisotropic :
 
 lemma posRootForm_posForm_nondegenerate :
     (P.posRootForm S).posForm.Nondegenerate := by
-  refine LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| LinearMap.ker_eq_bot'.mpr ?_
-  intro x hx
-  contrapose! hx
-  rw [DFunLike.ne_iff]
-  use x
-  exact (posRootForm_posForm_pos_of_ne_zero P S hx).ne'
+  constructor <;>
+  · intro x
+    contrapose!
+    exact fun hx ↦ ⟨x, (posRootForm_posForm_pos_of_ne_zero P S hx).ne'⟩
 
 end LinearOrderedCommRingAlg
 
@@ -260,12 +259,23 @@ lemma disjoint_corootSpan_ker_corootForm :
   P.flip.disjoint_rootSpan_ker_rootForm
 
 lemma rootForm_nondegenerate [P.IsRootSystem] :
-    P.RootForm.Nondegenerate :=
-  LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| by
-    simpa using P.disjoint_rootSpan_ker_rootForm
+    P.RootForm.Nondegenerate := by
+  simpa [(rootForm_symmetric P).isRefl.nondegenerate_iff_separatingLeft,
+    LinearMap.separatingLeft_iff_ker_eq_bot] using P.disjoint_rootSpan_ker_rootForm
 
-@[deprecated (since := "2025-12-14")]
-alias _root_.RootSystem.rootForm_nondegenerate := rootForm_nondegenerate
+private lemma linearIndepOn_coroot_iff_aux (s : Set ι) (h : LinearIndepOn R P.root s) :
+    LinearIndepOn R P.coroot s := by
+  classical
+  refine .of_comp (2 • P.CoPolarization) ?_
+  rw [← linearIndependent_restrict_iff, Fintype.linearIndependent_iff] at h ⊢
+  intro c hc i
+  specialize h (fun j ↦ c j * P.CorootForm (P.coroot j) (P.coroot j))
+    (by simp [mul_smul, ← corootForm_self_smul_root, -CoPolarization_apply, ← hc]) i
+  simpa [IsAnisotropic.corootForm_coroot_ne_zero] using h
+
+@[simp] lemma linearIndepOn_coroot_iff {s : Set ι} :
+    LinearIndepOn R P.coroot s ↔ LinearIndepOn R P.root s :=
+  ⟨P.flip.linearIndepOn_coroot_iff_aux s, P.linearIndepOn_coroot_iff_aux s⟩
 
 end IsDomain
 
@@ -291,7 +301,8 @@ lemma isCompl_corootSpan_ker_corootForm :
   P.flip.isCompl_rootSpan_ker_rootForm
 
 lemma ker_rootForm_eq_dualAnnihilator :
-    LinearMap.ker P.RootForm = (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm := by
+    P.RootForm.ker =
+      (P.corootSpan R).dualAnnihilator.map (P.toPerfPair.symm : Dual R N →ₗ[R] M) := by
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
   suffices finrank R (LinearMap.ker P.RootForm) = finrank R (P.corootSpan R).dualAnnihilator by
@@ -304,15 +315,16 @@ lemma ker_rootForm_eq_dualAnnihilator :
   lia
 
 lemma ker_corootForm_eq_dualAnnihilator :
-    LinearMap.ker P.CorootForm = (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm :=
+    P.CorootForm.ker =
+      (P.rootSpan R).dualAnnihilator.map (P.flip.toPerfPair.symm : Dual R M →ₗ[R] N) :=
   P.flip.ker_rootForm_eq_dualAnnihilator
 
 instance : P.IsBalanced where
     isPerfectCompl :=
   { isCompl_left := by
-      simpa only [ker_rootForm_eq_dualAnnihilator] using P.isCompl_rootSpan_ker_rootForm
+      simpa only [ker_rootForm_eq_dualAnnihilator] using! P.isCompl_rootSpan_ker_rootForm
     isCompl_right := by
-      simpa only [ker_corootForm_eq_dualAnnihilator] using P.isCompl_corootSpan_ker_corootForm }
+      simpa only [ker_corootForm_eq_dualAnnihilator] using! P.isCompl_corootSpan_ker_corootForm }
 
 /-- See also `RootPairing.rootForm_restrict_nondegenerate_of_ordered`.
 
@@ -328,8 +340,8 @@ lemma orthogonal_rootSpan_eq :
   rw [← LinearMap.BilinForm.orthogonal_top_eq_ker P.rootForm_symmetric.isRefl]
   refine le_antisymm ?_ (by intro; simp_all)
   rintro x hx y -
-  simp only [LinearMap.BilinForm.mem_orthogonal_iff, LinearMap.BilinForm.IsOrtho] at hx ⊢
-  obtain ⟨u, hu, v, hv, rfl⟩ : ∃ᵉ (u ∈ P.rootSpan R) (v ∈ LinearMap.ker P.RootForm), u + v = y := by
+  simp only [LinearMap.BilinForm.mem_orthogonal_iff] at hx ⊢
+  obtain ⟨u, hu, v, hv, rfl⟩ : ∃ u ∈ P.rootSpan R, ∃ v ∈ LinearMap.ker P.RootForm, u + v = y := by
     rw [← Submodule.mem_sup, P.isCompl_rootSpan_ker_rootForm.sup_eq_top]; exact Submodule.mem_top
   simp only [LinearMap.mem_ker] at hv
   simp [hx _ hu, hv]
@@ -372,28 +384,16 @@ lemma polarizationEquiv_apply (m : M) :
     P.PolarizationEquiv m = P.Polarization m :=
   congr($P.polarizationEquiv_toLinearMap m)
 
-variable [NeZero (2 : R)]
+lemma coroot_eq_polarizationEquiv_apply_root (i : ι) :
+    P.coroot i = (2 / P.RootForm (P.root i) (P.root i)) • P.PolarizationEquiv (P.root i) := by
+  have h₀ := IsAnisotropic.rootForm_root_ne_zero (P := P) i
+  rw [polarizationEquiv_apply, ← (smul_right_injective N h₀).eq_iff, P.rootForm_self_smul_coroot i,
+    smul_smul, mul_div_cancel₀ _ h₀]
+  norm_cast
 
-private lemma linearIndepOn_coroot_iff_aux {s : Set ι} (h : LinearIndepOn R P.root s) :
-    LinearIndepOn R P.coroot s := by
-  obtain ⟨f, hf⟩ : ∃ f : s → Rˣ, ∀ i : s, P.coroot i = f i • P.PolarizationEquiv (P.root i) := by
-    use fun i ↦ Units.mk0 (2 / P.RootForm (P.root i) (P.root i))
-      (by simp [NeZero.out, RootPairing.IsAnisotropic.rootForm_root_ne_zero])
-    intro i
-    have h₀ := RootPairing.IsAnisotropic.rootForm_root_ne_zero (P := P) i
-    rw [polarizationEquiv_apply, Units.smul_mk0,
-      ← (smul_right_injective N h₀).eq_iff, P.rootForm_self_smul_coroot i, smul_smul,
-      mul_div_cancel₀ _ h₀]
-    norm_cast
-  have : (s.restrict P.coroot) = P.PolarizationEquiv.toLinearMap ∘ (f • (s.restrict P.root)) := by
-    ext; simp [hf, polarizationEquiv_apply]
-  rw [← linearIndependent_restrict_iff, this,
-    LinearMap.linearIndependent_iff_of_injOn _ P.PolarizationEquiv.injective.injOn]
-  simpa
-
-@[simp] lemma linearIndepOn_coroot_iff {s : Set ι} :
-    LinearIndepOn R P.coroot s ↔ LinearIndepOn R P.root s :=
-  ⟨P.flip.linearIndepOn_coroot_iff_aux, P.linearIndepOn_coroot_iff_aux⟩
+lemma polarizationEquiv_symm_apply_coroot {i : ι} :
+    P.PolarizationEquiv.symm (P.coroot i) = (2 / P.RootForm (P.root i) (P.root i)) • P.root i := by
+  simp [coroot_eq_polarizationEquiv_apply_root]
 
 end IsRootSystem
 
@@ -430,15 +430,12 @@ lemma eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero {x : M}
 lemma rootForm_pos_of_ne_zero {x : M} (hx : x ∈ P.rootSpan R) (h : x ≠ 0) :
     0 < P.RootForm x x := by
   apply (P.zero_le_rootForm x).lt_of_ne
-  contrapose! h
+  contrapose h
   exact P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero hx h.symm
 
 lemma rootForm_anisotropic [P.IsRootSystem] :
     P.RootForm.toQuadraticMap.Anisotropic :=
   fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero <| by simp
-
-@[deprecated (since := "2025-12-14")]
-alias _root_.RootSystem.rootForm_anisotropic := rootForm_anisotropic
 
 end LinearOrderedCommRing
 

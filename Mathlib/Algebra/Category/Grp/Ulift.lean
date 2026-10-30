@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.Grp.LargeColimits
 public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Properties of the universe lift functor for groups
@@ -103,8 +102,8 @@ instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
     (K : J ⥤ GrpCat.{u}) : PreservesLimit K uliftFunctor.{v, u} where
-  preserves lc := ⟨isLimitOfReflects (forget GrpCat.{max u v})
-    (isLimitOfPreserves CategoryTheory.uliftFunctor (isLimitOfPreserves (forget GrpCat) lc))⟩
+  preserves lc := ⟨isLimitOfReflects (forget GrpCat) <|
+    isLimitOfPreserves CategoryTheory.uliftFunctor.{v} (isLimitOfPreserves (forget GrpCat) lc)⟩
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Category.{w'} J] :
@@ -140,12 +139,12 @@ def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
   map_preimage _ := rfl
   preimage_map _ := rfl
 
--- The universe lift functor for commutative groups is faithful. -/
+/-- The universe lift functor for commutative groups is faithful. -/
 @[to_additive
   /-- The universe lift functor for commutative additive groups is faithful. -/]
 instance : uliftFunctor.{u, v}.Faithful := uliftFunctorFullyFaithful.faithful
 
--- The universe lift functor for commutative groups is full. -/
+/-- The universe lift functor for commutative groups is full. -/
 @[to_additive
   /-- The universe lift functor for commutative additive groups is full. -/]
 instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
@@ -153,8 +152,8 @@ instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
     (K : J ⥤ CommGrpCat.{u}) : PreservesLimit K uliftFunctor.{v, u} where
-  preserves lc := ⟨isLimitOfReflects (forget CommGrpCat.{max u v})
-    (isLimitOfPreserves CategoryTheory.uliftFunctor (isLimitOfPreserves (forget CommGrpCat) lc))⟩
+  preserves lc := ⟨isLimitOfReflects (forget CommGrpCat) <|
+    isLimitOfPreserves CategoryTheory.uliftFunctor.{v} (isLimitOfPreserves (forget CommGrpCat) lc)⟩
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Category.{w'} J] :

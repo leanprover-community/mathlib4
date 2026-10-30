@@ -122,6 +122,8 @@ noncomputable def restrictionHomologyIso :
     ShortComplex.homologyMapIso (restriction.sc'Iso K e i j k hi' hj' hk' hi'' hk'') ≪≫
     (K.homologyIsoSc' i' j' k' hi'' hk'').symm
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma homologyπ_restrictionHomologyIso_hom :
     (K.restriction e).homologyπ j ≫
@@ -148,6 +150,8 @@ lemma homologyπ_restrictionHomologyIso_inv :
     assoc, assoc, Iso.inv_hom_id, homologyπ_restrictionHomologyIso_hom, comp_id,
     Iso.inv_hom_id_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma restrictionHomologyIso_inv_homologyι :
     (K.restrictionHomologyIso e i j k hi hk hi' hj' hk' hi'' hk'').inv ≫

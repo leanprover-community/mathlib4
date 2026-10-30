@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Int.Interval
+
 import Mathlib.Algebra.Order.Ring.Cast
 
 /-! # Intervals of integers in strict ordered rings
@@ -17,7 +18,7 @@ functions), but for now these are the ones that have found utility in practice (
 about `Real.Angle`).
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
 

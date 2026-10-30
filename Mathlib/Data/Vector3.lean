@@ -6,8 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Fin.Fin2
-public import Mathlib.Util.Notation3
-public import Mathlib.Tactic.TypeStar
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`
@@ -52,12 +53,12 @@ open Lean
 
 scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofElems l),*])
 
--- this is copied from `src/Init/NotationExtra.lean`
+-- this is copied from `Init/NotationExtra.lean` (Lean core)
 /-- Unexpander for `Vector3.nil` -/
 @[app_unexpander Vector3.nil] meta def unexpandNil : Lean.PrettyPrinter.Unexpander
   | `($(_)) => `([])
 
--- this is copied from `src/Init/NotationExtra.lean`
+-- this is copied from `Init/NotationExtra.lean` (Lean core)
 /-- Unexpander for `Vector3.cons` -/
 @[app_unexpander Vector3.cons] meta def unexpandCons : Lean.PrettyPrinter.Unexpander
   | `($(_) $x [])      => `([$x])

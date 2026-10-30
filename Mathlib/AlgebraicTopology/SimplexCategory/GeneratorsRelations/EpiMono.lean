@@ -6,6 +6,7 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
+
 /-! # Epi-mono factorization in the simplex category presented by generators and relations
 
 This file aims to establish that there is a nice epi-mono factorization in `SimplexCategoryGenRel`.
@@ -13,7 +14,7 @@ More precisely, we introduce two morphism properties `P_δ` and `P_σ` that
 single out morphisms that are compositions of `δ i` (resp. `σ i`).
 
 The main result of this file is `exists_P_σ_P_δ_factorization`, which asserts that every
-moprhism as a decomposition of a `P_σ` followed by a `P_δ`.
+morphism as a decomposition of a `P_σ` followed by a `P_δ`.
 
 -/
 

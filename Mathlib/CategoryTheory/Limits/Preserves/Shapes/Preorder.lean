@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # Preservation of well order continuous functors
@@ -20,7 +19,7 @@ for any limit element `j : J`. It follows that if
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' v'' u' u u''
 

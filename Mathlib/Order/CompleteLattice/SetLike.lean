@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Order.CompleteSublattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `SetLike` instance for elements of `CompleteSublattice (Set X)`
 
 This file provides lemmas for the `SetLike` instance for elements of `CompleteSublattice (Set X)`
 -/
 
-@[expose] public section
+public section
 
 attribute [local instance] SetLike.instSubtypeSet
 
@@ -47,13 +50,13 @@ lemma mem_subtype : x ∈ L.subtype T ↔ x ∈ T := Iff.rfl
 @[simp] lemma mem_inf : x ∈ S ⊓ T ↔ x ∈ S ∧ x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_sInf : x ∈ sInf 𝒮 ↔ ∀ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_iInf : x ∈ ⨅ i : I, f i ↔ ∀ i : I, x ∈ f i := by simp [← mem_subtype]
+
 @[simp] lemma mem_top : x ∈ (⊤ : L) := by simp [← mem_subtype]
 
 @[simp] lemma mem_sup : x ∈ S ⊔ T ↔ x ∈ S ∨ x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_sSup : x ∈ sSup 𝒮 ↔ ∃ T ∈ 𝒮, x ∈ T := by simp [← mem_subtype]
 @[simp] lemma mem_iSup : x ∈ ⨆ i : I, f i ↔ ∃ i : I, x ∈ f i := by simp [← mem_subtype]
-@[simp] lemma notMem_bot : x ∉ (⊥ : L) := by simp [← mem_subtype]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
+@[simp] lemma notMem_bot : x ∉ (⊥ : L) := by simp [← mem_subtype]
 
 end CompleteSublattice

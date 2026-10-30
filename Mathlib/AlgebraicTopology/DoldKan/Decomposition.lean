@@ -24,7 +24,7 @@ Then, we introduce an ad hoc structure `MorphComponents X n Z` which
 can be used in order to define morphisms `X _⦋n+1⦌ ⟶ Z` using the
 decomposition provided by `decomposition_Q`. This shall play a critical
 role in the proof that the functor
-`N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
+`N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 reflects isomorphisms.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
@@ -35,7 +35,9 @@ reflects isomorphisms.
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
-  Opposite Simplicial
+  Opposite
+
+open scoped Simplicial
 
 noncomputable section
 
@@ -82,7 +84,7 @@ theorem decomposition_Q (n q : ℕ) :
 variable (X)
 
 /-- The structure `MorphComponents` is an ad hoc structure that is used in
-the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
+the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 reflects isomorphisms. The fields are the data that are needed in order to
 construct a morphism `X _⦋n+1⦌ ⟶ Z` (see `φ`) using the decomposition of the
 identity given by `decomposition_Q n (n+1)`. -/
@@ -140,7 +142,7 @@ theorem preComp_φ : (f.preComp g).φ = g.app (op ⦋n + 1⦌) ≫ f.φ := by
   unfold φ preComp
   simp only [PInfty_f, comp_add]
   congr 1
-  · simp only [P_f_naturality_assoc]
+  · simp
   · simp only [comp_sum, P_f_naturality_assoc, SimplicialObject.δ_naturality_assoc]
 
 end MorphComponents

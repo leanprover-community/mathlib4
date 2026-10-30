@@ -3,11 +3,13 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Tactic.NormNum.Ineq
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # IMO 2001 Q3
@@ -16,7 +18,7 @@ Twenty-one girls and twenty-one boys took part in a mathematical competition. It
 
 1. each contestant solved at most six problems, and
 2. for each pair of a girl and a boy, there was at least one problem that was solved by
-both the girl and the boy.
+   both the girl and the boy.
 
 Show that there is a problem that was solved by at least three girls and at least three boys.
 
@@ -33,6 +35,8 @@ By the same reasoning this bound holds when "girls" and "boys" are swapped throu
 are $21^2$ girl-boy pairs in all and $21^2 > 210 + 210$, so some girl-boy pairs solved only problems
 in common that were not hard for girls or boys. By condition 2 the result follows.
 -/
+
+@[expose] public section
 
 namespace Imo2001Q3
 
@@ -53,7 +57,7 @@ def Easy (F : Fin 21 → Finset ℕ) (p : ℕ) : Prop := 3 ≤ #{i | p ∈ F i}
 
 variable {G B : Fin 21 → Finset ℕ}
 
-open Classical in
+open scoped Classical in
 /-- Every contestant solved at most five problems that were not easy for the other cohort. -/
 lemma card_not_easy_le_five {i : Fin 21} (hG : #(G i) ≤ 6) (hB : ∀ j, ¬Disjoint (G i) (B j)) :
     #{p ∈ G i | ¬Easy B p} ≤ 5 := by
@@ -68,7 +72,7 @@ lemma card_not_easy_le_five {i : Fin 21} (hG : #(G i) ≤ 6) (hB : ∀ j, ¬Disj
     _ ≤ ∑ p ∈ G i, 2 := sum_le_sum fun p mp ↦ Nat.le_of_lt_succ (h p mp)
     _ ≤ _ := by rw [sum_const, smul_eq_mul]; lia
 
-open Classical in
+open scoped Classical in
 /-- There are at most 210 girl-boy pairs who solved some problem in common that was not easy for
 a fixed cohort. -/
 lemma card_not_easy_le_210 (hG : ∀ i, #(G i) ≤ 6) (hB : ∀ i j, ¬Disjoint (G i) (B j)) :

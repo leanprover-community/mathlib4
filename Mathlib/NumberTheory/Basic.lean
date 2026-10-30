@@ -5,9 +5,13 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
+
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Basic results in number theory
@@ -22,7 +26,7 @@ all natural numbers `p` and `k` if `p` divides `a-b` in `R`, then `p ^ (k + 1)` 
 `a ^ (p ^ k) - b ^ (p ^ k)`.
 -/
 
-@[expose] public section
+public section
 
 
 section

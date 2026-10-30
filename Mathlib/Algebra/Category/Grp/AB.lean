@@ -5,21 +5,27 @@ Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn, Amelia Living
 -/
 module
 
+public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Biproducts
-public import Mathlib.Algebra.Category.Grp.FilteredColimits
-public import Mathlib.Algebra.Homology.ShortComplex.Ab
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+
+import Mathlib.Algebra.Category.Grp.FilteredColimits
+import Mathlib.Algebra.Homology.ShortComplex.Ab
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+
 /-!
 # AB axioms for the category of abelian groups
 
 This file proves that the category of abelian groups satisfies Grothendieck's axioms AB5, AB4, and
-AB4*.
+AB4\*.
 -/
 
-@[expose] public section
+public section
 
-universe u
+universe u v w
 
 open CategoryTheory Limits
 
@@ -56,29 +62,41 @@ instance : HasFilteredColimits (AddCommGrpCat.{u}) where
 noncomputable instance : AB5 (AddCommGrpCat.{u}) where
   ofShape _ := { preservesFiniteLimits := inferInstance }
 
+section UnivLE
+
+variable [UnivLE.{u, v}] [UnivLE.{u, w}] [UnivLE.{v, w}]
+
+instance Ab.hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{u, v} Ab.{w} :=
+  hasFilteredColimitsOfSize_of_univLE.{u, v, w}
+
+instance Ab.ab5OfSize : AB5OfSize.{u, v} Ab.{w} :=
+  AB5OfSize_of_univLE.{u, v, w, w} Ab.{w}
+
+end UnivLE
+
 attribute [local instance] Abelian.hasFiniteBiproducts
 
 instance : AB4 AddCommGrpCat.{u} := AB4.of_AB5 _
 
+set_option backward.isDefEq.respectTransparency false in
 instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
-  apply (config := { allowSynthFailures := true }) hasExactLimitsOfShape_of_preservesEpi
+  apply +allowSynthFailures hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
-      let iX : limit X ≅ AddCommGrpCat.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
+      let iX : limit X ≅ ↧((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫
         (limit.isLimit _).conePointUniqueUpToIso (AddCommGrpCat.HasLimit.productLimitCone _).isLimit
-      let iY : limit Y ≅ AddCommGrpCat.of ((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
+      let iY : limit Y ≅ ↧((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
         (limit.isLimit _).conePointUniqueUpToIso (AddCommGrpCat.HasLimit.productLimitCone _).isLimit
       have : Pi.map (fun i ↦ f.app ⟨i⟩) = iX.inv ≫ lim.map f ≫ iY.hom := by
         simp only [Discrete.functor_obj_eq_as, Discrete.mk_as, Pi.isoLimit,
           IsLimit.conePointUniqueUpToIso, limit.cone, AddCommGrpCat.HasLimit.productLimitCone,
-          Iso.trans_inv, Functor.mapIso_inv, IsLimit.uniqueUpToIso_inv, Cones.forget_map,
+          Iso.trans_inv, Functor.mapIso_inv, IsLimit.uniqueUpToIso_inv, Cone.forget_map,
           IsLimit.liftConeMorphism_hom, limit.isLimit_lift, Iso.symm_inv, Functor.mapIso_hom,
-          IsLimit.uniqueUpToIso_hom, lim_obj, lim_map, Iso.trans_hom, Iso.symm_hom,
-          AddCommGrpCat.HasLimit.lift, Functor.const_obj_obj, Category.assoc, limit.lift_map_assoc,
-          Pi.cone_pt, iX, iY]
+          IsLimit.uniqueUpToIso_hom, lim_map, Iso.trans_hom, Iso.symm_hom,
+          AddCommGrpCat.HasLimit.lift, Category.assoc, limit.lift_map_assoc, iX, iY]
         ext g j
         change _ = (_ ≫ limit.π (Discrete.functor fun j ↦ Y.obj { as := j }) ⟨j⟩) _
-        simp only [Discrete.functor_obj_eq_as, productIsProduct', limit.lift_π, Fan.mk_pt,
+        simp only [Discrete.functor_obj_eq_as, productIsProduct', limit.lift_π,
           Fan.mk_π_app, Pi.map_apply]
         change _ = (_ ≫ _ ≫ limit.π Y ⟨j⟩) _
         simp
@@ -92,3 +110,13 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
 
 instance : AB4Star AddCommGrpCat.{u} where
   ofShape _ := inferInstance
+
+instance : HasSeparator AddCommGrpCat.{u} where
+  hasSeparator := by
+    use ↧(ULift ℤ)
+    intro A B f g h; simp_all only [ObjectProperty.singleton_iff, AddCommGrpCat.ext_iff,
+      AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply, forall_eq', ULift.forall]
+    (intro x; specialize h (AddCommGrpCat.ofHom
+    (AddMonoidHom.mk' (fun y => y • x) fun y z => by simp only [add_smul])) 1; aesop)
+
+instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where

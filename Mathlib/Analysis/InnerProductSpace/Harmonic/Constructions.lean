@@ -6,8 +6,9 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
-public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+
+import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
+import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 /-!
 # Construction of Harmonic Functions
@@ -18,9 +19,11 @@ If `f : ℂ → F` is complex-differentiable, then `f` is harmonic. If `F = ℂ`
 part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f‖` is harmonic.
 -/
 
-@[expose] public section
+public section
 
-open Complex ComplexConjugate InnerProductSpace Topology
+open Complex InnerProductSpace
+
+open scoped ComplexConjugate Topology
 
 variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
@@ -94,7 +97,7 @@ private lemma analyticAt_harmonicAt_log_normSq {z : ℂ} {g : ℂ → ℂ} (h₁
       · simpa [ne_eq, map_eq_zero] using hx.2
     _ =ᶠ[𝓝 z] ⇑reCLM ∘ (⇑conjCLE ∘ log ∘ g + log ∘ g) := by
       apply Filter.eventuallyEq_iff_exists_mem.2
-      use g⁻¹' (Complex.slitPlane ∩ {0}ᶜ), t₀
+      use g ⁻¹' (Complex.slitPlane ∩ {0}ᶜ), t₀
       intro x hx
       simp only [Function.comp_apply, Pi.add_apply, conjCLE_apply]
       congr 1

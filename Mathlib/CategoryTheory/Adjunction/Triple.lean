@@ -6,8 +6,10 @@ Authors: Dagur Asgeirsson, Ben Eltschig
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Opposites
-public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Monad.Adjunction
+
+import Mathlib.CategoryTheory.Adjunction.Unique
+
 /-!
 
 # Adjoint triples
@@ -40,8 +42,8 @@ bundle the adjunctions in a structure `Triple F G H`.
 * `mono_leftToRight_app_iff_mono_adj₂_unit_app`: `leftToRight : F ⟶ H` is monic at `X` iff
   `adj₂.unit` is monic at `F.obj X`.
 * `mono_leftToRight_app_iff_mono_adj₁_counit_app`: `leftToRight : F ⟶ H` is monic at `X` iff
-  `adj₁.unit` is monic at `H.obj X`.
-* `mono_leftToRight_app_iff`: `leftToRight : H ⟶ F` is componentwise monic iff
+  `adj₁.counit` is monic at `H.obj X`.
+* `mono_leftToRight_app_iff`: `leftToRight : F ⟶ H` is componentwise monic iff
   `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` is.
 -/
 
@@ -222,7 +224,7 @@ natural transformation `F ⟶ H` at `G` are precisely the components of the natu
 `G ⋙ F ⟶ G ⋙ H` obtained from the units and counits of the adjunctions. -/
 @[simp, reassoc]
 lemma leftToRight_app_obj {X : D} :
-    t.leftToRight.app (G.obj X) = t.adj₁.counit.app X ≫ t.adj₂.unit.app X := by
+    dsimp% t.leftToRight.app (G.obj X) = t.adj₁.counit.app X ≫ t.adj₂.unit.app X := by
   refine (((t.adj₂.homEquiv _ _).apply_symm_apply _).symm.trans ?_).symm
   rw [homEquiv_symm_apply, map_comp, Category.assoc, left_triangle_components,
     homEquiv_apply, leftToRight_app, ← H.map_inv]
@@ -280,7 +282,8 @@ Note that unlike `epi_rightToLeft_app_iff`, this equivalence does not make sense
 on a per-object basis because the components of the two natural transformations are indexed by
 different categories. -/
 lemma mono_leftToRight_app_iff :
-    (∀ X, Mono (t.leftToRight.app X)) ↔ ∀ X, Mono (t.adj₁.counit.app X ≫ t.adj₂.unit.app X) := by
+    dsimp% (∀ X, Mono (t.leftToRight.app X)) ↔
+      ∀ X, Mono (t.adj₁.counit.app X ≫ t.adj₂.unit.app X) := by
   refine ⟨fun h X ↦ by rw [← leftToRight_app_obj]; exact h _, fun h X ↦ ?_⟩
   rw [mono_leftToRight_app_iff_mono_adj₂_unit_app]
   simpa using h (F.obj X)

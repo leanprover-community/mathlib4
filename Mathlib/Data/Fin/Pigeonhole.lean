@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Fintype.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pigeonhole-like results for Fin
 
@@ -14,7 +17,7 @@ This adapts Pigeonhole-like results from `Mathlib.Data.Fintype.Card` to the sett
 has the type `f : Fin m → Fin n`.
 -/
 
-@[expose] public section
+public section
 
 namespace Fin
 

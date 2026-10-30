@@ -5,9 +5,8 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
-public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Simple ring and fields
@@ -18,10 +17,11 @@ public import Mathlib.Algebra.Field.Equiv
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsSimpleRing
 
+set_option backward.isDefEq.respectTransparency.types false in
 open TwoSidedIdeal in
 lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.center A) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩

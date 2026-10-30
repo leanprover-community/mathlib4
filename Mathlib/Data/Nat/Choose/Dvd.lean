@@ -8,11 +8,14 @@ module
 public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Data.Nat.Prime.Factorial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisibility properties of binomial coefficients
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

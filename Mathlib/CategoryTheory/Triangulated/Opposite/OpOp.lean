@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.Adjunction
-public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 
 /-!
 # The triangulated equivalence `Cᵒᵖᵒᵖ ≌ C`.
@@ -100,14 +99,11 @@ instance : (opOp C).CommShift ℤ where
   commShiftIso := iso _
   commShiftIso_zero := by
     ext X
-    refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
     simp [iso_hom_app X 0 0, shiftFunctorZero_op_inv_app,
       shiftFunctorZero_op_hom_app]
   commShiftIso_add p q := by
     ext X
-    refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
-    simp [
-      ← shiftFunctorAdd'_eq_shiftFunctorAdd, ← unop_comp_assoc, ← Functor.map_comp,
+    simp [← shiftFunctorAdd'_eq_shiftFunctorAdd, ← unop_comp_assoc, ← Functor.map_comp,
       fun X n ↦ iso_hom_app X n (-n) (add_neg_cancel n),
       shiftFunctor_op_map _ q (-q),
       shiftFunctorAdd'_op_inv_app _ p q (p + q) rfl (-p) (-q) (-(p + q))
@@ -179,11 +175,12 @@ instance : (opOpEquivalence C).CommShift ℤ :=
         simp [Functor.commShiftIso_comp_hom_app,
           commShiftIso_opOp_hom_app _ n (-n),
           commShiftIso_unopUnop_hom_app _ n (-n),
-          ← unop_comp_assoc]}
+          ← unop_comp_assoc] }
 
 variable [Preadditive C] [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated C]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (opOp C).IsTriangulated where
   map_distinguished T hT := by
     refine isomorphic_distinguished _ (op_distinguished _ (op_distinguished _ hT)) _
@@ -200,7 +197,7 @@ instance : (opOp C).IsTriangulated where
     simp [Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app, ← reassoc_of% this]
 
 instance : (opOpEquivalence C).IsTriangulated :=
-  .mk'' _ (by dsimp; infer_instance)
+  .mk'' _ <| inferInstanceAs <| (opOp C).IsTriangulated
 
 instance : (unopUnop C).IsTriangulated :=
   inferInstanceAs ((opOpEquivalence C).functor.IsTriangulated)

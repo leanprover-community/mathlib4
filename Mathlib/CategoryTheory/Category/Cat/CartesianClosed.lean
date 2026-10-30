@@ -5,9 +5,8 @@ Authors: Emily Riehl
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
-public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Cartesian closed structure on `Cat`
@@ -30,7 +29,7 @@ universe v u v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Functor Cat
+open CategoryTheory.Functor Cat
 
 namespace Cat
 
@@ -40,14 +39,14 @@ variable (C : Type u) [Category.{v} C]
 by forming the category of functors out of `C`. -/
 @[simps]
 def exp : Cat ⥤ Cat where
-  obj D := Cat.of (C ⥤ D)
+  obj D := ↧(C ⥤ D)
   map F := ((whiskeringRight _ _ _).obj F.toFunctor).toCatHom
 
 end Cat
 
 section
 
-variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C] {D : Type u₃}
+variable {C : Type u₂} [Category.{v₂} C] {D : Type u₃}
   [Category.{v₃} D] {E : Type u₄} [Category.{v₄} E]
 
 /-- The isomorphism of categories of bifunctors given by currying. -/
@@ -75,7 +74,7 @@ instance closed : Closed (Cat.of C) where
       homEquiv_naturality_left_symm _ _ := rfl
       homEquiv_naturality_right _ _ := rfl }
 
-instance cartesianClosed : CartesianClosed Cat.{u, u} where
+instance cartesianClosed : MonoidalClosed Cat.{u, u} where
   closed C := closed C
 
 @[simp]
@@ -84,7 +83,7 @@ lemma ihom_obj (D : Type u) [Category.{u} D] :
 
 @[simp]
 lemma ihom_map {D E : Type u} [Category.{u} D] [Category.{u} E] (F : D ⥤ E) :
-    (ihom (Cat.of C)).map F.toCatHom = ((whiskeringRight _ _ _).obj F).toCatHom := rfl
+    (ihom ↧C).map F.toCatHom = ((whiskeringRight _ _ _).obj F).toCatHom := rfl
 
 end
 

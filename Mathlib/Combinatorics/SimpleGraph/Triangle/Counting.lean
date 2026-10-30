@@ -5,10 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.Linarith
+
+import Mathlib.Tactic.Linarith
 
 /-!
 # Triangle counting lemma
@@ -20,7 +21,7 @@ In this file, we prove the triangle counting lemma.
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
 
-@[expose] public section
+public section
 
 -- TODO: This instance is bad because it creates data out of a Prop
 attribute [-instance] decidableEq_of_subsingleton

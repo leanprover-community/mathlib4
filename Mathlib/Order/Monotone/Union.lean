@@ -6,7 +6,11 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Order.Interval.Set.LinearOrder
+
+import Mathlib.Order.Interval.Set.LinearOrder
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monotonicity on intervals
@@ -17,7 +21,7 @@ of a more general statement where one deduces monotonicity on a union from monot
 set.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

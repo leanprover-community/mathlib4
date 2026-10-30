@@ -5,9 +5,8 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.RingTheory.Ideal.Basic
-public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.Topology.Algebra.LinearTopology
 
 /-! # Topologically nilpotent elements
 

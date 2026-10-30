@@ -6,9 +6,10 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 module
 
 public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
+# Localization away from `r` and adjoining an inverse
+
 The `R`-`AlgEquiv` between the localization of `R` away from `r` and
 `R` with an inverse of `r` adjoined.
 -/
@@ -52,3 +53,7 @@ lemma Algebra.FinitePresentation.of_isLocalizationAway
 instance {S : Type*} [CommRing S] [Algebra R S] [Algebra.FinitePresentation R S] (f : S) :
     Algebra.FinitePresentation R (Localization.Away f) :=
   .of_isLocalizationAway f
+
+instance {S : Type*} [CommRing S] [Algebra R S] [Algebra.FiniteType R S] (f : S) :
+    Algebra.FiniteType R (Localization.Away f) :=
+  .trans ‹_› inferInstance

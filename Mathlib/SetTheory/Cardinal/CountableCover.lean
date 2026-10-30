@@ -5,9 +5,13 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Filter.Map
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+import Mathlib.Order.Filter.Finite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cardinality of a set with a countable cover
@@ -19,7 +23,7 @@ cardinality `≤ a`. Then `t` itself has cardinality at most `a`. This is proved
 Versions are also given when `t = univ`, and with `= a` instead of `≤ a`.
 -/
 
-@[expose] public section
+public section
 
 open Set Order Filter
 open scoped Cardinal
@@ -74,12 +78,11 @@ lemma mk_subtype_le_of_countable_eventually_mem {α : Type u} {ι : Type v} {a :
   let g : ULift.{u, v} ι → Set (ULift.{v, u} α) := (ULift.down ⁻¹' ·) ∘ f ∘ ULift.down
   suffices #(ULift.down.{v} ⁻¹' t) ≤ Cardinal.lift.{v, u} a by simpa
   let l' : Filter (ULift.{u} ι) := Filter.map ULift.up l
-  have : NeBot l' := map_neBot
   apply mk_subtype_le_of_countable_eventually_mem_aux (ι := ULift.{u} ι) (l := l') (f := g)
   · intro x hx
-    simpa only [Function.comp_apply, mem_preimage, eventually_map] using ht _ hx
+    simpa only [Function.comp_apply, mem_preimage, eventually_map] using! ht _ hx
   · intro i
-    simpa [g] using h'f i.down
+    simpa [g] using! h'f i.down
 
 /-- If a space is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of the space is also bounded by `a`. -/

@@ -9,11 +9,14 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
 public import Mathlib.SetTheory.Cardinal.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of sets under pointwise group with zero operations
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

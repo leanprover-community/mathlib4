@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Util.Notation3
 
 /-!
@@ -15,9 +16,6 @@ In this file we introduce notation for indexed suprema, infima, unions, and inte
 
 ## Main definitions
 
-- `SupSet α`: typeclass introducing the operation `SupSet.sSup` (exported to the root namespace);
-  `sSup s` is the supremum of the set `s`;
-- `InfSet`: similar typeclass for infimum of a set;
 - `iSup f`, `iInf f`: supremum and infimum of an indexed family of elements,
   defined as `sSup (Set.range f)` and `sInf (Set.range f)`, respectively;
 - `Set.sUnion s`, `Set.sInter s`: same as `sSup s` and `sInf s`,
@@ -39,21 +37,6 @@ open Set
 
 universe u v
 variable {α : Type u} {ι : Sort v}
-
-/-- Class for the `sSup` operator -/
-class SupSet (α : Type*) where
-  /-- Supremum of a set -/
-  sSup : Set α → α
-
-/-- Class for the `sInf` operator -/
-@[to_dual existing]
-class InfSet (α : Type*) where
-  /-- Infimum of a set -/
-  sInf : Set α → α
-
-export SupSet (sSup)
-
-export InfSet (sInf)
 
 /-- Indexed supremum -/
 @[to_dual /-- Indexed infimum -/]
@@ -133,18 +116,6 @@ end delaborators
 
 namespace Set
 
-/-
-We don't translate the order on sets (i.e. turning `s ⊆ t` into `t ⊆ s`).
-This is because for example the following theorems should be dual
-```
-theorem sSup_le_sSup {s t : Set α} (h : s ⊆ t) : sSup s ≤ sSup t
-theorem sInf_le_sInf {s t : Set α} (h : s ⊆ t) : sInf t ≤ sInf s
-```
-Additionally, dualizing the order on sets would mean that a set is dual to its complement.
-But we would like to dualize set intervals such that e.g. `Ico a b` is dual to `Ioc b a`.
--/
-attribute [to_dual_dont_translate] Set
-
 instance : InfSet (Set α) :=
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
 
@@ -165,11 +136,11 @@ def sUnion (S : Set (Set α)) : Set α :=
 /-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_sInter {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
   Iff.rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S, x ∈ t :=
   Iff.rfl
 
@@ -249,12 +220,12 @@ meta def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
 
 end delaborators
 
-@[simp]
+@[simp, push]
 theorem mem_iUnion {x : α} {s : ι → Set α} : (x ∈ ⋃ i, s i) ↔ ∃ i, x ∈ s i :=
   ⟨fun ⟨_, ⟨⟨a, (t_eq : s a = _)⟩, (h : x ∈ _)⟩⟩ => ⟨a, t_eq.symm ▸ h⟩, fun ⟨a, h⟩ =>
     ⟨s a, ⟨⟨a, rfl⟩, h⟩⟩⟩
 
-@[simp]
+@[simp, push]
 theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, x ∈ s i :=
   ⟨fun (h : ∀ a ∈ { a : Set α | ∃ i, s i = a }, x ∈ a) a => h (s a) ⟨a, rfl⟩,
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩

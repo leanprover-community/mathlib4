@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 # Analyticity on `WithLp`
 -/
 
-@[expose] public section
+public section
 
 open WithLp
 

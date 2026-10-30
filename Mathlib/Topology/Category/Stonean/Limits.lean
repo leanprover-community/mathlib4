@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Category.CompHausLike.Limits
 public import Mathlib.Topology.Category.Stonean.Basic
+
 /-!
 
 # Explicit limits and colimits
@@ -15,7 +16,7 @@ This file applies the general API for explicit limits and colimits in `CompHausL
 the file `Mathlib/Topology/Category/CompHausLike/Limits.lean`) to the special case of `Stonean`.
 -/
 
-@[expose] public section
+public section
 
 universe w u
 
@@ -24,7 +25,7 @@ open CategoryTheory Limits CompHausLike Topology
 namespace Stonean
 
 instance : HasExplicitFiniteCoproducts.{w, u} (fun Y ↦ ExtremallyDisconnected Y) where
-  hasProp _ := { hasProp := show ExtremallyDisconnected (Σ (_a : _), _) from inferInstance}
+  hasProp _ := { hasProp := show ExtremallyDisconnected (Σ (_a : _), _) from inferInstance }
 
 variable {X Y Z : Stonean} {f : X ⟶ Z} (i : Y ⟶ Z) (hi : IsOpenEmbedding f)
 include hi

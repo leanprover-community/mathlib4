@@ -5,10 +5,13 @@ Authors: Mario Carneiro
 -/
 module
 
+public meta import Mathlib.Data.Multiset.Defs
+public meta import Mathlib.Util.Qq
 public import Mathlib.Data.List.Sort
 public import Mathlib.Data.Multiset.Range
-public import Mathlib.Util.Qq
-meta import Mathlib.Data.Multiset.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Construct a sorted list from a multiset.
@@ -28,7 +31,7 @@ section sort
 /-- `sort s` constructs a sorted list from the multiset `s`.
   (Uses merge sort algorithm.) -/
 def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
-    [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
+    [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r] : List α :=
   Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
     ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm).eq_of_pairwise' (r := r)
       (pairwise_mergeSort' _ _) (pairwise_mergeSort' _ _)
@@ -36,8 +39,8 @@ def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ 
 section
 
 variable (a : α) (f : α → β) (l : List α) (s : Multiset α)
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
-variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
+variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [Std.Antisymm r'] [Std.Total r']
 
 @[simp]
 theorem coe_sort : sort l r = mergeSort l (r · ·) :=
@@ -46,8 +49,6 @@ theorem coe_sort : sort l r = mergeSort l (r · ·) :=
 @[simp]
 theorem pairwise_sort : (sort s r).Pairwise r :=
   Quot.inductionOn s (pairwise_mergeSort' _)
-
-@[deprecated (since := "2025-10-11")] alias sort_sorted := pairwise_sort
 
 @[simp]
 theorem sort_eq : ↑(sort s r) = s :=
@@ -79,13 +80,13 @@ end
 section
 
 variable {a : α} {s : Multiset α}
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [Std.Total r]
 
 @[simp]
 theorem mem_sort : a ∈ sort s r ↔ a ∈ s := by rw [← mem_coe, sort_eq]
 
 @[simp]
-theorem length_sort : (sort s r).length = card s := Quot.inductionOn s <| length_mergeSort
+theorem length_sort : (sort s r).length = card s := Quot.inductionOn s length_mergeSort
 
 end
 

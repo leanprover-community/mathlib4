@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.MeasureTheory.SpecificCodomains.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrability in `WithLp`
 
@@ -15,7 +18,7 @@ We prove that `f : X → PiLp q E` is in `Lᵖ` if and only if for all `i`, `f �
 We do the same for `f : X → WithLp q (E × F)`.
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal
 

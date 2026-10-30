@@ -5,16 +5,18 @@ Authors: Simon Hudon
 -/
 module
 
+public import Batteries.Data.Except
 public import Mathlib.Logic.Equiv.Defs
+
 
 /-!
 # Monad
 
 ## Attributes
 
-* ext
-* functor_norm
-* monad_norm
+* `ext`
+* `functor_norm`
+* `monad_norm`
 
 ## Implementation Details
 

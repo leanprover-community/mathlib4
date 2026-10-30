@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid, Newell Jensen
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Congruences
@@ -30,11 +30,12 @@ For more details see the [Zulip discussion](https://leanprover.zulipchat.com/#na
 
 @[expose] public section
 
-variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
+variable {ι ι' : Type*} {P₁ P₂ P₃ P₄ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
 
 section PseudoEMetricSpace
 
-variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace P₃]
+variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂]
+variable [PseudoEMetricSpace P₃] [PseudoEMetricSpace P₄]
 
 /-- A congruence between indexed sets of vertices v₁ and v₂.
 Use `open scoped Congruent` to access the `v₁ ≅ v₂` notation. -/
@@ -96,6 +97,32 @@ lemma index_map (h : v₁ ≅ v₂) (f : ι' → ι) : (v₁ ∘ f) ≅ (v₂ �
   simpa [(EquivLike.toEquiv f).right_inv i₁, (EquivLike.toEquiv f).right_inv i₂]
     using edist_eq h ((EquivLike.toEquiv f).symm i₁) ((EquivLike.toEquiv f).symm i₂)
 
+/-- Families with at most a single point are always congruent. -/
+@[nontriviality, simp]
+lemma of_subsingleton_index [Subsingleton ι] : v₁ ≅ v₂ :=
+  fun i j => by simp [Subsingleton.elim i j]
+
+lemma comp_left {f : P₁ → P₃} (hf : Isometry f) (h : v₁ ≅ v₂) : f ∘ v₁ ≅ v₂ :=
+  .trans (fun _ _ ↦ hf _ _) h
+
+lemma comp_right {f : P₂ → P₃} (hf : Isometry f) (h : v₁ ≅ v₂) : v₁ ≅ f ∘ v₂ :=
+  .trans h (.symm <| fun _ _ ↦ hf _ _)
+
+@[simp]
+lemma comp_left_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ≅ v₂ ↔ v₁ ≅ v₂ :=
+  ⟨.trans <| .comp_right hf (.refl _), .comp_left hf⟩
+
+@[simp]
+lemma comp_right_iff {f : P₂ → P₃} (hf : Isometry f) : v₁ ≅ f ∘ v₂ ↔ v₁ ≅ v₂ := by
+  rw [congruent_comm, comp_left_iff hf, congruent_comm]
+
+/-- Two sets of vertices remain congruent under a dilation if the dilations have equal ratios. -/
+lemma comp_dilation {F₁ F₂}
+    [FunLike F₁ P₁ P₃] [DilationClass F₁ P₁ P₃] [FunLike F₂ P₂ P₄] [DilationClass F₂ P₂ P₄]
+    {f₁ : F₁} {f₂ : F₂} (h : v₁ ≅ v₂) (hf : Dilation.ratio f₁ = Dilation.ratio f₂) :
+    f₁ ∘ v₁ ≅ f₂ ∘ v₂ :=
+  fun i j => by simp [hf, h i j]
+
 end Congruent
 
 end PseudoEMetricSpace
@@ -114,7 +141,7 @@ indices are the same. -/
 lemma congruent_iff_pairwise_nndist_eq :
     Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂) := by
   simp_rw [congruent_iff_pairwise_edist_eq, edist_nndist]
-  exact_mod_cast Iff.rfl
+  exact mod_cast Iff.rfl
 
 /-- Congruence holds if and only if all distances are the same. -/
 lemma congruent_iff_dist_eq :
@@ -127,7 +154,7 @@ indices are the same. -/
 lemma congruent_iff_pairwise_dist_eq :
     Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂) := by
   simp_rw [congruent_iff_pairwise_nndist_eq, dist_nndist]
-  exact_mod_cast Iff.rfl
+  exact mod_cast Iff.rfl
 
 namespace Congruent
 

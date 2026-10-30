@@ -73,12 +73,14 @@ theorem countP_le_of_le {s t} (h : s ≤ t) : countP p s ≤ countP p t :=
   leInductionOn h fun s => s.countP_le
 
 @[simp]
-theorem countP_True {s : Multiset α} : countP (fun _ => True) s = card s :=
-  Quot.inductionOn s fun _l => congrFun List.countP_true _
+theorem countP_true {s : Multiset α} : countP (fun _ => True) s = card s :=
+  Quot.inductionOn s fun _l => congr($List.countP_true _)
+
+@[deprecated (since := "2026-10-27")] alias countP_True := countP_true
 
 @[simp]
 theorem countP_False {s : Multiset α} : countP (fun _ => False) s = 0 :=
-  Quot.inductionOn s fun _l => congrFun List.countP_false _
+  Quot.inductionOn s fun _l => congr($List.countP_false _)
 
 lemma countP_attach (s : Multiset α) : s.attach.countP (fun a : {a // a ∈ s} ↦ p a) = s.countP p :=
   Quotient.inductionOn s fun l => by
@@ -134,11 +136,11 @@ theorem count_zero (a : α) : count a 0 = 0 :=
 
 @[simp]
 theorem count_cons_self (a : α) (s : Multiset α) : count a (a ::ₘ s) = count a s + 1 :=
-  countP_cons_of_pos _ <| rfl
+  countP_cons_of_pos _ rfl
 
 @[simp]
 theorem count_cons_of_ne {a b : α} (h : a ≠ b) (s : Multiset α) : count a (b ::ₘ s) = count a s :=
-  countP_cons_of_neg _ <| h
+  countP_cons_of_neg _ h
 
 theorem count_le_card (a : α) (s) : count a s ≤ card s :=
   countP_le_card _ _
@@ -173,8 +175,6 @@ theorem one_le_count_iff_mem {a : α} {s : Multiset α} : 1 ≤ count a s ↔ a 
 theorem count_eq_zero_of_notMem {a : α} {s : Multiset α} (h : a ∉ s) : count a s = 0 :=
   by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
 
-@[deprecated (since := "2025-05-23")] alias count_eq_zero_of_not_mem := count_eq_zero_of_notMem
-
 lemma count_ne_zero {a : α} : count a s ≠ 0 ↔ a ∈ s := Nat.pos_iff_ne_zero.symm.trans count_pos
 
 @[simp] lemma count_eq_zero {a : α} : count a s = 0 ↔ a ∉ s := count_ne_zero.not_right
@@ -205,7 +205,7 @@ section Rel
 
 variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
-theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
+theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [Std.Symm r] {s t : Multiset α} (x : α)
     [DecidablePred (r x)] (h : Rel r s t) : countP (r x) s = countP (r x) t := by
   induction s using Multiset.induction_on generalizing t with
   | empty => rw [rel_zero_left.mp h]

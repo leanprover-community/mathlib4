@@ -5,7 +5,6 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
@@ -43,14 +42,15 @@ def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
 theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (x : ∀ i, Ms i) :
     (piQuotientLift p q f hf fun i => Quotient.mk (x i)) = Quotient.mk (lsum _ _ R f x) := by
-  rw [piQuotientLift, lsum_apply, sum_apply, ← mkQ_apply, lsum_apply, sum_apply, _root_.map_sum]
+  rw [piQuotientLift, lsum_apply, LinearMap.sum_apply, ← mkQ_apply, lsum_apply, LinearMap.sum_apply,
+    _root_.map_sum]
   simp only [coe_proj, mapQ_apply, mkQ_apply, comp_apply]
 
 @[simp]
 theorem piQuotientLift_single [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (i)
     (x : Ms i ⧸ p i) : piQuotientLift p q f hf (Pi.single i x) = mapQ _ _ (f i) (hf i) x := by
-  simp_rw [piQuotientLift, lsum_apply, sum_apply, comp_apply, proj_apply]
+  simp_rw [piQuotientLift, lsum_apply, LinearMap.sum_apply, comp_apply, proj_apply]
   rw [Finset.sum_eq_single i]
   · rw [Pi.single_eq_same]
   · rintro j - hj
@@ -104,8 +104,10 @@ theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
 theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
   dsimp only [toFun, invFun]
   rw [Function.rightInverse_iff_comp, ← coe_comp, ← @id_coe R]
-  refine congr_arg _ (pi_ext fun i x => Submodule.Quotient.induction_on _ x fun x' =>
-    funext fun j => ?_)
+  congr
+  refine pi_ext fun i x ↦ ?_
+  induction x using Submodule.Quotient.induction_on with | _ x'
+  refine funext fun j ↦ ?_
   rw [comp_apply, piQuotientLift_single, mapQ_apply,
     quotientPiLift_mk, id_apply]
   by_cases hij : i = j <;> simp only [mkQ_apply, coe_single]

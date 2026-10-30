@@ -21,7 +21,7 @@ This file contains results on the behavior of ultrametrics in products of ultram
 ultrametric, nonarchimedean
 -/
 
-@[expose] public section
+public section
 
 instance Pi.instIsUltrametricDist {ι : Type*} {X : ι → Type*} [Fintype ι]
     [(i : ι) → PseudoMetricSpace (X i)] [(i : ι) → IsUltrametricDist (X i)] :

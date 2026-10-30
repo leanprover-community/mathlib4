@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 
 /-!
 # The homology sequence
@@ -44,8 +44,7 @@ variable {C ι : Type*} [Category* C] [HasZeroMorphisms C] {c : ComplexShape ι}
   [K.HasHomology i] [K.HasHomology j] [L.HasHomology i] [L.HasHomology j]
 
 /-- The morphism `K.opcycles i ⟶ K.cycles j` that is induced by `K.d i j`. -/
-noncomputable def opcyclesToCycles [K.HasHomology i] [K.HasHomology j] :
-    K.opcycles i ⟶ K.cycles j :=
+noncomputable def opcyclesToCycles : K.opcycles i ⟶ K.cycles j :=
   K.liftCycles (K.fromOpcycles i j) _ rfl (by simp)
 
 @[reassoc (attr := simp)]
@@ -87,6 +86,7 @@ lemma opcyclesToCycles_naturality :
 
 variable (C c)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.opcyclesToCycles i j : K.opcycles i ⟶ K.cycles j` for all
 `K : HomologicalComplex C c`. -/
 @[simps]
@@ -218,6 +218,7 @@ variable {S : ShortComplex (HomologicalComplex C c)}
 
 namespace HomologySequence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a short exact short complex `S : HomologicalComplex C c`, and degrees `i` and `j`
 such that `c.Rel i j`, this is the snake diagram whose four lines are respectively
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
@@ -292,6 +293,7 @@ lemma comp_δ : HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
 lemma homology_exact₁ : (ShortComplex.mk _ _ (δ_comp hS i j hij)).Exact :=
   (snakeInput hS i j hij).L₂'_exact
 
+set_option backward.isDefEq.respectTransparency false in
 include hS in
 /-- Exactness of `S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i`. -/
 lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i)

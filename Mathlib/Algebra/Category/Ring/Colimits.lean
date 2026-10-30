@@ -98,11 +98,9 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
 
 /-- The setoid corresponding to commutative expressions modulo monoid Relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `CommRingCat`.
 -/
@@ -179,7 +177,7 @@ theorem quot_mul (x y) :
 
 /-- The bundled ring giving the colimit of a diagram. -/
 def colimit : RingCat :=
-  RingCat.of (ColimitType F)
+  ↧(ColimitType F)
 
 /-- The function from a given ring in the diagram to the colimit ring. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
@@ -231,12 +229,12 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | refl => rfl
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
-    | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
-    | zero j => simp
-    | one j => simp
-    | neg j x => simp
-    | add j x y => simp
-    | mul j x y => simp
+    | map j j' f x => congrm $(s.ι.naturality f).hom x
+    | zero j => simp +instances
+    | one j => simp +instances
+    | neg j x => simp +instances
+    | add j x y => simp +instances
+    | mul j x y => simp +instances
     | neg_1 x x' r ih => dsimp; rw [ih]
     | add_1 x x' y r ih => dsimp; rw [ih]
     | add_2 x y y' r ih => dsimp; rw [ih]
@@ -268,6 +266,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
       rfl
     map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
@@ -279,7 +278,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     | one => simp
     | neg x ih => simp [ih]
     | of j x =>
-      exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
+      congrm $(w j) x
     | add x y ih_x ih_y => simp [ih_x, ih_y]
     | mul x y ih_x ih_y => simp [ih_x, ih_y]
 
@@ -392,11 +391,9 @@ inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equi
 
 /-- The setoid corresponding to commutative expressions modulo monoid Relations and identifications.
 -/
-def colimitSetoid : Setoid (Prequotient F) where
+instance colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-
-attribute [instance] colimitSetoid
 
 /-- The underlying type of the colimit of a diagram in `CommRingCat`.
 -/
@@ -478,7 +475,7 @@ theorem quot_mul (x y) :
 
 /-- The bundled commutative ring giving the colimit of a diagram. -/
 def colimit : CommRingCat :=
-  CommRingCat.of (ColimitType F)
+  ↧(ColimitType F)
 
 /-- The function from a given commutative ring in the diagram to the colimit commutative ring. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
@@ -486,7 +483,7 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 
 /-- The ring homomorphism from a given commutative ring in the diagram to the colimit commutative
 ring. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F := ofHom <|
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F := ofHom
   { toFun := coconeFun F j
     map_one' := by apply Quot.sound; apply Relation.one
     map_mul' := by intros; apply Quot.sound; apply Relation.mul
@@ -530,12 +527,12 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | refl => rfl
     | symm x y _ ih => exact ih.symm
     | trans x y z _ _ ih1 ih2 => exact ih1.trans ih2
-    | map j j' f x => exact RingHom.congr_fun (congrArg Hom.hom <| s.ι.naturality f) x
-    | zero j => simp
-    | one j => simp
-    | neg j x => simp
-    | add j x y => simp
-    | mul j x y => simp
+    | map j j' f x => congrm $(s.ι.naturality f).hom x
+    | zero j => simp +instances
+    | one j => simp +instances
+    | neg j x => simp +instances
+    | add j x y => simp +instances
+    | mul j x y => simp +instances
     | neg_1 x x' r ih => dsimp; rw [ih]
     | add_1 x x' y r ih => dsimp; rw [ih]
     | add_2 x y y' r ih => dsimp; rw [ih]
@@ -568,6 +565,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
       rfl
     map_mul' := fun x y ↦ by exact Quot.induction_on₂ x y fun a b => rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc := fun s ↦ descMorphism F s
@@ -579,7 +577,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     | one => simp
     | neg x ih => simp [ih]
     | of j x =>
-      exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
+      congrm $(w j) x
     | add x y ih_x ih_y => simp [ih_x, ih_y]
     | mul x y ih_x ih_y => simp [ih_x, ih_y]
 

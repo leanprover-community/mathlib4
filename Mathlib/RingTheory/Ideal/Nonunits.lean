@@ -45,12 +45,10 @@ theorem zero_mem_nonunits [MonoidWithZero α] : 0 ∈ nonunits α ↔ (0 : α) �
 theorem one_notMem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
 
-@[deprecated (since := "2025-05-23")] alias one_not_mem_nonunits := one_notMem_nonunits
-
 @[simp high] -- High priority shortcut lemma
 theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
     [IsLocalHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
-  ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩
+  ⟨fun h ha => h <| ha.map f, fun h ha => h ha.of_map⟩
 
 theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
   fun _x hx hu => h <| I.eq_top_of_isUnit_mem hx hu

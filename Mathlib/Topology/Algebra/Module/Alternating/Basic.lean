@@ -6,8 +6,7 @@ Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 module
 
 public import Mathlib.LinearAlgebra.Alternating.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
@@ -29,6 +28,7 @@ multilinear map, alternating map, continuous
 @[expose] public section
 
 open Function Matrix
+open scoped Nat
 
 /-- A continuous alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→L[R] N`,
 is a continuous map that is
@@ -71,9 +71,10 @@ theorem range_toContinuousMultilinearMap :
       {f | ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → f v = 0} :=
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h => ⟨⟨f, h⟩, rfl⟩⟩
 
+@[macro_inline]
 instance funLike : FunLike (M [⋀^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
+  coe_injective _ _ h := toContinuousMultilinearMap_injective <| DFunLike.ext' h
 
 instance continuousMapClass : ContinuousMapClass (M [⋀^ι]→L[R] N) (ι → M) N where
   map_continuous f := f.cont
@@ -466,6 +467,12 @@ theorem map_update_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
   f.toMultilinearMap.map_update_sub _ _ _ _
 
+@[simp]
+theorem map_vecCons_sub {n} (f : M [⋀^Fin (n + 1)]→L[R] N) (x y : M) (v : Fin n → M) :
+    f (Matrix.vecCons (x - y) v) = f (Matrix.vecCons x v) - f (Matrix.vecCons y v) := by
+  rw [vecCons, ← Fin.update_cons_zero 0, map_update_sub]
+  simp [vecCons]
+
 section IsTopologicalAddGroup
 
 variable [IsTopologicalAddGroup N]
@@ -622,6 +629,8 @@ end ContinuousAlternatingMap
 
 namespace ContinuousMultilinearMap
 
+section Semiring
+
 variable {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
   [AddCommGroup N] [Module R N] [TopologicalSpace N] [IsTopologicalAddGroup N] [Fintype ι]
   [DecidableEq ι] (f : ContinuousMultilinearMap R (fun _ : ι => M) N)
@@ -646,5 +655,16 @@ theorem alternatization_apply_toAlternatingMap :
     (alternatization f).toAlternatingMap = MultilinearMap.alternatization f.1 := by
   ext v
   simp [alternatization_apply_apply, MultilinearMap.alternatization_apply, Function.comp_def]
+
+theorem _root_.ContinuousAlternatingMap.alternatization_toContinuousMultilinearMap
+    (f : M [⋀^ι]→L[R] N) :
+    f.toContinuousMultilinearMap.alternatization = (Fintype.card ι)! • f := by
+  ext v
+  have : MultilinearMap.alternatization f.toAlternatingMap.toMultilinearMap v =
+      ((Fintype.card ι)! • f.toAlternatingMap) v := by
+    rw [AlternatingMap.coe_alternatization f.toAlternatingMap]
+  simpa only [MultilinearMap.alternatization_apply, alternatization_apply_apply] using! this
+
+end Semiring
 
 end ContinuousMultilinearMap

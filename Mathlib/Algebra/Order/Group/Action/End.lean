@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Order.Group.End
-public import Mathlib.Order.RelIso.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Tautological action by relation automorphisms
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

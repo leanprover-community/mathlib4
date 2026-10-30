@@ -5,9 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Order.Monotone.Union
+
+import Mathlib.Algebra.Order.Group.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monotonicity of odd functions
@@ -17,7 +21,7 @@ provided that it is monotone on `Set.Ici 0`, see `monotone_of_odd_of_monotoneOn_
 prove versions of this lemma for `Antitone`, `StrictMono`, and `StrictAnti`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

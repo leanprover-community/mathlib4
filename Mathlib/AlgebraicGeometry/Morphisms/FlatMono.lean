@@ -7,13 +7,16 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flat monomorphisms of finite presentation are open immersions
 
 We show the titular result `AlgebraicGeometry.IsOpenImmersion.of_flat_of_mono` by fpqc descent.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -29,6 +32,7 @@ lemma Flat.isIso_of_surjective_of_mono {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f]
   · tauto
   · exact inferInstanceAs <| IsIso (pullback.fst f f)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Flat monomorphisms that are locally of finite presentation are open immersions. In particular,
 every smooth monomorphism is an open immersion.

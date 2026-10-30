@@ -6,7 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Topology.UrysohnsLemma
+
+import Mathlib.Topology.UrysohnsLemma
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Integrals of continuous functions with respect to regular measures
@@ -16,7 +20,7 @@ in terms of the integral of continuous functions equal to 1 on the compact set, 
 of the open set respectively.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set MeasureTheory Measure
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sesquilinear forms over a star ring
 
@@ -14,7 +17,7 @@ This file provides some properties about sesquilinear forms `M →ₗ⋆[R] M �
 `StarRing`.
 -/
 
-@[expose] public section
+public section
 
 open Module LinearMap
 
@@ -33,7 +36,7 @@ lemma LinearMap.isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
       (by simp : y ∈ Submodule.span R (Set.range b))
     rw [← hx, ← hy]
     simp only [map_sum, LinearMap.map_smulₛₗ, starRingEnd_apply, map_smul, coe_sum,
-      Finset.sum_apply, smul_apply, smul_eq_mul, Finset.mul_sum, map_mul, star_star]
+      Finset.sum_apply, LinearMap.smul_apply, smul_eq_mul, Finset.mul_sum, map_mul, star_star]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl (fun b₁ h₁ ↦ Finset.sum_congr rfl fun b₂ h₂ ↦ ?_)
     rw [mul_left_comm]

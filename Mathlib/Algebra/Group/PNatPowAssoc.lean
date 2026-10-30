@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Data.PNat.Basic
-public import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Typeclasses for power-associative structures
@@ -36,7 +35,7 @@ powers are considered.
 
 -/
 
-@[expose] public section
+public section
 
 -- TODO:
 -- assert_not_exists MonoidWithZero

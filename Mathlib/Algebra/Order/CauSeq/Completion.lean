@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.CauSeq.Basic
 public import Mathlib.Algebra.Ring.Action.Rat
-public import Mathlib.Tactic.FastInstance
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cauchy completion
@@ -129,32 +131,20 @@ theorem ofRat_intCast (z : ℤ) : (ofRat z : Cauchy abv) = z :=
 
 theorem ofRat_add (x y : β) :
     ofRat (x + y) = (ofRat x + ofRat y : Cauchy abv) :=
-  congr_arg mk (const_add _ _)
+  congr(mk $(const_add ..))
 
 theorem ofRat_neg (x : β) : ofRat (-x) = (-ofRat x : Cauchy abv) :=
-  congr_arg mk (const_neg _)
+  congr(mk $(const_neg _))
 
 theorem ofRat_mul (x y : β) :
     ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
-  congr_arg mk (const_mul _ _)
+  congr(mk $(const_mul ..))
 
 theorem ofRat_injective : Function.Injective (ofRat : β → Cauchy abv) := fun x y h => by
   simpa [ofRat, mk_eq, ← const_sub, const_limZero, sub_eq_zero] using h
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-private theorem zero_def : 0 = mk (abv := abv) 0 :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-private theorem one_def : 1 = mk (abv := abv) 1 :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
-  Function.Surjective.ring mk Quotient.mk'_surjective zero_def.symm one_def.symm
+  Function.Surjective.ring mk Quotient.mk'_surjective rfl rfl
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -169,7 +159,7 @@ def ofRatRingHom : β →+* (Cauchy abv) where
   map_mul' := ofRat_mul
 
 theorem ofRat_sub (x y : β) : ofRat (x - y) = (ofRat x - ofRat y : Cauchy abv) :=
-  congr_arg mk (const_sub _ _)
+  congr(mk $(const_sub ..))
 
 noncomputable instance Cauchy.instNonTrivial [Nontrivial β] : Nontrivial (Cauchy abv) :=
   ofRat_injective.nontrivial
@@ -181,10 +171,8 @@ section
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
-  Function.Surjective.commRing mk Quotient.mk'_surjective zero_def.symm one_def.symm
+  Function.Surjective.commRing mk Quotient.mk'_surjective rfl rfl
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
     (fun _ _ => (mk_pow _ _).symm) (fun _ => rfl) fun _ => rfl
@@ -202,7 +190,7 @@ instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 @[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
 @[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 
-open Classical in
+open scoped Classical in
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
@@ -218,16 +206,16 @@ noncomputable instance : Inv (Cauchy abv) :=
         rw [← mul_one (mk (inv f hf)), ← Ig', ← mul_assoc, If, mul_assoc, Ig', mul_one]⟩
 
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
-  congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
+  congr(mk $(by rw [dite_eq_left] <;> [rfl; exact zero_limZero]))
 
 @[simp]
 theorem inv_mk {f} (hf) : (mk (abv := abv) f)⁻¹ = mk (inv f hf) :=
-  congr_arg mk <| by rw [dif_neg]
+  congr(mk $(by rw [dite_eq_right]))
 
-theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
+theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h ↦
   have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
   have : LimZero (1 : CauSeq _ abv) := by simpa
-  by apply one_ne_zero <| const_limZero.1 this
+  one_ne_zero <| const_limZero.1 this
 
 theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
 
@@ -244,8 +232,8 @@ protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1
     exact Quotient.sound (CauSeq.mul_inv_cancel hf)
 
 theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
-  congr_arg mk <| by split_ifs with h <;>
-    [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]
+  congr(mk $(by split_ifs with h <;>
+    [simp only [const_limZero.1 h, GroupWithZero.inv_zero, const_zero]; rfl]))
 
 noncomputable instance instDivInvMonoid : DivInvMonoid (Cauchy abv) where
 
@@ -260,8 +248,8 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   qsmul := (· • ·)
   nnratCast_def q := by simp_rw [← ofRat_nnratCast, NNRat.cast_def, ofRat_div, ofRat_natCast]
   ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
-  nnqsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ NNRat.smul_def _ _
-  qsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr_arg mk <| ext fun _ ↦ Rat.smul_def _ _
+  nnqsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr(mk $(ext fun _ ↦ NNRat.smul_def ..))
+  qsmul_def _ x := Quotient.inductionOn x fun _ ↦ congr(mk $(ext fun _ ↦ Rat.smul_def ..))
 
 /-- Show the first 10 items of a representative of this equivalence class of Cauchy sequences.
 
@@ -342,12 +330,9 @@ theorem lim_add (f g : CauSeq β abv) : lim f + lim g = lim (f + g) :=
 theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
   eq_lim_of_const_equiv <|
     show LimZero (const abv (lim f * lim g) - f * g) by
-      have h :
-        const abv (lim f * lim g) - f * g =
+      have h : const abv (lim f * lim g) - f * g =
           (const abv (lim f) - f) * g + const abv (lim f) * (const abv (lim g) - g) := by
-              apply Subtype.ext
-              rw [coe_add]
-              simp [sub_mul, mul_sub]
+        ext; simp [sub_mul, mul_sub]
       rw [h]
       exact
         add_limZero (mul_limZero_left _ (Setoid.symm (equiv_lim _)))

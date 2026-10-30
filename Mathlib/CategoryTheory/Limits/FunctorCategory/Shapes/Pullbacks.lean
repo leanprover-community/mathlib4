@@ -26,7 +26,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 section Pullback
 
 /-- Given functors `F G H` and natural transformations `f : F ⟶ H` and `g : g : G ⟶ H`, together
-with a collection of limiting pullback cones for each cospan `F X ⟶ H X, G X ⟶ H X`, we can stich
+with a collection of limiting pullback cones for each cospan `F X ⟶ H X, G X ⟶ H X`, we can stitch
 them together to give a pullback cone for the cospan formed by `f` and `g`.
 `combinePullbackConesIsLimit` shows that this pullback cone is limiting. -/
 @[simps!]
@@ -41,6 +41,8 @@ def PullbackCone.combine (f : F ⟶ H) (g : G ⟶ H) (c : ∀ X, PullbackCone (f
     { app X := (c X).snd }
     (by ext; simp [(c _).condition])
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 The pullback cone `combinePullbackCones` is limiting.
 -/
@@ -50,7 +52,7 @@ def PullbackCone.combineIsLimit (f : F ⟶ H) (g : G ⟶ H)
   evaluationJointlyReflectsLimits _ fun k ↦ by
     refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (hc k)
     · exact cospanIsoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    · refine Cones.ext (Iso.refl _) ?_
+    · refine Cone.ext (Iso.refl _) ?_
       rintro (_ | _ | _)
       all_goals cat_disch
 

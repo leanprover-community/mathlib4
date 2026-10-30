@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.UniformSpace.Basic
 
@@ -99,7 +98,9 @@ uniform space, separated space, Hausdorff space, separation quotient
 
 @[expose] public section
 
-open Filter Set Function Topology Uniformity UniformSpace
+open Filter Set Function SetRel
+
+open scoped Topology Uniformity
 
 noncomputable section
 
@@ -114,7 +115,7 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
 instance (priority := 100) UniformSpace.to_regularSpace : RegularSpace α :=
   .of_hasBasis
-    (fun _ ↦ nhds_basis_uniformity' uniformity_hasBasis_closed)
+    (fun _ ↦ nhds_basis_uniformity uniformity_hasBasis_closed)
     fun a _V hV ↦ isClosed_ball a hV.2
 
 /--
@@ -124,27 +125,29 @@ theorem UniformSpace.completelyNormalSpace_of_hasAntitoneBasis {ι : Type*} [Lin
     {B : ι → SetRel α α} (hB : (uniformity α).HasAntitoneBasis B) : CompletelyNormalSpace α where
   completely_normal s t hSt hsT := by
     let S (b : Bool) : Set α := b.casesOn (false := s) (true := t)
-    have hx (b : Bool) (x : S b) : ∃ i, Disjoint (ball x.1 ((B i).comp (B i).inv)) (S (!b)) := by
+    have hx (b : Bool) (x : S b) : ∃ i, Disjoint (((B i).inv.comp (B i)).ball x.1) (S (!b)) := by
       have hST : Disjoint (S b) (closure (S !b)) := b.casesOn (false := hsT) (true := hSt.symm)
       rw [← disjoint_nhdsSet_principal, disjoint_principal_right] at hST
       obtain ⟨U, hUu, hU⟩ := UniformSpace.mem_nhds_iff.1 (nhds_le_nhdsSet x.2 hST)
       obtain ⟨(V : SetRel α α), hV, hVs, hVU⟩ := comp_symm_mem_uniformity_sets hUu
       obtain ⟨i, hi⟩ := hB.mem_iff.1 hV
-      refine ⟨i, subset_compl_iff_disjoint_right.1 (subset_trans (ball_mono ?_ x.1) hU)⟩
-      exact subset_trans (SetRel.comp_subset_comp hi (V.inv_eq_self ▸ (SetRel.inv_mono hi))) hVU
+      refine ⟨i, subset_compl_iff_disjoint_right.1 (subset_trans (SetRel.ball_mono ?_ _) hU)⟩
+      grw [hi, hi, V.inv_eq_self, hVU]
     choose U hU using hx
-    have hUS (b : Bool) : ⋃ x, ball x.1 (B (U b x)) ∈ nhdsSet (S b) := by
+    have hUS (b : Bool) : ⋃ x, (B (U b x)).ball x.1 ∈ nhdsSet (S b) := by
       rw [mem_nhdsSet_iff_forall]
       intro x hx
-      apply mem_of_superset (ball_mem_nhds x (hB.mem (U b ⟨x, hx⟩)))
-      exact subset_iUnion (fun x => ball x.1 (B (U b x))) ⟨x, hx⟩
+      apply mem_of_superset (SetRel.ball_mem_nhds x (hB.mem (U b ⟨x, hx⟩)))
+      exact subset_iUnion (fun x => (B (U b x)).ball x.1) ⟨x, hx⟩
     rw [Filter.disjoint_iff]
     refine ⟨_, hUS false, _, hUS true, ?_⟩
     have hdj (b : Bool) (x : S b) (y : S (!b)) (hxy : U b x ≤ U (!b) y) :
-        Disjoint (ball x.1 (B (U b x))) (ball y.1 (B (U (!b) y))) := by
+        Disjoint ((B (U b x)).ball x.1) ((B (U (!b) y)).ball y.1) := by
       rw [Set.disjoint_iff]
       intro z hz
-      exact (hU b x).notMem_of_mem_left (mem_ball_comp hz.1 (hB.antitone hxy hz.2)) y.2
+      have h₁ : (z, x.1) ∈ B (U b x) := hz.1
+      have h₂ : (z, y.1) ∈ B (U b x) := hB.antitone hxy hz.2
+      exact (hU b x).notMem_of_mem_left (SetRel.prodMk_mem_comp h₂ h₁) y.2
     simp_rw [disjoint_iUnion_left, disjoint_iUnion_right]
     intro x y
     exact (le_total (U false x) (U true y)).elim
@@ -201,7 +204,7 @@ theorem eq_of_uniformity_basis {α : Type*} [UniformSpace α] [T0Space α] {ι :
 
 theorem eq_of_forall_symmetric {α : Type*} [UniformSpace α] [T0Space α] {x y : α}
     (h : ∀ {V}, V ∈ 𝓤 α → SetRel.IsSymm V → (x, y) ∈ V) : x = y :=
-  eq_of_uniformity_basis hasBasis_symmetric (by simpa)
+  eq_of_uniformity_basis UniformSpace.hasBasis_symmetric (by simpa)
 
 theorem eq_of_clusterPt_uniformity [T0Space α] {x y : α} (h : ClusterPt (x, y) (𝓤 α)) : x = y :=
   (inseparable_iff_clusterPt_uniformity.2 h).eq
@@ -218,16 +221,17 @@ theorem isClosed_of_spaced_out [T0Space α] {V₀ : Set (α × α)} (V₀_in : V
   rcases comp_symm_mem_uniformity_sets V₀_in with ⟨V₁, V₁_in, V₁_symm, h_comp⟩
   apply isClosed_of_closure_subset
   intro x hx
-  rw [mem_closure_iff_ball] at hx
+  rw [UniformSpace.mem_closure_iff_ball] at hx
   rcases hx V₁_in with ⟨y, hy, hy'⟩
   suffices x = y by rwa [this]
   apply eq_of_forall_symmetric
   intro V V_in _
   rcases hx (inter_mem V₁_in V_in) with ⟨z, hz, hz'⟩
+  obtain ⟨hz₁, hz₂⟩ : (z, x) ∈ V₁ ∧ (z, x) ∈ V := hz
   obtain rfl : z = y := by
     by_contra hzy
-    exact hs hz' hy' hzy (h_comp <| mem_comp_of_mem_ball (ball_inter_left x _ _ hz) hy)
-  exact ball_inter_right x _ _ hz
+    exact hs hz' hy' hzy (h_comp <| SetRel.prodMk_mem_comp hz₁ (SetRel.symm V₁ hy))
+  exact SetRel.symm V hz₂
 
 theorem isClosed_range_of_spaced_out {ι} [T0Space α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α)
     {f : ι → α} (hf : Pairwise fun x y => (f x, f y) ∉ V₀) : IsClosed (range f) :=
@@ -254,16 +258,17 @@ instance instUniformSpace : UniformSpace (SeparationQuotient α) where
   comp := fun t ht ↦ by
     rcases comp_open_symm_mem_uniformity_sets ht with ⟨U, hU, hUo, -, hUt⟩
     refine mem_of_superset (mem_lift' <| image_mem_map hU) ?_
-    simp only [subset_def, Prod.forall, SetRel.mem_comp, mem_image, Prod.ext_iff]
+    simp only [subset_def, Prod.forall, SetRel.mem_comp, Set.mem_image, Prod.ext_iff]
     rintro _ _ ⟨_, ⟨⟨x, y⟩, hxyU, rfl, rfl⟩, ⟨⟨y', z⟩, hyzU, hy, rfl⟩⟩
     have : y' ⤳ y := (mk_eq_mk.1 hy).specializes
-    exact @hUt (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩
+    exact @hUt (x, z) ⟨y', this.mem_open (hUo.preimage (Continuous.prodMk_right x)) hxyU, hyzU⟩
   nhds_eq_comap_uniformity := surjective_mk.forall.2 fun x ↦ comap_injective surjective_mk <| by
     conv_lhs => rw [comap_mk_nhds_mk, nhds_eq_comap_uniformity, ← comap_map_mk_uniformity]
     simp only [Filter.comap_comap, Function.comp_def, Prod.map_apply]
 
 theorem uniformity_eq : 𝓤 (SeparationQuotient α) = (𝓤 α).map (Prod.map mk mk) := rfl
 
+@[fun_prop]
 theorem uniformContinuous_mk : UniformContinuous (mk : α → SeparationQuotient α) :=
   le_rfl
 
@@ -289,7 +294,7 @@ theorem uniformContinuous_uncurry_lift₂ {f : α → β → γ}
 theorem comap_mk_uniformity : (𝓤 (SeparationQuotient α)).comap (Prod.map mk mk) = 𝓤 α :=
   comap_map_mk_uniformity
 
-open Classical in
+open scoped Classical in
 /-- Factoring functions to a separated space through the separation quotient.
 
 TODO: unify with `SeparationQuotient.lift`. -/
@@ -298,12 +303,13 @@ def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
   else fun x => f (Nonempty.some ⟨x.out⟩)
 
 theorem lift'_mk [T0Space β] {f : α → β} (h : UniformContinuous f) (a : α) :
-    lift' f (mk a) = f a := by rw [lift', dif_pos h, lift_mk]
+    lift' f (mk a) = f a := by rw [lift', dite_eq_left h, lift_mk]
 
+@[fun_prop]
 theorem uniformContinuous_lift' [T0Space β] (f : α → β) : UniformContinuous (lift' f) := by
   by_cases hf : UniformContinuous f
-  · rwa [lift', dif_pos hf, uniformContinuous_lift]
-  · rw [lift', dif_neg hf]
+  · rwa [lift', dite_eq_left hf, uniformContinuous_lift]
+  · rw [lift', dite_eq_right hf]
     exact uniformContinuous_of_const fun a _ => rfl
 
 /-- The separation quotient functor acting on functions. -/
@@ -312,6 +318,7 @@ def map (f : α → β) : SeparationQuotient α → SeparationQuotient β := lif
 theorem map_mk {f : α → β} (h : UniformContinuous f) (a : α) : map f (mk a) = mk (f a) := by
   rw [map, lift'_mk (uniformContinuous_mk.comp h)]; rfl
 
+@[fun_prop]
 theorem uniformContinuous_map (f : α → β) : UniformContinuous (map f) :=
   uniformContinuous_lift' _
 
@@ -320,7 +327,7 @@ theorem map_unique {f : α → β} (hf : UniformContinuous f)
   ext ⟨a⟩
   calc
     map f ⟦a⟧ = ⟦f a⟧ := map_mk hf a
-    _ = g ⟦a⟧ := congr_fun comm a
+    _ = g ⟦a⟧ := congr($comm a)
 
 @[simp]
 theorem map_id : map (@id α) = id := map_unique uniformContinuous_id rfl
@@ -330,3 +337,28 @@ theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg 
   (map_unique (hg.comp hf) <| by simp only [Function.comp_def, map_mk, hf, hg]).symm
 
 end SeparationQuotient
+
+namespace IndiscreteTopology
+
+variable {α : Type*} [u : UniformSpace α]
+
+theorem of_uniformity_eq_top (h : uniformity α = ⊤) : IndiscreteTopology α :=
+  ⟨(UniformSpace.ext h.symm : ⊤ = u) ▸ rfl⟩
+
+lemma eq_top_uniformSpace [IndiscreteTopology α] : u = ⊤ := by
+  refine UniformSpace.ext ?_
+  rw [top_uniformity, ← Filter.ker_eq_univ]
+  ext x
+  rw [← inseparable_iff_ker_uniformity]
+  simp
+
+lemma eq_top_iff_indiscrete : u = ⊤ ↔ IndiscreteTopology α :=
+  ⟨fun h ↦ IndiscreteTopology.mk <| h ▸ UniformSpace.toTopologicalSpace_top (α := α),
+  fun _ ↦ eq_top_uniformSpace⟩
+
+@[fun_prop]
+lemma uniformContinuous [IndiscreteTopology β] {f : α → β} : UniformContinuous f := by
+  rw [UniformContinuous, eq_top_uniformSpace (α := β), top_uniformity]
+  exact Filter.tendsto_top
+
+end IndiscreteTopology

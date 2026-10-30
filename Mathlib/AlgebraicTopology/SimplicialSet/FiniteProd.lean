@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # A binary product of finite simplicial sets is finite
@@ -18,23 +17,26 @@ We also show that if `X₁` and `X₂` are finite, then `X₁ ⊗ X₂` is also 
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
-open CategoryTheory Limits MonoidalCategory Simplicial Opposite
+open CategoryTheory Limits MonoidalCategory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
 variable {X₁ X₂ X₃ X₄ : SSet.{u}}
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (X₁ X₂) in
 lemma iSup_subcomplexOfSimplex_prod_eq_top :
     ⨆ (x₁ : X₁.N) (x₂ : X₂.N),
       (Subcomplex.ofSimplex x₁.simplex).prod (Subcomplex.ofSimplex x₂.simplex) = ⊤ := by
   ext m ⟨x₁, x₂⟩
   simp only [Subfunctor.iSup_obj, Subcomplex.prod_obj, Set.mem_iUnion, Subfunctor.top_obj,
-    Set.top_eq_univ, Set.mem_univ, iff_true]
+    Set.mem_univ, iff_true]
   have hx₁ : x₁ ∈ (⊤ : X₁.Subcomplex).obj _ := by simp
   have hx₂ : x₂ ∈ (⊤ : X₂.Subcomplex).obj _ := by simp
   simp only [← N.iSup_subcomplex_eq_top, Subfunctor.iSup_obj, Set.mem_iUnion] at hx₁ hx₂
@@ -51,7 +53,7 @@ variable (X₁ X₂) in
 lemma hasDimensionLT_prod
     (d₁ d₂ : ℕ) [X₁.HasDimensionLT d₁] [X₂.HasDimensionLT d₂]
     (n : ℕ) (hn : d₁ + d₂ ≤ n + 1 := by lia) :
-    (X₁ ⊗ X₂).HasDimensionLT  n := by
+    (X₁ ⊗ X₂).HasDimensionLT n := by
   rw [← hasDimensionLT_subcomplex_top_iff, ← iSup_subcomplexOfSimplex_prod_eq_top]
   simp only [Subcomplex.ofSimplexProd_eq_range, hasDimensionLT_iSup_iff]
   intro x₁ x₂

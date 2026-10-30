@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.Fintype.List
 public import Mathlib.Data.Fintype.OfMap
 
+import Mathlib.Data.Fin.Basic
+
 /-!
 # Cycles of a list
 
@@ -48,13 +50,13 @@ theorem nextOr_singleton (x y d : α) : nextOr [y] x d = d :=
 
 @[simp]
 theorem nextOr_self_cons_cons (xs : List α) (x y d : α) : nextOr (x :: y :: xs) x d = y :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
     nextOr (y :: xs) x d = nextOr xs x d := by
   rcases xs with - | ⟨z, zs⟩
   · rfl
-  · exact if_neg h
+  · exact ite_eq_right h
 
 /-- `nextOr` does not depend on the default value, if the next value appears. -/
 theorem nextOr_eq_nextOr_of_mem_dropLast (xs : List α) (x d d' : α) (x_mem : x ∈ xs.dropLast) :
@@ -68,10 +70,6 @@ theorem nextOr_eq_nextOr_of_mem_dropLast (xs : List α) (x d d' : α) (x_mem : x
   · rw [h, nextOr_self_cons_cons, nextOr_self_cons_cons]
   · rw [nextOr, nextOr, IH]
     simpa [h] using x_mem
-
-@[deprecated "Use `grind [nextOr_eq_nextOr_of_mem_dropLast, dropLast_concat_getLast]` to get the \
-  original statement" (since := "2025-11-29")]
-alias nextOr_eq_nextOr_of_mem_of_ne := nextOr_eq_nextOr_of_mem_dropLast
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
   induction xs with
@@ -148,7 +146,7 @@ theorem prev_singleton (x y : α) (h : x ∈ [y]) : prev [y] x h = y :=
   rfl
 
 theorem next_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
-    next (y :: z :: l) x h = z := by rw [next, nextOr, if_pos hx]
+    next (y :: z :: l) x h = z := by rw [next, nextOr, ite_eq_left hx]
 
 @[simp]
 theorem next_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) : next (x :: z :: l) x h = z :=
@@ -158,11 +156,6 @@ theorem next_cons_eq_next_of_mem_dropLast (h : x ∈ l.dropLast) (y : α) (hy : 
     next (y :: l) x (mem_cons_of_mem _ <| mem_of_mem_dropLast h) =
       next l x (mem_of_mem_dropLast h) := by
   rwa [next, next, nextOr_cons_of_ne _ _ _ _ hy, nextOr_eq_nextOr_of_mem_dropLast]
-
-@[deprecated "Use \
-  `grind [next_cons_eq_next_of_mem_dropLast, dropLast_concat_getLast, ne_nil_of_mem]` to get the \
-  original statement" (since := "2025-11-29")]
-alias next_ne_head_ne_getLast := next_cons_eq_next_of_mem_dropLast
 
 theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
     (h : x ∈ y :: l ++ [x] := mem_append_right _ (mem_singleton_self x)) :
@@ -183,18 +176,8 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
     rw [length, Nat.succ_inj]
-    refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
-      ⟨tl.length, by simp⟩ ?_
-    rw [← Option.some_inj] at hk'
-    rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_succ,
-      getElem?_eq_getElem, Option.some_inj] at hk'
-    · rw [get_eq_getElem, hk']
-      simp only [getLast_eq_getElem, length_cons, Nat.succ_sub_succ_eq_sub,
-        Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
-    · simp only [dropLast_cons₂, length_cons, length_dropLast, Nat.add_one_sub_one,
-        Nat.add_lt_add_iff_right] at hk ⊢
-      lia
-    simpa using hk
+    exact Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
+      ⟨tl.length, by simp⟩ (by grind)
 
 theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
     prev (y :: l) x hxy = getLast (y :: l) (cons_ne_nil _ _) := by cases l <;> simp [prev, hx]
@@ -210,7 +193,7 @@ theorem prev_head_eq_getLast (hl : l ≠ []) : l.prev (l.head hl) (head_mem hl) 
   | cons head tail => apply prev_getLast_cons
 
 theorem prev_cons_cons_eq' (y z : α) (h : x ∈ y :: z :: l) (hx : x = y) :
-    prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dif_pos hx]
+    prev (y :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) := by rw [prev, dite_eq_left hx]
 
 theorem prev_cons_cons_eq (z : α) (h : x ∈ x :: z :: l) :
     prev (x :: z :: l) x h = getLast (z :: l) (cons_ne_nil _ _) :=
@@ -220,7 +203,7 @@ theorem prev_cons_cons_of_ne' (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) 
     prev (y :: z :: l) x h = y := by
   cases l
   · simp [prev, hz]
-  · rw [prev, dif_neg hy, if_pos hz]
+  · rw [prev, dite_eq_right hy, ite_eq_left hz]
 
 theorem prev_cons_cons_of_ne (y : α) (h : x ∈ y :: x :: l) (hy : x ≠ y) :
     prev (y :: x :: l) x h = y :=
@@ -230,7 +213,7 @@ theorem prev_ne_cons_cons (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) (hz 
     prev (y :: z :: l) x h = prev (z :: l) x (by simpa [hy] using h) := by
   cases l
   · simp [hy, hz] at h
-  · rw [prev, dif_neg hy, if_neg hz]
+  · rw [prev, dite_eq_right hy, ite_eq_right hz]
 
 theorem next_mem (h : x ∈ l) : l.next x h ∈ l :=
   nextOr_mem (get_mem _ _)
@@ -244,7 +227,7 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
     by_cases hx : x = hd
     · simp only [hx, prev_cons_cons_eq]
       exact mem_cons_of_mem _ (getLast_mem _)
-    · rw [prev, dif_neg hx]
+    · rw [prev, dite_eq_right hx]
       split_ifs with hm
       · exact mem_cons_self
       · exact mem_cons_of_mem _ (hl _ _)
@@ -392,7 +375,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
       length_reverse, Nat.mod_eq_of_lt (Nat.sub_lt lpos Nat.succ_pos'),
       Nat.sub_sub_self (Nat.succ_le_of_lt lpos)]
     rw [getElem_eq_getElem_reverse]
-    · simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
+    simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
   · simpa
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
@@ -484,7 +467,7 @@ theorem induction_on {motive : Cycle α → Prop} (s : Cycle α) (nil : motive n
 
 /-- For `x : α`, `s : Cycle α`, `x ∈ s` indicates that `x` occurs at least once in `s`. -/
 def Mem (s : Cycle α) (a : α) : Prop :=
-  Quot.liftOn s (fun l => a ∈ l) fun _ _ e => propext <| e.mem_iff
+  Quot.liftOn s (fun l => a ∈ l) fun _ _ e => propext e.mem_iff
 
 instance : Membership α (Cycle α) :=
   ⟨Mem⟩
@@ -496,8 +479,6 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
 @[simp]
 theorem notMem_nil (a : α) : a ∉ nil :=
   List.not_mem_nil
-
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
@@ -593,7 +574,7 @@ theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s := 
 
 /-- The `s : Cycle α` contains no duplicates. -/
 nonrec def Nodup (s : Cycle α) : Prop :=
-  Quot.liftOn s Nodup fun _l₁ _l₂ e => propext <| e.nodup_iff
+  Quot.liftOn s Nodup fun _l₁ _l₂ e => propext e.nodup_iff
 
 @[simp]
 nonrec theorem nodup_nil : Nodup (@nil α) :=
@@ -671,6 +652,7 @@ def lists (s : Cycle α) : Multiset (List α) :=
 theorem lists_coe (l : List α) : lists (l : Cycle α) = ↑l.cyclicPermutations :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l : Cycle α) = s :=
   Quotient.inductionOn' s fun l => by
@@ -887,20 +869,11 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
   rw [Cycle.chain_coe_cons]
   apply Pairwise.isChain
   rw [pairwise_cons]
-  refine
-    ⟨fun b hb => ?_,
+  exact
+    ⟨fun b hb => by grind,
       pairwise_append.2
         ⟨pairwise_of_forall_mem_list fun b hb c hc => hs b (Hl hb) c (Hl hc),
-          pairwise_singleton r a, fun b hb c hc => ?_⟩⟩
-  · rw [mem_append] at hb
-    rcases hb with hb | hb
-    · exact hs a Ha b (Hl hb)
-    · rw [mem_singleton] at hb
-      rw [hb]
-      exact hs a Ha a Ha
-  · rw [mem_singleton] at hc
-    rw [hc]
-    exact hs b (Hl hb) a Ha
+          pairwise_singleton r a, fun b hb c hc => by grind⟩⟩
 
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by
@@ -918,17 +891,20 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     · exact hs.2.2 b hb
     · exact _root_.trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
 
-theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by
+theorem Chain.eq_nil_of_irrefl [IsTrans α r] [Std.Irrefl r] (h : Chain r s) : s = Cycle.nil := by
   induction s with
   | nil => rfl
   | cons a l h =>
     have ha : a ∈ a :: l := mem_cons_self
     exact (irrefl_of r a <| chain_iff_pairwise.1 h a ha a ha).elim
 
-theorem Chain.eq_nil_of_well_founded [IsWellFounded α r] (h : Chain r s) : s = Cycle.nil :=
+theorem Chain.eq_nil_of_wellFounded [WellFounded r] (h : Chain r s) : s = Cycle.nil :=
   Chain.eq_nil_of_irrefl <| h.imp fun _ _ => Relation.TransGen.single
 
-theorem forall_eq_of_chain [IsTrans α r] [IsAntisymm α r] (hs : Chain r s) {a b : α} (ha : a ∈ s)
+@[deprecated (since := "2026-08-23")]
+alias Chain.eq_nil_of_well_founded := Chain.eq_nil_of_wellFounded
+
+theorem forall_eq_of_chain [IsTrans α r] [Std.Antisymm r] (hs : Chain r s) {a b : α} (ha : a ∈ s)
     (hb : b ∈ s) : a = b := by
   rw [chain_iff_pairwise] at hs
   exact antisymm (hs a ha b hb) (hs b hb a ha)

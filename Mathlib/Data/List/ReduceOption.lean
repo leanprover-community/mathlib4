@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Data.List.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of `List.reduceOption`
 
 In this file we prove basic lemmas about `List.reduceOption`.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 

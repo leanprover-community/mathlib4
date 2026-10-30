@@ -5,6 +5,7 @@ Authors: Alex Kontorovich, Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 
@@ -18,9 +19,13 @@ subgroup, subgroups
 
 @[expose] public section
 
-variable {ι : Sort*} {G : Type*} [Group G]
+variable {G : Type*}
 
 namespace Subgroup
+
+section Group
+
+variable [Group G]
 
 /-- Pull a subgroup back to an opposite subgroup along `MulOpposite.unop` -/
 @[to_additive (attr := simps)
@@ -114,12 +119,43 @@ def equivOp (H : Subgroup G) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 
 @[to_additive]
-theorem op_normalizer (H : Subgroup G) : H.normalizer.op = H.op.normalizer := by
+theorem op_normalizer (H : Subgroup G) : (normalizer H : Subgroup G).op = normalizer H.op := by
   ext x
-  simp [mem_normalizer_iff', iff_comm]
+  rw [mem_op, mem_normalizer_iff', mem_normalizer_iff']
+  simp [iff_comm]
 
 @[to_additive]
-theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) : H.normalizer.unop = H.unop.normalizer := by
+theorem unop_normalizer (H : Subgroup Gᵐᵒᵖ) :
+    (normalizer H).unop = normalizer (H.unop : Set G) := by
   rw [← op_inj, op_unop, op_normalizer, op_unop]
+
+/-- Bijection between a subgroup `S` and `MulOpposite` of its opposite. -/
+@[to_additive (attr := simps!) addEquivOpAop
+  /-- Bijection between an additive subgroup and `AddOpposite` of its opposite. -/]
+def mulEquivOpMop (S : Subgroup G) : S ≃* (S.op)ᵐᵒᵖ where
+  toEquiv := S.equivOp.trans (MulOpposite.opEquiv : S.op ≃ (S.op)ᵐᵒᵖ)
+  map_mul' _ _ := rfl
+
+/-- Bijection between `MulOpposite` of a subgroup `S` and its opposite. -/
+@[to_additive (attr := simps!) aopAddEquivOp
+  /-- Bijection between `AddOpposite` of an additive subgroup and its opposite. -/]
+def mopMulEquivOp (S : Subgroup G) : Sᵐᵒᵖ ≃* S.op where
+  toEquiv := (MulOpposite.opEquiv : S ≃ Sᵐᵒᵖ).symm.trans S.equivOp
+  map_mul' _ _ := rfl
+
+end Group
+
+section CommGroup
+
+variable [CommGroup G]
+
+/-- Bijection between a subgroup `S` and its opposite as a monoid equivalence. -/
+@[to_additive (attr := simps!)
+  /-- Bijection between an additive subgroup and its opposite as an additive equivalence. -/]
+def mulEquivOp (S : Subgroup G) : S ≃* S.op where
+  toEquiv := S.equivOp
+  map_mul' x y := by ext; simp [MulOpposite.op_mul, mul_comm]
+
+end CommGroup
 
 end Subgroup

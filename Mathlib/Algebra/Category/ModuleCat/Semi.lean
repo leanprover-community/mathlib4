@@ -16,13 +16,13 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 /-!
 # The category of `R`-modules
 
-If `R` is a semiring, `SemimoduleCat.{v} R` is the category of bundled `R`-modules with carrier
-in the universe `v`. We  show that it is preadditive and show that being an isomorphism and
+If `R` is a semiring, `SemimoduleCat.{v} R` is the category of bundled `R`-semimodules with carrier
+in the universe `v`. We show that it is preadditive and show that being an isomorphism and
 monomorphism are equivalent to being a linear equivalence and an injective linear map respectively.
 
 ## Implementation details
 
-To construct an object in the category of `R`-modules from a type `M` with an instance of the
+To construct an object in the category of `R`-semimodules from a type `M` with an instance of the
 `Module` typeclass, write `of R M`. There is a coercion in the other direction.
 The roundtrip `↑(of R M)` is definitionally equal to `M` itself (when `M` is a type with `Module`
 instance), and so is `of R ↑M` (when `M : SemimoduleCat R M`).
@@ -45,20 +45,20 @@ universe v u
 
 variable (R : Type u) [Semiring R]
 
-set_option backward.privateInPublic true in
-/-- The category of R-modules and their morphisms.
+/-- The category of R-semimodules and their morphisms.
 
 Note that in the case of `R = ℕ`, we can not
 impose here that the `ℕ`-multiplication field from the module structure is defeq to the one coming
 from the `isAddCommMonoid` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
 structure SemimoduleCat where
-  private mk ::
+  _mkInternal ::
   /-- the underlying type of an object in `SemimoduleCat R` -/
   carrier : Type v
   [isAddCommMonoid : AddCommMonoid carrier]
   [isModule : Module R carrier]
 
+initialize_simps_projections SemimoduleCat (-isModule, -isAddCommMonoid)
 attribute [instance] SemimoduleCat.isAddCommMonoid SemimoduleCat.isModule
 
 namespace SemimoduleCat
@@ -68,12 +68,15 @@ instance : CoeSort (SemimoduleCat.{v} R) (Type v) :=
 
 attribute [coe] SemimoduleCat.carrier
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `SemimoduleCat R`. -/
 abbrev of (X : Type v) [AddCommMonoid X] [Module R X] : SemimoduleCat.{v} R :=
   ⟨X⟩
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `SemimoduleCat.of R X` as `↧X`. -/
+@[app_delab SemimoduleCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 lemma coe_of (X : Type v) [Semiring X] [Module R X] : (of R X : Type v) = X :=
   rfl
@@ -90,7 +93,7 @@ structure Hom (M N : SemimoduleCat.{v} R) where
   /-- The underlying linear map. -/
   hom' : M →ₗ[R] N
 
-instance moduleCategory : Category.{v, max (v+1) u} (SemimoduleCat.{v} R) where
+instance moduleCategory : Category.{v, max (v + 1) u} (SemimoduleCat.{v} R) where
   Hom M N := Hom M N
   id _ := ⟨LinearMap.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
@@ -143,7 +146,7 @@ lemma hom_ext {M N : SemimoduleCat.{v} R} {f g : M ⟶ N} (hf : f.hom = g.hom) :
 
 lemma hom_bijective {M N : SemimoduleCat.{v} R} :
     Function.Bijective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) where
-  left f g h := by cases f; cases g; simpa using h
+  left f g h := by cases f; cases g; simpa using! h
   right f := ⟨⟨f⟩, rfl⟩
 
 /-- Convenience shortcut for `SemimoduleCat.hom_bijective.injective`. -/
@@ -192,25 +195,21 @@ end
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
-lemma forget_obj {M : SemimoduleCat.{v} R} : (forget (SemimoduleCat.{v} R)).obj M = M := rfl
-
-@[simp]
-lemma forget_map {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
-    (forget (SemimoduleCat.{v} R)).map f = f :=
+lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj M : Type _) = M :=
   rfl
 
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
   forget₂ :=
-    { obj := fun M => .of M
+    { obj := fun M => ↧M
       map := fun f => AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp]
 theorem forget₂_obj (X : SemimoduleCat R) :
-    (forget₂ (SemimoduleCat R) AddCommMonCat).obj X = .of X :=
+    (forget₂ (SemimoduleCat R) AddCommMonCat).obj X = ↧X :=
   rfl
 
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommMonoid X] [Module R X] :
-    (forget₂ (SemimoduleCat R) AddCommMonCat).obj (of R X) = .of X :=
+    (forget₂ (SemimoduleCat R) AddCommMonCat).obj (of R X) = ↧X :=
   rfl
 
 @[simp]
@@ -224,13 +223,6 @@ instance : Inhabited (SemimoduleCat R) :=
 @[simp] theorem of_coe (X : SemimoduleCat R) : of R X = X := rfl
 
 variable {R}
-
-/-- Forgetting to the underlying type and then building the bundled object returns the original
-module. -/
-@[deprecated Iso.refl (since := "2025-05-15")]
-def ofSelfIso (M : SemimoduleCat R) : SemimoduleCat.of R M ≅ M where
-  hom := 𝟙 M
-  inv := 𝟙 M
 
 theorem isZero_of_subsingleton (M : SemimoduleCat R) [Subsingleton M] : IsZero M where
   unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f => by
@@ -269,7 +261,7 @@ namespace CategoryTheory.Iso
 
 /-- Build a `LinearEquiv` from an isomorphism in the category `SemimoduleCat R`. -/
 def toLinearEquivₛ {X Y : SemimoduleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y :=
-  LinearEquiv.ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+  LinearEquiv.ofLinearMap i.hom.hom i.inv.hom (by aesop) (by aesop)
 
 end CategoryTheory.Iso
 
@@ -277,9 +269,10 @@ end CategoryTheory.Iso
 in `SemimoduleCat` -/
 @[simps]
 def linearEquivIsoModuleIsoₛ {X Y : Type u} [AddCommMonoid X] [AddCommMonoid Y] [Module R X]
-    [Module R Y] : (X ≃ₗ[R] Y) ≅ SemimoduleCat.of R X ≅ SemimoduleCat.of R Y where
-  hom e := e.toModuleIsoₛ
-  inv i := i.toLinearEquivₛ
+    [Module R Y] : (X ≃ₗ[R] Y) ≅
+      ((SemimoduleCat.of R X) ≅ (SemimoduleCat.of R Y)) where
+  hom := ↾fun e ↦ e.toModuleIsoₛ
+  inv := ↾fun i ↦ i.toLinearEquivₛ
 
 end
 
@@ -303,11 +296,6 @@ instance : SMul ℕ (M ⟶ N) where
   smul n f := ⟨n • f.hom⟩
 
 @[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
-
-instance : SMul ℕ (M ⟶ N) where
-  smul n f := ⟨n • f.hom⟩
-
-@[simp] lemma hom_zsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance : AddCommMonoid (M ⟶ N) :=
   Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -418,7 +406,7 @@ theorem Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
   rfl
 
 theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
-    Iso.conj i f = ⟨LinearEquiv.conj i.toLinearEquivₛ f.hom⟩ :=
+    Iso.conj i f = .of ⟨LinearEquiv.conj i.toLinearEquivₛ f.asHom.hom⟩ :=
   rfl
 
 end

@@ -98,6 +98,7 @@ lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
 def map (I : X.IdealSheafData) (f : X ⟶ Y) : Y.IdealSheafData :=
   (I.subschemeι ≫ f).ker
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma le_map_iff_comap_le {I : X.IdealSheafData} {f : X ⟶ Y} {J : Y.IdealSheafData} :
     J ≤ I.map f ↔ J.comap f ≤ I := by
   constructor
@@ -118,7 +119,9 @@ variable (I I₁ I₂ : X.IdealSheafData) (J J₁ J₂ : Y.IdealSheafData) (f : 
 /-- Pushforward and pullback of ideal sheaves forms a Galois connection. -/
 lemma map_gc : GaloisConnection (comap · f) (map · f) := fun _ _ ↦ le_map_iff_comap_le.symm
 
-set_option linter.style.commandStart false
+section
+set_option linter.style.whitespace false -- manual alignment is not recognised
+
 lemma map_mono          : Monotone (map · f)                          := (map_gc f).monotone_u
 lemma comap_mono        : Monotone (comap · f)                        := (map_gc f).monotone_l
 lemma le_map_comap      : J ≤ (J.comap f).map f                       := (map_gc f).le_u_l J
@@ -127,7 +130,8 @@ lemma comap_map_le      : (I.map f).comap f ≤ I                       := (map_
 @[simp] lemma comap_bot : comap ⊥ f = ⊥                               := (map_gc f).l_bot
 @[simp] lemma map_inf   : map (I₁ ⊓ I₂) f = map I₁ f ⊓ map I₂ f       := (map_gc f).u_inf
 @[simp] lemma comap_sup : comap (J₁ ⊔ J₂) f = comap J₁ f ⊔ comap J₂ f := (map_gc f).l_sup
-set_option linter.style.commandStart true
+
+end
 
 end gc
 
@@ -176,6 +180,7 @@ lemma support_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] :
   rw [map, Scheme.Hom.support_ker, Scheme.Hom.comp_base, TopCat.coe_comp,
     Set.range_comp, range_subschemeι, TopologicalSpace.Closeds.coe_closure]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ideal_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] (U : Y.affineOpens)
     (H : IsAffineOpen (f ⁻¹ᵁ U)) :
     (I.map f).ideal U = (I.ideal ⟨_, H⟩).comap (f.app U).hom := by
@@ -200,7 +205,7 @@ lemma ideal_comap_of_isOpenImmersion
 /-- If `J ≤ I.map f`, then `f` restricts to a map `I ⟶ J` between the closed subschemes. -/
 def subschemeMap (I : X.IdealSheafData) (J : Y.IdealSheafData)
     (f : X ⟶ Y) (H : J ≤ I.map f) : I.subscheme ⟶ J.subscheme :=
-  IsClosedImmersion.lift J.subschemeι (I.subschemeι ≫ f) (by simpa using H)
+  IsClosedImmersion.lift J.subschemeι (I.subschemeι ≫ f) (by simpa using! H)
 
 @[reassoc (attr := simp)]
 lemma subschemeMap_subschemeι (I : X.IdealSheafData) (J : Y.IdealSheafData)
