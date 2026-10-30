@@ -39,6 +39,12 @@ instance : IsStableUnderRetracts (⊥ : ObjectProperty C) where
 instance : IsStableUnderRetracts (⊤ : ObjectProperty C) where
   of_retract _ _ := by trivial
 
+instance {ι : Sort*} (P : ι → ObjectProperty C) [∀ i, (P i).IsStableUnderRetracts] :
+    (⨅ i, P i).IsStableUnderRetracts where
+  of_retract r h := by
+    simp only [iInf_apply, iInf_Prop_eq] at h ⊢
+    exact fun i ↦ (P i).prop_of_retract r (h i)
+
 namespace IsStableUnderRetracts
 
 open scoped ZeroObject

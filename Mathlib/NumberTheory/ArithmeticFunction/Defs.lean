@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Data.Nat.Squarefree
@@ -85,8 +86,10 @@ theorem range_coe : Set.range ((↑) : ArithmeticFunction R → (ℕ → R)) = {
   ext f
   exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
-@[simp]
-theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
+instance : IsZeroApply (ArithmeticFunction R) where
+
+@[deprecated zero_apply +typeChanged (since := "2026-10-27")]
+protected theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
   rfl
 
 @[ext]
@@ -100,7 +103,7 @@ variable [One R]
 instance one : One (ArithmeticFunction R) :=
   ⟨⟨fun x => ite (x = 1) 1 0, rfl⟩⟩
 
-theorem one_apply {x : ℕ} : (1 : ArithmeticFunction R) x = ite (x = 1) 1 0 :=
+protected theorem one_apply {x : ℕ} : (1 : ArithmeticFunction R) x = ite (x = 1) 1 0 :=
   rfl
 
 @[simp]
@@ -162,13 +165,24 @@ theorem coe_coe [AddGroupWithOne R] {f : ArithmeticFunction ℕ} :
 theorem natCoe_one [AddMonoidWithOne R] :
     ((1 : ArithmeticFunction ℕ) : ArithmeticFunction R) = 1 := by
   ext n
-  simp [one_apply]
+  simp [ArithmeticFunction.one_apply]
 
 @[simp]
 theorem intCoe_one [AddGroupWithOne R] : ((1 : ArithmeticFunction ℤ) :
     ArithmeticFunction R) = 1 := by
   ext n
-  simp [one_apply]
+  simp [ArithmeticFunction.one_apply]
+
+section SMul
+
+variable {S : Type*} [Zero R] [SMulZeroClass S R]
+
+instance : SMul S (ArithmeticFunction R) where
+  smul n f := ⟨n • f, by simp⟩
+
+instance : IsSMulApply S (ArithmeticFunction R) where
+
+end SMul
 
 section AddMonoid
 
@@ -177,15 +191,13 @@ variable [AddMonoid R]
 instance add : Add (ArithmeticFunction R) where
   add f g := ⟨f + g, by simp⟩
 
-@[simp]
-theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n :=
+instance : IsAddApply (ArithmeticFunction R) where
+
+@[deprecated add_apply +typeChanged (since := "2026-10-27")]
+protected theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n :=
   rfl
 
-instance instAddMonoid : AddMonoid (ArithmeticFunction R) where
-  add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
-  zero_add _ := ext fun _ ↦ zero_add _
-  add_zero _ := ext fun _ ↦ add_zero _
-  nsmul := nsmulRec
+instance instAddMonoid : AddMonoid (ArithmeticFunction R) := fast_instance% FunLike.addMonoid
 
 end AddMonoid
 
@@ -195,22 +207,27 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
   natCast_zero := by ext; simp
   natCast_succ n := by ext x; by_cases h : x = 1 <;> simp [h]
 
-instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) where
-  add_comm _ _ := ext fun _ ↦ add_comm _ _
+instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
+  fast_instance% FunLike.addCommMonoid
 
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨-f, by simp⟩
 
-@[simp]
-theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} : (-f) n = -f n := by
-  rfl
+instance [NegZeroClass R] : IsNegApply (ArithmeticFunction R) where
 
-instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
-  neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
-  zsmul := zsmulRec
+@[deprecated neg_apply +typeChanged (since := "2026-10-27")]
+protected theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} :
+    (-f) n = -f n := rfl
 
-instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) where
-  add_comm := fun _ _ ↦ add_comm _ _
+instance [SubNegZeroMonoid R] : Sub (ArithmeticFunction R) where
+  sub f g := ⟨f - g, by simp⟩
+
+instance [SubNegZeroMonoid R] : IsSubApply (ArithmeticFunction R) where
+
+instance [AddGroup R] : AddGroup (ArithmeticFunction R) := fast_instance% FunLike.addGroup
+
+instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
+  fast_instance% FunLike.addCommGroup
 
 section SMul
 
@@ -222,7 +239,7 @@ instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) where
   smul f g := ⟨fun n ↦ ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd, by simp⟩
 
 @[simp]
-theorem smul_apply {f : ArithmeticFunction R} {g : ArithmeticFunction M} {n : ℕ} :
+protected theorem smul_apply {f : ArithmeticFunction R} {g : ArithmeticFunction M} {n : ℕ} :
     (f • g) n = ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd :=
   rfl
 
@@ -234,7 +251,7 @@ instance [Semiring R] : Mul (ArithmeticFunction R) where
   mul f g := f • g
 
 @[simp]
-theorem mul_apply [Semiring R] {f g : ArithmeticFunction R} {n : ℕ} :
+protected theorem mul_apply [Semiring R] {f g : ArithmeticFunction R} {n : ℕ} :
     (f * g) n = ∑ x ∈ divisorsAntidiagonal n, f x.fst * g x.snd :=
   rfl
 
@@ -259,7 +276,8 @@ variable {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 theorem mul_smul' (f g : ArithmeticFunction R) (h : ArithmeticFunction M) :
     (f * g) • h = f • g • h := by
   ext n
-  simp only [mul_apply, smul_apply, sum_smul, mul_smul, smul_sum, sum_sigma']
+  simp only [ArithmeticFunction.smul_apply, ArithmeticFunction.mul_apply, sum_smul, mul_smul,
+    sum_sigma', smul_sum]
   apply sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l * j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i * k, l), (i, k)⟩) <;> aesop (add simp mul_assoc)
 
@@ -293,7 +311,7 @@ end Semiring
 instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) where
   mul_comm f g := by
     ext
-    rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
+    rw [ArithmeticFunction.mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
     simp [mul_comm]
 
 instance [CommRing R] : CommRing (ArithmeticFunction R) where
@@ -301,18 +319,11 @@ instance [CommRing R] : CommRing (ArithmeticFunction R) where
   mul_comm := mul_comm
 
 instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
-    Module R (ArithmeticFunction S) where
-  smul x f := ⟨x • f, by simp⟩
-  smul_zero x := ext fun n ↦ smul_zero x
-  smul_add x f g := ext fun n ↦ smul_add x (f n) (g n)
-  zero_smul f := ext fun n ↦ zero_smul R (f n)
-  one_smul f := ext fun n ↦ one_smul R (f n)
-  add_smul x y f := ext fun n ↦ add_smul x y (f n)
-  mul_smul x y f := ext fun n ↦ mul_smul x y (f n)
+    Module R (ArithmeticFunction S) := fast_instance% FunLike.module
 
 -- note that `smul_apply` would be a more suitable name, but is already in use for the action of
 -- `ArithmeticFunction R` on `ArithmeticFunction S`
-@[simp]
+@[deprecated smul_apply +typeChanged (since := "2026-10-29")]
 theorem smul_map {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
     (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := by
   rfl
@@ -335,16 +346,16 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
   mul_smul := mul_smul'
   smul_add r x y := by
     ext
-    simp only [sum_add_distrib, smul_add, smul_apply, add_apply]
+    simp only [ArithmeticFunction.smul_apply, add_apply, smul_add, sum_add_distrib]
   smul_zero r := by
     ext
-    simp only [smul_apply, sum_const_zero, smul_zero, zero_apply]
+    simp only [ArithmeticFunction.smul_apply, zero_apply, smul_zero, sum_const_zero]
   add_smul r s x := by
     ext
-    simp only [add_smul, sum_add_distrib, smul_apply, add_apply]
+    simp only [ArithmeticFunction.smul_apply, add_apply, add_smul, sum_add_distrib]
   zero_smul r := by
     ext
-    simp only [smul_apply, sum_const_zero, zero_smul, zero_apply]
+    simp only [ArithmeticFunction.smul_apply, zero_apply, zero_smul, sum_const_zero]
 
 section DirichletInverse
 
@@ -391,7 +402,7 @@ theorem self_mul_dirichletInverse (f : ArithmeticFunction R) (hf : Invertible (f
   · simp [hn0]
   by_cases hn1 : n = 1
   · simp [hn1]
-  rw [dirichletInverse, mul_apply, coe_mk,
+  rw [dirichletInverse, ArithmeticFunction.mul_apply, coe_mk,
     Nat.sum_divisorsAntidiagonal' fun x y ↦ f x * dirichletInverseFun f hf y,
     ← Nat.cons_self_properDivisors hn0]
   simp [hn0, hn1, pos_of_ne_zero]
@@ -490,7 +501,7 @@ theorem intCast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f * g) := by
   refine ⟨by simp [hf.1, hg.1], ?_⟩
-  simp only [mul_apply]
+  simp only [ArithmeticFunction.mul_apply]
   intro m n cop
   rw [sum_mul_sum, ← sum_product']
   symm
