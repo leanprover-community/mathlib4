@@ -253,6 +253,6 @@ def NowhereVanishing (s : Set F) : Prop := ∀ x : α, ∃ f ∈ s, f x ≠ 0
 
 theorem NowhereVanishing.mono {s t : Set F} (hst : s ⊆ t) (hs : s.NowhereVanishing) :
     t.NowhereVanishing :=
-  fun x ↦ (hs x).imp <| by grind
+  fun x ↦ (hs x).imp fun _ ha ↦ ⟨hst ha.1, ha.2⟩
 
 end Set

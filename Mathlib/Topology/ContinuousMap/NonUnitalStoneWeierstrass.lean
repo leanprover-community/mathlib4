@@ -54,7 +54,7 @@ variable {X 𝕜 : Type*} [TopologicalSpace X] [R1Space X] [RCLike 𝕜]
 section StoneWeierstrass
 
 /-- A non-unital subalgebra of `C₀(X, 𝕜)` which separates points and vanishes nowhere also
-separates points in `C(OnePoint X, 𝕜)` under `ZeroAtInftyContinuousMap.toOnePoint` -/
+separates points in `C(OnePoint X, 𝕜)` under `ZeroAtInftyContinuousMap.toOnePoint`. -/
 theorem NonUnitalSubalgebra.SeparatesPoints.map_toOnePoint
     {S : NonUnitalSubalgebra 𝕜 C₀(X, 𝕜)} (hS : S.SeparatesPoints)
     (hS₀ : (S : Set (C₀(X, 𝕜))).NowhereVanishing) :
@@ -72,7 +72,7 @@ theorem NonUnitalSubalgebra.SeparatesPoints.map_toOnePoint
     exact ⟨_, ⟨f.toOnePoint, ⟨f, hf, rfl⟩, rfl⟩, by simpa⟩
 
 /-- A non-unital star subalgebra of `C₀(X, 𝕜)` which separates points and vanishes nowhere also
-separates points in `C(OnePoint X, 𝕜)` under `ZeroAtInftyContinuousMap.toOnePoint` -/
+separates points in `C(OnePoint X, 𝕜)` under `ZeroAtInftyContinuousMap.toOnePoint`. -/
 theorem NonUnitalStarSubalgebra.SeparatesPoints.map_toOnePoint
     {S : NonUnitalStarSubalgebra 𝕜 C₀(X, 𝕜)} (hS : S.SeparatesPoints)
     (hS₀ : (S : Set C₀(X, 𝕜)).NowhereVanishing) :
@@ -80,7 +80,7 @@ theorem NonUnitalStarSubalgebra.SeparatesPoints.map_toOnePoint
   NonUnitalSubalgebra.SeparatesPoints.map_toOnePoint (S := S.toNonUnitalSubalgebra) hS hS₀
 
 open Algebra NonUnitalSubalgebra Submodule in
-/-- A non-unital subalgebra of `C₀(X, 𝕜)` whose (unital) adjoin in  `C(OnePoint X, 𝕜)` (under
+/-- A non-unital subalgebra of `C₀(X, 𝕜)` whose (unital) adjoin in `C(OnePoint X, 𝕜)` (under
 `ZeroAtInftyContinuousMap.toOnePoint`) is dense is itself dense. -/
 private theorem NonUnitalSubalgebra.topologicalClosure_eq_top_of_adjoin_map_toOnePoint
     {S : NonUnitalSubalgebra 𝕜 C₀(X, 𝕜)}
