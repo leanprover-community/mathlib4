@@ -590,8 +590,7 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
-    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
-  simpa using CommGroupWithZero.coe_normUnit _ (by simpa)
+    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by simp [hp]
 
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
