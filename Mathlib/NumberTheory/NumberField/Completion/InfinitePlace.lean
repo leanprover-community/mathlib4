@@ -87,15 +87,16 @@ section Deprecated
 
 /-! ### Deprecated API from when `InfinitePlace.Completion` was a one-field structure -/
 
-set_option linter.deprecated false
-
+/-- The identity map `v.1.Completion → v.Completion`. -/
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 def ofCompletion {v : InfinitePlace K} (x : v.1.Completion) : v.Completion := x
 
+/-- The identity map `v.Completion → v.1.Completion`. -/
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 def toCompletion {v : InfinitePlace K} (x : v.Completion) : v.1.Completion := x
 
-@[deprecated Equiv.refl (since := "2026-10-30")]
+/-- The identity equivalence `v.Completion ≃ v.1.Completion`. -/
+@[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 def equivCompletion : v.Completion ≃ v.1.Completion := Equiv.refl _
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
@@ -105,7 +106,8 @@ theorem equivCompletion_apply (x : v.Completion) : equivCompletion v x = toCompl
 theorem equivCompletion_symm_apply (x : v.1.Completion) :
     (equivCompletion v).symm x = ofCompletion x := rfl
 
-@[deprecated RingEquiv.refl (since := "2026-10-30")]
+/-- The identity ring isomorphism `v.Completion ≃+* v.1.Completion`. -/
+@[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 def equiv : v.Completion ≃+* v.1.Completion := RingEquiv.refl _
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
@@ -136,11 +138,11 @@ theorem toCompletion_mul (x y : v.Completion) :
 theorem ext {v : InfinitePlace K} {x y : v.Completion} (h : toCompletion x = toCompletion y) :
     x = y := h
 
-@[deprecated Function.surjective_id (since := "2026-10-30")]
+@[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem toCompletion_surjective : Function.Surjective (toCompletion (v := v)) :=
   Function.surjective_id
 
-@[deprecated Function.surjective_id (since := "2026-10-30")]
+@[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem ofCompletion_surjective : Function.Surjective (ofCompletion (v := v)) :=
   Function.surjective_id
 
@@ -150,32 +152,33 @@ theorem norm_toCompletion (x : v.Completion) : ‖toCompletion x‖ = ‖x‖ :=
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem norm_ofCompletion (x : v.1.Completion) : ‖(ofCompletion x : v.Completion)‖ = ‖x‖ := rfl
 
-@[deprecated isometry_id (since := "2026-10-30")]
+@[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem isometry_toCompletion : Isometry (toCompletion (v := v)) := isometry_id
 
-@[deprecated IsometryEquiv.refl (since := "2026-10-30")]
+/-- The identity isometry equivalence `v.Completion ≃ᵢ v.1.Completion`. -/
+@[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 def isometryEquivCompletion : v.Completion ≃ᵢ v.1.Completion := IsometryEquiv.refl _
 
-@[deprecated continuous_id (since := "2026-10-30")]
+@[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem continuous_toCompletion : Continuous (toCompletion (v := v)) := continuous_id
 
-@[deprecated continuous_id (since := "2026-10-30")]
+@[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem continuous_ofCompletion : Continuous (ofCompletion (v := v)) := continuous_id
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem coe_toCompletion (x : WithAbs v.1) :
     toCompletion (x : v.Completion) = (x : v.1.Completion) := rfl
 
-@[deprecated AbsoluteValue.Completion.coe_zero (since := "2026-10-30")]
+@[deprecated AbsoluteValue.Completion.coe_zero +typeChanged (since := "2026-10-30")]
 theorem coe_zero : ((0 : K) : v.Completion) = 0 := by simp
 
-@[deprecated AbsoluteValue.Completion.coe_one (since := "2026-10-30")]
+@[deprecated AbsoluteValue.Completion.coe_one +typeChanged (since := "2026-10-30")]
 theorem coe_one : ((1 : K) : v.Completion) = 1 := by simp
 
-@[deprecated AbsoluteValue.Completion.coe_add (since := "2026-10-30")]
+@[deprecated AbsoluteValue.Completion.coe_add +typeChanged (since := "2026-10-30")]
 theorem coe_add (x y : K) : ((x + y : K) : v.Completion) = ↑x + ↑y := by simp
 
-@[deprecated AbsoluteValue.Completion.coe_mul (since := "2026-10-30")]
+@[deprecated AbsoluteValue.Completion.coe_mul +typeChanged (since := "2026-10-30")]
 theorem coe_mul (x y : K) : ((x * y : K) : v.Completion) = ↑x * ↑y := by simp
 
 @[deprecated (since := "2026-10-30")]
@@ -192,7 +195,7 @@ theorem algebraMap_toCompletion (R : Type*) [CommSemiring R] [Algebra R (WithAbs
     [UniformContinuousConstSMul R (WithAbs v.1)] (r : R) :
     toCompletion (algebraMap R v.Completion r) = algebraMap R v.1.Completion r := rfl
 
-@[deprecated AbsoluteValue.Completion.algebraMap_def (since := "2026-10-30")]
+@[deprecated AbsoluteValue.Completion.algebraMap_def +typeChanged (since := "2026-10-30")]
 theorem algebraMap_apply (k : K) :
     algebraMap K v.Completion k = (k : v.Completion) := by
   rw [AbsoluteValue.Completion.algebraMap_def, WithAbs.algebraMap_right_apply,
