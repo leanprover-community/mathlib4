@@ -39,7 +39,6 @@ if desired. Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is 
 * Define equidistance (pairwise intersections have a given size)
 -/
 
-#check Hypergraph
 @[expose] public section
 
 variable (α β : Type*)
