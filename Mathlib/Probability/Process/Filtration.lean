@@ -407,7 +407,7 @@ variable (𝓕) in
 /-- If a filtration `𝓕` on a nonempty type is complete with respect to `μ`, then `μ` is complete.
 
 This is not an instance since `𝓕` cannot be inferred from the goal. -/
-lemma IsComplete.measure_isComplete [Nonempty ι] [𝓕.IsComplete μ] : μ.IsComplete :=
+lemma IsComplete.isComplete_measure [Nonempty ι] [𝓕.IsComplete μ] : μ.IsComplete :=
   ⟨fun _ hs ↦ 𝓕.le (Classical.arbitrary ι) _ (IsComplete.measurableSet_of_null hs _)⟩
 
 /-- A filtration that is complete with respect to `μ` is complete with respect to any measure `ν`
