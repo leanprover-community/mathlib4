@@ -415,20 +415,23 @@ jobs:
   manifest:
     name: Validate manifest
     runs-on: ubuntu-latest
-    # This job parses the (potentially fork) PR's lake-manifest.json and runs no PR code.
     permissions:
       contents: read
+    env:
+      # Only enforce this on the main mathlib4 repository, not on nightly-testing.
+      # `bump/*` branches, and PRs into them, track the dependencies' `nightly-testing`
+      # branches, so they are exempt too. A PR's base branch is `github.base_ref`:
+      # `pull_request_target` sets `github.ref_name` to the default branch, not the base.
+      # The steps check ENFORCE, so the job succeeds where it does not apply.
+      ENFORCE: >-
+        ${{ github.repository == 'leanprover-community/mathlib4'
+        && github.ref_name != 'nightly-testing'
+        && !startsWith(github.ref_name, 'bump/')
+        && !startsWith(github.base_ref, 'bump/') }}
+      STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
     steps:
       - name: Checkout lake-manifest.json
-        # Only enforce this on the main mathlib4 repository, not on nightly-testing.
-        # `bump/*` branches, and PRs into them, track the dependencies' `nightly-testing`
-        # branches, so they are exempt too. A PR's base branch is `github.base_ref`:
-        # `pull_request_target` sets `github.ref_name` to the default branch, not the base.
-        if: >-
-          github.repository == 'leanprover-community/mathlib4'
-          && github.ref_name != 'nightly-testing'
-          && !startsWith(github.ref_name, 'bump/')
-          && !startsWith(github.base_ref, 'bump/')
+        if: env.ENFORCE == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.pr_branch_ref }}
@@ -436,42 +439,38 @@ jobs:
           sparse-checkout-cone-mode: false
           # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
           persist-credentials: false
-          # This job only parses the manifest, so checking out fork PR code under
-          # pull_request_target is safe.
+          # This job only parses the manifest and runs no PR code, so checking out fork PR
+          # code under pull_request_target is safe.
           allow-unsafe-pr-checkout: true
 
       - name: Validate lake-manifest.json
-        if: >-
-          github.repository == 'leanprover-community/mathlib4'
-          && github.ref_name != 'nightly-testing'
-          && !startsWith(github.ref_name, 'bump/')
-          && !startsWith(github.base_ref, 'bump/')
+        if: env.ENFORCE == 'true'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           PR_BRANCH_REF: ${{ inputs.pr_branch_ref }}
-          STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
         with:
           retries: 3
           script: |
             const fs = require('node:fs');
-            const strict = process.env.STRICT === 'true';
             const branchRev = /^(main|master)$/;
             const tagRev = /^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$/;
             const repoUrl = /^https:\/\/github\.com\/(leanprover|leanprover-community)\/([A-Za-z0-9._-]+)$/;
-            const hint = name => `Hint: Run \`lake update ${name}\` and commit lake-manifest.json.`;
+            const fullSha = /^[0-9a-f]{40}$/;
+            const requireHint = name =>
+              `Hint: Fix the \`require\` for \`${name}\` in lakefile.lean, then run \`lake update ${name}\`.`;
+            const updateHint = name => `Hint: Run \`lake update ${name}\` and commit lake-manifest.json.`;
 
-            // The package rules (`inputRev`, `url`) fail every run. The pin rules (`rev`) warn on
-            // ordinary pushes, so a PR can test an unmerged dependency commit. On `staging` and
-            // `trying`, the pin rules fail the run.
             let failed = false;
-            const report = (revRule, title, message) => {
-              if (revRule && !strict) {
-                core.warning(message, { title, file: 'lake-manifest.json' });
-              } else {
-                core.error(message, { title, file: 'lake-manifest.json' });
-                failed = true;
-              }
+            const annotate = (level, title, message) => {
+              core[level](message, { title, file: 'lake-manifest.json' });
+              if (level === 'error') failed = true;
             };
+            // The package rules fail every run.
+            const packageError = (title, message) => annotate('error', title, message);
+            // The pin rules warn on ordinary pushes, so a PR can test an unmerged dependency
+            // commit. On `staging` and `trying`, they fail the run.
+            const pinError = (title, message) =>
+              annotate(process.env.STRICT === 'true' ? 'error' : 'warning', title, message);
 
             // True when `commit` is `tip` or an ancestor of `tip`. False for a commit GitHub does not know.
             const contains = async (owner, repo, tip, commit) => {
@@ -496,22 +495,51 @@ jobs:
               }
             };
 
+            // `old` is the package in the manifest at the merge base, if any.
+            const checkPin = async (p, old) => {
+              const sameSource = old?.url === p.url && old?.inputRev === p.inputRev;
+              if (sameSource && old.rev === p.rev) return;
+              if (tagRev.test(p.inputRev)) {
+                const sha = await tagCommit(p.owner, p.repo, p.inputRev);
+                if (sha !== p.rev) {
+                  pinError(`Dependency commit does not match tag ${p.inputRev}`,
+                    `Package \`${p.name}\` pins \`${p.rev}\`, but tag \`${p.inputRev}\` of ${p.url} ` +
+                    (sha ? `points to \`${sha}\`.\n` : 'does not exist.\n') + updateHint(p.name));
+                }
+              } else if (!await contains(p.owner, p.repo, p.inputRev, p.rev)) {
+                pinError(`Dependency commit is not on branch ${p.inputRev}`,
+                  `Package \`${p.name}\` pins \`${p.rev}\`, which is not on the \`${p.inputRev}\` branch of ${p.url}.\n` +
+                  `Note: lakefile.lean makes \`${p.name}\` track \`${p.inputRev}\`, and Bors merges only commits on that branch.\n` +
+                  updateHint(p.name));
+              } else if (sameSource && !await contains(p.owner, p.repo, p.rev, old.rev)) {
+                pinError('Dependency pin moves backwards',
+                  `Package \`${p.name}\` moves its pin backwards: \`${p.rev}\` does not descend from ` +
+                  `\`${old.rev}\`, the pin at the merge base with master.\n` + updateHint(p.name));
+              }
+            };
+
             const pinned = [];
             for (const p of JSON.parse(fs.readFileSync('lake-manifest.json', 'utf8')).packages) {
-              let valid = true;
-              if (!branchRev.test(p.inputRev ?? '') && !tagRev.test(p.inputRev ?? '')) {
-                report(false, 'Invalid dependency revision',
+              const tracksAllowedRev = branchRev.test(p.inputRev) || tagRev.test(p.inputRev);
+              const source = repoUrl.exec(p.url);
+              const pinsCommit = fullSha.test(p.rev);
+              if (!tracksAllowedRev) {
+                packageError('Invalid dependency revision',
                   `Package \`${p.name}\` tracks \`${p.inputRev}\`, which is not an allowed revision.\n` +
-                  'Note: Each package must track `main`, `master` or a version tag `vX.Y.Z`.');
-                valid = false;
+                  'Note: Each package must track `main`, `master` or a version tag such as `v4.25.0` or `v4.25.0-rc1`.\n' +
+                  requireHint(p.name));
               }
-              if (!repoUrl.test(p.url ?? '')) {
-                report(false, 'Invalid dependency repository',
+              if (!source) {
+                packageError('Invalid dependency repository',
                   `Package \`${p.name}\` comes from \`${p.url}\`, which is not an allowed repository.\n` +
-                  'Note: Each package must come from https://github.com/leanprover-community or https://github.com/leanprover.');
-                valid = false;
+                  'Note: Each package must come from https://github.com/leanprover-community or https://github.com/leanprover.\n' +
+                  requireHint(p.name));
               }
-              if (valid) pinned.push(p);
+              if (!pinsCommit) {
+                packageError('Invalid dependency pin',
+                  `Package \`${p.name}\` pins \`${p.rev}\`, which is not a full commit hash.\n` + updateHint(p.name));
+              }
+              if (tracksAllowedRev && source && pinsCommit) pinned.push({ ...p, owner: source[1], repo: source[2] });
             }
 
             // Check each pin that differs from the manifest at the merge base with master.
@@ -521,34 +549,14 @@ jobs:
             });
             // The compare API lists at most 300 files, so a full list can omit lake-manifest.json.
             const files = comparison.files ?? [];
-            if (files.length >= 300 || files.some(f => f.filename === 'lake-manifest.json')) {
+            const manifestMayDiffer = files.length >= 300 || files.some(f => f.filename === 'lake-manifest.json');
+            if (manifestMayDiffer) {
               const { data: file } = await github.rest.repos.getContent({
                 ...context.repo, path: 'lake-manifest.json', ref: comparison.merge_base_commit.sha,
               });
               const base = new Map(JSON.parse(Buffer.from(file.content, 'base64').toString())
                 .packages.map(p => [p.name, p]));
-              for (const p of pinned) {
-                const old = base.get(p.name);
-                const sameSource = old?.url === p.url && old?.inputRev === p.inputRev;
-                if (sameSource && old.rev === p.rev) continue;
-                const [, owner, repo] = repoUrl.exec(p.url);
-                if (tagRev.test(p.inputRev)) {
-                  const sha = await tagCommit(owner, repo, p.inputRev);
-                  if (sha !== p.rev) {
-                    report(true, 'Dependency pin does not match its tag',
-                      `Package \`${p.name}\` pins \`${p.rev}\`, but tag \`${p.inputRev}\` of ${p.url} ` +
-                      (sha ? `points to \`${sha}\`.\n` : 'does not exist.\n') + hint(p.name));
-                  }
-                } else if (!await contains(owner, repo, p.inputRev, p.rev)) {
-                  report(true, 'Dependency pin is not on its branch',
-                    `Package \`${p.name}\` pins \`${p.rev}\`, which is not on branch \`${p.inputRev}\` of ${p.url}.\n` +
-                    'Note: Bors merges only pins that are on the tracked branch.\n' + hint(p.name));
-                } else if (sameSource && !await contains(owner, repo, p.rev, old.rev)) {
-                  report(true, 'Dependency pin moves backwards',
-                    `Package \`${p.name}\` moves its pin backwards: \`${p.rev}\` does not descend from ` +
-                    `\`${old.rev}\`, the pin at the merge base with master.\n` + hint(p.name));
-                }
-              }
+              for (const p of pinned) await checkPin(p, base.get(p.name));
             }
             if (failed) core.setFailed('lake-manifest.json is not valid.');
 

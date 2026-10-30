@@ -37,6 +37,7 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 The required "Validate manifest" job checks `lake-manifest.json`. Each package must follow these rules:
 - The package tracks `main`, `master` or a version tag `vX.Y.Z` (the `inputRev` field).
 - The package comes from a GitHub repository in `leanprover-community` or `leanprover` (the `url` field).
+- The package pins a full commit hash (the `rev` field).
 
 The job also checks each pin (the `rev` field) that differs from the manifest at the merge base with `master`:
 - A pin that tracks a branch is on that branch.
