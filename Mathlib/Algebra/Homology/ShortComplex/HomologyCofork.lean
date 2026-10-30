@@ -80,7 +80,7 @@ the cokernel of `toCyclesNatTrans C : π₁ ⟶ cyclesFunctor C`. -/
 noncomputable def isColimitHomologyFunctorCofork :
     IsColimit (homologyFunctorCofork C) :=
   evaluationJointlyReflectsColimits _
-    (fun S ↦ (CokernelCofork.isColimitMapCoconeEquiv _ _).2 S.homologyIsCokernel)
+    (fun S ↦ (CokernelCofork.isColimitMapCoconeEquiv _ _).symm S.homologyIsCokernel)
 
 /-- The limit kernel fork expressing `homologyFunctor C : ShortComplex C ⥤ C`
 as the kernel of `fromOpcyclesNatTrans C : opcyclesFunctor C ⟶ π₃`. -/
