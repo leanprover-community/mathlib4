@@ -34,8 +34,7 @@ The category `LightProfinite` is defined using the structure `CompHausLike`. See
 @[expose] public section
 
 /- The basic API for `LightProfinite` is largely copied from the API of `Profinite`;
-where possible, try to keep them in sync. Results that hold in every `CompHausLike` category,
-such as `CompHausLike.isIso_of_bijective`, apply directly and are not restated here. -/
+where possible, try to keep them in sync -/
 
 universe v u
 
