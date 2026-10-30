@@ -322,7 +322,7 @@ lemma isIdempotentElem_equalizerIdempotent : IsIdempotentElem (equalizerIdempote
 variable {f g} in
 lemma equalizerIdempotent_mul_eq_iff {a : A} :
     equalizerIdempotent f g * a = a ↔ ∀ x : S, f x * a = g x * a := by
-  rw [equalizerIdempotent]
+  unfold equalizerIdempotent
   refine ⟨fun h x ↦ ?_, fun h ↦ ?_⟩
   · simpa [mul_assoc, h] using congrArg (productMap f g · * a) (one_tmul_mul_elem x).symm
   · suffices ∀ t, productMap f g t * a = f (lmul' R t) * a by simpa using this (elem R S)
