@@ -193,11 +193,11 @@ noncomputable def denseAtUliftYoneda (P : Cᵒᵖ ⥤ Type max w v) : uliftYoned
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
-    functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
-    `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
-    final.
+functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
+`yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
+final.
 
-    Proposition 2.6.3(ii) in [Kashiwara2006] -/
+Proposition 2.6.3(ii) in [Kashiwara2006] -/
 theorem Presheaf.final_toCostructuredArrow_comp_pre
     {I : Type v} [SmallCategory I] (F : I ⥤ C)
     {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
