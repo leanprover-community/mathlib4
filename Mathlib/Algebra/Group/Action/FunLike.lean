@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.IsApply
 
-/-! # SMul instances for `FunLike` types
+/-! # `SMul` instances for `FunLike` types
 
 In this file we define various instances related to scalar multiplications for `FunLike` types.
 
@@ -37,8 +37,6 @@ protected theorem smulCommClass [SMulCommClass M M' β] : SMulCommClass M M' F w
 
 end SMulInstances
 
-section ModuleInstance
-
 include i in
 protected theorem isCentralScalar [SMul M F] [SMul Mᵐᵒᵖ F] [SMul M β] [SMul Mᵐᵒᵖ β]
     [IsCentralScalar M β] [IsSMulApply M F] [IsSMulApply Mᵐᵒᵖ F] :
@@ -52,7 +50,5 @@ is an `AddAction` if `β` is an `AddAction`. -/]
 protected abbrev mulAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulApply M F] :
     MulAction M F :=
   DFunLike.coe_injective.mulAction _ FunLike.coe_smul
-
-end ModuleInstance
 
 end FunLike
