@@ -34,19 +34,19 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 | [`build.yml`](../.github/workflows/build.yml) | continuous integration<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/build.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml) | High | `push` | On non-fork PRs, this workflow builds, lints and tests Mathlib using the reusable build template (`build_template.yml`). |
 | [`release_cache.yml`](../.github/workflows/release_cache.yml) | publish release cache<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/release_cache.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/release_cache.yml) | High | `push (v4.* tags), workflow_dispatch` | On every `v4.*` release tag, this workflow builds the tagged commit using the reusable build template (`build_template.yml`) and publishes its cache to the `master` container. When the cache is already complete, the build uploads nothing. |
 
-The required "Validate manifest" job checks `lake-manifest.json`. Each package must follow these rules:
+Before it builds, the Build job checks `lake-manifest.json`. Each package must follow these rules:
 - The package tracks `main`, `master` or a version tag `vX.Y.Z` (the `inputRev` field).
 - The package comes from a GitHub repository in `leanprover-community` or `leanprover` (the `url` field).
 - The package pins a full commit hash (the `rev` field).
 
-The job also checks each pin (the `rev` field) that differs from the manifest at the merge base with `master`:
+The Build job also checks each pin that differs from the manifest at the merge base with `master`:
 - A pin that tracks a branch is on that branch.
 - A pin that tracks a tag is the commit of that tag.
 - When the package tracks the same branch as at the merge base, the pin does not move backwards: it is the merge-base pin or a descendant of it.
 
-A broken package rule fails every run.
+A broken package rule fails the Build job before the build starts.
 A broken pin rule gives a warning on ordinary pushes, so a PR can test an unmerged dependency commit.
-On `staging` and `trying`, a broken pin rule fails the job, and Bors does not merge the batch.
+On `staging` and `trying`, a broken pin rule fails the Build job before the build starts, and Bors does not merge the batch.
 There, the merge base is `master`.
 To fix a pin, run `lake update <package>` and commit the manifest.
 
