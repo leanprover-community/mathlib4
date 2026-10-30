@@ -6,12 +6,15 @@ Authors: Joseph Myers, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Torsors of normed space actions.

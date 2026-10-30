@@ -16,8 +16,6 @@ This also includes some miscellaneous results about `minpoly` on matrices.
 public section
 
 
-noncomputable section
-
 open Matrix Module Polynomial
 
 universe u v w

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Sequences
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of the norm on (semi)normed groups
 
@@ -397,10 +400,8 @@ lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>
 
 @[to_additive]
 theorem tendsto_norm_inv_mul_self_nhdsNE (a : E) :
-    Tendsto (fun x => ‖x⁻¹ * a‖) (𝓝[≠] a) (𝓝[>] 0) := by
-  apply (tendsto_norm_inv_mul_self a).inf
-  apply tendsto_principal_principal.2 (fun _x hx => norm_pos_iff'.2 ?_)
-  simpa [inv_mul_eq_one] using hx
+    Tendsto (fun x => ‖x⁻¹ * a‖) (𝓝[≠] a) (𝓝[>] 0) :=
+  (tendsto_norm_inv_mul_self a).inf <| by simp [inv_mul_eq_one]
 
 variable (E)
 

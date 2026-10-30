@@ -8,8 +8,11 @@ module
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
 
-import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 import Mathlib.Analysis.PSeries
+import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Volume of the set of Liouville numbers
@@ -84,7 +87,8 @@ theorem volume_iUnion_setOfPred_liouvilleWith :
   simp only [← ofPred_exists, exists_prop]
   refine measure_mono_null setOfPred_liouvilleWith_subset_aux ?_
   rw [measure_iUnion_null_iff]; intro m; rw [measure_preimage_add_right]; clear m
-  refine (measure_biUnion_null_iff <| to_countable _).2 fun n (hn : 1 ≤ n) => ?_
+  refine (measure_biUnion_null_iff (I := {n : ℕ | 1 ≤ n}) <| to_countable _).2
+    fun n (hn : 1 ≤ n) => ?_
   generalize hr : (2 + 1 / n : ℝ) = r
   replace hr : 2 < r := by simp [← hr, zero_lt_one.trans_le hn]
   clear hn n
@@ -107,7 +111,7 @@ theorem volume_iUnion_setOfPred_liouvilleWith :
         rw [ENNReal.coe_inj]
         simp [add_mul, div_eq_mul_inv, NNReal.rpow_neg, NNReal.rpow_sub' this, mul_add,
           mul_left_comm]
-  refine ne_top_of_le_ne_top (ENNReal.tsum_coe_ne_top_iff_summable.2 ?_) (ENNReal.tsum_le_tsum this)
+  refine ne_top_of_le_ne_top (ENNReal.tsum_coe_ne_top_iff_summable.2 ?_) (tsum_le_tsum this)
   refine (Summable.add ?_ ?_).mul_left _ <;> simp only [NNReal.summable_rpow] <;> linarith
 
 @[deprecated (since := "2026-07-09")]

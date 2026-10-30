@@ -5,9 +5,12 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.GroupWithZero.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pi instances for groups with zero

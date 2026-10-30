@@ -11,8 +11,8 @@ public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.LinearAlgebra.Span.Defs
-public import Mathlib.Order.CompactlyGenerated.Basic
 public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Order.CompactlyGenerated.Basic
 
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Module.Submodule.EqLocus
@@ -460,7 +460,7 @@ lemma biSup_comap_subtype_eq_top {ι : Type*} (s : Set ι) (p : ι → Submodule
   exact le_biSup p hi
 
 theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N →ₛₗ[σ₁₂] M₂}
-    (h : f ≠ 0) (s : Set (Submodule R M)) (hs : sSup s = N):
+    (h : f ≠ 0) (s : Set (Submodule R M)) (hs : sSup s = N) :
     ∃ m, ∃ h : m ∈ s, f ∘ₛₗ inclusion ((le_sSup h).trans_eq hs) ≠ 0 :=
   have ⟨_, ⟨m, hm, rfl⟩, ne⟩ := LinearMap.exists_ne_zero_of_sSup_eq_top h (comap N.subtype '' s) <|
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
@@ -783,7 +783,7 @@ theorem toSpanSingleton_smul {S : Type*} [Monoid S] [DistribMulAction S M]
 
 theorem toSpanSingleton_isIdempotentElem_iff {e : R} :
     IsIdempotentElem (toSpanSingleton R R e) ↔ IsIdempotentElem e := by
-  simp_rw [IsIdempotentElem, LinearMap.ext_iff, Module.End.mul_apply, toSpanSingleton_apply,
+  simp_rw [IsIdempotentElem, LinearMap.ext_iff, mul_apply_eq_comp, toSpanSingleton_apply,
     smul_eq_mul, mul_assoc]
   exact ⟨fun h ↦ by conv_rhs => rw [← one_mul e, ← h, one_mul], fun h _ ↦ by rw [h]⟩
 
@@ -791,7 +791,7 @@ theorem isIdempotentElem_map_one_iff {f : Module.End R R} :
     IsIdempotentElem (f 1) ↔ IsIdempotentElem f := by
   rw [IsIdempotentElem, ← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one, IsIdempotentElem,
     LinearMap.ext_iff]
-  simp_rw [Module.End.mul_apply]
+  simp_rw [mul_apply_eq_comp]
   exact ⟨fun h r ↦ by rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, h], (· 1)⟩
 
 /-- The range of `toSpanSingleton x` is the span of `x`. -/

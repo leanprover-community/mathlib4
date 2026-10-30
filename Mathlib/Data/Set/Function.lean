@@ -911,9 +911,6 @@ theorem image_eq_preimage_of_leftInvOn_injOn {f : α → β} {g : β → α} {s 
     intro y hy
     simpa [hgf hy] using hy
 
-@[deprecated (since := "2026-03-27")]
-alias image_eq_preimage_of_leftInvOn_injOn_mapsTo := image_eq_preimage_of_leftInvOn_injOn
-
 end RightInvOn
 
 /-! ### Two-side inverses -/

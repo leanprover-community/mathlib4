@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
 
 import Mathlib.Data.Fintype.Perm
 

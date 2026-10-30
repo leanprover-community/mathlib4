@@ -8,6 +8,9 @@ module
 public meta import Mathlib.Tactic.Inclusion.Core.DiscrTreeExt
 public meta import Mathlib.Tactic.Inclusion.Core.Types
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Environment extensions for the `inclusion` tactic
 
