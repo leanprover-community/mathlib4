@@ -5,11 +5,14 @@ Authors: Henrik Böving, Simon Hudon
 -/
 module
 
-public import Plausible.Testable
-public meta import Mathlib.Logic.Basic
-public import Mathlib.Tactic.Basic
-public import Plausible.Gen
+public meta import Mathlib.Basic.Logic.Basic
 public meta import Plausible.Testable
+
+import Mathlib.Tactic.Basic
+import Plausible.Gen
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.

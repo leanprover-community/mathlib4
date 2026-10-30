@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Sums.Basic
-public import Mathlib.CategoryTheory.Products.Basic
 
 /-! # Sums and products of discrete categories.
 
@@ -43,6 +42,9 @@ def productEquiv {J K : Type*} : Discrete (J × K) ≌ Discrete J × Discrete K 
   unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The discrete category on a sum is equivalent to the sum of the
 discrete categories. -/
 @[simps!]

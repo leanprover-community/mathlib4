@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Ordered groups
@@ -27,8 +26,6 @@ public section
 `NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
 -/
 assert_not_imported Mathlib.Algebra.NeZero
-
-open Function
 
 universe u
 

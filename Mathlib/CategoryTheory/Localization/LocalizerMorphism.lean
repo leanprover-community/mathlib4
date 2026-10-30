@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Equivalence
 public import Mathlib.CategoryTheory.Localization.Opposite
 
 /-!
@@ -33,7 +32,7 @@ universe v₁ v₂ v₃ v₄ v₄' v₅ v₅' v₆ u₁ u₂ u₃ u₄ u₄' u�
 
 namespace CategoryTheory
 
-open Localization Functor
+open Localization CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {D₁ : Type u₄} {D₂ : Type u₅}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} D₁] [Category.{v₅} D₂]
@@ -64,6 +63,9 @@ def id : LocalizerMorphism W₁ W₁ where
   functor := 𝟭 C₁
   map _ _ _ hf := hf
 
+instance : (id W₁).functor.IsEquivalence :=
+  inferInstanceAs (𝟭 C₁).IsEquivalence
+
 variable {W₁ W₂ W₃}
 
 /-- The composition of two localizers morphisms. -/
@@ -80,6 +82,15 @@ from `Φ : LocalizerMorphism W₁ W₂`. -/
 abbrev op : LocalizerMorphism W₁.op W₂.op where
   functor := Φ.functor.op
   map _ _ _ hf := Φ.map _ hf
+
+/-- The external product of two morphisms of localizers. -/
+@[simps, implicit_reducible]
+def prod {C₁' C₂' : Type*} [Category* C₁'] [Category* C₂']
+    {W₁' : MorphismProperty C₁'} {W₂' : MorphismProperty C₂'}
+    (Φ₁ : LocalizerMorphism W₁ W₂) (Φ₂ : LocalizerMorphism W₁' W₂') :
+    LocalizerMorphism (W₁.prod W₁') (W₂.prod W₂') where
+  functor := Φ₁.functor.prod Φ₂.functor
+  map _ _ f hf := ⟨Φ₁.map f.1 hf.1, Φ₂.map f.2 hf.2⟩
 
 variable (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
@@ -180,7 +191,7 @@ lemma isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L
 
 instance [Φ.IsLocalizedEquivalence] : Φ.op.IsLocalizedEquivalence := by
   let G := Φ.localizedFunctor W₁.Q W₂.Q
-  letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+  let : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
     ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
   have := Φ.isEquivalence W₁.Q W₂.Q G
   exact IsLocalizedEquivalence.mk' Φ.op W₁.Q.op W₂.Q.op G.op
@@ -205,7 +216,7 @@ an equivalence of categories and that `W₁` and `W₂` essentially correspond t
 other via this equivalence, then `Φ` is a localized equivalence. -/
 lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
     (h : W₂ ≤ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
-  haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
+  have : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
     refine Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
       (asEquivalence Φ.functor).symm ?_ (Φ.inverts W₂.Q)
       ((associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
@@ -302,7 +313,7 @@ instance [Φ.IsLocalizedFullyFaithful] : (Φ.localizedFunctor L₁ L₂).Faithfu
 
 instance [Φ.IsLocalizedFullyFaithful] : Φ.op.IsLocalizedFullyFaithful := by
   let G := Φ.localizedFunctor W₁.Q W₂.Q
-  letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+  let : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
     ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
   exact IsLocalizedFullyFaithful.mk' Φ.op W₁.Q.op W₂.Q.op G.op
     (Φ.fullyFaithful W₁.Q W₂.Q G).op
@@ -325,7 +336,7 @@ lemma isLocalization_of_isLocalizedFullyFaithful
       (Arrow.isoOfNatIso iso f)).1 (Localization.inverts L₂ W₂ _ (Φ.map _ hf))
   let G := Localization.lift L₁ h W₁.Q
   let e : W₁.Q ⋙ G ≅ L₁ := Localization.fac L₁ h W₁.Q
-  letI : CatCommSq Φ.functor W₁.Q L₂ (G ⋙ F) :=
+  let : CatCommSq Φ.functor W₁.Q L₂ (G ⋙ F) :=
     ⟨iso ≪≫ isoWhiskerRight e.symm _ ≪≫ associator _ _ _⟩
   have hG : G.FullyFaithful := Functor.FullyFaithful.ofCompFaithful
     (Φ.fullyFaithful W₁.Q L₂ (G ⋙ F))
@@ -381,7 +392,6 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_counitIso_hom_app
   Functor.asEquivalence_counitIso_inv_app in
 /-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
@@ -413,7 +423,6 @@ instance : Φ.inv.IsInduced where
       (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
         (Φ.functor.asEquivalence.counitIso.app _))
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isLocalizedEquivalence_of_isInduced :
     Φ.IsLocalizedEquivalence := by
   refine IsLocalizedEquivalence.of_equivalence _ (fun X Y f hf ↦ ?_)

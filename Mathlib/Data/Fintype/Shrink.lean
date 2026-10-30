@@ -5,8 +5,11 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Countable.Small
+public import Mathlib.Basic.Countable.Small
 public import Mathlib.Data.Fintype.EquivFin
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Fintype instance for `Shrink`

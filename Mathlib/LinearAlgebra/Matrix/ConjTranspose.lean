@@ -26,13 +26,20 @@ The scope `Matrix` gives the following notation:
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
-variable {R : Type*} {S : Type*} {α : Type v} {β : Type w} {γ : Type*}
+variable {l m n o : Type*}
+variable {R : Type*} {α : Type v} {β : Type w}
 
 namespace Matrix
 
 
-/-- The conjugate transpose of a matrix defined in term of `star`. -/
+/-- The conjugate transpose of a matrix defined in term of `star`.
+
+This is available in bundled forms as:
+* `Matrix.conjTransposeAddEquiv`
+* `Matrix.conjTransposeLinearEquiv`
+* `Matrix.conjTransposeRingEquiv`
+* `Matrix.conjTransposeAlgEquiv`
+-/
 def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
   M.transpose.map star
 
@@ -149,6 +156,10 @@ theorem conjTranspose_transpose [Star α] (M : Matrix m n α) :
 
 theorem transpose_conjTranspose [Star α] (M : Matrix m n α) :
     Mᵀᴴ = M.map star :=
+  rfl
+
+theorem conjTranspose_transpose_eq_transpose_conjTranspose [Star α] (M : Matrix m n α) :
+    Mᵀᴴ = Mᴴᵀ :=
   rfl
 
 theorem conjTranspose_injective [InvolutiveStar α] :
@@ -337,7 +348,7 @@ theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ 
 @[simp]
 theorem conjTranspose_mul [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] (M : Matrix m n α)
     (N : Matrix n l α) : (M * N)ᴴ = Nᴴ * Mᴴ :=
-  Matrix.ext <| by simp [mul_apply]
+  Matrix.ext <| by simp [Matrix.mul_apply]
 
 @[simp]
 theorem conjTranspose_neg [AddGroup α] [StarAddMonoid α] (M : Matrix m n α) : (-M)ᴴ = -Mᴴ :=

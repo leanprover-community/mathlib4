@@ -29,7 +29,7 @@ public section
 
 variable {α β : Type*} {x y : α} {e : β} {G H : Graph α β} {F F₀ : Set β} {X : Set α}
 
-open Set Function
+open Set
 
 namespace Graph
 
@@ -189,7 +189,7 @@ lemma deleteVerts_isLink (G : Graph α β) (X : Set α) :
 @[simp]
 lemma edgeSet_deleteVerts (G : Graph α β) (X : Set α) :
     E(G.deleteVerts X) = {e | ∃ x y, G.IsLink e x y ∧ x ∉ X ∧ y ∉ X} := by
-  simp [edgeSet_eq_setOf_exists_isLink]
+  simp [edgeSet_eq_setOfPred_exists_isLink]
 
 @[simp, grind =]
 lemma deleteVerts_empty (G : Graph α β) : G.deleteVerts (∅ : Set α) = G := by

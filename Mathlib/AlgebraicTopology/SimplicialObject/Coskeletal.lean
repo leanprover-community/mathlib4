@@ -6,8 +6,6 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Coskeletal simplicial objects
@@ -82,7 +80,6 @@ instance [X.IsCoskeletal n] : IsIso ((coskAdj n).unit.app X) := by
   rw [← isCoskeletal_iff_isIso]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `X ≅ (cosk n).obj X` defined when `X` is coskeletal and the
 `n`-coskeleton functor exists. -/
 @[simps! hom]

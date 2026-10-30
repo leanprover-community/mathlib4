@@ -5,10 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 module
 
-public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bases for the product of modules
@@ -22,9 +24,9 @@ noncomputable section
 
 universe u
 
-open Function Set Submodule Finsupp
+open Function Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 

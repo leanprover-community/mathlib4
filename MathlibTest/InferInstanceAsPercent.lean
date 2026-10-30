@@ -3,7 +3,9 @@ Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Tests for `inferInstanceAs%`
@@ -12,6 +14,8 @@ Demonstrates that `inferInstanceAs%` fixes type leakage in synthesized instances
 when defining a typeclass instance for a type alias, the lambda binder domains
 use the alias type (not an internal unfolding).
 -/
+
+@[expose] public section
 
 set_option pp.funBinderTypes true
 
@@ -24,7 +28,7 @@ instance : MyInv Nat where
 def MyNat : Type := Nat
 
 -- `inferInstanceAs` leaks the source type `Nat` as the carrier
-@[implicit_reducible]
+@[instance_reducible]
 def myNatInv_leaky : MyInv MyNat :=
   inferInstanceAs (MyInv Nat)
 
@@ -34,7 +38,7 @@ instance myNatInv_fixed : MyInv MyNat :=
 
 -- The binder type is `MyNat`:
 /--
-info: @[implicit_reducible] def myNatInv_fixed : MyInv MyNat :=
+info: @[instance_reducible, expose] def myNatInv_fixed : MyInv MyNat :=
 { myInv := fun (a : MyNat) => (Nat.add a 0).succ }
 -/
 #guard_msgs in
@@ -75,7 +79,7 @@ instance : TestField Nat where
 def TestNat := Nat
 
 -- Direct instance: all lambda domains correctly use TestNat
-@[implicit_reducible]
+@[instance_reducible]
 def testField_direct : TestField TestNat where
   inv n := n
   mul := Nat.mul
@@ -83,11 +87,11 @@ def testField_direct : TestField TestNat where
   neg n := n
 
 -- Leaky: internal lambda domains use Nat instead of TestNat
-@[implicit_reducible]
+@[instance_reducible]
 def testField_leaky : TestField TestNat := inferInstanceAs (TestField Nat)
 
 -- Fixed: inferInstanceAs% patches lambda domains to use TestNat
-@[implicit_reducible]
+@[instance_reducible]
 def testField_fixed : TestField TestNat := inferInstanceAs% (TestField Nat)
 
 -- All three are defeq at default transparency (Nat = TestNat at this level).

@@ -6,9 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.Coverage
-public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # The site induced by a morphism property
@@ -45,6 +43,11 @@ def precoverage (P : MorphismProperty C) : Precoverage C where
 lemma ofArrows_mem_precoverage {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} :
     .ofArrows Y f ∈ precoverage P X ↔ ∀ i, P (f i) :=
   ⟨fun h i ↦ h ⟨i⟩, fun h _ g ⟨i⟩ ↦ h i⟩
+
+@[simp, grind =]
+lemma singleton_mem_precoverage {X Y : C} (f : X ⟶ Y) :
+    .singleton f ∈ precoverage P Y ↔ P f := by
+  simp [← Presieve.ofArrows_pUnit.{0}]
 
 instance [P.ContainsIdentities] [P.RespectsIso] : P.precoverage.HasIsos where
   mem_coverings_of_isIso f _ _ _ := fun ⟨⟩ ↦ P.of_isIso f
@@ -145,4 +148,56 @@ end
 
 end HasPullbacks
 
-end CategoryTheory.MorphismProperty
+end MorphismProperty
+
+/-- The weakest morphism property satisfied by all morphisms in covering families. -/
+def Precoverage.morphismProperty (K : Precoverage C) : MorphismProperty C :=
+  fun _ Y f ↦ ∃ R ∈ K Y, R f
+
+@[simp]
+lemma MorphismProperty.morphismProperty_precoverage (P : MorphismProperty C) :
+    P.precoverage.morphismProperty = P := by
+  ext X Y f
+  exact ⟨fun ⟨R, hR, hf⟩ ↦ hR hf, fun hf ↦ ⟨.singleton f, by simpa⟩⟩
+
+namespace Precoverage
+
+variable {K L : Precoverage C} {P : MorphismProperty C}
+
+lemma morphismProperty_le_iff_le_precoverage :
+    K.morphismProperty ≤ P ↔ K ≤ P.precoverage :=
+  ⟨fun hle _ R hR _ _ hf ↦ hle _ ⟨R, hR, hf⟩, fun hle _ _ _ ⟨_, hR, hf⟩ ↦ hle _ hR hf⟩
+
+lemma galoisConnection_morphismProperty_precoverage :
+    GaloisConnection (Precoverage.morphismProperty (C := C)) MorphismProperty.precoverage :=
+  @Precoverage.morphismProperty_le_iff_le_precoverage _ _
+
+lemma monotone_morphismProperty : Monotone (Precoverage.morphismProperty (C := C)) :=
+  Precoverage.galoisConnection_morphismProperty_precoverage.monotone_l
+
+lemma le_precoverage_morphismProperty : K ≤ K.morphismProperty.precoverage :=
+  galoisConnection_morphismProperty_precoverage.le_u_l _
+
+@[simp]
+lemma morphismProperty_bot : (⊥ : Precoverage C).morphismProperty = ⊥ :=
+  Precoverage.galoisConnection_morphismProperty_precoverage.l_bot
+
+@[simp]
+lemma morphismProperty_sup : (K ⊔ L).morphismProperty = K.morphismProperty ⊔ L.morphismProperty :=
+  Precoverage.galoisConnection_morphismProperty_precoverage.l_sup
+
+instance [K.HasIsos] : K.morphismProperty.ContainsIdentities where
+  id_mem X := ⟨.singleton (𝟙 X), K.mem_coverings_of_isIso _, by simp⟩
+
+@[simp, grind .]
+lemma ZeroHypercover.morphismProperty {X : C} {E : ZeroHypercover.{w} K X} (i : E.I₀) :
+    K.morphismProperty (E.f i) :=
+  ⟨_, E.mem₀, ⟨i⟩⟩
+
+end Precoverage
+
+@[simp]
+lemma MorphismProperty.precoverage_top : (⊤ : MorphismProperty C).precoverage = ⊤ :=
+  Precoverage.galoisConnection_morphismProperty_precoverage.u_top
+
+end CategoryTheory

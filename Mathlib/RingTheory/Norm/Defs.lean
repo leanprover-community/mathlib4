@@ -48,7 +48,7 @@ open Module
 
 open LinearMap
 
-open Matrix Polynomial
+open Matrix
 
 open scoped Matrix
 
@@ -69,7 +69,7 @@ theorem norm_self : Algebra.norm R = MonoidHom.id R := by
   simp [norm_apply]
 
 theorem norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) (x : S) :
-    norm R x = 1 := by rw [norm_apply, LinearMap.det]; split_ifs <;> trivial
+    norm R x = 1 := by rw [norm_apply, LinearMap.det_def]; split_ifs <;> trivial
 
 variable {R}
 
@@ -86,7 +86,7 @@ theorem norm_eq_matrix_det [Fintype ι] [DecidableEq ι] (b : Basis ι R S) (s :
 /-- If `x` is in the base ring `K`, then the norm is `x ^ [L : K]`. -/
 theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
     norm R (algebraMap R S x) = x ^ Fintype.card ι := by
-  haveI := Classical.decEq ι
+  have := Classical.decEq ι
   rw [norm_apply, ← det_toMatrix b, lmul_algebraMap]
   simp
 

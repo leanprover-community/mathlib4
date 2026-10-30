@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.Topology.Homotopy.TopCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological Pairs
 
@@ -51,7 +54,7 @@ abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPai
   MorphismProperty.Arrow.mk (P := TopCat.isEmbedding) f h
 
 /-- Constructor for a topological pair (X, A) where A ⊆ X. -/
-abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := (TopCat.of A))
+abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := ↧A)
   (X := X) (TopCat.ofHom { toFun := Subtype.val }) Topology.IsEmbedding.subtypeVal
 
 /-- Constructs the topological pair `(X, ∅)` from `X : TopCat`. -/
@@ -59,7 +62,8 @@ abbrev ofTopCat (X : TopCat.{u}) : TopPair.{u} :=
   TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
 
 /-- Construct a morphism in `TopPair` from its components. -/
-abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=
+abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :
+    X ⟶ Y :=
   MorphismProperty.Arrow.homMk g f w
 
 variable {X Y Z : TopPair.{u}}
@@ -79,27 +83,31 @@ attribute [local simp] Hom.w_apply
 
 /-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
-abbrev proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
+@[implicit_reducible, simps!]
+def proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
 
 /-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
-abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
+@[implicit_reducible, simps!]
+def proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
-@[simps]
+@[implicit_reducible, simps]
 def incl : TopCat.{u} ⥤ TopPair.{u} where
   obj X := ofTopCat X
   map f := TopPair.ofHom f (𝟙 _) <| by ext x; induction x
 
 /-- The functor from topological spaces to topological pairs that sends a space X to the identity
 morphism on X. -/
-abbrev diag : TopCat.{u} ⥤ TopPair.{u} where
+@[implicit_reducible]
+def diag : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion functor is left adjoint to the projection to the first component. -/
 @[simps]
@@ -130,6 +138,9 @@ structure Homotopy (f g : X ⟶ Y) where
   /-- The proof that the homotopies fit into a commutative square with the maps of the pairs. -/
   w : X.map ▷ _ ≫ fst.h = snd.h ≫ Y.map := by cat_disch
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 attribute [reassoc, elementwise] Homotopy.w
 attribute [local simp] Homotopy.w Homotopy.w_apply
 
@@ -152,6 +163,7 @@ def refl (f : X ⟶ Y) : Homotopy f f where
 instance : Inhabited (Homotopy (𝟙 X) (𝟙 X)) :=
   ⟨Homotopy.refl _⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a `Homotopy f₀ f₁`, we can define a `Homotopy f₁ f₀` by `TopCat.Homotopy.symm` on
 the first and second components.
 -/
@@ -168,6 +180,7 @@ theorem symm_bijective {f₀ f₁ : X ⟶ Y} :
     Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by
 `TopCat.Homotopy.trans` on the first and second components.
@@ -184,7 +197,7 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G :
 
 theorem symm_trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
-      ext : 1 <;> exact ContinuousMap.Homotopy.symm_trans _ _
+  ext : 1 <;> exact ContinuousMap.Homotopy.symm_trans _ _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If we have a `Homotopy g₀ g₁` and a `Homotopy f₀ f₁`, we can define a
@@ -208,5 +221,15 @@ theorem equivalence : Equivalence (Homotopic (X := X) (Y := Y)) :=
   ⟨fun f ↦ ⟨Homotopy.refl f⟩, fun h ↦ h.map Homotopy.symm, fun h₀ h₁ ↦ h₀.map2 Homotopy.trans h₁⟩
 
 end Homotopic
+
+/-- A morphism `g : (V, C) ⟶ (X, A)` in `TopPair` is excisive if it is an embedding,
+`g(C) = g(V) ∩ C`, and `cl(g(V)ᶜ) ⊆ int(A)`. -/
+class IsExcisive ⦃V X : TopPair.{u}⦄ (g : V ⟶ X) : Prop where
+  isEmbedding_fst : Topology.IsEmbedding (Hom.fst g)
+  range_fst_map : Set.range (Hom.fst g ∘ V.map) = Set.range (Hom.fst g) ∩ Set.range X.map
+  closure_range_fst_compl : closure (Set.range (Hom.fst g))ᶜ ⊆ interior (Set.range X.map)
+
+/-- A `MorphismProperty` for `IsExcisive`. -/
+abbrev isExcisive : MorphismProperty TopPair.{u} := IsExcisive
 
 end TopPair

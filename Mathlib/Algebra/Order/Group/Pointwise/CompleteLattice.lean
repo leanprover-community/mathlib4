@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infima/suprema in ordered monoids and groups
 
@@ -21,7 +24,7 @@ In this file we prove a few facts like “The infimum of `-s` is `-` the supremu
 
 public section
 
-open Function Set
+open Set
 open scoped Pointwise
 
 variable {M : Type*}

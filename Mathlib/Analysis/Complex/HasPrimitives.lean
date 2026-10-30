@@ -6,7 +6,8 @@ Authors: Ian Jauslin, Alex Kontorovich, Oliver Nash
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.Analysis.Complex.Convex
+
+import Mathlib.Analysis.Complex.Convex
 
 /-!
 # Primitives of Holomorphic Functions
@@ -33,8 +34,9 @@ TODO: Extend to holomorphic functions on simply connected domains.
 
 noncomputable section
 
-open Complex MeasureTheory Metric Set Topology
-open scoped Interval
+open Complex MeasureTheory Metric Set
+
+open scoped Topology Interval
 
 namespace Complex
 
@@ -70,12 +72,12 @@ private lemma mem_closedBall_aux (z_in_ball : z ∈ closedBall c r) (y_in_I : y 
 
 private lemma mem_ball_of_map_re_aux {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
     (ha₂ : a₂ + b * I ∈ ball c r) : (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] ⊆ ball c r := by
-  convert! Convex.rectangle_subset (convex_ball c r) ha₁ ha₂ ?_ ?_ using 1 <;>
+  convert Convex.rectangle_subset (convex_ball c r) ha₁ ha₂ ?_ ?_ <;>
   simp [horizontalSegment_eq a₁ a₂ b, ha₁, ha₂, Rectangle]
 
 private lemma mem_ball_of_map_im_aux₁ {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
     (hb₂ : a + b₂ * I ∈ ball c r) : (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] ⊆ ball c r := by
-  convert! Convex.rectangle_subset (convex_ball c r) hb₁ hb₂ ?_ ?_ using 1 <;>
+  convert Convex.rectangle_subset (convex_ball c r) hb₁ hb₂ ?_ ?_ <;>
   simp [verticalSegment_eq a b₁ b₂, hb₁, hb₂, Rectangle]
 
 private lemma mem_ball_of_map_im_aux₂ {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
@@ -232,7 +234,7 @@ private lemma hasDerivAt_wedgeIntegral_im_aux :
   have : (fun w ↦ f w - f z) =o[𝓝 z] fun _ ↦ (1 : ℝ) := by
     rw [Asymptotics.isLittleO_one_iff, tendsto_sub_nhds_zero_iff]
     exact f_cont.continuousAt <| _root_.mem_nhds_iff.mpr ⟨ball c r, le_refl _, isOpen_ball, hz⟩
-  rw [Asymptotics.IsLittleO] at this ⊢
+  rw [Asymptotics.isLittleO_iff_forall_isBigOWith] at this ⊢
   intro ε ε_pos
   replace := this ε_pos
   simp only [Asymptotics.isBigOWith_iff, norm_one, mul_one] at this ⊢

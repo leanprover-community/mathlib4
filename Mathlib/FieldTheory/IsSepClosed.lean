@@ -65,9 +65,6 @@ see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 class IsSepClosed : Prop where
   splits_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
-@[deprecated (since := "2025-12-09")]
-alias IsSepClosed.factors_of_separable := IsSepClosed.splits_of_separable
-
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
   ⟨fun p _ ↦ IsAlgClosed.splits p⟩
@@ -142,18 +139,18 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)
     use z
     simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
 
-theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z, x = z * z := by
+theorem isSquare [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : IsSquare x := by
   rcases exists_pow_nat_eq x 2 with ⟨z, rfl⟩
   exact ⟨z, sq z⟩
 
+@[deprecated (since := "2026-09-28")] alias exists_eq_mul_self := isSquare
+
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
-  rcases le_or_gt (degree p) 0 with hd | hd
-  · exact eq_C_of_degree_le_zero hd
-  · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep
-    rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
-    simp at hz
+  refine ⟨fun h => eq_C_of_degree_le_zero ?_, fun hp => by rw [hp, roots_C]⟩
+  contrapose! h
+  rw [roots_ne_zero_iff_exists_isRoot (ne_zero_of_degree_gt h)]
+  exact IsSepClosed.exists_root p h.ne' hsep
 
 theorem exists_eval₂_eq_zero_of_injective {k : Type*} [CommSemiring k] [IsSepClosed K] (f : k →+* K)
     (hf : Function.Injective f) (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
@@ -221,7 +218,7 @@ which is separable, then `L` is equal to `k`. A corollary of `IsSepClosed.algebr
 theorem IntermediateField.eq_bot_of_isSepClosed_of_isSeparable [IsSepClosed k] [Algebra k K]
     (L : IntermediateField k K) [Algebra.IsSeparable k L] : L = ⊥ := bot_unique fun x hx ↦ by
   obtain ⟨y, hy⟩ := IsSepClosed.algebraMap_surjective k L ⟨x, hx⟩
-  exact ⟨y, congr_arg (algebraMap L K) hy⟩
+  exact ⟨y, congr(algebraMap L K $hy)⟩
 
 variable (k) (K)
 
@@ -279,18 +276,21 @@ namespace IsSepClosed
 variable {K : Type u} (L : Type v) {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsSepClosed M]
 
-theorem surjective_restrictDomain_of_isSeparable {E : Type*}
+theorem surjective_domRestrict_of_isSeparable {E : Type*}
     [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsSeparable L E] :
-    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
+    Function.Surjective fun φ : E →ₐ[K] M ↦ φ.domRestrict L :=
   fun f ↦ IntermediateField.exists_algHom_of_splits' (E := E) f
     fun s ↦ ⟨Algebra.IsSeparable.isIntegral L s,
       IsSepClosed.splits_codomain _ <| Algebra.IsSeparable.isSeparable L s⟩
+
+@[deprecated (since := "2026-07-19")]
+alias surjective_restrictDomain_of_isSeparable := surjective_domRestrict_of_isSeparable
 
 variable [Algebra.IsSeparable K L] {L}
 
 /-- A (random) homomorphism from a separable extension L of K into a separably
   closed extension M of K. -/
-noncomputable irreducible_def lift : L →ₐ[K] M :=
+@[no_expose] noncomputable def lift : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
     (fun x _ ↦ ⟨Algebra.IsSeparable.isIntegral K x,
       splits_codomain _ (Algebra.IsSeparable.isSeparable K x)⟩)
@@ -311,3 +311,43 @@ noncomputable def equiv : L ≃ₐ[K] M :=
     (IsSepClosed.lift : L →ₐ[K] M) (IsSepClosed.lift : M →ₐ[K] L)).1
 
 end IsSepClosure
+
+section separableClosure
+
+variable (F E : Type*) [Field F] [Field E] [Algebra F E]
+
+/-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
+normal and separable) over `F`. -/
+@[stacks 0EXK]
+instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
+  to_isSeparable := separableClosure.isSeparable F E
+  to_normal := by
+    rw [← separableClosure.normalClosure_eq_self]
+    exact normalClosure.normal F _ E
+
+/-- If `E / F` is a field extension and `E` is separably closed, then the separable closure
+of `F` in `E` is equal to `F` if and only if `F` is separably closed. -/
+theorem IsSepClosed.separableClosure_eq_bot_iff [IsSepClosed E] :
+    separableClosure F E = ⊥ ↔ IsSepClosed F := by
+  refine ⟨fun h ↦ IsSepClosed.of_exists_root _ fun p _ hirr hsep ↦ ?_,
+    fun _ ↦ IntermediateField.eq_bot_of_isSepClosed_of_isSeparable _⟩
+  obtain ⟨x, hx⟩ := IsSepClosed.exists_aeval_eq_zero E p (degree_pos_of_irreducible hirr).ne' hsep
+  obtain ⟨x, rfl⟩ := h ▸ mem_separableClosure_iff.2 (hsep.of_dvd <| minpoly.dvd _ x hx)
+  exact ⟨x, by simpa [Algebra.ofId_apply] using hx⟩
+
+/-- If `E` is separably closed, then the separable closure of `F` in `E` is an absolute
+separable closure of `F`. -/
+instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) :=
+  ⟨(IsSepClosed.separableClosure_eq_bot_iff _ E).mp (separableClosure.separableClosure_eq_bot F E),
+    isSeparable F E⟩
+
+/-- The absolute separable closure is defined to be the relative separable closure inside the
+algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
+`separableClosure.isSepClosure`, and it is Galois (`IsGalois`) by `separableClosure.isGalois`
+or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSepClosed.lift`). -/
+abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
+
+instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
+  (inferInstance : IsSepClosure F (SeparableClosure F)).sep_closed
+
+end separableClosure

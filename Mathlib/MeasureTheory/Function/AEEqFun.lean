@@ -77,7 +77,9 @@ assert_not_exists InnerProductSpace
 
 noncomputable section
 
-open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
+open Set Filter TopologicalSpace ENNReal MeasureTheory Function
+
+open scoped Topology
 
 variable {α β γ δ : Type*} [MeasurableSpace α] {μ ν : Measure α}
 
@@ -90,7 +92,7 @@ variable (β)
 
 /-- The equivalence relation of being almost everywhere equal for almost everywhere strongly
 measurable functions. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Measure.aeEqSetoid (μ : Measure α) : Setoid { f : α → β // AEStronglyMeasurable f μ } :=
   ⟨fun f g => (f : α → β) =ᵐ[μ] g, fun {f} => ae_eq_refl f.val, fun {_ _} => ae_eq_symm,
     fun {_ _ _} => ae_eq_trans⟩
@@ -208,8 +210,6 @@ end
 section compQuasiMeasurePreserving
 
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β}
-
-open MeasureTheory.Measure (QuasiMeasurePreserving)
 
 /-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
@@ -352,7 +352,7 @@ theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : 
 
 theorem comp_compQuasiMeasurePreserving
     {β : Type*} [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
-    (f : β →ₘ[ν] γ) {φ : α → β} (hφ : Measure.QuasiMeasurePreserving φ μ ν) :
+    (f : β →ₘ[ν] γ) {φ : α → β} (hφ : QuasiMeasurePreserving φ μ ν) :
     (comp g hg f).compQuasiMeasurePreserving φ hφ =
       comp g hg (f.compQuasiMeasurePreserving φ hφ) := by
   rcases f; rfl
@@ -494,7 +494,7 @@ theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae �
 
 @[simp]
 theorem compQuasiMeasurePreserving_toGerm {β : Type*} [MeasurableSpace β] {f : α → β} {ν}
-    (g : β →ₘ[ν] γ) (hf : Measure.QuasiMeasurePreserving f μ ν) :
+    (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν) :
     (g.compQuasiMeasurePreserving f hf).toGerm = g.toGerm.compTendsto f hf.tendsto_ae := by
   rcases g; rfl
 
@@ -515,10 +515,12 @@ theorem compMeasurable_toGerm [MeasurableSpace β] [BorelSpace β] [PseudoMetriz
     (compMeasurable g hg f).toGerm = f.toGerm.map g :=
   induction_on f fun f _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp₂_toGerm (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
     (f₂ : α →ₘ[μ] γ) : (comp₂ g hg f₁ f₂).toGerm = f₁.toGerm.map₂ g f₂.toGerm :=
   induction_on₂ f₁ f₂ fun f₁ _ f₂ _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp₂Measurable_toGerm [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
     [PseudoMetrizableSpace γ] [SecondCountableTopologyEither β γ]
     [MeasurableSpace γ] [BorelSpace γ] [PseudoMetrizableSpace δ] [SecondCountableTopology δ]
@@ -647,6 +649,7 @@ def const (b : β) : α →ₘ[μ] β :=
 theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function.const α b :=
   coeFn_mk _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the measure is nonzero, we can strengthen `coeFn_const` to get an equality. -/
 @[simp]
 theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by

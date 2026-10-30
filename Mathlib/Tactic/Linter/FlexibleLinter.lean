@@ -6,11 +6,13 @@ Authors: Damiano Testa
 module
 
 public meta import Lean.Elab.Command
+public meta import Lean.Elab.InfoTree.Util
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Meta.Tactic.TryThis
-public meta import Lean.Server.InfoUtils
+public meta import Lean.Parser.Term
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Parser.Term
 
 /-!
 # The "flexible" linter
@@ -116,8 +118,16 @@ The prototypical non-flexible tactic `rw`.
 `simp only` is also non-flexible. -/
 --  TODO: adding more entries here, allows to consider more tactics to be flexible
 def flexible? : Syntax → Bool
-  | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
-  | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
+  | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _]
+  | .node _ ``Lean.Parser.Tactic.simpAutoUnfold #[_, _, _, only?, _, _]
+  | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _]
+  | .node _ ``Lean.Parser.Tactic.simpAllAutoUnfold #[_, _, _, only?, _] =>
+    only?[0].getAtomVal != "only"
+  | .node _ ``Lean.Parser.Tactic.simpTrace #[_, _, rest]
+  | .node _ ``Lean.Parser.Tactic.simpAllTrace #[_, _, rest]
+  | .node _ ``Lean.Parser.Tactic.tacticSimp?!_ #[_, rest]
+  | .node _ ``Lean.Parser.Tactic.tacticSimp_all?!_ #[_, rest] =>
+    rest[2][0].getAtomVal != "only"
   | _ => false
 
 end Mathlib.Linter
@@ -211,6 +221,9 @@ The function is used to extract "location" information about `stx`: either expli
 Whether or not what this function extracts really is a location will be determined by the linter
 using data embedded in the `InfoTree`s. -/
 partial def toStained : Syntax → Std.HashSet Stained
+  -- A declaration's name introduces a local, rather than referring to an existing one.
+  | .node _ ``Lean.Parser.Term.letIdDecl arg =>
+    ((arg.extract 1 arg.size).map toStained).foldl (.union) {}
   | .node _ _ arg => (arg.map toStained).foldl (.union) {}
   | .ident _ _ val _ => {.name val}
   | .atom _ val => match val with
@@ -477,8 +490,9 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     let mvs0 := td.goalsTargetedBy
     let mvs1 := td.goalsCreatedBy
     let skind := s.getKind
-    if stoppers.contains skind then continue
     let shouldStain? := flexible? s && mvs1.length == mvs0.length
+    if !shouldStain? && stains.isEmpty then continue
+    if stoppers.contains skind then continue
     for d in getStained! s do
       if shouldStain? then
         for currMVar1 in mvs1 do
@@ -520,14 +534,38 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     let suggestion? ← liftCoreM <| generateSimpSuggestion stainData stainStx
     -- Emit warning and suggestion
     let msg := match stainStx.getKind with
-      | ``Lean.Parser.Tactic.simp =>
-        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+      | ``Lean.Parser.Tactic.simp => match d with
+        | .wildcard => m!"`{stainStr}` is a flexible tactic that potentially modifies all \
+          hypotheses and the current goal with a wildcard `*`. \
+          Try `simp?` and use the suggested `simp only [...]`. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+        | _ => m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
           Try `simp?` and use the suggested `simp only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
       | ``Lean.Parser.Tactic.simpAll =>
         m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
           Try `simp_all?` and use the suggested `simp_all only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
+      | ``Lean.Parser.Tactic.simpAutoUnfold =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `simp?!` and use the suggested `simp! only [...]`. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | ``Lean.Parser.Tactic.simpAllAutoUnfold =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `simp_all?!` and use the suggested `simp_all! only [...]`. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | ``Lean.Parser.Tactic.simpTrace =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Use the suggested `simp only [...]` string."
+      | ``Lean.Parser.Tactic.simpAllTrace =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Use the suggested `simp_all only [...]` string."
+      | ``Lean.Parser.Tactic.tacticSimp?!_ =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Use the suggested `simp! only [...]` string."
+      | ``Lean.Parser.Tactic.tacticSimp_all?!_ =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Use the suggested `simp_all! only [...]` string."
       | `Aesop.Frontend.Parser.aesopTactic =>
         m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
           Try `aesop?` and use the suggested proof."
@@ -537,7 +575,18 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
     if let some suggStx := suggestion? then
       liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stainStx
         { suggestion := .tsyntax (kind := `tactic) ⟨suggStx⟩ } (origSpan? := stainStx)
-    logInfoAt s m!"`{s}` uses `{d}`!"
+    let fm ← getFileMap
+    let stainLine? := stainStx.getPos?.map (Position.line ∘ fm.toPosition)
+    let lineStr := if let some line := stainLine? then s!" on line {line}" else ""
+    let atomStr := match stainStx[0] with
+      | .atom _ val => "the flexible tactic " ++ m!"`{val}`"
+      | _ => "a flexible tactic"
+    logInfoAt s <| match d with
+    | .name _ => m!"`{.group s}`\nuses `{d}`, which was modified by {atomStr}{lineStr}!"
+    | .goal =>
+      m!"`{.group s}`\nmodifies the current goal, which was modified by {atomStr}{lineStr}!"
+    | .wildcard => m!"`{.group s}`\nuses a rigid tactic. Previously, {atomStr}, which \
+        potentially modified all hypotheses and the goal with a wildcard `*`, was used{lineStr}."
 
 initialize addLinter flexibleLinter
 

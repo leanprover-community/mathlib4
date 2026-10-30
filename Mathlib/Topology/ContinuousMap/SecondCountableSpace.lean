@@ -41,8 +41,10 @@ theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
     obtain ⟨t, htT, htf, hTU, hKT⟩ : ∃ t ⊆ T, t.Finite ∧ (∀ V ∈ t, V ⊆ U) ∧ f '' K ⊆ ⋃₀ t := by
       rw [hT.open_eq_sUnion' hU, mapsTo_iff_image_subset, sUnion_eq_biUnion] at hfKU
       obtain ⟨t, ht, hfin, htK⟩ :=
-        (hK.image (map_continuous f)).elim_finite_subcover_image (fun V hV ↦ hT.isOpen hV.1) hfKU
-      refine ⟨t, fun _ h ↦ (ht h).1, hfin, fun _ h ↦ (ht h).2, ?_⟩
+        (hK.image (map_continuous f)).elim_finite_subcover_image
+          (b := {V | V ∈ T ∧ V ⊆ U}) (fun V hV ↦ hT.isOpen hV.1) hfKU
+      replace ht : ∀ V ∈ t, V ∈ T ∧ V ⊆ U := ht
+      refine ⟨t, fun _ h ↦ (ht _ h).1, hfin, fun _ h ↦ (ht _ h).2, ?_⟩
       rwa [sUnion_eq_biUnion]
     rw [image_subset_iff] at hKT
     obtain ⟨s, hsS, hsf, hKs, hst⟩ : ∃ s ⊆ S, s.Finite ∧ K ⊆ ⋃₀ s ∧ MapsTo f (⋃₀ s) (⋃₀ t) := by
@@ -58,7 +60,7 @@ theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
       rw [mapsTo_sUnion, forall_mem_image]
       exact fun x hx ↦ hLt x <| hsK x hx
     have hsub : (⋂ L ∈ s, {g : C(X, Y) | MapsTo g L (⋃₀ t)}) ⊆ {g | MapsTo g K U} := by
-      simp only [← setOf_forall, ← mapsTo_iUnion, ← sUnion_eq_biUnion]
+      simp only [← ofPred_forall, ← mapsTo_iUnion, ← sUnion_eq_biUnion]
       exact fun g hg ↦ hg.mono hKs (sUnion_subset hTU)
     refine mem_of_superset ((biInter_mem hsf).2 fun L hL ↦ ?_) hsub
     refine mem_iInf_of_mem _ <| mem_iInf_of_mem ?_ <| mem_principal_self _
@@ -76,7 +78,7 @@ theorem secondCountableTopology [SecondCountableTopology Y]
   is_open_generated_countable := by
     rcases hX with ⟨S, hScount, hScomp, hS⟩
     refine ⟨_, ?_, compactOpen_eq_generateFrom (S := S) hScomp (isBasis_countableBasis _) ?_⟩
-    · exact .image2 hScount (countable_setOf_finite_subset (countable_countableBasis Y)) _
+    · exact .image2 hScount (countable_ofPred_finite_subset (countable_countableBasis Y)) _
     · intro f x V hV hx
       apply hS
       exacts [isOpen_of_mem_countableBasis hV, hx]

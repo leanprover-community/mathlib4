@@ -5,10 +5,10 @@ Authors: Christian Merten, Yi Song, Sihan Su
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
-public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Going down
@@ -30,7 +30,7 @@ of `S` lying above `q`, there exists a prime `P ≤ Q` of `S` lying above `p`.
 
 -/
 
-@[expose] public section
+public section
 
 /--
 An `R`-algebra `S` satisfies `Algebra.HasGoingDown R S` if for every pair of
@@ -158,8 +158,6 @@ instance of_flat [Module.Flat R S] : Algebra.HasGoingDown R S := by
   have : IsLocalHom (algebraMap (Localization.AtPrime <| P.under R) (Localization.AtPrime P)) := by
     rw [RingHom.algebraMap_toAlgebra]
     exact Localization.isLocalHom_localRingHom (P.under R) P (algebraMap R S) Ideal.LiesOver.over
-  have : Module.FaithfullyFlat (Localization.AtPrime (P.under R)) (Localization.AtPrime P) :=
-    Module.FaithfullyFlat.of_flat_of_isLocalHom
   apply PrimeSpectrum.comap_surjective_of_faithfullyFlat
 
 end Algebra.HasGoingDown

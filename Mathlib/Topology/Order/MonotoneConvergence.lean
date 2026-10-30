@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded monotone sequences converge
 
@@ -130,15 +133,11 @@ end ConditionallyCompletePartialOrder
 
 section ConditionallyCompleteLattice
 
-theorem tendsto_finset_sup_ciSup {ι} [ConditionallyCompleteLattice α] [OrderBot α]
+theorem tendsto_finsetSup_ciSup {ι} [ConditionallyCompleteLattice α] [OrderBot α]
     [SupConvergenceClass α] [Nonempty ι] {a : ι → α} (ha : BddAbove (range a)) :
     Tendsto (fun F : Finset ι => F.sup a) atTop (𝓝 (⨆ i, a i)) := by
-  have hmono : Monotone (fun F : Finset ι => F.sup a) := fun F G hFG => Finset.sup_mono hFG
-  have hbdd : BddAbove (Set.range fun F : Finset ι => F.sup a) := by
-    refine ⟨⨆ i, a i, ?_⟩
-    rintro _ ⟨F, rfl⟩
-    exact Finset.sup_le fun i _ => le_ciSup ha i
-  simpa [ciSup_eq_ciSup_finset ha] using tendsto_atTop_ciSup hmono hbdd
+  simpa [ciSup_eq_ciSup_finset ha] using
+    tendsto_atTop_ciSup (Finset.monotone_sup a) ha.range_finsetSup
 
 end ConditionallyCompleteLattice
 
@@ -160,10 +159,10 @@ end ConditionallyCompletePartialOrder
 
 section ConditionallyCompleteLattice
 
-theorem tendsto_finset_inf_ciInf {ι} [ConditionallyCompleteLattice α] [OrderTop α]
-    [InfConvergenceClass α] [Nonempty ι] (a : ι → α) (ha : BddBelow (range a)) :
+theorem tendsto_finsetInf_ciInf {ι} [ConditionallyCompleteLattice α] [OrderTop α]
+    [InfConvergenceClass α] [Nonempty ι] {a : ι → α} (ha : BddBelow (range a)) :
     Tendsto (fun F : Finset ι => F.inf a) atTop (𝓝 (⨅ i, a i)) :=
-  tendsto_finset_sup_ciSup (α := αᵒᵈ) ha
+  tendsto_finsetSup_ciSup (α := αᵒᵈ) ha
 
 end ConditionallyCompleteLattice
 
@@ -176,10 +175,10 @@ variable [CompleteLattice α] [SupConvergenceClass α] {f : ι → α}
 theorem tendsto_atTop_iSup (h_mono : Monotone f) : Tendsto f atTop (𝓝 (⨆ i, f i)) :=
   tendsto_atTop_ciSup h_mono (OrderTop.bddAbove _)
 
-theorem tendsto_finset_sup_iSup {ι} (a : ι → α) :
+theorem tendsto_finsetSup_iSup {ι} (a : ι → α) :
     Tendsto (fun F : Finset ι => F.sup a) atTop (𝓝 (⨆ i, a i)) := by
-  have hmono : Monotone (fun F : Finset ι => F.sup a) := fun F G hFG => Finset.sup_mono hFG
-  simpa [Finset.sup_eq_iSup, ← iSup_eq_iSup_finset a] using tendsto_atTop_iSup hmono
+  simpa [Finset.sup_eq_iSup, ← iSup_eq_iSup_finset a] using
+    tendsto_atTop_iSup (Finset.monotone_sup a)
 
 theorem tendsto_atBot_iSup (h_anti : Antitone f) : Tendsto f atBot (𝓝 (⨆ i, f i)) :=
   tendsto_atBot_ciSup h_anti (OrderTop.bddAbove _)
@@ -193,9 +192,9 @@ variable [CompleteLattice α] [InfConvergenceClass α] {f : ι → α}
 theorem tendsto_atBot_iInf (h_mono : Monotone f) : Tendsto f atBot (𝓝 (⨅ i, f i)) :=
   tendsto_atBot_ciInf h_mono (OrderBot.bddBelow _)
 
-theorem tendsto_finset_inf_iInf {ι} (a : ι → α) :
+theorem tendsto_finsetInf_iInf {ι} (a : ι → α) :
     Tendsto (fun F : Finset ι => F.inf a) atTop (𝓝 (⨅ i, a i)) :=
-  tendsto_finset_sup_iSup (α := αᵒᵈ) a
+  tendsto_finsetSup_iSup (α := αᵒᵈ) a
 
 theorem tendsto_atTop_iInf (h_anti : Antitone f) : Tendsto f atTop (𝓝 (⨅ i, f i)) :=
   tendsto_atTop_ciInf h_anti (OrderBot.bddBelow _)
@@ -209,11 +208,11 @@ instance Prod.supConvergenceClass
     [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
   constructor
   rintro ⟨a, b⟩ s h
-  rw [isLUB_prod, ← range_restrict, ← range_restrict] at h
+  rw [isLUB_prod, ← range_domRestrict, ← range_domRestrict] at h
   have A : Tendsto (fun x : s => (x : α × β).1) atTop (𝓝 a) :=
-    tendsto_atTop_isLUB (monotone_fst.restrict s) h.1
+    tendsto_atTop_isLUB (monotone_fst.domRestrict s) h.1
   have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
-    tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
+    tendsto_atTop_isLUB (monotone_snd.domRestrict s) h.2
   exact A.prodMk_nhds B
 
 instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [InfConvergenceClass α]
@@ -224,8 +223,8 @@ instance Pi.supConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine ⟨fun f s h => ?_⟩
-  simp only [isLUB_pi, ← range_restrict] at h
-  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
+  simp only [isLUB_pi, ← range_domRestrict] at h
+  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).domRestrict _) (h i)
 
 instance Pi.infConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
@@ -247,14 +246,10 @@ theorem tendsto_atTop_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpac
   exact if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_ciSup h_mono H⟩
   else Or.inl <| tendsto_atTop_atTop_of_monotone' h_mono H
 
-@[deprecated (since := "2026-01-22")] alias tendsto_of_monotone := tendsto_atTop_of_monotone
-
 theorem tendsto_atTop_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
   tendsto_atTop_of_monotone (α := αᵒᵈ) h_mono
-
-@[deprecated (since := "2026-01-22")] alias tendsto_of_antitone := tendsto_atTop_of_antitone
 
 theorem tendsto_atBot_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :

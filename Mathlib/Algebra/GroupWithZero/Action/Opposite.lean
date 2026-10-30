@@ -6,9 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Action.Faithful
-public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
@@ -17,7 +15,7 @@ This file defines the actions on the opposite type `SMul R Mᵐᵒᵖ`, and acti
 type, `SMul Rᵐᵒᵖ M`.
 
 Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
-provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
+provide the `NSMul.nsmul` and `ZSMul.zsmul` fields.
 
 ## Notation
 

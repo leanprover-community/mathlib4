@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Restriction
 public import Mathlib.Topology.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of the restriction function for functions indexed by a preorder
 
@@ -23,11 +26,11 @@ variable {α : Type*} [Preorder α] {X : α → Type*} [∀ i, TopologicalSpace 
 
 @[continuity, fun_prop]
 theorem continuous_restrictLe (a : α) : Continuous (restrictLe (π := X) a) :=
-  Pi.continuous_restrict _
+  Pi.continuous_domRestrict _
 
 @[continuity, fun_prop]
 theorem continuous_restrictLe₂ {a b : α} (hab : a ≤ b) : Continuous (restrictLe₂ (π := X) hab) :=
-  Pi.continuous_restrict₂ _
+  Pi.continuous_domRestrict₂ _
 
 variable [LocallyFiniteOrderBot α]
 

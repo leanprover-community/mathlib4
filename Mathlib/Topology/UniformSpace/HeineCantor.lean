@@ -6,8 +6,9 @@ Authors: Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Algebra.Support
-public import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.Equicontinuity
+
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Compact separated uniform spaces
@@ -25,7 +26,9 @@ uniform space, uniform continuity, compact space
 
 public section
 
-open Uniformity Topology Filter UniformSpace Set
+open Filter UniformSpace Set
+
+open scoped Uniformity Topology
 
 variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
@@ -48,7 +51,7 @@ theorem IsCompact.uniformContinuousOn_of_continuous {s : Set α} {f : α → β}
     (hf : ContinuousOn f s) : UniformContinuousOn f s := by
   rw [uniformContinuousOn_iff_restrict]
   rw [isCompact_iff_compactSpace] at hs
-  rw [continuousOn_iff_continuous_restrict] at hf
+  rw [continuousOn_iff_continuous_domRestrict] at hf
   exact CompactSpace.uniformContinuous_of_continuous hf
 
 /-- If `s` is compact and `f` is continuous at all points of `s`, then `f` is
@@ -62,12 +65,13 @@ theorem IsCompact.uniformContinuousAt_of_continuousAt {r : Set (β × β)} {s : 
   choose U hU T hT hb using fun a ha =>
     exists_mem_nhds_ball_subset_of_mem_nhds ((hf a ha).preimage_mem_nhds <| mem_nhds_left _ ht)
   obtain ⟨fs, hsU⟩ := hs.elim_nhds_subcover' U hU
-  apply mem_of_superset ((biInter_finset_mem fs).2 fun a _ => hT a a.2)
+  have hTinv (a : s) : SetRel.inv (T a a.2) ∈ 𝓤 α := symm_le_uniformity (hT a a.2)
+  apply mem_of_superset ((biInter_finset_mem fs).2 fun a _ => hTinv a)
   rintro ⟨a₁, a₂⟩ h h₁
   obtain ⟨a, ha, haU⟩ := Set.mem_iUnion₂.1 (hsU h₁)
   apply htr
   refine ⟨f a, SetRel.symm t <| hb _ _ _ haU ?_, hb _ _ _ haU ?_⟩
-  exacts [mem_ball_self _ (hT a a.2), mem_iInter₂.1 h a ha]
+  exacts [refl_mem_uniformity (hT a a.2), mem_iInter₂.1 h a ha]
 
 theorem Continuous.uniformContinuous_of_tendsto_cocompact {f : α → β} {x : β}
     (h_cont : Continuous f) (hx : Tendsto f (cocompact α) (𝓝 x)) : UniformContinuous f :=

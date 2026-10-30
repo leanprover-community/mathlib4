@@ -5,8 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
+
 /-!
 # Miscellaneous arithmetic Functions
 
@@ -52,7 +53,7 @@ section ProdPrimeFactors
 /-- The map $n \mapsto \prod_{p \mid n} f(p)$ as an arithmetic function -/
 def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
   toFun d := if d = 0 then 0 else ∏ p ∈ d.primeFactors, f p
-  map_zero' := if_pos rfl
+  map_zero' := ite_eq_left rfl
 
 open Batteries.ExtendedBinder
 
@@ -64,7 +65,7 @@ scoped macro_rules (kind := bigproddvd)
 @[simp]
 theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f : ℕ → R} {n : ℕ} (hn : n ≠ 0) :
     ∏ᵖ p ∣ n, f p = ∏ p ∈ n.primeFactors, f p :=
-  if_neg hn
+  ite_eq_right hn
 
 namespace IsMultiplicative
 
@@ -84,7 +85,7 @@ theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFun
     ∏ᵖ p ∣ n, (f + g) p = (f * g) n := by
   rw [prodPrimeFactors_apply hn.ne_zero]
   simp_rw [add_apply (f := f) (g := g)]
-  rw [prod_add, mul_apply, sum_divisorsAntidiagonal (f · * g ·),
+  rw [prod_add, ArithmeticFunction.mul_apply, sum_divisorsAntidiagonal (f · * g ·),
     ← divisors_filter_squarefree_of_squarefree hn, sum_divisors_filter_squarefree hn.ne_zero,
     factors_eq]
   apply sum_congr rfl
@@ -101,6 +102,7 @@ end ProdPrimeFactors
 section Id
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
+@[oeis A001477]
 protected def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 
@@ -140,6 +142,7 @@ end Pow
 section Sigma
 
 /-- `σ k n` is the sum of the `k`th powers of the divisors of `n` -/
+@[oeis A000005 "values for `k = 0`, `n > 0`"]
 def sigma (k : ℕ) : ArithmeticFunction ℕ :=
   ⟨fun n => ∑ d ∈ divisors n, d ^ k, by simp⟩
 
@@ -232,7 +235,6 @@ theorem _root_.Nat.divisors_card_eq_one_iff (n : ℕ) : #n.divisors = 1 ↔ n = 
   · refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     exact (card_le_one.mp h.le 1 (one_mem_divisors.mpr hn) n (n.mem_divisors_self hn)).symm
 
-set_option backward.privateInPublic true in
 /-- `sigma_eq_one_iff` is to be preferred. -/
 private theorem sigma_zero_eq_one_iff (n : ℕ) : σ 0 n = 1 ↔ n = 1 := by
   simp [sigma_zero_apply]
@@ -256,6 +258,7 @@ theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
     sigma_one_apply_prime_pow <| prime_of_mem_primeFactors h
 
 /-- `Ω n` is the number of prime factors of `n`. -/
+@[oeis A001222 "the sequence skips `n = 0`"]
 def cardFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.length, by simp⟩
 
@@ -318,9 +321,11 @@ theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k 
 
 theorem cardFactors_eq_sum_factorization {n : ℕ} :
     Ω n = n.factorization.sum fun _ k => k := by
-  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum]
+  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum,
+    primeFactorsList_count_eq]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
+@[oeis A001221 "the sequence skips `n = 0`"]
 def cardDistinctFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.dedup.length, by simp⟩
 
@@ -334,26 +339,30 @@ theorem cardDistinctFactors_zero : ω 0 = 0 := by simp
 @[simp]
 theorem cardDistinctFactors_one : ω 1 = 0 := by simp [cardDistinctFactors]
 
-theorem cardDistinctFactors_apply {n : ℕ} : ω n = n.primeFactorsList.dedup.length :=
+theorem cardDistinctFactors_eq_length_dedup_primeFactorsList {n : ℕ} :
+    ω n = n.primeFactorsList.dedup.length :=
+  rfl
+
+@[deprecated (since := "2026-10-20")]
+alias cardDistinctFactors_apply := cardDistinctFactors_eq_length_dedup_primeFactorsList
+
+theorem cardDistinctFactors_eq_card_primeFactors {n : ℕ} : ω n = n.primeFactors.card :=
   rfl
 
 @[simp]
 theorem cardDistinctFactors_eq_zero {n : ℕ} : ω n = 0 ↔ n ≤ 1 := by
-  simp [cardDistinctFactors_apply, le_one_iff_eq_zero_or_eq_one]
+  simp [cardDistinctFactors_eq_length_dedup_primeFactorsList, le_one_iff_eq_zero_or_eq_one]
 
 @[simp]
 theorem cardDistinctFactors_pos {n : ℕ} : 0 < ω n ↔ 1 < n := by simp [pos_iff_ne_zero]
 
 theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 0) :
     ω n = Ω n ↔ Squarefree n := by
-  rw [squarefree_iff_nodup_primeFactorsList h0, cardDistinctFactors_apply]
-  constructor <;> intro h
-  · rw [← n.primeFactorsList.dedup_sublist.eq_of_length h]
-    apply List.nodup_dedup
-  · simp [h.dedup, cardFactors]
+  rw [cardFactors_apply, cardDistinctFactors_eq_length_dedup_primeFactorsList,
+    ← List.nodup_iff_length_dedup_eq, squarefree_iff_nodup_primeFactorsList h0]
 
 theorem cardDistinctFactors_eq_one_iff {n : ℕ} : ω n = 1 ↔ IsPrimePow n := by
-  rw [ArithmeticFunction.cardDistinctFactors_apply, isPrimePow_iff_card_primeFactors_eq_one,
+  rw [cardDistinctFactors_eq_length_dedup_primeFactorsList, isPrimePow_iff_card_primeFactors_eq_one,
     ← toFinset_factors, List.card_toFinset]
 
 @[simp]
@@ -366,8 +375,8 @@ theorem cardDistinctFactors_apply_prime {p : ℕ} (hp : p.Prime) : ω p = 1 := b
   rw [← pow_one p, cardDistinctFactors_apply_prime_pow hp one_ne_zero]
 
 theorem cardDistinctFactors_mul {m n : ℕ} (h : m.Coprime n) : ω (m * n) = ω m + ω n := by
-  simp [cardDistinctFactors_apply, perm_primeFactorsList_mul_of_coprime h |>.dedup |>.length_eq,
-    coprime_primeFactorsList_disjoint h |>.dedup_append]
+  simp_rw [cardDistinctFactors_eq_card_primeFactors, h.primeFactors_mul,
+    card_union_of_disjoint h.disjoint_primeFactors]
 
 open scoped Function in
 theorem cardDistinctFactors_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ}
@@ -393,7 +402,7 @@ variable {R : Type*} [Semiring R]
 
 theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Ioc 0 N, (f * g) n = ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 ≤ N, f x.1 * g x.2 := by
-  simp only [mul_apply]
+  simp only [ArithmeticFunction.mul_apply]
   trans ∑ n ∈ Ioc 0 N, ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 = n, f x.1 * g x.2
   · refine sum_congr rfl fun n hn ↦ ?_
     simp only [mem_Ioc] at hn
@@ -452,15 +461,16 @@ theorem sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
 end Nat.Coprime
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq
+open Lean Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]
-meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p? e :=
+  match p? with | none => throwError "no PartialOrder instance" | some p => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
-    let rn ← core z p n
     assumeInstancesCommute
+    let rn ← core z p n
     match rn with
     | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.sigma_pos_iff $pn)
     | _ => return .nonnegative q(Nat.zero_le _)

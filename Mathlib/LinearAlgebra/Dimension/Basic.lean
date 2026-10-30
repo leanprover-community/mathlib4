@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 module
 
 public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.Data.Set.Card
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Dimension of modules and vector spaces
@@ -32,7 +32,7 @@ inserting `lift`s. The types `M`, `M'`, ... all live in different universes,
 and `M₁`, `M₂`, ... all live in the same universe.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -65,11 +65,13 @@ See also `Module.finrank` for a `ℕ`-valued function which returns the correct 
 for a finite-dimensional vector space (but 0 for an infinite-dimensional vector space).
 -/
 @[stacks 09G3 "first part"]
-protected irreducible_def Module.rank : Cardinal :=
+protected def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndepOn R id s }, (#ι.1)
 
+alias Module.rank_def := Module.rank.eq_def
+
 theorem rank_le_card : Module.rank R M ≤ #M :=
-  (Module.rank_def _ _).trans_le (ciSup_le' fun _ ↦ mk_set_le _)
+  ciSup_le' fun _ ↦ mk_set_le _
 
 instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s} :=
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
@@ -114,7 +116,7 @@ theorem exists_set_linearIndependent_of_lt_lift_rank {c : Cardinal.{w}}
     (h : Cardinal.lift.{v} c < Cardinal.lift.{w} (Module.rank R M)) :
     ∃ s : Set M, Cardinal.lift.{w} #s = Cardinal.lift.{v} c ∧ LinearIndepOn R id s := by
   rcases Cardinal.lt_lift_iff.mp h with ⟨c', hc', hcc'⟩
-  rcases exists_lt_of_lt_ciSup (by simpa [← hcc', Module.rank_def] using h) with ⟨⟨s, hs⟩, h⟩
+  rcases exists_lt_of_lt_ciSup (by simpa [← hcc', Module.rank] using h) with ⟨⟨s, hs⟩, h⟩
   rcases Cardinal.le_mk_iff_exists_subset.mp h.le with ⟨t, hst, ht⟩
   exact ⟨t, by simp [ht, hcc'], hs.mono hst⟩
 
@@ -164,7 +166,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [Semiring R']
 variable (R M) in
 @[nontriviality, simp]
 theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
-  rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
+  rw [Module.rank, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
   · have := Module.subsingleton R M
     simp [Set.subsingleton_of_subsingleton]
   · intro w hw
@@ -175,6 +177,11 @@ theorem Module.one_le_rank_iff : 1 ≤ Module.rank R M ↔ ∃ f : R →ₗ[R] M
   refine le_rank_iff_exists_linearMap.trans ⟨fun ⟨f, hf⟩ ↦ ?_, fun ⟨f, hf⟩ ↦ ?_⟩
   · exact ⟨f ∘ₗ _, by apply hf.comp (LinearEquiv.piUnique R ..).symm.injective⟩
   · exact ⟨f ∘ₗ _, hf.comp (LinearEquiv.piUnique R ..).injective⟩
+
+theorem Module.rank_eq_zero_of_not_faithfulSMul (h : ¬ FaithfulSMul R M) : Module.rank R M = 0 := by
+  contrapose! h
+  obtain ⟨f, hf⟩ := by rwa [← Cardinal.one_le_iff_ne_zero, one_le_rank_iff] at h
+  exact ⟨fun {x y} hxy ↦ hf (by simpa [← map_smul] using hxy (f 1))⟩
 
 section
 variable [AddCommMonoid M'] [Module R' M']
@@ -302,7 +309,7 @@ theorem lift_rank_le_of_injective_injective
   refine _root_.lift_rank_le_of_injective_injectiveₛ i j hi hj fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp_rw [smul_def, AddMonoidHom.coe_coe, map_mul, this]
+  simp_rw [smul_def, AddMonoidHom.coe_ofClass, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R →+* R'` is a surjective ring homomorphism,
 `j : S →+* S'` is an injective ring homomorphism, such that `R → R' → S'` and `R → S → S'` commute,
@@ -314,7 +321,7 @@ theorem lift_rank_le_of_surjective_injective
   refine _root_.lift_rank_le_of_surjective_injective i j hi hj fun r _ ↦ ?_
   have := congr($hc r)
   simp only [RingHom.coe_comp, comp_apply] at this
-  simp only [smul_def, AddMonoidHom.coe_coe, map_mul, this]
+  simp only [smul_def, AddMonoidHom.coe_ofClass, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R ≃+* R'` and `j : S ≃+* S'` are
 ring isomorphisms, such that `R → R' → S'` and `R → S → S'` commute,
@@ -372,7 +379,7 @@ theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) 
 -- source, by arbitrarily lifting a basis.
 theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     (Module.rank R (LinearMap.range f)) ≤ Cardinal.lift.{v'} (Module.rank R M) := by
-  simp only [Module.rank_def]
+  simp only [Module.rank]
   rw [Cardinal.lift_iSup Cardinal.bddAbove_of_small]
   apply ciSup_le'
   rintro ⟨s, li⟩

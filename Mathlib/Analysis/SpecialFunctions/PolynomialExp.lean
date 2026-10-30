@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
@@ -23,7 +24,9 @@ polynomial, limit, exponential
 
 public section
 
-open Filter Topology Real
+open Filter Real
+
+open scoped Topology
 
 namespace Polynomial
 
