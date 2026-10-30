@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Rat.Cast.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dyadic rationals
 
