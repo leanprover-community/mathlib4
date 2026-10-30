@@ -5,8 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 
 /-!
 # Bundled exact functors
@@ -34,21 +33,17 @@ section
 variable (C) (D)
 
 /-- Left-exactness, as a property of objects in `C ⥤ D`. -/
-def leftExactFunctor : ObjectProperty (C ⥤ D) :=
-  fun F ↦ PreservesFiniteLimits F
+@[deprecated (since := "2026-10-28")] alias leftExactFunctor :=
+  ObjectProperty.preservesFiniteLimits
 
 variable {C D} in
-@[simp]
+@[deprecated ObjectProperty.preservesFiniteLimits_iff +typeChanged (since := "2026-10-28"), simp]
 lemma leftExactFunctor_iff (F : C ⥤ D) :
-    leftExactFunctor C D F ↔ PreservesFiniteLimits F := Iff.rfl
-
-instance : (leftExactFunctor C D).IsClosedUnderIsomorphisms where
-  of_iso e h := by
-    simp only [leftExactFunctor_iff] at h ⊢
-    exact preservesFiniteLimits_of_natIso e
+    leftExactFunctor F ↔ PreservesFiniteLimits F := Iff.rfl
 
 /-- Bundled left-exact functors. -/
-abbrev LeftExactFunctor := (leftExactFunctor C D).FullSubcategory
+abbrev LeftExactFunctor :=
+  (ObjectProperty.preservesFiniteLimits (J := C) (C := D)).FullSubcategory
 
 /-- `C ⥤ₗ D` denotes left exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₗ " => LeftExactFunctor
@@ -62,21 +57,17 @@ abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaith
   ObjectProperty.fullyFaithfulι _
 
 /-- Right-exactness, as a property of objects in `C ⥤ D`. -/
-def rightExactFunctor : ObjectProperty (C ⥤ D) :=
-  fun F ↦ PreservesFiniteColimits F
+@[deprecated (since := "2026-10-28")] alias rightExactFunctor :=
+  ObjectProperty.preservesFiniteColimits
 
 variable {C D} in
-@[simp]
+@[deprecated ObjectProperty.preservesFiniteColimits_iff +typeChanged (since := "2026-10-28"), simp]
 lemma rightExactFunctor_iff (F : C ⥤ D) :
-    rightExactFunctor C D F ↔ PreservesFiniteColimits F := Iff.rfl
-
-instance : (rightExactFunctor C D).IsClosedUnderIsomorphisms where
-  of_iso e h := by
-    simp only [rightExactFunctor_iff] at h ⊢
-    exact preservesFiniteColimits_of_natIso e
+    rightExactFunctor F ↔ PreservesFiniteColimits F := Iff.rfl
 
 /-- Bundled right-exact functors. -/
-abbrev RightExactFunctor := (rightExactFunctor C D).FullSubcategory
+abbrev RightExactFunctor :=
+  (ObjectProperty.preservesFiniteColimits (J := C) (C := D)).FullSubcategory
 
 /-- `C ⥤ᵣ D` denotes right exact functors `C ⥤ D` -/
 infixr:26 " ⥤ᵣ " => RightExactFunctor
@@ -91,7 +82,7 @@ abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFai
 
 /-- Exactness, as a property of objects in `C ⥤ D`. -/
 def exactFunctor : ObjectProperty (C ⥤ D) :=
-  leftExactFunctor C D ⊓ rightExactFunctor C D
+  .preservesFiniteLimits ⊓ .preservesFiniteColimits
 
 variable {C D} in
 @[simp]
@@ -112,21 +103,26 @@ infixr:26 " ⥤ₑ " => ExactFunctor
 abbrev ExactFunctor.forget : (C ⥤ₑ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
-lemma exactFunctor_le_leftExactFunctor :
-    exactFunctor C D ≤ leftExactFunctor C D :=
+lemma exactFunctor_le_preservesFiniteLimits :
+    exactFunctor C D ≤ .preservesFiniteLimits :=
   fun _ h ↦ h.1
 
-lemma exactFunctor_le_rightExactFunctor :
-    exactFunctor C D ≤ rightExactFunctor C D :=
+lemma exactFunctor_le_preservesFiniteColimits :
+    exactFunctor C D ≤ .preservesFiniteColimits :=
   fun _ h ↦ h.2
+
+@[deprecated (since := "2026-10-28")] alias exactFunctor_le_leftExactFunctor :=
+  exactFunctor_le_preservesFiniteLimits
+@[deprecated (since := "2026-10-28")] alias exactFunctor_le_rightExactFunctor :=
+  exactFunctor_le_preservesFiniteColimits
 
 /-- Turn an exact functor into a left exact functor. -/
 abbrev LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
-  ObjectProperty.ιOfLE (exactFunctor_le_leftExactFunctor C D)
+  ObjectProperty.ιOfLE (exactFunctor_le_preservesFiniteLimits C D)
 
-/-- Turn an exact functor into a left exact functor. -/
+/-- Turn an exact functor into a right exact functor. -/
 abbrev RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
-  ObjectProperty.ιOfLE (exactFunctor_le_rightExactFunctor C D)
+  ObjectProperty.ιOfLE (exactFunctor_le_preservesFiniteColimits C D)
 
 variable {C D}
 
