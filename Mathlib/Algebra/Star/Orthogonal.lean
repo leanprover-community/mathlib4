@@ -352,6 +352,11 @@ lemma IsStarOrtho.star_left_of_isStarNormal {a b : R} (h : a ⋆⟂ b) (ha : IsS
     rw [mul_assoc _ (star a), ha.star_comm_self.eq, ← mul_assoc, h.star_mul_eq_zero, zero_mul,
       zero_mul]
 
+/-- If `a` is normal and `a ⋆⟂ b`, then `a ⋆⟂ star b`. -/
+lemma IsStarOrtho.star_right_of_isStarNormal {a b : R} (h : a ⋆⟂ b) (ha : IsStarNormal a) :
+    a ⋆⟂ star b :=
+  star_star a ▸ (h.star_left_of_isStarNormal ha).star
+
 section IsStarNormal
 
 variable {a b : R}
