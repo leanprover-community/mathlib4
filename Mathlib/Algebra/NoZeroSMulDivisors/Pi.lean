@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pi instances for NoZeroSMulDivisors
 

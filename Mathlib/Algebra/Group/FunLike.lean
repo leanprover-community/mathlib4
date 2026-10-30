@@ -120,8 +120,8 @@ protected abbrev semigroup [Semigroup β] [IsMulApply F] : Semigroup F :=
 
 /-- A `FunLike` type that satisfies `(f * g) x = f x * g x` is a commutative semigroup if `β` is a
 commutative semigroup. -/
-@[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is a commatative additive
-semigroup if `β` is a commatative additive semigroup. -/]
+@[to_additive /-- A `FunLike` type that satisfies `(f + g) x = f x + g x` is a commutative additive
+semigroup if `β` is a commutative additive semigroup. -/]
 protected abbrev commSemigroup [CommSemigroup β] [IsMulApply F] :
     CommSemigroup F :=
   DFunLike.coe_injective.commSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul

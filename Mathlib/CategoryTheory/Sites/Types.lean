@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Canonical
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Grothendieck Topology and Sheaves on the Category of Types
 
