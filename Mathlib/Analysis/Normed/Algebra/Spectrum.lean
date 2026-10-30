@@ -97,14 +97,14 @@ theorem spectralRadius_of_subsingleton [Subsingleton A] (a : A) :
     spectralRadius 𝕜 a = 0 := by
   simp [spectralRadius]
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias spectrum.SpectralRadius.of_subsingleton := spectralRadius_of_subsingleton
 
 @[simp]
 theorem spectralRadius_zero : spectralRadius 𝕜 (0 : A) = 0 := by
   simp [spectralRadius]
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias spectrum.spectralRadius_zero := spectralRadius_zero
 
 @[simp]
@@ -154,9 +154,9 @@ variable (𝕜) in
 theorem spectralRadius_le_enorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖ₑ :=
   iSup₂_le fun _ ↦ by simpa [enorm_eq_nnnorm] using mod_cast norm_le_norm_of_mem
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-08-13")]
 alias spectrum.spectralRadius_le_nnnorm := spectralRadius_le_enorm
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias spectralRadius_le_nnnorm := spectralRadius_le_enorm
 
 variable (𝕜) in
@@ -193,7 +193,7 @@ theorem exists_enorm_quasispectrum_eq_spectralRadius (a : A) :
   unfold spectralRadius
   exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le h)⟩
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias exists_nnnorm_quasispectrum_eq_spectralRadius := exists_enorm_quasispectrum_eq_spectralRadius
 
 theorem spectralRadius_lt_of_forall_lt {a : A} {r : ℝ≥0∞}
@@ -201,7 +201,7 @@ theorem spectralRadius_lt_of_forall_lt {a : A} {r : ℝ≥0∞}
   sSup_image.symm.trans_lt <| ((isCompact 𝕜 a).sSup_lt_iff_of_continuous
     (nonempty 𝕜 a) continuous_enorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias spectralRadius_lt_of_forall_quasispectrum_lt := spectralRadius_lt_of_forall_lt
 
 end Generic
@@ -258,7 +258,7 @@ lemma spectralRadius_eq_of_unital (a : A) : spectralRadius 𝕜 a = ⨆ k ∈ σ
 theorem spectralRadius_one [Nontrivial A] : spectralRadius 𝕜 (1 : A) = 1 := by
   simp [spectralRadius_eq_of_unital]
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 protected alias spectrum.spectralRadius_one := spectralRadius_one
 
 theorem spectrum.mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜}
@@ -274,7 +274,7 @@ lemma spectralRadius_pow_le (a : A) (n : ℕ) (hn : n ≠ 0) :
   apply le_iSup₂_of_le (x ^ n) <| pow_mem_pow a n hx
   simp
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 protected alias spectrum.spectralRadius_pow_le := spectralRadius_pow_le
 
 lemma spectralRadius_pow_le' [Nontrivial A] (a : A) (n : ℕ) :
@@ -283,7 +283,7 @@ lemma spectralRadius_pow_le' [Nontrivial A] (a : A) (n : ℕ) :
   · simp
   · exact spectralRadius_pow_le a _ (by simp)
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 protected alias spectrum.spectralRadius_pow_le' := spectralRadius_pow_le'
 
 end NotNormed
@@ -294,7 +294,7 @@ variable (𝕜) in
 theorem isOpen_resolventSet (a : A) : IsOpen (resolventSet 𝕜 a) :=
   Units.isOpen.preimage (by fun_prop)
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 protected alias spectrum.isOpen_resolventSet := isOpen_resolventSet
 
 theorem mem_resolventSet_of_norm_lt {a : A} {k : 𝕜} (h : ‖a‖ < ‖k‖) : k ∈ resolventSet 𝕜 a := by
@@ -302,7 +302,7 @@ theorem mem_resolventSet_of_norm_lt {a : A} {k : 𝕜} (h : ‖a‖ < ‖k‖) :
   contrapose! h
   exact quasispectrum.norm_le_norm_of_mem (spectrum_subset_quasispectrum _ _ h)
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 protected alias spectrum.mem_resolventSet_of_norm_lt := mem_resolventSet_of_norm_lt
 
 variable (𝕜) in
@@ -310,7 +310,7 @@ variable (𝕜) in
 protected theorem spectrum.isClosed (a : A) : IsClosed (σ 𝕜 a) :=
   (isOpen_resolventSet 𝕜 a).isClosed_compl
 
-@[deprecated mem_resolventSet_of_norm_lt +typeChanged (since := "2026-09-21")]
+@[deprecated mem_resolventSet_of_norm_lt +typeChanged (since := "2026-10-30")]
 theorem spectrum.mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖ * ‖(1 : A)‖ < ‖k‖) :
     k ∈ resolventSet 𝕜 a := by
   nontriviality A
@@ -320,14 +320,14 @@ theorem spectrum.mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖
 theorem spectrum.norm_le_norm_of_mem {a : A} {k : 𝕜} (hk : k ∈ σ 𝕜 a) : ‖k‖ ≤ ‖a‖ :=
   le_of_not_gt <| mt mem_resolventSet_of_norm_lt hk
 
-@[deprecated norm_le_norm_of_mem +typeChanged (since := "2026-09-21")]
+@[deprecated norm_le_norm_of_mem +typeChanged (since := "2026-10-30")]
 theorem spectrum.norm_le_norm_mul_of_mem {a : A} {k : 𝕜} (hk : k ∈ σ 𝕜 a) : ‖k‖ ≤ ‖a‖ * ‖(1 : A)‖ :=
   le_of_not_gt <| mt mem_resolventSet_of_norm_lt_mul hk
 
 theorem spectrum.subset_closedBall_norm (a : A) : σ 𝕜 a ⊆ Metric.closedBall (0 : 𝕜) ‖a‖ :=
   fun k hk => by simp [norm_le_norm_of_mem hk]
 
-@[deprecated subset_closedBall_norm +typeChanged (since := "2026-09-21")]
+@[deprecated subset_closedBall_norm +typeChanged (since := "2026-10-30")]
 theorem spectrum.subset_closedBall_norm_mul (a : A) :
     σ 𝕜 a ⊆ Metric.closedBall (0 : 𝕜) (‖a‖ * ‖(1 : A)‖) :=
   fun k hk => by simp [norm_le_norm_mul_of_mem hk]
@@ -359,7 +359,7 @@ theorem exists_enorm_spectrum_eq_spectralRadius_of_nonempty {a : A}
   rw [spectralRadius_eq_of_unital]
   exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le h)⟩
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty :=
   exists_enorm_spectrum_eq_spectralRadius_of_nonempty
 
@@ -370,7 +370,7 @@ theorem spectralRadius_lt_of_forall_lt_of_nonempty {a : A} {r : ℝ≥0∞}
   exact sSup_image.symm.trans_lt <|
     ((spectrum.isCompact 𝕜 a).sSup_lt_iff_of_continuous ha continuous_enorm.continuousOn r).mpr hr
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 protected alias spectrum.spectralRadius_lt_of_forall_lt_of_nonempty :=
   spectralRadius_lt_of_forall_lt_of_nonempty
 
@@ -398,14 +398,14 @@ theorem spectralRadius_le_pow_enorm_rpow_one_div (a : A) (n : ℕ) :
   convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le enorm_pow_le
   simp [← ENNReal.rpow_natCast, ← ENNReal.rpow_mul, mul_inv_cancel₀ hn.ne']
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias spectrum.spectralRadius_le_pow_nnnorm_pow_one_div := spectralRadius_le_pow_enorm_rpow_one_div
 
 theorem spectralRadius_le_iInf_pow_enorm_rpow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ ⨅ n : ℕ, ‖a ^ (n + 1)‖ₑ ^ (1 / (n + 1) : ℝ) :=
   le_iInf <| spectralRadius_le_pow_enorm_rpow_one_div 𝕜 a
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias spectrum.spectralRadius_le_iInf_pow_nnnorm_pow_one_div :=
   spectralRadius_le_iInf_pow_enorm_rpow_one_div
 
@@ -416,7 +416,7 @@ theorem spectralRadius_le_liminf_pow_enorm_rpow_one_div (a : A) :
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn
   exact mod_cast spectralRadius_le_pow_enorm_rpow_one_div 𝕜 a n
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias spectrum.spectralRadius_le_liminf_pow_nnnorm_pow_one_div :=
   spectralRadius_le_liminf_pow_enorm_rpow_one_div
 
@@ -523,7 +523,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
   convert (h ▸ hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A).compContinuousLinearMap
   all_goals simp [enorm_eq_nnnorm]
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias spectrum.hasFPowerSeriesOnBall_inverse_one_sub_smul :=
   hasFPowerSeriesOnBall_inverse_one_sub_smul
 
@@ -536,7 +536,7 @@ theorem isUnit_one_sub_smul_of_lt_inv_spectralRadius {a : A} {z : 𝕜}
     simpa [hz, Algebra.algebraMap_eq_smul_one, smul_sub]
       using spectrum.mem_resolventSet_of_spectralRadius_lt this |>.smul <| Units.mk0 z hz
 
-@[deprecated (since := "2026-09-22")]
+@[deprecated (since := "2026-10-30")]
 alias spectrum.isUnit_one_sub_smul_of_lt_inv_radius := isUnit_one_sub_smul_of_lt_inv_spectralRadius
 
 end OneSubSMul
@@ -608,7 +608,7 @@ lemma Subalgebra.frontier_spectrum_subset_spectrum : frontier (σ 𝕜 x) ⊆ σ
     apply Eventually.filter_mono inf_le_right
     simp [spectrum.notMem_iff]
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias Subalgebra.frontier_spectrum := Subalgebra.frontier_spectrum_subset_spectrum
 
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the boundary of
@@ -622,7 +622,7 @@ lemma Subalgebra.frontier_spectrum_subset_frontier :
   rw [frontier_eq_closure_inter_closure]
   grw [inter_subset_right, spectrum.subset_subalgebra]
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias Subalgebra.frontier_subset_frontier := Subalgebra.frontier_spectrum_subset_frontier
 
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the spectrum of `x`
@@ -645,7 +645,7 @@ lemma Subalgebra.spectrum_eq_union_sUnion_connectedComponentIn :
   grw [sdiff_eq_compl_inter, frontier_inter_subset, inter_subset_left, inter_subset_right,
     frontier_compl, frontier_spectrum_subset_frontier, union_self]
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias Subalgebra.spectrum_sUnion_connectedComponentIn :=
   Subalgebra.spectrum_eq_union_sUnion_connectedComponentIn
 
@@ -661,7 +661,7 @@ lemma Subalgebra.isBounded_connectedComponentIn_spectrum_compl {z : 𝕜} (hz : 
     rw [spectrum_eq_union_sUnion_connectedComponentIn S]
     exact subset_biUnion_of_mem (mem_sdiff_of_mem hz hz') |>.trans subset_union_right
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias Subalgebra.spectrum_isBounded_connectedComponentIn :=
   Subalgebra.isBounded_connectedComponentIn_spectrum_compl
 
@@ -760,9 +760,9 @@ theorem norm_apply_le_self [FunLike F A 𝕜] [NonUnitalAlgHomClass F 𝕜 A �
     (f : F) (a : A) : ‖f a‖ ≤ ‖a‖ :=
   quasispectrum.norm_le_norm_of_mem (apply_mem_quasispectrum f _)
 
-@[deprecated (since := "2026-09-21")] alias _root_.AlgHom.norm_apply_le_self := norm_apply_le_self
+@[deprecated (since := "2026-10-30")] alias _root_.AlgHom.norm_apply_le_self := norm_apply_le_self
 
-@[deprecated norm_apply_le_self +typeChanged (since := "2026-09-21")]
+@[deprecated norm_apply_le_self +typeChanged (since := "2026-10-30")]
 theorem _root_.AlgHom.norm_apply_le_self_mul_norm_one {F 𝕜 A : Type*} [NormedField 𝕜] [NormedRing A]
     [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜]
     (f : F) (a : A) : ‖f a‖ ≤ ‖a‖ * ‖(1 : A)‖ :=
@@ -804,12 +804,12 @@ variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [H
 
 /-- An algebra homomorphism into the base field (i.e., a multiplicative linear functional),
 as an element of the strong dual (since it is automatically continuous). -/
-@[deprecated NonUnitalAlgHom.toStrongDual +typeChanged (since := "2026-09-21")]
+@[deprecated NonUnitalAlgHom.toStrongDual +typeChanged (since := "2026-10-30")]
 def AlgHom.toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
   φ.toNonUnitalAlgHom.toStrongDual
 
 set_option linter.deprecated false in
-@[deprecated NonUnitalAlgHom.coe_toStrongDual (since := "2026-09-21")]
+@[deprecated NonUnitalAlgHom.coe_toStrongDual (since := "2026-10-30")]
 theorem AlgHom.coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuousLinearMap = φ :=
   rfl
 
@@ -821,7 +821,7 @@ theorem AlgHom.norm_toStrongDual_toNonUnitalAlgHom [NormOneClass A] (φ : A →�
     simpa [hφ] using
       (φ : A →ₙₐ[𝕜] 𝕜).toStrongDual.le_opNorm_of_le (x := 1) (c := 1) (by simp)
 
-@[deprecated (since := "2026-09-21")]
+@[deprecated (since := "2026-10-30")]
 alias AlgHom.toContinuousLinearMap_norm := AlgHom.norm_toStrongDual_toNonUnitalAlgHom
 
 namespace WeakDual
@@ -987,6 +987,6 @@ theorem exp_mem_spectrum_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
     sub_eq_iff_eq_add'.mpr h₃, Commute.isUnit_mul_iff (h₀ ▸ h₁ : _ * b = b * _)]
   exact not_and_of_not_left _ (not_and_of_not_left _ ((not_iff_not.mpr IsUnit.sub_iff).mp hz))
 
-@[deprecated (since := "2026-09-21")] alias spectrum.exp_mem_exp := exp_mem_spectrum_exp
+@[deprecated (since := "2026-10-30")] alias spectrum.exp_mem_exp := exp_mem_spectrum_exp
 
 end ExpMapping

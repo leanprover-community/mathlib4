@@ -169,7 +169,7 @@ theorem exists_enorm_eq_spectralRadius (a : A) :
     ∃ z ∈ spectrum ℂ a, ‖z‖ₑ = spectralRadius ℂ a :=
   exists_enorm_spectrum_eq_spectralRadius_of_nonempty (spectrum.nonempty a)
 
-@[deprecated (since := "2026-09-22")]
+@[deprecated (since := "2026-10-30")]
 alias exists_nnnorm_eq_spectralRadius := exists_enorm_eq_spectralRadius
 
 /-- In a complex Banach algebra, if every element of the spectrum has norm strictly less than

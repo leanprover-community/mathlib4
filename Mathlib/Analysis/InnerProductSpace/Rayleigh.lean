@@ -192,7 +192,7 @@ theorem spectralRadius_eq_enorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
   obtain ⟨c, hc0, hc⟩ := T.abs_rayleighQuotient_le_of_norm_mem_resolventSet h.1 h.2
   grind [ciSup_le hc, norm_eq_iSup_rayleighQuotient T hT.isSymmetric]
 
-@[deprecated (since := "2026-09-21")] alias spectralRadius_eq_nnnorm := spectralRadius_eq_enorm
+@[deprecated (since := "2026-10-30")] alias spectralRadius_eq_nnnorm := spectralRadius_eq_enorm
 
 end ContinuousLinearMap
 
