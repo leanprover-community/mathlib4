@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.UpperLower.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Upper and lower set product
 

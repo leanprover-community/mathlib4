@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Topology.Algebra.Order.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotics of polynomial and rational functions
 
