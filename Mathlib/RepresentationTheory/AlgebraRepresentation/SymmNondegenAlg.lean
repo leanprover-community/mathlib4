@@ -93,24 +93,6 @@ class IsSymmAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k)
 class IsSeparatingLeftAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) where
   separatingLeft : ∀ a : A, (∀ b : A, Φ (a * b) = 0) → a = 0
 
-/-- `(A, Φ)` is right separating if the bilinear form `⟨x, y⟩ := Φ (x * y)` is right separating. -/
-class IsSeparatingRightAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) where
-  separatingRight : ∀ a : A, (∀ b : A, Φ (b * a) = 0) → a = 0
-
-/-- `(A, Φ)` is nondegenerate if the bilinear form `⟨x, y⟩ := Φ (x * y)` is nondegenerate. -/
-class IsNondegenAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) extends
-  IsSeparatingLeftAlg A Φ, IsSeparatingRightAlg A Φ
-
-/-- `(A, Φ)` is symmetric nondegenerate if the bilinear form `⟨x, y⟩ := Φ (x * y)` is symmetric
-nondegenerate. -/
-class IsSymmNondegenAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) extends
-  IsSymmAlg A Φ, IsSeparatingLeftAlg A Φ
-
-instance [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) [IsSymmNondegenAlg A Φ] :
-  IsNondegenAlg A Φ where
-  separatingRight := fun a ha => IsSeparatingLeftAlg.separatingLeft a <| fun b => by
-    rw [IsSymmAlg.isSymm a b (Φ := Φ), ha]
-
 lemma IsSeparatingLeftAlg.eq_iff {k A : Type*} [CommRing k] [NonUnitalNonAssocRing A] [Module k A]
     [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) [IsSeparatingLeftAlg A Φ]
     {a b : A} :
@@ -145,21 +127,21 @@ lemma IsTraceRepresentative.ne_zero_of_charZero [CharZero k] [Nontrivial V] [Mod
   simp_all [Module.finrank_eq_zero_iff_of_free, ← not_nontrivial_iff_subsingleton]
 
 variable {k A V W : Type*} [CommRing k] [Ring A] [Algebra k A] {Φ : A →ₗ[k] k}
-  [AddCommGroup V] [Module k V] [Module A V] [IsScalarTower k A V]
+  [IsSeparatingLeftAlg A Φ] [AddCommGroup V] [Module k V] [Module A V] [IsScalarTower k A V]
   [AddCommGroup W] [Module k W] [Module A W] [IsScalarTower k A W]
 
-lemma IsTraceRepresentative.unique [IsSeparatingLeftAlg A Φ] {f g : A}
-    (hf : IsTraceRepresentative V Φ f) (hg : IsTraceRepresentative V Φ g) : f = g :=
+lemma IsTraceRepresentative.unique {f g : A} (hf : IsTraceRepresentative V Φ f)
+    (hg : IsTraceRepresentative V Φ g) : f = g :=
   (IsSeparatingLeftAlg.eq_iff Φ).mpr <| fun c => by rw [hf c, hg c]
 
-lemma IsTraceRepresentative.mem_center [IsSymmNondegenAlg A Φ] {f : A}
-    (hf : IsTraceRepresentative V Φ f) : f ∈ Set.center A :=
+lemma IsTraceRepresentative.mem_center [IsSymmAlg A Φ] {f : A} (hf : IsTraceRepresentative V Φ f) :
+    f ∈ Set.center A :=
   Semigroup.mem_center_iff.mpr fun a => (IsSeparatingLeftAlg.eq_iff Φ).mpr <| fun c => by
     simp_rw [mul_assoc a f c, IsSymmAlg.isSymm a, mul_assoc f, hf _, map_mul,
       LinearMap.trace_mul_comm]
 
-theorem IsTraceRepresentative.smul_eq_zero_of_isEmpty [IsSeparatingLeftAlg A Φ] [IsSimpleModule A V]
-    [IsSimpleModule A W] [IsEmpty (V ≃ₗ[A] W)] [Module.Finite (Module.End A V) V] {f : A}
+theorem IsTraceRepresentative.smul_eq_zero_of_isEmpty [IsSimpleModule A V] [IsSimpleModule A W]
+    [IsEmpty (V ≃ₗ[A] W)] [Module.Finite (Module.End A V) V] {f : A}
     (hf : IsTraceRepresentative V Φ f) (w : W) :
     f • w = 0 := by
   let EndAV := Module.End A V
@@ -272,7 +254,7 @@ private lemma normalization_eq_smul_and_ne_zero {f a : A} (hf : IsTraceRepresent
     simp [isTraceRepresentative_iff.mp hf, hr, hr_ne_zero]
   exact ⟨by simp [r', normalization_def, mul_smul, ← hr'], hr_ne_zero⟩
 
-variable [IsSymmNondegenAlg A Φ] [IsSimpleModule A V] [IsAlgClosed k]
+variable [IsSeparatingLeftAlg A Φ] [IsSymmAlg A Φ] [IsSimpleModule A V] [IsAlgClosed k]
 
 lemma normalization_isIdempotentElem {f : A} (hf : IsTraceRepresentative V Φ f) (a : A) :
     hf.normalization a ^ 2 = hf.normalization a := by
@@ -312,10 +294,9 @@ lemma normalization_smul_of_charZero [CharZero k] {f : A} (hf : IsTraceRepresent
   simp [isTraceRepresentative_iff.mp hf, hc, this, Module.finrank_eq_zero_iff_of_free,
     ← not_nontrivial_iff_subsingleton, IsSimpleModule.nontrivial A V]
 
-omit [IsAlgClosed k] [Module.Finite k V] [IsSymmNondegenAlg A Φ] in
-theorem normalization_smul_eq_zero_of_isEmpty [IsSeparatingLeftAlg A Φ] [IsSimpleModule A W]
-    [IsEmpty (V ≃ₗ[A] W)] [Module.Finite (Module.End A V) V] {f : A}
-    (hf : IsTraceRepresentative V Φ f) (a : A) (w : W) :
+omit [IsAlgClosed k] [Module.Finite k V] [IsSymmAlg A Φ] in
+theorem normalization_smul_eq_zero_of_isEmpty [IsSimpleModule A W] [IsEmpty (V ≃ₗ[A] W)]
+    [Module.Finite (Module.End A V) V] {f : A} (hf : IsTraceRepresentative V Φ f) (a : A) (w : W) :
     hf.normalization a • w = 0 := by
   simp [normalization_def, smul_eq_zero_of_isEmpty hf]
 
