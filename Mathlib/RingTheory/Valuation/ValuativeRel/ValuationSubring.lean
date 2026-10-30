@@ -17,9 +17,6 @@ upgrades `ValuativeRel.integer` to a `ValuationSubring` for fields.
 
 Furthermore, we show that the type `ValuativeRel R` and the type `ValuationSubring R` are
 equivalent at `ValuativeRel.equivValuationSubring`.
-
-TODO: existing usage of `(ValuativeRel.valuation R).valuationSubring` should be converted to
-`ValuativeRel.valuationSubring R`.
 -/
 
 public section
@@ -37,13 +34,17 @@ def valuationSubring : ValuationSubring K where
 
 theorem mem_valuationSubring_iff {x : K} : x ∈ valuationSubring K ↔ x ≤ᵥ 1 := by rfl
 
+theorem valuationSubring_eq_valuationValuationSubring {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) [v.Compatible] :
+    valuationSubring K = v.valuationSubring := by
+  ext x
+  simp [mem_valuationSubring_iff, v.mem_valuationSubring_iff, v.vle_iff_le]
+
 variable (K) in
 @[simp]
-theorem valuationSubring_valuation_eq_valuationSubring :
-    (ValuativeRel.valuation K).valuationSubring = valuationSubring K := by
-  ext x
-  simp [mem_valuationSubring_iff, Valuation.mem_valuationSubring_iff,
-    Valuation.vle_iff_le (ValuativeRel.valuation K)]
+theorem valuationValuationSubring_valuation_eq_valuationSubring :
+    (ValuativeRel.valuation K).valuationSubring = valuationSubring K :=
+  (valuationSubring_eq_valuationValuationSubring (ValuativeRel.valuation K)).symm
 
 /-- The `ValuativeRel` induced by a valuation subring. -/
 @[instance_reducible, expose]
@@ -85,6 +86,7 @@ theorem ofValuationSubring.vle_iff_exists (r : ValuationSubring K) {x y : K} :
   by_cases h : x = 0 <;> aesop (add simp [vle_def])
 
 omit [ValuativeRel K] in
+@[simp]
 theorem ofValuation_valuationSubringValuation_eq_ofValuationSubring (r : ValuationSubring K) :
     ofValuation r.valuation = ofValuationSubring r := by
   ext x y

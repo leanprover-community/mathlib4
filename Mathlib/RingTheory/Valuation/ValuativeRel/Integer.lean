@@ -38,10 +38,15 @@ def integer : Subring R where
 
 theorem mem_integer_iff {x : R} : x ∈ integer R ↔ x ≤ᵥ 1 := by rfl
 
+theorem integer_eq_valuationInteger {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    (v : Valuation R Γ₀) [v.Compatible] :
+    integer R = v.integer := by
+  ext x
+  simp [mem_integer_iff, v.mem_integer_iff, v.vle_iff_le]
+
 variable (R) in
 @[simp]
-theorem integer_valuation_eq_integer : (ValuativeRel.valuation R).integer = integer R := by
-  ext x
-  simp [mem_integer_iff, Valuation.mem_integer_iff, Valuation.vle_iff_le (ValuativeRel.valuation R)]
+theorem valuationInteger_valuation_eq_integer : (ValuativeRel.valuation R).integer = integer R :=
+  (integer_eq_valuationInteger (ValuativeRel.valuation R)).symm
 
 end ValuativeRel
