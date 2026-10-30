@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Pairwise.Lattice
 public import Mathlib.Order.Preorder.Chain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pairwise results for chains
 
