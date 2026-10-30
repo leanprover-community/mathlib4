@@ -25,7 +25,7 @@ of a ⋆-ring are *star-orthogonal*, i.e., `p * star q = 0` and `star q * p = 0`
   `star (p + q) * (p + q) = star p * p + star q * q`.
 + `IsStarProjection.add_iff_isStarOrtho`: the sum of star projections is a star projection if and
   only if they are star-orthogonal.
-+ `isStarProjection_sum`: a finite sum of pairwise star-orthogonal star projections is a star
++ `IsStarProjection.sum`: a finite sum of pairwise star-orthogonal star projections is a star
   projection.
 -/
 
@@ -225,7 +225,7 @@ lemma IsStarProjection.add_iff_isStarOrtho [IsCancelAdd R] [HasUniqueDiv R]
 The converse holds in a star-ordered ring with proper star. See `isStarProjection_sum_iff`.
 The converse is not an immediate corollary of `IsStarProjection.add_iff_isStarOrtho` because we are
 not assuming the intermediate sums (i.e., over a subset of `s`) are star projections. -/
-lemma isStarProjection_sum {ι : Type*} {s : Finset ι} {f : ι → R}
+lemma IsStarProjection.sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hf : ∀ i ∈ s, IsStarProjection (f i)) (h : (s : Set ι).Pairwise ((· ⋆⟂ ·) on f)) :
     IsStarProjection (∑ i ∈ s, f i) := by
   induction s using Finset.cons_induction_on with
