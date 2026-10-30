@@ -514,7 +514,7 @@ other. This is the action-form of `Equiv.Perm.exists_extending_pair`. -/
 theorem exists_smul_eq_embedding {ι : Type*} [Finite ι] {β : Type*}
     (x y : ι ↪ β) : ∃ σ : Perm β, σ • x = y := by
   obtain ⟨σ, hσ⟩ := Equiv.Perm.exists_extending_pair x y x.injective y.injective
-  exact ⟨σ, Function.Embedding.ext fun i => by simp [Function.Embedding.smul_apply, hσ]⟩
+  exact ⟨σ, Function.Embedding.ext fun i => by simp [hσ]⟩
 
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
@@ -564,7 +564,7 @@ theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm 
   ext a
   obtain ⟨i, rfl⟩ := (hx x) a
   specialize hgk i
-  simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at hgk
+  simp only [smul_apply, Perm.smul_def] at hgk
   simp [← hgk, Subgroup.smul_def, Perm.smul_def]
 
 end Equiv.Perm
