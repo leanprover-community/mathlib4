@@ -9,6 +9,7 @@ public import Mathlib.Data.Set.Card
 public import Mathlib.Geometry.Group.WordMetric
 
 import Mathlib.Data.Set.Finite.List
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Growth function of a finitely generated group
@@ -26,6 +27,9 @@ the number of elements of word length at most `n`.
 * `Function.HasExponentialGrowth`: `f` dominates `n ↦ 2^n`.
 * `Function.HasSuperpolynomialGrowth`: `f` eventually exceeds every polynomial.
 * `Function.HasSubexponentialGrowth`: `log f n / n → 0`, stated with natural numbers.
+* `Function.HasIntermediateGrowth`: superpolynomial and subexponential growth.
+* `Group.Generators.growth_growthEquivalent`: the growth function is independent of the
+  finite generating family, up to `GrowthEquivalent`.
 
 ## Implementation notes
 
@@ -101,6 +105,10 @@ we have `f n ^ k ≤ 2 ^ n` for all sufficiently large `n`. -/
 def HasSubexponentialGrowth (f : ℕ → ℕ) : Prop :=
   ∀ k : ℕ, ∃ n₀, ∀ n ≥ n₀, f n ^ k ≤ 2 ^ n
 
+/-- `f` has intermediate growth if it is both superpolynomial and subexponential. -/
+def HasIntermediateGrowth (f : ℕ → ℕ) : Prop :=
+  f.HasSuperpolynomialGrowth ∧ f.HasSubexponentialGrowth
+
 lemma HasPolynomialGrowth.of_growthDominates {f g : ℕ → ℕ} (hf : f.HasPolynomialGrowth)
     (hfg : f.GrowthDominates g) : g.HasPolynomialGrowth :=
   hf.imp fun _ hd ↦ hd.trans hfg
@@ -121,7 +129,7 @@ end Function
 
 namespace Group.Generators
 
-variable {G ι : Type*} [Group G] (P : Group.Generators G ι)
+variable {G ι ι' : Type*} [Group G] (P : Group.Generators G ι)
 
 /-- The closed ball of radius `n` in the word metric: elements of word length at most `n`. -/
 @[to_additive /-- The closed ball of radius `n` in the word metric: elements of word length at most
@@ -168,6 +176,53 @@ lemma growth_eq_ncard (n : ℕ) : P.growth n = (P.wordBall n).ncard :=
 lemma growth_zero : P.growth 0 = 1 := by
   simp [growth]
 
+@[to_additive]
+lemma wordLength_wordProd_le_mul {Q : Group.Generators G ι'} {α : ℕ}
+    (hα : ∀ j, P.wordLength (Q.val j) ≤ α) (l : List (ι' × Bool)) :
+    P.wordLength (Q.wordProd l) ≤ α * l.length := by
+  induction l with
+  | nil => simp
+  | cons x l ih =>
+    rcases x with ⟨j, b⟩
+    have hj : P.wordLength (cond b (Q.val j) (Q.val j)⁻¹) ≤ α := by
+      cases b <;> simpa [wordLength_inv] using hα j
+    calc
+      P.wordLength (Q.wordProd ((j, b) :: l))
+          = P.wordLength (cond b (Q.val j) (Q.val j)⁻¹ * Q.wordProd l) := by
+            rw [wordProd_cons]
+      _ ≤ P.wordLength (cond b (Q.val j) (Q.val j)⁻¹) + P.wordLength (Q.wordProd l) :=
+            P.wordLength_mul_le _ _
+      _ ≤ α + α * l.length := Nat.add_le_add hj ih
+      _ = α * ((j, b) :: l).length := by simp [Nat.mul_succ, Nat.add_comm]
+
+/-- Any two finite generating families yield comparable word lengths. -/
+@[to_additive /-- Any two finite generating families yield comparable word lengths. -/]
+lemma exists_mul_le_wordLength [Finite ι'] (Q : Group.Generators G ι') :
+    ∃ α, ∀ g, P.wordLength g ≤ α * Q.wordLength g := by
+  obtain ⟨α, hα⟩ := (finite_range fun j : ι' ↦ P.wordLength (Q.val j)).bddAbove
+  refine ⟨α, fun g ↦ ?_⟩
+  obtain ⟨l, hl, rfl⟩ := Q.exists_isGeodesic g
+  simpa [hl.eq] using P.wordLength_wordProd_le_mul (fun j ↦ hα ⟨j, rfl⟩) l
+
+/-- The growth function of a finite generating family dominates that of any other finite
+generating family. -/
+@[to_additive /-- The growth function of a finite generating family dominates that of any other
+finite generating family. -/]
+lemma growthDominates_growth [Finite ι] [Finite ι'] (Q : Group.Generators G ι') :
+    P.growth.GrowthDominates Q.growth := by
+  obtain ⟨α, hα⟩ := P.exists_mul_le_wordLength Q
+  refine ⟨1, α, fun n ↦ ?_⟩
+  rw [one_mul]
+  refine ncard_le_ncard (fun g hg ↦ ?_) (P.finite_wordBall (α * n))
+  exact (hα g).trans (Nat.mul_le_mul_left α hg)
+
+/-- The growth of a finitely generated group is independent of the finite generating family. -/
+@[to_additive /-- The growth of a finitely generated group is independent of the finite generating
+family. -/]
+theorem growth_growthEquivalent [Finite ι] [Finite ι'] (Q : Group.Generators G ι') :
+    P.growth.GrowthEquivalent Q.growth :=
+  ⟨P.growthDominates_growth Q, Q.growthDominates_growth P⟩
+
 /-- A generating family has polynomial growth if its growth function does. -/
 @[to_additive /-- A generating family has polynomial growth if its growth function does. -/]
 def HasPolynomialGrowth : Prop := Function.HasPolynomialGrowth P.growth
@@ -183,5 +238,9 @@ def HasSuperpolynomialGrowth : Prop := Function.HasSuperpolynomialGrowth P.growt
 /-- A generating family has subexponential growth if its growth function does. -/
 @[to_additive /-- A generating family has subexponential growth if its growth function does. -/]
 def HasSubexponentialGrowth : Prop := Function.HasSubexponentialGrowth P.growth
+
+/-- A generating family has intermediate growth if its growth function does. -/
+@[to_additive /-- A generating family has intermediate growth if its growth function does. -/]
+def HasIntermediateGrowth : Prop := Function.HasIntermediateGrowth P.growth
 
 end Group.Generators
