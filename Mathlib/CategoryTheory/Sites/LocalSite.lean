@@ -109,7 +109,6 @@ noncomputable def pointPresheafFiberIso (P : Cᵒᵖ ⥤ A) :
 
 variable {A} in
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma toPresheafFiber_pointPresheafFiberIso_hom {P : Cᵒᵖ ⥤ A} (X : C) (x : (point J).fiber.obj X) :
     (point J).toPresheafFiber  _ x _ ≫ (pointPresheafFiberIso J P).hom =

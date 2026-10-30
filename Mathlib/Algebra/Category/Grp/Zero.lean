@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of (commutative) (additive) groups has a zero object.
 

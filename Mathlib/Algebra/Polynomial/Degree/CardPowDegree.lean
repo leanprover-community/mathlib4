@@ -77,9 +77,11 @@ theorem cardPowDegree_apply [DecidableEq Fq] (p : Fq[X]) :
 theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := rfl
 
 @[simp]
-theorem cardPowDegree_nonzero (p : Fq[X]) (hp : p ≠ 0) :
+theorem cardPowDegree_of_ne_zero (p : Fq[X]) (hp : p ≠ 0) :
     cardPowDegree p = (Fintype.card Fq : ℤ) ^ p.natDegree :=
   ite_eq_right hp
+
+@[deprecated (since := "2026-10-13")] alias cardPowDegree_nonzero := cardPowDegree_of_ne_zero
 
 theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue Fq[X] ℤ) :=
   have card_pos : 0 < Fintype.card Fq := Fintype.card_pos_iff.mpr inferInstance

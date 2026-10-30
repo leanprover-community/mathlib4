@@ -341,10 +341,6 @@ theorem coe_mk (e : α ≃+* β) (h) : ⇑(⟨e, h⟩ : α ≃+*o β) = e :=
 theorem mk_coe (e : α ≃+*o β) (h) : (⟨e, h⟩ : α ≃+*o β) = e :=
   ext fun _ => rfl
 
-@[deprecated "Now a syntactic equality" (since := "2026-04-09"), nolint synTaut]
-theorem toRingEquiv_eq_coe (f : α ≃+*o β) : f.toRingEquiv = f :=
-  RingEquiv.ext fun _ => rfl
-
 @[simp]
 theorem toOrderIso_eq_coe (f : α ≃+*o β) : f.toOrderIso = f :=
   OrderIso.ext rfl

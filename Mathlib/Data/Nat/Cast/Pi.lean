@@ -29,7 +29,7 @@ variable {ι : Type*} {π : ι → Type*} [∀ i, NatCast (π i)]
 instance instNatCast : NatCast (∀ i, π i) where natCast n _ := n
 
 @[simp]
-theorem natCast_apply (n : ℕ) (i : ι) : (n : ∀ i, π i) i = n :=
+protected theorem natCast_apply (n : ℕ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
 
 @[push ←]
