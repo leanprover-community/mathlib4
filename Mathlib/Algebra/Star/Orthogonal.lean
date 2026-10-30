@@ -277,6 +277,28 @@ lemma isStarOrtho_one_left : 1 ⋆⟂ q ↔ q = 0 := by
 lemma isStarOrtho_one_right : p ⋆⟂ 1 ↔ p = 0 := by
   simp [isStarOrtho_iff]
 
+section IsAddTorsionFree
+
+variable [IsAddTorsionFree R]
+
+@[simp]
+lemma isStarOrtho_natCast_left (n : ℕ) : (n : R) ⋆⟂ q ↔ q = 0 ∨ n = 0 := by
+  simp [isStarOrtho_iff, ← nsmul_eq_mul, ← nsmul_eq_mul']
+
+@[simp]
+lemma isStarOrtho_natCast_right (n : ℕ) : p ⋆⟂ (n : R) ↔ p = 0 ∨ n = 0 := by
+  rw [isStarOrtho_comm, isStarOrtho_natCast_left]
+
+@[simp]
+lemma isStarOrtho_ofNat_left (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) ⋆⟂ q ↔ q = 0 := by
+  simpa using isStarOrtho_natCast_left (R := R) (q := q) ofNat(n)
+
+@[simp]
+lemma isStarOrtho_ofNat_right (n : ℕ) [n.AtLeastTwo] : p ⋆⟂ (ofNat(n) : R) ↔ p = 0 := by
+  simpa using isStarOrtho_natCast_right (p := p) ofNat(n)
+
+end IsAddTorsionFree
+
 namespace IsStarOrtho
 
 -- TODO: add `PNat` version
