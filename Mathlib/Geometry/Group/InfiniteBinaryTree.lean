@@ -26,6 +26,8 @@ This is the tree on which the Grigorchuk group acts.
 * `InfiniteBinaryTree.TreeAut`: prefix-preserving permutations of the vertices (rooted
   automorphisms). This is a group under composition. The name `TreeAut` avoids a clash with
   `MulAut`, which mathlib abbreviates as `Aut`.
+* `InfiniteBinaryTree.TreeAut.phi`: act independently on the two subtrees of the root.
+* `InfiniteBinaryTree.TreeAut.activity`: whether the two children of a vertex are swapped.
 
 ## Tags
 
@@ -153,6 +155,82 @@ instance : Group TreeAut where
   one_mul f := TreeAut.ext fun _ ↦ rfl
   mul_one f := TreeAut.ext fun _ ↦ rfl
   inv_mul_cancel f := TreeAut.ext fun v ↦ f.toEquiv.symm_apply_apply v
+
+/-- The map underlying `phi`: apply `f₀` on the left subtree and `f₁` on the right subtree. -/
+def phiFun (f₀ f₁ : TreeAut) : InfiniteBinaryTree → InfiniteBinaryTree
+  | [] => []
+  | i :: w => i :: bif i == 0 then f₀ w else f₁ w
+
+lemma phiFun_nil (f₀ f₁ : TreeAut) : phiFun f₀ f₁ [] = [] := rfl
+
+lemma phiFun_cons (f₀ f₁ : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
+    phiFun f₀ f₁ (i :: w) = i :: bif i == 0 then f₀ w else f₁ w :=
+  rfl
+
+lemma fin2_eq_zero_or_one (i : Fin 2) : i = 0 ∨ i = 1 := by
+  have : i.val = 0 ∨ i.val = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp (Nat.le_of_lt_succ i.2)
+  rcases this with h | h <;> simp [Fin.ext_iff, h]
+
+lemma phiFun_left_inv (f₀ f₁ : TreeAut) : (phiFun f₀.symm f₁.symm).LeftInverse (phiFun f₀ f₁) := by
+  intro v
+  induction v with
+  | nil => rfl
+  | cons i w ih =>
+    rcases fin2_eq_zero_or_one i with hi | hi <;> simp [phiFun_cons, hi, Equiv.symm_apply_apply]
+
+@[simp] lemma symm_symm (f : TreeAut) : f.symm.symm = f :=
+  TreeAut.ext fun v ↦ Equiv.symm_symm_apply f.toEquiv v
+
+lemma exists_apply_succ (f : TreeAut) (v : InfiniteBinaryTree) (i : Fin 2) :
+    ∃ j, f (v.succ i) = (f v).succ j := by
+  have hpref : f v <+: f (v.succ i) := (f.map_isPrefix_iff).mp (List.prefix_append ..)
+  obtain ⟨t, ht⟩ := hpref
+  have hlen : t.length = 1 := by
+    have := congrArg List.length ht
+    simp [f.map_length, succ] at this
+    omega
+  obtain ⟨j, rfl⟩ := List.length_eq_one_iff.mp hlen
+  exact ⟨j, ht.symm⟩
+
+/-- `activity f v` is `0` if `f` does not swap the children of `v`, and `1` if it does. -/
+noncomputable def activity (f : TreeAut) (v : InfiniteBinaryTree) : Fin 2 :=
+  (exists_apply_succ f v 0).choose
+
+lemma apply_succ_zero (f : TreeAut) (v : InfiniteBinaryTree) :
+    f (v.succ 0) = (f v).succ (activity f v) :=
+  (exists_apply_succ f v 0).choose_spec
+
+/-- Combine two tree automorphisms by acting independently on the two subtrees of the root. -/
+def phi (f₀ f₁ : TreeAut) : TreeAut where
+  toEquiv :=
+    { toFun := phiFun f₀ f₁
+      invFun := phiFun f₀.symm f₁.symm
+      left_inv := phiFun_left_inv f₀ f₁
+      right_inv := fun v ↦ by
+        simpa [symm_symm] using phiFun_left_inv f₀.symm f₁.symm v }
+  map_isPrefix := by
+    intro v w
+    induction v generalizing w with
+    | nil => simp [phiFun, List.nil_prefix]
+    | cons i a ih =>
+      cases w with
+      | nil => simp [phiFun]
+      | cons j b =>
+        change i :: a <+: j :: b ↔ phiFun f₀ f₁ (i :: a) <+: phiFun f₀ f₁ (j :: b)
+        rcases fin2_eq_zero_or_one i with hi | hi <;> rcases fin2_eq_zero_or_one j with hj | hj
+        · simp only [hi, hj, phiFun, List.cons_prefix_cons, true_and]
+          exact f₀.map_isPrefix a b
+        · simp [hi, hj, phiFun, List.cons_prefix_cons]
+        · simp [hi, hj, phiFun, List.cons_prefix_cons]
+        · simp only [hi, hj, phiFun, List.cons_prefix_cons, true_and]
+          exact f₁.map_isPrefix a b
+
+@[simp] lemma phi_root (f₀ f₁ : TreeAut) : phi f₀ f₁ root = root := by
+  simp [root, phi, phiFun]
+
+@[simp] lemma phi_cons (f₀ f₁ : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
+    phi f₀ f₁ (i :: w) = i :: bif i == 0 then f₀ w else f₁ w := by
+  simp [phi, phiFun]
 
 end TreeAut
 
