@@ -82,7 +82,7 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
 
 /-- The `hom` field of structured arrows in `StructuredArrow S T`,
-as a natural transformation `(Functor.const _).obj T ⟶ proj S T ⋙ S`. -/
+as a natural transformation `(Functor.const _).obj S ⟶ proj S T ⋙ T`. -/
 @[implicit_reducible, simps]
 def ι (S : D) (T : C ⥤ D) :
     (Functor.const _).obj S ⟶ proj S T ⋙ T where

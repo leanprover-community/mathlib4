@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Limits.Over
 
 Any presheaf of types is a colimit of representable presheaves.
 This is stated in two ways for each of the variants of the
-Yoneda embedding (`yoneda`, `yonedaULift` and `shrinkYoneda`):
+Yoneda embedding (`yoneda`, `uliftYoneda` and `shrinkYoneda`):
 * as the fact that for any `P : Cᵒᵖ ⥤ Type _`, there is a colimit
 cocone involving representable presheaves that is indexed by
 the opposite category of the category of elements of `P`,
@@ -106,7 +106,7 @@ the evaluation functor `(Cᵒᵖ ⥤ Type w) ⥤ Type w` at `X`. -/
 noncomputable def isColimitYonedaCoconeObj (P : Cᵒᵖ ⥤ Type v) (X : Cᵒᵖ) :
     IsColimit (((evaluation _ _).obj X).mapCocone (yonedaCocone P)) := by
   refine (IsColimit.equivOfNatIsoOfIso
-    (isoWhiskerRight (isoWhiskerLeft _ shrinkYonedaIsoYoneda) _) _ _ ?_).1
+    (isoWhiskerRight (isoWhiskerLeft _ shrinkYonedaIsoYoneda) _) _ _ ?_)
     (isColimitShrinkYonedaCoconeObj.{v} P X)
   refine Cocone.ext (Iso.refl _) (fun _ ↦ ?_)
   ext
@@ -137,7 +137,7 @@ the evaluation functor `(Cᵒᵖ ⥤ Type w) ⥤ Type w` at `X`. -/
 noncomputable def isColimitUliftYonedaCoconeObj (P : Cᵒᵖ ⥤ Type max w v) (X : Cᵒᵖ) :
     IsColimit (((evaluation _ _).obj X).mapCocone (uliftYonedaCocone.{w} P)) := by
   refine (IsColimit.equivOfNatIsoOfIso
-    (isoWhiskerRight (isoWhiskerLeft _ uliftYonedaIsoShrinkYoneda.symm) _) _ _ ?_).1
+    (isoWhiskerRight (isoWhiskerLeft _ uliftYonedaIsoShrinkYoneda.symm) _) _ _ ?_)
     (isColimitShrinkYonedaCoconeObj.{max w v} P X)
   refine Cocone.ext (Iso.refl _) (fun _ ↦ ?_)
   ext x

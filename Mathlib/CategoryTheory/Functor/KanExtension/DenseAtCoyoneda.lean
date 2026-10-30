@@ -49,7 +49,7 @@ noncomputable def shrinkCoyonedaCocone :
 @[reassoc]
 lemma shrinkYoneda_map_app_shrinkCoyonedaCocone_ι_app_app
     {X Y : C} (f : X ⟶ Y) (u : P.Elementsᵒᵖ) :
-    dsimp% (shrinkYoneda.{w}.map f).app _ ≫ ((shrinkCoyonedaCocone P).ι.app u).app Y =
+    (shrinkYoneda.{w}.map f).app _ ≫ ((shrinkCoyonedaCocone P).ι.app u).app Y =
     ((shrinkCoyonedaCocone P).ι.app u).app X ≫ P.map f := by
   ext x
   obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
@@ -101,9 +101,8 @@ lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply (u : P.Eleme
       (shrinkYonedaCompWhiskeringLeftObjπCompColimIso P).inv.app _ u.val =
       (colimit.ι ((π P).op ⋙ shrinkYoneda.{w}.obj u.obj) (op u)
         (shrinkYonedaObjObjEquiv.symm (𝟙 _))) := by
-  have := ConcreteCategory.congr_hom (NatTrans.congr_app
-    ((colim.isColimitCoconeCompFlip _ _).comp_coconePointUniqueUpToIso_inv
-      (isColimitShrinkCoyonedaCocone P) (op u)) u.1) (shrinkYonedaObjObjEquiv.symm (𝟙 _))
+  have := congr($((colim.isColimitCoconeCompFlip _ _).comp_coconePointUniqueUpToIso_inv
+    (isColimitShrinkCoyonedaCocone P) (op u)).app u.obj (shrinkYonedaObjObjEquiv.symm (𝟙 _)))
   simp [shrinkYonedaCompWhiskeringLeftObjπCompColimIso, ← dsimp% this,
     shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm.{w}]
 
@@ -112,7 +111,7 @@ end Functor.Elements
 instance [LocallySmall.{w} C] : (shrinkCoyoneda.{w} (C := C)).IsDense where
   isDenseAt P :=
     ⟨(IsColimit.whiskerEquivalenceEquiv
-      (Functor.Elements.costructuredArrowShrinkCoyonedaEquivalence P)).2
+      (Functor.Elements.costructuredArrowShrinkCoyonedaEquivalence P)).symm
         (Functor.Elements.isColimitShrinkCoyonedaCocone.{w} P)⟩
 
 instance : (coyoneda (C := C)).IsDense :=

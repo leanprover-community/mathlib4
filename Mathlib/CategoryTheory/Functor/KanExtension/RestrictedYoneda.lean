@@ -57,21 +57,19 @@ noncomputable def isPointwiseLeftKanExtensionAlongShrinkYoneda [IsIso α]
     [∀ (P : Cᵒᵖ ⥤ Type w),
       PreservesColimit ((π P).leftOp ⋙ shrinkYoneda.{w}) L] :
     (Functor.LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
-  fun P ↦ by
+  fun P ↦
     let c (s : Cocone (CostructuredArrow.proj shrinkYoneda.{w} P ⋙ A)) :
       Cocone (((π P).leftOp ⋙ shrinkYoneda.{w, v₁, u₁}) ⋙ L) :=
       { pt := s.pt
         ι.app x :=
           inv (α.app x.unop.1.unop) ≫ s.ι.app (CostructuredArrow.mk
-            (shrinkYonedaEquiv.symm x.unop.2))
+            (shrinkYonedaEquiv.symm x.unop.val))
         ι.naturality x y f := by
-          dsimp
-          let φ : CostructuredArrow.mk (shrinkYonedaEquiv.symm x.unop.2) ⟶
+          let φ : CostructuredArrow.mk (shrinkYonedaEquiv.symm x.unop.val) ⟶
               CostructuredArrow.mk (shrinkYonedaEquiv.symm y.unop.2) :=
             CostructuredArrow.homMk f.unop.1.unop
               (by simp [← shrinkYonedaEquiv_symm_map.{w}])
           simp [dsimp% [φ] s.w φ, ← dsimp% α.naturality_assoc f.unop.1.unop]}
-    exact
     { desc s := (isColimitOfPreserves L (isColimitShrinkYonedaCocone P)).desc (c s)
       fac s j := by
         obtain ⟨X, f, rfl⟩ := CostructuredArrow.mk_surjective j
@@ -81,8 +79,8 @@ noncomputable def isPointwiseLeftKanExtensionAlongShrinkYoneda [IsIso α]
       uniq s m hm :=
         (isColimitOfPreserves L (isColimitShrinkYonedaCocone P)).hom_ext (fun ⟨x⟩ ↦ by
           rw [← cancel_epi (α.app _)]
-          have := hm (CostructuredArrow.mk (shrinkYonedaEquiv.symm x.2))
-          dsimp at this ⊢
+          have := hm (CostructuredArrow.mk (shrinkYonedaEquiv.symm x.val))
+          dsimp at this
           simp only [Category.assoc] at this
           simp [dsimp% (isColimitOfPreserves L (isColimitShrinkYonedaCocone P)).fac (c s) ⟨x⟩,
             this, c]) }
@@ -305,7 +303,7 @@ variable [L.IsLeftKanExtension α]
 
 /-- Let `α : A ⟶ uliftYoneda ⋙ L` be a pointwise left Kan extension
 of `A : C ⥤ D` along the Yoneda embedding. Then, `L` admits
-`restrictedULiftShrinkYoneda.{w} A` as a right adjoint. -/
+`restrictedULiftYoneda.{max w v₁} A` as a right adjoint. -/
 @[no_expose]
 noncomputable def restrictedULiftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v₁} A :=
   have := hasPointwiseLeftKanExtension_shrinkYoneda_of_uliftYoneda A

@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
 
 /-!
-# `F.op.lan` is a left Kan extension
+# `F.op.lan` is a pointwise left Kan extension
 
 Let `F : C ⥤ D` be a functor between locally `w`-small categories. Assume that
 `F.op.lan : (Cᵒᵖ ⥤ Type w) ⥤ Dᵒᵖ ⥤ Type w` is defined. In this file, we show
@@ -64,22 +64,19 @@ noncomputable def compShrinkYonedaIsoShrinkYonedaCompLan :
   NatIso.ofComponents (fun X ↦ Functor.leftKanExtensionUnique _
       (shrinkYonedaMap.{w} F X) (F.op.lan.obj _)
       (F.op.lanUnit.app (shrinkYoneda.{w}.obj X))) (fun {X Y} f ↦ by
-    have (P : Cᵒᵖ ⥤ Type w) : F.op.HasLeftKanExtension P := inferInstance
     apply shrinkYonedaEquiv.injective
     have eq₁ :=
-      ConcreteCategory.congr_hom
-        ((shrinkYoneda.{w}.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
-          (shrinkYonedaMap F Y) (F.op.lan.obj (shrinkYoneda.obj Y))
-            (F.op.lanUnit.app (shrinkYoneda.obj Y)) _)
-              (shrinkYonedaObjObjEquiv.symm f)
+      congr($((shrinkYoneda.{w}.obj (F.obj Y)).descOfIsLeftKanExtension_fac_app
+        (shrinkYonedaMap F Y) (F.op.lan.obj (shrinkYoneda.obj Y))
+          (F.op.lanUnit.app (shrinkYoneda.obj Y)) _)
+            (shrinkYonedaObjObjEquiv.symm f))
     have eq₂ :=
-      ConcreteCategory.congr_hom
-        ((shrinkYoneda.{w}.obj (F.obj X)).descOfIsLeftKanExtension_fac_app
-          (shrinkYonedaMap F X) (F.op.lan.obj (shrinkYoneda.obj X))
-            (F.op.lanUnit.app (shrinkYoneda.obj X)) _)
-              (shrinkYonedaObjObjEquiv.symm (𝟙 X))
-    have eq₃ := ConcreteCategory.congr_hom (congr_app (F.op.lanUnit.naturality
-      (shrinkYoneda.{w}.map f)) _) (shrinkYonedaObjObjEquiv.symm (𝟙 X))
+      congr($((shrinkYoneda.{w}.obj (F.obj X)).descOfIsLeftKanExtension_fac_app
+        (shrinkYonedaMap F X) (F.op.lan.obj (shrinkYoneda.obj X))
+          (F.op.lanUnit.app (shrinkYoneda.obj X)) _)
+            (shrinkYonedaObjObjEquiv.symm (𝟙 X)))
+    have eq₃ := congr($(F.op.lanUnit.naturality (shrinkYoneda.{w}.map f)).app
+      _ (shrinkYonedaObjObjEquiv.symm (𝟙 X)))
     dsimp [Functor.leftKanExtensionUnique,
       Functor.leftKanExtensionUniqueOfIso] at eq₁ eq₂ eq₃ ⊢
     simp only [shrinkYonedaMap_app_hom_apply.{w},
@@ -117,6 +114,7 @@ lemma compShrinkYonedaIsoShrinkYonedaCompLan_inv_app_app_eq_id (X : C) :
 `F.op.lan : (Cᵒᵖ ⥤ Type w) ⥤ Dᵒᵖ ⥤ Type w` is defined. Then, it is a pointwise
 left Kan extension of `F ⋙ shrinkYoneda : C ⥤ Dᵒᵖ ⥤ Type w` along
 the Yoneda embedding of `C`. -/
+@[no_expose]
 noncomputable def isPointwiseLeftKanExtensionLanOp :
     (Functor.LeftExtension.mk _
       (compShrinkYonedaIsoShrinkYonedaCompLan.{w} F).hom).IsPointwiseLeftKanExtension :=
@@ -159,7 +157,7 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
 
 @[simp]
 lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
-    dsimp% ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
+    ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
           ((F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)).app (op X)
         (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) := by
   apply injective_of_mono ((uliftYonedaIsoShrinkYoneda.hom.app (F.obj X)).app (op (F.obj X)))
