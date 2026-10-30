@@ -9,6 +9,9 @@ public import Mathlib.Init
 
 import Lean.Meta.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Folding through the environment efficiently
 

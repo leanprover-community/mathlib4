@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact operators and finite dimensional spaces
 

@@ -1,4 +1,7 @@
-import Mathlib.Tactic.SuccessIfFailWithMsg
+module
+
+public meta import Mathlib.Tactic.SuccessIfFailWithMsg
+
 example : True := by
   success_if_fail_with_msg "No goals to be solved" trivial; trivial
   trivial
@@ -65,9 +68,9 @@ example : True := by
 
 open Lean Meta Mathlib Tactic
 
-def alwaysFails : MetaM Unit := do throwError "I failed!"
+meta def alwaysFails : MetaM Unit := do throwError "I failed!"
 
-def doesntFail : MetaM Unit := do
+meta def doesntFail : MetaM Unit := do
   try successIfFailWithMessage "I failed!" alwaysFails
   catch _ => throwError "I *really* failed."
 

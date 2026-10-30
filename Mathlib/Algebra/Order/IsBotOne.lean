@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Order.BoundedOrder.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses expressing `IsBot 1` and `IsBot 0`
 -/
