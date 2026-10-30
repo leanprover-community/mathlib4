@@ -238,7 +238,7 @@ lemma strictMono : StrictMono σ.simplex.obj := by
 
 /-- The type (II) simplex associated to `σ : NonemptyFiniteChains.sdHorn.pairingCore.ι x₀`:
 it is obtained as the face of the type (I) `σ.simplex` given by the index `σ.index`. -/
-def simplex₂ : nerve (NonemptyFiniteChains X) _⦋σ.dim⦌ :=
+abbrev simplex₂ : nerve (NonemptyFiniteChains X) _⦋σ.dim⦌ :=
   (nerve (NonemptyFiniteChains X)).δ σ.index σ.simplex
 
 lemma simplex₂_def : σ.simplex₂ = (nerve (NonemptyFiniteChains X)).δ σ.index σ.simplex := rfl
@@ -616,13 +616,33 @@ def pairingCore.weakRankFunction : (pairingCore x₀).WeakRankFunction ℕ where
     rw [← hi]
     simp only [ι.simplex₂_def] at hi
     generalize ht : t.index = j
+    have ht' := t.isIndexI
+    rw [ht] at ht'
     obtain rfl | ⟨j, rfl⟩ := j.eq_zero_or_eq_succ
-    · obtain rfl : i = 0 := by
+    · simp only [isIndexI_zero] at ht'
+      obtain rfl : i = 0 := by
         by_contra!
         obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero this
-        sorry
+        refine s.not_isIndexI_simplex₂ 0 ?_
+        rw [isIndexI_zero, ← congr(($(hi).obj 0).finset), ← ht',
+          nerve.δ_obj, Fin.succAbove_ne_zero_zero this]
       simp [hi, ht] at hst₁
-    · sorry
+    · simp only [isIndexI_succ] at ht'
+      have hs₁ : j.castSucc ≤ i := by
+        by_contra! hs
+        obtain ⟨j, rfl⟩ := Fin.eq_succ_of_ne_zero (i := j) (by grind)
+        simp only [Fin.castSucc_succ, ← Fin.le_castSucc_iff] at hs
+        refine s.not_isIndexI_simplex₂ j.succ ?_
+        simp only [isIndexI_succ, ι.simplex₂, ← hi, nerve.δ_obj]
+        rw [Fin.succAbove_of_le_castSucc _ _ (hs.trans (by simp [Fin.castSucc_le_succ])),
+          Fin.succAbove_of_le_castSucc _ _ (by assumption), ht', Fin.castSucc_succ]
+      have hs₂ : i ≤ j.succ := by
+        sorry
+      have hs₃ : i ≠ j.succ := by
+        sorry
+      obtain hs : i = j.castSucc := by grind
+      rw [hs] at hi
+      sorry
 
 instance : (pairingCore x₀).IsRegular := by
   rw [(pairingCore x₀).isRegular_iff_nonempty_weakRankFunction]
