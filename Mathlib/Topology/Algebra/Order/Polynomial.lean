@@ -111,8 +111,8 @@ theorem tendsTo_atBot_div_nhds_one [TopologicalSpace F] [OrderTopology F] (hP : 
     Tendsto (fun x ↦ P.eval x / (P.leadingCoeff * x ^ P.natDegree)) atBot (𝓝 1) := by
   convert ((P.comp (-X)).tendsTo_atTop_div_nhds_one (by simpa)).comp
     tendsto_neg_atBot_atTop with x
-  nth_rw 2 [show x = -1 * -x by simp]
-  simp [↓mul_pow, natDegree_comp]
+  rw [congr(_ / (_ * $(show x = -1 * -x by simp) ^ _)), mul_pow]
+  simp [natDegree_comp]
   ring
 
 theorem abs_tendsto_atBot (hdeg : 0 < P.degree) : Tendsto (|P.eval ·|) atBot atTop := by
@@ -224,9 +224,9 @@ theorem div_tendsTo_atBot_div_nhds_one [TopologicalSpace F] [OrderTopology F]
       (P.leadingCoeff / Q.leadingCoeff * x ^ (P.natDegree - Q.natDegree : ℤ))) atBot (nhds 1) := by
   convert ((P.comp (-X)).div_tendsTo_atTop_div_nhds_one (Q := Q.comp (-X))
     (by simpa) (by simpa)).comp tendsto_neg_atBot_atTop with x
-  nth_rw 3 [show x = -1 * -x by simp]
-  simp [↓mul_zpow, natDegree_comp, zpow_sub₀]
-  field
+  rw [congr(_ / _ * $(show x = -1 * -x by simp) ^ _), mul_zpow]
+  simp [natDegree_comp, zpow_sub₀]
+  ring
 
 theorem div_tendsto_atBot_zero_iff_degree_lt [TopologicalSpace F] [OrderTopology F] (hQ : Q ≠ 0) :
     Tendsto (fun x ↦ P.eval x / Q.eval x) atBot (𝓝 0) ↔ P.degree < Q.degree := by
