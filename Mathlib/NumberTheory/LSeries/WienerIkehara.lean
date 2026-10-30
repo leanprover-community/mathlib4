@@ -55,7 +55,7 @@ noncomputable section
 open Complex hiding log
 open Real MeasureTheory Filter Set FourierTransform LSeries Asymptotics SchwartzMap
   Function
-open scoped Topology ContDiff ComplexConjugate
+open scoped Topology ContDiff ComplexConjugate LSeries.notation
 
 namespace SchwartzMap
 
@@ -82,9 +82,6 @@ private lemma norm_fourier_le_Q_mul : ‖𝓕 ψ u‖ ≤ ψ.Q * (1 + u ^ 2)⁻�
 
 end SchwartzMap
 
-/-- It is convenient to automatically coerce real-valued functions to complex-valued functions. -/
-local instance {E : Type*} : Coe (E → ℝ) (E → ℂ) := ⟨fun f n ↦ f n⟩
-
 namespace WienerIkehara
 
 /- The data and hypotheses for the Wiener--Ikehara theorem, supplied as individual hypotheses:
@@ -93,7 +90,7 @@ an asymptotic constant `A`, and a continuous extension `G` of `s ↦ LSeries f s
 to `re s ≥ 1` (`hG`, `hG'`). -/
 variable {f : ℕ → ℝ} {C A : ℝ} {G : ℂ → ℂ} (bound : ∀ n, ∑ i ∈ .range n, |f i| ≤ C * n)
   (hG : ContinuousOn G {s | 1 ≤ s.re})
-  (hG' : EqOn G (fun s ↦ LSeries f s - A / (s - 1)) {s | 1 < s.re}) (hpos : 0 ≤ f)
+  (hG' : EqOn G (fun s ↦ LSeries ↗f s - A / (s - 1)) {s | 1 < s.re}) (hpos : 0 ≤ f)
 
 private abbrev c₀ := π⁻¹ * 2⁻¹
 
@@ -101,7 +98,7 @@ include bound in
 private lemma C_nonneg : 0 ≤ C := (abs_nonneg (f 0)).trans (by simpa using bound 1)
 
 include hpos bound in
-private lemma lSeriesSummable {σ : ℝ} (hσ : 1 < σ) : LSeriesSummable f (σ : ℂ) := by
+private lemma lSeriesSummable {σ : ℝ} (hσ : 1 < σ) : LSeriesSummable ↗f (σ : ℂ) := by
   refine LSeriesSummable_of_sum_norm_bigO_and_nonneg (r := 1) ?_ hpos zero_le_one (by simpa)
   have := C_nonneg bound
   refine .of_bound (2 * C) <| (eventually_ge_atTop 1).mono fun n hn ↦ ?_
@@ -118,7 +115,7 @@ section FourierIdentities
 variable (σ : ℝ) (φ : 𝓢(ℝ, ℂ)) (x : ℝ)
 
 private def S₁ (f : ℕ → ℝ) (σ : ℝ) (φ : 𝓢(ℝ, ℂ)) (x : ℝ) :=
-  ∑' n, term f σ n * φ (c₀ * log (n / x))
+  ∑' n, term ↗f σ n * φ (c₀ * log (n / x))
 
 private def S₂ (A : ℝ) (σ : ℝ) (φ : 𝓢(ℝ, ℂ)) (x : ℝ) :=
   A * ↑(x ^ (1 - σ)) * ∫ u in Ici (- log x), rexp (-u * (σ - 1)) * φ (c₀ * u)
@@ -132,9 +129,9 @@ variable {x σ : ℝ} (ψ : 𝓢(ℝ, ℂ))
 
 include bound hpos in
 private lemma sum_term_mul_fourier_eq (hx : 0 < x) (hσ : 1 < σ) :
-    S₁ f σ (𝓕 ψ) x = ∫ t : ℝ, LSeries f (σ + t * I) * ψ t * x ^ (t * I) :=
+    S₁ f σ (𝓕 ψ) x = ∫ t : ℝ, LSeries ↗f (σ + t * I) * ψ t * x ^ (t * I) :=
   calc
-    _ = ∑' n, ∫ t, term f σ n * 𝐞 (-(c₀ * log (n / x) * t)) • ψ t := by
+    _ = ∑' n, ∫ t, term ↗f σ n * 𝐞 (-(c₀ * log (n / x) * t)) • ψ t := by
       simp [S₁, fourier_coe, fourier_eq, integral_const_mul]
     _ = ∫ t, ∑' n, _ := by
       refine (integral_tsum (by fun_prop) ?_).symm
@@ -223,7 +220,7 @@ private lemma sum_term_mul_sub_mul_integral_eq {ψ : 𝓢(ℝ, ℂ)}
   · refine integral_congr_ae (.of_forall fun u ↦ ?_)
     simp_rw [hG' (by simp [hσ] : 1 < (σ + u * I).re)]
     field_simp
-  · have : Continuous fun x : ℝ ↦ LSeries f (σ + x * I) := by
+  · have : Continuous fun x : ℝ ↦ LSeries ↗f (σ + x * I) := by
       refine continuous_tsum (fun i ↦ ?_) (lSeriesSummable bound hpos hσ).norm
         (by simp [norm_term_eq])
       by_cases h : i = 0
@@ -495,8 +492,8 @@ variable {x : ℝ}
 
 include bound in
 private lemma summable_term_mul (hx : 1 ≤ x) :
-    Summable fun n ↦ ‖(term f 1 n) * 𝓕 Ψ (c₀ * log (n / x))‖ :=
-  .of_nonneg_of_le (fun _ ↦ norm_nonneg _) (norm_term_mul_le Ψ x f)
+    Summable fun n ↦ ‖(term ↗f 1 n) * 𝓕 Ψ (c₀ * log (n / x))‖ :=
+  .of_nonneg_of_le (fun _ ↦ norm_nonneg _) (norm_term_mul_le Ψ x ↗f)
     (by simpa using (summable_sum_log_range bound hx).const_smul Ψ.Q)
 
 include bound hG hG' hpos in
@@ -536,7 +533,7 @@ private lemma lim_S_one_fourier_schwartz : Tendsto (S f A 1 (𝓕 Ψ)) atTop (�
         unfold S₁
         grw [ofReal_one, norm_tsum_le_tsum_norm (summable_term_mul bound _ hx),
           (summable_term_mul bound _ hx).tsum_mono (by simpa using this.const_smul (Ψ - φ).Q)
-          (norm_term_mul_le _ x f), ← Summable.tsum_const_smul _ this]
+          (norm_term_mul_le _ x ↗f), ← Summable.tsum_const_smul _ this]
         simp
       _ ≤ _ := by
         grw [smul_eq_mul, mul_assoc, tsum_le_of_sum_range_le (fun _ ↦ by positivity)]
