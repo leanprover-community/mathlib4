@@ -163,7 +163,7 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
 
 @[simp]
 lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
-    ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
+    dsimp% ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
           ((F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)).app (op X)
         (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) := by
   apply injective_of_mono ((uliftYonedaIsoShrinkYoneda.hom.app (F.obj X)).app (op (F.obj X)))
