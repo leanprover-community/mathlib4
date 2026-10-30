@@ -53,7 +53,6 @@ namespace IsFlasque
 
 attribute [instance low] IsFlasque.epi
 
-set_option backward.defeqAttrib.useBackward true in
 instance pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
     IsFlasque (f _* F) where
   epi {U V} i := by

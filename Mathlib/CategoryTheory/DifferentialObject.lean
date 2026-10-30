@@ -253,7 +253,6 @@ variable [HasZeroMorphisms C] [HasShift C S]
 
 noncomputable section
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The shift functor on `DifferentialObject S C`. -/
 @[simps]
 def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C where
