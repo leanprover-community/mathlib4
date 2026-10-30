@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Fintype.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pigeonhole-like results for Fin
 

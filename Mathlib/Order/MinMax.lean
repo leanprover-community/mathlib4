@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.OpClass
 public import Mathlib.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `max` and `min`
 

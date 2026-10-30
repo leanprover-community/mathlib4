@@ -769,7 +769,7 @@ theorem isSymmetric_adjoint_mul_self (T : E →ₗ[𝕜] E) : IsSymmetric (T.adj
 /-- The Gram operator T†T is a positive operator. -/
 theorem re_inner_adjoint_mul_self_nonneg (T : E →ₗ[𝕜] E) (x : E) :
     0 ≤ re ⟪x, (T.adjoint * T) x⟫ := by
-  simp only [Module.End.mul_apply, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
+  simp only [mul_apply_eq_comp, adjoint_inner_right, inner_self_eq_norm_sq_to_K]
   norm_cast
   exact sq_nonneg _
 

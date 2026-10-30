@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.GradedAlgebra.RingHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `R`-linear homomorphisms of graded algebras
 

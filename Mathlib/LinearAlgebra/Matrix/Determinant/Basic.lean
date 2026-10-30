@@ -141,7 +141,7 @@ theorem det_mul_aux {M N : Matrix n n R} {p : n → n} (H : ¬Bijective p) :
 theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
   calc
     det (M * N) = ∑ p : n → n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
-      simp only [det_apply', mul_apply, prod_univ_sum, mul_sum, Fintype.piFinset_univ]
+      simp only [det_apply', Matrix.mul_apply, prod_univ_sum, mul_sum, Fintype.piFinset_univ]
       rw [Finset.sum_comm]
     _ = ∑ p : n → n with Bijective p, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
       refine (sum_subset (filter_subset _ _) fun f _ hbij ↦ det_mul_aux ?_).symm
@@ -719,7 +719,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
       · have hn := (not_exists.mp ha) a2
         exact absurd hx.symm hn
       · rw [Finset.prod_eq_zero (Finset.mem_univ (Sum.inl a)), mul_zero]
-        rw [hx, fromBlocks_apply₂₁, zero_apply]
+        rw [hx, fromBlocks_apply₂₁, Matrix.zero_apply]
 
 /-- The determinant of a 2×2 block matrix with the upper-right block equal to zero is the product of
 the determinants of the diagonal blocks. For the generalization to any number of blocks, see
