@@ -1289,8 +1289,7 @@ theorem measurable_uncurry_of_continuous_of_measurable {α β ι : Type*} [Topol
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 
 /-- A countable family of strongly measurable functions is jointly strongly measurable when
-singletons in the index space are measurable. No topology on the index space or metrizability of
-the target is needed. -/
+singletons in the index space are measurable. -/
 theorem stronglyMeasurable_uncurry_of_countable {α β ι : Type*} [MeasurableSpace ι]
     [Countable ι] [MeasurableSingletonClass ι] [MeasurableSpace α] [TopologicalSpace β]
     {u : ι → α → β} (h : ∀ i, StronglyMeasurable (u i)) :
