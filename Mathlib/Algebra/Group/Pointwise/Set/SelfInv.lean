@@ -12,9 +12,16 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
 This file specialises `IsSelfInv` to sets equipped with the pointwise inversion.
 
+See also `Mathlib/Algebra/Group/Pointwise/Finset/SelfInv.lean` for the finset version.
+
 -/
 
 public section
+
+/- Ensure that `@[to_additive]` uses the right namespace. -/
+insert_to_additive_translation Set.IsSelfInv Set.IsSelfNeg
+
+namespace Set
 
 open Set
 open scoped Pointwise
@@ -65,7 +72,7 @@ protected lemma IsSelfInv.sInter {S : Set (Set α)} (h : ∀ s ∈ S, IsSelfInv 
     IsSelfInv (⋂₀ S) :=
   sInter_eq_iInter ▸ .iInter fun s ↦ h s s.2
 
-@[to_additive]
+@[to_additive Set.IsSelfNeg.prod]
 protected lemma IsSelfInv.prod {t : Set β} (hs : IsSelfInv s) (ht : IsSelfInv t) :
     IsSelfInv (s ×ˢ t) := by
   rw [isSelfInv_iff, inv_prod, hs, ht]
@@ -114,4 +121,25 @@ protected lemma IsSelfInv.inv_mem (h : IsSelfInv s) {x : α} (hx : x ∈ s) : x�
 protected lemma IsSelfInv.diff (hs : IsSelfInv s) (ht : IsSelfInv t) : IsSelfInv (s \ t) := by
   simpa only [sdiff_eq] using hs.inter ht.compl
 
+@[to_additive]
+lemma isSelfInv_inter_inv : IsSelfInv (s ∩ s⁻¹) := by
+  rw [isSelfInv_iff, inter_inv, inv_inv, inter_comm]
+
+@[to_additive]
+lemma isSelfInv_union_inv : IsSelfInv (s ∪ s⁻¹) := by
+  rw [isSelfInv_iff, union_inv, inv_inv, union_comm]
+
 end InvolutiveInv
+
+section Group
+
+variable [Group α] [DivisionMonoid β] {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+  {s : Set α}
+
+@[to_additive]
+protected lemma IsSelfInv.image (f : F) (hs : IsSelfInv s) : IsSelfInv (f '' s) := by
+  rw [isSelfInv_iff, ← Set.image_inv, hs.inv_eq]
+
+end Group
+
+end Set

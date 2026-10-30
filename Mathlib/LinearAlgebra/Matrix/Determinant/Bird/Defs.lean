@@ -5,9 +5,9 @@ Authors: Paul Cadman
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Fin
-public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.LinearAlgebra.Matrix.Defs
+public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
 

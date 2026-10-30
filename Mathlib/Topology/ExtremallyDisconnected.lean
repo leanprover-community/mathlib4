@@ -5,8 +5,8 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Extremally disconnected spaces
@@ -161,7 +161,8 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
     fun c hc _ h => mem_iInter.mp h ⟨c, hc⟩⟩
   -- prove intersection of chain is mapped onto $A$
   by_cases hC : Nonempty C
-  · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
+  · refine eq_univ_of_forall fun a =>
+      (inter_nonempty_iff_exists_left (s := ⋂ c : C, (c : Set D)) (t := X ⁻¹' {a})).mp ?_
     -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (X ⁻¹' {a}) _ ▸
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _

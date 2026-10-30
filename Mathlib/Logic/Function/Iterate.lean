@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Function.Conjugate
 
 /-!
 # Iterations of a function

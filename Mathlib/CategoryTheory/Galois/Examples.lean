@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.Action.Concrete
 public import Mathlib.CategoryTheory.Action.Limits
+public import Mathlib.CategoryTheory.Galois.Basic
 
 /-!
 # Examples of Galois categories and fiber functors

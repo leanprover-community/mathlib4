@@ -11,9 +11,9 @@ public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Order.Interval.Finset.Basic
 
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Group.Embedding
 
 /-!
 

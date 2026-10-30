@@ -5,8 +5,8 @@ Authors: Kenny Lau, Eric Wieser, Antoine Chambert-Loir, María-Inés de Frutos-F
 -/
 module
 
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.Prod
 
 import Mathlib.Algebra.Order.Group.Nat
 

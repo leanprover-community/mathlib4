@@ -5,8 +5,8 @@ Authors: Josha Dekker
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.CardinalInter
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # The cocardinal filter

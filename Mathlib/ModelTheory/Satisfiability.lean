@@ -7,8 +7,8 @@ module
 
 public import Mathlib.ModelTheory.Bundled
 
-import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.ModelTheory.Skolem
+import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!

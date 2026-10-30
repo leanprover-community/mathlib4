@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Subobject.WellPowered
 
 /-!
 # Subobjects in the category of structured arrows
@@ -173,7 +173,6 @@ theorem unop_left_comp_underlyingIso_hom_unop {A : CostructuredArrow S T}
     rw [← Quiver.Hom.unop_op f.unop.left]
   rw [← unop_comp, Subobject.underlyingIso_hom_comp_eq_mk]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Projecting and then lifting a quotient recovers the original quotient, because there is at most
     one morphism making the projected quotient into a costructured arrow. -/
