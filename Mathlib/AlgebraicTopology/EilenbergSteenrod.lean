@@ -212,8 +212,7 @@ instance : IsClosedUnderIsomorphisms (hasExcisionIso.{u} C c) where
 
 /-- A `HomologyPretheory` is additive if its homology functor preserves coproducts. -/
 class IsAdditive where
-  /-- An extraordinary Eilenberg-Steenrod homology functor preserves colimits. -/
-  preserves_coproducts_u (J : Type u) (i : ι) :
+  preserves_coproducts (J : Type u) (i : ι) :
     PreservesColimitsOfShape (Discrete J) (HP.H i) := by infer_instance
 
 attribute [instance] IsAdditive.preserves_coproducts_u
