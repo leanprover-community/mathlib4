@@ -411,4 +411,7 @@ alias ⟨_, IsStarOrtho.star_right⟩ := isStarOrtho_star_right_iff
 lemma isStarOrtho_iff_mul_eq_zero_of_comm : a ⋆⟂ b ↔ a * b = 0 :=
   (IsStarNormal.all a).isStarOrtho_iff_mul_eq_zero (.all a b)
 
+alias ⟨IsStarOrtho.mul_eq_zero_of_comm, IsStarOrtho.of_mul_eq_zero⟩ :=
+  isStarOrtho_iff_mul_eq_zero_of_comm
+
 end Comm
