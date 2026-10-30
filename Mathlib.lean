@@ -6107,6 +6107,7 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 public import Mathlib.NumberTheory.ModularForms.LevelOne.GradedRing
 public import Mathlib.NumberTheory.ModularForms.NormTrace
+public import Mathlib.NumberTheory.ModularForms.OrderAtInfty
 public import Mathlib.NumberTheory.ModularForms.Petersson
 public import Mathlib.NumberTheory.ModularForms.ProperlyDiscontinuous
 public import Mathlib.NumberTheory.ModularForms.QExpansion
@@ -7694,7 +7695,9 @@ public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.Have
 public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.Hessenberg.Charpoly
+public import Mathlib.Tactic.Hessenberg.CoeffList
 public import Mathlib.Tactic.Hessenberg.Reduce
+public import Mathlib.Tactic.Hessenberg.Similarity
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
@@ -7796,6 +7799,7 @@ public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Tactic.NoncommRing
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Tactic.Nontriviality.Core
+public import Mathlib.Tactic.NormCharpoly
 public import Mathlib.Tactic.NormDet
 public import Mathlib.Tactic.NormMatMul
 public import Mathlib.Tactic.NormNum
