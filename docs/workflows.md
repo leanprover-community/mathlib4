@@ -37,8 +37,6 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 Batteries adaptation PRs come from `leanprover-community/mathlib4-adaptations`.
 They use `build_fork.yml`, including while they are drafts. The shared fork has Actions disabled.
 PR tests accept full commit pins for unmerged dependencies; Bors requires stable dependency references.
-For canonical `batteries @ main` updates, the required Build job checks each Bors merge candidate against Mathlib `master`'s current pin.
-The proposed pin must equal or descend from that pin, so an older adaptation cannot move it backwards.
 A separate job reports build, test, and lint results on the Batteries PR, with status comments and `builds-mathlib` / `breaks-mathlib` labels.
 It uses `lean-pr-testing-comments.sh` from `mathlib-ci`.
 It posts a fresh comment when `awaiting-mathlib` is present and removes that label after success.

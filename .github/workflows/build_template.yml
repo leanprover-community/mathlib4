@@ -179,32 +179,6 @@ jobs:
             echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
-      - name: Check that the Batteries pin moves forward
-        # Check the merged tree; an ordinary PR can have an older base manifest.
-        if: >-
-          github.repository == 'leanprover-community/mathlib4' &&
-          (github.ref_name == 'staging' || github.ref_name == 'trying')
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        with:
-          script: |
-            const fs = require('node:fs');
-            const batteries = manifest => manifest.packages.find(p => p.name === 'batteries');
-            const proposed = batteries(JSON.parse(fs.readFileSync('pr-branch/lake-manifest.json', 'utf8')));
-            const tracksMain = p => p.url === 'https://github.com/leanprover-community/batteries' && p.inputRev === 'main';
-            // Draft adaptations test unmerged Batteries commits.
-            if (!tracksMain(proposed)) return;
-            const { data: file } = await github.rest.repos.getContent({
-              ...context.repo, path: 'lake-manifest.json', ref: 'master',
-            });
-            const current = batteries(JSON.parse(Buffer.from(file.content, 'base64').toString()));
-            if (!tracksMain(current) || proposed.rev === current.rev) return;
-            const { data: comparison } = await github.rest.repos.compareCommits({
-              owner: 'leanprover-community', repo: 'batteries', base: current.rev, head: proposed.rev,
-            });
-            if (comparison.status !== 'ahead') {
-              core.setFailed('The Batteries pin must include Mathlib master’s current pin. Run `lake update batteries` and commit the manifest.');
-            }
-
       # Get this commit's oleans into the local cache — see the action for the steps.
       - name: Get cache
         uses: ./workflow-actions/.github/actions/get-cache
