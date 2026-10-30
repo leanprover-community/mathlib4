@@ -129,7 +129,7 @@ noncomputable abbrev intersectionNondeg (i j : Fin (p + 1)) :
   .ofSimplex (nonDegenerateEquiv i).val ⊓ .ofSimplex (nonDegenerateEquiv j).val
 
 /-- Given `j : Fin (p + 2)`, this is the non-degenerate `p`-simplex of `Δ[p] ⊗ Δ[1]`
-which correspond to the stricly monotone map `Fin (p + 1) → Fin (p + 1) × Fin 2`
+which correspond to the strictly monotone map `Fin (p + 1) → Fin (p + 1) × Fin 2`
 whose first projection is the identity, and whose second projection takes `j`-times
 the value `0`. -/
 @[simps coe_fst coe_snd]

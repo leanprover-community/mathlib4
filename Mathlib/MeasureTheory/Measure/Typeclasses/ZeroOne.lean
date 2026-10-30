@@ -63,7 +63,7 @@ lemma measure_inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : Measurabl
   rcases μ.zero_one s with (_ | hμs)
     <;> rcases μ.zero_one t with (_ | hμt)
     <;> rcases μ.zero_one (s ∩ t)
-  all_goals try simp_all only [zero_le, zero_ne_one]
+  all_goals simp_all only [zero_le, zero_ne_one]
   suffices μ (s ∩ t)ᶜ ≤ 0 by
     rw [measure_compl (hs.inter ht) (by simp), measure_univ ‹_›] at this
     simp_all
@@ -80,7 +80,7 @@ lemma measure_inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : Measurab
   have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
   cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
-  all_goals try simp_all [measure_inter_eq_one]
+  all_goals simp_all [measure_inter_eq_one]
 
 end IsZeroOneMeasure
 

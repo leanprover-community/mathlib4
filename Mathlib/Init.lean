@@ -5,7 +5,6 @@ public meta import Batteries.Tactic.HelpCmd
 -- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
 -- available globally.
 public meta import ImportGraph.Tools
-public meta import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
 public meta import Lean.Linter.Sets -- for the definition of linter sets
 public meta import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public meta import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
@@ -30,8 +29,6 @@ public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.Style
 public meta import Mathlib.Tactic.Linter.TacticDocumentation
 public meta import Mathlib.Tactic.Linter.UnusedTactic
--- The following import contains the environment extension for the unused tactic linter.
-public meta import Mathlib.Tactic.Linter.UnusedTacticExtension
 public meta import Mathlib.Tactic.Linter.Whitespace
 -- This import makes the `#min_imports in` command available globally.
 public meta import Mathlib.Tactic.MinImports
@@ -39,6 +36,8 @@ public meta import Mathlib.Tactic.TacticAnalysis.Declarations
 public meta import Mathlib.Tactic.TypeStar
 -- This import makes the binder plicity code action available globally
 public meta import Mathlib.Util.CodeActions
+-- This import makes the custom syntax used in Mathlib's Verso docstrings available globally.
+public meta import Mathlib.Util.VersoRoles
 -- This import makes the `alias` command available globally.
 public import Batteries.Tactic.Alias
 -- This import makes the `proof_wanted` command available globally.
@@ -155,4 +154,4 @@ run_cmd liftTermElabM do
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
 
-#allow_unused_tactic! Mathlib.Linter.Style.show
+allow_unused_tactic Mathlib.Linter.Style.show

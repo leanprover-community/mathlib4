@@ -42,7 +42,7 @@ variable {R : Type v} {M : Type w} [CommSemiring R] [AddCommMonoid M] [Module R 
 theorem ker_aeval_ring_hom'_unit_polynomial (f : End R M) (c : R[X]ˣ) :
     LinearMap.ker (aeval f (c : R[X])) = ⊥ :=
   LinearMap.ker_eq_bot'.mpr fun m hm ↦ by
-    simpa [← mul_apply, ← aeval_mul] using congr(c⁻¹.1.aeval f $hm)
+    simpa [← mul_apply_eq_comp, ← aeval_mul] using congr(c⁻¹.1.aeval f $hm)
 
 end CommSemiring
 
@@ -57,7 +57,7 @@ theorem aeval_apply_of_hasEigenvector (h : f.HasEigenvector μ x) :
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
   · intro n a hna
-    rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
+    rw [mul_comm, pow_succ', mul_assoc, map_mul, mul_apply_eq_comp, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       map_smulₛₗ, RingHom.id_apply, mul_comm]
 

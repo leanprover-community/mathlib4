@@ -33,7 +33,7 @@ variable {ι : Type*} {π : ι → Type*} [∀ i, IntCast (π i)]
 instance instIntCast : IntCast (∀ i, π i) where intCast n _ := n
 
 @[simp]
-theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
+protected theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
 
 @[push ←]
