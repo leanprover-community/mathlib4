@@ -5,9 +5,9 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 
 /-!
 # Quadratic maps
@@ -405,7 +405,7 @@ instance : SMul S (QuadraticMap R M N) :=
         letI := SMulCommClass.symm S R N
         ⟨a • B, by simp [h]⟩ }⟩
 
-instance : IsSMulApply S (QuadraticMap R M N) M N where
+instance : IsSMulApply S (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_smul := FunLike.coe_smul
 
@@ -424,7 +424,7 @@ instance : Zero (QuadraticMap R M N) :=
       toFun_smul := fun a _ => by simp only [smul_zero]
       exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
 
-instance : IsZeroApply (QuadraticMap R M N) M N where
+instance : IsZeroApply (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_zero := FunLike.coe_zero
 
@@ -443,7 +443,7 @@ instance : Add (QuadraticMap R M N) :=
         ⟨B + B', fun x y => by
           simp_rw [Pi.add_apply, h, h', LinearMap.add_apply, add_add_add_comm]⟩ }⟩
 
-instance : IsAddApply (QuadraticMap R M N) M N where
+instance : IsAddApply (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_add := FunLike.coe_add
 
@@ -484,7 +484,7 @@ instance : Neg (QuadraticMap R M N) :=
         let ⟨B, h⟩ := Q.exists_companion
         ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩
 
-instance : IsNegApply (QuadraticMap R M N) M N where
+instance : IsNegApply (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_neg := FunLike.coe_neg
 
@@ -493,7 +493,7 @@ instance : IsNegApply (QuadraticMap R M N) M N where
 instance : Sub (QuadraticMap R M N) :=
   ⟨fun Q Q' => (Q + -Q').copy (Q - Q') (sub_eq_add_neg _ _)⟩
 
-instance : IsSubApply (QuadraticMap R M N) M N where
+instance : IsSubApply (QuadraticMap R M N) where
 
 @[deprecated (since := "2026-07-27")] alias coeFn_sub := FunLike.coe_sub
 
@@ -755,8 +755,8 @@ theorem toQuadraticMap_sub (B₁ B₂ : BilinMap R M N) :
   rfl
 
 theorem polar_toQuadraticMap (x y : M) : polar (toQuadraticMap B) x y = B x y + B y x := by
-  simp only [polar, toQuadraticMap_apply, map_add, add_apply, add_assoc, add_comm (B y x) _,
-    add_sub_cancel_left, sub_eq_add_neg _ (B y y), add_neg_cancel_left]
+  simp only [polar, toQuadraticMap_apply, map_add, LinearMap.add_apply, add_assoc,
+    add_comm (B y x) _, add_sub_cancel_left, sub_eq_add_neg _ (B y y), add_neg_cancel_left]
 
 theorem polarBilin_toQuadraticMap : polarBilin (toQuadraticMap B) = B + flip B :=
   LinearMap.ext₂ polar_toQuadraticMap
@@ -818,12 +818,10 @@ instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
     (1 : Module.End R M)
   invOf_mul_self := by
     ext m
-    dsimp [Submonoid.smul_def]
-    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
+    simp [Submonoid.smul_def, ← ofNat_smul_eq_nsmul R]
   mul_invOf_self := by
     ext m
-    dsimp [Submonoid.smul_def]
-    rw [← ofNat_smul_eq_nsmul R, smul_invOf_smul (2 : R) m]
+    simp [Submonoid.smul_def, ← ofNat_smul_eq_nsmul R]
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
@@ -865,7 +863,7 @@ set_option backward.defeqAttrib.useBackward true in
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
   dsimp [associated_apply]
-  rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', Module.End.one_apply,
+  rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', one_apply_eq_self,
     polar]
 
 theorem associated_isSymm (Q : QuadraticMap R M N) (x y : M) :
@@ -1362,7 +1360,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
         intro y
         refine ⟨-B x y / B x x, fun z hz => ?_⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
-        rw [map_smul, smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
+        rw [map_smul, LinearMap.smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
           div_mul_cancel₀ _ hx, add_neg_cancel, mul_zero])
   refine ⟨b, ?_⟩
   rw [Basis.coe_mkFinCons]

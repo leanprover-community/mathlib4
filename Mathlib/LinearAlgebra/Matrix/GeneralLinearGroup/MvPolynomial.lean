@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 import Mathlib.Algebra.MvPolynomial.Funext
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomial identities from evaluation at invertible matrices
 

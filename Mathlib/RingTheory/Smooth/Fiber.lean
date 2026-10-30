@@ -6,9 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.Field
+public import Mathlib.RingTheory.Etale.Locus
 public import Mathlib.RingTheory.Kaehler.TensorProduct
 public import Mathlib.RingTheory.Smooth.Local
-public import Mathlib.RingTheory.Etale.Locus
 
 import Mathlib.RingTheory.Flat.Equalizer
 

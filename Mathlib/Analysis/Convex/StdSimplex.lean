@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Geometry.Convex.ConvexSpace.Barycenter
 public import Mathlib.Geometry.Convex.ConvexSpace.CompactSpaceStdSimplex
-public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
+public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 
 import Mathlib.Analysis.Convex.PathConnected

@@ -50,6 +50,8 @@ of sets in form `{ x | ∃ y, p x y }`.
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 variable {M N ι κ F : Type*} [AddCommMonoid M] [AddCommMonoid N]
@@ -209,8 +211,7 @@ theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F M N] [AddEquivClass F
 the index). It is a special case of `IsSemilinearSet.image`. -/
 theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → M)} (hs : IsSemilinearSet s) :
     IsSemilinearSet { x | ∃ y, Sum.elim x y ∈ s } := by
-  convert hs.image (LinearMap.funLeft ℕ M Sum.inl)
-  ext x
+  convert hs.image (LinearMap.funLeft ℕ M Sum.inl) with x
   constructor
   · intro ⟨y, hy⟩
     exact ⟨Sum.elim x y, hy, rfl⟩
@@ -336,7 +337,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
   classical
   rw [isLinearSet_iff] at hs
   rcases hs with ⟨a, t, rfl⟩
-  induction hn : t.card using Nat.strong_induction_on generalizing a t with | _ n ih
+  induction hn : #t using Nat.strong_induction_on generalizing a t with | _ n ih
   subst hn
   by_cases hindep : LinearIndepOn ℕ id (t : Set M)
   · exact IsProperLinearSet.isProperSemilinearSet ⟨a, t, by simpa⟩
@@ -402,7 +403,7 @@ theorem Nat.isSemilinearSet_iff_ultimately_periodic {s : Set ℕ} :
       apply hS at ht
       rw [isProperLinearSet_iff] at ht
       rcases ht with ⟨a, t, ht, rfl⟩
-      have hcard : t.card ≤ 1 := by simpa [CommSemiring.rank_self] using ht.cardinal_le_rank
+      have hcard : #t ≤ 1 := by simpa [CommSemiring.rank_self] using ht.cardinal_le_rank
       simp_rw [Finset.card_le_one_iff_subset_singleton, Finset.subset_singleton_iff] at hcard
       rcases hcard with ⟨b, (rfl | rfl)⟩
       · refine ⟨a + 1, 1, zero_lt_one, fun x hx => ?_⟩
