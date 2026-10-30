@@ -6,9 +6,9 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.Algebra.Module.FunLikeSMul
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -49,7 +49,7 @@ protected theorem vadd_apply [AddGroup G] [AddAction G β] (g : G) (f : α ↪ �
     (g +ᵥ f) a = g +ᵥ f a :=
   rfl
 
-@[deprecated smul_apply +typeChanged (since := "2026-10-29")]
+@[to_additive existing, deprecated smul_apply +typeChanged (since := "2026-10-29")]
 protected theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) :
     (g • f) a = g • f a :=
   rfl
@@ -58,7 +58,7 @@ protected theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) 
 theorem coe_vadd [AddGroup G] [AddAction G β] (g : G) (f : α ↪ β) : ⇑(g +ᵥ f) = g +ᵥ ⇑f :=
   rfl
 
-@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-29")]
+@[to_additive existing, deprecated FunLike.coe_smul +typeChanged (since := "2026-10-29")]
 theorem coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • f) = g • ⇑f :=
   rfl
 
@@ -73,10 +73,10 @@ instance [Group G] [Group G'] [MulAction G β] [MulAction G' β] [SMulCommClass 
 
 instance [Group G] [MulAction G β] [MulAction Gᵐᵒᵖ β] [IsCentralScalar G β] :
     IsCentralScalar G (α ↪ β) :=
-  ⟨fun _ _ => Function.Embedding.ext fun _ => op_smul_eq_smul _ _⟩
+  FunLike.isCentralScalar
 
 @[to_additive]
 instance [Group G] [MulAction G β] : MulAction G (α ↪ β) :=
-  DFunLike.coe_injective.mulAction _ coe_smul
+  fast_instance% FunLike.mulAction
 
 end Function.Embedding
