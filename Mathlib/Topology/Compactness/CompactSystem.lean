@@ -29,9 +29,6 @@ This file defines compact systems of sets.
 * `isCompactSystem_isCompact`: In a `T2Space`, the set of compact sets is a compact system.
 * `IsCompactSystem.supClosure`: If `S` is a compact system, then the set of finite unions of sets
   in `S` is also a compact system.
-* `IsCompactSystem.fst_image_iInter`: If `T` is a compact system, then the projection on the first
-  coordinate commutes with the intersection of a decreasing sequence of finite unions of products
-  `s ×ˢ t` with `t ∈ T`.
 * `IsCompactSystem.countableInfClosure`: If `S` is a compact system, then the set of countable
   intersections of sets in `S` is a compact system.
 * `IsCompactSystem.prod`, `IsCompactSystem.pi`: Products of sets from compact systems form a
