@@ -84,30 +84,36 @@ public section
 section definitions
 
 variable {k : Type*} (A : Type*) [CommSemiring k] [NonUnitalNonAssocSemiring A] [Module k A]
-  (Φ : A →ₗ[k] k)
 
 /-- `(A, Φ)` is symmetric if the bilinear form `⟨x, y⟩ := Φ (x * y)` is symmetric. -/
-class IsSymmAlg where isSymm : ∀ a b : A, Φ (a * b) = Φ (b * a)
+class IsSymmAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) where
+  isSymm : ∀ a b : A, Φ (a * b) = Φ (b * a)
 
 /-- `(A, Φ)` is left separating if the bilinear form `⟨x, y⟩ := Φ (x * y)` is left separating. -/
-class IsSeparatingLeftAlg where separatingLeft : ∀ a : A, (∀ b : A, Φ (a * b) = 0) → a = 0
+class IsSeparatingLeftAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) where
+  separatingLeft : ∀ a : A, (∀ b : A, Φ (a * b) = 0) → a = 0
 
 /-- `(A, Φ)` is right separating if the bilinear form `⟨x, y⟩ := Φ (x * y)` is right separating. -/
-class IsSeparatingRightAlg where separatingRight : ∀ a : A, (∀ b : A, Φ (b * a) = 0) → a = 0
+class IsSeparatingRightAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) where
+  separatingRight : ∀ a : A, (∀ b : A, Φ (b * a) = 0) → a = 0
 
 /-- `(A, Φ)` is nondegenerate if the bilinear form `⟨x, y⟩ := Φ (x * y)` is nondegenerate. -/
-class IsNondegenAlg extends IsSeparatingLeftAlg A Φ, IsSeparatingRightAlg A Φ
+class IsNondegenAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) extends
+  IsSeparatingLeftAlg A Φ, IsSeparatingRightAlg A Φ
 
 /-- `(A, Φ)` is symmetric nondegenerate if the bilinear form `⟨x, y⟩ := Φ (x * y)` is symmetric
 nondegenerate. -/
-class IsSymmNondegenAlg extends IsSymmAlg A Φ, IsSeparatingLeftAlg A Φ where
+class IsSymmNondegenAlg [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) extends
+  IsSymmAlg A Φ, IsSeparatingLeftAlg A Φ where
 
-instance [IsSymmNondegenAlg A Φ] : IsNondegenAlg A Φ where
+instance [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) [IsSymmNondegenAlg A Φ] :
+  IsNondegenAlg A Φ where
   separatingRight := fun a ha => IsSeparatingLeftAlg.separatingLeft a <| fun b => by
     rw [IsSymmAlg.isSymm a b (Φ := Φ), ha]
 
-lemma IsSeparatingLeftAlg.eq_iff {k A : Type*} [CommRing k] [NonUnitalNonAssocRing A]
-  [Module k A] (Φ : A →ₗ[k] k) [IsSeparatingLeftAlg A Φ] {a b : A} :
+lemma IsSeparatingLeftAlg.eq_iff {k A : Type*} [CommRing k] [NonUnitalNonAssocRing A] [Module k A]
+    [SMulCommClass k A A] [IsScalarTower k A A] (Φ : A →ₗ[k] k) [IsSeparatingLeftAlg A Φ]
+    {a b : A} :
     a = b ↔ (∀ c, Φ (a * c) = Φ (b * c)) := by
   apply Iff.intro
   · exact fun h _ => by rw [h]
