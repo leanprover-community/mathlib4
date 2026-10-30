@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Defs
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+
 import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 /-!
