@@ -59,21 +59,19 @@ TODO: investigate those interesting functionals not coming from the trace.
 
 ## Main definitions
 
-* `IsSymmNondegenAlg`: `(A, Φ)` is symmetric nondegenerate if the bilinear form
-  `⟨x, y⟩ := Φ (x * y)` is symmetric nondegenerate.
-* `IsSymmNondegenAlg.IsTraceRepresentative`: `f : A` is the trace representative of a `k`-linear
+* IsTraceRepresentative`: `f : A` is the trace representative of a `k`-linear
   `A`-module `V` if `⟨f, x⟩ = Trace ((x : Endₖ(V)))`.
 
 ## Main results
 
-* `IsSymmNondegenAlg.mul_comm_of_isTraceRepresentative`: Any trace representative is central.
+* `IsTraceRepresentative.mem_center`: Any trace representative is central.
 * `IsTraceRepresentative.lsmul_eq_zero_of_isEmpty`: If `V` is simple and its trace is represented by
   `f : A`, then `(f : Endₖ(W)) = 0` for any simple `A`-module `W` distinct from `V`.
-* `IsSymmNondegenAlg.IsTraceRepresentative.ne_zero_of_isSimpleModule`: The trace representative of
+* `IsTraceRepresentative.ne_zero_of_isSimpleModule`: The trace representative of
   a simple `A`-module `V` is non-zero.
-* `IsSymmNondegenAlg.IsTraceRepresentative.normalization_isIdempotentElem` : The normalization of
+* `IsTraceRepresentative.normalization_isIdempotentElem` : The normalization of
   the trace representative of a simple `A`-module `V` is an idempotnet element.
-* `IsSymmNondegenAlg.IsTraceRepresentative.lsmul_normalization_eq_one`: The idempotent element
+* `IsTraceRepresentative.normalization_smul`: The idempotent element
   `normalization Φ f a` isolate the simple module `V`.
 
 -/
