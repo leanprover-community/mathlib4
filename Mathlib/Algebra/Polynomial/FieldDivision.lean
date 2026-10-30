@@ -601,6 +601,13 @@ theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
 
+theorem leadingCoeff_mul_normalize [DecidableEq R] (p : R[X]) :
+    C p.leadingCoeff * normalize p = p := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  grind [map_mul C p.leadingCoeff p.leadingCoeff⁻¹, leadingCoeff_eq_zero, normalize_apply,
+    coe_normUnit_of_ne_zero]
+
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
   · rw [H, Polynomial.map_zero, zero_dvd_iff, zero_dvd_iff, Polynomial.map_eq_zero]
@@ -709,17 +716,13 @@ the polynomial.
 -/
 theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (p : R[X]) :
     C p.leadingCoeff * (normalizedFactors p).prod = p := by
-  obtain rfl | _ := eq_or_ne p 0
+  obtain rfl | hp := eq_or_ne p 0
   · simp
-  rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
-    mul_comm, mul_assoc, ← map_mul] <;>
-    simp_all
+  rw [prod_normalizedFactors_eq hp, leadingCoeff_mul_normalize]
 
 protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
     p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
-  obtain rfl | hp := eq_or_ne p 0
-  · simpa using zero_notMem_normalizedFactors _
-  · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
+  simp +contextual [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic, Irreducible.ne_zero]
 
 theorem sum_natDegree_normalizedFactors [DecidableEq R] (p : R[X]) :
     ((normalizedFactors p).map natDegree).sum = p.natDegree := by
