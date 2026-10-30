@@ -279,8 +279,8 @@ theorem comp_tail {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n.succ → 
   ext j
   simp [tail]
 
-theorem cons_cons_swap {α : Sort*} (x y : α) (a : Fin n → α) :
-    Fin.cons x (Fin.cons y a) ∘ Equiv.swap 0 1 = Fin.cons y (Fin.cons x a) := by
+theorem cons_cons_swap {α : Sort*} (x y : α) (q : Fin n → α) :
+    cons x (cons y q) ∘ Equiv.swap 0 1 = cons y (cons x q) := by
   ext i
   induction i using Fin.induction with
   | zero => simp
@@ -289,7 +289,7 @@ theorem cons_cons_swap {α : Sort*} (x y : α) (a : Fin n → α) :
   | zero => simp
   | succ i =>
     simp only [Function.comp_apply, cons_succ]
-    rw [Equiv.swap_apply_of_ne_of_ne (by simp) (Fin.succ_succ_ne_one i)]
+    rw [Equiv.swap_apply_of_ne_of_ne (by simp) (succ_succ_ne_one i)]
     simp
 
 section Preorder
