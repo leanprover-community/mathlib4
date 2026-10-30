@@ -38,7 +38,8 @@ public section
 
 namespace NumberField
 
-open Module NumberField NumberField.InfinitePlace Matrix
+open Module NumberField NumberField.InfinitePlace
+open Matrix hiding zpow_neg_one zpow_mul
 
 open scoped Real nonZeroDivisors
 

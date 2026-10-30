@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.Action.Opposite
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Module operations on `Mᵐᵒᵖ`
 

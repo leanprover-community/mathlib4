@@ -13,6 +13,9 @@ public import Mathlib.Tactic.ReduceModChar.Ext
 
 import Mathlib.Tactic.NormNum.DivMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `reduce_mod_char` tactic
 
