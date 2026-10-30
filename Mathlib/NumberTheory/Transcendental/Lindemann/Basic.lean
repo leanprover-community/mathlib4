@@ -48,11 +48,6 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   let w' := w'' ∘ p
   -- Note that none of the `p j` are zero.
   have p0' : ∀ j, p j ≠ 0 := by intro ⟨_, hp⟩ rfl; simpa using p0 _ hp
-  -- And the sum is not trivial. (Otherwise `w = 0`.)
-  have I : Nonempty w''.support := by
-    rw [Finset.nonempty_coe_sort, Finsupp.support_nonempty_iff]
-    rintro rfl; rw [Finsupp.sum_zero_index, add_zero, Int.cast_eq_zero] at h
-    exact w0 h
   -- Let `P` be the product of the `p j`, which has a nonzero constant coefficient as well.
   let P := ∏ j, p j
   have P0 : P.eval 0 ≠ 0 := by
@@ -62,29 +57,8 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
     rw [mem_aroots', Polynomial.map_ne_zero_iff (algebraMap ℤ ℂ).injective_int] at hx ⊢
     rw [map_prod]
     exact ⟨P0', prod_eq_zero (mem_univ _) hx.2⟩
-  -- Now let `K` be the splitting field of `P` in ℂ.
-  obtain ⟨K, _, _, _, _, _⟩ : ∃ (K : Type) (_ : Field K) (_ : Algebra ℚ K) (_ : Algebra K ℂ)
-      (_ : IsScalarTower ℚ K ℂ), IsSplittingField ℚ K (P.map (algebraMap ℤ ℚ)) :=
-    ⟨IntermediateField.adjoin ℚ ((P.map (algebraMap ℤ ℚ)).rootSet ℂ),
-      inferInstance, inferInstance, inferInstance, inferInstance,
-      IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits _)⟩
-  have : CharZero K := algebraRat.charZero K
-  -- All the `p j` split in `K`.
-  have splits_p (j) : ((p j).map (algebraMap ℤ K)).Splits := by
-    have P0'' : P.map (algebraMap ℤ K) ≠ 0 := by
-      rwa [Polynomial.map_ne_zero_iff (algebraMap ℤ K).injective_int]
-    refine .of_dvd ?_ P0'' ?_
-    · rw [IsScalarTower.algebraMap_eq ℤ ℚ K, ← Polynomial.map_map]
-      exact IsSplittingField.splits _ _
-    simp_rw [P, Polynomial.map_prod]
-    exact dvd_prod_of_mem _ (mem_univ _)
-  -- The roots of `p j` in `ℂ` are simply the roots in `K` embedded into `ℂ`
-  have aroots_K_eq_aroots_ℂ (j) (f : ℂ → ℂ) :
-      (((p j).aroots K).map fun x => f (algebraMap K ℂ x)) = (((p j).aroots ℂ).map f) := by
-    rw [← (splits_p j).map_aroots_algebraMap (B := ℂ), Multiset.map_map, Function.comp_def]
   replace h : ↑w + ∑ j, w' j • (((p j).aroots ℂ).map exp).sum = 0 := by
     rwa [Finsupp.sum, ← Finset.sum_coe_sort] at h
-  simp_rw [← aroots_K_eq_aroots_ℂ] at h
   -- The following roughly matches Jacobson, p. 286.
   -- Let `k` be the product of the leading coefficients of the `p j` (i.e., `P.leadingCoeff`).
   let k : ℤ := ∏ j, (p j).leadingCoeff
@@ -97,19 +71,17 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   -- * all complex roots `r` of `P` satisfy `|nₚ * exp r - p * gₚ(r)| ≤ c ^ p / (p - 1)!`
   obtain ⟨c, hc'⟩ := LindemannWeierstrass.exp_polynomial_approx P P0
   -- Let `L` be a nonnegative upper bound on the norms of the coefficients of the sum.
-  let L := sup' univ univ_nonempty fun j => ‖w' j‖
-  have L0 : 0 ≤ L := I.elim fun j => (norm_nonneg (w' j)).trans (le_sup' (‖w' ·‖) (mem_univ j))
+  let L := ∑ j, ‖w' j‖
+  have L0 : 0 ≤ L := sum_nonneg fun _ _ ↦ norm_nonneg _
   -- Now there exists a sufficiently large prime `q` such that
   -- `L * (∑ i, ((p i).aroots ℂ).card) * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! < 1`.
   let N := max (P.eval 0).natAbs (max k.natAbs w.natAbs)
   obtain ⟨q, hqN, prime_q, hq⟩ : ∃ q : ℕ, N < q ∧ Nat.Prime q ∧
       L * (∑ i, ((p i).aroots ℂ).card) * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! < 1 := by
     have (x : ℝ) : Filter.Tendsto (fun n ↦ x ^ n / (n - 1)!) .atTop (nhds 0) := by
-      suffices Filter.Tendsto ((fun n ↦ x ^ (n + 1) / n !) ∘ (· - 1)) .atTop (nhds 0) from
-        this.congr' <| Filter.eventually_atTop.mpr ⟨1, fun _ h ↦ by simp [h]⟩
-      have := (FloorSemiring.tendsto_pow_div_factorial_atTop x).const_mul x
-      simp_rw [← mul_div_assoc, ← pow_succ', mul_zero] at this
-      exact this.comp (Filter.tendsto_atTop_atTop.mpr fun b ↦ ⟨b + 1, fun _ ↦ by omega⟩)
+      rw [← Filter.tendsto_add_atTop_iff_nat 1]
+      simpa [pow_succ', mul_div_assoc] using
+        (FloorSemiring.tendsto_pow_div_factorial_atTop x).const_mul x
     simpa only [Nat.succ_le_iff, mul_div_assoc] using
       Filter.Frequently.forall_exists_of_atTop
         ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually <|
@@ -121,48 +93,36 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   replace hgp : gp.natDegree ≤ P.natDegree * q := by rw [mul_comm]; exact hgp.trans tsub_le_self
   clear hc'
   let t := P.natDegree * q
-  -- Now `k` is a positive integer such that for every `j`,
-  -- `k ^ t * ∑ u ∈ (p j).aroots K, gp u` is an integer.
+  -- Now `k` is a nonzero integer such that for every `j`,
+  -- `k ^ t * ∑ u ∈ (p j).aroots ℂ, gp u` is an integer.
   -- Let `sz` be the vector such that `sz j` is that corresponding integer.
   choose sz hsz using fun j ↦
-    pow_smul_sum_map_aroots_aeval_mem_range_algebraMap (p j) gp k t (sz_h j) hgp (splits_p j)
-  replace hsz : k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval x).sum =
-      algebraMap ℤ K (∑ j, w' j • sz j) := by
+    pow_smul_sum_map_aroots_aeval_mem_range_algebraMap (A := ℂ)
+      (p j) gp k t (sz_h j) hgp (IsAlgClosed.splits _)
+  replace hsz : k ^ t • ∑ j, w' j • (((p j).aroots ℂ).map fun x => gp.aeval x).sum =
+      algebraMap ℤ ℂ (∑ j, w' j • sz j) := by
     simp_rw [smul_sum, smul_comm (k ^ t), ← hsz, map_sum, map_zsmul]
   -- Then `k ^ t * n * w + q * ∑ j, w' j • sz j
-  --  = k ^ t • (∑ j, w' j • ∑ u ∈ (p j).aroots K, q • gp u - n • exp u))`.
+  --  = k ^ t • (∑ j, w' j • ∑ u ∈ (p j).aroots ℂ, q • gp u - n • exp u))`.
   have H' := calc
     ((k ^ t * n * w + q * ∑ j, w' j • sz j : ℤ) : ℂ)
-    _ = algebraMap K ℂ (k ^ t • n • (w : K) + q • algebraMap ℤ K (∑ j, w' j • sz j)) := by
-      simp [mul_assoc]
-    _ = algebraMap K ℂ
-          (k ^ t • n • (w : K) +
-            q • k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval x).sum) := by
-      rw [hsz]
-    _ = algebraMap K ℂ
-          (k ^ t • (n • (w : K) +
-            q • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval x).sum)) := by
-      simp_rw [smul_add, smul_comm (k ^ t)]
     _ = k ^ t • (n • (w : ℂ) +
-          q • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval (algebraMap K ℂ x)).sum) := by
-      simp only [map_add, map_nsmul, map_zsmul, map_intCast, map_sum, map_multiset_sum,
-        Multiset.map_map, Function.comp, ← aeval_algebraMap_apply]
+          q • ∑ j, w' j • (((p j).aroots ℂ).map fun x => gp.aeval x).sum) := by
+      rw [smul_add, smul_comm (k ^ t) q, hsz]
+      simp [mul_assoc]
     _ = k ^ t •
-        (q • ∑ j, w' j • (((p j).aroots K).map fun x => gp.aeval (algebraMap K ℂ x)).sum -
-          n • ∑ j, w' j • (((p j).aroots K).map fun x => exp (algebraMap K ℂ x)).sum) := by
+        (q • ∑ j, w' j • (((p j).aroots ℂ).map fun x => gp.aeval x).sum -
+          n • ∑ j, w' j • (((p j).aroots ℂ).map fun x => exp x).sum) := by
       rw [← eq_neg_iff_add_eq_zero] at h
       rw [h, smul_neg, neg_add_eq_sub]
     _ = k ^ t •
-          (∑ j, w' j • (((p j).aroots K).map fun x => q • gp.aeval (algebraMap K ℂ x)).sum -
-            ∑ j, w' j • (((p j).aroots K).map fun x => n • exp (algebraMap K ℂ x)).sum) := by
+          (∑ j, w' j • (((p j).aroots ℂ).map fun x => q • gp.aeval x).sum -
+            ∑ j, w' j • (((p j).aroots ℂ).map fun x => n • exp x).sum) := by
       simp_rw [smul_sum, Multiset.smul_sum, Multiset.map_map, Function.comp,
         smul_comm n, smul_comm q]
-    _ = k ^ t • ∑ j, w' j • (((p j).aroots K).map fun x =>
-                        q • gp.aeval (algebraMap K ℂ x) - n • exp (algebraMap K ℂ x)).sum := by
+    _ = k ^ t • ∑ j, w' j • (((p j).aroots ℂ).map fun x =>
+                        q • gp.aeval x - n • exp x).sum := by
       simp only [← smul_sub, ← sum_sub_distrib, ← Multiset.sum_map_sub]
-    _ = k ^ t • ∑ j, w' j • (((p j).aroots ℂ).map fun x => q • gp.aeval x - n • exp x).sum := by
-      congr!
-      exact aroots_K_eq_aroots_ℂ _ (fun x ↦ q • gp.aeval x - n • exp x)
   -- And, as we've taken `q` sufficiently large, `‖k ^ t * n * w + q * ∑ j, w' j • sz j‖ < 1`.
   have H := calc
     ‖((k ^ t * n * w + q * ∑ j, w' j • sz j : ℤ) : ℂ)‖
@@ -174,7 +134,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
       grw [norm_sum_le]
       simp_rw [norm_smul]
       gcongr
-      exact le_sup' (‖w' ·‖) (mem_univ _)
+      exact single_le_sum (fun _ _ ↦ norm_nonneg _) (mem_univ _)
     _ ≤ ‖k ^ t‖ *
         ∑ j, L * (Multiset.map (fun x ↦ ‖q • (aeval x) gp - n • cexp x‖) ((p j).aroots ℂ)).sum := by
       gcongr
@@ -242,17 +202,11 @@ theorem transcendental_e : Transcendental ℤ (exp 1) :=
 
 theorem transcendental_pi : Transcendental ℤ Real.pi := by
   intro h
-  refine by
-    simpa [Fin.forall_fin_succ] using linearIndependent_exp' ![Real.pi * I, 0] ?_ ?_ ![1, 1] ?_ ?_
-  · intro i; fin_cases i
-    · have isAlgebraic_pi := h.extendScalars (algebraMap ℤ ℚ).injective_int
-      have isIntegral_pi : IsIntegral ℚ (Real.pi : ℂ) := by
-        simpa only [coe_algebraMap] using isAlgebraic_pi.isIntegral.algebraMap (B := ℂ)
-      exact isIntegral_pi.mul (Complex.isIntegral_I ℚ)
-    · exact isIntegral_zero
-  · intro i j; fin_cases i, j <;> simp [Real.pi_ne_zero]
-  · intro i; fin_cases i <;> exact isIntegral_one
-  · simp
+  have hpi : IsAlgebraic ℤ (Real.pi : ℂ) := by
+    simpa only [coe_algebraMap] using h.algebraMap (A := ℂ)
+  have hexp := transcendental_exp (a := Real.pi * I) (by simp [Real.pi_ne_zero])
+    (hpi.mul (Complex.isIntegral_I ℤ).isAlgebraic)
+  simp [Transcendental, isAlgebraic_one.neg] at hexp
 
 theorem transcendental_log {u : ℂ} (hu0 : Complex.log u ≠ 0) (hu : IsAlgebraic ℤ u) :
     Transcendental ℤ (Complex.log u) := by

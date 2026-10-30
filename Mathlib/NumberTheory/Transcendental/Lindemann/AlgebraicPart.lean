@@ -150,15 +150,9 @@ theorem exists_ne_zero_lift_eq_zero {K S : Type*}
     (v' : ι → K) (v0 : v' ≠ 0)
     (h : ∑ i : ι, algebraMap K S (v' i) * φ (.ofAdd (u' i)) = 0) :
     ∃ (f : K[K]), f ≠ 0 ∧ AddMonoidAlgebra.lift _ _ _ φ f = 0 := by
-  classical
-  let f : K[K] := (AddMonoidAlgebra.ofCoeff <| Finsupp.equivFunOnFinite.symm v').mapDomain u'
-  refine ⟨f, ?_, ?_⟩
-  · obtain ⟨i, hv'i⟩ : ∃ i, v' i ≠ 0 := by simpa [Function.ne_iff, Pi.zero_apply] using v0
-    have h : f.coeff (u' i) ≠ 0 := by
-      simpa [f, AddMonoidAlgebra.coeff_mapDomain, AddMonoidAlgebra.coeff_ofCoeff,
-        Finsupp.mapDomain_apply_of_injective u'_inj]
-    contrapose h
-    simp [h]
+  refine ⟨(AddMonoidAlgebra.ofCoeff <| Finsupp.equivFunOnFinite.symm v').mapDomain u', ?_, ?_⟩
+  · rw [← AddMonoidAlgebra.mapDomain_zero u', (AddMonoidAlgebra.mapDomain_injective u'_inj).ne_iff]
+    simpa [Finsupp.ext_iff, funext_iff] using v0
   · rw [AddMonoidAlgebra.lift_apply, ← h, AddMonoidAlgebra.coeff_mapDomain,
       Finsupp.sum_mapDomain_index_inj u'_inj]
     simp [Finsupp.sum_fintype, Algebra.smul_def]
