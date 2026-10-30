@@ -40,7 +40,7 @@ namespace CategoryTheory
 open Category Localization
 
 variable {C₁ D₁ C₂ D₂ : Type*}
-  [Category C₁] [Category C₂] [Category D₁] [Category D₂]
+  [Category* C₁] [Category* C₂] [Category* D₁] [Category* D₂]
   {W₁ : MorphismProperty C₁} {W₁' : MorphismProperty D₁}
   {W₂ : MorphismProperty C₂} {W₂' : MorphismProperty D₂}
 
