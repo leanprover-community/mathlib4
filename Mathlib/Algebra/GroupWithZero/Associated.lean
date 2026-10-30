@@ -519,13 +519,17 @@ def map (f : M →* N) : Associates M →* Associates N where
 @[simp] lemma map_comp_map (g : N →* P) (f : M →* N) : (map g).comp (map f) = map (g.comp f) := by
   ext ⟨x⟩; simp
 
+@[simp] protected lemma map_one : map (1 : M →* N) = 1 := by ext ⟨x⟩; simp
+
+@[simp]
+protected lemma map_mul (f g : M →* N) : map (f * g) = map f * map g := by ext ⟨x⟩; simp [mk_mul_mk]
+
 /-- A multiplicative equivalence `M ≃* N` induces a multiplicative equivalence of associates. -/
 def congr (e : M ≃* N) : Associates M ≃* Associates N where
-  toFun := map e.toMonoidHom
+  __ := map e.toMonoidHom
   invFun := map e.symm.toMonoidHom
   left_inv := mk_surjective.forall.2 <| by simp
   right_inv := mk_surjective.forall.2 <| by simp
-  map_mul' := map_mul _
 
 @[simp] lemma congr_mk (e : M ≃* N) (x : M) : congr e (.mk x) = .mk (e x) := rfl
 
