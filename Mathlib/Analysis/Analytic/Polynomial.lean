@@ -5,8 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -32,7 +30,7 @@ theorem AnalyticWithinAt.aeval_polynomial (hf : AnalyticWithinAt 𝕜 f s z) (p 
   refine p.induction_on (fun k ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_
   · simp_rw [aeval_C]; apply analyticWithinAt_const
   · simp_rw [aeval_add]; exact hp.add hq
-  · convert hp.mul hf
+  · convert! hp.mul hf
     simp_rw [pow_succ, aeval_mul, ← mul_assoc, aeval_X]
 
 theorem AnalyticAt.aeval_polynomial (hf : AnalyticAt 𝕜 f z) (p : A[X]) :

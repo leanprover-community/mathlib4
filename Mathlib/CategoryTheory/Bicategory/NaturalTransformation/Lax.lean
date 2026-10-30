@@ -185,9 +185,6 @@ scoped instance : CategoryStruct (B ⥤ᴸ C) where
   id := LaxTrans.id
   comp := LaxTrans.vComp
 
-@[deprecated (since := "2026-03-16")] alias vComp_app := comp_app
-@[deprecated (since := "2026-03-16")] alias vComp_naturality := comp_naturality
-
 end LaxTrans
 
 /-- If `η` is an oplax transformation between `F` and `G`, we have a 1-morphism
@@ -395,6 +392,9 @@ instance : Inhabited (StrongTrans F F) :=
 
 variable {F} {G H : B ⥤ᴸ C} (η : StrongTrans F G) (θ : StrongTrans G H)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Vertical composition of strong natural transformations. -/
 @[simps!]
 def vComp : StrongTrans F H :=

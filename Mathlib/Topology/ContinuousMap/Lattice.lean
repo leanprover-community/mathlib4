@@ -5,10 +5,11 @@ Authors: Kim Morrison, Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.Order.Group.Lattice
 public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.ContinuousMap.Ordered
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuous maps as a lattice ordered group

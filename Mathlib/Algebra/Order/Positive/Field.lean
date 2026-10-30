@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Positive.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic structures on the set of positive numbers
 
@@ -35,8 +38,10 @@ instance : Pow { x : K // 0 < x } ℤ :=
 theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :=
   rfl
 
-instance : CommGroup { x : K // 0 < x } :=
-  { Positive.commMonoid with
-    inv_mul_cancel := fun a => Subtype.ext <| inv_mul_cancel₀ a.2.ne' }
+instance : CommGroup { x : K // 0 < x } where
+  inv_mul_cancel a := Subtype.ext <| inv_mul_cancel₀ a.2.ne'
+  zpow_zero' x := Subtype.ext <| zpow_zero _
+  zpow_succ' n x := Subtype.ext <| DivInvMonoid.zpow_succ' _ _
+  zpow_neg' n x := Subtype.ext <| DivInvMonoid.zpow_neg' _ _
 
 end Positive

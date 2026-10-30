@@ -6,8 +6,9 @@ Authors: Christian Merten, Junyan Xu
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Purely inseparable extensions are universal homeomorphisms
@@ -84,7 +85,7 @@ lemma PrimeSpectrum.isHomeomorph_comap_tensorProductMap_of_isPurelyInseparable [
         (IsScalarTower.toAlgHom K (K ⊗[R] S) ((K ⊗[R] S) ⊗[K] L)) := by
     ext; simp [e, e2]
   rw [heq]
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
+  simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
     AlgEquiv.toAlgHom_toRingHom, IsScalarTower.coe_toAlgHom, comap_comp]
   exact (isHomeomorph_comap_of_isPurelyInseparable K L (K ⊗[R] S)).comp <|
     (isHomeomorph_comap_of_bijective e2.symm.bijective).comp <|

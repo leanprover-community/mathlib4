@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Data.DFinsupp.Interval
 public import Mathlib.Data.DFinsupp.Multiset
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Data.Nat.Lattice
-public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Order.Lattice.Nat
+
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Finite intervals of multisets
@@ -29,7 +29,7 @@ multisets are typically used computationally.
 public section
 
 
-open Finset DFinsupp Function
+open Finset DFinsupp
 
 open scoped Pointwise
 

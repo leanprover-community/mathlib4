@@ -7,15 +7,13 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.HopkinsLevitzki
-public import Mathlib.RingTheory.IntegralDomain
-public import Mathlib.RingTheory.LocalRing.Quotient
-public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-public import Mathlib.Topology.Algebra.Field
-public import Mathlib.Topology.Algebra.Module.Basic
-public import Mathlib.Topology.Algebra.Module.Compact
-public import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Algebra.Ring.Ideal
+
+import Mathlib.RingTheory.HopkinsLevitzki
+import Mathlib.RingTheory.LocalRing.Quotient
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Compact
+import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
 
@@ -51,11 +49,11 @@ namespace IsArtinianRing
 apply to every `Finite` goal, causing slowly failing typeclass search in some cases. -/
 theorem finite_of_compactSpace_of_t2Space [IsArtinianRing R] :
     Finite R := by
-  obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson_bot (R := R)
+  obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson R
   have H : (∏ p : PrimeSpectrum R, p.asIdeal) ^ n = ⊥ := by
     rw [← le_bot_iff, ← Ideal.zero_eq_bot, ← hn]
     gcongr
-    rw [Ideal.jacobson_bot, Ring.jacobson_eq_sInf_isMaximal, le_sInf_iff]
+    rw [Ring.jacobson_eq_sInf_isMaximal, le_sInf_iff]
     exact fun I hI ↦ Ideal.prod_le_inf.trans
       (Finset.inf_le (b := PrimeSpectrum.mk I hI.isPrime) (by simp))
   have := Ideal.finite_quotient_prod (R := R) PrimeSpectrum.asIdeal Finset.univ
@@ -116,6 +114,7 @@ end IsLocalRing
 
 section IsDedekindDomain
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsDedekindDomain.isOpen_of_ne_bot
     [IsDedekindDomain R] {I : Ideal R} (hI : I ≠ ⊥) :
     IsOpen (X := R) I := by

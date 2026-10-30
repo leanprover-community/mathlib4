@@ -5,13 +5,7 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Subterminal
 
@@ -108,14 +102,13 @@ variable (i : D ⥤ C)
 
 /- This cannot be a local instance since it has free variables,
 it can instead be used as a have when needed.
-We assume HasFiniteProducts D as a hypothesis below, to avoid making this a local instance.
+We assume `HasFiniteProducts D` as a hypothesis below, to avoid making this a local instance.
 -/
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
 
 open MonoidalClosed MonoidalCategory CartesianMonoidalCategory
 
-set_option backward.isDefEq.respectTransparency false in
 open Limits in
 /-- Given a reflective subcategory `D` of a category with chosen finite products `C`, `D` admits
 finite chosen products. -/
@@ -146,7 +139,7 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
         · change (reflector i ⋙ i).obj (i.obj X ⊗ i.obj Y) ≅ (𝟭 C).obj (i.obj X ⊗ i.obj Y)
           letI : IsIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) := by
             apply Functor.essImage.unit_isIso
-            haveI := reflective_products i
+            have := reflective_products i
             use Limits.prod X Y
             constructor
             apply Limits.PreservesLimitPair.iso i _ _ |>.trans
@@ -161,7 +154,6 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
 variable [CartesianMonoidalCategory C] [Reflective i] [MonoidalClosed C]
   [CartesianMonoidalCategory D]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
 -/
@@ -185,7 +177,7 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
       prodComparison_natural_whiskerLeft_assoc, ← whiskerLeft_comp_assoc,
       ir.left_triangle_components, whiskerLeft_id, Category.id_comp]
     apply IsIso.hom_inv_id_assoc
-  haveI : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
+  have : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
   apply mem_essImage_of_unit_isSplitMono
 
 variable [ExponentialIdeal i]
@@ -198,7 +190,7 @@ takes in an explicit choice of lift of the essential image of `i` to `D`, in the
 `l : i.EssImageSubcategory ⥤ D` and natural isomorphism `φ : l ⋙ i ≅ i.essImage.ι`. When
 `l ⋙ i` is defeq to `i.essImage.ι`, images of exponential objects in `D` under `i` will be defeq
 to the respective exponential objects in `C`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i ≅ i.essImage.ι) :
     MonoidalClosed D where
   closed := fun B =>
@@ -224,7 +216,7 @@ Unlike `cartesianClosedOfReflective'` this construction lifts exponential object
 exponential objects in `D` by applying the reflector to them, even though they already lie in the
 essential image of `i`; if you need better control over definitional equality, use
 `cartesianClosedOfReflective'` instead. -/
-@[implicit_reducible]
+@[instance_reducible]
 def cartesianClosedOfReflective : MonoidalClosed D :=
   cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
     (NatIso.ofComponents (fun X ↦
@@ -286,7 +278,7 @@ theorem bijection_symm_apply_id (A B : C) :
     prodComparison_snd]
     apply (reflectorAdjunction i).unit.naturality
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⊗ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by
   dsimp [bijection]

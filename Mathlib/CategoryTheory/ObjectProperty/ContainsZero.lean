@@ -5,10 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-public import Mathlib.CategoryTheory.ObjectProperty.Opposite
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
 /-!
 # Properties of objects which hold for a zero object
@@ -102,6 +100,12 @@ instance [P.ContainsZero] : HasZeroObject P.FullSubcategory where
   zero := by
     obtain ⟨X, h₁, h₂⟩ := P.exists_prop_of_containsZero
     exact ⟨_, IsZero.of_full_of_faithful_of_isZero P.ι ⟨X, h₂⟩ h₁⟩
+
+instance [P.ContainsZero] [Q.ContainsZero] [Q.IsClosedUnderIsomorphisms] :
+    (P ⊓ Q).ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
+    exact ⟨Z, hZ, hP, Q.prop_of_isZero hZ⟩
 
 end ObjectProperty
 

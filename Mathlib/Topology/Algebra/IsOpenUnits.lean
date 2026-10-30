@@ -9,6 +9,8 @@ public import Mathlib.RingTheory.Jacobson.Ideal
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
+import Mathlib.Topology.Algebra.Group.Units
+
 /-!
 
 # Topological monoids with open units
@@ -63,7 +65,7 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
 (e.g. when `R` is complete or local), then `Rˣ` is an open subspace of `R`. -/
 lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     {I : Ideal R}
-    (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
+    (hR : IsAdic I) (hI : I ≤ Ring.jacobson R) :
     IsOpenUnits R := by
   refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective ?_⟩
   refine (IsTopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
@@ -86,7 +88,7 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
   rw [H.1]
   refine ⟨n, trivial, ?_⟩
   rintro _ ⟨x, hx, rfl⟩
-  have := Ideal.mem_jacobson_bot.mp (hI (Ideal.pow_le_self hn hx)) 1
+  have := Ring.mem_jacobson_iff.mp (hI (Ideal.pow_le_self hn hx)) 1
   rw [mul_one, add_comm] at this
   refine hn' this.unit (by simpa using hx) ?_
   have : -1 + ↑this.unit⁻¹ = -this.unit⁻¹ * x := by
@@ -95,3 +97,25 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
     · simp
   rw [this]
   exact Ideal.mul_mem_left _ _ hx
+
+/-!
+### Units of products
+
+This section contains the instances that the units in a product of two or finitely many topological
+monoids with open units are open.
+-/
+
+open ContinuousMulEquiv
+
+/-- Openness of the group of units is preserved under products. -/
+instance {M N : Type*} [Monoid M] [TopologicalSpace M] [Monoid N]
+    [TopologicalSpace N] [hM : IsOpenUnits M] [hN : IsOpenUnits N] : IsOpenUnits (M × N) := by
+  rw [isOpenUnits_iff] at *
+  exact ((hM.prodMap hN).of_comp_iff _).mpr prodUnits_isOpenEmbedding
+
+/-- Openness of the group of units is preserved under finite products. -/
+instance {I : Type*} [Finite I] {f : I → Type _} [(i : I) → Monoid (f i)]
+    [(i : I) → TopologicalSpace (f i)] [∀ i, IsOpenUnits (f i)] :
+    IsOpenUnits ((i : I) → f i) := by
+  simp_rw [isOpenUnits_iff] at *
+  exact ((IsOpenEmbedding.piMap ‹_›).of_comp_iff _).mpr piUnits_isOpenEmbedding

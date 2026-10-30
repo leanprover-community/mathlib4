@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
+public import Lean.Expr
 public import Mathlib.Data.Set.CoeSort
 
 /-!
@@ -12,7 +13,7 @@ public import Mathlib.Data.Set.CoeSort
 
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Expr
 

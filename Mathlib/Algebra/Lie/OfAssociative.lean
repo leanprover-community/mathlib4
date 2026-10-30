@@ -5,10 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.Algebra.Lie.Subalgebra
 public import Mathlib.Algebra.Lie.Submodule
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Lie algebras of associative algebras
@@ -46,7 +43,8 @@ variable {A : Type v} [Ring A]
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
-instance (priority := 100) ofAssociativeRing : LieRing A where
+@[instance_reducible]
+def ofAssociativeRing : LieRing A where
   add_lie _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_add _ _ _ := by simp only [Ring.lie_def, right_distrib, left_distrib]; abel
   lie_self := by simp only [Ring.lie_def, forall_const, sub_self]
@@ -62,6 +60,8 @@ theorem lie_apply {α : Type*} (f g : α → A) (a : α) : ⁅f, g⁆ a = ⁅f a
 
 end LieRing
 
+attribute [local instance 100] LieRing.ofAssociativeRing
+
 section AssociativeModule
 
 variable {M : Type w} [AddCommGroup M] [Module A M]
@@ -71,9 +71,9 @@ bracket equal to its ring commutator.
 
 Note that this cannot be a global instance because it would create a diamond when `M = A`,
 specifically we can build two mathematically-different `bracket A A`s:
- 1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
- 2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
-    (and thus `⁅a, b⁆ = a * b`)
+1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
+2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
+  (and thus `⁅a, b⁆ = a * b`)
 
 See note [reducible non-instances] -/
 abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
@@ -163,13 +163,15 @@ theorem toLieHom_comp : (g.comp f : A →ₗ⁅R⁆ C) = (g : B →ₗ⁅R⁆ C)
   rfl
 
 theorem toLieHom_injective {f g : A →ₐ[R] B} (h : (f : A →ₗ⁅R⁆ B) = (g : A →ₗ⁅R⁆ B)) : f = g := by
-  ext a; exact LieHom.congr_fun h a
+  ext a; congrm $h a
 
 end AlgHom
 
 end LieAlgebra
 
 end OfAssociative
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 section AdjointAction
 
@@ -270,7 +272,7 @@ lemma LieSubmodule.coe_toEnd_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : �
     ((toEnd R L N x ^ n) y : M) = (toEnd R L M x ^ n) y := by
   induction n generalizing y with
   | zero => rfl
-  | succ n ih => simp only [pow_succ', Module.End.mul_apply, ih, LieSubmodule.coe_toEnd]
+  | succ n ih => simp only [pow_succ', mul_apply_eq_comp, ih, LieSubmodule.coe_toEnd]
 
 lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
     (ad R H x y : L) = ad R L x y := rfl
@@ -300,7 +302,7 @@ lemma LieModule.toEnd_pow_lie (x y : L) (z : M) (n : ℕ) :
   | succ n ih =>
     rw [Finset.sum_antidiagonal_choose_succ_nsmul
       (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
-    simp only [pow_succ', Module.End.mul_apply, ih, map_sum, map_nsmul,
+    simp only [pow_succ', mul_apply_eq_comp, ih, map_sum, map_nsmul,
       toEnd_lie, nsmul_add, sum_add_distrib]
     rw [add_comm, add_left_cancel_iff, sum_congr rfl]
     rintro ⟨i, j⟩ hij
@@ -330,7 +332,7 @@ lemma toEnd_pow_comp_lieHom :
 
 lemma toEnd_pow_apply_map (m : M) :
     (toEnd R L M₂ x ^ k) (f m) = f ((toEnd R L M x ^ k) m) :=
-  LinearMap.congr_fun (toEnd_pow_comp_lieHom f k x) m
+  congr($(toEnd_pow_comp_lieHom f k x) m)
 
 end LieModule
 
@@ -358,7 +360,7 @@ theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
 
 lemma mapsTo_pow_toEnd_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
     MapsTo ((toEnd R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
-  rw [Module.End.coe_pow]
+  rw [FunLike.coe_pow_eq_iterate]
   exact MapsTo.iterate (fun m hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem _ hm)) k
 
 end LieSubmodule

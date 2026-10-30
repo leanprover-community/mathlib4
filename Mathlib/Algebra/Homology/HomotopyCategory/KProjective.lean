@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.Algebra.Homology.CochainComplexOpposite
+public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 
 /-!
 # K-projective cochain complexes
@@ -24,9 +24,11 @@ and show that bounded above complexes of projective objects are K-projective.
 
 @[expose] public section
 
+open CategoryTheory Limits Preadditive Opposite
+
 namespace CochainComplex
 
-open CategoryTheory Limits HomComplex Preadditive Opposite
+open HomComplex
 
 variable {C : Type*} [Category* C] [Abelian C]
 
@@ -43,7 +45,8 @@ class IsKProjective (K : CochainComplex C ℤ) : Prop where
 
 /-- A choice of homotopy to zero for a morphism from a
 K-projective cochain complex to an acyclic cochain complex. -/
-noncomputable irreducible_def IsKProjective.homotopyZero
+@[no_expose]
+noncomputable def IsKProjective.homotopyZero
     {K L : CochainComplex C ℤ} (f : K ⟶ L)
     (hL : L.Acyclic) [K.IsKProjective] :
     Homotopy f 0 :=
@@ -104,6 +107,8 @@ lemma isKProjective_of_op {K : CochainComplex C ℤ}
       ((opEquivalence C).functor.map f.op) (acyclic_op hL)).trans
         (.ofEq (by simp)))⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] opEquivalence ChainComplex.cochainComplexEquivalence in
 open Cochain.InductionUp in
 lemma isKProjective_of_projective (K : CochainComplex C ℤ) (d : ℤ)
@@ -118,5 +123,9 @@ lemma isKProjective_of_projective (K : CochainComplex C ℤ) (d : ℤ)
     intro i hi
     exact (K.isZero_of_isStrictlyLE d _ (by dsimp; lia)).op
   exact isKProjective_of_op (isKInjective_of_injective L (-d))
+
+instance (K : ChainComplex C ℕ) [∀ n, Projective (K.X n)] :
+    CochainComplex.IsKProjective (K.extend ComplexShape.embeddingDownNat) :=
+  CochainComplex.isKProjective_of_projective _ 0
 
 end CochainComplex

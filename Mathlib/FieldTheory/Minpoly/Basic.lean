@@ -39,7 +39,9 @@ the minimal polynomial of `f` is `minpoly 𝕜 f`.
 -/
 @[stacks 09GM]
 noncomputable def minpoly (x : B) : A[X] :=
-  if hx : IsIntegral A x then degree_lt_wf.min _ hx else 0
+  if hx : IsIntegral A x then
+    degree_lt_wf.min {p | p.Monic ∧ Polynomial.eval₂ (algebraMap A B) x p = 0} hx
+  else 0
 
 end MinPolyDef
 
@@ -53,15 +55,15 @@ variable {x : B}
 /-- A minimal polynomial is monic. -/
 theorem monic (hx : IsIntegral A x) : Monic (minpoly A x) := by
   delta minpoly
-  rw [dif_pos hx]
-  exact (degree_lt_wf.min_mem _ hx).1
+  rw [dite_eq_left hx]
+  exact (degree_lt_wf.min_mem {p | p.Monic ∧ Polynomial.eval₂ (algebraMap A B) x p = 0} hx).1
 
 /-- A minimal polynomial is nonzero. -/
 theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
   (monic hx).ne_zero
 
 theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
-  dif_neg hx
+  dite_eq_right hx
 
 theorem ne_zero_iff [Nontrivial A] : minpoly A x ≠ 0 ↔ IsIntegral A x :=
   ⟨fun h => of_not_not <| eq_zero.mt h, ne_zero⟩
@@ -89,7 +91,7 @@ variable (A x)
 theorem aeval : aeval x (minpoly A x) = 0 := by
   delta minpoly
   split_ifs with hx
-  · exact (degree_lt_wf.min_mem _ hx).2
+  · exact (degree_lt_wf.min_mem {p | p.Monic ∧ Polynomial.eval₂ (algebraMap A B) x p = 0} hx).2
   · exact aeval_zero _
 
 /-- Given any `f : B →ₐ[A] B'` and any `x : L`, the minimal polynomial of `x` vanishes at `f x`. -/
@@ -101,7 +103,7 @@ theorem aeval_algHom (f : B →ₐ[A] B') (x : B) : (Polynomial.aeval (f x)) (mi
 theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   intro h
   refine (one_ne_zero : (1 : B) ≠ 0) ?_
-  simpa using congr_arg (Polynomial.aeval x) h
+  simpa using congr(Polynomial.aeval x $h)
 
 theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A →+* R) :
     (minpoly A x).map f ≠ 1 := by
@@ -112,7 +114,7 @@ theorem map_ne_one [Nontrivial B] {R : Type*} [Semiring R] [Nontrivial R] (f : A
 
 /-- A minimal polynomial is not a unit. -/
 theorem not_isUnit [Nontrivial B] : ¬IsUnit (minpoly A x) := by
-  haveI : Nontrivial A := (algebraMap A B).domain_nontrivial
+  have : Nontrivial A := (algebraMap A B).domain_nontrivial
   by_cases hx : IsIntegral A x
   · exact mt (monic hx).eq_one_of_isUnit (ne_one A x)
   · rw [eq_zero hx]
@@ -148,7 +150,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   · exact (h <| (aeval_modByMonic_eq_self_of_root hp).trans <| aeval A x).elim
   obtain ⟨r, hr⟩ := (modByMonic_eq_zero_iff_dvd hm).1 h
   rw [hr]
-  have hlead := congr_arg leadingCoeff hr
+  have hlead := congr(leadingCoeff $hr)
   rw [mul_comm, leadingCoeff_mul_monic hm, (monic hx).leadingCoeff] at hlead
   have : natDegree r ≤ 0 := by
     have hr0 : r ≠ 0 := by
@@ -195,12 +197,16 @@ theorem natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minp
   have eq_one : minpoly A x = 1 := by
     rw [eq_C_of_natDegree_eq_zero ndeg_eq_zero]
     convert C_1 (R := A)
-    simpa only [ndeg_eq_zero.symm] using (monic hx).leadingCoeff
-  simpa only [eq_one, map_one, one_ne_zero] using aeval A x
+    simpa only [ndeg_eq_zero.symm] using! (monic hx).leadingCoeff
+  simpa only [eq_one, map_one, one_ne_zero] using! aeval A x
 
 /-- The degree of a minimal polynomial is positive. -/
 theorem degree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < degree (minpoly A x) :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos hx)
+
+@[simp]
+theorem aeval_modByMonic_minpoly (p : A[X]) (x : B) : (p %ₘ minpoly A x).aeval x = p.aeval x :=
+  aeval_modByMonic_eq_self_of_root (minpoly.aeval ..)
 
 section
 variable [Nontrivial B]
@@ -209,7 +215,7 @@ open Polynomial in
 theorem degree_eq_one_iff : (minpoly A x).degree = 1 ↔ x ∈ (algebraMap A B).range := by
   refine ⟨minpoly.mem_range_of_degree_eq_one _ _, ?_⟩
   rintro ⟨x, rfl⟩
-  haveI := Module.nontrivial A B
+  have := Module.nontrivial A B
   exact (degree_X_sub_C x ▸ minpoly.min A (algebraMap A B x) (monic_X_sub_C x) (by simp)).antisymm
     (Nat.WithBot.add_one_le_of_lt <| minpoly.degree_pos isIntegral_algebraMap)
 
@@ -266,7 +272,7 @@ theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   refine (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => ?_
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
   by_contra! h
-  have heval := congr_arg (Polynomial.aeval x) he
+  have heval := congr(Polynomial.aeval x $he)
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
   rcases heval with heval | heval
   · exact aeval_ne_zero_of_dvdNotUnit_minpoly hx hf ⟨hf.ne_zero, g, h.2, he.symm⟩ heval

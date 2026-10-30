@@ -32,6 +32,7 @@ open scoped Nat
 
 section SinCos
 
+set_option backward.defeqAttrib.useBackward true in
 theorem Complex.hasSum_cos' (z : ℂ) :
     HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n) / ↑(2 * n)!) (Complex.cos z) := by
   rw [Complex.cos, Complex.exp_eq_exp_ℂ]
@@ -48,6 +49,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
     neg_mul, mul_neg, neg_div, add_neg_cancel, zero_div, add_zero,
     mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0)]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem Complex.hasSum_sin' (z : ℂ) :
     HasSum (fun n : ℕ => (z * Complex.I) ^ (2 * n + 1) / ↑(2 * n + 1)! / Complex.I)
       (Complex.sin z) := by

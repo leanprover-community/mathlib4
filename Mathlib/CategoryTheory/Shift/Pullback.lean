@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Adjunction
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Shift.Adjunction
 
 /-!
 # The pullback of a shift by a monoid morphism
@@ -108,6 +108,7 @@ lemma pullbackShiftFunctorZero'_hom_app :
     pullbackShiftFunctorZero'_inv_app, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
   rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma pullbackShiftFunctorAdd'_inv_app :
     (shiftFunctorAdd' _ a₁ a₂ a₃ h).inv.app X =
       (shiftFunctor (PullbackShift C φ) a₂).map ((pullbackShiftIso C φ a₁ b₁ h₁).hom.app X) ≫
@@ -116,7 +117,7 @@ lemma pullbackShiftFunctorAdd'_inv_app :
         (pullbackShiftIso C φ a₃ b₃ h₃).inv.app X := by
   subst h₁ h₂ h
   obtain rfl : b₃ = φ a₁ + φ a₂ := by rw [h₃, φ.map_add]
-  simp only [Functor.comp_obj, NatTrans.naturality_assoc]
+  simp only [NatTrans.naturality_assoc]
   erw [Functor.map_id, id_comp, id_comp, shiftFunctorAdd'_eq_shiftFunctorAdd,
     shiftFunctorAdd'_eq_shiftFunctorAdd]
   change _ ≫ _ = _
@@ -210,14 +211,14 @@ namespace NatTrans
 variable {F} {G : C ⥤ D} [G.CommShift B]
 
 set_option backward.isDefEq.respectTransparency false in
-open Functor in
+open CategoryTheory.Functor in
 instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
     NatTrans.CommShift (PullbackShift.natTrans φ τ) A where
   shift_comm _ := by
     ext
     dsimp [PullbackShift.natTrans]
     simp only [commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
-      isoWhiskerLeft_hom, Iso.symm_hom, comp_app, comp_obj, whiskerRight_app, whiskerLeft_app,
+      isoWhiskerLeft_hom, Iso.symm_hom, comp_app, whiskerRight_app, whiskerLeft_app,
       assoc]
     rw [← τ.naturality_assoc]
     simp [← NatTrans.shift_app_comm_assoc]
@@ -257,7 +258,7 @@ composition of `CommShift` structures by `B` on `F` and `G`), and that on
 `PullbackShift.functor F φ ⋙ PullbackShift.functor G φ` (i.e. the one coming from
 the composition of the pulled back `CommShift` structures on `F` and `G`).
 -/
-open Functor in
+open CategoryTheory.Functor in
 instance : NatTrans.CommShift (PullbackShift.natIsoComp φ F G).hom A where
   shift_comm _ := by
     ext

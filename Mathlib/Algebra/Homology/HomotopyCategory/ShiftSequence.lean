@@ -5,12 +5,11 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 public import Mathlib.CategoryTheory.Shift.Localization
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
-public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Algebra.Homology.QuasiIso
 
 /-! # Compatibilities of the homology functor with the shift
 
@@ -36,7 +35,6 @@ open HomologicalComplex
 
 attribute [local simp] XIsoOfEq_hom_naturality smul_smul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `(K⟦n⟧).sc' i j k ≅ K.sc' i' j' k'` when `n + i = i'`,
 `n + j = j'` and `n + k = k'`. -/
 @[simps!]
@@ -66,7 +64,7 @@ lemma shiftShortComplexFunctorIso_zero_add_hom_app (a : ℤ) (K : CochainComplex
         ((shiftFunctorZero (CochainComplex C ℤ) ℤ).hom.app K) := by
   ext <;> simp [one_smul, shiftFunctorZero_hom_app_f]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 lemma shiftShortComplexFunctorIso_add'_hom_app
     (n m mn : ℤ) (hmn : m + n = mn) (a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' = a'')
     (K : CochainComplex C ℤ) :
@@ -94,11 +92,13 @@ noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
       (ShortComplex.homologyFunctor C) ≪≫
     (homologyFunctorIso C (ComplexShape.up ℤ) a').symm
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').hom.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').hom.app K) := by
   simp [shiftIso, HomologicalComplex.homology]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').inv.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').inv.app K) := by
@@ -106,6 +106,7 @@ lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C �
 
 end ShiftSequence
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     (homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ where

@@ -9,9 +9,8 @@ public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Algebra.Ring.CompTypeclasses
+public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.RingTheory.Localization.Basic
-public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization
@@ -114,6 +113,14 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
       (eq_div_iff_mul_eq <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
   exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
 
+theorem of_semifield_isLocalization
+    {R : Type*} [CommSemiring R] [NoZeroDivisors R] (S : Submonoid R)
+    (K : Type*) [Semifield K] [Algebra R K] [IsLocalization S K] :
+    IsFractionRing R K :=
+  of_le S R⁰
+    (fun s hs ↦ mem_nonZeroDivisors_of_ne_zero <| ne_zero_of_map <| (map_units K ⟨s, hs⟩).ne_zero)
+    (fun _ hr ↦ isUnit_of_mem_nonZeroDivisors <| nonZeroDivisors_le_comap S K hr)
+
 variable {R K}
 
 section CommSemiring
@@ -200,7 +207,8 @@ protected theorem isDomain : IsDomain K :=
   isDomain_of_le_nonZeroDivisors _ (le_refl (nonZeroDivisors A))
 
 /-- The inverse of an element in the field of fractions of an integral domain. -/
-protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical in
+@[no_expose]
+protected noncomputable def inv (z : K) : K := open scoped Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
@@ -209,7 +217,7 @@ protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical
           h <| eq_zero_of_fst_eq_zero (sec_spec (nonZeroDivisors A) z) h0⟩
 
 protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv A x = 1 := by
-  rw [IsFractionRing.inv, dif_neg hx, ←
+  rw [IsFractionRing.inv, dite_eq_right hx, ←
     IsUnit.mul_left_inj
       (map_units K
         ⟨(sec _ x).1,
@@ -226,7 +234,9 @@ noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
   inv := IsFractionRing.inv A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by
+    rw [IsFractionRing.inv]
+    exact dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
@@ -240,6 +250,12 @@ lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K)
     (IsLocalization.atUnits R _ (S := K)
       (fun _ hx ↦ Ne.isUnit (mem_nonZeroDivisors_iff_ne_zero.mp hx))).surjective
 
+/-- The ring `R` is an integral domain iff its fraction ring `K` is a field. -/
+theorem isDomain_iff_isField : IsDomain R ↔ IsField K := by
+  refine ⟨fun h ↦ (IsFractionRing.toField R).toIsField K, fun h ↦ ?_⟩
+  let := h.toField
+  exact IsDomain.of_faithfulSMul _ K
+
 end CommRing
 
 variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
@@ -248,7 +264,7 @@ variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
     mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
   haveI := (algebraMap A K).domain_nontrivial
-  mk'_eq_iff_eq_mul.2 <|
+  mk'_eq_iff_eq_mul.2
     (div_mul_cancel₀ (algebraMap A K r)
         (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hs)).symm
 
@@ -270,17 +286,22 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
 
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  haveI := (algebraMap R K).domain_nontrivial
+  have := (algebraMap R K).domain_nontrivial
   simp [nonZeroDivisors.ne_zero]
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
-  haveI := (algebraMap A K).domain_nontrivial
+  have := (algebraMap A K).domain_nontrivial
   refine ⟨?_, fun hxy => by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors y.property
   rw [IsFractionRing.mk'_eq_div, div_eq_one_iff_eq hy] at hxy
   exact IsFractionRing.injective A K hxy
+
+theorem of_algHom [Algebra A L] (f : L →ₐ[A] K) : IsFractionRing A L := by
+  refine IsFractionRing.of_algEquiv <| .symm <| .ofBijective f ⟨f.injective, fun x ↦ ?_⟩
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective A x
+  exact ⟨algebraMap A L x / algebraMap A L y, by simp⟩
 
 section commutes
 
@@ -355,7 +376,7 @@ theorem ringHom_ext {f1 f2 : K →+* L}
 
 theorem injective_comp_algebraMap :
     Function.Injective fun (f : K →+* L) => f.comp (algebraMap A K) :=
-  fun _ _ h => ringHom_ext (fun x => RingHom.congr_fun h x)
+  fun _ _ h => ringHom_ext (fun x => congr($h x))
 
 section liftAlgHom
 
@@ -424,13 +445,17 @@ variable {A K B L : Type*} [CommRing A] [CommRing B] [CommRing K] [CommRing L]
 /-- Given rings `A, B` and localization maps to their fraction rings
 `f : A →+* K, g : B →+* L`, an isomorphism `h : A ≃+* B` induces an isomorphism of
 fraction rings `K ≃+* L`. -/
-@[simps!]
+@[simps! apply]
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
   IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
 lemma ringEquivOfRingEquiv_algebraMap
     (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp
+
+@[simp]
+lemma ringEquivOfRingEquiv_refl :
+    ringEquivOfRingEquiv (.refl A) = .refl K := by ext; simp
 
 @[simp]
 lemma ringEquivOfRingEquiv_symm :
@@ -443,6 +468,26 @@ theorem ringEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C]
     (ringEquivOfRingEquiv (K := K) f).trans (ringEquivOfRingEquiv (K := L) (L := M) g) := by
   ext a
   simp [IsLocalization.map_map]
+
+variable (A K)
+
+/-- A ring automorphism of a ring induces an ring automorphism of its fraction field.
+
+This is a bundled version of `ringEquivOfRingEquiv`. -/
+noncomputable def ringEquivOfRingEquivHom : (A ≃+* A) →* (K ≃+* K) where
+  toFun := ringEquivOfRingEquiv
+  map_one' := ringEquivOfRingEquiv_refl
+  map_mul' f g := ringEquivOfRingEquiv_comp K K K g f
+
+@[simp]
+lemma ringEquivOfRingEquivHom_apply (f : A ≃+* A) :
+    ringEquivOfRingEquivHom A K f = ringEquivOfRingEquiv f :=
+  rfl
+
+lemma ringEquivOfRingEquivHom_injective : Function.Injective (ringEquivOfRingEquivHom A K) := by
+  intro f g h
+  ext b
+  simpa using RingEquiv.ext_iff.mp h (algebraMap A K b)
 
 end ringEquivOfRingEquiv
 
@@ -464,6 +509,7 @@ noncomputable def semilinearEquivOfRingEquiv : K ≃ₛₗ[(f : A →+* B)] L :=
 lemma semilinearEquivOfRingEquiv_apply (x : K) :
     (semilinearEquivOfRingEquiv K L f) x = (ringEquivOfRingEquiv f) x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma semilinearEquivOfRingEquiv_algebraMap (a : A) :
     semilinearEquivOfRingEquiv K L f (algebraMap A K a) = algebraMap B L (f a) := by
@@ -472,6 +518,7 @@ lemma semilinearEquivOfRingEquiv_algebraMap (a : A) :
 lemma semilinearEquivOfRingEquiv_symm_apply (x : L) :
     (semilinearEquivOfRingEquiv K L f).symm x = (ringEquivOfRingEquiv f).symm x := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [CommRing M]
     [Algebra C M] [IsFractionRing C M] (g : B ≃+* C) :
     let : RingHomCompTriple f (g : B →+* C) (f.trans g : A →+* C) := ⟨rfl⟩
@@ -481,7 +528,7 @@ lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [Comm
       (semilinearEquivOfRingEquiv K L f)
       (semilinearEquivOfRingEquiv L M g) := by
   ext a
-  simp [-RingEquiv.coe_ringHom_trans, semilinearEquivOfRingEquiv_apply,
+  simp [-RingEquiv.toRingHom_trans, semilinearEquivOfRingEquiv_apply,
     semilinearEquivOfRingEquiv_apply K M, ringEquivOfRingEquiv_comp K L M]
 
 end semilinearEquivOfRingEquiv
@@ -499,6 +546,7 @@ fraction rings `K ≃ₐ[R] L`. -/
 noncomputable def algEquivOfAlgEquiv : K ≃ₐ[R] L :=
   IsLocalization.algEquivOfAlgEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algEquivOfAlgEquiv_algebraMap
     (a : A) : algEquivOfAlgEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
@@ -609,6 +657,61 @@ theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
 
 protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
   h.nontrivial_iff_nontrivial.mp hR
+
+section MulAction
+
+variable (G A B K L : Type*) [Group G] [CommRing A] [CommRing B] [MulSemiringAction G B]
+  [Algebra A B] [Field K] [Field L] [Algebra K L] [Algebra A K] [Algebra B L] [Algebra A L]
+  [IsFractionRing A K] [IsFractionRing B L] [IsScalarTower A K L] [IsScalarTower A B L]
+
+/-- Given a `MulSemiringAction G B`, extend the action of `G` on `B` to a `MulSemiringAction G L`
+on the fraction field `L` of `B`. -/
+@[instance_reducible]
+noncomputable def mulSemiringAction :
+    MulSemiringAction G L :=
+  MulSemiringAction.compHom L
+    ((ringEquivOfRingEquivHom B L).comp (MulSemiringAction.toRingEquiv G B))
+
+/-- The action of `G` on the fraction field `L` of `B` given by `IsFractionRing.mulSemiringAction`
+is compatible with the embedding `B ⊆ L`. -/
+instance smulDistribClass :
+    letI := mulSemiringAction G B L
+    SMulDistribClass G B L :=
+  let := mulSemiringAction G B L
+  ⟨fun g b x ↦ by
+    rw [Algebra.smul_def', Algebra.smul_def', smul_mul']
+    congr
+    apply ringEquivOfRingEquiv_algebraMap⟩
+
+variable [MulSemiringAction G L] [SMulDistribClass G B L]
+
+protected theorem faithfulSMul [FaithfulSMul G B] : FaithfulSMul G L :=
+  ⟨fun h ↦ eq_of_smul_eq_smul fun x ↦ by simpa [← algebraMap.coe_smul'] using h (algebraMap B L x)⟩
+
+protected theorem smulCommClass [SMulCommClass G A B] : SMulCommClass G K L :=
+  ⟨fun g x y ↦ by
+    obtain ⟨a, b, hb, rfl⟩ := IsFractionRing.div_surjective A x
+    obtain ⟨c, d, hd, rfl⟩ := IsFractionRing.div_surjective B y
+    simp [Algebra.smul_def, map_div₀, ← IsScalarTower.algebraMap_apply A K L,
+      IsScalarTower.algebraMap_apply A B L, smul_mul', smul_div₀',
+      ← algebraMap.coe_smul', smul_algebraMap]⟩
+
+variable {A B} in
+/-- If `K` is the fraction field of `A` and `L` is the fraction field of `B` with `A ⊆ B`,
+then for `G` acting on `B` and `L`, the fixing subgroup of `A` in `B` equals the fixing subgroup
+of `K` in `L`. -/
+theorem fixingSubgroup_range_algebraMap :
+    fixingSubgroup G (Set.range (algebraMap A B)) =
+      fixingSubgroup G (Set.range (algebraMap K L)) := by
+  simp_rw [Subgroup.ext_iff, mem_fixingSubgroup_iff, Set.forall_mem_range]
+  refine fun g ↦ ⟨fun h x ↦ ?_, fun h x ↦ FaithfulSMul.algebraMap_injective B L ?_⟩
+  · obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
+    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A B L, smul_div₀', ← algebraMap.smul', h]
+  · simp_rw [algebraMap.smul', ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply A K L, h]
+
+end MulAction
 
 end IsFractionRing
 

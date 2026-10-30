@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.ENNReal.Action
+public import Mathlib.Basic.ENNReal.Action
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
@@ -111,12 +111,13 @@ include PU msU in
 theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     extend m (⋃ i, s i) ≤ ∑' i, extend m (s i) := by
   by_cases! h : ∀ i, P (s i)
-  · rw [extend_eq _ (PU h), congr_arg tsum _]
+  · rw [extend_eq _ (PU h), congr(tsum $(_))]
     · apply msU h
     funext i
     apply extend_eq _ (h i)
   · obtain ⟨i, hi⟩ := h
-    exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
+    grw [← le_tsum _ i, extend_eq_top _ hi]
+    exact le_top
 
 end Subadditive
 
@@ -175,7 +176,8 @@ theorem inducedOuterMeasure_union_of_false_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → ¬P u) :
     inducedOuterMeasure m P0 m0 (s ∪ t) =
       inducedOuterMeasure m P0 m0 s + inducedOuterMeasure m P0 m0 t :=
-  ofFunction_union_of_top_of_nonempty_inter fun u hsu htu => @iInf_of_empty _ _ _ ⟨h u hsu htu⟩ _
+  ofFunction_union_of_top_of_nonempty_inter
+    fun u hsu htu => @iInf_of_empty _ _ _ _ _ ⟨h u hsu htu⟩ _
 
 include PU msU m_mono
 
@@ -279,7 +281,7 @@ theorem extend_mono {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁) (hs : s₁ 
   have :=
     extend_union MeasurableSet.empty m0 MeasurableSet.iUnion mU disjoint_sdiff_self_right h₁
       (h₂.diff h₁)
-  rw [union_diff_cancel hs] at this
+  rw [union_sdiff_cancel hs] at this
   rw [← extend_eq m]
   exact le_iff_exists_add.2 ⟨_, this⟩
 
@@ -288,7 +290,7 @@ theorem extend_iUnion_le_tsum_nat : ∀ s : ℕ → Set α,
   refine extend_iUnion_le_tsum_nat' MeasurableSet.iUnion ?_; intro f h
   simp +singlePass only [iUnion_disjointed.symm]
   rw [mU (MeasurableSet.disjointed h) (disjoint_disjointed _)]
-  refine ENNReal.tsum_le_tsum fun i => ?_
+  refine tsum_le_tsum fun i => ?_
   rw [← extend_eq m, ← extend_eq m]
   exact extend_mono m0 mU (MeasurableSet.disjointed h _) (disjointed_le f _)
 
@@ -331,7 +333,7 @@ theorem trim_congr {m₁ m₂ : OuterMeasure α} (H : ∀ {s : Set α}, Measurab
 
 @[gcongr, mono]
 theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun _m₁ _m₂ H _s =>
-  iInf₂_mono fun _f _hs => ENNReal.tsum_le_tsum fun _b => iInf_mono fun _hf => H _
+  iInf₂_mono fun _f _hs => tsum_le_tsum fun _b => iInf_mono fun _hf => H _
 
 /-- `OuterMeasure.trim` is antitone in the σ-algebra. -/
 theorem trim_anti_measurableSpace {α} (m : OuterMeasure α) {m0 m1 : MeasurableSpace α}
@@ -372,8 +374,7 @@ theorem trim_zero : (0 : OuterMeasure α).trim = 0 := by
 theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim) ≤ (sum m).trim :=
   fun s => by
   simp only [sum_apply, trim_eq_iInf, le_iInf_iff]
-  exact fun t st ht =>
-    ENNReal.tsum_le_tsum fun i => iInf_le_of_le t <| iInf_le_of_le st <| iInf_le _ ht
+  exact fun t st ht => tsum_le_tsum fun i => iInf_le_of_le t <| iInf_le_of_le st <| iInf_le _ ht
 
 theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t = m.trim s := by
@@ -437,7 +438,7 @@ theorem trim_add (m₁ m₂ : OuterMeasure α) : (m₁ + m₂).trim = m₁.trim 
 /-- `trim` respects scalar multiplication. -/
 theorem trim_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R)
     (m : OuterMeasure α) : (c • m).trim = c • m.trim :=
-  ext <| trim_op (smul_apply c m)
+  ext <| trim_op (smul_apply m c)
 
 /-- `trim` sends the supremum of two outer measures to the supremum of the trimmed measures. -/
 theorem trim_sup (m₁ m₂ : OuterMeasure α) : (m₁ ⊔ m₂).trim = m₁.trim ⊔ m₂.trim :=

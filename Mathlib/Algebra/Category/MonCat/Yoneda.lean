@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.CategoryTheory.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Yoneda embeddings
 
@@ -52,5 +55,5 @@ This is also the coyoneda embedding of `Type` into `AddCommMonCat`-valued preshe
 monoids. -/]
 def CommMonCat.coyonedaType : Type uᵒᵖ ⥤ CommMonCat.{u} ⥤ CommMonCat.{u} where
   obj X := { obj M := of <| X.unop → M
-             map f := ofHom <| Pi.monoidHom fun i ↦ f.hom.comp <| Pi.evalMonoidHom _ i }
-  map f := { app N := ofHom <| Pi.monoidHom fun i ↦ Pi.evalMonoidHom _ <| f.unop i }
+             map f := ofHom <| MonoidHom.pi fun i ↦ f.hom.comp <| Pi.evalMonoidHom _ i }
+  map f := { app N := ofHom <| MonoidHom.pi fun i ↦ Pi.evalMonoidHom _ <| f.unop i }

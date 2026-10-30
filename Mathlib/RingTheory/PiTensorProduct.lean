@@ -5,10 +5,8 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct
 public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.Algebra.Algebra.Equiv
-public import Mathlib.Data.Finset.NoncommProd
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 /-!
 # Tensor product of `R`-algebras and rings
@@ -126,14 +124,10 @@ variable [CommSemiring R] [∀ i, NonUnitalSemiring (A i)]
 variable [∀ i, Module R (A i)] [∀ i, SMulCommClass R (A i) (A i)] [∀ i, IsScalarTower R (A i) (A i)]
 
 protected lemma mul_assoc (x y z : ⨂[R] i, A i) : mul (mul x y) z = mul x (mul y z) := by
-  -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
-        LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
+  apply mul.assoc_iff.mpr
   ext x y z
   dsimp [← mul_def]
-  simpa only [tprod_mul_tprod] using congr_arg (tprod R) (mul_assoc x y z)
+  simpa only [tprod_mul_tprod] using congr(tprod R $(mul_assoc x y z))
 
 instance instNonUnitalSemiring : NonUnitalSemiring (⨂[R] i, A i) where
   __ := instNonUnitalNonAssocSemiring
@@ -204,8 +198,7 @@ def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
 Lifting a multilinear map to an algebra homomorphism from tensor product
 -/
 @[simps!]
-def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
-    (f : MultilinearMap R A S)
+def liftAlgHom {S : Type*} [Semiring S] [Algebra R S] (f : (Π i, A i) →ₘₗ[R] S)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : (⨂[R] i, A i) →ₐ[R] S :=
   AlgHom.ofLinearMap (lift f) (show lift f (tprod R 1) = 1 by simp [one]) <|
     LinearMap.map_mul_iff _ |>.mpr <| by aesop
@@ -223,8 +216,8 @@ theorem algHom_ext {S : Type*} [Finite ι] [DecidableEq ι] [Semiring S] [Algebr
     f = g :=
   AlgHom.toLinearMap_injective <| PiTensorProduct.ext <| MultilinearMap.ext fun x =>
     suffices f.toMonoidHom.comp (tprodMonoidHom R) = g.toMonoidHom.comp (tprodMonoidHom R) from
-      DFunLike.congr_fun this x
-    MonoidHom.pi_ext fun i xi => DFunLike.congr_fun (h i) xi
+      congr($this x)
+    MonoidHom.pi_ext fun i xi => congr($(h i) xi)
 
 end Semiring
 
@@ -244,7 +237,7 @@ variable [CommSemiring R] [∀ i, CommSemiring (A i)] [∀ i, Algebra R (A i)]
 
 protected lemma mul_comm (x y : ⨂[R] i, A i) : mul x y = mul y x := by
   suffices mul (R := R) (A := A) = mul.flip from
-    DFunLike.congr_fun (DFunLike.congr_fun this x) y
+    congr($this x y)
   ext x y
   dsimp
   simp only [mul_tprod_tprod, mul_tprod_tprod, mul_comm x y]
@@ -276,9 +269,9 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
       ((lift.tprod _).trans Finset.prod_const_one)
       (by
         -- one of these is required, the other is a performance optimization
-        letI : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : IsScalarTower R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           IsScalarTower.right (R := R) (A := ⨂[R] (x : ι), R)
-        letI : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
+        let : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           Algebra.to_smulCommClass (R := R) (A := ⨂[R] x : ι, R)
         rw [LinearMap.map_mul_iff]
         ext

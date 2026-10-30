@@ -7,9 +7,10 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
+public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # The monoidal category structure on simplicial sets
@@ -27,8 +28,10 @@ category structure on `SSet`.
 
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory CartesianMonoidalCategory
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory
   Limits SimplicialObject.Truncated
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -73,7 +76,6 @@ lemma associator_inv_app_apply (K L M : SSet.{u}) {Δ : SimplexCategoryᵒᵖ}
     (x : (K ⊗ L ⊗ M).obj Δ) :
     dsimp% (α_ K L M).inv.app Δ x = ⟨⟨x.1, x.2.1⟩, x.2.2⟩ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(𝟙_ SSet ⟶ K) ≃ K _⦋0⦌`. -/
 def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
   toFun φ := φ.app _ PUnit.unit
@@ -115,12 +117,17 @@ instance : HasDimensionLE (𝟙_ SSet.{u}) 0 :=
   (hasDimensionLT_iff_of_iso (stdSimplex.isTerminalObj₀.{u}.uniqueUpToIso
     CartesianMonoidalCategory.isTerminalTensorUnit) _).1 inferInstance
 
+instance : opFunctor.{u}.Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso _ _ := Iso.refl _ }
+
 namespace Subcomplex
 
 /-- The external product of subcomplexes of simplicial sets. -/
 @[simps]
 def prod {X Y : SSet.{u}} (A : X.Subcomplex) (B : Y.Subcomplex) : (X ⊗ Y).Subcomplex where
-  obj Δ := (A.obj Δ).prod (B.obj Δ)
+  obj Δ := A.obj Δ ×ˢ B.obj Δ
   map i _ hx := ⟨A.map i hx.1, B.map i hx.2⟩
 
 lemma prod_monotone {X Y : SSet.{u}}
@@ -241,10 +248,10 @@ variable {X Y : SSet.{u}} (S : X.Subcomplex) (T : Y.Subcomplex)
 /-- Given `S ≤ X` and `T ≤ Y`, this is the subcomplex of `X ⊗ Y` given by `(X ⊗ T) ⊔ (S ⊗ Y)`. -/
 def unionProd : (X ⊗ Y).Subcomplex := ((⊤ : X.Subcomplex).prod T) ⊔ (S.prod ⊤)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_unionProd_iff {n : SimplexCategoryᵒᵖ} (x : (X ⊗ Y).obj n) :
-    x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
-  dsimp [unionProd, Set.prod]
-  cat_disch
+    dsimp% x ∈ (unionProd S T).obj _ ↔ x.2 ∈ T.obj _ ∨ x.1 ∈ S.obj _ := by
+  simp [unionProd, Set.mem_prod (α := X.obj n)]
 
 lemma top_prod_le_unionProd : (⊤ : X.Subcomplex).prod T ≤ S.unionProd T := le_sup_left
 
@@ -252,6 +259,14 @@ lemma prod_top_le_unionProd : (S.prod ⊤) ≤ S.unionProd T := le_sup_right
 
 lemma prod_le_unionProd : S.prod T ≤ S.unionProd T :=
   (prod_le_prod_top S T).trans (prod_top_le_unionProd S T)
+
+lemma preimage_op_unionProd :
+    (unionProd S T).op.preimage (Functor.LaxMonoidal.μ opFunctor _ _) =
+      unionProd S.op T.op := rfl
+
+lemma preimage_unionProd {X' Y' : SSet.{u}} (f : X' ⟶ X) (g : Y' ⟶ Y) :
+    (unionProd S T).preimage (f ⊗ₘ g) =
+      unionProd (S.preimage f) (T.preimage g) := rfl
 
 namespace unionProd
 
@@ -273,13 +288,10 @@ lemma ι₁_ι : ι₁ S T ≫ (unionProd S T).ι = X ◁ T.ι := rfl
 @[reassoc (attr := simp)]
 lemma ι₂_ι : ι₂ S T ≫ (unionProd S T).ι = S.ι ▷ Y := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma bicartSq : BicartSq (S.prod T) ((⊤ : X.Subcomplex).prod T) (S.prod ⊤) (unionProd S T) where
   sup_eq := rfl
-  inf_eq := by
-    ext n ⟨x, y⟩
-    change _ ∧ _ ↔ _
-    simp [prod, Set.prod, Membership.mem, Set.Mem, setOf]
-    tauto
+  inf_eq := by ext n; simp [Set.mem_prod (α := X.obj n), and_comm]
 
 lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
     (unionProd.ι₁ S T) (unionProd.ι₂ S T) :=
@@ -288,10 +300,13 @@ lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
     (prodIso _ _ ≪≫ whiskerLeftIso _ (topIso Y))
     (Iso.refl _) rfl rfl rfl rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma preimage_β_hom : (unionProd S T).preimage (β_ _ _).hom = unionProd T S := by
   ext n ⟨x, y⟩
-  simp only [mem_unionProd_iff, preimage_obj, Set.mem_preimage]
+  dsimp
+  simp only [mem_unionProd_iff, preimage_obj, Monoidal.tensorObj_obj,
+    dsimp% Set.mem_preimage (f := (β_ Y X).hom.app n)]
   tauto
 
 @[simp]

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.Action.Opposite
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Module operations on `Mᵐᵒᵖ`
 
@@ -22,7 +25,7 @@ assert_not_exists LinearMap
 
 section
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M]
+variable {R : Type*} [Semiring R]
 
 -- see Note [lower instance priority]
 /-- Like `Semiring.toModule`, but multiplies on the right. -/

@@ -5,9 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Subfunctor.Image
-public import Mathlib.Tactic.CategoryTheory.CategoryStar
 
 /-!
 
@@ -24,7 +22,6 @@ open Limits
 
 variable {C : Type*} [Category* C]
 
-attribute [local simp] FunctorToTypes.naturality in
 /-- The image of a natural transformation between type-valued functors is a `MonoFactorisation` -/
 @[simps]
 def monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f where
@@ -32,6 +29,8 @@ def monoFactorisation {F G : C ⥤ Type u} (f : F ⟶ G) : MonoFactorisation f w
   m := (Subfunctor.range f).ι
   e := Subfunctor.toRange f
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The image of a natural transformation between type-valued functors satisfies the universal
 property of images -/
 noncomputable def monoFactorisationIsImage {F G : C ⥤ Type u} (f : F ⟶ G) :

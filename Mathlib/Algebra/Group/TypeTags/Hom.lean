@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transport algebra morphisms between additive and multiplicative types.
 -/
@@ -60,9 +63,6 @@ def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
 @[simp, norm_cast]
 lemma MonoidHom.coe_toAdditive [MulOneClass α] [MulOneClass β] (f : α →* β) :
     ⇑(toAdditive f) = ofMul ∘ f ∘ toMul := rfl
-
-@[deprecated (since := "2025-11-07")]
-alias MonoidHom.coe_toMultiplicative := MonoidHom.coe_toAdditive
 
 @[simp] lemma MonoidHom.toAdditive_id [MulOneClass α] : (id α).toAdditive = .id _ := rfl
 

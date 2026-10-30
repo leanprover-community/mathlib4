@@ -22,8 +22,7 @@ of a profunctor with functors, and the profunctors in both directions correspond
 
 ## Future work
 
-- Define composition of profunctors.
-- Define the bicategory of categories where the 1-morphisms are profunctors.
+- Use profunctor composition to define the bicategory of categories and profunctors.
 -/
 
 @[expose] public section
@@ -104,6 +103,7 @@ def ofCore (P : ProfunctorCore.{w} C D) : Profunctor.{w} C D where
   obj X := { obj Y := P.obj X (unop Y), map f := P.map (𝟙 _) f.unop }
   map g := { app X := P.map g (𝟙 _) }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Construct a natural transformation between profunctors from a `ProfunctorCore.Hom`. -/
 @[simps]
 def ofHom {P Q : ProfunctorCore.{w} C D} (f : P.Hom Q) : ofCore P ⟶ ofCore Q where

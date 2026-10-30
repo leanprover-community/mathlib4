@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
-public import Mathlib.Probability.HasLaw
+
 import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
@@ -74,8 +74,8 @@ def diagonalStrongDualPi (L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] Strong
     simp only [LinearMap.mk₂_apply, g]
     grw [norm_sum_le, sum_mul, sum_mul]
     gcongr with i _
-    grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_single_le_one]
-    simp
+    grw [le_opNorm₂]
+    gcongr <;> grw [opNorm_comp_le, norm_single_le_one, mul_one]
 
 lemma diagonalStrongDualPi_apply (x y : StrongDual ℝ (Π i, E i)) :
     diagonalStrongDualPi L x y = ∑ i, L i (x ∘L (.single ℝ E i)) (y ∘L (.single ℝ E i)) := rfl
@@ -123,10 +123,10 @@ def diagonalStrongDualProd
     simp only [LinearMap.mk₂_apply, g]
     grw [norm_add_le, add_mul, add_mul]
     gcongr
-    · grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_inl_le_one]
-      simp
-    · grw [le_opNorm₂, opNorm_comp_le, opNorm_comp_le, norm_inr_le_one]
-      simp
+    · grw [le_opNorm₂]
+      gcongr <;> grw [opNorm_comp_le, norm_inl_le_one, mul_one]
+    · grw [le_opNorm₂]
+      gcongr <;> grw [opNorm_comp_le, norm_inr_le_one, mul_one]
 
 lemma diagonalStrongDualProd_apply (x y : StrongDual ℝ (E × F)) :
     diagonalStrongDualProd L₁ L₂ x y =
@@ -226,7 +226,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_inner
       cov[fun ω ↦ ⟪x, X i ω⟫, fun ω ↦ ⟪y, X j ω⟫; P] = 0) :
     iIndepFun X P :=
   hX.iIndepFun_of_covariance_strongDual fun i j hij L₁ L₂ ↦ by
-    simpa using h i j hij ((toDual ℝ (E i)).symm L₁) ((toDual ℝ (E j)).symm L₂)
+    simpa using! h i j hij ((toDual ℝ (E i)).symm L₁) ((toDual ℝ (E j)).symm L₂)
 
 end InnerProductSpace
 
@@ -284,7 +284,6 @@ lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω �
   isGaussian_map := by
     have := hX.isProbabilityMeasure
     rw [isGaussian_iff_gaussian_charFunDual]
-    classical
     refine ⟨(∫ x, x ∂P.map X, ∫ y, y ∂P.map Y),
       .diagonalStrongDualProd (covarianceBilinDual (P.map X)) (covarianceBilinDual (P.map Y)),
       isPosSemidef_diagonalStrongDualProd isPosSemidef_covarianceBilinDual
@@ -316,7 +315,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_strongDual [NormedSpace ℝ E] [Norm
   rw [indepFun_iff_charFunDual_prod hXY.fst.aemeasurable hXY.snd.aemeasurable]
   intro L
   have : L ∘ (fun ω ↦ (X ω, Y ω)) = (L ∘L (.inl ℝ E F)) ∘ X + (L ∘L (.inr ℝ E F)) ∘ Y := by
-    ext; simp [-coe_comp', ← comp_inl_add_comp_inr]
+    ext; simp [-comp_apply, ← comp_inl_add_comp_inr]
   rw [hXY.charFunDual_map_eq, hXY.fst.charFunDual_map_eq, hXY.snd.charFunDual_map_eq, ← exp_add,
     sub_add_sub_comm, ← add_mul, ← ofReal_add, ← integral_add, ← add_div, ← ofReal_add, this,
     variance_add, h, mul_zero, add_zero]
@@ -332,7 +331,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_inner [InnerProductSpace ℝ E] [Inn
     (h : ∀ x y, cov[fun ω ↦ ⟪x, X ω⟫, fun ω ↦ ⟪y, Y ω⟫; P] = 0) :
     IndepFun X Y P :=
   hXY.indepFun_of_covariance_strongDual fun L₁ L₂ ↦ by
-    simpa using h ((toDual ℝ E).symm L₁) ((toDual ℝ F).symm L₂)
+    simpa using! h ((toDual ℝ E).symm L₁) ((toDual ℝ F).symm L₂)
 
 /-- If $((X_i)_{i \in \iota}, (Y_j)_{j \in \kappa})$ is Gaussian, then $(X_i)_{i \in \iota}$ and
 $(Y_j)_{j \in \kappa}$ are independent if for all $i \in \iota, j \in \kappa$,

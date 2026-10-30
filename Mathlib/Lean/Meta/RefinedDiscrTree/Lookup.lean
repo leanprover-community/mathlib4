@@ -80,7 +80,7 @@ and returning the `Trie α`.
 
 Performance note: In the `apply` search discrimination tree, after root node `⟨Eq, 3⟩`,
 there are about `150,000` entries in the `pending` array.
-To deal with this smoothly, we parallellize the computation into chunks of `5000` entries.
+To deal with this smoothly, we parallelize the computation into chunks of `5000` entries.
 -/
 private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
   let node := (← get)[trie]!
@@ -206,12 +206,15 @@ The reason is that types are usually implicit arguments. For example
     This gets extra points for matching `1`
   - `Nat.succ.inj (n m : ℕ) (h : n.succ = m.succ) : n = m`.
     This gets extra points for matching `ℕ`
+
   Clearly, `rfl` is better.
+
 - If we rewrite `|(0 : ℝ)|`, we could find
   - `abs_zero : |(0 : α)| = 0`
     This gets extra points for matching `0`
   - `Real.norm_eq_abs : ∀ (r : ℝ), ‖r‖ = |r|`
     This gets extra points for matching `ℝ`
+
   Clearly, `abs_zero` is better
 
 In both examples, matching the type (`ℕ` or `ℝ`) was not very important for how good

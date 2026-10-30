@@ -5,14 +5,17 @@ Authors: Michael Jendrusch, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

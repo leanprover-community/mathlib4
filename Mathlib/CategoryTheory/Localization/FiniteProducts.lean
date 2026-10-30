@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Localization.Adjunction
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Localization.Pi
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+import Mathlib.CategoryTheory.Limits.ConeCategory
 
 /-! # The localized category has finite products
 
@@ -27,7 +28,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 namespace Localization
 
@@ -80,6 +81,7 @@ lemma adj_counit_app (F : Discrete J ⥤ C) :
         whiskerRight (constLimAdj.counit.app F) L := by
   apply constLimAdj.localization_counit_app
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Localization.preservesProductsOfShape`. -/
 noncomputable def isLimitMapCone (F : Discrete J ⥤ C) :
     IsLimit (L.mapCone (limit.cone F)) :=

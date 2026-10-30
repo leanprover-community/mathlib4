@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 /-!
@@ -41,7 +40,7 @@ noncomputable instance instMonoidalCategoryStruct :
   whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
   whiskerRight f X := ofHom (f.1.rTensor X)
   tensorHom f g := ofHom (Coalgebra.TensorProduct.map f.1 g.1)
-  tensorUnit := CoalgCat.of R R
+  tensorUnit := ↧R
   associator X Y Z := (Coalgebra.TensorProduct.assoc R R X Y Z).toCoalgIso
   leftUnitor X := (Coalgebra.TensorProduct.lid R X).toCoalgIso
   rightUnitor X := (Coalgebra.TensorProduct.rid R R X).toCoalgIso

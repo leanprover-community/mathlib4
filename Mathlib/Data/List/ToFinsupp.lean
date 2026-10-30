@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.Group.Finsupp
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.GetD
 
 /-!
@@ -99,7 +98,7 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
   simp only [toFinsupp_apply, Finsupp.add_apply]
   cases lt_or_ge n l₁.length with
   | inl h =>
-    rw [getD_append _ _ _ _ h, Finsupp.embDomain_notin_range, add_zero]
+    rw [getD_append _ _ _ _ h, Finsupp.embDomain_of_notMem_range, add_zero]
     rintro ⟨k, rfl : length l₁ + k = n⟩
     lia
   | inr h =>
@@ -112,7 +111,7 @@ theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x :
     toFinsupp (x::xs) =
       Finsupp.single 0 x + (toFinsupp xs).embDomain (addRightEmbedding 1) := by
   classical
-    convert toFinsupp_append [x] xs using 3
+    convert! toFinsupp_append [x] xs using 3
     · exact (toFinsupp_singleton x).symm
     · ext n
       exact add_comm n 1

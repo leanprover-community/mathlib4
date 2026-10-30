@@ -255,7 +255,6 @@ lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
 variable (W) (f : R →+* S)
 
 /-- The Weierstrass curve in affine coordinates mapped over a ring homomorphism `f : R →+* S`. -/
-@[simps!]
 abbrev map : Affine S :=
   WeierstrassCurve.map W f
 

@@ -5,8 +5,6 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Opposites
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 
 /-!
@@ -31,7 +29,6 @@ open Opposite
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-variable {J : Type u₂} [Category.{v₂} J]
 
 instance hasEqualizers_opposite [HasCoequalizers C] : HasEqualizers Cᵒᵖ :=
   haveI : HasColimitsOfShape WalkingParallelPairᵒᵖ C :=
@@ -103,8 +100,8 @@ namespace Cofork
 
 /-- The obvious map `Cofork f g → Fork f.unop g.unop` -/
 def unop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) : Fork f.unop g.unop :=
-   Cocone.unop ((Cocone.precompose (opParallelPairIso f.unop g.unop).hom).obj
-      (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
+  Cocone.unop ((Cocone.precompose (opParallelPairIso f.unop g.unop).hom).obj
+    (Cocone.whisker walkingParallelPairOpEquiv.inverse c))
 
 lemma unop_π_app_one {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Cofork f g) :
     c.unop.π.app .one = Quiver.Hom.unop (c.ι.app .zero) := by
@@ -288,6 +285,7 @@ def isLimitEquivIsColimitUnop {X Y : Cᵒᵖ} {f g : X ⟶ Y} (c : Fork f g) :
     IsLimit c ≃ IsColimit c.unop :=
   (IsLimit.equivIsoLimit c.unopOpIso).symm.trans c.unop.isColimitEquivIsLimitOp.symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism between `(Fork.ofι ι w).op` and `Cofork.ofπ ι.op w'`. -/
 def ofιOpIsoOfπ {X Y P : C} {f g : X ⟶ Y} (ι ι' : P ⟶ X) (w : ι ≫ f = ι ≫ g)
     (w' : f.op ≫ ι'.op = g.op ≫ ι'.op) (h : ι = ι') :

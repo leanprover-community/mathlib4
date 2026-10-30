@@ -5,7 +5,6 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
@@ -25,6 +24,7 @@ namespace IsLocalRing
 variable (R : Type*) [CommRing R] [IsLocalRing R]
 
 /-- The residue field of a local ring is the quotient of the ring by its maximal ideal. -/
+@[wikidata Q7315530]
 def ResidueField :=
   R ⧸ maximalIdeal R
 deriving CommRing, Inhabited

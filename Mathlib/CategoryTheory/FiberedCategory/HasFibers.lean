@@ -62,7 +62,6 @@ variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.
 collection of categories `Fib S` for every `S : 𝒮` (the fiber categories), each equipped with a
 functors `ι : Fib S ⥤ 𝒳` which map constantly to `S` on the base such that the induced functor
 `Fib S ⥤ Fiber p S` is an equivalence. -/
-@[nolint checkUnivs]
 class HasFibers (p : 𝒳 ⥤ 𝒮) where
   /-- The type of objects of the category `Fib S` for each `S`. -/
   Fib (S : 𝒮) : Type u₃
@@ -78,7 +77,7 @@ class HasFibers (p : 𝒳 ⥤ 𝒮) where
 namespace HasFibers
 
 /-- The `HasFibers` on `p : 𝒳 ⥤ 𝒮` given by the fibers of `p` -/
-@[implicit_reducible]
+@[instance_reducible]
 def canonical (p : 𝒳 ⥤ 𝒮) : HasFibers p where
   Fib := Fiber p
   ι S := fiberInclusion

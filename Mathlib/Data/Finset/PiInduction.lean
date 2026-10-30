@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Fintype.Basic
+
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Sigma
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`
