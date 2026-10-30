@@ -98,26 +98,15 @@ jobs:
           persist-credentials: false # no later step needs git credentials
 
       # Validate lake-manifest.json before "Set up build environment" downloads the dependencies.
-      # Each dependency tracks a branch or tag in `inputRev` and pins a commit in `rev`.
-      # On every run, the step fails when a dependency breaks one of these rules:
-      # - `inputRev` is `main`, `master` or a version tag.
-      # - `url` is a GitHub repository in `leanprover-community` or `leanprover`.
-      # - The pin is a full commit hash.
-      # The base manifest is master's manifest at the merge base of master and the commit under
-      # test. The step also checks each dependency whose `url`, `inputRev` or pin differs from the
-      # base. On bors runs (`staging` and `trying`), the step fails when a dependency breaks one of
-      # these rules. On other runs, the step only warns, so a PR can test an unmerged dependency
-      # commit.
-      # - A dependency that tracks a branch pins a commit on that branch. GitHub also serves
-      #   commits from unmerged pull requests by SHA, and this rule rejects them.
-      # - A dependency that tracks a tag pins the commit of that tag.
-      # - When `url` and `inputRev` are unchanged, a dependency that tracks a branch does not pin
-      #   an older commit: the pin is the base pin or a descendant of it. This rule catches a
-      #   contributor who keeps an older pin when they resolve a merge conflict. For an
-      #   intentional revert, such as the revert of a toolchain bump, a repository admin sets the
-      #   variable `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`, and this rule only warns. The
-      #   admin should delete the variable after the revert merges.
-      # An API error in these pin checks also fails bors runs, and warns on other runs.
+      # The action reads the manifests through the GitHub API and checks each dependency:
+      # - On every run: `inputRev` is `main`, `master` or a version tag, `url` is a GitHub
+      #   repository in `leanprover-community` or `leanprover`, and the pin (`rev`) is a full
+      #   commit hash.
+      # - On bors runs (`staging` and `trying`), and as warnings on other runs: a changed pin is on
+      #   its branch or is the commit of its tag, and is not older than the pin on master.
+      # For an intentional revert, a repository admin sets the variable
+      # `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`, and the older-pin rule only warns. The admin
+      # should delete the variable after the revert merges. The action's README.md has the details.
       - name: Validate lake-manifest.json
         # The step runs only in leanprover-community/mathlib4. `bump/*` branches and PRs into them
         # track the dependencies' `nightly-testing` branches, so the step skips them. A PR's base
@@ -127,141 +116,11 @@ jobs:
           github.repository == 'leanprover-community/mathlib4'
           && !startsWith(github.ref_name, 'bump/')
           && !startsWith(github.base_ref, 'bump/')
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        env:
-          PR_BRANCH_REF: ${{ inputs.pr_branch_ref }}
-          STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
-          ALLOW_OLDER_PINS: ${{ vars.MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS }}
+        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@b4731f641e0f23915f03451bccaa815e7bde21d0
         with:
-          retries: 3
-          script: |
-            const branchRev = /^(main|master)$/;
-            const tagRev = /^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$/;
-            const repoUrl = /^https:\/\/github\.com\/(leanprover|leanprover-community)\/([A-Za-z0-9._-]+)$/;
-            const fullSha = /^[0-9a-f]{40}$/;
-            // An inherited dependency comes from the `require` in another dependency, not in Mathlib.
-            const requireHint = p => p.inherited
-              ? `Hint: Fix the \`require\` for \`${p.name}\` in the dependency that requires it, then run \`lake update\`.`
-              : `Hint: Fix the \`require\` for \`${p.name}\` in lakefile.lean, then run \`lake update ${p.name}\`.`;
-            const updateHint = name => `Hint: Run \`lake update ${name}\` and commit lake-manifest.json.`;
-            const strictNote = 'Note: This check fails the Build job on bors runs.';
-
-            let failed = false;
-            const annotate = (level, title, ...lines) => {
-              core[level](lines.join('\n'), { title, file: 'lake-manifest.json' });
-              if (level === 'error') failed = true;
-            };
-            const packageError = (title, ...lines) => annotate('error', title, ...lines);
-            const pinError = (title, problem, ...lines) =>
-              annotate(process.env.STRICT === 'true' ? 'error' : 'warning', title, problem, strictNote, ...lines);
-
-            // The step reads the manifest through the API, so it writes no PR file to disk.
-            const readManifest = async ref => {
-              const { data } = await github.rest.repos.getContent({ ...context.repo, path: 'lake-manifest.json', ref });
-              if (data.type !== 'file') throw new Error(`lake-manifest.json at \`${ref}\` is a ${data.type}, not a file.`);
-              return JSON.parse(Buffer.from(data.content, 'base64').toString());
-            };
-
-            // True when `commit` is `tip` or an ancestor of `tip`. False for a commit GitHub does not know.
-            const isAncestor = async (owner, repo, commit, tip) => {
-              try {
-                const { data } = await github.rest.repos.compareCommits({
-                  owner, repo, base: commit, head: tip, per_page: 1,
-                });
-                return data.status === 'ahead' || data.status === 'identical';
-              } catch (e) {
-                if (e.status === 404) return false;
-                throw e;
-              }
-            };
-
-            const tagCommit = async (owner, repo, tag) => {
-              try {
-                const { data } = await github.rest.repos.getCommit({ owner, repo, ref: `refs/tags/${tag}` });
-                return data.sha;
-              } catch (e) {
-                if (e.status === 404 || e.status === 422) return null;
-                throw e;
-              }
-            };
-
-            // `old` is the dependency in the base manifest, if any.
-            const checkPin = async (p, old) => {
-              const sameSource = old?.url === p.url && old?.inputRev === p.inputRev;
-              if (sameSource && old.rev === p.rev) return;
-              if (tagRev.test(p.inputRev)) {
-                const sha = await tagCommit(p.owner, p.repo, p.inputRev);
-                if (sha !== p.rev) {
-                  pinError(`Dependency pin does not match tag ${p.inputRev}`,
-                    `lake-manifest.json pins \`${p.name}\` to \`${p.rev}\`, but tag \`${p.inputRev}\` of ${p.url} ` +
-                    (sha ? `points to \`${sha}\`.` : 'does not exist.'),
-                    updateHint(p.name));
-                }
-              } else if (!await isAncestor(p.owner, p.repo, p.rev, p.inputRev)) {
-                pinError(`Dependency pin is not on branch ${p.inputRev}`,
-                  `lake-manifest.json pins \`${p.name}\` to \`${p.rev}\`, which is not on the \`${p.inputRev}\` branch of ${p.url}.`,
-                  updateHint(p.name));
-              } else if (sameSource && !await isAncestor(p.owner, p.repo, old.rev, p.rev)) {
-                const problem = `lake-manifest.json pins \`${p.name}\` to \`${p.rev}\`, which does not descend from ` +
-                  `\`${old.rev}\`, the pin on master.`;
-                if (process.env.ALLOW_OLDER_PINS === 'true') {
-                  annotate('warning', 'Older dependency pin', problem,
-                    'Note: The variable `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` is `true`, so this check only warns.');
-                } else {
-                  pinError('Older dependency pin', problem,
-                    'Note: For an intentional revert, a repository admin can set the variable ' +
-                    '`MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`.',
-                    updateHint(p.name));
-                }
-              }
-            };
-
-            const pinned = [];
-            for (const p of (await readManifest(process.env.PR_BRANCH_REF)).packages) {
-              const tracksAllowedRev = branchRev.test(p.inputRev) || tagRev.test(p.inputRev);
-              const source = repoUrl.exec(p.url);
-              const pinsCommit = fullSha.test(p.rev);
-              if (!tracksAllowedRev) {
-                packageError('Invalid dependency inputRev',
-                  p.inputRev == null
-                    ? `lake-manifest.json sets no \`inputRev\` for \`${p.name}\`.`
-                    : `lake-manifest.json makes \`${p.name}\` track \`${p.inputRev}\`, which is not an allowed \`inputRev\`.`,
-                  'Note: CI accepts only `main`, `master` or a version tag such as `v4.25.0` or `v4.25.0-rc1`.',
-                  requireHint(p));
-              }
-              if (!source) {
-                packageError('Invalid dependency repository',
-                  p.url == null
-                    ? `lake-manifest.json sets no repository for \`${p.name}\`.`
-                    : `lake-manifest.json sets the repository of \`${p.name}\` to \`${p.url}\`, which is not an allowed repository.`,
-                  'Note: CI accepts only repositories in https://github.com/leanprover-community and https://github.com/leanprover.',
-                  requireHint(p));
-              }
-              if (!pinsCommit) {
-                packageError('Invalid dependency pin',
-                  `lake-manifest.json pins \`${p.name}\` to \`${p.rev}\`, which is not a full commit hash.`,
-                  updateHint(p.name));
-              }
-              if (tracksAllowedRev && source && pinsCommit) pinned.push({ ...p, owner: source[1], repo: source[2] });
-            }
-
-            try {
-              // Find the base and the files that the commit under test changes.
-              const { data: comparison } = await github.rest.repos.compareCommits({
-                ...context.repo, base: 'master', head: process.env.PR_BRANCH_REF, per_page: 1,
-              });
-              // The compare API lists at most 300 files, so a full list can omit lake-manifest.json.
-              const files = comparison.files ?? [];
-              const manifestMayDiffer = files.length >= 300 || files.some(f => f.filename === 'lake-manifest.json');
-              if (manifestMayDiffer) {
-                const base = new Map((await readManifest(comparison.merge_base_commit.sha)).packages.map(p => [p.name, p]));
-                for (const p of pinned) await checkPin(p, base.get(p.name));
-              }
-            } catch (e) {
-              pinError('Dependency pin check failed', `CI could not check the dependency pins: ${e.message}`,
-                'Hint: Re-run the failed job.');
-            }
-            if (failed) core.setFailed('lake-manifest.json is not valid.');
+          ref: ${{ inputs.pr_branch_ref }}
+          strict: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
+          allow-older-pins: ${{ vars.MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS == 'true' }}
 
       # Shared self-hosted setup (cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
