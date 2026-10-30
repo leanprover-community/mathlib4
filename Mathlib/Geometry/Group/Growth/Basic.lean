@@ -20,12 +20,16 @@ the number of elements of word length at most `n`.
 
 * `Group.Generators.wordBall`: the closed ball of radius `n` in the word metric.
 * `Group.Generators.growth`: the growth function `n ↦ #(wordBall n)`.
+* `Function.GrowthDominates`: `f` dominates `g` if `g n ≤ C * f (α * n)` for some `C, α`.
+* `Function.GrowthEquivalent`: mutual domination of two functions.
 
 ## Implementation notes
 
 * `wordBall` is defined via `wordLength`, so it is compatible with the existing word metric API.
 * When the index type is finite, `wordBall n` is a finite set, hence `growth n` is the actual
   cardinality.
+* Growth comparison uses natural coefficients, which is enough for cardinalities. Open the `Growth`
+  locale for the notations `f ⪰ᵍ g` and `f ∼ᵍ g`.
 
 ## Tags
 
@@ -35,6 +39,47 @@ growth of groups, word ball, geometric group theory
 @[expose] public section
 
 open Set
+
+/-- `f` dominates `g` (written `f ⪰ᵍ g`) if `g` is bounded by a rescaling of `f`. -/
+def Function.GrowthDominates (f g : ℕ → ℕ) : Prop :=
+  ∃ C α : ℕ, ∀ n, g n ≤ C * f (α * n)
+
+/-- Two functions are growth-equivalent (written `f ∼ᵍ g`) if each dominates the other. -/
+def Function.GrowthEquivalent (f g : ℕ → ℕ) : Prop :=
+  f.GrowthDominates g ∧ g.GrowthDominates f
+
+@[inherit_doc Function.GrowthDominates]
+scoped[Growth] infix:50 " ⪰ᵍ " => Function.GrowthDominates
+
+@[inherit_doc Function.GrowthEquivalent]
+scoped[Growth] infix:50 " ∼ᵍ " => Function.GrowthEquivalent
+
+namespace Function
+
+lemma GrowthDominates.refl (f : ℕ → ℕ) : f.GrowthDominates f :=
+  ⟨1, 1, by simp⟩
+
+lemma GrowthDominates.trans {f g h : ℕ → ℕ} (hfg : f.GrowthDominates g)
+    (hgh : g.GrowthDominates h) : f.GrowthDominates h := by
+  obtain ⟨C₁, α₁, h₁⟩ := hfg
+  obtain ⟨C₂, α₂, h₂⟩ := hgh
+  refine ⟨C₂ * C₁, α₁ * α₂, fun n ↦ ?_⟩
+  grw [h₂ n, h₁ (α₂ * n), mul_assoc, mul_assoc]
+
+lemma GrowthEquivalent.refl (f : ℕ → ℕ) : f.GrowthEquivalent f :=
+  ⟨.refl f, .refl f⟩
+
+lemma GrowthEquivalent.symm {f g : ℕ → ℕ} (h : f.GrowthEquivalent g) : g.GrowthEquivalent f :=
+  ⟨h.2, h.1⟩
+
+lemma GrowthEquivalent.trans {f g h : ℕ → ℕ} (hfg : f.GrowthEquivalent g)
+    (hgh : g.GrowthEquivalent h) : f.GrowthEquivalent h :=
+  ⟨hfg.1.trans hgh.1, hgh.2.trans hfg.2⟩
+
+lemma GrowthEquivalent.equivalence : Equivalence GrowthEquivalent :=
+  ⟨GrowthEquivalent.refl, GrowthEquivalent.symm, GrowthEquivalent.trans⟩
+
+end Function
 
 namespace Group.Generators
 
