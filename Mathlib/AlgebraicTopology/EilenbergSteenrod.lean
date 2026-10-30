@@ -217,7 +217,7 @@ class IsAdditive where
 
 attribute [instance] IsAdditive.preserves_coproducts
 
-export IsAdditive (preserves_coproducts_u)
+export IsAdditive (preserves_coproducts)
 
 variable (C c) in
 /-- An abbreviation for `HomologyPretheory.IsAdditive` as `ObjectProperty`. -/
