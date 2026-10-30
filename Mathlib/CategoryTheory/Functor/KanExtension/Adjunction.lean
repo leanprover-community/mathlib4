@@ -349,6 +349,8 @@ noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
         dsimp [homEquivOfIsRightKanExtension]
         rw [assoc] }
 
+instance : (L.ran (H := H)).IsRightAdjoint := (L.ranAdjunction H).isRightAdjoint
+
 variable (H) in
 @[simp]
 lemma ranAdjunction_counit : (L.ranAdjunction H).counit = L.ranCounit := by
