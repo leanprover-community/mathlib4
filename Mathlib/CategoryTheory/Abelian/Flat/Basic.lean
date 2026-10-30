@@ -23,7 +23,7 @@ admit a functorial epimorphism from a flat object.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -36,6 +36,7 @@ namespace ObjectProperty
 /-- In a monoidal category `A`, this is the property of objects `X` such that
 both functors `tensorLeft X : A ⥤ A` and `tensorRight X : A ⥤ A` preserve
 both finite limits and finite colimits. -/
+@[expose]
 def flat : ObjectProperty A :=
   fun X ↦ exactFunctor _ _ (tensorLeft X) ∧ exactFunctor _ _ (tensorRight X)
 
