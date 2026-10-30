@@ -5,12 +5,7 @@ Authors: Ching-Tsun Chou, Violeta Hernández Palacios, Lua Viana Reis
 -/
 module
 
-public import Mathlib.GroupTheory.Complement
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Mathlib.MeasureTheory.Measure.NullMeasurable
-public import Mathlib.Topology.Instances.AddCircle.Real
-public import Mathlib.GroupTheory.Torsion
 
 /-!
 # Vitali set and its non-measurability
