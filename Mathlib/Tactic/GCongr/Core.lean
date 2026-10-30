@@ -6,13 +6,12 @@ Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 module
 
 public meta import Batteries.Lean.Except
-public import Batteries.Tactic.Exact
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
-public import Mathlib.Order.Defs.Unbundled
+public meta import Mathlib.Tactic.GCongr.ForwardAttr
+public import Batteries.Tactic.Exact
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
-public meta import Mathlib.Tactic.GCongr.ForwardAttr
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -417,7 +416,7 @@ def addGCongrLemma (declName : Name) (stx : Syntax) (kind : AttributeKind) : Met
     -- If none of the methods work, we throw the error thrown by the "normal" attempt.
     throw e
 where
-  /-- Assuming the lemma has conslusion `lhs ↔ rhs`, mark one of the implications
+  /-- Assuming the lemma has conclusion `lhs ↔ rhs`, mark one of the implications
   `lhs → rhs` or `rhs → lhs` as a `gcongr` lemma. -/
   addIffGCongrLemma (prio : Nat) (strict forGrw : Bool) (cinfo : ConstantInfo)
       (xs : Array Expr) (lhs rhs : Expr) : MetaM Unit := do
@@ -604,10 +603,10 @@ The lemma `rel_imp_rel` is too general to be tagged with `@[gcongr]`,
 so instead we use `relImpRelLemma` to look it up.
 -/
 
-variable {α : Sort*} {r : α → α → Prop} [IsTrans α r] {a b c d : α}
+variable {α : Sort*} {r : α → α → Prop} [Trans r r r] {a b c d : α}
 
 lemma rel_imp_rel (h₁ : r c a) (h₂ : r b d) : r a b → r c d :=
-  fun h => IsTrans.trans c b d (IsTrans.trans c a b h₁ h) h₂
+  fun h => Trans.trans (Trans.trans h₁ h) h₂
 
 /--
 Construct a `GCongrLemma` for `gcongr` goals of the form `a ≺ b → c ≺ d`.
@@ -817,7 +816,7 @@ partial def _root_.Lean.MVarId.gcongr
   -- fail.
   if lemmas.isEmpty then
     throwTacticEx `gcongr g m!"there is no `@[gcongr]` lemma \
-      for relation '{relName}' and constant '{lhsHead}'."
+      for relation `{.ofConstName relName}` and constant `{.ofConstName lhsHead}`."
   else
     throwTacticEx `gcongr g m!"none of the `@[gcongr]` lemmas were applicable to the goal {rel}.\
       \n  attempted lemmas: {lemmas.map (·.declName)}"

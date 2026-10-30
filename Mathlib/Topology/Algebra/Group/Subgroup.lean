@@ -80,7 +80,7 @@ theorem Subgroup.is_normal_topologicalClosure {G : Type*} [TopologicalSpace G] [
     (Subgroup.topologicalClosure N).Normal where
   conj_mem n hn g := by
     apply map_mem_closure (IsTopologicalGroup.continuous_conj g) hn
-    exact fun m hm => Subgroup.Normal.conj_mem inferInstance m hm g
+    exact fun m hm => Subgroup.Normal.conj_mem m hm g
 
 @[to_additive]
 theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneClass G]
@@ -159,8 +159,7 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       have H : Set.Finite _ := hS ((hL.prod hK).image continuous_div').compl_mem_cocompact
       rw [preimage_compl, compl_compl] at H
       convert H
-      ext x
-      simp only [image_smul, mem_ofPred_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_eq_mem, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_nonempty_iff' }
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
@@ -187,7 +186,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       apply Finite.of_preimage _ (equivOp S).surjective
       convert H using 1
       ext x
-      simp only [image_smul, mem_ofPred_eq, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_nonempty_iff }
 
 end

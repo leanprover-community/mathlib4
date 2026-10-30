@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.Calculus
 
 import Mathlib.Analysis.Calculus.Deriv.Add
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative of the absolute value
 

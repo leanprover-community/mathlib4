@@ -23,7 +23,8 @@ intersection of all maximal submodules of `M`.
 an `R`-module, which is equal to the intersection of all maximal left ideals of `R`. It turns out
 it is in fact a two-sided ideal, and equals the intersection of all maximal right ideals of `R`.
 
-## Reference
+## References
+
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
@@ -126,7 +127,6 @@ variable (M : Type*) [AddCommGroup M] [Module R M]
 namespace Ring
 
 /-- The Jacobson radical of a ring `R` is the Jacobson radical of `R` as an `R`-module. -/
--- TODO: replace all `Ideal.jacobson ⊥` by this.
 abbrev jacobson : Ideal R := Module.jacobson R R
 
 theorem jacobson_eq_sInf_isMaximal : jacobson R = sInf {I : Ideal R | I.IsMaximal} := by

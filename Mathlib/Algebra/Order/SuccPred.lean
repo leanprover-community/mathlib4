@@ -11,6 +11,9 @@ public import Mathlib.Order.SuccPred.WithBot
 
 import Mathlib.Algebra.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interaction between successors and arithmetic
 
