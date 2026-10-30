@@ -281,7 +281,6 @@ end Weight
 
 section LimitingFourierIdentity
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma limiting_cor_aux {ψ : ℝ → ℂ} :
     Tendsto (fun x : ℝ ↦ ∫ t, ψ t * x ^ (t * I)) atTop (𝓝 0) := by
   have : ∀ᶠ x : ℝ in atTop, ∫ t, ψ t * x ^ (t * I) = ∫ t, ψ t * exp (log x * t * I) := by
@@ -291,8 +290,8 @@ private lemma limiting_cor_aux {ψ : ℝ → ℂ} :
   simp_rw [tendsto_congr' this]
   convert_to Tendsto (fun x ↦ 𝓕 ψ (-c₀ * log x)) atTop (𝓝 0)
   · ext; congr with _
-    simp only [← ofReal_mul, mul_comm (ψ _), fourierChar, Circle.exp, ContinuousMap.coe_mk,
-      innerₗ_apply_apply, RCLike.inner_apply, conj_trivial, AddChar.coe_mk, mul_neg, ofReal_neg]
+    simp only [← ofReal_mul, mul_comm (ψ _), fourierChar, Circle.exp,
+      innerₗ_apply_apply, RCLike.inner_apply, conj_trivial, AddChar.coe_mk, mul_neg]
     congr; norm_cast; field_simp
   exact (zero_at_infty_fourier ψ).comp <| Tendsto.mono_right
     (tendsto_log_atTop.const_mul_atTop_of_neg (by simp [pi_pos])) atBot_le_cocompact
@@ -414,9 +413,8 @@ private theorem tendsto_S₂ (hx : 1 ≤ x) :
 
 include bound hpos in
 private theorem lim_S_fourier (hx : 1 ≤ x) : Tendsto (fun σ ↦ S f A σ (𝓕 Ψ) x) (𝓝[>] 1)
-      (𝓝 (S f A 1 (𝓕 Ψ) x)) := by
-  unfold S
-  exact (tendsto_S₁ bound hpos Ψ hx).sub (tendsto_S₂ Ψ hx)
+      (𝓝 (S f A 1 (𝓕 Ψ) x)) :=
+  (tendsto_S₁ bound hpos Ψ hx).sub (tendsto_S₂ Ψ hx)
 
 include hG in
 private theorem lim_integ_G_mul {Ψ : 𝓢(ℝ, ℂ)} (hΨ : HasCompactSupport Ψ) (hx : 1 ≤ x) :
@@ -504,12 +502,12 @@ private lemma S_one_sub {x : ℝ} (hx : 1 ≤ x) (φ φ' : 𝓢(ℝ, ℂ)) :
     S f A 1 (𝓕 (φ - φ')) x = S f A 1 (𝓕 φ) x - S f A 1 (𝓕 φ') x := by
   have hFsub (t : ℝ) : 𝓕 (φ - φ') t = 𝓕 φ t - 𝓕 φ' t := by
     simp_rw [← fourierTransformCLM_apply ℂ, map_sub, sub_apply]
-  have h₁ : S₁ f 1 (𝓕 (φ - φ')) x = S₁ f 1 (𝓕 φ) x - S₁ f 1 (𝓕 φ') x := by
+  have : S₁ f 1 (𝓕 (φ - φ')) x = S₁ f 1 (𝓕 φ) x - S₁ f 1 (𝓕 φ') x := by
     unfold S₁; rw [ofReal_one, ← Summable.tsum_sub]
     · exact tsum_congr fun _ ↦ by rw [hFsub]; ring
     · simpa [← summable_norm_iff] using summable_term_mul bound hpos φ hx
     · simpa [← summable_norm_iff] using summable_term_mul bound hpos φ' hx
-  have h₂ : S₂ A 1 (𝓕 (φ - φ')) x = S₂ A 1 (𝓕 φ) x - S₂ A 1 (𝓕 φ') x := by
+  have : S₂ A 1 (𝓕 (φ - φ')) x = S₂ A 1 (𝓕 φ) x - S₂ A 1 (𝓕 φ') x := by
     simp only [S₂, sub_self, rpow_zero, ofReal_one, mul_one, mul_zero, Real.exp_zero,
       one_mul]
     rw [← mul_sub, ← integral_sub]
@@ -517,14 +515,14 @@ private lemma S_one_sub {x : ℝ} (hx : 1 ≤ x) (φ φ' : 𝓢(ℝ, ℂ)) :
       exact setIntegral_congr_fun measurableSet_Ici fun _ _ ↦ hFsub _
     · exact ((𝓕 φ).integrable.comp_mul_left' (by positivity)).restrict
     · exact ((𝓕 φ').integrable.comp_mul_left' (by positivity)).restrict
-  unfold S; rw [h₁, h₂]; ring
+  grind [S]
 
 include bound hpos in
 /-- A uniform bound on `S f A 1 (𝓕 φ) x` in terms of the seminorm `φ.Q`. -/
 private lemma norm_S_one_le {x : ℝ} (hx : 1 ≤ x) (φ : 𝓢(ℝ, ℂ)) :
     ‖S f A 1 (𝓕 φ) x‖ ≤ φ.Q * (C * C₀ + |A| * (2 * π ^ 2)) := by
   unfold S S₂
-  have hS₁ : ‖S₁ f 1 (𝓕 φ) x‖ ≤ φ.Q * C * C₀ := calc
+  have : ‖S₁ f 1 (𝓕 φ) x‖ ≤ φ.Q * C * C₀ := calc
     _ ≤ φ.Q • ∑' n, ‖f n‖ / n * (1 + (c₀ * log (n / x)) ^ 2)⁻¹ := by
       have hsum : Summable fun n ↦ ‖f n‖ / n * ((1 + (c₀ * (log (n / x))) ^ 2)⁻¹) := by
         simpa using summable_sum_log_range bound hpos hx
@@ -536,7 +534,7 @@ private lemma norm_S_one_le {x : ℝ} (hx : 1 ≤ x) (φ : 𝓢(ℝ, ℂ)) :
     _ ≤ _ := by
       grw [smul_eq_mul, mul_assoc, tsum_le_of_sum_range_le (fun _ ↦ by positivity)]
       exacts [φ.Q_nonneg, bound_sum_log_range bound hpos hx]
-  grw [norm_sub_le, hS₁, norm_mul]
+  grw [norm_sub_le, this, norm_mul]
   simp only [sub_self, rpow_zero, ofReal_one, mul_one, norm_real, norm_eq_abs, mul_zero,
     Real.exp_zero, one_mul]
   have := C_nonneg bound hpos
@@ -555,8 +553,8 @@ private lemma lim_S_one_fourier_schwartz : Tendsto (S f A 1 (𝓕 Ψ)) atTop (�
   filter_upwards [eventually_ge_atTop 1, Metric.tendsto_nhds.mp
     (lim_S_one_fourier bound hG hG' hpos hφcs) (ε / 2) (half_pos hε)] with x hx hφ
   rw [dist_zero_right] at hφ ⊢
-  calc ‖S f A 1 (𝓕 Ψ) x‖
-      = ‖S f A 1 (𝓕 (Ψ - φ)) x + S f A 1 (𝓕 φ) x‖ := by
+  calc
+    _ = ‖S f A 1 (𝓕 (Ψ - φ)) x + S f A 1 (𝓕 φ) x‖ := by
         rw [S_one_sub bound hpos hx Ψ φ]; ring_nf
     _ ≤ ‖S f A 1 (𝓕 (Ψ - φ)) x‖ + ‖S f A 1 (𝓕 φ) x‖ := norm_add_le _ _
     _ < ε / 2 + ε / 2 := add_lt_add ((norm_S_one_le bound hpos hx (Ψ - φ)).trans_lt hφQ) hφ
@@ -585,7 +583,7 @@ private lemma eventually_setIntegral_Ioi_inv_eq (hψ : ∀ᶠ x in 𝓝 0, ψ x 
   have hx0 : 0 < x := (inv_pos.mpr hε).trans hx
   refine (setIntegral_eq_of_subset_of_forall_sdiff_eq_zero measurableSet_Ioi
     (Ioi_subset_Ioi (inv_pos.mpr hx0).le) fun y ⟨hy, hy'⟩ ↦ h ?_).symm
-  rw [Real.dist_eq, sub_zero, abs_of_pos hy]
+  rw [dist_eq, sub_zero, abs_of_pos hy]
   exact (not_lt.mp hy').trans_lt (inv_lt_of_inv_lt₀ hε hx)
 
 include bound hG hG' hpos in
@@ -594,7 +592,7 @@ function whose L-series has a simple pole at `s = 1` with residue `A` and otherw
 continuously to the closed half-plane `re s ≥ 1`, then `f` behaves like `A` asymptotically
 with respect to smooth weights. -/
 lemma tendsto_sum_div_smooth (hsmooth : ContDiff ℝ ∞ ψ) (hsupp : HasCompactSupport ψ)
-    (hplus : closure (support ψ) ⊆ Ioi 0) : Tendsto (fun x ↦ (∑' n, f n * ψ (n / x)) / x)
+    (hplus : tsupport ψ ⊆ Ioi 0) : Tendsto (fun x ↦ (∑' n, f n * ψ (n / x)) / x)
     atTop (𝓝 (A * ∫ y in Ioi 0, ψ y)) := by
   let h x := rexp (2 * π * x) * ψ (exp (2 * π * x))
   have h1 : ContDiff ℝ ∞ h := by
@@ -639,11 +637,12 @@ lemma tendsto_sum_div_smooth (hsmooth : ContDiff ℝ ∞ ψ) (hsupp : HasCompact
 include bound hG hG' hpos in
 /-- A version of smoothed Wiener--Ikehara for real-valued cutoffs. -/
 lemma tendsto_sum_div_smooth_real {Ψ : ℝ → ℝ} (hsmooth : ContDiff ℝ ∞ Ψ)
-    (hsupp : HasCompactSupport Ψ) (hplus : closure (support Ψ) ⊆ Ioi 0) :
+    (hsupp : HasCompactSupport Ψ) (hplus : tsupport Ψ ⊆ Ioi 0) :
     Tendsto (fun x ↦ (∑' n, f n * Ψ (n / x)) / x) atTop (𝓝 (A * ∫ y in Ioi 0, Ψ y)) := by
   have : Tendsto (fun x ↦ (∑' n, f n * (ofReal ∘ Ψ) (n / x)) / x) atTop
       (𝓝 (A * ∫ y in Ioi 0, (ofReal ∘ Ψ) y)) := tendsto_sum_div_smooth bound hG hG' hpos
-      (ofRealCLM.contDiff.comp hsmooth) (hsupp.comp_left rfl) (by rwa [support_comp_eq]; simp)
+      (ofRealCLM.contDiff.comp hsmooth) (hsupp.comp_left rfl)
+      (by unfold tsupport; rwa [support_comp_eq]; simp)
   have := (continuous_re.tendsto _).comp this
   simp at this; norm_cast at this
 
