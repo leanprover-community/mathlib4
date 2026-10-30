@@ -189,38 +189,28 @@ instance : Group (SpecialLinearGroup n R) :=
       ext1
       simp [adjugate_mul] }
 
+section Reindex
+
+variable {m : Type*} [Fintype m] [DecidableEq m]
+variable (R)
+
 /-- Relabelling rows and columns by the same equivalence gives a group equivalence
 between the corresponding special linear groups. -/
-def reindex
-    {m n : Type*} [Fintype m] [Fintype n]
-    [DecidableEq m] [DecidableEq n]
-    (R : Type*) [CommRing R] (e : m ≃ n) :
-    Matrix.SpecialLinearGroup m R ≃*
-      Matrix.SpecialLinearGroup n R where
+def reindex (e : m ≃ n) :
+    SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
   __ := (Matrix.reindex e e).subtypeEquiv fun A => by
     rw [Matrix.det_reindex_self]
   map_mul' A B :=
     Subtype.ext ((Matrix.reindexRingEquiv R e).map_mul A.val B.val)
 
-section Reindex
-
-variable {m : Type*} [Fintype m] [DecidableEq m]
-
-/-- Reindexing a special linear matrix reindexes its underlying matrix. -/
 @[simp]
 theorem reindex_apply_coe (e : m ≃ n) (A : SpecialLinearGroup m R) :
     (reindex R e A : Matrix n n R) = Matrix.reindex e e (A : Matrix m m R) := rfl
 
-/-- Reindexing by the identity equivalence is the identity group equivalence. -/
 @[simp]
 theorem reindex_refl :
-    reindex R (Equiv.refl n) = MulEquiv.refl (SpecialLinearGroup n R) := by
-  apply MulEquiv.ext
-  intro A
-  apply Subtype.ext
-  rfl
+    reindex R (Equiv.refl n) = MulEquiv.refl (SpecialLinearGroup n R) := rfl
 
-/-- The inverse of reindexing reindexes by the inverse index equivalence. -/
 @[simp]
 theorem reindex_symm (e : m ≃ n) :
     (reindex R e).symm = reindex R e.symm := by
@@ -231,7 +221,6 @@ theorem reindex_symm (e : m ≃ n) :
 
 variable {k : Type*} [Fintype k] [DecidableEq k]
 
-/-- Successive reindexings compose their index equivalences. -/
 @[simp]
 theorem reindex_trans (e : m ≃ n) (f : n ≃ k) :
     (reindex R e).trans (reindex R f) = reindex R (e.trans f) := by
