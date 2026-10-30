@@ -6,11 +6,12 @@ Authors: Vasilii Nesterov, Andrew Yang
 module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.ConvergenceOnBall
-public import Mathlib.Analysis.Complex.OperatorNorm
 public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 public import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 public import Mathlib.RingTheory.Binomial
+
+import Mathlib.Analysis.Complex.OperatorNorm
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Binomial Series
@@ -102,8 +103,8 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 1 := by
   suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
       fun n ↦ iteratedDeriv n (fun (x : ℂ) ↦ (1 + x) ^ a) 0 / n !) by
-    convert! AnalyticOn.hasFPowerSeriesOnSubball _ _ _
-    · norm_num
+    convert AnalyticOn.hasFPowerSeriesOnSubball _ _ _
+    · simp
     · -- TODO: use `fun_prop` for this subgoal
       apply AnalyticOn.cpow (analyticOn_const.add analyticOn_id) analyticOn_const
       intro z hz
@@ -146,15 +147,9 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     · apply Complex.mem_slitPlane_of_norm_lt_one
       simpa [B] using hz
 
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_cpow_hasFPowerSeriesOnBall_zero := one_add_cpow_hasFPowerSeriesOnBall_zero
-
 theorem one_add_cpow_hasFPowerSeriesAt_zero {a : ℂ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 :=
   one_add_cpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
-
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_cpow_hasFPowerSeriesAt_zero := one_add_cpow_hasFPowerSeriesAt_zero
 
 theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
@@ -227,7 +222,7 @@ lemma one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero (w x : ℂ) (hw :
   · simpa only [sub_sub_sub_cancel_right, zero_add, sub_sq_comm w, zpow_neg, zpow_natCast, mul_comm]
       using (one_div_sub_sq_hasFPowerSeriesOnBall_zero
         (z := w - x) (by simp [sub_eq_zero, hw])).comp_sub x
-  · convert! hasFPowerSeriesOnBall_const.mono _ le_top
+  · convert hasFPowerSeriesOnBall_const.mono _ le_top
     · ext (_ | _) <;> simp [zpow_ofNat]
     · simpa [sub_eq_zero]
 
@@ -235,27 +230,21 @@ end Complex
 
 namespace Real
 
-attribute [local simp← ] Complex.ofReal_choose in
+attribute [local simp ←] Complex.ofReal_choose in
 attribute [-simp] FormalMultilinearSeries.apply_eq_prod_smul_coeff in
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 1 := by
   have H : binomialSeries ℂ a = (binomialSeries ℂ (a : ℂ)).restrictScalars (𝕜 := ℝ) := by aesop
   have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (a : ℂ)) (binomialSeries ℂ a) (.ofRealCLM 0) 1 :=
     Complex.ofRealCLM.map_zero ▸ H ▸ Complex.one_add_cpow_hasFPowerSeriesOnBall_zero.restrictScalars
-  convert! (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
+  convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
   · ext; simp [Function.comp_def]
   · simp
   · intro x hx; simp_all; norm_cast
 
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_rpow_hasFPowerSeriesOnBall_zero := one_add_rpow_hasFPowerSeriesOnBall_zero
-
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 :=
   one_add_rpow_hasFPowerSeriesOnBall_zero.hasFPowerSeriesAt
-
-@[deprecated (since := "2025-12-08")]
-alias _root_.one_add_rpow_hasFPowerSeriesAt_zero := one_add_rpow_hasFPowerSeriesAt_zero
 
 theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
@@ -316,8 +305,5 @@ theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℝ) :
       (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring
-
-@[deprecated (since := "2025-12-28")]
-alias hasFPowerSeriesOnBall_linear_zero := hasFPowerSeriesOnBall_ofScalars_mul_add_zero
 
 end Real

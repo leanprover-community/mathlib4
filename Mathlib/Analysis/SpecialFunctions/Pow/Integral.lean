@@ -5,10 +5,11 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.MeasureTheory.Integral.Layercake
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
-public import Mathlib.Tactic.MoveAdd
+
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.Tactic.MoveAdd
 
 /-!
 # The integral of the real power of a nonnegative function
@@ -110,7 +111,7 @@ lemma integrableOn_ball_of_norm_le_rpow (hd : 1 ≤ Module.finrank ℝ E) {f : E
     (hα : α < Module.finrank ℝ E) (h_decay : ∀ᵐ x ∂μ.restrict (ball 0 r), ‖f x‖ ≤ C * ‖x‖ ^ (-α))
     (h_meas : AEStronglyMeasurable f μ) :
     IntegrableOn f (ball 0 r) μ := by
-  haveI : Nontrivial E := by
+  have : Nontrivial E := by
     apply Module.nontrivial_of_finrank_pos (R := ℝ)
     positivity
   have hint : IntegrableOn (fun y ↦ y ^ (Module.finrank ℝ E - 1) • (C * y ^ (-α))) (Ioo 0 r) := by

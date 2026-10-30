@@ -59,6 +59,7 @@ theorem direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
   have h : Nonempty s := by simpa using! h
   simp [shift, h]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem shift_top (c : P) (r : k) : shift ⊤ c r = ⊤ := by
   simp [shift, AffineEquiv.surjective]
@@ -96,6 +97,15 @@ theorem shift_one (s : AffineSubspace k P) (c : P) : s.shift c 1 = s := by
   · simp [h]
   have h : Nonempty s := by simpa using! h
   simp [shift, h]
+
+theorem vadd_mem_shift {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (c : P) (r : k) :
+    (1 - r) • (c -ᵥ p) +ᵥ p ∈ s.shift c r := by
+  simpa [shift_eq ⟨p, hp⟩] using hp
+
+theorem lineMap_mem_shift {s : AffineSubspace k P} {p : P} (hp : p ∈ s) (c : P) (r : k) :
+    lineMap c p r ∈ s.shift c r := by
+  rw [← lineMap_apply_one_sub, lineMap_apply]
+  exact vadd_mem_shift hp c r
 
 /-- Consider a point `A` with barycentric coordinates associated to a collection of points `P`.
 If the coordinate associated to one of the points `Pᵢ` is `r`, then the point `A` is on the span
@@ -230,6 +240,7 @@ private theorem closedInterior_inter_shift_aux {n : ℕ} (i : Fin n) {x : k} (hx
     intro j
     by_cases hji : j = i <;> aesop
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A parallel cross-section of a simplex is the image of the base under a homothety. -/
 theorem closedInterior_inter_shift_eq_homothety {n : ℕ} [NeZero n] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) {x : k} (hx : x ∈ Set.Icc 0 1) :

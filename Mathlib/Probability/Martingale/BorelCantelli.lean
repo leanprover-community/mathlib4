@@ -5,10 +5,11 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.IndicatorCard
 public import Mathlib.Probability.Martingale.Centering
-public import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Martingale.OptionalStopping
+
+import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+import Mathlib.Probability.Martingale.Convergence
 
 /-!
 
@@ -53,6 +54,11 @@ noncomputable def leastGE [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
     (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
   hittingAfter f (Set.Ici r) ⊥
 
+/-- `leastGT f r` is the stopping time corresponding to the first time `f > r`. -/
+noncomputable def leastGT [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
+    (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
+  hittingAfter f (Set.Ioi r) ⊥
+
 theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrderBot ι]
     {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
     [Preorder β] [ClosedIciTopology β] [TopologicalSpace.PseudoMetrizableSpace β]
@@ -60,6 +66,19 @@ theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrder
     {f : ι → Ω → β} (r : β) (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (leastGE f r) :=
   hf.adapted.isStoppingTime_hittingAfter measurableSet_Ici
+
+theorem StronglyAdapted.isStoppingTime_leastGT [ConditionallyCompleteLinearOrderBot ι]
+    {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
+    [LinearOrder β] [ClosedIicTopology β] [TopologicalSpace.PseudoMetrizableSpace β]
+    [MeasurableSpace β] [BorelSpace β]
+    {f : ι → Ω → β} (r : β) (hf : StronglyAdapted ℱ f) :
+    IsStoppingTime ℱ (leastGT f r) :=
+  hf.adapted.isStoppingTime_hittingAfter measurableSet_Ioi
+
+lemma leastGT_lt_iff [ConditionallyCompleteLinearOrder ι] [OrderBot ι] [Preorder β]
+    {f : ι → Ω → β} {r : β} {t : ι} {ω : Ω} :
+    leastGT f r ω < t ↔ ∃ s < t, r < f s ω := by
+  simp [leastGT, hittingAfter_lt_iff]
 
 /-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
 (the first time `f` passes above `r`), and then is constant afterwards. -/
@@ -75,13 +94,12 @@ protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submarting
 
 variable {r : ℝ} {R : ℝ≥0}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
     ∀ᵐ ω ∂μ, stoppedAbove f r i ω ≤ r + R := by
   filter_upwards [hbdd] with ω hbddω
-  rw [stoppedAbove, stoppedProcess, ENat.some_eq_coe]
-  by_cases h_zero : (min (i : ℕ∞) (leastGE f r ω)).untopA = 0
+  rw [stoppedAbove, stoppedProcess]
+  by_cases h_zero : (min (WithTop.some i) (leastGE f r ω)).untopA = 0
   · simp only [h_zero, hf0, Pi.zero_apply]
     positivity
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_one_of_ne_zero h_zero
@@ -89,11 +107,12 @@ theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
   have := notMem_of_lt_hittingAfter (?_ : k < leastGE f r ω)
   · simp only [bot_eq_zero, zero_le, Set.mem_Ici, not_le, forall_const] at this
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
-  · suffices (k : ℕ∞) < min (i : ℕ∞) (leastGE f r ω) from this.trans_le (min_le_right _ _)
-    have h_top : min (i : ℕ∞) (leastGE f r ω) ≠ ⊤ :=
+  · suffices WithTop.some k < min (WithTop.some i) (leastGE f r ω) from
+      this.trans_le (min_le_right _ _)
+    have h_top : min (WithTop.some i) (leastGE f r ω) ≠ ⊤ :=
       ne_top_of_le_ne_top (by simp) (min_le_left _ _)
-    lift min (i : ℕ∞) (leastGE f r ω) to ℕ using h_top with p
-    simp only [untopD_coe_enat, Nat.cast_lt, gt_iff_lt] at *
+    lift min (WithTop.some i) (leastGE f r ω) to ℕ using h_top with p
+    simp only [WithTop.untopD_coe, WithTop.coe_lt_coe, gt_iff_lt] at *
     lia
 
 theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -155,7 +174,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
     simpa only [g, sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
-  convert! hω using 1
+  convert hω using 1
   · refine ⟨fun h => ?_, fun h => ?_⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine ⟨b + |f 0 ω|, fun y hy => ?_⟩ <;> obtain ⟨n, rfl⟩ := hy
     · simp_rw [g, sub_eq_add_neg]

@@ -6,7 +6,11 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Int.Notation
-public import Mathlib.Tactic.Push.Attr
+
+import Mathlib.Tactic.Push.Attr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cast of integers to function types
@@ -18,7 +22,7 @@ This file provides a (pointwise) cast from `ℤ` to function types.
 * `Pi.instIntCast`: map `n : ℤ` to the constant function `n : ∀ i, π i`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid RingHom
 
@@ -29,7 +33,7 @@ variable {ι : Type*} {π : ι → Type*} [∀ i, IntCast (π i)]
 instance instIntCast : IntCast (∀ i, π i) where intCast n _ := n
 
 @[simp]
-theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
+protected theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
   rfl
 
 @[push ←]

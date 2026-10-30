@@ -5,7 +5,6 @@ Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.FreeMonoid.UniqueProds
 public import Mathlib.Algebra.MonoidAlgebra.Basic
@@ -222,6 +221,7 @@ instance instDistrib : Distrib (FreeAlgebra R X) where
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.right_distrib
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
@@ -301,12 +301,11 @@ example : (Ring.toIntAlgebra _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ 
 
 variable {X}
 
-/-- The canonical function `X → FreeAlgebra R X`.
--/
-irreducible_def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
+/-- The canonical function `X → FreeAlgebra R X`. -/
+@[no_expose] def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
 
 @[simp]
-theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
+theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := (rfl)
 
 variable {A : Type*} [Semiring A] [Algebra R A]
 
@@ -339,11 +338,11 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
         simp
       · change _ * algebraMap _ _ _ = algebraMap _ _ _
         simp
-      repeat
+      on_goal 1 2 =>
         change liftFun R X f _ + liftFun R X f _ = _
         simp only [*]
         rfl
-      repeat
+      all_goals
         change liftFun R X f _ * liftFun R X f _ = _
         simp only [*]
         rfl
@@ -365,21 +364,16 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
-@[irreducible]
+@[no_expose]
 def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
   { toFun := liftAux R
     invFun := fun F ↦ F ∘ ι R
-    left_inv := fun f ↦ by
-      ext
-      simp only [Function.comp_apply, ι_def]
-      rfl
+    left_inv := fun f ↦ by rfl
     right_inv := fun F ↦ by
       ext t
       rcases t with ⟨x⟩
       induction x with
-      | of =>
-        change ((F : FreeAlgebra R X → A) ∘ ι R) _ = _
-        simp only [Function.comp_apply, ι_def]
+      | of => rfl
       | ofScalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
@@ -413,12 +407,12 @@ variable {R}
 @[simp]
 theorem ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
   ext
-  rw [Function.comp_apply, ι_def, lift]
+  rw [Function.comp_apply, lift]
   rfl
 
 @[simp]
 theorem lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x := by
-  rw [ι_def, lift]
+  rw [lift]
   rfl
 
 @[simp]
@@ -428,14 +422,14 @@ theorem lift_unique (f : X → A) (g : FreeAlgebra R X →ₐ[R] A) :
   rfl
 
 /-!
-Since we have set the basic definitions as `@[Irreducible]`, from this point onwards one
+Since we have set the basic definitions as `@[no_expose]`, from this point onwards one
 should only use the universal properties of the free algebra, and consider the actual implementation
 as a quotient of an inductive type as completely hidden. -/
 
 
--- Marking `FreeAlgebra` irreducible makes `Ring` instances inaccessible on quotients.
+-- Marking `FreeAlgebra` unexposed makes `Ring` instances inaccessible on quotients.
 -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/algebra.2Esemiring_to_ring.20breaks.20semimodule.20typeclass.20lookup/near/212580241
--- For now, we avoid this by not marking it irreducible.
+-- For now, we avoid this by not marking it `no_expose`.
 @[simp]
 theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) :
     lift R ((g : FreeAlgebra R X → A) ∘ ι R) = g := by
@@ -500,9 +494,9 @@ theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgeb
   by_contradiction <| by
     classical exact fun hxy : x ≠ y ↦
         let f : FreeAlgebra R X →ₐ[R] R := lift R fun z ↦ if x = z then (1 : R) else 0
-        have hfx1 : f (ι R x) = 1 := (lift_ι_apply _ _).trans <| if_pos rfl
+        have hfx1 : f (ι R x) = 1 := (lift_ι_apply _ _).trans <| ite_eq_left rfl
         have hfy1 : f (ι R y) = 1 := hoxy ▸ hfx1
-        have hfy0 : f (ι R y) = 0 := (lift_ι_apply _ _).trans <| if_neg hxy
+        have hfy0 : f (ι R y) = 0 := (lift_ι_apply _ _).trans <| ite_eq_right hxy
         one_ne_zero <| hfy1.symm.trans hfy0
 
 @[simp]
@@ -548,7 +542,7 @@ theorem induction {motive : FreeAlgebra R X → Prop}
     (a : FreeAlgebra R X) : motive a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from X
   let s : Subalgebra R (FreeAlgebra R X) :=
-    { carrier := motive
+    { carrier := {x | motive x}
       mul_mem' := mul _ _
       add_mem' := add _ _
       algebraMap_mem' := grade0 }

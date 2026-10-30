@@ -7,8 +7,6 @@ module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.Order.Northcott
-public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
@@ -58,6 +56,7 @@ section CommSemiring
 
 variable [CommSemiring R]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The arithmetic function corresponding to the Dirichlet series `f(q⁻ˢ)`.
 For example, if `f = 1 + X + X² + ...` and `q = p`, then `f(q⁻ˢ) = 1 + p⁻ˢ + p⁻²ˢ + ...`.
 
@@ -73,7 +72,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
     split_ifs with hq
     · by_cases hn : ∃ k, q ^ k = n
       · obtain ⟨a, rfl⟩ := hn
-        simp [(Nat.pow_right_injective hq).extend_apply, one_apply, hq.ne']
+        simp [(Nat.pow_right_injective hq).extend_apply, ArithmeticFunction.one_apply, hq.ne']
       · simp [hn, one_apply_ne (fun H ↦ hn ⟨0, H.symm⟩)]
     · simp
   map_add' f g := by
@@ -87,7 +86,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
   map_mul' f g := by
     ext n
     split_ifs with hq
-    · simp_rw [mul_apply, coe_mk]
+    · simp_rw [ArithmeticFunction.mul_apply, coe_mk]
       by_cases hn : ∃ a, q ^ a = n
       · obtain ⟨k, rfl⟩ := hn
         rw [(Nat.pow_right_injective hq).extend_apply]
@@ -124,15 +123,16 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
     · simp only [Algebra.algebraMap_eq_smul_one, coe_mk]
       by_cases hn : ∃ k, q ^ k = n
       · obtain ⟨k, rfl⟩ := hn
-        simp [(Nat.pow_right_injective hq).extend_apply, one_apply, hq.ne']
-      · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply, smul_map, one_apply_ne, smul_zero]
+        simp [(Nat.pow_right_injective hq).extend_apply, ArithmeticFunction.one_apply, hq.ne']
+      · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply, smul_apply, one_apply_ne, smul_zero]
         contrapose hn
         exact ⟨0, by simp [hn]⟩
     · simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem ofPowerSeries_apply {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (n : ℕ) :
     ofPowerSeries q f n = Function.extend (q ^ ·) (f.coeff ·) 0 n := by
-  simp [ofPowerSeries, dif_pos hq]
+  simp [ofPowerSeries, dite_eq_left hq]
 
 theorem ofPowerSeries_apply_pow {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (k : ℕ) :
     ofPowerSeries q f (q ^ k) = f.coeff k := by
@@ -141,13 +141,14 @@ theorem ofPowerSeries_apply_pow {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (k : 
 theorem ofPowerSeries_apply_zero (q : ℕ) (f : PowerSeries R) : ofPowerSeries q f 0 = 0 := by
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 -- note that `ofPowerSeries_apply_one` relies on the junk value `f.constantCoeff`.
 theorem ofPowerSeries_apply_one (q : ℕ) (f : PowerSeries R) :
     ofPowerSeries q f 1 = f.constantCoeff := by
   by_cases hq : 1 < q
   · rw [← pow_zero q, ofPowerSeries_apply_pow hq, PowerSeries.coeff_zero_eq_constantCoeff]
-  · simp [ofPowerSeries, dif_neg hq]
+  · simp [ofPowerSeries, dite_eq_right hq]
 
 end CommSemiring
 
@@ -159,7 +160,6 @@ variable [CommRing R]
 to substituting `X` with `X ^ k` in the original power series. -/
 theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
     ofPowerSeries (q ^ k) f = ofPowerSeries q (f.subst (PowerSeries.X ^ k)) := by
-  classical
   by_cases hq : 1 < q
   · ext n
     by_cases hn : ∃ i, q ^ i = n
@@ -174,7 +174,7 @@ theorem ofPowerSeries_pow (q : ℕ) {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R)
         exact hn
     · rwa [ofPowerSeries_apply hq, ofPowerSeries_apply (one_lt_pow' hq hk),
         Function.extend_apply', Function.extend_apply']
-      contrapose! hn
+      contrapose hn
       obtain ⟨i, rfl⟩ := hn
       exact ⟨k * i, pow_mul q k i⟩
   · simp [ofPowerSeries, hq, hk]
@@ -200,14 +200,14 @@ theorem isMultiplicative_ofPowerSeries_of_isPrimePow
     · simp_rw [ofPowerSeries_apply hp.one_lt]
       rw [Function.extend_apply', Function.extend_apply' _ _ _ hn,
         Pi.zero_apply, Pi.zero_apply, mul_zero]
-      contrapose! hn
+      contrapose hn
       obtain ⟨j, hj⟩ := hn
       obtain ⟨v, -, rfl⟩ := (Nat.dvd_prime_pow hp).mp (Dvd.intro_left _ hj.symm)
       exact ⟨v, rfl⟩
   · simp_rw [ofPowerSeries_apply hp.one_lt]
     rw [Function.extend_apply', Function.extend_apply' _ _ _ hm,
       Pi.zero_apply, Pi.zero_apply, zero_mul]
-    contrapose! hm
+    contrapose hm
     obtain ⟨i, hi⟩ := hm
     obtain ⟨j, -, rfl⟩ := (Nat.dvd_prime_pow hp).mp ⟨n, hi⟩
     exact ⟨j, rfl⟩
@@ -253,7 +253,7 @@ local instance : CompleteSpace (ArithmeticFunction R) := by
     ext f
     exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
   rw [ArithmeticFunction.range_coe]
-  apply isClosed_setOf_map_zero
+  apply isClosed_setOfPred_map_zero
 
 /-- The Euler product of a family of arithmetic functions. Defined as a `tprod`, but see
 `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
@@ -290,7 +290,7 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
     rw [Finset.mem_sdiff, Set.Finite.mem_toFinset, Set.notMem_compl_iff] at hi
     exact hi.2
   suffices ∀ k ≤ n, (∏ x ∈ u \ t, f x) k = (∏ x ∈ v \ t, f x) k by
-    rw [mul_apply, mul_apply]
+    rw [ArithmeticFunction.mul_apply, ArithmeticFunction.mul_apply]
     refine Finset.sum_congr rfl fun k hk ↦ ?_
     rw [this k.1 (Nat.divisor_le (Nat.fst_mem_divisors_of_mem_antidiagonal hk))]
   suffices ∀ w, (∀ i ∈ w, i ∈ s) → ∀ k ≤ n, (∏ x ∈ w, f x) k = (1 : ArithmeticFunction R) k by
@@ -301,7 +301,8 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
   case empty => simp
   case insert i w hi hw' =>
     intro k hk
-    rw [← one_mul (1 : ArithmeticFunction R), Finset.prod_insert hi, mul_apply, mul_apply]
+    rw [← one_mul (1 : ArithmeticFunction R), Finset.prod_insert hi, ArithmeticFunction.mul_apply,
+      ArithmeticFunction.mul_apply]
     refine Finset.sum_congr rfl fun j hj ↦ ?_
     have h1 := hs' i (hw i (Finset.mem_insert_self i w)) j.1
       ((Nat.divisor_le (Nat.fst_mem_divisors_of_mem_antidiagonal hj)).trans hk)

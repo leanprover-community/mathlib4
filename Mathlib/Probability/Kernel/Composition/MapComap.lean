@@ -274,12 +274,12 @@ lemma prodMkRight_add (κ η : Kernel α β) :
 lemma sum_prodMkLeft {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
     Kernel.sum (fun i ↦ Kernel.prodMkLeft γ (κ i)) = Kernel.prodMkLeft γ (Kernel.sum κ) := by
   ext
-  simp_rw [sum_apply, prodMkLeft_apply, sum_apply]
+  simp_rw [Kernel.sum_apply, prodMkLeft_apply, Kernel.sum_apply]
 
 lemma sum_prodMkRight {ι : Type*} [Countable ι] {κ : ι → Kernel α β} :
     Kernel.sum (fun i ↦ Kernel.prodMkRight γ (κ i)) = Kernel.prodMkRight γ (Kernel.sum κ) := by
   ext
-  simp_rw [sum_apply, prodMkRight_apply, sum_apply]
+  simp_rw [Kernel.sum_apply, prodMkRight_apply, Kernel.sum_apply]
 
 theorem lintegral_prodMkLeft (κ : Kernel α β) (ca : γ × α) (g : β → ℝ≥0∞) :
     ∫⁻ b, g b ∂prodMkLeft γ κ ca = ∫⁻ b, g b ∂κ ca.snd := rfl
@@ -454,7 +454,7 @@ lemma fst_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hg : Mea
   by_cases hf : Measurable f
   · ext x s hs
     rw [fst_apply' _ _ hs, map_apply' _ (hf.prod hg) _, map_apply' _ hf _ hs]
-    · simp only [Set.preimage, Set.mem_setOf]
+    · simp only [Set.preimage, Set.mem_ofPred]
     · exact measurable_fst hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
       contrapose hf; exact hf.fst
@@ -516,7 +516,7 @@ lemma snd_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hf : Mea
   by_cases hg : Measurable g
   · ext x s hs
     rw [snd_apply' _ _ hs, map_apply' _ (hf.prod hg), map_apply' _ hg _ hs]
-    · simp only [Set.preimage, Set.mem_setOf]
+    · simp only [Set.preimage, Set.mem_ofPred]
     · exact measurable_snd hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
       contrapose hg; exact hg.snd

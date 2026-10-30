@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Module.BigOperators
+
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Inclusion-exclusion principle
@@ -108,6 +109,7 @@ lemma prod_indicator_biUnion_finset_sub_indicator (hs : s.Nonempty) (S : ι → 
   convert! prod_indicator_biUnion_sub_indicator hs (fun i ↦ S i) a
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Inclusion-exclusion principle** for the sum of a function over a union.
 
 The sum of a function `f` over the union of the `S i` over `i ∈ s` is the alternating sum of the

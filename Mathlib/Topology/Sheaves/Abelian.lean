@@ -6,6 +6,7 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Algebra.Category.Grp.AB
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.Topology.Sheaves.Limits
@@ -54,7 +55,6 @@ end Sheaf
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The stalk functor is additive -/
 instance (p₀ : X) {C : Type v} [Category.{u} C] [Abelian C] [HasColimits C] :
     (Presheaf.stalkFunctor C p₀).Additive := by
@@ -74,9 +74,9 @@ variable {C : Type v} [Category.{u} C] [HasColimits C] [HasLimits C]
 
 instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
   have : (forget C X ⋙ stalkFunctor C p₀).PreservesHomology := by
-    simp only [(forget C X ⋙ stalkFunctor C p₀).exact_tfae.out 2 0]
+    simp only [(forget C X ⋙ stalkFunctor C p₀).exact_tfae.out 3 1]
     intro S h
-    have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 3 0).mp
+    have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 4 1).mp
       (inferInstance : (PreservesFiniteColimits _))
     refine ShortComplex.ShortExact.mk' (this S h).left ?_ (this S h).right
     have := h.2
@@ -104,7 +104,7 @@ theorem exact_iff_stalkFunctor_map_exact (S : ShortComplex (Sheaf C X)) :
     S.Exact ↔ ∀ x : X, (S.map (forget C X ⋙ stalkFunctor C x)).Exact := by
   constructor
   · intro h x
-    have := (forget C X ⋙ stalkFunctor C x).exact_tfae.out 2 1
+    have := (forget C X ⋙ stalkFunctor C x).exact_tfae.out 3 2
     exact this.mp inferInstance S h
   intro h
   simp_rw [ShortComplex.exact_iff_isZero_homology] at h

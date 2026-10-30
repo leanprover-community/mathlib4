@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.TStructure
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
-public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
-public import Mathlib.Algebra.Homology.SingleHomology
-public import Mathlib.CategoryTheory.Category.Factorisation
-public import Mathlib.CategoryTheory.Functor.OfSequence
+
+import Mathlib.Algebra.Homology.DerivedCategory.TStructure
+import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
+import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.CategoryTheory.Category.Factorisation
+import Mathlib.CategoryTheory.Functor.OfSequence
 
 /-!
 # Factorization lemma
@@ -110,7 +111,7 @@ variable (K L) in
 noncomputable abbrev mid := S K n₁ ⊞ L
 
 variable (K) in
-/-- The morphim `K ⟶ S K n₁` which in degree `n₁` corresponds to
+/-- The morphism `K ⟶ S K n₁` which in degree `n₁` corresponds to
 the composition `K.X n₁ ⟶ K.opcycles n₁ ⟶ Injective.under (K.opcycles n₁)`. -/
 noncomputable def i : K ⟶ S K n₁ := mkHomToSingle (K.pOpcycles n₁ ≫ Injective.ι _) (by simp)
 
@@ -370,6 +371,7 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
@@ -379,8 +381,8 @@ lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     rw [← quasiIsoAt_iff_comp_right _ (π f n), mappingCocone.lift_fst]
     exact hf q hq
   · have := mono_homologyMap_π f n n (by lia)
-    have : Mono (homologyMap (mappingCocone.triangle (α f n)).mor₁ n) :=
-      by dsimp; infer_instance
+    have : Mono (homologyMap (mappingCocone.triangle (α f n)).mor₁ n) := by
+      dsimp; infer_instance
     have h₁ := (exact_homologyShortComplex f n).fIsKernel
     have h₂ := (CochainComplex.homologyMap_exact₂_of_distTriang _
       (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) n).fIsKernel
@@ -498,7 +500,6 @@ sequence of morphisms `CofFibFactorizationQuasiIsoLE.toSequenceNext`. -/
 noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
   (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ) (hi : i ≤ n₀ + q₁) :
     IsIso (((functor f n₀).map (homOfLE hq).op).hom.h.f i) := by
   wlog hq' : q₁ + 1 = q₂ generalizing q₁ q₂

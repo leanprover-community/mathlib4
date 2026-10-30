@@ -6,12 +6,10 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 module
 
 public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.MonoidAlgebra.Lift
+public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 import Mathlib.LinearAlgebra.Span.Basic
 
@@ -49,7 +47,8 @@ section DistribMulAction
 variable [Monoid S] [Semiring R] [DistribMulAction S R]
 
 @[to_additive (dont_translate := S) distribMulAction]
-instance distribMulAction : DistribMulAction S R[M] := fast_instance% coeffEquiv.distribMulAction _
+instance distribMulAction : DistribMulAction S R[M] :=
+  fast_instance% coeffAddEquiv.distribMulAction _
 
 @[to_additive (dont_translate := S) (attr := simp)]
 lemma mapDomain_smul (f : M → N) (s : S) (x : R[M]) : mapDomain f (s • x) = s • mapDomain f x := by
@@ -61,17 +60,17 @@ section Module
 variable [Semiring R] [Semiring S] [Module R S] {s t : Set M} {x : S[M]}
 
 @[to_additive (dont_translate := R)]
-instance : Module R S[M] := fast_instance% coeffEquiv.module _
+instance : Module R S[M] := fast_instance% coeffAddEquiv.module _
 
 @[to_additive]
 instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
-  coeffEquiv.moduleIsTorsionFree _
+  coeffAddEquiv.moduleIsTorsionFree _
 
 variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
 @[to_additive (attr := simps! apply symm_apply)
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/]
-def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffEquiv.linearEquiv _
+def coeffLinearEquiv : S[M] ≃ₗ[R] M →₀ S := coeffAddEquiv.linearEquiv _
 
 variable (R S) in
 /-- `MonoidAlgebra.mapDomain` as a linear map. -/
@@ -91,13 +90,13 @@ lemma mapDomainLinearMap_single (f : M → N) (s : S) (m : M) :
 @[to_additive (attr := simp)]
 lemma mapDomainLinearMap_comp (f : M → N) (g : N → O) :
     mapDomainLinearMap R S (g ∘ f) = mapDomainLinearMap R S g ∘ₗ mapDomainLinearMap R S f := by
-  ext; simp [Finsupp.mapDomain_comp]
+  ext; simp [Finsupp.mapDomain_fun_comp]
 
 variable (R S) in
 /-- `MonoidAlgebra.mapDomain` as a linear equiv. -/
 @[to_additive /-- `AddMonoidAlgebra.mapDomain` as a linear equiv. -/]
 def mapDomainLinearEquiv (e : M ≃ N) : S[M] ≃ₗ[R] S[N] :=
-  (coeffLinearEquiv _).trans <| (Finsupp.domLCongr e).trans <| (coeffLinearEquiv _).symm
+  (coeffLinearEquiv _).trans <| (Finsupp.domLCongr e).trans (coeffLinearEquiv _).symm
 
 @[to_additive (attr := simp)]
 lemma coeff_mapDomainLinearEquiv (e : M ≃ N) (x : S[M]) :
@@ -152,6 +151,7 @@ lemma supported_eq_map :
     supported R S s = (Finsupp.supported S R s).map (coeffLinearEquiv R).symm.toLinearMap :=
   Submodule.comap_equiv_eq_map_symm ..
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R S s) in
 @[to_additive (dont_translate := R)]
 lemma supported_eq_span_single : supported R R s = .span R ((fun m ↦ single m 1) '' s) := by
@@ -161,6 +161,9 @@ lemma supported_eq_span_single : supported R R s = .span R ((fun m ↦ single m 
 @[to_additive (attr := gcongr)]
 lemma supported_mono (hst : s ⊆ t) : supported R S s ≤ supported R S t := fun _ h ↦ h.trans hst
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 @[to_additive (dont_translate := R) (attr := simps!)
@@ -199,8 +202,9 @@ TODO: Generalise to a group acting on another, instead of just the left multipli
 @[implicit_reducible]
 def comapDistribMulActionSelf [Group G] [Semiring S] : DistribMulAction G S[G] :=
   have := Finsupp.comapDistribMulAction (G := G) (α := G) (M := S)
-  fast_instance% coeffEquiv.distribMulAction _
+  fast_instance% coeffAddEquiv.distribMulAction _
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[to_additive (dont_translate := R)]
 lemma single_mem_span_single [Semiring R] [Nontrivial R] {m : M} {s : Set M} :
     single m 1 ∈ Submodule.span R ((single · (1 : R)) '' s) ↔ m ∈ s := by
@@ -271,7 +275,7 @@ theorem liftNC_smul (f : S →+* R) (g : M →* R) (c : S) (φ : S[M]) :
     liftNC (f : S →+ R) g (c • φ) = f c * liftNC (f : S →+ R) g φ := by
   suffices (liftNC (↑f) g).comp (smulAddHom S S[M] c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
-    DFunLike.congr_fun this φ
+    congr($this φ)
   ext
   simp [mul_assoc]
 
@@ -351,7 +355,7 @@ lemma mem_closure_of_mem_span_closure [AddMonoid M] [Nontrivial R] {m : M} {s : 
 lemma liftNC_smul [AddZeroClass M] (f : S →+* R) (g : Multiplicative M →* R) (c : S) (φ : S[M]) :
     liftNC (f : S →+ R) g (c • φ) = f c * liftNC (f : S →+ R) g φ := by
   suffices (liftNC (↑f) g).comp (smulAddHom S S[M] c) =
-      (AddMonoidHom.mulLeft (f c)).comp (liftNC f g) from DFunLike.congr_fun this φ
+      (AddMonoidHom.mulLeft (f c)).comp (liftNC f g) from congr($this φ)
   ext
   simp [mul_assoc]
 

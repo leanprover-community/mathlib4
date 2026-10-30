@@ -74,7 +74,7 @@ theorem mem_map_iff_exists_image : t ∈ map m f ↔ ∃ s ∈ f, m '' s ⊆ t :
 
 @[simp]
 theorem map_id : Filter.map id f = f :=
-  filter_eq <| rfl
+  filter_eq rfl
 
 @[simp]
 theorem map_id' : Filter.map (fun x => x) f = f :=
@@ -82,7 +82,7 @@ theorem map_id' : Filter.map (fun x => x) f = f :=
 
 @[simp]
 theorem map_compose : Filter.map m' ∘ Filter.map m = Filter.map (m' ∘ m) :=
-  funext fun _ => filter_eq <| rfl
+  funext fun _ => filter_eq rfl
 
 @[simp]
 theorem map_map : Filter.map m' (Filter.map m f) = Filter.map (m' ∘ m) f :=
@@ -224,7 +224,7 @@ theorem bind_def {α β} (f : Filter α) (m : α → Filter β) : f >>= m = bind
 
 section Map
 
-variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Filter β} {m : α → β} {m' : β → γ} {s : Set α} {t : Set β}
+variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Filter β} {m : α → β} {s : Set α} {t : Set β}
 
 @[simp] theorem mem_comap : s ∈ comap m g ↔ ∃ t ∈ g, m ⁻¹' t ⊆ s := Iff.rfl
 
@@ -715,7 +715,7 @@ theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· �
 theorem map_biInf_eq {ι : Type w} {f : ι → Filter α} {m : α → β} {p : ι → Prop}
     (h : DirectedOn (f ⁻¹'o (· ≥ ·)) { x | p x }) (ne : ∃ i, p i) :
     map m (⨅ (i) (_ : p i), f i) = ⨅ (i) (_ : p i), map m (f i) := by
-  haveI := nonempty_subtype.2 ne
+  have := nonempty_subtype.2 ne
   simp only [iInf_subtype']
   exact map_iInf_eq h.directed_val
 

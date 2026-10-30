@@ -5,9 +5,10 @@ Authors: Frédéric Dupuis, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.LinearAlgebra.Multilinear.Curry
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
@@ -25,7 +26,7 @@ binary tensor product in `Mathlib/LinearAlgebra/TensorProduct/Basic.lean`.
   This is bundled as a multilinear map from `Π i, s i` to `⨂[R] i, s i`.
 * `liftAddHom` constructs an `AddMonoidHom` from `(⨂[R] i, s i)` to some space `F` from a
   function `φ : (R × Π i, s i) → F` with the appropriate properties.
-* `lift φ` with `φ : MultilinearMap R s E` is the corresponding linear map
+* `lift φ` with `φ : (Π i, s i) →ₘₗ[R] E` is the corresponding linear map
   `(⨂[R] i, s i) →ₗ[R] E`. This is bundled as a linear equivalence.
 * `PiTensorProduct.reindex e` re-indexes the components of `⨂[R] i : ι, M` along `e : ι ≃ ι₂`.
 * `PiTensorProduct.tmulEquiv` equivalence between a `TensorProduct` of `PiTensorProduct`s and
@@ -196,7 +197,7 @@ protected theorem induction_on' {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] 
   have C0 : motive 0 := by
     have h₁ := tprodCoeff 0 0
     rwa [zero_tprodCoeff] at h₁
-  refine AddCon.induction_on z fun x ↦ FreeAddMonoid.recOn x C0 ?_
+  refine AddCon.induction_on z fun x ↦ FreeAddMonoid.addRecOn x C0 ?_
   simp_rw [AddCon.coe_add]
   refine fun f y ih ↦ add _ _ ?_ ih
   convert! tprodCoeff f.1 f.2
@@ -272,10 +273,10 @@ instance : IsScalarTower R R (⨂[R] i, s i) :=
   PiTensorProduct.isScalarTower'
 
 variable (R) in
-/-- The canonical `MultilinearMap R s (⨂[R] i, s i)`.
+/-- The canonical `(Π i, s i) →ₘₗ[R] ⨂[R] i, s i`.
 
 `tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
-def tprod : MultilinearMap R s (⨂[R] i, s i) where
+def tprod : (Π i, s i) →ₘₗ[R] ⨂[R] i, s i where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
   map_update_smul' {_ f} i r x := by
@@ -284,8 +285,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
-theorem tprod_eq_tprodCoeff_one :
-    ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
+theorem tprod_eq_tprodCoeff_one : ⇑(tprod R : (Π i, s i) →ₘₗ[R] ⨂[R] i, s i) = tprodCoeff R 1 := rfl
 
 @[simp]
 theorem tprodCoeff_eq_smul_tprod (z : R) (f : Π i, s i) : tprodCoeff R z f = z • tprod R f := by
@@ -301,7 +301,7 @@ lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)
     List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) := by
   induction p using FreeAddMonoid.inductionOn' with
   | zero => rfl
-  | add_of b a ih =>
+  | of_add b a ih =>
     rw [FreeAddMonoid.toList_of_add, List.map_cons, List.sum_cons, ← ih, ← tprodCoeff_eq_smul_tprod]
     rfl
 
@@ -316,8 +316,9 @@ if and only if `x` is equal to the sum of `a • ⨂ₜ[R] i, m i` over all the 
 -/
 lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
     p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) = x := by
-  simp only [lifts, Set.mem_setOf_eq, FreeAddMonoid.toPiTensorProduct]
+  simp only [lifts, Set.mem_ofPred_eq, FreeAddMonoid.toPiTensorProduct]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every element of `⨂[R] i, s i` has a lift in `FreeAddMonoid (R × Π i, s i)`.
 -/
 lemma nonempty_lifts (x : ⨂[R] i, s i) : Set.Nonempty (lifts x) := by
@@ -337,7 +338,7 @@ respectively, then `p + q` lifts `x + y`.
 -/
 lemma lifts_add {x y : ⨂[R] i, s i} {p q : FreeAddMonoid (R × Π i, s i)}
     (hp : p ∈ lifts x) (hq : q ∈ lifts y) : p + q ∈ lifts (x + y) := by
-  simp only [lifts, Set.mem_setOf_eq, AddCon.coe_add]
+  simp only [lifts, Set.mem_ofPred_eq, AddCon.coe_add]
   rw [hp, hq]
 
 /-- If an element `p` of `FreeAddMonoid (R × Π i, s i)` lifts an element `x` of `⨂[R] i, s i`,
@@ -365,10 +366,10 @@ theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
   refine LinearMap.ext ?_
   refine fun z ↦
     PiTensorProduct.induction_on' z ?_ fun {x y} hx hy ↦ by rw [φ₁.map_add, φ₂.map_add, hx, hy]
-  · intro r f
-    rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
-    apply congr_arg
-    exact MultilinearMap.congr_fun H f
+  intro r f
+  rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
+  apply congr_arg
+  congrm $H f
 
 /-- The pure tensors (i.e. the elements of the image of `PiTensorProduct.tprod`) span
 the tensor product. -/
@@ -390,9 +391,9 @@ variable {s}
 section lift
 
 /-- Auxiliary function to constructing a linear map `(⨂[R] i, s i) → E` given a
-`MultilinearMap R s E` with the property that its composition with the canonical
-`MultilinearMap R s (⨂[R] i, s i)` is the given multilinear map. -/
-def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
+`(Π i, s i) →ₘₗ[R] E` with the property that its composition with the canonical
+`(Π i, s i) →ₘₗ[R] ⨂[R] i, s i` is the given multilinear map. -/
+def liftAux (φ : (Π i, s i) →ₘₗ[R] E) : (⨂[R] i, s i) →+ E :=
   liftAddHom (fun p : R × Π i, s i ↦ p.1 • φ p.2)
     (fun z f i hf ↦ by simp_rw [map_coord_zero φ i hf, smul_zero])
     (fun f ↦ by simp_rw [zero_smul])
@@ -400,7 +401,7 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
     (fun z₁ z₂ f ↦ by rw [← add_smul])
     fun z f i r ↦ by simp [φ.map_update_smul, smul_smul, mul_comm]
 
-theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (tprod R f) = φ f := by
+theorem liftAux_tprod (φ : (Π i, s i) →ₘₗ[R] E) (f : Π i, s i) : liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
   -- The end of this proof was very different before https://github.com/leanprover/lean4/pull/2644:
   -- rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
@@ -410,10 +411,10 @@ theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (
   conv_lhs => apply AddCon.lift_coe
   simp
 
-theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : Π i, s i) :
+theorem liftAux_tprodCoeff (φ : (Π i, s i) →ₘₗ[R] E) (z : R) (f : Π i, s i) :
     liftAux φ (tprodCoeff R z f) = z • φ f := rfl
 
-theorem liftAux.smul {φ : MultilinearMap R s E} (r : R) (x : ⨂[R] i, s i) :
+theorem liftAux.smul {φ : (Π i, s i) →ₘₗ[R] E} (r : R) (x : ⨂[R] i, s i) :
     liftAux φ (r • x) = r • liftAux φ x := by
   refine PiTensorProduct.induction_on' x ?_ ?_
   · intro z f
@@ -421,10 +422,9 @@ theorem liftAux.smul {φ : MultilinearMap R s E} (r : R) (x : ⨂[R] i, s i) :
   · intro z y ihz ihy
     rw [smul_add, (liftAux φ).map_add, ihz, ihy, (liftAux φ).map_add, smul_add]
 
-/-- Constructing a linear map `(⨂[R] i, s i) → E` given a `MultilinearMap R s E` with the
-property that its composition with the canonical `MultilinearMap R s E` is
-the given multilinear map `φ`. -/
-def lift : MultilinearMap R s E ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
+/-- Constructing a linear map `(⨂[R] i, s i) → E` given a `(Π i, s i) →ₘₗ[R] E` with the property
+that its composition with the canonical `(Π i, s i) →ₘₗ[R] E` is the given multilinear map `φ`. -/
+def lift : ((Π i, s i) →ₘₗ[R] E) ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
   toFun φ := { liftAux φ with map_smul' := liftAux.smul }
   invFun φ' := φ'.compMultilinearMap (tprod R)
   left_inv φ := by
@@ -440,7 +440,7 @@ def lift : MultilinearMap R s E ≃ₗ[R] (⨂[R] i, s i) →ₗ[R] E where
     ext
     simp [liftAux_tprod]
 
-variable {φ : MultilinearMap R s E}
+variable {φ : (Π i, s i) →ₘₗ[R] E}
 
 @[simp]
 theorem lift.tprod (f : Π i, s i) : lift φ (tprod R f) = φ f :=
@@ -459,7 +459,7 @@ theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) : lift.symm φ' = φ'.comp
   rfl
 
 @[simp]
-theorem lift_tprod : lift (tprod R : MultilinearMap R s _) = LinearMap.id :=
+theorem lift_tprod : lift (tprod R : (Π i, s i) →ₘₗ[R] _) = LinearMap.id :=
   Eq.symm <| lift.unique' rfl
 
 end lift
@@ -492,7 +492,7 @@ theorem map_range_eq_span_tprod :
       Submodule.span R {t | ∃ (m : Π i, s i), tprod R (fun i ↦ f i (m i)) = t} := by
   rw [← Submodule.map_top, ← span_tprod_eq_top, Submodule.map_span, ← Set.range_comp]
   apply congrArg; ext x
-  simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_setOf_eq]
+  simp only [Set.mem_range, comp_apply, map_tprod, Set.mem_ofPred_eq]
 
 /-- Given submodules `p i ⊆ s i`, this is the natural map: `⨂[R] i, p i → ⨂[R] i, s i`.
 This is `TensorProduct.mapIncl` for an arbitrary family of modules.
@@ -505,8 +505,7 @@ theorem map_comp : map (fun (i : ι) ↦ g i ∘ₗ f i) = map g ∘ₗ map f :=
   ext
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.coe_comp, Function.comp_apply]
 
-theorem lift_comp_map (h : MultilinearMap R t E) :
-    lift h ∘ₗ map f = lift (h.compLinearMap f) := by
+theorem lift_comp_map (h : (Π i, t i) →ₘₗ[R] E) : lift h ∘ₗ map f = lift (h.compLinearMap f) := by
   ext
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, Function.comp_apply,
     map_tprod, lift.tprod, MultilinearMap.compLinearMap_apply]
@@ -564,7 +563,7 @@ the family.
 -/
 @[simps]
 noncomputable def mapMultilinear :
-    MultilinearMap R (fun (i : ι) ↦ s i →ₗ[R] t i) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
+    (Π i, s i →ₗ[R] t i) →ₘₗ[R] (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i where
   toFun := map
   map_update_smul' _ _ _ _ := PiTensorProduct.map_update_smul _ _ _ _
   map_update_add' _ _ _ _ := PiTensorProduct.map_update_add _ _ _ _
@@ -598,7 +597,7 @@ This is the n-ary version of `TensorProduct.congr`
 -/
 noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
     (⨂[R] i, s i) ≃ₗ[R] ⨂[R] i, t i :=
-  .ofLinear
+  .ofLinearMap
     (map (fun i ↦ f i))
     (map (fun i ↦ (f i).symm))
     (by ext; simp)
@@ -607,12 +606,13 @@ noncomputable def congr (f : Π i, s i ≃ₗ[R] t i) :
 @[simp]
 theorem congr_tprod (f : Π i, s i ≃ₗ[R] t i) (m : Π i, s i) :
     congr f (tprod R m) = tprod R (fun (i : ι) ↦ (f i) (m i)) := by
-  simp only [congr, LinearEquiv.ofLinear_apply, map_tprod, LinearEquiv.coe_coe]
+  simp only [congr, LinearEquiv.coe_ofLinearMap, map_tprod, LinearEquiv.coe_coe]
 
 @[simp]
 theorem congr_symm_tprod (f : Π i, s i ≃ₗ[R] t i) (p : Π i, t i) :
     (congr f).symm (tprod R p) = tprod R (fun (i : ι) ↦ (f i).symm (p i)) := by
-  simp only [congr, LinearEquiv.ofLinear_symm_apply, map_tprod, LinearEquiv.coe_coe]
+  simp only [congr, LinearEquiv.symm_ofLinearMap, LinearEquiv.coe_ofLinearMap, map_tprod,
+    LinearEquiv.coe_coe]
 
 /--
 Let `sᵢ`, `tᵢ` and `t'ᵢ` be families of `R`-modules, then `f : Πᵢ sᵢ → tᵢ → t'ᵢ` induces an
@@ -677,7 +677,7 @@ variable (s) in
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
   let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
   let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
-  LinearEquiv.ofLinear (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
+  LinearEquiv.ofLinearMap (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 
 end
 
@@ -693,25 +693,23 @@ theorem reindex_comp_tprod (e : ι ≃ ι₂) :
     (domDomCongrLinearEquiv' R R s _ e).symm (tprod R) :=
   MultilinearMap.ext <| reindex_tprod e
 
-theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun i ↦ s (e.symm i)) E) :
+theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : (Π i, s (e.symm i)) →ₘₗ[R] E) :
     lift φ ∘ₗ (reindex R s e) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) := by
   ext; simp [reindex]
 
 @[simp]
-theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : MultilinearMap R s E) :
+theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : (Π i, s i) →ₘₗ[R] E) :
     lift φ ∘ₗ (reindex R s e).symm = lift (domDomCongrLinearEquiv' R R s _ e φ) := by
   ext; simp [reindex]
 
-theorem lift_reindex
-    (e : ι ≃ ι₂) (φ : MultilinearMap R (fun i ↦ s (e.symm i)) E) (x : ⨂[R] i, s i) :
+theorem lift_reindex (e : ι ≃ ι₂) (φ : (Π i, s (e.symm i)) →ₘₗ[R] E) (x : ⨂[R] i, s i) :
     lift φ (reindex R s e x) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) x :=
-  LinearMap.congr_fun (lift_comp_reindex e φ) x
+  congr($(lift_comp_reindex e φ) x)
 
 @[simp]
-theorem lift_reindex_symm
-    (e : ι ≃ ι₂) (φ : MultilinearMap R s E) (x : ⨂[R] i, s (e.symm i)) :
+theorem lift_reindex_symm (e : ι ≃ ι₂) (φ : (Π i, s i) →ₘₗ[R] E) (x : ⨂[R] i, s (e.symm i)) :
     lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R R s _ e φ) x :=
-  LinearMap.congr_fun (lift_comp_reindex_symm e φ) x
+  congr($(lift_comp_reindex_symm e φ) x)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -726,14 +724,26 @@ theorem reindex_trans (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) :
 
 theorem reindex_reindex (e : ι ≃ ι₂) (e' : ι₂ ≃ ι₃) (x : ⨂[R] i, s i) :
     reindex R _ e' (reindex R s e x) = reindex R s (e.trans e') x :=
-  LinearEquiv.congr_fun (reindex_trans e e' : _ = reindex R s (e.trans e')) x
+  congr($((reindex_trans e e' : _ = reindex R s (e.trans e'))) x)
 
-/-- This lemma is impractical to state in the dependent case. -/
+/-- This lemma is impractical to state in the dependent case, instead see `reindex_symm_tprod`. -/
 @[simp]
 theorem reindex_symm (e : ι ≃ ι₂) :
     (reindex R (fun _ ↦ M) e).symm = reindex R (fun _ ↦ M) e.symm := by
   ext x
   simp [reindex]
+
+@[simp]
+theorem reindex_symm_tprod (e : ι ≃ ι₂) (f : Π i, s i) :
+    (reindex R s e).symm (tprod R (fun i ↦ f (e.symm i))) = tprod R f := by
+  apply (reindex R s e).injective
+  simp
+
+@[simp]
+theorem reindex_symm_symm_tprod (e : ι₂ ≃ ι) (f : Π i, s i) :
+    (reindex R s e.symm).symm (tprod R (fun i ↦ f (e i))) = tprod R f := by
+  apply (reindex R s e.symm).injective
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -754,7 +764,7 @@ theorem map_comp_reindex_eq (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
 
 theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s i) :
     map (fun i ↦ f (e.symm i)) (reindex R s e x) = reindex R t e (map f x) :=
-  DFunLike.congr_fun (map_comp_reindex_eq _ _) _
+  congr($(map_comp_reindex_eq _ _) _)
 
 theorem map_comp_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
     map f ∘ₗ (reindex R s e).symm = (reindex R t e).symm ∘ₗ map (fun i => f (e.symm i)) := by
@@ -765,7 +775,7 @@ theorem map_comp_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
 
 theorem map_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R] i, s (e.symm i)) :
     map f ((reindex R s e).symm x) = (reindex R t e).symm (map (fun i ↦ f (e.symm i)) x) :=
-  DFunLike.congr_fun (map_comp_reindex_symm _ _) _
+  congr($(map_comp_reindex_symm _ _) _)
 
 variable (ι)
 
@@ -802,7 +812,7 @@ variable [Subsingleton ι] (i₀ : ι)
 
 /-- Tensor product over a singleton type with element `i₀` is equivalent to `s i₀`. -/
 def subsingletonEquiv : (⨂[R] i : ι, s i) ≃ₗ[R] s i₀ :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (lift
       { toFun f := f i₀
         map_update_add' m i := by rw [Subsingleton.elim i i₀]; simp
@@ -836,12 +846,13 @@ section tmulEquivDep
 
 variable (N : ι ⊕ ι₂ → Type*) [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
 `PiTensorProduct` indexed by a `Sum` type. If `N` is a constant family of
 modules, use the non-dependent version `PiTensorProduct.tmulEquiv` instead. -/
 def tmulEquivDep :
     (⨂[R] i₁, N (.inl i₁)) ⊗[R] (⨂[R] i₂, N (.inr i₂)) ≃ₗ[R] ⨂[R] i, N i :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (TensorProduct.lift
       { toFun a := PiTensorProduct.lift (PiTensorProduct.lift
           (MultilinearMap.currySumEquiv (tprod R)) a)

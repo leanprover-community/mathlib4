@@ -5,7 +5,10 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.ToDual
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order definitions for propositions

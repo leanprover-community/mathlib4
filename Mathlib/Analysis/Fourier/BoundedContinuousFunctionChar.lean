@@ -39,7 +39,7 @@ measure.
 
 @[expose] public section
 
-open Filter BoundedContinuousFunction Complex
+open BoundedContinuousFunction Complex
 
 namespace BoundedContinuousFunction
 
@@ -89,8 +89,8 @@ theorem ext_of_char_eq (he : Continuous e) (he' : e ≠ 1)
   simp only [map_sub, LinearMap.sub_apply, char_apply, ne_eq]
   rw [← div_eq_one_iff_eq (Circle.coe_ne_zero _), div_eq_inv_mul, ← Metric.unitSphere.coe_inv,
     ← e.map_neg_eq_inv, ← Submonoid.coe_mul, ← e.map_add_eq_mul, OneMemClass.coe_eq_one]
-  simp only [map_sub, LinearMap.sub_apply, LinearMap.zero_apply, AddChar.one_apply,
-    map_smul, smul_eq_mul] at ha hw ⊢
+  simp only [one_apply, ne_eq, map_sub, LinearMap.sub_apply, LinearMap.zero_apply, map_smul,
+    smul_eq_mul] at ha hw ⊢
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
   (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
   It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
@@ -106,6 +106,7 @@ noncomputable def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V �
   map_one' := char_zero_eq_one
   map_mul' := char_add_eq_mul (he := he) (hL := hL)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma charMonoidHom_apply (w : Multiplicative W) (v : V) :
     charMonoidHom he hL w v = e (L v w.toAdd) := by simp [charMonoidHom]
@@ -122,6 +123,7 @@ lemma charAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
   simp [charAlgHom, charMonoidHom, char, AddMonoidAlgebra.lift_apply]
   simp [Finsupp.sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The family of `ℂ`-linear combinations of `char he hL w, w : W`, is closed under `star`. -/
 lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {x : V →ᵇ ℂ} (hx : x ∈ (charAlgHom he hL).range) :

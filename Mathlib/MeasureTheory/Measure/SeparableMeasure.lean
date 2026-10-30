@@ -107,7 +107,7 @@ theorem Measure.MeasureDense.nonempty' (h𝒜 : μ.MeasureDense 𝒜) :
     {s | s ∈ 𝒜 ∧ μ s ≠ ∞}.Nonempty := by
   rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by simp) with ⟨t, ht, hμt⟩
   refine ⟨t, ht, ?_⟩
-  convert! ne_top_of_lt hμt
+  convert ne_top_of_lt hμt
   rw [← bot_eq_empty, bot_symmDiff]
 
 /-- The set of measurable sets is measure-dense. -/
@@ -115,13 +115,14 @@ theorem measureDense_measurableSet : μ.MeasureDense {s | MeasurableSet s} where
   measurable _ h := h
   approx s hs _ ε ε_pos := ⟨s, hs, by simpa⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Measure.MeasureDense.completion (h𝒜 : μ.MeasureDense 𝒜) : μ.completion.MeasureDense 𝒜 where
   measurable s hs := (h𝒜.measurable s hs).nullMeasurableSet
   approx s hs hμs ε ε_pos := by
     obtain ⟨t, ht, hμst⟩ :=
       h𝒜.approx (toMeasurable μ s) (measurableSet_toMeasurable μ s) (by simpa) ε ε_pos
     refine ⟨t, ht, ?_⟩
-    convert! hμst using 1
+    convert hμst using 1
     rw [completion_apply]
     exact measure_congr <| ae_eq_set_symmDiff (NullMeasurableSet.toMeasurable_ae_eq hs).symm
       Filter.EventuallyEq.rfl
@@ -208,7 +209,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
       | iUnion f _ hf =>
         refine ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
         -- We have  `μ (⋃ n ≤ N, fₙ) ⟶ μ (⋃ n, fₙ)`.
-        have := tendsto_measure_iUnion_accumulate (μ := μ) (f := f)
+        have := tendsto_measure_iUnion_accumulate (μ := μ) (s := f)
         rw [← tendsto_toReal_iff (fun _ ↦ measure_ne_top _ _) (measure_ne_top _ _)] at this
         -- So there exists `N` such that `μ (⋃ n, fₙ) - μ (⋃ n ≤ N, fₙ) < ε/2`.
         rcases Metric.tendsto_atTop.1 this (ε / 2) (by linarith [ε_pos]) with ⟨N, hN⟩
@@ -289,7 +290,8 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
     -- We use the fact that we already know this is true for finite measures. As `⋃ n, T n = X`,
     -- we have that `μ ((T n) ∩ s) ⟶ μ s`.
     have mono : Monotone (fun n ↦ (T n) ∩ s) := fun m n hmn ↦ inter_subset_inter_left s
-        (biUnion_subset_biUnion_left fun k hkm ↦ Nat.le_trans hkm hmn)
+        (biUnion_subset_biUnion_left (s := {k | k ≤ m}) (s' := {k | k ≤ n})
+          fun k hkm ↦ Nat.le_trans hkm hmn)
     have := tendsto_measure_iUnion_atTop (μ := μ) mono
     rw [← tendsto_toReal_iff] at this
     · -- We can therefore choose `N` such that `μ s - μ ((S N) ∩ s) < ε/2`.
@@ -305,7 +307,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
       -- We can then use `t ∩ (S N)`, because `S N ∈ 𝒜` by hypothesis.
       -- `μ (s ∆ (t ∩ S N))`
       --   `≤ μ (s ∆ (s ∩ S N)) + μ ((s ∩ S N) ∆ (t ∩ S N))`
-      --   `= μ s - μ (s ∩ S N) + μ (s ∆ t) ∩ S N) < ε`.
+      --   `= μ s - μ (s ∩ S N) + μ ((s ∆ t) ∩ S N) < ε`.
       refine ⟨t ∩ T N, h𝒜.inter_mem t_mem (T_mem N), ?_⟩
       calc
         μ (s ∆ (t ∩ T N))
@@ -374,7 +376,7 @@ theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
     · rw [← hgen]
       exact generateFrom_mono <| le_trans self_subset_generateSetAlgebra <|
         generateSetAlgebra_mono <| subset_union_left ..
-    · induction hs with
+    · induction hs using generateSetAlgebra_induction with
       | base t t_mem =>
         rcases t_mem with t_mem | ⟨n, rfl⟩
         · exact hgen ▸ measurableSet_generateFrom t_mem
@@ -443,26 +445,26 @@ lemma AEFinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : X →
     (hf : AEFinStronglyMeasurable f μ) (h'f : ¬(f =ᵐ[μ] 0)) :
     ∃ s, MeasurableSet s ∧ 0 < μ s ∧ μ s < ∞ := by
   apply hf.finStronglyMeasurable_mk.exists_measurableSet_measure_pos_lt_top
-  contrapose! h'f
+  contrapose h'f
   exact hf.ae_eq_mk.trans h'f
 
 variable (E p μ) in
 lemma nontrivial_Lp_real_of_nontrivial_Lp [Nontrivial (Lp E p μ)] : Nontrivial (Lp ℝ p μ) := by
   obtain ⟨f, hf⟩ : ∃ f : Lp E p μ, f ≠ 0 := exists_ne 0
   have hfne : ¬ (f =ᵐ[μ] 0) := by
-    contrapose! hf
+    contrapose hf
     ext
     grw [hf, Lp.coeFn_zero E p μ]
   rcases eq_top_or_lt_top p with rfl | h'p
   · apply nontrivial_of_ne ((memLp_top_const (1 : ℝ)).toLp _) 0
-    contrapose! hfne
+    contrapose hfne
     have := Lp.ext_iff.1 hfne
     grw [Lp.coeFn_zero, MemLp.coeFn_toLp] at this
     filter_upwards [this] with x hx using by simp at hx
   rcases eq_or_ne p 0 with rfl | hp
   · have : MemLp (fun (_ : X) ↦ (1 : ℝ)) 0 μ := by simpa using aestronglyMeasurable_const
     apply nontrivial_of_ne (this.toLp _) 0
-    contrapose! hfne
+    contrapose hfne
     have := Lp.ext_iff.1 hfne
     grw [Lp.coeFn_zero, MemLp.coeFn_toLp] at this
     filter_upwards [this] with x hx using by simp at hx

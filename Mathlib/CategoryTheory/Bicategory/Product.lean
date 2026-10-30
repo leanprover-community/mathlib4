@@ -25,7 +25,7 @@ We define:
 
 namespace CategoryTheory.Bicategory
 
-open Prod
+open CategoryTheory.Prod
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 

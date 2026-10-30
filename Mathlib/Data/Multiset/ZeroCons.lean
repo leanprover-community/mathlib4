@@ -40,7 +40,7 @@ assert_not_exists Monoid OrderHom
 
 universe v
 
-open List Subtype Nat Function
+open List Subtype Nat
 
 variable {α : Type*} {β : Type v} {γ : Type*}
 
@@ -198,11 +198,11 @@ theorem eq_zero_of_forall_notMem {s : Multiset α} : (∀ x, x ∉ s) → s = 0 
 theorem eq_zero_iff_forall_notMem {s : Multiset α} : s = 0 ↔ ∀ a, a ∉ s :=
   ⟨fun h => h.symm ▸ fun _ => notMem_zero _, eq_zero_of_forall_notMem⟩
 
-theorem exists_mem_of_ne_zero {s : Multiset α} : s ≠ 0 → ∃ a : α, a ∈ s :=
-  Quot.inductionOn s fun l hl =>
-    match l, hl with
-    | [], h => False.elim <| h rfl
-    | a :: l, _ => ⟨a, by simp⟩
+theorem ne_zero_iff_exists_mem {s : Multiset α} : s ≠ 0 ↔ ∃ a, a ∈ s := by
+  contrapose!
+  exact eq_zero_iff_forall_notMem
+
+alias ⟨exists_mem_of_ne_zero, _⟩ := ne_zero_iff_exists_mem
 
 theorem empty_or_exists_mem (s : Multiset α) : s = 0 ∨ ∃ a, a ∈ s :=
   or_iff_not_imp_left.mpr Multiset.exists_mem_of_ne_zero
@@ -218,7 +218,7 @@ theorem cons_ne_zero {a : α} {m : Multiset α} : a ::ₘ m ≠ 0 :=
 
 theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
     a ::ₘ as = b ::ₘ bs ↔ a = b ∧ as = bs ∨ a ≠ b ∧ ∃ cs, as = b ::ₘ cs ∧ bs = a ::ₘ cs := by
-  haveI : DecidableEq α := Classical.decEq α
+  have : DecidableEq α := Classical.decEq α
   constructor
   · intro eq
     by_cases h : a = b
@@ -375,7 +375,7 @@ theorem le_cons_of_notMem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
   rcases append_of_mem m₂ with ⟨r₁, r₂, rfl⟩
   exact
     perm_middle.subperm_left.2
-      ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
+      ((subperm_cons _).2 ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
 
 theorem cons_le_of_notMem (hs : a ∉ s) : a ::ₘ s ≤ t ↔ a ∈ t ∧ s ≤ t := by
   apply Iff.intro (fun h ↦ ⟨subset_of_le h (mem_cons_self a s), le_trans (le_cons_self s a) h⟩)

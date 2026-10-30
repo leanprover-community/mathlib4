@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.ModEq
+
 import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
@@ -41,9 +42,6 @@ theorem modEq_iff_intModEq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z]
   simp [modEq_iff_zsmul', dvd_iff_exists_eq_mul_left, Int.ModEq,
     Int.emod_eq_emod_iff_emod_sub_eq_zero, ← Int.dvd_iff_emod_eq_zero]
 
-@[deprecated (since := "2026-01-13")]
-alias modEq_iff_int_modEq := modEq_iff_intModEq
-
 variable {G : Type*} [AddCommGroupWithOne G] [CharZero G]
 
 @[simp, norm_cast]
@@ -73,9 +71,6 @@ protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
 protected theorem rfl : a ≡ a [ZMOD n] :=
   ModEq.refl _
 
-instance : Std.Refl (ModEq n) :=
-  ⟨ModEq.refl⟩
-
 @[symm]
 protected theorem symm : a ≡ b [ZMOD n] → b ≡ a [ZMOD n] :=
   Eq.symm
@@ -84,8 +79,10 @@ protected theorem symm : a ≡ b [ZMOD n] → b ≡ a [ZMOD n] :=
 protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMOD n] :=
   Eq.trans
 
-instance : IsTrans ℤ (ModEq n) where
-  trans := @Int.ModEq.trans n
+instance : IsEquiv ℤ (ModEq n) where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
 
 protected theorem eq : a ≡ b [ZMOD n] → a % n = b % n := id
 
@@ -143,7 +140,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by convert! Int.dvd_add h₁.dvd h₂.dvd using 1; lia
+  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; lia
 
 protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
@@ -207,7 +204,7 @@ lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
 theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
     a ≡ b [ZMOD m / gcd m c] := by
-  letI d := gcd m c
+  let d := gcd m c
   rw [modEq_iff_dvd] at h ⊢
   refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
   · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (gcd_dvd_right ..), Int.sub_mul]
@@ -220,7 +217,7 @@ theorem cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [ZMOD m]) : a ≡ 
   cancel_right_div_gcd hm <| by simpa [mul_comm] using h
 
 theorem of_div (h : a / c ≡ b / c [ZMOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :
-    a ≡ b [ZMOD m] := by convert! h.mul_left' <;> rwa [Int.mul_ediv_cancel']
+    a ≡ b [ZMOD m] := by convert h.mul_left' <;> rwa [Int.mul_ediv_cancel']
 
 /-- Cancel left multiplication on both sides of the `≡` and in the modulus.
 
@@ -363,7 +360,7 @@ theorem modEq_and_modEq_iff_modEq_lcm {a b m n : ℤ} :
 
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.natAbs) :
     a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] := by
-  convert! ← modEq_and_modEq_iff_modEq_lcm using 1
+  convert ← modEq_and_modEq_iff_modEq_lcm using 1
   rw [lcm_eq_mul_iff.mpr (.inr <| .inr hmn), ← natAbs_mul, modEq_natAbs]
 
 theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD b] := by

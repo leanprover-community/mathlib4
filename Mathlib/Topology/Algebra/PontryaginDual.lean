@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Topology.Algebra.Group.CompactOpen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pontryagin dual
 
@@ -85,7 +88,7 @@ instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
   let V : Set (PontryaginDual A) := {ψ | Set.MapsTo ψ Set.univ (Circle.centeredArc (π / 2))}
   have hVopen : IsOpen V := by
     dsimp only [V]
-    exact isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo isCompact_univ
+    exact isOpen_induced (ContinuousMap.isOpen_setOfPred_mapsTo isCompact_univ
       (Circle.isOpen_centeredArc (π / 2)))
   have hVeq : V = ({1} : Set (PontryaginDual A)) := by
     ext ψ

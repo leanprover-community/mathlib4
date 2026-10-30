@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative of `(f x) ^ n`, `n : ℕ`
 
@@ -124,7 +127,7 @@ theorem deriv_pow (h : DifferentiableAt 𝕜 f x) (n : ℕ) :
 end NormedCommRing
 
 section NontriviallyNormedField
-variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜} {c : 𝕜 → 𝕜}
+variable [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
 theorem hasStrictDerivAt_pow (n : ℕ) (x : 𝕜) :
     HasStrictDerivAt (fun x : 𝕜 ↦ x ^ n) (n * x ^ (n - 1)) x := by

@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Distributivity of group operations over supremum/infimum
 -/
 
 public section
 
-open Function Set
+open Set
 
 variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G] [Nonempty ι] {f : ι → G}
 

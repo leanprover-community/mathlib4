@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Ring.Subring.Defs
 
 import Mathlib.Algebra.Polynomial.Eval.Coeff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomials over subrings
 
@@ -106,7 +109,6 @@ theorem coeff_ofSubring (p : T[X]) (n : ℕ) : coeff (ofSubring T p) n = (coeff 
 
 @[simp]
 theorem coeffs_ofSubring {p : T[X]} : (↑(p.ofSubring T).coeffs : Set R) ⊆ T := by
-  classical
   intro i hi
   simp only [coeffs, Set.mem_image, mem_support_iff, Ne, Finset.mem_coe,
     (Finset.coe_image)] at hi

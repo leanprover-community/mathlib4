@@ -5,10 +5,13 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.RingTheory.Derivation.DifferentialRing
-public import Mathlib.Algebra.Polynomial.Module.Basic
 public import Mathlib.Algebra.Polynomial.Derivation
+public import Mathlib.Algebra.Polynomial.Module.Basic
 public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.Derivation.DifferentialRing
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Coefficient-wise derivation on polynomials
@@ -30,8 +33,6 @@ namespace Derivation
 variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
   [Module A M] [Module R M] (d : Derivation R A M)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /--
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
 of the coefficients.
@@ -98,7 +99,6 @@ namespace Differential
 
 variable {A : Type*} [CommRing A] [Differential A]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 A specialization of `Derivation.mapCoeffs` for the case of a differential ring.
 -/
@@ -126,7 +126,7 @@ variable {R : Type*} [CommRing R] [Differential R] [Algebra A R] [DifferentialAl
 
 theorem deriv_aeval_eq (x : R) (p : A[X]) :
     (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
-  convert! Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
+  convert Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
   · simp [mapCoeffs]
   · simp [deriv_algebraMap]
 

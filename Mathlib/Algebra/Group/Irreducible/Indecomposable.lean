@@ -6,12 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Group.Irreducible.Defs
-public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Algebra.Group.Submonoid.Basic
-public import Mathlib.Algebra.Order.Group.Defs
-public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Order.Preorder.Finite
+
+import Mathlib.Algebra.Order.Group.Defs
 
 /-!
 # Indecomposable elements of monoids
@@ -28,12 +25,11 @@ written as a product of two others in a non-trivial way. -/
 @[to_additive (attr := simp) /-- Given a family of elements of an additive monoid, a member is said
 to be indecomposable if it cannot be written as a sum of two others in a non-trivial way.-/]
 def IsMulIndecomposable (v : ι → M) (s : Set ι) (i : ι) : Prop :=
-  i ∈ s ∧ ∀ᵉ (j ∈ s) (k ∈ s), v i = v j * v k → v j = 1 ∨ v k = 1
+  i ∈ s ∧ ∀ j ∈ s, ∀ k ∈ s, v i = v j * v k → v j = 1 ∨ v k = 1
 
 @[to_additive]
 protected lemma IsMulIndecomposable.subset (v : ι → M) (s : Set ι) :
-    {i | IsMulIndecomposable v s i} ⊆ s := by
-  aesop
+    {i | IsMulIndecomposable v s i} ⊆ s := fun _ hi ↦ hi.1
 
 @[to_additive]
 lemma isMulIndecomposable_id_univ [Subsingleton Mˣ] {x : M} (hx : x ≠ 1) :
@@ -111,10 +107,6 @@ lemma Submonoid.closure_image_isMulIndecomposable_baseOf [Finite ι]
   replace hjk : v i ∈ closure (v '' t) := hjk ▸ mul_mem hj' hk'
   exact hi₁ hjk
 
-@[deprecated (since := "2025-12-30")]
-alias Submonoid.closure_image_one_lt_and_isMulIndecomposable :=
-  Submonoid.closure_image_isMulIndecomposable_baseOf
-
 @[to_additive]
 lemma Subgroup.closure_image_isMulIndecomposable_baseOf [Finite ι] [InvolutiveInv ι]
     [CommGroup S] [IsOrderedMonoid S]
@@ -151,7 +143,7 @@ lemma pairwise_div_notMem_range [InvolutiveInv ι]
     s.Pairwise fun i j ↦ v i / v j ∉ range v := by
   have h_sub : s ⊆ t := hst.trans (IsMulIndecomposable.subset _ _)
   intro i hi j hj hne
-  by_contra! ⟨k, hk⟩
+  by_contra ⟨k, hk⟩
   rcases hv_t k with hk' | hk'
   · suffices ¬ IsMulIndecomposable v t i from this (hst hi)
     simp only [IsMulIndecomposable, hv_one, or_self, imp_false, not_and, not_forall, not_not]

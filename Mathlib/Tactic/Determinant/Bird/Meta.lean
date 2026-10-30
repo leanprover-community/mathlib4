@@ -5,9 +5,9 @@ Authors: Paul Cadman
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird
-public meta import Mathlib.Tactic.Ring
 public meta import Mathlib.Util.Qq
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
+public import Mathlib.Tactic.Ring
 
 /-!
 # Reification support for the determinant tactic
@@ -57,7 +57,7 @@ structure Ctx {u : Level} {α : Q(Type u)} (rα : Q(CommRing $α)) where
   dimensionLit : Q(ℕ)
   /-- The array of matrix entries as an Expr -/
   arrayExpr : Q(Array $α)
-  /-- An array of matrix entry `Expr`s` -/
+  /-- An array of matrix entry `Expr`s -/
   arrayEntries : Array Q($α)
 
 /-- The ring instance and evaluator context parsed by `reifyBirdDet`. -/

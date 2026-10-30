@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability on the quotient of a module by a submodule
 -/
