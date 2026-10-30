@@ -219,6 +219,7 @@ theorem map_kstar (f : α → β) (l : Language α) : l∗.map f = (l.map f)∗ 
 theorem mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, iSup_mul, ← pow_succ, ← pow_succ']
 
+/-- This is the simp-normal form of `one_add_self_mul_kstar_eq_kstar`. -/
 @[simp]
 theorem one_sup_self_mul_kstar_eq_kstar (l : Language α) : 1 ⊔ l * l∗ = l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, ← pow_succ', ← pow_zero l]
@@ -227,6 +228,7 @@ theorem one_sup_self_mul_kstar_eq_kstar (l : Language α) : 1 ⊔ l * l∗ = l�
 lemma one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ :=
   one_sup_self_mul_kstar_eq_kstar _
 
+/-- This is the simp-normal form of `one_add_kstar_mul_self_eq_kstar`. -/
 @[simp]
 theorem one_sup_kstar_mul_self_eq_kstar (l : Language α) : 1 ⊔ l∗ * l = l∗ := by
   rw [mul_self_kstar_comm, one_sup_self_mul_kstar_eq_kstar]
@@ -265,8 +267,7 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : 1 ∉ m.toSet) :
         rw [FreeMonoid.toList_mul, length_append] at ih
         have hal : a.toList ≠ [] :=
           FreeMonoid.toListEquiv.injective.ne_iff.mpr (ne_of_mem_of_not_mem ha hm)
-        rw [ne_nil_iff_length_pos] at hal
-        specialize ih b.toList.length (by lia) hb rfl
+        specialize ih b.toList.length (by grind) hb rfl
         rw [← one_add_self_mul_kstar_eq_kstar, one_add_mul, mul_assoc]
         exact .inr ⟨_, ha, _, ih, rfl⟩
       · exact ⟨1, nil_mem_kstar _, _, ⟨hx, one_mul _⟩⟩
@@ -282,7 +283,7 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : 1 ∉ m.toSet) :
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
-def reverse (l : Language α) : Language α := {w | star w ∈ l.toSet}
+def reverse (l : Language α) : Language α := .ofSet {w | star w ∈ l.toSet}
 
 @[simp]
 lemma mem_reverse : a ∈ l.reverse.toSet ↔ star a ∈ l.toSet := Iff.rfl
@@ -298,7 +299,9 @@ lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
 
 @[simp]
 lemma reverse_one : (1 : Language α).reverse = 1 := by
-  simp [reverse, ← one_def]
+  ext
+  simp_rw [reverse, SetSemiring.toSet_one, Set.mem_one]
+  rw [SetSemiring.toSet_ofSet, mem_ofPred, star_eq_iff_star_eq, star_one, eq_comm]
 
 lemma reverse_involutive : Function.Involutive (reverse : Language α → _) := by
   intro; ext; simp
@@ -318,12 +321,12 @@ lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := reverse_invol
 @[simp]
 lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
-  simp only [mul_def, reverse_eq_image, image2_image_left, image2_image_right, image_image2,
-    List.reverse_append]
-  apply image2_swap
+  ext
+  simp_rw [mem_reverse, mem_mul, mem_reverse]
+  constructor <;> rintro ⟨a, ha, b, hb, hab⟩ <;>
+  exact ⟨star b, by simp [hb], star a, by simp [ha], by simp [*, ← star_mul]⟩
 
 @[simp]
 lemma reverse_iSup {ι : Sort*} (l : ι → Language α) : (⨆ i, l i).reverse = ⨆ i, (l i).reverse :=
