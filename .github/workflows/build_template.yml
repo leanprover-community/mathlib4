@@ -97,7 +97,19 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Validate the manifest before "Set up build environment" downloads the dependencies it names.
+      # Validate lake-manifest.json before "Set up build environment" downloads the dependencies.
+      # Package rules fail the step on every run:
+      # - `inputRev` is `main`, `master` or a version tag.
+      # - `url` is a GitHub repository in `leanprover-community` or `leanprover`.
+      # - `rev` is a full commit hash.
+      # Pin rules apply to each `rev` that differs from the manifest at the merge base with master.
+      # They warn on ordinary pushes, so a PR can test an unmerged dependency commit, and fail the
+      # step on `staging` and `trying`, where the merge base is master:
+      # - A `rev` that tracks a branch is on that branch. GitHub serves commits from unmerged
+      #   pull requests by SHA, so this rule keeps such commits out of master.
+      # - A `rev` that tracks a tag is the tag's commit.
+      # - When `url` and `inputRev` are unchanged, a `rev` that tracks a branch descends from the
+      #   merge-base `rev`. This rule stops a merge conflict from bringing back an older `rev`.
       - name: Checkout lake-manifest.json
         id: manifest_checkout
         # Only enforce this on the main mathlib4 repository, not on nightly-testing.
@@ -144,10 +156,7 @@ jobs:
               core[level](message, { title, file: 'lake-manifest.json' });
               if (level === 'error') failed = true;
             };
-            // The package rules fail every run.
             const packageError = (title, message) => annotate('error', title, message);
-            // The pin rules warn on ordinary pushes, so a PR can test an unmerged dependency
-            // commit. On `staging` and `trying`, they fail the run.
             const pinError = (title, message) =>
               annotate(process.env.STRICT === 'true' ? 'error' : 'warning', title, message);
 
@@ -221,8 +230,7 @@ jobs:
               if (tracksAllowedRev && source && pinsCommit) pinned.push({ ...p, owner: source[1], repo: source[2] });
             }
 
-            // Check each pin that differs from the manifest at the merge base with master.
-            // On `staging` and `trying`, the merge base is master.
+            // Find the merge base with master and the files that the branch changes.
             const { data: comparison } = await github.rest.repos.compareCommits({
               ...context.repo, base: 'master', head: process.env.PR_BRANCH_REF, per_page: 1,
             });
