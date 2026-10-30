@@ -6,7 +6,9 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.IsNPowApplyEqIterate
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.Submodule.EqLocus

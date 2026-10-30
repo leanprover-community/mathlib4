@@ -507,29 +507,68 @@ theorem isBigOTVS_prodMk_left [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] {k
     (fun x ↦ (f x, g x)) =O[𝕜; l] k ↔ f =O[𝕜; l] k ∧ g =O[𝕜; l] k :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.elim .prodMk⟩
 
+section Add
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E] {f₁ f₂ f₃ : α → E}
+
 @[to_fun]
-theorem IsLittleOTVS.add [ContinuousAdd E] [ContinuousSMul 𝕜 E]
-    {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g :=
+theorem IsLittleOTVS.add (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g :=
   ContinuousLinearMap.fst 𝕜 E E + ContinuousLinearMap.snd 𝕜 E E |>.isBigOTVS_comp
     |>.trans_isLittleOTVS <| h₁.prodMk h₂
 
+theorem IsLittleOTVS.listSum {L : List (α → E)} (h : ∀ f ∈ L, f =o[𝕜; l] g) :
+    L.sum =o[𝕜; l] g := by
+  induction L with
+  | nil => simp
+  | cons f L ihL =>
+    rw [List.sum_cons]
+    exact (h f (.head _)).add (ihL fun f' hf' ↦ h f' (.tail _ hf'))
+
+theorem IsLittleOTVS.multisetSum {s : Multiset (α → E)} (h : ∀ f ∈ s, f =o[𝕜; l] g) :
+    s.sum =o[𝕜; l] g := by
+  cases s using Quotient.inductionOn with
+  | _ L => exact listSum h
+
 @[to_fun]
-theorem IsBigOTVS.add [ContinuousAdd E] [ContinuousSMul 𝕜 E]
-    {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : f₁ =O[𝕜; l] g) (h₂ : f₂ =O[𝕜; l] g) : (f₁ + f₂) =O[𝕜; l] g :=
+theorem IsLittleOTVS.sum {ι : Type*} {s : Finset ι} {f : ι → α → E} (h : ∀ i ∈ s, f i =o[𝕜; l] g) :
+    (∑ i ∈ s, f i) =o[𝕜; l] g := by
+  rw [Finset.sum_eq_multiset_sum]
+  apply multisetSum
+  simpa using h
+
+@[to_fun]
+theorem IsBigOTVS.add (h₁ : f₁ =O[𝕜; l] g) (h₂ : f₂ =O[𝕜; l] g) : (f₁ + f₂) =O[𝕜; l] g :=
   ContinuousLinearMap.fst 𝕜 E E + ContinuousLinearMap.snd 𝕜 E E |>.isBigOTVS_comp
     |>.trans <| h₁.prodMk h₂
 
-theorem IsLittleOTVS.triangle [ContinuousAdd E] [ContinuousSMul 𝕜 E]
-    {f₁ f₂ f₃ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : (f₁ - f₂) =o[𝕜; l] g) (h₂ : (f₂ - f₃) =o[𝕜; l] g) : (f₁ - f₃) =o[𝕜; l] g := by
+theorem IsBigOTVS.listSum {L : List (α → E)} (h : ∀ f ∈ L, f =O[𝕜; l] g) :
+    L.sum =O[𝕜; l] g := by
+  induction L with
+  | nil => simpa using (IsLittleOTVS.zero g l).isBigOTVS
+  | cons f L ihL =>
+    rw [List.sum_cons]
+    exact (h f (.head _)).add (ihL fun f' hf' ↦ h f' (.tail _ hf'))
+
+theorem IsBigOTVS.multisetSum {s : Multiset (α → E)} (h : ∀ f ∈ s, f =O[𝕜; l] g) :
+    s.sum =O[𝕜; l] g := by
+  cases s using Quotient.inductionOn with
+  | _ L => exact listSum h
+
+@[to_fun]
+theorem IsBigOTVS.sum {ι : Type*} {s : Finset ι} {f : ι → α → E} (h : ∀ i ∈ s, f i =O[𝕜; l] g) :
+    (∑ i ∈ s, f i) =O[𝕜; l] g := by
+  rw [Finset.sum_eq_multiset_sum]
+  apply multisetSum
+  simpa using h
+
+theorem IsLittleOTVS.triangle (h₁ : (f₁ - f₂) =o[𝕜; l] g) (h₂ : (f₂ - f₃) =o[𝕜; l] g) :
+    (f₁ - f₃) =o[𝕜; l] g := by
   simpa using h₁.add h₂
 
-theorem IsBigOTVS.triangle [ContinuousAdd E] [ContinuousSMul 𝕜 E]
-    {f₁ f₂ f₃ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : (f₁ - f₂) =O[𝕜; l] g) (h₂ : (f₂ - f₃) =O[𝕜; l] g) : (f₁ - f₃) =O[𝕜; l] g := by
+theorem IsBigOTVS.triangle (h₁ : (f₁ - f₂) =O[𝕜; l] g) (h₂ : (f₂ - f₃) =O[𝕜; l] g) :
+    (f₁ - f₃) =O[𝕜; l] g := by
   simpa using h₁.add h₂
+
+end Add
 
 section NegLeft
 

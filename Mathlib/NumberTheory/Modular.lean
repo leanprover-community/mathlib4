@@ -68,7 +68,7 @@ The characterization of cases with `z ∈ 𝒟` and `g • z ∈ 𝒟` follows T
 
 open Complex hiding I
 
-open Matrix hiding mul_smul
+open Matrix hiding mul_smul zpow_neg_one
 
 open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup Topology
 
