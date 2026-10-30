@@ -125,12 +125,6 @@ private def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) wher
   left_inv _ := rfl
   right_inv _ := rfl
 
--- This instance exists to avoid a zsmul diamond.
-@[no_expose]
-noncomputable instance (R : Type*) [CommSemiring R] [Algebra R (WithAbs v)] :
-    SMul R v.Completion where
-  smul r x := ofCompletion' (r • x.toCompletion')
-
 @[no_expose]
 noncomputable instance : NormedField v.Completion := fast_instance% (equivAux v).normedField
 
@@ -311,18 +305,9 @@ section Algebra
 variable {R : Type*} [CommSemiring R] [Algebra R (WithAbs v)]
   [UniformContinuousConstSMul R (WithAbs v)]
 
-omit [UniformContinuousConstSMul R (WithAbs v)] in
-@[simp]
-theorem toCompletion_smul (r : R) (x : v.Completion) :
-    (r • x).toCompletion = r • x.toCompletion := by
-  rfl
-
--- `toSMul` is inferred as the `SMul` instance declared earlier, so that `Algebra.toSMul` agrees
--- with it reducibly in downstream modules (needed e.g. for `IsScalarTower` hypotheses).
-noncomputable instance : Algebra R v.Completion where
-  algebraMap := (equiv v).symm.toRingHom.comp (algebraMap R (UniformSpace.Completion (WithAbs v)))
-  commutes' r x := (equiv v).injective <| by simp [Algebra.commutes]
-  smul_def' r x := (equiv v).injective <| by simp [Algebra.smul_def]
+-- Transported along `equivAux`, like `NormedField`, to avoid `nsmul`/`zsmul` diamonds.
+@[no_expose]
+noncomputable instance : Algebra R v.Completion := fast_instance% (equivAux v).algebra R
 
 theorem toCompletion_algebraMap (r : R) :
     (algebraMap R v.Completion r).toCompletion =

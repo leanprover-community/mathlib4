@@ -210,11 +210,8 @@ example : IsTopologicalRing v.Completion := inferInstance
 /-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/
 lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.1) :
     Rat.cast (WithAbs.equiv _ x) = (x : v.Completion) :=
-  (eq_ratCast (AbsoluteValue.Completion.ofCompletion.comp <|
-    UniformSpace.Completion.coeRingHom.comp (WithAbs.equiv v.1).symm.toRingHom) _).symm.trans <| by
-    simp only [RingHom.coe_comp, Function.comp_apply, RingEquiv.toRingHom_eq_coe,
-      RingEquiv.coe_toRingHom, RingEquiv.symm_apply_apply]
-    exact AbsoluteValue.Completion.ofCompletion_coe x
+  (eq_ratCast (algebraMap ℚ v.Completion) _).symm.trans <|
+    AbsoluteValue.Completion.algebraMap_def _ _
 
 lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
     ‖(x : v.Completion)‖ = |x| := by
@@ -347,11 +344,10 @@ variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Com
 
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
-    algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x := by
-  have := IsScalarTower.algebraMap_apply K v.Completion w.Completion x.ofAbs
-  simp only [AbsoluteValue.Completion.algebraMap_def, WithAbs.algebraMap_right_apply,
-    Algebra.algebraMap_self_apply, WithAbs.toAbs_ofAbs] at this
-  rw [← this, WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply]
+    algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x :=
+  (congrArg _ (algebraMap_eq_coe v x)).symm.trans <|
+    (IsScalarTower.algebraMap_apply (WithAbs v.1) v.Completion w.Completion x).symm.trans
+      (algebraMap_eq_coe w x)
 
 end Completion
 
