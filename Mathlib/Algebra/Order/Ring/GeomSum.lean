@@ -140,8 +140,7 @@ lemma geom_sum_eq_zero_iff_neg_one (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i = 0
   contrapose! h
   have hx := eq_or_ne x (-1)
   rcases hx with hx | hx
-  · rw [hx, neg_one_geom_sum]
-    simp only [h hx, ite_false, ne_eq, one_ne_zero, not_false_eq_true]
+  · simp_all [neg_one_geom_sum]
   · exact geom_sum_ne_zero hx hn
 
 lemma geom_sum_neg_iff (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i < 0 ↔ Even n ∧ x + 1 < 0 := by
