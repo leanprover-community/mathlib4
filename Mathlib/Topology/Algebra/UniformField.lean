@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.UniformRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completion of topological fields
 

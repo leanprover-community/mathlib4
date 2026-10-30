@@ -5,12 +5,12 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 public import Mathlib.NumberTheory.DirichletCharacter.Bounds
 public import Mathlib.NumberTheory.LSeries.Convolution
 public import Mathlib.NumberTheory.LSeries.Positivity
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.SumPrimeReciprocals
-public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 /-!
 # L-series of Dirichlet characters and arithmetic functions
@@ -160,11 +160,15 @@ lemma modZero_eq_delta {χ : DirichletCharacter ℂ 0} : ↗χ = δ := by
   have : ¬ IsUnit (n : ZMod 0) := fun h ↦ hn' <| ZMod.eq_one_of_isUnit_natCast h
   simp_all [χ.map_nonunit this, delta]
 
+/-- A Dirichlet character mod `1` takes the value `1` everywhere. This is the pointwise form;
+the functional form is `modOne_eq_one` below. -/
+@[simp] lemma modOne_eq_one' {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter R 1}
+    (y : ZMod 1) : χ y = 1 := by
+  rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _)]
+
 /-- The Dirichlet character mod `1` corresponds to the constant function `1`. -/
 lemma modOne_eq_one {R : Type*} [CommMonoidWithZero R] {χ : DirichletCharacter R 1} :
-    ((χ ·) : ℕ → R) = 1 := by
-  ext
-  rw [χ.level_one, MulChar.one_apply (isUnit_of_subsingleton _), Pi.one_apply]
+    ((χ ·) : ℕ → R) = 1 := funext fun _ ↦ modOne_eq_one' _
 
 lemma LSeries_modOne_eq : L ↗χ₁ = L 1 :=
   congr(L $modOne_eq_one)
@@ -338,7 +342,7 @@ lemma riemannZeta_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < riemannZeta x := by
   have hx' : 1 < (x : ℂ).re := by simpa using hx
   rw [← LSeries_one_eq_riemannZeta hx']
   refine LSeries.positive (fun _ ↦ by simp) (by simp) ?_
-  simpa [LSeries.abscissaOfAbsConv_one] using (by exact_mod_cast hx : (1 : EReal) < x)
+  simpa [LSeries.abscissaOfAbsConv_one] using (mod_cast hx : (1 : EReal) < x)
 
 /-- The real part of the Riemann zeta function is positive for real arguments greater than 1. -/
 lemma riemannZeta_re_pos_of_one_lt {x : ℝ} (hx : 1 < x) : 0 < (riemannZeta x).re :=
@@ -379,7 +383,7 @@ lemma convolution_vonMangoldt_const_one : ↗Λ ⍟ 1 = ↗Complex.log :=
 /-- The L-series of the von Mangoldt function `Λ` converges at `s` when `re s > 1`. -/
 lemma LSeriesSummable_vonMangoldt {s : ℂ} (hs : 1 < s.re) : LSeriesSummable ↗Λ s := by
   have hf := LSeriesSummable_logMul_of_lt_re
-    (show abscissaOfAbsConv 1 < s.re by rw [abscissaOfAbsConv_one]; exact_mod_cast hs)
+    (show abscissaOfAbsConv 1 < s.re by rw [abscissaOfAbsConv_one]; exact mod_cast hs)
   rw [LSeriesSummable, ← summable_norm_iff] at hf ⊢
   refine hf.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n ↦ norm_term_le s ?_)
   have hΛ : ‖↗Λ n‖ ≤ ‖Complex.log n‖ := by

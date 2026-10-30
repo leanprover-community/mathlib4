@@ -8,8 +8,6 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Util.CompileInductive
 
-import Batteries.Tactic.Alias
-
 /-!
 # Binary tree
 

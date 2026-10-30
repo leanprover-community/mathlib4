@@ -5,8 +5,8 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 /-!
 # Eisenstein Series
@@ -29,7 +29,8 @@ public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup Set
+open ModularForm UpperHalfPlane Complex CongruenceSubgroup Set
+open Matrix hiding zpow_neg
 
 open scoped MatrixGroups
 

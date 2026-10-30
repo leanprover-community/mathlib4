@@ -5,12 +5,12 @@ Authors: Raphael Douglas Giles
 -/
 module
 
-public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Length
 
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 
 /-!
 # Order of vanishing
