@@ -388,6 +388,9 @@ def fromPreimage (A : X.Subcomplex) (p : Y ⟶ X) :
 lemma fromPreimage_ι (A : X.Subcomplex) (p : Y ⟶ X) :
     A.fromPreimage p ≫ A.ι = (A.preimage p).ι ≫ p := rfl
 
+/-- If `A : X.Subcomplex` and `B : Y.Subcomplex` correspond
+via an isomorphism `e : X ≅ Y` (i.e. `B.preimage e.hom = A`),
+then `e` induces an isomorphism of arrows `Arrow.mk A.ι ≅ Arrow.mk B.ι`. -/
 @[simps! hom_left hom_right hom_right inv_right]
 def congrArrowι (e : X ≅ Y) {A : X.Subcomplex} {B : Y.Subcomplex}
     (h : B.preimage e.hom = A) :

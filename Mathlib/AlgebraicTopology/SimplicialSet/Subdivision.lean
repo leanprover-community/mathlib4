@@ -36,6 +36,9 @@ Vertices in `SimplexCategory.sd.obj ⦋n⦌` identify to nonempty subsets of `{0
 noncomputable def SimplexCategory.sd : SimplexCategory ⥤ SSet.{u} :=
   toPartOrd ⋙ PartOrd.nonemptyFiniteChainsFunctor ⋙ PartOrd.nerveFunctor
 
+/-- The functor `PartOrd ⥤ PartOrd` which sends a partially ordered type `X`
+to the type of nondegenerate simplices in the nerve of `X` is isomorphic to
+the functor which sends `X` to `NonemptyFiniteChains X`. -/
 noncomputable def PartOrd.nerveFunctorCompNIso :
     nerveFunctor.{u} ⋙ SSet.N.functor ≅ nonemptyFiniteChainsFunctor :=
       NatIso.ofComponents
@@ -47,6 +50,9 @@ noncomputable def PartOrd.nerveFunctorCompNIso :
           simp [SSet.mapN_coe, nerveMap_app, PartialOrder.NonemptyFiniteChains.nerveNEquiv_apply,
             PartialOrder.NonemptyFiniteChains.range_toN_simplex_obj.{u}])
 
+/-- The natural isomorphism of functors `SimplexCategory ⥤ SSet` which
+identifies the standard simplex `Δ[n]` to the nerve of `ULift (Fin (n + 1))`
+for all `n : ℕ`. -/
 def SSet.stdSimplex.toPartOrdCompNerveFunctorIso :
     SSet.stdSimplex.{u} ≅ SimplexCategory.toPartOrd ⋙ PartOrd.nerveFunctor :=
   NatIso.ofComponents (fun _ ↦ isoNerve _)
@@ -79,7 +85,7 @@ instance : ex.{u}.IsRightAdjoint := sdExAdjunction.isRightAdjoint
 the nerve of the partially ordered type `X.N` of nondegenerate simplices in `X`.
 There is a natural transformation `sdToSd' : sd ⟶ sd'` which is an isomorphism when
 evaluated on a nonsingular simplicial set. -/
-@[simps!, implicit_reducible]
+@[simps! +dsimpLhs, implicit_reducible]
 noncomputable def sd' : SSet.{u} ⥤ SSet.{u} :=
   SSet.N.functor ⋙ PartOrd.nerveFunctor
 
@@ -91,6 +97,7 @@ noncomputable def sdIso : stdSimplex.{u} ⋙ sd ≅ SimplexCategory.sd :=
   Presheaf.isExtensionAlongULiftYoneda _
 
 open Functor in
+/-- The natural isomorphism `stdSimplex ⋙ sd' ≅ SimplexCategory.sd`. -/
 noncomputable def sd'Iso : stdSimplex.{u} ⋙ sd' ≅ SimplexCategory.sd :=
   isoWhiskerRight (SSet.stdSimplex.toPartOrdCompNerveFunctorIso) _ ≪≫
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Functor.associator _ _ _).symm ≪≫
@@ -102,6 +109,8 @@ instance : sd.{u}.IsLeftKanExtension stdSimplex.sdIso.inv :=
   inferInstanceAs (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.leftKanExtensionUnit SimplexCategory.sd.{u}))
 
+/-- The natural transformation `sd ⟶ sd'`. It is an isomorphism when evaluated
+on nonsingular simplicial sets. -/
 @[no_expose]
 noncomputable def sdToSd' : sd.{u} ⟶ sd'.{u} :=
   sd.{u}.descOfIsLeftKanExtension stdSimplex.sdIso.inv _ stdSimplex.sd'Iso.{u}.inv
@@ -164,7 +173,7 @@ private lemma preservesColimit_functorN_sd'_aux {X : SSet.{u}}
   exact ⟨hφ.functor, fun d ↦ by simp [φ]⟩
 
 open Functor in
-instance (X : SSet.{u}) [Nonsingular X] : PreservesColimit X.functorN sd' :=
+instance (X : SSet.{u}) : PreservesColimit X.functorN sd' :=
   preservesColimit_of_preserves_colimit_cocone X.isColimitCoconeN
     (evaluationJointlyReflectsColimits _ (fun ⟨n⟩ ↦ by
       induction n with | mk n
@@ -282,6 +291,8 @@ namespace PartialOrder
 
 open SSet
 
+/-- If `X` is a partially ordered type, then this is the isomorphism
+between `sd'.obj (nerve X)` and `nerve (NonemptyFiniteChains X)`. -/
 noncomputable def sd'ObjNerveIso (X : Type u) [PartialOrder X] :
     sd'.obj (nerve X) ≅ nerve (NonemptyFiniteChains X) :=
   PartOrd.nerveFunctor.mapIso (PartOrd.Iso.mk (α := .of _) (β := .of _)
@@ -302,10 +313,18 @@ lemma finsetImage_sd'ObjNerveIso_inv_app_simplex_obj_univ
       (s.obj i).finset := by
   simp [← sd'ObjNerveIso_hom_app_obj_finset]
 
+/-- If `X` is a partially ordered type, then this is the isomorphism
+between `sd.obj (nerve X)` and `nerve (NonemptyFiniteChains X)`. -/
+@[simps! -isSimp hom inv]
+noncomputable def sdObjNerveIso (X : Type u) [PartialOrder X] :
+    sd.obj (nerve X) ≅ nerve (NonemptyFiniteChains X) :=
+  asIso (sdToSd'.app _) ≪≫ sd'ObjNerveIso X
+
 namespace NonemptyFiniteChains
 
 variable {X : Type u} [LinearOrder X] [Fintype X] [Nontrivial X] (x₀ : X)
 
+/-- Auxiliary definition for `sdHornArrowIsoSd'` and `sdHornArrowIsoSd`. -/
 noncomputable def sdHornArrowIsoRangeSd' :
     Arrow.mk (NonemptyFiniteChains.sdHorn x₀).ι ≅
       Arrow.mk (Subcomplex.range (sd'.map (PartialOrder.horn x₀).ι)).ι :=
@@ -317,11 +336,21 @@ noncomputable def sdHornArrowIsoRangeSd' :
     · simp [mem_sdHorn_iff.{u}, ← Set.toFinset_subset_toFinset,
         finsetImage_sd'ObjNerveIso_inv_app_simplex_obj_univ.{u}])
 
+/-- If `X` is a nontrivial finite linearly ordered type and `x₀ : X`, this is
+an isomorphism of arrows between the inclusion of the
+subcomplex `NonemptyFiniteChains.sdHorn x₀` in `nerve (NonemptyFiniteChains X)`,
+and the image by the subdivision functor `sd'` of the inclusion
+of `PartialOrder.horn x₀` in the nerve of `X`. -/
 noncomputable def sdHornArrowIsoSd' :
     Arrow.mk (NonemptyFiniteChains.sdHorn x₀).ι ≅
       Arrow.mk (sd'.map (PartialOrder.horn x₀).ι) :=
   sdHornArrowIsoRangeSd' _ ≪≫ Arrow.isoMk (asIso (Subcomplex.toRange _)).symm (Iso.refl _)
 
+/-- If `X` is a nontrivial finite linearly ordered type and `x₀ : X`, this is
+an isomorphism of arrows between the inclusion of the
+subcomplex `NonemptyFiniteChains.sdHorn x₀` in `nerve (NonemptyFiniteChains X)`,
+and the image by the subdivision functor `sd` of the inclusion
+of `PartialOrder.horn x₀` in the nerve of `X`. -/
 noncomputable def sdHornArrowIsoSd :
     Arrow.mk (NonemptyFiniteChains.sdHorn x₀).ι ≅
       Arrow.mk (sd.map (PartialOrder.horn x₀).ι) :=

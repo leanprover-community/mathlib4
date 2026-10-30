@@ -122,6 +122,8 @@ instance [Nonempty Z] : OrderTop (NonemptyFiniteChains Z) where
 
 variable (x₀ : Z) [Nontrivial Z]
 
+/-- Given `x₀ : Z`, this is complement of the singleton `{x₀}` as an
+element of `NonemptyFiniteChains Z`. -/
 @[simps]
 def complSingleton : NonemptyFiniteChains Z where
   finset := {x₀}ᶜ
