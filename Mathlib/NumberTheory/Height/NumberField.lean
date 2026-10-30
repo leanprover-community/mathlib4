@@ -257,6 +257,10 @@ private lemma relIndex_span_span_eq_relIndex_span_span {m n : ℕ} (hm : m ≠ 0
   rw [mul_comm, mul_comm n, h]
   exact (relIndex_span_span_nat_mul n hm b).symm
 
+@[norm_cast]
+lemma _root_.Subalgebra.coe_natCast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    (S : Subalgebra R A) (n : ℕ) : ((n : S) : A) = (n : A) := rfl
+
 open Module AddSubgroup LinearMap in
 lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
     ∃ n : ℕ, n ≠ 0 ∧ ∃ a : 𝓞 K, n * x = a ∧
@@ -270,10 +274,10 @@ lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
     have : n • r ∈ span {(m : 𝓞 K)} :=
       (span {(m : 𝓞 K)}).toAddSubgroup.nsmul_relIndex_mem <| Submodule.mem_span_of_mem <| by grind
     simpa [mem_span_singleton', mul_comm] using this
-  have ha : n * x = a := by
-    refine mul_left_cancel₀ (mod_cast hm : (m : K) ≠ 0) ?_
-    rw [mul_left_comm, ← nsmul_eq_mul m, hmr]
-    exact congr(Subtype.val $ha').symm
+  have ha : n * x = a := mul_left_cancel₀ (mod_cast hm : (m : K) ≠ 0) <| by
+    simpa [-nsmul_eq_mul, mul_left_comm (m : K) (n : K), ← nsmul_eq_mul m, hmr,
+      RingOfIntegers.ext_iff, Subalgebra.coe_mul _,  Subalgebra.coe_smul _,
+      Subalgebra.coe_natCast _] using ha'.symm
   refine ⟨n, hn, a, ha, mul_left_cancel₀ hn ?_⟩
   nth_rewrite 1 [hndef]
   rw [absNorm_eq_index, mul_pow_sub_one finrank_pos.ne', ← RingOfIntegers.rank,
