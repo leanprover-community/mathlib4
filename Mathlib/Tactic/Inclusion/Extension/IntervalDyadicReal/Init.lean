@@ -10,6 +10,9 @@ public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Tactic.Inclusion.Extension.Interval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Initialization for the dyadic real interval extension family
 

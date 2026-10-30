@@ -3,16 +3,18 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.GroupWithZero.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.RingTheory.Algebraic.Pi
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.GroupWithZero.Action.Prod
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.RingTheory.Algebraic.Pi
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
 
@@ -144,7 +146,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
-  rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
+  rw [comapSMul_single, Finsupp.smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
     single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
@@ -158,7 +160,7 @@ example {k : Type _} [Semiring k] [Nontrivial kˣ] :
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
-  rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
+  rw [comapSMul_single, Finsupp.smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
     smul_eq_mul, single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
