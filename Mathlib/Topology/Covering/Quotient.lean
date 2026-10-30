@@ -5,10 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.GroupTheory.Coset.Defs
-public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Covering.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Covering maps to quotients by free and properly discontinuous group actions
@@ -90,7 +91,7 @@ theorem isCancelSMul : IsCancelSMul G E where
 omit hf in
 @[to_additive (attr := simp)] theorem homeomorph_comp_iff {Y} [TopologicalSpace Y]
     (φ : X ≃ₜ Y) : IsQuotientCoveringMap (φ ∘ f) G ↔ IsQuotientCoveringMap f G where
-  mp h := by convert! h.homeomorph_comp φ.symm; ext; simp
+  mp h := by convert h.homeomorph_comp φ.symm; ext; simp
   mpr h := h.homeomorph_comp φ
 
 /-- Fibers of a quotient covering map by a group G is a G-torsor. -/
@@ -187,7 +188,7 @@ noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTop
       mul_inv_eq_one.mp (disjoint _ ⟨_, ⟨_, h₂, ?_⟩, h₁⟩)) preim_im.subset
   · rw [← hf.isOpen_preimage, preim_im]
     exact isOpen_iUnion fun g ↦ open_U.preimage (continuous_const_smul g)
-  · convert! isOpen_iUnion fun g : G ↦ isOpen.preimage (continuous_const_smul g)
+  · convert isOpen_iUnion fun g : G ↦ isOpen.preimage (continuous_const_smul g)
     ext e; refine ⟨fun hW ↦ ?_, ?_⟩
     · have ⟨e', he', hfe⟩ := hWU hW
       obtain ⟨g', rfl⟩ := hfG.mp hfe
@@ -225,7 +226,7 @@ namespace IsQuotientCoveringMap
     IsCoveringMap f :=
   isCoveringMap_iff_isCoveringMapOn_univ.mpr <| by
     have := h.toContinuousConstSMul
-    convert! ← h.isCoveringMapOn_of_smul_disjoint h.apply_eq_iff_mem_orbit fun e ↦ ?_
+    convert ← h.isCoveringMapOn_of_smul_disjoint h.apply_eq_iff_mem_orbit fun e ↦ ?_
     · refine Set.eq_univ_of_forall fun x ↦ ?_
       obtain ⟨e, rfl⟩ := h.surjective x
       have ⟨U, hU, hGU⟩ := h.disjoint e
@@ -348,6 +349,6 @@ end Topology.IsQuotientMap
       have := h.2.2.2.1
       apply IsCancelSMul.right_cancel _ _ x.1
       simp_rw [← eq, one_smul]
-      refine congr($(H.injective <| Prod.ext (Subtype.ext ?_) <| hy.trans hx.symm))
+      congrm $(H.injective <| Prod.ext (Subtype.ext ?_) <| hy.trans hx.symm)
       simp_rw [hH]
       exact h.2.2.2.2.mpr ⟨_, eq.symm⟩⟩⟩

@@ -5,10 +5,9 @@ Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 
@@ -671,7 +670,6 @@ def liftStar {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z �
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) : (lift F M hM).obj star ≅ Z :=
   eqToIso rfl
 
-set_option backward.defeqAttrib.useBackward true in
 theorem liftStar_lift_map {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
     (hM : ∀ (x y : C) (f : x ⟶ y), M x ≫ F.map f = M y) (x : C) :
     (liftStar F M hM).hom ≫ (lift F M hM).map (starInitial.to (incl.obj x)) =
@@ -839,7 +837,7 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
   inverse :=
     { obj := fun x ↦
       match x with
-        | .of x => op <| .of <| x.unop
+        | .of x => op <| .of x.unop
         | .star => op .star
       map := fun {x y} f ↦
         match x, y, f with
@@ -902,7 +900,7 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
   inverse :=
     { obj := fun x ↦
         match x with
-        | .of x => op <| .of <| x.unop
+        | .of x => op <| .of x.unop
         | .star => op .star
       map := fun {x y} f ↦
         match x, y, f with

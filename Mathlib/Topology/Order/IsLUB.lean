@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Order.LeftRightNhds
+
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of LUB and GLB in an order topology

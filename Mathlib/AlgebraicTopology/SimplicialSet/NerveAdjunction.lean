@@ -5,12 +5,13 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
-public import Mathlib.CategoryTheory.Limits.Presheaf
-public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
+
+import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
+import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
+import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 
 /-!
 # The adjunction between the nerve and the homotopy category functor
@@ -216,14 +217,12 @@ lemma descOfTruncation_map_homMk (φ : X ⟶ (truncation 2).obj (nerve C))
   Category.id_comp _
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma descOfTruncation_comp {X' : Truncated.{u} 2} (ψ : X ⟶ X')
     (φ : X' ⟶ (truncation 2).obj (nerve C)) :
     descOfTruncation (ψ ≫ φ) = mapHomotopyCategory ψ ⋙ descOfTruncation φ :=
   functor_ext (fun _ ↦ by simp) (by cat_disch)
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the morphism `X ⟶ (truncation 2).obj (nerve C)` corresponding
 to a functor `X.HomotopyCategory ⥤ C`. -/
@@ -237,7 +236,7 @@ def homToNerveMk (F : X.HomotopyCategory ⥤ C) : X ⟶ (truncation 2).obj (nerv
           ComposableArrows.mk₁ (F.map (homMk (Edge.mk' e.edge))) =
             ComposableArrows.mk₁ (F.map (homMk e)) :=
         ComposableArrows.arrowEquiv.injective
-          (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
+          congr(F.mapArrow.obj $(congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
       obtain ⟨x₀, x₁, x₂, e₀₁, e₁₂, e₀₂, h, rfl⟩ := Edge.CompStruct.exists_of_simplex x
       dsimp at h₀ h₂ ⊢
       have : ComposableArrows.mk₂ (F.map (homMk e₀₁)) (F.map (homMk e₁₂)) = y := by
@@ -275,9 +274,8 @@ lemma homToNerveMk_app_edge (F : X.HomotopyCategory ⥤ C) {x y : X _⦋0⦌₂}
       ComposableArrows.mk₁ (F.map (homMk e)) := by
   rw [homToNerveMk_app_one]
   exact ComposableArrows.arrowEquiv.injective
-    (congr_arg F.mapArrow.obj (congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
+    congr(F.mapArrow.obj $(congr_arrowMk_homMk (Edge.mk' e.edge) e rfl))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `2`-truncated simplicial set `X` and a category `C`,
 this is the bijection between morphism `X.HomotopyCategory ⥤ C`

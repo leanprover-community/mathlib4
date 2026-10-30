@@ -5,7 +5,6 @@ Authors: Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -45,6 +44,7 @@ theorem continuous_unop : Continuous (unop : Mᵐᵒᵖ → M) :=
 theorem continuous_op : Continuous (op : M → Mᵐᵒᵖ) :=
   continuous_induced_rng.2 continuous_id
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `MulOpposite.op` as a homeomorphism. -/
 @[to_additive (attr := simps!) /-- `AddOpposite.op` as a homeomorphism. -/]
 def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where

@@ -6,9 +6,10 @@ Authors: Thomas Browning
 
 module
 
-public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
-public import Mathlib.RingTheory.Noetherian.Basic
+
+import Mathlib.RingTheory.Finiteness.Ideal
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 

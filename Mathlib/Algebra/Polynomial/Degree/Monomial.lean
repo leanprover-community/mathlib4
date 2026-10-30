@@ -6,16 +6,17 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Polynomial.Degree.Defs
-public import Mathlib.Algebra.Polynomial.Monomial
-public import Mathlib.Data.Nat.SuccPred
+
+import Mathlib.Algebra.Polynomial.Monomial
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Degree of univariate monomials
 -/
 
 public section
-
-noncomputable section
 
 open Finset Polynomial
 

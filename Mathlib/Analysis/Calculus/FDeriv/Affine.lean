@@ -5,10 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
-public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
+
+import Mathlib.Algebra.Order.Field.Power
 
 
 /-!
@@ -36,7 +37,7 @@ namespace ContinuousAffineMap
 
 protected theorem hasFDerivAtFilter : HasFDerivAtFilter f f.contLinear L := by
   refine .of_isLittleOTVS <| .congr_left (.zero _ _) ?_
-  simp [(vsub_eq_sub _ _).symm.trans (f.contLinear_map_vsub _ _).symm]
+  simp [(vsub_eq_sub _ _).symm.trans (f.contLinear_apply_vsub _ _).symm]
 
 @[fun_prop]
 protected theorem hasStrictFDerivAt {x : E} : HasStrictFDerivAt f f.contLinear x :=

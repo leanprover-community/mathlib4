@@ -6,9 +6,13 @@ Authors: Eric Wieser, Kim Morrison
 
 module
 
-import Mathlib.Init
-public import Lean.Message
 public import Lean.Meta.Basic
+
+import Lean.Message
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Tools for extracting `Expr`s from `MessageData` nodes

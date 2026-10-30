@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Subgroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Squares and even elements
 

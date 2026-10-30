@@ -5,10 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.VectorField
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
 
 /-!
@@ -146,6 +143,11 @@ lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
     have : (extChartAt I x).symm ((extChartAt I x) x) = x := by simp
     rw [this, hW]
     simp +instances
+
+lemma mlieBracket_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
+    mlieBracket I V W x = 0 := by
+  rw [← mlieBracketWithin_univ]
+  exact mlieBracketWithin_eq_zero_of_eq_zero hV hW
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mlieBracketWithin_swap_apply :
@@ -626,10 +628,10 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   have : (mfderiv[range I] (extChartAt I x₀).symm (extChartAt I x₀ x₀)).inverse =
       mfderiv% (extChartAt I x₀) x₀ := by
     apply ContinuousLinearMap.inverse_eq
-    · convert!
+    · convert
       mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt (I := I) (x := x₀) (y :=
         extChartAt I x₀ x₀) (by simp)
-    · convert!
+    · convert
       mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm (I := I) (x := x₀) (y :=
         extChartAt I x₀ x₀) (by simp)
   rw [← this, ← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_right]; swap
@@ -695,7 +697,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
         (extChartAt I' (f x₀) (f ((extChartAt I x₀).symm y)))) ∘L
         (mfderiv% (extChartAt I' (f x₀)) (f ((extChartAt I x₀).symm y))) =
         ContinuousLinearMap.id _ _ := by
-      convert!
+      convert
         mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt ((PartialEquiv.map_source _ h'y))
     simp only [← ContinuousLinearMap.comp_assoc, this, ContinuousLinearMap.id_comp]
     congr 1
@@ -727,7 +729,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
   · intro z hz
     simp only [comp_apply, mem_inter_iff, mem_preimage, mem_range, F]
     refine ⟨?_, mem_range_self _⟩
-    convert! hst hz.1
+    convert hst hz.1
     exact PartialEquiv.left_inv (extChartAt I' (f x₀)) (ht (hst hz.1))
   · rw [← nhdsWithin_eq_iff_eventuallyEqSet]
     apply le_antisymm

@@ -5,17 +5,16 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
-public import Mathlib.Analysis.Normed.Ring.Units
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.Real.Spectrum
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
-public import Mathlib.Topology.Semicontinuity.Hemicontinuity
+
+import Mathlib.Analysis.Normed.Ring.Units
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -105,13 +104,16 @@ alias spectrum.SpectralRadius.of_subsingleton := spectralRadius_of_subsingleton
 theorem spectralRadius_zero : spectralRadius 𝕜 (0 : A) = 0 := by
   simp [spectralRadius]
 
+@[deprecated (since := "2026-09-21")]
+alias spectrum.spectralRadius_zero := spectralRadius_zero
+
 @[simp]
 theorem Unitization.spectralRadius_inr [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] (a : A) :
     spectralRadius 𝕜 (a : Unitization 𝕜 A) = spectralRadius 𝕜 a := by
   simp [spectralRadius, quasispectrum_eq_spectrum_union_zero, ← quasispectrum_eq_spectrum_inr']
 
 @[simp]
-theorem spectralRadius_smul [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] (k : 𝕜) (a : A) :
+theorem spectralRadius_smul (k : 𝕜) (a : A) :
     spectralRadius 𝕜 (k • a) = ‖k‖ₑ * spectralRadius 𝕜 a := by
   simp only [spectralRadius, quasispectrum_smul, ← Set.image_smul, iSup_image, ← smul_eq_mul]
   simp [↓ENNReal.smul_iSup, enorm_eq_nnnorm]
@@ -198,6 +200,9 @@ theorem spectralRadius_lt_of_forall_lt {a : A} {r : ℝ≥0∞}
     (hr : ∀ k ∈ σₙ 𝕜 a, ‖k‖ₑ < r) : spectralRadius 𝕜 a < r :=
   sSup_image.symm.trans_lt <| ((isCompact 𝕜 a).sSup_lt_iff_of_continuous
     (nonempty 𝕜 a) continuous_enorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
+
+@[deprecated (since := "2026-09-21")]
+alias spectralRadius_lt_of_forall_quasispectrum_lt := spectralRadius_lt_of_forall_lt
 
 end Generic
 
@@ -504,7 +509,7 @@ variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
 variable (𝕜) in
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
 power series with coefficients `a ^ n` represents the function `z ↦ (1 - z • a)⁻¹` in a disk of
-radius `‖a‖₊⁻¹`. -/
+radius `‖a‖ₑ⁻¹`. -/
 theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
       (fun n ↦ ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖ₑ⁻¹ := by
@@ -517,6 +522,10 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
   let h := map_zero <| (ContinuousLinearMap.id 𝕜 𝕜).smulRightL 𝕜 𝕜 A a
   convert (h ▸ hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A).compContinuousLinearMap
   all_goals simp [enorm_eq_nnnorm]
+
+@[deprecated (since := "2026-09-21")]
+alias spectrum.hasFPowerSeriesOnBall_inverse_one_sub_smul :=
+  hasFPowerSeriesOnBall_inverse_one_sub_smul
 
 theorem isUnit_one_sub_smul_of_lt_inv_spectralRadius {a : A} {z : 𝕜}
     (h : ‖z‖ₑ < (spectralRadius 𝕜 a)⁻¹) :
@@ -716,7 +725,7 @@ theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A]
 theorem upperHemicontinuous_quasispectrum [NonUnitalNormedRing A] [NormedSpace 𝕜 A]
     [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [HasSummableGeomSeries A] :
     UpperHemicontinuous (σₙ 𝕜 : A → Set 𝕜) := by
-  convert!
+  convert
     upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
       unitization_isometry_inr.continuous
   ext1 a
@@ -799,13 +808,18 @@ as an element of the strong dual (since it is automatically continuous). -/
 def AlgHom.toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
   φ.toNonUnitalAlgHom.toStrongDual
 
+set_option linter.deprecated false in
+@[deprecated NonUnitalAlgHom.coe_toStrongDual (since := "2026-09-21")]
+theorem AlgHom.coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuousLinearMap = φ :=
+  rfl
+
 @[simp]
 theorem AlgHom.norm_toStrongDual_toNonUnitalAlgHom [NormOneClass A] (φ : A →ₐ[𝕜] 𝕜) :
-    ‖φ.toNonUnitalAlgHom.toStrongDual‖ = 1 :=
-  le_antisymm φ.toNonUnitalAlgHom.norm_toStrongDual_le <| by
-    have hφ (x : A) : φ.toNonUnitalAlgHom x = φ x := rfl -- missing lemma
-    simpa [-AlgHom.toNonUnitalAlgHom_eq_coe, hφ] using
-      φ.toNonUnitalAlgHom.toStrongDual.le_opNorm_of_le (x := 1) (c := 1) (by simp)
+    ‖(φ : A →ₙₐ[𝕜] 𝕜).toStrongDual‖ = 1 :=
+  le_antisymm (φ : A →ₙₐ[𝕜] 𝕜).norm_toStrongDual_le <| by
+    have hφ (x : A) : (φ : A →ₙₐ[𝕜] 𝕜) x = φ x := rfl -- missing lemma
+    simpa [hφ] using
+      (φ : A →ₙₐ[𝕜] 𝕜).toStrongDual.le_opNorm_of_le (x := 1) (c := 1) (by simp)
 
 @[deprecated (since := "2026-09-21")]
 alias AlgHom.toContinuousLinearMap_norm := AlgHom.norm_toStrongDual_toNonUnitalAlgHom
@@ -882,7 +896,7 @@ lemma SpectrumRestricts.nnreal_iff_spectralRadius_le {A : Type*} [Ring A] [Algeb
     obtain ⟨y, hy, rfl⟩ : ∃ y ∈ σ ℝ a, ↑t - y = x := by simpa using hx
     obtain ⟨hty, hyt⟩ := Set.mem_Icc.mp <| this hy
     lift y to ℝ≥0 using h y hy
-    rw [← NNReal.coe_sub (by exact_mod_cast hyt)]
+    rw [← NNReal.coe_sub (mod_cast hyt)]
     simp
   · replace h : ∀ x ∈ σ ℝ a, ‖t - x‖₊ ≤ t := by
       simpa [spectralRadius, iSup₂_le_iff, ← spectrum.singleton_sub_eq] using h
@@ -965,7 +979,7 @@ theorem exp_mem_spectrum_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
     simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - algebraMap 𝕜 A z)
   have h₃ : exp (a - algebraMap 𝕜 A z) = 1 + (a - algebraMap 𝕜 A z) * b := by
     rw [exp_eq_tsum 𝕜]
-    convert! (expSeries_summable' (𝕂 := 𝕜) (a - algebraMap 𝕜 A z)).tsum_eq_zero_add
+    convert (expSeries_summable' (𝕂 := 𝕜) (a - algebraMap 𝕜 A z)).tsum_eq_zero_add
     · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
     · exact h₀.symm
   rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (algebraMap 𝕜 A (exp z)), hexpmul, ← sub_mul,

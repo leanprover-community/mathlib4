@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.Fin.Basic
 public import Mathlib.Data.Fintype.Basic
 
 /-!

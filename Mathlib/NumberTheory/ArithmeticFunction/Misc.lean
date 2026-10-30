@@ -5,8 +5,9 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
+
 /-!
 # Miscellaneous arithmetic Functions
 
@@ -101,6 +102,7 @@ end ProdPrimeFactors
 section Id
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
+@[oeis A001477]
 protected def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 
@@ -140,6 +142,7 @@ end Pow
 section Sigma
 
 /-- `σ k n` is the sum of the `k`th powers of the divisors of `n` -/
+@[oeis A000005 "values for `k = 0`, `n > 0`"]
 def sigma (k : ℕ) : ArithmeticFunction ℕ :=
   ⟨fun n => ∑ d ∈ divisors n, d ^ k, by simp⟩
 
@@ -255,6 +258,7 @@ theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
     sigma_one_apply_prime_pow <| prime_of_mem_primeFactors h
 
 /-- `Ω n` is the number of prime factors of `n`. -/
+@[oeis A001222 "the sequence skips `n = 0`"]
 def cardFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.length, by simp⟩
 
@@ -321,6 +325,7 @@ theorem cardFactors_eq_sum_factorization {n : ℕ} :
     primeFactorsList_count_eq]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
+@[oeis A001221 "the sequence skips `n = 0`"]
 def cardDistinctFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.dedup.length, by simp⟩
 
@@ -334,26 +339,30 @@ theorem cardDistinctFactors_zero : ω 0 = 0 := by simp
 @[simp]
 theorem cardDistinctFactors_one : ω 1 = 0 := by simp [cardDistinctFactors]
 
-theorem cardDistinctFactors_apply {n : ℕ} : ω n = n.primeFactorsList.dedup.length :=
+theorem cardDistinctFactors_eq_length_dedup_primeFactorsList {n : ℕ} :
+    ω n = n.primeFactorsList.dedup.length :=
+  rfl
+
+@[deprecated (since := "2026-10-20")]
+alias cardDistinctFactors_apply := cardDistinctFactors_eq_length_dedup_primeFactorsList
+
+theorem cardDistinctFactors_eq_card_primeFactors {n : ℕ} : ω n = n.primeFactors.card :=
   rfl
 
 @[simp]
 theorem cardDistinctFactors_eq_zero {n : ℕ} : ω n = 0 ↔ n ≤ 1 := by
-  simp [cardDistinctFactors_apply, le_one_iff_eq_zero_or_eq_one]
+  simp [cardDistinctFactors_eq_length_dedup_primeFactorsList, le_one_iff_eq_zero_or_eq_one]
 
 @[simp]
 theorem cardDistinctFactors_pos {n : ℕ} : 0 < ω n ↔ 1 < n := by simp [pos_iff_ne_zero]
 
 theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 0) :
     ω n = Ω n ↔ Squarefree n := by
-  rw [squarefree_iff_nodup_primeFactorsList h0, cardDistinctFactors_apply]
-  constructor <;> intro h
-  · rw [← n.primeFactorsList.dedup_sublist.eq_of_length h]
-    apply List.nodup_dedup
-  · simp [h.dedup, cardFactors]
+  rw [cardFactors_apply, cardDistinctFactors_eq_length_dedup_primeFactorsList,
+    ← List.nodup_iff_length_dedup_eq, squarefree_iff_nodup_primeFactorsList h0]
 
 theorem cardDistinctFactors_eq_one_iff {n : ℕ} : ω n = 1 ↔ IsPrimePow n := by
-  rw [ArithmeticFunction.cardDistinctFactors_apply, isPrimePow_iff_card_primeFactors_eq_one,
+  rw [cardDistinctFactors_eq_length_dedup_primeFactorsList, isPrimePow_iff_card_primeFactors_eq_one,
     ← toFinset_factors, List.card_toFinset]
 
 @[simp]
@@ -366,8 +375,8 @@ theorem cardDistinctFactors_apply_prime {p : ℕ} (hp : p.Prime) : ω p = 1 := b
   rw [← pow_one p, cardDistinctFactors_apply_prime_pow hp one_ne_zero]
 
 theorem cardDistinctFactors_mul {m n : ℕ} (h : m.Coprime n) : ω (m * n) = ω m + ω n := by
-  simp [cardDistinctFactors_apply, perm_primeFactorsList_mul_of_coprime h |>.dedup |>.length_eq,
-    coprime_primeFactorsList_disjoint h |>.dedup_append]
+  simp_rw [cardDistinctFactors_eq_card_primeFactors, h.primeFactors_mul,
+    card_union_of_disjoint h.disjoint_primeFactors]
 
 open scoped Function in
 theorem cardDistinctFactors_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ}

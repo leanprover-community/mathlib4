@@ -82,13 +82,13 @@ variable {R : Type u} {A : Type v} {ι : Type*} [CommSemiring R] [Semiring A] [H
 theorem mul_antipode_rTensor_comul_apply (a : A) :
     LinearMap.mul' R A ((antipode R).rTensor A (Coalgebra.comul a)) =
     algebraMap R A (Coalgebra.counit a) :=
-  LinearMap.congr_fun mul_antipode_rTensor_comul a
+  congr($mul_antipode_rTensor_comul a)
 
 @[simp]
 theorem mul_antipode_lTensor_comul_apply (a : A) :
     LinearMap.mul' R A ((antipode R).lTensor A (Coalgebra.comul a)) =
     algebraMap R A (Coalgebra.counit a) :=
-  LinearMap.congr_fun mul_antipode_lTensor_comul a
+  congr($mul_antipode_lTensor_comul a)
 
 @[simp]
 theorem antipode_one :

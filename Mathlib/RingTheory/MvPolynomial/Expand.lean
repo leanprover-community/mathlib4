@@ -6,9 +6,10 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.Algebra.MvPolynomial.Expand
-public import Mathlib.RingTheory.MvPolynomial.Basic
-public import Mathlib.Algebra.CharP.Frobenius
 public import Mathlib.FieldTheory.Finite.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Results on `MvPolynomial.expand`

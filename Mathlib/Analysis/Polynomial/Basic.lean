@@ -6,8 +6,10 @@ Authors: Anatole Dedecker, Devon Tuma
 module
 
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits related to polynomial and rational functions
@@ -36,10 +38,10 @@ namespace Polynomial
 variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] (P Q : 𝕜[X])
 
 theorem eventually_atTop_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
-  atTop_le_cofinite <| (finite_setOfPred_isRoot hP).compl_mem_cofinite
+  atTop_le_cofinite (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 theorem eventually_atBot_not_isRoot (hP : P ≠ 0) : ∀ᶠ x in atBot, ¬P.IsRoot x :=
-  atBot_le_cofinite <| (finite_setOfPred_isRoot hP).compl_mem_cofinite
+  atBot_le_cofinite (finite_setOfPred_isRoot hP).compl_mem_cofinite
 
 variable [OrderTopology 𝕜]
 
@@ -91,8 +93,8 @@ theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
 theorem isBoundedUnder_abs_atTop_iff :
     (IsBoundedUnder (· ≤ ·) atTop fun x => |eval x P|) ↔ P.degree ≤ 0 := by
   refine ⟨fun h => ?_, fun h => ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
-    (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
-    (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
+    (forall_imp (fun _ => le_of_eq) fun x => congr(abs $(_root_.trans (congr_arg (eval x)
+    (eq_C_of_degree_le_zero h)) eval_C))))⟩⟩
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atTop P h)
 
@@ -131,8 +133,8 @@ theorem abs_tendsto_atBot (hdeg : 0 < P.degree) : Tendsto (|P.eval ·|) atBot at
 theorem isBoundedUnder_abs_atBot_iff :
     (IsBoundedUnder (· ≤ ·) atBot (|P.eval ·|)) ↔ P.degree ≤ 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
-    (forall_imp (fun _ ↦ le_of_eq) fun x ↦ congr_arg abs <| _root_.trans (congr_arg (eval x)
-    (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
+    (forall_imp (fun _ ↦ le_of_eq) fun x ↦ congr(abs $(_root_.trans (congr_arg (eval x)
+    (eq_C_of_degree_le_zero h)) eval_C))))⟩⟩
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atBot P h)
 
@@ -328,6 +330,10 @@ lemma isEquivalent_cobounded_leading_monomial :
     exact (IsLittleO.fun_sum fun i hi ↦
       ((isLittleO_pow_pow_cobounded_of_lt (mem_range.mp hi)).const_mul_right
         (leadingCoeff_ne_zero.mpr h)).const_mul_left _).add_isEquivalent .refl
+
+theorem isBigO_cobounded_pow_natDegree (p : Polynomial R) :
+    p.eval =O[cobounded R] (· ^ p.natDegree) :=
+  isEquivalent_cobounded_leading_monomial.isBigO.trans (isBigO_const_mul_self _ _ _)
 
 theorem isLittleO_cobounded_of_degree_lt (h : P.degree < Q.degree) :
     P.eval =o[cobounded R] Q.eval := by

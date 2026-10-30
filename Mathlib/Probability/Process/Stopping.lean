@@ -5,10 +5,9 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Process.Adapted
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
-public import Mathlib.Data.ENat.Lattice
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+public import Mathlib.Probability.Process.Adapted
 
 /-!
 # Stopping times, stopped processes and stopped values
@@ -977,7 +976,7 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
     · lift τ (ω : Set.Iic i × Ω).2 to ι using h with t ht
       norm_cast
       refine hx_fst_le.trans (le_of_lt ?_)
-      convert! ω.prop
+      convert ω.prop
       simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_ofPred_eq, ← ht]
       norm_cast
 
@@ -1169,8 +1168,8 @@ theorem memLp_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀
     {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ WithTop.some '' s) :
     MemLp (stoppedValue u τ) p μ := by
   rw [stoppedValue_eq_of_mem_finset hbdd]
-  refine memLp_finsetSum' _ fun i _ => MemLp.indicator ?_ (hu i)
-  refine ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq_of_countable_range ?_ i)
+  refine memLp_finsetSum' _ fun i _ ↦ (hu i).indicator ?_
+  refine (ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq_of_countable_range ?_ i)).nullMeasurableSet
   have : Set.range τ ⊆ WithTop.some '' s := by
     rintro x ⟨y, rfl⟩
     exact hbdd y
@@ -1216,11 +1215,11 @@ theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : �
     MemLp (stoppedProcess u τ n) p μ := by
   rw [stoppedProcess_eq_of_mem_finset n hbdd]
   refine MemLp.add ?_ ?_
-  · exact MemLp.indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)) (hu n)
+  · exact (hu n).indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)).nullMeasurableSet
   · suffices MemLp (fun ω => ∑ i ∈ s with i < n, {a : Ω | τ a = i}.indicator (u i) ω) p μ by
-      convert! this using 1; ext1 ω; simp only [Finset.sum_apply]
-    refine memLp_finsetSum _ fun i _ => MemLp.indicator ?_ (hu i)
-    exact ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)
+      convert this using 1; ext1 ω; simp only [Finset.sum_apply]
+    refine memLp_finsetSum _ fun i _ ↦ (hu i).indicator ?_
+    exact (ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)).nullMeasurableSet
 
 theorem memLp_stoppedProcess [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
     (hu : ∀ n, MemLp (u n) p μ) (n : ι) :
