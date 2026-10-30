@@ -69,7 +69,7 @@ namespace IsPreordering
 
 @[simp, membership =>]
 protected theorem mul_self_mem (hS : IsPreordering S) (x : R) : x * x ∈ S := by
-  grind [mem_of_isSquare, IsSquare.mul_self]
+  grind [mem_of_isSquare]
 
 @[simp, membership =>]
 protected theorem pow_two_mem (hS : IsPreordering S) (x : R) : x ^ 2 ∈ S := by
@@ -80,12 +80,12 @@ theorem sumSq_le (hS : IsPreordering S) : .sumSq R ≤ S := by
   exact fun _ ↦ hS.mem_of_isSquare
 
 protected theorem mem_of_isSumSq (hS : IsPreordering S) {x : R} (hx : IsSumSq x) : x ∈ S := by
-   grind [membership, hS.sumSq_le, mem_sumSq]
+   grind [membership, hS.sumSq_le]
 
 grind_pattern [membership] IsPreordering.mem_of_isSumSq => S.IsPreordering, x ∈ S
 
 theorem of_sumSq_le (hS : .sumSq R ≤ S) (h : -1 ∉ S) : IsPreordering S where
-  mem_of_isSquare := by grind [membership, mem_sumSq, IsSquare.isSumSq]
+  mem_of_isSquare := by grind [membership]
 
 theorem of_isSpanning (hS : S.IsSpanning) (h : S ≠ ⊤) : S.IsPreordering :=
   .of_sumSq_le hS.sumSq_le <| by
