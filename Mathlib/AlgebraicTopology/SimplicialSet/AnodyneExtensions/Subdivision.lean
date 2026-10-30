@@ -18,11 +18,12 @@ by the subdivision functor `sd : SSet ⥤ SSet` (and dually, the right adjoint
 `ex : SSet ⥤ SSet` preserves Kan fibrations). The proof reduces to the case
 where `i` is a horn inclusion `Λ[n + 1, i] ⟶ Δ[n + 1]`.
 In order to tackle this case, we use a description of the subdivision of
-the standard simplex as the nerve of `NonemptyFiniteChains X`, and we show that
-for any finite nontrivial linearly ordered type `x₀ : X`, the inclusion
-morphism `NonemptyFiniteChains.sdHorn x₀ ⟶ nerve (NonemptyFiniteChains X)`
-is an anodyne extension. In order to do this, we follow the proof of
-proposition 19 in *Another approach to the Kan-Quillen model structure* by Sean Moss:
+the standard simplex as the nerve of `NonemptyFiniteChains X` for some
+finite nontrivial linearly ordered type `X`, and we show that for any `x₀ : X`,
+the inclusion morphism `NonemptyFiniteChains.sdHorn x₀ ⟶ nerve (NonemptyFiniteChains X)`
+is an anodyne extension, where `sdHorn x₀` identifies to the subdivision of the horn.
+In order to do this, we follow the proof of proposition 19 in
+*Another approach to the Kan-Quillen model structure* by Sean Moss:
 we define a `PairingCore` structure for the subcomplex `NonemptyFiniteChains.sdHorn x₀`.
 
 ## TODO
