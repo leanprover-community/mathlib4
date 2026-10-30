@@ -102,22 +102,22 @@ jobs:
       # - `inputRev` is `main`, `master` or a version tag.
       # - `url` is a GitHub repository in `leanprover-community` or `leanprover`.
       # - `rev` is a full commit hash.
-      # The step also checks each `rev` that differs from the manifest at the merge base with
-      # master. On `staging` and `trying`, where the merge base is master, the step fails when a
-      # `rev` breaks one of these rules. On other pushes, the step only warns, so a PR can test
-      # an unmerged dependency commit.
+      # The base manifest is master's manifest at the merge base. On `staging` and `trying`, the
+      # base is master itself. The step also checks each `rev` that differs from the base. On
+      # `staging` and `trying`, the step fails when a `rev` breaks one of these rules. On other
+      # pushes, the step only warns, so a PR can test an unmerged dependency commit.
       # - A `rev` that tracks a branch is on that branch. GitHub also serves commits from
       #   unmerged pull requests by SHA, and this rule rejects them.
       # - A `rev` that tracks a tag is the commit of that tag.
       # - When `url` and `inputRev` are unchanged, a `rev` that tracks a branch descends from the
-      #   `rev` at the merge base. This rule catches a contributor who keeps an older `rev` when
-      #   they resolve a merge conflict.
+      #   base `rev`. This rule catches a contributor who keeps an older `rev` when they resolve
+      #   a merge conflict.
       - name: Checkout lake-manifest.json
         id: manifest_checkout
         # Only enforce this on the main mathlib4 repository, not on nightly-testing.
         # `bump/*` branches, and PRs into them, track the dependencies' `nightly-testing`
         # branches, so they are exempt too. A PR's base branch is `github.base_ref`:
-        # `pull_request_target` sets `github.ref_name` to the default branch, not the base.
+        # `pull_request_target` sets `github.ref_name` to the default branch, not the base branch.
         if: >-
           github.repository == 'leanprover-community/mathlib4'
           && github.ref_name != 'nightly-testing'
@@ -185,7 +185,7 @@ jobs:
               }
             };
 
-            // `old` is the package in the manifest at the merge base, if any.
+            // `old` is the package in the base manifest, if any.
             const checkPin = async (p, old) => {
               const sameSource = old?.url === p.url && old?.inputRev === p.inputRev;
               if (sameSource && old.rev === p.rev) return;
@@ -204,7 +204,7 @@ jobs:
               } else if (sameSource && !await contains(p.owner, p.repo, p.rev, old.rev)) {
                 pinError('Older dependency pin',
                   `This branch moves the \`${p.name}\` pin backwards: \`${p.rev}\` does not descend from ` +
-                  `\`${old.rev}\`, the pin at the merge base with master.\n` + updateHint(p.name));
+                  `\`${old.rev}\`, the pin on master.\n` + updateHint(p.name));
               }
             };
 
@@ -232,7 +232,7 @@ jobs:
               if (tracksAllowedRev && source && pinsCommit) pinned.push({ ...p, owner: source[1], repo: source[2] });
             }
 
-            // Find the merge base with master and the files that the branch changes.
+            // Find the base and the files that the branch changes.
             const { data: comparison } = await github.rest.repos.compareCommits({
               ...context.repo, base: 'master', head: process.env.PR_BRANCH_REF, per_page: 1,
             });
