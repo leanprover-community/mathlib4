@@ -44,8 +44,10 @@ universe u
 open CategoryTheory SSet Simplicial
 
 -- to be moved
+namespace Fin
+
 @[simp]
-lemma Fin.predAbove_succAbove_succ {n : ℕ} (i j : Fin (n + 1)) :
+lemma predAbove_succAbove_succ {n : ℕ} (i j : Fin (n + 1)) :
     i.predAbove (i.succ.succAbove j) = j := by
   by_cases hi : j ≤ i
   · rw [Fin.succAbove_of_succ_le _ _ (by grind),
@@ -54,6 +56,35 @@ lemma Fin.predAbove_succAbove_succ {n : ℕ} (i j : Fin (n + 1)) :
   · rw [Fin.succAbove_of_lt_succ _ _ (by grind),
       Fin.predAbove_of_succ_le _ _ (by grind)]
     simp
+
+@[simp]
+lemma finsetCard_univ_filter_lt {n : ℕ} (i : Fin n) :
+    (Finset.univ.filter (fun j ↦ j < i)).card = i.1 :=
+  Finset.card_eq_of_bijective
+    (fun a _ ↦ ⟨a, by omega⟩)
+    (fun a ha ↦ ⟨a, by simpa using ha, rfl⟩)
+    (fun _ _ ↦ by simpa)
+    (fun _ _ _ _ h ↦ by rwa [Fin.ext_iff] at h)
+
+@[simp]
+lemma finsetCard_univ_filter_le {n : ℕ} (i : Fin n) :
+    (Finset.univ.filter (fun j ↦ j ≤ i)).card = i.1 + 1 := by
+  obtain _ | n := n
+  · fin_cases i
+  · obtain ⟨i, rfl⟩ | rfl := i.eq_castSucc_or_eq_last
+    · simp [Fin.le_castSucc_iff]
+    · simp [Fin.le_last]
+
+@[simp]
+lemma finsetCard_univ_filter_castSucc_lt {n : ℕ} (i : Fin (n + 1)) :
+    (Finset.univ.filter (fun j ↦ Fin.castSucc j < i)).card = i.1 :=
+  Finset.card_eq_of_bijective
+    (fun a _ ↦ ⟨a, by omega⟩)
+    (fun a ha ↦ ⟨a, by simpa [Fin.lt_def] using ha, rfl⟩)
+    (fun _ _ ↦ by simpa)
+    (fun _ _ _ _ h ↦ by rwa [Fin.ext_iff] at h)
+
+end Fin
 
 namespace PartialOrder.NonemptyFiniteChains
 
@@ -637,12 +668,27 @@ def pairingCore.weakRankFunction : (pairingCore x₀).WeakRankFunction ℕ where
         rw [Fin.succAbove_of_le_castSucc _ _ (hs.trans (by simp [Fin.castSucc_le_succ])),
           Fin.succAbove_of_le_castSucc _ _ (by assumption), ht', Fin.castSucc_succ]
       have hs₂ : i ≤ j.succ := by
-        sorry
-      have hs₃ : i ≠ j.succ := by
-        sorry
-      obtain hs : i = j.castSucc := by grind
-      rw [hs] at hi
-      sorry
+        by_contra! hs
+        obtain ⟨j, rfl⟩ := Fin.eq_castSucc_of_ne_last (x := j) (by grind)
+        refine s.not_isIndexI_simplex₂ j.succ ?_
+        simp only [isIndexI_succ, ← hi, nerve.δ_obj]
+        rw [Fin.succAbove_of_castSucc_lt _ _ hs,
+          Fin.succAbove_of_castSucc_lt _ _ (by grind),
+          Fin.castSucc_succ, ht']
+      have hs₃ : i ≠ j.succ := fun hs ↦ hst₁ (by simp [ht, hs])
+      obtain rfl : i = j.castSucc := by grind
+      have :
+          finsetNotMem x₀ ((nerve _).δ j.castSucc t.simplex) =
+            Finset.univ.filter (fun i ↦ i < j) ∧
+          finsetNotMem x₀ ((nerve _).δ j.succ t.simplex) =
+            Finset.univ.filter (fun i ↦ i ≤ j) := by
+        constructor
+        all_goals
+          ext k
+          simp only [nerve_obj, mem_finsetNotMem_iff, nerve.δ_obj.{u}, Finset.mem_filter,
+            Finset.mem_univ, true_and, t.mem_iff]
+          grind [Fin.succAbove_of_le_castSucc, Fin.succAbove_of_castSucc_lt]
+      simp [this.1, this.2, ι.simplex₂, ht]
 
 instance : (pairingCore x₀).IsRegular := by
   rw [(pairingCore x₀).isRegular_iff_nonempty_weakRankFunction]
