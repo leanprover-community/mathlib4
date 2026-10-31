@@ -353,7 +353,7 @@ theorem mulLeftMap_eq_mulRightMap_of_commute [SMulCommClass R S S]
   ext i n; simp [(hc i n).eq]
 
 theorem mulLeftMap_eq_mulRightMap {S : Type*} [CommSemiring S] [Module R S] [SMulCommClass R R S]
-    [SMulCommClass R S S] [IsScalarTower R S S] {M : Submodule R S} (N : Submodule R S)
+    [IsScalarTower R S S] {M : Submodule R S} (N : Submodule R S)
     {ι : Type*} (m : ι → M) : mulLeftMap N m = mulRightMap N m :=
   mulLeftMap_eq_mulRightMap_of_commute N m fun _ _ ↦ mul_comm _ _
 

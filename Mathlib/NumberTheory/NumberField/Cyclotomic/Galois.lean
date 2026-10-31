@@ -212,7 +212,7 @@ Assume that `m ∣ n`, then the image of `ℚ(ζₘ) ⊆ ℚ(ζₙ)` by `interme
 the set of characters whose conductor divides `m`.
 -/
 theorem mem_intermediateFieldEquivSubgroupChar_iff_conductor_dvd (F : IntermediateField ℚ K)
-    {m : ℕ} [NeZero m] [IsGalois ℚ F] [IsCyclotomicExtension {m} ℚ F] (hdiv : m ∣ n)
+    {m : ℕ} [NeZero m] [IsCyclotomicExtension {m} ℚ F] (hdiv : m ∣ n)
     (χ : DirichletCharacter R n) :
     χ ∈ intermediateFieldEquivSubgroupChar n K R F ↔ χ.conductor ∣ m := by
   simp_rw [← χ.mem_conductorSet_iff_conductor_dvd hdiv, χ.mem_conductorSet_iff,

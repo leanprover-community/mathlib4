@@ -263,7 +263,7 @@ lemma simplicialEvalσ_of_isAdmissible
 
 /-- Performing a simplicial insertion in a list is the same as composition on the right by the
 corresponding degeneracy operator. -/
-lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : j < m + 1)
+lemma standardσ_simplicialInsert (j : ℕ) (hj : j < m + 1)
     (m₁ : ℕ) (hm₁ : m + L.length + 1 = m₁) :
     standardσ (m₂ := m) (simplicialInsert j L) (m₁ := m₁)
       (by simpa only [simplicialInsert_length, add_assoc]) =
@@ -304,7 +304,7 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
     use simplicialInsert k.val L₁, m, b₁ + 1, rfl, by grind, by grind, by grind
     subst_vars
     have := standardσ (m₁ := m + 1 + L₁.length) [] (by grind) ≫=
-      (standardσ_simplicialInsert L₁ hL₁ k k.prop _ rfl).symm
+      (standardσ_simplicialInsert L₁ k k.prop _ rfl).symm
     simp_all [Fin.ofNat_eq_cast, Fin.cast_val_eq_self, standardσ_comp_standardσ_assoc,
       standardσ_comp_standardσ]
 
@@ -317,8 +317,8 @@ lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
 local grind_pattern IsAdmissible.simplicialEvalσ_succ_getElem =>
   IsAdmissible m L, simplicialEvalσ L L[k]
 
-lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
-    (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
+lemma mem_isAdmissible_of_eval_eq_eval_add_one (hL : IsAdmissible m L)
+    (j : ℕ) (hj : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
     j ∈ L := by
   induction L generalizing m with
   | nil => grind
@@ -333,9 +333,9 @@ lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j
 /-- We can characterize elements in an admissible list as exactly those for which
 `simplicialEvalσ` takes the same value twice in a row. -/
 lemma mem_isAdmissible_iff (hL : IsAdmissible m L) (j : ℕ) :
-    j ∈ L ↔ j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
-  grind [lt_and_eval_eq_eval_add_one_of_mem_isAdmissible,
-    mem_isAdmissible_of_lt_and_eval_eq_eval_add_one]
+    j ∈ L ↔ j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) :=
+  ⟨lt_and_eval_eq_eval_add_one_of_mem_isAdmissible L hL j,
+    fun h ↦ mem_isAdmissible_of_eval_eq_eval_add_one L hL j h.2⟩
 
 end MemIsAdmissible
 

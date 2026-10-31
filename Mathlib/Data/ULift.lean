@@ -132,7 +132,7 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
 lemma rec_update {β : ULift α → Type*} [DecidableEq α]
     (f : ∀ a, β (.up a)) (a : α) (x : β (.up a)) :
     ULift.rec (update f a x) = update (ULift.rec f) (.up a) x :=
-  Function.rec_update up_injective (ULift.rec ·) (fun _ _ => rfl) (fun
+  Function.rec_update (ULift.rec ·) (fun _ _ => rfl) (fun
     | _, _, .up _, h => (h _ rfl).elim) _ _ _
 
 end ULift

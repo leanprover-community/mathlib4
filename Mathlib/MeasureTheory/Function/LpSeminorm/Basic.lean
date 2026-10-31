@@ -844,7 +844,7 @@ lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → ε) : eLpNor
   essSup_eq_iSup hμ _
 
 variable {ε : Type*} [ENorm ε] in
-@[simp] lemma eLpNormEssSup_count [MeasurableSingletonClass α] (f : α → ε) :
+@[simp] lemma eLpNormEssSup_count (f : α → ε) :
     eLpNormEssSup f .count = ⨆ a, ‖f a‖ₑ := essSup_count _
 
 theorem MemLp.left_of_add_measure {f : α → ε} (h : MemLp f p (μ + ν)) :
