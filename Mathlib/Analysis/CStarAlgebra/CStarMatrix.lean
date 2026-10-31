@@ -657,9 +657,6 @@ private lemma nnNorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, CStarMatrix.toCLM M v⟫_A‖₊ ≤ C * ‖v‖₊ * ‖w‖₊) : ‖M‖₊ ≤ C :=
   CStarMatrix.norm_le_of_forall_inner_le fun v w => h v w
 
-@[deprecated (since := "2026-10-27")]
-alias nnnorm_le_of_forall_inner_le := nnNorm_le_of_forall_inner_le
-
 open Finset in
 private lemma lipschitzWith_toMatrixAux :
     LipschitzWith 1 (ofMatrixₗ.symm (R := ℂ) : CStarMatrix m n A → Matrix m n A) := by
