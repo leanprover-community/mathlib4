@@ -20,7 +20,8 @@ into `ℂ`.
 ## Main results
 
 - `NumberField.exists_heightOneSpectrum_eq_adicAbv`: A nontrivial non-archimedean absolute value on
-  a number field is equal to a `v`-adic absolute value for some `v : HeightOneSpectrum (𝓞 K)`.
+  a number field is equal to a `v`-adic absolute value for a unique `v : HeightOneSpectrum (𝓞 K)`
+  and a suitable base.
 - `NumberField.exists_heightOneSpectrum_equiv_adicAbv`: A nontrivial non-archimedean absolute value
   on a number field is equivalent to the `v`-adic absolute value `adicAbv K v` for a unique
   `v : HeightOneSpectrum (𝓞 K)`.
@@ -121,14 +122,14 @@ def heightOneSpectrumOfAbsoluteValue : HeightOneSpectrum (𝓞 K) where
 include hf_nontriv
 
 /-- A nontrivial non-archimedean absolute value on a number field is equal to a `v`-adic absolute
-value attached to some `v : HeightOneSpectrum (𝓞 K)` and for some base `b`. -/
+value attached to a unique `v : HeightOneSpectrum (𝓞 K)` and for some base `b`. -/
 theorem exists_heightOneSpectrum_eq_adicAbv :
     ∃! P : HeightOneSpectrum (𝓞 K), ∃ b, ∃ hb : 1 < b, f = adicAbv P hb := by
   let P := heightOneSpectrumOfAbsoluteValue hfna hf_nontriv
   use P
   rcases P.intValuation_exists_uniformizer with ⟨π, hπ⟩
   have hπv_ne : P.valuation K π ≠ 0 := by simp [valuation_of_algebraMap, hπ]
-  have hπ_pos : 0 < f π := by grind [AbsoluteValue.pos_iff]
+  have hπ_pos : 0 < f π := f.pos ((P.valuation K).ne_zero_iff.mp hπv_ne)
   let b : ℝ≥0 := ⟨(f π)⁻¹, by positivity⟩
   have hb : 1 < b := by
     apply_mod_cast (one_lt_inv₀ hπ_pos).2
@@ -159,7 +160,7 @@ theorem exists_heightOneSpectrum_eq_adicAbv :
     exact (adicAbv_coe_lt_one_iff Q hc x).symm
 
 /-- A nontrivial non-archimedean absolute value on a number field is equivalent to a `v`-adic
-absolute value attached to some `v : HeightOneSpectrum (𝓞 K)`. -/
+absolute value attached to a unique `v : HeightOneSpectrum (𝓞 K)`. -/
 theorem exists_heightOneSpectrum_equiv_adicAbv :
     ∃! P : HeightOneSpectrum (𝓞 K), f ≈ adicAbv K P := by
   obtain ⟨P, ⟨b, hb, hf⟩, -⟩ := exists_heightOneSpectrum_eq_adicAbv hfna hf_nontriv
