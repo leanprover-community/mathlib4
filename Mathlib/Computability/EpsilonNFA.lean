@@ -27,8 +27,6 @@ open Set
 
 open scoped Computability
 
--- "ε_NFA"
-
 universe u v
 
 /-- An `εNFA` is a set of states (`σ`), a transition function from state to state labelled by the

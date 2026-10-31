@@ -176,7 +176,6 @@ theorem of_mul_preimage_acceptsFrom {S : Set σ} {a : α} :
   ext x; simp
 
 variable (M) in
-@[simp]
 theorem mul_mem_acceptsFrom {S : Set σ} {x y : FreeMonoid α} :
     x * y ∈ (M.acceptsFrom S).toSet ↔ y ∈ (M.acceptsFrom (M.evalFrom S x)).toSet := by
   simp [mem_acceptsFrom]
