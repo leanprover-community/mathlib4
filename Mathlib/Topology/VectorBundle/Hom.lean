@@ -256,6 +256,12 @@ theorem Bundle.Trivialization.continuousLinearMap_apply
         (p.2.comp (e₁.symmL 𝕜₁ p.1 : F₁ →L[𝕜₁] E₁ p.1) : F₁ →SL[σ] E₂ p.1)⟩ :=
   rfl
 
+theorem Bundle.Trivialization.continuousLinearMap_symm_apply {b : B}
+    (hb : b ∈ e₁.baseSet ∩ e₂.baseSet) (L : F₁ →SL[σ] F₂) :
+    (e₁.continuousLinearMap σ e₂).symm b L =
+      (e₂.symmL 𝕜₂ b).comp (L.comp <| e₁.continuousLinearMapAt 𝕜₁ b) :=
+  Pretrivialization.continuousLinearMap_symm_apply' σ e₁ e₂ hb L
+
 theorem hom_trivializationAt (x₀ : B) :
     trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀ =
     (trivializationAt F₁ E₁ x₀).continuousLinearMap σ (trivializationAt F₂ E₂ x₀) := rfl
@@ -265,6 +271,18 @@ theorem hom_trivializationAt_apply (x₀ : B)
     trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀ x =
       ⟨x.1, inCoordinates F₁ E₁ F₂ E₂ x₀ x.1 x₀ x.1 x.2⟩ :=
   rfl
+
+/-- The inverse of the trivialization at `x₀` of the bundle `fun x ↦ E₁ x →SL[σ] E₂ x`, applied
+to a model map `L` and then to a fibre vector `v : E₁ x`. -/
+theorem hom_trivializationAt_symm_apply {x₀ x : B}
+    (hx : x ∈ (trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet)
+    (L : F₁ →SL[σ] F₂) (v : E₁ x) :
+    (trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀).symm x L v =
+      (trivializationAt F₂ E₂ x₀).symm x
+        (L ((trivializationAt F₁ E₁ x₀).continuousLinearMapAt 𝕜₁ x v)) := by
+  rw [hom_trivializationAt]
+  rw [Trivialization.continuousLinearMap_symm_apply σ hx]
+  exact (trivializationAt F₂ E₂ x₀).symmL_apply hx.2 _
 
 @[simp, mfld_simps]
 theorem hom_trivializationAt_source (x₀ : B) :
@@ -533,31 +551,25 @@ lemma inCoordinates_apply_eq₂_of_trivial
   rw [inCoordinates_apply_eq₂ h₁x h₂x (by simp [Trivial.fiberBundle_trivializationAt'])]
   simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
 
-/-- The inverse trivialization of the bundle of scalar-valued bilinear forms
-`fun x ↦ E₁ x →L[𝕜] E₁ x →L[𝕜] 𝕜`, applied to a model form `ϕ` and then to fibre vectors
-`u v : E₁ x`, equals `ϕ` evaluated on the images of `u` and `v` in the model fibre `F₁`. -/
+/-- The inverse trivialization of the bundle `fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] F₃` of bilinear
+maps into a fixed space, applied to a model map `ϕ` and then to fibre vectors `u : E₁ x` and
+`v : E₂ x`, equals `ϕ` evaluated on the images of `u` and `v` in the model fibres. -/
 lemma trivializationAt_symm_apply_bilin
-    (x₀ x : B) (hb : x ∈ (trivializationAt F₁ E₁ x₀).baseSet)
-    (ϕ : F₁ →L[𝕜] F₁ →L[𝕜] 𝕜) (u v : E₁ x) :
-    (trivializationAt (F₁ →L[𝕜] F₁ →L[𝕜] 𝕜) (fun x ↦ E₁ x →L[𝕜] E₁ x →L[𝕜] 𝕜) x₀).symm
+    (x₀ x : B) (h₁x : x ∈ (trivializationAt F₁ E₁ x₀).baseSet)
+    (h₂x : x ∈ (trivializationAt F₂ E₂ x₀).baseSet)
+    (ϕ : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (u : E₁ x) (v : E₂ x) :
+    (trivializationAt (F₁ →L[𝕜] F₂ →L[𝕜] F₃) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] F₃) x₀).symm
         x ϕ u v =
       ϕ (trivializationAt F₁ E₁ x₀ |>.continuousLinearMapAt 𝕜 x u)
-        (trivializationAt F₁ E₁ x₀ |>.continuousLinearMapAt 𝕜 x v) := by
-  let ψ := FiberBundle.trivializationAt (F₁ →L[𝕜] F₁ →L[𝕜] 𝕜)
-      (fun (x : B) ↦ E₁ x →L[𝕜] E₁ x →L[𝕜] 𝕜) x₀
-  let χ := trivializationAt F₁ E₁ x₀
-  have hc : x ∈ ψ.baseSet := by simpa [ψ] using hb
-  have h1 (u v) : ϕ u v = ψ.symm x ϕ (χ.symm x u) (χ.symm x v) := by
-    nth_rw 1 [← Trivialization.continuousLinearMapAt_symmL (R := 𝕜) ψ hc ϕ]
-    rw [Trivialization.continuousLinearMapAt_apply, Trivialization.linearMapAt_apply,
-      hom_trivializationAt_apply, ite_eq_left hc, ← inCoordinates_apply_eq₂_of_trivial hb hb,
-      Trivialization.symmL_apply _ hc]
-  change ψ.symm x ϕ u v = ϕ (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v)
-  rw [h1 (χ.continuousLinearMapAt 𝕜 x u) (χ.continuousLinearMapAt 𝕜 x v),
-    ← Trivialization.symmL_apply (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb,
-    Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb,
-    ← Trivialization.symmL_apply (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb,
-    Trivialization.symmL_continuousLinearMapAt (R := 𝕜) (trivializationAt F₁ E₁ x₀) hb]
+        (trivializationAt F₂ E₂ x₀ |>.continuousLinearMapAt 𝕜 x v) := by
+  have h₃x : x ∈ (trivializationAt F₃ (Bundle.Trivial B F₃) x₀).baseSet := by
+    simp [Trivial.fiberBundle_trivializationAt']
+  rw [hom_trivializationAt_symm_apply (RingHom.id 𝕜) (F₂ := F₂ →L[𝕜] F₃)
+      (E₂ := fun x ↦ E₂ x →L[𝕜] F₃)
+      ⟨h₁x, by rw [hom_trivializationAt_baseSet]; exact ⟨h₂x, h₃x⟩⟩ ϕ u,
+    hom_trivializationAt_symm_apply (RingHom.id 𝕜) (F₂ := F₃) (E₂ := Bundle.Trivial B F₃)
+      ⟨h₂x, h₃x⟩]
+  simp [Trivial.fiberBundle_trivializationAt']
 
 end TwoVariables
 
