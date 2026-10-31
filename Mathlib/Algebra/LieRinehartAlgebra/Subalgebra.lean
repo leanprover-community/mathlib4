@@ -274,7 +274,7 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
 
 /-- The range of a morphism of Lie-Rinehart algebras over the identity is a Lie-Rinehart
 subalgebra. -/
-def range : LieRinehartSubalgebra A L₂ := LieRinehartSubalgebra.map ⊤ f
+def range : LieRinehartSubalgebra A L₂ := .map ⊤ f
 
 @[simp]
 theorem mem_range {x} : x ∈ range f ↔ ∃ y, f y = x := by
