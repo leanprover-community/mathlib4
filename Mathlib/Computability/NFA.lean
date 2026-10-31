@@ -348,12 +348,12 @@ namespace DFA
 @[simp]
 theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : FreeMonoid α) :
     M.toNFA.evalFrom {start} s = {M.evalFrom start s} := by
-  change List.foldl M.toNFA.stepSet {start} s.toList = {List.foldl M.step start s.toList}
+  change s.toList.foldl M.toNFA.stepSet {start} = {s.toList.foldl M.step start}
   induction s using FreeMonoid.mulRecOn generalizing start with
   | one => tauto
   | of_mul a s ih =>
-    rw [List.foldl, List.foldl,
-      show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet]]
+    rw [FreeMonoid.toList_mul, FreeMonoid.toList_of, List.singleton_append,
+      List.foldl_cons, show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet]]
     tauto
 
 @[simp]
