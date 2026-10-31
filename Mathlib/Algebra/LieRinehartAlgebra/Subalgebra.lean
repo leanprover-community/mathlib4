@@ -277,7 +277,10 @@ subalgebra. -/
 def range : LieRinehartSubalgebra A L₂ := .map ⊤ f
 
 @[simp]
-theorem mem_range {x} : x ∈ range f ↔ ∃ y, f y = x := by simp [range]
+theorem mem_range {x} : x ∈ range f ↔ ∃ y, f y = x := by
+  constructor
+  · rintro ⟨x', _, h2⟩; use x'; exact h2
+  · rintro ⟨x', h⟩; change ∃ y, _; aesop
 
 theorem coe_range : (range f : Set L₂) = Set.range f := by
   ext
