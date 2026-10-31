@@ -59,6 +59,11 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
   v
   Q
   ```
+
+The modules `X` and `Y` are taken in the same universe as `R`. This choice makes
+`Module.Injective` equivalent to `Module.Baer` without a smallness assumption on `R`.
+It can therefore differ from injectivity in `ModuleCat` when `R` is not small in the
+universe used to define that category.
 -/
 @[mk_iff] class Module.Injective : Prop where
   out : ∀ ⦃X Y : Type u⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
