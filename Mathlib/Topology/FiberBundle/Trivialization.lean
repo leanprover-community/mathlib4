@@ -494,6 +494,24 @@ theorem symm_trans_target_eq (e e' : Trivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).target = (e.baseSet ∩ e'.baseSet) ×ˢ univ :=
   Pretrivialization.symm_trans_target_eq e.toPretrivialization e'
 
+lemma baseSet_mem_nhds {x : B} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
+  e.open_baseSet.mem_nhds_iff.mpr hx
+
+lemma eventually {x : B} (hx : x ∈ e.baseSet) {P : B → Prop}
+  (h : ∀ x' ∈ e.baseSet, P x') : ∀ᶠ x' in 𝓝 x, P x' := by
+  filter_upwards [e.baseSet_mem_nhds hx] with x' hx'
+  exact h x' hx'
+
+lemma baseSet_prod_univ_mem_nhds {v : Z}
+    (hv : proj v ∈ e.baseSet) : e.baseSet ×ˢ univ ∈ 𝓝 (e v) := by
+  rw [← e.mk_proj_snd' hv]
+  exact prod_mem_nhds (e.baseSet_mem_nhds hv) univ_mem
+
+lemma comp_invFun_eventuallyEq
+    {v : Z} (hv : proj v ∈ e.baseSet) : e ∘ e.invFun =ᶠ[𝓝 (e v)] id := by
+  filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with p hp
+  simp [(e.mem_target).2 hp.1]
+
 theorem coe_fst_eventuallyEq_proj (ex : x ∈ e.source) : Prod.fst ∘ e =ᶠ[𝓝 x] proj :=
   mem_nhds_iff.2 ⟨e.source, fun _y hy => e.coe_fst hy, e.open_source, ex⟩
 
@@ -718,6 +736,20 @@ theorem apply_mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.base
     e ⟨b, e.symm b y⟩ = (b, y) :=
   e.toPretrivialization.apply_mk_symm hb y
 
+lemma injective_symm (e : Trivialization F (π F E)) {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    Injective (e.symm v.proj) := by
+  intro f f' hff'
+  simpa [hv] using congr(e $hff')
+
+lemma surjective_symm (e : Trivialization F (π F E))
+    {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    Surjective (e.symm v.proj) :=
+  fun u ↦ ⟨(e u).2, by simp [hv]⟩
+
+lemma bijective_symm (e : Trivialization F (π F E)) {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    Bijective (e.symm v.proj) :=
+  ⟨e.injective_symm hv, e.surjective_symm hv⟩
+
 theorem continuousOn_symm (e : Trivialization F (π F E)) :
     ContinuousOn (fun z : B × F => TotalSpace.mk' F z.1 (e.symm z.1 z.2)) (e.baseSet ×ˢ univ) := by
   have : ∀ z ∈ e.baseSet ×ˢ (univ : Set F),
@@ -727,6 +759,13 @@ theorem continuousOn_symm (e : Trivialization F (π F E)) :
   refine ContinuousOn.congr ?_ this
   rw [← e.target_eq]
   exact e.toOpenPartialHomeomorph.continuousOn_symm
+
+lemma eq_of {x : B} {v v' : E x}
+    (e : Trivialization F (π F E)) (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v').2) :
+    v = v' := by
+  have := e.symm_proj_apply v hx
+  rw [hvv'] at this
+  grind [e.symm_proj_apply v' hx]
 
 end Nonempty
 
