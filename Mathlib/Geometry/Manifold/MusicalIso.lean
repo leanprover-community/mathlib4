@@ -86,7 +86,7 @@ lemma hoge {s : (x : B) → TangentSpace IB x} :
   -- TODO: needs a slightly different proof, but should be the same in both cases
   sorry
 
--- baby version of Clm.bundle_of_apply... seems missing!
+-- baby version of Clm.bundle_apply... seems missing!
 -- TODO: generalise to any C^k vector bundle; does this exist already?
 lemma bazAt
     {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
