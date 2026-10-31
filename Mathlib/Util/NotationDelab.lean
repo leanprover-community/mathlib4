@@ -17,7 +17,16 @@ public import Mathlib.Lean.Elab.Term
 public import Mathlib.Tactic.ScopedNS
 
 /-!
-# The notation3 macro, simulating Lean 3's notation.
+# The `notation +delab` command
+
+This file defines a command `notation +delab` that creates an elaborator/delaborator pair from
+a string describing the syntax. This can be seen both as a version of Lean 4's `notation` command
+that also creates a delaborator, or as a ported version of Lean 3's `notation` command.
+
+Currently, this second description is the most accurate one as `notation` is missing some Lean 3's
+`notation`-style features that `notation +delab` enjoys, besides the creation of a delaborator.
+Ultimately, it would be best if `notation` had these features directly,
+so that `notation +delab` can be dropped entirely.
 -/
 
 public meta section
@@ -25,13 +34,13 @@ public meta section
 -- To fix upstream:
 -- * bracketedExplicitBinders doesn't support optional types
 
-namespace Mathlib.Notation3
+namespace Mathlib.NotationDelab
 open Lean Parser Meta Elab Command PrettyPrinter.Delaborator SubExpr
 open Batteries.ExtendedBinder
 
-initialize registerTraceClass `notation3
+initialize registerTraceClass `notationDelab
 
-/-! ### Syntaxes supporting `notation3` -/
+/-! ### Syntaxes supporting `notation +delab` -/
 
 /--
 Expands binders into nested combinators.
@@ -68,11 +77,18 @@ macro_rules
       `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
         $[$binders]*, $res)
 
+/-- `expand_foldl% (x y => t) init [a, b, c]` expands to the term `t` with `x` replaced by the
+accumulator and `y` by each argument in turn, folding from the left:
+`t[t[t[init, a], b], c]`. It is used by the `foldl` items of `notation +delab`. -/
 macro (name := expandFoldl) "expand_foldl% "
   "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
   args.getElems.foldlM (init := init) fun res arg ↦ do
     term.replaceM fun e ↦
       return if e == x then some res else if e == y then some arg else none
+
+/-- `expand_foldr% (x y => t) init [a, b, c]` expands to the term `t` with `x` replaced by each
+argument and `y` by the accumulator, folding from the right: `t[a, t[b, t[c, init]]]`.
+It is used by the `foldr` items of `notation +delab`. -/
 macro (name := expandFoldr) "expand_foldr% "
   "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
   args.getElems.foldrM (init := init) fun arg res ↦ do
@@ -81,22 +97,22 @@ macro (name := expandFoldr) "expand_foldr% "
 
 /-- Keywording indicating whether to use a left- or right-fold. -/
 syntax foldKind := &"foldl" <|> &"foldr"
-/-- `notation3` argument matching `extBinders`. -/
+/-- `notation +delab` argument matching `extBinders`. -/
 syntax bindersItem := atomic("(" "..." ")")
-/-- `notation3` argument simulating a Lean 3 fold notation. -/
+/-- `notation +delab` argument simulating a Lean 3 fold notation. -/
 syntax foldAction := "(" ident ppSpace strLit "*" (precedence)? " => " foldKind
   " (" ident ppSpace ident " => " term ") " term ")"
-/-- `notation3` argument binding a name. -/
+/-- `notation +delab` argument binding a name. -/
 syntax identOptScoped :=
   ident (notFollowedBy(":" "(" "scoped") precedence)? (":" "(" "scoped " ident " => " term ")")?
-/-- `notation3` argument. -/
+/-- `notation +delab` argument. -/
 -- Note: there is deliberately no ppSpace between items
 -- so that the space in the literals themselves stands out
-syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
+syntax notationDelabItem := strLit <|> bindersItem <|> identOptScoped <|> foldAction
 
 /-! ### Expression matching
 
-A more complicated part of `notation3` is the delaborator generator.
+A more complicated part of `notation +delab` is the delaborator generator.
 While `notation` relies on generating app unexpanders, we instead generate a
 delaborator directly so that we can control how binders are formatted (we want
 to be able to know the types of binders, whether a lambda is a constant function,
@@ -344,7 +360,7 @@ partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
       let (_, matchBody) ← exprToMatcher boundFVars localFVars' body
       return ([.other `lam], ← ``(matchLambda $matchDom (fun $n' => $matchBody)))
   | _ =>
-    trace[notation3] "can't generate matcher for {e}"
+    trace[notationDelab] "can't generate matcher for {e}"
     failure
 
 /-- Returns a `Term` that represents a `Matcher` for the given pattern `stx`.
@@ -362,11 +378,11 @@ partial def mkExprMatcher (stx : Term) (boundNames : Array Name) :
         Term.elabPattern stx none
       catch e =>
         logException e
-        trace[notation3] "Could not elaborate pattern{indentD stx}\nError: {e.toMessageData}"
-        -- Convert the exception into an `OptionT` failure so that the `(prettyPrint := false)`
-        -- suggestion appears.
+        trace[notationDelab] "Could not elaborate pattern{indentD stx}\nError: {e.toMessageData}"
+        -- Convert the exception into an `OptionT` failure so that the warning below
+        -- suggesting alternatives appears.
         failure
-    trace[notation3] "Generating matcher for pattern {patt}"
+    trace[notationDelab] "Generating matcher for pattern {patt}"
     exprToMatcher boundFVars {} patt
 
 /-- Matcher for processing `scoped` syntax. Assumes the expression to be matched
@@ -464,7 +480,7 @@ partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames
   -- N.B. by swapping `x` and `y` we can just use the foldl matcher
   return (keys ++ keys', ← ``(matchFoldl $(quote lit) $(quote y) $(quote x) $smatcher $sinit))
 
-/-! ### The `notation3` command -/
+/-! ### The `notation +delab` command -/
 
 /-- Used when processing different kinds of variables when building the
 final delaborator. -/
@@ -476,6 +492,8 @@ inductive BoundValueType
   /-- A fold variable, use the fold state (do not reverse the array). -/
   | foldr
 
+/-- The option `(prettyPrint := false)` of the deprecated `notation3`, which keeps the command from
+generating a delaborator. -/
 syntax prettyPrintOpt := "(" &"prettyPrint" " := " (&"true" <|> &"false") ")"
 
 /-- Interpret a `prettyPrintOpt`. The default value is `true`. -/
@@ -505,26 +523,12 @@ def withHeadRefIfTagAppFns (d : Delab) : Delab := do
   else
     d
 
-/--
-`notation3` declares notation using Lean-3-style syntax.
-
-Examples:
-```
-notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
-notation3 "MyList[" (x", "* => foldr (a b => MyList.cons a b) MyList.nil) "]" => x
-```
-By default notation is unable to mention any variables defined using `variable`, but
-`local notation3` is able to use such local variables.
-
-Use `notation3 (prettyPrint := false)` to keep the command from generating a pretty printer
-for the notation.
-
-This command can be used in mathlib4 but it has an uncertain future and was created primarily
-for backward compatibility.
--/
-elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
-    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
-    pp?:(ppSpace prettyPrintOpt)? items:(ppSpace notation3Item)+ " => " val:term : command => do
+/-- Implementation of `notation +delab` and the deprecated `notation3`. -/
+def elabNotationDelab (doc : Option (TSyntax ``Parser.Command.docComment))
+    (attrs? : Option (TSyntax ``Parser.Term.attributes)) (attrKind : TSyntax ``Term.attrKind)
+    (prec? : Option (TSyntax ``precedence)) (name? : Option (TSyntax ``namedName))
+    (prio? : Option (TSyntax ``namedPrio)) (pp : Bool)
+    (items : TSyntaxArray ``notationDelabItem) (val : Term) : CommandElabM Unit := do
   -- We use raw `Name`s for variables. This maps variable names back to the
   -- identifiers that appear in `items`
   let mut boundIdents : Std.HashMap Name Ident := {}
@@ -552,22 +556,22 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   let mut hasScoped := false
   for item in items do
     match item with
-    | `(notation3Item| $lit:str) =>
+    | `(notationDelabItem| $lit:str) =>
       -- Can't use `pushMacro` since it inserts an extra variable into the pattern for `str`, which
       -- breaks our delaborator
       syntaxArgs := syntaxArgs.push (← `(stx| $lit:str))
       pattArgs := pattArgs.push <| mkAtomFrom lit lit.1.isStrLit?.get!
-    | `(notation3Item| $_:bindersItem) =>
+    | `(notationDelabItem| $_:bindersItem) =>
       if hasBindersItem then
         throwErrorAt item "Cannot have more than one `(...)` item."
       hasBindersItem := true
       -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
-      -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
+      -- notation +delab "∑ "(...)", "r:(scoped f => sum f) => r
       -- but extBinders already has a space before it so we strip the trailing space of "∑ "
       if let `(stx| $lit:str) := syntaxArgs.back! then
         syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimAsciiEnd.copy):str))
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
-    | `(notation3Item| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
+    | `(notationDelabItem| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
         `(macroArg| $id:ident:sepBy(term $(prec?)?, $sep:str))
       -- N.B. `Syntax.getId` returns `.anonymous` for non-idents
@@ -590,7 +594,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
           matchers := matchers.push <|
             mkFoldrMatcher id.getId x.getId y.getId scopedTerm init boundNames
         | _ => throwUnsupportedSyntax
-    | `(notation3Item| $lit:ident $(prec?)? : (scoped $scopedId:ident => $scopedTerm)) =>
+    | `(notationDelabItem| $lit:ident $(prec?)? : (scoped $scopedId:ident => $scopedTerm)) =>
       hasScoped := true
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
         `(macroArg| $lit:ident:term $(prec?)?)
@@ -602,7 +606,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
           $(⟨lit.1.mkAntiquotNode `term⟩):term)
       boundNames := boundNames.push lit.getId
-    | `(notation3Item| $lit:ident $(prec?)?) =>
+    | `(notationDelabItem| $lit:ident $(prec?)?) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
         `(macroArg| $lit:ident:term $(prec?)?)
       boundIdents := boundIdents.insert lit.getId lit
@@ -618,7 +622,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
     syntax $(prec?)? $[$name?:namedName]? $(prio?)? $[$syntaxArgs]* : term))
 
   -- 2. The `macro_rules`
-  trace[notation3] "syntax declaration has name {fullName}"
+  trace[notationDelab] "syntax declaration has name {fullName}"
   let pat : Term := ⟨mkNode fullName pattArgs⟩
   let val' ← val.replaceM fun s => pure boundValues[s.getId]?
   let mut macroDecl ← `($attrKind:attrKind macro_rules | `($pat) => `($val'))
@@ -628,8 +632,8 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   elabCommand macroDecl
 
   -- 3. Create a delaborator
-  if getPrettyPrintOpt pp? then
-    matchers := matchers.push <| Mathlib.Notation3.mkExprMatcher val boundNames
+  if pp then
+    matchers := matchers.push <| Mathlib.NotationDelab.mkExprMatcher val boundNames
     -- The matchers need to run in reverse order, so may as well reverse them here.
     let matchersM? := (matchers.reverse.mapM id).run
     -- We let local notations have access to `variable` declarations
@@ -638,9 +642,9 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
     else
       liftTermElabM matchersM?
     if let some ms := matchers? then
-      trace[notation3] "Matcher creation succeeded; assembling delaborator"
+      trace[notationDelab] "Matcher creation succeeded; assembling delaborator"
       let matcher ← ms.foldrM (fun m t => `($(m.2) >=> $t)) (← `(pure))
-      trace[notation3] "matcher:{indentD matcher}"
+      trace[notationDelab] "matcher:{indentD matcher}"
       let mut result ← `(withHeadRefIfTagAppFns `($pat))
       for (name, id) in boundIdents.toArray do
         match boundType.getD name .normal with
@@ -655,14 +659,14 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       let vis ← if let `(attrKind| local) := attrKind then
         `(visibility| private) else `(visibility| public)
       for key in delabKeys do
-        trace[notation3] "Creating delaborator for key {repr key}"
+        trace[notationDelab] "Creating delaborator for key {repr key}"
         let bodyCore ← `(getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
         let body ←
           match key with
           | .app _ arity => ``(withOverApp $(quote arity) $bodyCore)
           | _            => pure bodyCore
         elabCommand <| ← `(
-          /-- Pretty printer defined by `notation3` command. -/
+          /-- Pretty printer defined by `notation +delab` command. -/
           @[$attrKind delab $(mkIdent key.key)]
           $vis:visibility aux_def delab_app $(mkIdent fullName) : Delab :=
             whenPPOption getPPNotation <| whenNotPPOption getPPExplicit <| $body)
@@ -670,13 +674,53 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       logWarning s!"\
         Was not able to generate a pretty printer for this notation. \
         If you do not expect it to be pretty printable, then you can use \
-        `notation3 (prettyPrint := false)`. \
-        If the notation expansion refers to section variables, be sure to do `local notation3`. \
+        `macro` or `syntax` and `macro_rules` instead. \
+        If the notation expansion refers to section variables, be sure to do \
+        `local notation +delab`. \
         Otherwise, you might be able to adjust the notation expansion to make it matchable; \
         pretty printing relies on deriving an expression matcher from the expansion. \
-        (Use `set_option trace.notation3 true` to get some debug information.)"
+        (Use `set_option trace.notationDelab true` to get some debug information.)"
+
+
+/--
+`notation +delab` declares notation using Lean-3-style syntax.
+
+Examples:
+```
+notation +delab "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
+notation +delab "MyList[" (x", "* => foldr (a b => MyList.cons a b) MyList.nil) "]" => x
+```
+By default notation is unable to mention any variables defined using `variable`, but
+`local notation +delab` is able to use such local variables.
+
+If the notation should not have a pretty printer, use `macro` or `syntax` and `macro_rules`
+instead.
+
+This is the successor of `notation3`, which is now deprecated.
+-/
+syntax (name := notationDelab) (docComment)? (Parser.Term.attributes)? Term.attrKind
+    "notation" (precedence)? " +" &"delab" (namedName)? (namedPrio)?
+    (ppSpace notationDelabItem)+ " => " term : command
+
+elab_rules : command
+  | `($[$doc:docComment]? $[$attrs?:attributes]? $attrKind:attrKind
+      notation $[$prec?:precedence]? +delab $[$name?:namedName]? $[$prio?:namedPrio]?
+      $items* => $val) =>
+    elabNotationDelab doc attrs? attrKind prec? name? prio? true items val
+
+/--
+`notation3` is deprecated in favor of `notation +delab`. Instead of
+`notation3 (prettyPrint := false)`, use `macro` or `syntax` and `macro_rules`.
+-/
+elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
+    "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)?
+    pp?:(ppSpace prettyPrintOpt)? items:(ppSpace notationDelabItem)+ " => " val:term : command => do
+  elabNotationDelab doc attrs? attrKind prec? name? prio? (getPrettyPrintOpt pp?) items val
+
+deprecated_syntax «notation3» "use `notation +delab` instead" (since := "2026-10-19")
 
 initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind ``«notation3»
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind ``notationDelab
 
 /-! `scoped[ns]` support -/
 
@@ -685,6 +729,11 @@ macro_rules
     `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
       $[$doc]? $(attr)? scoped notation3 $(prec)? $(n)? $(prio)? $(pp)? $items* => $t)
 
-end Notation3
+  | `($[$doc]? $(attr)? scoped[$ns] notation $(prec)? +delab $(n)? $(prio)?
+      $items* => $t) =>
+    `(with_weak_namespace $(mkIdentFrom ns <| rootNamespace ++ ns.getId)
+      $[$doc]? $(attr)? scoped notation $(prec)? +delab $(n)? $(prio)? $items* => $t)
+
+end NotationDelab
 
 end Mathlib

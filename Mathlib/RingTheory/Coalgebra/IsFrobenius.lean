@@ -73,10 +73,10 @@ open scoped RingTheory.LinearMap
 variable {R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [SMulCommClass R A A] [IsScalarTower R A A]
 
-local notation3 "α" => (TensorProduct.assoc R _ _ _).toLinearMap
-local notation3 "α⁻¹" => (TensorProduct.assoc R _ _ _).symm.toLinearMap
-local notation3 "β" => (TensorProduct.lid R _).toLinearMap
-local notation3 "β⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
+local notation +delab "α" => (TensorProduct.assoc R _ _ _).toLinearMap
+local notation +delab "α⁻¹" => (TensorProduct.assoc R _ _ _).symm.toLinearMap
+local notation +delab "β" => (TensorProduct.lid R _).toLinearMap
+local notation +delab "β⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
 local notation "rT" => rTensor
 local notation "lT" => lTensor
 

@@ -69,7 +69,7 @@ end
 
 /-- `v ≤[i] w` is notation for `v.restrict i ≤ w.restrict i`. -/
 scoped[MeasureTheory]
-  notation3:50 v " ≤[" i:50 "] " w:50 =>
+  notation:50 +delab v " ≤[" i:50 "] " w:50 =>
     MeasureTheory.VectorMeasure.restrict v i ≤ MeasureTheory.VectorMeasure.restrict w i
 
 section

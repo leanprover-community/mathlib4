@@ -647,7 +647,7 @@ theorem mem_range_self {f : α → ZFSet.{u}} (a : α) : f a ∈ range f := by s
 noncomputable def iUnion (f : α → ZFSet.{u}) : ZFSet.{u} :=
   sUnion (range f)
 
-@[inherit_doc iUnion] scoped notation3 "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
+@[inherit_doc iUnion] scoped notation +delab "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
 
 @[simp]
 theorem mem_iUnion {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ ⋃ i, f i ↔ ∃ i, x ∈ f i := by

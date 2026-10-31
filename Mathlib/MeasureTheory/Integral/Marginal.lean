@@ -84,7 +84,7 @@ def lmarginal (μ : ∀ i, Measure (X i)) (s : Finset δ) (f : (∀ i, X i) → 
 notation "∫⋯∫⁻_" s ", " f " ∂" μ:70 => lmarginal μ s f
 
 @[inherit_doc lmarginal]
-notation3 "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
+notation +delab "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 
 variable (μ)
 

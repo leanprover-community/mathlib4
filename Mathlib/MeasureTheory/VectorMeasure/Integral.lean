@@ -252,30 +252,30 @@ noncomputable def integral (μ : VectorMeasure X F) (f : X → E) (B : E →L[�
     (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
 
 @[inherit_doc integral]
-notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂["B:65"; "μ:65"]" => integral μ r B
+notation +delab "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂["B:65"; "μ:65"]" => integral μ r B
 
 /-- The special case of the pairing integral where the pairing is just the scalar multiplication by
 `ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
-notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral μ r (lsmul ℝ ℝ)
+notation +delab "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral μ r (lsmul ℝ ℝ)
 
 /-- The special case of the pairing integral where the pairing is just the flip of scalar
 multiplication by `ℝ` on `F` and `f` is `F`-valued and `μ` is a signed measure.
 The resulting integral is `F`-valued.-/
-notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂<•"μ:70 => integral μ r (lsmul ℝ ℝ).flip
+notation +delab "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂<•"μ:70 => integral μ r (lsmul ℝ ℝ).flip
 
 @[inherit_doc integral]
-notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" =>
+notation +delab "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" =>
   integral (VectorMeasure.restrict μ s) r B
 
 /-- The special case of the pairing integral in a set where the pairing is just the scalar
 multiplication by `ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
-notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂•"μ:70 =>
+notation +delab "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂•"μ:70 =>
   integral (VectorMeasure.restrict μ s) r (lsmul ℝ ℝ)
 
 /-- The special case of the pairing integral in a set where the pairing is just the flip of the
 scalar multiplication by `ℝ` on `F` and `f` is `F`-valued and `μ` is a signed measure.
 The resulting integral is `F`-valued.-/
-notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂<•"μ:70 =>
+notation +delab "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂<•"μ:70 =>
   integral (VectorMeasure.restrict μ s) r (lsmul ℝ ℝ).flip
 
 variable {μ ν B}

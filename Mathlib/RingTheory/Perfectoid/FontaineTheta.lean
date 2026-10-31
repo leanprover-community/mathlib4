@@ -55,7 +55,7 @@ variable {R : Type u} [CommRing R] {p : ℕ} [Fact p.Prime]
 
 local notation "𝕎 " A:100 => WittVector p A
 local notation A "♭" => PreTilt A p
-local notation3 "𝔭" => span {(p : R)}
+local notation +delab "𝔭" => span {(p : R)}
 
 namespace WittVector
 

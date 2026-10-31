@@ -65,10 +65,12 @@ end delaborators
 
 /-- Notation to say that a property of points in a topological space holds
 almost everywhere in the sense of Baire category. That is, on a residual set. -/
-scoped[Topology] notation3 "∀ᵇ " (...) ", " r:(scoped p => Filter.Eventually p <| residual _) => r
+scoped[Topology] notation +delab
+  "∀ᵇ " (...) ", " r:(scoped p => Filter.Eventually p <| residual _) => r
 
 /-- Notation to say that a property of points in a topological space holds on a nonmeager set. -/
-scoped[Topology] notation3 "∃ᵇ " (...) ", " r:(scoped p => Filter.Frequently p <| residual _) => r
+scoped[Topology] notation +delab
+  "∃ᵇ " (...) ", " r:(scoped p => Filter.Frequently p <| residual _) => r
 
 variable {α}
 
