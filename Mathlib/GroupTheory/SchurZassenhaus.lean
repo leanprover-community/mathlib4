@@ -228,31 +228,33 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
     rw [← N.range_subtype, N.subtype.range_eq_map]
   rwa [map_subtype_inj, map_subtype_inj] at key
 
+omit [Normal N] h1 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step4 : (Nat.card N).minFac.Prime :=
   Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h3)).ne'
 
+omit [Normal N] h1 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.1 ≠ ⊥ := by
-  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
+  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h3⟩
   apply P.ne_bot_of_dvd_card
   exact (Nat.card N).minFac_dvd
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Nat.card N).minFac N := by
-  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
+  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h3⟩
   refine Sylow.nonempty.elim fun P => P.isPGroup.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
   have : (P.1.map N.subtype).Normal :=
     normalizer_eq_top_iff.mp (step1 h1 h2 h3 _ P.normalizer_sup_eq_top)
-  exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
+  exact (step3 h1 h2 h3 P.1).resolve_left (step5 h3)
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 theorem step7 : IsMulCommutative N := by
   have := N.bot_or_nontrivial.resolve_left (step0 h3)
-  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
+  have : Fact (Nat.card N).minFac.Prime := ⟨step4 h3⟩
   exact
     ⟨⟨fun g h => ((eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left
       (step6 h1 h2 h3).bot_lt_center.ne') (mem_top h)).comm g).symm⟩⟩
