@@ -18,7 +18,7 @@ The shift on `Cᵒᵖ` was constructed in `Mathlib.CategoryTheory.Triangulated.O
 and is such that shifting by `n : ℤ` on `Cᵒᵖ` corresponds to the shift by
 `-n` on `C`. In `Mathlib.CategoryTheory.Triangulated.Opposite.Triangle`, we constructed
 an equivalence `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`, called
-`Mathlib.CategoryTheory.Pretriangulated.triangleOpEquivalence`.
+`CategoryTheory.Pretriangulated.triangleOpEquivalence`.
 
 Here, we defined the notion of distinguished triangles in `Cᵒᵖ`, such that
 `triangleOpEquivalence` sends distinguished triangles in `C` to distinguished triangles
@@ -28,7 +28,7 @@ shall be a distinguished triangle in `Cᵒᵖ`. This is equivalent to the defini
 in [Verdier's thesis, p. 96][verdier1996] which would require that the triangle
 `(op X)⟦-1⟧ ⟶ op Z ⟶ op Y ⟶ op X` (without signs) is *antidistinguished*.
 
-In the file `Mathlib.Triangulated.Opposite.Triangulated`, we show that `Cᵒᵖ` is
+In the file `Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated`, we show that `Cᵒᵖ` is
 triangulated if `C` is triangulated.
 
 ## References

@@ -19,7 +19,7 @@ a `C`-category structure coming from another source (e.g. the type of simplicial
 `SSet.{v}` has an instance of `EnrichedCategory SSet.{v}` as a category of simplicial objects;
 see `Mathlib/AlgebraicTopology/SimplicialCategory/SimplicialObject.lean`).
 
-All structure field values are defined in `Mathlib/CategoryTheory/Closed/Monoidal.lean`.
+All structure field values are defined in `Mathlib/CategoryTheory/Monoidal/Closed/Basic.lean`.
 
 -/
 

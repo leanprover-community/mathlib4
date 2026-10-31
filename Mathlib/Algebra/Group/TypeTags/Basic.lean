@@ -23,7 +23,7 @@ We also define instances `Additive.*` and `Multiplicative.*` that actually trans
 
 ## See also
 
-This file is similar to `Mathlib/Order/Synonym.lean`.
+This file is similar to `Mathlib/Order/Lex.lean`.
 
 -/
 

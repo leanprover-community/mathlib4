@@ -38,7 +38,7 @@ coefficients.
 
 ## TODO
 
-Derive results from the corresponding ones `Mathlib.Data.Nat.Factorization.Multiplicity`
+Derive results from the corresponding ones in `Mathlib.Data.Nat.Choose.Factorization`
 
 ## Tags
 

@@ -356,7 +356,7 @@ theorem coeff_zero_X_mul (φ : R⟦X⟧) : coeff 0 (X * φ) = 0 := by simp
 theorem constantCoeff_surj : Function.Surjective (constantCoeff (R := R)) :=
   fun r => ⟨C r, constantCoeff_C r⟩
 
--- The following section duplicates the API of `Mathlib.Data.Polynomial.Coeff` and should attempt
+-- The following section duplicates the API of `Mathlib.Algebra.Polynomial.Coeff` and should attempt
 -- to keep up to date with that
 section
 
