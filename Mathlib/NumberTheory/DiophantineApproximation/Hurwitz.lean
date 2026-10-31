@@ -6,9 +6,10 @@ Authors: Yuanxia Xu
 module
 
 public import Mathlib.NumberTheory.Real.Irrational
+
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormNum.Prime
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Hurwitz's Theorem in Diophantine Approximation
@@ -53,6 +54,7 @@ Intermediate lemmas are stated in the division-free form `|y*ξ - x| * y * √5 
 
 ## References
 
+* [G. H. Hardy and E. M. Wright, *An Introduction to the Theory of Numbers*][hardy2008introduction]
 * <https://en.wikipedia.org/wiki/Hurwitz%27s_theorem_(number_theory)>
 
 ## Tags
@@ -119,30 +121,33 @@ private lemma one_le_of_not_isGoodApprox {x y : ℤ} (hy : 0 < y) (h : ¬ IsGood
   rw [IsGoodApprox, not_and, not_lt] at h
   exact h hy
 
-private lemma sqrt_five_mul_le_of_not_isGoodApprox_left {a b : ℤ} (hb : 0 < b)
-    (hlt : (a : ℝ) / b < ξ) (h : 1 ≤ |(b : ℝ) * ξ - a| * b * √5) :
+private lemma one_le_sqrt_five_mul_of_not_isGoodApprox_left {a b : ℤ} (hb : 0 < b)
+    (hlt : (a : ℝ) / b < ξ) (h : ¬ IsGoodApprox ξ a b) :
     1 ≤ √5 * b * ((b : ℝ) * ξ - a) := by
+  have h' := one_le_of_not_isGoodApprox hb h
   have hbR : 0 < (b : ℝ) := mod_cast hb
   have hpos : 0 < (b : ℝ) * ξ - a := by
     rw [div_lt_iff₀ hbR] at hlt
     linarith
-  rw [abs_of_pos hpos] at h
+  rw [abs_of_pos hpos] at h'
   linarith
 
-private lemma sqrt_five_mul_le_of_not_isGoodApprox_right {c d : ℤ} (hd : 0 < d)
-    (hgt : ξ < (c : ℝ) / d) (h : 1 ≤ |(d : ℝ) * ξ - c| * d * √5) :
+private lemma one_le_sqrt_five_mul_of_not_isGoodApprox_right {c d : ℤ} (hd : 0 < d)
+    (hgt : ξ < (c : ℝ) / d) (h : ¬ IsGoodApprox ξ c d) :
     1 ≤ √5 * d * ((c : ℝ) - d * ξ) := by
+  have h' := one_le_of_not_isGoodApprox hd h
   have hdR : 0 < (d : ℝ) := mod_cast hd
   have hneg : (d : ℝ) * ξ - c < 0 := by
     rw [lt_div_iff₀ hdR] at hgt
     linarith
-  rw [abs_of_neg hneg] at h
+  rw [abs_of_neg hneg] at h'
   linarith
 
 /-! ### Important contradiction -/
 
-private lemma two_mul_ne_sqrt_five_sub_one_mul {b d : ℤ} (hb : 0 < b)
-    (h : 2 * (d : ℝ) = (√5 - 1) * b) : False := by
+private lemma two_mul_ne_sqrt_five_sub_one_mul {b d : ℤ} (hb : 0 < b) :
+    2 * (d : ℝ) ≠ (√5 - 1) * b := by
+  intro h
   refine Nat.prime_five.irrational_sqrt ⟨(2 * d + b) / b, ?_⟩
   have hb0 : (b : ℝ) ≠ 0 := mod_cast (ne_of_gt hb)
   push_cast
@@ -220,13 +225,9 @@ theorem isGoodApprox_or (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey ξ p 
   have hqs_pos : 0 < q + s := add_pos h.q_pos h.s_pos
   have hqR : 0 < (q : ℝ) := mod_cast h.q_pos
   have hsR : 0 < (s : ℝ) := mod_cast h.s_pos
-  -- Inequalities
-  have hn1 := one_le_of_not_isGoodApprox h.q_pos h1
-  have hn2 := one_le_of_not_isGoodApprox h.s_pos h2
-  have hn3 := one_le_of_not_isGoodApprox hqs_pos h3
   -- Hypotheses for aux₀
-  have hA := sqrt_five_mul_le_of_not_isGoodApprox_left h.q_pos h.left hn1
-  have hB := sqrt_five_mul_le_of_not_isGoodApprox_right h.s_pos h.right hn2
+  have hA := one_le_sqrt_five_mul_of_not_isGoodApprox_left h.q_pos h.left h1
+  have hB := one_le_sqrt_five_mul_of_not_isGoodApprox_right h.s_pos h.right h2
   have H1 := aux₀ h.det hA hB
   -- Split depending on mediant
   have hne : ξ ≠ ((p + r : ℤ) : ℝ) / ((q + s : ℤ) : ℝ) := ne_mediant hξ
@@ -234,7 +235,7 @@ theorem isGoodApprox_or (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey ξ p 
   · -- ξ < (p + r) / (q + s)
     have h' := h.of_lt_mediant hm
     obtain ⟨H2, _⟩ := aux₁ hqR H1
-    have H1' := aux₀ h'.det hA (sqrt_five_mul_le_of_not_isGoodApprox_right hqs_pos h'.right hn3)
+    have H1' := aux₀ h'.det hA (one_le_sqrt_five_mul_of_not_isGoodApprox_right hqs_pos h'.right h3)
     obtain ⟨_, H2'⟩ := aux₁ hqR H1'
     push_cast at H2'
     have heq : 2 * s = (√5 - 1) * q := by linarith
@@ -242,7 +243,7 @@ theorem isGoodApprox_or (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey ξ p 
   · -- (p + r) / (q + s) < ξ
     have h' := h.of_mediant_lt hm
     obtain ⟨H2, _⟩ := aux₁' hsR H1
-    have H1' := aux₀ h'.det (sqrt_five_mul_le_of_not_isGoodApprox_left hqs_pos h'.left hn3) hB
+    have H1' := aux₀ h'.det (one_le_sqrt_five_mul_of_not_isGoodApprox_left hqs_pos h'.left h3) hB
     obtain ⟨_, H2'⟩ := aux₁' hsR H1'
     push_cast at H2'
     have heq : 2 * q = (√5 - 1) * s := by linarith
@@ -296,7 +297,9 @@ theorem exists_isFarey_large (hξ : Irrational ξ) (n : ℕ) :
 
 /-! ### From ℤ to ℚ, and infinitude -/
 
-private lemma isGoodApprox_div_bound {x y : ℤ} (hg : IsGoodApprox ξ x y) :
+/-- A good approximation in the division-free sense satisfies the usual Hurwitz bound
+`|ξ - x / y| < 1 / (√5 * y ^ 2)`. -/
+lemma isGoodApprox_div_bound {x y : ℤ} (hg : IsGoodApprox ξ x y) :
     |ξ - (x : ℝ) / y| < 1 / (√5 * (y : ℝ) ^ 2) := by
   obtain ⟨hpos, hmul⟩ := hg
   have hposR : 0 < (y : ℝ) := mod_cast hpos
@@ -318,7 +321,8 @@ private lemma add_le_two_mul_mul {q s : ℤ} (hq : 0 < q) (hs : 0 < s) :
 
 /-- Given any rational `t`, there is a rational `t'` satisfying the Hurwitz bound
 that is strictly closer to `ξ` than `t` is. -/
-theorem exists_rat_isGoodApprox_and_lt (hξ : Irrational ξ) (t : ℚ) :
+theorem exists_rat_abs_sub_lt_one_div_sqrt_five_mul_den_sq_and_lt_of_irrational
+    (hξ : Irrational ξ) (t : ℚ) :
     ∃ t' : ℚ, |ξ - t'| < 1 / (√5 * (t'.den : ℝ) ^ 2) ∧ |ξ - t'| < |ξ - t| := by
   have hpos := abs_pos.mpr (sub_ne_zero.mpr (hξ.ne_rat t))
   obtain ⟨n, hn⟩ := exists_nat_gt (2 / |ξ - (t : ℝ)|)
@@ -344,12 +348,14 @@ is infinite. -/
 theorem infinite_rat_abs_sub_lt_one_div_sqrt_five_mul_den_sq_of_irrational (hξ : Irrational ξ) :
     {t : ℚ | |ξ - t| < 1 / (√5 * (t.den : ℝ) ^ 2)}.Infinite := by
   have hne : {t : ℚ | |ξ - t| < 1 / (√5 * (t.den : ℝ) ^ 2)}.Nonempty := by
-    obtain ⟨t', hgood', _⟩ := Hurwitz.exists_rat_isGoodApprox_and_lt hξ 0
+    obtain ⟨t', hgood', _⟩ :=
+      Hurwitz.exists_rat_abs_sub_lt_one_div_sqrt_five_mul_den_sq_and_lt_of_irrational hξ 0
     use t', hgood'
   refine Or.resolve_left (Set.finite_or_infinite _) fun h => ?_
   obtain ⟨t₀, _, ht₀⟩ :=
     Set.exists_min_image _ (fun t : ℚ => |ξ - (t : ℝ)|) h hne
-  obtain ⟨t, ht_good, hbetter⟩ := Hurwitz.exists_rat_isGoodApprox_and_lt hξ t₀
+  obtain ⟨t, ht_good, hbetter⟩ :=
+    Hurwitz.exists_rat_abs_sub_lt_one_div_sqrt_five_mul_den_sq_and_lt_of_irrational hξ t₀
   exact lt_irrefl _ (lt_of_le_of_lt (ht₀ t ht_good) hbetter)
 
 end Real
