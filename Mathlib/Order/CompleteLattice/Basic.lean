@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.ULift
 public import Mathlib.Order.Bounds.Image
+public import Mathlib.Order.Bounds.OrderIso
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.Hom.Set
 
@@ -950,3 +951,17 @@ protected abbrev completeLattice [CompleteLattice β] : CompleteLattice α := by
   apply e.injective.completeLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
 
 end Equiv
+
+namespace OrderIso
+variable {α β : Type*} [Lattice α] [BoundedOrder α] [CompleteLattice β]
+
+/-- Transfer a `CompleteLattice` structure on `β` across an order isomorphism `α ≃o β`, keeping the
+existing `Lattice` and `BoundedOrder` structures on `α`. -/
+-- See note [reducible non-instances]
+abbrev completeLattice (e : α ≃o β) : CompleteLattice α where
+  __ := ‹Lattice α›
+  __ := ‹BoundedOrder α›
+  __ := @completeLatticeOfInf α _ ⟨fun S ↦ e.symm (sInf (e '' S))⟩ fun S ↦
+    e.isGLB_image'.1 (by simpa using isGLB_sInf (e '' S))
+
+end OrderIso
