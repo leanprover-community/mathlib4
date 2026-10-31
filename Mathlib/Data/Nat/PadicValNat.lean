@@ -85,7 +85,7 @@ theorem padicValNat_le_self {p : ℕ} (n : ℕ) : padicValNat p n ≤ n := by
   · simp
   · exact Nat.le_of_lt <| padicValNat_lt_self hn
 
-private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p) (hn : n ≠ 0)
+private theorem pow_dvd_iff_le_of_spec {p k n a b : ℕ} (hp : 1 < p)
     (hab : p ^ a * b = n) (hb : ¬p ∣ b) : p ^ k ∣ n ↔ k ≤ a := by
   subst hab
   cases Nat.lt_or_ge a k with
@@ -105,7 +105,7 @@ theorem pow_dvd_iff_le_padicValNat {p k n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
     p ^ k ∣ n ↔ k ≤ padicValNat p n := by
   obtain rfl | hp₁ : p = 0 ∨ 1 < p := by grind
   · rcases k.eq_zero_or_pos with rfl | hk <;> simp [Nat.ne_of_gt, *]
-  · exact pow_dvd_iff_le_of_spec hp₁ hn (pow_padicValNat_mul_divMaxPow p n)
+  · exact pow_dvd_iff_le_of_spec hp₁ (pow_padicValNat_mul_divMaxPow p n)
       (not_dvd_divMaxPow hp₁ hn)
 
 theorem maxPowDvdDiv_of_pow_mul_eq {p n k l : ℕ} (hn : n ≠ 0) (h : p ^ k * l = n)
@@ -116,8 +116,8 @@ theorem maxPowDvdDiv_of_pow_mul_eq {p n k l : ℕ} (hn : n ≠ 0) (h : p ^ k * l
   · have hk : k = (p.maxPowDvdDiv n).1 := by
       apply Nat.le_antisymm
       · rw [← padicValNat, ← pow_dvd_iff_le_padicValNat (Nat.ne_of_gt hp) hn,
-          pow_dvd_iff_le_of_spec hp hn h hl]
-      · rw [← pow_dvd_iff_le_of_spec hp hn h hl, pow_dvd_iff_le_padicValNat (Nat.ne_of_gt hp) hn]
+          pow_dvd_iff_le_of_spec hp h hl]
+      · rw [← pow_dvd_iff_le_of_spec hp h hl, pow_dvd_iff_le_padicValNat (Nat.ne_of_gt hp) hn]
         apply Nat.le_refl
     rw [← pow_padicValNat_mul_divMaxPow p n, hk, padicValNat, Nat.mul_left_cancel_iff] at h
     · exact Prod.ext hk.symm h.symm

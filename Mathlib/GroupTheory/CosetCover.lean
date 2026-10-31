@@ -237,7 +237,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     rw [← s.filter_union_filter_not_eq (fun i => (H i).FiniteIndex)] at hcovers
     rw [← hcovers, ← Finset.univ.filter_union_filter_not_eq (fun k => (H k.1).FiniteIndex),
       Finset.set_biUnion_union, Finset.set_biUnion_union]
-    apply congrArg₂ (· ∪ ·) <;> rw [Set.iUnion_sigma, Set.iUnion_subtype] <;>
+    congr <;> rw [Set.iUnion_sigma, Set.iUnion_subtype] <;>
         refine Set.iUnion_congr fun i => ?_
     · by_cases hfi : (H i).FiniteIndex <;>
         simp [← Set.smul_set_iUnion₂, Set.iUnion_subtype, ← leftCoset_assoc, f, K, ht, hfi]
@@ -360,7 +360,7 @@ theorem exists_index_le_card_of_leftCoset_cover :
     | inl hindex =>
       rwa [hindex, Nat.cast_zero, inv_zero, inv_pos, Nat.cast_pos]
     | inr hindex =>
-      exact inv_strictAnti₀ (by exact_mod_cast hs') (by exact_mod_cast h i hi ⟨hindex⟩)
+      exact inv_strictAnti₀ (mod_cast hs') (mod_cast h i hi ⟨hindex⟩)
   apply (Finset.sum_lt_sum_of_nonempty hs hlt).trans_eq
   rw [Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr hs'.ne')]
 

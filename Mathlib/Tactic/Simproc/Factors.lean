@@ -5,9 +5,12 @@ Authors: Mario Carneiro, Eric Wieser
 -/
 module
 
-public import Batteries.Lean.Expr
+public meta import Batteries.Lean.Expr
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Tactic.NormNum.Prime
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `simproc` for `Nat.primeFactorsList`
