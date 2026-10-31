@@ -56,6 +56,14 @@ theorem artanh_eq_half_log {x : ℝ} (hx : x ∈ Icc (-1) 1) :
     artanh x = 1 / 2 * log ((1 + x) / (1 - x)) := by
   rw [artanh, log_sqrt <| div_nonneg (by grind) (by grind), one_div_mul_eq_div]
 
+theorem log_eq_two_mul_artanh {x : ℝ} (hx : 0 < x) :
+    log x = 2 * artanh ((x - 1) / (x + 1)) := by
+  suffices (x - 1) / (x + 1) ∈ Icc (-1) 1 by
+    rw [artanh_eq_half_log this, one_div, mul_inv_cancel_left₀ (NeZero.ne 2)]
+    congr
+    field
+  simp [field, sub_eq_neg_add, add_left_comm, hx.le]
+
 theorem exp_artanh {x : ℝ} (hx : x ∈ Ioo (-1) 1) : exp (artanh x) = √((1 + x) / (1 - x)) :=
   exp_log <| sqrt_pos_of_pos <| div_pos (by grind) (by grind)
 
