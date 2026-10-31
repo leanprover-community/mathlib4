@@ -49,4 +49,62 @@ jobs:
       # the single producer: the master `push` build
       publish_cache: ${{ github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
       runs_on: pr
+      # Report the first build error before the build ends, on branches other than master.
+      early_signal: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref != 'refs/heads/master' }}
     secrets: inherit
+
+  early_signal:
+    name: First error
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref != 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    permissions:
+      actions: read
+      checks: write
+    steps:
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
+      - name: Report the first build error
+        uses: ./workflow-actions/.github/actions/early-signal
+        with:
+          artifact: first-error-${{ github.run_attempt }}
+          head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+
+  # Marks the failed `first error` check runs on the head commit neutral when Build succeeds,
+  # including those of earlier attempts. It runs after `early_signal`, so it also sees a check
+  # run created after Build ended, and it runs when `early_signal` fails or times out.
+  first_error_clear:
+    name: Clear first error
+    needs: [build, early_signal]
+    if: ${{ always() && github.repository == 'leanprover-community/mathlib4' && github.ref != 'refs/heads/master' && needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      checks: write
+    steps:
+      - name: Mark the failed first error check runs neutral
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          if ! ids="$(gh api "repos/${REPO}/commits/${HEAD_SHA}/check-runs?check_name=first%20error&filter=all&per_page=100" \
+                       --jq '.check_runs[] | select(.conclusion == "failure") | .id')"; then
+            echo "::error::Could not list the first error check runs of ${HEAD_SHA}."
+            exit 1
+          fi
+          for id in ${ids}; do
+            if ! gh api -X PATCH "repos/${REPO}/check-runs/${id}" -f conclusion=neutral \
+                   -f 'output[title]=The build succeeded' \
+                   -f 'output[summary]=The build reported an error, then succeeded on a later attempt.' > /dev/null; then
+              echo "::error::Could not mark the first error check run ${id} neutral."
+              exit 1
+            fi
+          done

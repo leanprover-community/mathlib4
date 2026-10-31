@@ -31,6 +31,12 @@ on:
         # writer credentials are scoped to.
         type: string
         required: true
+      early_signal:
+        # Upload the first error of the Mathlib build as the `first-error-<attempt>` artifact
+        # while the build continues, for a caller job that reports it as a check run.
+        type: boolean
+        required: false
+        default: false
       publish_cache:
         # On a successful build, publish this run's `.ltar` set as `cache-snapshot`.
         # Set by callers ONLY for the master-`push` build — the single producer.
@@ -199,6 +205,20 @@ jobs:
         with:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: lean
+      # Uploads the first error of the build below as soon as the wrapper writes it, for
+      # the caller's `early_signal` job. The build continues after its first error, so that the
+      # oleans of every other module are staged and cached.
+      - name: watch for the first build error
+        id: first_error
+        if: ${{ inputs.early_signal }}
+        background: true
+        continue-on-error: true
+        uses: ./workflow-actions/.github/actions/first-error
+        with:
+          file: pr-branch/.lake/build_summary_Mathlib.first_error.json
+          root: pr-branch/.lake
+          stop: ${{ runner.temp }}/first-error-stop
+          artifact: first-error-${{ github.run_attempt }}
       - name: build mathlib
         id: build
         run: |
@@ -220,6 +240,12 @@ jobs:
         with:
           action: remove
           linters: lean
+      - name: stop the first-error watch
+        if: ${{ always() && inputs.early_signal }}
+        shell: bash
+        run: touch "${RUNNER_TEMP}/first-error-stop"
+      - name: wait for the first-error watch
+        wait: first_error
 
       - name: print the sizes of the oleans
         run: |

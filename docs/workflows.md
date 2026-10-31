@@ -29,15 +29,21 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 
 | File | Name | Importance | Triggers | Description |
 |---|---|---|---|---|
-| [`build_fork.yml`](../.github/workflows/build_fork.yml) | continuous integration (mathlib forks)<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/build_fork.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/build_fork.yml) | High | `pull_request_target` | On PRs from forks, this workflow builds, lints and tests Mathlib using the reusable build template (`build_template.yml`). |
+| [`build_fork.yml`](../.github/workflows/build_fork.yml) | continuous integration (mathlib forks)<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/build_fork.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/build_fork.yml) | High | `pull_request_target` | On PRs from forks, this workflow builds, lints and tests Mathlib using the reusable build template (`build_template.yml`). The `early_signal` job reports the first error of the Mathlib build as a `first error` check run while the build runs, and the `first_error_clear` job marks the failed `first error` check runs neutral when the build succeeds. |
 | [`bors.yml`](../.github/workflows/bors.yml) | continuous integration (staging)<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/bors.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/bors.yml) | High | `push` | On the `staging` and `trying` branches used by Bors, this workflow builds, lints and tests Mathlib using the reusable build template (`build_template.yml`). |
-| [`build.yml`](../.github/workflows/build.yml) | continuous integration<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/build.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml) | High | `push` | On non-fork PRs, this workflow builds, lints and tests Mathlib using the reusable build template (`build_template.yml`). |
+| [`build.yml`](../.github/workflows/build.yml) | continuous integration<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/build.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml) | High | `push` | On non-fork PRs, this workflow builds, lints and tests Mathlib using the reusable build template (`build_template.yml`). On branches other than `master`, the `early_signal` and `first_error_clear` jobs report the first build error as in `build_fork.yml`. |
 | [`release_cache.yml`](../.github/workflows/release_cache.yml) | publish release cache<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/release_cache.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/release_cache.yml) | High | `push (v4.* tags), workflow_dispatch` | On every `v4.*` release tag, this workflow builds the tagged commit using the reusable build template (`build_template.yml`) and publishes its cache to the `master` container. When the cache is already complete, the build uploads nothing. |
 
 ### The main CI pipelines above all use this reusable workflow for the base logic:
 | File  | Description |
 |---|---|
 | [`build_template.yml`](../.github/workflows/build_template.yml) | Reusable CI workflow (`workflow_call`) that performs Lean setup, build/test/lint steps, cache/artifact handling, and reporting. Cache uploads have a 20-minute timeout; post-build checks have a 30-minute timeout. |
+
+### The first-error report of `build.yml` and `build_fork.yml` uses these composite actions:
+| File  | Description |
+|---|---|
+| [`first-error`](../.github/actions/first-error/action.yml) | A background step in the `build` job of `build_template.yml`, turned on by the `early_signal` input. It watches for the first error file that `scripts/lake-build-wrapper.py` writes, and uploads a validated copy as the `first-error-<attempt>` artifact while the build continues. |
+| [`early-signal`](../.github/actions/early-signal/action.yml) | The step of the `early_signal` job. On a GitHub-hosted runner, it polls the run every 120 s with conditional requests, validates the artifact, and creates a failed `first error` check run with `file:line` as its title. It fails when the `build` job fails, so "Re-run failed jobs" re-runs it. |
 
 ## Pull requests
 
