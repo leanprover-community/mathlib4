@@ -24,6 +24,7 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 - `issues`: runs on issue lifecycle events (for example `closed`, `reopened`).
 - `workflow_call`: reusable workflow entrypoint, triggered only when called by another workflow.
 
+
 # Summary
 ## Main CI
 
