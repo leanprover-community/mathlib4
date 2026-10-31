@@ -170,6 +170,10 @@ end
 
 section
 
+#adaptation_note
+/-- The autoParam in this `variable` generates a private helper declaration, so every public
+declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable {F : C ⥤ D}
     /- unit morphism -/
     (ε : 𝟙_ D ⟶ F.obj (𝟙_ C))
