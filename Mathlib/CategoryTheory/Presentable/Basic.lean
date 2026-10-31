@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 
+import Mathlib.CategoryTheory.Limits.Types.CardinalFiltered
+
 /-! # Presentable objects
 
 A functor `F : C ⥤ D` is `κ`-accessible (`Functor.IsCardinalAccessible`)
@@ -276,6 +278,14 @@ lemma Limits.exists_hom₂_of_preservesColimit_coyoneda
   Types.FilteredColimit.jointly_surjective_of_isColimit₂
     (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g
 
+lemma Limits.exists_hom_of_preservesColimit_coyoneda_of_hasCardinalLT
+    [IsCardinalFiltered J κ] {c : Cocone D} (hc : IsColimit c) {X : C}
+    [PreservesColimit D (coyoneda.obj (.op X))] {ι : Type*} (hi : HasCardinalLT ι κ)
+    (f : ι → (X ⟶ c.pt)) :
+    ∃ (j : J) (p : ι → (X ⟶ D.obj j)), ∀ (i : ι), p i ≫ c.ι.app j = f i :=
+  Types.FilteredColimit.jointly_surjective_of_isColimit_of_hasCardinalLT.{w} κ
+    (isColimitOfPreserves (coyoneda.obj (.op X)) hc) hi f
+
 lemma Limits.exists_eq_of_preservesColimit_coyoneda [IsFiltered J] {c : Cocone D}
     (hc : IsColimit c) {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
     {i j : J} (f : X ⟶ D.obj i) (g : X ⟶ D.obj j) (h : f ≫ c.ι.app i = g ≫ c.ι.app j) :
@@ -288,6 +298,14 @@ lemma Limits.exists_eq_of_preservesColimit_coyoneda_self [IsFiltered J] {c : Coc
     ∃ (j : J) (a : i ⟶ j), f ≫ D.map a = g ≫ D.map a :=
   (Types.FilteredColimit.isColimit_eq_iff'
     (isColimitOfPreserves (coyoneda.obj (.op X)) hc) f g).mp h
+
+lemma Limits.exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT [IsCardinalFiltered J κ]
+    {c : Cocone D} (hc : IsColimit c) {X : C} [PreservesColimit D (coyoneda.obj (.op X))]
+    {i : J} {ι : Type*} (hi : HasCardinalLT ι κ)
+    (f : ι → (X ⟶ D.obj i)) (h : ∀ (k k' : ι), f k ≫ c.ι.app i = f k' ≫ c.ι.app i) :
+    ∃ (j : J) (a : i ⟶ j), ∀ (k k' : ι), f k ≫ D.map a = f k' ≫ D.map a :=
+  (Types.FilteredColimit.isColimit_eq_iff'_of_hasCardinal_LT κ
+    (isColimitOfPreserves (coyoneda.obj (.op X)) hc) hi f).mp h
 
 lemma Limits.exists_hom_of_preservesColimit_yoneda {c : Cone D} (hc : IsLimit c) {X : C}
     [PreservesColimit D.op (yoneda.obj X)] (f : c.pt ⟶ X) :
@@ -320,6 +338,18 @@ lemma IsCardinalPresentable.exists_hom_of_isColimit [IsCardinalPresentable X κ]
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   exact exists_hom_of_preservesColimit_coyoneda hc f
 
+variable {X} in
+/-- A variant of `IsCardinalPresentable.exists_hom_of_isColimit` where one also imposes
+the index found to be over a given index `j₀`. -/
+lemma IsCardinalPresentable.exists_hom_above_of_isColimit [IsCardinalPresentable X κ]
+    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (f : X ⟶ c.pt) (j₀ : J) :
+    ∃ (j : J) (_ : j₀ ⟶ j) (f' : X ⟶ F.obj j), f' ≫ c.ι.app j = f := by
+  obtain ⟨j₁, f₁, hf₁⟩ := exists_hom_of_isColimit κ hc f
+  have := isFiltered_of_isCardinalFiltered J κ
+  exact ⟨IsFiltered.max j₀ j₁, IsFiltered.leftToMax .., f₁ ≫ F.map (IsFiltered.rightToMax ..),
+    by simpa⟩
+
 variable {X}
 
 lemma IsCardinalPresentable.exists_hom₂_of_isColimit [IsCardinalPresentable X κ]
@@ -329,6 +359,14 @@ lemma IsCardinalPresentable.exists_hom₂_of_isColimit [IsCardinalPresentable X 
   have := isFiltered_of_isCardinalFiltered J κ
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   exact exists_hom₂_of_preservesColimit_coyoneda hc f g
+
+lemma IsCardinalPresentable.exists_hom_of_isColimit_of_hasCardinalLT [IsCardinalPresentable X κ]
+    [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {ι : Type*} (hι : HasCardinalLT ι κ)
+    (f : ι → (X ⟶ c.pt)) :
+    ∃ (j : J) (f' : ι → (X ⟶ F.obj j)), ∀ (i : ι), f' i ≫ c.ι.app j = f i :=
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  exists_hom_of_preservesColimit_coyoneda_of_hasCardinalLT κ hc hι f
 
 lemma IsCardinalPresentable.exists_eq_of_isColimit [IsCardinalPresentable X κ]
     [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
@@ -348,6 +386,46 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
   have := isFiltered_of_isCardinalFiltered J κ
   exact exists_eq_of_preservesColimit_coyoneda_self hc f₁ f₂ hf
 
+lemma IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT
+    [IsCardinalPresentable X κ] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i : J} {ι : Type*} (hι : HasCardinalLT ι κ)
+    (f : ι → (X ⟶ F.obj i))
+    (hf : ∀ (i₀ i₁ : ι), f i₀ ≫ c.ι.app i = f i₁ ≫ c.ι.app i) :
+    ∃ (j : J) (u : i ⟶ j), ∀ (i₀ i₁ : ι), f i₀ ≫ F.map u = f i₁ ≫ F.map u :=
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT _ hc hι f hf
+
+/-- In a category `C`, given a diagram `F : J ⥤ C` where `J` is κ-filtered
+and a commutative diagram
+```
+X₀ ---> X₁ ------> X₂
+|                  |
+v                  v
+X₃ --> F(j₀) --> colim F
+```
+where X₁ is κ-presentable, there exists an index j₁ and a commutative diagram
+```
+X₀ -------------> X₁ --------> X₂
+|                 |            |
+v                 v            v
+X₃ --> F(j₀) -> F(j₁) ----> colim F
+```
+-/
+lemma IsCardinalPresentable.exists_of_hexagon
+    [IsCardinalFiltered J κ] [EssentiallySmall.{w} J] {F : J ⥤ C} {c : Limits.Cocone F}
+    (hc : IsColimit c) {X₀ X₁ X₂ X₃ : C} [IsCardinalPresentable X₀ κ] [IsCardinalPresentable X₁ κ]
+    (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₃ : X₀ ⟶ X₃)
+    {j₀ : J} (g : X₃ ⟶ F.obj j₀) (q : X₂ ⟶ c.pt)
+    (h : f₀₁ ≫ f₁₂ ≫ q = f₀₃ ≫ g ≫ c.ι.app j₀) :
+    ∃ (j₁ : J) (u : j₀ ⟶ j₁) (q' : X₁ ⟶ F.obj j₁),
+      (f₀₁ ≫ q' = f₀₃ ≫ g ≫ F.map u) ∧ (f₁₂ ≫ q = q' ≫ c.ι.app j₁) := by
+  obtain ⟨j₁₀, u', v', hu'⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hc
+    (f₁₂ ≫ q) j₀
+  obtain ⟨j₁, u, w⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hc (f₀₁ ≫ v')
+    (f₀₃ ≫ g ≫ F.map u') (by simpa [hu'])
+  exact ⟨j₁, u' ≫ u, v' ≫ F.map u, by grind, by simp [hu']⟩
+
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a commutative square where both objects on the top are `κ`-presentable
 and the bottom map is a colimit of a natural transformation `f : X ⟶ Y` between
 functors in `J ⥤ C` where `J` is `κ`-filtered, the commutative square can be
@@ -415,6 +493,14 @@ class HasCardinalFilteredColimits (C : Type u₁) [Category.{v₁} C]
 
 instance (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasColimitsOfSize.{w, w} C] :
     HasCardinalFilteredColimits.{w} C κ where
+
+lemma hasColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
+    (J : Type u₃) [Category.{v₃} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
+    HasColimitsOfShape J C := by
+  have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
+  have := HasCardinalFilteredColimits.hasColimitsOfShape C κ (SmallModel.{w} J)
+  exact hasColimitsOfShape_of_equivalence (equivSmallModel.{w} J).symm
 
 variable {κ} in
 lemma HasCardinalFilteredColimits.of_le {κ : Cardinal.{w}} [Fact κ.IsRegular]
