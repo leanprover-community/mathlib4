@@ -86,6 +86,11 @@ instance : IsEquiv ℤ (ModEq n) where
 
 protected theorem eq : a ≡ b [ZMOD n] → a % n = b % n := id
 
+@[gcongr]
+protected theorem congr (h₁ : a ≡ c [ZMOD n]) (h₂ : b ≡ d [ZMOD n]) :
+    (a ≡ b [ZMOD n]) = (c ≡ d [ZMOD n]) := by
+  simp_all [ModEq]
+
 end ModEq
 
 theorem modEq_comm : a ≡ b [ZMOD n] ↔ b ≡ a [ZMOD n] := ⟨ModEq.symm, ModEq.symm⟩
