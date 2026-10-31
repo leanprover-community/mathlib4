@@ -18,7 +18,7 @@ can be equalized at some stage of the diagram. -/
 
 open CategoryTheory Limits ConcreteCategory
 
-universe v u w
+universe w v u
 
 namespace CategoryTheory.Limits.Types.FilteredColimit
 
