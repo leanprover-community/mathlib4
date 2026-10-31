@@ -342,6 +342,17 @@ abbrev limitCone : Limits.Cone F where
       congr
       exact funext fun x => (x.2 f).symm }
 
+/-- Applying a map out of a finite-group-valued diagram after an explicit limit projection. -/
+@[to_additive
+  /-- Applying a map out of a finite-additive-group-valued diagram after an explicit limit
+  projection. -/]
+lemma limitCone_π_forget₂_map_apply (K : J ⥤ FiniteGrp.{max u v}) (j : J)
+    {H : FiniteGrp.{max u v}} (f : K.obj j ⟶ H)
+    (x : (limitCone (K ⋙ forget₂ FiniteGrp ProfiniteGrp)).pt) :
+    ((limitCone (K ⋙ forget₂ FiniteGrp ProfiniteGrp)).π.app j ≫
+      (forget₂ FiniteGrp ProfiniteGrp).map f) x = f (x.1 j) :=
+  rfl
+
 /-- `ProfiniteGrp.limitCone` is a limit cone. -/
 @[to_additive /-- `ProfiniteAddGrp.limitCone` is a limit cone. -/]
 def limitConeIsLimit : Limits.IsLimit (limitCone F) where
