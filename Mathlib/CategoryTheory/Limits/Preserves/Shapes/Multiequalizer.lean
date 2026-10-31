@@ -38,14 +38,13 @@ variable {J : MulticospanShape.{w, w'}} (d : MulticospanIndex J C)
   (c : Multifork d) (F : C ⥤ D)
 
 /-- The multicospan index obtained by applying a functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def MulticospanIndex.map : MulticospanIndex J D where
   left i := F.obj (d.left i)
   right i := F.obj (d.right i)
   fst i := F.map (d.fst i)
   snd i := F.map (d.snd i)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MulticospanIndex J C` and `F : C ⥤ D`, this is the obvious isomorphism
 `(d.map F).multicospan ≅ d.multicospan ⋙ F`. -/
 @[simps!]
@@ -58,16 +57,14 @@ def MulticospanIndex.multicospanMapIso : (d.map F).multicospan ≅ d.multicospan
 
 variable {d}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MulticospanIndex J C`, `c : Multifork d` and `F : C ⥤ D`,
 this is the induced multifork of `d.map F`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def Multifork.map : Multifork (d.map F) :=
   Multifork.ofι _ (F.obj c.pt) (fun i ↦ F.map (c.ι i)) (fun j ↦ by
     dsimp
     rw [← F.map_comp, ← F.map_comp, condition])
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MulticospanIndex J C`, `c : Multifork d` and `F : C ⥤ D`,
 the cone `F.mapCone c` is limiting iff the multifork `c.map F` is. -/
 def Multifork.isLimitMapEquiv :
@@ -91,14 +88,13 @@ variable {J : MultispanShape.{w, w'}} (d : MultispanIndex J C)
   (c : Multicofork d) (F : C ⥤ D)
 
 /-- The multispan index obtained by applying a functor. -/
-@[simps]
+@[simps, implicit_reducible]
 def MultispanIndex.map : MultispanIndex J D where
   left i := F.obj (d.left i)
   right i := F.obj (d.right i)
   fst i := F.map (d.fst i)
   snd i := F.map (d.snd i)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MultispanIndex J C` and `F : C ⥤ D`, this is the obvious isomorphism
 `(d.map F).multispan ≅ d.multispan ⋙ F`. -/
 @[simps!]
@@ -111,16 +107,14 @@ def MultispanIndex.multispanMapIso : (d.map F).multispan ≅ d.multispan ⋙ F :
 
 variable {d}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MultispanIndex J C`, `c : Multicofork d` and `F : C ⥤ D`,
 this is the induced multicofork of `d.map F`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def Multicofork.map : Multicofork (d.map F) :=
   Multicofork.ofπ _ (F.obj c.pt) (fun i ↦ F.map (c.π i)) (fun j ↦ by
     dsimp
     rw [← F.map_comp, ← F.map_comp, condition])
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MultispanIndex J C`, `c : Multicofork d` and `F : C ⥤ D`,
 the cocone `F.mapCocone c` is colimit iff the multicofork `c.map F` is. -/
 def Multicofork.isColimitMapEquiv :
