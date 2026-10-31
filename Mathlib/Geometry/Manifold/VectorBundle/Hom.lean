@@ -784,6 +784,42 @@ lemma ContMDiff.clm_bundle_apply₂
     CMDiff n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
   fun x ↦ (hψ x).clm_bundle_apply₂ (hv x) (hw x)
 
+-- Version without using pullback bundles: the general version needs the clm_bundle_of_apply
+-- lemmas to use pullbacks first.
+lemma ContMDiffAt.clm_bundle_of_apply₂_simpler
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
+    [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
+    [∀ (x : B), IsTopologicalAddGroup (E₂ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)]
+    [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
+    [ContMDiffVectorBundle n F₃ E₃ IB]
+    {ψ : ∀ x, (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)} {x : B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ x' in 𝓝 x, CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ m (σ m)) x') →
+      ∀ (τ : Π x : B, E₂ x),
+        (∀ᶠ x' in 𝓝 x, CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ m (τ m)) x') →
+      CMDiffAt n (fun m ↦ TotalSpace.mk' F₃ m (ψ m (σ m) (τ m))) x) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) m (ψ m)) x := by
+  -- We use `ContMDiffAT.clm_bundle_of_apply` twice: first to prove `ψ σ` is C^n at `x`,
+  have aux (σ : Π x : B, E₁ x)
+      (hσ : (∀ᶠ x' in 𝓝 x, CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ m (σ m)) x')) :
+      CMDiffAt n
+        (fun m ↦ TotalSpace.mk' (E := fun (x : B) ↦ (E₂ x →L[𝕜] E₃ x))
+        (F₂ →L[𝕜] F₃) m (ψ m (σ m))) x :=
+    ContMDiffAt.clm_bundle_of_apply (φ := fun m ↦ ψ m (σ m)) (fun τ hτ ↦ h σ hσ τ hτ )
+  -- then to conclude that `ψ` is C^n at `x`.
+  exact ContMDiffAt.clm_bundle_of_apply (E₁ := E₁) (F₁ := F₁) (x := x) aux
+
+lemma ContMDiffAt.clm_bundle_of_apply₂
+    (h : ∀ (σ : Π x : M, E₁ (b x)),
+      (∀ᶠ x' in 𝓝 x, CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ (b m) (σ m)) x') →
+      ∀ (τ : Π x : M, E₂ (b x)),
+        (∀ᶠ x' in 𝓝 x, CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (τ m)) x') →
+      CMDiffAt n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x :=
+  sorry -- copy the _simper version mutatis mutandis
+
 end TwoVariables
 
 section TwoVariables'
