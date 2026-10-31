@@ -215,6 +215,23 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
   counitIso :=
     NatIso.ofComponents (fun f ↦ CostructuredArrow.isoMk (Iso.refl _))
 
+/-- The functor `toCostructuredArrow F : F.Elementsᵒᵖ ⥤ CostructuredArrow yoneda F` for
+`F : Cᵒᵖ ⥤ Type v` is "natural" in `F`. -/
+def mapElementsOpCompToCostructuredArrow {F₁ F₂ : Cᵒᵖ ⥤ Type v} (α : F₁ ⟶ F₂) :
+    α.mapElements.op ⋙ toCostructuredArrow F₂ ≅
+      toCostructuredArrow F₁ ⋙ CostructuredArrow.map α :=
+  NatIso.ofComponents (fun _ ↦ CostructuredArrow.isoMk (Iso.refl _)
+    (yonedaEquiv.injective (by simp [yonedaEquiv_symm_naturality_right.{v}])))
+
+/-- The equivalence `(-.Elements)ᵒᵖ ≅ (yoneda, -)` is actually a natural isomorphism of functors.
+-/
+theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤ Type v} (α : F₁ ⟶ F₂) :
+    α.mapElements.op ⋙ toCostructuredArrow F₂ =
+      toCostructuredArrow F₁ ⋙ CostructuredArrow.map α :=
+  Functor.ext_of_iso (mapElementsOpCompToCostructuredArrow α) (fun e ↦
+    CostructuredArrow.obj_ext _ _ rfl
+      (yonedaEquiv.injective (by simp [yonedaEquiv_symm_naturality_right.{v}])))
+
 /-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
 @[simps!]
 def costructuredArrowYonedaEquivalenceFunctorProj (F : Cᵒᵖ ⥤ Type v) :
@@ -262,9 +279,7 @@ noncomputable def costructuredArrowShrinkYonedaEquivalence
     simp [← shrinkYonedaEquiv_symm_map.{w}])
   inverse.obj x := Opposite.op (Functor.elementsMk _ _ (shrinkYonedaEquiv x.hom))
   inverse.map f := (homMk f.left.op (by simp [shrinkYonedaEquiv_naturality])).op
-  unitIso :=
-    NatIso.ofComponents (fun x ↦ Iso.op (isoMk (Iso.refl _) (by simp)))
-      (fun _ ↦ Quiver.Hom.unop_inj (by cat_disch))
+  unitIso := NatIso.ofComponents (fun x ↦ Iso.op (isoMk (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun x ↦ CostructuredArrow.isoMk (Iso.refl _))
 
 /-- The functor of the equivalence `costructuredArrowShrinkYonedaEquivalence F` followed
@@ -274,6 +289,22 @@ noncomputable def costructuredArrowShrinkYonedaEquivalenceFunctorCompProjIso
     (costructuredArrowShrinkYonedaEquivalence.{w} F).functor ⋙ CostructuredArrow.proj _ _ ≅
       (π F).leftOp :=
   Iso.refl _
+
+/-- Given `F : C ⥤ Type w` where `C` is a locally `w`-small category, this is the
+equivalence between the opposite of the category of elements of `F` and
+`CostructuredArrow shrinkCoyoneda.{w} F`. -/
+@[implicit_reducible, simps]
+noncomputable def costructuredArrowShrinkCoyonedaEquivalence
+    [LocallySmall.{w} C] (F : C ⥤ Type w) :
+    F.Elementsᵒᵖ ≌ CostructuredArrow shrinkCoyoneda.{w} F where
+  functor.obj x :=
+    CostructuredArrow.mk (Y := Opposite.op x.unop.obj) (shrinkCoyonedaEquiv.symm x.unop.val)
+  functor.map f :=
+    CostructuredArrow.homMk f.unop.hom.op (by simp [← shrinkCoyonedaEquiv_symm_map.{w}])
+  inverse.obj x := Opposite.op (Functor.elementsMk _ _ (shrinkCoyonedaEquiv x.hom))
+  inverse.map f := (homMk f.left.unop (by simp [shrinkCoyonedaEquiv_naturality])).op
+  unitIso := NatIso.ofComponents (fun x ↦ Iso.op (isoMk (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun x ↦ CostructuredArrow.isoMk (Iso.refl _))
 
 /-- The initial object in `F.Elements` if `F` is representable. -/
 abbrev initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
@@ -300,16 +331,44 @@ def isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.Corepresentabl
     (fun _ m ↦ by ext; simp [← m.map_val, ← h.homEquiv_comp])
 
 /--
-The initial object in the category of elements for a representable functor. In `isInitial` it is
-shown that this is initial.
+The initial object in the category of elements for a representable functor.
+In `isInitialYonedaObj` it is shown that this is initial.
 -/
 abbrev initialYonedaObj (A : C) : (yoneda.obj A).Elements :=
   .mk (𝟙 A)
 
-/-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.
--/
+/-- Show that `Elements.initialYonedaObj A` is initial in the category of elements
+for the `yoneda` functor. -/
 def isInitialYonedaObj (A : C) : Limits.IsInitial (Elements.initialYonedaObj A) :=
   isInitialOfRepresentableBy (.yoneda A)
+
+/--
+The initial object in the category of elements for a representable functor.
+In `isInitialShrinkYonedaObj` it is shown that this is initial.
+-/
+noncomputable abbrev initialShrinkYonedaObj [LocallySmall.{w} C] (A : C) :
+    (shrinkYoneda.{w}.obj A).Elements :=
+  .mk (shrinkYonedaObjObjEquiv.symm (𝟙 A))
+
+/-- Show that `Elements.initialShrinkYonedaObj A` is initial in the category of elements
+for the `shrinkYoneda` functor. -/
+noncomputable def isInitialShrinkYonedaObj [LocallySmall.{w} C] (A : C) :
+    Limits.IsInitial (Elements.initialShrinkYonedaObj.{w} A) :=
+  isInitialOfRepresentableBy (shrinkYonedaRepresentableBy A)
+
+/--
+The initial object in the category of elements for a corepresentable functor.
+In `isInitialShrinkCoyonedaObj` it is shown that this is initial.
+-/
+noncomputable abbrev initialShrinkCoyonedaObj [LocallySmall.{w} C] (A : Cᵒᵖ) :
+    (shrinkCoyoneda.{w}.obj A).Elements :=
+  .mk (shrinkCoyonedaObjObjEquiv.symm (𝟙 A.unop))
+
+/-- Show that `Elements.initialShrinkCoyonedaObj A` is initial in the category of elements
+for the `shrinkCoyoneda` functor. -/
+noncomputable def isInitialShrinkCoyonedaObj [LocallySmall.{w} C] (A : Cᵒᵖ) :
+    Limits.IsInitial (Elements.initialShrinkCoyonedaObj.{w} A) :=
+  isInitialOfCorepresentableBy (shrinkCoyonedaCorepresentableBy A)
 
 @[deprecated (since := "2026-08-30")] alias yoneda := initialYonedaObj
 @[deprecated (since := "2026-08-30")] alias isInitial := isInitialYonedaObj
@@ -400,5 +459,28 @@ theorem to_comma_map_right (F : C ⥤ Type w) {X Y} (f : X ⟶ Y) :
   dsimp
 
 end CategoryOfElements
+
+/-- If `e : C ≌ D` is an equivalence of categories and `P : D ⥤ Type w` a functor
+to types, this is the equivalence between the category of elements of `P`
+and the category of elements of `e.functor ⋙ P`. -/
+@[implicit_reducible, simps!]
+def Equivalence.congrElements {D : Type*} [Category* D] (e : C ≌ D) (P : D ⥤ Type w) :
+    P.Elements ≌ (e.functor ⋙ P).Elements where
+  functor.obj x :=
+    Functor.elementsMk _ (e.inverse.obj x.obj) (P.map (e.counitIso.inv.app x.obj) x.val)
+  functor.map f :=
+    Functor.Elements.homMk (e.inverse.map f.hom) (by
+      simp only [← f.map_val, ← ConcreteCategory.comp_apply, ← Functor.map_comp,
+        fun_inv_map, Functor.comp_obj, Functor.id_obj, Iso.inv_hom_id_app_assoc,
+        Functor.comp_map])
+  inverse.obj x := Functor.elementsMk _ (e.functor.obj x.obj) x.val
+  inverse.map f := Functor.Elements.homMk (e.functor.map f.hom) f.map_val
+  unitIso :=
+    NatIso.ofComponents
+      (fun x ↦ Functor.Elements.isoMk (e.counitIso.symm.app x.obj) (by cat_disch))
+  counitIso :=
+    NatIso.ofComponents
+      (fun x ↦ Functor.Elements.isoMk (e.unitIso.symm.app x.obj) (by
+        simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
 
 end CategoryTheory
