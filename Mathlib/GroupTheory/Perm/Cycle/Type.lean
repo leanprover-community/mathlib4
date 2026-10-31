@@ -369,16 +369,16 @@ and the set's cardinality have the same residue modulo `p`, where `p` is a prime
 theorem card_fixedPoints_modEq [DecidableEq α] {f : α → α} {p n : ℕ}
     [hp : Fact p.Prime] (hf : f^[p ^ n] = id) :
     Fintype.card α ≡ Fintype.card f.fixedPoints [MOD p] := by
-  have red : (p ^ n - 1).succ = p ^ n := by grind [n.one_le_pow p hp.out.pos]
+  have red : (p ^ n - 1).succ = p ^ n := by simp [n.one_le_pow p hp.out.pos]
   let σ : α ≃ α := ⟨f, f^[p ^ n - 1],
-    leftInverse_iff_comp.mpr (by rwa [← iterate_succ, red]),
-    leftInverse_iff_comp.mpr (by rwa [← iterate_succ', red])⟩
+    by rwa [leftInverse_iff_comp, ← iterate_succ, red],
+    by rwa [rightInverse_iff_comp, ← iterate_succ', red]⟩
   have hσ : σ ^ p ^ n = 1 := by
     rw [DFunLike.ext'_iff, coe_pow]
     exact (hom_coe_pow (fun g : Function.End α ↦ g) rfl (fun g h ↦ rfl) f (p ^ n)).symm.trans hf
   suffices Fintype.card f.fixedPoints = (support σ)ᶜ.card from
     this ▸ (card_compl_support_modEq hσ).symm
-  suffices f.fixedPoints = (support σ)ᶜ by simp only [this]; apply Fintype.card_coe
+  suffices f.fixedPoints = (support σ)ᶜ by simp [this, ← Fintype.card_coe]
   simp [σ, Set.ext_iff, IsFixedPt]
 
 theorem exists_fixed_point_of_prime {p n : ℕ} [hp : Fact p.Prime] (hα : ¬p ∣ Fintype.card α)

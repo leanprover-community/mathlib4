@@ -69,7 +69,7 @@ lemma x_ne_zero : T.x ≠ 0 := by
   apply_fun (· % 4) at h
   simp [mul_assoc] at h
 
-lemma x_bound : T.x ∈ Icc 1 (k + 1) := by
+lemma x_mem_Icc_one_succ : T.x ∈ Icc 1 (k + 1) := by
   have nx := T.x_ne_zero
   obtain ⟨x, y, z, h⟩ := T
   exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
@@ -84,22 +84,18 @@ lemma y_ne_zero : T.y ≠ 0 := by
 
 lemma z_ne_zero : T.z ≠ 0 := T.swap.y_ne_zero
 
-lemma y_bound : T.y ∈ Icc 1 k := by
+lemma y_mem_Icc_one_succ : T.y ∈ Icc 1 k := by
   have ny := T.y_ne_zero
   have nz : 0 < T.z := by grind [T.z_ne_zero]
   obtain ⟨x, y, z, h⟩ := T
   exact mem_Icc.mpr ⟨by lia, by nlinarith⟩
 
-lemma z_bound : T.z ∈ Icc 1 k := T.swap.y_bound
+lemma z_mem_Icc_one_succ : T.z ∈ Icc 1 k := T.swap.y_mem_Icc_one_succ
 
-instance : Fintype (Triple k) where
-  elems := (univ : Finset {t : Icc 1 (k + 1) ×ˢ Icc 1 k ×ˢ Icc 1 k //
-    t.1.1 * t.1.1 + 4 * t.1.2.1 * t.1.2.2 = 4 * k + 1}).image fun s ↦ ⟨_, _, _, s.2⟩
-  complete T := by
-    simp_rw [mem_image, mem_univ, true_and]
-    refine ⟨⟨⟨(T.x, T.y, T.z), ?_⟩, T.eqn⟩, by ext <;> rfl⟩
-    simp only [mem_product]
-    exact ⟨T.x_bound, T.y_bound, T.z_bound⟩
+instance : Fintype (Triple k) :=
+  .ofSurjective (fun (t : {t : Icc 1 (k + 1) × Icc 1 k × Icc 1 k //
+    t.1.1 * t.1.1 + 4 * t.2.1 * t.2.2 = 4 * k + 1}) ↦ ⟨_, _, _, t.2⟩) <| fun T ↦ by
+    use ⟨(⟨_, T.x_mem_Icc_one_succ⟩, ⟨_, T.y_mem_Icc_one_succ⟩, ⟨_, T.z_mem_Icc_one_succ⟩), T.eqn⟩
 
 /-- The complicated involution, defined piecewise according to how `x` compares with
 `y - z` and `2 * y`. -/
@@ -143,8 +139,8 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
     ∃ a b, a ^ 2 + b ^ 2 = p := by
   rw [← div_add_mod p 4, hp] at h ⊢
   set k := p / 4
-  have s2 : swap (k := k)^[2 ^ 1] = id := funext fun T ↦ involutive_swap T
-  have m2 : mangle (k := k)^[2 ^ 1] = id := funext fun T ↦ involutive_mangle T
+  have s2 : swap (k := k)^[2 ^ 1] = id := funext involutive_swap
+  have m2 : mangle (k := k)^[2 ^ 1] = id := funext involutive_mangle
   have q := (Equiv.Perm.card_fixedPoints_modEq s2).symm.trans (Equiv.Perm.card_fixedPoints_modEq m2)
   rw [card_fixedPoints_mangle_eq_one, Nat.ModEq] at q
   replace q : 0 < Fintype.card (@swap k).fixedPoints := by lia
