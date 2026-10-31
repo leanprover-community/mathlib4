@@ -76,8 +76,8 @@ theorem hammingDist_triangle_right (x y z : ∀ i, β i) :
   rw [hammingDist_comm y]
   exact hammingDist_triangle _ _ _
 
-/-- Corresponds to `swap_dist`. -/
-theorem swap_hammingDist : swap (@hammingDist _ β _ _) = hammingDist := by
+/-- Corresponds to `dflip_dist`. -/
+theorem swap_hammingDist : dflip (@hammingDist _ β _ _) = hammingDist := by
   funext x y
   exact hammingDist_comm _ _
 

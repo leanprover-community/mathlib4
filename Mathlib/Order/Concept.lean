@@ -75,11 +75,15 @@ theorem gc_lowerPolar_upperPolar :
     GaloisConnection (toDual ∘ lowerPolar r) (upperPolar r ∘ ofDual) := fun _ _ =>
   subset_upperPolar_iff_subset_lowerPolar
 
-theorem upperPolar_swap (t : Set β) : upperPolar (swap r) t = lowerPolar r t :=
+theorem upperPolar_dflip (t : Set β) : upperPolar (dflip r) t = lowerPolar r t :=
   rfl
 
-theorem lowerPolar_swap (s : Set α) : lowerPolar (swap r) s = upperPolar r s :=
+@[deprecated (since := "2026-10-14")] alias upperPolar_swap := upperPolar_dflip
+
+theorem lowerPolar_dflip (s : Set α) : lowerPolar (dflip r) s = upperPolar r s :=
   rfl
+
+@[deprecated (since := "2026-10-14")] alias lowerPolar_swap := lowerPolar_dflip
 
 @[simp]
 theorem upperPolar_empty : upperPolar r ∅ = univ :=
@@ -579,28 +583,42 @@ instance : Inhabited (Concept α β r) :=
 
 /-- Swap the sets of a concept to make it a concept of the dual context. -/
 @[simps]
-def swap (c : Concept α β r) : Concept β α (swap r) :=
+def dflip (c : Concept α β r) : Concept β α (dflip r) :=
   ⟨c.intent, c.extent, c.lowerPolar_intent, c.upperPolar_extent⟩
 
+@[deprecated (since := "2026-10-14")] alias swap := dflip
+@[deprecated (since := "2026-10-14")] alias extent_swap := extent_dflip
+@[deprecated (since := "2026-10-14")] alias intent_swap := intent_dflip
+
 @[simp]
-theorem swap_swap (c : Concept α β r) : c.swap.swap = c :=
+theorem dflip_dflip (c : Concept α β r) : c.dflip.dflip = c :=
   ext rfl
 
-@[simp]
-theorem swap_le_swap_iff : c.swap ≤ d.swap ↔ d ≤ c :=
-  intent_subset_intent_iff
+@[deprecated (since := "2026-10-14")] alias swap_swap := dflip_dflip
 
 @[simp]
-theorem swap_lt_swap_iff : c.swap < d.swap ↔ d < c :=
+theorem dflip_le_dflip_iff : c.dflip ≤ d.dflip ↔ d ≤ c :=
+  intent_subset_intent_iff
+
+@[deprecated (since := "2026-10-14")] alias swap_le_swap_iff := dflip_le_dflip_iff
+
+@[simp]
+theorem dflip_lt_dflip_iff : c.dflip < d.dflip ↔ d < c :=
   intent_ssubset_intent_iff
+
+@[deprecated (since := "2026-10-14")] alias swap_lt_swap_iff := dflip_lt_dflip_iff
 
 /-- The dual of a concept lattice is isomorphic to the concept lattice of the dual context. -/
 @[simps]
-def swapEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.swap r) where
-  toFun := swap ∘ ofDual
-  invFun := toDual ∘ swap
-  left_inv := swap_swap
-  right_inv := swap_swap
-  map_rel_iff' := swap_le_swap_iff
+def dflipEquiv : (Concept α β r)ᵒᵈ ≃o Concept β α (Function.dflip r) where
+  toFun := dflip ∘ ofDual
+  invFun := toDual ∘ dflip
+  left_inv := dflip_dflip
+  right_inv := dflip_dflip
+  map_rel_iff' := dflip_le_dflip_iff
+
+@[deprecated (since := "2026-10-14")] alias swapEquiv := dflipEquiv
+@[deprecated (since := "2026-10-14")] alias swapEquiv_apply := dflipEquiv_apply
+@[deprecated (since := "2026-10-14")] alias swapEquiv_symm_apply := dflipEquiv_symm_apply
 
 end Concept
