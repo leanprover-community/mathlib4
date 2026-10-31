@@ -656,3 +656,38 @@ instance {ι : Type*} {S : ι → Type*} [Π i, MulZeroClass (S i)] [Π i, Star 
 
 instance [NonUnitalNonAssocSemiring R] [StarAddMonoid R] [IsProperStar R] : IsProperStar Rᵐᵒᵖ where
   eq_zero_of_star_mul_self_eq_zero := by simp [← MulOpposite.op_star, ← MulOpposite.op_mul]
+
+section IsStarOrtho
+
+/-- Two elements `p` and `q` in a ⋆-ring are *star-orthogonal* if `p * star q = 0`
+and `star q * p = 0`. If `p` and `q` are both selfadjoint, this reduces to `p * q = 0`
+(see `IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero`).
+
+This is denoted `p ⋆⟂ q` with the notation available in the `StarRing` namespace. -/
+@[mk_iff]
+structure IsStarOrtho [NonUnitalSemiring R] [StarRing R] (p q : R) : Prop where
+  mul_star_eq_zero : p * star q = 0
+  star_mul_eq_zero : star q * p = 0
+
+@[inherit_doc]
+scoped[StarRing] infix:50 " ⋆⟂ " => IsStarOrtho
+
+open scoped StarRing
+
+variable [NonUnitalSemiring R] [StarRing R] {p q : R}
+
+lemma isStarOrtho_comm : p ⋆⟂ q ↔ q ⋆⟂ p := by
+  simp_rw [isStarOrtho_iff, ← star_eq_zero (x := p * star q), ← star_eq_zero (x := star q * p),
+    star_mul, star_star]
+
+alias ⟨IsStarOrtho.symm, _⟩ := isStarOrtho_comm
+
+instance : Std.Symm (· ⋆⟂ · : R → R → Prop) where
+  symm _ _ := .symm
+
+/-- A variant of `isStarOrtho_iff` which retains the ordering of the factors in the product, but
+instead moves the `star`. -/
+lemma isStarOrtho_iff' : p ⋆⟂ q ↔ p * star q = 0 ∧ star p * q = 0 := by
+  rw [isStarOrtho_iff, ← star_eq_zero (x := star p * q), star_mul, star_star]
+
+end IsStarOrtho

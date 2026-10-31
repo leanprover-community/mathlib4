@@ -1367,6 +1367,7 @@ public import Mathlib.Algebra.Star.Module
 public import Mathlib.Algebra.Star.MonoidHom
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.Algebra.Star.NonUnitalSubsemiring
+public import Mathlib.Algebra.Star.Orthogonal
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Algebra.Star.Prod
