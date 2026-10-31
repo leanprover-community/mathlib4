@@ -905,7 +905,7 @@ files. -/
 def downloadFiles
     (repo : String) (locations : List Location) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (mode : IO.CurlMode)
-    (decompress : Bool := false) (forceUnpack : Bool := false)
+    (decompress : Bool := false)
     (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".")
     (unsafeMode : Bool := false) : IO DownloadResult := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
@@ -918,10 +918,14 @@ def downloadFiles
 
   -- Set up one decompression config for all download rounds, with the pipeline
   -- state carried between them via `decompState`.
+  -- The pipeline carries only files that arrive from the server, and the filter
+  -- above keeps only hashes that the cache directory lacks. Each of these files
+  -- is therefore a new artifact, so overwrite always: a skip here can only keep
+  -- an artifact that the new one replaces.
   let decompConfig ← if decompress then
     let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun acc mod hash =>
       acc.insert hash mod
-    pure (some { hashToMod, force := forceUnpack, isMathlibRoot, mathlibDepPath : DecompConfig })
+    pure (some { hashToMod, force := true, isMathlibRoot, mathlibDepPath : DecompConfig })
   else
     pure none
 
@@ -1062,16 +1066,27 @@ appropriate missing-files guidance (see `warnIfMissingFiles`).
 `repo` is the already-resolved GitHub repo (see `resolveRepo`). `readLocations`
 resolves the locations to try, including endpoint and container overrides,
 explicit scopes, and the forks HEAD fallback. Without an override, the fork
-lookup chain starts with `master`, which supplies shared upstream artifacts. -/
+lookup chain starts with `master`, which supplies shared upstream artifacts.
+
+`rootHash` is the root hash of the current checkout. It decides whether the
+unpack overwrites every file; see `IO.rootHashChanged`. `fullRun` states that
+`hashMap` holds every module of the cache, which a `cache get` with a module
+argument does not. Only a full run records the root hash. -/
 def getFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload forceUnpack : Bool) (mode : IO.CurlMode) (decompress : Bool)
+    (rootHash : UInt64) (fullRun : Bool)
     (unsafeScopes : List String := [])
     : IO.CacheM Nat := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do
     checkForToolchainMismatch
     checkForManifestMismatch
+
+  -- The per-module check in `IO.needsDecompression` cannot see a change of the
+  -- toolchain, the lakefile or the manifest. Overwrite every already-cached
+  -- file when the root hash differs. See `IO.rootHashChanged`.
+  let forceUnpack := forceUnpack || (← IO.rootHashChanged rootHash)
 
   let mathlibDepPath := (← read).mathlibDepPath
   let startTime ← IO.monoMsNow
@@ -1093,7 +1108,7 @@ def getFiles
 
   let result ← downloadFiles repo (← readLocations repo unsafeScopes) hashMap forceDownload
     mode
-    (decompress := decompress) (forceUnpack := forceUnpack)
+    (decompress := decompress)
     isMathlibRoot mathlibDepPath (unsafeMode := !unsafeScopes.isEmpty)
   if result.failed > 0 then
     IO.println s!"Downloading {result.failed} files failed"
@@ -1113,12 +1128,22 @@ def getFiles
 
   let elapsed := (← IO.monoMsNow) - startTime
   if decompress then
-    if bgDecomp.isSome && mode.parallel then
-      -- Background task handled pre-cached files, download pipeline handled new files
+    if mode.parallel then
+      -- No sweep here. The pipeline unpacks every file that it fetches, and
+      -- the background task unpacks every already-cached file that needs it.
+      -- With `forceDownload` there is no background task, and the pipeline
+      -- fetches and unpacks everything instead. A failure on either side
+      -- exits above, so no work is left at this point.
       IO.println s!"Completed successfully in {elapsed} ms!"
+      -- Files that the server lacks stay stale in the build directory. The
+      -- record is still safe to write, because these files are also absent
+      -- from the cache directory, so a later run downloads them and the
+      -- pipeline overwrites them without a check. This write is sound only
+      -- while the pipeline overwrites every file that it fetches.
+      if fullRun then IO.writeUnpackedRootHash rootHash
     else
-      -- Either no background decompression ran, or non-parallel mode needs final sweep
-      IO.unpackCache hashMap forceUnpack
+      -- Serial mode downloads without the pipeline, so unpack everything here.
+      IO.unpackCache hashMap forceUnpack rootHash fullRun
   else if result.missing == 0 then
     IO.println "Downloaded all files successfully!"
   else
