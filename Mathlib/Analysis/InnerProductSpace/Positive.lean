@@ -366,6 +366,7 @@ theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
+@[aesop safe apply]
 theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S ∘L S†).IsPositive := by
   simpa using! isPositive_one.conj_adjoint S
@@ -376,6 +377,7 @@ theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
+@[aesop safe apply]
 theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S† ∘L S).IsPositive := by
   simpa using! isPositive_one.adjoint_conj S
