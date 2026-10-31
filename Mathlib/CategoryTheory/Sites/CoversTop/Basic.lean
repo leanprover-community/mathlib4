@@ -102,7 +102,7 @@ def IsCompatible (x : FamilyOfElementsOnObjects F Y) : Prop :=
     F.map f.op (x i) = F.map g.op (x j)
 
 /-- A family of elements indexed by `Sieve.ofObjects Y X` that is induced by
-`x : FamilyOfElementsOnObjects F Y`. See the equational lemma
+`x : FamilyOfElementsOnObjects F Y`. See the equation lemma
 `IsCompatible.familyOfElements_apply` which holds under the assumption `x.IsCompatible`. -/
 noncomputable def familyOfElements (X : C) :
     Presieve.FamilyOfElements F (Sieve.ofObjects Y X).arrows :=
