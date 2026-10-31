@@ -1,0 +1,125 @@
+module
+
+public import Mathlib.Tactic.TacticAnalysis.Replacements
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+
+/-! Tests for the always-on tactic replacement analysis passes. -/
+
+/--
+info: `simp_all` can replace `aesop`
+
+Try this:
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.aesopToSimpAll false`
+---
+info: `simp` can replace `aesop`
+
+Try this:
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.aesopToSimp false`
+-/
+#guard_msgs in
+example : True := by
+  aesop
+
+-- A tactic after `<;>` is executed separately on every generated goal.  Do not suggest a
+-- replacement which succeeds on only some of them.
+/--
+info: `simp_all` can replace `aesop`
+
+Try this:
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.aesopToSimpAll false`
+-/
+#guard_msgs in
+example (P Q R : Prop) (hP : P) (hPQ : P → Q) (hQR : Q → R) : True ∧ R := by
+  constructor <;> aesop
+
+#guard_msgs in
+example (P Q R : Prop) (hP : P) (hPQ : P → Q) (hQR : Q → R) : True ∧ R := by
+  constructor <;> simp_all
+
+-- Generated induction cases are not necessarily part of a tactic sequence, but every execution
+-- of the source-level `simp_all` must still be checked.
+#guard_msgs in
+example {M N : Type*} [Monoid M] [Monoid N] {l : List M} {F : Type*} [FunLike F M N]
+    [MulHomClass F M N] (f : F) (hl : l ≠ []) : (l.map f).prod = f l.prod :=
+  match l, hl with | x :: xs, hl => by induction xs generalizing x <;> simp_all
+
+/--
+info: `simp` can replace `simp_all`
+
+Try this:
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.simpAllToSimp false`
+-/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  simp_all
+
+/--
+info: `lia` can replace `grind`
+
+Try this:
+  [apply] lia
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.grindToLia false`
+-/
+#guard_msgs in
+example (x y : Int) (h : x ≤ y) : x ≤ y := by
+  grind
+
+-- A failed replacement must not try to extract a counterexample when failure reporting is off.
+-- In particular, the target may depend on the auxiliary declaration for a recursive definition,
+-- which cannot be cleared while extracting a standalone theorem.
+#guard_msgs in
+private def recursiveAux : (n : Nat) → { p : Prop // p }
+  | 0 => ⟨True, by trivial⟩
+  | n + 1 => ⟨(recursiveAux n).1, by grind [(recursiveAux n).2]⟩
+
+section
+
+variable {α : Type*} {a b : α} (h : a = b)
+
+/--
+info: `rw` can replace `simp_rw [h]` using `rw [h]`
+
+Try this:
+  [apply] rw [h]
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.simpRwToRw false`
+-/
+#guard_msgs in
+example : a = b := by
+  simp_rw [h]
+
+/--
+info: `rw` can replace `rw! [h] at ha` using `rw [h] at ha`
+
+Try this:
+  [apply] rw [h] at ha
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.depRwToRw false`
+-/
+#guard_msgs in
+example (P : α → Prop) (ha : P a) : P b := by
+  rw! [h] at ha
+  exact ha
+
+/--
+info: `rw` can replace `grw [h]` using `rw [h]`
+
+Try this:
+  [apply] rw [h]
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.grwToRw false`
+-/
+#guard_msgs in
+example : a = b := by
+  grw [h]
+
+end
