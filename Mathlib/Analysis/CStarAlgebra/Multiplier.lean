@@ -499,14 +499,18 @@ noncomputable instance : NormedRing 𝓜(𝕜, A) :=
 theorem norm_def (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdHom a‖ :=
   rfl
 
-theorem nnnorm_def (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdHom a‖₊ :=
+theorem nnNorm_def (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdHom a‖₊ :=
   rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_def := nnNorm_def
 
 theorem norm_def' (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdMulOppositeHom a‖ :=
   rfl
 
-theorem nnnorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a‖₊ :=
+theorem nnNorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a‖₊ :=
   rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_def' := nnNorm_def'
 
 noncomputable instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instModule with
@@ -544,24 +548,26 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
     intro b
     calc
       ‖a.fst b‖₊ ^ 2 = ‖star (a.fst b) * a.fst b‖₊ := by
-        simpa only [← sq] using CStarRing.nnnorm_star_mul_self.symm
-      _ ≤ ‖a.snd (star (a.fst b))‖₊ * ‖b‖₊ := (a.central (star (a.fst b)) b ▸ nnnorm_mul_le _ _)
+        simpa only [← sq] using CStarRing.nnNorm_star_mul_self.symm
+      _ ≤ ‖a.snd (star (a.fst b))‖₊ * ‖b‖₊ := (a.central (star (a.fst b)) b ▸ nnNorm_mul_le _ _)
       _ ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ :=
-        nnnorm_star (a.fst b) ▸ mul_le_mul_left (a.snd.le_opNNNorm _) _
+        nnNorm_star (a.fst b) ▸ mul_le_mul_left (a.snd.le_opNNNorm _) _
   have h2 : ∀ b, ‖a.snd b‖₊ ^ 2 ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ := by
     intro b
     calc
       ‖a.snd b‖₊ ^ 2 = ‖a.snd b * star (a.snd b)‖₊ := by
-        simpa only [← sq] using CStarRing.nnnorm_self_mul_star.symm
+        simpa only [← sq] using CStarRing.nnNorm_self_mul_star.symm
       _ ≤ ‖b‖₊ * ‖a.fst (star (a.snd b))‖₊ :=
-        ((a.central b (star (a.snd b))).symm ▸ nnnorm_mul_le _ _)
+        ((a.central b (star (a.snd b))).symm ▸ nnNorm_mul_le _ _)
       _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := mul_comm _ _
       _ ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ :=
-        nnnorm_star (a.snd b) ▸ mul_le_mul_left (a.fst.le_opNNNorm _) _
+        nnNorm_star (a.snd b) ▸ mul_le_mul_left (a.fst.le_opNNNorm _) _
   exact le_antisymm (h0 _ _ h1) (h0 _ _ h2)
 
-theorem nnnorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ :=
+theorem nnNorm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a.snd‖₊ :=
   Subtype.ext <| norm_fst_eq_snd a
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_fst_eq_snd := nnNorm_fst_eq_snd
 
 @[simp]
 theorem norm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a‖ := by
@@ -571,12 +577,16 @@ theorem norm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a‖ := by
 theorem norm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖ = ‖a‖ := by rw [← norm_fst, norm_fst_eq_snd]
 
 @[simp]
-theorem nnnorm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a‖₊ :=
+theorem nnNorm_fst (a : 𝓜(𝕜, A)) : ‖a.fst‖₊ = ‖a‖₊ :=
   Subtype.ext (norm_fst a)
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_fst := nnNorm_fst
+
 @[simp]
-theorem nnnorm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖₊ = ‖a‖₊ :=
+theorem nnNorm_snd (a : 𝓜(𝕜, A)) : ‖a.snd‖₊ = ‖a‖₊ :=
   Subtype.ext (norm_snd a)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_snd := nnNorm_snd
 
 end NontriviallyNormed
 
@@ -598,7 +608,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
     On the other hand, for any `‖z‖ ≤ 1`, we may choose `x := star z` and `y := z` to get:
     `‖star (L (star x)) * L y‖ = ‖star (L z) * (L z)‖ = ‖L z‖ ^ 2`, and taking the supremum over
     all such `z` yields that the supremum is at least `‖L‖ ^ 2`. It is the latter part of the
-    argument where `DenselyNormedField 𝕜` is required (for `sSup_unitClosedBall_eq_nnnorm`). -/
+    argument where `DenselyNormedField 𝕜` is required (for `sSup_unitClosedBall_eq_nnNorm`). -/
       have hball : (Metric.closedBall (0 : A) 1).Nonempty :=
         Metric.nonempty_closedBall.2 zero_le_one
       have key :
@@ -607,15 +617,15 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
         rw [a.central]
         calc
           ‖star (a.fst (star x)) * a.fst y‖₊ ≤ ‖a.fst (star x)‖₊ * ‖a.fst y‖₊ :=
-            nnnorm_star (a.fst (star x)) ▸ nnnorm_mul_le _ _
+            nnNorm_star (a.fst (star x)) ▸ nnNorm_mul_le _ _
           _ ≤ ‖a.fst‖₊ * 1 * (‖a.fst‖₊ * 1) :=
-            (mul_le_mul' (a.fst.le_opNorm_of_le ((nnnorm_star x).trans_le hx))
+            (mul_le_mul' (a.fst.le_opNorm_of_le ((nnNorm_star x).trans_le hx))
               (a.fst.le_opNorm_of_le hy))
-          _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
-      rw [← nnnorm_snd]
-      simp only [mul_snd, ← sSup_unitClosedBall_eq_nnnorm, star_snd, mul_apply_eq_comp]
+          _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnNorm_fst, le_rfl]
+      rw [← nnNorm_snd]
+      simp only [mul_snd, ← sSup_unitClosedBall_eq_nnNorm, star_snd, mul_apply_eq_comp]
       simp only [← @opNNNorm_mul_apply 𝕜 _ A]
-      simp only [← sSup_unitClosedBall_eq_nnnorm, mul_apply']
+      simp only [← sSup_unitClosedBall_eq_nnNorm, mul_apply']
       refine csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) ?_ fun r hr => ?_
       · rintro - ⟨x, hx, rfl⟩
         refine csSup_le (hball.image _) ?_
@@ -623,15 +633,15 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
         exact key x y (mem_closedBall_zero_iff.1 hx) (mem_closedBall_zero_iff.1 hy)
       · simp only [Set.mem_image, exists_exists_and_eq_and]
         have hr' : NNReal.sqrt r < ‖a‖₊ := ‖a‖₊.sqrt_mul_self ▸ NNReal.sqrt_lt_sqrt.2 hr
-        simp_rw [← nnnorm_fst, ← sSup_unitClosedBall_eq_nnnorm] at hr'
+        simp_rw [← nnNorm_fst, ← sSup_unitClosedBall_eq_nnNorm] at hr'
         obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
         have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
-        refine ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), ?_⟩
+        refine ⟨star x, mem_closedBall_zero_iff.2 ((nnNorm_star x).trans_le hx'), ?_⟩
         refine lt_csSup_of_lt ?_ ⟨x, hx, rfl⟩ ?_
         · refine ⟨‖a‖₊ * ‖a‖₊, ?_⟩
           rintro - ⟨y, hy, rfl⟩
-          exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
-        · simpa [a.central, CStarRing.nnnorm_star_mul_self, ← sq]
+          exact key (star x) y ((nnNorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
+        · simpa [a.central, CStarRing.nnNorm_star_mul_self, ← sq]
             using pow_lt_pow_left₀ hxr zero_le two_ne_zero
 
 end DenselyNormed

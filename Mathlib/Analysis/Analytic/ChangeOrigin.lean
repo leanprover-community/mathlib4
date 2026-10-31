@@ -79,17 +79,23 @@ theorem norm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs :
   simp only [changeOriginSeriesTerm, LinearIsometryEquiv.norm_map]
 
 @[simp]
-theorem nnnorm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
+theorem nnNorm_changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     ‖p.changeOriginSeriesTerm k l s hs‖₊ = ‖p (k + l)‖₊ := by
-  simp only [changeOriginSeriesTerm, LinearIsometryEquiv.nnnorm_map]
+  simp only [changeOriginSeriesTerm, LinearIsometryEquiv.nnNorm_map]
 
-theorem nnnorm_changeOriginSeriesTerm_apply_le (k l : ℕ) (s : Finset (Fin (k + l)))
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_changeOriginSeriesTerm := nnNorm_changeOriginSeriesTerm
+
+theorem nnNorm_changeOriginSeriesTerm_apply_le (k l : ℕ) (s : Finset (Fin (k + l)))
     (hs : s.card = l) (x y : E) :
     ‖p.changeOriginSeriesTerm k l s hs (fun _ => x) fun _ => y‖₊ ≤
       ‖p (k + l)‖₊ * ‖x‖₊ ^ l * ‖y‖₊ ^ k := by
-  rw [← p.nnnorm_changeOriginSeriesTerm k l s hs, ← Fin.prod_const, ← Fin.prod_const]
+  rw [← p.nnNorm_changeOriginSeriesTerm k l s hs, ← Fin.prod_const, ← Fin.prod_const]
   apply ContinuousMultilinearMap.le_of_opNNNorm_le
   apply ContinuousMultilinearMap.le_opNNNorm
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_changeOriginSeriesTerm_apply_le := nnNorm_changeOriginSeriesTerm_apply_le
 
 /-- The power series for `f.changeOrigin k`.
 
@@ -100,17 +106,23 @@ the series `p.changeOriginSeries k`. -/
 def changeOriginSeries (k : ℕ) : FormalMultilinearSeries 𝕜 E (E [×k]→L[𝕜] F) := fun l =>
   ∑ s : { s : Finset (Fin (k + l)) // Finset.card s = l }, p.changeOriginSeriesTerm k l s s.2
 
-theorem nnnorm_changeOriginSeries_le_tsum (k l : ℕ) :
+theorem nnNorm_changeOriginSeries_le_tsum (k l : ℕ) :
     ‖p.changeOriginSeries k l‖₊ ≤
       ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ :=
-  (nnnorm_sum_le _ (fun t => changeOriginSeriesTerm p k l (Subtype.val t) t.prop)).trans_eq <| by
-    simp_rw [tsum_fintype, nnnorm_changeOriginSeriesTerm (p := p) (k := k) (l := l)]
+  (nnNorm_sum_le _ (fun t => changeOriginSeriesTerm p k l (Subtype.val t) t.prop)).trans_eq <| by
+    simp_rw [tsum_fintype, nnNorm_changeOriginSeriesTerm (p := p) (k := k) (l := l)]
 
-theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_changeOriginSeries_le_tsum := nnNorm_changeOriginSeries_le_tsum
+
+theorem nnNorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
     ‖p.changeOriginSeries k l fun _ => x‖₊ ≤
       ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ * ‖x‖₊ ^ l := by
   rw [NNReal.tsum_mul_right, ← Fin.prod_const]
-  exact (p.changeOriginSeries k l).le_of_opNNNorm_le (p.nnnorm_changeOriginSeries_le_tsum _ _) _
+  exact (p.changeOriginSeries k l).le_of_opNNNorm_le (p.nnNorm_changeOriginSeries_le_tsum _ _) _
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_changeOriginSeries_apply_le_tsum := nnNorm_changeOriginSeries_apply_le_tsum
 
 /-- Changing the origin of a formal multilinear series `p`, so that
 `p.sum (x+y) = (p.changeOrigin x).sum y` when this makes sense.
@@ -179,7 +191,7 @@ theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ�
     exact (hasSum_fintype _).mul_left _
   refine NNReal.summable_sigma.2 ⟨fun n => (this n).summable, ?_⟩
   simp only [(this _).tsum_eq]
-  exact p.summable_nnnorm_mul_pow hr
+  exact p.summable_nnNorm_mul_pow hr
 
 theorem changeOriginSeries_summable_aux₂ (hr : (r : ℝ≥0∞) < p.radius) (k : ℕ) :
     Summable fun s : Σ l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
@@ -194,19 +206,21 @@ theorem changeOriginSeries_summable_aux₃ {r : ℝ≥0} (hr : ↑r < p.radius) 
     (fun n => ?_) (NNReal.summable_sigma.1 <| p.changeOriginSeries_summable_aux₂ hr k).2
   simp only [NNReal.tsum_mul_right]
   gcongr
-  apply p.nnnorm_changeOriginSeries_le_tsum
+  apply p.nnNorm_changeOriginSeries_le_tsum
 
 theorem le_changeOriginSeries_radius (k : ℕ) : p.radius ≤ (p.changeOriginSeries k).radius :=
   ENNReal.le_of_forall_nnreal_lt fun _r hr =>
-    le_radius_of_summable_nnnorm _ (p.changeOriginSeries_summable_aux₃ hr k)
+    le_radius_of_summable_nnNorm _ (p.changeOriginSeries_summable_aux₃ hr k)
 
-theorem nnnorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radius) :
+theorem nnNorm_changeOrigin_le (k : ℕ) (h : (‖x‖₊ : ℝ≥0∞) < p.radius) :
     ‖p.changeOrigin x k‖₊ ≤
       ∑' s : Σ l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1 := by
-  refine tsum_of_nnnorm_bounded ?_ fun l => p.nnnorm_changeOriginSeries_apply_le_tsum k l x
+  refine tsum_of_nnNorm_bounded ?_ fun l => p.nnNorm_changeOriginSeries_apply_le_tsum k l x
   have := p.changeOriginSeries_summable_aux₂ h k
   refine HasSum.sigma this.hasSum fun l => ?_
   exact ((NNReal.summable_sigma.1 this).1 l).hasSum
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_changeOrigin_le := nnNorm_changeOrigin_le
 
 /-- The radius of convergence of `p.changeOrigin x` is at least `p.radius - ‖x‖`. In other words,
 `p.changeOrigin x` is well defined on the largest ball contained in the original ball of
@@ -215,12 +229,12 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
   refine ENNReal.le_of_forall_pos_nnreal_lt fun r _h0 hr => ?_
   rw [lt_tsub_iff_right, add_comm] at hr
   have hr' : (‖x‖₊ : ℝ≥0∞) < p.radius := (le_add_right le_rfl).trans_lt hr
-  apply le_radius_of_summable_nnnorm
+  apply le_radius_of_summable_nnNorm
   have (k : ℕ) :
       ‖p.changeOrigin x k‖₊ * r ^ k ≤
         (∑' s : Σ l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1) *
           r ^ k := by
-    gcongr; exact p.nnnorm_changeOrigin_le k hr'
+    gcongr; exact p.nnNorm_changeOrigin_le k hr'
   refine NNReal.summable_of_le this ?_
   simpa only [← NNReal.tsum_mul_right] using
     (NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr)).2
@@ -264,14 +278,14 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     rwa [lt_tsub_iff_right, add_comm]
   have x_add_y_mem_ball : x + y ∈ Metric.eball (0 : E) p.radius := by
     refine mem_eball_zero_iff.2 (lt_of_le_of_lt ?_ h)
-    exact mod_cast nnnorm_add_le x y
+    exact mod_cast nnNorm_add_le x y
   set f : (Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
   have hsf : Summable f := by
-    refine .of_nnnorm_bounded (p.changeOriginSeries_summable_aux₁ h) ?_
+    refine .of_nnNorm_bounded (p.changeOriginSeries_summable_aux₁ h) ?_
     rintro ⟨k, l, s, hs⟩
     dsimp only [Subtype.coe_mk]
-    exact p.nnnorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
+    exact p.nnNorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
   have hf : HasSum f ((p.changeOrigin x).sum y) := by
     refine HasSum.sigma_of_hasSum ((p.changeOrigin x).summable y_mem_ball).hasSum (fun k => ?_) hsf
     dsimp +instances only [f]
@@ -281,7 +295,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     refine HasSum.sigma_of_hasSum this (fun l => ?_) ?_
     · simp only [changeOriginSeries, sum_apply]
       apply hasSum_fintype
-    · refine .of_nnnorm_bounded
+    · refine .of_nnNorm_bounded
         (p.changeOriginSeries_summable_aux₂ (mem_eball_zero_iff.1 x_mem_ball) k)
           fun s => ?_
       refine (ContinuousMultilinearMap.le_opNNNorm _ _).trans_eq ?_

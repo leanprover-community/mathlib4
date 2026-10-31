@@ -760,7 +760,7 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
   refine le_antisymm (this s) ?_
   rw [← le_inv_smul_iff_of_pos]
   · dsimp
-    rw [← NNReal.inv_rpow, ← nnnorm_inv]
+    rw [← NNReal.inv_rpow, ← nnNorm_inv]
     refine Eq.trans_le ?_ (this (r • s))
     rw [inv_smul_smul₀ hr]
   · simp [pos_iff_ne_zero, hr]
@@ -1048,7 +1048,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
   have iso_smul : Isometry (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v)) := by
     refine AddMonoidHomClass.isometry_of_norm _ fun x => (norm_smul _ _).trans ?_
     rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel₀ hn, mul_one, LinearMap.id_apply]
-  rw [Set.image_smul, Measure.hausdorffMeasure_smul₀ zero_le_one hn, nnnorm_norm,
+  rw [Set.image_smul, Measure.hausdorffMeasure_smul₀ zero_le_one hn, nnNorm_norm,
       NNReal.rpow_one, iso_smul.hausdorffMeasure_image (Or.inl <| zero_le_one' ℝ)]
 
 section NormedFieldAffine
@@ -1072,7 +1072,7 @@ theorem hausdorffMeasure_homothety_preimage {d : ℝ} (hd : 0 ≤ d) (x : P) {c 
   change μH[d] (AffineEquiv.homothetyUnitsMulHom x (Units.mk0 c hc) ⁻¹' s) = _
   rw [← AffineEquiv.image_symm, AffineEquiv.coe_homothetyUnitsMulHom_apply_symm,
     hausdorffMeasure_homothety_image hd x (_ : 𝕜ˣ).isUnit.ne_zero, Units.val_inv_eq_inv_val,
-    Units.val_mk0, nnnorm_inv]
+    Units.val_mk0, nnNorm_inv]
 
 theorem map_homothety_hausdorffMeasure {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0) :
     Measure.map (AffineMap.homothety x c) μH[d] = ‖c‖₊⁻¹ ^ d • μH[d] := by
@@ -1096,7 +1096,7 @@ theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
     simpa only [Set.image_image]
   borelize E
   rw [IsometryEquiv.hausdorffMeasure_image, hausdorffMeasure_smul_right_image,
-    nndist_eq_nnnorm_vsub' E]
+    nndist_eq_nnNorm_vsub' E]
 
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]

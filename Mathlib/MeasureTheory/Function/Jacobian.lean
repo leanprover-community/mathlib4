@@ -427,7 +427,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
     · simp only [h, true_or, eventually_const]
     simp only [h, false_or]
     apply Iio_mem_nhds
-    simpa only [h, false_or, inv_pos] using B.subsingleton_or_nnnorm_symm_pos
+    simpa only [h, false_or, inv_pos] using B.subsingleton_or_nnNorm_symm_pos
   have L2 :
     ∀ᶠ δ in 𝓝 (0 : ℝ≥0), ‖(B.symm : E →L[ℝ] E)‖₊ * (‖(B.symm : E →L[ℝ] E)‖₊⁻¹ - δ)⁻¹ * δ < δ₀ := by
     have :
@@ -735,7 +735,7 @@ theorem aemeasurable_fderivWithin (hs : MeasurableSet s)
     exact hg n
   -- putting these two properties together gives the conclusion.
   filter_upwards [E₁, E₂] with x hx1 hx2
-  rw [← nndist_eq_nnnorm] at hx1
+  rw [← nndist_eq_nnNorm] at hx1
   rw [hx2, dist_comm]
   exact hx1
 

@@ -260,7 +260,7 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     norm_cast
   · simp
   · intro x hx
-    have : |x| < 1 := by simpa [enorm_eq_nnnorm] using! hx
+    have : |x| < 1 := by simpa [enorm_eq_nnNorm] using! hx
     have : 0 ≤ 1 - x := by grind
     simp [-Complex.inv_re, ← Complex.ofReal_one, ← Complex.ofReal_sub, ← Complex.ofReal_cpow this]
 
@@ -277,7 +277,7 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {r : ℝ} (hr : r �
       ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
       FormalMultilinearSeries.compContinuousLinearMap_apply]
     simp [-Complex.inv_re, ← Complex.ofReal_pow, ← Complex.ofReal_inv]
-  · simp [enorm_eq_nnnorm]
+  · simp [enorm_eq_nnNorm]
 
 theorem one_div_sub_hasFPowerSeriesOnBall_zero {r : ℝ} (hr : r ≠ 0) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (r - x)) (.ofScalars ℝ fun n ↦ (r ^ (n + 1))⁻¹) 0 ‖r‖ₑ := by

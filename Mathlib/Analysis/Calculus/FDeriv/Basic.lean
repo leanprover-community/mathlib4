@@ -878,7 +878,7 @@ section Lipschitz
 
 /-- If `f` is strictly differentiable at `x` with derivative `f'` and `K > ‖f'‖₊`, then `f` is
 `K`-Lipschitz in a neighborhood of `x`. -/
-theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDerivAt f f' x)
+theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnNorm_lt (hf : HasStrictFDerivAt f f' x)
     (K : ℝ≥0) (hK : ‖f'‖₊ < K) : ∃ s ∈ 𝓝 x, LipschitzOnWith K f s := by
   have := hf.isLittleO.add_isBigOWith (f'.isBigOWith_comp _ _) hK
   simp only [sub_add_cancel, isBigOWith_iff] at this
@@ -886,12 +886,16 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDe
   exact
     ⟨U, Uo.mem_nhds xU, lipschitzOnWith_iff_norm_sub_le.2 fun x hx y hy => hU (mk_mem_prod hx hy)⟩
 
+@[deprecated (since := "2026-10-31")]
+alias HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt :=
+  HasStrictFDerivAt.exists_lipschitzOnWith_of_nnNorm_lt
+
 /-- If `f` is strictly differentiable at `x` with derivative `f'`, then `f` is Lipschitz in a
-neighborhood of `x`. See also `HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt` for a
+neighborhood of `x`. See also `HasStrictFDerivAt.exists_lipschitzOnWith_of_nnNorm_lt` for a
 more precise statement. -/
 theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x) :
     ∃ K, ∃ s ∈ 𝓝 x, LipschitzOnWith K f s :=
-  (exists_gt _).imp hf.exists_lipschitzOnWith_of_nnnorm_lt
+  (exists_gt _).imp hf.exists_lipschitzOnWith_of_nnNorm_lt
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
 on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version

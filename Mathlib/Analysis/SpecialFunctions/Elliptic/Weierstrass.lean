@@ -687,7 +687,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
     have H₁ : Summable fun i : ℕ ↦ ((i + 2) * κ ^ (-i : ℤ)) := by
       have : |κ⁻¹| < 1 := by grind [abs_inv, inv_lt_one_iff₀]
       simpa [mul_comm] using ((Real.hasFPowerSeriesOnBall_ofScalars_mul_add_zero 1 2).hasSum
-        (y := κ⁻¹) (by simpa [enorm_eq_nnnorm])).summable
+        (y := κ⁻¹) (by simpa [enorm_eq_nnNorm])).summable
     have H₂ : Summable fun l : L.lattice ↦ ‖l - x‖ ^ (-3 : ℤ) * ‖z - x‖ :=
       (ZLattice.summable_norm_sub_zpow _ _ (by simp) _).mul_right _
     refine (H₁.mul_of_nonneg H₂ (by intro; positivity) (by intro; positivity)).of_norm_bounded ?_
@@ -721,7 +721,7 @@ lemma weierstrassPExcept_eq_tsum (l₀ z x : ℂ)
     · simp
     simpa [mul_comm] using ((Complex.one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero l x
       (by simpa [sub_eq_zero] using (norm_nonneg _).trans_lt (hx l h))).hasSum (y := z - x)
-      (by simpa [enorm_eq_nnnorm] using hx _ h)).tsum_eq.symm
+      (by simpa [enorm_eq_nnNorm] using hx _ h)).tsum_eq.symm
   trans ∑' (l : ↥L.lattice) (i : ℕ), L.weierstrassPExceptSummand l₀ x i l * (z - x) ^ i
   · simp only [weierstrassPExceptSummand, ite_mul, zero_mul]
   · simp_rw [coeff_weierstrassPExceptSeries, ← tsum_mul_right]

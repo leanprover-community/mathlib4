@@ -71,8 +71,10 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
 @[simp] lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
-@[simp] lemma nnnorm_coe (z : Circle) : ‖(z : ℂ)‖₊ = 1 := NNReal.coe_injective z.norm_coe
-@[simp] lemma enorm_coe (z : Circle) : ‖(z : ℂ)‖ₑ = 1 := by simp [enorm_eq_nnnorm]
+@[simp] lemma nnNorm_coe (z : Circle) : ‖(z : ℂ)‖₊ = 1 := NNReal.coe_injective z.norm_coe
+@[simp] lemma enorm_coe (z : Circle) : ‖(z : ℂ)‖ₑ = 1 := by simp [enorm_eq_nnNorm]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_coe := nnNorm_coe
 
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
@@ -203,8 +205,10 @@ section Norm
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] (u : Circle) (v : E)
 
 @[simp] protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by simp [smul_def, norm_smul]
-@[simp] protected lemma nnnorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
-@[simp] protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnnorm]
+@[simp] protected lemma nnNorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
+@[simp] protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [enorm_eq_nnNorm]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_smul := nnNorm_smul
 
 instance : IsIsometricSMul Circle E :=
   ⟨fun _ ↦ Isometry.of_dist_eq fun _ _ ↦ by simp [dist_eq_norm, ← smul_sub]⟩

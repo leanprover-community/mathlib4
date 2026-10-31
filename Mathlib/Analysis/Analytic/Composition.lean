@@ -319,10 +319,13 @@ theorem compAlongComposition_norm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F 
     ‖q.compAlongComposition p c‖ ≤ ‖q c.length‖ * ∏ i, ‖p (c.blocksFun i)‖ :=
   ContinuousMultilinearMap.opNorm_le_bound (by positivity) (compAlongComposition_bound _ _ _)
 
-theorem compAlongComposition_nnnorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
+theorem compAlongComposition_nnNorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
     ‖q.compAlongComposition p c‖₊ ≤ ‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊ := by
   rw [← NNReal.coe_le_coe]; push_cast; exact q.compAlongComposition_norm p c
+
+@[deprecated (since := "2026-10-31")]
+alias compAlongComposition_nnnorm := compAlongComposition_nnNorm
 
 /-!
 ### The identity formal power series
@@ -456,9 +459,9 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 (lt_min zero_lt_one hp) with ⟨rp, rp_pos, hrp⟩
   simp only [lt_min_iff, ENNReal.coe_lt_one_iff, ENNReal.coe_pos] at hrp hrq rp_pos rq_pos
   obtain ⟨Cq, _hCq0, hCq⟩ : ∃ Cq > 0, ∀ n, ‖q n‖₊ * rq ^ n ≤ Cq :=
-    q.nnnorm_mul_pow_le_of_lt_radius hrq.2
+    q.nnNorm_mul_pow_le_of_lt_radius hrq.2
   obtain ⟨Cp, hCp1, hCp⟩ : ∃ Cp ≥ 1, ∀ n, ‖p n‖₊ * rp ^ n ≤ Cp := by
-    rcases p.nnnorm_mul_pow_le_of_lt_radius hrp.2 with ⟨Cp, -, hCp⟩
+    rcases p.nnNorm_mul_pow_le_of_lt_radius hrp.2 with ⟨Cp, -, hCp⟩
     exact ⟨max Cp 1, le_max_right _ _, fun n => (hCp n).trans (le_max_left _ _)⟩
   let r0 : ℝ≥0 := (4 * Cp)⁻¹
   have r0_pos : 0 < r0 := inv_pos.2 (mul_pos zero_lt_four (zero_lt_one.trans_le hCp1))
@@ -480,7 +483,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
     calc
       ‖q.compAlongComposition p c‖₊ * r ^ n ≤
           (‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊) * r ^ n := by
-        grw [q.compAlongComposition_nnnorm p c]
+        grw [q.compAlongComposition_nnNorm p c]
       _ = ‖q c.length‖₊ * rq ^ n * ((∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n) * r0 ^ n := by
         ring
       _ ≤ Cq * Cp ^ n * r0 ^ n := mul_le_mul' (mul_le_mul' A B) le_rfl
@@ -515,7 +518,7 @@ theorem le_comp_radius_of_summable (q : FormalMultilinearSeries 𝕜 F G)
     ‖FormalMultilinearSeries.comp q p n‖₊ * r ^ n ≤
         ∑' c : Composition n, ‖compAlongComposition q p c‖₊ * r ^ n := by
       rw [tsum_fintype, ← Finset.sum_mul]
-      exact mul_le_mul' (nnnorm_sum_le _ _) le_rfl
+      exact mul_le_mul' (nnNorm_sum_le _ _) le_rfl
     _ ≤ ∑' i : Σ n : ℕ, Composition n, ‖compAlongComposition q p i.snd‖₊ * r ^ i.fst :=
       NNReal.tsum_comp_le_tsum_of_inj hr sigma_mk_injective
 
@@ -793,7 +796,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
       CauchySeq fun s : Finset (Σ n, Composition n) =>
         ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
       apply cauchySeq_finset_of_norm_bounded (NNReal.summable_coe.2 hr) _
-      simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
+      simp only [coe_nnNorm, NNReal.coe_mul, NNReal.coe_pow]
       rintro ⟨n, c⟩
       calc
         ‖(compAlongComposition q p c) fun _j : Fin n => y‖ ≤
@@ -804,7 +807,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
           gcongr
           rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
-          rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
+          rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
     tendsto_nhds_of_cauchySeq_of_subseq cau compPartialSumTarget_tendsto_atTop C
   -- Fifth step: the sum over `n` of `q.comp p n` can be expressed as a particular resummation of
   -- the sum over all compositions, by grouping together the compositions of the same

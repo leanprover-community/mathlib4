@@ -204,7 +204,7 @@ lemma variation_prod_le [CompleteSpace G] [IsFiniteMeasure μ.variation] [SFinit
 instance [CompleteSpace G] [IsFiniteMeasure μ.variation] [IsFiniteMeasure ν.variation] :
     IsFiniteMeasure (μ.prod ν B).variation := by
   have : IsFiniteMeasure (‖B‖ₑ • μ.variation.prod ν.variation) := by
-    simp only [enorm_eq_nnnorm, Measure.coe_nnreal_smul]
+    simp only [enorm_eq_nnNorm, Measure.coe_nnreal_smul]
     infer_instance
   exact isFiniteMeasure_of_le _ variation_prod_le
 

@@ -66,13 +66,15 @@ section Lp
 variable [MeasurableSpace β] [MeasurableSpace E] [NormedAddCommGroup E] [NormedAddCommGroup F]
   {p : ℝ≥0∞}
 
-theorem nnnorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
+theorem nnNorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s y₀ h₀ n x - f x‖₊ ≤ ‖f x - y₀‖₊ := by
   have := edist_approxOn_le hf h₀ x n
   rw [edist_comm y₀] at this
-  simp only [edist_nndist, nndist_eq_nnnorm] at this
+  simp only [edist_nndist, nndist_eq_nnNorm] at this
   exact mod_cast this
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_approxOn_le := nnNorm_approxOn_le
 
 theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
@@ -103,7 +105,7 @@ theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β 
   -- bounded, at any given point, by `fun x => ‖f x - y₀‖ ^ p.toReal`
   have h_bound n :
     (fun x ↦ ‖approxOn f hf s y₀ h₀ n x - f x‖ₑ ^ p) ≤ᵐ[μ] (‖f · - y₀‖ₑ ^ p) :=
-    .of_forall fun x => rpow_le_rpow (coe_mono (nnnorm_approxOn_le hf h₀ x n)) hp.le
+    .of_forall fun x => rpow_le_rpow (coe_mono (nnNorm_approxOn_le hf h₀ x n)) hp.le
   -- (3) The bounding function `fun x => ‖f x - y₀‖ ^ p.toReal` has finite integral
   have h_fin : (∫⁻ a : β, ‖f a - y₀‖ₑ ^ p ∂μ) ≠ ⊤ :=
     (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top hp hi).ne
@@ -114,7 +116,7 @@ theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β 
     filter_upwards [hμ] with a ha
     have : Tendsto (fun n => (approxOn f hf s y₀ h₀ n) a - f a) atTop (𝓝 (f a - f a)) :=
       (tendsto_approxOn hf h₀ ha).sub tendsto_const_nhds
-    convert! continuous_rpow_const.continuousAt.tendsto.comp (tendsto_coe.mpr this.nnnorm)
+    convert! continuous_rpow_const.continuousAt.tendsto.comp (tendsto_coe.mpr this.nnNorm)
     simp [zero_rpow_of_pos hp]
   -- Then we apply the Dominated Convergence Theorem
   simpa using tendsto_lintegral_of_dominated_convergence _ hF_meas h_bound h_fin h_lim

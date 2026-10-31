@@ -96,16 +96,18 @@ theorem norm_fderiv_norm_id_rpow (x : E) {p : ℝ} (hp : 1 < p) :
   rw [← Real.rpow_add_one' (by positivity) (by linarith)]
   ring_nf
 
-theorem nnnorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
+theorem nnNorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
     {x : F} {p : ℝ≥0} (hp : 1 < p) :
     ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ (p : ℝ)) x‖₊ ≤ p * ‖f x‖₊ ^ ((p : ℝ) - 1) * ‖fderiv ℝ f x‖₊ :=
   norm_fderiv_norm_rpow_le hf hp
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_fderiv_norm_rpow_le := nnNorm_fderiv_norm_rpow_le
 
 lemma enorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
     {x : F} {p : ℝ≥0} (hp : 1 < p) :
     ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ (p : ℝ)) x‖ₑ ≤ p * ‖f x‖ₑ ^ ((p : ℝ) - 1) * ‖fderiv ℝ f x‖ₑ := by
   simpa [enorm, ← ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.2 <| NNReal.one_le_coe.2 hp.le),
-    ← ENNReal.coe_mul] using nnnorm_fderiv_norm_rpow_le hf hp
+    ← ENNReal.coe_mul] using nnNorm_fderiv_norm_rpow_le hf hp
 
 theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E ↦ ‖x‖ ^ p) := by
   rw [contDiff_one_iff_fderiv]

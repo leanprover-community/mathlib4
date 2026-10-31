@@ -511,13 +511,15 @@ protected theorem norm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
   continuous_norm.comp_aestronglyMeasurable hf
 
 @[fun_prop]
-protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem nnNorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖₊) μ :=
-  continuous_nnnorm.comp_aestronglyMeasurable hf
+  continuous_nnNorm.comp_aestronglyMeasurable hf
+
+@[deprecated (since := "2026-10-31")] alias nnnorm := nnNorm
 
 /-- The `enorm` of a strongly a.e. measurable function is a.e. measurable.
 
-Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
+Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnNorm`, this lemma proves
 a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
 for functions taking values in `ℝ≥0∞`, a.e. measurability is much more useful than
 a.e. strong measurability. -/

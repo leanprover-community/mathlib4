@@ -180,8 +180,11 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[�
   norm f := ‖f.toContinuousMultilinearMap‖
 
 @[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ = ‖f‖ := rfl
-@[simp] theorem nnnorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl
+@[simp] theorem nnNorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl
 @[simp] theorem enorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ₑ = ‖f‖ₑ := rfl
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_toContinuousMultilinearMap := nnNorm_toContinuousMultilinearMap
 
 /-- The inclusion of `E [⋀^ι]→L[𝕜] F` into `ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F`
 as a linear isometry. -/
@@ -246,7 +249,7 @@ theorem opNorm_le_iff {C : ℝ} (hC : 0 ≤ C) : ‖f‖ ≤ C ↔ ∀ m, ‖f m
   f.1.opNorm_le_iff hC
 
 /-- The fundamental property of the operator norm of a continuous alternating map:
-`‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
+`‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnNorm` version. -/
 theorem le_opNNNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
   f.1.le_opNNNorm m
 
@@ -285,9 +288,11 @@ section
     ‖ofSubsingleton 𝕜 E F i f‖ = ‖f‖ :=
   ContinuousMultilinearMap.norm_ofSubsingleton i f
 
-@[simp] theorem nnnorm_ofSubsingleton [Subsingleton ι] (i : ι) (f : E →L[𝕜] F) :
+@[simp] theorem nnNorm_ofSubsingleton [Subsingleton ι] (i : ι) (f : E →L[𝕜] F) :
     ‖ofSubsingleton 𝕜 E F i f‖₊ = ‖f‖₊ :=
   NNReal.eq <| norm_ofSubsingleton i f
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofSubsingleton := nnNorm_ofSubsingleton
 
 /-- `ContinuousAlternatingMap.ofSubsingleton` as a linear isometry. -/
 @[simps +simpRhs]
@@ -301,17 +306,22 @@ theorem norm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
     ‖ofSubsingleton 𝕜 E E i (.id _ _)‖ ≤ 1 :=
   ContinuousMultilinearMap.norm_ofSubsingleton_id_le ..
 
-theorem nnnorm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
+theorem nnNorm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
     ‖ofSubsingleton 𝕜 E E i (.id _ _)‖₊ ≤ 1 :=
-  ContinuousMultilinearMap.nnnorm_ofSubsingleton_id_le ..
+  ContinuousMultilinearMap.nnNorm_ofSubsingleton_id_le ..
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_ofSubsingleton_id_le := nnNorm_ofSubsingleton_id_le
 
 variable (𝕜 E)
 
 @[simp] theorem norm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖ = ‖x‖ :=
   ContinuousMultilinearMap.norm_constOfIsEmpty _ _ _
 
-@[simp] theorem nnnorm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖₊ = ‖x‖₊ :=
+@[simp] theorem nnNorm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_constOfIsEmpty _ _ _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_constOfIsEmpty := nnNorm_constOfIsEmpty
 
 variable (ι F) in
 /-- `constOfIsEmpty` as a linear isometry equivalence. -/
@@ -634,9 +644,11 @@ theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :
   ContinuousMultilinearMap.norm_ofSubsingleton_id 𝕜 F i
 
 variable (𝕜 F) in
-theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :
+theorem nnNorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :
     ‖ofSubsingleton 𝕜 F F i (.id _ _)‖₊ = 1 :=
   NNReal.eq <| norm_ofSubsingleton_id ..
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofSubsingleton_id := nnNorm_ofSubsingleton_id
 
 end ContinuousAlternatingMap
 

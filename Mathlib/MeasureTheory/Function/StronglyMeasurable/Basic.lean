@@ -976,13 +976,15 @@ protected theorem norm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommG
   continuous_norm.comp_stronglyMeasurable hf
 
 @[fun_prop]
-protected theorem nnnorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem nnNorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖₊ :=
-  continuous_nnnorm.comp_stronglyMeasurable hf
+  continuous_nnNorm.comp_stronglyMeasurable hf
+
+@[deprecated (since := "2026-10-31")] alias nnnorm := nnNorm
 
 /-- The `enorm` of a strongly measurable function is measurable.
 
-Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma proves measurability,
+Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnNorm`, this lemma proves measurability,
 **not** strong measurability. This is an intentional decision: for functions taking values in
 ℝ≥0∞, measurability is much more useful than strong measurability. -/
 @[fun_prop]
@@ -1080,10 +1082,10 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
       (∀ n, MeasurableSet[m] (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, ‖f x‖ ≤ n) ∧
       ⋃ i, s i = Set.univ := by
   obtain ⟨s, hs, hs_univ⟩ :=
-    @exists_spanning_measurableSet_le _ m _ hf.nnnorm.measurable (μ.trim hm) _
+    @exists_spanning_measurableSet_le _ m _ hf.nnNorm.measurable (μ.trim hm) _
   refine ⟨s, fun n ↦ ⟨(hs n).1, (le_trim hm).trans_lt (hs n).2.1, fun x hx ↦ ?_⟩, hs_univ⟩
-  have hx_nnnorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
-  rw [← coe_nnnorm]
+  have hx_nnNorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
+  rw [← coe_nnNorm]
   norm_cast
 
 end StronglyMeasurable

@@ -180,10 +180,10 @@ theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
 
 -- TODO: Prove this from `IsSelfAdjoint.toReal_spectralRadius_eq_norm` using complexification.
 /-- The spectral radius of a self-adjoint operator on a complete space equals the norm. -/
-theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
+theorem spectralRadius_eq_nnNorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
     spectralRadius 𝕜 T = ‖T‖₊ := by
   nontriviality E
-  apply le_antisymm (spectralRadius_le_nnnorm T)
+  apply le_antisymm (spectralRadius_le_nnNorm T)
   suffices h : algebraMap ℝ 𝕜 ‖T‖ ∈ spectrum 𝕜 T ∨ algebraMap ℝ 𝕜 (-‖T‖) ∈ spectrum 𝕜 T by
     rcases h with h | h <;>
       exact le_trans (by simp) (le_biSup _ (spectrum_subset_quasispectrum 𝕜 T h))
@@ -191,6 +191,8 @@ theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
   by_contra! h
   obtain ⟨c, hc0, hc⟩ := T.abs_rayleighQuotient_le_of_norm_mem_resolventSet h.1 h.2
   grind [ciSup_le hc, norm_eq_iSup_rayleighQuotient T hT.isSymmetric]
+
+@[deprecated (since := "2026-10-31")] alias spectralRadius_eq_nnnorm := spectralRadius_eq_nnNorm
 
 end ContinuousLinearMap
 

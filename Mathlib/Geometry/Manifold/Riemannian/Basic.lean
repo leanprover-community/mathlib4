@@ -130,13 +130,16 @@ lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
   rfl
 
-lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
+lemma nnNorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖₊ = ‖NormedSpace.fromTangentSpace _  v‖₊ := by
-  simp [nnnorm, norm_tangentSpace_vectorSpace]
+  simp [nnNorm, norm_tangentSpace_vectorSpace]
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_tangentSpace_vectorSpace := nnNorm_tangentSpace_vectorSpace
 
 lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖ₑ = ‖NormedSpace.fromTangentSpace _ v‖ₑ := by
-  simp [enorm, nnnorm_tangentSpace_vectorSpace]
+  simp [enorm, nnNorm_tangentSpace_vectorSpace]
 
 open MeasureTheory
 
@@ -256,7 +259,7 @@ lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
   refine ⟨C, C_pos, ?_⟩
   filter_upwards [hC] with y hy
-  simp only [enorm, nnnorm]
+  simp only [enorm, nnNorm]
   exact mod_cast hy
 
 set_option backward.isDefEq.respectTransparency false in
@@ -296,7 +299,7 @@ lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
   refine ⟨C, C_pos, ?_⟩
   filter_upwards [hC] with y hy
-  simp only [enorm, nnnorm]
+  simp only [enorm, nnNorm]
   exact mod_cast hy
 
 set_option backward.isDefEq.respectTransparency false in

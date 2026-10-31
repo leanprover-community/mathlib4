@@ -197,7 +197,7 @@ theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z�
 theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
     (C a * X + C b).mahlerMeasure = max ‖a‖ ‖b‖ := by
   simp only [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
-    mahlerMeasure_mul, mahlerMeasure_const, ← coe_nnnorm, mahlerMeasure_X_add_C]
+    mahlerMeasure_mul, mahlerMeasure_const, ← coe_nnNorm, mahlerMeasure_X_add_C]
   norm_cast
   simp [mul_max, ha]
 
@@ -383,7 +383,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       gcongr with a
       exact le_max_right 1 ‖a‖
     _ ≤ ∏ z ∈ p.roots.toFinset, (1 ⊔ ‖z‖) ^ count z x := by
-      simp_rw [← coe_nnnorm]
+      simp_rw [← coe_nnNorm]
       norm_cast
       exact Finset.prod_le_prod_of_subset_of_one_le (toFinset_subset.mpr (subset_of_le hx.1))
         (fun a _ _ ↦ one_le_pow₀ (le_max_left 1 ‖a‖))

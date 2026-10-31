@@ -210,12 +210,12 @@ theorem eLpNorm_eq [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g
   · simp only [h_top, eLpNorm_exponent_top hf, eLpNorm_exponent_top hg,
       eLpNormEssSup]
     apply essSup_eq
-    exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
+    exact h.comp (measurable_coe_nnreal_ennreal.comp measurable_nnNorm)
   simp only [eLpNorm_eq_eLpNorm' h0 h_top hf, eLpNorm_eq_eLpNorm' h0 h_top hg,
     eLpNorm', one_div]
   congr 1
   apply lintegral_eq
-  exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
+  exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnNorm)
     p.toReal)
 
 theorem memLp_snd [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
@@ -241,10 +241,12 @@ protected theorem norm [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : Id
     IdentDistrib (fun x => ‖f x‖) (fun x => ‖g x‖) μ ν :=
   h.comp measurable_norm
 
-protected theorem nnnorm [NormedAddCommGroup γ] [OpensMeasurableSpace γ]
+protected theorem nnNorm [NormedAddCommGroup γ] [OpensMeasurableSpace γ]
     (h : IdentDistrib f g μ ν) :
     IdentDistrib (fun x => ‖f x‖₊) (fun x => ‖g x‖₊) μ ν :=
-  h.comp measurable_nnnorm
+  h.comp measurable_nnNorm
+
+@[deprecated (since := "2026-10-31")] alias nnnorm := nnNorm
 
 protected theorem pow [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) {n : ℕ} :
     IdentDistrib (fun x => f x ^ n) (fun x => g x ^ n) μ ν :=
@@ -284,7 +286,7 @@ lemma inv [Inv γ] [MeasurableInv γ] (h : IdentDistrib f g μ ν) :
 
 theorem evariance_eq {f : α → ℝ} {g : β → ℝ} (h : IdentDistrib f g μ ν) :
     evariance f μ = evariance g ν := by
-  convert! (h.sub_const (∫ x, f x ∂μ)).nnnorm.coe_nnreal_ennreal.sq.lintegral_eq
+  convert! (h.sub_const (∫ x, f x ∂μ)).nnNorm.coe_nnreal_ennreal.sq.lintegral_eq
   rw [h.integral_eq]
   rfl
 
@@ -308,20 +310,20 @@ theorem MemLp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α → 
   refine ⟨C.toNNReal, fun i ↦ hC₂.trans_eq' ?_⟩
   have : {x | C.toNNReal ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
-    simp_rw [Set.mem_ofPred_eq, Real.toNNReal_le_iff_le_coe, coe_nnnorm]
+    simp_rw [Set.mem_ofPred_eq, Real.toNNReal_le_iff_le_coe, coe_nnNorm]
   rw [this, ← eLpNorm_norm _ <| (hmeas i).indicator₀
       (nullMeasurableSet_le aemeasurable_const (hmeas i).norm.aemeasurable),
     ← eLpNorm_norm (Set.indicator _ _) <| (hmeas j).indicator₀
-      (nullMeasurableSet_le aemeasurable_const (hmeas j).nnnorm.aemeasurable.coe_nnreal_real)]
-  simp_rw [norm_indicator_eq_indicator_norm, coe_nnnorm]
+      (nullMeasurableSet_le aemeasurable_const (hmeas j).nnNorm.aemeasurable.coe_nnreal_real)]
+  simp_rw [norm_indicator_eq_indicator_norm, coe_nnNorm]
   let F : E → ℝ := (fun x : E ↦ if C.toNNReal ≤ ‖x‖₊ then ‖x‖ else 0)
   have F_meas : Measurable F := by
-    apply measurable_norm.indicator (measurableSet_le measurable_const measurable_nnnorm)
+    apply measurable_norm.indicator (measurableSet_le measurable_const measurable_nnNorm)
   have : ∀ k, (fun x ↦ Set.indicator {x | C ≤ ‖f k x‖} (fun a ↦ ‖f k a‖) x) = F ∘ f k := by
     intro k
     ext x
     simp only [F, Set.indicator, Set.mem_ofPred_eq, Function.comp_apply,
-      Real.toNNReal_le_iff_le_coe, coe_nnnorm]
+      Real.toNNReal_le_iff_le_coe, coe_nnNorm]
   rw [this, this, ← eLpNorm_map_measure F_meas.aestronglyMeasurable (hf i).aemeasurable_fst,
     (hf i).map_eq, eLpNorm_map_measure F_meas.aestronglyMeasurable (hf j).aemeasurable_fst]
 

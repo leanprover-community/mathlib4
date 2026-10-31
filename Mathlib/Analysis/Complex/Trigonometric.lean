@@ -957,12 +957,16 @@ theorem norm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ = 1 := by
   rw [mul_comm, norm_exp_ofReal_mul_I]
 
 @[simp]
-theorem nnnorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖₊ = 1 := by
-  rw [← nnnorm_norm, norm_exp_ofReal_mul_I, ← NNReal.coe_eq_one]; simp
+theorem nnNorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖₊ = 1 := by
+  rw [← nnNorm_norm, norm_exp_ofReal_mul_I, ← NNReal.coe_eq_one]; simp
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_exp_ofReal_mul_I := nnNorm_exp_ofReal_mul_I
 
 @[simp]
-theorem nnnorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖₊ = 1 := by
-  rw [← nnnorm_norm, norm_exp_I_mul_ofReal, ← NNReal.coe_eq_one]; simp
+theorem nnNorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖₊ = 1 := by
+  rw [← nnNorm_norm, norm_exp_I_mul_ofReal, ← NNReal.coe_eq_one]; simp
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_exp_I_mul_ofReal := nnNorm_exp_I_mul_ofReal
 
 @[simp]
 theorem enorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ₑ = 1 := by

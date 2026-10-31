@@ -53,13 +53,19 @@ end Norm
 section NNNorm
 variable [NNNorm E]
 
-instance nnnorm : NNNorm (ULift E) where nnnorm x := ‖x.down‖₊
+instance nnNorm : NNNorm (ULift E) where nnNorm x := ‖x.down‖₊
 
-lemma nnnorm_def (x : ULift E) : ‖x‖₊ = ‖x.down‖₊ := rfl
+lemma nnNorm_def (x : ULift E) : ‖x‖₊ = ‖x.down‖₊ := rfl
 
-@[simp] lemma nnnorm_up (x : E) : ‖ULift.up x‖₊ = ‖x‖₊ := rfl
+@[deprecated (since := "2026-10-31")] alias nnnorm_def := nnNorm_def
 
-@[simp] lemma nnnorm_down (x : ULift E) : ‖x.down‖₊ = ‖x‖₊ := rfl
+@[simp] lemma nnNorm_up (x : E) : ‖ULift.up x‖₊ = ‖x‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_up := nnNorm_up
+
+@[simp] lemma nnNorm_down (x : ULift E) : ‖x.down‖₊ = ‖x‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_down := nnNorm_down
 
 end NNNorm
 
@@ -124,13 +130,21 @@ instance Additive.toNNNorm : NNNorm (Additive E) := ‹NNNorm E›
 
 instance Multiplicative.toNNNorm : NNNorm (Multiplicative E) := ‹NNNorm E›
 
-@[simp] lemma nnnorm_toMul (x : Additive E) : ‖(x.toMul : E)‖₊ = ‖x‖₊ := rfl
+@[simp] lemma nnNorm_toMul (x : Additive E) : ‖(x.toMul : E)‖₊ = ‖x‖₊ := rfl
 
-@[simp] lemma nnnorm_ofMul (x : E) : ‖ofMul x‖₊ = ‖x‖₊ := rfl
+@[deprecated (since := "2026-10-31")] alias nnnorm_toMul := nnNorm_toMul
 
-@[simp] lemma nnnorm_toAdd (x : Multiplicative E) : ‖(x.toAdd : E)‖₊ = ‖x‖₊ := rfl
+@[simp] lemma nnNorm_ofMul (x : E) : ‖ofMul x‖₊ = ‖x‖₊ := rfl
 
-@[simp] lemma nnnorm_ofAdd (x : E) : ‖ofAdd x‖₊ = ‖x‖₊ := rfl
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofMul := nnNorm_ofMul
+
+@[simp] lemma nnNorm_toAdd (x : Multiplicative E) : ‖(x.toAdd : E)‖₊ = ‖x‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_toAdd := nnNorm_toAdd
+
+@[simp] lemma nnNorm_ofAdd (x : E) : ‖ofAdd x‖₊ = ‖x‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofAdd := nnNorm_ofAdd
 
 end NNNorm
 
@@ -194,11 +208,15 @@ section NNNorm
 variable [NNNorm E]
 
 instance OrderDual.toNNNorm : NNNorm Eᵒᵈ where
-  nnnorm x := ‖ofDual x‖₊
+  nnNorm x := ‖ofDual x‖₊
 
-@[simp] lemma nnnorm_toDual (x : E) : ‖toDual x‖₊ = ‖x‖₊ := rfl
+@[simp] lemma nnNorm_toDual (x : E) : ‖toDual x‖₊ = ‖x‖₊ := rfl
 
-@[simp] lemma nnnorm_ofDual (x : Eᵒᵈ) : ‖ofDual x‖₊ = ‖x‖₊ := rfl
+@[deprecated (since := "2026-10-31")] alias nnnorm_toDual := nnNorm_toDual
+
+@[simp] lemma nnNorm_ofDual (x : Eᵒᵈ) : ‖ofDual x‖₊ = ‖x‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofDual := nnNorm_ofDual
 
 end NNNorm
 
@@ -254,15 +272,19 @@ variable [SeminormedGroup E] [SeminormedGroup F]
 instance Prod.seminormedGroup : SeminormedGroup (E × F) where
   dist_eq x y := by simp [Prod.norm_def, Prod.dist_eq, dist_eq_norm_inv_mul]
 
-/-- Multiplicative version of `Prod.nnnorm_def`.
+/-- Multiplicative version of `Prod.nnNorm_def`.
 Earlier, this name was used for the additive version. -/
-@[to_additive Prod.nnnorm_def /-- Additive version of `Prod.nnnorm_def'`.
+@[to_additive Prod.nnNorm_def /-- Additive version of `Prod.nnNorm_def'`.
 Earlier, this name was used for the multiplicative version. -/]
-lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
+lemma Prod.nnNorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 
-/-- Multiplicative version of `Prod.nnnorm_mk`. -/
-@[to_additive (attr := simp) Prod.nnnorm_mk /-- Additive version of `Prod.nnnorm_mk'`. -/]
-lemma Prod.nnnorm_mk' (x : E) (y : F) : ‖(x, y)‖₊ = max ‖x‖₊ ‖y‖₊ := rfl
+@[deprecated (since := "2026-10-31")] alias Prod.nnnorm_def' := Prod.nnNorm_def'
+
+/-- Multiplicative version of `Prod.nnNorm_mk`. -/
+@[to_additive (attr := simp) Prod.nnNorm_mk /-- Additive version of `Prod.nnNorm_mk'`. -/]
+lemma Prod.nnNorm_mk' (x : E) (y : F) : ‖(x, y)‖₊ = max ‖x‖₊ ‖y‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")] alias Prod.nnnorm_mk' := Prod.nnNorm_mk'
 
 end SeminormedGroup
 
@@ -304,13 +326,15 @@ instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
   dist_eq x y :=
     congr((Finset.univ.sup $(funext fun a => show nndist (x a) (y a) = ‖(x a)⁻¹ * y a‖₊
-      from nndist_eq_nnnorm_inv_mul (x a) (y a))).toReal)
+      from nndist_eq_nnNorm_inv_mul (x a) (y a))).toReal)
 
 @[to_additive Pi.norm_def]
 lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
 
-@[to_additive Pi.nnnorm_def]
-lemma Pi.nnnorm_def' : ‖f‖₊ = Finset.univ.sup fun b => ‖f b‖₊ := Subtype.eta _ _
+@[to_additive Pi.nnNorm_def]
+lemma Pi.nnNorm_def' : ‖f‖₊ = Finset.univ.sup fun b => ‖f b‖₊ := Subtype.eta _ _
+
+@[deprecated (since := "2026-10-31")] alias Pi.nnnorm_def' := Pi.nnNorm_def'
 
 /-- The seminorm of an element in a product space is `≤ r` if and only if the norm of each
 component is. -/
@@ -319,9 +343,11 @@ and only if the norm of each component is. -/]
 lemma pi_norm_le_iff_of_nonneg' (hr : 0 ≤ r) : ‖x‖ ≤ r ↔ ∀ i, ‖x i‖ ≤ r := by
   simp only [← dist_one_right, dist_pi_le_iff hr, Pi.one_apply]
 
-@[to_additive pi_nnnorm_le_iff]
-lemma pi_nnnorm_le_iff' {r : ℝ≥0} : ‖x‖₊ ≤ r ↔ ∀ i, ‖x i‖₊ ≤ r :=
+@[to_additive pi_nnNorm_le_iff]
+lemma pi_nnNorm_le_iff' {r : ℝ≥0} : ‖x‖₊ ≤ r ↔ ∀ i, ‖x i‖₊ ≤ r :=
   pi_norm_le_iff_of_nonneg' r.coe_nonneg
+
+@[deprecated (since := "2026-10-31")] alias pi_nnnorm_le_iff' := pi_nnNorm_le_iff'
 
 @[to_additive pi_norm_le_iff_of_nonempty]
 lemma pi_norm_le_iff_of_nonempty' [Nonempty ι] : ‖f‖ ≤ r ↔ ∀ b, ‖f b‖ ≤ r := by
@@ -338,42 +364,52 @@ if the norm of each component is. -/]
 lemma pi_norm_lt_iff' (hr : 0 < r) : ‖x‖ < r ↔ ∀ i, ‖x i‖ < r := by
   simp only [← dist_one_right, dist_pi_lt_iff hr, Pi.one_apply]
 
-@[to_additive pi_nnnorm_lt_iff]
-lemma pi_nnnorm_lt_iff' {r : ℝ≥0} (hr : 0 < r) : ‖x‖₊ < r ↔ ∀ i, ‖x i‖₊ < r :=
+@[to_additive pi_nnNorm_lt_iff]
+lemma pi_nnNorm_lt_iff' {r : ℝ≥0} (hr : 0 < r) : ‖x‖₊ < r ↔ ∀ i, ‖x i‖₊ < r :=
   pi_norm_lt_iff' hr
+
+@[deprecated (since := "2026-10-31")] alias pi_nnnorm_lt_iff' := pi_nnNorm_lt_iff'
 
 @[to_additive norm_le_pi_norm]
 lemma norm_le_pi_norm' (i : ι) : ‖f i‖ ≤ ‖f‖ :=
   (pi_norm_le_iff_of_nonneg' <| norm_nonneg' _).1 le_rfl i
 
-@[to_additive nnnorm_le_pi_nnnorm]
-lemma nnnorm_le_pi_nnnorm' (i : ι) : ‖f i‖₊ ≤ ‖f‖₊ :=
+@[to_additive nnNorm_le_pi_nnNorm]
+lemma nnNorm_le_pi_nnNorm' (i : ι) : ‖f i‖₊ ≤ ‖f‖₊ :=
   norm_le_pi_norm' _ i
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_le_pi_nnnorm' := nnNorm_le_pi_nnNorm'
 
 @[to_additive pi_norm_const_le]
 lemma pi_norm_const_le' (a : E) : ‖fun _ : ι => a‖ ≤ ‖a‖ :=
   (pi_norm_le_iff_of_nonneg' <| norm_nonneg' _).2 fun _ => le_rfl
 
-@[to_additive pi_nnnorm_const_le]
-lemma pi_nnnorm_const_le' (a : E) : ‖fun _ : ι => a‖₊ ≤ ‖a‖₊ :=
+@[to_additive pi_nnNorm_const_le]
+lemma pi_nnNorm_const_le' (a : E) : ‖fun _ : ι => a‖₊ ≤ ‖a‖₊ :=
   pi_norm_const_le' _
+
+@[deprecated (since := "2026-10-31")] alias pi_nnnorm_const_le' := pi_nnNorm_const_le'
 
 @[to_additive (attr := simp) pi_norm_const]
 lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖ = ‖a‖ := by
   simpa only [← dist_one_right] using! dist_pi_const a 1
 
-@[to_additive (attr := simp) pi_nnnorm_const]
-lemma pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a‖₊ :=
+@[to_additive (attr := simp) pi_nnNorm_const]
+lemma pi_nnNorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a‖₊ :=
   NNReal.eq <| pi_norm_const' a
 
-@[to_additive pi_nnnorm_comp_le]
-lemma pi_nnnorm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖₊ ≤ ‖g‖₊ := by
-  rw [pi_nnnorm_le_iff']
+@[deprecated (since := "2026-10-31")] alias pi_nnnorm_const' := pi_nnNorm_const'
+
+@[to_additive pi_nnNorm_comp_le]
+lemma pi_nnNorm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖₊ ≤ ‖g‖₊ := by
+  rw [pi_nnNorm_le_iff']
   exact fun x ↦ norm_le_pi_norm' g (f x)
+
+@[deprecated (since := "2026-10-31")] alias pi_nnnorm_comp_le' := pi_nnNorm_comp_le'
 
 @[to_additive pi_norm_comp_le]
 lemma pi_norm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖ ≤ ‖g‖ :=
-  pi_nnnorm_comp_le' g f
+  pi_nnNorm_comp_le' g f
 
 @[to_additive IsGreatest.pi_norm]
 lemma IsGreatest.pi_norm' [Nonempty ι] (f : ι → E) : IsGreatest (Set.range (‖f ·‖)) ‖f‖ := by
@@ -402,45 +438,56 @@ lemma Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f
   Finset.sum_le_card_nsmul _ _ _ fun i _hi => norm_le_pi_norm' _ i
 
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
-@[to_additive Pi.sum_nnnorm_apply_le_nnnorm /-- The $L^1$ norm is less than the $L^\infty$ norm
+@[to_additive Pi.sum_nnNorm_apply_le_nnNorm /-- The $L^1$ norm is less than the $L^\infty$ norm
 scaled by the cardinality. -/]
-lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
+lemma Pi.sum_nnNorm_apply_le_nnNorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
   (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
 
-@[to_additive Pi.nnnorm_extend_le]
-theorem Pi.nnnorm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
+@[deprecated (since := "2026-10-31")]
+alias Pi.sum_nnnorm_apply_le_nnnorm' := Pi.sum_nnNorm_apply_le_nnNorm'
+
+@[to_additive Pi.nnNorm_extend_le]
+theorem Pi.nnNorm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
     ‖Function.extend f g j‖₊ ≤ max ‖g‖₊ ‖j‖₊ := by
-  rw [pi_nnnorm_le_iff']
-  classical aesop (add simp [Function.extend_def, nnnorm_le_pi_nnnorm'])
+  rw [pi_nnNorm_le_iff']
+  classical aesop (add simp [Function.extend_def, nnNorm_le_pi_nnNorm'])
+
+@[deprecated (since := "2026-10-31")] alias Pi.nnnorm_extend_le' := Pi.nnNorm_extend_le'
 
 @[to_additive Pi.norm_extend_le]
 theorem Pi.norm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
     ‖Function.extend f g j‖ ≤ max ‖g‖ ‖j‖ :=
-  nnnorm_extend_le' f g j
+  nnNorm_extend_le' f g j
 
-@[to_additive Function.FactorsThrough.nnnorm_extend]
-theorem Function.FactorsThrough.nnnorm_extend' {f : ι → ι'} {g : ι → E} {j : ι' → E}
+@[to_additive Function.FactorsThrough.nnNorm_extend]
+theorem Function.FactorsThrough.nnNorm_extend' {f : ι → ι'} {g : ι → E} {j : ι' → E}
     (h : FactorsThrough g f) (hj : ‖j‖₊ ≤ ‖g‖₊) :
     ‖extend f g j‖₊ = ‖g‖₊ := by
-  grw [le_antisymm (Pi.nnnorm_extend_le' f g j), max_eq_left hj]
-  simpa [hj, h.extend_comp] using pi_nnnorm_comp_le' (extend f g j) f
+  grw [le_antisymm (Pi.nnNorm_extend_le' f g j), max_eq_left hj]
+  simpa [hj, h.extend_comp] using pi_nnNorm_comp_le' (extend f g j) f
+
+@[deprecated (since := "2026-10-31")]
+alias Function.FactorsThrough.nnnorm_extend' := Function.FactorsThrough.nnNorm_extend'
 
 @[to_additive Function.FactorsThrough.norm_extend]
 theorem Function.FactorsThrough.norm_extend' {f : ι → ι'} {g : ι → E} {j : ι' → E}
     (h : FactorsThrough g f) (hj : ‖j‖ ≤ ‖g‖) :
     ‖extend f g j‖ = ‖g‖ :=
-  congr(↑$(h.nnnorm_extend' hj))
+  congr(↑$(h.nnNorm_extend' hj))
 
 @[to_additive]
-theorem Function.FactorsThrough.nnnorm_extend_one {f : ι → ι'} {g : ι → E}
+theorem Function.FactorsThrough.nnNorm_extend_one {f : ι → ι'} {g : ι → E}
     (h : FactorsThrough g f) :
     ‖extend f g 1‖₊ = ‖g‖₊ :=
-  h.nnnorm_extend' (by simp)
+  h.nnNorm_extend' (by simp)
+
+@[deprecated (since := "2026-10-31")]
+alias Function.FactorsThrough.nnnorm_extend_one := Function.FactorsThrough.nnNorm_extend_one
 
 @[to_additive]
 theorem Function.FactorsThrough.norm_extend_one {f : ι → ι'} {g : ι → E} (h : FactorsThrough g f) :
     ‖extend f g 1‖ = ‖g‖ :=
-  congr(↑$h.nnnorm_extend_one)
+  congr(↑$h.nnNorm_extend_one)
 
 end SeminormedGroup
 
@@ -463,20 +510,22 @@ instance Pi.normedCommGroup [∀ i, NormedCommGroup (G i)] : NormedCommGroup (�
     mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
+theorem Pi.nnNorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖₊ = ‖y‖₊ := by
   have H : ∀ b, ‖single i y b‖₊ = single (M := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
     intro b
     refine Pi.apply_single (fun i (x : G i) ↦ ‖x‖₊) ?_ i y b
     simp
-  simp [Pi.nnnorm_def, H, Pi.single_apply, Finset.sup_ite, Finset.filter_eq']
+  simp [Pi.nnNorm_def, H, Pi.single_apply, Finset.sup_ite, Finset.filter_eq']
+
+@[deprecated (since := "2026-10-31")] alias Pi.nnnorm_single := Pi.nnNorm_single
 
 lemma Pi.enorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
-    ‖Pi.single i y‖ₑ = ‖y‖ₑ := by simp [enorm, Pi.nnnorm_single]
+    ‖Pi.single i y‖ₑ = ‖y‖ₑ := by simp [enorm, Pi.nnNorm_single]
 
 theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖ = ‖y‖ :=
-  congr($(Pi.nnnorm_single y).val)
+  congr($(Pi.nnNorm_single y).val)
 
 end Pi
 
@@ -501,9 +550,13 @@ lemma norm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ 
 
 lemma norm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.unop a‖ = ‖a‖ := rfl
 
-lemma nnnorm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖₊ = ‖a‖₊ := rfl
+lemma nnNorm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖₊ = ‖a‖₊ := rfl
 
-lemma nnnorm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.unop a‖₊ = ‖a‖₊ := rfl
+@[deprecated (since := "2026-10-31")] alias nnnorm_op := nnNorm_op
+
+lemma nnNorm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.unop a‖₊ = ‖a‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_unop := nnNorm_unop
 
 instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
   __ := instMetricSpace
