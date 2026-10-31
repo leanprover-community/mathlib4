@@ -101,7 +101,7 @@ protected theorem induct' (motive : ℤ → Prop)
     apply neg (n + 2) (add_two n (neg' _ h₀) (neg' n ?_))
     convert h₁ using 1; omega
 
-@[simp]
+@[simp, dlmf 18.9.T1]
 theorem T_add_two : ∀ n, T R (n + 2) = 2 * X * T R (n + 1) - T R n
   | (k : ℕ) => T.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) T.eq_4 R k
@@ -118,10 +118,10 @@ theorem T_sub_one (n : ℤ) : T R (n - 1) = 2 * X * T R n - T R (n + 1) := by
 theorem T_eq (n : ℤ) : T R n = 2 * X * T R (n - 1) - T R (n - 2) := by
   linear_combination (norm := ring_nf) T_add_two R (n - 2)
 
-@[simp]
+@[simp, dlmf 18.5.E14]
 theorem T_zero : T R 0 = 1 := by simp [T]
 
-@[simp]
+@[simp, dlmf 18.5.E14]
 theorem T_one : T R 1 = X := by simp [T]
 
 theorem T_neg_one : T R (-1) = X := by
@@ -130,7 +130,7 @@ theorem T_neg_one : T R (-1) = X := by
   suffices 2 * X - X = X by simpa
   ring
 
-
+@[dlmf 18.5.E14]
 theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
   unfold T; simp [pow_two, mul_assoc]
 
@@ -153,7 +153,7 @@ theorem T_natAbs (n : ℤ) : T R n.natAbs = T R n := by
 
 theorem T_neg_two : T R (-2) = 2 * X ^ 2 - 1 := by simp [T_two]
 
-@[simp]
+@[simp, dlmf 18.6.T1]
 theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -161,6 +161,7 @@ theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
   | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
   | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
 
+@[dlmf 18.6.T1]
 theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -218,7 +219,7 @@ theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.na
 theorem natDegree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).natDegree = n.natAbs :=
   natDegree_eq_of_degree_eq_some (degree_T R n)
 
-@[simp]
+@[simp, dlmf 18.3.T1]
 theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     (T R n).leadingCoeff = 2 ^ (n.natAbs - 1) := by
   induction n using Chebyshev.induct' with
@@ -236,7 +237,7 @@ theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
       tauto
   | neg n ih => simp [ih]
 
-@[simp]
+@[simp, dlmf 18.6.T1]
 theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n).eval x := by
   induction n using Chebyshev.induct' with
   | zero => simp
@@ -267,7 +268,7 @@ noncomputable def U : ℤ → R[X]
   | -((n : ℕ) + 1) => 2 * X * U (-n) - U (-n + 1)
   termination_by n => Int.natAbs n + Int.natAbs (n - 1)
 
-@[simp]
+@[simp, dlmf 18.9.T1]
 theorem U_add_two : ∀ n, U R (n + 2) = 2 * X * U R (n + 1) - U R n
   | (k : ℕ) => U.eq_3 R k
   | -(k + 1 : ℕ) => by linear_combination (norm := (simp [Int.negSucc_eq]; ring_nf)) U.eq_4 R k
@@ -284,15 +285,16 @@ theorem U_sub_one (n : ℤ) : U R (n - 1) = 2 * X * U R n - U R (n + 1) := by
 theorem U_eq (n : ℤ) : U R n = 2 * X * U R (n - 1) - U R (n - 2) := by
   linear_combination (norm := ring_nf) U_add_two R (n - 2)
 
-@[simp]
+@[simp, dlmf 18.5.E15]
 theorem U_zero : U R 0 = 1 := by simp [U]
 
-@[simp]
+@[simp, dlmf 18.5.E15]
 theorem U_one : U R 1 = 2 * X := by simp [U]
 
 @[simp]
 theorem U_neg_one : U R (-1) = 0 := by simpa using U_sub_one R 0
 
+@[dlmf 18.5.E15]
 theorem U_two : U R 2 = 4 * X ^ 2 - 1 := by
   have := U_add_two R 0
   simp only [zero_add, U_one, U_zero] at this
@@ -321,7 +323,7 @@ theorem U_neg (n : ℤ) : U R (-n) = -U R (n - 2) := by simpa [sub_sub] using U_
 theorem U_neg_sub_two (n : ℤ) : U R (-n - 2) = -U R n := by
   simpa [sub_eq_add_neg, add_comm] using U_neg R (n + 2)
 
-@[simp]
+@[simp, dlmf 18.6.T1]
 theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -336,6 +338,7 @@ theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
       sub_add_cancel]
     ring
 
+@[dlmf 18.6.T1]
 theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -423,7 +426,7 @@ theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
   case pos hn => subst hn; simp
   case neg hn => exact natDegree_eq_of_degree_eq_some (degree_U_of_ne_neg_one R n hn)
 
-@[simp]
+@[simp, dlmf 18.3.T1]
 theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
     (U R n).leadingCoeff = 2 ^ n := by
   have : leadingCoeff (2 : R[X]) = 2 := by
@@ -441,7 +444,7 @@ theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
         degree_U_natCast R n, degree_U_natCast R (n + 1)]
       norm_cast; omega
 
-@[simp]
+@[simp, dlmf 18.6.T1]
 theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow * (U R n).eval x := by
   induction n using Nat.twoStepInduction with
   | zero => simp
@@ -485,6 +488,7 @@ theorem T_eq_X_mul_T_sub_pol_U (n : ℤ) : T R (n + 2) = X * T R (n + 1) - (1 - 
   have h₃ := U_add_two R n
   linear_combination (norm := ring_nf) h₃ - h₂ + (X : R[X]) * h₁
 
+@[dlmf 18.9.E10]
 theorem one_sub_X_sq_mul_U_eq_pol_in_T (n : ℤ) :
     (1 - X ^ 2) * U R n = X * T R (n + 1) - T R (n + 2) := by
   linear_combination T_eq_X_mul_T_sub_pol_U R n
@@ -499,6 +503,7 @@ theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := 
 theorem two_mul_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n := by
   linear_combination (norm := ring_nf) (T_eq_U_sub_X_mul_U R (n + 2)) + (T_eq_X_mul_U_sub_U R n)
 
+@[dlmf 18.9.E9]
 theorem U_eq_two_mul_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n := by
   linear_combination (norm := ring_nf) - (two_mul_T_eq_U_sub_U R n)
 
@@ -573,6 +578,7 @@ theorem C_natAbs (n : ℤ) : C R n.natAbs = C R n := by
 
 theorem C_neg_two : C R (-2) = X ^ 2 - 2 := by simp [C_two]
 
+@[dlmf 18.1.E3]
 theorem C_comp_two_mul_X (n : ℤ) : (C R n).comp (2 * X) = 2 * T R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -610,6 +616,7 @@ theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
+@[dlmf 18.1.E3]
 theorem C_eq_two_mul_T_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     C R n = 2 * (T R n).comp (Polynomial.C ⅟2 * X) := by
   have := congr_arg (·.comp (Polynomial.C ⅟2 * X)) (C_comp_two_mul_X R n)
@@ -721,6 +728,7 @@ theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := 
     simp
     ring
 
+@[dlmf 18.1.E3]
 theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => simp
@@ -738,6 +746,7 @@ theorem S_sq_add_S_sq (n : ℤ) : S R n ^ 2 + S R (n + 1) ^ 2 - X * S R n * S R 
     have h₁ := S_sub_one R (-n)
     linear_combination (norm := ring_nf) (S R (-1 - n) - S R (1 - n)) * h₁ + ih
 
+@[dlmf 18.1.E3]
 theorem S_eq_U_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     S R n = (U R n).comp (Polynomial.C ⅟2 * X) := by
   have := congr_arg (·.comp (Polynomial.C ⅟2 * X)) (S_comp_two_mul_X R n)
@@ -899,6 +908,7 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     (-n - 1) * h₁ + (-(X : R[X]) ^ 2 + 1) * H₂ + (n + 1) * H₁
 
+@[dlmf 18.9.E22]
 theorem add_one_mul_T_eq_poly_in_U (n : ℤ) :
     ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
   have h₁ := congr(derivative $(T_eq_X_mul_T_sub_pol_U R n))
@@ -916,6 +926,7 @@ theorem add_one_mul_self_mul_T_eq_poly_in_T (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     (n + 1) * n * h
 
+@[dlmf 18.8.T1]
 theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
     (1 - X ^ 2) * derivative^[2] (T R n) = X * derivative (T R n) - (n ^ 2 : R[X]) * T R n := by
   have h₁ := congr(derivative $(one_sub_X_sq_mul_derivative_T_eq_poly_in_T (R := R) (n - 1)))
@@ -926,6 +937,7 @@ theorem one_sub_X_sq_mul_derivative_derivative_T_eq_poly_in_T (n : ℤ) :
   linear_combination (norm := (push_cast; ring_nf))
     h₁ + h₂
 
+@[dlmf 18.8.T1]
 theorem one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U (n : ℤ) :
     (1 - X ^ 2) * derivative^[2] (U R n) =
       3 * X * derivative (U R n) - ((n + 2) * n : R[X]) * U R n := by
