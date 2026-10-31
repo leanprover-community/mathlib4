@@ -348,6 +348,16 @@ lemma ContMDiffWithinAt.clm_bundle_apply
   simp only [contMDiffWithinAt_hom_bundle] at hϕ
   exact hϕ.2.clm_apply_of_inCoordinates hv hϕ.1
 
+lemma ContMDiffWithinAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E₂ (b x)}
+    (hψ : CMDiffAt[s] n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (F₁ →L[𝕜] E₂ x)) (b m) (ψ m)) x)
+    {w : M → F₁}
+    (hb : CMDiffAt[s] n b x) (hw : CMDiffAt[s] n w x) :
+    CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) x := by
+  apply ContMDiffWithinAt.clm_bundle_apply (E₁ := Bundle.Trivial B F₁) (F₁ := F₁)
+  · apply hψ
+  · simp [contMDiffWithinAt_totalSpace, hb, hw]
+
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
 One can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
@@ -360,16 +370,13 @@ lemma ContMDiffAt.clm_bundle_apply
     CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
   ContMDiffWithinAt.clm_bundle_apply hϕ hv
 
-
 lemma ContMDiffAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E₂ (b x)}
     (hψ : CMDiffAt n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (F₁ →L[𝕜] E₂ x)) (b m) (ψ m)) x)
     {w : M → F₁}
     (hb : CMDiffAt n b x) (hw : CMDiffAt n w x) :
-    CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) x := by
-  apply ContMDiffAt.clm_bundle_apply (E₁ := Bundle.Trivial B F₁) (F₁ := F₁)
-  · apply hψ
-  · simp [contMDiffAt_totalSpace, hb, hw]
+    CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) x :=
+  ContMDiffWithinAt.clm_bundle_apply_trivial_source hψ hb hw
 
 lemma Bundle.Trivialization.contMDiffAt_symm_const {k}
     [IsManifold IB k B]
@@ -404,6 +411,14 @@ lemma ContMDiffOn.clm_bundle_apply
     CMDiff[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x hx ↦ (hϕ x hx).clm_bundle_apply (hv x hx)
 
+lemma ContMDiffOn.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E₂ (b x)}
+    (hψ : CMDiff[s] n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (F₁ →L[𝕜] E₂ x)) (b m) (ψ m)))
+    {w : M → F₁}
+    (hb : CMDiff[s] n b) (hw : CMDiff[s] n w) :
+    CMDiff[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) :=
+  fun x hx ↦ (hψ x hx).clm_bundle_apply_trivial_source (hb x hx) (hw x hx)
+
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
 One can apply `ϕ m` to `v m`, and the resulting map is `C^n`. -/
@@ -414,6 +429,13 @@ lemma ContMDiff.clm_bundle_apply
     CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
 
+lemma ContMDiff.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E₂ (b x)}
+    (hψ : CMDiff n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (F₁ →L[𝕜] E₂ x)) (b m) (ψ m)))
+    {w : M → F₁}
+    (hb : CMDiff n b) (hw : CMDiff n w) :
+    CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) :=
+  fun x ↦ (hψ x).clm_bundle_apply_trivial_source (hb x) (hw x)
 
 section
 variable [CompleteSpace 𝕜] [IsManifold IB 1 B]
