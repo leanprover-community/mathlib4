@@ -852,23 +852,18 @@ noncomputable instance [CompleteLinearOrder α] : CompleteLinearOrder (WithBot �
   __ := WithBot.linearOrder.toBiheytingAlgebra
   __ := show CompleteLattice (WithBot α) from inferInstance
 
-noncomputable instance [ConditionallyCompleteLinearOrder α] :
-    ConditionallyCompleteLinearOrder (WithTop α) where
+@[to_dual]
+noncomputable instance WithTop.conditionallyCompleteLinearOrder
+    [ConditionallyCompleteLinearOrder α] : ConditionallyCompleteLinearOrder (WithTop α) where
   le_total
-  toDecidableLE := inferInstance
-  toDecidableEq := inferInstance
-  toDecidableLT := inferInstance
+  toDecidableLE := WithTop.decidableLE
+  toDecidableEq := WithTop.decidableEq
+  toDecidableLT := WithTop.decidableLT
   csSup_of_not_bddAbove s := absurd <| OrderTop.bddAbove s
   csInf_of_not_bddBelow s h := by simp [h]
 
 noncomputable instance [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrderBot (WithBot α) where
-  le_total
-  toDecidableLE := inferInstance
-  toDecidableEq := inferInstance
-  toDecidableLT := inferInstance
-  csSup_of_not_bddAbove s h := by simp [h]
-  csInf_of_not_bddBelow s := absurd <| OrderBot.bddBelow s
   csSup_empty := WithBot.sSup_empty
 
 open scoped Classical in
