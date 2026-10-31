@@ -7,9 +7,8 @@ module
 
 public import Mathlib.NumberTheory.Real.Irrational
 
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.NormNum.Prime
+
 
 /-!
 # Hurwitz's Theorem in Diophantine Approximation
@@ -34,7 +33,7 @@ repeatedly constructing smaller intervals around $\xi$, infinitude is achieved.
   and `p/q < ξ < r/s` with `q*r - p*s = 1`.
 
 * `Real.Hurwitz.IsGoodApprox` defines a good approximation as one satisfying the Hurwitz bound
-  without using division for simplicity.
+  without using division for simplicity. It can be accessed using `Real.Hurwitz.isGoodApprox_iff`.
 
 ## Main statements
 
@@ -50,7 +49,7 @@ Farey brackets and mediants, following the pattern of `Real.ContfracLegendre` in
 
 Intermediate lemmas are stated in the division-free form `|y*ξ - x| * y * √5 < 1` rather than
 `|ξ - x/y| < 1/(√5*y^2)`, which is substantially easier to manipulate. The two are related by
-`Real.Hurwitz.isGoodApprox_div_bound`.
+`Real.Hurwitz.IsGoodApprox.abs_sub_div_lt`.
 
 ## References
 
@@ -88,6 +87,11 @@ structure IsFarey (ξ : ℝ) (p q r s : ℤ) : Prop where
 /-- Divisionless reformulation of Hurwitz bound `|ξ - x / y| < 1 / (√5 * y ^ 2)`. -/
 def IsGoodApprox (ξ : ℝ) (x y : ℤ) : Prop :=
   0 < y ∧ |(y : ℝ) * ξ - x| * y * √5 < 1
+
+/-- Unfolding lemma for `IsGoodApprox`. -/
+theorem isGoodApprox_iff {x y : ℤ} :
+    IsGoodApprox ξ x y ↔ 0 < y ∧ |(y : ℝ) * ξ - x| * y * √5 < 1 :=
+  Iff.rfl
 
 private lemma sq_sqrt_five : √5 ^ 2 = 5 := sq_sqrt (by norm_num)
 
@@ -299,7 +303,7 @@ theorem exists_isFarey_large (hξ : Irrational ξ) (n : ℕ) :
 
 /-- A good approximation in the division-free sense satisfies the usual Hurwitz bound
 `|ξ - x / y| < 1 / (√5 * y ^ 2)`. -/
-lemma isGoodApprox_div_bound {x y : ℤ} (hg : IsGoodApprox ξ x y) :
+lemma IsGoodApprox.abs_sub_div_lt {x y : ℤ} (hg : IsGoodApprox ξ x y) :
     |ξ - (x : ℝ) / y| < 1 / (√5 * (y : ℝ) ^ 2) := by
   obtain ⟨hpos, hmul⟩ := hg
   have hposR : 0 < (y : ℝ) := mod_cast hpos
@@ -313,7 +317,7 @@ private lemma isGoodApprox_bound_rat {x y : ℤ} (hg : IsGoodApprox ξ x y) :
   have hden_le : ((((x : ℚ) / y : ℚ).den : ℝ)) ≤ (y : ℝ) :=
     mod_cast Int.le_of_dvd hy_pos (Rat.den_dvd x y)
   push_cast
-  refine lt_of_lt_of_le (isGoodApprox_div_bound hg) ?_
+  refine lt_of_lt_of_le hg.abs_sub_div_lt ?_
   gcongr
 
 private lemma add_le_two_mul_mul {q s : ℤ} (hq : 0 < q) (hs : 0 < s) :
