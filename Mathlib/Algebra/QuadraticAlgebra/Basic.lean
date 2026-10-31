@@ -283,6 +283,12 @@ theorem norm_algebraMap (r : R) : norm (algebraMap R (QuadraticAlgebra R a b) r)
   simp [norm_def, pow_two]
 
 @[simp]
+theorem norm_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
+    [SMulCommClass S R R] (s : S) (z : QuadraticAlgebra R a b) :
+    norm (s • z) = s ^ 2 • norm z := by
+  simp [norm_def, mul_smul_comm, smul_sub, pow_two, mul_smul, smul_mul_assoc]
+
+@[simp]
 theorem norm_natCast (n : ℕ) : norm (n : QuadraticAlgebra R a b) = n ^ 2 := by
   simp [norm_def, pow_two]
 

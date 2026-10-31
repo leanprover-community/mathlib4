@@ -140,7 +140,7 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
     f =O[cocompact E] (‖·‖ ^ (-k : ℤ)) := by
   obtain ⟨d, _, hd'⟩ := f.decay k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
-  simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
+  simp_rw [isBigO_iff]
   refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
   refine (Filter.eventually_cofinite_ne 0).mono fun x hx ↦ ?_
   rw [Real.norm_of_nonneg (by positivity), zpow_neg, ← div_eq_mul_inv, le_div_iff₀' (by positivity)]
@@ -153,7 +153,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
   refine (isBigO_cocompact_zpow_neg_nat f k).trans ?_
   suffices (fun x : ℝ ↦ x ^ (-k : ℤ)) =O[atTop] fun x : ℝ ↦ x ^ s
     from this.comp_tendsto tendsto_norm_cocompact_atTop
-  simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
+  simp_rw [Asymptotics.isBigO_iff]
   refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx ↦ ?_⟩
   rw [one_mul, Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity),
     ← Real.rpow_intCast, Int.cast_neg, Int.cast_natCast]

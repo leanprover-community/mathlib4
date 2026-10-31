@@ -82,8 +82,8 @@ theorem HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
     · grind [norm_nonneg (w - c)]
   · grind [mem_ball_iff_norm]
   · intro r hr
-    rw [HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
-      (hf.1.mono (closedBall_subset_ball hr.2)) (by grind [mem_ball_iff_norm])]
+    grw [← hr.2] at hf
+    rw [hf.1.circleAverage_re_herglotzRieszKernel_smul (by grind [mem_ball_iff_norm])]
 
 /--
 **Poisson integral formula** for harmonic functions on arbitrary disks in the complex plane,
