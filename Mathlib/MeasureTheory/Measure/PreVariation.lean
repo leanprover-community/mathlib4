@@ -112,12 +112,14 @@ lemma mono {s₁ s₂ : Set X} (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) 
     simp_all [preVariationFun]
   · simp [preVariationFun, hs₁]
 
-lemma exists_Finpartition_sum_gt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞}
+lemma exists_finpartition_sum_gt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞}
     (ha : a < preVariationFun f s) : ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
     a < ∑ p ∈ P.parts, f p := by
   simp_all [preVariationFun, lt_iSup_iff]
 
-lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0} (hε : 0 < ε)
+@[deprecated (since := "2026-10-27")] alias exists_Finpartition_sum_gt := exists_finpartition_sum_gt
+
+lemma exists_finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0} (hε : 0 < ε)
     (h : preVariationFun f s ≠ ∞) :
     ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
     preVariationFun f s ≤ ∑ p ∈ P.parts, f p + ε := by
@@ -130,7 +132,7 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
       exact ⟨hε, toNNReal_pos hw h⟩
     let a := preVariationFun f s - ε'
     have ha : a < preVariationFun f s := ENNReal.sub_lt_self h hw (by positivity)
-    obtain ⟨P, hP⟩ := exists_Finpartition_sum_gt f hs ha
+    obtain ⟨P, hP⟩ := exists_finpartition_sum_gt f hs ha
     use P
     calc preVariationFun f s
       _ = a + ε' := (tsub_add_cancel_of_le hε').symm
@@ -139,14 +141,19 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
       _ ≤ ∑ p ∈ P.parts, f p + ε := by gcongr
   · simp [*]
 
-lemma exists_Finpartition_sum_ge' {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε : 0 < ε)
+@[deprecated (since := "2026-10-27")] alias exists_Finpartition_sum_ge := exists_finpartition_sum_ge
+
+lemma exists_finpartition_sum_ge' {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε : 0 < ε)
     (h : preVariationFun f s ≠ ∞) :
     ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
     preVariationFun f s ≤ ∑ p ∈ P.parts, f p + ε := by
   rcases eq_top_or_lt_top ε with rfl | h'ε
   · simp
   lift ε to NNReal using h'ε.ne
-  exact exists_Finpartition_sum_ge _ hs (by simpa using hε) h
+  exact exists_finpartition_sum_ge _ hs (by simpa using hε) h
+
+@[deprecated (since := "2026-10-27")]
+alias exists_Finpartition_sum_ge' := exists_finpartition_sum_ge'
 
 lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s))
@@ -179,7 +186,7 @@ lemma sum_le_preVariationFun_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableS
     (mono f (MeasurableSet.iUnion hs) (Set.subset_iUnion s i)).trans_lt hsnetop
   -- For each set `s i` we choose a Finpartition `P i` such that, for each `i`,
   -- `preVariationFun f (s i) ≤ ∑ p ∈ (P i), f p + ε`.
-  choose P hP using fun i ↦ exists_Finpartition_sum_ge f (hs i) (hε) (hs'' i)
+  choose P hP using fun i ↦ exists_finpartition_sum_ge f (hs i) (hε) (hs'' i)
   calc ∑ i ∈ Finset.range n, preVariationFun f (s i)
     _ ≤ ∑ i ∈ Finset.range n, (∑ p ∈ (P i).parts, f p + ε) := Finset.sum_le_sum fun i _ => hP i
     _ = ∑ i ∈ Finset.range n, ∑ p ∈ (P i).parts, f p + ε' := by
