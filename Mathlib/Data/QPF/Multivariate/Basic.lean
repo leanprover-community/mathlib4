@@ -88,11 +88,11 @@ open MvFunctor
 /-- Multivariate quotients of polynomial functors.
 -/
 class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type*) extends MvFunctor F where
-  P : MvPFunctor.{u} n
+  P : MvPFunctor.{u, u} n
   abs : ∀ {α}, P α → F α
   repr : ∀ {α}, F α → P α
   abs_repr : ∀ {α} (x : F α), abs (repr x) = x
-  abs_map : ∀ {α β} (f : α ⟹ β) (p : P α), abs (f <$$> p) = f <$$> abs p
+  abs_map : ∀ {α β} (f : α ⟹ β) (p : P α), abs (P.map f p) = f <$$> abs p
 
 namespace MvQPF
 
@@ -235,7 +235,9 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
 set_option backward.isDefEq.respectTransparency false in
 theorem supp_map (h : q.IsUniform) {α β : TypeVec n} (g : α ⟹ β) (x : F α) (i) :
     supp (g <$$> x) i = g i '' supp x i := by
-  rw [← abs_repr x]; obtain ⟨a, f⟩ := repr x; rw [← abs_map, MvPFunctor.map_eq]
+  rw [← abs_repr x]
+  obtain ⟨a, f⟩ := repr x
+  rw [← abs_map, MvPFunctor.map_eq]
   rw [supp_eq_of_isUniform h, supp_eq_of_isUniform h, ← image_comp]
   rfl
 
