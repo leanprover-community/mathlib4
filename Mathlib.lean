@@ -2517,6 +2517,7 @@ public import Mathlib.Analysis.Subadditive
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.Analysis.SumIntegralExpDecay
 public import Mathlib.Analysis.SumOverResidueClass
+public import Mathlib.Analysis.SummableGeometricTails
 public import Mathlib.Analysis.VonNeumannAlgebra.Basic
 public import Mathlib.Basic.Complex.Basic
 public import Mathlib.Basic.Complex.BigOperators
