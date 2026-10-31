@@ -47,8 +47,9 @@ noncomputable section
 local instance : ContMDiffVectorBundle k EB (TangentSpace (M := B) IB) IB :=
   TangentBundle.contMDiffVectorBundle (M := B) (I := IB) (n := k)
 
-section simpler
+variable [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace IB x)]
 
+section simpler
 
 /-
 given a section s : (x : M) → TangentSpace I x →L[ℝ] ℝ,
@@ -57,8 +58,6 @@ we get an induced section (x : M) → TangentSpace I x via the musical isomorphi
 def musicalIsoSimple (s : (x : B) → TangentSpace IB x →L[ℝ] ℝ) :
     (x : B) → TangentSpace IB x :=
   fun x ↦ (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap (s x)
-
-variable [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace IB x)]
 
 #check TangentBundle IB B
 
@@ -69,7 +68,7 @@ abbrev CotangentBundle := Bundle.TotalSpace EB
 -- idea: write the musical iso as a map from the tangent to the cotangent bundle,
 -- prove that is a diffeomorphism (and its own inverse) and rejoice
 variable (IB B) in
-def foo : TangentBundle IB B → CotangentBundle IB B :=
+def musicalIsoBundleMap : TangentBundle IB B → CotangentBundle IB B :=
     --Bundle.TotalSpace EB (fun x : B ↦ (TangentSpace (M := B) IB x →L[ℝ] ℝ)) :=
   fun X ↦
     TotalSpace.mk' EB X.1 ((InnerProductSpace.toDual ℝ (TangentSpace IB X.1)).toLinearEquiv X.2)
@@ -96,19 +95,20 @@ def foo : TangentBundle IB B → CotangentBundle IB B :=
 --#synth ContMDiffVectorBundle k EB (fun x : B ↦ TangentSpace (M := B) IB x →L[ℝ] (Bundle.Trivial B ℝ x)) IB
 
 -- doesn't typecheck yet
---lemma contMDiff_foo :
+--lemma contMDiff_musicalIsoBundleMap :
 --    ContMDiff IB.tangent (IB.prod 𝓘(ℝ, EB →L[ℝ] ℝ)) k
---    (foo IB B) := sorry
+--    (musicalIsoBundleMap IB B) := sorry
 
-def fooinv : CotangentBundle IB B → TangentBundle IB B :=
+variable (IB B) in
+def musicalIsoBundleMapSymm : CotangentBundle IB B → TangentBundle IB B :=
   fun X ↦ TotalSpace.mk' EB X.1 ((InnerProductSpace.toDual ℝ _).symm.toLinearEquiv X.2)
 
 def fooeq : TangentBundle IB B ≃ CotangentBundle IB B where
-  toFun := foo IB B
-  invFun := fooinv
+  toFun := musicalIsoBundleMap IB B
+  invFun := musicalIsoBundleMapSymm IB B
   left_inv := by
     intro x
-    simp only [foo, fooinv]
+    simp only [musicalIsoBundleMap, musicalIsoBundleMapSymm]
     ext
     · rfl
     simp
@@ -151,7 +151,23 @@ lemma ContMDiffAt.inner_bundle_iff_apply {s : (x : B) → TangentSpace IB x} {x 
 
 -- TODO: add also the corresponding WithinAt, On and unrestricted versions of these lemmas
 
---set_option linter.tacticCheckInstances true in
+-- attempt to abstract the claim in fooAt_simple, after passing to a local trivialisation
+-- doesn't typecheck yet...
+-- *could* simplify by observing that T p is a vector field in the application below
+lemma abstract {x : B}
+    {e : B → B → EB} {f : B → EB → B}
+    -- don't elaborate; need to manually specify
+    --(he : CMDiff k (T% e)) (hf : CMDiff k (T% f))
+    {S : ∀ (x' : B), TangentSpace IB x' →L[ℝ] TangentSpace 𝓘(ℝ, EB) (e x x')}
+    {T : (x' : B) → TangentSpace 𝓘(ℝ, EB) (e x' x') →L[ℝ] TangentSpace IB ((f x') (e x' x'))}
+    --(hS : CMDiff k (T% S)) (hT : CMDiff k (T% T))
+    (p : ∀ (x : B), TangentSpace% x)
+    (hp : CMDiff k (T% p)) :
+    let F := fun x' ↦ S x' (T x' (p x'))
+    let F' := (fun (x' : B) ↦ TotalSpace.mk'
+      (E := fun (x' : B) ↦ TangentSpace 𝓘(ℝ, EB) (e x x')) (B := B) EB x' (F x'))
+    True := sorry -- ContMDiff IB (IB.prod 𝓘(ℝ, EB)) k F' := sorry
+
 lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     (hs : CMDiffAt k (fun (x : B) ↦
       TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)) x) :
@@ -161,35 +177,32 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
   -- XXX: is there a better approach than "pair with any smooth section"?
   rw [contMDiffAt_section]
   simp_rw [TangentBundle.trivializationAt_apply']
-
-
+  -- let's simplify notation a bit
   let echart (x' : B) := extChartAt IB x'
   let p (x' : B) := (InnerProductSpace.toDual ℝ (TangentSpace IB x')).symm (s x')
-  have h1 (x') : MDiffAt[(chartAt HB x).source] (echart x) ((echart x').symm ((echart x') x')) := by
+  have h1 (x') (hx' : x' ∈ (chartAt HB x).source) :
+      MDiffAt[(chartAt HB x).source] (echart x) ((echart x').symm ((echart x') x')) := by
+    -- -- requires x' ∈ (chartAt HB x).source
+    -- apply MDifferentiableOn.mdifferentiableWithinAt (s := (chartAt HB x).source)
+    -- swap
+    -- apply (chartAt HB x).open_source.mem_nhds
 
-    -- requires x' ∈ (chartAt HB x).source
-    apply MDifferentiableOn.mdifferentiableWithinAt (s := (chartAt HB x).source)
-    swap
-    apply (chartAt HB x).open_source.mem_nhds
-
-    apply mdifferentiableAt_extChartAt
-
+    -- apply mdifferentiableAt_extChartAt
+    sorry
   have h3 (x') : UniqueMDiffAt[Set.range IB] ((echart x') x') := sorry
   have h4 (x') : ((echart x').symm ((echart x') x')) = x' := by simp [echart]
-  let A (x') := mfderiv% (echart x) x' -- ((echart x').symm ((echart x') x'))
+  let A (x') := mfderiv% (echart x) x'
   let Bl (x') := mfderiv[Set.range IB] (echart x').symm ((echart x') x')
-
   let Bp (x') := Bl x' (p x') -- from B into TB
   have aux'' : ContMDiffAt IB 𝓘(ℝ, EB) k (fun x' ↦ ((A x') ∘SL (Bl x')) (p x')) x := sorry
-
   have aux : ContMDiffAt IB 𝓘(ℝ, EB) k
       (fun x' ↦ (mfderiv[Set.range IB] ((echart x) ∘ (echart x').symm) (echart x' x')) (p x'))
       x := by
     conv =>
       enter [4, x']
-      rw [mfderivWithin_comp (I' := IB) (u := (chartAt HB x).source) _ (h1 x')
-        (mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x')) (by simp) (h3 x'),
-        mfderivWithin_univ, h4 x']
+      rw [mfderivWithin_comp (I' := IB) (u := (chartAt HB x).source) _ sorry--(h1 x')
+        (mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x')) (by sorry) (h3 x'),
+        h4 x']
     sorry
   apply aux.congr
   · intro y hy
@@ -200,7 +213,6 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
   -- intro t ht
   -- simp [hs.clm_bundle_apply_trivial_target ht]
 
-#exit
 lemma foo_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ}
     (hs : CMDiff k (fun (x : B) ↦
       TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x))) :
@@ -225,7 +237,7 @@ def musicalIso (s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) :
 -- Suppose s is a C^k section, then its musical isomorphism is also C^k.
 -- TODO: prove point-wise within at version of all these
 omit [IsContMDiffRiemannianBundle IB k F E] in -- temporarily omitted to silence a warning
-lemma foo [FiniteDimensional ℝ EB] [FiniteDimensional ℝ F]
+lemma contMDiff_musicalIso_apply [FiniteDimensional ℝ EB] [FiniteDimensional ℝ F]
     {s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ}
     (hs : CMDiff k (fun (x : B) ↦ TotalSpace.mk' (F →L[ℝ] (EB →L[ℝ] ℝ))
       (E := fun (x : B) ↦ E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) x (s x))) :
