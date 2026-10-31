@@ -793,6 +793,15 @@ theorem multiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
     multiplicity p (p ^ n) = n :=
   multiplicity_pow_self hp.ne_zero hp.not_isUnit n
 
+lemma multiplicity_map_eq_mul [Monoid β] {a : α} {b c : β}
+    (ha : Prime a) (hbc : FiniteMultiplicity b c)
+    (f : β →* α) (hf : ∀ x, a ∣ f x → b ∣ x) :
+    multiplicity a (f c) = multiplicity a (f b) * multiplicity b c := by
+  obtain ⟨x, hbc, hx⟩ := hbc.exists_eq_pow_mul_and_not_dvd
+  conv_lhs => rw [hbc]
+  simp [multiplicity, emultiplicity_mul ha, emultiplicity_pow ha,
+    emultiplicity_eq_zero.mpr (mt (hf x) hx), mul_comm]
+
 end CancelCommMonoidWithZero
 
 section Nat
