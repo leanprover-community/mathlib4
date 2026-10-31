@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Data.Finset.BooleanAlgebra
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Order.Category.PartOrd
 
@@ -33,7 +34,7 @@ structure NonemptyFiniteChains (X : Type u) [PartialOrder X] where
   /-- a finite subset -/
   finset : Finset X
   nonempty : finset.Nonempty := by simp
-  comparable (a b : finset) : a ≤ b ∨ b ≤ a
+  comparable (a b : finset) : a ≤ b ∨ b ≤ a := by apply le_total
 
 namespace NonemptyFiniteChains
 
@@ -80,6 +81,30 @@ noncomputable def orderHomMap (f : X →o Y) :
     obtain ⟨x, hx, rfl⟩ := hx
     exact ⟨x, h hx, rfl⟩
 
+section
+
+variable {Z : Type*} [LinearOrder Z] [Fintype Z]
+
+instance [Nonempty Z] : OrderTop (NonemptyFiniteChains Z) where
+  top :=
+    { finset := .univ
+      comparable := le_total }
+  le_top _ := by simp
+
+@[simp] lemma coe_top [Nonempty Z] : (⊤ : NonemptyFiniteChains Z).1 = Finset.univ := rfl
+
+variable (x₀ : Z) [Nontrivial Z]
+
+/-- Given `x₀ : Z`, this is complement of the singleton `{x₀}` as an
+element of `NonemptyFiniteChains Z`. -/
+@[simps]
+def complSingleton : NonemptyFiniteChains Z where
+  finset := {x₀}ᶜ
+  nonempty := ⟨(exists_ne x₀).choose, by simpa using (exists_ne x₀).choose_spec⟩
+  comparable := le_total
+
+end
+
 end NonemptyFiniteChains
 
 end PartialOrder
@@ -87,7 +112,7 @@ end PartialOrder
 open PartialOrder in
 /-- The functor `PartOrd ⥤ PartOrd` which sends a partially ordered type `X`
 to `NonemptyFiniteChains X`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def PartOrd.nonemptyFiniteChainsFunctor : PartOrd.{u} ⥤ PartOrd.{u} where
   obj X := ↧(NonemptyFiniteChains X)
   map f := PartOrd.ofHom (NonemptyFiniteChains.orderHomMap f.hom)
