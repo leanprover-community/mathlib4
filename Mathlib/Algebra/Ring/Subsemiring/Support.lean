@@ -77,7 +77,7 @@ theorem AddSubmonoid.IsSpanning.sumSq_le (hS : S.IsSpanning) : .sumSq R ≤ S :=
 
 theorem AddSubmonoid.IsSpanning.mem_of_isSumSq (hS : S.IsSpanning)
     {x : R} (hx : IsSumSq x) : x ∈ S := by
-  grind [membership, hS.sumSq_le, Subsemiring.mem_sumSq]
+  grind [membership, hS.sumSq_le]
 
 grind_pattern [membership] AddSubmonoid.IsSpanning.mem_of_isSumSq => S.IsSpanning, x ∈ S
 

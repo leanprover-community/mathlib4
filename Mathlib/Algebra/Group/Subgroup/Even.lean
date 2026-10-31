@@ -35,7 +35,7 @@ def square : Subsemigroup S where
   carrier := {s : S | IsSquare s}
   mul_mem' := IsSquare.mul
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, membership =)]
 theorem mem_square {a : S} : a ∈ square S ↔ IsSquare a := Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]
@@ -60,7 +60,7 @@ def square : Submonoid M where
 @[to_additive (attr := simp)]
 theorem square_toSubsemigroup : (square M).toSubsemigroup = .square M := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, membership =)]
 theorem mem_square {a : M} : a ∈ square M ↔ IsSquare a := Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]
@@ -85,7 +85,7 @@ def square : Subgroup G where
 @[to_additive (attr := simp)]
 theorem square_toSubmonoid : (square G).toSubmonoid = .square G := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, membership =)]
 theorem mem_square {a : G} : a ∈ square G ↔ IsSquare a := Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]
