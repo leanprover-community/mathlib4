@@ -178,18 +178,23 @@ theorem limitRecOn_limit {motive} (o H₁ H₂ H₃ h) :
 instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).ToType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
+-- TODO: replace this with an `OrderTop` instance
 theorem enum_succ_eq_top {o : Ordinal} :
-    enum (α := (succ o).ToType) (· < ·) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
+    enum (α := (succ o).ToType) ⟨o, type_toType _ ▸ lt_succ o⟩ = ⊤ :=
   rfl
 
+-- TODO: replace this with a `NoMaxOrder` instance
 set_option backward.isDefEq.respectTransparency false in
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
-  refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩
+  classical
+  let := linearOrderOfSTO r
+  refine ⟨enum ⟨succ (typein x), hr.succ_lt (typein_lt_type x)⟩, ?_⟩
   intro b hb
+  change b < _
   rw [mem_singleton_iff.1 hb]
-  nth_rw 1 [← enum_typein r x]
-  rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
+  nth_rw 1 [← enum_typein x]
+  rw [OrderIso.lt_iff_lt, Subtype.mk_lt_mk]
   apply lt_succ
 
 /-! ### The predecessor of an ordinal -/
@@ -451,27 +456,42 @@ theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := b
   convert mul_le_mul_left (one_le_iff_pos.2 hb) a
   rw [one_mul a]
 
-set_option backward.isDefEq.respectTransparency false in
-private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
-    (h : IsSuccLimit (type s)) (H : ∀ b' < type s, type r * b' ≤ c) (l : c < type r * type s) :
+set_option backward.isDefEq.respectTransparency.types false in
+private theorem mul_le_of_limit_aux {α β} [LinearOrder α] [LinearOrder β]
+    [WellFoundedLT α] [WellFoundedLT β] {c}
+    (h : IsSuccLimit (typeLT β)) (H : ∀ b' < typeLT β, (typeLT α) * b' ≤ c)
+    (l : c ∈ Iio (typeLT (β ×ₗ α))) :
     False := by
-  suffices ∀ a b, Prod.Lex s r (b, a) (enum _ ⟨_, l⟩) from irrefl _ (this _ _)
+  suffices ∀ a b, toLex (b, a) < enum ⟨_, l⟩ from irrefl _ (this _ _)
   intro a b
-  rw [← typein_lt_typein (Prod.Lex s r), typein_enum]
-  have := H _ (h.succ_lt (typein_lt_type s b))
+  rw [← typein.lt_iff_lt, typein_enum]
+  have := H _ (h.succ_lt (typein_lt_type b))
   rw [mul_succ] at this
-  have := ((add_lt_add_iff_left _).2 (typein_lt_type _ a)).trans_le this
-  refine (RelEmbedding.ofMonotone (fun a => ?_) fun a b => ?_).ordinal_type_le.trans_lt this
-  · rcases a with ⟨⟨b', a'⟩, h⟩
-    by_cases e : b = b'
-    · exact .inr ⟨a', by grind [asymm_of s]⟩
-    · exact .inl (⟨b', by grind⟩, a')
-  · grind [subrel_val, Sum.Lex.sep, asymm_of s]
+  apply (((add_lt_add_iff_left _).2 (typein_lt_type a)).trans_le this).trans_le'
+  suffices e : Iio (toLex (b, a)) ↪o Iio b ×ₗ α ⊕ₗ Iio a from e.ordinal_type_le
+  refine OrderEmbedding.ofStrictMono (fun a ↦ ?_) ?_
+  · by_cases e : b = (ofLex a.1).1
+    · exact toLex <| .inr ⟨(ofLex a.1).2, by
+        cases a with | mk a h
+        simpa [Prod.Lex.lt_iff, e] using h⟩
+    · exact toLex <| .inl <| toLex (⟨(ofLex a.1).1, by
+        cases a with | mk a h
+        simpa [Prod.Lex.lt_iff, Ne.symm e] using h⟩, (ofLex a.1).2)
+  · simp_rw [StrictMono, Subtype.forall, Lex.forall]
+    intro ⟨a₁, b₁⟩ h₁ ⟨a₂, b₂⟩ h₂ h
+    rw [mem_Iio] at h₁ h₂
+    simp [Prod.Lex.lt_iff] at *
+    split_ifs with h
+    · simp; grind
+    · simp; grind
+    · simp
+    · simp [Prod.Lex.lt_iff]; grind
 
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
     a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c := by
   refine ⟨fun h _ l ↦ (mul_le_mul_right l.le _).trans h, fun H ↦ le_of_not_gt ?_⟩
-  induction a, b using inductionOn₂ with | type α r β s
+  induction a using inductionOnWellOrder with | type α
+  induction b using inductionOnWellOrder with | type β
   exact mul_le_of_limit_aux h H
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
@@ -857,23 +877,6 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
     lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 
-@[simp]
-theorem typein_lt_nat (x : ℕ) : typein LT.lt x = x := by
-  have : Fintype <| Iio x := Nat.fintypeIio x
-  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
-  nth_rw 2 [← Fintype.card_fin x]
-  exact Fintype.card_congr Fin.equivSubtype.symm
-
-@[simp]
-theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
-  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
-  exact Fintype.card_fin_lt_of_le x.is_le'
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum LT.lt ⟨x, by simp⟩ = x := by
-  simp [← typein_inj LT.lt]
-
 /-! ### Properties of `ω` -/
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
@@ -883,10 +886,25 @@ theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
 theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
-  simp [← typein_inj LT.lt]
+theorem typein_lt_nat (x : ℕ) : typein x = x := by
+  have : Fintype <| Iio x := Nat.fintypeIio x
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
+  nth_rw 2 [← Fintype.card_fin x]
+  exact Fintype.card_congr Fin.equivSubtype.symm
+
+@[simp]
+theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein x = x := by
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
+  exact Fintype.card_fin_lt_of_le x.is_le'
+
+@[simp]
+theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum ⟨x, by simp⟩ = x := by
+  rw [← typein.inj, typein_enum, typein_lt_fin]
+
+@[simp]
+theorem enum_lt_nat (x : ℕ) : enum ⟨x, by simp⟩ = x := by
+  rw [← typein.inj, typein_enum, typein_lt_nat]
 
 theorem eq_natCast_of_le_natCast {a : Ordinal} {b : ℕ} (h : a ≤ b) : ∃ c : ℕ, a = c :=
   lt_omega0.1 (h.trans_lt (natCast_lt_omega0 b))

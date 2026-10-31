@@ -111,12 +111,13 @@ theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
-theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
-    (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
+@[deprecated "deprecated without replacement" (since := "2026-09-20")]
+theorem unbounded_range_of_le_iSup {α β : Type u} [LinearOrder α] [WellFoundedLT α] (f : β → α)
+    (h : typeLT α ≤ ⨆ i, typein (f i)) : Unbounded (· < ·) (range f) :=
   (not_bounded_iff _).1 fun ⟨x, hx⟩ =>
     h.not_gt <| lt_of_le_of_lt
-      (Ordinal.iSup_le fun y => ((typein_lt_typein r).2 <| hx _ <| mem_range_self y).le)
-      (typein_lt_type r x)
+      (Ordinal.iSup_le fun y => (typein.lt_iff_lt.2 <| hx _ <| mem_range_self y).le)
+      (typein_lt_type x)
 
 theorem sSup_ord (s : Set Cardinal) : (sSup s).ord = sSup (ord '' s) := by
   obtain rfl | hn := s.eq_empty_or_nonempty
@@ -197,14 +198,9 @@ theorem iSup_Iio_add_one {a : Ordinal.{u}} {f : Iio a → Ordinal.{u}}
   have := ha.noMaxOrder_Iio
   exact iSup_add_one hf
 
-section bsup
-
-end bsup
-
 end Ordinal
 
 /-! ### Results about injectivity and surjectivity -/
-
 
 theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordinal.{u}) :
     ¬ Surjective f := by

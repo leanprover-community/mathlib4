@@ -90,7 +90,7 @@ theorem GoodProducts.linearIndependentAux (μ : Ordinal) : P I μ := by
 theorem GoodProducts.linearIndependent (hC : IsClosed C) :
     LinearIndependent ℤ (GoodProducts.eval C) :=
   GoodProducts.linearIndependentAux (Ordinal.type (· < · : I → I → Prop)) (le_refl _)
-    C hC (fun _ _ _ _ ↦ Ordinal.typein_lt_type _ _)
+    C hC (fun _ _ _ _ ↦ Ordinal.typein_lt_type _)
 
 /-- `GoodProducts C` as a `ℤ`-basis for `LocallyConstant C ℤ`. -/
 noncomputable

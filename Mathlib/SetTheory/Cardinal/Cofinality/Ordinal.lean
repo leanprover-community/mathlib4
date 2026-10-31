@@ -65,7 +65,7 @@ theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.li
     ← Cardinal.lift_umax, ← ULift.orderIso.lift_cof_congr]
 
 theorem _root_.Order.cof_Iio [LinearOrder α] [WellFoundedLT α] (x : α) :
-    Order.cof (Iio x) = cof (typein (α := α) (· < ·) x) :=
+    Order.cof (Iio x) = cof (typein x) :=
   (cof_type _).symm
 
 @[simp]
@@ -224,12 +224,11 @@ theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) :
     exact (hf.strictMono (lt_succ a)).ne_zero
   | limit a ha => rw [cof_map_of_isNormal hf ha]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sSup_add_one_lt_of_lt_cof {s : Set Ordinal.{u}} {a : Ordinal.{u}}
     (ha : #s < (lift.{u + 1} a).cof) (hs : ∀ i ∈ s, i < a) : sSup ((· + 1) '' s) < a := by
-  let f := OrderIso.ofRelIsoLT (enum (α := s) (· < ·))
+  let f := enum (α := s)
   have : Small.{u} (Iio (typeLT s)) := by
-    refine small_of_injective (β := Iio a) (f := fun x ↦ ⟨f x, hs _ (f x).2⟩) fun _ ↦ ?_
+    refine small_of_injective (β := Iio a) (f := fun x ↦ ⟨_, mem_Iio.2 <| hs _ (f x).2⟩) fun _ ↦ ?_
     simp [Subtype.val_inj]
   have : range (fun i ↦ (f i).1 + 1) = (· + 1) '' s := by
     convert! range_comp (· + 1) (fun i ↦ (f i).1)
@@ -355,6 +354,8 @@ open Ordinal
 -- TODO: re-state this for a bundled well-order
 theorem mk_bounded_subset {α : Type*} (h : IsStrongPrelimit #α) {r : α → α → Prop}
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
+  classical
+  let := linearOrderOfSTO r
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
     have := mk_eq_zero_iff.1 ha
