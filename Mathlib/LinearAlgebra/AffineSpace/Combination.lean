@@ -604,24 +604,6 @@ theorem lineMap_affineCombination (w₁ : ι → k) (w₂ : ι → k) (r : k) (p
 
 variable (k)
 
-/-- Weights for expressing a single point as an affine combination. -/
-@[deprecated Pi.single +typeChanged (since := "2026-04-16")]
-def affineCombinationSingleWeights [DecidableEq ι] (i : ι) : ι → k :=
-  Pi.single i 1
-
-@[deprecated Pi.single_eq_same +typeChanged (since := "2026-04-16")]
-theorem affineCombinationSingleWeights_apply_self [DecidableEq ι] (i : ι) :
-    affineCombinationSingleWeights k i i = 1 := Pi.single_eq_same _ _
-
-@[deprecated Pi.single_eq_of_ne +typeChanged (since := "2026-04-16")]
-theorem affineCombinationSingleWeights_apply_of_ne [DecidableEq ι] {i j : ι} (h : j ≠ i) :
-    affineCombinationSingleWeights k i j = 0 := Pi.single_eq_of_ne h _
-
-@[deprecated Finset.sum_pi_single' +typeChanged (since := "2026-04-16")]
-theorem sum_affineCombinationSingleWeights [DecidableEq ι] {i : ι} (h : i ∈ s) :
-    ∑ j ∈ s, affineCombinationSingleWeights k i j = 1 := by
-  rw [affineCombinationSingleWeights, s.sum_pi_single', ite_eq_left h]
-
 /-- Weights for expressing the subtraction of two points as a `weightedVSub`. -/
 def weightedVSubVSubWeights [DecidableEq ι] (i j : ι) : ι → k :=
   Pi.single i 1 - Pi.single j 1
@@ -689,12 +671,6 @@ theorem affineCombination_piSingle [DecidableEq ι] (p : ι → P) {i : ι}
   refine s.affineCombination_of_eq_one_of_eq_zero _ _ hi (by simp) ?_
   rintro j - hj
   simp [hj]
-
-/-- An affine combination with `affineCombinationSingleWeights` gives the specified point. -/
-@[deprecated affineCombination_piSingle +typeChanged (since := "2026-04-16")]
-theorem affineCombination_affineCombinationSingleWeights [DecidableEq ι] (p : ι → P) {i : ι}
-    (hi : i ∈ s) : s.affineCombination k p (affineCombinationSingleWeights k i) = p i :=
-  affineCombination_piSingle _ _ _ hi
 
 /-- A weighted subtraction with `weightedVSubVSubWeights` gives the result of subtracting the
 specified points. -/

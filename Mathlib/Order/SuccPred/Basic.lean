@@ -561,13 +561,9 @@ theorem Iio_succ_eq_insert (a : α) : Iio (succ a) = insert a (Iio a) :=
 theorem Ico_succ_right_eq_insert (h : a ≤ b) : Ico a (succ b) = insert b (Ico a b) :=
   Ico_succ_right_eq_insert_of_not_isMax h <| not_isMax b
 
-@[deprecated (since := "2026-04-28")] alias Ico_pred_right_eq_insert := Ioc_pred_left_eq_insert
-
 @[to_dual Ioo_pred_left_eq_insert]
 theorem Ioo_succ_right_eq_insert (h : a < b) : Ioo a (succ b) = insert b (Ioo a b) :=
   Ioo_succ_right_eq_insert_of_not_isMax h <| not_isMax b
-
-@[deprecated (since := "2026-04-28")] alias Ioo_pred_right_eq_insert := Ioo_pred_left_eq_insert
 
 @[to_dual (attr := simp) Ioo_eq_empty_iff_pred_le]
 theorem Ioo_eq_empty_iff_le_succ : Ioo a b = ∅ ↔ b ≤ succ a := by

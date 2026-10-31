@@ -186,10 +186,6 @@ def toAlgHom : A₁ →ₐ[R] A₂ :=
 
 instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ →ₐ[R] A₂) where coe := AlgEquiv.toAlgHom
 
-@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
-theorem toAlgHom_eq_coe : e.toAlgHom = e :=
-  rfl
-
 theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
   rfl
 
