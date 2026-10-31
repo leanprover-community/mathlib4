@@ -5891,6 +5891,7 @@ public import Mathlib.MeasureTheory.Measure.SubFinite
 public import Mathlib.MeasureTheory.Measure.Sum
 public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.MeasureTheory.Measure.Tight
+public import Mathlib.MeasureTheory.Measure.TightHilbert
 public import Mathlib.MeasureTheory.Measure.TightNormed
 public import Mathlib.MeasureTheory.Measure.Tilted
 public import Mathlib.MeasureTheory.Measure.TotalVariation.Basic

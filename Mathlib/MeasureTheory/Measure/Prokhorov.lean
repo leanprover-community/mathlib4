@@ -29,6 +29,8 @@ notably several versions of Prokhorov theorem on tight sets of probability measu
   is compact.
 * `isTightMeasureSet_of_isCompact_closure`: In a second countable complete metric space, a set of
   probability measures with compact closure is tight.
+* `ProbabilityMeasure.tendsto_of_isTightMeasureSet_of_forall_mapClusterPt`: a tight family of
+  probability measures whose only cluster point is `ν` converges to `ν`.
 
 Versions are also given for finite measures.
 
@@ -703,3 +705,36 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
 end MeasureTheory -- namespace
 
 end Backward
+
+section Convergence
+
+namespace MeasureTheory
+
+variable {E ι : Type*} [MeasurableSpace E] [TopologicalSpace E] [T2Space E] [BorelSpace E]
+  {l : Filter ι} {μ : ι → ProbabilityMeasure E}
+
+/-- A tight family of probability measures whose only cluster point is `ν` converges to `ν`. -/
+theorem ProbabilityMeasure.tendsto_of_isTightMeasureSet_of_forall_mapClusterPt
+    {ν : ProbabilityMeasure E} (h_tight : IsTightMeasureSet {(μ i : Measure E) | i})
+    (h : ∀ ν', MapClusterPt ν' l μ → ν' = ν) :
+    Tendsto μ l (𝓝 ν) := by
+  have h_comp : IsCompact (closure {μ i | i}) :=
+    isCompact_closure_of_isTightMeasureSet (by simpa using h_tight)
+  exact h_comp.tendsto_nhds_of_unique_mapClusterPt
+    (.of_forall fun i ↦ subset_closure ⟨i, rfl⟩) fun ν' _ hν' ↦ h ν' hν'
+
+/-- A tight family of probability measures, along a nontrivial filter, any two of whose cluster
+points coincide, converges. -/
+theorem ProbabilityMeasure.exists_tendsto_of_isTightMeasureSet [l.NeBot]
+    (h_tight : IsTightMeasureSet {(μ i : Measure E) | i})
+    (h : ∀ ν₁ ν₂, MapClusterPt ν₁ l μ → MapClusterPt ν₂ l μ → ν₁ = ν₂) :
+    ∃ ν, Tendsto μ l (𝓝 ν) := by
+  have h_comp : IsCompact (closure {μ i | i}) :=
+    isCompact_closure_of_isTightMeasureSet (by simpa using h_tight)
+  obtain ⟨ν, -, hν⟩ := h_comp.exists_mapClusterPt (f := l) (u := μ)
+    (le_principal_iff.2 <| mem_map.2 <| univ_mem' fun i ↦ subset_closure ⟨i, rfl⟩)
+  exact ⟨ν, tendsto_of_isTightMeasureSet_of_forall_mapClusterPt h_tight fun ν' hν' ↦ h ν' ν hν' hν⟩
+
+end MeasureTheory
+
+end Convergence
