@@ -263,7 +263,7 @@ lemma mul_sSup (o : Ordinal) (s : Set Ordinal) : o * sSup s = sSup ((o * ·) '' 
   · simp [hs.image_const]
   by_cases bdd : BddAbove s
   · exact (isNormal_mul_right ho).leftOrdContinuous.map_csSup hs bdd
-  · rw [csSup_of_not_bddAbove bdd, csSup_empty, csSup_of_not_bddAbove]
+  · rw [csSup_of_not_bddAbove bdd, sSup_empty, csSup_of_not_bddAbove]
     · simp
     exact fun ⟨u, hu⟩ ↦ bdd ⟨u, fun x hx ↦ (x.le_mul_right ho).trans (hu ⟨x, hx, rfl⟩)⟩
 
