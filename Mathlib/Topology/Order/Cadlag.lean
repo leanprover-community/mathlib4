@@ -330,12 +330,27 @@ lemma IsCadlag.tendsto_nhdsLT_leftLim [OrderTopology X] (hf : IsCadlag f) (x : X
     Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
   tendsto_leftLim_of_tendsto (hf.tendsto_nhdsLT x)
 
+/-- The image of a set of a second-countable linear order under a right-continuous function is a
+separable space. -/
+@[to_dual /-- The image of a set of a second-countable linear order under a left-continuous function
+is a separable space. -/]
+lemma IsRightContinuousOn.separableSpace_image [OrderTopology X] [SecondCountableTopology X]
+    {s : Set X} (hf : IsRightContinuousOn f s) : SeparableSpace (f '' s) := by
+  obtain ⟨d, hds, hdc, hd⟩ := exists_countable_subset_mem_closure_inter_Ici s
+  refine ⟨Subtype.val ⁻¹' (f '' d), (hdc.image _).preimage Subtype.val_injective, ?_⟩
+  rw [Subtype.dense_iff, Subtype.image_preimage_coe,
+    Set.inter_eq_self_of_subset_right (Set.image_mono hds)]
+  rintro _ ⟨x, hxs, rfl⟩
+  refine closure_mono (s := f '' (d ∩ Set.Ici x)) (Set.image_mono Set.inter_subset_left) ?_
+  exact ((isRightContinuousOn_iff_continuousWithinAt_inter_Ici.1 hf x hxs).mono
+    (Set.inter_subset_inter_left _ hds)).mem_closure_image (hd x hxs)
+
 /-- The range of a right-continuous function on a second-countable linear order is separable. -/
 @[to_dual /-- The range of a left-continuous function on a second-countable linear order is
 separable. -/]
 lemma IsRightContinuous.separableSpace_range [OrderTopology X] [SecondCountableTopology X]
     (hf : IsRightContinuous f) : SeparableSpace (Set.range f) :=
-  Set.image_univ ▸ separableSpace_image_of_continuousWithinAt_Ioi fun x _ ↦ by simpa using hf x
+  Set.image_univ ▸ hf.isRightContinuousOn.separableSpace_image
 
 end LinearOrder
 

@@ -207,22 +207,6 @@ theorem exists_countable_subset_mem_closure_inter_Iic [SecondCountableTopology �
     ∃ d, d ⊆ s ∧ d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Iic x) :=
   exists_countable_subset_mem_closure_inter_Ici (α := αᵒᵈ) s
 
-/-- The image of a set of a second-countable linear order under a right-continuous function is a
-separable space. -/
-@[to_dual /-- The image of a set of a second-countable linear order under a left-continuous function
-is a separable space. -/]
-theorem separableSpace_image_of_continuousWithinAt_Ioi [SecondCountableTopology α] {s : Set α}
-    [TopologicalSpace β] {f : α → β} (hf : ∀ x ∈ s, ContinuousWithinAt f (s ∩ Ioi x) x) :
-    SeparableSpace (f '' s) := by
-  obtain ⟨d, hds, hdc, hd⟩ := exists_countable_subset_mem_closure_inter_Ici s
-  refine ⟨Subtype.val ⁻¹' (f '' d), (hdc.image _).preimage Subtype.val_injective, ?_⟩
-  rw [Subtype.dense_iff, Subtype.image_preimage_coe, inter_eq_self_of_subset_right (image_mono hds)]
-  rintro _ ⟨x, hxs, rfl⟩
-  refine closure_mono (s := f '' (d ∩ Ici x)) ?_ ?_
-  · exact image_mono inter_subset_left
-  · exact ((continuousWithinAt_inter_Ioi_iff_Ici.1 (hf x hxs)).mono
-      (inter_subset_inter_left _ hds)).mem_closure_image (hd x hxs)
-
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
 @[to_dual /-- A set is a neighborhood of `a` within `(-∞, a)` if and only if it contains an interval
