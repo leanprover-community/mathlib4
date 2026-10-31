@@ -561,3 +561,17 @@ example (h : liftEq b a) (h' : liftLE b c) : liftLE a c := by
   grw [← h, ← h']
 
 end universePolymorphic
+
+theorem NeZero.one_lt_add_one (n : Nat) [NeZero n] : 1 < n + 1 := by simp [Nat.pos_of_neZero]
+
+-- This used to fail with an unknown free variable error
+example (f : Nat → Nat) (hf : ∀ x, NeZero (f x)) : ∀ i, 1 < (f i) + 1 := by
+  grw [← NeZero.one_lt_add_one]
+  intro; rfl
+
+-- This fails because `grw` minimized the local context of the rewrite,
+-- which causes the `NeZero n` hypothesis to be unavailable.
+-- We may want to change this behaviour.
+example : ∀ n, [NeZero n] → 1 < n + 1 := by
+  grw [← NeZero.one_lt_add_one]
+  intros; rfl
