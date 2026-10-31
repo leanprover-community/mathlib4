@@ -28,7 +28,7 @@ structure to be the _adjoint_ of the algebra structure.
 This comes up in non-commutative graph theory for example.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]

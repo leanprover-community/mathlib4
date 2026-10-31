@@ -33,7 +33,7 @@ or partial orders.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology WithTop WithBot
 

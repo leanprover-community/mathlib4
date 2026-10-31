@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 This file contains elementary lemmas about finite sums in `EReal`.
 -/
 
-@[expose] public section
+public section
 
 open scoped BigOperators
 

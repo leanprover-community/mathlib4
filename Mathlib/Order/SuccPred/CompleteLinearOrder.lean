@@ -14,7 +14,7 @@ public import Mathlib.Order.SuccPred.Limit
 
 -/
 
-@[expose] public section
+public section
 
 open Order Set
 

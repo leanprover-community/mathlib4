@@ -19,7 +19,7 @@ with cofinal range. We can generalize this notion to arbitrary ordinals by setti
 - `Ordinal.exists_isFundamentalSeq`: every ordinal has a fundamental sequence.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

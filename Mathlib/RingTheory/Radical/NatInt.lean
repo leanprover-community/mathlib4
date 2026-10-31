@@ -30,7 +30,7 @@ import Mathlib.Data.Nat.Prime.Int
 - `Int.radical_eq_prod_primeFactors`: The radical is computable for integers.
 -/
 
-@[expose] public section
+public section
 
 open UniqueFactorizationMonoid
 

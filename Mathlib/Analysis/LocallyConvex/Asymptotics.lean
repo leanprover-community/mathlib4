@@ -24,7 +24,7 @@ and families of seminorms.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 open Filter

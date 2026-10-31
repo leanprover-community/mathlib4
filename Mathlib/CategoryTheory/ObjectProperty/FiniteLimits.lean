@@ -20,7 +20,7 @@ is also introduced.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ObjectProperty
 

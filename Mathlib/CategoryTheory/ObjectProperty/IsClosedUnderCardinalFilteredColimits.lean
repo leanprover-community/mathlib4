@@ -27,7 +27,7 @@ that the subcategory `P.FullSubcategory` is accessibly embedded in `C`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w
 

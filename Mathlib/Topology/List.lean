@@ -17,7 +17,7 @@ import Mathlib.Topology.Constructions
 
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Set Filter

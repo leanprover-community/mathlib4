@@ -20,7 +20,7 @@ correspond to the notion of left t-exact, right t-exact and t-exact functors.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Functor
 

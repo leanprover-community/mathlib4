@@ -13,7 +13,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 This file defines basic operations for the `interval_dyadic_real` inclusion family.
 -/
 
-@[expose] public section
+public section
 
 open Lean Qq
 
