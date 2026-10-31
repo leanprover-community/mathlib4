@@ -10,6 +10,8 @@ public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.GroupWithZero.Pi
+public import Mathlib.Algebra.GroupWithZero.Prod
 
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.GroupWithZero.Regular
@@ -427,6 +429,86 @@ lemma associatesNonZeroDivisorsEquiv_symm_mk_mk (a : M₀) (ha) :
   rfl
 
 end CommMonoidWithZero
+
+section Pi
+variable {ι : Type*} {M₀ : ι → Type*} [∀ i, MonoidWithZero (M₀ i)] {x : ∀ i, M₀ i}
+
+lemma Pi.mem_nonZeroDivisorsLeft_iff :
+    x ∈ nonZeroDivisorsLeft (∀ i, M₀ i) ↔ ∀ i, x i ∈ nonZeroDivisorsLeft (M₀ i) := by
+  refine ⟨fun hx i y hy ↦ ?_, fun hx _ h ↦ funext fun i ↦ hx i _ congr($h i)⟩
+  classical
+  have h := hx (Pi.single i y) (funext fun j ↦ ?_)
+  · simpa using congr($h i)
+  · rcases eq_or_ne j i with rfl | hj <;> simp [*]
+
+lemma Pi.mem_nonZeroDivisorsRight_iff :
+    x ∈ nonZeroDivisorsRight (∀ i, M₀ i) ↔ ∀ i, x i ∈ nonZeroDivisorsRight (M₀ i) := by
+  refine ⟨fun hx i y hy ↦ ?_, fun hx _ h ↦ funext fun i ↦ hx i _ congr($h i)⟩
+  classical
+  have h := hx (Pi.single i y) (funext fun j ↦ ?_)
+  · simpa using congr($h i)
+  · rcases eq_or_ne j i with rfl | hj <;> simp [*]
+
+/-- An element of a product of monoids with zero is a non-zero-divisor iff each of its coordinates
+is a non-zero-divisor. -/
+lemma Pi.mem_nonZeroDivisors_iff :
+    x ∈ nonZeroDivisors (∀ i, M₀ i) ↔ ∀ i, x i ∈ nonZeroDivisors (M₀ i) := by
+  simp only [nonZeroDivisors, Submonoid.mem_inf,
+    Pi.mem_nonZeroDivisorsLeft_iff, Pi.mem_nonZeroDivisorsRight_iff, forall_and]
+
+lemma Pi.nonZeroDivisorsLeft_eq :
+    nonZeroDivisorsLeft (∀ i, M₀ i) = .pi .univ (fun i ↦ nonZeroDivisorsLeft <| M₀ i) := by
+  ext; simp only [Pi.mem_nonZeroDivisorsLeft_iff, Submonoid.mem_pi, Set.mem_univ, true_implies]
+
+lemma Pi.nonZeroDivisorsRight_eq :
+    nonZeroDivisorsRight (∀ i, M₀ i) = .pi .univ (fun i ↦ nonZeroDivisorsRight <| M₀ i) := by
+  ext; simp only [Pi.mem_nonZeroDivisorsRight_iff, Submonoid.mem_pi, Set.mem_univ, true_implies]
+
+lemma Pi.nonZeroDivisors_eq :
+    nonZeroDivisors (∀ i, M₀ i) = .pi .univ (fun i ↦ nonZeroDivisors <| M₀ i) := by
+  ext; simp only [Pi.mem_nonZeroDivisors_iff, Submonoid.mem_pi, Set.mem_univ, true_implies]
+
+end Pi
+
+section Prod
+variable {M₀ N₀ : Type*} [MonoidWithZero M₀] [MonoidWithZero N₀] {x : M₀ × N₀}
+
+lemma Prod.mem_nonZeroDivisorsLeft_iff :
+    x ∈ nonZeroDivisorsLeft (M₀ × N₀) ↔
+      x.1 ∈ nonZeroDivisorsLeft M₀ ∧ x.2 ∈ nonZeroDivisorsLeft N₀ := by
+  refine ⟨fun hx ↦ ⟨fun y hy ↦ ?_, fun y hy ↦ ?_⟩,
+    fun ⟨h₁, h₂⟩ _ h ↦ Prod.ext (h₁ _ congr($h.1)) (h₂ _ congr($h.2))⟩
+  · simpa using congrArg Prod.fst (hx (y, 0) (Prod.ext (by simpa using hy) (by simp)))
+  · simpa using congrArg Prod.snd (hx (0, y) (Prod.ext (by simp) (by simpa using hy)))
+
+lemma Prod.mem_nonZeroDivisorsRight_iff :
+    x ∈ nonZeroDivisorsRight (M₀ × N₀) ↔
+      x.1 ∈ nonZeroDivisorsRight M₀ ∧ x.2 ∈ nonZeroDivisorsRight N₀ := by
+  refine ⟨fun hx ↦ ⟨fun y hy ↦ ?_, fun y hy ↦ ?_⟩,
+    fun ⟨h₁, h₂⟩ _ h ↦ Prod.ext (h₁ _ congr($h.1)) (h₂ _ congr($h.2))⟩
+  · simpa using congrArg Prod.fst (hx (y, 0) (Prod.ext (by simpa using hy) (by simp)))
+  · simpa using congrArg Prod.snd (hx (0, y) (Prod.ext (by simp) (by simpa using hy)))
+
+/-- An element of a binary product of monoids with zero is a non-zero-divisor iff each of its
+coordinates is a non-zero-divisor. -/
+lemma Prod.mem_nonZeroDivisors_iff :
+    x ∈ nonZeroDivisors (M₀ × N₀) ↔ x.1 ∈ nonZeroDivisors M₀ ∧ x.2 ∈ nonZeroDivisors N₀ := by
+  simp only [nonZeroDivisors, Submonoid.mem_inf,
+    Prod.mem_nonZeroDivisorsLeft_iff, Prod.mem_nonZeroDivisorsRight_iff, and_and_and_comm]
+
+lemma Prod.nonZeroDivisorsLeft_eq :
+    nonZeroDivisorsLeft (M₀ × N₀) = (nonZeroDivisorsLeft M₀).prod (nonZeroDivisorsLeft N₀) :=
+  Submonoid.ext fun _ ↦ Prod.mem_nonZeroDivisorsLeft_iff
+
+lemma Prod.nonZeroDivisorsRight_eq :
+    nonZeroDivisorsRight (M₀ × N₀) = (nonZeroDivisorsRight M₀).prod (nonZeroDivisorsRight N₀) :=
+  Submonoid.ext fun _ ↦ Prod.mem_nonZeroDivisorsRight_iff
+
+lemma Prod.nonZeroDivisors_eq :
+    nonZeroDivisors (M₀ × N₀) = (nonZeroDivisors M₀).prod (nonZeroDivisors N₀) :=
+  Submonoid.ext fun _ ↦ Prod.mem_nonZeroDivisors_iff
+
+end Prod
 
 section MulDistribMulAction
 
