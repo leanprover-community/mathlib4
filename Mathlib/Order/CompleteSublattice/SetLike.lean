@@ -5,7 +5,7 @@ Authors: Sven Manthe
 -/
 module
 
-public import Mathlib.Order.CompleteSublattice
+public import Mathlib.Order.CompleteSublattice.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
