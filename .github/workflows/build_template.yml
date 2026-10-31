@@ -1222,14 +1222,26 @@ jobs:
     needs: [style_lint, build, test_lint, post_steps]
     runs-on: ubuntu-latest
     steps:
-      - id: PR
-        uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
-        # TODO: this may not work properly if the same commit is pushed to multiple branches:
-        # https://github.com/8BitJonny/gh-get-current-pr/issues/8
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          # Only return if PR is still open
-          filterOutClosed: true
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
+
+      - id: PR
+        name: Find the PR
+        # The event's PR on pull_request_target, otherwise the PR from the pushed branch, and only
+        # when its head is the commit this run built, so the job never acts for a head that has not
+        # passed CI.
+        uses: ./workflow-actions/.github/actions/find-open-pr
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.pull_request.number }}
+          branch: ${{ github.ref_name }}
+          head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - id: remove_labels
         name: Remove "awaiting-CI"
