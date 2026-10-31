@@ -12,6 +12,8 @@ public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
+public import Mathlib.RingTheory.Valuation.Integers
+public import Mathlib.RingTheory.Valuation.IsTrivialOn
 
 /-!
 # Adic valuations on Dedekind domains
@@ -447,6 +449,18 @@ theorem valuationSubring_valuation_injective :
   fun _ _ h ↦ eq_of_valuation_isEquiv_valuation ((Valuation.isEquiv_iff_valuationSubring ..).mpr h)
 
 variable {K}
+
+section IsTrivialOn
+
+variable (k : Type*) [Field k] [Algebra k R] [Algebra k K] [IsScalarTower k R K]
+
+/-- The `v`-adic valuation on `K` is trivial on any subfield of `R`. -/
+instance : (v.valuation K).IsTrivialOn k :=
+  .of_le_one _ fun a ↦ by
+    rw [IsScalarTower.algebraMap_apply k R K]
+    exact valuation_le_one v _
+
+end IsTrivialOn
 
 section Localization
 
