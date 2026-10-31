@@ -1,0 +1,882 @@
+/-
+Copyright (c) 2025 Joseph Myers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joseph Myers, Jakob von Raumer
+-/
+import Mathlib
+
+
+open scoped Affine Finset
+open Module Multiset
+
+namespace IMO2025P1
+
+/-- The `x`-axis, as an affine subspace. -/
+def xAxis : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) :=
+  line[ℝ, !₂[0, 0], !₂[1, 0]]
+
+/-- The `y`-axis, as an affine subspace. -/
+def yAxis : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) :=
+  line[ℝ, !₂[0, 0], !₂[0, 1]]
+
+/- The line `x+y=1`, as an affine subspace. -/
+noncomputable def linexy0 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) :=
+  line[ℝ, !₂[1, 0], !₂[0, 1]]
+
+/-- The condition on lines in the problem. -/
+def Sunny (s : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) : Prop :=
+   ¬ s ∥ xAxis ∧ ¬ s ∥ yAxis ∧ ¬ s ∥ linexy0
+
+/-- The answer to be determined. -/
+def answer : (Set.Ici 3) → Set ℕ := fun _ => { 0, 1, 3 }
+
+/- Preliminaries -/
+
+/-- The counting argument that we need, is there a similar version already in mathlib? -/
+lemma _root_.Finset.right_unique_of_left_total_of_left_unique {α β : Type*}
+    (A : Finset α) (B : Finset β) (hcard : #B ≤ #A)
+    (R : α → β → Prop)
+    (htotal : ∀ a ∈ A, ∃ b ∈ B, R a b)
+    (hunique : ∀ a₁ ∈ A, ∀ a₂ ∈ A, ∀ b ∈ B, R a₁ b → R a₂ b → a₁ = a₂) :
+    ∀ a ∈ A, ∀ b₁ ∈ B, ∀ b₂ ∈ B, R a b₁ → R a b₂ → b₁ = b₂ := by
+  by_contra! h
+  rcases h with ⟨a, ha, b₁, hb₁, b₂, hb₂, hab₁, hab₂, hb₁b₂⟩
+  have : ¬ #A < #B := sorry
+  apply this
+  sorry
+
+lemma mem_line_iff {p} {x₀ x₁ y₀ y₁ : ℝ} (hx : x₀ ≠ x₁ ∨ y₀ ≠ y₁ := by grind) :
+    p ∈ line[ℝ, !₂[x₀, y₀], !₂[x₁, y₁]] ↔ (p 0 - x₀) * (y₁ - y₀) = (p 1 - y₀) * (x₁ - x₀) := by
+  have : {!₂[x₀, y₀], !₂[x₁, y₁]} = Set.range ![!₂[x₀, y₀], !₂[x₁, y₁]] :=
+    (Matrix.range_cons_cons_empty !₂[x₀, y₀] !₂[x₁, y₁] ![]).symm
+  constructor
+  · intro h
+    induction' h using affineSpan_induction' with y hy c u hu v hv w hw h₁ h₂ h₃
+    · rcases hy with (rfl | rfl)
+      · simp
+      · simp [mul_comm]
+    · simp only [vsub_eq_sub, Fin.isValue, vadd_eq_add, PiLp.add_apply, PiLp.smul_apply,
+        PiLp.sub_apply, smul_eq_mul]
+      grind only
+  · intro h
+    rcases hx with (hx | hy)
+    · have := affineCombination_mem_affineSpan_of_nonempty
+        (s := ⊤) (w := ![1 - (p 0 - x₀) / (x₁ - x₀), (p 0 - x₀) / (x₁ - x₀)])
+        (by simp) ![!₂[x₀, y₀], !₂[x₁, y₁]]
+      convert this
+      ext i; fin_cases i
+      <;> simp only [Fin.zero_eta, Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd,
+        Finset.top_eq_univ, Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one,
+        Matrix.cons_val_fin_one, sub_add_cancel, Finset.affineCombination_eq_linear_combination,
+        PiLp.add_apply, PiLp.smul_apply, PiLp.toLp_apply, smul_eq_mul,
+        Fin.mk_one, Fin.isValue, Matrix.cons_val_one, Matrix.cons_val_fin_one]
+      <;> apply mul_right_cancel₀ (sub_ne_zero_of_ne hx.symm)
+      <;> rw [add_mul, sub_mul, sub_mul, sub_add_comm]
+      <;> field_simp [mul_div_cancel_right₀ _ (sub_ne_zero_of_ne hx.symm)]
+      · ring
+      · rw [mul_sub] at h
+        rw [h]
+        ring
+    · have := affineCombination_mem_affineSpan_of_nonempty
+        (s := ⊤) (w := ![1 - (p 1 - y₀) / (y₁ - y₀), (p 1 - y₀) / (y₁ - y₀)])
+        (by simp) ![!₂[x₀, y₀], !₂[x₁, y₁]]
+      convert this
+      ext i; fin_cases i
+      <;> simp only [Fin.mk_one, Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd,
+        Finset.top_eq_univ, Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one,
+        Matrix.cons_val_fin_one, sub_add_cancel, Finset.affineCombination_eq_linear_combination,
+        PiLp.add_apply, PiLp.smul_apply, PiLp.toLp_apply, smul_eq_mul]
+      <;> apply mul_right_cancel₀ (sub_ne_zero_of_ne hy.symm)
+      · rw [add_mul, sub_mul, sub_mul]
+        field_simp [mul_div_cancel_right₀ _ (sub_ne_zero_of_ne hy.symm)]
+        rw [sub_mul] at h
+        rw [eq_add_of_sub_eq h]
+        ring
+      · rw [add_mul, sub_mul, sub_mul]
+        field_simp [mul_div_cancel_right₀ _ (sub_ne_zero_of_ne hy.symm)]
+        ring
+
+lemma point_ne_of_x_ne {x₁ x₂ y₁ y₂ : ℝ} (hne : x₁ ≠ x₂) : !₂[x₁, y₁] ≠ !₂[x₂, y₂] := fun h =>
+  hne <| congr_fun h 0
+
+lemma point_ne_of_y_ne {x₁ x₂ y₁ y₂ : ℝ} (hne : y₁ ≠ y₂) : !₂[x₁, y₁] ≠ !₂[x₂, y₂] := fun h =>
+  hne <| congr_fun h 1
+
+lemma _root_.AffineSubspace.eq_line_of_mem_mem_finrank
+    (l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)))
+    {p q} (hp : p ∈ l) (hq : q ∈ l) (hpq : p ≠ q) (h : finrank ℝ l.direction = 1) :
+    l = line[ℝ, p, q] :=
+  sorry
+
+lemma _root_.AffineSubspace.finrank_eq_two_of_ne
+    (l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)))
+    {p q r} (hp : p ∈ l) (hq : q ∈ l) (hr : r ∈ l)
+    (h : (p 0 - q 0) * (r 1 - q 1) ≠ (p 1 - q 1) * (r 0 - q 0)) :
+    finrank ℝ l.direction = 2 :=
+  sorry
+
+lemma _root_.EuclideanGeometry.orthogonalProjection_diag_apply (a b : ℝ) :
+    (EuclideanGeometry.orthogonalProjection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]) !₂[↑b, ↑a]  =
+    !₂[(a + b) / 2, (a + b) / 2] := by
+  sorry
+
+/-- This is still missing non-degeneracy conditions -/
+lemma line_eq_iff {a₀ b₀ c₀ d₀ a₁ b₁ c₁ d₁ : ℝ} :
+    line[ℝ, !₂[a₀, b₀], !₂[c₀, d₀]] = line[ℝ, !₂[a₁, b₁], !₂[c₁, d₁]] ↔
+    (a₀ - a₁) * (d₀ - b₁) = (c₀ - a₁) * (b₀ - b₁) ∧
+      (a₀ - c₁) * (d₀ - d₁) = (c₀ - c₁) * (b₀ - d₁) := by
+  sorry
+
+lemma line_parallel_iff {a₀ b₀ c₀ d₀ a₁ b₁ c₁ d₁ : ℝ} :
+    line[ℝ, !₂[a₀, b₀], !₂[c₀, d₀]] ∥ line[ℝ, !₂[a₁, b₁], !₂[c₁, d₁]] ↔
+    (d₀ - b₀) * (c₁ - a₁) = (d₁ - b₁) * (c₀ - a₀) := by
+  sorry
+
+@[simp]
+theorem line_rank {p q : EuclideanSpace ℝ (Fin 2)}
+    (h : p ≠ q := by {ext i; fin_cases i <;> simp }) :
+    finrank ℝ (AffineSubspace.direction line[ℝ, p, q]) = 1 := by
+  rw [direction_affineSpan]
+  apply Nat.le_antisymm
+  · trans
+    · apply finrank_vectorSpan_insert_le_set ℝ {q} (p : EuclideanSpace ℝ (Fin 2))
+    · simp
+  · rw [Submodule.one_le_finrank_iff]
+    rw [vectorSpan_def]
+    simp
+    use q -ᵥ p
+    constructor
+    · rw [Set.mem_vsub]
+      refine ⟨q, by simp, p, by simp, rfl⟩
+    · exact vsub_ne_zero.mpr fun a ↦ h (id (Eq.symm a))
+
+@[simp]
+lemma point_sub {x₁ y₁ x₂ y₂ : ℝ} : !₂[x₁, y₁] - !₂[x₂, y₂] = !₂[x₁ - x₂, y₁ - y₂] := by
+  ext i; fin_cases i <;> simp
+
+@[simp]
+lemma point_add {x₁ y₁ x₂ y₂ : ℝ} : !₂[x₁, y₁] + !₂[x₂, y₂] = !₂[x₁ + x₂, y₁ + y₂] := by
+  ext i; fin_cases i <;> simp
+
+@[simp]
+lemma smul_point {c x₁ y₁ : ℝ} : c • !₂[x₁, y₁] = !₂[c * x₁, c * y₁] := by
+  ext i; fin_cases i <;> simp
+
+@[simp]
+lemma neg_point {x₁ y₁ : ℝ} : - !₂[x₁, y₁] = !₂[-x₁, -y₁] := by
+  ext i; fin_cases i <;> simp
+
+@[simp]
+lemma not_sunny_vert {x : ℝ} : ¬Sunny line[ℝ, !₂[x, 0], !₂[x, 1]] := by
+  simp only [Sunny, Classical.not_and_iff_not_or_not, not_not]; right; left
+  rw [yAxis, AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq, vectorSpan_def]
+  congr 1
+  simp [Set.vsub, Set.image_insert_eq]
+
+/- General helper lemmas -/
+
+noncomputable instance : DecidablePred Sunny := Classical.decPred _
+
+lemma not_sunny_of_horiz {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
+    {x₁ x₂ y₁ : ℝ} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₁] ∈ l) (h : x₁ ≠ x₂ := by simp) :
+    ¬ Sunny l := by
+  classical
+  simp only [Sunny, Decidable.not_and_iff_or_not, not_not, xAxis]
+  left
+  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_x_ne h) sorry, line_parallel_iff]
+  grind
+
+lemma not_sunny_of_vert {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
+    {x₁ y₁ y₂ : ℝ} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₁, y₂] ∈ l) (h : y₁ ≠ y₂ := by simp) :
+    ¬ Sunny l := by
+  classical
+  simp only [Sunny, Decidable.not_and_iff_or_not, not_not, yAxis]
+  right; left
+  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_y_ne h) sorry, line_parallel_iff]
+  grind
+
+lemma not_sunny_of_diag {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
+    {x₁ x₂ y₁ y₂ : ℝ} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l)
+    (h : y₂ - y₁ = x₁ - x₂) (h : x₁ ≠ x₂ := by simp) :
+    ¬ Sunny l := by
+  classical
+  simp only [Sunny, Decidable.not_and_iff_or_not, not_not, linexy0]
+  right; right
+  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_x_ne h) sorry, line_parallel_iff]
+  simp
+  grind
+
+@[simp]
+lemma not_sunny_diag (x : ℝ) (h : x ≠ 1 := by simp): ¬ Sunny line[ℝ, !₂[x, 1], !₂[1, x]] :=
+  not_sunny_of_diag (left_mem_affineSpan_pair ℝ !₂[x, 1] !₂[1, x])
+    (right_mem_affineSpan_pair ℝ !₂[x, 1] !₂[1, x]) rfl h
+
+lemma sunny_of_ne {l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))}
+    (hrank : finrank ℝ l.direction = 1)
+    {x₁ x₂ y₁ y₂} (h₁ : !₂[x₁, y₁] ∈ l) (h₂ : !₂[x₂, y₂] ∈ l)
+    (h₃ : y₂ - y₁ ≠ x₁ - x₂) (h₄ : x₁ ≠ x₂ := by simp) (h₅ : y₁ ≠ y₂ := by simp) : Sunny l := by
+  simp only [Sunny]
+  rw [l.eq_line_of_mem_mem_finrank h₁ h₂ (point_ne_of_x_ne h₄) hrank]
+  refine ⟨fun h => ?_, fun h => ?_, fun h => ?_⟩
+  · rw [xAxis, line_parallel_iff] at h
+    grind
+  · rw [yAxis, line_parallel_iff] at h
+    grind
+  · rw [linexy0, line_parallel_iff] at h
+    grind
+
+lemma reflection_inj : Function.Injective fun (l : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) =>
+    l.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap := by
+  intro l₁ l₂ h
+  have := congr_arg
+   (·.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap) h
+  convert this <;> ext <;> simp
+
+/- Lemmas for the case `n = 3` -/
+
+def l1 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[1, 0], !₂[1, 1]]
+
+def l2 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[2, 0], !₂[2, 1]]
+
+def l3 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[3, 0], !₂[3, 1]]
+
+def l4 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[3, 1], !₂[4, 2]]
+
+@[simp]
+lemma sunny_l4 : Sunny l4 :=
+  sunny_of_ne (by sorry) (show !₂[3, 1] ∈ l4 by apply left_mem_affineSpan_pair)
+    (show !₂[4, 2] ∈ l4 by apply right_mem_affineSpan_pair)
+    (by grind)
+
+def l5 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[0, 0], !₂[1, 1]]
+
+@[simp]
+lemma sunny_l5 : Sunny l5 :=
+  sunny_of_ne (by sorry) (show !₂[0, 0] ∈ l5 by apply left_mem_affineSpan_pair)
+    (show !₂[1, 1] ∈ l5 by apply right_mem_affineSpan_pair)
+    (by grind)
+
+def l6 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[1, 3], !₂[2, 1]]
+
+@[simp]
+lemma sunny_l6 : Sunny l6 :=
+  sunny_of_ne (by sorry) (show !₂[1, 3] ∈ l6 by apply left_mem_affineSpan_pair)
+    (show !₂[2, 1] ∈ l6 by apply right_mem_affineSpan_pair)
+    (by grind)
+
+def l7 : AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)) := line[ℝ, !₂[3, 1], !₂[1, 2]]
+
+@[simp]
+lemma sunny_l7 : Sunny l7 :=
+  sunny_of_ne (by sorry) (show !₂[3, 1] ∈ l7 by apply left_mem_affineSpan_pair)
+    (show !₂[1, 2] ∈ l7 by apply right_mem_affineSpan_pair)
+    (by grind)
+
+lemma zero_mem3 : 0 ∈ {k | ∃ lines : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))),
+      have : DecidablePred Sunny := Classical.decPred _;
+      #lines = 3 ∧ (∀ l ∈ lines, finrank ℝ l.direction = 1) ∧
+      (∀ a b : ℕ, 0 < a → 0 < b → a + b ≤ 4 → ∃ l ∈ lines, !₂[(a : ℝ), b] ∈ l) ∧
+      #{l ∈ lines | Sunny l} = k} := by
+  simp only [Set.mem_setOf_eq, Finset.card_eq_zero]
+  let ls : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) :=
+    (({ l1 } : Finset _).cons l2
+      (by simp only [Finset.mem_singleton, l2, l1, line_eq_iff]; norm_num)).cons l3 (by
+        simp only [Finset.mem_cons, Finset.mem_singleton, not_or]
+        constructor <;> simp only [l1, l2, l3, line_eq_iff] <;> norm_num )
+  use ls
+  refine ⟨by simp [ls], fun l hl => ?_, ?_, ?_⟩
+  · simp only [Finset.mem_cons, Finset.mem_singleton, ls] at hl
+    rcases hl with (rfl|rfl|rfl)
+    <;> apply line_rank (fun h => by have := congr_fun h 1; simp at this)
+  · simp only [Finset.mem_cons, Finset.mem_singleton, exists_eq_or_imp, exists_eq_left, ls]
+    rintro (a|a|a|a|a) b ha hb hab
+    · simp at ha
+    · have : b = 1 ∨ b = 2 ∨ b = 3 := by omega
+      rcases this with (rfl|rfl|rfl) <;> right <;> right <;>
+        simp only [l1, zero_add, Nat.cast_one, Nat.cast_ofNat] <;> rw [mem_line_iff] <;> simp
+    · have : b = 1 ∨ b = 2 := by omega
+      rcases this with (rfl|rfl) <;> right <;> left <;>
+        simp only [l2, zero_add, Nat.reduceAdd, Nat.cast_ofNat, Nat.cast_one] <;>
+        rw [mem_line_iff] <;> simp
+    · left
+      have : b = 1 := by omega
+      subst this
+      simp only [zero_add, Nat.reduceAdd, Nat.cast_ofNat, Nat.cast_one]
+      apply right_mem_affineSpan_pair ℝ
+    · omega
+  · simp only [ls]
+    apply Finset.filter_false_of_mem
+    rintro x (h | ⟨x, (h | ⟨x, (h | ⟨x, ⟨⟩⟩)⟩)⟩) <;> simp [l1, l2, l3]
+
+lemma one_mem3 : 1 ∈ {k | ∃ lines : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))),
+      have : DecidablePred Sunny := Classical.decPred _;
+      #lines = 3 ∧ (∀ l ∈ lines, finrank ℝ l.direction = 1) ∧
+      (∀ a b : ℕ, 0 < a → 0 < b → a + b ≤ 4 → ∃ l ∈ lines, !₂[(a : ℝ), b] ∈ l) ∧
+      #{l ∈ lines | Sunny l} = k} := by
+  simp only [Set.mem_setOf_eq]
+  let ls : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) :=
+    (({ l1 } : Finset _).cons l2
+      (by simp only [Finset.mem_singleton, l2, l1, line_eq_iff]; norm_num)).cons l4 (by
+        simp only [Finset.mem_cons, Finset.mem_singleton, not_or]
+        constructor <;> simp only [l1, l2, l4, line_eq_iff] <;> norm_num )
+  use ls
+  refine ⟨by simp [ls], fun l hl => ?_, ?_, ?_⟩
+  · simp only [Finset.mem_cons, Finset.mem_singleton, ls] at hl
+    rcases hl with (rfl|rfl|rfl)
+    <;> apply line_rank (fun h => by have := congr_fun h 1; simp at this)
+  · simp only [Finset.mem_cons, Finset.mem_singleton, exists_eq_or_imp, exists_eq_left, ls]
+    rintro (a|a|a|a|a) b ha hb hab
+    · simp at ha
+    · have : b = 1 ∨ b = 2 ∨ b = 3 := by omega
+      rcases this with (rfl|rfl|rfl) <;> right <;> right <;>
+        simp only [l1, zero_add, Nat.cast_one, Nat.cast_ofNat] <;> rw [mem_line_iff] <;> simp
+    · have : b = 1 ∨ b = 2 := by omega
+      rcases this with (rfl|rfl) <;> right <;> left <;>
+        simp only [l2, zero_add, Nat.reduceAdd, Nat.cast_ofNat, Nat.cast_one] <;>
+        rw [mem_line_iff] <;> simp
+    · left
+      have : b = 1 := by omega
+      subst this
+      simp only [l4, zero_add, Nat.reduceAdd, Nat.cast_ofNat, Nat.cast_one]
+      rw [mem_line_iff]
+      simp
+    · omega
+  · simp [ls, Finset.filter_cons_of_pos, Finset.filter_cons_of_neg, Finset.filter_singleton, l1, l2]
+
+lemma three_mem3 : 3 ∈ {k | ∃ lines : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))),
+      have : DecidablePred Sunny := Classical.decPred _;
+      #lines = 3 ∧ (∀ l ∈ lines, finrank ℝ l.direction = 1) ∧
+      (∀ a b : ℕ, 0 < a → 0 < b → a + b ≤ 4 → ∃ l ∈ lines, !₂[(a : ℝ), b] ∈ l) ∧
+      #{l ∈ lines | Sunny l} = k} := by
+  simp only [Set.mem_setOf_eq]
+  let ls : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) :=
+    (({ l5 } : Finset _).cons l6
+      (by simp only [Finset.mem_singleton, l5, l6, line_eq_iff]; norm_num)).cons l7 (by
+        simp only [Finset.mem_cons, Finset.mem_singleton, not_or]
+        constructor <;> simp only [l5, l6, l7, line_eq_iff] <;> norm_num )
+  use ls
+  refine ⟨by simp [ls], fun l hl => ?_, ?_, ?_⟩
+  · simp only [Finset.mem_cons, Finset.mem_singleton, ls] at hl
+    rcases hl with (rfl|rfl|rfl)
+    <;> apply line_rank (fun h => by have := congr_fun h 1; simp at this)
+  · simp only [Finset.mem_cons, Finset.mem_singleton, exists_eq_or_imp, exists_eq_left, ls]
+    rintro (a|a|a|a|a) b ha hb hab
+    · simp at ha
+    · have : b = 1 ∨ b = 2 ∨ b = 3 := by omega
+      rcases this with (rfl|rfl|rfl)
+      · right; right; simp [l5]; rw [mem_line_iff]; dsimp
+      · left; simp [l7]; rw [mem_line_iff]; dsimp; norm_num
+      · right; left; simp [l6]; rw [mem_line_iff]; dsimp; norm_num
+    · have : b = 1 ∨ b = 2 := by omega
+      rcases this with (rfl|rfl)
+      · right; left; simp [l6]; rw [mem_line_iff]; dsimp; norm_num
+      · right; right; simp [l5]; rw [mem_line_iff]; dsimp
+    · obtain rfl : b = 1 := by omega;
+      left; simp [l7]; rw [mem_line_iff]; dsimp; norm_num
+    · omega
+  · simp [ls, Finset.filter_cons_of_pos _ _ _ _ sunny_l7,
+      Finset.filter_cons_of_pos _ _ _ _ sunny_l6,
+      Finset.filter_singleton]
+
+noncomputable instance : DecidableEq (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))) :=
+  Classical.decEq _
+
+/-- Valid configurations and operations on them -/
+
+structure Config (n k : Nat) where
+  ls : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2)))
+  card : #ls = n
+  rank : ∀ l ∈ ls, finrank ℝ ↥l.direction = 1
+  cover : ∀ (a b : ℕ)
+    (_ : 0 < a := by omega) (_ : 0 < b := by omega) (_ : a + b ≤ n + 1 := by omega),
+    ∃ l ∈ ls, !₂[↑a, ↑b] ∈ l
+  sunny : #{l ∈ ls | Sunny l} = k
+
+lemma Config.not_rank_2 {n k} (c : Config n k) {l} (hl : l ∈ c.ls)
+    (hrank : finrank ℝ ↥l.direction = 2) : False := by
+  have := c.rank l hl
+  omega
+
+/-- Reflect a valid configuration along the diagonal. -/
+noncomputable def Config.symm {n k : ℕ} (c : Config n k) : Config n k where
+  ls := c.ls.map ⟨fun l => _, reflection_inj⟩
+  card := by simp [c.card]
+  rank l hl := by
+    simp only [Finset.mem_map, Function.Embedding.coeFn_mk] at hl
+    obtain ⟨l',hl', rfl⟩ := hl
+    rw [AffineSubspace.map_direction, AffineEquiv.linear_toAffineMap,
+      LinearEquiv.finrank_map_eq, c.rank l' hl']
+  cover a b ha hb hab := by
+    simp only [gt_iff_lt, ge_iff_le, Finset.mem_map, Function.Embedding.coeFn_mk,
+      exists_exists_and_eq_and, AffineSubspace.mem_map, AffineEquiv.coe_toAffineMap,
+      AffineIsometryEquiv.coe_toAffineEquiv] at *
+    rw [add_comm] at hab
+    obtain ⟨l, hl, hbal⟩ := c.cover b a hb ha hab
+    refine ⟨l, hl, !₂[b, a], hbal, ?_⟩
+    rw [EuclideanGeometry.reflection_apply]
+    simp only [vsub_eq_sub, vadd_eq_add]
+    rw [EuclideanGeometry.orthogonalProjection_diag_apply]
+    simp only [point_sub, point_add]
+    grind
+  sunny := by
+    conv_rhs => rw [← c.sunny]
+    apply Finset.card_eq_of_equiv
+    simp
+    sorry
+
+/-- Extend a valid configuration without changing the number of sunny lines. -/
+def Config.extend {n k : ℕ} (hn : 3 ≤ n) (c : Config n k) : Config (n + 1) k where
+  ls := c.ls.cons line[ℝ, !₂[(n : ℝ) + 1, 1], !₁[1, n + 1]] <| fun h => by
+    -- Bit annoying that we need to prove this, we could as well add some junk line if the diagonal
+    -- is already in the set
+    sorry
+  card := by rw [Finset.card_cons, c.card]
+  rank l hl := by
+    simp only [Finset.cons_eq_insert, Finset.mem_insert] at hl
+    rcases hl with (rfl | hl)
+    · apply line_rank
+      intro h
+      have := congr_fun h 0
+      simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, add_eq_right,
+        Nat.cast_eq_zero] at this
+      grind
+    · exact c.rank l hl
+  cover a b ha hb hab := by
+    simp at ha hb hab
+    by_cases hab' : a + b < n + 2
+    · obtain ⟨l, hl, meml⟩ := c.cover a b
+      exact ⟨l, Finset.subset_cons _ hl, meml⟩
+    · have : a + b = n + 2 := by omega
+      refine ⟨line[ℝ, !₂[(n : ℝ) + 1, 1], !₁[1, n + 1]], Finset.mem_cons_self _ _, ?_⟩
+      erw [mem_line_iff (by left; norm_cast; omega)]
+      simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, add_sub_cancel_right,
+        Matrix.cons_val_one, Matrix.cons_val_fin_one, sub_add_cancel_right, mul_neg]
+      rw [Nat.eq_sub_of_add_eq this, Nat.cast_sub (by omega), Nat.cast_add]
+      ring
+  sunny := by
+    conv_rhs => rw [← c.sunny]
+    congr 1
+    rw [Finset.filter_inj]
+    intro l hl
+    simp only [Finset.cons_eq_insert, Finset.mem_insert, or_iff_right_iff_imp]
+    rintro rfl
+    absurd hl
+    exact not_sunny_diag (n + 1) (by norm_cast; omega)
+
+/-- Restrict a configuration for `n + 1` points to a configuration for `n` points by discarding
+a vertical line. -/
+noncomputable def Config.restrict_vert {n k : ℕ} (c : Config (n + 1) k)
+    (h : line[ℝ, !₂[1, 0], !₂[1, 1]] ∈ c.ls) : Config n k where
+  ls := (c.ls.erase line[ℝ, !₂[1, 0], !₂[1, 1]]).image <| fun l =>
+    l.map (AffineEquiv.constVAdd ℝ _ !₂[-1, 0]).toAffineMap
+  card := by
+    have : Function.Injective <| fun (l : AffineSubspace ℝ (WithLp 2 (Fin 2 → ℝ))) =>
+      l.map (AffineEquiv.constVAdd ℝ _ !₂[-1, 0]).toAffineMap := sorry
+    simp [h, c.card, Finset.card_image_of_injective _ this]
+  rank l hl := by
+    obtain ⟨l', hl', rfl⟩ := Finset.mem_image.mp hl
+    rw [AffineSubspace.map_direction, AffineEquiv.linear_toAffineMap, AffineEquiv.linear_constVAdd,
+      LinearEquiv.refl_toLinearMap, Submodule.map_id]
+    apply c.rank l' <| Finset.mem_of_mem_erase hl'
+  cover a b ha hb hab := by
+    obtain ⟨l, hl, meml⟩ := c.cover (a + 1) b
+    refine ⟨l.map (AffineEquiv.constVAdd ℝ _ !₂[-1, 0]).toAffineMap, ?_, ?_⟩
+    · simp
+      refine ⟨l, ⟨?_, hl⟩, rfl⟩
+      rintro rfl
+      rw [mem_line_iff] at meml
+      simp only [Nat.cast_add, Nat.cast_one, Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero,
+        add_sub_cancel_right, sub_zero, mul_one, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+        sub_self, mul_zero, Nat.cast_eq_zero] at meml
+      omega
+    · simp only [AffineSubspace.mem_map, AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply,
+        vadd_eq_add]
+      exact ⟨_, meml, by simp⟩
+  sunny := by
+    conv_rhs => rw [← c.sunny]
+    apply Finset.card_eq_of_equiv
+    simp
+    -- TODO show translation invariance of sunniness
+    sorry
+
+noncomputable def Config.restrict_horiz {n k : ℕ} (c : Config (n + 1) k)
+    (h : line[ℝ, !₂[0, 1], !₂[1, 1]] ∈ c.ls) : Config n k :=
+  Config.restrict_vert c.symm sorry
+
+noncomputable def Config.restrict_diag {n k : ℕ} (hn : 3 ≤ n) (c : Config (n + 1) k)
+    (h : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∈ c.ls) : Config n k where
+  ls := c.ls.erase line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]]
+  card := by simp [Finset.card_erase_of_mem h, c.card]
+  rank l hl := c.rank l (Finset.mem_of_mem_erase hl)
+  cover a b ha hb hab := by
+    obtain ⟨l, hl, meml⟩ := c.cover a b
+    refine ⟨l, Finset.mem_erase_of_ne_of_mem ?_ hl, meml⟩
+    rintro rfl
+    rw [mem_line_iff (by left; norm_cast; grind)] at meml
+    simp at *
+    rw [← neg_mul] at meml
+    have := mul_right_cancel₀ (by norm_cast; omega) meml
+    simp only [neg_sub, sub_eq_sub_iff_add_eq_add] at this
+    norm_cast at this
+    grind
+  sunny := by
+    conv_rhs => rw [← c.sunny]
+    congr 1
+    rw [Finset.filter_inj]
+    simp
+    rintro l hl - rfl
+    apply not_sunny_diag (n + 1) (by norm_cast; omega) hl
+
+lemma no_config_3_2_no_vert (c : Config 3 2) (h_no_vert : ∀ l ∈ c.ls, ¬ l ∥ yAxis) : False := by
+  obtain ⟨l₁, hl₁, meml₁⟩ := c.cover 1 1 (by norm_num) (by norm_num) (by norm_num)
+  obtain ⟨l₂, hl₂, meml₂⟩ := c.cover 1 2 (by norm_num) (by norm_num) (by norm_num)
+  obtain ⟨l₃, hl₃, meml₃⟩ := c.cover 1 3 (by norm_num) (by norm_num) (by norm_num)
+  have hcard : #{l₁, l₂, l₃} = 3 := by
+    refine Finset.card_eq_three.mpr ⟨l₁, l₂, l₃, fun h => ?_, fun h => ?_, fun h => ?_, rfl⟩
+    <;> subst h
+    · fapply h_no_vert l₁ hl₁
+      use !₂[-1, -1]
+      rw [l₁.eq_line_of_mem_mem_finrank meml₁ meml₂ (fun h => by have := congr_fun h 1; simp_all)
+        (c.rank _ hl₁), AffineSubspace.map_span, Set.image_pair, yAxis]
+      simp only [AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply, vadd_eq_add, point_add]
+      norm_num
+    · fapply h_no_vert l₁ hl₁
+      use !₂[-1, -1]
+      rw [l₁.eq_line_of_mem_mem_finrank meml₁ meml₃ (fun h => by have := congr_fun h 1; simp_all)
+        (c.rank _ hl₁), AffineSubspace.map_span, Set.image_pair, yAxis]
+      simp only [AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply, vadd_eq_add, point_add]
+      rw [line_eq_iff]
+      norm_num
+    · fapply h_no_vert l₂ hl₂
+      use !₂[-1, -2]
+      rw [l₂.eq_line_of_mem_mem_finrank meml₂ meml₃ (fun h => by have := congr_fun h 1; simp_all)
+        (c.rank _ hl₂), AffineSubspace.map_span, Set.image_pair, yAxis]
+      simp only [AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply, vadd_eq_add, point_add]
+      norm_num
+  have hcls : {l₁, l₂, l₃} = c.ls := Finset.eq_of_subset_of_card_le (Finset.insert_subset hl₁
+    (Finset.insert_subset hl₂ (Finset.singleton_subset_iff.mpr hl₃))) (by rw [c.card, hcard])
+  obtain ⟨l₄, hl₄, meml₄⟩ :=  c.cover 2 1
+  obtain ⟨l₅, hl₅, meml₅⟩ :=  c.cover 2 2
+  obtain ⟨l₆, hl₆, meml₆⟩ :=  c.cover 3 1
+  rw [← hcls, Finset.mem_insert, Finset.mem_insert, Finset.mem_singleton] at hl₄ hl₅ hl₆
+  have hsunny := c.sunny
+  simp [← hcls, Finset.filter_insert, Finset.filter_singleton] at hsunny
+  rcases hl₄ with (rfl | rfl | rfl)
+  · -- l₁ = l₄ must be non-sunny
+    have hl₄ : ¬ Sunny l₄ := not_sunny_of_horiz meml₁ meml₄
+    rcases hl₅ with (rfl | rfl | rfl)
+    · -- l₅ = l₄, finrank violated
+      apply c.not_rank_2 hl₁ <| l₅.finrank_eq_two_of_ne meml₅ meml₄ meml₁ (by norm_num)
+    · -- l₅ = l₂, only one sunny line
+      have hl₅ : ¬ Sunny l₅ := not_sunny_of_horiz meml₂ meml₅
+      split_ifs at hsunny <;> simp at hsunny
+    · -- l₅ = l₃, only one sunny line
+      have hl₅ : ¬ Sunny l₅ := not_sunny_of_diag meml₃ meml₅ (by simp; norm_num)
+      split_ifs at hsunny <;> simp at hsunny
+  · -- l₂ = l₄ must be non-sunny
+    have hl₄ : ¬ Sunny l₄ := not_sunny_of_diag meml₂ meml₄ (by simp)
+    rcases hl₅ with (rfl | rfl | rfl)
+    · -- l₅ = l₁, only one sunny line
+      rcases hl₆ with (rfl | rfl | rfl)
+      · -- l₆ = l₅
+        have hl₆ : ¬ Sunny l₆ := not_sunny_of_diag meml₅ meml₆ (by norm_num)
+        split_ifs at hsunny <;> simp at hsunny
+      · -- l₆ = l₄, finrank violated
+        apply c.not_rank_2 hl₂ <|  l₆.finrank_eq_two_of_ne meml₆ meml₂ meml₄ (by norm_num)
+      · -- l₆ = l₃
+        have hl₆ : ¬ Sunny l₆ := not_sunny_of_diag meml₃ meml₆ (by simp)
+        split_ifs at hsunny <;> simp at hsunny
+    · -- l₅ = l₄, finrank violated
+      apply c.not_rank_2 hl₂ <| l₅.finrank_eq_two_of_ne meml₅ meml₂ meml₄ (by norm_num)
+    · -- l₅ = l₃
+      have hl₅ : ¬ Sunny l₅ := not_sunny_of_diag meml₃ meml₅ (by norm_num)
+      split_ifs at hsunny <;> simp at hsunny
+  · -- l₃ = l₄
+    have hl₄ : Sunny l₄ := sunny_of_ne (c.rank _ hl₃) meml₄ meml₃ (by simp)
+    rcases hl₅ with (rfl | rfl | rfl)
+    · -- l₅ = l₁
+      have hl₅ : Sunny l₅ := sunny_of_ne (c.rank _ hl₁) meml₁ meml₅ (by simp; norm_num)
+      rcases hl₆ with (rfl | rfl | rfl)
+      · -- l₆ = l₅, finrank violated
+        apply c.not_rank_2 hl₁ <| l₆.finrank_eq_two_of_ne meml₅ meml₁ meml₆ (by norm_num)
+      · -- l₆ = l₂, three sunny lines
+        have hl₆ : Sunny l₆ := sunny_of_ne (c.rank _ hl₂) meml₆ meml₂ (by norm_num)
+        split_ifs at hsunny
+        omega
+      · -- l₆ = l₄, finrank violated
+        apply c.not_rank_2 hl₃ <| l₆.finrank_eq_two_of_ne meml₄ meml₃ meml₆ (by norm_num)
+    · -- l₅ = l₂
+      have hl₅ : ¬ Sunny l₅ := not_sunny_of_horiz meml₅ meml₂ (by norm_num)
+      rcases hl₆ with (rfl | rfl | rfl)
+      · -- l₆ = l₁, only one sunny line
+        have : ¬ Sunny l₆ := not_sunny_of_horiz meml₁ meml₆ (by norm_num)
+        split_ifs at hsunny; simp at hsunny
+      · -- l₆ = l₅, finrank violated
+        apply c.not_rank_2 hl₂ <| l₆.finrank_eq_two_of_ne meml₂ meml₅ meml₆ (by norm_num)
+      · -- l₆ = l₄, finrank violated
+        apply c.not_rank_2 hl₃ <| l₆.finrank_eq_two_of_ne meml₄ meml₃ meml₆ (by norm_num)
+    · -- l₅ = l₄, finrank violated
+      apply c.not_rank_2 hl₃ <| l₅.finrank_eq_two_of_ne meml₅ meml₃ meml₄ (by norm_num)
+
+lemma no_config_3_2 (c : Config 3 2) : False := by
+  by_cases h : ∀ l ∈ c.ls, ¬ l ∥ yAxis
+  · apply no_config_3_2_no_vert c h
+  · let c' := c.symm
+    by_cases h' : ∀ l ∈ c'.ls, ¬ l ∥ yAxis
+    · apply no_config_3_2_no_vert c' h'
+    · simp at h h'
+      obtain ⟨l₁, hl₁, yl₁⟩ := h
+      obtain ⟨l₂, hl₂, xl₂⟩ := h'
+      let l₂' := l₂.map (EuclideanGeometry.reflection line[ℝ, !₂[(0 : ℝ), 0], !₂[1, 1]]).toAffineMap
+      have hl₂' : l₂' ∈ c.ls := by
+        simp [l₂']
+        simp [c', Config.symm] at hl₂
+        obtain ⟨l₂'', hl₂'', rfl⟩ := hl₂
+        convert hl₂''
+        ext
+        simp
+      obtain ⟨l₃, hl₃, meml₃⟩ := c.cover 2 2
+      -- `c.ls` contains two distinct non-sunny lines
+      have nsunnyl₁ : ¬ Sunny l₁ := fun h => by simp [Sunny, yl₁] at h
+      have yl₂' : l₂' ∥ xAxis := by
+        sorry -- TODO characterize reflection
+      have nsunnyl₂' : ¬ Sunny l₂' := fun h => by simp [Sunny, yl₂'] at h
+      -- `l₁` and `l₂'` are distinct because they have different directions
+      have : l₁ ≠ l₂' := fun h => by
+        subst h
+        have := yl₂'.symm.trans yl₁
+        rw [xAxis, yAxis, line_parallel_iff] at this
+        grind
+      have hsunny := c.sunny
+      rw [← Finset.union_sdiff_of_subset (Finset.insert_subset hl₁
+        (Finset.singleton_subset_iff.mpr hl₂')),
+        Finset.filter_union, Finset.card_union_of_disjoint
+        (Finset.disjoint_filter_filter Finset.sdiff_disjoint.symm),
+        Finset.filter_insert, Finset.filter_singleton] at hsunny
+      simp [nsunnyl₁, nsunnyl₂'] at hsunny
+      have : #({l ∈ c.ls \ {l₁, l₂'} | Sunny l}) ≤ 1 :=
+      calc _ ≤ #(c.ls \ {l₁, l₂'}) := Finset.card_filter_le _ Sunny
+        _ = #(c.ls \ {l₂'}) - 1 := by rw [Finset.sdiff_insert,
+              Finset.card_erase_of_mem (by simp [this, hl₁])]
+        _ = #c.ls - 1 - 1 := by rw [Finset.sdiff_singleton_eq_erase, Finset.card_erase_of_mem hl₂']
+        _ = 1 := by rw [c.card]
+      omega
+
+lemma get_horiz_point_of_no_horiz_line {n k} (c : Config n k)
+    (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls) {l} (hl : l ∈ c.ls) :
+    ∃ m : ℕ, 1 ≤ m ∧ m ≤ n ∧ !₂[(m : ℝ), 1] ∈ l := by
+  let cl m (hm : m ∈ Finset.Icc 1 n) := Classical.choose <| c.cover m 1
+    (by rw [Finset.mem_Icc] at hm; omega) Nat.one_pos (by rw [Finset.mem_Icc] at hm; omega)
+  have hcl m (hm : m ∈ Finset.Icc 1 n) : cl m hm ∈ c.ls ∧ !₂[↑m, ((1 : ℕ) : ℝ)] ∈ cl m hm :=
+    Classical.choose_spec (c.cover m 1
+      (by rw [Finset.mem_Icc] at hm; omega) Nat.one_pos (by rw [Finset.mem_Icc] at hm; omega))
+  obtain ⟨m, hm, rfl⟩ := Finset.surj_on_of_inj_on_of_card_le (s := Finset.Icc 1 n) (t := c.ls)
+    cl (fun m hm => (hcl m hm).1)
+    (fun m₁ m₂ hm₁ hm₂ h => by
+      simp only [Finset.mem_Icc, Nat.cast_one] at *
+      have hm₁'' := Finset.mem_Icc.mp hm₁
+      have hm₂'' := Finset.mem_Icc.mp hm₂
+      by_contra! hm₁m₂
+      apply hhoriz
+      have hm₁' := hcl m₁ hm₁''
+      have hm₂' := hcl m₂ hm₂''
+      rw [← h] at hm₂'
+      convert (hcl m₁ hm₁'').1
+      rw [(cl m₁ hm₁).eq_line_of_mem_mem_finrank hm₁'.2 hm₂'.2 (point_ne_of_x_ne (by norm_cast))
+        (c.rank _ hm₁'.1), line_eq_iff]
+      simp)
+    (by simp [c.card]) l hl
+  have := (hcl m hm).2
+  simp only [Nat.cast_one] at this
+  rw [Finset.mem_Icc] at hm
+  refine ⟨m, hm.1, hm.2, this⟩
+
+/-- Obtain a point on the main diagonal which lies on a given line, when no main diagonal line
+is present in a configuration. -/
+lemma get_diag_point_of_no_diag_line {n k} (c : Config n k)
+    (hdiag : line[ℝ, !₂[(n : ℝ), 1], !₂[1, (n : ℝ)]] ∉ c.ls) {l} (hl : l ∈ c.ls) :
+    ∃ m : ℕ, 1 ≤ m ∧ m ≤ n ∧ !₂[(m : ℝ), n + 1 - m] ∈ l := by
+  let cl m (hm : m ∈ Finset.Icc 1 n) := Classical.choose <| c.cover m (n + 1 - m)
+    (by rw [Finset.mem_Icc] at hm; omega)
+    (by rw [Finset.mem_Icc] at hm; omega)
+    (by rw [Finset.mem_Icc] at hm; omega)
+  have hcl m (hm : m ∈ Finset.Icc 1 n) : cl m hm ∈ c.ls ∧ !₂[(m : ℝ), (n + 1 - m : ℕ)] ∈ cl m hm :=
+    Classical.choose_spec (c.cover m (n + 1 - m)
+      (by rw [Finset.mem_Icc] at hm; omega)
+      (by rw [Finset.mem_Icc] at hm; omega)
+      (by rw [Finset.mem_Icc] at hm; omega))
+  obtain ⟨m, hm, rfl⟩ := Finset.surj_on_of_inj_on_of_card_le (s := Finset.Icc 1 n) (t := c.ls)
+    cl (fun m hm => (hcl m hm).1)
+    (fun m₁ m₂ hm₁ hm₂ h => by
+      simp only [Finset.mem_Icc] at *
+      have hm₁'' := Finset.mem_Icc.mp hm₁
+      have hm₂'' := Finset.mem_Icc.mp hm₂
+      by_contra! hm₁m₂
+      apply hdiag
+      have hm₁' := hcl m₁ hm₁''
+      have hm₂' := hcl m₂ hm₂''
+      rw [← h] at hm₂'
+      convert (hcl m₁ hm₁'').1
+      rw [(cl m₁ hm₁).eq_line_of_mem_mem_finrank hm₁'.2 hm₂'.2 (point_ne_of_x_ne (by norm_cast))
+        (c.rank _ hm₁'.1), line_eq_iff]
+      rw [Nat.cast_sub (by omega), Nat.cast_sub (by omega)]
+      push_cast
+      grind)
+    (by simp [c.card]) l hl
+  have := (hcl m hm).2
+  rw [Finset.mem_Icc] at hm
+  rw [Nat.cast_sub (by omega), Nat.cast_add, Nat.cast_one] at this
+  refine ⟨m, hm.1, hm.2, this⟩
+
+lemma no_config_without_vert_horiz_diag_contr_line {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
+    (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
+    (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls)
+    (hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∉ c.ls)
+    {m} (hm : 1 < m) (hm' : m ≤ n)
+    {l} (hl : l ∈ c.ls) (meml : !₂[1, (m : ℝ)] ∈ l) (hQ : !₂[(n : ℝ) + 1, 1] ∉ l) :
+    False := by
+  -- find point `∈ l` on bottom line
+  obtain ⟨m₂, ltm₂, m₂lt, hm₂⟩ : ∃ m₂ : ℕ, 1 < m₂ ∧ m₂ ≤ n ∧ !₂[(m₂ : ℝ), 1] ∈ l := by
+    obtain ⟨m, lem, mle, hm⟩ := get_horiz_point_of_no_horiz_line c hhoriz hl
+    by_cases h : m = 1
+    · subst h
+      absurd hvert
+      obtain rfl := l.eq_line_of_mem_mem_finrank meml hm (point_ne_of_y_ne (by norm_cast; omega))
+        (c.rank l hl)
+      convert hl using 1
+      rw [line_eq_iff]
+      simp
+    · by_cases h : m = n + 1
+      · absurd hQ
+        rwa [h, Nat.cast_add, Nat.cast_one] at hm
+      · exact ⟨m, by omega, by omega, hm⟩
+  -- find point `∈ l` on main diag
+  obtain ⟨m₃, ltm₃, m₃lt, hm₃⟩ : ∃ m₃ : ℕ, 1 < m₃ ∧ m₃ ≤ n ∧ !₂[(m₃ : ℝ), n + 2 - m₃] ∈ l := by
+    norm_cast at hdiag
+    obtain ⟨m, lem, mle, hm⟩ := get_diag_point_of_no_diag_line c hdiag hl
+    by_cases h : m = 1
+    · subst h
+      absurd hvert
+      obtain rfl := l.eq_line_of_mem_mem_finrank meml hm
+        (point_ne_of_y_ne (by norm_cast; rw [Int.subNatNat_of_le (by omega)]; simp; omega))
+        (c.rank l hl)
+      convert hl using 1
+      rw [line_eq_iff]
+      simp
+    · by_cases h : m = n + 1
+      · absurd hQ
+        rwa [← h, add_sub_cancel_left, h, Nat.cast_add, Nat.cast_one] at hm
+      · rw [Nat.cast_add, Nat.cast_one] at hm
+        ring_nf at hm ⊢
+        exact ⟨m, by omega, by omega, hm⟩
+  apply c.not_rank_2 hl
+  -- This should be solvable by `grind` or so
+  apply l.finrank_eq_two_of_ne hm₃ meml hm₂
+  simp
+  rw [mul_comm, ← div_eq_div_iff
+    (by norm_cast; rw [Int.subNatNat_of_le (by omega)]; simp; omega)
+    (by norm_cast; rw [Int.subNatNat_of_le (by omega)]; simp; omega)]
+  apply ne_of_lt
+  apply lt_of_lt_of_le (b := (1 - (m : ℝ)) / n)
+  · -- the line from `!₂[1, ↑m]` to `!₂[↑m₂, 1]` lies below the line `!₂[1, ↑m]` to `!₂[↑n + 1, 1]`
+    rw [div_lt_div_iff₀ (by simpa) (by simp; omega)]
+    apply mul_lt_mul_of_neg_left _ (by simpa)
+    norm_cast
+    rw [Int.subNatNat_of_le (by omega)]
+    simp
+    omega
+  · -- the line from `!₂[1, ↑m]` to `!₂[↑m₃, ↑n + 2 - ↑m₃]` lies above the line `!₂[1, ↑m]`
+    -- to `!₂[↑n + 1, 1]`
+    rw [div_le_div_iff₀ (by simp; omega) (by simp; omega)]
+    ring_nf
+    apply le_of_sub_nonneg
+    ring_nf
+    calc 0 ≤ (((n : ℝ) + 1) - m) * (((n : ℝ) + 1) - m₃) := by
+          apply mul_nonneg <;> { norm_cast; rw [Int.subNatNat_of_le (by omega)]; simp }
+         _ = _ := by ring
+
+lemma no_config_without_vert_horiz_diag {n k} (hn : 3 ≤ n) (c : Config (n + 1) k)
+    (hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∉ c.ls)
+    (hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∉ c.ls)
+    (hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∉ c.ls) : False := by
+  have ⟨l₁, hl₁, meml₁⟩ := c.cover 1 n
+  by_cases hQ : !₂[(n : ℝ) + 1, 1] ∈ l₁
+  · have ⟨l₂, hl₂, meml₂⟩ := c.cover 1 2
+    norm_cast at meml₂ meml₁
+    apply no_config_without_vert_horiz_diag_contr_line hn c hvert hhoriz hdiag
+      (by grind) (by grind) hl₂ meml₂
+    intro h
+    obtain rfl := Finset.right_unique_of_left_total_of_left_unique
+      (Finset.Icc 1 (n + 1)) c.ls
+      (by simp [c.card]) (fun m l => !₂[(m : ℝ), 1] ∈ l)
+      (fun m₁ hm₁ => by
+        rw [Finset.mem_Icc] at hm₁
+        have := c.cover m₁ 1 (Nat.lt_of_add_one_le hm₁.1) Nat.one_pos (Nat.succ_le_succ hm₁.2)
+        simpa using this)
+      (fun m₁ hm₁ m₂ hm₂ l hl hm₁l hm₂l => by
+        by_contra! h
+        apply hhoriz
+        convert hl
+        rw [l.eq_line_of_mem_mem_finrank hm₁l hm₂l (point_ne_of_x_ne (by simpa)) (c.rank l hl),
+          line_eq_iff]
+        simp)
+      (n + 1) (by simp) l₁ hl₁ l₂ hl₂ (by simp [hQ]) (by push_cast; assumption)
+    apply c.not_rank_2 hl₁ <| l₁.finrank_eq_two_of_ne h meml₁ meml₂ _
+    simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, Matrix.cons_val_one,
+      Matrix.cons_val_fin_one, sub_self, mul_zero, ne_eq, mul_eq_zero, sub_eq_zero,
+      not_or]
+    norm_cast
+    omega
+  · norm_cast at meml₁
+    exact no_config_without_vert_horiz_diag_contr_line hn c hvert hhoriz hdiag
+      (by grind) (by grind) hl₁ meml₁ hQ
+
+theorem result (n : Set.Ici 3) :
+    {k | ∃ lines : Finset (AffineSubspace ℝ (EuclideanSpace ℝ (Fin 2))),
+      have : DecidablePred Sunny := Classical.decPred _;
+      #lines = n ∧ (∀ l ∈ lines, finrank ℝ l.direction = 1) ∧
+      (∀ a b : ℕ, 0 < a → 0 < b → a + b ≤ (n : ℕ) + 1 → ∃ l ∈ lines, !₂[(a : ℝ), b] ∈ l) ∧
+      #{l ∈ lines | Sunny l} = k} = answer n := by
+  induction' n.1, n.2 using Nat.le_induction with n hn ih
+  · simp only [Nat.reduceAdd, answer]
+    ext k; constructor
+    · rintro ⟨ls, cardls, rankls, linesls, rfl⟩
+      have hk : #({l ∈ ls | Sunny l}) < 4 := by
+        apply lt_of_le_of_lt (Finset.card_filter_le ls Sunny)
+        rw [cardls]
+        norm_num
+      have hk' := fun h => no_config_3_2 ⟨ls, cardls, rankls, linesls, h⟩
+      interval_cases #({l ∈ ls | Sunny l}) <;> first | contradiction | decide
+    · intro h
+      rcases n with ⟨n, hn⟩; simp at hn
+      rcases h with (rfl|(rfl|rfl))
+      · apply zero_mem3
+      · apply one_mem3
+      · apply three_mem3
+  · simp [answer] at ih ⊢
+    ext k
+    constructor
+    · intro h
+      simp only [Set.mem_setOf_eq] at h
+      rcases h with ⟨ls, card, rank, cover, sunny⟩
+      let c : Config (n + 1) k := ⟨ls, card, rank, cover, sunny⟩
+      simp only [← ih, Set.mem_setOf_eq]
+      by_cases hvert : line[ℝ, !₂[1, 0], !₂[1, 1]] ∈ c.ls
+      · have c := Config.restrict_vert c hvert
+        exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
+      · by_cases hhoriz : line[ℝ, !₂[0, 1], !₂[1, 1]] ∈ c.ls
+        · have c := Config.restrict_horiz c hhoriz
+          exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
+        · by_cases hdiag : line[ℝ, !₂[(n : ℝ) + 1, 1], !₂[1, (n : ℝ) + 1]] ∈ c.ls
+          · have c := Config.restrict_diag hn c hdiag
+            exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
+          · exfalso
+            exact no_config_without_vert_horiz_diag hn c hvert hhoriz hdiag
+    · intro h
+      rw [← ih] at h
+      simp only [Set.mem_setOf_eq] at h ⊢
+      obtain ⟨ls, card, rank, cover, sunny⟩ := h
+      let c := Config.extend hn ⟨ls, card, rank, cover, sunny⟩
+      exact ⟨c.ls, c.card, c.rank, @c.cover, c.sunny⟩
+
+end IMO2025P1
