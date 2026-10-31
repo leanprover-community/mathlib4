@@ -29,6 +29,8 @@ and therefore `bcd = 1`. They also satisfy the torsion relations
 * `Grigorchuk.st n` is the stabilizer in `G` of the vertices of length `n`.
   The index `[G : St_G(1)]` is `2`, and in general
   `[G : St_G(n)] ≤ 2^(2^n - 1)`.
+* `Grigorchuk.psi` is the restriction homomorphism `st 1 →* G × G`. Both
+  projections of its image onto `G` are surjective.
 
 ## References
 
@@ -669,5 +671,381 @@ lemma st_index_le_stabilizerLevel_index (n : ℕ) :
 /-- The index of the level-`n` stabilizer in `G` is at most `2^(2^n - 1)`. -/
 lemma st_index_le (n : ℕ) : (st n).index ≤ 2 ^ (2 ^ n - 1) :=
   (st_index_le_stabilizerLevel_index n).trans (stabilizerLevel_index_le n)
+
+lemma restrict_one (i : Fin 2) : restrict (1 : TreeAut) i = 1 :=
+  TreeAut.ext fun w => by simp [restrict_apply]
+
+lemma firstLetter_eq_of_mem_stabilizerLevel_one {f : TreeAut} (hf : f ∈ stabilizerLevel 1)
+    (i : Fin 2) : firstLetter f i = i := by
+  have : f [i] = [i] := hf [i] (by simp)
+  rw [apply_singleton] at this
+  exact (List.cons_eq_cons.mp this).1
+
+lemma apply_cons_of_mem_stabilizerLevel_one {f : TreeAut} (hf : f ∈ stabilizerLevel 1)
+    (i : Fin 2) (w : InfiniteBinaryTree) : f (i :: w) = i :: restrict f i w := by
+  rw [apply_cons, firstLetter_eq_of_mem_stabilizerLevel_one hf]
+  rfl
+
+lemma restrict_mul {f g : TreeAut} (hf : f ∈ stabilizerLevel 1) (hg : g ∈ stabilizerLevel 1)
+    (i : Fin 2) : restrict (f * g) i = restrict f i * restrict g i :=
+  TreeAut.ext fun w => by
+    have hfg : (f * g) (i :: w) = i :: restrict f i (restrict g i w) := by
+      rw [mul_apply, apply_cons_of_mem_stabilizerLevel_one hg,
+        apply_cons_of_mem_stabilizerLevel_one hf]
+    simpa [restrict_apply, mul_apply] using congrArg List.tail hfg
+
+lemma restrict_inv {f : TreeAut} (hf : f ∈ stabilizerLevel 1) (i : Fin 2) :
+    restrict f⁻¹ i = (restrict f i)⁻¹ := by
+  rw [eq_inv_iff_mul_eq_one, ← restrict_mul (inv_mem hf) hf, inv_mul_cancel, restrict_one]
+
+lemma a_mul_b_mul_a_eq_phi : a * b * a = phi c a := by
+  rw [b_eq_phi, a_mul_phi_mul_a]
+
+lemma a_mul_c_mul_a_eq_phi : a * c * a = phi d a := by
+  rw [c_eq_phi, a_mul_phi_mul_a]
+
+lemma a_mul_d_mul_a_eq_phi : a * d * a = phi b 1 := by
+  rw [d_eq_phi, a_mul_phi_mul_a]
+
+lemma a_conj_a_mul_b_mul_a : a * (a * b * a) * a = b := by
+  have h : a * (a * b * a) * a = a * a * b * (a * a) := by simp only [mul_assoc]
+  rw [h]
+  simp only [a_mul_self, one_mul, mul_one]
+
+lemma a_conj_a_mul_c_mul_a : a * (a * c * a) * a = c := by
+  have h : a * (a * c * a) * a = a * a * c * (a * a) := by simp only [mul_assoc]
+  rw [h]
+  simp only [a_mul_self, one_mul, mul_one]
+
+lemma a_conj_a_mul_d_mul_a : a * (a * d * a) * a = d := by
+  have h : a * (a * d * a) * a = a * a * d * (a * a) := by simp only [mul_assoc]
+  rw [h]
+  simp only [a_mul_self, one_mul, mul_one]
+
+lemma restrict_b_zero : restrict b 0 = a := by
+  rw [b_eq_phi, restrict_phi_zero]
+
+lemma restrict_b_one : restrict b 1 = c := by
+  rw [b_eq_phi, restrict_phi_one]
+
+lemma restrict_c_zero : restrict c 0 = a := by
+  rw [c_eq_phi, restrict_phi_zero]
+
+lemma restrict_c_one : restrict c 1 = d := by
+  rw [c_eq_phi, restrict_phi_one]
+
+lemma restrict_d_zero : restrict d 0 = 1 := by
+  rw [d_eq_phi, restrict_phi_zero]
+
+lemma restrict_d_one : restrict d 1 = b := by
+  rw [d_eq_phi, restrict_phi_one]
+
+lemma restrict_aba_zero : restrict (a * b * a) 0 = c := by
+  rw [a_mul_b_mul_a_eq_phi, restrict_phi_zero]
+
+lemma restrict_aba_one : restrict (a * b * a) 1 = a := by
+  rw [a_mul_b_mul_a_eq_phi, restrict_phi_one]
+
+lemma restrict_aca_zero : restrict (a * c * a) 0 = d := by
+  rw [a_mul_c_mul_a_eq_phi, restrict_phi_zero]
+
+lemma restrict_aca_one : restrict (a * c * a) 1 = a := by
+  rw [a_mul_c_mul_a_eq_phi, restrict_phi_one]
+
+lemma restrict_ada_zero : restrict (a * d * a) 0 = b := by
+  rw [a_mul_d_mul_a_eq_phi, restrict_phi_zero]
+
+lemma restrict_ada_one : restrict (a * d * a) 1 = 1 := by
+  rw [a_mul_d_mul_a_eq_phi, restrict_phi_one]
+
+/-- Schreier generators of `st 1` inside `G`. -/
+def stOneGenerators : Set TreeAut := {b, c, d, a * b * a, a * c * a, a * d * a}
+
+lemma aba_mem_G : a * b * a ∈ G :=
+  mul_mem (mul_mem a_mem_G b_mem_G) a_mem_G
+
+lemma aca_mem_G : a * c * a ∈ G :=
+  mul_mem (mul_mem a_mem_G c_mem_G) a_mem_G
+
+lemma ada_mem_G : a * d * a ∈ G :=
+  mul_mem (mul_mem a_mem_G d_mem_G) a_mem_G
+
+lemma aba_mem_stabilizerLevel_one : a * b * a ∈ stabilizerLevel 1 := by
+  rw [a_mul_b_mul_a_eq_phi, ← activity_eq_zero_iff_mem_stabilizerLevel_one, activity_nil]
+  exact activity_phi c a
+
+lemma aca_mem_stabilizerLevel_one : a * c * a ∈ stabilizerLevel 1 := by
+  rw [a_mul_c_mul_a_eq_phi, ← activity_eq_zero_iff_mem_stabilizerLevel_one, activity_nil]
+  exact activity_phi d a
+
+lemma ada_mem_stabilizerLevel_one : a * d * a ∈ stabilizerLevel 1 := by
+  rw [a_mul_d_mul_a_eq_phi, ← activity_eq_zero_iff_mem_stabilizerLevel_one, activity_nil]
+  exact activity_phi b 1
+
+lemma stOneGenerators_subset_G : stOneGenerators ⊆ G := by
+  intro x hx
+  simp only [stOneGenerators, Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl
+  · exact b_mem_G
+  · exact c_mem_G
+  · exact d_mem_G
+  · exact aba_mem_G
+  · exact aca_mem_G
+  · exact ada_mem_G
+
+lemma stOneGenerators_subset_stabilizerLevel_one : stOneGenerators ⊆ stabilizerLevel 1 := by
+  intro x hx
+  simp only [stOneGenerators, Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl
+  · exact b_mem_stabilizerLevel_one
+  · exact c_mem_stabilizerLevel_one
+  · exact d_mem_stabilizerLevel_one
+  · exact aba_mem_stabilizerLevel_one
+  · exact aca_mem_stabilizerLevel_one
+  · exact ada_mem_stabilizerLevel_one
+
+lemma closure_stOneGenerators_le_G : Subgroup.closure stOneGenerators ≤ G :=
+  (Subgroup.closure_le _).2 stOneGenerators_subset_G
+
+lemma closure_stOneGenerators_le_stabilizerLevel_one :
+    Subgroup.closure stOneGenerators ≤ stabilizerLevel 1 :=
+  (Subgroup.closure_le _).2 stOneGenerators_subset_stabilizerLevel_one
+
+lemma conj_a_mem_stOneGenerators {x : TreeAut} (hx : x ∈ stOneGenerators) :
+    a * x * a ∈ stOneGenerators := by
+  simp only [stOneGenerators, Set.mem_insert_iff, Set.mem_singleton_iff] at hx ⊢
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl
+  · exact .inr <| .inr <| .inr <| .inl rfl
+  · exact .inr <| .inr <| .inr <| .inr <| .inl rfl
+  · exact .inr <| .inr <| .inr <| .inr <| .inr rfl
+  · rw [a_conj_a_mul_b_mul_a]; exact .inl rfl
+  · rw [a_conj_a_mul_c_mul_a]; exact .inr <| .inl rfl
+  · rw [a_conj_a_mul_d_mul_a]; exact .inr <| .inr <| .inl rfl
+
+lemma conj_a_mem_closure_stOneGenerators {x : TreeAut}
+    (hx : x ∈ Subgroup.closure stOneGenerators) :
+    a * x * a ∈ Subgroup.closure stOneGenerators := by
+  induction hx using Subgroup.closure_induction with
+  | mem y hy =>
+    exact Subgroup.subset_closure (conj_a_mem_stOneGenerators hy)
+  | one =>
+    simpa only [mul_one, a_mul_self] using
+      Subgroup.one_mem (Subgroup.closure stOneGenerators)
+  | mul y z _ _ ihy ihz =>
+    have : a * (y * z) * a = (a * y * a) * (a * z * a) := by
+      calc
+        a * (y * z) * a = (a * y) * (z * a) := by simp only [mul_assoc]
+        _ = (a * y) * (1 * (z * a)) := by rw [one_mul]
+        _ = (a * y) * ((a * a) * (z * a)) := by rw [a_mul_self]
+        _ = (a * y * a) * (a * z * a) := by simp only [mul_assoc]
+    rw [this]
+    exact mul_mem ihy ihz
+  | inv y _ ihy =>
+    have : a * y⁻¹ * a = (a * y * a)⁻¹ := by
+      simp only [mul_inv_rev, mul_assoc, a_inv]
+    rw [this]
+    exact inv_mem ihy
+
+lemma mem_closure_insert_a {x : TreeAut} (hx : x ∈ Subgroup.closure (insert a stOneGenerators)) :
+    x ∈ Subgroup.closure stOneGenerators ∨
+      ∃ k ∈ Subgroup.closure stOneGenerators, x = a * k := by
+  induction hx using Subgroup.closure_induction with
+  | mem y hy =>
+    simp only [Set.mem_insert_iff] at hy
+    rcases hy with rfl | hy
+    · exact .inr ⟨1, Subgroup.one_mem _, (mul_one a).symm⟩
+    · exact .inl (Subgroup.subset_closure hy)
+  | one => exact .inl (Subgroup.one_mem _)
+  | mul y z _ _ ihy ihz =>
+    rcases ihy with hyK | ⟨k, hk, rfl⟩ <;> rcases ihz with hzK | ⟨l, hl, rfl⟩
+    · exact .inl (mul_mem hyK hzK)
+    · refine .inr ⟨a * y * a * l, mul_mem (conj_a_mem_closure_stOneGenerators hyK) hl, ?_⟩
+      simp [← mul_assoc]
+    · exact .inr ⟨k * z, mul_mem hk hzK, mul_assoc a k z⟩
+    · refine .inl ?_
+      have : (a * k) * (a * l) = (a * k * a) * l := by simp only [mul_assoc]
+      rw [this]
+      exact mul_mem (conj_a_mem_closure_stOneGenerators hk) hl
+  | inv y _ ihy =>
+    rcases ihy with hyK | ⟨k, hk, rfl⟩
+    · exact .inl (inv_mem hyK)
+    · refine .inr ⟨a * k⁻¹ * a, conj_a_mem_closure_stOneGenerators (inv_mem hk), ?_⟩
+      calc
+        (a * k)⁻¹ = k⁻¹ * a⁻¹ := mul_inv_rev a k
+        _ = k⁻¹ * a := by rw [a_inv]
+        _ = (a * a) * k⁻¹ * a := by rw [a_mul_self, one_mul]
+        _ = a * (a * k⁻¹ * a) := by simp only [mul_assoc]
+
+lemma generators_subset_insert_a : generators ⊆ insert a stOneGenerators := by
+  intro x hx
+  simp only [generators, stOneGenerators, Set.mem_insert_iff, Set.mem_singleton_iff] at hx ⊢
+  rcases hx with rfl | rfl | rfl | rfl <;> simp
+
+lemma G_eq_closure_insert_a : G = Subgroup.closure (insert a stOneGenerators) := by
+  refine le_antisymm (Subgroup.closure_mono generators_subset_insert_a) ?_
+  rw [Subgroup.closure_le]
+  intro x hx
+  simp only [Set.mem_insert_iff] at hx
+  rcases hx with rfl | hx
+  · exact a_mem_G
+  · exact closure_stOneGenerators_le_G (Subgroup.subset_closure hx)
+
+lemma G_inf_stabilizerLevel_one_eq :
+    G ⊓ stabilizerLevel 1 = Subgroup.closure stOneGenerators := by
+  refine le_antisymm ?_ (le_inf closure_stOneGenerators_le_G
+    closure_stOneGenerators_le_stabilizerLevel_one)
+  intro x ⟨hxG, hxS⟩
+  have hx' : x ∈ Subgroup.closure (insert a stOneGenerators) := by
+    rwa [← G_eq_closure_insert_a]
+  rcases mem_closure_insert_a hx' with hxK | ⟨k, hk, rfl⟩
+  · exact hxK
+  · have hkS : k ∈ stabilizerLevel 1 :=
+      closure_stOneGenerators_le_stabilizerLevel_one hk
+    have h0 : activity (a * k) [] = 0 :=
+      (activity_eq_zero_iff_mem_stabilizerLevel_one).mpr hxS
+    have h1 : activity (a * k) [] = 1 := by
+      rw [activity_mul, activity_a, (activity_eq_zero_iff_mem_stabilizerLevel_one).mpr hkS]
+      rfl
+    exact absurd (h0.symm.trans h1) Fin.zero_ne_one
+
+lemma restrict_mem_G_of_mem_closure {x : TreeAut} (hx : x ∈ Subgroup.closure stOneGenerators) :
+    restrict x 0 ∈ G ∧ restrict x 1 ∈ G := by
+  induction hx using Subgroup.closure_induction with
+  | mem y hy =>
+    simp only [stOneGenerators, Set.mem_insert_iff, Set.mem_singleton_iff] at hy
+    rcases hy with rfl | rfl | rfl | rfl | rfl | rfl
+    · exact ⟨restrict_b_zero ▸ a_mem_G, restrict_b_one ▸ c_mem_G⟩
+    · exact ⟨restrict_c_zero ▸ a_mem_G, restrict_c_one ▸ d_mem_G⟩
+    · exact ⟨restrict_d_zero ▸ Subgroup.one_mem _, restrict_d_one ▸ b_mem_G⟩
+    · exact ⟨restrict_aba_zero ▸ c_mem_G, restrict_aba_one ▸ a_mem_G⟩
+    · exact ⟨restrict_aca_zero ▸ d_mem_G, restrict_aca_one ▸ a_mem_G⟩
+    · exact ⟨restrict_ada_zero ▸ b_mem_G, restrict_ada_one ▸ Subgroup.one_mem _⟩
+  | one =>
+    simp [restrict_one]
+  | mul y z hy hz ihy ihz =>
+    have hyS := closure_stOneGenerators_le_stabilizerLevel_one hy
+    have hzS := closure_stOneGenerators_le_stabilizerLevel_one hz
+    rw [restrict_mul hyS hzS, restrict_mul hyS hzS]
+    exact ⟨mul_mem ihy.1 ihz.1, mul_mem ihy.2 ihz.2⟩
+  | inv y hy ihy =>
+    have hyS := closure_stOneGenerators_le_stabilizerLevel_one hy
+    rw [restrict_inv hyS, restrict_inv hyS]
+    exact ⟨inv_mem ihy.1, inv_mem ihy.2⟩
+
+lemma coe_mem_closure_stOneGenerators (h : st 1) :
+    (h : TreeAut) ∈ Subgroup.closure stOneGenerators := by
+  have : (h : TreeAut) ∈ G ⊓ stabilizerLevel 1 := ⟨h.1.property, h.property⟩
+  rwa [G_inf_stabilizerLevel_one_eq] at this
+
+lemma restrict_mem_G (h : st 1) (i : Fin 2) : restrict (h : TreeAut) i ∈ G := by
+  have := restrict_mem_G_of_mem_closure (coe_mem_closure_stOneGenerators h)
+  rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi, this]
+
+/-- Restriction of an element of `st 1` to the two subtrees of the root. -/
+def psi : st 1 →* G × G where
+  toFun h := (⟨restrict (h : TreeAut) 0, restrict_mem_G h 0⟩,
+    ⟨restrict (h : TreeAut) 1, restrict_mem_G h 1⟩)
+  map_one' := by
+    apply Prod.ext <;> apply Subtype.ext <;> simp [restrict_one]
+  map_mul' h₁ h₂ := by
+    have h₁S : (h₁ : TreeAut) ∈ stabilizerLevel 1 := h₁.property
+    have h₂S : (h₂ : TreeAut) ∈ stabilizerLevel 1 := h₂.property
+    apply Prod.ext <;> apply Subtype.ext
+    · exact restrict_mul h₁S h₂S 0
+    · exact restrict_mul h₁S h₂S 1
+
+lemma aba_mem_st_one : (⟨a * b * a, aba_mem_G⟩ : G) ∈ st 1 :=
+  aba_mem_stabilizerLevel_one
+
+lemma aca_mem_st_one : (⟨a * c * a, aca_mem_G⟩ : G) ∈ st 1 :=
+  aca_mem_stabilizerLevel_one
+
+lemma ada_mem_st_one : (⟨a * d * a, ada_mem_G⟩ : G) ∈ st 1 :=
+  ada_mem_stabilizerLevel_one
+
+lemma psi_b : psi ⟨⟨b, b_mem_G⟩, b_mem_st_one⟩ = (⟨a, a_mem_G⟩, ⟨c, c_mem_G⟩) := by
+  apply Prod.ext <;> apply Subtype.ext
+  · exact restrict_b_zero
+  · exact restrict_b_one
+
+lemma psi_c : psi ⟨⟨c, c_mem_G⟩, c_mem_st_one⟩ = (⟨a, a_mem_G⟩, ⟨d, d_mem_G⟩) := by
+  apply Prod.ext <;> apply Subtype.ext
+  · exact restrict_c_zero
+  · exact restrict_c_one
+
+lemma psi_d : psi ⟨⟨d, d_mem_G⟩, d_mem_st_one⟩ = (⟨1, Subgroup.one_mem _⟩, ⟨b, b_mem_G⟩) := by
+  apply Prod.ext <;> apply Subtype.ext
+  · exact restrict_d_zero
+  · exact restrict_d_one
+
+lemma psi_aba : psi ⟨⟨a * b * a, aba_mem_G⟩, aba_mem_st_one⟩ = (⟨c, c_mem_G⟩, ⟨a, a_mem_G⟩) := by
+  apply Prod.ext <;> apply Subtype.ext
+  · exact restrict_aba_zero
+  · exact restrict_aba_one
+
+lemma psi_aca : psi ⟨⟨a * c * a, aca_mem_G⟩, aca_mem_st_one⟩ = (⟨d, d_mem_G⟩, ⟨a, a_mem_G⟩) := by
+  apply Prod.ext <;> apply Subtype.ext
+  · exact restrict_aca_zero
+  · exact restrict_aca_one
+
+lemma psi_ada :
+    psi ⟨⟨a * d * a, ada_mem_G⟩, ada_mem_st_one⟩ = (⟨b, b_mem_G⟩, ⟨1, Subgroup.one_mem _⟩) := by
+  apply Prod.ext <;> apply Subtype.ext
+  · exact restrict_ada_zero
+  · exact restrict_ada_one
+
+lemma psi_fst_surjective : Function.Surjective ((MonoidHom.fst G G).comp psi) := by
+  have htop : Subgroup.closure (G.subtype ⁻¹' generators) = ⊤ :=
+    Subgroup.closure_preimage_eq_top generators
+  rw [← MonoidHom.range_eq_top]
+  apply eq_top_iff.mpr
+  rw [← htop]
+  refine (Subgroup.closure_le _).2 ?_
+  intro x hx
+  simp only [generators, Set.mem_preimage, Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+  rcases hx with hx | hx | hx | hx
+  · refine ⟨⟨⟨b, b_mem_G⟩, b_mem_st_one⟩, ?_⟩
+    change (psi _).1 = x
+    rw [psi_b]
+    exact Subtype.ext hx.symm
+  · refine ⟨⟨⟨a * d * a, ada_mem_G⟩, ada_mem_st_one⟩, ?_⟩
+    change (psi _).1 = x
+    rw [psi_ada]
+    exact Subtype.ext hx.symm
+  · refine ⟨⟨⟨a * b * a, aba_mem_G⟩, aba_mem_st_one⟩, ?_⟩
+    change (psi _).1 = x
+    rw [psi_aba]
+    exact Subtype.ext hx.symm
+  · refine ⟨⟨⟨a * c * a, aca_mem_G⟩, aca_mem_st_one⟩, ?_⟩
+    change (psi _).1 = x
+    rw [psi_aca]
+    exact Subtype.ext hx.symm
+
+lemma psi_snd_surjective : Function.Surjective ((MonoidHom.snd G G).comp psi) := by
+  have htop : Subgroup.closure (G.subtype ⁻¹' generators) = ⊤ :=
+    Subgroup.closure_preimage_eq_top generators
+  rw [← MonoidHom.range_eq_top]
+  apply eq_top_iff.mpr
+  rw [← htop]
+  refine (Subgroup.closure_le _).2 ?_
+  intro x hx
+  simp only [generators, Set.mem_preimage, Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+  rcases hx with hx | hx | hx | hx
+  · refine ⟨⟨⟨a * b * a, aba_mem_G⟩, aba_mem_st_one⟩, ?_⟩
+    change (psi _).2 = x
+    rw [psi_aba]
+    exact Subtype.ext hx.symm
+  · refine ⟨⟨⟨d, d_mem_G⟩, d_mem_st_one⟩, ?_⟩
+    change (psi _).2 = x
+    rw [psi_d]
+    exact Subtype.ext hx.symm
+  · refine ⟨⟨⟨b, b_mem_G⟩, b_mem_st_one⟩, ?_⟩
+    change (psi _).2 = x
+    rw [psi_b]
+    exact Subtype.ext hx.symm
+  · refine ⟨⟨⟨c, c_mem_G⟩, c_mem_st_one⟩, ?_⟩
+    change (psi _).2 = x
+    rw [psi_c]
+    exact Subtype.ext hx.symm
 
 end Grigorchuk
