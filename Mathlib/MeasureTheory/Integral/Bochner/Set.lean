@@ -741,6 +741,23 @@ theorem setIntegral_le_integral [OrderClosedTopology E] (hfi : Integrable f μ) 
 
 variable [ClosedIciTopology E]
 
+/-- If `f` is integrable and a.e. nonpositive outside `s`, then its integral is at most its
+integral over `s`. Compare `setIntegral_le_integral`, the reverse inequality for a.e.
+nonnegative `f`. -/
+theorem integral_le_setIntegral (hs : NullMeasurableSet s μ) (hfi : Integrable f μ)
+    (hf : f ≤ᵐ[μ.restrict sᶜ] 0) : ∫ x, f x ∂μ ≤ ∫ x in s, f x ∂μ :=
+  (integral_add_compl₀ hs hfi).symm.trans_le <| add_le_of_nonpos_right <| integral_nonpos_of_ae hf
+
+/-- The integral of an integrable function `f` is at most its integral over the set `{f ≤ 0}ᶜ`
+where `f` is not nonpositive. Unlike `setIntegral_le_integral`, no sign assumption is needed. -/
+theorem integral_le_setIntegral_compl_setOf_le_zero [OrderClosedTopology E]
+    (hfi : Integrable f μ) : ∫ x, f x ∂μ ≤ ∫ x in {x | f x ≤ 0}ᶜ, f x ∂μ := by
+  have hs : NullMeasurableSet {x | f x ≤ 0} μ :=
+    hfi.1.nullMeasurableSet_le aestronglyMeasurable_const
+  refine integral_le_setIntegral hs.compl hfi ?_
+  rw [compl_compl]
+  exact ae_restrict_mem₀ hs
+
 section
 variable (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ)
 include hf hg
