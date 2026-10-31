@@ -134,7 +134,7 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
 
 with appropriate restrictions on each term.
 
-See `induction_horner` for a variant with a constant base case.
+See `recOnHorner_const` for a variant with a constant base case.
 -/
 @[elab_as_elim]
 noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
@@ -156,9 +156,7 @@ noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
           else MX (divX p) hpX0 (recOnHorner _ M0 MC MX))
 termination_by p.degree
 
--- TODO : generalise to Sort-valued motives
-
-/-- A property holds for all polynomials over a semiring `R` if it holds for
+/-- A Sort-valued induction principle for polynomials over a semiring `R`, with cases
 * `a`, with `a ∈ R`,
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 * `p * X`, with `p ∈ R[X]`,
@@ -168,12 +166,15 @@ with appropriate restrictions on each term.
 See `recOnHorner` for a variant with a zero base case.
 -/
 @[elab_as_elim]
-theorem induction_horner {motive : R[X] → Prop}
+def recOnHorner_const {motive : R[X] → Sort*}
     (hC : ∀ a, motive (C a))
     (ha : ∀ p a, (hp : p.coeff 0 = 0) → (hdeg : 0 < p.natDegree) → (ha : a ≠ 0) →
       (ih : motive p) → motive (p + C a))
     (hX : ∀ p, (hp : p ≠ 0) → (ih : motive p) → motive (p * X)) (p : R[X]) : motive p :=
-  recOnHorner p (by simpa using hC 0) (by grind [Polynomial.eq_C_of_natDegree_eq_zero]) hX
+  recOnHorner p (C_0 (R := R) ▸ hC 0)
+    (fun p a hp ha' ih ↦ if hdeg : 0 < p.natDegree then ha p a hp hdeg ha' ih else
+      (show p = 0 by grind [=> eq_C_of_natDegree_eq_zero]) ▸ ((zero_add (C a)).symm ▸ hC a))
+    hX
 
 -- TODO : better names for next two lemmas, and fix their statements to work with `induction`
 
