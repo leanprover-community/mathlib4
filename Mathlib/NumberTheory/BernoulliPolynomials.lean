@@ -128,13 +128,9 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   simp only [add_tsub_cancel_left, zero_add, map_add]
   simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
   conv_lhs =>
-    apply_congr
-    · skip
-    · conv =>
-      apply_congr
-      · skip
-      · rw [← Nat.cast_mul, choose_mul (le_add_right _ _), Nat.cast_mul, add_tsub_cancel_left,
-          mul_assoc, mul_comm, ← smul_eq_mul, ← smul_monomial]
+    enter [2, x, 2, y]
+    rw [← Nat.cast_mul, choose_mul (le_add_right _ _), Nat.cast_mul, add_tsub_cancel_left,
+      mul_assoc, mul_comm, ← smul_eq_mul, ← smul_monomial]
   simp_rw [← sum_smul, Nat.sub_zero]
   rw [sum_range_succ_comm]
   simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
@@ -185,11 +181,10 @@ theorem bernoulli_comp_one_add_X (n : ℕ) :
   rw [← smul_right_inj (show d + 2 ≠ 0 by positivity), ← smul_comp, smul_add]
   simp only [bernoulli_eq_sub_sum, sub_comp, sum_comp, add_assoc, one_add_one_eq_two, smul_smul]
   conv_lhs =>
-    congr
+    arg 2
+    apply_congr
     · skip
-    · apply_congr
-      · skip
-      · rw [smul_comp, hd _ (mem_range.1 (by assumption))]
+    · rw [smul_comp, hd _ (mem_range.1 (by assumption))]
   simp_rw [smul_add, sum_add_distrib, sub_add, sub_add_eq_sub_sub_swap, sub_sub_eq_add_sub]
   congr 1
   rw [show ∀ a b c d : ℚ[X], a - b = c + d ↔ a - c = b + d by grind]
