@@ -400,13 +400,13 @@ theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x �
   simpa [mem_ball] using exists_between' h
 
 theorem ball_eq_ball (ε : ℝ) (x : α) :
-    UniformSpace.ball x { p | dist p.2 p.1 < ε } = Metric.ball x ε :=
-  rfl
+    SetRel.ball {p | dist p.2 p.1 < ε} x = Metric.ball x ε := by
+  ext
+  simp [dist_comm, SetRel.ball]
 
 theorem ball_eq_ball' (ε : ℝ) (x : α) :
-    UniformSpace.ball x { p | dist p.1 p.2 < ε } = Metric.ball x ε := by
-  ext
-  simp [dist_comm, UniformSpace.ball]
+    SetRel.ball {p | dist p.1 p.2 < ε} x = Metric.ball x ε :=
+  rfl
 
 @[simp]
 theorem iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
@@ -553,6 +553,7 @@ theorem closedBall_subset_closedBall' (h : ε₁ + dist x y ≤ ε₂) :
     _ ≤ ε₁ + dist x y := by gcongr; exact hz
     _ ≤ ε₂ := h
 
+@[gcongr strict]
 theorem closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
   fun y (yh : dist y x ≤ ε₁) => lt_of_le_of_lt yh h
 

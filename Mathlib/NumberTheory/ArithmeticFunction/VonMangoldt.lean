@@ -132,8 +132,8 @@ theorem moebius_mul_log_eq_vonMangoldt : (μ : ArithmeticFunction ℝ) * log = �
   rw [mul_comm]; simp
 
 theorem sum_moebius_mul_log_eq {n : ℕ} : (∑ d ∈ n.divisors, (μ d : ℝ) * log d) = -Λ n := by
-  simp only [← log_mul_moebius_eq_vonMangoldt, mul_comm log, mul_apply, log_apply, intCoe_apply, ←
-    Finset.sum_neg_distrib, neg_mul_eq_mul_neg]
+  simp only [← log_mul_moebius_eq_vonMangoldt, mul_comm log, ArithmeticFunction.mul_apply,
+    log_apply, intCoe_apply, ← Finset.sum_neg_distrib, neg_mul_eq_mul_neg]
   rw [sum_divisorsAntidiagonal fun i j => (μ i : ℝ) * -Real.log j]
   have : (∑ i ∈ n.divisors, (μ i : ℝ) * -Real.log (n / i : ℕ)) =
       ∑ i ∈ n.divisors, ((μ i : ℝ) * Real.log i - μ i * Real.log n) := by

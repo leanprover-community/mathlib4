@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.CauSeq.Basic
 public import Mathlib.Algebra.Ring.Action.Rat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cauchy completion
 
