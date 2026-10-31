@@ -265,6 +265,9 @@ theorem nnNorm_starProjection_eq_infNndist
     ‖U.starProjection y‖₊ = Metric.infNndist y Uᗮ := by
   simp [← nndist_starProjection_eq_infNndist, nndist_eq_nnNorm]
 
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_starProjection_eq_infNndist := nnNorm_starProjection_eq_infNndist
+
 /-- The extended norm of the orthogonal projection of `y` onto `U` equals the extended distance
 to the orthogonal complement of `U` as given by `Metric.infEDist`. -/
 theorem enorm_starProjection_eq_infEDist

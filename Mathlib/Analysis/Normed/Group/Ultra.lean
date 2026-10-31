@@ -72,7 +72,8 @@ lemma nnNorm_mul_le_max (x y : S) :
     ‖x * y‖₊ ≤ max ‖x‖₊ ‖y‖₊ :=
   norm_mul_le_max _ _
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_mul_le_max := nnNorm_mul_le_max
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_mul_le_max := nnNorm_mul_le_max
 
 @[to_additive]
 lemma isUltrametricDist_of_forall_nnNorm_mul_le_max_nnNorm
@@ -118,12 +119,15 @@ lemma nnNorm_mul_eq_max_of_nnNorm_ne_nnNorm
   simpa only [← NNReal.coe_inj, NNReal.coe_max] using!
     norm_mul_eq_max_of_norm_ne_norm (NNReal.coe_injective.ne h)
 
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm := nnNorm_mul_eq_max_of_nnNorm_ne_nnNorm
+
 @[to_additive]
 lemma nnNorm_eq_of_mul_nnNorm_lt_max {x y : S} (h : ‖x * y‖₊ < max ‖x‖₊ ‖y‖₊) :
     ‖x‖₊ = ‖y‖₊ :=
   not_ne_iff.mp (h.ne ∘ nnNorm_mul_eq_max_of_nnNorm_ne_nnNorm)
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
 alias nnnorm_eq_of_mul_nnnorm_lt_max := nnNorm_eq_of_mul_nnNorm_lt_max
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
@@ -139,7 +143,7 @@ lemma nnNorm_div_eq_max_of_nnNorm_div_ne_nnNorm_div (x y z : S) (h : ‖x / y‖
   simpa only [← NNReal.coe_inj, NNReal.coe_max] using!
     norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
 alias nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div := nnNorm_div_eq_max_of_nnNorm_div_ne_nnNorm_div
 
 @[to_additive]
@@ -149,7 +153,7 @@ lemma nnNorm_pow_le (x : S) (n : ℕ) :
   | zero => simp
   | succ n hn => simpa [pow_add, hn] using nnNorm_mul_le_max (x ^ n) x
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_pow_le := nnNorm_pow_le
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_pow_le := nnNorm_pow_le
 
 @[to_additive]
 lemma norm_pow_le (x : S) (n : ℕ) :
@@ -245,7 +249,7 @@ lemma _root_.Finset.nnNorm_prod_le_sup_nnNorm (s : Finset ι) (f : ι → M) :
   · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnNorm']
       using! hs.norm_prod_le_sup'_norm f
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
 alias _root_.Finset.nnnorm_prod_le_sup_nnnorm := _root_.Finset.nnNorm_prod_le_sup_nnNorm
 
 /--
@@ -258,7 +262,7 @@ lemma nnNorm_prod_le_of_forall_le {s : Finset ι} {f : ι → M} {C : ℝ≥0}
     (hC : ∀ i ∈ s, ‖f i‖₊ ≤ C) : ‖∏ i ∈ s, f i‖₊ ≤ C :=
   (s.nnNorm_prod_le_sup_nnNorm f).trans <| Finset.sup_le hC
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
 alias nnnorm_prod_le_of_forall_le := nnNorm_prod_le_of_forall_le
 
 /--
@@ -351,7 +355,7 @@ lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := b
 lemma nnNorm_tprod_le (f : ι → M) : ‖∏' i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
   simpa only [← NNReal.coe_le_coe, coe_nnNorm', coe_iSup] using norm_tprod_le f
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_tprod_le := nnNorm_tprod_le
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_tprod_le := nnNorm_tprod_le
 
 @[to_additive]
 lemma norm_tprod_le_of_forall_le [Nonempty ι] {f : ι → M} {C : ℝ} (h : ∀ i, ‖f i‖ ≤ C) :
@@ -369,7 +373,7 @@ lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ 
 lemma nnNorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
   (nnNorm_tprod_le f).trans (ciSup_le' h)
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
 alias nnnorm_tprod_le_of_forall_le := nnNorm_tprod_le_of_forall_le
 
 @[to_additive]
@@ -388,7 +392,7 @@ lemma nnNorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
     rw [hj']
     apply hs <;> grind
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
 alias nnnorm_prod_eq_sup_of_pairwise_ne := nnNorm_prod_eq_sup_of_pairwise_ne
 
 @[to_additive]

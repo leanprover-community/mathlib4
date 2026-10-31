@@ -69,6 +69,9 @@ class NNNorm (E : Type*) where
   /-- the `ℝ≥0`-valued norm function. -/
   nnNorm : E → ℝ≥0
 
+@[deprecated (since := "2026-10-31")] alias NNNorm.nnnorm := NNNorm.nnNorm
+export NNNorm (nnnorm)
+
 /-- Auxiliary class, endowing a type `α` with a function `enorm : α → ℝ≥0∞` with notation `‖x‖ₑ`. -/
 @[notation_class]
 class ENorm (E : Type*) where

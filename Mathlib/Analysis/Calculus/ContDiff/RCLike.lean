@@ -105,6 +105,10 @@ theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnNorm_lt
     hs.exists_nhdsWithin_lipschitzOnWith_of_hasFDerivWithinAt_of_nnNorm_lt
       (eventually_nhdsWithin_iff.2 <| Eventually.of_forall hder) hcont K hK
 
+@[deprecated (since := "2026-10-31")]
+alias HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnnorm_lt :=
+  HasFTaylorSeriesUpToOn.exists_lipschitzOnWith_of_nnNorm_lt
+
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
 then `f` is Lipschitz in a neighborhood of `x` within `s`. -/
 theorem HasFTaylorSeriesUpToOn.exists_lipschitzOnWith

@@ -45,6 +45,9 @@ structure NonlinearRightInverse where
   bound' : ∀ y, ‖toFun y‖ ≤ nnNorm * ‖y‖
   right_inv' : ∀ y, f (toFun y) = y
 
+@[deprecated (since := "2026-10-31")]
+alias NonlinearRightInverse.nnnorm := NonlinearRightInverse.nnNorm
+
 instance : CoeFun (NonlinearRightInverse f) fun _ => F → E :=
   ⟨fun fsymm => fsymm.toFun⟩
 

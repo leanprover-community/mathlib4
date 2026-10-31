@@ -534,6 +534,9 @@ theorem _root_.lipschitzWith_of_nnNorm_fderiv_le
   rw [← lipschitzOnWith_univ]
   exact lipschitzOnWith_of_nnNorm_fderiv_le (fun x _ ↦ hf x) (fun x _ ↦ bound x) convex_univ
 
+@[deprecated (since := "2026-10-31")]
+alias _root_.lipschitzWith_of_nnnorm_fderiv_le := lipschitzWith_of_nnNorm_fderiv_le
+
 /-- Variant of the mean value inequality on a convex set, using a bound on the difference between
 the derivative and a fixed linear map, rather than a bound on the derivative itself. Version with
 `HasFDerivWithinAt`. -/
