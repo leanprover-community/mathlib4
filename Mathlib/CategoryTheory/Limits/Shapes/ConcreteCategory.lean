@@ -124,7 +124,11 @@ variable [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) (forget C)]
 noncomputable def terminalEquiv : ToType (⊤_ C) ≃ PUnit :=
   (PreservesTerminal.iso (forget C) ≪≫ Types.terminalIso).toEquiv
 
-noncomputable instance : Unique (ToType (⊤_ C)) where
+-- We use the `{}` binder for the `FunLike` instance in order to get the right synthOrder.
+noncomputable instance
+    {FC : C → C → Type*} {CC : C → Type w} {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
+    [ConcreteCategory.{w} C FC] [PreservesLimit (Functor.empty.{0} C) (forget C)] :
+    Unique (ToType (⊤_ C)) where
   default := (terminalEquiv C).symm PUnit.unit
   uniq _ := (terminalEquiv C).injective (Subsingleton.elim _ _)
 
