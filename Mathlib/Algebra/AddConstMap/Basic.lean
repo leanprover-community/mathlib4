@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.NatInt
