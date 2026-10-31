@@ -4663,6 +4663,7 @@ public import Mathlib.Data.ZMod.Coprime
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Data.ZMod.Factorial
 public import Mathlib.Data.ZMod.IntUnitsPower
+public import Mathlib.Data.ZMod.IsSquare
 public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.Data.ZMod.QuotientRing
 public import Mathlib.Data.ZMod.Units
