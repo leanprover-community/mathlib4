@@ -459,6 +459,14 @@ def toMultiplicative : AddMonoidAlgebra R M ≃+* MonoidAlgebra R (Multiplicativ
 lemma toMultiplicative_single (m : M) (r : R) :
     toMultiplicative R M (single m r) = .single (.ofAdd m) r := by simp [toMultiplicative]
 
+lemma coeff_toMultiplicative (x : R[M]) (m : Multiplicative M) :
+    (toMultiplicative R M x).coeff m = x.coeff m.toAdd := by
+  simp
+
+lemma coeff_toMultiplicative_ofAdd (x : R[M]) (m : M) :
+    (toMultiplicative R M x).coeff (Multiplicative.ofAdd m) = x.coeff m := by
+  simp
+
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
@@ -482,5 +490,13 @@ def toAdditive : MonoidAlgebra R M ≃+* AddMonoidAlgebra R (Additive M) where
 @[simp]
 lemma toAdditive_single (m : M) (r : R) : toAdditive R M (single m r) = .single (.ofMul m) r := by
   ext; simp
+
+lemma coeff_toAdditive (x : R[M]) (m : Additive M) :
+    (toAdditive R M x).coeff m = x.coeff m.toMul := by
+  simp
+
+lemma coeff_toAdditive_ofMul (x : R[M]) (m : M) :
+    (toAdditive R M x).coeff (Additive.ofMul m) = x.coeff m := by
+  simp
 
 end MonoidAlgebra
