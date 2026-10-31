@@ -72,14 +72,13 @@ theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.In
   -- * `deg(gₚ) ≤ p * deg(f) - 1` (`≤ p * deg(f)` is sufficient)
   -- * all complex roots `r` of `P` satisfy `|nₚ * exp r - p * gₚ(r)| ≤ c ^ p / (p - 1)!`
   obtain ⟨c, hc'⟩ := LindemannWeierstrass.exp_polynomial_approx P P0
-  -- Let `L` be a nonnegative upper bound on the norms of the coefficients of the sum.
-  let L := ∑ j, ‖w' j‖
-  have L0 : 0 ≤ L := sum_nonneg fun _ _ ↦ norm_nonneg _
+  -- Let `L` be the sum of the coefficient norms, weighted by the number of roots.
+  let L := ∑ j, ‖w' j‖ * ((p j).aroots ℂ).card
   -- Now there exists a sufficiently large prime `q` such that
-  -- `L * (∑ i, ((p i).aroots ℂ).card) * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! < 1`.
+  -- `L * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! < 1`.
   let N := max (P.eval 0).natAbs (max k.natAbs w.natAbs)
   obtain ⟨q, hqN, prime_q, hq⟩ : ∃ q : ℕ, N < q ∧ Nat.Prime q ∧
-      L * (∑ i, ((p i).aroots ℂ).card) * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! < 1 := by
+      L * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! < 1 := by
     have (x : ℝ) : Filter.Tendsto (fun n ↦ x ^ n / (n - 1)!) .atTop (nhds 0) := by
       rw [← Filter.tendsto_add_atTop_iff_nat 1]
       simpa [pow_succ', mul_div_assoc] using
@@ -88,7 +87,7 @@ theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.In
       Filter.Frequently.forall_exists_of_atTop
         ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually <|
           Filter.Tendsto.eventually_lt_const (u := 1) (by simp)
-            ((this (‖k‖ ^ P.natDegree * c)).const_mul (L * ∑ i, Multiset.card ((p i).aroots ℂ))))
+            ((this (‖k‖ ^ P.natDegree * c)).const_mul L))
         (N + 1)
   -- And this `q` is in particular large enough to apply `hc'`.
   obtain ⟨n, hn, gp, hgp, hc⟩ := hc' q (by order) prime_q
@@ -132,24 +131,21 @@ theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.In
       rw [H']
     _ = ‖k ^ t‖ * ‖∑ j, w' j • (((p j).aroots ℂ).map fun x => q • gp.aeval x - n • exp x).sum‖ := by
       rw [norm_smul]
-    _ ≤ ‖k ^ t‖ * ∑ j, L * ‖(((p j).aroots ℂ).map fun x => q • gp.aeval x - n • exp x).sum‖ := by
+    _ ≤ ‖k ^ t‖ * ∑ j, ‖w' j‖ *
+        (Multiset.map (fun x ↦ ‖q • (aeval x) gp - n • cexp x‖) ((p j).aroots ℂ)).sum := by
       grw [norm_sum_le]
       simp_rw [norm_smul]
       gcongr
-      exact single_le_sum (fun _ _ ↦ norm_nonneg _) (mem_univ _)
-    _ ≤ ‖k ^ t‖ *
-        ∑ j, L * (Multiset.map (fun x ↦ ‖q • (aeval x) gp - n • cexp x‖) ((p j).aroots ℂ)).sum := by
-      gcongr
       grw [norm_multiset_sum_le]
       rw [Multiset.map_map, Function.comp_def]
-    _ ≤ ‖k ^ t‖ * ∑ j, L * (((p j).aroots ℂ).map fun _ => c ^ q / ↑(q - 1)!).sum := by
+    _ ≤ ‖k ^ t‖ * ∑ j, ‖w' j‖ * (((p j).aroots ℂ).map fun _ => c ^ q / ↑(q - 1)!).sum := by
       gcongr
       refine Multiset.sum_map_le_sum_map _ _ fun x hx => ?_
       rw [norm_sub_rev]
       exact hc (mem_aroots hx)
-    _ = L * (∑ i, ((p i).aroots ℂ).card) * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! := by
-      simp_rw [norm_pow, Multiset.map_const', Multiset.sum_replicate, ← mul_sum, ← sum_smul,
-        nsmul_eq_mul]
+    _ = L * (‖k‖ ^ P.natDegree * c) ^ q / (q - 1)! := by
+      simp_rw [norm_pow, Multiset.map_const', Multiset.sum_replicate, nsmul_eq_mul,
+        ← mul_assoc, ← sum_mul]
       ring
     _ < 1 := hq
   -- The left-hand side is an integer with norm less than one, so is zero. Since the second term

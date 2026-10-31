@@ -10,7 +10,7 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Algebra.Group.UniqueProds.VectorSpace
 import Mathlib.Data.Finsupp.Quotient
 import Mathlib.FieldTheory.Minpoly.ConjRootClass
-import Mathlib.FieldTheory.Normal.Basic
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.RingTheory.Invariant.Basic
 
 /-!
@@ -220,18 +220,16 @@ public theorem exists_add_sum_map_aroots_eq_zero {S : Type*}
     ∃ (w : ℤ), w ≠ 0 ∧ ∃ (w' : ℤ[X] →₀ ℤ), (∀ p ∈ w'.support, p.eval 0 ≠ 0) ∧
       w + w'.sum (fun p c ↦ c • ((p.aroots S).map (φ <| .ofAdd ·)).sum) = 0 := by
   classical
-  let s := univ.image u ∪ univ.image v
+  let s := Set.range u ∪ Set.range v
   have hs : ∀ x ∈ s, IsIntegral ℚ x := by simp [s, or_imp, forall_and, hu, hv]
-  let poly : ℚ[X] := ∏ x ∈ s, minpoly ℚ x
-  let K : IntermediateField ℚ S := IntermediateField.adjoin ℚ (poly.rootSet S)
-  have _ : IsSplittingField ℚ K poly :=
-    IntermediateField.adjoin_rootSet_isSplittingField (IsAlgClosed.splits _)
-  have : FiniteDimensional ℚ K := Polynomial.IsSplittingField.finiteDimensional K poly
-  have : Normal ℚ K := .of_isSplittingField poly
-  have mem_K {x : S} (hx : x ∈ s) : x ∈ K := by
-    apply IntermediateField.subset_adjoin
-    rw [mem_rootSet, map_prod, prod_eq_zero_iff]
-    exact ⟨prod_ne_zero_iff.mpr fun x hx ↦ minpoly.ne_zero (hs x hx), x, hx, minpoly.aeval _ _⟩
+  let E := IntermediateField.adjoin ℚ (s : Set S)
+  have : FiniteDimensional ℚ E := IntermediateField.finiteDimensional_adjoin hs
+  let K := IntermediateField.normalClosure ℚ E S
+  have hK : IsNormalClosure ℚ E K :=
+    Algebra.IsAlgebraic.isNormalClosure_normalClosure fun _ ↦ IsAlgClosed.splits _
+  have : Normal ℚ K := hK.normal
+  have mem_K {x : S} (hx : x ∈ s) : x ∈ K :=
+    IntermediateField.le_normalClosure E (IntermediateField.subset_adjoin ℚ _ hx)
   let u' : ι → K := fun i ↦ ⟨u i, mem_K (by simp [s])⟩
   let v' : ι → K := fun i ↦ ⟨v i, mem_K (by simp [s])⟩
   obtain ⟨f, f0, hf⟩ : ∃ (f : K[K]), f ≠ 0 ∧
