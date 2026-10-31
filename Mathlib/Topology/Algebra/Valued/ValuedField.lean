@@ -379,7 +379,7 @@ theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0
     { x : hat K | extensionValuation x * v r < v s } := by
   have hrs : v s / v r ≠ 0 := by simp [hr, hs]
   convert! closure_coe_completion_v_lt (γ := .mk0 _ hrs) using 3
-  all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
+  all_goals simp [← lt_div_iff₀, pos_iff_ne_zero, hr]
 
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
 that of the extension to its completion. TODO: Split out the definition of `(restrict₀_surjective
