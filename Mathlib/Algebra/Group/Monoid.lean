@@ -560,7 +560,7 @@ export IsMulTorsionFree (eq_of_pow_eq_pow_of_commute)
 alias IsMulTorsionFree.pow_left_injective := eq_of_pow_eq_pow_of_commute
 
 /-- An additive monoid has unique divisibility if scalar multiplication by every non-zero element
-`n : ℕ` is injective. This is the uniqueness counterpart to `DivisibleBy` which asserts existence.
+`n : ℕ` is injective. This is the uniqueness counterpart to `IsDivisibleBy` which asserts existence.
 
 `HasUniqueDiv` is stronger than `IsAddTorsionFree` for general additive monoids, but equivalent to
 it for commutative ones. Prefer using `HasUniqueDiv` for commutative additive monoids, so that
@@ -575,7 +575,7 @@ class HasUniqueDiv (M : Type*) [AddMonoid M] where
 export HasUniqueDiv (nsmul_right_injective)
 
 /-- A monoid has unique roots if exponentiation by every non-zero element `n : ℕ` is injective.
-This is the uniqueness counterpart to `RootableBy` which asserts existence.
+This is the uniqueness counterpart to `IsRootableBy` which asserts existence.
 
 `HasUniqueRoots` is stronger than `IsMulTorsionFree` for general monoids, but equivalent to it for
 commutative ones. Prefer using `HasUniqueRoots` for commutative monoids, so that typeclass-search

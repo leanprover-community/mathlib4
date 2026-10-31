@@ -27,7 +27,7 @@ Furthermore, we show that
 * when `M` is a linearly ordered group, `DivisibleHull M` is an ordered `ℚ`-module, and
   `ArchimedeanClass` is preserved.
 
-Despite the name, this file doesn't implement a `DivisibleBy` instance on `DivisibleHull`. This
+Despite the name, this file doesn't implement a `IsDivisibleBy` instance on `DivisibleHull`. This
 should be implemented on `LocalizedModule` in a more general setting (TODO: implement this).
 This file mainly focuses on the specialization to `ℕ` and the linear order property introduced by
 it.
