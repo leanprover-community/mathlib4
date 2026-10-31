@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Data.Sym.Sym2.Card
 public import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -166,5 +167,20 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
   rcases card_pos.mp hg' with ⟨w, hw⟩
   rw [mem_filter_univ] at hw
   exact ⟨w, hw⟩
+
+theorem cardinalMk_dart_eq_two_mul_cardinalMk_edgeSet :
+    Cardinal.mk G.Dart = 2 * Cardinal.mk G.edgeSet := by
+  rw [edgeSet, edgeSetEmbedding, OrderEmbedding.coe_ofMapLEIff]
+  have := G.loopless
+  rw [← Sym2.cardinalMk_prod_eq_two_mul_cardinalMk_fromRel G.symm]
+  apply Cardinal.mk_congr
+  exact ⟨fun d ↦ ⟨d.toProd, d.adj⟩, fun z ↦ ⟨z.val, z.property⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
+
+theorem enatCard_dart_eq_two_mul_encard_edgeSet : ENat.card G.Dart = 2 * G.edgeSet.encard := by
+  simp [← ENat.card_coe_set_eq, ← Cardinal.toENat_mk, -Set.toENat_cardinalMk,
+    cardinalMk_dart_eq_two_mul_cardinalMk_edgeSet]
+
+theorem natCard_dart_eq_two_mul_ncard_edgeSet : Nat.card G.Dart = 2 * G.edgeSet.ncard := by
+  simp [Set.ncard_def, ← ENat.toNat_card, enatCard_dart_eq_two_mul_encard_edgeSet]
 
 end SimpleGraph
