@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
 This file defines `Coalgebra.IsFrobenius` and shows some elementary results.
 
-A coalgebra with an algebra structure is said to be Frobenius when the Frobenius equation
+A coalgebra with an algebra structure is said to be **Frobenius** when the Frobenius equation
 is satisfied:
 `(id ⊗ mul') ∘ assoc ∘ (comul ⊗ id) = (mul' ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
 which in diagrams looks like
@@ -55,8 +55,8 @@ In texts, this is what the Frobenius equations are usually referred to as.
 * `Coalgebra.IsFrobenius.instFinite`: a coalgebra satisfying the Frobenius equations is finite
 * `Coalgebra.IsFrobenius.instProjective`: a coalgebra satisfying the Frobenius equations is
   projective
-* `Bialgebra.nonempty_algEquiv_of_isFrobenius`: when an `R`-bialgebra `A` satisfies the Frobenius
-  equations, `R` is isomorphic to `A`
+* `Bialgebra.algebraOfId_bijective_of_isFrobenius`: when an `R`-bialgebra `A` satisfies the
+  Frobenius equations, `R` is isomorphic to `A`
 
 ## TODO
 
@@ -166,24 +166,6 @@ instance instProjective : Module.Projective R A := by
   have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
   refine Module.projective_def'.mpr ⟨∑ p ∈ S, (ε ∘ₗ mulRight R p.1).smulRight (.single p.2 1), ?_⟩
   ext; simp [sum_counit_mul_left_smul_of_comul_one hS]
-
-/-- The bilinear form `(mul R A).compr₂ counit` is separating left.
-This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
-lemma forall_counit_mul_left_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (a * b) = 0) ↔ a = 0 := by
-  refine ⟨fun h ↦ ?_, fun h _ ↦ by simp [h]⟩
-  have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
-  simpa [h] using (sum_counit_mul_left_smul_of_comul_one hS a).symm
-
-/-- The bilinear form `(mul R A).compr₂ counit` is separating right.
-This is the simplified version, see `nondegenerate_compr₂_mul_counit`. -/
-lemma forall_counit_mul_right_eq_zero_iff {a : A} : (∀ b, (ε : _ →ₗ[R] _) (b * a) = 0) ↔ a = 0 := by
-  refine ⟨fun h ↦ ?_, fun h _ ↦ by simp [h]⟩
-  have ⟨S, hS⟩ := exists_finset (R := R) (δ (1 : A))
-  simpa [hS, sum_tmul, h] using (sum_counit_mul_right_smul_of_comul_one hS a).symm
-
-/-- The bilinear form `mul.compr₂ counit` is nondegenerate. -/
-lemma nondegenerate_compr₂_mul_counit : ((mul R A).compr₂ ε).Nondegenerate :=
-  ⟨fun _ ↦ forall_counit_mul_left_eq_zero_iff.mp, fun _ ↦ forall_counit_mul_right_eq_zero_iff.mp⟩
 
 /-- The bilinear form `mul.compr₂ counit` is bijective. -/
 lemma compr₂_mul_counit_bijective : (⇑((mul R A).compr₂ ε)).Bijective := by
