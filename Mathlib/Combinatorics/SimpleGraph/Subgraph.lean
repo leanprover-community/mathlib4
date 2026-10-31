@@ -6,7 +6,6 @@ Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-public import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Subgraphs of a simple graph
@@ -395,7 +394,7 @@ theorem eq_bot_iff_verts_eq_empty (G' : G.Subgraph) : G' = ⊥ ↔ G'.verts = �
     funext₂ fun _ _ ↦ propext ⟨fun h' ↦ (h ▸ h'.fst_mem :), False.elim⟩⟩
 
 theorem ne_bot_iff_nonempty_verts (G' : G.Subgraph) : G' ≠ ⊥ ↔ G'.verts.Nonempty :=
-  G'.eq_bot_iff_verts_eq_empty.not.trans <| Set.nonempty_iff_ne_empty.symm
+  G'.eq_bot_iff_verts_eq_empty.not.trans Set.nonempty_iff_ne_empty.symm
 
 @[simp]
 theorem sSup_adj {s : Set G.Subgraph} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
@@ -902,7 +901,7 @@ theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
 lemma degree_toSubgraph (G H : SimpleGraph V) (h : H ≤ G) {v : V}
     [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
     (toSubgraph H h).degree v = H.degree v := by
-  simp [Subgraph.degree, card_neighborSet_toSubgraph]
+  simp [Subgraph.degree, card_neighborSet_toSubgraph, -Set.fintypeCard_eq_ncard]
 
 section MkProperties
 
@@ -985,8 +984,7 @@ theorem subgraphOfAdj_symm {v w : V} (hvw : G.Adj v w) :
 @[simp]
 theorem map_subgraphOfAdj (f : G →g G') {v w : V} (hvw : G.Adj v w) :
     Subgraph.map f (G.subgraphOfAdj hvw) = G'.subgraphOfAdj (f.map_adj hvw) := by
-  ext <;> grind [Subgraph.map_verts, subgraphOfAdj_verts, Relation.Map, Subgraph.map_adj,
-    subgraphOfAdj_adj]
+  ext <;> grind [Subgraph.map_verts, subgraphOfAdj_verts, Subgraph.map_adj, subgraphOfAdj_adj]
 
 theorem neighborSet_subgraphOfAdj_subset {u v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).neighborSet u ⊆ {v, w} :=
@@ -1277,6 +1275,64 @@ lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') := by
 lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') := by
   exact (sup_le_iff.mp le_induce_union).2
 
+variable (G') in
+theorem le_induce_iUnion (s : ι → Set V) : ⨆ i, G'.induce (s i) ≤ G'.induce (⋃ i, s i) :=
+  iSup_le fun i ↦ induce_mono_right <| le_iSup s i
+
+variable (G') in
+@[simp]
+theorem induce_inter : G'.induce (s ∩ s') = G'.induce s ⊓ G'.induce s' := by
+  ext u v
+  · simp
+  · grind [induce_adj, inf_adj]
+
+variable (G') in
+@[simp]
+theorem induce_iInter [Nonempty ι] (s : ι → Set V) :
+    G'.induce (⋂ i, s i) = ⨅ i, G'.induce (s i) := by
+  ext u v
+  · simp
+  · rw [iInf_adj]
+    refine ⟨fun h ↦ ?_, fun ⟨h, _⟩ ↦ ?_⟩
+    · grind [induce_adj, Set.mem_iInter, adj_sub]
+    · grind [induce_adj, Set.mem_iInter, h <| Classical.arbitrary ι]
+
+variable (G' G'' s) in
+@[simp]
+theorem induce_sup : (G' ⊔ G'').induce s = G'.induce s ⊔ G''.induce s := by
+  ext
+  · simp
+  · grind [induce_adj, sup_adj]
+
+variable (s) in
+@[simp]
+theorem induce_iSup [Nonempty ι] (G' : ι → G.Subgraph) :
+    (⨆ i, G' i).induce s = ⨆ i, (G' i).induce s := by
+  ext <;> simp
+
+variable (G' G'' s) in
+@[simp]
+theorem induce_inf : (G' ⊓ G'').induce s = G'.induce s ⊓ G''.induce s := by
+  ext
+  · simp
+  · grind [induce_adj, inf_adj]
+
+variable (s) in
+@[simp]
+theorem induce_iInf [Nonempty ι] (G' : ι → G.Subgraph) :
+    (⨅ i, G' i).induce s = ⨅ i, (G' i).induce s := by
+  ext u v
+  · simp
+  · rw [iInf_adj]
+    refine ⟨fun h ↦ ?_, fun ⟨h, _⟩ ↦ ?_⟩
+    · grind [induce_adj, iInf_adj]
+    · grind [induce_adj, iInf_adj, h <| Classical.arbitrary ι]
+
+theorem induce_eq_inf_of_subset_verts (hs : s ⊆ G'.verts) : G'.induce s = G' ⊓ induce ⊤ s := by
+  ext u v
+  · simpa using @hs u
+  · grind [induce_adj, inf_adj, top_adj, adj_sub]
+
 theorem singletonSubgraph_eq_induce {v : V} :
     G.singletonSubgraph v = (⊤ : G.Subgraph).induce {v} := by
   ext <;> simp +contextual [-Set.bot_eq_empty, Prop.bot_eq_false]
@@ -1374,7 +1430,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
 def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
-  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_inter_left hv⟩, by aesop⟩
+  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_sdiff hv⟩, by aesop⟩
   invFun := fun ⟨v, hv⟩ ↦ ⟨v, by simp_all⟩
   map_rel_iff' := by simp
 

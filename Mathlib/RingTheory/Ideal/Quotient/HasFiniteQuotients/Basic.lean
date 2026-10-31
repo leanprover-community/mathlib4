@@ -104,3 +104,21 @@ instance : HasFiniteQuotients ℤ where
     exact inferInstanceAs <| Finite (ℤ ⧸ Ideal.span {n})
 
 end Ring.HasFiniteQuotients
+
+namespace Ideal
+
+variable {S : Type*} [CommRing S] [Ring.HasFiniteQuotients S]
+
+lemma finiteIndex {I : Ideal S} (hI : I ≠ ⊥) : I.toAddSubgroup.FiniteIndex :=
+  AddSubgroup.finiteIndex_iff_finite_quotient.mpr (Ring.HasFiniteQuotients.finiteQuotient hI)
+
+@[deprecated (since := "2026-10-23")] alias finiteIndex' := finiteIndex
+
+lemma isFiniteRelIndex {I : Ideal S} (hI : I ≠ ⊥) (J : Ideal S) :
+    I.toAddSubgroup.IsFiniteRelIndex J.toAddSubgroup :=
+  have := finiteIndex hI
+  AddSubgroup.isFiniteRelIndex_of_finiteIndex
+
+@[deprecated (since := "2026-10-23")] alias isFiniteRelIndex' := isFiniteRelIndex
+
+end Ideal

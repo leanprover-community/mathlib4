@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
+public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition of the `Finite` typeclass
@@ -48,7 +48,7 @@ A finite set is defined to be a set whose coercion to a type has a `Finite` inst
 
 There are two components to finiteness constructions. The first is `Fintype` instances for each
 construction. This gives a way to actually compute a `Finset` that represents the set, and these
-may be accessed using `set.toFinset`. This gets the `Finset` in the correct form, since otherwise
+may be accessed using `Set.toFinset`. This gets the `Finset` in the correct form, since otherwise
 `Finset.univ : Finset s` is a `Finset` for the subtype for `s`. The second component is
 "constructors" for `Set.Finite` that give proofs that `Fintype` instances exist classically given
 other `Set.Finite` proofs. Unlike the `Fintype` instances, these *do not* use any decidability

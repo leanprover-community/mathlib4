@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.UpperLower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Upper/lower sets and fibrations
 -/
@@ -27,18 +30,18 @@ alias _root_.IsLowerSet.image_fibration := Fibration.isLowerSet_image
 
 lemma fibration_iff_isLowerSet_image_Iic [Preorder α] [LE β] :
     Fibration (· ≤ ·) (· ≤ ·) f ↔ ∀ x, IsLowerSet (f '' Iic x) :=
-  ⟨fun h x ↦ (isLowerSet_Iic x).image_fibration h, fun H x _ e ↦ H x e ⟨x, le_rfl, rfl⟩⟩
+  ⟨fun h x ↦ (IsLowerSet.Iic x).image_fibration h, fun H x _ e ↦ H x e ⟨x, le_rfl, rfl⟩⟩
 
 lemma fibration_iff_isLowerSet_image [Preorder α] [LE β] :
     Fibration (· ≤ ·) (· ≤ ·) f ↔ ∀ s, IsLowerSet s → IsLowerSet (f '' s) :=
   ⟨Fibration.isLowerSet_image,
-    fun H ↦ fibration_iff_isLowerSet_image_Iic.mpr (H _ <| isLowerSet_Iic ·)⟩
+    fun H ↦ fibration_iff_isLowerSet_image_Iic.mpr (H _ <| .Iic ·)⟩
 
 lemma fibration_iff_image_Iic [Preorder α] [Preorder β] (hf : Monotone f) :
     Fibration (· ≤ ·) (· ≤ ·) f ↔ ∀ x, f '' Iic x = Iic (f x) :=
   ⟨fun H x ↦ le_antisymm (fun _ ⟨_, hy, e⟩ ↦ e ▸ hf hy)
-    ((H.isLowerSet_image (isLowerSet_Iic x)).Iic_subset ⟨x, le_rfl, rfl⟩),
-    fun H ↦ fibration_iff_isLowerSet_image_Iic.mpr (fun x ↦ (H x).symm ▸ isLowerSet_Iic (f x))⟩
+    ((H.isLowerSet_image (.Iic x)).Iic_subset ⟨x, le_rfl, rfl⟩),
+    fun H ↦ fibration_iff_isLowerSet_image_Iic.mpr (fun x ↦ (H x).symm ▸ .Iic (f x))⟩
 
 lemma Fibration.isUpperSet_image [LE α] [LE β] (hf : Fibration (· ≥ ·) (· ≥ ·) f)
     {s : Set α} (hs : IsUpperSet s) : IsUpperSet (f '' s) :=

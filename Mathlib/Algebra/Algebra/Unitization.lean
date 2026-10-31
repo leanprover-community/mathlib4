@@ -5,15 +5,12 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Algebra.NonUnitalHom
-public import Mathlib.Algebra.Star.Module
-public import Mathlib.Algebra.Star.StarProjection
-public import Mathlib.Algebra.Star.NonUnitalSubalgebra
-public import Mathlib.LinearAlgebra.Prod
-public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.GroupWithZero.Action.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
+public import Mathlib.Algebra.Star.StarProjection
+
+import Mathlib.Tactic.Abel
 
 /-!
 # Unitization of a non-unital algebra
@@ -242,6 +239,11 @@ theorem toProd_add [Add R] [Add A] (x₁ x₂ : Unitization R A) :
 
 @[simp]
 theorem toProd_neg [Neg R] [Neg A] (x : Unitization R A) : (-x).toProd = -x.toProd :=
+  rfl
+
+@[simp]
+theorem toProd_sub [Sub R] [Sub A] (x₁ x₂ : Unitization R A) :
+    (x₁ - x₂).toProd = x₁.toProd - x₂.toProd :=
   rfl
 
 @[simp]
@@ -790,8 +792,8 @@ variable [Semiring C] [Algebra R C] [StarRing C]
 /-- See note [partially-applied ext lemmas] -/
 @[ext]
 theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
-    (h : (φ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A) =
-      (ψ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A)) :
+    (h : φ.toNonUnitalStarAlgHom.comp (Unitization.inrNonUnitalStarAlgHom R A) =
+      ψ.toNonUnitalStarAlgHom.comp (Unitization.inrNonUnitalStarAlgHom R A)) :
     φ = ψ :=
   Unitization.algHom_ext'' <| DFunLike.congr_fun h
 

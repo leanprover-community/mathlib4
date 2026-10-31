@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Contrapose
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalence between product types
@@ -95,6 +96,9 @@ theorem prodComm_apply {α β} (x : α × β) : prodComm α β x = x.swap :=
 @[simp, grind =]
 theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm (α β) : (prodComm α β).trans (prodComm β α) = .refl _ := rfl
 
 /-- Type product is associative up to an equivalence. -/
 @[simps (attr := grind =)]

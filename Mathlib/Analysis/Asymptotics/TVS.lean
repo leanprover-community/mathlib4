@@ -5,13 +5,11 @@ Authors: Yury Kudryashov, Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.Convex.EGauge
-public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Asymptotics.Defs
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+public import Mathlib.Analysis.Convex.EGauge
+
+import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Tactic.Peel
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Asymptotics in a Topological Vector Space
@@ -159,7 +157,7 @@ theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : 
 theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     f₁ =o[𝕜; l] g₁ ↔ f₂ =o[𝕜; l] g₂ := by
   simp only [isLittleOTVS_iff_tendsto_div]
-  peel with U hU V hV
+  congr! 5 with U hU V hV
   exact tendsto_congr' (hf.comp₂ (egauge _ _ · / egauge _ _ ·) hg)
 
 /-- A stronger version of `IsLittleOTVS.congr` that requires the functions only agree along the
@@ -181,7 +179,7 @@ theorem IsLittleOTVS.congr_right (h : f =o[𝕜; l] g₁) (hg : ∀ x, g₁ x = 
 theorem isBigOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     f₁ =O[𝕜; l] g₁ ↔ f₂ =O[𝕜; l] g₂ := by
   simp only [isBigOTVS_iff]
-  peel with U hU V hV
+  congr! 5 with U hU V hV
   exact eventuallyLE_congr (hf.fun_comp (egauge 𝕜 U)) (hg.fun_comp (egauge 𝕜 V))
 
 /-- A stronger version of `IsBigOTVS.congr` that requires the functions only agree along the
@@ -509,29 +507,68 @@ theorem isBigOTVS_prodMk_left [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] {k
     (fun x ↦ (f x, g x)) =O[𝕜; l] k ↔ f =O[𝕜; l] k ∧ g =O[𝕜; l] k :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.elim .prodMk⟩
 
+section Add
+variable [ContinuousAdd E] [ContinuousSMul 𝕜 E] {f₁ f₂ f₃ : α → E}
+
 @[to_fun]
-theorem IsLittleOTVS.add [ContinuousAdd E] [ContinuousSMul 𝕜 E]
-    {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g :=
+theorem IsLittleOTVS.add (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g :=
   ContinuousLinearMap.fst 𝕜 E E + ContinuousLinearMap.snd 𝕜 E E |>.isBigOTVS_comp
     |>.trans_isLittleOTVS <| h₁.prodMk h₂
 
+theorem IsLittleOTVS.listSum {L : List (α → E)} (h : ∀ f ∈ L, f =o[𝕜; l] g) :
+    L.sum =o[𝕜; l] g := by
+  induction L with
+  | nil => simp
+  | cons f L ihL =>
+    rw [List.sum_cons]
+    exact (h f (.head _)).add (ihL fun f' hf' ↦ h f' (.tail _ hf'))
+
+theorem IsLittleOTVS.multisetSum {s : Multiset (α → E)} (h : ∀ f ∈ s, f =o[𝕜; l] g) :
+    s.sum =o[𝕜; l] g := by
+  cases s using Quotient.inductionOn with
+  | _ L => exact listSum h
+
 @[to_fun]
-theorem IsBigOTVS.add [ContinuousAdd E] [ContinuousSMul 𝕜 E]
-    {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : f₁ =O[𝕜; l] g) (h₂ : f₂ =O[𝕜; l] g) : (f₁ + f₂) =O[𝕜; l] g :=
+theorem IsLittleOTVS.sum {ι : Type*} {s : Finset ι} {f : ι → α → E} (h : ∀ i ∈ s, f i =o[𝕜; l] g) :
+    (∑ i ∈ s, f i) =o[𝕜; l] g := by
+  rw [Finset.sum_eq_multiset_sum]
+  apply multisetSum
+  simpa using h
+
+@[to_fun]
+theorem IsBigOTVS.add (h₁ : f₁ =O[𝕜; l] g) (h₂ : f₂ =O[𝕜; l] g) : (f₁ + f₂) =O[𝕜; l] g :=
   ContinuousLinearMap.fst 𝕜 E E + ContinuousLinearMap.snd 𝕜 E E |>.isBigOTVS_comp
     |>.trans <| h₁.prodMk h₂
 
-theorem IsLittleOTVS.triangle [ContinuousAdd E] [ContinuousSMul 𝕜 E]
-    {f₁ f₂ f₃ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : (f₁ - f₂) =o[𝕜; l] g) (h₂ : (f₂ - f₃) =o[𝕜; l] g) : (f₁ - f₃) =o[𝕜; l] g := by
+theorem IsBigOTVS.listSum {L : List (α → E)} (h : ∀ f ∈ L, f =O[𝕜; l] g) :
+    L.sum =O[𝕜; l] g := by
+  induction L with
+  | nil => simpa using (IsLittleOTVS.zero g l).isBigOTVS
+  | cons f L ihL =>
+    rw [List.sum_cons]
+    exact (h f (.head _)).add (ihL fun f' hf' ↦ h f' (.tail _ hf'))
+
+theorem IsBigOTVS.multisetSum {s : Multiset (α → E)} (h : ∀ f ∈ s, f =O[𝕜; l] g) :
+    s.sum =O[𝕜; l] g := by
+  cases s using Quotient.inductionOn with
+  | _ L => exact listSum h
+
+@[to_fun]
+theorem IsBigOTVS.sum {ι : Type*} {s : Finset ι} {f : ι → α → E} (h : ∀ i ∈ s, f i =O[𝕜; l] g) :
+    (∑ i ∈ s, f i) =O[𝕜; l] g := by
+  rw [Finset.sum_eq_multiset_sum]
+  apply multisetSum
+  simpa using h
+
+theorem IsLittleOTVS.triangle (h₁ : (f₁ - f₂) =o[𝕜; l] g) (h₂ : (f₂ - f₃) =o[𝕜; l] g) :
+    (f₁ - f₃) =o[𝕜; l] g := by
   simpa using h₁.add h₂
 
-theorem IsBigOTVS.triangle [ContinuousAdd E] [ContinuousSMul 𝕜 E]
-    {f₁ f₂ f₃ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : (f₁ - f₂) =O[𝕜; l] g) (h₂ : (f₂ - f₃) =O[𝕜; l] g) : (f₁ - f₃) =O[𝕜; l] g := by
+theorem IsBigOTVS.triangle (h₁ : (f₁ - f₂) =O[𝕜; l] g) (h₂ : (f₂ - f₃) =O[𝕜; l] g) :
+    (f₁ - f₃) =O[𝕜; l] g := by
   simpa using h₁.add h₂
+
+end Add
 
 section NegLeft
 
@@ -663,9 +700,8 @@ theorem isBigOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
 
 protected lemma IsLittleOTVS.smul_left (h : f =o[𝕜; l] g) (c : α → 𝕜) :
     (fun x ↦ c x • f x) =o[𝕜; l] (fun x ↦ c x • g x) := by
-  simp only [isLittleOTVS_iff] at *
-  peel h with U hU V hV ε hε x hx
-  simp only at *
+  simp only [isLittleOTVS_iff, EventuallyLE] at *
+  gconvert h using 7 with U hU V hV ε hε x hx
   rw [egauge_smul_right, egauge_smul_right, mul_left_comm]
   · gcongr
   all_goals exact fun _ ↦ Filter.nonempty_of_mem ‹_›
@@ -703,7 +739,7 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] : f =o[𝕜; l] (1 : α → 𝕜)
       _ ≤ ε := mod_cast hcε.le
       _ ≤ ε * egauge 𝕜 (ball (0 : 𝕜) 1) 1 := by
         apply le_mul_of_one_le_right'
-        simpa using! le_egauge_ball_one 𝕜 (1 : 𝕜)
+        simpa using! le_egauge_unitBall 𝕜 (1 : 𝕜)
 
 lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E}
     (h : g =o[𝕜; l] f) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
@@ -765,7 +801,7 @@ lemma isLittleOTVS_iff_isLittleO : f =o[𝕜; l] g ↔ f =o[l] g := by
     suffices (‖f x‖₊ / ε : ℝ≥0∞) ≤ ‖g x‖₊ by
       rw [← ENNReal.coe_div hε.ne'] at this
       rw [← div_le_iff₀' (NNReal.coe_pos.2 hε)]
-      exact_mod_cast this
+      exact mod_cast this
     calc
       (‖f x‖₊ / ε : ℝ≥0∞) ≤ egauge 𝕜 (ball 0 ε) (f x) := div_le_egauge_ball 𝕜 _ _
       _ ≤ ↑(δ / ‖c‖₊) * egauge 𝕜 (ball 0 ↑δ) (g x) := hx
@@ -780,12 +816,12 @@ lemma isLittleOTVS_iff_isLittleO : f =o[𝕜; l] g ↔ f =o[l] g := by
     calc
       egauge 𝕜 (ball 0 ε) (f x) ≤ ‖c‖₊ * ‖f x‖₊ / ε :=
         egauge_ball_le_of_one_lt_norm hc (.inl <| ne_of_gt hε)
-      _ ≤ ‖c‖₊ * (↑(ε * δ / ‖c‖₊) * ‖g x‖₊) / ε := by gcongr; exact_mod_cast hx
+      _ ≤ ‖c‖₊ * (↑(ε * δ / ‖c‖₊) * ‖g x‖₊) / ε := by gcongr; exact mod_cast hx
       _ = (‖c‖₊ / ‖c‖₊) * (ε / ε) * δ * ‖g x‖₊ := by
         simp only [div_eq_mul_inv, ENNReal.coe_inv hc₀.ne', ENNReal.coe_mul]; ring
       _ ≤ 1 * 1 * δ * ‖g x‖₊ := by gcongr <;> exact ENNReal.div_self_le_one
       _ = δ * ‖g x‖₊ := by simp
-      _ ≤ δ * egauge 𝕜 (ball 0 1) (g x) := by gcongr; apply le_egauge_ball_one
+      _ ≤ δ * egauge 𝕜 (ball 0 1) (g x) := by gcongr; apply le_egauge_unitBall
 
 alias ⟨isLittleOTVS.isLittleO, IsLittleO.isLittleOTVS⟩ := isLittleOTVS_iff_isLittleO
 
@@ -802,7 +838,7 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
       simp only [enorm_eq_nnnorm, ← coe_nnnorm] at this ⊢
       exact mod_cast this
     calc
-      ‖f x‖ₑ ≤ egauge 𝕜 (ball 0 1) (f x) := le_egauge_ball_one ..
+      ‖f x‖ₑ ≤ egauge 𝕜 (ball 0 1) (f x) := le_egauge_unitBall ..
       _ ≤ egauge 𝕜 (ball 0 r) (g x) := hx
       _ ≤ ‖c‖ₑ * ‖g x‖ₑ / ↑r :=
         egauge_ball_le_of_one_lt_norm hc <| .inl hr₀.ne'

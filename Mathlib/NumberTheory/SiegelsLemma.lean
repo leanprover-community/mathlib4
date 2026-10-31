@@ -108,7 +108,7 @@ lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
     1 ≤ ‖A i j‖ := by
       rw [Int.norm_eq_abs, ← Int.cast_abs, ← Int.cast_one, Int.cast_le]
       exact Int.one_le_abs hij
-    _ ≤ ‖A‖ := norm_entry_le_entrywise_sup_norm A
+    _ ≤ ‖A‖ := norm_apply_le_norm A
 
 -- # Step 2: #S < #T
 
@@ -123,7 +123,7 @@ private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
   calc
   ∏ x : α, (∑ x_1 : β, ↑B * ↑(A x x_1)⁺ - ∑ x_1 : β, ↑B * -↑(A x x_1)⁻ + 1)
     ≤ ∏ x : α, (n * max 1 ‖A‖ * B + 1) := by
-      refine Finset.prod_le_prod (fun i _ ↦ ?_) (fun i _ ↦ ?_)
+      refine Finset.prod_le_prod₀ (fun i _ ↦ ?_) (fun i _ ↦ ?_)
       · have h := N_le_P_add_one A i
         rify at h
         linarith only [h]
@@ -133,7 +133,7 @@ private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
         simp_rw [h1, ← Finset.sum_add_distrib, ← mul_add, mul_comm (max 1 ‖A‖), ← Int.cast_add]
         gcongr with j _
         rw [posPart_add_negPart (A i j), Int.cast_abs]
-        exact le_trans (norm_entry_le_entrywise_sup_norm A) (le_max_right ..)
+        exact le_trans (norm_apply_le_norm A) (le_max_right ..)
   _ = (n * max 1 ‖A‖ * B + 1) ^ m := by simp
   _ ≤ (n * max 1 ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow, mul_add, mul_one]

@@ -64,7 +64,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf of modules associated to a submodule. -/
 @[simps! obj]
 noncomputable def toPresheafOfModules : PresheafOfModules.{v} R where
-  obj X := ModuleCat.of (R.obj X) (N.obj X)
+  obj X := ↧(N.obj X)
   map {X Y} f :=
     ModuleCat.semilinearMapAddEquiv _ _ _ <|
       (M.restrictₛₗ f).restrict (p := N.obj X) (q := N.obj Y) (fun _ hc ↦ N.map_mem _ hc)

@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Ring.Submonoid.Pointwise
-public import Mathlib.Algebra.Module.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additive subgroups of rings

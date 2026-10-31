@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Mario Carneiro
 module
 
 public import Mathlib.Data.Set.Function
-public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Equivalences and sets
@@ -343,7 +342,7 @@ protected def sumDiffSubset {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (·
   calc
     s ⊕ (t \ s : Set α) ≃ (s ∪ t \ s : Set α) :=
       (Equiv.Set.union disjoint_sdiff_self_right).symm
-    _ ≃ t := Set.equivOfEq (by simp [union_sdiff_self, union_eq_self_of_subset_left h])
+    _ ≃ t := Set.equivOfEq (by simp [union_eq_self_of_subset_left h])
 
 @[simp]
 theorem sumDiffSubset_apply_inl {α} {s t : Set α} (h : s ⊆ t) [DecidablePred (· ∈ s)] (x : s) :

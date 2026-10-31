@@ -137,7 +137,7 @@ elab "guard_decl" na:ident mod:ident : command => do
   let env ← getEnv
   let some dcli := env.getModuleIdxFor? dcl | unreachable!
   let some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
-  unless dcli = mdni do throwError "instance {na} is no longer in {mod}."
+  unless dcli == mdni do throwError "instance {na} is no longer in {mod}."
 
 guard_decl Finsupp.Lex.addLeftMono Mathlib.Data.Finsupp.Lex
 
@@ -153,7 +153,7 @@ instance : One F :=
   ⟨F.one⟩
 
 /-- A tactic to prove trivial goals by enumeration. -/
-macro "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> decide)
+local macro "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> decide)
 
 /-- `val` maps `0 1 : F` to their counterparts in `ℕ`.
 We use it to lift the linear order on `ℕ`. -/

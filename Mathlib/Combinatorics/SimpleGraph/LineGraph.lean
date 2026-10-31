@@ -39,7 +39,9 @@ lemma lineGraph_adj_iff_exists {e₁ e₂ : G.edgeSet} :
     (G.lineGraph).Adj e₁ e₂ ↔ e₁ ≠ e₂ ∧ ∃ v, v ∈ (e₁ : Sym2 V) ∧ v ∈ (e₂ : Sym2 V) := by
   simp [Set.Nonempty, lineGraph]
 
-@[simp] lemma lineGraph_bot : (⊥ : SimpleGraph V).lineGraph = ⊥ := by aesop (add simp lineGraph)
+@[simp] lemma lineGraph_bot : (⊥ : SimpleGraph V).lineGraph = ⊥ := by
+  ext ⟨a, ha⟩
+  simp at ha
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Lift a copy between graphs to an embedding between their line graphs -/
@@ -78,7 +80,5 @@ theorem map_lineGraph_le_of_le {G' : SimpleGraph V} (h : G ≤ G') :
     G.lineGraph.map (subtype _) ≤ G'.lineGraph.map (subtype _) := by
   rintro _ _ ⟨hne', ⟨⟨⟩, h₁⟩, ⟨⟨⟩, h₂⟩, ⟨hne, hinter⟩, rfl, rfl⟩
   exact ⟨hne', ⟨⟨_, h h₁⟩, ⟨_, h h₂⟩, ⟨(hne <| Subtype.ext <| Subtype.mk.inj ·), hinter⟩, rfl, rfl⟩⟩
-
-@[deprecated (since := "2026-03-26")] alias IsSubgraph.lineGraph := map_lineGraph_le_of_le
 
 end SimpleGraph

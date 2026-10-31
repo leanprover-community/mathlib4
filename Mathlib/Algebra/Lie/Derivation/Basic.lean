@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.Lie.Subalgebra
 public import Mathlib.RingTheory.Nilpotent.Exp
-public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations
@@ -59,6 +57,7 @@ variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
 variable (D : LieDerivation R L M) {D1 D2 : LieDerivation R L M} (a b : L)
 
+@[macro_inline]
 instance : FunLike (LieDerivation R L M) L M where
   coe D := D.toFun
   coe_injective D1 D2 h := by cases D1; cases D2; congr; exact DFunLike.coe_injective h
@@ -95,7 +94,7 @@ theorem ext (H : ∀ a, D1 a = D2 a) : D1 = D2 :=
   DFunLike.ext _ _ H
 
 theorem congr_fun (h : D1 = D2) (a : L) : D1 a = D2 a :=
-  DFunLike.congr_fun h a
+  congr($h a)
 
 @[simp]
 lemma apply_lie_eq_sub (D : LieDerivation R L M) (a b : L) :
@@ -295,7 +294,7 @@ variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
   bracket D1 D2 := LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
     simp only [Ring.lie_def, apply_lie_eq_add, coeFn_coe,
-      LinearMap.sub_apply, Module.End.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
+      LinearMap.sub_apply, mul_apply_eq_comp, map_add, sub_lie, lie_sub, ← lie_skew b]
     abel)
 
 variable {D1 D2 : LieDerivation R L L}
@@ -407,10 +406,10 @@ noncomputable def exp (h : IsNilpotent D.toLinearMap) :
     invFun x := IsNilpotent.exp (- D.toLinearMap) x
     left_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
-        ← Module.End.mul_eq_comp, h.exp_neg_mul_exp_self, Module.End.one_apply]
+        ← Module.End.mul_eq_comp, h.exp_neg_mul_exp_self, one_apply_eq_self]
     right_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
-        ← Module.End.mul_eq_comp, h.exp_mul_exp_neg_self, Module.End.one_apply] }
+        ← Module.End.mul_eq_comp, h.exp_mul_exp_neg_self, one_apply_eq_self] }
 
 lemma exp_apply (h : IsNilpotent D.toLinearMap) :
     exp D h = IsNilpotent.exp D.toLinearMap :=
@@ -418,7 +417,7 @@ lemma exp_apply (h : IsNilpotent D.toLinearMap) :
 
 lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
     exp D h l = IsNilpotent.exp D.toLinearMap l :=
-  DFunLike.congr_fun (exp_apply D h) l
+  congr($(exp_apply D h) l)
 
 end ExpNilpotent
 

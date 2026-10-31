@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonid Ryvkin
 -/
 module
+
 public import Mathlib.Algebra.Lie.Ideal
 
-/-! ### Products of Lie algebras
+/-! # Products of Lie algebras
 
 This file defines the Lie algebra structure the Product of two Lie algebras
 
@@ -24,7 +25,9 @@ This file defines the Lie algebra structure the Product of two Lie algebras
 - products in both domain and codomain:
   - `LieHom.prodMap` the `Prod.map` of two Lie algebra homomorphisms is a Lie algebra homomorphism.
 
-## Todo: Extend to further functionality from LinearMap.prod e.g.
+## TODO
+
+Extend to further functionality from `LinearMap.prod`, e.g.
 - Lie Equivalences related to products
 - Lie Submodule statements
 

@@ -5,11 +5,10 @@ Authors: Gregory Wickham
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.Completion
-public import Mathlib.Topology.Algebra.LinearMapCompletion
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.InnerProductSpace.Completion
 
 /-!
 # The GNS (Gelfand-Naimark-Segal) construction

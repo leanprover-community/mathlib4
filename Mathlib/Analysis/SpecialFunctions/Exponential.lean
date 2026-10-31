@@ -5,9 +5,9 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Complex.Exponential
+public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
@@ -208,7 +208,7 @@ end DerivRCLike
 
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp := by
   refine funext fun x => ?_
-  rw [Complex.exp, exp_eq_tsum_div]
+  rw [Complex.exp_def, exp_eq_tsum_div]
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable x).hasSum.tendsto_sum_nat
 
 theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp := by
@@ -286,7 +286,7 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasFDerivAt (fun u : 𝕊 => exp (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp (t • x))) t := by
-  convert! hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
+  convert hasFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
   change Commute (t' • x) (exp (t • x))
   exact (((Commute.refl x).smul_left t').smul_right t).exp_right
@@ -307,7 +307,7 @@ theorem hasStrictFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     HasStrictFDerivAt (fun u : 𝕊 => exp (u • x))
       (((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).smulRight (exp (t • x))) t := by
   let ⟨_, _⟩ := analyticAt_exp_of_mem_ball (t • x) htx
-  convert! hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
+  convert hasStrictFDerivAt_exp_smul_const_of_mem_ball 𝕂 _ _ htx using 1
   ext t'
   change Commute (t' • x) (exp (t • x))
   exact (((Commute.refl x).smul_left t').smul_right t).exp_right

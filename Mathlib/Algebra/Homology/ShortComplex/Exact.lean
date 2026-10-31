@@ -5,11 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.Algebra.Homology.ShortComplex.Abelian
-public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.CategoryTheory.Abelian.Opposite
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
@@ -307,14 +305,12 @@ lemma exact_iff_epi [HasZeroObject C] (hg : S.g = 0) :
 
 variable {S}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma Exact.epi_f' (hS : S.Exact) (h : LeftHomologyData S) : Epi h.f' :=
   epi_of_isZero_cokernel' _ h.hπ (by
     have := hS.hasHomology
     dsimp
     simpa only [← h.exact_iff] using hS)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma Exact.mono_g' (hS : S.Exact) (h : RightHomologyData S) : Mono h.g' :=
   mono_of_isZero_kernel' _ h.hι (by
     have := hS.hasHomology
@@ -367,7 +363,6 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
     apply Fork.IsLimit.hom_ext hkf
     simp [IsLimit.conePointUniqueUpToIso]) (isZero_zero C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given an exact short complex `S` and a colimit cokernel cofork `cc` for `S.f`, this is the
 right homology data for `S` with `Q := cc.pt` and `H := 0`. -/
 @[simps]
@@ -398,14 +393,12 @@ lemma exact_iff_epi_toCycles [S.HasHomology] : S.Exact ↔ Epi S.toCycles :=
 lemma exact_iff_mono_fromOpcycles [S.HasHomology] : S.Exact ↔ Mono S.fromOpcycles :=
   S.rightHomologyData.exact_iff_mono_g'
 
-set_option backward.defeqAttrib.useBackward true in
 lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
     S.Exact ↔ Epi (kernel.lift S.g S.f S.zero) := by
   rw [exact_iff_epi_toCycles]
   apply (MorphismProperty.epimorphisms C).arrow_mk_iso_iff
   exact Arrow.isoMk (Iso.refl _) S.cyclesIsoKernel (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     S.Exact ↔ Mono (cokernel.desc S.f S.g S.zero) := by
   rw [exact_iff_mono_fromOpcycles]
@@ -578,7 +571,6 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
       wπ := wπ
       hπ := hπ }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The right homology data on a short complex equipped with a splitting. -/
 @[simps]
 noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
@@ -624,7 +616,6 @@ noncomputable def gIsCokernel [HasZeroObject C] (s : S.Splitting) :
     IsColimit (CokernelCofork.ofπ S.g S.zero) :=
   s.homologyData.right.hp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a short complex `S` has a splitting and `F` is an additive functor, then
 `S.map F` also has a splitting. -/
 @[simps]
@@ -749,7 +740,6 @@ lemma isIso_fromOpcycles (hS : S.Exact) [Epi S.g] [S.HasRightHomology] :
     IsIso S.fromOpcycles :=
   hS.isIso_g' _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In a balanced category, if a short complex `S` is exact and `S.f` is a mono, then
 `S.X₁` is the kernel of `S.g`. -/
 noncomputable def fIsKernel (hS : S.Exact) [Mono S.f] : IsLimit (KernelFork.ofι S.f S.zero) := by
@@ -889,7 +879,6 @@ lemma cokernelSequence_exact : (cokernelSequence f).Exact :=
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.f`
 and `S₁.g` are zero (e.g. when `S₁` is of the form `0 ⟶ S₁.X₂ ⟶ 0`) and `S₂.f = 0`
 (e.g when `S₂` is of the form `0 ⟶ S₂.X₂ ⟶ S₂.X₃`), then `φ` is a quasi-isomorphism iff
@@ -979,7 +968,6 @@ namespace Functor
 variable (F : C ⥤ D) [Preadditive C] [Preadditive D] [HasZeroObject C]
   [HasZeroObject D] [F.PreservesZeroMorphisms] [F.PreservesHomology]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : F.PreservesMonomorphisms where
   preserves {X Y} f hf := by
     let S := ShortComplex.mk (0 : X ⟶ X) f zero_comp
@@ -987,7 +975,6 @@ instance : F.PreservesMonomorphisms where
       (((S.exact_iff_mono rfl).2 hf).map F)
 
 
-set_option backward.isDefEq.respectTransparency false in
 instance : F.PreservesEpimorphisms where
   preserves {X Y} f hf := by
     let S := ShortComplex.mk f (0 : Y ⟶ Y) comp_zero

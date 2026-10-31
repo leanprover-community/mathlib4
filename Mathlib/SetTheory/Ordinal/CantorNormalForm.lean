@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.SetTheory.Ordinal.Exponential
-public import Mathlib.SetTheory.Ordinal.Family
 
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finsupp.AList

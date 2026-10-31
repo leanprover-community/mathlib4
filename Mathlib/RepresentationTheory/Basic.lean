@@ -6,7 +6,6 @@ Authors: Antoine Labelle
 module
 
 public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.Algebra.Group.Equiv.TypeTags
 
 /-!
 # Monoid representations
@@ -92,12 +91,12 @@ variable {k G V : Type*} [Semiring k] [Group G] [AddCommMonoid V] [Module k V]
 @[simp]
 theorem inv_self_apply (g : G) (x : V) :
     ρ g⁻¹ (ρ g x) = x := by
-  simp [← Module.End.mul_apply, ← map_mul]
+  simp [← mul_apply_eq_comp, ← map_mul]
 
 @[simp]
 theorem self_inv_apply (g : G) (x : V) :
     ρ g (ρ g⁻¹ x) = x := by
-  simp [← Module.End.mul_apply, ← map_mul]
+  simp [← mul_apply_eq_comp, ← map_mul]
 
 lemma inv_apply_eq_iff {g : G} {x y : V} :
     ρ g⁻¹ x = y ↔ x = ρ g y := by
@@ -356,7 +355,7 @@ def ofQuotient [IsTrivial (ρ.comp S.subtype)] :
     rintro x y ⟨⟨z, hz⟩, rfl⟩
     ext w
     simp only [Subgroup.mk_smul, MulOpposite.smul_eq_mul_unop]
-    exact congr($(ρ.apply_eq_of_coe_eq S _ _ (by simpa)) w)
+    congrm $(ρ.apply_eq_of_coe_eq S _ _ (by simpa)) w
 
 @[simp]
 lemma ofQuotient_coe_apply [IsTrivial (ρ.comp S.subtype)] (g : G) (x : V) :
@@ -449,13 +448,13 @@ variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 `ℤ`-linear `M`-representation on `Additive G`. -/
 def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
   (addMonoidEndRingEquivInt (Additive G) : AddMonoid.End (Additive G) →* _).comp
-    ((monoidEndToAdditive G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
+    ((MulEquiv.monoidEnd G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
 
 @[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : Additive G) :
     ofMulDistribMulAction M G g a = Additive.ofMul (g • a.toMul) := rfl
 
 @[simp]
-theorem norm_ofMulDistribMulAction_eq {G M : Type} [Group G] [Fintype G]
+theorem norm_ofMulDistribMulAction_eq {G M : Type*} [Group G] [Fintype G]
     [CommGroup M] [MulDistribMulAction G M] (x : Additive M) :
     Additive.toMul ((ofMulDistribMulAction G M).norm x) =
       ∏ g : G, g • Additive.toMul x := by
@@ -475,7 +474,7 @@ theorem coeff_ofMulAction {H : Type*} [MulAction G H] (g : G) (f : k[H]) (h : H)
   have hg : Function.Injective (g • · : H → H) := by
     intro h₁ h₂
     simp
-  simp [ofMulAction_def, Finsupp.mapDomain_apply, hg]
+  simp [ofMulAction_def, hg]
 
 @[deprecated (since := "2026-06-18")] alias ofMulAction_apply := coeff_ofMulAction
 
@@ -631,7 +630,7 @@ theorem smul_tprod_one_asModule (r : k[G]) (x : V) (y : W) :
     r • (show (ρV.tprod 1).asModule from x ⊗ₜ y) = (r • show ρV.asModule from x) ⊗ₜ y := by
   change asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
-    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
+    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, one_apply_eq_self]
   simp only [Finsupp.sum, TensorProduct.sum_tmul]
   rfl
 
@@ -639,7 +638,7 @@ theorem smul_one_tprod_asModule (r : k[G]) (x : V) (y : W) :
     r • (show (1 ⊗ ρW).asModule from x ⊗ₜ y) = x ⊗ₜ (r • show ρW.asModule from y) := by
   change asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
-    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
+    LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, one_apply_eq_self]
   simp only [Finsupp.sum, TensorProduct.tmul_sum, TensorProduct.tmul_smul]
 
 end TensorProduct

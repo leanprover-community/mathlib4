@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # Unique derivative sets in manifolds
@@ -22,8 +21,6 @@ In this file, we prove various properties of unique derivative sets in manifolds
 -/
 
 public section
-
-noncomputable section
 
 open scoped Manifold
 open Set
@@ -159,7 +156,7 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
       ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.refl_coe,
       OpenPartialHomeomorph.prod_symm, OpenPartialHomeomorph.refl_symm,
       OpenPartialHomeomorph.prod_apply, OpenPartialHomeomorph.refl_apply]
-    convert! hz.1
+    convert hz.1
     apply Trivialization.proj_symm_apply'
     exact h's hz.1
   · rcases hz.2 with ⟨u, rfl⟩

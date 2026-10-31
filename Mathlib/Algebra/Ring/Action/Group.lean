@@ -8,7 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
 public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.Algebra.Ring.Aut
-public import Mathlib.Algebra.Ring.Equiv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # If a group acts multiplicatively on a semiring, each group element acts by a ring automorphism.
