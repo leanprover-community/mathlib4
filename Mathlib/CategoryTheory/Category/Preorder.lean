@@ -162,6 +162,11 @@ def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
 theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f :=
   rfl
 
+@[simp]
+lemma Monotone.functor_map_homOfLE {f : X → Y} (hf : Monotone f) {a b : X} (h : a ≤ b) :
+    hf.functor.map (homOfLE h) = homOfLE (hf h) :=
+  rfl
+
 -- Faithfulness is automatic because preorder categories are thin
 instance (f : X ↪o Y) : f.monotone.functor.Full where
   map_surjective h := ⟨homOfLE (f.map_rel_iff.1 h.le), rfl⟩
