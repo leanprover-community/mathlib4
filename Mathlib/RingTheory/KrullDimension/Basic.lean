@@ -54,6 +54,9 @@ lemma zero_le_ringKrullDim_iff_nontrivial : 0 ≤ ringKrullDim R ↔ Nontrivial 
 lemma ringKrullDim_nonneg_of_nontrivial [Nontrivial R] : 0 ≤ ringKrullDim R :=
   krullDim_nonneg
 
+lemma ringKrullDim_ne_bot_of_nontrivial [Nontrivial R] : ringKrullDim R ≠ ⊥ :=
+  ne_bot_of_le_ne_bot WithBot.zero_ne_bot ringKrullDim_nonneg_of_nontrivial
+
 /-- If `f : R →+* S` is surjective, then `ringKrullDim S ≤ ringKrullDim R`. -/
 theorem ringKrullDim_le_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     ringKrullDim S ≤ ringKrullDim R :=
@@ -92,6 +95,13 @@ lemma ringKrullDim_ne_bot [FiniteRingKrullDim R] :
 lemma finiteRingKrullDim_iff_ne_bot_and_top :
     FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
   (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
+
+lemma FiniteRingKrullDim.ringKrullDim_eq_nat [FiniteRingKrullDim R] :
+    ∃ n : ℕ, ringKrullDim R = n := by
+  obtain ⟨m, hm⟩ := WithBot.ne_bot_iff_exists.mp (ringKrullDim_ne_bot (R := R))
+  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp
+    (WithBot.coe_inj.not.mp (ne_of_eq_of_ne hm ringKrullDim_ne_top))
+  exact ⟨n, ((WithBot.coe_inj.mpr hn).trans hm).symm⟩
 
 lemma Nontrivial.of_finiteRingKrullDim [FiniteRingKrullDim R] : Nontrivial R := by
   rw [← PrimeSpectrum.nonempty_iff_nontrivial]
