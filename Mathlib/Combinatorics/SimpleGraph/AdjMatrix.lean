@@ -108,11 +108,8 @@ def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGra
   Adj i j := A i j = 1
   symm.symm i j hij := by rwa [h.symm.apply i j]
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
-    DecidableRel h.toGraph.Adj := by
-  simp only [toGraph]
-  infer_instance
+    DecidableRel h.toGraph.Adj := fun i j ↦ inferInstanceAs (Decidable (A i j = 1))
 
 variable (A) in
 /-- A homomorphism of the graph of a submatrix of an adjacency matrix to the graph of the

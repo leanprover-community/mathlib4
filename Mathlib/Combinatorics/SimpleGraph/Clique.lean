@@ -339,7 +339,6 @@ theorem is3Clique_iff_exists_cycle_length_three :
     ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, cons hab (cons hbc (cons hac.symm nil)), by aesop⟩),
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
 its embedding is an `n`-clique in `G`. -/
 theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
@@ -942,8 +941,6 @@ theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
 set in `G` and vice versa. -/
 theorem isIndepSet_induce {F : Set α} {s : Set F} :
@@ -979,7 +976,6 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNIndepSet n s) :=
   decidable_of_iff' _ (G.isNIndepSet_iff n s)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding of an `n`-independent set of an induced subgraph of the subgraph `G` is an
 `n`-independent set in `G` and vice versa. -/
 theorem isNIndepSet_induce {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :
