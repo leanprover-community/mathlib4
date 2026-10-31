@@ -521,7 +521,7 @@ private lemma choose_two_mul_succ_mul_div_eq {k m : ℕ} (x : ℚ) (hm_lt : m < 
   exact mod_cast Nat.choose_mul_succ_eq (2 * k) (2 * m) |>.symm
 
 /- `p`-integrality of the core even-index summand after denominator normalization. -/
-private lemma choose_mul_pow_div_mem_pIntegrals {k m p : ℕ} (hm_lt : m < k) [Fact p.Prime]
+private lemma choose_mul_pow_div_mem_pIntegrals {k m p : ℕ} [Fact p.Prime]
     (hd : 2 * k - 2 * m ≥ 2) :
     (((2 * k).choose (2 * m) : ℚ) * p ^ (2 * k - 2 * m - 1) / (2 * k - 2 * m + 1)) ∈
       pIntegrals p := by
@@ -551,7 +551,7 @@ private lemma bernoulli_even_term_mem_pIntegrals {k m p : ℕ} (hm_lt : m < k) [
     vonStaudtIndicator (2 * m) p * ((2 * k + 1).choose (2 * m)) *
       P / (2 * k + 1) := by rw [hpow]; field_simp [hp_ne]; ring
   rw [hdecomp]
-  have hcmp := choose_mul_pow_div_mem_pIntegrals (p := p) hm_lt (by lia)
+  have hcmp := choose_mul_pow_div_mem_pIntegrals (k := k) (m := m) (p := p) (by lia)
   have H x := choose_two_mul_succ_mul_div_eq x hm_lt
   apply sub_mem
   · rw [mul_assoc, mul_div_assoc]
@@ -568,7 +568,7 @@ private lemma bernoulli_even_term_mem_pIntegrals {k m p : ℕ} (hm_lt : m < k) [
     · simp
 
 /- The full remainder sum in Faulhaber's formula is `p`-integral. -/
-private lemma faulhaber_sum_mem_pIntegrals {k p : ℕ} (hk : k > 0) [Fact p.Prime]
+private lemma faulhaber_sum_mem_pIntegrals {k p : ℕ} [Fact p.Prime]
     (ih : ∀ m, 0 < m → m < k →
       (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) ∈ pIntegrals p) :
     (∑ i ∈ range (2 * k),
@@ -647,7 +647,7 @@ private lemma not_dvd_den_bernoulli_add_indicator {k p : ℕ} (hk : k > 0) [Fact
     obtain ⟨T, hT⟩ := bernoulli_add_indicator_eq_sub (p := p) hk
     rw [hT]
     have hT_int : (T : ℚ) ∈ pIntegrals p := intCast_mem _ T
-    have hR := faulhaber_sum_mem_pIntegrals hk fun m hm_pos hm_lt ↦
+    have hR := faulhaber_sum_mem_pIntegrals fun m hm_pos hm_lt ↦
       mem_pIntegrals_iff_not_dvd_den.mpr (ih m hm_lt hm_pos)
     exact mem_pIntegrals_iff_not_dvd_den.mp (sub_mem hT_int hR)
 

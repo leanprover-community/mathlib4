@@ -238,7 +238,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
-lemma algebraMap_def [SMulCommClass R S A] :
+lemma algebraMap_def :
     algebraMap S (A ⊗[R] B) = includeLeftRingHom.comp (algebraMap S A) := rfl
 
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
@@ -249,7 +249,7 @@ instance instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 
 @[simp]
-theorem algebraMap_apply [SMulCommClass R S A] (r : S) :
+theorem algebraMap_apply (r : S) :
     algebraMap S (A ⊗[R] B) r = (algebraMap S A) r ⊗ₜ 1 :=
   rfl
 
@@ -262,11 +262,11 @@ def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
   { includeLeftRingHom with commutes' := by simp }
 
 @[simp]
-theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
+theorem includeLeft_apply (a : A) :
     (includeLeft : A →ₐ[S] A ⊗[R] B) a = a ⊗ₜ 1 :=
   rfl
 
-@[simp] theorem toLinearMap_includeLeft [SMulCommClass R S A] :
+@[simp] theorem toLinearMap_includeLeft :
     (includeLeft : A →ₐ[S] A ⊗[R] B).toLinearMap = (AlgebraTensorModule.mk R S A B).flip 1 := rfl
 
 /-- The algebra morphism `B →ₐ[R] A ⊗[R] B` sending `b` to `1 ⊗ₜ b`. -/
@@ -650,7 +650,7 @@ lemma Algebra.TensorProduct.includeRight_surjective (h : Function.Surjective (al
 
 lemma Algebra.TensorProduct.includeLeft_surjective
     (S A : Type*) [CommSemiring S] [Semiring A] [Algebra S A] [Algebra R A]
-    [SMulCommClass R S A] (h : Function.Surjective (algebraMap R T)) :
+    (h : Function.Surjective (algebraMap R T)) :
     Function.Surjective (includeLeft : A →ₐ[S] A ⊗[R] T) :=
   TensorProduct.flip_mk_surjective _ h
 
