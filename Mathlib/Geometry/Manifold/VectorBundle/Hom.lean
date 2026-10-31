@@ -806,7 +806,7 @@ lemma ContMDiffWithinAt.clm_bundle_of_apply₂_simpler
       CMDiffAt[s] n
         (fun m ↦ TotalSpace.mk' (E := fun (x : B) ↦ (E₂ x →L[𝕜] E₃ x))
         (F₂ →L[𝕜] F₃) m (ψ m (σ m))) x :=
-    ContMDiffWithinAt.clm_bundle_of_apply (φ := fun m ↦ ψ m (σ m)) (fun τ hτ ↦ h σ hσ τ hτ )
+    ContMDiffWithinAt.clm_bundle_of_apply (φ := fun m ↦ ψ m (σ m)) (fun τ hτ ↦ h σ hσ τ hτ)
   -- then to conclude that `ψ` is C^n at `x`.
   exact ContMDiffWithinAt.clm_bundle_of_apply (E₁ := E₁) (F₁ := F₁) (x := x) aux
 
