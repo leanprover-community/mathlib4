@@ -18,6 +18,9 @@ In this file, we prove that `Module.Invertible` is a local property.
 ## Main results
 * `Module.Invertible.of_isLocalized_maximal`: Let `M` be a finite `R`-module, then `M` is invertible
   if `Mₘ` is invertible for any maximal ideal `m` of `R`.
+* `FinitePresentation.of_finite_of_flat_of_rankAtStalk_constant`:
+  Let `M` be a finite flat `R`-module. If `rankAtStalk M` is constant on maximal ideals of `R`,
+  then `M` is finitely presented.
 -/
 
 public section
@@ -26,6 +29,8 @@ namespace Module
 
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
+/-- Let `M` be a finite flat `R`-module. If `rankAtStalk M` is constant on maximal ideals of `R`,
+then `M` is finitely presented. -/
 theorem FinitePresentation.of_finite_of_flat_of_rankAtStalk_constant [Module.Flat R M] (n : ℕ)
     (h : ∀ (p : Ideal R) [p.IsMaximal], rankAtStalk M ⟨p, inferInstance⟩ = n) :
     Module.FinitePresentation R M := by
@@ -44,6 +49,7 @@ open IsLocalizedModule IsLocalization
 
 open scoped TensorProduct
 
+/-- A variant of `Module.Invertible.of_localized_maximal` that accepts `IsLocalizedModule`. -/
 theorem Invertible.of_isLocalized_maximal
     (Rₚ : ∀ (m : Ideal R) [m.IsMaximal], Type*)
     [∀ (m : Ideal R) [m.IsMaximal], CommRing (Rₚ m)]
