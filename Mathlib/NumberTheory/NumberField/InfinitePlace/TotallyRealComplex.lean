@@ -110,9 +110,8 @@ instance _root_.IntermediateField.isTotallyReal_bot [CharZero K] :
   IsTotallyReal.ofRingEquiv (IntermediateField.botEquiv ℚ K).symm.toRingEquiv
 
 instance _root_.Subfield.isTotallyReal_bot [CharZero K] :
-    IsTotallyReal (⊥ : Subfield K) := by
-  rw [Subfield.bot_eq_of_charZero]
-  exact IsTotallyReal.ofRingEquiv (algebraMap ℚ K).rangeRestrictFieldEquiv
+    IsTotallyReal (⊥ : Subfield K) :=
+  IsTotallyReal.ofRingEquiv (Subfield.botEquivRat K).symm
 
 section maximalRealSubfield
 
