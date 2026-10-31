@@ -37,7 +37,7 @@ the number of elements of word length at most `n`.
 * When the index type is finite, `wordBall n` is a finite set, hence `growth n` is the actual
   cardinality.
 * Growth comparison uses natural coefficients, which is enough for cardinalities. Open the `Growth`
-  locale for the notations `f ⪰ᵍ g` and `f ∼ᵍ g`.
+  locale for the notations `f ≽ᵍ g` and `f ∼ᵍ g`.
 
 ## Tags
 
@@ -48,7 +48,7 @@ growth of groups, word ball, geometric group theory
 
 open Set
 
-/-- `f` dominates `g` (written `f ⪰ᵍ g`) if `g` is bounded by a rescaling of `f`. -/
+/-- `f` dominates `g` (written `f ≽ᵍ g`) if `g` is bounded by a rescaling of `f`. -/
 def Function.GrowthDominates (f g : ℕ → ℕ) : Prop :=
   ∃ C α : ℕ, ∀ n, g n ≤ C * f (α * n)
 
@@ -57,7 +57,7 @@ def Function.GrowthEquivalent (f g : ℕ → ℕ) : Prop :=
   f.GrowthDominates g ∧ g.GrowthDominates f
 
 @[inherit_doc Function.GrowthDominates]
-scoped[Growth] infix:50 " ⪰ᵍ " => Function.GrowthDominates
+scoped[Growth] infix:50 " ≽ᵍ " => Function.GrowthDominates
 
 @[inherit_doc Function.GrowthEquivalent]
 scoped[Growth] infix:50 " ∼ᵍ " => Function.GrowthEquivalent
