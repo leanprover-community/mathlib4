@@ -572,13 +572,11 @@ theorem toLinearMap_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ
   rfl
 
 instance : NPow (M₁ →L[R₁] M₁) where
-  npow := npowRec
+  npow n f :=
+    { toLinearMap := f.toLinearMap ^ n
+      cont := f.continuous.iterate n }
 
 instance : IsNPowApplyEqIterate (M₁ →L[R₁] M₁) where
-  pow_apply_eq_iterate f n x := by
-    induction n generalizing x with
-    | zero => rfl
-    | succ n ih => rw [Function.iterate_succ_apply]; exact ih (f x)
 
 @[deprecated (since := "2026-05-20")] alias coe_mul := toLinearMap_mul
 

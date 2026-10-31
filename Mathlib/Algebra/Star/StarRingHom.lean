@@ -185,12 +185,22 @@ theorem id_comp (f : A →⋆ₙ+* B) : (NonUnitalStarRingHom.id _).comp f = f :
 theorem comp_id (f : A →⋆ₙ+* B) : f.comp (NonUnitalStarRingHom.id _) = f :=
   ext fun _ => rfl
 
+instance : One (A →⋆ₙ+* A) where one := .id A
+instance : Mul (A →⋆ₙ+* A) where mul := comp
+instance : Pow (A →⋆ₙ+* A) Nat where
+  pow f n :=
+    { toFun := f^[n]
+      map_mul' := by simp
+      map_zero' := by simp
+      map_add' := by simp
+      map_star' := Nat.rec (fun _ => rfl)
+        (fun n ih a => (congrArg f^[n] (map_star f a)).trans (ih (f a))) n }
+
 instance : Monoid (A →⋆ₙ+* A) where
-  mul := comp
   mul_assoc := comp_assoc
-  one := NonUnitalStarRingHom.id A
   one_mul := id_comp
   mul_one := comp_id
+  npow n f := f ^ n
 
 @[simp]
 theorem coe_one : ((1 : A →⋆ₙ+* A) : A → A) = id :=
