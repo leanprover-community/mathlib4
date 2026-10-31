@@ -333,8 +333,8 @@ lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j
 /-- We can characterize elements in an admissible list as exactly those for which
 `simplicialEvalσ` takes the same value twice in a row. -/
 lemma mem_isAdmissible_iff (hL : IsAdmissible m L) (j : ℕ) :
-    j ∈ L ↔ j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
-  exact ⟨lt_and_eval_eq_eval_add_one_of_mem_isAdmissible L hL j,
+    j ∈ L ↔ j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) :=
+  ⟨lt_and_eval_eq_eval_add_one_of_mem_isAdmissible L hL j,
     fun h ↦ mem_isAdmissible_of_lt_and_eval_eq_eval_add_one L hL j h.2⟩
 
 end MemIsAdmissible

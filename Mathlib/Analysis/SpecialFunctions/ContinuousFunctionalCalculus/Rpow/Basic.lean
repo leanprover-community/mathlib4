@@ -748,7 +748,7 @@ omit [T2Space A] [IsSemitopologicalRing A] in
 lemma _root_.IsStrictlyPositive.rpow (a : A) (y : ℝ) (ha : IsStrictlyPositive a := by cfc_tac) :
     IsStrictlyPositive (a ^ y) := by grind
 
-lemma inverse_rpow (a : A) (x : ℝ) (hx : x ≠ 0) (ha : IsStrictlyPositive a := by cfc_tac) :
+lemma inverse_rpow (a : A) (x : ℝ) (ha : IsStrictlyPositive a := by cfc_tac) :
     Ring.inverse (a ^ x) = a ^ (-x) := by
   have : a ^ (-x) = (a ^ x) ^ (-1 : ℝ) := by
     rw [rpow_rpow (ha := by grind)]
