@@ -332,6 +332,21 @@ theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[
     (f : M [⋀^ι]→L[R] N) : ⇑(g.compContinuousAlternatingMap f) = g ∘ f :=
   rfl
 
+@[simp]
+lemma zero_compContinuousLinearMap (g : M' →L[R] M) :
+    (0 : M [⋀^ι]→L[R] N).compContinuousLinearMap g = 0 := by
+  ext; simp
+
+@[simp]
+lemma _root_.ContinuousLinearMap.compContinuousAlternatingMap_zero (g : N →L[R] N') :
+    g.compContinuousAlternatingMap (0 : M [⋀^ι]→L[R] N) = 0 := by
+  ext; simp
+
+@[simp]
+lemma _root_.ContinuousLinearMap.zero_compContinuousAlternatingMap :
+    (0 : N →L[R] N').compContinuousAlternatingMap (f : M [⋀^ι]→L[R] N) = 0 := by
+  ext; simp
+
 /-- A continuous linear equivalence of domains
 defines an equivalence between continuous alternating maps.
 
@@ -477,6 +492,8 @@ section IsTopologicalAddGroup
 
 variable [IsTopologicalAddGroup N]
 
+-- TODO: can this instance be generalised to `ContinuousNeg`?
+-- the Add instances assumes only ContinuousAdd, for example
 instance : Neg (M [⋀^ι]→L[R] N) :=
   ⟨fun f => { -f.toAlternatingMap with toContinuousMultilinearMap := -f.1 }⟩
 
