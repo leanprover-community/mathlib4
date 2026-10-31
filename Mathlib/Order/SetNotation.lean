@@ -126,7 +126,7 @@ instance : SupSet (Set α) :=
 def sInter (S : Set (Set α)) : Set α :=
   sInf S
 
-/-- Notation for `Set.sInter` Intersection of a set of sets. -/
+/-- Notation for `Set.sInter`. Intersection of a set of sets. -/
 prefix:110 "⋂₀ " => sInter
 
 /-- Union of a set of sets. -/

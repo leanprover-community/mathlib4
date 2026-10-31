@@ -151,7 +151,7 @@ theorem coe_sInf {S : Set (Closeds α)} : (↑(sInf S) : Set α) = ⋂ i ∈ S, 
   rfl
 
 @[simp]
-lemma coe_sSup {S : Set (Closeds α)} : ((sSup S : Closeds α) : Set α) =
+lemma coe_sSup {S : Set (Closeds α)} : ((⨆₀ S : Closeds α) : Set α) =
     closure (⋃₀ ((↑) '' S)) := by rfl
 
 @[simp, norm_cast]
