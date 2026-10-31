@@ -143,18 +143,13 @@ instance : Mul (Poly α) := ⟨fun f g => ⟨f * g, f.2.mul g.2⟩⟩
 
 instance : IsMulApply (Poly α) where
 
-instance : SMul ℤ (Poly α) where
+instance {R : Type*} [SMul R ℤ] [IsScalarTower R ℤ ℤ] : SMul R (Poly α) where
   smul c f := ⟨c • f, by
-    have : c • ⇑f = (fun _ ↦ c) * ⇑f := rfl
+    have : c • ⇑f = (fun _ ↦ c • 1) * ⇑f := by ext; simp
     rw [this]
-    exact (IsPoly.const c).mul f.2⟩
+    exact (IsPoly.const _).mul f.2⟩
 
-instance : IsSMulApply ℤ (Poly α) where
-
-instance : SMul ℕ (Poly α) where
-  smul c f := (c : ℤ) • f
-
-instance : IsSMulApply ℕ (Poly α) where
+instance {R : Type*} [SMul R ℤ] [IsScalarTower R ℤ ℤ] : IsSMulApply R (Poly α) where
 
 instance : Pow (Poly α) ℕ where
   pow f n := ⟨f ^ n, by
