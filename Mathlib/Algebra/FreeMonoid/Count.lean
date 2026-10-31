@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.TypeTags.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `List.count` as a bundled homomorphism
 

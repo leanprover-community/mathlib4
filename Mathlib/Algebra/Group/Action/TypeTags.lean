@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.TypeTags.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive and Multiplicative for group actions
 

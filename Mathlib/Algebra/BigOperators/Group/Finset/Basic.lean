@@ -173,7 +173,7 @@ theorem prod_filter_xor (p q : ι → Prop) [DecidablePred p] [DecidablePred q] 
 theorem _root_.IsCompl.prod_mul_prod [Fintype ι] {s t : Finset ι} (h : IsCompl s t) (f : ι → M) :
     (∏ i ∈ s, f i) * ∏ i ∈ t, f i = ∏ i, f i :=
   (Finset.prod_disjUnion h.disjoint).symm.trans <| by
-    classical rw [Finset.disjUnion_eq_union, ← Finset.sup_eq_union, h.sup_eq_top]; rfl
+    classical rw [Finset.disjUnion_eq_union, h.sup_eq_top]; rfl
 
 /-- Multiplying the products of a function over `s` and over `sᶜ` gives the whole product.
 For a version expressed with subtypes, see `Fintype.prod_subtype_mul_prod_subtype`. -/
@@ -1161,6 +1161,10 @@ lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
 @[to_additive]
 lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by simp
+
+@[simp] theorem Int.natAbs_prod (s : Finset ι) (f : ι → ℤ) :
+    (∏ i ∈ s, f i).natAbs = ∏ i ∈ s, (f i).natAbs := by
+  induction s using Finset.cons_induction with grind [natAbs_mul]
 
 theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by

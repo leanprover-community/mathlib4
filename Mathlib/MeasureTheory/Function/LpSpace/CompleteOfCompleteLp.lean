@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # If an `Lp` space is complete, so is the target space
 -/

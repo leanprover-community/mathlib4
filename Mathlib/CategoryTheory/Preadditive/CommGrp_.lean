@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.CommGrp_
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commutative group objects in additive categories.
 
