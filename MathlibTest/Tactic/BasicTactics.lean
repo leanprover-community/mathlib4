@@ -65,4 +65,4 @@ example (p q : Prop) : p → q → (p ∧ q) ∧ (p ∧ q ∧ p) := by
   all_goals constructor
   any_goals assumption
   constructor
-  any_goals assumption
+  all_goals assumption
