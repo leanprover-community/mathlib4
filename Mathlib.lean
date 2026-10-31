@@ -3140,6 +3140,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 public import Mathlib.CategoryTheory.Limits.Sifted
 public import Mathlib.CategoryTheory.Limits.Skeleton
 public import Mathlib.CategoryTheory.Limits.SmallComplete
+public import Mathlib.CategoryTheory.Limits.Types.CardinalFiltered
 public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 public import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
