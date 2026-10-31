@@ -39,6 +39,10 @@ instance : IsStableUnderRetracts (⊥ : ObjectProperty C) where
 instance : IsStableUnderRetracts (⊤ : ObjectProperty C) where
   of_retract _ _ := by trivial
 
+instance {P₁ P₂ : ObjectProperty C} [P₁.IsStableUnderRetracts] [P₂.IsStableUnderRetracts] :
+    (P₁ ⊓ P₂).IsStableUnderRetracts where
+  of_retract r h := ⟨P₁.prop_of_retract r h.1, P₂.prop_of_retract r h.2⟩
+
 instance {ι : Sort*} (P : ι → ObjectProperty C) [∀ i, (P i).IsStableUnderRetracts] :
     (⨅ i, P i).IsStableUnderRetracts where
   of_retract r h := by
@@ -53,6 +57,9 @@ variable [P.IsStableUnderRetracts]
 
 instance : P.IsClosedUnderIsomorphisms where
   of_iso i h := IsStableUnderRetracts.of_retract i.symm.retract h
+
+instance {D : Type*} [Category* D] (F : D ⥤ C) : (P.inverseImage F).IsStableUnderRetracts where
+  of_retract r h := P.prop_of_retract (r.map _) h
 
 -- see Note [lower instance priority]
 instance (priority := 100) [HasZeroObject C] [P.Nonempty] : P.ContainsZero where
