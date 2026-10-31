@@ -326,6 +326,10 @@ lemma mem_isAdmissible_of_eval_eq_eval_add_one (hL : IsAdmissible m L)
     have := simplicialEvalσ_monotone L (a := a + 1)
     rcases lt_trichotomy j a with h | h | h <;> grind
 
+@[deprecated (since := "2026-10-31")]
+alias mem_isAdmissible_of_lt_and_eval_eq_eval_add_one :=
+  mem_isAdmissible_of_eval_eq_eval_add_one
+
 lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j : ℕ) (hj : j ∈ L) :
     j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
   grind [List.mem_iff_getElem]

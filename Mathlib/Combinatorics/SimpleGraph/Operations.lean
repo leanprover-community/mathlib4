@@ -78,6 +78,9 @@ theorem edgeSet_replaceVertex : (G.replaceVertex s t).edgeSet =
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_sdiff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by grind]
 
+@[deprecated (since := "2026-10-31")]
+alias edgeSet_replaceVertex_of_adj := edgeSet_replaceVertex
+
 variable [Fintype V] [DecidableRel G.Adj]
 
 instance : DecidableRel (G.replaceVertex s t).Adj := inferInstanceAs <| DecidableRel (mk _ _ _).Adj
@@ -93,6 +96,9 @@ theorem edgeFinset_replaceVertex : (G.replaceVertex s t).edgeFinset =
   apply Finset.coe_injective
   push_cast
   exact G.edgeSet_replaceVertex
+
+@[deprecated (since := "2026-10-31")]
+alias edgeFinset_replaceVertex_of_adj := edgeFinset_replaceVertex
 
 lemma disjoint_sdiff_neighborFinset_image :
     Disjoint (G.edgeFinset \ G.incidenceFinset t) ((G.neighborFinset s).image (s(·, t))) := by
