@@ -33,8 +33,8 @@ theorem toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype
   ext
   simp
 
-theorem toFinset_offDiag {s : Set α} [Fintype s] [Fintype s.offDiag] :
-    s.offDiag.toFinset = s.toFinset.offDiag :=
+theorem toFinset_offDiag {s : Set α} [Fintype s] [Fintype s.offDiagonal] :
+    s.offDiagonal.toFinset = s.toFinset.offDiag :=
   Finset.ext <| by simp
 
 end Set
