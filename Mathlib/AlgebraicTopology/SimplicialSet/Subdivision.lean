@@ -6,12 +6,14 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
-public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.Monomorphisms
+public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonemptyFiniteChains
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonsingularColimit
-public import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
-public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
+
+import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
+import Mathlib.AlgebraicTopology.SimplicialSet.Monomorphisms
+import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 
 /-!
 # The subdivision functors
@@ -69,13 +71,11 @@ noncomputable def sd : SSet.{u} ⥤ SSet.{u} :=
 noncomputable def ex : SSet.{u} ⥤ SSet.{u} :=
   Presheaf.restrictedULiftYoneda.{0} SimplexCategory.sd
 
-attribute [local implicit_reducible] stdSimplex in
 /-- The adjunction between the subdivision functor `sd` and `ex`. -/
 @[no_expose]
 noncomputable def sdExAdjunction : sd.{u} ⊣ ex :=
-  Presheaf.uliftYonedaAdjunction.{0}
-    (SSet.stdSimplex.{u}.leftKanExtension SimplexCategory.sd)
-    (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.sd)
+  (Presheaf.restrictedULiftYonedaAdjunction.{0}
+    (uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.sd) :)
 
 instance : sd.{u}.IsLeftAdjoint := sdExAdjunction.isLeftAdjoint
 
@@ -94,7 +94,7 @@ namespace stdSimplex
 /-- The natural isomorphism `stdSimplex ⋙ sd ≅ SimplexCategory.sd`. -/
 @[no_expose]
 noncomputable def sdIso : stdSimplex.{u} ⋙ sd ≅ SimplexCategory.sd :=
-  Presheaf.isExtensionAlongULiftYoneda _
+  (asIso (uliftYoneda.{u}.leftKanExtensionUnit SimplexCategory.sd.{u})).symm
 
 open Functor in
 /-- The natural isomorphism `stdSimplex ⋙ sd' ≅ SimplexCategory.sd`. -/
