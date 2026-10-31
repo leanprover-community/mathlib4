@@ -23,7 +23,7 @@ usual classes extend `LE` and/or `LT` while these classes take a relation as an 
 
 universe u v
 
-variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop}
+variable {α : Type u} {β : Type v} {r r' : α → α → Prop} {s : β → β → Prop}
 
 open Function
 
@@ -411,9 +411,14 @@ instance (r : α → α → Prop) [i : WellFounded r] (f : β → α) : WellFoun
 instance (f : α → ℕ) : WellFounded (InvImage (· < ·) f) :=
   (measure f).wf
 
-theorem Subrelation.isWellFounded (r : α → α → Prop) [i : WellFounded r] {s : α → α → Prop}
-    (h : Subrelation s r) : WellFounded s :=
-  h.wf i
+theorem Acc.anti (h : r' ≤ r) {a : α} (ha : Acc r a) : Acc r' a :=
+  Subrelation.accessible @h ha
+
+theorem WellFounded.anti [WellFounded r] (h : r' ≤ r) : WellFounded r' :=
+  Subrelation.wf @h ‹_›
+
+@[deprecated (since := "2026-09-01")] alias WellFounded.mono := WellFounded.anti
+@[deprecated (since := "2026-09-01")] alias Subrelation.isWellFounded := WellFounded.anti
 
 @[to_dual]
 instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
