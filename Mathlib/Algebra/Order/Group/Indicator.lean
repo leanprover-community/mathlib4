@@ -58,6 +58,20 @@ lemma mulSupport_iSup [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι →
 lemma mulSupport_iInf [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι → α → M) :
     mulSupport (fun x ↦ ⨅ i, f i x) ⊆ ⋃ i, mulSupport (f i) := mulSupport_iSup (M := Mᵒᵈ) f
 
+@[simp]
+lemma support_abs {M : Type*} [AddGroup M] [LinearOrder M] [AddLeftMono M]
+    [AddRightMono M] {f : α → M} : support |f| = support f := by
+  ext; simp
+
+@[to_additive]
+lemma mulSupport_mul_of_one_le {M : Type*} [MulOneClass M] [PartialOrder M] [MulLeftMono M]
+    [MulLeftStrictMono M] {f g : α → M} (hf : 1 ≤ f) (hg : 1 ≤ g) :
+    mulSupport (f * g) = mulSupport f ∪ mulSupport g := by
+  refine le_antisymm (mulSupport_binop_subset _ (one_mul _) f g) ?_
+  rintro x (hx | hx)
+  · exact (one_lt_mul_of_lt_of_le' ((hf x).lt_of_ne' hx) (hg x)).ne'
+  · exact (one_lt_mul_of_le_of_lt' (hf x) ((hg x).lt_of_ne' hx)).ne'
+
 end Function
 
 namespace Set
