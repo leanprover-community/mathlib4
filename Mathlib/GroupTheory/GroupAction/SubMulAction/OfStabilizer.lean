@@ -189,7 +189,7 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
   obtain ⟨g, hgx⟩ := exists_smul_eq G (x (Fin.last n)) a
   have H : ∀ i, Fin.Embedding.init (g • x) i ∈ ofStabilizer G a := fun i ↦ by
     simp only [mem_ofStabilizer_iff,
-      Nat.succ_eq_add_one, ← hgx, ← smul_apply, ne_eq]
+      Nat.succ_eq_add_one, ← hgx, ← Function.Embedding.smul_apply, ne_eq]
     suffices Fin.Embedding.init (g • x) i = (g • x) i.castSucc by
       simp [this]
     simp [Fin.Embedding.init, Fin.init_def]
@@ -198,7 +198,7 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
   rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
   · simpa [ofStabilizer.snoc] using!
       Subtype.ext_iff.mp <| Function.Embedding.codRestrict_apply _ _ H i
-  · simpa only [smul_apply, ofStabilizer.snoc, Fin.Embedding.snoc_last]
+  · simpa only [Function.Embedding.smul_apply, ofStabilizer.snoc, Fin.Embedding.snoc_last]
 
 end SubMulAction
 
