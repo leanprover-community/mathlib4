@@ -36,20 +36,20 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [I
   [SMulCommClass ℝ A A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-lemma nnnorm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
+lemma nnNorm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖₊ = ‖a‖₊ ^ (r : ℝ) :=
-  NNReal.monotone_nnrpow_const r |>.monotoneOn _ |>.nnnorm_cfcₙ _ _
+  NNReal.monotone_nnrpow_const r |>.monotoneOn _ |>.nnNorm_cfcₙ _ _
 
 lemma norm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖ = ‖a‖ ^ (r : ℝ) :=
-  congr(NNReal.toReal $(nnnorm_nnrpow a hr ha))
+  congr(NNReal.toReal $(nnNorm_nnrpow a hr ha))
 
-lemma nnnorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
+lemma nnNorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
   rw [sqrt_eq_nnrpow, NNReal.sqrt_eq_rpow]
-  exact nnnorm_nnrpow a (by simp) ha
+  exact nnNorm_nnrpow a (by simp) ha
 
 lemma norm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖ = √‖a‖ := by
-  simpa using congr(NNReal.toReal $(nnnorm_sqrt a ha))
+  simpa using congr(NNReal.toReal $(nnNorm_sqrt a ha))
 
 variable [ContinuousStar A] [CompleteSpace A]
 
@@ -69,15 +69,15 @@ variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
   [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
   [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-lemma nnnorm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
+lemma nnNorm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖₊ = ‖a‖₊ ^ r := by
   lift r to ℝ≥0 using hr.le
-  rw [← nnrpow_eq_rpow, ← nnnorm_nnrpow a]
+  rw [← nnrpow_eq_rpow, ← nnNorm_nnrpow a]
   all_goals simpa
 
 lemma norm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖ = ‖a‖ ^ r :=
-  congr(NNReal.toReal $(nnnorm_rpow a hr ha))
+  congr(NNReal.toReal $(nnNorm_rpow a hr ha))
 
 lemma continuousOn_rpow [ContinuousStar A] [CompleteSpace A] (r : ℝ) :
     ContinuousOn (· ^ r) {a : A | IsStrictlyPositive a} := by

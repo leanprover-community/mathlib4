@@ -567,7 +567,7 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
 @[simp 1100, rclike_simps]
 theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 
-@[simp 1100, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
+@[simp 1100, rclike_simps] lemma nnNorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnNorm]
 
 @[simp 1100, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
 
@@ -662,33 +662,33 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 
-@[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
+@[simp, rclike_simps, norm_cast] lemma nnNorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnNorm]
 
 @[simp, rclike_simps]
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖ = ofNat(n) :=
   norm_natCast n
 
 @[simp, rclike_simps]
-lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖₊ = ofNat(n) :=
-  nnnorm_natCast n
+lemma nnNorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖₊ = ofNat(n) :=
+  nnNorm_natCast n
 
 lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
-lemma nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
+lemma nnNorm_two : ‖(2 : K)‖₊ = 2 := nnNorm_ofNat 2
 
 @[simp, rclike_simps, norm_cast]
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
   rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
 
 @[simp, rclike_simps, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]; rfl
+lemma nnNorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnNorm]; rfl
 
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in
-lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
-    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
+lemma nnNorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnNorm_smul (n : K) x
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
@@ -823,8 +823,8 @@ lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
   simpa [NNRat.cast_smul_eq_nnqsmul] using! norm_smul (q : K) x
 
 variable (K) in
-lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnnorm_smul (q : K) x
+lemma nnNorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnNorm_smul (q : K) x
 
 @[bound]
 lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=

@@ -468,7 +468,7 @@ theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
     (orderIsoRpow y hy).symm = orderIsoRpow (1 / y) (one_div_pos.2 hy) := by
   simp only [orderIsoRpow, one_div_one_div]; rfl
 
-theorem _root_.Real.nnnorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : ‖x ^ y‖₊ = ‖x‖₊ ^ y := by
+theorem _root_.Real.nnNorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : ‖x ^ y‖₊ = ‖x‖₊ ^ y := by
   ext; exact Real.norm_rpow_of_nonneg hx
 
 end NNReal
@@ -1018,7 +1018,7 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
   ⟨rpow_left_injective hx, rpow_left_surjective hx⟩
 
 lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
-    ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnnorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
+    ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnNorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
 
 lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) :
     (a + b) ^ p ≤ 2 ^ p * (a ^ p + b ^ p) := calc

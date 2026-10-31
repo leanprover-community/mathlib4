@@ -38,11 +38,11 @@ variable [NontrivialTopology E] [RingHomIsometric σ₁₂]
 @[simp] lemma norm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ = 1 :=
   f.toContinuousLinearMap.homothety_norm <| by simp
 
-@[simp] lemma nnnorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖₊ = 1 :=
+@[simp] lemma nnNorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖₊ = 1 :=
   Subtype.ext f.norm_toContinuousLinearMap
 
 @[simp] lemma enorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ₑ = 1 :=
-  congrArg _ f.nnnorm_toContinuousLinearMap
+  congrArg _ f.nnNorm_toContinuousLinearMap
 
 end
 
@@ -73,9 +73,9 @@ variable [NontrivialTopology E] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖ = 1 :=
   e.toLinearIsometry.norm_toContinuousLinearMap
 
-@[simp] lemma nnnorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
+@[simp] lemma nnNorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖₊ = 1 :=
-  e.toLinearIsometry.nnnorm_toContinuousLinearMap
+  e.toLinearIsometry.nnNorm_toContinuousLinearMap
 
 @[simp] lemma enorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖ₑ = 1 :=
@@ -215,12 +215,12 @@ lemma opNNNorm_linearIsometryEquiv_comp [RingHomIsometric σ₁₂] (e : F ≃�
 /-- Precomposition with a linear isometry preserves the operator norm. -/
 @[simp]
 lemma opNorm_comp_linearIsometryEquiv [RingHomIsometric σ₂₃] (f : F →SL[σ₂₃] G)
-    (e : E ≃ₛₗᵢ[σ₁₂] F) : ‖f.comp (e : E →SL[σ₁₂] F)‖ = ‖f‖ := by simp [← coe_nnnorm]
+    (e : E ≃ₛₗᵢ[σ₁₂] F) : ‖f.comp (e : E →SL[σ₁₂] F)‖ = ‖f‖ := by simp [← coe_nnNorm]
 
 /-- Postcomposition with a linear isometry preserves the operator norm. -/
 @[simp]
 lemma opNorm_linearIsometryEquiv_comp [RingHomIsometric σ₁₂] (e : F ≃ₛₗᵢ[σ₂₃] G)
-    (f : E →SL[σ₁₂] F) : ‖(e : F →SL[σ₂₃] G).comp f‖ = ‖f‖ := by simp [← coe_nnnorm]
+    (f : E →SL[σ₁₂] F) : ‖(e : F →SL[σ₂₃] G).comp f‖ = ‖f‖ := by simp [← coe_nnNorm]
 
 /-- Precomposition with a linear isometry preserves the operator norm. -/
 @[simp]
@@ -284,7 +284,7 @@ theorem norm_symm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ
     0 < ‖(e.symm : F →SL[σ₂₁] E)‖ :=
   pos_of_mul_pos_right (zero_lt_one.trans_le e.one_le_norm_mul_norm_symm) (norm_nonneg _)
 
-theorem nnnorm_symm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
+theorem nnNorm_symm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
     0 < ‖(e.symm : F →SL[σ₂₁] E)‖₊ :=
   e.norm_symm_pos
 
@@ -296,7 +296,7 @@ theorem subsingleton_or_norm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[�
   · right
     exact e.norm_symm_pos
 
-theorem subsingleton_or_nnnorm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[σ₁₂] F) :
+theorem subsingleton_or_nnNorm_symm_pos [RingHomIsometric σ₁₂] (e : E ≃SL[σ₁₂] F) :
     Subsingleton E ∨ 0 < ‖(e.symm : F →SL[σ₂₁] E)‖₊ :=
   subsingleton_or_norm_symm_pos e
 

@@ -158,7 +158,7 @@ private theorem norm_sq_eq_re_inner (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike
   · rw [← ENNReal.rpow_natCast, eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top
       (Lp.aestronglyMeasurable f), eLpNorm', ←
       ENNReal.rpow_mul, one_div, h_two]
-    simp [enorm_eq_nnnorm]
+    simp [enorm_eq_nnNorm]
   · refine (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top zero_lt_two (ε' := E) ?_).ne
     rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top
       (Lp.aestronglyMeasurable f)]

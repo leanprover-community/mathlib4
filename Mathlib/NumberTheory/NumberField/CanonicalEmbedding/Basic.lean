@@ -72,9 +72,9 @@ theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
   · rw [Pi.smul_apply, Complex.real_smul, map_mul, Complex.conj_ofReal]
     exact congrArg ((a : ℂ) * ·) hx
 
-theorem nnnorm_eq [NumberField K] (x : K) :
+theorem nnNorm_eq [NumberField K] (x : K) :
     ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
-  simp_rw [Pi.nnnorm_def, apply_at]
+  simp_rw [Pi.nnNorm_def, apply_at]
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
@@ -84,7 +84,7 @@ theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     · exact (hr.trans_le (norm_nonneg _)).not_ge
     · exact fun h => hr.not_ge (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
-    simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
+    simp_rw [← coe_nnNorm, nnNorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
 
 variable (K)
@@ -385,7 +385,7 @@ theorem continuous_normAtPlace (w : InfinitePlace K) :
 variable [NumberField K]
 
 open scoped Classical in
-theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
+theorem nnNorm_eq_sup_normAtPlace (x : mixedSpace K) :
     ‖x‖₊ = univ.sup fun w ↦ .mk (normAtPlace w x) (normAtPlace_nonneg w x) := by
   have :
       (univ : Finset (InfinitePlace K)) =
@@ -393,7 +393,7 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
       (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1)) := by
     ext; simp [isReal_or_isComplex]
   rw [this, sup_union, univ.sup_image, univ.sup_image,
-    Prod.nnnorm_def, Pi.nnnorm_def, Pi.nnnorm_def]
+    Prod.nnNorm_def, Pi.nnNorm_def, Pi.nnNorm_def]
   congr
   · ext w
     simp [normAtPlace_apply_of_isReal w.prop]
@@ -404,7 +404,7 @@ set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
-  rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
+  rw [← coe_nnNorm, nnNorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
   simp
 

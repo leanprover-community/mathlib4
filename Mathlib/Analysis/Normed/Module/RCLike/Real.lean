@@ -114,12 +114,12 @@ theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
 theorem range_norm : range (norm : E → ℝ) = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 norm_nonneg) fun _ => exists_norm_eq E
 
-theorem nnnorm_surjective : Surjective (nnnorm : E → ℝ≥0) := fun c =>
+theorem nnNorm_surjective : Surjective (nnNorm : E → ℝ≥0) := fun c =>
   (exists_norm_eq E c.coe_nonneg).imp fun _ h => NNReal.eq h
 
 @[simp]
-theorem range_nnnorm : range (nnnorm : E → ℝ≥0) = univ :=
-  (nnnorm_surjective E).range_eq
+theorem range_nnNorm : range (nnNorm : E → ℝ≥0) = univ :=
+  (nnNorm_surjective E).range_eq
 
 variable {E} in
 /-- In a nontrivial real normed space, a sphere is nonempty if and only if its radius is

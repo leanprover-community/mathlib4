@@ -457,7 +457,7 @@ theorem norm_inner_le_norm (x y : E) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
   let : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
   exact InnerProductSpace.Core.norm_inner_le_norm x y
 
-theorem nnnorm_inner_le_nnnorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
+theorem nnNorm_inner_le_nnNorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
   norm_inner_le_norm x y
 
 lemma enorm_inner_le_enorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
@@ -498,14 +498,14 @@ theorem parallelogram_law_with_norm (x y : E) :
   simp_rw [sq, parallelogram_law_with_norm_mul 𝕜 x y]
 
 include 𝕜 in
-theorem parallelogram_law_with_nnnorm_mul (x y : E) :
+theorem parallelogram_law_with_nnNorm_mul (x y : E) :
     ‖x + y‖₊ * ‖x + y‖₊ + ‖x - y‖₊ * ‖x - y‖₊ = 2 * (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) :=
   Subtype.ext <| parallelogram_law_with_norm_mul 𝕜 x y
 
 include 𝕜 in
-theorem parallelogram_law_with_nnnorm (x y : E) :
+theorem parallelogram_law_with_nnNorm (x y : E) :
     ‖x + y‖₊ ^ 2 + ‖x - y‖₊ ^ 2 = 2 * (‖x‖₊ ^ 2 + ‖y‖₊ ^ 2) := by
-  simp_rw [sq, parallelogram_law_with_nnnorm_mul 𝕜 x y]
+  simp_rw [sq, parallelogram_law_with_nnNorm_mul 𝕜 x y]
 
 variable {𝕜}
 

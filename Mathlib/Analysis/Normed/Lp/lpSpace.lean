@@ -310,12 +310,12 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
   · apply memℓp_gen
     dsimp only [Pi.smul_apply]
     have := (hf.summable hp).mul_left (↑(‖c‖₊ ^ p.toReal) : ℝ)
-    simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
+    simp_rw [← coe_nnNorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
       ← NNReal.mul_rpow] at this ⊢
     refine NNReal.summable_of_le ?_ this
     intro i
     gcongr
-    apply nnnorm_smul_le
+    apply nnNorm_smul_le
 
 theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x => c * f x) p :=
   hf.const_smul c
@@ -713,20 +713,20 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     exact norm_le_of_forall_le (by positivity)
       fun i ↦ norm_smul_le c (f i) |>.trans <| hfc.1 ⟨i, rfl⟩
   · let inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
-    have coe_nnnorm : ∀ f : lp E p, ↑‖f‖₊ = ‖f‖ := fun _ => rfl
+    have coe_nnNorm : ∀ f : lp E p, ↑‖f‖₊ = ‖f‖ := fun _ => rfl
     suffices ‖c • f‖₊ ^ p.toReal ≤ (‖c‖₊ * ‖f‖₊) ^ p.toReal by
       rwa [NNReal.rpow_le_rpow_iff hp] at this
     clear_value inst
     rw [NNReal.mul_rpow]
     have hLHS := lp.hasSum_norm hp (c • f)
     have hRHS := (lp.hasSum_norm hp f).mul_left (‖c‖ ^ p.toReal)
-    simp_rw [← coe_nnnorm, ← _root_.coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul,
+    simp_rw [← coe_nnNorm, ← _root_.coe_nnNorm, ← NNReal.coe_rpow, ← NNReal.coe_mul,
       NNReal.hasSum_coe] at hRHS hLHS
     refine hasSum_mono hLHS hRHS fun i => ?_
     dsimp only
     rw [← NNReal.mul_rpow, lp.coeFn_smul, Pi.smul_apply]
     gcongr
-    apply nnnorm_smul_le
+    apply nnNorm_smul_le
 
 instance [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (lp E p) :=
   IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le Fact.out).ne'

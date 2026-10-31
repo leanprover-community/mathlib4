@@ -110,16 +110,16 @@ theorem norm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
   refine ⟨le_trans two_mul_le_exp ((le_add_iff_nonneg_left (exp y)).mpr zero_le_one), ?_⟩
   exact le_trans (one_le_exp hynonneg) (le_add_of_nonneg_right (by simp [hynonneg]))
 
-theorem nnnorm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
+theorem nnNorm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
     ‖deriv (mulExpNegMulSq ε) x‖₊ ≤ 1 := by
-  rw [← NNReal.coe_le_coe, coe_nnnorm]
+  rw [← NNReal.coe_le_coe, coe_nnNorm]
   exact norm_deriv_mulExpNegMulSq_le_one hε x
 
 /-- For fixed `ε > 0`, the mapping `mulExpNegMulSq ε` is Lipschitz with constant `1` -/
 theorem lipschitzWith_one_mulExpNegMulSq (hε : 0 < ε) :
     LipschitzWith 1 (mulExpNegMulSq ε) := by
-  apply lipschitzWith_of_nnnorm_deriv_le differentiable_mulExpNegMulSq
-  exact nnnorm_deriv_mulExpNegMulSq_le_one hε
+  apply lipschitzWith_of_nnNorm_deriv_le differentiable_mulExpNegMulSq
+  exact nnNorm_deriv_mulExpNegMulSq_le_one hε
 
 theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegMulSq_one (hε : 0 < ε) (x : ℝ) :
     mulExpNegMulSq ε x = (√ε)⁻¹ * mulExpNegMulSq 1 (sqrt ε * x) := by

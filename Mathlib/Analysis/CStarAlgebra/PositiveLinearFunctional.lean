@@ -33,7 +33,7 @@ theorem norm_map_le_sqrt_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ← f.coe_toContinuousLinearMap, f.toContinuousLinearMap.le_opNorm (star e * e),
     norm_star_mul_self, he2, he2, one_mul, mul_one]
 
-theorem nnnorm_map_le_sqrt_opNNNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
+theorem nnNorm_map_le_sqrt_opNNNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ‖f x‖₊ ≤ ‖(f : A →L[ℂ] ℂ)‖₊.sqrt * ‖f (star x * x)‖₊.sqrt := by
   simp [NNReal.toReal_le, norm_map_le_sqrt_opNorm_mul]
 
@@ -41,7 +41,7 @@ theorem norm_map_sq_le_opNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ‖f x‖ ^ 2 ≤ ‖(f : A →L[ℂ] ℂ)‖ * ‖f (star x * x)‖ := by
   grw [norm_map_le_sqrt_opNorm_mul, mul_pow]; simp
 
-theorem nnnorm_map_sq_le_opNNNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
+theorem nnNorm_map_sq_le_opNNNorm_mul (f : A →P[ℂ] ℂ) (x : A) :
     ‖f x‖₊ ^ 2 ≤ ‖(f : A →L[ℂ] ℂ)‖₊ * ‖f (star x * x)‖₊ :=
   norm_map_sq_le_opNorm_mul _ _
 

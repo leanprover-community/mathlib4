@@ -514,7 +514,7 @@ instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ 
 end NormedField
 
 /-- The fundamental property of the operator norm of a continuous multilinear map:
-`‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
+`‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnNorm` version. -/
 theorem le_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) (m : ∀ i, E i) :
     ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
   NNReal.coe_le_coe.1 <| by
@@ -536,7 +536,7 @@ theorem isLeast_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) :
 theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by
-    simp only [opNNNorm_le_iff, prod_apply, Prod.nnnorm_def, max_le_iff, forall_and]
+    simp only [opNNNorm_le_iff, prod_apply, Prod.nnNorm_def, max_le_iff, forall_and]
 
 theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
@@ -545,7 +545,7 @@ theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMulti
 theorem opNNNorm_pi
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
     (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) : ‖pi f‖₊ = ‖f‖₊ :=
-  eq_of_forall_ge_iff fun _ ↦ by simpa [opNNNorm_le_iff, pi_nnnorm_le_iff] using forall_comm
+  eq_of_forall_ge_iff fun _ ↦ by simpa [opNNNorm_le_iff, pi_nnNorm_le_iff] using forall_comm
 
 theorem opNorm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
@@ -562,7 +562,7 @@ theorem norm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
   simp [norm_def, ContinuousLinearMap.norm_def, (Equiv.funUnique _ _).symm.surjective.forall]
 
 @[simp]
-theorem nnnorm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
+theorem nnNorm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
     ‖ofSubsingleton 𝕜 G G' i f‖₊ = ‖f‖₊ :=
   NNReal.eq <| norm_ofSubsingleton i f
 
@@ -583,7 +583,7 @@ theorem norm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
   rw [norm_ofSubsingleton]
   apply ContinuousLinearMap.norm_id_le
 
-theorem nnnorm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
+theorem nnNorm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ ≤ 1 :=
   norm_ofSubsingleton_id_le _ _ _
 
@@ -597,7 +597,7 @@ theorem norm_constOfIsEmpty [IsEmpty ι] (x : G) : ‖constOfIsEmpty 𝕜 E x‖
   · simpa using (constOfIsEmpty 𝕜 E x).le_opNorm 0
 
 @[simp]
-theorem nnnorm_constOfIsEmpty [IsEmpty ι] (x : G) : ‖constOfIsEmpty 𝕜 E x‖₊ = ‖x‖₊ :=
+theorem nnNorm_constOfIsEmpty [IsEmpty ι] (x : G) : ‖constOfIsEmpty 𝕜 E x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_constOfIsEmpty _ _ _
 
 end
@@ -775,10 +775,10 @@ theorem norm_mkPiAlgebraFin [NormOneClass A] :
 end
 
 @[simp]
-theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
+theorem nnNorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
   refine le_antisymm ?_ ?_
-  · refine opNNNorm_le_iff.2 fun m => (nnnorm_smul_le _ _).trans ?_
+  · refine opNNNorm_le_iff.2 fun m => (nnNorm_smul_le _ _).trans ?_
     rw [mul_right_comm]
     gcongr
     exact le_opNNNorm _ _
@@ -788,12 +788,12 @@ theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     intro m
     rw [div_mul_eq_mul_div, le_div_iff₀ hz]
     refine le_trans ?_ ((f.smulRight z).le_opNNNorm m)
-    rw [smulRight_apply, nnnorm_smul]
+    rw [smulRight_apply, nnNorm_smul]
 
 @[simp]
 theorem norm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖ = ‖f‖ * ‖z‖ :=
-  congr($(nnnorm_smulRight f z).toReal)
+  congr($(nnNorm_smulRight f z).toReal)
 
 @[simp]
 theorem norm_mkPiRing (z : G) : ‖ContinuousMultilinearMap.mkPiRing 𝕜 ι z‖ = ‖z‖ := by
@@ -1260,7 +1260,7 @@ theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖ = 1 := by
   simp [ContinuousLinearMap.norm_id]
 
-theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
+theorem nnNorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=
   NNReal.eq <| norm_ofSubsingleton_id ..
 

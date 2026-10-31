@@ -244,9 +244,9 @@ section Densely
 
 variable (α) [DenselyNormedField α]
 
-theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
+theorem denseRange_nnNorm : DenseRange (nnNorm : α → ℝ≥0) :=
   dense_of_exists_between fun _ _ hr =>
-    let ⟨x, h⟩ := exists_lt_nnnorm_lt α hr
+    let ⟨x, h⟩ := exists_lt_nnNorm_lt α hr
     ⟨‖x‖₊, ⟨x, rfl⟩, h⟩
 
 end Densely

@@ -38,9 +38,9 @@ we can still establish a form of spectral permanence.
 
 + `Unitary.spectrum_subset_circle`: The spectrum of a unitary element is contained in the unit
   sphere in `ℂ`.
-+ `IsSelfAdjoint.spectralRadius_eq_nnnorm`: The spectral radius of a selfadjoint element is equal
++ `IsSelfAdjoint.spectralRadius_eq_nnNorm`: The spectral radius of a selfadjoint element is equal
   to its norm.
-+ `IsStarNormal.spectralRadius_eq_nnnorm`: The spectral radius of a normal element is equal to
++ `IsStarNormal.spectralRadius_eq_nnNorm`: The spectral radius of a normal element is equal to
   its norm.
 + `spectralRadius_toReal_star_self_mul_self_eq_normSq`: The spectral radius of `a⋆ * a` is equal to
   the square of the norm of `a`.
@@ -99,10 +99,10 @@ end UnitarySpectrum
 section Quasispectrum
 
 open scoped NNReal in
-lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
+lemma CStarAlgebra.le_nnNorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
     {a : A} {x : ℝ≥0} (hx : x ∈ quasispectrum ℝ≥0 a) : x ≤ ‖a‖₊ := by
   rw [Unitization.quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ] at hx
-  simpa [Unitization.nnnorm_inr] using spectrum.le_nnnorm_of_mem hx
+  simpa [Unitization.nnNorm_inr] using spectrum.le_nnNorm_of_mem hx
 
 end Quasispectrum
 
@@ -114,12 +114,12 @@ variable {A : Type*} [CStarAlgebra A]
 
 local notation "↑ₐ" => algebraMap ℂ A
 
-theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
+theorem IsSelfAdjoint.spectralRadius_eq_nnNorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
-  refine tendsto_nhds_unique_of_forall ((pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a).comp
+  refine tendsto_nhds_unique_of_forall ((pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius a).comp
       (tendsto_pow_atTop_atTop_of_one_lt one_lt_two)) hconst fun n ↦ ?_
-  rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
+  rw [Function.comp_apply, ha.nnNorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp
 
 /-- In a C⋆-algebra, the spectral radius of a self-adjoint element is equal to its norm.
@@ -127,9 +127,9 @@ See `IsSelfAdjoint.toReal_spectralRadius_eq_norm` for a version involving
 `spectralRadius ℝ a`. -/
 lemma IsSelfAdjoint.toReal_spectralRadius_complex_eq_norm {a : A} (ha : IsSelfAdjoint a) :
     (spectralRadius ℂ a).toReal = ‖a‖ := by
-  simp [ha.spectralRadius_eq_nnnorm]
+  simp [ha.spectralRadius_eq_nnNorm]
 
-theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
+theorem IsStarNormal.spectralRadius_eq_nnNorm (a : A) [IsStarNormal a] :
     spectralRadius ℂ a = ‖a‖₊ := by
   refine (ENNReal.pow_right_strictMono two_ne_zero).injective ?_
   have heq :
@@ -137,13 +137,13 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
       (fun x => x ^ 2) ∘ fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
     funext n
     rw [Function.comp_apply, ← rpow_natCast, ← rpow_mul, mul_comm, rpow_mul, rpow_natCast, ←
-      coe_pow, sq, ← nnnorm_star_mul_self, Commute.mul_pow (star_comm_self' a), star_pow]
+      coe_pow, sq, ← nnNorm_star_mul_self, Commute.mul_pow (star_comm_self' a), star_pow]
   have h₂ :=
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
-      (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a)
+      (spectrum.pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius a)
   rw [← heq] at h₂
-  convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
-  rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
+  convert tendsto_nhds_unique h₂ (pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
+  rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnNorm, sq, nnNorm_star_mul_self, coe_mul]
 
 namespace CStarAlgebra
 
@@ -261,31 +261,31 @@ open Unitization
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
-lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
+lemma nnNorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
       ‖ψ x‖₊ ≤ ‖x‖₊ := by
     suffices ∀ {s}, IsSelfAdjoint s → ‖ψ s‖₊ ≤ ‖s‖₊ by
       refine nonneg_le_nonneg_of_sq_le_sq zero_le ?_
-      simp_rw [← nnnorm_star_mul_self, ← map_star, ← map_mul]
+      simp_rw [← nnNorm_star_mul_self, ← map_star, ← map_mul]
       exact this <| .star_mul_self x
     intro s hs
     suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
-      rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
+      rwa [(hs.map ψ).spectralRadius_eq_nnNorm, hs.spectralRadius_eq_nnNorm, coe_le_coe]
         at this
     exact iSup_le_iSup_of_subset (NonUnitalAlgHom.quasispectrum_apply_subset ψ s)
-  simpa [nnnorm_inr] using
+  simpa [nnNorm_inr] using
     h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (ofClass φ : A →⋆ₙₐ[ℂ] B))) a
 
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
-  exact mod_cast nnnorm_apply_le φ a
+  exact mod_cast nnNorm_apply_le φ a
 
 /-- Non-unital star algebra homomorphisms between C⋆-algebras are continuous linear maps.
 See note [lower instance priority] -/
 lemma instContinuousLinearMapClassComplex : ContinuousLinearMapClass F ℂ A B :=
   { NonUnitalAlgHomClass.instLinearMapClass with
     map_continuous := fun φ =>
-      AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using! nnnorm_apply_le φ) }
+      AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using! nnNorm_apply_le φ) }
 
 scoped[CStarAlgebra] attribute [instance] NonUnitalStarAlgHom.instContinuousLinearMapClassComplex
 
@@ -296,13 +296,13 @@ namespace StarAlgEquiv
 variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] [EquivLike F A B]
 variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
-lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
-  le_antisymm (NonUnitalStarAlgHom.nnnorm_apply_le φ a) <| by
-    simpa using! NonUnitalStarAlgHom.nnnorm_apply_le
+lemma nnNorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
+  le_antisymm (NonUnitalStarAlgHom.nnNorm_apply_le φ a) <| by
+    simpa using! NonUnitalStarAlgHom.nnNorm_apply_le
       (symm (ofClass φ : A ≃⋆ₐ[ℂ] B)) ((ofClass φ : A ≃⋆ₐ[ℂ] B) a)
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
-  congr($(nnnorm_map φ a).toReal)
+  congr($(nnNorm_map φ a).toReal)
 
 lemma isometry (φ : F) : Isometry φ :=
   AddMonoidHomClass.isometry_of_norm φ (norm_map φ)

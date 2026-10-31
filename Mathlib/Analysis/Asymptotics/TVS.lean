@@ -360,13 +360,13 @@ theorem IsBigOTVS.of_egauge_le_mul [ContinuousConstSMul 𝕜 F] {ι} {p : ι →
   rw [hb.isBigOTVS_iff (basis_sets _)]
   intro i hi
   rcases h i hi with ⟨C, V, hV₀, hV⟩
-  rcases NormedField.exists_lt_nnnorm 𝕜 C with ⟨c, hc⟩
+  rcases NormedField.exists_lt_nnNorm 𝕜 C with ⟨c, hc⟩
   have hc₀ : c ≠ 0 := by rintro rfl; simp at hc
   refine ⟨c⁻¹ • V, (set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hV₀, ?_⟩
   refine hV.trans <| .of_forall fun x ↦ ?_
   simp only
   grw [hc]
-  simp [egauge_smul_left, hc₀, enorm_eq_nnnorm, ENNReal.div_eq_inv_mul]
+  simp [egauge_smul_left, hc₀, enorm_eq_nnNorm, ENNReal.div_eq_inv_mul]
 
 theorem isLittleOTVS_iff_smallSets :
     f =o[𝕜; l] g ↔ ∀ U ∈ 𝓝 0, ∀ᶠ V in (𝓝 0).smallSets, ∀ ε ≠ (0 : ℝ≥0),
@@ -835,7 +835,7 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
     norm_cast at hr₀
     refine ⟨(‖c‖₊ / r : ℝ≥0), hr.mono fun x hx ↦ ?_⟩
     suffices ‖f x‖ₑ ≤ (‖c‖₊ / r : ℝ≥0) * ‖g x‖ₑ by
-      simp only [enorm_eq_nnnorm, ← coe_nnnorm] at this ⊢
+      simp only [enorm_eq_nnNorm, ← coe_nnNorm] at this ⊢
       exact mod_cast this
     calc
       ‖f x‖ₑ ≤ egauge 𝕜 (ball 0 1) (f x) := le_egauge_unitBall ..
@@ -843,7 +843,7 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
       _ ≤ ‖c‖ₑ * ‖g x‖ₑ / ↑r :=
         egauge_ball_le_of_one_lt_norm hc <| .inl hr₀.ne'
       _ = (‖c‖₊ / r : ℝ≥0) * ‖g x‖ₑ := by
-        simp [hr₀.ne', ENNReal.mul_div_right_comm, enorm_eq_nnnorm]
+        simp [hr₀.ne', ENNReal.mul_div_right_comm, enorm_eq_nnNorm]
   · rw [nhds_basis_ball.isBigOTVS_iff nhds_basis_ball, isBigO_iff']
     have hc₀ : 0 < ‖c‖₊ := one_pos.trans hc
     rintro ⟨C, hC₀, hC⟩ r hr₀
@@ -855,7 +855,7 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
         egauge_ball_le_of_one_lt_norm hc <| .inl hr₀.ne'
       _ ≤ ‖c‖ₑ * (C * ‖g x‖ₑ) / r := by
         gcongr
-        simp only [enorm_eq_nnnorm, ← coe_nnnorm] at hx ⊢
+        simp only [enorm_eq_nnNorm, ← coe_nnNorm] at hx ⊢
         exact mod_cast hx
       _ = ‖g x‖ₑ / (r / (C * ‖c‖₊) : ℝ≥0) := by
         simp_all [pos_iff_ne_zero, ENNReal.div_eq_inv_mul, ENNReal.mul_inv]

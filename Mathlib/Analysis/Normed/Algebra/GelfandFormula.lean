@@ -24,7 +24,7 @@ complex Banach algebra has nonempty spectrum.
 
 * `spectrum.hasDerivAt_resolvent_const_left`: the resolvent function is differentiable on the
   resolvent set.
-* `spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius`: Gelfand's formula for the
+* `spectrum.pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius`: Gelfand's formula for the
   spectral radius in Banach algebras over `ℂ`.
 * `spectrum.nonempty`: the spectrum of any element in a complex Banach algebra is nonempty.
 * `NormedRing.algEquivComplexOfComplete`: **Gelfand-Mazur theorem** For a complex
@@ -99,7 +99,7 @@ variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 
 open ContinuousMultilinearMap in
 /-- The `limsup` relationship for the spectral radius used to prove `spectrum.gelfand_formula`. -/
-theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
+theorem limsup_pow_nnNorm_pow_one_div_le_spectralRadius (a : A) :
     limsup (fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) atTop ≤ spectralRadius ℂ a := by
   refine ENNReal.inv_le_inv.mp (le_of_forall_pos_nnreal_lt fun r r_pos r_lt => ?_)
   simp_rw [inv_limsup, ← one_div]
@@ -118,23 +118,23 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
 
 /-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
 `spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖₊ ^ (1 / n)`. -/
-theorem pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
+theorem pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
     Tendsto (fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) atTop (𝓝 (spectralRadius ℂ a)) :=
-  tendsto_of_le_liminf_of_limsup_le (spectralRadius_le_liminf_pow_nnnorm_pow_one_div ℂ a)
-    (limsup_pow_nnnorm_pow_one_div_le_spectralRadius a)
+  tendsto_of_le_liminf_of_limsup_le (spectralRadius_le_liminf_pow_nnNorm_pow_one_div ℂ a)
+    (limsup_pow_nnNorm_pow_one_div_le_spectralRadius a)
 
-alias gelfand_formula := pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius
+alias gelfand_formula := pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius
 
-/- This is the same as `pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius` but for `norm`
-instead of `nnnorm`. -/
+/- This is the same as `pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius` but for `norm`
+instead of `nnNorm`. -/
 /-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
 `spectralRadius` of `a` is the limit of the sequence `‖a ^ n‖ ^ (1 / n)`. -/
 theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
     Tendsto (fun n : ℕ => ENNReal.ofReal (‖a ^ n‖ ^ (1 / n : ℝ))) atTop
       (𝓝 (spectralRadius ℂ a)) := by
-  convert pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
+  convert pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
   ext1
-  rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnnorm, coe_nnreal_eq]
+  rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnNorm, coe_nnreal_eq]
   simp
 
 /-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
@@ -165,9 +165,9 @@ protected theorem nonempty (a : A) : (spectrum ℂ a).Nonempty := by
 
 /-- In a complex Banach algebra, the spectral radius is always attained by some element of the
 spectrum. -/
-theorem exists_nnnorm_eq_spectralRadius (a : A) :
+theorem exists_nnNorm_eq_spectralRadius (a : A) :
     ∃ z ∈ spectrum ℂ a, (‖z‖₊ : ℝ≥0∞) = spectralRadius ℂ a :=
-  exists_nnnorm_eq_spectralRadius_of_nonempty (spectrum.nonempty a)
+  exists_nnNorm_eq_spectralRadius_of_nonempty (spectrum.nonempty a)
 
 /-- In a complex Banach algebra, if every element of the spectrum has norm strictly less than
 `r : ℝ≥0`, then the spectral radius is also strictly less than `r`. -/

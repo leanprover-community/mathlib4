@@ -91,7 +91,7 @@ section EqualizersAndKernels
 noncomputable instance {V W : SemiNormedGrp.{u}} : Norm (V ⟶ W) where
   norm f := norm f.hom
 noncomputable instance {V W : SemiNormedGrp.{u}} : NNNorm (V ⟶ W) where
-  nnnorm f := nnnorm f.hom
+  nnNorm f := nnNorm f.hom
 
 /-- The equalizer cone for a parallel pair of morphisms of seminormed groups. -/
 noncomputable def fork {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) : Fork f g :=

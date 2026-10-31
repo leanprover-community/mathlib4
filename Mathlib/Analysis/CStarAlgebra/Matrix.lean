@@ -284,7 +284,7 @@ lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanCLM (n := n
 
 /-- This is the same as `Matrix.l2_opNNNorm_def`, but with a more bundled RHS for square
 matrices. -/
-lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
+lemma cstar_nnNorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/

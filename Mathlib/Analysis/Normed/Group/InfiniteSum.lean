@@ -25,7 +25,7 @@ In a complete (semi)normed group,
 - `tsum_of_norm_bounded`, `HasSum.norm_le_of_bounded`: if `‖f i‖ ≤ g i`, where `∑' i, g i` is a
   summable series, then `‖∑' i, f i‖ ≤ ∑' i, g i`.
 
-- versions of these lemmas for `nnnorm` and `enorm`.
+- versions of these lemmas for `nnNorm` and `enorm`.
 
 ## Tags
 
@@ -154,24 +154,24 @@ theorem norm_tsum_le_tsum_norm {f : ι → E} (hf : Summable fun i => ‖f i‖)
 summable, and for all `i`, `‖f i‖₊ ≤ g i`, then `‖∑' i, f i‖₊ ≤ ∑' i, g i`. Note that we
 do not assume that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete
 space. -/
-theorem tsum_of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} {a : ℝ≥0} (hg : HasSum g a)
+theorem tsum_of_nnNorm_bounded {f : ι → E} {g : ι → ℝ≥0} {a : ℝ≥0} (hg : HasSum g a)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : ‖∑' i : ι, f i‖₊ ≤ a := by
-  simp only [← NNReal.coe_le_coe, ← NNReal.hasSum_coe, coe_nnnorm] at *
+  simp only [← NNReal.coe_le_coe, ← NNReal.hasSum_coe, coe_nnNorm] at *
   exact tsum_of_norm_bounded hg h
 
 /-- If `∑' i, ‖f i‖₊` is summable, then `‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊`. Note that
 we do not assume that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete
 space. -/
-theorem nnnorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : ‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊ :=
-  tsum_of_nnnorm_bounded hf.hasSum fun _i => le_rfl
+theorem nnNorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : ‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊ :=
+  tsum_of_nnNorm_bounded hf.hasSum fun _i => le_rfl
 
-theorem tsum_enorm_ne_top_iff_summable_nnnorm {ι : Type*} {f : ι → E} :
+theorem tsum_enorm_ne_top_iff_summable_nnNorm {ι : Type*} {f : ι → E} :
     ∑' i, ‖f i‖ₑ ≠ ∞ ↔ Summable fun i ↦ ‖f i‖₊ := by
-  simp only [enorm_eq_nnnorm, ENNReal.tsum_coe_ne_top_iff_summable]
+  simp only [enorm_eq_nnNorm, ENNReal.tsum_coe_ne_top_iff_summable]
 
 lemma tsum_enorm_ne_top_iff_summable_norm {ι : Type*} {f : ι → E} :
     ∑' i, ‖f i‖ₑ ≠ ∞ ↔ Summable fun i ↦ ‖f i‖ := by
-  simp only [tsum_enorm_ne_top_iff_summable_nnnorm, ← coe_nnnorm, NNReal.summable_coe]
+  simp only [tsum_enorm_ne_top_iff_summable_nnNorm, ← coe_nnNorm, NNReal.summable_coe]
 
 variable [CompleteSpace E]
 
@@ -187,15 +187,15 @@ theorem Summable.of_norm_bounded_eventually_nat {f : ℕ → E} {g : ℕ → ℝ
     (h : ∀ᶠ i in atTop, ‖f i‖ ≤ g i) : Summable f :=
   .of_norm_bounded_eventually hg <| Nat.cofinite_eq_atTop ▸ h
 
-theorem Summable.of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} (hg : Summable g)
+theorem Summable.of_nnNorm_bounded {f : ι → E} {g : ι → ℝ≥0} (hg : Summable g)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
   .of_norm_bounded (NNReal.summable_coe.2 hg) h
 
 theorem Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
   .of_norm_bounded hf fun _i => le_rfl
 
-theorem Summable.of_nnnorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) : Summable f :=
-  .of_nnnorm_bounded hf fun _i => le_rfl
+theorem Summable.of_nnNorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) : Summable f :=
+  .of_nnNorm_bounded hf fun _i => le_rfl
 
 theorem Summable.of_enorm {f : ι → E} (hf : ∑' a, ‖f a‖ₑ ≠ ∞) : Summable f :=
-  Summable.of_nnnorm_bounded (tsum_coe_ne_top_iff_summable.1 hf) fun _i => le_rfl
+  Summable.of_nnNorm_bounded (tsum_coe_ne_top_iff_summable.1 hf) fun _i => le_rfl

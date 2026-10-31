@@ -503,7 +503,7 @@ lemma hasFiniteIntegral_count_iff_enorm {f : α → ε} :
 lemma hasFiniteIntegral_count_iff {f : α → β} :
     HasFiniteIntegral f Measure.count ↔ Summable (‖f ·‖) := by
   simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count, lt_top_iff_ne_top,
-    tsum_coe_ne_top_iff_summable, ← summable_coe, coe_nnnorm]
+    tsum_coe_ne_top_iff_summable, ← summable_coe, coe_nnNorm]
 
 end count
 

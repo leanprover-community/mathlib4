@@ -54,7 +54,7 @@ lemma norm_star (x : E) : ‖x⋆‖ = ‖x‖ :=
   le_antisymm (NormedStarGroup.norm_star_le x) (by simpa using NormedStarGroup.norm_star_le x⋆)
 
 @[simp]
-theorem nnnorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
+theorem nnNorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_star _
 
 /-- The `star` map in a normed star group is a normed group homomorphism. -/
@@ -144,17 +144,17 @@ theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
 
 theorem norm_star_mul_self' {x : E} : ‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖ := by rw [norm_star_mul_self, norm_star]
 
-theorem nnnorm_self_mul_star {x : E} : ‖x * x⋆‖₊ = ‖x‖₊ * ‖x‖₊ :=
+theorem nnNorm_self_mul_star {x : E} : ‖x * x⋆‖₊ = ‖x‖₊ * ‖x‖₊ :=
   Subtype.ext norm_self_mul_star
 
-theorem nnnorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖₊ :=
+theorem nnNorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖₊ :=
   Subtype.ext norm_star_mul_self
 
 lemma _root_.IsSelfAdjoint.norm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖ = ‖x‖ ^ 2 := by
   simpa [sq, hx.star_eq] using CStarRing.norm_star_mul_self (x := x)
 
-lemma _root_.IsSelfAdjoint.nnnorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
+lemma _root_.IsSelfAdjoint.nnNorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖₊ = ‖x‖₊ ^ 2 :=
   Subtype.ext hx.norm_mul_self
 
@@ -199,7 +199,7 @@ instance _root_.Prod.cstarRing : CStarRing (R₁ × R₂) where
 instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
   norm_mul_self_le x := by
     refine le_of_eq (Eq.symm ?_)
-    simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
+    simp only [norm, Pi.mul_apply, Pi.star_apply, nnNorm_star_mul_self, ← sq]
     norm_cast
     exact
       (Finset.apply_sup_eq_sup_comp_of_linearOrder (fun x : NNReal => x ^ 2)
@@ -265,16 +265,16 @@ section SelfAdjoint
 
 variable [NormedRing E] [StarRing E] [CStarRing E]
 
-theorem IsSelfAdjoint.nnnorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
+theorem IsSelfAdjoint.nnNorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
     ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction n with
   | zero => simp only [pow_zero, pow_one]
   | succ k hk =>
-    rw [pow_succ', pow_mul', sq, (hx.pow (2 ^ k)).nnnorm_mul_self, hk, pow_mul']
+    rw [pow_succ', pow_mul', sq, (hx.pow (2 ^ k)).nnNorm_mul_self, hk, pow_mul']
 
 theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
     ‖x ^ 2 ^ n‖ = ‖x‖ ^ 2 ^ n :=
-  congr($(hx.nnnorm_pow_two_pow n))
+  congr($(hx.nnNorm_pow_two_pow n))
 
 end SelfAdjoint
 

@@ -40,8 +40,8 @@ theorem norm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 
     ‖f x‖ = ‖x‖ :=
   (IsometryClass.isometry f).norm_map_of_map_one (map_one f) x
 
-@[to_additive (attr := simp) nnnorm_map]
-theorem nnnorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+@[to_additive (attr := simp) nnNorm_map]
+theorem nnNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
     ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map' f x
 
@@ -125,7 +125,7 @@ attribute [to_additive] MonoidHomClass.isometry_of_norm
 section NNNorm
 
 @[to_additive]
-theorem MonoidHomClass.lipschitz_of_bound_nnnorm [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ≥0)
+theorem MonoidHomClass.lipschitz_of_bound_nnNorm [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ≥0)
     (h : ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊) : LipschitzWith C f :=
   @Real.toNNReal_coe C ▸ MonoidHomClass.lipschitz_of_bound f C h
 
@@ -139,13 +139,13 @@ theorem MonoidHomClass.antilipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : �
 theorem LipschitzWith.norm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f) (hf : f 1 = 1)
     (x) : ‖f x‖ ≤ K * ‖x‖ := by simpa only [dist_one_right, hf] using h.dist_le_mul x 1
 
-@[to_additive LipschitzWith.nnnorm_le_mul]
-theorem LipschitzWith.nnnorm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f)
+@[to_additive LipschitzWith.nnNorm_le_mul]
+theorem LipschitzWith.nnNorm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzWith K f)
     (hf : f 1 = 1) (x) : ‖f x‖₊ ≤ K * ‖x‖₊ :=
   h.norm_le_mul' hf x
 
 @[to_additive (attr := deprecated (since := "2026-09-28")) LipschitzWith.nnorm_le_mul]
-alias LipschitzWith.nnorm_le_mul' := LipschitzWith.nnnorm_le_mul'
+alias LipschitzWith.nnorm_le_mul' := LipschitzWith.nnNorm_le_mul'
 
 @[to_additive AntilipschitzWith.le_mul_norm]
 theorem AntilipschitzWith.le_mul_norm' {f : E → F} {K : ℝ≥0} (h : AntilipschitzWith K f)
@@ -161,18 +161,18 @@ theorem antilipschitzWith_iff_exists_mul_le_norm' [MonoidHomClass 𝓕 E F] {f :
     exact mul_le_of_le_one_left (norm_nonneg' (f x)) (by simp [field])
   · grw [← hc, NNReal.coe_mk, inv_mul_cancel_left₀ hc0.ne']
 
-@[to_additive AntilipschitzWith.le_mul_nnnorm]
-theorem AntilipschitzWith.le_mul_nnnorm' {f : E → F} {K : ℝ≥0} (h : AntilipschitzWith K f)
+@[to_additive AntilipschitzWith.le_mul_nnNorm]
+theorem AntilipschitzWith.le_mul_nnNorm' {f : E → F} {K : ℝ≥0} (h : AntilipschitzWith K f)
     (hf : f 1 = 1) (x) : ‖x‖₊ ≤ K * ‖f x‖₊ :=
   h.le_mul_norm' hf x
 
 @[to_additive]
 theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K : ℝ≥0}
     (h : AntilipschitzWith K f) (x) : ‖x‖ ≤ K * ‖f x‖ :=
-  h.le_mul_nnnorm' (map_one f) x
+  h.le_mul_nnNorm' (map_one f) x
 
 @[to_additive]
-theorem Isometry.nnnorm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
+theorem Isometry.nnNorm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
     ‖f x‖₊ = ‖x‖₊ :=
   Subtype.ext <| hi.norm_map_of_map_one h₁ x
 
@@ -182,16 +182,16 @@ end NNNorm
 theorem lipschitzWith_one_norm' : LipschitzWith 1 (norm : E → ℝ) := by
   simpa using LipschitzWith.dist_right (1 : E)
 
-@[to_additive lipschitzWith_one_nnnorm]
-theorem lipschitzWith_one_nnnorm' : LipschitzWith 1 (NNNorm.nnnorm : E → ℝ≥0) :=
+@[to_additive lipschitzWith_one_nnNorm]
+theorem lipschitzWith_one_nnNorm' : LipschitzWith 1 (NNNorm.nnNorm : E → ℝ≥0) :=
   lipschitzWith_one_norm'
 
 @[to_additive (attr := fun_prop) uniformContinuous_norm]
 theorem uniformContinuous_norm' : UniformContinuous (norm : E → ℝ) :=
   lipschitzWith_one_norm'.uniformContinuous
 
-@[to_additive (attr := fun_prop) uniformContinuous_nnnorm]
-theorem uniformContinuous_nnnorm' : UniformContinuous fun a : E => ‖a‖₊ :=
+@[to_additive (attr := fun_prop) uniformContinuous_nnNorm]
+theorem uniformContinuous_nnNorm' : UniformContinuous fun a : E => ‖a‖₊ :=
   uniformContinuous_norm'.subtype_mk _
 
 end SeminormedGroup
@@ -411,8 +411,8 @@ theorem mk_eq_one_iff {p : E} : mk p = 1 ↔ ‖p‖ = 0 := by
   rw [← norm_mk', norm_eq_zero']
 
 set_option linter.docPrime false in
-@[to_additive (attr := simp) nnnorm_mk]
-theorem nnnorm_mk' (p : E) : ‖mk p‖₊ = ‖p‖₊ := rfl
+@[to_additive (attr := simp) nnNorm_mk]
+theorem nnNorm_mk' (p : E) : ‖mk p‖₊ = ‖p‖₊ := rfl
 
 end SeparationQuotient
 

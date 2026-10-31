@@ -212,7 +212,7 @@ theorem opNNNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖
 
 @[simp]
 theorem opENorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ₑ = ‖f‖ₑ := by
-  simp [enorm_eq_nnnorm]
+  simp [enorm_eq_nnNorm]
 
 @[simp]
 lemma flip_zero : flip (0 : E' →SL[σ₁₃] F' →SL[σ₂₃] G') = 0 := rfl
@@ -468,13 +468,13 @@ theorem norm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c
 /-- The non-negative norm of the tensor product of a scalar linear map and of an element of a normed
 space is the product of the non-negative norms. -/
 @[simp]
-theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
+theorem nnNorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
   NNReal.eq <| c.norm_smulRight_apply f
 
 @[simp] theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
   simp [← smulRight_id, norm_id]
 
-@[simp] theorem nnnorm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖₊ = ‖x‖₊ :=
+@[simp] theorem nnNorm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_toSpanSingleton _
 
 variable [IsTopologicalAddGroup Fₗ']

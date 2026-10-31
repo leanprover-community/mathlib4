@@ -24,7 +24,7 @@ This file contains results on the behavior of norms in ultrametric groups.
 
 ## Implementation details
 
-Some results are proved first about `nnnorm : X → ℝ≥0` because the bottom element
+Some results are proved first about `nnNorm : X → ℝ≥0` because the bottom element
 in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 
 ## Tags
@@ -68,24 +68,24 @@ lemma isUltrametricDist_iff_isNonarchimedean_norm {R} [SeminormedAddCommGroup R]
   ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
 @[to_additive]
-lemma nnnorm_mul_le_max (x y : S) :
+lemma nnNorm_mul_le_max (x y : S) :
     ‖x * y‖₊ ≤ max ‖x‖₊ ‖y‖₊ :=
   norm_mul_le_max _ _
 
 @[to_additive]
-lemma isUltrametricDist_of_forall_nnnorm_mul_le_max_nnnorm
+lemma isUltrametricDist_of_forall_nnNorm_mul_le_max_nnNorm
     (h : ∀ x y : S', ‖x * y‖₊ ≤ max ‖x‖₊ ‖y‖₊) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_norm_mul_le_max_norm h
 
-lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGroup S']
-    (h : IsNonarchimedean (nnnorm : S' → ℝ≥0)) : IsUltrametricDist S' :=
-  isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
+lemma isUltrametricDist_of_isNonarchimedean_nnNorm {S' : Type*} [SeminormedAddGroup S']
+    (h : IsNonarchimedean (nnNorm : S' → ℝ≥0)) : IsUltrametricDist S' :=
+  isUltrametricDist_of_forall_nnNorm_add_le_max_nnNorm h
 
-lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
+lemma isNonarchimedean_nnNorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖₊ : R → ℝ) := by
   simpa using isNonarchimedean_norm
 
-lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] :
+lemma isUltrametricDist_iff_isNonarchimedean_nnNorm {R} [SeminormedAddCommGroup R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
   ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
@@ -103,15 +103,15 @@ lemma norm_eq_of_mul_norm_lt_max {x y : S} (h : ‖x * y‖ < max ‖x‖ ‖y�
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
-lemma nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm
+lemma nnNorm_mul_eq_max_of_nnNorm_ne_nnNorm
     {x y : S} (h : ‖x‖₊ ≠ ‖y‖₊) : ‖x * y‖₊ = max ‖x‖₊ ‖y‖₊ := by
   simpa only [← NNReal.coe_inj, NNReal.coe_max] using!
     norm_mul_eq_max_of_norm_ne_norm (NNReal.coe_injective.ne h)
 
 @[to_additive]
-lemma nnnorm_eq_of_mul_nnnorm_lt_max {x y : S} (h : ‖x * y‖₊ < max ‖x‖₊ ‖y‖₊) :
+lemma nnNorm_eq_of_mul_nnNorm_lt_max {x y : S} (h : ‖x * y‖₊ < max ‖x‖₊ ‖y‖₊) :
     ‖x‖₊ = ‖y‖₊ :=
-  not_ne_iff.mp (h.ne ∘ nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm)
+  not_ne_iff.mp (h.ne ∘ nnNorm_mul_eq_max_of_nnNorm_ne_nnNorm)
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
@@ -121,33 +121,33 @@ lemma norm_div_eq_max_of_norm_div_ne_norm_div (x y z : S) (h : ‖x / y‖ ≠ �
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
-lemma nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div (x y z : S) (h : ‖x / y‖₊ ≠ ‖y / z‖₊) :
+lemma nnNorm_div_eq_max_of_nnNorm_div_ne_nnNorm_div (x y z : S) (h : ‖x / y‖₊ ≠ ‖y / z‖₊) :
     ‖x / z‖₊ = max ‖x / y‖₊ ‖y / z‖₊ := by
   simpa only [← NNReal.coe_inj, NNReal.coe_max] using!
     norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
 @[to_additive]
-lemma nnnorm_pow_le (x : S) (n : ℕ) :
+lemma nnNorm_pow_le (x : S) (n : ℕ) :
     ‖x ^ n‖₊ ≤ ‖x‖₊ := by
   induction n with
   | zero => simp
-  | succ n hn => simpa [pow_add, hn] using nnnorm_mul_le_max (x ^ n) x
+  | succ n hn => simpa [pow_add, hn] using nnNorm_mul_le_max (x ^ n) x
 
 @[to_additive]
 lemma norm_pow_le (x : S) (n : ℕ) :
     ‖x ^ n‖ ≤ ‖x‖ :=
-  nnnorm_pow_le x n
+  nnNorm_pow_le x n
 
 @[to_additive]
-lemma nnnorm_zpow_le (x : S) (z : ℤ) :
+lemma nnNorm_zpow_le (x : S) (z : ℤ) :
     ‖x ^ z‖₊ ≤ ‖x‖₊ := by
   cases z <;>
-  simpa using nnnorm_pow_le _ _
+  simpa using nnNorm_pow_le _ _
 
 @[to_additive]
 lemma norm_zpow_le (x : S) (z : ℤ) :
     ‖x ^ z‖ ≤ ‖x‖ :=
-  nnnorm_zpow_le x z
+  nnNorm_zpow_le x z
 
 section nonarch
 
@@ -218,11 +218,11 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
 product. -/
 @[to_additive /-- Nonarchimedean norm of a sum is less than or equal to the largest norm of a term
 in the sum. -/]
-lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
+lemma _root_.Finset.nnNorm_prod_le_sup_nnNorm (s : Finset ι) (f : ι → M) :
     ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
-  · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnnorm']
+  · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnNorm']
       using! hs.norm_prod_le_sup'_norm f
 
 /--
@@ -231,9 +231,9 @@ an ultrametric norm.
 -/
 @[to_additive /-- Generalised ultrametric triangle inequality for finite sums in additive
 commutative groups with an ultrametric norm. -/]
-lemma nnnorm_prod_le_of_forall_le {s : Finset ι} {f : ι → M} {C : ℝ≥0}
+lemma nnNorm_prod_le_of_forall_le {s : Finset ι} {f : ι → M} {C : ℝ≥0}
     (hC : ∀ i ∈ s, ‖f i‖₊ ≤ C) : ‖∏ i ∈ s, f i‖₊ ≤ C :=
-  (s.nnnorm_prod_le_sup_nnnorm f).trans <| Finset.sup_le hC
+  (s.nnNorm_prod_le_sup_nnNorm f).trans <| Finset.sup_le hC
 
 /--
 Generalised ultrametric triangle inequality for nonempty finite products in commutative groups with
@@ -254,7 +254,7 @@ commutative groups with an ultrametric norm. -/]
 lemma norm_prod_le_of_forall_le_of_nonneg {s : Finset ι} {f : ι → M} {C : ℝ}
     (h_nonneg : 0 ≤ C) (hC : ∀ i ∈ s, ‖f i‖ ≤ C) : ‖∏ i ∈ s, f i‖ ≤ C := by
   lift C to NNReal using h_nonneg
-  exact nnnorm_prod_le_of_forall_le hC
+  exact nnNorm_prod_le_of_forall_le hC
 
 /--
 Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can always find `i ∈ t` such that
@@ -322,8 +322,8 @@ lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := b
   · exact fun i _ ↦ le_ciSup h_bd i
 
 @[to_additive]
-lemma nnnorm_tprod_le (f : ι → M) : ‖∏' i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
-  simpa only [← NNReal.coe_le_coe, coe_nnnorm', coe_iSup] using norm_tprod_le f
+lemma nnNorm_tprod_le (f : ι → M) : ‖∏' i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
+  simpa only [← NNReal.coe_le_coe, coe_nnNorm', coe_iSup] using norm_tprod_le f
 
 @[to_additive]
 lemma norm_tprod_le_of_forall_le [Nonempty ι] {f : ι → M} {C : ℝ} (h : ∀ i, ‖f i‖ ≤ C) :
@@ -338,11 +338,11 @@ lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ 
   · exact norm_tprod_le_of_forall_le h
 
 @[to_additive]
-lemma nnnorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
-  (nnnorm_tprod_le f).trans (ciSup_le' h)
+lemma nnNorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
+  (nnNorm_tprod_le f).trans (ciSup_le' h)
 
 @[to_additive]
-lemma nnnorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
+lemma nnNorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
     (hs : Set.Pairwise s (fun i j ↦ ‖f i‖₊ ≠ ‖f j‖₊)) :
     ‖∏ i ∈ s, f i‖₊ = s.sup (fun i ↦ ‖f i‖₊) := by
   induction s using Finset.cons_induction with
@@ -353,7 +353,7 @@ lemma nnnorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
     specialize IH (hs.mono (by simp))
     obtain ⟨j, hj, hj'⟩ : ∃ j ∈ s, ‖∏ i ∈ s, f i‖₊ = ‖f j‖₊ := by
       simpa [IH] using s.exists_mem_eq_sup hs' _
-    suffices ‖f a‖₊ ≠ ‖∏ x ∈ s, f x‖₊ by simp [← IH, nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm this]
+    suffices ‖f a‖₊ ≠ ‖∏ x ∈ s, f x‖₊ by simp [← IH, nnNorm_mul_eq_max_of_nnNorm_ne_nnNorm this]
     rw [hj']
     apply hs <;> grind
 
@@ -361,7 +361,7 @@ lemma nnnorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
 lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.Nonempty)
     (hs : Set.Pairwise s (fun i j ↦ ‖f i‖ ≠ ‖f j‖)) :
     ‖∏ i ∈ s, f i‖ = s.sup' hs' (fun i ↦ ‖f i‖) := by
-  rw [← coe_nnnorm', nnnorm_prod_eq_sup_of_pairwise_ne, ← Finset.sup'_eq_sup hs']
+  rw [← coe_nnNorm', nnNorm_prod_eq_sup_of_pairwise_ne, ← Finset.sup'_eq_sup hs']
   · exact s.apply_sup'_eq_sup'_comp hs' _ (by tauto)
   · simpa [← NNReal.coe_inj] using hs
 

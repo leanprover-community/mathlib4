@@ -66,7 +66,7 @@ lemma orthonormal_vecCons_iff {n : ℕ} {v : E} {vs : Fin n → E} :
 lemma Orthonormal.norm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ = 1 := h.1 i
 
-lemma Orthonormal.nnnorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
+lemma Orthonormal.nnNorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖₊ = 1 := by
   suffices (‖v i‖₊ : ℝ) = 1 by norm_cast at this
   simp [h.norm_eq_one]

@@ -135,7 +135,7 @@ attribute [local instance] Unitization.normedAlgebraAux
 theorem norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖splitMul 𝕜 A x‖ :=
   rfl
 
-theorem nnnorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x‖₊ :=
+theorem nnNorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x‖₊ :=
   rfl
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to `Unitization.norm_def`. -/
@@ -144,8 +144,8 @@ theorem norm_eq_sup (x : Unitization 𝕜 A) :
   rw [norm_def, splitMul_apply, Prod.norm_def]
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to
-`Unitization.nnnorm_def`. -/
-theorem nnnorm_eq_sup (x : Unitization 𝕜 A) :
+`Unitization.nnNorm_def`. -/
+theorem nnNorm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖₊ = ‖x.fst‖₊ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖₊ :=
   NNReal.eq <| norm_eq_sup x
 
@@ -250,7 +250,7 @@ instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
 lemma norm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖ = ‖a‖ := by
   simp [norm_eq_sup]
 
-lemma nnnorm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖₊ = ‖a‖₊ :=
+lemma nnNorm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inr a
 
 lemma isometry_inr : Isometry ((↑) : A → Unitization 𝕜 A) :=
