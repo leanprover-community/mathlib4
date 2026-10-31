@@ -207,9 +207,14 @@ theorem ihom_obj : (ihom V).obj W = ↧(V.obj ⟶ W.obj) :=
 def FGModuleCatDual : FGModuleCat K :=
   ⟨↧(Module.Dual K V), Subspace.instModuleDualFiniteDimensional⟩
 
-@[simp] lemma FGModuleCatDual_obj : (FGModuleCatDual K V).obj = ↧(Module.Dual K V) :=
+@[simp] lemma fgmoduleCatDual_obj : (FGModuleCatDual K V).obj = ↧(Module.Dual K V) :=
   rfl
-@[simp] lemma FGModuleCatDual_coe : (FGModuleCatDual K V : Type u) = Module.Dual K V := rfl
+
+@[deprecated (since := "2026-10-04")] alias FGModuleCatDual_obj := fgmoduleCatDual_obj
+
+@[simp] lemma fgmoduleCatDual_coe : (FGModuleCatDual K V : Type u) = Module.Dual K V := rfl
+
+@[deprecated (since := "2026-10-04")] alias FGModuleCatDual_coe := fgmoduleCatDual_coe
 
 open CategoryTheory.MonoidalCategory
 
@@ -217,27 +222,36 @@ open CategoryTheory.MonoidalCategory
 def FGModuleCatCoevaluation : 𝟙_ (FGModuleCat K) ⟶ V ⊗ FGModuleCatDual K V :=
   ConcreteCategory.ofHom <| coevaluation K V
 
-theorem FGModuleCatCoevaluation_apply_one :
+theorem fgmoduleCatCoevaluation_apply_one :
     (FGModuleCatCoevaluation K V).hom (1 : K) =
       ∑ i : Basis.ofVectorSpaceIndex K V,
         (Basis.ofVectorSpace K V) i ⊗ₜ[K] (Basis.ofVectorSpace K V).coord i :=
   coevaluation_apply_one K V
 
+@[deprecated (since := "2026-10-04")]
+alias FGModuleCatCoevaluation_apply_one := fgmoduleCatCoevaluation_apply_one
+
 /-- The evaluation morphism is given by the contraction map. -/
 def FGModuleCatEvaluation : FGModuleCatDual K V ⊗ V ⟶ 𝟙_ (FGModuleCat K) :=
   ConcreteCategory.ofHom <| contractLeft K V
 
-theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
+theorem fgmoduleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
     (FGModuleCatEvaluation K V).hom (f ⊗ₜ x) = f.toFun x :=
   contractLeft_apply f x
 
-/-- `@[simp]`-normal form of `FGModuleCatEvaluation_apply`, where the carriers have been unfolded.
+@[deprecated (since := "2026-10-04")]
+alias FGModuleCatEvaluation_apply := fgmoduleCatEvaluation_apply
+
+/-- `@[simp]`-normal form of `fgmoduleCatEvaluation_apply`, where the carriers have been unfolded.
 -/
 @[simp]
-theorem FGModuleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
+theorem fgmoduleCatEvaluation_apply' (f : FGModuleCatDual K V) (x : V) :
     (FGModuleCatEvaluation K V).hom.hom (A := ↧(Dual K V) ⊗ V.obj) (B := 𝟙_ (ModuleCat K)) (f ⊗ₜ x)
       = f.toFun x :=
   contractLeft_apply f x
+
+@[deprecated (since := "2026-10-04")]
+alias FGModuleCatEvaluation_apply' := fgmoduleCatEvaluation_apply'
 
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
@@ -273,13 +287,19 @@ end FGModuleCat
 -/
 
 @[simp]
-theorem LinearMap.comp_id_fgModuleCat
+theorem LinearMap.comp_id_fgmoduleCat
     {R} [Ring R] {G : FGModuleCat.{v} R} {H : Type v} [AddCommGroup H] [Module R H]
     (f : G →ₗ[R] H) : f.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 G))) = f :=
   ModuleCat.hom_ext_iff.mp <| Category.id_comp (ModuleCat.ofHom f)
 
+@[deprecated (since := "2026-10-04")]
+alias LinearMap.comp_id_fgModuleCat := LinearMap.comp_id_fgmoduleCat
+
 @[simp]
-theorem LinearMap.id_fgModuleCat_comp
+theorem LinearMap.id_fgmoduleCat_comp
     {R} [Ring R] {G : Type v} [AddCommGroup G] [Module R G] {H : FGModuleCat.{v} R}
     (f : G →ₗ[R] H) : LinearMap.comp (ModuleCat.Hom.hom (InducedCategory.Hom.hom (𝟙 H))) f = f :=
   ModuleCat.hom_ext_iff.mp <| Category.comp_id (ModuleCat.ofHom f)
+
+@[deprecated (since := "2026-10-04")]
+alias LinearMap.id_fgModuleCat_comp := LinearMap.id_fgmoduleCat_comp
