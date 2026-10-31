@@ -94,58 +94,58 @@ theorem stepSet_union {S T : Set σ} {a : α} :
 variable (M) in
 /-- `M.evalFrom S x` computes all possible paths through `M` with input `x` starting at an element
   of `S`. -/
-def evalFrom (S : Set σ) : List α → Set σ :=
-  List.foldl M.stepSet S
+def evalFrom (S : Set σ) (x : FreeMonoid α) : Set σ :=
+  x.toList.foldl M.stepSet S
 
 variable (M) in
 @[simp]
-theorem evalFrom_nil (S : Set σ) : M.evalFrom S [] = S :=
+theorem evalFrom_one (S : Set σ) : M.evalFrom S 1 = S :=
   rfl
 
 variable (M) in
 @[simp]
-theorem evalFrom_singleton (S : Set σ) (a : α) : M.evalFrom S [a] = M.stepSet S a :=
+theorem evalFrom_of (S : Set σ) (a : α) : M.evalFrom S (.of a) = M.stepSet S a :=
   rfl
 
 variable (M) in
 @[simp]
-theorem evalFrom_cons (S : Set σ) (a : α) (x : List α) :
-    M.evalFrom S (a :: x) = M.evalFrom (M.stepSet S a) x :=
+theorem evalFrom_of_mul (S : Set σ) (a : α) (x : FreeMonoid α) :
+    M.evalFrom S (.of a * x) = M.evalFrom (M.stepSet S a) x :=
   rfl
 
 variable (M) in
 @[simp]
-theorem evalFrom_append (S : Set σ) (x y : List α) :
-    M.evalFrom S (x ++ y) = M.evalFrom (M.evalFrom S x) y := by
-  simp only [evalFrom, List.foldl_append]
+theorem evalFrom_mul (S : Set σ) (x y : FreeMonoid α) :
+    M.evalFrom S (x * y) = M.evalFrom (M.evalFrom S x) y := by
+  simp [evalFrom]
 
 variable (M) in
 @[simp]
-theorem evalFrom_union (S T : Set σ) (x : List α) :
+theorem evalFrom_union (S T : Set σ) (x : FreeMonoid α) :
     M.evalFrom (S ∪ T) x = M.evalFrom S x ∪ M.evalFrom T x := by
-  induction x generalizing S T with
-  | nil => simp
-  | cons a x ih => simp [ih]
+  induction x using FreeMonoid.mulRecOn generalizing S T with
+  | one => simp
+  | of_mul a x ih => simp [ih]
 
 variable (M) in
 @[simp]
-theorem evalFrom_iUnion {ι : Sort*} (s : ι → Set σ) (x : List α) :
+theorem evalFrom_iUnion {ι : Sort*} (s : ι → Set σ) (x : FreeMonoid α) :
     M.evalFrom (⋃ i, s i) x = ⋃ i, M.evalFrom (s i) x := by
-  induction x generalizing s with
-  | nil => simp
-  | cons a x ih => simp [stepSet, Set.iUnion_comm (ι := σ) (ι' := ι), ih]
+  induction x using FreeMonoid.mulRecOn generalizing s with
+  | one => simp
+  | of_mul a x ih => simp [stepSet, Set.iUnion_comm (ι := σ) (ι' := ι), ih]
 
 variable (M) in
-theorem evalFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) (x : List α) :
+theorem evalFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) (x : FreeMonoid α) :
     M.evalFrom (⋃ (i) (j), f i j) x = ⋃ (i) (j), M.evalFrom (f i j) x := by
   simp
 
 variable (M) in
-theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : List α) :
+theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : FreeMonoid α) :
     M.evalFrom S x = ⋃ s ∈ S, M.evalFrom {s} x := by
   simp [← evalFrom_iUnion₂]
 
-theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
+theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : FreeMonoid α} :
     s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
   rw [evalFrom_eq_biUnion_singleton]
   simp
@@ -155,38 +155,35 @@ variable (M) in
 in `M.evalFrom S x`. -/
 def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
-theorem mem_acceptsFrom {S : Set σ} {x : List α} :
-    x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
+theorem mem_acceptsFrom {S : Set σ} {x : FreeMonoid α} :
+    x ∈ (M.acceptsFrom S).toSet ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
   rfl
 
 variable (M) in
 @[simp]
-theorem nil_mem_acceptsFrom {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
-  simp only [mem_acceptsFrom, evalFrom_nil]; tauto
+theorem one_mem_acceptsFrom {S : Set σ} : 1 ∈ (M.acceptsFrom S).toSet ↔ ∃ s ∈ S, s ∈ M.accept := by
+  simp only [mem_acceptsFrom, evalFrom_one]; tauto
 
 variable (M) in
 @[simp]
-theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
-    a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
+theorem of_mul_mem_acceptsFrom {S : Set σ} {a : α} {x : FreeMonoid α} :
+    .of a * x ∈ (M.acceptsFrom S).toSet ↔ x ∈ (M.acceptsFrom (M.stepSet S a)).toSet := by
   simp [mem_acceptsFrom]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
-theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
-    (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
-  ext x; simp [cons_mem_acceptsFrom M]
+theorem of_mul_preimage_acceptsFrom {S : Set σ} {a : α} :
+    (.of a * ·) ⁻¹' (M.acceptsFrom S).toSet = (M.acceptsFrom (M.stepSet S a)).toSet := by
+  ext x; simp
 
 variable (M) in
-@[simp]
-theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
-    x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
+theorem mul_mem_acceptsFrom {S : Set σ} {x y : FreeMonoid α} :
+    x * y ∈ (M.acceptsFrom S).toSet ↔ y ∈ (M.acceptsFrom (M.evalFrom S x)).toSet := by
   simp [mem_acceptsFrom]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
-theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
-    (x ++ ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
-  ext y; simp [append_mem_acceptsFrom M]
+theorem mul_preimage_acceptsFrom {S : Set σ} {x : FreeMonoid α} :
+    (x * ·) ⁻¹' (M.acceptsFrom S).toSet = (M.acceptsFrom (M.evalFrom S x)).toSet := by
+  ext y; simp [mul_mem_acceptsFrom M]
 
 variable (M) in
 @[simp]
@@ -200,28 +197,26 @@ theorem acceptsFrom_union {S T : Set σ} :
     · right; tauto
   · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 @[simp]
 theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
-    M.acceptsFrom (⋃ i, s i) = ⋃ i, M.acceptsFrom (s i) := by
+    (M.acceptsFrom (⋃ i, s i)).toSet = ⋃ i, (M.acceptsFrom (s i)).toSet := by
   ext x
-  simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
-  simp_rw [↑mem_iUnion, ↑mem_ofPred_eq]; tauto
+  simp_rw [mem_iUnion, mem_acceptsFrom, evalFrom_iUnion, mem_iUnion]
+  tauto
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem acceptsFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) :
-    M.acceptsFrom (⋃ (i) (j), f i j) = ⋃ (i) (j), M.acceptsFrom (f i j) := by
+    (M.acceptsFrom (⋃ (i) (j), f i j)).toSet = ⋃ (i) (j), (M.acceptsFrom (f i j)).toSet := by
   simp
 
 variable (M) in
 @[simp]
-private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
-    x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
-  induction x generalizing S with
-  | nil => simp only [nil_mem_acceptsFrom, mem_ofPred_eq]; tauto
-  | cons a x ih =>
+private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : FreeMonoid α} :
+    x ∈ (M.acceptsFrom {s ∈ S | p}).toSet ↔ x ∈ (M.acceptsFrom S).toSet ∧ p := by
+  induction x using FreeMonoid.mulRecOn generalizing S with
+  | one => simp only [one_mem_acceptsFrom, mem_ofPred_eq]; tauto
+  | of_mul a x ih =>
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
       ext s; simp only [stepSet, mem_ofPred_eq, mem_iUnion, exists_prop]; tauto
     simp [*]
@@ -229,30 +224,44 @@ private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
 variable (M) in
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
   `M.start`. -/
-def eval : List α → Set σ :=
+def eval : FreeMonoid α → Set σ :=
   M.evalFrom M.start
 
 variable (M) in
 @[simp]
-theorem eval_nil : M.eval [] = M.start :=
+theorem eval_one : M.eval 1 = M.start :=
   rfl
 
 variable (M) in
 @[simp]
-theorem eval_singleton (a : α) : M.eval [a] = M.stepSet M.start a :=
+theorem eval_of (a : α) : M.eval (.of a) = M.stepSet M.start a :=
   rfl
 
 variable (M) in
 @[simp]
-theorem eval_append_singleton (x : List α) (a : α) :
-    M.eval (x ++ [a]) = M.stepSet (M.eval x) a := by
+theorem eval_mul_of (x : FreeMonoid α) (a : α) :
+    M.eval (x * .of a) = M.stepSet (M.eval x) a := by
   simp [eval]
+
+@[deprecated (since := "2026-10-31")] alias evalFrom_nil := evalFrom_one
+@[deprecated (since := "2026-10-31")] alias evalFrom_singleton := evalFrom_of
+@[deprecated (since := "2026-10-31")] alias evalFrom_cons := evalFrom_of_mul
+@[deprecated (since := "2026-10-31")] alias evalFrom_append := evalFrom_mul
+@[deprecated (since := "2026-10-31")] alias nil_mem_acceptsFrom := one_mem_acceptsFrom
+@[deprecated (since := "2026-10-31")] alias cons_mem_acceptsFrom := of_mul_mem_acceptsFrom
+@[deprecated (since := "2026-10-31")] alias cons_preimage_acceptsFrom := of_mul_preimage_acceptsFrom
+@[deprecated (since := "2026-10-31")] alias append_mem_acceptsFrom := mul_mem_acceptsFrom
+@[deprecated (since := "2026-10-31")] alias append_preimage_acceptsFrom := mul_preimage_acceptsFrom
+@[deprecated (since := "2026-10-31")] alias eval_nil := eval_one
+@[deprecated (since := "2026-10-31")] alias eval_singleton := eval_of
+@[deprecated (since := "2026-10-31")] alias eval_append_singleton := eval_mul_of
 
 variable (M) in
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
+def accepts : Language α := .ofSet {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 
-theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
+theorem mem_accepts {x : FreeMonoid α} :
+    x ∈ M.accepts.toSet ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
   rfl
 
 theorem accepts_eq_acceptsFrom_start : M.accepts = M.acceptsFrom M.start := rfl
@@ -266,37 +275,39 @@ for a given word.
 
 Also note that this is `Type` and not a `Prop`, so that we can speak about the properties
 of a particular `Path`, such as the set of states visited along the way (defined as `Path.supp`). -/
-inductive Path : σ → σ → List α → Type (max u v)
-  | nil (s : σ) : Path s s []
-  | cons (t s u : σ) (a : α) (x : List α) :
-      t ∈ M.step s a → Path t u x → Path s u (a :: x)
+inductive Path : σ → σ → FreeMonoid α → Type (max u v)
+  | one (s : σ) : Path s s 1
+  | of_mul (t s u : σ) (a : α) (x : FreeMonoid α) :
+      t ∈ M.step s a → Path t u x → Path s u (.of a * x)
 
 /-- Set of states visited by a path. -/
 @[simp]
-def Path.supp [DecidableEq σ] {s t : σ} {x : List α} : M.Path s t x → Finset σ
-  | nil s => {s}
-  | cons _ _ _ _ _ _ p => {s} ∪ p.supp
+def Path.supp [DecidableEq σ] {s t : σ} {x : FreeMonoid α} : M.Path s t x → Finset σ
+  | one s => {s}
+  | of_mul _ _ _ _ _ _ p => {s} ∪ p.supp
 
-theorem mem_evalFrom_iff_nonempty_path {s t : σ} {x : List α} :
-    t ∈ M.evalFrom {s} x ↔ Nonempty (M.Path s t x) where
-  mp h := match x with
-    | [] =>
+theorem mem_evalFrom_iff_nonempty_path {s t : σ} :
+    ∀ {x}, t ∈ M.evalFrom {s} x ↔ Nonempty (M.Path s t x) := fun {x} ↦ by
+  refine ⟨fun h ↦ ?_, fun ⟨p⟩ ↦ ?_⟩
+  · cases x using FreeMonoid.mulRecOn with
+    | one =>
       have h : s = t := by simp at h; tauto
-      ⟨h ▸ Path.nil s⟩
-    | a :: x =>
+      exact ⟨h ▸ Path.one s⟩
+    | of_mul a x =>
       have h : ∃ s' ∈ M.step s a, t ∈ M.evalFrom {s'} x := by
-        rw [evalFrom_cons, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
+        rw [evalFrom_of_mul, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
       let ⟨s', h₁, h₂⟩ := h
       let ⟨p'⟩ := mem_evalFrom_iff_nonempty_path.1 h₂
-      ⟨Path.cons s' _ _ _ _ h₁ p'⟩
-  mpr p := match p with
-    | ⟨Path.nil s⟩ => by simp
-    | ⟨Path.cons s' s t a x h₁ h₂⟩ => by
-      rw [evalFrom_cons, stepSet_singleton, mem_evalFrom_iff_exists]
+      exact ⟨Path.of_mul s' _ _ _ _ h₁ p'⟩
+  · match p with
+    | Path.one s => simp
+    | Path.of_mul s' s t a x h₁ h₂ =>
+      rw [evalFrom_of_mul, stepSet_singleton, mem_evalFrom_iff_exists]
       exact ⟨s', h₁, mem_evalFrom_iff_nonempty_path.2 ⟨h₂⟩⟩
+  termination_by x => x.toList.length
 
-theorem accepts_iff_exists_path {x : List α} :
-    x ∈ M.accepts ↔ ∃ s ∈ M.start, ∃ t ∈ M.accept, Nonempty (M.Path s t x) := by
+theorem accepts_iff_exists_path {x : FreeMonoid α} :
+    x ∈ M.accepts.toSet ↔ ∃ s ∈ M.start, ∃ t ∈ M.accept, Nonempty (M.Path s t x) := by
   simp only [← mem_evalFrom_iff_nonempty_path, mem_accepts, mem_evalFrom_iff_exists (S := M.start)]
   tauto
 
@@ -314,11 +325,11 @@ theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
   rw [mem_accepts, DFA.mem_accepts]
   constructor <;> · exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
 
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
-    (hlen : Fintype.card (Set σ) ≤ List.length x) :
+theorem pumping_lemma [Fintype σ] {x : FreeMonoid α} (hx : x ∈ M.accepts.toSet)
+    (hlen : Fintype.card (Set σ) ≤ x.toList.length) :
     ∃ a b c,
-      x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
+      x = a * b * c ∧ a.toList.length + b.toList.length ≤ Fintype.card (Set σ) ∧
+      b ≠ 1 ∧ .ofSet {a} * (.ofSet {b})∗ * .ofSet {c} ≤ M.accepts := by
   rw [← toDFA_correct] at hx ⊢
   exact M.toDFA.pumping_lemma hx hlen
 
@@ -334,14 +345,14 @@ namespace DFA
   accept := M.accept
 
 @[simp]
-theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
+theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : FreeMonoid α) :
     M.toNFA.evalFrom {start} s = {M.evalFrom start s} := by
-  change List.foldl M.toNFA.stepSet {start} s = {List.foldl M.step start s}
-  induction s generalizing start with
-  | nil => tauto
-  | cons a s ih =>
-    rw [List.foldl, List.foldl,
-      show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet]]
+  change s.toList.foldl M.toNFA.stepSet {start} = {s.toList.foldl M.step start}
+  induction s using FreeMonoid.mulRecOn generalizing start with
+  | one => tauto
+  | of_mul a s ih =>
+    rw [FreeMonoid.toList_mul, FreeMonoid.toList_of, List.singleton_append,
+      List.foldl_cons, show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet]]
     tauto
 
 @[simp]
@@ -377,24 +388,24 @@ theorem disjoint_stepSet_reverse {a : α} {S S' : Set σ} :
   simp only [Set.not_disjoint_iff, mem_stepSet, reverse_step, Set.mem_ofPred_eq]
   tauto
 
-theorem disjoint_evalFrom_reverse {x : List α} {S S' : Set σ}
-    (h : Disjoint S (M.reverse.evalFrom S' x)) : Disjoint S' (M.evalFrom S x.reverse) := by
-  simp only [evalFrom, List.foldl_reverse] at h ⊢
-  induction x generalizing S S' with
-  | nil =>
-    rw [disjoint_comm]
-    exact h
-  | cons x xs ih =>
-    rw [List.foldl_cons] at h
-    rw [List.foldr_cons, ← NFA.disjoint_stepSet_reverse, disjoint_comm]
+theorem disjoint_evalFrom_reverse {x : FreeMonoid α} {S S' : Set σ}
+    (h : Disjoint S (M.reverse.evalFrom S' x)) : Disjoint S' (M.evalFrom S (star x)) := by
+  simp only [evalFrom, star, Function.comp_apply, List.foldl_reverse] at h ⊢
+  induction x using FreeMonoid.mulRecOn generalizing S S' with
+  | one => rwa [disjoint_comm]
+  | of_mul x xs ih =>
+    simp only [FreeMonoid.toList_mul, FreeMonoid.toList_of, List.cons_append, List.nil_append,
+      List.foldl_cons, List.foldr_cons] at h ⊢
+    rw [← NFA.disjoint_stepSet_reverse, disjoint_comm]
     exact ih h
 
-theorem disjoint_evalFrom_reverse_iff {x : List α} {S S' : Set σ} :
-    Disjoint S (M.reverse.evalFrom S' x) ↔ Disjoint S' (M.evalFrom S x.reverse) :=
-  ⟨disjoint_evalFrom_reverse, fun h ↦ List.reverse_reverse x ▸ disjoint_evalFrom_reverse h⟩
+theorem disjoint_evalFrom_reverse_iff {x : FreeMonoid α} {S S' : Set σ} :
+    Disjoint S (M.reverse.evalFrom S' x) ↔ Disjoint S' (M.evalFrom S (star x)) :=
+  ⟨disjoint_evalFrom_reverse, fun h ↦ star_star x ▸ disjoint_evalFrom_reverse h⟩
 
 @[simp]
-theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.reverse ∈ M.accepts := by
+theorem mem_accepts_reverse {x : FreeMonoid α} :
+    x ∈ M.reverse.accepts.toSet ↔ (star x) ∈ M.accepts.toSet := by
   simp [mem_accepts, ← Set.not_disjoint_iff, disjoint_evalFrom_reverse_iff]
 
 end NFA

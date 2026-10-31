@@ -99,7 +99,7 @@ Not named `matches` since that is a reserved word.
 def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
-  | char a => {[a]}
+  | char a => .ofSet {.of a}
   | P + Q => P.matches' + Q.matches'
   | P * Q => P.matches' * Q.matches'
   | star P => P.matches'∗
@@ -110,7 +110,7 @@ theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
 theorem matches'_epsilon : (1 : RegularExpression α).matches' = 1 :=
   rfl
 
-theorem matches'_char (a : α) : (char a).matches' = {[a]} :=
+theorem matches'_char (a : α) : (char a).matches' = .ofSet {.of a} :=
   rfl
 
 theorem matches'_add (P Q : RegularExpression α) : (P + Q).matches' = P.matches' + Q.matches' :=
@@ -174,56 +174,75 @@ theorem deriv_add (P Q : RegularExpression α) (a : α) : deriv (P + Q) a = deri
 theorem deriv_star (P : RegularExpression α) (a : α) : deriv P.star a = deriv P a * star P :=
   rfl
 
+/-- An auxiliary definition for `P.rmatch x` based on `x.toList`. -/
+def rmatchL : RegularExpression α → List α → Bool
+  | P, [] => matchEpsilon P
+  | P, a :: as => rmatchL (P.deriv a) as
+
 /-- `P.rmatch x` is true if and only if `P` matches `x`. This is a computable definition equivalent
   to `matches'`. -/
-def rmatch : RegularExpression α → List α → Bool
-  | P, [] => matchEpsilon P
-  | P, a :: as => rmatch (P.deriv a) as
+def rmatch (P : RegularExpression α) (x : FreeMonoid α) : Bool :=
+  P.rmatchL x.toList
 
 @[simp]
-theorem zero_rmatch (x : List α) : rmatch 0 x = false := by
-  induction x <;> simp [rmatch, matchEpsilon, *]
+lemma zero_rmatchL (x : List α) : rmatchL 0 x = false := by
+  induction x <;> simp [rmatchL, matchEpsilon, *]
 
-theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
-  induction x <;> simp [rmatch, matchEpsilon, *]
+@[simp]
+theorem zero_rmatch (x : FreeMonoid α) : rmatch 0 x = false := zero_rmatchL x.toList
 
-theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
+lemma one_rmatchL_iff (x : List α) : rmatchL 1 x ↔ x = [] := by
+  induction x <;> simp [rmatchL, matchEpsilon, *]
+
+theorem one_rmatch_iff (x : FreeMonoid α) : rmatch 1 x ↔ x = 1 := by
+  rw [rmatch, one_rmatchL_iff x.toList, FreeMonoid.ofList.injEq]
+  exact Iff.rfl
+
+lemma char_rmatchL_iff (a : α) (x : List α) : rmatchL (char a) x ↔ x = [a] := by
   rcases x with - | ⟨_, x⟩
   · exact of_decide_eq_true rfl
   · rcases x with - | ⟨head, tail⟩
-    · rw [rmatch, deriv, List.singleton_inj]
+    · rw [rmatchL, deriv, List.singleton_inj]
       split <;> tauto
-    · rw [rmatch, rmatch, deriv, cons.injEq]
+    · rw [rmatchL, rmatchL, deriv, cons.injEq]
       split
-      · simp_rw [deriv_one, zero_rmatch, reduceCtorEq, and_false]
-      · simp_rw [deriv_zero, zero_rmatch, reduceCtorEq, and_false]
+      · simp_rw [deriv_one, zero_rmatchL, reduceCtorEq, and_false]
+      · simp_rw [deriv_zero, zero_rmatchL, reduceCtorEq, and_false]
 
-theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
-    (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
+theorem char_rmatch_iff (a : α) (x : FreeMonoid α) : rmatch (char a) x ↔ x = .of a := by
+  rw [rmatch, char_rmatchL_iff, FreeMonoid.ofList.injEq]
+  exact Iff.rfl
+
+lemma add_rmatchL_iff (P Q : RegularExpression α) (x : List α) :
+    (P + Q).rmatchL x ↔ P.rmatchL x ∨ Q.rmatchL x := by
   induction x generalizing P Q with
-  | nil => simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
+  | nil => simp only [rmatchL, matchEpsilon, Bool.or_eq_true_iff]
   | cons _ _ ih =>
-    rw [rmatch, deriv_add]
-    exact ih _ _
+    rw [rmatchL, deriv_add]
+    exact ih ..
 
-theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
-    (P * Q).rmatch x ↔ ∃ t u : List α, x = t ++ u ∧ P.rmatch t ∧ Q.rmatch u := by
+theorem add_rmatch_iff (P Q : RegularExpression α) (x : FreeMonoid α) :
+    (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
+  simp [rmatch, add_rmatchL_iff]
+
+lemma mul_rmatchL_iff (P Q : RegularExpression α) (x : List α) :
+    (P * Q).rmatchL x ↔ ∃ t u, x = t ++ u ∧ P.rmatchL t ∧ Q.rmatchL u := by
   induction x generalizing P Q with
   | nil =>
-    rw [rmatch]; simp only [matchEpsilon]
+    rw [rmatchL]; simp only [matchEpsilon]
     constructor
     · intro h
       refine ⟨[], [], rfl, ?_⟩
-      rw [rmatch, rmatch]
+      rw [rmatchL, rmatchL]
       rwa [Bool.and_eq_true_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
       obtain ⟨rfl, rfl⟩ := List.append_eq_nil_iff.1 h₁.symm
-      repeat rw [rmatch] at h₂
+      repeat rw [rmatchL] at h₂
       simp [h₂]
   | cons a x ih =>
-    rw [rmatch]; simp only [deriv]
+    rw [rmatchL]; simp only [deriv]
     split_ifs with hepsilon
-    · rw [add_rmatch_iff, ih]
+    · rw [add_rmatchL_iff, ih]
       constructor
       · rintro (⟨t, u, _⟩ | h)
         · exact ⟨a :: t, u, by tauto⟩
@@ -237,7 +256,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
         · left
           rw [List.cons_append, List.cons_eq_cons] at h
           refine ⟨t, u, h.2, ?_, hQ⟩
-          rw [rmatch] at hP
+          rw [rmatchL] at hP
           convert hP
           exact h.1
     · rw [ih]
@@ -247,21 +266,24 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
         · contradiction
         · rw [List.cons_append, List.cons_eq_cons] at h
           refine ⟨t, u, h.2, ?_, hQ⟩
-          rw [rmatch] at hP
+          rw [rmatchL] at hP
           convert hP
           exact h.1
 
-theorem star_rmatch_iff (P : RegularExpression α) :
-    ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x
-          = S.flatten ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
+theorem mul_rmatch_iff (P Q : RegularExpression α) (x : FreeMonoid α) :
+    (P * Q).rmatch x ↔ ∃ t u, x = t * u ∧ P.rmatch t ∧ Q.rmatch u := by
+  simp [rmatch, mul_rmatchL_iff, FreeMonoid.exists, ← FreeMonoid.ofList.injEq]
+
+lemma star_rmatchL_iff (P : RegularExpression α) :
+    ∀ x, (star P).rmatchL x ↔ ∃ S : List (List α), x = S.flatten ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatchL t :=
   fun x => by
-    have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
-    clear star_rmatch_iff
+    have IH := fun t (_h : List.length t < List.length x) => star_rmatchL_iff P t
+    clear star_rmatchL_iff
     constructor
     · rcases x with - | ⟨a, x⟩
       · intro _h
         use []; dsimp; tauto
-      · rw [rmatch, deriv, mul_rmatch_iff]
+      · rw [rmatchL, deriv, mul_rmatchL_iff]
         rintro ⟨t, u, hs, ht, hu⟩
         have hwf : u.length < (List.cons a x).length := by
           rw [hs, List.length_cons, List.length_append]
@@ -274,13 +296,13 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · intro t' ht'
           cases ht' with
           | head ht' =>
-            simp only [ne_eq, not_false_iff, true_and, rmatch, reduceCtorEq]
+            simp only [ne_eq, not_false_iff, true_and, rmatchL, reduceCtorEq]
             exact ht
           | tail _ ht' => exact helem t' ht'
     · rintro ⟨S, hsum, helem⟩
       rcases x with - | ⟨a, x⟩
       · rfl
-      · rw [rmatch, deriv, mul_rmatch_iff]
+      · rw [rmatchL, deriv, mul_rmatchL_iff]
         rcases S with - | ⟨t', U⟩
         · exact ⟨[], [], by tauto⟩
         · obtain - | ⟨b, t⟩ := t'
@@ -289,15 +311,30 @@ theorem star_rmatch_iff (P : RegularExpression α) :
           simp only [List.flatten_cons, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
-            rw [rmatch] at helem
+            rw [rmatchL] at helem
             convert helem.2
             exact hsum.1
           · grind
   termination_by t => (P, t.length)
 
+theorem star_rmatch_iff (P : RegularExpression α) (x : FreeMonoid α) :
+    (star P).rmatch x ↔ ∃ S : List (FreeMonoid α), x = S.prod ∧ ∀ t ∈ S, t ≠ 1 ∧ P.rmatch t := by
+  simp_rw [rmatch, star_rmatchL_iff, ← FreeMonoid.ofList.injEq]
+  constructor <;> rintro ⟨S, hS₁, hS₂⟩
+  · refine ⟨S.map .ofList, by simp [← FreeMonoid.ofList_flatten, ← hS₁], fun y my ↦ ?_⟩
+    rw [mem_map] at my
+    obtain ⟨y, my, rfl⟩ := my
+    specialize hS₂ _ my
+    rwa [← FreeMonoid.toListEquiv.injective.ne_iff]
+  · refine ⟨S.map FreeMonoid.toList, by simp [hS₁], fun l ml ↦ ?_⟩
+    rw [mem_map] at ml
+    obtain ⟨l, ml, rfl⟩ := ml
+    specialize hS₂ _ ml
+    rwa [← FreeMonoid.toListEquiv.injective.ne_iff] at hS₂
+
 @[simp]
-theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
-    P.rmatch x ↔ x ∈ P.matches' := by
+theorem rmatch_iff_matches' (P : RegularExpression α) (x : FreeMonoid α) :
+    P.rmatch x ↔ x ∈ P.matches'.toSet := by
   induction P generalizing x with
   | zero =>
     rw [zero_def, zero_rmatch]
@@ -314,9 +351,9 @@ theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
     simp only [comp_def, mul_rmatch_iff, matches'_mul, Language.mem_mul, *]
     tauto
   | star _ ih =>
-    simp only [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_nonempty, and_comm]
+    simp only [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_ne_one, and_comm]
 
-instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
+instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches'.toSet) := fun _ ↦
   decidable_of_iff _ (rmatch_iff_matches' _ _)
 
 end DecidableEq
