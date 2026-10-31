@@ -452,15 +452,10 @@ example [DecidableEq α] (a : α) : insert a (∅ : Finset α) = {a} := by
   guard_target = insert a (∅ : Set α) = {a}
   rw [← Set.singleton_def]
 
-example [DecidableEq α] (a : α) : ∀ s : Finset α, insert a ∅ = s := by
+example [DecidableEq α] (a : α) : ∀ s : Finset α, s ∪ {a} = insert a s := by
   transport Finset α to Set α
-  guard_target = ∀ s : Set α, insert a ∅ = s
-  sorry
-
-example [DecidableEq α] (a : α) : ∀ s : Finset α, Finset.erase ∅ a = s := by
-  transport Finset α to Set α
-  guard_target = ∀ s : Set α, (∅ : Set α) \ {a} = s
-  sorry
+  intro s
+  exact Set.union_singleton
 
 example [DecidableEq α] (a : α) : ¬ ∀ s : Set α, insert a ∅ = s := by
   transport Set α to Finset α
@@ -474,6 +469,19 @@ example [DecidableEq α] (a : α) (s : Option (Finset α)) : s.elim {a} (·.eras
   guard_target = s.elim {a} (· \ {a}) = ∅
   sorry
 
+-- In this example, transport cannot eliminate all occurrences of `s`, so it should fails.
+/--
+error: unsolved goals
+α : Type u_1
+s t : Finset α
+s' t' : Set α
+p : Finset α → Prop
+⊢ ∀ (s : Set α), p _fvar.19324 ∧ s = s
+-/
+#guard_msgs in
+example (p : Finset α → Prop) : ∀ s, p s ∧ s = s := by
+  transport Finset α to Set α
+
 
 
 def MyCompact (X : Type) [TopologicalSpace X] :=
@@ -483,7 +491,7 @@ def MyCompact (X : Type) [TopologicalSpace X] :=
 variable {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
 
 @[transport intro]
-theorem transport_IsOpen {r : X → Y → Prop} {map : X → Y} [Transport r map] [SurjMapClass X Y]
+theorem transport_IsOpen {r : X → Y → Prop} {map : X → Y} [Transport r map] [SemiMapClass X Y]
     (hf : Continuous map) {s : Set X} {t : Set Y} (h : SetRel r t s) : IsOpen t → IsOpen s := by
   convert IsOpen.preimage hf
   ext x
