@@ -409,53 +409,43 @@ alias AEMeasurable.ennreal_toReal := AEMeasurable.ennReal_toReal
 @[fun_prop, deprecated
   "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
-theorem Measurable.ennReal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
+theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [tsum_eq_iSup_sum]
   exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
 
-@[deprecated (since := "2026-10-27")] alias Measurable.ennreal_tsum := Measurable.ennReal_tsum
-
 @[fun_prop, deprecated
   "Use `Measurable.tsum'` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
-theorem Measurable.ennReal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
+theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable (∑' i, f i) := by
-  convert! Measurable.ennReal_tsum h with x
+  convert! Measurable.ennreal_tsum h with x
   exact Pi.tsum_apply (Pi.summable.2 fun _ => CompleteLattice.summable)
-
-@[deprecated (since := "2026-10-27")] alias Measurable.ennreal_tsum' := Measurable.ennReal_tsum'
 
 @[fun_prop, deprecated
   "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
-theorem Measurable.nnReal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (h : ∀ i, Measurable (f i)) :
+theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
-  exact (Measurable.ennReal_tsum fun i => (h i).coe_nnReal_ennReal).ennReal_toNNReal
-
-@[deprecated (since := "2026-10-27")] alias Measurable.nnreal_tsum := Measurable.nnReal_tsum
+  exact (Measurable.ennreal_tsum fun i => (h i).coe_nnReal_ennReal).ennReal_toNNReal
 
 @[fun_prop, deprecated
   "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
-theorem AEMeasurable.ennReal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
+theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [tsum_eq_iSup_sum]
   exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
 
-@[deprecated (since := "2026-10-27")] alias AEMeasurable.ennreal_tsum := AEMeasurable.ennReal_tsum
-
 @[fun_prop, deprecated
   "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
   (since := "2026-04-30")]
-theorem AEMeasurable.nnReal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]
+theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]
     {f : ι → α → NNReal} {μ : Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
     AEMeasurable (fun x : α => ∑' i : ι, f i x) μ := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
-  exact (AEMeasurable.ennReal_tsum fun i => (h i).coe_nnReal_ennReal).ennReal_toNNReal
-
-@[deprecated (since := "2026-10-27")] alias AEMeasurable.nnreal_tsum := AEMeasurable.nnReal_tsum
+  exact (AEMeasurable.ennreal_tsum fun i => (h i).coe_nnReal_ennReal).ennReal_toNNReal
 
 @[fun_prop]
 theorem measurable_coe_real_ereal : Measurable ((↑) : ℝ → EReal) :=

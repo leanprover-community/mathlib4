@@ -22,9 +22,6 @@ characteristic functions and is closed under addition and supremum of increasing
 functions.
 -/
 
-@[deprecated (since := "2026-10-27")]
-alias `Measurable.ennreal_induction` := `Measurable.ennReal_induction`
-
 @[expose] public section
 
 
