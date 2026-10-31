@@ -5982,6 +5982,7 @@ public import Mathlib.ModelTheory.Topology.Types
 public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
+public import Mathlib.NumberTheory.AKSPrimality.Introspective
 public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.AddCharacter.Trace
 public import Mathlib.NumberTheory.AlmostPrime
