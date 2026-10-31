@@ -318,7 +318,7 @@ local grind_pattern IsAdmissible.simplicialEvalσ_succ_getElem =>
   IsAdmissible m L, simplicialEvalσ L L[k]
 
 lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
-    (j : ℕ) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
+    (j : ℕ) (hj : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
     j ∈ L := by
   induction L generalizing m with
   | nil => grind

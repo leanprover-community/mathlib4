@@ -899,11 +899,11 @@ alias codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top :=
 Variant of `codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top`: The set where a meromorphic
 function has zero or infinite order is codiscrete within its domain of meromorphicity.
 -/
-theorem codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U) :
+theorem codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f U) :
     {u ∈ U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ codiscreteWithin U := by
   convert
     mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
-      h₁f.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
+      hf.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
   aesop
 
 @[deprecated (since := "2026-07-09")]

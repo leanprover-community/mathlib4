@@ -264,7 +264,7 @@ private theorem negOnePow_mul_iterateDerivativeC_nonneg
   · exact Finset.prod_nonneg (fun a _ => by grind [show node n a ≤ 1 from cos_le_one _])
 
 private theorem negOnePow_mul_iterateDerivativeC_pos
-    {n k i : ℕ} (hk₁ : 0 < k) (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
+    {n k i : ℕ} (hk : 0 < k) (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
     0 < (-1) ^ i * iterateDerivativeC n k x i := by
   rw [iterateDerivativeC, ← mul_assoc]
   refine mul_pos ?_ (Finset.sum_pos' ?_ ?_)
