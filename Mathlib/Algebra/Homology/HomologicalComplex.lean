@@ -62,13 +62,20 @@ structure HomologicalComplex (c : ComplexShape ι) where
   shape : ∀ i j, ¬c.Rel i j → d i j = 0 := by cat_disch
   d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by cat_disch
 
+attribute [to_dual self] HomologicalComplex.d HomologicalComplex.shape
+attribute [to_dual self (reorder := i k, 10 11)] HomologicalComplex.d_comp_d'
+attribute [to_dual self (reorder := d (i j), shape (i j), d_comp_d' (i k, 4 5))]
+  HomologicalComplex.mk
+attribute [to_dual self (reorder := mk (d (i j), shape (i j), d_comp_d' (i k, 4 5)))]
+  HomologicalComplex.casesOn
+
 namespace HomologicalComplex
 
 attribute [simp] shape
 
 variable {V} {c : ComplexShape ι}
 
-@[reassoc (attr := simp)]
+@[to_dual self, reassoc (attr := simp)]
 theorem d_comp_d (C : HomologicalComplex V c) (i j k : ι) : C.d i j ≫ C.d j k = 0 := by
   by_cases hij : c.Rel i j
   · by_cases hjk : c.Rel j k
@@ -76,6 +83,7 @@ theorem d_comp_d (C : HomologicalComplex V c) (i j k : ι) : C.d i j ≫ C.d j k
     · rw [C.shape j k hjk, comp_zero]
   · rw [C.shape i j hij, zero_comp]
 
+@[to_dual none]
 theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
     (h_d :
       ∀ i j : ι,
@@ -85,7 +93,7 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
   obtain ⟨X₂, d₂, s₂, h₂⟩ := C₂
   dsimp at h_X
   subst h_X
-  simp only [mk.injEq, heq_eq_eq, true_and]
+  congr
   ext i j
   by_cases hij : c.Rel i j
   · simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
@@ -145,75 +153,56 @@ lemma d_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p�
 
 end HomologicalComplex
 
+to_dual_name_hint Chain Cochain
+
 /-- An `α`-indexed chain complex is a `HomologicalComplex`
 in which `d i j ≠ 0` only if `j + 1 = i`.
 -/
+@[to_dual
+/-- An `α`-indexed cochain complex is a `HomologicalComplex`
+in which `d i j ≠ 0` only if `i + 1 = j`.
+-/]
 abbrev ChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.down α)
 
-/-- An `α`-indexed cochain complex is a `HomologicalComplex`
-in which `d i j ≠ 0` only if `i + 1 = j`.
--/
-abbrev CochainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
-  HomologicalComplex V (ComplexShape.up α)
-
 namespace ChainComplex
 
-@[simp]
-theorem prev (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
-    (ComplexShape.down α).prev i = i + 1 :=
+variable {α : Type*}
+
+@[to_dual (attr := simp)]
+theorem prev [AddRightCancelSemigroup α] [One α] (i : α) : (ComplexShape.down α).prev i = i + 1 :=
   (ComplexShape.down α).prev_eq' rfl
 
-@[simp]
-theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
+@[to_dual (attr := simp)]
+theorem next [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
   (ComplexShape.down α).next_eq' <| sub_add_cancel _ _
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
   refine dite_eq_right ?_
   push Not
-  intro
-  apply Nat.noConfusion
+  exact Nat.add_one_ne_zero
 
-@[simp]
-theorem next_nat_succ (i : ℕ) : (ComplexShape.down ℕ).next (i + 1) = i :=
-  (ComplexShape.down ℕ).next_eq' rfl
+@[to_dual (attr := simp)]
+theorem next_add_one [AddRightCancelSemigroup α] [One α] (i : α) :
+    (ComplexShape.down α).next (i + 1) = i :=
+  (ComplexShape.down α).next_eq' rfl
+
+@[to_dual (attr := deprecated (since := "2026-09-14")) prev_nat_succ]
+alias next_nat_succ := next_add_one
 
 end ChainComplex
-
-namespace CochainComplex
-
-@[simp]
-theorem prev (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.up α).prev i = i - 1 :=
-  (ComplexShape.up α).prev_eq' <| sub_add_cancel _ _
-
-@[simp]
-theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
-    (ComplexShape.up α).next i = i + 1 :=
-  (ComplexShape.up α).next_eq' rfl
-
-@[simp]
-theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
-  refine dite_eq_right ?_
-  push Not
-  intro
-  apply Nat.noConfusion
-
-@[simp]
-theorem prev_nat_succ (i : ℕ) : (ComplexShape.up ℕ).prev (i + 1) = i :=
-  (ComplexShape.up ℕ).prev_eq' rfl
-
-end CochainComplex
 
 namespace HomologicalComplex
 
 variable {V}
 variable {c : ComplexShape ι} (C : HomologicalComplex V c)
 
+set_option linter.translate.warnInvalid false in
 /-- A morphism of homological complexes consists of maps between the chain groups,
 commuting with the differentials.
 -/
-@[ext]
+@[ext, to_dual self (reorder := A B)]
 structure Hom (A B : HomologicalComplex V c) where
   f : ∀ i, A.X i ⟶ B.X i
   comm' : ∀ i j, c.Rel i j → f i ≫ B.d i j = A.d i j ≫ f j := by cat_disch
@@ -225,6 +214,9 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
   · exact f.comm' i j hij
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 
+to_dual_for Hom.comm := (Hom.comm f j i).symm
+to_dual_for Hom.mk := ⟨f, fun i j h ↦ (comm' j i h).symm⟩
+
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
   ⟨{ f := fun _ => 0 }⟩
 
@@ -232,6 +224,7 @@ instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
 def id (A : HomologicalComplex V c) : Hom A A where f _ := 𝟙 _
 
 /-- Composition of chain maps. -/
+@[to_dual self (reorder := A C, φ ψ)]
 def comp (A B C : HomologicalComplex V c) (φ : Hom A B) (ψ : Hom B C) : Hom A C where
   f i := φ.f i ≫ ψ.f i
 
@@ -246,7 +239,7 @@ instance : Category (HomologicalComplex V c) where
 
 end
 
-@[ext]
+@[ext, to_dual self]
 lemma hom_ext {C D : HomologicalComplex V c} (f g : C ⟶ D)
     (h : ∀ i, f.f i = g.f i) : f = g := by
   apply Hom.ext
@@ -257,7 +250,7 @@ lemma hom_ext {C D : HomologicalComplex V c} (f g : C ⟶ D)
 theorem id_f (C : HomologicalComplex V c) (i : ι) : Hom.f (𝟙 C) i = 𝟙 (C.X i) :=
   rfl
 
-@[simp, reassoc]
+@[simp, reassoc, to_dual self]
 theorem comp_f {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     (f ≫ g).f i = f.f i ≫ g.f i :=
   rfl
@@ -310,17 +303,12 @@ instance [HasZeroObject V] : HasZeroObject (HomologicalComplex V c) :=
 noncomputable instance [HasZeroObject V] : Inhabited (HomologicalComplex V c) :=
   ⟨zero⟩
 
+@[to_dual self]
 theorem congr_hom {C D : HomologicalComplex V c} {f g : C ⟶ D} (w : f = g) (i : ι) :
     f.f i = g.f i :=
   congr($(w).f i)
 
-lemma mono_of_mono_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
-    (hφ : ∀ i, Mono (φ.f i)) : Mono φ where
-  right_cancellation g h eq := by
-    ext i
-    rw [← cancel_mono (φ.f i)]
-    exact congr_hom eq i
-
+@[to_dual]
 lemma epi_of_epi_f {K L : HomologicalComplex V c} (φ : K ⟶ L)
     (hφ : ∀ i, Epi (φ.f i)) : Epi φ where
   left_cancellation g h eq := by
@@ -402,68 +390,41 @@ theorem image_eq_image [HasImages V] [HasEqualizers V] {i i' j : ι} (r : c.Rel 
 
 section
 
-/-- Either `C.X i`, if there is some `i` with `c.Rel i j`, or `C.X j`. -/
-abbrev xPrev (j : ι) : V :=
-  C.X (c.prev j)
-
-/-- If `c.Rel i j`, then `C.xPrev j` is isomorphic to `C.X i`. -/
-def xPrevIso {i j : ι} (r : c.Rel i j) : C.xPrev j ≅ C.X i :=
-  eqToIso <| by rw [← c.prev_eq' r]
-
-/-- If there is no `i` so `c.Rel i j`, then `C.xPrev j` is isomorphic to `C.X j`. -/
-def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
-  eqToIso <| by rw [xPrev, ComplexShape.prev, dite_eq_right]; rintro ⟨i, hi⟩; grind [c.prev_eq' hi]
-
 /-- Either `C.X j`, if there is some `j` with `c.rel i j`, or `C.X i`. -/
+@[to_dual /-- Either `C.X i`, if there is some `i` with `c.Rel i j`, or `C.X j`. -/]
 abbrev xNext (i : ι) : V :=
   C.X (c.next i)
 
 /-- If `c.Rel i j`, then `C.xNext i` is isomorphic to `C.X j`. -/
+@[to_dual /-- If `c.Rel i j`, then `C.xPrev j` is isomorphic to `C.X i`. -/]
 def xNextIso {i j : ι} (r : c.Rel i j) : C.xNext i ≅ C.X j :=
   eqToIso <| by rw [← c.next_eq' r]
 
 /-- If there is no `j` so `c.Rel i j`, then `C.xNext i` is isomorphic to `C.X i`. -/
+@[to_dual /-- If there is no `i` so `c.Rel i j`, then `C.xPrev j` is isomorphic to `C.X j`. -/]
 def xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) : C.xNext i ≅ C.X i :=
   eqToIso <| by rw [xNext, ComplexShape.next, dite_eq_right]; rintro ⟨j, hj⟩; grind [c.next_eq' hj]
 
-/-- The differential mapping into `C.X j`, or zero if there isn't one.
--/
-abbrev dTo (j : ι) : C.xPrev j ⟶ C.X j :=
-  C.d (c.prev j) j
-
-/-- The differential mapping out of `C.X i`, or zero if there isn't one.
--/
+/-- The differential mapping out of `C.X i`, or zero if there isn't one. -/
+@[to_dual dTo /-- The differential mapping into `C.X j`, or zero if there isn't one. -/]
 abbrev dFrom (i : ι) : C.X i ⟶ C.xNext i :=
   C.d i (c.next i)
 
-theorem dTo_eq {i j : ι} (r : c.Rel i j) : C.dTo j = (C.xPrevIso r).hom ≫ C.d i j := by
-  obtain rfl := c.prev_eq' r
-  exact (Category.id_comp _).symm
-
-theorem dTo_eq_zero {j : ι} (h : ¬c.Rel (c.prev j) j) : C.dTo j = 0 := by
-  simp [h]
-
+@[to_dual dTo_eq]
 theorem dFrom_eq {i j : ι} (r : c.Rel i j) : C.dFrom i = C.d i j ≫ (C.xNextIso r).inv := by
   obtain rfl := c.next_eq' r
   exact (Category.comp_id _).symm
 
+@[to_dual dTo_eq_zero]
 theorem dFrom_eq_zero {i : ι} (h : ¬c.Rel i (c.next i)) : C.dFrom i = 0 := by
   simp [h]
 
-@[reassoc (attr := simp)]
-theorem xPrevIso_comp_dTo {i j : ι} (r : c.Rel i j) : (C.xPrevIso r).inv ≫ C.dTo j = C.d i j := by
-  simp [C.dTo_eq r]
-
-@[reassoc]
-theorem xPrevIsoSelf_comp_dTo {j : ι} (h : ¬c.Rel (c.prev j) j) :
-    (C.xPrevIsoSelf h).inv ≫ C.dTo j = 0 := by simp [h]
-
-@[reassoc (attr := simp)]
+@[to_dual (attr := reassoc (attr := simp)) xPrevIso_comp_dTo]
 theorem dFrom_comp_xNextIso {i j : ι} (r : c.Rel i j) :
     C.dFrom i ≫ (C.xNextIso r).hom = C.d i j := by
   simp [C.dFrom_eq r]
 
-@[reassoc]
+@[to_dual (attr := reassoc) xPrevIsoSelf_comp_dTo]
 theorem dFrom_comp_xNextIsoSelf {i : ι} (h : ¬c.Rel i (c.next i)) :
     C.dFrom i ≫ (C.xNextIsoSelf h).hom = 0 := by simp [h]
 
@@ -527,20 +488,12 @@ theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : Is
 
 /-! Lemmas relating chain maps and `dTo`/`dFrom`. -/
 
-
-/-- `f.prev j` is `f.f i` if there is some `r i j`, and `f.f j` otherwise. -/
-abbrev prev (f : Hom C₁ C₂) (j : ι) : C₁.xPrev j ⟶ C₂.xPrev j :=
-  f.f _
-
-theorem prev_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
-    f.prev j = (C₁.xPrevIso w).hom ≫ f.f i ≫ (C₂.xPrevIso w).inv := by
-  obtain rfl := c.prev_eq' w
-  simp only [xPrevIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
-
 /-- `f.next i` is `f.f j` if there is some `r i j`, and `f.f j` otherwise. -/
+@[to_dual /-- `f.prev j` is `f.f i` if there is some `r i j`, and `f.f j` otherwise. -/]
 abbrev next (f : Hom C₁ C₂) (i : ι) : C₁.xNext i ⟶ C₂.xNext i :=
   f.f _
 
+@[to_dual]
 theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
     f.next i = (C₁.xNextIso w).hom ≫ f.f j ≫ (C₂.xNextIso w).inv := by
   obtain rfl := c.next_eq' w
@@ -564,35 +517,20 @@ induces a morphism of arrows of the differentials out of each object.
 def sqFrom (f : Hom C₁ C₂) (i : ι) : Arrow.mk (C₁.dFrom i) ⟶ Arrow.mk (C₂.dFrom i) :=
   Arrow.homMk _ _ (f.comm_from i)
 
-@[simp]
-theorem sqFrom_left (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).left = f.f i :=
-  rfl
-
-@[simp]
-theorem sqFrom_right (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).right = f.next i :=
-  rfl
-
-@[simp]
-theorem sqFrom_id (C₁ : HomologicalComplex V c) (i : ι) : sqFrom (𝟙 C₁) i = 𝟙 _ :=
-  rfl
-
-@[simp]
-theorem sqFrom_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
-    sqFrom (f ≫ g) i = sqFrom f i ≫ sqFrom g i :=
-  rfl
-
 /-- A morphism of chain complexes
 induces a morphism of arrows of the differentials into each object.
 -/
+@[to_dual existing (attr := simps!) sqFrom]
 def sqTo (f : Hom C₁ C₂) (j : ι) : Arrow.mk (C₁.dTo j) ⟶ Arrow.mk (C₂.dTo j) :=
   Arrow.homMk _ _ (f.comm_to j)
 
-@[simp]
-theorem sqTo_left (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).left = f.prev j :=
+@[to_dual (attr := simp) sqFrom_id]
+theorem sqTo_id (C₁ : HomologicalComplex V c) (i : ι) : sqTo (𝟙 C₁) i = 𝟙 _ :=
   rfl
 
-@[simp]
-theorem sqTo_right (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).right = f.f j :=
+@[to_dual (attr := simp) sqFrom_comp]
+theorem sqTo_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
+    sqTo (f ≫ g) i = sqTo f i ≫ sqTo g i :=
   rfl
 
 instance (f : C₁ ⟶ C₂) [IsIso f] (j : ι) : IsIso (f.f j) :=
@@ -622,16 +560,18 @@ section Of
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Auxiliary definition for differentials for `ChainComplex.of`. -/
-def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i : α) (j : α) : X i ⟶ X j :=
-  if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
+@[to_dual (reorder := i j)
+/-- Auxiliary definition for differentials for `CochainComplex.of`. -/]
+def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i j : α) : X i ⟶ X j :=
+  if h : j + 1 = i then eqToHom (by rw [h]) ≫ d j else 0
 
-/-- Construct an `α`-indexed chain complex from a dependently-typed differential.
--/
+/-- Construct an `α`-indexed chain complex from a dependently-typed differential. -/
+@[to_dual /-- Construct an `α`-indexed cochain complex from a dependently-typed differential. -/]
 abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     ChainComplex V α :=
   { X := X
     d := of.d X d
-    shape := fun i j w => by simp [of.d, (Ne.symm w)]
+    shape := fun i j w => dite_eq_right w
     d_comp_d' := fun i j k hij hjk => by
       dsimp [of.d] at hij hjk ⊢
       subst hij hjk
@@ -639,28 +579,33 @@ abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) �
 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
 
+@[to_dual]
 theorem of_X : (of X d sq).X = X :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem of_d (j : α) : of.d X d (j + 1) j = d j := by
   dsimp [of.d]
   rw [ite_eq_left rfl, Category.id_comp]
 
-theorem of_d_ne {i j : α} (h : i ≠ j + 1) : of.d X d i j = 0 := by
+@[to_dual]
+theorem of_d_ne {i j : α} (h : j + 1 ≠ i) : of.d X d i j = 0 := by
   simp [of.d, dite_eq_right h]
 
 end Of
 
 section OfHom
 
-variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
-variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n + 1) ≫ d_X n = 0) (Y : α → V)
-  (d_Y : ∀ n, Y (n + 1) ⟶ Y n) (sq_Y : ∀ n, d_Y (n + 1) ≫ d_Y n = 0)
+variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α]
 
 /-- A constructor for chain maps between `α`-indexed chain complexes built using `ChainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
+@[to_dual
+/--
+A constructor for chain maps between `α`-indexed cochain complexes built using `CochainComplex.of`,
+from a dependently typed collection of morphisms.
+-/]
 abbrev ofHom {X Y : ChainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
     (comm : ∀ i : α, f (i + 1) ≫ Y.d (i + 1) i = X.d (i + 1) i ≫ f i) :
     X ⟶ Y where
@@ -877,63 +822,6 @@ end ChainComplex
 
 namespace CochainComplex
 
-section Of
-
-variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
-
-/-- Auxiliary definition for differentials for `CochainComplex.of`. -/
-def of.d (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (i : α) (j : α) : X i ⟶ X j :=
-  if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
-
-/-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
--/
-abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
-    CochainComplex V α :=
-  { X := X
-    d := of.d X d
-    shape := fun i j w => dite_eq_right (c := i + 1 = j) w
-    d_comp_d' := fun i j k => by
-      dsimp [of.d]
-      split_ifs with h h' h'
-      · subst h h'
-        simp [sq]
-      all_goals simp }
-
-variable (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0)
-
-theorem of_X : (of X d sq).X = X :=
-  rfl
-
-@[simp]
-theorem of_d (j : α) : of.d X d j (j + 1) = d j := by
-  dsimp [of.d]
-  rw [ite_eq_left rfl, Category.comp_id]
-
-theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : of.d X d i j = 0 := by
-  simp [of.d, dite_eq_right h]
-
-end Of
-
-section OfHom
-
-variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
-variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n ≫ d_X (n + 1) = 0) (Y : α → V)
-  (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)
-
-/--
-A constructor for chain maps between `α`-indexed cochain complexes built using `CochainComplex.of`,
-from a dependently typed collection of morphisms.
--/
-abbrev ofHom {X Y : CochainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
-    (comm : ∀ i : α, f i ≫ Y.d i (i + 1) = X.d i (i + 1) ≫ f (i + 1)) :
-    X ⟶ Y where
-  f := f
-  comm' n m := by
-    simp only [ComplexShape.up_Rel]
-    rintro rfl
-    simpa using comm n
-
-end OfHom
 
 section Mk
 
