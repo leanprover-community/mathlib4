@@ -179,6 +179,8 @@ example : 1 + 1 = 2 := by decide (config := { native := true, kernel := false })
 set_option linter.style.native false
 
 set_option linter.style.maxHeartbeats true
+-- The following fixtures intentionally exercise `set_option ... in section`.
+set_option linter.style.inSection false
 /--
 warning: Please, add a comment explaining the need for modifying the maxHeartbeat limit, as in
 set_option maxHeartbeats 10 in

@@ -28,6 +28,7 @@ This file defines the following linters:
   It also checks for `maxHeartbeats` options being present which are not scoped to single commands.
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
   of the file: enforcing this invariant makes minimising files or moving code between files easier
+- the `inSection` linter checks for commands scoped with `... in section`
 - the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
   this is allowed Lean syntax, but it is nicer to be uniform
 - the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
@@ -127,6 +128,39 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
 initialize addLinter setOptionLinter
 
 end Style.setOption
+
+/-- The `inSection` linter warns on any command followed by `in section`.
+Put the `section` command first, followed by the command that should apply inside it.
+The `... in section` form closes the new section immediately and leaves the generated outer
+scope open instead; it also fails when the section has a name. -/
+public register_option linter.style.inSection : Bool := {
+  defValue := false
+  descr := "enable the linter against commands scoped with `in section`"
+}
+
+private partial def lintInSection (stx : Syntax) (first? : Option Syntax := none) :
+    CommandElabM Unit := do
+  if stx.isOfKind ``Parser.Command.in then
+    let head := stx[0]
+    let first? := first? <|> some head
+    if head.isOfKind ``Parser.Command.set_option then
+      withSetOptionIn (fun body ↦ lintInSection body first?) stx
+    else
+      lintInSection stx[2] first?
+  else if stx.isOfKind ``Parser.Command.section &&
+      getLinterValue linter.style.inSection (← getLinterOptions) then
+    if let some head := first? then
+      Linter.logLint linter.style.inSection head
+        "Please put `section` before the command, rather than using `... in section`."
+
+/-- Warn on commands applied to a section header using `in`, including nested command wrappers.
+Only command prefixes are traversed, so quotations and declaration bodies are ignored. -/
+def inSectionLinter : Linter where run stx := do
+  if (← MonadState.get).messages.hasErrors then
+    return
+  lintInSection stx
+
+initialize addLinter inSectionLinter
 
 /-!
 # The "missing end" linter
