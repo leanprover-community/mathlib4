@@ -46,7 +46,7 @@ noncomputable def toShiftedHom (x : CohomologyClass K L n) : Q.obj K ⟶ (Q.obj 
   Quotient.lift (fun y ↦ ShiftedHom.map (Cocycle.equivHomShift.symm y) Q) (fun y₁ y₂ h ↦ by
     dsimp [ShiftedHom.map]
     rw [cancel_mono]
-    refine DerivedCategory.Q_map_eq_of_homotopy _
+    refine DerivedCategory.Q_map_eq_of_homotopy
       (HomotopyCategory.homotopyOfEq _ _ ?_)
     simp only [← toHom_mk]
     congr 1

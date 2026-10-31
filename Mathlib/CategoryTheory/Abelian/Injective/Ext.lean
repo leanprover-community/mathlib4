@@ -354,6 +354,7 @@ lemma δ_extMk
   rw [Ext.δ_apply,
     R.extClass_comp_extMk hS f₁ f₂ hf₂ m hm (Int.negOnePow m • f₃) (by simpa [smul_smul]) m' hm']
   obtain h | h := Int.units_eq_one_or (Int.negOnePow m) <;> simp [h, ← neg_extMk _ _ _ _ hf₃']
+
 section
 
 variable {R₀ : Type*} [Ring R₀] [Linear R₀ C]

@@ -46,6 +46,22 @@ noncomputable def cochainComplexXIso (n : ℤ) (k : ℕ) (h : -k = n := by lia) 
     R.cochainComplex.X n ≅ R.complex.X k :=
   HomologicalComplex.extendXIso _ _ h
 
+@[reassoc (attr := simp)]
+lemma cochainComplexXIso_inv_comp_XIsoOfEq_hom
+    (n n' : ℤ) (k : ℕ) (h : -k = n := by lia) (h' : n = n' := by lia) :
+    (R.cochainComplexXIso n k h).inv ≫ (R.cochainComplex.XIsoOfEq h').hom =
+      (R.cochainComplexXIso n' k (by lia)).inv := by
+  subst h'
+  simp
+
+@[reassoc (attr := simp)]
+lemma XIsoOfEq_hom_cochainComplexXIso_hom
+    (n n' : ℤ) (k : ℕ) (h : -k = n' := by lia) (h' : n = n' := by lia) :
+    (R.cochainComplex.XIsoOfEq h').hom ≫ (R.cochainComplexXIso n' k h).hom  =
+      (R.cochainComplexXIso n k (by lia)).hom := by
+  subst h'
+  simp
+
 @[reassoc]
 lemma cochainComplex_d (n₁ n₂ : ℤ) (k₁ k₂ : ℕ) (h₁ : -k₁ = n₁ := by lia) (h₂ : -k₂ = n₂ := by lia) :
     R.cochainComplex.d n₁ n₂ = (cochainComplexXIso _ _ _).hom ≫
