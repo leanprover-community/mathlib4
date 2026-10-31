@@ -48,14 +48,14 @@ def defeqAbuse : Linter where
       let some expectedTy := i.expectedType? | return arr
       let .const ctor _ := i.expr.getAppFn | return arr
       let some (.ctorInfo { induct, type, .. }) := env.find? ctor | return arr
-      -- This check is for performance. We later do the stronger check on `← whnfI expectedTy`.
+      -- This check is for performance. We later do the stronger check on `whnf expectedTy`.
       if expectedTy.isAppOf induct then return arr
       -- Do not lint on propositions
       if (env.find? induct).get!.type.getForallBody.isProp then return arr
       return arr.push (ctx, induct, expectedTy, i)
     for (ctx, induct, expectedTy, i) in arr do
       Command.liftCoreM do MetaM.run' do withLCtx i.lctx {} do withMCtx ctx.mctx do
-      if !(← whnfI expectedTy).isAppOf induct then
+      if !(← withImplicit <| whnf expectedTy).isAppOf induct then
         Linter.logLint linter.defeqAbuse i.stx
           m!"The expected type `{expectedTy}` is different from the structure \
           `{.ofConstName induct}` at implicit transparency.\n\
