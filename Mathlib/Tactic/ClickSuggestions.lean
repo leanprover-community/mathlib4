@@ -9,6 +9,7 @@ public meta import Lean.Server.FileWorker.RequestHandling
 public meta import Lean.Widget.InteractiveGoal
 public meta import Mathlib.Lean.GoalsLocation
 public meta import Mathlib.Lean.Meta.KAbstractPositions
+public import Mathlib.Tactic.ClickSuggestions.Calc
 public import Mathlib.Tactic.ClickSuggestions.TryPremises
 public import Mathlib.Tactic.ClickSuggestions.Unfold
 public import ProofWidgets.Component.OfRpcMethod
@@ -124,8 +125,8 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
   let some onGoal := props.goals.findFinIdx? (·.mvarId == loc.mvarId) |
     return .text "#click_suggestions: please reload the tactic state"
   let goal := props.goals[onGoal]
-  let onGoal := if onGoal.val != 0 then some onGoal.val else none
-  let some goalsAt := (FileWorker.findGoalsAt? doc (doc.meta.text.lspPosToUtf8Pos props.pos)).get |
+  let some (goalsAt, cmd) :=
+    (findGoalsAndSyntaxAt? doc (doc.meta.text.lspPosToUtf8Pos props.pos)).get |
     return .text "Internal #click_suggestions error: could not find any goal at the cursor position"
   let some { ctxInfo := { parentDecl?, .. }, useAfter, tacticInfo := { stx, .. }, .. } :=
     goalsAt.find? fun { useAfter, tacticInfo, .. } ↦
@@ -133,19 +134,22 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
       goals.contains loc.mvarId
     | return .text "#click_suggestions: Please reload the tactic state"
   -- Focus with a `·` if there are multiple goals, or the previous tactic was also a `·`.
-  let focus := onGoal.isNone && (2 ≤ props.goals.size || stx.isOfKind ``cdot)
-  goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
+  let calcWidget? ← getCalcWidget? stx cmd props
+  let suggestionWidget ←
+    goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
     let (solvedHtml, solvedToken) ← mkRefreshComponent
     let targetHtml ←
       if let .hyp h := loc.loc then
-        pure jsx%{<span> hypothesis {← exprToHtml (.fvar h)}</span>}
+        pure jsx%{<span>hypothesis {← exprToHtml (.fvar h)}</span>}
       else
         Meta.viewSubexpr (fun _ e ↦ exprToHtml e) loc.pos (← loc.rootExpr)
     let html ← mkRefreshComponentM
       (.text "#click_suggestions has started searching.") fun masterToken ↦ do
       (generateSuggestions loc parentDecl? masterToken).run {
-        onGoal, focus, masterToken, statusToken, solvedToken
+        masterToken, statusToken, solvedToken
+        onGoal := if onGoal.val != 0 then some onGoal.val else none
+        focus := onGoal.val == 0 && (2 ≤ props.goals.size || stx.isOfKind ``cdot)
         stx := if useAfter then some ⟨stx⟩ else none
         «meta» := doc.meta
         cursorPos := props.pos
@@ -160,6 +164,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
       {solvedHtml}
       {html}
     </details>}
+  return jsx%{<div>{calcWidget?.getD (.text "")}{suggestionWidget}</div>}
 
 /-- The component called by the `#click_suggestions` command. -/
 @[widget_module]
