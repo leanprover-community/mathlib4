@@ -122,7 +122,7 @@ namespace MvPowerSeries
 
 noncomputable section
 
-open ENat Finsupp
+open ENat Finsupp Finset
 
 variable {σ R : Type*} [Semiring R]
 
@@ -179,6 +179,10 @@ smaller than the order of the power series. -/
 theorem coeff_eq_zero_of_lt_weightedOrder {d : σ →₀ ℕ} (h : (weight w d) < f.weightedOrder w) :
     coeff d f = 0 := by
   contrapose! h; exact weightedOrder_le w h
+
+theorem coeff_eq_of_lt_weightedOrder_sub {R : Type*} [Ring R] {f g : MvPowerSeries σ R}
+    {d : σ →₀ ℕ} (h : weight w d < (f - g).weightedOrder w) : coeff d f = coeff d g := by
+  rw [← sub_eq_zero, ← map_sub, coeff_eq_zero_of_lt_weightedOrder w h]
 
 /-- The order of a formal power series is at least `n` if
 the `d`th coefficient is `0` for all `d` such that `weight w d < n`. -/
@@ -353,6 +357,36 @@ theorem coeff_mul_prod_one_sub_of_lt_weightedOrder {R ι : Type*} [CommRing R] (
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm,
       coeff_mul_left_one_sub_of_lt_weightedOrder w h.1, ih h.2]
 
+/-- If `a i - b i` has weighted order at least `n`, and `a i`, `b i` have weighted order at
+least `k`, for all `i ∈ s`, then `∏ i ∈ s, a i - ∏ i ∈ s, b i` has weighted order at least
+`n + (#s - 1) • k`. -/
+theorem add_nsmul_le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n k : ℕ∞}
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (ha : ∀ i ∈ s, k ≤ (a i).weightedOrder w)
+    (hb : ∀ i ∈ s, k ≤ (b i).weightedOrder w) (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
+    n + (#s - 1) • k ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
+  induction s using cons_induction with
+  | empty => simp
+  | cons i s hi ih =>
+    simp only [mem_cons, forall_eq_or_imp] at ha hb h
+    rw [prod_cons, prod_cons, ← sub_add_sub_cancel (b := a i * ∏ j ∈ s, b j),
+      ← sub_mul, ← mul_sub, Finset.card_cons, Nat.add_sub_cancel]
+    refine (le_min ?_ ?_).trans (min_weightedOrder_le_add w)
+    · rcases s.eq_empty_or_nonempty with rfl | hs
+      · simp
+      calc
+        _ = k + (n + (s.card - 1) • k) := by
+          rw [add_left_comm, ← succ_nsmul', Nat.sub_add_cancel hs.card_pos]
+        _ ≤ _ := (add_le_add ha.1 (ih ha.2 hb.2 h.2)).trans (le_weightedOrder_mul w)
+    · exact (add_le_add h.1 ((s.card_nsmul_le_sum _ k hb.2).trans
+        (le_weightedOrder_prod w b s))).trans (le_weightedOrder_mul w)
+
+/-- If `a i - b i` has weighted order at least `n` for all `i ∈ s`, then so does
+`∏ i ∈ s, a i - ∏ i ∈ s, b i`. -/
+theorem le_weightedOrder_prod_sub_prod {R ι : Type*} [CommRing R] {n : ℕ∞}
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (h : ∀ i ∈ s, n ≤ (a i - b i).weightedOrder w) :
+    n ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).weightedOrder w := by
+  simpa using add_nsmul_le_weightedOrder_prod_sub_prod w (k := 0) (by simp) (by simp) h
+
 @[simp]
 theorem weightedOrder_neg (f : MvPowerSeries σ R) : (-f).weightedOrder w = f.weightedOrder w := by
   by_contra! h
@@ -415,6 +449,11 @@ theorem coeff_of_lt_order {d : σ →₀ ℕ} (h : degree d < f.order) :
     coeff d f = 0 := by
   rw [degree_eq_weight_one] at h
   exact coeff_eq_zero_of_lt_weightedOrder _ h
+
+theorem coeff_eq_of_lt_order_sub {R : Type*} [Ring R] {f g : MvPowerSeries σ R} {d : σ →₀ ℕ}
+    (h : degree d < (f - g).order) : coeff d f = coeff d g := by
+  rw [degree_eq_weight_one] at h
+  exact coeff_eq_of_lt_weightedOrder_sub _ h
 
 /-- The order of a formal power series is at least `n` if
 the `d`th coefficient is `0` for all `d` such that `degree d < n`. -/
@@ -526,6 +565,21 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (d : σ �
     (∀ i ∈ s, degree d < order (g i)) → coeff d (f * ∏ i ∈ s, (1 - g i)) = coeff d f := by
   rw [degree_eq_weight_one]
   exact coeff_mul_prod_one_sub_of_lt_weightedOrder _ d s f g
+
+/-- If `a i - b i` has order at least `n` for all `i ∈ s`, then so does
+`∏ i ∈ s, a i - ∏ i ∈ s, b i`. -/
+theorem le_order_prod_sub_prod {R ι : Type*} [CommRing R] {n : ℕ∞}
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (h : ∀ i ∈ s, n ≤ (a i - b i).order) :
+    n ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).order :=
+  le_weightedOrder_prod_sub_prod _ h
+
+/-- If `a i - b i` has order at least `n`, and `a i`, `b i` have order at least `k`, for all
+`i ∈ s`, then `∏ i ∈ s, a i - ∏ i ∈ s, b i` has order at least `n + (#s - 1) • k`. -/
+theorem add_nsmul_le_order_prod_sub_prod {R ι : Type*} [CommRing R] {n k : ℕ∞}
+    {a b : ι → MvPowerSeries σ R} {s : Finset ι} (ha : ∀ i ∈ s, k ≤ (a i).order)
+    (hb : ∀ i ∈ s, k ≤ (b i).order) (h : ∀ i ∈ s, n ≤ (a i - b i).order) :
+    n + (#s - 1) • k ≤ (∏ i ∈ s, a i - ∏ i ∈ s, b i).order :=
+  add_nsmul_le_weightedOrder_prod_sub_prod _ ha hb h
 
 @[simp]
 theorem order_neg (f : MvPowerSeries σ R) : (-f).order = f.order := weightedOrder_neg _ f
