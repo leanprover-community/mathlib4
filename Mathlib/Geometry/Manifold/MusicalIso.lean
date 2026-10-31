@@ -86,24 +86,6 @@ lemma hoge {s : (x : B) → TangentSpace IB x} :
   -- TODO: needs a slightly different proof, but should be the same in both cases
   sorry
 
--- baby version of Clm.bundle_apply... seems missing!
--- TODO: generalise to any C^k vector bundle; does this exist already?
-lemma bazAt
-    {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
-    (hs : CMDiffAt k (fun (x : B) ↦
-      TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)) x)
-    {t : (x : B) → TangentSpace IB x} (ht : CMDiffAt k (T% t) x) :
-    CMDiffAt k (fun x ↦ (s x) (t x)) x := by
-  let aux := ContMDiffAt.clm_bundle_apply hs ht
-  sorry
-
-lemma baz {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ}
-    (hs : CMDiff k (fun (x : B) ↦
-      TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)))
-    {t : (x : B) → TangentSpace IB x} (ht : CMDiff k (T% t)) :
-    CMDiff k fun x ↦ (s x) (t x) :=
-  fun x ↦ bazAt (hs x) (ht x)
-
 lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     (hs : CMDiffAt k (fun (x : B) ↦
       TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)) x) :
@@ -112,7 +94,7 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv]
   rw [hogeAt (IB := IB)]
   intro t ht
-  simp [bazAt hs ht]
+  simp [hs.clm_bundle_apply_trivial_target ht]
 
 lemma foo_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ}
     (hs : CMDiff k (fun (x : B) ↦
