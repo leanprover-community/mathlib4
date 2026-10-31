@@ -33,6 +33,11 @@ check_not_same
   1,
   have : One Nat := ⟨0 + 1 + 0⟩; 1
 
+-- Over-applications are handled correctly.
+instance {n} : OfNat (Nat → Nat) n := ⟨fun _ ↦ n⟩
+instance : Add (Nat → Nat) := ⟨fun f g i ↦ f i + g i⟩
+
+check_not_same (1 + 2 : Nat → Nat) 3, (1 + 2 : Nat → Nat) (2).succ
 
 check_same
   1,

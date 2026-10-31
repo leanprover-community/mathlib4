@@ -259,7 +259,7 @@ partial def isExplicitEq (t s : Expr) : MetaM Bool := do
   let sArgs := s.getAppArgs
   let info ← getFunInfoNArgs t.getAppFn t.getAppNumArgs
   t.getAppNumArgs.allM fun i _ => do
-    if info.paramInfo[i]!.isExplicit then
+    if info.paramInfo[i]?.all (·.isExplicit) then
       isExplicitEq tArgs[i]! sArgs[i]!
     else
       withNewMCtxDepth <| isDefEqI tArgs[i]! sArgs[i]!
