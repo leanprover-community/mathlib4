@@ -241,12 +241,9 @@ theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p
     (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
-theorem normUnit_X : normUnit (X : R[X]) = 1 := by
-  have := coe_normUnit (R := R) (p := X)
-  rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
+theorem normUnit_X : normUnit (X : R[X]) = 1 := by simp [← Units.val_eq_one]
 
-theorem X_eq_normalize : X = normalize (X : R[X]) := by
-  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
+theorem X_eq_normalize : X = normalize (X : R[X]) := monic_X.normalize_eq_self.symm
 
 end NormalizationMonoid
 
@@ -551,13 +548,11 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
   · simp
 
 theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) := by
-  rw [Ne, ← leadingCoeff_eq_zero, ← Ne, ← isUnit_iff_ne_zero] at hp0
-  rw [Monic, leadingCoeff_normalize, normalize_eq_one]
-  apply hp0
+  simpa [Monic, leadingCoeff_normalize, normalize_eq_one]
 
 theorem normalize_eq_self_iff_monic [DecidableEq R] {p : R[X]} (hp : p ≠ 0) :
     normalize p = p ↔ p.Monic :=
-  ⟨fun h ↦ h ▸ monic_normalize hp, fun h ↦ Monic.normalize_eq_self h⟩
+  ⟨fun h ↦ h ▸ monic_normalize hp, Monic.normalize_eq_self⟩
 
 theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
     (p / q).leadingCoeff = p.leadingCoeff / q.leadingCoeff := by
@@ -595,9 +590,7 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
-    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
-  have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
-  simp [CommGroupWithZero.coe_normUnit _ this]
+    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by simp [hp]
 
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
