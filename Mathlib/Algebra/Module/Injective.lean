@@ -34,7 +34,7 @@ public import Mathlib.Tactic.NormNum
 
 ## Main statements
 
-* `Module.Baer.injective`: an `R`-module is injective if it is Baer.
+* `Module.Baer.iff_injective`: an `R`-module is injective if and only if it is Baer.
 
 -/
 
