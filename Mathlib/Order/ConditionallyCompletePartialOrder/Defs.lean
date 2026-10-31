@@ -47,7 +47,7 @@ variable {ι : Sort*} {α : Type*}
 /-- Conditionally complete partial orders (with infima) are partial orders
 where every nonempty, directed set which is bounded below has a greatest lower bound. -/
 class ConditionallyCompletePartialOrderInf (α : Type*)
-    extends PartialOrder α, InfSet α where
+    extends PartialOrder α, OrderInfSet α where
   /-- For each nonempty, directed set `s` which is bounded below, `sInf s` is
   the greatest lower bound of `s`. -/
   isGLB_csInf_of_directed :
@@ -57,7 +57,7 @@ class ConditionallyCompletePartialOrderInf (α : Type*)
 where every nonempty, directed set which is bounded above has a least upper bound. -/
 @[to_dual existing]
 class ConditionallyCompletePartialOrderSup (α : Type*)
-    extends PartialOrder α, SupSet α where
+    extends PartialOrder α, OrderSupSet α where
   /-- For each nonempty, directed set `s` which is bounded above, `sSup s` is
   the least upper bound of `s`. -/
   isLUB_csSup_of_directed :

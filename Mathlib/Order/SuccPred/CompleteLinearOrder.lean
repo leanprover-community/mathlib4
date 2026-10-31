@@ -99,7 +99,7 @@ lemma csSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup
   · simp [isSuccPrelimit_bot] at hlim
   · apply csSup_mem_of_not_isSuccLimit hs _ <| mt IsSuccLimit.isSuccPrelimit hlim
     contrapose hlim
-    rw [csSup_of_not_bddAbove hlim, csSup_empty]
+    rw [csSup_of_not_bddAbove hlim, sSup_empty]
     exact isSuccPrelimit_bot
 
 @[deprecated (since := "2026-04-24")]
