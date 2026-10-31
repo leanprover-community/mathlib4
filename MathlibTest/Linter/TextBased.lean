@@ -1,11 +1,12 @@
 module
 
 import all Batteries.Data.List.Basic
+import Mathlib.Basic.FunLike.Basic
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Linter.Style
 import all Mathlib.Tactic.Linter.TextBased
 import all Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 -- This import line is longer than a 100 characters, and used to trigger the longLine linter.
@@ -472,6 +473,54 @@ open Mathlib.Linter.Style.nameCheck
 #guard isBadNameWithUnderscore `Nat.fooBar_2 == false
 #guard isBadNameWithUnderscore `Nat.foo_bar_2 == false
 #guard isBadNameWithUnderscore `LibraryNote.coercion_into_rings == false
+
+end
+
+/-! Tests for the `misnamedCoercionLemmas` linter -/
+section
+
+open Lean Meta
+
+/-- Auxiliary definition used for unit-testing this linter.
+
+NB. This function assumes that `name` is a public declaration (as does the linter). -/
+meta def isMisnamedCoercionAux (name : Name) : MetaM (Bool × String) := do
+  let (s, m) ← Mathlib.Linter.Style.misnamedCoercions.isMisnamedCoercion name
+  return (s, ← m.toString)
+
+-- This lemma is misnamed: the name contains "coe".
+public lemma foo_coe : 2 = 2 := rfl
+/--
+info: (true, "This declaration statement references the constant(s) [Eq, Nat, OfNat.ofNat, instOfNatNat]")
+-/
+#guard_msgs in
+#eval isMisnamedCoercionAux `foo_coe
+
+-- The next two lemmas are fine: their names involves the string "coe", but not as a name component.
+public lemma foo_coeBar : 2 = 2 := rfl
+public lemma coeFoo_bar_eq_baz : 2 = 2 := rfl
+
+/-- info: (false, "") -/
+#guard_msgs in
+#eval isMisnamedCoercionAux `foo_coeBar
+/-- info: (false, "") -/
+#guard_msgs in
+#eval isMisnamedCoercionAux `coeFoo_bar_eq_baz
+
+-- This lemma involves the name `coe`, but also the coercion `DFunLike.coe`.
+public lemma coe_f {M N : Type*} (f : M → N) : (f : M → N) = f := rfl
+/-- info: (true, "This declaration statement references the constant(s) [Eq]") -/
+#guard_msgs in
+#eval isMisnamedCoercionAux `coe_f
+
+-- This lemma involves the name `coe` and a coercion, but the coercion in question is `Int.ofNat`.
+public lemma coe_n (a : ℕ) (b : ℤ) (ha : a = 0) (hb : b = 0) : a = b := by simp [*]
+/--
+info: (true,
+  "This declaration statement references the constant(s) [Nat,\n Int,\n Eq,\n OfNat.ofNat,\n instOfNatNat,\n instOfNat,\n Nat.cast,\n instNatCastInt]")
+-/
+#guard_msgs in
+#eval isMisnamedCoercionAux `coe_n
 
 end
 

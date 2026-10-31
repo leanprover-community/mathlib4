@@ -548,20 +548,20 @@ public def isBadNameWithUnderscore (name : Name) : Bool := Id.run do
   if declName.toString.contains "_" then return true
   else return false
 
-open Batteries.Tactic.Lint in
 /-- Linter that checks for definitions whose name contains an underscore:
 such names violate the naming convention. -/
 @[env_linter] public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
   noErrorsFound := "no definitions with an underscore in their name found."
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
-    unless ((← getEnv).find? declName).get!.isDefinition &&
+    let env ← getEnv
+    unless wasOriginallyDefn env declName &&
         -- TODO: lint private definitions with underscores for readability.
-        !(← isPrivateOrAutoDecl declName) do
+        !(env.isPrivateOrAutoDecl declName) do
       return none
     -- We also exclude simprocs: these should be named like normal lemmas.
     -- check if their type is `Lean.Meta.Simp.Simproc`.
-    if ((← getEnv).find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
+    if (env.find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
     if isBadNameWithUnderscore declName then
       return m!"The definition `{.ofConstName declName true}` contains an underscore. \
         This almost surely violates mathlib's naming convention; \
@@ -569,6 +569,47 @@ such names violate the naming convention. -/
     else return none
 
 end Style.nameCheck
+
+namespace Style.misnamedCoercions
+
+/-- Checks if a lemma `name` is (very likely) a misnamed coercion lemma:
+if its name contains the component `coe`, but the statement involves no such declaration,
+most likely it needs renaming.
+Upon error, return a message describing more details (such as, all relevant constants
+that *do* occur in the lemma). -/
+public def isMisnamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
+  -- Does the final name component contain a part `coe` (or `coe'`)?
+  let parts := name.components.getLast!.toString.split "_" |>.toList
+  unless parts.contains "coe" || parts.contains "coe'" do return (false, "")
+  -- Does the declaration reference a constant called `coe`? If so, we are fine.
+  let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
+  let coercionConstants := usedConstants.filter
+    fun c ↦ c.components.getLast? == some `coe || c == `UniformSpace.Completion.coe'
+  if coercionConstants.isEmpty then return (true,
+    m!"This declaration statement references the constant(s) {usedConstants}")
+  return (false, "")
+
+/-- Linter that checks for lemmas whose name contains the string "coe",
+but which don't reference any declaration named like this: most likely,
+these are coercion lemmas violating mathlib's naming convention. -/
+@[env_linter] public def misnamedCoercionLemmas : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "no badly named coercion lemmas found."
+  errorsFound := "FOUND most-likely badly named coercion lemmas."
+  test declName := do
+    let env ← getEnv
+    unless wasOriginallyTheorem env declName do return none
+    if env.isPrivateOrAutoDecl declName || declName.isInternalDetail ||
+        isDeprecated env declName then
+      return none
+    match ← isMisnamedCoercion declName with
+    | (true, details) =>
+      return m!"The lemma `{.ofConstName declName true}` contains 'coe' in its name, \
+        but does not involve any constant named \"coe\": {details}.\n\
+        Most likely, this lemma is a misnamed coercion lemma: \
+        note that it should be named according to the coercion used."
+    | (false, _) => return none
+
+end Style.misnamedCoercions
 
 /-! ### The "openClassical" linter -/
 
