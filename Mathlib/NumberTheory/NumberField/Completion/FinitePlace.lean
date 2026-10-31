@@ -322,6 +322,7 @@ theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ �
   simp only [mk_apply]
   rw [← norm_lt_one_iff_mem K] at hx1
   rw [← norm_eq_one_iff_notMem K] at hx2
+  rw [RingOfIntegers.coe_eq_algebraMap, hx2]
   linarith
 
 theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) = v := by
@@ -348,14 +349,14 @@ theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
   have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 :=
     ne_iff_lt_iff_le.mpr <| norm_embedding_eq w x ▸ norm_le_one K w.maximalIdeal x
   simp_rw [Function.HasFiniteMulSupport, Function.mulSupport, this, ← norm_embedding_eq,
-    norm_lt_one_iff_mem, ← Ideal.dvd_span_singleton]
+    RingOfIntegers.coe_eq_algebraMap, norm_lt_one_iff_mem, ← Ideal.dvd_span_singleton]
   have h : {v : HeightOneSpectrum (𝓞 K) | v.asIdeal ∣ span {x}}.Finite := by
     apply Ideal.finite_factors
     simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, h_x_nezero, not_false_eq_true]
   have h_inj : Set.InjOn FinitePlace.maximalIdeal {w | w.maximalIdeal.asIdeal ∣ span {x}} :=
     Function.Injective.injOn maximalIdeal_injective
   refine (h.subset ?_).of_finite_image h_inj
-  simp only [dvd_span_singleton, Set.image_subset_iff, Set.preimage_ofPred_eq, subset_refl]
+  simp
 
 @[fun_prop]
 theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :

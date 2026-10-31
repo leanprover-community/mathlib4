@@ -243,7 +243,7 @@ noncomputable def subOneIntegralPowerBasisOfPrimePow [IsCyclotomicExtension {p ^
     (RingOfIntegers.isIntegral ⟨ζ- 1, (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one⟩) (by
     refine hζ.integralPowerBasisOfPrimePow.adjoin_eq_top_of_gen_mem_adjoin ?_
     convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
-    simp [RingOfIntegers.ext_iff, integralPowerBasisOfPrimePow_gen, toInteger])
+    simp [RingOfIntegers.ext_iff, integralPowerBasisOfPrimePow_gen, Subalgebra.coe_add _])
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
@@ -873,7 +873,7 @@ noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {n} ℚ K]
     (RingOfIntegers.isIntegral ⟨ζ- 1, (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one⟩) (by
     refine hζ.integralPowerBasis.adjoin_eq_top_of_gen_mem_adjoin ?_
     convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
-    simp [RingOfIntegers.ext_iff, integralPowerBasis_gen, toInteger])
+    simp [RingOfIntegers.ext_iff, integralPowerBasis_gen, Subalgebra.coe_add _])
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
