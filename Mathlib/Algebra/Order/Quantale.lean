@@ -153,13 +153,13 @@ theorem sup_mul_distrib : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
   rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_distrib]
 
 @[to_additive]
-instance : MulLeftMono α where
+instance (priority := 90) : MulLeftMono α where
   elim := by
     intro _ _ _; simp only; intro
     rwa [← left_eq_sup, ← mul_sup_distrib, sup_of_le_left]
 
 @[to_additive]
-instance : MulRightMono α where
+instance (priority := 90) : MulRightMono α where
   elim := by
     intro _ _ _; simp only; intro
     rwa [← left_eq_sup, ← sup_mul_distrib, sup_of_le_left]
@@ -181,9 +181,6 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
   mpr h1 := le_sSup h1
 
 section Zero
-
-variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
-variable {x : α}
 
 @[to_additive (attr := simp)]
 theorem bot_mul : ⊥ * x = ⊥ := by
