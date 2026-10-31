@@ -17,7 +17,8 @@ The other three are determined by the recursive relations
 by recursion on length.
 
 The generators satisfy `a² = b² = c² = d² = 1`, `bc = d`, `cd = b`, `db = c`,
-and therefore `bcd = 1`.
+and therefore `bcd = 1`. They also satisfy the torsion relations
+`(ad)⁴ = (ac)⁸ = (ab)¹⁶ = 1`.
 
 ## References
 
@@ -229,5 +230,79 @@ lemma db_eq_c : d * b = c :=
 
 @[simp] lemma bcd_eq_one : b * c * d = 1 := by
   rw [mul_assoc, cd_eq_b, b_mul_self]
+
+lemma a_mul_phi_mul_a (f₀ f₁ : TreeAut) : a * phi f₀ f₁ * a = phi f₁ f₀ :=
+  swapRoot_mul_phi_mul_swapRoot f₀ f₁
+
+lemma phi_pow (f₀ f₁ : TreeAut) (n : ℕ) : phi f₀ f₁ ^ n = phi (f₀ ^ n) (f₁ ^ n) := by
+  induction n with
+  | zero => simp [phi_one]
+  | succ n ih =>
+    rw [pow_succ, pow_succ, pow_succ, ih, phi_mul]
+
+lemma conj_a_pow (x : TreeAut) (n : ℕ) : (a * x * a) ^ n = a * x ^ n * a := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    have haa : a * a = 1 := a_mul_self
+    calc
+      (a * x * a) ^ (n + 1) = (a * x ^ n * a) * (a * x * a) := by rw [pow_succ, ih]
+      _ = a * (x ^ n * (a * a * (x * a))) := by simp only [mul_assoc]
+      _ = a * (x ^ n * (1 * (x * a))) := by rw [haa]
+      _ = a * (x ^ n * (x * a)) := by rw [one_mul]
+      _ = a * x ^ (n + 1) * a := by
+        rw [← mul_assoc (x ^ n), ← pow_succ]
+        simp only [mul_assoc]
+
+lemma ad_pow_two : (a * d) ^ 2 = phi b b := by
+  calc
+    (a * d) ^ 2 = a * d * a * d := pow_two _
+    _ = a * phi (1 : TreeAut) b * a * phi (1 : TreeAut) b := by rw [d_eq_phi]
+    _ = (a * phi (1 : TreeAut) b * a) * phi (1 : TreeAut) b := by simp [mul_assoc]
+    _ = phi b 1 * phi (1 : TreeAut) b := by rw [a_mul_phi_mul_a]
+    _ = phi (b * 1) (1 * b) := (phi_mul ..).symm
+    _ = phi b b := by simp
+
+lemma ad_pow_four : (a * d) ^ 4 = 1 := by
+  have h : (a * d) ^ 4 = ((a * d) ^ 2) ^ 2 := by rw [← pow_mul]
+  rw [h, ad_pow_two, pow_two, ← phi_mul, b_mul_self, phi_one]
+
+lemma da_eq_conj_ad : d * a = a * (a * d) * a := by
+  simp [← mul_assoc]
+
+lemma da_pow_four : (d * a) ^ 4 = 1 := by
+  rw [da_eq_conj_ad, conj_a_pow, ad_pow_four]
+  simp
+
+lemma ac_pow_two : (a * c) ^ 2 = phi (d * a) (a * d) := by
+  calc
+    (a * c) ^ 2 = a * c * a * c := pow_two _
+    _ = a * phi a d * a * phi a d := by rw [c_eq_phi]
+    _ = (a * phi a d * a) * phi a d := by simp [mul_assoc]
+    _ = phi d a * phi a d := by rw [a_mul_phi_mul_a]
+    _ = phi (d * a) (a * d) := (phi_mul ..).symm
+
+lemma ac_pow_eight : (a * c) ^ 8 = 1 := by
+  have h : (a * c) ^ 8 = ((a * c) ^ 2) ^ 4 := by rw [← pow_mul]
+  rw [h, ac_pow_two, phi_pow, da_pow_four, ad_pow_four, phi_one]
+
+lemma ca_eq_conj_ac : c * a = a * (a * c) * a := by
+  simp [← mul_assoc]
+
+lemma ca_pow_eight : (c * a) ^ 8 = 1 := by
+  rw [ca_eq_conj_ac, conj_a_pow, ac_pow_eight]
+  simp
+
+lemma ab_pow_two : (a * b) ^ 2 = phi (c * a) (a * c) := by
+  calc
+    (a * b) ^ 2 = a * b * a * b := pow_two _
+    _ = a * phi a c * a * phi a c := by rw [b_eq_phi]
+    _ = (a * phi a c * a) * phi a c := by simp [mul_assoc]
+    _ = phi c a * phi a c := by rw [a_mul_phi_mul_a]
+    _ = phi (c * a) (a * c) := (phi_mul ..).symm
+
+lemma ab_pow_sixteen : (a * b) ^ 16 = 1 := by
+  have h : (a * b) ^ 16 = ((a * b) ^ 2) ^ 8 := by rw [← pow_mul]
+  rw [h, ab_pow_two, phi_pow, ca_pow_eight, ac_pow_eight, phi_one]
 
 end Grigorchuk
