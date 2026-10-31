@@ -518,6 +518,7 @@ This is available in bundled forms as:
 * `Matrix.reindexLinearEquiv`
 * `Matrix.reindexRingEquiv`
 * `Matrix.reindexAlgEquiv`
+* `Matrix.reindexStarAlgEquiv`
 -/
 def reindex (eₘ : m ≃ l) (eₙ : n ≃ o) : Matrix m n α ≃ Matrix l o α where
   toFun M := M.submatrix eₘ.symm eₙ.symm
