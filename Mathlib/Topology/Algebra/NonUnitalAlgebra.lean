@@ -48,6 +48,10 @@ def topologicalClosure (s : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R A :
   { s.toNonUnitalSubsemiring.topologicalClosure, s.toSubmodule.topologicalClosure with
     carrier := _root_.closure (s : Set A) }
 
+theorem toSubmodule_topologicalClosure (s : NonUnitalSubalgebra R A) :
+    s.topologicalClosure.toSubmodule = s.toSubmodule.topologicalClosure :=
+  rfl
+
 theorem le_topologicalClosure (s : NonUnitalSubalgebra R A) : s ≤ s.topologicalClosure :=
   subset_closure
 
