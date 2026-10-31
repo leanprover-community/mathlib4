@@ -57,3 +57,14 @@ theorem Fintype.card_units [GroupWithZero α] [Fintype α] [DecidableEq α] :
 theorem Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [DecidableEq α] :
     Fintype.card α = Fintype.card αˣ + 1 := by
   rw [Fintype.card_units, tsub_add_cancel_of_le Fintype.card_pos]
+
+variable {α}
+
+/-- A product over the nonzero elements of a finite group with zero is a product over its units. -/
+@[to_additive (dont_translate := α)
+  /-- A sum over the nonzero elements of a finite group with zero is a sum over its units. -/]
+theorem Fintype.prod_compl_zero {M : Type*} [GroupWithZero α] [Fintype α] [DecidableEq α]
+    [Fintype αˣ] [CommMonoid M] (f : α → M) :
+    ∏ x ∈ {0}ᶜ, f x = ∏ x : αˣ, f x := by
+  rw [← Fintype.prod_equiv unitsEquivNeZero.symm (fun x ↦ f x) _ (fun _ ↦ rfl),
+    ← Finset.prod_subtype {0}ᶜ (by simp)]
