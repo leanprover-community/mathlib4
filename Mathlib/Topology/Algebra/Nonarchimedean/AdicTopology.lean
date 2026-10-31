@@ -252,7 +252,7 @@ instance (priority := 100) : UniformSpace R :=
   IsTopologicalAddGroup.rightUniformSpace R
 
 instance (priority := 100) : IsUniformAddGroup R :=
-  isUniformAddGroup_of_addCommGroup
+  IsUniformAddGroup.rightUniformSpace_of_addCommGroup R
 
 instance (priority := 100) : IsLinearTopology R R := i.isLinearTopology
 
