@@ -6,9 +6,9 @@ Authors: Yuanxia Xu
 module
 
 public import Mathlib.NumberTheory.Real.Irrational
-public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.NormNum.Prime
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Hurwitz's Theorem in Diophantine Approximation
@@ -60,7 +60,7 @@ Intermediate lemmas are stated in the division-free form `|y*ξ - x| * y * √5 
 Diophantine approximation, Hurwitz's theorem, Farey sequence, Stern-Brocot tree, mediant
 -/
 
-@[expose] public section
+public section
 
 namespace Real
 
@@ -78,12 +78,12 @@ structure IsFarey (ξ : ℝ) (p q r s : ℤ) : Prop where
   s_pos : 0 < s
   /-- Unimodularity condition. -/
   det   : q * r - p * s = 1
-  /-- p/q is a lower bound for ξ. -/
+  /-- `p / q` is a lower bound for `ξ`. -/
   left  : (p : ℝ) / q < ξ
-  /-- r/s is an upper bound for ξ. -/
+  /-- `r / s` is an upper bound for `ξ`. -/
   right : ξ < (r : ℝ) / s
 
-/-- Divisionless reformulation of Hurwitz bound |ξ - x/y| < 1/(√5y²). -/
+/-- Divisionless reformulation of Hurwitz bound `|ξ - x / y| < 1 / (√5 * y ^ 2)`. -/
 def IsGoodApprox (ξ : ℝ) (x y : ℤ) : Prop :=
   0 < y ∧ |(y : ℝ) * ξ - x| * y * √5 < 1
 
@@ -123,7 +123,7 @@ private lemma sqrt_five_mul_le_of_not_isGoodApprox_left {a b : ℤ} (hb : 0 < b)
     (hlt : (a : ℝ) / b < ξ) (h : 1 ≤ |(b : ℝ) * ξ - a| * b * √5) :
     1 ≤ √5 * b * ((b : ℝ) * ξ - a) := by
   have hbR : 0 < (b : ℝ) := mod_cast hb
-  have hpos: 0 < (b : ℝ) * ξ - a := by
+  have hpos : 0 < (b : ℝ) * ξ - a := by
     rw [div_lt_iff₀ hbR] at hlt
     linarith
   rw [abs_of_pos hpos] at h
@@ -184,7 +184,6 @@ private lemma ne_mediant (hξ : Irrational ξ) {p q r s : ℤ} :
   rw [hcast]
   exact hξ.ne_rat _
 
-
 namespace IsFarey
 
 private theorem of_lt_mediant {p q r s : ℤ} (h : IsFarey ξ p q r s)
@@ -202,7 +201,6 @@ private theorem of_mediant_lt {p q r s : ℤ} (h : IsFarey ξ p q r s)
   det := by linear_combination h.det
   left := hm
   right := h.right
-
 
 /-! ### Key step: one of three consecutive Farey endpoints is good -/
 
@@ -295,7 +293,6 @@ theorem exists_isFarey_large (hξ : Irrational ξ) (n : ℕ) :
     obtain ⟨p, q, r, s, h, hn⟩ := ih
     obtain ⟨p', q', r', s', h', hlt⟩ := h.exists_next hξ
     exact ⟨p', q', r', s', h', by omega⟩
-
 
 /-! ### From ℤ to ℚ, and infinitude -/
 
