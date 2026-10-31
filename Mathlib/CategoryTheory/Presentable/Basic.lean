@@ -235,6 +235,14 @@ lemma isCardinalPresentable_iff_of_isEquivalence
   · intro
     infer_instance
 
+instance (X : C) [LocallySmall.{w} C] [IsCardinalPresentable X κ] :
+    (shrinkCoyoneda.{w}.obj (op X)).IsCardinalAccessible κ where
+  preservesColimitOfShape J _ _ := by
+    have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+    have := preservesColimitsOfShape_of_natIso (J := J)
+      (shrinkCoyonedaObjCompUliftFunctorIso (op X)).symm
+    exact preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor
+
 variable {X κ} in
 open IsFiltered in
 lemma IsCardinalPresentable.mk

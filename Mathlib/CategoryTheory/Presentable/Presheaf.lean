@@ -18,7 +18,7 @@ If `A` is a locally `κ`-presentable category and `C` is a small category,
 we show that `Cᵒᵖ ⥤ A` is also locally `κ`-presentable, under the
 additional assumption that `A` has pullbacks. This assumption about
 pullbacks is automatically satisfied, as it is proven in the file
-`CategoryTheory.Presentable.Presheaf`.
+`CategoryTheory.Presentable.Representation`.
 
 -/
 
@@ -32,7 +32,6 @@ open Opposite Limits
 
 namespace Presheaf
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] freeYonedaHomEquiv_comp in
 instance {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
     [HasColimitsOfSize.{w, w} A] [HasCoproducts.{v} A]
