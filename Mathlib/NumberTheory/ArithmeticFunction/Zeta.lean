@@ -61,7 +61,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
-  rw [smul_apply]
+  rw [ArithmeticFunction.smul_apply]
   trans ∑ i ∈ divisorsAntidiagonal x, f i.snd
   · refine sum_congr rfl fun i hi => ?_
     rcases mem_divisorsAntidiagonal.1 hi with ⟨rfl, h⟩
@@ -78,7 +78,7 @@ theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid
 
 theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
   ext n
-  simp_rw [mul_apply, natCoe_apply, (cast_commute ..).eq]
+  simp_rw [ArithmeticFunction.mul_apply, natCoe_apply, (cast_commute ..).eq]
   rw [sum_divisorsAntidiagonal fun x y ↦ f y * ζ x, sum_divisorsAntidiagonal' fun x y ↦ f x * ζ y]
 
 theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
