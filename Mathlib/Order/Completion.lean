@@ -22,8 +22,6 @@ lattice factors through it.
 
 ## Todo
 
-- Build the order isomorphism `DedekindCut ℚ ≃o EReal`.
-
 - Make the `to_dual` tactic work so that some lemmas are created automatically, eg
   `DedekindCut.le_principal_iff` from `DedekindCut.principal_le_iff`.
   See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r3328958630]
@@ -66,6 +64,9 @@ abbrev left (A : DedekindCut α) : Set α := A.extent
 /-- The right set of a Dedekind cut. This is an alias for `Concept.intent`. -/
 @[to_dual existing]
 abbrev right (A : DedekindCut α) : Set α := A.intent
+
+@[simp] theorem left_mk (l r : Set α) (hl hr) : left (mk l r hl hr) = l := rfl
+@[simp] theorem right_mk (l r : Set α) (hl hr) : right (mk l r hl hr) = r := rfl
 
 /-- See `DedekindCut.ext'` for a version using the right set instead. -/
 @[ext] theorem ext {A B : DedekindCut α} (h : A.left = B.left) : A = B := Concept.ext h
@@ -140,6 +141,22 @@ lemma principal_le_iff {a : α} {c : DedekindCut α} :
     principal a ≤ c ↔ a ∈ c.left := by
   simp only [← left_subset_left_iff, left_principal]
   exact ⟨fun h ↦ h self_mem_Iic, fun h y hy ↦ c.isLowerSet_left hy h⟩
+
+theorem sSup_image_principal_left (c : DedekindCut α) : sSup (principal '' c.left) = c := by
+  refine le_antisymm (sSup_le <| forall_mem_image.mpr <| by simp [principal_le_iff])
+    (right_subset_right_iff.mp fun x hx ↦ ?_)
+  rw [← upperBounds_left]
+  intro y hy
+  grw [← principal_le_principal]
+  exact (le_sSup (mem_image_of_mem _ hy)).trans (le_principal_iff.2 hx)
+
+theorem sInf_image_principal_right (c : DedekindCut α) : sInf (principal '' c.right) = c := by
+  refine le_antisymm (left_subset_left_iff.mp fun x hx ↦ ?_)
+    (le_sInf <| forall_mem_image.mpr <| by simp [le_principal_iff])
+  rw [← lowerBounds_right]
+  intro y hy
+  rw [← principal_le_principal]
+  exact (principal_le_iff.mpr hx).trans (sInf_le (mem_image_of_mem _ hy))
 
 /-- We can never have a computable decidable instance, for the same reason we can't on `Set α`. -/
 noncomputable instance : DecidableLE (DedekindCut α) :=
