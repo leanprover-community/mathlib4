@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
+public import Mathlib.Geometry.Manifold.MusicalIso
 
 import Mathlib.Analysis.InnerProductSpace.Dual
 
@@ -409,6 +410,50 @@ public lemma torsion_leviCivitaConnection_eq_zero :
 public lemma isLeviCivitaConnection_leviCivitaConnection :
     (leviCivitaConnection I M).IsLeviCivitaConnection :=
   ⟨isMetricCompatible_leviCivitaConnection I, torsion_leviCivitaConnection_eq_zero I⟩
+
+-- TODO: have a stale `IsManifold I 2 M` hypothesis lying around...
+variable {k : ℕ∞}
+  [IsContMDiffRiemannianBundle I (k + 2) E (fun (x : M) ↦ TangentSpace% x)] [IsManifold I (k + 3) M]
+
+variable (x) in -- silence a warning; TODO this argument should never appear
+/-- If `M` is `C^{k+2}` and endowed with a `C^{k+1}` metric,
+its Levi-Civita connection is a `C^k` connection. -/
+instance leviCivitaConnection_baz :
+    ContMDiffCovariantDerivative (leviCivitaConnection I M) (k + 1) where
+  contMDiff := by
+    dsimp [leviCivitaConnection]
+    unfold leviCivitaAux
+    refine ⟨fun {σ} hσ ↦ ?_⟩
+    rw [contMDiffOn_univ]
+    -- The next few lines all allow replacing the goal by smoothness of `leviCivitaAuxOfMDiffAt`.
+    have := (contMDiffOn_univ.mp hσ).mdifferentiable (by simp)
+    let arg : M → TotalSpace (E →L[ℝ] E) fun (x : M) ↦ TangentSpace I x →L[ℝ] TangentSpace I x :=
+      fun x ↦ TotalSpace.mk' _ x (leviCivitaAuxOfMDiffAt I (this x))
+    suffices hyp : ContMDiff I (I.prod 𝓘(ℝ, E →L[ℝ] E)) (↑k + 1) arg by
+      apply hyp.congr
+      intro y
+      simp [arg, this y]
+    unfold arg leviCivitaAuxOfMDiffAt
+
+    -- Next, we handle the application of the musical isomorphism.
+    #check contMDiff_musicalIso_apply
+    have : IsManifold I (↑k + 1 + 1) M := sorry
+    have : ContMDiffVectorBundle (↑k + 1) E (TangentSpace (M := M) I) I := sorry
+    have : IsContMDiffRiemannianBundle I (↑k + 1) E fun (x : M) ↦ TangentSpace I x := sorry
+    apply contMDiff_musicalIso_apply (k := k + 1) (IB := I)
+
+    -- The final step is applying our smoothness criterion for the tensoriality construction.
+    -- TODO: do we need a 2-tensor version of that?
+    #check' TensorialAt.contMDiff_mkHom
+    have : IsManifold I (↑k + 1) M := sorry
+    -- TODO: this should need to specify the base point `x`
+    let φ : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → ℝ :=
+      fun X Y ↦ leviCivitaAuxInner I σ X Y x
+    -- apply TensorialAt.contMDiff_mkHom (by simp : (1 : ℕ∞ω) ≤ k + 1)
+    --   (φ := φ)
+    --   (IB := I) (F₁ := E) (F₂ := E →L[ℝ] ℝ)
+    --   (B := M) (E₁ := fun x : M ↦ TangentSpace% x)
+    sorry
 
 end existence
 

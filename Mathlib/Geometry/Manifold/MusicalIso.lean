@@ -10,8 +10,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-
-import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-!
 # The musical isomorphism preserves smoothness
@@ -225,6 +224,7 @@ end simpler
 given a section s : (x : M) → E x →L[ℝ] TangentSpace I x →L[ℝ] ℝ,
 we get an induced section (x : M) → E x →L[ℝ] TangentSpace I x via the musical isomorphism
 -/
+@[expose, reducible]
 def musicalIso (s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) :
     (x : B) → E x →L[ℝ] TangentSpace IB x :=
   fun x ↦ (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L (s x)
