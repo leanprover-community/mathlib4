@@ -5,10 +5,10 @@ Authors: Yongle Hu
 -/
 module
 
-import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.LocallyFree
-import Mathlib.RingTheory.LocalProperties.FinitePresentation
 public import Mathlib.RingTheory.PicardGroup
+import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.LocalProperties.FinitePresentation
 
 /-!
 # `Module.Invertible` is a local property
