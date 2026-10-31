@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.LinearIndependent.Algebra
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.OreLocalization.OreSet
@@ -304,3 +304,20 @@ lemma nonempty_oreSet_of_strongRankCondition [StrongRankCondition R] :
   exact this.not_gt one_lt_aleph0
 
 end Ring
+
+section FractionRing
+
+universe u
+
+variable {R K : Type*} [CommRing R] [Field K] [Algebra R K]
+
+lemma Submodule.span_range_eq_top_of_injective_of_rank_le {M N : Type u} [IsDomain R]
+    [IsFractionRing R K] [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] [Module K N] [IsScalarTower R K N] [Module.Finite K N]
+    {f : M →ₗ[R] N} (hf : Function.Injective f) (h : Module.rank K N ≤ Module.rank R M) :
+    Submodule.span K (LinearMap.range f : Set N) = ⊤ := by
+  rw [← rank_range_of_injective f hf, ← rank_span_eq_rank_of_linearIndepOn (K := K)] at h
+  · exact eq_top_of_finrank_eq congr(Cardinal.toNat $(le_antisymm (rank_le _) h))
+  · exact fun _ _ ↦ (LinearIndependent.iff_fractionRing R K).mp
+
+end FractionRing
