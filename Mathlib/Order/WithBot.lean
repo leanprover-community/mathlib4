@@ -901,8 +901,11 @@ See `WithBot.toDualTopEquiv` for the related order-iso. -/
 @[to_dual
 /-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
 See `WithTop.toDualBotEquiv` for the related order-iso. -/]
-protected def toDual : WithBot α ≃ WithTop αᵒᵈ :=
-  Equiv.refl _
+protected def toDual : WithBot α ≃ WithTop αᵒᵈ where
+  toFun a := match a with | ⊥ => ⊤ | (a : α) => OrderDual.toDual a
+  invFun a := match a with | ⊤ => ⊥ | (a : αᵒᵈ) => a.ofDual
+  left_inv a := by cases a <;> simp
+  right_inv a := by cases a <;> simp
 
 /-- `WithBot.ofDual` is the equivalence sending `⊥` to `⊤` and any `a : αᵒᵈ` to `ofDual a : α`.
 See `WithBot.ofDualTopEquiv` for the related order-iso.
@@ -910,8 +913,11 @@ See `WithBot.ofDualTopEquiv` for the related order-iso.
 @[to_dual
 /-- `WithTop.ofDual` is the equivalence sending `⊤` to `⊥` and any `a : αᵒᵈ` to `ofDual a : α`.
 See `WithTop.toDualBotEquiv` for the related order-iso. -/]
-protected def ofDual : WithBot αᵒᵈ ≃ WithTop α :=
-  Equiv.refl _
+protected def ofDual : WithBot αᵒᵈ ≃ WithTop α where
+  toFun a := match a with | ⊥ => ⊤ | (a : αᵒᵈ) => a.ofDual
+  invFun a := match a with | ⊤ => ⊥ | (a : α) => OrderDual.toDual a
+  left_inv a := by cases a <;> simp
+  right_inv a := by cases a <;> simp
 
 @[to_dual (attr := simp)]
 theorem toDual_symm : WithBot.toDual.symm = WithTop.ofDual (α := α) := rfl
@@ -935,23 +941,21 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithBot.ofDual (a : WithBot αᵒᵈ) 
 
 @[to_dual]
 theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
-    map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
-  rfl
+    map f (WithBot.toDual a) = a.map (f ∘ toDual) := by cases a <;> rfl
 
 @[to_dual]
 theorem map_ofDual (f : α → β) (a : WithBot αᵒᵈ) :
-    map f (WithBot.ofDual a) = a.map (ofDual ∘ f) :=
-  rfl
+    map f (WithBot.ofDual a) = a.map (f ∘ ofDual) := by cases a <;> rfl
 
 @[to_dual]
 theorem toDual_map (f : α → β) (a : WithBot α) :
-    WithBot.toDual (map f a) = WithTop.map (toDual ∘ f ∘ ofDual) (WithBot.toDual a) :=
-  rfl
+    WithBot.toDual (map f a) = WithTop.map (toDual ∘ f ∘ ofDual) (WithBot.toDual a) := by
+  cases a <;> rfl
 
 @[to_dual]
 theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
-    WithBot.ofDual (map f a) = WithTop.map (ofDual ∘ f ∘ toDual) (WithBot.ofDual a) :=
-  rfl
+    WithBot.ofDual (map f a) = WithTop.map (ofDual ∘ f ∘ toDual) (WithBot.ofDual a) := by
+  cases a <;> rfl
 
 section LE
 variable [LE α]

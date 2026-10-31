@@ -239,8 +239,11 @@ alias Set.range_injOn_strictMono := Set.range_injOn_strictMono_of_wellFoundedLT
 
 @[to_dual]
 theorem Set.range_injOn_strictAnti_of_wellFoundedGT [WellFoundedGT β] :
-    Set.InjOn Set.range { f : β → γ | StrictAnti f } :=
-  fun _ hf _ hg ↦ Set.range_injOn_strictMono_of_wellFoundedLT (β := βᵒᵈ) hf.dual hg.dual
+    Set.InjOn Set.range { f : β → γ | StrictAnti f } := fun f hf g hg e ↦ by
+  have := range_injOn_strictMono_of_wellFoundedLT hf.dual hg.dual
+  simp only [range, Function.comp_apply, OrderDual.exists] at e this
+  funext b
+  exact congrFun (this e) (OrderDual.toDual b)
 
 @[deprecated (since := "2026-08-13")]
 alias Set.range_injOn_strictAnti := Set.range_injOn_strictAnti_of_wellFoundedGT

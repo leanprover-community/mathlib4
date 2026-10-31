@@ -504,9 +504,8 @@ theorem orderHom_eq_id [Subsingleton α] (g : α →o α) : g = OrderHom.id :=
 /-- Reinterpret a bundled monotone function as a monotone function between dual orders. -/
 @[simps]
 protected def dual : (α →o β) ≃ (αᵒᵈ →o βᵒᵈ) where
-  toFun f := ⟨(OrderDual.toDual : β → βᵒᵈ) ∘ (f : α → β) ∘
-    (OrderDual.ofDual : αᵒᵈ → α), f.mono.dual⟩
-  invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual, f.mono.dual⟩
+  toFun f := ⟨OrderDual.toDual ∘ f ∘ OrderDual.ofDual, f.mono.dual⟩
+  invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual, monotone_dual_iff.mp f.mono⟩
 
 @[simp]
 theorem dual_id : (OrderHom.id : α →o α).dual = OrderHom.id :=
@@ -528,8 +527,8 @@ theorem symm_dual_comp (g : βᵒᵈ →o γᵒᵈ) (f : αᵒᵈ →o βᵒᵈ)
 
 /-- `OrderHom.dual` as an order isomorphism. -/
 def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
-  toEquiv := OrderHom.dual.trans OrderDual.toDual
-  map_rel_iff' := Iff.rfl
+  toEquiv := OrderHom.dual.trans OrderDual.equiv
+  map_rel_iff' := ⟨fun h a ↦ h ⟨a⟩, fun h a ↦ h a.ofDual⟩
 
 /-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o ULift β` in a
 higher universe. -/
@@ -656,8 +655,10 @@ protected theorem isWellOrder [IsWellOrder β (· < ·)] (f : α ↪o β) : IsWe
   f.ltEmbedding.isWellOrder
 
 /-- An order embedding is also an order embedding between dual orders. -/
-protected def dual : αᵒᵈ ↪o βᵒᵈ :=
-  ⟨f.toEmbedding, f.map_rel_iff⟩
+protected def dual : αᵒᵈ ↪o βᵒᵈ where
+  toFun := toDual ∘ f ∘ ofDual
+  inj' _ := by simp
+  map_rel_iff' := f.map_rel_iff
 
 /-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
 @[to_dual /-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
@@ -728,18 +729,16 @@ variable [PartialOrder α] [PartialOrder β] (f : OrderEmbedding α β)
 /-- If the images by an order embedding of two elements are disjoint,
 then they are themselves disjoint. -/
 lemma Disjoint.of_orderEmbedding [OrderBot α] [OrderBot β] {a₁ a₂ : α} :
-    Disjoint (f a₁) (f a₂) → Disjoint a₁ a₂ := by
-  intro h x h₁ h₂
+    Disjoint (f a₁) (f a₂) → Disjoint a₁ a₂ := fun h x h₁ h₂ ↦ by
   rw [← f.le_iff_le] at h₁ h₂ ⊢
-  calc
-    f x ≤ ⊥ := h h₁ h₂
-    _ ≤ f ⊥ := bot_le
+  exact (h h₁ h₂).trans bot_le
 
 /-- If the images by an order embedding of two elements are codisjoint,
 then they are themselves codisjoint. -/
 lemma Codisjoint.of_orderEmbedding [OrderTop α] [OrderTop β] {a₁ a₂ : α} :
-    Codisjoint (f a₁) (f a₂) → Codisjoint a₁ a₂ :=
-  Disjoint.of_orderEmbedding (α := αᵒᵈ) (β := βᵒᵈ) f.dual
+    Codisjoint (f a₁) (f a₂) → Codisjoint a₁ a₂ := fun h x h₁ h₂ ↦ by
+  rw [← f.le_iff_le] at h₁ h₂ ⊢
+  exact le_top.trans (h h₁ h₂)
 
 /-- If the images by an order embedding of two elements are complements,
 then they are themselves complements. -/
@@ -1019,8 +1018,10 @@ theorem prodComm_trans_prodComm : (prodComm : α × β ≃o β × α).trans prod
 variable (α)
 
 /-- The order isomorphism between a type and its double dual. -/
-def dualDual : α ≃o αᵒᵈᵒᵈ :=
-  refl α
+def dualDual : α ≃o αᵒᵈᵒᵈ where
+  toFun := toDual ∘ toDual
+  invFun := ofDual ∘ ofDual
+  map_rel_iff' := by simp
 
 @[simp]
 theorem coe_dualDual : ⇑(dualDual α) = toDual ∘ toDual :=
@@ -1217,8 +1218,12 @@ def orderIsoOfRightInverse (g : β → α) (hg : Function.RightInverse g f) : α
 end StrictMono
 
 /-- An order isomorphism is also an order isomorphism between dual orders. -/
-protected def OrderIso.dual [LE α] [LE β] (f : α ≃o β) : αᵒᵈ ≃o βᵒᵈ :=
-  ⟨f.toEquiv, f.le_iff_le⟩
+protected def OrderIso.dual [LE α] [LE β] (f : α ≃o β) : αᵒᵈ ≃o βᵒᵈ where
+  toFun := toDual ∘ f ∘ ofDual
+  invFun := toDual ∘ f.symm ∘ ofDual
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_rel_iff' := f.le_iff_le
 
 section
 variable [LE α] [LE β] (f : α ≃o β)
@@ -1334,12 +1339,11 @@ lemma denselyOrdered_iff_of_strictAnti {X Y F : Type*} [LinearOrder X] [Preorder
     [EquivLike F X Y] (f : F) (hf : StrictAnti f) :
     DenselyOrdered X ↔ DenselyOrdered Y := by
   rw [← denselyOrdered_orderDual]
-  let e : Xᵒᵈ ≃o Y := ⟨OrderDual.ofDual.trans (f : X ≃ Y), ?_⟩
+  let e : Xᵒᵈ ≃o Y := ⟨OrderDual.equiv.symm.trans f, ?_⟩
   · exact denselyOrdered_iff_of_orderIsoClass e
-  · simp only [Equiv.trans_apply, EquivLike.coe_coe, OrderDual.forall, OrderDual.ofDual_toDual,
-      OrderDual.toDual_le_toDual]
+  · simp_rw [OrderDual.forall]
     intro a b
-    rw [hf.le_iff_ge]
+    simp [hf.le_iff_ge]
 
 end DenselyOrdered
 

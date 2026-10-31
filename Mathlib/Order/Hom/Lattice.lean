@@ -526,8 +526,8 @@ variable [Max α] [Max β] [Max γ]
 @[to_dual (attr := simps) /--
 Reinterpret an infimum homomorphism as a supremum homomorphism between the dual lattices. -/]
 protected def dual : SupHom α β ≃ InfHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨f, f.map_sup'⟩
-  invFun f := ⟨f, f.map_inf'⟩
+  toFun f := ⟨OrderDual.toDual ∘ f ∘ OrderDual.ofDual, by simp⟩
+  invFun f := ⟨OrderDual.ofDual ∘ f ∘ OrderDual.toDual, by simp⟩
 
 @[to_dual (attr := simp)]
 theorem dual_id : SupHom.dual (SupHom.id α) = InfHom.id _ :=
@@ -557,8 +557,8 @@ variable [Lattice α] [Lattice β] [Lattice γ]
 /-- Reinterpret a lattice homomorphism as a lattice homomorphism between the dual lattices. -/
 @[simps!]
 protected def dual : LatticeHom α β ≃ LatticeHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨InfHom.dual f.toInfHom, f.map_sup'⟩
-  invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_sup'⟩
+  toFun f := ⟨InfHom.dual f.toInfHom, by simp⟩
+  invFun f := ⟨SupHom.dual.symm f.toInfHom, by simp⟩
 
 @[simp] theorem dual_id : LatticeHom.dual (LatticeHom.id α) = LatticeHom.id _ := rfl
 
