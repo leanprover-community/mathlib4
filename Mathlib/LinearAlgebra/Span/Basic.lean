@@ -934,4 +934,9 @@ theorem coord_self : (coord R M x h) (⟨x, Submodule.mem_span_singleton_self x�
 theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y • x = y :=
   Subtype.ext_iff.1 <| (toSpanNonzeroSingleton R M x h).apply_symm_apply _
 
+@[simp]
+theorem toSpanNonzeroSingleton_symm_apply {x : M} (h : x ≠ 0) (a : R) :
+    (LinearEquiv.coord R M x h) ⟨a • x, Submodule.mem_span_singleton.mpr ⟨a, rfl⟩⟩ = a :=
+    (symm_apply_eq (toSpanNonzeroSingleton R M x h)).mpr rfl
+
 end LinearEquiv
