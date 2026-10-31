@@ -6,8 +6,9 @@ Authors: David Kurniadi Angdinata
 module
 
 public import Mathlib.RingTheory.ClassGroup.Basic
-public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
+public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 /-!
 # `S`-integers and `S`-units of fraction fields of Dedekind domains
@@ -29,7 +30,7 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 
 ## Main statements
 
-* `IsDedekindDomain.IsLocalizationSInteger`: The ring of `S`-integers is a localization of `R` if
+* `IsDedekindDomain.isLocalizationSInteger`: The ring of `S`-integers is a localization of `R` if
   every class in the class group has finite order.
 * `IsDedekindDomain.isDedekindDomainSInteger`: The ring of `S`-integers of a Dedekind domain with
   every class in the class group of finite order is a Dedekind domain.
@@ -92,14 +93,21 @@ end Set
 /-- The submonoid of non-zero elements of `R` that are not contained in any non-zero prime ideal
     away from `S`. -/
 def Localization.submonoid : Submonoid R := Ideal.sInfPrimeCompl
-  (S := (fun v : HeightOneSpectrum R ↦ v.asIdeal) '' Sᶜ)
+  ((fun v : HeightOneSpectrum R ↦ v.asIdeal) '' Sᶜ)
   (by rintro _ ⟨v, _, rfl⟩; exact v.isPrime) ⊓ nonZeroDivisors R
 
 @[simp]
-lemma Localization.submonoid_eq_primeCompl (P : HeightOneSpectrum R) :
-    submonoid {v | v ≠ P} = Ideal.primeCompl P ⊓ nonZeroDivisors R := by
-  ext
+lemma Localization.mem_submonoid_iff {r : R} :
+    r ∈ Localization.submonoid S ↔ (∀ v ∈ Sᶜ, r ∉ v.asIdeal) ∧ r ∈ nonZeroDivisors R := by
   simp [Localization.submonoid]
+
+@[simp]
+lemma Localization.submonoid_eq_primeCompl (P : HeightOneSpectrum R) :
+    submonoid {P}ᶜ = Ideal.primeCompl P ⊓ nonZeroDivisors R := by
+  ext
+  simp
+
+lemma Localization.submonoid_le_nonZeroDivisors : Localization.submonoid S ≤ R⁰ := inf_le_right
 
 namespace IsDedekindDomain
 
@@ -120,98 +128,63 @@ just `R` itself, via `Algebra.botEquivOfInjective` and `IsFractionRing.injective
   exact v.valuation_le_one y
 
 open Ideal IsDedekindDomain.HeightOneSpectrum in
-/-- A generator of a positive power of the denominator ideal of `z` belongs to each of its prime
-power factors. -/
-lemma mem_prime_pow_of_span_eq_prod (z : K) {n : ℕ} (hn : n ≠ 0) {α : R}
-    (hα : span {α} = (∏ v ∈ (Support.finite (R := R) z).toFinset,
-    v.asIdeal ^ (v.valuation K z).log.toNat) ^ n) (v : HeightOneSpectrum R) :
-    α ∈ v.asIdeal ^ (v.valuation K z).log.toNat := by
-  let T := (Support.finite (R := R) z).toFinset
-  rw [← span_singleton_le_iff_mem, hα]
-  calc
-    (∏ v ∈ T, v.asIdeal ^ (v.valuation K z).log.toNat) ^ n ≤
-        ∏ v ∈ T, v.asIdeal ^ (v.valuation K z).log.toNat := pow_le_self hn
-    _ ≤ T.inf fun v ↦ v.asIdeal ^ (v.valuation K z).log.toNat := prod_le_inf
-    _ ≤ v.asIdeal ^ (v.valuation K z).log.toNat := by
-      by_cases hvT : v ∈ T
-      · exact Finset.inf_le hvT
-      · by_cases hz : z = 0
-        · simp [hz]
-        · simp_all [Int.toNat_eq_zero.mpr, WithZero.log_le_iff_le_exp, T, Support]
+lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))]
+    (z : S.integer K) : ∃ x : R × Localization.submonoid S,
+      z * algebraMap R (S.integer K) x.2 = algebraMap R (S.integer K) x.1 := by
+  -- `D` is the ideal of denominators of `z`.
+  let D : Ideal R := (1 : Submodule R K).colon (Submodule.span R {(z : K)})
+  have hD {r : R} : r ∈ D ↔ ∃ b : R, algebraMap R K b = algebraMap R K r * z := by
+    simp [D, Submodule.mem_colon_singleton, Submodule.mem_one, Algebra.smul_def]
+  have hD_ne_zero : D ≠ 0 := by
+    obtain ⟨⟨a, b⟩, h⟩ := IsLocalization.surj R⁰ (z : K)
+    exact fun h0 ↦ nonZeroDivisors.ne_zero b.2 <| by
+      simpa [h0] using hD.2 ⟨a, ((mul_comm _ _).trans h).symm⟩
+  -- `D` is not contained in any prime `v ∉ S`, since `z` is a `v`-integer for such `v`.
+  have hD_not_le {v : HeightOneSpectrum R} (hv : v ∉ S) : ¬ D ≤ v.asIdeal := fun hle ↦ by
+    obtain ⟨n, d, hnd⟩ :=
+      exists_primeCompl_mul_eq_of_integer v (z : K) (Set.integer_valuation_le_one S K z hv)
+    exact d.2 (hle (hD.2 ⟨n, ((mul_comm _ _).trans hnd).symm⟩))
+  -- Since the class group is torsion, `D ^ n = (α)` for some `n ≠ 0` and `α ∈ R`.
+  have hD_mem : D ∈ (Ideal R)⁰ := mem_nonZeroDivisors_iff_ne_zero.2 hD_ne_zero
+  obtain ⟨n, hn, hpow⟩ := isOfFinOrder_iff_pow_eq_one.1 <|
+    (Fact.out : IsMulTorsion (ClassGroup R)) (ClassGroup.mk0 ⟨D, hD_mem⟩)
+  obtain ⟨α, hα⟩ : (D ^ n).IsPrincipal := by
+    rw [← ClassGroup.mk0_eq_one_iff (pow_mem hD_mem n), ← hpow, ← map_pow]; rfl
+  have hα_mem : α ∈ D := pow_le_self hn.ne' (hα ▸ Submodule.mem_span_singleton_self α)
+  obtain ⟨β, hβ⟩ := hD.1 hα_mem
+  have hα_mem' : α ∈ Localization.submonoid S := by
+    rw [Localization.mem_submonoid_iff, mem_nonZeroDivisors_iff_ne_zero]
+    refine ⟨?_, ?_⟩
+    · rintro v hv hαv
+      exact hD_not_le hv <| IsPrime.le_of_pow_le <|
+        hα.trans_le ((span_singleton_le_iff_mem v.asIdeal).2 hαv)
+    · rintro rfl
+      exact hD_ne_zero (pow_eq_zero_iff hn.ne' |>.1 (by simpa using hα))
+  exact ⟨(β, ⟨α, hα_mem'⟩), SetLike.coe_eq_coe.mp ((hβ.trans (mul_comm _ _)).symm)⟩
 
-open Ideal IsDedekindDomain.HeightOneSpectrum Set in
-lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))] (z : S.integer K) :
-    ∃ x : R × Localization.submonoid S,
-    z * algebraMap R (S.integer K) x.2 = algebraMap R (S.integer K) x.1 := by
-  simp only [Prod.exists, Subtype.exists]
-  -- Let `T` be the finite set of places that have `v(z) > 1`.
-  let T := (Support.finite (R := R) (z : K)).toFinset
-  -- `I` is the denominator ideal of `z`.
-  let I := ∏ v ∈ T, v.asIdeal ^ (v.valuation K z).log.toNat
-  have hI_ne_zero : I ≠ 0 := by
-    grind [Finset.prod_ne_zero_iff, pow_ne_zero, HeightOneSpectrum.ne_bot, bot_eq_zero]
-  /- Here we use the fact that the class group has finite order, so there exist `n > 0` and `α` such
-  that `I ^ n` is generated by `α`. -/
-  let I₀ : (Ideal R)⁰ := ⟨I, mem_nonZeroDivisors_iff_ne_zero.mpr hI_ne_zero⟩
-  obtain ⟨n, hn, _⟩ := isOfFinOrder_iff_pow_eq_one.1
-    ((Fact.out : IsMulTorsion (ClassGroup R)) (ClassGroup.mk0 I₀))
-  obtain ⟨α, hα⟩ : (I ^ n).IsPrincipal := by
-    simp_all [← MonoidHom.map_pow, ClassGroup.mk0_eq_one_iff, I₀]
-  have hαz_valuation_le_one (v : HeightOneSpectrum R) :
-      v.valuation K (algebraMap R K α * z) ≤ 1 := by
-    let e := (v.valuation K z).log.toNat
-    calc
-    v.valuation K (algebraMap R K α * z) = v.valuation K (algebraMap R K α) * v.valuation K z :=  by
-            rw [map_mul]
-    _ ≤ WithZero.exp (-(e : ℤ)) * WithZero.exp (e : ℤ) := by
-            apply mul_le_mul' _ <| WithZero.le_exp_of_log_le (Int.self_le_toNat _)
-            simpa [valuation_of_algebraMap, intValuation_le_pow_iff_mem] using
-              mem_prime_pow_of_span_eq_prod (R := R) K z hn.ne' hα.symm v
-    _ = 1 := by simp [← WithZero.exp_add]
-  -- we can write `z * α = β` for some `β ∈ R`.
-  obtain ⟨β, hβ⟩ : ∃ β : R, z * algebraMap R K α = algebraMap R K β := by
-    simpa [mul_comm, eq_comm] using
-      mem_range.mp <| mem_integers_of_valuation_le_one (K := K) (algebraMap R K α * z)
-        hαz_valuation_le_one
-  refine ⟨β, α, ?_, SetLike.coe_eq_coe.mp hβ⟩
-  -- we are left to prove that `α ∈ Localization.submonoid S`, i.e. that `α` is non-zero and not
-  -- contained in any prime ideal not in `S`.
-  simp only [Localization.submonoid, Submonoid.mem_inf, mem_sInfPrimeCompl_iff,
-    mem_nonZeroDivisors_iff_ne_zero]
-  refine ⟨?_, fun hα0 ↦ hI_ne_zero <| eq_zero_of_pow_eq_zero (by simpa [hα0] using hα)⟩
-  rintro _ ⟨v, hvS, rfl⟩ _
-  -- `α ∈ v.asIdeal` and `I ^ n = R ∙ α` imply that `v` is in `T`.
-  have hvT : v ∈ T := by
-    obtain ⟨w, hwT, hwle⟩ := v.isPrime.prod_le.1 <|
-      IsPrime.le_of_pow_le (by rwa [hα, span_singleton_le_iff_mem v.asIdeal])
-    simpa [HeightOneSpectrum.ext
-      (w.isMaximal.eq_of_le v.isPrime.ne_top' (IsPrime.le_of_pow_le hwle))] using hwT
-  apply hvS
-  contrapose hvT
-  simp [T, HeightOneSpectrum.Support, integer_valuation_le_one S K z hvS]
+instance [Finite (ClassGroup R)] : Fact (IsMulTorsion (ClassGroup R)) := ⟨isMulTorsion_of_finite⟩
 
 /-- When every class in the class group has finite order, the ring of `S`-integers is a localization
   of `R` at the multiplicative set `S`. -/
-instance IsLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
+instance isLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
     IsLocalization (Localization.submonoid S) <| S.integer K where
   map_units := by
     rintro ⟨r, hr⟩
     have h₀ : algebraMap R K r ≠ 0 :=
       IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hr.2
     refine ⟨⟨⟨_, fun v _ ↦ v.valuation_le_one r⟩, ⟨(algebraMap R K r)⁻¹,
-        fun _ _ ↦ by simp_all [Localization.submonoid, HeightOneSpectrum.valuation_of_algebraMap,
+        fun _ _ ↦ by simp_all [HeightOneSpectrum.valuation_of_algebraMap,
           HeightOneSpectrum.intValuation_eq_one_iff.2]⟩,
       by simp [Subtype.ext_iff, h₀], by simp [Subtype.ext_iff, h₀]⟩, rfl⟩
   surj := exists_mul_algebraMap_eq_algebraMap R S K
   exists_of_eq := fun h ↦
     ⟨1, by simpa using (IsFractionRing.injective R K (congrArg Subtype.val h))⟩
 
-/-- The ring of `S`-integers is a Dedekind domain when the every element in class group has finite
+/-- The ring of `S`-integers is a Dedekind domain when every element in class group has finite
   order. -/
 instance isDedekindDomainSInteger [Fact (IsMulTorsion (ClassGroup R))] :
     IsDedekindDomain (S.integer K) :=
-  IsLocalization.isDedekindDomain _
-    (fun _ h ↦ h.2 : Localization.submonoid S ≤ nonZeroDivisors R) _
+  IsLocalization.isDedekindDomain _ (Localization.submonoid_le_nonZeroDivisors S) _
 
 end IsDedekindDomain
 
