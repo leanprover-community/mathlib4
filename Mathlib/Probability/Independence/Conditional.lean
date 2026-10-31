@@ -569,6 +569,15 @@ theorem condIndep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
     CondIndep m' (⨆ i ∈ S, m i) (⨆ i ∈ T, m i) hm' μ :=
   Kernel.indep_iSup_of_disjoint h_le h_indep hST
 
+/-- Grouping a conditionally independent family of σ-algebras into pairwise disjoint sets of
+indices yields a conditionally independent family. This is the indexed-family version of
+`condIndep_iSup_of_disjoint`. -/
+theorem iCondIndep_iSup_of_disjoint {ι' : Type*} {m : ι → MeasurableSpace Ω}
+    (h_le : ∀ i, m i ≤ mΩ) (h_indep : iCondIndep m' hm' m μ) {G : ι' → Set ι}
+    (hG : Pairwise (Function.onFun Disjoint G)) :
+    iCondIndep m' hm' (fun i' ↦ ⨆ j ∈ G i', m j) μ :=
+  Kernel.iIndep_iSup_of_disjoint h_le h_indep hG
+
 theorem condIndep_iSup_of_directed_le {m : ι → MeasurableSpace Ω}
     (h_indep : ∀ i, CondIndep m' (m i) m₁ hm' μ)
     (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ) (hm : Directed (· ≤ ·) m) :
