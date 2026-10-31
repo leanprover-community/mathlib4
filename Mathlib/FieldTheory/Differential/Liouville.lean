@@ -95,11 +95,9 @@ instance (B : IntermediateField F K)
     conv =>
       rhs
       congr
-      · rhs
-        intro x
-        rhs
+      · enter [2, x, 2]
         apply logDeriv_algebraMap (u x)
-      · apply (deriv_algebraMap v)
+      · apply deriv_algebraMap v
     simp_rw [IsScalarTower.algebraMap_apply F B K]
     norm_cast
 

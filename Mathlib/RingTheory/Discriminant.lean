@@ -216,9 +216,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
   congr
   rw [norm_eq_prod_embeddings, prod_prod_Ioi_mul_eq_prod_prod_off_diag]
   conv_rhs =>
-    congr
-    rfl
-    ext σ
+    enter [2, σ]
     rw [← aeval_algHom_apply, ← eval_map_algebraMap, ← derivative_map,
       (IsAlgClosed.splits _).eval_root_derivative ((minpoly.monic pb.isIntegral_gen).map _)
       (hroots σ), ← Finset.prod_mk _ (hnodup.erase _)]

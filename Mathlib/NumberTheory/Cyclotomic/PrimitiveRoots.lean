@@ -338,9 +338,7 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
   let := IsCyclotomicExtension.isGalois {n} K L
   rw [norm_eq_prod_embeddings]
   conv_lhs =>
-    congr
-    rfl
-    ext
+    enter [2, _]
     rw [← neg_sub, map_neg, map_sub, map_one, neg_eq_neg_one_mul]
   rw [prod_mul_distrib, prod_const, Finset.card_univ, AlgHom.card,
     IsCyclotomicExtension.finrank L hirr, (totient_even h).neg_one_pow, one_mul]
