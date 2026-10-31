@@ -62,7 +62,6 @@ protected noncomputable abbrev conditionallyCompleteLinearOrderBot
     [ConditionallyCompleteLinearOrder α] (a : α) :
     ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
-    csSup_empty := by
-      rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }
+    csSup_empty := @IsLUB.sSup_eq _ _ (.chooseBot _) _ _ isLUB_empty }
 
 end Nonneg
