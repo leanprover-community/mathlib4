@@ -6,6 +6,7 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Algebra.Category.Grp.AB
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.Topology.Sheaves.Limits
