@@ -280,9 +280,10 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
 include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
-  have := findIdx_getElem
-    (w := show findIdx .. < _ from length_range (n := p.toList.length) ▸ firstReturn_lt_length h)
-  simpa using! this
+  have := firstReturn_lt_length h
+  rw [firstReturn] at this
+  conv_rhs at this => rw [← length_range (n := p.toList.length)]
+  simpa using! findIdx_getElem (w := this)
 
 lemma count_D_lt_count_U_of_lt_firstReturn {i : ℕ} (hi : i < p.firstReturn) :
     (p.toList.take (i + 1)).count D < (p.toList.take (i + 1)).count U := by
