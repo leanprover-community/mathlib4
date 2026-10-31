@@ -42,7 +42,7 @@ but rather extend the relation properties as needed.
 ## References
 
 * [D. Windisch, *Equivalent characterizations of non-Archimedean uniform spaces*][windisch2021]
-* [A. C. M. van Rooij, *Non-Archimedean uniformities*][vanrooij1970]
+* [A. C. M. van Rooij, *Non-Archimedean uniformities*][rooij1970]
 
 -/
 
