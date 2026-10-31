@@ -85,7 +85,6 @@ def ofFinite [Finite α] [MeasurableSingletonClass α] (f : α → β) : α →�
   measurableSet_fiber' x := (toFinite (f ⁻¹' {x})).measurableSet
   finite_range' := Set.finite_range f
 
-
 /-- A monotone function with finite range, viewed as a simple function. -/
 def ofMonotone [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
     [OpensMeasurableSpace α] [PartialOrder β] (f : α → β) (hf : Monotone f)
