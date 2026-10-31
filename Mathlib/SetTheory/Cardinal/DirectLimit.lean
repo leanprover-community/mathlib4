@@ -20,8 +20,9 @@ This file gives upper and lower bounds for the cardinality of a direct limit of 
   cardinalities of its components.
 * `DirectLimit.mk_le_of_aleph0_le`: an infinite common bound for the index type and the
   components is also a bound for the direct limit.
-* `DirectLimit.mk_eq_iSup_lift_mk`: when that supremum is greater than the cardinality of the
-  index type and the canonical maps are injective, it equals the cardinality of the direct limit.
+* `DirectLimit.mk_eq_iSup_lift_mk`: when that supremum is at least as large as the cardinality of
+  the index type and the canonical maps are injective, it equals the cardinality of the direct
+  limit.
 * `DirectLimit.mk_eq_of_forall_lift_mk_eq`: when all components have the same cardinality, under
   the corresponding bound and injectivity assumptions, so does the direct limit.
 -/
@@ -53,8 +54,8 @@ theorem mk_le_of_aleph0_le (c : Cardinal.{max u v}) (hc : ℵ₀ ≤ c)
     Cardinal.mul_le_of_le hc hι (ciSup_le' hF)
 
 /-- If all canonical maps into a direct limit are injective and the supremum of the component
-cardinalities is greater than the cardinality of the index type, then it equals the cardinality
-of the direct limit. -/
+cardinalities is at least as large as the cardinality of the index type, then it equals the
+cardinality of the direct limit. -/
 theorem mk_eq_iSup_lift_mk
     (hι : Cardinal.lift.{v} #ι ≤ ⨆ i, Cardinal.lift.{u} #(F i))
     (h : ∀ i, Injective fun x ↦ (⟦⟨i, x⟩⟧ : DirectLimit F (f · · ·))) :
