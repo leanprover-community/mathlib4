@@ -135,7 +135,7 @@ lemma preservesLimit_eq_isLocal :
 lemma preservesLimitsOfShape_eq_isLocal :
     ObjectProperty.preservesLimitsOfShape J =
       (⨆ (F : J ⥤ Cᵒᵖ), MorphismProperty.ofHoms (preservesLimitHomFamily F)).isLocal := by
-  simp only [ObjectProperty.preservesLimitsOfShape_eq_iSup,
+  simp only [ObjectProperty.preservesLimitsOfShape_eq_iInf,
     MorphismProperty.isLocal_iSup, preservesLimit_eq_isLocal]
 
 end

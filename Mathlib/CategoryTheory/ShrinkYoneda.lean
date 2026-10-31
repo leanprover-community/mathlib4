@@ -139,6 +139,10 @@ noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
     simpa [shrinkYoneda] using ((τ.naturality_apply f.op) (equivShrink _ (𝟙 X))).symm
   right_inv x := by simp
 
+instance {X : C} {P : Cᵒᵖ ⥤ Type w} :
+    Small.{w} (shrinkYoneda.{w}.obj X ⟶ P) :=
+  small_of_surjective (shrinkYonedaEquiv.symm.surjective)
+
 lemma shrinkYonedaEquiv_apply {X : C} {P : Cᵒᵖ ⥤ Type w}
     (τ : shrinkYoneda.{w}.obj X ⟶ P) :
     shrinkYonedaEquiv τ = τ.app _ (shrinkYonedaObjObjEquiv.symm (𝟙 X)) := rfl
@@ -275,17 +279,21 @@ lemma uliftYonedaIsoShrinkYoneda_hom_app_comp_shrinkYoneda_symm
     uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm.{w'}]
 
 set_option backward.defeqAttrib.useBackward true in
-/-- The functor `shrinkYoneda.{w}` followed by the evaluation
-at `Y : Cᵒᵖ` and `uliftFunctor.{v}` identifies to `coyoneda.obj Y` followed
-by `uliftFunctor.{w}`. -/
-noncomputable def shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor (Y : Cᵒᵖ) :
-    shrinkYoneda.{w} ⋙ (evaluation Cᵒᵖ _).obj Y ⋙ uliftFunctor.{v} ≅
-      coyoneda.obj Y ⋙ uliftFunctor.{w} :=
-  NatIso.ofComponents (fun X ↦ (Equiv.ulift.trans
-    (shrinkYonedaObjObjEquiv.trans Equiv.ulift.symm)).toIso) (fun f ↦ by
+/-- For `X : C`, the functor `shrinkYoneda.{w}.flip.obj (op X)` followed by
+`uliftFunctor.{v}` identifies to `coyoneda.obj Y` followed by `uliftFunctor.{w}`. -/
+noncomputable def shrinkYonedaFlipObjCompUliftFunctorIso (X : C) :
+    shrinkYoneda.{w}.flip.obj (op X) ⋙ uliftFunctor.{v} ≅
+      coyoneda.obj (op X) ⋙ uliftFunctor.{w} :=
+  NatIso.ofComponents
+    (fun Y ↦ Equiv.toIso (Equiv.ulift.trans (shrinkYonedaObjObjEquiv.trans Equiv.ulift.symm)))
+    (fun _ ↦ by
       ext ⟨g⟩
       obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
-      simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm])
+      simp [shrinkYonedaObjObjEquiv, shrinkYoneda])
+
+@[deprecated (since := "2026-06-25")]
+alias shrinkYonedaCompEvaluationCompUliftFunctorIsoUliftFunctor :=
+  shrinkYonedaFlipObjCompUliftFunctorIso
 
 /-- `shrinkYoneda.obj X` is represented by `X`. -/
 @[simps]
@@ -316,6 +324,22 @@ lemma shrinkYonedaMap_app_shrinkYonedaObjObjEquiv_symm (F : C ⥤ D) {X Y : C} (
     (shrinkYonedaMap.{w} F Y).app (op X) (shrinkYonedaObjObjEquiv.symm f) =
       shrinkYonedaObjObjEquiv.symm (F.map f) := by
   simp [shrinkYonedaMap]
+
+instance (F : C ⥤ D) (X : C) [F.Full] [F.Faithful] :
+    IsIso (shrinkYonedaMap.{w} F X) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro Y
+  rw [isIso_iff_bijective]
+  exact (shrinkYonedaObjObjEquiv.trans
+    ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.trans
+      shrinkYonedaObjObjEquiv.symm)).bijective
+
+/-- The natural isomorphism `shrinkYoneda.obj X ≅ F.op ⋙ shrinkYoneda.obj (F.obj X)`
+when `F : C ⥤ D` is a fully faithful functor and `X : C`. -/
+@[simps! hom]
+noncomputable def shrinkYonedaMapIso (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) :
+    shrinkYoneda.{w}.obj X ≅ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) :=
+  asIso (shrinkYonedaMap F X)
 
 end
 
