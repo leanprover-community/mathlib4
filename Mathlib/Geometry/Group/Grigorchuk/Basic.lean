@@ -149,16 +149,8 @@ def d : TreeAut := bcd 2
 
 @[simp] lemma a_eq_swapRoot : a = swapRoot := rfl
 
-@[simp] lemma a_root : a root = root := swapRoot_root
-
 @[simp] lemma a_cons (i : Fin 2) (w : InfiniteBinaryTree) : a (i :: w) = (i + 1) :: w :=
   swapRoot_cons i w
-
-@[simp] lemma b_root : b root = root := rfl
-
-@[simp] lemma c_root : c root = root := rfl
-
-@[simp] lemma d_root : d root = root := rfl
 
 @[simp] lemma b_cons (i : Fin 2) (w : InfiniteBinaryTree) :
     b (i :: w) = i :: bif i == 0 then a w else c w := by
@@ -193,7 +185,7 @@ lemma d_eq_phi : d = phi (1 : TreeAut) b :=
     | cons i w =>
       rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi, phi_cons]
 
-@[simp] lemma a_mul_self : a * a = 1 := swapRoot_mul_self
+lemma a_mul_self : a * a = 1 := swapRoot_mul_self
 
 @[simp] lemma b_mul_self : b * b = 1 :=
   TreeAut.ext fun v ↦ by
@@ -324,7 +316,7 @@ def generators : Set TreeAut := {a, b, c, d}
 /-- The Grigorchuk group, as a subgroup of `TreeAut`. -/
 def G : Subgroup TreeAut := .closure generators
 
-@[simp] lemma a_mem_G : a ∈ G := Subgroup.subset_closure (by simp [generators])
+lemma a_mem_G : a ∈ G := Subgroup.subset_closure (by simp [generators])
 
 @[simp] lemma b_mem_G : b ∈ G := Subgroup.subset_closure (by simp [generators])
 
@@ -361,23 +353,17 @@ lemma a_notMem_stabilizerLevel_one : a ∉ stabilizerLevel 1 := by
 lemma b_mem_stabilizerLevel_one : b ∈ stabilizerLevel 1 := by
   intro v hv
   obtain ⟨i, rfl⟩ := List.length_eq_one_iff.mp hv
-  rcases fin2_eq_zero_or_one i with hi | hi
-  · simpa [hi] using map_root a
-  · simpa [hi] using map_root c
+  rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi]
 
 lemma c_mem_stabilizerLevel_one : c ∈ stabilizerLevel 1 := by
   intro v hv
   obtain ⟨i, rfl⟩ := List.length_eq_one_iff.mp hv
-  rcases fin2_eq_zero_or_one i with hi | hi
-  · simpa [hi] using map_root a
-  · simpa [hi] using map_root d
+  rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi]
 
 lemma d_mem_stabilizerLevel_one : d ∈ stabilizerLevel 1 := by
   intro v hv
   obtain ⟨i, rfl⟩ := List.length_eq_one_iff.mp hv
-  rcases fin2_eq_zero_or_one i with hi | hi
-  · simp [hi]
-  · simpa [hi] using map_root b
+  rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi]
 
 /-- The stabilizer of level `n` in the Grigorchuk group. -/
 def st (n : ℕ) : Subgroup G := (stabilizerLevel n).subgroupOf G
