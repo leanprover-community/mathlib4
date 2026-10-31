@@ -79,7 +79,6 @@ section LocallyFinite
 
 variable [DecidableEq V] [LocallyFinite G]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The `Finset` of length-`n` walks from `u` to `v`.
 This is used to give `{p : G.walk u v | p.length = n}` a `Fintype` instance, and it
 can also be useful as a recursive description of this set when `V` is finite.
@@ -94,8 +93,8 @@ def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
       exact {Walk.nil}
     else ∅
   | n + 1 =>
-    Finset.univ.biUnion fun (w : G.neighborSet u) =>
-      (finsetWalkLength n w v).map ⟨fun p => Walk.cons w.property p, fun _ _ => by simp⟩
+    Finset.univ.biUnion fun (w : G.neighborSet u) => (finsetWalkLength n w v).map
+      ⟨fun p => Walk.cons w.property p, fun _ _ => by generalize_proofs; simp⟩
 
 theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
@@ -122,12 +121,13 @@ def finsetWalkLengthLT (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
       have hl' : p.length = l' := mem_finsetWalkLength_iff.mp (hsl' hp)
       False.elim <| hne <| hl.symm.trans hl')
 
-set_option backward.isDefEq.respectTransparency.types false in
 open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLT, mem_finsetWalkLength_iff]
+  unfold finsetWalkLengthLT
+  generalize_proofs
+  simp [mem_finsetWalkLength_iff]
 
 variable {G} in
 theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :

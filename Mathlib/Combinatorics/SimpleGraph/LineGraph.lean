@@ -43,16 +43,16 @@ lemma lineGraph_adj_iff_exists {e₁ e₂ : G.edgeSet} :
   ext ⟨a, ha⟩
   simp at ha
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lift a copy between graphs to an embedding between their line graphs -/
 def Copy.toLineGraphEmbedding (f : Copy G G') : G.lineGraph ↪g G'.lineGraph where
   toFun e := ⟨e.val.map f, by rcases e with ⟨⟨⟩, h⟩; exact f.toHom.map_adj h⟩
   inj' _ _ h := SetCoe.ext <| Sym2.map.injective f.injective <| Subtype.mk.inj h
-  map_rel_iff' := by
-    simp only [lineGraph, Function.Embedding.coeFn_mk, Sym2.coe_map, ne_eq]
-    refine .and ?_ <| Set.image_inter f.injective ▸ Set.image_nonempty
-    rw [Subtype.mk.injEq, Subtype.mk.injEq]
-    exact Sym2.map.injective f.injective |>.eq_iff.not
+  map_rel_iff' {a b} := by
+    simp_rw [lineGraph_adj_iff_exists, Ne, EmbeddingLike.apply_eq_iff_eq, and_congr_right_iff]
+    intro hn
+    generalize_proofs
+    simp_rw [Function.Embedding.coeFn_mk, Sym2.mem_map, exists_exists_and_eq_and, ← toHom_apply,
+      f.injective.eq_iff, existsAndEq, and_true]
 
 theorem IsIndContained.lineGraph (h : G ⊴ G') : G.lineGraph ⊴ G'.lineGraph :=
   ⟨h.some.toCopy.toLineGraphEmbedding⟩

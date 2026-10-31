@@ -318,25 +318,19 @@ def mapToSubgraph {u v : V} : ∀ w : G.Walk u v, w.toSubgraph.coe.Walk
     let h : cons .. |>.toSubgraph.coe.Adj ⟨_, h.fst_mem⟩ ⟨_, h.snd_mem⟩ := h
     cons h <| mapToSubgraph _ |>.map <| Subgraph.inclusion le_sup_right
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Mapping a walk to its own subgraph and then to the original graph produces the same walk. -/
 theorem map_mapToSubgraph_hom {u v : V} : ∀ w : G.Walk u v, w.mapToSubgraph.map w.toSubgraph.hom = w
   | nil => rfl
-  | cons _ w => by
-    rw [mapToSubgraph, Walk.map, map_map]
-    exact congrArg₂ _ rfl w.map_mapToSubgraph_hom
+  | cons h w => (map_cons ..).trans (congrArg (cons h) ((map_map ..).trans w.map_mapToSubgraph_hom))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Mapping a walk to its own subgraph and then to `G[s]` where `s` contains the walk's support is
 the same as inducing the walk to `s`. -/
 theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
     ∀ (w : G.Walk u v) (hs : ∀ x ∈ w.support, x ∈ s),
       w.mapToSubgraph.map (⟨(⟨·, by grind [mem_verts_toSubgraph]⟩), w.toSubgraph.adj_sub⟩ :
-        w.toSubgraph.coe →g G.induce s) = w.induce s hs
-  | nil, hs => rfl
-  | cons hadj w, hs => by
-    rw [mapToSubgraph, map_cons, map_map]
-    exact congrArg _ <| w.map_mapToSubgraph_eq_induce s (hs · <| List.mem_of_mem_tail ·)
+        w.toSubgraph.coe →g G.induce s) = w.induce s hs := fun w hs ↦ by
+  apply map_injective_of_injective (f := (Embedding.induce s).toHom) Subtype.val_injective
+  exact (map_map ..).trans (w.map_mapToSubgraph_hom.trans (w.map_induce hs).symm)
 
 /-- Mapping a walk to its own subgraph and then to `G[w.support]` is the same as inducing the walk
 to its support. -/
@@ -527,14 +521,13 @@ lemma connected_induce_top_sup {H K : G.Subgraph} (Hconn : H.Preconnected) (Kcon
   · exact ⟨u, by simp [uH]⟩
   · exact ⟨v, by simp [vK]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
     H.Preconnected ↔ ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   constructor
   · intro hc u v hu hv
     refine (hc ⟨_, hu⟩ ⟨_, hv⟩).elim fun p => ?_
     exists p.map (Subgraph.hom _)
-    simp [coeSubgraph_le]
+    exact (p.toSubgraph_map H.hom).trans_le (coeSubgraph_le _)
   · intro hw
     rw [Subgraph.preconnected_iff]
     rintro ⟨u, hu⟩ ⟨v, hv⟩
@@ -552,15 +545,15 @@ end Subgraph
 
 section induced_subgraphs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preconnected_induce_iff {s : Set V} :
     (G.induce s).Preconnected ↔ ((⊤ : G.Subgraph).induce s).Preconnected := by
-  rw [induce_eq_coe_induce_top, ← Subgraph.preconnected_iff]
+  rw [induce_eq_coe_induce_top]
+  exact Subgraph.preconnected_iff.symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma connected_induce_iff {s : Set V} :
     (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
-  rw [induce_eq_coe_induce_top, ← Subgraph.connected_iff']
+  rw [induce_eq_coe_induce_top]
+  exact Subgraph.connected_iff'.symm
 
 lemma induce_union_connected {s t : Set V}
     (sconn : (G.induce s).Preconnected) (tconn : (G.induce t).Preconnected)

@@ -71,21 +71,19 @@ def Iso.sumAssoc : (G ⊕g H) ⊕g I ≃g G ⊕g (H ⊕g I) where
   toEquiv := .sumAssoc ..
   map_rel_iff' := by rintro ((u | u) | u) ((v | v) | v) <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The embedding of `G` into `G ⊕g H`. -/
 @[simps]
 def Embedding.sumInl : G ↪g G ⊕g H where
   toFun u := _root_.Sum.inl u
   inj' u v := by simp
-  map_rel_iff' := by simp
+  map_rel_iff' := by rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The embedding of `H` into `G ⊕g H`. -/
 @[simps]
 def Embedding.sumInr : H ↪g G ⊕g H where
   toFun u := _root_.Sum.inr u
   inj' u v := by simp
-  map_rel_iff' := by simp
+  map_rel_iff' := by rfl
 
 /-- Given homomorphisms `f : G →g G'` and `g : H →g H'`, returns a homomorphism from `G ⊕g H` to
 `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
@@ -102,14 +100,13 @@ lemma Hom.sum_sum_comp_sumAssoc (f : G →g G') (g : H →g H') (h : I →g I') 
     comp (sum f (sum g h)) Iso.sumAssoc.toHom = comp Iso.sumAssoc.toHom (sum (sum f g) h) := by
   ext ((v | w) | u) <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Given embeddings `f : G ↪g G'` and `g : H ↪g H'`, returns an embedding from `G ⊕g H` to
 `G' ⊕g H'` that applies `f` to the left component and `g` to the right component. -/
 @[simps]
 def Embedding.sum (f : G ↪g G') (g : H ↪g H') : G ⊕g H ↪g G' ⊕g H' where
   toFun := Sum.map f g
   inj' u v := by cases u <;> cases v <;> simp
-  map_rel_iff' {u v} := by cases u <;> cases v <;> simp
+  map_rel_iff' {u v} := by cases u <;> cases v <;> generalize_proofs <;> simp
 
 lemma Embedding.toHom_sum (f : G ↪g G') (g : H ↪g H') :
     (Embedding.sum f g).toHom = Hom.sum f.toHom g.toHom := rfl
@@ -144,7 +141,6 @@ lemma Iso.sumAssoc_comp_sumCongr (f : G ≃g G') (g : H ≃g H') (h : I ≃g I')
     comp sumAssoc (sumCongr (sumCongr f g) h) = comp (sumCongr f (sumCongr g h)) sumAssoc := by
   ext ((v | w) | u) <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The edges of the disjoint sum of `G` and `H` are in bijection with
 the disjoint sum of the edges of `G` and the edges of `H` -/
 def edgeSetSumEquiv : (G ⊕g H).edgeSet ≃ G.edgeSet ⊕ H.edgeSet where
@@ -157,9 +153,11 @@ def edgeSetSumEquiv : (G ⊕g H).edgeSet ≃ G.edgeSet ⊕ H.edgeSet where
     ) (by grind)
   invFun
     | Sum.inl ⟨e, he⟩ =>
-      e.fromRelNdrec (sym := G.symm) he (fun u v h ↦ ⟨s(.inl u, .inl v), h⟩) <| by simp
+      e.fromRelNdrec (sym := G.symm) he (fun u v h ↦ ⟨s(.inl u, .inl v), h⟩)
+        (by simp [Subtype.ext_iff])
     | Sum.inr ⟨e, he⟩ =>
-      e.fromRelNdrec (sym := H.symm) he (fun u v h ↦ ⟨s(.inr u, .inr v), h⟩) <| by simp
+      e.fromRelNdrec (sym := H.symm) he (fun u v h ↦ ⟨s(.inr u, .inr v), h⟩)
+        (by simp [Subtype.ext_iff])
   left_inv := by rintro ⟨⟨u | u, v | v⟩, h⟩ <;> first | contradiction | rfl
   right_inv := by rintro (⟨⟨u, v⟩, h⟩ | ⟨⟨u, v⟩, h⟩) <;> rfl
 

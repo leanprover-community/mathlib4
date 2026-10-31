@@ -135,12 +135,11 @@ theorem exists_maximal_isAcyclic_of_le_isAcyclic
   · grind [sSup_le_iff]
   · exact isAcyclic_sSup_of_isAcyclic_directedOn c (by grind) hc.directedOn
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A connected component of an acyclic graph is a tree. -/
 lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComponent) :
     c.toSimpleGraph.IsTree where
   connected := c.connected_toSimpleGraph
-  isAcyclic := h.comap c.toSimpleGraph_hom <| by simp [ConnectedComponent.toSimpleGraph_hom]
+  isAcyclic := h.comap c.toSimpleGraph_hom Subtype.val_injective
 
 theorem IsAcyclic.of_card_le_two (h : ENat.card V ≤ 2) : G.IsAcyclic := by
   intro v p hp
@@ -289,7 +288,6 @@ theorem IsAcyclic.isPath_iff_isTrail (hG : G.IsAcyclic) {v w : V} (p : G.Walk v 
     p.IsPath ↔ p.IsTrail :=
   ⟨IsPath.isTrail, fun h ↦ hG.isPath_iff_isChain p |>.mpr <| p.isTrail_def.mp h |>.isChain⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     Finset.card G.edgeFinset + 1 = Fintype.card V := by
   have := hG.connected.nonempty
@@ -311,14 +309,12 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     rw [dart_edge_eq_iff] at h
     obtain (h | h) := h
     · exact (congrArg (·.fst) h)
-    · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).snd = b :=
-        congrArg (·.snd) h
+    · have h1 : (f a).snd = b := congr(($h).snd)
       have h3 := congrArg length (hf' _ ((f _).tail.copy h1 rfl) ?_)
       · rw [length_copy, ← add_left_inj 1,
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
         lia
-      · simp only [isPath_copy]
-        exact (hf _).tail
+      · exact (isPath_copy (f a).tail h1 rfl).2 (hf a).tail
   case surj =>
     simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
     intro x y h
@@ -476,7 +472,6 @@ lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card_eq_fintype_card, ← edgeFinset_card]
   exact Finset.card_mono <| by simpa
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
@@ -487,7 +482,7 @@ lemma isTree_iff_connected_and_card [Finite V] :
     |>.card_vert_le_card_edgeSet_add_one.not_gt ?_)
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
-  exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
+  exact Finset.card_lt_card <| Set.toFinset_strict_mono <| by simp [h]
 
 /-- An acyclic graph on `n` vertices with `c` connected components has exactly `n - c` edges. -/
 theorem IsAcyclic.ncard_edgeSet_add_card_connectedComponent [Finite V] (h : G.IsAcyclic) :

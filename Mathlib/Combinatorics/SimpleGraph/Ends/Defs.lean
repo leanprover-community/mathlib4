@@ -155,7 +155,7 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
 If `K ⊆ L`, the components outside of `L` are all contained in a single component outside of `K`.
 -/
 abbrev hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
-  C.map <| induceHom Hom.id <| Set.compl_subset_compl.2 h
+  C.map <| induceHom Hom.id <| by rwa [← Set.compl_subset_compl] at h
 
 theorem subset_hom (C : G.ComponentCompl L) (h : K ⊆ L) : (C : Set V) ⊆ (C.hom h : Set V) := by
   rintro c ⟨cL, rfl⟩
@@ -186,12 +186,9 @@ theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
   rw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
     C.hom (h'.trans h) = (C.hom h).hom h' := by
-  change C.map _ = (C.map _).map _
-  rw [ConnectedComponent.map_comp, induceHom_comp]
-  rfl
+  simp
 
 theorem hom_mk {v : V} (vnL : v ∉ L) (h : K ⊆ L) :
     (G.componentComplMk vnL).hom h = G.componentComplMk (Set.notMem_subset h vnL) :=
@@ -253,7 +250,6 @@ variable (G)
 
 open CategoryTheory
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The functor assigning, to a finite set in `V`, the set of connected components in its complement.
 -/

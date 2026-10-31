@@ -339,15 +339,14 @@ theorem is3Clique_iff_exists_cycle_length_three :
     ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, cons hab (cons hbc (cons hac.symm nil)), by aesop⟩),
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
 its embedding is an `n`-clique in `G`. -/
 theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
     (cc : (S.induce F).coe.IsNClique n s) :
     G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
-  rw [isNClique_iff] at cc ⊢
+  rw [isNClique_iff]
   simp only [coe_map, card_map]
-  exact ⟨cc.left.of_induce, cc.right⟩
+  exact ⟨cc.isClique.of_induce, cc.card_eq⟩
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
@@ -479,14 +478,12 @@ namespace completeMultipartiteGraph
 
 variable {ι : Type*} (V : ι → Type*)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts -/
 @[simps]
-def topEmbedding (f : ∀ (i : ι), V i) :
-    (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
-  toFun := fun i ↦ ⟨i, f i⟩
-  inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
-  map_rel_iff' := by simp
+def topEmbedding (f : ∀ (i : ι), V i) : (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
+  toFun i := ⟨i, f i⟩
+  inj' _ _ h := (Sigma.mk.inj_iff.1 h).1
+  map_rel_iff' := by rfl
 
 theorem not_cliqueFree_of_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n ≤ card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=
@@ -942,12 +939,10 @@ theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
 set in `G` and vice versa. -/
 theorem isIndepSet_induce {F : Set α} {s : Set F} :
-    ((⊤ : Subgraph G).induce F).coe.IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
+    (G.induce F).IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
   simp [Set.Pairwise]
 
 end IndepSet
@@ -979,13 +974,12 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNIndepSet n s) :=
   decidable_of_iff' _ (G.isNIndepSet_iff n s)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding of an `n`-independent set of an induced subgraph of the subgraph `G` is an
 `n`-independent set in `G` and vice versa. -/
 theorem isNIndepSet_induce {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :
-    ((⊤ : Subgraph G).induce F).coe.IsNIndepSet n ↑s ↔
+    (G.induce F).IsNIndepSet n ↑s ↔
     G.IsNIndepSet n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
-  simp [isNIndepSet_iff, (isIndepSet_induce)]
+  simp [isNIndepSet_iff, isIndepSet_induce]
 
 end NIndepSet
 

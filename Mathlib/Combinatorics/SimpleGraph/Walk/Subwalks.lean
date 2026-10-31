@@ -217,7 +217,6 @@ protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
     (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q :=
   (isSubwalk_drop _ _).trans hpq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem take_isSubwalk_take {u v n k} (p : G.Walk u v) (h : n ≤ k) :
     (p.take n).IsSubwalk (p.take k) := by
   induction k, h using Nat.le_induction with
@@ -239,7 +238,7 @@ theorem drop_isSubwalk_drop {u v n k} (p : G.Walk u v) (h : n ≤ k) :
     clear h ih
     induction k generalizing p u with
     | zero => exact p.drop_zero ▸ (p.isSubwalk_rfl.copy rfl rfl p.getVert_zero.symm rfl).tail
-    | succ _ ih => cases p <;> simp [drop, ih]
+    | succ _ ih => cases p <;> simp [ih]
 
 end Walk
 

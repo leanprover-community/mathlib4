@@ -505,14 +505,12 @@ theorem ofSupport_cons_cons {l : List V} (hchain : u :: v :: l |>.IsChain G.Adj)
       .cons hchain.rel (.ofSupport (v :: l) (l.cons_ne_nil v) hchain.of_cons) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
     (ofSupport l hne hchain).support = l := by
   match l with
   | [_] => rfl
-  | _ :: v :: l =>
-    simpa using support_ofSupport (l.cons_ne_nil v) hchain.of_cons
+  | _ :: v :: l => exact congr(_ :: $(support_ofSupport (l.cons_ne_nil v) hchain.of_cons))
 
 @[simp, grind =]
 theorem length_ofSupport {l : List V} (hne : l ≠ []) (hchain : l.IsChain G.Adj) :
@@ -542,14 +540,14 @@ theorem ofDarts_cons_cons {d₁ d₂ : G.Dart} {l : List G.Dart}
       .cons (hchain.rel ▸ d₁.adj) (ofDarts (d₂ :: l) (l.cons_ne_nil d₂) hchain.of_cons) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem darts_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
     (ofDarts l hne hchain).darts = l := by
   match l with
   | [_] => rfl
   | d₁ :: d₂ :: l =>
-    simpa [hchain.rel.symm] using darts_ofDarts (l.cons_ne_nil d₂) hchain.of_cons
+    exact congrArg₂ List.cons (Dart.ext _ _ (Prod.ext rfl hchain.rel.symm))
+      (darts_ofDarts (l.cons_ne_nil d₂) hchain.of_cons)
 
 @[simp]
 theorem edges_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
