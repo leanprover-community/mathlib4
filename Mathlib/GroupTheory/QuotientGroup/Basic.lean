@@ -461,7 +461,7 @@ end QuotientGroup
 
 namespace QuotientAddGroup
 
-variable {R : Type*} [NonAssocRing R] (N : AddSubgroup R) [N.Normal]
+variable {R : Type*} [NonAssocRing R] (N : AddSubgroup R)
 
 @[simp]
 theorem mk_nat_mul (n : ℕ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := by

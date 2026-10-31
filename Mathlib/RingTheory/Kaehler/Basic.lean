@@ -671,7 +671,7 @@ theorem KaehlerDifferential.kerTotal_map' [Algebra R B]
   ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 section
-variable [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B] [SMulCommClass S A B]
+variable [Algebra R B] [IsScalarTower R A B] [IsScalarTower R S B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
 ```

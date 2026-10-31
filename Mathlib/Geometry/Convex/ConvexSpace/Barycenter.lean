@@ -16,7 +16,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
 namespace Convexity.StdSimplex
 
-variable {K M : Type*} [Field K] [CharZero K] [LinearOrder K] [IsStrictOrderedRing K]
+variable {K M : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
 
 /-- In the standard simplex with vertices `M`, this is the barycenter of
 a nonempty finite subset `S` of `M`. -/
