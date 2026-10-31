@@ -122,14 +122,14 @@ theorem run_liftM (empty : ω) (cmd : M α) :
 
 instance [EmptyCollection ω] [Append ω] : Monad (WriterT ω M) := monad ∅ (· ++ ·)
 instance [EmptyCollection ω] : MonadLift M (WriterT ω M) := WriterT.liftTell ∅
-instance [Monoid ω] : Monad (WriterT ω M) := monad 1 (· * ·)
-instance [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
+instance [AddMonoid ω] : Monad (WriterT ω M) := monad 0 (· + ·)
+instance [AddMonoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 0
 
-instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
+instance [AddMonoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
   (bind_pure_comp := fun _ _ => by ext; simp)
   (id_map := fun _ => by ext; simp)
   (pure_bind := fun _ _ => by ext; simp)
-  (bind_assoc := fun _ _ _ => by ext; simp [mul_assoc])
+  (bind_assoc := fun _ _ _ => by ext; simp [add_assoc])
 
 instance : MonadWriter ω (WriterT ω M) where
   tell := fun w ↦ WriterT.mk <| pure (⟨⟩, w)
