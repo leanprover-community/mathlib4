@@ -5516,6 +5516,7 @@ public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.LinearAlgebra.Span.TensorProduct
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.StdBasis
+public import Mathlib.LinearAlgebra.Symmetric.Basic
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basis
 public import Mathlib.LinearAlgebra.SymplecticGroup
@@ -8071,6 +8072,8 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.Algebra.Module.Star
 public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Symmetric.Basic
+public import Mathlib.Topology.Algebra.Module.Symmetric.Topology
 public import Mathlib.Topology.Algebra.Module.TopDualPairing
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
