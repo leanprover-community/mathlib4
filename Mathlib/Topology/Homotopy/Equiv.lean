@@ -157,6 +157,29 @@ def piCongrRight {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (X i
   left_inv := .piMap fun i ↦ (h i).left_inv
   right_inv := .piMap fun i ↦ (h i).right_inv
 
+instance : Monoid (HomotopyEquiv X X) where
+  one := refl X
+  mul f g := g.trans f
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+
+/-- The homomorphism from the monoid of homotopy auto-equivalences to the group of units in
+the monoid of homotopy classes of continuous self-maps. -/
+def toUnitsMappingClassMonoid : HomotopyEquiv X X →* (MappingClassMonoid X)ˣ where
+  toFun f := ⟨⟦f.toFun⟧, ⟦f.invFun⟧, Quotient.sound f.right_inv, Quotient.sound f.left_inv⟩
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+theorem toUnitsMappingClassMonoid_surjective :
+    Function.Surjective <| toUnitsMappingClassMonoid (X := X) := by
+  rintro ⟨⟨f⟩, ⟨g⟩, hfg, hgf⟩
+  exact ⟨⟨f, g, Quotient.eq.mp hgf, Quotient.eq.mp hfg⟩, rfl⟩
+
+theorem toUnitsMappingClassMonoid_eq_iff (f g : HomotopyEquiv X X) :
+    toUnitsMappingClassMonoid f = toUnitsMappingClassMonoid g ↔ f.toFun.Homotopic g.toFun :=
+  Units.ext_iff.trans Quotient.eq
+
 end HomotopyEquiv
 
 end ContinuousMap
