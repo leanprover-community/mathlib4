@@ -145,7 +145,7 @@ theorem carmichael_two_pow_of_ne_two {n : ℕ} (hn : n ≠ 2) :
     have ⟨k, hk, h⟩ := dvd_prime_pow prime_two |>.mp <| hcard ▸ Group.exponent_dvd_nat_card
     have := IsCyclic.iff_exponent_eq_card.not.mp <| ZMod.isCyclic_units_two_pow_iff n |>.not.mpr hn'
     exact h ▸ Nat.pow_dvd_pow 2 (by grind)
-  · rw [← ZMod.orderOf_unitFive (n - 2), show n - 2 + 2 = n by lia]
+  · rw [← ZMod.orderOf_unitFive n]
     exact order_dvd_exponent _
 
 theorem two_mul_carmichael_two_pow_of_three_le_eq_totient {n : ℕ} (hn : 3 ≤ n) :
