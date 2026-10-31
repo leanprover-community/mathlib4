@@ -8,6 +8,8 @@ module
 public import Mathlib.Probability.Martingale.Upcrossing
 public import Mathlib.Probability.Process.LimitProcess
 
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
+
 /-!
 
 # Martingale convergence theorems
@@ -34,11 +36,18 @@ theorems.
   theorem: if `f` is a uniformly integrable martingale strongly adapted to the filtration `ℱ`, then
   `f n` equals `𝔼[g | ℱ n]` almost everywhere where `g` is the limiting process of `f`.
 * `MeasureTheory.Integrable.tendsto_ae_condExp`: part c the L¹ martingale convergence theorem:
-  given a `⨆ n, ℱ n`-measurable function `g` where `ℱ` is a filtration, `𝔼[g | ℱ n]` converges
-  almost everywhere to `g`.
+  given an integrable function `g` with values in a Banach space, which is almost everywhere
+  strongly measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, `𝔼[g | ℱ n]`
+  converges almost everywhere to `g`.
 * `MeasureTheory.Integrable.tendsto_eLpNorm_condExp`: part c the L¹ martingale convergence theorem:
-  given a `⨆ n, ℱ n`-measurable function `g` where `ℱ` is a filtration, `𝔼[g | ℱ n]` converges in
-  L¹ to `g`.
+  given an integrable function `g` with values in a Banach space, which is almost everywhere
+  strongly measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, `𝔼[g | ℱ n]`
+  converges in L¹ to `g`.
+* `MeasureTheory.tendsto_ae_condExp`: **Lévy's upward theorem** almost everywhere: for any
+  function `g` with values in a Banach space, `𝔼[g | ℱ n]` converges almost everywhere to
+  `𝔼[g | ⨆ n, ℱ n]`.
+* `MeasureTheory.tendsto_eLpNorm_condExp`: **Lévy's upward theorem** in L¹: for any function `g`
+  with values in a Banach space, `𝔼[g | ℱ n]` converges in L¹ to `𝔼[g | ⨆ n, ℱ n]`.
 
 -/
 
@@ -352,13 +361,9 @@ theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
     ((memLp_limitProcess_of_eLpNorm_bdd hbdd.aestronglyMeasurable hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
 
-/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
-is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
-`𝔼[g | ℱ n]` converges almost everywhere to `g`.
-
-This martingale also converges to `g` in L¹ and this result is provided by
-`MeasureTheory.Integrable.tendsto_eLpNorm_condExp` -/
-theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
+/-- The real case of `MeasureTheory.Integrable.tendsto_ae_condExp`, used to prove the general
+case. -/
+private theorem Integrable.tendsto_ae_condExp_real (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g | ℱ n]) x) atTop (𝓝 (g x)) := by
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
@@ -406,13 +411,9 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
       integral_iUnion (fun n => hle _ (hfmeas n)) hf hlimint.integrableOn]
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)
 
-/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
-is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
-`𝔼[g | ℱ n]` converges in L¹ to `g`.
-
-This martingale also converges to `g` almost everywhere and this result is provided by
-`MeasureTheory.Integrable.tendsto_ae_condExp` -/
-theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
+/-- The real case of `MeasureTheory.Integrable.tendsto_eLpNorm_condExp`, used to prove the general
+case. -/
+private theorem Integrable.tendsto_eLpNorm_condExp_real (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     Tendsto (fun n => eLpNorm (μ[g | ℱ n] - g) 1 μ) atTop (𝓝 0) :=
   tendsto_Lp_finite_of_tendstoInMeasure le_rfl ENNReal.one_ne_top
@@ -420,34 +421,207 @@ theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
     (memLp_one_iff_integrable.2 hg) hg.uniformIntegrable_condExp_filtration.1
     (tendstoInMeasure_of_tendsto_ae
       (fun n => (stronglyMeasurable_condExp.mono (ℱ.le n)).aestronglyMeasurable)
-      (hg.tendsto_ae_condExp hgmeas))
-
-/-- **Lévy's upward theorem**, almost everywhere version: given a function `g` and a filtration
-`ℱ`, the sequence defined by `𝔼[g | ℱ n]` converges almost everywhere to `𝔼[g | ⨆ n, ℱ n]`. -/
-theorem tendsto_ae_condExp (g : Ω → ℝ) :
-    ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g | ℱ n]) x) atTop (𝓝 ((μ[g | ⨆ n, ℱ n]) x)) := by
-  have ht : ∀ᵐ x ∂μ, Tendsto (fun n => (μ[μ[g | ⨆ n, ℱ n] | ℱ n]) x)
-      atTop (𝓝 ((μ[g | ⨆ n, ℱ n]) x)) :=
-    integrable_condExp.tendsto_ae_condExp stronglyMeasurable_condExp
-  have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g | ⨆ n, ℱ n] | ℱ n]) x = (μ[g | ℱ n]) x := fun n =>
-    condExp_condExp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
-  rw [← ae_all_iff] at heq
-  filter_upwards [heq, ht] with x hxeq hxt
-  exact hxt.congr hxeq
-
-/-- **Lévy's upward theorem**, L¹ version: given a function `g` and a filtration `ℱ`, the
-sequence defined by `𝔼[g | ℱ n]` converges in L¹ to `𝔼[g | ⨆ n, ℱ n]`. -/
-theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
-    Tendsto (fun n => eLpNorm (μ[g | ℱ n] - μ[g | ⨆ n, ℱ n]) 1 μ) atTop (𝓝 0) := by
-  have ht : Tendsto (fun n => eLpNorm (μ[μ[g | ⨆ n, ℱ n] | ℱ n] - μ[g | ⨆ n, ℱ n]) 1 μ)
-      atTop (𝓝 0) :=
-    integrable_condExp.tendsto_eLpNorm_condExp stronglyMeasurable_condExp
-  have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g | ⨆ n, ℱ n] | ℱ n]) x = (μ[g | ℱ n]) x := fun n =>
-    condExp_condExp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
-  refine ht.congr fun n => eLpNorm_congr_ae ?_
-  filter_upwards [heq n] with x hxeq
-  simp only [hxeq, Pi.sub_apply]
+      (hg.tendsto_ae_condExp_real hgmeas))
 
 end L1Convergence
+
+section L1ConvergenceBanach
+
+/-! ### Lévy's upward theorem in `L¹` for functions with values in a Banach space
+
+The set of functions `g` for which `μ[g | ℱ n]` tends to `g` in `L¹` is closed under addition and
+under limits in `L¹`, and it contains the indicators `s.indicator fun _ ↦ c` of the sets `s` which
+are measurable with respect to `⨆ n, ℱ n` by the real case. Hence it contains all integrable
+functions which are almost everywhere strongly measurable with respect to `⨆ n, ℱ n`. -/
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {g : Ω → E}
+
+/-- If `μ[a j | ℱ n]` tends to `a j` in `L¹` as `n` tends to infinity for all `j`, and if `a j`
+tends to `g` in `L¹` along a nontrivial filter, then `μ[g | ℱ n]` tends to `g` in `L¹`. -/
+private lemma tendsto_eLpNorm_condExp_sub_of_tendsto {ι : Type*} {l : Filter ι} [l.NeBot]
+    (hg : Integrable g μ) {a : ι → Ω → E} (ha_int : ∀ j, Integrable (a j) μ)
+    (ha_lim : Tendsto (fun j ↦ eLpNorm (a j - g) 1 μ) l (𝓝 0))
+    (ha : ∀ j, Tendsto (fun n ↦ eLpNorm (μ[a j | ℱ n] - a j) 1 μ) atTop (𝓝 0)) :
+    Tendsto (fun n ↦ eLpNorm (μ[g | ℱ n] - g) 1 μ) atTop (𝓝 0) := by
+  rw [ENNReal.tendsto_atTop_zero]
+  intro ε hε
+  have hε3 : 0 < ε / 3 := ENNReal.div_pos hε.ne' (by simp)
+  obtain ⟨j, hj⟩ := (ha_lim.eventually_le_const hε3).exists
+  obtain ⟨n₀, hn₀⟩ := ENNReal.tendsto_atTop_zero.1 (ha j) (ε / 3) hε3
+  refine ⟨n₀, fun n hn ↦ ?_⟩
+  have h_eq : μ[g | ℱ n] - g =ᵐ[μ] μ[g - a j | ℱ n] + (μ[a j | ℱ n] - a j) + (a j - g) := by
+    filter_upwards [condExp_sub hg (ha_int j) (ℱ n)] with ω hω
+    simp only [Pi.sub_apply, Pi.add_apply, hω]
+    abel
+  rw [eLpNorm_congr_ae h_eq]
+  calc eLpNorm (μ[g - a j | ℱ n] + (μ[a j | ℱ n] - a j) + (a j - g)) 1 μ
+    _ ≤ eLpNorm (μ[g - a j | ℱ n]) 1 μ + eLpNorm (μ[a j | ℱ n] - a j) 1 μ
+        + eLpNorm (a j - g) 1 μ :=
+      (eLpNorm_add_le le_rfl).trans (add_le_add_left (eLpNorm_add_le le_rfl) _)
+    _ ≤ ε / 3 + ε / 3 + ε / 3 := by
+      gcongr
+      · exact (eLpNorm_condExp_le_eLpNorm _ le_rfl).trans ((eLpNorm_sub_comm ..).trans_le hj)
+      · exact hn₀ n hn
+    _ = ε := ENNReal.add_thirds ε
+
+variable [IsFiniteMeasure μ]
+
+/-- Lévy's upward theorem in `L¹` for the indicator of a set, which follows from the real case.
+Auxiliary result for `Integrable.tendsto_eLpNorm_condExp`. -/
+private lemma tendsto_eLpNorm_condExp_sub_indicator_const (c : E) {s : Set Ω}
+    (hs : MeasurableSet[⨆ n, ℱ n] s) :
+    Tendsto (fun n ↦ eLpNorm (μ[s.indicator (fun _ ↦ c) | ℱ n] - s.indicator (fun _ ↦ c)) 1 μ)
+      atTop (𝓝 0) := by
+  have hle : ⨆ n, ℱ n ≤ m0 := iSup_le ℱ.le
+  -- `u` is the real indicator of `s`, and `T` is the linear map `x ↦ x • c`
+  let u : Ω → ℝ := s.indicator fun _ ↦ 1
+  have hu_int : Integrable u μ := (integrable_const 1).indicator (hle s hs)
+  have hu : Tendsto (fun n ↦ eLpNorm (μ[u | ℱ n] - u) 1 μ) atTop (𝓝 0) :=
+    hu_int.tendsto_eLpNorm_condExp_real (stronglyMeasurable_const.indicator hs)
+  let T : ℝ →L[ℝ] E := ContinuousLinearMap.toSpanSingleton ℝ c
+  have hT : T ∘ u = s.indicator fun _ ↦ c := by
+    ext ω
+    by_cases hω : ω ∈ s <;> simp [T, u, hω]
+  have h_bound (n : ℕ) :
+      eLpNorm (μ[s.indicator (fun _ ↦ c) | ℱ n] - s.indicator (fun _ ↦ c)) 1 μ
+        ≤ ‖c‖₊ * eLpNorm (μ[u | ℱ n] - u) 1 μ := by
+    refine eLpNorm_le_mul_eLpNorm_of_ae_le_mul'
+      (integrable_condExp.sub ((integrable_const c).indicator (hle s hs))).aestronglyMeasurable ?_ 1
+    filter_upwards [T.comp_condExp_comm hu_int (m := ℱ n)] with ω hω
+    rw [hT] at hω
+    have h_eq : (μ[s.indicator (fun _ ↦ c) | ℱ n] - s.indicator fun _ ↦ c) ω
+        = (μ[u | ℱ n] ω - u ω) • c := by
+      rw [Pi.sub_apply, ← hω, ← congrFun hT ω, sub_smul]
+      rfl
+    rw [h_eq, enorm_smul, mul_comm, enorm_eq_nnnorm c, Pi.sub_apply]
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le) h_bound
+  simpa using ENNReal.Tendsto.const_mul hu (.inr ENNReal.coe_ne_top)
+
+/-- **Lévy's upward theorem**, `L¹` version, for a function with values in a Banach space: if `g`
+is integrable and almost everywhere strongly measurable with respect to `⨆ n, ℱ n`, then the
+conditional expectations `μ[g | ℱ n]` tend to `g` in `L¹`.
+
+The convergence also holds almost everywhere: see `MeasureTheory.Integrable.tendsto_ae_condExp`. -/
+theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
+    (hgmeas : AEStronglyMeasurable[⨆ n, ℱ n] g μ) :
+    Tendsto (fun n ↦ eLpNorm (μ[g | ℱ n] - g) 1 μ) atTop (𝓝 0) := by
+  refine MemLp.induction_stronglyMeasurable (iSup_le ℱ.le) ENNReal.one_ne_top
+    (fun g ↦ Tendsto (fun n ↦ eLpNorm (μ[g | ℱ n] - g) 1 μ) atTop (𝓝 0)) ?_ ?_ ?_ ?_
+    (memLp_one_iff_integrable.2 hg) hgmeas
+  · exact fun c s hs _ ↦ tendsto_eLpNorm_condExp_sub_indicator_const c hs
+  · intro f₁ f₂ _ hf₁ hf₂ _ _ hPf₁ hPf₂
+    rw [memLp_one_iff_integrable] at hf₁ hf₂
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+      (by simpa using hPf₁.add hPf₂) (fun _ ↦ zero_le) fun n ↦ ?_
+    have h_eq : μ[f₁ + f₂ | ℱ n] - (f₁ + f₂) =ᵐ[μ] (μ[f₁ | ℱ n] - f₁) + (μ[f₂ | ℱ n] - f₂) := by
+      filter_upwards [condExp_add hf₁ hf₂ (ℱ n)] with ω hω
+      simp only [Pi.sub_apply, Pi.add_apply, hω]
+      abel
+    rw [eLpNorm_congr_ae h_eq]
+    exact eLpNorm_add_le le_rfl
+  · refine IsSeqClosed.isClosed fun a f ha h_lim ↦ ?_
+    have h_lim' : Tendsto (fun j ↦ (a j : Lp E 1 μ)) atTop (𝓝 (f : Lp E 1 μ)) :=
+      (continuous_subtype_val.tendsto f).comp h_lim
+    rw [Lp.tendsto_Lp_iff_tendsto_eLpNorm'] at h_lim'
+    exact tendsto_eLpNorm_condExp_sub_of_tendsto (L1.integrable_coeFn _)
+      (fun j ↦ L1.integrable_coeFn _) h_lim' ha
+  · intro f₁ f₂ hf _ hPf₁
+    refine hPf₁.congr fun n ↦ eLpNorm_congr_ae ?_
+    filter_upwards [condExp_congr_ae hf (m := ℱ n), hf] with ω hω hω'
+    rw [Pi.sub_apply, Pi.sub_apply, hω, hω']
+
+variable (ℱ) in
+/-- **Lévy's upward theorem**, `L¹` version, for a function with values in a Banach space: the
+conditional expectations `μ[g | ℱ n]` tend to `μ[g | ⨆ n, ℱ n]` in `L¹`.
+
+The convergence also holds almost everywhere: see `MeasureTheory.tendsto_ae_condExp`. -/
+theorem tendsto_eLpNorm_condExp (g : Ω → E) :
+    Tendsto (fun n ↦ eLpNorm (μ[g | ℱ n] - μ[g | ⨆ n, ℱ n]) 1 μ) atTop (𝓝 0) := by
+  have h : Tendsto (fun n ↦ eLpNorm (μ[μ[g | ⨆ n, ℱ n] | ℱ n] - μ[g | ⨆ n, ℱ n]) 1 μ) atTop
+      (𝓝 0) :=
+    integrable_condExp.tendsto_eLpNorm_condExp stronglyMeasurable_condExp.aestronglyMeasurable
+  refine h.congr fun n ↦ eLpNorm_congr_ae ?_
+  have h_eq : μ[μ[g | ⨆ n, ℱ n] | ℱ n] =ᵐ[μ] μ[g | ℱ n] :=
+    condExp_condExp_of_le (le_iSup _ n) (iSup_le ℱ.le)
+  filter_upwards [h_eq] with ω hω
+  rw [Pi.sub_apply, Pi.sub_apply, hω]
+
+end L1ConvergenceBanach
+
+section AeConvergenceBanach
+
+/-! ### Lévy's upward theorem almost everywhere for functions with values in a Banach space
+
+We deduce the Banach-valued case from the real case. Let `g` be integrable and strongly measurable
+with respect to `⨆ n, ℱ n`, and let `D` be a countable dense subset of its range. For all `c ∈ D`,
+the real case applied to `‖g - c‖` shows that `μ[‖g - c‖ | ℱ n]` tends to `‖g - c‖` almost
+everywhere, and the conditional Jensen inequality gives `‖μ[g | ℱ n] - c‖ ≤ μ[‖g - c‖ | ℱ n]`.
+Hence for almost every `ω`, the limsup of `‖μ[g | ℱ n] ω - g ω‖` is at most `2 * ‖g ω - c‖` for
+all `c ∈ D`, so it is zero. -/
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  [IsFiniteMeasure μ] {g : Ω → E}
+
+/-- Auxiliary result for `Integrable.tendsto_ae_condExp`: the case of a function which is strongly
+measurable with respect to `⨆ n, ℱ n`. -/
+private lemma Integrable.tendsto_ae_condExp_of_stronglyMeasurable (hg : Integrable g μ)
+    (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
+    ∀ᵐ ω ∂μ, Tendsto (fun n ↦ μ[g | ℱ n] ω) atTop (𝓝 (g ω)) := by
+  obtain ⟨D, -, hD, hD_dense⟩ := hgmeas.isSeparable_range.exists_countable_dense_subset
+  have h_tendsto : ∀ᵐ ω ∂μ, ∀ c ∈ D,
+      Tendsto (fun n ↦ μ[fun ω ↦ ‖g ω - c‖ | ℱ n] ω) atTop (𝓝 ‖g ω - c‖) :=
+    (ae_ball_iff hD).2 fun c _ ↦ (hg.sub (integrable_const c)).norm.tendsto_ae_condExp_real
+      (hgmeas.sub stronglyMeasurable_const).norm
+  have h_le : ∀ᵐ ω ∂μ, ∀ c ∈ D, ∀ n, ‖μ[g | ℱ n] ω - c‖ ≤ μ[fun ω ↦ ‖g ω - c‖ | ℱ n] ω := by
+    refine (ae_ball_iff hD).2 fun c _ ↦ ae_all_iff.2 fun n ↦ ?_
+    filter_upwards [norm_condExp_le (μ := μ) (m := ℱ n) (g - fun _ ↦ c),
+      condExp_sub hg (integrable_const c) (ℱ n)] with ω h_norm h_sub
+    rw [h_sub, condExp_const (ℱ.le n)] at h_norm
+    exact h_norm
+  filter_upwards [h_tendsto, h_le] with ω h_tendsto h_le
+  refine Metric.tendsto_atTop.2 fun ε hε ↦ ?_
+  have hε3 : 0 < ε / 3 := by positivity
+  obtain ⟨c, hcD, hc⟩ := Metric.mem_closure_iff.1 (hD_dense (Set.mem_range_self ω)) _ hε3
+  obtain ⟨N, hN⟩ := eventually_atTop.1 <|
+    (h_tendsto c hcD).eventually_lt_const (lt_add_of_pos_right _ hε3)
+  refine ⟨N, fun n hn ↦ ?_⟩
+  have h_dist : dist (μ[g | ℱ n] ω) c < dist (g ω) c + ε / 3 := by
+    rw [dist_eq_norm, dist_eq_norm]
+    exact (h_le c hcD n).trans_lt (hN n hn)
+  linarith [dist_triangle_right (μ[g | ℱ n] ω) (g ω) c]
+
+/-- Part c of the **L¹ martingale convergence theorem**, almost everywhere version, for a function
+with values in a Banach space: if `g` is integrable and almost everywhere strongly measurable with
+respect to `⨆ n, ℱ n`, then the conditional expectations `μ[g | ℱ n]` tend to `g` almost
+everywhere.
+
+The convergence also holds in `L¹`: see `MeasureTheory.Integrable.tendsto_eLpNorm_condExp`. -/
+theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
+    (hgmeas : AEStronglyMeasurable[⨆ n, ℱ n] g μ) :
+    ∀ᵐ ω ∂μ, Tendsto (fun n ↦ μ[g | ℱ n] ω) atTop (𝓝 (g ω)) := by
+  obtain ⟨g', hg'_meas, hgg'⟩ := hgmeas
+  have h_eq : ∀ᵐ ω ∂μ, ∀ n, μ[g' | ℱ n] ω = μ[g | ℱ n] ω :=
+    ae_all_iff.2 fun n ↦ condExp_congr_ae hgg'.symm
+  filter_upwards [(hg.congr hgg').tendsto_ae_condExp_of_stronglyMeasurable hg'_meas, hgg', h_eq]
+    with ω hω hω' h_eq
+  rw [hω']
+  exact hω.congr h_eq
+
+variable (ℱ) in
+/-- **Lévy's upward theorem**, almost everywhere version, for a function with values in a Banach
+space: the conditional expectations `μ[g | ℱ n]` tend to `μ[g | ⨆ n, ℱ n]` almost everywhere.
+
+The convergence also holds in `L¹`: see `MeasureTheory.tendsto_eLpNorm_condExp`. -/
+theorem tendsto_ae_condExp (g : Ω → E) :
+    ∀ᵐ ω ∂μ, Tendsto (fun n ↦ μ[g | ℱ n] ω) atTop (𝓝 (μ[g | ⨆ n, ℱ n] ω)) := by
+  have h : ∀ᵐ ω ∂μ, Tendsto (fun n ↦ μ[μ[g | ⨆ n, ℱ n] | ℱ n] ω) atTop
+      (𝓝 (μ[g | ⨆ n, ℱ n] ω)) :=
+    integrable_condExp.tendsto_ae_condExp stronglyMeasurable_condExp.aestronglyMeasurable
+  have h_eq : ∀ᵐ ω ∂μ, ∀ n, μ[μ[g | ⨆ n, ℱ n] | ℱ n] ω = μ[g | ℱ n] ω :=
+    ae_all_iff.2 fun n ↦ condExp_condExp_of_le (le_iSup _ n) (iSup_le ℱ.le)
+  filter_upwards [h, h_eq] with ω hω h_eq
+  exact hω.congr h_eq
+
+end AeConvergenceBanach
 
 end MeasureTheory
