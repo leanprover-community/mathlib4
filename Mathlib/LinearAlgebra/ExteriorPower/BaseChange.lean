@@ -6,6 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.BaseChange
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
 /-!
@@ -65,17 +66,9 @@ lemma baseChangeEquivForward_apply_one_tmul_ιMulti (i : ℕ) (m : Fin i → M) 
     exteriorPower.alternatingMapLinearEquiv_apply_ιMulti]
   rfl
 
-/-- Projection from `ExteriorAlgebra` to exterior power. -/
-def degreeProjection (i : ℕ) : ExteriorAlgebra R M →ₗ[R] (⋀[R]^i M) :=
-  ExteriorAlgebra.liftAlternating (Function.update 0 i (exteriorPower.ιMulti R i))
-
-lemma degreeProjection_apply_ιMulti (i : ℕ) (m : Fin i → M) :
-    degreeProjection R M i (ExteriorAlgebra.ιMulti R i m) = ιMulti R i m := by
-  simp [exteriorPower.degreeProjection]
-
 /-- Auxiliary alternating map for `exteriorPower.baseChangeEquivInverse`. -/
 def baseChangeInverseAlternating (i : ℕ) : (S ⊗[R] M) [⋀^Fin i]→ₗ[S] S ⊗[R] (⋀[R]^i M) :=
-  (((exteriorPower.degreeProjection R M i).baseChange S).comp
+  (((ExteriorAlgebra.toExteriorPower R M i).baseChange S).comp
     (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom.toLinearMap).compAlternatingMap
       (ExteriorAlgebra.ιMulti S i)
 
@@ -98,8 +91,8 @@ lemma baseChangeInverseAlternating_apply_tmul (i : ℕ) (s : Fin i → S) (m : F
     ext j
     simp [ExteriorAlgebra.baseChangeEquiv_symm_apply]
   rw [himages, hprod]
-  simpa [ExteriorAlgebra.ιMulti_apply] using
-    congrArg ((Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] ·) (degreeProjection_apply_ιMulti R M i m)
+  simp [← ExteriorAlgebra.ιMulti_apply, ← exteriorPower.ιMulti_apply_coe,
+    ExteriorAlgebra.toExteriorPower_eq]
 
 /-- Inverse function of `exteriorPower.baseChangeEquiv`,
 obtained from `exteriorPower.baseChangeInverseAlternating`. -/

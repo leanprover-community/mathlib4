@@ -101,4 +101,10 @@ lemma ιMulti_span :
     obtain ⟨y, rfl⟩ := hx
     exact ⟨⟨_, y⟩, rfl⟩
 
+def toExteriorPower (i : ℕ) : ExteriorAlgebra R M →ₗ[R] (⋀[R]^i M) :=
+    (DFinsupp.lapply i).comp (GradedAlgebra.liftι R M).toLinearMap
+
+lemma toExteriorPower_eq (i : ℕ) (x : ⋀[R]^i M) : toExteriorPower R M i x = x := by
+  simp [toExteriorPower, GradedAlgebra.liftι_eq]
+
 end ExteriorAlgebra
