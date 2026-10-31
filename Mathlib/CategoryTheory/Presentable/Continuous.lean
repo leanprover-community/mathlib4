@@ -43,30 +43,29 @@ section
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
+@[mk_iff]
+class IsCardinalContinuous (F : C ⥤ D) (κ : Cardinal.{w}) : Prop where
+  preservesLimitsOfShape (F) (κ) (J : Type w) [SmallCategory J]
+    (hJ : HasCardinalLT (Arrow J) κ) : PreservesLimitsOfShape J F
+
 variable (C D) in
 /-- Given a cardinal `κ`, this is the property of objects
 in the category of functors `C ⥤ D` that is satisfied by `κ`-continuous
 functors, i.e. functors which preserve limits indexed by categories `J`
 such that `Arrow J` is of cardinality `< κ`. -/
-def isCardinalContinuous (κ : Cardinal.{w}) : ObjectProperty (C ⥤ D) :=
-  ⨅ (J : Type w) (_ : Category.{w} J) (_ : HasCardinalLT (Arrow J) κ),
-    ObjectProperty.preservesLimitsOfShape J
+abbrev isCardinalContinuous (κ : Cardinal.{w}) : ObjectProperty (C ⥤ D) :=
+  fun F ↦ IsCardinalContinuous F κ
 
-lemma isCardinalContinuous_iff (F : C ⥤ D) (κ : Cardinal.{w}) :
-    isCardinalContinuous C D κ F ↔
-      ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
-        PreservesLimitsOfShape J F := by
-  simp [isCardinalContinuous]
-
-lemma isCardinalContinuous.preservesColimitsOfShape {F : C ⥤ D}
-    {κ : Cardinal.{w}} (hF : isCardinalContinuous C D κ F)
-    (J : Type w) [SmallCategory.{w} J] (hκ : HasCardinalLT (Arrow J) κ) :
-    PreservesLimitsOfShape J F :=
-  (isCardinalContinuous_iff F κ).1 hF J hκ
+lemma isCardinalContinuous_eq_iInf (κ : Cardinal.{w}) :
+  isCardinalContinuous C D κ =
+    ⨅ (J : Type w) (_ : SmallCategory J) (_ : HasCardinalLT (Arrow J) κ),
+      .preservesLimitsOfShape J := by
+  ext
+  simp [isCardinalContinuous_iff]
 
 instance (κ : Cardinal.{w}) :
     (isCardinalContinuous C D κ).IsClosedUnderIsomorphisms := by
-  dsimp only [isCardinalContinuous]
+  rw [isCardinalContinuous_eq_iInf]
   infer_instance
 
 @[simp]
@@ -118,9 +117,9 @@ lemma isCardinalContinuous_eq_isLocal :
   · refine le_antisymm ?_ ?_
     · simp only [le_iInf_iff]
       intro J P hP
-      simpa using hP.preservesColimitsOfShape _ (SmallCategoryCardinalLT.hasCardinalLT κ J)
-    · dsimp [isCardinalContinuous]
-      simp only [le_iInf_iff]
+      exact IsCardinalContinuous.preservesLimitsOfShape P κ _
+        (SmallCategoryCardinalLT.hasCardinalLT κ J)
+    · simp only [isCardinalContinuous_eq_iInf, le_iInf_iff]
       intro J _ hJ
       obtain ⟨J', ⟨e⟩⟩ := SmallCategoryCardinalLT.exists_equivalence κ J hJ
       rw [← ObjectProperty.congr_preservesLimitsOfShape _ _ e]
@@ -129,8 +128,6 @@ lemma isCardinalContinuous_eq_isLocal :
 
 variable [Fact κ.IsRegular]
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) :
     IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ where
   preservesColimitOfShape J _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
@@ -152,7 +149,6 @@ instance (X : C) :
       refine ⟨l, a, ?_⟩
       rw [shrinkYonedaEquiv_symm_comp, shrinkYonedaEquiv_symm_comp, hl]⟩⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance (J : SmallCategoryCardinalLT κ)
     (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ)
     (X : (SmallCategoryCardinalLT.categoryFamily κ J)ᵒᵖ) :
@@ -160,7 +156,6 @@ instance (J : SmallCategoryCardinalLT κ)
   dsimp
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (J : SmallCategoryCardinalLT κ)
     (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ) :
     IsCardinalPresentable (preservesLimitHomFamilySrc F) κ :=
@@ -191,8 +186,6 @@ instance : HasLimitsOfSize.{w, w} (isCardinalContinuous Cᵒᵖ (Type w) κ).Ful
   exact ⟨inferInstance⟩
 
 variable {C κ} in
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isCardinalFiltered_costructuredArrow_yoneda
     {P : Cᵒᵖ ⥤ Type w} (hP : isCardinalContinuous Cᵒᵖ (Type w) κ P)
     (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
@@ -200,7 +193,7 @@ lemma isCardinalFiltered_costructuredArrow_yoneda
     IsCardinalFiltered (CostructuredArrow yoneda P) κ where
   nonempty_cocone {J _} F hJ := by
     have := hC J hJ
-    have := hP.preservesColimitsOfShape Jᵒᵖ (by simpa)
+    have := IsCardinalContinuous.preservesLimitsOfShape P κ Jᵒᵖ (by simpa)
     let s : ((F ⋙ CostructuredArrow.proj _ _).op ⋙ P).sections :=
       { val j := yonedaEquiv (F := P) (F.obj j.unop).hom
         property {j j'} g := by
@@ -262,7 +255,6 @@ instance (F : Cᵒᵖ ⥤ Type w) :
     EssentiallySmall.{w} (CostructuredArrow shrinkYoneda.{w} F) :=
   CostructuredArrow.essentiallySmall' ..
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isCardinalFiltered_costructuredArrow_shrinkYoneda
     {P : Cᵒᵖ ⥤ Type w} (hP : isCardinalContinuous Cᵒᵖ (Type w) κ P)
     (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
@@ -287,8 +279,6 @@ lemma isCardinalFiltered_costructuredArrow_shrinkYoneda
       exact Adjunction.hasColimitsOfShape_of_equivalence (equivSmallModel.{w} C).inverse)
   exact IsCardinalFiltered.of_equivalence κ F.asEquivalence
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 lemma exists_presentation_of_isCardinalContinuous
     (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
       HasColimitsOfShape J C)

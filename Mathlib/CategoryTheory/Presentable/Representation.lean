@@ -32,20 +32,24 @@ namespace IsCardinalLocallyPresentable
 variable (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
   [IsCardinalLocallyPresentable C κ]
 
-open CategoryTheory.Functor in
-set_option backward.defeqAttrib.useBackward true in
-noncomputable def toCardinalContinuous :
-    C ⥤ (Functor.isCardinalContinuous
-      (isCardinalPresentable C κ).FullSubcategoryᵒᵖ (Type w) κ).FullSubcategory :=
-  ObjectProperty.lift _ (Presheaf.restrictedShrinkYoneda.{w} (ObjectProperty.ι _)) (fun X ↦ by
-    rw [isCardinalContinuous_iff]
-    intro J _ _
-    dsimp [Presheaf.restrictedShrinkYoneda]
+instance (X : C) :
+    Functor.IsCardinalContinuous
+      ((Presheaf.restrictedShrinkYoneda (isCardinalPresentable C κ).ι).obj X) κ where
+  preservesLimitsOfShape J _ _ := by
     have : (isCardinalPresentable C κ).IsClosedUnderColimitsOfShape Jᵒᵖ :=
       isClosedUnderColimitsOfShape_isCardinalPresentable _ (by simpa)
     have : PreservesLimitsOfShape J (isCardinalPresentable C κ).ι.op :=
       preservesLimitsOfShape_op _ _
-    infer_instance)
+    dsimp [Presheaf.restrictedShrinkYoneda]
+    infer_instance
+
+open CategoryTheory.Functor in
+@[implicit_reducible]
+noncomputable def toCardinalContinuous :
+    C ⥤ (Functor.isCardinalContinuous
+      (isCardinalPresentable C κ).FullSubcategoryᵒᵖ (Type w) κ).FullSubcategory :=
+  ObjectProperty.lift _ (Presheaf.restrictedShrinkYoneda.{w} (ObjectProperty.ι _))
+    inferInstance
 
 noncomputable def toCardinalContinuousCompIso :
     toCardinalContinuous C κ ⋙ ObjectProperty.ι _ ≅
@@ -82,7 +86,7 @@ instance : (toCardinalContinuous C κ).EssSurj where
     let G₂ := G ⋙ shrinkYoneda.{w}
     refine ⟨colimit G₁,
       ⟨(ObjectProperty.fullyFaithfulι _).preimageIso ?_⟩⟩
-    dsimp [toCardinalContinuous, Presheaf.restrictedShrinkYoneda]
+    --dsimp [toCardinalContinuous, Presheaf.restrictedShrinkYoneda]
     let c' : Cocone G₂ :=
       { pt := (isCardinalPresentable C κ).ι.op ⋙ shrinkYoneda.{w, v, u}.obj (colimit G₁)
         ι.app j :=
