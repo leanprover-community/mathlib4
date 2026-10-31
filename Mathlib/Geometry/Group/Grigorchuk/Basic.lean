@@ -16,6 +16,9 @@ The other three are determined by the recursive relations
 `b = phi a c`, `c = phi a d`, `d = phi 1 b`, which specify the action on each word
 by recursion on length.
 
+The generators satisfy `a² = b² = c² = d² = 1`, `bc = d`, `cd = b`, `db = c`,
+and therefore `bcd = 1`.
+
 ## References
 
 The construction follows Grigorchuk, *On the Milnor problem of group growth*,
@@ -175,5 +178,56 @@ lemma d_eq_phi : d = phi (1 : TreeAut) b :=
     | nil => rfl
     | cons i w =>
       rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi, phi_cons]
+
+@[simp] lemma a_mul_self : a * a = 1 := swapRoot_mul_self
+
+@[simp] lemma b_mul_self : b * b = 1 :=
+  TreeAut.ext fun v ↦ by
+    simp only [mul_apply, one_apply, b, bcd]
+    exact bcdFun_involutive 0 v
+
+@[simp] lemma c_mul_self : c * c = 1 :=
+  TreeAut.ext fun v ↦ by
+    simp only [mul_apply, one_apply, c, bcd]
+    exact bcdFun_involutive 1 v
+
+@[simp] lemma d_mul_self : d * d = 1 :=
+  TreeAut.ext fun v ↦ by
+    simp only [mul_apply, one_apply, d, bcd]
+    exact bcdFun_involutive 2 v
+
+lemma a_inv : a⁻¹ = a := inv_eq_of_mul_eq_one_right a_mul_self
+
+lemma b_inv : b⁻¹ = b := inv_eq_of_mul_eq_one_right b_mul_self
+
+lemma c_inv : c⁻¹ = c := inv_eq_of_mul_eq_one_right c_mul_self
+
+lemma d_inv : d⁻¹ = d := inv_eq_of_mul_eq_one_right d_mul_self
+
+/-- The identities `bc = d`, `cd = b` and `db = c` hold pointwise. -/
+lemma bc_cd_db_apply (v : InfiniteBinaryTree) :
+    (b * c) v = d v ∧ (c * d) v = b v ∧ (d * b) v = c v := by
+  induction v with
+  | nil => exact ⟨rfl, rfl, rfl⟩
+  | cons i w ih =>
+    obtain ⟨ihbc, ihcd, ihdb⟩ := ih
+    rcases fin2_eq_zero_or_one i with hi | hi
+    · simp [hi, mul_apply, swapRoot_apply_apply]
+    · refine ⟨?_, ?_, ?_⟩
+      · simpa [hi, mul_apply] using ihcd
+      · simpa [hi, mul_apply] using ihdb
+      · simpa [hi, mul_apply] using ihbc
+
+lemma bc_eq_d : b * c = d :=
+  TreeAut.ext fun v ↦ (bc_cd_db_apply v).1
+
+lemma cd_eq_b : c * d = b :=
+  TreeAut.ext fun v ↦ (bc_cd_db_apply v).2.1
+
+lemma db_eq_c : d * b = c :=
+  TreeAut.ext fun v ↦ (bc_cd_db_apply v).2.2
+
+@[simp] lemma bcd_eq_one : b * c * d = 1 := by
+  rw [mul_assoc, cd_eq_b, b_mul_self]
 
 end Grigorchuk
