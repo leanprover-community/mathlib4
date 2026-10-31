@@ -250,18 +250,18 @@ variable {L₂ : Type*} [LieRing L₂] [Module A L₂] [LieRingModule L₂ A] [L
 
 variable {R} in
 /-- The pushforward of a Lie-Rinehart subalgebra `L' ⊆ L` by `f : L → L₂` -/
-def map (f : L →ₗ⁅(AlgHom.id R A)⁆ L₂) :
+def map (f : L →ₗ⁅.id R A⁆ L₂) :
     LieRinehartSubalgebra A L₂ :=
-    letI : RingHomSurjective (AlgHom.id R A).toRingHom := {is_surjective := Function.surjective_id}
-    { L'.toSubmodule.map (f.toLinearMap') with
-      lie_mem' {x y} := by
-        rintro ⟨x', hx1, hx2⟩ ⟨y', hy1, hy2⟩
-        use ⁅x', y'⁆
-        constructor
-        · exact L'.lie_mem' hx1 hy1
-        · rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at *
-          rw [LieHom.map_lie, hx2, hy2]
-      }
+  letI : RingHomSurjective (AlgHom.id R A).toRingHom := {is_surjective := Function.surjective_id}
+  { L'.toSubmodule.map f.toLinearMap' with
+    lie_mem' {x y} := by
+      rintro ⟨x', hx1, hx2⟩ ⟨y', hy1, hy2⟩
+      use ⁅x', y'⁆
+      constructor
+      · exact L'.lie_mem' hx1 hy1
+      · rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at *
+        rw [LieHom.map_lie, hx2, hy2]
+    }
 
 end LieRinehartSubalgebra
 
@@ -277,13 +277,10 @@ subalgebra. -/
 def range : LieRinehartSubalgebra A L₂ := .map ⊤ f
 
 @[simp]
-theorem mem_range {x} : x ∈ range f ↔ ∃ y, f y = x := by
-  constructor
-  · rintro ⟨x', _, h2⟩; use x'; exact h2
-  · rintro ⟨x', h⟩; change ∃ y, _; aesop
+theorem mem_range {x} : x ∈ range f ↔ ∃ y, f y = x := by simp [range]
 
 theorem coe_range : (range f : Set L₂) = Set.range f := by
-  ext _
+  ext
   simp
 
 end Hom
