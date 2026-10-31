@@ -288,6 +288,25 @@ theorem reindexMulEquiv_refl : reindex R (.refl n) = .refl (GL n R) := rfl
 
 end Reindex
 
+section Prod
+
+variable (n R S)
+
+/-- The equivalence between `GL n (R × S)` and `GL n R × GL n S`. -/
+@[simps! apply_fst_val apply_snd_val]
+def prodEquiv : GL n (R × S) ≃* GL n R × GL n S :=
+    (Units.mapEquiv (Matrix.prodRingEquiv n R S)).trans MulEquiv.prodUnits
+
+@[simp]
+lemma val_prodEquiv_symm_apply (g : GL n R × GL n S) :
+    ((prodEquiv n R S).symm g : Matrix n n (R × S)) =
+      (prodRingEquiv n R S).symm (g.1, g.2) := rfl
+
+lemma prodEquiv_apply (g : GL n (R × S)) :
+    prodEquiv n R S g = (map (RingHom.fst R S) g, map (RingHom.snd R S) g) := rfl
+
+end Prod
+
 section Pi
 
 variable {ι : Type*} (R : ι → Type*)
