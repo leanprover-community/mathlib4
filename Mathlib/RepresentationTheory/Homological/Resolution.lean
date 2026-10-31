@@ -127,7 +127,6 @@ def compForgetAugmented : SimplicialObject.Augmented (Type u) :=
   SimplicialObject.augment (classifyingSpaceUniversalCover G ⋙ forget _) (terminal _)
     (terminal.from _) fun _ _ _ => Subsingleton.elim _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The augmented Čech nerve of the map from `Fin 1 → G` to the terminal object in `Type u` has an
 extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
@@ -293,7 +292,6 @@ def εToSingle₀ :
     standardComplex k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
   ((standardComplex k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
 
-set_option backward.defeqAttrib.useBackward true in
 theorem εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
         (HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _ =

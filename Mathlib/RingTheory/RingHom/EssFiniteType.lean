@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Meta properties of essentially of finite type ring homomorphisms
 -/

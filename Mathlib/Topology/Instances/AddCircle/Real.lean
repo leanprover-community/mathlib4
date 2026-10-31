@@ -9,6 +9,9 @@ public import Mathlib.Topology.Connected.PathConnected
 public import Mathlib.Topology.Instances.AddCircle.Defs
 public import Mathlib.Topology.Instances.ZMultiples
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The additive circle over `ℝ`
 

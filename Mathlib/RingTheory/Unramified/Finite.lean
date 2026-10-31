@@ -40,6 +40,7 @@ open scoped TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 namespace Algebra.FormallyUnramified
 
@@ -261,13 +262,34 @@ def sec :
       · simp [TensorProduct.smul_tmul']
       · simp only [map_add, smul_add, mul_add, *]
 
+variable {M} in
+lemma sec_apply (x : M) :
+    sec R S M x = ((LinearMap.toSpanSingleton S M x).restrictScalars R).baseChange S (elem R S) :=
+  rfl
+
+variable {M N} in
+lemma sec_comp (f : M →ₗ[S] N) :
+    (sec R S N).comp f = ((f.restrictScalars R).baseChange S).comp (sec R S M) := by
+  ext x
+  simp [sec_apply, ← f.comp_toSpanSingleton, LinearMap.baseChange_comp]
+
+variable {M N} in
+@[simp]
+lemma baseChange_sec (f : M →ₗ[S] N) (x : M) :
+    (f.restrictScalars R).baseChange S (sec R S M x) = sec R S N (f x) :=
+  (congr($(sec_comp R S f) x)).symm
+
+variable {M} in
+lemma sec_mem_baseChange (P : Submodule S M) {x : M} (hx : x ∈ P) :
+    sec R S M x ∈ (P.restrictScalars R).baseChange S :=
+  ⟨sec R S P ⟨x, hx⟩, baseChange_sec R S P.subtype ⟨x, hx⟩⟩
+
 lemma comp_sec :
     (TensorProduct.AlgebraTensorModule.lift
       ((lsmul S S M).toLinearMap.flip.restrictScalars R).flip).comp (sec R S M) =
       LinearMap.id := by
   ext x
-  simp only [sec, LinearMap.coe_comp, LinearMap.coe_mk, LinearMap.coe_toAddHom,
-    Function.comp_apply, LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply,
+  simp only [sec_apply, LinearMap.coe_comp, Function.comp_apply,
     TensorProduct.AlgebraTensorModule.lift_apply, LinearMap.id_coe, id_eq]
   trans (TensorProduct.lmul' R (elem R S)) • x
   · induction elem R S using TensorProduct.inductionOn with

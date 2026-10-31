@@ -11,6 +11,9 @@ public import Mathlib.SetTheory.Cardinal.Defs
 
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of Ultrafilters
 
