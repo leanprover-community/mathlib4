@@ -265,10 +265,10 @@ theorem normDet_neg (f : U →ₗ[𝕜] V) : (-f).normDet = f.normDet := by
 The square of `f.normDet` equals the determinant of `f.adjoint ∘L f`.
 -/
 theorem _root_.ContinuousLinearMap.normDet_sq [CompleteSpace V] (f : U →L[𝕜] V) :
-    haveI : CompleteSpace U := FiniteDimensional.complete 𝕜 U
+    haveI : CompleteSpace U := FiniteDimensional.completeSpace 𝕜 U
     ↑(f.normDet ^ 2) = (f.adjoint ∘L f).det := by
-  have : CompleteSpace U := FiniteDimensional.complete 𝕜 U
-  have : CompleteSpace f.range := FiniteDimensional.complete 𝕜 f.range
+  have : CompleteSpace U := FiniteDimensional.completeSpace 𝕜 U
+  have : CompleteSpace f.range := FiniteDimensional.completeSpace 𝕜 f.range
   let bu := stdOrthonormalBasis 𝕜 U
   by_cases h : f.ker = ⊥
   · obtain ⟨b⟩ := (f.normDet_ne_zero_tfae.out 2 4).mp h
@@ -293,7 +293,7 @@ dimensional.
 -/
 theorem normDet_sq [FiniteDimensional 𝕜 V] (f : U →ₗ[𝕜] V) :
     ↑(f.normDet ^ 2) = (f.adjoint ∘ₗ f).det := by
-  have : CompleteSpace V := FiniteDimensional.complete 𝕜 V
+  have : CompleteSpace V := FiniteDimensional.completeSpace 𝕜 V
   exact f.toContinuousLinearMap.normDet_sq
 
 /--

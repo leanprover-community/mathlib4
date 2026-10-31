@@ -279,7 +279,7 @@ Analysis:
     normed vector space over a normed field: 'NormedSpace'
     topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
-    finite-dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
+    finite-dimensional normed spaces over complete normed fields are complete: 'Submodule.isComplete_of_finiteDimensional'
     Heine-Borel theorem (finite-dimensional normed spaces are proper): 'FiniteDimensional.proper'
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     Banach-Steinhaus theorem: 'banach_steinhaus'
