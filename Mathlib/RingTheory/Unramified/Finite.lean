@@ -16,6 +16,16 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 We prove various theorems about unramified algebras. In fact we work in the more general setting
 of formally unramified algebras which are essentially of finite type.
 
+## Main definitions
+
+Let `S/R` be formally unramified and essentially of finite type.
+
+- `Algebra.FormallyUnramified.elem R S`: the idempotent of the diagonal.
+- `Algebra.FormallyUnramified.sec R S M`: For an `S`-module `M`, this is an `S`-linear section of
+  the map `S ⊗[R] M →ₗ[S] M` defined by `s ⊗ m ↦ s • m`
+- `Algebra.FormallyUnramified.equalizerIdempotent f g`: For algebra homomorphisms `f g : S →ₐ[R] A`,
+  this is the idempotent defining the subset of `Spec A` where `f` and `g` agree.
+
 ## Main results
 
 - `Algebra.FormallyUnramified.iff_exists_tensorProduct`:
@@ -147,6 +157,7 @@ lemma one_tmul_sub_tmul_one_mul_elem (s : S) : (1 ⊗ₜ s - s ⊗ₜ 1) * elem 
 lemma one_tmul_mul_elem (s : S) : (1 ⊗ₜ s) * elem R S = (s ⊗ₜ 1) * elem R S := by
   rw [← sub_eq_zero, ← sub_mul, one_tmul_sub_tmul_one_mul_elem]
 
+@[simp]
 lemma lmul_elem : TensorProduct.lmul' R (elem R S) = 1 :=
   (iff_exists_tensorProduct.mp inferInstance).choose_spec.2
 
@@ -304,5 +315,54 @@ lemma flat_of_restrictScalars [Module.Flat R M] : Module.Flat S M :=
 /-- If `S` is an unramified `R`-algebra, then `R`-projective implies `S`-projective. -/
 lemma projective_of_restrictScalars [Module.Projective R M] : Module.Projective S M :=
   Module.Projective.of_split _ _ (comp_sec R S M)
+
+section equalizer
+
+open Algebra.TensorProduct
+
+variable {R S} {A : Type*} [CommRing A] [Algebra R A] (f g : S →ₐ[R] A)
+
+/-- The idempotent defining the subset of `Spec A` where `f` and `g` agree. -/
+noncomputable def equalizerIdempotent : A :=
+  productMap f g (elem R S)
+
+lemma isIdempotentElem_equalizerIdempotent : IsIdempotentElem (equalizerIdempotent f g) :=
+  (isIdempotentElem_elem R S).map (productMap f g)
+
+variable {f g} in
+lemma equalizerIdempotent_mul_eq_iff {a : A} :
+    equalizerIdempotent f g * a = a ↔ ∀ x : S, f x * a = g x * a := by
+  unfold equalizerIdempotent
+  refine ⟨fun h x ↦ ?_, fun h ↦ ?_⟩
+  · simpa [mul_assoc, h] using congrArg (productMap f g · * a) (one_tmul_mul_elem x).symm
+  · suffices ∀ t, productMap f g t * a = f (lmul' R t) * a by simpa using this (elem R S)
+    intro t
+    induction t with
+    | tmul x y => simp [mul_assoc, h]
+    | add x y hx hy => simp [add_mul, hx, hy]
+
+variable {f g} in
+lemma equalizerIdempotent_eq_one_iff : equalizerIdempotent f g = 1 ↔ f = g := by
+  simpa [AlgHom.ext_iff] using equalizerIdempotent_mul_eq_iff (f := f) (g := g) (a := 1)
+
+@[simp]
+lemma equalizerIdempotent_self : equalizerIdempotent f f = 1 :=
+  equalizerIdempotent_eq_one_iff.mpr rfl
+
+lemma map_mul_equalizerIdempotent (x : S) :
+    f x * equalizerIdempotent f g = g x * equalizerIdempotent f g :=
+  equalizerIdempotent_mul_eq_iff.mp (isIdempotentElem_equalizerIdempotent f g).eq x
+
+lemma equalizerIdempotent_comm : equalizerIdempotent f g = equalizerIdempotent g f := by
+  have hfg := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (map_mul_equalizerIdempotent f g x).symm
+  have hgf := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (map_mul_equalizerIdempotent g f x).symm
+  rw [← hfg, mul_comm, hgf]
+
+@[simp]
+lemma map_equalizerIdempotent {B : Type*} [CommRing B] [Algebra R B] (φ : A →ₐ[R] B) :
+    φ (equalizerIdempotent f g) = equalizerIdempotent (φ.comp f) (φ.comp g) := by
+  simp_rw [equalizerIdempotent, ← AlgHom.comp_apply, comp_productMap]
+
+end equalizer
 
 end Algebra.FormallyUnramified

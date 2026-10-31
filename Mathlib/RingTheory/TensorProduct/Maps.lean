@@ -741,9 +741,9 @@ end
 
 section
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
-variable [Algebra R A] [Algebra R B] [Algebra R S]
-variable (f : A →ₐ[R] S) (g : B →ₐ[R] S)
+variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S] [CommSemiring T]
+variable [Algebra R A] [Algebra R B] [Algebra R S] [Algebra R T]
+variable (f : A →ₐ[R] S) (g : B →ₐ[R] S) (h : S →ₐ[R] T)
 variable (R)
 
 /-- `LinearMap.mul'` as an `AlgHom` over the algebra. -/
@@ -828,6 +828,9 @@ theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
     ← AlgHom.range_comp,
     ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft, lmul'_comp_includeRight,
     AlgHom.id_comp, AlgHom.id_comp]
+
+theorem comp_productMap : h.comp (productMap f g) = productMap (h.comp f) (h.comp g) :=
+  Algebra.TensorProduct.ext' (by simp)
 
 end
 
