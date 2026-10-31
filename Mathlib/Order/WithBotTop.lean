@@ -24,7 +24,7 @@ variable (ι) in
 abbrev WithBotTop := WithBot (WithTop ι)
 
 /-- The canonical inclusion `ι → WithBotTop ι`. Registered as a coercion. -/
-def WithBotTop.coe : ι → WithBotTop ι :=
+abbrev WithBotTop.coe : ι → WithBotTop ι :=
   WithBot.some ∘ WithTop.some
 
 namespace WithBotTop
