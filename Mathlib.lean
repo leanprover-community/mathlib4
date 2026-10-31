@@ -4854,10 +4854,10 @@ public import Mathlib.Geometry.Euclidean.Volume.Def
 public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 public import Mathlib.Geometry.Euclidean.Volume.Triangle
-public import Mathlib.Geometry.Group.InfiniteBinaryTree
 public import Mathlib.Geometry.Group.Grigorchuk.Basic
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
+public import Mathlib.Geometry.Group.InfiniteBinaryTree
 public import Mathlib.Geometry.Group.WordMetric
 public import Mathlib.Geometry.Group.WordProd
 public import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
