@@ -147,6 +147,16 @@ lemma Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z (𝒢 : Subgroup (GL (Fin 2) 
     {c : OnePoint ℝ} : IsCusp c 𝒢 ↔ IsCusp c 𝒮ℒ :=
   is_commensurable.isCusp_iff
 
+/-- An arithmetic subgroup does not fix the cusp `∞`. -/
+lemma Subgroup.IsArithmetic.exists_smul_infty_ne_infty (𝒢 : Subgroup (GL (Fin 2) ℝ))
+    [𝒢.IsArithmetic] : ∃ γ ∈ 𝒢, γ • (∞ : OnePoint ℝ) ≠ ∞ := by
+  have h0 : IsCusp ((0 : ℝ) : OnePoint ℝ) 𝒢 := by
+    rw [IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
+    exact ⟨((0 : ℚ) : OnePoint ℚ), by simp⟩
+  obtain ⟨g, hg, hgp, hg0⟩ := h0
+  refine ⟨g, hg, fun hinf ↦ coe_ne_infty (0 : ℝ) ?_⟩
+  rw [hgp.smul_eq_self_iff.mp hg0, ← hgp.smul_eq_self_iff.mp hinf]
+
 end IsCusp
 
 section CuspOrbits
@@ -373,6 +383,22 @@ lemma two_mul_widthInfty_mem_strictPeriods : 2 * 𝒢.widthInfty ∈ 𝒢.strict
     simpa [-upperRightHom_apply, ← AddChar.map_nsmul_eq_pow] using Subgroup.pow_mem _ h 2
 
 variable {𝒢} in
+/-- If `∞` is a cusp of `𝒢`, then `𝒢` has a nonzero strict period. See
+`Subgroup.isCusp_of_mem_strictPeriods` for the converse. -/
+lemma exists_ne_zero_mem_strictPeriods_of_isCusp [𝒢.HasDetPlusMinusOne] (h𝒢 : IsCusp ∞ 𝒢) :
+    ∃ x ≠ 0, x ∈ 𝒢.strictPeriods := by
+  obtain ⟨g, hgg, hgp, hgi⟩ := h𝒢
+  -- We have some `g ∈ 𝒢` which is parabolic and fixes `∞`. So `g = ±[1, x; 0, 1]` some `x ≠ 0`.
+  rw [smul_infty_eq_self_iff] at hgi
+  rw [Subgroup.HasDetPlusMinusOne.isParabolic_iff_of_upperTriangular hgg hgi] at hgp
+  rcases hgp with ⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩
+  · -- If `g = [1, x; 0, 1]`, we're done
+    exact ⟨x, hx, mem_strictPeriods_iff.mpr hgg⟩
+  · -- If `g = -[1, x; 0, 1]` then `g ^ 2 = [1, 2 * x; 0, 1]`.
+    exact ⟨2 • x, by grind, mem_strictPeriods_iff.mpr <| by
+      simpa only [AddChar.map_nsmul_eq_pow, neg_sq] using pow_mem hgg 2⟩
+
+variable {𝒢} in
 lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDetPlusMinusOne] :
     0 < 𝒢.strictWidthInfty ↔ IsCusp ∞ 𝒢 := by
   constructor
@@ -381,20 +407,12 @@ lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDe
       simpa using h.ne'
     · simp [smul_infty_eq_self_iff]
   · -- Hard implication: if `∞` is a cusp, show the strict width is positive.
-    rintro ⟨g, hgg, hgp, hgi⟩
+    intro h
     apply 𝒢.strictWidthInfty_nonneg.lt_of_ne'
     rw [← AddSubgroup.zmultiples_ne_bot]
     simp only [AddSubgroup.ne_bot_iff_exists_ne_zero, Subtype.exists, Ne, AddSubgroup.mk_eq_zero,
-      exists_prop, and_comm, ← strictPeriods_eq_zmultiples_strictWidthInfty, mem_strictPeriods_iff]
-    -- We have some `g ∈ 𝒢` which is parabolic and fixes `∞`. So `g = ±[1, x; 0, 1]` some `x ≠ 0`.
-    rw [smul_infty_eq_self_iff] at hgi
-    rw [Subgroup.HasDetPlusMinusOne.isParabolic_iff_of_upperTriangular hgg hgi] at hgp
-    rcases hgp with ⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩
-    · -- If `g = [1, x; 0, 1]`, we're done
-      exact ⟨x, hx, hgg⟩
-    · -- If `g = -[1, x; 0, 1]` then `g ^ 2 = [1, 2 * x; 0, 1]`.
-      exact ⟨2 • x, by grind,
-        by simpa only [AddChar.map_nsmul_eq_pow, neg_sq] using pow_mem hgg 2⟩
+      exists_prop, and_comm, ← strictPeriods_eq_zmultiples_strictWidthInfty]
+    exact exists_ne_zero_mem_strictPeriods_of_isCusp h
 
 lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty := by
   rw [strictWidthInfty_pos_iff]
