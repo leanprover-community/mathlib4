@@ -191,8 +191,7 @@ lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
     [DenselyOrdered ι] [FirstCountableTopology ι] [NoMaxOrder ι]
     {τ : ℕ → Ω → WithTop ι} [IsRightContinuous 𝓕] (hτ : IsPreLocalizingSequence 𝓕 τ P) :
     IsLocalizingSequence 𝓕 (fun i ω ↦ ⨅ j ≥ i, τ j ω) P where
-  isStoppingTime n := IsStoppingTime.biInf (Set.to_countable {j | j ≥ n})
-    (fun j _ ↦ hτ.isStoppingTime j)
+  isStoppingTime n := IsStoppingTime.biInf (Set.to_countable _) (fun j _ ↦ hτ.isStoppingTime j)
   mono := ae_of_all _ <| fun ω n m hnm ↦
     iInf_le_iInf_of_subset (s := {j | j ≥ m}) (t := {j | j ≥ n}) fun k hk ↦ hnm.trans hk
   tendsto_top := by

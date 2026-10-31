@@ -85,11 +85,14 @@ theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
   simp [sdiff_eq, add_assoc]
 
 variable {m} in
-lemma IsCaratheodory.biUnion_of_finite {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
-    (h : ∀ i ∈ t, m.IsCaratheodory (s i)) :
-    m.IsCaratheodory (⋃ i ∈ t, s i) := by
+lemma IsCaratheodory.biUnion_of_finite {ι : Type*} {s : ι → Set α} {p : ι → Prop}
+    (hp : {i | p i}.Finite) (h : ∀ i, p i → m.IsCaratheodory (s i)) :
+    m.IsCaratheodory (⋃ (i) (_ : p i), s i) := by
   classical
-  lift t to Finset ι using ht
+  change m.IsCaratheodory (⋃ i ∈ {i | p i}, s i)
+  replace h : ∀ i ∈ {i | p i}, m.IsCaratheodory (s i) := h
+  generalize {i | p i} = t at hp h ⊢
+  lift t to Finset ι using hp
   induction t using Finset.induction_on with
   | empty => simp
   | insert i t hi IH =>
