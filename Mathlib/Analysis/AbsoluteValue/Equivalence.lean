@@ -94,7 +94,7 @@ variable {R S : Type*} [Field R] [Semifield S] [LinearOrder S] {v w : AbsoluteVa
 
 /-- An absolute value is equivalent to the trivial iff it is trivial itself. -/
 @[simp]
-lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
+lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0]
     [IsStrictOrderedRing S] {f : AbsoluteValue R S} :
     f.IsEquiv .trivial ↔ f = .trivial :=
   ⟨fun h ↦ by aesop (add simp [h.eq_one_iff, AbsoluteValue.trivial]), fun h ↦ h ▸ .rfl⟩

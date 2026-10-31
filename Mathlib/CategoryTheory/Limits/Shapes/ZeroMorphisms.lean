@@ -259,10 +259,10 @@ theorem zeroIsoIsInitial_hom {X : C} (t : IsInitial X) : (zeroIsoIsInitial t).ho
 theorem zeroIsoIsInitial_inv {X : C} (t : IsInitial X) : (zeroIsoIsInitial t).inv = 0 := by ext
 
 @[to_dual (attr := simp) zeroIsoTerminal_inv]
-theorem zeroIsoInitial_hom [HasInitial C] : zeroIsoInitial.hom = (0 : 0 ⟶ ⊥_ C) := by ext
+theorem zeroIsoInitial_hom : zeroIsoInitial.hom = (0 : 0 ⟶ ⊥_ C) := by ext
 
 @[to_dual (attr := simp) zeroIsoTerminal_hom]
-theorem zeroIsoInitial_inv [HasInitial C] : zeroIsoInitial.inv = (0 : ⊥_ C ⟶ 0) := by ext
+theorem zeroIsoInitial_inv : zeroIsoInitial.inv = (0 : ⊥_ C ⟶ 0) := by ext
 
 end HasZeroMorphisms
 
@@ -481,7 +481,7 @@ def imageZero' {X Y : C} {f : X ⟶ Y} (h : f = 0) [HasImage f] : image f ≅ 0 
   image.eqToIso h ≪≫ imageZero
 
 @[simp]
-theorem image.ι_zero {X Y : C} [HasImage (0 : X ⟶ Y)] : image.ι (0 : X ⟶ Y) = 0 := by
+theorem image.ι_zero {X Y : C} : image.ι (0 : X ⟶ Y) = 0 := by
   rw [← image.lift_fac (monoFactorisationZero X Y)]
   simp
 
