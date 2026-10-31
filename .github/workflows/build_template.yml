@@ -97,6 +97,31 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
+      # Validate lake-manifest.json before "Set up build environment" downloads the dependencies.
+      # The action reads the manifests through the GitHub API and checks each dependency:
+      # - On every run: `inputRev` is `main`, `master` or a version tag, `url` is a GitHub
+      #   repository in `leanprover-community` or `leanprover`, and the pin (`rev`) is a full
+      #   commit hash.
+      # - On bors runs (`staging` and `trying`), and as warnings on other runs: a changed pin is on
+      #   its branch or is the commit of its tag, and is not older than the pin on master.
+      # For an intentional revert, a repository admin sets the variable
+      # `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`, and the older-pin rule only warns. The admin
+      # should delete the variable after the revert merges. The action's README.md has the details.
+      - name: Validate lake-manifest.json
+        # The step runs only in leanprover-community/mathlib4. `bump/*` branches and PRs into them
+        # track the dependencies' `nightly-testing` branches, so the step skips them. A PR's base
+        # branch is `github.base_ref`: `pull_request_target` sets `github.ref_name` to the default
+        # branch. Bors builds a batch for a PR into `bump/*` on `staging`, and the step checks it.
+        if: >-
+          github.repository == 'leanprover-community/mathlib4'
+          && !startsWith(github.ref_name, 'bump/')
+          && !startsWith(github.base_ref, 'bump/')
+        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@b4731f641e0f23915f03451bccaa815e7bde21d0
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          strict: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
+          allow-older-pins: ${{ vars.MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS == 'true' }}
+
       # Shared self-hosted setup (cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
       # download); see the action for per-step rationale. It is loaded from the
@@ -142,40 +167,6 @@ jobs:
             echo "=============================================================================="
             echo ""
             exit 1
-          fi
-
-      - name: validate lake-manifest.json inputRevs
-        # Only enforce this on the main mathlib4 repository, not on nightly-testing.
-        # `bump/*` branches, and PRs into them, track the dependencies' `nightly-testing`
-        # branches, so they are exempt too. A PR's base branch is `github.base_ref`:
-        # `pull_request_target` sets `github.ref_name` to the default branch, not the base.
-        if: >-
-          github.repository == 'leanprover-community/mathlib4'
-          && github.ref_name != 'nightly-testing'
-          && !startsWith(github.ref_name, 'bump/')
-          && !startsWith(github.base_ref, 'bump/')
-        shell: bash
-        run: |
-          cd pr-branch
-
-          # Check that all inputRevs in lake-manifest.json match the required pattern
-          echo "Validating lake-manifest.json inputRevs..."
-
-          # Extract all inputRevs from the manifest
-          invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
-            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?)$' || true)
-
-          if [ -n "$invalid_revs" ]; then
-            echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
-            echo "$invalid_revs"
-            echo ""
-            echo "All inputRevs must be one of:"
-            echo "  - 'main'"
-            echo "  - 'master'"
-            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3, v1.2.3-pre, or v1.2.3+build)"
-            exit 1
-          else
-            echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
       # Get this commit's oleans into the local cache — see the action for the steps.
