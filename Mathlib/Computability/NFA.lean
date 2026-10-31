@@ -259,7 +259,7 @@ theorem eval_mul_of (x : FreeMonoid α) (a : α) :
 
 variable (M) in
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
+def accepts : Language α := .ofSet {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 
 theorem mem_accepts {x : FreeMonoid α} :
     x ∈ M.accepts.toSet ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by

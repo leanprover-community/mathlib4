@@ -231,7 +231,10 @@ lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t)
   tauto
 
 lemma language_eq_zero_of_forall_input_ne_initial (hg : ∀ r ∈ g.rules, r.input ≠ g.initial) :
-    g.language = 0 := by ext; simp +contextual [derives_nonterminal, hg]
+    g.language = 0 := by
+  ext
+  simp +contextual [← FreeMonoid.toListEquiv.injective.ne_iff, FreeMonoid.toListEquiv,
+    derives_nonterminal, hg]
 
 end ContextFreeGrammar
 
