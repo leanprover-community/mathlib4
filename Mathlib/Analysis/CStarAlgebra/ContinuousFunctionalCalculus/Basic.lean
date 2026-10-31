@@ -237,6 +237,9 @@ lemma SpectrumRestricts.nnreal_iff_nnNorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjo
     try apply IsSelfAdjoint.spectrumRestricts
     assumption
 
+@[deprecated (since := "2026-10-31")]
+alias SpectrumRestricts.nnreal_iff_nnnorm := SpectrumRestricts.nnreal_iff_nnNorm
+
 lemma SpectrumRestricts.nnreal_add {a b : A} (ha₁ : IsSelfAdjoint a)
     (hb₁ : IsSelfAdjoint b) (ha₂ : SpectrumRestricts a ContinuousMap.realToNNReal)
     (hb₂ : SpectrumRestricts b ContinuousMap.realToNNReal) :

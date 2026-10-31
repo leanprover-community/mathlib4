@@ -74,6 +74,8 @@ theorem norm_div (a b : α) : ‖a / b‖ = ‖a‖ / ‖b‖ :=
 theorem nnNorm_div (a b : α) : ‖a / b‖₊ = ‖a‖₊ / ‖b‖₊ :=
   map_div₀ (nnNormHom : α →*₀ ℝ≥0) a b
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_div := nnNorm_div
+
 @[simp]
 theorem norm_inv (a : α) : ‖a⁻¹‖ = ‖a‖⁻¹ :=
   map_inv₀ (normHom : α →*₀ ℝ) a
@@ -81,6 +83,8 @@ theorem norm_inv (a : α) : ‖a⁻¹‖ = ‖a‖⁻¹ :=
 @[simp]
 theorem nnNorm_inv (a : α) : ‖a⁻¹‖₊ = ‖a‖₊⁻¹ :=
   NNReal.eq <| by simp
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_inv := nnNorm_inv
 
 @[simp]
 lemma enorm_inv {a : α} (ha : a ≠ 0) : ‖a⁻¹‖ₑ = ‖a‖ₑ⁻¹ := by simp [enorm, ENNReal.coe_inv, ha]
@@ -92,6 +96,8 @@ theorem norm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖ = ‖a‖ ^ n :=
 @[simp]
 theorem nnNorm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   map_zpow₀ (nnNormHom : α →*₀ ℝ≥0)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_zpow := nnNorm_zpow
 
 theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     dist z⁻¹ w⁻¹ = dist z w / (‖z‖ * ‖w‖) := by
@@ -109,6 +115,9 @@ lemma norm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
 lemma nnNorm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
     ‖a * b * a⁻¹ * b⁻¹ - 1‖₊ ≤ 2 * ‖a‖₊⁻¹ * ‖b‖₊⁻¹ * ‖a - 1‖₊ * ‖b - 1‖₊ := by
   simpa using nnNorm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_commutator_sub_one_le := nnNorm_commutator_sub_one_le
 
 namespace NormedDivisionRing
 
@@ -208,6 +217,8 @@ theorem exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
 
 theorem exists_one_lt_nnNorm : ∃ x : α, 1 < ‖x‖₊ := exists_one_lt_norm α
 
+@[deprecated (since := "2026-10-31")] alias exists_one_lt_nnnorm := exists_one_lt_nnNorm
+
 theorem exists_one_lt_enorm : ∃ x : α, 1 < ‖x‖ₑ :=
   exists_one_lt_nnNorm α |>.imp fun _ => ENNReal.coe_lt_coe.mpr
 
@@ -217,6 +228,8 @@ theorem exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
   ⟨w ^ n, by rwa [norm_pow]⟩
 
 theorem exists_lt_nnNorm (r : ℝ≥0) : ∃ x : α, r < ‖x‖₊ := exists_lt_norm α r
+
+@[deprecated (since := "2026-10-31")] alias exists_lt_nnnorm := exists_lt_nnNorm
 
 theorem exists_lt_enorm {r : ℝ≥0∞} (hr : r ≠ ∞) : ∃ x : α, r < ‖x‖ₑ := by
   lift r to ℝ≥0 using hr
@@ -229,6 +242,8 @@ theorem exists_norm_lt {r : ℝ} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ ∧ ‖x
 theorem exists_nnNorm_lt {r : ℝ≥0} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖₊ ∧ ‖x‖₊ < r :=
   exists_norm_lt α hr
 
+@[deprecated (since := "2026-10-31")] alias exists_nnnorm_lt := exists_nnNorm_lt
+
 /-- TODO: merge with `_root_.exists_enorm_lt`. -/
 theorem exists_enorm_lt {r : ℝ≥0∞} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < r :=
   match r with
@@ -240,6 +255,8 @@ theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
   exists_norm_lt α one_pos
 
 theorem exists_nnNorm_lt_one : ∃ x : α, 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 := exists_norm_lt_one _
+
+@[deprecated (since := "2026-10-31")] alias exists_nnnorm_lt_one := exists_nnNorm_lt_one
 
 theorem exists_enorm_lt_one : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < 1 := exists_enorm_lt _ one_pos
 
@@ -268,6 +285,8 @@ theorem exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂
 
 theorem exists_lt_nnNorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ :=
   mod_cast exists_lt_norm_lt α r₁.prop h
+
+@[deprecated (since := "2026-10-31")] alias exists_lt_nnnorm_lt := exists_lt_nnNorm_lt
 
 instance denselyOrdered_range_norm : DenselyOrdered (Set.range (norm : α → ℝ)) where
   dense := by
@@ -315,8 +334,12 @@ theorem toNNReal_mul_nnNorm {x : ℝ} (y : ℝ) (hx : 0 ≤ x) : x.toNNReal * �
   simp only [NNReal.coe_mul, nnNorm_mul, coe_nnNorm, Real.toNNReal_of_nonneg, norm_of_nonneg, hx,
     NNReal.coe_mk]
 
+@[deprecated (since := "2026-10-31")] alias toNNReal_mul_nnnorm := toNNReal_mul_nnNorm
+
 theorem nnNorm_mul_toNNReal (x : ℝ) {y : ℝ} (hy : 0 ≤ y) : ‖x‖₊ * y.toNNReal = ‖x * y‖₊ := by
   rw [mul_comm, mul_comm x, toNNReal_mul_nnNorm x hy]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_mul_toNNReal := nnNorm_mul_toNNReal
 
 end Real
 

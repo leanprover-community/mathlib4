@@ -72,6 +72,8 @@ lemma nnNorm_mul_le_max (x y : S) :
     ‖x * y‖₊ ≤ max ‖x‖₊ ‖y‖₊ :=
   norm_mul_le_max _ _
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_mul_le_max := nnNorm_mul_le_max
+
 @[to_additive]
 lemma isUltrametricDist_of_forall_nnNorm_mul_le_max_nnNorm
     (h : ∀ x y : S', ‖x * y‖₊ ≤ max ‖x‖₊ ‖y‖₊) : IsUltrametricDist S' :=
@@ -81,13 +83,21 @@ lemma isUltrametricDist_of_isNonarchimedean_nnNorm {S' : Type*} [SeminormedAddGr
     (h : IsNonarchimedean (nnNorm : S' → ℝ≥0)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnNorm_add_le_max_nnNorm h
 
+@[deprecated (since := "2026-10-31")]
+alias isUltrametricDist_of_isNonarchimedean_nnnorm := isUltrametricDist_of_isNonarchimedean_nnNorm
+
 lemma isNonarchimedean_nnNorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖₊ : R → ℝ) := by
   simpa using isNonarchimedean_norm
 
+@[deprecated (since := "2026-10-31")] alias isNonarchimedean_nnnorm := isNonarchimedean_nnNorm
+
 lemma isUltrametricDist_iff_isNonarchimedean_nnNorm {R} [SeminormedAddCommGroup R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
   ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
+
+@[deprecated (since := "2026-10-31")]
+alias isUltrametricDist_iff_isNonarchimedean_nnnorm := isUltrametricDist_iff_isNonarchimedean_nnNorm
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
@@ -113,6 +123,9 @@ lemma nnNorm_eq_of_mul_nnNorm_lt_max {x y : S} (h : ‖x * y‖₊ < max ‖x‖
     ‖x‖₊ = ‖y‖₊ :=
   not_ne_iff.mp (h.ne ∘ nnNorm_mul_eq_max_of_nnNorm_ne_nnNorm)
 
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_eq_of_mul_nnnorm_lt_max := nnNorm_eq_of_mul_nnNorm_lt_max
+
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
 lemma norm_div_eq_max_of_norm_div_ne_norm_div (x y z : S) (h : ‖x / y‖ ≠ ‖y / z‖) :
@@ -126,12 +139,17 @@ lemma nnNorm_div_eq_max_of_nnNorm_div_ne_nnNorm_div (x y z : S) (h : ‖x / y‖
   simpa only [← NNReal.coe_inj, NNReal.coe_max] using!
     norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div := nnNorm_div_eq_max_of_nnNorm_div_ne_nnNorm_div
+
 @[to_additive]
 lemma nnNorm_pow_le (x : S) (n : ℕ) :
     ‖x ^ n‖₊ ≤ ‖x‖₊ := by
   induction n with
   | zero => simp
   | succ n hn => simpa [pow_add, hn] using nnNorm_mul_le_max (x ^ n) x
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_pow_le := nnNorm_pow_le
 
 @[to_additive]
 lemma norm_pow_le (x : S) (n : ℕ) :
@@ -143,6 +161,8 @@ lemma nnNorm_zpow_le (x : S) (z : ℤ) :
     ‖x ^ z‖₊ ≤ ‖x‖₊ := by
   cases z <;>
   simpa using nnNorm_pow_le _ _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_zpow_le := nnNorm_zpow_le
 
 @[to_additive]
 lemma norm_zpow_le (x : S) (z : ℤ) :
@@ -225,6 +245,9 @@ lemma _root_.Finset.nnNorm_prod_le_sup_nnNorm (s : Finset ι) (f : ι → M) :
   · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnNorm']
       using! hs.norm_prod_le_sup'_norm f
 
+@[deprecated (since := "2026-10-31")]
+alias _root_.Finset.nnnorm_prod_le_sup_nnnorm := _root_.Finset.nnNorm_prod_le_sup_nnNorm
+
 /--
 Generalised ultrametric triangle inequality for finite products in commutative groups with
 an ultrametric norm.
@@ -234,6 +257,9 @@ commutative groups with an ultrametric norm. -/]
 lemma nnNorm_prod_le_of_forall_le {s : Finset ι} {f : ι → M} {C : ℝ≥0}
     (hC : ∀ i ∈ s, ‖f i‖₊ ≤ C) : ‖∏ i ∈ s, f i‖₊ ≤ C :=
   (s.nnNorm_prod_le_sup_nnNorm f).trans <| Finset.sup_le hC
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_prod_le_of_forall_le := nnNorm_prod_le_of_forall_le
 
 /--
 Generalised ultrametric triangle inequality for nonempty finite products in commutative groups with
@@ -325,6 +351,8 @@ lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := b
 lemma nnNorm_tprod_le (f : ι → M) : ‖∏' i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
   simpa only [← NNReal.coe_le_coe, coe_nnNorm', coe_iSup] using norm_tprod_le f
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_tprod_le := nnNorm_tprod_le
+
 @[to_additive]
 lemma norm_tprod_le_of_forall_le [Nonempty ι] {f : ι → M} {C : ℝ} (h : ∀ i, ‖f i‖ ≤ C) :
     ‖∏' i, f i‖ ≤ C :=
@@ -341,6 +369,9 @@ lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ 
 lemma nnNorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
   (nnNorm_tprod_le f).trans (ciSup_le' h)
 
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_tprod_le_of_forall_le := nnNorm_tprod_le_of_forall_le
+
 @[to_additive]
 lemma nnNorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
     (hs : Set.Pairwise s (fun i j ↦ ‖f i‖₊ ≠ ‖f j‖₊)) :
@@ -356,6 +387,9 @@ lemma nnNorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
     suffices ‖f a‖₊ ≠ ‖∏ x ∈ s, f x‖₊ by simp [← IH, nnNorm_mul_eq_max_of_nnNorm_ne_nnNorm this]
     rw [hj']
     apply hs <;> grind
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_prod_eq_sup_of_pairwise_ne := nnNorm_prod_eq_sup_of_pairwise_ne
 
 @[to_additive]
 lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.Nonempty)

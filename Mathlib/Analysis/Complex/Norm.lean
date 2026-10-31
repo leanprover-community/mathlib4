@@ -101,6 +101,8 @@ theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
 
 @[simp] lemma nnNorm_I : ‖I‖₊ = 1 := by simp [nnNorm]
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_I := nnNorm_I
+
 @[simp 1100, norm_cast]
 lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := by
   simp [norm_def, Real.sqrt_mul_self_eq_abs]
@@ -110,6 +112,8 @@ protected theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : ℂ)‖ = r :
 
 @[simp, norm_cast]
 lemma nnNorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_real := nnNorm_real
 
 @[norm_cast]
 lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := Complex.norm_of_nonneg n.cast_nonneg
@@ -123,9 +127,13 @@ protected lemma norm_two : ‖(2 : ℂ)‖ = 2 := norm_ofNat 2
 @[simp 1100, norm_cast]
 lemma nnNorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp [norm_natCast]
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_natCast := nnNorm_natCast
+
 @[simp 1100]
 lemma nnNorm_ofNat (n : ℕ) [n.AtLeastTwo] :
     ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnNorm_natCast n
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofNat := nnNorm_ofNat
 
 @[simp 1100, norm_cast]
 lemma norm_intCast (n : ℤ) : ‖(n : ℂ)‖ = |(n : ℝ)| := by
@@ -143,8 +151,12 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.norm_of_nonn
 @[simp 1100, norm_cast]
 lemma nnNorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnNorm_real q
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_ratCast := nnNorm_ratCast
+
 @[simp 1100, norm_cast]
 lemma nnNorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnNorm]; rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnratCast := nnNorm_nnratCast
 
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   simp [norm_def, sq, Real.mul_self_sqrt (normSq_nonneg _)]

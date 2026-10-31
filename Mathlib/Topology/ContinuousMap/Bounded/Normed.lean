@@ -208,25 +208,39 @@ instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGrou
 
 theorem nnNorm_def : ‖f‖₊ = nndist f 0 := rfl
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_def := nnNorm_def
+
 theorem nnNorm_coe_le_nnNorm (x : α) : ‖f x‖₊ ≤ ‖f‖₊ :=
   norm_coe_le_norm _ _
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_coe_le_nnnorm := nnNorm_coe_le_nnNorm
+
 theorem nndist_le_two_nnNorm (x y : α) : nndist (f x) (f y) ≤ 2 * ‖f‖₊ :=
   dist_le_two_norm _ _ _
+
+@[deprecated (since := "2026-10-31")] alias nndist_le_two_nnnorm := nndist_le_two_nnNorm
 
 /-- The `nnNorm` of a function is controlled by the supremum of the pointwise `nnNorm`s. -/
 theorem nnNorm_le (C : ℝ≥0) : ‖f‖₊ ≤ C ↔ ∀ x : α, ‖f x‖₊ ≤ C :=
   norm_le C.prop
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_le := nnNorm_le
+
 theorem nnNorm_const_le (b : β) : ‖const α b‖₊ ≤ ‖b‖₊ :=
   norm_const_le _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_const_le := nnNorm_const_le
 
 @[simp]
 theorem nnNorm_const_eq [Nonempty α] (b : β) : ‖const α b‖₊ = ‖b‖₊ :=
   Subtype.ext <| norm_const_eq _
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_const_eq := nnNorm_const_eq
+
 theorem nnNorm_eq_iSup_nnNorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
   Subtype.ext <| (norm_eq_iSup_norm f).trans <| by simp_rw [val_eq_coe, NNReal.coe_iSup, coe_nnNorm]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_iSup_nnnorm := nnNorm_eq_iSup_nnNorm
 
 theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ := by
   simpa only [← edist_zero_right] using! edist_eq_iSup
@@ -360,6 +374,8 @@ lemma nnNorm_add_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) 
     ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_add_eq_max h
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
+
 lemma norm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
     ‖f - g‖ = max ‖f‖ ‖g‖ := by
   simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
@@ -367,6 +383,8 @@ lemma norm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
 lemma nnNorm_sub_eq_max [IsCancelMulZero R] {f g : α →ᵇ R} (h : f * g = 0) :
     ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_sub_eq_max h
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 open scoped Function in
 /-- If the pairwise products of bounded continuous functions are all zero, then the norm of their
@@ -380,6 +398,8 @@ lemma nnNorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ 
   | insert j s hj ih =>
     suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnNorm_add_eq_max this
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h (by grind)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end Seminormed
 
@@ -647,8 +667,12 @@ def nnNorm (f : α →ᵇ ℝ) : α →ᵇ ℝ≥0 :=
   BoundedContinuousFunction.comp _
     (show LipschitzWith 1 fun x : ℝ => ‖x‖₊ from lipschitzWith_one_norm) f
 
+@[deprecated (since := "2026-10-31")] alias nnnorm := nnNorm
+
 @[simp]
 theorem nnNorm_coeFn_eq (f : α →ᵇ ℝ) : ⇑f.nnNorm = NNNorm.nnNorm ∘ ⇑f := rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_coeFn_eq := nnNorm_coeFn_eq
 
 -- TODO: Use `posPart` and `negPart` here
 /-- Decompose a bounded continuous function to its positive and negative parts. -/

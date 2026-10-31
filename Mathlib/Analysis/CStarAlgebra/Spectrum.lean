@@ -104,6 +104,9 @@ lemma CStarAlgebra.le_nnNorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlg
   rw [Unitization.quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ] at hx
   simpa [Unitization.nnNorm_inr] using spectrum.le_nnNorm_of_mem hx
 
+@[deprecated (since := "2026-10-31")]
+alias CStarAlgebra.le_nnnorm_of_mem_quasispectrum := CStarAlgebra.le_nnNorm_of_mem_quasispectrum
+
 end Quasispectrum
 
 section ComplexScalars
@@ -121,6 +124,9 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnNorm {a : A} (ha : IsSelfAdjoint a) :
       (tendsto_pow_atTop_atTop_of_one_lt one_lt_two)) hconst fun n ↦ ?_
   rw [Function.comp_apply, ha.nnNorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp
+
+@[deprecated (since := "2026-10-31")]
+alias IsSelfAdjoint.spectralRadius_eq_nnnorm := IsSelfAdjoint.spectralRadius_eq_nnNorm
 
 /-- In a C⋆-algebra, the spectral radius of a self-adjoint element is equal to its norm.
 See `IsSelfAdjoint.toReal_spectralRadius_eq_norm` for a version involving
@@ -144,6 +150,9 @@ theorem IsStarNormal.spectralRadius_eq_nnNorm (a : A) [IsStarNormal a] :
   rw [← heq] at h₂
   convert tendsto_nhds_unique h₂ (pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnNorm, sq, nnNorm_star_mul_self, coe_mul]
+
+@[deprecated (since := "2026-10-31")]
+alias IsStarNormal.spectralRadius_eq_nnnorm := IsStarNormal.spectralRadius_eq_nnNorm
 
 namespace CStarAlgebra
 
@@ -276,6 +285,8 @@ lemma nnNorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   simpa [nnNorm_inr] using
     h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (ofClass φ : A →⋆ₙₐ[ℂ] B))) a
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_apply_le := nnNorm_apply_le
+
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
   exact mod_cast nnNorm_apply_le φ a
@@ -300,6 +311,8 @@ lemma nnNorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   le_antisymm (NonUnitalStarAlgHom.nnNorm_apply_le φ a) <| by
     simpa using! NonUnitalStarAlgHom.nnNorm_apply_le
       (symm (ofClass φ : A ≃⋆ₐ[ℂ] B)) ((ofClass φ : A ≃⋆ₐ[ℂ] B) a)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
   congr($(nnNorm_map φ a).toReal)

@@ -210,11 +210,15 @@ lemma norm_add_eq_max (h : a * b = 0) : ‖a + b‖ = max ‖a‖ ‖b‖ := by
 lemma nnNorm_add_eq_max (h : a * b = 0) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| norm_add_eq_max h
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
+
 lemma norm_sub_eq_max (h : a * b = 0) : ‖a - b‖ = max ‖a‖ ‖b‖ := by
   simpa [sub_eq_add_neg] using norm_add_eq_max (a := a) (b := -b) (by simpa)
 
 lemma nnNorm_sub_eq_max (h : a * b = 0) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| norm_sub_eq_max h
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 open scoped Function in
 lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise ((· * · = 0) on f)) :
@@ -225,6 +229,8 @@ lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwi
   | insert j s hj ih =>
     suffices f j * ∑ i ∈ s, f i = 0 by simp_all [nnNorm_add_eq_max this]
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end CommCStarAlgebra
 
@@ -253,6 +259,8 @@ lemma nnNorm_add_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| ha.norm_add_eq_max hb hcomm hab
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
+
 lemma norm_sub_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
     ‖a - b‖ = max ‖a‖ ‖b‖ := by
@@ -263,6 +271,8 @@ lemma nnNorm_sub_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
     ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| ha.norm_sub_eq_max hb hcomm hab
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 end IsStarNormal
 
@@ -277,6 +287,8 @@ lemma nnNorm_add_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a *
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| ha.norm_add_eq_max hb hab
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
+
 lemma norm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a - b‖ = max ‖a‖ ‖b‖ := by
   simpa [sub_eq_add_neg] using ha.norm_add_eq_max hb.neg (by simpa)
@@ -284,6 +296,8 @@ lemma norm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b
 lemma nnNorm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| ha.norm_sub_eq_max hb hab
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 open scoped Function in
 lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
@@ -296,6 +310,8 @@ lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
     suffices f j * ∑ i ∈ s, f i = 0 by
       simp_all [(h j (by simp)).nnNorm_add_eq_max (by cfc_tac) this]
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end IsSelfAdjoint
 

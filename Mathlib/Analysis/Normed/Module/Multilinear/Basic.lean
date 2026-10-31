@@ -566,6 +566,8 @@ theorem nnNorm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
     ‖ofSubsingleton 𝕜 G G' i f‖₊ = ‖f‖₊ :=
   NNReal.eq <| norm_ofSubsingleton i f
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofSubsingleton := nnNorm_ofSubsingleton
+
 variable (𝕜 G)
 
 /-- Linear isometry between continuous linear maps from `G` to `G'`
@@ -587,6 +589,9 @@ theorem nnNorm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ ≤ 1 :=
   norm_ofSubsingleton_id_le _ _ _
 
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_ofSubsingleton_id_le := nnNorm_ofSubsingleton_id_le
+
 variable {G} (E)
 
 @[simp]
@@ -599,6 +604,8 @@ theorem norm_constOfIsEmpty [IsEmpty ι] (x : G) : ‖constOfIsEmpty 𝕜 E x‖
 @[simp]
 theorem nnNorm_constOfIsEmpty [IsEmpty ι] (x : G) : ‖constOfIsEmpty 𝕜 E x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_constOfIsEmpty _ _ _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_constOfIsEmpty := nnNorm_constOfIsEmpty
 
 end
 
@@ -789,6 +796,8 @@ theorem nnNorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     rw [div_mul_eq_mul_div, le_div_iff₀ hz]
     refine le_trans ?_ ((f.smulRight z).le_opNNNorm m)
     rw [smulRight_apply, nnNorm_smul]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_smulRight := nnNorm_smulRight
 
 @[simp]
 theorem norm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
@@ -1263,6 +1272,8 @@ theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
 theorem nnNorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=
   NNReal.eq <| norm_ofSubsingleton_id ..
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofSubsingleton_id := nnNorm_ofSubsingleton_id
 
 end ContinuousMultilinearMap
 

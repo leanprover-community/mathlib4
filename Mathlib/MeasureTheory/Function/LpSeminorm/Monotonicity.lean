@@ -220,6 +220,8 @@ theorem MemLp.of_nnNorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg :
   (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hf hfg p).trans_lt <|
     ENNReal.mul_lt_top ENNReal.coe_lt_top hg
 
+@[deprecated (since := "2026-10-31")] alias MemLp.of_nnnorm_le_mul := MemLp.of_nnNorm_le_mul
+
 theorem MemLp.of_enorm_le_mul {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
   (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hf hfg p).trans_lt <|

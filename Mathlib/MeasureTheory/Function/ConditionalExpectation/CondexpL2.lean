@@ -165,6 +165,9 @@ theorem lintegral_nnNorm_condExpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
     rw [← integral_condExpL2_eq_of_fin_meas_real (hm := hm) f ht hμt.ne]
     exact setIntegral_congr_ae (hm t ht) (hg_eq.mono fun x hx _ => hx)
 
+@[deprecated (since := "2026-10-31")]
+alias lintegral_nnnorm_condExpL2_le := lintegral_nnNorm_condExpL2_le
+
 theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) {f : Lp ℝ 2 μ}
     (hf : f =ᵐ[μ.restrict s] 0) : condExpL2 ℝ ℝ hm f =ᵐ[μ.restrict s] (0 : α → ℝ) := by
   suffices h_nnNorm_eq_zero : ∫⁻ x in s, ‖(condExpL2 ℝ ℝ hm f : α → ℝ) x‖₊ ∂μ = 0 by
@@ -200,6 +203,9 @@ theorem lintegral_nnNorm_condExpL2_indicator_le_real (hs : MeasurableSet s) (hμ
     split_ifs <;> simp
   rw [h_eq, lintegral_indicator hs, lintegral_const, Measure.restrict_restrict hs]
   simp only [one_mul, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
+
+@[deprecated (since := "2026-10-31")]
+alias lintegral_nnnorm_condExpL2_indicator_le_real := lintegral_nnNorm_condExpL2_indicator_le_real
 
 end Real
 
@@ -321,6 +327,9 @@ theorem setLIntegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
       exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ := by grw [lintegral_nnNorm_condExpL2_indicator_le_real hs hμs ht hμt]
 
+@[deprecated (since := "2026-10-31")]
+alias setLIntegral_nnnorm_condExpL2_indicator_le := setLIntegral_nnNorm_condExpL2_indicator_le
+
 theorem lintegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : E') [SigmaFinite (μ.trim hm)] :
     ∫⁻ a, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ ≤ μ s * ‖x‖₊ := by
@@ -328,6 +337,9 @@ theorem lintegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measurable
   refine (setLIntegral_nnNorm_condExpL2_indicator_le hm hs hμs x ht hμt).trans ?_
   gcongr
   apply Set.inter_subset_left
+
+@[deprecated (since := "2026-10-31")]
+alias lintegral_nnnorm_condExpL2_indicator_le := lintegral_nnNorm_condExpL2_indicator_le
 
 /-- If the measure `μ.trim hm` is sigma-finite, then the conditional expectation of a measurable set
 with finite measure is integrable. -/
@@ -389,12 +401,18 @@ theorem setLIntegral_nnNorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
       exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ := by grw [lintegral_nnNorm_condExpL2_indicator_le_real hs hμs ht hμt]
 
+@[deprecated (since := "2026-10-31")]
+alias setLIntegral_nnnorm_condExpIndSMul_le := setLIntegral_nnNorm_condExpIndSMul_le
+
 theorem lintegral_nnNorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) [SigmaFinite (μ.trim hm)] : ∫⁻ a, ‖condExpIndSMul hm hs hμs x a‖₊ ∂μ ≤ μ s * ‖x‖₊ := by
   refine lintegral_le_of_forall_fin_meas_trim_le hm (μ s * ‖x‖₊) fun t ht hμt => ?_
   refine (setLIntegral_nnNorm_condExpIndSMul_le hm hs hμs x ht hμt).trans ?_
   gcongr
   apply Set.inter_subset_left
+
+@[deprecated (since := "2026-10-31")]
+alias lintegral_nnnorm_condExpIndSMul_le := lintegral_nnNorm_condExpIndSMul_le
 
 /-- If the measure `μ.trim hm` is sigma-finite, then the conditional expectation of a measurable set
 with finite measure is integrable. -/

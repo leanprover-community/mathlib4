@@ -246,6 +246,8 @@ protected theorem nnNorm [NormedAddCommGroup γ] [OpensMeasurableSpace γ]
     IdentDistrib (fun x => ‖f x‖₊) (fun x => ‖g x‖₊) μ ν :=
   h.comp measurable_nnNorm
 
+@[deprecated (since := "2026-10-31")] alias nnnorm := nnNorm
+
 protected theorem pow [Pow γ ℕ] [MeasurablePow γ ℕ] (h : IdentDistrib f g μ ν) {n : ℕ} :
     IdentDistrib (fun x => f x ^ n) (fun x => g x ^ n) μ ν :=
   h.comp (measurable_id.pow_const n)

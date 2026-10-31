@@ -159,6 +159,8 @@ theorem nnNorm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖₊ ≤ ‖c‖₊ * (μ s).toNNReal ^ (1 / p.toReal) :=
   norm_indicatorConstLp_le
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_indicatorConstLp_le := nnNorm_indicatorConstLp_le
+
 theorem enorm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ₑ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← enorm_eq_nnNorm]

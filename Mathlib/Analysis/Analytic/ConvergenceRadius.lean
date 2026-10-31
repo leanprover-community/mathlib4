@@ -132,6 +132,9 @@ theorem le_radius_of_eventually_le (C) (h : ∀ᶠ n in atTop, ‖p n‖ * (r : 
 theorem le_radius_of_summable_nnNorm (h : Summable fun n => ‖p n‖₊ * r ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_bound_nnreal (∑' n, ‖p n‖₊ * r ^ n) fun _ => h.le_tsum' _
 
+@[deprecated (since := "2026-10-31")]
+alias le_radius_of_summable_nnnorm := le_radius_of_summable_nnNorm
+
 theorem le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_summable_nnNorm <| by
     simp only [← coe_nnNorm] at h
@@ -228,6 +231,9 @@ theorem nnNorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r
   let ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
   ⟨⟨C, hC.lt.le⟩, hC, mod_cast hp⟩
 
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_mul_pow_le_of_lt_radius := nnNorm_mul_pow_le_of_lt_radius
+
 theorem le_radius_of_tendsto (p : FormalMultilinearSeries 𝕜 E F) {l : ℝ}
     (h : Tendsto (fun n => ‖p n‖ * (r : ℝ) ^ n) atTop (𝓝 l)) : ↑r ≤ p.radius :=
   p.le_radius_of_isBigO (h.isBigO_one _)
@@ -239,6 +245,9 @@ theorem le_radius_of_summable_norm (p : FormalMultilinearSeries 𝕜 E F)
 theorem not_summable_norm_of_radius_lt_nnNorm (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (h : p.radius < ‖x‖₊) : ¬Summable fun n => ‖p n‖ * ‖x‖ ^ n :=
   fun hs => not_le_of_gt h (p.le_radius_of_summable_norm hs)
+
+@[deprecated (since := "2026-10-31")]
+alias not_summable_norm_of_radius_lt_nnnorm := not_summable_norm_of_radius_lt_nnNorm
 
 theorem summable_norm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0} (h : ↑r < p.radius) :
     Summable fun n : ℕ => ‖p n‖ * (r : ℝ) ^ n := by
@@ -258,6 +267,8 @@ theorem summable_nnNorm_mul_pow (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ�
   rw [← NNReal.summable_coe]
   push_cast
   exact p.summable_norm_mul_pow h
+
+@[deprecated (since := "2026-10-31")] alias summable_nnnorm_mul_pow := summable_nnNorm_mul_pow
 
 protected theorem summable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (hx : x ∈ Metric.eball (0 : E) p.radius) : Summable fun n : ℕ => p n fun _ => x :=
@@ -349,6 +360,9 @@ lemma enorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
 lemma nnNorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
     (u : E →L[𝕜] F) (n : ℕ) : ‖p.compContinuousLinearMap u n‖₊ ≤ ‖p n‖₊ * ‖u‖₊ ^ n :=
   norm_compContinuousLinearMap_le p u n
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_compContinuousLinearMap_le := nnNorm_compContinuousLinearMap_le
 
 theorem div_le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
     p.radius / ‖u‖ₑ ≤ (p.compContinuousLinearMap u).radius := by

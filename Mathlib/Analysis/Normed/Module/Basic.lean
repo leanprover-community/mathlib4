@@ -288,6 +288,8 @@ theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * �
 theorem nnNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
   Subtype.ext <| norm_algebraMap 𝕜' x
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap := nnNorm_algebraMap
+
 theorem enorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ₑ = ‖x‖ₑ * ‖(1 : 𝕜')‖ₑ := by
   simp only [enorm_eq_nnNorm, nnNorm_algebraMap, ENNReal.coe_mul]
 
@@ -308,6 +310,8 @@ theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x •
 @[simp]
 theorem nnNorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap' := nnNorm_algebraMap'
 
 /-- This is a simpler version of `enorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
@@ -331,6 +335,8 @@ theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ 
 @[simp]
 theorem nnNorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
   Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap_nnreal := nnNorm_algebraMap_nnreal
 
 end NNReal
 

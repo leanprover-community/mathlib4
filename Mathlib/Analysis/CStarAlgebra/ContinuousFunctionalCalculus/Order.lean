@@ -226,6 +226,9 @@ lemma nnNorm_mem_spectrum_of_nonneg [Nontrivial A] (a : A) (ha : 0 ≤ a := by c
   · simp [this.spectrumRestricts.spectralRadius_eq, this.spectralRadius_eq_nnNorm]
   · exact this.spectrumRestricts.image ▸ (spectrum.nonempty a).image _
 
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_mem_spectrum_of_nonneg := nnNorm_mem_spectrum_of_nonneg
+
 lemma norm_mem_spectrum_of_nonneg [Nontrivial A] (a : A) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ∈ spectrum ℝ a := by
   simpa using spectrum.algebraMap_mem ℝ <| nnNorm_mem_spectrum_of_nonneg a
@@ -243,6 +246,8 @@ lemma nnNorm_le_iff_of_nonneg (a : A) (r : ℝ≥0) (ha : 0 ≤ a := by cfc_tac)
   rw [← NNReal.coe_le_coe]
   exact norm_le_iff_le_algebraMap a r.2
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_le_iff_of_nonneg := nnNorm_le_iff_of_nonneg
+
 lemma norm_le_one_iff_of_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ 1 ↔ a ≤ 1 := by
   simpa using norm_le_iff_le_algebraMap a zero_le_one
@@ -252,6 +257,9 @@ lemma nnNorm_le_one_iff_of_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) :
   rw [← NNReal.coe_le_coe]
   exact norm_le_one_iff_of_nonneg a
 
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_le_one_iff_of_nonneg := nnNorm_le_one_iff_of_nonneg
+
 lemma norm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ n ↔ a ≤ n := by
   simpa using norm_le_iff_le_algebraMap a n.cast_nonneg
@@ -259,6 +267,9 @@ lemma norm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_ta
 lemma nnNorm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ≤ n ↔ a ≤ n := by
   simpa using nnNorm_le_iff_of_nonneg a n
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_le_natCast_iff_of_nonneg := nnNorm_le_natCast_iff_of_nonneg
 
 
 section Icc
@@ -274,6 +285,9 @@ lemma mem_Icc_algebraMap_iff_nnNorm_le {x : A} {r : ℝ≥0} :
     x ∈ Icc 0 (algebraMap ℝ≥0 A r) ↔ 0 ≤ x ∧ ‖x‖₊ ≤ r :=
   mem_Icc_algebraMap_iff_norm_le (hr := r.2)
 
+@[deprecated (since := "2026-10-31")]
+alias mem_Icc_algebraMap_iff_nnnorm_le := mem_Icc_algebraMap_iff_nnNorm_le
+
 lemma mem_Icc_iff_norm_le_one {x : A} :
     x ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
   simpa only [map_one] using mem_Icc_algebraMap_iff_norm_le zero_le_one (A := A)
@@ -281,6 +295,8 @@ lemma mem_Icc_iff_norm_le_one {x : A} :
 lemma mem_Icc_iff_nnNorm_le_one {x : A} :
     x ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖₊ ≤ 1 :=
   mem_Icc_iff_norm_le_one
+
+@[deprecated (since := "2026-10-31")] alias mem_Icc_iff_nnnorm_le_one := mem_Icc_iff_nnNorm_le_one
 
 end Icc
 
@@ -467,8 +483,14 @@ theorem nnNorm_le_nnNorm_of_le_of_nonneg {a b : A} (hab : a ≤ b) (ha : 0 ≤ a
     ‖a‖₊ ≤ ‖b‖₊ :=
   norm_le_norm_of_le_of_nonneg hab
 
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_le_nnnorm_of_le_of_nonneg := nnNorm_le_nnNorm_of_le_of_nonneg
+
 @[deprecated (since := "2026-08-10")]
 alias nnNorm_le_nnNorm_of_nonneg_of_le := nnNorm_le_nnNorm_of_le_of_nonneg
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_le_nnnorm_of_nonneg_of_le := nnNorm_le_nnNorm_of_nonneg_of_le
 
 lemma star_left_conjugate_le_norm_smul (a b : A) (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
@@ -589,6 +611,8 @@ lemma inr_mem_Icc_iff_norm_le {x : A} :
 lemma inr_mem_Icc_iff_nnNorm_le {x : A} :
     (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖₊ ≤ 1 :=
   inr_mem_Icc_iff_norm_le
+
+@[deprecated (since := "2026-10-31")] alias inr_mem_Icc_iff_nnnorm_le := inr_mem_Icc_iff_nnNorm_le
 
 lemma preimage_inr_Icc_zero_one :
     ((↑) : A → A⁺¹) ⁻¹' Icc 0 1 = {x : A | 0 ≤ x} ∩ closedBall 0 1 := by

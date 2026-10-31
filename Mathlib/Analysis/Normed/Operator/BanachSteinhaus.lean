@@ -52,3 +52,6 @@ theorem banach_steinhaus_iSup_nnNorm {ι : Type*} [CompleteSpace E] {g : ι → 
   rw [show ((⨆ i, ↑‖g i‖₊) < ∞) ↔ _ from (NormedSpace.equicontinuous_tfae g).out 9 3]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
   simpa [← NNReal.bddAbove_coe, ← Set.range_comp] using! ENNReal.iSup_coe_lt_top.1 (h x)
+
+@[deprecated (since := "2026-10-31")]
+alias banach_steinhaus_iSup_nnnorm := banach_steinhaus_iSup_nnNorm

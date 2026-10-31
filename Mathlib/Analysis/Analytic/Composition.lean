@@ -324,6 +324,9 @@ theorem compAlongComposition_nnNorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 
     ‖q.compAlongComposition p c‖₊ ≤ ‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊ := by
   rw [← NNReal.coe_le_coe]; push_cast; exact q.compAlongComposition_norm p c
 
+@[deprecated (since := "2026-10-31")]
+alias compAlongComposition_nnnorm := compAlongComposition_nnNorm
+
 /-!
 ### The identity formal power series
 

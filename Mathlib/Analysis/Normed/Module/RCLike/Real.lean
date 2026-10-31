@@ -117,9 +117,13 @@ theorem range_norm : range (norm : E → ℝ) = Ici 0 :=
 theorem nnNorm_surjective : Surjective (nnNorm : E → ℝ≥0) := fun c =>
   (exists_norm_eq E c.coe_nonneg).imp fun _ h => NNReal.eq h
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_surjective := nnNorm_surjective
+
 @[simp]
 theorem range_nnNorm : range (nnNorm : E → ℝ≥0) = univ :=
   (nnNorm_surjective E).range_eq
+
+@[deprecated (since := "2026-10-31")] alias range_nnnorm := range_nnNorm
 
 variable {E} in
 /-- In a nontrivial real normed space, a sphere is nonempty if and only if its radius is

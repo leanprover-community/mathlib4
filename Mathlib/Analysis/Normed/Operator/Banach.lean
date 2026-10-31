@@ -303,6 +303,9 @@ theorem nonlinearRightInverseOfSurjective_nnNorm_pos (f : E →SL[σ] F) (hsurj 
   rw [nonlinearRightInverseOfSurjective]
   exact Classical.choose_spec (exists_nonlinearRightInverse_of_surjective f hsurj)
 
+@[deprecated (since := "2026-10-31")]
+alias nonlinearRightInverseOfSurjective_nnnorm_pos := nonlinearRightInverseOfSurjective_nnNorm_pos
+
 end ContinuousLinearMap
 
 namespace LinearEquiv

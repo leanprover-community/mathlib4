@@ -710,6 +710,8 @@ theorem nnNorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (
     ‖x i‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_apply_le x 0 i
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_apply_le := nnNorm_apply_le
+
 theorem norm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
     ‖x i‖ ≤ ‖x‖ := by
   simpa using dist_apply_le x 0 i
@@ -727,6 +729,8 @@ theorem nnNorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} (hp 
   ext
   simp [NNReal.coe_sum, norm_eq_sum (p.toReal_pos_iff_ne_top.mpr hp)]
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_sum := nnNorm_eq_sum
+
 section Linfty
 variable {β}
 variable [∀ i, SeminormedAddCommGroup (β i)]
@@ -735,10 +739,16 @@ theorem nnNorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
   ext
   simp [NNReal.coe_iSup, norm_eq_ciSup]
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_ciSup := nnNorm_eq_ciSup
+
 @[simp] lemma nnNorm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖₊ = ‖f‖₊ := by
   rw [nnNorm_eq_ciSup, Pi.nnNorm_def, Finset.sup_univ_eq_ciSup]
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofLp := nnNorm_ofLp
+
 @[simp] lemma nnNorm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖₊ = ‖f‖₊ := (nnNorm_ofLp _).symm
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_toLp := nnNorm_toLp
 
 @[simp] lemma norm_ofLp (f : PiLp ∞ β) : ‖ofLp f‖ = ‖f‖ := congr($(nnNorm_ofLp f).toReal)
 @[simp] lemma norm_toLp (f : ∀ i, β i) : ‖toLp ∞ f‖ = ‖f‖ := (norm_ofLp _).symm
@@ -761,6 +771,8 @@ theorem norm_eq_of_L1 (x : PiLp 1 β) : ‖x‖ = ∑ i : ι, ‖x i‖ := by
 
 theorem nnNorm_eq_of_L1 (x : PiLp 1 β) : ‖x‖₊ = ∑ i : ι, ‖x i‖₊ :=
   NNReal.eq <| by push_cast; exact norm_eq_of_L1 x
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_of_L1 := nnNorm_eq_of_L1
 
 theorem dist_eq_of_L1 (x y : PiLp 1 β) : dist x y = ∑ i, dist (x i) (y i) := by
   simp_rw [dist_eq_norm, norm_eq_of_L1, sub_apply]
@@ -788,6 +800,8 @@ theorem nnNorm_eq_of_L2 (x : PiLp 2 β) :
   NNReal.eq <| by
     push_cast
     exact norm_eq_of_L2 x
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_of_L2 := nnNorm_eq_of_L2
 
 theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
@@ -1070,6 +1084,8 @@ theorem nnNorm_single (i : ι) (b : β i) : ‖single p i b‖₊ = ‖b‖₊ :
     intro j hij
     rw [toLp_apply, single_eq_of_ne _ hij, nnNorm_zero, NNReal.zero_rpow hp0]
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_single := nnNorm_single
+
 @[simp]
 lemma norm_single (i : ι) (b : β i) : ‖single p i b‖ = ‖b‖ :=
   congr($(nnNorm_single p β i b))
@@ -1105,6 +1121,8 @@ lemma nnNorm_toLp_const {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) (b : �
       Finset.card_univ, nsmul_eq_mul, NNReal.mul_rpow, ← NNReal.rpow_mul,
       mul_one_div_cancel ne_zero, NNReal.rpow_one, ENNReal.toReal_div, ENNReal.toReal_one]
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_toLp_const := nnNorm_toLp_const
+
 /-- When `IsEmpty ι`, this lemma does not hold without the additional assumption `p ≠ ∞` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
 `PiLp.nnNorm_toLp_const` for a version which exchanges the hypothesis `Nonempty ι` for `p ≠ ∞`. -/
@@ -1115,6 +1133,8 @@ lemma nnNorm_toLp_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β)
   · simp only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero,
       one_mul, nnNorm_eq_ciSup, Function.const_apply, ciSup_const]
   · exact nnNorm_toLp_const hp b
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_toLp_const' := nnNorm_toLp_const'
 
 /-- When `p = ∞`, this lemma does not hold without the additional assumption `Nonempty ι` because
 the left-hand side simplifies to `0`, while the right-hand side simplifies to `‖b‖₊`. See
@@ -1136,6 +1156,8 @@ lemma norm_toLp_const' {β} [SeminormedAddCommGroup β] [Nonempty ι] (b : β) :
 lemma nnNorm_toLp_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
     ‖toLp p (1 : ι → β)‖₊ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖₊ :=
   (nnNorm_toLp_const hp (1 : β)).trans rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_toLp_one := nnNorm_toLp_one
 
 lemma norm_toLp_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
     ‖toLp p (1 : ι → β)‖ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖ :=
@@ -1269,6 +1291,9 @@ lemma norm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x 
 lemma nnNorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
     @NNNorm.nnNorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_seminormedAddCommGroupToPi := nnNorm_seminormedAddCommGroupToPi
 
 lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]

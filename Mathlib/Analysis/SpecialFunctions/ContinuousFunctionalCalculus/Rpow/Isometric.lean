@@ -40,6 +40,8 @@ lemma nnNorm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_t
     ‖a ^ r‖₊ = ‖a‖₊ ^ (r : ℝ) :=
   NNReal.monotone_nnrpow_const r |>.monotoneOn _ |>.nnNorm_cfcₙ _ _
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnrpow := nnNorm_nnrpow
+
 lemma norm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖ = ‖a‖ ^ (r : ℝ) :=
   congr(NNReal.toReal $(nnNorm_nnrpow a hr ha))
@@ -47,6 +49,8 @@ lemma norm_nnrpow (a : A) {r : ℝ≥0} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac
 lemma nnNorm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖₊ = NNReal.sqrt ‖a‖₊ := by
   rw [sqrt_eq_nnrpow, NNReal.sqrt_eq_rpow]
   exact nnNorm_nnrpow a (by simp) ha
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sqrt := nnNorm_sqrt
 
 lemma norm_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : ‖sqrt a‖ = √‖a‖ := by
   simpa using congr(NNReal.toReal $(nnNorm_sqrt a ha))
@@ -74,6 +78,8 @@ lemma nnNorm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
   lift r to ℝ≥0 using hr.le
   rw [← nnrpow_eq_rpow, ← nnNorm_nnrpow a]
   all_goals simpa
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_rpow := nnNorm_rpow
 
 lemma norm_rpow (a : A) {r : ℝ} (hr : 0 < r) (ha : 0 ≤ a := by cfc_tac) :
     ‖a ^ r‖ = ‖a‖ ^ r :=

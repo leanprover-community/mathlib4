@@ -71,6 +71,8 @@ lemma unitization_nnNorm_def (x : WithLp 1 (Unitization 𝕜 A)) :
     ‖x‖₊ = ‖(ofLp x).fst‖₊ + ‖(ofLp x).snd‖₊ :=
   Subtype.ext <| unitization_norm_def x
 
+@[deprecated (since := "2026-10-31")] alias unitization_nnnorm_def := unitization_nnNorm_def
+
 @[simp]
 lemma unitization_norm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖ = ‖x‖ := by
   simp [unitization_norm_def]
@@ -78,6 +80,8 @@ lemma unitization_norm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖ = ‖
 @[simp]
 lemma unitization_nnNorm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖₊ = ‖x‖₊ := by
   simp [unitization_nnNorm_def]
+
+@[deprecated (since := "2026-10-31")] alias unitization_nnnorm_inr := unitization_nnNorm_inr
 
 lemma unitization_isometry_inr : Isometry fun x : A ↦ toLp 1 (x : Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm

@@ -316,6 +316,8 @@ lemma toLinearMap_rankOne (x : E) (y : F) :
 @[simp] theorem nnNorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
   NNReal.eq <| norm_rankOne _ _
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_rankOne := nnNorm_rankOne
+
 @[simp] theorem enorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
   ENNReal.coe_inj.mpr <| nnNorm_rankOne _ _
 

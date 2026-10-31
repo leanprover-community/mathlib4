@@ -304,6 +304,8 @@ lemma eLpNorm'_mono_nnNorm_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : 
     eLpNorm' f q μ ≤ eLpNorm' g q μ :=
   eLpNorm'_mono_enorm_ae hq <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
 
+@[deprecated (since := "2026-10-31")] alias eLpNorm'_mono_nnnorm_ae := eLpNorm'_mono_nnNorm_ae
+
 theorem eLpNorm'_mono_ae {f : α → F} {g : α → G} (hq : 0 ≤ q) (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm' f q μ ≤ eLpNorm' g q μ :=
   eLpNorm'_mono_enorm_ae hq (by simpa only [enorm_le_iff_norm_le] using h)
@@ -317,6 +319,8 @@ theorem eLpNorm'_congr_nnNorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x �
     eLpNorm' f q μ = eLpNorm' g q μ := by
   have : (‖f ·‖ₑ ^ q) =ᵐ[μ] (‖g ·‖ₑ ^ q) := hfg.mono fun x hx ↦ by simp [enorm, hx]
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_congr_ae this]
+
+@[deprecated (since := "2026-10-31")] alias eLpNorm'_congr_nnnorm_ae := eLpNorm'_congr_nnNorm_ae
 
 theorem eLpNorm'_congr_norm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :
     eLpNorm' f q μ = eLpNorm' g q μ :=
@@ -337,6 +341,9 @@ theorem eLpNormEssSup_mono_nnNorm_ae {f : α → F} {g : α → G} (hfg : ∀ᵐ
     eLpNormEssSup f μ ≤ eLpNormEssSup g μ :=
   essSup_mono_ae <| hfg.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
 
+@[deprecated (since := "2026-10-31")]
+alias eLpNormEssSup_mono_nnnorm_ae := eLpNormEssSup_mono_nnNorm_ae
+
 theorem eLpNorm_mono_enorm_ae [TopologicalSpace ε']
     {f : α → ε} {g : α → ε'} (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ ‖g x‖ₑ) :
@@ -355,6 +362,8 @@ theorem eLpNorm_mono_nnNorm_ae {f : α → F} {g : α → G} (hf : AEStronglyMea
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖g x‖₊) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_enorm_ae hf <| h.mono fun _ hx => ENNReal.coe_le_coe.mpr hx
+
+@[deprecated (since := "2026-10-31")] alias eLpNorm_mono_nnnorm_ae := eLpNorm_mono_nnNorm_ae
 
 theorem eLpNorm_mono_ae {f : α → F} {g : α → G} (hf : AEStronglyMeasurable f μ)
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
@@ -379,6 +388,8 @@ theorem eLpNorm_mono_nnNorm {f : α → F} {g : α → G} (hf : AEStronglyMeasur
     eLpNorm f p μ ≤ eLpNorm g p μ :=
   eLpNorm_mono_nnNorm_ae hf (Eventually.of_forall h)
 
+@[deprecated (since := "2026-10-31")] alias eLpNorm_mono_nnnorm := eLpNorm_mono_nnNorm
+
 theorem eLpNorm_mono {f : α → F} {g : α → G} (hf : AEStronglyMeasurable f μ)
     (h : ∀ x, ‖f x‖ ≤ ‖g x‖) :
     eLpNorm f p μ ≤ eLpNorm g p μ :=
@@ -397,6 +408,9 @@ theorem eLpNormEssSup_le_of_ae_nnNorm_bound {f : α → F} {C : ℝ≥0} (hfC : 
     eLpNormEssSup f μ ≤ C :=
   essSup_le_of_ae_le (C : ℝ≥0∞) <| hfC.mono fun _x hx => ENNReal.coe_le_coe.mpr hx
 
+@[deprecated (since := "2026-10-31")]
+alias eLpNormEssSup_le_of_ae_nnnorm_bound := eLpNormEssSup_le_of_ae_nnNorm_bound
+
 theorem eLpNormEssSup_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNormEssSup f μ ≤ ENNReal.ofReal C :=
   eLpNormEssSup_le_of_ae_nnNorm_bound <| hfC.mono fun _x hx => hx.trans C.le_coe_toNNReal
@@ -408,6 +422,9 @@ theorem eLpNormEssSup_lt_top_of_ae_enorm_bound {f : α → ε'} {C : ℝ≥0} (h
 theorem eLpNormEssSup_lt_top_of_ae_nnNorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_nnNorm_bound hfC).trans_lt ENNReal.coe_lt_top
+
+@[deprecated (since := "2026-10-31")]
+alias eLpNormEssSup_lt_top_of_ae_nnnorm_bound := eLpNormEssSup_lt_top_of_ae_nnNorm_bound
 
 theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     eLpNormEssSup f μ < ∞ :=
@@ -430,6 +447,9 @@ theorem eLpNorm_le_of_ae_nnNorm_bound {f : α → F} {C : ℝ≥0}
   simpa [C.enorm_eq, ENNReal.smul_def, smul_eq_mul] using
     (eLpNorm_le_of_ae_enorm_bound (f := f) (C := (C : ℝ≥0∞)) hf
       (hfC.mono fun _ hx => by simpa using hx))
+
+@[deprecated (since := "2026-10-31")]
+alias eLpNorm_le_of_ae_nnnorm_bound := eLpNorm_le_of_ae_nnNorm_bound
 
 theorem eLpNorm_le_of_ae_bound {f : α → F} {C : ℝ} (hf : AEStronglyMeasurable f μ)
     (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
@@ -458,6 +478,8 @@ theorem eLpNorm_congr_nnNorm_ae {f : α → F} {g : α → G} (hf : AEStronglyMe
     eLpNorm f p μ = eLpNorm g p μ :=
   le_antisymm (eLpNorm_mono_nnNorm_ae hf <| EventuallyEq.le hfg)
     (eLpNorm_mono_nnNorm_ae hg (EventuallyEq.symm hfg).le)
+
+@[deprecated (since := "2026-10-31")] alias eLpNorm_congr_nnnorm_ae := eLpNorm_congr_nnNorm_ae
 
 theorem eLpNorm_congr_norm_ae {f : α → F} {g : α → G}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ = ‖g x‖) :

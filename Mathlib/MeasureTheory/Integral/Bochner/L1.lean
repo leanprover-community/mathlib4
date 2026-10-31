@@ -596,6 +596,8 @@ theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ 
 theorem nnNorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖₊ ≤ 1 :=
   norm_Integral_le_one
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_Integral_le_one := nnNorm_Integral_le_one
+
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
     ‖integral f‖ = ‖integralCLM f‖ := by simp only [integral]
@@ -605,6 +607,8 @@ theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
 
 theorem nnNorm_integral_le (f : α →₁[μ] E) : ‖integral f‖₊ ≤ ‖f‖₊ :=
   norm_integral_le f
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_integral_le := nnNorm_integral_le
 
 @[continuity]
 theorem continuous_integral : Continuous fun f : α →₁[μ] E => integral f := by

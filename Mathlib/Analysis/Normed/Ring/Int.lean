@@ -30,6 +30,8 @@ theorem nnNorm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖₊ = 1 := by
   obtain rfl | rfl := units_eq_one_or e <;>
     simp only [Units.coe_neg_one, Units.val_one, nnNorm_neg, nnNorm_one]
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_coe_units := nnNorm_coe_units
+
 theorem norm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖ = 1 := by
   rw [← coe_nnNorm, nnNorm_coe_units, NNReal.coe_one]
 
@@ -37,11 +39,16 @@ theorem norm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖ = 1 := by
 theorem nnNorm_natCast (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
   Real.nnNorm_natCast _
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_natCast := nnNorm_natCast
+
 @[simp] lemma enorm_natCast (n : ℕ) : ‖(n : ℤ)‖ₑ = n := Real.enorm_natCast _
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_nnNorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖₊ := by
   rw [← Nat.cast_add, toNat_add_toNat_neg_eq_natAbs, NNReal.natCast_natAbs]
+
+@[deprecated (since := "2026-10-31")]
+alias toNat_add_toNat_neg_eq_nnnorm := toNat_add_toNat_neg_eq_nnNorm
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_norm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖ := by

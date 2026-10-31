@@ -159,15 +159,22 @@ theorem tsum_of_nnNorm_bounded {f : ι → E} {g : ι → ℝ≥0} {a : ℝ≥0}
   simp only [← NNReal.coe_le_coe, ← NNReal.hasSum_coe, coe_nnNorm] at *
   exact tsum_of_norm_bounded hg h
 
+@[deprecated (since := "2026-10-31")] alias tsum_of_nnnorm_bounded := tsum_of_nnNorm_bounded
+
 /-- If `∑' i, ‖f i‖₊` is summable, then `‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊`. Note that
 we do not assume that `∑' i, f i` is summable, and it might not be the case if `α` is not a complete
 space. -/
 theorem nnNorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : ‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊ :=
   tsum_of_nnNorm_bounded hf.hasSum fun _i => le_rfl
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_tsum_le := nnNorm_tsum_le
+
 theorem tsum_enorm_ne_top_iff_summable_nnNorm {ι : Type*} {f : ι → E} :
     ∑' i, ‖f i‖ₑ ≠ ∞ ↔ Summable fun i ↦ ‖f i‖₊ := by
   simp only [enorm_eq_nnNorm, ENNReal.tsum_coe_ne_top_iff_summable]
+
+@[deprecated (since := "2026-10-31")]
+alias tsum_enorm_ne_top_iff_summable_nnnorm := tsum_enorm_ne_top_iff_summable_nnNorm
 
 lemma tsum_enorm_ne_top_iff_summable_norm {ι : Type*} {f : ι → E} :
     ∑' i, ‖f i‖ₑ ≠ ∞ ↔ Summable fun i ↦ ‖f i‖ := by
@@ -191,11 +198,15 @@ theorem Summable.of_nnNorm_bounded {f : ι → E} {g : ι → ℝ≥0} (hg : Sum
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
   .of_norm_bounded (NNReal.summable_coe.2 hg) h
 
+@[deprecated (since := "2026-10-31")] alias Summable.of_nnnorm_bounded := Summable.of_nnNorm_bounded
+
 theorem Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
   .of_norm_bounded hf fun _i => le_rfl
 
 theorem Summable.of_nnNorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) : Summable f :=
   .of_nnNorm_bounded hf fun _i => le_rfl
+
+@[deprecated (since := "2026-10-31")] alias Summable.of_nnnorm := Summable.of_nnNorm
 
 theorem Summable.of_enorm {f : ι → E} (hf : ∑' a, ‖f a‖ₑ ≠ ∞) : Summable f :=
   Summable.of_nnNorm_bounded (tsum_coe_ne_top_iff_summable.1 hf) fun _i => le_rfl

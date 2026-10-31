@@ -95,6 +95,8 @@ variable (K) in
 lemma exists_nnNorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
   exists_norm_coe_lt_one K
 
+@[deprecated (since := "2026-10-31")] alias exists_nnnorm_lt_one := exists_nnNorm_lt_one
+
 end Valued.integer
 
 end NormedField

@@ -705,9 +705,13 @@ theorem nnNorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x
     ‖x.fst‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_fst_le x 0
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_fst_le := nnNorm_fst_le
+
 theorem nnNorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.snd‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_snd_le x 0
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_snd_le := nnNorm_snd_le
 
 theorem norm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.fst‖ ≤ ‖x‖ := by
@@ -755,15 +759,23 @@ theorem prod_nnNorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
   ext
   simp [prod_norm_eq_add (p.toReal_pos_iff_ne_top.mpr hp)]
 
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_add := prod_nnNorm_eq_add
+
 theorem prod_nnNorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔ ‖f.snd‖₊ := by
   ext
   norm_cast
 
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_sup := prod_nnNorm_eq_sup
+
 @[simp] lemma prod_nnNorm_ofLp (f : WithLp ∞ (α × β)) : ‖ofLp f‖₊ = ‖f‖₊ := by
   rw [prod_nnNorm_eq_sup, Prod.nnNorm_def, ofLp_fst, ofLp_snd]
 
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_ofLp := prod_nnNorm_ofLp
+
 @[simp] lemma prod_nnNorm_toLp (f : α × β) : ‖toLp ⊤ f‖₊ = ‖f‖₊ :=
   (prod_nnNorm_ofLp _).symm
+
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_toLp := prod_nnNorm_toLp
 
 @[simp] lemma prod_norm_ofLp (f : WithLp ∞ (α × β)) : ‖ofLp f‖ = ‖f‖ :=
   congr($(prod_nnNorm_ofLp f).toReal)
@@ -783,6 +795,8 @@ theorem prod_nnNorm_eq_of_L1 (x : WithLp 1 (α × β)) :
   NNReal.eq <| by
     push_cast
     exact prod_norm_eq_of_L1 x
+
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_of_L1 := prod_nnNorm_eq_of_L1
 
 theorem prod_dist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     dist x y = dist x.fst y.fst + dist x.snd y.snd := by
@@ -813,6 +827,8 @@ theorem prod_nnNorm_eq_of_L2 (x : WithLp 2 (α × β)) :
   NNReal.eq <| by
     push_cast
     exact prod_norm_eq_of_L2 x
+
+@[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_of_L2 := prod_nnNorm_eq_of_L2
 
 theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2 by
@@ -849,6 +865,8 @@ section Single
     have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     simp [prod_nnNorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_toLp_inl := nnNorm_toLp_inl
+
 @[simp] lemma nnNorm_toLp_inr (y : β) : ‖toLp p ((0 : α), y)‖₊ = ‖y‖₊ := by
   induction p generalizing hp with
   | top =>
@@ -856,6 +874,8 @@ section Single
   | coe p =>
     have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     simp [prod_nnNorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel₀ hp0]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_toLp_inr := nnNorm_toLp_inr
 
 @[simp]
 lemma norm_toLp_fst (x : α) : ‖toLp p (x, (0 : β))‖ = ‖x‖ :=
@@ -1046,6 +1066,9 @@ lemma nnNorm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [Seminorme
     (x : α × β) :
     @NNNorm.nnNorm _ (seminormedAddCommGroupToProd p α β).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_seminormedAddCommGroupToProd := nnNorm_seminormedAddCommGroupToProd
 
 lemma isBoundedSMulSeminormedAddCommGroupToProd
     [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]

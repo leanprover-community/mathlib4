@@ -228,6 +228,9 @@ theorem exists_nnNorm_eq_spectralRadius_of_nonempty [ProperSpace 𝕜] {a : A}
   rw [spectralRadius_eq_of_unital]
   exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le <| mod_cast h)⟩
 
+@[deprecated (since := "2026-10-31")]
+alias exists_nnnorm_eq_spectralRadius_of_nonempty := exists_nnNorm_eq_spectralRadius_of_nonempty
+
 theorem spectralRadius_lt_of_forall_lt_of_nonempty [ProperSpace 𝕜] {a : A} {r : ℝ≥0}
     (ha : (spectrum 𝕜 a).Nonempty) (hr : ∀ k ∈ spectrum 𝕜 a, ‖k‖₊ < r) :
     spectralRadius 𝕜 a < r := by
@@ -247,6 +250,8 @@ theorem le_nnNorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖₊ := calc
   r ≤ ‖(r : ℝ)‖ := Real.le_norm_self _
   _ ≤ ‖a‖ := norm_le_norm_of_mem hr
+
+@[deprecated (since := "2026-10-31")] alias le_nnnorm_of_mem := le_nnNorm_of_mem
 
 theorem coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖ :=
@@ -283,6 +288,9 @@ theorem spectralRadius_le_pow_nnNorm_pow_one_div (a : A) (n : ℕ) :
     positivity
   rw [Nat.cast_succ, ENNReal.coe_mul_rpow]
 
+@[deprecated (since := "2026-10-31")]
+alias spectralRadius_le_pow_nnnorm_pow_one_div := spectralRadius_le_pow_nnNorm_pow_one_div
+
 theorem spectralRadius_le_liminf_pow_nnNorm_pow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ atTop.liminf fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
   refine ENNReal.le_of_forall_lt_one_mul_le fun ε hε => ?_
@@ -300,6 +308,10 @@ theorem spectralRadius_le_liminf_pow_nnNorm_pow_one_div (a : A) :
   refine (spectralRadius_le_pow_nnNorm_pow_one_div 𝕜 a (n + N)).trans ?_
   norm_cast
   grw [hN (n + N + 1) (by lia)]
+
+@[deprecated (since := "2026-10-31")]
+alias spectralRadius_le_liminf_pow_nnnorm_pow_one_div :=
+  spectralRadius_le_liminf_pow_nnNorm_pow_one_div
 
 end Unital
 
@@ -490,14 +502,22 @@ open quasispectrum
 theorem spectralRadius_le_nnNorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ :=
   iSup₂_le fun _ => mod_cast norm_le_norm_of_mem
 
+@[deprecated (since := "2026-10-31")] alias spectralRadius_le_nnnorm := spectralRadius_le_nnNorm
+
 @[deprecated (since := "2026-08-13")]
 alias spectrum.spectralRadius_le_nnNorm := spectralRadius_le_nnNorm
+
+@[deprecated (since := "2026-10-31")]
+alias spectrum.spectralRadius_le_nnnorm := spectrum.spectralRadius_le_nnNorm
 
 theorem exists_nnNorm_quasispectrum_eq_spectralRadius [ProperSpace 𝕜] (a : A) :
     ∃ k ∈ quasispectrum 𝕜 a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by
   obtain ⟨k, hk, h⟩ := (isCompact a).exists_isMaxOn (nonempty 𝕜 a) continuous_nnNorm.continuousOn
   unfold spectralRadius
   exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le <| mod_cast h)⟩
+
+@[deprecated (since := "2026-10-31")]
+alias exists_nnnorm_quasispectrum_eq_spectralRadius := exists_nnNorm_quasispectrum_eq_spectralRadius
 
 theorem spectralRadius_lt_of_forall_quasispectrum_lt [ProperSpace 𝕜] {a : A} {r : ℝ≥0}
     (hr : ∀ k ∈ quasispectrum 𝕜 a, ‖k‖₊ < r) : spectralRadius 𝕜 a < r :=
