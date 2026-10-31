@@ -156,6 +156,7 @@ instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMo
   __ := NormedGroup.toENormedMonoid
   __ := ‹NormedCommGroup E›
 
+
 end Instances
 
 section SeminormedGroup
