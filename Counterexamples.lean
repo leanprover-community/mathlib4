@@ -30,4 +30,5 @@ public import Counterexamples.SeminormLatticeNotDistrib
 public import Counterexamples.SeparableNotSecondCountable
 public import Counterexamples.SorgenfreyLine
 public import Counterexamples.TopologistsSineCurve
+public import Counterexamples.VitaliSetNotMeasurable
 public import Counterexamples.ZeroDivisorsInAddMonoidAlgebras
