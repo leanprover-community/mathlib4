@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
+Authors: Markus Himmel, Jack McKoen
 -/
 module
 
@@ -9,14 +9,31 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
-# Equivalence between subobjects and quotients in an abelian category
+# Subobjects in abelian categories
+
+This file contains numerous results about subobjects which are unique to abelian categories. In
+particular, `exists_eq_kernelSubobject` and `pullback_eq_kernelSubobject` specialize
+`Subobject.«exists»` and `Subobject.pullback` API to the abelian case.
+
+## Main results
+
+* subobjects and quotient objects of an object `X` are order-isomorphic via taking kernels and
+  cokernels
+* `Abelian.Subobject.epiOrderIso`: for an epimorphism `f : X ⟶ Y`, there is an order-isomorphism
+  between subobjects of `Y` and subobjects of `X` containing `kernelSubobject f`
+* `Abelian.Subobject.cokernelOrderIso`: given a subobject `Y` of `X`, there is an order-isomorphism
+  between subobjects of `cokernel (Y ↪ X)` and subobjects of `X` containing `Y`.
+
+## References
+
+* [N. Popescu, *Abelian Categories with Applications to Rings and Modules*][popescu1973]
 
 -/
 
 @[expose] public section
 
 
-open CategoryTheory CategoryTheory.Limits Opposite
+open CategoryTheory CategoryTheory.Limits Opposite Subobject
 
 universe w v u
 
@@ -24,7 +41,7 @@ noncomputable section
 
 namespace CategoryTheory.Abelian
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] [Abelian C]
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -33,7 +50,7 @@ order-isomorphic via taking kernels and cokernels.
 Implemented here using subobjects in the opposite category,
 since mathlib does not have a notion of quotient objects at the time of writing. -/
 @[simps!]
-def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
+def subobjectIsoSubobjectOp (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
   refine OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) ?_ ?_
   · change (cokernelOrderHom X).comp (kernelOrderHom X) = _
     refine OrderHom.ext _ _ (funext (Subobject.ind _ ?_))
@@ -64,15 +81,126 @@ def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (o
     · simp only [monoLift_comp]
 
 /-- A well-powered abelian category is also well-copowered. -/
-instance wellPowered_opposite [Abelian C] [LocallySmall.{w} C] [WellPowered.{w} C] :
+instance wellPowered_opposite [LocallySmall.{w} C] [WellPowered.{w} C] :
     WellPowered.{w} Cᵒᵖ where
   subobject_small X :=
     (small_congr (subobjectIsoSubobjectOp (unop X)).toEquiv).1 inferInstance
 
 /-- In an abelian category, the projection `Subobject.pullbackπ f B` from the pullback of a
 subobject `B` along an epimorphism `f` is an epimorphism. -/
-instance [Abelian C] {X Y : C} (f : X ⟶ Y) [Epi f] (B : Subobject Y) :
+instance {X Y : C} (f : X ⟶ Y) [Epi f] (B : Subobject Y) :
     Epi (Subobject.pullbackπ f B) :=
   epi_fst_of_isLimit _ _ (Subobject.isPullback f B).isLimit
 
 end CategoryTheory.Abelian
+
+section MonoOver
+
+namespace CategoryTheory.MonoOver
+
+variable {C : Type u} [Category.{v} C] [Abelian C]
+
+instance {X Y : C} (f : X ⟶ Y) [Epi f] (Y' : MonoOver Y) :
+    IsIso ((existsPullbackAdj f).counit.app Y') := by
+  let : Epi ((existsPullbackAdj f).counit.app Y').hom.left :=
+    epi_of_epi_fac (factorThruImage_comp_existsPullbackAdj_counit_app_hom_left f Y')
+  let : Mono ((existsPullbackAdj f).counit.app Y').hom.left := mono_of_mono_fac (MonoOver.w _)
+  rw [isIso_iff_isIso_hom_left]
+  apply isIso_of_mono_of_epi
+
+/-- Pullback along an epimorphism in an abelian category is fully faithful. -/
+def fullyFaithfulPullbackOfEpi {X Y : C} (f : X ⟶ Y) [Epi f] : (pullback f).FullyFaithful :=
+  letI := NatIso.isIso_of_isIso_app (existsPullbackAdj f).counit
+  (existsPullbackAdj f).fullyFaithfulROfIsIsoCounit
+
+end CategoryTheory.MonoOver
+
+end MonoOver
+
+namespace CategoryTheory.Abelian
+
+variable {C : Type u} [Category.{v} C] [Abelian C]
+
+namespace Subobject
+
+section
+
+variable {X Y : C} (f : X ⟶ Y)
+
+lemma imageSubobject_eq_kernelSubobject {X Y : C} (f : X ⟶ Y) :
+    imageSubobject f = kernelSubobject (cokernel.π f) :=
+  (mk_eq_mk_of_comm (kernel.ι (cokernel.π f)) (Limits.image.ι f) (imageIsoImage f)
+    (imageIsoImage_hom_comp_image_ι f)).symm
+
+lemma exists_eq_kernelSubobject (X' : Subobject X) :
+    («exists» f).obj X' = kernelSubobject (cokernel.π (X'.arrow ≫ f)) := by
+  rw [exists_eq_imageSubobject, ← imageSubobject_eq_kernelSubobject]
+
+lemma pullback_eq_kernelSubobject (Y' : Subobject Y) :
+    (Subobject.pullback f).obj Y' = kernelSubobject (f ≫ cokernel.π Y'.arrow) := by
+  rw [← pullback_kernelSubobject, ← imageSubobject_eq_kernelSubobject,
+    imageSubobject_mono, mk_arrow]
+
+lemma pullback_mk_eq_kernelSubobject {A : C} (g : A ⟶ Y) [Mono g] :
+    (Subobject.pullback f).obj (Subobject.mk g) = kernelSubobject (f ≫ cokernel.π g) := by
+  rw [← imageSubobject_mono, imageSubobject_eq_kernelSubobject, pullback_kernelSubobject]
+
+theorem exists_pullback_eq_self_of_epi [Epi f] (Y' : Subobject Y) :
+    («exists» f).obj ((Subobject.pullback f).obj Y') = Y' :=
+  Quotient.inductionOn' Y' fun _ ↦
+    Quotient.sound ⟨asIso ((MonoOver.existsPullbackAdj f).counit.app _)⟩
+
+theorem pullback_le_pullback_iff_of_epi (Y₁ Y₂ : Subobject Y) [Epi f] :
+    (Subobject.pullback f).obj Y₁ ≤ (Subobject.pullback f).obj Y₂ ↔ Y₁ ≤ Y₂ := by
+  rw [← (existsPullbackAdj f).gc, exists_pullback_eq_self_of_epi]
+
+lemma pullback_exists_eq_self_of_epi [Epi f] (X' : Subobject X) (h : kernelSubobject f ≤ X') :
+    (Subobject.pullback f).obj ((«exists» f).obj X') = X' := by
+  let d := epiDesc f (cokernel.π X'.arrow) (by
+    rw [← kernelSubobject_arrow' f, ← ofLE_arrow h]
+    simp only [Category.assoc, cokernel.condition, comp_zero])
+  have hX' : (Subobject.pullback f).obj (kernelSubobject d) = X' := by
+    rw [pullback_kernelSubobject, comp_epiDesc, ← imageSubobject_eq_kernelSubobject,
+      imageSubobject_mono, mk_arrow]
+  rw [← hX', exists_pullback_eq_self_of_epi]
+
+theorem pullback_exists_eq_sup (X' : Subobject X) :
+    (Subobject.pullback f).obj ((«exists» f).obj X') = X' ⊔ kernelSubobject f := by
+  rw [← imageSubobject_arrow_comp f, exists_comp, pullback_comp,
+    pullback_exists_eq_self_of_mono, kernelSubobject_comp_mono]
+  apply le_antisymm
+  · rw [← pullback_exists_eq_self_of_epi _ (X' ⊔ kernelSubobject _) le_sup_right]
+    exact (Subobject.pullback _).monotone ((«exists» _).monotone le_sup_left)
+  · apply sup_le (le_pullback_exists _ X')
+    rw [pullback_eq_kernelSubobject]
+    exact kernelSubobject_comp_le _ _
+
+theorem exists_pullback_eq_inf (Y' : Subobject Y) :
+    («exists» f).obj ((Subobject.pullback f).obj Y') = Y' ⊓ imageSubobject f := by
+  rw [← imageSubobject_arrow_comp f, exists_comp, Subobject.pullback_comp,
+    exists_pullback_eq_self_of_epi, exists_pullback_eq_inf_of_mono, mk_arrow,
+    imageSubobject_arrow_comp]
+
+end
+
+/-- For an epimorphism `f : X ⟶ Y`, there is an order-isomorphism between subobjects of `Y`
+and subobjects of `X` containing `kernelSubobject f`. -/
+def epiOrderIso {X Y : C} (f : X ⟶ Y) [Epi f] :
+    Subobject Y ≃o Set.Ici (kernelSubobject f) where
+  toFun p := ⟨(Subobject.pullback f).obj p, by
+    rw [pullback_eq_kernelSubobject]
+    exact kernelSubobject_comp_le f _⟩
+  invFun q := («exists» f).obj q
+  left_inv p := exists_pullback_eq_self_of_epi f p
+  right_inv := fun ⟨q, hq⟩ ↦ SetCoe.ext (pullback_exists_eq_self_of_epi f q hq)
+  map_rel_iff' := pullback_le_pullback_iff_of_epi ..
+
+/-- The correspondence theorem for subobjects in an abelian category: given a subobject `Y` of `X`,
+there is an order-isomorphism between subobjects of `X/Y := cokernel (Y ↪ X)` and subobjects of `X`
+containing `Y`. -/
+def cokernelOrderIso {X : C} (Y : Subobject X) :
+    Subobject (cokernel Y.arrow) ≃o Set.Ici Y :=
+  (epiOrderIso (cokernel.π Y.arrow)).trans (Set.orderIsoOfEq _ _
+    (by rw [← imageSubobject_eq_kernelSubobject, imageSubobject_mono, mk_arrow]))
+
+end CategoryTheory.Abelian.Subobject
