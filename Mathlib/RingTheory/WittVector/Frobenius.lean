@@ -88,8 +88,6 @@ noncomputable def frobeniusPolyAux : ℕ → MvPolynomial ℕ ℤ
         C (((p ^ (n - i)).choose (j + 1) / (p ^ (n - i - v p (j + 1)))
           * ↑p ^ (j - v p (j + 1)) : ℕ) : ℤ)
 
-variable [hp : Fact p.Prime] in
-omit hp in
 theorem frobeniusPolyAux_eq (n : ℕ) :
     frobeniusPolyAux p n =
       X (n + 1) - ∑ i ∈ range n,

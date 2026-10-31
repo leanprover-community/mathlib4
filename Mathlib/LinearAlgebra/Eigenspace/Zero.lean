@@ -216,5 +216,3 @@ lemma finrank_eigenspace_le (φ : Module.End K M) (μ : K) :
   finrank_genEigenspace_le ..
 
 end LinearMap
-
-variable [Module.Finite R M]

@@ -288,5 +288,3 @@ theorem adjoin_union_eq_top_of_isCoprime_differentialIdeal [Module.Free A R₂]
   exact range_sup_range_eq_top_of_isCoprime_differentIdeal A B R₁ R₂ h₁ h₂ h₃
 
 end IsDedekindDomain
-
-variable [IsDomain R₁] [IsIntegralClosure B R₁ L] [IsTorsionFree A R₂]

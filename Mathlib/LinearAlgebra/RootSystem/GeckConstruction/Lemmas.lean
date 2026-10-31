@@ -27,10 +27,10 @@ local notation "α" => P.root
 
 namespace Base
 
+variable [P.IsCrystallographic]
 variable {b : P.Base} (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
 include hij hi hj
 
-variable [P.IsCrystallographic] in
 /-- This is Lemma 2.5 (a) from [Geck][Geck2017]. -/
 lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :
@@ -80,7 +80,6 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
   omega
 
-variable [P.IsCrystallographic] in
 /-- This is Lemma 2.5 (b) from [Geck][Geck2017]. -/
 lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : α k ≠ -α i) (hk' : α k - α j ∈ Φ) :
@@ -98,7 +97,6 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
-variable [P.IsCrystallographic] in
 lemma root_sub_mem_iff_root_add_mem (hkj : k ≠ j) (hkj' : α k ≠ -α i) (hk : α k + α i - α j ∈ Φ) :
     α k - α j ∈ Φ ↔ α k + α i ∈ Φ :=
   ⟨b.root_add_root_mem_of_mem_of_mem i j k hij hi hj hk hkj',
@@ -112,7 +110,6 @@ section chainBotCoeff_mul_chainTopCoeff
 
 variable {b : P.Base} {i j k l m : ι}
 
-set_option linter.overlappingInstances false in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 [P.IsNotG2]
     (hik_mem : P.root k + P.root i ∈ range P.root) :
     P.pairingIn ℤ k i = 0 ∨ (P.pairingIn ℤ k i < 0 ∧ P.chainBotCoeff i k = 0) := by
@@ -122,9 +119,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 [P.IsNotG2]
   rw [P.chainBotCoeff_if_one_zero hik_mem, ite_eq_right_iff, P.pairingIn_eq_zero_iff (i := i)]
   lia
 
-variable [P.IsCrystallographic]
-
-variable [P.IsReduced] [P.IsIrreducible]
+variable [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible]
   (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j)
   (h₁ : P.root k + P.root i = P.root l)
   (h₂ : P.root k - P.root j = P.root m)

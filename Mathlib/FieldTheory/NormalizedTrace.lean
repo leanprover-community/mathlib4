@@ -175,8 +175,6 @@ theorem normalizedTrace_algebraMap :
     normalizedTrace F K ∘ₗ Algebra.linearMap E K = normalizedTrace F E :=
   LinearMap.ext <| normalizedTrace_algebraMap_apply F E K
 
-variable [Algebra.IsIntegral F E] in
-omit [Algebra.IsIntegral F E] in
 /-- If all the coefficients of `minpoly E a` are in `F`, then the normalized trace of `a` from `K`
 to `E` equals the normalized trace of `a` from `K` to `F`. -/
 theorem normalizedTrace_algebraMap_of_lifts [CharZero E] [Algebra.IsIntegral E K] (a : K)

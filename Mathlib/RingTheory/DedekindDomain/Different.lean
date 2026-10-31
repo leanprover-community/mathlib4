@@ -1006,5 +1006,3 @@ theorem dvd_differentIdeal_iff
   iff_not_comm.mp not_dvd_differentIdeal_iff.symm
 
 end
-
-variable [IsDomain A] [IsIntegralClosure B A L]

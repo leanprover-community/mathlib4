@@ -129,5 +129,3 @@ theorem updateFinset_univ_apply [Fintype ι] {y : ∀ i : Finset.univ, π i} {i 
   simp [updateFinset_def]
 
 end Function
-
-variable {z : ∀ i : t, π i}

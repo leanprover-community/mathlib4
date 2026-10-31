@@ -135,9 +135,8 @@ lemma lie_h_h [Fintype ι] (i j : b.support) :
 
 variable [IsDomain R] [CharZero R]
 
-variable [Finite ι] in
 /-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
-def e (i : b.support) :
+def e [Finite ι] (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
   letI := P.indexNeg
@@ -146,9 +145,8 @@ def e (i : b.support) :
     (.of fun i' j ↦ if i' = i then ↑|b.cartanMatrix i j| else 0)
     (.of fun i' j ↦ if P.root i' = P.root i + P.root j then P.chainBotCoeff i j + 1 else 0)
 
-variable [Finite ι] in
 /-- Part of an `sl₂` triple used in Geck's construction of a Lie algebra from a root system. -/
-def f (i : b.support) :
+def f [Finite ι] (i : b.support) :
     Matrix (b.support ⊕ ι) (b.support ⊕ ι) R :=
   open scoped Classical in
   letI := P.indexNeg
@@ -196,8 +194,7 @@ def cartanSubalgebra' [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (lieAlgebra b) :=
   (cartanSubalgebra b).comap (lieAlgebra b).incl
 
-variable [Finite ι] in
-omit [Finite ι] [IsDomain R] [CharZero R] in
+omit [IsDomain R] [CharZero R] in
 lemma cartanSubalgebra_eq_lieSpan [Fintype ι] [DecidableEq ι] :
     cartanSubalgebra b = LieSubalgebra.lieSpan R _ (range h) := by
   refine le_antisymm LieSubalgebra.submodule_span_le_lieSpan ?_
@@ -206,8 +203,7 @@ lemma cartanSubalgebra_eq_lieSpan [Fintype ι] [DecidableEq ι] :
 
 variable {b}
 
-variable [Finite ι] in
-omit [Finite ι] [IsDomain R] [CharZero R] in
+omit [IsDomain R] [CharZero R] in
 @[simp] lemma h_mem_cartanSubalgebra [Fintype ι] [DecidableEq ι] (i : b.support) :
     h i ∈ cartanSubalgebra b :=
   Submodule.subset_span <| mem_range_self i
@@ -245,15 +241,13 @@ lemma span_range_h'_eq_top [Fintype ι] [DecidableEq ι] :
         ← (injective_subtype _).mem_set_image, ← image_comp]
   rwa [map_span, ← range_comp]
 
-variable [Finite ι] in
-omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
+omit [IsDomain R] [CharZero R] [P.IsCrystallographic] in
 @[simp] lemma ω_mul_ω [DecidableEq ι] [Fintype ι] :
     ω b * ω b = 1 := by
   ext (k | k) (l | l) <;>
   simp [ω, -indexNeg_neg]
 
-variable [Finite ι] in
-omit [Finite ι] [IsDomain R] in
+omit [IsDomain R] in
 lemma ω_mul_h [Fintype ι] (i : b.support) :
     ω b * h i = -h i * ω b := by
   classical
@@ -308,9 +302,8 @@ variable (b) in
 /-- Geck's name for the "right" basis elements of `b.support ⊕ ι`. -/
 abbrev v (i : ι) : b.support ⊕ ι → R := Pi.single (Sum.inr i) 1
 
-variable [Finite ι] in
 variable (b) in
-omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
+omit [IsDomain R] [CharZero R] [P.IsCrystallographic] in
 lemma apply_inr_eq_zero_of_mem_span_range_u (j : ι) {x : b.support ⊕ ι → R}
     (hx : x ∈ span R (range u)) : x (Sum.inr j) = 0 := by
   induction hx using span_induction with
@@ -417,8 +410,6 @@ lemma ωConj_mem_of_mem
     rw [LieEquiv.map_lie]
     exact (lieAlgebra b).lie_mem hu hv
 
-variable [Finite ι]
-
 variable (N : LieSubmodule R (lieAlgebra b) (b.support ⊕ ι → R))
 
 /-- The equivalence `x ↦ ωxω` as an operation on Lie submodules of the Geck construction. -/
@@ -430,12 +421,10 @@ def ωConjLieSubmodule :
     suffices ⁅A', ω b *ᵥ x⁆ ∈ N by simpa [A', mul_assoc] using this
     exact LieSubmodule.lie_mem _ hx
 
-omit [Finite ι] in
 @[simp] lemma mem_ωConjLieSubmodule_iff {x : b.support ⊕ ι → R} :
     x ∈ ωConjLieSubmodule N ↔ (ω b) *ᵥ x ∈ N :=
   Iff.rfl
 
-omit [Finite ι] in
 @[simp] lemma ωConjLieSubmodule_eq_top_iff : ωConjLieSubmodule N = ⊤ ↔ N = ⊤ := by
   rw [← LieSubmodule.toSubmodule_eq_top]
   let e : Submodule R (b.support ⊕ ι → R) ≃o Submodule R (b.support ⊕ ι → R) :=
