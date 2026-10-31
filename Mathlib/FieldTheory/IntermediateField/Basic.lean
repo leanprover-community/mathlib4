@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Rat  -- shake: keep (used in `example` only)
 public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Field.Subfield.Basic
@@ -64,7 +65,7 @@ instance : SetLike (IntermediateField K L) L :=
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
-instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L) L
+instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L)
 
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   change -x ∈ S.toSubalgebra; simpa
@@ -408,6 +409,12 @@ instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : Interm
     [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
   inferInstanceAs (Algebra R' S.toSubalgebra)
 
+-- Over `ℚ`, the algebra structure inherited from the ambient field and the one coming from the
+-- `DivisionRing` structure of the intermediate field are the same instance.
+example {L : Type*} [Field L] [CharZero L] (S : IntermediateField ℚ L) :
+    (S.algebra' : Algebra ℚ S) = DivisionRing.toRatAlgebra := by
+  with_implicit rfl
+
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=
   inferInstanceAs (IsScalarTower R K S.toSubalgebra)
@@ -747,7 +754,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 /-- Construct an algebra isomorphism from an equality of intermediate fields. -/
 @[simps! apply]
 def equivOfEq {S T : IntermediateField F E} (h : S = T) : S ≃ₐ[F] T :=
-  Subalgebra.equivOfEq _ _ (congr_arg toSubalgebra h)
+  Subalgebra.equivOfEq _ _ congr(toSubalgebra $h)
 
 @[simp]
 theorem equivOfEq_symm {S T : IntermediateField F E} (h : S = T) :

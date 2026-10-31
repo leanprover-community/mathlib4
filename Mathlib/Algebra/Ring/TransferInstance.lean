@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.Algebra.Ring.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer algebraic structures across `Equiv`s
 
@@ -79,7 +82,7 @@ protected abbrev addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
     intCast := fun n => e.invFun n
     intCast_ofNat := fun n => by simp only [Int.cast_natCast]; rfl
     intCast_negSucc := fun _ =>
-      congr_arg e.invFun <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
+      congr(e.symm $((Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm)) }
 
 /-- Transfer `NonAssocSemiring` across an `Equiv` -/
 protected abbrev nonAssocSemiring [NonAssocSemiring β] : NonAssocSemiring α := by

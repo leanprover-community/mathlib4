@@ -5,8 +5,8 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Preadditive.Comma
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # Homotopies in the arrow category

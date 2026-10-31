@@ -180,7 +180,7 @@ theorem mconv_absolutelyContinuous [MeasurableMul₂ M] {μ ν ρ : Measure M}
 @[to_additive]
 lemma map_mconv_monoidHom {M M' : Type*} {mM : MeasurableSpace M} [Monoid M] [MeasurableMul₂ M]
     {mM' : MeasurableSpace M'} [Monoid M'] [MeasurableMul₂ M']
-    {μ ν : Measure M} [SFinite μ] [SFinite ν]
+    {μ ν : Measure M} [SFinite ν]
     (L : M →* M') (hL : Measurable L) :
     (μ ∗ₘ ν).map L = (μ.map L) ∗ₘ (ν.map L) := by
   unfold mconv
@@ -193,12 +193,12 @@ lemma map_conv_continuousLinearMap {E F : Type*} [AddCommMonoid E] [AddCommMonoi
     [Module ℝ E] [Module ℝ F] [TopologicalSpace E] [TopologicalSpace F]
     {mE : MeasurableSpace E} [MeasurableAdd₂ E] {mF : MeasurableSpace F} [MeasurableAdd₂ F]
     [OpensMeasurableSpace E] [BorelSpace F]
-    {μ ν : Measure E} [SFinite μ] [SFinite ν]
+    {μ ν : Measure E} [SFinite ν]
     (L : E →L[ℝ] F) :
     (μ ∗ ν).map L = (μ.map L) ∗ (ν.map L) := by
   suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)) ∗ (ν.map (L : E →+ F)) by simpa
   rw [map_conv_addMonoidHom]
-  rw [AddMonoidHom.coe_coe]
+  rw [AddMonoidHom.coe_ofClass]
   fun_prop
 
 end Measure

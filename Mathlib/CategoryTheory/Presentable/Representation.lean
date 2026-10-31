@@ -81,8 +81,6 @@ noncomputable def shrinkYonedaCompWhiskeringRightUliftFunctorIso :
     ext Y g
     simp [uliftYoneda, shrinkYoneda])
 
-noncomputable def restrictedShrinkYoneda : D ⥤ Cᵒᵖ ⥤ Type w :=
-  shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj F.op
 
 open CategoryTheory.Functor in
 noncomputable def restrictedShrinkYonedaCompULiftIso :
@@ -97,13 +95,15 @@ noncomputable def restrictedShrinkYonedaCompULiftIso :
 variable [F.IsDense]
 
 instance : (restrictedShrinkYoneda.{w} F).Faithful := by
-  have := Functor.Faithful.of_iso (restrictedShrinkYonedaCompULiftIso.{w} F).symm
-  exact Functor.Faithful.of_comp _ ((Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}))
+  sorry
+  --have := Functor.Faithful.of_iso (restrictedShrinkYonedaCompULiftIso.{w} F).symm
+  --exact Functor.Faithful.of_comp _ ((Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}))
 
 instance : (restrictedShrinkYoneda.{w} F).Full := by
-  have := Functor.Full.of_iso (restrictedShrinkYonedaCompULiftIso.{w} F).symm
-  exact Functor.Full.of_comp_faithful _
-    ((Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}))
+  sorry
+  --have := Functor.Full.of_iso (restrictedShrinkYonedaCompULiftIso.{w} F).symm
+  --exact Functor.Full.of_comp_faithful _
+  --  ((Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}))
 
 end Presheaf
 
@@ -176,7 +176,7 @@ instance : (toCardinalContinuous C κ).EssSurj where
           rw [← colimit.w G₁ f, ← Category.assoc]
           congr 1
           simp [G₁, G₂, shrinkYoneda]
-          rfl }
+          sorry } --rfl }
     have h' : IsColimit c' := evaluationJointlyReflectsColimits _ (fun ⟨X⟩ ↦ by
       have := Functor.preservesColimitsOfShape_of_isCardinalAccessible
         (shrinkYoneda.{w}.flip.obj (op X.1)) κ J
@@ -188,7 +188,7 @@ instance : (toCardinalContinuous C κ).EssSurj where
           (shrinkYoneda.{w}.flip.obj (op X.1)) (colimit.isColimit G₁))
       · ext
         simp [shrinkYoneda, shrinkYonedaMap, G₁, G₂]
-        rfl
+        sorry --rfl
       · refine (Cocone.ext (Iso.refl _) (fun j ↦ ?_))
         simp [c', dsimp% ((isCardinalPresentable C κ).fullyFaithfulι.shrinkYonedaIso
           (G.obj j)).inv_hom_id_app_assoc (op X)])

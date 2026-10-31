@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Module
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`
@@ -38,7 +40,7 @@ variable [Ring R]
 free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
 def free : Type u ⥤ ModuleCat R where
-  obj X := ModuleCat.of R (X →₀ R)
+  obj X := ↧(X →₀ R)
   map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ (f : _ → _)
 
 /-- The free functor `Type u ⥤ ModuleCat R` sending a type `X` to the
@@ -46,7 +48,7 @@ free `R`-module with generators `x : X`, implemented as the monoid algebra `R[X]
 -/
 @[simps]
 def monoidAlgebraFree : Type u ⥤ ModuleCat.{u} R where
-  obj X := .of R R[X]
+  obj X := ↧R[X]
   map f := ofHom (MonoidAlgebra.mapDomainLinearMap R R f)
 
 variable {R}

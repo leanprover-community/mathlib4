@@ -5,8 +5,8 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # Filtered colimits in the category of types.
@@ -54,7 +54,6 @@ theorem eqvGen_colimitTypeRel_of_rel (x y : Σ j, F.obj j) :
     · exact (Relation.EqvGen.rel _ _ ⟨f, rfl⟩)
     · exact (Relation.EqvGen.symm _ _ (Relation.EqvGen.rel _ _ ⟨g, h⟩))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Recognizing filtered colimits of types. -/
 noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
     (hinj :

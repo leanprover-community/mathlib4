@@ -23,8 +23,6 @@ sin, cos, tan, angle
 
 public section
 
-noncomputable section
-
 open scoped Asymptotics Topology Filter
 open Set
 
@@ -132,6 +130,17 @@ theorem deriv_cos {x : ℂ} : deriv cos x = -sin x :=
 @[simp]
 theorem deriv_cos' : deriv cos = fun x => -sin x :=
   funext fun _ => deriv_cos
+
+/-- The limit `lim_{z → 0} (sin z) / z = 1`, for the complex sine. -/
+theorem tendsto_sin_div_nhdsNE_zero : Filter.Tendsto (fun z : ℂ ↦ sin z / z) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_sin 0)).congr
+    fun _ ↦ by simp [slope_def_field]
+
+/-- The limit `lim_{z → 0} (1 - cos z) / z = 0`, for the complex cosine. -/
+theorem tendsto_one_sub_cos_div_nhdsNE_zero :
+    Filter.Tendsto (fun z : ℂ ↦ (1 - cos z) / z) (𝓝[≠] 0) (𝓝 0) := by
+  have hd : HasDerivAt cos 0 0 := by simpa using hasDerivAt_cos 0
+  simpa [slope_def_field, ← neg_div, neg_sub] using (hasDerivAt_iff_tendsto_slope.mp hd).neg
 
 end Complex
 
@@ -398,6 +407,17 @@ theorem deriv_cos : deriv cos x = -sin x :=
 @[simp]
 theorem deriv_cos' : deriv cos = fun x => -sin x :=
   funext fun _ => deriv_cos
+
+/-- The limit `lim_{x → 0} (sin x) / x = 1`. -/
+theorem tendsto_sin_div_nhdsNE_zero : Filter.Tendsto (fun x : ℝ ↦ sin x / x) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_sin 0)).congr
+    fun _ ↦ by simp [slope_def_field]
+
+/-- The limit `lim_{x → 0} (1 - cos x) / x = 0`. -/
+theorem tendsto_one_sub_cos_div_nhdsNE_zero :
+    Filter.Tendsto (fun x : ℝ ↦ (1 - cos x) / x) (𝓝[≠] 0) (𝓝 0) := by
+  have hd : HasDerivAt cos 0 0 := by simpa using hasDerivAt_cos 0
+  simpa [slope_def_field, ← neg_div, neg_sub] using (hasDerivAt_iff_tendsto_slope.mp hd).neg
 
 end Real
 
@@ -751,14 +771,10 @@ theorem Complex.logDeriv_exp : logDeriv (Complex.exp) = 1 := by
   ext
   rw [logDeriv, Complex.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
 
-@[deprecated (since := "2026-02-05")] alias Complex.LogDeriv_exp := Complex.logDeriv_exp
-
 @[simp]
 theorem Real.logDeriv_exp : logDeriv (Real.exp) = 1 := by
   ext
   rw [logDeriv, Real.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
-
-@[deprecated (since := "2026-02-05")] alias Real.LogDeriv_exp := Real.logDeriv_exp
 
 end LogDeriv
 

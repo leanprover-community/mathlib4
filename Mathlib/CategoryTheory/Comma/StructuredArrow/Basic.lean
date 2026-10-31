@@ -5,10 +5,12 @@ Authors: Adam Topaz, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Basic
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.PUnit
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of "structured arrows"
@@ -84,7 +86,7 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
 
 /-- The `hom` field of structured arrows in `StructuredArrow S T`,
-as a natural transformation `(Functor.const _).obj T ⟶ proj S T ⋙ S`. -/
+as a natural transformation `(Functor.const _).obj S ⟶ proj S T ⋙ T`. -/
 @[implicit_reducible, simps]
 def ι (S : D) (T : C ⥤ D) :
     (Functor.const _).obj S ⟶ proj S T ⋙ T where
@@ -506,14 +508,13 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
   Comma S (Functor.fromPUnit.{0} T)
 
 /-- The type of morphisms in the category `CostructuredArrow`. -/
+@[implicit_reducible]
 protected def CostructuredArrow.Hom {S : C ⥤ D} {T : D}
     (f g : CostructuredArrow S T) := CommaMorphism f g
 
 instance {S : C ⥤ D} {T : D} : Category (CostructuredArrow S T) where
   Hom := CostructuredArrow.Hom
   __ := (inferInstance : Category (Comma _ _))
-
-instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
 
 namespace CostructuredArrow
 
@@ -835,7 +836,7 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
 def map₂Congr {F' : C ⥤ A} {G' : D ⥤ B} (e₁ : F ≅ F') (e₂ : G ≅ G')
     (α' : F' ⋙ U ⟶ S ⋙ G') (β' : G'.obj T ⟶ V)
     (hα : α ≫ Functor.whiskerLeft _ e₂.hom = Functor.whiskerRight e₁.hom _ ≫ α')
-    (hβ : β = e₂.hom.app _ ≫  β') :
+    (hβ : β = e₂.hom.app _ ≫ β') :
     map₂ α β ≅ map₂ α' β' :=
   NatIso.ofComponents (fun X ↦ isoMk (e₁.app X.left) ?_) ?_
 where finally

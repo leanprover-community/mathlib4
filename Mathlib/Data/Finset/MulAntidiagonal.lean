@@ -5,9 +5,9 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Data.Set.MulAntidiagonal
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-! # Multiplication antidiagonal as a `Finset`.
 

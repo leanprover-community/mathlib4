@@ -90,7 +90,7 @@ section Comp
 theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     coeff (p.comp q) (natDegree p * natDegree q) =
     leadingCoeff p * leadingCoeff q ^ natDegree p := by
-  rw [comp, eval₂_def, coeff_sum]
+  rw [comp, eval₂_eq_sum, coeff_sum]
   refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
   case h₂ =>
     simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
@@ -238,7 +238,7 @@ lemma isUnit_of_isUnit_leadingCoeff_of_isUnit_map (hf : IsUnit f.leadingCoeff)
   rw [degree_map_eq_of_leadingCoeff_ne_zero] at dz
   · rw [eq_C_of_degree_eq_zero dz]
     refine IsUnit.map C ?_
-    convert! hf
+    convert hf
     change coeff f 0 = coeff f (natDegree f)
     rw [(degree_eq_iff_natDegree_eq _).1 dz]
     · rfl

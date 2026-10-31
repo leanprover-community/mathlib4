@@ -9,9 +9,8 @@ public import Mathlib.Algebra.NeZero
 public import Mathlib.Data.Finset.Attach
 public import Mathlib.Data.Finset.Disjoint
 public import Mathlib.Data.Finset.Erase
-public import Mathlib.Data.Finset.Filter
-public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.Lattice.Lemmas
+public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.SDiff
 public import Mathlib.Data.Fintype.Defs
 
@@ -443,12 +442,12 @@ theorem image_subset_image_iff {t : Finset α} (hf : Injective f) :
 hypothesis. -/
 theorem image_subset_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
     (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f ⊆ s₂.image f ↔ s₁ ⊆ s₂ := by
-  exact_mod_cast ht.image_subset_image_iff (mod_cast h₁) (mod_cast h₂)
+  exact mod_cast ht.image_subset_image_iff (mod_cast h₁) (mod_cast h₂)
 
 /-- Variant of `Finset.image_inj` under an `InjOn` rather than `Injective` hypothesis. -/
 theorem image_eq_image_iff_of_injOn {s₁ s₂ : Finset α} (ht : (s : Set α).InjOn f)
     (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) : s₁.image f = s₂.image f ↔ s₁ = s₂ := by
-  exact_mod_cast ht.image_eq_image_iff (mod_cast h₁) (mod_cast h₂)
+  exact mod_cast ht.image_eq_image_iff (mod_cast h₁) (mod_cast h₂)
 
 lemma image_ssubset_image {t : Finset α} (hf : Injective f) : s.image f ⊂ t.image f ↔ s ⊂ t := by
   exact lt_iff_lt_of_le_iff_le' (image_subset_image_iff hf) (image_subset_image_iff hf)
@@ -690,7 +689,7 @@ subtype. -/
 theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.subtype _)) ⊆ t := by
   intro a ha
   rw [mem_coe] at ha
-  convert! property_of_mem_map_subtype s ha
+  convert property_of_mem_map_subtype s ha
 
 end Subtype
 
@@ -779,22 +778,6 @@ namespace Finset
 
 @[deprecated (since := "2026-08-21")] alias congr_toEmbedding := Equiv.finsetCongr_toEmbedding
 
-/-- The subtypes corresponding to equal finsets are equivalent.
-
-See also `Equiv.Set.congr`. -/
-@[simps!] protected def congr {s t : Finset α} (h : s = t) :
-    s ≃ t :=
-  .subtypeEquivProp <| by simp [h]
-
-@[simp] lemma congr_refl {s : Finset α} : Equiv.Finset.congr (s := s) rfl = .refl _ := rfl
-
-lemma congr_symm {s t : Finset α} (h : s = t) :
-    Equiv.Finset.congr h.symm = (Equiv.Finset.congr h).symm := rfl
-
-lemma congr_trans {s t u : Finset α} (h : s = t) (h' : t = u) :
-    Finset.congr (h.trans h') = (Equiv.Finset.congr h).trans (Equiv.Finset.congr h') :=
-  rfl
-
 end Finset
 
 set_option backward.isDefEq.respectTransparency false in
@@ -818,3 +801,29 @@ protected def finsetSubtypeComm (p : α → Prop) :
     grind
 
 end Equiv
+
+namespace Finset
+variable {s t u : Finset α}
+
+/-- The subtypes corresponding to equal finsets are equivalent.
+
+See also `Set.equivOfEq`. -/
+@[simps!] def equivOfEq (h : s = t) : s ≃ t := .subtypeEquivProp <| by simp [h]
+
+@[simp] lemma equivOfEq_refl : equivOfEq (s := s) rfl = .refl _ := rfl
+
+lemma equivOfEq_symm (h : s = t) : equivOfEq h.symm = (equivOfEq h).symm := rfl
+
+lemma equivOfEq_trans (h : s = t) (h' : t = u) :
+    equivOfEq (h.trans h') = (equivOfEq h).trans (equivOfEq h') := rfl
+
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Finset.congr := equivOfEq
+@[deprecated (since := "2026-08-29")]
+alias _root_.Equiv.Finset.congr_apply_coe := equivOfEq_apply_coe
+@[deprecated (since := "2026-08-29")]
+alias _root_.Equiv.Finset.congr_symm_apply_coe := equivOfEq_symm_apply_coe
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Finset.congr_refl := equivOfEq_refl
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Finset.congr_symm := equivOfEq_symm
+@[deprecated (since := "2026-08-29")] alias _root_.Equiv.Finset.congr_trans := equivOfEq_trans
+
+end Finset

@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.Multiset.Filter
 public import Mathlib.Order.MinMax
-public import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets
@@ -69,17 +68,17 @@ lemma mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
 lemma map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f) {s t : Multiset α} :
     map f (s ∪ t) = map f s ∪ map f t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ =>
-    congr_arg ofList (by rw [List.map_append, List.map_diff finj])
+    congr(ofList $(by rw [List.map_append, List.map_diff finj]))
 
 @[simp] lemma zero_union : 0 ∪ s = s := by simp [union_def, Multiset.zero_sub]
 @[simp] lemma union_zero : s ∪ 0 = s := by simp [union_def]
 
 @[simp]
 lemma count_union (a : α) (s t : Multiset α) : count a (s ∪ t) = max (count a s) (count a t) := by
-  simp [(· ∪ ·), union, Nat.sub_add_eq_max]
+  simp [union_def, Nat.sub_add_eq_max]
 
 @[simp] lemma filter_union (p : α → Prop) [DecidablePred p] (s t : Multiset α) :
-    filter p (s ∪ t) = filter p s ∪ filter p t := by simp [(· ∪ ·), union]
+    filter p (s ∪ t) = filter p s ∪ filter p t := by simp [union_def]
 
 /-! ### Intersection -/
 
@@ -92,18 +91,18 @@ def inter (s t : Multiset α) : Multiset α :=
 instance : Inter (Multiset α) := ⟨inter⟩
 
 @[simp] lemma inter_zero (s : Multiset α) : s ∩ 0 = 0 :=
-  Quot.inductionOn s fun l => congr_arg ofList l.bagInter_nil
+  Quot.inductionOn s fun l => congr(ofList $l.bagInter_nil)
 
 @[simp] lemma zero_inter (s : Multiset α) : 0 ∩ s = 0 :=
-  Quot.inductionOn s fun l => congr_arg ofList l.nil_bagInter
+  Quot.inductionOn s fun l => congr(ofList $l.nil_bagInter)
 
 @[simp]
 lemma cons_inter_of_pos (s : Multiset α) : a ∈ t → (a ::ₘ s) ∩ t = a ::ₘ s ∩ t.erase a :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_mem _ h
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr(ofList $(cons_bagInter_of_mem _ h))
 
 @[simp]
 lemma cons_inter_of_neg (s : Multiset α) : a ∉ t → (a ::ₘ s) ∩ t = s ∩ t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_not_mem _ h
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr(ofList $(cons_bagInter_of_notMem _ h))
 
 lemma inter_le_left : s ∩ t ≤ s :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => bagInter_sublist_left.subperm
@@ -156,7 +155,7 @@ lemma eq_union_right (h : s ≤ t) : s ∪ t = t := by rw [union_comm, eq_union_
 lemma union_le_add (s t : Multiset α) : s ∪ t ≤ s + t := union_le (le_add_right ..) (le_add_left ..)
 
 lemma union_add_distrib (s t u : Multiset α) : s ∪ t + u = s + u ∪ (t + u) := by
-  simpa [(· ∪ ·), union, eq_comm, Multiset.add_assoc, Multiset.add_left_inj] using
+  simpa [union_def, eq_comm, Multiset.add_assoc, Multiset.add_left_inj] using
     show s + u - (t + u) = s - t by
       rw [t.add_comm, Multiset.sub_add_eq_sub_sub, Multiset.add_sub_cancel_right]
 

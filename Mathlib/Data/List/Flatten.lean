@@ -5,7 +5,10 @@ Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
 module
 
-public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Tactic.GCongr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Join of a list of lists

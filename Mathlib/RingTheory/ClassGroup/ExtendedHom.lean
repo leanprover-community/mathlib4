@@ -5,23 +5,28 @@ Authors: Chris Birkbeck, Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.ClassGroup.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Extended
 
 /-!
 # Class group map induced by an extension of domains
 
-For an injective extension `A → B` of commutative domains (equivalently `Module.IsTorsionFree A B`),
-we construct the group homomorphism `ClassGroup.extendedHom : ClassGroup A →* ClassGroup B` given by
-pushing fractional ideals forward along the algebra map.
+For an injective ring homomorphism `f : A →+* B` of commutative domains, we construct the group
+homomorphism `ClassGroup.map f hf : ClassGroup A →* ClassGroup B` given by pushing fractional ideals
+forward along `f`. For an injective extension `A → B` (equivalently `Module.IsTorsionFree A B`),
+`ClassGroup.extendedHom A B` is the special case of the algebra map.
 
 ## Main definitions
 
+- `ClassGroup.map f hf`: the map between class groups induced by an injective ring homomorphism.
+- `ClassGroup.mulEquiv g`: the isomorphism between class groups induced by a ring isomorphism.
 - `ClassGroup.extendedHom A B`: the induced map between the class groups.
 - `ClassGroup.extendedIdeal A B`: the extension of a nonzero integral ideal.
 
 ## Main results
 
+- `ClassGroup.map_mk0`: compatibility of `ClassGroup.map` with nonzero integral ideals.
+- `ClassGroup.map_id`, `ClassGroup.map_map`: functoriality of `ClassGroup.map`.
 - `ClassGroup.extendedHom_mk`: compatibility with representatives as fractional ideals.
 - `ClassGroup.extendedHom_mk0`: compatibility with representatives as nonzero integral ideals.
 - `ClassGroup.extendedHom_comp`: compatibility of extension in a tower `A → B → C`.
@@ -33,10 +38,92 @@ public section
 
 open scoped nonZeroDivisors
 
+namespace ClassGroup
+
+section Map
+
+variable {A B C : Type*} [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [CommRing C]
+  [IsDomain C]
+
+/-- The monoid homomorphism `ClassGroup A → ClassGroup B` induced by an injective ring
+homomorphism `f : A →+* B` of domains, given by extending fractional ideals along `f`. -/
+noncomputable def map (f : A →+* B) (hf : Function.Injective f) : ClassGroup A →* ClassGroup B :=
+  QuotientGroup.map _ _
+    (Units.map (FractionalIdeal.extendedHom' (FractionRing B)
+      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective f hf)).toMonoidHom)
+    (by
+      rintro _ ⟨α, rfl⟩
+      refine ⟨Units.mk0 (IsFractionRing.map hf (α : FractionRing A)) (by simp [α.ne_zero]), ?_⟩
+      simpa [coe_toPrincipalIdeal, Units.coe_map, Units.val_mk0] using!
+        (FractionalIdeal.extended_spanSingleton (FractionRing B) _ _).symm)
+
+@[simp]
+lemma map_quotientMk (f : A →+* B) (hf : Function.Injective f)
+    (α : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
+    map f hf (QuotientGroup.mk α) = QuotientGroup.mk
+      (Units.map (FractionalIdeal.extendedHom' (FractionRing B)
+        (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective f hf)).toMonoidHom α) := by
+  rfl
+
+@[simp]
+theorem map_id (x : ClassGroup A) : map (RingHom.id A) Function.injective_id x = x := by
+  induction x using QuotientGroup.induction_on with | H α
+  rw [map_quotientMk]
+  congr 1
+  ext : 1
+  simp only [Units.coe_map, MonoidHom.coe_ofClass, RingHom.toMonoidHom_eq_coe,
+    FractionalIdeal.extendedHom'_apply]
+  rw [← FractionalIdeal.coeToSubmodule_inj, FractionalIdeal.coe_extended_eq_span]
+  have : ⇑(IsLocalization.map (FractionRing A) (RingHom.id A)
+      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ Function.injective_id) :
+        FractionRing A →+* FractionRing A) = id :=
+    funext fun z ↦ IsLocalization.map_id z _
+  rw [this, Set.image_id]
+  exact Submodule.span_eq (α : Submodule A (FractionRing A))
+
+theorem map_map (f : A →+* B) (hf : Function.Injective f) (g : B →+* C)
+    (hg : Function.Injective g) (x : ClassGroup A) :
+    map g hg (map f hf x) = map (g.comp f) (hg.comp hf) x := by
+  induction x using QuotientGroup.induction_on with | H α
+  simp only [map_quotientMk]
+  congr 1
+  ext : 1
+  exact FractionalIdeal.extended_extended _ _ _ _
+
+theorem map_mk0 {A B : Type*} [CommRing A] [CommRing B] [IsDedekindDomain A]
+    [IsDedekindDomain B] (f : A →+* B)
+    (hf : Function.Injective f) (I : (Ideal A)⁰) :
+    map f hf (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.1.map f, mem_nonZeroDivisors_iff_ne_zero.mpr <|
+      (Ideal.map_eq_bot_iff_of_injective hf).not.mpr (mem_nonZeroDivisors_iff_ne_zero.mp I.2)⟩ := by
+  rw [mk0_eq_quotientMk, mk0_eq_quotientMk, map_quotientMk]
+  congr 1
+  ext : 1
+  exact FractionalIdeal.extended_coeIdeal_eq_map _ _ _
+
+/-- A ring isomorphism `A ≃+* B` induces an isomorphism on their class groups. -/
+@[expose, simps]
+noncomputable def mulEquiv (g : A ≃+* B) : ClassGroup A ≃* ClassGroup B where
+  -- The `show` forces the type of the injectivity proof to `Function.Injective ⇑(g : A →+* B)`.
+  -- Without it, `map_mk0` would no longer apply to `mulEquiv g (mk0 I)` since at implicit
+  -- transparency `⇑(g : A →+* B)` is not `⇑g`.
+  toFun := map (g : A →+* B) (show Function.Injective (g : A →+* B) from g.injective)
+  invFun := map (g.symm : B →+* A)
+    (show Function.Injective (g.symm : B →+* A) from g.symm.injective)
+  left_inv x := (map_map _ _ _ _ x).trans (by convert map_id x; ext; simp)
+  right_inv x := (map_map _ _ _ _ x).trans (by convert map_id x; ext; simp)
+  map_mul' := map_mul _
+
+theorem mulEquiv_mk0 {A B : Type*} [CommRing A] [CommRing B] [IsDedekindDomain A]
+    [IsDedekindDomain B] (g : A ≃+* B) (I : (Ideal A)⁰) :
+    mulEquiv g (ClassGroup.mk0 I) = ClassGroup.mk0 ⟨I.1.map g,
+      mem_nonZeroDivisors_iff_ne_zero.mpr <| (Ideal.map_eq_bot_iff_of_injective g.injective).not.mpr
+        (mem_nonZeroDivisors_iff_ne_zero.mp I.2)⟩ := by
+  simp [map_mk0, Ideal.map_coe]
+
+end Map
+
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
   [Module.IsTorsionFree A B]
-
-namespace ClassGroup
 
 section CommRing
 
@@ -45,15 +132,7 @@ variable [IsDomain A] [IsDomain B]
 /-- The monoid homomorphism `ClassGroup A → ClassGroup B` induced by an
 injective extension of domains `A → B`. -/
 noncomputable def extendedHom : ClassGroup A →* ClassGroup B :=
-  QuotientGroup.map _ _
-    (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom)
-    (by
-      rintro _ ⟨α, rfl⟩
-      refine ⟨Units.mk0 (IsFractionRing.map (j := algebraMap A B)
-        (FaithfulSMul.algebraMap_injective _ _) (α : FractionRing A))
-        (by simp [α.ne_zero]), ?_⟩
-      simpa [coe_toPrincipalIdeal, Units.coe_map, Units.val_mk0] using!
-        (FractionalIdeal.extendedHom_spanSingleton (FractionRing B) B _).symm)
+  map (algebraMap A B) (FaithfulSMul.algebraMap_injective A B)
 
 @[simp]
 lemma extendedHom_quotientMk (α : (FractionalIdeal A⁰ (FractionRing A))ˣ) :

@@ -131,6 +131,7 @@ structure CircleDeg1Lift : Type extends ℝ →o ℝ where
 
 namespace CircleDeg1Lift
 
+@[macro_inline]
 instance : FunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
   coe_injective | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
@@ -253,7 +254,7 @@ theorem commute_iff_commute {f g : CircleDeg1Lift} : Commute f g ↔ Function.Co
 /-- The map `y ↦ x + y` as a `CircleDeg1Lift`. More precisely, we define a homomorphism from
 `Multiplicative ℝ` to `CircleDeg1Liftˣ`, so the translation by `x` is
 `translation (Multiplicative.ofAdd x)`. -/
-def translate : Multiplicative ℝ →* CircleDeg1Liftˣ := MonoidHom.toHomUnits <|
+def translate : Multiplicative ℝ →* CircleDeg1Liftˣ := MonoidHom.toHomUnits
   { toFun x := ⟨⟨fun y => x.toAdd + y, add_right_mono⟩, fun _ => (add_assoc ..).symm⟩
     map_one' := ext zero_add
     map_mul' _ _ := ext <| add_assoc _ _ }
@@ -600,7 +601,7 @@ theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ
   · exact fun n => C / 2 ^ n
   · intro n
     have : 0 < (2 ^ n : ℝ) := pow_pos zero_lt_two _
-    convert! (div_le_div_iff_of_pos_right this).2 (H (2 ^ n)) using 1
+    convert (div_le_div_iff_of_pos_right this).2 (H (2 ^ n)) using 1
     rw [transnumAuxSeq, Real.dist_eq, ← sub_div, abs_div, abs_of_pos this, Real.dist_eq]
   · exact mul_zero C ▸ tendsto_const_nhds.mul <| tendsto_inv_atTop_zero.comp <|
       tendsto_pow_atTop_atTop_of_one_lt one_lt_two

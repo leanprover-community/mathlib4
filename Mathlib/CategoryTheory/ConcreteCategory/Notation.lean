@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Lean.PrettyPrinter.Delaborator.Builtins
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Init
 
 /-!
@@ -19,7 +19,6 @@ This file introduces the notation `↧X` for `FooCat.of X`, where the category `
 from the expected type. The name `FooCat.of` is looked up in the environment rather than through a
 typeclass, so `↧X` is syntactically the same as `FooCat.of`. It also provides a corresponding
 delaborator `CategoryTheory.delabOf` that must be manually registered for every concrete category.
-
 
 ## Implementation notes
 

@@ -5,7 +5,7 @@ Authors: Manuel Candales
 -/
 module
 
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Field

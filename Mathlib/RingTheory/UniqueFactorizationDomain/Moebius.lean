@@ -6,7 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The Moebius function on a unique factorization monoid

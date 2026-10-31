@@ -5,8 +5,10 @@ Authors: Shanghe Chen
 -/
 module
 
-public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Discrete.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The left/right unitor equivalences `1 × C ≌ C` and `C × 1 ≌ C`.

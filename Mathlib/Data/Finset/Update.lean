@@ -6,8 +6,9 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Data.Finset.Pi
-public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Logic.Function.DependsOn
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Update a function on a set of values

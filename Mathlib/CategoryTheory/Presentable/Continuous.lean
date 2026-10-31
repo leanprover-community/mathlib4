@@ -6,11 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Types.PreservesLimit
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.SmallRepresentatives
-public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 
 /-!
 # `κ`-continuous functors
@@ -301,7 +301,7 @@ lemma exists_presentation_of_isCardinalContinuous
   refine ⟨SmallModel.{w} (CostructuredArrow shrinkYoneda.{w} F), inferInstance,
     ?_, e.inverse ⋙ CostructuredArrow.proj shrinkYoneda.{w} F,
     Functor.whiskerLeft e.inverse (CostructuredArrow.ι shrinkYoneda.{w} F),
-    ⟨IsColimit.whiskerEquivalence (Presheaf.isColimitTautologicalCoconeShrink F) e.symm⟩⟩
+      ⟨IsColimit.whiskerEquivalence  (denseAtShrinkYoneda F) e.symm⟩⟩
   have := isCardinalFiltered_costructuredArrow_shrinkYoneda hF hC
   exact IsCardinalFiltered.of_equivalence κ e
 

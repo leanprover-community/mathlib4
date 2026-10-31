@@ -214,8 +214,7 @@ instance : NoZeroDivisors L where
 -/
 example : ∃ a b : L, a ≠ b ∧ 2 * a = 2 * b := by
   refine ⟨⟨(1, 0), by simp⟩, 1, fun h : (⟨(1, 0), _⟩ : L) = ⟨⟨1, 1⟩, _⟩ => ?_, rfl⟩
-  obtain F : (0 : ZMod 2) = 1 := congr_arg (fun j : L => j.1.2) h
-  cases F
+  cases congr($h.1.2)
 
 end ExL
 

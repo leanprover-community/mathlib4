@@ -5,9 +5,8 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.PiLex
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.PiLex
 
 /-!
 # Complete linear order instance on lexicographically ordered pi types
@@ -38,7 +37,8 @@ instance : InfSet (Πₗ i, α i) where
 
 theorem sInf_apply (s : Set (Πₗ i, α i)) (i : ι) :
     sInf s i = ⨅ e : {e ∈ s | ∀ j < i, e j = sInf s j}, e.1 i := by
-  simp [sInf, inf]
+  -- This still works without excluding `iInf_of_isEmpty`, but very slowly
+  simp [sInf, inf, -iInf_of_isEmpty]
 
 theorem sInf_apply_le {s : Set (Πₗ i, α i)} {i : ι} {e : Πₗ i, α i}
     (he : e ∈ s) (h : ∀ j < i, e j = sInf s j) : sInf s i ≤ e i := by

@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Cover
 public import Mathlib.Order.LatticeIntervals
-public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Modular Lattices
@@ -220,12 +219,11 @@ theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ
   wellFounded_lt_exact_sequence (α := αᵒᵈ) (β := γᵒᵈ) (γ := βᵒᵈ)
     K g₁ g₂ f₁ f₂ gi.dual gci.dual hg hf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The diamond isomorphism between the closed intervals `[a ⊓ b, a]` and `[b, a ⊔ b]` -/
-@[simps]
+@[simps, to_dual none]
 def infIccOrderIsoIccSup (a b : α) : Icc (a ⊓ b) a ≃o Icc b (a ⊔ b) where
-  toFun x := ⟨x ⊔ b, ⟨le_sup_right, sup_le_sup_right x.prop.2 b⟩⟩
-  invFun x := ⟨a ⊓ x, ⟨inf_le_inf_left a x.prop.1, inf_le_left⟩⟩
+  toFun x := ⟨x ⊔ b, by simp [le_sup_of_le_left x.prop.2]⟩
+  invFun x := ⟨a ⊓ x, by simp [inf_le_of_right_le x.prop.1]⟩
   left_inv x :=
     Subtype.ext
       (by
@@ -247,8 +245,8 @@ def infIccOrderIsoIccSup (a b : α) : Icc (a ⊓ b) a ≃o Icc b (a ⊔ b) where
 /-- The diamond isomorphism between the closed intervals `[a ⊓ b, b]` and `[a, a ⊔ b]` -/
 @[simps!]
 def infIccOrderIsoIccSup' (a b : α) : Icc (a ⊓ b) b ≃o Icc a (a ⊔ b) :=
-  (OrderIso.Set.congr _ _ (by rw [inf_comm])).trans <| (infIccOrderIsoIccSup b a).trans <|
-    OrderIso.Set.congr _ _ (by rw [sup_comm])
+  (Set.orderIsoOfEq _ _ (by rw [inf_comm])).trans <| (infIccOrderIsoIccSup b a).trans <|
+    Set.orderIsoOfEq _ _ (by rw [sup_comm])
 
 theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c => a ⊓ c) (Icc b (a ⊔ b)) :=
   StrictMono.of_domRestrict (infIccOrderIsoIccSup a b).symm.strictMono
@@ -284,8 +282,8 @@ def infIooOrderIsoIooSup (a b : α) : Ioo (a ⊓ b) a ≃o Ioo b (a ⊔ b) where
 /-- The diamond isomorphism between the open intervals `(a ⊓ b, b)` and `(a, a ⊔ b)`. -/
 @[simps!]
 def infIooOrderIsoIooSup' (a b : α) : Ioo (a ⊓ b) b ≃o Ioo a (a ⊔ b) :=
-  (OrderIso.Set.congr _ _ (by rw [inf_comm])).trans <| (infIooOrderIsoIooSup b a).trans <|
-    OrderIso.Set.congr _ _ (by rw [sup_comm])
+  (Set.orderIsoOfEq _ _ (by rw [inf_comm])).trans <| (infIooOrderIsoIooSup b a).trans <|
+    Set.orderIsoOfEq _ _ (by rw [sup_comm])
 
 -- See note [lower instance priority]
 instance (priority := 100) IsModularLattice.to_isLowerModularLattice : IsLowerModularLattice α :=
@@ -309,11 +307,12 @@ namespace IsCompl
 variable [Lattice α] [BoundedOrder α] [IsModularLattice α]
 
 /-- The diamond isomorphism between the intervals `Set.Iic a` and `Set.Ici b`. -/
+@[to_dual none]
 def IicOrderIsoIci {a b : α} (h : IsCompl a b) : Set.Iic a ≃o Set.Ici b :=
-  (OrderIso.Set.congr (Set.Iic a) (Set.Icc (a ⊓ b) a)
+  (Set.orderIsoOfEq (Set.Iic a) (Set.Icc (a ⊓ b) a)
         (h.inf_eq_bot.symm ▸ Set.Icc_bot.symm)).trans <|
     (infIccOrderIsoIccSup a b).trans
-      (OrderIso.Set.congr (Set.Icc b (a ⊔ b)) (Set.Ici b) (h.sup_eq_top.symm ▸ Set.Icc_top))
+      (Set.orderIsoOfEq (Set.Icc b (a ⊔ b)) (Set.Ici b) (h.sup_eq_top.symm ▸ Set.Icc_top))
 
 end IsCompl
 
@@ -393,6 +392,7 @@ variable [Lattice α] [IsModularLattice α] {a b c : α}
 instance isModularLattice_Iic : IsModularLattice (Set.Iic a) :=
   ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
 
+@[to_dual existing]
 instance isModularLattice_Ici : IsModularLattice (Set.Ici a) :=
   ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
 
@@ -400,12 +400,14 @@ section ComplementedLattice
 
 variable [BoundedOrder α] [ComplementedLattice α]
 
+@[to_dual none]
 theorem exists_inf_eq_and_sup_eq (hb : a ≤ b) (hc : b ≤ c) : ∃ b', b ⊓ b' = a ∧ b ⊔ b' = c := by
   obtain ⟨d, hdisjoint, hcodisjoint⟩ := exists_isCompl b
   refine ⟨(d ⊔ a) ⊓ c, ?_, ?_⟩
   · simpa [← inf_assoc, ← inf_sup_assoc_of_le _ hb, hdisjoint.eq_bot] using hb.trans hc
   · simp [← sup_inf_assoc_of_le _ hc, ← sup_assoc, hcodisjoint.eq_top]
 
+@[to_dual none]
 theorem exists_disjoint_and_sup_eq (h : a ≤ b) : ∃ a', Disjoint a a' ∧ a ⊔ a' = b := by
   simp_rw [disjoint_iff]
   apply exists_inf_eq_and_sup_eq (by simp) h
@@ -420,17 +422,12 @@ instance complementedLattice_Icc [Fact (a ≤ b)] : ComplementedLattice (Set.Icc
     obtain ⟨y, rfl, rfl⟩ := exists_inf_eq_and_sup_eq ha hb
     exact ⟨⟨y, inf_le_right, le_sup_right⟩, rfl, rfl⟩
 
+@[to_dual]
 instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) where
   exists_isCompl := fun ⟨x, hx⟩ => by
     simp_rw [Set.Iic.isCompl_iff]
     obtain ⟨y, hdisjoint, rfl⟩ := exists_disjoint_and_sup_eq hx
     exact ⟨⟨y, le_sup_right⟩, hdisjoint, rfl⟩
-
-instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
-  exists_isCompl := fun ⟨x, hx⟩ => by
-    simp_rw [Set.Ici.isCompl_iff]
-    obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
-    exact ⟨⟨y, inf_le_right⟩, hcodisjoint, rfl⟩
 
 /-- A disjoint element can be enlarged to a complementary element. -/
 @[to_dual /-- A codisjoint element can be shrunk to a complementary element. -/]

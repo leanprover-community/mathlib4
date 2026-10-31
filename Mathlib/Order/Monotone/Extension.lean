@@ -5,8 +5,12 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+import Mathlib.Data.Set.Monotone
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extension of a monotone function from a set to the whole space
@@ -20,7 +24,7 @@ public section
 
 open Set
 
-variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
+variable {α β : Type*} [PartialOrder α] [ConditionallyCompleteLinearOrder β] {f : α → β} {s : Set α}
 
 /-- If a function is monotone and is bounded on a set `s`, then it admits a monotone extension to
 the whole space. -/
