@@ -99,7 +99,7 @@ instance : Fintype (Triple k) :=
 
 /-- The complicated involution, defined piecewise according to how `x` compares with
 `y - z` and `2 * y`. -/
-def mangle : Triple k where
+def piecewise : Triple k where
   x := if T.x + T.z < T.y then T.x + 2 * T.z else
     if 2 * T.y < T.x then T.x - 2 * T.y else 2 * T.y - T.x
   y := if T.x + T.z < T.y then T.z else if 2 * T.y < T.x then T.x + T.z - T.y else T.y
@@ -111,21 +111,21 @@ def mangle : Triple k where
     · push Not at less; zify [less, more]; lia
     · push Not at less more; zify [less, more]; lia
 
-lemma involutive_mangle : (@mangle k).Involutive := fun T ↦ by
-  ext <;> grind [mangle, T.x_ne_zero, T.z_ne_zero]
+lemma involutive_piecewise : (@piecewise k).Involutive := fun T ↦ by
+  ext <;> grind [piecewise, T.x_ne_zero, T.z_ne_zero]
 
-/-- The only fixed point of `mangle` is `(1, 1, k)`. -/
-lemma eq_of_mangle_eq_self (mT : T.mangle = T) : T = ⟨1, 1, k, by lia⟩ := by
-  have xy : T.x = T.y := by grind [mangle]
-  have eqn : T.x * (T.x + 4 * T.z) = 4 * k + 1 := by grind [mangle]
+/-- The only fixed point of `piecewise` is `(1, 1, k)`. -/
+lemma eq_of_piecewise_eq_self (mT : T.piecewise = T) : T = ⟨1, 1, k, by lia⟩ := by
+  have xy : T.x = T.y := by grind [piecewise]
+  have eqn : T.x * (T.x + 4 * T.z) = 4 * k + 1 := by grind [piecewise]
   obtain ⟨_, _⟩ | ⟨_, _⟩ := Nat.prime_mul_iff.mp (eqn ▸ hk.out)
   · grind [T.z_ne_zero]
   · ext <;> grind
 
-lemma card_fixedPoints_mangle_eq_one : Fintype.card (@mangle k).fixedPoints = 1 := by
+lemma card_fixedPoints_piecewise_eq_one : Fintype.card (@piecewise k).fixedPoints = 1 := by
   rw [Fintype.card_eq_one_iff]
-  exact ⟨⟨⟨1, 1, k, by lia⟩, (by grind [mangle] : mangle _ = _)⟩,
-    fun ⟨T, mT⟩ ↦ Subtype.ext (eq_of_mangle_eq_self _ mT)⟩
+  exact ⟨⟨⟨1, 1, k, by lia⟩, (by grind [piecewise] : piecewise _ = _)⟩,
+    fun ⟨T, mT⟩ ↦ Subtype.ext (eq_of_piecewise_eq_self _ mT)⟩
 
 end Triple
 
@@ -140,9 +140,9 @@ theorem Nat.Prime.sq_add_sq' {p : ℕ} [h : Fact p.Prime] (hp : p % 4 = 1) :
   rw [← div_add_mod p 4, hp] at h ⊢
   set k := p / 4
   have s2 : swap (k := k)^[2 ^ 1] = id := funext involutive_swap
-  have m2 : mangle (k := k)^[2 ^ 1] = id := funext involutive_mangle
+  have m2 : piecewise (k := k)^[2 ^ 1] = id := funext involutive_piecewise
   have q := (Equiv.Perm.card_fixedPoints_modEq s2).symm.trans (Equiv.Perm.card_fixedPoints_modEq m2)
-  rw [card_fixedPoints_mangle_eq_one, Nat.ModEq] at q
+  rw [card_fixedPoints_piecewise_eq_one, Nat.ModEq] at q
   replace q : 0 < Fintype.card (@swap k).fixedPoints := by lia
   rw [Fintype.card_pos_iff, nonempty_subtype] at q
   exact sq_add_sq_of_swap_eq_self _ q.choose_spec
