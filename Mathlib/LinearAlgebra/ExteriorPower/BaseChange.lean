@@ -35,12 +35,8 @@ namespace exteriorPower
 `TensorProduct.mk R S M 1`. -/
 def baseChangeGenerator (i : ℕ) : M [⋀^Fin i]→ₗ[R] ExteriorAlgebra S (S ⊗[R] M) where
   toFun m := ExteriorAlgebra.ιMulti S i ((TensorProduct.mk R S M 1) ∘ m)
-  map_update_add' {_i} := by
-    cases Subsingleton.elim _i (by clear _i; infer_instance)
-    simp [Function.comp_update, map_add]
-  map_update_smul' {_i} := by
-    cases Subsingleton.elim _i (by clear _i; infer_instance)
-    intro m j r
+  map_update_add' _ := by simp [Function.comp_update, map_add]
+  map_update_smul' {_} m j r := by
     simp [Function.comp_update, -algebraMap_smul, ← algebraMap_smul S r]
   map_eq_zero_of_eq' m j k hjk hjk_ne := by
     have : ((mk R S M 1) ∘ m) j = ((mk R S M 1) ∘ m) k := by
