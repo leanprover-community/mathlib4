@@ -75,6 +75,8 @@ open LineDeriv
 
 section fderiv
 
+variable [SMulCommClass ℝ 𝕜 F]
+
 variable (E F) in
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
