@@ -201,7 +201,6 @@ instance : (isCardinalPresentable C κ).IsClosedUnderIsomorphisms where
     rw [isCardinalPresentable_iff] at hX ⊢
     exact isCardinalPresentable_of_iso e _
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isCardinalPresentable_of_equivalence
     {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (e : C ≌ C') :
     IsCardinalPresentable (e.functor.obj X) κ := by
@@ -425,7 +424,6 @@ lemma IsCardinalPresentable.exists_of_hexagon
     (f₀₃ ≫ g ≫ F.map u') (by simpa [hu'])
   exact ⟨j₁, u' ≫ u, v' ≫ F.map u, by grind, by simp [hu']⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a commutative square where both objects on the top are `κ`-presentable
 and the bottom map is a colimit of a natural transformation `f : X ⟶ Y` between
 functors in `J ⥤ C` where `J` is `κ`-filtered, the commutative square can be
