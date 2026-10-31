@@ -41,7 +41,7 @@ theorem mem_kaplanskySet_iff : P ∈ kaplanskySet S ↔ (P : Set R) ∩ S = ∅ 
 
 /-- If `0 ∉ S`, then every chain in `kaplanskySet S` has an upper bound. -/
 theorem exists_mem_kaplanskySet_le {C : Set (Ideal R)} (hS : 0 ∉ S) (hC : C ⊆ kaplanskySet S)
-      (hC₂ : IsChain (· ≤ ·) C) : ∃ P ∈ kaplanskySet S, ∀ J ∈ C, J ≤ P := by
+      (hC₂ : IsLEChain C) : ∃ P ∈ kaplanskySet S, ∀ J ∈ C, J ≤ P := by
   rcases C.eq_empty_or_nonempty with rfl | ⟨_, hI⟩
   · exact ⟨⊥, by simpa [mem_kaplanskySet_iff, eq_empty_iff_forall_notMem]⟩
   · refine ⟨sSup C, ?_, fun _ hz ↦ le_sSup hz⟩
