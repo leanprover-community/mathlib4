@@ -113,8 +113,8 @@ lemma ord_add {x : X} [IsDiscreteValuationRing (X.presheaf.stalk x)]
   · simp [hg]
   by_cases! hx : coheight x ≠ 1
   · simp [hx]
-  rw [inf_le_iff, ord_le_ord_iff hx hx hf hfg, ord_le_ord_iff hx hx hg hfg]
-  exact inf_le_iff.mp <| Ring.ordFrac_add (R := X.presheaf.stalk x) _ _ hfg
+  rw [min_le_iff, ord_le_ord_iff hx hx hf hfg, ord_le_ord_iff hx hx hg hfg]
+  exact min_le_iff.mp <| Ring.ordFrac_add (R := X.presheaf.stalk x) _ _ hfg
 
 lemma ord_le_smul {x : X} {U : X.Opens} [Nonempty U] (hxU : x ∈ U)
     {a : Γ(X, U)} (ha : a ≠ 0) (f : X.functionField) : ord f x ≤ ord (a • f) x := by
