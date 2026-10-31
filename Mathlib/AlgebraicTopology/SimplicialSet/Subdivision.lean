@@ -320,4 +320,42 @@ noncomputable def sdObjNerveIso (X : Type u) [PartialOrder X] :
     sd.obj (nerve X) ≅ nerve (NonemptyFiniteChains X) :=
   asIso (sdToSd'.app _) ≪≫ sd'ObjNerveIso X
 
+namespace NonemptyFiniteChains
+
+variable {X : Type u} [LinearOrder X] [Fintype X] [Nontrivial X] (x₀ : X)
+
+/-- Auxiliary definition for `sdHornArrowIsoSd'` and `sdHornArrowIsoSd`. -/
+noncomputable def sdHornArrowIsoRangeSd' :
+    Arrow.mk (NonemptyFiniteChains.sdHorn x₀).ι ≅
+      Arrow.mk (Subcomplex.range (sd'.map (PartialOrder.horn x₀).ι)).ι :=
+  Subcomplex.congrArrowι (sd'ObjNerveIso _).symm (by
+    ext ⟨n⟩ x
+    trans (((sd'ObjNerveIso X).inv.app _ x).obj (Fin.last _)).simplex ∈
+      (PartialOrder.horn x₀).obj _
+    · apply SSet.mem_range_sd'_map_ι_app_iff
+    · simp [mem_sdHorn_iff.{u}, ← Set.toFinset_subset_toFinset,
+        finsetImage_sd'ObjNerveIso_inv_app_simplex_obj_univ.{u}])
+
+/-- If `X` is a nontrivial finite linearly ordered type and `x₀ : X`, this is
+an isomorphism of arrows between the inclusion of the
+subcomplex `NonemptyFiniteChains.sdHorn x₀` in `nerve (NonemptyFiniteChains X)`,
+and the image by the subdivision functor `sd'` of the inclusion
+of `PartialOrder.horn x₀` in the nerve of `X`. -/
+noncomputable def sdHornArrowIsoSd' :
+    Arrow.mk (NonemptyFiniteChains.sdHorn x₀).ι ≅
+      Arrow.mk (sd'.map (PartialOrder.horn x₀).ι) :=
+  sdHornArrowIsoRangeSd' _ ≪≫ Arrow.isoMk (asIso (Subcomplex.toRange _)).symm (Iso.refl _)
+
+/-- If `X` is a nontrivial finite linearly ordered type and `x₀ : X`, this is
+an isomorphism of arrows between the inclusion of the
+subcomplex `NonemptyFiniteChains.sdHorn x₀` in `nerve (NonemptyFiniteChains X)`,
+and the image by the subdivision functor `sd` of the inclusion
+of `PartialOrder.horn x₀` in the nerve of `X`. -/
+noncomputable def sdHornArrowIsoSd :
+    Arrow.mk (NonemptyFiniteChains.sdHorn x₀).ι ≅
+      Arrow.mk (sd.map (PartialOrder.horn x₀).ι) :=
+  sdHornArrowIsoSd' _ ≪≫ Arrow.isoMk (asIso (sdToSd'.app _)).symm (asIso (sdToSd'.app _)).symm
+
+end NonemptyFiniteChains
+
 end PartialOrder
