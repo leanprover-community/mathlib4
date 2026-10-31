@@ -961,6 +961,11 @@ namespace FactorsThrough
 
 protected theorem rfl {α β : Sort*} {f : α → β} : FactorsThrough f f := fun _ _ ↦ id
 
+/-- Fiber containment is transitive, even when the codomains differ. -/
+theorem trans {α β γ δ : Sort*} {f : α → β} {g : α → γ} {k : α → δ}
+    (hg : g.FactorsThrough f) (hf : f.FactorsThrough k) : g.FactorsThrough k :=
+  fun _ _ hab ↦ hg (hf hab)
+
 theorem comp_left {α β γ δ : Sort*} {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : γ → δ) :
     FactorsThrough (g' ∘ g) f := fun _x _y hxy ↦
   congr_arg g' (h hxy)
@@ -970,6 +975,89 @@ theorem comp_right {α β γ δ : Sort*} {f : α → β} {g : α → γ} (h : Fa
   h hxy
 
 end FactorsThrough
+
+/-! ### Factorization along a surjective function -/
+
+/-- Evaluate `g` at a chosen preimage under the surjection `f`.
+This is a factor of `g` exactly when `g` is constant on the fibers of `f`. -/
+noncomputable def Surjective.factor {α β γ : Sort*} {f : α → β} (hf : Function.Surjective f)
+    (g : α → γ) : β → γ :=
+  g ∘ surjInv hf
+
+section factor
+
+variable {α β γ δ : Sort*} {f : α → β} {g : α → γ} {k : α → δ}
+
+namespace FactorsThrough
+
+@[simp]
+theorem factor_apply (h : g.FactorsThrough f) (hf : Surjective f) (a : α) :
+    hf.factor g (f a) = g a :=
+  h (surjInv_eq hf (f a))
+
+@[simp]
+theorem factor_comp (h : g.FactorsThrough f) (hf : Surjective f) : hf.factor g ∘ f = g :=
+  funext (h.factor_apply hf)
+
+/-- Surjectivity makes the factorization unique. -/
+theorem factor_eq_iff (h : g.FactorsThrough f) (hf : Surjective f) (d : β → γ) :
+    hf.factor g = d ↔ d ∘ f = g := by
+  rw [← hf.right_cancellable, h.factor_comp, eq_comm]
+
+/-- Factoring preserves surjectivity. -/
+theorem factor_surjective_iff (h : g.FactorsThrough f) (hf : Surjective f) :
+    Surjective (hf.factor g) ↔ Surjective g := by
+  have hcomp := factor_comp h hf
+  exact ⟨fun hs ↦ hcomp ▸ hs.comp hf, fun hs ↦ (hcomp.symm ▸ hs).of_comp⟩
+
+theorem factor_injective (h : f.FactorsThrough g) (hf : Surjective f) :
+    Injective (hf.factor g) := by
+  intro b c hbc
+  simpa only [surjInv_eq] using h hbc
+
+/-- The factor is injective exactly when no additional fibers were identified. -/
+theorem factor_injective_iff (h : g.FactorsThrough f) (hf : Surjective f) :
+    Injective (hf.factor g) ↔ f.FactorsThrough g := by
+  refine ⟨fun hi a b hab ↦ hi ?_, fun hfg ↦ hfg.factor_injective hf⟩
+  rw [factor_apply h hf, factor_apply h hf, hab]
+
+theorem factor_trans (hk : k.FactorsThrough g) (hf : Surjective f) (hgSurj : Surjective g) :
+    hgSurj.factor k ∘ hf.factor g = hf.factor k :=
+  funext (hk.factor_apply hgSurj <| surjInv hf ·)
+
+end FactorsThrough
+
+namespace Surjective
+open FactorsThrough
+
+@[simp]
+theorem factor_self (hf : Surjective f) : hf.factor f = id :=
+  (factor_eq_iff (FactorsThrough.rfl (f := f)) hf id).mpr rfl
+
+theorem factor_comp_eq_iff (hf : Surjective f) (g : α → γ) :
+    hf.factor g ∘ f = g ↔ g.FactorsThrough f :=
+  ⟨fun h a b hab ↦ (congr_fun h a).symm.trans ((congrArg (hf.factor g) hab).trans (congr_fun h b)),
+    fun h ↦ factor_comp h hf⟩
+
+theorem factorsThrough_iff_existsUnique (hf : Surjective f) :
+    g.FactorsThrough f ↔ ∃! d : β → γ, d ∘ f = g := by
+  refine ⟨fun h ↦ ⟨hf.factor g, h.factor_comp hf, fun d hd ↦ ?_⟩, ?_⟩
+  · exact ((h.factor_eq_iff hf d).mpr hd).symm
+  exact fun ⟨d, hd, _⟩ a b hf ↦ (congrFun hd a).symm.trans ((congrArg d hf).trans (congrFun hd b))
+
+theorem factor_comp_left (hf : Surjective f) (g : α → γ) (d : γ → δ) :
+  hf.factor (d ∘ g) = d ∘ hf.factor g := rfl
+
+@[simp]
+theorem factor_comp (hf : Surjective f) (d : β → γ) : hf.factor (d ∘ f) = d := by
+  rw [hf.factor_comp_left, hf.factor_self, comp_id]
+
+/-- Factoring along the identity leaves a function unchanged. -/
+@[simp]
+theorem factor_id (g : α → γ) : (surjective_id : Surjective (@id α)).factor g = g :=
+  funext <| (injective_id.factorsThrough g).factor_apply surjective_id
+
+end factor.Surjective
 
 section CurryAndUncurry
 
