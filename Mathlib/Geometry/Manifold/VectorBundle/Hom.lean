@@ -358,6 +358,17 @@ lemma ContMDiffWithinAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[�
   · apply hψ
   · simp [contMDiffWithinAt_totalSpace, hb, hw]
 
+lemma ContMDiffWithinAt.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x) →L[𝕜] F₂)}
+    (hψ : CMDiffAt[s] n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] F₂)) (b m) (ψ m)) x)
+    (hv : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
+    CMDiffAt[s] n (fun m ↦ ψ m (v m)) x := by
+  have aux := hψ.clm_bundle_apply (E₂ := Bundle.Trivial B F₂) (F₂ := F₂) hv
+  -- TODO: generalise `contMDiffWithinAt_section` to pullback bundles, then golf this proof!
+  simp_rw [contMDiffWithinAt_totalSpace,
+    Trivial.fiberBundle_trivializationAt', Trivial.trivialization_apply] at aux
+  exact aux.2
+
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
 One can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
@@ -391,22 +402,12 @@ lemma Bundle.Trivialization.contMDiffAt_symm_const {k}
   · exact contMDiffAt_id
   · exact contMDiffAt_const
 
--- TODO: we want this for the musical isomorphism (it seems), and nice for symmetry anyway
 lemma ContMDiffAt.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x) →L[𝕜] F₂)}
     (hψ : CMDiffAt n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] F₂)) (b m) (ψ m)) x)
     (hv : CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
-    CMDiffAt n (fun m ↦ ψ m (v m)) x := by
-  have aux := ContMDiffAt.clm_bundle_apply (E₁ := E₁) (F₁ := F₁)
-    (E₂ := Bundle.Trivial B F₂) (F₂ := F₂)
-    (n := n) (ϕ := ψ) (v := v) (hv := hv) (b := b) --(IM := IM) (IB := IB)
-    (hϕ := hψ)
-  --simp_all
-  convert aux
-  sorry -- TODO: what's the right statement?
-  --let aux := ContMDiffAt.clm_bundle_apply (E₂ := Bundle.Trivial B F₂) (F₂ := F₂) (𝕜 := 𝕜)
-  --  (E₁ := E₁) (F₁ := F₁) (n := n) (IB := IB) (IM := IM)
-  --apply aux
+    CMDiffAt n (fun m ↦ ψ m (v m)) x :=
+  ContMDiffWithinAt.clm_bundle_apply_trivial_target hψ hv
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
@@ -428,13 +429,12 @@ lemma ContMDiffOn.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E
     CMDiff[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) :=
   fun x hx ↦ (hψ x hx).clm_bundle_apply_trivial_source (hb x hx) (hw x hx)
 
--- TODO: we want this for the musical isomorphism (it seems), and nice for symmetry anyway
 lemma ContMDiffOn.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x) →L[𝕜] F₂)}
     (hψ : CMDiff[s] n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] F₂)) (b m) (ψ m)))
     (hv : CMDiff[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
-    CMDiff[s] n (fun m ↦ ψ m (v m)) := by
-  sorry
+    CMDiff[s] n (fun m ↦ ψ m (v m)) :=
+  fun x hx ↦ (hψ x hx).clm_bundle_apply_trivial_target (hv x hx)
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
@@ -453,6 +453,13 @@ lemma ContMDiff.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[𝕜] E�
     (hb : CMDiff n b) (hw : CMDiff n w) :
     CMDiff n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) :=
   fun x ↦ (hψ x).clm_bundle_apply_trivial_source (hb x) (hw x)
+
+lemma ContMDiff.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x) →L[𝕜] F₂)}
+    (hψ : CMDiff n
+      (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] F₂)) (b m) (ψ m)))
+    (hv : CMDiff n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
+    CMDiff n (fun m ↦ ψ m (v m)) :=
+  fun x ↦ (hψ x).clm_bundle_apply_trivial_target (hv x)
 
 section
 variable [CompleteSpace 𝕜] [IsManifold IB 1 B]
