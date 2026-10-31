@@ -127,6 +127,40 @@ lemma circleMap_zero_re (r θ : ℝ) : (circleMap 0 r θ).re = r * Real.cos θ :
 lemma circleMap_zero_im (r θ : ℝ) : (circleMap 0 r θ).im = r * Real.sin θ := by
   simp [circleMap_zero]
 
+@[simp] lemma circleMap_zero_norm_arg (z : ℂ) : circleMap 0 ‖z‖ z.arg = z := by
+  rw [circleMap_zero, norm_mul_exp_arg_mul_I]
+
+private lemma norm_circleMap_zero_sub_circleMap_zero_sq (r s θ φ : ℝ) :
+    ‖circleMap 0 r θ - circleMap 0 s φ‖ ^ 2 =
+      r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) := by
+  rw [← ofReal_inj, ← normSq_eq_norm_sq, normSq_sub, conj_circleMap_zero]
+  simp [circleMap_zero_mul, circleMap_zero_re, normSq_eq_norm_sq, sub_eq_add_neg, mul_assoc]
+
+/--
+Law of cosines for the chord between two points `circleMap c r θ` and `circleMap c s φ`.
+-/
+lemma norm_circleMap_sub_circleMap_sq (c : ℂ) (r s θ φ : ℝ) :
+    ‖circleMap c r θ - circleMap c s φ‖ ^ 2 =
+      r ^ 2 + s ^ 2 - 2 * r * s * Real.cos (θ - φ) := by
+  simpa [circleMap] using norm_circleMap_zero_sub_circleMap_zero_sq ..
+
+/--
+Points of the circle `circleMap 0 r` keep distance at least `r * |sin ((θ - arg a) / 2)|` from any
+point `a`. The bound is sharp: equality holds for `a = 0` and `θ = π`.
+-/
+theorem mul_abs_sin_le_norm_circleMap_zero_sub {r : ℝ} (hr : 0 ≤ r) (θ : ℝ) (a : ℂ) :
+    r * |Real.sin ((θ - a.arg) / 2)| ≤ ‖circleMap 0 r θ - a‖ := by
+  refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
+  have h := Real.sin_sq_eq_half_sub ((θ - a.arg) / 2)
+  rw [show 2 * ((θ - a.arg) / 2) = θ - a.arg by ring] at h
+  conv_rhs => rw [← circleMap_zero_norm_arg a, norm_circleMap_sub_circleMap_sq]
+  rw [mul_pow, sq_abs, show Real.cos (θ - a.arg) = 1 - 2 * Real.sin ((θ - a.arg) / 2) ^ 2 by
+    linarith]
+  linarith [mul_nonneg (sub_nonneg.2 (Real.sin_sq_le_one ((θ - a.arg) / 2)))
+      (sq_nonneg (r - ‖a‖)),
+    mul_nonneg (mul_nonneg (sq_nonneg (Real.sin ((θ - a.arg) / 2))) (norm_nonneg a))
+      (by positivity : (0 : ℝ) ≤ 2 * r + ‖a‖)]
+
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
 
