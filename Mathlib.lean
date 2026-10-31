@@ -4932,6 +4932,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorBundle.Pullback
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+public import Mathlib.Geometry.Manifold.VectorBundle.SecToFun
 public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
@@ -8327,6 +8328,7 @@ public import Mathlib.Topology.ExtremallyDisconnected
 public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Topology.FiberBundle.Constructions
 public import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
+public import Mathlib.Topology.FiberBundle.SecToFun
 public import Mathlib.Topology.FiberBundle.Trivialization
 public import Mathlib.Topology.FiberPartition
 public import Mathlib.Topology.Filter
@@ -8653,6 +8655,7 @@ public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Topology.VectorBundle.Riemannian
+public import Mathlib.Topology.VectorBundle.SecToFun
 public import Mathlib.Topology.WithTopology
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Util.AliasIn

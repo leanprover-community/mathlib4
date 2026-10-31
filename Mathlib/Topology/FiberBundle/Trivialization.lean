@@ -494,6 +494,24 @@ theorem symm_trans_target_eq (e e' : Trivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).target = (e.baseSet ∩ e'.baseSet) ×ˢ univ :=
   Pretrivialization.symm_trans_target_eq e.toPretrivialization e'
 
+lemma baseSet_mem_nhds {x : B} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
+  e.open_baseSet.mem_nhds_iff.mpr hx
+
+lemma eventually {x : B} (hx : x ∈ e.baseSet) {P : B → Prop}
+  (h : ∀ x' ∈ e.baseSet, P x') : ∀ᶠ x' in 𝓝 x, P x' := by
+  filter_upwards [e.baseSet_mem_nhds hx] with x' hx'
+  exact h x' hx'
+
+lemma baseSet_prod_univ_mem_nhds {v : Z}
+    (hv : proj v ∈ e.baseSet) : e.baseSet ×ˢ univ ∈ 𝓝 (e v) := by
+  rw [← e.mk_proj_snd' hv]
+  exact prod_mem_nhds (e.baseSet_mem_nhds hv) univ_mem
+
+lemma comp_invFun_eventuallyEq
+    {v : Z} (hv : proj v ∈ e.baseSet) : e ∘ e.invFun =ᶠ[𝓝 (e v)] id := by
+  filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with p hp
+  simp [(e.mem_target).2 hp.1]
+
 theorem coe_fst_eventuallyEq_proj (ex : x ∈ e.source) : Prod.fst ∘ e =ᶠ[𝓝 x] proj :=
   mem_nhds_iff.2 ⟨e.source, fun _y hy => e.coe_fst hy, e.open_source, ex⟩
 
