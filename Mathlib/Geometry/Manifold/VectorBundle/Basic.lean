@@ -441,6 +441,14 @@ theorem Bundle.Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → Total
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) s x :=
   ⟨(hp.change_section_trivialization · he he'), (hp.change_section_trivialization · he' he)⟩
 
+theorem Bundle.Trivialization.contMDiffAt_snd_comp_iff₂ {f : M → TotalSpace F E}
+    (hp : ContMDiffAt IM IB n (π F E ∘ f) x)
+    (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
+    ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ (e (f y)).2) x ↔
+      ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) x := by
+  simpa [← contMDiffWithinAt_univ] using
+    e.contMDiffWithinAt_snd_comp_iff₂ hp he he'
+
 end ContMDiffCoordChange
 
 variable [IsManifold IB n B] in
@@ -521,12 +529,22 @@ theorem contMDiffOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
   rw [e.contMDiffOn_iff (mapsTo_id _)] at this
   exact (this.1.prodMk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
 
+theorem contMDiffAt (e : Trivialization F (π F E)) [MemTrivializationAtlas e]
+    {x} (hx : x ∈ e.source) :
+    ContMDiffAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e x :=
+  e.contMDiffOn.contMDiffAt (e.open_source.mem_nhds hx)
+
 theorem contMDiffOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toOpenPartialHomeomorph.symm e.target := by
   rw [e.contMDiffOn_iff e.toOpenPartialHomeomorph.mapsTo_symm]
   refine ⟨contMDiffOn_fst.congr fun x hx ↦ e.proj_symm_apply hx,
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
+
+theorem contMDiffAt_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e]
+    {x} (hx : x ∈ e.target) :
+    ContMDiffAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toOpenPartialHomeomorph.symm x :=
+  e.contMDiffOn_symm.contMDiffAt (e.open_target.mem_nhds hx)
 
 /-- Smoothness of a `C^n` section at `x₀` within a set `a` can be determined
 using any trivialisation whose `baseSet` contains `x₀`. -/
