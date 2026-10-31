@@ -287,7 +287,7 @@ section PartialOrder
 variable [PartialOrder X] [TopologicalSpace Y] {s : Set X}
 
 @[to_dual]
-lemma isRightContinuous_iff_continuousWithin_Ici :
+lemma isRightContinuous_iff_continuousWithinAt_Ici :
     IsRightContinuous f ↔ ∀ a, ContinuousWithinAt f (Ici a) a :=
   forall_congr' fun _ ↦ continuousWithinAt_Ioi_iff_Ici
 
