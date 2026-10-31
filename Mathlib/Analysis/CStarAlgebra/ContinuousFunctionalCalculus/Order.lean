@@ -487,10 +487,7 @@ theorem nnNorm_le_nnNorm_of_le_of_nonneg {a b : A} (hab : a ≤ b) (ha : 0 ≤ a
 alias nnnorm_le_nnnorm_of_le_of_nonneg := nnNorm_le_nnNorm_of_le_of_nonneg
 
 @[deprecated (since := "2026-08-10")]
-alias nnNorm_le_nnNorm_of_nonneg_of_le := nnNorm_le_nnNorm_of_le_of_nonneg
-
-@[deprecated (since := "2026-10-31")]
-alias nnnorm_le_nnnorm_of_nonneg_of_le := nnNorm_le_nnNorm_of_nonneg_of_le
+alias nnnorm_le_nnnorm_of_nonneg_of_le := nnNorm_le_nnNorm_of_le_of_nonneg
 
 lemma star_left_conjugate_le_norm_smul (a b : A) (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
