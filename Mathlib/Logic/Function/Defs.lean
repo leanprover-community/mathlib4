@@ -8,6 +8,7 @@ module
 public import Mathlib.Init
 
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.FunProp
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -163,6 +164,7 @@ theorem onFun_swap_comm (f : β → β → φ) (g : α → β) : (swap f on g) =
 /- ### Bijective functions -/
 
 /-- A function is called bijective if it is both injective and surjective. -/
+@[fun_prop]
 def Bijective (f : α → β) :=
   Injective f ∧ Surjective f
 

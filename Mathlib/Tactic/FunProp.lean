@@ -354,3 +354,5 @@ There are four types of theorems that are used a bit differently.
 -/
 
 public meta section
+
+attribute [fun_prop] Function.Injective Function.Surjective
