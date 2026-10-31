@@ -122,7 +122,8 @@ theorem IsEulerian.connected_of_forall_not_isIsolated (hp : p.IsEulerian)
 
 theorem IsEulerian.even_degree_iff (ht : p.IsEulerian) [Fintype V] [DecidableRel G.Adj] :
     Even (G.degree w) ↔ u ≠ v → w ≠ u ∧ w ≠ v := by
-  rw [← IsTrail.even_countP_edges_iff (p := p), ← Multiset.coe_countP, Multiset.countP_eq_card_filter,
+  rw [← IsTrail.even_countP_edges_iff (p := p), ← Multiset.coe_countP,
+    Multiset.countP_eq_card_filter,
     ← card_incidenceFinset_eq_degree, incidenceFinset_eq_filter, ← ht.edgesFinset_eq]
   simp [Finset.card_def]
 

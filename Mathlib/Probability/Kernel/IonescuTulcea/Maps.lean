@@ -159,7 +159,7 @@ end Definitions
 
 section Lemmas
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] {X : ι → Type*}
 
 lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
     (s : (i : Ioc a c) → Set (X i)) :

@@ -100,11 +100,10 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
+variable [Ring k] [LinearOrder k]
   [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [IsStrictOrderedModule k E]
   {a a' b b' : E} {r r' : k}
 
-omit [IsStrictOrderedRing k] in
 theorem lineMap_le_lineMap_iff_of_lt' (h : a < b) : lineMap a b r ≤ lineMap a b r' ↔ r ≤ r' := by
   simp only [lineMap_apply_module']
   rw [add_le_add_iff_right, smul_le_smul_iff_of_pos_right (sub_pos.mpr h)]
@@ -121,7 +120,6 @@ theorem right_le_lineMap_iff_one_le (h : a < b) : b ≤ lineMap a b r ↔ 1 ≤ 
 theorem lineMap_le_right_iff_le_one (h : a < b) : lineMap a b r ≤ b ↔ r ≤ 1 := by
   rw [← lineMap_le_lineMap_iff_of_lt' h, lineMap_apply_one]
 
-omit [IsStrictOrderedRing k] in
 theorem lineMap_lt_lineMap_iff_of_lt' (h : a < b) : lineMap a b r < lineMap a b r' ↔ r < r' := by
   simp only [lineMap_apply_module']
   rw [add_lt_add_iff_right, smul_lt_smul_iff_of_pos_right (sub_pos.mpr h)]
@@ -137,6 +135,8 @@ theorem right_lt_lineMap_iff_one_lt (h : a < b) : b < lineMap a b r ↔ 1 < r :=
 
 theorem lineMap_lt_right_iff_lt_one (h : a < b) : lineMap a b r < b ↔ r < 1 := by
   rw [← lineMap_lt_lineMap_iff_of_lt' h, lineMap_apply_one]
+
+variable [IsStrictOrderedRing k]
 
 theorem midpoint_le_midpoint [Invertible (2 : k)] (ha : a ≤ a') (hb : b ≤ b') :
     midpoint k a b ≤ midpoint k a' b' :=

@@ -143,6 +143,7 @@ protected theorem inductionOn {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
 set_option linter.unusedVariables false
 @[deprecated TensorProduct.inductionOn +typeChanged (since := "2026-09-07")]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
+    (zero : motive 0)
     (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
     (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
   TensorProduct.inductionOn z tmul add

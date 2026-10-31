@@ -221,7 +221,7 @@ theorem factor_orderIso_map_one_eq_bot [IsCancelMulZero N] {m : Associates M} {n
     (d ⟨1, one_dvd m⟩ : Associates N) = 1 := by
   let : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
   let : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
-  simp only [← Associates.bot_eq_one, Subtype.mk_bot, bot_le, Subtype.coe_eq_bot_iff]
+  simp only [← Associates.bot_eq_one, bot_le, Subtype.coe_eq_bot_iff]
   let : BotHomClass ({ l // l ≤ m } ≃o { l // l ≤ n }) _ _ := OrderIsoClass.toBotHomClass
   exact map_bot d
 
