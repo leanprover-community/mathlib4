@@ -30,27 +30,27 @@ noncomputable def mvPolynomialMinor (row : t → m) (col : t → n) :
     MvPolynomial (m × n) R :=
   det <| submatrix (Matrix.mvPolynomialX m n R) row col
 
-lemma mvPolynomialMinor_def (row : t → m) (col : t → n) :
+lemma mvPolynomialMinor_eq_det_submatrix (row : t → m) (col : t → n) :
     mvPolynomialMinor R row col = det (submatrix (Matrix.mvPolynomialX m n R) row col) := by
   rfl
 
 /-- A generic minor indexed by an empty type is `1`. -/
 @[simp] theorem mvPolynomialMinor_zero [IsEmpty t] (row : t → m) (col : t → n) :
     mvPolynomialMinor R row col = 1 := by
-  rw [mvPolynomialMinor_def, det_isEmpty]
+  rw [mvPolynomialMinor_eq_det_submatrix, det_isEmpty]
 
 /-- A generic minor indexed by a unique type is the corresponding variable. -/
 @[simp] theorem mvPolynomialMinor_one [Unique t] (row : t → m) (col : t → n) :
     mvPolynomialMinor R row col = MvPolynomial.X (row default, col default) := by
-  simp [mvPolynomialMinor_def]
+  simp [mvPolynomialMinor_eq_det_submatrix]
 
 variable (R) in
 /-- Evaluating a generic minor at a concrete matrix gives the corresponding concrete minor. -/
-theorem eval_mvPolynomialMinor [Algebra R S] (A : Matrix m n S)
+@[simp] theorem aeval_mvPolynomialMinor [Algebra R S] (A : Matrix m n S)
     (row : t → m) (col : t → n) :
     MvPolynomial.aeval (fun ij : m × n => A ij.1 ij.2)
       (mvPolynomialMinor R row col) = det (submatrix A row col) := by
-  rw [mvPolynomialMinor_def, AlgHom.map_det]
+  rw [mvPolynomialMinor_eq_det_submatrix, AlgHom.map_det]
   congr
   ext
   simp
@@ -58,7 +58,7 @@ theorem eval_mvPolynomialMinor [Algebra R S] (A : Matrix m n S)
 /-- Mapping coefficients sends a generic minor to the corresponding generic minor. -/
 theorem map_mvPolynomialMinor (f : R →+* S) (row : t → m) (col : t → n) :
     MvPolynomial.map f (mvPolynomialMinor R row col) = mvPolynomialMinor S row col := by
-  rw [mvPolynomialMinor_def, RingHom.map_det]
+  rw [mvPolynomialMinor_eq_det_submatrix, RingHom.map_det]
   congr
   ext
   simp
@@ -103,7 +103,7 @@ theorem determinantalIdeal_eq_span_determinantalMinors :
   simp only [determinantalIdeal]
 
 /-- Determinantal ideals are finitely generated. -/
-theorem determinantalIdeal_fg [Finite m] [Finite n] : (determinantalIdeal R m n t).FG := by
+theorem fg_determinantalIdeal [Finite m] [Finite n] : (determinantalIdeal R m n t).FG := by
   refine Submodule.fg_def.mpr ⟨determinantalMinors R m n t, Set.finite_univ.image _, ?_⟩
   exact (determinantalIdeal_eq_span_determinantalMinors R m n t).symm
 
