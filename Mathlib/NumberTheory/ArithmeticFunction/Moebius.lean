@@ -52,7 +52,7 @@ open scoped zeta
   If `n` is not squarefree, `μ n = 0`. -/
 @[oeis A008683 "the sequence skips `n = 0`"]
 def moebius : ArithmeticFunction ℤ :=
-  ⟨fun n => if Squarefree n then (-1) ^ cardFactors n else 0, by simp⟩
+  .mk (fun n => if Squarefree n then (-1) ^ cardFactors n else 0) (by simp)
 
 @[inherit_doc]
 scoped[ArithmeticFunction.Moebius] notation "μ" => ArithmeticFunction.moebius
@@ -222,13 +222,12 @@ theorem inv_zetaUnit : ((zetaUnit⁻¹ : (ArithmeticFunction R)ˣ) : ArithmeticF
 
 end CommRing
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Möbius inversion for functions to an `AddCommGroup`. -/
 theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     (∀ n > 0, ∑ i ∈ n.divisors, f i = g n) ↔
       ∀ n > 0, ∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd = f n := by
-  let f' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else f x, ite_eq_left rfl⟩
-  let g' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else g x, ite_eq_left rfl⟩
+  let f' : ArithmeticFunction R := .mk (fun x => if x = 0 then 0 else f x) (ite_eq_left rfl)
+  let g' : ArithmeticFunction R := .mk (fun x => if x = 0 then 0 else g x) (ite_eq_left rfl)
   trans (ζ : ArithmeticFunction ℤ) • f' = g'
   · rw [ArithmeticFunction.ext_iff]
     apply forall_congr'

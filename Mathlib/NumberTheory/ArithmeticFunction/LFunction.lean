@@ -56,14 +56,13 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The arithmetic function corresponding to the Dirichlet series `f(q⁻ˢ)`.
 For example, if `f = 1 + X + X² + ...` and `q = p`, then `f(q⁻ˢ) = 1 + p⁻ˢ + p⁻²ˢ + ...`.
 
 If `q ≤ 1` then `k ↦ q ^ k` is not injective, so we use the junk value `f.constantCoeff`. -/
 noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFunction R where
   toFun f := if hq : 1 < q then
-    ⟨Function.extend (q ^ ·) (f.coeff ·) 0, by simp [Nat.ne_zero_of_lt hq]⟩ else
+    .mk (Function.extend (q ^ ·) (f.coeff ·) 0) (by simp [Nat.ne_zero_of_lt hq]) else
       algebraMap R (ArithmeticFunction R) f.constantCoeff
   map_zero' := by ext; split_ifs <;> simp [Function.extend]
   -- note that `ofPowerSeries.map_one'` relies on the junk value `f.constantCoeff`.
@@ -129,7 +128,6 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
         exact ⟨0, by simp [hn]⟩
     · simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem ofPowerSeries_apply {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (n : ℕ) :
     ofPowerSeries q f n = Function.extend (q ^ ·) (f.coeff ·) 0 n := by
   simp [ofPowerSeries, dite_eq_left hq]
@@ -141,7 +139,6 @@ theorem ofPowerSeries_apply_pow {q : ℕ} (hq : 1 < q) (f : PowerSeries R) (k : 
 theorem ofPowerSeries_apply_zero (q : ℕ) (f : PowerSeries R) : ofPowerSeries q f 0 = 0 := by
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 -- note that `ofPowerSeries_apply_one` relies on the junk value `f.constantCoeff`.
 theorem ofPowerSeries_apply_one (q : ℕ) (f : PowerSeries R) :
