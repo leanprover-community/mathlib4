@@ -155,6 +155,29 @@ theorem eVariationOn_eq_strictMonoOn (f : α → E) (s : Set α) :
     rintro ⟨n, u, u_mono, u_mem⟩
     apply sum_le_of_monotoneOn_Iic (by grind [MonotoneOn, StrictMonoOn]) (by grind)
 
+/-- The variation can be expressed as a supremum over monotone tuples `Fin (n + 1) → α` with
+values in `s`. When `s` is countable, the index type of this supremum is countable. -/
+theorem eq_iSup_fin (f : α → E) (s : Set α) :
+    eVariationOn f s = ⨆ (n : ℕ) (p : {u : Fin (n + 1) → α // Monotone u ∧ ∀ i, u i ∈ s}),
+      ∑ i : Fin n, edist (f (p.1 i.succ)) (f (p.1 i.castSucc)) := by
+  refine le_antisymm (iSup_le fun ⟨n, u, hu, hus⟩ ↦ ?_)
+    (iSup_le fun n ↦ iSup_le fun ⟨p, hp, hps⟩ ↦ ?_)
+  · let p : {u : Fin (n + 1) → α // Monotone u ∧ ∀ i, u i ∈ s} :=
+      ⟨fun i : Fin (n + 1) ↦ u i, hu.comp Fin.val_strictMono.monotone, fun i ↦ hus i⟩
+    have : ∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)) =
+        ∑ i : Fin n, edist (f (p.1 i.succ)) (f (p.1 i.castSucc)) := by
+      simp [← Fin.sum_univ_eq_sum_range, p]
+    exact le_iSup₂_of_le n p this.le
+  · let v : ℕ → α := fun k ↦ p ⟨min k n, Nat.lt_succ_of_le (min_le_right k n)⟩
+    have : ∑ i : Fin n, edist (f (p i.succ)) (f (p i.castSucc)) =
+        ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by
+      simp only [← Fin.sum_univ_eq_sum_range, Order.add_one_le_iff, Fin.is_lt, inf_of_le_left,
+        Fin.is_le', v]
+      congr
+    rw [this]
+    exact sum_le (f := f) (u := v) (fun _ _ hab ↦ hp (Fin.mk_le_mk.2 (min_le_min hab le_rfl)))
+      fun i ↦ hps _
+
 theorem mono (f : α → E) {s t : Set α} (hst : t ⊆ s) : eVariationOn f t ≤ eVariationOn f s := by
   apply iSup_le _
   rintro ⟨n, ⟨u, hu, ut⟩⟩
@@ -709,6 +732,107 @@ lemma eVariationOn_Ioc_eq_Icc_of_continuousWithinAt
   · simp [hab]
   have : (𝓝[Ioi a] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
   exact eVariationOn_Ioc_eq_Icc_of_continuousWithinAt' h'
+
+section Dense
+
+variable [TopologicalSpace α] [OrderTopology α] {s : Set α} {t : Set s} {f : α → M}
+
+/-- The variation of a function that is continuous within `s` at every point of `s` can be
+computed using only points of a dense subset `t` of `s`. -/
+theorem eq_of_dense_of_continuousOn (ht : Dense t) (hf : ContinuousOn f s) :
+    eVariationOn f s = eVariationOn f t := by
+  refine le_antisymm ?_ (mono f (Subtype.coe_image_subset s t))
+  simp only [eVariationOn_eq_strictMonoOn, iSup_le_iff, Sigma.forall, Subtype.forall, mem_Iic,
+    and_imp]
+  refine fun n u hsu hus ↦ ?_
+  -- The main idea of the proof is to express this finite sum as the limit along a product filter.
+  let F := Filter.pi (fun i ↦ 𝓝[t] (u (min i n)))
+  let g : (ℕ → α) → ℝ≥0∞ := fun a ↦ ∑ i ∈ Finset.range n, edist (f (a (i + 1))) (f (a i))
+  have heval ⦃i⦄ (hi : i ≤ n) : Tendsto (fun a : ℕ → α ↦ a i) F (𝓝[t] (u i)) := by
+    nth_rw 2 [← min_eq_left hi]
+    exact tendsto_eval_pi _ i
+  have htend : Tendsto g F (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
+    suffices ∀ i ≤ n, Tendsto (fun a : ℕ → α ↦ f (a i)) F (𝓝 (f (u i))) from
+      tendsto_finsetSum _ fun i hi ↦ (this (i + 1) (Finset.mem_range.1 hi)).edist
+        (this i (Finset.mem_range_le hi))
+    refine fun i hi ↦ Tendsto.comp ?_ (heval hi)
+    exact (hf (u i) (hus _ hi)).mono (Subtype.coe_image_subset s t)
+  have (i : ℕ) : (𝓝[t] (u (min i n))).NeBot := by
+    simpa [← mem_closure_iff_nhdsWithin_neBot, ← closure_image_closure continuous_subtype_val,
+      ht.closure_eq] using subset_closure <| hus _ (min_le_right i n)
+  refine le_of_tendsto htend ?_
+  -- Eventually the approximants lie in `t` and stay strictly increasing along the partition.
+  have hlt : ∀ᶠ c in F, StrictMonoOn c (Iic n) := by
+    unfold StrictMonoOn
+    refine (eventually_all_finite (finite_Iic n)).2 fun _ hi ↦
+      (eventually_all_finite (finite_Iic n)).2 fun _ hj ↦ eventually_all.2 fun hij ↦ ?_
+    refine Tendsto.eventually_lt ?_ ?_ (hsu hi hj hij)
+    <;> exact tendsto_nhds_of_tendsto_nhdsWithin (heval (by assumption))
+  have hmem : ∀ᶠ c in F, ∀ i ∈ Iic n, c i ∈ (t : Set α) := (eventually_all_finite (finite_Iic n)).2
+    fun i hi ↦ (tendsto_eval_pi _ i).eventually eventually_mem_nhdsWithin
+  filter_upwards [hlt, hmem] with c hclt hcmem
+  exact le_iSup_of_le ⟨n, c, hclt, hcmem⟩ le_rfl
+
+/-- The variation of a function that is right-continuous within `s` at every point of `s` can be
+computed using only points of a dense subset `t` of `s`, provided `t` contains every point of `s`
+that is isolated on the right. -/
+theorem eq_of_dense_of_continuousWithinAt_Ioi (ht : Dense t) (hts : {x : s | 𝓝[>] x = ⊥} ⊆ t)
+    (hf : ∀ x ∈ s, ContinuousWithinAt f (s ∩ Ioi x) x) :
+    eVariationOn f s = eVariationOn f t := by
+  refine le_antisymm ?_ (mono f (Subtype.coe_image_subset s t))
+  simp only [eVariationOn_eq_strictMonoOn, iSup_le_iff, Sigma.forall, Subtype.forall, mem_Iic,
+    and_imp]
+  refine fun n u hsu hus ↦ ?_
+  let F := Filter.pi (fun i ↦ 𝓝[t ∩ Ici (u (min i n))] (u (min i n)))
+  let g : (ℕ → α) → ℝ≥0∞ := fun a ↦ ∑ i ∈ Finset.range n, edist (f (a (i + 1))) (f (a i))
+  have heval ⦃i⦄ (hi : i ≤ n) : Tendsto (fun a : ℕ → α ↦ a i) F (𝓝[t ∩ Ici (u i)] (u i)) := by
+    nth_rw 2 3 [← min_eq_left hi]
+    exact tendsto_eval_pi _ i
+  have htend : Tendsto g F (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
+    suffices ∀ i ≤ n, Tendsto (fun a : ℕ → α ↦ f (a i)) F (𝓝 (f (u i))) from
+      tendsto_finsetSum _ fun i hi ↦ (this (i + 1) (Finset.mem_range.1 hi)).edist
+        (this i (Finset.mem_range_le hi))
+    refine fun i hi ↦ Tendsto.comp ?_ (heval hi)
+    exact (continuousWithinAt_inter_Ioi_iff_Ici.1 (hf (u i) (hus _ hi))).mono
+      (inter_subset_inter_left _ (Subtype.coe_image_subset s t))
+  have (i : ℕ) : (𝓝[t ∩ Ici (u (min i n))] (u (min i n))).NeBot := by
+    rw [← mem_closure_iff_nhdsWithin_neBot]
+    by_cases! hb : 𝓝[>] (⟨u (min i n), hus _ (min_le_right i n)⟩ : s) = ⊥
+    · -- If `x` is isolated on the right within `s`, then `x ∈ t` by assumption, so `x ∈ t ∩ Ici x`.
+      exact subset_closure ⟨mem_image_of_mem _ (hts hb), le_rfl⟩
+    · -- Otherwise `𝓝[>] x ≠ ⊥`, so density of `t` gives points of `t` just to the right of `x`.
+      refine mem_closure_iff.2 fun U hU hxU ↦ ?_
+      have : (𝓝[s ∩ Ioi (u (min i n))] (u (min i n))).NeBot :=
+        ⟨(nhdsGT_subtype_eq_bot_iff (hus _ (min_le_right i n))).not.1 hb.ne'⟩
+      obtain ⟨z, hzU, hzs, hzx⟩ : (U ∩ (s ∩ Ioi (u (min i n)))).Nonempty :=
+        nonempty_of_mem (inter_mem (mem_nhdsWithin_of_mem_nhds (hU.mem_nhds hxU))
+          self_mem_nhdsWithin)
+      obtain ⟨w, hwt, hwU, hwx⟩ := ht.exists_mem_open
+        ((hU.inter isOpen_Ioi).preimage continuous_subtype_val) ⟨⟨z, hzs⟩, hzU, hzx⟩
+      exact ⟨w, hwU, mem_image_of_mem _ hwt, hwx.le⟩
+  refine le_of_tendsto htend ?_
+  have hlt : ∀ᶠ c in F, StrictMonoOn c (Iic n) := by
+    unfold StrictMonoOn
+    refine (eventually_all_finite (finite_Iic n)).2 fun _ hi ↦
+      (eventually_all_finite (finite_Iic n)).2 fun _ hj ↦ eventually_all.2 fun hij ↦ ?_
+    refine Tendsto.eventually_lt ?_ ?_ (hsu hi hj hij)
+    <;> exact tendsto_nhds_of_tendsto_nhdsWithin (heval (by assumption))
+  have hmem : ∀ᶠ c in F, ∀ i ∈ Iic n, c i ∈ (t : Set α) := (eventually_all_finite (finite_Iic n)).2
+    fun i _ ↦ (tendsto_eval_pi _ i).eventually (eventually_mem_nhdsWithin.mono fun _ h ↦ h.1)
+  filter_upwards [hlt, hmem] with c hclt hcmem
+  exact le_iSup_of_le ⟨n, c, hclt, hcmem⟩ le_rfl
+
+/-- The variation of a function that is left-continuous within `s` at every point of `s` can be
+computed using only points of a dense subset `t` of `s`, provided `t` contains every point of `s`
+that is isolated on the left. -/
+theorem eq_of_dense_of_continuousWithinAt_Iio (ht : Dense t) (hts : {x : s | 𝓝[<] x = ⊥} ⊆ t)
+    (hf : ∀ x ∈ s, ContinuousWithinAt f (s ∩ Iio x) x) :
+    eVariationOn f s = eVariationOn f t := by
+  rw [← comp_ofDual, ← comp_ofDual f t,
+    eq_of_dense_of_continuousWithinAt_Ioi (s := ofDual ⁻¹' s) (f := f ∘ ofDual) ht hts hf]
+  congr
+
+end Dense
 
 lemma exists_lt_eVariationOn_inter_Icc {f : α → E} {ε : ℝ≥0∞} {s : Set α}
     (h : ε < eVariationOn f s) : ∃ a ∈ s, ∃ b ∈ s, a < b ∧ ε < eVariationOn f (s ∩ Icc a b) := by
