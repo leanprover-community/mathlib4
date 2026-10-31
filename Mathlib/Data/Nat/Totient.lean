@@ -310,6 +310,24 @@ theorem totient_eq_div_primeFactors_mul (n : ℕ) :
     Nat.mul_div_assoc _ (prod_primeFactors_dvd n), mul_comm]
   exact prod_pos (fun p => pos_of_mem_primeFactors)
 
+/-- The totient of a product of pairwise coprime factors is the product of their totients. -/
+theorem totient_prod_of_pairwise_coprime {ι : Type*} {s : Finset ι} {f : ι → ℕ}
+    (hs : Set.Pairwise s <| Coprime.onFun f) : φ (∏ i ∈ s, f i) = ∏ i ∈ s, φ (f i) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih =>
+    rw [coe_cons, Set.pairwise_insert] at hs
+    rw [prod_cons, prod_cons, totient_mul, ih hs.1]
+    exact prod_induction _ (Coprime (f a)) (fun _ _ ↦ Coprime.mul_right) (coprime_one_right _)
+      fun i hi ↦ (hs.2 i hi fun h ↦ ha (h ▸ hi)).1
+
+/-- Euler's product formula for a product of distinct primes. -/
+theorem totient_prod_of_forall_prime {s : Finset ℕ} (hs : ∀ p ∈ s, p.Prime) :
+    φ (∏ p ∈ s, p) = ∏ p ∈ s, (p - 1) := by
+  rw [totient_prod_of_pairwise_coprime fun p hp q hq hpq ↦
+    (coprime_primes (hs p hp) (hs q hq)).2 hpq]
+  exact prod_congr rfl fun p hp ↦ totient_prime (hs p hp)
+
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_mul_prod_factors (n : ℕ) :
     (φ n : ℚ) = n * ∏ p ∈ n.primeFactors, (1 - (p : ℚ)⁻¹) := by
