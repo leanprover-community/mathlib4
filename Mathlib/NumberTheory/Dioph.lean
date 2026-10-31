@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.Data.PFun
 public import Mathlib.Data.Vector3
 public import Mathlib.NumberTheory.PellMatiyasevic
@@ -120,79 +121,104 @@ theorem const_apply (n) (x : α → ℕ) : const n x = n := rfl
 
 instance : Zero (Poly α) := ⟨const 0⟩
 
+instance : IsZeroApply (Poly α) where
+
 instance : One (Poly α) := ⟨const 1⟩
+
+instance : IsOneApply (Poly α) where
 
 instance : Neg (Poly α) := ⟨fun f => ⟨-f, f.2.neg⟩⟩
 
+instance : IsNegApply (Poly α) where
+
 instance : Add (Poly α) := ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
+
+instance : IsAddApply (Poly α) where
 
 instance : Sub (Poly α) := ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
+instance : IsSubApply (Poly α) where
+
 instance : Mul (Poly α) := ⟨fun f g => ⟨f * g, f.2.mul g.2⟩⟩
 
-@[simp]
+instance : IsMulApply (Poly α) where
+
+instance : SMul ℤ (Poly α) where
+  smul c f := ⟨c • f, by
+    have : c • ⇑f = (fun _ ↦ c) * ⇑f := rfl
+    rw [this]
+    exact (IsPoly.const c).mul f.2⟩
+
+instance : IsSMulApply ℤ (Poly α) where
+
+instance : SMul ℕ (Poly α) where
+  smul c f := (c : ℤ) • f
+
+instance : IsSMulApply ℕ (Poly α) where
+
+instance : Pow (Poly α) ℕ where
+  pow f n := ⟨f ^ n, by
+    induction n with
+    | zero => simpa using .const 1
+    | succ n h => rw [pow_succ]; exact h.mul f.2⟩
+
+instance : IsPowApply ℕ (Poly α) where
+
+instance : IntCast (Poly α) where
+  intCast n := ⟨fun _ ↦ n, .const n⟩
+
+instance : IsIntCastApply (Poly α) where
+
+instance : NatCast (Poly α) where
+  natCast n := (n : ℤ)
+
+instance : IsNatCastApply (Poly α) where
+
+@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-31")]
 theorem coe_zero : ⇑(0 : Poly α) = const 0 := rfl
 
-@[simp]
+@[deprecated FunLike.coe_one +typeChanged (since := "2026-10-31")]
 theorem coe_one : ⇑(1 : Poly α) = const 1 := rfl
 
-@[simp]
+@[deprecated FunLike.coe_neg +typeChanged (since := "2026-10-31")]
 theorem coe_neg (f : Poly α) : ⇑(-f) = -f := rfl
 
-@[simp]
+@[deprecated FunLike.coe_add +typeChanged (since := "2026-10-31")]
 theorem coe_add (f g : Poly α) : ⇑(f + g) = f + g := rfl
 
-@[simp]
+@[deprecated FunLike.coe_sub +typeChanged (since := "2026-10-31")]
 theorem coe_sub (f g : Poly α) : ⇑(f - g) = f - g := rfl
 
-@[simp]
+@[deprecated FunLike.coe_mul +typeChanged (since := "2026-10-31")]
 theorem coe_mul (f g : Poly α) : ⇑(f * g) = f * g := rfl
 
-@[simp]
-theorem zero_apply (x) : (0 : Poly α) x = 0 := rfl
+@[deprecated zero_apply +typeChanged (since := "2026-10-31")]
+protected theorem zero_apply (x) : (0 : Poly α) x = 0 := rfl
 
-@[simp]
-theorem one_apply (x) : (1 : Poly α) x = 1 := rfl
+@[deprecated one_apply +typeChanged (since := "2026-10-31")]
+protected theorem one_apply (x) : (1 : Poly α) x = 1 := rfl
 
-@[simp]
-theorem neg_apply (f : Poly α) (x) : (-f) x = -f x := rfl
+@[deprecated neg_apply +typeChanged (since := "2026-10-31")]
+protected theorem neg_apply (f : Poly α) (x) : (-f) x = -f x := rfl
 
-@[simp]
-theorem add_apply (f g : Poly α) (x : α → ℕ) : (f + g) x = f x + g x := rfl
+@[deprecated add_apply +typeChanged (since := "2026-10-31")]
+protected theorem add_apply (f g : Poly α) (x : α → ℕ) : (f + g) x = f x + g x := rfl
 
-@[simp]
-theorem sub_apply (f g : Poly α) (x : α → ℕ) : (f - g) x = f x - g x := rfl
+@[deprecated sub_apply +typeChanged (since := "2026-10-31")]
+protected theorem sub_apply (f g : Poly α) (x : α → ℕ) : (f - g) x = f x - g x := rfl
 
-@[simp]
-theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rfl
+@[deprecated mul_apply +typeChanged (since := "2026-10-31")]
+protected theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rfl
 
 instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
-instance : AddCommGroup (Poly α) where
-  nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
-  zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
-  add_zero _ := by ext; simp_rw [add_apply, zero_apply, add_zero]
-  zero_add _ := by ext; simp_rw [add_apply, zero_apply, zero_add]
-  add_comm _ _ := by ext; simp_rw [add_apply, add_comm]
-  add_assoc _ _ _ := by ext; simp_rw [add_apply, ← add_assoc]
-  neg_add_cancel _ := by ext; simp_rw [add_apply, neg_apply, neg_add_cancel, zero_apply]
+instance : AddCommGroup (Poly α) := fast_instance% FunLike.addCommGroup
 
 instance : AddGroupWithOne (Poly α) where
   natCast := fun n => Poly.const n
   intCast := Poly.const
 
-instance : CommRing (Poly α) where
-  __ := (inferInstance : AddCommGroup (Poly α))
-  __ := (inferInstance : AddGroupWithOne (Poly α))
-  npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
-  mul_zero _ := by ext; rw [mul_apply, zero_apply, mul_zero]
-  zero_mul _ := by ext; rw [mul_apply, zero_apply, zero_mul]
-  mul_one _ := by ext; rw [mul_apply, one_apply, mul_one]
-  one_mul _ := by ext; rw [mul_apply, one_apply, one_mul]
-  mul_comm _ _ := by ext; simp_rw [mul_apply, mul_comm]
-  mul_assoc _ _ _ := by ext; simp_rw [mul_apply, mul_assoc]
-  left_distrib _ _ _ := by ext; simp_rw [add_apply, mul_apply]; apply mul_add
-  right_distrib _ _ _ := by ext; simp only [add_apply, mul_apply]; apply add_mul
+instance : CommRing (Poly α) := fast_instance% FunLike.commRing
 
 theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C (const n))
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
