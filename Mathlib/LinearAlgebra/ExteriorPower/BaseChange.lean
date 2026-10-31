@@ -74,25 +74,20 @@ def baseChangeInverseAlternating (i : ℕ) : (S ⊗[R] M) [⋀^Fin i]→ₗ[S] S
 
 lemma baseChangeInverseAlternating_apply_tmul (i : ℕ) (s : Fin i → S) (m : Fin i → M) :
     baseChangeInverseAlternating R M S i (fun j ↦ s j ⊗ₜ[R] m j) =
-      (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] exteriorPower.ιMulti R i m := by
-  simp only [baseChangeInverseAlternating, LinearMap.comp_apply,
-    LinearMap.compAlternatingMap_apply, AlgHom.toLinearMap_apply, ExteriorAlgebra.ιMulti_apply]
-  have hprod : (List.ofFn fun j ↦ s j ⊗ₜ[R] ExteriorAlgebra.ι R (m j)).prod =
-    (Finset.univ.prod fun j ↦ s j) ⊗ₜ[R] (List.ofFn fun j ↦ ExteriorAlgebra.ι R (m j)).prod := by
+      (∏ j, s j) ⊗ₜ[R] exteriorPower.ιMulti R i m := by
+  trans ((ExteriorAlgebra.toExteriorPower R M i).baseChange S)
+    ((∏ j, s j) ⊗ₜ[R] (ExteriorAlgebra.ιMulti R i) m)
+  · simp only [baseChangeInverseAlternating, AlgEquiv.toAlgHom_toLinearMap, LinearMap.coe_comp,
+      AlgEquiv.toLinearEquiv_symm, LinearMap.compAlternatingMap_apply, Function.comp_apply,
+      LinearEquiv.coe_coe, AlgEquiv.coe_symm_toLinearEquiv, ExteriorAlgebra.ιMulti_apply]
+    congr
     induction i with
     | zero => simp [Algebra.TensorProduct.one_def]
     | succ i ih =>
-      rw [List.ofFn_succ, List.ofFn_succ, List.prod_cons, List.prod_cons, ih]
-      simp [Algebra.TensorProduct.tmul_mul_tmul, Fin.prod_univ_succ]
-  rw [map_list_prod (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom]
-  have himages : List.map (ExteriorAlgebra.baseChangeEquiv R M S).symm.toAlgHom
-    (List.ofFn fun j ↦ ExteriorAlgebra.ι S (s j ⊗ₜ[R] m j)) =
-      List.ofFn fun j ↦ s j ⊗ₜ[R] ExteriorAlgebra.ι R (m j) := by
-    ext j
-    simp [ExteriorAlgebra.baseChangeEquiv_symm_apply]
-  rw [himages, hprod]
-  simp [← ExteriorAlgebra.ιMulti_apply, ← exteriorPower.ιMulti_apply_coe,
-    ExteriorAlgebra.toExteriorPower_eq]
+      rw [List.ofFn_succ, List.ofFn_succ, List.prod_cons, List.prod_cons, map_mul, ih,
+        ExteriorAlgebra.baseChangeEquiv_symm_apply, Algebra.TensorProduct.tmul_mul_tmul]
+      simp only [Fin.prod_univ_succAbove s 0, Fin.zero_succAbove]
+  · simp [← exteriorPower.ιMulti_apply_coe, ExteriorAlgebra.toExteriorPower_eq]
 
 /-- Inverse function of `exteriorPower.baseChangeEquiv`,
 obtained from `exteriorPower.baseChangeInverseAlternating`. -/
