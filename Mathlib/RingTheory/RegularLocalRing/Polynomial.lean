@@ -60,7 +60,7 @@ lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdea
     have : (comap C p).IsMaximal := by simpa [max] using maximalIdeal.isMaximal R
     obtain ⟨y, _, hy⟩ := Polynomial.exists_monic_span_sup_map_eq R p this (by simpa [max])
     have peq : p = Ideal.span (((algebraMap R R[X]) '' (maximalIdeal R).generators) ∪ {y}) := by
-      simp only [Set.union_comm, Ideal.span_union, ← Ideal.map_span, algebraMap_eq, sup_comm]
+      simp only [Ideal.span_union, ← Ideal.map_span, algebraMap_eq, sup_comm]
       nth_rw 1 [hy, max, ← (maximalIdeal R).span_generators]
     simp only [← Localization.AtPrime.map_eq_maximalIdeal, peq, Ideal.map_span]
     rw [← maximalIdeal_height_eq_ringKrullDim, ← IsLocalization.height_under p.primeCompl,

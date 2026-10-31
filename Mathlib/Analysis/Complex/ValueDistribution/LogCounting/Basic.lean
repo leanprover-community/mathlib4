@@ -284,7 +284,7 @@ theorem sum_toClosedBall_le_logCounting {D : Function.locallyFinsupp ℂ ℤ} {�
     apply hmem
     intro h
     simp [h] at hz
-  rw [finsum_eq_sum_of_support_subset _ (by aesop), hRHS, Finset.sum_mul]
+  rw [finsum_eq_sum_of_support_subset _ (s := t) (by simp_all), hRHS, Finset.sum_mul]
   -- Compare the sums term by term
   have key : ∀ z ∈ t, (D.toClosedBall ρ z : ℝ) * Real.log (r / ρ)
       ≤ (D.toClosedBall r z : ℝ) * Real.log (r * ‖z‖⁻¹)
