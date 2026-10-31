@@ -981,11 +981,17 @@ lemma inv_vlt_one (hx : x ≠ 0) : x⁻¹ <ᵥ 1 ↔ 1 <ᵥ x :=
 lemma one_vlt_inv (hx : x ≠ 0) : 1 <ᵥ x⁻¹ ↔ x <ᵥ 1 :=
   (inv_vle_one hx).not
 
-lemma inv_veq_one (hx : x ≠ 0) : x⁻¹ =ᵥ 1 ↔ 1 =ᵥ x := by
-  simp [veq_def, one_vle_inv hx, inv_vle_one hx]
+@[simp]
+lemma inv_veq_one : x⁻¹ =ᵥ 1 ↔ x =ᵥ 1 := by
+  by_cases hx : x = 0
+  · simp [hx]
+  grind [veq_def, one_vle_inv, inv_vle_one]
 
-lemma one_veq_inv (hx : x ≠ 0) : 1 =ᵥ x⁻¹ ↔ x =ᵥ 1 := by
-  simp [veq_def, one_vle_inv hx, inv_vle_one hx]
+@[simp]
+lemma one_veq_inv : 1 =ᵥ x⁻¹ ↔ 1 =ᵥ x := by
+  by_cases hx : x = 0
+  · simp [hx]
+  grind [veq_def, one_vle_inv, inv_vle_one]
 
 lemma vle_one_or_inv_vlt_one : x ≤ᵥ 1 ∨ x⁻¹ <ᵥ 1 := by
   by_cases h : x = 0
