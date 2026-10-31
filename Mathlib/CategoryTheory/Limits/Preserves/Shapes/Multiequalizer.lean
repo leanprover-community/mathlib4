@@ -65,7 +65,6 @@ def Multifork.map : Multifork (d.map F) :=
     dsimp
     rw [← F.map_comp, ← F.map_comp, condition])
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MulticospanIndex J C`, `c : Multifork d` and `F : C ⥤ D`,
 the cone `F.mapCone c` is limiting iff the multifork `c.map F` is. -/
 def Multifork.isLimitMapEquiv :
@@ -116,7 +115,6 @@ def Multicofork.map : Multicofork (d.map F) :=
     dsimp
     rw [← F.map_comp, ← F.map_comp, condition])
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MultispanIndex J C`, `c : Multicofork d` and `F : C ⥤ D`,
 the cocone `F.mapCocone c` is colimit iff the multicofork `c.map F` is. -/
 def Multicofork.isColimitMapEquiv :
