@@ -80,6 +80,20 @@ Note: This linter can be disabled with `set_option linter.style.setOption false`
 #guard_msgs in
 set_option debug.moduleNameAtTimeout false
 
+/--
+warning: Unscoped option backward.isDefEq.respectTransparency is not allowed:
+Please scope this to individual declarations, as in
+```
+set_option backward.isDefEq.respectTransparency in
+-- comment explaining why this is necessary
+example : ... := ...
+```
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option backward.isDefEq.respectTransparency false
+
 -- The lint does not fire on arbitrary options.
 set_option autoImplicit false
 
