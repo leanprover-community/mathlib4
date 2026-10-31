@@ -473,7 +473,6 @@ See the discussion before Equation (3) of [MM92], Chapter III, Section 4. See al
 def YonedaSheafCondition (P : Cᵒᵖ ⥤ Type v₁) (S : Sieve X) : Prop :=
   ∀ f : S.functor ⟶ P, ∃! g, S.functorInclusion ≫ g = f
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). This is a (primarily internal) equivalence between natural transformations
 and compatible families.
@@ -487,7 +486,7 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
   toFun t := ⟨fun Y f hf ↦ t.app _ ⟨shrinkYonedaObjObjEquiv.symm f, by simpa⟩, by
     rw [Presieve.compatible_iff_sieveCompatible]
     intro Y Z f g hf
-    simp only [shrinkFunctor_obj, ← NatTrans.naturality_apply]
+    simp only [← NatTrans.naturality_apply]
     rw! [shrinkYonedaObjObjEquiv_symm_comp]
     rfl⟩
   invFun t :=
