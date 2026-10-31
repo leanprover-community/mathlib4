@@ -286,7 +286,7 @@ theorem reindex_trans_reindex (e : m ≃ n) (e' : n ≃ o) :
 theorem reindex_refl : reindex R (.refl n) = .refl (SpecialLinearGroup n R) :=
   rfl
 
-theorem reindex_comp_map (e : m ≃ n) (f : R →+* S) (A : SpecialLinearGroup m R) :
+theorem reindex_map (e : m ≃ n) (f : R →+* S) (A : SpecialLinearGroup m R) :
     reindex S e (map f A) = map f (reindex R e A) :=
   rfl
 
