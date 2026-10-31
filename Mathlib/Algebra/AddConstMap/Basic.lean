@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Archimedean.Basic
 
@@ -393,37 +394,50 @@ def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
 instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) :=
   ⟨fun c f ↦ ⟨c +ᵥ ⇑f, fun x ↦ by simp [vadd_add_assoc]⟩⟩
 
-@[simp, norm_cast]
+instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : IsVAddApply K (G →+c[a, b] H) where
+
+@[deprecated FunLike.coe_vadd +typeChanged (since := "2026-10-27")]
 theorem coe_vadd {K : Type*} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G →+c[a, b] H) :
     ⇑(c +ᵥ f) = c +ᵥ ⇑f :=
   rfl
 
 instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
-    AddAction K (G →+c[a, b] H) :=
-  DFunLike.coe_injective.addAction _ coe_vadd
+    AddAction K (G →+c[a, b] H) := fast_instance% FunLike.addAction
 
 /-!
 ### Monoid structure on endomorphisms `G →+c[a, a] G`
 -/
 
 instance : Mul (G →+c[a, a] G) := ⟨comp⟩
+
+instance : IsMulApplyEqComp (G →+c[a, a] G) where
+
 instance : One (G →+c[a, a] G) := ⟨.id⟩
+
+instance : IsOneApplyEqSelf (G →+c[a, a] G) where
 
 instance : Pow (G →+c[a, a] G) ℕ where
   pow f n := ⟨f^[n], Commute.iterate_left (AddConstMapClass.semiconj f) _⟩
 
-instance : Monoid (G →+c[a, a] G) :=
-  DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+instance : IsNPowApplyEqIterate (G →+c[a, a] G) where
+
+instance : Monoid (G →+c[a, a] G) := fast_instance% FunLike.compMonoid
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
-@[simp, push_cast] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
+
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-10-27")]
+theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
 
 theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
-@[simp, push_cast] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
 
-@[simp, push_cast] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-10-27")]
+theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
 
-theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
+@[deprecated FunLike.coe_pow_eq_iterate +typeChanged (since := "2026-10-27")]
+theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+
+@[deprecated pow_apply_eq_iterate +typeChanged (since := "2026-10-27")]
+protected theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 
 /-- Coercion to functions as a monoid homomorphism to `Function.End G`. -/
 @[simps -fullyApplied]

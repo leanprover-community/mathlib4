@@ -79,7 +79,7 @@ lemma chainLength_nsmul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
   have h : x' ∈ rootSpace H (chainTop α β) ∧ x' ≠ 0 :=
     (chainTop α β).exists_ne_zero.choose_spec
   obtain ⟨k, rfl⟩ : ∃ k : K, k • x' = x := by
-    simpa using (finrank_eq_one_iff_of_nonzero' ⟨x', h.1⟩ (by simpa using h.2)).mp
+    simpa using (finrank_eq_one_iff_of_ne_zero' ⟨x', h.1⟩ (by simpa using h.2)).mp
       (finrank_rootSpace_eq_one _ (chainTop_isNonZero α β hα)) ⟨_, hx⟩
   rw [lie_smul, smul_comm, chainLength, dite_eq_right hα, (chainLength_aux α β hα h.1).choose_spec]
 
@@ -238,7 +238,7 @@ lemma exists_mem_rootSpace_lie_ne_zero
     exact toEnd_pow_apply_mem hf hx (chainTopCoeff α β)
   · have hq₀ : 0 < chainTopCoeff α β := by
       have := (rootSpace_zsmul_add_ne_bot_iff α β hα 1).mp <| by rwa [one_smul]
-      exact_mod_cast this.1
+      exact mod_cast this.1
     obtain ⟨n, hn⟩ : ∃ n, chainTopCoeff α β = n + 1 := ⟨chainTopCoeff α β - 1, by lia⟩
     have h_prim : ef_sl2.HasPrimitiveVectorWith x (chainLength α β : K) :=
       { ne_zero := hx₀
@@ -248,7 +248,7 @@ lemma exists_mem_rootSpace_lie_ne_zero
           rwa [genWeightSpace_add_chainTop α β hα] at hmem }
     rw [hn, h_prim.lie_e_pow_succ_toEnd_f n]
     have : chainTopCoeff α β ≤ chainLength α β := chainTopCoeff_le_chainLength α β
-    refine smul_ne_zero (mul_ne_zero (by exact_mod_cast n.succ_ne_zero) ?_)
+    refine smul_ne_zero (mul_ne_zero (mod_cast n.succ_ne_zero) ?_)
       (h_prim.pow_toEnd_f_ne_zero_of_eq_nat rfl (by lia))
     rw [sub_ne_zero, Nat.cast_injective.ne_iff]
     lia
@@ -301,7 +301,7 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
       convert toEnd_pow_apply_mem hf hx (chainTopCoeff α (0 : Weight K H L) + 1)
       rw [coe_chainTop', FunLike.coe_zero, add_zero, succ_nsmul',
         add_assoc, smul_neg, neg_add_cancel, add_zero]
-    simpa using! (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simpa using! isSl2.f_ne_zero)).mp
+    simpa using! (finrank_eq_one_iff_of_ne_zero' ⟨f, hf⟩ (by simpa using! isSl2.f_ne_zero)).mp
       (finrank_rootSpace_eq_one _ hα.neg) ⟨_, this⟩
   apply_fun (⁅f, ·⁆) at hk
   simp only [lie_smul, lie_self, smul_zero, prim.lie_f_pow_toEnd_f] at hk
