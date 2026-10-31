@@ -29,7 +29,7 @@ jobs:
     steps:
     - name: Add / remove label based on comment
       run: |
-        labelArray=("awaiting-author" "awaiting-zulip" "WIP" "easy" "please-adopt" "help-wanted" "CI" "brownian" "carleson" "CFT" "FLT" "infinity-cosmos" "sphere-packing" "toric" "LLM-generated" "IMO" "t-algebra" "t-algebraic-geometry" "t-algebraic-topology" "t-analysis" "t-category-theory" "t-combinatorics" "t-computability" "t-condensed" "t-convex-geometry" "t-data" "t-differential-geometry" "t-dynamics" "t-euclidean-geometry" "t-geometric-group-theory" "t-group-theory" "t-linter" "t-logic" "t-measure-probability" "t-meta" "t-number-theory" "t-order" "t-ring-theory" "t-set-theory" "t-topology")
+        labelArray=("awaiting-author" "WIP" "easy" "please-adopt" "help-wanted" "CI" "brownian" "carleson" "CFT" "FLT" "infinity-cosmos" "sphere-packing" "toric" "LLM-generated" "IMO" "t-algebra" "t-algebraic-geometry" "t-algebraic-topology" "t-analysis" "t-category-theory" "t-combinatorics" "t-computability" "t-condensed" "t-convex-geometry" "t-data" "t-differential-geometry" "t-dynamics" "t-euclidean-geometry" "t-geometric-group-theory" "t-group-theory" "t-linter" "t-logic" "t-measure-probability" "t-meta" "t-number-theory" "t-order" "t-ring-theory" "t-set-theory" "t-topology")
 
         # we strip `\r` since line endings from GitHub contain this character
         COMMENT="${COMMENT//$'\r'/}"
@@ -85,3 +85,28 @@ jobs:
           fi
 
         done
+
+  # GITHUB_TOKEN label changes do not trigger the label-event workflow. Handle
+  # awaiting-zulip here, validating the discussion before applying the label.
+  awaiting-zulip:
+    if: >-
+      github.repository == 'leanprover-community/mathlib4' &&
+      contains(github.event.comment.body || github.event.review.body, 'awaiting-zulip')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: awaiting-zulip-${{ github.event.issue.number || github.event.pull_request.number }}
+      cancel-in-progress: false
+    steps:
+    - name: Check out trusted awaiting-zulip action
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        ref: ${{ github.event.repository.default_branch }}
+        persist-credentials: false
+        sparse-checkout: .github/actions/awaiting-zulip
+    - name: Handle awaiting-zulip directive
+      uses: ./.github/actions/awaiting-zulip
+      with:
+        github-token: ${{ github.token }}
+        zulip-api-key: ${{ secrets.ZULIP_API_KEY }}
+        mode: directive
