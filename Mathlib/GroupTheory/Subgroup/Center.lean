@@ -42,15 +42,28 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 instance center.isMulCommutative : IsMulCommutative (center G) :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
 
+@[to_additive]
+instance : CommGroup (center G) where
+  mul_comm x y := Subtype.ext (x.prop.comm y)
+
+@[to_additive]
+instance : CommGroup (Center G) := inferInstanceAs <| CommGroup (center G)
+
+@[to_additive (attr := simp)]
+lemma _root_.Center.coe_inv (z : Center G) : z⁻¹.val = z.val⁻¹ := rfl
+
+@[to_additive]
+lemma _root_.Center.coe_zpow (z : Center G) (n : ℤ) : (z ^ n).val = z.val ^ n := rfl
+
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
 @[to_additive (attr := simps!) /-- The center of isomorphic additive groups are isomorphic. -/]
-def centerCongr (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
+def centerCongr (e : G ≃* H) : center G ≃* center H := e.toCenter
 
 /-- The center of a group is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps!)
 /-- The center of an additive group is isomorphic to the center of its opposite. -/]
-def centerToMulOpposite : center G ≃* center Gᵐᵒᵖ := Submonoid.centerToMulOpposite
+def centerToMulOpposite : center G ≃* center Gᵐᵒᵖ := Center.toMulOpposite
 
 variable {G}
 

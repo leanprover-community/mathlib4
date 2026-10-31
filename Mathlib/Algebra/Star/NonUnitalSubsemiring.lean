@@ -121,6 +121,9 @@ def center (R) [NonUnitalNonAssocSemiring R] [StarRing R] : NonUnitalStarSubsemi
   toNonUnitalSubsemiring := NonUnitalSubsemiring.center R
   star_mem' := Set.star_mem_center
 
+instance (R) [NonUnitalNonAssocSemiring R] [StarRing R] : StarRing (Center R) where
+  star_add := by simp
+
 end Center
 
 end NonUnitalStarSubsemiring

@@ -52,6 +52,19 @@ instance center.commSemigroup : CommSemigroup (center M) where
   mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
   mul_comm a _ := Subtype.ext <| a.2.comm _
 
+@[to_additive]
+instance {M} [Semigroup M] : CommSemigroup (Center M) :=
+  { toSemigroup := inferInstanceAs <| Semigroup (center M), mul_comm}
+
+@[to_additive]
+lemma _root_.Center.subtype_surjective {M} [CommSemigroup M] :
+    Function.Surjective (Center.subtype (M := M)) :=
+  fun m => ⟨Center.mk m (by simp), by simp⟩
+
+@[to_additive]
+lemma _root_.Center.range_subtype_eq_top {M} [CommSemigroup M] :
+    Set.range (Center.subtype (M := M)) = ⊤ := by simp
+
 end Mul
 
 section Semigroup
