@@ -934,6 +934,18 @@ theorem comap_center_le_center {f : A →ₐ[R] B} (hf : Function.Injective f) :
 theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
   SetLike.coe_injective (Set.image_center_eq f)
 
+/-- An isomorphism of `R`-algebras induces an `R`-algebra isomorphism between their centers. -/
+@[simps! apply_coe]
+def centerCongr (e : A ≃ₐ[R] B) :
+    center R A ≃ₐ[R] center R B where
+  toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
+  commutes' r := Subtype.ext <| e.commutes r
+
+@[simp]
+lemma centerCongr_symm_apply_coe (e : A ≃ₐ[R] B) (a : center R B) :
+    centerCongr e.symm a = e.symm a :=
+  rfl
+
 end Center
 
 section Centralizer
