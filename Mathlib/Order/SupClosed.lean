@@ -137,6 +137,12 @@ lemma SupClosed.finsetSup_mem [OrderBot α] (hs : SupClosed s) (ht : t.Nonempty)
 end Finset
 end SemilatticeSup
 
+lemma InfClosed.image2_prod {S : Set (Set α)} {T : Set (Set β)} (hS : InfClosed S)
+    (hT : InfClosed T) :
+    InfClosed (Set.image2 (· ×ˢ ·) S T) := by
+  rintro _ ⟨s, hs, t, ht, rfl⟩ _ ⟨s', hs', t', ht', rfl⟩
+  exact ⟨s ∩ s', hS hs hs', t ∩ t', hT ht ht', Set.prod_inter_prod.symm⟩
+
 open Finset OrderDual
 
 section Lattice
