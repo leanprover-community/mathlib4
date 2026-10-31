@@ -16,7 +16,8 @@ This file defines complete sublattices. These are subsets of complete lattices w
 under arbitrary suprema and infima. As a standard example one could take the complete sublattice of
 invariant submodules of some module with respect to a linear map.
 
-## Main definitions:
+## Main definitions
+
 * `CompleteSublattice`: the definition of a complete sublattice
 * `CompleteSublattice.mk'`: an alternate constructor for a complete sublattice, demanding fewer
   hypotheses
