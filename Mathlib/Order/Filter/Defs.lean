@@ -70,7 +70,7 @@ open Set
 /-- A filter `F` on a type `α` is a collection of sets of `α` which contains the whole `α`,
 is upwards-closed, and is stable under intersection. We do not forbid this collection to be
 all sets of `α`. -/
-@[to_dual_dont_translate]
+@[to_dual_dont_translate, wikidata Q1052692]
 structure Filter (α : Type*) where
   /-- The set of sets that belong to the filter. -/
   sets : Set (Set α)
