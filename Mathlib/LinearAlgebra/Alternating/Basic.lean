@@ -853,7 +853,7 @@ theorem alternatization_coe (m : (ι → M) →ₘₗ[R] N') :
 
 theorem alternatization_apply (m : (ι → M) →ₘₗ[R] N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
-  simp only [alternatization_def, smul_apply, sum_apply]
+  simp [alternatization_def]
 
 @[simp]
 theorem alternatization_compLinearMap (f : (ι → M') →ₘₗ[R] N') (g : M →ₗ[R] M') :
