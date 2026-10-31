@@ -67,7 +67,7 @@ def right (v : InfiniteBinaryTree) : InfiniteBinaryTree := v.succ 1
 
 @[simp] lemma length_root : root.length = 0 := rfl
 
-@[simp] lemma length_succ (v : InfiniteBinaryTree) (i : Fin 2) : (v.succ i).length = v.length + 1 :=
+lemma length_succ (v : InfiniteBinaryTree) (i : Fin 2) : (v.succ i).length = v.length + 1 :=
   by simp [succ]
 
 lemma isPrefix_root (v : InfiniteBinaryTree) : root <+: v :=
@@ -86,8 +86,6 @@ namespace TreeAut
 instance : CoeFun TreeAut fun _ ↦ InfiniteBinaryTree → InfiniteBinaryTree where
   coe f := f.toEquiv
 
-lemma toEquiv_apply (f : TreeAut) (v : InfiniteBinaryTree) : f.toEquiv v = f v := rfl
-
 lemma map_isPrefix_iff (f : TreeAut) {v w : InfiniteBinaryTree} : v <+: w ↔ f v <+: f w :=
   f.map_isPrefix v w
 
@@ -100,11 +98,11 @@ def symm (f : TreeAut) : TreeAut where
 @[simp] lemma symm_apply (f : TreeAut) (v : InfiniteBinaryTree) : f.symm v = f.toEquiv.symm v := rfl
 
 /-- A tree automorphism fixes the root. -/
-@[simp] lemma map_root (f : TreeAut) : f root = root := by
-  have h : f root <+: f (f.toEquiv.symm root) :=
-    (f.map_isPrefix_iff).mp (isPrefix_root (f.toEquiv.symm root))
+@[simp] lemma map_root (f : TreeAut) : f [] = [] := by
+  have h : f [] <+: f (f.toEquiv.symm []) :=
+    (f.map_isPrefix_iff).mp List.nil_prefix
   rw [Equiv.apply_symm_apply] at h
-  exact List.prefix_nil.mp (by simpa [root] using h)
+  exact List.prefix_nil.mp h
 
 lemma length_lt_of_prefix_ne {v w : InfiniteBinaryTree} (h : v <+: w) (hne : v ≠ w) :
     v.length < w.length :=
@@ -229,9 +227,6 @@ def phi (f₀ f₁ : TreeAut) : TreeAut where
         · simp only [hi, hj, phiFun, List.cons_prefix_cons, true_and]
           exact f₁.map_isPrefix a b
 
-@[simp] lemma phi_root (f₀ f₁ : TreeAut) : phi f₀ f₁ root = root := by
-  simp [root, phi, phiFun]
-
 @[simp] lemma phi_cons (f₀ f₁ : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
     phi f₀ f₁ (i :: w) = i :: bif i == 0 then f₀ w else f₁ w := by
   simp [phi, phiFun]
@@ -269,7 +264,7 @@ def swapRoot : TreeAut where
       | cons j b =>
         simp [List.cons_prefix_cons, add_left_inj]
 
-@[simp] lemma swapRoot_root : swapRoot root = root := rfl
+@[simp] lemma swapRoot_root : swapRoot [] = [] := rfl
 
 @[simp] lemma swapRoot_cons (i : Fin 2) (w : InfiniteBinaryTree) :
     swapRoot (i :: w) = (i + 1) :: w :=
@@ -357,9 +352,9 @@ def restrict (f : TreeAut) (i : Fin 2) : TreeAut where
   rfl
 
 lemma firstLetter_zero (f : TreeAut) : firstLetter f 0 = activity f root := by
-  have h := apply_succ_zero f root
+  have h := apply_succ_zero f []
   rw [map_root] at h
-  simp only [root_eq_nil, succ_eq_append, List.nil_append] at h
+  simp only [succ_eq_append, List.nil_append] at h
   rw [apply_singleton] at h
   exact (List.cons_eq_cons.mp h).1
 
@@ -468,11 +463,11 @@ def swapRootHom : Multiplicative (ZMod 2) →* TreeAut where
         rfl
       simp [hx, hy, hxy, swapRoot_mul_self]
 
-@[simp] lemma swapHom_ofAdd_zero : swapHom (ofAdd 0) = 1 := rfl
+@[simp] lemma swapHom_ofAdd_zero : swapHom 1 = 1 := rfl
 
 @[simp] lemma swapHom_ofAdd_one : swapHom (ofAdd 1) = swapComponents := rfl
 
-@[simp] lemma swapRootHom_ofAdd_zero : swapRootHom (ofAdd 0) = 1 := rfl
+@[simp] lemma swapRootHom_ofAdd_zero : swapRootHom 1 = 1 := rfl
 
 @[simp] lemma swapRootHom_ofAdd_one : swapRootHom (ofAdd 1) = swapRoot := rfl
 
@@ -585,7 +580,7 @@ lemma toSemidirect_ofSemidirect (x : (TreeAut × TreeAut) ⋊[swapHom] Multiplic
   rcases zmod2_eq_zero_or_one ε.toAdd with h | h
   · have hε : ε = 1 := by rw [← ofAdd_toAdd ε, h]; rfl
     rw [hε, ofSemidirect_apply]
-    change toSemidirect (phi f₀ f₁ * swapRootHom (ofAdd (0 : ZMod 2))) = ⟨(f₀, f₁), 1⟩
+    change toSemidirect (phi f₀ f₁ * swapRootHom 1) = ⟨(f₀, f₁), 1⟩
     rw [swapRootHom_ofAdd_zero, mul_one]
     refine SemidirectProduct.ext ?_ ?_
     · change (restrict (phi f₀ f₁) (activity (phi f₀ f₁) root),
