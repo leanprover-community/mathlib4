@@ -258,7 +258,8 @@ protected theorem coe_nnReal_ennReal {f : α → ℝ≥0} {g : β → ℝ≥0} (
     IdentDistrib (fun x => (f x : ℝ≥0∞)) (fun x => (g x : ℝ≥0∞)) μ ν :=
   h.comp measurable_coe_nnReal_ennReal
 
-@[deprecated (since := "2026-10-27")] alias coe_nnreal_ennreal := coe_nnReal_ennReal
+@[deprecated (since := "2026-10-27")]
+protected alias coe_nnreal_ennreal := IdentDistrib.coe_nnReal_ennReal
 
 @[to_additive]
 theorem mul_const [Mul γ] [MeasurableMul γ] (h : IdentDistrib f g μ ν) (c : γ) :
