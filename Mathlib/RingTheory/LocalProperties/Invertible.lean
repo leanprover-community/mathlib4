@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Flat.LocallyFree
 public import Mathlib.RingTheory.PicardGroup
+
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.LocalProperties.FinitePresentation
 
