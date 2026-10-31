@@ -374,6 +374,30 @@ def sigmaLcurryEquiv : (⨁ i : Σ _, _, δ i.1 i.2) ≃ₗ[R] ⨁ (i) (j), δ i
 
 end Sigma
 
+section SigmaFiber
+
+variable {κ : Type*} [DecidableEq κ] (f : ι → κ)
+
+/-- Regroup a direct sum along the fibres of `f`, as a linear equivalence. -/
+def sigmaFiberLEquiv : (⨁ i, M i) ≃ₗ[R] ⨁ (j : κ) (i : {i : ι // f i = j}), M i :=
+  (sigmaFiberAddEquiv f).toLinearEquiv fun _ _ ↦ by ext; rfl
+
+variable [DecidableEq ι]
+
+@[simp]
+theorem sigmaFiberLEquiv_lof (i : ι) (x : M i) :
+    sigmaFiberLEquiv R f (lof R ι M i x) = lof R κ _ (f i) (lof R _ _ ⟨i, rfl⟩ x) :=
+  sigmaFiberAddEquiv_of f i x
+
+theorem sigmaFiberLEquiv_symm_comp_lof (j : κ) :
+    (sigmaFiberLEquiv R f).symm.toLinearMap ∘ₗ
+        lof R κ (fun j ↦ ⨁ (i : {i : ι // f i = j}), M i) j =
+      toModule R {i : ι // f i = j} _ fun i ↦ lof R ι M i :=
+  linearMap_ext _ fun ⟨i, hi⟩ ↦ LinearMap.ext fun x ↦ by
+    subst hi; simp [LinearEquiv.symm_apply_eq]
+
+end SigmaFiber
+
 section Option
 
 variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)] [∀ i, Module R (α i)]
@@ -603,5 +627,59 @@ theorem congrLinearEquiv_toLinearMap (u : (i : ι) → N i ≃ₗ[R] P i) :
   rfl
 
 end Congr
+
+section IsInternal
+
+variable {R : Type*} [Semiring R] {ι : Type*} [DecidableEq ι] {M N : Type*} [AddCommMonoid M]
+  [Module R M] [AddCommMonoid N] [Module R N] {A : ι → Submodule R M}
+
+variable (R) in
+/-- A direct sum is the internal direct sum of the images of its summands. -/
+theorem isInternal_range_lof {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)] :
+    IsInternal fun i ↦ LinearMap.range (lof R ι P i) := by
+  have key : coeLinearMap (fun i ↦ LinearMap.range (lof R ι P i)) ∘ₗ
+      (congrLinearEquiv fun i ↦ LinearEquiv.ofInjective (lof R ι P i) (of_injective i)).toLinearMap
+      = .id := by
+    ext i x; simp [coe_congrLinearEquiv]; rfl
+  have h : Function.Bijective (LinearMap.id : (⨁ i, P i) →ₗ[R] _) := Function.bijective_id
+  rw [← key, LinearMap.coe_comp] at h
+  exact (Function.Bijective.of_comp_iff _ (LinearEquiv.bijective _)).1 h
+
+/-- An internal direct sum is carried to an internal direct sum by a linear equivalence. -/
+theorem IsInternal.submodule_map (h : IsInternal A) (e : M ≃ₗ[R] N) :
+    IsInternal fun i ↦ (A i).map (e : M →ₗ[R] N) := by
+  have key : coeLinearMap (fun i ↦ (A i).map (e : M →ₗ[R] N)) ∘ₗ
+      (congrLinearEquiv fun i ↦ e.submoduleMap (A i)).toLinearMap =
+      e.toLinearMap ∘ₗ coeLinearMap A := by
+    ext i x; simp [coe_congrLinearEquiv]
+  have h' : Function.Bijective (e.toLinearMap ∘ₗ coeLinearMap A) := e.bijective.comp h
+  rw [← key, LinearMap.coe_comp] at h'
+  exact (Function.Bijective.of_comp_iff _ (LinearEquiv.bijective _)).1 h'
+
+theorem range_toModule {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)]
+    (φ : ∀ i, P i →ₗ[R] M) :
+    LinearMap.range (toModule R ι M φ) = ⨆ i, LinearMap.range (φ i) := by
+  rw [LinearMap.range_eq_map, ← (isInternal_range_lof R (P := P)).submodule_iSup_eq_top,
+    Submodule.map_iSup]
+  simp_rw [← LinearMap.range_comp]
+  exact iSup_congr fun i ↦ congrArg _ (LinearMap.ext (toModule_lof R i))
+
+/-- An internal direct sum regrouped along the fibres of `f` is still an internal direct sum. -/
+theorem IsInternal.submodule_iSup_fiberwise {κ : Type*} [DecidableEq κ] (h : IsInternal A)
+    (f : ι → κ) : IsInternal fun j ↦ ⨆ (i) (_ : f i = j), A i := by
+  convert (isInternal_range_lof R (P := fun j ↦ ⨁ (i : {i // f i = j}), A i)).submodule_map
+    ((sigmaFiberLEquiv R f (M := fun i ↦ A i)).symm.trans
+      (LinearEquiv.ofBijective (coeLinearMap A) h)) using 1
+  funext j
+  rw [← LinearMap.range_comp, LinearEquiv.coe_trans, LinearMap.comp_assoc,
+    sigmaFiberLEquiv_symm_comp_lof, LinearMap.range_comp, range_toModule, Submodule.map_iSup,
+    iSup_subtype]
+  refine iSup_congr fun i ↦ iSup_congr fun _ ↦ ?_
+  dsimp only
+  rw [← LinearMap.range_comp]
+  exact (Submodule.range_subtype (A i)).symm.trans
+    (congrArg LinearMap.range (LinearMap.ext fun x ↦ (coeLinearMap_of A i x).symm))
+
+end IsInternal
 
 end DirectSum
