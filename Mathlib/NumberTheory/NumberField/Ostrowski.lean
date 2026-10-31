@@ -77,11 +77,10 @@ lemma RingOfIntegers.absoluteValue_le_one (x : 𝓞 K) : f x ≤ 1 := by
     rw [← B.sum_repr y]
     calc
       f ↑(∑ i, (B.repr y i) • B i) ≤ ∑ i, f ((B.repr y i) • B i) := by
-        rw [coe_eq_algebraMap, map_sum]
+        push_cast
         exact f.sum_le _ _
       _ ≤ ∑ i, f (B i) := by
-        apply Finset.sum_le_sum
-        intro _ _
+        gcongr
         rw [zsmul_eq_mul, map_mul]
         exact mul_le_of_le_one_left (apply_nonneg f _) <| hfna.apply_intCast_le_one
           (map_zero_le f 1) (map_one f) f.map_neg
@@ -96,10 +95,9 @@ def heightOneSpectrumOfAbsoluteValue : HeightOneSpectrum (𝓞 K) where
     carrier := {a | f a < 1}
     add_mem' := fun ha hb ↦ (hfna _ _).trans_lt (max_lt ha hb)
     zero_mem' := by simp
-    smul_mem' := by
-      simpa [Set.mem_ofPred_eq] using
-        (fun (c x : 𝓞 K) hx ↦ (mul_le_of_le_one_left (apply_nonneg f ↑x)
-        (RingOfIntegers.absoluteValue_le_one hfna c)).trans_lt hx)
+    smul_mem' c _ hx := by
+      simpa using (mul_le_of_le_one_left (apply_nonneg f _)
+        (RingOfIntegers.absoluteValue_le_one hfna c)).trans_lt hx
   }
   isPrime := by
     rw [Ideal.isPrime_iff]
@@ -108,10 +106,9 @@ def heightOneSpectrumOfAbsoluteValue : HeightOneSpectrum (𝓞 K) where
       change ¬f 1 < 1
       simp
     · change ∀ x y : 𝓞 K, f (x * y) < 1 → f x < 1 ∨ f y < 1
-      intro _ _ hxy
-      rw [map_mul] at hxy
-      by_contra! h
-      linarith [one_le_mul_of_one_le_of_one_le h.1 h.2]
+      intro _ _
+      contrapose!
+      simpa using fun h1 h2 ↦ one_le_mul_of_one_le_of_one_le h1 h2
   ne_bot := by
     rw [Submodule.ne_bot_iff]
     change ∃ x : 𝓞 K, f x < 1 ∧ x ≠ 0
@@ -119,9 +116,7 @@ def heightOneSpectrumOfAbsoluteValue : HeightOneSpectrum (𝓞 K) where
     obtain ⟨c, b, h, rfl⟩ := IsFractionRing.div_surjective (A := 𝓞 K) a
     by_cases hfb : f b < 1
     · exact ⟨b, hfb, nonZeroDivisors.ne_zero h⟩
-    rw [map_div₀,
-      le_antisymm (RingOfIntegers.absoluteValue_le_one hfna b) (le_of_not_gt hfb)] at hfa
-    grind [RingOfIntegers.absoluteValue_le_one]
+    grind [map_inv₀, RingOfIntegers.absoluteValue_le_one]
 
 include hf_nontriv
 
@@ -138,14 +133,13 @@ theorem exists_heightOneSpectrum_eq_adicAbv :
   have hb : 1 < b := by
     apply_mod_cast (one_lt_inv₀ hπ_pos).2
     change π ∈ P.asIdeal
-    simp [← intValuation_lt_one_iff_mem, hπ, ← WithZero.exp_zero]
+    simp [← intValuation_lt_one_iff_mem, hπ]
   have f_eq_one_of_adicAbv_eq_one {x : K} (hx : P.adicAbv hb x = 1) : f x = 1 := by
     obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_adicAbv_eq_one hb (le_of_eq hx)
     have h {x : 𝓞 K} (hx : P.adicAbv hb (x : K) = 1) : f x = 1 := by
       rw [adicAbv_coe_eq_one_iff] at hx
       exact le_antisymm (RingOfIntegers.absoluteValue_le_one hfna x) (le_of_not_gt hx)
-    have hy : P.adicAbv hb (y : K) = 1 := by simpa [map_div₀, hz] using hx
-    simp [map_div₀, h hy, h hz]
+    simp [h (by simpa [hz] using hx), h hz]
   constructor
   · use b, hb
     ext x
@@ -158,13 +152,9 @@ theorem exists_heightOneSpectrum_eq_adicAbv :
     apply eq_inv_of_mul_eq_one_left
     rw [← map_zpow₀, ← map_mul]
     apply f_eq_one_of_adicAbv_eq_one
-    have : (P.valuation K π).log = -1 := by
-      simp [valuation_of_algebraMap, hπ]
-    simp [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, coe_b,
-      WithZeroMulInt.toNNReal_neg_apply _ hπv_ne, WithZeroMulInt.toNNReal_neg_apply _ hxv_ne, this,
-      zpow_ne_zero _ hπ_pos.ne']
-  · simp only [forall_exists_index]
-    rintro Q _ hc rfl
+    simp [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, coe_b, valuation_of_algebraMap,
+      hπ, toNNReal_neg_apply, hxv_ne, zpow_ne_zero _ hπ_pos.ne']
+  · rintro Q ⟨_, hc, rfl⟩
     ext x
     exact (adicAbv_coe_lt_one_iff Q hc x).symm
 
@@ -174,9 +164,7 @@ theorem exists_heightOneSpectrum_equiv_adicAbv :
     ∃! P : HeightOneSpectrum (𝓞 K), f ≈ adicAbv K P := by
   obtain ⟨P, ⟨b, hb, hf⟩, -⟩ := exists_heightOneSpectrum_eq_adicAbv hfna hf_nontriv
   refine ⟨P, ?_, fun Q hQ ↦ ?_⟩
-  · rw [hf]
-    apply AbsoluteValue.isEquiv_iff_lt_one_iff.mpr
-    intro _
+  · refine hf ▸ AbsoluteValue.isEquiv_iff_lt_one_iff.mpr fun _ ↦ ?_
     simpa [NumberField.HeightOneSpectrum.adicAbv, IsDedekindDomain.HeightOneSpectrum.adicAbv,
       IsDedekindDomain.HeightOneSpectrum.adicAbvDef] using
       (toNNReal_lt_one_iff hb).trans (toNNReal_lt_one_iff (one_lt_absNorm_nnreal P)).symm
