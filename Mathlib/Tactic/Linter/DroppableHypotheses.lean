@@ -14,20 +14,20 @@ public import Mathlib.Init
 # Droppable hypothesis linter
 
 Lean's unused-variable linter detects parameters unused by the existing proof. A parameter can
-be used yet redundant: for example, `infer_instance` can replace `[Nonempty α]` using `[Inhabited α]`.
+be used yet redundant: `infer_instance` can derive `Nonempty α` from `[Inhabited α]`.
 This linter finds such cases by deleting one parameter and re-elaborating the unchanged statement
 and proof. Enable it with `set_option linter.droppableHypotheses true` after importing this module.
 
-Named theorems and lemmas are supported, including section variables and grouped binders.
+Only named theorems and lemmas are checked, including section variables and grouped binders.
+Binders inside the return type are not tried.
 Findings are independent; individually removable parameters may not all be removable together.
 Trials restore command state, disable auto-implicit parameters and recursive linting, reject
 `sorry` dependencies, and check that reinserting one parameter recovers the original statement.
-Ambiguous binder alignment and explicitly dependent section binders are conservatively skipped.
+Explicitly dependent section binders are conservatively skipped.
 Arbitrary IO performed by elaborators or tactics is not undone.
 
-This linter is expensive and disabled by default. Heartbeats do not bound every Lean operation:
-`CategoryTheory/Sites/Descent/IsPrestack.lean` still times out, so large surveys need an external
-process timeout. The dependent-section guard avoids https://github.com/leanprover/lean4/issues/16125.
+This linter is expensive and requires explicit enabling, even with `linter.all true`.
+Heartbeats do not bound every Lean operation, so large surveys need an external process timeout.
 -/
 
 public meta section
@@ -54,15 +54,7 @@ register_option linter.droppableHypotheses.outputFile : String := {
   descr := "JSONL audit file for the droppable-hypothesis linter"
 }
 
-/-- Record individual trial phases in the audit file when diagnosing a failed replay. -/
-register_option linter.droppableHypotheses.traceTrials : Bool := {
-  defValue := false
-  descr := "record individual droppable-hypothesis trial phases"
-}
-
 namespace DroppableHypotheses
-
-initialize registerTraceClass `linter.droppableHypotheses
 
 /-- One source edit to try, together with the scope in which to replay it. -/
 private structure Trial where
@@ -71,28 +63,21 @@ private structure Trial where
   command : Syntax
   scope : Scope
   isSection : Bool := false
-  dependentSectionBinder : Bool := false
 
 /-- The individual names of a binder; an anonymous instance counts as one parameter. -/
 private def binderNames (binder : Syntax) : Array Syntax :=
-  if binder.isIdent || binder.isOfKind ``Parser.Term.hole then #[binder]
-  else if binder.isOfKind ``Parser.Term.instBinder then #[binder]
+  if binder.isIdent || binder.isOfKind ``Parser.Term.hole ||
+      binder.isOfKind ``Parser.Term.instBinder then #[binder]
   else if binder.isOfKind ``Parser.Term.explicitBinder ||
       binder.isOfKind ``Parser.Term.implicitBinder ||
       binder.isOfKind ``Parser.Term.strictImplicitBinder then binder[1].getArgs
   else #[]
 
-/-- Delete one name from a grouped binder, or the entire binder if it has only one name. -/
-private def dropName (binder : Syntax) (i : Nat) : Option Syntax :=
-  if (binderNames binder).size == 1 then none
-  else some <| binder.setArg 1 (mkNullNode <| binder[1].getArgs.eraseIdxIfInBounds i)
-
-/-- Replace a binder, or remove it if its replacement is `none`. -/
-private def editBinders (binders : Array Syntax) (i : Nat) (replacement : Option Syntax) :
-    Array Syntax :=
-  match replacement with
-  | some binder => binders.set! i binder
-  | none => binders.eraseIdxIfInBounds i
+/-- Delete one name from a grouped binder, or its entire binder if it has only one name. -/
+private def eraseName (binders : Array Syntax) (i j : Nat) : Array Syntax :=
+  let binder := binders[i]!
+  if (binderNames binder).size == 1 then binders.eraseIdxIfInBounds i
+  else binders.set! i <| binder.setArg 1 (mkNullNode <| binder[1].getArgs.eraseIdxIfInBounds j)
 
 /-- Enumerate declaration parameters and section variables, without dropping a whole group. -/
 private def trials (stx : Syntax) (scope : Scope) : Array Trial := Id.run do
@@ -101,22 +86,23 @@ private def trials (stx : Syntax) (scope : Scope) : Array Trial := Id.run do
   let binders := sig[0].getArgs
   for binder in binders, i in *...binders.size do
     for ref in binderNames binder, j in *...(binderNames binder).size do
-      let sig := sig.setArg 0 <| mkNullNode <| editBinders binders i (dropName binder j)
+      let sig := sig.setArg 0 <| mkNullNode <| eraseName binders i j
       result := result.push { ref, binder, command := stx.setArg 1 (stx[1].setArg 2 sig), scope }
   let mut uidIdx := 0
   for binder in scope.varDecls, i in *...scope.varDecls.size do
     for ref in binderNames binder, j in *...(binderNames binder).size do
       let uid := scope.varUIds[uidIdx + j]!
-      let varDecls := editBinders (scope.varDecls.map (·.raw)) i (dropName binder j)
+      let varDecls := eraseName (scope.varDecls.map (·.raw)) i j
       -- Re-elaborating the whole section telescope with an explicitly referenced variable
       -- missing is invalid, even when the dependent binder is unused by this theorem.
+      -- It can also trigger https://github.com/leanprover/lean4/issues/16125.
       let name? := if ref.isIdent then some ref.getId
         else if binder.raw.isOfKind ``Parser.Term.instBinder && binder.raw[1][0].isIdent then
           some binder.raw[1][0].getId
         else none
-      let dependentSectionBinder := name?.any fun name => varDecls.any fun remaining =>
-        (remaining.getArgs.drop 2).any fun arg =>
-          (arg.find? fun stx => stx.isIdent && stx.getId == name).isSome
+      if name?.any (fun name => varDecls.any fun remaining =>
+          (remaining.getArgs.drop 2).any fun arg =>
+            (arg.find? fun stx => stx.isIdent && stx.getId == name).isSome) then continue
       let scope := { scope with
         varDecls := varDecls.map (⟨·⟩)
         varUIds := scope.varUIds.eraseIdxIfInBounds (uidIdx + j)
@@ -127,8 +113,7 @@ private def trials (stx : Syntax) (scope : Scope) : Array Trial := Id.run do
         binder := binder
         command := stx
         scope := scope
-        isSection := true
-        dependentSectionBinder := dependentSectionBinder }
+        isSection := true }
     uidIdx := uidIdx + (binderNames binder).size
   return result
 
@@ -145,18 +130,11 @@ private def specializesToOriginal (original replay : Expr) : MetaM Bool :=
         if i == dropped then continue
         let .forallE name domain body bi := type | compatible := false; break
         let decl := decls[i]!
-        if decl.binderInfo.isInstImplicit && decl.userName.hasMacroScopes &&
-            bi.isInstImplicit && name.hasMacroScopes then
-          -- Anonymous instance names can change when an earlier binder is removed. Align by
-          -- type only when unambiguous, or when proof irrelevance makes the choice immaterial.
-          unless ← Meta.isProp decl.type do
-            for other in decls do
-              if other.fvarId != decl.fvarId && (← Meta.isDefEq decl.type other.type) then
-                compatible := false
-        else
-          if name != decl.userName || decls.any (fun other =>
-              other.fvarId != decl.fvarId && other.userName == decl.userName) then
-            compatible := false
+        -- Anonymous instance names can change when an earlier binder is removed.
+        unless (decl.binderInfo.isInstImplicit && decl.userName.hasMacroScopes &&
+            bi.isInstImplicit && name.hasMacroScopes) ||
+            name.eraseMacroScopes == decl.userName.eraseMacroScopes do
+          compatible := false
         unless compatible do break
         unless ← Meta.isDefEq domain (← Meta.inferType x) do
           compatible := false
@@ -173,11 +151,7 @@ private def audit (record : Json) : CommandElabM Unit := do
     handle.putStrLn record.compress
     handle.flush
 
-private def traceTrialPhase (phase : String) : CommandElabM Unit := do
-  if linter.droppableHypotheses.traceTrials.get (← getOptions) then
-    audit <| Json.mkObj [("event", toJson "trial_phase"), ("phase", toJson phase)]
-
-/-- The outcome of an isolated replay; only successful trials carry a replacement type. -/
+/-- An isolated replay's status and, when auditing, its replacement type. -/
 private structure TrialResult where
   status : String
   newType : String := ""
@@ -185,13 +159,13 @@ private structure TrialResult where
 /-- Re-elaborate in an isolated command state. No declaration or diagnostic escapes a trial. -/
 private def succeeds (before : State) (declName : Name) (original : Expr) (trial : Trial) :
     CommandElabM TrialResult := do
-  if trial.dependentSectionBinder then return ⟨"dependent_section_binder", ""⟩
   let saved ← get
   try
+    -- Finish the trial proof before inspecting errors or discarding its snapshot tasks.
     let opts := trial.scope.opts
       |>.setBool `autoImplicit false
+      |>.setBool `warningAsError false
       |>.setBool `Elab.async false
-      |>.setBool `linter.all false
       |>.setBool `linter.droppableHypotheses false
       |>.set `maxHeartbeats (linter.droppableHypotheses.maxHeartbeats.get trial.scope.opts)
     set { before with
@@ -200,21 +174,18 @@ private def succeeds (before : State) (declName : Name) (original : Expr) (trial
       snapshotTasks := #[]
       scopes := { trial.scope with opts } :: before.scopes.tail }
     withReader ({ · with snap? := none }) do
-      traceTrialPhase "elaborate"
       elabDeclaration trial.command
-      traceTrialPhase "check_errors"
       if (← get).messages.hasErrors then
         let heartbeat := (← get).messages.toArray.any fun m =>
           m.data.hasTag (· == `runtime.maxHeartbeats)
         return ⟨if heartbeat then "heartbeat_limit" else "elaboration_error", ""⟩
       let some info := (← getEnv).find? declName | return ⟨"missing_declaration", ""⟩
-      traceTrialPhase "axioms"
       if (← collectAxioms declName).contains ``sorryAx then return ⟨"sorry", ""⟩
-      traceTrialPhase "compare_types"
       unless ← liftTermElabM <| specializesToOriginal original info.type do
         return ⟨"statement_changed", ""⟩
-      traceTrialPhase "pretty_type"
-      let newType ← liftTermElabM do return toString (← Meta.ppExpr info.type)
+      let newType ← if (linter.droppableHypotheses.outputFile.get (← getOptions)).isEmpty then
+        pure ""
+        else liftTermElabM do return toString (← Meta.ppExpr info.type)
       return ⟨"success", newType⟩
   catch ex =>
     if ex.isInterrupt then throw ex
@@ -226,7 +197,7 @@ private def succeeds (before : State) (declName : Name) (original : Expr) (trial
 /-- Capture the state before adding a theorem, then run isolated deletion trials. -/
 @[command_elab Lean.Parser.Command.declaration]
 def elabWithDroppableHypotheses : CommandElab := fun stx => do
-  unless getLinterValue linter.droppableHypotheses (← getLinterOptions) do
+  unless linter.droppableHypotheses.get (← getOptions) do
     throwUnsupportedSyntax
   unless stx[1].isOfKind ``Parser.Command.theorem do
     throwUnsupportedSyntax
@@ -253,32 +224,36 @@ def elabWithDroppableHypotheses : CommandElab := fun stx => do
     ("declarationEnd", toJson <| (stx.getTailPos?.map (·.byteIdx)).getD 0)]
   audit <| Json.mkObj <| [("event", toJson "declaration_start"),
     ("trials", toJson candidates.size)] ++ location
-  let mut findings : Array Json := #[]
+  let auditing := !(linter.droppableHypotheses.outputFile.get (← getOptions)).isEmpty
+  let mut originalType : Option String := none
+  let mut findings := 0
   let mut outcomes : Std.HashMap String Nat := {}
   for (trial, index) in candidates.zipIdx do
-    if linter.droppableHypotheses.traceTrials.get (← getOptions) then
+    if auditing then
       audit <| Json.mkObj [("event", toJson "trial_start"),
         ("declaration", toJson declName.toString), ("index", toJson index),
         ("binder", toJson <| trial.binder.reprint.getD ""),
         ("section", toJson trial.isSection)]
     let result ← succeeds before declName info.type trial
-    if linter.droppableHypotheses.traceTrials.get (← getOptions) then
+    if auditing then
       audit <| Json.mkObj [("event", toJson "trial_done"), ("index", toJson index),
         ("status", toJson result.status)]
     outcomes := outcomes.insert result.status (outcomes.getD result.status 0 + 1)
     if result.status == "success" then
-      let finding := Json.mkObj <| [
-        ("binder", toJson <| trial.ref.reprint.getD ""),
-        ("binderSyntax", toJson <| trial.binder.reprint.getD ""),
-        ("binderStart", toJson <| (trial.binder.getPos?.map (·.byteIdx)).getD 0),
-        ("binderEnd", toJson <| (trial.binder.getTailPos?.map (·.byteIdx)).getD 0),
-        ("newType", toJson result.newType),
-        ("section", toJson trial.isSection),
-        ("byteOffset", toJson <| (trial.ref.getPos?.map (·.byteIdx)).getD 0)] ++ location
-      findings := findings.push finding
-      let originalType ← liftTermElabM do return toString (← Meta.ppExpr info.type)
-      audit <| Json.mkObj [("event", toJson "finding"), ("finding", finding),
-        ("originalType", toJson originalType)]
+      findings := findings + 1
+      if auditing then
+        if originalType.isNone then
+          originalType := some (← liftTermElabM do return toString (← Meta.ppExpr info.type))
+        let finding := Json.mkObj <| [
+          ("binder", toJson <| trial.ref.reprint.getD ""),
+          ("binderSyntax", toJson <| trial.binder.reprint.getD ""),
+          ("binderStart", toJson <| (trial.binder.getPos?.map (·.byteIdx)).getD 0),
+          ("binderEnd", toJson <| (trial.binder.getTailPos?.map (·.byteIdx)).getD 0),
+          ("newType", toJson result.newType),
+          ("section", toJson trial.isSection),
+          ("byteOffset", toJson <| (trial.ref.getPos?.map (·.byteIdx)).getD 0)] ++ location
+        audit <| Json.mkObj [("event", toJson "finding"), ("finding", finding),
+          ("originalType", toJson <| originalType.getD "")]
       let kind := if trial.isSection then "Section parameter" else "Parameter"
       logLint linter.droppableHypotheses trial.ref m!"\
         {kind} `{trial.ref}` can be dropped: \
@@ -287,12 +262,7 @@ def elabWithDroppableHypotheses : CommandElab := fun stx => do
     ("event", toJson "declaration_done"),
     ("trials", toJson candidates.size),
     ("outcomes", Json.mkObj <| outcomes.toList.map fun (k, v) => (k, toJson v)),
-    ("findings", toJson findings.size),
+    ("findings", toJson findings),
     ("milliseconds", toJson <| (← IO.monoMsNow) - started)] ++ location
-  trace[linter.droppableHypotheses] "{Json.compress <| Json.mkObj [
-    ("declaration", toJson declName.toString),
-    ("trials", toJson candidates.size),
-    ("findings", toJson findings)]}"
-
 end DroppableHypotheses
 end Mathlib.Linter

@@ -10,6 +10,11 @@ namespace DroppableHypothesesTest
 #guard_msgs in
 theorem disabled (h : True) : True := by trivial
 
+-- Enabling every ordinary linter must not enable expensive replay trials.
+#guard_msgs (drop info) in
+set_option linter.all true in
+theorem allLinters (P : Prop) (_h _k : P) : P := by assumption
+
 set_option linter.droppableHypotheses true
 
 /--
@@ -19,6 +24,14 @@ Note: This linter can be disabled with `set_option linter.droppableHypotheses fa
 -/
 #guard_msgs in
 theorem unused (h : True) : True := by trivial
+
+/--
+warning: Parameter `h` can be dropped: the declaration and its existing proof re-elaborate without it.
+
+Note: This linter can be disabled with `set_option linter.droppableHypotheses false`
+-/
+#guard_msgs in
+theorem defaultArgument (h : True := by trivial) : True := by trivial
 
 -- Failed trials must not leak their unknown-identifier or unsolved-goal errors.
 #guard_msgs in
@@ -135,11 +148,29 @@ Note: This linter can be disabled with `set_option linter.droppableHypotheses fa
 #guard_msgs in
 theorem selectedInstance [a : Selected] [b : Selected] : Selected.value = Selected.value := by rfl
 
--- Anonymous instances of the same data-carrying class cannot be aligned unambiguously.
+-- Anonymous instances align by type; each can be removed independently.
+/--
+warning: Parameter `[Selected]` can be dropped: the declaration and its existing proof re-elaborate without it.
+
+Note: This linter can be disabled with `set_option linter.droppableHypotheses false`
+---
+warning: Parameter `[Selected]` can be dropped: the declaration and its existing proof re-elaborate without it.
+
+Note: This linter can be disabled with `set_option linter.droppableHypotheses false`
+-/
 #guard_msgs in
 theorem ambiguousInstances [Selected] [Selected] : Selected.value = Selected.value := by rfl
 
--- Reusing a binder name is also an ambiguous alignment.
+-- Repeated binder names also permit independent removals when reinsertion recovers the type.
+/--
+warning: Parameter `x` can be dropped: the declaration and its existing proof re-elaborate without it.
+
+Note: This linter can be disabled with `set_option linter.droppableHypotheses false`
+---
+warning: Parameter `x` can be dropped: the declaration and its existing proof re-elaborate without it.
+
+Note: This linter can be disabled with `set_option linter.droppableHypotheses false`
+-/
 #guard_msgs in
 theorem ambiguousNames (x : Nat) (x : Nat) : x = x := by rfl
 
@@ -185,6 +216,20 @@ Note: This linter can be disabled with `set_option linter.droppableHypotheses fa
 #guard_msgs in
 theorem adequateBudget (h : True) : True := by
   first | exact h | spend_trial_heartbeats; exact True.intro
+
+open Lean Elab Tactic in
+elab "warn_in_trial" : tactic => logWarning "trial warning"
+
+-- A warning in the alternative proof must not make a successful replay fail.
+/--
+error: Parameter `h` can be dropped: the declaration and its existing proof re-elaborate without it.
+
+Note: This linter can be disabled with `set_option linter.droppableHypotheses false`
+-/
+#guard_msgs in
+set_option warningAsError true in
+theorem warningIsNotFailure (h : True) : True := by
+  first | exact h | warn_in_trial; exact True.intro
 
 -- Declarations with private or qualified names are supported.
 /--
