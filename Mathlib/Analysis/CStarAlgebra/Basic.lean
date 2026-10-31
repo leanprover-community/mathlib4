@@ -76,6 +76,8 @@ instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] 
 
 variable (x : E) (r : ℝ)
 
+open scoped Pointwise
+
 @[simp] lemma Metric.star_ball : star (ball x r) = ball (star x) r := by
   simpa using star_isometry.preimage_ball (star x) r
 

@@ -127,6 +127,7 @@ lemma mulCayley_adj (u v : M) :
   simp [mulCayley_adj', ← eq_inv_mul_iff_mul_eq (b := u), ← inv_mul_eq_iff_eq_mul (a := v),
     and_or_left, exists_or]
 
+open scoped Pointwise in
 @[to_additive (attr := simp)]
 theorem mulCayley_inv : mulCayley s⁻¹ = mulCayley s := by
   ext u v
