@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 
+import Mathlib.RingTheory.NormTrace
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
 
@@ -38,6 +39,10 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 * `IsCyclotomicExtension.Rat.ramificationIdxIn_eq`: write `n = p ^ (k + 1) * m` where the prime `p`
   does not divide `m`, then the ramification index of `p` in `ℚ(ζₙ)` is `p ^ k * (p - 1)`.
+
+* `IsCyclotomicExtension.Rat.zeta_sub_one_dvd_trace_sub_smul` and
+  `IsCyclotomicExtension.Rat.zeta_sub_one_pow_dvd_norm_one_add_smul_sub`: congruences modulo
+  `ζ - 1` for the trace and the norm of elements of `𝓞 K`, where `K = ℚ(ζₚ)` with `p` prime.
 
 -/
 
@@ -230,6 +235,72 @@ theorem isCoprime_of_not_zeta_sub_one_dvd {x : 𝓞 K} (hx : ¬ hζ.toInteger - 
     IsCoprime.pow_left_iff (by grind [hp.out.one_lt]), isCoprime_iff_gcd,
     (prime_span_singleton_iff.mpr
     hζ.zeta_sub_one_prime').irreducible.gcd_eq_one_iff, dvd_span_singleton, mem_span_singleton]
+
+/-- Let `p` be an odd prime. For every `a : 𝓞 K` there is an integer `b` such that
+`a ^ p ≡ b ^ p` modulo `p`. -/
+theorem exists_natCast_dvd_pow_sub_intCast_pow (h : 2 < p) (a : 𝓞 K) :
+    ∃ b : ℤ, (p : 𝓞 K) ∣ a ^ p - (b : 𝓞 K) ^ p := by
+  have hζ := hK.zeta_spec
+  obtain ⟨b, k, e⟩ : ∃ b : ℤ, hζ.toInteger - 1 ∣ a - b := by
+    obtain ⟨b, hb⟩ := hζ.subOneIntegralPowerBasis.exists_gen_dvd_sub a
+    exact ⟨b, by rwa [hζ.subOneIntegralPowerBasis_gen] at hb⟩
+  obtain ⟨r, hr⟩ := exists_add_pow_prime_eq hp.out a (-b)
+  obtain ⟨u, hu⟩ := (associated_zeta_sub_one_pow_prime p hζ).symm
+  rw [(hp.out.odd_of_ne_two h.ne').neg_pow, ← sub_eq_add_neg, e, mul_pow,
+    ← sub_eq_add_neg] at hr
+  refine ⟨b, ↑u * ((hζ.toInteger - 1) * k ^ p) - r * a * (-b), ?_⟩
+  grind [← pow_succ, Nat.sub_add_cancel hp.out.one_lt.le]
+
+open Polynomial in
+/-- Reduction modulo `ζ - 1` is invariant under every ring endomorphism of `𝓞 K`, where `ζ` is a
+primitive `p`-th root of unity. -/
+theorem quotientMk_span_zeta_sub_one_comp (σ : 𝓞 K →+* 𝓞 K) :
+    (Ideal.Quotient.mk (span {hζ.toInteger - 1})).comp σ = Ideal.Quotient.mk _ := by
+  apply RingHom.toIntAlgHom_injective
+  apply hζ.integralPowerBasis.algHom_ext
+  simp only [RingHom.toIntAlgHom, AlgHom.coe_mk, RingHom.coe_comp, Function.comp_apply,
+    hζ.integralPowerBasis_gen, Ideal.Quotient.eq, mem_span_singleton]
+  apply hζ.toInteger_isPrimitiveRoot.sub_one_dvd_sub hp.out
+  · simp [mem_nthRootsFinset (NeZero.pos p), ← map_pow, hζ.toInteger_isPrimitiveRoot.pow_eq_one]
+  · simpa [mem_nthRootsFinset (NeZero.pos p)] using hζ.toInteger_isPrimitiveRoot.pow_eq_one
+
+/-- The trace of `x : 𝓞 K` is congruent to `(p - 1) • x` modulo `ζ - 1`, where `ζ` is a primitive
+`p`-th root of unity. -/
+theorem zeta_sub_one_dvd_trace_sub_smul (x : 𝓞 K) :
+    hζ.toInteger - 1 ∣ Algebra.trace ℤ (𝓞 K) x - (p - 1) • x := by
+  have := isGalois {p} ℚ K
+  have htrace : (Algebra.trace ℤ (𝓞 K) x : 𝓞 K) =
+      ∑ σ : K ≃ₐ[ℚ] K, mapRingHom (σ : K →+* K) x := by
+    apply coe_injective
+    rw [← eq_intCast (algebraMap ℤ (𝓞 K)), ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply ℤ ℚ K, eq_intCast, Algebra.coe_trace_int,
+      trace_eq_sum_automorphisms, map_sum]
+    simp only [mapRingHom_apply, RingHom.coe_coe]
+  rw [← mem_span_singleton, ← Ideal.Quotient.eq_zero_iff_mem, map_sub, htrace, map_sum]
+  simp_rw [← RingHom.comp_apply, quotientMk_span_zeta_sub_one_comp p hζ]
+  rw [Finset.sum_const, map_nsmul, sub_eq_zero, Finset.card_univ, ← Nat.card_eq_fintype_card,
+    IsGalois.card_aut_eq_finrank, IsCyclotomicExtension.Rat.finrank p K,
+    Nat.totient_prime hp.out]
+
+/-- `(ζ - 1) ^ p` divides `N(1 + p • x) - (1 - p • x)` for every `x : 𝓞 K`, where `N` is the norm
+and `ζ` is a primitive `p`-th root of unity. -/
+theorem zeta_sub_one_pow_dvd_norm_one_add_smul_sub (x : 𝓞 K) :
+    (hζ.toInteger - 1) ^ p ∣ (Algebra.norm ℤ (1 + p • x) : 𝓞 K) - 1 + p • x := by
+  obtain ⟨r, hr⟩ := Algebra.norm_one_add_smul (p : ℤ) x
+  obtain ⟨s, hs⟩ := zeta_sub_one_dvd_trace_sub_smul p hζ x
+  obtain ⟨t, ht⟩ := (associated_zeta_sub_one_pow_prime p hζ).dvd
+  rw [sub_eq_iff_eq_add] at hs
+  simp only [zsmul_eq_mul, Int.cast_natCast] at hr
+  simp only [nsmul_eq_mul, hr, Int.cast_add, Int.cast_one, Int.cast_mul, hs, NeZero.pos p,
+    Nat.cast_pred, Int.cast_natCast, Int.cast_pow]
+  suffices (hζ.toInteger - 1) ^ p ∣ (hζ.toInteger - 1) * p * s + (p : 𝓞 K) ^ 2 * (r + x) by grind
+  refine dvd_add (dvd_mul_of_dvd_left ?_ _) ?_
+  · rw [ht, ← mul_assoc, ← pow_succ', tsub_add_cancel_of_le hp.out.one_lt.le]
+    exact dvd_mul_right _ _
+  · rw [ht, mul_pow, ← pow_mul, mul_assoc]
+    refine dvd_mul_of_dvd_left (pow_dvd_pow _ ?_) _
+    zify [hp.out.one_lt.le]
+    linarith [hp.out.two_le]
 
 theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg (span {hζ.toInteger - 1}) ℤ = 1 := by
   rw [← pow_one p] at hK hζ
