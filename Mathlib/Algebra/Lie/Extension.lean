@@ -452,9 +452,9 @@ lemma d₁₂_oneCochainOfTwoSplitting [IsLieAbelian M] (E : Extension R M L) {s
   replace this {s' : L → E.L} (h : LeftInverse E.proj s') :
       ⁅s x, s' y⁆ = ⁅s' x, s' y⁆ + (⁅s x, s y⁆ - ⁅s' x, s y⁆) := by
     simpa [sub_sub, sub_eq_zero] using this h
-  simp only [d₁₂_apply_coe_apply_apply, oneCochainOfTwoSplitting_apply, AddSubgroupClass.coe_sub,
-    twoCocycleOf_coe_coe, LinearMap.sub_apply, LinearMap.compr₂_apply, LinearMap.coe_mk,
-    AddHom.coe_mk, LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
+  simp only [twoCochain_val_apply, d₁₂_apply_apply, oneCochainOfTwoSplitting_apply,
+    AddSubgroupClass.coe_sub, twoCocycleOf_coe_coe, LinearMap.sub_apply, LinearMap.compr₂_apply,
+    LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_coe, LieEquiv.coe_toLinearEquiv]
   nth_rw 1 [← hs x]
   nth_rw 4 [← hs y]
   simp only [← EmbeddingLike.apply_eq_iff_eq E.toKer, ringModuleOf_bracket_proj,

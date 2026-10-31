@@ -55,7 +55,7 @@ def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
   (TotalSpace.toProd _ _).toHomeomorphOfIsInducing (isInducing_toProd B F)
 
 /-- Local trivialization for trivial bundle. -/
-@[simps!]
+@[simps! baseSet apply source target]
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
   toOpenPartialHomeomorph := (homeomorphProd B F).toOpenPartialHomeomorph
   baseSet := univ

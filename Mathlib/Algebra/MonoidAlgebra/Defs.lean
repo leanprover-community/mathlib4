@@ -895,6 +895,9 @@ lemma coeff_sub (x y : R[M]) : coeff (x - y) = coeff x - coeff y := rfl
 @[to_additive (attr := simp)]
 lemma ofCoeff_sub (x y : M →₀ R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y := rfl
 
+@[to_additive (attr := simp)]
+lemma coeff_sub_apply (x y : R[M]) (i : M) : coeff (x - y) i = coeff x i - coeff y i := rfl
+
 @[to_additive (attr := simp) (dont_translate := R)]
 lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := by ext; simp
 

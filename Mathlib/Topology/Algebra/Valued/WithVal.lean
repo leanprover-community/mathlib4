@@ -166,7 +166,8 @@ def map (f : R →+* S) : WithVal v →+* WithVal w := (equiv w).symm.toRingHom.
 
 @[simp] theorem map_id : map v v (.id R) = .id (WithVal v) := rfl
 
-@[simp] theorem map_comp {T : Type*} [Ring T] (u : Valuation T Γ₀) (f : S →+* T) (g : R →+* S) :
+-- This cannot be `@[simp]` because `simp` cannot fill in the argument `w`.
+theorem map_comp {T : Type*} [Ring T] (u : Valuation T Γ₀) (f : S →+* T) (g : R →+* S) :
     map v u (f.comp g) = (map w u f).comp (map v w g) := rfl
 
 @[simp] theorem map_apply (f : R →+* S) (x : WithVal v) : map v w f x = toVal w (f x.ofVal) := rfl
