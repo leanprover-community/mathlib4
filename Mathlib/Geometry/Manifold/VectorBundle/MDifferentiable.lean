@@ -251,6 +251,7 @@ theorem mdifferentiableWithinAt_snd_comp_iff₂
    (hf.change_section_trivialization IB · he'x₀ hex₀)⟩
 
 variable (e e')
+variable {IB}
 
 theorem mdifferentiableAt_snd_comp_iff₂
     {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
@@ -285,7 +286,7 @@ theorem mdifferentiableAt_totalSpace_iff
   rw [mdifferentiableAt_totalSpace]
   apply and_congr_right
   intro hf
-  rw [Trivialization.mdifferentiableAt_snd_comp_iff₂ IB
+  rw [Trivialization.mdifferentiableAt_snd_comp_iff₂
     (FiberBundle.mem_trivializationAt_proj_source) he hf]
 
 /-- Characterization of differentiable functions into a vector bundle in terms
@@ -295,7 +296,7 @@ theorem mdifferentiableWithinAt_section_iff
     (s : Π b : B, E b) {u : Set B} {b₀ : B}
     (hex₀ : b₀ ∈ e.baseSet) :
     MDiffAt[u] (T% s) b₀ ↔ MDiffAt[u] (fun x ↦ (e (s x)).2) b₀ := by
-  rw [e.mdifferentiableWithinAt_totalSpace_iff IB]
+  rw [e.mdifferentiableWithinAt_totalSpace_iff]
   · change MDiffAt[u] (@id B) b₀ ∧ _ ↔ _
     simp [mdifferentiableWithinAt_id]
   exact (coe_mem_source e).mpr hex₀
@@ -307,9 +308,8 @@ theorem mdifferentiableAt_section_iff
     (s : Π b : B, E b) {b₀ : B}
     (hex₀ : b₀ ∈ e.baseSet) :
     MDiffAt (T% s) b₀ ↔ MDiffAt (fun x ↦ (e (s x)).2) b₀ := by
-  simpa [← mdifferentiableWithinAt_univ] using e.mdifferentiableWithinAt_section_iff IB s hex₀
+  simpa [← mdifferentiableWithinAt_univ] using e.mdifferentiableWithinAt_section_iff s hex₀
 
-variable {IB} in
 /-- Differentiability of a section on `s` can be determined
 using any trivialisation whose `baseSet` contains `s`. -/
 theorem mdifferentiableOn_section_iff {s : ∀ x, E x} {a : Set B}
@@ -318,10 +318,9 @@ theorem mdifferentiableOn_section_iff {s : ∀ x, E x} {a : Set B}
     MDiff[a] (T% s) ↔ MDiff[a] (fun x ↦ (e ⟨x, s x⟩).2) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩ <;>
   have := (h x hx).mdifferentiableAt <| ha.mem_nhds hx
-  · exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mp this).mdifferentiableWithinAt
-  · exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mpr this).mdifferentiableWithinAt
+  · exact ((e.mdifferentiableAt_section_iff _ (ha' hx)).mp this).mdifferentiableWithinAt
+  · exact ((e.mdifferentiableAt_section_iff _ (ha' hx)).mpr this).mdifferentiableWithinAt
 
-variable {IB} in
 /-- For any trivialization `e`, the differentiability of a section on `e.baseSet`
 can be determined using `e`. -/
 theorem mdifferentiableOn_section_baseSet_iff {s : ∀ x, E x}
@@ -344,22 +343,22 @@ theorem mdifferentiableWithinAt_iff {f : M → TotalSpace F E} {s : Set M} {x₀
 
 theorem mdifferentiableAt_iff {f : M → TotalSpace F E} {x₀ : M} (he : f x₀ ∈ e.source) :
     MDiffAt f x₀ ↔ MDiffAt (fun x ↦ (f x).proj) x₀ ∧ MDiffAt (fun x ↦ (e (f x)).2) x₀ :=
-  e.mdifferentiableWithinAt_iff IB he
+  e.mdifferentiableWithinAt_iff he
 
 theorem mdifferentiableOn_iff {f : M → TotalSpace F E} {s : Set M}
     (he : MapsTo f s e.source) :
     MDiff[s] f ↔ MDiff[s] (fun x ↦ (f x).proj) ∧ MDiff[s] (fun x ↦ (e (f x)).2) := by
   simp only [MDifferentiableOn, ← forall_and]
-  exact forall₂_congr fun x hx ↦ e.mdifferentiableWithinAt_iff IB (he hx)
+  exact forall₂_congr fun x hx ↦ e.mdifferentiableWithinAt_iff (he hx)
 
 theorem mdifferentiable_iff {f : M → TotalSpace F E} (he : ∀ x, f x ∈ e.source) :
     MDiff f ↔ MDiff (fun x ↦ (f x).proj) ∧ MDiff (fun x ↦ (e (f x)).2) :=
-  (forall_congr' fun x ↦ e.mdifferentiableAt_iff IB (he x)).trans forall_and
+  (forall_congr' fun x ↦ e.mdifferentiableAt_iff (he x)).trans forall_and
 
 theorem mdifferentiableOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     MDiff[e.source] e := by
   have : MDifferentiableOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) id e.source := mdifferentiableOn_id
-  rw [e.mdifferentiableOn_iff IB (mapsTo_id _)] at this
+  rw [e.mdifferentiableOn_iff (mapsTo_id _)] at this
   exact (this.1.prodMk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
 
 theorem mdifferentiableAt (e : Trivialization F (π F E)) [MemTrivializationAtlas e]
@@ -368,7 +367,7 @@ theorem mdifferentiableAt (e : Trivialization F (π F E)) [MemTrivializationAtla
 
 theorem mdifferentiableOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     MDiff[e.target] e.toOpenPartialHomeomorph.symm := by
-  rw [e.mdifferentiableOn_iff IB e.toOpenPartialHomeomorph.mapsTo_symm]
+  rw [e.mdifferentiableOn_iff e.toOpenPartialHomeomorph.mapsTo_symm]
   refine ⟨mdifferentiableOn_fst.congr fun x hx ↦ e.proj_symm_apply hx,
     mdifferentiableOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
