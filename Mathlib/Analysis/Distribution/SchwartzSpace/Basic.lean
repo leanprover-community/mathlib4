@@ -1240,7 +1240,7 @@ def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
     (⟨{0}, 1, zero_le_one, by simpa [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
       BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
 
-@[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyCLM 𝕜 E F f x = f x :=
+@[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) : toZeroAtInftyCLM 𝕜 E F f = f.toZeroAtInfty :=
   rfl
 
 end ZeroAtInfty
