@@ -795,6 +795,13 @@ theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
 theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g :=
   DFunLike.coe_injective h
 
+/-- Build an order isomorphism from a bijective map that preserves and reflects `≤`. -/
+@[simps! apply]
+noncomputable def ofBijective (f : α → β) (hf : f.Bijective) (hf' : ∀ a b, f a ≤ f b ↔ a ≤ b) :
+    α ≃o β where
+  toEquiv := .ofBijective f hf
+  map_rel_iff' := hf' ..
+
 /-- Reinterpret an order isomorphism as an order embedding. -/
 def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
   e.toRelEmbedding
@@ -1004,6 +1011,25 @@ def prodAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] :
     (α × β) × γ ≃o α × (β × γ) where
   toEquiv := .prodAssoc α β γ
   map_rel_iff' := @fun ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ ↦ by simp [Equiv.prodAssoc, and_assoc]
+
+/-- `Equiv.prodCongr` promoted to an order isomorphism. -/
+@[simps! (attr := grind =)]
+def prodCongr {α' β' : Type*} [LE α'] [LE β'] (e : α ≃o α') (f : β ≃o β') :
+    α × β ≃o α' × β' where
+  toEquiv := e.toEquiv.prodCongr f.toEquiv
+  map_rel_iff' := by simp [Prod.le_def]
+
+/-- `Equiv.prodUnique` promoted to an order isomorphism. -/
+@[simps! (attr := grind =)]
+def prodUnique (α β : Type*) [LE α] [Preorder β] [Unique β] : α × β ≃o α where
+  toEquiv := .prodUnique α β
+  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+
+/-- `Equiv.uniqueProd` promoted to an order isomorphism. -/
+@[simps! (attr := grind =)]
+def uniqueProd (α β : Type*) [Preorder α] [LE β] [Unique α] : α × β ≃o β where
+  toEquiv := .uniqueProd β α
+  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
 
 @[simp]
 theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
