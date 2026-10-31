@@ -244,7 +244,7 @@ def orderCoreImp (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId
     trace[order] "Collected atoms:\n{atomsMsg}"
     for (type, facts) in TypeToFacts do
       let some orderType ← findBestOrderInstance type | continue
-      trace[order] "Working on type {← ppExpr type} ({orderType})"
+      trace[order] "Working on type {type} ({orderType})"
       let factsMsg := String.intercalate "\n" (facts.map toString).toList
       trace[order] "Collected facts:\n{factsMsg}"
       let facts ← replaceBotTop facts
