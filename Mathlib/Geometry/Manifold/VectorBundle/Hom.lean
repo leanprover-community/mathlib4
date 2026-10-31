@@ -810,6 +810,22 @@ lemma ContMDiffWithinAt.clm_bundle_of_apply₂_simpler
   -- then to conclude that `ψ` is C^n at `x`.
   exact ContMDiffWithinAt.clm_bundle_of_apply (E₁ := E₁) (F₁ := F₁) (x := x) aux
 
+lemma ContMDiffAt.clm_bundle_of_apply₂_simpler
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
+    [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
+    [∀ (x : B), IsTopologicalAddGroup (E₂ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)]
+    [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
+    [ContMDiffVectorBundle n F₃ E₃ IB]
+    {ψ : ∀ x, (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)} {x : B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ x' in 𝓝 x, CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ m (σ m)) x') →
+      ∀ (τ : Π x : B, E₂ x),
+        (∀ᶠ x' in 𝓝 x, CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ m (τ m)) x') →
+      CMDiffAt n (fun m ↦ TotalSpace.mk' F₃ m (ψ m (σ m) (τ m))) x) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) m (ψ m)) x :=
+  ContMDiffWithinAt.clm_bundle_of_apply₂_simpler h
+
 lemma ContMDiffWithinAt.clm_bundle_of_apply₂
     (h : ∀ (σ : Π x : M, E₁ (b x)),
       (∀ᶠ x' in 𝓝 x, CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (σ m)) x') →
