@@ -126,8 +126,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
   suffices 2 = orderOf (-1 : (ZMod n)ˣ) by
     rw [← ZMod.card_units_eq_totient, even_iff_two_dvd, this]
     exact orderOf_dvd_card
-  rw [← orderOf_units, Units.coe_neg_one, orderOf_neg_one, ringChar.eq (ZMod n) n,
-    ite_eq_right hn.ne']
+  simp [ZMod.ringChar_zmod_n, hn.ne']
 
 theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
