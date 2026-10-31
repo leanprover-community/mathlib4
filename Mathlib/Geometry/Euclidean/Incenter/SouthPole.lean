@@ -166,7 +166,7 @@ variable {s} in
 lemma ExcenterExists.nsPole_mem_affineSpan_range {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
     s.nsPole signs i ∈ affineSpan ℝ (Set.range s.points) :=
-  IsConcreteLE.le_iff.1 (affineSpan_pair_le_of_mem_of_mem (mem_affineSpan _ (by simp))
+  le_iff_mem_imp_mem.1 (affineSpan_pair_le_of_mem_of_mem (mem_affineSpan _ (by simp))
     h.excenter_mem_affineSpan_range) (s.nsPole_mem_affineSpan_pair _ _)
 
 lemma southPole_mem_affineSpan_range (i : Fin (n + 1)) :

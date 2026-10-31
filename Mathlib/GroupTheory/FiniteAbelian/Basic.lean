@@ -241,7 +241,7 @@ lemma isFiniteRelIndex_of_map_linearMapMulLeft_le {A B : Submodule R K} {n : ℕ
   have := isFiniteRelIndex_map_nsmulAddMonoidHom_of_fg this hn
   refine isFiniteRelIndex_of_le_left (H := A.toAddSubgroup.map (nsmulAddMonoidHom n))
     A.toAddSubgroup ?_
-  rw [IsConcreteLE.le_iff] at h ⊢
+  rw [le_iff_mem_imp_mem] at h ⊢
   simpa using h
 
 end Submodule

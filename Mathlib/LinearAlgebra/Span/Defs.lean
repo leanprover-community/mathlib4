@@ -458,7 +458,7 @@ theorem mem_span_singleton {y : M} : x ∈ R ∙ y ↔ ∃ a : R, a • y = x :=
 
 theorem le_span_singleton_iff {s : Submodule R M} {v₀ : M} :
     s ≤ R ∙ v₀ ↔ ∀ v ∈ s, ∃ r : R, r • v₀ = v := by
-  simp_rw [IsConcreteLE.le_iff, mem_span_singleton]
+  simp_rw [le_iff_mem_imp_mem, mem_span_singleton]
 
 theorem eq_span_singleton_of_surjective {s : Submodule R M}
     {f : R →ₗ[R] s} (hf : Surjective f) : s = span R {(f 1 : M)} := by
