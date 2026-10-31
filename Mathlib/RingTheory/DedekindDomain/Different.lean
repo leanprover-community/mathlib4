@@ -423,7 +423,8 @@ variable {A K}
 
 variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma dual_involutive :
-    Function.Involutive (dual A K : FractionalIdeal B⁰ L → FractionalIdeal B⁰ L) := fun I => dual_dual A K I
+    Function.Involutive (dual A K : FractionalIdeal B⁰ L → FractionalIdeal B⁰ L) :=
+  fun I => dual_dual A K I
 
 variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma dual_injective :

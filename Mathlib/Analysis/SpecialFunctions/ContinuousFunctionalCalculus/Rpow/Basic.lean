@@ -667,8 +667,7 @@ lemma sqrt_eq_one_iff' [Nontrivial A] (a : A) :
   exact zero_ne_one
 
 -- TODO: relate to a strict positivity condition
-lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
-    (hx : x ≠ 0) : sqrt (a ^ x) = a ^ (x / 2) := by
+lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a) : sqrt (a ^ x) = a ^ (x / 2) := by
   by_cases hnonneg : 0 ≤ a
   case pos =>
     have : IsStrictlyPositive a := by grind

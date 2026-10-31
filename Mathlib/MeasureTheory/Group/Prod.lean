@@ -75,6 +75,7 @@ open Measure
 
 section LeftInvariant
 
+omit [SFinite μ] in
 /-- The multiplicative shear mapping `(x, y) ↦ (x, xy)` preserves the measure `μ × ν`.
 This condition is part of the definition of a measurable group in [Halmos, §59].
 There, the map in this lemma is called `S`. -/
@@ -107,6 +108,7 @@ theorem measurable_measure_mul_right (hs : MeasurableSet s) :
 
 variable [MeasurableInv G]
 
+omit [SFinite μ] in
 /-- The map `(x, y) ↦ (x, x⁻¹y)` is measure-preserving.
 This is the function `S⁻¹` in [Halmos, §59],
 where `S` is the map `(x, y) ↦ (x, xy)`. -/
@@ -340,6 +342,7 @@ end LeftInvariant
 
 section RightInvariant
 
+omit [SFinite μ] in
 @[to_additive measurePreserving_prod_add_right]
 theorem measurePreserving_prod_mul_right [IsMulRightInvariant ν] :
     MeasurePreserving (fun z : G × G => (z.1, z.2 * z.1)) (μ.prod ν) (μ.prod ν) :=
@@ -362,6 +365,7 @@ theorem measurePreserving_mul_prod [IsMulRightInvariant μ] :
 
 variable [MeasurableInv G]
 
+omit [SFinite μ] in
 /-- The map `(x, y) ↦ (x, y / x)` is measure-preserving. -/
 @[to_additive measurePreserving_prod_sub
 /-- The map `(x, y) ↦ (x, y - x)` is measure-preserving. -/]
@@ -397,6 +401,7 @@ end RightInvariant
 
 section QuasiMeasurePreserving
 
+omit [SFinite μ] in
 /-- The map `(x, y) ↦ x * y` is quasi-measure-preserving. -/
 @[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ x + y` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_mul [IsMulLeftInvariant ν] :
@@ -413,6 +418,7 @@ section MeasurableInv
 
 variable [MeasurableInv G]
 
+omit [SFinite μ] in
 /-- The map `(x, y) ↦ x⁻¹ * y` is quasi-measure-preserving. -/
 @[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ -x + y` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_inv_mul [IsMulLeftInvariant ν] :

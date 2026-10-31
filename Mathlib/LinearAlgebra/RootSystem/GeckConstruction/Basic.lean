@@ -430,10 +430,12 @@ def ωConjLieSubmodule :
     suffices ⁅A', ω b *ᵥ x⁆ ∈ N by simpa [A', mul_assoc] using this
     exact LieSubmodule.lie_mem _ hx
 
+omit [Finite ι] in
 @[simp] lemma mem_ωConjLieSubmodule_iff {x : b.support ⊕ ι → R} :
     x ∈ ωConjLieSubmodule N ↔ (ω b) *ᵥ x ∈ N :=
   Iff.rfl
 
+omit [Finite ι] in
 @[simp] lemma ωConjLieSubmodule_eq_top_iff : ωConjLieSubmodule N = ⊤ ↔ N = ⊤ := by
   rw [← LieSubmodule.toSubmodule_eq_top]
   let e : Submodule R (b.support ⊕ ι → R) ≃o Submodule R (b.support ⊕ ι → R) :=
