@@ -5,9 +5,9 @@ Authors: Oliver Nash, Deepro Choudhury
 -/
 module
 
+public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.LinearAlgebra.Span.Defs
-public import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!
 
@@ -20,7 +20,6 @@ public section
 open Set Function
 open Submodule (span)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear equivalence which preserves a finite spanning set must have finite order. -/
 lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
     {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
@@ -33,10 +32,10 @@ lemma LinearEquiv.isOfFinOrder_of_finite_of_span_eq_top_of_mapsTo
   refine ⟨k, hk₀, ?_⟩
   ext m
   have hm : m ∈ span R Φ := hΦ₂ ▸ Submodule.mem_top
-  simp only [mul_left_iterate, mul_one, LinearEquiv.coe_one, id_eq]
+  simp only [mul_left_iterate, mul_one, FunLike.coe_one_eq_id]
   refine Submodule.span_induction (fun x hx ↦ ?_) (by simp)
     (fun x y _ _ hx hy ↦ by simp [map_add, hx, hy]) (fun t x _ hx ↦ by simp [hx]) hm
-  rw [LinearEquiv.pow_apply, ← he.1.coe_iterate_restrict ⟨x, hx⟩ k]
+  rw [pow_apply_eq_iterate, ← he.1.coe_iterate_restrict ⟨x, hx⟩ k]
   replace hk : (e') ^ k = 1 := by simpa [IsPeriodicPt, IsFixedPt] using hk
-  replace hk := Equiv.congr_fun hk ⟨x, hx⟩
+  replace hk := congr($hk ⟨x, hx⟩)
   rwa [Equiv.Perm.coe_one, id_eq, Subtype.ext_iff, Equiv.Perm.coe_pow] at hk

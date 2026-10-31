@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Order.MinMax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Splitting a list to chunks of specified lengths
 

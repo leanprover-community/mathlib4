@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
@@ -82,11 +81,9 @@ end Map
 
 section Pullback
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : X ⟶ Y) [P.HasPullbacksAlong f] (A : P.Over Q Y) : HasPullback A.hom f :=
   HasPullbacksAlong.hasPullback A.hom A.prop
 
-set_option backward.isDefEq.respectTransparency false in
 instance {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z)
     [P.HasPullbacksAlong f] [P.HasPullbacksAlong g] [P.IsStableUnderBaseChangeAlong g]
     (A : P.Over Q Z) : HasPullback (pullback.snd A.hom g) f :=
@@ -128,7 +125,7 @@ noncomputable def Over.pullbackComp (f : X ⟶ Y) (g : Y ⟶ Z)
 set_option backward.defeqAttrib.useBackward true in
 lemma Over.pullbackComp_left_fst_fst (f : X ⟶ Y) (g : Y ⟶ Z) [P.IsStableUnderBaseChangeAlong f]
     [P.IsStableUnderBaseChangeAlong g] [P.HasPullbacksAlong f] [P.HasPullbacksAlong g]
-    [Q.RespectsIso] [Q.IsStableUnderBaseChange] (A : P.Over Q Z) :
+    [Q.IsStableUnderBaseChange] (A : P.Over Q Z) :
     ((Over.pullbackComp f g).hom.app A).left ≫ pullback.fst (pullback.snd A.hom g) f ≫
     pullback.fst A.hom g = pullback.fst A.hom (f ≫ g) := by
   simp
@@ -267,11 +264,9 @@ end Map
 
 section Pushout
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : X ⟶ Y) [P.HasPushoutsAlong f] (A : P.Under Q X) : HasPushout A.hom f :=
   HasPushoutsAlong.hasPushout A.hom A.prop
 
-set_option backward.isDefEq.respectTransparency false in
 instance {X Y Z} (f : Y ⟶ X) (g : Z ⟶ Y)
     [P.HasPushoutsAlong f] [P.HasPushoutsAlong g] [P.IsStableUnderCobaseChangeAlong g]
     (A : P.Under Q Z) : HasPushout (pushout.inr A.hom g) f :=

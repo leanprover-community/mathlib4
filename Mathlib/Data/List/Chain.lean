@@ -8,8 +8,12 @@ module
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.Lex
-public import Mathlib.Data.List.Pairwise
 public import Mathlib.Logic.Function.Iterate
+
+import Mathlib.Data.List.Pairwise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Relation chain
@@ -178,12 +182,12 @@ theorem isChain_cons_of_isChain_cons_pmap {S : β → β → Prop} {p : α → P
     (H : ∀ a b ha hb, S (f a ha) (f b hb) → R a b) : IsChain R (a :: l) :=
   ((isChain_cons_pmap f _ _).1 hl₂).imp (by grind)
 
-protected theorem IsChain.sublist [Trans R R R] (hl : l₂.IsChain R) (h : l₁ <+ l₂) :
+protected theorem IsChain.sublist [IsTrans α R] (hl : l₂.IsChain R) (h : l₁ <+ l₂) :
     l₁.IsChain R := by
   rw [isChain_iff_pairwise] at hl ⊢
   exact hl.sublist h
 
-protected theorem IsChain.rel_cons [Trans R R R] (hl : (a :: l).IsChain R) (hb : b ∈ l) :
+protected theorem IsChain.rel_cons [IsTrans α R] (hl : (a :: l).IsChain R) (hb : b ∈ l) :
     R a b := by
   rw [isChain_iff_pairwise] at hl
   exact rel_of_pairwise_cons hl hb
@@ -284,7 +288,7 @@ theorem IsChain.append_overlap {l₁ l₂ l₃ : List α} (h₁ : IsChain R (l�
 
 lemma isChain_flatten : ∀ {L : List (List α)}, [] ∉ L →
     (IsChain R L.flatten ↔ (∀ l ∈ L, IsChain R l) ∧
-    L.IsChain (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
+    L.IsChain (fun l₁ l₂ => ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y))
 | [], _ => by simp
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
@@ -438,6 +442,13 @@ lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
 theorem isChain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : IsChain r (replicate n a) := by
   induction n using Nat.twoStepInduction <;> grind
 
+/-- If `r a (f a)` holds for every `a`, then `List.iterate f a n` is a chain under `r`. -/
+protected theorem IsChain.iterate {f : α → α} {a : α} (h : ∀ x, r x (f x)) :
+    ∀ {n}, IsChain r (iterate f a n)
+  | 0 => .nil
+  | 1 => .singleton _
+  | n + 2 => .cons_cons (h a) (.iterate h (n := n + 1))
+
 theorem isChain_eq_iff_eq_replicate {l : List α} :
     IsChain (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a := by
   induction l using twoStepInduction with
@@ -516,10 +527,5 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       · apply ihl ⟨m, (List.isChain_cons.1 hm).2⟩ hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
-theorem WellFounded.list_chain' (hwf : WellFounded r) :
-    WellFounded (List.lex_chains r) :=
-  ⟨fun _ ↦ Acc.list_chain' (fun _ _ => hwf.apply _)⟩
-
-instance [hwf : IsWellFounded α r] :
-    IsWellFounded (List.chains r) (List.lex_chains r) :=
-  ⟨hwf.wf.list_chain'⟩
+instance WellFounded.list_chain' [WellFounded r] : WellFounded (List.lex_chains r) :=
+  ⟨fun _ ↦ Acc.list_chain' (fun _ _ => ‹WellFounded r›.apply _)⟩

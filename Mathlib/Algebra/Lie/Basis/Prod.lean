@@ -6,8 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Basis.Basic
-public import Mathlib.Algebra.Lie.Prod
 public import Mathlib.Algebra.Lie.Semisimple.Basic
+
+import Mathlib.Algebra.Lie.Prod
 
 /-!
 # Products of bases Lie algebras
@@ -43,7 +44,7 @@ protected def prod :
 /-- The equivalence obtained by interchanging the two bases consumed by `LieAlgebra.Basis.prod`. -/
 def prodSymmEquiv : prod eι.symm b₂ b₁ ≃ₗ⁅R⁆ b₁.prod eι b₂ :=
   have : (prod eι.symm b₂ b₁).map (LieEquiv.prodComm R L₂ L₁) = b₁.prod eι b₂ := by
-    rw [prod, prod, map_lieSpan]; congr; ext; aesop
+    rw [prod, prod, map_lieSpan]; congr; ext; simp; grind
   (LieEquiv.lieSubalgebraMap (prod eι.symm b₂ b₁) (LieEquiv.prodComm _ _ _)).trans
     (LieEquiv.ofEq _ _ <| by simpa)
 
@@ -59,7 +60,7 @@ lemma h_mem_prod (i : ι₁) :
 
 /-- A distinguished subalgebra of the Lie algebra defined by `LieAlgebra.Basis.prod`.
 
-Subject to the assumtions demanded by `LieAlgebra.Basis.isCartanSubalgebra` this will be a Cartan
+Subject to the assumptions demanded by `LieAlgebra.Basis.isCartanSubalgebra` this will be a Cartan
 subalgebra of `LieAlgebra.Basis.prod`. -/
 def prodCartan :
     LieSubalgebra R (prod eι b₁ b₂) :=
@@ -68,14 +69,16 @@ def prodCartan :
 open Finsupp in
 lemma prodCartanEquiv_aux :
     InjOn (LinearMap.fst R L₁ L₂) (span R {(b₁.h i, b₂.h (eι i)) | i : ι₁}) := by
-  suffices ∀ y, (∃ l : ι₁ →₀ R,
-      (l.linearCombination R fun i ↦ (b₁.h i, b₂.h (eι i))) = (0, y)) → y = 0 by
+  suffices ∀ y (l : ι₁ →₀ R),
+      (l.linearCombination R fun i ↦ (b₁.h i, b₂.h (eι i))) = (0, y) → y = 0 by
     have aux : {(b₁.h i, b₂.h (eι i)) | i : ι₁} = (fun i : ι₁ ↦ (b₁.h i, b₂.h (eι i))) '' univ := by
       ext; simp
     simp_rw [← LinearMap.disjoint_ker_iff_injOn, LinearMap.disjoint_ker, aux,
       mem_span_image_iff_linearCombination]
-    aesop
-  intro y ⟨f, hf⟩
+    rintro ⟨_, y⟩ ⟨a, _⟩ rfl
+    specialize this y a
+    simp [*]
+  intro y f hf
   suffices linearCombination R b₁.h f = 0 by
     rw [LinearMap.map_eq_zero_iff _ b₁.linInd] at this
     aesop (add simp Prod.ext_iff)
@@ -115,13 +118,13 @@ def prodCartanEquiv :
   e₀.trans <| e₁.trans <| e₂.trans <| e₃.trans <| e₄.trans e₅
 
 protected abbrev prodH (i : ι₁) : b₁.prod eι b₂ :=
-  ⟨(b₁.h i, b₂.h (eι i)), subset_lieSpan <| by aesop⟩
+  ⟨(b₁.h i, b₂.h (eι i)), subset_lieSpan <| by grind⟩
 
 protected abbrev prodE (i : ι₁) : b₁.prod eι b₂ :=
-  ⟨(b₁.e i, b₂.e (eι i)), subset_lieSpan <| by aesop⟩
+  ⟨(b₁.e i, b₂.e (eι i)), subset_lieSpan <| by grind⟩
 
 protected abbrev prodF (i : ι₁) : b₁.prod eι b₂ :=
-  ⟨(b₁.f i, b₂.f (eι i)), subset_lieSpan <| by aesop⟩
+  ⟨(b₁.f i, b₂.f (eι i)), subset_lieSpan <| by grind⟩
 
 lemma basisProd_aux :
     lieSpan R (prod eι b₁ b₂) (range (prodE eι b₁ b₂) ∪ range (prodF eι b₁ b₂)) = ⊤ := by
@@ -132,7 +135,7 @@ lemma basisProd_aux :
         Subtype.val ⁻¹' ( {(b₁.h i, b₂.h (eι i)) | i : ι₁} ∪
                           {(b₁.e i, b₂.e (eι i)) | i : ι₁} ∪
                           {(b₁.f i, b₂.f (eι i)) | i : ι₁} ) := by
-      ext; simp [Subtype.ext_iff]
+      ext; push _ ∈ _; simp only [Subtype.ext_iff]
     rw [this, hr]
     exact lieSpan_lieSpan_coe_preimage
   simp only [union_assoc]
@@ -216,8 +219,9 @@ lemma lie_snd_eq_zero_of_mem_prodCartan
     mem_image_of_mem (prodSymmEquiv eι b₁ b₂).symm hy
   rw [prodCartan, map_lieSpan] at hy
   rw [prodCartan]
-  convert hy
-  ext; simp; grind
+  convert hy with x
+  simp
+  grind
 
 end CommRing
 
@@ -232,7 +236,7 @@ include hA
 lemma prod_lt_top [Nontrivial L₂] :
     b₁.prod eι b₂ < ⊤ := by
   /- This innocent-looking result is the key. The informal literature seems only to contain
-  somewhat heavy-weight proofs (e.g., [Chapter IV, Theorem 14.2](humphreys1972) makes an
+  somewhat heavy-weight proofs (e.g., [Chapter IV, Theorem 14.2][humphreys1972] makes an
   inductive argument using highest weights) but in fact it follows very easily from
   `LieAlgebra.Basis.isCartanSubalgebra`. The argument is essentially: if `b₁.prod eι b₂` is not
   proper then it's Cartan subalgebra contains `H₁ × H₂` which is absurd since it
@@ -282,7 +286,7 @@ def prodEquivLeft :
     have := (prod_lt_top eι b₁ b₂ hA).ne
     contrapose this
     have hI₁ : (I₁ : Set L₂) = p₂ '' p₁.ker :=
-      congr_arg SetLike.coe <| p₁.ker.coe_map_of_surjective (surjective_snd_prod eι b₁ b₂)
+      congr(SetLike.coe $(p₁.ker.coe_map_of_surjective (surjective_snd_prod eι b₁ b₂)))
     have hL₂ (x₂ : L₂) : (0, x₂) ∈ L := by
       replace this : x₂ ∈ (I₁ : Set L₂) := by simp [this]
       simpa [p₂, p₁, hI₁] using this

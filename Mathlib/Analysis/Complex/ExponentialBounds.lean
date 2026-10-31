@@ -5,9 +5,12 @@ Authors: Mario Carneiro, Joseph Myers
 -/
 module
 
-public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bounds on specific values of the exponential
@@ -45,10 +48,10 @@ theorem exp_one_lt_three : exp 1 < 3 :=
   lt_trans exp_one_lt_d9 (by norm_num)
 
 theorem floor_exp_one_eq_two : ⌊exp 1⌋ = 2 :=
-  Int.floor_eq_iff.mpr ⟨exp_one_gt_two.le, by exact_mod_cast exp_one_lt_three⟩
+  Int.floor_eq_iff.mpr ⟨exp_one_gt_two.le, mod_cast exp_one_lt_three⟩
 
 theorem ceil_exp_one_eq_three : ⌈exp 1⌉ = 3 :=
-  Int.ceil_eq_iff.mpr ⟨by exact_mod_cast exp_one_gt_two, exp_one_lt_three.le⟩
+  Int.ceil_eq_iff.mpr ⟨mod_cast exp_one_gt_two, exp_one_lt_three.le⟩
 
 theorem round_exp_one_eq_three : round (exp 1) = 3 := by
   refine round_eq _ |>.trans <| Int.floor_eq_iff.mpr ⟨?_, by grind [exp_one_lt_three]⟩
@@ -72,7 +75,7 @@ theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
   suffices |log 2 - 287209 / 414355| ≤ 1 / 17179869184 + (1 / 10 ^ 10 - 1 / 2 ^ 34) by
     norm_num1 at *
     assumption
-  have t : |(2⁻¹ : ℝ)| = 2⁻¹ := by rw [abs_of_pos]; norm_num
+  have t : |(2⁻¹ : ℝ)| = 2⁻¹ := by rw [abs_of_pos]; simp
   have z := Real.abs_log_sub_add_sum_range_le (show |(2⁻¹ : ℝ)| < 1 by rw [t]; norm_num) 34
   rw [t] at z
   norm_num1 at z

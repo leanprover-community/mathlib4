@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of pointwise scalar multiplication of sets in normed spaces.
 
@@ -25,7 +28,7 @@ variable {𝕜 E : Type*}
 
 section SMulZeroClass
 
-variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
+variable [SeminormedAddGroup 𝕜] [SeminormedAddGroup E]
 variable [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem ediam_smul_le (c : 𝕜) (s : Set E) : ediam (c • s) ≤ ‖c‖₊ • ediam s :=
@@ -33,44 +36,36 @@ theorem ediam_smul_le (c : 𝕜) (s : Set E) : ediam (c • s) ≤ ‖c‖₊ �
 
 end SMulZeroClass
 
-section DivisionRing
+section NormedRing
 
-variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
+variable [NormedRing 𝕜] [SeminormedAddCommGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • ediam s := by
-  refine le_antisymm (ediam_smul_le c s) ?_
-  obtain rfl | hc := eq_or_ne c 0
-  · obtain rfl | hs := s.eq_empty_or_nonempty
-    · simp
-    simp [zero_smul_set hs, ← Set.singleton_zero]
-  · have := (lipschitzWith_smul c⁻¹).ediam_image_le (c • s)
-    rwa [← smul_eq_mul, ← ENNReal.smul_def, Set.image_smul, inv_smul_smul₀ hc s, nnnorm_inv,
-      le_inv_smul_iff_of_pos (nnnorm_pos.2 hc)] at this
+  simp_rw [ediam, ← image_smul, iSup_image, edist_smul₀, ENNReal.smul_iSup]
 
 theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x := by
   simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm, smul_eq_mul]
 
+theorem infEDist_smul_of_nonempty₀ (c : 𝕜) {s : Set E} (hs : s.Nonempty) (x : E) :
+    infEDist (c • x) (c • s) = ‖c‖₊ • infEDist x s := by
+  have : Nonempty s := hs.to_subtype
+  simp_rw [infEDist, ← Set.image_smul, iInf_image, edist_smul₀, iInf_subtype']
+  exact (ENNReal.mul_iInf (by simp)).symm
+
 theorem infEDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
     infEDist (c • x) (c • s) = ‖c‖₊ • infEDist x s := by
-  simp_rw [infEDist]
-  have : Function.Surjective ((c • ·) : E → E) :=
-    Function.RightInverse.surjective (smul_inv_smul₀ hc)
-  trans ⨅ (y) (_ : y ∈ s), ‖c‖₊ • edist x y
-  · refine (this.iInf_congr _ fun y => ?_).symm
-    simp_rw [smul_mem_smul_set_iff₀ hc, edist_smul₀]
-  · have : (‖c‖₊ : ENNReal) ≠ 0 := by simp [hc]
-    simp_rw [ENNReal.smul_def, smul_eq_mul, ENNReal.mul_iInf_of_ne this ENNReal.coe_ne_top]
+  obtain rfl | hs := s.eq_empty_or_nonempty
+  · simp [ENNReal.smul_def, hc]
+  exact infEDist_smul_of_nonempty₀ c hs x
 
-@[deprecated (since := "2026-01-08")] alias infEdist_smul₀ := infEDist_smul₀
+theorem infDist_smul₀ (c : 𝕜) (s : Set E) (x : E) :
+    infDist (c • x) (c • s) = ‖c‖ * infDist x s := by
+  obtain rfl | hs := s.eq_empty_or_nonempty
+  · simp
+  simp [infDist, infEDist_smul_of_nonempty₀ c hs, ENNReal.toReal_smul, NNReal.smul_def]
 
-theorem infDist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
-    Metric.infDist (c • x) (c • s) = ‖c‖ * Metric.infDist x s := by
-  simp_rw [Metric.infDist, infEDist_smul₀ hc s, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm,
-    smul_eq_mul]
-
-end DivisionRing
-
+end NormedRing
 
 variable [NormedField 𝕜]
 
@@ -229,7 +224,7 @@ theorem disjoint_closedBall_closedBall_iff (hδ : 0 ≤ δ) (hε : 0 ≤ ε) :
   rw [dist_comm] at hxz
   exact h.le_bot ⟨hxz, hzy⟩
 
-open EMetric ENNReal
+open ENNReal
 
 @[simp]
 theorem infEDist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
@@ -255,9 +250,6 @@ theorem infEDist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
     refine (ENNReal.add_lt_add_right ofReal_ne_top <|
       infEDist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, edist_lt_ofReal.2 hxy⟩).trans_le ?_
     rw [← ofReal_add hr.le hδ.le, sub_add_cancel, ofReal_coe_nnreal]
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_thickening := infEDist_thickening
 
 @[simp]
 theorem thickening_thickening (hε : 0 < ε) (hδ : 0 < δ) (s : Set E) :
@@ -288,9 +280,6 @@ theorem infEDist_cthickening (δ : ℝ) (s : Set E) (x : E) :
   obtain hδ | hδ := le_or_gt δ 0
   · rw [cthickening_of_nonpos hδ, infEDist_closure, ofReal_of_nonpos hδ, tsub_zero]
   · rw [← closure_thickening hδ, infEDist_closure, infEDist_thickening hδ]
-
-@[deprecated (since := "2026-01-08")]
-alias infEdist_cthickening := infEDist_cthickening
 
 @[simp]
 theorem thickening_cthickening (hε : 0 < ε) (hδ : 0 ≤ δ) (s : Set E) :

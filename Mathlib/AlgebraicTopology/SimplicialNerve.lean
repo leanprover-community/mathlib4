@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+
 /-!
 
 # The simplicial nerve of a simplicial category
@@ -129,7 +129,6 @@ instance (J : Type*) [LinearOrder J] :
     fun _ _ _ ↦ by simp; rfl⟩
   homEquiv {i j} := nerveEquiv.symm.trans (SSet.unitHomEquiv (nerve (i ⟶ j))).symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 attribute [local simp] SimplicialThickening.Hom_def
 
 /-- Auxiliary definition for `SimplicialThickening.functor` -/
@@ -140,9 +139,6 @@ abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.left_le k hk),
     by rintro _ ⟨k, hk, rfl⟩; exact f.monotone (I.le_right k hk)⟩
   map f := ⟨⟨⟨Set.image_mono f.1.1.1⟩⟩⟩
-
-@[deprecated "No replacement, was using a bad instance" (since := "01-12-2026")]
-alias orderHom := functorMap
 
 attribute [local simp] nerveMap_app
 
@@ -184,7 +180,6 @@ lemma functor_comp {J K L : Type u} [LinearOrder J] [LinearOrder K]
 
 end SimplicialThickening
 
-set_option backward.isDefEq.respectTransparency.types false in
 /--
 The simplicial nerve of a simplicial category `C` is defined as the simplicial set whose
 `n`-simplices are given by the set of simplicial functors from the simplicial thickening of

@@ -6,8 +6,6 @@ Authors: Robin Carlier, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Fubini
-public import Mathlib.CategoryTheory.Functor.Currying
-public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
@@ -30,8 +28,6 @@ open Category Limits CategoryTheory.Functor
 variable {J₁ J₂ : Type*} [Category* J₁] [Category* J₂]
   {C₁ C₂ C : Type*} [Category* C₁] [Category* C₂] [Category* C]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a bifunctor `G : C₁ ⥤ C₂ ⥤ C`, diagrams `K₁ : J₁ ⥤ C₁` and `K₂ : J₂ ⥤ C₂`, and cocones
 over these diagrams, `G.mapCocone₂ c₁ c₂` is the cocone over the diagram `J₁ × J₂ ⥤ C` obtained
 by applying `G` to both `c₁` and `c₂`. -/
@@ -49,7 +45,6 @@ def Functor.mapCocone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ 
           ← Functor.map_comp, NatTrans.naturality, const_obj_map, const_obj_obj,
           ← NatTrans.comp_app_assoc, c₁.w] }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a bifunctor `G : C₁ ⥤ C₂ ⥤ C`, diagrams `K₁ : J₁ ⥤ C₁` and `K₂ : J₂ ⥤ C₂`, and cones
 over these diagrams, `G.mapCone₂ c₁ c₂` is the cone over the diagram `J₁ × J₂ ⥤ C` obtained
 by applying `G` to both `c₁` and `c₂`. -/
@@ -157,7 +152,6 @@ lemma ι_comp_isoObjConePointsOfIsColimit_inv (j : J₁ × J₂) :
   dsimp [isoObjCoconePointsOfIsColimit, Functor.mapCocone₂]
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Characterize the forward direction of the isomorphism
 `PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t. the canonical maps to the colimit. -/
 @[reassoc (attr := simp)]
@@ -292,7 +286,6 @@ lemma isoObjConePointsOfIsLimit_hom_comp_π (j : J₁ × J₂) :
   dsimp [isoObjConePointsOfIsLimit, Functor.mapCocone₂]
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Characterize the inverse direction of the isomorphism
 `PreservesLimit₂.isoObjConePointsOfIsLimit` w.r.t. the canonical maps to the limit. -/
 @[reassoc (attr := simp)]

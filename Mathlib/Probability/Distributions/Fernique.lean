@@ -6,8 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+
+import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 
 /-!
 # Fernique's theorem for rotation-invariant measures
@@ -126,13 +127,7 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
     -- We can rotate the bands since `μ.prod μ` is invariant under rotation
     rw [h]
   _ = (μ.prod μ) {p | ‖p.1 - p.2‖ / √2 ≤ a ∧ b < ‖p.1 + p.2‖ / √2} := by
-    rw [Measure.map_apply (by fun_prop)]
-    swap
-    · refine MeasurableSet.inter ?_ ?_
-      · change MeasurableSet {p : E × E | ‖p.1‖ ≤ a}
-        exact measurableSet_le (by fun_prop) (by fun_prop)
-      · change MeasurableSet {p : E × E | b < ‖p.2‖}
-        exact measurableSet_lt (by fun_prop) (by fun_prop)
+    rw [Measure.map_apply (by fun_prop) (by measurability)]
     congr 1
     simp only [Set.preimage_ofPred_eq, ContinuousLinearMap.rotation_apply, Real.cos_neg,
       Real.cos_pi_div_four, Real.sin_neg, Real.sin_pi_div_four, neg_smul, neg_neg]
@@ -292,7 +287,7 @@ lemma logRatio_mono {c d : ℝ≥0∞} (hc : (2 : ℝ≥0∞)⁻¹ < c) (hd : d 
   gcongr
   · refine div_pos ?_ ?_
     · rw [ENNReal.toReal_pos_iff]
-      exact ⟨lt_trans (by norm_num) hc, h.trans_lt (by finiteness)⟩
+      exact ⟨lt_trans (by simp) hc, h.trans_lt (by finiteness)⟩
     · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt]
       exact ⟨h.trans_lt hd, by finiteness⟩
   · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hd, true_and]
@@ -364,7 +359,7 @@ lemma lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ
   _ ≤ .ofReal (rexp (2⁻¹ * Real.log (c.toReal / (1 - c).toReal) * 2 ^ n))
       * c * .ofReal (rexp (-Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     gcongr ENNReal.ofReal (rexp ?_) * _ * _
-    convert! logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
+    convert logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
     ring
   _ = c * .ofReal (rexp (-2⁻¹ * Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]
@@ -377,7 +372,6 @@ lemma lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ
 alias lintegral_closedBall_diff_exp_logRatio_mul_sq_le :=
   lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le
 
-set_option backward.isDefEq.respectTransparency.types false in
 open Metric in
 lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
@@ -421,7 +415,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     rw [← setLIntegral_univ]
     refine setLIntegral_congr ?_
     rw [← ae_iff_prob_eq_one ?_] at ha
-    · rw [eventuallyEq_comm, ae_eq_univ]
+    · refine (ae_eq_univ.2 ?_).symm
       change μ {x | ¬ x ∈ closedBall 0 a} = 0
       rw [← ae_iff]
       filter_upwards [ha] with x hx using by simp [hx]
@@ -470,7 +464,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   gcongr
   · refine div_pos ?_ ?_
     all_goals rw [ENNReal.toReal_pos_iff]
-    · exact ⟨lt_trans (by norm_num) hc'_gt, by finiteness⟩
+    · exact ⟨lt_trans (by simp) hc'_gt, by finiteness⟩
     · simp only [tsub_pos_iff_lt, hc'_lt, true_and]
       finiteness
   · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt]
@@ -608,7 +602,8 @@ theorem exists_integrable_exp_sq_of_map_rotation_eq_self [IsFiniteMeasure μ]
     calc (μ'.prod μ').map (ContinuousLinearMap.rotation (-(π / 4)))
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹)
         • (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) := by
-      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]
+      simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul,
+        (ContinuousLinearMap.rotation (-(π / 4))).continuous.aemeasurable]
     _ = ((μ Set.univ)⁻¹ * (μ Set.univ)⁻¹) • (μ.prod μ) := by rw [h_rot]
     _ = μ'.prod μ' := by
       simp [hμ'_eq, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]

@@ -5,8 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.BumpFunction.Convolution
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+
+import Mathlib.Analysis.Calculus.BumpFunction.Convolution
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Density of smooth functions in the space of continuous functions
@@ -27,7 +31,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensi
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F} {ε : ℝ}
 
 open scoped ContDiff unitInterval Topology
-open Function Set Metric MeasureTheory
+open Set Metric MeasureTheory
 
 theorem MeasureTheory.LocallyIntegrable.exists_contDiff_dist_le_of_forall_mem_ball_dist_le
     [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [μ.IsAddHaarMeasure]

@@ -106,7 +106,7 @@ theorem mulCharEquiv_symm_apply_apply (m : Mˣ) (χ : MulChar M R) :
     (mulCharEquiv M R).symm m χ = χ m := by
   classical
   rw [show ((mulCharEquiv M R).symm m) χ =
-    if IsUnit χ then ↑(mulEquivToUnitHom χ m) else (0 : R) by rfl, if_pos (Group.isUnit χ),
+    if IsUnit χ then ↑(mulEquivToUnitHom χ m) else (0 : R) by rfl, ite_eq_left (Group.isUnit χ),
     mulEquivToUnitHom_apply, coe_equivToUnitHom]
 
 @[simp]

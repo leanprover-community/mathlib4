@@ -7,7 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.LinearAlgebra.TensorProduct.Basis
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Connections between `TensorProduct` and `Matrix`

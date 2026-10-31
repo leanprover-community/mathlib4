@@ -5,11 +5,14 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convex combinations
@@ -114,8 +117,8 @@ theorem Finset.centerMass_ite_eq [DecidableEq ι] (hi : i ∈ t) :
     · congr with i
       split_ifs with h
       exacts [h ▸ one_smul _ _, zero_smul _ _]
-    · rw [sum_ite_eq, if_pos hi]
-  · rw [sum_ite_eq, if_pos hi]
+    · rw [sum_ite_eq, ite_eq_left hi]
+  · rw [sum_ite_eq, ite_eq_left hi]
 
 variable {t}
 
@@ -225,13 +228,13 @@ theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E}
     (∑ᶠ i, w i • z i) ∈ s := by
   have hfin_w : HasFiniteSupport (w ∘ PLift.down) := by
     by_contra H
-    rw [finsum, dif_neg H] at h₁
+    rw [finsum_def', dite_eq_right H] at h₁
     exact zero_ne_one h₁
   have hsub : support ((fun i => w i • z i) ∘ PLift.down) ⊆ hfin_w.toFinset :=
     (support_smul_subset_left _ _).trans hfin_w.coe_toFinset.ge
   rw [finsum_eq_sum_plift_of_support_subset hsub]
   refine hs.sum_mem (fun _ _ => h₀ _) ?_ fun i hi => hz _ ?_
-  · rwa [finsum, dif_pos hfin_w] at h₁
+  · rwa [finsum_def', dite_eq_left hfin_w] at h₁
   · rwa [hfin_w.mem_toFinset] at hi
 
 theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
@@ -242,10 +245,10 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
   by_cases h_cases : x = y
   · rw [h_cases, ← add_smul, hab, one_smul]
     exact hy
-  · convert! h { x, y } (fun z => if z = y then b else a) _ _ _
-    · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial]
+  · convert h { x, y } (fun z => if z = y then b else a) _ _ _
+    · simp only [sum_pair h_cases, ite_eq_right h_cases, ite_eq_left trivial]
     · grind
-    · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial, hab]
+    · simp only [sum_pair h_cases, ite_eq_right h_cases, ite_eq_left trivial, hab]
     · intro i hi
       simp only [Finset.mem_singleton, Finset.mem_insert] at hi
       cases hi <;> subst i <;> assumption
@@ -396,7 +399,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     · intros
       split_ifs
       exacts [zero_le_one, le_refl 0]
-    · rw [Finset.sum_ite_eq, if_pos hx]
+    · rw [Finset.sum_ite_eq, ite_eq_left hx]
   · rintro x ⟨wx, hwx₀, hwx₁, rfl⟩ y ⟨wy, hwy₀, hwy₁, rfl⟩ a b ha hb hab
     rw [Finset.centerMass_segment _ _ _ _ hwx₁ hwy₁ _ _ hab]
     refine ⟨_, ?_, ?_, rfl⟩
@@ -520,7 +523,7 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
     rw [b.coord_apply_combination_of_mem hi hw₁] at hx
     exact hx
 
-variable {s t t₁ t₂ : Finset E}
+variable {s t₁ t₂ : Finset E}
 
 /-- Two simplices glue nicely if the union of their vertices is affine independent. -/
 lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s → E))
@@ -529,10 +532,10 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
   classical
   refine (Set.subset_inter (convexHull_mono inf_le_left) <|
     convexHull_mono inf_le_right).antisymm ?_
-  simp_rw [Set.subset_def, mem_inter_iff, Set.inf_eq_inter, ← coe_inter, mem_convexHull']
+  simp_rw [Set.subset_def, mem_inter_iff, ← coe_inter, mem_convexHull']
   rintro x ⟨⟨w₁, h₁w₁, h₂w₁, h₃w₁⟩, w₂, -, h₂w₂, h₃w₂⟩
   let w (x : E) : R := (if x ∈ t₁ then w₁ x else 0) - if x ∈ t₂ then w₂ x else 0
-  have h₁w : ∑ i ∈ s, w i = 0 := by simp [w, Finset.inter_eq_right.2, *]
+  have h₁w : ∑ i ∈ s, w i = 0 := by simp [w, *]
   replace hs := hs.eq_zero_of_sum_eq_zero_subtype h₁w <| by
     simp only [w, sub_smul, zero_smul, ite_smul, Finset.sum_sub_distrib, ← Finset.sum_filter, h₃w₁,
       Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht₁, Finset.inter_eq_right.2 ht₂, h₃w₂,

@@ -22,7 +22,7 @@ a complete Noetherian local ring.
 Most results needing finitely generation of maximal ideal have a version for Noetherian ring without
 this side condition for convenience.
 
-# Main Results
+## Main results
 
 * `AdicCompletion.isLocalRing_of_fg` : for a local ring `R` with finitely generated maximal ideal,
   its completion with respect to `IsLocalRing.maximalIdeal R` is local ring.
@@ -50,7 +50,7 @@ theorem isLocalRing_of_isAdicComplete_maximal (m : Ideal R) [m.IsMaximal] [IsAdi
     IsLocalRing R :=
   IsLocalRing.of_unique_max_ideal ⟨m, ‹m.IsMaximal›, fun _ hJ ↦
     (‹m.IsMaximal›.eq_of_le hJ.ne_top <|
-      (IsAdicComplete.le_jacobson_bot m).trans <| sInf_le ⟨bot_le, hJ⟩).symm⟩
+      (IsAdicComplete.le_jacobson m).trans <| Ring.jacobson_le_of_isMaximal _).symm⟩
 
 open IsLocalRing
 
@@ -110,7 +110,7 @@ lemma mem_maximalIdeal_iff_eval_one_eq_zero [IsNoetherianRing R] [IsLocalRing R]
 lemma algebraMap_isLocalHom_of_fg [IsLocalRing R] (fg : (maximalIdeal R).FG) :
     IsLocalHom (algebraMap R (AdicCompletion (maximalIdeal R) R)) := by
   have := AdicCompletion.isLocalRing_of_fg fg
-  apply ((IsLocalRing.local_hom_TFAE _).out 0 2).mpr
+  apply ((IsLocalRing.local_hom_tfae _).out 1 3).mpr
   simp [AdicCompletion.maximalIdeal_eq_map_of_fg fg]
 
 instance [IsNoetherianRing R] [IsLocalRing R] :

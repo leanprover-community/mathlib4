@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
@@ -43,10 +44,13 @@ to each basis element. -/
 instance : SMul G (Basis ι R M) where
   smul g b := b.map <| DistribMulAction.toLinearEquiv _ _ g
 
-@[simp]
-theorem smul_apply (g : G) (b : Basis ι R M) (i : ι) : (g • b) i = g • b i := rfl
+instance : IsSMulApply G (Basis ι R M) where
 
-@[norm_cast] theorem coe_smul (g : G) (b : Basis ι R M) : ⇑(g • b) = g • ⇑b := rfl
+@[deprecated _root_.smul_apply +typeChanged (since := "2026-10-26")]
+protected theorem smul_apply (g : G) (b : Basis ι R M) (i : ι) : (g • b) i = g • b i := rfl
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-26")]
+theorem coe_smul (g : G) (b : Basis ι R M) : ⇑(g • b) = g • ⇑b := rfl
 
 /-- When the group in question is the automorphisms, `•` coincides with `Basis.map`. -/
 @[simp]
@@ -55,14 +59,12 @@ theorem smul_eq_map (g : M ≃ₗ[R] M) (b : Basis ι R M) : g • b = b.map g :
 @[simp] theorem repr_smul (g : G) (b : Basis ι R M) :
     (g • b).repr = (DistribMulAction.toLinearEquiv _ _ g).symm.trans b.repr := rfl
 
-instance : MulAction G (Basis ι R M) :=
-  Function.Injective.mulAction _ DFunLike.coe_injective coe_smul
+instance : MulAction G (Basis ι R M) := fast_instance% FunLike.mulAction
 
-instance [SMulCommClass G G' M] : SMulCommClass G G' (Basis ι R M) where
-  smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _
+instance [SMulCommClass G G' M] : SMulCommClass G G' (Basis ι R M) := FunLike.smulCommClass
 
-instance [SMul G G'] [IsScalarTower G G' M] : IsScalarTower G G' (Basis ι R M) where
-  smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ => smul_assoc _ _ _
+instance [SMul G G'] [IsScalarTower G G' M] : IsScalarTower G G' (Basis ι R M) :=
+  FunLike.isScalarTower
 
 end SMul
 
@@ -110,7 +112,6 @@ theorem unitsSMul_apply {v : Basis ι R M} {w : ι → Rˣ} (i : ι) : unitsSMul
 
 variable [CommSemiring R₂] [Module R₂ M]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     (unitsSMul e w).coord i = (w i)⁻¹ • e.coord i := by
@@ -126,7 +127,7 @@ theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
 @[simp]
 theorem repr_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι) :
     (e.unitsSMul w).repr v i = (w i)⁻¹ • e.repr v i :=
-  congr_arg (fun f : M →ₗ[R₂] R₂ => f v) (e.coord_unitsSMul w i)
+  congr($(e.coord_unitsSMul w i) v)
 
 /-- A version of `unitsSMul` that uses `IsUnit`. -/
 def isUnitSMul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Basis ι R M :=

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Data.Nat.Cast.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The product of two `AddMonoidWithOne`s.
 -/
@@ -22,11 +25,10 @@ namespace Prod
 
 variable [AddMonoidWithOne α] [AddMonoidWithOne β]
 
-instance instAddMonoidWithOne : AddMonoidWithOne (α × β) :=
-  { Prod.instAddMonoid, @Prod.instOne α β _ _ with
-    natCast := fun n => (n, n)
-    natCast_zero := congr_arg₂ Prod.mk Nat.cast_zero Nat.cast_zero
-    natCast_succ := fun _ => congr_arg₂ Prod.mk (Nat.cast_succ _) (Nat.cast_succ _) }
+instance instAddMonoidWithOne : AddMonoidWithOne (α × β) where
+  natCast := fun n => (n, n)
+  natCast_zero := by ext <;> simp
+  natCast_succ n := by ext <;> simp
 
 @[simp]
 theorem fst_natCast (n : ℕ) : (n : α × β).fst = n := by induction n <;> simp [*]

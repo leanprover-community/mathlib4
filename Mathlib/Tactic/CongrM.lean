@@ -5,7 +5,7 @@ Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
 module
 
-public meta import Lean.Meta.Tactic.Rfl
+public import Mathlib.Tactic.Relation.Rfl
 public import Mathlib.Tactic.TermCongr
 
 /-!
@@ -58,6 +58,8 @@ If the goal is an equality, `congrm e` is equivalent to `refine congr(e')` where
 built from `e` by replacing each placeholder `?m` by `$(?m)`.
 The pattern `e` is allowed to contain `$(...)` expressions to immediately substitute
 equality proofs into the congruence, just like for congruence quotations.
+
+[More documentation on `congr()` and `congrm`.](https://leanprover-community.github.io/extras/congr.html)
 -/
 syntax (name := congrM) "congrm " term : tactic
 
@@ -75,7 +77,7 @@ elab_rules : tactic
     trace[Tactic.congrm] "pattern: {pattern}"
     -- Chain together transformations as needed to convert the goal to an Eq if possible.
     liftMetaTactic fun g => do
-      return [← (← g.iffOfEq).liftReflToEq]
+      return [← liftReflToEq (← g.iffOfEq)]
     -- Apply `congr(...)`
     withMainContext do
       let gStx ← Term.exprToSyntax (← getMainTarget)

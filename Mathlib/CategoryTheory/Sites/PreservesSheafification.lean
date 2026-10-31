@@ -5,10 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
-public import Mathlib.CategoryTheory.Sites.Whiskering
-public import Mathlib.CategoryTheory.Sites.Sheafification
+public import Mathlib.CategoryTheory.Sites.Localization
 
 /-! # Functors which preserve sheafification
 
@@ -70,7 +68,6 @@ lemma W_of_preservesSheafification
 
 variable [HasWeakSheafify J B]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma W_isInvertedBy_whiskeringRight_presheafToSheaf :
     J.W.IsInvertedBy (((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B) := by
   intro P₁ P₂ f hf
@@ -130,7 +127,6 @@ section
 variable {G₁ : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj₁ : G₁ ⊣ sheafToPresheaf J A)
   {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     (adj₂ : G₂ ⊣ sheafToPresheaf J B) :
     J.PreservesSheafification F ↔ ∀ (P : Cᵒᵖ ⥤ A),
@@ -156,7 +152,6 @@ section HasSheafCompose
 
 variable (adj₂ : G₂ ⊣ sheafToPresheaf J B) [J.HasSheafCompose F]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The canonical natural transformation
 `(whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F`
@@ -171,7 +166,7 @@ def sheafComposeNatTrans :
       ← adj₂.homEquiv_naturality_right_symm]
     congr 1
     ext X
-    have := NatTrans.congr_app (adj₁.unit.naturality f) X
+    have := congr($(adj₁.unit.naturality f).app X)
     dsimp at this ⊢
     grind
 

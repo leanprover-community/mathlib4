@@ -11,11 +11,8 @@ public import Mathlib.Data.Finset.Erase
 public import Mathlib.Data.Finset.Filter
 public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.SDiff
-public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Directed
-public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Basic lemmas on finite sets
@@ -54,7 +51,7 @@ open Multiset Subtype Function
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*} {β : Type*}
 
 namespace Finset
 
@@ -65,20 +62,18 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Lattice
 
-variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
+variable [DecidableEq α] {s t u : Finset α} {a b : α}
 
 /-! #### union -/
 
 @[simp]
 theorem disjUnion_eq_union (s t h) : @disjUnion α s t h = s ∪ t := by grind
 
-@[simp]
-theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := by
-  simp only [disjoint_left, mem_union, or_imp, forall_and]
+theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=
+  disjoint_sup_left
 
-@[simp]
-theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u := by
-  simp only [disjoint_right, mem_union, or_imp, forall_and]
+theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u :=
+  disjoint_sup_right
 
 /-! #### inter -/
 
@@ -110,7 +105,7 @@ instance isDirected_subset : IsDirected (Finset α) (· ⊆ ·) := isDirected_le
 
 section Erase
 
-variable [DecidableEq α] {s t u v : Finset α} {a b : α}
+variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 @[simp]
 theorem erase_empty (a : α) : erase ∅ a = ∅ :=
@@ -139,7 +134,9 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
 theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
     (s.cons a ha).erase b = (s.erase b).cons a fun h => ha <| erase_subset _ _ h := by grind
 
-@[simp] theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by grind
+@[simp] theorem insert_erase_eq_insert : insert a (s.erase a) = insert a s := by grind
+
+theorem insert_erase (h : a ∈ s) : insert a (s.erase a) = s := by simpa
 
 lemma erase_eq_iff_eq_insert (hs : a ∈ s) (ht : a ∉ t) : s.erase a = t ↔ s = insert a t := by
   aesop
@@ -177,6 +174,15 @@ theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := b
 theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => s.erase a :=
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
 
+theorem insert_right_inj (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t :=
+  ⟨fun h ↦ by rw [← erase_insert hs, h, erase_insert ht], congrArg _⟩
+
+theorem insert_injOn_notMem (a : α) : { s : Finset α | a ∉ s }.InjOn (insert a) :=
+  fun _s hs _t ht ↦ (insert_right_inj hs ht).1
+
+theorem sdiff_singleton_injOn_mem (a : α) : { s : Finset α | a ∈ s }.InjOn (· \ {a}) :=
+  fun _s hs _t ht ↦ superset_injOn_sdiff _ (singleton_subset_iff.2 hs) (singleton_subset_iff.2 ht)
+
 end Erase
 
 lemma Nontrivial.exists_cons_eq {s : Finset α} (hs : s.Nontrivial) :
@@ -191,7 +197,7 @@ lemma Nontrivial.exists_cons_eq {s : Finset α} (hs : s.Nontrivial) :
 
 section Sdiff
 
-variable [DecidableEq α] {s t u v : Finset α} {a b : α}
+variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 lemma erase_sdiff_erase (hab : a ≠ b) (hb : b ∈ s) : s.erase a \ s.erase b = {b} := by
   ext; aesop
@@ -437,7 +443,7 @@ section Range
 
 open Nat
 
-variable {n m l : ℕ}
+variable {n m : ℕ}
 
 @[simp]
 theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ := by grind
@@ -490,8 +496,7 @@ end Multiset
 
 namespace List
 
-variable [DecidableEq α] {l l' : List α} {a : α} {f : α → β}
-  {s : Finset α} {t : Set β} {t' : Finset β}
+variable [DecidableEq α] {l l' : List α} {a : α} {s : Finset α}
 
 @[simp]
 theorem toFinset_union (l l' : List α) : (l ∪ l').toFinset = l.toFinset ∪ l'.toFinset := by
@@ -583,7 +588,7 @@ open Finset
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ (s ∪ t : Finset α) :=
-  Equiv.setCongr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Set.equivOfEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.union_inl (h : Disjoint s t) (x : s) :
@@ -608,7 +613,7 @@ theorem Finset.union_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
 /-- The disjoint union of finsets is a sum -/
 def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ s.disjUnion t h :=
-  Equiv.setCongr (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Set.equivOfEq (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :

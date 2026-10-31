@@ -5,8 +5,6 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Rel.Separated
-public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
@@ -25,7 +23,7 @@ constant.
 
 @[expose] public section
 
-open EMetric Set
+open Set
 open scoped NNReal ENNReal
 
 noncomputable section
@@ -56,8 +54,8 @@ protected lemma IsSeparated.singleton : IsSeparated ε {x} := pairwise_singleton
 
 alias _root_.Set.Subsingleton.isSeparated := IsSeparated.of_subsingleton
 
-nonrec lemma IsSeparated.anti (hεδ : ε ≤ δ) (hs : IsSeparated δ s) : IsSeparated ε s :=
-  hs.mono' fun _ _ ↦ hεδ.trans_lt
+nonrec lemma IsSeparated.anti (hεδ : ε ≤ δ) (hs : IsSeparated δ s) : IsSeparated ε s := by
+  unfold IsSeparated at *; gconvert hs
 
 lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated ε s := hs.mono hst
 

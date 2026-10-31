@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.BoolIndicator
 public import Mathlib.Topology.ContinuousOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Clopen sets
 
@@ -16,7 +19,7 @@ A clopen set is a set that is both closed and open.
 
 public section
 
-open Set Filter Topology TopologicalSpace
+open Set Topology TopologicalSpace
 
 universe u v
 
@@ -101,7 +104,7 @@ theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s)
     (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen (s ∩ a) := by
   refine ⟨?_, IsOpen.inter h.2 ha⟩
   have : IsClosed (s ∩ bᶜ) := IsClosed.inter h.1 (isClosed_compl_iff.2 hb)
-  convert! this using 1
+  convert this using 1
   refine (inter_subset_inter_right s hab.subset_compl_right).antisymm ?_
   rintro x ⟨hx₁, hx₂⟩
   exact ⟨hx₁, by simpa [notMem_of_mem_compl hx₂] using cover hx₁⟩

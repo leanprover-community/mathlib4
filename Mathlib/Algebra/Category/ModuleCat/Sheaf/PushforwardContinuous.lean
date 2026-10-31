@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 public import Mathlib.CategoryTheory.Sites.Over
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Pushforward of sheaves of modules
@@ -217,9 +215,8 @@ lemma pushforwardNatTrans_comp (α : F ⟶ G) (β : G ⟶ H)
     pushforwardNatTrans φ (α ≫ β) = pushforwardNatTrans φ β ≫ pushforwardNatTrans _ α ≫
       (pushforwardCongr (by cat_disch)).hom := by cat_disch
 
-@[simp]
-lemma pushforwardNatTrans_app_val_app_apply (α : F ⟶ G) (X U x) :
-    ((pushforwardNatTrans φ α).app X).val.app U x = X.val.map (α.app U.unop).op x := rfl
+@[deprecated (since := "2026-10-07")]
+alias pushforwardNatTrans_app_val_app_apply := pushforwardNatTrans_app_val_app
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -418,7 +415,7 @@ noncomputable def pushforwardCompForgetToSheafModuleCat
     (X : Cᵒᵖ) (hX : Limits.IsInitial X) (hX' : Limits.IsInitial (F.op.obj X)) :
     SheafOfModules.pushforward φ ⋙ SheafOfModules.forgetToSheafModuleCat _ X hX ≅
     SheafOfModules.forgetToSheafModuleCat _ _ hX' ⋙
-      sheafCompose K (ModuleCat.restrictScalars <| (φ.hom.app _).hom) ⋙
+      sheafCompose K (ModuleCat.restrictScalars (φ.hom.app _).hom) ⋙
         F.sheafPushforwardContinuous _ J K := by
   refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
   · refine NatIso.ofComponents (fun U ↦ ?_) ?_

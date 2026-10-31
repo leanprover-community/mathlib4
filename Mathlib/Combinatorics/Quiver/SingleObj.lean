@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Quiver.Cast
 public import Mathlib.Combinatorics.Quiver.Symmetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Single-object quiver
 
@@ -102,7 +105,6 @@ def listToPath : List α → Path (star α) (star α)
   | [] => Path.nil
   | a :: l => (listToPath l).cons a
 
-set_option backward.isDefEq.respectTransparency false in
 theorem listToPath_pathToList {x : SingleObj α} (p : Path (star α) x) :
     listToPath (pathToList p) = p.cast rfl ext := by
   induction p with

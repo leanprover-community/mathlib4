@@ -5,12 +5,13 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Analysis.Normed.Module.RieszLemma
-public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.Normed.Module.RieszLemma
+import Mathlib.Analysis.Normed.Operator.Banach
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Spectral theory of compact operators
@@ -172,7 +173,7 @@ theorem hasEigenvalue_or_mem_resolventSet (hT : IsCompactOperator T) (hμ : μ �
   replace h₂ : ¬ (S : X → X).Bijective := by
     rw [spectrum.mem_resolventSet_iff, ← IsUnit.neg_iff,
       ContinuousLinearMap.isUnit_iff_bijective] at h₂
-    convert! h₂
+    convert h₂
     ext x
     simp [S]
   replace h₂ : ¬ (S : X → X).Surjective := by grind [Function.Bijective, hK.injective]

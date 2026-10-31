@@ -31,6 +31,8 @@ about simple and semisimple Lie algebras.
 lie algebra, radical, simple, semisimple
 -/
 
+open scoped Finset
+
 public section
 
 section Irreducible
@@ -196,7 +198,6 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
     rcases hx with ⟨y, hy, rfl⟩
     exact hy
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a semisimple Lie algebra,
 Lie ideals that are contained in the supremum of a finite collection of atoms
@@ -268,7 +269,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
     rw [← hJI]
     exact inf_le_right
   exact inf_le_left
-termination_by s => s.card
+termination_by s => #s
 decreasing_by exact Finset.card_lt_card hs'
 
 variable (R L) in

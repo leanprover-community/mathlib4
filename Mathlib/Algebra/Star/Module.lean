@@ -5,11 +5,9 @@ Authors: Eric Wieser, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.Algebra.Module.Basic
-public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.LinearMap.Star
 public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -132,14 +130,36 @@ theorem starLinearEquiv_symm_apply (x : A) :
 
 end starLinearEquiv
 
-section SelfSkewAdjoint
+section selfAdjoint
 
-variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommMonoid A]
   [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The self-adjoint elements of a star module, as a submodule. -/
 def selfAdjoint.submodule : Submodule R A :=
-  { selfAdjoint A with smul_mem' := fun _ _ => (IsSelfAdjoint.all _).smul }
+  { selfAdjoint.addSubmonoid A with smul_mem' := fun _ _ => (IsSelfAdjoint.all _).smul }
+
+@[simp]
+theorem selfAdjoint.toAddSubmonoid_submodule :
+    (selfAdjoint.submodule R A).toAddSubmonoid = selfAdjoint.addSubmonoid A := rfl
+
+end selfAdjoint
+
+section selfAdjoint_ring
+
+variable (R : Type*) (A : Type*) [Ring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+  [Module R A] [StarAddMonoid A] [StarModule R A]
+
+@[simp]
+theorem selfAdjoint.toAddSubgroup_submodule :
+    (selfAdjoint.submodule R A).toAddSubgroup = selfAdjoint A := rfl
+
+end selfAdjoint_ring
+
+section SelfSkewAdjoint
+
+variable (R : Type*) (A : Type*) [Semiring R] [StarMul R] [TrivialStar R] [AddCommGroup A]
+  [Module R A] [StarAddMonoid A] [StarModule R A]
 
 /-- The skew-adjoint elements of a star module, as a submodule. -/
 def skewAdjoint.submodule : Submodule R A :=
@@ -221,7 +241,7 @@ set_option backward.isDefEq.respectTransparency false in
 as a linear equivalence. -/
 @[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
-  refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
+  refine LinearEquiv.ofLinearMap ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
   -- Note: with https://github.com/leanprover-community/mathlib4/pull/6965 `Submodule.coe_subtype` doesn't fire in `dsimp` or `simp`
@@ -241,7 +261,7 @@ theorem algebraMap_star_comm (r : R) : algebraMap R A (star r) = star (algebraMa
 variable (A) in
 protected lemma IsSelfAdjoint.algebraMap {r : R} (hr : IsSelfAdjoint r) :
     IsSelfAdjoint (algebraMap R A r) := by
-  simpa using! congr(algebraMap R A $(hr.star_eq))
+  simpa using! congr(algebraMap R A $hr.star_eq)
 
 lemma isSelfAdjoint_algebraMap_iff {r : R} (h : Function.Injective (algebraMap R A)) :
     IsSelfAdjoint (algebraMap R A r) ↔ IsSelfAdjoint r :=

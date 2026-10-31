@@ -7,7 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 public import Mathlib.CategoryTheory.Preadditive.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Additional results about the `liftToFinset` construction
@@ -32,7 +33,6 @@ namespace CoproductsFromFiniteFiltered
 variable [HasFiniteCoproducts C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem finiteSubcoproductsCocone_ι_app_eq_sum {α : Type w} [DecidableEq α] (f : α → C)
     [HasCoproduct f] (S : Finset (Discrete α)) :
     (finiteSubcoproductsCocone f).ι.app S = ∑ a ∈ S.attach, Sigma.π _ a ≫ Sigma.ι _ a.1.as := by
@@ -53,7 +53,6 @@ namespace ProductsFromFiniteCofiltered
 variable [HasFiniteProducts C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 theorem finiteSubproductsCocone_π_app_eq_sum {α : Type w} [DecidableEq α] (f : α → C) [HasProduct f]
     (S : (Finset (Discrete α))ᵒᵖ) :
     (finiteSubproductsCone f).π.app S =

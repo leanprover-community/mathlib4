@@ -9,8 +9,6 @@ public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
@@ -41,14 +39,14 @@ variable (R M N ι)
 
 theorem finsuppLinearMap_injective :
     Function.Injective (finsuppLinearMap S : (ι →₀ M →ₗ[R] N) → M →ₗ[R] ι →₀ N) :=
-  fun _ _ eq ↦ by ext i m; exact congr($eq m i)
+  fun _ _ eq ↦ by ext i m; congrm $eq m i
 
 theorem finsuppLinearMap_bijective_of_moduleFinite [Module.Finite R M] :
     Function.Bijective (finsuppLinearMap S : (ι →₀ M →ₗ[R] N) → M →ₗ[R] ι →₀ N) := by
   have ⟨s, span_s⟩ := Module.finite_def.mp ‹Module.Finite R M›
   classical refine ⟨finsuppLinearMap_injective ..,
     fun x ↦ ⟨.onFinset (s.sup fun m ↦ (x m).support) (lapply · ∘ₗ x) fun i h ↦ ?_, ?_⟩⟩
-  · contrapose! h; exact LinearMap.ext_on span_s (by simpa using! h)
+  · contrapose h; exact LinearMap.ext_on span_s (by simpa using! h)
   · ext; rfl
 
 theorem finsuppLinearMap_bijective_of_finite [Finite ι] :
@@ -87,9 +85,9 @@ theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
     exists fun y => if H : y ∈ t1 then g y H else 0
     intro y H
     constructor
-    · simp only [dif_pos H]
+    · simp only [dite_eq_left H]
       apply hg1
-    · simp only [dif_pos H]
+    · simp only [dite_eq_left H]
       apply hg2
   obtain ⟨g, hg⟩ := this
   clear this

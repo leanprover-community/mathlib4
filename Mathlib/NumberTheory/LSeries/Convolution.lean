@@ -5,10 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Convergence
+
+import Mathlib.Algebra.BigOperators.Field
 
 /-!
 # Dirichlet convolution of sequences and products of L-series
@@ -41,14 +41,12 @@ def toArithmeticFunction {R : Type*} [Zero R] (f : ℕ → R) : ArithmeticFuncti
   toFun n := if n = 0 then 0 else f n
   map_zero' := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toArithmeticFunction_congr {R : Type*} [Zero R] {f f' : ℕ → R}
     (h : ∀ {n}, n ≠ 0 → f n = f' n) :
     toArithmeticFunction f = toArithmeticFunction f' := by
   ext
   simp_all [toArithmeticFunction]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If we consider an arithmetic function just as a function and turn it back into an
 arithmetic function, it is the same as before. -/
 @[simp]

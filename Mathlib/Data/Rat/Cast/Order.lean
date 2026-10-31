@@ -9,13 +9,16 @@ public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.Positivity.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Casts of rational numbers into linear ordered fields.
 -/
 
 @[expose] public section
 
-variable {F ι α β : Type*}
+variable {α : Type*}
 
 namespace Rat
 variable {p q : ℚ}
@@ -256,7 +259,7 @@ theorem preimage_cast_uIoc (p q : ℚ≥0) : (↑) ⁻¹' uIoc (p : K) q = uIoc 
 end NNRat
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for Rat.cast. -/
 @[positivity Rat.cast _]
