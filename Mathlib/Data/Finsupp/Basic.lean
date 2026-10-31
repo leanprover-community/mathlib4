@@ -174,7 +174,7 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
-  ext; simp only [equivMapDomain_apply, coe_zero, Pi.zero_apply]
+  ext; simp
 
 @[to_additive (attr := simp)]
 theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N) :
@@ -269,15 +269,15 @@ lemma mapDomain_apply (f : α → β) (x : α →₀ M) (b : β) :
 
 @[simp] theorem mapDomain_apply_of_injective {f : α → β} (hf : f.Injective) (x : α →₀ M) (a : α) :
     mapDomain f x (f a) = x a := by
-  rw [mapDomain, sum_apply, sum_eq_single a, single_eq_same]
+  rw [mapDomain, Finsupp.sum_apply, sum_eq_single a, single_eq_same]
   · intro b _ hba
     exact single_eq_of_ne' (hf.ne hba)
   · intro _
-    rw [single_zero, coe_zero, Pi.zero_apply]
+    rw [single_zero, zero_apply]
 
 lemma mapDomain_of_notMem_image_support {f : α → β} {x : α →₀ M} {b : β}
     (hb : b ∉ f '' x.support) : mapDomain f x b = 0 := by
-  rw [mapDomain, sum_apply, sum, Finset.sum_eq_zero]
+  rw [mapDomain, Finsupp.sum_apply, sum, Finset.sum_eq_zero]
   exact fun a ha ↦ single_eq_of_ne fun eq => hb <| eq ▸ Set.mem_image_of_mem _ ha
 
 @[deprecated (since := "2026-09-28")]
@@ -373,7 +373,7 @@ theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
 theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x.support : Set α) ⊆ S)
     (hf : Set.InjOn f S) {a : α} (ha : a ∈ S) : mapDomain f x (f a) = x a := by
   classical
-    rw [mapDomain, sum_apply, sum]
+    rw [mapDomain, Finsupp.sum_apply, sum]
     simp_rw [single_apply]
     by_cases hax : a ∈ x.support
     · rw [← Finset.add_sum_erase _ _ hax, ite_eq_left rfl]
@@ -535,7 +535,7 @@ lemma comapDomain_single_of_notMem_range [Zero M] {f : α → β} {b : β} (hb :
     (m : M) (hf) : comapDomain f (single b m) hf = 0 := by
   classical
   ext a
-  simp only [comapDomain, single_apply, coe_mk, coe_zero, Pi.zero_apply, ite_eq_right_iff]
+  simp only [comapDomain, single_apply, coe_mk, zero_apply, ite_eq_right_iff]
   rintro rfl
   simp at hb
 
@@ -846,7 +846,7 @@ def filterAddHom (p : α → Prop) [DecidablePred p] : (α →₀ M) →+ α →
   toFun := filter p
   map_zero' := filter_zero p
   map_add' f g := DFunLike.coe_injective <| by
-    simp_rw [coe_add, filter_eq_indicator]
+    simp_rw [FunLike.coe_add, filter_eq_indicator]
     exact Set.indicator_add { x | p x } f g
 
 @[simp]
@@ -1154,9 +1154,7 @@ def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃+ (�
   { sumFinsuppEquivProdFinsupp with
     map_add' := by
       intros
-      ext <;>
-        simp only [Equiv.toFun_as_coe, Prod.fst_add, Prod.snd_add, add_apply,
-          snd_sumFinsuppEquivProdFinsupp, fst_sumFinsuppEquivProdFinsupp] }
+      ext <;> simp }
 
 theorem fst_sumFinsuppAddEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (x : α) :
     (sumFinsuppAddEquivProdFinsupp f).1 x = f (Sum.inl x) :=

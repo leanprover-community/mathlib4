@@ -152,8 +152,7 @@ theorem factorization_eq_zero_of_remainder {p r : ℕ} (i : ℕ) (hr : ¬p ∣ r
 theorem factorization_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).factorization = a.factorization + b.factorization := by
   ext p
-  simp only [add_apply, ← primeFactorsList_count_eq,
-    perm_iff_count.mp (perm_primeFactorsList_mul ha hb) p, count_append]
+  simp [← primeFactorsList_count_eq, perm_iff_count.mp (perm_primeFactorsList_mul ha hb) p]
 
 theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
     d.factorization ≤ n.factorization ↔ d ∣ n := by
@@ -315,7 +314,7 @@ theorem factorization_mul_apply_of_coprime {p a b : ℕ} (hab : Coprime a b) :
 theorem factorization_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
     (a * b).factorization = a.factorization + b.factorization := by
   ext q
-  rw [Finsupp.add_apply, factorization_mul_apply_of_coprime hab]
+  rw [add_apply, factorization_mul_apply_of_coprime hab]
 
 /-! ### Generalisation of the "even part" and "odd part" of a natural number -/
 

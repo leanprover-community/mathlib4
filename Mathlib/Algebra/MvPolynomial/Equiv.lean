@@ -471,7 +471,7 @@ theorem optionEquivLeft_coeff_some_coeff_none
     rw [optionEquivLeft_monomial]
     classical
     simp only [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial, apply_ite, ite_apply,
-      AddMonoidAlgebra.coeff_zero, Finsupp.coe_zero, Pi.zero_apply]
+      AddMonoidAlgebra.coeff_zero, FunLike.coe_zero, Pi.zero_apply]
     by_cases hj : j = n
     · simp [hj]
     · rw [ite_eq_right hj]
@@ -481,7 +481,7 @@ theorem optionEquivLeft_coeff_some_coeff_none
       simp only [Finsupp.ext_iff, Option.forall, hj_none, true_and]
       simpa only [Finsupp.ext_iff] using! hj_some
   | add p q hp hq =>
-    simp only [map_add, Polynomial.coeff_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
+    simp [hp, hq]
 
 theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Option S₁) R) :
     eval (fun x ↦ Option.elim x y s) f =
@@ -511,7 +511,7 @@ lemma support_optionEquivLeft (p : MvPolynomial (Option σ) R) :
     (optionEquivLeft R σ p).support = Finset.image (fun m => m none) p.support := by
   ext i
   simp only [Polynomial.mem_support_iff, ne_eq, MvPolynomial.ext_iff, AddMonoidAlgebra.coeff_zero,
-    Finsupp.zero_apply, not_forall, Finset.mem_image, mem_support_iff,
+    zero_apply, not_forall, Finset.mem_image, mem_support_iff,
     ← optionEquivLeft_coeff_some_coeff_none]
   constructor
   · rintro ⟨m, hm⟩
@@ -645,8 +645,7 @@ theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = Polynomi
 theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ) :
     (Polynomial.coeff (finSuccEquiv R n f) i).coeff m = f.coeff (m.cons i) := by
   induction f using MvPolynomial.induction_on' generalizing i m with
-  | add p q hp hq =>
-    simp only [map_add, Polynomial.coeff_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp, hq]
+  | add p q hp hq => simp [hp, hq]
   | monomial j r =>
     simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, Finsupp.prod_pow,
       Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
@@ -657,7 +656,7 @@ theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (
         Finsupp.prod_pow] using! coeff_monomial m m (1 : R)
     · simp only [hjmi, ite_false]
       obtain hij | rfl := ne_or_eq i (j 0)
-      · simp only [hij, ite_false, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply]
+      · simp [hij]
       simp only [ite_true]
       have hmj : m ≠ j.tail := by
         rintro rfl
@@ -722,8 +721,8 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
 theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
   ext i
-  simp only [Polynomial.mem_support_iff, ne_eq, MvPolynomial.ext_iff, AddMonoidAlgebra.coeff_zero,
-    Finsupp.zero_apply, not_forall, Finset.mem_image, mem_support_iff, finSuccEquiv_coeff_coeff]
+  simp only [Polynomial.mem_support_iff, ne_eq, MvPolynomial.ext_iff, finSuccEquiv_coeff_coeff,
+    AddMonoidAlgebra.coeff_zero, zero_apply, not_forall, Finset.mem_image, mem_support_iff]
   constructor
   · rintro ⟨m, hm⟩
     exact ⟨cons i m, hm, cons_zero _ _⟩

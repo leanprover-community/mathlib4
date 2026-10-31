@@ -730,7 +730,7 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self {B : M →ₗ[R] M �
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
   rw [LinearEquiv.map_eq_zero_iff]
   ext i
-  rw [Finsupp.zero_apply]
+  rw [zero_apply]
   specialize hB (v i)
   simp_rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂,
            map_smulₛₗ₂] at hB

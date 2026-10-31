@@ -160,10 +160,10 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
     apply_fun finsuppScalarLeft R N ι at hkn
     apply_fun (· i) at hkn
     symm at hkn
-    simp only [map_sum, finsuppScalarLeft_apply_tmul, zero_smul, Finsupp.single_zero,
-      Finsupp.sum_single_index, one_smul, Finsupp.finsetSum_apply, Finsupp.single_apply,
-      Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, rTensor_tmul, coe_subtype, Finsupp.sum_apply,
-      Finsupp.sum_ite_eq', Finsupp.mem_support_iff, ne_eq, ite_not, en] at hkn
+    simp only [map_sum, finsuppScalarLeft_apply_tmul, zero_smul, single_zero, sum_single_index,
+      one_smul, _root_.sum_apply, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ,
+      ↓reduceIte, rTensor_tmul, subtype_apply, Finsupp.sum_apply, sum_ite_eq', mem_support_iff,
+      ne_eq, ite_not, en] at hkn
     simp only [Finset.univ_eq_attach, Finset.sum_attach ma (fun x ↦ (x.1 : ι →₀ R) i • x.2)]
     convert! hkn using 2 with x _
     split

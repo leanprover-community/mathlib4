@@ -714,7 +714,7 @@ theorem rescale_zero :
   · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
   · simp only [coeff_apply]
     convert zero_mul _
-    simp only [DFunLike.ext_iff, not_forall, Finsupp.coe_zero, Pi.zero_apply] at h
+    simp only [DFunLike.ext_iff, not_forall, zero_apply] at h
     obtain ⟨s, h⟩ := h
     simp only [Finsupp.prod]
     apply Finset.prod_eq_zero (i := s) _ (zero_pow h)

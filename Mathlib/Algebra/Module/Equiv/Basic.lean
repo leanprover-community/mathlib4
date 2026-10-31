@@ -7,6 +7,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 module
 
 public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.IsNPowApplyEqIterate
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.LinearMap.Basic

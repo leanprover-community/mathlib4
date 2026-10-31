@@ -237,8 +237,7 @@ lemma mem_range_map_iff
     refine ⟨{
       weights := ∑ (y : s.weights.support), .single (m y) (s.weights y)
       nonneg x := by
-        simp only [Finsupp.coe_finsetSum, Finset.sum_apply,
-          Finsupp.coe_zero, Pi.zero_apply]
+        simp only [zero_apply, Finset.univ_eq_attach, sum_apply]
         refine Finset.sum_nonneg fun y ↦ ?_
         obtain rfl | hy := eq_or_ne (m y) x <;> simp [*]
       total := by
@@ -254,14 +253,13 @@ lemma mem_range_map_iff
         Finset.sum_eq_single ⟨y, hy⟩ ?_ (by simp)]
       · simp [hm]
       · intro z hz hz'
-        simp only [hm, Finsupp.single_zero, Finsupp.coe_zero, Pi.zero_apply,
-          Finsupp.sum_single_index]
+        simp only [hm, single_zero, zero_apply, sum_single_index]
         aesop
     · rw [Finsupp.notMem_support_iff] at hy
       rw [hy]
       refine Finsupp.mapDomain_of_notMem_image_support ?_
-      simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, Finsupp.mem_support_iff,
-        Finsupp.coe_finsetSum, Finset.sum_apply, ne_eq, not_exists, not_and]
+      simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, mem_support_iff, sum_apply,
+        ne_eq, not_exists, not_and]
       intro x hx rfl
       refine hx (Finset.sum_eq_zero (fun z hz ↦ Finsupp.single_eq_of_ne ?_))
       intro rfl

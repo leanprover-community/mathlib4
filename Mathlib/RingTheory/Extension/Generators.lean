@@ -711,7 +711,7 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         · simp only [*, map_zero, ite_self]
         · congr
       | add p q hp hq =>
-        simp only [AddMonoidAlgebra.coeff_add, Finsupp.add_apply, map_add, ite_add_zero]
+        simp only [AddMonoidAlgebra.coeff_add,add_apply, map_add, ite_add_zero]
         rw [finsum_add_distrib, hp, hq]
         · refine (((support p).map e).finite_toSet.subset ?_)
           convert this p

@@ -16,6 +16,7 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Algebra.Epi
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.Field
+public import Mathlib.Algebra.Algebra.FunLike
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.Algebra.Algebra.IsSimpleRing
@@ -367,6 +368,7 @@ public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Equidecomp
 public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.Group.Action.Option
@@ -429,6 +431,7 @@ public import Mathlib.Algebra.Group.Irreducible.Indecomposable
 public import Mathlib.Algebra.Group.Irreducible.Lemmas
 public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.IsCommutative
+public import Mathlib.Algebra.Group.IsNPowApplyEqIterate
 public import Mathlib.Algebra.Group.MinimalAxioms
 public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Group.Monoid
@@ -527,6 +530,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Center
 public import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.GroupWithZero.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Action.Pi

@@ -843,8 +843,8 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     simp only [LinearMap.mem_range]
     simp only [map_sum, Finsupp.linearCombination_single]
     have : ∑ i ∈ x.support with algebraMap A B i = c, x i ∈ RingHom.ker (algebraMap A B) := by
-      simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finsetSum_apply, RingHom.mem_ker,
-        Finsupp.single_apply, ← Finset.sum_filter] using congr($hx c)
+      simpa [Finsupp.mapDomain, Finsupp.sum, sum_apply, RingHom.mem_ker, Finsupp.single_apply,
+        ← Finset.sum_filter] using congr($hx c)
     obtain ⟨a, ha⟩ := h c
     use ∑ i ∈ {i ∈ x.support | algebraMap A B i = c}.attach, x i • Ideal.toCotangent _ ⟨i - a, ?_⟩
     · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_toCotangent, map_sub]

@@ -160,7 +160,7 @@ lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
   · rw [LinearMap.linearProjOfIsCompl_apply_right']
     · ext j
       simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_apply, single_apply,
-        coe_zero, Pi.zero_apply, ite_eq_right_iff]
+        zero_apply, ite_eq_right_iff]
       intro hij
       exact (Set.disjoint_range_iff.mp h.1 j i hij.symm).elim
     · exact Submodule.subset_span ⟨i, rfl⟩
@@ -208,7 +208,7 @@ variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*} (B : Bas
   `B.repr ((algebra_map R S r) * s) i = r * (B.repr s i) `. -/
 theorem Module.Basis.repr_smul' (i : ι) (r : R) (s : S) :
     B.repr (algebraMap R S r * s) i = r * B.repr s i := by
-  rw [← smul_eq_mul, ← smul_eq_mul, algebraMap_smul, map_smul, Finsupp.smul_apply]
+  rw [← smul_eq_mul, ← smul_eq_mul, algebraMap_smul, map_smul, smul_apply]
 
 end Algebra
 

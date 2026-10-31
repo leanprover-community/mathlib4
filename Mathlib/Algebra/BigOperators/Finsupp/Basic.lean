@@ -264,29 +264,32 @@ theorem prod_neg_index [SubtractionMonoid G] [CommMonoid M] {g : α →₀ G} {h
     (h0 : ∀ a, h a 0 = 1) : (-g).prod h = g.prod fun a b => h a (-b) :=
   prod_mapRange_index h0
 
+@[deprecated sum_apply +typeChanged (since := "2026-10-27")]
 theorem finsetSum_apply [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) (a : α) :
     (∑ i ∈ S, f i) a = ∑ i ∈ S, f i a :=
   map_sum (applyAddHom a) _ _
 
 @[simp]
-theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} {a₂ : β} :
+protected theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} {a₂ : β} :
     (f.sum g) a₂ = f.sum fun a₁ b => g a₁ b a₂ :=
-  finsetSum_apply _ _ _
+  sum_apply _ _ _
 
-@[simp, norm_cast] theorem coe_finsetSum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
+@[deprecated FunLike.coe_sum +typeChanged (since := "2026-10-27")]
+theorem coe_finsetSum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
     ⇑(∑ i ∈ S, f i) = ∑ i ∈ S, ⇑(f i) :=
   map_sum (coeFnAddHom : (α →₀ N) →+ _) _ _
 
 @[simp, norm_cast] theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
     ⇑(f.sum g) = f.sum fun a₁ b => ⇑(g a₁ b) :=
-  coe_finsetSum _ _
+  FunLike.coe_sum _ _
 
 theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} :
     (f.sum g).support ⊆ f.support.biUnion fun a => (g a (f a)).support := by
   have : ∀ c, (f.sum fun a b => g a b c) ≠ 0 → ∃ a, f a ≠ 0 ∧ ¬(g a (f a)) c = 0 := fun a₁ h =>
     let ⟨a, ha, ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
     ⟨a, mem_support_iff.mp ha, ne⟩
-  simpa only [Finset.subset_iff, mem_support_iff, Finset.mem_biUnion, sum_apply, exists_prop]
+  simpa only [Finset.subset_iff, mem_support_iff, Finset.mem_biUnion, Finsupp.sum_apply,
+    exists_prop]
 
 theorem support_finsetSum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f : α → β →₀ M} :
     (Finset.sum s f).support ⊆ s.biUnion fun x => (f x).support := by
@@ -419,7 +422,7 @@ theorem univ_sum_single [Fintype α] [AddCommMonoid M] (f : α →₀ M) :
     ∑ a : α, single a (f a) = f := by
   classical
   refine DFunLike.coe_injective ?_
-  simp_rw [coe_finsetSum, single_eq_pi_single, Finset.univ_sum_single]
+  simp_rw [FunLike.coe_sum, single_eq_pi_single, Finset.univ_sum_single]
 
 @[simp]
 theorem univ_sum_single_apply [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
@@ -593,7 +596,7 @@ lemma prod_mul_eq_prod_mul_of_exists [Zero M] [CommMonoid N]
 end Finsupp
 
 theorem Finset.sum_apply' : (∑ k ∈ s, f k) i = ∑ k ∈ s, f k i :=
-  map_sum (Finsupp.applyAddHom i) f s
+  sum_apply _ _ _
 
 theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
   Finset.sum_apply _ _ _

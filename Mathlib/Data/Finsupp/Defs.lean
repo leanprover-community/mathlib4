@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.FiniteSupport.Defs
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Data.Multiset.Find
 
 /-!
@@ -140,10 +141,13 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
 instance instZero : Zero (α →₀ M) :=
   ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (notMem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
 
-@[simp, norm_cast] lemma coe_zero : ⇑(0 : α →₀ M) = 0 := rfl
+instance : IsZeroApply (α →₀ M) where
 
-@[grind =]
-theorem zero_apply {a : α} : (0 : α →₀ M) a = 0 :=
+@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-26")]
+lemma coe_zero : ⇑(0 : α →₀ M) = 0 := rfl
+
+@[deprecated zero_apply +typeChanged (since := "2026-10-26")]
+protected theorem zero_apply {a : α} : (0 : α →₀ M) a = 0 :=
   rfl
 
 @[simp, grind =]
@@ -166,7 +170,7 @@ theorem fun_support_eq (f : α →₀ M) : Function.support f = f.support :=
 theorem notMem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :=
   not_iff_comm.1 mem_support_iff.symm
 
-@[simp, norm_cast]
+@[deprecated FunLike.coe_zero_iff +typeChanged (since := "2026-10-26")]
 theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 
 theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=

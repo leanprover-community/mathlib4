@@ -231,13 +231,13 @@ lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm :
     ofLex (supDegree toLex <| esymmAlgHomMonomial (Fin m) t r) = accumulate n m t := by
   nontriviality R
   induction t using Finsupp.induction₂ with
-  | zero => simp_rw [esymmAlgHom_zero, supDegree_toLex_C, ofLex_zero, Finsupp.coe_zero, map_zero]
+  | zero => simp_rw [esymmAlgHom_zero, supDegree_toLex_C, ofLex_zero, FunLike.coe_zero, map_zero]
   | add_single i _ _ _ _ ih =>
     have := i.2.trans_le hnm
     rw [esymmAlgHomMonomial_add, esymmAlgHomMonomial_single_one,
-        Monic.supDegree_mul_of_ne_zero_left toLex.injective toLex_add, ofLex_add, Finsupp.coe_add,
-        ih, Finsupp.coe_add, map_add, Monic.supDegree_pow rfl toLex_add toLex.injective, ofLex_smul,
-        Finsupp.coe_smul, supDegree_esymm this, ← map_nsmul, ← Finsupp.coe_smul,
+        Monic.supDegree_mul_of_ne_zero_left toLex.injective toLex_add, ofLex_add, FunLike.coe_add,
+        ih, FunLike.coe_add, map_add, Monic.supDegree_pow rfl toLex_add toLex.injective, ofLex_smul,
+        FunLike.coe_smul, supDegree_esymm this, ← map_nsmul, ← FunLike.coe_smul,
         Finsupp.smul_single, nsmul_one, Nat.cast_id]
     · exact monic_esymm this
     · exact (monic_esymm this).pow toLex_add toLex.injective
