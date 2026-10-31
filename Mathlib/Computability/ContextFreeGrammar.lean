@@ -324,10 +324,11 @@ set_option backward.isDefEq.respectTransparency false in
 lemma derives_reverse : g.reverse.Derives (star u) (star v) ↔ g.Derives u v :=
   ⟨fun h ↦ by convert! h.reverse <;> simp, .reverse⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma derives_reverse_comm : g.reverse.Derives u v ↔ g.Derives (star u) (star v) := by
-  rw [iff_comm, ← derives_reverse, List.reverse_reverse, List.reverse_reverse]
+  rw [iff_comm, ← derives_reverse, star_star, star_star]
 
-set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma generates_reverse : g.reverse.Generates (star u) ↔ g.Generates u := by simp [Generates]
 
 alias ⟨_, Generates.reverse⟩ := generates_reverse
@@ -337,7 +338,13 @@ set_option backward.defeqAttrib.useBackward true in
   simp [Generates]
 
 set_option backward.defeqAttrib.useBackward true in
-@[simp] lemma language_reverse : g.reverse.language = g.language.reverse := by ext; simp
+@[simp] lemma language_reverse : g.reverse.language = g.language.reverse := by
+  ext x
+  simp only [mem_language_iff, reverse_NT, derives_reverse_comm, Language.mem_reverse]
+  congr!
+  simp only [FreeMonoid.ext_iff, star, comp_apply, List.map_reverse, List.reverse_inj,
+    FreeMonoid.toList_map]
+  exact FreeMonoid.toList_map Symbol.terminal x
 
 end ContextFreeGrammar
 
