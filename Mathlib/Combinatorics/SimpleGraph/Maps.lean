@@ -570,6 +570,30 @@ def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
     · simp
     · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
 
+/-- A graph embedding maps an induced subgraph of the domain to an isomorphic induced subgraph of
+the codomain. -/
+def induceEmb {s : Set V} {t : Set W} (f : G ↪g G') (hfst : s.MapsTo f t) :
+    G.induce s ↪g G'.induce t where
+  toFun := Set.MapsTo.restrict f s t hfst
+  inj' := by
+    intro ⟨u, hu⟩ ⟨v, hv⟩
+    simp [Set.MapsTo.restrict, Subtype.map]
+  map_rel_iff' {u v} := by
+    simp [Set.MapsTo.restrict, Subtype.map]
+
+/-- A graph embedding maps an induced subgraph of the domain to an isomorphic induced subgraph of
+the codomain. -/
+noncomputable def induceIso {s : Set V} {t : Set W} {f : G ↪g G'} (hfst : s.BijOn f t) :
+    G.induce s ≃g G'.induce t where
+  __ : s ≃ t := by
+      obtain ⟨⟨f, hf⟩, hf'⟩ := f
+      simp only [RelEmbedding.coe_mk, Embedding.coeFn_mk] at hfst
+      exact Set.BijOn.equiv f hfst
+  map_rel_iff' {u v} := by
+    obtain ⟨f, hf⟩ := f
+    simp only [Embedding.toFun_eq_coe, comap_adj, Embedding.subtype_apply]
+    exact (iff_comm.mp hf).symm
+
 end Embedding
 
 section induceHom
