@@ -128,10 +128,6 @@ lemma IsRightContinuous.isRightContinuousOn (hf : IsRightContinuous f) :
 lemma ContinuousOn.isRightContinuousOn (hf : ContinuousOn f s) : IsRightContinuousOn f s :=
   fun a ha ↦ (hf a ha).mono inter_subset_left
 
-@[to_dual]
-lemma Continuous.isRightContinuousOn (hf : Continuous f) : IsRightContinuousOn f s :=
-  hf.isRightContinuous.isRightContinuousOn
-
 @[to_dual (attr := simp)]
 lemma isRightContinuousOn_empty (f : X → Y) : IsRightContinuousOn f ∅ :=
   fun _ ↦ False.elim
