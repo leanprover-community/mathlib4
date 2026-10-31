@@ -78,15 +78,15 @@ instance : Lattice (Finset α) where
 theorem sup_eq_union' : (Max.max : Finset α → Finset α → Finset α) = Max.max :=
   rfl
 
-@[deprecated "This is now a syntactic euqality" (since := "2026-10-23")]
+@[deprecated "This is now a syntactic equality" (since := "2026-10-23")]
 theorem sup_eq_union {s t : Finset α} : s ⊔ t = s ∪ t :=
   rfl
 
-@[deprecated "This is now a syntactic euqality" (since := "2026-10-23")]
+@[deprecated "This is now a syntactic equality" (since := "2026-10-23")]
 theorem inf_eq_inter' : (Min.min : Finset α → Finset α → Finset α) = Min.min :=
   rfl
 
-@[deprecated "This is now a syntactic euqality" (since := "2026-10-23")]
+@[deprecated "This is now a syntactic equality" (since := "2026-10-23")]
 theorem inf_eq_inter {s t : Finset α} : s ⊓ t = s ∩ t :=
   rfl
 

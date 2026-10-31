@@ -146,7 +146,7 @@ register_option linter.setNotationForOrder : Bool := {
 /-- This relation is an implementation detail of the `⊆` elaborator. -/
 public opaque SubsetElabAux.{u} {α : Type u} : α → α → Prop
 
-/-- This relation is an implementation detail of the `∪`/`∩` elaborator. -/
+/-- This operation is an implementation detail of the `∪`/`∩` elaborator. -/
 public opaque UnionInterElabAux.{u} {α : Type u} : α → α → α := fun _ ↦ id
 
 /-- Elaborate a notation like `a ⊆ b` by elaborating `a` and `b`, and then deciding

@@ -84,11 +84,7 @@ private meta def linearOrderToMax (u : Level) : Q((a : Type u) → $(linearOrder
 private meta def linearOrderToMin (u : Level) : Q((a : Type u) → $(linearOrderExpr u) a → Min a) :=
   .const `LinearOrder.toMin [u]
 
-/--
-Return `true` if `inst` comes from a `LinearOrder e` instance.
-
-We use a `try catch` block to make sure there are no surprising errors during delaboration.
--/
+/-- Return `true` if `inst` comes from a `LinearOrder e` instance. -/
 private meta def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type u))
     (toCls : Q((α : Type u) → $(linearOrderExpr u) α → $cls α)) (inst : Q($cls $α)) :
     MetaM Bool := do
