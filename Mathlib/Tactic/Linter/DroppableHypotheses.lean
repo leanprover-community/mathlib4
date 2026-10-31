@@ -13,36 +13,21 @@ public import Mathlib.Init
 /-!
 # Droppable hypothesis linter
 
-Import this module and enable `set_option linter.droppableHypotheses true` to try deleting
-each parameter of a `theorem` (including a `lemma` expanded to a theorem). Each trial replays
-the unchanged proof from the command state *before* the original declaration. Section variables
-are tested too. Grouped binders are tested one name at a time. Findings are independent: they
-do not imply that all reported parameters can be removed simultaneously.
+Lean's unused-variable linter detects parameters unused by the existing proof. A parameter can
+be used yet redundant: for example, `infer_instance` can replace `[Nonempty α]` using `[Inhabited α]`.
+This linter finds such cases by deleting one parameter and re-elaborating the unchanged statement
+and proof. Enable it with `set_option linter.droppableHypotheses true` after importing this module.
 
-The linter uses a declaration elaborator hook to obtain the pre-declaration state. It preserves
-the original theorem's elaboration options, uses synchronous elaboration for deletion trials,
-and restores command state after every trial.
-Trials disable auto-implicit parameters and recursive linting, reject errors and `sorry` (also
-through auxiliary declarations), and check that the new type specializes to the old type by
-reinserting one parameter. This last check prevents accepting a changed statement through name
-capture or a change of instance. A failed or timed-out trial produces no warning.
+Named theorems and lemmas are supported, including section variables and grouped binders.
+Findings are independent; individually removable parameters may not all be removable together.
+Trials restore command state, disable auto-implicit parameters and recursive linting, reject
+`sorry` dependencies, and check that reinserting one parameter recovers the original statement.
+Ambiguous binder alignment and explicitly dependent section binders are conservatively skipped.
+Arbitrary IO performed by elaborators or tactics is not undone.
 
-Limitations: only named theorems are handled, not `example`, `def`, mutual declarations, or
-parameters written inside the result type. Trials that remove additional automatically included
-section parameters are conservatively rejected. A proof that needs editing is not detected.
-Ambiguous binder alignment (e.g. repeated anonymous instances of a data-carrying class) is
-conservatively rejected too.
-Section parameters explicitly referenced by another remaining section binder are skipped:
-deleting them would leave an invalid section telescope.
-
-Command state is isolated, but arbitrary IO performed by elaborators or tactics is not undone.
-This module is deliberately not imported by the default linter bundle.
-
-The heartbeat limit is not a wall-clock timeout: some Lean operations do not check heartbeats.
-In the full-library survey, `CategoryTheory/Sites/Descent/IsPrestack.lean` still timed out while
-replaying `pullHom_pullHom` without its section category instance. Run large surveys in separate
-processes with an external timeout. The dependent-section guard also avoids the universe-unifier
-stack overflow reported in https://github.com/leanprover/lean4/issues/16125.
+This linter is expensive and disabled by default. Heartbeats do not bound every Lean operation:
+`CategoryTheory/Sites/Descent/IsPrestack.lean` still times out, so large surveys need an external
+process timeout. The dependent-section guard avoids https://github.com/leanprover/lean4/issues/16125.
 -/
 
 public meta section
