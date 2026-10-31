@@ -87,7 +87,7 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
 
 /-- The `hom` field of structured arrows in `StructuredArrow S T`,
 as a natural transformation `(Functor.const _).obj S ⟶ proj S T ⋙ T`. -/
-@[implicit_reducible, simps]
+@[simps]
 def ι (S : D) (T : C ⥤ D) :
     (Functor.const _).obj S ⟶ proj S T ⋙ T where
   app X := X.hom
@@ -555,7 +555,7 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
 
 /-- The `hom` field of costructured arrows in `CostructuredArrow S T`,
 as a natural transformation `proj S T ⋙ S ⟶ (Functor.const _).obj T`. -/
-@[implicit_reducible, simps]
+@[simps]
 def ι (S : C ⥤ D) (T : D) :
     proj S T ⋙ S ⟶ (Functor.const _).obj T where
   app X := X.hom
