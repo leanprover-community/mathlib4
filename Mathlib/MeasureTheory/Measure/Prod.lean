@@ -899,7 +899,7 @@ for the product measures on `α × γ` and `β × δ`.
 Some authors call a map of the form `fun (a, c) ↦ (f a, g a c)` a *skew product* over `f`,
 thus the choice of a name.
 -/
-theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
+theorem skew_product [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
   have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.1.comp measurable_fst).prodMk hgm

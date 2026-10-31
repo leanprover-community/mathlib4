@@ -98,6 +98,7 @@ lemma isLocalizedEquivalence_of_functorial_right_resolutions :
 
 variable [W₂.IsMultiplicative]
 
+omit [W₂.HasTwoOutOfThreeProperty] in
 lemma isConnected_rightResolution_of_functorial_resolutions (X₂ : C₂) :
     letI : W₁.IsMultiplicative := by rw [hW₁]; infer_instance
     IsConnected (Φ.RightResolution X₂) := by

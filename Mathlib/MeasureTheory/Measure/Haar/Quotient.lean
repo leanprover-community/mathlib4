@@ -115,7 +115,7 @@ section normal
 
 variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [IsTopologicalGroup G]
   [BorelSpace G] [PolishSpace G] {Γ : Subgroup G} [Subgroup.Normal Γ]
-  [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
+  [T2Space (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
 
 section mulInvariantMeasure
 
@@ -139,10 +139,11 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
     exact smulInvariantMeasure_quotient ν
 
 variable [Countable Γ] [IsMulRightInvariant ν] [SigmaFinite ν]
-  [IsMulLeftInvariant μ] [SigmaFinite μ]
+  [IsMulLeftInvariant μ]
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
+variable [SecondCountableTopology (G ⧸ Γ)] [SigmaFinite μ] in
 /-- Assume that a measure `μ` is `IsMulLeftInvariant`, that the action of `Γ` on `G` has a
 measurable fundamental domain `s` with positive finite volume, and that there is a single measurable
 set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the scaling is right). Then

@@ -113,6 +113,7 @@ instance {x : E} : IsGaussian (Measure.dirac x) where
   map_eq_gaussianReal L := by simp
 
 omit [IsGaussian μ] in
+omit [BorelSpace E] in
 lemma IsGaussian.of_subsingleton [Subsingleton E] [IsProbabilityMeasure μ] :
     IsGaussian μ := by
   convert instIsGaussianDirac (x := (0 : E))

@@ -91,7 +91,8 @@ theorem isUnit_norm_of_isGalois [FiniteDimensional K L] [IsGalois K L] {x : 𝓞
 
 variable (F : Type*) [Field F] [Algebra K F] [FiniteDimensional K F]
 
-theorem norm_norm [Algebra F L] [FiniteDimensional F L] [IsScalarTower K F L] (x : 𝓞 L) :
+omit [FiniteDimensional K F] in
+theorem norm_norm [Algebra F L] [IsScalarTower K F L] (x : 𝓞 L) :
     norm K (norm F x) = norm K x := by
   rw [RingOfIntegers.ext_iff, coe_norm, coe_norm, coe_norm, Algebra.norm_norm]
 

@@ -304,6 +304,7 @@ theorem outerMeasure_caratheodory (A : Set G) :
   · apply innerContent_iUnion_nat
   · apply innerContent_mono'
 
+omit [R1Space G] in
 @[to_additive]
 theorem outerMeasure_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup G]
     (h3 : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (K : Compacts G)

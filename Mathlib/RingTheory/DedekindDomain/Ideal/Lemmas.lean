@@ -1175,6 +1175,7 @@ end IsDedekindDomain
 
 set_option linter.overlappingInstances false in
 variable {R} (A) in
+omit [IsDomain A] in
 theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
     [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
     IsDedekindDomain.primesOverFinset p A = {IsLocalRing.maximalIdeal A} := by

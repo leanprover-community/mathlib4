@@ -809,6 +809,7 @@ lemma _root_.Irreducible.subsingleton_isRoot
   fun _ hx ↦ (subsingleton_isRoot_of_natDegree_eq_one <| natDegree_eq_of_degree_eq_some <|
     degree_eq_one_of_irreducible_of_root hi hx) hx
 
+omit [IsDomain R] in
 lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality

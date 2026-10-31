@@ -239,10 +239,11 @@ section Algebra
 
 open scoped nonZeroDivisors
 
-variable {A K : Type*} (L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
+variable {A K : Type*} (L B : Type*) [CommRing A] [CommRing B]
   [Algebra A B] [IsTorsionFree A B] [Field K] [Field L] [Algebra A K] [Algebra B L]
   [IsFractionRing A K] [IsFractionRing B L] {I : FractionalIdeal A⁰ K}
 
+variable [IsDomain A] [IsDomain B] in
 /--
 The ring homomorphism that extends a fractional ideal of `A` to a fractional ideal of `B` for
 an extension of domains `A ⊆ B`.
@@ -253,12 +254,14 @@ abbrev extendedHom : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
 
 @[deprecated (since := "2026-04-16")] alias extendedHomₐ := extendedHom
 
+variable [IsDomain A] [IsDomain B] in
 theorem extendedHom_eq_zero_iff {I : FractionalIdeal A⁰ K} :
     extendedHom L B I = 0 ↔ I = 0 :=
   extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _) zero_notMem_nonZeroDivisors
 
 @[deprecated (since := "2026-04-16")] alias extendedHomₐ_eq_zero_iff := extendedHom_eq_zero_iff
 
+variable [IsDomain A] [IsDomain B] in
 theorem extendedHom_coeIdeal_eq_map (I : Ideal A) :
     (I : FractionalIdeal A⁰ K).extendedHom L B =
       (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
@@ -266,6 +269,7 @@ theorem extendedHom_coeIdeal_eq_map (I : Ideal A) :
 @[deprecated (since := "2026-04-16")]
 alias extendedHomₐ_coeIdeal_eq_map := extendedHom_coeIdeal_eq_map
 
+variable [IsDomain A] [IsDomain B] in
 theorem extendedHom_spanSingleton (x : K) : extendedHom L B (spanSingleton A⁰ x) =
     spanSingleton B⁰ (IsFractionRing.map (FaithfulSMul.algebraMap_injective A B) x) :=
   extended_spanSingleton L _ x
@@ -273,6 +277,7 @@ theorem extendedHom_spanSingleton (x : K) : extendedHom L B (spanSingleton A⁰ 
 variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [Algebra.IsIntegral A B]
 
+variable [IsDomain A] [IsDomain B] in
 theorem coe_extendedHom_eq_span (I : FractionalIdeal A⁰ K) :
     extendedHom L B I = span B (algebraMap K L '' I) := by
   rw [extendedHom'_apply, coe_extended_eq_span,
@@ -281,6 +286,7 @@ theorem coe_extendedHom_eq_span (I : FractionalIdeal A⁰ K) :
 
 @[deprecated (since := "2026-04-16")] alias coe_extendedHomₐ_eq_span := coe_extendedHom_eq_span
 
+variable [IsDomain A] [IsDomain B] in
 theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed B]
     (hI : extendedHom L B I ≤ 1) : I ≤ 1 := by
   contrapose hI
@@ -296,6 +302,7 @@ theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed 
 @[deprecated (since := "2026-04-16")]
 alias le_one_of_extendedHomₐ_le_one := le_one_of_extendedHom_le_one
 
+variable [IsDomain A] [IsDomain B] in
 theorem extendedHom_le_one_iff [IsIntegrallyClosed A] [IsIntegrallyClosed B] :
     extendedHom L B I ≤ 1 ↔ I ≤ 1 :=
   ⟨fun h ↦ le_one_of_extendedHom_le_one L B h, fun a ↦ extended_le_one_of_le_one L _ I a⟩
@@ -330,6 +337,8 @@ theorem extendedHom_injective :
   · rwa [hJ, map_zero, extendedHom_eq_zero_iff L B, ← hJ] at h
   rwa [← mul_inv_eq_one₀ ((extendedHom_eq_zero_iff _ _).not.mpr hJ), ← map_inv₀, ← map_mul,
     extendedHom_eq_one_iff _ _ (mul_ne_zero hI (inv_ne_zero hJ)), mul_inv_eq_one₀ hJ] at h
+
+variable [IsDomain A] [IsDomain B]
 
 @[deprecated (since := "2026-04-16")] alias extendedHomₐ_injective := extendedHom_injective
 

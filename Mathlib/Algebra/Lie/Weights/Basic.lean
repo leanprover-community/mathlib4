@@ -288,7 +288,7 @@ lemma hasEigenvalueAt (χ : Weight R L M) (x : L) :
     simpa [genWeightSpaceOf, ← Module.End.iSup_genEigenspace_eq] using χ.genWeightSpaceOf_ne_bot x
   exact Module.End.hasEigenvalue_of_hasGenEigenvalue hk
 
-lemma apply_eq_zero_of_isNilpotent [IsDomain R] [Module.IsTorsionFree R M] [IsReduced R]
+lemma apply_eq_zero_of_isNilpotent [IsDomain R] [Module.IsTorsionFree R M]
     (x : L) (h : _root_.IsNilpotent (toEnd R L M x)) (χ : Weight R L M) :
     χ x = 0 :=
   ((χ.hasEigenvalueAt x).isNilpotent_of_isNilpotent h).eq_zero

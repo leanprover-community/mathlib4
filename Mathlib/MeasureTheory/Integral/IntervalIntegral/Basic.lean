@@ -584,7 +584,7 @@ interval of the form `0..x`, for positive `x`.
 See `intervalIntegrable_of_odd` for a stronger result. -/
 lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
     (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {t : ℝ}
-    (ht : ‖f (min 0 t)‖ₑ ≠ ∞ := by finiteness) :
+    :
     IntervalIntegrable f volume 0 t := by
   rcases lt_trichotomy t 0 with h | h | h
   · rw [IntervalIntegrable.iff_comp_neg]
@@ -598,11 +598,10 @@ lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
 iff it is interval integrable (with respect to the volume measure) on every interval of the form
 `0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_odd
-    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ}
-    (ha : ‖f (min 0 a)‖ₑ ≠ ∞ := by finiteness) (hb : ‖f (min 0 b)‖ₑ ≠ ∞ := by finiteness) :
+    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ} :
     IntervalIntegrable f volume a b :=
   -- Split integral and apply lemma
-  (intervalIntegrable_of_odd₀ h₁f h₂f ha).symm.trans (intervalIntegrable_of_odd₀ h₁f h₂f hb)
+  (intervalIntegrable_of_odd₀ h₁f h₂f).symm.trans (intervalIntegrable_of_odd₀ h₁f h₂f)
 
 end
 

@@ -211,6 +211,7 @@ variable (A K) [IsDomain C]
 
 set_option linter.overlappingInstances false
 
+omit [IsDomain A] in
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,
 the integral closure `C` of `A` in `L` is a Dedekind domain.
 
@@ -226,6 +227,7 @@ theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDoma
       ⟨IsIntegralClosure.mk' C x (isIntegral_trans (R := A) _ hx),
         IsIntegralClosure.algebraMap_mk' _ _ _⟩ with : IsDedekindDomain C }
 
+omit [IsDomain A] in
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,
 the integral closure of `A` in `L` is a Dedekind domain.
 

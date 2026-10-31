@@ -398,8 +398,8 @@ More specifically, the unit `u` such that `W.add P Q = u • ![1, 1, 0]` where
 def addU (P Q : Fin 3 → F) : F :=
   -((P y * Q z ^ 3 - Q y * P z ^ 3) / (P z * Q z))
 
-lemma addU_smul {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) {u v : F} (hu : u ≠ 0)
-    (hv : v ≠ 0) : addU (u • P) (v • Q) = (u * v) ^ 2 * addU P Q := by
+lemma addU_smul {P Q : Fin 3 → F} {u v : F}
+    : addU (u • P) (v • Q) = (u * v) ^ 2 * addU P Q := by
   simp [field, addU, smul_fin3_ext]
 
 lemma addU_of_Z_eq_zero_left {P Q : Fin 3 → F} (hPz : P z = 0) : addU P Q = 0 := by

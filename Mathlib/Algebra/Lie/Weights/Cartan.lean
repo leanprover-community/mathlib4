@@ -33,7 +33,7 @@ Basic definitions and properties of the above ideas are provided in this file.
 open Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-  (H : LieSubalgebra R L) [LieRing.IsNilpotent H]
+  (H : LieSubalgebra R L)
   {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieAlgebra
@@ -41,15 +41,18 @@ namespace LieAlgebra
 open scoped TensorProduct
 open TensorProduct.LieModule LieModule
 
+variable [LieRing.IsNilpotent H] in
 /-- Given a nilpotent Lie subalgebra `H ⊆ L`, the root space of a map `χ : H → R` is the weight
 space of `L` regarded as a module of `H` via the adjoint action. -/
 abbrev rootSpace (χ : H → R) : LieSubmodule R H L :=
   genWeightSpace L χ
 
+variable [LieRing.IsNilpotent H] in
 theorem zero_rootSpace_eq_top_of_nilpotent [LieRing.IsNilpotent L] :
     rootSpace (⊤ : LieSubalgebra R L) 0 = ⊤ :=
   zero_genWeightSpace_eq_top_of_nilpotent L
 
+variable [LieRing.IsNilpotent H] in
 @[simp]
 theorem rootSpace_comap_eq_genWeightSpace (χ : H → R) :
     (rootSpace H χ).comap H.incl' = genWeightSpace H χ :=
@@ -57,6 +60,7 @@ theorem rootSpace_comap_eq_genWeightSpace (χ : H → R) :
 
 variable {H}
 
+variable [LieRing.IsNilpotent H] in
 theorem lie_mem_genWeightSpace_of_mem_genWeightSpace {χ₁ χ₂ : H → R} {x : L} {m : M}
     (hx : x ∈ rootSpace H χ₁) (hm : m ∈ genWeightSpace M χ₂) :
     ⁅x, m⁆ ∈ genWeightSpace M (χ₁ + χ₂) := by
@@ -68,6 +72,7 @@ theorem lie_mem_genWeightSpace_of_mem_genWeightSpace {χ₁ χ₂ : H → R} {x 
     rw [genWeightSpace, LieSubmodule.mem_iInf] at hm; exact hm y
   exact lie_mem_maxGenEigenspace_toEnd hx hm
 
+variable [LieRing.IsNilpotent H] in
 lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
     (hx : x ∈ rootSpace H χ₁) (hm : m ∈ genWeightSpace M χ₂) (n) :
     (toEnd R L M x ^ n : Module.End R M) m ∈ genWeightSpace M (n • χ₁ + χ₂) := by
@@ -78,6 +83,7 @@ lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
     convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
     rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
 
+variable [LieRing.IsNilpotent H] in
 lemma mem_biSup_genWeightSpace_of {s : Set (H → R)} (hs : ∀ χ₁ ∈ s, ∀ χ₂ ∈ s, χ₁ + χ₂ ∈ s)
     {x : L} {m : M} (hx : x ∈ ⨆ χ, ⨆ (_ : χ ∈ s), rootSpace H χ)
     (hm : m ∈ ⨆ χ, ⨆ (_ : χ ∈ s), genWeightSpace M χ) :
@@ -99,6 +105,10 @@ lemma mem_biSup_genWeightSpace_of {s : Set (H → R)} (hs : ∀ χ₁ ∈ s, ∀
       simp_all [lie_mem_genWeightSpace_of_mem_genWeightSpace]
 
 variable (R L H M)
+
+section
+
+variable [LieRing.IsNilpotent H]
 
 /-- Auxiliary definition for `rootSpaceWeightSpaceProduct`,
 which is close to the deterministic timeout limit.
@@ -253,6 +263,8 @@ theorem eq_rootSpace_zero_iff_isCartan [IsNoetherian R L] :
     ← LieSubmodule.toSubmodule_inj]
   aesop
 
+end
+
 @[simp]
 theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoetherian R L] :
     rootSpace H 0 = H.toLieSubmodule := by
@@ -313,6 +325,8 @@ lemma mem_corootSpace' {x : H} :
     (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property using 0
   simp [hyz]
 
+variable [LieRing.IsNilpotent H]
+
 section FiniteDimensional
 
 variable {K : Type*} [Field K] [LieAlgebra K L]
@@ -345,3 +359,5 @@ lemma cartan_sup_iSup_rootSpace_eq_top :
 end FiniteDimensional
 
 end LieAlgebra
+
+variable [LieRing.IsNilpotent H]

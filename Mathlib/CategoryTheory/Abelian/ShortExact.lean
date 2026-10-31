@@ -25,9 +25,10 @@ open CategoryTheory Limits Preadditive CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C] [Abelian C]
 variable {D : Type u₂} [Category.{v₂} D] [Abelian D]
-variable (F : C ⥤ D) [PreservesZeroMorphisms F] [F.Faithful]
+variable (F : C ⥤ D) [F.Faithful]
 variable {S : ShortComplex C}
 
+variable [PreservesZeroMorphisms F] in
 lemma reflects_shortExact_of_faithful (hS : (S.map F).ShortExact) : S.ShortExact where
   exact := F.reflects_exact_of_faithful _ hS.1
   mono_f := ReflectsMonomorphisms.reflects _ hS.mono_f

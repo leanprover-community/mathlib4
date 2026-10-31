@@ -249,8 +249,8 @@ end FractionalIdeal
 
 end BIsDomain
 
-variable [IsDomain A] [IsFractionRing A K]
-  [FiniteDimensional K L] [Algebra.IsSeparable K L] [IsIntegralClosure B A L]
+variable [IsFractionRing A K]
+  [FiniteDimensional K L] [Algebra.IsSeparable K L]
 
 namespace FractionalIdeal
 
@@ -263,11 +263,13 @@ local notation:max I:max "ᵛ" => Submodule.traceDual A K I
 variable [IsDedekindDomain B] {I J : FractionalIdeal B⁰ L}
 
 set_option backward.isDefEq.respectTransparency.types false in
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma coe_dual (hI : I ≠ 0) :
     (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dite_eq_right hI, coe_mk]
 
 variable (B L)
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 @[simp]
 lemma coe_dual_one :
     (dual A K (1 : FractionalIdeal B⁰ L) : Submodule B L) = 1ᵛ := by
@@ -275,6 +277,7 @@ lemma coe_dual_one :
   exact one_ne_zero
 
 set_option backward.isDefEq.respectTransparency.types false in
+variable [IsDomain A] [IsIntegralClosure B A L] in
 @[simp]
 lemma dual_zero :
     dual A K (0 : FractionalIdeal B⁰ L) = 0 := by rw [dual, dite_eq_left rfl]
@@ -282,12 +285,14 @@ lemma dual_zero :
 variable {A K L B}
 
 set_option backward.isDefEq.respectTransparency.types false in
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma mem_dual (hI : I ≠ 0) {x} :
     x ∈ dual A K I ↔ ∀ a ∈ I, traceForm K L x a ∈ (algebraMap A K).range := by
   rw [dual, dite_eq_right hI]; exact forall₂_congr fun _ _ ↦ mem_one
 
 variable (A K)
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma dual_ne_zero (hI : I ≠ 0) :
     dual A K I ≠ 0 := by
   obtain ⟨b, hb, hb'⟩ := I.prop
@@ -308,17 +313,20 @@ lemma dual_ne_zero (hI : I ≠ 0) :
 
 variable {A K}
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 @[simp]
 lemma dual_eq_zero_iff :
     dual A K I = 0 ↔ I = 0 :=
   ⟨not_imp_not.mp (dual_ne_zero A K), fun e ↦ e.symm ▸ dual_zero A K L B⟩
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma dual_ne_zero_iff :
     dual A K I ≠ 0 ↔ I ≠ 0 := dual_eq_zero_iff.not
 
 variable (A K)
 
 set_option backward.isDefEq.respectTransparency.types false in
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma le_dual_inv_aux (hI : I ≠ 0) (hIJ : I * J ≤ 1) :
     J ≤ dual A K I := by
   rw [dual, dite_eq_right hI]
@@ -331,10 +339,12 @@ lemma le_dual_inv_aux (hI : I ≠ 0) (hIJ : I * J ≤ 1) :
   rw [mul_comm] at hz
   exact ⟨z, hz⟩
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma one_le_dual_one :
     1 ≤ dual A K (1 : FractionalIdeal B⁰ L) :=
   le_dual_inv_aux A K one_ne_zero (by rw [one_mul])
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma le_dual_iff (hJ : J ≠ 0) :
     I ≤ dual A K J ↔ I * J ≤ dual A K 1 := by
   by_cases hI : I = 0
@@ -343,17 +353,20 @@ lemma le_dual_iff (hJ : J ≠ 0) :
 
 variable (I)
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma inv_le_dual :
     I⁻¹ ≤ dual A K I := by
   classical
   exact if hI : I = 0 then by simp [hI] else le_dual_inv_aux A K hI (le_of_eq (mul_inv_cancel₀ hI))
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma dual_inv_le :
     (dual A K I)⁻¹ ≤ I := by
   by_cases hI : I = 0; · simp [hI]
   rw [inv_le_comm₀ (by simpa [pos_iff_ne_zero]) (by simpa [pos_iff_ne_zero])]
   exact inv_le_dual ..
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma dual_eq_mul_inv :
     dual A K I = dual A K 1 * I⁻¹ := by
   by_cases hI : I = 0; · simp [hI]
@@ -362,6 +375,10 @@ lemma dual_eq_mul_inv :
   rw [le_dual_iff A K hI, mul_assoc, inv_mul_cancel₀ hI, mul_one]
 
 variable {I}
+
+section
+
+variable [IsDomain A] [IsIntegralClosure B A L]
 
 lemma dual_div_dual :
     dual A K J / dual A K I = I / J := by
@@ -380,8 +397,11 @@ lemma self_mul_dual (hI : I ≠ 0) :
 lemma dual_inv :
     dual A K I⁻¹ = dual A K 1 * I := by rw [dual_eq_mul_inv, inv_inv]
 
+end
+
 variable (I)
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 @[simp]
 lemma dual_dual :
     dual A K (dual A K I) = I := by
@@ -392,6 +412,7 @@ lemma dual_dual :
 
 variable {I}
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 @[simp]
 lemma dual_le_dual (hI : I ≠ 0) (hJ : J ≠ 0) :
     dual A K I ≤ dual A K J ↔ J ≤ I := by
@@ -400,9 +421,12 @@ lemma dual_le_dual (hI : I ≠ 0) (hJ : J ≠ 0) :
 
 variable {A K}
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma dual_involutive :
-    Function.Involutive (dual A K : FractionalIdeal B⁰ L → FractionalIdeal B⁰ L) := dual_dual A K
+    Function.Involutive (dual A K : FractionalIdeal B⁰ L → FractionalIdeal B⁰ L) :=
+  fun I => dual_dual A K I
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma dual_injective :
     Function.Injective (dual A K : FractionalIdeal B⁰ L → FractionalIdeal B⁰ L) :=
   dual_involutive.injective
@@ -417,6 +441,7 @@ variable (C M : Type*) [CommRing C] [IsDedekindDomain C] [Field M] [Algebra C M]
   [IsScalarTower B L M] [IsScalarTower K L M] [IsIntegralClosure C A M] [FiniteDimensional K M]
   [FiniteDimensional L M] [Algebra.IsSeparable K M]
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 theorem trace_mem_dual_one (x : M) (hx : x ∈ dual A K (1 : FractionalIdeal C⁰ M)) :
     Algebra.trace L M x ∈ dual A K (1 : FractionalIdeal B⁰ L) := by
   simp only [ne_eq, one_ne_zero, not_false_eq_true, mem_dual, mem_one_iff, traceForm_apply,
@@ -427,6 +452,7 @@ theorem trace_mem_dual_one (x : M) (hx : x ∈ dual A K (1 : FractionalIdeal C�
 
 variable [IsIntegralClosure C B M] [Algebra.IsSeparable L M]
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 theorem smul_mem_dual_one {x : L} (hx : x ∈ dual A K (1 : FractionalIdeal B⁰ L))
     {y : M} (hy : y ∈ dual B L (1 : FractionalIdeal C⁰ M)) :
     x • y ∈ dual A K (1 : FractionalIdeal C⁰ M) := by
@@ -442,6 +468,7 @@ theorem smul_mem_dual_one {x : L} (hx : x ∈ dual A K (1 : FractionalIdeal B⁰
 
 variable [IsTorsionFree B C]
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 theorem dual_eq_dual_mul_dual :
     dual A K (1 : FractionalIdeal C⁰ M) = dual B L (1 : FractionalIdeal C⁰ M) *
         (dual A K (1 : FractionalIdeal B⁰ L)).extendedHom M C := by
@@ -476,12 +503,14 @@ section IsIntegrallyClosed
 variable (B)
 variable [IsIntegrallyClosed A] [IsDedekindDomain B] [IsTorsionFree A B]
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 /-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
 as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/
 noncomputable def differentIdeal : Ideal B :=
   (1 / Submodule.traceDual A (FractionRing A) 1 : Submodule B (FractionRing B)).comap
     (Algebra.linearMap B (FractionRing B))
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma coeSubmodule_differentIdeal_fractionRing [Algebra.IsIntegral A B]
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     [FiniteDimensional (FractionRing A) (FractionRing B)] :
@@ -501,6 +530,7 @@ section
 
 variable [IsFractionRing B L]
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma coeSubmodule_differentIdeal :
     coeSubmodule L (differentIdeal A B) = 1 / Submodule.traceDual A K 1 := by
   have : (FractionRing.algEquiv B L).toLinearEquiv.comp (Algebra.linearMap B (FractionRing B)) =
@@ -530,6 +560,7 @@ lemma coeSubmodule_differentIdeal :
 
 variable (L)
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma coeIdeal_differentIdeal :
     ↑(differentIdeal A B) = (FractionalIdeal.dual A K (1 : FractionalIdeal B⁰ L))⁻¹ := by
   apply FractionalIdeal.coeToSubmodule_injective
@@ -540,6 +571,7 @@ lemma coeIdeal_differentIdeal :
 
 variable {A K B L}
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 theorem differentIdeal_ne_bot [Module.Finite A B]
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)] :
     differentIdeal A B ≠ ⊥ := by
@@ -548,6 +580,7 @@ theorem differentIdeal_ne_bot [Module.Finite A B]
   rw [ne_eq, ← FractionalIdeal.coeIdeal_inj (K := L), coeIdeal_differentIdeal (K := K)]
   simp
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma differentialIdeal_le_fractionalIdeal_iff
     {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
     differentIdeal A B ≤ I ↔ (((I⁻¹ :) : Submodule B L).restrictScalars A).map
@@ -557,6 +590,7 @@ lemma differentialIdeal_le_fractionalIdeal_iff
   refine le_traceDual_iff_map_le_one.trans ?_
   simp
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) :
     differentIdeal A B ≤ I ↔ (((I⁻¹ : FractionalIdeal B⁰ L) : Submodule B L).restrictScalars A).map
       ((Algebra.trace K L).restrictScalars A) ≤ 1 :=
@@ -568,6 +602,7 @@ variable (A K B L)
 set_option linter.overlappingInstances false
 
 open FractionalIdeal in
+variable [IsDomain A] [IsIntegralClosure B A L] in
 /-- Transitivity of the different ideal. -/
 theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomain B] [CommRing C]
     [Algebra B C] [Algebra A C] [IsDedekindDomain C]
@@ -590,6 +625,7 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomai
 
 variable {B L}
 
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma traceForm_dualSubmodule_adjoin
     {x : L} (hx : Algebra.adjoin K {x} = ⊤) (hAx : IsIntegral A x) :
     (traceForm K L).dualSubmodule (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
@@ -635,6 +671,7 @@ end
 variable (L) {B}
 
 open Polynomial Pointwise in
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma conductor_mul_differentIdeal
     (x : B) (hx : Algebra.adjoin K {algebraMap B L x} = ⊤) :
     (conductor A x) * differentIdeal A B = Ideal.span {aeval x (derivative (minpoly A x))} := by
@@ -674,6 +711,7 @@ lemma conductor_mul_differentIdeal
   exact ⟨fun H b ↦ (mul_one b) ▸ H b 1 (one_mem _), fun H _ _ _ ↦ H _⟩
 
 open Polynomial Pointwise in
+variable [IsDomain A] [IsIntegralClosure B A L] in
 lemma aeval_derivative_mem_differentIdeal
     (x : B) (hx : Algebra.adjoin K {algebraMap B L x} = ⊤) :
     aeval x (derivative (minpoly A x)) ∈ differentIdeal A B := by
@@ -740,6 +778,8 @@ lemma pow_sub_one_dvd_differentIdeal_aux
   rw [← map_pow, Ideal.Quotient.eq_zero_iff_mem]
   exact (Ideal.dvd_iff_le.mp this) <| Ideal.pow_mem_pow hx _
 
+variable [IsIntegralClosure B A L]
+
 lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     {p : Ideal A} [p.IsMaximal] (P : Ideal B) (e : ℕ) (hp : p ≠ ⊥)
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
@@ -750,6 +790,7 @@ lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (Frac
   · rw [he, pow_zero]; exact one_dvd _
   exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
 
+variable [IsDomain A] in
 theorem not_dvd_differentIdeal_of_intTrace_notMem
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     {p : Ideal A} (P Q : Ideal B) (hP : P * Q = Ideal.map (algebraMap A B) p)
@@ -965,3 +1006,5 @@ theorem dvd_differentIdeal_iff
   iff_not_comm.mp not_dvd_differentIdeal_iff.symm
 
 end
+
+variable [IsDomain A] [IsIntegralClosure B A L]

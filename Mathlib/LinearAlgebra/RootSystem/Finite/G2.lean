@@ -85,18 +85,19 @@ def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
 lemma IsG2.nonempty [P.IsG2] : Nonempty ι :=
   ⟨(IsG2.exists_pairingIn_neg_three (P := P)).choose⟩
 
-variable [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible]
-
+variable [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible] in
 lemma isG2_iff :
     P.IsG2 ↔ ∃ i j, P.pairingIn ℤ i j = -3 :=
   ⟨fun _ ↦ IsG2.exists_pairingIn_neg_three, fun h ↦ ⟨h⟩⟩
 
+variable [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible] in
 lemma isNotG2_iff :
     P.IsNotG2 ↔ ∀ i j, P.pairingIn ℤ i j ∈ ({-2, -1, 0, 1, 2} : Set ℤ) :=
   ⟨fun _ ↦ IsNotG2.pairingIn_mem_zero_one_two, fun h ↦ ⟨h⟩⟩
 
 variable [Finite ι] [CharZero R] [IsDomain R]
 
+variable [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible] in
 @[simp]
 lemma not_isG2_iff_isNotG2 :
     ¬ P.IsG2 ↔ P.IsNotG2 := by

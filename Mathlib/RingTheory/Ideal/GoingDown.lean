@@ -48,7 +48,7 @@ class Algebra.HasGoingDown (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 lemma Ideal.exists_ideal_le_liesOver_of_le [Algebra.HasGoingDown R S]
-    {p q : Ideal R} [p.IsPrime] [q.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver q]
+    {p q : Ideal R} [p.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver q]
     (hle : p ≤ q) :
     ∃ P ≤ Q, P.IsPrime ∧ P.LiesOver p := by
   by_cases h : p = q

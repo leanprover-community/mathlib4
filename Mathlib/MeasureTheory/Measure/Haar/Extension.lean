@@ -40,8 +40,9 @@ namespace TopologicalGroup.IsSES
 variable {A B C E : Type*} [Group A] [Group B] [Group C]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
-  [IsTopologicalGroup A] [IsTopologicalGroup B] [NormedAddCommGroup E]
+  [IsTopologicalGroup B] [NormedAddCommGroup E]
 
+variable [IsTopologicalGroup A] in
 /-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
 can pull back a continuous compactly supported function `f` on `B` along `φ` to the continuous
 compactly supported function `a ↦ f (b * φ a)` on `A`. -/
@@ -52,6 +53,7 @@ noncomputable abbrev pullback (f : CompactlySupportedContinuousMap B E) (b : B) 
     CompactlySupportedContinuousMap A E :=
   f.pullback_monoidHom H.isClosedEmbedding b
 
+variable [IsTopologicalGroup A] in
 @[to_additive]
 theorem pullback_def (f : CompactlySupportedContinuousMap B E) (b : B) (a : A) :
     pullback H f b a = f (b * φ a) :=
@@ -60,6 +62,7 @@ theorem pullback_def (f : CompactlySupportedContinuousMap B E) (b : B) (a : A) :
 variable [MeasurableSpace A] [BorelSpace A] (μA : Measure A) [hμA : IsHaarMeasure μA]
   [NormedSpace ℝ E]
 
+variable [IsTopologicalGroup A] in
 @[to_additive]
 theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
     ∫ a, H.pullback f (Function.invFun ψ (ψ b)) a ∂μA = ∫ a, H.pullback f b a ∂μA := by
@@ -70,6 +73,10 @@ theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E)
   simp [pullback_def, ha, mul_assoc]
 
 variable [IsTopologicalGroup C] [LocallyCompactSpace B]
+
+section
+
+variable [IsTopologicalGroup A]
 
 /-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
 can push forward a continuous compactly supported function on `B` to a continuous compactly
@@ -147,8 +154,11 @@ theorem pushforward_mono {f g : CompactlySupportedContinuousMap B ℝ} (h : f �
     pushforward H μA f ≤ pushforward H μA g :=
   fun _ ↦ integral_mono (pullback H f _).integrable (pullback H g _).integrable (fun _ ↦ h _)
 
+end
+
 variable [MeasurableSpace C] [BorelSpace C] (μC : Measure C) [hμC : IsHaarMeasure μC]
 
+variable [IsTopologicalGroup A] in
 /-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
 can integrate a continuous compactly supported function on `B` by integrating over `A` and `C`. -/
 @[to_additive /-- If `φ : A →+ B` and `ψ : B →+ C` define a short exact sequence of additive
@@ -163,11 +173,13 @@ noncomputable def integrate : CompactlySupportedContinuousMap B E →ₗ[ℝ] E 
     rw [map_smul]
     exact integral_smul x (H.pushforward μA f)
 
+variable [IsTopologicalGroup A] in
 @[to_additive]
 theorem integrate_apply (f : CompactlySupportedContinuousMap B E) :
     H.integrate μA μC f = ∫ c, pushforward H μA f c ∂μC :=
   rfl
 
+variable [IsTopologicalGroup A] in
 @[to_additive]
 theorem integrate_mono {f g : CompactlySupportedContinuousMap B ℝ} (h : f ≤ g) :
     integrate H μA μC f ≤ integrate H μA μC g :=
@@ -175,6 +187,10 @@ theorem integrate_mono {f g : CompactlySupportedContinuousMap B ℝ} (h : f ≤ 
     (pushforward_mono H μA h)
 
 variable [T2Space B] [MeasurableSpace B] [BorelSpace B]
+
+section
+
+variable [IsTopologicalGroup A]
 
 /-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
 can define a Haar measure on `B` induced by the Haar measures on `A` and `C`. -/
@@ -230,6 +246,8 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     replace ha : f (Function.invFun ψ (ψ b) * φ a) ≠ 0 := by simp [ha, hf1 (interior_subset hb)]
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
+
+end
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, and if

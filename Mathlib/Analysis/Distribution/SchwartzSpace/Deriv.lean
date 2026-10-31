@@ -75,8 +75,6 @@ open LineDeriv
 
 section fderiv
 
-variable [SMulCommClass ℝ 𝕜 F]
-
 variable (E F) in
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
@@ -159,7 +157,7 @@ theorem tsupport_derivCLM_subset (f : 𝓢(ℝ, F)) : tsupport (derivCLM 𝕜 F 
   simp_rw [← fderiv_apply_one_eq_deriv]
   exact tsupport_fderiv_apply_subset ℝ 1
 
-variable [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 F]
+variable [NormedSpace ℝ E]
 
 theorem tsupport_fderivCLM_subset (f : 𝓢(E, F)) : tsupport (fderivCLM 𝕜 E F f) ⊆ tsupport f :=
   tsupport_fderiv_subset ℝ

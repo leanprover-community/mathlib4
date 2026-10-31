@@ -20,7 +20,7 @@ namespace RootPairing
 
 variable {ι R M N : Type*} [CommRing R] [CharZero R] [IsDomain R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-  {P : RootPairing ι R M N} [Finite ι] [P.IsCrystallographic]
+  {P : RootPairing ι R M N} [Finite ι]
 
 local notation "Φ" => range P.root
 local notation "α" => P.root
@@ -30,6 +30,7 @@ namespace Base
 variable {b : P.Base} (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
 include hij hi hj
 
+variable [P.IsCrystallographic] in
 /-- This is Lemma 2.5 (a) from [Geck][Geck2017]. -/
 lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :
@@ -79,6 +80,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   replace hij := pairingIn_le_zero_of_ne b hij.symm hj hi
   omega
 
+variable [P.IsCrystallographic] in
 /-- This is Lemma 2.5 (b) from [Geck][Geck2017]. -/
 lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : α k ≠ -α i) (hk' : α k - α j ∈ Φ) :
@@ -96,6 +98,7 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
   simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
 
+variable [P.IsCrystallographic] in
 lemma root_sub_mem_iff_root_add_mem (hkj : k ≠ j) (hkj' : α k ≠ -α i) (hk : α k + α i - α j ∈ Φ) :
     α k - α j ∈ Φ ↔ α k + α i ∈ Φ :=
   ⟨b.root_add_root_mem_of_mem_of_mem i j k hij hi hj hk hkj',
@@ -118,6 +121,8 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 [P.IsNotG2]
   rw [add_comm] at hik_mem
   rw [P.chainBotCoeff_if_one_zero hik_mem, ite_eq_right_iff, P.pairingIn_eq_zero_iff (i := i)]
   lia
+
+variable [P.IsCrystallographic]
 
 variable [P.IsReduced] [P.IsIrreducible]
   (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j)
@@ -264,7 +269,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /- An auxiliary result en route to `RootPairing.chainBotCoeff_mul_chainTopCoeff`. -/
 open RootPositiveForm in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
-    (hki' : P.pairingIn ℤ k i < 0) (hkj' : 0 < P.pairingIn ℤ k j) :
+    (hki' : P.pairingIn ℤ k i < 0) :
     have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
     letI := P.indexNeg
     P.root i + P.root m ∈ range P.root → P.root j + P.root (-l) ∈ range P.root →
@@ -364,9 +369,9 @@ lemma chainBotCoeff_mul_chainTopCoeff :
   /- Geck "Case 3" -/
   suffices P.chainBotCoeff i m = P.chainBotCoeff j (-l) by rw [hik, hjk, this]
   have aux₁ : ¬ (P.chainBotCoeff i m = 1 ∧ P.chainBotCoeff j (-l) = 0) :=
-    aux_2 hi hj hij h₁ h₂ h₃ hki (by simpa using hkj) him_mem hjl_mem <| by rwa [add_comm]
+    aux_2 hi hj hij h₁ h₂ h₃ hki him_mem hjl_mem <| by rwa [add_comm]
   have aux₂ : ¬(P.chainBotCoeff j (-l) = 1 ∧ P.chainBotCoeff i m = 0) := by
-    simpa using aux_2 hj hi hij.symm h₂' h₁' h₃' hkj (by simpa)
+    simpa using aux_2 hj hi hij.symm h₂' h₁' h₃' hkj
       hjl_mem (by simpa only [neg_neg]) (by simpa only [neg_neg])
   have aux₃ : P.chainBotCoeff i m = 0 ∨ P.chainBotCoeff i m = 1 := by
     have := P.chainBotCoeff_if_one_zero him_mem

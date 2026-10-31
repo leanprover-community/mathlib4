@@ -1140,6 +1140,7 @@ lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
 
 set_option linter.overlappingInstances false in
 -- The use case in mind for this is when `K = ℝ`, and `R = ℝ` or `ℂ`
+omit [IsDomain K] in
 lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [LinearOrder K]
     [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
     (hg : Tendsto (fun n : ℕ ↦ n • g n) atTop (𝓝 t)) :

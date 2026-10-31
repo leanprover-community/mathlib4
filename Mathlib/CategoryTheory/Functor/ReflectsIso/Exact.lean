@@ -73,7 +73,7 @@ end
 
 section
 
-variable [Abelian C] [∀ i, Abelian (D i)] [CategoryWithHomology C]
+variable [Abelian C] [∀ i, Abelian (D i)]
   [∀ i, PreservesFiniteLimits (F i)] [∀ i, PreservesFiniteColimits (F i)]
 
 lemma shortExact_iff (S : ShortComplex C) :

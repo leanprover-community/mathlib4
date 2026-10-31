@@ -73,10 +73,9 @@ private theorem normalizedTraceAux_eq_of_finiteDimensional [FiniteDimensional F 
     ← Module.finrank_mul_finrank F F⟮a⟯ K, nsmul_eq_mul, Nat.cast_mul, mul_comm,
     mul_div_mul_right _ _ h, div_eq_mul_inv, mul_comm, ← smul_eq_mul, normalizedTraceAux_def]
 
-variable [Algebra.IsIntegral F K]
-
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
+variable [Algebra.IsIntegral F K] in
 /-- The normalized trace map from an algebraic extension `K` to the base field `F`. -/
 noncomputable def normalizedTrace : K →ₗ[F] F where
   toFun := normalizedTraceAux F K
@@ -111,11 +110,13 @@ noncomputable def normalizedTrace : K →ₗ[F] F where
       normalizedTraceAux_eq_of_finiteDimensional F ma',
       smul_comm, ← map_smul _ m, SetLike.mk_smul_mk]
 
+variable [Algebra.IsIntegral F K] in
 theorem normalizedTrace_def (a : K) : normalizedTrace F K a =
     (Module.finrank F F⟮a⟯ : F)⁻¹ • trace F F⟮a⟯ (AdjoinSimple.gen F a) :=
   rfl
 
 variable {K} in
+variable [Algebra.IsIntegral F K] in
 /-- Normalized trace defined purely in terms of the degree and the next coefficient of the minimal
 polynomial. Could be an alternative definition but it is harder to work with linearity. -/
 theorem normalizedTrace_minpoly (a : K) :
@@ -142,6 +143,8 @@ theorem normalizedTrace_eq_of_finiteDimensional [FiniteDimensional F K] :
     normalizedTrace F K = (Module.finrank F K : F)⁻¹ • trace F K :=
   LinearMap.ext <| normalizedTrace_eq_of_finiteDimensional_apply F
 
+variable [Algebra.IsIntegral F K]
+
 /-- The normalized trace transfers via (injective) maps. -/
 @[simp]
 theorem normalizedTrace_map {E : Type*} [Field E] [Algebra F E] [Algebra.IsIntegral F E]
@@ -157,19 +160,22 @@ section IsScalarTower
 
 variable (F E K : Type*) [Field F] [Field E] [Field K]
 variable [Algebra F E] [Algebra E K] [Algebra F K] [IsScalarTower F E K]
-variable [Algebra.IsIntegral F E] [Algebra.IsIntegral F K]
+variable [Algebra.IsIntegral F K]
 variable [CharZero F]
 
+variable [Algebra.IsIntegral F E] in
 @[simp]
 theorem normalizedTrace_algebraMap_apply (a : E) :
     normalizedTrace F K (algebraMap E K a) = normalizedTrace F E a :=
   normalizedTrace_map F K (IsScalarTower.toAlgHom F E K) a
 
+variable [Algebra.IsIntegral F E] in
 @[simp]
 theorem normalizedTrace_algebraMap :
     normalizedTrace F K ∘ₗ Algebra.linearMap E K = normalizedTrace F E :=
   LinearMap.ext <| normalizedTrace_algebraMap_apply F E K
 
+variable [Algebra.IsIntegral F E] in
 omit [Algebra.IsIntegral F E] in
 /-- If all the coefficients of `minpoly E a` are in `F`, then the normalized trace of `a` from `K`
 to `E` equals the normalized trace of `a` from `K` to `F`. -/
@@ -201,6 +207,8 @@ private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra
   rw [h_finrank_eq, h_trace_eq, ← normalizedTrace_eq_of_finiteDimensional_apply F,
     ← normalizedTrace_intermediateField F K a']
   congr
+
+variable [Algebra.IsIntegral F E]
 
 /-- For a tower `K / E / F` of algebraic extensions, the normalized trace from `K` to `E` composed
 with the normalized trace from `E` to `F` equals the normalized trace from `K` to `F`. -/

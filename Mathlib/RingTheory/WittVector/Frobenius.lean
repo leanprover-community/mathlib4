@@ -50,7 +50,7 @@ and bundle it into `WittVector.frobenius`.
 
 namespace WittVector
 
-variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
+variable {p : ℕ} {R : Type*} [CommRing R]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -60,6 +60,7 @@ open MvPolynomial Finset
 
 variable (p)
 
+variable [hp : Fact p.Prime] in
 /-- The rational polynomials that give the coefficients of `frobenius x`,
 in terms of the coefficients of `x`.
 These polynomials actually have integral coefficients,
@@ -67,6 +68,7 @@ see `frobeniusPoly` and `map_frobeniusPoly`. -/
 def frobeniusPolyRat (n : ℕ) : MvPolynomial ℕ ℚ :=
   bind₁ (wittPolynomial p ℚ ∘ fun n => n + 1) (xInTermsOfW p ℚ n)
 
+variable [hp : Fact p.Prime] in
 theorem bind₁_frobeniusPolyRat_wittPolynomial (n : ℕ) :
     bind₁ (frobeniusPolyRat p) (wittPolynomial p ℚ n) = wittPolynomial p ℚ (n + 1) := by
   delta frobeniusPolyRat
@@ -86,6 +88,7 @@ noncomputable def frobeniusPolyAux : ℕ → MvPolynomial ℕ ℤ
         C (((p ^ (n - i)).choose (j + 1) / (p ^ (n - i - v p (j + 1)))
           * ↑p ^ (j - v p (j + 1)) : ℕ) : ℤ)
 
+variable [hp : Fact p.Prime] in
 omit hp in
 theorem frobeniusPolyAux_eq (n : ℕ) :
     frobeniusPolyAux p n =
@@ -110,12 +113,14 @@ lemma map_frobeniusPoly (n : ℕ) :
 This lemma has a rather long proof, but it mostly boils down to applying induction,
 and then using the following two key facts at the right point.
 -/
+variable [hp : Fact p.Prime] in
 /-- A key divisibility fact for the proof of `WittVector.map_frobeniusPoly`. -/
 theorem map_frobeniusPoly.key₁ (n j : ℕ) (hj : j < p ^ n) :
     p ^ (n - v p (j + 1)) ∣ (p ^ n).choose (j + 1) := by
   apply pow_dvd_of_le_emultiplicity
   rw [hp.out.emultiplicity_choose_prime_pow hj j.succ_ne_zero]
 
+variable [hp : Fact p.Prime] in
 /-- A key numerical identity needed for the proof of `WittVector.map_frobeniusPoly`. -/
 theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n - i)) :
     j - v p (j + 1) + n = i + j + (n - i - v p (j + 1)) := by
@@ -128,6 +133,7 @@ theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n -
   exact ⟨(Nat.pow_le_pow_iff_right hp.1.one_lt).1 (hle.trans hj),
      Nat.le_of_lt_succ ((m.lt_pow_self hp.1.one_lt).trans_le hle)⟩
 
+variable [hp : Fact p.Prime] in
 theorem map_frobeniusPoly (n : ℕ) :
     MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n := by
   rw [frobeniusPoly, map_add, map_mul, map_pow, map_C, map_X, eq_intCast, Int.cast_natCast,
@@ -176,6 +182,8 @@ theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
   rw [frobeniusPoly, map_add, map_pow, map_mul, map_X, map_C]
   simp only [Int.cast_natCast, add_zero, eq_intCast, ZMod.natCast_self, zero_mul, C_0]
+
+variable [hp : Fact p.Prime]
 
 @[simp]
 theorem bind₁_frobeniusPoly_wittPolynomial (n : ℕ) :
@@ -244,7 +252,7 @@ theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
 variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
-instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
+instance frobenius_isPoly : IsPoly p fun R _Rcr => frobenius (p := p) (R := R) :=
   frobeniusFun_isPoly _
 
 section CharP

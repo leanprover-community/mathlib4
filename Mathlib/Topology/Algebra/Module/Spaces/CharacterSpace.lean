@@ -52,8 +52,12 @@ namespace CharacterSpace
 
 section NonUnitalNonAssocSemiring
 
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
   [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A]
+
+section
+
+variable [ContinuousConstSMul 𝕜 𝕜]
 
 @[macro_inline]
 noncomputable instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
@@ -103,7 +107,10 @@ noncomputable def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[�
 theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgHom φ) = φ :=
   rfl
 
+end
+
 set_option backward.isDefEq.respectTransparency false in
+variable [ContinuousConstSMul 𝕜 𝕜] in
 instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
   ⟨fun φ => φ.prop.1 <|
     ContinuousLinearMap.ext fun x => by
@@ -111,6 +118,7 @@ instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
 
 variable (𝕜 A)
 
+variable [ContinuousConstSMul 𝕜 𝕜] in
 theorem union_zero :
     characterSpace 𝕜 A ∪ {0} = {φ : WeakDual 𝕜 A | ∀ x y : A, φ (x * y) = φ x * φ y} :=
   le_antisymm (by
@@ -133,8 +141,9 @@ end NonUnitalNonAssocSemiring
 section Unital
 
 variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-  [ContinuousConstSMul 𝕜 𝕜] [TopologicalSpace A] [Semiring A] [Algebra 𝕜 A]
+  [TopologicalSpace A] [Semiring A] [Algebra 𝕜 A]
 
+variable [ContinuousConstSMul 𝕜 𝕜] in
 /-- In a unital algebra, elements of the character space are algebra homomorphisms. -/
 instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   haveI map_one' : ∀ φ : characterSpace 𝕜 A, φ 1 = 1 := fun φ => by
@@ -149,6 +158,7 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_self, RingHom.id_apply]
       rw [map_smul, smul_eq_mul, map_one' φ, mul_one] }
 
+variable [ContinuousConstSMul 𝕜 𝕜] in
 /-- An element of the character space of a unital algebra, as an algebra homomorphism. -/
 @[simps]
 noncomputable def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
@@ -156,6 +166,7 @@ noncomputable def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
     map_one' := map_one φ
     commutes' := AlgHomClass.commutes φ }
 
+variable [ContinuousConstSMul 𝕜 𝕜] in
 theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
     characterSpace 𝕜 A = {φ : WeakDual 𝕜 A | φ 1 = 1 ∧ ∀ x y : A, φ (x * y) = φ x * φ y} := by
   ext φ
