@@ -10,7 +10,7 @@ Usage:
 
 """
 
-from typing import Dict, Mapping, Optional, Union, Tuple, List
+from typing import Dict, Optional, Union, Tuple, List
 from dataclasses import dataclass
 import yaml
 import json
@@ -43,7 +43,8 @@ def print_list(fn: str, pairs: List[Tuple[str, str]]) -> None:
             out.write(f"{id}\n{val.strip()}\n\n")
 
 
-# keep in sync with make_site.py in the leanprover-community.github.io repo
+# The website accepts legacy `links` while its Mathlib documentation cache updates.
+# Otherwise keep in sync with HundredTheorem in the website's hundred_theorems.py.
 @dataclass
 class HundredTheorem:
     # this theorem's number in Freek's 100 theorems list
@@ -61,7 +62,6 @@ class HundredTheorem:
     authors: Optional[str] = None
     # Date of the formalization, in the form `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (optional)
     date: Optional[str] = None
-    links: Optional[Mapping[str, str]] = None
     note: Optional[str] = None
 
 
@@ -119,6 +119,14 @@ for index, entry in hundred.items():
         _thm = HundredTheorem(index, **entry)
     except TypeError as e:
         print(f"error: entry for theorem {index} is invalid: {e}")
+        errors += 1
+        continue
+    if not (_thm.decl or _thm.decls) and any((_thm.authors, _thm.date, _thm.note)):
+        print(
+            f"error: theorem {index} has proof metadata but no Mathlib declaration; "
+            "record external formalizations in the community website's data/100-external.yaml",
+            file=sys.stderr,
+        )
         errors += 1
     # Also verify that the |decl| and |decls| fields are not *both* provided.
     if _thm.decl and _thm.decls:
