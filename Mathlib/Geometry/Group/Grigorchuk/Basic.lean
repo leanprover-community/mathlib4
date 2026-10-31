@@ -31,6 +31,7 @@ and therefore `bcd = 1`. They also satisfy the torsion relations
   `[G : St_G(n)] ≤ 2^(2^n - 1)`.
 * `Grigorchuk.psi` is the restriction homomorphism `st 1 →* G × G`. Both
   projections of its image onto `G` are surjective.
+* `G` is infinite.
 
 ## References
 
@@ -1047,5 +1048,16 @@ lemma psi_snd_surjective : Function.Surjective ((MonoidHom.snd G G).comp psi) :=
     change (psi _).2 = x
     rw [psi_c]
     exact Subtype.ext hx.symm
+
+/-- The Grigorchuk group is infinite: a surjection `st 1 → G` cannot exist if
+`[G : st 1] = 2` and `G` is finite. -/
+instance : Infinite G :=
+  ⟨fun _ => by
+    have hcard : Nat.card G = Nat.card (st 1) * 2 := by
+      rw [← st_one_index, Subgroup.card_mul_index]
+    have hle : Nat.card G ≤ Nat.card (st 1) :=
+      Nat.card_le_card_of_surjective _ psi_fst_surjective
+    have : 0 < Nat.card (st 1) := Nat.card_pos
+    omega⟩
 
 end Grigorchuk
