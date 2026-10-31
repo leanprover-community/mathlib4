@@ -58,7 +58,7 @@ open Real
 
 /-- A continuous surjection from the Cantor space to the Hilbert cube. -/
 noncomputable def cantorToHilbert (x : ℕ → Bool) : ℕ → unitInterval :=
-  Pi.map (fun _ b ↦ fromBinary b) (cantorSpaceHomeomorphNatToCantorSpace x)
+  Function.map (fun _ b ↦ fromBinary b) (cantorSpaceHomeomorphNatToCantorSpace x)
 
 theorem cantorToHilbert_continuous : Continuous cantorToHilbert :=
   continuous_pi (fun _ ↦ fromBinary_continuous.comp (by fun_prop))

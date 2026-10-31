@@ -410,10 +410,10 @@ theorem image_mem_nhdsWithin {x : H} {s : Set H} (hs : s ∈ 𝓝 x) : I '' s �
   I.map_nhds_eq x ▸ image_mem_map hs
 
 theorem symm_map_nhdsWithin_image {x : H} {s : Set H} : map I.symm (𝓝[I '' s] I x) = 𝓝[s] x := by
-  rw [← I.map_nhdsWithin_eq, map_map, I.symm_comp_self, map_id]
+  rw [← I.map_nhdsWithin_eq, map_map, I.symm_comp_self, Filter.map_id]
 
 theorem symm_map_nhdsWithin_range (x : H) : map I.symm (𝓝[range I] I x) = 𝓝 x := by
-  rw [← I.map_nhds_eq, map_map, I.symm_comp_self, map_id]
+  rw [← I.map_nhds_eq, map_map, I.symm_comp_self, Filter.map_id]
 
 theorem uniqueDiffOn_preimage {s : Set H} (hs : IsOpen s) :
     UniqueDiffOn 𝕜 (I.symm ⁻¹' s ∩ range I) := by
