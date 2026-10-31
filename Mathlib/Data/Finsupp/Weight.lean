@@ -275,9 +275,6 @@ theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ 
   simp [mapDomain, sum]
   dsimp [degree_apply]
 
-@[deprecated (since := "2026-04-27")]
-alias degree_mapDomain_eq_of_subsingletonAddUnits := degree_mapDomain
-
 set_option backward.isDefEq.respectTransparency false in
 theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddCommMonoid M]
     [PartialOrder M] [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :

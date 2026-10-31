@@ -403,10 +403,6 @@ end lift
 
 end GaloisInsertion
 
-namespace GaloisCoinsertion
-
-end GaloisCoinsertion
-
 /-- `sSup` and `Iic` form a Galois connection. -/
 theorem gc_sSup_Iic [CompleteSemilatticeSup α] :
     GaloisConnection (sSup : Set α → α) (Iic : α → Set α) :=

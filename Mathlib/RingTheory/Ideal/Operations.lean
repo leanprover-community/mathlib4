@@ -17,8 +17,6 @@ public import Mathlib.Tactic.Order
 # More operations on modules and ideals
 -/
 
-set_option linter.style.longFile 1700
-
 @[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
@@ -1299,9 +1297,6 @@ theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
     span {a} ∣ span ({b} : Set R) ↔ a ∣ b :=
   ⟨fun h => span_singleton_le_span_singleton.mp (le_of_dvd h),
    fun ⟨c, hc⟩ => ⟨span {c}, by rw [hc, span_singleton_mul_span_singleton]⟩⟩
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
 
 /-- Every ideal has multiplicity `0` in `⊤`, the unit ideal. -/
 @[simp]

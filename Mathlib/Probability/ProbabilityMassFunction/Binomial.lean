@@ -3,7 +3,7 @@ Copyright (c) 2023 Joachim Breitner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Probability.Distributions.Binomial
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
@@ -21,7 +21,9 @@ This file defines the probability mass function of the binomial distribution.
 * `binomial_one_eq_bernoulli`: For `n = 1`, it is equal to `PMF.bernoulli`.
 -/
 
-@[expose] public section
+deprecated_module (since := "2026-05-31")
+
+public section
 
 namespace PMF
 
