@@ -100,8 +100,8 @@ def maximalIdeal : HeightOneSpectrum (𝓞 K) where
     zero_mem' := by simp
     smul_mem' := by
       simpa [Set.mem_ofPred_eq] using
-        (fun (c x : 𝓞 K) hx ↦ mul_lt_one_of_nonneg_of_lt_one_right
-        (RingOfIntegers.absoluteValue_le_one hfna c) (apply_nonneg f ↑x) hx)
+        (fun (c x : 𝓞 K) hx ↦ (mul_le_of_le_one_left (apply_nonneg f ↑x)
+        (RingOfIntegers.absoluteValue_le_one hfna c)).trans_lt hx)
   }
   isPrime := by
       rw [Ideal.isPrime_iff]
@@ -138,7 +138,7 @@ theorem exists_heightOneSpectrum_eq_adicAbv (hf_nontriv : f.IsNontrivial) :
   have hb : 1 < b := by
     apply_mod_cast (one_lt_inv₀ hπ_pos).2
     change π ∈ P.asIdeal
-    simp [← intValuation_lt_one_iff_mem, hπ, ← WithZero.exp_zero, -WithZero.exp_neg]
+    simp [← intValuation_lt_one_iff_mem, hπ, ← WithZero.exp_zero]
   have f_eq_one_of_adicAbv_eq_one {x : K} (hx : P.adicAbv hb x = 1) : f x = 1 := by
     obtain ⟨y, z, rfl, hz⟩ := exists_num_denom_adicAbv_eq_one hb (le_of_eq hx)
     have h {x : 𝓞 K} (hx : P.adicAbv hb (x : K) = 1) : f x = 1 := by
@@ -158,8 +158,8 @@ theorem exists_heightOneSpectrum_eq_adicAbv (hf_nontriv : f.IsNontrivial) :
     apply eq_inv_of_mul_eq_one_left
     rw [← map_zpow₀, ← map_mul]
     apply f_eq_one_of_adicAbv_eq_one
-    have : (WithZero.unzero hπv_ne).toAdd = -1 := by
-      simp [valuation_of_algebraMap, hπ, WithZero.toAdd_unzero_eq_log]
+    have : (P.valuation K π).log = -1 := by
+      simp [valuation_of_algebraMap, hπ]
     simp [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, coe_b,
       WithZeroMulInt.toNNReal_neg_apply _ hπv_ne, WithZeroMulInt.toNNReal_neg_apply _ hxv_ne, this,
       zpow_ne_zero _ hπ_pos.ne']
