@@ -277,7 +277,7 @@ theorem closure_empty : closure (∅ : Set X) = ∅ :=
 
 @[simp]
 theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
-  ⟨subset_eq_empty subset_closure, fun h => h.symm ▸ closure_empty⟩
+  ⟨by gcongr; exact subset_closure, fun h => h.symm ▸ closure_empty⟩
 
 @[simp]
 theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
