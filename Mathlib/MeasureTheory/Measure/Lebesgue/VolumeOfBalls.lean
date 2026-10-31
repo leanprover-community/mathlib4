@@ -391,21 +391,29 @@ namespace EuclideanSpace
 
 open Real MeasureTheory MeasureTheory.Measure ENNReal Metric
 
+/-- **Area of a Circle**:
+The area of an (open) disc with radius `r` is `π * r ^ 2`. -/
 @[simp]
 lemma volume_ball_fin_two (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
     volume (ball x r) = .ofReal r ^ 2 * .ofReal π := by
-  simp [InnerProductSpace.volume_ball_of_dim_even (k := 1) (by simp) x]
+  simp [InnerProductSpace.volume_ball_of_dim_even (k := 1)]
 
+/-- **Area of a Circle**:
+The area of a (closed) disc with radius `r` is `π * r ^ 2`. -/
 @[simp]
 lemma volume_closedBall_fin_two (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
     volume (closedBall x r) = .ofReal r ^ 2 * .ofReal π := by
   rw [addHaar_closedBall_eq_addHaar_ball, volume_ball_fin_two x r]
 
+/-- **Volume of a Sphere**:
+The volume of an (open) sphere with radius `r` is `4 / 3 * π * r ^ 3`. -/
 @[simp]
 lemma volume_ball_fin_three (x : EuclideanSpace ℝ (Fin 3)) (r : ℝ) :
     volume (ball x r) = .ofReal r ^ 3 * .ofReal (π * 4 / 3) := by
-  norm_num [InnerProductSpace.volume_ball_of_dim_odd (k := 1) (by simp) x]
+  norm_num [InnerProductSpace.volume_ball_of_dim_odd (k := 1)]
 
+/-- **Volume of a Sphere**:
+The volume of a (closed) sphere with radius `r` is `4 / 3 * π * r ^ 3`. -/
 @[simp]
 lemma volume_closedBall_fin_three (x : EuclideanSpace ℝ (Fin 3)) (r : ℝ) :
     volume (closedBall x r) = .ofReal r ^ 3 * .ofReal (π * 4 / 3) := by
