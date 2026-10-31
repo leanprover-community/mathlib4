@@ -154,7 +154,7 @@ instance toEmbeddingDirectedSystem (C : ElementaryChain L ι) :
 variable [IsDirectedOrder ι]
 
 /-- The abstract union of an elementary chain, constructed without an ambient structure. -/
-abbrev Limit (C : ElementaryChain L ι) :=
+abbrev Limit (C : ElementaryChain L ι) : Type _ :=
   L.DirectLimit C.carrier (fun i j h ↦ (C.map i j h).toEmbedding)
 
 variable [Nonempty ι]
