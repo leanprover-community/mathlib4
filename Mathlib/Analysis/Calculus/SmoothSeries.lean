@@ -221,7 +221,10 @@ theorem iteratedFDeriv_tsum_apply (hf : ∀ i, ContDiff 𝕜 N (f i))
 
 /-- Consider a series of functions `∑' i, f i x`. Assume that each individual function `f i` is of
 class `C^N`, and moreover there is a uniform summable upper bound on the `k`-th derivative
-for each `k ≤ N`. Then the series is also `C^N`. -/
+for each `k ≤ N`. Then the series is also `C^N`.
+
+See also `SummableLocallyUniformlyOn.contDiffOn_tsum` for a variant of this result for functions
+with one-dimensional domains and which demands locally uniform convergence instead. -/
 theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k : ℕ∞) ≤ N → Summable (v k))
     (h'f : ∀ (k : ℕ) (i : α) (x : E), k ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) :
     ContDiff 𝕜 N fun x => ∑' i, f i x := by

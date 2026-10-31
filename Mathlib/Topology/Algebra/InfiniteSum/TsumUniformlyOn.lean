@@ -65,18 +65,19 @@ lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [Local
 
 end UniformlyOn
 
-variable {ι 𝕜 F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {s : Set 𝕜}
+section Differentiable
 
-/-- The `derivWithin` of a sum whose derivative is absolutely and uniformly convergent sum on an
-open set `s` is the sum of the derivatives of sequence of functions on the open set `s` -/
-theorem derivWithin_tsum {f : ι → 𝕜 → F} (hs : IsOpen s) {x : 𝕜} (hx : x ∈ s)
+variable {ι F E : Type*} [NontriviallyNormedField E] [IsRCLikeNormedField E]
+    [NormedAddCommGroup F] [NormedSpace E F] {s : Set E} {f : ι → E → F} {x : E}
+
+/-- If a sequence of functions `fₙ` is such that `∑ fₙ (z)` is summable for each `z` in an
+open set `s`, and `∑ (derivWithin fₙ s) (z)` is summable locally uniformly on `s`, and each `fₙ` is
+differentiable, then `∑ fₙ` is differentiable at each point in `s`. -/
+theorem SummableLocallyUniformlyOn.hasDerivAt_tsum (hs : IsOpen s) (hx : x ∈ s)
     (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
-    (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (fun z ↦ f n z) s)) s)
-    (hf2 : ∀ n r, r ∈ s → DifferentiableAt 𝕜 (f n) r) :
-    derivWithin (fun z ↦ ∑' n, f n z) s x = ∑' n, derivWithin (f n) s x := by
-  apply HasDerivWithinAt.derivWithin ?_ (hs.uniqueDiffWithinAt hx)
-  apply HasDerivAt.hasDerivWithinAt
+    (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (f n) s)) s)
+    (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
+    HasDerivAt (fun z => ∑' (n : ι), f n z) (∑' (n : ι), derivWithin (f n) s x) x := by
   apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ (fun y hy ↦ (hf y hy).hasSum) hx
     (f' := fun n : Finset ι ↦ fun a ↦ ∑ i ∈ n, derivWithin (fun z ↦ f i z) s a)
   · obtain ⟨g, hg⟩ := h
@@ -87,22 +88,44 @@ theorem derivWithin_tsum {f : ι → 𝕜 → F} (hs : IsOpen s) {x : 𝕜} (hx 
       (hs.mem_nhds hr))
 
 /-- If a sequence of functions `fₙ` is such that `∑ fₙ (z)` is summable for each `z` in an
+open set `s`, and `∑ (derivWithin fₙ s) (z)` is summable locally uniformly on `s`, and each `fₙ` is
+differentiable, then `∑ fₙ` is differentiable on `s`. -/
+theorem SummableLocallyUniformlyOn.differentiableOn_tsum (hs : IsOpen s)
+    (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
+    (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (f n) s)) s)
+    (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
+    DifferentiableOn E (fun z => ∑' (n : ι), f n z) s :=
+  fun _ hx => (h.hasDerivAt_tsum hs hx hf hf2).hasDerivWithinAt.differentiableWithinAt
+
+/-- The `derivWithin` of a sum whose derivative is summable locally uniformly on an open set `s`
+is the sum of the derivatives of sequence of functions on the open set `s` -/
+theorem SummableLocallyUniformlyOn.derivWithin_tsum (hs : IsOpen s) (hx : x ∈ s)
+    (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
+    (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (f n) s)) s)
+    (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
+    derivWithin (fun z ↦ ∑' n, f n z) s x = ∑' n, derivWithin (f n) s x :=
+  (h.hasDerivAt_tsum hs hx hf hf2).hasDerivWithinAt.derivWithin (hs.uniqueDiffWithinAt hx)
+
+@[deprecated (since := "2026-10-30")]
+alias derivWithin_tsum := SummableLocallyUniformlyOn.derivWithin_tsum
+
+/-- If a sequence of functions `fₙ` is such that `∑ fₙ (z)` is summable for each `z` in an
 open set `s`, and for each `1 ≤ k ≤ m`, the series of `k`-th iterated derivatives
-`∑ (iteratedDerivWithin k fₙ s) (z)`
-is summable locally uniformly on `s`, and each `fₙ` is `m`-times differentiable, then the `m`-th
-iterated derivative of the sum is the sum of the `m`-th iterated derivatives. -/
-theorem iteratedDerivWithin_tsum {f : ι → 𝕜 → F} (m : ℕ) (hs : IsOpen s)
-    {x : 𝕜} (hx : x ∈ s) (hsum : ∀ t ∈ s, Summable (fun n : ι ↦ f n t))
+`∑ (iteratedDerivWithin k fₙ s) (z)` is summable locally uniformly on `s`, and each `fₙ` is
+`m`-times differentiable, then the `m`-th iterated derivative of the sum is the sum of the
+`m`-th iterated derivatives. -/
+theorem SummableLocallyUniformlyOn.iteratedDerivWithin_tsum (m : ℕ) (hs : IsOpen s) (hx : x ∈ s)
+    (hsum : ∀ t ∈ s, Summable (fun n : ι ↦ f n t))
     (h : ∀ k, 1 ≤ k → k ≤ m → SummableLocallyUniformlyOn
-      (fun n ↦ (iteratedDerivWithin k (fun z ↦ f n z) s)) s)
-    (hf2 : ∀ n k r, k ≤ m → r ∈ s →
-      DifferentiableAt 𝕜 (iteratedDerivWithin k (fun z ↦ f n z) s) r) :
+      (fun n ↦ (iteratedDerivWithin k (f n) s)) s)
+    (hf2 : ∀ n k r, k < m → r ∈ s → DifferentiableAt E (iteratedDerivWithin k (f n) s) r) :
     iteratedDerivWithin m (fun z ↦ ∑' n, f n z) s x = ∑' n, iteratedDerivWithin m (f n) s x := by
   induction m generalizing x with
   | zero => simp
   | succ m hm =>
     simp_rw [iteratedDerivWithin_succ]
-    rw [← derivWithin_tsum hs hx _ _ (fun n r hr ↦ hf2 n m r (by lia) hr)]
+    rw [← SummableLocallyUniformlyOn.derivWithin_tsum hs hx _ _
+      (fun n r hr ↦ hf2 n m r (by lia) hr)]
     · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by lia))
           (fun k r e hr he ↦ hf2 k r e (by lia) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by lia))
           (fun k r e hr he ↦ hf2 k r e (by lia) he))
@@ -112,3 +135,38 @@ theorem iteratedDerivWithin_tsum {f : ι → 𝕜 → F} (m : ℕ) (hs : IsOpen 
       · exact ((h m (by lia) (by lia)).summable hr).congr (fun _ ↦ by simp)
     · exact SummableLocallyUniformlyOn_congr
         (fun _ _ ht ↦ by rw [iteratedDerivWithin_succ]) (h (m + 1) (by lia) (by lia))
+
+@[deprecated (since := "2026-10-30")]
+alias iteratedDerivWithin_tsum := SummableLocallyUniformlyOn.iteratedDerivWithin_tsum
+
+/-- If a sequence of functions `fₙ` is such that for each `0 ≤ k ≤ N`, the series of `k`-th
+iterated derivatives `∑ (iteratedDerivWithin k fₙ s) (z)` is summable locally uniformly on `s`, and
+each `fₙ` is in the class of `C^N`, then the series is also in `C^N`. -/
+theorem SummableLocallyUniformlyOn.contDiffOn_tsum {N : ℕ∞} (hs : IsOpen s)
+    (hf : ∀ (n : ι), ContDiffOn E N (f n) s)
+    (h : ∀ (k : ℕ), k ≤ N → SummableLocallyUniformlyOn
+      (fun n ↦ (iteratedDerivWithin k (f n) s)) s) :
+    ContDiffOn E N (fun (x : E) => ∑' (n : ι), f n x) s := by
+  simp_all only [contDiffOn_iff_continuousOn_differentiableOn_deriv hs.uniqueDiffOn]
+  have q (r : E) (hr : r ∈ s) : s ∈ 𝓝 r := hs.mem_nhds hr
+  have hsum : ∀ t ∈ s, Summable fun (n : ι) => f n t := fun t ht => (h 0 zero_le).summable ht
+  refine ⟨fun m hm => ?_, fun m hm => ?_⟩
+  · refine ((h m hm).continuousOn_tsum (fun i => (hf i).1 m hm)).congr (fun x hx => ?_)
+    · refine SummableLocallyUniformlyOn.iteratedDerivWithin_tsum m hs hx hsum (fun k _ hk => ?_)
+        (fun n k r hk hr => ?_)
+      · exact h k (LE.le.trans (mod_cast hk) hm)
+      · exact ((hf n).2 k (lt_of_lt_of_le (mod_cast hk) hm)).differentiableAt (q r hr)
+  · have h'm : ((m + 1 : ℕ) : ℕ∞) ≤ N := by
+      simpa only [ENat.natCast_add, ENat.natCast_one] using Order.add_one_le_of_lt hm
+    refine DifferentiableOn.congr (f := fun x => ∑' n, iteratedDerivWithin m (f n) s x) ?_
+      (fun x hx => ?_)
+    · refine SummableLocallyUniformlyOn.differentiableOn_tsum hs (fun y hy =>
+        (h m hm.le).summable hy) ?_ (fun n r hr => ((hf n).2 m hm).differentiableAt (q r hr))
+      refine SummableLocallyUniformlyOn_congr (fun n x hx => ?_) (h (m + 1) h'm)
+      rw [← iteratedDerivWithin_succ]
+    · refine SummableLocallyUniformlyOn.iteratedDerivWithin_tsum m hs hx hsum (fun k _ hk => ?_)
+        (fun n k r hk hr => ?_)
+      · exact h k (le_trans (mod_cast hk) hm.le)
+      · exact ((hf n).2 k (lt_trans (mod_cast hk) hm)).differentiableAt (q r hr)
+
+end Differentiable
