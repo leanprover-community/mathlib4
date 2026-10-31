@@ -29,7 +29,6 @@ namespace HasCardinalLT
 
 variable (X : Type u) (κ : Cardinal.{u})
 
-set_option backward.defeqAttrib.useBackward true in
 variable {X κ} in
 lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
     IsCardinalPresentable X κ where

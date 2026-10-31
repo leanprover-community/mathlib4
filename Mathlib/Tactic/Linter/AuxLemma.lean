@@ -6,10 +6,10 @@ Authors: Kim Morrison
 module
 
 public meta import Lean.Elab.Command
+public meta import Lean.Message
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public meta import Lean.Message
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
