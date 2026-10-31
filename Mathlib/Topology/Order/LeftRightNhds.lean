@@ -189,6 +189,7 @@ alias countable_setOf_isolated_right_within := countable_setOfPred_isolated_righ
 @[deprecated (since := "2026-07-09")]
 alias countable_setOf_isolated_left_within := countable_setOfPred_isolated_left_within
 
+@[to_dual]
 theorem exists_countable_subset_mem_closure_inter_Ici [SecondCountableTopology α] (s : Set α) :
     ∃ d, d ⊆ s ∧ d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Ici x) := by
   obtain ⟨d, hdc, hd⟩ := exists_countable_dense s
@@ -201,11 +202,6 @@ theorem exists_countable_subset_mem_closure_inter_Ici [SecondCountableTopology �
   · obtain ⟨z, hzd, hz⟩ := hd.exists_mem_open
       ((hu.inter isOpen_Ioi).preimage continuous_subtype_val) ⟨⟨y, hys⟩, hyu, hyx⟩
     exact ⟨z, hz.1, .inl ⟨z, hzd, rfl⟩, hz.2.le⟩
-
-@[to_dual existing]
-theorem exists_countable_subset_mem_closure_inter_Iic [SecondCountableTopology α] (s : Set α) :
-    ∃ d, d ⊆ s ∧ d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Iic x) :=
-  exists_countable_subset_mem_closure_inter_Ici (α := αᵒᵈ) s
 
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
