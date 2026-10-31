@@ -286,7 +286,6 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
 
 open Multiset
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
 value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
 maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
@@ -340,7 +339,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
       obtain ⟨y, hyx, hy_max⟩ : ∃ y : L, y ∈ s ∧ ∀ z : L, z ∈ s → f z ≤ f y :=
         exists_max_image f hs_ne
       have : (map f t).prod ≤ f y ^ (p.natDegree - m) := by
-        set g : L → NNReal := fun x ↦ ⟨f x, apply_nonneg f x⟩
+        set g : L → NNReal := fun x ↦ .mk (f x) (apply_nonneg f x)
         have h_card : p.natDegree - m = card (t.map g) := by rw [card_map, ht_card, ← hps]
         have hx_le : ∀ x : NNReal, x ∈ map g t → x ≤ g y := by
           intro r hr
