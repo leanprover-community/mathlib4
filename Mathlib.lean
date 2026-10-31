@@ -2030,6 +2030,7 @@ public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.Convex.GaugeRescale
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.Analysis.Convex.Independent
+public import Mathlib.Analysis.Convex.IndependentBetween
 public import Mathlib.Analysis.Convex.Integral
 public import Mathlib.Analysis.Convex.Intrinsic
 public import Mathlib.Analysis.Convex.Jensen
@@ -4828,6 +4829,7 @@ public import Mathlib.Geometry.Euclidean.Basic
 public import Mathlib.Geometry.Euclidean.BritishFlag
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Congruence
+public import Mathlib.Geometry.Euclidean.ConvexIndependent
 public import Mathlib.Geometry.Euclidean.Incenter
 public import Mathlib.Geometry.Euclidean.Incenter.Basic
 public import Mathlib.Geometry.Euclidean.Incenter.SouthPole

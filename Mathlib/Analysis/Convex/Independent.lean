@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Bhavik Mehta
+Authors: Yaël Dillies, Bhavik Mehta, David Iach
 -/
 module
 
@@ -167,6 +167,21 @@ end OrderedSemiring
 section LinearOrderedField
 
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+
+/-- A point of a convex independent family lies on a segment between two family members
+if and only if its index is one of their indices. -/
+@[simp]
+theorem ConvexIndependent.mem_segment_iff {p : ι → E} (hs : ConvexIndependent 𝕜 p)
+    {i j k : ι} : p k ∈ segment 𝕜 (p i) (p j) ↔ k = i ∨ k = j := by
+  rw [← convexHull_pair, ← Set.image_pair, hs.mem_convexHull_iff]
+  rfl
+
+/-- A point of a convex independent set on a segment between two of its points is an endpoint. -/
+theorem ConvexIndependent.eq_or_eq_of_mem_segment (hs : ConvexIndependent 𝕜 ((↑) : s → E))
+    {a b p : E} (ha : a ∈ s) (hb : b ∈ s) (hp : p ∈ s)
+    (h : p ∈ segment 𝕜 a b) : p = a ∨ p = b := by
+  have h' := (hs.mem_segment_iff (i := ⟨a, ha⟩) (j := ⟨b, hb⟩) (k := ⟨p, hp⟩)).mp h
+  simpa only [Subtype.mk.injEq] using h'
 
 open scoped Classical in
 /-- To check convex independence, one only has to check finsets thanks to Carathéodory's theorem. -/
