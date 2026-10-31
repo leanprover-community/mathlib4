@@ -210,7 +210,6 @@ lemma orderAtInfty_slash_of_upperTriangular (f : ℍ → ℂ) (k : ℤ) (g : GL 
 If we assume `f` is periodic, and holomorphic on `ℍ ∪ ∞`, then its order at infinity is related
 to the order of vanishing of its cusp function.
 -/
-
 section Complex
 
 variable {h : ℝ} {f g : ℍ → ℂ}
