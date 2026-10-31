@@ -119,7 +119,7 @@ inductive Progress where
   | matched
   /-- The rewrite lemma has unified with something, and depends on a free variable that is now
   out of scope. We store a local context in which the rewrite makes sense. -/
-  | matchedOutOfScope (lctx : LocalContext)
+  | matchedOutOfScope (lctx : LocalContext) (linsts : LocalInstances)
 
 /-- The state used in `GRewriteM`. -/
 structure State where
@@ -262,7 +262,7 @@ partial def processGCongrHypothesis (goal : MVarId) (forward : Bool)
         let some val ← getExprMVarAssignment? mvarId | return false
         return (Lean.collectFVars {} val).fvarIds.all outerLCtx.contains
       unless validInOuterLCtx do
-        modify ({ · with progress := .matchedOutOfScope (← getLCtx) })
+        modify ({ · with progress := .matchedOutOfScope (← getLCtx) (← getLocalInstances) })
     return result
   else
     processGCongrHypothesisAux goal forward config
@@ -282,7 +282,7 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bo
   for (goal, isContra) in mainGoals do
     -- Any of the rewrites in this loop could make a match that is out of scope here.
     -- In that case we should stop rewriting, and the remaining goals should be closed `by rfl`.
-    unless (← get).progress matches .matchedOutOfScope _ do
+    unless (← get).progress matches .matchedOutOfScope _ _ do
       if ← processGCongrHypothesis goal (forward != isContra) config then
         anyProgress := true
         continue
@@ -420,7 +420,7 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
           { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
           |>.run {} |>.run then
         let lctx? := match progress with
-          | .matchedOutOfScope lctx => some lctx
+          | .matchedOutOfScope lctx linsts => some (lctx, linsts)
           | _ => none
         pure (lctx?, eNew, impProof, s.newGoals)
       else
@@ -431,12 +431,13 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
             in the target expression{indentExpr e}\n\n\
             Use the command `set_option trace.Meta.grewrite true` to inspect this."
     -- post-process the metavariables
-    postprocessAppMVars `grewrite goal newMVars binderInfos
-      (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
+    (lctx?.elim id (fun (lctx, insts) ↦ withLCtx lctx insts)) do
+      postprocessAppMVars `grewrite goal newMVars binderInfos
+        (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
     let newMVarIds ← (sideGoals ++ newMVars.map Expr.mvarId!).filterM (not <$> ·.isAssigned)
     let otherMVarIds ← getMVarsNoDelayed hrelIn
     let otherMVarIds := otherMVarIds.filter (!newMVarIds.contains ·)
     let newMVarIds := newMVarIds ++ otherMVarIds
-    pure { eNew, impProof, mvarIds := newMVarIds.toList, lctx? }
+    pure { eNew, impProof, mvarIds := newMVarIds.toList, lctx? := lctx?.map (·.1) }
 
 end Mathlib.Tactic.GRewrite
