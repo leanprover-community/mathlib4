@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
 
 import Mathlib.Data.Set.Function
+import Mathlib.Order.MinMax
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -676,6 +677,19 @@ lemma StrictMono.mul [PosMulStrictMono M₀] [MulPosStrictMono M₀] (hf : Stric
     StrictMono (f * g) := fun _ _ h ↦ mul_lt_mul'' (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 end PartialOrder
+
+section LinearOrder
+variable [LinearOrder M₀] [PosMulMono M₀] [MulPosMono M₀] {a b : M₀}
+
+lemma max_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
+    max a b ^ n = max (a ^ n) (b ^ n) :=
+  pow_left_monotoneOn.map_max ha hb
+
+lemma min_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
+    min a b ^ n = min (a ^ n) (b ^ n) :=
+  pow_left_monotoneOn.map_min ha hb
+
+end LinearOrder
 
 section LinearOrder
 variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀}

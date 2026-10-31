@@ -233,39 +233,115 @@ instance nhdsWithin_uIcc_isMeasurablyGenerated [OrderClosedTopology α] :
     IsMeasurablyGenerated (𝓝[[[a, b]]] x) :=
   nhdsWithin_Icc_isMeasurablyGenerated
 
-theorem measurableSet_lt' [SecondCountableTopology α] [OrderClosedTopology α] :
-    MeasurableSet { p : α × α | p.1 < p.2 } :=
+section SecondCountableTopology
+
+variable [SecondCountableTopology α]
+
+section OrderClosedTopology
+
+variable [OrderClosedTopology α]
+
+theorem measurableSet_lt' : MeasurableSet { p : α × α | p.1 < p.2 } :=
   (isOpen_lt continuous_fst continuous_snd).measurableSet
 
 @[fun_prop]
-theorem measurable_lt [SecondCountableTopology α] [OrderClosedTopology α] :
-    Measurable fun p : α × α => p.1 < p.2 :=
+theorem measurable_lt : Measurable fun p : α × α => p.1 < p.2 :=
   measurableSet_setOfPred.mp measurableSet_lt'
 
-theorem measurableSet_lt [SecondCountableTopology α] [OrderClosedTopology α]
-    {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
+theorem measurableSet_lt {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     MeasurableSet { a | f a < g a } :=
   hf.prodMk hg measurableSet_lt'
 
-theorem Measurable.lt [SecondCountableTopology α] [OrderClosedTopology α] {f g : δ → α}
-    (hf : Measurable f) (hg : Measurable g) :
+theorem Measurable.lt {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => f a < g a := by
   fun_prop
 
-theorem nullMeasurableSet_lt [SecondCountableTopology α] [OrderClosedTopology α] {μ : Measure δ}
+theorem nullMeasurableSet_lt {μ : Measure δ}
     {f g : δ → α} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     NullMeasurableSet { a | f a < g a } μ :=
   (hf.prodMk hg).nullMeasurable measurableSet_lt'
 
-theorem nullMeasurableSet_lt' [SecondCountableTopology α] [OrderClosedTopology α]
-    {μ : Measure (α × α)} :
+theorem nullMeasurableSet_lt' {μ : Measure (α × α)} :
     NullMeasurableSet { p : α × α | p.1 < p.2 } μ :=
   measurableSet_lt'.nullMeasurableSet
 
-theorem nullMeasurableSet_le [SecondCountableTopology α] [OrderClosedTopology α] {μ : Measure δ}
+theorem nullMeasurableSet_le {μ : Measure δ}
     {f g : δ → α} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     NullMeasurableSet { a | f a ≤ g a } μ :=
   (hf.prodMk hg).nullMeasurable measurableSet_le'
+
+@[fun_prop]
+theorem Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a => max (f a) (g a) := by
+  simpa only [max_def'] using! hf.piecewise (measurableSet_le hg hf) hg
+
+@[fun_prop]
+nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) : AEMeasurable (fun a => max (f a) (g a)) μ :=
+  ⟨fun a => max (hf.mk f a) (hg.mk g a), hf.measurable_mk.max hg.measurable_mk,
+    EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
+
+@[fun_prop]
+theorem Measurable.min {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a => min (f a) (g a) := by
+  simpa only [min_def] using! hf.piecewise (measurableSet_le hf hg) hg
+
+@[fun_prop]
+nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
+    (hg : AEMeasurable g μ) : AEMeasurable (fun a => min (f a) (g a)) μ :=
+  ⟨fun a => min (hf.mk f a) (hg.mk g a), hf.measurable_mk.min hg.measurable_mk,
+    EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
+
+end OrderClosedTopology
+
+section OrderTopology
+
+variable [OrderTopology α]
+
+theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
+    (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
+  choose! M hM using h'
+  suffices H : (s \ interior s).Countable by
+    have : s = interior s ∪ s \ interior s := by rw [union_sdiff_cancel interior_subset]
+    rw [this]
+    exact isOpen_interior.measurableSet.union H.measurableSet
+  have A : ∀ x ∈ s, ∃ y ∈ Ioi x, Ioo x y ⊆ s := fun x hx =>
+    (mem_nhdsGT_iff_exists_Ioo_subset' (hM x hx)).1 (h x hx)
+  choose! y hy h'y using A
+  have B : Set.PairwiseDisjoint (s \ interior s) fun x => Ioo x (y x) := by
+    intro x hx x' hx' hxx'
+    rcases lt_or_gt_of_ne hxx' with (h' | h')
+    · refine disjoint_left.2 fun z hz h'z => ?_
+      have : x' ∈ interior s :=
+        mem_interior.2 ⟨Ioo x (y x), h'y _ hx.1, isOpen_Ioo, ⟨h', h'z.1.trans hz.2⟩⟩
+      exact False.elim (hx'.2 this)
+    · refine disjoint_left.2 fun z hz h'z => ?_
+      have : x ∈ interior s :=
+        mem_interior.2 ⟨Ioo x' (y x'), h'y _ hx'.1, isOpen_Ioo, ⟨h', hz.1.trans h'z.2⟩⟩
+      exact False.elim (hx.2 this)
+  exact B.countable_of_Ioo fun x hx => hy x hx.1
+
+/-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
+theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
+  by_cases H : ∃ x ∈ s, IsTop x
+  · rcases H with ⟨x₀, x₀s, h₀⟩
+    have : s = { x₀ } ∪ s \ { x₀ } := by rw [union_sdiff_cancel (singleton_subset_iff.2 x₀s)]
+    rw [this]
+    refine (measurableSet_singleton _).union ?_
+    have A : ∀ x ∈ s \ { x₀ }, x < x₀ := fun x hx => lt_of_le_of_ne (h₀ _) (by simpa using hx.2)
+    refine .of_mem_nhdsGT_aux (fun x hx => ?_) fun x hx => ⟨x₀, A x hx⟩
+    obtain ⟨u, hu, us⟩ : ∃ (u : α), u ∈ Ioi x ∧ Ioo x u ⊆ s :=
+      (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).1 (h x hx.1)
+    refine (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).2 ⟨u, hu, fun y hy => ⟨us hy, ?_⟩⟩
+    exact ne_of_lt (hy.2.trans_le (h₀ _))
+  · refine .of_mem_nhdsGT_aux h ?_
+    simp only [IsTop] at H
+    push Not at H
+    exact H
+
+end OrderTopology
+
+end SecondCountableTopology
 
 theorem Set.OrdConnected.measurableSet [OrderClosedTopology α] (h : OrdConnected s) :
     MeasurableSet s := by
@@ -583,30 +659,6 @@ theorem measurableSet_uIcc [OrderClosedTopology α] : MeasurableSet (uIcc a b) :
 theorem measurableSet_uIoc [ClosedIicTopology α] : MeasurableSet (uIoc a b) :=
   measurableSet_Ioc
 
-variable [SecondCountableTopology α] [OrderClosedTopology α]
-
-@[fun_prop]
-theorem Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => max (f a) (g a) := by
-  simpa only [max_def'] using! hf.piecewise (measurableSet_le hg hf) hg
-
-@[fun_prop]
-nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun a => max (f a) (g a)) μ :=
-  ⟨fun a => max (hf.mk f a) (hg.mk g a), hf.measurable_mk.max hg.measurable_mk,
-    EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
-
-@[fun_prop]
-theorem Measurable.min {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => min (f a) (g a) := by
-  simpa only [min_def] using! hf.piecewise (measurableSet_le hf hg) hg
-
-@[fun_prop]
-nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun a => min (f a) (g a)) μ :=
-  ⟨fun a => min (hf.mk f a) (hg.mk g a), hf.measurable_mk.min hg.measurable_mk,
-    EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
-
 end LinearOrder
 
 section Lattice
@@ -634,7 +686,6 @@ end Orders
 section BorelSpace
 
 variable [TopologicalSpace α] {mα : MeasurableSpace α} [BorelSpace α]
-variable [TopologicalSpace β] {mβ : MeasurableSpace β} [BorelSpace β]
 variable {mδ : MeasurableSpace δ}
 
 section LinearOrder
@@ -663,9 +714,12 @@ theorem nullMeasurable_of_Ioi {μ : Measure δ} {f : δ → α}
     (hf : ∀ x, NullMeasurableSet (f ⁻¹' Ioi x) μ) : NullMeasurable f μ :=
   measurable_of_Ioi hf
 
-lemma measurable_iSup_of_lowerSemicontinuous [CompleteLinearOrder β] [OrderTopology β]
-    [SecondCountableTopology β]
-    {ι : Type*} [TopologicalSpace ι] [SeparableSpace ι]
+section CompleteLinearOrder
+
+variable [TopologicalSpace β] {mβ : MeasurableSpace β} [BorelSpace β] [CompleteLinearOrder β]
+  [OrderTopology β] [SecondCountableTopology β]
+
+lemma measurable_iSup_of_lowerSemicontinuous {ι : Type*} [TopologicalSpace ι] [SeparableSpace ι]
     {f : ι → δ → β} (mf : ∀ t, Measurable (f t))
     (cf : ∀ x, LowerSemicontinuous (f · x)) :
     Measurable (⨆ i, f i) := by
@@ -683,13 +737,13 @@ lemma measurable_iSup_of_lowerSemicontinuous [CompleteLinearOrder β] [OrderTopo
   exact ⟨hj.some, mem_of_mem_inter_left hj.some_mem,
     hv' _ (mem_of_mem_inter_right hj.some_mem)⟩
 
-lemma measurable_iInf_of_upperSemicontinuous [CompleteLinearOrder β] [OrderTopology β]
-    [SecondCountableTopology β]
-    {ι : Type*} [TopologicalSpace ι] [SeparableSpace ι]
+lemma measurable_iInf_of_upperSemicontinuous {ι : Type*} [TopologicalSpace ι] [SeparableSpace ι]
     {f : ι → δ → β} (mf : ∀ t, Measurable (f t))
     (cf : ∀ x, UpperSemicontinuous (f · x)) :
     Measurable (⨅ i, f i) :=
    measurable_iSup_of_lowerSemicontinuous (β := βᵒᵈ) mf cf
+
+end CompleteLinearOrder
 
 theorem LowerSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : LowerSemicontinuous f) : Measurable f :=
@@ -803,66 +857,32 @@ theorem AEMeasurable.isGLB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
     AEMeasurable g μ :=
   AEMeasurable.isLUB (α := αᵒᵈ) hf hg
 
-protected theorem Monotone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
+section Monotone
+
+variable [TopologicalSpace β] {mβ : MeasurableSpace β} [OpensMeasurableSpace β] [LinearOrder β]
+  [OrderClosedTopology β]
+
+protected theorem Monotone.measurable {f : β → α}
     (hf : Monotone f) : Measurable f :=
   suffices h : ∀ x, OrdConnected (f ⁻¹' Ioi x) from measurable_of_Ioi fun x => (h x).measurableSet
   fun _ => ordConnected_def.mpr fun _a ha _ _ _c hc => lt_of_lt_of_le ha (hf hc.1)
 
-theorem aemeasurable_restrict_of_monotoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}
+theorem aemeasurable_restrict_of_monotoneOn {μ : Measure β}
     {s : Set β} (hs : MeasurableSet s) {f : β → α} (hf : MonotoneOn f s) :
     AEMeasurable f (μ.restrict s) :=
   have : Monotone (f ∘ (↑) : s → α) := fun ⟨x, hx⟩ ⟨y, hy⟩ => fun (hxy : x ≤ y) => hf hx hy hxy
   aemeasurable_restrict_of_measurable_subtype hs this.measurable
 
-protected theorem Antitone.measurable [LinearOrder β] [OrderClosedTopology β] {f : β → α}
+protected theorem Antitone.measurable {f : β → α}
     (hf : Antitone f) : Measurable f :=
-  @Monotone.measurable αᵒᵈ β _ _ ‹_› _ _ _ _ _ ‹_› _ _ _ hf
+  Monotone.measurable (α := αᵒᵈ) hf
 
-theorem aemeasurable_restrict_of_antitoneOn [LinearOrder β] [OrderClosedTopology β] {μ : Measure β}
+theorem aemeasurable_restrict_of_antitoneOn {μ : Measure β}
     {s : Set β} (hs : MeasurableSet s) {f : β → α} (hf : AntitoneOn f s) :
     AEMeasurable f (μ.restrict s) :=
-  @aemeasurable_restrict_of_monotoneOn αᵒᵈ β _ _ ‹_› _ _ _ _ _ ‹_› _ _ _ _ hs _ hf
+  aemeasurable_restrict_of_monotoneOn (α := αᵒᵈ) hs hf
 
-theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
-    (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
-  choose! M hM using h'
-  suffices H : (s \ interior s).Countable by
-    have : s = interior s ∪ s \ interior s := by rw [union_sdiff_cancel interior_subset]
-    rw [this]
-    exact isOpen_interior.measurableSet.union H.measurableSet
-  have A : ∀ x ∈ s, ∃ y ∈ Ioi x, Ioo x y ⊆ s := fun x hx =>
-    (mem_nhdsGT_iff_exists_Ioo_subset' (hM x hx)).1 (h x hx)
-  choose! y hy h'y using A
-  have B : Set.PairwiseDisjoint (s \ interior s) fun x => Ioo x (y x) := by
-    intro x hx x' hx' hxx'
-    rcases lt_or_gt_of_ne hxx' with (h' | h')
-    · refine disjoint_left.2 fun z hz h'z => ?_
-      have : x' ∈ interior s :=
-        mem_interior.2 ⟨Ioo x (y x), h'y _ hx.1, isOpen_Ioo, ⟨h', h'z.1.trans hz.2⟩⟩
-      exact False.elim (hx'.2 this)
-    · refine disjoint_left.2 fun z hz h'z => ?_
-      have : x ∈ interior s :=
-        mem_interior.2 ⟨Ioo x' (y x'), h'y _ hx'.1, isOpen_Ioo, ⟨h', hz.1.trans h'z.2⟩⟩
-      exact False.elim (hx.2 this)
-  exact B.countable_of_Ioo fun x hx => hy x hx.1
-
-/-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
-theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
-  by_cases H : ∃ x ∈ s, IsTop x
-  · rcases H with ⟨x₀, x₀s, h₀⟩
-    have : s = { x₀ } ∪ s \ { x₀ } := by rw [union_sdiff_cancel (singleton_subset_iff.2 x₀s)]
-    rw [this]
-    refine (measurableSet_singleton _).union ?_
-    have A : ∀ x ∈ s \ { x₀ }, x < x₀ := fun x hx => lt_of_le_of_ne (h₀ _) (by simpa using hx.2)
-    refine .of_mem_nhdsGT_aux (fun x hx => ?_) fun x hx => ⟨x₀, A x hx⟩
-    obtain ⟨u, hu, us⟩ : ∃ (u : α), u ∈ Ioi x ∧ Ioo x u ⊆ s :=
-      (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).1 (h x hx.1)
-    refine (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).2 ⟨u, hu, fun y hy => ⟨us hy, ?_⟩⟩
-    exact ne_of_lt (hy.2.trans_le (h₀ _))
-  · refine .of_mem_nhdsGT_aux h ?_
-    simp only [IsTop] at H
-    push Not at H
-    exact H
+end Monotone
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
