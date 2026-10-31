@@ -5,11 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 module
 
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
 public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.Topology.UniformSpace.DiscreteUniformity
-public import Mathlib.Data.ENat.Lattice
 
 /-! # Substitutions in multivariate power series
 
@@ -137,12 +136,40 @@ theorem HasSubst.smul_X (a : σ → R) :
   convert! HasSubst.X.mul_left (fun s ↦ algebraMap R (MvPowerSeries σ R) (a s))
   simp [funext_iff, algebra_compatible_smul (MvPowerSeries σ R)]
 
+theorem HasSubst.sumElim {γ : Type*} {a : σ → MvPowerSeries γ R} {b : τ → MvPowerSeries γ R}
+    (ha : HasSubst a) (hb : HasSubst b) : HasSubst (Sum.elim a b) where
+  const_coeff := by rintro (s | t) <;> simp [ha.const_coeff, hb.const_coeff]
+  coeff_zero d := (((ha.coeff_zero d).image .inl).union ((hb.coeff_zero d).image .inr)).subset
+    (by rintro (s | t) _ <;> simpa)
+
+/-- Stacking finitely many substitutable families gives a substitutable family. -/
+theorem HasSubst.uncurry {γ : Type*} [Finite γ] {a : γ → σ → MvPowerSeries τ R}
+    (ha : ∀ k, HasSubst (a k)) : HasSubst (Function.uncurry a) where
+  const_coeff p := (ha p.1).const_coeff p.2
+  coeff_zero d := (Set.finite_iUnion fun k ↦ ((ha k).coeff_zero d).image (Prod.mk k)).subset
+    fun ⟨k, s⟩ h ↦ Set.mem_iUnion.mpr ⟨k, s, h, rfl⟩
+
+/-- Two substitutable families combine to a substitutable family indexed by `Fin 2 × σ`. -/
+theorem HasSubst.pair {x y : σ → MvPowerSeries τ R} (hx : HasSubst x) (hy : HasSubst y) :
+    HasSubst (Function.uncurry ![x, y]) :=
+  .uncurry <| Fin.forall_fin_two.mpr ⟨hx, hy⟩
+
 /-- Families of `MvPowerSeries` that can be substituted, as an `Ideal` -/
 noncomputable def hasSubstIdeal : Ideal (σ → MvPowerSeries τ S) :=
   { carrier := Set.ofPred HasSubst
     add_mem' := HasSubst.add
     zero_mem' := HasSubst.zero
     smul_mem' := HasSubst.mul_left }
+
+theorem HasSubst.sub {a b : σ → MvPowerSeries τ S} (ha : HasSubst a) (hb : HasSubst b) :
+    HasSubst (a - b) := by
+  have : a - b ∈ hasSubstIdeal := Ideal.sub_mem _ ha hb
+  exact this
+
+theorem HasSubst.neg {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
+    HasSubst (-a) := by
+  have : -a ∈ hasSubstIdeal := Ideal.neg_mem_iff _|>.mpr ha
+  exact this
 
 /-- If `σ` is finite, then the nilpotent condition is enough for `HasSubst` -/
 theorem hasSubst_of_constantCoeff_nilpotent [Finite σ]
@@ -222,7 +249,7 @@ theorem substAlgHom_eq_aeval
     (ha : HasSubst a) :
     (substAlgHom ha : MvPowerSeries σ R → MvPowerSeries τ S) = MvPowerSeries.aeval ha.hasEval := by
   simp only [substAlgHom, coe_aeval ha.hasEval]
-  convert! coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
+  convert coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
   exact DiscreteUniformity.eq_bot.symm
 
 @[simp]
@@ -354,7 +381,7 @@ theorem map_subst {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+*
   rw [coeff_subst (ha.map h), coeff_map, coeff_subst ha, this, AddMonoidHom.map_finsum _
     (coeff_subst_finite ha _ _), finsum_congr]
   intro d
-  simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe, map_mul,
+  simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_ofClass, map_mul,
     ← coeff_map, Finsupp.prod]
 
 lemma subst_zero_eq_C_constantCoeff {f : MvPowerSeries σ R} :
@@ -396,7 +423,7 @@ theorem comp_substAlgHom
     ε.comp (substAlgHom ha) = aeval (ha.hasEval.map hε) := by
   ext f
   simp only [AlgHom.coe_comp, substAlgHom_eq_aeval ha]
-  exact DFunLike.congr_fun (comp_aeval ha.hasEval hε) f
+  congrm $(comp_aeval ha.hasEval hε) f
 
 theorem comp_subst [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
     (ha : HasSubst a) (hε : Continuous ε) :
@@ -407,7 +434,7 @@ theorem comp_subst_apply
     [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
     (ha : HasSubst a) (hε : Continuous ε) (f : MvPowerSeries σ R) :
     ε (subst a f) = aeval (R := R) (ha.hasEval.map hε) f :=
-  congr_fun (comp_subst ha hε) f
+  congr($(comp_subst ha hε) f)
 
 variable [Algebra S T] [IsScalarTower R S T]
 
@@ -468,7 +495,7 @@ theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
 theorem substAlgHom_comp_substAlgHom_apply (ha : HasSubst a) (hb : HasSubst b)
     (f : MvPowerSeries σ R) :
     (substAlgHom hb) (substAlgHom ha f) = substAlgHom (ha.comp hb) f :=
-  DFunLike.congr_fun (substAlgHom_comp_substAlgHom ha hb) f
+  congr($(substAlgHom_comp_substAlgHom ha hb) f)
 
 theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
     (subst b) ∘ (subst a) = subst (R := R) (fun s ↦ subst b (a s)) := by
@@ -476,7 +503,7 @@ theorem subst_comp_subst (ha : HasSubst a) (hb : HasSubst b) :
 
 theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : MvPowerSeries σ R) :
     subst b (subst a f) = subst (fun s ↦ subst b (a s)) f :=
-  congr_fun (subst_comp_subst (R := R) ha hb) f
+  congr($(subst_comp_subst (R := R) ha hb) f)
 
 section
 
@@ -492,7 +519,7 @@ theorem le_weightedOrder_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
   by_cases hfx : f.coeff x = 0
   · simp [hfx]
   rw [coeff_eq_zero_of_lt_weightedOrder w, smul_zero]
-  refine hd.trans_le (((biInf_le _ hfx).trans ?_).trans (le_weightedOrder_prod ..))
+  refine hd.trans_le (((iInf₂_le x hfx).trans ?_).trans (le_weightedOrder_prod ..))
   simp only [Finsupp.weight_apply, Finsupp.sum, Function.comp_apply]
   exact Finset.sum_le_sum fun i hi ↦ .trans (by simp) (le_weightedOrder_pow ..)
 
@@ -539,7 +566,7 @@ theorem truncTotal_subst_eq_truncTotal_subst_truncTotal_of_le (ha : HasSubst a)
       obtain ⟨hl₁, -⟩ := mem_finsuppAntidiag.mp hl
       have : (l i).degree ≤ d.degree :=
         hl₁ ▸ Finsupp.degree_mono (single_le_sum_of_canonicallyOrdered hi)
-      exact_mod_cast (coeff_truncTotal_pow _ (by nlinarith [hx i])).symm
+      exact mod_cast (coeff_truncTotal_pow _ (by nlinarith [hx i])).symm
     · exact ha.truncTotal
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
@@ -561,7 +588,7 @@ theorem truncTotal_subst_eq_truncTotal_subst_sum (ha : HasSubst a)
       rw [Finsupp.prod]
       refine coeff_of_lt_order (lt_of_lt_of_le (Nat.cast_lt.mpr hc)
         (.trans ?_ (le_order_prod _ n.support)))
-      exact_mod_cast sum_le_sum fun i hi => le_order_pow_of_constantCoeff_eq_zero _ (ha₁ i)
+      exact mod_cast sum_le_sum fun i hi => le_order_pow_of_constantCoeff_eq_zero _ (ha₁ i)
     rw [← Finset.sum_subset this]
     · congr! 2 with n hn
       simp only [map_sum, coeff_homogeneousComponent, sum_ite_eq, mem_range, left_eq_ite_iff,
@@ -686,7 +713,7 @@ theorem rescale_zero :
   split_ifs with h
   · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
   · simp only [coeff_apply]
-    convert! zero_mul _
+    convert zero_mul _
     simp only [DFunLike.ext_iff, not_forall, Finsupp.coe_zero, Pi.zero_apply] at h
     obtain ⟨s, h⟩ := h
     simp only [Finsupp.prod]

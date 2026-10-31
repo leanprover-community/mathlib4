@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Algebra.Prime.Lemmas
-public import Mathlib.Order.BoundedOrder.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Associated elements.
@@ -20,9 +21,9 @@ and prove basic properties of this quotient.
 
 @[expose] public section
 
-assert_not_exists IsOrderedMonoid Multiset Ring
+assert_not_exists DenselyOrdered IsOrderedMonoid Multiset Ring
 
-variable {M : Type*}
+variable {M N P : Type*}
 
 /-- Two elements of a `Monoid` are `Associated` if one of them is another one
 multiplied by a unit on the right. -/
@@ -69,7 +70,7 @@ protected def setoid (M : Type*) [Monoid M] :
 theorem map {M N : Type*} [Monoid M] [Monoid N] {F : Type*} [FunLike F M N] [MonoidHomClass F M N]
     (f : F) {x y : M} (ha : Associated x y) : Associated (f x) (f y) := by
   obtain ⟨u, ha⟩ := ha
-  exact ⟨Units.map f u, by rw [← ha, map_mul, Units.coe_map, MonoidHom.coe_coe]⟩
+  exact ⟨Units.map f u, by rw [← ha, map_mul, Units.coe_map, MonoidHom.coe_ofClass]⟩
 
 end Associated
 
@@ -177,7 +178,7 @@ theorem Associated.mul_mul [CommMonoid M] {a₁ a₂ b₁ b₂ : M}
 theorem Associated.pow_pow [CommMonoid M] {a b : M} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
   induction n with
   | zero => simp [Associated.refl]
-  | succ n ih => convert! h.mul_mul ih <;> rw [pow_succ']
+  | succ n ih => convert h.mul_mul ih <;> rw [pow_succ']
 
 protected theorem Associated.dvd [Monoid M] {a b : M} : a ~ᵤ b → a ∣ b := fun ⟨u, hu⟩ =>
   ⟨u, hu.symm⟩
@@ -343,9 +344,7 @@ theorem Associated.of_mul_right [CommMonoidWithZero M] [IsCancelMulZero M] {a b 
 theorem Associated.of_pow_associated_of_prime [CommMonoidWithZero M] [IsCancelMulZero M]
     {p₁ p₂ : M} {k₁ k₂ : ℕ}
     (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0 < k₁) (h : p₁ ^ k₁ ~ᵤ p₂ ^ k₂) : p₁ ~ᵤ p₂ := by
-  have : p₁ ∣ p₂ ^ k₂ := by
-    rw [← h.dvd_iff_dvd_right]
-    apply dvd_pow_self _ hk₁.ne'
+  have : p₁ ∣ p₂ ^ k₂ := by rw [← h.dvd_iff_dvd_right]; exact dvd_pow_self _ (by lia)
   rw [← hp₁.dvd_prime_iff_associated hp₂]
   exact hp₁.dvd_of_dvd_pow this
 
@@ -402,7 +401,8 @@ end UniqueUnits₀
 /-- The quotient of a monoid by the `Associated` relation. Two elements `x` and `y`
   are associated iff there is a unit `u` such that `x * u = y`. There is a natural
   monoid structure on `Associates M`. -/
-abbrev Associates (M : Type*) [Monoid M] : Type _ :=
+@[implicit_reducible]
+def Associates (M : Type*) [Monoid M] : Type _ :=
   Quotient (Associated.setoid M)
 
 namespace Associates
@@ -410,25 +410,32 @@ namespace Associates
 open Associated
 
 /-- The canonical quotient map from a monoid `M` into the `Associates` of `M` -/
-protected abbrev mk {M : Type*} [Monoid M] (a : M) : Associates M :=
+@[implicit_reducible]
+protected def mk {M : Type*} [Monoid M] (a : M) : Associates M :=
   ⟦a⟧
 
 instance [Monoid M] : Inhabited (Associates M) :=
   ⟨⟦1⟧⟩
 
+@[simp]
 theorem mk_eq_mk_iff_associated [Monoid M] {a b : M} : Associates.mk a = Associates.mk b ↔ a ~ᵤ b :=
   Iff.intro Quotient.exact Quot.sound
 
+@[simp]
 theorem quotient_mk_eq_mk [Monoid M] (a : M) : ⟦a⟧ = Associates.mk a :=
   rfl
 
+@[simp]
 theorem quot_mk_eq_mk [Monoid M] (a : M) : Quot.mk Setoid.r a = Associates.mk a :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a := by
-  rw [← quot_mk_eq_mk, Quot.out_eq]
+theorem quotient_out [Monoid M] (a : Associates M) : Associates.mk (Quotient.out a) = a :=
+  Quotient.out_eq a
+
+@[simp]
+theorem quot_out [Monoid M] (a : Associates M) : Associates.mk (Quot.out a) = a :=
+  Quot.out_eq a
 
 theorem mk_quot_out [Monoid M] (a : M) : Quot.out (Associates.mk a) ~ᵤ a := by
   rw [← Associates.mk_eq_mk_iff_associated, Associates.quot_out]
@@ -472,8 +479,7 @@ theorem mk_injective [Monoid M] [Subsingleton Mˣ] : Function.Injective (@Associ
   fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
 
 section CommMonoid
-
-variable [CommMonoid M]
+variable [CommMonoid M] [CommMonoid N] [CommMonoid P]
 
 instance instMul : Mul (Associates M) :=
   ⟨Quotient.map₂ (· * ·) fun _ _ h₁ _ _ h₂ ↦ h₁.mul_mul h₂⟩
@@ -490,11 +496,6 @@ instance instCommMonoid : CommMonoid (Associates M) where
   mul_comm a' b' :=
     Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
 
-instance instPreorder : Preorder (Associates M) where
-  le := Dvd.dvd
-  le_refl := dvd_refl
-  le_trans _ _ _ := dvd_trans
-
 /-- `Associates.mk` as a `MonoidHom`. -/
 protected def mkMonoidHom : M →* Associates M where
   toFun := Associates.mk
@@ -505,15 +506,53 @@ protected def mkMonoidHom : M →* Associates M where
 theorem mkMonoidHom_apply (a : M) : Associates.mkMonoidHom a = Associates.mk a :=
   rfl
 
+/-- The monoid homomorphism on associates induced by a monoid homomorphism. -/
+def map (f : M →* N) : Associates M →* Associates N where
+  toFun := Quotient.map' f fun _ _ ↦ .map f
+  map_one' := show Associates.mk (f 1) = 1 by simp
+  map_mul' := by
+    rintro ⟨a⟩ ⟨b⟩
+    change Associates.mk (f (a * b)) = .mk (f a) * .mk (f b)
+    simp [mk_mul_mk]
+
+@[simp] lemma map_mk (f : M →* N) (a : M) : map f (.mk a) = .mk (f a) := rfl
+
+@[simp] lemma map_id : map (.id M) = .id (Associates M) := by ext ⟨x⟩; simp
+
+@[simp] lemma map_comp_map (g : N →* P) (f : M →* N) : (map g).comp (map f) = map (g.comp f) := by
+  ext ⟨x⟩; simp
+
+@[simp] protected lemma map_one : map (1 : M →* N) = 1 := by ext ⟨x⟩; simp
+
+@[simp]
+protected lemma map_mul (f g : M →* N) : map (f * g) = map f * map g := by ext ⟨x⟩; simp [mk_mul_mk]
+
+/-- A multiplicative equivalence `M ≃* N` induces a multiplicative equivalence of associates. -/
+def congr (e : M ≃* N) : Associates M ≃* Associates N where
+  __ := map e.toMonoidHom
+  invFun := map e.symm.toMonoidHom
+  left_inv := mk_surjective.forall.2 <| by simp
+  right_inv := mk_surjective.forall.2 <| by simp
+
+@[simp] lemma congr_mk (e : M ≃* N) (x : M) : congr e (.mk x) = .mk (e x) := rfl
+
+-- TODO: Make `simp` once `MonoidHomClass.toMonoidHom` isn't simp nf anymore.
+-- See https://github.com/leanprover-community/mathlib4/pull/43765.
+lemma congr_toMonoidHom (e : M ≃* N) : (congr e).toMonoidHom = map e.toMonoidHom := rfl
+
+@[simp] lemma congr_refl : congr (.refl M) = .refl (Associates M) := by ext ⟨x⟩; simp
+
+@[simp, grind =] lemma symm_congr (e : M ≃* N) : (congr e).symm = congr e.symm := rfl
+
+@[simp] lemma congr_trans_congr (e : M ≃* N) (e' : N ≃* P) :
+    (congr e).trans (congr e') = congr (e.trans e') := by ext ⟨x⟩; simp
+
 theorem associated_map_mk {f : Associates M →* M} (hinv : Function.RightInverse f Associates.mk)
     (a : M) : a ~ᵤ f (Associates.mk a) :=
   Associates.mk_eq_mk_iff_associated.1 (hinv (Associates.mk a)).symm
 
 theorem mk_pow (a : M) (n : ℕ) : Associates.mk (a ^ n) = Associates.mk a ^ n := by
   induction n <;> simp [*, pow_succ, Associates.mk_mul_mk.symm]
-
-theorem dvd_eq_le : ((· ∣ ·) : Associates M → Associates M → Prop) = (· ≤ ·) :=
-  rfl
 
 instance uniqueUnits : Unique (Associates M)ˣ where
   uniq := by
@@ -528,38 +567,11 @@ theorem coe_unit_eq_one (u : (Associates M)ˣ) : (u : Associates M) = 1 := by
 theorem isUnit_iff_eq_one (a : Associates M) : IsUnit a ↔ a = 1 :=
   Iff.intro (fun ⟨_, h⟩ => h ▸ coe_unit_eq_one _) fun h => h.symm ▸ isUnit_one
 
-theorem isUnit_iff_eq_bot {a : Associates M} : IsUnit a ↔ a = ⊥ := by
-  rw [Associates.isUnit_iff_eq_one, bot_eq_one]
-
 theorem isUnit_mk {a : M} : IsUnit (Associates.mk a) ↔ IsUnit a :=
   calc
     IsUnit (Associates.mk a) ↔ a ~ᵤ 1 := by
       rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
     _ ↔ IsUnit a := associated_one_iff_isUnit
-
-section Order
-
-theorem mul_mono {a b c d : Associates M} (h₁ : a ≤ b) (h₂ : c ≤ d) : a * c ≤ b * d :=
-  let ⟨x, hx⟩ := h₁
-  let ⟨y, hy⟩ := h₂
-  ⟨x * y, by simp [hx, hy, mul_comm, mul_left_comm]⟩
-
-instance : IsBotOneClass (Associates M) where
-  isBot_one a := Dvd.intro _ (one_mul a)
-
-instance instOrderBot : OrderBot (Associates M) where
-  bot_le _ := one_le
-
-@[deprecated _root_.one_le (since := "2026-05-07")]
-protected theorem one_le {a : Associates M} : 1 ≤ a :=
-  one_le
-
-theorem le_mul_right {a b : Associates M} : a ≤ a * b :=
-  ⟨b, rfl⟩
-
-theorem le_mul_left {a b : Associates M} : a ≤ b * a := by rw [mul_comm]; exact le_mul_right
-
-end Order
 
 @[simp]
 theorem mk_dvd_mk {a b : M} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b := by
@@ -570,14 +582,6 @@ theorem mk_dvd_mk {a b : M} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b :=
     exact ⟨_, mul_assoc ..⟩
   · rintro ⟨c, rfl⟩
     use c
-
-theorem dvd_of_mk_le_mk {a b : M} : Associates.mk a ≤ Associates.mk b → a ∣ b :=
-  mk_dvd_mk.mp
-
-theorem mk_le_mk_of_dvd {a b : M} : a ∣ b → Associates.mk a ≤ Associates.mk b :=
-  mk_dvd_mk.mpr
-
-theorem mk_le_mk_iff_dvd {a b : M} : Associates.mk a ≤ Associates.mk b ↔ a ∣ b := mk_dvd_mk
 
 @[simp]
 theorem isPrimal_mk {a : M} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
@@ -639,21 +643,9 @@ instance instCommMonoidWithZero : CommMonoidWithZero (Associates M) where
     zero_mul := forall_associated.2 fun a ↦ by rw [← mk_zero, mk_mul_mk, zero_mul]
     mul_zero := forall_associated.2 fun a ↦ by rw [← mk_zero, mk_mul_mk, mul_zero]
 
-instance instOrderTop : OrderTop (Associates M) where
-  top := 0
-  le_top := dvd_zero
-
-@[simp] protected theorem le_zero (a : Associates M) : a ≤ 0 := le_top
-
-instance instBoundedOrder : BoundedOrder (Associates M) where
-
 instance [DecidableRel ((· ∣ ·) : M → M → Prop)] :
     DecidableRel ((· ∣ ·) : Associates M → Associates M → Prop) := fun a b =>
   Quotient.recOnSubsingleton₂ a b fun _ _ => decidable_of_iff' _ mk_dvd_mk
-
-theorem Prime.le_or_le {p : Associates M} (hp : Prime p) {a b : Associates M} (h : p ≤ a * b) :
-    p ≤ a ∨ p ≤ b :=
-  hp.2.2 a b h
 
 @[simp]
 theorem prime_mk {p : M} : Prime (Associates.mk p) ↔ Prime p := by
@@ -684,17 +676,6 @@ theorem mk_dvdNotUnit_mk_iff {a b : M} :
   · rintro ⟨x, ⟨hx, rfl⟩⟩
     use x
 
-theorem dvdNotUnit_of_lt {a b : Associates M} (hlt : a < b) : DvdNotUnit a b := by
-  constructor
-  · rintro rfl
-    apply not_lt_of_ge _ hlt
-    apply dvd_zero
-  rcases hlt with ⟨⟨x, rfl⟩, ndvd⟩
-  refine ⟨x, ?_, rfl⟩
-  contrapose ndvd
-  rcases ndvd with ⟨u, rfl⟩
-  simp
-
 theorem irreducible_iff_prime_iff :
     (∀ a : M, Irreducible a ↔ Prime a) ↔ ∀ a : Associates M, Irreducible a ↔ Prime a := by
   simp_rw [forall_associated, irreducible_mk, prime_mk]
@@ -704,10 +685,6 @@ end CommMonoidWithZero
 section CancelCommMonoidWithZero
 
 variable [CommMonoidWithZero M] [IsCancelMulZero M]
-
-instance instPartialOrder : PartialOrder (Associates M) where
-  le_antisymm := mk_surjective.forall₂.2 fun _a _b hab hba => mk_eq_mk_iff_associated.2 <|
-    associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
 instance instIsCancelMulZero : IsCancelMulZero (Associates M) :=
   @IsLeftCancelMulZero.to_isCancelMulZero _ _ _
@@ -721,21 +698,6 @@ theorem _root_.associates_irreducible_iff_prime [DecompositionMonoid M] {p : Ass
     Irreducible p ↔ Prime p := irreducible_iff_prime
 
 instance : NoZeroDivisors (Associates M) := by infer_instance
-
-theorem le_of_mul_le_mul_left (a b c : Associates M) (ha : a ≠ 0) : a * b ≤ a * c → b ≤ c
-  | ⟨d, hd⟩ => ⟨d, mul_left_cancel₀ ha <| by rwa [← mul_assoc]⟩
-
-theorem one_or_eq_of_le_of_prime {p m : Associates M} (hp : Prime p) (hle : m ≤ p) :
-    m = 1 ∨ m = p := by
-  rcases mk_surjective p with ⟨p, rfl⟩
-  rcases mk_surjective m with ⟨m, rfl⟩
-  simpa [mk_eq_mk_iff_associated, Associated.comm]
-    using (prime_mk.1 hp).irreducible.dvd_iff.mp (mk_le_mk_iff_dvd.1 hle)
-
-theorem dvdNotUnit_iff_lt {a b : Associates M} : DvdNotUnit a b ↔ a < b :=
-  dvd_and_not_dvd_iff.symm
-
-theorem le_one_iff {p : Associates M} : p ≤ 1 ↔ p = 1 := by rw [← Associates.bot_eq_one, le_bot_iff]
 
 end CancelCommMonoidWithZero
 
@@ -806,6 +768,6 @@ theorem dvd_prime_pow [CommMonoidWithZero M] [IsCancelMulZero M] {p q : M} (hp :
       refine ⟨i + 1, Nat.succ_le_succ hi, (hq.mul_left p).trans ?_⟩
       rw [pow_succ']
     · obtain ⟨i, hi, hq⟩ := ih.mp hno
-      exact ⟨i, hi.trans n.le_succ, hq⟩
+      exact ⟨i, by lia, hq⟩
 
 end CancelCommMonoidWithZero

@@ -5,9 +5,10 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
+
+import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-!
 # The Levi-Civita connection on a Riemannian manifold
@@ -92,7 +93,7 @@ variable
 variable (IB F E) in
 /-- A vector in `E x` is uniquely determined by its scalar product with sections that
 are differentiable at `x` -/
-public lemma injective_inner_mdifferentiableAt_section  (x : B) :
+public lemma injective_inner_mdifferentiableAt_section (x : B) :
     Function.Injective
       (fun X₀ : E x ↦
         fun (Z : Π x, E x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
@@ -176,8 +177,8 @@ variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 -- with `open scoped RealInnerProductSpace`.
 local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 
-/- TODO: The next two lemmas are workarounds for some version of https://github.com/leanprover/lean4/issues/9077
-(Instance synthesis sees through type synonyms).
+/- TODO: The next two lemmas are workarounds for https://github.com/leanprover/lean4/issues/14949
+(Unification sees through type synonyms when checking instances' types).
 They should be removed when that issue will be fully solved. -/
 
 variable {I} in

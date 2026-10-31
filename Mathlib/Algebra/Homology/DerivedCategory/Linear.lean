@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
-public import Mathlib.Algebra.Homology.Linear
-public import Mathlib.CategoryTheory.Localization.Linear
 public import Mathlib.CategoryTheory.Shift.Linear
 
 /-!

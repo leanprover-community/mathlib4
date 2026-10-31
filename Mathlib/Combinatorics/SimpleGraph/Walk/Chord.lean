@@ -55,7 +55,7 @@ theorem IsChordless.mem_edges {p : G.Walk u v} (h : p.IsChordless) {u' v' : V}
   isChordless_iff_forall_mem_edges.mp h hu' hv' hadj
 
 theorem _root_.SimpleGraph.Adj.isChordless_toWalk (h : G.Adj u v) : h.toWalk.IsChordless := by
-  grind [isChordless_iff_forall_mem_edges, h.support_toWalk, h.edges_toWalk, Adj.ne]
+  grind [isChordless_iff_forall_mem_edges, h.support_toWalk, h.edges_toWalk]
 
 end Walk
 end SimpleGraph

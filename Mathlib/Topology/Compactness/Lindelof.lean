@@ -5,7 +5,6 @@ Authors: Josha Dekker
 -/
 module
 
-public import Mathlib.Topology.Bases
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Compactness.SigmaCompact
 
@@ -108,7 +107,7 @@ theorem IsLindelof.image_of_continuousOn {f : X → Y} (hs : IsLindelof s) (hf :
   have := hx.neBot
   use f x, mem_image_of_mem f hxs
   have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l) := by
-    convert! (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
+    convert (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
     rw [nhdsWithin]
     ac_rfl
   exact this.neBot
@@ -474,9 +473,13 @@ theorem mem_coclosed_Lindelof' : s ∈ coclosedLindelof X ↔
 theorem coLindelof_le_coclosedLindelof : coLindelof X ≤ coclosedLindelof X :=
   iInf_mono fun _ => le_iInf fun _ => le_rfl
 
-theorem IsLindeof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs' : IsClosed s) :
+theorem IsLindelof.compl_mem_coclosedLindelof_of_isClosed (hs : IsLindelof s) (hs' : IsClosed s) :
     sᶜ ∈ Filter.coclosedLindelof X :=
   hasBasis_coclosedLindelof.mem_of_mem ⟨hs', hs⟩
+
+@[deprecated (since := "2026-09-17")]
+alias IsLindeof.compl_mem_coclosedLindelof_of_isClosed :=
+  IsLindelof.compl_mem_coclosedLindelof_of_isClosed
 
 /-- X is a Lindelöf space iff every open cover has a countable subcover. -/
 class LindelofSpace (X : Type*) [TopologicalSpace X] : Prop where

@@ -7,7 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
-public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
+
+import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
 
 /-!
 # Product of vector measures
@@ -196,7 +197,7 @@ lemma variation_prod_le [CompleteSpace G] [IsFiniteMeasure μ.variation] [SFinit
     (μ.prod ν B).variation ≤ ‖B‖ₑ • μ.variation.prod ν.variation := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   rw [prod_apply_eq_integral hs]
-  simp only [Measure.smul_apply, smul_eq_mul, Measure.prod_apply hs]
+  simp only [smul_apply, Measure.prod_apply hs, smul_eq_mul]
   grw [enorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_flip,
     enorm_measure_le_variation]
 

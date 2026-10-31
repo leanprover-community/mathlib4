@@ -5,7 +5,6 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
@@ -151,7 +150,7 @@ instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full w
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
-    BinaryBiconeMorphism.ext f g <| F.map_injective <| congr_arg BinaryBiconeMorphism.hom h
+    BinaryBiconeMorphism.ext f g <| F.map_injective congr(BinaryBiconeMorphism.hom $h)
 
 end BinaryBicones
 
@@ -633,7 +632,6 @@ theorem biprod.isoCoprod_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).inv = coprod.desc biprod.inl biprod.inr := by
   ext <;> simp [biprod.isoCoprod]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod_isoCoprod_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).hom = biprod.desc coprod.inl coprod.inr := by
@@ -755,7 +753,6 @@ theorem biprod.isIso_inl_iff_id_eq_fst_comp_inl (X Y : C) [HasBinaryBiproduct X 
   · intro h
     exact ⟨⟨biprod.fst, biprod.inl_fst, h.symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Epi (biprod.map f g) := by
   rw [show biprod.map f g =

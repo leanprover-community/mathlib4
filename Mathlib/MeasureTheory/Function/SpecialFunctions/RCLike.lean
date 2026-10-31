@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+
+import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Measurability of the basic `RCLike` functions
@@ -14,9 +15,6 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 -/
 
 public section
-
-
-noncomputable section
 
 namespace RCLike
 

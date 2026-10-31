@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
-public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
 /-! # The derived category of an abelian category
@@ -242,7 +242,6 @@ def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
 abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
@@ -250,6 +249,10 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
 @[simp] theorem Q_obj_single_obj (n : ℤ) (X : C) :
     Q.obj ((HomologicalComplex.single C _ n).obj X) = (singleFunctor C n).obj X :=
   rfl
+
+@[simp]
+lemma Q_map_single_map (n : ℤ) {X Y : C} (f : X ⟶ Y) :
+    Q.map ((HomologicalComplex.single C _ n).map f) = (singleFunctor C n).map f := rfl
 
 /-- The isomorphism
 `DerivedCategory.singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh` given
@@ -267,6 +270,7 @@ def singleFunctorsPostcompQIso :
   Iso.refl _
 
 /-- The isomorphism `singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q`. -/
+@[simps! -isSimp]
 def singleFunctorIsoCompQ (n : ℤ) :
     singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q := Iso.refl _
 

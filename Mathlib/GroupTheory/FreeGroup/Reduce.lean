@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Data.Fintype.Defs
-public import Mathlib.Data.List.Sublists
 public import Mathlib.GroupTheory.FreeGroup.Basic
+
+import Mathlib.Data.List.Sublists
+import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 /-!
 # The maximal reduction of a word in a free group
@@ -68,7 +70,7 @@ theorem reduce_replicate (n : ℕ) (x : α × Bool) :
   maximal reduction. -/]
 theorem reduce.red : Red L (reduce L) := by
   induction L with
-  | nil => constructor
+  | nil => simpa using .refl
   | cons hd1 tl1 ih =>
     dsimp
     revert ih
@@ -98,7 +100,7 @@ theorem reduce.not {p : Prop} :
     | nil =>
       dsimp; intro h
       exfalso
-      have := congr_arg List.length h
+      have := congr($(h).length)
       grind
     | cons hd tail =>
       obtain ⟨y, c⟩ := hd
@@ -301,7 +303,7 @@ instance Red.decidableRel : DecidableRel (@Red α)
   | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion rfl (heq_of_eq (Red.nil_iff.1 H))
   | (x, b) :: tl, [] =>
     match Red.decidableRel tl [(x, not b)] with
-    | isTrue H => isTrue <| Red.trans (Red.cons_cons H) <| (@Red.Step.not _ [] [] _ _).to_red
+    | isTrue H => isTrue <| Red.trans (Red.cons_cons H) (@Red.Step.not _ [] [] _ _).to_red
     | isFalse H => isFalse fun H2 => H <| Red.cons_nil_iff_singleton.1 H2
   | (x1, b1) :: tl1, (x2, b2) :: tl2 =>
     if h : (x1, b1) = (x2, b2) then
@@ -402,6 +404,24 @@ theorem eq_of_of_zpow_eq_of_zpow {a b : α} (hab : a ≠ b) {n m : ℤ} (h : of 
 theorem eq_of_of_pow_eq_of_pow {a b : α} (hab : a ≠ b) {n m : ℕ} (h : of a ^ n = of b ^ m) :
     n = 0 ∧ m = 0 := by
   simpa [← Int.natCast_eq_zero] using eq_of_of_zpow_eq_of_zpow hab h
+
+@[to_additive]
+theorem eq_of_commute_of_of {a b : α} (h : Commute (of a) (of b)) : a = b := by
+  classical
+  simpa [toWord_mul, eq_comm (a := b)] using congr(toWord $h)
+
+@[to_additive]
+private theorem subsingleton_of_isMulCommutative [IsMulCommutative (FreeGroup α)] :
+    Subsingleton α :=
+  ⟨fun _ _ ↦ eq_of_commute_of_of (mul_comm' _ _)⟩
+
+@[to_additive (attr := simp)]
+theorem isCyclic_iff_subsingleton : IsCyclic (FreeGroup α) ↔ Subsingleton α :=
+  ⟨fun _ ↦ subsingleton_of_isMulCommutative, fun _ ↦ inferInstance⟩
+
+@[to_additive (attr := simp)]
+theorem isMulCommutative_iff_subsingleton : IsMulCommutative (FreeGroup α) ↔ Subsingleton α :=
+  ⟨fun _ ↦ subsingleton_of_isMulCommutative, fun _ ↦ inferInstance⟩
 
 @[to_additive (attr := simp)]
 theorem one_ne_of (a : α) : 1 ≠ of a :=

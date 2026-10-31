@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Data.Finset.Option
 public import Mathlib.Data.PFun
-public import Mathlib.Data.Part
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Image of a `Finset α` under a partially defined function

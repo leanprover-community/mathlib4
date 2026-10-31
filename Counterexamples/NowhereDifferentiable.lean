@@ -146,7 +146,6 @@ theorem weierstrass_partial {a : ℝ} (ha : 0 < a) {b : ℕ} (hab : 1 < a * b) (
     ring
   simp_rw [this, ← Finset.sum_mul, geom_sum_eq hab.ne.symm]
   field_simp
-  refine div_le_div_of_nonneg_right ?_ (sub_nonneg.mpr hab.le)
   simp [sub_one_mul]
 
 /-- The remainder has lower bound in absolute value $|B| \ge |x_m - x| 2 (ab)^m / 3$ -/
@@ -261,7 +260,7 @@ theorem not_differentiableAt_weierstrass
       a * b ≤ 1 := by bound [ha.2]
       1 ≤ 3 / 2 * π + 1 := by simp [pi_nonneg]
   have hab' : 1 < a * b := lt_trans (lt_add_of_pos_left _ (mul_pos (by norm_num) pi_pos)) hab
-  by_contra!
+  by_contra
   obtain ⟨f', h⟩ := this
   have : Tendsto (fun m ↦ (seq b x m - x)⁻¹ * (weierstrass a b (seq b x m) - weierstrass a b x))
       atTop (𝓝 (f' 1)) := by

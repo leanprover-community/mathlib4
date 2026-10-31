@@ -29,39 +29,26 @@ namespace Filter
 
 variable {α β : Type*}
 
+@[to_dual]
 instance (priority := 200) atTop.isCountablyGenerated [Preorder α] [Countable α] :
-    (atTop : Filter <| α).IsCountablyGenerated :=
+    (atTop : Filter α).IsCountablyGenerated :=
   isCountablyGenerated_seq _
 
-instance (priority := 200) atBot.isCountablyGenerated [Preorder α] [Countable α] :
-    (atBot : Filter <| α).IsCountablyGenerated :=
-  isCountablyGenerated_seq _
-
+@[to_dual]
 instance instIsCountablyGeneratedAtTopProd [Preorder α] [IsCountablyGenerated (atTop : Filter α)]
     [Preorder β] [IsCountablyGenerated (atTop : Filter β)] :
     IsCountablyGenerated (atTop : Filter (α × β)) := by
   rw [← prod_atTop_atTop_eq]
   infer_instance
 
-instance instIsCountablyGeneratedAtBotProd [Preorder α] [IsCountablyGenerated (atBot : Filter α)]
-    [Preorder β] [IsCountablyGenerated (atBot : Filter β)] :
-    IsCountablyGenerated (atBot : Filter (α × β)) := by
-  rw [← prod_atBot_atBot_eq]
-  infer_instance
-
+@[to_dual]
 instance _root_.OrderDual.instIsCountablyGeneratedAtTop [Preorder α]
     [IsCountablyGenerated (atBot : Filter α)] : IsCountablyGenerated (atTop : Filter αᵒᵈ) := ‹_›
 
-instance _root_.OrderDual.instIsCountablyGeneratedAtBot [Preorder α]
-    [IsCountablyGenerated (atTop : Filter α)] : IsCountablyGenerated (atBot : Filter αᵒᵈ) := ‹_›
-
+@[to_dual]
 lemma atTop_countable_basis [Preorder α] [IsDirectedOrder α] [Nonempty α] [Countable α] :
     HasCountableBasis (atTop : Filter α) (fun _ => True) Ici :=
   { atTop_basis with countable := to_countable _ }
-
-lemma atBot_countable_basis [Preorder α] [IsCodirectedOrder α] [Nonempty α] [Countable α] :
-    HasCountableBasis (atBot : Filter α) (fun _ => True) Iic :=
-  { atBot_basis with countable := to_countable _ }
 
 /-- If `f` is a nontrivial countably generated filter, then there exists a sequence that converges
 to `f`. -/

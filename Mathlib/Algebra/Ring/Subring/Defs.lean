@@ -88,7 +88,7 @@ instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : T
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
 
 namespace SubringClass
@@ -188,7 +188,7 @@ lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).In
 lemma toSubmonoid_injective : (fun s : Subring R => s.toSubmonoid).Injective :=
   fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
 
-instance : PartialOrder (Subring R) := .ofSetLike (Subring R) R
+instance : PartialOrder (Subring R) := .ofSetLike (Subring R)
 
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 

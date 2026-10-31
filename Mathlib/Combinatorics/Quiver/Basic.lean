@@ -5,8 +5,7 @@ Authors: David Wärn, Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Opposite
-public import Mathlib.Tactic.ToDual
+public import Mathlib.Basic.Opposite
 
 /-!
 # Quivers
@@ -67,6 +66,12 @@ def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X :=
 def Hom.opEquiv {V} [Quiver V] {X Y : V} : (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
   toFun := Opposite.op
   invFun := Opposite.unop
+
+/-- To show that two Homs from the opposite category agree, it suffices to show they agree
+in the original category. -/
+@[ext low, to_dual self]
+theorem Hom.unop_ext {V} [Quiver V] {X Y : Vᵒᵖ} {f g : X ⟶ Y} (h : f.unop = g.unop) : f = g :=
+  Hom.opEquiv.symm.injective h
 
 /-- A type synonym for a quiver with no arrows. -/
 def Empty (V : Type u) : Type u := V

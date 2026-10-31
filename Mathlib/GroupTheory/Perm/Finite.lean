@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.Logic.Equiv.Fintype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Permutations on `Fintype`s
 
@@ -156,7 +159,6 @@ theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Su
   · left
     rw [extendDomain_apply_not_subtype _ _ pb]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
     (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
   classical
@@ -229,7 +231,7 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf
   obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
   exact
     le_antisymm (support_pow_le σ n)
-      (le_trans (ge_of_eq (congr_arg support hm)) (support_pow_le (σ ^ n) m))
+      (le_trans (ge_of_eq congr(support $hm)) (support_pow_le (σ ^ n) m))
 
 lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints σ)) :
     _root_.Disjoint x.ofSubtype.support σ.support := by
@@ -255,7 +257,7 @@ lemma support_closure_subset_union (S : Set (Perm α)) :
   · simp
   · intro a b ha hb hc hd
     refine (Finset.coe_subset.mpr (support_mul_le a b)).trans ?_
-    rw [Finset.sup_eq_union, Finset.coe_union, Set.union_subset_iff]
+    rw [Finset.coe_union, Set.union_subset_iff]
     exact ⟨hc, hd⟩
   · simp only [support_inv, imp_self, implies_true]
 
