@@ -5,12 +5,11 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-public import Mathlib.Analysis.Calculus.VectorField
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 import Mathlib.Analysis.InnerProductSpace.Dual
 
@@ -22,7 +21,7 @@ TODO: once all proofs are complete, generalise them appropriately
 and move these lemmas to their proper locations
 -/
 
-open Bundle FiberBundle Function NormedSpace VectorField
+open Bundle FiberBundle Function NormedSpace
 
 open scoped Manifold ContDiff
 
