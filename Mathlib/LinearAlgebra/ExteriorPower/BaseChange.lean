@@ -149,8 +149,8 @@ lemma baseChange_right_inverse (i : ℕ) :
 public def baseChangeEquiv (i : ℕ) : S ⊗[R] (⋀[R]^i M) ≃ₗ[S] ⋀[S]^i (S ⊗[R] M) where
   __ := baseChangeEquivForward R M S i
   invFun := baseChangeEquivInverse R M S i
-  left_inv x := LinearMap.congr_fun (exteriorPower.baseChange_left_inverse R M S i) x
-  right_inv x := LinearMap.congr_fun (exteriorPower.baseChange_right_inverse R M S i) x
+  left_inv x := congr($(exteriorPower.baseChange_left_inverse R M S i) x)
+  right_inv x := congr($(exteriorPower.baseChange_right_inverse R M S i) x)
 
 public lemma baseChangeEquiv_apply_tmul (i : ℕ) (m : Fin i → M) :
     baseChangeEquiv R M S i (1 ⊗ₜ[R] (ιMulti R i m)) =
