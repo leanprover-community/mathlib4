@@ -47,7 +47,7 @@ variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G �
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x)).comp x (hc.prodMk hd)
+  (isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x)).fun_comp x (hc.prodMk hd)
 
 @[fun_prop]
 theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
@@ -100,7 +100,7 @@ theorem fderiv_clm_comp (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 
 theorem HasStrictFDerivAt.clm_apply (hc : HasStrictFDerivAt c c' x)
     (hu : HasStrictFDerivAt u u' x) :
     HasStrictFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMap_apply.hasStrictFDerivAt (c x, u x)).comp x (hc.prodMk hu)
+  (isBoundedBilinearMap_apply.hasStrictFDerivAt (c x, u x)).fun_comp x (hc.prodMk hu)
 
 @[fun_prop]
 theorem HasFDerivWithinAt.clm_apply (hc : HasFDerivWithinAt c c' s x)
@@ -114,7 +114,7 @@ theorem HasFDerivWithinAt.clm_apply (hc : HasFDerivWithinAt c c' s x)
 theorem HasFDerivAt.clm_apply (hc : HasFDerivAt c c' x) (hu : HasFDerivAt u u' x) :
     HasFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x := by
   -- `by exact` to solve unification issues.
-  exact (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).comp x (hc.prodMk hu)
+  exact (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).fun_comp x (hc.prodMk hu)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.clm_apply (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -163,7 +163,7 @@ variable [Fintype ι]
 @[fun_prop]
 theorem HasStrictFDerivAt.continuousMultilinear_apply_const (hc : HasStrictFDerivAt c c' x)
     (u : ∀ i, M i) : HasStrictFDerivAt (fun y ↦ (c y) u) (c'.flipMultilinear u) x :=
-  (ContinuousMultilinearMap.apply 𝕜 M H u).hasStrictFDerivAt.comp x hc
+  (ContinuousMultilinearMap.apply 𝕜 M H u).hasStrictFDerivAt.fun_comp x hc
 
 @[fun_prop]
 theorem HasFDerivWithinAt.continuousMultilinear_apply_const (hc : HasFDerivWithinAt c c' s x)
@@ -252,7 +252,7 @@ variable [Fintype ι]
 @[fun_prop]
 theorem HasStrictFDerivAt.continuousAlternatingMap_apply_const (hc : HasStrictFDerivAt c c' x)
     (u : ι → F) : HasStrictFDerivAt (c · u) (c'.flipAlternating u) x :=
-  (ContinuousAlternatingMap.apply 𝕜 F G u).hasStrictFDerivAt.comp x hc
+  (ContinuousAlternatingMap.apply 𝕜 F G u).hasStrictFDerivAt.fun_comp x hc
 
 @[fun_prop]
 theorem HasFDerivWithinAt.continuousAlternatingMap_apply_const (hc : HasFDerivWithinAt c c' s x)
