@@ -807,14 +807,14 @@ variable [HasKernels C] [HasCokernels C]
 /-- The left homology functor `ShortComplex C ⥤ C`, where the left homology of a
 short complex `S` is understood as a cokernel of the obvious map `S.toCycles : S.X₁ ⟶ S.cycles`
 where `S.cycles` is a kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def leftHomologyFunctor : ShortComplex C ⥤ C where
   obj S := S.leftHomology
   map := leftHomologyMap
 
 /-- The cycles functor `ShortComplex C ⥤ C` which sends a short complex `S` to `S.cycles`
 which is a kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def cyclesFunctor : ShortComplex C ⥤ C where
   obj S := S.cycles
   map := cyclesMap
