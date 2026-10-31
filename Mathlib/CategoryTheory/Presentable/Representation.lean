@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseIff
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 public import Mathlib.CategoryTheory.Presentable.Continuous
 public import Mathlib.CategoryTheory.Presentable.Dense
@@ -25,87 +26,6 @@ universe w v v' u u'
 namespace CategoryTheory
 
 open Limits Opposite
-
-namespace Functor.FullyFaithful
-
-variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
-  {D : Type u'} [Category.{v'} D] [LocallySmall.{w} D]
-  {F : C ⥤ D} (hF : F.FullyFaithful)
-
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
-noncomputable def shrinkYonedaIso (X : C) :
-    shrinkYoneda.{w}.obj X ≅ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) :=
-  NatIso.ofComponents
-    (fun Y ↦ ((equivShrink _).symm.trans
-      (Equiv.trans hF.homEquiv (equivShrink _))).toIso)
-    (fun f ↦ by ext; simp [shrinkYoneda])
-
-@[simp]
-lemma shrinkYonedaIso_hom (X : C) :
-    (hF.shrinkYonedaIso X).hom = shrinkYonedaMap F X := rfl
-
-end Functor.FullyFaithful
-
-namespace Functor
-
-variable {C₁ C₂ C₃ C₄ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
-
-set_option backward.defeqAttrib.useBackward true in
-@[simps!]
-def whiskeringLeftObjCompWhiskeringRightObj (F : C₁ ⥤ C₂) (G : C₃ ⥤ C₄) :
-    (whiskeringLeft C₁ C₂ C₃).obj F ⋙ (whiskeringRight C₁ C₃ C₄).obj G ≅
-      (whiskeringRight C₂ C₃ C₄).obj G ⋙ (whiskeringLeft C₁ C₂ C₄).obj F :=
-  NatIso.ofComponents (fun _ ↦ Functor.associator _ _ _)
-
-end Functor
-
--- to be moved
-namespace Presheaf
-
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
-  [LocallySmall.{w} D] (F : C ⥤ D)
-
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
-noncomputable def shrinkYonedaCompWhiskeringRightUliftFunctorIso :
-    shrinkYoneda.{w} (C := D) ⋙
-      (Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}) ≅
-    uliftYoneda.{w} :=
-  NatIso.ofComponents (fun X ↦ NatIso.ofComponents
-    (fun Y ↦ (Equiv.ulift.trans (Equiv.trans (equivShrink _).symm Equiv.ulift.symm)).toIso) (by
-    intro Y₁ Y₂ f
-    ext g
-    simp [uliftYoneda, shrinkYoneda])) (by
-    intro X₁ X₂ f
-    ext Y g
-    simp [uliftYoneda, shrinkYoneda])
-
-
-open CategoryTheory.Functor in
-noncomputable def restrictedShrinkYonedaCompULiftIso :
-    restrictedShrinkYoneda.{w} F ⋙
-      (Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}) ≅
-        restrictedULiftYoneda.{w} F :=
-  associator _ _ _ ≪≫
-    isoWhiskerLeft _ (whiskeringLeftObjCompWhiskeringRightObj _ _) ≪≫
-    (associator _ _ _).symm ≪≫
-    isoWhiskerRight shrinkYonedaCompWhiskeringRightUliftFunctorIso.{w} _
-
-variable [F.IsDense]
-
-instance : (restrictedShrinkYoneda.{w} F).Faithful := by
-  sorry
-  --have := Functor.Faithful.of_iso (restrictedShrinkYonedaCompULiftIso.{w} F).symm
-  --exact Functor.Faithful.of_comp _ ((Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}))
-
-instance : (restrictedShrinkYoneda.{w} F).Full := by
-  sorry
-  --have := Functor.Full.of_iso (restrictedShrinkYonedaCompULiftIso.{w} F).symm
-  --exact Functor.Full.of_comp_faithful _
-  --  ((Functor.whiskeringRight _ _ _).obj (uliftFunctor.{v', w}))
-
-end Presheaf
 
 namespace IsCardinalLocallyPresentable
 
@@ -182,7 +102,7 @@ instance : (toCardinalContinuous C κ).EssSurj where
         (shrinkYoneda.{w}.flip.obj (op X.1)) κ J
       refine (IsColimit.equivOfNatIsoOfIso
         (NatIso.ofComponents
-          (fun j ↦ ((isCardinalPresentable C κ).fullyFaithfulι.shrinkYonedaIso
+          (fun j ↦ (shrinkYonedaMapIso (isCardinalPresentable C κ).ι
             (G.obj j)).app _) (fun _ ↦ ?_)) _ _ ?_).2
         (isColimitOfPreserves
           (shrinkYoneda.{w}.flip.obj (op X.1)) (colimit.isColimit G₁))
@@ -190,7 +110,7 @@ instance : (toCardinalContinuous C κ).EssSurj where
         simp [shrinkYoneda, shrinkYonedaMap, G₁, G₂]
         sorry --rfl
       · refine (Cocone.ext (Iso.refl _) (fun j ↦ ?_))
-        simp [c', dsimp% ((isCardinalPresentable C κ).fullyFaithfulι.shrinkYonedaIso
+        simp [c', dsimp% (shrinkYonedaMapIso (isCardinalPresentable C κ).ι
           (G.obj j)).inv_hom_id_app_assoc (op X)])
     exact IsColimit.coconePointUniqueUpToIso h' h
 

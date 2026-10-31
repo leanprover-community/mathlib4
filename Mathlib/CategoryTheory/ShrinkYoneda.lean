@@ -325,6 +325,22 @@ lemma shrinkYonedaMap_app_shrinkYonedaObjObjEquiv_symm (F : C ⥤ D) {X Y : C} (
       shrinkYonedaObjObjEquiv.symm (F.map f) := by
   simp [shrinkYonedaMap]
 
+instance (F : C ⥤ D) (X : C) [F.Full] [F.Faithful] :
+    IsIso (shrinkYonedaMap.{w} F X) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro Y
+  rw [isIso_iff_bijective]
+  exact (shrinkYonedaObjObjEquiv.trans
+    ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.trans
+      shrinkYonedaObjObjEquiv.symm)).bijective
+
+/-- The natural isomorphism `shrinkYoneda.obj X ≅ F.op ⋙ shrinkYoneda.obj (F.obj X)`
+when `F : C ⥤ D` is a fully faithful functor and `X : C`. -/
+@[simps! hom]
+noncomputable def shrinkYonedaMapIso (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) :
+    shrinkYoneda.{w}.obj X ≅ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) :=
+  asIso (shrinkYonedaMap F X)
+
 end
 
 lemma comp_shrinkYonedaMap_comp_eq_yonedaMap
