@@ -58,33 +58,35 @@ def musicalIsoSimple (s : (x : B) → TangentSpace IB x →L[ℝ] ℝ) :
     (x : B) → TangentSpace IB x :=
   fun x ↦ (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap (s x)
 
--- TODO: generalise to any Riemannian bundle; does this exist already?
+variable [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace IB x)]
+
+-- Same workaround as for the Levi-Civita file.
+variable {I} in
+omit [IsManifold IB (k + 1) B] [CompleteSpace EB] [∀ (x : B), CompleteSpace (TangentSpace IB x)] in
+lemma _root_.ContMDiffAt.inner_bundle' {X Y : Π x : B, TangentSpace IB x} {x : B}
+    (hX : CMDiffAt k (T% X) x) (hY : CMDiffAt k (T% Y) x) :
+    CMDiffAt k (fun x ↦ inner ℝ (X x) (Y x)) x :=
+  ContMDiffAt.inner_bundle hX hY
+
+-- TODO: review if the shape of h is right, and generalise this a lot
+lemma ContMDiffAt.inner_bundle_of_apply
+    {s : (x : B) → TangentSpace IB x} {x : B}
+    (h : ∀ {t : (x : B) → TangentSpace IB x},
+      CMDiffAt k (T% t) x → CMDiffAt k (fun x ↦ inner ℝ (s x) (t x)) x) :
+    CMDiffAt k (T% s) x := by
+  -- this should be ContMDiffAt.clm_bundle_of_apply₂
+  #check ContMDiffAt.clm_bundle_of_apply
+  sorry
+
+-- TODO: generalise to any Riemannian bundle
 /-- If `B` has a `C^k` Riemannian metric, then a vector field `s` of `B` is `C^k` at `x`
 if and only if its pairing with any `C^k` vector field is `C^k` at `x`. -/
-lemma hogeAt {s : (x : B) → TangentSpace IB x} {x : B} :
+lemma ContMDiffAt.inner_bundle_iff_apply {s : (x : B) → TangentSpace IB x} {x : B} :
     CMDiffAt k (T% s) x ↔ (∀ {t : (x : B) → TangentSpace IB x},
-      CMDiffAt k (T% t) x → CMDiffAt k (fun x ↦ inner ℝ (s x) (t x)) x) := by
-  refine ⟨fun hs t ht ↦ ?_, fun h ↦ ?_⟩
-  · let ψ : (x : B) → TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] Bundle.Trivial B ℝ x :=
-      fun x ↦ innerSL ℝ (E := TangentSpace IB x)
-    have hψ : ContMDiffAt IB (IB.prod 𝓘(ℝ, EB →L[ℝ] EB →L[ℝ] ℝ)) k
-      (fun m ↦ TotalSpace.mk' (E := fun x ↦ TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-        (EB →L[ℝ] EB →L[ℝ] ℝ) m (innerSL ℝ)) x := by
-      sorry -- Riemannian metric is C^k
-    let aux := ContMDiffAt.clm_bundle_apply₂ (F₃ := ℝ) hψ hs ht
-    -- Remaining: reduce `aux` to this statement
-    sorry
-  · sorry
+      CMDiffAt k (T% t) x → CMDiffAt k (fun x ↦ inner ℝ (s x) (t x)) x) :=
+  ⟨fun hs _t ht ↦ hs.inner_bundle' ht, fun h ↦ .inner_bundle_of_apply h⟩
 
-/-- If `B` has a `C^k` Riemannian metric, then a vector field `s` of `B` is `C^k`
-if and only if its pairing with any `C^k` vector field is `C^k`. -/
-lemma hoge {s : (x : B) → TangentSpace IB x} :
-    CMDiff k (T% s) ↔ (∀ {t : (x : B) → TangentSpace IB x},
-      CMDiff k (T% t) → ContMDiff IB 𝓘(ℝ) k (fun x ↦ inner ℝ (s x) (t x))) := by
-  refine ⟨fun hs t ht x ↦ hogeAt.mp (hs x) (ht x), ?_⟩
-  intro ht x
-  -- TODO: needs a slightly different proof, but should be the same in both cases
-  sorry
+-- TODO: add also the corresponding WithinAt, On and unrestricted versions of these lemmas
 
 lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     (hs : CMDiffAt k (fun (x : B) ↦
@@ -92,7 +94,7 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     CMDiffAt k (T% (musicalIsoSimple s)) x := by
   simp only [musicalIsoSimple, LinearIsometryEquiv.toContinuousLinearEquiv_symm,
     ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv]
-  rw [hogeAt (IB := IB)]
+  rw [ContMDiffAt.inner_bundle_iff_apply (IB := IB)]
   intro t ht
   simp [hs.clm_bundle_apply_trivial_target ht]
 
