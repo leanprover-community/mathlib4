@@ -291,6 +291,8 @@ def toSet : Set (Arrow C) := Set.ofPred (fun f ↦ P f.hom)
 
 lemma mem_toSet_iff (f : Arrow C) : f ∈ P.toSet ↔ P f.hom := Iff.rfl
 
+lemma mem_toSet_iff' {X Y : C} (f : X ⟶ Y) : (Arrow.mk f) ∈ P.toSet ↔ P f := Iff.rfl
+
 lemma toSet_iSup {ι : Type*} (W : ι → MorphismProperty C) :
     (⨆ i, W i).toSet = ⋃ i, (W i).toSet := by
   ext

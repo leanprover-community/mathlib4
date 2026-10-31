@@ -5,9 +5,12 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.Basic.Countable.Basic
 public import Mathlib.Basic.Countable.Small
+public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Countable categories
@@ -41,6 +44,13 @@ instance {J : Type u} [Countable J] [Category* J] [Quiver.IsThin J] : CountableC
   CountableCategory.mk inferInstance (fun _ _ ↦ ⟨fun _ ↦ 0, fun _ _ _ ↦ Subsingleton.elim _ _⟩)
 
 instance : CountableCategory ℕ where
+
+instance (J : Type*) [Category* J] [CountableCategory J] : Countable (Arrow J) :=
+  Countable.of_equiv _ (Arrow.equivSigma J).symm
+
+instance (J K : Type*) [Category* J] [Category* K]
+    [CountableCategory J] [CountableCategory K] : CountableCategory (J × K) where
+  countableHom _ _ := inferInstanceAs (Countable (_ × _))
 
 namespace CountableCategory
 
