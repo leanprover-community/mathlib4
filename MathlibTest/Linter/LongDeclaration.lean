@@ -17,20 +17,18 @@ set_option linter.longDeclaration true
 set_option linter.longDeclaration.maxLines 3
 
 -- Exactly the limit is permitted.
-#guard_msgs in
 example : True := by
   skip
   exact True.intro
 
 -- A named declaration whose entire range is exactly the limit can take the fast path.
-#guard_msgs in
 theorem shortProofAtLimit : True := by
   skip
   exact True.intro
 
 -- Explicit hypotheses contribute to the declaration length.
 /--
-warning: This declaration contains 6 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 6 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -43,7 +41,7 @@ theorem shortProofWithLongHeader
   exact h
 
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -54,7 +52,7 @@ private theorem longPrivateProofTest : True := by
   exact True.intro
 
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -65,7 +63,7 @@ theorem longDeclarationTest : True := by
   exact True.intro
 
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -77,7 +75,7 @@ lemma longLemmaTest : True := by
 
 -- Term proofs are checked too; UTF-8 before the proof must not affect the positions.
 /--
-warning: This declaration contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -90,7 +88,7 @@ example (_α : Type) : True :=
 
 -- Anonymous declarations include their headers too.
 /--
-warning: This declaration contains 6 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 6 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -110,14 +108,12 @@ variable (α : Type)
 
 include h
 
-#guard_msgs in
 theorem shortProofWithSectionVariables : True := by
   exact h
 
 end
 
 -- A declaration's documentation does not count toward its length.
-#guard_msgs in
 /-- A documented theorem.
 Its documentation spans several lines.
 These lines do not count as code.
@@ -128,7 +124,7 @@ theorem documentedShortProof : True := by
 
 -- Data-returning declaration bodies are checked too.
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -140,7 +136,7 @@ example : Nat := by
 
 -- Proofs with local proposition parameters are checked without type information.
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -152,7 +148,7 @@ example (P : Prop) (h : P) : P := by
 
 -- Only the enclosing declaration body is reported, even when it contains a long subproof.
 /--
-warning: This declaration contains 6 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 6 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -166,7 +162,7 @@ example : True := by
 
 -- An embedded proof contributes to the enclosing definition body.
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -177,7 +173,6 @@ def longEmbeddedProofTest : {n : Nat // n = 0} := ⟨0, by
   rfl⟩
 
 -- Blank lines and comment-only lines do not count.
-#guard_msgs in
 example : True := by
   -- This comment is free.
 
@@ -186,7 +181,6 @@ example : True := by
   exact True.intro
 
 -- Nested block comments, including blank lines inside them, do not count.
-#guard_msgs in
 example : True := by
   /- Outer comment
 
@@ -198,7 +192,7 @@ example : True := by
 
 -- Code before or after a block comment still counts, as do lines with trailing comments.
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -210,7 +204,6 @@ example : True := by -- A trailing comment.
   exact True.intro
 
 -- A blank line between separate comments does not count.
-#guard_msgs in
 example : True := by
   -- First comment.
 
@@ -220,7 +213,7 @@ example : True := by
 
 -- Comment markers in strings and quoted identifiers are code.
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -230,21 +223,18 @@ example : True := by
   skip
   exact True.intro
 
-#guard_msgs in
 example : True := by
   exact True.intro
 -- Trailing comments do not count.
 -- Nor do blank lines after the last token.
 
 -- Command-local overrides must be respected.
-#guard_msgs in
 set_option linter.longDeclaration false in
 example : True := by
   skip
   skip
   exact True.intro
 
-#guard_msgs in
 set_option linter.longDeclaration.maxLines 4 in
 example : True := by
   skip
@@ -252,7 +242,7 @@ example : True := by
   exact True.intro
 
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -264,7 +254,7 @@ example : True := by
 
 -- Documentation comments in term proofs are excluded too.
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -278,14 +268,12 @@ example : True :=
   True.intro
 
 -- A line-comment marker cannot start a block comment.
-#guard_msgs in
 example : True := by
   -- /- This does not open a block comment.
 
   exact True.intro
 
 -- A closing block-comment marker can overlap a pair of hyphens.
-#guard_msgs in
 example : True := by
   /- A block comment ending with an extra hyphen. --/
 
@@ -294,7 +282,7 @@ example : True := by
 
 -- Lines of a multiline string remain code, even when they look like comments.
 /--
-warning: This declaration contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -307,7 +295,7 @@ example : True := by
 
 -- Blank lines inside multiline tokens still count.
 /--
-warning: This declaration contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -320,7 +308,7 @@ last line"
 
 -- Term-style definitions returning data are checked.
 /--
-warning: This declaration contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -333,7 +321,7 @@ def longDataTermTest : Nat :=
 
 -- Abbreviations are checked.
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -345,7 +333,7 @@ abbrev longAbbrevTest : Nat := by
 
 -- Opaque declarations with bodies are checked.
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -357,7 +345,7 @@ opaque longOpaqueTest : Nat := by
 
 -- Structure-style instances are checked.
 /--
-warning: This declaration contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 4 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -369,7 +357,7 @@ instance longInstanceTest : Inhabited Nat where
 
 -- Equation-style definitions include the signature and patterns.
 /--
-warning: This declaration contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -382,7 +370,7 @@ def longEquationTest : Nat → Nat
 
 -- Attached helper declarations count toward the enclosing declaration.
 /--
-warning: This declaration contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -395,7 +383,7 @@ where
 
 -- Termination hints are part of the declaration body.
 /--
-warning: This declaration contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 5 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -408,7 +396,7 @@ termination_by n
 
 -- Equation-style declarations include their signatures and patterns.
 /--
-warning: This declaration contains 7 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+warning: This command contains 7 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
 
 Note: This linter can be disabled with `set_option linter.longDeclaration false`
 -/
@@ -422,13 +410,16 @@ def shortEquationTest
   | n + 2 => n
 
 -- Short opaque declarations without values and axioms are permitted.
-#guard_msgs in
 opaque bodylessOpaqueTest : Nat
 
-#guard_msgs in
 axiom bodylessAxiomTest : True
 
--- Declarations quoted inside a term are data, not independently linted declarations.
+-- Non-declaration commands are checked too, including any quoted syntax they contain.
+/--
+warning: This command contains 6 lines of code, exceeding the limit of 3. Consider extracting helper definitions or lemmas.
+
+Note: This linter can be disabled with `set_option linter.longDeclaration false`
+-/
 #guard_msgs in
 run_elab do
   let _ ← `(command| def quotedLongDeclaration : Nat := by
