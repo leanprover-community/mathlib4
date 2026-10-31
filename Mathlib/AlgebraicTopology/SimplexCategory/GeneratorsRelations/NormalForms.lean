@@ -317,7 +317,7 @@ lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
 local grind_pattern IsAdmissible.simplicialEvalσ_succ_getElem =>
   IsAdmissible m L, simplicialEvalσ L L[k]
 
-lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
+lemma mem_isAdmissible_of_eval_eq_eval_add_one (hL : IsAdmissible m L)
     (j : ℕ) (hj : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
     j ∈ L := by
   induction L generalizing m with
@@ -335,7 +335,7 @@ lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j
 lemma mem_isAdmissible_iff (hL : IsAdmissible m L) (j : ℕ) :
     j ∈ L ↔ j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) :=
   ⟨lt_and_eval_eq_eval_add_one_of_mem_isAdmissible L hL j,
-    fun h ↦ mem_isAdmissible_of_lt_and_eval_eq_eval_add_one L hL j h.2⟩
+    fun h ↦ mem_isAdmissible_of_eval_eq_eval_add_one L hL j h.2⟩
 
 end MemIsAdmissible
 
