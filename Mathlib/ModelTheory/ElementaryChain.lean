@@ -256,6 +256,29 @@ noncomputable def liftElementary (C : ElementaryChain L ι) {P : Type*} [L.Struc
         rw [← hz]
         exact ((C.toLimitElementary i).map_formula' φ z).symm }
 
+/-- The elementary lift of a compatible cocone agrees with the cocone on the canonical maps into
+the limit. -/
+@[simp]
+theorem liftElementary_toLimit (C : ElementaryChain L ι) {P : Type*} [L.Structure P]
+    (g : ∀ i, C.carrier i ↪ₑ[L] P)
+    (comm : ∀ i j (hij : i ≤ j) (x : C.carrier i), g j (C.map i j hij x) = g i x)
+    (i : ι) (x : C.carrier i) :
+    C.liftElementary g comm (C.toLimit i x) = g i x := by
+  simp only [liftElementary, toLimit]
+  exact DirectLimit.lift_of (g := fun i ↦ (g i).toEmbedding)
+    (Hg := fun i j hij x ↦ by simpa using comm i j hij x) x
+
+/-- An elementary embedding out of the limit is determined by its values on the canonical maps into
+the limit. -/
+theorem liftElementary_unique (C : ElementaryChain L ι) {P : Type*} [L.Structure P]
+    (g : ∀ i, C.carrier i ↪ₑ[L] P)
+    (comm : ∀ i j (hij : i ≤ j) (x : C.carrier i), g j (C.map i j hij x) = g i x)
+    (F : C.Limit ↪ₑ[L] P) (hF : ∀ (i : ι) (x : C.carrier i), F (C.toLimit i x) = g i x) :
+    F = C.liftElementary g comm := by
+  ext z
+  obtain ⟨i, x, rfl⟩ := C.exists_toLimit z
+  rw [hF, liftElementary_toLimit]
+
 /-- If some stage is a model of `T`, then the direct limit is also a model of `T`. -/
 theorem limit_models (C : ElementaryChain L ι) (T : L.Theory)
     (hT : ∃ i, C.carrier i ⊨ T) : C.Limit ⊨ T := by
