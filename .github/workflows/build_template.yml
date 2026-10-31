@@ -21,10 +21,6 @@ on:
       runs_on:
         type: string
         required: true
-      mathlib_ci_ref:
-        type: string
-        required: false
-        default: ''
       cache_environment:
         # GitHub environment for the `upload_cache` and `upload_test_cache` jobs. Its only
         # role is to fix the OIDC `sub` claim to `...:environment:<name>`, which the cache
@@ -67,8 +63,6 @@ jobs:
       mk_all-outcome: ${{ steps.mk_all.outcome }}
       noisy-outcome: ${{ steps.noisy.outcome }}
       # shake-outcome: ${{ steps.shake.outcome }}
-      # `test`/`lint` outcomes are exposed by the `test_lint` job (and consumed,
-      # with these, by the `batteries_pr_comment` job).
     # PR code can write `pr-branch/.lake/` from setup-build-env's "download dependencies"
     # step onward, so later steps that use it run inside landrun. The one exception is
     # "prune local cache to this commit's set", which runs only on a trusted checkout.
@@ -120,7 +114,7 @@ jobs:
       - name: check the cache tool is recent
         # Canonical repo only. This nudge targets human fork-PR / dev-branch
         # contributors who run `lake exe cache get` locally. The nightly-testing
-        # repo's branches (nightly-testing, bump/*, batteries-pr-testing-*) are
+        # repo's branches (nightly-testing and bump/*) are
         # machine-managed and don't merge master the same way, so "merge master
         # and push" is the wrong remedy there; never fail their CI on it.
         if: github.repository == 'leanprover-community/mathlib4'
@@ -155,15 +149,21 @@ jobs:
           && !startsWith(github.ref_name, 'bump/')
           && !startsWith(github.base_ref, 'bump/')
         shell: bash
+        env:
+          IS_PR: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
         run: |
           cd pr-branch
 
           # Check that all inputRevs in lake-manifest.json match the required pattern
           echo "Validating lake-manifest.json inputRevs..."
 
+          # PR tests can pin unmerged dependencies. Bors requires stable references.
+          pattern='main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?'
+          if [ "$IS_PR" = true ]; then pattern="$pattern|[0-9a-f]{40}"; fi
+
           # Extract all inputRevs from the manifest
           invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
-            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?)$' || true)
+            grep -v -E "^($pattern)$" || true)
 
           if [ -n "$invalid_revs" ]; then
             echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
@@ -173,6 +173,7 @@ jobs:
             echo "  - 'main'"
             echo "  - 'master'"
             echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3, v1.2.3-pre, or v1.2.3+build)"
+            if [ "$IS_PR" = true ]; then echo "  - a full commit SHA (PR tests only)"; fi
             exit 1
           else
             echo "✅ All inputRevs in lake-manifest.json are valid"
@@ -685,71 +686,80 @@ jobs:
           action: remove
           linters: gcc
 
-  # Posts the batteries-pr-testing status comment. It is a separate job so that
-  # the `mathlib-nightly-testing` App token is minted on a fresh GitHub-hosted
-  # runner, never in a job that built the branch. It reads the build, test and
-  # lint outcomes from those jobs' outputs; the only files it checks out are this
-  # workflow's own local actions.
+  # Report from a fresh runner so the Batteries write token never reaches PR code.
   batteries_pr_comment:
-    name: Comment on batteries-pr-testing branch
+    name: Report Mathlib CI to Batteries
     needs: [build, test_lint]
-    # Only when `test_lint` finished. Its job-level `always()` keeps it running if
-    # the run is cancelled after it started, while a run cancelled before it
-    # started (say, superseded during `build`) records it as `cancelled` with no
-    # steps run, so checking for `!= 'skipped'` would post for an untested run.
-    if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') && (needs.test_lint.result == 'success' || needs.test_lint.result == 'failure') }}
+    if: >-
+      !cancelled() && github.repository == 'leanprover-community/mathlib4' &&
+      github.event.pull_request.head.repo.full_name == 'leanprover-community/mathlib4-adaptations' &&
+      startsWith(github.head_ref, 'batteries-pr-testing-') &&
+      (needs.test_lint.result == 'success' || needs.test_lint.result == 'failure')
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     permissions:
       contents: read
+      pull-requests: read
     steps:
+      - name: Check the adaptation PR and read its Batteries pin
+        id: adaptation
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const match = /^batteries-pr-testing-([0-9]+)$/.exec(pr.head.ref);
+            if (!match) return;
+            const { data: current } = await github.rest.pulls.get({ ...context.repo, pull_number: pr.number });
+            if (current.state !== 'open' || current.head.sha !== pr.head.sha) return;
+            const { data: file } = await github.rest.repos.getContent({
+              ...context.repo, path: 'lake-manifest.json', ref: pr.head.sha,
+            });
+            const manifest = JSON.parse(Buffer.from(file.content, 'base64').toString());
+            core.setOutput('batteries-sha', manifest.packages.find(p => p.name === 'batteries').rev);
+            core.setOutput('batteries-pr', match[1]);
+
       - name: Checkout local actions
+        if: steps.adaptation.outputs.batteries-pr != ''
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.workflow_sha }}
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
-          persist-credentials: false # no later step needs git credentials
-
-      # mathlib-ci provides the comment script. Written twice because a `uses:` step
-      # cannot conditionally omit the single `ref` key (`ref: ''` would override the
-      # action's pinned default).
-      - name: Get mathlib-ci
-        if: ${{ inputs.mathlib_ci_ref == '' }}
-        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+          persist-credentials: false
 
       - name: Get mathlib-ci
-        if: ${{ inputs.mathlib_ci_ref != '' }}
+        if: steps.adaptation.outputs.batteries-pr != ''
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
-        with:
-          ref: ${{ inputs.mathlib_ci_ref }}
 
-      - name: Generate batteries-pr-testing app token
-        id: batteries-pr-testing-token
+      - name: Generate Batteries status token
+        if: steps.adaptation.outputs.batteries-pr != ''
+        id: token
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
-          app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
-          private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+          app-id: ${{ secrets.BATTERIES_STATUS_APP_ID }}
+          private-key: ${{ secrets.BATTERIES_STATUS_PRIVATE_KEY }}
           owner: leanprover-community
           repositories: batteries
-          permission-pull-requests: write # labels and comments on the Batteries PR
-      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
-      - name: Post comments for batteries-pr-testing-NNNN branches
+          permission-pull-requests: write
+
+      - name: Update the Batteries status comment and labels
+        if: steps.adaptation.outputs.batteries-pr != ''
         shell: bash
         env:
-          TOKEN: ${{ steps.batteries-pr-testing-token.outputs.token }}
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+          TOKEN: ${{ steps.token.outputs.token }}
+          BOT_LOGIN: mathlib-batteries-status[bot]
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+          BATTERIES_SHA: ${{ steps.adaptation.outputs.batteries-sha }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          # All outcomes come from the `build` and `test_lint` jobs' outputs, since
-          # this job runs none of those steps itself.
           BUILD_OUTCOME: ${{ needs.build.outputs.build-outcome }}
           NOISY_OUTCOME: ${{ needs.build.outputs.noisy-outcome }}
           ARCHIVE_OUTCOME: ${{ needs.build.outputs.archive-outcome }}
           COUNTEREXAMPLES_OUTCOME: ${{ needs.build.outputs.counterexamples-outcome }}
+          WANTED_OUTCOME: ${{ needs.build.outputs.wanted-outcome }}
+          MK_ALL_OUTCOME: ${{ needs.build.outputs.mk_all-outcome }}
           LINT_OUTCOME: ${{ needs.test_lint.outputs.lint-outcome }}
           TEST_OUTCOME: ${{ needs.test_lint.outputs.test-outcome }}
-          NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
           "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
 
