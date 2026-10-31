@@ -6,7 +6,11 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.ZMod.Basic
+
 import Mathlib.Tactic.Linarith
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Absolute value in `ZMod n`

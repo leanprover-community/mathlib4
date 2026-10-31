@@ -6,8 +6,12 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebraic operations on `SeparationQuotient`

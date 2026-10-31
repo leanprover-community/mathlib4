@@ -412,7 +412,7 @@ theorem hausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpa
       simpa [(f.normDet_eq_zero_tfae.out 2 1).mp h, Set.image_image]
     rw [(LinearIsometry.isometry _).hausdorffMeasure_image (by simp)]
     have h : (finrank ℝ f.range : ℝ) < finrank ℝ U := by
-      exact_mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
+      exact mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
     simp [Real.hausdorffMeasure_of_finrank_lt h]
 
 /--
@@ -422,7 +422,7 @@ Using Euclidean Hausdorff measure with the domain dimension, the volume of the i
 theorem euclideanHausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpace V]
     [BorelSpace V] (f : U →ₗ[ℝ] V) (s : Set U) :
     μHE[finrank ℝ U] (f '' s) = ENNReal.ofReal f.normDet * μHE[finrank ℝ U] s := by
-  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply, nnreal_smul_coe_apply,
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply, nnreal_smul_coe_apply,
     hausdorffMeasure_image]
   exact mul_left_comm _ _ _
 

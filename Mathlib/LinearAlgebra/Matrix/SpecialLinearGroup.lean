@@ -277,7 +277,7 @@ def center_equiv_rootsOfUnity' (i : n) :
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
     Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
   left_inv A := by
-    refine SetCoe.ext <| SetCoe.ext ?_
+    refine Subtype.ext <| Subtype.ext ?_
     obtain ⟨r, _, hr⟩ := mem_center_iff.mp A.property
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using! smul_one_eq_diagonal r
   right_inv a := by
@@ -590,7 +590,7 @@ open scoped MatrixGroups
 namespace SpecialLinearGroup
 
 /-- An element in SLₙ(F) induced by a diagonal matrix `1` on any other entries and `a`, `a⁻¹` on
-  positition `i` and `j` respectively where `i ≠ j`. -/
+  positions `i` and `j` respectively where `i ≠ j`. -/
 noncomputable def diag2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
     (ha : a ≠ 0) : SpecialLinearGroup ι F :=
   ⟨diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1), by
@@ -602,7 +602,7 @@ lemma diag2n_coe {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i 
       if k = i then a else if k = j then a⁻¹ else 1) := rfl
 
 /-- An element in SL₂(F) induced by a diagonal matrix with `a`, `a⁻¹` on
-  positition `0` and `1` respectively. -/
+  positions `0` and `1` respectively. -/
 noncomputable abbrev diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
   diag2n zero_ne_one a ha
 

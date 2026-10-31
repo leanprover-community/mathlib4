@@ -878,14 +878,12 @@ lemma cyclesIsoSc'_hom_iCycles :
     natIsoSc'_hom_app_τ₂, comp_id]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_inv_iCycles :
     (K.cyclesIsoSc' i j k hi hk).inv ≫ K.iCycles j = (K.sc' i j k).iCycles := by
   simp [cyclesIsoSc', iCycles]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toCycles_cyclesIsoSc'_hom :
     K.toCycles i j ≫ (K.cyclesIsoSc' i j k hi hk).hom = (K.sc' i j k).toCycles := by
@@ -914,7 +912,6 @@ lemma pOpcycles_opcyclesIsoSc'_hom :
     K.pOpcycles j ≫ (K.opcyclesIsoSc' i j k hi hk).hom = (K.sc' i j k).pOpcycles := by
   simp [opcyclesIsoSc', pOpcycles]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opcyclesIsoSc'_inv_fromOpcycles :
     (K.opcyclesIsoSc' i j k hi hk).inv ≫ K.fromOpcycles j k =

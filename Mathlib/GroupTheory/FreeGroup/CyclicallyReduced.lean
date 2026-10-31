@@ -6,6 +6,7 @@ Authors: Amir Livne Bar-on, Bernhard Reinke
 module
 
 public import Mathlib.GroupTheory.FreeGroup.Reduce
+
 import Mathlib.Tactic.Group
 
 /-!

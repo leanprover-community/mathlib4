@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Analytic.Within
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+
+import Mathlib.Analysis.Analytic.Within
 
 /-!
 # Faa di Bruno formula
@@ -809,7 +810,7 @@ and multilinearly on `p`. -/
 @[simps! apply_apply]
 def compAlongOrderedFinpartitionₗ :
     (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
-      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E [×c.partSize i]→L[𝕜] F) (E [×n]→L[𝕜] G) where
+      (Π i : Fin c.length, E [×c.partSize i]→L[𝕜] F) →ₘₗ[𝕜] E [×n]→L[𝕜] G where
   toFun f :=
     MultilinearMap.mk' (fun p ↦ c.compAlongOrderedFinpartition f p)
       (fun p m q q' ↦ by
@@ -1071,7 +1072,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x
       have cm : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
       have cp i : (c.partSize i : WithTop ℕ∞) ≤ m := by
-        exact_mod_cast OrderedFinpartition.partSize_le c i
+        exact mod_cast OrderedFinpartition.partSize_le c i
       have I i : HasFDerivWithinAt (fun x ↦ p x (c.partSize i))
           (p x (c.partSize i).succ).curryLeft s x :=
         hf.fderivWithin (c.partSize i) ((cp i).trans_lt hm) x hx
@@ -1106,5 +1107,5 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
     · apply continuousOn_pi.2 (fun i ↦ ?_)
       have : (c.partSize i : WithTop ℕ∞) ≤ m := by
-        exact_mod_cast OrderedFinpartition.partSize_le c i
+        exact mod_cast OrderedFinpartition.partSize_le c i
       exact hf.cont _ (this.trans hm)

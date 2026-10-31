@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.SpecialFunctions.Sqrt
 public import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
+public import Mathlib.Analysis.SpecialFunctions.Sqrt
+
 import Mathlib.Analysis.Calculus.ContDiff.WithLp
 import Mathlib.Analysis.Calculus.FDeriv.WithLp
 

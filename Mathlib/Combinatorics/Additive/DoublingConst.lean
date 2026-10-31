@@ -6,7 +6,11 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+
 import Mathlib.Data.Finset.Density
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Doubling and difference constants

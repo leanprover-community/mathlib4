@@ -5,8 +5,10 @@ Authors: Aaron Anderson
 -/
 module
 
-import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+
+import Mathlib.Algebra.Order.Ring.Abs
+
 /-!
 # The Möbius function and Möbius inversion
 
@@ -21,13 +23,13 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 * `sum_eq_iff_sum_mul_moebius_eq` for functions to a `CommRing`
 * `sum_eq_iff_sum_smul_moebius_eq` for functions to an `AddCommGroup`
 * `prod_eq_iff_prod_pow_moebius_eq` for functions to a `CommGroup`
-* `prod_eq_iff_prod_pow_moebius_eq_of_nonzero` for functions to a `CommGroupWithZero`
+* `prod_eq_iff_prod_pow_moebius_eq_of_ne_zero` for functions to a `CommGroupWithZero`
 * And variants that apply when the equalities only hold on a set `S : Set ℕ` such that
   `m ∣ n → n ∈ S → m ∈ S`:
 * `sum_eq_iff_sum_mul_moebius_eq_on` for functions to a `CommRing`
 * `sum_eq_iff_sum_smul_moebius_eq_on` for functions to an `AddCommGroup`
 * `prod_eq_iff_prod_pow_moebius_eq_on` for functions to a `CommGroup`
-* `prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero` for functions to a `CommGroupWithZero`
+* `prod_eq_iff_prod_pow_moebius_eq_on_of_ne_zero` for functions to a `CommGroupWithZero`
 
 ## Tags
 
@@ -48,6 +50,7 @@ open scoped zeta
 /-- `μ` is the Möbius function. If `n` is squarefree with an even number of distinct prime factors,
   `μ n = 1`. If `n` is squarefree with an odd number of distinct prime factors, `μ n = -1`.
   If `n` is not squarefree, `μ n = 0`. -/
+@[oeis A008683 "the sequence skips `n = 0`"]
 def moebius : ArithmeticFunction ℤ :=
   ⟨fun n => if Squarefree n then (-1) ^ cardFactors n else 0, by simp⟩
 
@@ -141,16 +144,34 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
   rw [isMultiplicative_zeta.natCast.prodPrimeFactors_add_of_squarefree h_mult hn,
     coe_zeta_mul_apply]
 
+theorem IsMultiplicative.prodPrimeFactors_one_sub [CommRing R]
+    (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : n ≠ 0) :
+    ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d := by
+  -- `P` is squarefree with the prime factors of `n`, and `μ` vanishes on the divisors of `n`
+  -- that do not divide `P`
+  set P := ∏ p ∈ n.primeFactors, p
+  have hP : Squarefree P := n.squarefree_prod_primeFactors
+  calc ∏ p ∈ n.primeFactors, (1 - f p)
+    _ = ∏ p ∈ P.primeFactors, (1 + ArithmeticFunction.pmul (μ : ArithmeticFunction R) f p) := by
+      rw [primeFactors_prod_primeFactors]
+      exact prod_congr rfl fun p hp ↦ by
+        simp [moebius_apply_prime (prime_of_mem_primeFactors hp), sub_eq_add_neg]
+    _ = ∑ d ∈ P.divisors, μ d * f d := by
+      rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hP]
+      simp_rw [pmul_apply, intCoe_apply]
+    _ = ∑ d ∈ n.divisors, μ d * f d := by
+      refine sum_subset (divisors_subset_of_dvd hn n.prod_primeFactors_dvd) fun d hd hdP ↦ ?_
+      suffices ¬ Squarefree d by simp [moebius_eq_zero_of_not_squarefree this]
+      -- a squarefree divisor of `n` is the product of its own prime factors, so it divides `P`
+      refine fun hsq ↦ hdP (mem_divisors.mpr ⟨?_, hP.ne_zero⟩)
+      rw [← prod_primeFactors_of_squarefree hsq]
+      exact prod_dvd_prod_of_subset _ _ _ (primeFactors_mono (dvd_of_mem_divisors hd) hn)
+
+@[deprecated IsMultiplicative.prodPrimeFactors_one_sub +typeChanged (since := "2026-09-14")]
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
-    ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d := by
-  trans (∏ p ∈ n.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p))
-  · apply prod_congr rfl; intro p hp
-    rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
-        (prime_of_mem_primeFactorsList (List.mem_toFinset.mp hp))]
-    ring
-  · rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
-    simp_rw [pmul_apply, intCoe_apply]
+    ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d :=
+  hf.prodPrimeFactors_one_sub f hn.ne_zero
 
 @[simp]
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
@@ -227,8 +248,8 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
     cases n with
     | zero => simp
     | succ n =>
-      simp only [forall_prop_of_true, succ_pos', smul_apply, f', g', coe_mk, succ_ne_zero,
-        ite_false]
+      simp only [forall_prop_of_true, succ_pos', ArithmeticFunction.smul_apply, f', g', coe_mk,
+        succ_ne_zero, ite_false]
       rw [sum_congr rfl fun x hx => ?_]
       rw [ite_eq_right (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)).ne']
 
@@ -248,7 +269,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq [CommGroup R] {f g : ℕ → R} :
   @sum_eq_iff_sum_smul_moebius_eq (Additive R) _ _ _
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`. -/
-theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : ℕ → R}
+theorem prod_eq_iff_prod_pow_moebius_eq_of_ne_zero [CommGroupWithZero R] {f g : ℕ → R}
     (hf : ∀ n : ℕ, 0 < n → f n ≠ 0) (hg : ∀ n : ℕ, 0 < n → g n ≠ 0) :
     (∀ n > 0, ∏ i ∈ n.divisors, f i = g n) ↔
       ∀ n > 0, ∏ x ∈ n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n := by
@@ -269,6 +290,9 @@ theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : 
     intro x hx
     rw [dite_eq_left (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)),
       Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
+
+@[deprecated (since := "2026-10-13")]
+alias prod_eq_iff_prod_pow_moebius_eq_of_nonzero := prod_eq_iff_prod_pow_moebius_eq_of_ne_zero
 
 /-- Möbius inversion for functions to an `AddCommGroup`, where the equalities only hold on a
 well-behaved set. -/
@@ -330,7 +354,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on [CommGroup R] {f g : ℕ → R}
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`, where the equalities only hold on
 a well-behaved set. -/
-theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
+theorem prod_eq_iff_prod_pow_moebius_eq_on_of_ne_zero [CommGroupWithZero R]
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) {f g : ℕ → R}
     (hf : ∀ n > 0, f n ≠ 0) (hg : ∀ n > 0, g n ≠ 0) :
     (∀ n > 0, n ∈ s → (∏ i ∈ n.divisors, f i) = g n) ↔
@@ -353,5 +377,8 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
     intro x hx
     rw [dite_eq_left (pos_of_mem_divisors (snd_mem_divisors_of_mem_antidiagonal hx)),
       Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
+
+@[deprecated (since := "2026-10-13")]
+alias prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero := prod_eq_iff_prod_pow_moebius_eq_on_of_ne_zero
 
 end ArithmeticFunction

@@ -8,9 +8,12 @@ module
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Order.Nat
-import Mathlib.Tactic.Basify.Attr
 
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Tactic.Basify.Attr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -234,6 +237,10 @@ theorem natCast_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
 alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
 
 @[deprecated (since := "2026-07-17")] alias coe_toNat := natCast_toNat
+
+@[simp] lemma le_natCast_toNat_self_iff : n ≤ n.toNat ↔ n ≠ ⊤ where
+  mp := by rintro hn rfl; simp at hn
+  mpr hn := by rw [natCast_toNat hn]
 
 @[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
     n.toNat = m ↔ n = m := by

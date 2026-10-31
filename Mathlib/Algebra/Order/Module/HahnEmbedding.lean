@@ -9,9 +9,10 @@ public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.Module.Submodule.Order
 public import Mathlib.Algebra.Order.Module.Archimedean
 public import Mathlib.Algebra.Order.Module.Equiv
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.RingTheory.HahnSeries.Lex
+
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Hahn embedding theorem on ordered modules

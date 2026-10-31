@@ -5,8 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.RingTheory.Flat.Localization
+
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Flat modules in domains

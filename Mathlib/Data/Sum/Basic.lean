@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Logic.Function.Basic
+
 import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!

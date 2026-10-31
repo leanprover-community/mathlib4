@@ -6,8 +6,12 @@ Authors: PFR contributors
 module
 
 public import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Topology.Piecewise
 public import Mathlib.Topology.Clopen
+
+import Mathlib.Topology.Piecewise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuity of indicator functions

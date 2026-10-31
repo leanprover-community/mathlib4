@@ -39,6 +39,12 @@ instance : IsStableUnderRetracts (⊥ : ObjectProperty C) where
 instance : IsStableUnderRetracts (⊤ : ObjectProperty C) where
   of_retract _ _ := by trivial
 
+instance {ι : Sort*} (P : ι → ObjectProperty C) [∀ i, (P i).IsStableUnderRetracts] :
+    (⨅ i, P i).IsStableUnderRetracts where
+  of_retract r h := by
+    simp only [iInf_apply, iInf_Prop_eq] at h ⊢
+    exact fun i ↦ (P i).prop_of_retract r (h i)
+
 namespace IsStableUnderRetracts
 
 open scoped ZeroObject
@@ -51,10 +57,6 @@ instance : P.IsClosedUnderIsomorphisms where
 -- see Note [lower instance priority]
 instance (priority := 100) [HasZeroObject C] [P.Nonempty] : P.ContainsZero where
   exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract _) P.prop_arbitrary⟩
-
-@[deprecated instContainsZeroOfHasZeroObjectOfNonempty +typeChanged (since := "2026-04-03")]
-lemma containsZero [HasZeroObject C] {X : C} (h : P X) : P.ContainsZero where
-  exists_zero := ⟨0, isZero_zero _, of_retract ((isZero_zero _).retract X) h⟩
 
 lemma of_binaryBicone_left [HasZeroMorphisms C] {X Y : C} (c : BinaryBicone X Y) (h : P c.pt) :
     P X :=

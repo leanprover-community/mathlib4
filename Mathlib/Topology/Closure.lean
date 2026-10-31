@@ -297,7 +297,7 @@ theorem closure_eq_compl_interior_compl : closure s = (interior sᶜ)ᶜ := by
 
 @[simp]
 theorem closure_union : closure (s ∪ t) = closure s ∪ closure t := by
-  simp [closure_eq_compl_interior_compl, compl_inter]
+  simp [closure_eq_compl_interior_compl]
 
 theorem Set.Finite.closure_biUnion {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set X) :
     closure (⋃ i ∈ s, f i) = ⋃ i ∈ s, closure (f i) := by
@@ -350,7 +350,7 @@ theorem interior_eq_compl_closure_compl : interior s = (closure sᶜ)ᶜ := by s
 
 theorem interior_union_of_disjoint_closure (h : Disjoint (closure s) (closure t)) :
     interior (s ∪ t) = interior s ∪ interior t := by
-  have full : interior sᶜ ∪ interior tᶜ = univ := by simpa [disjoint_iff, ← compl_inter] using h
+  have full : interior sᶜ ∪ interior tᶜ = univ := by simpa [disjoint_iff, ← compl_inf] using h
   refine subset_antisymm ?_ subset_interior_union
   rw [← (interior _).inter_univ, ← full, inter_union_distrib_left]
   exact union_subset
@@ -439,6 +439,11 @@ theorem Dense.exists_mem_open (hs : Dense s) {U : Set X} (ho : IsOpen U)
     (hne : U.Nonempty) : ∃ x ∈ s, x ∈ U :=
   let ⟨x, hx⟩ := hs.inter_open_nonempty U ho hne
   ⟨x, hx.2, hx.1⟩
+
+/-- A dense set contains every isolated point. -/
+theorem Dense.mem_of_isOpen_singleton (hs : Dense s) (hx : IsOpen {x}) : x ∈ s := by
+  obtain ⟨y, hys, hy⟩ := hs.exists_mem_open hx ⟨x, rfl⟩
+  exact mem_singleton_iff.1 hy ▸ hys
 
 theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
   ⟨fun ⟨x, _⟩ => ⟨x⟩, fun ⟨x⟩ =>

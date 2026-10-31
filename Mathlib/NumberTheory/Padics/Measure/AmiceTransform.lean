@@ -5,11 +5,13 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.Padics.Measure.Basic
-public import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.NumberTheory.Padics.AddChar
 public import Mathlib.NumberTheory.Padics.MahlerBasis
+public import Mathlib.NumberTheory.Padics.Measure.Monoid
+public import Mathlib.RingTheory.PowerSeries.Basic
+
+import Mathlib.Algebra.Order.Field.Power
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # The Amice transform
@@ -113,11 +115,10 @@ private lemma invTransformSummable (F : ℤ_[p]⟦X⟧) (f : C(ℤ_[p], ℤ_[p])
 private def invTransformₗ (F : ℤ_[p]⟦X⟧) : C(ℤ_[p], ℤ_[p]) →ₗ[ℤ_[p]] ℤ_[p] where
   toFun f := ∑' i, PadicInt.mahlerEquiv ℤ_[p] f i * F.coeff i
   map_add' f g := by
-    simp only [map_add, ZeroAtInftyContinuousMap.coe_add, Pi.add_apply, add_mul]
+    simp only [map_add, add_apply, add_mul]
     rw [Summable.tsum_add] <;> apply invTransformSummable
   map_smul' r f := by
-    simp only [map_smul, ZeroAtInftyContinuousMap.coe_smul, Pi.smul_apply, smul_eq_mul, mul_assoc,
-      RingHom.id_apply]
+    simp only [map_smul, smul_apply, smul_eq_mul, mul_assoc, RingHom.id_apply]
     simp_rw [← smul_eq_mul]
     rw [Summable.tsum_const_smul]
     exact invTransformSummable F f
@@ -169,6 +170,69 @@ lemma coeff_amiceTransformEquiv (μ : D(ℤ_[p], ℤ_[p])) (n : ℕ) :
   simp [coeff_amiceTransform]
 
 end Inverse
+
+section multiplicative
+
+variable {R : Type*} [CommRing R] [TopologicalSpace R] [Algebra ℤ_[p] R] [ContinuousSMul ℤ_[p] R]
+
+/-- A multiplicative version of the Mahler basis functions. -/
+@[expose, simps -isSimp]
+def mulMahler (n : ℕ) : C(Multiplicative ℤ_[p], R) where
+  toFun x := mahler n (Multiplicative.toAdd x) • 1
+  continuous_toFun := by fun_prop
+
+lemma mulMahler_mul (n : ℕ) (x y : Multiplicative ℤ_[p]) :
+    (mulMahler n (x * y) : R) = ∑ i ∈ .antidiagonal n, mulMahler i.1 x * mulMahler i.2 y := by
+  simp only [mulMahler_apply, toAdd_mul, smul_one_mul, ← mul_smul, ← Finset.sum_smul]
+  simp [mahler_apply, Ring.add_choose_eq n (Commute.all x.toAdd y.toAdd)]
+
+variable [IsTopologicalRing R]
+
+section MultiplicativeEquivs
+
+private def ofAddMeasureEquiv : D(Multiplicative ℤ_[p], R) ≃ₗ[R] D(ℤ_[p], R) :=
+  AbstractMeasure.arrowCongrLeft Homeomorph.ofAdd.symm
+
+end MultiplicativeEquivs
+
+private def amiceTransformₘ : D(Multiplicative ℤ_[p], R) →ₗ[R] PowerSeries R :=
+  amiceTransform.comp ofAddMeasureEquiv.toLinearMap
+
+private lemma coeff_amiceTransformₘ (μ : D(Multiplicative ℤ_[p], R)) (n : ℕ) :
+    (amiceTransformₘ μ).coeff n = μ (mulMahler n) := by
+  simp [amiceTransformₘ, coeff_amiceTransform, ofAddMeasureEquiv, mulMahler, ContinuousMap.comp,
+    Function.comp_def]
+
+private lemma amiceTransformₘ_mul (μ ν : D(Multiplicative ℤ_[p], R)) :
+    amiceTransformₘ (μ * ν : AbstractMeasure (Multiplicative ℤ_[p]) R R) =
+      amiceTransformₘ μ * amiceTransformₘ ν := by
+  ext n
+  simp [coeff_amiceTransformₘ, PowerSeries.coeff_mul, mul_apply_eq_sum μ ν (mulMahler_mul n)]
+
+/--
+The Amice transform `D(Multiplicative ℤ_[p], R) → R[X]`, as a homomorphism of `R`-algebras.
+-/
+def amiceTransformₐ : D(Multiplicative ℤ_[p], R) →ₐ[R] PowerSeries R :=
+  .ofLinearMap amiceTransformₘ
+    (by ext; simp [coeff_amiceTransformₘ, mulMahler_apply, mahler_apply, Ring.choose_zero_ite])
+    amiceTransformₘ_mul
+
+lemma coeff_amiceTransformₐ (μ : D(Multiplicative ℤ_[p], R)) (n : ℕ) :
+    (amiceTransformₐ μ).coeff n = μ (mulMahler n) :=
+  coeff_amiceTransformₘ ..
+
+/--
+The Amice transform `D(Multiplicative ℤ_[p], ℤ_[p]) → ℤ_[p][X]`, as an isomorphism of
+`ℤ_[p]`-algebras.
+
+(TODO: Define this more generally -- this will need a definition for bounded power series over a
+normed ring, as in `amiceTransformEquiv`.)
+-/
+def amiceTransformEquivₐ : D(Multiplicative ℤ_[p], ℤ_[p]) ≃ₐ[ℤ_[p]] PowerSeries ℤ_[p] :=
+  .ofLinearEquiv (ofAddMeasureEquiv.trans amiceTransformEquiv) (map_one amiceTransformₐ)
+    (map_mul amiceTransformₐ)
+
+end multiplicative
 
 end AbstractMeasure
 

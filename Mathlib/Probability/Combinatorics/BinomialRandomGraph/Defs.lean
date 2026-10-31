@@ -5,9 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Data.Sym.Card
 public import Mathlib.MeasureTheory.Constructions.SimpleGraph
 public import Mathlib.Probability.Distributions.SetBernoulli
+
+import Mathlib.Data.Sym.Card
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Binomial random graphs

@@ -5,9 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Group.Subgroup
+
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Order.Filter.AtTopBot.Group
-public import Mathlib.Topology.Algebra.Group.Subgroup
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topological closure of the submonoid closure

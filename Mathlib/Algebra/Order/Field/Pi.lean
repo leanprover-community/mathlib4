@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Data.Finset.Lattice.Fold
+
 import Mathlib.Data.Fintype.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about (finite domain) functions into fields.

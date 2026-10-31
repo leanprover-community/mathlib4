@@ -146,7 +146,7 @@ lemma subsingleton_of_disjoint_isClopen
   rw [← not_nontrivial_iff_subsingleton]
   by_contra ⟨i, j, h_ne⟩
   replace h_ne : s i ∩ s j = ∅ := by
-    simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
+    simpa only [← bot_eq_empty, eq_bot_iff, ← disjoint_iff_inf_le] using h_disj h_ne
   rcases isClopen_iff.mp (h_clopen i) with hi | hi
   · exact (h_nonempty i).ne_empty hi
   · rw [hi, univ_inter] at h_ne
@@ -473,16 +473,6 @@ theorem Topology.IsCoinducing.isConnected_preimage_of_isClosed
     suffices f ⁻¹' t ⊆ f ⁻¹' T₂
       from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
-
-@[deprecated Topology.IsCoinducing.isConnected_preimage_of_isClosed +typeChanged
-  (since := "2026-04-01")]
-theorem preimage_connectedComponent_connected (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
-    (hcl : IsCoinducing f) (t : β) :
-    IsConnected (f ⁻¹' connectedComponent t) := by
-  apply hcl.isConnected_preimage_of_isClosed
-  · exact isClosed_connectedComponent
-  · exact isConnected_connectedComponent
-  · exact connected_fibers
 
 theorem Topology.IsCoinducing.preimage_connectedComponent (hf : IsCoinducing f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :

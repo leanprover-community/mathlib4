@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.Set.Piecewise
 public import Mathlib.Order.Interval.Set.UnorderedInterval
+
+import Mathlib.Data.Set.Piecewise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Intervals in `pi`-space

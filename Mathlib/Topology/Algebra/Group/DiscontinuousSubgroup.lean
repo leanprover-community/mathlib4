@@ -7,8 +7,12 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Commensurable
-import Mathlib.GroupTheory.Complement
 public import Mathlib.Topology.Algebra.ConstMulAction
+
+import Mathlib.GroupTheory.Complement
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Properly discontinuous actions of subgroups
@@ -27,7 +31,6 @@ protected lemma Subgroup.properlyDiscontinuousSMul_iff
   rw [properlyDiscontinuousSMul_iff]
   congr! with K L hK hL
   convert injOn_subtype_val (s := {m : S | (m • K ∩ L).Nonempty}) |>.bijOn_image.finite_iff_finite
-  ext g
   simp [Set.subtype_smul_set, and_comm]
 
 @[to_additive]

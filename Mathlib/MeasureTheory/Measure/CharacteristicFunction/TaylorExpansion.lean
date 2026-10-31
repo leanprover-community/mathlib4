@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.Taylor
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+public import Mathlib.Probability.Notation
 
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
-public import Mathlib.Probability.Notation
 
 /-!
 # Taylor expansion of the characteristic function

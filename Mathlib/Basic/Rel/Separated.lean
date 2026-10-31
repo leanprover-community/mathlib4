@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Basic.Rel
+
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!

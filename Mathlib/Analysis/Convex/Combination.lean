@@ -5,10 +5,14 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convex combinations
@@ -224,13 +228,13 @@ theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E}
     (∑ᶠ i, w i • z i) ∈ s := by
   have hfin_w : HasFiniteSupport (w ∘ PLift.down) := by
     by_contra H
-    rw [finsum, dite_eq_right H] at h₁
+    rw [finsum_def', dite_eq_right H] at h₁
     exact zero_ne_one h₁
   have hsub : support ((fun i => w i • z i) ∘ PLift.down) ⊆ hfin_w.toFinset :=
     (support_smul_subset_left _ _).trans hfin_w.coe_toFinset.ge
   rw [finsum_eq_sum_plift_of_support_subset hsub]
   refine hs.sum_mem (fun _ _ => h₀ _) ?_ fun i hi => hz _ ?_
-  · rwa [finsum, dite_eq_left hfin_w] at h₁
+  · rwa [finsum_def', dite_eq_left hfin_w] at h₁
   · rwa [hfin_w.mem_toFinset] at hi
 
 theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
@@ -528,10 +532,10 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
   classical
   refine (Set.subset_inter (convexHull_mono inf_le_left) <|
     convexHull_mono inf_le_right).antisymm ?_
-  simp_rw [Set.subset_def, mem_inter_iff, Set.inf_eq_inter, ← coe_inter, mem_convexHull']
+  simp_rw [Set.subset_def, mem_inter_iff, ← coe_inter, mem_convexHull']
   rintro x ⟨⟨w₁, h₁w₁, h₂w₁, h₃w₁⟩, w₂, -, h₂w₂, h₃w₂⟩
   let w (x : E) : R := (if x ∈ t₁ then w₁ x else 0) - if x ∈ t₂ then w₂ x else 0
-  have h₁w : ∑ i ∈ s, w i = 0 := by simp [w, Finset.inter_eq_right.2, *]
+  have h₁w : ∑ i ∈ s, w i = 0 := by simp [w, *]
   replace hs := hs.eq_zero_of_sum_eq_zero_subtype h₁w <| by
     simp only [w, sub_smul, zero_smul, ite_smul, Finset.sum_sub_distrib, ← Finset.sum_filter, h₃w₁,
       Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht₁, Finset.inter_eq_right.2 ht₂, h₃w₂,

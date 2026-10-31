@@ -6,6 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.FieldTheory.PrimitiveElement
+
 import Mathlib.GroupTheory.CosetCover
 
 /-!

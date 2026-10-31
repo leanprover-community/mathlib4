@@ -5,9 +5,10 @@ Authors: Yaël Dillies, Kim Morrison
 -/
 module
 
-import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Multiset.Functor
+
+import Mathlib.Data.Finset.Lattice.Union
 
 /-!
 # Functoriality of `Finset`

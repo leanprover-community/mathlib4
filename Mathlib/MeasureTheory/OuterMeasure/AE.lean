@@ -46,7 +46,7 @@ variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F 
 /-- The “almost everywhere” filter of co-null sets. -/
 @[wikidata Q1139334]
 def ae (μ : F) : Filter α :=
-  .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
+  .ofCountableUnion {s | μ s = 0} (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
     measure_mono_null hs ht
 deriving CountableInterFilter
 
@@ -215,8 +215,7 @@ theorem ae_le_set_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ
   h.union h'
 
 theorem union_ae_eq_right : s ∪ t =ᵐ[μ] t ↔ μ (s \ t) = 0 := by
-  simp [eventuallySubset_antisymm_iff, ae_le_set, union_sdiff_right,
-    sdiff_eq_empty.2 Set.subset_union_right]
+  simp [eventuallySubset_antisymm_iff, ae_le_set, sdiff_eq_empty.2 Set.subset_union_right]
 
 theorem sdiff_ae_eq_self : s \ t =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallySubset_antisymm_iff, ae_le_set]
@@ -298,7 +297,6 @@ theorem ae_eq_set_biUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
     ⋃ b ∈ s, t b =ᵐ[μ] ⋃ b ∈ s, t' b :=
   .countable_bUnion hs h
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s : Set α} :
     s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by

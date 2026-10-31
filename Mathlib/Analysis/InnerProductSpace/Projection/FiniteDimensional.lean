@@ -5,9 +5,9 @@ Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
+public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-public import Mathlib.Algebra.DirectSum.Decomposition
 
 /-!
 # Orthogonal projections in finite-dimensional spaces
@@ -394,7 +394,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     obtain ⟨l, hl, rfl⟩ :
       ∃ l ∈ supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (linearCombination 𝕜 ((↑) : u → E)) l = y := by
       rw [← Finsupp.mem_span_image_iff_linearCombination]
-      simp [huv, inter_eq_self_of_subset_right, hy]
+      simp [huv, hy]
     exact hu.inner_finsupp_eq_zero hxv' hl
 
 variable [FiniteDimensional 𝕜 E]

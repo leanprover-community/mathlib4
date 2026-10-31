@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Skeletal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite types.
 
@@ -152,7 +155,7 @@ instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
   Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
 
 instance (X : FintypeCat) : Finite (Aut X) :=
-  inferInstanceAs <| Finite (X ≅ X)
+  Finite.of_equiv _ (Aut.isoEquiv (X := X)).symm
 
 universe u
 
@@ -290,7 +293,6 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
       Y.uSwitchEquiv)).inv := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] uSwitch_map_uSwitch_map in
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
 noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where

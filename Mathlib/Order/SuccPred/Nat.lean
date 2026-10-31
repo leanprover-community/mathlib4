@@ -6,12 +6,16 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 public import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Data.Fin.Basic
+public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Order.Nat
+
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.Fin.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Successors and predecessors of naturals
