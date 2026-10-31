@@ -5,10 +5,10 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
-public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.GroupTheory.OrderOfElement
 
 
 /-!

@@ -5,9 +5,9 @@ Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Elab.Tactic.Simp
 public import Lean.Meta.DiscrTree
+public import Mathlib.Init
 
 /-!
 # Helper functions for using the simplifier.
@@ -15,7 +15,7 @@ public import Lean.Meta.DiscrTree
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
 
-@[expose] public section
+public section
 
 open Lean Elab.Tactic
 

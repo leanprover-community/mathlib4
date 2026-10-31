@@ -5,8 +5,8 @@ Authors: Joël Riou, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.ChosenPullback
+public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 
 /-!
 # Descent data when we have pullbacks
@@ -116,7 +116,6 @@ lemma pullHom'_p₁_p₂ (i₁ i₂ : ι) :
     pullHom' hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (by simp) (by simp) = hom i₁ i₂ := by
   simp [pullHom'_eq_pullHom hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (𝟙 _)]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma pullHom'_self' (hom_self : ∀ i, pullHom' hom (f i) (𝟙 (X i)) (𝟙 (X i)) = 𝟙 _)
     ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (hg : g ≫ f i = q := by cat_disch) :
     pullHom' hom q g g hg hg = 𝟙 _ := by
@@ -252,9 +251,9 @@ def isoMk {D₁ D₂ : F.DescentData' sq sq₃} (e : ∀ (i : ι), D₁.obj i �
   inv.hom i := (e i).inv
   inv.comm i₁ i₂ := by
     rw [← cancel_mono ((F.map _).toFunctor.map (e i₂).hom), Category.assoc,
-      Category.assoc, Iso.map_inv_hom_id, Category.comp_id,
+      Category.assoc, Iso.inv_hom_id_map, Category.comp_id,
       ← cancel_epi ((F.map _).toFunctor.map (e i₁).hom),
-      Iso.map_hom_inv_id_assoc, comm i₁ i₂]
+      Iso.hom_inv_id_map_assoc, comm i₁ i₂]
 
 /-- The functor `toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentData f`, on objects. -/
 @[simps]

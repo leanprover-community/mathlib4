@@ -288,9 +288,9 @@ instance semilatticeInf : SemilatticeInf (E →ₛₗ.[σ] F) where
       ⟨fg_le hx, fh_le hx,
       (fg_eq (x := ⟨x, hx⟩) rfl).symm.trans (fh_eq rfl)⟩,
       fun x ⟨y, yg, hy⟩ h => fg_eq h⟩
-  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr_arg f <| Subtype.ext <| h⟩
+  inf_le_left f _ := ⟨fun _ hx => hx.fst, fun _ _ h => congr(f $(Subtype.ext h))⟩
   inf_le_right _ g :=
-    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.ext <| h⟩
+    ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans congr(g $(Subtype.ext h))⟩
 
 instance orderBot : OrderBot (E →ₛₗ.[σ] F) where
   bot_le f :=
@@ -922,7 +922,7 @@ theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.grap
   obtain ⟨y, hx⟩ := hx
   use ⟨y, h.1 y.2⟩
   simp only [hx, true_and]
-  convert! hx.2 using 1
+  convert hx.2 using 1
   refine (h.2 ?_).symm
   simp only [hx.1]
 
@@ -949,11 +949,11 @@ theorem existsUnique_from_graph {g : Submodule R (E × F)}
     (hg : ∀ {x : E × F} (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) {a : E}
     (ha : a ∈ g.map (LinearMap.fst R E F)) : ∃! b : F, (a, b) ∈ g := by
   refine existsUnique_of_exists_of_unique ?_ ?_
-  · convert! ha
+  · convert ha
     simp
   intro y₁ y₂ hy₁ hy₂
   have hy : ((0 : E), y₁ - y₂) ∈ g := by
-    convert! g.sub_mem hy₁ hy₂
+    convert g.sub_mem hy₁ hy₂
     exact (sub_self _).symm
   exact sub_eq_zero.mp (hg hy (by simp))
 
@@ -1026,7 +1026,7 @@ theorem toLinearPMap_graph_eq (g : Submodule R (E × F))
   constructor <;> intro hx
   · rw [LinearPMap.mem_graph_iff] at hx
     rcases hx with ⟨y, hx1, hx2⟩
-    convert! g.mem_graph_toLinearPMap hg y using 1
+    convert g.mem_graph_toLinearPMap hg y using 1
     exact Prod.ext hx1.symm hx2.symm
   rw [LinearPMap.mem_graph_iff]
   have hx_fst : x_fst ∈ g.map (LinearMap.fst R E F) := by

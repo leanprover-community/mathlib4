@@ -86,7 +86,8 @@ another linear ordered field. -/
 def cutMap (a : α) : Set β :=
   (Rat.cast : ℚ → β) '' {t | ↑t < a}
 
-theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := image_mono fun _ => h.trans_lt'
+@[gcongr]
+theorem cutMap_mono (h : a₁ ≤ a₂) : cutMap β a₁ ⊆ cutMap β a₂ := by unfold cutMap; gcongr
 
 variable {β}
 
@@ -160,6 +161,7 @@ def inducedMap (x : α) : β :=
 
 variable [Archimedean α]
 
+@[gcongr]
 theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _ h =>
   csSup_le_csSup (cutMap_bddAbove β _) (cutMap_nonempty β _) (cutMap_mono β h)
 
@@ -181,8 +183,8 @@ theorem inducedMap_one : inducedMap α β 1 = 1 := mod_cast inducedMap_rat α β
 
 variable {α β} {a : α} {b : β} {q : ℚ}
 
-theorem inducedMap_nonneg (ha : 0 ≤ a) : 0 ≤ inducedMap α β a :=
-  (inducedMap_zero α _).ge.trans <| inducedMap_mono _ _ ha
+theorem inducedMap_nonneg (ha : 0 ≤ a) : 0 ≤ inducedMap α β a := by
+  grw [← ha, inducedMap_zero]
 
 theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a := by
   refine ⟨fun h => ?_, fun hq => ?_⟩
@@ -259,7 +261,7 @@ def inducedOrderRingHom : α →+*o β :=
       suffices ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x by
         intro x
         obtain h | rfl | h := lt_trichotomy x 0
-        · convert! this (-x) (neg_pos.2 h) using 1
+        · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
           · simp_rw [map_neg, neg_mul, mul_neg, neg_neg]
         · simp only [mul_zero, map_zero]
@@ -282,7 +284,7 @@ def inducedOrderRingIso : β ≃+*o γ :=
     map_le_map_iff' := by
       dsimp
       refine ⟨fun h => ?_, fun h => inducedMap_mono _ _ h⟩
-      convert! inducedMap_mono γ β h <;>
+      convert inducedMap_mono γ β h <;>
       · rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]
         dsimp
         rw [inducedMap_inv_self β γ _] }

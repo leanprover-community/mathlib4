@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.SetToL1.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Change of measure for set-to-function extensions
 
@@ -66,13 +69,10 @@ theorem setToFun_of_le_map_of_stronglyMeasurable
     ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hf).mono_measure hμ'
   borelize E
   have : SeparableSpace (range f ∪ {0} : Set E) := hfm.separableSpace_range_union_singleton
-  refine tendsto_nhds_unique
-    (tendsto_setToFun_approxOn_of_measurable_of_range_subset
-      hT' hfm.measurable hfi' _ Subset.rfl) ?_
-  convert tendsto_setToFun_approxOn_of_measurable_of_range_subset
-    hT (hfm.measurable.comp hφ) hf (range f ∪ {0})
-    (union_subset_union_left {0} (range_comp_subset_range φ f)) using 1
-  ext i : 1
+  refine tendsto_nhds_unique_of_forall
+    (tendsto_setToFun_approxOn_of_measurable_of_range_subset hT' hfm.measurable hfi' _ Subset.rfl)
+      (tendsto_setToFun_approxOn_of_measurable_of_range_subset hT (hfm.measurable.comp hφ) hf
+        (range f ∪ {0}) (union_subset_union_left {0} (range_comp_subset_range φ f))) fun i ↦ ?_
   rw [setToFun_simpleFunc _ _ (SimpleFunc.integrable_approxOn_range _ hfi' _),
     setToFun_simpleFunc, SimpleFunc.approxOn_comp hfm.measurable hφ]; swap
   · apply SimpleFunc.integrable_approxOn _ hf (by simp) (by simp)
@@ -153,7 +153,7 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
   · intro c s hs hμs
     have hμ's : μ' s ≠ ∞ := by
       refine ((hμ'_le s).trans_lt ?_).ne
-      rw [Measure.smul_apply, smul_eq_mul]
+      rw [smul_apply, smul_eq_mul]
       exact ENNReal.mul_lt_top hc'.lt_top hμs
     rw [setToFun_indicator_const hT hs hμs.ne, setToFun_indicator_const hT' hs hμ's]
   · intro f₂ g₂ _ hf₂ hg₂ h_eq_f h_eq_g
@@ -238,9 +238,9 @@ theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T 
     setToFun (∞ • μ) T hT f = 0 := by
   refine setToFun_measure_zero' hT fun s _ hμs => ?_
   rw [lt_top_iff_ne_top] at hμs
-  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top,
-    top_ne_zero, Ne, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
-  simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
+  simp only [Ne, smul_apply, smul_eq_mul, mul_eq_top, top_ne_zero, not_false_eq_true, true_and,
+    not_or, Decidable.not_not] at hμs
+  simp [hμs.right]
 
 theorem setToFun_congr_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞)
     (hT : DominatedFinMeasAdditive μ T C) (hT_smul : DominatedFinMeasAdditive (c • μ) T C')

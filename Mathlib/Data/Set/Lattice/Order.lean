@@ -25,33 +25,25 @@ variable {α β : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 namespace Set
 
+@[to_dual]
 lemma nonempty_iInter_Iic_iff [Preorder α] {f : ι → α} :
     (⋂ i, Iic (f i)).Nonempty ↔ BddBelow (range f) := by
   have : (⋂ (i : ι), Iic (f i)) = lowerBounds (range f) := by
     ext c; simp [lowerBounds]
   simp [this, BddBelow]
 
-lemma nonempty_iInter_Ici_iff [Preorder α] {f : ι → α} :
-    (⋂ i, Ici (f i)).Nonempty ↔ BddAbove (range f) :=
-  nonempty_iInter_Iic_iff (α := αᵒᵈ)
-
 variable [CompleteLattice α]
 
+@[to_dual]
 theorem Ici_iSup (f : ι → α) : Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
   ext fun _ => by simp only [mem_Ici, iSup_le_iff, mem_iInter]
 
-theorem Iic_iInf (f : ι → α) : Iic (⨅ i, f i) = ⋂ i, Iic (f i) :=
-  ext fun _ => by simp only [mem_Iic, le_iInf_iff, mem_iInter]
-
+@[to_dual]
 theorem Ici_iSup₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⋂ (i) (j), Ici (f i j) := by
   simp_rw [Ici_iSup]
 
-theorem Iic_iInf₂ (f : ∀ i, κ i → α) : Iic (⨅ (i) (j), f i j) = ⋂ (i) (j), Iic (f i j) := by
-  simp_rw [Iic_iInf]
-
+@[to_dual]
 theorem Ici_sSup (s : Set α) : Ici (sSup s) = ⋂ a ∈ s, Ici a := by rw [sSup_eq_iSup, Ici_iSup₂]
-
-theorem Iic_sInf (s : Set α) : Iic (sInf s) = ⋂ a ∈ s, Iic a := by rw [sInf_eq_iInf, Iic_iInf₂]
 
 end Set
 
@@ -92,29 +84,23 @@ open Set
 
 variable [CompleteLattice β]
 
+@[to_dual]
 theorem iSup_iUnion (s : ι → Set α) (f : α → β) : ⨆ a ∈ ⋃ i, s i, f a = ⨆ (i) (a ∈ s i), f a := by
   rw [iSup_comm]
   simp_rw [mem_iUnion, iSup_exists]
 
-theorem iInf_iUnion (s : ι → Set α) (f : α → β) : ⨅ a ∈ ⋃ i, s i, f a = ⨅ (i) (a ∈ s i), f a :=
-  iSup_iUnion (β := βᵒᵈ) s f
-
+@[to_dual]
 theorem sSup_iUnion (t : ι → Set β) : sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
   simp_rw [sSup_eq_iSup, iSup_iUnion]
 
+@[to_dual]
 theorem sSup_sUnion (s : Set (Set β)) : sSup (⋃₀ s) = ⨆ t ∈ s, sSup t := by
   simp only [sUnion_eq_biUnion, sSup_eq_iSup, iSup_iUnion]
 
-theorem sInf_sUnion (s : Set (Set β)) : sInf (⋃₀ s) = ⨅ t ∈ s, sInf t :=
-  sSup_sUnion (β := βᵒᵈ) s
-
+@[to_dual]
 lemma iSup_sUnion (S : Set (Set α)) (f : α → β) :
     (⨆ x ∈ ⋃₀ S, f x) = ⨆ (s ∈ S) (x ∈ s), f x := by
   rw [sUnion_eq_iUnion, iSup_iUnion, ← iSup_subtype'']
-
-lemma iInf_sUnion (S : Set (Set α)) (f : α → β) :
-    (⨅ x ∈ ⋃₀ S, f x) = ⨅ (s ∈ S) (x ∈ s), f x := by
-  rw [sUnion_eq_iUnion, iInf_iUnion, ← iInf_subtype'']
 
 lemma forall_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∀ x ∈ ⋃₀ S, p x) ↔ ∀ s ∈ S, ∀ x ∈ s, p x := by

@@ -44,7 +44,7 @@ variable {P : RootPairing ι R M N} [P.IsCrystallographic] {i j : ι}
 to invoke this lemma directly. -/
 lemma setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent
     (h : LinearIndependent R ![P.root i, P.root j]) :
-    ∃ᵉ (q ≤ 0) (p ≥ 0), {z : ℤ | P.root j + z • P.root i ∈ range P.root} = Icc q p := by
+    ∃ q ≤ 0, ∃ p ≥ 0, {z : ℤ | P.root j + z • P.root i ∈ range P.root} = Icc q p := by
   replace h := LinearIndependent.pair_iff.mp <| h.restrict_scalars' ℤ
   set S : Set ℤ := {z | P.root j + z • P.root i ∈ range P.root} with S_def
   have hS₀ : 0 ∈ S := by simp [S]
@@ -52,7 +52,7 @@ lemma setOfPred_root_add_zsmul_eq_Icc_of_linearIndependent
     suffices Injective (fun z : S ↦ z.property.choose) from Finite.of_injective _ this
     intro ⟨z, hz⟩ ⟨z', hz'⟩ hzz
     have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-    have : IsAddTorsionFree M := .of_isTorsionFree R M
+    have : HasUniqueDiv M := .of_isTorsionFree R M
     have : z • P.root i = z' • P.root i := by
       rwa [← add_right_inj (P.root j), ← hz.choose_spec, ← hz'.choose_spec, P.root.injective.eq_iff]
     exact Subtype.ext <| smul_left_injective ℤ (P.ne_zero i) this

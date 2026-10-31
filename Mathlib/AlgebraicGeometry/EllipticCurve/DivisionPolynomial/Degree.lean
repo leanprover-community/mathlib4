@@ -6,7 +6,6 @@ Authors: David Kurniadi Angdinata
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
-public import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Division polynomials of Weierstrass curves
@@ -224,9 +223,10 @@ private lemma natDegree_coeff_preΨ' (n : ℕ) :
       refine natDegree_sub_le_of_le (dm (dm h₄.1 (dp h₂.1)) ?_) (dm (dm h₁.1 (dp h₃.1)) ?_) <;>
         split_ifs <;> simp only [natDegree_one.le, dp W.natDegree_Ψ₂Sq_le]
     · nth_rw 1 [coeff_sub, (expDegree_rec m).2.1, cm (dm h₄.1 (dp h₂.1)), cm h₄.1 (dp h₂.1),
-        h₄.2, cp h₂.1, h₂.2, apply_ite₂ coeff, cp W.natDegree_Ψ₂Sq_le, coeff_Ψ₂Sq, coeff_one_zero,
-        (expDegree_rec m).2.2, cm (dm h₁.1 (dp h₃.1)), cm h₁.1 (dp h₃.1), h₁.2, cp h₃.1, h₃.2,
-        apply_ite₂ coeff, cp W.natDegree_Ψ₂Sq_le, coeff_one_zero, coeff_Ψ₂Sq, (expCoeff_rec m).2]
+        h₄.2, cp h₂.1, h₂.2, apply_ite₂ (coeff · ·), cp W.natDegree_Ψ₂Sq_le, coeff_Ψ₂Sq,
+        coeff_one_zero, (expDegree_rec m).2.2, cm (dm h₁.1 (dp h₃.1)), cm h₁.1 (dp h₃.1), h₁.2,
+        cp h₃.1, h₃.2, apply_ite₂ (coeff · ·), cp W.natDegree_Ψ₂Sq_le, coeff_one_zero, coeff_Ψ₂Sq,
+        (expCoeff_rec m).2]
       · norm_cast
       all_goals split_ifs <;> simp only [natDegree_one.le, dp W.natDegree_Ψ₂Sq_le]
 
@@ -272,14 +272,14 @@ section preΨ
 lemma natDegree_preΨ_le (n : ℤ) : (W.preΨ n).natDegree ≤
     (n.natAbs ^ 2 - if Even n then 4 else 1) / 2 := by
   induction n using Int.negInduction with
-  | nat n => exact_mod_cast W.preΨ_ofNat n ▸ W.natDegree_preΨ'_le n
+  | nat n => exact mod_cast W.preΨ_ofNat n ▸ W.natDegree_preΨ'_le n
   | neg ih => simp_rw [preΨ_neg, natDegree_neg, Int.natAbs_neg, even_neg, ih]
 
 @[simp]
 lemma coeff_preΨ (n : ℤ) : (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 4 else 1) / 2) =
     if Even n then n / 2 else n := by
   induction n using Int.negInduction with
-  | nat n => exact_mod_cast W.preΨ_ofNat n ▸ W.coeff_preΨ' n
+  | nat n => exact mod_cast W.preΨ_ofNat n ▸ W.coeff_preΨ' n
   | neg ih n =>
     simp_rw [preΨ_neg, coeff_neg, Int.natAbs_neg, even_neg]
     rcases ih n, n.even_or_odd' with ⟨ih, ⟨n, rfl | rfl⟩⟩ <;>
@@ -289,10 +289,9 @@ lemma coeff_preΨ (n : ℤ) : (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 
 lemma coeff_preΨ_ne_zero {n : ℤ} (h : (n : R) ≠ 0) :
     (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 4 else 1) / 2) ≠ 0 := by
   induction n using Int.negInduction with
-  | nat n => simpa only [preΨ_ofNat, Int.even_coe_nat]
-      using! W.coeff_preΨ'_ne_zero <| by exact_mod_cast h
+  | nat n => simpa only [preΨ_ofNat, Int.even_natCast] using! W.coeff_preΨ'_ne_zero <| mod_cast h
   | neg ih n => simpa only [preΨ_neg, coeff_neg, neg_ne_zero, Int.natAbs_neg, even_neg]
-        using! ih n <| neg_ne_zero.mp <| by exact_mod_cast h
+        using! ih n <| neg_ne_zero.mp <| mod_cast h
 
 @[simp]
 lemma natDegree_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
@@ -302,9 +301,9 @@ lemma natDegree_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
 lemma natDegree_preΨ_pos {n : ℤ} (hn : 2 < n.natAbs) (h : (n : R) ≠ 0) :
     0 < (W.preΨ n).natDegree := by
   induction n using Int.negInduction with
-  | nat n => simpa only [preΨ_ofNat] using! W.natDegree_preΨ'_pos hn <| by exact_mod_cast h
+  | nat n => simpa only [preΨ_ofNat] using! W.natDegree_preΨ'_pos hn <| mod_cast h
   | neg ih n => simpa only [preΨ_neg, natDegree_neg]
-        using! ih n (by rwa [← Int.natAbs_neg]) <| neg_ne_zero.mp <| by exact_mod_cast h
+        using! ih n (by rwa [← Int.natAbs_neg]) <| neg_ne_zero.mp <| mod_cast h
 
 @[simp]
 lemma leadingCoeff_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
@@ -313,9 +312,9 @@ lemma leadingCoeff_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
 
 lemma preΨ_ne_zero [Nontrivial R] {n : ℤ} (h : (n : R) ≠ 0) : W.preΨ n ≠ 0 := by
   induction n using Int.negInduction with
-  | nat n => simpa only [preΨ_ofNat] using W.preΨ'_ne_zero <| by exact_mod_cast h
+  | nat n => simpa only [preΨ_ofNat] using W.preΨ'_ne_zero <| mod_cast h
   | neg ih n => simpa only [preΨ_neg, neg_ne_zero]
-        using ih n <| neg_ne_zero.mp <| by exact_mod_cast h
+        using ih n <| neg_ne_zero.mp <| mod_cast h
 
 end preΨ
 
@@ -338,7 +337,7 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
   · refine natDegree_mul_le_of_le (dp h.1) ?_
     split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]
   · rw [coeff_mul_add_eq_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2,
-      apply_ite₂ coeff, coeff_Ψ₂Sq, coeff_one_zero, hc]
+      apply_ite₂ (coeff · ·), coeff_Ψ₂Sq, coeff_one_zero, hc]
     · norm_cast
     split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]
 
@@ -350,7 +349,7 @@ lemma natDegree_ΨSq_le (n : ℤ) : (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 :=
 @[simp]
 lemma coeff_ΨSq (n : ℤ) : (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) = n ^ 2 := by
   induction n using Int.negInduction with
-  | nat n => exact_mod_cast (W.natDegree_coeff_ΨSq_ofNat n).right
+  | nat n => exact mod_cast (W.natDegree_coeff_ΨSq_ofNat n).right
   | neg ih => rw [ΨSq_neg, Int.natAbs_neg, ← Int.cast_pow, neg_sq, Int.cast_pow, ih]
 
 lemma coeff_ΨSq_ne_zero [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) :
@@ -392,7 +391,7 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
   let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_add_eq_of_natDegree_le
   let h {n} := W.natDegree_coeff_preΨ' n
   rcases n with _ | _ | n
-  iterate 2 simp [natDegree_X_le]
+  on_goal 1 2 => simp [natDegree_X_le]
   have hd : (n + 1 + 1) ^ 2 = 1 + 2 * expDegree (n + 2) + if Even (n + 1) then 0 else 3 := by
     push_cast [← @Nat.cast_inj ℤ, expDegree_cast (n + 1).succ_ne_zero, Nat.even_add_one, ite_not]
     split_ifs <;> ring1
@@ -411,8 +410,9 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
     refine natDegree_sub_le_of_le (dm (dm natDegree_X_le (dp h.1)) ?_) (dm (dm h.1 h.1) ?_) <;>
       split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]
   · nth_rw 1 [coeff_sub, hd, hd', cm (dm natDegree_X_le (dp h.1)), cm natDegree_X_le (dp h.1),
-      coeff_X_one, coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ coeff, coeff_one_zero, coeff_Ψ₂Sq,
-      cm (dm h.1 h.1), cm h.1 h.1, h.2, h.2, apply_ite₂ coeff, coeff_one_zero, coeff_Ψ₂Sq]
+      coeff_X_one, coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ (coeff · ·), coeff_one_zero,
+      coeff_Ψ₂Sq, cm (dm h.1 h.1), cm h.1 h.1, h.2, h.2, apply_ite₂ (coeff · ·), coeff_one_zero,
+      coeff_Ψ₂Sq]
     conv_rhs => rw [← Int.cast_one, hc]
     · norm_cast
     all_goals split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]

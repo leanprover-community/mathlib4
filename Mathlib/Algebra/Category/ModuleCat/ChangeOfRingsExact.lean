@@ -6,7 +6,6 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
@@ -25,7 +24,7 @@ public section
 
 universe v u u'
 
-variable {R : Type u} [CommRing R] {R' : Type u'} [CommRing R']
+variable {R : Type u} [Ring R] {R' : Type u'} [Ring R']
 
 open CategoryTheory
 

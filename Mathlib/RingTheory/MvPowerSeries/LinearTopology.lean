@@ -5,11 +5,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Data.Finsupp.Interval
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
-public import Mathlib.Topology.Algebra.LinearTopology
-public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-! # Linear topology on the ring of multivariate power series
 
@@ -20,7 +18,7 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Operations
   the two-sided ideals from `MvPowerSeries.LinearTopology.basis` form a basis
   of neighborhoods of `0` if the topology of `R` is (left and right) linear.
 
-## Instances :
+## Instances
 
 If `R` has a linear topology, then the product topology on `MvPowerSeries σ R`
 is a linear topology.

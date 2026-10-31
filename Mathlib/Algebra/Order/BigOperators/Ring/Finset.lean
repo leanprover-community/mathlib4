@@ -160,7 +160,7 @@ lemma sum_sq_le_sum_mul_sum_of_sq_le_mul [CommSemiring R] [LinearOrder R] [IsStr
           repeat rw [mul_assoc]
       _ = _ := by simp_rw [sum_add_distrib, ← sum_mul]; ring
 
-@[deprecated sum_sq_le_sum_mul_sum_of_sq_le_mul (since := "2026-05-12")]
+@[deprecated sum_sq_le_sum_mul_sum_of_sq_le_mul +typeChanged (since := "2026-05-12")]
 lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R]
     [ExistsAddOfLE R]
     (s : Finset ι) {r f g : ι → R} (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i)

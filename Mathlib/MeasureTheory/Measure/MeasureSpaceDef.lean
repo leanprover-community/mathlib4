@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.MeasureTheory.OuterMeasure.Induced
 public import Mathlib.MeasureTheory.OuterMeasure.AE
+public import Mathlib.MeasureTheory.OuterMeasure.Induced
 
 /-!
 # Measure spaces
@@ -86,6 +86,7 @@ theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
+@[macro_inline]
 instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) ℝ≥0∞ where
   coe μ := μ.toOuterMeasure
   coe_injective | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
@@ -224,7 +225,7 @@ theorem exists_measurable_superset_iff_measure_eq_zero :
 
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     (hfin : ∀ i ∈ s, μ (f i) < ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
-  convert! (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
+  convert (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
   · ext
     rw [Finite.mem_toFinset]
   · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset]
@@ -319,18 +320,20 @@ open scoped Classical in
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
 This property holds without the assumption `μ s ≠ ∞` when the space is s-finite (for example
-σ-finite); see `measure_toMeasurable_inter_of_sFinite`.
+σ-finite); see `measure_toMeasurable_inter_of_sfinite`.
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
-irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
+@[no_expose] def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
   if h : ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
     if h' : ∃ t, t ⊇ s ∧ MeasurableSet t ∧
       ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
     else (exists_measurable_superset μ s).choose
 
+alias toMeasurable_def := toMeasurable.eq_def
+
 theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s := by
-  rw [toMeasurable_def]; split_ifs with hs h's
+  rw [toMeasurable]; split_ifs with hs h's
   exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
@@ -339,13 +342,13 @@ theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
     MeasurableSet (toMeasurable μ s) := by
-  rw [toMeasurable_def]; split_ifs with hs h's
+  rw [toMeasurable]; split_ifs with hs h's
   exacts [hs.choose_spec.2.1, h's.choose_spec.2.1,
           (exists_measurable_superset μ s).choose_spec.2.1]
 
 @[simp]
 theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
-  rw [toMeasurable_def]; split_ifs with hs h's
+  rw [toMeasurable]; split_ifs with hs h's
   · exact measure_congr hs.choose_spec.2.2
   · simpa only [inter_univ] using h's.choose_spec.2.2 univ MeasurableSet.univ
   · exact (exists_measurable_superset μ s).choose_spec.2.2
@@ -475,7 +478,7 @@ variable {δ : Type*} {X : δ → Type*} {mX : ∀ a, MeasurableSpace (X a)}
 protected theorem AEMeasurable.eval {g : α → Π a, X a} (hg : AEMeasurable g μ) (a : δ) :
     AEMeasurable (fun x ↦ g x a) μ := by
   use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
-  exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
+  exact hg.ae_eq_mk.mono fun _ h ↦ congr($h _)
 
 variable [Countable δ]
 
