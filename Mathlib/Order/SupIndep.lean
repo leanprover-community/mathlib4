@@ -257,7 +257,7 @@ protected theorem SupIndep.insert [DecidableEq ι] {i : ι} {s : Finset ι} {f :
 
 protected theorem SupIndep.sup_inter [DecidableEq ι] {s₁ s₂ : Finset ι} (hs : s.SupIndep f)
     (hs₁ : s₁ ⊆ s) (hs₂ : s₂ ⊆ s) : (s₁ ∩ s₂).sup f = s₁.sup f ⊓ s₂.sup f := by
-  conv_rhs => rw [← sup_inf_sdiff s₁ s₂, inf_eq_inter, sup_eq_union, sup_union]
+  conv_rhs => rw [← sup_inf_sdiff s₁ s₂, sup_union]
   rw [sup_inf_assoc_of_le _ <| sup_mono inter_subset_right,
     (hs.disjoint_sup_sup (sdiff_subset.trans hs₁) hs₂ disjoint_sdiff_self_left).eq_bot,
     sup_bot_eq]
@@ -274,7 +274,7 @@ protected theorem SupIndep.sup_inf' [DecidableEq ι] {t : Finset ι'} {g : ι' �
   | singleton => simp
   | cons j t _ ht ih =>
     rw [forall_mem_cons] at hg
-    simp_rw [inf'_cons ht, inf_eq_inter]
+    simp_rw [inf'_cons ht]
     rw [hs.sup_inter hg.1 ?_, ih hg.2]
     grw [inf'_mono_fun hg.2, inf'_const]
 
