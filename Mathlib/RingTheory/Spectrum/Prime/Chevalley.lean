@@ -66,7 +66,7 @@ lemma isOpenMap_comap_of_hasGoingDown_of_finitePresentation
   rw [isBasis_basic_opens.isOpenMap_iff]
   rintro _ ⟨_, ⟨f, rfl⟩, rfl⟩
   exact isOpen_of_stableUnderGeneralization_of_isConstructible
-    ((basicOpen f).2.stableUnderGeneralization.image
+    ((basicOpen f).is_open'.stableUnderGeneralization.image
       (Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap.mp ‹_›))
     (isConstructible_comap_image (RingHom.finitePresentation_algebraMap.mpr ‹_›)
       isConstructible_basicOpen)

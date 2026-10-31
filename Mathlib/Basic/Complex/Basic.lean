@@ -31,7 +31,7 @@ open Set Function
 
 
 /-- Complex numbers consist of two `Real`s: a real part `re` and an imaginary part `im`. -/
-@[wikidata Q11567]
+@[wikidata Q11567, allow_numeric_proj]
 structure Complex : Type where
   /-- The real part of a complex number. -/
   re : ℝ

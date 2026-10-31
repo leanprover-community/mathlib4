@@ -66,7 +66,7 @@ instance {n : ℕ} (F : Fin n ⥤ C) : F.IsWellOrderContinuous where
 lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :
     G.IsWellOrderContinuous where
   nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :=
-    ⟨(IsColimit.precomposeHomEquiv (isoWhiskerLeft _ e) _).1
+    ⟨(IsColimit.precomposeHomEquiv (isoWhiskerLeft _ e) _).toFun
       (IsColimit.ofIsoColimit (F.isColimitOfIsWellOrderContinuous m hm)
         (Cocone.ext (e.app _)))⟩
 
@@ -97,11 +97,11 @@ instance IsWellOrderContinuous.restriction_setIci
       · refine ⟨⟨⟨j, le_refl j⟩, ?_⟩, h⟩
         by_contra h'
         simp only [Set.mem_Iio, not_lt] at h'
-        apply hm.1
+        apply hm.not_isMin
         rintro ⟨k, hk⟩ hkm
         exact h'.trans hk
       · exact ⟨⟨⟨j', h.le⟩, hj'⟩, by rfl⟩
-    exact (Functor.Final.isColimitWhiskerEquiv (F := hf.functor) _).2
+    exact (Functor.Final.isColimitWhiskerEquiv (F := hf.functor) _).invFun
       (F.isColimitOfIsWellOrderContinuous m.1 (Set.Ici.isSuccLimit_coe m hm))⟩
 
 end CategoryTheory.Functor

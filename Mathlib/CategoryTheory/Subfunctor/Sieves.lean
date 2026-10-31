@@ -37,7 +37,7 @@ def sieveOfSection {U : Cᵒᵖ} (s : F.obj U) : Sieve (unop U) where
 /-- Given an `F`-section `s` on `U` and a subpresheaf `G`, we may define a family of elements in
 `G` consisting of the restrictions of `s` -/
 def familyOfElementsOfSection {U : Cᵒᵖ} (s : F.obj U) :
-    (G.sieveOfSection s).1.FamilyOfElements G.toFunctor := fun _ i hi => ⟨F.map i.op s, hi⟩
+    (G.sieveOfSection s).arrows.FamilyOfElements G.toFunctor := fun _ i hi => ⟨F.map i.op s, hi⟩
 
 theorem family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
     (G.familyOfElementsOfSection s).Compatible := by

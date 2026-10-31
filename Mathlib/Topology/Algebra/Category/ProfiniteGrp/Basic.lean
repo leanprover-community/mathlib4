@@ -244,7 +244,7 @@ instance : HasForget₂ ProfiniteGrp GrpCat where
 @[to_additive /-- A closed additive subgroup of a profinite additive group is profinite. -/]
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G) : ProfiniteGrp :=
   letI : CompactSpace H := inferInstance
-  of H.1
+  of H.toSubgroup
 
 /-- A topological group that has a `ContinuousMulEquiv` to a profinite group is profinite. -/
 @[to_additive /-- A topological additive group that has a `ContinuousAddEquiv` to a

@@ -93,8 +93,8 @@ abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderEmbedding :=
-  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
-  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
+  fun i ↦ ⟨i.toEmbedding, by rw [forall_comm]; exact @i.map_rel_iff'⟩,
+  fun i ↦ ⟨i.toEmbedding, by rw [forall_comm]; exact @i.map_rel_iff'⟩
 
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
@@ -105,8 +105,8 @@ abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 
 to_dual_insert_cast_fun OrderIso :=
-  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩,
-  fun i ↦ ⟨i.1, by rw [forall_comm]; exact @i.2⟩
+  fun i ↦ ⟨i.toEquiv, by rw [forall_comm]; exact @i.map_rel_iff'⟩,
+  fun i ↦ ⟨i.toEquiv, by rw [forall_comm]; exact @i.map_rel_iff'⟩
 
 /-- Notation for an `OrderIso`. -/
 infixl:25 " ≃o " => OrderIso
@@ -1287,7 +1287,7 @@ section BoundedOrder
 variable [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β] (f : α ≃o β)
 
 theorem OrderIso.isCompl {x y : α} (h : IsCompl x y) : IsCompl (f x) (f y) :=
-  ⟨h.1.map_orderIso _, h.2.map_orderIso _⟩
+  ⟨h.disjoint.map_orderIso _, h.codisjoint.map_orderIso _⟩
 
 theorem OrderIso.isCompl_iff {x y : α} : IsCompl x y ↔ IsCompl (f x) (f y) :=
   ⟨f.isCompl, fun h => f.symm_apply_apply x ▸ f.symm_apply_apply y ▸ f.symm.isCompl h⟩

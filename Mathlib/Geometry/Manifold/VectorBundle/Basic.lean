@@ -418,7 +418,7 @@ theorem Bundle.Trivialization.contMDiffOn_symm_trans :
     (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr ?_
   rintro ⟨b, x⟩ hb
   refine Prod.ext ?_ rfl
-  have : (e.toOpenPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet := by
+  have : (e.toOpenPartialHomeomorph.symm (b, x)).proj ∈ e'.baseSet := by
     simp_all only [Trivialization.mem_target, mfld_simps]
   exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
 
@@ -589,7 +589,7 @@ class IsContMDiff (IB : ModelWithCorners 𝕜 EB HB) (n : ℕ∞ω) : Prop where
 
 theorem contMDiffOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsContMDiff IB n] (i j : ι) :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j) :=
-  h.1 i j
+  h.contMDiffOn_coordChange i j
 
 variable [Z.IsContMDiff IB n]
 

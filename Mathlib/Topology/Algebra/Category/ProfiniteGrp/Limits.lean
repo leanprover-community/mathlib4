@@ -101,11 +101,11 @@ private theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit 
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
   simp_rw [← hsv, Set.mem_preimage] at uDefaultSpec
   rcases (isOpen_pi_iff.mp hsO) _ uDefaultSpec with ⟨J, fJ, hJ1, hJ2⟩
-  let M := iInf (fun (j : J) => j.1.1.1)
+  let M := iInf (fun (j : J) => j.1.toOpenSubgroup.toSubgroup)
   have hM : M.Normal := Subgroup.normal_iInf_normal fun j => j.1.isNormal'
   have hMOpen : IsOpen (M : Set P) := by
     rw [Subgroup.coe_iInf]
-    exact isOpen_iInter_of_finite fun i => i.1.1.isOpen'
+    exact isOpen_iInter_of_finite fun i => i.1.toOpenSubgroup.isOpen'
   let m : OpenNormalSubgroup P := { M with isOpen' := hMOpen }
   rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
   use (toLimit P) origin
@@ -113,7 +113,7 @@ private theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit 
   rw [← hsv]
   apply hJ2
   intro a a_in_J
-  let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
+  let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.toOpenSubgroup.toSubgroup) ⟨a, a_in_J⟩).hom
   rw [← (P.toLimit origin).property M_to_Na]
   change (P.toFiniteQuotientFunctor.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
   rw [horigin]

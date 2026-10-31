@@ -48,7 +48,7 @@ namespace FiniteAdeleRing
 
 open scoped AdeleRing
 
-theorem hasFiniteMulSupport_norm (x : 𝔸ᶠ[R, K]ˣ) : (fun v ↦ ‖x.1 v‖).HasFiniteMulSupport :=
+theorem hasFiniteMulSupport_norm (x : 𝔸ᶠ[R, K]ˣ) : (fun v ↦ ‖x.val v‖).HasFiniteMulSupport :=
   (FiniteAdeleRing.hasFiniteMulSupport_valued x).of_eq_one_iff
     fun _ ↦ Valued.toNormedField.norm_eq_one_iff.symm
 

@@ -44,7 +44,7 @@ class ProperConstSMul (M X : Type*) [SMul M X] [TopologicalSpace X] : Prop where
 /-- `(c • ·)` is a proper map. -/
 @[to_additive /-- `(c +ᵥ ·)` is a proper map. -/]
 theorem isProperMap_smul {M : Type*} (c : M) (X : Type*) [SMul M X] [TopologicalSpace X]
-    [h : ProperConstSMul M X] : IsProperMap ((c • ·) : X → X) := h.1 c
+    [h : ProperConstSMul M X] : IsProperMap ((c • ·) : X → X) := h.isProperMap_smul c
 
 /-- The preimage of a compact set under `(c • ·)` is a compact set. -/
 @[to_additive /-- The preimage of a compact set under `(c +ᵥ ·)` is a compact set. -/]

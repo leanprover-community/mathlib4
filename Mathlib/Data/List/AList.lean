@@ -257,7 +257,7 @@ theorem entries_insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [entries_insert, kerase_of_notMem_keys h]
 
 theorem insert_of_notMem {a} {b : β a} {s : AList β} (h : a ∉ s) :
-    insert a b s = ⟨⟨a, b⟩ :: s.entries, nodupKeys_cons.2 ⟨h, s.2⟩⟩ :=
+    insert a b s = ⟨⟨a, b⟩ :: s.entries, nodupKeys_cons.2 ⟨h, s.nodupKeys⟩⟩ :=
   ext <| entries_insert_of_notMem h
 
 @[simp]

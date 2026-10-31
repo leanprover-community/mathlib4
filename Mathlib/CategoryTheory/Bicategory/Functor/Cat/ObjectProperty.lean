@@ -76,7 +76,7 @@ in `B`, this is the functor `P.Obj X ⥤ P.Obj Y` that is induced by `F.map f`. 
 def map {X Y : B} (f : X ⟶ Y) :
     P.Obj X ⥤ P.Obj Y :=
   (P.prop Y).lift (ObjectProperty.ι _ ⋙ (F.map f).toFunctor)
-    (fun M ↦ P.map_obj M.2 f)
+    (fun M ↦ P.map_obj M.property f)
 
 /-- Given a property `P` of objects for `F : Pseudofunctor B Cat` and
 a `2`-morphism in `B`, this is the induced natural transformation between

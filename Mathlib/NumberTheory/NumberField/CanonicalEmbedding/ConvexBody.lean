@@ -448,7 +448,7 @@ noncomputable def minkowskiBound : ℝ≥0∞ :=
 open scoped Classical in
 theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
     volume (fundamentalDomain (fractionalIdealLatticeBasis K I)) =
-      .ofReal (FractionalIdeal.absNorm I.1) * volume (fundamentalDomain (latticeBasis K)) := by
+      .ofReal (FractionalIdeal.absNorm I.val) * volume (fundamentalDomain (latticeBasis K)) := by
   let e : (Module.Free.ChooseBasisIndex ℤ I) ≃ (Module.Free.ChooseBasisIndex ℤ (𝓞 K)) := by
     refine Fintype.equivOfCardEq ?_
     rw [← finrank_eq_card_chooseBasisIndex, ← finrank_eq_card_chooseBasisIndex,

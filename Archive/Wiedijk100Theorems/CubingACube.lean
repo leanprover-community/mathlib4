@@ -193,10 +193,10 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
       · apply (cs i).hw'
     · exact lt_of_le_of_ne (b_add_w_le_one h) hc
     intro j; exact side_subset h (hps j)
-  rw [← h.2, mem_iUnion] at this; rcases this with ⟨i', hi'⟩
+  rw [← h.iUnion_eq, mem_iUnion] at this; rcases this with ⟨i', hi'⟩
   rw [mem_iUnion]; use i'; refine ⟨?_, fun j => hi' j.succ⟩
   have : i ≠ i' := by rintro rfl; apply not_le_of_gt (hi' 0).2; rw [hp0]; rfl
-  have := h.1 this
+  have := h.PairwiseDisjoint this
   rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
   rcases this with (h0 | ⟨j, hj⟩)
   · rw [hp0]; symm; apply eq_of_Ico_disjoint h0 (by simp [hw]) _
@@ -233,7 +233,7 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
       rw [forall_iff_succ, h0]; constructor
       · norm_num [side, unitCube]
       · exact hv
-    rw [← h.2, mem_iUnion] at this; rcases this with ⟨i, hi⟩
+    rw [← h.iUnion_eq, mem_iUnion] at this; rcases this with ⟨i, hi⟩
     use i
     constructor
     · apply le_antisymm
@@ -417,9 +417,9 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
       intro j₂; by_cases hj₂ : j₂ = j
       · simpa [p', side_tail, hj'.symm, hj₂] using hi''.2 j
       · simpa [p, hj₂] using! hi'.2 j₂
-    apply not_disjoint_iff.mpr ⟨(cs i).b, (cs i).b_mem_toSet, this⟩ (h.1 i_i')
+    apply not_disjoint_iff.mpr ⟨(cs i).b, (cs i).b_mem_toSet, this⟩ (h.PairwiseDisjoint i_i')
   have i_i'' : i ≠ i'' := by intro h; induction h; simpa [p', hx'.2] using hi''.2 j'
-  apply Not.elim _ (h.1 i'_i'')
+  apply Not.elim _ (h.PairwiseDisjoint i'_i'')
   simp_rw [onFun, comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_iff_succ]
   refine ⟨⟨c.b 0, bottom_mem_side h2i', bottom_mem_side h2i''⟩, ?_⟩
   intro j₂
@@ -491,7 +491,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
       have : (cs i).b 0 = (cs i'').b 0 := by rw [hi.1, h2i''.1]
       simp [side, hw', xm, this, h3i'']
     apply not_disjoint_iff.mpr ⟨p', hp', h2p'⟩
-    apply h.1
+    apply h.PairwiseDisjoint
     rintro rfl
     apply (cs i).b_ne_xm
     rw [← hi', ← hi''.1, hi.1]

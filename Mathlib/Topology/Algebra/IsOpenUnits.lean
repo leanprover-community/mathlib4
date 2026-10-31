@@ -78,14 +78,14 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
     MulOpposite.op_one, and_self, Set.image_add_left] at this
   have : ∃ n₁ n₂, ∀ (u : Rˣ), (-1 + u : R) ∈ I ^ n₁ → (-1 + u⁻¹ : R) ∈ I ^ n₂ → ↑u ∈ s := by
     simpa [Set.subset_def, forall_comm (β := Rˣ), forall_comm (β := _ = _)] using
-      (((this.comap (Units.embedProduct R)).map (Units.coeHom R)).1 _).mp hs
+      (((this.comap (Units.embedProduct R)).map (Units.coeHom R)).mem_iff' _).mp hs
   obtain ⟨n, hn, hn'⟩ : ∃ n ≠ 0, ∀ (u : Rˣ), (-1 + u : R) ∈ I ^ n →
       (-1 + u⁻¹ : R) ∈ I ^ n → ↑u ∈ s := by
     obtain ⟨n₁, n₂, H⟩ := this
     exact ⟨n₁ ⊔ n₂ ⊔ 1, by simp, fun u h₁ h₂ ↦ H u
       (Ideal.pow_le_pow_right (by simp) h₁)
       (Ideal.pow_le_pow_right (by simp) h₂)⟩
-  rw [H.1]
+  rw [H.mem_iff']
   refine ⟨n, trivial, ?_⟩
   rintro _ ⟨x, hx, rfl⟩
   have := Ring.mem_jacobson_iff.mp (hI (Ideal.pow_le_self hn hx)) 1

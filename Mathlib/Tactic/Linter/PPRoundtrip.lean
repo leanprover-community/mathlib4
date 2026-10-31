@@ -98,9 +98,9 @@ at most `p`, trimming down also the relevant substrings. -/
 def capSourceInfo (s : SourceInfo) (p : Nat) : SourceInfo :=
   match s with
     | .original leading pos trailing endPos =>
-      .original leading pos {trailing with stopPos := ⟨min endPos.1 p⟩} ⟨min endPos.1 p⟩
+      .original leading pos {trailing with stopPos := ⟨min endPos.byteIdx p⟩} ⟨min endPos.byteIdx p⟩
     | .synthetic pos endPos canonical =>
-      .synthetic pos ⟨min endPos.1 p⟩ canonical
+      .synthetic pos ⟨min endPos.byteIdx p⟩ canonical
     | .none => s
 
 /-- `capSyntax stx p` applies `capSourceInfo · s` to all `SourceInfo`s in all
@@ -114,7 +114,8 @@ def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
   match stx with
     | .node si k args => .node (capSourceInfo si p) k (args.map (capSyntax · p))
     | .atom si val => .atom (capSourceInfo si p) (val.take p).copy
-    | .ident si r v pr => .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.1 p⟩ } v pr
+    | .ident si r v pr =>
+      .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.byteIdx p⟩ } v pr
     | s => s
 
 namespace PPRoundtrip
@@ -125,7 +126,7 @@ def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    let stx := capSyntax stx (stx.getTailPos?.getD default).1
+    let stx := capSyntax stx (stx.getTailPos?.getD default).byteIdx
     let origSubstring := stx.getSubstring?.getD default
     let (real, lths) := polishSource origSubstring.toString
     let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
@@ -137,11 +138,11 @@ def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
     let st := polishPP fmt.pretty
     if st != real then
       let diff := real.firstDiffPos st
-      let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
+      let pos := posToShiftedPos lths diff.byteIdx + origSubstring.startPos.byteIdx
       let f := origSubstring.str.drop (pos)
       let extraLth := (f.takeWhile (· != diff.get st)).copy.length
-      let srcCtxt := zoomString real diff.1 5
-      let ppCtxt  := zoomString st diff.1 5
+      let srcCtxt := zoomString real diff.byteIdx 5
+      let ppCtxt  := zoomString st diff.byteIdx 5
       Linter.logLint linter.ppRoundtrip (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
         m!"source context\n'{srcCtxt}'\n'{ppCtxt}'\npretty-printed context"
 

@@ -59,7 +59,7 @@ instance [IsCardinalAccessibleCategory C κ] :
   isDenseAt X := by
     obtain ⟨J, _, _, ⟨p⟩⟩ :=
       (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape X
-    exact ⟨(Functor.Final.isColimitWhiskerEquiv (F := p.toCostructuredArrow) _).1
+    exact ⟨(Functor.Final.isColimitWhiskerEquiv (F := p.toCostructuredArrow) _).toFun
       (IsColimit.ofIsoColimit p.isColimit (Cocone.ext (Iso.refl _)))⟩
 
 instance [IsCardinalAccessibleCategory C κ] (X : C) :

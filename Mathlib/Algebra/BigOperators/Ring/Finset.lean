@@ -35,7 +35,7 @@ namespace Finset
 
 lemma prod_neg [CommMonoid M] [HasDistribNeg M] (f : ι → M) :
     ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
-  simpa using (s.1.map f).prod_map_neg
+  simpa using (s.val.map f).prod_map_neg
 
 section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne R]

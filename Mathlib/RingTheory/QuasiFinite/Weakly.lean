@@ -93,7 +93,7 @@ lemma of_algHom_localization (p : Ideal S) [p.IsPrime] [WeaklyQuasiFiniteAt R p]
     intro x hx
     by_contra hx'
     have : IsLocalHom f.toRingHom := .of_surjective _ hf
-    have := this.1 (algebraMap _ _ x) (by
+    have := this.map_nonunit (algebraMap _ _ x) (by
       suffices IsUnit (IsLocalization.mk' (M := q.primeCompl) (Localization.AtPrime q)
         (algebraMap _ _ x) 1) by simpa [IsLocalization.mk'_one] using! this
       simpa [IsLocalization.AtPrime.isUnit_mk'_iff])

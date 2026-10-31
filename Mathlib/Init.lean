@@ -24,6 +24,7 @@ public meta import Mathlib.Tactic.Linter.InternalConstructor
 -- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
 public meta import Mathlib.Tactic.Linter.Lint
 public meta import Mathlib.Tactic.Linter.Multigoal
+public meta import Mathlib.Tactic.Linter.NumericProjection
 public meta import Mathlib.Tactic.Linter.OldObtain
 public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.Style
@@ -109,6 +110,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.openClassical
   linter.style.maxHeartbeats
   linter.style.missingEnd
+  linter.style.numericProjections
   linter.style.setOption
   linter.style.show
   linter.style.whitespace

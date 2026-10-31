@@ -92,7 +92,7 @@ def coindMap (f : σ.IntertwiningMap ρ) : (coind φ σ).IntertwiningMap (coind 
     simp only [mem_coindV, LinearMap.compLeft_apply, Function.comp_apply,
       IntertwiningMap.toLinearMap_apply] at h ⊢
     intro g h0
-    simpa [h] using LinearMap.ext_iff.1 (f.2 g) (x h0)
+    simpa [h] using LinearMap.ext_iff.1 (f.isIntertwining' g) (x h0)
   isIntertwining' h := by ext; simp
 
 lemma coindMap_coe_apply (f : σ.IntertwiningMap ρ) (x : coindV φ σ) :

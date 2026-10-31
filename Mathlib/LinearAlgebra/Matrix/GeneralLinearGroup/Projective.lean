@@ -130,8 +130,8 @@ lemma toPGL_surj_of_roots
     obtain ⟨r, hr⟩ := hR g.det⁻¹
     exact ⟨r, by simpa [mul_eq_one_iff_eq_inv] using hr⟩
   simp only [Units.ext_iff, Units.val_mul, Units.val_pow_eq_pow_val,
-    GeneralLinearGroup.val_det_apply, ← Matrix.det_smul g.1 r.1, Units.val_one] at hr
-  use QuotientGroup.mk ⟨r.1 • g.1, hr⟩
+    GeneralLinearGroup.val_det_apply, ← Matrix.det_smul g.val r.val, Units.val_one] at hr
+  use QuotientGroup.mk ⟨r.val • g.val, hr⟩
   simp only [ProjectiveSpecialLinearGroup.toPGL_mk, mk_eq_mk_iff]
   refine ⟨r⁻¹, Units.ext ?_⟩
   simp only [Units.val_mul, coe_GL_coe_matrix, GeneralLinearGroup.coe_scalar]
@@ -156,7 +156,7 @@ noncomputable def isoPSLOfAlgClosedOfNonempty [Nonempty n] {F : Type*} [Field F]
   MulEquiv.symm (MulEquiv.ofBijective Matrix.ProjectiveSpecialLinearGroup.toPGL
     ⟨Matrix.ProjectiveSpecialLinearGroup.toPGL_injective,
     Matrix.ProjectiveSpecialLinearGroup.toPGL_surj_of_roots fun r => by
-  obtain ⟨x, hx⟩ := IsAlgClosed.exists_root (X ^ Fintype.card n - C r.1 : F[X]) (by
+  obtain ⟨x, hx⟩ := IsAlgClosed.exists_root (X ^ Fintype.card n - C r.val : F[X]) (by
     simp [Polynomial.degree_X_pow_sub_C Fintype.card_pos])
   have hx' : x ≠ 0 := by aesop
   exact ⟨⟨x, x⁻¹, mul_inv_cancel₀ hx', inv_mul_cancel₀ hx'⟩, by

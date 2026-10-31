@@ -96,7 +96,7 @@ def univ : Finset α :=
 theorem mem_univ (x : α) : x ∈ (univ : Finset α) :=
   Fintype.complete x
 
-theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).1 := by simp
+theorem mem_univ_val : ∀ x, x ∈ (univ : Finset α).val := by simp
 
 theorem eq_univ_iff_forall : s = univ ↔ ∀ x, x ∈ s := by simp [Finset.ext_iff]
 
@@ -226,7 +226,7 @@ instance decidableSubsingleton [Fintype α] [DecidableEq α] {s : Set α} [Decid
 section BundledHoms
 
 instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α ≃ β) := fun a b =>
-  decidable_of_iff (a.1 = b.1) Equiv.coe_fn_injective.eq_iff
+  decidable_of_iff (a.toFun = b.toFun) Equiv.coe_fn_injective.eq_iff
 
 instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
@@ -275,7 +275,7 @@ associated to the predicate is a fintype. -/
 @[instance_reducible]
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
     Fintype { x // p x } :=
-  ⟨⟨s.1.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
+  ⟨⟨s.val.pmap Subtype.mk fun x => (H x).1, s.nodup.pmap fun _ _ _ _ => congr_arg Subtype.val⟩,
     fun ⟨x, px⟩ => Multiset.mem_pmap.2 ⟨x, (H x).2 px, rfl⟩⟩
 
 /-- Construct a fintype from a finset with the same elements. -/

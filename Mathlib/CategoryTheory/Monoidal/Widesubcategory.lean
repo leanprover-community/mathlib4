@@ -70,8 +70,8 @@ namespace WideSubcategory
 @[simps]
 instance [P.IsMonoidalStable] : MonoidalCategoryStruct (WideSubcategory P) where
   tensorObj c c' := ⟨c.obj ⊗ c'.obj⟩
-  whiskerLeft c _ _ f := ⟨c.obj ◁ f.1, P.whiskerLeft_mem _ _ f.2⟩
-  whiskerRight f c' := ⟨f.1 ▷ c'.obj, P.whiskerRight_mem _ f.2 _⟩
+  whiskerLeft c _ _ f := ⟨c.obj ◁ f.hom, P.whiskerLeft_mem _ _ f.property⟩
+  whiskerRight f c' := ⟨f.hom ▷ c'.obj, P.whiskerRight_mem _ f.property _⟩
   tensorUnit := ⟨𝟙_ C⟩
   associator _ _ _ :=
     isoMk (α_ _ _ _) (P.associator_hom_mem _ _ _) (P.associator_inv_mem _ _ _)
@@ -79,7 +79,7 @@ instance [P.IsMonoidalStable] : MonoidalCategoryStruct (WideSubcategory P) where
     isoMk (λ_ _) (P.leftUnitor_hom_mem _) (P.leftUnitor_inv_mem _)
   rightUnitor _ :=
     isoMk (ρ_ _) (P.rightUnitor_hom_mem _) (P.rightUnitor_inv_mem _)
-  tensorHom f g := ⟨f.1 ⊗ₘ g.1, P.tensorHom_mem _ _ f.2 g.2⟩
+  tensorHom f g := ⟨f.hom ⊗ₘ g.hom, P.tensorHom_mem _ _ f.property g.property⟩
 
 instance [P.IsMonoidalStable] : MonoidalCategory (WideSubcategory P) :=
   Monoidal.induced (wideSubcategoryInclusion P)

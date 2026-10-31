@@ -105,14 +105,15 @@ instance instCompleteLattice : CompleteLattice (Closeds α) :=
     -- bot
     ⟨∅, isClosed_empty⟩ (SetLike.coe_injective closure_empty.symm)
     -- sup
-    (fun s t => ⟨s ∪ t, s.2.union t.2⟩)
-    (funext fun s => funext fun t => SetLike.coe_injective (s.2.union t.2).closure_eq.symm)
+    (fun s t => ⟨s ∪ t, s.isClosed'.union t.isClosed'⟩)
+    (funext fun s => funext fun t =>
+      SetLike.coe_injective (s.isClosed'.union t.isClosed').closure_eq.symm)
     -- inf
-    (fun s t => ⟨s ∩ t, s.2.inter t.2⟩) rfl
+    (fun s t => ⟨s ∩ t, s.isClosed'.inter t.isClosed'⟩) rfl
     -- sSup
     _ rfl
     -- sInf
-    (fun S => ⟨⋂ s ∈ S, ↑s, isClosed_biInter fun s _ => s.2⟩)
+    (fun S => ⟨⋂ s ∈ S, ↑s, isClosed_biInter fun s _ => s.isClosed'⟩)
     (funext fun _ => SetLike.coe_injective sInf_image.symm)
 
 /-- The type of closed sets is inhabited, with default element the empty set. -/
@@ -175,7 +176,7 @@ theorem coe_iInf {ι} (s : ι → Closeds α) : ((⨅ i, s i : Closeds α) : Set
   ext; simp
 
 theorem iInf_def {ι} (s : ι → Closeds α) :
-    ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).2⟩ := by ext1; simp
+    ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).isClosed'⟩ := by ext1; simp
 
 @[simp]
 theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
@@ -231,12 +232,12 @@ end Closeds
 /-- The complement of a closed set as an open set. -/
 @[simps]
 def Closeds.compl (s : Closeds α) : Opens α :=
-  ⟨sᶜ, s.2.isOpen_compl⟩
+  ⟨sᶜ, s.isClosed'.isOpen_compl⟩
 
 /-- The complement of an open set as a closed set. -/
 @[simps]
 def Opens.compl (s : Opens α) : Closeds α :=
-  ⟨sᶜ, s.2.isClosed_compl⟩
+  ⟨sᶜ, s.is_open'.isClosed_compl⟩
 
 nonrec theorem Closeds.compl_compl (s : Closeds α) : s.compl.compl = s :=
   Closeds.ext (compl_compl (s : Set α))
@@ -276,7 +277,8 @@ variable {α}
 
 lemma Closeds.coe_eq_singleton_of_isAtom [T0Space α] {s : Closeds α} (hs : IsAtom s) :
     ∃ a, (s : Set α) = {a} := by
-  refine minimal_nonempty_closed_eq_singleton s.2 (coe_nonempty.2 hs.1) fun t hts ht ht' ↦ ?_
+  refine minimal_nonempty_closed_eq_singleton s.isClosed' (coe_nonempty.2 hs.1)
+    fun t hts ht ht' ↦ ?_
   lift t to Closeds α using ht'
   exact SetLike.coe_injective.eq_iff.2 <| (hs.le_iff_eq <| coe_nonempty.1 ht).1 hts
 
@@ -367,7 +369,7 @@ instance : BooleanAlgebra (Clopens α) := fast_instance%
 instance : Inhabited (Clopens α) := ⟨⊥⟩
 
 instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
-  sprod s t := ⟨s ×ˢ t, s.2.prod t.2⟩
+  sprod s t := ⟨s ×ˢ t, s.isClopen'.prod t.isClopen'⟩
 
 @[simp]
 protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
@@ -449,7 +451,7 @@ The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducibl
 -/
 @[simps apply symm_apply]
 def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x } where
-  toFun a  := ⟨a.1, a.2, a.3⟩
+  toFun a  := ⟨a.carrier, a.isIrreducible', a.isClosed'⟩
   invFun a := ⟨a.1, a.2.1, a.2.2⟩
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
@@ -458,7 +460,7 @@ The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x �
 -/
 @[simps apply symm_apply]
 def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x } where
-  toFun a  := ⟨a.1, a.3, a.2⟩
+  toFun a  := ⟨a.carrier, a.isClosed', a.isIrreducible'⟩
   invFun a := ⟨a.1, a.2.2, a.2.1⟩
 
 variable (α) in
@@ -514,17 +516,19 @@ to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
 noncomputable
 def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
     IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
-  toFun T := ⟨map f h.continuous T, nonempty_preimage_closure_image h.continuous T T.2.nonempty⟩
+  toFun T := ⟨map f h.continuous T,
+    nonempty_preimage_closure_image h.continuous T T.isIrreducible'.nonempty⟩
   invFun V :=
     { carrier := f ⁻¹' V
-      isIrreducible' := ⟨V.2, V.1.2.isPreirreducible.preimage h⟩
-      isClosed' := V.1.3.preimage h.continuous }
+      isIrreducible' := ⟨V.2, V.1.isIrreducible'.isPreirreducible.preimage h⟩
+      isClosed' := V.1.isClosed'.preimage h.continuous }
   left_inv V := by
     ext
     simp [h.isOpenMap.preimage_closure_image h.injective h.continuous _ V.isClosed]
   right_inv V := by
     ext
-    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.2 V.1.2.2 V.1.3]
+    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.2 V.1.isIrreducible'.2
+      V.1.isClosed']
   map_rel_iff' {a b} := by
     refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
     simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,

@@ -113,7 +113,7 @@ lemma eq_unit_mul_divisor {N : ℕ} (a : ZMod N) :
   obtain ⟨u, hu⟩ := (unitsMap_surjective (⟨d, mul_comm d N₀ ▸ hN₀⟩ : N₀ ∣ N)) hu₀.unit
   rw [unitsMap_def, ← Units.val_inj, Units.coe_map, IsUnit.unit_spec, MonoidHom.coe_ofClass] at hu
   refine ⟨u.val, u.isUnit, ?_⟩
-  rw [← natCast_zmod_val a, ← natCast_zmod_val u.1, ha₀, ← Nat.cast_mul,
+  rw [← natCast_zmod_val a, ← natCast_zmod_val u.val, ha₀, ← Nat.cast_mul,
     natCast_eq_natCast_iff, mul_comm _ d, Nat.ModEq]
   simp only [hN₀, Nat.mul_mod_mul_left, Nat.mul_right_inj hd]
   rw [← Nat.ModEq, ← natCast_eq_natCast_iff, ← hu, natCast_val, castHom_apply]

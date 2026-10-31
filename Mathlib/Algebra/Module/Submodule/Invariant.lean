@@ -77,8 +77,8 @@ lemma invtSubmodule_le_invtSubmodule_smul (c : S) : f.invtSubmodule ≤ (c • f
 
 @[simp]
 lemma invtSubmodule_smul (c : Sˣ) : (c • f).invtSubmodule = f.invtSubmodule := by
-  apply le_antisymm ?_ (invtSubmodule_le_invtSubmodule_smul f c.1)
-  grw [invtSubmodule_le_invtSubmodule_smul (c.1 • f) c⁻¹.1]
+  apply le_antisymm ?_ (invtSubmodule_le_invtSubmodule_smul f c.val)
+  grw [invtSubmodule_le_invtSubmodule_smul (c.val • f) c⁻¹.val]
   simp [smul_smul]
 
 end CommRing

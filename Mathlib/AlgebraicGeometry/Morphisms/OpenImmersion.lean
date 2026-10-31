@@ -72,7 +72,7 @@ theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
   refine IsOpenImmersion.iff_isIso_stalkMap.mpr
     ⟨.of_continuous_injective_isOpenMap f.continuous hf ?_, ?_⟩
   · intro U hU
-    convert (⨆ i, ((𝒰.f i ≫ f) ''ᵁ (𝒰.f i ⁻¹ᵁ ⟨U, hU⟩))).2
+    convert (⨆ i, ((𝒰.f i ≫ f) ''ᵁ (𝒰.f i ⁻¹ᵁ ⟨U, hU⟩))).is_open'
     ext x
     exact ⟨fun ⟨x, _, _⟩ ↦ by have := 𝒰.exists_eq x; simp; grind, by simp; grind⟩
   · intro x

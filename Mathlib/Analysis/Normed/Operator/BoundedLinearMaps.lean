@@ -135,7 +135,7 @@ theorem smul {𝕜' : Type*} (c : 𝕜') [SeminormedRing 𝕜'] [Module 𝕜' F]
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
 theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e :=
-  ⟨(-hf.1.mk' _).isLinear, by simpa using hf.2⟩
+  ⟨(-hf.toIsLinearMap.mk' _).isLinear, by simpa using hf.bound⟩
 
 theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
     IsBoundedLinearMap 𝕜 fun e => f e + g e :=
@@ -153,7 +153,7 @@ theorem comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinea
     IsBoundedLinearMap 𝕜 (g ∘ f) :=
   let ⟨hlf, Mf, _, hMf⟩ := hf
   let ⟨hlg, Mg, _, hMg⟩ := hg
-  (hg.1.mk' _).comp (hf.1.mk' _) |>.isLinear.with_bound (Mg * Mf) fun x ↦
+  (hg.toIsLinearMap.mk' _).comp (hf.toIsLinearMap.mk' _) |>.isLinear.with_bound (Mg * Mf) fun x ↦
     show ‖g (f x)‖ ≤ _ by grw [hMg, hMf, mul_assoc]
 
 protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
@@ -163,7 +163,7 @@ theorem continuous (hf : IsBoundedLinearMap 𝕜 f) : Continuous f :=
   hf.toContinuousLinearMap.continuous
 
 theorem lim_zero_bounded_linear_map (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 0) (𝓝 0) :=
-  (hf.1.mk' _).map_zero ▸ hf.tendsto 0
+  (hf.toIsLinearMap.mk' _).map_zero ▸ hf.tendsto 0
 
 section
 

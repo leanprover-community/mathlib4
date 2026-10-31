@@ -196,7 +196,7 @@ instance : Nonempty (SMulCandidate α φ r m) := ⟨by
     apply Presieve.isAmalgamation_restrict
     apply Presieve.FamilyOfElements.isAmalgamation_map_localPreimage
   exact SMulCandidate.mk' α φ r m S hS r₀ m₀ hr₀ hm₀ _ (Presieve.IsSheafFor.isAmalgamation
-    (((sheafCompose J (forget _)).obj A).2.isSheafFor S hS)
+    (((sheafCompose J (forget _)).obj A).property.isSheafFor S hS)
     (Presieve.FamilyOfElements.isCompatible_map_smul α φ A.isSeparated r m r₀ m₀ hr₀ hm₀))⟩
 
 instance : Subsingleton (SMulCandidate α φ r m) where

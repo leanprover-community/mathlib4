@@ -94,8 +94,8 @@ theorem jacobson_eq_self_of_isMaximal [H : IsMaximal I] : I.jacobson = I :=
   le_antisymm (sInf_le ⟨le_of_eq rfl, H⟩) le_jacobson
 
 instance (priority := 100) jacobson.isMaximal [H : IsMaximal I] : IsMaximal (jacobson I) :=
-  ⟨⟨fun htop => H.1.1 (jacobson_eq_top_iff.1 htop), fun _ hJ =>
-    H.1.2 _ (lt_of_le_of_lt le_jacobson hJ)⟩⟩
+  ⟨⟨fun htop => H.out.1 (jacobson_eq_top_iff.1 htop), fun _ hJ =>
+    H.out.2 _ (lt_of_le_of_lt le_jacobson hJ)⟩⟩
 
 theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x + z - 1 ∈ I :=
   ⟨fun hx y =>
@@ -108,12 +108,12 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
           exact I.neg_mem hpi⟩)
       fun hxy : I ⊔ span {y * x + 1} ≠ ⊤ => let ⟨M, hm1, hm2⟩ := exists_le_maximal _ hxy
       suffices x ∉ M from (this <| mem_sInf.1 hx ⟨le_trans le_sup_left hm2, hm1⟩).elim
-      fun hxm => hm1.1.1 <| (eq_top_iff_one _).2 <| add_sub_cancel_left (y * x) 1 ▸
+      fun hxm => hm1.out.1 <| (eq_top_iff_one _).2 <| add_sub_cancel_left (y * x) 1 ▸
         M.sub_mem (le_sup_right.trans hm2 <| subset_span rfl) (M.mul_mem_left _ hxm),
     fun hx => mem_sInf.2 fun M ⟨him, hm⟩ => by_contradiction fun hxm =>
       let ⟨y, i, hi, df⟩ := hm.exists_inv hxm
       let ⟨z, hz⟩ := hx (-y)
-      hm.1.1 <| (eq_top_iff_one _).2 <| sub_sub_cancel (z * -y * x + z) 1 ▸
+      hm.out.1 <| (eq_top_iff_one _).2 <| sub_sub_cancel (z * -y * x + z) 1 ▸
         M.sub_mem (by
           rw [mul_assoc, ← mul_add_one, neg_mul, ← sub_eq_iff_eq_add.mpr df.symm, neg_sub,
             sub_add_cancel]
@@ -151,7 +151,7 @@ theorem eq_jacobson_iff_sInf_maximal' :
       let ⟨M, hM⟩ := h
       ⟨M,
         ⟨fun J hJ K hK =>
-          Or.recOn (hM.1 J hJ) (fun h => h.1.2 K hK) fun h => eq_top_iff.2 (le_of_lt (h ▸ hK)),
+          Or.recOn (hM.1 J hJ) (fun h => h.out.2 K hK) fun h => eq_top_iff.2 (le_of_lt (h ▸ hK)),
           hM.2⟩⟩,
       fun h =>
       let ⟨M, hM⟩ := h
@@ -371,7 +371,7 @@ class IsLocal (I : Ideal R) : Prop where
   out : IsMaximal (jacobson I)
 
 theorem isLocal_iff {I : Ideal R} : IsLocal I ↔ IsMaximal (jacobson I) :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out, fun h => ⟨h⟩⟩
 
 theorem isLocal_of_isMaximal_radical {I : Ideal R} (hi : IsMaximal (radical I)) : IsLocal I :=
   ⟨have : radical I = jacobson I :=
@@ -382,7 +382,7 @@ theorem isLocal_of_isMaximal_radical {I : Ideal R} (hi : IsMaximal (radical I)) 
 theorem IsLocal.le_jacobson {I J : Ideal R} (hi : IsLocal I) (hij : I ≤ J) (hj : J ≠ ⊤) :
     J ≤ jacobson I :=
   let ⟨_, hm, hjm⟩ := exists_le_maximal J hj
-  le_trans hjm <| le_of_eq <| Eq.symm <| hi.1.eq_of_le hm.1.1 <| sInf_le ⟨le_trans hij hjm, hm⟩
+  le_trans hjm <| le_of_eq <| Eq.symm <| hi.out.eq_of_le hm.out.1 <| sInf_le ⟨le_trans hij hjm, hm⟩
 
 theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R) :
     x ∈ jacobson I ∨ ∃ y, y * x - 1 ∈ I :=

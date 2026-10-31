@@ -428,7 +428,7 @@ def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (Equiv.ofBijective (fromOpenSubsetsGlue U)
       ⟨fromOpenSubsetsGlue_injective U,
         Set.range_eq_univ.mp ((range_fromOpenSubsetsGlue U).symm ▸ h)⟩)
-    (fromOpenSubsetsGlue U).hom.2 (fromOpenSubsetsGlue_isOpenMap U)
+    (fromOpenSubsetsGlue U).hom.continuous_toFun (fromOpenSubsetsGlue_isOpenMap U)
 
 end GlueData
 

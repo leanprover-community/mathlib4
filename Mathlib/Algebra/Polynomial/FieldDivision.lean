@@ -760,7 +760,7 @@ theorem natDegree_pos (h : Irreducible f) : 0 < f.natDegree := Nat.pos_of_ne_zer
   obtain ⟨x, hf⟩ := natDegree_eq_zero.1 H
   by_cases hx : x = 0
   · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
-  exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))
+  exact h.not_isUnit (hf ▸ isUnit_C.2 (Ne.isUnit hx))
 
 /-- An irreducible polynomial over a field must have positive degree. -/
 theorem degree_pos (h : Irreducible f) : 0 < f.degree := by

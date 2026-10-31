@@ -55,7 +55,7 @@ theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M
 
 theorem Finset.support_sum_subset [AddCommMonoid M] (s : Finset (ι →₀ M)) :
     (s.sum id).support ⊆ Finset.sup s Finsupp.support := by
-  convert! Multiset.support_sum_subset s.1; simp
+  convert! Multiset.support_sum_subset s.val; simp
 
 theorem List.mem_foldr_sup_support_iff [Zero M] {l : List (ι →₀ M)} {x : ι} :
     x ∈ l.foldr (Finsupp.support · ⊔ ·) ∅ ↔ ∃ f ∈ l, x ∈ f.support := by
@@ -112,8 +112,8 @@ theorem Finset.support_sum_eq [AddCommMonoid M] (s : Finset (ι →₀ M))
     (hs : (s : Set (ι →₀ M)).PairwiseDisjoint Finsupp.support) :
     (s.sum id).support = Finset.sup s Finsupp.support := by
   classical
-  suffices s.1.Pairwise (_root_.Disjoint on Finsupp.support) by
-    convert! Multiset.support_sum_eq s.1 this
+  suffices s.val.Pairwise (_root_.Disjoint on Finsupp.support) by
+    convert! Multiset.support_sum_eq s.val this
     exact (Finset.sum_val _).symm
   obtain ⟨l, hl, hn⟩ : ∃ l : List (ι →₀ M), l.toFinset = s ∧ l.Nodup := by
     refine ⟨s.toList, ?_, Finset.nodup_toList _⟩

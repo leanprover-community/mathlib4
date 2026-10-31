@@ -91,8 +91,8 @@ theorem IsUniversalColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (hc : IsUniver
   intro F' c'' α f h hα H
   have : c'.ι ≫ (Functor.const J).map e.inv.hom = c.ι := by
     ext j
-    exact e.inv.2 j
-  apply hc c'' α (f ≫ e.inv.1) (by rw [Functor.map_comp, ← reassoc_of% h, this]) hα
+    exact e.inv.w j
+  apply hc c'' α (f ≫ e.inv.hom) (by rw [Functor.map_comp, ← reassoc_of% h, this]) hα
   intro j
   rw [← Category.comp_id (α.app j)]
   exact (H j).paste_vert (IsPullback.of_vert_isIso ⟨by simp⟩)
@@ -102,8 +102,8 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
   intro F' c'' α f h hα
   have : c'.ι ≫ (Functor.const J).map e.inv.hom = c.ι := by
     ext j
-    exact e.inv.2 j
-  rw [H c'' α (f ≫ e.inv.1) (by rw [Functor.map_comp, ← reassoc_of% h, this]) hα]
+    exact e.inv.w j
+  rw [H c'' α (f ≫ e.inv.hom) (by rw [Functor.map_comp, ← reassoc_of% h, this]) hα]
   apply forall_congr'
   intro j
   conv_lhs => rw [← Category.comp_id (α.app j)]
@@ -370,11 +370,11 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     simp [β]
   rw [this]
   have : f = (hl.coconePointUniqueUpToIso hr).hom ≫
-    Gl.map (colimit.desc _ ⟨_, whiskerRight α' Gr ≫ c.2⟩) := by
+    Gl.map (colimit.desc _ ⟨_, whiskerRight α' Gr ≫ c.ι⟩) := by
     symm
     convert!
       @IsColimit.coconePointUniqueUpToIso_hom_desc _ _ _ _ ((F' ⋙ Gr) ⋙ Gl)
-        (Gl.mapCocone ⟨_, (whiskerRight α' Gr ≫ c.2 :)⟩) _ _ hl hr using 2
+        (Gl.mapCocone ⟨_, (whiskerRight α' Gr ≫ c.ι :)⟩) _ _ hl hr using 2
     · apply hr.hom_ext
       intro j
       rw [hr.fac, Functor.mapCocone_ι_app, ← Gl.map_comp, colimit.cocone_ι, colimit.ι_desc]
@@ -389,8 +389,8 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
       exact congr($(h).app j).symm
   rw [this]
   have := ((H (colimit.cocone <| F' ⋙ Gr) (whiskerRight α' Gr)
-    (colimit.desc _ ⟨_, whiskerRight α' Gr ≫ c.2⟩) ?_ (hα'.whiskerRight Gr)).mp
-    ⟨(getColimitCocone <| F' ⋙ Gr).2⟩ j).map Gl
+    (colimit.desc _ ⟨_, whiskerRight α' Gr ≫ c.ι⟩) ?_ (hα'.whiskerRight Gr)).mp
+    ⟨(getColimitCocone <| F' ⋙ Gr).isColimit⟩ j).map Gl
   · convert! IsPullback.paste_vert _ this
     refine IsPullback.of_vert_isIso ⟨?_⟩
     rw [← IsIso.inv_comp_eq, ← Category.assoc, NatIso.inv_inv_app]
@@ -667,7 +667,7 @@ theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → 
   refine (hc (Cofan.mk (X i) (f := fun k ↦ if k = i then X i else ⊥_ C)
     (fun k ↦
       if h : k = i then (eqToHom <| ite_eq_left h) else (eqToHom <| ite_eq_right h) ≫ initial.to _))
-    (Discrete.natTrans (fun k ↦ if h : k.1 = i then (eqToHom <| (ite_eq_left h).trans
+    (Discrete.natTrans (fun k ↦ if h : k.as = i then (eqToHom <| (ite_eq_left h).trans
       (congr_arg X h.symm)) else (eqToHom <| ite_eq_right h) ≫ initial.to _))
     (c.inj i) ?_ (.of_discrete _)).mp ⟨?_⟩ ⟨j⟩
   · ext ⟨k⟩
@@ -744,7 +744,7 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_left
       Discrete.natTrans_app]
     rw [← Cofan.inj]
     refine IsPullback.of_right ?_ (by simp) (IsPullback.of_isLimit ht)
-    simpa [hu] using (IsPullback.of_isLimit (hs j.1))
+    simpa [hu] using (IsPullback.of_isLimit (hs j.as))
 
 section
 
@@ -807,7 +807,7 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_right
       Discrete.natTrans_app]
     rw [← Cofan.inj]
     refine IsPullback.of_right ?_ (by simp) (IsPullback.of_isLimit ht).flip
-    simpa [hu] using (IsPullback.of_isLimit (hs j.1)).flip
+    simpa [hu] using (IsPullback.of_isLimit (hs j.as)).flip
 
 section
 

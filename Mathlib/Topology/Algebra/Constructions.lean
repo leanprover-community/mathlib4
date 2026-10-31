@@ -118,7 +118,7 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
 @[to_additive] lemma topology_eq_inf :
     instTopologicalSpaceUnits =
       .induced (val : Mˣ → M) ‹_› ⊓ .induced (fun u ↦ ↑u⁻¹ : Mˣ → M) ‹_› := by
-  simp only [isInducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
+  simp only [isInducing_embedProduct.eq_induced, instTopologicalSpaceProd, induced_inf,
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
@@ -126,7 +126,7 @@ Use `Units.isEmbedding_val₀`, `Units.isEmbedding_val`, or `toUnits_homeomorph`
 @[to_additive /-- An auxiliary lemma that can be used to prove that coercion `AddUnits M → M` is a
 topological embedding. Use `AddUnits.isEmbedding_val` or `toAddUnits_homeomorph` instead. -/]
 lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M → M}
-    (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.1 = ↑u⁻¹) :
+    (hc : ContinuousOn f {x : M | IsUnit x}) (hf : ∀ u : Mˣ, f u.val = ↑u⁻¹) :
     IsEmbedding (val : Mˣ → M) := by
   refine ⟨⟨?_⟩, val_injective⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,

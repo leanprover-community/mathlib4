@@ -119,11 +119,11 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a finset, produce the finset of all permutations of its elements. -/
 def permsOfFinset (s : Finset α) : Finset (Perm α) :=
-  Quotient.hrecOn s.1 (fun l hl => ⟨permsOfList l, nodup_permsOfList hl⟩)
+  Quotient.hrecOn s.val (fun l hl => ⟨permsOfList l, nodup_permsOfList hl⟩)
     (fun a b hab =>
       hfunext (congr_arg _ (Quotient.sound hab)) fun ha hb _ =>
         heq_of_eq <| Finset.ext <| by simp [mem_permsOfList_iff, hab.mem_iff])
-    s.2
+    s.nodup
 
 theorem mem_perms_of_finset_iff :
     ∀ {s : Finset α} {f : Perm α}, f ∈ permsOfFinset s ↔ ∀ {x}, f x ≠ x → x ∈ s := by

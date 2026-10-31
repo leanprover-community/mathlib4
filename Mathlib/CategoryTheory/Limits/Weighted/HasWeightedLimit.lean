@@ -296,7 +296,7 @@ to the `W`-weighted limit of `F`. This is defined on the full subcategory of `J 
 where this weighted limit exists. -/
 @[implicit_reducible, simps]
 noncomputable def weightedLimFlipObj' : (hasWeightedLimit.{w} F).FullSubcategoryᵒᵖ ⥤ C where
-  obj W := W.unop.1.weightedLimObjObj F
+  obj W := W.unop.obj.weightedLimObjObj F
   map g := weightedLimFlipObjMap g.unop.hom F
 
 /-- Given `F : J ⥤ C`, this is the property that weighted limits of `F` exist for all

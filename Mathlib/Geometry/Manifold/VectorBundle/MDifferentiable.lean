@@ -373,8 +373,8 @@ lemma mdifferentiableWithinAt_add_section
   · apply eventually_of_mem (U := e.baseSet)
     · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
-    · exact fun x hx ↦ (e.linear 𝕜 hx).1 ..
-  · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1 ..
+    · exact fun x hx ↦ (e.linear 𝕜 hx).map_add ..
+  · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_add ..
 
 @[to_fun mdifferentiableAt_fun_add_section]
 lemma mdifferentiableAt_add_section
@@ -442,8 +442,8 @@ lemma MDifferentiableWithinAt.smul_section
   · apply eventually_of_mem (U := e.baseSet)
     · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
-    · exact fun x hx ↦ (e.linear 𝕜 hx).2 ..
-  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
+    · exact fun x hx ↦ (e.linear 𝕜 hx).map_smul ..
+  · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_smul
 
 @[to_fun]
 lemma MDifferentiableAt.smul_section

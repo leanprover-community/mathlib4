@@ -48,7 +48,7 @@ variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `s \ t` is the set consisting of the elements of `s` that are not in `t`. -/
 instance instSDiff : SDiff (Finset α) :=
-  ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le (Multiset.sub_le_self ..) s₁.2⟩⟩
+  ⟨fun s₁ s₂ => ⟨s₁.val - s₂.val, nodup_of_le (Multiset.sub_le_self ..) s₁.nodup⟩⟩
 
 @[simp]
 theorem sdiff_val (s₁ s₂ : Finset α) : (s₁ \ s₂).val = s₁.val - s₂.val :=
@@ -56,7 +56,7 @@ theorem sdiff_val (s₁ s₂ : Finset α) : (s₁ \ s₂).val = s₁.val - s₂.
 
 @[simp, grind =]
 theorem mem_sdiff : a ∈ s \ t ↔ a ∈ s ∧ a ∉ t :=
-  mem_sub_of_nodup s.2
+  mem_sub_of_nodup s.nodup
 
 @[simp]
 theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ := by grind

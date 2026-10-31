@@ -329,7 +329,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
 
 /-- Composition of a bounded continuous function and a continuous function. -/
 def compContinuous {δ : Type*} [TopologicalSpace δ] (f : α →ᵇ β) (g : C(δ, α)) : δ →ᵇ β where
-  toContinuousMap := f.1.comp g
+  toContinuousMap := f.toContinuousMap.comp g
   map_bounded' := f.map_bounded'.imp fun _ hC _ _ => hC _ _
 
 @[simp]

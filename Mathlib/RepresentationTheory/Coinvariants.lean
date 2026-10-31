@@ -373,7 +373,7 @@ representation, factors through `A_G`. -/
 noncomputable abbrev desc [B.ρ.IsTrivial] (f : A ⟶ B) :
     (coinvariantsFunctor k G).obj A ⟶ ↧B.V :=
   ModuleCat.ofHom <| Representation.Coinvariants.lift _ f.hom.toLinearMap <| by
-    simp [f.hom.2, isTrivial_def]
+    simp [f.hom.isIntertwining', isTrivial_def]
 
 variable (k G)
 

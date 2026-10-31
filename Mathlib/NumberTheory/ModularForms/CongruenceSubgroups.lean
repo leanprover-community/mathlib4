@@ -229,8 +229,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     ∃ N ≠ 0, ∀ x ∈ Gamma N, g * (mapGL ℚ x) * g⁻¹ ∈ (Gamma M).map (mapGL ℚ) := by
   -- Give names to the numerators and denominators of `g` and `g⁻¹`
-  let A₁ := g.1
-  let A₂ := (g⁻¹).1
+  let A₁ := g.val
+  let A₂ := (g⁻¹).val
   have hA₁₂ : A₁ * A₂ = 1 := by simp only [← Matrix.GeneralLinearGroup.coe_mul,
     mul_inv_cancel, Matrix.GeneralLinearGroup.coe_one, A₁, A₂]
   let a₁ := A₁.den

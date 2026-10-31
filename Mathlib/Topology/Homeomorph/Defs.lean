@@ -238,7 +238,8 @@ lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
 lemma isInducing (h : X ≃ₜ Y) : IsInducing h :=
   .of_comp h.continuous h.symm.continuous <| by simp only [symm_comp_self, IsInducing.id]
 
-theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› := h.isInducing.1.symm
+theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
+  h.isInducing.eq_induced.symm
 
 theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
   IsQuotientMap.of_comp h.symm.continuous h.continuous <| by
@@ -562,7 +563,7 @@ namespace IsHomeomorph
 /-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
 @[simps! toEquiv apply symm_apply]
 noncomputable def homeomorph (f : X → Y) (hf : IsHomeomorph f) : X ≃ₜ Y where
-  continuous_toFun := hf.1
+  continuous_toFun := hf.continuous
   continuous_invFun :=
     Equiv.ofBijective f hf.bijective |>.continuous_symm_iff.2 hf.isOpenMap
   toEquiv := Equiv.ofBijective f hf.bijective
@@ -582,7 +583,7 @@ theorem image_frontier (hf : IsHomeomorph f) (s : Set X) :
   f '' frontier s = frontier (f '' s) := hf.homeomorph.image_frontier s
 
 lemma comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f) : IsHomeomorph (g ∘ f) :=
-  ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
+  ⟨hg.continuous.comp hf.continuous, hg.isOpenMap.comp hf.isOpenMap, hg.bijective.comp hf.bijective⟩
 
 end IsHomeomorph
 

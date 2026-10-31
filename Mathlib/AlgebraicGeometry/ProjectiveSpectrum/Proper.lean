@@ -156,11 +156,11 @@ instance [Algebra.FiniteType (𝒜 0) A] : QuasiCompact (Proj.toSpecZero 𝒜) :
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 (i : A)).1 := by
+  have H (i : x) : IsCompact (Proj.basicOpen 𝒜 (i : A)).carrier := by
     rw [← Proj.opensRange_awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt]
     exact isCompact_range (Proj.awayι _ _ (hxd _ i.2) (hd _ i.2).bot_lt).continuous
   have := congr($(Proj.iSup_basicOpen_eq_top' 𝒜
-    (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx)).1)
+    (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx)).carrier)
   simp only [TopologicalSpace.Opens.iSup_mk, TopologicalSpace.Opens.carrier_eq_coe,
     TopologicalSpace.Opens.coe_mk, TopologicalSpace.Opens.coe_top] at this
   rw [← isCompact_univ_iff, ← this]

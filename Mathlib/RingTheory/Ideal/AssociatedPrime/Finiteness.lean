@@ -46,7 +46,7 @@ variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
 /-- A `Prop` asserting that two submodules `N₁, N₂` satisfy `N₁ ≤ N₂` and
 `N₂ / N₁` is isomorphic to `A / p` for some prime ideal `p` of `A`. -/
 def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
-  N₁ ≤ N₂ ∧ ∃ (p : PrimeSpectrum A), Nonempty ((↥N₂ ⧸ N₁.submoduleOf N₂) ≃ₗ[A] A ⧸ p.1)
+  N₁ ≤ N₂ ∧ ∃ (p : PrimeSpectrum A), Nonempty ((↥N₂ ⧸ N₁.submoduleOf N₂) ≃ₗ[A] A ⧸ p.asIdeal)
 
 set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
@@ -60,7 +60,7 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
   · obtain ⟨⟨x, hx⟩, hx'⟩ := Submodule.mkQ_surjective _ (e.symm 1)
     have hx'' : N₁.mkQ x = f (e.symm 1) := by simp [f, ← hx']
     refine ⟨x, ?_, ?_⟩
-    · convert p.2
+    · convert p.isPrime
       ext r
       simp [hx'', ← map_smul, Algebra.smul_def, show f _ = 0 ↔ _ from congr(_ ∈ $hf₁),
         Ideal.Quotient.eq_zero_iff_mem]
@@ -119,7 +119,7 @@ theorem IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
     (subsingleton : (N : Type v) → [AddCommGroup N] → [Module A N] → [Module.Finite A N] →
       [Subsingleton N] → motive N)
     (quotient : (N : Type v) → [AddCommGroup N] → [Module A N] → [Module.Finite A N] →
-      (p : PrimeSpectrum A) → (N ≃ₗ[A] A ⧸ p.1) → motive N)
+      (p : PrimeSpectrum A) → (N ≃ₗ[A] A ⧸ p.asIdeal) → motive N)
     (exact : (N₁ : Type v) → [AddCommGroup N₁] → [Module A N₁] → [Module.Finite A N₁] →
       (N₂ : Type v) → [AddCommGroup N₂] → [Module A N₂] → [Module.Finite A N₂] →
       (N₃ : Type v) → [AddCommGroup N₃] → [Module A N₃] → [Module.Finite A N₃] →
@@ -157,7 +157,7 @@ theorem associatedPrimes.finite : (associatedPrimes A M).Finite := by
     IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime A with
   | subsingleton N => simp [associatedPrimes.eq_empty_of_subsingleton]
   | quotient N p f =>
-    have := associatedPrimes.eq_singleton_of_isPrimary p.2.isPrimary
+    have := associatedPrimes.eq_singleton_of_isPrimary p.isPrime.isPrimary
     simp [LinearEquiv.AssociatedPrimes.eq f, this]
   | exact N₁ N₂ N₃ f g hf _ hfg h₁ h₃ =>
     exact (h₁.union h₃).subset (associatedPrimes.subset_union_of_exact hf hfg)
@@ -192,7 +192,8 @@ see https://math.stackexchange.com/a/3187153. -/
 theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     (h : Disjoint (I : Set A) (nonZeroDivisors A)) : ⊥ < Module.annihilator A I := by
   obtain ⟨P, h, hP⟩ : ∃ P ∈ associatedPrimes A A, I ≤ P :=
-    (I.subset_union_prime_finite (associatedPrimes.finite ..) (f := id) 0 0 fun _ h _ _ ↦ h.1).1 <|
+    (I.subset_union_prime_finite (associatedPrimes.finite ..) (f := id) 0 0
+      fun _ h _ _ ↦ h.toIsPrime).1 <|
     biUnion_associatedPrimes_eq_compl_nonZeroDivisors A ▸ h.subset_compl_right
   rw [AssociatedPrimes.mem_iff, isAssociatedPrime_iff] at h
   obtain ⟨prime, x, rfl⟩ := h

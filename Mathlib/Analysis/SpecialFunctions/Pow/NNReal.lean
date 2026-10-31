@@ -1214,11 +1214,11 @@ open Lean.Meta Qq
 
 theorem IsNat.nnreal_rpow_eq_nnreal_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a : ℝ≥0) :
     a ^ b = a ^ n := by
-  rw [h.1, NNReal.rpow_natCast]
+  rw [h.out, NNReal.rpow_natCast]
 
 theorem IsInt.nnreal_rpow_eq_inv_nnreal_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ≥0) :
     a ^ b = (a ^ n)⁻¹ := by
-  rw [h.1, NNReal.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
+  rw [h.out, NNReal.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
 
 theorem IsNat.nnreal_rpow_isNNRat {a : ℝ≥0} {b : ℝ} {m n d r : ℕ} (ha : IsNat a m)
     (hb : IsNNRat b n d) (k : ℕ) (hr : r ^ d = k) (l : ℕ) (hm : m ^ n = l) (hkl : k = l) :
@@ -1234,9 +1234,9 @@ theorem IsNNRat.nnreal_rpow_isNNRat (a : ℝ≥0) (b : ℝ) (na da : ℕ) (ha : 
     (nr dr : ℕ) (hnum : IsNat ((na : ℝ≥0) ^ b) nr) (hden : IsNat ((da : ℝ≥0) ^ b) dr) :
     IsNNRat (a ^ b) nr dr := by
   suffices IsNNRat (nr / dr : ℝ≥0) nr dr by
-    simpa [ha.to_eq, NNReal.div_rpow, hnum.1, hden.1]
+    simpa [ha.to_eq, NNReal.div_rpow, hnum.out, hden.out]
   apply IsNNRat.of_raw
-  simp [← hden.1, ha.den_nz]
+  simp [← hden.out, ha.den_nz]
 
 theorem nnreal_rpow_isRat_eq_inv_nnreal_rpow (a : ℝ≥0) (b : ℝ) (n d : ℕ)
     (hb : IsRat b (Int.negOfNat n) d) : a ^ b = (a⁻¹) ^ (n / d : ℝ) := by

@@ -344,12 +344,12 @@ variable (I I') in
 /-- `tangentMapWithin I I' f s` is the derivative of `f : M → M'` within a set `s`,
 as a map between the tangent bundles `TM` and `TM'`. -/
 def tangentMapWithin (f : M → M') (s : Set M) : TangentBundle I M → TangentBundle I' M' := fun p =>
-  ⟨f p.1, mfderivWithin I I' f s p.1 p.2⟩
+  ⟨f p.proj, mfderivWithin I I' f s p.proj p.snd⟩
 
 variable (I I') in
 /-- `tangentMap I I' f` is the derivative of `f : M → M'` as a map between the tangent bundles
 `TM` and `TM'`. -/
 def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun p =>
-  ⟨f p.1, mfderiv I I' f p.1 p.2⟩
+  ⟨f p.proj, mfderiv I I' f p.proj p.snd⟩
 
 end DerivativesDefinitions

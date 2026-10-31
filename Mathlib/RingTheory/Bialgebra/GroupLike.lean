@@ -69,8 +69,9 @@ alias ⟨IsGroupLikeElem.of_unitsInv, IsGroupLikeElem.unitsInv⟩ := isGroupLike
 namespace GroupLike
 
 instance : One (GroupLike R A) where one := ⟨1, .one⟩
-instance : Mul (GroupLike R A) where mul a b := ⟨a * b, a.2.mul b.2⟩
-instance : Pow (GroupLike R A) ℕ where pow a n := ⟨a ^ n, a.2.pow⟩
+instance : Mul (GroupLike R A) where
+  mul a b := ⟨a * b, a.isGroupLikeElem_val.mul b.isGroupLikeElem_val⟩
+instance : Pow (GroupLike R A) ℕ where pow a n := ⟨a ^ n, a.isGroupLikeElem_val.pow⟩
 
 @[simp] lemma val_one : (1 : GroupLike R A) = (1 : A) := rfl
 @[simp] lemma val_mul (a b : GroupLike R A) : ↑(a * b) = (a * b : A) := rfl

@@ -165,7 +165,7 @@ theorem ext ⦃f g : CircleDeg1Lift⦄ (h : ∀ x, f x = g x) : f = g :=
 
 instance : Monoid CircleDeg1Lift where
   mul f g :=
-    { toOrderHom := f.1.comp g.1
+    { toOrderHom := f.toOrderHom.comp g.toOrderHom
       map_add_one' := fun x => by simp [map_add_one] }
   one := ⟨.id, fun _ => rfl⟩
   mul_one _ := rfl

@@ -164,7 +164,7 @@ theorem HasFDerivWithinAt.unique_on (hf : HasFDerivWithinAt f f' s x)
 /-- `UniqueDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
 theorem UniqueDiffWithinAt.eq (H : UniqueDiffWithinAt 𝕜 s x) (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt f f₁' s x) : f' = f₁' :=
-  ContinuousLinearMap.ext_on H.1 (hf.unique_on hg)
+  ContinuousLinearMap.ext_on H.dense_tangentConeAt (hf.unique_on hg)
 
 theorem UniqueDiffOn.eq (H : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : HasFDerivWithinAt f f' s x)
     (h₁ : HasFDerivWithinAt f f₁' s x) : f' = f₁' :=

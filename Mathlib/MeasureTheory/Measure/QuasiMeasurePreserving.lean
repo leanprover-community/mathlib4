@@ -61,11 +61,11 @@ protected theorem _root_.Measurable.quasiMeasurePreserving
 
 theorem mono_left (h : QuasiMeasurePreserving f μa μb) (ha : μa' ≪ μa) :
     QuasiMeasurePreserving f μa' μb :=
-  ⟨h.1, (ha.map h.1).trans h.2⟩
+  ⟨h.measurable, (ha.map h.measurable).trans h.absolutelyContinuous⟩
 
 theorem mono_right (h : QuasiMeasurePreserving f μa μb) (ha : μb ≪ μb') :
     QuasiMeasurePreserving f μa μb' :=
-  ⟨h.1, h.2.trans ha⟩
+  ⟨h.measurable, h.absolutelyContinuous.trans ha⟩
 
 @[gcongr, mono]
 theorem mono (ha : μa' ≪ μa) (hb : μb ≪ μb') (h : QuasiMeasurePreserving f μa μb) :
@@ -76,8 +76,8 @@ theorem mono (ha : μa' ≪ μa) (hb : μb ≪ μb') (h : QuasiMeasurePreserving
 protected theorem comp {g : β → γ} {f : α → β} (hg : QuasiMeasurePreserving g μb μc)
     (hf : QuasiMeasurePreserving f μa μb) : QuasiMeasurePreserving (g ∘ f) μa μc :=
   ⟨hg.measurable.comp hf.measurable, by
-    rw [← map_map hg.1 hf.1]
-    exact (hf.2.map hg.1).trans hg.2⟩
+    rw [← map_map hg.measurable hf.measurable]
+    exact (hf.absolutelyContinuous.map hg.measurable).trans hg.absolutelyContinuous⟩
 
 protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa) :
     ∀ n, QuasiMeasurePreserving f^[n] μa μa
@@ -85,7 +85,7 @@ protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa
   | n + 1 => (hf.iterate n).comp hf
 
 protected theorem aemeasurable (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable f μa :=
-  hf.1.aemeasurable
+  hf.measurable.aemeasurable
 
 protected theorem congr (hf : QuasiMeasurePreserving f μa μb) {f' : α → β} (hf' : Measurable f')
     (h : f =ᵐ[μa] f') : QuasiMeasurePreserving f' μa μb := by
@@ -95,10 +95,10 @@ protected theorem congr (hf : QuasiMeasurePreserving f μa μb) {f' : α → β}
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiMeasurePreserving f μa μb) (c : R) : QuasiMeasurePreserving f (c • μa) (c • μb) :=
-  ⟨hf.1, by rw [Measure.map_smul _ hf.aemeasurable]; exact hf.2.smul c⟩
+  ⟨hf.measurable, by rw [Measure.map_smul _ hf.aemeasurable]; exact hf.absolutelyContinuous.smul c⟩
 
 theorem ae_map_le (h : QuasiMeasurePreserving f μa μb) : ae (μa.map f) ≤ ae μb :=
-  h.2.ae_le
+  h.absolutelyContinuous.ae_le
 
 theorem tendsto_ae (h : QuasiMeasurePreserving f μa μb) : Tendsto f (ae μa) (ae μb) :=
   (tendsto_ae_map h.aemeasurable).mono_right h.ae_map_le
@@ -116,7 +116,7 @@ theorem ae_eq_comp (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ
 
 theorem preimage_null (h : QuasiMeasurePreserving f μa μb) {s : Set β} (hs : μb s = 0) :
     μa (f ⁻¹' s) = 0 :=
-  preimage_null_of_map_null h.aemeasurable (h.2 hs)
+  preimage_null_of_map_null h.aemeasurable (h.absolutelyContinuous hs)
 
 theorem preimage_mono_ae {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s ≤ᵐ[μb] t) :
     f ⁻¹' s ≤ᵐ[μa] f ⁻¹' t :=

@@ -125,7 +125,7 @@ variable {A B} in
 
 variable {A B} in
 lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (f.hom a) := by
-  simpa using! congr($(f.hom.2 g) a)
+  simpa using! congr($(f.hom.isIntertwining' g) a)
 
 instance : AddCommGroup (A ⟶ B) := fast_instance% ConcreteCategory.homEquiv.addCommGroup
 
@@ -187,7 +187,8 @@ section equivAction
 `Action (TopModuleCat k) G`. -/
 def toActionTopModFunc : TopRep k G ⥤ Action (TopModuleCat k) G where
   obj X := ⟨.of k X.V, (TopModuleCat.endRingEquiv (.of k X.V)).symm.toMonoidHom.comp X.ρ⟩
-  map f := ⟨f.toTopModuleCatHom, fun g => by ext1; simp [TopModuleCat.endRingEquiv, f.hom.2 g]⟩
+  map f := ⟨f.toTopModuleCatHom, fun g => by
+    ext1; simp [TopModuleCat.endRingEquiv, f.hom.isIntertwining' g]⟩
 
 /-- The functor sending an object in `Action (TopModuleCat k) G` to the corresponding topological
 representation. -/

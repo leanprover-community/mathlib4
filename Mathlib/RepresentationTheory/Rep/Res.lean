@@ -32,7 +32,7 @@ namespace Rep
 @[expose, implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
     of (X := X.V) (X.ρ.comp f) ⟶ of (X := Y.V) (Y.ρ.comp f) :=
-  ofHom ⟨p.hom, fun h ↦ by simpa using! p.hom.2 (f h)⟩
+  ofHom ⟨p.hom, fun h ↦ by simpa using! p.hom.isIntertwining' (f h)⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
 abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
@@ -73,7 +73,9 @@ instance : (resFunctor (k := k) f).Faithful where
 /-- Morphism between `X Y : Rep k G` can be lifted from restrictions associated with `f : H →* G`
   when `f` is surjective. -/
 abbrev liftHomOfSurj {X Y : Rep k G} (hf : Function.Surjective f) (f' : res f X ⟶ res f Y) :
-    X ⟶ Y := ofHom ⟨f'.hom.toLinearMap, fun g ↦ by obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.2 h⟩
+    X ⟶ Y :=
+  ofHom ⟨f'.hom.toLinearMap, fun g ↦ by
+    obtain ⟨h, rfl⟩ := hf g; simpa using f'.hom.isIntertwining' h⟩
 
 @[simp]
 lemma liftHomOfSurj_toLinearMap {X Y : Rep k G} (hf : Function.Surjective f)
@@ -123,9 +125,9 @@ lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex
     (S.map (resFunctor φ)).ShortExact ↔ S.ShortExact := by
   constructor
   · intro h
-    have h₁ := h.1
-    have h₂ := h.2
-    have h₃ := h.3
+    have h₁ := h.exact
+    have h₂ := h.mono_f
+    have h₃ := h.epi_g
     rw [ShortComplex.exact_map_iff_of_faithful] at h₁
     simp only [ShortComplex.map_f, mono_iff_injective, ShortComplex.map_g,
       epi_iff_surjective] at h₂ h₃

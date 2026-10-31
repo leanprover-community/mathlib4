@@ -1248,7 +1248,7 @@ theorem Set.separatesPoints_mono {α β : Type*} {A B : Set (α → β)} (hAB : 
 
 theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop) (f : α → β)
     (h : Equivalence r) : Equivalence (InvImage r f) :=
-  ⟨fun _ ↦ h.1 _, h.symm, h.trans⟩
+  ⟨fun _ ↦ h.refl _, h.symm, h.trans⟩
 
 instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
     Decidable (uncurry r x) :=

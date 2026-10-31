@@ -135,9 +135,9 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
       ((Filter.tendsto_pure_pure _ _).mono_right (pure_le_nhds _)).le_comap.trans hf)
     exact norm_zero.trans_le (mul_nonneg (NNReal.coe_nonneg _) (norm_nonneg _))
   have hc₀ : c ≠ 0 := norm_pos_iff.1 (one_pos.trans hc)
-  rw [← h.1] at hc
+  rw [← h.norm_map] at hc
   rcases rescale_to_shell_zpow hc ε0 hx with ⟨n, -, hlt, -, hle⟩
-  simp only [← map_zpow₀, h.1, ← map_smulₛₗ] at hlt hle
+  simp only [← map_zpow₀, h.norm_map, ← map_smulₛₗ] at hlt hle
   calc
     ‖x‖ = ‖c ^ n‖⁻¹ * ‖c ^ n • x‖ := by
       rwa [← norm_inv, ← norm_smul, inv_smul_smul₀ (zpow_ne_zero _ _)]

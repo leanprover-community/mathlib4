@@ -679,7 +679,7 @@ theorem _root_.Matrix.SeparatingRight.toLinearMap₂' (h : M.SeparatingRight) :
 
 theorem _root_.Matrix.Nondegenerate.toLinearMap₂' (h : M.Nondegenerate) :
     (toLinearMap₂' R M).Nondegenerate (R := R) :=
-  ⟨h.1.toLinearMap₂', h.2.toLinearMap₂'⟩
+  ⟨h.separatingLeft.toLinearMap₂', h.separatingRight.toLinearMap₂'⟩
 
 @[simp]
 theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff :
@@ -697,7 +697,8 @@ theorem _root_.Matrix.separatingRight_toLinearMap₂'_iff :
 theorem _root_.Matrix.nondegenerate_toLinearMap₂'_iff :
     (toLinearMap₂' R M).Nondegenerate (R := R) ↔ M.Nondegenerate :=
   ⟨fun h ↦ ⟨separatingLeft_toLinearMap₂'_iff.mp h.1, separatingRight_toLinearMap₂'_iff.mp h.2⟩,
-   fun h ↦ ⟨separatingLeft_toLinearMap₂'_iff.mpr h.1, separatingRight_toLinearMap₂'_iff.mpr h.2⟩⟩
+   fun h ↦ ⟨separatingLeft_toLinearMap₂'_iff.mpr h.separatingLeft,
+     separatingRight_toLinearMap₂'_iff.mpr h.separatingRight⟩⟩
 
 @[simp]
 theorem separatingLeft_toMatrix₂'_iff :

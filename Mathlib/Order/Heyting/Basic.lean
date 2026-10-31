@@ -609,11 +609,12 @@ theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a bᶜ :=
 
 @[to_dual]
 theorem IsCompl.compl_eq (h : IsCompl a b) : aᶜ = b :=
-  h.1.le_compl_left.antisymm' <| Disjoint.le_of_codisjoint disjoint_compl_left h.2
+  h.disjoint.le_compl_left.antisymm' <| Disjoint.le_of_codisjoint disjoint_compl_left h.codisjoint
 
 @[to_dual]
 theorem IsCompl.eq_compl (h : IsCompl a b) : a = bᶜ :=
-  h.1.le_compl_right.antisymm <| Disjoint.le_of_codisjoint disjoint_compl_left h.2.symm
+  h.disjoint.le_compl_right.antisymm <|
+    Disjoint.le_of_codisjoint disjoint_compl_left h.codisjoint.symm
 
 @[to_dual none]
 theorem compl_unique (h₀ : a ⊓ b = ⊥) (h₁ : a ⊔ b = ⊤) : aᶜ = b :=

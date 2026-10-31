@@ -67,8 +67,8 @@ open MonoidalClosed
 instance : ExponentialIdeal (subterminalInclusion C) := by
   apply ExponentialIdeal.mk'
   intro B A
-  refine ⟨⟨A ⟹ B.1, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
-  exact uncurry_injective (B.2 (MonoidalClosed.uncurry g) (MonoidalClosed.uncurry h))
+  refine ⟨⟨A ⟹ B.obj, fun Z g h => ?_⟩, ⟨Iso.refl _⟩⟩
+  exact uncurry_injective (B.property (MonoidalClosed.uncurry g) (MonoidalClosed.uncurry h))
 
 /-- If `D` is a reflective subcategory, the property of being an exponential ideal is equivalent to
 the presence of a natural isomorphism `i ⋙ exp A ⋙ leftAdjoint i ⋙ i ≅ i ⋙ exp A`, that is:
@@ -220,7 +220,7 @@ essential image of `i`; if you need better control over definitional equality, u
 def cartesianClosedOfReflective : MonoidalClosed D :=
   cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
     (NatIso.ofComponents (fun X ↦
-      have := Functor.essImage.unit_isIso X.2
+      have := Functor.essImage.unit_isIso X.property
       (asIso ((reflectorAdjunction i).unit.app X.obj)).symm))
 
 variable [BraidedCategory C]

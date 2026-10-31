@@ -105,7 +105,7 @@ noncomputable abbrev ind : Rep k H := Rep.of (A.ρ.ind φ)
 a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
 noncomputable def indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B := Rep.ofHom
   ⟨Representation.Coinvariants.map _ _ ⟨f.hom.toLinearMap.lTensor _, by
-    simp [LinearMap.lTensor_comp_map, f.hom.2, LinearMap.map_comp_lTensor]⟩,
+    simp [LinearMap.lTensor_comp_map, f.hom.isIntertwining', LinearMap.map_comp_lTensor]⟩,
     fun g ↦ by ext; simp⟩
 
 variable (k) in

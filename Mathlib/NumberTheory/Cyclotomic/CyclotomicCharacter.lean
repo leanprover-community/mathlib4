@@ -349,7 +349,7 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
   intro ε hε
   obtain ⟨k, hk', hk⟩ : ∃ k : ℕ, k ≠ 0 ∧ p ^ (-k : ℤ) < ε := by
     obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt p hε
-    exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.1.one_le]) hk⟩
+    exact ⟨k + 1, by simp, lt_of_le_of_lt (by gcongr <;> simp [‹Fact p.Prime›.out.one_le]) hk⟩
   refine ⟨_, ⟨_, ⟨(K⟮ζ k⟯), adjoin.finiteDimensional ?_, rfl⟩, rfl⟩, ?_⟩
   · exact ((hζ k).isIntegral (Nat.pos_of_neZero _)).tower_top
   · intro σ hσ
@@ -363,4 +363,4 @@ lemma cyclotomicCharacter.continuous (p : ℕ) [Fact p.Prime]
     obtain ⟨i, hi, rfl⟩ := ((hζ k).isUnit_unit NeZero.out).eq_pow_of_mem_rootsOfUnity ht
     rw [ZMod.val_one'', pow_one]
     · exact hσ ⟨ζ k ^ i, pow_mem (mem_adjoin_simple_self K (ζ k)) _⟩
-    · exact (one_lt_pow₀ ‹Fact p.Prime›.1.one_lt hk').ne'
+    · exact (one_lt_pow₀ ‹Fact p.Prime›.out.one_lt hk').ne'

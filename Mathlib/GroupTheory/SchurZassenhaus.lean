@@ -232,7 +232,7 @@ private theorem step4 : (Nat.card N).minFac.Prime :=
   Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h1 h3)).ne'
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
-private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.1 ≠ ⊥ := by
+private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.toSubgroup ≠ ⊥ := by
   have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   apply P.ne_bot_of_dvd_card
   exact (Nat.card N).minFac_dvd
@@ -241,11 +241,11 @@ include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
-  refine Sylow.nonempty.elim fun P => P.isPGroup.of_surjective P.1.subtype ?_
+  refine Sylow.nonempty.elim fun P => P.isPGroup.of_surjective P.toSubgroup.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
-  have : (P.1.map N.subtype).Normal :=
+  have : (P.toSubgroup.map N.subtype).Normal :=
     normalizer_eq_top_iff.mp (step1 h1 h2 h3 _ P.normalizer_sup_eq_top)
-  exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
+  exact (step3 h1 h2 h3 P.toSubgroup).resolve_left (step5 h1 h3)
 
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/

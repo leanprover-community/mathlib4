@@ -200,12 +200,12 @@ theorem kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f''
 
 @[reassoc]
 theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
-    kernel.map f f' sq.1 sq.2 sq.3.symm ≫ (kernelSubobjectIso _).inv =
+    kernel.map f f' sq.left sq.right sq.w.symm ≫ (kernelSubobjectIso _).inv =
       (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by cat_disch
 
 @[reassoc]
 theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
-    (kernelSubobjectIso _).hom ≫ kernel.map f f' sq.1 sq.2 sq.3.symm =
+    (kernelSubobjectIso _).hom ≫ kernel.map f f' sq.left sq.right sq.w.symm =
       kernelSubobjectMap sq ≫ (kernelSubobjectIso _).hom := by
   simp [← Iso.comp_inv_eq, kernel_map_comp_kernelSubobjectIso_inv]
 

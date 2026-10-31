@@ -300,11 +300,12 @@ lemma _root_.QuasiSeparatedSpace.of_isOpenCover {ι : Type*} {U : ι → Opens X
     (h₁ : ∀ i, IsRetrocompact (X := X) (U i)) (h₂ : ∀ i, IsQuasiSeparated (α := X) (U i)) :
     QuasiSeparatedSpace X where
   inter_isCompact V₁ V₂ ho₁ hc₁ ho₂ hc₂ := by
-    obtain ⟨t, ht⟩ := hc₁.elim_finite_subcover _ (fun i ↦ (U i).2) (by simp [hU.iSup_set_eq_univ])
+    obtain ⟨t, ht⟩ := hc₁.elim_finite_subcover _ (fun i ↦ (U i).is_open')
+      (by simp [hU.iSup_set_eq_univ])
     convert
       t.isCompact_biUnion fun i _ ↦
-        h₂ i _ _ Set.inter_subset_left ((U i).2.inter ho₁) (h₁ i hc₁ ho₁) Set.inter_subset_left
-          ((U i).2.inter ho₂) (h₁ i hc₂ ho₂)
+        h₂ i _ _ Set.inter_subset_left ((U i).is_open'.inter ho₁) (h₁ i hc₁ ho₁)
+          Set.inter_subset_left ((U i).is_open'.inter ho₂) (h₁ i hc₂ ho₂)
     apply subset_antisymm
     · rintro x ⟨hx₁, hx₂⟩
       obtain ⟨i, hi, hxi⟩ := Set.mem_iUnion₂.mp (ht hx₁)
@@ -504,11 +505,11 @@ lemma IsLocallyConstructible.of_isOpenCover
   intro x
   have ⟨i, hi⟩ := hU.exists_mem x
   have ⟨V, hVx, hV, hV'⟩ := H i ⟨x, hi⟩
-  refine ⟨_, (U i).2.isOpenEmbedding_subtypeVal.image_mem_nhds.mpr hVx,
-      (U i).2.isOpenMap_subtype_val _ hV, ?_⟩
+  refine ⟨_, (U i).is_open'.isOpenEmbedding_subtypeVal.image_mem_nhds.mpr hVx,
+      (U i).is_open'.isOpenMap_subtype_val _ hV, ?_⟩
   let e : V ≃ₜ Subtype.val '' V :=
     (Equiv.Set.image _ V Subtype.val_injective).toHomeomorphOfIsInducing
-      ((U i).2.isOpenEmbedding_subtypeVal.restrict (by simp [MapsTo]) hV).isInducing
+      ((U i).is_open'.isOpenEmbedding_subtypeVal.restrict (by simp [MapsTo]) hV).isInducing
   convert! hV'.preimage_of_isOpenEmbedding e.symm.isOpenEmbedding
   ext ⟨_, x, hx, rfl⟩
   simp [e, Equiv.toHomeomorphOfIsInducing]
@@ -520,19 +521,19 @@ lemma IsLocallyConstructible.of_isOpenCover'
     IsLocallyConstructible s :=
   .of_isOpenCover hU fun i ↦ by
     rw [← Subtype.preimage_coe_inter_self]
-    exact (H i).preimage_of_isOpenEmbedding (U i).2.isOpenEmbedding_subtypeVal
+    exact (H i).preimage_of_isOpenEmbedding (U i).is_open'.isOpenEmbedding_subtypeVal
 
 lemma IsLocallyConstructible.iff_of_isOpenCover
     (hU : IsOpenCover U) :
     IsLocallyConstructible s ↔ ∀ i, IsLocallyConstructible ((U i : Set X) ↓∩ s) :=
-  ⟨fun H i ↦ H.preimage_of_isOpenEmbedding (U i).2.isOpenEmbedding_subtypeVal,
+  ⟨fun H i ↦ H.preimage_of_isOpenEmbedding (U i).is_open'.isOpenEmbedding_subtypeVal,
     fun H ↦ .of_isOpenCover hU H⟩
 
 lemma IsLocallyConstructible.iff_isConstructible_of_isOpenCover
     [PrespectralSpace X] [QuasiSeparatedSpace X]
     (hU : IsOpenCover U) (hU' : ∀ i, IsCompact (U i : Set X)) :
     IsLocallyConstructible s ↔ ∀ i, IsConstructible (s ∩ U i) :=
-  ⟨fun H i ↦ H.inter_of_isOpen_isCompact (U i).2 (hU' i),
+  ⟨fun H i ↦ H.inter_of_isOpen_isCompact (U i).is_open' (hU' i),
     fun H ↦ .of_isOpenCover' hU fun i ↦ (H i).isLocallyConstructible⟩
 
 end Topology

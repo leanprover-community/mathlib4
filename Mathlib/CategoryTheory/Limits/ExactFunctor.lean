@@ -128,12 +128,12 @@ variable {C D}
 
 @[simp]
 theorem LeftExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
-    (LeftExactFunctor.ofExact C D).obj F = ⟨F.1, F.2.1⟩ :=
+    (LeftExactFunctor.ofExact C D).obj F = ⟨F.obj, F.property.1⟩ :=
   rfl
 
 @[simp]
 theorem RightExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
-    (RightExactFunctor.ofExact C D).obj F = ⟨F.1, F.2.2⟩ :=
+    (RightExactFunctor.ofExact C D).obj F = ⟨F.obj, F.property.2⟩ :=
   rfl
 
 @[simp]
@@ -147,15 +147,15 @@ theorem RightExactFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
   rfl
 
 @[simp]
-theorem LeftExactFunctor.forget_obj (F : C ⥤ₗ D) : (LeftExactFunctor.forget C D).obj F = F.1 :=
+theorem LeftExactFunctor.forget_obj (F : C ⥤ₗ D) : (LeftExactFunctor.forget C D).obj F = F.obj :=
   rfl
 
 @[simp]
-theorem RightExactFunctor.forget_obj (F : C ⥤ᵣ D) : (RightExactFunctor.forget C D).obj F = F.1 :=
+theorem RightExactFunctor.forget_obj (F : C ⥤ᵣ D) : (RightExactFunctor.forget C D).obj F = F.obj :=
   rfl
 
 @[simp]
-theorem ExactFunctor.forget_obj (F : C ⥤ₑ D) : (ExactFunctor.forget C D).obj F = F.1 :=
+theorem ExactFunctor.forget_obj (F : C ⥤ₑ D) : (ExactFunctor.forget C D).obj F = F.obj :=
   rfl
 
 @[simp]

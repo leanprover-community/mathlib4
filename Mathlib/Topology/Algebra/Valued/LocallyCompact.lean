@@ -223,7 +223,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
+    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.val.2
       rw [← hb] at z0 ⊢
       simp only [← v.restrict_le_iff]
       refine Valued.isOpen_closedBall _ ?_

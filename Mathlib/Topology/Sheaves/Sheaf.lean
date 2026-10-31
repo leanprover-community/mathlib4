@@ -111,7 +111,7 @@ variable {C X}
 
 /-- The underlying presheaf of a sheaf -/
 abbrev Sheaf.presheaf (F : X.Sheaf C) : TopCat.Presheaf C X :=
-  F.1
+  F.obj
 
 variable (C X)
 
@@ -136,11 +136,11 @@ instance forgetFaithful : (forget C X).Faithful where
   map_injective := Sheaf.hom_ext
 
 -- Note: These can be proved by simp.
-theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
+theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).hom.app t = 𝟙 _ :=
   rfl
 
 theorem comp_app {F G H : Sheaf C X} (f : F ⟶ G) (g : G ⟶ H) (t) :
-    (f ≫ g).1.app t = f.1.app t ≫ g.1.app t :=
+    (f ≫ g).hom.app t = f.hom.app t ≫ g.hom.app t :=
   rfl
 
 end Sheaf

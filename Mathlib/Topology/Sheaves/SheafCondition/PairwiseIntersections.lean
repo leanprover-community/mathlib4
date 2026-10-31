@@ -305,34 +305,35 @@ open CategoryTheory.Limits
 /-- For a sheaf `F`, `F(U ⊔ V)` is the pullback of `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)`.
 This is the pullback cone. -/
 def interUnionPullbackCone :
-    PullbackCone (F.1.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op)
-      (F.1.map (homOfLE inf_le_right).op) :=
-  PullbackCone.mk (F.1.map (homOfLE le_sup_left).op) (F.1.map (homOfLE le_sup_right).op) <| by
-    rw [← F.1.map_comp, ← F.1.map_comp]
+    PullbackCone (F.obj.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op)
+      (F.obj.map (homOfLE inf_le_right).op) :=
+  PullbackCone.mk (F.obj.map (homOfLE le_sup_left).op) (F.obj.map (homOfLE le_sup_right).op) <| by
+    rw [← F.obj.map_comp, ← F.obj.map_comp]
     congr 1
 
 @[simp]
-theorem interUnionPullbackCone_pt : (interUnionPullbackCone F U V).pt = F.1.obj (op <| U ⊔ V) :=
+theorem interUnionPullbackCone_pt : (interUnionPullbackCone F U V).pt = F.obj.obj (op <| U ⊔ V) :=
   rfl
 
 @[simp]
 theorem interUnionPullbackCone_fst :
-    (interUnionPullbackCone F U V).fst = F.1.map (homOfLE le_sup_left).op :=
+    (interUnionPullbackCone F U V).fst = F.obj.map (homOfLE le_sup_left).op :=
   rfl
 
 @[simp]
 theorem interUnionPullbackCone_snd :
-    (interUnionPullbackCone F U V).snd = F.1.map (homOfLE le_sup_right).op :=
+    (interUnionPullbackCone F U V).snd = F.obj.map (homOfLE le_sup_right).op :=
   rfl
 
 variable
   (s :
-    PullbackCone (F.1.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op) (F.1.map (homOfLE inf_le_right).op))
+    PullbackCone (F.obj.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op)
+      (F.obj.map (homOfLE inf_le_right).op))
 
 /-- (Implementation).
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/
-def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
+def interUnionPullbackConeLift : s.pt ⟶ F.obj.obj (op (U ⊔ V)) := by
   let ι : ULift.{w} WalkingPair → Opens X := fun j => WalkingPair.casesOn j.down U V
   have hι : U ⊔ V = iSup ι := by
     ext
@@ -343,14 +344,14 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
     · rintro ⟨⟨_ | _⟩, h⟩
       exacts [Or.inl h, Or.inr h]
   refine
-    (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.lift
+    (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.property ι).some.lift
         ⟨s.pt,
           { app := ?_
             naturality := ?_ }⟩ ≫
-      F.1.map (eqToHom hι).op
+      F.obj.map (eqToHom hι).op
   · rintro ((_ | _) | (_ | _))
-    exacts [s.fst, s.snd, s.fst ≫ F.1.map (homOfLE inf_le_left).op,
-      s.snd ≫ F.1.map (homOfLE inf_le_left).op]
+    exacts [s.fst, s.snd, s.fst ≫ F.obj.map (homOfLE inf_le_left).op,
+      s.snd ≫ F.obj.map (homOfLE inf_le_left).op]
   rintro ⟨i⟩ ⟨j⟩ f
   let g : j ⟶ i := f.unop
   have : f = g.op := rfl
@@ -361,24 +362,24 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
   rcases g with ⟨⟩ <;>
   dsimp [Pairwise.diagram] <;>
   simp only [ι, Category.id_comp, s.condition, CategoryTheory.Functor.map_id, Category.comp_id]
-  rw [← cancel_mono (F.1.map (eqToHom <| inf_comm U V : U ⊓ V ⟶ _).op), Category.assoc,
-    Category.assoc, ← F.1.map_comp, ← F.1.map_comp]
+  rw [← cancel_mono (F.obj.map (eqToHom <| inf_comm U V : U ⊓ V ⟶ _).op), Category.assoc,
+    Category.assoc, ← F.obj.map_comp, ← F.obj.map_comp]
   exact s.condition.symm
 
 set_option backward.isDefEq.respectTransparency false in
 theorem interUnionPullbackConeLift_left :
-    interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_left).op = s.fst := by
-  rw [interUnionPullbackConeLift, Category.assoc, ← F.1.map_comp]
+    interUnionPullbackConeLift F U V s ≫ F.obj.map (homOfLE le_sup_left).op = s.fst := by
+  rw [interUnionPullbackConeLift, Category.assoc, ← F.obj.map_comp]
   exact
-    (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 _).some.fac _ <|
+    (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.property _).some.fac _ <|
       op <| Pairwise.single <| ULift.up WalkingPair.left
 
 set_option backward.isDefEq.respectTransparency false in
 theorem interUnionPullbackConeLift_right :
-    interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_right).op = s.snd := by
-  rw [interUnionPullbackConeLift, Category.assoc, ← F.1.map_comp]
+    interUnionPullbackConeLift F U V s ≫ F.obj.map (homOfLE le_sup_right).op = s.snd := by
+  rw [interUnionPullbackConeLift, Category.assoc, ← F.obj.map_comp]
   exact
-    (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 _).some.fac _ <|
+    (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.property _).some.fac _ <|
       op <| Pairwise.single <| ULift.up WalkingPair.right
 
 set_option backward.defeqAttrib.useBackward true in
@@ -401,10 +402,10 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   · apply interUnionPullbackConeLift_left
   · apply interUnionPullbackConeLift_right
   · intro m h₁ h₂
-    rw [← cancel_mono (F.1.map (eqToHom hι.symm).op)]
-    apply (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.hom_ext
+    rw [← cancel_mono (F.obj.map (eqToHom hι.symm).op)]
+    apply (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.property ι).some.hom_ext
     rintro ((_ | _) | (_ | _)) <;>
-    rw [Category.assoc, Category.assoc, Functor.mapCone_π_app, ← F.1.map_comp]
+    rw [Category.assoc, Category.assoc, Functor.mapCone_π_app, ← F.obj.map_comp]
     · convert! h₁
       apply interUnionPullbackConeLift_left
     · convert! h₂
@@ -412,9 +413,9 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
     all_goals
       dsimp only [Functor.op, Pairwise.cocone_ι_app, Functor.mapCone_π_app, Cocone.op,
         Pairwise.coconeιApp, unop_op, op_comp, NatTrans.op]
-      simp_rw [F.1.map_comp, ← Category.assoc]
+      simp_rw [F.obj.map_comp, ← Category.assoc]
       congr 1
-      simp_rw [Category.assoc, ← F.1.map_comp]
+      simp_rw [Category.assoc, ← F.obj.map_comp]
     · convert! h₁
       apply interUnionPullbackConeLift_left
     · convert! h₂
@@ -423,8 +424,8 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
 /-- If `U, V` are disjoint, then `F(U ⊔ V) = F(U) × F(V)`. -/
 def isProductOfDisjoint (h : U ⊓ V = ⊥) :
     IsLimit
-      (BinaryFan.mk (F.1.map (homOfLE le_sup_left : _ ⟶ U ⊔ V).op)
-        (F.1.map (homOfLE le_sup_right : _ ⟶ U ⊔ V).op)) :=
+      (BinaryFan.mk (F.obj.map (homOfLE le_sup_left : _ ⟶ U ⊔ V).op)
+        (F.obj.map (homOfLE le_sup_right : _ ⟶ U ⊔ V).op)) :=
   isProductOfIsTerminalIsPullback _ _ _ _ (F.isTerminalOfEqEmpty h) (isLimitPullbackCone F U V)
 
 end TopCat.Sheaf

@@ -370,7 +370,7 @@ theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ := by
   exact ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
 lemma not_isSuccLimit_natCast : (n : ℕ) → ¬ IsSuccLimit (n : Cardinal.{u})
-  | 0, e => e.1 isMin_bot
+  | 0, e => e.not_isMin isMin_bot
   | Nat.succ n, h => by
     rw [Nat.cast_succ, ← succ_natCast] at h
     exact Order.not_isSuccLimit_succ _ h

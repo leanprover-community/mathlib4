@@ -286,7 +286,7 @@ attribute [instance] IsAlgClosure.isAlgebraic
 
 theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
     IsAlgClosure k K ↔ IsAlgClosed K ∧ Algebra.IsAlgebraic k K :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
+  ⟨fun h => ⟨h.isAlgClosed, h.isAlgebraic⟩, fun h => ⟨h.1, h.2⟩⟩
 
 instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] : Normal R K where
