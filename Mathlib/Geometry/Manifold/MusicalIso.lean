@@ -117,15 +117,9 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
   simp only [musicalIsoSimple, LinearIsometryEquiv.toContinuousLinearEquiv_symm,
     ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv]
   -- XXX: is there a better approach than "pair with any smooth section"?
-  --rw [contMDiffAt_iff]
   rw [contMDiffAt_section]
-  have (x₀ : B) (e : HB) :
-      fderivWithin ℝ ((IB ∘ (chartAt HB x₀)) ∘ (chartAt HB x₀).symm ∘ IB.symm) (Set.range ↑IB) (IB e) =
-    fderivWithin ℝ id (Set.range IB) (IB e) := sorry
-  conv =>
-    enter [4, x']
-    rw [TangentBundle.trivializationAt_apply (E := EB) (I := IB) (x := x)]
-    simp
+  simp_rw [TangentBundle.trivializationAt_apply']
+
   let echart (x' : B) := extChartAt IB x'
   let p (x' : B) := (InnerProductSpace.toDual ℝ (TangentSpace IB x')).symm (s x')
   have h1 (x') : MDiffAt[Set.univ] (echart x) ((echart x').symm ((echart x') x')) := sorry
@@ -139,7 +133,7 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
   let Bp (x') := Bl x' (p x') -- from B into TB
   have aux'' : ContMDiffAt IB 𝓘(ℝ, EB) k (fun x' ↦ ((A x') ∘SL (Bl x')) (p x')) x := sorry
 
-  have aux' : ContMDiffAt IB 𝓘(ℝ, EB) k
+  have aux : ContMDiffAt IB 𝓘(ℝ, EB) k
       (fun x' ↦ (mfderiv[Set.range IB] ((echart x) ∘ (echart x').symm) (echart x' x')) (p x'))
       x := by
     conv =>
@@ -147,15 +141,10 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
       rw [mfderivWithin_comp (I' := IB) (u := Set.univ) _ (h1 x') (h2 x') (by simp) (h3 x'),
         mfderivWithin_univ, h4 x']
     sorry
-  have aux : ContMDiffAt IB 𝓘(ℝ, EB) k
-    (fun x' ↦ (fderivWithin ℝ ((echart x) ∘ (echart x').symm) (Set.range IB) (echart x' x')) (p x'))
-    x := by
-    convert! aux'
-    sorry
   apply aux.congr
   · intro y hy
-    simp [p, echart]
-  · simp [p, echart]
+    simp [p, echart]; rfl
+  · simp [p, echart]; rfl
   -- alternative proof, using orthonormal frames
   -- rw [ContMDiffAt.inner_bundle_iff_apply (IB := IB)]
   -- intro t ht
