@@ -84,7 +84,7 @@ open Classical in
 private lemma depth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N M n)) :
     N.depth M = Nat.find h := by
   apply le_antisymm
-  · simp only [depth, sSup_le_iff, Set.mem_ofPred_eq]
+  · simp only [depth, sSup_le_iff, Set.mem_ofPred]
     intro n hn
     by_contra gt
     absurd Nat.find_spec h
@@ -217,7 +217,7 @@ lemma depth_min_fst_trd_le_snd_left
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) (N : ModuleCat.{v} R) :
     S.X₁.depth N ⊓ S.X₃.depth N ≤ S.X₂.depth N := by
   apply le_sSup
-  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred, lt_inf_iff, and_imp]
   intro i hi1 hi3
   have zero1 : IsZero (AddCommGrpCat.of (Ext S.X₁ N i)) :=
     AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi1)
@@ -231,7 +231,7 @@ lemma depth_min_snd_trd_sub_one_le_fst_left
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) (N : ModuleCat.{v} R) :
     S.X₂.depth N ⊓ (S.X₃.depth N - 1) ≤ S.X₁.depth N := by
   apply le_sSup
-  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred, lt_inf_iff, and_imp]
   intro i hi2 hi3
   have hi3' : (i + 1 : ℕ) < depth S.X₃ N := by simpa using lt_tsub_iff_right.mp hi3
   have zero2 : IsZero (AddCommGrpCat.of (Ext S.X₂ N i)) :=
@@ -246,7 +246,7 @@ lemma depth_min_snd_fst_add_one_le_trd_left
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) (N : ModuleCat.{v} R) :
     S.X₂.depth N ⊓ (S.X₁.depth N + 1) ≤ S.X₃.depth N := by
   apply le_sSup
-  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred, lt_inf_iff, and_imp]
   intro i hi2 hi1
   have zero2 := AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi2)
   match i with
@@ -266,7 +266,7 @@ lemma depth_min_fst_trd_le_snd_right
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) :
     N.depth S.X₁ ⊓ N.depth S.X₃ ≤ N.depth S.X₂ := by
   apply le_sSup
-  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred, lt_inf_iff, and_imp]
   intro i hi1 hi3
   have zero1 : IsZero (AddCommGrpCat.of (Ext N S.X₁ i)) :=
     AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi1)
@@ -281,7 +281,7 @@ lemma depth_min_snd_trd_add_one_le_fst_right
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) :
     N.depth S.X₂ ⊓ (N.depth S.X₃ + 1) ≤ N.depth S.X₁ := by
   apply le_sSup
-  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred, lt_inf_iff, and_imp]
   intro i hi2 hi3
   have zero2 : IsZero (AddCommGrpCat.of (Ext N S.X₂ i)) :=
     AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsingleton_ext_of_lt_depth hi2)
@@ -302,7 +302,7 @@ lemma depth_min_snd_fst_sub_one_le_trd_right
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact) :
     N.depth S.X₂ ⊓ (N.depth S.X₁ - 1) ≤ N.depth S.X₃ := by
   apply le_sSup
-  simp only [Set.mem_ofPred_eq, lt_inf_iff, and_imp]
+  simp only [Set.mem_ofPred, lt_inf_iff, and_imp]
   intro i hi2 hi1
   have hi1' : (i + 1 : ℕ) < N.depth S.X₁ := by simpa using lt_tsub_iff_right.mp hi1
   have zero2 : IsZero (AddCommGrpCat.of (Ext N S.X₂ i)) :=

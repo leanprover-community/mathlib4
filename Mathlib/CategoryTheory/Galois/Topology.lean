@@ -81,7 +81,7 @@ instance : TopologicalSpace (Aut F) :=
     Set.range (autEmbedding F) =
       ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).hom = (a f.left).hom ≫ F.map f.hom } := by
   ext a
-  simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_ofPred_eq]
+  simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_ofPred]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
   · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl-/
@@ -92,7 +92,7 @@ lemma autEmbedding_range :
     Set.range (autEmbedding F) = ⋂ (f : Arrow C), { a | F.map f.hom ≫ (a f.right).asIso.hom =
       (a f.left).asIso.hom ≫ F.map f.hom } := by
   ext a
-  simp only [Set.mem_range, Set.mem_iInter, Set.mem_ofPred_eq]
+  simp only [Set.mem_range, Set.mem_iInter, Set.mem_ofPred]
   refine ⟨fun ⟨σ, h⟩ i ↦ by cat_disch, fun h ↦ ?_⟩
   exact ⟨.of (NatIso.ofComponents (fun _ ↦ (a _).asIso) (fun {X Y} f ↦ by
     ext; simpa using congr($(h ⟨X, Y, f⟩) _))), rfl⟩

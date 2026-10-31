@@ -155,7 +155,7 @@ lemma nhds_one_hasBasis : (𝓝 (1 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun 
   have : ∀ ε : ℝ, mk '' ball (1 : M) ε = {x : M ⧸ S | ‖x‖ < ε} := by
     refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
     rw [ball_one_eq]
-    simp only [mem_image, mem_ofPred_eq, norm_lt_iff]
+    simp only [mem_image, mem_ofPred, norm_lt_iff]
     exact exists_congr fun _ ↦ and_comm
   rw [← mk_one, nhds_eq, ← funext this]
   exact .map _ Metric.nhds_basis_ball

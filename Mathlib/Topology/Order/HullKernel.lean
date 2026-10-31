@@ -112,7 +112,7 @@ Lower topology.
 lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
     IsTopologicalBasis { S : Set T | ∃ (a : α), (hull T a)ᶜ = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis (· ∈ T)
-  simp only [preimage_compl, mem_ofPred_eq, mem_eq_mem, IsLower.lowerBasis, mem_image,
+  simp only [preimage_compl, mem_ofPred, mem_eq_mem, IsLower.lowerBasis, mem_image,
     exists_exists_and_eq_and]
   constructor
   · rintro ⟨a, ha'⟩

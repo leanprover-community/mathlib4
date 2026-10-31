@@ -29,7 +29,7 @@ universe u v
 variable {X : Type u} [TopologicalSpace X] {ι : Sort v} {α : Type*} {x : X} {s t : Set X}
 
 theorem nhds_def' (x : X) : 𝓝 x = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 s := by
-  simp only [nhds_def, mem_ofPred_eq, @and_comm (x ∈ _), iInf_and]
+  simp only [nhds_def, mem_ofPred, @and_comm (x ∈ _), iInf_and]
 
 /-- The open sets containing `x` are a basis for the neighborhood filter. See `nhds_basis_opens'`
 for a variant using open neighborhoods instead. -/
@@ -69,7 +69,7 @@ theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
 containing `x`. -/
 theorem eventually_nhds_iff {p : X → Prop} :
     (∀ᶠ y in 𝓝 x, p y) ↔ ∃ t : Set X, (∀ y ∈ t, p y) ∧ IsOpen t ∧ x ∈ t :=
-  mem_nhds_iff.trans <| by simp only [subset_def, mem_ofPred_eq]
+  mem_nhds_iff.trans <| by simp only [subset_def, mem_ofPred]
 
 theorem frequently_nhds_iff {p : X → Prop} :
     (∃ᶠ y in 𝓝 x, p y) ↔ ∀ U : Set X, x ∈ U → IsOpen U → ∃ y ∈ U, p y :=
@@ -224,7 +224,7 @@ theorem Filter.EventuallyEq.tendsto {l : Filter α} {f : α → X} (hf : f =ᶠ[
 /-! ### Interior, closure and frontier in terms of neighborhoods -/
 
 theorem interior_eq_nhds' : interior s = { x | s ∈ 𝓝 x } :=
-  Set.ext fun x => by simp only [mem_interior, mem_nhds_iff, mem_ofPred_eq]
+  Set.ext fun x => by simp only [mem_interior, mem_nhds_iff, mem_ofPred]
 
 theorem interior_eq_nhds : interior s = { x | 𝓝 x ≤ 𝓟 s } :=
   interior_eq_nhds'.trans <| by simp only [le_principal_iff]

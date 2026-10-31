@@ -346,7 +346,7 @@ lemma closure_image_coe_le : closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K
 theorem closure_image_coe_ofPred_map_lt {r : Γ₀} (hr : r ≠ 0) :
     closure ((↑) '' {x : K | v x < r}) = {x : Completion K | v.extension x < r} := by
   ext x
-  simp only [mem_ofPred_eq, mem_closure_iff_nhds]
+  simp only [mem_ofPred, mem_closure_iff_nhds]
   refine ⟨fun hx ↦ ?_, fun hx t ht ↦ ?_⟩
   · rcases eq_or_ne x 0 with rfl | h
     · simp [zero_lt_iff, hr]

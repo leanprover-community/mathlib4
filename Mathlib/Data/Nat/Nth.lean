@@ -126,7 +126,7 @@ theorem nth_mem_of_lt_card {n : ℕ} (hf : (Set.ofPred p).Finite) (hlt : n < #hf
 
 theorem exists_lt_card_finite_nth_eq (hf : (Set.ofPred p).Finite) {x} (h : p x) :
     ∃ n, n < #hf.toFinset ∧ nth p n = x := by
-  rwa [← @Set.mem_ofPred_eq _ _ p, ← image_nth_Iio_card hf] at h
+  rwa [← @Set.mem_ofPred _ _ p, ← image_nth_Iio_card hf] at h
 
 /-!
 ### Lemmas about `Nat.nth` on an infinite set
@@ -176,7 +176,7 @@ theorem exists_lt_card_nth_eq {x} (h : p x) :
   refine (Set.ofPred p).finite_or_infinite.elim (fun hf => ?_) fun hf => ?_
   · rcases exists_lt_card_finite_nth_eq hf h with ⟨n, hn, hx⟩
     exact ⟨n, fun _ => hn, hx⟩
-  · rw [← @Set.mem_ofPred_eq _ _ p, ← range_nth_of_infinite hf] at h
+  · rw [← @Set.mem_ofPred _ _ p, ← range_nth_of_infinite hf] at h
     rcases h with ⟨n, hx⟩
     exact ⟨n, fun hf' => absurd hf' hf, hx⟩
 
@@ -357,7 +357,7 @@ lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
     replace h := nth_mem _ h
     rw [← hs h0, ← hf.monotone.map_csInf]
     rcases h0 _ h with ⟨t, ht⟩
-    exact ⟨t, Set.mem_ofPred_eq ▸ ht ▸ h⟩
+    exact ⟨t, Set.mem_ofPred ▸ ht ▸ h⟩
   case _ n ih =>
     repeat nth_rw 1 [nth_eq_sInf]
     have h0' : ∀ k', (p k' ∧ ∀ k < n + 1, nth p k < k') → k' ∈ Set.range f := fun _ h ↦ h0 _ h.1
