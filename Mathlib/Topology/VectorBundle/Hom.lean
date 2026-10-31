@@ -280,8 +280,7 @@ theorem hom_trivializationAt_symm_apply {x₀ x : B}
     (trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀).symm x L v =
       (trivializationAt F₂ E₂ x₀).symm x
         (L ((trivializationAt F₁ E₁ x₀).continuousLinearMapAt 𝕜₁ x v)) := by
-  rw [hom_trivializationAt]
-  rw [Trivialization.continuousLinearMap_symm_apply σ hx]
+  rw [hom_trivializationAt, Trivialization.continuousLinearMap_symm_apply σ hx]
   exact (trivializationAt F₂ E₂ x₀).symmL_apply hx.2 _
 
 @[simp, mfld_simps]
