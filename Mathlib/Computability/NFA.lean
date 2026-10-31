@@ -287,23 +287,25 @@ def Path.supp [DecidableEq σ] {s t : σ} {x : FreeMonoid α} : M.Path s t x →
   | one s => {s}
   | of_mul _ _ _ _ _ _ p => {s} ∪ p.supp
 
-theorem mem_evalFrom_iff_nonempty_path {s t : σ} {x : FreeMonoid α} :
-    t ∈ M.evalFrom {s} x ↔ Nonempty (M.Path s t x) where
-  mp h := match x with
-    | 1 =>
+theorem mem_evalFrom_iff_nonempty_path {s t : σ} :
+    ∀ {x}, t ∈ M.evalFrom {s} x ↔ Nonempty (M.Path s t x) := fun {x} ↦ by
+  refine ⟨fun h ↦ ?_, fun ⟨p⟩ ↦ ?_⟩
+  · cases x using FreeMonoid.mulRecOn with
+    | one =>
       have h : s = t := by simp at h; tauto
-      ⟨h ▸ Path.one s⟩
-    | .of a * x =>
+      exact ⟨h ▸ Path.one s⟩
+    | of_mul a x =>
       have h : ∃ s' ∈ M.step s a, t ∈ M.evalFrom {s'} x := by
         rw [evalFrom_of_mul, mem_evalFrom_iff_exists, stepSet_singleton] at h; exact h
       let ⟨s', h₁, h₂⟩ := h
       let ⟨p'⟩ := mem_evalFrom_iff_nonempty_path.1 h₂
-      ⟨Path.cons s' _ _ _ _ h₁ p'⟩
-  mpr p := match p with
-    | ⟨Path.one s⟩ => by simp
-    | ⟨Path.of_mul s' s t a x h₁ h₂⟩ => by
+      exact ⟨Path.of_mul s' _ _ _ _ h₁ p'⟩
+  · match p with
+    | Path.one s => simp
+    | Path.of_mul s' s t a x h₁ h₂ =>
       rw [evalFrom_of_mul, stepSet_singleton, mem_evalFrom_iff_exists]
       exact ⟨s', h₁, mem_evalFrom_iff_nonempty_path.2 ⟨h₂⟩⟩
+  termination_by x => x.toList.length
 
 theorem accepts_iff_exists_path {x : FreeMonoid α} :
     x ∈ M.accepts.toSet ↔ ∃ s ∈ M.start, ∃ t ∈ M.accept, Nonempty (M.Path s t x) := by
