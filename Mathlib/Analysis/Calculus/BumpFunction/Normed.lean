@@ -126,6 +126,7 @@ theorem integral_le_measure_closedBall : ∫ x, f x ∂μ ≤ μ.real (closedBal
     simp [measure_closedBall_lt_top]
   _ = μ.real (closedBall c f.rOut) := by simp
 
+omit [IsLocallyFiniteMeasure μ] in
 theorem measure_closedBall_div_le_integral [IsAddHaarMeasure μ] (K : ℝ) (h : f.rOut ≤ K * f.rIn) :
     μ.real (closedBall c f.rOut) / K ^ finrank ℝ E ≤ ∫ x, f x ∂μ := by
   have K_pos : 0 < K := by
@@ -137,6 +138,7 @@ theorem measure_closedBall_div_le_integral [IsAddHaarMeasure μ] (K : ℝ) (h : 
   gcongr
   exact f.rOut_pos.le
 
+omit [IsLocallyFiniteMeasure μ] in
 theorem normed_le_div_measure_closedBall_rOut [IsAddHaarMeasure μ] (K : ℝ) (h : f.rOut ≤ K * f.rIn)
     (x : E) :
     f.normed μ x ≤ K ^ finrank ℝ E / μ.real (closedBall c f.rOut) := by

@@ -43,6 +43,7 @@ lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
 
 set_option linter.overlappingInstances false
 
+omit [Nontrivial R] in
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
 lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [IsDomain R] [IsTorsionFree R M]
     (b : Basis n R M) : HasEigenvalue (toLin b b (diagonal d)) μ ↔ ∃ i, d i = μ := by
@@ -66,6 +67,7 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [IsDomain R] [IsTo
   · rintro ⟨i, rfl⟩
     exact this i
 
+omit [Nontrivial R] in
 /-- Eigenvalues of a diagonal linear operator with respect to standard basis
 are the diagonal entries. -/
 lemma hasEigenvalue_toLin'_diagonal_iff [IsDomain R] (d : n → R) {μ : R} :

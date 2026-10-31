@@ -410,8 +410,7 @@ end SemilinearMap
 
 section OrderIso
 
-variable [RingHomSurjective σ₁₂]
-
+variable [RingHomSurjective σ₁₂] in
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
 @[simps symm_apply apply]
 def orderIsoMapComapOfBijective (f : M →ₛₗ[σ₁₂] M₂) (hf : Bijective f) :

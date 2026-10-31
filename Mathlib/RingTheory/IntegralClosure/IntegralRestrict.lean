@@ -249,8 +249,9 @@ lemma Algebra.map_intTraceAux [IsIntegrallyClosed A] (x : B) :
 
 variable (A B)
 variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
-variable [Module.Finite A B] [IsTorsionFree A B]
+variable [Module.Finite A B]
 
+variable [IsTorsionFree A B] in
 /-- The trace of a finite extension of integrally closed domains `B/A` is the restriction of
 the trace on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intTrace`. -/
 noncomputable
@@ -261,6 +262,7 @@ def Algebra.intTrace : B →ₗ[A] A :=
 
 variable {A B}
 
+variable [IsTorsionFree A B] in
 lemma Algebra.algebraMap_intTrace (x : B) :
     algebraMap A K (Algebra.intTrace A B x) = Algebra.trace K L (algebraMap B L x) := by
   have : IsIntegralClosure B A (FractionRing B) :=
@@ -274,6 +276,7 @@ lemma Algebra.algebraMap_intTrace (x : B) :
   ext
   exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
 
+variable [IsTorsionFree A B] in
 lemma Algebra.algebraMap_intTrace_fractionRing (x : B) :
     algebraMap A (FractionRing A) (Algebra.intTrace A B x) =
       Algebra.trace (FractionRing A) (FractionRing B) (algebraMap B _ x) := by
@@ -287,6 +290,8 @@ lemma Algebra.intTrace_eq_trace [Module.Free A B] : Algebra.intTrace A B = Algeb
   ext x
   apply IsFractionRing.injective A (FractionRing A)
   rw [Algebra.algebraMap_intTrace_fractionRing, Algebra.trace_localization A A⁰]
+
+variable [IsTorsionFree A B]
 
 open nonZeroDivisors
 
@@ -365,9 +370,9 @@ lemma Algebra.map_intNormAux (x : B) :
   exact IsIntegralClosure.algebraMap_mk' _ _ _
 
 variable (A B)
-variable [IsDomain A] [IsDomain B] [IsIntegrallyClosed B] [Algebra.IsIntegral A B]
-  [IsTorsionFree A B]
+variable [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
 
+variable [Algebra.IsIntegral A B] [IsTorsionFree A B] in
 /-- The norm of a finite extension of integrally closed domains `B/A` is the restriction of
 the norm on `Frac(B)/Frac(A)` onto `B/A`. See `Algebra.algebraMap_intNorm`. -/
 noncomputable
@@ -375,6 +380,7 @@ def Algebra.intNorm : B →* A := Algebra.intNormAux A (FractionRing A) (Fractio
 
 variable {A B}
 
+variable [Algebra.IsIntegral A B] [IsTorsionFree A B] in
 lemma Algebra.algebraMap_intNorm (x : B) :
     algebraMap A K (Algebra.intNorm A B x) = Algebra.norm K (algebraMap B L x) := by
   have := IsIntegralClosure.isFractionRing_of_finite_extension A K L B
@@ -386,6 +392,7 @@ lemma Algebra.algebraMap_intNorm (x : B) :
   ext
   exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
 
+variable [Algebra.IsIntegral A B] [IsTorsionFree A B] in
 @[simp]
 lemma Algebra.algebraMap_intNorm_fractionRing (x : B) :
     algebraMap A (FractionRing A) (Algebra.intNorm A B x) =
@@ -394,6 +401,7 @@ lemma Algebra.algebraMap_intNorm_fractionRing (x : B) :
 
 variable (A B)
 
+variable [Algebra.IsIntegral A B] [IsTorsionFree A B] in
 theorem Algebra.intNorm_intNorm {C : Type*} [CommRing C] [IsDomain C] [IsIntegrallyClosed C]
     [Algebra A C] [Algebra B C] [IsScalarTower A B C] [Algebra.IsIntegral A C]
     [Algebra.IsIntegral B C] [IsTorsionFree A C] [IsTorsionFree B C] (x : C) :
@@ -409,6 +417,8 @@ lemma Algebra.intNorm_eq_norm [Module.Free A B] [Module.Finite A B] :
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
   apply IsFractionRing.injective A (FractionRing A)
   rw [Algebra.algebraMap_intNorm_fractionRing, Algebra.norm_localization A A⁰]
+
+variable [Algebra.IsIntegral A B] [IsTorsionFree A B]
 
 @[simp]
 lemma Algebra.intNorm_zero [FiniteDimensional (FractionRing A) (FractionRing B)] :

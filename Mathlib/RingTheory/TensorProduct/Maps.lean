@@ -314,8 +314,8 @@ section CompatibleSMul
 variable (R S T A B : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring T] [Semiring A]
   [Semiring B]
 variable [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
-variable [Algebra T A] [SMulCommClass R T A] [SMulCommClass S T A]
-variable [SMulCommClass R S A] [CompatibleSMul R S A B]
+variable [Algebra T A]
+variable [CompatibleSMul R S A B]
 
 /-- If A and B are both R- and S-algebras and their actions on them commute,
 and if the S-action on `A ⊗[R] B` can switch between the two factors, then there is a
@@ -332,6 +332,8 @@ def mapOfCompatibleSMul : A ⊗[S] B →ₐ[T] A ⊗[R] B :=
 
 theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R S T A B) :=
   _root_.TensorProduct.mapOfCompatibleSMul_surjective R S T A B
+
+variable [SMulCommClass R T A] [SMulCommClass S T A] [SMulCommClass R S A]
 
 attribute [local instance] SMulCommClass.symm
 
@@ -661,9 +663,9 @@ theorem leftComm_symm_tmul (m : A) (n : B) (p : C) :
 theorem leftComm_toLinearEquiv : ↑(leftComm R A B C) = _root_.TensorProduct.leftComm R A B C :=
   LinearEquiv.toLinearMap_injective (by ext; rfl)
 
-variable [CommSemiring T] [Algebra R T] [Algebra T A] [IsScalarTower R T A] [SMulCommClass S T A]
+variable [CommSemiring T] [Algebra R T] [Algebra T A] [IsScalarTower R T A]
   [Algebra S T] [IsScalarTower S T A] [CommSemiring R'] [Algebra R R'] [Algebra R' T] [Algebra R' A]
-  [Algebra R' B] [IsScalarTower R R' A] [SMulCommClass S R' A] [SMulCommClass R' S A]
+  [Algebra R' B] [IsScalarTower R R' A]
   [IsScalarTower R' T A] [IsScalarTower R R' B]
 
 variable (R R' S T A B C D) in
@@ -690,6 +692,8 @@ theorem tensorTensorTensorComm_symm :
 theorem tensorTensorTensorComm_toLinearEquiv :
     (tensorTensorTensorComm R R' S T A B C D).toLinearEquiv =
       TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R' S T A B C D := rfl
+
+variable [SMulCommClass S T A] [SMulCommClass S R' A] [SMulCommClass R' S A]
 
 @[simp]
 theorem toLinearEquiv_tensorTensorTensorComm :

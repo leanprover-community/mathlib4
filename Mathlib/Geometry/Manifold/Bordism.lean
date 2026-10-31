@@ -131,7 +131,7 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
   {k : WithTop ℕ∞}
   {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] {I : ModelWithCorners ℝ E H} [TopologicalSpace M] [ChartedSpace H M]
-  [IsManifold I k M] [CompactSpace M] [BoundarylessManifold I M]
+  [CompactSpace M] [BoundarylessManifold I M]
 
 instance {s : SingularManifold X k I} : TopologicalSpace s.M := s.topSpaceM
 
@@ -170,6 +170,10 @@ lemma map_comp (s : SingularManifold X k I)
 
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [TopologicalSpace H']
 
+section
+
+variable [IsManifold I k M]
+
 variable (M I) in
 /-- If `M` is a closed `C^k` manifold, it is a singular manifold over itself. -/
 noncomputable def refl : SingularManifold M k I where
@@ -195,6 +199,8 @@ lemma comap_f (s : SingularManifold X k I) {φ : M → s.M} (hφ : Continuous φ
     (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
+end
+
 variable (X) in
 /-- The canonical singular manifold associated to the empty set (seen as a smooth manifold) -/
 @[expose] def empty.{u} (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
@@ -208,6 +214,8 @@ variable (X) in
 omit [CompactSpace M] [BoundarylessManifold I M] in
 @[simp, mfld_simps]
 lemma empty_M [IsEmpty M] : (empty X M I (k := k)).M = M := (rfl)
+
+variable [IsManifold I k M]
 
 instance [IsEmpty M] : IsEmpty (SingularManifold.empty X M I (k := k)).M :=
   inferInstanceAs <| IsEmpty M

@@ -363,6 +363,8 @@ abbrev EuclideanSpace.finAddEquivProd {𝕜 : Type*} [RCLike 𝕜] {n m : ℕ} :
 end finAddEquivProd
 
 variable (ι 𝕜 E)
+section
+
 variable [Fintype ι]
 
 /-- An orthonormal basis on E is an identification of `E` with its dimensional-matching
@@ -1265,6 +1267,10 @@ theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike
     [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
     toEuclideanLin.symm (rankOne 𝕜 x y) = .vecMulVec x (star y) := by
   simp [toLpLin, toMatrix', ← Matrix.ext_iff, vecMulVec_apply, inner_single_right, mul_comm]
+
+end
+
+variable {ι 𝕜 E}
 
 namespace FiniteDimensional
 variable [Unique ι] (h : Module.finrank 𝕜 E = 1) {v : E} (hv : ‖v‖ = 1)

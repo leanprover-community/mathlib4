@@ -1179,7 +1179,7 @@ theorem norm_toBoundedContinuousFunction_le (f : 𝓢(E, F)) :
   BoundedContinuousFunction.norm_ofNormedAddCommGroup_le f.continuous (by positivity) _
 
 variable (𝕜 E F)
-variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
@@ -1196,6 +1196,8 @@ theorem toBoundedContinuousFunctionCLM_apply (f : 𝓢(E, F)) (x : E) :
 theorem toBoundedContinuousFunctionCLM_injective :
     Function.Injective (toBoundedContinuousFunctionCLM .. : 𝓢(E, F) →L[𝕜] E →ᵇ F) :=
   fun _ _ h ↦ DFunLike.ext _ _ fun x ↦ congr($h x)
+
+variable [SMulCommClass ℝ 𝕜 F]
 
 instance : T3Space 𝓢(E, F) :=
   suffices T2Space 𝓢(E, F) from inferInstance
@@ -1231,7 +1233,7 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   rw [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm, toZeroAtInfty_toBCF]
 
 variable (𝕜 E F)
-variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/
@@ -1252,10 +1254,11 @@ section Lp
 open MeasureTheory
 open scoped NNReal ENNReal
 
-variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
+variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E]
   [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 variable (𝕜 F) in
+variable [OpensMeasurableSpace E] in
 /-- The `L^p` norm of a Schwartz function is controlled by a finite family of Schwartz seminorms.
 
 The maximum index `k` and the constant `C` depend on `p` and `μ`.
@@ -1289,13 +1292,16 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     simp only [ENNReal.coe_pow, ENNReal.coe_ofNat]
     ring
 
+variable [OpensMeasurableSpace E] in
 /-- The `L^p` norm of a Schwartz function is finite. -/
 theorem eLpNorm_lt_top (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] [SecondCountableTopologyEither E F] : eLpNorm f p μ < ⊤ := by
   rcases eLpNorm_le_seminorm ℝ F p μ with ⟨k, C, hC⟩
   exact lt_of_le_of_lt (hC f) (ENNReal.mul_lt_top ENNReal.coe_lt_top ENNReal.ofReal_lt_top)
 
-variable [SecondCountableTopologyEither E F]
+section
+
+variable [OpensMeasurableSpace E] [SecondCountableTopologyEither E F]
 
 /-- Schwartz functions are in `L^∞`; does not require `hμ.HasTemperateGrowth`. -/
 theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f ⊤ μ := by
@@ -1344,7 +1350,10 @@ theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ :
     [μ.IsOpenPosMeasure] : Function.Injective (fun f : 𝓢(E, F) ↦ f.toLp p μ) :=
   fun f g ↦ by simpa [toLp] using (Continuous.ae_eq_iff_eq μ f.continuous g.continuous).mp
 
+end
+
 variable (𝕜 F) in
+variable [OpensMeasurableSpace E] [SecondCountableTopologyEither E F] in
 theorem norm_toLp_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] :
     ∃ k C, 0 ≤ C ∧ ∀ (f : 𝓢(E, F)), ‖f.toLp p μ‖ ≤
@@ -1357,6 +1366,7 @@ theorem norm_toLp_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
   simpa using hC f
 
 variable (𝕜 F) in
+variable [OpensMeasurableSpace E] [SecondCountableTopologyEither E F] in
 /-- Continuous linear map from Schwartz functions to `L^p`. -/
 def toLpCLM (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : 𝓢(E, F) →L[𝕜] Lp F p μ :=
@@ -1364,9 +1374,11 @@ def toLpCLM (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
     rcases norm_toLp_le_seminorm 𝕜 F p μ with ⟨k, C, hC_pos, hC⟩
     exact ⟨Finset.Iic (k, 0), C, hC_pos, hC⟩
 
+variable [OpensMeasurableSpace E] [SecondCountableTopologyEither E F] in
 @[simp] theorem toLpCLM_apply {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
     {f : 𝓢(E, F)} : toLpCLM 𝕜 F p μ f = f.toLp p μ := rfl
 
+variable [OpensMeasurableSpace E] [SecondCountableTopologyEither E F] in
 @[fun_prop]
 theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous

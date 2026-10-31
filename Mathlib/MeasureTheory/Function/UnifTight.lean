@@ -341,7 +341,7 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
 
 @[deprecated "Formerly invoked in the proof of `tendsto_Lp_of_tendsto_ae`." (since := "2026-09-15")]
 private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
-    {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (_hg : StronglyMeasurable g)
+    {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n))
     (hg' : MemLp g p μ) (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     Tendsto (fun n => eLpNorm (f n - g) p μ) atTop (𝓝 0) :=

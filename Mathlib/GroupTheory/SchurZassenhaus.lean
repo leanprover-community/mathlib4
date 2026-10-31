@@ -154,6 +154,7 @@ include h1 h3
 -/
 
 
+omit [Normal N] h1 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step0 : N ≠ ⊥ := by
   rintro rfl
@@ -229,7 +230,7 @@ private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ 
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step4 : (Nat.card N).minFac.Prime :=
-  Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h1 h3)).ne'
+  Nat.minFac_prime (N.one_lt_card_iff_ne_bot.mpr (step0 h3)).ne'
 
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.1 ≠ ⊥ := by
@@ -250,7 +251,7 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 theorem step7 : IsMulCommutative N := by
-  have := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
+  have := N.bot_or_nontrivial.resolve_left (step0 h3)
   have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
   exact
     ⟨⟨fun g h => ((eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left

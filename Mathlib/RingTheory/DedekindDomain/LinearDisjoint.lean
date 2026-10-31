@@ -35,13 +35,14 @@ open FractionalIdeal nonZeroDivisors IntermediateField Algebra Module Submodule
 variable (A B : Type*) {K L : Type*} [CommRing A] [Field K] [Algebra A K] [IsFractionRing A K]
   [CommRing B] [Field L] [Algebra B L] [Algebra A L] [Algebra K L] [FiniteDimensional K L]
   [IsScalarTower A K L]
-variable (R₁ R₂ : Type*) [CommRing R₁] [CommRing R₂] [IsDomain R₁] [Algebra A R₁] [Algebra A R₂]
+variable (R₁ R₂ : Type*) [CommRing R₁] [CommRing R₂] [Algebra A R₁] [Algebra A R₂]
   [Algebra R₁ B] [Algebra R₂ B] [Algebra R₁ L] [Algebra R₂ L]
   [IsScalarTower A R₁ L] [IsScalarTower R₁ B L] [IsScalarTower R₂ B L] [Module.Finite A R₂]
 variable {F₁ F₂ : IntermediateField K L} [Algebra R₁ F₁] [Algebra R₂ F₂] [IsTorsionFree R₁ F₁]
   [IsScalarTower A F₂ L] [IsScalarTower A R₂ F₂] [IsScalarTower R₁ F₁ L] [IsScalarTower R₂ F₂ L]
   [Algebra.IsSeparable K F₂] [Algebra.IsSeparable F₁ L]
 
+variable [IsDomain R₁] in
 theorem Submodule.traceDual_le_span_map_traceDual [Module.Free A R₂]
     [IsLocalization (Algebra.algebraMapSubmonoid R₂ A⁰) F₂] (h₁ : F₁.LinearDisjoint F₂)
     (h₂ : F₁ ⊔ F₂ = ⊤) :
@@ -74,12 +75,13 @@ attribute [local instance] FractionRing.liftAlgebra
 
 variable [IsDomain A] [IsDedekindDomain B] [IsDedekindDomain R₁] [IsDedekindDomain R₂]
     [IsFractionRing B L] [IsFractionRing R₁ F₁] [IsFractionRing R₂ F₂] [IsIntegrallyClosed A]
-    [IsIntegralClosure B R₁ L] [IsTorsionFree R₁ B] [IsTorsionFree R₂ B]
+    [IsTorsionFree R₁ B] [IsTorsionFree R₂ B]
 
 set_option linter.overlappingInstances false
 
 namespace IsDedekindDomain
 
+variable [IsDomain R₁] [IsIntegralClosure B R₁ L] in
 theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
     [Module.Free A R₂] [IsLocalization (Algebra.algebraMapSubmonoid R₂ A⁰) F₂]
     (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁ ⊔ F₂ = ⊤) :
@@ -99,10 +101,11 @@ theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
   · exact (_root_.map_ne_zero _).mpr <| coeIdeal_eq_zero.not.mpr differentIdeal_ne_bot
 
 variable [Algebra A B] [Module.Finite A B] [IsTorsionFree A B] [IsTorsionFree A R₁]
-  [IsTorsionFree A R₂] [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
+  [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
   [Module.Finite R₁ B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
   [IsScalarTower A R₁ B]
 
+variable [IsIntegralClosure B R₁ L] [IsTorsionFree A R₂] in
 theorem map_differentIdeal_dvd_differentIdeal
     (h : IsCoprime ((differentIdeal A R₁).map (algebraMap R₁ B))
       ((differentIdeal A R₂).map (algebraMap R₂ B))) :
@@ -139,7 +142,7 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime
 end IsDedekindDomain
 
 variable [Algebra A B] [Module.Finite A B] [IsTorsionFree A B] [IsTorsionFree A R₁]
-  [IsTorsionFree A R₂] [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
+  [Module.Finite A R₁] [Module.Finite R₂ B] [IsScalarTower A R₂ B]
   [Module.Finite R₁ B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
   [IsScalarTower A R₁ B]
 
@@ -202,6 +205,7 @@ private theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
   · rw [hb]
     ext; simp
 
+variable [IsDomain R₁] [IsIntegralClosure B R₁ L] [IsTorsionFree A R₂] in
 /--
 Let `A ⊆ B` be a finite extension of Dedekind domains and assume that `A ⊆ R₁, R₂ ⊆ B` are two
 subrings such that `Frac R₁ ⊔ Frac R₂ = Frac B`, `Frac R₁` and `Frac R₂` are linearly disjoint
@@ -238,6 +242,7 @@ noncomputable def ofIsCoprimeDifferentIdeal (h₁ : F₁.LinearDisjoint F₂)
     · ext; simp
   Basis.mk P₁ P₂
 
+variable [IsTorsionFree A R₂] in
 @[simp]
 theorem ofIsCoprimeDifferentIdeal_apply (h₁ : F₁.LinearDisjoint F₂)
     (h₂ : F₁.toSubalgebra ⊔ F₂.toSubalgebra = ⊤)
@@ -250,6 +255,7 @@ end Module.Basis
 
 namespace IsDedekindDomain
 
+variable [IsTorsionFree A R₂] in
 /--
 Let `A ⊆ B` be a finite extension of Dedekind domains and assume that `A ⊆ R₁, R₂ ⊆ B` are two
 subrings such that `Frac R₁ ⊔ Frac R₂ = Frac B`, `Frac R₁` and `Frac R₂` are linearly disjoint
@@ -282,3 +288,5 @@ theorem adjoin_union_eq_top_of_isCoprime_differentialIdeal [Module.Free A R₂]
   exact range_sup_range_eq_top_of_isCoprime_differentIdeal A B R₁ R₂ h₁ h₂ h₃
 
 end IsDedekindDomain
+
+variable [IsDomain R₁] [IsIntegralClosure B R₁ L] [IsTorsionFree A R₂]

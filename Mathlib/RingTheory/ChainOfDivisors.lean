@@ -215,6 +215,7 @@ end DivisorChain
 
 variable {N : Type*} [CommMonoidWithZero N]
 
+omit [IsCancelMulZero M] in
 theorem factor_orderIso_map_one_eq_bot [IsCancelMulZero N] {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :
     (d ⟨1, one_dvd m⟩ : Associates N) = 1 := by
@@ -247,6 +248,7 @@ open DivisorChain
 set_option linter.overlappingInstances false
 
 set_option backward.isDefEq.respectTransparency false in
+omit [IsCancelMulZero M] in
 theorem pow_image_of_prime_by_factor_orderIso_dvd
     {m p : Associates M} {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) {s : ℕ} (hs' : p ^ s ≤ m) :
@@ -279,6 +281,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
   exact ne_zero_of_dvd_ne_zero hn (Subtype.prop (d ⟨c₁ 1 ^ s, _⟩))
 
 set_option backward.isDefEq.respectTransparency false in
+omit [IsCancelMulZero M] in
 theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn : n ≠ 0)
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
@@ -306,6 +309,7 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
           a (Subtype.mk_lt_mk.mp <| d.lt_iff_lt.mp hb)
     simp
 
+omit [IsCancelMulZero M] in
 theorem mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors {m p : Associates M}
     {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ∈ normalizedFactors n := by
@@ -315,6 +319,7 @@ theorem mem_normalizedFactors_factor_orderIso_of_mem_normalizedFactors {m p : As
   rw [associated_iff_eq] at hq'
   rwa [hq']
 
+omit [IsCancelMulZero M] in
 theorem emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso {m p : Associates M}
     {n : Associates N} (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     emultiplicity p m ≤ emultiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n := by
@@ -326,6 +331,7 @@ theorem emultiplicity_prime_le_emultiplicity_image_by_factor_orderIso {m p : Ass
     |>.emultiplicity_eq_multiplicity, ← pow_dvd_iff_le_emultiplicity]
   apply pow_image_of_prime_by_factor_orderIso_dvd hn hp d (pow_multiplicity_dvd ..)
 
+omit [IsCancelMulZero M] in
 theorem emultiplicity_prime_eq_emultiplicity_image_by_factor_orderIso {m p : Associates M}
     {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     emultiplicity p m = emultiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n := by
@@ -381,6 +387,7 @@ variable [UniqueFactorizationMonoid M] [UniqueFactorizationMonoid N]
 
 set_option linter.overlappingInstances false
 
+omit [IsCancelMulZero M] in
 theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} {n : N} (hm : m ≠ 0)
     (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
@@ -413,6 +420,7 @@ theorem mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors {m p : M} 
       (mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp))
   simpa only [associated_iff_eq.mp hq', associatesEquivOfUniqueUnits_symm_apply] using hq
 
+omit [IsCancelMulZero M] in
 theorem emultiplicity_factor_dvd_iso_eq_emultiplicity_of_mem_normalizedFactors {m p : M} {n : N}
     (hm : m ≠ 0) (hn : n ≠ 0) (hp : p ∈ normalizedFactors m)
     {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }} (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ l') :

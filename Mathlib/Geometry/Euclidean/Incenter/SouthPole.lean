@@ -46,25 +46,32 @@ namespace Affine
 
 namespace Simplex
 
-variable {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex ℝ P n)
+variable {m n : ℕ} [NeZero m] (s : Simplex ℝ P n)
 
+variable [NeZero n] in
 /-- The generalized north pole of a simplex with respect to a given vertex and excenter is the
 second intersection with the circumsphere of the line through that vertex and excenter. -/
 def nsPole (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
   s.circumsphere.secondInter (s.points i) (s.excenter signs -ᵥ s.points i)
 
+variable [NeZero n] in
 lemma nsPole_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finset (Fin (m + 1)))
     (i : Fin (m + 1)) :
     (s.reindex e).nsPole signs i = s.nsPole (signs.map e.symm) (e.symm i) := by
   simp [nsPole, excenter_reindex]
 
 variable {s} in
+variable [NeZero n] in
 @[simp] lemma ExcenterExists.nsPole_map {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs)
     (f : P →ᵃⁱ[ℝ] P₂) (i : Fin (n + 1)) :
     (s.map f.toAffineMap f.injective).nsPole signs i = f (s.nsPole signs i) := by
   simp only [nsPole, map_points, AffineIsometry.coe_toAffineMap, Function.comp_apply,
     h.excenter_map, ← Sphere.secondInter_map, ← AffineIsometry.map_vsub]
   convert rfl <;> simp
+
+section
+
+variable [NeZero n]
 
 variable {s} in
 @[simp] lemma ExcenterExists.nsPole_restrict {signs : Finset (Fin (n + 1))}
@@ -102,7 +109,10 @@ lemma southPole_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (i : Fin (m + 1)) :
     s.nsPole signsᶜ i = s.nsPole signs i := by
   simp [nsPole]
 
+end
+
 variable {s} in
+variable [NeZero n] in
 @[simp] lemma ExcenterExists.nsPole_insert {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) {i : Fin (n + 1)} (hi : s.ExcenterExists (insert i signs)) :
     s.nsPole (insert i signs) i = s.nsPole signs i := by
@@ -139,6 +149,7 @@ variable {s} in
     field
 
 variable {s} in
+variable [NeZero n] in
 @[simp] lemma ExcenterExists.nsPole_erase {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) {i : Fin (n + 1)} (hi : s.ExcenterExists (signs.erase i)) :
     s.nsPole (signs.erase i) i = s.nsPole signs i := by
@@ -153,6 +164,8 @@ variable {s} in
   rw [← Finset.insert_empty, ← nsPole_empty, s.excenterExists_empty.nsPole_insert]
   rw [Finset.insert_empty]
   exact s.excenterExists_singleton _
+
+variable [NeZero n]
 
 lemma nsPole_mem_affineSpan_pair (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) :
     s.nsPole signs i ∈ line[ℝ, s.points i, s.excenter signs] :=

@@ -33,11 +33,12 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
 public section
 
 variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
-variable [Module R M] [Module.Finite R M] [Module.Free R M]
+variable [Module R M] [Module.Free R M]
 variable [Module K M] [Module.Finite K M]
 
 open Module Module.Free Polynomial
 
+variable [Module.Finite R M] in
 lemma IsNilpotent.charpoly_eq_X_pow_finrank {φ : Module.End R M} (h : IsNilpotent φ) :
     φ.charpoly = X ^ finrank R M := by
   rw [← sub_eq_zero]
@@ -48,6 +49,7 @@ lemma IsNilpotent.charpoly_eq_X_pow_finrank {φ : Module.End R M} (h : IsNilpote
 
 namespace LinearMap
 
+variable [Module.Finite R M] in
 lemma isNilpotent_iff_charpoly (φ : End R M) :
     IsNilpotent φ ↔ charpoly φ = X ^ finrank R M :=
   ⟨IsNilpotent.charpoly_eq_X_pow_finrank,
@@ -82,6 +84,8 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
 lemma charpoly_eq_X_pow_iff [IsNoetherian R M] (φ : Module.End R M) :
     φ.charpoly = X ^ finrank R M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 :=
   (charpoly_nilpotent_tfae φ).out 2 3
+
+variable [Module.Finite R M]
 
 open Module.Free in
 lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
@@ -212,3 +216,5 @@ lemma finrank_eigenspace_le (φ : Module.End K M) (μ : K) :
   finrank_genEigenspace_le ..
 
 end LinearMap
+
+variable [Module.Finite R M]

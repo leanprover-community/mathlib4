@@ -72,7 +72,7 @@ theorem edgeSet_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_sdiff, mk'_mem_incidenceSet_iff]
   intros; split_ifs; exacts [by simp_all, by aesop, by rw [adj_comm]; aesop, by grind]
 
-theorem edgeSet_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeSet =
+theorem edgeSet_replaceVertex_of_adj : (G.replaceVertex s t).edgeSet =
     (G.edgeSet \ G.incidenceSet t ∪ (s(·, t)) '' (G.neighborSet s)) \ {s(t, t)} := by
   ext e; refine e.inductionOn ?_
   simp only [replaceVertex, mem_edgeSet, Set.mem_union, Set.mem_sdiff, mk'_mem_incidenceSet_iff]
@@ -92,7 +92,7 @@ theorem edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t)
     (G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t))) \ {s(t, t)} := by
   apply Finset.coe_injective
   push_cast
-  exact G.edgeSet_replaceVertex_of_adj ha
+  exact G.edgeSet_replaceVertex_of_adj
 
 lemma disjoint_sdiff_neighborFinset_image :
     Disjoint (G.edgeFinset \ G.incidenceFinset t) ((G.neighborFinset s).image (s(·, t))) := by

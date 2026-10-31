@@ -257,7 +257,7 @@ theorem MemLp.integral_indicator_norm_ge_nonneg_le (hf : MemLp f 1 μ) {ε : ℝ
 @[deprecated "This lemma is superseded by `MeasureTheory.MemLp.integral_indicator_norm_ge_nonneg_le`
 which does not require measurability." (since := "2026-08-27")]
 theorem MemLp.integral_indicator_norm_ge_nonneg_le_of_meas (hf : MemLp f 1 μ)
-    (_hmeas : StronglyMeasurable f) {ε : ℝ≥0∞} (hε : 0 < ε) :
+    {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ M : ℝ, 0 ≤ M ∧ (∫⁻ x, ‖{ x | M ≤ ‖f x‖₊ }.indicator f x‖ₑ ∂μ) ≤ ε :=
   hf.integral_indicator_norm_ge_nonneg_le hε
 
@@ -407,7 +407,7 @@ theorem MemLp.eLpNorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf :
 @[deprecated "This lemma is superseded by `MeasureTheory.MemLp.eLpNorm_indicator_le` which does not
 require measurability on `f`." (since := "2026-08-18")]
 theorem MemLp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : MemLp f p μ)
-    (_hmeas : StronglyMeasurable f) {ε : ℝ≥0∞} (hε : 0 < ε) :
+    {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ δ > 0, ∀ s, NullMeasurableSet s μ → μ s ≤ δ → eLpNorm (s.indicator f) p μ ≤ ε :=
   hf.eLpNorm_indicator_le hp_one hp_top hε
 
@@ -808,7 +808,7 @@ theorem UniformIntegrable.spec (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIn
 
 @[deprecated "This lemma is superseded by `UniformIntegrable.spec` which does not require
 measurability." (since := "2026-08-18")]
-theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (_hf : ∀ i, StronglyMeasurable (f i))
+theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞)
     (hfu : UniformIntegrable f p μ) {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ε :=
   hfu.spec hp hp' hε

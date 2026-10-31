@@ -89,7 +89,7 @@ More precisely, we avoid quotients in this statement and instead require that `b
 -/
 @[deprecated "Use results of RingTheory.RamificationInertia.Basic" (since := "2026-07-01")]
 theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [Module.Finite R S]
-    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Algebra.IsAlgebraic R S]
+    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L]
     [IsTorsionFree R K] (hp : p ≠ ⊤) (b : Set S)
     (hb' : Submodule.span R b ⊔ (p.map (algebraMap R S)).restrictScalars R = ⊤) :
     Submodule.span K (algebraMap S L '' b) = ⊤ := by

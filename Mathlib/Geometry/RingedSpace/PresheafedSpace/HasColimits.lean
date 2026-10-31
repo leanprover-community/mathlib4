@@ -129,19 +129,20 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       NatTrans.naturality_assoc, pushforward_obj_map, eqToHom_unop]
     simp [NatTrans.congr (α := (F.map f).c) this]
 
-variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)]
-
+variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)] in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
 def colimit (F : J ⥤ PresheafedSpace.{_, _, v} C) : PresheafedSpace C where
   carrier := Limits.colimit (F ⋙ PresheafedSpace.forget C)
   presheaf := limit (pushforwardDiagramToColimit F).leftOp
 
+variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)] in
 @[simp]
 theorem colimit_carrier (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     (colimit F).carrier = Limits.colimit (F ⋙ PresheafedSpace.forget C) :=
   rfl
 
+variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)] in
 @[simp]
 theorem colimit_presheaf (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     (colimit F).presheaf = limit (pushforwardDiagramToColimit F).leftOp :=
@@ -149,6 +150,7 @@ theorem colimit_presheaf (F : J ⥤ PresheafedSpace.{_, _, v} C) :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)] in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
 @[simps]
@@ -217,6 +219,7 @@ theorem desc_c_naturality (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F)
   simp only [Opens.map_comp_map] at w
   simp [congr($(w).op)]
 
+variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)] in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.colimitCoconeIsColimit`.
 -/
 def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ s.pt where
@@ -243,6 +246,7 @@ open ColimitCoconeIsColimit
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
+variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)] in
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.instHasColimits`.
 -/
 def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
@@ -273,6 +277,7 @@ instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
+variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)] in
 instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{v, u, v} C) :=
   ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F) <| by
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
@@ -285,6 +290,7 @@ instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{v, u, v} C) :=
 instance instHasColimits [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} C) :=
   ⟨fun {_ _} => ⟨fun {F} => ⟨colimitCocone F, colimitCoconeIsColimit F⟩⟩⟩
 
+variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)] in
 /-- The underlying topological space of a colimit of presheafed spaces is
 the colimit of the underlying topological spaces.
 -/
@@ -296,6 +302,7 @@ instance forget_preservesColimits [HasLimits C] :
           (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (Iso.refl _))) }
 
 set_option backward.isDefEq.respectTransparency false in
+variable [∀ X : TopCat.{v}, HasLimitsOfShape Jᵒᵖ (X.Presheaf C)] in
 /-- The components of the colimit of a diagram of `PresheafedSpace C` is obtained
 via taking componentwise limits.
 -/

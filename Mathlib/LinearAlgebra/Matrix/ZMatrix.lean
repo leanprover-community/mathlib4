@@ -31,6 +31,7 @@ variable {ι R : Type*} [Fintype ι] [DecidableEq ι]
 
 include hA hD
 
+omit [TrivialStar R] in
 public lemma diag_pos_of_mul_diagonal_posDef (i : ι) :
     0 < A i i := by
   rw [← mul_pos_iff_of_pos_left (hD i)]

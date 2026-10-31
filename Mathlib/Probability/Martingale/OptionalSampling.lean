@@ -193,7 +193,7 @@ to the conditional expectation of `f` stopped at `τ` with respect to the σ-alg
 by `σ`. -/
 theorem stoppedValue_min_ae_eq_condExp [SigmaFiniteFiltration μ ℱ] (h : Martingale f ℱ μ)
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) {n : ι} (hτ_le : ∀ x, τ x ≤ n)
-    [h_sf_min : SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
+    :
     (stoppedValue f fun x => min (σ x) (τ x)) =ᵐ[μ] μ[stoppedValue f τ | hσ.measurableSpace] := by
   refine
     (h.stoppedValue_ae_eq_condExp_of_le hτ (hσ.min hτ) (fun x => min_le_right _ _) hτ_le).trans ?_

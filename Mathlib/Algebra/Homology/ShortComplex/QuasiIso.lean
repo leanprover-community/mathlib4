@@ -163,7 +163,7 @@ lemma quasiIso_opMap (φ : S₁ ⟶ S₂) [QuasiIso φ] :
   infer_instance
 
 lemma quasiIso_unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} [S₁.HasHomology] [S₂.HasHomology]
-    [S₁.unop.HasHomology] [S₂.unop.HasHomology]
+
     (φ : S₁ ⟶ S₂) [QuasiIso φ] : QuasiIso (unopMap φ) := by
   rw [← quasiIso_opMap_iff]
   change QuasiIso φ

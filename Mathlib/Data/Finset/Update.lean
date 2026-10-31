@@ -22,7 +22,7 @@ for other purposes.
 
 @[expose] public section
 variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]
-  {s t : Finset ι} {y : ∀ i : s, π i} {z : ∀ i : t, π i} {i : ι}
+  {s t : Finset ι} {y : ∀ i : s, π i} {i : ι}
 
 namespace Function
 
@@ -74,6 +74,7 @@ theorem _root_.DependsOn.update {α : Type*} {f : (Π i, π i) → α} {s : Fins
   simp_rw [Function.update_eq_updateFinset, erase_eq, coe_sdiff]
   exact hf.updateFinset _
 
+variable {z : ∀ i : t, π i} in
 theorem updateFinset_updateFinset (hst : Disjoint s t) :
     updateFinset (updateFinset x s y) t z =
     updateFinset x (s ∪ t) (Equiv.piFinsetUnion π hst ⟨y, z⟩) := by
@@ -117,6 +118,8 @@ theorem updateFinset_congr (h : s = t) :
     updateFinset x s y = updateFinset x t (fun i ↦ y ⟨i, h ▸ i.prop⟩) := by
   subst h; rfl
 
+variable {z : ∀ i : t, π i}
+
 theorem updateFinset_univ [Fintype ι] {y : ∀ i : Finset.univ, π i} :
     updateFinset x .univ y = fun i : ι ↦ y ⟨i, Finset.mem_univ i⟩ := by
   simp [updateFinset_def]
@@ -126,3 +129,5 @@ theorem updateFinset_univ_apply [Fintype ι] {y : ∀ i : Finset.univ, π i} {i 
   simp [updateFinset_def]
 
 end Function
+
+variable {z : ∀ i : t, π i}

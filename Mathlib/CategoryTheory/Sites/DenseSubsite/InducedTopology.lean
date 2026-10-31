@@ -134,6 +134,7 @@ instance (priority := 900) [G.IsCoverDense K] : G.IsDenseSubsite (G.inducedTopol
   rw [← restrictedTopology_eq_inducedTopology]
   infer_instance
 
+omit [G.LocallyCoverDense K] in
 @[simp]
 lemma mem_inducedTopology_iff_of_isCoverDense [G.IsCoverDense K] {X : C} (S : Sieve X) :
     S ∈ G.inducedTopology K X ↔ S.functorPushforward G ∈ K (G.obj X) := by

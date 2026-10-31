@@ -443,6 +443,7 @@ variable [CompleteSpace 𝕜] [CompleteSpace A]
 
 namespace quasispectrum
 
+omit [CompleteSpace 𝕜] in
 @[simp]
 theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (quasispectrum 𝕜 a) := by
   rw [quasispectrum_eq_spectrum_toLp_inr]
@@ -493,12 +494,14 @@ theorem spectralRadius_le_nnnorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ 
 @[deprecated (since := "2026-08-13")]
 alias spectrum.spectralRadius_le_nnnorm := spectralRadius_le_nnnorm
 
+omit [CompleteSpace 𝕜] in
 theorem exists_nnnorm_quasispectrum_eq_spectralRadius [ProperSpace 𝕜] (a : A) :
     ∃ k ∈ quasispectrum 𝕜 a, (‖k‖₊ : ℝ≥0∞) = spectralRadius 𝕜 a := by
   obtain ⟨k, hk, h⟩ := (isCompact a).exists_isMaxOn (nonempty 𝕜 a) continuous_nnnorm.continuousOn
   unfold spectralRadius
   exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le <| mod_cast h)⟩
 
+omit [CompleteSpace 𝕜] in
 theorem spectralRadius_lt_of_forall_quasispectrum_lt [ProperSpace 𝕜] {a : A} {r : ℝ≥0}
     (hr : ∀ k ∈ quasispectrum 𝕜 a, ‖k‖₊ < r) : spectralRadius 𝕜 a < r :=
   sSup_image.symm.trans_lt <| ((isCompact a).sSup_lt_iff_of_continuous

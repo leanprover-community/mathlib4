@@ -293,10 +293,11 @@ section ofFun
 
 open MeasureTheory
 
-variable [MeasurableSpace E] [OpensMeasurableSpace E]
+variable [MeasurableSpace E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 variable (Ω) in
+variable [OpensMeasurableSpace E] in
 /-- The distribution induced by a function `f : E → F` and a measure `μ`,
 sending a test function `φ` to `∫ x, φ x • f x ∂μ`. This is the zero map if `f` is not locally
 integrable on `Ω`. -/
@@ -304,14 +305,20 @@ noncomputable def ofFun (f : E → F) (μ : Measure E := by volume_tac) (n : ℕ
     𝓓'^{n}(Ω, F) :=
   TestFunction.integralAgainstBilinCLM (ContinuousLinearMap.lsmul ℝ ℝ) μ f
 
+variable [OpensMeasurableSpace E] in
 theorem ofFun_apply {f : E → F} {μ : Measure E} (hf : LocallyIntegrableOn f Ω μ)
     {φ : 𝓓^{n}(Ω, ℝ)} :
     ofFun Ω f μ n φ = ∫ x, φ x • f x ∂μ :=
   TestFunction.integralAgainstBilinCLM_eq_integral hf
 
+variable [OpensMeasurableSpace E] in
 theorem ofFun_eq_zero {f : E → F} {μ : Measure E}
     (hf : ¬ LocallyIntegrableOn f Ω μ) : ofFun Ω f μ n = 0 :=
   TestFunction.integralAgainstBilinCLM_eq_zero hf
+
+section
+
+variable [OpensMeasurableSpace E]
 
 open Classical in
 @[grind =]
@@ -367,6 +374,8 @@ theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
 @[simp] theorem ofFun_dirac_eq_delta (x : E) :
     ofFun Ω (1 : E → ℝ) (Measure.dirac x) n = delta x := by
   ext; simp [ofFun_apply_eq_ite, Pi.one_def, locallyIntegrableOn_const]
+
+end
 
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 

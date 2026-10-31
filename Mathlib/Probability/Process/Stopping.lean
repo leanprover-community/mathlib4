@@ -795,7 +795,11 @@ section LinearOrder
 
 /-! ## Stopped value and stopped process -/
 
-variable [Nonempty ι] {u v : ι → Ω → β} {τ σ : Ω → WithTop ι}
+variable {u v : ι → Ω → β} {τ σ : Ω → WithTop ι}
+
+section
+
+variable [Nonempty ι]
 
 /-- Given a map `u : ι → Ω → E`, its stopped value with respect to the stopping
 time `τ` is the map `x ↦ u (τ ω) ω`. -/
@@ -825,11 +829,17 @@ lemma stoppedValue_div [Div β] :
 @[simp] lemma stoppedValue_const_smul {𝕜 : Type*} [SMul 𝕜 β] (c : 𝕜) :
     stoppedValue (c • u) τ = c • stoppedValue u τ := rfl
 
+end
+
 @[simp] lemma stoppedValue_const_bot [Bot ι] :
     stoppedValue u (fun _ ↦ ⊥) = u ⊥ := by
   ext; simp [stoppedValue, ← WithTop.coe_bot]
 
 variable [LinearOrder ι]
+
+section
+
+variable [Nonempty ι]
 
 /-- Given a map `u : ι → Ω → E`, the stopped process with respect to `τ` is `u i ω` if
 `i ≤ τ ω`, and `u (τ ω) ω` otherwise.
@@ -868,9 +878,13 @@ lemma stoppedProcess_div [Div β] :
 @[simp] lemma stoppedProcess_const_smul {𝕜 : Type*} [SMul 𝕜 β] (c : 𝕜) :
     stoppedProcess (c • u) τ = c • stoppedProcess u τ := rfl
 
+end
+
 @[simp] lemma stoppedProcess_const_bot [OrderBot ι] :
     stoppedProcess u (fun _ ↦ ⊥) = fun _ ↦ u ⊥ := by
   ext; simp [stoppedProcess, ← WithTop.coe_bot]
+
+variable [Nonempty ι]
 
 @[simp] lemma stoppedProcess_const_top : stoppedProcess u (fun _ ↦ ⊤) = u := by
   ext; simp [stoppedProcess]

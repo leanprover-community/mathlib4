@@ -90,7 +90,7 @@ open MeasureTheory MeasureTheory.Measure
 
 theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedAddCommGroup F]
     [NormedSpace ℝ E] [NormedSpace ℝ F] [MeasurableSpace E] [MeasurableSpace F] [BorelSpace E]
-    [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
+    [BorelSpace F] [SigmaCompactSpace F]
     (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable

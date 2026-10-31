@@ -48,7 +48,7 @@ abbrev IsTrail.edgesFinset (h : p.IsTrail) : Finset (Sym2 V) :=
 
 variable [DecidableEq V]
 
-theorem IsTrail.even_countP_edges_iff (ht : p.IsTrail) (x : V) :
+theorem IsTrail.even_countP_edges_iff (x : V) :
     Even (p.edges.countP fun e ↦ x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   induction p with
   | nil => simp
@@ -122,7 +122,7 @@ theorem IsEulerian.connected_of_forall_not_isIsolated (hp : p.IsEulerian)
 
 theorem IsEulerian.even_degree_iff (ht : p.IsEulerian) [Fintype V] [DecidableRel G.Adj] :
     Even (G.degree w) ↔ u ≠ v → w ≠ u ∧ w ≠ v := by
-  rw [← ht.isTrail.even_countP_edges_iff, ← Multiset.coe_countP, Multiset.countP_eq_card_filter,
+  rw [← IsTrail.even_countP_edges_iff (p := p), ← Multiset.coe_countP, Multiset.countP_eq_card_filter,
     ← card_incidenceFinset_eq_degree, incidenceFinset_eq_filter, ← ht.edgesFinset_eq]
   simp [Finset.card_def]
 

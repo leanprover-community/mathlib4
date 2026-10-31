@@ -39,12 +39,13 @@ namespace SchwartzMap
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E]
   {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
 section definition
 
+variable [SMulCommClass ℂ 𝕜 E] in
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
 Schwartz space.
 
@@ -91,6 +92,7 @@ instance instFourierTransform : FourierTransform 𝓢(V, E) 𝓢(V, E) where
 instance instFourierAdd : FourierAdd 𝓢(V, E) 𝓢(V, E) where
   fourier_add := ContinuousLinearMap.map_add _
 
+variable [SMulCommClass ℂ 𝕜 E] in
 instance instFourierSMul : FourierSMul 𝕜 𝓢(V, E) 𝓢(V, E) where
   fourier_smul := (fourierTransformCLM 𝕜).map_smul
 
@@ -99,6 +101,7 @@ instance instContinuousFourier : ContinuousFourier 𝓢(V, E) 𝓢(V, E) where
 
 lemma fourier_coe (f : 𝓢(V, E)) : 𝓕 f = 𝓕 (f : V → E) := rfl
 
+variable [SMulCommClass ℂ 𝕜 E] in
 @[simp]
 theorem fourierTransformCLM_apply (f : 𝓢(V, E)) :
     fourierTransformCLM 𝕜 f = 𝓕 f := rfl
@@ -110,6 +113,7 @@ instance instFourierTransformInv : FourierTransformInv 𝓢(V, E) 𝓢(V, E) whe
 instance instFourierInvAdd : FourierInvAdd 𝓢(V, E) 𝓢(V, E) where
   fourierInv_add := ContinuousLinearMap.map_add _
 
+variable [SMulCommClass ℂ 𝕜 E] in
 instance instFourierInvSMul : FourierInvSMul 𝕜 𝓢(V, E) 𝓢(V, E) where
   fourierInv_smul := ((compCLMOfContinuousLinearEquiv 𝕜 (D := V) (E := V) (F := E)
     (LinearIsometryEquiv.neg ℝ (E := V))) ∘L (fourierTransformCLM 𝕜)).map_smul
@@ -177,6 +181,8 @@ theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
   simp [fourier_fderiv f.integrable f.differentiable (fderivCLM ℝ V E f).integrable,
     innerSL_apply_apply ℝ, fourier_coe]
 
+variable [SMulCommClass ℂ 𝕜 E]
+
 open LineDeriv
 
 /-- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
@@ -214,6 +220,8 @@ theorem fourierInv_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
     smulLeftCLM_compCLMOfContinuousLinearEquiv ℂ this, Function.comp_def, smulLeftCLM_fun_neg this]
 
 end deriv
+
+variable [SMulCommClass ℂ 𝕜 E]
 
 section fubini
 

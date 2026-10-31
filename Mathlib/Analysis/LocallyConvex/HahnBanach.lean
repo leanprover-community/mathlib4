@@ -117,6 +117,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {S : Submod
   ext x
   simp [fi, e, hgf]
 
+omit [ContinuousSMul 𝕜 F] in
 /-- A finite-dimensional submodule of a polynormable space over a field satisfying
 `IsRCLikeNormedField` is `Submodule.ClosedComplemented`. -/
 lemma Submodule.ClosedComplemented.of_finiteDimensional [PolynormableSpace 𝕜 F] (S : Submodule 𝕜 F)

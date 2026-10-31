@@ -398,7 +398,7 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
 /-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
 a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
 lemma exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton
-    {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime] (hq : p.primesOver S = {q})
+    {p : Ideal R} [p.IsPrime] {q : Ideal S} (hq : p.primesOver S = {q})
     [Algebra.IsIntegral R S] (x : S) (hx : x ∉ q) : ∃ r ∉ p, x ∣ algebraMap _ _ r := by
   simp only [dvd_def, eq_comm, mul_comm x]
   by_contra!
