@@ -549,7 +549,7 @@ theorem transpose_reindex (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) 
   rfl
 
 theorem reindex_map (eₘ : m ≃ l) (eₙ : n ≃ o) (f : α → β) (A : Matrix m n α) :
-    reindex eₘ eₙ (A.map f) = (reindex eₘ eₙ A).map f :=
+    reindex eₘ eₙ (map A f) = map (reindex eₘ eₙ A) f :=
   rfl
 
 /-- The left `n × l` part of an `n × (l+r)` matrix. -/
