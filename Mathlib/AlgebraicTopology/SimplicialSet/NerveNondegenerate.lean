@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 
 /-!
 # The nondegenerate simplices in the nerve of a partially ordered type
@@ -29,7 +30,6 @@ namespace PartialOrder
 
 variable {X : Type*} [PartialOrder X] {n m : ℕ}
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mem_range_nerve_σ_iff (s : (nerve X) _⦋n + 1⦌) (i : Fin (n + 1)) :
     s ∈ Set.range ((nerve X).σ i) ↔
       s.obj i.castSucc = s.obj i.succ := by
@@ -75,6 +75,7 @@ lemma mem_nerve_nonDegenerate_iff_injective (s : (nerve X) _⦋n⦌) :
   · exact h'
   · exact ((h h').not_lt hij).elim
 
+attribute [local simp] nerve_map in
 lemma nerve_ofSimplex_le_ofSimplex_iff
     (s : (nerve X) _⦋n⦌) (t : (nerve X) _⦋m⦌) :
     Subcomplex.ofSimplex s ≤ Subcomplex.ofSimplex t ↔
@@ -100,6 +101,6 @@ lemma nerve_ofSimplex_le_ofSimplex_iff
     have hf' : Monotone f := fun i₁ i₂ hi ↦ by
       rw [← ht.le_iff_le, hf, hf]
       exact s.monotone hi
-    exact ⟨Quiver.Hom.op (SimplexCategory.Hom.mk ⟨f, hf'⟩), by aesop⟩
+    exact ⟨Quiver.Hom.op (SimplexCategory.Hom.mk ⟨f, hf'⟩), by ext; cat_disch⟩
 
 end PartialOrder

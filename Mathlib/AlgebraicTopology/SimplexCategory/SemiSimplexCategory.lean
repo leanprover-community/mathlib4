@@ -71,6 +71,7 @@ theorem hom_ext {a b : SemiSimplexCategory} {f g : a ⟶ b}
   homEquiv.injective h
 
 /-- The inclusion functor `SemiSimplexCategory ⥤ SimplexCategory`. -/
+@[implicit_reducible]
 def toSimplexCategory : SemiSimplexCategory ⥤ SimplexCategory where
   obj n := ⦋n.len⦌
   map f := SimplexCategory.Hom.mk (homEquiv f).toOrderHom
