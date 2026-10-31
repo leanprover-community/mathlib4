@@ -21,7 +21,7 @@ open Ideal
 
 section Polynomial
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 variable {R : Type*} [CommRing R]
 
@@ -44,9 +44,9 @@ theorem jacobson_polynomial_le_sInf_map_maximal :
 theorem jacobson_polynomial_eq_bot_of_jacobson_eq_bot (h : Ring.jacobson R = ⊥) :
     Ring.jacobson R[X] = ⊥ := by
   refine eq_bot_iff.2 (le_trans Ring.jacobson_polynomial_le_sInf_map_maximal ?_)
-  refine fun f hf => (Submodule.mem_bot R[X]).2 <| Polynomial.ext fun n =>
-    Trans.trans (?_ : coeff f n = 0) (coeff_zero n).symm
-  suffices f.coeff n ∈ Ring.jacobson R by rwa [h, Submodule.mem_bot] at this
+  refine fun f hf => (Submodule.mem_bot R[X]).2 ?_
+  ext n
+  suffices f.coeff n ∈ Ring.jacobson R by simpa [h] using this
   rw [Ring.jacobson_eq_sInf_isMaximal]
   exact mem_sInf.2 fun j hj => (mem_map_C_iff.1 ((mem_sInf.1 hf) ⟨j, ⟨hj, rfl⟩⟩)) n
 

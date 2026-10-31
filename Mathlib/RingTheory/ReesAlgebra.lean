@@ -74,7 +74,7 @@ theorem mem_reesAlgebra_iff_support (f : R[X]) :
 
 theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
     monomial i r ∈ reesAlgebra I ↔ r ∈ I ^ i := by
-  simp +contextual [mem_reesAlgebra_iff_support, coeff_monomial, ←
+  simp +contextual [mem_reesAlgebra_iff_support, Finsupp.single_apply, ←
     imp_iff_not_or]
 
 lemma reesAlgebra.monomial_coeff_mem {I : Ideal R} (f : reesAlgebra I) (i : ℕ) :

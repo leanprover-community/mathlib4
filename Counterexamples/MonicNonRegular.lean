@@ -97,7 +97,7 @@ theorem monic_X_add_two : Monic (X + C 2 : N₃[X]) := by
 theorem not_isLeftRegular_X_add_two : ¬ IsLeftRegular (X + C 2 : N₃[X]) := by
   intro h
   have H := h X_add_two_mul_X_add_two
-  apply_fun (coeff · 0) at H
+  apply_fun (·.coeff 0) at H
   simp only [coeff_add, coeff_X_zero, zero_add, coeff_C, ite_true] at H
   cases H
 

@@ -100,7 +100,7 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
     simp_rw [Set.mem_range, Set.mem_image, Finset.mem_coe, Finset.mem_range]
     exact ⟨fun ⟨⟨i, hi⟩, hy⟩ => ⟨i, hi, hy⟩, fun ⟨i, hi, hy⟩ => ⟨⟨i, hi⟩, hy⟩⟩
   simp [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero, eq_comm,
-    exists_iff_exists_finsupp, coeff, aeval_def, eval₂_eq_sum, Polynomial.sum, mem_supported',
+    aeval_def, eval₂_eq_sum, Polynomial.sum, mem_supported', Polynomial.support_ofCoeff,
     Finsupp.sum, linearCombination, Algebra.smul_def, AddMonoidAlgebra.coeffEquiv.exists_congr_left]
 
 theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
@@ -423,7 +423,8 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
   · simp_rw [← C_mul_X_pow_eq_monomial]
     exact (degree_eq_natDegree <| minpoly.ne_zero h).symm ▸ degree_sum_fin_lt _
   · apply_fun lcoeff K i at h0
-    simp_rw [map_sum, lcoeff_apply, coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq'] at h0
+    simp_rw [map_sum, lcoeff_apply, coeff_monomial, Finsupp.single_apply, Fin.val_eq_val,
+      Finset.sum_ite_eq'] at h0
     exact (ite_eq_left <| Finset.mem_univ _).symm.trans h0
 
 theorem IsIntegral.mem_span_pow [Nontrivial R] {x y : S} (hx : IsIntegral R x)

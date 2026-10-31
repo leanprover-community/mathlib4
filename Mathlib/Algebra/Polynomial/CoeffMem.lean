@@ -24,6 +24,8 @@ of `q`.
 
 public section
 
+open AddMonoidAlgebra
+
 namespace Polynomial
 variable {ι R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 

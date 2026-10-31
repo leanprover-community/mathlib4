@@ -95,11 +95,11 @@ theorem cyclotomic_105 :
     ring
   repeat' norm_num
 
-theorem coeff_cyclotomic_105 : coeff (cyclotomic 105 ℤ) 7 = -2 := by
+theorem coeff_cyclotomic_105 : (cyclotomic 105 ℤ).coeff 7 = -2 := by
   simp [cyclotomic_105, coeff_X_of_ne_one, coeff_one]
 
 theorem not_forall_coeff_cyclotomic_neg_one_zero_one :
-    ¬∀ n i, coeff (cyclotomic n ℤ) i ∈ ({-1, 0, 1} : Set ℤ) := by
+    ¬∀ n i, (cyclotomic n ℤ).coeff i ∈ ({-1, 0, 1} : Set ℤ) := by
   intro h
   specialize h 105 7
   rw [coeff_cyclotomic_105] at h
