@@ -6,9 +6,8 @@ Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
 module
 
 public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # `ULift` creates small (co)limits
@@ -49,8 +48,8 @@ noncomputable instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
         rw [Types.isLimit_iff ((uliftFunctor.{v, u}).mapCone c)]
         intro s hs
         obtain ⟨x, hx₁, hx₂⟩ := (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv K).symm ⟨s, hs⟩).2
-        exact ⟨⟨x⟩, fun i => ULift.ext _ _ (hx₁ i),
-          fun y hy => ULift.ext _ _ (hx₂ y.down fun i ↦ ULift.ext_iff.mp (hy i))⟩ } }
+        exact ⟨⟨x⟩, fun i => ULift.ext (hx₁ i),
+          fun y hy => ULift.ext (hx₂ y.down fun i ↦ ULift.ext_iff.mp (hy i))⟩ } }
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small limits.

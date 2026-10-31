@@ -47,6 +47,8 @@ More API is available in the file `Mathlib/Analysis/Analytic/CPolynomial.lean`, 
 imports.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -55,7 +57,7 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup
 open scoped Topology
 open Set Filter ENNReal
 
-variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
+variable {f g : E → F} {p pf : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
 
 section FiniteFPowerSeries
 
@@ -201,13 +203,18 @@ theorem ContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall (g : F →L[𝕜] G
     rw [compFormalMultilinearSeries_apply, h.finite m hm]
     ext; exact map_zero g⟩
 
+/-- If a function `f` is continuously polynomial at a point `x` and `g` is a continuous linear map,
+then `g ∘ f` is continuously polynomial at `x`. -/
+theorem ContinuousLinearMap.comp_cpolynomialAt (g : F →L[𝕜] G)
+    (h : CPolynomialAt 𝕜 f x) : CPolynomialAt 𝕜 (g ∘ f) x := by
+  rcases h with ⟨p, n, r, hp⟩
+  exact ⟨g.compFormalMultilinearSeries p, n, r, g.comp_hasFiniteFPowerSeriesOnBall hp⟩
+
 /-- If a function `f` is continuously polynomial on a set `s` and `g` is a continuous linear map,
 then `g ∘ f` is continuously polynomial on `s`. -/
 theorem ContinuousLinearMap.comp_cpolynomialOn {s : Set E} (g : F →L[𝕜] G)
-    (h : CPolynomialOn 𝕜 f s) : CPolynomialOn 𝕜 (g ∘ f) s := by
-  rintro x hx
-  rcases h x hx with ⟨p, n, r, hp⟩
-  exact ⟨g.compFormalMultilinearSeries p, n, r, g.comp_hasFiniteFPowerSeriesOnBall hp⟩
+    (h : CPolynomialOn 𝕜 f s) : CPolynomialOn 𝕜 (g ∘ f) s :=
+  fun x hx ↦ g.comp_cpolynomialAt (h x hx)
 
 /-- If a function admits a finite power series expansion bounded by `n`, then it is equal to
 the `m`th partial sums of this power series at every point of the disk for `n ≤ m`. -/
@@ -342,7 +349,7 @@ main point is that the new series `p.changeOrigin x` is still finite, with the s
 `p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`. -/
 lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
-    (hs : s.card = l) (hkl : n ≤ k + l) :
+    (hs : #s = l) (hkl : n ≤ k + l) :
     p.changeOriginSeriesTerm k l s hs = 0 := by
   rw [changeOriginSeriesTerm, hn _ hkl, map_zero]
 
@@ -387,7 +394,7 @@ theorem hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries �
 theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (x y : E) :
     (p.changeOrigin x).sum y = p.sum (x + y) := by
-  let f (s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) : F :=
+  let f (s : Σ k l : ℕ, { s : Finset (Fin (k + l)) // #s = l }) : F :=
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ ↦ x) fun _ ↦ y
   have finsupp : f.support.Finite := by
     apply Set.Finite.subset (s := changeOriginIndexEquiv ⁻¹' Sigma.fst ⁻¹' {m | m < n})

@@ -5,8 +5,10 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.Algebra.Polynomial.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Univariate monomials
@@ -21,8 +23,8 @@ namespace Polynomial
 
 universe u
 
-variable {R : Type u} {a b : R} {m n : ℕ}
-variable [Semiring R] {p q r : R[X]}
+variable {R : Type u} {a : R} {m n : ℕ}
+variable [Semiring R] {r : R[X]}
 
 theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
     (monomial i 1 : R[X]) = monomial j 1 ↔ i = j := by

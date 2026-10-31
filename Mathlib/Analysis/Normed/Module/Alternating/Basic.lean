@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov, Heather Macbeth, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Alternating.Topology
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+public import Mathlib.Topology.Algebra.Module.Alternating.Topology
 
 /-!
 # Operator norm on the space of continuous alternating maps
@@ -23,7 +23,7 @@ Most proofs just invoke the corresponding fact about continuous multilinear maps
 
 noncomputable section
 
-open scoped NNReal
+open scoped NNReal Nat
 open Finset
 
 /-!
@@ -615,7 +615,7 @@ section Norm
 (and not just a `SeminormedAddCommGroup`). -/
 
 universe u wE wF v
-variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
+variable {𝕜 : Type u} {E : Type wE} {F : Type wF} {ι : Type v}
   [Fintype ι]
   [NontriviallyNormedField 𝕜]
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]

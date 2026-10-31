@@ -8,6 +8,9 @@ module
 public import Mathlib.Control.ULift
 public import Mathlib.Logic.Equiv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extra lemmas about `ULift` and `PLift`
 
@@ -124,10 +127,6 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
 
 @[simp] lemma map_bijective : Bijective (ULift.map f : ULift.{u'} α → ULift.{v'} β) ↔ Bijective f :=
   (down_bijective.of_comp_iff _).trans <| Bijective.of_comp_iff' up_bijective _
-
-@[ext]
-theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
-  congrArg up h
 
 @[simp]
 lemma rec_update {β : ULift α → Type*} [DecidableEq α]

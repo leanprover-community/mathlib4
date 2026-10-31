@@ -204,7 +204,6 @@ lemma isCoboundedUnder_le_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι 
     IsCoboundedUnder (· ≤ ·) l f :=
   isCoboundedUnder_le_of_eventually_le l (Eventually.of_forall hf)
 
-
 theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 
 theorem isCobounded_top : IsCobounded r ⊤ ↔ Nonempty α := by
@@ -453,6 +452,7 @@ end Order
 
 section MinMax
 
+@[to_dual isCoboundedUnder_ge_min]
 theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → β}
     (h : f.IsCoboundedUnder (· ≤ ·) u ∨ f.IsCoboundedUnder (· ≤ ·) v) :
     f.IsCoboundedUnder (· ≤ ·) (fun a ↦ max (u a) (v a)) := by

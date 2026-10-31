@@ -6,11 +6,7 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Monad.Types
-public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.CategoryTheory.Equivalence
-public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Category.Profinite.Basic
-public import Mathlib.Data.Set.Constructions
 
 /-!
 
@@ -30,7 +26,7 @@ https://ncatlab.org/nlab/show/monad
 This file proves the equivalence between the category of *compact Hausdorff topological spaces*
 and the category of algebras for the *ultrafilter monad*.
 
-## Notation:
+## Notation
 
 Here are the main objects introduced in this file.
 - `Compactum` is the type of compacta, which we define as algebras for the ultrafilter monad.
@@ -110,6 +106,7 @@ instance : CoeSort Compactum Type* :=
   ⟨fun X => X.A⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
+@[macro_inline]
 instance {X Y : Compactum} : FunLike (X ⟶ Y) X Y where
   coe f := f.f
   coe_injective _ _ h := (Monad.forget_faithful β).map_injective (by aesop)
@@ -266,8 +263,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   suffices ⋂₀ ι T ∈ C2 by exact claim6 _ this
   -- Finish
   apply claim4.finiteInter_mem T
-  intro t ht
-  exact finiteInterClosure.basic (@hT t ht)
+  grw [← subset_finiteInterClosure, ← hT]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -321,14 +317,9 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
         exact claim4 Q hQ
     intro S hS
     apply finiteInterClosure_insert
-    · constructor
-      · use Set.univ
-        refine ⟨Filter.univ_sets _, ?_⟩
-        ext
-        refine ⟨?_, by tauto⟩
-        · intro
-          apply Filter.univ_sets
-      · exact claim3
+    · refine ⟨⟨Set.univ, Filter.univ_sets _, ?_⟩, claim3⟩
+      ext
+      exact ⟨fun _ ↦ Filter.univ_sets _, by tauto⟩
     · exact hS
   -- It suffices to show that the intersection of any finite subset of T1 is nonempty.
   suffices ∀ F : fsu, ↑F ⊆ T1 → (⋂₀ ι F).Nonempty by
@@ -343,8 +334,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   -- Finish...
   intro T hT
   refine claim6 _ (finiteInter_mem (.finiteInterClosure_finiteInter _) _ ?_)
-  intro t ht
-  exact finiteInterClosure.basic (@hT t ht)
+  grw [← subset_finiteInterClosure, ← hT]
 
 theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=
   fun h => le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]
@@ -427,7 +417,7 @@ end Compactum
 
 /-- The functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
-  obj X := { toTop := TopCat.of X, prop := trivial }
+  obj X := { toTop := ↧X, prop := trivial }
   map := fun f => CompHausLike.ofHom _
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
@@ -446,7 +436,7 @@ instance faithful : compactumToCompHaus.Faithful where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
     ext
-    simpa using! ConcreteCategory.congr_hom h _
+    simpa using! congr($h _)
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :

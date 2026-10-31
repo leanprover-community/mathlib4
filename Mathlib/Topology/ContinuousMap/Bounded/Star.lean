@@ -24,7 +24,7 @@ open Set
 
 universe u v w
 
-variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u} {β : Type v}
 
 namespace BoundedContinuousFunction
 
@@ -54,7 +54,7 @@ variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α]
 variable [NormedSpace 𝕜 β] [StarModule 𝕜 β]
 
 instance instStarAddMonoid : StarAddMonoid (α →ᵇ β) where
-  star f := f.comp star starNormedAddGroupHom.lipschitz
+  star f := f.comp star starNormedAddGroupHom.lipschitzWith
   star_involutive f := ext fun x => star_star (f x)
   star_add f g := ext fun x => star_add (f x) (g x)
 

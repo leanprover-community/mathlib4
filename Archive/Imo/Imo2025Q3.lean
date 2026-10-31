@@ -3,9 +3,11 @@ Copyright (c) 2025 Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yi Yuan
 -/
-import Mathlib.NumberTheory.LSeries.PrimesInAP
-import Mathlib.NumberTheory.Multiplicity
-import Mathlib.Tactic.Simproc.Factors
+module
+
+public import Mathlib.NumberTheory.LSeries.PrimesInAP
+public import Mathlib.NumberTheory.Multiplicity
+public import Mathlib.Tactic.Simproc.Factors
 
 /-!
 # IMO 2025 Q3
@@ -29,6 +31,8 @@ Finally, evaluating `a = n, b = 3` gives `f n ∣ 3 ^ n - 1`, and according to t
 A matching construction is `f n = 1` for `Odd n`, `f 4 = 16`, and `f n = 2` for other `Even n`,
 which attains the bound, showing the optimal answer is `c = 4`.
 -/
+
+@[expose] public section
 
 open Nat Int
 
@@ -73,7 +77,7 @@ lemma apply_prime_eq_one_or_dvd_self_sub_apply (hf : IsBonza f) {p : ℕ} (hp : 
 /-- For each bonza function `f`, then `f p = 1` for sufficient big prime `p` -/
 theorem not_id_apply_prime_of_gt_eq_one (hf : IsBonza f) (hnf : ¬ ∀ x > (0 : ℕ), f x = x) :
     ∃ N, ∀ p > N, p.Prime → f p = 1 := by
-  obtain ⟨b, hb, ne⟩ : ∃ b, 0 < b ∧ f b ≠ b := Set.not_subset.mp hnf
+  obtain ⟨b, hb, ne⟩ : ∃ b, 0 < b ∧ f b ≠ b := by simpa using hnf
   use ((b : ℤ) - (f b : ℤ)).natAbs
   intro p _ pp
   have : f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=

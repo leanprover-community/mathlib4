@@ -69,8 +69,10 @@ theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
 theorem conjCLE_enorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
-theorem conjCLE_nnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
+theorem conjCLE_nnnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
   Subtype.ext conjCLE_norm
+
+@[deprecated (since := "2026-09-28")] alias conjCLE_nnorm := conjCLE_nnnorm
 
 @[simp]
 theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
@@ -81,6 +83,6 @@ theorem ofRealCLM_enorm : ‖ofRealCLM‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
 theorem ofRealCLM_nnnorm : ‖ofRealCLM‖₊ = 1 :=
-  Subtype.ext <| ofRealCLM_norm
+  Subtype.ext ofRealCLM_norm
 
 end Complex

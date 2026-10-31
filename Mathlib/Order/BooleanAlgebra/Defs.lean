@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Bryan Gin-ge Chen
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Order.Heyting.Basic
 
 /-!
@@ -64,7 +64,7 @@ assert_not_exists RelIso
 
 universe u v
 
-variable {α : Type u} {β : Type*} {x y z : α}
+variable {α : Type u} {x y z : α}
 
 /-!
 ### Generalized Boolean algebras

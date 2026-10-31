@@ -5,13 +5,13 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Extension
 public import Mathlib.NumberTheory.Cyclotomic.Gal
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
-public import Mathlib.NumberTheory.NumberField.Ideal.Basic
-public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
+
+import Mathlib.FieldTheory.Finite.Extension
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
+import Mathlib.NumberTheory.NumberField.Ideal.Basic
 
 /-!
 # Galois theory for cyclotomic fields
@@ -61,10 +61,8 @@ noncomputable abbrev galEquivZMod : Gal(K/ℚ) ≃* (ZMod n)ˣ :=
   IsCyclotomicExtension.autEquivPow K <| Polynomial.cyclotomic.irreducible_rat (NeZero.pos n)
 
 theorem galEquivZMod_apply_of_pow_eq (σ : Gal(K/ℚ)) {x : K} (hx : x ^ n = 1) :
-    σ x = x ^ (galEquivZMod n K σ).val.val := by
-  obtain ⟨a, -, rfl⟩ := (zeta_spec n ℚ K).eq_pow_of_pow_eq_one hx
-  rw [map_pow, pow_right_comm, galEquivZMod, autEquivPow_apply, OneHom.toFun_eq_coe,
-    MonoidHom.toOneHom_coe, IsPrimitiveRoot.autToPow_spec]
+    σ x = x ^ (galEquivZMod n K σ).val.val :=
+  autEquivPow_apply_of_pow_eq_one K _ σ hx
 
 set_option backward.isDefEq.respectTransparency false in
 theorem galEquivZMod_smul_of_pow_eq (σ : Gal(K/ℚ)) {x : 𝓞 K} (hx : x ^ n = 1) :
@@ -116,7 +114,6 @@ theorem mem_zpowers_galEquivZMod_of_mem_stabilizer {σ : Gal(K/ℚ)} (hσ : σ �
   let τ := IsFractionRing.stabilizerHom Gal(K/ℚ) (Ideal.span {(p : ℤ)}) P
      (ℤ ⧸ span {(p : ℤ)}) (𝓞 K ⧸ P) ⟨σ, hσ⟩
   have : CharP (ℤ ⧸ span {(p : ℤ)}) p := ringChar.of_eq <| Int.ringChar_idealQuot p
-  have : Finite (𝓞 K ⧸ P) := Ring.HasFiniteQuotients.finiteQuotient (NeZero.ne P)
   obtain ⟨i, hi⟩ := FiniteField.exists_forall_apply_eq_pow (ℤ ⧸ span {(p : ℤ)}) p (𝓞 K ⧸ P) τ
   refine ⟨i, ?_⟩
   have h₀ : IsPrimitiveRoot (Ideal.Quotient.mk P hζ.toInteger) n := by
@@ -175,9 +172,7 @@ theorem mem_subgroupGalEquivSubgroupChar_symm_iff (σ : Gal(K/ℚ))
     (Y : Subgroup (DirichletCharacter R n)) :
     σ ∈ (subgroupGalEquivSubgroupChar n K R).symm (OrderDual.toDual Y) ↔
       ∀ χ ∈ Y, χ (galEquivZMod n K σ) = 1 := by
-  simp only [subgroupGalEquivSubgroupChar, OrderIso.symm_trans_apply, MulEquiv.symm_mapSubgroup,
-    MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv, MulEquiv.symm_symm,
-    mem_subgroupOrderIsoSubgroupMulChar_symm_iff]
+  simp [subgroupGalEquivSubgroupChar, MulEquiv.symm_apply_eq]
 
 theorem card_subgroupGalEquivSubgroupChar [IsMulCommutative Gal(K/ℚ)] (H : Subgroup Gal(K/ℚ)) :
     Nat.card (subgroupGalEquivSubgroupChar n K R H).ofDual = Nat.card (Gal(K/ℚ) ⧸ H) := by
@@ -212,7 +207,6 @@ theorem mem_intermediateFieldEquivSubgroupChar_iff (F : IntermediateField ℚ K)
       ∀ σ : Gal(K/ℚ), σ ∈ F.fixingSubgroup → χ (galEquivZMod n K σ) = 1 := by
   simp [intermediateFieldEquivSubgroupChar]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Assume that `m ∣ n`, then the image of `ℚ(ζₘ) ⊆ ℚ(ζₙ)` by `intermediateFieldEquivSubgroupChar` is
 the set of characters whose conductor divides `m`.
@@ -223,7 +217,7 @@ theorem mem_intermediateFieldEquivSubgroupChar_iff_conductor_dvd (F : Intermedia
     χ ∈ intermediateFieldEquivSubgroupChar n K R F ↔ χ.conductor ∣ m := by
   simp_rw [← χ.mem_conductorSet_iff_conductor_dvd hdiv, χ.mem_conductorSet_iff,
     factorsThrough_iff_ker_unitsMap hdiv, mem_intermediateFieldEquivSubgroupChar_iff,
-    SetLike.le_def, ← (galEquivZMod n K).forall_congr_right, MonoidHom.mem_ker,
+    IsConcreteLE.le_iff, ← (galEquivZMod n K).forall_congr_right, MonoidHom.mem_ker,
     MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe, ← (galEquivZMod_restrictNormal_apply n K F hdiv _),
     EmbeddingLike.map_eq_one_iff, AlgEquiv.restrictNormal_eq_one_iff,
     IntermediateField.mem_fixingSubgroup_iff, Units.ext_iff, toUnitHom_eq, coe_equivToUnitHom,

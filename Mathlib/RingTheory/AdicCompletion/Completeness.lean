@@ -6,12 +6,9 @@ Authors: Bingyu Xia
 module
 
 public import Mathlib.RingTheory.AdicCompletion.Exactness
-public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
-public import Mathlib.RingTheory.PowerSeries.Basic
 
 import Mathlib.RingTheory.AdicCompletion.Topology
-public import Mathlib.Algebra.DirectSum.Finsupp
 
 /-!
 # Completeness of the Adic Completion for Finitely Generated Ideals
@@ -219,7 +216,7 @@ instance {σ : Type*} [Finite σ] :
     simp [AdicCompletion.algebraMap_apply, ← MvPolynomial.coe_X, toAdicCompletion_coe]
   rw [← IsAdicComplete.congr_ringEquiv _ (toAdicCompletionAlgEquiv σ R).toRingEquiv, this,
     IsAdicComplete.map_algebraMap_iff]
-  exact AdicCompletion.isAdicComplete (MvPolynomial.idealOfVars_fg σ R)
+  exact AdicCompletion.isAdicComplete (MvPolynomial.fg_idealOfVars σ R)
 
 end MvPowerSeries
 

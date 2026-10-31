@@ -6,9 +6,6 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Yoneda
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Simplicial sets
@@ -28,7 +25,7 @@ universe v u
 
 open CategoryTheory Limits Functor ConcreteCategory
 
-open Simplicial
+open scoped Simplicial
 
 /-- The category of simplicial sets.
 This is the category of contravariant functors from

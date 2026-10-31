@@ -1,5 +1,7 @@
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 set_option pp.unicode.fun true
 
@@ -162,7 +164,6 @@ hint: you may be missing suitable typeclass assumptions
 -/
 #guard_msgs in
 #check (T% (T% X)) x
-
 
 /--
 error: could not find a `FiberBundle` instance on `TotalSpace E`:
@@ -1054,13 +1055,15 @@ open ContDiff in -- for the ∞ notation
 
 end
 
-/-! Inferring a model with corners on a normed space, for an `IsManifold` hypothesis -/
+/-! Inferring a model with corners, when the inferred model is not in the local context,
+but an explicitly named construction (e.g. `𝓘(𝕜, E)` on some normed space `E`). -/
 section
 
 open scoped ContDiff
 
-variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℝ X] [IsManifold 𝓘(ℝ) ω X]
-  [TopologicalSpace Y] [ChartedSpace ℝ Y] [IsManifold 𝓘(ℝ) ω Y] {f : X → Y}
+-- This does not require any `IsManifold` hypothesis, ...
+variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℝ X]
+  [TopologicalSpace Y] [ChartedSpace ℝ Y] {f : X → Y}
 
 /--
 info: ContMDiff (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) Top.top f : Prop
@@ -1073,14 +1076,14 @@ info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersSelf Rea
 -/
 #guard_msgs in #check MDiff f
 
-variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] [IsManifold 𝓘(𝕜, F) ω X] {f : X → 𝕜} in
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace F X] {f : X → 𝕜} in
 /-- info: MDifferentiable (modelWithCornersSelf 𝕜 F) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/
 #guard_msgs in
 #check MDiff f
 
 -- This test is expected to fail: it passing would amount to guessing a model with corners on
 -- a product of two normed spaces (which is ambiguous).
-variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] [IsManifold 𝓘(𝕜, F × F) ω X] {f : X → 𝕜} in
+variable {X : Type*} [TopologicalSpace X] [ChartedSpace (F × F) X] {f : X → 𝕜} in
 /--
 error: Could not find a model with corners for `X`.
 
@@ -1088,6 +1091,13 @@ Hint: failures to find a model with corners can be debugged with the command `se
 -/
 #guard_msgs in
 #check MDiff f
+
+-- ... but also works with an `IsManifold` hypothesis in context.
+variable [IsManifold 𝓘(ℝ) n X] [IsManifold 𝓘(ℝ) ω Y]
+/--
+info: MDifferentiable (modelWithCornersSelf Real Real) (modelWithCornersSelf Real Real) f : Prop
+-/
+#guard_msgs in #check MDiff f
 
 end
 
@@ -1469,6 +1479,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 [Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] 💥️ ContinuousAlternatingMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Unit` is not a space of continuous alternating maps
 [Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a coercion of a set to a type

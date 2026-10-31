@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Euclidean.Triangle
 public import Mathlib.Topology.MetricSpace.Similarity
+
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
 /-!
@@ -25,12 +26,11 @@ open Similar
 
 namespace EuclideanGeometry
 
-variable {ι V₁ V₂ P₁ P₂ : Type*}
+variable {V₁ V₂ P₁ P₂ : Type*}
   [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
   [InnerProductSpace ℝ V₁] [InnerProductSpace ℝ V₂]
   [MetricSpace P₁] [MetricSpace P₂]
   [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
-  {v₁ : ι → P₁} {v₂ : ι → P₂}
   {a b c : P₁} {a' b' c' : P₂}
 
 /-- If two triangles have two pairs equal angles, then the triangles are similar. -/
@@ -100,7 +100,7 @@ theorem similar_of_side_angle_side (h_not_col : ¬ Collinear ℝ {a, b, c})
   rw [← hcos', ← mul_pow] at hcos
   have dist_ac_pos : 0 < dist a c := by grind [dist_pos, ne₁₃_of_not_collinear]
   have k_dist_a'c' : 0 ≤ k * dist a' c' := by positivity
-  rw [pow_left_inj₀ (le_of_lt dist_ac_pos) k_dist_a'c' (by norm_num), dist_comm a _,
+  rw [pow_left_inj₀ (le_of_lt dist_ac_pos) k_dist_a'c' (by simp), dist_comm a _,
     dist_comm a' _] at hcos
   rw [dist_comm c _, dist_comm c' _] at h_bc
   rw [similar_iff_exists_pos_pairwise_dist_eq]
@@ -125,7 +125,7 @@ theorem _root_.Similar.angle_eq (h : ![a, b, c] ∼ ![a', b', c']) :
   field_simp at h_cos'
   rw [h_cos', sub_right_inj] at h_cos
   by_cases heq : dist a' b' * dist c' b' * 2 = 0
-  · rw [mul_eq_zero_iff_right (by norm_num), mul_eq_zero] at heq
+  · rw [mul_eq_zero_iff_right (by simp), mul_eq_zero] at heq
     rcases heq with h1 | h2
     · have h_dist_ab : dist a b = 0 := by grind
       rw [dist_eq_zero] at h_dist_ab h1
@@ -134,8 +134,7 @@ theorem _root_.Similar.angle_eq (h : ![a, b, c] ∼ ![a', b', c']) :
       rw [dist_eq_zero] at h_dist_cb h2
       simp_rw [h_dist_cb, h2, angle_self_right]
   rw [mul_right_inj' heq] at h_cos
-  apply Real.injOn_cos at h_cos
-  repeat grind [angle_nonneg, angle_le_pi]
+  apply Real.injOn_cos at h_cos <;> grind [angle_nonneg, angle_le_pi]
 
 /-- In two similar triangles, all three corresponding angles are equal. -/
 theorem _root_.Similar.angle_eq_all (h : ![a, b, c] ∼ ![a', b', c']) :

@@ -5,10 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # Sheaves preserve products
@@ -80,7 +80,6 @@ variable (hI : IsInitial I)
 -- This is the data of a particular disjoint coproduct in `C`.
 variable {α : Type*} [Small.{w} α] {X : α → C} (c : Cofan X) (hc : IsColimit c)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem piComparison_fac :
     have : HasCoproduct X := ⟨⟨c, hc⟩⟩
     piComparison F (fun x ↦ op (X x)) = F.map (opCoproductIsoProduct' hc (productIsProduct _)).inv ≫
@@ -97,7 +96,6 @@ theorem piComparison_fac :
 
 variable [(ofArrows X c.inj).HasPairwisePullbacks]
 
-set_option backward.defeqAttrib.useBackward true in
 include hc in
 /--
 If `F` preserves a particular product, then it `IsSheafFor` the corresponding presieve of arrows.
@@ -153,7 +151,7 @@ lemma preservesProduct_of_isSheafFor
   refine IsIso.comp_isIso' inferInstance ?_
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
-  exact fun b ↦ hF' b (ConcreteCategory.congr_hom (firstMap_eq_secondMap F hF hI c hd) b)
+  exact fun b ↦ hF' b congr($(firstMap_eq_secondMap F hF hI c hd) b)
 
 include hc hd hF hI in
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔

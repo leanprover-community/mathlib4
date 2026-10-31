@@ -6,7 +6,6 @@ Authors: Kenny Lau, Ken Lee, Chris Hughes
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Int.GCD
 public import Mathlib.RingTheory.Coprime.Basic
 
@@ -142,11 +141,11 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
           @ite_eq_left _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
         rw [← hμ, sum_congr rfl]
         intro x hx
-        convert! add_mul (R := R) _ _ _ using 2
+        convert add_mul (R := R) _ _ _ using 2
         · by_cases hx : x = h.choose
           · rw [hx, Pi.single_eq_same, Pi.single_eq_same]
           · rw [Pi.single_eq_of_ne hx, Pi.single_eq_of_ne hx, zero_mul]
-        · convert! (mul_assoc _ _ _).symm
+        · convert (mul_assoc _ _ _).symm
           rw [prod_eq_prod_sdiff_singleton_mul (mem x hx), mul_comm, sdiff_sdiff_comm,
             sdiff_singleton_eq_erase a, erase_insert hat]
       · have : IsCoprime (s b) (s a) :=
@@ -178,7 +177,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
     (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
-  convert! exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
+  convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
   simp only [pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
@@ -210,7 +209,7 @@ theorem IsCoprime.pow_left_iff (hm : 0 < m) : IsCoprime (x ^ m) y ↔ IsCoprime 
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
 
 theorem IsCoprime.pow_right_iff (hm : 0 < m) : IsCoprime x (y ^ m) ↔ IsCoprime x y :=
-  isCoprime_comm.trans <| (IsCoprime.pow_left_iff hm).trans <| isCoprime_comm
+  isCoprime_comm.trans <| (IsCoprime.pow_left_iff hm).trans isCoprime_comm
 
 theorem IsCoprime.pow_iff (hm : 0 < m) (hn : 0 < n) : IsCoprime (x ^ m) (y ^ n) ↔ IsCoprime x y :=
   (IsCoprime.pow_left_iff hm).trans <| IsCoprime.pow_right_iff hn
@@ -298,7 +297,7 @@ theorem pow_left_iff (hm : 0 < m) : IsRelPrime (x ^ m) y ↔ IsRelPrime x y := b
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
 
 theorem pow_right_iff (hm : 0 < m) : IsRelPrime x (y ^ m) ↔ IsRelPrime x y :=
-  isRelPrime_comm.trans <| (IsRelPrime.pow_left_iff hm).trans <| isRelPrime_comm
+  isRelPrime_comm.trans <| (IsRelPrime.pow_left_iff hm).trans isRelPrime_comm
 
 theorem pow_iff (hm : 0 < m) (hn : 0 < n) :
     IsRelPrime (x ^ m) (y ^ n) ↔ IsRelPrime x y :=

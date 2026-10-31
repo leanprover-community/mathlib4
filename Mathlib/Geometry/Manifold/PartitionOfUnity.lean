@@ -5,11 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.BumpFunction
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Topology.MetricSpace.PartitionOfUnity
-public import Mathlib.Topology.ShrinkingLemma
+
+import Mathlib.Geometry.Manifold.Algebra.Structures
+import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Smooth partition of unity
@@ -137,6 +138,7 @@ namespace SmoothPartitionOfUnity
 
 variable {s : Set M} (f : SmoothPartitionOfUnity ι I M s) {n : ℕ∞}
 
+@[macro_inline]
 instance {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
   coe := toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -726,9 +728,7 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
         simp [(chartAt H c).left_inv (hf c Hx), hx, (chartAt H c).map_source (hf c Hx)]
       apply finsum_pos (fun c ↦ h''g c x) B
       apply (f.locallyFinite.point_finite x).subset
-      apply compl_subset_compl.2
-      rintro c (hc : f c x = 0)
-      simpa only [mul_eq_zero] using! Or.inl hc
+      exact fun c hc h ↦ hc <| by simp [h]
     · apply finsum_eq_zero_of_forall_eq_zero
       intro c
       by_cases Hx : x ∈ tsupport (f c)
@@ -783,6 +783,13 @@ theorem exists_contMDiff_support_eq_eq_one_iff
   · intro x
     simp [div_eq_one_iff_eq (A x).ne', left_eq_add, ← notMem_support, g_supp]
 
+/-- The `ContDiff` counterpart of `exists_contMDiff_support_eq_eq_one_iff` for a
+finite-dimensional real normed space. -/
+theorem exists_contDiff_support_eq_eq_one_iff {s t : Set E} (hs : IsOpen s) (ht : IsClosed t)
+    (h : t ⊆ s) :
+    ∃ f : E → ℝ, ContDiff ℝ n f ∧ range f ⊆ Icc 0 1 ∧ support f = s ∧ (∀ x, x ∈ t ↔ f x = 1) := by
+  simpa [contMDiff_iff_contDiff] using exists_contMDiff_support_eq_eq_one_iff (I := 𝓘(ℝ, E)) hs ht h
+
 /-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite-dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` exactly on `s` and to `1`
 exactly on `t`. See also `exists_contMDiffMap_zero_one_of_isClosed` for a
@@ -795,3 +802,12 @@ theorem exists_contMDiff_zero_iff_one_iff_of_isClosed {s t : Set M}
     ⟨f, f_diff, f_range, fs, ft⟩
   refine ⟨f, f_diff, f_range, ?_, ft⟩
   simp [← notMem_support, fs]
+
+/-- The `ContDiff` counterpart of `exists_contMDiff_zero_iff_one_iff_of_isClosed` for a
+finite-dimensional real normed space. -/
+theorem exists_contDiff_zero_iff_one_iff_of_isClosed {s t : Set E}
+    (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
+    ∃ f : E → ℝ, ContDiff ℝ n f ∧ range f ⊆ Icc 0 1 ∧ (∀ x, x ∈ s ↔ f x = 0)
+      ∧ (∀ x, x ∈ t ↔ f x = 1) := by
+  simpa [contMDiff_iff_contDiff] using
+    exists_contMDiff_zero_iff_one_iff_of_isClosed (I := 𝓘(ℝ, E)) hs ht hd

@@ -5,12 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Comma.CardinalArrow
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
-public import Mathlib.CategoryTheory.Comma.CardinalArrow
-public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
-public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # κ-filtered category
 
@@ -197,20 +194,18 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
       { app a := homOfLE (hj a)
         naturality _ _ _ := rfl }⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
     IsCardinalFiltered κ.ord.ToType κ :=
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
-    have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
     contrapose! hs
     rw [← hκ.out.cof_ord, ← Ordinal.cof_toType]
-    refine (Order.cof_le fun j ↦ ?_).trans (Cardinal.mk_le_of_surjective h)
+    refine (Order.cof_le fun j ↦ ?_).trans
+      (Cardinal.mk_le_of_surjective (Set.rangeFactorization_surjective (f := f)))
     obtain ⟨k, hk⟩ := hs j
     exact ⟨_, Set.mem_range_self k, hk.le⟩)
 
 open IsCardinalFiltered
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_under
     (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
@@ -232,7 +227,6 @@ instance isCardinalFiltered_under
               dsimp at this ⊢
               simp only [reassoc_of% this, Category.comp_id] } }⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance isCardinalFiltered_prod (J₁ : Type u) (J₂ : Type u')
     [Category.{v} J₁] [Category.{v'} J₂] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalFiltered J₁ κ] [IsCardinalFiltered J₂ κ] :
@@ -292,7 +286,6 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
   obtain ⟨l, a, b, h⟩ := isCardinalFiltered_iff_aux₁ h₁ h₂ p hι
   exact ⟨l, b, fun i ↦ by grind⟩
 
-set_option backward.defeqAttrib.useBackward true in
 variable (J κ) in
 /-- A category is `κ`-filtered iff
 1. any family of objects of cardinality `< κ` admits a map towards a common object, and
@@ -379,7 +372,6 @@ lemma IsCardinalFiltered.of_final
       exact ⟨F.obj (IsFiltered.max j' k'), b ≫ F.map (IsFiltered.rightToMax _ _),
         a ≫ F.map (IsFiltered.leftToMax _ _), by simp⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma Limits.IsTerminal.isCardinalFiltered {J : Type u} [Category.{v} J]
     {X : J} (hX : IsTerminal X) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     IsCardinalFiltered J κ where

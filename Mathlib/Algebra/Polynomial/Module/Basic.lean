@@ -45,11 +45,11 @@ structure PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R
   /-- The coefficients `ℕ →₀ M` of an element of the additive monoid algebra `M[X]`. -/
   coeff : ℕ →₀ M
 
-variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
-variable {x y : PolynomialModule R M} {r r₁ r₂ : R} {m m' m₁ m₂ m₁' m₂' : M}
+variable {x y : PolynomialModule R M} {r : R} {m m₁ m₂ : M}
 
 lemma coeff_ofCoeff (x : ℕ →₀ M) : (ofCoeff R x).coeff = x := rfl
 lemma ofCoeff_coeff (x : PolynomialModule R M) : ofCoeff R x.coeff = x := rfl
@@ -191,17 +191,17 @@ instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
 @[simp]
 theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     monomial i r • single R j m = single R (i + j) (r • m) := by
-  simp only [Module.End.mul_apply, Polynomial.aeval_monomial, Module.End.pow_apply,
-    Module.algebraMap_end_apply, smul_def]
+  simp only [smul_def, aeval_monomial, mul_apply_eq_comp, pow_apply_eq_iterate, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, Module.algebraMap_end_apply]
   induction i generalizing r j m with
   | zero =>
     rw [Function.iterate_zero, zero_add]
-    exact congr(ofCoeff R $(Finsupp.smul_single r j m))
+    congrm ofCoeff R $(Finsupp.smul_single r j m)
   | succ n hn =>
     rw [Function.iterate_succ, Function.comp_apply, add_assoc, ← hn]
     congr 2
     rw [Nat.one_add]
-    exact congr(ofCoeff R $(Finsupp.mapDomain_single))
+    congrm ofCoeff R $Finsupp.mapDomain_single
 
 @[simp]
 theorem monomial_smul_lsingle (i : ℕ) (r : R) (j : ℕ) (m : M) :
@@ -291,7 +291,7 @@ theorem hom_ext {f g : PolynomialModule R M →ₗ[R] M'}
 
 /-- The image of a polynomial under a linear map. -/
 def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] PolynomialModule R' M' :=
-  (coeffLinearEquiv ..).symm.toLinearMap.comp <| (Finsupp.mapRange.linearMap f).comp <|
+  (coeffLinearEquiv ..).symm.toLinearMap.comp <| (Finsupp.mapRange.linearMap f).comp
     (coeffLinearEquiv ..).toLinearMap
 
 @[simp]

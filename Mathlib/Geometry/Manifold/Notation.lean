@@ -5,8 +5,9 @@ Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
 module
 
-public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+
+import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 # Elaborators for differential geometry
@@ -262,6 +263,17 @@ private def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Expr × Ex
       which is not the identity"
   | _ => throwError "`{e}` is not a space of continuous linear maps"
 
+/-- Check if an expression `e` is a space of `ContinuousAlternatingMap`s.
+If so, we return `(R, M, N, ι)`, where `R` is the coefficient ring, `ι → M` is the domain, and
+`N` is the codomain of the continuous alternating linear maps. Otherwise, we error.
+Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
+private def isContAlternatingMaps (e : Expr) : TermElabM <| Expr × Expr × Expr × Expr := do
+  match_expr e with
+  | ContinuousAlternatingMap R M N ι _ _ _ _ _ _ _ =>
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous alternating maps"
+    return (R, M, N, ι)
+  | _ => throwError "`{e}` is not a space of continuous alternating maps"
+
 /--
 Captures information when a model with corners is the trivial model on a normed space
 (or on an inner product space, which is also a normed space):
@@ -340,11 +352,16 @@ partial def guessBaseFieldForNormedSpace (e : Expr) : TermElabM <| Option Expr :
   | Prod E _F =>
     guessBaseFieldForNormedSpace E
   | _ =>
+    -- TODO: can/should this just take the field k / R instead of recursing?
     try
       let (_k, E, _F) ← isCLMReduciblyDefeqCoefficients e
       guessBaseFieldForNormedSpace E
     catch _e =>
-      findFromLocalInstance e
+      try
+        let (_R, M, _N, _ι) ← isContAlternatingMaps e
+        guessBaseFieldForNormedSpace M
+      catch _e =>
+        findFromLocalInstance e
 where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
   findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
     match_expr type with
@@ -391,6 +408,7 @@ partial def findModelInner (e : Expr) : TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy "NormedSpace"         fromNormedSpace     then return some m
   if let some m ← tryStrategy "Manifold"            fromManifold        then return some m
   if let some m ← tryStrategy "ContinuousLinearMap" fromCLM             then return some m
+  if let some m ← tryStrategy "ContinuousAlternatingMap" fromCAM        then return some m
   if let some m ← tryStrategy "RealInterval"        fromRealInterval    then return some m
   if let some m ← tryStrategy "EuclideanSpace"      fromEuclideanSpace  then return some m
   if let some m ← tryStrategy "UpperHalfPlane"      fromUpperHalfPlane  then return some m
@@ -414,7 +432,7 @@ where
       trace[Elab.DiffGeo.MDiff]
         "{e} is the total space of a fiber bundle: trying to find a model on the base of `{V}`"
       -- `V` should be of type `B → Type*`, where `B` is the base of the vector bundle.
-      -- Then, the desired model with corners is `I.prod (𝓘(𝕜, F))`, where `I` is the model on `B`
+      -- Then, the desired model with corners is `I.prod 𝓘(𝕜, F)`, where `I` is the model on `B`
       -- and `𝕜` is the base field for `F`.
       let vtype ← whnf <| ← instantiateMVars <| ← inferType V
       trace[Elab.DiffGeo.MDiff] "`{V}` has type `{vtype}`"
@@ -480,6 +498,24 @@ where
       model := ← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst']
       normedSpaceInfo? := some { normedSpace := e, baseField := K }
     }
+  /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant
+  on a type (represented by an expression `e`):
+  if successful, return `some m` where `m` is an expression describing the model found.
+  Otherwise, return `none`. -/
+  -- Shared function used for the `fromManifold` and `fromEuclideanSpace` strategies.
+  tryFromEuclideanSpace (e : Expr) : TermElabM (Option Expr) := do
+    -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
+    match (← instantiateMVars e).cleanupAnnotations with
+    | mkApp2 (.const `EuclideanSpace _) k _n =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a Euclidean space over `{k}`"
+      mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
+    | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a Euclidean half-space"
+      mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
+    | mkApp (.const `EuclideanQuadrant _) n =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a Euclidean quadrant"
+      mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
+    | _ => return none
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
@@ -504,20 +540,25 @@ where
         | _ => return none
       | trace[Elab.DiffGeo.MDiff]
           "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
-        -- Try a normed space, and a normed field as last alternatives.
-        let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
-          match_expr type with
-          | NormedSpace K E _ _ =>
-            if ← withReducible (pureIsDefEq E H) then return some (inst, K)
-            else return none
-          | _ => return none
-        if let some (inst, K) := a then
-          trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
-          return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
-        trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
-          assuming it is a non-trivially normed field"
-        -- Return the trivial model with corners: this will work if `H` is a normed field.
-        mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
+        -- As last alternatives, check if `H` is Euclidean half-space, a Euclidean quadrant,
+        -- Euclidean space, a normed space or a normed field.
+        if let some m ← tryFromEuclideanSpace H then
+          return m
+        else
+          trace[Elab.DiffGeo.MDiff] "`{H}` is not a Euclidean space, half-space or quadrant"
+          let a ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+            match_expr type with
+            | NormedSpace K E _ _ =>
+              if ← withReducible (pureIsDefEq E H) then return some (inst, K)
+              else return none
+            | _ => return none
+          if let some (inst, K) := a then
+            trace[Elab.DiffGeo.MDiff] "`{H}` is a normed space over the field `{K}`"
+            return ← mkAppOptM ``modelWithCornersSelf #[K, none, H, none, inst]
+          trace[Elab.DiffGeo.MDiff] "Couldn't find a normed space structure on {H}` either: \
+            assuming it is a non-trivially normed field"
+          -- Return the trivial model with corners: this will work if `H` is a normed field.
+          mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
     return m
   /-- Attempt to find a model with corners on a space of continuous linear maps -/
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
@@ -529,17 +570,14 @@ where
     -- Therefore, we only check definitional equality at reducible transparency.
     let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
     mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
+  /-- Attempt to find a model with corners on a space of continuous alternating linear maps -/
+  fromCAM : TermElabM Expr := do
+    let (R, _M, _N, _ι) ← isContAlternatingMaps e
+    mkAppOptM ``modelWithCornersSelf #[R, none, e, none, none]
   /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
   fromEuclideanSpace : TermElabM Expr := do
-    -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
-    match (← instantiateMVars e).cleanupAnnotations with
-    | mkApp2 (.const `EuclideanSpace _) k _n =>
-      mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
-    | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
-      mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
-    | mkApp (.const `EuclideanQuadrant _) n =>
-      mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
-    | _ => throwError "`{e}` is not a Euclidean space, half-space or quadrant"
+    if let some m ← tryFromEuclideanSpace e then return m else
+    throwError "`{e}` is not a Euclidean space, half-space or quadrant"
   /-- Attempt to find a model with corners on a closed interval of real numbers,
   or on the unit interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
@@ -1047,7 +1085,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   let .lam n _ b _ ← getExpr | failure
   guard <| b.isAppOf ``Bundle.TotalSpace.mk'
   let σe := b.getAppArgs[4]!.getAppFn
-  guard <| σe.isFVar
+  guard σe.isFVar
   let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
   -- TODO: this always adds parentheses; find a more parsimonious way!
   `((T% $σs)) >>= annotateGoToSyntaxDef
@@ -1056,16 +1094,16 @@ open Bundle PrettyPrinter Delaborator SubExpr
 @[app_delab TotalSpace.mk] meta def delabTotalSpaceMk : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
-  let bd ← withNaryArg 3 <| delab
-  let vd ← withNaryArg 4 <| delab
+  let bd ← withNaryArg 3 delab
+  let vd ← withNaryArg 4 delab
   `(⟨$bd, $vd⟩)
 
 /-- Delaborator for `Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
 @[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpaceMkPrime : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
-  let bd ← withNaryArg 3 <| delab
-  let vd ← withNaryArg 4 <| delab
+  let bd ← withNaryArg 3 delab
+  let vd ← withNaryArg 4 delab
   `(⟨$bd, $vd⟩)
 
 /-- Delaborator for `mfderiv` using the custom elaborator -/
@@ -1102,7 +1140,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   whenPPOption getPPNotation do
   withOverApp 22 do
   let ss ← withAppArg delab
-  let fs ← withNaryArg 20 <| delab
+  let fs ← withNaryArg 20 delab
   `(MDiff[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `MDifferentiableWithinAt` using the custom elaborator -/
@@ -1110,7 +1148,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   whenPPOption getPPNotation do
   withOverApp 22 do
   let ss ← withAppArg delab
-  let fs ← withNaryArg 20 <| delab
+  let fs ← withNaryArg 20 delab
   `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `HasMFDerivWithinAt` using the custom elaborator -/

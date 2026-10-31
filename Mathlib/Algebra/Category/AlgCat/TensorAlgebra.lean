@@ -6,10 +6,14 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.AlgCat.Basic
-public import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
-public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.Algebra.Ring.Shrink
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+
+import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
+import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+import Mathlib.Algebra.Ring.Shrink
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `TensorAlgebra` as a functor `ModuleCat R ⥤ AlgCat R`
@@ -30,7 +34,7 @@ namespace AlgCat
 /-- The functor sending an `R`-module `M` to its tensor algebra over `R`. -/
 @[simps]
 def tensorAlgebra (R : Type u) [CommRing R] : ModuleCat.{w} R ⥤ AlgCat.{max u w} R where
-  obj M := AlgCat.of R (TensorAlgebra R M)
+  obj M := ↧(TensorAlgebra R M)
   map f := AlgCat.ofHom (TensorAlgebra.lift _ (TensorAlgebra.ι _ ∘ₗ f.hom))
 
 variable (R : Type u) [CommRing R]

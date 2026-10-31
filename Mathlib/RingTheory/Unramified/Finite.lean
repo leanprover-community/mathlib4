@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.IdempotentFG
-public import Mathlib.RingTheory.Unramified.Basic
 public import Mathlib.RingTheory.Flat.Stability
+public import Mathlib.RingTheory.Unramified.Basic
+
+import Mathlib.RingTheory.Ideal.IdempotentFG
 
 /-!
 # Various results about unramified algebras
@@ -39,6 +40,7 @@ open scoped TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 namespace Algebra.FormallyUnramified
 
@@ -139,20 +141,27 @@ noncomputable
 def elem : S ⊗[R] S :=
   (iff_exists_tensorProduct.mp inferInstance).choose
 
-lemma one_tmul_sub_tmul_one_mul_elem
-    (s : S) : (1 ⊗ₜ s - s ⊗ₜ 1) * elem R S = 0 :=
+lemma one_tmul_sub_tmul_one_mul_elem (s : S) : (1 ⊗ₜ s - s ⊗ₜ 1) * elem R S = 0 :=
   (iff_exists_tensorProduct.mp inferInstance).choose_spec.1 s
 
-lemma one_tmul_mul_elem
-    (s : S) : (1 ⊗ₜ s) * elem R S = (s ⊗ₜ 1) * elem R S := by
+lemma one_tmul_mul_elem (s : S) : (1 ⊗ₜ s) * elem R S = (s ⊗ₜ 1) * elem R S := by
   rw [← sub_eq_zero, ← sub_mul, one_tmul_sub_tmul_one_mul_elem]
 
-lemma lmul_elem :
-    TensorProduct.lmul' R (elem R S) = 1 :=
+lemma lmul_elem : TensorProduct.lmul' R (elem R S) = 1 :=
   (iff_exists_tensorProduct.mp inferInstance).choose_spec.2
 
-
 variable (R S)
+
+lemma isIdempotentElem_elem : IsIdempotentElem (elem R S) := by
+  suffices h : ∀ t, t * elem R S = TensorProduct.lmul' R t ⊗ₜ[R] 1 * elem R S by
+    simpa [IsIdempotentElem, lmul_elem, ← Algebra.TensorProduct.one_def] using h (elem R S)
+  intro t
+  induction t using TensorProduct.inductionOn with
+  | tmul a b =>
+    calc a ⊗ₜ[R] b * elem R S = (a ⊗ₜ[R] 1) * (1 ⊗ₜ[R] b) * elem R S := by simp
+       _ = (a ⊗ₜ[R] 1) * (b ⊗ₜ[R] 1) * elem R S := by simp_rw [mul_assoc, one_tmul_mul_elem]
+       _ = TensorProduct.lmul' R (a ⊗ₜ[R] b) ⊗ₜ[R] 1 * elem R S := by simp
+  | add t₁ t₂ h₁ h₂ => rw [map_add, TensorProduct.add_tmul, add_mul, add_mul, h₁, h₂]
 
 /-- An unramified free algebra is finitely generated. Iversen I.2.8 -/
 lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
@@ -185,9 +194,8 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
       not_not] at hj
     simp only [Finsupp.sum]
     trans b.repr (f.support.sum (fun _ ↦ 0))
-    · refine congr_arg b.repr (Finset.sum_congr rfl ?_)
-      simp only [Finsupp.mem_support_iff]
-      intro i hi
+    · congr! with i hi
+      rw [Finsupp.mem_support_iff] at hi
       rw [hj i hi, zero_smul]
     · simp only [Finset.sum_const_zero, map_zero]
   -- And `G` such that `∑ₛ aᵢⱼfᵢ = ∑ Gᵢⱼbⱼ`, where `aᵢⱼ` are the coefficients `bᵢx = ∑ aᵢⱼbⱼ`.
@@ -219,7 +227,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   have : ∀ j, x * f j = f.sum fun i y ↦ a i j • y := by
     intro j
     apply b.repr.injective
-    exact DFunLike.congr_fun this j
+    congrm $this j
   -- Since `∑ₛ fⱼbⱼ = 1`, `x = ∑ₛ aᵢⱼfᵢbⱼ` is indeed in the span of `{ fᵢbⱼ | i, j ∈ s }`.
   rw [← mul_one x, ← @lmul_elem R, hf, map_finsuppSum, Finsupp.sum, Finset.mul_sum]
   simp only [TensorProduct.lmul'_apply_tmul, Finset.coe_image₂, ← mul_assoc, this,
@@ -244,29 +252,47 @@ def sec :
       LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply, RingHom.id_apply]
     trans (TensorProduct.AlgebraTensorModule.map (LinearMap.id (R := S) (M := S))
       ((LinearMap.flip (AlgHom.toLinearMap (lsmul R R M))) m)) ((1 ⊗ₜ r) * elem R S)
-    · induction elem R S using TensorProduct.induction_on
-      · simp
+    · induction elem R S using TensorProduct.inductionOn
       · simp [smul_comm r]
       · simp only [map_add, mul_add, *]
     · have := one_tmul_sub_tmul_one_mul_elem (R := R) r
       rw [sub_mul, sub_eq_zero] at this
       rw [this]
-      induction elem R S using TensorProduct.induction_on
-      · simp
+      induction elem R S using TensorProduct.inductionOn
       · simp [TensorProduct.smul_tmul']
       · simp only [map_add, smul_add, mul_add, *]
+
+variable {M} in
+lemma sec_apply (x : M) :
+    sec R S M x = ((LinearMap.toSpanSingleton S M x).restrictScalars R).baseChange S (elem R S) :=
+  rfl
+
+variable {M N} in
+lemma sec_comp (f : M →ₗ[S] N) :
+    (sec R S N).comp f = ((f.restrictScalars R).baseChange S).comp (sec R S M) := by
+  ext x
+  simp [sec_apply, ← f.comp_toSpanSingleton, LinearMap.baseChange_comp]
+
+variable {M N} in
+@[simp]
+lemma baseChange_sec (f : M →ₗ[S] N) (x : M) :
+    (f.restrictScalars R).baseChange S (sec R S M x) = sec R S N (f x) :=
+  (congr($(sec_comp R S f) x)).symm
+
+variable {M} in
+lemma sec_mem_baseChange (P : Submodule S M) {x : M} (hx : x ∈ P) :
+    sec R S M x ∈ (P.restrictScalars R).baseChange S :=
+  ⟨sec R S P ⟨x, hx⟩, baseChange_sec R S P.subtype ⟨x, hx⟩⟩
 
 lemma comp_sec :
     (TensorProduct.AlgebraTensorModule.lift
       ((lsmul S S M).toLinearMap.flip.restrictScalars R).flip).comp (sec R S M) =
       LinearMap.id := by
   ext x
-  simp only [sec, LinearMap.coe_comp, LinearMap.coe_mk, LinearMap.coe_toAddHom,
-    Function.comp_apply, LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply,
+  simp only [sec_apply, LinearMap.coe_comp, Function.comp_apply,
     TensorProduct.AlgebraTensorModule.lift_apply, LinearMap.id_coe, id_eq]
   trans (TensorProduct.lmul' R (elem R S)) • x
-  · induction elem R S using TensorProduct.induction_on with
-    | zero => simp
+  · induction elem R S using TensorProduct.inductionOn with
     | tmul r s => simp [mul_smul, smul_comm r s]
     | add y z hy hz => simp [hy, hz, add_smul]
   · rw [lmul_elem, one_smul]

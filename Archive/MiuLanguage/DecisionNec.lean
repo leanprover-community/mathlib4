@@ -3,9 +3,11 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Archive.MiuLanguage.Basic
-import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.ModEq
+module
+
+public import Archive.MiuLanguage.Basic
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Nat.ModEq
 
 /-!
 # Decision procedure: necessary condition
@@ -20,6 +22,7 @@ Using this, we give a negative answer to the question: is `"MU"` derivable?
 miu, decision procedure
 -/
 
+@[expose] public section
 
 namespace Miu
 

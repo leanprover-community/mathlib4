@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.GroupTheory.Congruence.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations on rings
@@ -76,6 +75,7 @@ lemma toCon_injective : Injective fun c : RingCon R ↦ c.toCon := fun c d ↦ b
 @[simp] lemma toCon_inj : c.toCon = d.toCon ↔ c = d := toCon_injective.eq_iff
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
+@[macro_inline]
 instance : FunLike (RingCon R) R (R → Prop) where
   coe c := c.r
   coe_injective := DFunLike.coe_injective.comp toCon_injective

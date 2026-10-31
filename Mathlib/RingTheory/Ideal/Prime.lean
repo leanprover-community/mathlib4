@@ -24,7 +24,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
 open Set
 
@@ -125,43 +125,46 @@ theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
   ext
   simp
 
+variable (S : Set (Ideal α)) (hS : ∀ P ∈ S, P.IsPrime)
+
 /-- The elements lying outside every ideal in a set of prime ideals form a submonoid. -/
-def iInfPrimeCompl {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) : Submonoid α :=
-  ⨅ P : S, P.val.primeCompl (hp := hS P.val P.prop)
+@[no_expose]
+def sInfPrimeCompl : Submonoid α :=
+  ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption))
 
-lemma iInfPrimeCompl_def {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) :
-    iInfPrimeCompl hS = ⨅ P : S, P.val.primeCompl (hp := hS P.val P.prop) := rfl
-
-@[simp]
-theorem mem_iInfPrimeCompl_iff {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime) {x : α} :
-    x ∈ iInfPrimeCompl hS ↔ ∀ P ∈ S, x ∉ P := by simp [iInfPrimeCompl_def]
+lemma sInfPrimeCompl_def :
+    sInfPrimeCompl S hS = ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption)) := by rfl
 
 @[simp]
-theorem iInfPrimeCompl_empty :
-    iInfPrimeCompl (by simp : ∀ P ∈ (∅ : Set (Ideal α)), P.IsPrime) = ⊤ := by
+theorem mem_sInfPrimeCompl_iff {x : α} : x ∈ sInfPrimeCompl S hS ↔ ∀ P ∈ S, x ∉ P := by
+  simp [sInfPrimeCompl_def]
+
+@[simp]
+theorem sInfPrimeCompl_empty :
+    sInfPrimeCompl ∅ (by simp : ∀ P ∈ (∅ : Set (Ideal α)), P.IsPrime) = ⊤ := by
   ext
   simp
 
 @[simp]
-theorem iInfPrimeCompl_singleton (P : Ideal α) [P.IsPrime] :
-    iInfPrimeCompl (S := {P}) (by simp_all) = P.primeCompl := by
+theorem sInfPrimeCompl_singleton (P : Ideal α) [P.IsPrime] :
+    sInfPrimeCompl {P} (by simp_all) = P.primeCompl := by
   ext
   simp
 
-theorem iInfPrimeCompl_union {S T : Set (Ideal α)} (hST : ∀ P ∈ S ∪ T, P.IsPrime) :
-    iInfPrimeCompl hST = iInfPrimeCompl (fun P hP ↦ hST P (Or.inl hP)) ⊓
-    iInfPrimeCompl (fun P hP ↦ hST P (Or.inr hP)) := by
+theorem sInfPrimeCompl_union {S T : Set (Ideal α)} (hST : ∀ P ∈ S ∪ T, P.IsPrime) :
+    sInfPrimeCompl (S ∪ T) hST =
+      sInfPrimeCompl S (fun P hP ↦ hST P (Set.mem_union_left T hP)) ⊓
+      sInfPrimeCompl T (fun P hP ↦ hST P (Set.mem_union_right S hP)) := by
   aesop
 
-theorem iInfPrimeCompl_le_primeCompl {S : Set (Ideal α)} (hS : ∀ P ∈ S, P.IsPrime)
-    {P : Ideal α} (hP : P ∈ S) : iInfPrimeCompl hS ≤ P.primeCompl (hp := hS P hP) :=
-  fun _ hx ↦ (mem_iInfPrimeCompl_iff hS).mp hx P hP
+theorem sInfPrimeCompl_le_primeCompl {P : Ideal α} (hP : P ∈ S) :
+    sInfPrimeCompl S hS ≤ P.primeCompl (hp := hS P hP) :=
+  fun _ hx ↦ (mem_sInfPrimeCompl_iff S hS).mp hx P hP
 
-theorem iInfPrimeCompl_antitone {S T : Set (Ideal α)} (hP : ∀ P ∈ S ∪ T, P.IsPrime) (hST : S ⊆ T) :
-    iInfPrimeCompl (by simp_all : ∀ P ∈ T, P.IsPrime) ≤
-    iInfPrimeCompl (by simp_all  : ∀ P ∈ S, P.IsPrime) := by
+theorem sInfPrimeCompl_anti {S T : Set (Ideal α)} (hST : S ⊆ T) (hP : ∀ P ∈ T, P.IsPrime) :
+    sInfPrimeCompl T hP ≤ sInfPrimeCompl S (by grind  : ∀ P ∈ S, P.IsPrime) := by
   intro x hx
-  rw [mem_iInfPrimeCompl_iff] at hx ⊢
+  rw [mem_sInfPrimeCompl_iff] at hx ⊢
   exact fun P hp ↦ hx P (hST hp)
 
 end Ideal
