@@ -795,6 +795,26 @@ theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
 theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g :=
   DFunLike.coe_injective h
 
+/-- Build an order isomorphism from a bijective map that preserves and reflects `≤`. -/
+noncomputable def ofBijective (f : α → β) (hf : f.Bijective) (hf' : ∀ a b, f a ≤ f b ↔ a ≤ b) :
+    α ≃o β where
+  toEquiv := .ofBijective f hf
+  map_rel_iff' := hf' ..
+
+@[simp, grind =] lemma coe_ofBijective (f : α → β) (hf hf') : ⇑(ofBijective f hf hf') = f := rfl
+
+@[simp] lemma ofBijective_coe (e : α ≃o β) :
+    ofBijective e e.bijective (by simp) = e := ext rfl
+
+lemma ofBijective_apply_symm_apply (f : α → β) (hf hf') (x : β) :
+    f ((ofBijective f hf hf').symm x) = x :=
+  (ofBijective f hf hf').apply_symm_apply x
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : α → β) (hf hf') (x : α) :
+    (ofBijective f hf hf').symm (f x) = x :=
+  (ofBijective f hf hf').symm_apply_apply x
+
 /-- Reinterpret an order isomorphism as an order embedding. -/
 def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
   e.toRelEmbedding
