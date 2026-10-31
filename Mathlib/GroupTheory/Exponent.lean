@@ -697,7 +697,7 @@ end Group
 
 end ExponentTwo
 
-theorem ringChar_eq_addMonoidExponent (R : Type*) [NonAssocSemiring R] :
+theorem ringChar_eq_addMonoidExponent (R : Type*) [NonAssocSemiring R] [IsLeftCancelAdd R] :
     ringChar R = AddMonoid.exponent R := by
   apply dvd_antisymm
   · apply ringChar.dvd

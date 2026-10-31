@@ -396,11 +396,10 @@ lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
   rw [pow_succ, pow_mul, α_sq]
 
 /-! We show that `X q` has characteristic `q`, so that we can apply the binomial theorem. -/
-
-instance : CharP (X q) q where
-  cast_eq_zero_iff x := by
-    convert ZMod.natCast_eq_zero_iff _ _
-    exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
+instance : CharP (X q) q := by
+  refine CharP.of_cast_eq_zero_iff_dvd _ fun x => ?_
+  convert ZMod.natCast_eq_zero_iff _ _
+  exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
 
 instance : Coe (ZMod ↑q) (X q) where
   coe := ZMod.castHom dvd_rfl (X q)

@@ -39,8 +39,7 @@ section Semiring
 variable [Semiring R]
 
 instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
-  let ⟨h⟩ := h
-  ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
+  ⟨fun a b => by rw [← map_natCast C, ← map_natCast C, C_inj, CharP.cast_eq_iff_mod_eq]⟩
 
 instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
   cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
