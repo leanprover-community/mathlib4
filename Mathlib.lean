@@ -8313,6 +8313,7 @@ public import Mathlib.Topology.DiscreteQuotient
 public import Mathlib.Topology.DiscreteSubset
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
+public import Mathlib.Topology.EMetricSpace.Chaining
 public import Mathlib.Topology.EMetricSpace.Defs
 public import Mathlib.Topology.EMetricSpace.Diam
 public import Mathlib.Topology.EMetricSpace.Lipschitz
