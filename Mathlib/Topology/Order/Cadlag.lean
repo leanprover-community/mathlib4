@@ -16,14 +16,11 @@ are for instance a common hypothesis made on stochastic processes.
 
 Using the `to_dual` machinery we also define *càglàd functions* (left-continuous with right limits).
 
-We also define right-continuity on a set, `IsRightContinuousOn f s`, which asks that `f` restricted
-to `s` is right-continuous at every point of `s`, and its dual `IsLeftContinuousOn`.
-
 -/
 
 @[expose] public section
 
-open Filter TopologicalSpace Bornology
+open Filter TopologicalSpace Bornology Set
 open scoped Topology ENNReal
 
 -- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
@@ -104,8 +101,6 @@ lemma IsRightContinuous.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R
 
 section IsRightContinuousOn
 
-open Set
-
 variable {s t : Set X}
 
 /-- A function `f` is *right-continuous on* a set `s` if for any `a ∈ s`, `f x → f a` when
@@ -155,22 +150,12 @@ lemma IsOpen.isRightContinuousOn_iff (hs : IsOpen s) :
     IsRightContinuousOn f s ↔ ∀ a ∈ s, ContinuousWithinAt f (Ioi a) a :=
   forall₂_congr fun _ ha ↦ by rw [inter_comm, continuousWithinAt_inter (hs.mem_nhds ha)]
 
--- `to_dual` cannot translate the order on the subtype `s`, so both versions are stated.
+@[to_dual]
 lemma isRightContinuousOn_iff_isRightContinuous_domRestrict :
     IsRightContinuousOn f s ↔ IsRightContinuous (s.domRestrict f) := by
   rw [IsRightContinuousOn, IsRightContinuous, Subtype.forall]
   refine forall₂_congr fun a ha ↦ ?_
   have : Ioi (⟨a, ha⟩ : s) = (↑) ⁻¹' Ioi a := rfl
-  rw [ContinuousWithinAt, ContinuousWithinAt, this, nhdsWithin_subtype, Subtype.image_preimage_coe,
-    domRestrict_eq, ← tendsto_map'_iff, map_comap, Subtype.range_coe, ← nhdsWithin_inter',
-    inter_right_comm, inter_self]
-  rfl
-
-lemma isLeftContinuousOn_iff_isLeftContinuous_domRestrict :
-    IsLeftContinuousOn f s ↔ IsLeftContinuous (s.domRestrict f) := by
-  rw [IsLeftContinuousOn, IsLeftContinuous, Subtype.forall]
-  refine forall₂_congr fun a ha ↦ ?_
-  have : Iio (⟨a, ha⟩ : s) = (↑) ⁻¹' Iio a := rfl
   rw [ContinuousWithinAt, ContinuousWithinAt, this, nhdsWithin_subtype, Subtype.image_preimage_coe,
     domRestrict_eq, ← tendsto_map'_iff, map_comap, Subtype.range_coe, ← nhdsWithin_inter',
     inter_right_comm, inter_self]
