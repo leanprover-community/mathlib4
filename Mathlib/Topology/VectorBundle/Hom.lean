@@ -5,7 +5,7 @@ Authors: Heather Macbeth, Floris van Doorn
 -/
 module
 
-public import Mathlib.Topology.VectorBundle.Basic
+public import Mathlib.Topology.VectorBundle.Constructions
 
 /-!
 # The vector bundle of continuous (semi)linear maps
@@ -256,6 +256,12 @@ theorem Bundle.Trivialization.continuousLinearMap_apply
         (p.2.comp (e₁.symmL 𝕜₁ p.1 : F₁ →L[𝕜₁] E₁ p.1) : F₁ →SL[σ] E₂ p.1)⟩ :=
   rfl
 
+theorem Bundle.Trivialization.continuousLinearMap_symm_apply {b : B}
+    (hb : b ∈ e₁.baseSet ∩ e₂.baseSet) (L : F₁ →SL[σ] F₂) :
+    (e₁.continuousLinearMap σ e₂).symm b L =
+      (e₂.symmL 𝕜₂ b).comp (L.comp <| e₁.continuousLinearMapAt 𝕜₁ b) :=
+  Pretrivialization.continuousLinearMap_symm_apply' σ e₁ e₂ hb L
+
 theorem hom_trivializationAt (x₀ : B) :
     trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀ =
     (trivializationAt F₁ E₁ x₀).continuousLinearMap σ (trivializationAt F₂ E₂ x₀) := rfl
@@ -265,6 +271,17 @@ theorem hom_trivializationAt_apply (x₀ : B)
     trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀ x =
       ⟨x.1, inCoordinates F₁ E₁ F₂ E₂ x₀ x.1 x₀ x.1 x.2⟩ :=
   rfl
+
+/-- The inverse of the trivialization at `x₀` of the bundle `fun x ↦ E₁ x →SL[σ] E₂ x`, applied
+to a model map `L` and then to a fibre vector `v : E₁ x`. -/
+theorem hom_trivializationAt_symm_apply {x₀ x : B}
+    (hx : x ∈ (trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet)
+    (L : F₁ →SL[σ] F₂) (v : E₁ x) :
+    (trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀).symm x L v =
+      (trivializationAt F₂ E₂ x₀).symm x
+        (L ((trivializationAt F₁ E₁ x₀).continuousLinearMapAt 𝕜₁ x v)) := by
+  rw [hom_trivializationAt, Trivialization.continuousLinearMap_symm_apply σ hx]
+  exact (trivializationAt F₂ E₂ x₀).symmL_apply hx.2 _
 
 @[simp, mfld_simps]
 theorem hom_trivializationAt_source (x₀ : B) :
@@ -521,6 +538,37 @@ theorem inCoordinates_apply_eq₂
       (ϕ ((trivializationAt F₁ E₁ x₀).symm x v) ((trivializationAt F₂ E₂ x₀).symm x w)) := by
   rw [inCoordinates_eq h₁x (by simp [h₂x, h₃x])]
   simp [hom_trivializationAt, Trivialization.continuousLinearMap_apply, h₂x]
+
+/-- Specialisation of `inCoordinates_apply_eq₂` to a trivial target bundle
+`E₃ = Bundle.Trivial B F₃`: no trivialization is needed on the output. -/
+lemma inCoordinates_apply_eq₂_of_trivial
+    {x₀ x : B} {ϕ : E₁ x →L[𝕜] E₂ x →L[𝕜] F₃} {v : F₁} {w : F₂}
+    (h₁x : x ∈ (trivializationAt F₁ E₁ x₀).baseSet)
+    (h₂x : x ∈ (trivializationAt F₂ E₂ x₀).baseSet) :
+    inCoordinates F₁ E₁ (F₂ →L[𝕜] F₃) (fun x ↦ E₂ x →L[𝕜] F₃) x₀ x x₀ x ϕ v w =
+      ϕ ((trivializationAt F₁ E₁ x₀).symm x v) ((trivializationAt F₂ E₂ x₀).symm x w) := by
+  rw [inCoordinates_apply_eq₂ h₁x h₂x (by simp [Trivial.fiberBundle_trivializationAt'])]
+  simp [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization]
+
+/-- The inverse trivialization of the bundle `fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] F₃` of bilinear
+maps into a fixed space, applied to a model map `ϕ` and then to fibre vectors `u : E₁ x` and
+`v : E₂ x`, equals `ϕ` evaluated on the images of `u` and `v` in the model fibres. -/
+lemma trivializationAt_symm_apply_bilin
+    (x₀ x : B) (h₁x : x ∈ (trivializationAt F₁ E₁ x₀).baseSet)
+    (h₂x : x ∈ (trivializationAt F₂ E₂ x₀).baseSet)
+    (ϕ : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (u : E₁ x) (v : E₂ x) :
+    (trivializationAt (F₁ →L[𝕜] F₂ →L[𝕜] F₃) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] F₃) x₀).symm
+        x ϕ u v =
+      ϕ (trivializationAt F₁ E₁ x₀ |>.continuousLinearMapAt 𝕜 x u)
+        (trivializationAt F₂ E₂ x₀ |>.continuousLinearMapAt 𝕜 x v) := by
+  have h₃x : x ∈ (trivializationAt F₃ (Bundle.Trivial B F₃) x₀).baseSet := by
+    simp [Trivial.fiberBundle_trivializationAt']
+  rw [hom_trivializationAt_symm_apply (RingHom.id 𝕜) (F₂ := F₂ →L[𝕜] F₃)
+      (E₂ := fun x ↦ E₂ x →L[𝕜] F₃)
+      ⟨h₁x, by rw [hom_trivializationAt_baseSet]; exact ⟨h₂x, h₃x⟩⟩ ϕ u,
+    hom_trivializationAt_symm_apply (RingHom.id 𝕜) (F₂ := F₃) (E₂ := Bundle.Trivial B F₃)
+      ⟨h₂x, h₃x⟩]
+  simp [Trivial.fiberBundle_trivializationAt']
 
 end TwoVariables
 
