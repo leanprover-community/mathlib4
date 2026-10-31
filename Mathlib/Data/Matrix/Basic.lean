@@ -66,10 +66,22 @@ def ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : (m → n → �
 
 end
 
+@[simp]
 protected theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β)
     (g : β → Matrix m n α) :
     (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
   congr($(s.sum_apply i g) j).trans (s.sum_apply j _)
+
+@[simp]
+theorem row_sum [AddCommMonoid α] (s : Finset β) (M : β → Matrix m n α) :
+    (∑ i ∈ s, M i).row = ∑ i ∈ s, (M i).row :=
+  rfl
+
+@[simp]
+theorem col_sum [AddCommMonoid α] (s : Finset β) (M : β → Matrix m n α) :
+    (∑ i ∈ s, M i).col = ∑ i ∈ s, (M i).col := by
+  ext
+  simp
 
 end Matrix
 
@@ -944,6 +956,78 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
   commutes' r := by simp [algebraMap_eq_diagonal]
 
 end Transpose
+
+section RowCol
+
+variable (m n R α)
+
+/-- `Matrix.row` as an `AddEquiv` -/
+def rowAddEquiv [Add α] : Matrix m n α ≃+ (m → n → α) where
+  __ := rowEquiv m n α
+  map_add' := row_add
+
+/-- `Matrix.col` as an `AddEquiv` -/
+def colAddEquiv [Add α] : Matrix m n α ≃+ (n → m → α) where
+  __ := colEquiv m n α
+  map_add' := col_add
+
+@[simp]
+theorem coe_rowAddEquiv [Add α] : ⇑(rowAddEquiv m n α) = row :=
+  rfl
+
+@[simp]
+theorem coe_colAddEquiv [Add α] : ⇑(colAddEquiv m n α) = col :=
+  rfl
+
+@[simp]
+theorem toEquiv_rowAddEquiv [Add α] : rowAddEquiv m n α = rowEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toEquiv_colAddEquiv [Add α] : colAddEquiv m n α = colEquiv m n α :=
+  rfl
+
+/-- `Matrix.row` as a `LinearMap` -/
+def rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : Matrix m n α ≃ₗ[R] m → n → α where
+  __ := rowAddEquiv m n α
+  map_smul' := row_smul
+
+/-- `Matrix.col` as a `LinearMap` -/
+def colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : Matrix m n α ≃ₗ[R] n → m → α where
+  __ := colAddEquiv m n α
+  map_smul' := col_smul
+
+@[simp]
+theorem coe_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    ⇑(rowLinearEquiv m n R α) = row :=
+  rfl
+
+@[simp]
+theorem coe_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    ⇑(colLinearEquiv m n R α) = col :=
+  rfl
+
+@[simp]
+theorem toEquiv_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    rowLinearEquiv m n R α = rowEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toEquiv_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    colLinearEquiv m n R α = colEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    rowLinearEquiv m n R α = rowAddEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    colLinearEquiv m n R α = colAddEquiv m n α :=
+  rfl
+
+end RowCol
 
 section NonUnitalNonAssocSemiring
 variable {ι : Type*} [NonUnitalNonAssocSemiring α] [Fintype n]

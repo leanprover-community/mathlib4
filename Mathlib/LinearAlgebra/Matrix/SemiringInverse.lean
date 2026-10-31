@@ -172,7 +172,7 @@ alias ⟨_, Nonsingular.submatrix_equiv⟩ := nonsingular_submatrix_equiv_iff
 lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A.row p = A.row q)
     (s : ℤˣ := 1) (t : ℤˣ := -1) : A.detp s = A.detp t := by
   have : A.detp 1 = A.detp (-1) := sum_equiv (.mulRight <| swap p q) (by simp [hpq])
-    fun _ _ ↦ prod_equiv (swap p q) (by simp) (by aesop (add simp row))
+    fun _ _ ↦ prod_equiv (swap p q) (by simp) (by rw [coe_mulRight, coe_mul]; grind [row_apply'])
   obtain rfl | rfl := Int.units_eq_one_or s <;>
   obtain rfl | rfl := Int.units_eq_one_or t <;>
   first | rfl | rw [this]
