@@ -5870,6 +5870,7 @@ public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 public import Mathlib.MeasureTheory.Measure.MeasuredSets
 public import Mathlib.MeasureTheory.Measure.Module
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
+public import Mathlib.MeasureTheory.Measure.NoAtoms.Lyapunov
 public import Mathlib.MeasureTheory.Measure.NullMeasurable
 public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.MeasureTheory.Measure.OuterMeasure
