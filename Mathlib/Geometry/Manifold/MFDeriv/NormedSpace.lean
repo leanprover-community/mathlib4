@@ -659,6 +659,14 @@ end Manifold
   ext X
   simp [mvfderiv, mvfderivWithin]
 
+lemma mvfderivWithin_zero_of_not_mdifferentiableWithinAt {f : M → F} (hf : ¬MDiffAt[s] f x) :
+    d[s] f x = 0 := by
+  convert! mfderivWithin_zero_of_not_mdifferentiableWithinAt hf
+
+lemma mvfderiv_zero_of_not_mdifferentiableAt {f : M → F} (hf : ¬MDiffAt f x) :
+    d% f x = 0 := by
+  rw [← mvfderivWithin_univ, mvfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
+
 lemma mvfderivWithin_const (c : F) {x : M} : d[s] (fun _ : M ↦ c) x = 0 := by
   simp [mvfderivWithin, mfderivWithin_const]
 
@@ -742,6 +750,25 @@ lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g
   ext v
   simp only [mvfderiv, ← smul_eq_mul, mfderiv_smul hf hg]
   simp [mul_comm _ (g x)]
+
+@[simp, to_fun mvfderivWithin_const_fun_smul]
+lemma mvfderivWithin_const_smul (c : 𝕜) {f : M → F} (hs : UniqueMDiffAt[s] x) :
+    d[s](c • f) x = c • d[s] f x := by
+  by_cases hf : MDiffAt[s] f x
+  · -- Need to translate from scalar multiplication with a constant to with a constant function.
+    simp [← Function.smul_def c f, mvfderivWithin_smul mdifferentiableWithinAt_const hf hs,
+      mvfderivWithin_const]
+  · rcases eq_or_ne c 0 with rfl | hc; · simp
+    have hs' : ¬ MDiffAt[s] (c • f) x :=
+      fun h ↦ hf (by simpa [hc] using! h.const_smul c⁻¹)
+    simp [mvfderivWithin_zero_of_not_mdifferentiableWithinAt hs',
+      mvfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
+
+@[simp, to_fun mvfderiv_const_fun_smul]
+lemma mvfderiv_const_smul (c : 𝕜) {f : M → F} :
+    d% (c • f) x = c • d% f x := by
+  rw [← mvfderivWithin_univ, ← mvfderivWithin_univ,
+    mvfderivWithin_const_smul _ (uniqueMDiffWithinAt_univ _)]
 
 -- TODO: the next two lemmas are more type correct than their `mvfderiv` cousins, but not entirely:
 -- the right hand side should be of the form `fderiv ∘SL TangentSpaceCastModel`.
