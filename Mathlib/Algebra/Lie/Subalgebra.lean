@@ -361,10 +361,13 @@ def map : LieSubalgebra R L₂ :=
 theorem mem_map (x : L₂) : x ∈ K.map f ↔ ∃ y : L, y ∈ K ∧ f y = x :=
   Submodule.mem_map
 
--- TODO Rename and state for homs instead of equivs.
-theorem mem_map_submodule (e : L ≃ₗ⁅R⁆ L₂) (x : L₂) :
-    x ∈ K.map (e : L →ₗ⁅R⁆ L₂) ↔ x ∈ (K : Submodule R L).map (e : L →ₗ[R] L₂) :=
+theorem mem_map_submodule (f : L →ₗ⁅R⁆ L₂) (x : L₂) :
+    x ∈ K.map f ↔ x ∈ (K : Submodule R L).map (f : L →ₗ[R] L₂) :=
   Iff.rfl
+
+theorem mem_map_equiv {e : L ≃ₗ⁅R⁆ L₂} {x : L₂} :
+    x ∈ K.map (e : L →ₗ⁅R⁆ L₂) ↔ e.symm x ∈ K :=
+  Submodule.mem_map_equiv (K : Submodule R L) (e := e.toLinearEquiv)
 
 /-- The preimage of a Lie subalgebra under a Lie algebra morphism is a Lie subalgebra of the
 domain. -/
