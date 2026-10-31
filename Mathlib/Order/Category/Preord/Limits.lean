@@ -1,0 +1,29 @@
+/-
+Copyright (c) 2026 Jeremy Chen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Chen
+-/
+module
+
+public import Mathlib.CategoryTheory.Category.Cat.Limit
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Order.Category.Preord.Reflective
+
+/-!
+# Limits in `Preord`
+
+`Preord` has all small limits as a reflective subcategory of `Cat`.
+-/
+
+public section
+
+universe u
+
+open CategoryTheory Limits
+
+namespace Preord
+
+instance : HasLimits Preord.{u} :=
+  hasLimits_of_reflective preordToCat
+
+end Preord
