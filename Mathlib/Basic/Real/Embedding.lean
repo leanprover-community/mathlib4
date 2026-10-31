@@ -176,7 +176,7 @@ theorem embedRealFun_zero : embedRealFun (0 : M) = 0 := by
     have h' (y : ℚ) (hy : y < 0) : y ≤ x := by
       exact h _ <| (smul_neg_iff_of_neg_left (by simpa using hy)).mpr zero_lt_one
     contrapose! h'
-    obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
+    obtain ⟨y, hxy, hy⟩ := exists_ratCast_btwn h'
     exact ⟨y, by simpa using hy, hxy⟩
 
 theorem embedRealFun_add (x y : M) : embedRealFun (x + y) = embedRealFun x + embedRealFun y := by
@@ -227,7 +227,7 @@ theorem embedReal_one : (embedReal M) 1 = 1 := by
     have h' (y : ℚ) (hy : y < 1) : y ≤ x :=
       h _ ((smul_lt_smul_iff_of_pos_right zero_lt_one).mpr (by simpa using (Rat.lt_iff _ _).mp hy))
     contrapose! h'
-    obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
+    obtain ⟨y, hxy, hy⟩ := exists_ratCast_btwn h'
     exact ⟨y, (by norm_cast at hy), hxy⟩
 
 omit [One M] [ZeroLEOneClass M] [NeZero (1 : M)] in

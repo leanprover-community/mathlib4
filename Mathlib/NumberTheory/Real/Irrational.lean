@@ -514,7 +514,7 @@ theorem irrational_div_natCast_iff : Irrational (x / n) ↔ n ≠ 0 ∧ Irration
   rw [← cast_natCast, irrational_div_ratCast_iff, Nat.cast_ne_zero]
 /-- There is an irrational number `r` between any two reals `x < r < y`. -/
 theorem exists_irrational_btwn {x y : ℝ} (h : x < y) : ∃ r, Irrational r ∧ x < r ∧ r < y :=
-  let ⟨q, ⟨hq1, hq2⟩⟩ := exists_rat_btwn ((sub_lt_sub_iff_right (√2)).mpr h)
+  let ⟨q, ⟨hq1, hq2⟩⟩ := exists_ratCast_btwn ((sub_lt_sub_iff_right (√2)).mpr h)
   ⟨q + √2, irrational_sqrt_two.ratCast_add _, sub_lt_iff_lt_add.mp hq1, lt_sub_iff_add_lt.mp hq2⟩
 
 end
