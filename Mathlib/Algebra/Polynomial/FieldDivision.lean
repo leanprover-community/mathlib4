@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
@@ -599,6 +600,13 @@ theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
 
+theorem leadingCoeff_mul_normalize [DecidableEq R] (p : R[X]) :
+    C p.leadingCoeff * normalize p = p := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  grind [map_mul C p.leadingCoeff p.leadingCoeff⁻¹, leadingCoeff_eq_zero, normalize_apply,
+    coe_normUnit_of_ne_zero]
+
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
   · rw [H, Polynomial.map_zero, zero_dvd_iff, zero_dvd_iff, Polynomial.map_eq_zero]
@@ -697,25 +705,58 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
-open UniqueFactorizationMonoid in
+section normalizedFactors
+
+open UniqueFactorizationMonoid
+
 /--
 The normalized factors of a polynomial over a field times its leading coefficient give
 the polynomial.
 -/
-theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
-    C a.leadingCoeff * (normalizedFactors a).prod = a := by
-  by_cases ha : a = 0
-  · simp [ha]
-  rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
-    mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
-  simp_all
+theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (p : R[X]) :
+    C p.leadingCoeff * (normalizedFactors p).prod = p := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  rw [prod_normalizedFactors_eq hp, leadingCoeff_mul_normalize]
 
-open UniqueFactorizationMonoid in
 protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
     p ∈ normalizedFactors q ↔ Irreducible p ∧ p.Monic ∧ p ∣ q := by
-  by_cases hp : p = 0
-  · simpa [hp] using zero_notMem_normalizedFactors _
-  · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
+  simp +contextual [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic, Irreducible.ne_zero]
+
+theorem sum_natDegree_normalizedFactors [DecidableEq R] (p : R[X]) :
+    ((normalizedFactors p).map natDegree).sum = p.natDegree := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  rw [← natDegree_multiset_prod _ (zero_notMem_normalizedFactors p),
+    ← natDegree_C_mul (leadingCoeff_ne_zero.mpr hp), leadingCoeff_mul_prod_normalizedFactors]
+
+/-- A polynomial over a field which is not a unit must have a monic irreducible factor.
+See also `WfDvdMonoid.exists_irreducible_factor`. -/
+theorem exists_monic_irreducible_factor (p : R[X]) (hu : ¬IsUnit p) :
+    ∃ q : R[X], q.Monic ∧ Irreducible q ∧ q ∣ p := by
+  classical
+  obtain rfl | hp := eq_or_ne p 0
+  · exact ⟨X, by simp [irreducible_X]⟩
+  rcases exists_mem_normalizedFactors hp hu with ⟨q, hq⟩
+  grind [Polynomial.mem_normalizedFactors_iff]
+
+theorem exists_odd_natDegree_monic_irreducible_factor (p : R[X]) (hp : Odd p.natDegree) :
+    ∃ q : R[X], Odd q.natDegree ∧ q.Monic ∧ Irreducible q ∧ q ∣ p := by
+  classical
+  suffices ∃ q ∈ normalizedFactors p, Odd q.natDegree by
+    grind [Polynomial.mem_normalizedFactors_iff, show p ≠ 0 by grind]
+  contrapose! hp
+  rw [← p.sum_natDegree_normalizedFactors, Multiset.sum_map_eq_sum_toEnumFinset]
+  exact Finset.even_sum _ fun _ hq ↦ hp _ (Multiset.mem_of_mem_toEnumFinset hq)
+
+end normalizedFactors
+
+theorem exists_root_of_odd_natDegree_irreducible_imp_natDegree_eq_one
+    (h : ∀ {q : R[X]}, q.Monic → Odd q.natDegree → Irreducible q → q.natDegree = 1)
+    (p : R[X]) (hp : Odd p.natDegree) : ∃ x, p.IsRoot x := by
+  rcases p.exists_odd_natDegree_monic_irreducible_factor hp with ⟨q, _, _, _, hd⟩
+  rcases q.exists_root_of_natDegree_eq_one (by grind) with ⟨x, hx⟩
+  exact ⟨x, hx.dvd hd⟩
 
 variable (p) in
 @[simp]
