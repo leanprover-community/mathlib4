@@ -70,14 +70,28 @@ theorem opow_limit {a b : Ordinal} (ha : a ≠ 0) (hb : IsSuccLimit b) :
     a ^ b = ⨆ x : Iio b, a ^ x.1 := by
   simp_rw [opow_of_ne_zero ha, limitRecOn_limit _ _ _ _ hb]
 
+/-- See `opow_le_of_isSuccLimit'` for a variant assuming `c ≠ 0` rather than `a ≠ 0`. -/
 theorem opow_le_of_isSuccLimit {a b c : Ordinal} (a0 : a ≠ 0) (h : IsSuccLimit b) :
     a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c := by
   rw [opow_limit a0 h, Ordinal.iSup_le_iff, Subtype.forall]
   rfl
 
+/-- See `opow_le_of_isSuccLimit` for a variant assuming `a ≠ 0` rather than `c ≠ 0`. -/
+theorem opow_le_of_isSuccLimit' {a b c : Ordinal} (hc : c ≠ 0) (h : IsSuccLimit b) :
+    a ^ b ≤ c ↔ ∀ b' < b, a ^ b' ≤ c := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · constructor <;> intros <;> grw [zero_opow_le, one_le_iff_ne_zero.mpr hc]
+  · exact opow_le_of_isSuccLimit ha h
+
+/-- See `lt_opow_of_isSuccLimit'` for a variant assuming `a ≠ 0` rather than `b ≠ 0`. -/
 theorem lt_opow_of_isSuccLimit {a b c : Ordinal} (b0 : b ≠ 0) (h : IsSuccLimit c) :
     a < b ^ c ↔ ∃ c' < c, a < b ^ c' := by
   simpa using (opow_le_of_isSuccLimit b0 h).not
+
+/-- See `lt_opow_of_isSuccLimit` for a variant assuming `b ≠ 0` rather than `a ≠ 0`. -/
+theorem lt_opow_of_isSuccLimit' {a b c : Ordinal} (ha : a ≠ 0) (h : IsSuccLimit c) :
+    a < b ^ c ↔ ∃ c' < c, a < b ^ c' := by
+  simpa using (opow_le_of_isSuccLimit' ha h).not
 
 @[simp]
 theorem opow_one (a : Ordinal) : a ^ (1 : Ordinal) = a := by
