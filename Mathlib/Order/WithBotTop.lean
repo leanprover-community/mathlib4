@@ -5,6 +5,7 @@ Authors: Joël Riou, Kevin Buzzard
 -/
 module
 
+public import Mathlib.Order.OrdContinuous
 public import Mathlib.Order.WithBot
 
 /-!
@@ -74,6 +75,33 @@ theorem coe_strictMono [Preorder ι] : StrictMono (WithBotTop.coe : ι → _) :=
 lemma coe_monotone [Preorder ι] :
     Monotone (WithBotTop.coe : ι → _) :=
   fun _ _ _ ↦ by simpa
+
+variable {α : Type*} [Preorder α]
+
+theorem leftOrdContinuous_coe : LeftOrdContinuous (WithBotTop.coe : α → _) :=
+  WithBot.leftOrdContinuous_coe.comp WithTop.leftOrdContinuous_coe
+
+theorem rightOrdContinuous_coe : RightOrdContinuous (WithBotTop.coe : α → _) :=
+  WithBot.rightOrdContinuous_coe.comp WithTop.rightOrdContinuous_coe
+
+variable {α β : Type*} {ι : Sort*} [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β]
+  [Nonempty ι] {f : α → β}
+
+theorem coe_csSup {s : Set α} (hs : s.Nonempty) (hs' : BddAbove s) :
+    (↑(sSup s) : WithBotTop α) = sSup ((↑) '' s) :=
+  WithBotTop.leftOrdContinuous_coe.map_csSup hs hs'
+
+theorem coe_csInf {s : Set α} (hs : s.Nonempty) (hs' : BddBelow s) :
+    (↑(sInf s) : WithBotTop α) = sInf ((↑) '' s) :=
+  WithBotTop.rightOrdContinuous_coe.map_csInf hs hs'
+
+theorem coe_ciSup {f : ι → α} (hf : BddAbove (Set.range f)) :
+    (↑(⨆ x, f x) : WithBotTop α) = ⨆ x, ↑(f x) :=
+  WithBotTop.leftOrdContinuous_coe.map_ciSup hf
+
+theorem coe_ciInf {f : ι → α} (hf : BddBelow (Set.range f)) :
+    (↑(⨅ x, f x) : WithBotTop α) = ⨅ x, ↑(f x) :=
+  WithBotTop.rightOrdContinuous_coe.map_ciInf hf
 
 end WithBotTop
 
