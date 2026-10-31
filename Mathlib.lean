@@ -7460,7 +7460,9 @@ public import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.RingTheory.Valuation.ValuationRing
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Integer
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Trivial
+public import Mathlib.RingTheory.Valuation.ValuativeRel.ValuationSubring
 public import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.Compare
 public import Mathlib.RingTheory.WittVector.Complete
