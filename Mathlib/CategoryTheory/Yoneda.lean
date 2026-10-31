@@ -937,6 +937,13 @@ lemma uliftYonedaEquiv_symm_comp
     uliftYonedaEquiv.symm x ≫ f = uliftYonedaEquiv.symm (f.app _ x) :=
   uliftYonedaEquiv.injective (by rw [uliftYonedaEquiv_comp]; simp)
 
+@[reassoc]
+lemma uliftYonedaEquiv_symm_naturality_left
+    {X X' : C} (f : X' ⟶ X) (F : Cᵒᵖ ⥤ Type max w v₁) (x : F.obj ⟨X⟩) :
+    uliftYoneda.{w}.map f ≫ uliftYonedaEquiv.symm x =
+      uliftYonedaEquiv.symm ((F.map f.op) x) :=
+  uliftYonedaEquiv.injective (by simp [uliftYonedaEquiv])
+
 @[simp]
 lemma uliftYonedaEquiv_uliftYoneda_map {X Y : C} (f : X ⟶ Y) :
     DFunLike.coe (β := fun _ ↦ ULift.{w} (X ⟶ Y))
