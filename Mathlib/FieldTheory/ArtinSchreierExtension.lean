@@ -31,7 +31,7 @@ theory).
 public section
 universe u
 
-section ArtinScheierPolynomial
+section ArtinSchreierPolynomial
 
 variable {F : Type u} [CommRing F]
 
@@ -125,19 +125,42 @@ lemma artinSchreierPoly_irreducible_or_splits (a : F) :
   · right
     simp [artinSchreierPoly_def p, hp1]
 
-end ArtinScheierPolynomial
+lemma artinSchreierPoly_add (a b : F) :
+    artinSchreierPoly (a + b) = artinSchreierPoly a - C b := by
+  let p := ringExpChar F
+  have : ExpChar F p := ringExpChar.expChar F
+  grind [artinSchreierPoly_def p]
+
+lemma artinSchreierPoly_sub (a b : F) :
+    artinSchreierPoly (a - b) = artinSchreierPoly a + C b := by
+  simpa [sub_eq_add_neg] using artinSchreierPoly_add a (-b)
+
+lemma artinSchreierPoly_neg (a : F) :
+    (artinSchreierPoly (-a)).aeval (- X) = - artinSchreierPoly a := by
+  let p := ringExpChar F
+  have hex : ExpChar F p := ringExpChar.expChar F
+  rcases expChar_is_prime_or_one F p with hp | hp1
+  · simp [artinSchreierPoly_def p]
+    by_cases hp2 : p = 2
+    · rw [expChar_prime_iff F hp, hp2] at hex
+      simp [hp2, CharTwo.add_eq_iff_eq_add]
+      grind
+    · ring_nf
+      rw [neg_one_pow_eq_pow_mod_two p, hp.mod_two_eq_one_iff_ne_two.mpr hp2]
+      grind
+  · simp [artinSchreierPoly_def p, hp1]
+
+end ArtinSchreierPolynomial
 
 section Lemmas
-
-variable {F : Type u} {K : Type u} {p : ℕ} [Field F] [CharP F p] [Field K] [Algebra F K]
-  [FiniteDimensional F K] [IsGalois F K] [hp : Fact p.Prime] (hrank : Module.finrank F K = p)
-include hrank
 
 open Finset
 
 private
-lemma generator_of_charP (g : Gal(K/F)) (h_gen : Subgroup.zpowers g = ⊤) :
-    ∃ z : K, g z = z - 1 := by
+lemma generator_of_charP {F : Type u} {K : Type u} {p : ℕ} [Field F] [CharP F p] [Field K]
+    [Algebra F K] [IsGalois F K] [hp : Fact p.Prime] (hrank : Module.finrank F K = p)
+    (g : Gal(K/F)) (h_gen : Subgroup.zpowers g = ⊤) : ∃ z : K, g z = z - 1 := by
+  let := FiniteDimensional.of_finrank_pos (hp.elim.pos.trans_eq hrank.symm)
   have := (Algebra.charP_iff F K p).mp ‹CharP F p›
   have h_ord := (IsGalois.card_aut_eq_finrank F K).trans hrank
   obtain ⟨y, hy⟩ := Algebra.trace_surjective F K 1
@@ -155,11 +178,11 @@ lemma generator_of_charP (g : Gal(K/F)) (h_gen : Subgroup.zpowers g = ⊤) :
     let f := fun (i : rp) ↦ g ^ (i + 1 : ℕ)
     refine sum_bijective f ?_ (by simp) fun _ _ ↦ rfl
     refine (Nat.bijective_iff_injective_and_card f).mpr
-      ⟨fun a b h ↦ ?_, by rw [h_ord, Nat.card_eq_finsetCard rp, Finset.card_range p]⟩
+      ⟨fun a b h ↦ ?_, by rw [h_ord, Nat.card_eq_finsetCard rp, card_range p]⟩
     rw [pow_eq_pow_iff_modEq, Nat.ModEq.add_iff_right rfl, ← pow_eq_pow_iff_modEq, pow_inj_mod,
-      orderOf_eq_card_of_zpowers_eq_top h_gen, h_ord, Nat.mod_eq_of_lt (by grind),
-      Nat.mod_eq_of_lt (by grind), SetCoe.ext_iff] at h
-    exact h
+      orderOf_eq_card_of_zpowers_eq_top h_gen, h_ord] at h
+    repeat rw [Nat.mod_eq_of_lt (by grind)] at h
+    simpa using h
   calc
   _ = ∑ i : rp, g ((g ^ (i : ℕ)) y * i) := map_finsetSum ..
   _ = ∑ i : rp, (g ^ (i + 1 : ℕ)) y * i := by simp [pow_succ' g]
@@ -173,10 +196,26 @@ open Field IntermediateField minpoly Polynomial
 variable {F : Type u} {K : Type u} {p : ℕ} [Field F] [ExpChar F p] [Field K] [Algebra F K]
   [hp : Fact p.Prime]
 
+omit hp in
+include p in
+lemma artinSchreierPoly_adjoin (a : F) (z : K) (h : z ∈ (artinSchreierPoly a).rootSet K) :
+    IsSplittingField F F⟮z⟯ (artinSchreierPoly a) := by
+  have splits : ((artinSchreierPoly a).map (algebraMap F F⟮z⟯)).Splits := by
+    rw [artinSchreierPoly_map p a]
+    refine artinSchreierPoly_splits ?_ (c := ⟨z, mem_adjoin_simple_self F z⟩)
+    apply isRoot_of_eval₂_map_eq_zero (FaithfulSMul.algebraMap_injective ↥F⟮z⟯ K)
+    rw [IntermediateField.algebraMap_apply, eval₂_eq_eval_map, ← artinSchreierPoly_map p a,
+      Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
+    simpa using (mem_rootSet.mp h).2
+  refine isSplittingField_iff.mpr ⟨splits, ge_antisymm_iff.mpr ⟨?_,
+    adjoin_simple_le_iff.mpr (mem_adjoin_of_mem F h)⟩⟩
+  rw [adjoin_le_iff, Set.subset_def, ← splits.image_rootSet_algebraMap]
+  exact fun x ⟨y, _, hy⟩ ↦ by simp [← hy]
+
 theorem isCyclic_charP_tfae :
     [Module.finrank F K = p ∧ IsGalois F K,
     ∃ a : F, Irreducible (artinSchreierPoly a) ∧ IsSplittingField F K (artinSchreierPoly a),
-    ∃ α : K, α ∉ Set.range ⇑(algebraMap F K) ∧ α ^ p - α ∈ Set.range ⇑(algebraMap F K) ∧ F⟮α⟯ = ⊤,
+    ∃ α ∉ (⊥ : IntermediateField F K), α ^ p - α ∈ (⊥ : IntermediateField F K) ∧ F⟮α⟯ = ⊤,
     ∃ a : F, ∃ α : K, minpoly F α = artinSchreierPoly a ∧ F⟮α⟯ = ⊤,
     ∃ a : F, Nonempty (IsAdjoinRootMonic K (artinSchreierPoly a))].TFAE := by
   have : CharP F p := (expChar_prime_iff F hp.elim).mp ‹ExpChar F p›
@@ -188,15 +227,13 @@ theorem isCyclic_charP_tfae :
     have h_ord := (hgal.card_aut_eq_finrank F K).trans hrank
     obtain ⟨g, h_gen⟩ := isCyclic_iff_exists_zpowers_eq_top.mp (isCyclic_of_prime_card h_ord)
     obtain ⟨z, hgz⟩ := generator_of_charP hrank g h_gen
-    have hz := (hgal.mem_range_algebraMap_iff_fixed z).mp.mt (by grind)
-    refine ⟨z, ⟨hz, ?_⟩⟩
-    rw [hgal.mem_range_algebraMap_iff_fixed, primitive_element_iff_minpoly_natDegree_eq F z]
-    refine ⟨fun γ ↦ ?_, Eq.symm ?_⟩
+    have hz := (hgal.mem_bot_iff_fixed z).mp.mt (by grind)
+    refine ⟨z, ⟨hz, (hgal.mem_bot_iff_fixed _).mpr (fun γ ↦ ?_),
+      (primitive_element_iff_minpoly_natDegree_eq F z).mpr (Eq.symm ?_)⟩⟩
     · obtain ⟨n, rfl⟩ : ∃ n, g ^ n = γ := Subgroup.mem_zpowers_iff.mp (by simp [h_gen])
-      rw [← AlgEquiv.smul_def, ← MulAction.mem_fixedBy]
-      exact MulAction.mem_fixedBy_zpow (by simp [hgz, sub_pow_char]) n
-    · rw [hrank, ← hp.elim.dvd_iff_eq (natDegree_eq_one_iff.mp.mt hz)]
-      simpa [hrank] using degree_dvd (Algebra.IsIntegral.isIntegral z (R := F))
+      simpa [← AlgEquiv.smul_def] using MulAction.mem_fixedBy_zpow (by simp [hgz, sub_pow_char]) n
+    · simpa [hrank, ← hp.elim.dvd_iff_eq (natDegree_eq_one_iff.mp.mt hz)] using
+        degree_dvd (Algebra.IsIntegral.isIntegral z (R := F))
   tfae_have 3 → 4 := by
     refine fun ⟨z, hz, ⟨a, _⟩, htop⟩ ↦ ⟨a, z, ?_, htop⟩
     set f := artinSchreierPoly a with hf
@@ -209,50 +246,39 @@ theorem isCyclic_charP_tfae :
     aesop
   tfae_have 4 → 5 := by
     refine fun ⟨a, z, h, htop⟩ ↦ ⟨a, Nonempty.intro ?_⟩
-    have h_int : IsIntegral F z := ne_zero_iff.mp (by rw [h]; exact (ha a).ne_zero)
+    have h_int : IsIntegral F z := ne_zero_iff.mp (by simpa [h] using (ha a).ne_zero)
     have : FiniteDimensional F K := by
-      refine Module.finite_def.mpr ?_
-      rw [adjoin_simple_eq_top_iff_of_isAlgebraic (IsIntegral.isAlgebraic h_int)] at htop
-      simpa [← Algebra.top_toSubmodule, ← htop] using IsIntegral.fg_adjoin_singleton h_int
+      rw [adjoin_simple_eq_top_iff_of_isAlgebraic h_int.isAlgebraic] at htop
+      simpa [Module.finite_def, ← Algebra.top_toSubmodule, ← htop] using h_int.fg_adjoin_singleton
     simpa [← h] using IsAdjoinRootMonic.mkOfPrimitiveElement h_int htop
   tfae_have 5 → 2 := by
-    refine fun ⟨a, ⟨h⟩⟩ ↦ ⟨a, ?_⟩
-    have heval := IsAdjoinRoot.aeval_root_self h.1
-    refine ⟨IsAdjoinRoot.irreducible h.1, isSplittingField_iff_intermediateField.mpr ⟨?_, ?_⟩⟩
+    refine fun ⟨a, ⟨h1, h2⟩⟩ ↦ ⟨a, ?_⟩
+    have heval := h1.aeval_root_self
+    refine ⟨h1.irreducible, isSplittingField_iff_intermediateField.mpr ⟨?_, ?_⟩⟩
     · rw [← eval_map_algebraMap] at heval
       rw [artinSchreierPoly_map p a] at heval ⊢
-      exact artinSchreierPoly_splits (c := h.root) (by simp [heval])
+      exact artinSchreierPoly_splits (c := h1.root) (by simp [heval])
     · refine (adjoin_eq_top_iff_of_isAlgebraic (fun _ ↦ isAlgebraic_of_mem_rootSet)).mpr ?_
-      rw [eq_top_iff, ← IsAdjoinRoot.adjoin_root_eq_top h.1, Algebra.adjoin_le_iff,
+      rw [eq_top_iff, ← h1.adjoin_root_eq_top, Algebra.adjoin_le_iff,
         Set.singleton_subset_iff, SetLike.mem_coe]
-      exact Algebra.mem_adjoin_of_mem (h.2.mem_rootSet.mpr heval)
+      exact Algebra.mem_adjoin_of_mem (h2.mem_rootSet.mpr heval)
   tfae_have 2 → 1 := by
     refine fun ⟨a, h1, h2⟩ ↦ ⟨Eq.symm ?_, IsGalois.of_separable_splitting_field
       ((separable_iff_derivative_ne_zero h1).mpr
       (by simp [artinSchreierPoly_def p, derivative_pow]))⟩
     set f := artinSchreierPoly a with hf
+    have : FiniteDimensional F K := h2.finiteDimensional K f
     have hd : (f.map (algebraMap F K)).degree ≠ 0 := by
       rw [degree_map, degree_eq_natDegree (ha a).ne_zero, (ha a).1, Nat.cast_ne_zero]
       exact hp.elim.ne_zero
-    have splits : (f.map (algebraMap F K)).Splits := IsSplittingField.splits K f
-    set z := Polynomial.rootOfSplits splits hd with hz
-    have heval : (Polynomial.aeval z) f = 0 := by
-      simpa using Polynomial.eval_rootOfSplits splits hd
-    have htop : F⟮z⟯ = ⊤ := by
-      have splits' : (f.map (algebraMap F F⟮z⟯)).Splits := by
-        rw [artinSchreierPoly_map p a]
-        refine artinSchreierPoly_splits ?_ (c := ⟨z, mem_adjoin_simple_self F z⟩)
-        apply Polynomial.isRoot_of_eval₂_map_eq_zero (FaithfulSMul.algebraMap_injective (↥F⟮z⟯) K)
-        rw [IntermediateField.algebraMap_apply, eval₂_eq_eval_map, ← artinSchreierPoly_map p a,
-          Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
-        simpa using heval
-      rw [eq_top_iff, ← (isSplittingField_iff_intermediateField.mp h2).2, adjoin_le_iff]
-      intro x hx
-      rw [← splits'.image_rootSet_algebraMap (B := K)] at hx
-      aesop
-    have : FiniteDimensional F K := IsSplittingField.finiteDimensional K f
-    rw [← (ha a).1, ← hf, eq_of_irreducible_of_monic h1 heval (ha a).2]
-    exact (primitive_element_iff_minpoly_natDegree_eq F z).mp htop
+    set z := rootOfSplits h2.splits hd with hz
+    have heval : f.aeval z = 0 := by simpa using eval_rootOfSplits h2.splits hd
+    have splits' := (artinSchreierPoly_adjoin a z ((ha a).2.mem_rootSet.mpr heval) (p := p)).1
+    rw [IsSplittingField.splits_iff K (f.map (algebraMap F F⟮z⟯)), ← Subalgebra.finrank_eq_one_iff,
+      subalgebra_top_finrank_eq_submodule_top_finrank, finrank_top,
+      finrank_eq_one_iff_eq_top] at splits'
+    simpa [← (ha a).1, ← hf, eq_of_irreducible_of_monic h1 heval (ha a).2]
+        using (primitive_element_iff_minpoly_natDegree_eq F z).mp splits'
   tfae_finish
 
 /- This is the first step towards the Artin-Schreier-Witt construction.
