@@ -63,18 +63,59 @@ variable [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace IB x
 #check TangentBundle IB B
 
 variable (IB B) in
-def CotangentBundle := Bundle.TotalSpace EB (fun x : B ↦ (TangentSpace (M := B) IB x →L[ℝ] ℝ))
+abbrev CotangentBundle := Bundle.TotalSpace EB
+  (fun x : B ↦ (TangentSpace (M := B) IB x →L[ℝ] Trivial B ℝ x))
 
 -- idea: write the musical iso as a map from the tangent to the cotangent bundle,
--- prove that is a smooth embedding and be happy
+-- prove that is a diffeomorphism (and its own inverse) and rejoice
+variable (IB B) in
 def foo : TangentBundle IB B → CotangentBundle IB B :=
+    --Bundle.TotalSpace EB (fun x : B ↦ (TangentSpace (M := B) IB x →L[ℝ] ℝ)) :=
   fun X ↦
-    let a := (InnerProductSpace.toDual ℝ (TangentSpace IB X.1))
-    TotalSpace.mk' EB X.1 (a.toLinearEquiv sorry)
+    TotalSpace.mk' EB X.1 ((InnerProductSpace.toDual ℝ (TangentSpace IB X.1)).toLinearEquiv X.2)
 
--- lemma verysimple : True := by
---   let f : (TangentBundle IB B) →
---     (Bundle.TotalSpace EB (fun x : B ↦ (TangentSpace (M := B) IB x →L[ℝ] ℝ))) := sorry
+#synth ContMDiffVectorBundle k EB (fun x : B ↦ TangentSpace (M := B) IB x) IB
+
+#synth ContMDiffVectorBundle k (EB →L[ℝ] ℝ)
+  (fun b ↦ TangentSpace IB b →L[ℝ] Trivial B ℝ b) IB
+
+#synth ContMDiffVectorBundle k (EB →L[ℝ] ℝ)
+  (fun x : B ↦ (TangentSpace (M := B) IB x →L[ℝ] Trivial B ℝ x)) IB
+
+-- fails
+--#synth TopologicalSpace (CotangentBundle IB B)
+
+-- fails also: that's the reason for the failure below
+--#synth TopologicalSpace <|
+--  Bundle.TotalSpace EB (fun x : B ↦ (TangentSpace (M := B) IB x →L[ℝ] Trivial B ℝ x))
+
+-- #check ContMDiffVectorBundle.continuousLinearMap
+--   (E₁ := fun x : B ↦ TangentSpace (M := B) IB x) (F₁ := EB) (𝕜 := ℝ) (n := k)
+--   (E₂ := fun x : B ↦ Bundle.Trivial B ℝ x) (F₂ := ℝ) (IB := IB)
+
+--#synth ContMDiffVectorBundle k EB (fun x : B ↦ TangentSpace (M := B) IB x →L[ℝ] (Bundle.Trivial B ℝ x)) IB
+
+-- doesn't typecheck yet
+--lemma contMDiff_foo :
+--    ContMDiff IB.tangent (IB.prod 𝓘(ℝ, EB →L[ℝ] ℝ)) k
+--    (foo IB B) := sorry
+
+def fooinv : CotangentBundle IB B → TangentBundle IB B :=
+  fun X ↦ TotalSpace.mk' EB X.1 ((InnerProductSpace.toDual ℝ _).symm.toLinearEquiv X.2)
+
+def fooeq : TangentBundle IB B ≃ CotangentBundle IB B where
+  toFun := foo IB B
+  invFun := fooinv
+  left_inv := by
+    intro x
+    simp only [foo, fooinv]
+    ext
+    · rfl
+    simp
+    sorry -- follows by basic properties...
+  right_inv := sorry -- similar
+
+-- final step: upgrade that to a diffeomorphism...
 
 -- Same workaround as for the Levi-Civita file.
 variable {I} in
@@ -110,6 +151,7 @@ lemma ContMDiffAt.inner_bundle_iff_apply {s : (x : B) → TangentSpace IB x} {x 
 
 -- TODO: add also the corresponding WithinAt, On and unrestricted versions of these lemmas
 
+--set_option linter.tacticCheckInstances true in
 lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     (hs : CMDiffAt k (fun (x : B) ↦
       TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)) x) :
@@ -120,11 +162,18 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
   rw [contMDiffAt_section]
   simp_rw [TangentBundle.trivializationAt_apply']
 
+
   let echart (x' : B) := extChartAt IB x'
   let p (x' : B) := (InnerProductSpace.toDual ℝ (TangentSpace IB x')).symm (s x')
-  have h1 (x') : MDiffAt[Set.univ] (echart x) ((echart x').symm ((echart x') x')) := sorry
-  have h2 (x') : MDiffAt[Set.range IB] (echart x').symm ((echart x') x') := by
-    sorry
+  have h1 (x') : MDiffAt[(chartAt HB x).source] (echart x) ((echart x').symm ((echart x') x')) := by
+
+    -- requires x' ∈ (chartAt HB x).source
+    apply MDifferentiableOn.mdifferentiableWithinAt (s := (chartAt HB x).source)
+    swap
+    apply (chartAt HB x).open_source.mem_nhds
+
+    apply mdifferentiableAt_extChartAt
+
   have h3 (x') : UniqueMDiffAt[Set.range IB] ((echart x') x') := sorry
   have h4 (x') : ((echart x').symm ((echart x') x')) = x' := by simp [echart]
   let A (x') := mfderiv% (echart x) x' -- ((echart x').symm ((echart x') x'))
@@ -138,7 +187,8 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
       x := by
     conv =>
       enter [4, x']
-      rw [mfderivWithin_comp (I' := IB) (u := Set.univ) _ (h1 x') (h2 x') (by simp) (h3 x'),
+      rw [mfderivWithin_comp (I' := IB) (u := (chartAt HB x).source) _ (h1 x')
+        (mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x')) (by simp) (h3 x'),
         mfderivWithin_univ, h4 x']
     sorry
   apply aux.congr
