@@ -122,10 +122,7 @@ theorem nnNorm_apply_le_nnNorm (A : Matrix m n α) {i : m} {j : n} : ‖A i j‖
 @[deprecated (since := "2026-10-31")] alias nnnorm_apply_le_nnnorm := nnNorm_apply_le_nnNorm
 
 @[deprecated (since := "2026-10-19")]
-alias nnNorm_entry_le_entrywise_sup_nnNorm := nnNorm_apply_le_nnNorm
-
-@[deprecated (since := "2026-10-31")]
-alias nnnorm_entry_le_entrywise_sup_nnnorm := nnNorm_entry_le_entrywise_sup_nnNorm
+alias nnnorm_entry_le_entrywise_sup_nnnorm := nnNorm_apply_le_nnNorm
 
 @[simp]
 theorem nnNorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖₊ = ‖a‖₊) :

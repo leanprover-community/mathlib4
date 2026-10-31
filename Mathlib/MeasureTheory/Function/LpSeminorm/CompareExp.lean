@@ -264,9 +264,6 @@ private lemma ae_enorm_bilin_le_of_ae_nnNorm_le {b : E → F → G} {c : ℝ≥0
   simp only [enorm_eq_nnNorm]
   exact_mod_cast hx
 
-@[deprecated (since := "2026-10-31")]
-alias ae_enorm_bilin_le_of_ae_nnnorm_le := ae_enorm_bilin_le_of_ae_nnNorm_le
-
 theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm_of_pos (p : ℝ≥0∞) (b : ε → ε' → ε'') (c : ℝ≥0∞)
     {f : α → ε} {g : α → ε'}
     (hb : AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
@@ -463,10 +460,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm {p q r : ℝ≥0∞} (b : E → F → G) 
     (ae_enorm_bilin_le_of_ae_nnNorm_le h)
 
 @[deprecated (since := "2026-09-16")]
-alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnNorm := eLpNorm_le_eLpNorm_mul_eLpNorm
-
-@[deprecated (since := "2026-10-31")]
-alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm := eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnNorm
+alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm := eLpNorm_le_eLpNorm_mul_eLpNorm
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
@@ -507,11 +501,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_pos {p q r : ℝ≥0∞} (b : E → F 
     (ae_enorm_bilin_le_of_ae_nnNorm_le h) hr
 
 @[deprecated (since := "2026-09-16")]
-alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnNorm_of_pos := eLpNorm_le_eLpNorm_mul_eLpNorm_of_pos
-
-@[deprecated (since := "2026-10-31")]
-alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm_of_pos :=
-  eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnNorm_of_pos
+alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm_of_pos := eLpNorm_le_eLpNorm_mul_eLpNorm_of_pos
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of an elementwise operation
 `fun x => b (f x) (g x)`. -/
