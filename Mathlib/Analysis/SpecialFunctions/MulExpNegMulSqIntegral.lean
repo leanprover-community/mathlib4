@@ -95,10 +95,8 @@ theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0
       exact (mul_nonneg (le_of_lt hε) (mul_self_nonneg (norm g)))
     apply Eventually.of_forall
     intro x
-    simp only [Algebra.smul_mul_assoc, smul_neg, BoundedContinuousFunction.coe_mul, Pi.mul_apply,
-      BoundedContinuousFunction.pow_apply, BoundedContinuousFunction.coe_add,
-      BoundedContinuousFunction.coe_one, coe_neg, BoundedContinuousFunction.coe_smul, smul_eq_mul,
-      Pi.add_apply, Pi.ofNat_apply, Pi.neg_apply, norm_mul, norm_eq_abs, norm_pow]
+    simp only [Algebra.smul_mul_assoc, smul_neg, mul_apply, pow_apply, add_apply, one_apply,
+      neg_apply, smul_apply, smul_eq_mul, norm_mul, norm_eq_abs, norm_pow]
     refine (mul_le_mul_of_nonneg_right (norm_coe_le_norm g x) (pow_nonneg (abs_nonneg _) n)).trans
       <| mul_le_of_le_one_right (norm_nonneg _) ?_
     apply pow_le_one₀ (abs_nonneg _)

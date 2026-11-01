@@ -389,7 +389,7 @@ theorem Splits.roots_map_of_ne_zero {S : Type*} [CommRing S] [IsDomain S]
   induction hf using Submonoid.closure_induction with
   | mem p hp => obtain (⟨r, rfl⟩ | ⟨a, rfl⟩) := hp <;> simp
   | one => simp
-  | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by aesop]
+  | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by contrapose hφ; simp [hφ]]
 
 theorem Splits.roots_map_of_injective {S : Type*} [CommRing S] [IsDomain S]
     (hf : f.Splits) {i : R →+* S} (hi : Function.Injective i) : (f.map i).roots = f.roots.map i :=
@@ -669,30 +669,5 @@ theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x =
   Splits.of_natDegree_eq_two (natDegree_eq_of_degree_eq_some h₁) h₂
 
 end Field
-
-
-universe u v w
-
-section Splits
-
-section CommRing
-
-variable {i}
-
-variable (i)
-
-end CommRing
-
-variable [CommRing R]
-
-section UFD
-
-attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
-
-local infixl:50 " ~ᵤ " => Associated
-
-end UFD
-
-end Splits
 
 end Polynomial
