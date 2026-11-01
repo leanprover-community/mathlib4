@@ -91,7 +91,7 @@ theorem neg_one_notMem_closure_insert_of_neg_notMem
   suffices x * y⁻¹ + y⁻¹ ∈ P by membership
   membership
 
-theorem exists_le_and_mem_or_mem (hP : P.IsPreordering) (x y : R) (h : -(x * y) ∈ P) :
+theorem exists_ge_and_mem_or_mem (hP : P.IsPreordering) (x y : R) (h : -(x * y) ∈ P) :
     ∃ Q ≥ P, Q.IsPreordering ∧ (x ∈ Q ∨ y ∈ Q) := by
   rcases hP.neg_one_notMem_closure_insert_or_of_neg_mul_mem h with hcl | hcl <;>
     exact ⟨_, fun _ ↦ by membership, hP.closure_insert hcl, by membership⟩
@@ -100,31 +100,31 @@ theorem exists_le_and_mem_or_mem (hP : P.IsPreordering) (x y : R) (h : -(x * y) 
 theorem _root_.Subsemiring.IsOrdering.of_maximal_isPreordering
     (max : Maximal IsPreordering P) : P.IsOrdering :=
   max.prop.isOrdering_iff.mpr <| fun _ _ h ↦ by
-  rcases max.prop.exists_le_and_mem_or_mem _ _ h with ⟨_, hO'₁, hO'₂, _⟩
+  rcases max.prop.exists_ge_and_mem_or_mem _ _ h with ⟨_, hO'₁, hO'₂, _⟩
   grind [max.le_of_ge hO'₂ hO'₁]
 
 /- Every preordering on `R` extends to an ordering. -/
-theorem exists_le_isOrdering (hP : P.IsPreordering) : ∃ O ≥ P, O.IsOrdering :=
+theorem exists_ge_isOrdering (hP : P.IsPreordering) : ∃ O ≥ P, O.IsOrdering :=
   have ⟨_, O_ge, O_max⟩ : ∃ O, P ≤ O ∧ Maximal IsPreordering O :=
     zorn_le_nonempty₀ {P : Subsemiring R | IsPreordering P} (fun _ hS hc _ hQ ↦
       ⟨_, IsPreordering.sSup (Set.nonempty_of_mem hQ) hc.directedOn hS, fun _ ↦ le_sSup⟩) _ hP
   ⟨_, O_ge, .of_maximal_isPreordering O_max⟩
 
-theorem exists_le_isOrdering_and_mem (hP : P.IsPreordering) (h : -1 ∉ closure (insert a P)) :
+theorem exists_ge_isOrdering_and_mem (hP : P.IsPreordering) (h : -1 ∉ closure (insert a P)) :
     ∃ O ≥ P, O.IsOrdering ∧ a ∈ O := by
-  rcases (hP.closure_insert h).exists_le_isOrdering with ⟨_, _, hO⟩
+  rcases (hP.closure_insert h).exists_ge_isOrdering with ⟨_, _, hO⟩
   exact ⟨_, fun _ ↦ by membership, hO, by membership⟩
 
 variable (a) in
-theorem exists_le_isOrdering_and_mem_or_neg_mem (hP : P.IsPreordering) :
+theorem exists_ge_isOrdering_and_mem_or_neg_mem (hP : P.IsPreordering) :
     ∃ Q ≥ P, Q.IsOrdering ∧ (a ∈ Q ∨ -a ∈ Q) := by
-  rcases hP.exists_le_and_mem_or_mem a (-a) (by simp [hP]) with ⟨_, _, hP', _⟩
-  rcases hP'.exists_le_isOrdering with ⟨_, _, hO⟩
+  rcases hP.exists_ge_and_mem_or_mem a (-a) (by simp [hP]) with ⟨_, _, hP', _⟩
+  rcases hP'.exists_ge_isOrdering with ⟨_, _, hO⟩
   exact ⟨_, by grind, hO, by membership⟩
 
-theorem exists_lt_isOrdering (hP : P.IsPreordering) (hp : a ∉ P) (hn : -a ∉ P) :
+theorem exists_gt_isOrdering (hP : P.IsPreordering) (hp : a ∉ P) (hn : -a ∉ P) :
     ∃ Q > P, Q.IsOrdering := by
-  rcases hP.exists_le_isOrdering_and_mem_or_neg_mem a with ⟨_, _, hQ, _ | _⟩ <;>
+  rcases hP.exists_ge_isOrdering_and_mem_or_neg_mem a with ⟨_, _, hQ, _ | _⟩ <;>
     exact ⟨_, by grind [lt_iff_le_and_ne], hQ⟩
 
 end IsPreordering
@@ -133,7 +133,7 @@ end IsPreordering
 theorem maximal_isOrdering_iff_maximal_isPreordering {O : Subsemiring R} :
     Maximal IsOrdering O ↔ Maximal IsPreordering O where
   mp hO := ⟨hO.prop.isPreordering, fun _ hP _ ↦ by
-    rcases hP.exists_le_isOrdering with ⟨_, hO', hO'₂⟩
+    rcases hP.exists_ge_isOrdering with ⟨_, hO', hO'₂⟩
     simpa [hO.eq_of_ge hO'₂ (by grind)] using hO'⟩
   mpr hO := .mono hO (fun _ hO ↦ hO.isPreordering) (.of_maximal_isPreordering hO)
 
