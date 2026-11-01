@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.RingTheory.SimpleModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules over semisimple rings are injective and projective
 
