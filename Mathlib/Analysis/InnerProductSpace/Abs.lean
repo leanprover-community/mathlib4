@@ -47,13 +47,13 @@ def abs (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T† ∘L T)
 @[inherit_doc]
 local notation "|" T "|" => abs T
 
-theorem abs_apply (T : E →L[ℂ] F) : |T| = CFC.sqrt (T† ∘L T) := rfl
+theorem abs_def (T : E →L[ℂ] F) : |T| = CFC.sqrt (T† ∘L T) := rfl
 
-@[simp] theorem abs_zero : |(0 : E →L[ℂ] F)| = 0 := by simp [abs]
-@[simp] theorem abs_neg (T : E →L[ℂ] F) : |-T| = |T| := by simp [abs]
-@[simp] theorem abs_nonneg (T : E →L[ℂ] F) : 0 ≤ |T| := by simp [abs]
+@[simp] theorem abs_zero : |(0 : E →L[ℂ] F)| = 0 := by simp [abs_def]
+@[simp] theorem abs_neg (T : E →L[ℂ] F) : |-T| = |T| := by simp [abs_def]
+@[simp] theorem abs_nonneg (T : E →L[ℂ] F) : 0 ≤ |T| := by simp [abs_def]
 @[simp] theorem abs_abs (T : E →L[ℂ] F) : |(|T|)| = |T| := by
-  rw [abs, T.abs_nonneg.isSelfAdjoint.adjoint_eq]
+  rw [abs_def, T.abs_nonneg.isSelfAdjoint.adjoint_eq]
   exact CFC.sqrt_mul_self |T|
 @[simp] theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.abs_nonneg.isSelfAdjoint
 
@@ -65,18 +65,18 @@ theorem adjoint_comp_self_nonneg (T : E →L[ℂ] F) : 0 ≤ T† ∘L T :=
 
 @[simp]
 theorem abs_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
-  simp [abs, CFC.sqrt_eq_zero_iff, adjoint_comp_self_eq_zero_iff]
+  simp [abs_def, CFC.sqrt_eq_zero_iff, adjoint_comp_self_eq_zero_iff]
 
 @[simp]
 theorem abs_comp_abs (T : E →L[ℂ] F) : |T| ∘L |T| = T† ∘L T := by
-  simp [abs, ← mul_def, CFC.sqrt_mul_sqrt_self]
+  simp [abs_def, ← mul_def, CFC.sqrt_mul_sqrt_self]
 
 @[simp]
 theorem norm_abs_apply (T : E →L[ℂ] F) (x : E) : ‖|T| x‖ = ‖T x‖ := by
   apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
   simp_rw [apply_norm_sq_eq_inner_adjoint_left, ContinuousLinearMap.comp_apply]
   rw [T.abs_nonneg.isSelfAdjoint.adjoint_eq]
-  simp [abs, ← mul_apply_eq_comp, CFC.sqrt_mul_sqrt_self, ContinuousLinearMap.comp_apply]
+  simp [abs_def, ← mul_apply_eq_comp, CFC.sqrt_mul_sqrt_self, ContinuousLinearMap.comp_apply]
 
 @[simp]
 theorem ker_abs_eq (T : E →L[ℂ] F) : |T|.ker = T.ker := by
@@ -114,7 +114,7 @@ theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = |T| ∘L |T|
   exact abs_of_nonneg _
 
 theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
-  rw [abs, CFC.sqrt_eq_iff _ _ (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self (c • T)))
+  rw [abs_def, CFC.sqrt_eq_iff _ _ (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self (c • T)))
     (smul_nonneg (norm_nonneg c) T.abs_nonneg), smul_mul_smul_comm, mul_def, abs_comp_abs]
   simp [LinearIsometryEquiv.map_smulₛₗ, ← smul_assoc, Complex.mul_conj', ← sq]
   norm_cast
