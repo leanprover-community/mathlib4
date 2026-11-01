@@ -771,11 +771,11 @@ theorem compactSet_eq_union_aux₁ {x : realSpace K} (hx₀ : x ≠ 0)
 
 variable {K} in
 theorem compactSet_eq_union_aux₂ {x : realSpace K}
-    (hx₁ : x ∈ expMapBasis '' closure (paramSet K)) :
+    (hx : x ∈ expMapBasis '' closure (paramSet K)) :
     x ∈ compactSet K := by
   classical
-  simp only [closure_paramSet, Set.mem_image, Set.mem_smul, exists_exists_and_eq_and] at hx₁ ⊢
-  obtain ⟨y, hy, rfl⟩ := hx₁
+  simp only [closure_paramSet, Set.mem_image, Set.mem_smul, exists_exists_and_eq_and] at hx ⊢
+  obtain ⟨y, hy, rfl⟩ := hx
   refine ⟨Real.exp (y w₀), ⟨Real.exp_nonneg _, ?_⟩,
         fun i ↦ if i = w₀ then 0 else y i, Set.mem_univ_pi.mpr fun w ↦ ?_,
         by rw [expMapBasis_apply'' y]⟩
