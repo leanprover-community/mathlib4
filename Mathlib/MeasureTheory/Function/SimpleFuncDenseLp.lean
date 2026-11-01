@@ -71,7 +71,7 @@ theorem nnNorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measura
     ‖approxOn f hf s y₀ h₀ n x - f x‖₊ ≤ ‖f x - y₀‖₊ := by
   have := edist_approxOn_le hf h₀ x n
   rw [edist_comm y₀] at this
-  simp only [edist_nndist, nndist_eq_nnNorm] at this
+  simp only [edist_nndist, nnDist_eq_nnNorm] at this
   exact mod_cast this
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_approxOn_le := nnNorm_approxOn_le

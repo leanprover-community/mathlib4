@@ -150,7 +150,8 @@ lemma norm_norm' (x : E) : ‖‖x‖‖ = ‖x‖ := Real.norm_of_nonneg (norm_
 @[to_additive (attr := simp) nnNorm_norm]
 lemma nnNorm_norm' (x : E) : ‖‖x‖‖₊ = ‖x‖₊ := by simp [nnNorm]
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_norm' := nnNorm_norm'
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_norm]
+alias nnnorm_norm' := nnNorm_norm'
 
 @[to_additive (attr := simp) enorm_norm]
 lemma enorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [enorm]

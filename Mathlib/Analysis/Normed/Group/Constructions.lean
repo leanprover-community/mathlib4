@@ -278,13 +278,15 @@ Earlier, this name was used for the additive version. -/
 Earlier, this name was used for the multiplicative version. -/]
 lemma Prod.nnNorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
 
-@[deprecated (since := "2026-10-31")] alias Prod.nnnorm_def' := Prod.nnNorm_def'
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_def]
+alias Prod.nnnorm_def' := Prod.nnNorm_def'
 
 /-- Multiplicative version of `Prod.nnNorm_mk`. -/
 @[to_additive (attr := simp) Prod.nnNorm_mk /-- Additive version of `Prod.nnNorm_mk'`. -/]
 lemma Prod.nnNorm_mk' (x : E) (y : F) : ‖(x, y)‖₊ = max ‖x‖₊ ‖y‖₊ := rfl
 
-@[deprecated (since := "2026-10-31")] alias Prod.nnnorm_mk' := Prod.nnNorm_mk'
+@[to_additive (attr := deprecated (since := "2026-10-31")) Prod.nnnorm_mk]
+alias Prod.nnnorm_mk' := Prod.nnNorm_mk'
 
 end SeminormedGroup
 
@@ -326,7 +328,7 @@ instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
   dist_eq x y :=
     congr((Finset.univ.sup $(funext fun a => show nndist (x a) (y a) = ‖(x a)⁻¹ * y a‖₊
-      from nndist_eq_nnNorm_inv_mul (x a) (y a))).toReal)
+      from nnDist_eq_nnNorm_inv_mul (x a) (y a))).toReal)
 
 @[to_additive Pi.norm_def]
 lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
@@ -334,7 +336,8 @@ lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
 @[to_additive Pi.nnNorm_def]
 lemma Pi.nnNorm_def' : ‖f‖₊ = Finset.univ.sup fun b => ‖f b‖₊ := Subtype.eta _ _
 
-@[deprecated (since := "2026-10-31")] alias Pi.nnnorm_def' := Pi.nnNorm_def'
+@[to_additive (attr := deprecated (since := "2026-10-31")) Pi.nnnorm_def]
+alias Pi.nnnorm_def' := Pi.nnNorm_def'
 
 /-- The seminorm of an element in a product space is `≤ r` if and only if the norm of each
 component is. -/
@@ -347,7 +350,8 @@ lemma pi_norm_le_iff_of_nonneg' (hr : 0 ≤ r) : ‖x‖ ≤ r ↔ ∀ i, ‖x i
 lemma pi_nnNorm_le_iff' {r : ℝ≥0} : ‖x‖₊ ≤ r ↔ ∀ i, ‖x i‖₊ ≤ r :=
   pi_norm_le_iff_of_nonneg' r.coe_nonneg
 
-@[deprecated (since := "2026-10-31")] alias pi_nnnorm_le_iff' := pi_nnNorm_le_iff'
+@[to_additive (attr := deprecated (since := "2026-10-31")) pi_nnnorm_le_iff]
+alias pi_nnnorm_le_iff' := pi_nnNorm_le_iff'
 
 @[to_additive pi_norm_le_iff_of_nonempty]
 lemma pi_norm_le_iff_of_nonempty' [Nonempty ι] : ‖f‖ ≤ r ↔ ∀ b, ‖f b‖ ≤ r := by
@@ -368,7 +372,8 @@ lemma pi_norm_lt_iff' (hr : 0 < r) : ‖x‖ < r ↔ ∀ i, ‖x i‖ < r := by
 lemma pi_nnNorm_lt_iff' {r : ℝ≥0} (hr : 0 < r) : ‖x‖₊ < r ↔ ∀ i, ‖x i‖₊ < r :=
   pi_norm_lt_iff' hr
 
-@[deprecated (since := "2026-10-31")] alias pi_nnnorm_lt_iff' := pi_nnNorm_lt_iff'
+@[to_additive (attr := deprecated (since := "2026-10-31")) pi_nnnorm_lt_iff]
+alias pi_nnnorm_lt_iff' := pi_nnNorm_lt_iff'
 
 @[to_additive norm_le_pi_norm]
 lemma norm_le_pi_norm' (i : ι) : ‖f i‖ ≤ ‖f‖ :=
@@ -378,7 +383,8 @@ lemma norm_le_pi_norm' (i : ι) : ‖f i‖ ≤ ‖f‖ :=
 lemma nnNorm_le_pi_nnNorm' (i : ι) : ‖f i‖₊ ≤ ‖f‖₊ :=
   norm_le_pi_norm' _ i
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_le_pi_nnnorm' := nnNorm_le_pi_nnNorm'
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_le_pi_nnnorm]
+alias nnnorm_le_pi_nnnorm' := nnNorm_le_pi_nnNorm'
 
 @[to_additive pi_norm_const_le]
 lemma pi_norm_const_le' (a : E) : ‖fun _ : ι => a‖ ≤ ‖a‖ :=
@@ -388,7 +394,8 @@ lemma pi_norm_const_le' (a : E) : ‖fun _ : ι => a‖ ≤ ‖a‖ :=
 lemma pi_nnNorm_const_le' (a : E) : ‖fun _ : ι => a‖₊ ≤ ‖a‖₊ :=
   pi_norm_const_le' _
 
-@[deprecated (since := "2026-10-31")] alias pi_nnnorm_const_le' := pi_nnNorm_const_le'
+@[to_additive (attr := deprecated (since := "2026-10-31")) pi_nnnorm_const_le]
+alias pi_nnnorm_const_le' := pi_nnNorm_const_le'
 
 @[to_additive (attr := simp) pi_norm_const]
 lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖ = ‖a‖ := by
@@ -398,14 +405,16 @@ lemma pi_norm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖ = ‖a‖ :=
 lemma pi_nnNorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖a‖₊ :=
   NNReal.eq <| pi_norm_const' a
 
-@[deprecated (since := "2026-10-31")] alias pi_nnnorm_const' := pi_nnNorm_const'
+@[to_additive (attr := deprecated (since := "2026-10-31")) pi_nnnorm_const]
+alias pi_nnnorm_const' := pi_nnNorm_const'
 
 @[to_additive pi_nnNorm_comp_le]
 lemma pi_nnNorm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖₊ ≤ ‖g‖₊ := by
   rw [pi_nnNorm_le_iff']
   exact fun x ↦ norm_le_pi_norm' g (f x)
 
-@[deprecated (since := "2026-10-31")] alias pi_nnnorm_comp_le' := pi_nnNorm_comp_le'
+@[to_additive (attr := deprecated (since := "2026-10-31")) pi_nnnorm_comp_le]
+alias pi_nnnorm_comp_le' := pi_nnNorm_comp_le'
 
 @[to_additive pi_norm_comp_le]
 lemma pi_norm_comp_le' [Fintype F] (g : ι → E) (f : F → ι) : ‖g ∘ f‖ ≤ ‖g‖ :=
@@ -443,7 +452,7 @@ scaled by the cardinality. -/]
 lemma Pi.sum_nnNorm_apply_le_nnNorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
   (NNReal.coe_sum ..).trans_le <| Pi.sum_norm_apply_le_norm' _
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31")) sum_nnnorm_apply_le_nnnorm]
 alias Pi.sum_nnnorm_apply_le_nnnorm' := Pi.sum_nnNorm_apply_le_nnNorm'
 
 @[to_additive Pi.nnNorm_extend_le]
@@ -452,7 +461,8 @@ theorem Pi.nnNorm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
   rw [pi_nnNorm_le_iff']
   classical aesop (add simp [Function.extend_def, nnNorm_le_pi_nnNorm'])
 
-@[deprecated (since := "2026-10-31")] alias Pi.nnnorm_extend_le' := Pi.nnNorm_extend_le'
+@[to_additive (attr := deprecated (since := "2026-10-31")) Pi.nnnorm_extend_le]
+alias Pi.nnnorm_extend_le' := Pi.nnNorm_extend_le'
 
 @[to_additive Pi.norm_extend_le]
 theorem Pi.norm_extend_le' (f : ι → ι') (g : ι → E) (j : ι' → E) :
@@ -466,7 +476,7 @@ theorem Function.FactorsThrough.nnNorm_extend' {f : ι → ι'} {g : ι → E} {
   grw [le_antisymm (Pi.nnNorm_extend_le' f g j), max_eq_left hj]
   simpa [hj, h.extend_comp] using pi_nnNorm_comp_le' (extend f g j) f
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_extend]
 alias Function.FactorsThrough.nnnorm_extend' := Function.FactorsThrough.nnNorm_extend'
 
 @[to_additive Function.FactorsThrough.norm_extend]
@@ -481,7 +491,7 @@ theorem Function.FactorsThrough.nnNorm_extend_one {f : ι → ι'} {g : ι → E
     ‖extend f g 1‖₊ = ‖g‖₊ :=
   h.nnNorm_extend' (by simp)
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
 alias Function.FactorsThrough.nnnorm_extend_one := Function.FactorsThrough.nnNorm_extend_one
 
 @[to_additive]

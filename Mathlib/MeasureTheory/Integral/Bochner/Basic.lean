@@ -1040,7 +1040,7 @@ theorem integral_finsetSum_measure {ι} {m : MeasurableSpace α} {f : α → G} 
 theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
     (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖ₑ ∂ν := by
-  rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnNorm, add_sub_cancel_left]
+  rw [integral_add_measure h₁ h₂, nndist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm _
 
 @[simp]

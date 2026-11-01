@@ -1093,7 +1093,7 @@ lemma norm_single (i : ι) (b : β i) : ‖single p i b‖ = ‖b‖ :=
 @[simp]
 lemma nndist_single_same (i : ι) (b₁ b₂ : β i) :
     nndist (single p i b₁) (single p i b₂) = nndist b₁ b₂ := by
-  rw [nndist_eq_nnNorm, nndist_eq_nnNorm, ← single_sub, nnNorm_single]
+  rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← single_sub, nnNorm_single]
 
 @[simp]
 lemma dist_single_same (i : ι) (b₁ b₂ : β i) :

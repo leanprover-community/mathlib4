@@ -1126,7 +1126,7 @@ theorem hasFPowerSeriesAt_iff :
   · simp only [Metric.mem_eball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
       dist_zero_right] at h ⊢
     refine fun {y} _ hyr => h ?_
-    simpa [nndist_eq_nnNorm, Real.lt_toNNReal_iff_coe_lt] using hyr
+    simpa [nnDist_eq_nnNorm, Real.lt_toNNReal_iff_coe_lt] using hyr
 
 theorem hasFPowerSeriesAt_iff' :
     HasFPowerSeriesAt f p z₀ ↔ ∀ᶠ z in 𝓝 z₀, HasSum (fun n => (z - z₀) ^ n • p.coeff n) (f z) := by

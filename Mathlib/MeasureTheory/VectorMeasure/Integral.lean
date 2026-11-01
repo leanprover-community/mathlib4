@@ -806,7 +806,7 @@ theorem nndist_integral_add_vectorMeasure_le_lintegral
     (h₁ : μ.Integrable f) (h₂ : ν.Integrable f) :
     (nndist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤
       ‖B‖ₑ * ∫⁻ x, ‖f x‖ₑ ∂ν.variation := by
-  rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnNorm, add_sub_cancel_left]
+  rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm
 
 variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X}

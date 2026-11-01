@@ -1096,7 +1096,7 @@ theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
     simpa only [Set.image_image]
   borelize E
   rw [IsometryEquiv.hausdorffMeasure_image, hausdorffMeasure_smul_right_image,
-    nndist_eq_nnNorm_vsub' E]
+    nnDist_eq_nnNorm_vsub' E]
 
 /-- The measure of a segment is the distance between its endpoints. -/
 @[simp]

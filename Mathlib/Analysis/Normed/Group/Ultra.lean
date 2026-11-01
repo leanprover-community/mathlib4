@@ -80,6 +80,10 @@ lemma isUltrametricDist_of_forall_nnNorm_mul_le_max_nnNorm
     (h : ∀ x y : S', ‖x * y‖₊ ≤ max ‖x‖₊ ‖y‖₊) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_norm_mul_le_max_norm h
 
+@[to_additive (attr := deprecated (since := "2026-11-01"))]
+alias isUltrametricDist_of_forall_nnnorm_mul_le_max_nnnorm :=
+  isUltrametricDist_of_forall_nnNorm_mul_le_max_nnNorm
+
 lemma isUltrametricDist_of_isNonarchimedean_nnNorm {S' : Type*} [SeminormedAddGroup S']
     (h : IsNonarchimedean (nnNorm : S' → ℝ≥0)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnNorm_add_le_max_nnNorm h

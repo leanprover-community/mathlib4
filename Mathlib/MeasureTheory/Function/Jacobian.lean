@@ -735,7 +735,7 @@ theorem aemeasurable_fderivWithin (hs : MeasurableSet s)
     exact hg n
   -- putting these two properties together gives the conclusion.
   filter_upwards [E₁, E₂] with x hx1 hx2
-  rw [← nndist_eq_nnNorm] at hx1
+  rw [← nnDist_eq_nnNorm] at hx1
   rw [hx2, dist_comm]
   exact hx1
 

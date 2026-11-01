@@ -250,7 +250,7 @@ multiplicative norm. -/
 def Dilation.mulLeft (a : α) (ha : a ≠ 0) : α →ᵈ α where
   toFun b := a * b
   edist_eq' := ⟨‖a‖₊, nnNorm_ne_zero_iff.2 ha, fun x y ↦ by
-    simp [edist_nndist, nndist_eq_nnNorm, ← mul_sub]⟩
+    simp [edist_nndist, nnDist_eq_nnNorm, ← mul_sub]⟩
 
 /-- Multiplication by a nonzero element `a` on the right, as a `Dilation` of a ring with a strictly
 multiplicative norm. -/
@@ -258,7 +258,7 @@ multiplicative norm. -/
 def Dilation.mulRight (a : α) (ha : a ≠ 0) : α →ᵈ α where
   toFun b := b * a
   edist_eq' := ⟨‖a‖₊, nnNorm_ne_zero_iff.2 ha, fun x y ↦ by
-    simp [edist_nndist, nndist_eq_nnNorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
+    simp [edist_nndist, nnDist_eq_nnNorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
 
 namespace Filter
 

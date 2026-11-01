@@ -888,13 +888,13 @@ lemma norm_toLp_snd (y : β) : ‖toLp p ((0 : α), y)‖ = ‖y‖ :=
 @[simp]
 lemma nndist_toLp_fst (x₁ x₂ : α) :
     nndist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = nndist x₁ x₂ := by
-  rw [nndist_eq_nnNorm, nndist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
+  rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
     nnNorm_toLp_inl]
 
 @[simp]
 lemma nndist_toLp_snd (y₁ y₂ : β) :
     nndist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = nndist y₁ y₂ := by
-  rw [nndist_eq_nnNorm, nndist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
+  rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
     nnNorm_toLp_inr]
 
 @[simp]
