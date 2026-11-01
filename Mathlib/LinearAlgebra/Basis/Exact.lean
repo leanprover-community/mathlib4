@@ -48,7 +48,7 @@ lemma LinearIndependent.linearIndependent_of_exact_of_retraction
     | zero => simp_all
     | add => simp_all
     | smul => simp_all
-  replace hs := DFunLike.congr_fun hs y
+  replace hs := congr($hs y)
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
   rw [← hs, hz, map_zero]
 
@@ -62,7 +62,7 @@ private lemma top_le_span_of_aux (v : κ ⊕ σ → M)
   · let x : M := f (s m)
     rw [show g m = g (m - f (s m)) by simp [hfg.apply_apply_eq_zero]]
     apply this hs hfg v hg hslzero hli hsp
-    replace hs := DFunLike.congr_fun hs (s m)
+    replace hs := congr($hs (s m))
     simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq] at hs
     simp [hs]
   have : m ∈ Submodule.span R (Set.range v) := hsp Submodule.mem_top

@@ -10,10 +10,11 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
-public import Mathlib.LinearAlgebra.Complex.Determinant
-public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Norm.Transitivity
+
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.LinearAlgebra.Complex.Determinant
+import Mathlib.RingTheory.Complex
 
 /-!
 # Manifold structure on the upper half plane.
@@ -123,7 +124,7 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDiff f) {τ : ℍ} (hτ : �
   rw [mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
-  convert! this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
+  convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.im_pos
   · rw [Function.comp_apply, ofComplex_apply]
   · exact (Complex.isConnected_of_upperHalfPlane subset_rfl (by grind)).isPreconnected
   · contrapose! hτ

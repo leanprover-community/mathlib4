@@ -5,8 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Topology.Algebra.Group.ContinuousDiv
+
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 
 /-!
 # Ordered topological groups

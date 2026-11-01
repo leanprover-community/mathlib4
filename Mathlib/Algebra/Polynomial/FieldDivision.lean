@@ -5,13 +5,14 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Group.Finset
 
 /-!
 # Theory of univariate polynomials
@@ -190,7 +191,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     exact not_isRoot_C _ _ <| C_ne_zero.mp hf0
   by_contra hg
   have hdfg0 : f.derivative * g ≠ 0 := mul_ne_zero hdf0 (by rintro rfl; simp at hg)
-  have hr' := congr_arg (rootMultiplicity a) hr
+  have hr' := congr(rootMultiplicity a $hr)
   have : IsDomain R := {}
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
@@ -452,16 +453,15 @@ theorem mul_mod (p₁ p₂ q : R[X]) : (p₁ * p₂) % q = (p₁ % q) * (p₂ % 
   simp_rw [Polynomial.mod_def]
   apply Polynomial.mul_modByMonic
 
-section
+lemma eval_mod_eq_self_of_root {p q : R[X]} {x : R} (hx : eval x q = 0) :
+    (p % q).eval x = p.eval x :=
+  eval₂_modByMonic_eq_self_of_root (by simp [hx])
 
-open EuclideanDomain
-
+open EuclideanDomain in
 theorem gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
     gcd (p.map f) (q.map f) = (gcd p q).map f :=
   GCD.induction p q (fun x => by simp_rw [Polynomial.map_zero, EuclideanDomain.gcd_zero_left])
     fun x y _ ih => by rw [gcd_val, ← map_mod, ih, ← gcd_val]
-
-end
 
 theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} (hf : f.eval₂ ϕ α = 0)

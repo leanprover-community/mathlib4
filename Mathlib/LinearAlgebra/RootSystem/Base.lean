@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Chain
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Bases for root pairings / systems
@@ -77,6 +75,89 @@ structure Base (P : RootPairing ι R M N) where
   coroot_mem_or_neg_mem (i : ι) : P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support) ∨
                                  -P.coroot i ∈ AddSubmonoid.closure (P.coroot '' support)
 
+section AlternateConstructor
+
+variable [Finite ι] [CharZero R] [IsDomain R] (P : RootPairing ι R M N) [P.IsCrystallographic]
+  {s : Finset ι}
+  (h₀ : LinearIndepOn R P.root s)
+  (h₁ : Set.Pairwise s fun i j ↦ P.pairingIn ℤ i j ≤ 0)
+  (h₂ : ∀ i, P.coroot i ∈ span ℤ (P.coroot '' s))
+include h₀ h₁ h₂
+
+lemma nonneg_or_nonpos_of_sum_smul_mem_range_root
+    (c : s → ℤ) (hc : ∑ k, c k • P.root k ∈ range P.root) :
+    0 ≤ c ∨ c ≤ 0 := by
+  classical
+  have : Fintype ι := Fintype.ofFinite ι
+  have h₀' : LinearIndepOn ℤ P.root s := h₀.linearIndependent.restrict_scalars' ℤ
+  by_contra! hc'
+  have key (d : s → ℤ) (hd : ∑ k, d k • P.root k ∈ range P.root) (hd' : ¬ 0 ≤ d ∧ ¬ d ≤ 0)
+      (hdc : ∑ k, (d k).natAbs = ∑ k, (c k).natAbs) :
+      ∃ k, 0 < d k ∧ d ≤ Pi.single k 1 := by
+    obtain ⟨i, hi⟩ : ∃ i : ι, P.root i = ∑ k, d k • P.root k := hd
+    obtain ⟨k, hk, hik⟩ : ∃ k : s, 0 < d k ∧ 0 < P.pairingIn ℤ i k :=
+      P.exists_pos_pairingIn h₀' h₁ hi.symm hd'.2
+    have hk₀ : ¬ Pi.single k 1 ≤ d := hd'.1 ∘ (Pi.single_nonneg.2 zero_le_one).trans
+    obtain ⟨j, hj⟩ : ∃ j : ι, P.root j = P.root i - P.root k :=
+      P.root_sub_root_mem_of_pairingIn_pos hik <| by
+        rintro rfl
+        exact hk₀ (funext <| Fintype.linearIndependent_iffₛ.mp h₀' _ _ <| by
+          simpa [Pi.single_apply] using hi.symm).ge
+    have : ∑ j, ((d - Pi.single k 1 : s → ℤ) j).natAbs < ∑ j, (c j).natAbs := by
+      have aux (l : s) : (d l - (Pi.single k 1 : s → ℤ) l).natAbs ≤ (d l).natAbs := by grind
+      rw [← hdc]
+      exact Fintype.sum_strictMono <| Pi.lt_def.2 ⟨aux, k, by simp; lia⟩
+    replace hk₀ : ¬ 0 ≤ d - Pi.single k 1 := by aesop
+    replace hd : P.root j = ∑ l : s, (d - Pi.single k 1 : s → ℤ) l • P.root l := by
+      simp [hj, hi, sub_smul, Pi.single_apply]
+    replace hd : d ≤ Pi.single k 1 := sub_nonpos.mp <|
+      (nonneg_or_nonpos_of_sum_smul_mem_range_root (d - Pi.single k 1) ⟨j, hd⟩).resolve_left hk₀
+    exact ⟨k, hk, hd⟩
+  obtain ⟨k, hk, hk'⟩ := key c hc hc' rfl
+  obtain ⟨l, hl, hl'⟩ :=
+    key (-c) (by simpa using P.neg_mem_range_root_iff.mpr hc) (by aesop) (by simp)
+  obtain rfl : c = Pi.single k 1 - Pi.single l 1 := by
+    ext; grind [Pi.neg_apply, Pi.sub_apply, Pi.le_def]
+  replace h₀ := (P.linearIndepOn_coroot_iff.mpr h₀).linearIndependent.restrict_scalars' ℤ
+  specialize h₁ l.property k.property (by grind [Pi.neg_apply])
+  exact P.root_sub_root_notMem_range h₀ h₂ h₁ (by simpa [sub_smul, Pi.single_apply] using hc)
+termination_by ∑ k, (c k).natAbs
+
+variable (h₃ : ∀ i, P.root i ∈ span ℤ (P.root '' s))
+include h₃
+
+private lemma Base.mkOfPairwiseLEZero_aux (i : ι) :
+     P.root i ∈ AddSubmonoid.closure (P.root '' s) ∨
+    -P.root i ∈ AddSubmonoid.closure (P.root '' s) := by
+  have {c : s → ℤ} (hc : 0 ≤ c) : ∑ k, c k • P.root k ∈ AddSubmonoid.closure (P.root '' s) := by
+    simp_rw [← span_nat_eq_addSubmonoidClosure, mem_toAddSubmonoid,
+      Fintype.mem_span_image_iff_exists_fun, ← natCast_zsmul]
+    exact ⟨fun k ↦ (c k).toNat, Finset.sum_congr rfl fun k _ ↦ by rw [Int.toNat_of_nonneg (hc k)]⟩
+  obtain ⟨c, hc⟩ := (mem_span_image_finset_iff_exists_fun ℤ).mp (h₃ i)
+  rcases P.nonneg_or_nonpos_of_sum_smul_mem_range_root h₀ h₁ h₂ c ⟨i, hc.symm⟩ with h | h
+  · exact .inl <| by simpa [← hc] using this h
+  · exact .inr <| by simpa [← hc] using this <| neg_nonneg.mpr h
+
+/-- An alternate condition for a subset of linearly independent (co)roots to form a base.
+
+This is useful when constructing a root pairing from a realisation of a Cartan matrix. -/
+@[no_expose] def Base.mkOfPairwiseLEZero : P.Base where
+  support := s
+  linearIndepOn_root := h₀
+  linearIndepOn_coroot := by
+    have : Fintype ι := Fintype.ofFinite ι
+    rwa [P.linearIndepOn_coroot_iff]
+  root_mem_or_neg_mem := mkOfPairwiseLEZero_aux P h₀ h₁ h₂ h₃
+  coroot_mem_or_neg_mem := by
+    have : Fintype ι := Fintype.ofFinite ι
+    exact Base.mkOfPairwiseLEZero_aux P.flip (P.linearIndepOn_coroot_iff.mpr h₀)
+      (fun j hj k hk hjk ↦ h₁ hk hj hjk.symm) h₃ h₂
+
+@[simp]
+lemma Base.mkOfPairwiseLEZero_support : (mkOfPairwiseLEZero P h₀ h₁ h₂ h₃).support = s := by rfl
+
+end AlternateConstructor
+
 namespace Base
 
 section RootPairing
@@ -106,7 +187,7 @@ private lemma map_aux_pos [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f�
     (e₁ : ι ≃ ι₂) (e₂ : M ≃ₗ[R] M₂) (he : f₂ ∘ e₁ = e₂ ∘ f) {i : ι₂}
     (hi : f (e₁.symm i) ∈ AddSubmonoid.closure (f '' s)) :
     f₂ i ∈ AddSubmonoid.closure (f₂ '' (s.image e₁)) := by
-  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr_fun he (e₁.symm i); simp_all
+  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr($he (e₁.symm i)); simp_all
   have aux₂ : AddSubmonoid.closure (f₂ '' e₁ '' s) = (AddSubmonoid.closure (f '' s)).map e₂ := by
     rw [AddMonoidHom.map_mclosure, ← image_comp, ← image_comp, he]
   aesop
@@ -115,7 +196,7 @@ private lemma map_aux_neg [DecidableEq ι₂] (s : Finset ι) {f : ι → M} {f�
     (e₁ : ι ≃ ι₂) (e₂ : M ≃ₗ[R] M₂) (he : f₂ ∘ e₁ = e₂ ∘ f) {i : ι₂}
     (hi : -f (e₁.symm i) ∈ AddSubmonoid.closure (f '' s)) :
     -f₂ i ∈ AddSubmonoid.closure (f₂ '' (s.image e₁)) := by
-  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr_fun he (e₁.symm i); simp_all
+  have aux₁ : f (e₁.symm i) = e₂.symm (f₂ i) := by have := congr($he (e₁.symm i)); simp_all
   have aux₂ : AddSubmonoid.closure (f₂ '' e₁ '' s) = (AddSubmonoid.closure (f '' s)).map e₂ := by
     rw [AddMonoidHom.map_mclosure, ← image_comp, ← image_comp, he]
   aesop
@@ -214,7 +295,7 @@ lemma span_coroot_support :
 
 open Finsupp in
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
-    [IsAddTorsionFree M] [IsAddTorsionFree N]
+    [HasUniqueDiv M] [HasUniqueDiv N]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
     ∃ z : ℤ, z * t = 1 := by
   obtain ⟨j, hj⟩ := ht
@@ -235,12 +316,12 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
   have hg : P.coroot i = linearCombination R (fun k : b.support ↦ P.coroot k) g := by simp [g]
   rw [hg] at hf
   have : Injective (linearCombination R fun k : b.support ↦ P.coroot k) := b.linearIndepOn_coroot
-  simpa [g, linearEquivFunOnFinite, mul_comm t] using (DFunLike.congr_fun (this hf) ⟨i, h⟩).symm
+  simpa [g, linearEquivFunOnFinite, mul_comm t] using congr($(this hf) ⟨i, h⟩).symm
 
 variable [CharZero R]
 
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
-    [IsAddTorsionFree M] [IsAddTorsionFree N]
+    [HasUniqueDiv M] [HasUniqueDiv N]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
     t = 1 ∨ t = -1 := by
   obtain ⟨z, hz⟩ := b.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h t ht
@@ -249,7 +330,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
     simpa only [coroot_eq_smul_coroot_iff.mpr hj, smul_smul, hz, one_smul] using mem_range_self j
   obtain ⟨w, hw⟩ := b.flip.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h _ ht
   have : (z : R) * w = 1 := by
-    simpa [mul_mul_mul_comm _ t, mul_comm t, mul_comm _ (z : R), hz] using congr_arg₂ (· * ·) hz hw
+    simpa [mul_mul_mul_comm _ t, mul_comm t, mul_comm _ (z : R), hz] using congr($hz * $hw)
   suffices z = 1 ∨ z = -1 by
     rcases this with rfl | rfl
     · left; simpa using hz
@@ -268,7 +349,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     have hf' : f ≠ 0 := by rintro rfl; exact P.ne_zero k <| by simp [hk]
     rcases b.root_mem_or_neg_mem k with hk' | hk' <;> rw [hk] at hk'
     · left; exact this f hk' hf₀ hf'
-    · right; simpa using this (-f) (by convert! hk'; simp) (by simpa only [support_neg]) (by simpa)
+    · right; simpa using this (-f) (by convert hk'; simp) (by simpa only [support_neg]) (by simpa)
   intro f hf hf₀ hf'
   let f' : b.support → ℤ := fun i ↦ f i
   replace hf : ∑ j, f' j • P.root j ∈ AddSubmonoid.closure (P.root '' b.support) := by

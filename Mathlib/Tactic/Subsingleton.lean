@@ -6,7 +6,6 @@ Authors: Kyle Miller
 module
 
 public meta import Lean.Meta.Tactic.Refl
-
 public import Mathlib.Basic.Logic.Basic
 
 /-!

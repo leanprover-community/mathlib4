@@ -5,12 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
+public meta import Mathlib.Data.Sigma.Basic -- for the `Inhabited (Sigma β)` instance
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.Algebra.Ring.Nat
-public import Mathlib.Data.Int.Cast.Basic
 
-public meta import Mathlib.Data.Sigma.Basic -- for the `Inhabited (Sigma β)` instance
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 ## The `Result` type for `norm_num`

@@ -5,8 +5,8 @@ Authors: Damiano Testa, Yury Kudryashov, Lawrence Wu
 -/
 module
 
-public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.NumberTheory.Divisors
 
 /-!
 # `Nat.divisors` as a multiplicative homomorphism

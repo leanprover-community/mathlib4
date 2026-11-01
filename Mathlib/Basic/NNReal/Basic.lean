@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Expect
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.Order.Field.Canonical
 public import Mathlib.Algebra.Order.Nonneg.Floor
 public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Basic.Real.Pointwise
@@ -236,7 +235,7 @@ section rify
 end rify
 
 @[simp]
-theorem range_coe : range toReal = Ici 0 := Subtype.range_coe
+theorem range_coe : range toReal = Ici 0 := Subtype.range_coe_subtype
 
 @[simp]
 theorem image_coe_Ici (x : ℝ≥0) : toReal '' Ici x = Ici ↑x := image_subtype_val_Ici_Ici ..

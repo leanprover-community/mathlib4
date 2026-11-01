@@ -6,8 +6,6 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Basics on bilinear maps
@@ -100,7 +98,7 @@ theorem ext₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (H : ∀ m 
   LinearMap.ext fun m => LinearMap.ext fun n => H m n
 
 theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : f = g) (x y) : f x y = g x y :=
-  LinearMap.congr_fun (LinearMap.congr_fun h x) y
+  congr($h x y)
 
 theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
   ⟨congr_fun₂, ext₂⟩
@@ -365,7 +363,7 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     ext x y
     obtain ⟨x', rfl⟩ := hₗ x
     obtain ⟨y', rfl⟩ := hᵣ y
-    convert! LinearMap.congr_fun₂ h x' y' using 0
+    convert! congr($h x' y') using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
@@ -498,6 +496,15 @@ theorem bijective_compr₂ₛₗ_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [Ri
     Bijective (f.compr₂ₛₗ g.toLinearMap) :=
   ⟨injective_compr₂ₛₗ_of_injective f g.toLinearMap hf.1 g.bijective.1,
   surjective_compr₂ₛₗ_of_equiv f g hf.2⟩
+
+/-- An auxiliary lemma for proving associativity, turning an equality in terms of bilinear maps into
+an equality of linear maps so that we can use `ext`. -/
+lemma assoc_iff (f : M →ₗ[R] M →ₗ[R] M) :
+    (∀ x y z, f (f x y) z = f x (f y z)) ↔
+      LinearMap.llcomp R M M (M →ₗ[R] M) f ∘ₗ f =
+        (LinearMap.llcomp R M (M →ₗ[R] M →ₗ[R] M) (M →ₗ[R] M →ₗ[R] M) LinearMap.lflip.toLinearMap <|
+          LinearMap.llcomp R M M (M →ₗ[R] M) f.flip ∘ₗ f).flip :=
+  ⟨fun h => by ext x y z; exact h x y z, fun h x y z => congr($h x y z)⟩
 
 end CommSemiringSemilinear
 

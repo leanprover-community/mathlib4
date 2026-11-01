@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps

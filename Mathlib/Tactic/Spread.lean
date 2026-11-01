@@ -5,8 +5,8 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Binders
+public import Mathlib.Init
 
 /-!
 # Macro for spread syntax (`__ := instSomething`) in structures.

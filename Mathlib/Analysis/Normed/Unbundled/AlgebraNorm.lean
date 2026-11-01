@@ -5,8 +5,8 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # Algebra norms

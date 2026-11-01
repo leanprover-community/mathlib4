@@ -6,8 +6,8 @@ Authors: Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Binary (co)products of type-valued functors

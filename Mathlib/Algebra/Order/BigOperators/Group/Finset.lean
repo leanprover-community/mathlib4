@@ -5,14 +5,15 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Data.Multiset.OrderedMonoid
-public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Algebra.Order.Monoid.Multiset
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Tactic.Bound.Attribute
 
 import Mathlib.Algebra.Order.Monoid.OrderDual
 
@@ -101,6 +102,12 @@ theorem le_prod_of_submultiplicative [IsOrderedMonoid N] (f : M → N) (h_one : 
 /-- If `f : M → N` is a subadditive function, `f (x + y) ≤ f x + f y`, `f 0 = 0`, and `g i`,
 `i ∈ s`, is a finite family of elements of `M`, then `f (∑ i ∈ s, g i) ≤ ∑ i ∈ s, f (g i)`. -/
 add_decl_doc le_sum_of_subadditive
+
+@[to_additive]
+theorem map_prod_le_prod [IsOrderedMonoid N] {F : Type*} [FunLike F M N] [OneHomClass F M N]
+    [SubmultiplicativeHomClass F M N] (f : F) (s : Finset ι) (g : ι → M) :
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
+  le_prod_of_submultiplicative f (map_one f).le (map_mul_le_mul f) s g
 
 variable {f g : ι → N} {s t : Finset ι}
 
@@ -807,9 +814,6 @@ theorem finsetSum_eq_sup_iff_disjoint [DecidableEq α] {i : Finset β} {f : β �
     simp_rw [← disjoint_finsetSum_left, ← disjoint_finsetSum_right, disjoint_comm, ← and_assoc,
       and_self_iff]
     exact add_eq_union_left_of_le (Finset.sup_le fun x hx => le_sum_of_mem (mem_map_of_mem f hx))
-
-@[deprecated (since := "2026-04-08")]
-alias finset_sum_eq_sup_iff_disjoint := finsetSum_eq_sup_iff_disjoint
 
 theorem sup_powerset_len [DecidableEq α] (x : Multiset α) :
     (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetCard k) = x.powerset := by

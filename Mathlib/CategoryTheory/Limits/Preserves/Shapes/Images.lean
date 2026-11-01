@@ -5,7 +5,6 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!

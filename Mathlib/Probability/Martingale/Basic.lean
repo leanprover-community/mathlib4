@@ -460,7 +460,7 @@ theorem Submartingale.zero_le_of_predictable [SigmaFiniteFiltration μ 𝒢] {f 
   | zero => rfl
   | succ k ih =>
     exact ih.trans ((hfmgle.2.1 k (k + 1) k.le_succ).trans_eq <| Germ.coe_eq.mp <|
-    congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _) <| hfmgle.integrable _)
+    congr($(condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _) <| hfmgle.integrable _)))
 
 /-- A predictable supermartingale is a.e. less than or equal to its initial state. -/
 theorem Supermartingale.le_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
@@ -469,8 +469,8 @@ theorem Supermartingale.le_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {
   induction n with
   | zero => rfl
   | succ k ih =>
-    exact ((Germ.coe_eq.mp <| congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _)
-      (hfadp _) <| hfmgle.integrable _).symm.trans_le (hfmgle.2.1 k (k + 1) k.le_succ)).trans ih
+    exact ((Germ.coe_eq.mp <| congr(Germ.ofFun $(condExp_of_stronglyMeasurable (𝒢.le _)
+      (hfadp _) <| hfmgle.integrable _))).symm.trans_le (hfmgle.2.1 k (k + 1) k.le_succ)).trans ih
 
 end Preorder
 
@@ -517,8 +517,8 @@ theorem Martingale.eq_zero_of_predictable [CompleteSpace E] [SigmaFiniteFiltrati
   induction n with
   | zero => rfl
   | succ k ih =>
-    exact ((Germ.coe_eq.mp (congr_arg Germ.ofFun <| condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
-      (hfmgle.integrable _))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
+    exact ((Germ.coe_eq.mp congr(Germ.ofFun $(condExp_of_stronglyMeasurable (𝒢.le _) (hfadp _)
+      (hfmgle.integrable _)))).symm.trans (hfmgle.2 k (k + 1) k.le_succ)).trans ih
 
 section IsStronglyPredictable
 

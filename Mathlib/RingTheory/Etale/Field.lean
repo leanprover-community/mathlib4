@@ -153,7 +153,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     change g _ (algebraMap K _ r) = _
     rw [AlgHom.commutes]
   · ext x
-    simpa using AlgHom.congr_fun (hg₁ x) (IntermediateField.AdjoinSimple.gen K x)
+    simpa using congr($(hg₁ x) (IntermediateField.AdjoinSimple.gen K x))
 
 theorem iff_isSeparable [EssFiniteType K L] :
     FormallyEtale K L ↔ Algebra.IsSeparable K L :=

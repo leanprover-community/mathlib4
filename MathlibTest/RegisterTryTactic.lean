@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Tactic.Module
 
 -- Register module as a try? helper
 register_try?_tactic module

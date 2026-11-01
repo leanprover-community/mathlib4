@@ -5,9 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+
+import Mathlib.Analysis.Normed.Group.Real
 
 /-!
 # Sums over residue classes

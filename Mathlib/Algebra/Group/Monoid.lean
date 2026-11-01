@@ -506,17 +506,94 @@ equalities. -/
 noncomputable abbrev IsUnital.toMonoid {A : Type*} [Semigroup A] [IsUnital A] : Monoid A where
 
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
-injective. -/
+injective on commuting elements (i.e., `a + b = b + a → n • a = n • b → a = b`).
+
+For commutative additive monoids, this is equivalent to `n • a = n • b → a = b`.
+For additive groups, this is equivalent to `n • a = 0 → a = 0`.
+
+Thus, this definition reconciles the notions of torsion-free for
+additive groups and commutative additive semigroups.
+
+For more information, see this mathoverflow answer: https://mathoverflow.net/a/377268/95685
+
+`IsAddTorsionFree` is weaker than `HasUniqueDiv` for general additive monoids, but equivalent to
+it for commutative ones. Prefer using `HasUniqueDiv` for commutative additive monoids, so that
+typeclass-search can derive both `HasUniqueDiv` and `IsAddTorsionFree` without us needing to
+introduce an expensive `[AddCommMonoid M] [IsAddTorsionFree M] : HasUniqueDiv M` instance loop.
+
+TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
 @[mk_iff]
 class IsAddTorsionFree (M : Type*) [AddMonoid M] where
-  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
+  eq_of_nsmul_eq_nsmul_of_addCommute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : AddCommute a b)
+    (hn : n • a = n • b) : a = b
 
-/-- A monoid is torsion-free if power by every non-zero element `n : ℕ` is injective. -/
+export IsAddTorsionFree (eq_of_nsmul_eq_nsmul_of_addCommute)
+
+@[deprecated (since := "2026-09-29")]
+alias IsAddTorsionFree.pow_left_injective := eq_of_nsmul_eq_nsmul_of_addCommute
+
+/-- A monoid is torsion-free if exponentiation by every non-zero element `n : ℕ` is
+injective on commuting elements (i.e., `a * b = b * a → a ^ n = b ^ n → a = b`).
+
+For commutative monoids, this is equivalent to `a ^ n = b ^ n → a = b`.
+For groups, this is equivalent to `a ^ n = 1 → a = 1`.
+
+Thus, this definition reconciles the notions of torsion-free for groups and commutative semigroups.
+
+For more information, see this mathoverflow answer: https://mathoverflow.net/a/377268/95685
+
+`IsMulTorsionFree` is weaker than `HasUniqueRoots` for general monoids, but equivalent to it for
+commutative ones. Prefer using `HasUniqueRoots` over commutative monoids, so that typeclass-search
+can derive both `HasUniqueRoots` and `IsMulTorsionFree` without us needing to introduce an expensive
+`[CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M` instance loop.
+
+TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
 @[to_additive, mk_iff]
 class IsMulTorsionFree (M : Type*) [Monoid M] where
-  protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
+  eq_of_pow_eq_pow_of_commute ⦃n : ℕ⦄ (hn : n ≠ 0) ⦃a b : M⦄ (hab : Commute a b)
+    (hn : a ^ n = b ^ n) : a = b
 
 attribute [to_additive existing] isMulTorsionFree_iff
+export IsMulTorsionFree (eq_of_pow_eq_pow_of_commute)
+
+@[deprecated (since := "2026-09-29")]
+alias IsMulTorsionFree.pow_left_injective := eq_of_pow_eq_pow_of_commute
+
+/-- An additive monoid has unique divisibility if scalar multiplication by every non-zero element
+`n : ℕ` is injective. This is the uniqueness counterpart to `DivisibleBy` which asserts existence.
+
+`HasUniqueDiv` is stronger than `IsAddTorsionFree` for general additive monoids, but equivalent to
+it for commutative ones. Prefer using `HasUniqueDiv` for commutative additive monoids, so that
+typeclass-search can derive both `HasUniqueDiv` and `IsAddTorsionFree` without us needing to
+introduce an expensive `[AddCommMonoid M] [IsAddTorsionFree M] : HasUniqueDiv M` instance loop.
+
+TODO: Generalize this definition to additive semigroups once we have the `PNat` action. -/
+@[mk_iff]
+class HasUniqueDiv (M : Type*) [AddMonoid M] where
+  nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
+
+export HasUniqueDiv (nsmul_right_injective)
+
+/-- A monoid has unique roots if exponentiation by every non-zero element `n : ℕ` is injective.
+This is the uniqueness counterpart to `RootableBy` which asserts existence.
+
+`HasUniqueRoots` is stronger than `IsMulTorsionFree` for general monoids, but equivalent to it for
+commutative ones. Prefer using `HasUniqueRoots` for commutative monoids, so that typeclass-search
+can derive both `HasUniqueRoots` and `IsMulTorsionFree` without us needing to introduce an expensive
+`[CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M` instance loop.
+
+TODO: Generalize this definition to semigroups once we have the `PNat` action. -/
+@[mk_iff]
+class HasUniqueRoots (M : Type*) [Monoid M] where
+  pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
+
+attribute [to_additive existing HasUniqueDiv] HasUniqueRoots
+attribute [to_additive existing] hasUniqueRoots_iff
+export HasUniqueRoots (pow_left_injective)
+
+@[to_additive]
+instance (M : Type*) [Monoid M] [HasUniqueRoots M] : IsMulTorsionFree M where
+  eq_of_pow_eq_pow_of_commute _ hn _ _ _ hab := pow_left_injective hn hab
 
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type*) extends AddMonoid M, AddCommSemigroup M

@@ -30,7 +30,7 @@ theorem lintegral_map {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f
   simp only [← Function.comp_apply (f := f) (g := g)]
   rw [lintegral_eq_iSup_eapprox_lintegral (hf.comp hg)]
   congr with n : 1
-  convert! SimpleFunc.lintegral_map _ hg
+  convert SimpleFunc.lintegral_map _ hg
   ext1 x; simp only [eapprox_comp hf hg, coe_comp]
 
 theorem lintegral_map' {f : β → ℝ≥0∞} {g : α → β}
@@ -116,8 +116,13 @@ protected theorem lintegral_map_equiv (f : β → ℝ≥0∞) (g : α ≃ᵐ β)
 
 include hg
 
+theorem lintegral_comp' {f : β → ℝ≥0∞} (hf : AEMeasurable f ν) :
+    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by
+  rw [← hg.map_eq, lintegral_map' (hg.map_eq ▸ hf) hg.aemeasurable]
+
 theorem lintegral_comp {f : β → ℝ≥0∞} (hf : Measurable f) :
-    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, lintegral_map hf hg.measurable]
+    ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν :=
+  hg.lintegral_comp' hf.aemeasurable
 
 theorem lintegral_comp_emb (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞) :
     ∫⁻ a, f (g a) ∂μ = ∫⁻ b, f b ∂ν := by rw [← hg.map_eq, hge.lintegral_map]

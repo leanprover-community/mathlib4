@@ -5,10 +5,10 @@ Authors: Anne Baanen, Yongle Hu
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.RingTheory.Ideal.Pointwise
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
+
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals over/under ideals

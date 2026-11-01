@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Order.AddGroupWithTop
+
 /-!
 # Instances on PUnit
 

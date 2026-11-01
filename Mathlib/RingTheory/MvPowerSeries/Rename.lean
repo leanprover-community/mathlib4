@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
-public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Renaming variables of power series
@@ -278,7 +277,7 @@ theorem killCompl_comp_rename : (killCompl e).comp (rename e) = AlgHom.id R _ :=
 
 @[simp]
 theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl e (rename e p) = p :=
-  AlgHom.congr_fun (killCompl_comp_rename) p
+  congr($killCompl_comp_rename p)
 
 theorem killCompl_map (φ : R →+* S) (p : MvPowerSeries τ R) :
     killCompl e (map φ p) = map φ (killCompl e p) := by

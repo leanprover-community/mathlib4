@@ -24,8 +24,6 @@ open Filter Asymptotics ContinuousLinearMap Set
 
 open scoped Topology
 
-noncomputable section
-
 section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]

@@ -68,7 +68,7 @@ noncomputable def isLimitPowerFan : IsLimit (U.powerFan α) :=
         ext i
         dsimp
         ext a
-        exact congr_fun (congr_arg FormalCoproduct.Hom.f (hm a)) i
+        congrm $(hm a).f i
       ext i
       · rfl
       · dsimp
@@ -192,7 +192,6 @@ noncomputable def cech (U : FormalCoproduct.{w} C) :
   obj n := U.power (ToType n.unop)
   map f := U.mapPower f.unop.toOrderHom.toFun
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `FormalCoproduct C ⥤ SimplicialObject (FormalCoproduct C)`
 which sends a formal coproduct to its Cech object. -/
 @[simps]

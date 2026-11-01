@@ -132,8 +132,8 @@ noncomputable def arrowEquiv : Arrow h.smallCategoryOfSet.obj ≃ Arrow C :=
   Equiv.ofBijective h.functor.mapArrow.obj (by
     constructor
     · rintro ⟨x, y, f⟩ ⟨x', y', g⟩ hfg
-      obtain rfl : x = x' := by simpa using! congr_arg Arrow.leftFunc.obj hfg
-      obtain rfl : y = y' := by simpa using! congr_arg Arrow.rightFunc.obj hfg
+      obtain rfl : x = x' := by simpa using! congr(Arrow.leftFunc.obj $hfg)
+      obtain rfl : y = y' := by simpa using! congr(Arrow.rightFunc.obj $hfg)
       obtain rfl : f = g := by simpa [Arrow.mk_eq_mk_iff] using! hfg
       rfl
     · rintro ⟨X, Y, f⟩
@@ -191,7 +191,7 @@ lemma exists_equivalence (C : Type u) [Category.{v} C] (hC : HasCardinalLT (Arro
     rw [Cardinal.lift_mk_le']
     refine ⟨Function.Embedding.trans { toFun X := Arrow.mk (𝟙 X), inj' := ?_ } ι⟩
     intro X Y h
-    exact congr_arg Arrow.leftFunc.obj h
+    congrm Arrow.leftFunc.obj $h
   have h₂ (X Y : C) : Cardinal.lift.{w} (Cardinal.mk (X ⟶ Y)) ≤
       Cardinal.lift.{v} (Cardinal.mk Ω) := by
     rw [Cardinal.lift_mk_le']

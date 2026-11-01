@@ -418,7 +418,7 @@ theorem exists_disjoint_covering_ae
     μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
       measure_mono M
     _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _
-    _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (ENNReal.tsum_le_tsum fun a => μB a (ut (vu a.1.2)))
+    _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (tsum_le_tsum fun a => μB a (ut (vu a.1.2)))
     _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
     _ ≤ C * (ε / C) := by gcongr
     _ ≤ ε := ENNReal.mul_div_le
@@ -492,7 +492,7 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
       exact t'_disj hq hq' (ne_of_apply_ne _ hqq')
     · rintro - ⟨q, hq, rfl⟩
       exact (t't hq).2.2.2.2.1
-    · convert! μt' using 3
+    · convert μt' using 3
       rw [biUnion_image]
 
 end Vitali

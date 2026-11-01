@@ -113,7 +113,7 @@ theorem domRestrict₂_comp_domRestrict {s t : Set α} (hst : s ⊆ t) :
 theorem domRestrict₂_comp_domRestrict₂ {s t u : Set α} (hst : s ⊆ t) (htu : t ⊆ u) :
     (domRestrict₂ (π := π) hst) ∘ (domRestrict₂ htu) = domRestrict₂ (hst.trans htu) := rfl
 
-theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
+theorem range_extend_subset (f : ι → β) (g : ι → γ) (g' : β → γ) :
     range (extend f g g') ⊆ range g ∪ g' '' (range f)ᶜ := by
   classical
   rintro _ ⟨y, rfl⟩
@@ -121,7 +121,7 @@ theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
   split_ifs with h
   exacts [Or.inl (mem_range_self _), Or.inr (mem_image_of_mem _ h)]
 
-theorem range_extend {f : α → β} (hf : Injective f) (g : α → γ) (g' : β → γ) :
+theorem range_extend {f : ι → β} (hf : Injective f) (g : ι → γ) (g' : β → γ) :
     range (extend f g g') = range g ∪ g' '' (range f)ᶜ := by
   refine (range_extend_subset _ _ _).antisymm ?_
   rintro z (⟨x, rfl⟩ | ⟨y, hy, rfl⟩)

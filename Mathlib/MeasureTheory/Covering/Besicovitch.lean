@@ -441,7 +441,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
         have I : (a : ℕ) < N := ha
         have J : G (Fin.last N) = i := by dsimp; simp only [G, ite_true]
         have K : G a = g a := by simp [G, I.ne]
-        convert! dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
+        convert dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
   -- this is a contradiction
   exact hN.false sc
 
@@ -603,7 +603,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     ∃ w : Finset (u i), μ s / (N + 1) <
       ∑ x ∈ w, μ (o ∩ closedBall (x : α) (r (x : α))) := by
     have C : HasSum (fun x : u i => μ (o ∩ closedBall x (r x))) (μ (o ∩ v i)) := by
-      rw [B]; exact ENNReal.summable.hasSum
+      rw [B]; exact CompleteLattice.summable.hasSum
     have : μ s / (N + 1) < μ (o ∩ v i) := hi.trans_le (measure_mono (inter_subset_inter_left _ so))
     exact ((tendsto_order.1 C).1 _ this).exists
   -- Bring back the finset `w i` of `↑(u i)` to a finset of `α`, and check that it works by design.
@@ -733,7 +733,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       · exact ht.2.2 p h'p
       · rcases Finset.mem_image.1 h'p with ⟨p', p'v, rfl⟩
         exact (hr p' (vs' p'v)).1.1
-    · convert! hμv using 2
+    · convert hμv using 2
       rw [Finset.set_biUnion_union, ← sdiff_sdiff, Finset.set_biUnion_finset_image]
   /- Define `F` associating to a finite good covering the above enlarged good covering, covering
     a proportion `1/(N+1)` of leftover points. Iterating `F`, one will get larger and larger good
@@ -1001,11 +1001,11 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
       (∑' x : ↥(t0 ∪ ⋃ i : Fin N, ((↑) : s' → α) '' S i), μ (closedBall x (r x))) ≤
           (∑' x : t0, μ (closedBall x (r x))) +
             ∑' x : ⋃ i : Fin N, ((↑) : s' → α) '' S i, μ (closedBall x (r x)) :=
-        ENNReal.tsum_union_le (fun x => μ (closedBall x (r x))) _ _
+        tsum_union_le (fun x => μ (closedBall x (r x))) _ _
       _ ≤
           (∑' x : t0, μ (closedBall x (r x))) +
             ∑ i : Fin N, ∑' x : ((↑) : s' → α) '' S i, μ (closedBall x (r x)) :=
-        (add_le_add le_rfl (ENNReal.tsum_iUnion_le (fun x => μ (closedBall x (r x))) _))
+        (add_le_add le_rfl (tsum_iUnion_le (fun x => μ (closedBall x (r x))) _))
       _ ≤ μ s + ε / 2 + ∑ i : Fin N, ε / 2 / N := by
         gcongr
         apply B

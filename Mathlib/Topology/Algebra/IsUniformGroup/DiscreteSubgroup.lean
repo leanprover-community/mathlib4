@@ -6,9 +6,9 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Commensurable
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
-public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
+
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 
 /-!
 # Discrete subgroups of topological groups

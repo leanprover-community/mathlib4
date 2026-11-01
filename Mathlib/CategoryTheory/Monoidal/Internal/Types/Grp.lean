@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
-public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Monoidal.Grp
+public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
 
 /-!
 # `Grp (Type u) ≌ GrpCat.{u}`
@@ -31,7 +31,7 @@ namespace GrpTypeEquivalenceGrp
 instance grpGroup (A : Type u) [GrpObj A] : Group A :=
   { MonTypeEquivalenceMon.monMonoid A with
     inv := ι[A]
-    inv_mul_cancel a := ConcreteCategory.congr_hom (GrpObj.left_inv A) a }
+    inv_mul_cancel a := congr($(GrpObj.left_inv A) a) }
 
 /-- Converting a group object in `Type u` into a group. -/
 noncomputable def functor : Grp (Type u) ⥤ GrpCat.{u} where

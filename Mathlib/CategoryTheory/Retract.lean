@@ -5,7 +5,6 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.EpiMono
 
 /-!
@@ -149,7 +148,6 @@ def map (F : C ⥤ D) : RetractArrow (F.map f) (F.map g) :=
 
 attribute [to_dual existing] map_i_left map_i_right
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If a morphism `f` is a retract of `g`, then `f.op` is a retract of `g.op`. -/
 @[to_dual self, simps]
 def op : RetractArrow f.op g.op where
@@ -159,7 +157,6 @@ def op : RetractArrow f.op g.op where
 
 attribute [to_dual existing (reorder := X Y, Z W)] op_i
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If a morphism `f` in the opposite category is a retract of `g`,
 then `f.unop` is a retract of `g.unop`. -/
 @[to_dual self, simps]
@@ -185,7 +182,6 @@ attribute [to_dual existing] retract_i
 
 end Iso
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `X` is a retract of `Y`, then for any natural transformation `τ`,
 the natural transformation `τ.app X` is a retract of `τ.app Y`. -/
 @[to_dual self, simps]

@@ -6,7 +6,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Polynomial.Reverse
-public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Theory of monic polynomials
@@ -51,7 +50,7 @@ theorem Monic.as_sum (hp : p.Monic) :
     p = X ^ p.natDegree + ∑ i ∈ range p.natDegree, C (p.coeff i) * X ^ i := by
   conv_lhs => rw [p.as_sum_range_C_mul_X_pow, sum_range_succ_comm]
   suffices C (p.coeff p.natDegree) = 1 by rw [this, one_mul]
-  exact congr_arg C hp
+  congrm C $hp
 
 theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) :=
   subsingleton_or_nontrivial S |>.elim (·.elim ..) fun _ ↦
@@ -188,11 +187,11 @@ theorem eq_one_of_map_eq_one {S : Type*} [Semiring S] [Nontrivial S] (f : R →+
   nontriviality R
   have hdeg : p.degree = 0 := by
     rw [← degree_map_eq_of_leadingCoeff_ne_zero f _, map_eq, degree_one]
-    · rw [hp.leadingCoeff, f.map_one]
-      exact one_ne_zero
+    rw [hp.leadingCoeff, f.map_one]
+    exact one_ne_zero
   have hndeg : p.natDegree = 0 :=
     WithBot.coe_eq_coe.mp ((degree_eq_natDegree hp.ne_zero).symm.trans hdeg)
-  convert! eq_C_of_degree_eq_zero hdeg
+  convert eq_C_of_degree_eq_zero hdeg
   rw [← hndeg, ← Polynomial.leadingCoeff, hp.leadingCoeff, C.map_one]
 
 theorem natDegree_pow (hp : p.Monic) (n : ℕ) : (p ^ n).natDegree = n * p.natDegree := by

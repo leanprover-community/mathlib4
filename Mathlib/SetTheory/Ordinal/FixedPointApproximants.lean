@@ -82,8 +82,6 @@ theorem lfpApprox_mono_right : Monotone (lfpApprox f x) := by
   apply sup_le_sup_left (iSup₂_mono' _)
   grind
 
-@[deprecated (since := "2026-03-30")] alias lfpApprox_monotone := lfpApprox_mono_right
-
 theorem lfpApprox_zero : lfpApprox f x 0 = x := by
   rw [lfpApprox]
   simp
@@ -265,8 +263,6 @@ theorem gfpApprox_zero : gfpApprox f x 0 = x := by
 
 theorem gfpApprox_anti_right : Antitone (gfpApprox f x) :=
   lfpApprox_mono_right f.dual
-
-@[deprecated (since := "2026-03-30")] alias gfpApprox_antitone := gfpApprox_anti_right
 
 theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
   le_lfpApprox f.dual

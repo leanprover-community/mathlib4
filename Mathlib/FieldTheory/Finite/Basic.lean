@@ -9,10 +9,11 @@ public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.ZMod.ValMinAbs
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.Galois.Notation
 public import Mathlib.FieldTheory.Perfect
+
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Finite fields
@@ -73,7 +74,7 @@ theorem card_image_polynomial_eval [DecidableEq R] [Fintype R] {p : R[X]} (hp : 
   Finset.card_le_mul_card_image _ _ (fun a _ =>
     calc
       _ = #(p - C a).roots.toFinset :=
-        congr_arg card (by simp [Finset.ext_iff, ← mem_roots_sub_C hp])
+        congr(card $(by simp [Finset.ext_iff, ← mem_roots_sub_C hp]))
       _ ≤ Multiset.card (p - C a).roots := Multiset.toFinset_card_le _
       _ ≤ _ := card_roots_sub_C' hp)
 
@@ -381,10 +382,10 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
         ← Module.card_eq_pow_finrank, pow_card]
     have := card_le_degree_of_subset_roots (R := L) (p := X ^ q ^ m - X) (Z := univ) fun x _ ↦ by
       simp_rw [mem_roots', IsRoot, eval_sub, eval_pow, eval_X]
-      have := DFunLike.congr_fun eq x
+      have := congr($eq x)
       rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
       refine ⟨fun h ↦ ?_, this⟩
-      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr_arg (coeff · 1) h
+      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr(coeff $h 1)
     refine this.not_gt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
       (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
     simp [Nat.one_le_pow _ _ Fintype.card_pos]
@@ -427,34 +428,9 @@ end frobenius
 
 open Polynomial
 
-section
-
-variable [Fintype K] (K' : Type*) [Field K'] {p n : ℕ}
-
-theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
-  have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
-    rw [degree_X_pow, degree_X]
-    exact mod_cast hp
-  rw [natDegree_eq_of_degree_eq (degree_sub_eq_left_of_degree_lt h1), natDegree_X_pow]
-
-theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
-    (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow hn hp
-
-theorem X_pow_card_sub_X_ne_zero (hp : 1 < p) : (X ^ p - X : K'[X]) ≠ 0 :=
-  ne_zero_of_natDegree_gt <|
-    calc
-      1 < _ := hp
-      _ = _ := (X_pow_card_sub_X_natDegree_eq K' hp).symm
-
-theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow hn hp
-
-end
-
 theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
   classical
-    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
+    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_sub_X_ne_zero Fintype.one_lt_card
     have : (roots (X ^ q - X : K[X])).toFinset = Finset.univ := by
       rw [eq_univ_iff_forall]
       intro x
@@ -463,7 +439,7 @@ theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := b
     rw [← this, Multiset.toFinset_val, eq_comm, Multiset.dedup_eq_self]
     apply nodup_roots
     rw [separable_def]
-    convert! isCoprime_one_right.neg_right (R := K[X]) using 1
+    convert isCoprime_one_right.neg_right (R := K[X]) using 1
     rw [derivative_sub, derivative_X, derivative_X_pow, Nat.cast_card_eq_zero K, C_0,
       zero_mul, zero_sub]
 
@@ -497,21 +473,14 @@ namespace ZMod
 
 open FiniteField Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
   rcases hp.1.eq_two_or_odd with rfl | hp_odd
-  · change Fin 2 at x
+  · unfold ZMod
     fin_cases x
     · use 0; simp
     · use 0, 1; simp
-  let f : (ZMod p)[X] := X ^ 2
-  let g : (ZMod p)[X] := X ^ 2 - C x
-  obtain ⟨a, b, hab⟩ : ∃ a b, f.eval a + g.eval b = 0 :=
-    @exists_root_sum_quadratic _ _ _ _ f g (degree_X_pow 2) (degree_X_pow_sub_C (by decide) _)
-      (by rw [ZMod.card, hp_odd])
-  refine ⟨a, b, ?_⟩
-  rw [← sub_eq_zero]
-  simpa only [f, g, eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
+  simpa [hp_odd, sub_eq_zero, ← add_sub_assoc] using
+    exists_root_sum_quadratic (degree_X_pow 2) (degree_X_pow_sub_C two_pos x)
 
 end ZMod
 
@@ -542,7 +511,7 @@ theorem sq_add_sq (R : Type*) [Ring R] [IsDomain R] (p : ℕ) [NeZero p] [CharP 
   have := char_is_prime_of_pos R p
   obtain ⟨a, b, hab⟩ := ZMod.sq_add_sq p x
   refine ⟨a.val, b.val, ?_⟩
-  simpa using congr_arg (ZMod.castHom dvd_rfl R) hab
+  simpa using congr(ZMod.castHom dvd_rfl R $hab)
 
 end CharP
 
@@ -642,7 +611,7 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
   have : Fact p.Prime := ⟨hp⟩
   have : ¬(n : ZMod p) = 0 := by
     rw [CharP.intCast_eq_zero_iff _ p, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd]
-    · exact hpn.symm
+    exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
 theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :
@@ -747,13 +716,12 @@ theorem Subfield.splits_bot :
     Splits (X ^ p - X : (⊥ : Subfield F)[X]) := by
   let _ := Subfield.fintypeBot F p
   rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
-    FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,
-    Fintype.card_eq_nat_card, card_bot F p]
+    natDegree_X_pow_sub_X (Fact.out (p := p.Prime)).one_lt, Fintype.card_eq_nat_card, card_bot F p]
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
       (splits_bot F p).roots_map (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
-  simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
+  simpa [sub_eq_zero, iff_comm, X_pow_sub_X_ne_zero (Fact.out : p.Prime).one_lt]
 
 end prime_subfield
 

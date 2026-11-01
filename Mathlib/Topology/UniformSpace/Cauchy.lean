@@ -5,10 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Topology.Algebra.Constructions
-public import Mathlib.Topology.Bases
 public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
@@ -177,7 +175,7 @@ lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : C
     (hm : UniformContinuousOn m s) (hfs : f ≤ 𝓟 s) :
     Cauchy (map m f) := by
   suffices Cauchy (comap (Subtype.val : s → α) f) by
-    simpa [Set.domRestrict_def, ← Function.comp_def, ← map_map,
+    simpa [Set.domRestrict_def, ← Function.comp_def, ← Filter.map_map,
       subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
   exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
@@ -289,7 +287,7 @@ theorem cauchySeq_shift {u : ℕ → α} (k : ℕ) : CauchySeq (fun n ↦ u (n +
     obtain ⟨N, h⟩ := h V mV
     use N + k
     intro a ha b hb
-    convert! h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
+    convert h (a - k) (Nat.le_sub_of_add_le ha) (b - k) (Nat.le_sub_of_add_le hb) <;> lia
   · exact h.comp_tendsto (tendsto_add_atTop_nat k)
 
 theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u : β → α} {p : γ → Prop}

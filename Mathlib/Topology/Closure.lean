@@ -405,6 +405,9 @@ alias ⟨Dense.closure_eq, _⟩ := dense_iff_closure_eq
 theorem interior_eq_empty_iff_dense_compl : interior s = ∅ ↔ Dense sᶜ := by
   rw [dense_iff_closure_eq, closure_compl, compl_univ_iff]
 
+theorem interior_compl_eq_empty_iff_dense : interior sᶜ = ∅ ↔ Dense s := by
+  rw [interior_eq_empty_iff_dense_compl, compl_compl]
+
 theorem Dense.interior_compl (h : Dense s) : interior sᶜ = ∅ :=
   interior_eq_empty_iff_dense_compl.2 <| by rwa [compl_compl]
 
@@ -436,6 +439,11 @@ theorem Dense.exists_mem_open (hs : Dense s) {U : Set X} (ho : IsOpen U)
     (hne : U.Nonempty) : ∃ x ∈ s, x ∈ U :=
   let ⟨x, hx⟩ := hs.inter_open_nonempty U ho hne
   ⟨x, hx.2, hx.1⟩
+
+/-- A dense set contains every isolated point. -/
+theorem Dense.mem_of_isOpen_singleton (hs : Dense s) (hx : IsOpen {x}) : x ∈ s := by
+  obtain ⟨y, hys, hy⟩ := hs.exists_mem_open hx ⟨x, rfl⟩
+  exact mem_singleton_iff.1 hy ▸ hys
 
 theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
   ⟨fun ⟨x, _⟩ => ⟨x⟩, fun ⟨x⟩ =>
