@@ -68,7 +68,7 @@ It is defined as `0` if either `¬ mΩ ≤ mΩ₀` or `hm : mΩ ≤ mΩ₀` but 
 
 One should typically not use the definition directly.
 -/
-noncomputable irreducible_def condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω)
+noncomputable def condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω)
     (X : Ω → ℝ≥0∞) : Ω → ℝ≥0∞ :=
   if hm : mΩ ≤ mΩ₀ then
     if SigmaFinite (P.trim hm) then

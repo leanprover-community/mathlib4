@@ -49,7 +49,6 @@ instance : (chainComplexFunctor C).Additive := by
   dsimp [chainComplexFunctor, SimplicialObject.whiskering]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] SSet.chainComplexFunctor in
 attribute [local simp←] _root_.SSet.yonedaEquiv_symm_comp in
 /-- The adjunction `Hom(Cⁿ(-, X), F) ≃ Hom(X, F(Δ[n]))` for `R : C` and `F : SSet ⥤ C`. -/
@@ -80,14 +79,12 @@ corresponding to a `n`-simplex `x : X _⦋n⦌`. -/
 noncomputable def ιChainComplex {n : ℕ} (x : X _⦋n⦌) : R ⟶ (X.chainComplex R).X n :=
   Sigma.ι (fun (_ : X _⦋n⦌) ↦ R) x
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ιChainComplex_d {n : ℕ} (x : X _⦋n + 1⦌) :
     X.ιChainComplex x ≫ (X.chainComplex R).d (n + 1) n =
       ∑ (i : Fin (n + 2)), (-1) ^ i.val • X.ιChainComplex (X.δ i x) := by
   simp [ιChainComplex, chainComplex, chainComplexFunctor, Preadditive.comp_sum]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_chainComplexMap_f {n : ℕ} (x : X _⦋n⦌) :
     X.ιChainComplex x ≫ (chainComplexMap f R).f n =

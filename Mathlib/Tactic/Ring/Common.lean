@@ -112,8 +112,6 @@ deriving Inhabited
 /-- The data used to represent coefficients in exponents. This is the same data that `ring` uses. -/
 abbrev btℕ (e : Q(ℕ)) : Type := _root_.Mathlib.Tactic.Ring.RatCoeff q($e)
 
-instance (e : Expr) : Inhabited <| btℕ e := ⟨⟨0, none⟩⟩
-
 universe u v
 
 /-!
@@ -1270,7 +1268,7 @@ changes to `eval` should be kept in sync:
 * `Common.isAtomOrDerivable`
 * `Algebra.collectScalarRings`
 -/
-partial def eval  {u : Lean.Level}
+partial def eval {u : Lean.Level}
     {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := Lean.withIncRecDepth do
   let els := do

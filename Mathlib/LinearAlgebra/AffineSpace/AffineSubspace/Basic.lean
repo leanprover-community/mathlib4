@@ -534,6 +534,10 @@ theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
 
+theorem AffineMap.vectorSpan_preimage_le (s : Set P₂) :
+    vectorSpan k (f ⁻¹' s) ≤ (vectorSpan k s).comap f.linear := by
+  simp [← Submodule.map_le_iff_le_comap, map_vectorSpan, vectorSpan_mono]
+
 namespace AffineSubspace
 
 /-- The image of an affine subspace under an affine map as an affine subspace. -/
@@ -763,6 +767,17 @@ theorem comap_id (s : AffineSubspace k P₁) : s.comap (AffineMap.id k P₁) = s
 theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P₂ →ᵃ[k] P₃) :
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
+
+theorem direction_comap_le (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) :
+    (s.comap f).direction ≤ s.direction.comap f.linear :=
+  f.vectorSpan_preimage_le _
+
+theorem direction_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₂} (h : s.comap f ≠ ⊥) :
+    (s.comap f).direction = s.direction.comap f.linear := by
+  ext v
+  obtain ⟨p, hp⟩ := (nonempty_iff_ne_bot _).mpr h
+  have : f p ∈ s := by simpa
+  simp [← vadd_mem_iff_mem_direction _ hp, ← vadd_mem_iff_mem_direction _ this]
 
 -- lemmas about map and comap derived from the Galois connection
 theorem map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :

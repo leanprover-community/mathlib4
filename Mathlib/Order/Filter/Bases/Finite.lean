@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Filter.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness results on filter bases
 
