@@ -49,7 +49,7 @@ variable (R : Type u) [Ring R]
 
 open Abelian
 
-/-- The (left) global (homological) dimension of a (commutative) ring defined as
+/-- The (left) global (homological) dimension of a ring is defined as
 the supremum of projective dimension over all modules. -/
 @[expose]
 noncomputable def globalDimension : WithBot ℕ∞ :=
