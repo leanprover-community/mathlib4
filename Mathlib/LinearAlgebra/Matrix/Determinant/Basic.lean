@@ -280,7 +280,7 @@ theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n
 
 @[simp]
 theorem det_smul_of_tower {α} [Monoid α] [MulAction α R] [IsScalarTower α R R]
-    [SMulCommClass α R R] (c : α) (A : Matrix n n R) :
+    (c : α) (A : Matrix n n R) :
     det (c • A) = c ^ Fintype.card n • det A := by
   rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
 
@@ -321,6 +321,12 @@ variable {S : Type w} [CommRing S]
 theorem _root_.RingHom.map_det (f : R →+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) := by
   simp [Matrix.det_apply', map_sum f, map_prod f]
+
+/-- The determinant of submatrices are natural with respect to a ring homomorphism. -/
+theorem _root_.RingHom.map_det_submatrix {m n t : Type*} [Fintype t] [DecidableEq t]
+  (f : R →+* S) (A : Matrix m n R) (row : t → m) (col : t → n) :
+    f (det (submatrix A row col)) = det (submatrix (A.map f) row col) := by
+  simp [submatrix_map, f.map_det]
 
 theorem _root_.RingEquiv.map_det (f : R ≃+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) :=
