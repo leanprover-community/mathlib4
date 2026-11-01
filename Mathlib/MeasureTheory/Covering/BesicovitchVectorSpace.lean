@@ -38,7 +38,7 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
   are bounded below by `1`.
 * `multiplicity_le E` shows that `multiplicity E ≤ 5 ^ (dim E)`.
 * `good_τ E` is a constant `> 1`, but close enough to `1` that satellite configurations
-  with this parameter `τ` are not worst than for `τ = 1`.
+  with this parameter `τ` are not worse than for `τ = 1`.
 * `isEmpty_satelliteConfig_multiplicity` is the main theorem, saying that there are
   no satellite configurations of `(multiplicity E) + 1` points, for the parameter `goodτ E`.
 -/

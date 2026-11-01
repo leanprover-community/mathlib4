@@ -692,7 +692,7 @@ private lemma Aux.of_eq_iSup_basicOpen {M : (Spec R).Modules} (V : (Spec R).Open
       refine ⟨⨆ i, n i, fun i ↦ f ^ ((⨆ i, n i) - n i) • t' i, fun i ↦ ?_⟩
       conv_lhs => rw [hN i]
       rw [pow_add, mul_smul, ht', M.map_smul_Spec]
-    /- By `h₂`, up to a factor of `f ^ K`, the restrictions of `tᵢ` and `tⱼ` to
+    /- By `h₂`, up to a factor of `f ^ K`, the restrictions of `tᵢ` and `tⱼ`
     to `D(gᵢ) ∩ D(gⱼ)` agree. -/
     obtain ⟨K, hK⟩ : ∃ (K : ℕ), ∀ (i j : ι),
         M.presheaf.map (homOfLE (basicOpen_mul_le_left (g i) (g j))).op (f ^ K • t i) =

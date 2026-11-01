@@ -174,7 +174,7 @@ variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
 the exactness at `X₂.opcycles i`, while the fact that `X₂.opcycles i ⟶ X₃.opcycles i`
 is an epi is an instance. -/
 lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Epi S.g]
-    (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
+    (i : ι) :
     (ShortComplex.mk (opcyclesMap S.f i) (opcyclesMap S.g i)
       (by rw [← opcyclesMap_comp, S.zero, opcyclesMap_zero])).Exact := by
   have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
@@ -196,7 +196,7 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
 the exactness at `X₂.cycles i`, while the fact that `X₁.cycles i ⟶ X₂.cycles i`
 is a mono is an instance. -/
 lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Mono S.f]
-    (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
+    (i : ι) :
     (ShortComplex.mk (cyclesMap S.f i) (cyclesMap S.g i)
       (by rw [← cyclesMap_comp, S.zero, cyclesMap_zero])).Exact := by
   have : Mono (ShortComplex.map S (eval C c i)).f := by dsimp; infer_instance
