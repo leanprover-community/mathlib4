@@ -210,11 +210,11 @@ instance : PreservesLimitsOfSize.{t, w} (uliftCoyoneda.{w'} : Cᵒᵖ ⥤ _) := 
 
 instance [LocallySmall.{w'} C] :
     PreservesLimitsOfSize.{t, w} (shrinkYoneda.{w'} (C := C)) :=
-  preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦ by
+  preservesLimits_of_evaluation _ (fun K ↦ ⟨fun {J _} ↦
     have := preservesLimitsOfShape_of_natIso (J := J)
       (shrinkCoyonedaObjCompUliftFunctorIso.{w'} K).symm
-    exact preservesLimitsOfShape_of_reflects_of_preserves
-      (shrinkYoneda.{w'}.flip.obj K) uliftFunctor.{v}⟩)
+    preservesLimitsOfShape_of_reflects_of_preserves
+      (shrinkCoyoneda.{w'}.obj K) uliftFunctor.{v}⟩)
 
 namespace Functor
 
