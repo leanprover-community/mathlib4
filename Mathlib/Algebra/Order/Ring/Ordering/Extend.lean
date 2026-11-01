@@ -19,7 +19,7 @@ on `R` extends to an ordering on `R`, and characterise maximal orderings.
 
 ## Main results
 
-* `Subsemiring.IsPreordering.exists_le_isOrdering`: a preordering extends to an ordering.
+* `Subsemiring.IsPreordering.exists_le_isOrdering`: every preordering extends to an ordering.
 * `Subsemiring.maximal_isPreordering_iff_maximal_isOrdering`:
 an ordering is maximal as an ordering if and only if it is maximal as a preordering.
 * `Subsemiring.maximal_isPreordering_iff_isOrdering`: over a field,
