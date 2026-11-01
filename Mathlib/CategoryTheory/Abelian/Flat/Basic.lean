@@ -37,15 +37,15 @@ namespace ObjectProperty
 both functors `tensorLeft X : A ⥤ A` and `tensorRight X : A ⥤ A` preserve
 both finite limits and finite colimits. -/
 @[expose]
-def flat : ObjectProperty A :=
+def Monoidal.flat : ObjectProperty A :=
   fun X ↦ exactFunctor _ _ (tensorLeft X) ∧ exactFunctor _ _ (tensorRight X)
 
-lemma flat_eq_min :
+lemma Monoidal.flat_eq_min :
     flat (A := A) =
       (exactFunctor A A).inverseImage (curriedTensor A) ⊓
       (exactFunctor A A).inverseImage (curriedTensor A).flip := rfl
 
-namespace flat
+namespace Monoidal.flat
 
 protected lemma tensorLeft {X : A} (hX : flat X) :
     exactFunctor _ _ (tensorLeft X) := hX.1
@@ -75,7 +75,7 @@ instance : (flat (A := A)).IsMonoidal where
     · exact preservesFiniteLimits_of_natIso (tensorRightTensor X Y).symm
     · exact preservesFiniteColimits_of_natIso (tensorRightTensor X Y).symm
 
-end flat
+end Monoidal.flat
 
 end ObjectProperty
 
@@ -85,10 +85,10 @@ variable (A) in
 /-- A monoidal abelian category has functorial flat resolutions if all objects
 admit a functorial epimorphism from a flat object. -/
 abbrev HasFunctorialFlatResolution : Prop :=
-  Nonempty (LeftResolution (ObjectProperty.flat.ι : _ ⥤ A))
+  Nonempty (LeftResolution (ObjectProperty.Monoidal.flat.ι : _ ⥤ A))
 
 lemma HasFunctorialFlatResolution.mk {C : Type*} [Category* C] {ι : C ⥤ A}
-    (Λ : LeftResolution ι) (hι : ι.essImage ≤ ObjectProperty.flat) :
+    (Λ : LeftResolution ι) (hι : ι.essImage ≤ ObjectProperty.Monoidal.flat) :
     HasFunctorialFlatResolution A :=
   ⟨{F := ObjectProperty.lift _ (Λ.F ⋙ ι) (fun _ ↦ hι _ (ι.obj_mem_essImage _))
     π := Λ.π }⟩
