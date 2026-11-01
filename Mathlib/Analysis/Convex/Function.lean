@@ -236,6 +236,22 @@ theorem ConvexOn.add (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexO
 theorem ConcaveOn.add (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) : ConcaveOn 𝕜 s (f + g) :=
   hf.dual.add hg
 
+/-- A finite sum of convex functions is convex. -/
+theorem convexOn_finsetSum {ι : Type*} {t : Finset ι} {f : ι → E → β} (hs : Convex 𝕜 s)
+    (hf : ∀ i ∈ t, ConvexOn 𝕜 s (f i)) : ConvexOn 𝕜 s fun x ↦ ∑ i ∈ t, f i x := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => exact ⟨hs, fun _ _ _ _ _ _ _ _ _ ↦ by simp⟩
+  | insert i t hi ih =>
+    simp only [Finset.sum_insert hi]
+    exact (hf i (Finset.mem_insert_self i t)).add
+      (ih fun j hj ↦ hf j (Finset.mem_insert_of_mem hj))
+
+/-- A finite sum of concave functions is concave. -/
+theorem concaveOn_finsetSum {ι : Type*} {t : Finset ι} {f : ι → E → β} (hs : Convex 𝕜 s)
+    (hf : ∀ i ∈ t, ConcaveOn 𝕜 s (f i)) : ConcaveOn 𝕜 s fun x ↦ ∑ i ∈ t, f i x :=
+  convexOn_finsetSum (β := βᵒᵈ) hs hf
+
 end DistribMulAction
 
 section Module
