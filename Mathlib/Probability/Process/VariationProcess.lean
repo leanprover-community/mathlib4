@@ -123,6 +123,7 @@ variable [SecondCountableTopology ι]
 
 /-- The variation of a process with right-continuous paths over the times in a set `s` is
 measurable. -/
+@[to_dual]
 theorem measurable_eVariationOn_of_isRightContinuousOn {m : MeasurableSpace Ω} {s : Set ι}
     {X : ι → Ω → E} (hX : ∀ i ∈ s, StronglyMeasurable[m] (X i))
     (hcont : ∀ ω, IsRightContinuousOn (X · ω) s) :
@@ -153,18 +154,6 @@ theorem MeasureTheory.StronglyAdapted.adapted_variationProcess_of_isRightContinu
     [OrderBot ι] {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} (hX : StronglyAdapted 𝓕 X)
     (hcont : ∀ ω, IsRightContinuous (X · ω)) : Adapted 𝓕 (variationProcess X ⊥) :=
   fun _ ↦ hX.measurable_variationProcess_of_isRightContinuous hcont bot_le
-
-/-- The variation of a process with left-continuous paths over the times in a set `s` is
-measurable. -/
-@[to_dual existing]
-theorem measurable_eVariationOn_of_isLeftContinuousOn {m : MeasurableSpace Ω} {s : Set ι}
-    {X : ι → Ω → E} (hX : ∀ i ∈ s, StronglyMeasurable[m] (X i))
-    (hcont : ∀ ω, IsLeftContinuousOn (X · ω) s) :
-    Measurable[m] fun ω ↦ eVariationOn (X · ω) s := by
-  have hdual : ∀ ω, eVariationOn (fun i ↦ X (OrderDual.ofDual i) ω) (OrderDual.ofDual ⁻¹' s)
-    = eVariationOn (X · ω) s := fun ω ↦ eVariationOn.comp_ofDual (X · ω) s
-  simpa [hdual] using measurable_eVariationOn_of_isRightContinuousOn
-    (s := OrderDual.ofDual ⁻¹' s) (X := fun i ↦ X (OrderDual.ofDual i)) hX hcont
 
 /-- For `a ≤ t`, the value at time `t` of the variation process of a strongly adapted process with
 left-continuous paths is `𝓕 t`-measurable. -/
