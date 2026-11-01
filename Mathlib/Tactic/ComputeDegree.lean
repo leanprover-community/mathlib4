@@ -199,6 +199,9 @@ theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegre
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
     (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
 
+theorem coeff_neg_of_eq {n : ℕ} {a : R} {f : R[X]} (hf : f.coeff n = a) :
+    (-f).coeff n = -a := by subst hf; apply coeff_neg
+
 theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
   simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
 
@@ -352,7 +355,7 @@ def dispatchLemma
         | .inr ``HPow.hPow =>
           π ``natDegree_pow_le_of_le ``degree_pow_le_of_le ``coeff_pow_of_natDegree_le_of_eq_ite'
         | .inr ``Neg.neg =>
-          π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``coeff_neg
+          π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``coeff_neg_of_eq
         | .inr ``Polynomial.X =>
           π ``natDegree_X_le ``degree_X_le ``coeff_X
         | .inr ``Nat.cast =>

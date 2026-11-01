@@ -193,7 +193,7 @@ variable (ι)
 theorem vecMulVec_eq [Mul α] [AddCommMonoid α] [Unique ι] (w : m → α) (v : n → α) :
     vecMulVec w v = replicateCol ι w * replicateRow ι v := by
   ext
-  simp [vecMulVec, mul_apply]
+  simp [vecMulVec, Matrix.mul_apply]
 
 /-! ### Updating rows and columns -/
 
@@ -428,16 +428,16 @@ theorem updateRow_mul [DecidableEq l] [Fintype m] [NonUnitalNonAssocSemiring α]
     A.updateRow i r * B = (A * B).updateRow i (r ᵥ* B) := by
   ext i' j'
   obtain rfl | hi := eq_or_ne i' i
-  · simp [mul_apply, vecMul, dotProduct]
-  · simp [mul_apply, hi]
+  · simp [Matrix.mul_apply, vecMul, dotProduct]
+  · simp [Matrix.mul_apply, hi]
 
 theorem mul_updateCol [DecidableEq n] [Fintype m] [NonUnitalNonAssocSemiring α]
     (A : Matrix l m α) (B : Matrix m n α) (j : n) (c : m → α) :
     A * B.updateCol j c = (A * B).updateCol j (A *ᵥ c) := by
   ext i' j'
   obtain rfl | hj := eq_or_ne j' j
-  · simp [mul_apply, mulVec, dotProduct]
-  · simp [mul_apply, hj]
+  · simp [Matrix.mul_apply, mulVec, dotProduct]
+  · simp [Matrix.mul_apply, hj]
 
 open RightActions in
 theorem mul_single_eq_updateCol_zero

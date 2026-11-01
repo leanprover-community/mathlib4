@@ -351,7 +351,7 @@ theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (h
   (since := "2026-04-30")]
 theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum]
+  simp_rw [tsum_eq_iSup_sum]
   exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
 
 @[fun_prop, deprecated
@@ -360,7 +360,7 @@ theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0�
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable (∑' i, f i) := by
   convert! Measurable.ennreal_tsum h with x
-  exact Pi.tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
+  exact Pi.tsum_apply (Pi.summable.2 fun _ => CompleteLattice.summable)
 
 @[fun_prop, deprecated
   "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
@@ -375,7 +375,7 @@ theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (
   (since := "2026-04-30")]
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum]
+  simp_rw [tsum_eq_iSup_sum]
   exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
 
 @[fun_prop, deprecated
