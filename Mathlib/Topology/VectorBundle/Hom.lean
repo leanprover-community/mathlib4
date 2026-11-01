@@ -537,6 +537,24 @@ theorem inCoordinates_apply_eq₂
   rw [inCoordinates_eq h₁x (by simp [h₂x, h₃x])]
   simp [hom_trivializationAt, Trivialization.continuousLinearMap_apply, h₂x]
 
+/-- Rewrite the inverse trivialization of the bundle of bilinear maps in terms of the
+trivializations of `E₁`, `E₂` and `E₃`. This is the inverse direction of
+`inCoordinates_apply_eq₂`. -/
+theorem hom_trivializationAt_symm_apply₂
+    {x₀ x : B} (h₁x : x ∈ (trivializationAt F₁ E₁ x₀).baseSet)
+    (h₂x : x ∈ (trivializationAt F₂ E₂ x₀).baseSet)
+    (h₃x : x ∈ (trivializationAt F₃ E₃ x₀).baseSet)
+    (ϕ : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (u : E₁ x) (v : E₂ x) :
+    (trivializationAt (F₁ →L[𝕜] F₂ →L[𝕜] F₃) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x) x₀).symm
+        x ϕ u v =
+      (trivializationAt F₃ E₃ x₀).symm x
+        (ϕ ((trivializationAt F₁ E₁ x₀).linearMapAt 𝕜 x u)
+          ((trivializationAt F₂ E₂ x₀).linearMapAt 𝕜 x v)) := by
+  rw [hom_trivializationAt_symm_apply (RingHom.id 𝕜) (F₂ := F₂ →L[𝕜] F₃)
+      (E₂ := fun x ↦ E₂ x →L[𝕜] E₃ x)
+      ⟨h₁x, by rw [hom_trivializationAt_baseSet]; exact ⟨h₂x, h₃x⟩⟩ ϕ u,
+    hom_trivializationAt_symm_apply (RingHom.id 𝕜) (F₂ := F₃) (E₂ := E₃) ⟨h₂x, h₃x⟩]
+
 /-- Specialisation of `inCoordinates_apply_eq₂` to a trivial target bundle
 `E₃ = Bundle.Trivial B F₃`: no trivialization is needed on the output. -/
 lemma inCoordinates_apply_eq₂_of_trivial
@@ -561,11 +579,7 @@ lemma trivializationAt_symm_apply_bilin
         (trivializationAt F₂ E₂ x₀ |>.linearMapAt 𝕜 x v) := by
   have h₃x : x ∈ (trivializationAt F₃ (Bundle.Trivial B F₃) x₀).baseSet := by
     simp [Trivial.fiberBundle_trivializationAt']
-  rw [hom_trivializationAt_symm_apply (RingHom.id 𝕜) (F₂ := F₂ →L[𝕜] F₃)
-      (E₂ := fun x ↦ E₂ x →L[𝕜] F₃)
-      ⟨h₁x, by rw [hom_trivializationAt_baseSet]; exact ⟨h₂x, h₃x⟩⟩ ϕ u,
-    hom_trivializationAt_symm_apply (RingHom.id 𝕜) (F₂ := F₃) (E₂ := Bundle.Trivial B F₃)
-      ⟨h₂x, h₃x⟩]
+  rw [hom_trivializationAt_symm_apply₂ h₁x h₂x h₃x]
   simp [Trivial.fiberBundle_trivializationAt']
 
 end TwoVariables
