@@ -3464,6 +3464,7 @@ public import Mathlib.CategoryTheory.Presentable.Continuous
 public import Mathlib.CategoryTheory.Presentable.Dense
 public import Mathlib.CategoryTheory.Presentable.Directed
 public import Mathlib.CategoryTheory.Presentable.EssentiallyLarge
+public import Mathlib.CategoryTheory.Presentable.FilteredColimitsYoneda
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 public import Mathlib.CategoryTheory.Presentable.IsDiscrete

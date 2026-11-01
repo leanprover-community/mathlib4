@@ -115,6 +115,10 @@ lemma NatTrans.mapElements_comp_π {G : C ⥤ Type w} (φ : F ⟶ G) :
     φ.mapElements ⋙ Functor.Elements.π G = Functor.Elements.π F :=
   rfl
 
+lemma NatTrans.mapElements_comp_obj {G H : C ⥤ Type w} (φ : F ⟶ G) (ψ : G ⟶ H)
+    (e : F.Elements) :
+    (φ ≫ ψ).mapElements.obj e = ψ.mapElements.obj (φ.mapElements.obj e) := rfl
+
 /-- The functor mapping functors `C ⥤ Type w` to their category of elements -/
 @[simps]
 def Functor.elementsFunctor : (C ⥤ Type w) ⥤ Cat where
@@ -482,5 +486,11 @@ def Equivalence.congrElements {D : Type*} [Category* D] (e : C ≌ D) (P : D ⥤
     NatIso.ofComponents
       (fun x ↦ Functor.Elements.isoMk (e.unitIso.symm.app x.obj) (by
         simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
+
+@[simps!]
+def NatTrans.congrMapElements {G : C ⥤ Type w} {φ φ' : F ⟶ G} (h : φ = φ') :
+    φ.mapElements ≅ φ'.mapElements :=
+  NatIso.ofComponents (fun _ ↦ Functor.Elements.isoMk (Iso.refl _))
+
 
 end CategoryTheory

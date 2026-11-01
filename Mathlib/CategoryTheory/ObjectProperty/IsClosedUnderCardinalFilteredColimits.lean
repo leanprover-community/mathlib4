@@ -45,7 +45,7 @@ class IsClosedUnderCardinalFilteredColimits
     (P : ObjectProperty C) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   isCardinalClosedUnderColimitsOfShape'
       (P) (κ) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
-    P.IsClosedUnderColimitsOfShape J := by infer_instance
+    P.IsClosedUnderColimitsOfShape J := by intros; infer_instance
 
 namespace IsClosedUnderCardinalFilteredColimits
 
