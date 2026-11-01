@@ -306,18 +306,18 @@ instance :
       (opOpEquivalence C)) (Type w) κ).inverse)
 
 omit [EssentiallySmall.{w} C] in
-lemma isCardinalFiltered_elements_op
-    (P : Cᵒᵖ ⥤ Type w) [P.IsCardinalContinuous κ]
+lemma isCardinalFiltered_elements_op'
+    (P : C ⥤ Type w) [P.IsCardinalContinuous κ]
     (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
-      HasColimitsOfShape J C) :
+      HasLimitsOfShape J C) :
     IsCardinalFiltered P.Elementsᵒᵖ κ where
   nonempty_cocone {J _} F hJ := by
-    have := hasLimitsOfShape_opposite_opposite_iff.mpr (hC J hJ)
+    have := hC Jᵒᵖ (by simpa)
     have := IsCardinalContinuous.preservesLimitsOfShape P κ Jᵒᵖ (by simpa)
     obtain ⟨f, hf⟩ := ((Types.isLimit_iff_bijective_sectionOfCone _).mp
       ⟨isLimitOfPreserves P (limit.isLimit (F.leftOp ⋙ Elements.π P))⟩).surjective
-        { val j := (F.obj j.unop).unop.val
-          property _ := by simp }
+      { val j := (F.obj j.unop).unop.val
+        property _ := by simp }
     replace hf (j : J) := congr($(hf).val (op j))
     dsimp at f hf
     exact ⟨op (elementsMk _ _ f),
@@ -325,6 +325,35 @@ lemma isCardinalFiltered_elements_op
         naturality _ _ g := by
           ext
           simp [← limit.w (F.leftOp ⋙ Elements.π P) g.op] }⟩
+
+omit [EssentiallySmall.{w} C] in
+lemma isCardinalFiltered_elements_op
+    (P : Cᵒᵖ ⥤ Type w) [P.IsCardinalContinuous κ]
+    (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
+      HasColimitsOfShape J C) :
+    IsCardinalFiltered P.Elementsᵒᵖ κ :=
+  isCardinalFiltered_elements_op' _ (fun J _ hJ ↦ by
+    have := hC Jᵒᵖ (by simpa)
+    exact hasLimitsOfShape_op_of_hasColimitsOfShape)
+
+variable (C κ) in
+open ObjectProperty.IsClosedUnderCardinalFilteredColimits in
+lemma isCardinalFilteredElementsOp_le_isCardinalContinuous :
+     isCardinalFilteredElementsOp C κ ≤ isCardinalContinuous C (Type w) κ := by
+  intro P hP
+  rw [Presheaf.isCardinalFilteredElementsOp_iff,
+    Presheaf.isCardinalFiltered_elements_op_iff'] at hP
+  obtain ⟨J, _, _, F, ι, ⟨h⟩⟩ := hP
+  have := isCardinalClosedUnderColimitsOfShape (isCardinalContinuous C (Type w) κ) κ J
+  exact (isCardinalContinuous C (Type w) κ).prop_of_isColimit h (by dsimp; infer_instance)
+
+variable (C κ) in
+lemma isCardinalFilteredElementsOp_eq_isCardinalContinuous
+    (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
+      HasLimitsOfShape J C) :
+    isCardinalFilteredElementsOp C κ = isCardinalContinuous C (Type w) κ :=
+  le_antisymm (isCardinalFilteredElementsOp_le_isCardinalContinuous _ κ)
+    (fun _ _ ↦ isCardinalFiltered_elements_op' _ hC)
 
 end EssentiallySmall
 

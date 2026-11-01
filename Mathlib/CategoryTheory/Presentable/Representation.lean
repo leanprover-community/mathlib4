@@ -121,8 +121,8 @@ instance : (toCardinalContinuousFunctor C κ).Full := by
 instance : (toCardinalContinuousFunctor C κ).EssSurj where
   mem_essImage := fun F ↦ by
     have := Presheaf.isCardinalFiltered_elements_op F.obj (κ := κ) (fun J _ hJ ↦ by
-        have := isClosedUnderColimitsOfShape_isCardinalPresentable C hJ
-        infer_instance)
+      have := isClosedUnderColimitsOfShape_isCardinalPresentable C hJ
+      infer_instance)
     rw [Presheaf.isCardinalFiltered_elements_op_iff] at this
     obtain ⟨J, _, hJ, G, ι, ⟨h⟩⟩ := this
     let c' : Cocone (G ⋙ shrinkYoneda.{w}) :=
