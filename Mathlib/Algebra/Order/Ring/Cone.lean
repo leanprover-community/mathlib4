@@ -50,9 +50,8 @@ noncomputable def isPointedPartialOrderEquiv :
   invFun := fun ⟨_, _⟩ ↦ ⟨.nonneg R, .nonneg _⟩
   left_inv := fun ⟨_, _⟩ ↦ by ext; simp
   right_inv := fun ⟨_, _⟩ ↦ by
-    -- TODO : fix proj-reduction with classes, simp, extends-projection
     ext : 1
-    simp
+    simp only [Subsemiring.nonneg_toAddSubmonoid]
     ext
     simp
 

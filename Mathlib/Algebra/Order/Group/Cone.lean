@@ -81,7 +81,6 @@ noncomputable def submonoidPartialOrderEquiv :
   invFun := fun ⟨_, _⟩ ↦ ⟨.oneLE G, .oneLE _⟩
   left_inv := fun ⟨_, _⟩ ↦ by ext; simp
   right_inv := fun ⟨v, p⟩ ↦ by
-    -- TODO : fix proj-reduction with classes, simp, extends-projection
     ext : 1
     simp only
     ext
