@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+
 /-!
 
 # Effective epimorphisms in `TopCat`
