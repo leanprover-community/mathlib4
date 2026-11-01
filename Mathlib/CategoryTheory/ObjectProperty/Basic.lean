@@ -210,6 +210,12 @@ lemma strictMap_singleton (X : C) (F : C ⥤ D) :
   ext
   simp [strictMap_iff]
 
+lemma strictMap_le_iff (P : ObjectProperty C) (Q : ObjectProperty D) (F : C ⥤ D) :
+    P.strictMap F ≤ Q ↔ P ≤ Q.inverseImage F := by
+  refine ⟨fun h _ hX ↦ h _ (strictMap_obj _ _ hX), ?_⟩
+  rintro h _ ⟨X, hX⟩
+  exact h _ hX
+
 end
 
 end ObjectProperty

@@ -216,7 +216,11 @@ deriving ObjectProperty.EssentiallySmall.{w}
 variable (C) in
 lemma isCardinalFilteredGenerator_generator :
     (generator C κ).IsCardinalFilteredGenerator κ where
-  le_isCardinalPresentable := sorry
+  le_isCardinalPresentable := by
+    dsimp [generator]
+    rw [← ObjectProperty.map_top, ObjectProperty.map_le_iff]
+    intro P _
+    exact ObjectProperty.isCardinalPresentable_of_fullSubcategory _ _ (by dsimp; infer_instance)
   exists_colimitsOfShape P := by
     have := P.property
     rw [isCardinalFilteredElementsOp_iff, isCardinalFiltered_elements_op_iff'] at this
@@ -227,8 +231,7 @@ lemma isCardinalFilteredGenerator_generator :
         { app j := ObjectProperty.homMk (ι.app j)
           naturality j j' f := by ext : 1; simp [dsimp% ι.naturality f] }
       isColimit := isColimitOfReflects (ObjectProperty.ι _) h
-      prop_diag_obj _ := Functor.obj_mem_essImage _ _
-    }⟩⟩
+      prop_diag_obj _ := Functor.obj_mem_essImage _ _ }⟩⟩
 
 instance :
     IsCardinalAccessibleCategory (isCardinalFilteredElementsOp C κ).FullSubcategory κ where

@@ -3472,7 +3472,7 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 public import Mathlib.CategoryTheory.Presentable.Presheaf
-public import Mathlib.CategoryTheory.Presentable.PresheafFiltered
+public import Mathlib.CategoryTheory.Presentable.PresheafAccessible
 public import Mathlib.CategoryTheory.Presentable.Representation
 public import Mathlib.CategoryTheory.Presentable.Retracts
 public import Mathlib.CategoryTheory.Presentable.SharplyLT.Basic
