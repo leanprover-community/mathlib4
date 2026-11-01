@@ -556,6 +556,29 @@ theorem encard_left [H.FiniteIndex] (h : IsComplement S H) : S.encard = H.index 
 theorem encard_right [H.FiniteIndex] (h : IsComplement H T) : T.encard = H.index := by
   rw [← h.finite_right.cast_ncard_eq, h.ncard_right]
 
+/-- If `S` is a left transversal for a subgroup `H`, then for every `x : G`
+there is a unique `g : H` with `x * g ∈ S`. -/
+@[to_additive /-- If `S` is a left transversal for an additive subgroup `H`, then for every
+`x : G` there is a unique `g : H` with `x + g ∈ S`. -/]
+lemma existsUnique_mul_mem_left (h : IsComplement S H) (x : G) :
+    ∃! g : H, x * g ∈ S := by
+  obtain ⟨t, ht, ht'⟩ := isComplement_iff_existsUnique_mul_inv_mem.mp h x
+  refine ⟨t⁻¹, ht, fun g hg ↦ ?_⟩
+  rw [← inv_inv g, ht' g⁻¹ (by simp [hg])]
+
+/-- If `T` is a right transversal for a subgroup `H`, then for every `x : G`
+there is a unique `g : H` with `g * x ∈ T`. -/
+@[to_additive /-- If `T` is a right transversal for an additive subgroup `H`, then for every
+`x : G` there is a unique `g : H` with `g + x ∈ T`. -/]
+lemma existsUnique_mul_mem_right (h : IsComplement H T) (x : G) :
+    ∃! g : H, g * x ∈ T := by
+  obtain ⟨t, ht, ht'⟩ := isComplement_iff_existsUnique_inv_mul_mem.mp h x
+  refine ⟨t⁻¹, ht, fun g hg ↦ ?_⟩
+  rw [← inv_inv g, ht' g⁻¹ (by simp [hg])]
+
+@[to_additive (attr := deprecated (since := "2026-10-28"))]
+alias existsUnique_smul_mem := existsUnique_mul_mem_right
+
 end IsComplement
 
 section Action
@@ -695,15 +718,5 @@ theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
   specialize h1 (h * h') (by rwa [mul_smul, smul_def h', ← hg, ← mul_smul, hg])
   refine Prod.ext (eq_inv_of_mul_eq_one_right h1) (Subtype.ext ?_)
   rwa [Subtype.ext_iff, coe_one, coe_mul, ← right_eq_mul, mul_assoc (↑h) (↑h') g] at h1
-
-/-- If `S` is a complement of a subgroup `H` of a commutative group `G`, then for every `x : G`
-there is a unique `g : H` with `g • x ∈ S`. -/
-@[to_additive /-- If `S` is a complement of a subgroup `H` of a commutative additive group `G`, then
-for every `x : G` there is a unique `g : H` with `g +ᵥ x ∈ S`. -/]
-lemma IsComplement.existsUnique_smul_mem {G : Type*} [CommGroup G] {S : Set G} {H : Subgroup G}
-    (h : IsComplement S H) (x : G) : ∃! g : H, g • x ∈ S := by
-  obtain ⟨t, ht, ht'⟩ := isComplement_iff_existsUnique_mul_inv_mem.1 h x
-  refine ⟨t⁻¹, by simpa [Subgroup.smul_def, mul_comm] using ht, fun g hg ↦ ?_⟩
-  rw [← inv_inv g, ht' g⁻¹ (by simpa [Subgroup.smul_def, mul_comm] using hg)]
 
 end Subgroup
