@@ -128,12 +128,12 @@ theorem evalFrom_mul (s : σ) (x y : FreeMonoid α) :
 def acceptsFrom (s : σ) : Language α := .ofSet {x | M.evalFrom s x ∈ M.accept}
 
 theorem mem_acceptsFrom {s : σ} {x : FreeMonoid α} :
-    x ∈ (M.acceptsFrom s).toSet ↔ M.evalFrom s x ∈ M.accept := by rfl
+    x ∈ M.acceptsFrom s ↔ M.evalFrom s x ∈ M.accept := by rfl
 
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
 def accepts : Language α := M.acceptsFrom M.start
 
-theorem mem_accepts {x : FreeMonoid α} : x ∈ M.accepts.toSet ↔ M.eval x ∈ M.accept := by rfl
+theorem mem_accepts {x : FreeMonoid α} : x ∈ M.accepts ↔ M.eval x ∈ M.accept := by rfl
 
 theorem evalFrom_split [Fintype σ] {x : FreeMonoid α} {s t : σ}
     (hlen : Fintype.card σ ≤ x.toList.length) (hx : M.evalFrom s x = t) :
@@ -159,26 +159,26 @@ theorem evalFrom_split [Fintype σ] {x : FreeMonoid α} {s t : σ}
   congr; ext1; simp [FreeMonoid.toList_mul, ← List.append_assoc]
 
 theorem evalFrom_of_pow {x y : FreeMonoid α} {s : σ} (hx : M.evalFrom s x = s)
-    (hy : y ∈ (SetSemiring.ofSet {x})∗.toSet) : M.evalFrom s y = s := by
-  rw [Language.mem_kstar, SetSemiring.toSet_ofSet] at hy
+    (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
+  rw [Language.mem_kstar] at hy
   rcases hy with ⟨S, rfl, hS⟩
   induction S with
   | nil => rfl
   | cons a S ih =>
     have ha := hS a List.mem_cons_self
-    rw [Set.mem_singleton_iff] at ha
+    rw [SetSemiring.mem_singleton_iff] at ha
     rw [List.prod_cons, evalFrom_mul, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)
 
-theorem pumping_lemma [Fintype σ] {x : FreeMonoid α} (hx : x ∈ M.accepts.toSet)
+theorem pumping_lemma [Fintype σ] {x : FreeMonoid α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card σ ≤ x.toList.length) :
     ∃ a b c,
       x = a * b * c ∧ a.toList.length + b.toList.length ≤ Fintype.card σ ∧
       b ≠ 1 ∧ .ofSet {a} * (.ofSet {b})∗ * .ofSet {c} ≤ M.accepts := by
   obtain ⟨_, a, b, c, hx, hlen, hnil, rfl, hb, hc⟩ := M.evalFrom_split (s := M.start) hlen rfl
-  refine ⟨a, b, c, hx, hlen, hnil, fun y hy ↦ (?_ : y ∈ M.accepts.toSet)⟩
+  refine ⟨a, b, c, hx, hlen, hnil, fun y hy ↦ (?_ : y ∈ M.accepts)⟩
   obtain ⟨ab, ⟨a', ha', b', hb', rfl⟩, c', hc', rfl⟩ := hy
   rw [SetSemiring.toSet_ofSet] at ha' hc'
   subst ha' hc'
@@ -216,7 +216,7 @@ theorem eval_comap (f : α' → α) (x : FreeMonoid α') : (M.comap f).eval x = 
 @[simp]
 theorem accepts_comap (f : α' → α) :
     (M.comap f).accepts = .ofSet (FreeMonoid.map f ⁻¹' M.accepts.toSet) := by
-  ext; simp [mem_accepts]
+  ext; simp_rw [← SetSemiring.mem_toSet]; simp [mem_accepts]
 
 /-- Lifts an equivalence on states to an equivalence on DFAs. -/
 @[simps apply_step apply_start apply_accept]
@@ -297,7 +297,8 @@ def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
 theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : σ2) :
     (M1.union M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
   ext x
-  simp_rw [acceptsFrom, SetSemiring.add_def, SetSemiring.toSet_ofSet, Set.mem_union, Set.mem_ofPred]
+  simp_rw [acceptsFrom, SetSemiring.add_def, ← SetSemiring.mem_toSet, SetSemiring.toSet_ofSet,
+    Set.mem_union, Set.mem_ofPred]
   induction x using FreeMonoid.mulRecOn generalizing s1 s2 with
   | one => simp
   | of_mul a x ih => simp only [evalFrom_of_mul, union_step, ih]
@@ -325,7 +326,7 @@ theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
     (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
   ext x
   rw [Language.mem_inf]
-  simp_rw [acceptsFrom, SetSemiring.toSet_ofSet, Set.mem_ofPred]
+  simp_rw [acceptsFrom, ← SetSemiring.mem_toSet, SetSemiring.toSet_ofSet, Set.mem_ofPred]
   induction x using FreeMonoid.mulRecOn generalizing s1 s2 with
   | one => simp
   | of_mul a x ih => simp only [evalFrom_of_mul, inter_step, ih]

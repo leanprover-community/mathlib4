@@ -142,7 +142,7 @@ def language (g : ContextFreeGrammar T) : Language T :=
 number of steps. -/
 @[simp]
 lemma mem_language_iff (g : ContextFreeGrammar T) (w : FreeMonoid T) :
-    w ∈ g.language.toSet ↔ g.Derives (.of (.nonterminal g.initial)) (w.map .terminal) := by
+    w ∈ g.language ↔ g.Derives (.of (.nonterminal g.initial)) (w.map .terminal) := by
   rfl
 
 variable {g : ContextFreeGrammar T}
@@ -233,8 +233,8 @@ lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t)
 lemma language_eq_zero_of_forall_input_ne_initial (hg : ∀ r ∈ g.rules, r.input ≠ g.initial) :
     g.language = 0 := by
   ext
-  simp +contextual [← FreeMonoid.toListEquiv.injective.ne_iff, FreeMonoid.toListEquiv,
-    derives_nonterminal, hg]
+  simpa +contextual [← FreeMonoid.toListEquiv.injective.ne_iff, FreeMonoid.toListEquiv,
+    derives_nonterminal, hg] using Language.notMem_zero _
 
 end ContextFreeGrammar
 

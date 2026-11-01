@@ -156,18 +156,18 @@ in `M.evalFrom S x`. -/
 def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
 theorem mem_acceptsFrom {S : Set σ} {x : FreeMonoid α} :
-    x ∈ (M.acceptsFrom S).toSet ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
+    x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
   rfl
 
 variable (M) in
 @[simp]
-theorem one_mem_acceptsFrom {S : Set σ} : 1 ∈ (M.acceptsFrom S).toSet ↔ ∃ s ∈ S, s ∈ M.accept := by
+theorem one_mem_acceptsFrom {S : Set σ} : 1 ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
   simp only [mem_acceptsFrom, evalFrom_one]; tauto
 
 variable (M) in
 @[simp]
 theorem of_mul_mem_acceptsFrom {S : Set σ} {a : α} {x : FreeMonoid α} :
-    .of a * x ∈ (M.acceptsFrom S).toSet ↔ x ∈ (M.acceptsFrom (M.stepSet S a)).toSet := by
+    .of a * x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
   simp [mem_acceptsFrom]
 
 variable (M) in
@@ -177,7 +177,7 @@ theorem of_mul_preimage_acceptsFrom {S : Set σ} {a : α} :
 
 variable (M) in
 theorem mul_mem_acceptsFrom {S : Set σ} {x y : FreeMonoid α} :
-    x * y ∈ (M.acceptsFrom S).toSet ↔ y ∈ (M.acceptsFrom (M.evalFrom S x)).toSet := by
+    x * y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
   simp [mem_acceptsFrom]
 
 variable (M) in
@@ -202,7 +202,7 @@ variable (M) in
 theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
     (M.acceptsFrom (⋃ i, s i)).toSet = ⋃ i, (M.acceptsFrom (s i)).toSet := by
   ext x
-  simp_rw [mem_iUnion, mem_acceptsFrom, evalFrom_iUnion, mem_iUnion]
+  simp_rw [mem_iUnion, SetSemiring.mem_toSet, mem_acceptsFrom, evalFrom_iUnion, mem_iUnion]
   tauto
 
 variable (M) in
@@ -213,7 +213,7 @@ theorem acceptsFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i 
 variable (M) in
 @[simp]
 private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : FreeMonoid α} :
-    x ∈ (M.acceptsFrom {s ∈ S | p}).toSet ↔ x ∈ (M.acceptsFrom S).toSet ∧ p := by
+    x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
   induction x using FreeMonoid.mulRecOn generalizing S with
   | one => simp only [one_mem_acceptsFrom, mem_ofPred_eq]; tauto
   | of_mul a x ih =>
@@ -261,7 +261,7 @@ variable (M) in
 def accepts : Language α := .ofSet {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 
 theorem mem_accepts {x : FreeMonoid α} :
-    x ∈ M.accepts.toSet ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
+    x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
   rfl
 
 theorem accepts_eq_acceptsFrom_start : M.accepts = M.acceptsFrom M.start := rfl
@@ -307,7 +307,7 @@ theorem mem_evalFrom_iff_nonempty_path {s t : σ} :
   termination_by x => x.toList.length
 
 theorem accepts_iff_exists_path {x : FreeMonoid α} :
-    x ∈ M.accepts.toSet ↔ ∃ s ∈ M.start, ∃ t ∈ M.accept, Nonempty (M.Path s t x) := by
+    x ∈ M.accepts ↔ ∃ s ∈ M.start, ∃ t ∈ M.accept, Nonempty (M.Path s t x) := by
   simp only [← mem_evalFrom_iff_nonempty_path, mem_accepts, mem_evalFrom_iff_exists (S := M.start)]
   tauto
 
@@ -325,7 +325,7 @@ theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
   rw [mem_accepts, DFA.mem_accepts]
   constructor <;> · exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
 
-theorem pumping_lemma [Fintype σ] {x : FreeMonoid α} (hx : x ∈ M.accepts.toSet)
+theorem pumping_lemma [Fintype σ] {x : FreeMonoid α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ x.toList.length) :
     ∃ a b c,
       x = a * b * c ∧ a.toList.length + b.toList.length ≤ Fintype.card (Set σ) ∧
@@ -404,8 +404,7 @@ theorem disjoint_evalFrom_reverse_iff {x : FreeMonoid α} {S S' : Set σ} :
   ⟨disjoint_evalFrom_reverse, fun h ↦ star_star x ▸ disjoint_evalFrom_reverse h⟩
 
 @[simp]
-theorem mem_accepts_reverse {x : FreeMonoid α} :
-    x ∈ M.reverse.accepts.toSet ↔ (star x) ∈ M.accepts.toSet := by
+theorem mem_accepts_reverse {x : FreeMonoid α} : x ∈ M.reverse.accepts ↔ star x ∈ M.accepts := by
   simp [mem_accepts, ← Set.not_disjoint_iff, disjoint_evalFrom_reverse_iff]
 
 end NFA

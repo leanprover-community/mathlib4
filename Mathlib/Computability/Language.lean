@@ -86,45 +86,43 @@ theorem mul_def (l m : Language α) : l * m = image2 (· * ·) l m :=
 /-- The Kleene star of a language `L` is the set of all strings which can be written by
 concatenating strings from `L`. -/
 instance : KStar (Language α) where
-  kstar l := {x | ∃ L : List (FreeMonoid α), x = L.prod ∧ ∀ y ∈ L, y ∈ l.toSet}
+  kstar l := {x | ∃ L : List (FreeMonoid α), x = L.prod ∧ ∀ y ∈ L, y ∈ l}
 
 lemma kstar_def (l : Language α) :
-    l∗ = {x | ∃ L : List (FreeMonoid α), x = L.prod ∧ ∀ y ∈ L, y ∈ l.toSet} :=
+    l∗ = {x | ∃ L : List (FreeMonoid α), x = L.prod ∧ ∀ y ∈ L, y ∈ l} :=
   rfl
 
 @[ext]
-theorem ext (h : ∀ x, x ∈ l.toSet ↔ x ∈ m.toSet) : l = m :=
+theorem ext (h : ∀ x, x ∈ l ↔ x ∈ m) : l = m :=
   Set.ext h
 
-theorem notMem_zero (x : FreeMonoid α) : x ∉ (0 : Language α).toSet :=
+theorem notMem_zero (x : FreeMonoid α) : x ∉ (0 : Language α) :=
   id
 
-theorem mem_one (x : FreeMonoid α) : x ∈ (1 : Language α).toSet ↔ x = 1 := by rfl
+theorem mem_one (x : FreeMonoid α) : x ∈ (1 : Language α) ↔ x = 1 := by rfl
 
-theorem nil_mem_one : 1 ∈ (1 : Language α).toSet :=
+theorem nil_mem_one : 1 ∈ (1 : Language α) :=
   Set.mem_singleton _
 
-theorem mem_add (l m : Language α) (x : FreeMonoid α) :
-    x ∈ (l + m).toSet ↔ x ∈ l.toSet ∨ x ∈ m.toSet :=
+theorem mem_add (l m : Language α) (x : FreeMonoid α) : x ∈ l + m ↔ x ∈ l ∨ x ∈ m :=
   Iff.rfl
 
-theorem mem_sub (l m : Language α) (x : FreeMonoid α) :
-    x ∈ (l - m).toSet ↔ x ∈ l.toSet ∧ x ∉ m.toSet :=
+theorem mem_sub (l m : Language α) (x : FreeMonoid α) : x ∈ l - m ↔ x ∈ l ∧ x ∉ m :=
   Iff.rfl
 
-theorem mem_mul : x ∈ (l * m).toSet ↔ ∃ a ∈ l.toSet, ∃ b ∈ m.toSet, a * b = x :=
+theorem mem_mul : x ∈ l * m ↔ ∃ a ∈ l, ∃ b ∈ m, a * b = x :=
   mem_image2
 
-theorem append_mem_mul : a ∈ l.toSet → b ∈ m.toSet → a * b ∈ (l * m).toSet :=
+theorem append_mem_mul : a ∈ l → b ∈ m → a * b ∈ l * m :=
   mem_image2_of_mem
 
-theorem mem_kstar : x ∈ l∗.toSet ↔ ∃ L : List (FreeMonoid α), x = L.prod ∧ ∀ y ∈ L, y ∈ l.toSet :=
+theorem mem_kstar : x ∈ l∗ ↔ ∃ L : List (FreeMonoid α), x = L.prod ∧ ∀ y ∈ L, y ∈ l :=
   Iff.rfl
 
-theorem join_mem_kstar {L : List (FreeMonoid α)} (h : ∀ y ∈ L, y ∈ l.toSet) : L.prod ∈ l∗.toSet :=
+theorem join_mem_kstar {L : List (FreeMonoid α)} (h : ∀ y ∈ L, y ∈ l) : L.prod ∈ l∗ :=
   ⟨L, rfl, h⟩
 
-theorem nil_mem_kstar (l : Language α) : 1 ∈ l∗.toSet :=
+theorem nil_mem_kstar (l : Language α) : 1 ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 
 instance : OrderedSub (Language α) where
@@ -146,7 +144,7 @@ theorem map_map (g : β → γ) (f : α → β) (l : Language α) : (l.map f).ma
   rw [FreeMonoid.map_comp, ← RingHom.comp_apply, ← SetSemiring.imageHom_comp]
 
 lemma mem_kstar_iff_exists_ne_one {x : FreeMonoid α} :
-    x ∈ l∗.toSet ↔ ∃ S : List (FreeMonoid α), x = S.prod ∧ ∀ y ∈ S, y ∈ l.toSet ∧ y ≠ 1 := by
+    x ∈ l∗ ↔ ∃ S : List (FreeMonoid α), x = S.prod ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ 1 := by
   constructor
   · rintro ⟨S, rfl, h⟩
     classical
@@ -157,14 +155,14 @@ lemma mem_kstar_iff_exists_ne_one {x : FreeMonoid α} :
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
 
 theorem kstar_def_ne_one (l : Language α) :
-    l∗ = {x | ∃ S : List (FreeMonoid α), x = S.prod ∧ ∀ y ∈ S, y ∈ l.toSet ∧ y ≠ 1} := by
+    l∗ = {x | ∃ S : List (FreeMonoid α), x = S.prod ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ 1} := by
   ext x; apply mem_kstar_iff_exists_ne_one
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
 
 theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : FreeMonoid α} :
-    (x ∈ (⨆ i, l i).toSet) ↔ ∃ i, x ∈ (l i).toSet :=
+    x ∈ ⨆ i, l i ↔ ∃ i, x ∈ l i :=
   mem_iUnion
 
 theorem iSup_mul {ι : Sort v} (l : ι → Language α) (m : Language α) :
@@ -192,10 +190,9 @@ theorem sub_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
   sdiff_iUnion _ _
 
 theorem mem_pow {l : Language α} {x : FreeMonoid α} {n : ℕ} :
-    x ∈ (l ^ n).toSet ↔
-    ∃ S : List (FreeMonoid α), x = S.prod ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l.toSet := by
+    x ∈ l ^ n ↔ ∃ S : List (FreeMonoid α), x = S.prod ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
   induction n generalizing x with
-  | zero => simp
+  | zero => simp [mem_one]
   | succ n ihn =>
     simp only [pow_succ', mem_mul, ihn]
     constructor
@@ -254,7 +251,7 @@ instance : KleeneAlgebra (Language α) where
     | succ n ih => grw [pow_succ, ← mul_assoc m (l ^ n) l, ih, h]
 
 /-- **Arden's lemma** -/
-theorem self_eq_mul_add_iff {l m n : Language α} (hm : 1 ∉ m.toSet) :
+theorem self_eq_mul_add_iff {l m n : Language α} (hm : 1 ∉ m) :
     l = m * l + n ↔ l = m∗ * n where
   mp h := by
     apply le_antisymm
@@ -283,16 +280,16 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : 1 ∉ m.toSet) :
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
-def reverse (l : Language α) : Language α := .ofSet {w | star w ∈ l.toSet}
+def reverse (l : Language α) : Language α := .ofSet {w | star w ∈ l}
 
 @[simp]
-lemma mem_reverse : a ∈ l.reverse.toSet ↔ star a ∈ l.toSet := Iff.rfl
+lemma mem_reverse : a ∈ l.reverse ↔ star a ∈ l := Iff.rfl
 
-lemma star_mem_reverse : star a ∈ l.reverse.toSet ↔ a ∈ l.toSet := by
+lemma star_mem_reverse : star a ∈ l.reverse ↔ a ∈ l := by
   rw [mem_reverse, star_star]
 
 lemma reverse_eq_image (l : Language α) : l.reverse = .ofSet (star '' l.toSet) := by
-  ext; simp [star_eq_iff_star_eq]
+  ext; simp_rw [← SetSemiring.mem_toSet]; simp [star_eq_iff_star_eq]
 
 @[simp]
 lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
@@ -300,7 +297,7 @@ lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
 @[simp]
 lemma reverse_one : (1 : Language α).reverse = 1 := by
   ext
-  simp_rw [reverse, SetSemiring.toSet_one, Set.mem_one]
+  simp_rw [reverse, ← SetSemiring.mem_toSet, SetSemiring.toSet_one, Set.mem_one]
   rw [SetSemiring.toSet_ofSet, mem_ofPred, star_eq_iff_star_eq, star_one, eq_comm]
 
 lemma reverse_involutive : Function.Involutive (reverse : Language α → _) := by
@@ -356,9 +353,8 @@ lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
   simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
 
 @[simp]
-lemma mem_inf {x : FreeMonoid α} {l m : Language α} :
-    x ∈ (l ⊓ m).toSet ↔ x ∈ l.toSet ∧ x ∈ m.toSet := by
-  apply Set.mem_inter_iff
+lemma mem_inf {x : FreeMonoid α} {l m : Language α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m :=
+  Set.mem_inter_iff ..
 
 lemma compl_compl (l : Language α) : lᶜᶜ = l :=
   _root_.compl_compl l

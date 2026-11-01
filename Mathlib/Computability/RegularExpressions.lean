@@ -334,7 +334,7 @@ theorem star_rmatch_iff (P : RegularExpression α) (x : FreeMonoid α) :
 
 @[simp]
 theorem rmatch_iff_matches' (P : RegularExpression α) (x : FreeMonoid α) :
-    P.rmatch x ↔ x ∈ P.matches'.toSet := by
+    P.rmatch x ↔ x ∈ P.matches' := by
   induction P generalizing x with
   | zero =>
     rw [zero_def, zero_rmatch]
@@ -353,7 +353,7 @@ theorem rmatch_iff_matches' (P : RegularExpression α) (x : FreeMonoid α) :
   | star _ ih =>
     simp only [star_rmatch_iff, matches'_star, ih, Language.mem_kstar_iff_exists_ne_one, and_comm]
 
-instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches'.toSet) := fun _ ↦
+instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
   decidable_of_iff _ (rmatch_iff_matches' _ _)
 
 end DecidableEq

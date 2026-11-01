@@ -33,7 +33,7 @@ namespace Language
 
 variable (L) in
 /-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
-def leftQuotient (x : FreeMonoid α) : Language α := .ofSet {y | x * y ∈ L.toSet}
+def leftQuotient (x : FreeMonoid α) : Language α := .ofSet {y | x * y ∈ L}
 
 variable (L) in
 @[simp]
@@ -42,13 +42,13 @@ theorem leftQuotient_one : L.leftQuotient 1 = L := rfl
 variable (L) in
 theorem leftQuotient_mul (x y : FreeMonoid α) :
     L.leftQuotient (x * y) = (L.leftQuotient x).leftQuotient y := by
-  simp [leftQuotient, mul_assoc]
+  simp [← SetSemiring.mem_toSet, leftQuotient, mul_assoc]
 
 @[deprecated (since := "2026-10-31")] alias leftQuotient_nil := leftQuotient_one
 @[deprecated (since := "2026-10-31")] alias leftQuotient_append := leftQuotient_mul
 
 @[simp]
-theorem mem_leftQuotient (x y : FreeMonoid α) : y ∈ (L.leftQuotient x).toSet ↔ x * y ∈ L.toSet :=
+theorem mem_leftQuotient (x y : FreeMonoid α) : y ∈ L.leftQuotient x ↔ x * y ∈ L :=
   Iff.rfl
 
 theorem leftQuotient_accepts_apply (M : DFA α σ) (x : FreeMonoid α) :
@@ -75,10 +75,10 @@ def toDFA : DFA α (Set.range L.leftQuotient) where
     exists y * .of a
     rw [← hy, leftQuotient_mul]
   start := ⟨L, by exists 1⟩
-  accept := {s | 1 ∈ s.val.toSet}
+  accept := {s | 1 ∈ s.val}
 
 @[simp]
-theorem mem_accept_toDFA (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept ↔ 1 ∈ s.val.toSet :=
+theorem mem_accept_toDFA (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept ↔ 1 ∈ s.val :=
   Iff.rfl
 
 @[simp]

@@ -287,7 +287,7 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : FreeMonoid α} :
       tauto
 
 theorem mem_accepts_iff_exists_path {x : FreeMonoid α} :
-    x ∈ M.accepts.toSet ↔
+    x ∈ M.accepts ↔
       ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧
         x'.reduceOption = x.toList ∧ M.IsPath s₁ s₂ x' where
   mp := by
@@ -319,7 +319,7 @@ theorem toNFA_evalFrom_match (start : Set σ) :
 theorem toNFA_correct : M.toNFA.accepts = M.accepts :=
   rfl
 
-theorem pumping_lemma [Fintype σ] {x : FreeMonoid α} (hx : x ∈ M.accepts.toSet)
+theorem pumping_lemma [Fintype σ] {x : FreeMonoid α} (hx : x ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ x.toList.length) :
     ∃ a b c,
       x = a * b * c ∧ a.toList.length + b.toList.length ≤ Fintype.card (Set σ) ∧
