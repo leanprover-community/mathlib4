@@ -574,8 +574,7 @@ lemma shrinkCoyonedaMap_app_shrinkCoyonedaObjObjEquiv_symm (F : C ⥤ D) {X Y : 
   simp [shrinkCoyonedaMap, shrinkYonedaMap_app_shrinkYonedaObjObjEquiv_symm.{w}]
 
 lemma shrinkCoyonedaMap_app (F : C ⥤ D) (X : Cᵒᵖ) (Y : C) :
-    (shrinkCoyonedaMap.{w} F X).app Y =
-      (shrinkYonedaMap.{w} F Y).app X := rfl
+    (shrinkCoyonedaMap.{w} F X).app Y = (shrinkYonedaMap.{w} F Y).app X := rfl
 
 instance (F : C ⥤ D) [F.Full] [F.Faithful] (X : Cᵒᵖ) :
     IsIso (shrinkCoyonedaMap.{w} F X) := by
