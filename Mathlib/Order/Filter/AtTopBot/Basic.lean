@@ -169,8 +169,6 @@ theorem exists_lt_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto u atTop atTop) (
 
 end IsDirected
 
-/-- If a sequence `c` tends to infinity and `c a ≤ x`, then `x` lies between two consecutive
-values `c k ≤ x < c (k + 1)` for some `k ≥ a`. -/
 theorem Tendsto.exists_le_lt_succ [LinearOrder α] [NoMaxOrder α] {c : ℕ → α}
     (hc : Tendsto c atTop atTop) {a : ℕ} {x : α} (hx : c a ≤ x) :
     ∃ k ≥ a, c k ≤ x ∧ x < c (k + 1) := by
