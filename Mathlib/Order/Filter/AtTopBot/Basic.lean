@@ -174,7 +174,7 @@ theorem Tendsto.exists_le_lt_succ [LinearOrder α] [NoMaxOrder α] {c : ℕ → 
     ∃ k ≥ a, c k ≤ x ∧ x < c (k + 1) := by
   by_contra! h
   obtain ⟨k, hak, hk⟩ := exists_lt_of_tendsto_atTop hc a x
-  exact (Nat.le_induction (P := fun k _ ↦ c k ≤ x) hx h k hak).not_gt hk
+  exact (Nat.le_induction (motive := fun k _ ↦ c k ≤ x) hx h k hak).not_gt hk
 
 section IsDirected
 variable [Nonempty α] [Preorder α] [IsDirectedOrder α] {f : α → β} {l : Filter β}
