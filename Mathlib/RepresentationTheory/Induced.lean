@@ -156,7 +156,8 @@ lemma ind.lift_apply_mk (f : ρ.IntertwiningMap (σ.comp φ)) (h : H) (a : A) :
 
 /-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
 a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
-noncomputable def indMap (f : IntertwiningMap ρ τ) : (ind φ ρ).IntertwiningMap (ind φ τ) :=
+noncomputable def indMap {τ : Representation k G B} (f : IntertwiningMap ρ τ) :
+    (ind φ ρ).IntertwiningMap (ind φ τ) :=
   ⟨Coinvariants.map _ _ (f.lTensor _), fun g => by
     ext h a; exact (congrArg _ (ind_apply_mk φ ρ g h a)).trans (ind_apply_mk φ τ g h (f a)).symm⟩
 
