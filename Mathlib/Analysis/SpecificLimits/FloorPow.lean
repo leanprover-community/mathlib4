@@ -56,15 +56,11 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     · nlinarith [(Nat.cast_le.mpr hb'.le).trans hgrowth, hmono hb, mul_nonneg hl hε.le,
         (le_div_iff₀ hcb).mp hb₁]
     · nlinarith [hmono hb'.le, (by positivity : 0 ≤ (l + ε) * ε), (div_le_iff₀ hcb').1 hb₂]
-  have hlow : Tendsto (fun ε ↦ l - ε * (1 + l)) (𝓝 0) (𝓝 l) :=
-    Continuous.tendsto' (by fun_prop) 0 l (by simp)
-  have hup : Tendsto (fun ε ↦ (1 + ε) * (l + ε)) (𝓝 0) (𝓝 l) :=
-    Continuous.tendsto' (by fun_prop) 0 l (by simp)
-  refine tendsto_order.mpr ⟨fun d hd ↦ ?_, fun d hd ↦ ?_⟩
-  · obtain ⟨ε, hε, hεd⟩ := (hlow.eventually_const_lt hd).exists_gt
-    exact (key ε hε).mono fun n hn ↦ hεd.trans_le hn.1
-  · obtain ⟨ε, hε, hεd⟩ := (hup.eventually_lt_const hd).exists_gt
-    exact (key ε hε).mono fun n hn ↦ hn.right.trans_lt hεd
+  have : Tendsto (fun ε ↦ ε ^ 2 + ε * l + ε) (𝓝 0) (𝓝 0) :=
+    Continuous.tendsto' (by fun_prop) 0 0 (by simp)
+  refine tendsto_order.mpr ⟨fun d hd ↦ ?_, fun d hd ↦ ?_⟩ <;>
+    obtain ⟨ε, hε, hεd⟩ := (this.eventually_lt_const (sub_pos.mpr hd)).exists_gt <;>
+    exact (key ε hε).mono fun n hn ↦ by nlinarith
 
 /-- If a monotone sequence `u` is such that `u ⌊c^n⌋₊ / ⌊c^n⌋₊` converges to a limit `l` for all
 `c > 1`, then `u n / n` tends to `l`. It is even enough to have the assumption for a sequence of
