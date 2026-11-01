@@ -34,7 +34,7 @@ private def parallel.aux2 : List (Computation α) → α ⊕ List (Computation �
 private def parallel.aux1 :
     List (Computation α) × WSeq (Computation α) → α ⊕ (List (Computation α) × WSeq (Computation α))
   | (l, S) => rmap (fun l' ↦ match Seq.destruct S with
-      | none => (l', Seq.nil)
+      | none => (l', WSeq.nil)
       | some (o, S') => (o.elim l' (· :: l'), S')) (parallel.aux2 l)
 
 /-- Parallel computation of an infinite stream of computations,
@@ -114,7 +114,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
     all_goals
       simp only [WSeq.seq_destruct_nil, WSeq.seq_destruct_cons, WSeq.seq_destruct_think] at this
       obtain ⟨d, hd, ad⟩ := IH _ _ this
-      simp [← WSeq.nil.eq_1, WSeq.notMem_nil] at hd ⊢
+      simp [WSeq.notMem_nil] at hd ⊢
       grind [=> destruct_eq_think, think_mem]
 
 theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map (map f)) := by
@@ -146,10 +146,10 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
     (h : a ∈ parallel S) : C a := by
   let T : WSeq (Computation (α × Computation α)) := S.map fun c => c.map fun a => (a, c)
   have h' : a ∈ map Prod.fst (parallel T) := by
-    rw [map_parallel, ← WSeq.map_comp]
-    convert h
-    convert WSeq.map_id S
-    exact funext fun c ↦ (map_comp _ _ c).symm.trans (map_id c)
+    rw [map_parallel, ← WSeq.map_comp,
+      show map Prod.fst ∘ (fun c : Computation α ↦ c.map fun a ↦ (a, c)) = id from
+        funext fun c ↦ (map_comp (·, c) Prod.fst c).symm.trans (map_id c), WSeq.map_id]
+    exact h
   have : Terminates (parallel T) := (terminates_map_iff _ _).1 ⟨⟨_, h'⟩⟩
   rcases e : get (parallel T) with ⟨a', c⟩
   have : a ∈ c ∧ c ∈ S := by

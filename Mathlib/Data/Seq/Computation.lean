@@ -46,7 +46,6 @@ def pure (a : α) : Computation α :=
 instance : Coe α (Computation α) :=
   ⟨pure⟩
 
--- note [use has_coe_t]
 /-- `think c` is the computation that delays for one "tick" and then performs
   computation `c`. -/
 def think (c : Computation α) : Computation α :=

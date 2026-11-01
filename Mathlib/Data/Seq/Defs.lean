@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Batteries.Data.MLList.Basic
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Data.Seq.Computation
 
-import Batteries.Data.MLList.Basic
 import Mathlib.Data.Subtype
 
 /-!
