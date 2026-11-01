@@ -69,18 +69,19 @@ Leading and trailing whitespace and comments are outside the token ranges. Multi
 including string literals, contribute all their lines as code.
 -/
 partial def sourceLines (fileMap : FileMap) (stx : Syntax)
-    (lines : Std.HashSet Nat) : Std.HashSet Nat := Id.run do
+    (lines : Std.HashSet Nat) : Std.HashSet Nat :=
   match stx with
   | .node _ kind args =>
     -- Documentation comments are syntax nodes, so skip them explicitly.
     if kind == ``Parser.Command.docComment || kind == ``Parser.Command.moduleDoc then
-      return lines
-    return args.foldl (init := lines) fun lines arg ↦ sourceLines fileMap arg lines
+      lines
+    else
+      args.foldl (init := lines) fun lines arg ↦ sourceLines fileMap arg lines
   | .atom (.original _ pos _ endPos) _
   | .ident (.original _ pos _ endPos) .. =>
-    return addSourceLines fileMap ⟨pos, endPos⟩ lines
+    addSourceLines fileMap ⟨pos, endPos⟩ lines
   -- Synthetic and missing tokens do not describe code written in the source file.
-  | _ => return lines
+  | _ => lines
 
 /-- Count all source lines touched by `range`, as a cheap upper bound on the code-line count. -/
 def sourceLineCount (fileMap : FileMap) (range : Syntax.Range) : Nat :=
