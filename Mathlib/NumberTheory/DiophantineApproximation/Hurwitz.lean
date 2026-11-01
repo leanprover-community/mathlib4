@@ -6,6 +6,7 @@ Authors: Yuanxia Xu
 module
 
 public import Mathlib.NumberTheory.Real.Irrational
+
 import Mathlib.Tactic.LinearCombination
 
 /-!
