@@ -10,6 +10,7 @@ public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Order.CompleteBooleanAlgebra
+public import Mathlib.Tactic.CrossRefAttribute
 
 import Mathlib.Data.Set.Lattice.Disjoint
 
@@ -472,6 +473,7 @@ def edgeSetEmbedding (V : Type*) : SimpleGraph V ↪o Set (Sym2 V) :=
 
 /-- `G.edgeSet` is the edge set for `G`.
 This is an abbreviation for `edgeSetEmbedding G` that permits dot notation. -/
+@[wikidata Q124247109]
 abbrev edgeSet (G : SimpleGraph V) : Set (Sym2 V) := edgeSetEmbedding V G
 
 @[simp]
