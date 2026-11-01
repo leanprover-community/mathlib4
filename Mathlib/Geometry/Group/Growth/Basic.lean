@@ -30,6 +30,8 @@ the number of elements of word length at most `n`.
 * `Function.HasSuperpolynomialGrowth`: `f` eventually exceeds every polynomial.
 * `Function.HasSubexponentialGrowth`: `log f n / n → 0`, stated with natural numbers.
 * `Function.HasIntermediateGrowth`: superpolynomial and subexponential growth.
+* `Function.HasSubexponentialGrowth.of_growthDominates`: subexponential growth is inherited
+  under `GrowthDominates`.
 * `Group.Generators.growth_growthEquivalent`: the growth function is independent of the
   finite generating family, up to `GrowthEquivalent`.
 
@@ -181,6 +183,85 @@ lemma HasSuperpolynomialGrowth.of_growthEquivalent {f g : ℕ → ℕ} (hg : Mon
     (h : f.GrowthEquivalent g) (hf : f.HasSuperpolynomialGrowth) :
     g.HasSuperpolynomialGrowth :=
   hf.of_growthDominates hg h.2
+
+/-- A constant is eventually dominated by any positive exponential. -/
+lemma exists_const_le_two_pow (M : ℕ) : ∃ n₀, ∀ n ≥ n₀, M ≤ 2 ^ n := by
+  refine ⟨M, fun n hn ↦ ?_⟩
+  have : M ≤ 2 ^ M := Nat.lt_two_pow_self.le
+  exact this.trans (Nat.pow_le_pow_right (by decide : 1 ≤ 2) hn)
+
+/-- Subexponential growth is inherited by any function dominated by a subexponential
+function. -/
+lemma HasSubexponentialGrowth.of_growthDominates {f g : ℕ → ℕ}
+    (hf : f.HasSubexponentialGrowth) (hfg : f.GrowthDominates g) :
+    g.HasSubexponentialGrowth := by
+  obtain ⟨C, α, hCg⟩ := hfg
+  intro k
+  cases k with
+  | zero =>
+    exact ⟨0, fun n _ ↦ Nat.one_le_two_pow⟩
+  | succ k =>
+    cases α with
+    | zero =>
+      obtain ⟨n₀, hn₀⟩ := exists_const_le_two_pow ((C * f 0) ^ k.succ)
+      refine ⟨n₀, fun n hn ↦ ?_⟩
+      have hg : g n ≤ C * f 0 := by simpa using hCg n
+      exact (Nat.pow_le_pow_left hg _).trans (hn₀ n hn)
+    | succ α =>
+      obtain ⟨n₁, hn₁⟩ := hf (2 * k.succ * α.succ)
+      obtain ⟨n₂, hn₂⟩ := exists_const_le_two_pow (C ^ (2 * k.succ))
+      refine ⟨max n₁ n₂, fun n hn ↦ ?_⟩
+      have hαn : n₁ ≤ α.succ * n :=
+        le_trans (le_trans (le_max_left _ _) hn)
+          (Nat.le_mul_of_pos_left _ (Nat.succ_pos α))
+      have hf' : f (α.succ * n) ^ (2 * k.succ * α.succ) ≤ 2 ^ (α.succ * n) :=
+        hn₁ _ hαn
+      have hg : g n ≤ C * f (α.succ * n) := hCg n
+      have hpow : g n ^ (2 * k.succ) ≤
+          C ^ (2 * k.succ) * f (α.succ * n) ^ (2 * k.succ) := by
+        simpa [mul_pow] using Nat.pow_le_pow_left hg (2 * k.succ)
+      have hα : 0 < α.succ := Nat.succ_pos _
+      have hsq : (g n ^ k.succ) ^ 2 ≤ C ^ (2 * k.succ) * 2 ^ n := by
+        have hleft : (g n ^ (2 * k.succ)) ^ α.succ ≤
+            (C ^ (2 * k.succ) * f (α.succ * n) ^ (2 * k.succ)) ^ α.succ :=
+          Nat.pow_le_pow_left hpow _
+        have hrewrite :
+            (C ^ (2 * k.succ) * f (α.succ * n) ^ (2 * k.succ)) ^ α.succ =
+              C ^ (2 * k.succ * α.succ) *
+                f (α.succ * n) ^ (2 * k.succ * α.succ) := by
+          rw [mul_pow, ← pow_mul, ← pow_mul]
+        have hright :
+            C ^ (2 * k.succ * α.succ) * f (α.succ * n) ^ (2 * k.succ * α.succ) ≤
+              C ^ (2 * k.succ * α.succ) * 2 ^ (α.succ * n) :=
+          Nat.mul_le_mul_left _ hf'
+        have hC2 : C ^ (2 * k.succ * α.succ) * 2 ^ (α.succ * n) =
+            (C ^ (2 * k.succ) * 2 ^ n) ^ α.succ := by
+          rw [mul_pow, ← pow_mul, ← pow_mul, Nat.mul_comm n]
+        have : (g n ^ (2 * k.succ)) ^ α.succ ≤
+            (C ^ (2 * k.succ) * 2 ^ n) ^ α.succ :=
+          (hleft.trans_eq hrewrite).trans (hright.trans_eq hC2)
+        have hred : g n ^ (2 * k.succ) ≤ C ^ (2 * k.succ) * 2 ^ n :=
+          (Nat.pow_le_pow_iff_left hα.ne').1 this
+        have hsqid : g n ^ (2 * k.succ) = (g n ^ k.succ) ^ 2 := by
+          rw [Nat.mul_comm, pow_mul, pow_two]
+        rwa [← hsqid]
+      have hC : C ^ (2 * k.succ) ≤ 2 ^ n := hn₂ n (le_trans (le_max_right _ _) hn)
+      have : (g n ^ k.succ) ^ 2 ≤ (2 ^ n) ^ 2 :=
+        hsq.trans (by
+          have : C ^ (2 * k.succ) * 2 ^ n ≤ 2 ^ n * 2 ^ n :=
+            Nat.mul_le_mul_right _ hC
+          rwa [pow_two, Nat.mul_comm (2 ^ n)])
+      exact (Nat.pow_le_pow_iff_left (by decide : (2 : ℕ) ≠ 0)).1 this
+
+lemma HasSubexponentialGrowth.of_growthEquivalent {f g : ℕ → ℕ}
+    (h : f.GrowthEquivalent g) (hf : f.HasSubexponentialGrowth) :
+    g.HasSubexponentialGrowth :=
+  hf.of_growthDominates h.1
+
+lemma HasIntermediateGrowth.of_growthEquivalent {f g : ℕ → ℕ} (hg : Monotone g)
+    (h : f.GrowthEquivalent g) (hf : f.HasIntermediateGrowth) :
+    g.HasIntermediateGrowth :=
+  ⟨hf.1.of_growthEquivalent hg h, hf.2.of_growthEquivalent h⟩
 
 /-- Squares grow slower than powers of two for exponents at least 5. -/
 lemma sq_lt_two_pow {k : ℕ} (hk : 5 ≤ k) : k ^ 2 < 2 ^ k := by
