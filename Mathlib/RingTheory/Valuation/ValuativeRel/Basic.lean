@@ -122,8 +122,8 @@ lemma veq_mul_comm (x y : R) : x * y =ᵥ y * x := ⟨vle_mul_comm, vle_mul_comm
 
 macro_rules | `($a =ᵥ $b) => `(binrel% ValuativeRel.veq $a $b)
 
-@[simp, grind =] lemma not_vle : ¬ x ≤ᵥ y ↔ y <ᵥ x := .rfl
-@[simp, grind =] lemma not_vlt : ¬ x <ᵥ y ↔ y ≤ᵥ x := not_vle.not_left
+@[simp, grind =, push] lemma not_vle : ¬ x ≤ᵥ y ↔ y <ᵥ x := .rfl
+@[simp, grind =, push] lemma not_vlt : ¬ x <ᵥ y ↔ y ≤ᵥ x := not_vle.not_left
 lemma veq_def : x =ᵥ y ↔ x ≤ᵥ y ∧ y ≤ᵥ x := .rfl
 
 protected alias ⟨_, vle.not_vlt⟩ := not_vlt
