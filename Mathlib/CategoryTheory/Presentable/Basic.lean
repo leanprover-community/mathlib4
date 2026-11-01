@@ -395,33 +395,43 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT
   exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT _ hc hι f hf
 
 /-- In a category `C`, given a diagram `F : J ⥤ C` where `J` is κ-filtered
-and a commutative diagram
+and a commutative square
 ```
-X₀ ---> X₁ ------> X₂
-|                  |
-v                  v
-X₃ --> F(j₀) --> colim F
+ X₀ ------> X₁
+ |          |
+ | g        | q
+ v          v
+F(j₀) --> colim F
 ```
 where X₁ is κ-presentable, there exists an index j₁ and a commutative diagram
 ```
-X₀ -------------> X₁ --------> X₂
-|                 |            |
-v                 v            v
-X₃ --> F(j₀) -> F(j₁) ----> colim F
+  X₀ -------------> X₁
+  |                 |
+  | g               | q'
+  v                 v
+F(j₀) ----------> F(j₁)
 ```
+such that the triangle
+```
+X₁---> F(j₁)
+ \      /
+q \    / q'
+   v  v
+  colim F
+```
+also commutes.
 -/
-lemma IsCardinalPresentable.exists_of_hexagon
+lemma IsCardinalPresentable.exists_of_square
     [IsCardinalFiltered J κ] [EssentiallySmall.{w} J] {F : J ⥤ C} {c : Limits.Cocone F}
-    (hc : IsColimit c) {X₀ X₁ X₂ X₃ : C} [IsCardinalPresentable X₀ κ] [IsCardinalPresentable X₁ κ]
-    (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₃ : X₀ ⟶ X₃)
-    {j₀ : J} (g : X₃ ⟶ F.obj j₀) (q : X₂ ⟶ c.pt)
-    (h : f₀₁ ≫ f₁₂ ≫ q = f₀₃ ≫ g ≫ c.ι.app j₀) :
+    (hc : IsColimit c) {X₀ X₁ : C} [IsCardinalPresentable X₀ κ] [IsCardinalPresentable X₁ κ]
+    (f₀₁ : X₀ ⟶ X₁) (q : X₁ ⟶ c.pt) {j₀ : J} (g : X₀ ⟶ F.obj j₀)
+    (h : f₀₁ ≫ q = g ≫ c.ι.app j₀) :
     ∃ (j₁ : J) (u : j₀ ⟶ j₁) (q' : X₁ ⟶ F.obj j₁),
-      (f₀₁ ≫ q' = f₀₃ ≫ g ≫ F.map u) ∧ (f₁₂ ≫ q = q' ≫ c.ι.app j₁) := by
+      (f₀₁ ≫ q' = g ≫ F.map u) ∧ (q = q' ≫ c.ι.app j₁) := by
   obtain ⟨j₁₀, u', v', hu'⟩ := IsCardinalPresentable.exists_hom_above_of_isColimit κ hc
-    (f₁₂ ≫ q) j₀
+    q j₀
   obtain ⟨j₁, u, w⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ hc (f₀₁ ≫ v')
-    (f₀₃ ≫ g ≫ F.map u') (by simpa [hu'])
+    (g ≫ F.map u') (by simpa [hu'])
   exact ⟨j₁, u' ≫ u, v' ≫ F.map u, by grind, by simp [hu']⟩
 
 /-- Given a commutative square where both objects on the top are `κ`-presentable
