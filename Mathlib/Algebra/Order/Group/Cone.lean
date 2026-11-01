@@ -66,6 +66,65 @@ def LinearOrder.ofSubmonoid (hMs : M.IsMulSpanning) [dec : DecidablePred (· ∈
   le_total a b := by simpa using hMs.mem_or_inv_mem (b / a)
   toDecidableLE a b := dec (b / a)
 
+namespace CommGroup
+
+variable (G) in
+/-- Equivalence between submonoids with zero support in an abelian group `G`
+    and partially ordered group structures on `G`. -/
+@[to_additive
+  /-- Equivalence between submonoids with zero support in an abelian group `G`
+    and partially ordered group structures on `G`. -/]
+noncomputable def submonoidPartialOrderEquiv :
+    Equiv {C : Submonoid G // C.IsMulPointed}
+          {_o : PartialOrder G // IsOrderedMonoid G} where
+  toFun := fun ⟨_, hC⟩ ↦ ⟨.ofSubmonoid hC, .ofSubmonoid _⟩
+  invFun := fun ⟨_, _⟩ ↦ ⟨.oneLE G, .oneLE _⟩
+  left_inv := fun ⟨_, _⟩ ↦ by ext; simp
+  right_inv := fun ⟨v, p⟩ ↦ by
+    -- TODO : fix proj-reduction with classes, simp, extends-projection
+    ext : 1
+    simp only
+    ext
+    simp
+
+@[to_additive (attr := simp)]
+theorem submonoidPartialOrderEquiv_apply
+    (C : Submonoid G) (h : C.IsMulPointed) :
+    submonoidPartialOrderEquiv G ⟨C, h⟩ = PartialOrder.ofSubmonoid h := rfl
+
+@[to_additive (attr := simp)]
+theorem submonoidPartialOrderEquiv_symm_apply (o : PartialOrder G) (h : IsOrderedMonoid G) :
+    (submonoidPartialOrderEquiv G).symm ⟨o, h⟩ = Submonoid.oneLE G := rfl
+
+open Classical in
+variable (G) in
+/-- Equivalence between maximal submonoids with zero support in an abelian group `G`
+    and linearly ordered group structures on `G`. -/
+@[to_additive
+  /-- Equivalence between maximal submonoids with zero support in an abelian group `G`
+    and linearly ordered group structures on `G`. -/]
+noncomputable def submonoidLinearOrderEquiv :
+    Equiv {C : Submonoid G // C.IsMulPointed ∧ C.IsMulSpanning}
+          {_o : LinearOrder G // IsOrderedMonoid G} where
+  toFun := fun ⟨C, hC⟩ ↦ ⟨.ofSubmonoid hC.1 hC.2, .ofSubmonoid _⟩
+  invFun := fun ⟨_, _⟩ ↦ ⟨.oneLE G, .oneLE _, .oneLE _⟩
+  left_inv := fun ⟨_, _, _⟩ ↦ by ext; simp
+  right_inv := fun ⟨_, _⟩ ↦ by ext; simp
+
+open Classical in
+@[to_additive (attr := simp)]
+theorem submonoidLinearOrderEquiv_apply
+    (C : Submonoid G) (h : C.IsMulPointed ∧ C.IsMulSpanning) :
+    submonoidLinearOrderEquiv G ⟨C, h⟩ = LinearOrder.ofSubmonoid h.1 h.2 := rfl
+
+@[to_additive (attr := simp)]
+theorem submonoidLinearOrderEquiv_symm_apply (l : LinearOrder G) (h : IsOrderedMonoid G) :
+    (submonoidLinearOrderEquiv G).symm ⟨l, h⟩ = Submonoid.oneLE G := rfl
+
+end CommGroup
+
+/- Deprecated -/
+
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
 class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLike S G] : Prop
     extends AddSubmonoidClass S G where
