@@ -1140,6 +1140,7 @@ public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Algebra.Order.Ring.Opposite
 public import Mathlib.Algebra.Order.Ring.Ordering.Basic
 public import Mathlib.Algebra.Order.Ring.Ordering.Defs
+public import Mathlib.Algebra.Order.Ring.Ordering.Extend
 public import Mathlib.Algebra.Order.Ring.Pow
 public import Mathlib.Algebra.Order.Ring.Prod
 public import Mathlib.Algebra.Order.Ring.Rat
