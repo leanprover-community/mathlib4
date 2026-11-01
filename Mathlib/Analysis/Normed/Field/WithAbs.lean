@@ -434,7 +434,7 @@ noncomputable def degree : ℕ :=
 theorem degree_eq : w.degree K = Module.finrank v.Completion w.Completion := by
   have := LiesOver.under_eq w v
   subst this
-  rw [degree, Completion.algebra_eq (w.under K) w]
+  rw [degree, Completion.algebra_eq_of_liesOver (w.under K) w]
 
 theorem degree_mul_degree : v.degree J * w.degree K = w.degree J := by
   let u := v.under J
