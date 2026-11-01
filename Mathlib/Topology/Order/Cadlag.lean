@@ -157,8 +157,8 @@ lemma isRightContinuousOn_iff_isRightContinuous_domRestrict :
     inter_right_comm, inter_self]
   rfl
 
+@[to_dual]
 alias ⟨IsRightContinuousOn.domRestrict, _⟩ := isRightContinuousOn_iff_isRightContinuous_domRestrict
-alias ⟨IsLeftContinuousOn.domRestrict, _⟩ := isLeftContinuousOn_iff_isLeftContinuous_domRestrict
 
 @[to_dual]
 lemma IsRightContinuousOn.congr (hf : IsRightContinuousOn f s) (h : EqOn g f s) :
