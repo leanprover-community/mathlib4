@@ -272,8 +272,6 @@ theorem hom_trivializationAt_apply (x₀ : B)
       ⟨x.1, inCoordinates F₁ E₁ F₂ E₂ x₀ x.1 x₀ x.1 x.2⟩ :=
   rfl
 
-/-- The inverse of the trivialization at `x₀` of the bundle `fun x ↦ E₁ x →SL[σ] E₂ x`, applied
-to a model map `L` and then to a fibre vector `v : E₁ x`. -/
 theorem hom_trivializationAt_symm_apply {x₀ x : B}
     (hx : x ∈ (trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet)
     (L : F₁ →SL[σ] F₂) (v : E₁ x) :
