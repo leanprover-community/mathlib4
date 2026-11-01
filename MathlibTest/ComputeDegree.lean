@@ -254,3 +254,17 @@ example : (C 1 + X * 3 * (X + 3) ^ 4 : Polynomial ℤ).degree < 10 := by
 variable [CommRing R] in
 example : (X ^ 2 + 2 • X + C 1 : R[X]).natDegree < 3 := by
   compute_degree!
+
+example : natDegree (-1 + X : ℤ[X]) = 1 := by compute_degree!
+
+example : degree (-1 + X : ℤ[X]) = 1 := by compute_degree!
+
+example : natDegree (-1 + 8 * X ^ 7 : ℤ[X]) = 7 := by compute_degree!
+
+example : coeff (-1 + 8 * X ^ 7 : ℤ[X]) 7 = 8 := by compute_degree!
+
+example : natDegree (-X + 8 * X ^ 7 : ℤ[X]) = 7 := by compute_degree!
+
+example : natDegree (-(2 * X) + 8 * X ^ 7 : ℤ[X]) = 7 := by compute_degree!
+
+example : natDegree (-(X ^ 3 - 1) : ℤ[X]) = 3 := by compute_degree!

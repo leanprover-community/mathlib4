@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
 public import Mathlib.Topology.ContinuousMap.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Weierstrass approximation theorem for continuous functions on `[a,b]`
 

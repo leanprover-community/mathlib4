@@ -375,7 +375,7 @@ lemma IndepFun.integral_fun_comp_smul_comp
     ∫ ω, f (X ω) • g (Y ω) ∂μ = (∫ ω, f (X ω) ∂μ) • (∫ ω, g (Y ω) ∂μ) := by
   by_cases hE : CompleteSpace E
   · exact hXY.integral_bilin_comp_comp' hX hY hf hg (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
 
 lemma IndepFun.integral_fun_comp_mul_comp
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜}
@@ -406,7 +406,7 @@ lemma IndepFun.integral_smul_eq_smul_integral
     μ[X • Y] = μ[X] • μ[Y] := by
   by_cases hE : CompleteSpace E
   · exact hXY.integral_bilin' hX hY (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
 
 lemma IndepFun.integral_mul_eq_mul_integral
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :

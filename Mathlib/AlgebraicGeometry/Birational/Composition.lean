@@ -142,7 +142,6 @@ lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
   · simp_rw [comp_hom, Hom.toPartialMap_domain, Hom.toPartialMap_hom, compHom_hom, topIso_hom,
       morphismRestrict_ι_assoc, f.domain.isoImage_ι_inv_ι_assoc, isoOfEq_hom]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] : f.comp (PartialMap.id Y) = f := by simp
 
 end PartialMap

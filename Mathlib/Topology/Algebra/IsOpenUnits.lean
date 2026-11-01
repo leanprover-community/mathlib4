@@ -65,7 +65,7 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
 (e.g. when `R` is complete or local), then `Rˣ` is an open subspace of `R`. -/
 lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     {I : Ideal R}
-    (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
+    (hR : IsAdic I) (hI : I ≤ Ring.jacobson R) :
     IsOpenUnits R := by
   refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective ?_⟩
   refine (IsTopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
@@ -88,7 +88,7 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
   rw [H.1]
   refine ⟨n, trivial, ?_⟩
   rintro _ ⟨x, hx, rfl⟩
-  have := Ideal.mem_jacobson_bot.mp (hI (Ideal.pow_le_self hn hx)) 1
+  have := Ring.mem_jacobson_iff.mp (hI (Ideal.pow_le_self hn hx)) 1
   rw [mul_one, add_comm] at this
   refine hn' this.unit (by simpa using hx) ?_
   have : -1 + ↑this.unit⁻¹ = -this.unit⁻¹ * x := by
