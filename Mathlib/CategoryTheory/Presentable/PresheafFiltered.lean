@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
-public import Mathlib.CategoryTheory.Presentable.Basic
+
+import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtCoyoneda
 
 /-!
 # Presheaves that are `κ`-filtered colimits of representable presheaves
@@ -157,8 +158,24 @@ lemma isCardinalFiltered_elements_op_iff [EssentiallySmall.{w} C]
   exact ⟨SmallModel.{w} P.Elementsᵒᵖ, inferInstance, IsCardinalFiltered.of_equivalence κ e,
     e.inverse ⋙ (π P).leftOp,
     (Functor.associator _ _ _).hom ≫ whiskerLeft e.inverse (shrinkYonedaCocone P).ι,
-    ⟨IsColimit.equivOfNatIsoOfIso ((Functor.associator _ _ _).symm) _ _ (Cocone.ext (Iso.refl _))
+    ⟨IsColimit.equivOfNatIsoOfIso (Functor.associator _ _ _).symm _ _ (Cocone.ext (Iso.refl _))
       ((isColimitShrinkYonedaCocone P).whiskerEquivalence e.symm)⟩⟩
+
+open CategoryTheory.Functor Elements in
+lemma isCardinalFiltered_elements_op_iff' [EssentiallySmall.{w} C]
+    (P : C ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered P.Elementsᵒᵖ κ ↔
+      ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ) (F : J ⥤ Cᵒᵖ)
+        (ι : F ⋙ shrinkCoyoneda.{w} ⟶ (Functor.const _).obj P),
+        Nonempty (IsColimit (Cocone.mk _ ι)) := by
+  refine ⟨fun h ↦ ?_,
+    fun ⟨J, _, _, F, ι, ⟨h⟩⟩ ↦ isCardinalFilteredElementsOp_of_isColimit' P κ F ι h⟩
+  let e := equivSmallModel.{w} P.Elementsᵒᵖ
+  refine ⟨SmallModel.{w} P.Elementsᵒᵖ, inferInstance, IsCardinalFiltered.of_equivalence κ e,
+    e.inverse ⋙ (π P).op,
+    (Functor.associator _ _ _).hom ≫ whiskerLeft e.inverse (shrinkCoyonedaCocone P).ι,
+    ⟨IsColimit.equivOfNatIsoOfIso (Functor.associator _ _ _).symm _ _ (Cocone.ext (Iso.refl _))
+      ((isColimitShrinkCoyonedaCocone P).whiskerEquivalence e.symm)⟩⟩
 
 end Presheaf
 
