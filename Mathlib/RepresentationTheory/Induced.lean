@@ -154,6 +154,16 @@ lemma ind.lift_apply_mk (f : ρ.IntertwiningMap (σ.comp φ)) (h : H) (a : A) :
     ind.lift φ f (IndV.mk φ ρ h a) = σ h⁻¹ (f a) := by
   simp [ind.lift]
 
+/-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
+a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
+noncomputable def indMap (f : IntertwiningMap ρ τ) : (ind φ ρ).IntertwiningMap (ind φ τ) :=
+  ⟨Coinvariants.map _ _ (f.lTensor _), fun g => by
+    ext h a; exact (congrArg _ (ind_apply_mk φ ρ g h a)).trans (ind_apply_mk φ τ g h (f a)).symm⟩
+
+@[simp]
+lemma indMap_apply_mk (f : ρ.IntertwiningMap τ) (h : H) (a : A) :
+    indMap φ f (IndV.mk φ ρ h a) = IndV.mk φ τ h (f a) := rfl
+
 end Representation
 
 namespace Rep
@@ -172,8 +182,8 @@ noncomputable abbrev ind : Rep k H := Rep.of (A.ρ.ind φ)
 
 /-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
 a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
-noncomputable abbrev indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B := Rep.ofHom <|
-  ind.lift φ ⟨IndV.mk φ B.ρ 1 ∘ₗ f.hom, fun g => by ext; simp [IntertwiningMap.isIntertwining]⟩
+noncomputable abbrev indMap {A B : Rep k G} (f : A ⟶ B) :
+    ind φ A ⟶ ind φ B := Rep.ofHom <| A.ρ.indMap φ f.hom
 
 variable (k) in
 /-- Given a group homomorphism `φ : G →* H`, this is the functor sending a `G`-representation `A`
@@ -182,8 +192,8 @@ to the induced `H`-representation `ind φ A`, with action on maps induced by lef
 noncomputable def indFunctor : Rep.{w} k G ⥤ Rep k H where
   obj A := ind φ A
   map f := indMap φ f
-  map_id _ := by ext; simp
-  map_comp _ _ := by ext; simp
+  map_id _ := by ext; rfl
+  map_comp _ _ := by ext; rfl
 
 end Ind
 
