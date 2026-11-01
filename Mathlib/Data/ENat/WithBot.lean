@@ -13,6 +13,8 @@ public import Mathlib.Data.ENat.Basic
 
 -/
 
+public section
+
 namespace ENat.WithBot
 
 lemma eq_natCast_of_ne_bot_of_ne_top {x : WithBot ℕ∞} (ne1 : x ≠ ⊥) (ne2 : x ≠ ⊤) :
