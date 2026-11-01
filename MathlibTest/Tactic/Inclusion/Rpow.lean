@@ -10,6 +10,31 @@ open Real
 
 namespace Inclusion.Tests
 
+example : (0 : ℝ) ^ (2 : ℝ) ∈ Set.Icc 0 1 := by dyadic_interval
+
+example : (0 : ℝ) ^ (0 : ℝ) = 1 := by dyadic_interval
+
+example : (0 : ℝ) ^ (-1 : ℝ) ∈ Set.Icc 0 1 := by dyadic_interval
+
+example {x : ℝ} (hx : 0 ≤ x) : 0 ≤ x ^ (2 : ℝ) := by dyadic_interval
+
+example {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) : 0 ≤ x ^ y := by dyadic_interval
+
+example {x : ℝ} (hx : x ∈ Set.Icc 0 2) : x ^ (2 : ℝ) ∈ Set.Icc 0 4.1 := by
+  dyadic_interval [prec := 10]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc 0 2) (hy : y ∈ Set.Icc 1 2) : x ^ y ∈ Set.Icc 0 4.1 := by
+  dyadic_interval [prec := 10]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc 0 2) (hy : y ∈ Set.Icc 2 3) : x ^ y ∈ Set.Icc 0 8.1 := by
+  dyadic_interval [prec := 10]
+
+example {x : ℝ} (hx : x ∈ Set.Icc 0.25 0.5) : x ^ (0.5 : ℝ) ∈ Set.Icc 0.49 0.71 := by
+  dyadic_interval [prec := 10]
+
+example {x : ℝ} (hx : x ∈ Set.Icc 0 0.5) : x ^ (0.5 : ℝ) ∈ Set.Icc 0 0.71 := by
+  dyadic_interval [prec := 10]
+
 example : (2 : ℝ) ^ (0 : ℝ) = 1 := by
   dyadic_interval
 
