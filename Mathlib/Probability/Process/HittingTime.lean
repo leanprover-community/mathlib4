@@ -433,7 +433,7 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
 is a stopping time. -/
 theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] [TopologicalSpace ι] [OrderTopology ι]
-    [FirstCountableTopology ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
+    [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
     {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
     {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
     IsStoppingTime f fun x ↦ (hittingBtwn u s (τ x).untopA N x : ι) := by
