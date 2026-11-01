@@ -166,7 +166,7 @@ with appropriate restrictions on each term.
 See `recOnHorner` for a variant with a zero base case.
 -/
 @[elab_as_elim]
-def recOnHorner_const {motive : R[X] → Sort*}
+def recOnHornerConst {motive : R[X] → Sort*}
     (hC : ∀ a, motive (C a))
     (ha : ∀ p a, (hp : p.coeff 0 = 0) → (hdeg : 0 < p.natDegree) → (ha : a ≠ 0) →
       (ih : motive p) → motive (p + C a))
