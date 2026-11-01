@@ -202,6 +202,14 @@ namespace isCardinalFilteredElementsOp
 
 variable (C) in
 @[expose, simps! obj_obj map_hom, implicit_reducible]
+noncomputable def toFullSubcategory :
+    C ⥤ (isCardinalFilteredElementsOp Cᵒᵖ κ).FullSubcategory :=
+  ObjectProperty.lift _ shrinkYoneda.{w}
+    (fun _ ↦ isCardinalFilteredElementsOp_shrinkYoneda_obj _ _)
+
+
+variable (C) in
+@[expose, simps! obj_obj map_hom, implicit_reducible]
 noncomputable def toFullSubcategory' :
     Cᵒᵖ ⥤ (isCardinalFilteredElementsOp C κ).FullSubcategory :=
   ObjectProperty.lift _ shrinkCoyoneda.{w}
@@ -210,8 +218,23 @@ noncomputable def toFullSubcategory' :
 variable (C) in
 def generator :
     ObjectProperty (isCardinalFilteredElementsOp C κ).FullSubcategory :=
-  (isCardinalFilteredElementsOp.toFullSubcategory' C κ).essImage
+  (toFullSubcategory' C κ).essImage
 deriving ObjectProperty.EssentiallySmall.{w}
+
+lemma generator_eq_essImage_toFullSubcategory' :
+    generator C κ = (toFullSubcategory' C κ).essImage := by rfl
+
+variable (C) in
+lemma generator_eq_essImage_toFullSubcategory :
+    generator Cᵒᵖ κ = (toFullSubcategory C κ).essImage := by
+  dsimp [generator]
+  refine le_antisymm ?_ ?_
+  · intro _ ⟨⟨⟨X⟩⟩, ⟨e⟩⟩
+    refine ⟨X, ⟨ObjectProperty.isoMk _ ?_ ≪≫ e⟩⟩
+    exact (shrinkCoyonedaObjOpOpIso _).symm
+  · intro _ ⟨X, ⟨e⟩⟩
+    refine ⟨op (op X), ⟨ObjectProperty.isoMk _ ?_ ≪≫ e⟩⟩
+    exact shrinkCoyonedaObjOpOpIso _
 
 variable (C) in
 lemma isCardinalFilteredGenerator_generator :
@@ -236,8 +259,7 @@ lemma isCardinalFilteredGenerator_generator :
 instance :
     IsCardinalAccessibleCategory (isCardinalFilteredElementsOp C κ).FullSubcategory κ where
   exists_generator :=
-    ⟨isCardinalFilteredElementsOp.generator C κ, inferInstance,
-      isCardinalFilteredGenerator_generator C κ⟩
+    ⟨_, inferInstance, isCardinalFilteredGenerator_generator C κ⟩
 
 instance :
     IsAccessibleCategory.{w} (isCardinalFilteredElementsOp C κ).FullSubcategory where
