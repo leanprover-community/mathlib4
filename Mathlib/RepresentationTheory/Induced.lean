@@ -162,7 +162,7 @@ noncomputable def indMap {τ : Representation k G B} (f : IntertwiningMap ρ τ)
     ext h a; exact (congrArg _ (ind_apply_mk φ ρ g h a)).trans (ind_apply_mk φ τ g h (f a)).symm⟩
 
 @[simp]
-lemma indMap_apply_mk (f : ρ.IntertwiningMap τ) (h : H) (a : A) :
+lemma indMap_apply_mk {τ : Representation k G B} (f : ρ.IntertwiningMap τ) (h : H) (a : A) :
     indMap φ f (IndV.mk φ ρ h a) = IndV.mk φ τ h (f a) := rfl
 
 end Representation
