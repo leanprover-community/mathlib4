@@ -6,16 +6,20 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtCoyoneda
 
 /-!
 # Presheaves that are `κ`-filtered colimits of representable presheaves
 
-Let `C` be a category and `κ` be a regular cardinal. In this file, we introduce
-a property `Presheaf.isCardinalFilteredElementsOp` of objects in `C ⥤ Type w`
-that is satisfied by functors `P` such that `P.Elementsᵒᵖ` is `κ`-filtered,
-and we show that this property is stable under `κ`-filtered colimits.
+Let `C` be an essentially small category and `κ` be a regular cardinal. In this file,
+we introduce a property `Presheaf.isCardinalFilteredElementsOp` of objects in `C ⥤ Type w`
+that is satisfied by functors `P` such that `P.Elementsᵒᵖ` is `κ`-filtered.
+We show that this property holds for (co)representable functors and is stable under
+`κ`-filtered colimits. It follows that the property `Presheaf.isCardinalFilteredElementsOp`
+is precisely satisfied by `κ`-filtered colimits of (co)representable functors.
+We show that the corresponding full subcategory of `C ⥤ Type w` is `κ`-accessible.
 
 -/
 
@@ -37,6 +41,10 @@ the functors `P` such that `P.Elementsᵒᵖ` is `κ`-filtered. -/
 abbrev isCardinalFilteredElementsOp (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     ObjectProperty (C ⥤ Type w) :=
   fun P ↦ IsCardinalFiltered P.Elementsᵒᵖ κ
+
+instance (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (P : (isCardinalFilteredElementsOp C κ).FullSubcategory) :
+  IsCardinalFiltered P.obj.Elementsᵒᵖ κ := P.property
 
 @[simp]
 lemma isCardinalFilteredElementsOp_iff
@@ -176,6 +184,65 @@ lemma isCardinalFiltered_elements_op_iff' [EssentiallySmall.{w} C]
     (Functor.associator _ _ _).hom ≫ whiskerLeft e.inverse (shrinkCoyonedaCocone P).ι,
     ⟨IsColimit.equivOfNatIsoOfIso (Functor.associator _ _ _).symm _ _ (Cocone.ext (Iso.refl _))
       ((isColimitShrinkCoyonedaCocone P).whiskerEquivalence e.symm)⟩⟩
+
+section
+
+variable [EssentiallySmall.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+
+instance (P Q : (isCardinalFilteredElementsOp C κ).FullSubcategory) :
+    Small.{w} (P ⟶ Q) := by
+  obtain ⟨J, _, _, F, ι, ⟨h⟩⟩ := (isCardinalFiltered_elements_op_iff' P.obj κ).mp inferInstance
+  let φ (f : P ⟶ Q) (j : J) : shrinkCoyoneda.{w, v_1, u_1}.obj (F.obj j) ⟶ Q.obj :=
+    ι.app j ≫ f.hom
+  refine small_of_injective (f := φ) (fun a b hab ↦ ?_)
+  ext : 1
+  exact h.hom_ext (fun j ↦ congr($(hab) j))
+
+namespace isCardinalFilteredElementsOp
+
+variable (C) in
+@[expose, simps! obj_obj map_hom, implicit_reducible]
+noncomputable def toFullSubcategory' :
+    Cᵒᵖ ⥤ (isCardinalFilteredElementsOp C κ).FullSubcategory :=
+  ObjectProperty.lift _ shrinkCoyoneda.{w}
+    (fun _ ↦ isCardinalFilteredElementsOp_shrinkCoyoneda_obj _ _)
+
+variable (C) in
+def generator :
+    ObjectProperty (isCardinalFilteredElementsOp C κ).FullSubcategory :=
+  (isCardinalFilteredElementsOp.toFullSubcategory' C κ).essImage
+deriving ObjectProperty.EssentiallySmall.{w}
+
+variable (C) in
+lemma isCardinalFilteredGenerator_generator :
+    (generator C κ).IsCardinalFilteredGenerator κ where
+  le_isCardinalPresentable := sorry
+  exists_colimitsOfShape P := by
+    have := P.property
+    rw [isCardinalFilteredElementsOp_iff, isCardinalFiltered_elements_op_iff'] at this
+    obtain ⟨J, _, _, F, ι, ⟨h⟩⟩ := this
+    exact ⟨J, inferInstance, inferInstance, ⟨{
+      diag := F ⋙ toFullSubcategory' C κ
+      ι :=
+        { app j := ObjectProperty.homMk (ι.app j)
+          naturality j j' f := by ext : 1; simp [dsimp% ι.naturality f] }
+      isColimit := isColimitOfReflects (ObjectProperty.ι _) h
+      prop_diag_obj _ := Functor.obj_mem_essImage _ _
+    }⟩⟩
+
+instance :
+    IsCardinalAccessibleCategory (isCardinalFilteredElementsOp C κ).FullSubcategory κ where
+  exists_generator :=
+    ⟨isCardinalFilteredElementsOp.generator C κ, inferInstance,
+      isCardinalFilteredGenerator_generator C κ⟩
+
+instance :
+    IsAccessibleCategory.{w} (isCardinalFilteredElementsOp C κ).FullSubcategory where
+  exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
+end isCardinalFilteredElementsOp
+
+end
 
 end Presheaf
 

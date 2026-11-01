@@ -429,6 +429,9 @@ noncomputable def shrinkCoyonedaEquiv {X : Cᵒᵖ} {P : C ⥤ Type w} :
     simpa [shrinkYoneda] using ((τ.naturality_apply f) (equivShrink _ (𝟙 X.unop))).symm
   right_inv x := by simp
 
+instance {X : Cᵒᵖ} {P : C ⥤ Type w} : Small.{w} (shrinkCoyoneda.{w}.obj X ⟶ P) :=
+  small_of_injective shrinkCoyonedaEquiv.injective
+
 lemma map_shrinkCoyonedaEquiv {X Y : Cᵒᵖ} {P : C ⥤ Type w} (f : shrinkCoyoneda.obj X ⟶ P)
     (g : Y ⟶ X) : P.map g.unop (shrinkCoyonedaEquiv f) =
       f.app Y.unop (shrinkCoyonedaObjObjEquiv.symm g.unop) := by
