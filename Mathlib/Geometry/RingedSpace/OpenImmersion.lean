@@ -867,7 +867,7 @@ end
 section Prod
 
 -- here `ι` should have same universe level as morphism of `C`, so needs explicit universe level
-variable [HasLimits C] {ι : Type v} (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F]
+variable [HasLimits C] {ι : Type v} (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C)
   (i : Discrete ι)
 
 set_option backward.isDefEq.respectTransparency false in
