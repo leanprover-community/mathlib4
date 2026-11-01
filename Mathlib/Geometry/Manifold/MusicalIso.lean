@@ -150,22 +150,27 @@ lemma ContMDiffAt.inner_bundle_iff_apply {s : (x : B) → TangentSpace IB x} {x 
 
 -- TODO: add also the corresponding WithinAt, On and unrestricted versions of these lemmas
 
--- attempt to abstract the claim in fooAt_simple, after passing to a local trivialisation
--- doesn't typecheck yet...
--- *could* simplify by observing that T p is a vector field in the application below
-lemma abstract {x : B}
-    {e : B → B → EB} {f : B → EB → B}
-    -- don't elaborate; need to manually specify
-    --(he : CMDiff k (T% e)) (hf : CMDiff k (T% f))
-    {S : ∀ (x' : B), TangentSpace IB x' →L[ℝ] TangentSpace 𝓘(ℝ, EB) (e x x')}
-    {T : (x' : B) → TangentSpace 𝓘(ℝ, EB) (e x' x') →L[ℝ] TangentSpace IB ((f x') (e x' x'))}
-    --(hS : CMDiff k (T% S)) (hT : CMDiff k (T% T))
-    (p : ∀ (x : B), TangentSpace% x)
-    (hp : CMDiff k (T% p)) :
-    let F := fun x' ↦ S x' (T x' (p x'))
-    let F' := (fun (x' : B) ↦ TotalSpace.mk'
-      (E := fun (x' : B) ↦ TangentSpace 𝓘(ℝ, EB) (e x x')) (B := B) EB x' (F x'))
-    True := sorry -- ContMDiff IB (IB.prod 𝓘(ℝ, EB)) k F' := sorry
+-- wait, is this actually circular now?
+lemma aux {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
+    (hs : CMDiffAt k (fun (x : B) ↦
+      TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)) x) :
+    letI p (x' : B) := (InnerProductSpace.toDual ℝ (TangentSpace IB x')).symm (s x')
+    ContMDiff IB IB.tangent k (T% p) := by
+  dsimp
+  intro x₀
+  rw [contMDiffAt_section]
+  simp_rw [TangentBundle.trivializationAt_apply']
+  simp
+  sorry
+
+lemma goal {p : (x' : B) → TangentSpace IB x'} (hp : CMDiff k (T% p)) {x : B}
+    (hx : x ∈ (chartAt HB x).source) :
+    ContMDiffWithinAt IB 𝓘(ℝ, EB) k
+      (fun (x' : B) ↦ (mfderiv[(chartAt HB x).source] (extChartAt IB x) x') (p x'))
+      (chartAt HB x).source x := by
+  convert! contMDiffAt_extChartAt.contMDiffWithinAt.mvfderivWithin
+    (hp.contMDiffOn x hx) (by simp : k + 1 ≤ k + 1)
+    (chartAt HB x).open_source.uniqueMDiffOn (mem_chart_source _ _)
 
 lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     (hs : CMDiffAt k (fun (x : B) ↦
@@ -176,37 +181,37 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
   -- XXX: is there a better approach than "pair with any smooth section"?
   rw [contMDiffAt_section]
   simp_rw [TangentBundle.trivializationAt_apply']
-  -- let's simplify notation a bit
-  let echart (x' : B) := extChartAt IB x'
   let p (x' : B) := (InnerProductSpace.toDual ℝ (TangentSpace IB x')).symm (s x')
-  have h1 (x') (hx' : x' ∈ (chartAt HB x).source) :
-      MDiffAt[(chartAt HB x).source] (echart x) ((echart x').symm ((echart x') x')) := by
-    -- -- requires x' ∈ (chartAt HB x).source
-    -- apply MDifferentiableOn.mdifferentiableWithinAt (s := (chartAt HB x).source)
-    -- swap
-    -- apply (chartAt HB x).open_source.mem_nhds
-
-    -- apply mdifferentiableAt_extChartAt
+  have hp : ContMDiff IB IB.tangent k (T% p) := by
     sorry
-  have h3 (x') : UniqueMDiffAt[Set.range IB] ((echart x') x') := sorry
-  have h4 (x') : ((echart x').symm ((echart x') x')) = x' := by simp [echart]
-  let A (x') := mfderiv% (echart x) x'
-  let Bl (x') := mfderiv[Set.range IB] (echart x').symm ((echart x') x')
-  let Bp (x') := Bl x' (p x') -- from B into TB
-  have aux'' : ContMDiffAt IB 𝓘(ℝ, EB) k (fun x' ↦ ((A x') ∘SL (Bl x')) (p x')) x := sorry
-  have aux : ContMDiffAt IB 𝓘(ℝ, EB) k
-      (fun x' ↦ (mfderiv[Set.range IB] ((echart x) ∘ (echart x').symm) (echart x' x')) (p x'))
-      x := by
-    conv =>
-      enter [4, x']
-      rw [mfderivWithin_comp (I' := IB) (u := (chartAt HB x).source) _ sorry--(h1 x')
-        (mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x')) (by sorry) (h3 x'),
-        h4 x']
-    sorry
-  apply aux.congr
-  · intro y hy
-    simp [p, echart]; rfl
-  · simp [p, echart]; rfl
+  have goal : ContMDiffAt IB 𝓘(ℝ, EB) k
+      (fun x' ↦ (mfderiv[(chartAt HB x).source] (extChartAt IB x) x') (p x')) x := by
+    apply ContMDiffWithinAt.contMDiffAt _
+      ((chartAt HB x).open_source.mem_nhds (mem_chart_source ..))
+    exact goal hp (mem_chart_source _ _)
+  -- TODO: need some last fiddling with the open sets, and the sorry for p: then it's done.
+  apply goal.congr_of_eventuallyEq
+  apply Set.EqOn.eventuallyEq_of_mem (s := (chartAt HB x).source) ?_
+    ((chartAt HB x).open_source.mem_nhds (mem_chart_source HB x))
+  intro y hy
+  dsimp
+  rw [mfderivWithin_comp (I' := IB) (u := (chartAt HB x).source)]
+  on_goal 1 =>
+    erw [ContinuousLinearMap.comp_apply]
+    erw [mfderivWithin_range_extChartAt_symm]
+    simp [p]
+    congr
+    simp
+  -- side goals now
+  · exact (mdifferentiableAt_extChartAt (by simp [hy])).mdifferentiableWithinAt
+  · exact mdifferentiableWithinAt_extChartAt_symm (by simp)
+  · rintro x ⟨x₀, rfl⟩
+    simp
+    sorry -- only true after restricting further...
+  · refine UniqueDiffWithinAt.uniqueMDiffWithinAt ?_
+    have aux := UniqueMDiffOn.uniqueDiffWithinAt_range_inter (I := IB) uniqueMDiffOn_univ y
+    simp at aux
+    exact aux ((chartAt HB y) y) (by simp)
   -- alternative proof, using orthonormal frames
   -- rw [ContMDiffAt.inner_bundle_iff_apply (IB := IB)]
   -- intro t ht
