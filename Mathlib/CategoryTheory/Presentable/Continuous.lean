@@ -7,9 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Types.PreservesLimit
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.CategoryTheory.Presentable.CardinalInd
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.Presheaf
-public import Mathlib.CategoryTheory.Presentable.PresheafAccessible
 public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.SmallRepresentatives
 

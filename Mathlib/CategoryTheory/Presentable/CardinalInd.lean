@@ -11,21 +11,30 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtCoyoneda
 
 /-!
-# Presheaves that are `κ`-filtered colimits of representable presheaves
+# `κ`-ind objects
 
-Let `C` be an essentially small category and `κ` be a regular cardinal. In this file,
-we introduce a property `Presheaf.isCardinalFilteredElementsOp` of objects in `C ⥤ Type w`
-that is satisfied by functors `P` such that `P.Elementsᵒᵖ` is `κ`-filtered.
-We show that this property holds for (co)representable functors and is stable under
-`κ`-filtered colimits. It follows that the property `Presheaf.isCardinalFilteredElementsOp`
-is precisely satisfied by `κ`-filtered colimits of (co)representable functors.
-We show that the corresponding full subcategory of `C ⥤ Type w` is `κ`-accessible.
+Let `C` be an essentially `w`-small category and `κ : Cardinal.{w}` be a regular cardinal.
+We define the category `CardinalInd C κ` as the full subcategory of `Cᵒᵖ ⥤ Type w`
+consisting the presheaves `P` such that `P.Elementsᵒᵖ` is `κ`-filtered. We show that
+this full subcategory contains representable presheaves and is stable under
+`κ`-filtered colimits. It follows that the `κ`-ind objects are precisely the
+`κ`-filtered colimits of representable functors.
+
+TODO: in the definition of `CardinalInd C κ`, it may be possible to relax
+the `EssentiallySmall` assumption, by assuming not only that `P.Elementsᵒᵖ`
+is `κ`-filtered but also that `P.Elements` is initially
+
+## Implementation notes
+
+We define more generally a property `Presheaf.isCardinalFilteredElementsOp` of objects in
+`C ⥤ Type w` that is satisfied by functors `P` such that `P.Elementsᵒᵖ` is `κ`-filtered.
+In the case the category `C` is replaced by `Cᵒᵖ`, we get the notion of `κ`-ind object.
 
 -/
 
 public section
 
-universe w
+universe w₁ w₂ w
 
 namespace CategoryTheory
 
@@ -203,38 +212,35 @@ namespace isCardinalFilteredElementsOp
 variable (C) in
 @[expose, simps! obj_obj map_hom, implicit_reducible]
 noncomputable def toFullSubcategory :
-    C ⥤ (isCardinalFilteredElementsOp Cᵒᵖ κ).FullSubcategory :=
-  ObjectProperty.lift _ shrinkYoneda.{w}
-    (fun _ ↦ isCardinalFilteredElementsOp_shrinkYoneda_obj _ _)
-
-
-variable (C) in
-@[expose, simps! obj_obj map_hom, implicit_reducible]
-noncomputable def toFullSubcategory' :
     Cᵒᵖ ⥤ (isCardinalFilteredElementsOp C κ).FullSubcategory :=
   ObjectProperty.lift _ shrinkCoyoneda.{w}
     (fun _ ↦ isCardinalFilteredElementsOp_shrinkCoyoneda_obj _ _)
 
 variable (C) in
-def generator :
-    ObjectProperty (isCardinalFilteredElementsOp C κ).FullSubcategory :=
-  (toFullSubcategory' C κ).essImage
-deriving ObjectProperty.EssentiallySmall.{w}
-
-lemma generator_eq_essImage_toFullSubcategory' :
-    generator C κ = (toFullSubcategory' C κ).essImage := by rfl
+@[expose, simps! hom_app inv_app]
+noncomputable def toFullSubcategoryCompιIso :
+    toFullSubcategory C κ ⋙ ObjectProperty.ι _ ≅ shrinkCoyoneda.{w} := Iso.refl _
 
 variable (C) in
+noncomputable def fullyFaithfulToFullSubcategory :
+    (toFullSubcategory C κ).FullyFaithful :=
+  Functor.FullyFaithful.ofCompFaithful
+    (.ofIso (fullyFaithfulShrinkCoyoneda C) (toFullSubcategoryCompιIso C κ).symm)
+
+instance : (toFullSubcategory C κ).Faithful :=
+  (fullyFaithfulToFullSubcategory C κ).faithful
+
+instance : (toFullSubcategory C κ).Full :=
+  (fullyFaithfulToFullSubcategory C κ).full
+
+variable (C) in
+def generator :
+    ObjectProperty (isCardinalFilteredElementsOp C κ).FullSubcategory :=
+  (toFullSubcategory C κ).essImage
+deriving ObjectProperty.EssentiallySmall.{w}
+
 lemma generator_eq_essImage_toFullSubcategory :
-    generator Cᵒᵖ κ = (toFullSubcategory C κ).essImage := by
-  dsimp [generator]
-  refine le_antisymm ?_ ?_
-  · intro _ ⟨⟨⟨X⟩⟩, ⟨e⟩⟩
-    refine ⟨X, ⟨ObjectProperty.isoMk _ ?_ ≪≫ e⟩⟩
-    exact (shrinkCoyonedaObjOpOpIso _).symm
-  · intro _ ⟨X, ⟨e⟩⟩
-    refine ⟨op (op X), ⟨ObjectProperty.isoMk _ ?_ ≪≫ e⟩⟩
-    exact shrinkCoyonedaObjOpOpIso _
+    generator C κ = (toFullSubcategory C κ).essImage := by rfl
 
 variable (C) in
 lemma isCardinalFilteredGenerator_generator :
@@ -249,7 +255,7 @@ lemma isCardinalFilteredGenerator_generator :
     rw [isCardinalFilteredElementsOp_iff, isCardinalFiltered_elements_op_iff'] at this
     obtain ⟨J, _, _, F, ι, ⟨h⟩⟩ := this
     exact ⟨J, inferInstance, inferInstance, ⟨{
-      diag := F ⋙ toFullSubcategory' C κ
+      diag := F ⋙ toFullSubcategory C κ
       ι :=
         { app j := ObjectProperty.homMk (ι.app j)
           naturality j j' f := by ext : 1; simp [dsimp% ι.naturality f] }
@@ -270,5 +276,70 @@ end isCardinalFilteredElementsOp
 end
 
 end Presheaf
+
+open Presheaf
+
+variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
+
+variable (C) in
+abbrev CardinalInd [EssentiallySmall.{w} C] :=
+  (isCardinalFilteredElementsOp Cᵒᵖ κ).FullSubcategory
+
+variable [EssentiallySmall.{w} C]
+
+namespace CardinalInd
+
+variable {κ} in
+noncomputable abbrev ι : C ⥤ CardinalInd C κ :=
+  ObjectProperty.lift _ shrinkYoneda.{w}
+    (fun _ ↦ isCardinalFilteredElementsOp_shrinkYoneda_obj _ _)
+
+variable {κ} in
+abbrev inclusion : CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w := ObjectProperty.ι _
+
+variable (C) in
+@[expose, simps!]
+noncomputable def ιCompInclusion : ι (C := C) (κ := κ) ⋙ inclusion ≅ shrinkYoneda.{w} := Iso.refl _
+
+variable (C) in
+noncomputable def fullyFaithfulι : (ι : C ⥤ CardinalInd C κ).FullyFaithful :=
+  Functor.FullyFaithful.ofCompFaithful
+    (.ofIso (fullyFaithfulShrinkYoneda C) (ιCompInclusion C κ).symm)
+
+instance : (ι : C ⥤ CardinalInd C κ).Faithful :=
+  (fullyFaithfulι C κ).faithful
+
+instance : (ι : C ⥤ CardinalInd C κ).Full :=
+  (fullyFaithfulι C κ).full
+
+variable (C) in
+lemma essImage_ι_eq : ι.essImage = isCardinalFilteredElementsOp.generator Cᵒᵖ κ := by
+  rw [isCardinalFilteredElementsOp.generator]
+  refine le_antisymm ?_ ?_
+  · intro _ ⟨X, ⟨e⟩⟩
+    refine ⟨op (op X), ⟨ObjectProperty.isoMk _ ?_ ≪≫ e⟩⟩
+    exact shrinkCoyonedaObjOpOpIso _
+  · intro _ ⟨⟨⟨X⟩⟩, ⟨e⟩⟩
+    refine ⟨X, ⟨ObjectProperty.isoMk _ ?_ ≪≫ e⟩⟩
+    exact (shrinkCoyonedaObjOpOpIso _).symm
+
+lemma isCardinalFilteredGenerator_essImage_ι :
+    (ι.essImage : ObjectProperty (CardinalInd Cᵒᵖ κ)).IsCardinalFilteredGenerator κ := by
+  rw [essImage_ι_eq]
+  apply isCardinalFilteredElementsOp.isCardinalFilteredGenerator_generator
+
+instance : PreservesLimitsOfSize.{w₁, w₂} (CardinalInd.ι : C ⥤ CardinalInd C κ) where
+  preservesLimitsOfShape {J _} := by
+    have := preservesLimitsOfShape_of_natIso (J := J) (ιCompInclusion C κ).symm
+    exact preservesLimitsOfShape_of_reflects_of_preserves _ inclusion
+
+example : IsCardinalAccessibleCategory (CardinalInd C κ) κ := inferInstance
+
+example : IsAccessibleCategory.{w} (CardinalInd C κ) := inferInstance
+
+example : (CardinalInd.inclusion : CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w).IsCardinalAccessible κ :=
+  inferInstance
+
+end CardinalInd
 
 end CategoryTheory
