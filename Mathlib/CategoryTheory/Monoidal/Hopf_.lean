@@ -68,7 +68,7 @@ namespace Hopf
 variable {C}
 
 /-- A Hopf monoid is a bimonoid. -/
-def toBimon (A : Hopf C) : Bimon C := .mk' A.X
+def toBimon (A : Hopf C) : Bimon C := .mk A.X
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.
