@@ -50,11 +50,11 @@ jobs:
           echo "$label_names"
 
           # build command so build lines don't pollute `output` below
-          lake build check_title_labels
+          lake build check-title-labels
 
           set +e
           # Capture output and exit code
-          output=$(lake exe check_title_labels --labels "$label_names" "$TITLE" 2>&1)
+          output=$(lake exe check-title-labels --labels "$label_names" "$TITLE" 2>&1)
           exit_code=$?
           set -e
 

@@ -62,6 +62,7 @@ theorem im_sq_mul_discr [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     z.im ^ 2 * discr a b = trace z ^ 2 - 4 * norm z := by
   rw [trace_def, norm_def, discr_def]; ring
 
+/-- Four times the norm of `z` is `trace z ^ 2 - discr a b * z.im ^ 2`. -/
 theorem four_mul_norm_eq [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
     4 * norm z = trace z ^ 2 - discr a b * z.im ^ 2 := by
   rw [trace_def, norm_def, discr_def]; ring
@@ -69,8 +70,7 @@ theorem four_mul_norm_eq [CommRing R] {a b : R} (z : QuadraticAlgebra R a b) :
 /-- Four times the norm of `t • 1 + ω` is `(2 * t + b) ^ 2 - discr a b`. -/
 theorem four_mul_norm_smul_one_add_omega [CommRing R] {a b : R} (t : R) :
     4 * norm (t • 1 + ω : QuadraticAlgebra R a b) = (2 * t + b) ^ 2 - discr a b := by
-  rw [four_mul_norm_eq, trace_smul_one_add_omega]
-  simp
+  simp [four_mul_norm_eq, trace_def]
 
 /-- The discriminant commutes with a base change `R → S`. -/
 @[simp]
@@ -187,10 +187,7 @@ theorem nonempty_algEquiv_int_iff {a b a' b' : ℤ} :
       discr a b = discr a' b' := by
   rw [nonempty_algEquiv_iff (IsRegular.of_ne_zero two_ne_zero)]
   refine ⟨fun ⟨u, hu, _⟩ ↦ by rwa [Int.isUnit_sq u.isUnit, one_mul] at hu, fun h ↦ ?_⟩
-  obtain _ | _ : 2 ∣ (b + b') ∨ 2 ∣ (b - b') := by
-    rw [← Prime.dvd_mul Int.prime_two, ← sq_sub_sq]
-    refine ⟨2 * a' - 2 * a, ?_⟩
-    grind [discr]
+  obtain _ | _ : 2 ∣ (b + b') ∨ 2 ∣ (b - b') := Int.prime_two.dvd_mul.mp <| by grind [discr]
   · exact ⟨-1, by simpa, by simpa⟩
   · exact ⟨1, by simpa, by simpa⟩
 
