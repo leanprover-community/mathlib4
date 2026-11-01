@@ -334,6 +334,11 @@ lemma shrinkYonedaMap_naturality (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
   ext Z : 2
   simp [shrinkYonedaMap_naturality_app F f]
 
+/-- When `F : C ⥤ D` is a functor between locally `w`-small categories, this is the
+natural transformation of bifunctors `C ⥤ Cᵒᵖ ⥤ Type w` which, for all `X : C` and `Y : Cᵒᵖ`,
+corresponds to the maps
+`(shrinkYoneda.obj X).obj Y ⟶ (shrinkYoneda.{w}.obj (F.obj X)).obj (op (F.obj Y.unop))`
+induced by `F` on morphisms `Y.unop ⟶ X`. -/
 @[simps]
 noncomputable def shrinkYonedaMap₂ (F : C ⥤ D) :
     shrinkYoneda.{w} ⟶ F ⋙ shrinkYoneda.{w} ⋙ (Functor.whiskeringLeft ..).obj F.op where
@@ -576,6 +581,8 @@ section
 
 variable {D : Type*} [Category* D] [LocallySmall.{w} D]
 
+/-- The natural transformation `shrinkCoyoneda.obj X ⟶ F ⋙ shrinkCoyoneda.obj (F.op.obj X)`
+when `F : C ⥤ D` and `X : Cᵒᵖ`. -/
 noncomputable def shrinkCoyonedaMap (F : C ⥤ D) (X : Cᵒᵖ) :
     shrinkCoyoneda.{w}.obj X ⟶ F ⋙ shrinkCoyoneda.{w}.obj (F.op.obj X) :=
   ((flipFunctor ..).map (shrinkYonedaMap₂ F)).app _
