@@ -6,6 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Data.ENat.Basic
+public import Mathlib.Order.WithBotTop
 
 /-!
 
@@ -18,9 +19,7 @@ public section
 namespace ENat.WithBot
 
 lemma eq_natCast_of_ne_bot_of_ne_top {x : WithBot ℕ∞} (ne1 : x ≠ ⊥) (ne2 : x ≠ ⊤) :
-    ∃ n : ℕ, x = n := by
-  obtain ⟨m, rfl⟩ := WithBot.ne_bot_iff_exists.mp ne1
-  obtain ⟨n, rfl⟩ := ENat.ne_top_iff_exists.mp (WithBot.coe_inj.not.mp ne2)
-  exact ⟨n, coe_eq_natCast n⟩
+    ∃ n : ℕ, x = n :=
+  WithBotTop.eq_coe_of_ne_top_of_ne_bot ne1 ne2
 
 end ENat.WithBot
