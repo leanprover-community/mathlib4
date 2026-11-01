@@ -591,7 +591,7 @@ theorem natDegree_sub_eq_right_of_natDegree_lt (h : natDegree p < natDegree q) :
 
 end Ring
 
-section NonzeroRing
+section Nontrivial
 
 variable [Nontrivial R]
 
@@ -645,7 +645,7 @@ theorem X_add_C_ne_one (r : R) : X + C r ≠ 1 :=
 
 end Semiring
 
-end NonzeroRing
+end Nontrivial
 
 section Semiring
 
@@ -766,8 +766,42 @@ theorem natDegree_X_sub_C (x : R) : (X - C x).natDegree = 1 := by
 theorem nextCoeff_X_sub_C [Ring S] (c : S) : nextCoeff (X - C c) = -c := by
   rw [sub_eq_add_neg, ← map_neg C c, nextCoeff_X_add_C]
 
-theorem degree_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) : degree ((X : R[X]) ^ n - C a) = n := by
+theorem degree_X_pow_sub_C (hn : 0 < n) (a : R) : ((X : R[X]) ^ n - C a).degree = n := by
   rw [sub_eq_add_neg, ← map_neg C a, degree_X_pow_add_C hn]
+
+theorem natDegree_X_pow_sub_C (a : R) : (X ^ n - C a).natDegree = n := by
+  rw [sub_eq_add_neg, ← map_neg C a, natDegree_X_pow_add_C]
+
+theorem degree_X_pow_sub_X (hn : 1 < n) : (X ^ n - X : R[X]).degree = n := by
+  rw [degree_sub_eq_left_of_degree_lt]
+  · simp
+  · simpa
+
+theorem natDegree_X_pow_sub_X (hn : 1 < n) : (X ^ n - X : R[X]).natDegree = n := by
+  rw [natDegree_sub_eq_left_of_natDegree_lt]
+  · simp
+  · simpa
+
+@[deprecated (since := "2026-10-09")]
+alias _root_.FiniteField.X_pow_card_sub_X_natDegree_eq := natDegree_X_pow_sub_X
+
+variable (R) in
+@[deprecated natDegree_X_pow_sub_X +typeChanged (since := "2026-10-09")]
+theorem _root_.FiniteField.X_pow_card_pow_sub_X_natDegree_eq {p : ℕ} (hn : n ≠ 0) (hp : 1 < p) :
+    (X ^ p ^ n - X : R[X]).natDegree = p ^ n :=
+  natDegree_X_pow_sub_X <| Nat.one_lt_pow hn hp
+
+theorem X_pow_sub_X_ne_zero (hn : 1 < n) : (X ^ n - X : R[X]) ≠ 0 :=
+  ne_zero_of_natDegree_gt (hn.trans_eq (natDegree_X_pow_sub_X hn).symm)
+
+@[deprecated (since := "2026-10-09")]
+alias _root_.FiniteField.X_pow_card_sub_X_ne_zero := X_pow_sub_X_ne_zero
+
+variable (R) in
+@[deprecated X_pow_sub_X_ne_zero +typeChanged (since := "2026-10-09")]
+theorem _root_.FiniteField.X_pow_card_pow_sub_X_ne_zero {p : ℕ} (hn : n ≠ 0) (hp : 1 < p) :
+    (X ^ p ^ n - X : R[X]) ≠ 0 :=
+  X_pow_sub_X_ne_zero <| Nat.one_lt_pow hn hp
 
 theorem X_pow_sub_C_ne_zero {n : ℕ} (hn : 0 < n) (a : R) : (X : R[X]) ^ n - C a ≠ 0 := by
   rw [sub_eq_add_neg, ← map_neg C a]
@@ -780,9 +814,6 @@ theorem zero_notMem_multiset_map_X_sub_C {α : Type*} (m : Multiset α) (f : α 
     (0 : R[X]) ∉ m.map fun a => X - C (f a) := fun mem =>
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_sub_C_ne_zero _ ha
-
-theorem natDegree_X_pow_sub_C {n : ℕ} {r : R} : (X ^ n - C r).natDegree = n := by
-  rw [sub_eq_add_neg, ← map_neg C r, natDegree_X_pow_add_C]
 
 @[simp]
 theorem leadingCoeff_X_sub_C [Ring S] (r : S) : (X - C r).leadingCoeff = 1 := by

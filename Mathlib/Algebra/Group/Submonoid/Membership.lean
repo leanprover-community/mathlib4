@@ -183,7 +183,7 @@ open Submonoid
 @[to_additive]
 theorem closure_range_of : closure (Set.range <| @of α) = ⊤ :=
   eq_top_iff.2 fun x _ =>
-    FreeMonoid.recOn x (one_mem _) fun _x _xs hxs =>
+    FreeMonoid.mulRecOn x (one_mem _) fun _x _xs hxs =>
       mul_mem (subset_closure <| Set.mem_range_self _) hxs
 
 end FreeMonoid
@@ -255,7 +255,7 @@ theorem closure_eq_mrange (s : Set M) : closure s = mrange (FreeMonoid.lift ((�
 theorem closure_eq_image_prod (s : Set M) :
     (closure s : Set M) = List.prod '' { l : List M | ∀ x ∈ l, x ∈ s } := by
   rw [closure_eq_mrange, coe_mrange, ← Set.range_list_map_coe, ← Set.range_comp]
-  exact congrArg _ (funext <| FreeMonoid.lift_apply _)
+  ext; simp [FreeMonoid.exists]
 
 @[to_additive]
 theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :

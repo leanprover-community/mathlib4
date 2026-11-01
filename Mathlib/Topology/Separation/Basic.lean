@@ -137,14 +137,9 @@ theorem t0Space_iff_exists_isOpen_xor_mem (X : Type u) [TopologicalSpace X] :
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
     inseparable_iff_forall_isOpen, Pairwise]
 
-@[deprecated (since := "2026-04-04")]
-alias t0Space_iff_exists_isOpen_xor'_mem := t0Space_iff_exists_isOpen_xor_mem
-
 theorem exists_isOpen_xor_mem [T0Space X] {x y : X} (h : x ≠ y) :
     ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) :=
   (t0Space_iff_exists_isOpen_xor_mem X).1 ‹_› h
-
-@[deprecated (since := "2026-04-04")] alias exists_isOpen_xor'_mem := exists_isOpen_xor_mem
 
 /-- Specialization forms a partial order on a t0 topological space. -/
 @[instance_reducible]
@@ -429,7 +424,7 @@ protected theorem Finset.isClosed [T1Space X] (s : Finset X) : IsClosed (s : Set
 instance : T1Space (CofiniteTopology X) where
   t1 x := CofiniteTopology.isClosed_iff.mpr <| by simp
 
-theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
+theorem t1Space_tfae (X : Type u) [TopologicalSpace X] :
     List.TFAE [T1Space X,
       ∀ x, IsClosed ({ x } : Set X),
       ∀ x, IsOpen ({ x }ᶜ : Set X),
@@ -473,27 +468,29 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       fun ⟨_, _⟩ _ _ h => (h.antisymm h.symm).eq⟩
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias t1Space_TFAE := t1Space_tfae
+
 theorem t1Space_iff_continuous_cofinite_of : T1Space X ↔ Continuous (@CofiniteTopology.of X) :=
-  (t1Space_TFAE X).out 1 4
+  (t1Space_tfae X).out 1 4
 
 theorem CofiniteTopology.continuous_of [T1Space X] : Continuous (@CofiniteTopology.of X) :=
   t1Space_iff_continuous_cofinite_of.mp ‹_›
 
 theorem t1Space_iff_exists_open :
     T1Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ y ∉ U :=
-  (t1Space_TFAE X).out 1 7
+  (t1Space_tfae X).out 1 7
 
 theorem t1Space_iff_disjoint_pure_nhds : T1Space X ↔ ∀ ⦃x y : X⦄, x ≠ y → Disjoint (pure x) (𝓝 y) :=
-  (t1Space_TFAE X).out 1 9
+  (t1Space_tfae X).out 1 9
 
 theorem t1Space_iff_disjoint_nhds_pure : T1Space X ↔ ∀ ⦃x y : X⦄, x ≠ y → Disjoint (𝓝 x) (pure y) :=
-  (t1Space_TFAE X).out 1 8
+  (t1Space_tfae X).out 1 8
 
 theorem t1Space_iff_specializes_imp_eq : T1Space X ↔ ∀ ⦃x y : X⦄, x ⤳ y → x = y :=
-  (t1Space_TFAE X).out 1 10
+  (t1Space_tfae X).out 1 10
 
 theorem t1Space_iff_t0Space_and_r0Space : T1Space X ↔ T0Space X ∧ R0Space X :=
-  (t1Space_TFAE X).out 1 11
+  (t1Space_tfae X).out 1 11
 
 theorem disjoint_pure_nhds [T1Space X] {x y : X} (h : x ≠ y) : Disjoint (pure x) (𝓝 y) :=
   t1Space_iff_disjoint_pure_nhds.mp ‹_› h
@@ -841,7 +838,7 @@ theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs
   fun_prop
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
-  rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 1 10 :)]
+  rw [r0Space_iff, ((t1Space_tfae (SeparationQuotient X)).out 1 10 :)]
   refine ⟨fun h ↦ ⟨fun x y xspecy ↦ ?_⟩, ?_⟩
   · rw [← IsInducing.specializes_iff isInducing_mk, h xspecy] at *
   · -- TODO is there are better way to do this,

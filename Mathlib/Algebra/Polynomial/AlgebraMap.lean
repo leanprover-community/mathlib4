@@ -775,9 +775,6 @@ lemma mem_nonZeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ 
 @[deprecated (since := "2026-09-28")]
 alias mem_nonzeroDivisors_of_coeff_mem := mem_nonZeroDivisors_of_coeff_mem
 
-lemma X_mem_nonZeroDivisors : X ∈ R[X]⁰ :=
-  mem_nonZeroDivisors_of_coeff_mem 1 (by simp [one_mem])
-
 @[deprecated (since := "2026-09-28")] alias X_mem_nonzeroDivisors := X_mem_nonZeroDivisors
 
 end CommSemiring

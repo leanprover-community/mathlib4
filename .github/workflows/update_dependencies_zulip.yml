@@ -8,10 +8,15 @@ on:
     branches:
       - 'update-dependencies-**'
 
+# `workflow_run` matches the triggering workflow by name and branch name only, which doesn't
+# identify it. So both jobs require a run for a push to this repository.
 jobs:
   monitor-failures:
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'failure' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' &&
+            github.event.workflow_run.event == 'push' &&
+            github.event.workflow_run.head_repository.full_name == github.repository &&
+            github.event.workflow_run.conclusion == 'failure' }}
     permissions:
       contents: read
 
@@ -64,7 +69,7 @@ jobs:
             } else {
               output += "No PR found for this run! If you are feeling impatient and have write access, please go to the following page and click the \"Run workflow\" button!\nhttps://github.com/leanprover-community/mathlib4/actions/workflows/update_dependencies.yml";
             }
-            output += "\n\n" + process.env.CHANGES;
+            output += "\n\n" + (process.env.CHANGES ?? "");
             return output;
 
       - name: Send Zulip message
@@ -81,7 +86,10 @@ jobs:
 
   monitor-success:
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' &&
+            github.event.workflow_run.event == 'push' &&
+            github.event.workflow_run.head_repository.full_name == github.repository &&
+            github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
 
@@ -131,7 +139,7 @@ jobs:
               for (let pr of prs) {
                 output += "#" + pr.number + " passed CI and is ready for review. ";
               }
-              output += "\n\n" + process.env.CHANGES;
+              output += "\n\n" + (process.env.CHANGES ?? "");
               return output
             }
             return ''  // Return empty string if no PRs found

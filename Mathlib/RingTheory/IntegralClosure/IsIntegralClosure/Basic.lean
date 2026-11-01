@@ -193,7 +193,7 @@ theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
     Subtype.ext <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
 
-instance integralClosure.AlgebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
+instance integralClosure.algebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
   ⟨integralClosure.isIntegral⟩
 
 theorem IsIntegral.of_mul_unit {x y : B} {r : R} (hr : algebraMap R B r * y = 1)
@@ -293,18 +293,12 @@ attribute [local instance] MvPolynomial.algebraMvPolynomial in
 instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
   Algebra.IsPushout.isIntegral R _ S _
 
+@[to_additive (dont_translate := R S)]
 instance {M : Type*} [CommMonoid M]
     [Algebra (MonoidAlgebra R M) (MonoidAlgebra S M)]
     [IsScalarTower R (MonoidAlgebra R M) (MonoidAlgebra S M)]
     [Algebra.IsPushout R S (MonoidAlgebra R M) (MonoidAlgebra S M)] :
     Algebra.IsIntegral (MonoidAlgebra R M) (MonoidAlgebra S M) :=
-  Algebra.IsPushout.isIntegral R _ S _
-
-instance {M : Type*} [AddCommMonoid M]
-    [Algebra (AddMonoidAlgebra R M) (AddMonoidAlgebra S M)]
-    [IsScalarTower R (AddMonoidAlgebra R M) (AddMonoidAlgebra S M)]
-    [Algebra.IsPushout R S (AddMonoidAlgebra R M) (AddMonoidAlgebra S M)] :
-    Algebra.IsIntegral (AddMonoidAlgebra R M) (AddMonoidAlgebra S M) :=
   Algebra.IsPushout.isIntegral R _ S _
 
 end Pushout
@@ -378,6 +372,14 @@ instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing 
     IsIntegralClosure (integralClosure R A) R A where
   algebraMap_injective := Subtype.coe_injective
   isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
+
+/-- If `A` acts faithfully on `B`, then `A` is the integral closure of `R` in `B` iff an element
+of `B` is integral over `R` exactly when it lies in the image of `A`. -/
+theorem isIntegralClosure_iff {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
+    [Algebra R B] [Algebra A B] [FaithfulSMul A B] :
+    IsIntegralClosure A R B ↔ ∀ x : B, IsIntegral R x ↔ ∃ a : A, algebraMap A B a = x :=
+  ⟨fun _ _ ↦ IsIntegralClosure.isIntegral_iff,
+   fun h ↦ ⟨FaithfulSMul.algebraMap_injective A B, fun {x} ↦ h x⟩⟩
 
 namespace IsIntegralClosure
 
