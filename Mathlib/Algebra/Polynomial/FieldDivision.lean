@@ -5,13 +5,13 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.Order.Group.Finset
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -451,6 +451,10 @@ theorem sub_mod (p₁ p₂ q : R[X]) : (p₁ - p₂) % q = p₁ % q - p₂ % q :
 theorem mul_mod (p₁ p₂ q : R[X]) : (p₁ * p₂) % q = (p₁ % q) * (p₂ % q) % q := by
   simp_rw [Polynomial.mod_def]
   apply Polynomial.mul_modByMonic
+
+lemma eval_mod_eq_self_of_root {p q : R[X]} {x : R} (hx : eval x q = 0) :
+    (p % q).eval x = p.eval x :=
+  eval₂_modByMonic_eq_self_of_root (by simp [hx])
 
 section
 
