@@ -216,10 +216,17 @@ lemma IsFσ.eq_iUnion_nat (hs : IsFσ s) :
     ∃ (f : ℕ → Set X), (∀ n, IsClosed (f n)) ∧ s = ⋃ n, f n :=
   isFσ_iff_eq_iUnion_nat.1 hs
 
-/-- Countable unions of Fσ sets are Fσ sets. -/
-lemma IsFσ.iUnion {ι : Sort*} [Countable ι] {s : ι → Set X} (hs : ∀ i, IsFσ (s i)) :
-    IsFσ (⋃ i, s i) := by
-  simpa [← compl_iUnion] using IsGδ.iInter fun i ↦ (hs i).isGδ_compl
+/-- σ-locally finite unions of Fσ sets are Fσ. -/
+lemma IsFσ.iUnion {ι : Type*} {s : ι → Set X} (hs : SigmaLocallyFinite s)
+    (hs' : ∀ i, IsFσ (s i)) : IsFσ (⋃ i, s i) := by
+  replace hs' := fun n ↦ (hs' n).eq_iUnion_nat
+  choose w hw using hs'
+  simp_rw [hw]
+  have ⟨κ, e, he⟩ := sigmaLocallyFinite_iff_exists_equiv.1 hs
+  rw [← e.symm.surjective.iUnion_comp, iUnion_sigma, ← isGδ_compl_iff, compl_iUnion]
+  exact .iInter fun n ↦ IsFσ.isGδ_compl <| iUnion_comm _ ▸ .iUnion_of_isClosed fun m ↦
+    ((he n).subset fun k ↦ (subset_iUnion _ _).trans_eq (hw _).2.symm).isClosed_iUnion
+      fun k ↦ (hw _).1 _
 
 lemma IsFσ.biUnion {I : Set ι} (hI : I.Countable) {s : (i : ι) → i ∈ I → Set X}
     (hs : ∀ i hi, IsFσ (s i hi)) : IsFσ (⋃ i, ⋃ hi, s i hi) := by
@@ -232,7 +239,7 @@ lemma IsFσ.sUnion {S : Set (Set X)} (h : ∀ s ∈ S, IsFσ s) (hS : S.Countabl
 /-- Binary unions of Fσ sets are Fσ sets. -/
 lemma IsFσ.union {s t : Set X} (hs : IsFσ s) (ht : IsFσ t) : IsFσ (s ∪ t) := by
   rw [union_eq_iUnion]
-  exact .iUnion (Bool.forall_bool.2 ⟨ht, hs⟩)
+  exact .iUnion .of_countable (Bool.forall_bool.2 ⟨ht, hs⟩)
 
 /-- Binary intersections of Fσ sets are Fσ sets. -/
 lemma isFσ.inter {s t : Set X} (hs : IsFσ s) (ht : IsFσ t) : IsFσ (s ∩ t) := by
@@ -260,18 +267,6 @@ Note that the same is not true for Gδ sets and open maps. -/
 lemma IsFσ.image (hs : IsFσ s) {f : X → Y} (hf : IsClosedMap f) : IsFσ (f '' s) := by
   obtain ⟨w, hw, rfl⟩ := hs.eq_iUnion_nat
   exact image_iUnion ▸ IsFσ.iUnion_of_isClosed fun n ↦ hf _ (hw n)
-
-/-- σ-locally finite unions of Fσ sets are Fσ. -/
-lemma SigmaLocallyFinite.isFσ_iUnion {ι : Type*} {s : ι → Set X} (hs : SigmaLocallyFinite s)
-    (hs' : ∀ i, IsFσ (s i)) : IsFσ (⋃ i, s i) := by
-  replace hs' := fun n ↦ (hs' n).eq_iUnion_nat
-  choose w hw using hs'
-  simp_rw [hw]
-  have ⟨κ, e, he⟩ := sigmaLocallyFinite_iff_exists_equiv.1 hs
-  rw [← e.symm.surjective.iUnion_comp, iUnion_sigma]
-  exact .iUnion fun n ↦ iUnion_comm _ ▸ .iUnion_of_isClosed fun m ↦
-    ((he n).subset fun k ↦ (subset_iUnion _ _).trans_eq (hw _).2.symm).isClosed_iUnion
-      fun k ↦ (hw _).1 _
 
 end IsFσ
 
