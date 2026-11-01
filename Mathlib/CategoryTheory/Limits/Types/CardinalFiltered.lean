@@ -39,7 +39,7 @@ lemma jointly_surjective_of_isColimit_of_hasCardinalLT
 variable {F} in
 /-- In a κ-filtered diagram of types, if a family of size < κ in the `i`-th stage of the diagram
 collapses to the same element in the colimit, then it already does at some stage of the colimit. -/
-theorem isColimit_eq_iff'_of_hasCardinal_LT
+theorem isColimit_eq_iff'_of_hasCardinalLT
     {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
     {i : J} (x : ι → F.obj i) :
     (∀ (k k' : ι), t.ι.app i (x k) = t.ι.app i (x k')) ↔
@@ -68,14 +68,14 @@ theorem isColimit_eq_iff'_of_hasCardinal_LT
 variable {F} in
 /-- In a κ-filtered diagram of types, if a family of size < κ of elements in the diagram collapses
 to the same element in the colimit, then it already does at some stage of the colimit. -/
-theorem isColimit_eq_iff''_of_hasCardinal_LT
+theorem isColimit_eq_iff''_of_hasCardinalLT
     {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
     {φ : ι → J} (x : (i : ι) → F.obj (φ i)) :
     (∀ (k k' : ι), t.ι.app _ (x k) = t.ι.app _ (x k')) ↔
       ∃ (j : _) (f : (i : ι) → (φ i) ⟶ j), ∀ (k k' : ι),
         F.map (f k) (x k) = F.map (f k') (x k') := by
   refine ⟨fun h ↦ ?_, fun ⟨j, f, h⟩ k k' ↦ ?_⟩
-  · -- We reduce to the case of isColimit_eq_iff'_of_hasCardinal_LT
+  · -- We reduce to the case of isColimit_eq_iff'_of_hasCardinalLT
     let i₀ := IsCardinalFiltered.max φ hι
     let x₀ (i : ι) : F.obj i₀ := F.map (IsCardinalFiltered.toMax φ hι i) (x i)
     have (k k' : ι) : (t.ι.app i₀) (x₀ k) = (t.ι.app i₀) (x₀ k') := by
