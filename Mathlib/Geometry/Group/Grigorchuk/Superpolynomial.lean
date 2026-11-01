@@ -8,10 +8,6 @@ module
 public import Mathlib.Geometry.Group.Grigorchuk.Basic
 public import Mathlib.Geometry.Group.Growth.Basic
 public import Mathlib.GroupTheory.Complement
-public import Mathlib.GroupTheory.Index
-public import Mathlib.GroupTheory.Schreier
-
-import Mathlib.Algebra.Order.BigOperators.Group.List
 
 /-!
 # Superpolynomial growth of the Grigorchuk group
@@ -71,17 +67,40 @@ lemma a_mul_ac_pow (k : ℕ) : a * (a * c) ^ k = (c * a) ^ k * a := by
       _ = (c * a) ^ (k + 1) * a := by rw [← mul_assoc, ← pow_succ]
 
 lemma ac_pow_mul_a (k : ℕ) : (a * c) ^ k * a = a * (c * a) ^ k := by
+  have haa : a * a = 1 := a_mul_self
+  have hmid : (a * c) ^ k = a * (c * a) ^ k * a := by
+    calc
+      (a * c) ^ k = 1 * (a * c) ^ k := by rw [one_mul]
+      _ = a * a * (a * c) ^ k := by rw [haa]
+      _ = a * (a * (a * c) ^ k) := by rw [mul_assoc]
+      _ = a * ((c * a) ^ k * a) := by rw [a_mul_ac_pow k]
+      _ = a * (c * a) ^ k * a := by rw [← mul_assoc]
   calc
-    (a * c) ^ k * a = a * a * ((a * c) ^ k * a) := by rw [a_mul_self, one_mul]
-    _ = a * (a * (a * c) ^ k * a) := by simp only [mul_assoc]
-    _ = a * ((c * a) ^ k * a * a) := by rw [a_mul_ac_pow]; simp only [mul_assoc]
-    _ = a * (c * a) ^ k := by rw [a_mul_self, mul_one]
+    (a * c) ^ k * a = (a * (c * a) ^ k * a) * a := by rw [hmid]
+    _ = a * (c * a) ^ k * (a * a) := by simp only [mul_assoc]
+    _ = a * (c * a) ^ k * 1 := by rw [haa]
+    _ = a * (c * a) ^ k := by rw [mul_one]
 
 lemma ca_eq_a_mul_ac_mul_a : c * a = a * (a * c) * a := by
-  simp only [← mul_assoc, a_mul_self, one_mul]
+  calc
+    c * a = a * a * (c * a) := by rw [a_mul_self, one_mul]
+    _ = a * (a * c * a) := by simp only [mul_assoc]
 
 lemma ca_pow_eq_conj (k : ℕ) : (c * a) ^ k = a * (a * c) ^ k * a := by
   rw [ca_eq_a_mul_ac_mul_a, conj_a_pow]
+
+lemma ac_ca_mul : (a * c) * (c * a) = 1 := by
+  calc
+    a * c * (c * a) = a * (c * c) * a := by simp only [mul_assoc]
+    _ = a * 1 * a := by rw [c_mul_self]
+    _ = a * a := by rw [mul_one]
+    _ = 1 := a_mul_self
+
+lemma ca_eq_ac_inv : c * a = (a * c)⁻¹ :=
+  eq_inv_of_mul_eq_one_right ac_ca_mul
+
+lemma ca_pow_eq_ac_pow_inv (k : ℕ) : (c * a) ^ k = ((a * c) ^ k)⁻¹ := by
+  rw [ca_eq_ac_inv, inv_pow]
 
 lemma ac_pow_eq_mod (k : ℕ) : (a * c) ^ k = (a * c) ^ (k % 8) := by
   conv_lhs => rw [← Nat.div_add_mod k 8]
@@ -101,7 +120,31 @@ lemma ac_pow_inv (k : ℕ) :
 
 lemma inv_a_mul_ac_pow (k : ℕ) : (a * (a * c) ^ k)⁻¹ = a * (a * c) ^ k := by
   rw [mul_inv_rev, a_inv, ← inv_pow, mul_inv_rev, a_inv, c_inv, ca_pow_eq_conj]
-  simp [mul_assoc, a_mul_self]
+  simp only [mul_assoc, a_mul_self, mul_one]
+
+lemma ac_pow_mul_a_mul_ac_pow (i j : ℕ) :
+    (a * c) ^ i * a * (a * c) ^ j =
+      a * (a * c) ^ (((8 - i % 8) % 8 + j) % 8) := by
+  calc
+    (a * c) ^ i * a * (a * c) ^ j
+        = a * (c * a) ^ i * (a * c) ^ j := by
+          rw [ac_pow_mul_a]
+    _ = a * ((a * c) ^ i)⁻¹ * (a * c) ^ j := by rw [ca_pow_eq_ac_pow_inv]
+    _ = a * ((a * c) ^ ((8 - i % 8) % 8) * (a * c) ^ j) := by
+          rw [ac_pow_inv]; simp only [mul_assoc]
+    _ = a * (a * c) ^ ((8 - i % 8) % 8 + j) := by rw [← pow_add]
+    _ = a * (a * c) ^ (((8 - i % 8) % 8 + j) % 8) := by rw [ac_pow_eq_mod]
+
+lemma a_mul_ac_pow_mul_a_mul_ac_pow (i j : ℕ) :
+    a * (a * c) ^ i * (a * (a * c) ^ j) =
+      (a * c) ^ (((8 - i % 8) % 8 + j) % 8) := by
+  calc
+    a * (a * c) ^ i * (a * (a * c) ^ j)
+        = a * ((a * c) ^ i * a * (a * c) ^ j) := by simp only [mul_assoc]
+    _ = a * (a * (a * c) ^ (((8 - i % 8) % 8 + j) % 8)) := by
+          rw [ac_pow_mul_a_mul_ac_pow]
+    _ = a * a * (a * c) ^ (((8 - i % 8) % 8 + j) % 8) := by simp only [mul_assoc]
+    _ = (a * c) ^ (((8 - i % 8) % 8 + j) % 8) := by rw [a_mul_self, one_mul]
 
 /-- Every element of `⟨a, c⟩` is of the form `(ac)^k` or `a * (ac)^k` with `k < 8`. -/
 lemma exists_of_mem_closure_a_c {x : TreeAut} (hx : x ∈ Subgroup.closure ({a, c} : Set TreeAut)) :
@@ -110,26 +153,33 @@ lemma exists_of_mem_closure_a_c {x : TreeAut} (hx : x ∈ Subgroup.closure ({a, 
   | mem y hy =>
     simp only [mem_insert_iff, mem_singleton_iff] at hy
     rcases hy with rfl | rfl
-    · exact ⟨0, Or.inr (by simp)⟩
-    · exact ⟨1, Or.inr (by simp [pow_one, ← mul_assoc, a_mul_self])⟩
-  | one => exact ⟨0, Or.inl (by simp)⟩
+    · refine ⟨0, Or.inr ?_⟩
+      change a = a * (a * c) ^ (0 : ℕ)
+      rw [pow_zero, mul_one]
+    · refine ⟨1, Or.inr ?_⟩
+      have : a * (a * c) = c := by
+        calc
+          a * (a * c) = a * a * c := by rw [← mul_assoc]
+          _ = 1 * c := by rw [a_mul_self]
+          _ = c := one_mul _
+      change c = a * (a * c) ^ (1 : ℕ)
+      rw [pow_one, this]
+  | one =>
+    refine ⟨0, Or.inl ?_⟩
+    change 1 = (a * c) ^ (0 : ℕ)
+    rw [pow_zero]
   | mul y z _ _ ihy ihz =>
     obtain ⟨i, hi⟩ := ihy
     obtain ⟨j, hj⟩ := ihz
     rcases hi with hi | hi <;> rcases hj with hj | hj
     · refine ⟨⟨((i : ℕ) + j) % 8, Nat.mod_lt _ (by decide)⟩, Or.inl ?_⟩
       rw [hi, hj, ← pow_add, ac_pow_eq_mod]
+    · refine ⟨⟨(((8 - (i : ℕ) % 8) % 8 + j) % 8), Nat.mod_lt _ (by decide)⟩, Or.inr ?_⟩
+      rw [hi, hj, ← mul_assoc, ac_pow_mul_a_mul_ac_pow]
     · refine ⟨⟨((i : ℕ) + j) % 8, Nat.mod_lt _ (by decide)⟩, Or.inr ?_⟩
-      rw [hi, hj, ac_pow_mul_a, ca_pow_eq_conj, ← mul_assoc, a_mul_self, one_mul,
-        ← pow_add, ac_pow_eq_mod]
-    · refine ⟨⟨((i : ℕ) + j) % 8, Nat.mod_lt _ (by decide)⟩, Or.inr ?_⟩
-      rw [hi, hj, ← mul_assoc, ← pow_add, ac_pow_eq_mod]
-    · refine ⟨⟨((i : ℕ) + j + 1) % 8, Nat.mod_lt _ (by decide)⟩, Or.inl ?_⟩
-      have : a * (a * c) ^ (i : ℕ) * (a * (a * c) ^ (j : ℕ)) =
-          (a * c) ^ ((i : ℕ) + j + 1) := by
-        rw [mul_assoc, ac_pow_mul_a, ca_pow_eq_conj, ← mul_assoc, a_mul_self, one_mul,
-          ← pow_add, pow_succ]
-      rw [hi, hj, this, ac_pow_eq_mod]
+      rw [hi, hj, mul_assoc, ← pow_add, ac_pow_eq_mod]
+    · refine ⟨⟨(((8 - (i : ℕ) % 8) % 8 + j) % 8), Nat.mod_lt _ (by decide)⟩, Or.inl ?_⟩
+      rw [hi, hj, a_mul_ac_pow_mul_a_mul_ac_pow]
   | inv y _ ihy =>
     obtain ⟨i, hi⟩ := ihy
     rcases hi with hi | hi
@@ -173,7 +223,7 @@ lemma range_generator : range generator = G.subtype ⁻¹' generators := by
     · exact ⟨3, Subtype.ext hx.symm⟩
 
 lemma closure_generator : Subgroup.closure (range generator) = ⊤ := by
-  rw [range_generator, Subgroup.closure_preimage_eq_top generators]
+  rw [range_generator, G, Subgroup.closure_preimage_eq_top generators]
 
 /-- The four Grigorchuk generators as a `Group.Generators` family. -/
 def gens : Group.Generators G (Fin 4) where
@@ -185,29 +235,41 @@ instance : Group.FG G := gens.fg
 /-- The subgroup of `G` generated by the images of `a` and `c`. -/
 def acSub : Subgroup G := Subgroup.closure {⟨a, a_mem_G⟩, ⟨c, c_mem_G⟩}
 
+lemma a_mem_acSub : (⟨a, a_mem_G⟩ : G) ∈ acSub :=
+  Subgroup.subset_closure (mem_insert _ _)
+
+lemma c_mem_acSub : (⟨c, c_mem_G⟩ : G) ∈ acSub :=
+  Subgroup.subset_closure (mem_insert_of_mem _ (mem_singleton _))
+
 lemma coe_mem_closure_a_c {x : G} (hx : x ∈ acSub) :
     (x : TreeAut) ∈ Subgroup.closure ({a, c} : Set TreeAut) := by
   induction hx using Subgroup.closure_induction with
   | mem y hy =>
     simp only [mem_insert_iff, mem_singleton_iff] at hy
     rcases hy with hy | hy
-    · exact Subgroup.subset_closure (by simp [hy])
-    · exact Subgroup.subset_closure (by simp [hy])
+    · rw [hy]; exact Subgroup.subset_closure (mem_insert _ _)
+    · rw [hy]; exact Subgroup.subset_closure (mem_insert_of_mem _ (mem_singleton _))
   | one => exact one_mem _
   | mul _ _ _ _ hx hy => exact mul_mem hx hy
   | inv _ _ hx => exact inv_mem hx
 
-lemma finite_acSub : Finite acSub :=
-  Finite.of_injective
+lemma finite_acSub : Finite acSub := by
+  have := finite_closure_a_c
+  refine Finite.of_injective
     (fun x : acSub ↦
       (⟨(x : TreeAut), coe_mem_closure_a_c x.property⟩ :
-        Subgroup.closure ({a, c} : Set TreeAut)))
-    (fun x y h ↦ Subtype.ext (Subtype.ext (Subtype.ext_iff.mp h)))
+        Subgroup.closure ({a, c} : Set TreeAut))) ?_
+  intro x y h
+  refine Subtype.ext (Subtype.ext ?_)
+  exact congrArg (Subtype.val : Subgroup.closure ({a, c} : Set TreeAut) → TreeAut) h
 
 /-- The normal closure of the generator `b` in `G`. -/
 def B : Subgroup G := Subgroup.normalClosure {⟨b, b_mem_G⟩}
 
-instance : B.Normal := inferInstance
+set_option maxHeartbeats 800000 in
+-- Unfolding `B` to `normalClosure` for the `Normal` instance is expensive.
+instance : B.Normal :=
+  show (Subgroup.normalClosure {(⟨b, b_mem_G⟩ : G)}).Normal from inferInstance
 
 lemma b_mem_B : (⟨b, b_mem_G⟩ : G) ∈ B :=
   Subgroup.subset_normalClosure (mem_singleton _)
@@ -215,17 +277,16 @@ lemma b_mem_B : (⟨b, b_mem_G⟩ : G) ∈ B :=
 lemma d_mem_sup_acSub_B : (⟨d, d_mem_G⟩ : G) ∈ acSub ⊔ B := by
   have : (⟨d, d_mem_G⟩ : G) = ⟨b, b_mem_G⟩ * ⟨c, c_mem_G⟩ := Subtype.ext bc_eq_d.symm
   rw [this]
-  exact mul_mem (Subgroup.mem_sup_right b_mem_B)
-    (Subgroup.mem_sup_left (Subgroup.subset_closure (by simp [acSub])))
+  exact mul_mem (Subgroup.mem_sup_right b_mem_B) (Subgroup.mem_sup_left c_mem_acSub)
 
 lemma closure_a_c_sup_B_eq_top : acSub ⊔ B = ⊤ := by
   rw [eq_top_iff, ← closure_generator, Subgroup.closure_le]
   intro x hx
   obtain ⟨i, rfl⟩ := hx
   fin_cases i
-  · exact Subgroup.mem_sup_left (Subgroup.subset_closure (by simp [acSub]))
+  · exact Subgroup.mem_sup_left a_mem_acSub
   · exact Subgroup.mem_sup_right b_mem_B
-  · exact Subgroup.mem_sup_left (Subgroup.subset_closure (by simp [acSub]))
+  · exact Subgroup.mem_sup_left c_mem_acSub
   · exact d_mem_sup_acSub_B
 
 lemma finite_quotient_B : Finite (G ⧸ B) := by
@@ -234,11 +295,15 @@ lemma finite_quotient_B : Finite (G ⧸ B) := by
   intro y
   induction y using QuotientGroup.induction_on with
   | H g =>
-    have hg : g ∈ (⊤ : Subgroup G) := Subgroup.mem_top g
-    rw [← closure_a_c_sup_B_eq_top] at hg
-    obtain ⟨u, hu, v, hv, rfl⟩ := (Subgroup.mem_sup (s := acSub) (t := B)).1 hg
-    refine ⟨⟨u, hu⟩, ?_⟩
-    exact QuotientGroup.eq.2 (by simpa [mul_assoc] using hv)
+    have hg : g ∈ acSub ⊔ B := by
+      have : g ∈ (⊤ : Subgroup G) := Subgroup.mem_top g
+      rwa [← closure_a_c_sup_B_eq_top] at this
+    obtain ⟨u, hu, v, hv, rfl⟩ :=
+      (Subgroup.mem_sup_of_normal_right (s := acSub) (t := B)).mp hg
+    refine ⟨⟨u, hu⟩, (QuotientGroup.eq (a := u) (b := u * v)).2 ?_⟩
+    simpa [mul_assoc] using hv
+
+instance : Finite (G ⧸ B) := finite_quotient_B
 
 instance instFiniteIndexB : B.FiniteIndex :=
   Subgroup.finiteIndex_of_finite_quotient
@@ -254,8 +319,10 @@ lemma psi_injective : Injective psi := by
   cases v with
   | nil => simp [map_root]
   | cons i w =>
-    have hx : (x : TreeAut) ∈ stabilizerLevel 1 := x.property
-    have hy : (y : TreeAut) ∈ stabilizerLevel 1 := y.property
+    have hx : (x : TreeAut) ∈ stabilizerLevel 1 :=
+      (Subgroup.mem_subgroupOf (H := stabilizerLevel 1)).mp x.property
+    have hy : (y : TreeAut) ∈ stabilizerLevel 1 :=
+      (Subgroup.mem_subgroupOf (H := stabilizerLevel 1)).mp y.property
     rw [apply_cons_of_mem_stabilizerLevel_one hx, apply_cons_of_mem_stabilizerLevel_one hy]
     have h0 : restrict (x : TreeAut) 0 = restrict (y : TreeAut) 0 :=
       congrArg (fun p : G × G ↦ (p.1 : TreeAut)) hxy
@@ -264,18 +331,58 @@ lemma psi_injective : Injective psi := by
     rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi, h0, h1]
 
 lemma mem_range_psi_conj_b_fst (g : G) :
-    (g * ⟨b, b_mem_G⟩ * g⁻¹, 1) ∈ psi.range := by
+    (g * ⟨b, b_mem_G⟩ * g⁻¹, (1 : G)) ∈ psi.range := by
   obtain ⟨k, hk⟩ := psi_fst_surjective g
   refine ⟨k * ⟨⟨a * d * a, ada_mem_G⟩, ada_mem_st_one⟩ * k⁻¹, ?_⟩
-  rw [map_mul, map_mul, map_inv, psi_ada]
-  simp [mul_assoc, show (psi k).1 = g from hk]
+  have hψ : psi k = (g, (psi k).2) := Prod.ext hk rfl
+  rw [map_mul, map_mul, map_inv, psi_ada, hψ]
+  apply Prod.ext
+  · simp [mul_assoc]
+  · simp
 
 lemma mem_range_psi_conj_b_snd (g : G) :
-    (1, g * ⟨b, b_mem_G⟩ * g⁻¹) ∈ psi.range := by
+    ((1 : G), g * ⟨b, b_mem_G⟩ * g⁻¹) ∈ psi.range := by
   obtain ⟨k, hk⟩ := psi_snd_surjective g
   refine ⟨k * ⟨⟨d, d_mem_G⟩, d_mem_st_one⟩ * k⁻¹, ?_⟩
-  rw [map_mul, map_mul, map_inv, psi_d]
-  simp [mul_assoc, show (psi k).2 = g from hk]
+  have hψ : psi k = ((psi k).1, g) := Prod.ext rfl hk
+  rw [map_mul, map_mul, map_inv, psi_d, hψ]
+  apply Prod.ext
+  · simp
+  · simp [mul_assoc]
+
+lemma mem_range_psi_of_mem_B_fst {x : G} (hx : x ∈ B) : (x, (1 : G)) ∈ psi.range := by
+  induction hx using Subgroup.closure_induction with
+  | mem z hz =>
+    obtain ⟨w, hw, hconj⟩ := Group.mem_conjugatesOfSet_iff.mp hz
+    obtain ⟨rfl⟩ : w = (⟨b, b_mem_G⟩ : G) := by simpa using hw
+    obtain ⟨g, rfl⟩ := isConj_iff.mp hconj
+    exact mem_range_psi_conj_b_fst g
+  | one => exact one_mem _
+  | mul x y _ _ hx hy =>
+    have : (x * y, (1 : G)) = (x, (1 : G)) * (y, (1 : G)) := by simp
+    rw [this]
+    exact mul_mem hx hy
+  | inv x _ hx =>
+    have : (x⁻¹, (1 : G)) = (x, (1 : G))⁻¹ := by simp
+    rw [this]
+    exact inv_mem hx
+
+lemma mem_range_psi_of_mem_B_snd {x : G} (hx : x ∈ B) : ((1 : G), x) ∈ psi.range := by
+  induction hx using Subgroup.closure_induction with
+  | mem z hz =>
+    obtain ⟨w, hw, hconj⟩ := Group.mem_conjugatesOfSet_iff.mp hz
+    obtain ⟨rfl⟩ : w = (⟨b, b_mem_G⟩ : G) := by simpa using hw
+    obtain ⟨g, rfl⟩ := isConj_iff.mp hconj
+    exact mem_range_psi_conj_b_snd g
+  | one => exact one_mem _
+  | mul x y _ _ hx hy =>
+    have : ((1 : G), x * y) = ((1 : G), x) * ((1 : G), y) := by simp
+    rw [this]
+    exact mul_mem hx hy
+  | inv x _ hx =>
+    have : ((1 : G), x⁻¹) = ((1 : G), x)⁻¹ := by simp
+    rw [this]
+    exact inv_mem hx
 
 lemma B_prod_bot_le_psi_range : B.prod (⊥ : Subgroup G) ≤ psi.range := by
   intro p hp
@@ -283,16 +390,7 @@ lemma B_prod_bot_le_psi_range : B.prod (⊥ : Subgroup G) ≤ psi.range := by
   have hp' : x ∈ B ∧ y = 1 := by
     simpa [Subgroup.mem_prod, Subgroup.mem_bot] using hp
   obtain ⟨hp1, rfl⟩ := hp'
-  induction hp1 using Subgroup.closure_induction with
-  | mem z hz =>
-    obtain ⟨w, hw, hconj⟩ := Group.mem_conjugatesOfSet_iff.1 hz
-    obtain ⟨rfl⟩ : w = (⟨b, b_mem_G⟩ : G) := by
-      simpa [mem_singleton_iff] using hw
-    obtain ⟨g, rfl⟩ := isConj_iff.1 hconj
-    exact mem_range_psi_conj_b_fst g
-  | one => exact one_mem _
-  | mul _ _ _ _ hx hy => simpa [Prod.mul_def] using mul_mem hx hy
-  | inv _ _ hx => simpa using inv_mem hx
+  exact mem_range_psi_of_mem_B_fst hp1
 
 lemma bot_prod_B_le_psi_range : (⊥ : Subgroup G).prod B ≤ psi.range := by
   intro p hp
@@ -300,84 +398,77 @@ lemma bot_prod_B_le_psi_range : (⊥ : Subgroup G).prod B ≤ psi.range := by
   have hp' : x = 1 ∧ y ∈ B := by
     simpa [Subgroup.mem_prod, Subgroup.mem_bot] using hp
   obtain ⟨rfl, hp2⟩ := hp'
-  induction hp2 using Subgroup.closure_induction with
-  | mem z hz =>
-    obtain ⟨w, hw, hconj⟩ := Group.mem_conjugatesOfSet_iff.1 hz
-    obtain ⟨rfl⟩ : w = (⟨b, b_mem_G⟩ : G) := by
-      simpa [mem_singleton_iff] using hw
-    obtain ⟨g, rfl⟩ := isConj_iff.1 hconj
-    exact mem_range_psi_conj_b_snd g
-  | one => exact one_mem _
-  | mul _ _ _ _ hx hy => simpa [Prod.mul_def] using mul_mem hx hy
-  | inv _ _ hx => simpa using inv_mem hx
+  exact mem_range_psi_of_mem_B_snd hp2
 
 lemma prod_B_B_le_psi_range : B.prod B ≤ psi.range := by
   intro p hp
-  have hp' : p = (p.1, 1) * (1, p.2) := by simp
-  have h1 : (p.1, (1 : G)) ∈ B.prod (⊥ : Subgroup G) := by
-    simpa [Subgroup.mem_prod, Subgroup.mem_bot] using hp.1
-  have h2 : ((1 : G), p.2) ∈ (⊥ : Subgroup G).prod B := by
-    simpa [Subgroup.mem_prod, Subgroup.mem_bot] using hp.2
-  rw [hp']
-  exact mul_mem (B_prod_bot_le_psi_range h1) (bot_prod_B_le_psi_range h2)
+  have hp1 : p.1 ∈ B := (Subgroup.mem_prod.mp hp).1
+  have hp2 : p.2 ∈ B := (Subgroup.mem_prod.mp hp).2
+  have : p = (p.1, (1 : G)) * ((1 : G), p.2) := by
+    apply Prod.ext <;> simp
+  rw [this]
+  exact mul_mem (mem_range_psi_of_mem_B_fst hp1) (mem_range_psi_of_mem_B_snd hp2)
 
 lemma exists_psi_fst {x : G} (hx : x ∈ B) : ∃ h : st 1, psi h = (x, 1) :=
-  B_prod_bot_le_psi_range (by simp [Subgroup.mem_prod, Subgroup.mem_bot, hx])
+  mem_range_psi_of_mem_B_fst hx
 
 lemma exists_psi_snd {x : G} (hx : x ∈ B) : ∃ h : st 1, psi h = (1, x) :=
-  bot_prod_B_le_psi_range (by simp [Subgroup.mem_prod, Subgroup.mem_bot, hx])
+  mem_range_psi_of_mem_B_snd hx
 
 /-! ### Length-controlled lifts through `psi` -/
 
-noncomputable def B_transversal : Set G :=
+/-- A right transversal for `B` in `G` containing `1`. -/
+noncomputable def BTransversal : Set G :=
   Classical.choose (B.exists_isComplement_right (1 : G))
 
-lemma B_isComplement : Subgroup.IsComplement B B_transversal :=
+lemma B_isComplement : Subgroup.IsComplement B BTransversal :=
   (Classical.choose_spec (B.exists_isComplement_right (1 : G))).1
 
-lemma one_mem_B_transversal : (1 : G) ∈ B_transversal :=
+lemma one_mem_BTransversal : (1 : G) ∈ BTransversal :=
   (Classical.choose_spec (B.exists_isComplement_right (1 : G))).2
 
-lemma finite_B_transversal : B_transversal.Finite :=
+lemma finite_BTransversal : BTransversal.Finite :=
   B_isComplement.finite_right
 
-noncomputable def B_rep (g : G) : G := (B_isComplement.toRightFun g : G)
+/-- The representative of the right coset `B g` in `BTransversal`. -/
+noncomputable def BRep (g : G) : G := (B_isComplement.equiv g).2
 
-lemma B_rep_mem (g : G) : B_rep g ∈ B_transversal :=
-  (B_isComplement.toRightFun g).property
+lemma BRep_mem (g : G) : BRep g ∈ BTransversal :=
+  (B_isComplement.equiv g).2.property
 
-lemma mul_inv_B_rep_mem (g : G) : g * (B_rep g)⁻¹ ∈ B :=
-  B_isComplement.mul_inv_toRightFun_mem g
+lemma mul_inv_BRep_mem (g : G) : g * (BRep g)⁻¹ ∈ B := by
+  have h := (B_isComplement.equiv g).1.property
+  rw [BRep, ← Subgroup.IsComplement.equiv_fst_eq_mul_inv]
+  exact h
 
-lemma B_rep_eq_one_of_mem {g : G} (hg : g ∈ B) : B_rep g = 1 := by
-  simpa [B_rep] using
-    (B_isComplement.coe_equiv_snd_eq_one_iff_mem one_mem_B_transversal).2 hg
+lemma BRep_eq_one_of_mem {g : G} (hg : g ∈ B) : BRep g = 1 :=
+  (B_isComplement.coe_equiv_snd_eq_one_iff_mem one_mem_BTransversal).mpr hg
 
-lemma B_rep_eq_self_of_mem {g : G} (hg : g ∈ B_transversal) : B_rep g = g := by
-  simpa [B_rep] using
-    (B_isComplement.equiv_snd_eq_self_iff_mem (one_mem _) hg)
+lemma BRep_eq_self_of_mem {g : G} (hg : g ∈ BTransversal) : BRep g = g :=
+  (B_isComplement.equiv_snd_eq_self_iff_mem (one_mem B)).mpr hg
 
+/-- The generator `generator i` or its inverse, according to the sign `b`. -/
 def letter (i : Fin 4) (b : Bool) : G := cond b (generator i) (generator i)⁻¹
 
 lemma schreier_letter_mem (r : G) (i : Fin 4) (b : Bool) :
-    r * letter i b * (B_rep (r * letter i b))⁻¹ ∈ B :=
-  mul_inv_B_rep_mem (r * letter i b)
+    r * letter i b * (BRep (r * letter i b))⁻¹ ∈ B :=
+  mul_inv_BRep_mem (r * letter i b)
 
-lemma exists_schreier_factors (r : G) (hr : r ∈ B_transversal) (l : List (Fin 4 × Bool)) :
+lemma exists_schreier_factors (r : G) (hr : r ∈ BTransversal) (l : List (Fin 4 × Bool)) :
     ∃ bs : List G, bs.length = l.length ∧
       (∀ t ∈ bs, t ∈ B) ∧
-      (∀ t ∈ bs, ∃ r' ∈ B_transversal, ∃ i : Fin 4, ∃ b : Bool,
-        t = r' * letter i b * (B_rep (r' * letter i b))⁻¹) ∧
-      bs.prod = r * gens.wordProd l * (B_rep (r * gens.wordProd l))⁻¹ := by
+      (∀ t ∈ bs, ∃ r' ∈ BTransversal, ∃ i : Fin 4, ∃ b : Bool,
+        t = r' * letter i b * (BRep (r' * letter i b))⁻¹) ∧
+      bs.prod = r * gens.wordProd l * (BRep (r * gens.wordProd l))⁻¹ := by
   induction l generalizing r with
   | nil =>
     refine ⟨[], rfl, by simp, by simp, ?_⟩
-    simp [B_rep_eq_self_of_mem hr]
+    simp [BRep_eq_self_of_mem hr]
   | cons x l ih =>
     rcases x with ⟨i, b⟩
     set s := letter i b
-    obtain ⟨bs, hlen, hmem, hform, hprod⟩ := ih (B_rep (r * s)) (B_rep_mem _)
-    refine ⟨r * s * (B_rep (r * s))⁻¹ :: bs, by simp [hlen], ?_, ?_, ?_⟩
+    obtain ⟨bs, hlen, hmem, hform, hprod⟩ := ih (BRep (r * s)) (BRep_mem _)
+    refine ⟨r * s * (BRep (r * s))⁻¹ :: bs, by simp [hlen], ?_, ?_, ?_⟩
     · intro t ht
       simp only [List.mem_cons] at ht
       rcases ht with rfl | ht
@@ -390,46 +481,46 @@ lemma exists_schreier_factors (r : G) (hr : r ∈ B_transversal) (l : List (Fin 
       · exact hform t ht
     · have hword : gens.wordProd ((i, b) :: l) = s * gens.wordProd l := by
         simp [s, letter, gens, Group.Generators.wordProd_cons, generator]
-      have hrep : B_rep (B_rep (r * s) * gens.wordProd l) =
-          B_rep (r * s * gens.wordProd l) := by
-        refine (B_isComplement.equiv_snd_eq_iff_rightCosetEquivalence).2 ?_
+      have hrep : BRep (BRep (r * s) * gens.wordProd l) =
+          BRep (r * s * gens.wordProd l) := by
+        refine congrArg (fun t : ↥BTransversal ↦ (t : G))
+          ((B_isComplement.equiv_snd_eq_iff_rightCosetEquivalence).mpr ?_)
         rw [RightCosetEquivalence, rightCoset_eq_iff]
-        simp [B_rep, mul_assoc]
+        have : (r * s * gens.wordProd l) * (BRep (r * s) * gens.wordProd l)⁻¹ =
+            r * s * (BRep (r * s))⁻¹ := by
+          simp [mul_assoc, mul_inv_rev]
+        rw [this]
         exact schreier_letter_mem r i b
       calc
-        (r * s * (B_rep (r * s))⁻¹ :: bs).prod
-            = r * s * (B_rep (r * s))⁻¹ * bs.prod := by simp
-        _ = r * s * (B_rep (r * s))⁻¹ *
-              (B_rep (r * s) * gens.wordProd l *
-                (B_rep (B_rep (r * s) * gens.wordProd l))⁻¹) := by rw [hprod]
+        (r * s * (BRep (r * s))⁻¹ :: bs).prod
+            = r * s * (BRep (r * s))⁻¹ * bs.prod := by simp
+        _ = r * s * (BRep (r * s))⁻¹ *
+              (BRep (r * s) * gens.wordProd l *
+                (BRep (BRep (r * s) * gens.wordProd l))⁻¹) := by rw [hprod]
         _ = r * s * gens.wordProd l *
-              (B_rep (B_rep (r * s) * gens.wordProd l))⁻¹ := by simp [mul_assoc]
+              (BRep (BRep (r * s) * gens.wordProd l))⁻¹ := by simp [mul_assoc]
         _ = r * gens.wordProd ((i, b) :: l) *
-              (B_rep (r * gens.wordProd ((i, b) :: l)))⁻¹ := by
+              (BRep (r * gens.wordProd ((i, b) :: l)))⁻¹ := by
               simp [hword, hrep, mul_assoc]
 
 lemma exists_B_factors {x : G} (hx : x ∈ B) (l : List (Fin 4 × Bool))
     (hl : gens.wordProd l = x) :
     ∃ bs : List G, bs.length = l.length ∧ (∀ t ∈ bs, t ∈ B) ∧
-      (∀ t ∈ bs, ∃ r' ∈ B_transversal, ∃ i : Fin 4, ∃ b : Bool,
-        t = r' * letter i b * (B_rep (r' * letter i b))⁻¹) ∧
+      (∀ t ∈ bs, ∃ r' ∈ BTransversal, ∃ i : Fin 4, ∃ b : Bool,
+        t = r' * letter i b * (BRep (r' * letter i b))⁻¹) ∧
       bs.prod = x := by
-  obtain ⟨bs, hlen, hmem, hform, hprod⟩ := exists_schreier_factors 1 one_mem_B_transversal l
+  obtain ⟨bs, hlen, hmem, hform, hprod⟩ := exists_schreier_factors 1 one_mem_BTransversal l
   refine ⟨bs, hlen, hmem, hform, ?_⟩
-  simpa [hl, B_rep_eq_one_of_mem hx] using hprod
+  simpa [hl, BRep_eq_one_of_mem hx] using hprod
 
-lemma list_prod_mem_B {bs : List G} (hB : ∀ t ∈ bs, t ∈ B) : bs.prod ∈ B := by
-  induction bs with
-  | nil => simp
-  | cons t ts ih =>
-    exact mul_mem (hB t (by simp)) (ih fun s hs ↦ hB s (by simp [hs]))
-
+/-- A chosen preimage of `(x, 1)` under `psi`. -/
 noncomputable def liftFst {x : G} (hx : x ∈ B) : st 1 :=
   Classical.choose (exists_psi_fst hx)
 
 lemma liftFst_spec {x : G} (hx : x ∈ B) : psi (liftFst hx) = (x, 1) :=
   Classical.choose_spec (exists_psi_fst hx)
 
+/-- A chosen preimage of `(1, x)` under `psi`. -/
 noncomputable def liftSnd {x : G} (hx : x ∈ B) : st 1 :=
   Classical.choose (exists_psi_snd hx)
 
@@ -437,164 +528,233 @@ lemma liftSnd_spec {x : G} (hx : x ∈ B) : psi (liftSnd hx) = (1, x) :=
   Classical.choose_spec (exists_psi_snd hx)
 
 lemma exists_liftBound :
-    ∃ L, ∀ (r : G), r ∈ B_transversal → ∀ (i : Fin 4) (b : Bool),
-      gens.wordLength (liftFst (schreier_letter_mem r i b)).val ≤ L ∧
-      gens.wordLength (liftSnd (schreier_letter_mem r i b)).val ≤ L := by
-  have hfin : (B_transversal ×ˢ (univ : Set (Fin 4 × Bool))).Finite :=
-    finite_B_transversal.prod finite_univ
+    ∃ L, ∀ (r : G), r ∈ BTransversal → ∀ (i : Fin 4) (b : Bool),
+      gens.wordLength (liftFst (schreier_letter_mem r i b) : G) ≤ L ∧
+      gens.wordLength (liftSnd (schreier_letter_mem r i b) : G) ≤ L := by
+  have hfin : (BTransversal ×ˢ (univ : Set (Fin 4 × Bool))).Finite :=
+    finite_BTransversal.prod finite_univ
   let f : G × (Fin 4 × Bool) → ℕ := fun p ↦
-    max (gens.wordLength (liftFst (schreier_letter_mem p.1 p.2.1 p.2.2)).val)
-      (gens.wordLength (liftSnd (schreier_letter_mem p.1 p.2.1 p.2.2)).val)
+    max (gens.wordLength (liftFst (schreier_letter_mem p.1 p.2.1 p.2.2) : G))
+      (gens.wordLength (liftSnd (schreier_letter_mem p.1 p.2.1 p.2.2) : G))
   obtain ⟨L, hL⟩ := (hfin.image f).bddAbove
   refine ⟨L, fun r hr i b ↦ ?_⟩
   have : f (r, (i, b)) ≤ L := hL ⟨(r, (i, b)), ⟨hr, mem_univ _⟩, rfl⟩
   exact ⟨le_trans (le_max_left _ _) this, le_trans (le_max_right _ _) this⟩
 
+/-- A uniform word-length bound for the chosen `psi`-lifts of Schreier generators. -/
 noncomputable def liftBound : ℕ := Classical.choose exists_liftBound
 
-lemma liftBound_spec (r : G) (hr : r ∈ B_transversal) (i : Fin 4) (b : Bool) :
-    gens.wordLength (liftFst (schreier_letter_mem r i b)).val ≤ liftBound ∧
-    gens.wordLength (liftSnd (schreier_letter_mem r i b)).val ≤ liftBound :=
+lemma liftBound_spec (r : G) (hr : r ∈ BTransversal) (i : Fin 4) (b : Bool) :
+    gens.wordLength (liftFst (schreier_letter_mem r i b) : G) ≤ liftBound ∧
+    gens.wordLength (liftSnd (schreier_letter_mem r i b) : G) ≤ liftBound :=
   Classical.choose_spec exists_liftBound r hr i b
 
-lemma wordLength_list_prod (l : List G) :
-    gens.wordLength l.prod ≤ (l.map gens.wordLength).sum := by
-  induction l with
-  | nil => simp
-  | cons t l ih =>
-    simpa using (gens.wordLength_mul_le t l.prod).trans (Nat.add_le_add_left ih _)
+lemma liftFst_eq_of_eq {x y : G} (hx : x ∈ B) (hy : y ∈ B) (h : x = y) :
+    liftFst hx = liftFst hy := by
+  apply psi_injective
+  rw [liftFst_spec, liftFst_spec, h]
 
-lemma psi_map_liftFst (bs : List G) (hB : ∀ t ∈ bs, t ∈ B) :
-    psi ((bs.attach.map fun t ↦ liftFst (hB t.1 t.2)).prod) =
-      (bs.prod, 1) := by
+lemma liftSnd_eq_of_eq {x y : G} (hx : x ∈ B) (hy : y ∈ B) (h : x = y) :
+    liftSnd hx = liftSnd hy := by
+  apply psi_injective
+  rw [liftSnd_spec, liftSnd_spec, h]
+
+/-- The list of first-coordinate `psi`-lifts of a word in `B`. -/
+noncomputable def liftsFst : (bs : List G) → (∀ t ∈ bs, t ∈ B) → List (st 1)
+  | [], _ => []
+  | t :: ts, h =>
+      liftFst (h t (by simp)) ::
+        liftsFst ts (fun s hs ↦ h s (by simp [hs]))
+
+/-- The list of second-coordinate `psi`-lifts of a word in `B`. -/
+noncomputable def liftsSnd : (bs : List G) → (∀ t ∈ bs, t ∈ B) → List (st 1)
+  | [], _ => []
+  | t :: ts, h =>
+      liftSnd (h t (by simp)) ::
+        liftsSnd ts (fun s hs ↦ h s (by simp [hs]))
+
+lemma psi_liftsFst (bs : List G) (hB : ∀ t ∈ bs, t ∈ B) :
+    psi (liftsFst bs hB).prod = (bs.prod, 1) := by
   induction bs with
-  | nil => simp
+  | nil =>
+    rw [liftsFst, List.prod_nil, map_one]
+    rfl
   | cons t ts ih =>
     have hBts : ∀ s ∈ ts, s ∈ B := fun s hs ↦ hB s (by simp [hs])
     have ht : t ∈ B := hB t (by simp)
-    simp [map_mul, liftFst_spec ht, ih hBts, Prod.mul_def]
+    simp only [liftsFst, List.prod_cons, map_mul, liftFst_spec ht, ih hBts, Prod.mul_def, mul_one]
 
-lemma wordLength_map_liftFst (bs : List G) (hB : ∀ t ∈ bs, t ∈ B)
-    (hform : ∀ t ∈ bs, ∃ r' ∈ B_transversal, ∃ i : Fin 4, ∃ b : Bool,
-      t = r' * letter i b * (B_rep (r' * letter i b))⁻¹) :
-    gens.wordLength ((bs.attach.map fun t ↦ liftFst (hB t.1 t.2)).prod).val ≤
-      liftBound * bs.length := by
-  have hsum : gens.wordLength ((bs.attach.map fun t ↦ liftFst (hB t.1 t.2)).prod).val ≤
-      (bs.attach.map fun t ↦ gens.wordLength (liftFst (hB t.1 t.2)).val).sum := by
-    simpa using wordLength_list_prod
-      (bs.attach.map fun t ↦ (liftFst (hB t.1 t.2)).val)
-  refine hsum.trans ?_
-  have hle : ∀ n ∈ bs.attach.map fun t ↦ gens.wordLength (liftFst (hB t.1 t.2)).val,
-      n ≤ liftBound := by
-    intro n hn
-    simp only [List.mem_map, List.mem_attach, true_and] at hn
-    obtain ⟨t, rfl⟩ := hn
-    obtain ⟨r', hr', i, b, ht⟩ := hform t.1 t.2
-    have : liftFst (hB t.1 t.2) = liftFst (schreier_letter_mem r' i b) := by
-      apply psi_injective
-      rw [liftFst_spec, liftFst_spec]
-      simp [ht]
-    rw [this]
-    exact (liftBound_spec r' hr' i b).1
-  exact (List.sum_le_length_nsmul _ liftBound hle).trans_eq (by simp)
+lemma psi_liftsSnd (bs : List G) (hB : ∀ t ∈ bs, t ∈ B) :
+    psi (liftsSnd bs hB).prod = (1, bs.prod) := by
+  induction bs with
+  | nil =>
+    rw [liftsSnd, List.prod_nil, map_one]
+    rfl
+  | cons t ts ih =>
+    have hBts : ∀ s ∈ ts, s ∈ B := fun s hs ↦ hB s (by simp [hs])
+    have ht : t ∈ B := hB t (by simp)
+    simp only [liftsSnd, List.prod_cons, map_mul, liftSnd_spec ht, ih hBts, Prod.mul_def, one_mul]
+
+lemma wordLength_liftsFst_le (bs : List G) (hB : ∀ t ∈ bs, t ∈ B)
+    (hform : ∀ t ∈ bs, ∃ r' ∈ BTransversal, ∃ i : Fin 4, ∃ b : Bool,
+      t = r' * letter i b * (BRep (r' * letter i b))⁻¹) :
+    gens.wordLength ((liftsFst bs hB).prod : G) ≤ liftBound * bs.length := by
+  induction bs with
+  | nil => simp [liftsFst]
+  | cons t ts ih =>
+    have hBts : ∀ s ∈ ts, s ∈ B := fun s hs ↦ hB s (by simp [hs])
+    have hformts : ∀ s ∈ ts, ∃ r' ∈ BTransversal, ∃ i : Fin 4, ∃ b : Bool,
+        s = r' * letter i b * (BRep (r' * letter i b))⁻¹ :=
+      fun s hs ↦ hform s (by simp [hs])
+    have ht : t ∈ B := hB t (by simp)
+    obtain ⟨r', hr', i, b, htt⟩ := hform t (by simp)
+    have hEq : liftFst ht = liftFst (schreier_letter_mem r' i b) :=
+      liftFst_eq_of_eq _ _ htt
+    have h1 : gens.wordLength (liftFst ht : G) ≤ liftBound := by
+      rw [hEq]; exact (liftBound_spec r' hr' i b).1
+    have h2 := ih hBts hformts
+    calc
+      gens.wordLength ((liftsFst (t :: ts) hB).prod : G)
+          = gens.wordLength
+              ((liftFst ht * (liftsFst ts hBts).prod : st 1) : G) := by
+            simp [liftsFst]
+      _ = gens.wordLength ((liftFst ht : G) * ((liftsFst ts hBts).prod : G)) := by
+            rw [Subgroup.coe_mul]
+      _ ≤ gens.wordLength (liftFst ht : G) +
+            gens.wordLength ((liftsFst ts hBts).prod : G) :=
+          gens.wordLength_mul_le _ _
+      _ ≤ liftBound + liftBound * ts.length := Nat.add_le_add h1 h2
+      _ = liftBound * (t :: ts).length := by
+            simp [Nat.mul_succ, Nat.add_comm]
+
+lemma wordLength_liftsSnd_le (bs : List G) (hB : ∀ t ∈ bs, t ∈ B)
+    (hform : ∀ t ∈ bs, ∃ r' ∈ BTransversal, ∃ i : Fin 4, ∃ b : Bool,
+      t = r' * letter i b * (BRep (r' * letter i b))⁻¹) :
+    gens.wordLength ((liftsSnd bs hB).prod : G) ≤ liftBound * bs.length := by
+  induction bs with
+  | nil => simp [liftsSnd]
+  | cons t ts ih =>
+    have hBts : ∀ s ∈ ts, s ∈ B := fun s hs ↦ hB s (by simp [hs])
+    have hformts : ∀ s ∈ ts, ∃ r' ∈ BTransversal, ∃ i : Fin 4, ∃ b : Bool,
+        s = r' * letter i b * (BRep (r' * letter i b))⁻¹ :=
+      fun s hs ↦ hform s (by simp [hs])
+    have ht : t ∈ B := hB t (by simp)
+    obtain ⟨r', hr', i, b, htt⟩ := hform t (by simp)
+    have hEq : liftSnd ht = liftSnd (schreier_letter_mem r' i b) :=
+      liftSnd_eq_of_eq _ _ htt
+    have h1 : gens.wordLength (liftSnd ht : G) ≤ liftBound := by
+      rw [hEq]; exact (liftBound_spec r' hr' i b).2
+    have h2 := ih hBts hformts
+    calc
+      gens.wordLength ((liftsSnd (t :: ts) hB).prod : G)
+          = gens.wordLength
+              ((liftSnd ht * (liftsSnd ts hBts).prod : st 1) : G) := by
+            simp [liftsSnd]
+      _ = gens.wordLength ((liftSnd ht : G) * ((liftsSnd ts hBts).prod : G)) := by
+            rw [Subgroup.coe_mul]
+      _ ≤ gens.wordLength (liftSnd ht : G) +
+            gens.wordLength ((liftsSnd ts hBts).prod : G) :=
+          gens.wordLength_mul_le _ _
+      _ ≤ liftBound + liftBound * ts.length := Nat.add_le_add h1 h2
+      _ = liftBound * (t :: ts).length := by
+            simp [Nat.mul_succ, Nat.add_comm]
 
 lemma exists_linear_lift_fst {x : G} (hx : x ∈ B) :
     ∃ h : st 1, psi h = (x, 1) ∧
-      gens.wordLength h.val ≤ liftBound * gens.wordLength x := by
+      gens.wordLength (h : G) ≤ liftBound * gens.wordLength x := by
   obtain ⟨l, hlgeo, hl⟩ := gens.exists_isGeodesic x
   obtain ⟨bs, hlen, hB, hform, hprod⟩ := exists_B_factors hx l hl
-  let hs := bs.attach.map fun t ↦ liftFst (hB t.1 t.2)
-  refine ⟨hs.prod, ?_, ?_⟩
-  · have := psi_map_liftFst bs hB
-    simpa [hprod] using this
-  · have := wordLength_map_liftFst bs hB hform
-    simpa [hlen, hlgeo.eq] using this
+  refine ⟨(liftsFst bs hB).prod, ?_, ?_⟩
+  · rw [psi_liftsFst, hprod]
+  · have hxlen : gens.wordLength x = l.length :=
+      (congrArg gens.wordLength hl.symm).trans hlgeo
+    have hle := wordLength_liftsFst_le bs hB hform
+    rw [hlen] at hle
+    rw [hxlen]
+    exact hle
 
 lemma exists_linear_lift_snd {x : G} (hx : x ∈ B) :
     ∃ h : st 1, psi h = (1, x) ∧
-      gens.wordLength h.val ≤ liftBound * gens.wordLength x := by
+      gens.wordLength (h : G) ≤ liftBound * gens.wordLength x := by
   obtain ⟨l, hlgeo, hl⟩ := gens.exists_isGeodesic x
   obtain ⟨bs, hlen, hB, hform, hprod⟩ := exists_B_factors hx l hl
-  let hs := bs.attach.map fun t ↦ liftSnd (hB t.1 t.2)
-  refine ⟨hs.prod, ?_, ?_⟩
-  · have hpsi : psi hs.prod = (1, bs.prod) := by
-      induction bs with
-      | nil => simp [hs]
-      | cons t ts ih =>
-        have hBts : ∀ s ∈ ts, s ∈ B := fun s hs ↦ hB s (by simp [hs])
-        have ht : t ∈ B := hB t (by simp)
-        simp [hs, map_mul, liftSnd_spec ht, ih hBts, Prod.mul_def]
-    simpa [hprod] using hpsi
-  · have hsum : gens.wordLength hs.prod.val ≤
-        (bs.attach.map fun t ↦ gens.wordLength (liftSnd (hB t.1 t.2)).val).sum := by
-      simpa using wordLength_list_prod
-        (bs.attach.map fun t ↦ (liftSnd (hB t.1 t.2)).val)
-    refine hsum.trans ?_
-    have : (bs.attach.map fun t ↦ gens.wordLength (liftSnd (hB t.1 t.2)).val).sum ≤
-        liftBound * bs.length := by
-      refine (List.sum_le_length_nsmul _ liftBound ?_).trans_eq ?_
-      · intro n hn
-        simp only [List.mem_map, List.mem_attach, true_and] at hn
-        obtain ⟨t, rfl⟩ := hn
-        obtain ⟨r', hr', i, b, ht⟩ := hform t.1 t.2
-        have : liftSnd (hB t.1 t.2) = liftSnd (schreier_letter_mem r' i b) := by
-          apply psi_injective
-          rw [liftSnd_spec, liftSnd_spec]
-          simp [ht]
-        rw [this]
-        exact (liftBound_spec r' hr' i b).2
-      · simp [hlen]
-    simpa [hlen, hlgeo.eq] using this
+  refine ⟨(liftsSnd bs hB).prod, ?_, ?_⟩
+  · rw [psi_liftsSnd, hprod]
+  · have hxlen : gens.wordLength x = l.length :=
+      (congrArg gens.wordLength hl.symm).trans hlgeo
+    have hle := wordLength_liftsSnd_le bs hB hform
+    rw [hlen] at hle
+    rw [hxlen]
+    exact hle
 
 lemma exists_linear_lift_pair {x y : G} (hx : x ∈ B) (hy : y ∈ B) :
     ∃ h : st 1, psi h = (x, y) ∧
-      gens.wordLength h.val ≤
+      gens.wordLength (h : G) ≤
         liftBound * gens.wordLength x + liftBound * gens.wordLength y := by
   obtain ⟨h₁, hψ₁, hℓ₁⟩ := exists_linear_lift_fst hx
   obtain ⟨h₂, hψ₂, hℓ₂⟩ := exists_linear_lift_snd hy
-  refine ⟨h₁ * h₂, ?_, (gens.wordLength_mul_le h₁.val h₂.val).trans (Nat.add_le_add hℓ₁ hℓ₂)⟩
-  simp [map_mul, hψ₁, hψ₂]
+  refine ⟨h₁ * h₂, ?_, ?_⟩
+  · simp [map_mul, hψ₁, hψ₂]
+  · have : gens.wordLength ((h₁ * h₂ : st 1) : G) =
+        gens.wordLength ((h₁ : G) * (h₂ : G)) := by
+      rw [Subgroup.coe_mul]
+    rw [this]
+    exact (gens.wordLength_mul_le (h₁ : G) (h₂ : G)).trans (Nat.add_le_add hℓ₁ hℓ₂)
 
+/-- A length-controlled preimage of `(x, y)` under `psi`. -/
+noncomputable def liftPair {x y : G} (hx : x ∈ B) (hy : y ∈ B) : st 1 :=
+  Classical.choose (exists_linear_lift_pair hx hy)
+
+lemma liftPair_psi {x y : G} (hx : x ∈ B) (hy : y ∈ B) :
+    psi (liftPair hx hy) = (x, y) :=
+  (Classical.choose_spec (exists_linear_lift_pair hx hy)).1
+
+lemma liftPair_wordLength {x y : G} (hx : x ∈ B) (hy : y ∈ B) :
+    gens.wordLength (liftPair hx hy : G) ≤
+      liftBound * gens.wordLength x + liftBound * gens.wordLength y :=
+  (Classical.choose_spec (exists_linear_lift_pair hx hy)).2
+
+/-- The maximal word length of an element of `BTransversal`. -/
 noncomputable def transversalBound : ℕ :=
-  sSup (gens.wordLength '' B_transversal)
+  sSup (gens.wordLength '' BTransversal)
 
-lemma le_transversalBound {g : G} (hg : g ∈ B_transversal) :
+lemma le_transversalBound {g : G} (hg : g ∈ BTransversal) :
     gens.wordLength g ≤ transversalBound :=
-  le_csSup ((finite_B_transversal.image _).bddAbove) ⟨g, hg, rfl⟩
+  le_csSup ((finite_BTransversal.image _).bddAbove) ⟨g, hg, rfl⟩
 
 lemma ncard_B_inter_wordBall_mul (n : ℕ) :
     gens.growth n ≤
       B.index * (B.carrier ∩ gens.wordBall (n + transversalBound)).ncard := by
-  let σ (g : G) : G := g * (B_rep g)⁻¹
-  have hσB (g : G) : σ g ∈ B := mul_inv_B_rep_mem g
+  let σ (g : G) : G := g * (BRep g)⁻¹
+  have hσB (g : G) : σ g ∈ B := mul_inv_BRep_mem g
   have hσlen (g : G) (hg : g ∈ gens.wordBall n) :
       σ g ∈ gens.wordBall (n + transversalBound) := by
-    have : gens.wordLength (σ g) ≤ gens.wordLength g + gens.wordLength (B_rep g) := by
-      simpa [σ, gens.wordLength_inv] using gens.wordLength_mul_le g (B_rep g)⁻¹
-    exact this.trans (Nat.add_le_add hg (le_transversalBound (B_rep_mem g)))
+    have : gens.wordLength (σ g) ≤ gens.wordLength g + gens.wordLength (BRep g) := by
+      simpa [σ, gens.wordLength_inv] using gens.wordLength_mul_le g (BRep g)⁻¹
+    exact this.trans (Nat.add_le_add hg (le_transversalBound (BRep_mem g)))
   have hcover : gens.wordBall n ⊆
       (fun p : G × G ↦ p.1 * p.2) ''
-        ((B.carrier ∩ gens.wordBall (n + transversalBound)) ×ˢ B_transversal) := by
+        ((B.carrier ∩ gens.wordBall (n + transversalBound)) ×ˢ BTransversal) := by
     intro g hg
-    refine ⟨(σ g, B_rep g), ?_, ?_⟩
-    · exact ⟨⟨hσB g, hσlen g hg⟩, B_rep_mem g⟩
+    refine ⟨(σ g, BRep g), ?_, ?_⟩
+    · exact ⟨⟨hσB g, hσlen g hg⟩, BRep_mem g⟩
     · simp [σ]
   have hfin : ((B.carrier ∩ gens.wordBall (n + transversalBound)) ×ˢ
-      B_transversal).Finite :=
-    ((gens.finite_wordBall _).subset inter_subset_right).prod finite_B_transversal
+      BTransversal).Finite :=
+    ((gens.finite_wordBall _).subset inter_subset_right).prod finite_BTransversal
   have := ncard_le_ncard hcover (hfin.image _)
   have hmul : ((B.carrier ∩ gens.wordBall (n + transversalBound)) ×ˢ
-      B_transversal).ncard =
-      (B.carrier ∩ gens.wordBall (n + transversalBound)).ncard * B_transversal.ncard :=
+      BTransversal).ncard =
+      (B.carrier ∩ gens.wordBall (n + transversalBound)).ncard * BTransversal.ncard :=
     ncard_prod
-  have hR : B_transversal.ncard = B.index := B_isComplement.ncard_right
+  have hR : BTransversal.ncard = B.index := B_isComplement.ncard_right
   have himage := ncard_image_le (hs := hfin) (f := fun p : G × G ↦ p.1 * p.2)
   calc
     gens.growth n = (gens.wordBall n).ncard := rfl
     _ ≤ ((fun p : G × G ↦ p.1 * p.2) ''
-          ((B.carrier ∩ gens.wordBall (n + transversalBound)) ×ˢ B_transversal)).ncard :=
+          ((B.carrier ∩ gens.wordBall (n + transversalBound)) ×ˢ BTransversal)).ncard :=
         this
-    _ ≤ ((B.carrier ∩ gens.wordBall (n + transversalBound)) ×ˢ B_transversal).ncard :=
+    _ ≤ ((B.carrier ∩ gens.wordBall (n + transversalBound)) ×ˢ BTransversal).ncard :=
         himage
     _ = B.index * (B.carrier ∩ gens.wordBall (n + transversalBound)).ncard := by
         rw [hmul, hR, mul_comm]
@@ -603,47 +763,43 @@ lemma growth_sq_le (n : ℕ) :
     (B.carrier ∩ gens.wordBall n).ncard ^ 2 ≤
       gens.growth (liftBound * n + liftBound * n) := by
   let S := B.carrier ∩ gens.wordBall n
-  have hS : S.Finite := (gens.finite_wordBall n).subset inter_subset_right
-  let f : G × G → G := fun p ↦
-    if hx : p.1 ∈ B then
-      if hy : p.2 ∈ B then
-        (Classical.choose (exists_linear_lift_pair hx hy)).val
-      else 1
-    else 1
-  have hinj : InjOn f (S ×ˢ S) := by
-    intro p hp q hq hfg
-    have hp1 : p.1 ∈ B := hp.1.1
-    have hp2 : p.2 ∈ B := hp.2.1
-    have hq1 : q.1 ∈ B := hq.1.1
-    have hq2 : q.2 ∈ B := hq.2.1
-    have hψp := Classical.choose_spec (exists_linear_lift_pair hp1 hp2)
-    have hψq := Classical.choose_spec (exists_linear_lift_pair hq1 hq2)
-    have : (Classical.choose (exists_linear_lift_pair hp1 hp2)).val =
-        (Classical.choose (exists_linear_lift_pair hq1 hq2)).val := by
-      simpa [f, hp1, hp2, hq1, hq2] using hfg
-    have hcoe : Classical.choose (exists_linear_lift_pair hp1 hp2) =
-        Classical.choose (exists_linear_lift_pair hq1 hq2) := Subtype.ext this
-    have : (p.1, p.2) = (q.1, q.2) := by
-      rw [← hψp.1, ← hψq.1, hcoe]
-    exact this
-  have himg : f '' (S ×ˢ S) ⊆ gens.wordBall (liftBound * n + liftBound * n) := by
+  let f : ↥(S ×ˢ S) → G := fun p ↦
+    (liftPair p.property.1.1 p.property.2.1 : G)
+  have hinj : Injective f := by
+    intro p q hfg
+    have hcoe : liftPair p.property.1.1 p.property.2.1 =
+        liftPair q.property.1.1 q.property.2.1 := Subtype.ext hfg
+    have : (p.val.1, p.val.2) = (q.val.1, q.val.2) := by
+      rw [← liftPair_psi p.property.1.1 p.property.2.1,
+        ← liftPair_psi q.property.1.1 q.property.2.1, hcoe]
+    exact Subtype.ext (Prod.ext (Prod.mk.inj this).1 (Prod.mk.inj this).2)
+  have himg : range f ⊆ gens.wordBall (liftBound * n + liftBound * n) := by
     intro g hg
-    obtain ⟨p, hp, rfl⟩ := hg
-    have hp1 : p.1 ∈ B := hp.1.1
-    have hp2 : p.2 ∈ B := hp.2.1
-    have hℓ := (Classical.choose_spec (exists_linear_lift_pair hp1 hp2)).2
-    have hlen1 : gens.wordLength p.1 ≤ n := hp.1.2
-    have hlen2 : gens.wordLength p.2 ≤ n := hp.2.2
-    have : gens.wordLength (f p) ≤ liftBound * n + liftBound * n := by
-      simpa [f, hp1, hp2] using
-        hℓ.trans (Nat.add_le_add (Nat.mul_le_mul_left _ hlen1)
-          (Nat.mul_le_mul_left _ hlen2))
-    exact this
+    obtain ⟨p, rfl⟩ := hg
+    have hℓ := liftPair_wordLength p.property.1.1 p.property.2.1
+    have hlen1 : gens.wordLength p.val.1 ≤ n := p.property.1.2
+    have hlen2 : gens.wordLength p.val.2 ≤ n := p.property.2.2
+    exact hℓ.trans (Nat.add_le_add (Nat.mul_le_mul_left _ hlen1)
+      (Nat.mul_le_mul_left _ hlen2))
+  have hcard : (S ×ˢ S).ncard = (range f).ncard := by
+    rw [← Nat.card_coe_set_eq, ← Nat.card_coe_set_eq]
+    exact Nat.card_congr (Equiv.ofInjective f hinj)
   have : (S ×ˢ S).ncard ≤ gens.growth (liftBound * n + liftBound * n) := by
-    have := hinj.ncard_image
-    rw [← this]
+    rw [hcard]
     exact ncard_le_ncard himg (gens.finite_wordBall _)
   simpa [S, ncard_prod, pow_two] using this
+
+lemma two_mul_add_le (L T n : ℕ) :
+    2 * L * (n + 1 + T) ≤ (2 * L * (T + 1) + 2 * L) * (n + 1) := by
+  have hT : T ≤ (T + 1) * (n + 1) :=
+    (Nat.le_add_right T 1).trans (Nat.le_mul_of_pos_right _ (Nat.succ_pos n))
+  have hsum : n + 1 + T ≤ (T + 1) * (n + 1) + (n + 1) := by
+    rw [Nat.add_comm ((T + 1) * (n + 1))]
+    exact Nat.add_le_add_left hT (n + 1)
+  calc
+    2 * L * (n + 1 + T)
+        ≤ 2 * L * ((T + 1) * (n + 1) + (n + 1)) := Nat.mul_le_mul_left _ hsum
+    _ = (2 * L * (T + 1) + 2 * L) * (n + 1) := by ring
 
 theorem hasSuperpolynomialGrowth {ι : Type*} [Finite ι] (P : Group.Generators G ι) :
     P.HasSuperpolynomialGrowth := by
@@ -669,26 +825,24 @@ theorem hasSuperpolynomialGrowth {ι : Type*} [Finite ι] (P : Group.Generators 
       have : gens.growth n.succ * gens.growth n.succ ≤
           C * gens.growth (2 * liftBound * (n.succ + transversalBound)) := by
         have hmul := Nat.mul_le_mul h1 h1
-        have : (B.index *
-              (B.carrier ∩ gens.wordBall (n.succ + transversalBound)).ncard) *
+        have hrewrite :
             (B.index *
-              (B.carrier ∩ gens.wordBall (n.succ + transversalBound)).ncard) =
-            C * ((B.carrier ∩ gens.wordBall (n.succ + transversalBound)).ncard ^ 2) := by
+                (B.carrier ∩ gens.wordBall (n.succ + transversalBound)).ncard) *
+              (B.index *
+                (B.carrier ∩ gens.wordBall (n.succ + transversalBound)).ncard) =
+              C * ((B.carrier ∩ gens.wordBall (n.succ + transversalBound)).ncard ^ 2) := by
           simp [C, pow_two]; ring
-        rw [this] at hmul
+        rw [hrewrite] at hmul
         exact hmul.trans (Nat.mul_le_mul_left C hβ)
       refine this.trans (Nat.mul_le_mul_left C (gens.monotone_growth ?_))
       have : 2 * liftBound * (n.succ + transversalBound) ≤ α * n.succ := by
-        have : 2 * liftBound * (n.succ + transversalBound) ≤
-            (2 * liftBound * (transversalBound + 1) + 2 * liftBound) * n.succ := by
-          simp [Nat.succ_eq_add_one]
-          ring_nf
-          omega
-        exact this.trans (Nat.mul_le_mul_right _ (le_max_right _ _))
+        have hle := two_mul_add_le liftBound transversalBound n
+        simpa [Nat.succ_eq_add_one] using
+          hle.trans (Nat.mul_le_mul_right _ (le_max_right _ _))
       exact this
-  have hgens : gens.HasSuperpolynomialGrowth :=
-    HasSuperpolynomialGrowth.of_sq_mul gens.monotone_growth hunb hC hα hsq
-  exact hgens.of_growthEquivalent P.monotone_growth (P.growth_growthEquivalent gens).symm
+  have hgens : Function.HasSuperpolynomialGrowth gens.growth :=
+    Function.HasSuperpolynomialGrowth.of_sq_mul gens.monotone_growth hunb hC hα hsq
+  exact Function.HasSuperpolynomialGrowth.of_growthEquivalent P.monotone_growth
+    (P.growth_growthEquivalent gens).symm hgens
 
 end Grigorchuk
-
