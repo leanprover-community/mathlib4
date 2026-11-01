@@ -24,14 +24,16 @@ We prove basic properties of (pre)orderings on rings.
 
 @[expose] public section
 
-namespace Subsemiring
+namespace Subsemiring.IsPreordering
 
 section CommRing
 
 variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
         {P : Subsemiring R} {P' : Subsemiring S}
 
-namespace IsPreordering
+@[gcongr]
+theorem mono (hP : P.IsPreordering) {Q : Subsemiring R} (hPQ : P ≤ Q) (hQ : -1 ∉ Q) :
+    Q.IsPreordering where
 
 theorem unitsInv_mem (hP : P.IsPreordering) {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
   simpa using show (a * (a⁻¹ * a⁻¹) : R) ∈ P by membership
@@ -69,15 +71,18 @@ theorem mul_mem_support_of_left (hP : P.IsPreordering) (h : IsUnit (2 : R))
     (x : R) {a : R} (ha : a ∈ P.support) : a * x ∈ P.support :=
   (mul_comm _ x) ▸ hP.mul_mem_support_of_right h _ ha
 
-end IsPreordering
+theorem sSup {S : Set (Subsemiring R)} (hSn : S.Nonempty) (hSd : DirectedOn (· ≤ ·) S)
+    (hS : ∀ s ∈ S, s.IsPreordering) : (sSup S).IsPreordering where
+  mem_of_isSquare := by
+    rintro _ ⟨_, rfl⟩
+    grind [membership, mem_sSup_of_directedOn, hSn.some_mem]
+  neg_one_notMem := by grind [membership, mem_sSup_of_directedOn]
 
 end CommRing
 
 section Field
 
 variable {F : Type*} [Field F] {P : Subsemiring F}
-
-namespace IsPreordering
 
 theorem inv_mem (hP : IsPreordering P) {a : F} (ha : a ∈ P) : a⁻¹ ∈ P := by
   suffices a * (a⁻¹ * a⁻¹) ∈ P by grind
@@ -88,11 +93,9 @@ grind_pattern [membership] inv_mem => P.IsPreordering, a⁻¹ ∈ P
 theorem isPointed (hP : IsPreordering P) : P.IsPointed := by
   grind [membership, isPointed_def]
 
-end IsPreordering
-
 end Field
 
-end Subsemiring
+end Subsemiring.IsPreordering
 
 /- Deprecated -/
 
