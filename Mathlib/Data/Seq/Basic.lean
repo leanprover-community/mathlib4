@@ -76,7 +76,7 @@ simpler statement of the theorem where the sequence is known to terminate see `l
 theorem length_le_iff' {s : Seq α} {n : ℕ} :
     (∃ h, s.length h ≤ n) ↔ s.TerminatedAt n := by
   simp only [length, Nat.find_le_iff, TerminatedAt, Terminates, exists_prop]
-  exact ⟨fun ⟨_, k, hkn, hk⟩ => le_stable s hkn hk, fun hn => ⟨⟨n, hn⟩, n, le_rfl, hn⟩⟩
+  exact ⟨fun ⟨_, k, hkn, hk⟩ ↦ le_stable s hkn hk, fun hn ↦ ⟨⟨n, hn⟩, n, le_rfl, hn⟩⟩
 
 /-- The statement of `length_le_iff` assumes that the sequence terminates. For a
 statement of the where the sequence is not known to terminate see `length_le_iff'`. -/
@@ -97,7 +97,7 @@ theorem lt_length_iff' {s : Seq α} {n : ℕ} :
     (∀ h : s.Terminates, n < s.length h) ↔ ∃ a, a ∈ s.get? n := by
   simp only [Terminates, TerminatedAt, length, Nat.lt_find_iff, forall_exists_index, Option.mem_def,
     ← Option.ne_none_iff_exists', ne_eq]
-  exact ⟨fun h hn => h n hn n le_rfl hn, fun hn _ _ k hkn hk => hn <| le_stable s hkn hk⟩
+  exact ⟨fun h hn ↦ h n hn n le_rfl hn, fun hn _ _ k hkn hk ↦ hn <| le_stable s hkn hk⟩
 
 /-- The statement of `length_le_iff` assumes that the sequence terminates. For a
 statement of the where the sequence is not known to terminate see `length_le_iff'`. -/
@@ -175,10 +175,13 @@ theorem length_take_of_le_length {s : Seq α} {n : ℕ}
   | zero => simp [take]
   | succ n ih =>
     cases s with
-    | nil => simpa using hle terminates_nil
+    | nil =>
+      have := hle terminates_nil
+      simp at this
     | cons x s =>
       simp only [take_succ_cons, List.length_cons, Nat.add_right_cancel_iff]
-      exact ih fun h => by simpa [length_cons h] using hle (terminates_cons_iff.2 h)
+      refine ih fun h ↦ ?_
+      simpa [length_cons h] using hle (terminates_cons_iff.2 h)
 
 end Take
 
@@ -186,7 +189,7 @@ section ToList
 
 @[simp]
 theorem length_toList (s : Seq α) (h : s.Terminates) : (toList s h).length = length s h := by
-  exact length_take_of_le_length fun _ => le_rfl
+  exact length_take_of_le_length fun _ ↦ le_rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -260,7 +263,7 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
   apply mem_rec_on h _
   intro b s' o s₁
   cases s₁ with
-  | nil => exact fun m _ => .inr (by simpa using m)
+  | nil => exact fun m _ ↦ .inr (by simpa using m)
   | cons c t₁ =>
     intro m e
     obtain ⟨rfl, rfl⟩ : c = b ∧ append t₁ s₂ = s' := by simpa using e
@@ -341,7 +344,7 @@ theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈
   | ⟨_, _⟩ => Stream'.mem_map (Option.map f)
 
 theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃ a, a ∈ s ∧ f a = b :=
-  fun {s} h => by
+  fun {s} h ↦ by
     obtain ⟨_ | a, om, oe⟩ := Stream'.exists_of_mem_map (f := Option.map f) (b := some b) h
     · simp at oe
     · exact ⟨a, om, by simpa using oe⟩
@@ -380,7 +383,7 @@ theorem join_cons_cons (a b : α) (s S) :
 
 @[simp]
 theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join S)) := by
-  refine eq_of_bisim_strong (fun s1 s2 =>
+  refine eq_of_bisim_strong (fun s1 s2 ↦
     ∃ a s S, s1 = join (cons (a, s) S) ∧ s2 = cons a (append s (join S))) ⟨a, s, S, rfl, rfl⟩ ?_
   rintro _ _ ⟨a, s, S, rfl, rfl⟩
   cases s with
@@ -845,7 +848,7 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     obtain ⟨x, hx⟩ := lt_length'_iff.1 h
     have hx : (b.drop n).head = some x := by simpa using hx
     obtain ⟨a_hd, a_tl, ha, -⟩ :=
-      step _ _ (this n fun h0 => by simp [h0] at hx) x _ (head_eq_some hx)
+      step _ _ (this n fun h0 ↦ by simp [h0] at hx) x _ (head_eq_some hx)
     have : a.get? n = some a_hd := by simp [← head_dropn, ha]
     exact (lt_length'_iff.2 ⟨_, this⟩).ne' hl
 
@@ -931,7 +934,7 @@ theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
-  refine Seq.eq_of_bisim (fun s1 s2 => ∃ s S,
+  refine Seq.eq_of_bisim (fun s1 s2 ↦ ∃ s S,
     s1 = Seq.append s (Seq.map f (Seq.join S)) ∧ s2 = append s (Seq.join (Seq.map (map f) S)))
     ?_ ⟨nil, S, by simp, by simp⟩
   rintro s1 s2 ⟨s, S, rfl, rfl⟩

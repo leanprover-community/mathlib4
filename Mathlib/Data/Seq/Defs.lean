@@ -198,7 +198,7 @@ theorem destruct_nil : destruct (nil : Seq α) = none :=
 
 @[simp]
 theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s) :=
-  fun _ => rfl
+  fun _ ↦ rfl
 
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
@@ -212,7 +212,7 @@ theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s =
   · contradiction
   · injections _ h1 h2
     subst h1 h2
-    exact Seq.ext fun n => by cases n <;> simp [f0]
+    exact Seq.ext fun n ↦ by cases n <;> simp [f0]
 
 @[simp]
 theorem head_nil : head (nil : Seq α) = none :=
@@ -281,7 +281,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   | zero =>
     change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
     rcases o with - | b
-    · exact fun _ => rfl
+    · exact fun _ ↦ rfl
     · rcases h₁ : f b with - | ⟨a, b'⟩ <;> simp [Corec.f, h₁]
   | succ n IH =>
     rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
@@ -345,7 +345,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
   · rintro _ _ ⟨s, s', rfl, rfl, r⟩
     suffices head s = head s' ∧ R (tail s) (tail s') from
-      this.imp id fun r => ⟨tail s, tail s', rfl, rfl, r⟩
+      this.imp id fun r ↦ ⟨tail s, tail s', rfl, rfl, r⟩
     have := bisim r
     cases s <;> cases s' <;> simp_all [head]
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
@@ -453,7 +453,7 @@ theorem terminates_nil : Terminates (nil : Seq α) := ⟨0, rfl⟩
 @[simp]
 theorem terminates_cons_iff {x : α} {s : Seq α} :
     (cons x s).Terminates ↔ s.Terminates := by
-  refine ⟨fun ⟨n, h⟩ => ⟨n, ?_⟩, fun ⟨n, h⟩ => ⟨n + 1, ?_⟩⟩
+  refine ⟨fun ⟨n, h⟩ ↦ ⟨n, ?_⟩, fun ⟨n, h⟩ ↦ ⟨n + 1, ?_⟩⟩
   · exact cons_terminatedAt_succ_iff.mp (terminated_stable _ (Nat.le_succ _) h)
   · exact cons_terminatedAt_succ_iff.mpr h
 
