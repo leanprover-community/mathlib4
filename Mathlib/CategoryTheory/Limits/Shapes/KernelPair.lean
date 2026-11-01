@@ -5,8 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
 # Kernel pairs

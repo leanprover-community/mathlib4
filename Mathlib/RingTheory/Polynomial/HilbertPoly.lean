@@ -9,10 +9,10 @@ public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.RingTheory.PowerSeries.WellKnown
 
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Hilbert polynomials

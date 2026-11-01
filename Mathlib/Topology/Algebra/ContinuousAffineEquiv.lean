@@ -5,8 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # Continuous affine equivalences
@@ -130,13 +130,14 @@ lemma toContinuousAffineMap_toAffineMap (e : P₁ ≃ᴬ[k] P₂) :
   rfl
 
 lemma toContinuousAffineMap_toContinuousMap (e : P₁ ≃ᴬ[k] P₂) :
-    e.toContinuousAffineMap.toContinuousMap = toContinuousMap e.toHomeomorph :=
+    e.toContinuousAffineMap.toContinuousMap = ContinuousMap.ofClass e.toHomeomorph :=
   rfl
 
 end Basic
 
 section ReflSymmTrans
 
+set_option fun_prop.projDefaultTransparency true in
 variable (k P₁) in
 /-- Identity map as a `ContinuousAffineEquiv`. -/
 def refl : P₁ ≃ᴬ[k] P₁ where

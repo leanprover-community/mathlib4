@@ -6,8 +6,9 @@ Authors: Anne Baanen, Paul Lezeau
 module
 
 public import Mathlib.Algebra.IsPrimePow
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 public import Mathlib.Order.Atoms
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+
 /-!
 
 # Chains of divisors

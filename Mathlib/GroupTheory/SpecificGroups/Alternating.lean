@@ -5,8 +5,8 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.Perm.Fin
 public import Mathlib.Data.Nat.Totient
+public import Mathlib.GroupTheory.Perm.Fin
 
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.ConjAct
@@ -254,10 +254,6 @@ theorem closure_cycleType_eq_two_two_eq_alternatingGroup (h5 : 5 ≤ Nat.card α
     apply mul_mem <;>
     · apply Subgroup.subset_closure
       exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
-
-@[deprecated (since := "2026-03-10")]
-alias closure_cycleType_eq_2_2_eq_alternatingGroup :=
-  closure_cycleType_eq_two_two_eq_alternatingGroup
 
 theorem cycleType_eq_two_two_subset_alternatingGroup :
     {g : Perm α | g.cycleType = {2, 2}} ⊆ alternatingGroup α := by

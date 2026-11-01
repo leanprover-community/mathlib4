@@ -6,8 +6,8 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.Group.Embedding
-public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.MonoidAlgebra.Module
 
 import Mathlib.Order.BourbakiWitt
 

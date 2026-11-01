@@ -5,8 +5,11 @@ Authors: Patrick Massot, Floris van Doorn, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Filter.Lift
 public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.Lift
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The filter of small sets

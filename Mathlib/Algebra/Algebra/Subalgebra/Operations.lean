@@ -6,8 +6,8 @@ Authors: Andrew Yang, Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Algebra.Ring.Action.Submonoid
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # More operations on subalgebras
@@ -68,9 +68,6 @@ theorem mem_of_finsetSum_eq_one_of_pow_smul_mem
   rw [← tsub_add_cancel_of_le (show n i ≤ N from Finset.le_sup hi), pow_add, mul_smul]
   refine Submodule.smul_mem _ (⟨_, pow_mem (hs i) _⟩ : S') ?_
   exact ⟨⟨_, hn i⟩, rfl⟩
-
-@[deprecated (since := "2026-04-08")]
-alias mem_of_finset_sum_eq_one_of_pow_smul_mem := mem_of_finsetSum_eq_one_of_pow_smul_mem
 
 theorem mem_of_span_eq_top_of_smul_pow_mem
     (s : Set S) (l : s →₀ S) (hs : Finsupp.linearCombination S ((↑) : s → S) l = 1)

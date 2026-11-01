@@ -5,8 +5,8 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Sites.Plus
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Compatibility of the plus construction with functors
@@ -182,7 +182,6 @@ def plusFunctorWhiskerRightIso :
       (whiskeringRight _ _ _).obj F ⋙ J.plusFunctor E :=
   NatIso.ofComponents (fun _ => J.plusCompIso _ _) @fun _ _ _ => plusCompIso_whiskerRight _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem whiskerRight_toPlus_comp_plusCompIso_hom :

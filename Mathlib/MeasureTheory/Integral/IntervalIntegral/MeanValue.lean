@@ -7,9 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
-import Mathlib.MeasureTheory.Integral.MeanValue
 import Mathlib.Analysis.Normed.Module.HahnBanach
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
+import Mathlib.MeasureTheory.Integral.MeanValue
 import Mathlib.MeasureTheory.Integral.Prod
 
 /-!

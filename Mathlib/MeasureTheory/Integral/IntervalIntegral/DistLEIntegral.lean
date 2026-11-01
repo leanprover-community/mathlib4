@@ -6,8 +6,8 @@ Authors: Yury G. Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.DiffContOnCl
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
@@ -166,7 +166,7 @@ lemma norm_sub_le_mul_volume_of_norm_fderiv_le (hs : IsOpen s) (hf : DiffContOnC
     · exact hf.differentiableAt hs <| hmem_s t ht
   refine norm_sub_le_mul_volume_of_norm_lineDeriv_le hfc hfd (.of_forall hfC) |>.trans ?_
   gcongr
-  · refine ne_top_of_le_ne_top ?_ (measure_mono inter_subset_left)
+  · refine ne_top_of_le_ne_top ?_ (measure_mono fun t ht ↦ ht.1)
     simp
   · simp +contextual [(hf.differentiableAt hs <| hmem_s _ ‹_›).lineDeriv_eq_fderiv]
 
@@ -177,7 +177,7 @@ theorem sub_isBigO_norm_rpow_add_one_of_fderiv (hr : 0 ≤ r)
     (hdf : ∀ᶠ x in 𝓝 a, DifferentiableAt ℝ f x) (hderiv : fderiv ℝ f =O[𝓝 a] (‖· - a‖ ^ r)) :
     (f · - f a) =O[𝓝 a] (‖· - a‖ ^ (r + 1)) := by
   rcases hderiv.exists_pos with ⟨C, hC₀, hC⟩
-  rw [Asymptotics.IsBigOWith_def] at hC
+  rw [Asymptotics.isBigOWith_iff] at hC
   rcases eventually_nhds_iff_ball.mp (hdf.and hC) with ⟨ε, hε₀, hε⟩
   refine .of_bound C ?_
   rw [eventually_nhds_iff_ball]

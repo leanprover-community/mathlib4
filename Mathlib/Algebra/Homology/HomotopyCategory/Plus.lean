@@ -33,7 +33,6 @@ open HomologicalComplex
 
 variable {C} [HasBinaryBiproducts C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma plus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
     CochainComplex.plus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK
@@ -140,7 +139,7 @@ abbrev Plus := (plus C).FullSubcategory
 namespace Plus
 
 /-- The inclusion of the homotopy category of bounded below cochain complexes
-in the homotopy category category of all cochain complexes. -/
+in the homotopy category of all cochain complexes. -/
 abbrev ι : Plus C ⥤ HomotopyCategory C (.up ℤ) := (plus C).ι
 
 /-- The inclusion functor

@@ -5,9 +5,9 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
@@ -330,7 +330,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
       rw [toReal_one, rpow_one]
       convert!
         mul_meas_ge_le_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top C
-      · rw [ENNReal.toReal_one, ENNReal.rpow_one, enorm_eq_nnnorm]
+      rw [ENNReal.toReal_one, ENNReal.rpow_one, enorm_eq_nnnorm]
     rw [toReal_one, rpow_one, mul_comm,
       ← ENNReal.le_div_iff_mul_le (Or.inl (coe_ne_zero.2 hCpos.ne'))
         (Or.inl coe_lt_top.ne)] at this

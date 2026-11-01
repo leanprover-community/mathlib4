@@ -9,8 +9,8 @@ public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.MeanInequalitiesPow
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Fintype.Order
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
@@ -243,8 +243,7 @@ theorem eLpNorm_const_lt_top_iff_enorm {c : ε} (hc' : ‖c‖ₑ ≠ ∞)
     eLpNorm (fun _ : α ↦ c) p μ < ∞ ↔ ‖c‖ₑ = 0 ∨ μ Set.univ < ∞ := by
   have hp : 0 < p.toReal := ENNReal.toReal_pos hp_ne_zero hp_ne_top
   by_cases hμ : μ = 0
-  · simp only [hμ, Measure.coe_zero, Pi.zero_apply, or_true, ENNReal.zero_lt_top,
-      eLpNorm_measure_zero]
+  · simp [hμ]
   by_cases hc : ‖c‖ₑ = 0
   · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp_ne_zero hp_ne_top
       aestronglyMeasurable_const]
@@ -845,7 +844,7 @@ lemma eLpNormEssSup_eq_iSup (hμ : ∀ a, μ {a} ≠ 0) (f : α → ε) : eLpNor
   essSup_eq_iSup hμ _
 
 variable {ε : Type*} [ENorm ε] in
-@[simp] lemma eLpNormEssSup_count [MeasurableSingletonClass α] (f : α → ε) :
+@[simp] lemma eLpNormEssSup_count (f : α → ε) :
     eLpNormEssSup f .count = ⨆ a, ‖f a‖ₑ := essSup_count _
 
 theorem MemLp.left_of_add_measure {f : α → ε} (h : MemLp f p (μ + ν)) :

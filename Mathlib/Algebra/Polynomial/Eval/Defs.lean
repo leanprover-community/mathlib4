@@ -5,8 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # Evaluating a polynomial
@@ -53,11 +53,12 @@ variable (f : R →+* S) (x : S)
 
 /-- Evaluate a polynomial `p` given a ring hom `f` from the scalar ring
   to the target and a value `x` for the variable in the target -/
-irreducible_def eval₂ (p : R[X]) : S :=
+@[no_expose] def eval₂ (p : R[X]) : S :=
   p.sum fun e a => f a * x ^ e
 
-theorem eval₂_eq_sum {f : R →+* S} {x : S} : p.eval₂ f x = p.sum fun e a => f a * x ^ e := by
-  rw [eval₂_def]
+theorem eval₂_eq_sum {f : R →+* S} {x : S} : p.eval₂ f x = p.sum fun e a => f a * x ^ e := (rfl)
+
+@[deprecated (since := "2026-10-20")] alias eval₂_def := eval₂_eq_sum
 
 theorem eval₂_congr {R S : Type*} [Semiring R] [Semiring S] {f g : R →+* S} {s t : S}
     {φ ψ : R[X]} : f = g → s = t → φ = ψ → eval₂ f s φ = eval₂ g t ψ := by
@@ -131,8 +132,6 @@ theorem eval₂_multiset_sum (s : Multiset R[X]) (x : S) :
 theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∑ i ∈ s, g i).eval₂ f x = ∑ i ∈ s, (g i).eval₂ f x :=
   map_sum (eval₂AddMonoidHom f x) _ _
-
-@[deprecated (since := "2026-04-08")] alias eval₂_finset_sum := eval₂_finsetSum
 
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
     eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
@@ -348,8 +347,6 @@ theorem eval_finsetSum (s : Finset ι) (g : ι → R[X]) (x : R) :
     (∑ i ∈ s, g i).eval x = ∑ i ∈ s, (g i).eval x :=
   eval₂_finsetSum _ _ _ _
 
-@[deprecated (since := "2026-04-08")] alias eval_finset_sum := eval_finsetSum
-
 /-- `IsRoot p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero -/
 def IsRoot (p : R[X]) (a : R) : Prop :=
   p.eval a = 0
@@ -384,7 +381,7 @@ theorem comp_eq_sum_left : p.comp q = p.sum fun e a => C a * q ^ e := by rw [com
 
 @[simp]
 theorem comp_X : p.comp X = p := by
-  simp only [comp, eval₂_def, C_mul_X_pow_eq_monomial]
+  simp only [comp, eval₂_eq_sum, C_mul_X_pow_eq_monomial]
   exact sum_monomial_eq _
 
 @[simp]
@@ -656,8 +653,6 @@ theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
 theorem eval₂_finsetProd (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∏ i ∈ s, g i).eval₂ f x = ∏ i ∈ s, (g i).eval₂ f x :=
   map_prod (eval₂RingHom f x) _ _
-
-@[deprecated (since := "2026-04-08")] alias eval₂_finset_prod := eval₂_finsetProd
 
 /-- Polynomial evaluation commutes with `List.prod`
 -/

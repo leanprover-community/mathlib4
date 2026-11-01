@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
 import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 
@@ -173,7 +173,6 @@ noncomputable def imageBasicOpen : Opens Y :=
     (show Y.presheaf.obj (op (unop _)) from
       ((coequalizer.π f.toShHom g.toShHom).hom.c.app (op U)) s)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).hom.base ''

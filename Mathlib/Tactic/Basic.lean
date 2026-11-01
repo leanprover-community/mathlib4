@@ -6,10 +6,10 @@ Authors: Mario Carneiro, Kyle Miller
 module  -- shake: keep-all, shake: keep-downstream
 
 public meta import Lean.Elab.BuiltinCommand
-public import Mathlib.Tactic.PPWithUniv
+public import Batteries.Util.LibraryNote -- For `library_note` command.
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Linter.OldObtain
-public import Batteries.Util.LibraryNote -- For `library_note` command.
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Basic tactics and utilities for tactic writing

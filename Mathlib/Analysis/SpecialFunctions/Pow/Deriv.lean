@@ -10,10 +10,10 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 
-import Mathlib.Analysis.Calculus.FDeriv.Extend
 import Mathlib.Analysis.Calculus.Deriv.Prod
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+import Mathlib.Analysis.Calculus.FDeriv.Extend
 import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!
@@ -512,7 +512,7 @@ theorem iter_deriv_rpow_const (r x : ℝ) (k : ℕ) :
 
 theorem hasStrictDerivAt_rpow_const {x p : ℝ} (hx : x ≠ 0 ∨ 1 ≤ p) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x :=
-  ContDiffAt.hasStrictDerivAt' (contDiffAt_rpow_const (by rwa [← Nat.cast_one] at hx))
+  ContDiffAt.hasStrictDerivAt (contDiffAt_rpow_const (by rwa [← Nat.cast_one] at hx))
     (hasDerivAt_rpow_const hx) one_ne_zero
 
 end Real

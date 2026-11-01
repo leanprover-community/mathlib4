@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Prod
-public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 import Mathlib.Geometry.Manifold.Notation
 
@@ -682,10 +682,10 @@ theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f 
     mfderiv[s] f x = 0 := by
   simp only [mfld_simps, mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte]
   simp only [HasMFDerivWithinAt, mfld_simps] at h
-  rw [fderivWithin, ite_eq_left (by exact h.2)]
+  rw [fderivWithin_def, ite_eq_left (by exact h.2)]
   simp
 
-theorem MDifferentiable.mfderivWithin (h : MDiffAt f x) (hxs : UniqueMDiffAt[s] x) :
+protected theorem MDifferentiable.mfderivWithin (h : MDiffAt f x) (hxs : UniqueMDiffAt[s] x) :
     mfderiv[s] f x = mfderiv% f x := by
   apply HasMFDerivWithinAt.mfderivWithin _ hxs
   exact h.hasMFDerivAt.hasMFDerivWithinAt

@@ -337,9 +337,6 @@ lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
   rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
     natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
 
-@[deprecated (since := "2026-04-08")]
-alias natDegree_finset_prod_X_sub_C_eq_card := natDegree_finsetProd_X_sub_C_eq_card
-
 end CommRing
 
 section NoZeroDivisors

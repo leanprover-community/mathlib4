@@ -124,7 +124,7 @@ theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitive
   have hmonic : (X ^ n - C (1 : R)).Monic := monic_X_pow_sub_C (1 : R) (ne_of_lt hpos).symm
   symm
   apply prod_multiset_X_sub_C_of_monic_of_roots_card_eq hmonic
-  rw [@natDegree_X_pow_sub_C R _ _ n 1, ← nthRoots]
+  rw [natDegree_X_pow_sub_C, ← nthRoots]
   exact IsPrimitiveRoot.card_nthRoots_one h
 
 end IsDomain
@@ -214,10 +214,8 @@ then `cyclotomic n K` comes from a unique polynomial with integer coefficients. 
 theorem unique_int_coeff_of_cycl {K : Type*} [CommRing K] [IsDomain K] [CharZero K] {ζ : K}
     {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K := by
-  obtain ⟨P, hP⟩ := int_coeff_of_cyclotomic' h
-  refine ⟨P, hP.1, fun Q hQ => ?_⟩
-  apply map_injective (Int.castRingHom K) Int.cast_injective
-  rw [hP.1, hQ]
+  rw [(map_injective (Int.castRingHom K) Int.cast_injective).existsUnique_iff_exists]
+  exact (int_coeff_of_cyclotomic' h).imp fun _ hP ↦ hP.1
 
 end Field
 
@@ -429,7 +427,7 @@ theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [Comm
       algebraMap _ _ (X ^ n - 1 : R[X]) := by
     intro n hn
     rw [← prod_cyclotomic_eq_X_pow_sub_one hn R, map_prod]
-  rw [(prod_eq_iff_prod_pow_moebius_eq_of_nonzero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
+  rw [(prod_eq_iff_prod_pow_moebius_eq_of_ne_zero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
     simp_rw [Ne, IsFractionRing.to_map_eq_zero_iff]
   · simp [cyclotomic_ne_zero]
   · intro n hn

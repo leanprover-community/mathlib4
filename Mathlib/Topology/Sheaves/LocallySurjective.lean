@@ -5,8 +5,8 @@ Authors: Sam van Gool, Jake Levinson
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 
@@ -55,7 +55,7 @@ such that `$T_*(s_V) = t|_V$`.
 
 See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
-def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
+abbrev IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
