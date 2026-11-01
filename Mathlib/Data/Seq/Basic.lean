@@ -936,7 +936,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem map_join' (f : α → β) (S) : Seq.map f (Seq.join S) = Seq.join (Seq.map (map f) S) := by
   refine Seq.eq_of_bisim (fun s1 s2 ↦ ∃ s S,
     s1 = Seq.append s (Seq.map f (Seq.join S)) ∧ s2 = append s (Seq.join (Seq.map (map f) S)))
-    ?_ ⟨nil, S, by simp, by simp⟩
+      ?_ ⟨nil, S, by simp, by simp⟩
   rintro s1 s2 ⟨s, S, rfl, rfl⟩
   cases s with
   | nil =>
