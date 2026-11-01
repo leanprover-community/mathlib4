@@ -279,7 +279,7 @@ theorem hom_trivializationAt_symm_apply {x₀ x : B}
     (L : F₁ →SL[σ] F₂) (v : E₁ x) :
     (trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀).symm x L v =
       (trivializationAt F₂ E₂ x₀).symm x
-        (L ((trivializationAt F₁ E₁ x₀).continuousLinearMapAt 𝕜₁ x v)) := by
+        (L ((trivializationAt F₁ E₁ x₀).linearMapAt 𝕜₁ x v)) := by
   rw [hom_trivializationAt, Trivialization.continuousLinearMap_symm_apply σ hx]
   exact (trivializationAt F₂ E₂ x₀).symmL_apply hx.2 _
 
@@ -559,8 +559,8 @@ lemma trivializationAt_symm_apply_bilin
     (ϕ : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (u : E₁ x) (v : E₂ x) :
     (trivializationAt (F₁ →L[𝕜] F₂ →L[𝕜] F₃) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] F₃) x₀).symm
         x ϕ u v =
-      ϕ (trivializationAt F₁ E₁ x₀ |>.continuousLinearMapAt 𝕜 x u)
-        (trivializationAt F₂ E₂ x₀ |>.continuousLinearMapAt 𝕜 x v) := by
+      ϕ (trivializationAt F₁ E₁ x₀ |>.linearMapAt 𝕜 x u)
+        (trivializationAt F₂ E₂ x₀ |>.linearMapAt 𝕜 x v) := by
   have h₃x : x ∈ (trivializationAt F₃ (Bundle.Trivial B F₃) x₀).baseSet := by
     simp [Trivial.fiberBundle_trivializationAt']
   rw [hom_trivializationAt_symm_apply (RingHom.id 𝕜) (F₂ := F₂ →L[𝕜] F₃)
