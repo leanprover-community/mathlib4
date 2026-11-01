@@ -16,11 +16,9 @@ import Mathlib.RingTheory.Polynomial.RationalRoot
 /-!
 # Quadratic algebras over `ℤ`
 
-For `a b : ℤ`, the quadratic algebra `QuadraticAlgebra ℤ a b` is an order in
-`QuadraticAlgebra ℚ a b`: a free `ℤ`-module of rank `2` whose fraction ring is
-`QuadraticAlgebra ℚ a b`. This file establishes that relation, and then determines for which
-parameters the order is maximal, that is, is the integral closure of `ℤ` in
-`QuadraticAlgebra ℚ a b`. This happens exactly when `discr a b` is a fundamental discriminant.
+For `a b : ℤ`, `QuadraticAlgebra ℤ a b` is an order in `QuadraticAlgebra ℚ a b`. This file
+proves that `QuadraticAlgebra ℚ a b` is its fraction ring, and that it is the integral closure of
+`ℤ` in `QuadraticAlgebra ℚ a b` iff `discr a b` is a fundamental discriminant.
 
 ## Main definitions
 
