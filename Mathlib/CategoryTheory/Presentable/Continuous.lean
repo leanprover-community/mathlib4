@@ -222,28 +222,6 @@ lemma isCardinalContinuous_eq_isLocal :
 
 variable [Fact κ.IsRegular]
 
--- to be moved
-instance (X : C) :
-    IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ where
-  preservesColimitOfShape J _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
-    have := isFiltered_of_isCardinalFiltered J κ
-    refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f₁ f₂ hf ↦ ?_)
-    · obtain ⟨x, rfl⟩ := shrinkYonedaEquiv.symm.surjective f
-      obtain ⟨j, y, rfl⟩ := Types.jointly_surjective_of_isColimit
-        (isColimitOfPreserves ((evaluation _ _).obj (op X)) hc) x
-      exact ⟨j, shrinkYonedaEquiv.symm y,
-        shrinkYonedaEquiv.injective (by simp [shrinkYonedaEquiv_comp])⟩
-    · obtain ⟨x₁, rfl⟩ := shrinkYonedaEquiv.symm.surjective f₁
-      obtain ⟨x₂, rfl⟩ := shrinkYonedaEquiv.symm.surjective f₂
-      dsimp at hf ⊢
-      rw [shrinkYonedaEquiv_symm_comp, shrinkYonedaEquiv_symm_comp] at hf
-      simp only [EmbeddingLike.apply_eq_iff_eq] at hf
-      obtain ⟨l, a, hl⟩ := (Types.FilteredColimit.isColimit_eq_iff'
-          (isColimitOfPreserves ((evaluation _ _).obj (op X)) hc) x₁ x₂).1 hf
-      dsimp at hl
-      refine ⟨l, a, ?_⟩
-      rw [shrinkYonedaEquiv_symm_comp, shrinkYonedaEquiv_symm_comp, hl]⟩⟩⟩
-
 instance (J : SmallCategoryCardinalLT κ)
     (F : SmallCategoryCardinalLT.categoryFamily κ J ⥤ Cᵒᵖ)
     (X : (SmallCategoryCardinalLT.categoryFamily κ J)ᵒᵖ) :

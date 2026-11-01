@@ -74,7 +74,7 @@ instance (κ : Cardinal.{w}) [Fact κ.IsRegular]
       · exact (toMax t hι i).unop.hom
       · dsimp
         rw [← NatTrans.naturality_apply, (toMax t hι i).unop.map_val,
-          ← hs₁, ← ConcreteCategory.comp_apply, ← NatTrans.comp_app, p.w]
+          ← hs₁, ← NatTrans.comp_app_apply, p.w]
     · have (e : P.Elements) :
           ∃ j e', (p.ι.app j).mapElements.obj e' = e := by
         obtain ⟨j, x, hx⟩ := Types.jointly_surjective_of_isColimit

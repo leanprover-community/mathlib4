@@ -243,6 +243,26 @@ instance (X : C) [LocallySmall.{w} C] [IsCardinalPresentable X κ] :
       (shrinkCoyonedaObjCompUliftFunctorIso (op X)).symm
     exact preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor
 
+instance (X : C) [LocallySmall.{w} C] :
+    PreservesColimitsOfSize.{w, w} (coyoneda.obj (op (shrinkYoneda.{w}.obj X))) := by
+  have e : coyoneda.obj (op (shrinkYoneda.{w}.obj X)) ≅
+      (evaluation ..).obj (op X) ⋙ uliftFunctor.{u₁} :=
+    NatIso.ofComponents (fun P ↦ (shrinkYonedaEquiv.trans Equiv.ulift.symm).toIso)
+  exact preservesColimits_of_natIso e.symm
+
+instance (X : C) [LocallySmall.{w} C] :
+    PreservesColimitsOfSize.{w, w} (coyoneda.obj (op (shrinkCoyoneda.{w}.obj (op X)))) := by
+  have e : coyoneda.obj (op (shrinkCoyoneda.{w}.obj (op X))) ≅
+      (evaluation ..).obj X ⋙ uliftFunctor.{u₁} :=
+    NatIso.ofComponents (fun _ ↦ (shrinkCoyonedaEquiv.trans Equiv.ulift.symm).toIso)
+  exact preservesColimits_of_natIso e.symm
+
+example (X : C) [LocallySmall.{w} C] :
+    IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ := inferInstance
+
+example (X : C) [LocallySmall.{w} C] :
+    IsCardinalPresentable (shrinkCoyoneda.{w}.obj (op X)) κ := inferInstance
+
 variable {X κ} in
 open IsFiltered in
 lemma IsCardinalPresentable.mk

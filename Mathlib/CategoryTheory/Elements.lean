@@ -487,6 +487,8 @@ def Equivalence.congrElements {D : Type*} [Category* D] (e : C ≌ D) (P : D ⥤
       (fun x ↦ Functor.Elements.isoMk (e.unitIso.symm.app x.obj) (by
         simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
 
+/-- Two equal natural transformations induce isomorphic functors on
+categories of elements. -/
 @[simps!]
 def NatTrans.congrMapElements {G : C ⥤ Type w} {φ φ' : F ⟶ G} (h : φ = φ') :
     φ.mapElements ≅ φ'.mapElements :=
