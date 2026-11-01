@@ -229,7 +229,6 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
   ext i j
   induction j using Fin.addCases <;> simp [M, sylvester, M₁, M₂]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `Res(f, g + fp) = Res(f, g)` if `deg f + deg p ≤ deg g`. -/
 lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * p) m n = resultant f g m n := by
@@ -410,7 +409,7 @@ lemma resultant_eq_prod_roots_sub
       simp [hf'.natDegree_eq_card_roots, hg'.natDegree_eq_card_roots]
     · simp
   generalize hN : f.natDegree + g.natDegree = N
-  induction N using Nat.strong_induction_on generalizing K with | h n IH =>
+  induction N using Nat.strong_induction_on generalizing K with | ind n IH
   by_cases hr : g ∣ f
   · obtain ⟨r, rfl⟩ := hr
     have hr' : r ≠ 0 := by simpa [hg.ne_zero] using hf.ne_zero
