@@ -299,6 +299,7 @@ section OrderTopology
 
 variable [OrderTopology α]
 
+@[to_dual]
 theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
     (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
   choose! M hM using h'
@@ -323,6 +324,7 @@ theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ �
   exact B.countable_of_Ioo fun x hx => hy x hx.1
 
 /-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
+@[to_dual /-- If a set is a left-neighborhood of all of its points, then it is measurable. -/]
 theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
   by_cases H : ∃ x ∈ s, IsTop x
   · rcases H with ⟨x₀, x₀s, h₀⟩
@@ -339,11 +341,6 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
     simp only [IsTop] at H
     push Not at H
     exact H
-
-/-- If a set is a left-neighborhood of all of its points, then it is measurable. -/
-@[to_dual existing]
-theorem MeasurableSet.of_mem_nhdsLT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[<] x) : MeasurableSet s :=
-  of_mem_nhdsGT (α := αᵒᵈ) h
 
 end OrderTopology
 
