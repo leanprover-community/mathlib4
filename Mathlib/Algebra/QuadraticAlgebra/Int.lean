@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
 public import Mathlib.NumberTheory.FundamentalDiscriminant
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-public import Mathlib.RingTheory.Localization.FractionRing
 
 import Mathlib.Algebra.QuadraticAlgebra.Integral
 import Mathlib.RingTheory.Int.Basic
@@ -271,10 +270,9 @@ protected theorem isIntegralClosure_iff :
 discriminant. -/
 protected theorem isIntegrallyClosed_iff :
     IsIntegrallyClosed (QuadraticAlgebra ℤ a b) ↔ Int.IsFundamentalDiscr (discr a b) := by
-  rw [← Int.isIntegralClosure_iff]
-  exact ⟨fun h ↦ .of_isIntegrallyClosedIn,
-    fun h ↦ (isIntegrallyClosed_iff_isIntegrallyClosedIn (QuadraticAlgebra ℚ a b)).mpr <|
-      .of_isIntegralClosure ℤ⟩
+  rw [← Int.isIntegralClosure_iff,
+    isIntegrallyClosed_iff_isIntegrallyClosedIn (QuadraticAlgebra ℚ a b)]
+  exact ⟨fun _ ↦ .of_isIntegrallyClosedIn, fun _ ↦ .of_isIntegralClosure ℤ⟩
 
 /-- When `discr a b` is a fundamental discriminant, `QuadraticAlgebra ℤ a b` is isomorphic, as a
 `ℤ`-algebra, to the integral closure of `ℤ` in `QuadraticAlgebra ℚ a b`. -/
