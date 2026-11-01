@@ -37,8 +37,9 @@ lemma jointly_surjective_of_isColimit_of_hasCardinalLT
     by simpa⟩
 
 variable {F} in
-/-- In a κ-filtered diagram of types, if a family of size < κ in the `i`-th stage of the diagram
-collapses to the same element in the colimit, then it already does at some stage of the colimit. -/
+/-- In a κ-filtered diagram of types, a family of size < κ in the `i`-th stage of the diagram
+collapses to the same element in the colimit if and only if it already does at some
+stage of the colimit. -/
 theorem isColimit_eq_iff'_of_hasCardinalLT
     {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
     {i : J} (x : ι → F.obj i) :
@@ -66,8 +67,8 @@ theorem isColimit_eq_iff'_of_hasCardinalLT
   · simp [← dsimp% t.ι.naturality_apply f (x k), h k k']
 
 variable {F} in
-/-- In a κ-filtered diagram of types, if a family of size < κ of elements in the diagram collapses
-to the same element in the colimit, then it already does at some stage of the colimit. -/
+/-- In a κ-filtered diagram of types, a family of size < κ of elements in the diagram collapses
+to the same element in the colimit if and only if it already does at some stage of the colimit. -/
 theorem isColimit_eq_iff''_of_hasCardinalLT
     {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
     {φ : ι → J} (x : (i : ι) → F.obj (φ i)) :
@@ -80,7 +81,7 @@ theorem isColimit_eq_iff''_of_hasCardinalLT
     let x₀ (i : ι) : F.obj i₀ := F.map (IsCardinalFiltered.toMax φ hι i) (x i)
     have (k k' : ι) : (t.ι.app i₀) (x₀ k) = (t.ι.app i₀) (x₀ k') := by
       simp [i₀, x₀, h k k']
-    obtain ⟨j, f₀, hj⟩ := (isColimit_eq_iff'_of_hasCardinal_LT κ ht hι x₀).mp this
+    obtain ⟨j, f₀, hj⟩ := (isColimit_eq_iff'_of_hasCardinalLT κ ht hι x₀).mp this
     use j, (IsCardinalFiltered.toMax φ hι · ≫ f₀)
     intro k k'
     dsimp [x₀] at hj
