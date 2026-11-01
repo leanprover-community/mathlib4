@@ -5,8 +5,8 @@ Authors: Jiaxi Mo
 -/
 module
 
-public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.RingTheory.Flat.EquationalCriterion
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 This file proves base change theorems for the center of algebras comparing the base change of the
