@@ -23,7 +23,7 @@ if `C` is a locally `w`-small categories and `κ : Cardinal.{w}`, the following
 conditions are equivalent:
 (i) `C` is locally `κ`-presentable;
 (ii) `C` is equivalent to a category `CardinalContinuousFunctor A (Type w) κ` where
-`A` is an (essentially) `w`-small category ;
+`A` is an (essentially) `w`-small category;
 (iii) `C` is equivalent to a full subcategory of the form `W.isLocal`
 where `W : MorphismProperty (A ⥤ Type w)` is a `w`-small family of morphisms
 between `κ`-presentable objects, and `A` is an (essentially) `w`-small category.
