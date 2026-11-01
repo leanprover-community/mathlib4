@@ -269,6 +269,12 @@ theorem StrictBlockTriangular.blockTriangular (hM : M.StrictBlockTriangular b) :
 theorem StrictBlockTriangular.diag_eq_zero (hM : M.StrictBlockTriangular b) :
     M.diag = 0 := funext fun _ => hM le_rfl
 
+theorem StrictBlockTriangular.toSquareBlock_eq_zero (hM : M.StrictBlockTriangular b) (a : α) :
+    M.toSquareBlock b a = 0 := by
+  apply Matrix.ext
+  rintro ⟨i, rfl⟩ ⟨j, hj⟩
+  exact hM hj.le
+
 variable [DecidableEq m]
 
 theorem blockTriangular_one [One R] : BlockTriangular (1 : Matrix m m R) b :=

@@ -207,16 +207,8 @@ lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h :
 /-- The characteristic polynomial of a strict block triangular matrix is a power of `X`. -/
 lemma StrictBlockTriangular.charpoly {α : Type*} [LinearOrder α] {b : n → α}
     {M : Matrix n n R} (hM : M.StrictBlockTriangular b) : M.charpoly = X ^ Fintype.card n := by
-  classical
-  rw [hM.blockTriangular.charpoly]
-  have hz (a : α) : M.toSquareBlock b a = 0 := by
-    ext i j
-    exact hM (j.property.trans i.property.symm).le
-  simp_rw [hz, charpoly_zero]
-  rw [Finset.prod_pow_eq_pow_sum]
-  congr 1
-  simpa only [Fintype.card_subtype, Finset.card_univ] using
-    (Finset.card_eq_sum_card_image b (Finset.univ : Finset n)).symm
+  rw [← charpoly_zero, hM.blockTriangular.charpoly, (blockTriangular_zero (b := b)).charpoly]
+  simp only [hM.toSquareBlock_eq_zero, toSquareBlock_zero]
 
 lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.IsUpperTriangular) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by
