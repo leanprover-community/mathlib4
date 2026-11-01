@@ -122,6 +122,44 @@ instance (κ : Cardinal.{w}) [Fact κ.IsRegular]
 instance (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     (isCardinalFilteredElementsOp C κ).IsClosedUnderCardinalFilteredColimits κ where
 
+open ObjectProperty.IsClosedUnderCardinalFilteredColimits in
+lemma isCardinalFilteredElementsOp_of_isColimit
+    [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    {J : Type*} [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] (F : J ⥤ C)
+    (ι : F ⋙ shrinkYoneda.{w} ⟶ (Functor.const _).obj P)
+    (h : IsColimit (Cocone.mk _ ι)) :
+    isCardinalFilteredElementsOp Cᵒᵖ κ P :=
+  have := isCardinalClosedUnderColimitsOfShape (isCardinalFilteredElementsOp Cᵒᵖ κ) κ J
+  (isCardinalFilteredElementsOp Cᵒᵖ κ).prop_of_isColimit h
+    (fun _ ↦ isCardinalFilteredElementsOp_shrinkYoneda_obj _ _)
+
+open ObjectProperty.IsClosedUnderCardinalFilteredColimits in
+lemma isCardinalFilteredElementsOp_of_isColimit'
+    [LocallySmall.{w} C] (P : C ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    {J : Type*} [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] (F : J ⥤ Cᵒᵖ)
+    (ι : F ⋙ shrinkCoyoneda.{w} ⟶ (Functor.const _).obj P)
+    (h : IsColimit (Cocone.mk _ ι)) :
+    isCardinalFilteredElementsOp C κ P :=
+  have := isCardinalClosedUnderColimitsOfShape (isCardinalFilteredElementsOp C κ) κ J
+  (isCardinalFilteredElementsOp C κ).prop_of_isColimit h
+    (fun _ ↦ isCardinalFilteredElementsOp_shrinkCoyoneda_obj _ _)
+
+open CategoryTheory.Functor Elements in
+lemma isCardinalFiltered_elements_op_iff [EssentiallySmall.{w} C]
+    (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered P.Elementsᵒᵖ κ ↔
+      ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ) (F : J ⥤ C)
+        (ι : F ⋙ shrinkYoneda.{w} ⟶ (Functor.const _).obj P),
+        Nonempty (IsColimit (Cocone.mk _ ι)) := by
+  refine ⟨fun h ↦ ?_,
+    fun ⟨J, _, _, F, ι, ⟨h⟩⟩ ↦ isCardinalFilteredElementsOp_of_isColimit P κ F ι h⟩
+  let e := equivSmallModel.{w} P.Elementsᵒᵖ
+  exact ⟨SmallModel.{w} P.Elementsᵒᵖ, inferInstance, IsCardinalFiltered.of_equivalence κ e,
+    e.inverse ⋙ (π P).leftOp,
+    (Functor.associator _ _ _).hom ≫ whiskerLeft e.inverse (shrinkYonedaCocone P).ι,
+    ⟨IsColimit.equivOfNatIsoOfIso ((Functor.associator _ _ _).symm) _ _ (Cocone.ext (Iso.refl _))
+      ((isColimitShrinkYonedaCocone P).whiskerEquivalence e.symm)⟩⟩
+
 end Presheaf
 
 end CategoryTheory

@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Types.PreservesLimit
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.Presheaf
+public import Mathlib.CategoryTheory.Presentable.PresheafFiltered
 public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.SmallRepresentatives
 
@@ -324,23 +325,6 @@ lemma isCardinalFiltered_elements_op
         naturality _ _ g := by
           ext
           simp [← limit.w (F.leftOp ⋙ Elements.π P) g.op] }⟩
-
-variable (κ) in
-lemma exists_presentation_of_isCardinalContinuous
-    (hC : ∀ (J : Type w) [SmallCategory J] (_ : HasCardinalLT (Arrow J) κ),
-      HasColimitsOfShape J C)
-    (P : Cᵒᵖ ⥤ Type w) [P.IsCardinalContinuous κ] :
-    ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ)
-      (G : J ⥤ C) (ι : G ⋙ shrinkYoneda.{w} ⟶ (Functor.const _).obj P),
-        Nonempty (IsColimit (Cocone.mk _ ι)) := by
-  let e := equivSmallModel.{w} P.Elementsᵒᵖ
-  have := isCardinalFiltered_elements_op P hC
-  exact ⟨SmallModel.{w} P.Elementsᵒᵖ, inferInstance, IsCardinalFiltered.of_equivalence κ e, _,
-    (Functor.associator _ _ _).hom ≫
-      Functor.whiskerLeft e.inverse (Elements.shrinkYonedaCocone P).ι,
-    ⟨(IsColimit.equivOfNatIsoOfIso (Functor.associator _ _ _) _ _
-      (Cocone.ext (Iso.refl _))).symm
-        (IsColimit.whiskerEquivalence (Elements.isColimitShrinkYonedaCocone P) e.symm)⟩⟩
 
 end EssentiallySmall
 
