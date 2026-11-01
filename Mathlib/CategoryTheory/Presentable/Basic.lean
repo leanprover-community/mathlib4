@@ -303,7 +303,7 @@ lemma Limits.exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT [IsCar
     {i : J} {ι : Type*} (hi : HasCardinalLT ι κ)
     (f : ι → (X ⟶ D.obj i)) (h : ∀ (k k' : ι), f k ≫ c.ι.app i = f k' ≫ c.ι.app i) :
     ∃ (j : J) (a : i ⟶ j), ∀ (k k' : ι), f k ≫ D.map a = f k' ≫ D.map a :=
-  (Types.FilteredColimit.isColimit_eq_iff'_of_hasCardinal_LT κ
+  (Types.FilteredColimit.isColimit_eq_iff'_of_hasCardinalLT κ
     (isColimitOfPreserves (coyoneda.obj (.op X)) hc) hi f).mp h
 
 lemma Limits.exists_hom_of_preservesColimit_yoneda {c : Cone D} (hc : IsLimit c) {X : C}
