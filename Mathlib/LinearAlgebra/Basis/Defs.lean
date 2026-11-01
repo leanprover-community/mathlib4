@@ -59,7 +59,7 @@ basis, bases
 
 @[expose] public section
 
-assert_not_exists LinearMap.pi LinearIndependent Cardinal
+assert_not_exists LinearMap.single LinearIndependent Cardinal
 -- TODO: assert_not_exists Submodule
 -- (should be possible after splitting `Mathlib/LinearAlgebra/Finsupp/LinearCombination.lean`)
 

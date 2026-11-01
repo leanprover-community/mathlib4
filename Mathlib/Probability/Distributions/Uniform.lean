@@ -211,7 +211,7 @@ open scoped Classical in
 @[simp]
 theorem uniformOfFinset_apply_singleton (a : α) :
     uniformOfFinset s {a} = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 := by
-  rw [uniformOfFinset, finsetSum_apply]
+  rw [uniformOfFinset, sum_apply]
   split_ifs with ha
   · rw [Finset.sum_eq_single_of_mem a ha]
     · simp
@@ -251,7 +251,7 @@ theorem uniformOfFinset_apply :
     uniformOfFinset s t = #{x ∈ s | x ∈ t} / #s :=
   calc
     uniformOfFinset s t = ∑ x ∈ s with x ∈ t, (#s : ℝ≥0∞)⁻¹ := by
-      rw [uniformOfFinset, finsetSum_apply, Finset.sum_filter]
+      rw [uniformOfFinset, sum_apply, Finset.sum_filter]
       refine Finset.sum_congr rfl fun x hx ↦ ?_
       split_ifs with hx' <;> simp_all
     _ = #{x ∈ s | x ∈ t} / #s := by
@@ -306,10 +306,10 @@ open scoped Classical in
 @[simp]
 theorem ofMultiset_apply_singleton (a : α) : ofMultiset s {a} = s.count a / (Multiset.card s) := by
   by_cases ha : a ∈ s
-  · rw [ofMultiset, finsetSum_apply, Finset.sum_eq_single_of_mem a (by simpa)]
+  · rw [ofMultiset, sum_apply, Finset.sum_eq_single_of_mem a (by simpa)]
     · simp
     · simp +contextual
-  · rw [ofMultiset, finsetSum_apply, Finset.sum_eq_zero]
+  · rw [ofMultiset, sum_apply, Finset.sum_eq_zero]
     · simp [ha]
     · simp
       grind

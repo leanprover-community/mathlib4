@@ -552,7 +552,7 @@ lemma convexOn_cfcₙ_of_convexOn_cfc {f : ℝ → ℝ} {s : Set A}
   let inrl : A →ₗ[ℝ] A⁺¹ := inrHom ℝ ℂ A
   by_cases hf₀ : f 0 = 0
   case neg =>
-    have : (cfcₙ f : A → A) = fun _ => 0 := by ext x; grind
+    have : (cfcₙ f : A → A) = fun _ => 0 := by grind
     rw [this]
     refine convexOn_const _ ?_
     have : Convex ℝ (inrl ⁻¹' inrl '' s) := Convex.linear_preimage hf.1 _

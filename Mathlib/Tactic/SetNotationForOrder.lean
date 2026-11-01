@@ -112,7 +112,7 @@ public def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getP
 
 /-! ## Elaboration -/
 
-/-- Linter for ambiguous use of subset notation notation. -/
+/-- Linter for ambiguous use of subset notation. -/
 register_option linter.setNotationForOrder : Bool := {
   defValue := true
   descr := "Linter for ambiguous use of subset notation notation" }
