@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Localization.Composition
 public import Mathlib.CategoryTheory.Localization.HasLocalization
@@ -67,7 +67,6 @@ noncomputable def homologyFunctorFactors (i : ι) :
 
 variable {C c}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_Q_map_iff_mem_quasiIso {K L : HomologicalComplex C c} (f : K ⟶ L) :
     IsIso (Q.map f) ↔ HomologicalComplex.quasiIso C c f := by
   constructor
@@ -138,7 +137,6 @@ instance : (quasiIso C c).IsMultiplicative where
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_eq_quasiIso_map_quotient :
     quasiIso C c = (HomologicalComplex.quasiIso C c).map (quotient C c) := by
   ext ⟨K⟩ ⟨L⟩ f
@@ -185,7 +183,6 @@ variable (C c)
 def quotientCompQhIso : HomotopyCategory.quotient C c ⋙ Qh ≅ Q := by
   apply Quotient.lift.isLift
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Qh_inverts_quasiIso : (HomotopyCategory.quasiIso C c).IsInvertedBy Qh := by
   rintro ⟨K⟩ ⟨L⟩ φ
   obtain ⟨φ, rfl⟩ := (HomotopyCategory.quotient C c).map_surjective φ

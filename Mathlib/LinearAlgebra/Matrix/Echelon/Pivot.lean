@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
-public import Mathlib.Order.WithBot
 
 /-!
 # Pivots of a matrix
@@ -56,7 +55,7 @@ theorem isLeadingEntry [LT m] [LT n] {i : m} {c : n} (hA : A.IsPivotedBy l) (hc 
     A.IsLeadingEntry i c := by
   refine ⟨fun j hj => (hA.isPivotEntry i).1 j ?_, (hA.isPivotEntry i).2 c hc⟩
   rw [hc]
-  exact_mod_cast hj
+  exact mod_cast hj
 
 theorem eq_top_iff [LT m] [LT n] {i : m} (hA : A.IsPivotedBy l) :
     l i = ⊤ ↔ A i = 0 := by
@@ -88,8 +87,8 @@ theorem unique [LT m] {l' : m → WithTop n}
     cases hc : l i with
     | top =>
       rw [hl.eq_top_iff] at hc
-      exact absurd (congrFun hc c') (hl'.isLeadingEntry hc').2
-    | coe c => exact_mod_cast (hl.isLeadingEntry hc).unique (hl'.isLeadingEntry hc')
+      exact absurd congr($hc c') (hl'.isLeadingEntry hc').2
+    | coe c => exact mod_cast (hl.isLeadingEntry hc).unique (hl'.isLeadingEntry hc')
 
 theorem strictMonoOn [Preorder m] (hA : A.IsPivotedBy l) :
     StrictMonoOn l {i | l i ≠ ⊤} :=

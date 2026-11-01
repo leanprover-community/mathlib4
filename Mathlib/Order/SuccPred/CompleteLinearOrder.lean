@@ -88,13 +88,6 @@ lemma IsGLB.exists_of_nonempty_of_not_isPredPrelimit
     (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) : ∃ i, f i = x :=
   hf.exists_of_nonempty_of_not_isPredLimit <| mt IsPredLimit.isPredPrelimit hx
 
-/-- Every conditionally complete linear order with well-founded `<` is a successor order, by setting
-the successor of an element to be the infimum of all larger elements. -/
-@[instance_reducible, deprecated SuccOrder.ofLinearWellFoundedLT +typeChanged
-  (since := "2026-04-12")]
-noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α] :
-    SuccOrder α := .ofLinearWellFoundedLT _
-
 end ConditionallyCompleteLinearOrder
 
 section ConditionallyCompleteLinearOrderBot
@@ -105,7 +98,7 @@ lemma csSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [isSuccPrelimit_bot] at hlim
   · apply csSup_mem_of_not_isSuccLimit hs _ <| mt IsSuccLimit.isSuccPrelimit hlim
-    contrapose! hlim
+    contrapose hlim
     rw [csSup_of_not_bddAbove hlim, csSup_empty]
     exact isSuccPrelimit_bot
 

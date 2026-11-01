@@ -5,7 +5,6 @@ Authors: Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Monoidal.Limits.Shapes.Pullback
@@ -24,8 +23,8 @@ diagram:
   A ⊗ Y --> B ⊗ Y
 ```
 
-In a monoidal closed category with pullbacks, the pullback-hom is the the Leibniz functor associated
-to the internal hom. This is the bifunctor of arrow categories that sends `f : A ⟶ B` and
+In a monoidal closed category with pullbacks, the pullback-hom is the Leibniz functor associated to
+the internal hom. This is the bifunctor of arrow categories that sends `f : A ⟶ B` and
 `g : X ⟶ Y` to the canonical map from `B ⟹ X` to the pullback of
 `(ihom A).map g : A ⟹ X ⟶ A ⟹ Y` and `(pre f).app Y : B ⟹ Y ⟶ A ⟹ Y`, induced by the
 following diagram:
@@ -107,7 +106,6 @@ section Monoidal
 
 variable [MonoidalCategory C] (X₁ X₂ X₃ : Arrow C) {W : C}
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Left-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `W ◁ X₁` and `X₂`. -/
@@ -127,7 +125,6 @@ def whiskerLeftIso
         (by simp [← whiskerLeft_comp_assoc]) (by simp [← whiskerLeft_comp_assoc]))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Right-whiskering the pushout-product of `X₁` and `X₂` with `W : C` is isomorphic to the
   pushout-product of `X₁` and `X₂ ▷ W`. -/
 @[simps!]
@@ -188,12 +185,11 @@ def associator
     · refine pushout.hom_ext ?_ (by simp)
       apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
   · apply pushout.hom_ext (by simp [← MonoidalCategory.whiskerLeft_comp])
-    · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-      · simp [← MonoidalCategory.whiskerLeft_comp, ← MonoidalCategory.comp_whiskerRight_assoc]
-      · simp [← MonoidalCategory.comp_whiskerRight_assoc]
+    apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
+    · simp [← MonoidalCategory.whiskerLeft_comp, ← MonoidalCategory.comp_whiskerRight_assoc]
+    · simp [← MonoidalCategory.comp_whiskerRight_assoc]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The pushout-product is commutative: `X₁ □ X₂ ≅ X₂ □ X₁`. -/
 @[simps!]
 noncomputable
@@ -262,7 +258,6 @@ end
 variable [HasInitial C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a CCC with pushouts and an initial object, then `X □ (⊥_ C ⟶ 𝟙_ C) ≅ X`. -/
 @[simp]
 noncomputable

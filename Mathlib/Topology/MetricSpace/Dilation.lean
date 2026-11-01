@@ -5,10 +5,10 @@ Authors: Hanting Zhang
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Antilipschitz
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Topology.MetricSpace.Isometry
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Data.FunLike.Basic
+
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Dilations
@@ -104,10 +104,10 @@ theorem coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : α →ᵈ β) = f :=
   rfl
 
 protected theorem congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 protected theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
-  DFunLike.congr_arg f h
+  congr(f $h)
 
 @[ext]
 theorem ext {f g : α →ᵈ β} (h : ∀ x, f x = g x) : f = g :=
@@ -336,17 +336,21 @@ instance : Monoid (α →ᵈ α) where
   one_mul := id_comp
   mul_assoc _ _ _ := comp_assoc _ _ _
 
+instance : IsOneApplyEqSelf (α →ᵈ α) where
+
+instance : IsMulApplyEqComp (α →ᵈ α) where
+
 theorem one_def : (1 : α →ᵈ α) = Dilation.id α :=
   rfl
 
 theorem mul_def (f g : α →ᵈ α) : f * g = f.comp g :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-10-26")]
 theorem coe_one : ⇑(1 : α →ᵈ α) = id :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-10-26")]
 theorem coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
   rfl
 

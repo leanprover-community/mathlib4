@@ -5,9 +5,9 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.Data.ULift
+
+import Mathlib.Data.ULift
 
 /-!
 # Basic API for ULift
@@ -61,7 +61,6 @@ def ULift.downFunctor : ULift.{u₂} C ⥤ C where
   obj := ULift.down
   map f := f
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The categorical equivalence between `C` and `ULift C`. -/
 @[simps]

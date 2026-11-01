@@ -1,6 +1,8 @@
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Basic.Real.Basic
-import Mathlib.Tactic.ApplyAt
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Tactic.ApplyAt
 
 example {α β : Type*} (f : α → β) (a : α) : β := by
   apply f at a
@@ -15,7 +17,7 @@ example {α : Type} (γ : α → Type) (a : α) (f : α → γ a) : γ a := by
   exact a
 
 example {α β : Type*} (f : α → β) (a b : α) (h : a = b) : f a = f b := by
-  apply congr_arg f at h
+  replace h := congr(f $h)
   guard_hyp h :ₛ f a = f b
   exact h
 

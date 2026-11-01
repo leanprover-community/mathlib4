@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intermediate Fields of Rational Function Fields
 
@@ -140,7 +143,7 @@ theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX 
     rw [mul_comm]
     rfl
   rw [this, MulEquiv.irreducible_iff]
-  convert!
+  convert
     irreducible_C_mul_X_add_C (neg_ne_zero.mpr f.denom_ne_zero)
       ((IsCoprime.neg_right_iff _ _).mpr f.isCoprime_num_denom).symm.isRelPrime using 1
   rw [add_comm, X_mul_C, map_neg, neg_mul]

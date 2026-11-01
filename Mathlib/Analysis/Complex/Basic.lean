@@ -101,7 +101,7 @@ theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : 
   (pow_left_inj₀ zero_le zero_le hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
 
 theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
-  congr_arg Subtype.val (nnnorm_eq_one_of_pow_eq_one h hn)
+  congr($(nnnorm_eq_one_of_pow_eq_one h hn).val)
 
 lemma le_of_eq_sum_of_eq_sum_norm {ι : Type*} {a b : ℝ} (f : ι → ℂ) (s : Finset ι) (ha₀ : 0 ≤ a)
     (ha : a = ∑ i ∈ s, f i) (hb : b = ∑ i ∈ s, (‖f i‖ : ℂ)) : a ≤ b := by
@@ -259,9 +259,6 @@ theorem conjCAE_toAlgEquiv : conjCAE.toAlgEquiv = conjAe :=
 
 @[simp] theorem conjCLE_toLinearEquiv : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
-
-@[deprecated "Now provable by simp" (since := "2026-04-13")]
-lemma conjCLE_coe_toLinearMap : (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap := by simp
 
 @[simp]
 theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
@@ -434,8 +431,6 @@ theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
 
 theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
   isometry_intCast.isClosedEmbedding
-
-@[deprecated (since := "2026-04-15")] alias closedEmbedding_intCast := isClosedEmbedding_intCast
 
 lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
   Complex.isClosedEmbedding_intCast.isClosed_range

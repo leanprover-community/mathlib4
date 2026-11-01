@@ -58,6 +58,11 @@ theorem neg_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : -x ∈ I.neg :=
   Interval.neg_mem Dyadic.toRealAddMonoidHom hx
 
 @[inclusion_op interval_dyadic_real]
+theorem abs_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : |x| ∈ I.abs :=
+  Interval.abs_mem Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
+    (map_neg Dyadic.toRealAddMonoidHom) hx
+
+@[inclusion_op interval_dyadic_real]
 theorem sub_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) : x - y ∈ I.sub J :=
   Interval.sub_mem Dyadic.toRealAddMonoidHom hx hy
 
@@ -65,6 +70,11 @@ theorem sub_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J
 theorem mul_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) : x * y ∈ I.mul J :=
   Interval.mul_mem Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
     Dyadic.toReal_mul hx hy
+
+@[inclusion_op interval_dyadic_real]
+theorem pow_mem (n : ℕ) {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : x ^ n ∈ I.pow n :=
+  Interval.pow_mem Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
+    (by exact map_one (Rat.castHom ℝ)) (map_neg Dyadic.toRealAddMonoidHom) Dyadic.toReal_pow n hx
 
 end Arithmetic
 
@@ -126,6 +136,32 @@ theorem mem_Ioo {a b x : ℝ} {I J K : Interval Dyadic} (ha : a ∈ I) (hx : x �
   Interval.mem_Ioo Dyadic.toRealOrderEmbedding ha hx hb
 
 end Props
+
+section Rounding
+
+/-- Round the lower endpoint of `I` down and the upper endpoint up, each to a multiple of
+`2 ^ (-prec)`. Infinite endpoints are left unchanged, so the result always contains `I`.
+
+This drops surplus bits so that later computations don't have to carry them. For example, a large
+power of an interval (as in `expPoint`) has endpoints with very long binary expansions. -/
+def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
+  ⟨I.lb.map (fun l ↦ Dyadic.roundDown l prec), I.ub.map (fun u ↦ Dyadic.roundUp u prec)⟩
+
+theorem mem_roundOut_iff {x : ℝ} {I : Interval Dyadic} {prec : ℕ} :
+    x ∈ roundOut I prec ↔
+      (∀ J : Dyadic, I.lb = J → (J.roundDown prec).toReal ≤ x) ∧
+      (∀ J : Dyadic, I.ub = J → x ≤ (J.roundUp prec).toReal) := by
+  rw [mem_iff_mem_map, Interval.mem_map_iff]
+  simp [roundOut, WithBot.map_eq_some_iff, WithTop.map_eq_some_iff]
+
+theorem roundOut_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
+    x ∈ roundOut I prec := by
+  rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
+  refine mem_roundOut_iff.mpr ⟨fun l hl ↦ ?_, fun u hu ↦ ?_⟩
+  · exact (Dyadic.toReal_le_toReal.mpr Dyadic.roundDown_le).trans (hx.1 l hl)
+  · exact (hx.2 u hu).trans (Dyadic.toReal_le_toReal.mpr Dyadic.le_roundUp)
+
+end Rounding
 
 end IntervalDyadicReal
 

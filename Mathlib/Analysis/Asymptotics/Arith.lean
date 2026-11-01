@@ -6,7 +6,8 @@ Authors: Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.Basic
-public import Mathlib.Analysis.Normed.Ring.Basic
+
+import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
 # Arithmetic operations on asymptotic relations
@@ -42,40 +43,40 @@ section Abs
 variable {u v : α → ℝ}
 
 @[simp]
-theorem isBigOWith_abs_right : (IsBigOWith c l f fun x => |u x|) ↔ IsBigOWith c l f u :=
-  by simpa only [Real.norm_eq_abs] using
+theorem isBigOWith_abs_right : (IsBigOWith c l f fun x => |u x|) ↔ IsBigOWith c l f u := by
+  simpa only [Real.norm_eq_abs] using
     (isBigOWith_norm_right (c := c) (l := l) (f := f) (g' := u))
 
 alias ⟨IsBigOWith.of_abs_right, IsBigOWith.abs_right⟩ := isBigOWith_abs_right
 
 @[simp]
-theorem isBigO_abs_right : (f =O[l] fun x => |u x|) ↔ f =O[l] u :=
-  by simpa only [Real.norm_eq_abs] using (isBigO_norm_right (l := l) (f := f) (g' := u))
+theorem isBigO_abs_right : (f =O[l] fun x => |u x|) ↔ f =O[l] u := by
+  simpa only [Real.norm_eq_abs] using (isBigO_norm_right (l := l) (f := f) (g' := u))
 
 alias ⟨IsBigO.of_abs_right, IsBigO.abs_right⟩ := isBigO_abs_right
 
 @[simp]
-theorem isLittleO_abs_right : (f =o[l] fun x => |u x|) ↔ f =o[l] u :=
-  by simpa only [Real.norm_eq_abs] using (isLittleO_norm_right (l := l) (f := f) (g' := u))
+theorem isLittleO_abs_right : (f =o[l] fun x => |u x|) ↔ f =o[l] u := by
+  simpa only [Real.norm_eq_abs] using (isLittleO_norm_right (l := l) (f := f) (g' := u))
 
 alias ⟨IsLittleO.of_abs_right, IsLittleO.abs_right⟩ := isLittleO_abs_right
 
 @[simp]
-theorem isBigOWith_abs_left : IsBigOWith c l (fun x => |u x|) g ↔ IsBigOWith c l u g :=
-  by simpa only [Real.norm_eq_abs] using
+theorem isBigOWith_abs_left : IsBigOWith c l (fun x => |u x|) g ↔ IsBigOWith c l u g := by
+  simpa only [Real.norm_eq_abs] using
     (isBigOWith_norm_left (c := c) (l := l) (f' := u) (g := g))
 
 alias ⟨IsBigOWith.of_abs_left, IsBigOWith.abs_left⟩ := isBigOWith_abs_left
 
 @[simp]
-theorem isBigO_abs_left : (fun x => |u x|) =O[l] g ↔ u =O[l] g :=
-  by simpa only [Real.norm_eq_abs] using (isBigO_norm_left (l := l) (f' := u) (g := g))
+theorem isBigO_abs_left : (fun x => |u x|) =O[l] g ↔ u =O[l] g := by
+  simpa only [Real.norm_eq_abs] using (isBigO_norm_left (l := l) (f' := u) (g := g))
 
 alias ⟨IsBigO.of_abs_left, IsBigO.abs_left⟩ := isBigO_abs_left
 
 @[simp]
-theorem isLittleO_abs_left : (fun x => |u x|) =o[l] g ↔ u =o[l] g :=
-  by simpa only [Real.norm_eq_abs] using (isLittleO_norm_left (l := l) (f' := u) (g := g))
+theorem isLittleO_abs_left : (fun x => |u x|) =o[l] g ↔ u =o[l] g := by
+  simpa only [Real.norm_eq_abs] using (isLittleO_norm_left (l := l) (f' := u) (g := g))
 
 alias ⟨IsLittleO.of_abs_left, IsLittleO.abs_left⟩ := isLittleO_abs_left
 
@@ -101,40 +102,40 @@ end Abs
 
 @[simp]
 theorem isBigOWith_neg_right : (IsBigOWith c l f fun x => -g' x) ↔ IsBigOWith c l f g' := by
-  simp only [IsBigOWith_def, norm_neg]
+  simp only [isBigOWith_iff, norm_neg]
 
 alias ⟨IsBigOWith.of_neg_right, IsBigOWith.neg_right⟩ := isBigOWith_neg_right
 
 @[simp]
 theorem isBigO_neg_right : (f =O[l] fun x => -g' x) ↔ f =O[l] g' := by
-  simp only [IsBigO_def]
+  simp only [isBigO_iff_isBigOWith]
   exact exists_congr fun _ => isBigOWith_neg_right
 
 alias ⟨IsBigO.of_neg_right, IsBigO.neg_right⟩ := isBigO_neg_right
 
 @[simp]
 theorem isLittleO_neg_right : (f =o[l] fun x => -g' x) ↔ f =o[l] g' := by
-  simp only [IsLittleO_def]
+  simp only [isLittleO_iff_forall_isBigOWith]
   exact forall₂_congr fun _ _ => isBigOWith_neg_right
 
 alias ⟨IsLittleO.of_neg_right, IsLittleO.neg_right⟩ := isLittleO_neg_right
 
 @[simp]
 theorem isBigOWith_neg_left : IsBigOWith c l (fun x => -f' x) g ↔ IsBigOWith c l f' g := by
-  simp only [IsBigOWith_def, norm_neg]
+  simp only [isBigOWith_iff, norm_neg]
 
 alias ⟨IsBigOWith.of_neg_left, IsBigOWith.neg_left⟩ := isBigOWith_neg_left
 
 @[simp]
 theorem isBigO_neg_left : (fun x => -f' x) =O[l] g ↔ f' =O[l] g := by
-  simp only [IsBigO_def]
+  simp only [isBigO_iff_isBigOWith]
   exact exists_congr fun _ => isBigOWith_neg_left
 
 alias ⟨IsBigO.of_neg_left, IsBigO.neg_left⟩ := isBigO_neg_left
 
 @[simp]
 theorem isLittleO_neg_left : (fun x => -f' x) =o[l] g ↔ f' =o[l] g := by
-  simp only [IsLittleO_def]
+  simp only [isLittleO_iff_forall_isBigOWith]
   exact forall₂_congr fun _ _ => isBigOWith_neg_left
 
 alias ⟨IsLittleO.of_neg_left, IsLittleO.neg_left⟩ := isLittleO_neg_left
@@ -154,7 +155,7 @@ variable {f₁ f₂ : α → E'} {g₁ g₂ : α → F'}
 
 theorem IsBigOWith.add (h₁ : IsBigOWith c₁ l f₁ g) (h₂ : IsBigOWith c₂ l f₂ g) :
     IsBigOWith (c₁ + c₂) l (fun x => f₁ x + f₂ x) g := by
-  rw [IsBigOWith_def] at *
+  rw [isBigOWith_iff] at *
   filter_upwards [h₁, h₂] with x hx₁ hx₂ using
     calc
       ‖f₁ x + f₂ x‖ ≤ c₁ * ‖g x‖ + c₂ * ‖g x‖ := norm_add_le_of_le hx₁ hx₂
@@ -173,7 +174,7 @@ theorem IsLittleO.add (h₁ : f₁ =o[l] g) (h₂ : f₂ =o[l] g) : (fun x => f�
 theorem IsBigOWith.add_add {g₁ g₂ : α → ℝ} (h₁ : IsBigOWith c₁ l f₁ g₁)
     (h₂ : IsBigOWith c₂ l f₂ g₂) :
     IsBigOWith (max c₁ c₂) l (fun x ↦ f₁ x + f₂ x) (fun x ↦ ‖g₁ x‖ + ‖g₂ x‖) := by
-  rw [IsBigOWith_def] at *
+  rw [isBigOWith_iff] at *
   filter_upwards [h₁, h₂] with x hx₁ hx₂
   calc
     ‖f₁ x + f₂ x‖ ≤ c₁ * ‖g₁ x‖ + c₂ * ‖g₂ x‖ := norm_add_le_of_le hx₁ hx₂
@@ -326,7 +327,7 @@ variable {g g' l}
 
 @[simp]
 theorem isBigOWith_zero_right_iff : (IsBigOWith c l f'' fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 := by
-  simp only [IsBigOWith_def, norm_zero, mul_zero, norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
+  simp only [isBigOWith_iff, norm_zero, mul_zero, norm_le_zero_iff, EventuallyEq, Pi.zero_apply]
 
 @[simp]
 theorem isBigO_zero_right_iff : (f'' =O[l] fun _x => (0 : F')) ↔ f'' =ᶠ[l] 0 :=
@@ -342,7 +343,7 @@ theorem isLittleO_zero_right_iff : (f'' =o[l] fun _x => (0 : F')) ↔ f'' =ᶠ[l
 
 theorem isBigOWith_const_const (c : E) {c' : F''} (hc' : c' ≠ 0) (l : Filter α) :
     IsBigOWith (‖c‖ / ‖c'‖) l (fun _x : α => c) fun _x => c' := by
-  simp only [IsBigOWith_def]
+  simp only [isBigOWith_iff]
   apply univ_mem'
   intro x
   rw [mem_ofPred, div_mul_cancel₀ _ (norm_ne_zero_iff.mpr hc')]
@@ -383,7 +384,7 @@ variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
     exact h.1.add (IH h.2)
 
 @[to_fun] theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (∑ i ∈ s, A i) =O[l] g := by
-  simp only [IsBigO_def] at *
+  simp only [isBigO_iff_isBigOWith] at *
   choose! C hC using h
   exact ⟨_, IsBigOWith.sum hC⟩
 
@@ -399,7 +400,7 @@ theorem IsBigOWith.sum_congr
     IsBigOWith (sSup (C '' s)) l (fun H ↦ ∑ i ∈ s, A i H) (fun H ↦ ∑ i ∈ s, ‖B i H‖) := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [isBigOWith_zero]
-  simp only [IsBigOWith_def] at *
+  simp only [isBigOWith_iff] at *
   filter_upwards [(eventually_all_finset s).mpr hAB]
     with x hx
   calc
@@ -415,7 +416,7 @@ theorem IsBigOWith.sum_congr
 
 theorem IsBigO.sum_congr (hAB : ∀ i ∈ s, A i =O[l] B i) :
     (fun H => ∑ i ∈ s, A i H) =O[l] fun H => ∑ i ∈ s, ‖B i H‖ := by
-  simp only [IsBigO_def] at *
+  simp only [isBigO_iff_isBigOWith] at *
   choose! C hC using hAB
   exact ⟨_, IsBigOWith.sum_congr hC⟩
 
@@ -429,7 +430,7 @@ theorem IsLittleO.sum_congr (hAB : ∀ i ∈ s, A i =o[l] B i) :
       =o[l] fun H => ‖B i H‖ + ‖∑ j ∈ s, ‖B j H‖‖ :=
           (hAB i (by simp)).add_add (h (fun j hj => hAB j (by simp [hj])))
     _ =ᶠ[l] fun H => ‖B i H‖ + ∑ j ∈ s, ‖B j H‖ := by
-        refine Eventually.of_forall fun H ↦ congr_arg (‖B i H‖ + ·) ?_
+        refine Eventually.of_forall fun H ↦ congr(‖B i H‖ + $(?_))
         exact Real.norm_of_nonneg (Finset.sum_nonneg fun _ _ => norm_nonneg _)
 
 /-- Similar to `IsBigOWith.sum_congr` except the index set can change in the sum. This requires the
@@ -438,7 +439,7 @@ at the same point along the running variable. Hence the `⊤` in `⊤ ×ˢ l`. -
 theorem IsBigOWith.sum_congr' {C : ℝ} {i : α → Finset ι}
     (hAB : IsBigOWith C (⊤ ×ˢ l) A.uncurry B.uncurry) :
     IsBigOWith C l (fun H => ∑ j ∈ i H, A j H) (fun H => ∑ j ∈ i H, ‖B j H‖) := by
-  simp only [IsBigOWith_def] at *
+  simp only [isBigOWith_iff] at *
   obtain ⟨s₁, hs₁, s₂, hs₂, hbound⟩ := Filter.eventually_prod_iff.mp hAB
   filter_upwards [hs₂] with H hH
   calc
@@ -451,7 +452,7 @@ theorem IsBigOWith.sum_congr' {C : ℝ} {i : α → Finset ι}
 
 theorem IsBigO.sum_congr' {i : α → Finset ι} (hAB : A.uncurry =O[⊤ ×ˢ l] B.uncurry) :
     (fun H => ∑ j ∈ i H, A j H) =O[l] (fun H => ∑ j ∈ i H, ‖B j H‖) := by
-  simp only [IsBigO_def]
+  simp only [isBigO_iff_isBigOWith]
   obtain ⟨C, hC⟩ := hAB.isBigOWith
   exact ⟨C, hC.sum_congr'⟩
 

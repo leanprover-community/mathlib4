@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
-public import Mathlib.CategoryTheory.Functor.Flat
+public import Mathlib.CategoryTheory.Sites.Equivalence
 
 /-! # Localization
 
@@ -50,7 +49,6 @@ lemma map_functorPullback_overForget {X : C} {Y : Over X} (R : Presieve Y.left) 
   le_antisymm (map_functorPullback _) fun Z g hg ↦
     map.of (u := (Over.homMk g : Over.mk (g ≫ Y.hom) ⟶ Y)) hg
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Presieve Y ≃ Presieve Y.left` for all `Y : Over X`. -/
 @[simps]
 def overEquiv {X : C} (Y : Over X) : Presieve Y ≃o Presieve Y.left where
@@ -83,7 +81,6 @@ lemma functorPushforward_functorPullback_overForget {X : C} {Y : Over X} (S : Si
   apply arrows_ext
   simp [← arrows_generate_map_eq_functorPushforward]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Sieve Y ≃ Sieve Y.left` for all `Y : Over X`. -/
 @[simps -isSimp] -- working with `overEquiv` is useful enough that we don't want `simp` unfolding it
 def overEquiv {X : C} (Y : Over X) : Sieve Y ≃o Sieve Y.left where
@@ -127,7 +124,6 @@ lemma overEquiv_symm_iff {X : C} {Y : Over X} (S : Sieve Y.left) {Z : Over X} (f
     (overEquiv Y).symm S f ↔ S f.left := by
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma overEquiv_iff {X : C} {Y : Over X} (S : Sieve Y) {Z : C} (f : Z ⟶ Y.left) :
     overEquiv Y S f ↔ S (Over.homMk f : Over.mk (f ≫ Y.hom) ⟶ Y) := by
   obtain ⟨S, rfl⟩ := (overEquiv Y).symm.surjective S
@@ -159,7 +155,6 @@ lemma overEquiv_generate {X : C} {Y : Over X} (R : Presieve Y) :
     rintro Z g ⟨W, u, v, hu, rfl⟩
     exact (overEquiv_iff _ _).mpr ⟨W, Over.homMk v, u, hu, rfl⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
     (overEquiv Y).symm (.generate R) =
       .generate (Presieve.functorPullback (Over.forget X) R) := by
@@ -172,7 +167,6 @@ lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
   · rw [generate_le_iff]
     exact fun Z g hg ↦ le_generate _ _ _ hg
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Sieve Z.left) :
     Sieve.functorPushforward (Over.map f) ((Sieve.overEquiv Z).symm S) =
@@ -185,7 +179,6 @@ lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Siev
     exact ⟨Over.mk (g.left ≫ Z.hom), Over.homMk g.left,
       Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by cat_disch⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma overEquiv_functorPullback_map {X Y : C} (f : X ⟶ Y) (U : Over X)
     (S : Sieve ((Over.map f).obj U)) :
     overEquiv U (S.functorPullback (Over.map f)) =
@@ -202,8 +195,6 @@ lemma overEquiv_functorPullback_map {X Y : C} (f : X ⟶ Y) (U : Over X)
   rw [Sieve.overEquiv_iff, Sieve.overEquiv_iff]
   simp [Presieve.functorPullback, heq]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X : C}
     (U : Over X) (S : Sieve ((Over.post F).obj U)) :
     (Sieve.overEquiv U) (Sieve.functorPullback (Over.post F) S) =
@@ -288,7 +279,6 @@ lemma over_map_coverPreserving {X Y : C} (f : X ⟶ Y) :
     apply overEquiv_symm_mem_over
     simpa [mem_over_iff] using! hS
 
-set_option backward.defeqAttrib.useBackward true in
 lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
     CompatiblePreserving (J.over Y) (Over.map f) where
   compatible {F Z _ x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
@@ -512,7 +502,6 @@ def Sheaf.pushforwardOverMapIso (F : Sheaf J A) {X Y : C} (f : X ⟶ Y) :
   ObjectProperty.isoMk _ (NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp))
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- For `f : X ⟶ Y`, this is the morphism from `F.over Y` to the pushforward of `F.over X`
 along `Over.pullback f` induced by `Limits.pullback.fst`. -/
 @[simps]

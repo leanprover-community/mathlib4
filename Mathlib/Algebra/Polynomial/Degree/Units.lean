@@ -8,13 +8,14 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Degree.SmallDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Degree of polynomials that are units
 -/
 
 public section
-
-noncomputable section
 
 open Polynomial
 
