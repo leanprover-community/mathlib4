@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Tactic.ENatToNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of sequences (possibly infinite lists)
 

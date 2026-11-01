@@ -749,7 +749,7 @@ theorem setIntegral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
   by_cases hE : CompleteSpace E
   · exact integral_mono_ae hf hg h
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
 
 theorem setIntegral_mono_ae (h : f ≤ᵐ[μ] g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   setIntegral_mono_ae_restrict hf hg (ae_restrict_of_ae h)
@@ -1024,11 +1024,15 @@ open Measure
 variable [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
   {μ : Measure X} [IsOpenPosMeasure μ]
 
-theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMeasureOnCompacts μ]
+theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero [IsFiniteMeasureOnCompacts μ]
     {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
     (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
-  integral_pos_of_integrable_nonneg_nonzero f_cont (f_cont.integrable_of_hasCompactSupport f_comp)
+  integral_pos_of_integrable_nonneg_ne_zero f_cont (f_cont.integrable_of_hasCompactSupport f_comp)
     f_nonneg f_x
+
+@[deprecated (since := "2026-10-13")]
+alias Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero :=
+  Continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
 
 end OpenPos
 

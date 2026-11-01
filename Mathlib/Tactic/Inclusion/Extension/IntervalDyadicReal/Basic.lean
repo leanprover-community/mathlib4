@@ -137,6 +137,32 @@ theorem mem_Ioo {a b x : ℝ} {I J K : Interval Dyadic} (ha : a ∈ I) (hx : x �
 
 end Props
 
+section Rounding
+
+/-- Round the lower endpoint of `I` down and the upper endpoint up, each to a multiple of
+`2 ^ (-prec)`. Infinite endpoints are left unchanged, so the result always contains `I`.
+
+This drops surplus bits so that later computations don't have to carry them. For example, a large
+power of an interval (as in `expPoint`) has endpoints with very long binary expansions. -/
+def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
+  ⟨I.lb.map (fun l ↦ Dyadic.roundDown l prec), I.ub.map (fun u ↦ Dyadic.roundUp u prec)⟩
+
+theorem mem_roundOut_iff {x : ℝ} {I : Interval Dyadic} {prec : ℕ} :
+    x ∈ roundOut I prec ↔
+      (∀ J : Dyadic, I.lb = J → (J.roundDown prec).toReal ≤ x) ∧
+      (∀ J : Dyadic, I.ub = J → x ≤ (J.roundUp prec).toReal) := by
+  rw [mem_iff_mem_map, Interval.mem_map_iff]
+  simp [roundOut, WithBot.map_eq_some_iff, WithTop.map_eq_some_iff]
+
+theorem roundOut_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
+    x ∈ roundOut I prec := by
+  rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
+  refine mem_roundOut_iff.mpr ⟨fun l hl ↦ ?_, fun u hu ↦ ?_⟩
+  · exact (Dyadic.toReal_le_toReal.mpr Dyadic.roundDown_le).trans (hx.1 l hl)
+  · exact (hx.2 u hu).trans (Dyadic.toReal_le_toReal.mpr Dyadic.le_roundUp)
+
+end Rounding
+
 end IntervalDyadicReal
 
 end Inclusion

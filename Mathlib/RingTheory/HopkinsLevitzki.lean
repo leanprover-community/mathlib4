@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 import Mathlib.RingTheory.Noetherian.Nilpotent
 
 /-!
-## The Hopkins–Levitzki theorem
+# The Hopkins–Levitzki theorem
 
 ## Main results
 
@@ -28,7 +28,7 @@ import Mathlib.RingTheory.Noetherian.Nilpotent
 * `isArtinianRing_iff_isNoetherianRing_krullDimLE_zero`: a commutative ring is Artinian iff
   it is Noetherian with Krull dimension at most 0.
 
-## Reference
+## References
 
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
