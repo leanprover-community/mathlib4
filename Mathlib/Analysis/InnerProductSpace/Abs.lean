@@ -114,7 +114,8 @@ theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = |T| ∘L |T|
   exact abs_of_nonneg _
 
 theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
-  rw [abs_def, CFC.sqrt_eq_iff _ _ (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self (c • T)))
+  rw [abs_def, CFC.sqrt_eq_iff _ _
+    (nonneg_iff_isPositive.mpr (isPositive_adjoint_comp_self (c • T)))
     (smul_nonneg (norm_nonneg c) T.abs_nonneg), smul_mul_smul_comm, mul_def, abs_comp_abs]
   simp [LinearIsometryEquiv.map_smulₛₗ, ← smul_assoc, Complex.mul_conj', ← sq]
   norm_cast
