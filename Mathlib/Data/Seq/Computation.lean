@@ -109,7 +109,7 @@ unsafe def run : Computation α → α
 theorem destruct_eq_pure {s : Computation α} {a : α} : destruct s = Sum.inl a → s = pure a := by
   unfold destruct
   cases f0 : s.1 0 <;> intro h
-  · simp only [reduceCtorEq] at h
+  · cases h
   · refine Subtype.ext (funext fun n ↦ ?_)
     induction n with
     | zero => cases h; exact f0
@@ -184,7 +184,7 @@ def Corec.f (f : β → α ⊕ β) : α ⊕ β → Option α × (α ⊕ β)
       f b)
 
 /-- `corec f b` is the corecursor for `Computation α` as a coinductive type.
-  If `f b = inl a` then `corec f b = pure a`, and if `f b = inl b'` then
+  If `f b = inl a` then `corec f b = pure a`, and if `f b = inr b'` then
   `corec f b = think (corec f b')`. -/
 def corec (f : β → α ⊕ β) (b : β) : Computation α := by
   refine ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => ?_⟩
@@ -194,9 +194,7 @@ def corec (f : β → α ⊕ β) (b : β) : Computation α := by
     rcases o with _ | b
     · exact h
     · rw [Stream'.corec'_eq] at h ⊢
-      rcases e : f b with _ | _
-      · simp_all [Stream'.cons, Stream'.corec', Stream'.corec, Stream'.map, Corec.f]
-      · simp_all [Corec.f, Stream'.cons]
+      rcases e : f b with _ | _ <;> simp_all [Corec.f, Stream'.cons, Stream'.corec'_eq]
   | succ n IH =>
     rw [Stream'.corec'_eq] at h ⊢
     dsimp only [Stream'.cons]

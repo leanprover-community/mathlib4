@@ -388,7 +388,7 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
   rintro _ _ ⟨a, s, S, rfl, rfl⟩
   cases s with
   | nil => simp [join_cons_nil]
-  | cons b s => exact .inr ⟨a, _, _, join_cons_cons .., by simp, b, s, S, rfl, rfl⟩
+  | cons b s => simpa [join_cons_cons] using .inr ⟨s, S, rfl, rfl⟩
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
