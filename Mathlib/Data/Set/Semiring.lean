@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Order.Ring.Canonical
-public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
@@ -49,9 +48,8 @@ def toSet : SetSemiring α ≃ Set α := Equiv.refl _
 @[simp] lemma symm_toSet : toSet (α := α).symm = ofSet := rfl
 @[simp] lemma symm_ofSet : ofSet (α := α).symm = toSet := rfl
 
-instance : SetLike (SetSemiring α) α where
-  coe := toSet
-  coe_injective := toSet.injective
+instance : Membership α (SetSemiring α) where
+  mem s a := a ∈ s.toSet
 
 instance : Singleton α (SetSemiring α) where
   singleton a := ofSet {a}
