@@ -123,9 +123,9 @@ variable [SecondCountableTopology ι]
 
 /-- The variation of a process with right-continuous paths over the times in a set `s` is
 measurable. -/
-theorem measurable_eVariationOn_of_continuousWithinAt_Ioi {m : MeasurableSpace Ω} {s : Set ι}
+theorem measurable_eVariationOn_of_isRightContinuousOn {m : MeasurableSpace Ω} {s : Set ι}
     {X : ι → Ω → E} (hX : ∀ i ∈ s, StronglyMeasurable[m] (X i))
-    (hcont : ∀ ω, ∀ i ∈ s, ContinuousWithinAt (X · ω) (s ∩ Ioi i) i) :
+    (hcont : ∀ ω, IsRightContinuousOn (X · ω) s) :
     Measurable[m] fun ω ↦ eVariationOn (X · ω) s := by
   obtain ⟨t, ht, htc, hts⟩ : ∃ t : Set s, Dense t ∧ t.Countable ∧ {x : s | 𝓝[>] x = ⊥} ⊆ t := by
     obtain ⟨d, hdc, hdd⟩ := exists_countable_dense s
@@ -133,7 +133,7 @@ theorem measurable_eVariationOn_of_continuousWithinAt_Ioi {m : MeasurableSpace �
     have hsub : {x : s | 𝓝[>] x = ⊥} ⊆ Subtype.val ⁻¹' {x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥} :=
       fun x hx ↦ ⟨x.2, (nhdsGT_subtype_eq_bot_iff x.2).1 hx⟩
     exact ((countable_setOfPred_isolated_right_within).preimage Subtype.val_injective).mono hsub
-  simp only [fun ω ↦ eVariationOn.eq_of_dense_of_continuousWithinAt_Ioi ht hts (hcont ω)]
+  simp only [fun ω ↦ eVariationOn.eq_of_dense_of_isRightContinuousOn ht hts (hcont ω)]
   exact measurable_eVariationOn_of_countable (htc.image _) fun i hi ↦ hX i
     (Subtype.coe_image_subset s t hi)
 
@@ -144,8 +144,8 @@ theorem MeasureTheory.StronglyAdapted.measurable_variationProcess_of_isRightCont
     (hcont : ∀ ω, IsRightContinuous (X · ω)) {a t : ι} (hat : a ≤ t) :
     Measurable[𝓕 t] (variationProcess X a t) := by
   rw [funext fun ω ↦ variationProcess_eq_toReal_eVariationOn_Icc X hat ω]
-  exact Measurable.ennreal_toReal <| measurable_eVariationOn_of_continuousWithinAt_Ioi
-    (fun i hi ↦ (hX i).mono (𝓕.mono hi.2)) fun ω i _ ↦ (hcont ω i).mono inter_subset_right
+  exact Measurable.ennreal_toReal <| measurable_eVariationOn_of_isRightContinuousOn
+    (fun i hi ↦ (hX i).mono (𝓕.mono hi.2)) fun ω ↦ (hcont ω).isRightContinuousOn
 
 /-- If the index set has a bottom element, then the variation process of a strongly adapted process
 with right-continuous paths is adapted. -/
@@ -156,13 +156,14 @@ theorem MeasureTheory.StronglyAdapted.adapted_variationProcess_of_isRightContinu
 
 /-- The variation of a process with left-continuous paths over the times in a set `s` is
 measurable. -/
-theorem measurable_eVariationOn_of_continuousWithinAt_Iio {m : MeasurableSpace Ω} {s : Set ι}
+@[to_dual existing]
+theorem measurable_eVariationOn_of_isLeftContinuousOn {m : MeasurableSpace Ω} {s : Set ι}
     {X : ι → Ω → E} (hX : ∀ i ∈ s, StronglyMeasurable[m] (X i))
-    (hcont : ∀ ω, ∀ i ∈ s, ContinuousWithinAt (X · ω) (s ∩ Iio i) i) :
+    (hcont : ∀ ω, IsLeftContinuousOn (X · ω) s) :
     Measurable[m] fun ω ↦ eVariationOn (X · ω) s := by
   have hdual : ∀ ω, eVariationOn (fun i ↦ X (OrderDual.ofDual i) ω) (OrderDual.ofDual ⁻¹' s)
     = eVariationOn (X · ω) s := fun ω ↦ eVariationOn.comp_ofDual (X · ω) s
-  simpa [hdual] using measurable_eVariationOn_of_continuousWithinAt_Ioi
+  simpa [hdual] using measurable_eVariationOn_of_isRightContinuousOn
     (s := OrderDual.ofDual ⁻¹' s) (X := fun i ↦ X (OrderDual.ofDual i)) hX hcont
 
 /-- For `a ≤ t`, the value at time `t` of the variation process of a strongly adapted process with
@@ -172,8 +173,8 @@ theorem MeasureTheory.StronglyAdapted.measurable_variationProcess_of_isLeftConti
     (hcont : ∀ ω, IsLeftContinuous (X · ω)) {a t : ι} (hat : a ≤ t) :
     Measurable[𝓕 t] (variationProcess X a t) := by
   rw [funext fun ω ↦ variationProcess_eq_toReal_eVariationOn_Icc X hat ω]
-  exact Measurable.ennreal_toReal <| measurable_eVariationOn_of_continuousWithinAt_Iio
-    (fun i hi ↦ (hX i).mono (𝓕.mono hi.2)) fun ω i _ ↦ (hcont ω i).mono inter_subset_right
+  exact Measurable.ennreal_toReal <| measurable_eVariationOn_of_isLeftContinuousOn
+    (fun i hi ↦ (hX i).mono (𝓕.mono hi.2)) fun ω ↦ (hcont ω).isLeftContinuousOn
 
 /-- If the index set has a bottom element, then the variation process of a strongly adapted process
 with left-continuous paths is adapted. -/

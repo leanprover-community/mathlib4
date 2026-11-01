@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Tactic.Bound
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Order.Cadlag
 public import Mathlib.Topology.Order.LeftRightLim
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
@@ -773,11 +774,11 @@ theorem eq_of_dense_of_continuousOn (ht : Dense t) (hf : ContinuousOn f s) :
   filter_upwards [hlt, hmem] with c hclt hcmem
   exact le_iSup_of_le ⟨n, c, hclt, hcmem⟩ le_rfl
 
-/-- The variation of a function that is right-continuous within `s` at every point of `s` can be
-computed using only points of a dense subset `t` of `s`, provided `t` contains every point of `s`
-that is isolated on the right. -/
-theorem eq_of_dense_of_continuousWithinAt_Ioi (ht : Dense t) (hts : {x : s | 𝓝[>] x = ⊥} ⊆ t)
-    (hf : ∀ x ∈ s, ContinuousWithinAt f (s ∩ Ioi x) x) :
+/-- The variation of a function that is right-continuous on `s` can be computed using only points
+of a dense subset `t` of `s`, provided `t` contains every point of `s` that is isolated on the
+right. -/
+theorem eq_of_dense_of_isRightContinuousOn (ht : Dense t) (hts : {x : s | 𝓝[>] x = ⊥} ⊆ t)
+    (hf : IsRightContinuousOn f s) :
     eVariationOn f s = eVariationOn f t := by
   refine le_antisymm ?_ (mono f (Subtype.coe_image_subset s t))
   simp only [eVariationOn_eq_strictMonoOn, iSup_le_iff, Sigma.forall, Subtype.forall, mem_Iic,
@@ -822,14 +823,15 @@ theorem eq_of_dense_of_continuousWithinAt_Ioi (ht : Dense t) (hts : {x : s | �
   filter_upwards [hlt, hmem] with c hclt hcmem
   exact le_iSup_of_le ⟨n, c, hclt, hcmem⟩ le_rfl
 
-/-- The variation of a function that is left-continuous within `s` at every point of `s` can be
-computed using only points of a dense subset `t` of `s`, provided `t` contains every point of `s`
-that is isolated on the left. -/
-theorem eq_of_dense_of_continuousWithinAt_Iio (ht : Dense t) (hts : {x : s | 𝓝[<] x = ⊥} ⊆ t)
-    (hf : ∀ x ∈ s, ContinuousWithinAt f (s ∩ Iio x) x) :
+/-- The variation of a function that is left-continuous on `s` can be computed using only points
+of a dense subset `t` of `s`, provided `t` contains every point of `s` that is isolated on the
+left. -/
+@[to_dual existing]
+theorem eq_of_dense_of_isLeftContinuousOn (ht : Dense t) (hts : {x : s | 𝓝[<] x = ⊥} ⊆ t)
+    (hf : IsLeftContinuousOn f s) :
     eVariationOn f s = eVariationOn f t := by
   rw [← comp_ofDual, ← comp_ofDual f t,
-    eq_of_dense_of_continuousWithinAt_Ioi (s := ofDual ⁻¹' s) (f := f ∘ ofDual) ht hts hf]
+    eq_of_dense_of_isRightContinuousOn (s := ofDual ⁻¹' s) (f := f ∘ ofDual) ht hts hf]
   congr
 
 end Dense
