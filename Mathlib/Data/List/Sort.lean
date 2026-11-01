@@ -92,7 +92,7 @@ theorem mem_orderedInsert {a b : α} {l : List α} :
   induction l <;> grind
 
 theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
-    (hl₂ : ∀ a ∈ l, x ≼ a ↔ f x ≼ f a) :
+    (hl : ∀ a ∈ l, x ≼ a ↔ f x ≼ f a) :
     (l.orderedInsert r x).map f = (l.map f).orderedInsert s (f x) := by
   induction l <;> grind
 

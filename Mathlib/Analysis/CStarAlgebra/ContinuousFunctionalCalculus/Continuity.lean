@@ -407,7 +407,6 @@ variable {X A : Type*} [NormedRing A] [StarRing A]
     [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [ContinuousStar A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
 
-
 variable (A) in
 /-- A version of `continuousOn_cfc` over `ℝ≥0` instead of `RCLike 𝕜`. -/
 theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
@@ -955,7 +954,6 @@ variable {X A : Type*} [NonUnitalNormedRing A] [StarRing A]
     [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
-
 
 variable (A) in
 /-- A version of `continuousOn_cfcₙ` over `ℝ≥0` instead of `RCLike 𝕜`. -/
