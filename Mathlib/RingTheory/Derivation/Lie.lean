@@ -36,7 +36,7 @@ section LieStructures
 instance : Bracket (Derivation R A A) (Derivation R A A) :=
   ⟨fun D1 D2 =>
     mk' ⁅(D1 : Module.End R A), (D2 : Module.End R A)⁆ fun a b => by
-      simp only [Ring.lie_def, map_add, smul_eq_mul, Module.End.mul_apply, leibniz,
+      simp only [Ring.lie_def, map_add, smul_eq_mul, mul_apply_eq_comp, leibniz,
         coeFn_coe, LinearMap.sub_apply]
       ring⟩
 
@@ -60,8 +60,8 @@ instance instLieAlgebra : LieAlgebra R (Derivation R A A) :=
 
 instance : LieRingModule (Derivation R A A) A where
   bracket X a := X a
-  add_lie _ _ m := add_apply m
-  lie_add _ _ _ := Derivation.map_add _ _ _
+  add_lie := add_apply
+  lie_add := map_add
   leibniz_lie _ _ _ := by rw [commutator_apply]; abel
 
 instance : LieModule R (Derivation R A A) A where

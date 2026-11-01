@@ -94,19 +94,15 @@ section
 with `Classical.dec` in their statement. -/
 
 open scoped Classical in
-/-- Sum of `f x` as `x` ranges over the elements of the support of `f`, if it's finite. Zero
-otherwise. -/
-noncomputable irreducible_def finsum (lemma := finsum_def') [AddCommMonoid M] (f : α → M) : M :=
-  if h : HasFiniteSupport (f ∘ PLift.down) then ∑ i ∈ h.toFinset, f i.down else 0
-
-open scoped Classical in
 /-- Product of `f x` as `x` ranges over the elements of the multiplicative support of `f`, if it's
 finite. One otherwise. -/
-@[to_additive existing]
-noncomputable irreducible_def finprod (lemma := finprod_def') (f : α → M) : M :=
-  if h : HasFiniteMulSupport (f ∘ PLift.down) then ∏ i ∈ h.toFinset, f i.down else 1
+@[no_expose, to_additive
+/-- Sum of `f x` as `x` ranges over the elements of the support of `f`, if it's finite.
+Zero otherwise. -/]
+noncomputable def finprod (f : α → M) : M :=
+  if h : HasFiniteMulSupport (f ∘ PLift.down) then h.toFinset.prod fun i ↦ f i.down else 1
 
-attribute [to_additive existing] finprod_def'
+@[to_additive] alias finprod_def' := finprod.eq_def
 
 end
 

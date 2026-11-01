@@ -218,7 +218,8 @@ variable [IsLocalization S P] [IsLocalization S P']
 
 /-- `canonicalEquiv f f'` is the canonical equivalence between the fractional
 ideals in `P` and in `P'`, which are both localizations of `R` at `S`. -/
-noncomputable irreducible_def canonicalEquiv : FractionalIdeal S P ≃+* FractionalIdeal S P' :=
+@[no_expose]
+noncomputable def canonicalEquiv : FractionalIdeal S P ≃+* FractionalIdeal S P' :=
   mapEquiv
     { ringEquivOfRingEquiv P P' (RingEquiv.refl R)
         (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl', Submonoid.map_id]) with
@@ -367,7 +368,7 @@ theorem ne_zero_of_mul_eq_one (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) 
 
 variable [IsFractionRing R₁ K] [IsDomain R₁]
 
-theorem _root_.IsFractional.div_of_nonzero {I J : Submodule R₁ K} :
+theorem _root_.IsFractional.div_of_ne_zero {I J : Submodule R₁ K} :
     IsFractional R₁⁰ I → IsFractional R₁⁰ J → J ≠ 0 → IsFractional R₁⁰ (I / J)
   | ⟨aI, haI, hI⟩, ⟨aJ, haJ, hJ⟩, h => by
     obtain ⟨y, mem_J, notMem_zero⟩ :=
@@ -389,9 +390,12 @@ theorem _root_.IsFractional.div_of_nonzero {I J : Submodule R₁ K} :
     convert hI _ (hb _ (Submodule.smul_mem _ aJ mem_J)) using 1
     rw [← hy', mul_comm b, ← Algebra.smul_def, mul_smul]
 
+@[deprecated (since := "2026-10-13")]
+alias _root_.IsFractional.div_of_nonzero := _root_.IsFractional.div_of_ne_zero
+
 theorem isFractional_div_of_ne_zero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     IsFractional R₁⁰ (I / J : Submodule R₁ K) :=
-  I.isFractional.div_of_nonzero J.isFractional fun H =>
+  I.isFractional.div_of_ne_zero J.isFractional fun H =>
     h <| coeToSubmodule_injective <| H.trans coe_zero.symm
 
 open scoped Classical in

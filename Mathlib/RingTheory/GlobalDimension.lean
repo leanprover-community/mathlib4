@@ -49,7 +49,7 @@ variable (R : Type u) [Ring R]
 
 open Abelian
 
-/-- The (left) global (homological) dimension of a (commutative) ring defined as
+/-- The (left) global (homological) dimension of a ring is defined as
 the supremum of projective dimension over all modules. -/
 @[expose]
 noncomputable def globalDimension : WithBot ℕ∞ :=
@@ -83,7 +83,7 @@ lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
     exact fun M ↦ hasProjectiveDimensionLT_of_enoughInjectives M _ (h M)
   tfae_finish
 
-lemma globalDimension_eq_sup_module_finite_projectiveDimension [Small.{v} R] :
+lemma globalDimension_eq_biSup_module_finite_projectiveDimension [Small.{v} R] :
     globalDimension.{v} R =
       ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M := by
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
@@ -98,7 +98,7 @@ lemma globalDimension_eq_sup_module_finite_projectiveDimension [Small.{v} R] :
     | top => simp
     | coe n => simp [projectiveDimension_le_iff, (globalDimension_le_tfae R n).out 1 2]
 
-lemma globalDimension_eq_sup_injectiveDimension [Small.{v} R] : globalDimension.{v} R =
+lemma globalDimension_eq_iSup_injectiveDimension [Small.{v} R] : globalDimension.{v} R =
     ⨆ (M : ModuleCat.{v} R), injectiveDimension.{v} M := by
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
