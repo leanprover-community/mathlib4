@@ -25,6 +25,8 @@ into `ℂ`.
 - `NumberField.exists_heightOneSpectrum_equiv_adicAbv`: A nontrivial non-archimedean absolute value
   on a number field is equivalent to the `v`-adic absolute value `adicAbv K v` for a unique
   `v : HeightOneSpectrum (𝓞 K)`.
+- `NumberField.exists_finitePlace_equiv`: A nontrivial non-archimedean absolute value on a number
+  field is equivalent to a unique finite place `w : FinitePlace K`.
 
 ## TODO
 
@@ -36,7 +38,7 @@ Archimedean case.
 
 ## Tags
 
-absolute value, number field, Ostrowski's theorem
+absolute value, number field, Ostrowski's Theorem
 -/
 
 @[expose] public section
@@ -121,8 +123,9 @@ def heightOneSpectrumOfAbsoluteValue : HeightOneSpectrum (𝓞 K) where
 
 include hf_nontriv
 
-/-- A nontrivial non-archimedean absolute value on a number field is equal to a `v`-adic absolute
-value attached to a unique `v : HeightOneSpectrum (𝓞 K)` and for some base `b`. -/
+/-- **Ostrowski's Theorem, non-archimedean case** A nontrivial non-archimedean absolute value on a
+number field is equal to a `v`-adic absolute value attached to a unique
+`v : HeightOneSpectrum (𝓞 K)` and for some base `b`. -/
 theorem exists_heightOneSpectrum_eq_adicAbv :
     ∃! P : HeightOneSpectrum (𝓞 K), ∃ b, ∃ hb : 1 < b, f = adicAbv P hb := by
   let P := heightOneSpectrumOfAbsoluteValue hfna hf_nontriv
@@ -148,30 +151,35 @@ theorem exists_heightOneSpectrum_eq_adicAbv :
     · simp
     have hxv_ne : P.valuation K x ≠ 0 := (P.valuation K).ne_zero_iff.mpr hx
     have coe_b : (b : ℝ) = (f π)⁻¹ := rfl
-    simp only [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, AbsoluteValue.coe_mk,
-      MulHom.coe_mk, WithZeroMulInt.toNNReal_neg_apply _ hxv_ne, coe_zpow, coe_b, inv_zpow]
+    simp only [adicAbv_apply, WithZeroMulInt.toNNReal_neg_apply _ hxv_ne, coe_zpow, coe_b,
+      inv_zpow]
     apply eq_inv_of_mul_eq_one_left
     rw [← map_zpow₀, ← map_mul]
     apply f_eq_one_of_adicAbv_eq_one
-    simp [IsDedekindDomain.HeightOneSpectrum.adicAbv, adicAbvDef, coe_b, valuation_of_algebraMap,
-      hπ, toNNReal_neg_apply, hxv_ne, zpow_ne_zero _ hπ_pos.ne']
+    simp [adicAbv_apply, coe_b, valuation_of_algebraMap, hπ, toNNReal_neg_apply, hxv_ne,
+      zpow_ne_zero _ hπ_pos.ne']
   · rintro Q ⟨_, hc, rfl⟩
     ext x
     exact (adicAbv_coe_lt_one_iff Q hc x).symm
 
-/-- A nontrivial non-archimedean absolute value on a number field is equivalent to a `v`-adic
-absolute value attached to a unique `v : HeightOneSpectrum (𝓞 K)`. -/
+/-- **Ostrowski's Theorem, non-archimedean case** A nontrivial non-archimedean absolute value on a
+number field is equivalent to a `v`-adic absolute value attached to a unique
+`v : HeightOneSpectrum (𝓞 K)`. -/
 theorem exists_heightOneSpectrum_equiv_adicAbv :
     ∃! P : HeightOneSpectrum (𝓞 K), f ≈ adicAbv K P := by
-  obtain ⟨P, ⟨b, hb, hf⟩, -⟩ := exists_heightOneSpectrum_eq_adicAbv hfna hf_nontriv
-  refine ⟨P, ?_, fun Q hQ ↦ ?_⟩
-  · refine hf ▸ AbsoluteValue.isEquiv_iff_lt_one_iff.mpr fun _ ↦ ?_
-    simpa [NumberField.HeightOneSpectrum.adicAbv, IsDedekindDomain.HeightOneSpectrum.adicAbv,
-      IsDedekindDomain.HeightOneSpectrum.adicAbvDef] using
-      (toNNReal_lt_one_iff hb).trans (toNNReal_lt_one_iff (one_lt_absNorm_nnreal P)).symm
+  obtain ⟨P, ⟨_, hb, rfl⟩, -⟩ := exists_heightOneSpectrum_eq_adicAbv hfna hf_nontriv
+  refine ⟨P, AbsoluteValue.isEquiv_iff_lt_one_iff.mpr fun _ ↦ ?_, fun Q hQ ↦ ?_⟩
+  · exact (adicAbv_lt_one_iff P hb _).trans (adicAbv_lt_one_iff P _ _).symm
   · ext x
-    simpa only [NumberField.HeightOneSpectrum.adicAbv, hf,
-      adicAbv_coe_lt_one_iff] using (hQ.lt_one_iff (x := (x : K))).symm
+    exact (adicAbv_coe_lt_one_iff Q _ x).symm.trans <|
+      hQ.lt_one_iff.symm.trans (adicAbv_coe_lt_one_iff P hb x)
+
+/-- **Ostrowski's Theorem, non-archimedean case** A nontrivial non-archimedean absolute value on a
+number field is equivalent to a unique finite place. -/
+theorem exists_finitePlace_equiv : ∃! w : FinitePlace K, f ≈ w.val := by
+  refine FinitePlace.equivHeightOneSpectrum.symm.existsUnique_congr_right.mp ?_
+  convert exists_heightOneSpectrum_equiv_adicAbv hfna hf_nontriv using 4
+  exact AbsoluteValue.ext (FinitePlace.norm_embedding _)
 
 end Nonarchimedean
 
