@@ -9,7 +9,6 @@ module
 public import Mathlib.Algebra.Divisibility.Units
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
-import Mathlib.Data.Nat.Basic
 
 /-!
 # Divisibility in groups with zero.

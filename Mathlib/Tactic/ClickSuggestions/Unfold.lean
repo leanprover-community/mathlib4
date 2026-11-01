@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.ClickSuggestions.Util
 
-import ProofWidgets.Component.Basic
 
 /-!
 

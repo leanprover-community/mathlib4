@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
+public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 
 /-!
 # The Lie algebra of a Lie group

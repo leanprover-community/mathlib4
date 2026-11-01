@@ -9,7 +9,7 @@ public meta import Mathlib.Basic.Logic.Basic
 public meta import Plausible.Testable
 
 import Mathlib.Tactic.Basic
-import Plausible.Gen
+public import Mathlib.Init
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

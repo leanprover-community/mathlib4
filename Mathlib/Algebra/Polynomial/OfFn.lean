@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Data.List.ToFinsupp
-public import Mathlib.LinearAlgebra.Pi
 
 import Mathlib.Algebra.BigOperators.Fin
 

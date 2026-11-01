@@ -8,6 +8,8 @@ module
 public meta import Lean.Meta.Tactic.TryThis
 
 import Mathlib.Init
+public import Lean.Meta.TryThis
+public import Mathlib.Init
 
 /-!
 # 'Try this' tactic macro

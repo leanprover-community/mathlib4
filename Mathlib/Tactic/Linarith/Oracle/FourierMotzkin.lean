@@ -10,6 +10,7 @@ public meta import Mathlib.Tactic.Linarith.Datatypes
 public meta import Std.Data.HashMap.AdditionalOperations
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Std.Data.HashMap
+public import Batteries.Lean.HashMap
 
 /-!
 # The Fourier-Motzkin elimination procedure

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.Pi.Torsion
+public import Mathlib.Algebra.Group.Basic
 
 /-! # Group instances for `FunLike` types
 In this file we define various instances related to groups for `FunLike` types.

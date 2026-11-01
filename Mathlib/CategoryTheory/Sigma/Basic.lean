@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Disjoint union of categories

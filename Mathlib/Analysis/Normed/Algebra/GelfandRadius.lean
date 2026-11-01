@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Group.DenselyOrdered
 public import Mathlib.Analysis.Subadditive
 
-import Mathlib.Data.Fintype.Order
 
 /-!
 # The Gelfand radius in a normed ring

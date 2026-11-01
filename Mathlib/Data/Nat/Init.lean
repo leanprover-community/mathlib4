@@ -5,10 +5,11 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Batteries.Data.Nat.Lemmas
 public import Batteries.Util.LibraryNote
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Basic operations on the natural numbers

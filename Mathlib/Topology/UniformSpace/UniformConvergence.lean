@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.Inseparable
 
 /-!
 # Uniform convergence

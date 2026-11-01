@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.GroupWithZero.Range
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
 
-import Mathlib.Algebra.Order.Ring.Basic
 
 /-!
 

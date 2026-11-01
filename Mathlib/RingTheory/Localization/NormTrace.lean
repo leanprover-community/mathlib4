@@ -6,7 +6,6 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.RingTheory.Discriminant
-public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 

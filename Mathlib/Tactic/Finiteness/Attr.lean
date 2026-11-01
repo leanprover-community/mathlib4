@@ -5,9 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
-public meta import Aesop.Frontend
 
 import Mathlib.Init
+public import Aesop.Frontend
+public import Mathlib.Init
 
 /-! # Finiteness tactic attribute -/
 

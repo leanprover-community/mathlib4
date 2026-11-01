@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.ColimitType
+public import Std.Do
 
 /-!
 # Colimits in the category of types

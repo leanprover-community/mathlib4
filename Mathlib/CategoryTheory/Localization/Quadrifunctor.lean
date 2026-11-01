@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Functor.CurryingFour
-public import Mathlib.CategoryTheory.Localization.Trifunctor
+public import Mathlib.CategoryTheory.Localization.Prod
 
 /-!
 # Lifting of quadrifunctors

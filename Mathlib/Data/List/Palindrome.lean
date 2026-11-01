@@ -6,6 +6,7 @@ Authors: Chris Wong
 module
 
 import Mathlib.Data.List.Induction
+public import Mathlib.Init
 
 /-!
 # Palindromes

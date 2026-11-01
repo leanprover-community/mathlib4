@@ -11,7 +11,6 @@ public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Order.Filter.Tendsto
 
-import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Germ of a function at a filter

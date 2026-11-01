@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Quadrifunctor
 public import Mathlib.CategoryTheory.Monoidal.Multifunctor
+public import Mathlib.CategoryTheory.Localization.Trifunctor
 
 /-!
 # Localization of monoidal categories

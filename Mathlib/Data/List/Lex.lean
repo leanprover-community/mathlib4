@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.List.Basic
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Linter.HaveILetI
 
 /-!
 # Lexicographic ordering of lists.
