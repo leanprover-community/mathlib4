@@ -80,11 +80,7 @@ noncomputable def submonoidPartialOrderEquiv :
   toFun := fun ⟨_, hC⟩ ↦ ⟨.ofSubmonoid hC, .ofSubmonoid _⟩
   invFun := fun ⟨_, _⟩ ↦ ⟨.oneLE G, .oneLE _⟩
   left_inv := fun ⟨_, _⟩ ↦ by ext; simp
-  right_inv := fun ⟨v, p⟩ ↦ by
-    ext : 1
-    simp only
-    ext
-    simp
+  right_inv := fun ⟨v, p⟩ ↦ by ext; simp +instances
 
 @[to_additive (attr := simp)]
 theorem submonoidPartialOrderEquiv_apply

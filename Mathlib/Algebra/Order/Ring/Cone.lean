@@ -49,11 +49,7 @@ noncomputable def isPointedPartialOrderEquiv :
   toFun := fun ⟨_, hC⟩ ↦ ⟨.ofAddSubmonoid hC, .ofSubsemiring _⟩
   invFun := fun ⟨_, _⟩ ↦ ⟨.nonneg R, .nonneg _⟩
   left_inv := fun ⟨_, _⟩ ↦ by ext; simp
-  right_inv := fun ⟨_, _⟩ ↦ by
-    ext : 1
-    simp only [Subsemiring.nonneg_toAddSubmonoid]
-    ext
-    simp
+  right_inv := fun ⟨_, _⟩ ↦ by ext; simp +instances
 
 @[simp]
 theorem isPointedPartialOrderEquiv_apply
