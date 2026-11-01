@@ -6,6 +6,7 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Algebra.Order.Group.Subgroup
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
@@ -103,3 +104,27 @@ lemma genLTOne_unique {g : G} (hg : g < 1) (htop : Subgroup.zpowers g = ⊤) : g
 end IsCyclic
 
 end LinearOrderedCommGroup
+
+namespace OrderMonoidIso
+
+open LinearOrderedCommGroup.Subgroup
+
+variable {A B : Type*} [LinearOrder A] [CommGroup A] [IsOrderedMonoid A] [Nontrivial A] [IsCyclic A]
+  [LinearOrder B] [CommGroup B] [IsOrderedMonoid B] [Nontrivial B] [IsCyclic B] (f : A ≃*o B)
+
+theorem map_genLTOne : f (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) =
+      LinearOrderedCommGroup.Subgroup.genLTOne ⊤ := by
+  apply genLTOne_unique
+  · simpa [-map_one, ← map_one f, map_lt_map_iff] using genLTOne_lt_one ⊤
+  · rw [Subgroup.eq_top_iff']
+    intro y
+    obtain ⟨x, hx⟩ := EquivLike.surjective f y
+    obtain ⟨k, hk⟩ : x ∈ Subgroup.zpowers (LinearOrderedCommGroup.Subgroup.genLTOne ⊤) := by
+      simp [genLTOne_zpowers_eq_top]
+    exact ⟨k, by simp [← hx, ← hk]⟩
+
+theorem map_genLTOne' :
+    f (LinearOrderedCommGroup.genLTOne A) = LinearOrderedCommGroup.genLTOne B := by
+  simp [LinearOrderedCommGroup.genLTOne_eq_of_top, map_genLTOne]
+
+end OrderMonoidIso

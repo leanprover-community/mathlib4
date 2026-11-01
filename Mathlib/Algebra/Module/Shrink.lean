@@ -19,7 +19,7 @@ variable {R α : Type*} [Small.{v} α] [Semiring R] [AddCommMonoid α] [Module R
 
 namespace Shrink
 
-instance : Module R (Shrink.{v} α) := addEquiv.module R
+instance : Module R (Shrink.{v} α) := fast_instance% addEquiv.module R
 
 variable (R α) in
 /-- Shrinking `α` to a smaller universe preserves module structure. -/

@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Product of torsion-free modules

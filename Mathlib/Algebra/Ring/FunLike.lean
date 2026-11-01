@@ -1,0 +1,232 @@
+/-
+Copyright (c) 2026 Moritz Doll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Moritz Doll
+-/
+module
+
+public import Mathlib.Algebra.GroupWithZero.FunLike
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Pi
+
+import Mathlib.Tactic.Finiteness.Attr
+
+/-! # Ring instances for `FunLike` types
+In this file we define various instances related to ring for `FunLike` types.
+There are two different variants: either the multiplication is given by composition or it is
+pointwise multiplication.
+
+Note that currently, these are not registered as instances, but only `abbrev`s to avoid long
+typeclass searches.
+-/
+
+public section
+
+variable {F α β R : Type*}
+
+namespace FunLike
+
+section Comp
+
+section Semiring
+
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddCommMonoid α]
+  [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
+  [SMul ℕ F] [IsSMulApply ℕ F] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApplyEqSMul F]
+
+/-- A `FunLike` type with `(f * g) x = f (g x)` is a `Semiring`. -/
+protected abbrev compSemiring : Semiring F where
+  __ := FunLike.compMonoidWithZero
+  __ := FunLike.addCommMonoid
+  left_distrib f g h := by apply DFunLike.ext; simp
+  right_distrib _ _ _ := by apply DFunLike.ext; simp
+  natCast_zero := by apply DFunLike.ext; simp
+  natCast_succ n := by apply DFunLike.ext; simp [succ_nsmul]
+
+end Semiring
+
+section Ring
+
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F]
+  [AddCommGroup α]
+  [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
+  [IsNegApply F] [IsSubApply F]
+  [SMul ℕ F] [IsSMulApply ℕ F]
+  [SMul ℤ F] [IsSMulApply ℤ F] [AddMonoidHomClass F α α]
+  [NatCast F] [IsNatCastApplyEqSMul F] [IntCast F] [IsIntCastApplyEqSMul F]
+
+/-- A `FunLike` type with `(f * g) x = f (g x)` is a `Ring`. -/
+protected abbrev compRing : Ring F where
+  __ := FunLike.compSemiring
+  __ := FunLike.addCommGroup
+  intCast_ofNat _ := by apply DFunLike.ext; simp
+  intCast_negSucc n := by apply DFunLike.ext; simp [succ_nsmul]
+
+end Ring
+
+end Comp
+
+section PointwiseMul
+
+variable [FunLike F α β] [Zero F] [One F] [Add F] [Neg F] [Sub F] [Mul F] [SMul ℕ F] [SMul ℤ F]
+  [Pow F ℕ] [NatCast F] [IntCast F]
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `Distrib` if `β` is a `Distrib`. -/
+protected abbrev distrib [Distrib β] [IsAddApply F] [IsMulApply F] :
+    Distrib F :=
+  DFunLike.coe_injective.distrib (fun (f : F) ↦ (f : α → β)) coe_add coe_mul
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `HasDistribNeg` if `β` is a
+`HasDistribNeg`. -/
+protected abbrev hasDistribNeg [Mul β] [HasDistribNeg β] [IsNegApply F] [IsMulApply F] :
+    HasDistribNeg F :=
+  DFunLike.coe_injective.hasDistribNeg (fun (f : F) ↦ (f : α → β)) coe_neg coe_mul
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is an `AddMonoidWithOne` if `β` is an
+`AddMonoidWithOne`. -/
+protected abbrev addMonoidWithOne [AddMonoidWithOne β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsSMulApply ℕ F] [IsNatCastApply F] :
+    AddMonoidWithOne F :=
+  DFunLike.coe_injective.addMonoidWithOne (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
+    coe_smul coe_natCast
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is an `AddGroupWithOne` if `β` is an
+`AddGroupWithOne`. -/
+protected abbrev addGroupWithOne [AddGroupWithOne β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsNegApply F] [IsSubApply F] [IsSMulApply ℕ F]
+    [IsSMulApply ℤ F] [IsNatCastApply F] [IsIntCastApply F] :
+    AddGroupWithOne F :=
+  DFunLike.coe_injective.addGroupWithOne (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
+    coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalNonAssocSemiring` if `β` is a
+`NonUnitalNonAssocSemiring`. -/
+protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] :
+    NonUnitalNonAssocSemiring F :=
+  DFunLike.coe_injective.nonUnitalNonAssocSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_add
+    coe_mul coe_smul
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalSemiring` if `β` is a
+`NonUnitalSemiring`. -/
+protected abbrev nonUnitalSemiring [NonUnitalSemiring β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] :
+    NonUnitalSemiring F :=
+  DFunLike.coe_injective.nonUnitalSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_add coe_mul
+    coe_smul
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonAssocSemiring` if `β` is a
+`NonAssocSemiring`. -/
+protected abbrev nonAssocSemiring [NonAssocSemiring β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] [IsNatCastApply F] :
+    NonAssocSemiring F :=
+  DFunLike.coe_injective.nonAssocSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
+    coe_mul coe_smul coe_natCast
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `Semiring` if `β` is a `Semiring`. -/
+protected abbrev semiring [Semiring β] [IsZeroApply F] [IsOneApply F] [IsAddApply F]
+    [IsMulApply F] [IsSMulApply ℕ F] [IsPowApply ℕ F] [IsNatCastApply F] :
+    Semiring F :=
+  DFunLike.coe_injective.semiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
+    coe_mul coe_smul coe_pow coe_natCast
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalCommSemiring` if `β` is a
+`NonUnitalCommSemiring`. -/
+protected abbrev nonUnitalCommSemiring [NonUnitalCommSemiring β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] :
+    NonUnitalCommSemiring F :=
+  DFunLike.coe_injective.nonUnitalCommSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_add coe_mul
+    coe_smul
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `CommSemiring` if `β` is a `CommSemiring`. -/
+protected abbrev commSemiring [CommSemiring β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsSMulApply ℕ F] [IsPowApply ℕ F]
+    [IsNatCastApply F] :
+    CommSemiring F :=
+  DFunLike.coe_injective.commSemiring (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
+    coe_mul coe_smul coe_pow coe_natCast
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalNonAssocRing` if `β` is a
+`NonUnitalNonAssocRing`. -/
+protected abbrev nonUnitalNonAssocRing [NonUnitalNonAssocRing β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] :
+    NonUnitalNonAssocRing F :=
+  DFunLike.coe_injective.nonUnitalNonAssocRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_add
+    coe_mul coe_neg coe_sub coe_smul coe_smul
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalRing` if `β` is a
+`NonUnitalRing`. -/
+protected abbrev nonUnitalRing [NonUnitalRing β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] :
+    NonUnitalRing F :=
+  DFunLike.coe_injective.nonUnitalRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_add
+    coe_mul coe_neg coe_sub coe_smul coe_smul
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonAssocRing` if `β` is a `NonAssocRing`. -/
+protected abbrev nonAssocRing [NonAssocRing β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] [IsNatCastApply F]
+    [IsIntCastApply F] :
+    NonAssocRing F :=
+  DFunLike.coe_injective.nonAssocRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
+    coe_mul coe_neg coe_sub coe_smul coe_smul coe_natCast coe_intCast
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `Ring` if `β` is a `Ring`. -/
+protected abbrev ring [Ring β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] [IsPowApply ℕ F] [IsNatCastApply F]
+    [IsIntCastApply F] :
+    Ring F :=
+  DFunLike.coe_injective.ring (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
+    coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `NonUnitalCommRing` if `β` is a
+`NonUnitalCommRing`. -/
+protected abbrev nonUnitalCommRing [NonUnitalCommRing β] [IsZeroApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] :
+    NonUnitalCommRing F :=
+  DFunLike.coe_injective.nonUnitalCommRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_add
+    coe_mul coe_neg coe_sub coe_smul coe_smul
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is a `CommRing` if `β` is a `CommRing`. -/
+protected abbrev commRing [CommRing β] [IsZeroApply F] [IsOneApply F]
+    [IsAddApply F] [IsMulApply F] [IsNegApply F] [IsSubApply F]
+    [IsSMulApply ℕ F] [IsSMulApply ℤ F] [IsPowApply ℕ F] [IsNatCastApply F]
+    [IsIntCastApply F] :
+    CommRing F :=
+  DFunLike.coe_injective.commRing (fun (f : F) ↦ (f : α → β)) coe_zero coe_one coe_add
+    coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
+
+end PointwiseMul
+
+section SMulSelf
+
+variable [Semiring R] [SMul R F] [NonUnitalNonAssocSemiring F] [NonUnitalNonAssocSemiring β]
+  [SMul R β]
+
+variable [FunLike F α β] [IsMulApply F] [IsSMulApply R F]
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is an `R`-scalar tower if `β` is an `R`-scalar
+tower. -/
+protected abbrev isScalarTowerSelf [IsScalarTower R β β] : IsScalarTower R F F where
+  smul_assoc r f g := by
+    apply DFunLike.ext
+    intro x
+    simp only [smul_eq_mul, mul_apply, smul_apply]
+    rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` has commutative `R`-scalar multiplication if `β`
+has commutative `R`-scalar multiplication. -/
+protected abbrev smulCommClassSelf [SMulCommClass R β β] : SMulCommClass R F F where
+  smul_comm r f g := by
+    apply DFunLike.ext
+    intro x
+    simp only [smul_eq_mul, mul_apply, smul_apply]
+    rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
+
+end SMulSelf
+
+end FunLike

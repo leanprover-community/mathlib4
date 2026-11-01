@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Tactic.Abel
 
 /-!
 # Chain homotopies
@@ -855,7 +854,6 @@ namespace CategoryTheory
 
 variable {W : Type*} [Category* W] [Preadditive W]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An additive functor takes homotopies to homotopies. -/
 @[simps]
 def Functor.mapHomotopy (F : V ⥤ W) [F.Additive] {f g : C ⟶ D} (h : Homotopy f g) :

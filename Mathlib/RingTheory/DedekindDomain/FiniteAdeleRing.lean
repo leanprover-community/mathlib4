@@ -5,10 +5,11 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 public import Mathlib.Topology.Algebra.RestrictedProduct.Units
+
+import Mathlib.RingTheory.DedekindDomain.Factorization
 
 /-!
 # The finite adèle ring of a Dedekind domain

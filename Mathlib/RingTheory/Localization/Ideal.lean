@@ -5,13 +5,12 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
-
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
 
 /-!
 # Ideals in localizations of commutative rings
@@ -51,6 +50,11 @@ This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
 private def map_ideal (I : Ideal R) : Ideal S :=
   Submodule.localized' S M (Algebra.linearMap R S) I
+
+theorem _root_.Ideal.localized'_eq_map (S : Type*) {R : Type*} [CommSemiring R] [CommSemiring S]
+    [Algebra R S] (p : Submonoid R) [IsLocalization p S] (I : Ideal R) :
+    Submodule.localized' S p (Algebra.linearMap R S) I = I.map (algebraMap R S) := by
+  rw [Ideal.map, Ideal.span, Submodule.localized'_eq_span, Algebra.coe_linearMap]
 
 theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
     ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by
@@ -120,8 +124,6 @@ theorem map_under (J : Ideal S) :
           (show (algebraMap R S) r ∈ J from
             mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 
-@[deprecated (since := "2026-04-09")] alias map_comap := map_under
-
 theorem under_map_of_isPrimary_disjoint
     {I : Ideal R} (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     (Ideal.map (algebraMap R S) I).under R = I := by
@@ -141,15 +143,9 @@ theorem under_map_of_isPrimary_disjoint
     exact I.mul_mem_left c b.2
   exact ((Ideal.isPrimary_iff.mp hI).2 this).resolve_right (Set.disjoint_left.mp key (c * s).2)
 
-@[deprecated (since := "2026-04-09")] alias comap_map_of_isPrimary_disjoint :=
-  under_map_of_isPrimary_disjoint
-
 theorem under_map_of_isPrime_disjoint {I : Ideal R} (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
     (Ideal.map (algebraMap R S) I).under R = I :=
   under_map_of_isPrimary_disjoint M S hI.isPrimary hM
-
-@[deprecated (since := "2026-04-09")] alias comap_map_of_isPrime_disjoint :=
-  under_map_of_isPrime_disjoint
 
 theorem liesOver_map_of_isPrime_disjoint {I : Ideal R} [I.IsPrime] (hM : Disjoint (M : Set R) I) :
     (I.map (algebraMap R S)).LiesOver I :=
@@ -170,8 +166,6 @@ include M in
 theorem under_le_under_iff {I J : Ideal S} :
     I.under R ≤ J.under R ↔ I ≤ J := by
   exact (IsLocalization.orderEmbedding M S).le_iff_le
-
-@[deprecated (since := "2026-04-09")] alias comap_le_comap_iff := under_le_under_iff
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M`.
@@ -228,8 +222,6 @@ theorem disjoint_under_iff (J : Ideal S) :
   · rintro ⟨x, hxM, hxJ⟩
     exact J.eq_top_of_isUnit_mem hxJ (IsLocalization.map_units S ⟨x, hxM⟩)
 
-@[deprecated (since := "2026-04-09")] alias disjoint_comap_iff := disjoint_under_iff
-
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M` -/
 @[simps] def orderIsoOfPrime :
@@ -260,7 +252,7 @@ lemma map_radical (I : Ideal R) :
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M] at hn ⊢
   obtain ⟨s, hs, h⟩ := hn
-  refine ⟨s, hs, n + 1, by convert! I.mul_mem_left (s ^ n * x) h; ring⟩
+  refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
 
 theorem ideal_eq_iInf_under_map_away {S : Finset R} (hS : Ideal.span (α := R) S = ⊤) (I : Ideal R) :
     I = ⨅ f ∈ S, (I.map (algebraMap R (Localization.Away f))).under R := by
@@ -279,9 +271,6 @@ theorem ideal_eq_iInf_under_map_away {S : Finset R} (hS : Ideal.span (α := R) S
     dsimp at e ⊢
     rw [pow_add, mul_assoc, ← mul_comm x, e]
     exact I.mul_mem_left _ y.2
-
-@[deprecated (since := "2026-04-09")] alias ideal_eq_iInf_comap_map_away :=
-  ideal_eq_iInf_under_map_away
 
 lemma map_eq_top_of_not_subset {I : Ideal R} (hle : ¬ (I : Set R) ⊆ Mᶜ) :
     Ideal.map (algebraMap R S) I = ⊤ := by
@@ -312,7 +301,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
   · have : I = ⊤ := by
       rw [Ideal.eq_top_iff_one]
       rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_comap] at hM
-      convert! I.mul_mem_right (mk' S (1 : R) ⟨m, hm⟩) hM
+      convert I.mul_mem_right (mk' S (1 : R) ⟨m, hm⟩) hM
       rw [← mk'_eq_mul_mk'_one, mk'_self]
     exact ⟨0, eq_comm.1 (by simp [Ideal.Quotient.eq_zero_iff_mem, this])⟩
   · rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient] at hI
@@ -320,7 +309,7 @@ theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPri
     obtain ⟨rn, rfl⟩ := Ideal.Quotient.mk_surjective n
     refine ⟨(Ideal.Quotient.mk J) (r * rn), ?_⟩
     -- The rest of the proof is essentially just algebraic manipulations to prove the equality
-    replace hn := congr_arg (Ideal.quotientMap I (algebraMap R S) le_rfl) hn
+    replace hn := congr(Ideal.quotientMap I (algebraMap R S) le_rfl $hn)
     rw [map_one, map_mul] at hn
     rw [Ideal.quotientMap_mk, ← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem, ←
       Ideal.Quotient.eq_zero_iff_mem, map_sub, sub_eq_zero, mk'_eq_mul_mk'_one]
@@ -344,8 +333,6 @@ theorem bot_lt_under_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
   convert!
     (orderIsoOfPrime M S).lt_iff_lt.mpr
       (show (⟨⊥, Ideal.isPrime_bot⟩ : { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
-
-@[deprecated (since := "2026-04-09")] alias bot_lt_comap_prime := bot_lt_under_prime
 
 set_option backward.isDefEq.respectTransparency false in
 variable (R) in
@@ -386,7 +373,7 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     obtain ⟨z, rfl⟩ := hg z
     obtain ⟨⟨r, s⟩, e⟩ := IsLocalization.surj M z
     refine ⟨⟨f r, _, s.1, s.2, rfl⟩, ?_⟩
-    simpa only [map_mul, ← RingHom.comp_apply, H] using DFunLike.congr_arg g e
+    simpa only [map_mul, ← RingHom.comp_apply, H] using congr(g $e)
   exists_of_eq := by
     intro x y e
     obtain ⟨x, rfl⟩ := hf x

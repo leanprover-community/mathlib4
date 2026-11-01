@@ -123,7 +123,7 @@ lemma comp_app {M₁ M₂ M₃ : PresheafOfModules R} (f : M₁ ⟶ M₂) (g : M
 
 lemma naturality_apply (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M₁.obj X) :
     Hom.app f Y (M₁.map g x) = M₂.map g (Hom.app f X x) :=
-  CategoryTheory.congr_fun (Hom.naturality f g) x
+  congr($(Hom.naturality f g) x)
 
 /-- Constructor for isomorphisms in the category of presheaves of modules. -/
 @[simps!]
@@ -154,8 +154,8 @@ lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
 
 @[reassoc]
 lemma smul_map {U V : Cᵒᵖ} (f : U ⟶ V) (r : R.obj U) :
-    dsimp% ModuleCat.smul _ r ≫ M.presheaf.map f =
-      M.presheaf.map f ≫ ModuleCat.smul _ (R.map f r) := by
+    (ModuleCat.smul _ r).asHom ≫ M.presheaf.map f =
+      M.presheaf.map f ≫ (ModuleCat.smul _ (R.map f r)).asHom := by
   ext x
   exact (M.map f).hom.map_smul r x
 
@@ -183,7 +183,7 @@ lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
     ext X x
-    exact ConcreteCategory.congr_hom (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
+    congrm $(((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
 
 section
 
@@ -226,7 +226,7 @@ noncomputable def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
       map_smul' := hφ X }
   naturality := fun f ↦ by
     ext x
-    exact CategoryTheory.congr_fun (φ.naturality f) x
+    congrm $(φ.naturality f) x
 
 instance : Zero (M₁ ⟶ M₂) where
   zero := { app := fun _ ↦ 0 }

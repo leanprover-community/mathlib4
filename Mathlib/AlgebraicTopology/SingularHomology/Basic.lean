@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Homology.AlternatingConst
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.CategoryTheory.Adjunction.Whiskering
-public import Mathlib.CategoryTheory.Limits.MonoCoprod
+
+import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 /-!
 # Singular homology
@@ -41,7 +42,6 @@ instance : (singularChainComplexFunctor C).Additive := by
   delta singularChainComplexFunctor
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance [Limits.HasPullbacks C] {X : C} :
     ((singularChainComplexFunctor C).obj X).PreservesMonomorphisms where
   preserves f _ := by
@@ -78,7 +78,6 @@ lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
   simp [stdSimplexToTop]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C) (X : TopCat) (i) :
     Sigma.ι _ i ≫ ((singularChainComplexFunctorAdjunction C n).counit.app F).app X =
@@ -92,7 +91,7 @@ lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C)
     simp
   · congr 1
     rw [← reassoc_of% sSetTopAdj_unit_app_app_down]
-    exact congr(($(sSetTopAdj.right_triangle_components X).app (.op ⦋n⦌) i).down)
+    congrm ($(sSetTopAdj.right_triangle_components X).app (.op ⦋n⦌) i).down
 
 end Adjunction
 

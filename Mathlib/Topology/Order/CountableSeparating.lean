@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.Basic
 public import Mathlib.Order.Filter.CountableSeparatingOn
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Countably many infinite intervals separate points

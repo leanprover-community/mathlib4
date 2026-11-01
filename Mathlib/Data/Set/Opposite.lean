@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Data.Opposite
+public import Mathlib.Basic.Opposite
 public import Mathlib.Data.Set.Operations
 
 /-!

@@ -5,11 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Data.Nat.Notation
+
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition and basic properties of `List.offDiag`

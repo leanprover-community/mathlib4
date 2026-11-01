@@ -68,7 +68,7 @@ lemma comm' {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f) :
   simp
 
 /-- If a `1`-morphism is a retract of another, it stays so
-after the applicaton of a pseudofunctor. -/
+after the application of a pseudofunctor. -/
 @[implicit_reducible, simps]
 def map {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
     {D : Type*} [Bicategory D] (F : C ⥤ᵖ D) :
@@ -82,7 +82,7 @@ def map {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
   commi := (F.mapComp _ _).symm ≪≫ F.map₂Iso r.commi ≪≫ F.mapComp _ _
   commr := (F.mapComp _ _).symm ≪≫ F.map₂Iso r.commr ≪≫ F.mapComp _ _
   comm := by
-    have := congr_arg (fun f ↦ F.map₂ f) r.comm
+    have := congr(F.map₂ $r.comm)
     simp at this
     simp [← cancel_mono (F.map r.i₁ ◁ (F.mapComp r.r₁ f').inv),
       ← cancel_mono ((F.mapComp r.i₁ (r.r₁ ≫ f')).inv),

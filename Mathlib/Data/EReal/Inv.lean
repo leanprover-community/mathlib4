@@ -5,10 +5,11 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Mathlib.Basic.ENNReal.Inv
 public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.EReal.Operations
 public import Mathlib.Data.Nat.Cast.Order.Field
+
+import Mathlib.Basic.ENNReal.Inv
 
 /-!
 # Absolute value, sign, inversion and division on extended real numbers

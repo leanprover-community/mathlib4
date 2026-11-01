@@ -156,9 +156,8 @@ theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isOrdinal :
 
 theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔ x = y ∨ x ∈ y := by
   constructor
-  · revert hx hy
-    refine Sym2.GameAdd.recursion mem_wf ?_ x y
-    intro x y IH hx hy hxy
+  · intro hxy
+    induction x, y using Sym2.GameAdd.recursion mem_wf with | ind x y IH
     by_cases hyx : y ⊆ x
     · exact Or.inl (subset_antisymm hxy hyx)
     · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.sdiff_nonempty.2 hyx)
@@ -183,9 +182,8 @@ theorem mem_of_subset_of_mem (h : x.IsOrdinal) (hz : z.IsOrdinal) (hx : x ⊆ y)
   · exact hz.mem_trans hx hy
 
 theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y ⊆ x := by
-  refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
-  revert hx hy
-  refine Sym2.GameAdd.recursion mem_wf (fun x y IH hx hy hyx z hzy ↦ ?_) x y
+  refine ⟨fun hyx z hzy => ?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
+  induction x, y using Sym2.GameAdd.recursion mem_wf generalizing z with | ind x y IH
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
 

@@ -62,7 +62,7 @@ lemma antidiagonal_eq_image' (n : ℕ) :
 
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
-theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [antidiagonal]
+theorem card_antidiagonal (n : ℕ) : #(antidiagonal n) = n + 1 := by simp [antidiagonal]
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
 @[simp]

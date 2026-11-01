@@ -6,8 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.RingTheory.DedekindDomain.Dvr
-public import Mathlib.RingTheory.Finiteness.Quotient
 public import Mathlib.RingTheory.Unramified.Field
+
+import Mathlib.RingTheory.Finiteness.Quotient
 
 /-!
 # Unramified algebras over Dedekind domains

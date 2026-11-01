@@ -5,8 +5,8 @@ Authors: Riccardo Brasca, Bingyu Xia
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Functions tending to the cofinite filter
@@ -71,7 +71,8 @@ namespace TendstoCofinite
 @[instance]
 lemma comp [TendstoCofinite g] [TendstoCofinite f] : TendstoCofinite (g ∘ f) :=
   (tendstoCofinite_iff_finite_preimage_singleton _).mpr (fun r ↦ by
-    simpa using! TendstoCofinite.finite_preimage f (TendstoCofinite.finite_preimage g (by simp)))
+    simpa using! TendstoCofinite.finite_preimage f
+      (TendstoCofinite.finite_preimage g (finite_singleton r)))
 
 @[instance]
 lemma id : TendstoCofinite (id : α → α) := by simp [tendstoCofinite_iff_finite_preimage_singleton]

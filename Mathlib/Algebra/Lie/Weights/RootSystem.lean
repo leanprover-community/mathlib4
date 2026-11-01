@@ -5,11 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Lie.Weights.Killing
-public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.LinearAlgebra.RootSystem.Basic
-public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!
@@ -82,7 +79,7 @@ lemma chainLength_nsmul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
   have h : x' ∈ rootSpace H (chainTop α β) ∧ x' ≠ 0 :=
     (chainTop α β).exists_ne_zero.choose_spec
   obtain ⟨k, rfl⟩ : ∃ k : K, k • x' = x := by
-    simpa using (finrank_eq_one_iff_of_nonzero' ⟨x', h.1⟩ (by simpa using h.2)).mp
+    simpa using (finrank_eq_one_iff_of_ne_zero' ⟨x', h.1⟩ (by simpa using h.2)).mp
       (finrank_rootSpace_eq_one _ (chainTop_isNonZero α β hα)) ⟨_, hx⟩
   rw [lie_smul, smul_comm, chainLength, dite_eq_right hα, (chainLength_aux α β hα h.1).choose_spec]
 
@@ -304,7 +301,7 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
       convert toEnd_pow_apply_mem hf hx (chainTopCoeff α (0 : Weight K H L) + 1)
       rw [coe_chainTop', FunLike.coe_zero, add_zero, succ_nsmul',
         add_assoc, smul_neg, neg_add_cancel, add_zero]
-    simpa using! (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simpa using! isSl2.f_ne_zero)).mp
+    simpa using! (finrank_eq_one_iff_of_ne_zero' ⟨f, hf⟩ (by simpa using! isSl2.f_ne_zero)).mp
       (finrank_rootSpace_eq_one _ hα.neg) ⟨_, this⟩
   apply_fun (⁅f, ·⁆) at hk
   simp only [lie_smul, lie_self, smul_zero, prim.lie_f_pow_toEnd_f] at hk
@@ -403,7 +400,7 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
   have : β (coroot α) = 0 := by
     by_cases hα : α.IsZero
     · simp [coroot_eq_zero_iff.mpr hα]
-    simpa [root_apply_coroot hα, mul_two] using congr_fun (sub_eq_zero.mp e) (coroot α)
+    simpa [root_apply_coroot hα, mul_two] using congr($(sub_eq_zero.mp e) (coroot α))
   have : reflectRoot α β = β := by ext; simp [reflectRoot, this]
   exact hβ (this ▸ e)
 
@@ -417,7 +414,7 @@ def rootSystem :
     .id
     { toFun := (↑)
       inj' := by
-        intro α β h; ext x; simpa using LinearMap.congr_fun h x }
+        intro α β h; ext x; simpa using congr($h x) }
     { toFun := coroot ∘ (↑)
       inj' := by rintro ⟨α, hα⟩ ⟨β, hβ⟩ h; simpa using h }
     (fun ⟨α, hα⟩ ↦ by simpa using root_apply_coroot <| by simpa using hα)
@@ -425,7 +422,7 @@ def rootSystem :
       rintro ⟨α, hα⟩ - ⟨⟨β, hβ⟩, rfl⟩
       simpa using
         ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
-    (by convert! span_weight_isNonZero_eq_top K L H; ext; simp)
+    (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
 
 instance : (rootSystem H).IsRootSystem :=
   RootPairing.isRootSystem_mk'' fun α β ↦
@@ -472,9 +469,9 @@ instance : (rootSystem H).IsReduced where
     simp only [rootSystem_root_apply, ne_eq, not_not] at e
     obtain ⟨u, hu⟩ := e
     obtain (h | h) := eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u
-      (by ext x; exact DFunLike.congr_fun hu.symm x)
-    · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
-    · left; ext x; simpa using DFunLike.congr_fun h.symm x
+      (by ext x; congrm $hu.symm x)
+    · right; ext x; simpa [neg_eq_iff_eq_neg] using congr($h.symm x)
+    · left; ext x; simpa using congr($h.symm x)
 
 variable {H}
 

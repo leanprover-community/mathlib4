@@ -10,8 +10,8 @@ public import Mathlib.GroupTheory.Perm.Sign
 
 import Mathlib.Algebra.Module.End
 import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Tactic.Abel
 import Mathlib.LinearAlgebra.Matrix.RowCol
+import Mathlib.Tactic.Abel
 
 /-!
 # Nonsingular inverses over semirings
@@ -262,12 +262,12 @@ theorem detp_mul :
   replace h (s) : detp s (A * B) =
       ∑ σ ∈ bijᶜ, ∑ τ ∈ ofSign s, ∏ i : n, A i (σ i) * B (σ i) (τ i) +
         (detp 1 A * detp s B + detp (-1) A * detp (-s) B) := by
-    simp_rw [h, neg_mul_neg, mul_one, detp, mul_apply, prod_univ_sum, Fintype.piFinset_univ]
+    simp_rw [h, neg_mul_neg, mul_one, detp, Matrix.mul_apply, prod_univ_sum, Fintype.piFinset_univ]
     rw [sum_comm, ← sum_compl_add_sum bij, sum_map, sum_disjUnion]
     simp_rw [hι]
   rw [h, h, neg_neg, add_assoc]
   conv_rhs => rw [add_assoc]
-  refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (add_comm _ _)
+  congrm $(sum_congr rfl fun σ hσ ↦ ?_) + $(add_comm ..)
   replace hσ : ¬ Function.Injective σ := by
     contrapose hσ
     rw [notMem_compl, mem_map, ofSign_disjUnion]
@@ -278,21 +278,21 @@ theorem detp_mul :
     split_ifs with h h <;> simp only [hσ, h]
   rw [← mul_neg_one, hf (mem_ofSign.mpr (sign_swap hij)), sum_map]
   simp_rw [prod_mul_distrib, mulRightEmbedding_apply, Perm.mul_apply]
-  refine sum_congr rfl fun τ hτ ↦ congr_arg (_ * ·) ?_
+  congr! 2 with τ hτ
   rw [← Equiv.prod_comp (swap i j)]
   simp only [hσ]
 
 theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
   have key := sum_fiberwise_eq_sum_filter (ofSign s) univ (· i) fun σ ↦ ∏ k, A k (σ k)
   simp_rw [mem_univ, filter_true] at key
-  simp_rw [mul_apply, adjp_apply, mul_sum, detp, ← key]
+  simp_rw [Matrix.mul_apply, adjp_apply, mul_sum, detp, ← key]
   refine sum_congr rfl fun x hx ↦ sum_congr rfl fun σ hσ ↦ ?_
   rw [← prod_mul_prod_compl ({i} : Finset n), prod_singleton, (mem_filter.mp hσ).2]
 
 theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
   let A' : Matrix n n R := A.updateRow j (A i)
   have h' s : (A * adjp s A) i j = (A' * adjp s A') j j := sum_congr rfl fun _ _ ↦
-    congr_arg₂ (· * ·) (by simp [A']) <| sum_congr rfl fun σ hσ ↦ prod_congr rfl fun _ _ ↦ by aesop
+    congr($(by simp) * $(sum_congr rfl fun σ hσ ↦ prod_congr rfl fun _ _ ↦ by aesop))
   simp_rw [h', mul_adjp_apply_eq]
   apply detp_eq_of_row_eq h
   simp [A', Matrix.row_apply', h]
@@ -306,7 +306,7 @@ theorem adjp_mul_apply_ne (h : i ≠ j) : (adjp 1 A * A) i j = (adjp (-1) A * A)
 
 theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A + detp 1 A • 1 := by
   ext i j
-  rcases eq_or_ne i j with rfl | h <;> simp_rw [add_apply, smul_apply, smul_eq_mul]
+  rcases eq_or_ne i j with rfl | h <;> simp_rw [Matrix.add_apply, Matrix.smul_apply, smul_eq_mul]
   · simp_rw [mul_adjp_apply_eq, one_apply_eq, mul_one, add_comm]
   · simp_rw [mul_adjp_apply_ne A i j h, one_apply_ne h, mul_zero]
 
@@ -314,7 +314,7 @@ theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A +
 lemma detp_option_expand_row_none (A : Matrix (Option n) (Option n) R) :
     A.detp s = A none none * (A.submatrix some some).detp s +
       ∑ k : n, A none (some k) * (A.submatrix some (Function.update some k none)).detp (-s) := by
-  simp_rw [← A.mul_adjp_apply_eq s none, mul_apply,
+  simp_rw [← A.mul_adjp_apply_eq s none, Matrix.mul_apply,
     Fintype.sum_option, adjp_none_none, adjp_some_none]
 
 variable {A B}
@@ -322,7 +322,7 @@ variable {A B}
 theorem isAddUnit_mul {d : n → R} (hAB : A * B = diagonal d) (i j k : n) (hij : i ≠ j) :
     IsAddUnit (A i k * B k j) := by
   revert k
-  rw [← IsAddUnit.sum_univ_iff, ← mul_apply, hAB, diagonal_apply_ne _ hij]
+  rw [← IsAddUnit.sum_univ_iff, ← Matrix.mul_apply, hAB, diagonal_apply_ne _ hij]
   exact isAddUnit_zero
 
 theorem isAddUnit_detp_mul_detp {d : n → R} (hAB : A * B = diagonal d) :
@@ -349,7 +349,7 @@ theorem isAddUnit_detp_smul_mul_adjp {d : n → R} (hAB : A * B = diagonal d) :
   intro s t h
   rw [isAddUnit_iff]
   intro i j
-  simp_rw [smul_apply, smul_eq_mul, mul_apply, detp, adjp_apply, mul_sum, sum_mul,
+  simp_rw [Matrix.smul_apply, smul_eq_mul, Matrix.mul_apply, detp, adjp_apply, mul_sum, sum_mul,
     IsAddUnit.sum_iff]
   intro k hk σ hσ τ hτ
   rw [mem_filter] at hσ

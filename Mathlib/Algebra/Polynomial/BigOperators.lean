@@ -267,7 +267,7 @@ theorem prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
 theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
-  convert! multiset_prod_X_sub_C_nextCoeff (by assumption)
+  convert multiset_prod_X_sub_C_nextCoeff (by assumption)
   rw [nextCoeff, ite_eq_right]
   swap
   · rw [natDegree_multiset_prod_of_monic]
@@ -336,9 +336,6 @@ lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
     (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
   rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
     natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
-
-@[deprecated (since := "2026-04-08")]
-alias natDegree_finset_prod_X_sub_C_eq_card := natDegree_finsetProd_X_sub_C_eq_card
 
 end CommRing
 

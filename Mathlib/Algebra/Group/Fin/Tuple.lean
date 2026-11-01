@@ -114,12 +114,14 @@ variable [Zero α]
 @[simp] lemma tail_zero : vecTail (0 : Fin n.succ → α) = 0 := rfl
 
 @[simp] lemma cons_eq_zero_iff {v : Fin n → α} {x : α} : vecCons x v = 0 ↔ x = 0 ∧ v = 0 where
-  mp h := ⟨congr_fun h 0, by convert! congr_arg vecTail h⟩
+  mp h := ⟨congr($h 0), by convert! congr(vecTail $h)⟩
   mpr := fun ⟨hx, hv⟩ ↦ by simp [hx, hv]
 
-lemma cons_nonzero_iff {v : Fin n → α} {x : α} : vecCons x v ≠ 0 ↔ x ≠ 0 ∨ v ≠ 0 where
+lemma cons_ne_zero_iff {v : Fin n → α} {x : α} : vecCons x v ≠ 0 ↔ x ≠ 0 ∨ v ≠ 0 where
   mp h := not_and_or.mp (h ∘ cons_eq_zero_iff.mpr)
   mpr h := mt cons_eq_zero_iff.mp (not_and_or.mpr h)
+
+@[deprecated (since := "2026-10-13")] alias cons_nonzero_iff := cons_ne_zero_iff
 
 end Zero
 

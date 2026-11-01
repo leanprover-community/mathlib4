@@ -59,7 +59,7 @@ lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 
 lemma coe_mono : Monotone (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
 
-lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
+lemma coe_strictMono : StrictMono (Finsupp.toFun : (ι →₀ M) → ι → M) := fun _ _ ↦ id
 
 end Preorder
 

@@ -42,9 +42,6 @@ def principalSegIio (j : α) : Iio j <i α where
 lemma principalSegIio_apply (k : Iio j) : principalSegIio j k = k.1 :=
   rfl
 
-@[deprecated (since := "2026-04-12")]
-alias principalSegIio_toRelEmbedding := principalSegIio_apply
-
 set_option backward.isDefEq.respectTransparency false in
 /-- If `i ≤ j`, then `Iic i` is an initial segment of `Iic j`. -/
 @[simps]
@@ -67,9 +64,6 @@ def principalSegIioIicOfLE (h : i ≤ j) : Iio i <i Iic j where
 @[simp]
 lemma principalSegIioIicOfLE_apply (h : i ≤ j) (k : Iio i) :
     principalSegIioIicOfLE h k = ⟨k, k.2.le.trans h⟩ := rfl
-
-@[deprecated (since := "2026-04-12")]
-alias principalSegIioIicOfLE_toRelEmbedding := principalSegIioIicOfLE_apply
 
 end Set
 

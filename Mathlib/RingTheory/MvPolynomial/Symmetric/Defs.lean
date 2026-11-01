@@ -5,9 +5,8 @@ Authors: Hanting Zhang, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
@@ -268,7 +267,7 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
   rw [Finsupp.support_single _ one_ne_zero]
   simp only [mem_singleton]
   rintro a h rfl
-  have := congr_arg Finsupp.support h
+  have := congr($(h).support)
   rw [Finsupp.support_sum_eq_biUnion _ (by simp), Finsupp.support_sum_eq_biUnion _ (by simp)]
     at this
   simp_all

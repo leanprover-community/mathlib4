@@ -5,14 +5,14 @@ Authors: Adam Topaz
 -/
 module
 
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.RingTheory.Bezout
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Valuation.Integers
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Valuation Rings
@@ -399,7 +399,7 @@ instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
   rcases eq_or_ne g 0 with h | h
   · simp [h]
   have : x * a + y * b = 1 := by
-    apply mul_left_injective₀ h; convert! e' using 1 <;> ring
+    apply mul_left_injective₀ h; convert e' using 1 <;> ring
   rcases IsLocalRing.isUnit_or_isUnit_of_add_one this with h' | h' <;> [left; right]
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 

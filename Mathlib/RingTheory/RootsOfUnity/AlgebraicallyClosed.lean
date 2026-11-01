@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 public import Mathlib.NumberTheory.Cyclotomic.Basic
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 
 /-!
 # Instances for HasEnoughRootsOfUnity

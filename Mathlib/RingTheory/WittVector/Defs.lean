@@ -49,18 +49,28 @@ If `p` is invertible in `R`, this ring is isomorphic to `ℕ → R` (the product
 If `R` is a ring of characteristic `p`, then `WittVector p R` is a ring of characteristic `0`.
 The canonical example is `WittVector p (ZMod p)`,
 which is isomorphic to the `p`-adic integers `ℤ_[p]`. -/
-structure WittVector (p : ℕ) (R : Type*) where mk' ::
+structure WittVector (p : ℕ) (R : Type*) where
+  /-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
+  mk (p) ::
   /-- `x.coeff n` is the `n`th coefficient of the Witt vector `x`.
 
   This concept does not have a standard name in the literature.
   -/
   coeff : ℕ → R
 
-/-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`.
+/-- Construct a Witt vector `mk' x : 𝕎 R` from a sequence `x` of elements of `R`. -/
+@[deprecated WittVector.mk (since := "2026-09-03")]
+def WittVector.mk' {p : ℕ} {R : Type*} (coeff : ℕ → R) : WittVector p R := WittVector.mk p coeff
 
-This is preferred over `WittVector.mk'` because it has `p` explicit.
--/
-def WittVector.mk (p : ℕ) {R : Type*} (coeff : ℕ → R) : WittVector p R := mk' coeff
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `mk p x` being printed as `{ coeff := x }` by `delabStructureInstance`. -/
+@[app_delab WittVector.mk]
+meta def WittVector.delabMk : Delab := delabApp
+
+end Notation
 
 variable {p : ℕ}
 

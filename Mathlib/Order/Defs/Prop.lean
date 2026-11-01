@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
-import Mathlib.Tactic.ToDual
 public import Mathlib.Tactic.ToDual
 
 /-!

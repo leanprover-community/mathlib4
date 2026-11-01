@@ -55,7 +55,7 @@ The relevant files are:
 assert_not_exists Monoid
 
 namespace Nat
-variable {a b m n k : ℕ} {p : ℕ → Prop}
+variable {a b c m n k : ℕ} {p : ℕ → Prop}
 
 /-! ### `succ`, `pred` -/
 
@@ -219,11 +219,6 @@ lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
 
-@[deprecated (since := "2026-03-05")] alias strongRec' := Nat.strongRec
-@[deprecated (since := "2026-03-05")] alias strongRec'_spec := Nat.strongRec_eq
-@[deprecated (since := "2026-03-05")] alias strongRecOn' := Nat.strongRec
-@[deprecated (since := "2026-03-05")] alias strongRecOn'_beta := Nat.strongRec_eq
-
 /-- Induction principle starting at a non-zero number.
 To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
 for `induction'`).
@@ -378,6 +373,13 @@ protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
 
 /-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_right : m ∣ n + m ↔ m ∣ n := Nat.dvd_add_left (Nat.dvd_refl m)
+
+/-- Alias of `Nat.dvd_div_of_mul_dvd`, to specify which factor is divided out,
+so that `Nat.dvd_div_of_mul_dvd_right` can have a symmetrical name. -/
+alias dvd_div_of_mul_dvd_left := dvd_div_of_mul_dvd
+
+lemma dvd_div_of_mul_dvd_right (h : a * b ∣ c) : a ∣ c / b :=
+  dvd_div_of_mul_dvd_left (by rwa [Nat.mul_comm])
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=

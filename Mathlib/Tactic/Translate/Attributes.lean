@@ -28,7 +28,7 @@ initialize generatingAttrs : IO.Ref (NameMap (Name → Syntax → AttributeKind 
 register the implementation that returns the generated declarations.
 This will be used by translation attributes for translating between generated declarations. -/
 def registerGeneratingAttr (attr : Name)
-    (impl : Name → Syntax → AttributeKind → AttrM (Array Name)) : IO Unit :=
+    (impl : Name → Syntax → AttributeKind → AttrM (Array Name)) : BaseIO Unit :=
   generatingAttrs.modify (·.insert attr impl)
 
 end Mathlib.Tactic

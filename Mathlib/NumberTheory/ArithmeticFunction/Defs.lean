@@ -6,11 +6,12 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.Tactic.ArithMult
+
+import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution

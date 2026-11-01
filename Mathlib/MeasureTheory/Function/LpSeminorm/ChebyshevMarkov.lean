@@ -48,7 +48,7 @@ theorem mul_meas_ge_le_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
 theorem mul_meas_ge_le_pow_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     {f : α → ε'} (ε : ℝ≥0∞) :
     ε ^ p.toReal * μ { x | ε ≤ ‖f x‖ₑ } ≤ eLpNorm f p μ ^ p.toReal := by
-  convert! mul_meas_ge_le_pow_eLpNorm μ hp_ne_zero hp_ne_top (ε ^ p.toReal) using 4
+  convert mul_meas_ge_le_pow_eLpNorm μ hp_ne_zero hp_ne_top (ε ^ p.toReal) using 4
   ext x
   rw [ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp_ne_zero hp_ne_top)]
 

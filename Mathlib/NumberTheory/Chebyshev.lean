@@ -5,15 +5,12 @@ Authors: Alastair Irving, Terry Tao, Ruben Van de Velde
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semifield
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.NumberTheory.AbelSummation
-public import Mathlib.NumberTheory.PrimeCounting
-public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
+public import Mathlib.NumberTheory.Primorial
 
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
+import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Data.Nat.Prime.Int
@@ -111,7 +108,7 @@ theorem theta_eq_sum_primesLE_log (n : ℕ) : θ n = ∑ p ∈ primesLE n, log p
 theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
   simp only [mem_Ioc] at hn
-  convert! vonMangoldt_apply_one
+  convert vonMangoldt_apply_one
   have := lt_of_le_of_lt (le_floor_iff' hn.1.ne' |>.mp hn.2) hx
   norm_cast at this
   linarith
@@ -136,7 +133,7 @@ theorem psi_one : ψ 1 = 0 := psi_eq_zero_of_lt_two one_lt_two
 
 theorem theta_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : θ x = 0 := by
   apply sum_eq_zero fun n hn ↦ ?_
-  convert! log_one
+  convert log_one
   simp only [mem_filter, mem_Ioc] at hn
   have := lt_of_le_of_lt (le_floor_iff' hn.1.1.ne' |>.mp hn.1.2) hx
   norm_cast at ⊢ this
@@ -210,11 +207,15 @@ Basic facts about the least common multiple of the first `n` natural numbers
 -/
 
 /-- Least common multiple of `Icc 1 n`. -/
+@[oeis A003418]
 def lcmUpto (n : ℕ) : ℕ := (Icc 1 n).lcm id
 
 theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by simp [lcmUpto]
 
 theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
+
+lemma lcmUpto_dvd_lcmUpto {m n : ℕ} (h : m ≤ n) : lcmUpto m ∣ lcmUpto n :=
+  Finset.lcm_dvd fun _ _ ↦ dvd_lcm (by grind)
 
 theorem factorization_lcmUpto (n : ℕ) {p : ℕ} (hp : p.Prime) :
     (lcmUpto n).factorization p = p.log n := by
@@ -324,6 +325,34 @@ theorem two_pow_le_mul_lcmUpto (n : ℕ) : 2 ^ n ≤ (n + 1) * lcmUpto n := calc
     gcongr with k hk
     exact le_of_dvd (lcmUpto_pos n) (choose_dvd_lcmUpto <| by grind)
   _ = _ := by simp
+
+lemma mul_choose_dvd_lcmUpto {n k : ℕ} (nk : k ≠ 0) (lk : k ≤ n) : k * n.choose k ∣ lcmUpto n := by
+  rw [← factorization_prime_le_iff_dvd (mul_ne_zero nk (choose_ne_zero lk)) (lcmUpto_ne_zero n)]
+  intro p pp
+  rw [factorization_lcmUpto n pp, factorization_mul nk (choose_ne_zero lk), Finsupp.add_apply]
+  exact factorization_add_factorization_choose_le_log lk
+
+lemma mul_mul_choose_dvd_lcmUpto {n : ℕ} (hn : n ≠ 0) :
+    n * (n + 1) * (2 * n + 1).choose n ∣ lcmUpto (2 * n + 1) := by
+  have co : n.Coprime (n + 1) := by simp [Coprime]
+  rw [← co.lcm_eq_mul, ← lcm_mul_right]
+  apply Nat.lcm_dvd (mul_choose_dvd_lcmUpto hn (by lia))
+  rw [← choose_symm_half]
+  apply mul_choose_dvd_lcmUpto <;> lia
+
+lemma mul_four_pow_le_lcmUpto {n : ℕ} (hn : n ≠ 0) : n * 4 ^ n ≤ lcmUpto (2 * n + 1) := by
+  grw [four_pow_le_add_one_mul_choose, ← mul_assoc]
+  exact le_of_dvd (lcmUpto_pos _) (mul_mul_choose_dvd_lcmUpto hn)
+
+theorem two_pow_le_lcmUpto {n : ℕ} (hn : 7 ≤ n) : 2 ^ n ≤ lcmUpto n := by
+  have p2 (k) : 2 ^ (2 * k) = 4 ^ k := by simp [pow_mul]
+  obtain ⟨k, rfl | rfl⟩ := n.even_or_odd'
+  · obtain rfl | gk : k = 4 ∨ 4 ≤ k - 1 := by lia
+    · decide
+    · nth_grw 1 [p2, ← k.sub_one_add_one (by lia), pow_succ', gk, mul_four_pow_le_lcmUpto (by lia)]
+      exact le_of_dvd (lcmUpto_pos _) (lcmUpto_dvd_lcmUpto (by lia))
+  · grw [pow_succ', p2, ← mul_four_pow_le_lcmUpto (by lia)]
+    exact Nat.mul_le_mul_right _ (by lia)
 
 /-!
 ## Relating `ψ` and `θ`
@@ -489,6 +518,10 @@ theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ ψ 
   · exact (Nat.sub_one_lt_floor x).le
   · exact floor_le hx
   · exact one_le_two
+
+lemma psi_ge_of_seven_le {n : ℕ} (hn : 7 ≤ n) : n * log 2 ≤ ψ n := by
+  rw [psi_eq_log_lcmUpto, ← log_pow 2]
+  exact log_le_log (by positivity) <| mod_cast two_pow_le_lcmUpto hn
 
 theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : ψ x - θ x ≤ 2 * √x * log x := by
   grw [← abs_psi_sub_theta_le_sqrt_mul_log hx]
@@ -816,6 +849,15 @@ theorem pi_ge' {x : ℝ} (hx : 1 < x) :
     ((x - 1) * log 2 - log (x + 2)) / log x ≤ π ⌊x⌋₊ := by
   grw [div_le_iff₀ (log_pos hx), ← psi_le_primeCounting_mul_log', psi_ge']
   positivity
+
+lemma pi_ge_of_four_le {n : ℕ} (hn : 4 ≤ n) : n * log 2 / log n ≤ π n := by
+  rw [div_le_iff₀ (log_pos (mod_cast (by lia)))]
+  by_cases! hn' : 7 ≤ n
+  · grw [psi_ge_of_seven_le hn', ← psi_le_primeCounting_mul_log]
+  rw [← exp_le_exp]
+  iterate 2 rw [mul_comm, exp_mul, exp_log (by positivity)]
+  norm_cast
+  decide +revert
 
 theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
   (theta_le_psi n).trans (psi_le_primeCounting_mul_log n)

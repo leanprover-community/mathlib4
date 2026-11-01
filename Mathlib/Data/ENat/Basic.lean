@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.ENat.Defs
 public import Mathlib.Order.Nat
-import Mathlib.Tactic.Basify.Attr
 
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -235,6 +235,10 @@ alias ⟨_, natCast_toNat⟩ := natCast_toNat_eq_self
 
 @[deprecated (since := "2026-07-17")] alias coe_toNat := natCast_toNat
 
+@[simp] lemma le_natCast_toNat_self_iff : n ≤ n.toNat ↔ n ≠ ⊤ where
+  mp := by rintro hn rfl; simp at hn
+  mpr hn := by rw [natCast_toNat hn]
+
 @[simp] lemma toNat_eq_iff_eq_natCast (n : ℕ∞) (m : ℕ) [NeZero m] :
     n.toNat = m ↔ n = m := by
   cases n
@@ -342,6 +346,10 @@ protected lemma exists_nat_gt (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
 
 @[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
+
+@[simp]
+theorem addLECancellable_iff_ne_top {a : ℕ∞} : AddLECancellable a ↔ a ≠ ⊤ :=
+  WithTop.addLECancellable_iff_ne_top
 
 lemma addLECancellable_of_ne_top : a ≠ ⊤ → AddLECancellable a := WithTop.addLECancellable_of_ne_top
 lemma addLECancellable_of_lt_top : a < ⊤ → AddLECancellable a := WithTop.addLECancellable_of_lt_top

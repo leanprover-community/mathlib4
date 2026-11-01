@@ -15,6 +15,8 @@ This file provides `fun₀ | 3 => a | 7 => b` notation for `Finsupp`, which desu
 `singleton`.
 -/
 
+open scoped Finset
+
 public section
 
 namespace Finsupp
@@ -89,13 +91,13 @@ meta def updateUnexpander : Lean.PrettyPrinter.Unexpander
 /-- Display `Finsupp` using `fun₀` notation. -/
 unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀ β) where
   reprPrec f p :=
-    if f.support.card = 0 then
+    if #f.support = 0 then
       "0"
     else
       let ret : Std.Format := f!"fun₀" ++ .nest 2 (
         .group (.join <| f.support.val.unquot.map fun a =>
           .line ++ .group (f!"| {repr a} =>" ++ .line ++ repr (f a))))
-      if p ≥ leadPrec then Format.paren ret else ret
+      if p ≥ eval_prec lead then Format.paren ret else ret
 
 -- This cannot be put in `Mathlib/Data/DFinsupp/Notation.lean` where it belongs, since doc-strings
 -- can only be added/modified in the file where the corresponding declaration is defined.

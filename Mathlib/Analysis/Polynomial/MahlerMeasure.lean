@@ -5,13 +5,13 @@ Authors: Fabrizio Barroero, Kevin H. Wilson
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Polynomial
-public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Analysis.Polynomial.Fourier
 public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
-public import Mathlib.Analysis.Convex.Integral
-public import Mathlib.Analysis.Polynomial.Fourier
+
+import Mathlib.Analysis.Analytic.Polynomial
+import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Analysis.Convex.Integral
 
 /-!
 # Mahler measure of complex polynomials
@@ -137,12 +137,12 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
   rw [MeasureTheory.ae_iff]
   apply Set.Finite.measure_zero _ MeasureTheory.volume
   simp only [Classical.not_imp]
-  apply Set.Finite.of_finite_image (f := circleMap 0 1) _ <|
-    (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp)).mono (fun _ h ↦ h.1)
-  apply (p * q).roots.finite_toSet.subset
-  rintro _ ⟨_, ⟨_, h⟩, _⟩
-  contrapose h
-  simp_all [log_mul]
+  apply Set.Finite.of_finite_image (f := circleMap 0 1)
+  · apply (p * q).roots.finite_toSet.subset
+    rintro _ ⟨_, ⟨_, h⟩, _⟩
+    contrapose h
+    simp_all [log_mul]
+  · exact (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp)).mono fun _ h ↦ h.1
 
 @[simp]
 theorem prod_mahlerMeasure_eq_mahlerMeasure_prod (s : Multiset ℂ[X]) :
@@ -273,14 +273,17 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     p.intervalIntegrable_mahlerMeasure (by simp)
   rw [EventuallyLE, eventually_iff_exists_mem]
   use {x : ℝ | eval (circleMap 0 1 x) p ≠ 0}
+  simp only [mem_ofPred]
   constructor
   · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp)]
     apply (Finite.of_sdiff _ <| finite_singleton (2 * π)).measure_zero
     simp only [ne_eq, mem_ofPred_eq, Decidable.not_not, inter_sdiff_assoc, Icc_sdiff_right]
     rw [ofPred_inter_eq_sep]
-    apply Finite.of_finite_image (f := circleMap 0 1) ((Multiset.finite_toSet p.roots).subset _)
-      <| fun _ h _ k l ↦ injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
-    simp [hp]
+    apply Finite.of_finite_image (f := circleMap 0 1)
+    · apply (Multiset.finite_toSet p.roots).subset
+      simp [hp]
+    · exact fun _ h _ k l ↦
+        injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
   · intro _ _
     gcongr
     rw [eval_eq_sum]

@@ -80,6 +80,11 @@ def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
 lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
 
+@[simp]
+lemma eLpNormEssSup_dirac [MeasurableSingletonClass α] (f : α → ε) (a : α) :
+    eLpNormEssSup f (Measure.dirac a) = ‖f a‖ₑ := by
+  simp [eLpNormEssSup]
+
 /-- `ℒp` seminorm, for almost everywhere strongly measurable functions,
 equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. For not almost everywhere strongly measurable functions,
@@ -190,7 +195,7 @@ agreeing with it on `1 ≤ p`, equal to `∫ ‖f a‖^p ∂μ` for `0 < p ≤ 1
 and  `μ (Function.support fun x ↦ ‖f x‖ₑ)` for `p = 0`.
 
 Under this modification, the triangle inequality holds for all `p` and
-is thus somethimes more convenient. -/
+is thus sometimes more convenient. -/
 def inhmgELpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   open scoped Classical in

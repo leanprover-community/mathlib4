@@ -248,11 +248,11 @@ theorem MonoidHom.map_iterate_frobeniusEquiv_symm (f : R →* S) (n : ℕ) (x : 
     f (((frobeniusEquiv R p).symm^[n]) x) = ((frobeniusEquiv S p).symm^[n]) (f x) := by
   apply_fun (frobeniusEquiv S p)^[n]
   · simp only [coe_frobeniusEquiv, ← map_iterate_frobenius]
-    · rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
-          ← Function.comp_apply (f := (⇑(frobenius S p))^[n]),
-          ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
-      · simp
-      all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
+    rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
+        ← Function.comp_apply (f := (⇑(frobenius S p))^[n]),
+        ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
+    · simp
+    all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
   apply Function.Injective.iterate
   simp
 
@@ -366,14 +366,14 @@ theorem roots_expand_pow_map_iterateFrobenius_le :
     simp_rw [count_nsmul, count_roots, ← rootMultiplicity_expand_pow, ← count_roots, count_map,
       count_eq_card_filter_eq]
     exact card_le_card (monotone_filter_right _ fun _ h ↦ iterateFrobenius_inj R p n h)
-  convert! Nat.zero_le _
+  convert Nat.zero_le _
   simp_rw [count_map, card_eq_zero]
   exact ext' fun t ↦ count_zero t ▸ count_filter_of_neg fun h' ↦ h ⟨t, h'⟩
 
 theorem roots_expand_map_frobenius_le :
     (expand R p f).roots.map (frobenius R p) ≤ p • f.roots := by
   rw [← iterateFrobenius_one]
-  convert! ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
+  convert ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
 
 theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
     (expand R (p ^ n) f).roots.toFinset.image (iterateFrobenius R p n) ⊆ f.roots.toFinset := by
@@ -384,7 +384,7 @@ theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
 theorem roots_expand_image_frobenius_subset [DecidableEq R] :
     (expand R p f).roots.toFinset.image (frobenius R p) ⊆ f.roots.toFinset := by
   rw [← iterateFrobenius_one]
-  convert! ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
+  convert ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
   apply pow_one
 
 section PerfectRing
