@@ -670,29 +670,4 @@ theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x =
 
 end Field
 
-
-universe u v w
-
-section Splits
-
-section CommRing
-
-variable {i}
-
-variable (i)
-
-end CommRing
-
-variable [CommRing R]
-
-section UFD
-
-attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
-
-local infixl:50 " ~ᵤ " => Associated
-
-end UFD
-
-end Splits
-
 end Polynomial
