@@ -5,8 +5,8 @@ Authors: Reid Barton, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.Separation.Regular
-public import Mathlib.Topology.SigmaLocallyFinite
 
 /-!
 # Paracompact topological spaces
@@ -40,6 +40,9 @@ We also prove the following facts.
 * In order for a regular space to be paracompact, it suffices for every open cover of it to admit a
   locally finite but not necessarily open refinement, or for every cover to admit a
   σ-locally finite open refinement. In particular, every regular Lindelöf space is paracompact.
+
+* Every closed or more generally Fσ subset of a paracompact space is itself paracompact, see
+  `Topology.IsClosedEmbedding.paracompactSpace` and `Topology.IsEmbedding.paracompactSpace_of_isFσ`.
 
 ## TODO
 
@@ -421,3 +424,42 @@ instance [RegularSpace X] [LindelofSpace X] : ParacompactSpace X := by
   have ⟨s, hs, hs'⟩ := isLindelof_univ.elim_countable_subcover u hu hu'.symm.subset
   replace hs := hs.to_subtype
   exact ⟨s, fun i ↦ u i, .of_countable, by grind, by simpa using hs', by grind⟩
+
+/-- Fσ subsets of regular paracompact spaces are paracompact. -/
+lemma Topology.IsEmbedding.paracompactSpace_of_isFσ {X : Type u} {Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] [ParacompactSpace Y] [RegularSpace Y] {f : X → Y}
+    (hf : IsEmbedding f) (hf' : IsFσ (range f)) : ParacompactSpace X := by
+  /- It suffices to prove that every open cover of `range f` in `Y` in admits a σ-locally finite
+  open refinement. -/
+  suffices h : ∀ ι : Type u, ∀ u : ι → Set Y, (∀ i, IsOpen (u i)) → range f ⊆ ⋃ i, u i →
+      ∃ ι' : Type u, ∃ v : ι' → Set Y, SigmaLocallyFinite v ∧ (∀ i', IsOpen (v i')) ∧
+        range f ⊆ ⋃ i', v i' ∧ ∀ i', ∃ i, v i' ⊆ u i by
+    have := hf.regularSpace
+    refine (paracompactSpace_tfae_of_regularSpace.out 1 2).2 fun ι u hu hu' ↦ ?_
+    choose u' hu'' hu''' using fun i ↦ hf.isOpen_iff.1 (hu i)
+    have ⟨ι', v, hv⟩ := h ι u' hu'' <| by simp [← image_univ, hu''', hu']
+    exact ⟨ι', _, hv.1.preimage_continuous hf.continuous,
+      fun i' ↦ (hv.2.1 i').preimage hf.continuous, by simpa [← image_univ] using hv.2.2.1,
+        fun i' ↦ (hv.2.2.2 i').imp fun i ↦ by grind⟩
+  /- So, let `u` be an open cover of `range f` in `Y` and `w` a sequence of closed sets whose union
+  is `range f`. -/
+  intro ι u hu hu'
+  have ⟨w, hw⟩ := hf'.eq_iUnion_nat
+  /- Since each `w n` is closed, we can use paracompactness of `X` to pick locally finite open
+  covers `v n` of `w n` in `Y` refining `u`. -/
+  have h : ∀ n, ∃ v : ι → Set Y, LocallyFinite v ∧ (∀ i, IsOpen (v i)) ∧ w n ⊆ ⋃ i, v i ∧
+      ∀ i, v i ⊆ u i := fun n ↦ by
+    have ⟨v, hv⟩ := precise_refinement (Option.rec (w n)ᶜ u)
+      (Option.rec (by simp [hw]) (by simp [hu])) (by grind [iUnion_option, subset_iUnion w n])
+    refine ⟨_, hv.2.2.1.comp_injective (Option.some_injective _), by simp [hv], ?_, by simp [hv]⟩
+    rw [iUnion_option v, ← compl_subset_iff_union] at hv
+    grind
+  choose v hv using h
+  /- `v.uncurry : ℕ × ι → Set Y` is then the desired σ-locally finite refinement of `u`. -/
+  refine ⟨ℕ × ι, v.uncurry, ?_, ?_, ?_, ?_⟩
+  · refine sigmaLocallyFinite_iff_exists_equiv.2 ⟨_, (Equiv.sigmaEquivProd _ _).symm, ?_⟩
+    simp [hv]
+  · simp [hv]
+  · simp only [hw.2, iUnion_prod', Function.uncurry_apply_pair]
+    exact iUnion_mono fun n ↦ (hv n).2.2.1
+  · grind
