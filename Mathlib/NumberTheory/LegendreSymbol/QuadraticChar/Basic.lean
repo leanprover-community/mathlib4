@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
+public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 
@@ -237,6 +238,15 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/
 theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticChar F a = 0 :=
   sum_eq_zero_of_ne_one (quadraticChar_ne_one hF)
+
+/-- The sum of the quadratic character over the values of an odd function is zero when
+`-1` is not a square. -/
+theorem quadraticChar_sum_comp_eq_zero_of_odd (hF : ¬IsSquare (-1 : F)) {f : F → F}
+    (hf : Function.Odd f) : ∑ x : F, quadraticChar F (f x) = 0 := by
+  rw [← quadraticChar_neg_one_iff_not_isSquare] at hF
+  suffices quadraticChar F (-1) * ∑ x, quadraticChar F (f x) = ∑ x, quadraticChar F (f x) by grind
+  simp_rw [Finset.mul_sum, ← map_mul, neg_one_mul, ← hf.eq]
+  exact Equiv.sum_comp (Equiv.neg F) (quadraticChar F ∘ f)
 
 end quadraticChar
 

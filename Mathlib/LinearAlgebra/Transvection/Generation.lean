@@ -130,16 +130,14 @@ theorem fixedSubmodule_transvection_mul {f : Dual K V} {v : V}
   constructor
   · -- e.fixedSubmodule ≤ e'.fixedSubmodule
     intro x hx
-    simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap, LinearEquiv.mul_apply]
+    simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap, mul_apply_eq_comp]
     suffices transvection hfv x = x by
       simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap] at hx
       simp only [hx, this]
     rw [← LinearEquiv.coe_toLinearMap, ← mem_fixedSubmodule_iff]
     exact ht hx
   · -- u ∈ e.fixedSubmodule
-    simp only [mem_fixedSubmodule_iff, LinearEquiv.coe_toLinearMap,
-      LinearEquiv.mul_apply, transvection.apply]
-    simp [hfv']
+    simp [LinearMap.transvection.apply, hfv']
 
 /-- A linear equivalence `u : V ≃ₗ[K] V` is exceptional if
 it is a nontrivial homothety modulo `u.fixedSubmodule`. -/
@@ -267,8 +265,8 @@ theorem mem_transvections_pow_mul_dilatransvections_of_fixedReduce_eq_one
       · -- We prove that `(t * e).fixedReduce = 1`.
         simp only [ht, one_eq_refl, fixedReduce_eq_one, auxTransvection_mul_fixed hv] at he ⊢
         intro w
-        simp only [auxTransvection, LinearEquiv.mul_apply, transvection.apply,
-          add_sub_right_comm]
+        simp only [auxTransvection, mul_apply_eq_comp, transvection.coe_apply,
+          LinearMap.transvection.apply, add_sub_right_comm]
         apply mem_sup_left
         apply Submodule.add_mem _ (he w)
         exact smul_mem _ _ hv'
@@ -365,8 +363,9 @@ private theorem not_forall_fixedReduce_eq_smul {f g : Dual K V} {v : V} {a b : K
   have key (x : V) : g (e x) • (v - e v) - c • x ∈ e.fixedSubmodule ⊔ K ∙ v := by
     have ha := ha x
     have hb := hb x
-    simp only [LinearEquiv.mul_apply, transvection.apply, auxTransvection] at ha hb
-    rw [LinearMap.add_apply, add_smul, ← add_assoc] at hb
+    simp only [auxTransvection, mul_apply_eq_comp, transvection.coe_apply,
+      LinearMap.transvection.apply, LinearMap.add_apply] at ha hb
+    rw [add_smul, ← add_assoc] at hb
     convert Submodule.sub_mem _ hb ha using 1
     -- should be taken care by a `module` tactic that handles noncommutative rings
     simp only [add_comm _ (g (e x) • _), ← add_assoc]
