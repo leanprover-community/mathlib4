@@ -30,6 +30,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    # See the `no-actions-cache` job in `actionlint.yml`.
+    cache-mode: none
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -39,17 +41,6 @@ jobs:
           auto-config: false
           use-github-cache: false
           use-mathlib-cache: true
-
-      - name: Restore progress cache
-        if: toJson(inputs.dry_run) != 'true'
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: scripts/.rm_set_option_progress.jsonl
-          # Use run_id in restore-keys so we always pick up the most recent cache
-          # for this toolchain, regardless of which run saved it.
-          key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
-          restore-keys: |
-            rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-
 
       - name: Remove unnecessary set_option lines
         id: rm_set_option
@@ -69,16 +60,6 @@ jobs:
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Save progress cache
-        # Always save (even on failure/timeout) so the next run can resume.
-        # Skip on dry-run (no files are modified) and if the progress file was
-        # cleaned up (meaning the run completed fully).
-        if: always() && toJson(inputs.dry_run) != 'true' && hashFiles('scripts/.rm_set_option_progress.jsonl') != ''
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: scripts/.rm_set_option_progress.jsonl
-          key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
 
       - name: Build PR body
         id: pr_body

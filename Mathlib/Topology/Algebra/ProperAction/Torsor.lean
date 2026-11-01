@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Group.Torsor
 public import Mathlib.Topology.Algebra.ProperAction.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The action underlying a topological torsor is proper.
 -/

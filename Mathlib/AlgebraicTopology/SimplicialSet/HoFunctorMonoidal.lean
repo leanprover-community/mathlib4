@@ -176,7 +176,6 @@ lemma inverse_map_mkHom_homMk_homMk {x₀ x₁ : X _⦋0⦌₂} (e : Edge x₀ x
   homMk_comp_homMk ((Edge.CompStruct.compId e).tensor (Edge.CompStruct.idComp e'))
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 variable (X Y) in
 /-- Auxiliary definition for `equivalence`. -/
 def functorCompInverseIso : functor X Y ⋙ inverse X Y ≅ 𝟭 _ :=
@@ -279,7 +278,6 @@ lemma id_prod_mapHomotopyCategory_comp_inverse (g : Y ⟶ Y') :
       inverse X Y ⋙ mapHomotopyCategory (X ◁ g) :=
   Functor.ext_of_iso (idProdMapHomotopyCategoryCompInverseIso _ _) (fun _ ↦ rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the first projection. -/
@@ -295,7 +293,6 @@ def inverseCompMapHomotopyCategoryFstIso :
       simp))
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The compatibility of `HomotopyCategory.BinaryProduct.inverse`
 with respect to the second projection. -/
 def inverseCompMapHomotopyCategorySndIso :
@@ -330,7 +327,6 @@ lemma right_unitality [Unique (Y _⦋0⦌₂)] [Subsingleton (Y _⦋1⦌₂)] :
 
 variable (Z)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `associativityIso`. -/
 def associativity'Iso :
@@ -370,7 +366,6 @@ def associativityIso :
     associator _ _ _ ≪≫
     isoWhiskerLeft (prod.associativity _ _ _).functor (associativity'Iso X Y Z)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {X Y Z} in
 lemma associativityIso_hom_app (xyz) :
