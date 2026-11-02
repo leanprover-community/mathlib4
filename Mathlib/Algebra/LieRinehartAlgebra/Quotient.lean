@@ -76,7 +76,7 @@ instance : LieRing (L ⧸ s) where
   lie_self := by rintro ⟨x⟩; exact congrArg mk (lie_self x)
   leibniz_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (leibniz_lie x y z)
 
-theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ s), (mk y : L ⧸ s)⁆ := rfl
+theorem mk_bracket (x y : L) : (mk ⁅x, y⁆ : L ⧸ s) = ⁅mk x, mk y⁆ := rfl
 
 instance : Bracket (L ⧸ s) A where
   bracket x a := Quotient.liftOn' x (fun x' => ⁅x', a⁆) (by
