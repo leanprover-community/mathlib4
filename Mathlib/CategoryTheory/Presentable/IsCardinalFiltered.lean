@@ -385,8 +385,10 @@ lemma isCardinalFiltered_of_hasTerminal (J : Type u) [Category.{v} J]
 open IsCardinalFiltered in
 lemma ObjectProperty.isCardinalFiltered {C : Type*} [Category* C] (P : ObjectProperty C)
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered C κ]
-    (hP : ∀ (X : C), ∃ (Y : C) (_ : P Y), Nonempty (X ⟶ Y)) :
+    (hP : P.ι.Final := by infer_instance) :
     IsCardinalFiltered P.FullSubcategory κ := by
+  have := isFiltered_of_isCardinalFiltered C κ
+  rw [ObjectProperty.final_ι_iff_of_isFiltered] at hP
   rw [isCardinalFiltered_iff]
   refine ⟨fun ι X hι ↦ ?_, fun ι X Y f hι ↦ ?_⟩
   · let X' (i : ι) := (X i).obj
@@ -400,6 +402,14 @@ lemma ObjectProperty.isCardinalFiltered {C : Type*} [Category* C] (P : ObjectPro
     dsimp
     rw [coeq_condition_assoc f' hι i]
 
+lemma finallySmall_iff_of_isCardinalFiltered
+    (J : Type*) [Category* J] [LocallySmall.{w} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalFiltered J κ] :
+    FinallySmall.{w} J ↔ ∃ (P : ObjectProperty J), ObjectProperty.Small.{w} P ∧
+      P.ι.Final := by
+  have := isFiltered_of_isCardinalFiltered J κ
+  rw [finallySmall_iff_of_isFiltered]
+
 lemma isCardinalFiltered_and_finallySmall_iff
     (J : Type*) [Category* J] [LocallySmall.{w} J] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     IsCardinalFiltered J κ ∧ FinallySmall.{w} J ↔
@@ -407,19 +417,10 @@ lemma isCardinalFiltered_and_finallySmall_iff
         (F : J₀ ⥤ J), F.Final := by
   refine ⟨fun ⟨_, _⟩ ↦ ?_,
     fun ⟨J₀, _, _, F, _⟩ ↦ ⟨IsCardinalFiltered.of_final F κ, .mk' F⟩⟩
-  obtain ⟨S, _, hS⟩  := FinallySmall.exists_small_weakly_terminal_set J
-  choose k hk₁ hk₂ using hS
-  let P : ObjectProperty J := fun j ↦ j ∈ S
-  have : IsCardinalFiltered P.FullSubcategory κ :=
-    P.isCardinalFiltered κ (fun j ↦ ⟨k j, hk₁ j, hk₂ _⟩)
-  have := isFiltered_of_isCardinalFiltered P.FullSubcategory κ
-  have := isFiltered_of_isCardinalFiltered J κ
-  have : P.ι.Final :=
-    Functor.final_of_exists_of_isFiltered_of_fullyFaithful _
-      (fun j ↦ ⟨⟨k j, hk₁ j⟩, hk₂ j⟩)
+  obtain ⟨P, _, hP⟩ := (finallySmall_iff_of_isCardinalFiltered J κ).1 inferInstance
   let e := equivSmallModel.{w} P.FullSubcategory
+  have := P.isCardinalFiltered κ
   exact ⟨SmallModel.{w} P.FullSubcategory, inferInstance,
-    IsCardinalFiltered.of_equivalence _ e,
-    e.inverse ⋙ P.ι, inferInstance⟩
+    IsCardinalFiltered.of_equivalence _ e, e.inverse ⋙ P.ι, inferInstance⟩
 
 end CategoryTheory

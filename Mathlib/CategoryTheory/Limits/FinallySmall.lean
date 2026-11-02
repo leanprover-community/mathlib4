@@ -191,6 +191,21 @@ theorem finallySmall_iff_exists_small_weakly_terminal_set [IsFilteredOrEmpty J] 
   rcases h with ⟨s, hs, hs'⟩
   exact finallySmall_of_small_weakly_terminal_set s hs'
 
+lemma finallySmall_iff_of_isFiltered [IsFilteredOrEmpty J] [LocallySmall.{w} J] :
+    FinallySmall.{w} J ↔ ∃ (P : ObjectProperty J), ObjectProperty.Small.{w} P ∧
+      P.ι.Final := by
+  refine ⟨fun _ ↦ ?_, fun ⟨P, _, _⟩ ↦ finallySmall_of_final_of_essentiallySmall P.ι⟩
+  let e := ShrinkHoms.equivalence.{w} J
+  have := IsFilteredOrEmpty.of_equivalence e
+  have := finallySmall_of_final_of_finallySmall.{w} e.functor
+  obtain ⟨S, _, hS⟩ :=
+    (finallySmall_iff_exists_small_weakly_terminal_set.{w} (ShrinkHoms J)).1 inferInstance
+  refine ⟨ObjectProperty.strictMap (fun X ↦ X ∈ S) e.inverse, inferInstance, ?_⟩
+  rw [ObjectProperty.final_ι_iff_of_isFiltered]
+  intro X
+  obtain ⟨Y, hY, ⟨f⟩⟩ := hS (e.functor.obj X)
+  exact ⟨_, ObjectProperty.strictMap_obj _ _ hY, ⟨e.toAdjunction.homEquiv _ _ f⟩⟩
+
 end WeaklyTerminal
 
 section WeaklyInitial
