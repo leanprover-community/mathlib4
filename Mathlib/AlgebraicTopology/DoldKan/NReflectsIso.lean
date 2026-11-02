@@ -38,7 +38,6 @@ variable {C : Type*} [Category* C] [Preadditive C]
 
 open MorphComponents
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).ReflectsIsomorphisms :=
   ⟨fun {X Y} f => by
     intro
