@@ -163,7 +163,7 @@ open scoped Classical in
 theorem IsDecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
     (hg : IsDecompOn g B T) (hf : IsDecompOn f A S) (h : MapsTo f A B) :
     IsDecompOn (g ∘ f) A (T * S) := by
-  rw [left_eq_inter.mpr h]
+  rw [left_eq_inter.mpr h.subset_preimage]
   exact hg.comp' hf
 
 /-- The composition of two equidecompositions as an equidecomposition. -/

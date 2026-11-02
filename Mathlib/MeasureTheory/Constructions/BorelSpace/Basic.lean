@@ -95,7 +95,7 @@ theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
 
 theorem borel_comap {f : α → β} {t : TopologicalSpace β} :
     @borel α (t.induced f) = (@borel β t).comap f :=
-  comap_generateFrom.symm
+  (comap_generateFrom (s := {s | IsOpen[t] s})).symm
 
 theorem Continuous.borel_measurable [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
     (hf : Continuous f) : @Measurable α β (borel α) (borel β) f :=
@@ -322,7 +322,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
   exact hf s hs h1 h2
 
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
-  rw [nhds, iInf_subtype']
+  rw [nhds_def, iInf_subtype']
   refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => ?_
   exact i.2.2.measurableSet.principal_isMeasurablyGenerated
 
@@ -511,9 +511,7 @@ theorem ContinuousOn.measurable_of_countable_compl [MeasurableSingletonClass α]
 theorem measurable_of_countable_not_continuousAt [MeasurableSingletonClass α]
     {f : α → γ} (hf : Set.Countable {x | ¬ ContinuousAt f x}) : Measurable f := by
   have : ContinuousOn f {x | ContinuousAt f x} := fun x hx ↦ hx.continuousWithinAt
-  apply this.measurable_of_countable_compl
-  convert hf
-  grind
+  exact this.measurable_of_countable_compl hf
 
 theorem Topology.IsClosedEmbedding.measurable {f : α → γ} (hf : IsClosedEmbedding f) :
     Measurable f :=

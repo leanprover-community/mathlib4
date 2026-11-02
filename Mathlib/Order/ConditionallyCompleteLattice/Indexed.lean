@@ -262,19 +262,11 @@ theorem cbiSup_eq_ciSup_subtype {p : ι → Prop} {f : ∀ i, p i → α}
     ⨆ (i) (h), f i h = ⨆ x : Subtype p, f x x.property :=
   (ciSup_subtype (f := fun x => f x.val x.property) hf hf').symm
 
-@[deprecated (since := "2026-04-04")] alias ciSup_subtype' := cbiSup_eq_ciSup_subtype
-
-@[deprecated (since := "2026-04-04")] alias ciInf_subtype' := cbiInf_eq_ciInf_subtype
-
 @[to_dual]
 theorem ciSup_subtype_fun {ι} {s : Set ι} {f : ι → α}
     (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :
     ⨆ i : s, f i = ⨆ (t : ι) (_ : t ∈ s), f t :=
   ciSup_subtype hf hf'
-
-@[deprecated (since := "2026-04-04")] alias ciSup_subtype'' := ciSup_subtype_fun
-
-@[deprecated (since := "2026-04-04")] alias ciInf_subtype'' := ciInf_subtype_fun
 
 @[to_dual]
 theorem csSup_image {s : Set β} {f : β → α}
@@ -407,8 +399,6 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
 @[to_dual]
 theorem ciSup_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
   csSup_eq_top_of_top_mem hs
-
-@[deprecated (since := "2026-04-05")] alias ciInf_eq_top_of_top_mem := ciSup_eq_top_of_top_mem
 
 variable [WellFoundedLT α]
 

@@ -1200,7 +1200,8 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
     have h : b.coeff 0 = 1 := by simpa using! congr(($e).coeff 0)
     have : b.natTrailingDegree = 0 := by simp [h]
     rw [Monic.def, reverse_leadingCoeff, trailingCoeff, this, h]
-  · have : p.natDegree ≤ 1 := by simpa using! natDegree_linear_le (a := r) (b := -1)
+  · have : p.natDegree ≤ 1 := by
+      simpa [p, sub_eq_add_neg] using natDegree_linear_le (a := r) (b := -1)
     rw [eval₂_eq_eval_map, reverse, Polynomial.map_mul, ← reflect_map, Polynomial.map_pow,
       map_X, ← revAt_zero (1 + _), ← reflect_monomial,
       ← reflect_mul _ _ natDegree_map_le (by simp), pow_zero, mul_one, hc,
@@ -1236,7 +1237,8 @@ protected def _root_.Ideal.minimalPrimes.equivIrreducibleComponents (I : Ideal R
   rw [irreducibleComponents_eq_maximals_closed]
   exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.zeroLocusEquivIrreducibleCloseds (I : Set R)).trans
-    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (zeroLocus (I : Set R))).dual))
+    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (zeroLocus (I : Set R))).dual) :
+    _ ≃o (↥{x | IsClosed x ∧ IsIrreducible x})ᵒᵈ)
 
 variable (R)
 
@@ -1250,7 +1252,8 @@ protected def _root_.minimalPrimes.equivIrreducibleComponents :
   rw [irreducibleComponents_eq_maximals_closed]
   exact OrderIso.setOfPredMinimalIsoSetOfPredMaximal
     (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
-    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual))
+    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual) :
+    _ ≃o (↥{x | IsClosed x ∧ IsIrreducible x})ᵒᵈ)
 
 lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) = minimalPrimes R := by
@@ -1309,7 +1312,7 @@ variable {R}
 theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S]
     (f : R →+* S) : IsLocalHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note: inline `this` does **not** work
-  have := (local_hom_TFAE f).out 1 5
+  have := (local_hom_tfae f).out 1 5
   rw [this, PrimeSpectrum.ext_iff]
   rfl
 

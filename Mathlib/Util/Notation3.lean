@@ -6,13 +6,13 @@ Authors: Mario Carneiro, Kyle Miller
 module
 
 public meta import Batteries.Lean.Syntax
+public meta import Lean.Elab.AuxDef
 public meta import Lean.Elab.MacroArgUtil
 public meta import Lean.PrettyPrinter.Delaborator  -- shake: keep (dependency of elaborator output)
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Batteries.Linter.UnreachableTactic
 public import Batteries.Util.ExtendedBinder
-public import Lean.Elab.AuxDef
 public import Mathlib.Lean.Elab.Term
 public import Mathlib.Tactic.ScopedNS
 
@@ -662,6 +662,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
           | .app _ arity => ``(withOverApp $(quote arity) $bodyCore)
           | _            => pure bodyCore
         elabCommand <| ← `(
+          /-- Pretty printer defined by `notation3` command. -/
           @[$attrKind delab $(mkIdent key.key)]
           $vis:visibility aux_def delab_app $(mkIdent fullName) : Delab :=
             whenPPOption getPPNotation <| whenNotPPOption getPPExplicit <| $body)

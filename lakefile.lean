@@ -15,8 +15,6 @@ require "leanprover-community" / "proofwidgets" @ git "main"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
     Please report this issue on the Lean Zulip."
-
-
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
@@ -32,8 +30,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
   -- Explicitly enable the header linter, since the standard set is defined in `Mathlib.Init`
   -- but we want to run this linter in files imported by `Mathlib.Init`.
-  --⟨`linter.style.header, true⟩,
-  ⟨`linter.style.header, false⟩,
+  ⟨`linter.style.header, true⟩,
   ⟨`linter.checkInitImports, true⟩,
   ⟨`linter.allScriptsDocumented, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
@@ -90,6 +87,9 @@ lean_lib Mathlib where
 -- `scripts/mk_all.lean`.
 lean_lib Cache where
   globs := #[`Cache.+]
+  -- The `Cache` modules do not use the module system, but they import each other and thus
+  -- the `requiresModuleSystem` package option set above.
+  allowNonModules := true
 
 lean_lib MathlibTest where
   globs := #[`MathlibTest.+]
@@ -136,6 +136,9 @@ lean_exe autolabel where
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
+  -- As for `lean_lib Cache`: the root does not use the module system either, and the
+  -- executable's configuration does not inherit the library's.
+  allowNonModules := true
 
 /-- `lake exe cache-test` runs the cache tool's unit tests (container URL
 construction, per-repo trust-ordered allowlist, `--cache-from` parsing).
@@ -154,8 +157,6 @@ lean_exe mk_all where
   allowNonModules := true
   srcDir := "scripts"
   supportInterpreter := true
-  -- Executables which import `Lake` must set `-lLake`.
-  weakLinkArgs := #["-lLake"]
 
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
@@ -163,11 +164,13 @@ lean_exe «lint-style» where
   supportInterpreter := true
   -- TODO: modulise this script, so remove the need for this option
   allowNonModules := true
-  -- Executables which import `Lake` must set `-lLake`.
-  weakLinkArgs := #["-lLake"]
 
 /-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
+lean_exe «check-title-labels» where
+  srcDir := "scripts"
+
+-- TODO: provided for backwards compatibility; delete after #44306
 lean_exe «check_title_labels» where
   srcDir := "scripts"
   -- TODO: modulise this script, so remove the need for this option
