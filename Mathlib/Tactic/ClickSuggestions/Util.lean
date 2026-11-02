@@ -154,19 +154,23 @@ structure State where
 
 /-- The information required for pasting a suggestion into the editor. -/
 structure Context where
-  /-- The current document -/
-  «meta» : DocumentMeta
-  /-- The range that should be replaced.
-  In tactic mode, this should be the range of the suggestion tactic.
-  In infoview mode, the start and end of the range should both be the cursor position. -/
+  /-- The text in the current file. -/
+  fileMap : FileMap
+  /-- An identifier for the current file version. -/
+  fileVersion : Lsp.VersionedTextDocumentIdentifier
+  /-- The cursor position. -/
   cursorPos : Lsp.Position
-  /-- Whether to use the `on_goal n =>` combinator. -/
-  onGoal : Option Nat
-  /-- Whether to use the `·` combinator. -/
-  focus : Bool
-  /-- The preceding piece of syntax, if available. It is not available if the cursor is
-  at the start of the next tactic. This is used for merging consecutive `rw` tactics. -/
-  stx : Option (TSyntax `tactic)
+  /--
+  The number of goals in the tactic state.
+
+  Note: if there are multiple different tactic states (e.g. when using `all_goals`),
+  we only consider the one relevant tactic state.
+  -/
+  numGoals : Nat
+  /-- The index of the selected goal in the tactic state. -/
+  onGoal : Nat
+  /-- The goal information from the info tree. This is used to format suggested tactics. -/
+  goalsAt : Elab.GoalsAtResult
   /-- The token for updating the main HTML body of suggestions.
   This is used for displaying a message that no progress has happened. -/
   masterToken : RefreshToken
@@ -332,28 +336,76 @@ partial def mergeTactics? {m} [Monad m] [MonadQuotation m] (stx₁ stx₂ : TSyn
 
 /-- Given tactic syntax `tac` that we want to paste into the editor, return it as a string.
 This function respects the 100 character limit for long lines. -/
-def tacticPasteString (tac : TSyntax `tactic) : ClickSuggestionsM String := do
-  let column := (← read).cursorPos.character
+def tacticPasteString (tac : TSyntax `tactic) (column : Nat) : CoreM String := do
   let indent := column
   return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
 
-/-- Given tactic syntax `tac`, compute the text edit that will paste it into the editor.
-We return the range that should be replaced, and the new text that will replace it. -/
+/--
+Given tactic syntax `tac`, compute the text edit that will paste it into the editor.
+Return the range that should be replaced, and the new text that will replace it.
+
+- If the goal comes from some existing tactic syntax, align the inserted tactic with this syntax.
+- If the cursor is on a `by`, add a space between the `by` and the inserted tactic.
+- Otherwise, for example if the cursor is after a `by` or a `=>`,
+  simply insert it at the cursor position.
+
+TODO: we might want to add support for inserting in the middle of a `rw [...]` sequence.
+-/
 def mkInsertion (tac : TSyntax `tactic) : ClickSuggestionsM (Lsp.Range × String) := do
-  let tac ← match (← read).onGoal with
-    | some n => `(tactic| on_goal $(Syntax.mkNatLit (n + 1)):num => $tac:tactic)
-    | none => pure tac
-  if let some stx := (← read).stx then
-    if let some tac ← mergeTactics? stx tac then
-      if let some range := stx.raw.getRange? then
-        let text := (← read).meta.text
-        let endPos := max (text.lspPosToUtf8Pos (← read).cursorPos) range.stop
-        let extraWhitespace := range.stop.extract text.source endPos
-        let tactic ← tacticPasteString tac
-        return (text.utf8RangeToLspRange ⟨range.start, endPos⟩, tactic ++ extraWhitespace)
-  let tac ← if (← read).focus then `(tactic| · $tac:tactic) else pure tac
-  return (⟨(← read).cursorPos, (← read).cursorPos⟩,
-    s!"{← tacticPasteString tac}\n{String.replicate (← read).cursorPos.character ' '}")
+  let { onGoal, numGoals, goalsAt, cursorPos, fileMap .. } ← read
+  let tac ←
+    if onGoal = 0 then
+      pure tac
+    else
+      `(tactic| on_goal $(Syntax.mkNatLit (onGoal + 1)):num => $tac:tactic)
+  let stx := match goalsAt.tacticInfo.stx with
+    |`(by%$tk $[$tacs]*) =>
+      if h : tacs.size = 0 then tk else if goalsAt.useAfter then tacs.back else tacs[0]
+    | stx => stx
+  let tacFocused ←
+    -- Focus with a `·` if there are multiple goals, or the previous tactic is also a `·`.
+    if onGoal = 0 && (1 < numGoals || stx.isOfKind ``cdot) then
+      `(tactic| · $tac:tactic)
+    else
+      pure tac
+  if let some range := stx.getRange? then
+    let range := fileMap.utf8RangeToLspRange range
+    -- If the goal comes from a `by` that the cursor is on, then add a space after the `by`.
+    -- Ideally we would add a newline, but it is hard to determine the right indentation level.
+    if stx matches .atom _ "by" then
+      if cursorPos ≤ range.end then
+        let tactic ← tacticPasteString tac (range.end.character + 1)
+        return (⟨range.end, range.end⟩, " " ++ tactic)
+    -- If the goal comes from a `tactic` syntax, then align the inserted tactic with it.
+    let stxCategories := (Parser.parserExtension.getState (← getEnv)).categories
+    if (stxCategories.find! `tactic).kinds.contains stx.getKind then
+      let column := range.start.character
+      -- `useAfter` determines whether `tac` should go before or after the existing tactic syntax.
+      if goalsAt.useAfter then
+        -- Try merging `tac` at the end of the existing tactic syntax.
+        if let some tac ← mergeTactics? ⟨stx⟩ tac then
+          return (range, ← tacticPasteString tac column)
+        let tactic ← tacticPasteString tacFocused column
+        return (⟨range.end, range.end⟩, "\n" ++ .replicate column ' ' ++ tactic)
+      else
+        -- Try merging `tac` at the start of the existing tactic syntax.
+        if let some tac ← mergeTactics? tac ⟨stx⟩ then
+          return (range, ← tacticPasteString tac column)
+        let tactic ← tacticPasteString tacFocused column
+        return (⟨range.start, range.start⟩, tactic ++ "\n" ++ .replicate column ' ')
+  return (⟨cursorPos, cursorPos⟩, ← tacticPasteString tacFocused cursorPos.character)
+
+/--
+Return the new cursor position, given the old one and the range that is being replaced.
+If the cursor is below the replaced range, this preserves the relative position.
+Otherwise, the cursor comes at the end of the inserted text.
+-/
+def newCursorPos (current : Lsp.Position) (range : Lsp.Range) (newText : String) : Lsp.Position :=
+  let endPos := range.start.advance newText.toRawSubstring
+  if current.line ≤ range.end.line then
+    endPos
+  else
+    { current with line := endPos.line + (current.line - range.end.line) }
 
 end Syntax
 
@@ -366,11 +418,16 @@ open Widget
 If `solves := true`, then a `🎉️` emoji is added. -/
 def mkSuggestion (tac : TSyntax `tactic) (button : String) (html : ProofWidgets.Html)
     (solves : Bool) : ClickSuggestionsM ProofWidgets.Html := do
-  let (range, newText) ← mkInsertion tac (← read)
+  let (range, newText) ← mkInsertion tac
+  let newCursorPos := newCursorPos (← read).cursorPos range newText
+  let edit := {
+    edit := ⟨(← read).fileVersion, #[{ range, newText }]⟩
+    newSelection? := some ⟨newCursorPos, newCursorPos⟩
+    title? := some newText }
   let buttonText := s!"{if solves then "🎉️" else ""}[{button}] "
   let button :=
     jsx%{<span style={json% { "white-space" : "pre"}} className="font-code">
-    { .ofComponent MakeEditLink (.ofReplaceRange (← read).meta range newText) #[.text buttonText] }
+    { .ofComponent MakeEditLink edit #[.text buttonText] }
     </span>}
   return jsx%{<div
     style={json% { "display" : "flex", "align-items" : "flex-start", "margin-bottom" : "1em" }}>
