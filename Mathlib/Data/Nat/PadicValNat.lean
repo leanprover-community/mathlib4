@@ -22,7 +22,6 @@ that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p n` defaults t
 def _root_.padicValNat (p n : ℕ) : ℕ := (maxPowDvdDiv p n).fst
 
 open maxPowDvdDiv in
-@[simp]
 theorem divMaxPow_mul_pow_fst_maxPowDvdDiv (p n : ℕ) :
     divMaxPow n p * p ^ (maxPowDvdDiv p n).1 = n := by
   unfold divMaxPow
