@@ -5,13 +5,13 @@ Authors: Rémy Degenne, Etienne Marion
 -/
 module
 
-public import Mathlib.Topology.Order.Cadlag
 public import Mathlib.Probability.Process.Adapted
+public import Mathlib.Topology.Order.Cadlag
 
 /-! # Strong measurability of the path map of a right-continuous process
 
 A process `X : ι → Ω → E` can be seen as a path-valued random variable `Ω → (ι → E)`, where
-`ι → E` carries the product topology. We show that if each `X i` is strongly measurable and
+`ι → E` carries the product σ-algebra. We show that if each `X i` is strongly measurable and
 every path `X · ω` is right-continuous, then that path map is strongly measurable.
 
 ## Main results
@@ -53,7 +53,7 @@ open scoped Classical in
 lemma pathApproxRight_apply (hX : ∀ t, Measurable (X t)) (ω : Ω) (i : ι) :
     pathApproxRight X hX e s n ω i =
       ∑ t ∈ s, if IsLeast {u ∈ s | i ≤ u} t then SimpleFunc.nearestPt e n (X t ω) else 0 := by
-  simp [pathApproxRight, SimpleFunc.coe_finsetSum]
+  simp [pathApproxRight]
 
 /-- Evaluation of `pathApprox` at a time `i` for which `t₀` is the smallest element of `s`
 that is `≥ i`. -/
