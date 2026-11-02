@@ -8,8 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Order.Setoid.Partition
+
 import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Data.Setoid.Partition
 
 /-!
 # Graph Coloring

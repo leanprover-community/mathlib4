@@ -72,7 +72,7 @@ conditional expectation, conditional expected value
 
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace MeasureTheory.Lp Filter
 open scoped ENNReal Topology MeasureTheory
@@ -98,7 +98,7 @@ It is defined as 0 if any one of the following conditions is true:
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
 @[wikidata Q772232]
-noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : α → E :=
+noncomputable def condExp (μ : Measure[m₀] α) (f : α → E) : α → E :=
   if hm : m ≤ m₀ then
     if h : SigmaFinite (μ.trim hm) ∧ Integrable f μ then
       if StronglyMeasurable[m] f then f
@@ -311,8 +311,6 @@ theorem condExp_finsetSum {ι : Type*} {s : Finset ι} {f : ι → α → E}
     exact (condExp_add (hf i <| Finset.mem_insert_self i s)
       (integrable_finsetSum' _ <| Finset.forall_of_forall_insert hf) _).trans
         ((EventuallyEq.refl _ _).add <| heq <| Finset.forall_of_forall_insert hf)
-
-@[deprecated (since := "2026-04-08")] alias condExp_finset_sum := condExp_finsetSum
 
 theorem condExp_smul [NormedSpace 𝕜 E] (c : 𝕜) (f : α → E) (m : MeasurableSpace α) :
     μ[c • f | m] =ᵐ[μ] c • μ[f | m] := by

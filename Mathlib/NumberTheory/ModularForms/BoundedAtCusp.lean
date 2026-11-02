@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.SlashActions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Boundedness and vanishing at cusps
 

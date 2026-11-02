@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Regular.Basic
-import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Algebra.Ring.Basic
+
+import Mathlib.Algebra.Regular.Opposite
 
 /-!
 # Non-zero divisors in a ring
@@ -42,14 +43,6 @@ theorem IsRightRegular.pow_injective {M : Type*} [Monoid M] [IsMulTorsionFree M]
     (hx : IsRightRegular x) (hx' : x ≠ 1) : Function.Injective (fun n ↦ x ^ n) :=
   MulOpposite.unop_injective.comp <| (isLeftRegular_op.mpr hx).pow_injective <|
     (MulOpposite.op_eq_one_iff x).not.mpr hx'
-
-theorem IsMulTorsionFree.pow_right_injective {M : Type*} [CancelMonoid M] [IsMulTorsionFree M]
-    {x : M} (hx : x ≠ 1) : Function.Injective (fun n ↦ x ^ n) :=
-  IsLeftRegular.pow_injective (IsLeftRegular.all x) hx
-
-@[simp]
-theorem IsMulTorsionFree.pow_right_inj {M : Type*} [CancelMonoid M] [IsMulTorsionFree M] {x : M}
-    (hx : x ≠ 1) {n m : ℕ} : x ^ n = x ^ m ↔ n = m := (pow_right_injective hx).eq_iff
 
 theorem IsMulTorsionFree.pow_right_injective₀ {M : Type*} [MonoidWithZero M] [IsLeftCancelMulZero M]
     [IsMulTorsionFree M] {x : M} (hx : x ≠ 1) (hx' : x ≠ 0) : Function.Injective (fun n ↦ x ^ n) :=

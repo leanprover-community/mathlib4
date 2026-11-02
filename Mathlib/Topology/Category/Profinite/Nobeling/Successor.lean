@@ -152,7 +152,7 @@ include hsC in
 theorem swapTrue_mem_C1 (f : π (C1 C ho) (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
   obtain ⟨f, g, hg, rfl⟩ := f
-  convert! hg
+  convert hg
   dsimp +unfoldPartialApp [SwapTrue]
   ext i
   split_ifs with h
@@ -476,7 +476,7 @@ theorem Products.max_eq_eval [Inhabited I] (l : Products I) (hl : l.val ≠ [])
       (∀ i, i ∈ l.Tail.val → (SwapTrue o x.val i = true)) := by
     apply forall_congr; intro i; apply forall_congr; intro hi; rw [hi' i hi]
   simp only [H]
-  split_ifs with h₁ h₂ h₃ <;> try (dsimp [e])
+  split_ifs with h₁ h₂ h₃ <;> dsimp [e]
   · rw [ite_eq_left (swapTrue_eq_true _ _), ite_eq_right]
     · rfl
     · simp [mem_C'_eq_false C ho x x.prop]

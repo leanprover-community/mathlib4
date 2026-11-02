@@ -10,6 +10,9 @@ public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`
 is the left adjoint of

@@ -5,8 +5,8 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Subobject.Basic
 
 /-!
 # Factoring through subobjects

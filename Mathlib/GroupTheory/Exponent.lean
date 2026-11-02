@@ -279,9 +279,10 @@ lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : or
       y ^ (orderOf y / factorizationLCMRight (orderOf x) (orderOf y))) =
       Nat.lcm (orderOf x) (orderOf y) := by
   rw [(h.pow_pow _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
-  all_goals iterate 2 rw [orderOf_pow_orderOf_div]; try rw [Coprime]
-  all_goals simp [factorizationLCMLeft_mul_factorizationLCMRight, factorizationLCMLeft_dvd_left,
-    factorizationLCMRight_dvd_right, coprime_factorizationLCMLeft_factorizationLCMRight, hx, hy]
+  all_goals iterate 2 rw [orderOf_pow_orderOf_div]
+  all_goals simp [Coprime, factorizationLCMLeft_mul_factorizationLCMRight,
+    factorizationLCMLeft_dvd_left, factorizationLCMRight_dvd_right,
+    coprime_factorizationLCMLeft_factorizationLCMRight, hx, hy]
 
 open Submonoid in
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, then there is an

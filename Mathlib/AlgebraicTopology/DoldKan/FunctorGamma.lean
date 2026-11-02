@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 
 /-!
 

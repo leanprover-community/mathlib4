@@ -5,9 +5,10 @@ Authors: Madison Crim
 -/
 module
 
+public import Mathlib.RingTheory.KrullDimension.Zero
+
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Group.Pi.Units
-public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 # Localizing a product of commutative rings

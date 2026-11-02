@@ -5,10 +5,11 @@ Authors: Heather Macbeth, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.MeanInequalitiesPow
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+
+import Mathlib.Analysis.MeanInequalitiesPow
 
 /-!
 # ℓp space
@@ -167,7 +168,8 @@ theorem mono {f : (i : α) → E i} {g : α → ℝ}
   replace hfg (i) : ‖f i‖ ≤ ‖g i‖ := (hfg i).trans (Real.le_norm_self _)
   obtain (rfl | rfl | hp) := p.trichotomy
   · simp_rw [memℓp_zero_iff, ← norm_pos_iff] at hg ⊢
-    refine hg.subset fun i hi ↦ hi.trans_le <| hfg i
+    grw [hfg]
+    exact hg
   · rw [memℓp_infty_iff] at hg ⊢
     exact hg.range_mono _ hfg
   · rw [memℓp_gen_iff hp] at hg ⊢
@@ -288,8 +290,6 @@ theorem finsetSum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
-
-@[deprecated (since := "2026-04-08")] alias finset_sum := finsetSum
 
 section IsBoundedSMul
 
@@ -604,7 +604,7 @@ theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ 
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp hp'
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i ↦ by positivity
   rw [← Real.rpow_le_rpow_iff (norm_nonneg _) (norm_nonneg' _) hp'']
-  convert! le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
+  convert le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
 
 lemma lipschitzWith_one_eval (p : ℝ≥0∞) [Fact (1 ≤ p)] (i : α) :
     LipschitzWith 1 (fun x : lp E p ↦ x i) :=

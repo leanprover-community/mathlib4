@@ -6,8 +6,12 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Simps
+
+import Mathlib.Tactic.AdaptationNote
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subtypes
