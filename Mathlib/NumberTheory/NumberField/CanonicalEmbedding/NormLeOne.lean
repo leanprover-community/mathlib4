@@ -331,7 +331,7 @@ variable {K}
 /--
 A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.
 -/
-@[deprecated NumberField.Units.equivFinRank (since := "2026-10-07")]
+@[deprecated NumberField.Units.equivFinRank (since := "2026-11-02")]
 abbrev equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} := Units.equivFinRank K
 
 open scoped Classical in
