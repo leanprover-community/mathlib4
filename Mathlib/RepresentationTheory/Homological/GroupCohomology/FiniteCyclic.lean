@@ -93,16 +93,13 @@ noncomputable abbrev groupCohomologyπEven (i : ℕ) [NeZero i] (hi : Even i) :
   (moduleCatCyclesIso <| normHomCompSub A g).inv ≫
       ShortComplex.homologyπ _ ≫ (groupCohomologyIsoEven A g hg i hi).inv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma groupCohomologyπEven_eq_zero_iff (i : ℕ) [NeZero i] (hi : Even i)
     (x : LinearMap.ker (applyAsHom A g - 𝟙 A).hom.toLinearMap) :
     groupCohomologyπEven A g hg i hi x = 0 ↔
       x.1 ∈ LinearMap.range A.norm.asHom.hom.toLinearMap := by
-  simp only [groupCohomologyπEven, ModuleCat.hom_comp, LinearMap.comp_apply]
-  rw [moduleCatCyclesIso_inv_π_apply,
-    map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
-    map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
-    Submodule.Quotient.mk_eq_zero, mem_range_moduleCatToCycles_iff]
-  rfl
+  simp [groupCohomologyπEven, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
+    moduleCatToCycles, -LinearMap.mem_range, LinearMap.range_codRestrict ]
 
 lemma groupCohomologyπEven_eq_iff (i : ℕ) [NeZero i] (hi : Even i)
     (x y : LinearMap.ker (applyAsHom A g - 𝟙 A).hom.toLinearMap) :
