@@ -928,10 +928,9 @@ lemma π_comp_H1Iso_inv :
 variable {A}
 
 lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries₁ A := by
-  rw [← π_comp_H1Iso_inv_apply,
-    map_eq_zero_iff _ ((ModuleCat.mono_iff_injective (H1Iso A).inv).1 inferInstance),
-    Submodule.Quotient.mk_eq_zero, mem_range_moduleCatToCycles_iff, shortComplexH1_f]
-  rfl
+  rw [← π_comp_H1Iso_inv_apply, map_eq_zero_iff _
+    ((ModuleCat.mono_iff_injective (H1Iso A).inv).1 inferInstance)]
+  simp [LinearMap.range_codRestrict, shortComplexH1, boundaries₁]
 
 lemma H1π_eq_iff (x y : cycles₁ A) :
     H1π A x = H1π A y ↔ x.1 - y.1 ∈ boundaries₁ A := by
@@ -976,7 +975,9 @@ def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[
   ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => AddMonoidHom.ofClass
     (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g)))).comp
       (cycles₁ A).toAddSubgroup.subtype) fun x hx => AddMonoidHom.mem_ker.2 <| by
-      obtain ⟨z, hz⟩ : ∃ z : G × G →₀ A, d₂₁ A z = x.1 := (mem_range_moduleCatToCycles_iff _ _).1 hx
+      obtain ⟨z, hz⟩ : ∃ z : G × G →₀ A, d₂₁ A z = x.1 := by
+        simpa [-SetLike.coe_eq_coe, Subtype.ext_iff, LinearMap.codRestrict_apply _,
+          shortComplexH1] using hx
       simp [← hz, d₂₁, map_finsuppSum, -liftAddHom_apply, liftAddHom_apply_single,
         isTrivial_apply]).comp <|
           AddMonoidHom.ofClass (H1Iso A).hom.hom).toIntLinearMap
@@ -1065,10 +1066,9 @@ lemma π_comp_H2Iso_inv :
 variable {A}
 
 lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries₂ A := by
-  rw [← π_comp_H2Iso_inv_apply,
-    map_eq_zero_iff _ ((ModuleCat.mono_iff_injective (H2Iso A).inv).1 inferInstance),
-    Submodule.Quotient.mk_eq_zero, mem_range_moduleCatToCycles_iff, shortComplexH2_f]
-  rfl
+  rw [← π_comp_H2Iso_inv_apply, map_eq_zero_iff _
+    ((ModuleCat.mono_iff_injective (H2Iso A).inv).1 inferInstance)]
+  simp [LinearMap.range_codRestrict, shortComplexH2, boundaries₂]
 
 lemma H2π_eq_iff (x y : cycles₂ A) :
     H2π A x = H2π A y ↔ x.1 - y.1 ∈ boundaries₂ A := by
