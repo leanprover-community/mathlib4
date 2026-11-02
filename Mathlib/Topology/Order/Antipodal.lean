@@ -9,6 +9,22 @@ public import Mathlib.Topology.Order.IntermediateValue
 public import Mathlib.Topology.UniformSpace.Real
 import Mathlib.Tactic.Linarith
 
+/-!
+# Zero-Crossing of Odd Maps on Antipodal Paths
+
+This module formalizes zero-crossing existence for continuous odd maps under domain involutions
+along connected paths.
+
+## Main definitions
+* `IsOddMap τ f`: Anti-invariance condition `f (τ x) = -f x`.
+
+## Main statements
+* `IsOddMap.not_forall_pos`: An odd map cannot be strictly positive everywhere.
+* `IsOddMap.not_forall_neg`: An odd map cannot be strictly negative everywhere.
+* `IsOddMap.exists_zero_of_antipodal_path`: Any continuous odd map along a path connecting
+  antipodal points `γ b = τ (γ a)` has a zero `f (γ t) = 0`.
+-/
+
 public section
 
 open Set
