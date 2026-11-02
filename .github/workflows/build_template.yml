@@ -1027,17 +1027,22 @@ jobs:
 
       # The dump is single-threaded and needs only the Mathlib oleans, so it runs in
       # the background from here; the job waits for it before the upload.
+      # Everything the `import-graph` artifact holds goes into one directory, outside
+      # the checkout, which is checked and uploaded as a whole: the dumper names its
+      # own files there (`--out-dir`: `api.jsonl`, which replaces `decls.txt`, and
+      # `imports.json`), so a new one needs no edit to this workflow.
       - name: dump declarations and transitive-import counts
         id: dump
         background: true
         run: |
+          mkdir -p "$RUNNER_TEMP/import-graph"
           lake env lean --run "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean" \
-            --out decls.txt --imports-out imports.json Mathlib
+            --out-dir "$RUNNER_TEMP/import-graph" Mathlib
           ## Record the PR number so the post-build `decls-diff` workflow can find
           ## the comment to patch without the (laggy) commit-SHA search API. Empty
           ## for non-PR builds (push to master / bors); the consumer then falls
           ## back to the commit's associated PRs.
-          printf '%s' "${{ github.event.pull_request.number }}" > pr_number.txt
+          printf '%s' "${{ github.event.pull_request.number }}" > "$RUNNER_TEMP/import-graph/pr_number.txt"
 
       - name: get cache for Archive and Counterexamples
         run: |
@@ -1136,36 +1141,39 @@ jobs:
 
       - name: generate our import graph
         run: |
-          lake exe graph
+          mkdir -p "$RUNNER_TEMP/import-graph"
+          lake exe graph "$RUNNER_TEMP/import-graph/import_graph.dot"
 
       - name: wait for the declaration dump
         wait: dump
 
       - name: ensure dump outputs are regular files
         run: |
-          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
-            if [ -L "$f" ] || [ ! -f "$f" ]; then
-              echo "Refusing to upload: $f is not a regular file." >&2
-              ls -la -- "$f" >&2 || true
-              exit 1
-            fi
-          done
+          DIR="$RUNNER_TEMP/import-graph"
+          if [ -L "$DIR" ] || [ ! -d "$DIR" ]; then
+            echo "Refusing to upload: $DIR is not a directory." >&2
+            exit 1
+          fi
+          BAD="$(find "$DIR" -mindepth 1 ! -type f)"
+          if [ -n "$BAD" ]; then
+            echo "Refusing to upload: these are not regular files:" >&2
+            printf '%s\n' "$BAD" >&2
+            exit 1
+          fi
+          ls -la -- "$DIR"
 
       - name: upload the import graph
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: import-graph
-          path: |
-            import_graph.dot
-            decls.txt
-            imports.json
-            pr_number.txt
+          ## The directory's contents, at the artifact's top level as before.
+          path: ${{ runner.temp }}/import-graph/
           ## Master pushes: 90 days, so later PRs forked from these commits
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
-      - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
+      - name: clean up the import graph files
+        run: rm -rf "$RUNNER_TEMP/import-graph"
 
       - name: check all scripts build successfully
         run: |
