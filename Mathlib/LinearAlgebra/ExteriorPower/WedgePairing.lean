@@ -51,7 +51,7 @@ lemma wedgePairing_apply (x : ⋀[R]^k M) (y : ⋀[R]^l M) :
   change Eq.ndrec (motive := fun n => (⋀[R]^n M) →ₗ[R] R) vol hkl.symm (wedge R M k l x y) = _
   rw [wedge, LinearMap.eqRec_apply (fun n : ℕ => ⋀[R]^n M)]
   simp only [LinearEquiv.coe_coe, EmbeddingLike.apply_eq_iff_eq]
-  generalize hn : Module.finrank R M = n at hkl ⊢
+  generalize Module.finrank R M = n at hkl ⊢
   cases hkl
   rfl
 
