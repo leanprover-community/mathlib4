@@ -563,7 +563,7 @@ section
 variable {D : Type*} [Category* D] [LocallySmall.{w} D]
 
 /-- The natural transformation `shrinkCoyoneda.obj X ⟶ F ⋙ shrinkCoyoneda.obj (F.op.obj X)`
-when `F : C ⥤ D` and `X : Cᵒᵖ`. -/
+induced by `shrinkYonedaMap₂` when `F : C ⥤ D` and `X : Cᵒᵖ`. -/
 noncomputable def shrinkCoyonedaMap (F : C ⥤ D) (X : Cᵒᵖ) :
     shrinkCoyoneda.{w}.obj X ⟶ F ⋙ shrinkCoyoneda.{w}.obj (F.op.obj X) :=
   ((flipFunctor ..).map (shrinkYonedaMap₂ F)).app _
