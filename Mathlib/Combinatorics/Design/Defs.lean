@@ -54,7 +54,7 @@ structure IncidenceSystem where
   /-- The function from the indexing type `β` to the blocks in `α`. -/
   block (b : β) : Set α
   /-- The blocks must be subsets of the ambient set. -/
-  block_subset {b} (hb : b ∈ blockSet) : block b ⊆ carrier
+  block_subset {b} (hb : b ∈ blockSet) : block b ⊆ carrier := by grind
 
 initialize_simps_projections IncidenceSystem (as_prefix carrier, as_prefix blockSet,
   as_prefix block)
@@ -99,7 +99,6 @@ def discrete (s : Set α) : IncidenceSystem α α where
   carrier := s
   blockSet := s
   block x := {x}
-  block_subset := Set.singleton_subset_iff.mpr
 
 /-- The indiscrete incidence system consists of the carrier as a single block. -/
 @[simps]
@@ -107,7 +106,6 @@ def indiscrete (s : Set α) (b : β) : IncidenceSystem α β where
   carrier := s
   blockSet := {b}
   block _ := s
-  block_subset _ := subset_rfl
 
 /-- An incidence system is simple if there are no duplicate blocks. -/
 @[mk_iff]
