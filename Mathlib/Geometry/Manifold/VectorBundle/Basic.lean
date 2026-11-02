@@ -167,7 +167,7 @@ namespace Bundle
 
 /-- Characterization of `C^n` functions into a vector bundle.
 Version at a point within a set. -/
-theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x₀ : M} :
+theorem contMDiffWithinAt_totalSpace_iff {f : M → TotalSpace F E} {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
@@ -187,24 +187,34 @@ theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x�
     exact hx
   · simp only [mfld_simps]
 
+@[deprecated (since := "2026-11-02")]
+alias contMDiffWithinAt_totalSpace := contMDiffWithinAt_totalSpace_iff
+
 /-- Characterization of `C^n` functions into a vector bundle. Version at a point. -/
-theorem contMDiffAt_totalSpace {f : M → TotalSpace F E} {x₀ : M} :
+theorem contMDiffAt_totalSpace_iff {f : M → TotalSpace F E} {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x ↦ (f x).proj) x₀ ∧
         ContMDiffAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
   simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_totalSpace
 
+@[deprecated (since := "2026-11-02")] alias contMDiffAt_totalSpace := contMDiffAt_totalSpace_iff
+
 /-- Characterization of `C^n` sections within a set at a point of a vector bundle. -/
-theorem contMDiffWithinAt_section {s : ∀ x, E x} {a : Set B} {x₀ : B} :
+theorem contMDiffWithinAt_section_iff {s : ∀ x, E x} {a : Set B} {x₀ : B} :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
       ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
   simp_rw [contMDiffWithinAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffWithinAt_id
 
+@[deprecated (since := "2026-11-02")]
+alias contMDiffWithinAt_section := contMDiffWithinAt_section_iff
+
 /-- Characterization of `C^n` sections of a vector bundle. -/
-theorem contMDiffAt_section {s : ∀ x, E x} (x₀ : B) :
+theorem contMDiffAt_section_iff {s : ∀ x, E x} (x₀ : B) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
+
+@[deprecated (since := "2026-11-02")] alias contMDiffAt_section := contMDiffAt_section_iff
 
 variable (E)
 
@@ -549,6 +559,8 @@ theorem contMDiffAt_section_iff {s : ∀ x, E x} {x₀ : B}
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
   simp_rw [← contMDiffWithinAt_univ]
   exact e.contMDiffWithinAt_section univ hx₀
+
+@[deprecated (since := "2026-11-02")] alias contMDiffAt_section := contMDiffAt_section_iff
 
 /-- Smoothness of a `C^n` section on `s` can be determined
 using any trivialisation whose `baseSet` contains `s`. -/
