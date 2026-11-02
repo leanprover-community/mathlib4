@@ -428,7 +428,7 @@ theorem multiplicity_eq_of_associated_right {a b c : α} (h : Associated b c) :
   multiplicity_eq_of_emultiplicity_eq (emultiplicity_eq_of_associated_right h)
 
 /-- Finiteness of the multiplicity only depends on the associate class of the second argument. -/
-theorem Associated.finiteMultiplicity_iff_right {a b c : α} (h : Associated b c) :
+theorem Associated.finiteMultiplicity_right_iff {a b c : α} (h : Associated b c) :
     FiniteMultiplicity a b ↔ FiniteMultiplicity a c :=
   ⟨.of_dvd h.symm.dvd, .of_dvd h.dvd⟩
 
@@ -471,8 +471,7 @@ section CommMonoid
 variable [CommMonoid α]
 
 theorem FiniteMultiplicity.mul_right {a b c : α} (hf : FiniteMultiplicity a (b * c)) :
-    FiniteMultiplicity a c :=
-  hf.of_dvd (dvd_mul_left c b)
+    FiniteMultiplicity a c := (mul_comm b c ▸ hf).mul_left
 
 theorem emultiplicity_of_isUnit_right {a b : α} (ha : ¬IsUnit a)
     (hb : IsUnit b) : emultiplicity a b = 0 :=
