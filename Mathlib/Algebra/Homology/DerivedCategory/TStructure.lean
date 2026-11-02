@@ -154,13 +154,11 @@ instance (K : CochainComplex C ℤ) (n : ℤ) [K.IsLE n] :
   rw [isLE_Q_obj_iff]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsGE n := by
   let e := (singleFunctorIsoCompQ C n).app X
   dsimp only [Functor.comp_obj] at e
   exact TStructure.t.isGE_of_iso e.symm n
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsLE n := by
   let e := (singleFunctorIsoCompQ C n).app X
   dsimp only [Functor.comp_obj] at e

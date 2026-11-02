@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+
 /-!
 
 # Sheaves for the coherent topology

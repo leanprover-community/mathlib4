@@ -36,7 +36,6 @@ variable {C D H : Type*} [Category* C] [Category* D] [Category* H]
   [F.CommShift ℤ] [L.CommShift ℤ] [F'.CommShift ℤ]
   [F.IsTriangulated] [L.IsTriangulated]
 
-set_option backward.defeqAttrib.useBackward true in
 public lemma isTriangulated_of_rightExtension
     (α : L ⋙ F' ⟶ F) [NatTrans.CommShift α ℤ]
     (h : ∀ ⦃X Y : H⦄ (f : X ⟶ Y), ∃ (T : Triangle C) (_ : T ∈ distTriang C)
