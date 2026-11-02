@@ -6,8 +6,8 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Probability.Process.LimitProcess
-public import Mathlib.Probability.Process.StronglyMeasurablePath
 public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Probability.Process.StronglyMeasurablePath
 
 /-!
 
