@@ -486,7 +486,6 @@ theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
 theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : m ≠ n) : (monomial n c).coeff m = 0 :=
   Finsupp.single_eq_of_ne h
 
-@[simp]
 theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
   rfl
 
@@ -962,10 +961,9 @@ theorem ofFinsupp_intCast (z : ℤ) : (ofFinsupp z : R[X]) = z := rfl
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 
-@[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by simp
 
-@[simp]
+
 theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by simp
 
 @[simp]
