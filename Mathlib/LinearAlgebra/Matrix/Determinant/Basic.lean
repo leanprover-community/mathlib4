@@ -322,6 +322,12 @@ theorem _root_.RingHom.map_det (f : R →+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) := by
   simp [Matrix.det_apply', map_sum f, map_prod f]
 
+/-- The determinant of submatrices are natural with respect to a ring homomorphism. -/
+theorem _root_.RingHom.map_det_submatrix {m n t : Type*} [Fintype t] [DecidableEq t]
+  (f : R →+* S) (A : Matrix m n R) (row : t → m) (col : t → n) :
+    f (det (submatrix A row col)) = det (submatrix (A.map f) row col) := by
+  simp [submatrix_map, f.map_det]
+
 theorem _root_.RingEquiv.map_det (f : R ≃+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) :=
   f.toRingHom.map_det _
