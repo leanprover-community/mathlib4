@@ -146,7 +146,7 @@ lemma span_degreeLT {m : ℕ} (hCoeff : ∀ i < m, IsUnit (S i).leadingCoeff) :
       rw [degree_eq_natDegree p_ne_zero, head_degree_eq_natDegree] at head_degree_eq
       nth_rw 2 [← coeff_natDegree]
       rw_mod_cast [← head_degree_eq, hp]
-      dsimp [head]
+      simp only [AddMonoidAlgebra.coeff_smul, smul_apply, smul_eq_mul, head]
       nth_rw 2 [← S.natDegree_eq n]
       rw [coeff_natDegree, rightinv, mul_one]
     -- which we can now combine to show that `P - head` must have strictly lower degree,
