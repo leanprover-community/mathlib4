@@ -135,8 +135,7 @@ theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
 
 theorem eval₂_eq_liftNC {f : R →+* S} {x : S} {p : R[X]} :
     eval₂ f x p = liftNC f (powersHom S x) p := by
-  simp only [eval₂_eq_sum, sum, support]
-  rfl
+  simp [eval₂_eq_sum, sum, support, liftNC, Finsupp.sum]
 
 @[deprecated eval₂_eq_liftNC +typeChanged (since := "2026-10-25")]
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :

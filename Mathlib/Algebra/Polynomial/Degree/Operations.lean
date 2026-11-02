@@ -532,9 +532,7 @@ theorem natDegree_X_pow_le {R : Type*} [Semiring R] (n : ℕ) : (X ^ n : R[X]).n
   rw [Polynomial.natDegree_X_pow]
 
 theorem not_isUnit_X : ¬IsUnit (X : R[X]) := fun ⟨⟨_, g, _hfg, hgf⟩, rfl⟩ =>
-  zero_ne_one' R <| by
-    rw [← AddMonoidAlgebra.coeff_one_zero (R := R) (M := ℕ), ← hgf]
-    simp
+  zero_ne_one' R <| by rw [← AddMonoidAlgebra.coeff_one_zero (M := ℕ), ← hgf]; simp
 
 @[simp]
 theorem degree_mul_X : degree (p * X) = degree p + 1 := by simp [monic_X.degree_mul]
