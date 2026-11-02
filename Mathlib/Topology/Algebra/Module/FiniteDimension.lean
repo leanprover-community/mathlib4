@@ -509,26 +509,26 @@ variable {R E : Type*} [Ring R] [AddCommGroup E] [Module R E] [UniformSpace R] [
   [IsUniformAddGroup R] [IsTopologicalRing R]
 
 variable (R E) in
-theorem FiniteDimensional.completeSpace_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
+theorem Module.Finite.completeSpace_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
     [Module.Finite R E] [Module.Projective R E] [IsModuleTopology R E] : CompleteSpace E := by
   obtain ⟨_, f, g, -, -, hfg⟩ := Module.Finite.exists_comp_eq_id_of_projective R E
   apply CompleteSpace.of_comp_eq_id f g congr(↑$hfg) (IsModuleTopology.continuous_of_linearMap f)
     (uniformContinuous_addMonoidHom_of_continuous (IsModuleTopology.continuous_of_linearMap g))
 
-theorem Submodule.isComplete_of_finiteDimensional_of_isModuleTopology
+theorem Submodule.isComplete_of_finite_of_isModuleTopology
     [UniformSpace E] [IsUniformAddGroup E]
     (s : Submodule R E) [Module.Finite R s] [Module.Projective R s] [IsModuleTopology R s] :
     IsComplete (s : Set E) :=
   haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
-  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.completeSpace_of_isModuleTopology R s)
+  completeSpace_coe_iff_isComplete.1 (Finite.completeSpace_of_isModuleTopology R s)
 
-theorem Submodule.isisClosed_of_finiteDimensional_of_isModuleTopology
+theorem Submodule.isClosed_of_finite_of_isModuleTopology
     [TopologicalSpace E] [IsTopologicalAddGroup E] [T0Space E]
     (s : Submodule R E) [Module.Finite R s] [Module.Projective R s] [IsModuleTopology R s] :
     IsClosed (s : Set E) :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
-  s.isComplete_of_finiteDimensional_of_isModuleTopology.isClosed
+  s.isComplete_of_finite_of_isModuleTopology.isClosed
 
 end IsModuleTopology
 
@@ -541,7 +541,7 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
 include 𝕜 in
 attribute [local instance] isModuleTopologyOfFiniteDimensional in
 theorem FiniteDimensional.completeSpace [FiniteDimensional 𝕜 E] : CompleteSpace E :=
-  FiniteDimensional.completeSpace_of_isModuleTopology 𝕜 E
+  Finite.completeSpace_of_isModuleTopology 𝕜 E
 
 @[deprecated (since := "2026-10-29")]
 alias FiniteDimensional.complete := FiniteDimensional.completeSpace
@@ -552,7 +552,7 @@ attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- A finite-dimensional subspace is complete. -/
 theorem Submodule.isComplete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsComplete (s : Set E) :=
-  s.isComplete_of_finiteDimensional_of_isModuleTopology
+  s.isComplete_of_finite_of_isModuleTopology
 
 @[deprecated (since := "2026-10-29")]
 alias Submodule.complete_of_finiteDimensional := Submodule.isComplete_of_finiteDimensional
@@ -570,7 +570,7 @@ attribute [local instance] isModuleTopologyOfFiniteDimensional in
 theorem Submodule.isClosed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
-  s.isisClosed_of_finiteDimensional_of_isModuleTopology
+  s.isClosed_of_finite_of_isModuleTopology
 
 @[deprecated (since := "2026-10-29")]
 alias Submodule.closed_of_finiteDimensional := Submodule.isClosed_of_finiteDimensional
