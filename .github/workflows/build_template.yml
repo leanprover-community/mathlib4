@@ -38,15 +38,12 @@ on:
         required: false
         default: false
       gate_cache_verification:
-        # A failure of the `cache_verify` job fails the run. Set by the callers whose cache
-        # must be complete: bors `staging` runs, master pushes, release tags, and every
-        # build in the nightly-testing repository. Elsewhere a gap in the cache is a warning.
+        # A failure of the `cache_verify` job fails the run. Otherwise a gap in the cache is a warning.
         type: boolean
         required: false
         default: false
       revalidate:
-        # Run the `test_lint` and `cache_verify` jobs. A bors push to master turns them
-        # off: bors validated the same commit on `staging`.
+        # Run the `test_lint` and `cache_verify` jobs.
         type: boolean
         required: false
         default: true
@@ -310,9 +307,9 @@ jobs:
             exit 1
           fi
 
-      # `check-yaml` imports `Mathlib` and `Archive`, whose oleans this job holds. Both tools
-      # write and read their JSON files in the working directory, which is under `.lake/`
-      # because this sandbox can write only there. The outcome is checked at the end of the job.
+      # `check-yaml` needs the `Mathlib` and `Archive` oleans of this job. Both tools write to
+      # the working directory, so it is under `.lake/`, the only path the sandbox can write.
+      # The last step of the job checks the outcome.
       - name: check declarations in db files
         id: yaml
         if: ${{ steps.archive.outcome == 'success' }}
@@ -692,9 +689,8 @@ jobs:
           action: remove
           linters: gcc
 
-      # Elaborating `export_crossrefs.lean` runs the export, which doubles as a smoke test of
-      # the `export_crossrefs.yml` workflow. Its output goes under `.lake/`, the only path
-      # this sandbox can write.
+      # Elaborating `export_crossrefs.lean` runs the export, a smoke test of
+      # `export_crossrefs.yml`. It writes under `.lake/`, the only path the sandbox can write.
       - name: check all scripts build successfully
         if: ${{ !cancelled() && env.RUN_TESTS == 'true' }}
         run: |
@@ -1152,9 +1148,7 @@ jobs:
           lake exe cache --repo="${REPO}" get
           lake build --no-build Mathlib
 
-  # Produces the `import-graph` artifact that `decls-diff.yml` reads for the PR
-  # summary comment. The merge gate does not wait for this job, and its failure
-  # does not fail the run.
+  # Produces the `import-graph` artifact for `decls-diff.yml`. A failure does not fail the run.
   summary:
     name: Summary
     needs: [build, upload_cache]
