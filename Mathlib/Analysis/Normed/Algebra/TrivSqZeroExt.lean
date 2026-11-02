@@ -145,7 +145,7 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M]
 
 variable [T2Space R] [T2Space M]
 
@@ -173,7 +173,7 @@ variable [Field R] [AddCommGroup M]
   [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M]
 
 variable [T2Space R] [T2Space M]
 
