@@ -923,7 +923,7 @@ theorem skew_product [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa
 
 /-- If `f : α → β` sends the measure `μa` to `μb` and `g : γ → δ` sends the measure `μc` to `μd`,
 then `Prod.map f g` sends `μa.prod μc` to `μb.prod μd`. -/
-protected theorem prod [SFinite μa] [SFinite μc] {f : α → β} {g : γ → δ}
+protected theorem prod [SFinite μc] {f : α → β} {g : γ → δ}
     (hf : MeasurePreserving f μa μb) (hg : MeasurePreserving g μc μd) :
     MeasurePreserving (Prod.map f g) (μa.prod μc) (μb.prod μd) :=
   have : Measurable (uncurry fun _ : α => g) := hg.1.comp measurable_snd
