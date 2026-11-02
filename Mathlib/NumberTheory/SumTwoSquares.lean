@@ -210,8 +210,7 @@ every prime `q` such that `q % 4 = 3` in the prime factorization of `n` is even.
 (The assumption `0 < n` is not present, since for `n = 0`, both sides are satisfied;
 the right-hand side holds, since `padicValNat q 0 = 0` by definition.) -/
 theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
-    (∃ x y, n = x ^ 2 + y ^ 2) ↔ ∀ q ∈ n.primeFactors, q % 4 = 3 → Even (padicValNat q n) := by
-  simp_rw [padicValNat_def]
+    (∃ x y, n = x ^ 2 + y ^ 2) ↔ ∀ q ∈ n.primeFactors, q % 4 = 3 → Even (multiplicity q n) := by
   rcases n.eq_zero_or_pos with (rfl | hn₀)
   · exact ⟨fun _ q _ _ ↦ (multiplicity_zero_right q).symm ▸ Even.zero, fun _ ↦ ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
@@ -232,4 +231,5 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
 end Main
 
 instance {n : ℕ} : Decidable (∃ x y, n = x ^ 2 + y ^ 2) :=
-  decidable_of_iff' _ Nat.eq_sq_add_sq_iff
+  decidable_of_iff' (∀ q ∈ n.primeFactors, q % 4 = 3 → Even (Nat.maxPowDvdDiv q n).1)
+    (by simp_rw [Nat.eq_sq_add_sq_iff, Nat.fst_maxPowDvdDiv])
