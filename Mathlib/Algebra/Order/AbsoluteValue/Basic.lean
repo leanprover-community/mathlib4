@@ -253,7 +253,7 @@ instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S 
 
 open Int in
 lemma apply_natAbs_eq (x : ℤ) : abv (natAbs x) = abv x := by
-  obtain ⟨_, rfl | rfl⟩ := Int.eq_nat_or_neg x <;> simp
+  obtain ⟨-, rfl | rfl⟩ := Int.eq_nat_or_neg x <;> simp
 
 open Int in
 /-- Values of an absolute value coincide on the image of `ℕ` in `R`

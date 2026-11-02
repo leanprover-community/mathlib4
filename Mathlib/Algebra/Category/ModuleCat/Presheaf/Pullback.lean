@@ -89,7 +89,7 @@ lemma pullbackObjIsDefined_eq_top :
   simp only [Pi.top_apply, Prop.top_eq_true, iff_true]
   apply leftAdjointObjIsDefined_of_isColimit
     M.isColimitFreeYonedaCoproductsCokernelCofork
-  rintro (_ | _)
+  rintro (- | -)
   all_goals
     apply leftAdjointObjIsDefined_colimit _
       (fun _ ↦ pullbackObjIsDefined_free_yoneda _ _)

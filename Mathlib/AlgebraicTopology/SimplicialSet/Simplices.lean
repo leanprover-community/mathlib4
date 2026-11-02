@@ -81,7 +81,7 @@ def cast : X.S where
   simplex := _root_.cast (by simp only [hd]) s.simplex
 
 lemma cast_eq_self : s.cast hd = s := by
-  obtain ⟨d, _, rfl⟩ := s.mk_surjective
+  obtain ⟨d, -, rfl⟩ := s.mk_surjective
   obtain rfl := hd
   rfl
 

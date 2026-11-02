@@ -343,7 +343,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         ∀ n, (v₁ = n :: v.val) → (∀ m < n, ¬f (m ::ᵥ v) = 0) →
           ∃ a : ℕ,
             (f (a ::ᵥ v) = 0 ∧ ∀ {m : ℕ}, m < a → ¬f (m ::ᵥ v) = 0) ∧ [a] = [v'.headI.pred]
-        by exact this _ h1 0 rfl (by rintro _ ⟨⟩)
+        by exact this _ h1 0 rfl (by rintro - ⟨⟩)
       clear h1
       intro v₀ h1
       refine PFun.fixInduction h1 fun v₁ h2 IH => ?_
@@ -652,7 +652,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
     · exact ReflTransGen.single rfl
     refine PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH => ?_
     rw [fok, Part.bind_eq_bind, Part.mem_bind_iff]
-    obtain he | ⟨v'', he₁', _⟩ := PFun.mem_fix_iff.1 he
+    obtain he | ⟨v'', he₁', -⟩ := PFun.mem_fix_iff.1 he
     · obtain ⟨v', he₁, he₂⟩ := (Part.mem_map_iff _).1 he
       split_ifs at he₂ with h; cases he₂
       refine ⟨_, he₁, ?_⟩

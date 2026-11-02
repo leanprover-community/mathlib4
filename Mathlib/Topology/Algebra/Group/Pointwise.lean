@@ -154,7 +154,7 @@ theorem closure_subset_mul_left_of_mem_nhds_one_of_inv {s : Set G} (s' : Set G)
     (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) :
     closure s' ⊆ s * s' := by
   intro y hy
-  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
+  obtain ⟨-, ⟨b, hb, rfl⟩, hc⟩ :=
     mem_closure_iff_nhds.mp hy ((· * y) '' s)
       (by simpa using (isOpenMap_mul_right y).image_mem_nhds hs₀)
   simpa using Set.mul_mem_mul (h_symm b hb) hc
@@ -164,7 +164,7 @@ theorem closure_subset_mul_right_of_mem_nhds_one_of_inv (s : Set G) {s' : Set G}
     (hs'₀ : s' ∈ 𝓝 1) (h_symm : ∀ x ∈ s', x⁻¹ ∈ s') :
     closure s ⊆ s * s' := by
   intro y hy
-  obtain ⟨_, ⟨b, hb, rfl⟩, hc⟩ :=
+  obtain ⟨-, ⟨b, hb, rfl⟩, hc⟩ :=
     mem_closure_iff_nhds.mp hy ((y * ·) '' s')
       (by simpa using (isOpenMap_mul_left y).image_mem_nhds hs'₀)
   simpa using Set.mul_mem_mul hc (h_symm b hb)
@@ -214,7 +214,7 @@ theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set G) : s * closure t = s * t :
   refine (mul_subset_iff.2 fun a ha b hb => ?_).antisymm (mul_subset_mul_left subset_closure)
   rw [mem_closure_iff] at hb
   have hbU : b ∈ s⁻¹ * {a * b} := ⟨a⁻¹, Set.inv_mem_inv.2 ha, a * b, rfl, inv_mul_cancel_left _ _⟩
-  obtain ⟨_, ⟨c, hc, d, rfl : d = _, rfl⟩, hcs⟩ := hb _ hs.inv.mul_right hbU
+  obtain ⟨-, ⟨c, hc, d, rfl : d = _, rfl⟩, hcs⟩ := hb _ hs.inv.mul_right hbU
   exact ⟨c⁻¹, hc, _, hcs, inv_mul_cancel_left _ _⟩
 
 @[to_additive]
@@ -438,7 +438,7 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
   obtain ⟨V, hV⟩ := nhds_inter_eq_singleton_of_mem_discrete hS S.one_mem
   obtain ⟨U, hU, -, hUinv, hUV⟩ := exists_closed_nhds_one_inv_eq_mul_subset hV.1
   refine ⟨U, hU, hUinv, fun g hgS ↦ ?_⟩
-  rintro ⟨_, ⟨x, hx, rfl⟩, hgx⟩
+  rintro ⟨-, ⟨x, hx, rfl⟩, hgx⟩
   refine hV.2.subset ⟨hUV ?_, hgS⟩
   rw [← hUinv] at hx
   exact ⟨_, hgx, _, hx, by simp⟩

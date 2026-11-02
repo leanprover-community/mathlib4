@@ -45,7 +45,7 @@ def invSubmonoid : Submonoid S :=
 variable [IsLocalization M S]
 
 theorem submonoid_map_le_is_unit : M.map (algebraMap R S) ≤ IsUnit.submonoid S := by
-  rintro _ ⟨a, ha, rfl⟩
+  rintro - ⟨a, ha, rfl⟩
   exact IsLocalization.map_units S ⟨_, ha⟩
 
 /-- There is an equivalence of monoids between the image of `M` and `invSubmonoid`. -/

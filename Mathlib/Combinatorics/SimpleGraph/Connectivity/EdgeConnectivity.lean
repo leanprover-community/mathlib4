@@ -100,7 +100,7 @@ lemma IsEdgeReachable.le_degree [Fintype (G.neighborSet u)] (h : G.IsEdgeReachab
   classical
   by_contra! hh
   rw [← card_incidenceSet_eq_degree, Set.coe_fintypeCard] at hh
-  obtain ⟨w, _⟩ := h hh |>.exists_isPath
+  obtain ⟨w, -⟩ := h hh |>.exists_isPath
   simpa using w.adj_snd <| mt Walk.Nil.eq huv
 
 lemma IsEdgeConnected.le_degree [Fintype (G.neighborSet u)] [Nontrivial V]

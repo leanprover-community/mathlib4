@@ -111,7 +111,7 @@ lemma IsSStronglyConnected.exists_pos_cycle
 
 lemma IsSStronglyConnected.isStronglyConnected
     (h : IsSStronglyConnected V) : IsStronglyConnected V := by
-  intro i j; obtain ⟨p, _⟩ := h i j; exact ⟨p⟩
+  intro i j; obtain ⟨p, -⟩ := h i j; exact ⟨p⟩
 
 /-- Equivalence relation identifying vertices connected by directed paths in both directions. -/
 @[instance_reducible]

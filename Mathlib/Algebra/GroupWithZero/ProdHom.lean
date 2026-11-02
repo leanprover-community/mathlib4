@@ -98,7 +98,7 @@ lemma inr_apply_unit [DecidablePred fun x : H₀ ↦ x = 0] (x : H₀ˣ) :
 @[simp]
 theorem fst_inl [DecidablePred fun x : G₀ ↦ x = 0] (x : G₀) :
     fst _ H₀ (inl _ _ x) = x := by
-  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
+  obtain rfl | ⟨-, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp [WithZero.withZeroUnitsEquiv, fst, inl]
 
 @[simp]
@@ -110,7 +110,7 @@ theorem fst_comp_inl [DecidablePred fun x : G₀ ↦ x = 0] :
 theorem snd_comp_inl [DecidablePred fun x : G₀ ↦ x = 0] :
     (snd ..).comp (inl G₀ H₀) = 1 := by
   ext x
-  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
+  obtain rfl | ⟨-, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp_all [WithZero.withZeroUnitsEquiv, snd, inl]
 
 theorem snd_inl_apply_of_ne_zero [DecidablePred fun x : G₀ ↦ x = 0] {x : G₀} (hx : x ≠ 0) :
@@ -121,7 +121,7 @@ theorem snd_inl_apply_of_ne_zero [DecidablePred fun x : G₀ ↦ x = 0] {x : G�
 theorem fst_comp_inr [DecidablePred fun x : H₀ ↦ x = 0] :
     (fst ..).comp (inr G₀ H₀) = 1 := by
   ext x
-  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
+  obtain rfl | ⟨-, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp_all [WithZero.withZeroUnitsEquiv, fst, inr]
 
 theorem fst_inr_apply_of_ne_zero [DecidablePred fun x : H₀ ↦ x = 0] {x : H₀} (hx : x ≠ 0) :
@@ -131,7 +131,7 @@ theorem fst_inr_apply_of_ne_zero [DecidablePred fun x : H₀ ↦ x = 0] {x : H�
 @[simp]
 theorem snd_inr [DecidablePred fun x : H₀ ↦ x = 0] (x : H₀) :
     snd _ _ (inr G₀ _ x) = x := by
-  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
+  obtain rfl | ⟨-, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp [WithZero.withZeroUnitsEquiv, snd, inr]
 
 @[simp]
@@ -162,8 +162,8 @@ theorem inl_mul_inr_eq_mk_of_unit (m : G₀ˣ) (n : H₀ˣ) :
   simp [inl, WithZero.withZeroUnitsEquiv, inr, ← WithZero.coe_mul]
 
 theorem commute_inl_inr (m : G₀) (n : H₀) : Commute (inl G₀ H₀ m) (inr G₀ H₀ n) := by
-  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit m <;>
-  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit n <;>
+  obtain rfl | ⟨-, rfl⟩ := GroupWithZero.eq_zero_or_unit m <;>
+  obtain rfl | ⟨-, rfl⟩ := GroupWithZero.eq_zero_or_unit n <;>
   simp [inl, inr, WithZero.withZeroUnitsEquiv, commute_iff_eq, ← WithZero.coe_mul]
 
 end MonoidWithZeroHom

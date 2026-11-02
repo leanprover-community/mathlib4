@@ -54,7 +54,7 @@ theorem mem_localizationLocalizationSubmodule {x : R} :
       ∃ (y : N) (z : M), algebraMap R S x = y * algebraMap R S z := by
   rw [localizationLocalizationSubmodule, Submonoid.mem_comap, Submonoid.mem_sup]
   constructor
-  · rintro ⟨y, hy, _, ⟨z, hz, rfl⟩, e⟩
+  · rintro ⟨y, hy, -, ⟨z, hz, rfl⟩, e⟩
     exact ⟨⟨y, hy⟩, ⟨z, hz⟩, e.symm⟩
   · rintro ⟨y, z, e⟩
     exact ⟨y, y.prop, _, ⟨z, z.prop, rfl⟩, e.symm⟩
@@ -124,7 +124,7 @@ theorem localization_localization_isLocalization_of_has_all_units [IsLocalizatio
   congr
   symm
   rw [sup_eq_left]
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   exact H _ (IsLocalization.map_units _ ⟨x, hx⟩)
 
 include M in
@@ -194,7 +194,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
     [IsLocalization N T] [Algebra S T] [IsScalarTower R S T] :
     IsLocalization (N.map (algebraMap R S)) T where
   map_units := by
-    rintro ⟨_, ⟨y, hy, rfl⟩⟩
+    rintro ⟨-, ⟨y, hy, rfl⟩⟩
     convert IsLocalization.map_units T ⟨y, hy⟩
     exact (IsScalarTower.algebraMap_apply _ _ _ _).symm
   surj y := by

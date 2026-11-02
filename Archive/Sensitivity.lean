@@ -99,13 +99,13 @@ theorem succ_n_eq (p q : Q n.succ) : p = q ↔ p 0 = q 0 ∧ π p = π q := by
 def adjacent {n : ℕ} (p : Q n) : Set (Q n) := { q | ∃! i, p i ≠ q i }
 
 /-- In `Q 0`, no two vertices are adjacent. -/
-theorem not_adjacent_zero (p q : Q 0) : q ∉ p.adjacent := by rintro ⟨v, _⟩; apply finZeroElim v
+theorem not_adjacent_zero (p q : Q 0) : q ∉ p.adjacent := by rintro ⟨v, -⟩; apply finZeroElim v
 
 /-- If `p` and `q` in `Q n.succ` have different values at zero then they are adjacent
 iff their projections to `Q n` are equal. -/
 theorem adj_iff_proj_eq {p q : Q n.succ} (h₀ : p 0 ≠ q 0) : q ∈ p.adjacent ↔ π p = π q := by
   constructor
-  · rintro ⟨i, _, h_uni⟩
+  · rintro ⟨i, -, h_uni⟩
     ext x; by_contra hx
     apply Fin.succ_ne_zero x
     rw [h_uni _ hx, h_uni _ h₀]

@@ -75,7 +75,7 @@ theorem LinearIndependent.of_isLocalizedModule_of_isRegular {ι : Type*} {v : ι
     (hv : LinearIndependent R v) (h : ∀ s : S, IsRegular (s : R)) : LinearIndependent R (f ∘ v) :=
   hv.map_injOn _ <| by
     rw [← Finsupp.range_linearCombination]
-    rintro _ ⟨_, r, rfl⟩ _ ⟨_, r', rfl⟩ eq
+    rintro - ⟨_, r, rfl⟩ - ⟨_, r', rfl⟩ eq
     congr; ext i
     have ⟨s, eq⟩ := IsLocalizedModule.exists_of_eq (S := S) eq
     simp_rw [Submonoid.smul_def, ← map_smul] at eq

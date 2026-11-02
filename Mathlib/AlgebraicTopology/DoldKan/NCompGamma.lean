@@ -46,7 +46,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
         rw [← h] at h₁
         exact h₁ rfl)
-  rcases k with _ | k
+  rcases k with - | k
   · change n = m + 1 at hk
     subst hk
     obtain ⟨j, rfl⟩ := eq_δ_of_mono i

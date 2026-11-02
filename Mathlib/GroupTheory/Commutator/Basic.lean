@@ -304,7 +304,7 @@ theorem commutator_le_of_le (h₁ : K₁ ≤ K) (h₂ : K₂ ≤ K) : ⁅K₁, K
 @[to_additive]
 theorem normalizer_commutator_ge_left : H₁ ≤ normalizer (⁅H₁, H₂⁆ : Subgroup G) := by
   apply le_normalizer_closure_iff.mpr
-  rintro g hg _ ⟨g₁, hg₁, g₂, hg₂, rfl⟩
+  rintro g hg - ⟨g₁, hg₁, g₂, hg₂, rfl⟩
   apply (mul_mem_cancel_right <| commutator_mem_commutator hg hg₂).mp
   rw [← commutatorElement_mul_left_eq_conj_mul g g₁ g₂]
   exact commutator_mem_commutator (mul_mem hg hg₁) hg₂
@@ -325,7 +325,7 @@ theorem map_commutator (f : G →* G') : map f ⁅H₁, H₂⁆ = ⁅map f H₁,
   constructor
   · intro p hp q hq
     exact commutator_mem_commutator (mem_map_of_mem _ hp) (mem_map_of_mem _ hq)
-  · rintro _ ⟨p, hp, rfl⟩ _ ⟨q, hq, rfl⟩
+  · rintro - ⟨p, hp, rfl⟩ - ⟨q, hq, rfl⟩
     rw [← map_commutatorElement]
     exact mem_map_of_mem _ (commutator_mem_commutator hp hq)
 

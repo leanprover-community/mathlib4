@@ -131,7 +131,7 @@ open scoped Pointwise in
     simp only [monomial, AddMonoidAlgebra.lsingle_apply, zero_subset, mem_preimage,
       ← AddMonoidAlgebra.one_def, SetLike.mem_coe, Submodule.mem_one, algebraMap_eq]
     exact ⟨1, by simp⟩
-  · rintro _ ⟨x, rfl⟩
+  · rintro - ⟨x, rfl⟩
     simp [mem_restrictSupport_iff, subset_def, AddMonoidAlgebra.one_def, Finsupp.single_apply]
 
 @[simp]

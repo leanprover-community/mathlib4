@@ -314,7 +314,7 @@ theorem isLUB_of_tendsto_atTop [TopologicalSpace α] [Preorder α] [OrderClosedT
     [Preorder β] [IsDirectedOrder β] [Nonempty β] {f : β → α} {a : α} (hf : Monotone f)
     (ha : Tendsto f atTop (𝓝 a)) : IsLUB (Set.range f) a := by
   constructor
-  · rintro _ ⟨b, rfl⟩
+  · rintro - ⟨b, rfl⟩
     exact hf.ge_of_tendsto ha b
   · exact fun _ hb => le_of_tendsto' ha fun x => hb (Set.mem_range_self x)
 

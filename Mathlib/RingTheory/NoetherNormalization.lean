@@ -251,7 +251,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     by_contra ne
     have eq := eq_C_of_isEmpty (a - b)
     have ne : (a - b).coeff 0 ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne ne <| map_zero _
-    obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
+    obtain ⟨c, -, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
     have one : c • (a - b) = 1 := by
       rw [MvPolynomial.smul_eq_C_mul, eq, ← map_mul, eqr, MvPolynomial.C_1]
     exact hi ((eq_top_iff_one I).mpr (one ▸ I.smul_of_tower_mem c hab))
@@ -280,7 +280,7 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) 
     Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
-  obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
+  obtain ⟨s, -, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
   use s, ϕ.toAlgHom.comp g
   simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective,
     AlgHom.toRingHom_eq_coe]

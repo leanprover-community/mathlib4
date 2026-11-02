@@ -74,7 +74,7 @@ theorem commutator_le (IwaS : IwasawaStructure M α) [IsQuasiPreprimitive M α]
   intro x
   obtain ⟨g, rfl⟩ := MulAction.exists_smul_eq N a x
   rw [Subgroup.smul_def, IwaS.is_conj g a]
-  rintro _ ⟨k, hk, rfl⟩
+  rintro - ⟨k, hk, rfl⟩
   have hg' : ↑g ∈ N ⊔ IwaS.T a := Subgroup.mem_sup_left (Subtype.mem g)
   have hk' : k ∈ N ⊔ IwaS.T a := Subgroup.mem_sup_right hk
   exact (N ⊔ IwaS.T a).mul_mem ((N ⊔ IwaS.T a).mul_mem hg' hk') ((N ⊔ IwaS.T a).inv_mem hg')

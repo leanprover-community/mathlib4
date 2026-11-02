@@ -157,7 +157,7 @@ theorem coe_jacobson_quotient (I : Ideal R) [I.IsTwoSided] :
   let f : R ⧸ I →ₛₗ[Ideal.Quotient.mk I] R ⧸ I := ⟨AddHom.id _, fun _ _ ↦ rfl⟩
   rw [jacobson, ← Module.map_jacobson_of_ker_le (f := f) Function.surjective_id]
   · apply Set.image_id
-  · rintro _ rfl; exact zero_mem _
+  · rintro - rfl; exact zero_mem _
 
 theorem jacobson_quotient_of_le {I : Ideal R} [I.IsTwoSided] (le : I ≤ jacobson R) :
     jacobson (R ⧸ I) = Submodule.map (Ideal.Quotient.mk I).toSemilinearMap (jacobson R) :=

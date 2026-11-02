@@ -96,7 +96,7 @@ theorem range_eq_top_of_surjective [RingHomSurjective τ₁₂] (f : M →ₛₗ
 
 theorem range_add_le [RingHomSurjective τ₁₂] (f g : M →ₛₗ[τ₁₂] M₂) :
     range (f + g) ≤ range f ⊔ range g := by
-  rintro - ⟨_, rfl⟩
+  rintro - ⟨-, rfl⟩
   apply add_mem_sup
   all_goals simp only [mem_range, exists_apply_eq_apply]
 
@@ -171,7 +171,7 @@ theorem _root_.Submodule.map_comap_eq [RingHomSurjective τ₁₂] (f : M →ₛ
     (q : Submodule R₂ M₂) :
     map f (comap f q) = range f ⊓ q :=
   le_antisymm (le_inf map_le_range (map_comap_le _ _)) <| by
-    rintro _ ⟨⟨x, _, rfl⟩, hx⟩; exact ⟨x, hx, rfl⟩
+    rintro - ⟨⟨x, -, rfl⟩, hx⟩; exact ⟨x, hx, rfl⟩
 
 theorem _root_.Submodule.map_comap_eq_self [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂}
     {q : Submodule R₂ M₂} (h : q ≤ range f) :

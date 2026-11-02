@@ -708,7 +708,7 @@ theorem addSubmonoid_closure_setOfPred_eq_monomial :
   rw [← AddSubmonoid.map_equiv_top (toFinsuppIso R).symm.toAddEquiv, ← addSubmonoidClosure_single,
     AddMonoidHom.map_mclosure]
   refine AddSubmonoid.closure_mono (Set.image_subset_iff.2 ?_)
-  rintro _ ⟨n, a, rfl⟩
+  rintro - ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 
 @[deprecated (since := "2026-07-09")]

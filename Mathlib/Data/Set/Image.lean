@@ -1285,7 +1285,7 @@ theorem injective_iff {α β} {f : Option α → β} :
   simp only [mem_range, not_exists, (· ∘ ·)]
   refine
     ⟨fun hf => ⟨hf.comp (Option.some_injective _), fun x => hf.ne <| Option.some_ne_none _⟩, ?_⟩
-  rintro ⟨h_some, h_none⟩ (_ | a) (_ | b) hab
+  rintro ⟨h_some, h_none⟩ (- | a) (- | b) hab
   exacts [rfl, (h_none _ hab.symm).elim, (h_none _ hab).elim, congr_arg some (h_some hab)]
 
 theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (range (f ∘ some)) :=
@@ -1318,7 +1318,7 @@ variable {α : Type u} {β : Type v} {f : α → β}
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
   refine ⟨fun h y => ?_, Surjective.image_surjective⟩
   rcases h {y} with ⟨s, hs⟩
-  have := mem_singleton y; rw [← hs] at this; rcases this with ⟨x, _, hx⟩
+  have := mem_singleton y; rw [← hs] at this; rcases this with ⟨x, -, hx⟩
   exact ⟨x, hx⟩
 
 @[simp]

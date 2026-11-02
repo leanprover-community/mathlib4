@@ -415,7 +415,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
       simp only [mem_inter, mem_map] at hp
-      obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
+      obtain ⟨⟨px, -, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
       cases hp
       simp at hxy
 

@@ -69,7 +69,7 @@ lemma monotoneOn_deriv_descPochhammer_eval (n : ℕ) :
 /-- `descPochhammer ℝ n` is convex on `[n-1, ∞)`. -/
 theorem convexOn_descPochhammer_eval (n : ℕ) :
     ConvexOn ℝ (Set.Ici (n - 1 : ℝ)) (descPochhammer ℝ n).eval := by
-  rcases n.eq_zero_or_pos with h_eq | _
+  rcases n.eq_zero_or_pos with h_eq | -
   · simp [h_eq, convexOn_const, convex_Ici]
   · apply MonotoneOn.convexOn_of_deriv (convex_Ici (n - 1 : ℝ))
       continuous_descPochhammer_eval.continuousOn

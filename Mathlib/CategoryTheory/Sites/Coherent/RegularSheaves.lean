@@ -250,7 +250,7 @@ lemma equalizerCondition_iff_isSheaf (F : Cᵒᵖ ⥤ D) [Preregular C]
   dsimp [regularTopology]
   rw [Presheaf.isSheaf_iff_isLimit_coverage]
   constructor
-  · rintro hF X _ ⟨Y, f, rfl, _⟩
+  · rintro hF X - ⟨Y, f, rfl, _⟩
     exact (equalizerConditionMap_iff_nonempty_isLimit F f).1 (hF f)
   · intro hF Y X f _
     exact (equalizerConditionMap_iff_nonempty_isLimit F f).2 (hF _ ⟨_, f, rfl, inferInstance⟩)

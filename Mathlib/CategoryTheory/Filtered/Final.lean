@@ -475,7 +475,7 @@ lemma Monotone.final_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder J
     hf.functor.Final ↔ ∀ (j₂ : J₂), ∃ (j₁ : J₁), j₂ ≤ f j₁ := by
   rw [Functor.final_iff_of_isFiltered]
   constructor
-  · rintro ⟨h, _⟩ j₂
+  · rintro ⟨h, -⟩ j₂
     obtain ⟨j₁, ⟨φ⟩⟩ := h j₂
     exact ⟨j₁, leOfHom φ⟩
   · intro h
@@ -491,7 +491,7 @@ lemma Monotone.initial_functor_iff {J₁ J₂ : Type*} [Preorder J₁] [Preorder
     hf.functor.Initial ↔ ( ∀ j₁,∃ j₂, f j₂ ≤ j₁) := by
   rw [Functor.initial_iff_of_isCofiltered]
   constructor
-  · rintro ⟨h, _⟩ j₂
+  · rintro ⟨h, -⟩ j₂
     obtain ⟨j₁, ⟨φ⟩⟩ := h j₂
     exact ⟨j₁,leOfHom φ⟩
   · intro h

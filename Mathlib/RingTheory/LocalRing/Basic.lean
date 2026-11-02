@@ -86,7 +86,7 @@ theorem of_unique_max_ideal (h : ∃! I : Ideal R, I.IsMaximal) : IsLocalRing R 
 theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPrime P) : IsLocalRing R :=
   of_unique_max_ideal
     (by
-      rcases h with ⟨P, ⟨hPnonzero, hPnot_top, _⟩, hPunique⟩
+      rcases h with ⟨P, ⟨hPnonzero, hPnot_top, -⟩, hPunique⟩
       refine ⟨P, ⟨⟨hPnot_top, ?_⟩⟩, fun M hM => hPunique _ ⟨?_, Ideal.IsMaximal.isPrime hM⟩⟩
       · refine Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM ?_
         exact (hPunique _ ⟨ne_bot_of_gt hPM, Ideal.IsMaximal.isPrime hM⟩).symm

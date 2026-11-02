@@ -54,7 +54,7 @@ lemma mem_iSup_of_directed {ι : Sort*} {S : ι → Subsemigroup M} (hS : Direct
     simpa only [closure_iUnion, closure_eq (S _)] using this
   refine fun hx ↦ closure_induction (fun _ ↦ ?_) ?_ hx
   · simp
-  rintro x y _ _ ⟨i, hi⟩ ⟨j, hj⟩
+  rintro x y - - ⟨i, hi⟩ ⟨j, hj⟩
   obtain ⟨k, hik, hjk⟩ := hS i j
   exact ⟨k, mul_mem (hik hi) (hjk hj)⟩
 

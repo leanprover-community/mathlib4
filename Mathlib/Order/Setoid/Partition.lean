@@ -117,7 +117,7 @@ theorem eq_eqv_class_of_mem {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b
   · intro hx _s' hs' hx'
     rwa [eq_of_mem_eqv_class H hs' hx' hs hx]
   · intro hx
-    obtain ⟨b', ⟨hc, hb'⟩, _⟩ := H x
+    obtain ⟨b', ⟨hc, hb'⟩, -⟩ := H x
     rwa [eq_of_mem_eqv_class H hs hy hc (hx b' hc hb')]
 
 /-- The equivalence classes of the equivalence relation defined by a set of sets
@@ -235,7 +235,7 @@ theorem classes_mkClasses (c : Set (Set α)) (hc : IsPartition c) :
   ext s
   constructor
   · rintro ⟨y, rfl⟩
-    obtain ⟨b, ⟨hb, hy⟩, _⟩ := hc.2 y
+    obtain ⟨b, ⟨hb, hy⟩, -⟩ := hc.2 y
     rwa [← eq_eqv_class_of_mem _ hb hy]
   · exact exists_of_mem_partition hc
 

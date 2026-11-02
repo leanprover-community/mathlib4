@@ -440,7 +440,7 @@ protected theorem continuous_of_continuous_uncurry [AddCommGroup G]
   rcases RingHom.surjective τ (σ c) with ⟨d, hd⟩
   have d_ne : d ≠ 0 := by rwa [← map_ne_zero τ, hd, map_ne_zero σ]
   filter_upwards [(set_smul_mem_nhds_zero_iff d_ne).mpr hV]
-  rintro _ ⟨a, ha, rfl⟩ x hx
+  rintro - ⟨a, ha, rfl⟩ x hx
   rw [map_smulₛₗ, hd, smul_apply, ← map_smulₛₗ]
   exact @hVW ⟨_, _⟩ ⟨ha, hc hx⟩
 

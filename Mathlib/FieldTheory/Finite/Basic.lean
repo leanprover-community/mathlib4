@@ -86,7 +86,7 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
     (univ.image fun x : R => eval x (-g)) by
     simp only [disjoint_left, mem_image] at this
     push Not at this
-    rcases this with ⟨x, ⟨a, _, ha⟩, ⟨b, _, hb⟩⟩
+    rcases this with ⟨x, ⟨a, -, ha⟩, ⟨b, -, hb⟩⟩
     exact ⟨a, b, by rw [ha, ← hb, eval_neg, neg_add_cancel]⟩
   fun hd : Disjoint _ _ =>
   lt_irrefl (2 * #((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g))) <|
@@ -269,7 +269,7 @@ theorem card' : ∃ (p : ℕ), CharP K p ∧ ∃ (n : ℕ+), Nat.Prime p ∧ Fin
   ⟨p, hc, @FiniteField.card K _ _ p hc⟩
 
 lemma isPrimePow_card : IsPrimePow (Fintype.card K) := by
-  obtain ⟨p, _, n, hp, hn⟩ := card' K
+  obtain ⟨p, -, n, hp, hn⟩ := card' K
   exact ⟨p, n, Nat.prime_iff.mp hp, n.prop, hn.symm⟩
 
 theorem cast_card_eq_zero : (q : K) = 0 := by

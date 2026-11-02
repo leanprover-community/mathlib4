@@ -145,7 +145,7 @@ lemma of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P (f ∣_ U i)) : P f := by
   refine (P.iff_of_zeroHypercover_target
     (Y.openCoverOfIsOpenCover (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
-  obtain ⟨_, i, rfl⟩ := i
+  obtain ⟨-, i, rfl⟩ := i
   refine (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mp ?_
   change P (f ∣_ (U i).ι.opensRange)
   rw [Scheme.Opens.opensRange_ι]
@@ -263,7 +263,7 @@ lemma of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P ((U i).ι ≫ f)) : P f := by
   refine (P.iff_of_zeroHypercover_source
     (X.openCoverOfIsOpenCover (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
-  obtain ⟨_, i, rfl⟩ := i
+  obtain ⟨-, i, rfl⟩ := i
   exact H i
 
 theorem iff_of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤) :

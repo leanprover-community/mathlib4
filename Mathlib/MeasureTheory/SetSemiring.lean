@@ -178,7 +178,7 @@ theorem mem_supClosure_iff (hC : IsSetSemiring C) :
       · rw [sup_bot_eq]; exact ⟨P, hP⟩
       choose Q hQ using show ∀ t ∈ (P.avoid s).parts, ∃ Q : Finpartition t, ↑Q.parts ⊆ C by
         simp_rw [Finpartition.mem_avoid]
-        rintro _ ⟨t, ht, -, rfl⟩
+        rintro - ⟨t, ht, -, rfl⟩
         exact hC.exists_finpartition_sdiff (hP ht) hsC
       exists P.avoid s |>.bind Q |>.extend hs disjoint_sdiff_left (sdiff_sup_self _ _)
       rw [Finpartition.extend_parts, coe_insert, insert_subset_iff, Finpartition.bind_parts,
@@ -202,7 +202,7 @@ theorem isSetRing_supClosure (hC : IsSetSemiring C) : IsSetRing (supClosure C) w
   empty_mem := subset_supClosure hC.empty_mem
   union_mem _ _ h₁ h₂ := supClosed_supClosure h₁ h₂
   sdiff_mem := by
-    rintro s _ hs ⟨T, hT, hTC, rfl⟩
+    rintro s - hs ⟨T, hT, hTC, rfl⟩
     rw [sup'_eq_sup]
     clear hT
     induction T using Finset.induction generalizing s with

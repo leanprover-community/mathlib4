@@ -32,7 +32,7 @@ theorem mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero {b : R[X]} {P : R[X][X]
     P ∈ Ideal.span {C (X - C a), X - C b} ↔ (P.eval b).eval a = 0 := by
   rw [Ideal.mem_span_pair]
   constructor <;> intro h
-  · rcases h with ⟨_, _, rfl⟩
+  · rcases h with ⟨-, -, rfl⟩
     simp
   · rcases dvd_iff_isRoot.mpr h with ⟨p, hp⟩
     rcases @X_sub_C_dvd_sub_C_eval _ b _ P with ⟨q, hq⟩

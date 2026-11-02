@@ -119,7 +119,7 @@ lemma ZariskisMainProperty.trans [Algebra S T] [IsScalarTower R S T] (p : Ideal 
   refine ⟨algebraMap _ _ (s ^ (m + 1) * t), ?_, fun x ↦ ?_⟩
   · simpa using ‹p.IsPrime›.mul_notMem
       (mt ((inferInstance : (p.under S).IsPrime).mem_of_pow_mem (m + 1)) hsp) htp
-  obtain ⟨_, ⟨n, rfl⟩, a, ha⟩ := Ht.ge (Set.mem_univ x)
+  obtain ⟨-, ⟨n, rfl⟩, a, ha⟩ := Ht.ge (Set.mem_univ x)
   obtain ⟨k, hk⟩ := Hs a
   refine ⟨k + n, ?_⟩
   convert_to IsIntegral R (algebraMap S T ((s ^ ((m + 1) * n) * (s ^ m * t) ^ k * (s ^ k * a))))
@@ -212,7 +212,7 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
       obtain ⟨r, hr : φ r = _⟩ := hp
       use C ha.unit⁻¹.1 * mapRingHom (algebraMap R R') r
       simp [aeval_algebraMap_apply, aeval_algHom_apply, hr, mul_assoc])
-  obtain ⟨_, ⟨n, rfl⟩, e⟩ := IsLocalization.integerNormalization_spec (.powers a) q
+  obtain ⟨-, ⟨n, rfl⟩, e⟩ := IsLocalization.integerNormalization_spec (.powers a) q
   generalize IsLocalization.integerNormalization (.powers a) q = q' at e
   have : IsIntegral R' ((algebraMap S S') (a ^ n • t - φ q')) := by
     have : algebraMap S S' (φ q') = (algebraMap R S' a) ^ n * aeval (algebraMap S S' (φ X)) q := by
@@ -220,9 +220,9 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
         congr(aeval (algebraMap S S' (φ X)) $e)
     simpa [Algebra.smul_def, ← mul_sub, ← algebraMap_apply, this] using
       (isIntegral_algebraMap (A := S') (x := algebraMap R R' a ^ n)).mul hq
-  obtain ⟨⟨_, m, rfl⟩, hm⟩ := this.exists_multiple_integral_of_isLocalization (.powers a) _
+  obtain ⟨⟨-, m, rfl⟩, hm⟩ := this.exists_multiple_integral_of_isLocalization (.powers a) _
   simp only [Algebra.smul_def, Submonoid.smul_def, algebraMap_apply R S S', ← map_mul] at hm
-  obtain ⟨_, ⟨k, rfl⟩, hk⟩ := IsLocalization.exists_isIntegral_smul_of_isIntegral_map (.powers a) hm
+  obtain ⟨-, ⟨k, rfl⟩, hk⟩ := IsLocalization.exists_isIntegral_smul_of_isIntegral_map (.powers a) hm
   refine ⟨C a ^ (k + m) * q', k + m + n, ?_⟩
   convert hk using 1
   simp only [Algebra.smul_def, map_pow, ← Polynomial.algebraMap_eq, map_mul, AlgHom.commutes]
@@ -480,7 +480,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
   obtain ⟨n, hfn⟩ : ∃ x, algebraMap R S (f.coeff x) ∉ p := by simpa [Ideal.mem_map_C_iff] using! hfp
   clear hfp
   induction hm : f.natDegree using Nat.strong_induction_on generalizing f n with | ind m IH
-  obtain (_ | m) := m
+  obtain (- | m) := m
   · obtain ⟨r, rfl⟩ := natDegree_eq_zero.mp hm
     cases n <;> aesop
   by_cases Hfp : algebraMap _ _ f.leadingCoeff ∈ p
@@ -688,7 +688,7 @@ lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
     exact ⟨_, Algebra.subset_adjoin (Set.mem_insert_of_mem _ ⟨x, hx, mul_comm _ _⟩),
       m x, pow_mem r'.2 _, 1, rfl⟩
   intro x
-  obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
+  obtain ⟨x, ⟨-, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
     (.powers ((Algebra.adjoin R t).val.toRingHom r')) x
   obtain ⟨y, hy : Localization.awayMap _ _ _ = _⟩ := this ⟨x, rfl⟩
   refine ⟨y * Localization.Away.invSelf _ ^ n, ?_⟩

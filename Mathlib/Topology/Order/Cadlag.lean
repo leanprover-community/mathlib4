@@ -181,7 +181,7 @@ lemma IsCadlag.isLocallyBounded (hf : IsCadlag f) (x : X) : ∃ t ∈ 𝓝 x, Is
     Metric.exists_isBounded_image_of_tendsto (hf.1 x).tendsto
   refine ⟨A ∩ B, inter_mem hA hB, ?_⟩
   apply ((hAW.union hBR).union (isBounded_singleton (x := f x))).subset
-  rintro _ ⟨y, ⟨hyL, hyR⟩ , rfl⟩
+  rintro - ⟨y, ⟨hyL, hyR⟩ , rfl⟩
   rcases lt_trichotomy y x with (hlt | heq | hgt)
   · grind [hW hlt]
   · grind

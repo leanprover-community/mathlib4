@@ -113,7 +113,7 @@ theorem isBigO_iff' {g : α → E'} :
     exact le_max_left _ _
   case mpr =>
     rw [isBigO_iff]
-    obtain ⟨c, ⟨_, hc⟩⟩ := h
+    obtain ⟨c, ⟨-, hc⟩⟩ := h
     exact ⟨c, hc⟩
 
 /-- Definition of `IsBigO` in terms of filters, with the constant in the lower bound. -/

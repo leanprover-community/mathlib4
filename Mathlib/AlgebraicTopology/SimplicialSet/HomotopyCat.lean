@@ -321,9 +321,9 @@ lemma morphismPropertyHomMk_eq_strictMap :
       (Cat.FreeRefl.morphismPropertyHomMk (OneTruncation₂ V)).strictMap (quotientFunctor V) := by
   ext _ _ f
   constructor
-  · rintro ⟨_⟩
+  · rintro ⟨-⟩
     exact MorphismProperty.map_mem_strictMap _ _ _ ⟨_⟩
-  · rintro ⟨⟨_, _, e⟩⟩
+  · rintro ⟨⟨-, -, e⟩⟩
     exact morphismPropertyHomMk_of_edge e
 
 open MorphismProperty in
@@ -343,7 +343,7 @@ lemma morphismProperty_eq_top {W : MorphismProperty V.HomotopyCategory}
   le_antisymm (by simp) (by
     rw [← multiplicativeClosure_morphismPropertyHomMk,
       MorphismProperty.multiplicativeClosure_le_iff]
-    rintro _ _ _ ⟨_, _, e⟩
+    rintro - - - ⟨-, -, e⟩
     exact hW e)
 
 /-- Induction principle for proving a property for all the morphisms

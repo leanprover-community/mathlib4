@@ -198,7 +198,7 @@ theorem apply_of_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) :
   · exact ha.iSup_Iio.symm
   · exact ⟨⊥, ha.bot_lt⟩
   · use a
-    rintro _ ⟨⟨x, hx⟩, rfl⟩
+    rintro - ⟨⟨x, hx⟩, rfl⟩
     exact hx.le
 
 end ConditionallyCompleteLinearOrderBot
@@ -271,7 +271,7 @@ theorem dirSupClosed_range_of_isCofinal {f : α → β} (hf : IsNormal f) (hf' :
   let := WellFoundedLT.conditionallyCompleteLinearOrderBot α
   have hfl : IsLUB (f ⁻¹' s) (sSup (f ⁻¹' s)) := by
     apply isLUB_csSup hfn _
-    obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
+    obtain ⟨-, ⟨b, rfl⟩, hb⟩ := hf' a
     use b
     intro c hc
     rw [← hf.strictMono.le_iff_le]

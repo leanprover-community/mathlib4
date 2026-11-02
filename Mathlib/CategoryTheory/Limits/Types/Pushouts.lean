@@ -85,7 +85,7 @@ lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
     Rel' f g (Sum.inl x₁) (Sum.inl y₁) ↔ x₁ = y₁ ∨
       ∃ (x₀ y₀ : S) (_ : g x₀ = g y₀), x₁ = f x₀ ∧ y₁ = f y₀ := by
   constructor
-  · rintro (_ | ⟨_, _, h⟩)
+  · rintro (- | ⟨_, _, h⟩)
     · exact Or.inl rfl
     · exact Or.inr ⟨_, _, h, rfl, rfl⟩
   · rintro (rfl | ⟨_, _, h, rfl, rfl⟩)
@@ -97,7 +97,7 @@ lemma inl_rel'_inr_iff (x₁ : X₁) (x₂ : X₂) :
     Rel' f g (Sum.inl x₁) (Sum.inr x₂) ↔
       ∃ (s : S), x₁ = f s ∧ x₂ = g s := by
   constructor
-  · rintro ⟨_⟩
+  · rintro ⟨-⟩
     exact ⟨_, rfl, rfl⟩
   · rintro ⟨s, rfl, rfl⟩
     exact Rel'.inl_inr _
@@ -106,7 +106,7 @@ lemma inl_rel'_inr_iff (x₁ : X₁) (x₂ : X₂) :
 lemma inr_rel'_inr_iff (x₂ y₂ : X₂) :
     Rel' f g (Sum.inr x₂) (Sum.inr y₂) ↔ x₂ = y₂ := by
   constructor
-  · rintro ⟨_⟩
+  · rintro ⟨-⟩
     rfl
   · rintro rfl
     apply Rel'.refl
@@ -115,7 +115,7 @@ variable {f g}
 
 lemma Rel'.symm {x y : X₁ ⊕ X₂} (h : Rel' f g x y) :
     Rel' f g y x := by
-  obtain _ | ⟨_, _, h⟩ | _ | _ := h
+  obtain - | ⟨_, _, h⟩ | - | - := h
   · apply Rel'.refl
   · exact Rel'.inl_inl _ _ h.symm
   · exact Rel'.inr_inl _
@@ -264,7 +264,7 @@ variable {X₁ X₂ X₃ X₄ X₅ : Type u} {t : X₁ ⟶ X₂} {r : X₂ ⟶ X
 lemma eq_or_eq_of_isPushout (h : IsPushout t l r b)
     (x₄ : X₄) : (∃ x₂, r x₂ = x₄) ∨ ∃ x₃, b x₃ = x₄ := by
   obtain ⟨j, x, rfl⟩ := jointly_surjective_of_isColimit h.isColimit x₄
-  obtain (_ | _ | _) := j
+  obtain (- | - | -) := j
   · exact Or.inl ⟨t x, by simp; rfl⟩
   · exact Or.inl ⟨x, rfl⟩
   · exact Or.inr ⟨x, rfl⟩

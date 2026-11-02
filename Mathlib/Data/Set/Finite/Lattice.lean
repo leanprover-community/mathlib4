@@ -257,7 +257,7 @@ theorem eq_finite_iUnion_of_finite_subset_iUnion {ι} {s : ι → Set α} {t : S
     rw [mem_iUnion]
     constructor
     · intro x_in
-      rcases mem_iUnion.mp (hI x_in) with ⟨i, _, ⟨hi, rfl⟩, H⟩
+      rcases mem_iUnion.mp (hI x_in) with ⟨i, -, ⟨hi, rfl⟩, H⟩
       exact ⟨⟨i, hi⟩, ⟨H, x_in⟩⟩
     · rintro ⟨i, -, H⟩
       exact H⟩

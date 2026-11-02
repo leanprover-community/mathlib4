@@ -980,14 +980,14 @@ theorem image_mul : m '' (s * t) = m '' s * m '' t :=
 
 @[to_additive]
 lemma mul_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s * t ⊆ range m := by
-  rintro _ ⟨a, ha, b, hb, rfl⟩
+  rintro - ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a * b, map_mul ..⟩
 
 @[to_additive]
 theorem preimage_mul_preimage_subset {s t : Set β} : m ⁻¹' s * m ⁻¹' t ⊆ m ⁻¹' (s * t) := by
-  rintro _ ⟨_, _, _, _, rfl⟩
+  rintro - ⟨_, _, _, _, rfl⟩
   exact ⟨_, ‹_›, _, ‹_›, (map_mul m ..).symm⟩
 
 @[to_additive]
@@ -1032,14 +1032,14 @@ theorem image_div : m '' (s / t) = m '' s / m '' t :=
 
 @[to_additive]
 lemma div_subset_range {s t : Set β} (hs : s ⊆ range m) (ht : t ⊆ range m) : s / t ⊆ range m := by
-  rintro _ ⟨a, ha, b, hb, rfl⟩
+  rintro - ⟨a, ha, b, hb, rfl⟩
   obtain ⟨a, rfl⟩ := hs ha
   obtain ⟨b, rfl⟩ := ht hb
   exact ⟨a / b, map_div ..⟩
 
 @[to_additive]
 theorem preimage_div_preimage_subset {s t : Set β} : m ⁻¹' s / m ⁻¹' t ⊆ m ⁻¹' (s / t) := by
-  rintro _ ⟨_, _, _, _, rfl⟩
+  rintro - ⟨_, _, _, _, rfl⟩
   exact ⟨_, ‹_›, _, ‹_›, (map_div m ..).symm⟩
 
 @[to_additive]

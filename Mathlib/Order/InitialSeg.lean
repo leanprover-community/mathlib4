@@ -583,7 +583,7 @@ theorem mem_range_of_le [LT α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.ran
   exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
 
 theorem isLowerSet_range [LT α] (f : α ≤i β) : IsLowerSet (Set.range f) := by
-  rintro _ b h ⟨a, rfl⟩
+  rintro - b h ⟨a, rfl⟩
   exact mem_range_of_le f h
 
 -- TODO: this would follow immediately if we had a `RelEmbeddingClass`

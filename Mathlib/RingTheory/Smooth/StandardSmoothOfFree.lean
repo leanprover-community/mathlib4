@@ -83,7 +83,7 @@ theorem IsStandardSmooth.iff_exists_basis_kaehlerDifferential [FinitePresentatio
     IsStandardSmooth R S ↔ Subsingleton (H1Cotangent R S) ∧
       ∃ (I : Type) (b : Module.Basis I S (Ω[S⁄R])), Set.range b ⊆ Set.range (D R S) := by
   refine ⟨fun h ↦ ⟨inferInstance, ?_⟩, fun ⟨h, ⟨_, b, hb⟩⟩ ↦ .of_basis_kaehlerDifferential b hb⟩
-  obtain ⟨ι, σ, _, _, ⟨P⟩⟩ := Algebra.IsStandardSmooth.out (R := R) (S := S)
+  obtain ⟨ι, σ, _, -, ⟨P⟩⟩ := Algebra.IsStandardSmooth.out (R := R) (S := S)
   exact ⟨_, P.basisKaehler, by simp [Set.range_subset_iff]⟩
 
 /-- `S` is an étale `R`-algebra if and only if it is standard smooth of relative dimension `0`. -/

@@ -204,7 +204,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_measurable_edist [IsFiniteMeasure μ]
   refine fun ε hε => ENNReal.tendsto_atTop_zero.mpr fun δ hδ => ?_
   by_cases hδi : δ = ∞
   · simp only [hδi, imp_true_iff, le_top, exists_const]
-  obtain ⟨t, _, ht, hunif⟩ :=
+  obtain ⟨t, -, ht, hunif⟩ :=
     tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist' hf hfg hδ
   rw [EMetric.tendstoUniformlyOn_iff] at hunif
   obtain ⟨N, hN⟩ := eventually_atTop.1 (hunif ε hε)
@@ -339,7 +339,7 @@ theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
     obtain ⟨δ, hδ, h5⟩ := NNReal.nhds_zero_basis.mem_iff.1 hs
     obtain ⟨ns, hns, h6⟩ := extraction_of_frequently_atTop h4
     exact ⟨δ, ns, hδ, hns, fun n ↦ Set.notMem_Iio.1 (Set.notMem_subset h5 (h6 n))⟩
-  obtain ⟨ns', _, h6⟩ := h1 ns hns
+  obtain ⟨ns', -, h6⟩ := h1 ns hns
   have h7 := tendstoInMeasure_iff_tendsto_toNNReal.mp <|
     tendstoInMeasure_of_tendsto_ae (fun n ↦ hf _) h6
   exact lt_irrefl _ (lt_of_le_of_lt (ge_of_tendsto' (h7 ε hε) (fun n ↦ h3 _)) hδ)

@@ -505,7 +505,7 @@ private theorem delta_relations :
     deltaV ^ 2 = a₁ ^ 2 * deltaV ∧
       deltaU ^ 2 = a₁ * b₁ * deltaU - b₁ ^ 2 * deltaV := by
   obtain ⟨ha₁, hb₁, hab₁, hv₁', hu₁'⟩ := mapped_relations (S := A ⊗[R] A) left
-  obtain ⟨_, _, _, hv₂', hu₂'⟩ := mapped_relations (S := A ⊗[R] A) right
+  obtain ⟨-, -, -, hv₂', hu₂'⟩ := mapped_relations (S := A ⊗[R] A) right
   simp only [right_aA, right_bA] at hv₂' hu₂'
   exact law_relations_generic ha₁ hb₁ hab₁ hv₁' hu₁' hv₂' hu₂'
 
@@ -715,7 +715,7 @@ theorem powerMap_succ_lambda (n : ℕ) :
   simp [universalPoint, powerMap]
 
 theorem four_eq_zero : (4 : A) = 0 := by
-  obtain ⟨ha, _, hab, _, _⟩ := mapped_relations (AlgHom.id R A)
+  obtain ⟨ha, -, hab, -, -⟩ := mapped_relations (AlgHom.id R A)
   change aA ^ 3 = 0 at ha
   change aA ^ 2 * bA + 2 = 0 at hab
   linear_combination -(aA ^ 2 * bA - 2) * hab + aA * bA ^ 2 * ha
@@ -770,7 +770,7 @@ theorem powerMap_four_V : powerMap 4 V = 0 := by
   have hv : V ^ 2 = aA ^ 2 * V := by
     simp [aA, map_pow]
   have hab : aA ^ 2 * bA + 2 = 0 := by
-    obtain ⟨_, _, hab, _, _⟩ := mapped_relations (AlgHom.id R A)
+    obtain ⟨-, -, hab, -, -⟩ := mapped_relations (AlgHom.id R A)
     simpa using hab
   rw [show V * (2 * bA * V) = 2 * bA * V ^ 2 by ring, hv]
   linear_combination 2 * V * hab - V * four_eq_zero

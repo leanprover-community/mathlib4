@@ -103,7 +103,7 @@ protected lemma IsStarConvexSet.preimage {s : Set Y} (hf : IsAffineMap R f)
 @[grind <=]
 protected lemma IsStarConvexSet.image (hf : IsAffineMap R f) (hs : IsStarConvexSet R x s) :
     IsStarConvexSet R (f x) (f '' s) := by
-  rintro _ ⟨y, hy, rfl⟩ a b ha hb hab; exact ⟨_, hs hy _ .., hf.map_convexCombPair ..⟩
+  rintro - ⟨y, hy, rfl⟩ a b ha hb hab; exact ⟨_, hs hy _ .., hf.map_convexCombPair ..⟩
 
 @[grind ←]
 protected lemma IsStarConvexSet.prod {t : Set Y} {y : Y} (hs : IsStarConvexSet R x s)

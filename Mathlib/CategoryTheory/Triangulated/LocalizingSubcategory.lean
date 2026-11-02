@@ -108,7 +108,7 @@ lemma isVerdierRightLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
     obtain ⟨W, a, b, hT, hW⟩ := hs
     obtain ⟨W', c, d, h₁, h₂, fac⟩ := IsVerdierRightLocalizing.fac a hW hX
     obtain ⟨U, hU, e, f, hT'⟩ := A.distinguished_cocone_triangle d h₁ hX
-    obtain ⟨g, hg, _⟩ := Pretriangulated.complete_distinguished_triangle_morphism _ _ hT hT'
+    obtain ⟨g, hg, -⟩ := Pretriangulated.complete_distinguished_triangle_morphism _ _ hT hT'
       c (𝟙 _) (by cat_disch)
     refine ⟨U, e, g, hU, ?_, by cat_disch⟩
     rw [ObjectProperty.trW_iff']

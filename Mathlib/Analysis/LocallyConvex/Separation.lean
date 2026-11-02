@@ -67,7 +67,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
     refine ⟨⟨φ, ?_⟩, hφ₃, hφ₄⟩
     refine
       φ.continuous_of_ne_zero_on_open _ (hs₂.vadd (-x₀)) (Nonempty.vadd_set ⟨0, hs₀⟩) ?_
-    rintro _ ⟨x, hx, rfl⟩
+    rintro - ⟨x, hx, rfl⟩
     change φ (-x₀ + x) ≠ 0
     rw [map_add, map_neg]
     specialize hφ₄ x hx

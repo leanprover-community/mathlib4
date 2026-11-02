@@ -259,7 +259,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
     ∃ f : ℕ → α, (∀ n, P (f n)) ∧ ∀ m n, m < n → r (f m) (f n) := by
   classical
     have : Nonempty α := by
-      rcases h ∅ (by simp) with ⟨y, _⟩
+      rcases h ∅ (by simp) with ⟨y, -⟩
       exact ⟨y⟩
     choose! F hF using h
     have h' : ∀ s : Finset α, ∃ y, (∀ x ∈ s, P x) → P y ∧ ∀ x ∈ s, r x y := fun s => ⟨F s, hF s⟩

@@ -235,10 +235,10 @@ theorem LinearIsometryEquiv.reflections_generate [FiniteDimensional ℝ F] :
     Subgroup.closure (Set.range fun v : F => reflection (ℝ ∙ v)ᗮ) = ⊤ := by
   rw [Subgroup.eq_top_iff']
   intro φ
-  rcases φ.reflections_generate_dim with ⟨l, _, rfl⟩
+  rcases φ.reflections_generate_dim with ⟨l, -, rfl⟩
   apply (Subgroup.closure _).list_prod_mem
   intro x hx
-  rcases List.mem_map.mp hx with ⟨a, _, hax⟩
+  rcases List.mem_map.mp hx with ⟨a, -, hax⟩
   exact Subgroup.subset_closure ⟨a, hax⟩
 
 section OrthogonalFamily

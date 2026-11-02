@@ -486,8 +486,8 @@ theorem uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuou
     mem_of_superset (interior_mem_uniformity ht) fun ⟨x₁, x₂⟩ hx_t => by
       have : interior t ∈ 𝓝 (x₁, x₂) := isOpen_interior.mem_nhds hx_t
       let ⟨m₁, hm₁, m₂, hm₂, (hm : m₁ ×ˢ m₂ ⊆ interior t)⟩ := mem_nhds_prod_iff.mp this
-      obtain ⟨_, ⟨a, ha₁, rfl⟩, _, ha₂⟩ := h_pnt hm₁
-      obtain ⟨_, ⟨b, hb₁, rfl⟩, hb₂, _⟩ := h_pnt hm₂
+      obtain ⟨-, ⟨a, ha₁, rfl⟩, -, ha₂⟩ := h_pnt hm₁
+      obtain ⟨-, ⟨b, hb₁, rfl⟩, hb₂, -⟩ := h_pnt hm₂
       have : Prod.map f f (a, b) ∈ s :=
         ts <| mem_preimage.2 <| interior_subset (@hm (e a, e b) ⟨ha₁, hb₁⟩)
       exact hs_comp ⟨f a, ha₂, ⟨f b, this, hb₂⟩⟩

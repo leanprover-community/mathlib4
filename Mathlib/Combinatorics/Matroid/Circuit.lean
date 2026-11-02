@@ -457,12 +457,12 @@ lemma IsCircuit.strong_multi_elimination (hC₀ : M.IsCircuit C₀) (x : ι → 
       (iUnion_subset fun i ↦ subset_sdiff.2
         ⟨sdiff_subset.trans (subset_union_of_subset_right (subset_iUnion ..) _), ?_⟩)
     rw [disjoint_iff_forall_ne]
-    rintro _ he _ ⟨j, hj, rfl⟩ rfl
+    rintro - he - ⟨j, hj, rfl⟩ rfl
     obtain rfl : j = i := h_unique he.1
     simp at he
   · simpa [insert_eq_of_mem (h_mem i)] using hC i
   · rwa [sdiff_union_self, union_eq_self_of_subset_right]
-    rintro _ ⟨i, hi, rfl⟩
+    rintro - ⟨i, hi, rfl⟩
     exact h_mem_C₀ i
   · rintro ⟨i, hi, rfl⟩
     exact hzC _ (h_mem i)

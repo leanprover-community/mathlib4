@@ -172,7 +172,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Finite ι]
   let := compatibleRingOfRing (AlgebraicClosure (ZMod p))
   rw [← (ACF_isComplete (Or.inl hp)).realize_sentence_iff _
     (AlgebraicClosure (ZMod p)), realize_genericPolyMapSurjOnOfInjOn]
-  rintro v ⟨f, _⟩
+  rintro v ⟨f, -⟩
   exact ax_grothendieck_of_locally_finite (K := ZMod p) (ι := ι) f _
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
@@ -206,7 +206,7 @@ theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
   let := Fintype.ofFinite ι
   let p : ℕ := ringChar K
   rw [Set.definable_iff_finitely_definable] at hS
-  rcases hS with ⟨c, _, hS⟩
+  rcases hS with ⟨c, -, hS⟩
   rw [Set.definable_iff_exists_formula_sum] at hS
   rcases hS with ⟨φ, hφ⟩
   rw [hφ]

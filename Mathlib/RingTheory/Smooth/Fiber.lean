@@ -200,7 +200,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
   let := Localization.AtPrime.algebraOfLiesOver p q
   let f : Sp →ₐ[S] Sq := IsLocalization.liftAlgHom (M := algebraMapSubmonoid S p.primeCompl)
         (f := Algebra.ofId _ _) (by
-      rintro ⟨_, x, hx, rfl⟩
+      rintro ⟨-, x, hx, rfl⟩
       simpa using! IsLocalization.map_units (M := q.primeCompl) Sq ⟨algebraMap _ _ x,
         by simp_all [q.over_def p]⟩)
   algebraize [f.toRingHom]
@@ -210,7 +210,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
     simp only [RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq]
   have : IsLocalization (algebraMapSubmonoid Sp q.primeCompl) Sq :=
     .isLocalization_of_submonoid_le _ _ (algebraMapSubmonoid S p.primeCompl) _
-    (by rintro _ ⟨x, hx, rfl⟩; simp_all [q.over_def p])
+    (by rintro - ⟨x, hx, rfl⟩; simp_all [q.over_def p])
   have : FinitePresentation Rp Sp := by
     have : Algebra.IsPushout R Rp S Sp :=
       .symm <| Algebra.isPushout_of_isLocalization p.primeCompl _ _ _

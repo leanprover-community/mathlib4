@@ -87,7 +87,7 @@ theorem swap (hs : IsAntichain r s) : IsAntichain (swap r) s :=
 
 theorem image (hs : IsAntichain r s) (f : α → β) (h : ∀ ⦃a b⦄, r' (f a) (f b) → r a b) :
     IsAntichain r' (f '' s) := by
-  rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ hbc hr
+  rintro - ⟨b, hb, rfl⟩ - ⟨c, hc, rfl⟩ hbc hr
   exact hs hb hc (ne_of_apply_ne _ hbc) (h hr)
 
 theorem preimage (hs : IsAntichain r s) {f : β → α} (hf : Injective f)
@@ -354,7 +354,7 @@ theorem swap [Std.Symm r] (hs : IsStrongAntichain r s) : IsStrongAntichain (swap
 
 theorem image (hs : IsStrongAntichain r s) {f : α → β} (hf : Surjective f)
     (h : ∀ a b, r' (f a) (f b) → r a b) : IsStrongAntichain r' (f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab c
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩ hab c
   obtain ⟨c, rfl⟩ := hf c
   exact (hs ha hb (ne_of_apply_ne _ hab) _).imp (mt <| h _ _) (mt <| h _ _)
 

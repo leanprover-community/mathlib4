@@ -127,7 +127,7 @@ submodule `M'` of `M`, such that `s` is contained in the image
 of `M' ⊗[R] N` in `M ⊗[R] N`. -/
 theorem exists_finite_submodule_left_of_setFinite (s : Set (M ⊗[R] N)) (hs : s.Finite) :
     ∃ M' : Submodule R M, Module.Finite R M' ∧ s ⊆ LinearMap.range (M'.subtype.rTensor N) := by
-  obtain ⟨M', _, hfin, _, h⟩ := exists_finite_submodule_of_setFinite s hs
+  obtain ⟨M', _, hfin, -, h⟩ := exists_finite_submodule_of_setFinite s hs
   refine ⟨M', hfin, ?_⟩
   rw [mapIncl, ← LinearMap.rTensor_comp_lTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
@@ -137,7 +137,7 @@ submodule `N'` of `N`, such that `s` is contained in the image
 of `M ⊗[R] N'` in `M ⊗[R] N`. -/
 theorem exists_finite_submodule_right_of_setFinite (s : Set (M ⊗[R] N)) (hs : s.Finite) :
     ∃ N' : Submodule R N, Module.Finite R N' ∧ s ⊆ LinearMap.range (N'.subtype.lTensor M) := by
-  obtain ⟨_, N', _, hfin, h⟩ := exists_finite_submodule_of_setFinite s hs
+  obtain ⟨_, N', -, hfin, h⟩ := exists_finite_submodule_of_setFinite s hs
   refine ⟨N', hfin, ?_⟩
   rw [mapIncl, ← LinearMap.lTensor_comp_rTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
@@ -163,7 +163,7 @@ already submodules. -/
 theorem exists_finite_submodule_left_of_setFinite' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
     ∃ (M' : Submodule R M) (hM : M' ≤ M₁), Module.Finite R M' ∧
       s ⊆ LinearMap.range ((inclusion hM).rTensor N₁) := by
-  obtain ⟨M', _, hM, _, hfin, _, h⟩ := exists_finite_submodule_of_setFinite' s hs
+  obtain ⟨M', _, hM, _, hfin, -, h⟩ := exists_finite_submodule_of_setFinite' s hs
   refine ⟨M', hM, hfin, ?_⟩
   rw [← LinearMap.rTensor_comp_lTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
@@ -173,7 +173,7 @@ already submodules. -/
 theorem exists_finite_submodule_right_of_setFinite' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
     ∃ (N' : Submodule R N) (hN : N' ≤ N₁), Module.Finite R N' ∧
       s ⊆ LinearMap.range ((inclusion hN).lTensor M₁) := by
-  obtain ⟨_, N', _, hN, _, hfin, h⟩ := exists_finite_submodule_of_setFinite' s hs
+  obtain ⟨_, N', _, hN, -, hfin, h⟩ := exists_finite_submodule_of_setFinite' s hs
   refine ⟨N', hN, hfin, ?_⟩
   rw [← LinearMap.lTensor_comp_rTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)

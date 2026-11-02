@@ -434,7 +434,7 @@ theorem coboundaries₁_ext {f₁ f₂ : coboundaries₁ A} (h : ∀ g : G, f₁
 
 variable (A) in
 lemma coboundaries₁_le_cocycles₁ : coboundaries₁ A ≤ cocycles₁ A := by
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   exact d₀₁_apply_mem_cocycles₁ x
 
 variable (A) in
@@ -468,7 +468,7 @@ theorem coboundaries₂_ext {f₁ f₂ : coboundaries₂ A} (h : ∀ g h : G, f�
 
 variable (A) in
 lemma coboundaries₂_le_cocycles₂ : coboundaries₂ A ≤ cocycles₂ A := by
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   exact d₁₂_apply_mem_cocycles₂ x
 
 variable (A) in

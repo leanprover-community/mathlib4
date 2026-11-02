@@ -274,7 +274,7 @@ theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ 
   $A_5$. -/
 theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 ∈ cycleType g) :
     IsThreeCycle (g * g) := by
-  obtain ⟨c, g', rfl, hd, _, h3⟩ := mem_cycleType_iff.1 h
+  obtain ⟨c, g', rfl, hd, -, h3⟩ := mem_cycleType_iff.1 h
   simp only [mul_assoc]
   rw [hd.commute.eq, ← mul_assoc g']
   suffices hg' : orderOf g' ∣ 2 by
@@ -452,7 +452,7 @@ open Subgroup Group
 theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG : G.index = 2) :
     G = alternatingGroup α := by
   nontriviality α
-  obtain ⟨_, ⟨a, b, hab, rfl⟩, habG⟩ : ∃ g : Perm α, g.IsSwap ∧ g ∉ G := by
+  obtain ⟨-, ⟨a, b, hab, rfl⟩, habG⟩ : ∃ g : Perm α, g.IsSwap ∧ g ∉ G := by
     by_contra! h
     suffices G = ⊤ by rw [this, Subgroup.index_top] at hG; cases hG
     rwa [eq_top_iff, ← closure_isSwap, G.closure_le]

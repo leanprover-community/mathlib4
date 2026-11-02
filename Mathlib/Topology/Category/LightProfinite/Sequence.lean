@@ -37,7 +37,7 @@ embedding.
 lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInftyEmbedding := by
   refine .of_continuous_injective_isClosedMap
     natUnionInftyEmbedding.continuous ?_ ?_
-  · rintro (_ | n) (_ | m) h
+  · rintro (- | n) (- | m) h
     · rfl
     · simp only [natUnionInftyEmbedding, one_div, ContinuousMap.coe_mk, zero_eq_inv] at h
       assumption_mod_cast

@@ -117,7 +117,7 @@ variable {A F : Type*} [MulZeroOneClass A] [FunLike F ℕ A]
 theorem ext_nat'' [ZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
     f = g := by
   apply DFunLike.ext
-  rintro (_ | n)
+  rintro (- | n)
   · simp
   · exact h_pos n.succ_pos
 

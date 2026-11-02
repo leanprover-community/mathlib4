@@ -461,7 +461,7 @@ lemma LevyProkhorov.continuous_toMeasure_probabilityMeasure :
   apply _root_.le_of_forall_pos_le_add
   intro δ δ_pos
   apply limsup_le_of_le ?_
-  · obtain ⟨εs, _, εs_pos, εs_lim⟩ := exists_seq_strictAnti_tendsto (0 : ℝ)
+  · obtain ⟨εs, -, εs_pos, εs_lim⟩ := exists_seq_strictAnti_tendsto (0 : ℝ)
     have ε_of_room := Tendsto.add (tendsto_iff_dist_tendsto_zero.mp hμs) εs_lim
     have ε_of_room' : Tendsto (fun n ↦ dist (μs n) ν + εs n) atTop (𝓝[>] 0) := by
       rw [tendsto_nhdsWithin_iff]
@@ -645,7 +645,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
   have subset_thickB : ⋃ i ∈ JB, thickening (ε / 3) (Es i) ⊆ thickening δ B := by
     intro ω ω_in_U
     simp only [mem_iUnion, exists_prop] at ω_in_U
-    obtain ⟨k, ⟨B_intersects, _⟩, ω_in_thEk⟩ := ω_in_U
+    obtain ⟨k, ⟨B_intersects, -⟩, ω_in_thEk⟩ := ω_in_U
     rw [mem_thickening_iff] at ω_in_thEk ⊢
     obtain ⟨w, w_in_Ek, w_near⟩ := ω_in_thEk
     obtain ⟨z, ⟨z_in_B, z_in_Ek⟩⟩ := B_intersects

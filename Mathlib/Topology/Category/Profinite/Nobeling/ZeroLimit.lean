@@ -231,7 +231,7 @@ theorem GoodProducts.union : range C = ⋃ (e : {o' // o' < o}), (smaller C e.va
     obtain ⟨o', ho'⟩ := hl
     refine ⟨o', ho'.1, eval (π C (ord I · < o')) ⟨l, ho'.2⟩, ⟨l, ho'.2, rfl⟩, ?_⟩
     exact Products.eval_πs C (Products.prop_of_isGood C _ ho'.2)
-  · obtain ⟨o', h, _, ⟨l, hl, rfl⟩, rfl⟩ := hp
+  · obtain ⟨o', h, -, ⟨l, hl, rfl⟩, rfl⟩ := hp
     refine ⟨l, ?_, (Products.eval_πs C (Products.prop_of_isGood  C _ hl)).symm⟩
     rw [contained_eq_proj C o hsC]
     exact Products.isGood_mono C (le_of_lt h) hl

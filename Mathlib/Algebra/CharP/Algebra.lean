@@ -95,7 +95,7 @@ as `R`. -/
 lemma expChar_of_injective_ringHom
     [NonAssocSemiring R] [NonAssocSemiring A] {f : R →+* A} (h : Function.Injective f)
     (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
-  rcases hR with _ | hprime
+  rcases hR with - | hprime
   · have := charZero_of_injective_ringHom h; exact .zero
   have := charP_of_injective_ringHom h q; exact .prime hprime
 

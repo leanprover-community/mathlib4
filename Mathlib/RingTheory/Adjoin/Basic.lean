@@ -95,7 +95,7 @@ theorem Subalgebra.restrictScalars_adjoin {s : Set A} :
     (fun x ↦ le_sup_left (α := Subalgebra R A) ⟨x, rfl⟩)
     (fun _ _ _ _ ↦ add_mem) (fun _ _ _ _ ↦ mul_mem) <|
     (Subalgebra.mem_restrictScalars _).mp hx) (sup_le ?_ <| adjoin_le subset_adjoin)
-  rintro _ ⟨x, rfl⟩; exact algebraMap_mem (adjoin S s) x
+  rintro - ⟨x, rfl⟩; exact algebraMap_mem (adjoin S s) x
 
 @[simp]
 theorem adjoin_top {A} [Semiring A] [Algebra S A] (t : Set A) :

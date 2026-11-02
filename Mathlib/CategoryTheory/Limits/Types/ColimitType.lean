@@ -124,7 +124,7 @@ lemma ιColimitType_eq_of_map_eq_map {j j' : J} (x : F.obj j) (y : F.obj j')
 
 lemma ιColimitType_jointly_surjective (t : F.ColimitType) :
     ∃ j x, F.ιColimitType j x = t := by
-  obtain ⟨_, _⟩ := t
+  obtain ⟨-, -⟩ := t
   exact ⟨_, _, rfl⟩
 
 @[simp]

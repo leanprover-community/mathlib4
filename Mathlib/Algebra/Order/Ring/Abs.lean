@@ -191,7 +191,7 @@ private theorem pow_sub_pow_eq_sub_mul_geomSum :
 
 theorem abs_pow_sub_pow_le [IsOrderedRing α] :
     |a ^ n - b ^ n| ≤ |a - b| * n * max |a| |b| ^ (n - 1) := by
-  obtain _ | n := n; · simp
+  obtain - | n := n; · simp
   rw [Nat.add_sub_cancel, pow_sub_pow_eq_sub_mul_geomSum, abs_mul, mul_assoc, Nat.cast_succ]
   gcongr
   · exact abs_nonneg _

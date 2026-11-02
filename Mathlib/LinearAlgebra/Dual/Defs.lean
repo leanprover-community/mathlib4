@@ -476,7 +476,7 @@ theorem ker_dualMap_eq_dualAnnihilator_range :
 
 theorem range_dualMap_le_dualAnnihilator_ker :
     LinearMap.range f.dualMap ≤ (ker f).dualAnnihilator := by
-  rintro _ ⟨ψ, rfl⟩
+  rintro - ⟨ψ, rfl⟩
   simp +contextual
 
 end LinearMap

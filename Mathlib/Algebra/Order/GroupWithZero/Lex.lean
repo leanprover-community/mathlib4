@@ -118,7 +118,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_comp_inl : (fst _ _).comp (inl α β) = .id α := by
   ext x
-  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
+  obtain rfl | ⟨-, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp
 
 variable {α β}

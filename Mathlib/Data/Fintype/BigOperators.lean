@@ -237,7 +237,7 @@ theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
 theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → β) :
     ∏ i, c i = ∏ i ∈ Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
   rw [← Fin.prod_univ_eq_prod_range, Finset.prod_congr rfl]
-  rintro ⟨i, hi⟩ _
+  rintro ⟨i, hi⟩ -
   simp only [hi, dite_eq_left]
 
 @[to_additive]

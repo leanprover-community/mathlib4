@@ -119,7 +119,7 @@ positive.
 This lemma is a small wrapper based on `coprime_of_probablePrime`
 -/
 theorem coprime_of_fermatPsp {n b : ℕ} (h : FermatPsp n b) (h₁ : 1 ≤ b) : Nat.Coprime n b := by
-  rcases h with ⟨hp, _, hn₂⟩
+  rcases h with ⟨hp, -, hn₂⟩
   exact coprime_of_probablePrime hp (by lia) h₁
 
 /-- All composite numbers are Fermat pseudoprimes to base 1.

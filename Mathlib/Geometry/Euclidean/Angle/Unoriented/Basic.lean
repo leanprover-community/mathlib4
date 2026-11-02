@@ -207,7 +207,7 @@ theorem angle_eq_pi_iff {x y : V} : angle x y = π ↔ x ≠ 0 ∧ ∃ r : ℝ, 
 vectors and a third vector add to π. -/
 theorem angle_add_angle_eq_pi_of_angle_eq_pi {x y : V} (z : V) (h : angle x y = π) :
     angle x z + angle y z = π := by
-  rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩
+  rcases angle_eq_pi_iff.1 h with ⟨-, ⟨r, ⟨hr, rfl⟩⟩⟩
   rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel]
 
 /-- Two vectors have inner product 0 if and only if the angle between

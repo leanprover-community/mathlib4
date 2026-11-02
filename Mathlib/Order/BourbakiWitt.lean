@@ -85,7 +85,7 @@ structure IsAdmissible (x : α) (f : α → α) (s : Set α) : Prop where
 lemma ici_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (Ici x) where
   base_isLeast := ⟨le_refl x, fun _ h ↦ h⟩
   image_self_subset_self := by
-    rintro _ ⟨y, hy, rfl⟩
+    rintro - ⟨y, hy, rfl⟩
     exact le_trans hy (le_map _)
   cSup_mem := by
     intro c hc
@@ -102,7 +102,7 @@ lemma bot_isAdmissible (le_map : ∀ x, x ≤ f x) : IsAdmissible x f (bot x f) 
     · intro y hy
       exact hy (Ici x) (ici_isAdmissible le_map)
   image_self_subset_self := by
-    rintro _ ⟨y, hy, rfl⟩ s hs
+    rintro - ⟨y, hy, rfl⟩ s hs
     exact hs.image_self_subset_self ⟨y, ⟨mem_sInter.1 hy _ hs, rfl⟩⟩
   cSup_mem := by
     intro c hc s hs
@@ -136,7 +136,7 @@ lemma bot_eq_of_le_or_map_le {y : α} (le_map : ∀ x, x ≤ f x) (hy : IsExtrem
         · exact (bot_isAdmissible le_map).base_isLeast.1
         · exact Or.inl ((bot_isAdmissible le_map).base_isLeast.2 hy.mem_bot)
       · exact fun y h ↦ (bot_isAdmissible le_map).base_isLeast.2 h.1
-    · rintro _ ⟨z, ⟨hz, (hzy | hyz)⟩, rfl⟩ <;>
+    · rintro - ⟨z, ⟨hz, (hzy | hyz)⟩, rfl⟩ <;>
         refine ⟨map_mem_bot le_map hz, ?_⟩
       · rcases le_iff_lt_or_eq.1 hzy with (hzy | rfl)
         · left; exact hy.map_le_of_mem_of_lt hz hzy
@@ -160,12 +160,12 @@ lemma setOfPred_isExtremePt_isAdmissible (le_map : ∀ x, x ≤ f x) :
       exfalso
       exact lt_irrefl x (lt_of_le_of_lt ((bot_isAdmissible le_map).base_isLeast.2 hy) hyx)
     · exact fun y h ↦ (bot_isAdmissible le_map).base_isLeast.2 h.1
-  · rintro _ ⟨y, hy, rfl⟩
+  · rintro - ⟨y, hy, rfl⟩
     refine ⟨map_mem_bot le_map hy.mem_bot, ?_⟩
     intro z hz hzy
     have hz' := hz
     rw [← bot_eq_of_le_or_map_le le_map hy] at hz'
-    rcases hz' with ⟨_, (hz' | hz')⟩
+    rcases hz' with ⟨-, (hz' | hz')⟩
     · rcases le_iff_lt_or_eq.1 hz' with (hz' | rfl)
       · exact le_trans (hy.map_le_of_mem_of_lt hz hz') (le_map y)
       · exact le_refl (f z)
@@ -210,7 +210,7 @@ lemma bot_isChain (le_map : ∀ x, x ≤ f x) : IsChain (· ≤ ·) (bot x f) :=
   intro y hy z hz _
   rw [mem_bot_iff_isExtremePt le_map] at hy
   rw [← bot_eq_of_le_or_map_le le_map hy] at hz
-  obtain ⟨_, (hz | hz)⟩ := hz
+  obtain ⟨-, (hz | hz)⟩ := hz
   · right; exact hz
   · left; exact le_trans (le_map y) hz
 
@@ -253,7 +253,7 @@ lemma ωScottContinuous.sup (hf : ωScottContinuous f) (hg : ωScottContinuous g
     ωScottContinuous (f ⊔ g) := by
   rw [← sSup_pair]
   apply ωScottContinuous.sSup
-  rintro f (rfl | rfl | _) <;> assumption
+  rintro f (rfl | rfl | -) <;> assumption
 
 #adaptation_note
 /--

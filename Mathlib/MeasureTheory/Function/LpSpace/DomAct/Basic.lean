@@ -80,7 +80,7 @@ instance {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 @[to_additive]
 theorem smul_Lp_add (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f + g) = c • f + c • g := by
-  rintro ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
+  rintro ⟨⟨⟩, -⟩ ⟨⟨⟩, -⟩; rfl
 attribute [simp] DomAddAct.vadd_Lp_add
 
 @[to_additive (attr := simp 1001)]
@@ -88,11 +88,11 @@ theorem smul_Lp_zero (c : Mᵈᵐᵃ) : c • (0 : Lp E p μ) = 0 := rfl
 
 @[to_additive]
 theorem smul_Lp_neg (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • (-f) = -(c • f) := by
-  rcases f with ⟨⟨_⟩, _⟩; rfl
+  rcases f with ⟨⟨-⟩, -⟩; rfl
 
 @[to_additive]
 theorem smul_Lp_sub (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f - g) = c • f - c • g := by
-  rintro ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
+  rintro ⟨⟨⟩, -⟩ ⟨⟨⟩, -⟩; rfl
 
 instance : DistribSMul Mᵈᵐᵃ (Lp E p μ) where
   smul_zero _ := rfl

@@ -160,7 +160,7 @@ theorem natDegree_mul_comm (hp : p.Monic) (q : R[X]) : (p * q).natDegree = (q * 
   simpa [hp.leadingCoeff, leadingCoeff_ne_zero]
 
 theorem _root_.Polynomial.not_isUnit_X_add_C [Nontrivial R] (a : R) : ¬ IsUnit (X + C a) := by
-  rintro ⟨⟨_, g, hfg, hgf⟩, rfl⟩
+  rintro ⟨⟨-, g, hfg, hgf⟩, rfl⟩
   have h := (monic_X_add_C a).natDegree_mul' (right_ne_zero_of_mul_eq_one hfg)
   rw [hfg, natDegree_one, natDegree_X_add_C] at h
   grind

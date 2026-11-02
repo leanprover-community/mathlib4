@@ -41,7 +41,7 @@ lemma hasLeftCalculusOfFractions (adj : G ⊣ F) (W : MorphismProperty C₁)
     [W.IsMultiplicative] (hW : W.IsInvertedBy G) (hW' : (W.functorCategory C₁) adj.unit) :
     W.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
-    obtain ⟨T, s, _, f, rfl⟩ := φ.cases
+    obtain ⟨T, s, -, f, rfl⟩ := φ.cases
     dsimp
     have := hW s (by assumption)
     exact ⟨{

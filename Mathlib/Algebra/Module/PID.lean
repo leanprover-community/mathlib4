@@ -273,7 +273,7 @@ theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
     fun _ ↦ mkQ _ 1), le_antisymm (fun x h ↦ ?_) fun x h ↦ mem_annihilator.mp h _⟩
   rw [mem_ker, toSpanSingleton_apply, ← map_smul,
     e.symm.map_eq_zero_iff, Prod.ext_iff, Finsupp.ext_iff, DFinsupp.ext_iff] at h
-  obtain _ | m := m
+  obtain - | m := m
   · rw [← mul_one x, ← smul_eq_mul, e.annihilator_eq, annihilator_prod]
     simp_rw [annihilator_eq_top_iff.mpr inferInstance, DirectSum, annihilator_dfinsupp,
       top_inf_eq, mem_iInf, Ideal.annihilator_quotient, ← Quotient.mk_eq_zero]

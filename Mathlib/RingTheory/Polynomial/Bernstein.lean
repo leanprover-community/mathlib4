@@ -299,7 +299,7 @@ theorem sum_smul (n : ℕ) :
     have w : ∀ k : ℕ, k • bernsteinPolynomial R n k =
         (k : R[X]) * Polynomial.X ^ (k - 1) * (1 - Polynomial.X) ^ (n - k) * (n.choose k : R[X]) *
           Polynomial.X := by
-      rintro (_ | k)
+      rintro (- | k)
       · simp
       · rw [bernsteinPolynomial]
         simp only [← natCast_mul, Nat.add_succ_sub_one, add_zero, pow_succ]
@@ -336,7 +336,7 @@ theorem sum_mul_smul (n : ℕ) :
     have w : ∀ k : ℕ, (k * (k - 1)) • bernsteinPolynomial R n k =
         (n.choose k : R[X]) * ((1 - Polynomial.X) ^ (n - k) *
           ((k : R[X]) * ((↑(k - 1) : R[X]) * Polynomial.X ^ (k - 1 - 1)))) * Polynomial.X ^ 2 := by
-      rintro (_ | _ | k)
+      rintro (- | - | k)
       · simp
       · simp
       · rw [bernsteinPolynomial]

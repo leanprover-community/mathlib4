@@ -509,7 +509,7 @@ theorem mem_supp {α : Type u} (x : F α) (u : α) :
     exact h this
   intro h p; rw [liftp_iff]
   rintro ⟨a, f, xeq, h'⟩
-  rcases h a f xeq.symm with ⟨i, _, hi⟩
+  rcases h a f xeq.symm with ⟨i, -, hi⟩
   rw [← hi]; apply h'
 
 theorem supp_eq {α : Type u} (x : F α) :
@@ -527,12 +527,12 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
     rcases this with ⟨a, f, xeq, h'⟩
     refine ⟨a, f, xeq.symm, ?_⟩
     intro a' f' h''
-    rintro u ⟨i, _, hfi⟩
+    rintro u ⟨i, -, hfi⟩
     have : u ∈ supp x := by rw [← hfi]; apply h'
     exact (mem_supp x u).mp this _ _ h''
   rintro ⟨a, f, xeq, h⟩ p; rw [liftp_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ u usuppx
-    rcases (mem_supp x u).mp usuppx a' f' xeq'.symm with ⟨i, _, f'ieq⟩
+    rcases (mem_supp x u).mp usuppx a' f' xeq'.symm with ⟨i, -, f'ieq⟩
     rw [← f'ieq]
     apply h'
   intro h'
@@ -571,7 +571,7 @@ theorem liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : �
   constructor
   · rintro ⟨a', f', abseq, hf⟩ u
     rw [supp_eq_of_isUniform h, h _ _ _ _ abseq]
-    rintro ⟨i, _, hi⟩
+    rintro ⟨i, -, hi⟩
     rw [← hi]
     apply hf
   · intro h'

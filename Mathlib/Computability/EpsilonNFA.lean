@@ -201,7 +201,7 @@ alias ⟨IsPath.eq_of_nil, _⟩ := isPath_nil
 @[simp]
 theorem isPath_singleton {a : Option α} : M.IsPath s t [a] ↔ t ∈ M.step s a where
   mp := by
-    rintro (_ | ⟨_, _, _, _, _, _, ⟨⟩⟩)
+    rintro (- | ⟨_, _, _, _, -, _, ⟨⟩⟩)
     assumption
   mpr := by tauto
 
@@ -215,7 +215,7 @@ theorem isPath_append {x y : List (Option α)} :
       rw [List.nil_append]
       tauto
     | cons x a ih =>
-      rintro (_ | ⟨t, _, _, _, _, _, h⟩)
+      rintro (- | ⟨t, _, _, _, -, _, h⟩)
       apply ih at h
       tauto
   mpr := by
@@ -274,7 +274,7 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
         List.reduceOption_eq_nil_iff]
       intro ⟨_, ⟨x', _, rfl, _, n, rfl⟩, h⟩
       rw [isPath_append] at h
-      obtain ⟨t, _, _ | u⟩ := h
+      obtain ⟨t, _, - | u⟩ := h
       use t
       rw [mem_εClosure_iff_exists, ih]
       simp_rw [mem_εClosure_iff_exists_path]

@@ -123,7 +123,7 @@ theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
 
 @[to_additive]
 theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) := by
-  rintro ⟨_, g, rfl⟩
+  rintro ⟨-, g, rfl⟩
   use mk g
   rfl
 

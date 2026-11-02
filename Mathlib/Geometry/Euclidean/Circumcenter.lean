@@ -453,7 +453,7 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
   change _ = (∑ i, f (pointIndexEmbedding n i)) + _
   rw [add_comm, h, ← sum_map, sum_insert]
   simp_rw [Finset.mem_map, not_exists]
-  rintro x ⟨_, h⟩
+  rintro x ⟨-, h⟩
   injection h
 
 /-- The vertices of a simplex plus its circumcenter. -/
@@ -559,7 +559,7 @@ theorem circumcenter_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s
   rw [← pointsWithCircumcenter_eq_circumcenter]
   symm
   refine affineCombination_of_eq_one_of_eq_zero _ _ _ (mem_univ _) rfl ?_
-  rintro ⟨i⟩ _ hn <;> tauto
+  rintro ⟨i⟩ - hn <;> tauto
 
 /-- The weights for the reflection of the circumcenter in an edge of a
 simplex.  This definition is only valid with `i₁ ≠ i₂`. -/

@@ -112,7 +112,7 @@ protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
     case disj =>
       intro z hz hz'
       simp only [mem_cons, mem_map] at hz
-      obtain ⟨_, (rfl | _), rfl⟩ := hz
+      obtain ⟨_, (rfl | -), rfl⟩ := hz
         <;> simp [left_mem_of_mk_mem_sym2 hz'] at h
     case notmem =>
       intro h'

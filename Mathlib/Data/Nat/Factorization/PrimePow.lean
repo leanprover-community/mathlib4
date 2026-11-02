@@ -124,7 +124,7 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
     ⟨?_, fun h =>
       Or.elim h (fun i => i.trans ((@dvd_mul_right a b a hab).mpr (dvd_refl a)))
           fun i => i.trans ((@dvd_mul_left a b b hab.symm).mpr (dvd_refl b))⟩
-  obtain ⟨p, k, hp, _, rfl⟩ := (isPrimePow_nat_iff _).1 hn
+  obtain ⟨p, k, hp, -, rfl⟩ := (isPrimePow_nat_iff _).1 hn
   simp only [hp.pow_dvd_iff_le_factorization (mul_ne_zero ha hb), Nat.factorization_mul ha hb,
     hp.pow_dvd_iff_le_factorization ha, hp.pow_dvd_iff_le_factorization hb, Pi.add_apply,
     Finsupp.coe_add]

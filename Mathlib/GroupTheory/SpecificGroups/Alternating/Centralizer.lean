@@ -230,7 +230,7 @@ theorem centralizer_le_alternating_iff :
     rw [mem_alternatingGroup, sign_kerParam_apply_apply (g := g) y uv]
     convert mul_one _
     · apply Finset.prod_eq_one
-      rintro ⟨c, hc⟩ _
+      rintro ⟨c, hc⟩ -
       obtain ⟨k, hk⟩ := (uv _).prop
       rw [← hk, map_zpow]
       convert one_zpow k
@@ -272,7 +272,7 @@ theorem alternatingGroup.commutator_perm_le :
     commutator (Perm α) ≤ alternatingGroup α := by
   simp only [commutator_eq_closure, closure_le, Set.subset_def, mem_commutatorSet_iff,
     SetLike.mem_coe, mem_alternatingGroup, forall_exists_index]
-  rintro _ p q rfl
+  rintro - p q rfl
   simp [map_commutatorElement, commutatorElement_eq_one_iff_commute, Commute.all]
 
 /-- If `n ≥ 5`, then the alternating group on `n` letters is perfect -/

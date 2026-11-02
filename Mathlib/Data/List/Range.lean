@@ -76,7 +76,7 @@ theorem ranges_disjoint (l : List ℕ) :
     simp only [ranges, pairwise_cons]
     constructor
     · intro s hs
-      obtain ⟨s', _, rfl⟩ := mem_map.mp hs
+      obtain ⟨s', -, rfl⟩ := mem_map.mp hs
       intro u hu
       rw [mem_map]
       rw [mem_range] at hu

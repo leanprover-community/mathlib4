@@ -164,7 +164,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
     · exact hxy (h xs ys x ⟨xs, le_rfl, xy⟩ y ⟨ys, xy, le_rfl⟩)
     · rw [edist_comm] at hxy
       exact hxy (h ys xs y ⟨ys, le_rfl, yx⟩ x ⟨xs, yx, le_rfl⟩)
-  · rintro h x _ y _
+  · rintro h x - y -
     simpa [h] using eVariationOn.mono (s := s) f inter_subset_left
 
 theorem HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)
@@ -245,7 +245,7 @@ theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
     HasUnitSpeedOn (naturalParameterization f s a) (variationOnFromTo f s a '' s) := by
   dsimp only [HasUnitSpeedOn]
   rw [hasConstantSpeedOnWith_iff_ordered]
-  rintro _ ⟨b, bs, rfl⟩ _ ⟨c, cs, rfl⟩ h
+  rintro - ⟨b, bs, rfl⟩ - ⟨c, cs, rfl⟩ h
   rcases le_total c b with (cb | bc)
   · rw [NNReal.coe_one, one_mul, le_antisymm h (variationOnFromTo.monotoneOn hf as cs bs cb),
       sub_self, ENNReal.ofReal_zero, Icc_self, eVariationOn.subsingleton]
@@ -257,5 +257,5 @@ theorem has_unit_speed_naturalParameterization (f : α → E) {s : Set α}
         (variationOnFromTo.monotoneOn hf as) bs cs]
     rw [eVariationOn.eq_of_edist_zero_on (f' := f)]
     · rw [variationOnFromTo.eq_of_le _ _ bc, ENNReal.ofReal_toReal (hf b c bs cs)]
-    · rintro x ⟨xs, _, _⟩
+    · rintro x ⟨xs, -, -⟩
       exact edist_naturalParameterization_eq_zero hf as xs

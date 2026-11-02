@@ -220,7 +220,7 @@ lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} [NeZero
   · exact χ.map_zero ▸ Subalgebra.zero_mem _
   · obtain ⟨ζ, hζ₁, hζ₂⟩ := apply_mem_rootsOfUnity_of_pow_eq_one hχ h
     rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val] at hζ₁
-    obtain ⟨k, _, hk⟩ := IsPrimitiveRoot.eq_pow_of_pow_eq_one hμ hζ₁
+    obtain ⟨k, -, hk⟩ := IsPrimitiveRoot.eq_pow_of_pow_eq_one hμ hζ₁
     exact hζ₂ ▸ hk ▸ Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton ℤ μ) k
 
 /-- The values of a multiplicative character of order `n` are contained in `ℤ[μ]` when

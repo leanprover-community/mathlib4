@@ -1026,7 +1026,7 @@ theorem IsBasis.iUnion_isBasis_iUnion {ι : Type _} (X I : ι → Set α)
     M.IsBasis (⋃ i, I i) (⋃ i, X i) := by
   refine h_ind.isBasis_of_forall_insert
     (iUnion_subset (fun i ↦ (hI i).subset.trans (subset_iUnion _ _))) ?_
-  rintro e ⟨⟨_, ⟨⟨i, hi, rfl⟩, (hes : e ∈ X i)⟩⟩, he'⟩
+  rintro e ⟨⟨-, ⟨⟨i, hi, rfl⟩, (hes : e ∈ X i)⟩⟩, he'⟩
   rw [mem_iUnion, not_exists] at he'
   refine ((hI i).insert_dep ⟨hes, he' _⟩).superset (insert_subset_insert (subset_iUnion _ _)) ?_
   rw [insert_subset_iff, iUnion_subset_iff, and_iff_left (fun i ↦ (hI i).indep.subset_ground)]
@@ -1123,7 +1123,7 @@ theorem finite_setOfPred_matroid {E : Set α} (hE : E.Finite) :
     exact ext_isBase hMM'.1 (fun B _ ↦ hMM'.2 B)
   rw [← Set.finite_image_iff hf.injOn]
   refine (hE.finite_subsets.prod hE.finite_subsets.finite_subsets).subset ?_
-  rintro _ ⟨M, hE : M.E ⊆ E, rfl⟩
+  rintro - ⟨M, hE : M.E ⊆ E, rfl⟩
   simp only [Set.mem_prod, Set.mem_ofPred_eq]
   exact ⟨hE, fun B hB ↦ hB.subset_ground.trans hE⟩
 

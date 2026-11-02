@@ -145,7 +145,7 @@ lemma jointly_reflect_ofArrows_mem
       ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
         ∃ (i : ι) (y : Φ.obj.fiber.obj (U i)), Φ.obj.fiber.map (f i) y = x := by
   refine ⟨fun hf Φ x ↦ ?_, fun hf ↦ ?_⟩
-  · obtain ⟨Z, _, ⟨_, p, _, ⟨i⟩, rfl⟩, z, rfl⟩ := Φ.obj.jointly_surjective _ hf x
+  · obtain ⟨Z, -, ⟨-, p, -, ⟨i⟩, rfl⟩, z, rfl⟩ := Φ.obj.jointly_surjective _ hf x
     exact ⟨i, Φ.obj.fiber.map p z, by simp⟩
   · rw [J.ofArrows_mem_iff_isLocallySurjective_sigmaDesc_shrinkYoneda_map]
     refine hP.jointly_reflect_isLocallySurjective _ (fun Φ x ↦ ?_)
@@ -166,7 +166,7 @@ lemma jointly_reflect_ofArrows_mem_of_small
       ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
         ∃ (i : ι) (y : Φ.obj.fiber.obj (U i)), Φ.obj.fiber.map (f i) y = x := by
   refine ⟨fun hf Φ x ↦ ?_, fun hf ↦ ?_⟩
-  · obtain ⟨Z, _, ⟨_, p, _, ⟨i⟩, rfl⟩, z, rfl⟩ := Φ.obj.jointly_surjective _ hf x
+  · obtain ⟨Z, -, ⟨-, p, -, ⟨i⟩, rfl⟩, z, rfl⟩ := Φ.obj.jointly_surjective _ hf x
     exact ⟨i, Φ.obj.fiber.map p z, by simp⟩
   · let ι' : Type _ := Σ (Φ : P.FullSubcategory), Φ.obj.fiber.obj X
     choose i y hy using fun (j : ι') ↦ hf j.1 j.2

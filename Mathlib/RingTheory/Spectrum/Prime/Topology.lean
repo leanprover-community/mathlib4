@@ -235,7 +235,7 @@ theorem isIrreducible_zeroLocus_iff_of_radical (I : Ideal R) (hI : I.IsRadical) 
       constructor
       · rintro h x y
         exact h _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
-      · rintro h _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
+      · rintro h - - ⟨x, rfl⟩ ⟨y, rfl⟩
         exact h x y
     · simp_rw [← zeroLocus_inf, subset_zeroLocus_iff_le_vanishingIdeal,
         vanishingIdeal_zeroLocus_eq_radical, hI.radical]
@@ -268,7 +268,7 @@ lemma vanishingIdeal_isClosed_isIrreducible :
     vanishingIdeal (R := R) '' {s | IsClosed s ∧ IsIrreducible s} = {P | P.IsPrime} := by
   refine (subset_antisymm ?_ ?_).trans vanishingIdeal_isIrreducible
   · exact Set.image_mono fun _ ↦ And.right
-  rintro _ ⟨s, hs, rfl⟩
+  rintro - ⟨s, hs, rfl⟩
   exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
 lemma irreducibleSpace_iff_isPrime_nilradical :
@@ -329,7 +329,7 @@ section Comap
 @[fun_prop]
 lemma continuous_comap (f : R →+* S) : Continuous (comap f) := by
   simp only [continuous_iff_isClosed, isClosed_iff_zeroLocus]
-  rintro _ ⟨s, rfl⟩
+  rintro - ⟨s, rfl⟩
   exact ⟨_, preimage_comap_zeroLocus_aux f s⟩
 
 variable (f : R →+* S)
@@ -558,7 +558,7 @@ theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
       (Set.range fun r : R => (basicOpen r : Set (PrimeSpectrum R))) := by
   apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
-  · rintro _ ⟨r, rfl⟩
+  · rintro - ⟨r, rfl⟩
     exact isOpen_basicOpen
   · rintro p U hp ⟨s, hs⟩
     rw [← compl_compl U, Set.mem_compl_iff, ← hs, mem_zeroLocus, Set.not_subset] at hp
@@ -593,7 +593,7 @@ theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S
   constructor
   · intro h₁ h₂
     exact h₁ ⟨Submonoid.mem_powers r, h₂⟩
-  · rintro h₁ _ ⟨⟨n, rfl⟩, h₃⟩
+  · rintro h₁ - ⟨⟨n, rfl⟩, h₃⟩
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 
 theorem localization_away_isOpenEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
@@ -863,7 +863,7 @@ lemma isClosed_image_of_stableUnderSpecialization
     IsClosed (comap f '' Z) := by
   obtain ⟨I, rfl⟩ := (PrimeSpectrum.isClosed_iff_zeroLocus_ideal Z).mp hZ
   refine (isClosed_iff_zeroLocus _).mpr ⟨I.comap f, le_antisymm ?_ fun p hp ↦ ?_⟩
-  · rintro _ ⟨q, hq, rfl⟩
+  · rintro - ⟨q, hq, rfl⟩
     exact Ideal.comap_mono hq
   · obtain ⟨q, hqI, hq, hqle⟩ := p.asIdeal.exists_ideal_comap_le_prime I hp
     exact hf ((le_iff_specializes ⟨q.comap f, inferInstance⟩ p).mp hqle) ⟨⟨q, hq⟩, hqI, rfl⟩
@@ -949,7 +949,7 @@ lemma denseRange_comap_iff_minimalPrimes :
       simp only [Set.mem_ofPred, Ideal.IsMinimalPrime] at hI ⊢
       convert! hI using 2 with p
       exact ⟨fun h ↦ ⟨h.1, bot_le⟩, fun h ↦ ⟨h.1, H.trans (h.1.radical_le_iff.mpr bot_le)⟩⟩
-    obtain ⟨p, hp, _, rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f (I := ⊥) I this
+    obtain ⟨p, hp, -, rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f (I := ⊥) I this
     exact ⟨⟨p, hp⟩, rfl⟩
   · intro H p
     obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le (J := p.asIdeal) bot_le
@@ -1054,8 +1054,8 @@ lemma exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen {s : Set (PrimeSpec
     rw [eq_top_iff, ← Ideal.span_pow_eq_top (I ∪ J : Set R) _ n, Ideal.span_le, Set.image_union,
       Set.union_subset_iff]
     constructor
-    · rintro _ ⟨x, hx, rfl⟩; exact Ideal.mem_sup_left (Ideal.pow_mem_pow hx n)
-    · rintro _ ⟨x, hx, rfl⟩; exact Ideal.mem_sup_right (Ideal.pow_mem_pow hx n)
+    · rintro - ⟨x, hx, rfl⟩; exact Ideal.mem_sup_left (Ideal.pow_mem_pow hx n)
+    · rintro - ⟨x, hx, rfl⟩; exact Ideal.mem_sup_right (Ideal.pow_mem_pow hx n)
     · rw [Ideal.span_union, Ideal.span_eq, Ideal.span_eq, ← zeroLocus_empty_iff_eq_top,
         zeroLocus_sup, hI', hJ', Set.compl_inter_self]
   rw [Ideal.eq_top_iff_one, Submodule.mem_sup] at this
@@ -1151,7 +1151,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
 theorem isClosedMap_comap_of_isIntegral (hf : f.IsIntegral) :
     IsClosedMap (comap f) := by
   refine fun s hs ↦ isClosed_image_of_stableUnderSpecialization _ _ hs ?_
-  rintro _ y e ⟨x, hx, rfl⟩
+  rintro - y e ⟨x, hx, rfl⟩
   algebraize [f]
   obtain ⟨q, hq₁, hq₂, hq₃⟩ := Ideal.exists_ideal_over_prime_of_isIntegral y.asIdeal x.asIdeal
     ((le_iff_specializes _ _).mpr e)
@@ -1214,7 +1214,7 @@ lemma _root_.Algebra.IsIntegral.comap_surjective [Algebra R S] [Algebra.IsIntegr
     Function.Surjective (comap (algebraMap R S)) := by
   intro ⟨p, hp⟩
   have hinj : Function.Injective (algebraMap R S) := FaithfulSMul.algebraMap_injective _ _
-  obtain ⟨Q, _, hQ, rfl⟩ := Ideal.exists_ideal_over_prime_of_isIntegral p (⊥ : Ideal S)
+  obtain ⟨Q, -, hQ, rfl⟩ := Ideal.exists_ideal_over_prime_of_isIntegral p (⊥ : Ideal S)
     (by simp [Ideal.comap_bot_of_injective (algebraMap R S) hinj])
   exact ⟨⟨Q, hQ⟩, rfl⟩
 

@@ -34,7 +34,7 @@ theorem not_prime_of_mul_eq {a b n : ℕ} (h : a * b = n) (h₁ : a ≠ 1) (h₂
 theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔ p = a := by
   refine ⟨?_, by rintro rfl; rfl⟩
   rintro ⟨j, rfl⟩
-  rcases prime_mul_iff.mp hp with (⟨_, rfl⟩ | ⟨_, rfl⟩)
+  rcases prime_mul_iff.mp hp with (⟨-, rfl⟩ | ⟨-, rfl⟩)
   · exact mul_one _
   · exact (a1 rfl).elim
 

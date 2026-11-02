@@ -253,7 +253,7 @@ lemma signVariations_X_sub_C_mul_eraseLead_le (h : 0 < P.leadingCoeff) (h₂ : 0
   rw [List.destutter'_cons]
   split; swap --does SignType.sign c₀ = 1? If so, the destutter doesn't care about it.
   · rfl
-  rcases hcs : (cs.map SignType.sign).filter fun x ↦ decide (x ≠ 0) with _ | ⟨r, rs⟩
+  rcases hcs : (cs.map SignType.sign).filter fun x ↦ decide (x ≠ 0) with - | ⟨r, rs⟩
   · simp
   · rw [← List.destutter_cons', ← List.destutter_cons']
     grind [List.destutter_cons_cons]
@@ -272,7 +272,7 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
   have h_mul : (X - C η) * P ≠ 0 := mul_ne_zero (X_sub_C_ne_zero η) hP
   have h_deg_mul : natDegree ((X - C η) * P) = natDegree P + 1 := by
     rw [natDegree_mul (X_sub_C_ne_zero η) hP, natDegree_X_sub_C, add_comm]
-  rcases d with _ | d
+  rcases d with - | d
   · --P is zero degree, therefore a constant.
     have hcQ : 0 < coeff P 0 := by grind [leadingCoeff]
     have hxcQ : coeff ((X - C η) * P) 1 = coeff P 0 := by

@@ -147,7 +147,7 @@ theorem homogeneous_mem_or_mem : ∀ {x y : R × R},
     unfold Prime
     decide +kernel
   simp only [I, Ideal.mem_span_singleton]
-  rintro ⟨x1, x2⟩ ⟨y1, y2⟩ ⟨_ | ⟨⟨⟩⟩, rfl : x1 = _⟩ ⟨_ | ⟨⟨⟩⟩, rfl : y1 = _⟩ h <;>
+  rintro ⟨x1, x2⟩ ⟨y1, y2⟩ ⟨- | ⟨⟨⟩⟩, rfl : x1 = _⟩ ⟨- | ⟨⟨⟩⟩, rfl : y1 = _⟩ h <;>
     decide +revert
 
 end CounterexampleNotPrimeButHomogeneousPrime

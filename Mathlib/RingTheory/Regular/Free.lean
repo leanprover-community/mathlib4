@@ -61,7 +61,7 @@ lemma Module.free_quotSMulTop_iff_free [Module.FinitePresentation R M] {x : R}
     rw [Submodule.ideal_span_singleton_smul]
     intro y hy
     have : y ∈ x • (⊤ : Submodule R (I →₀ R)) := by simp [← kerf, ← hg, LinearMap.mem_ker.mp hy]
-    rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp this with ⟨z, _, hz⟩
+    rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp this with ⟨z, -, hz⟩
     simp only [← hz, LinearMap.mem_ker, map_smul] at hy
     have := LinearMap.mem_ker.mpr (IsSMulRegular.right_eq_zero_of_smul reg hy)
     simpa [hz] using Submodule.smul_mem_pointwise_smul z x _ this

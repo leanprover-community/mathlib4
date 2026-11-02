@@ -75,7 +75,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     simpa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
-  obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h
+  obtain ⟨-, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h
   refine ⟨x - y, sub_ne_zero.2 hxy, ?_⟩
   rw [Set.mem_inv_smul_set_iff₀ (two_ne_zero' ℝ)] at hv hw
   simp_rw [AddSubgroup.vadd_def, vadd_eq_add, add_comm _ w, ← sub_eq_sub_iff_add_eq_add, ←
@@ -126,7 +126,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     exact le_of_lt <| (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.1 (Nat.lt_add_one n)
   · suffices μ F * 2 ^ finrank ℝ E < μ (S n : Set E) by
       have h_symm' : ∀ x ∈ S n, -x ∈ S n := by
-        rintro _ ⟨y, hy, rfl⟩
+        rintro - ⟨y, hy, rfl⟩
         exact ⟨-y, h_symm _ hy, by simp⟩
       obtain ⟨x, hx_nz, hx_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
         fund h_symm' (S n).convex this

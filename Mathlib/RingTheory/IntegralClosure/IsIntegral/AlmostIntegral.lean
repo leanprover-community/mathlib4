@@ -94,7 +94,7 @@ lemma IsAlmostIntegral.isIntegral_of_nonZeroDivisors_le_comap
       (p := (Algebra.adjoin R {s}).toSubmodule) <| by
     change (Algebra.adjoin R {s}).toSubmodule ≤ (Submodule.span _ _).comap _
     rw [Algebra.adjoin_eq_span, ← Submonoid.powers_eq_closure, Submodule.span_le]
-    rintro _ ⟨n, rfl⟩
+    rintro - ⟨n, rfl⟩
     obtain ⟨a, ha⟩ := hr' n
     refine Submodule.mem_span_singleton.mpr ⟨a, ?_⟩
     suffices algebraMap _ _ (s ^ n) * algebraMap _ _ ((algebraMap R S) r) *

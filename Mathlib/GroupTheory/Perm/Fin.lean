@@ -229,7 +229,7 @@ theorem sign_cycleRange (i : Fin n) : Perm.sign (cycleRange i) = (-1) ^ (i : ℕ
 theorem succAbove_cycleRange (i j : Fin n) :
     i.succ.succAbove (i.cycleRange j) = swap 0 i.succ j.succ := by
   cases n
-  · rcases j with ⟨_, ⟨⟩⟩
+  · rcases j with ⟨-, ⟨⟩⟩
   rcases lt_trichotomy j i with (hlt | heq | hgt)
   · have : castSucc (j + 1) = j.succ := by
       ext

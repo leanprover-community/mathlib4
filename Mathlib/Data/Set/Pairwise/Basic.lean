@@ -110,7 +110,7 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
     rcases eq_or_ne x y with (rfl | hne)
     · apply Std.Refl.refl
     · exact H hx hy hne
-  · rintro ⟨z, hz⟩ x hx y hy _
+  · rintro ⟨z, hz⟩ x hx y hy -
     exact @IsTrans.trans α r _ (f x) z (f y) (hz _ hx) (symm <| hz _ hy)
 
 /-- For a nonempty set `s`, a function `f` takes pairwise equal values on `s` if and only if
@@ -304,7 +304,7 @@ theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι} (
 
 theorem PairwiseDisjoint.image_of_le (hs : s.PairwiseDisjoint f) {g : ι → ι} (hg : f ∘ g ≤ f) :
     (g '' s).PairwiseDisjoint f := by
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ h
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩ h
   exact (hs ha hb <| ne_of_apply_ne _ h).mono (hg a) (hg b)
 
 theorem InjOn.pairwiseDisjoint_image {g : ι' → ι} {s : Set ι'} (h : s.InjOn g) :
@@ -313,7 +313,7 @@ theorem InjOn.pairwiseDisjoint_image {g : ι' → ι} {s : Set ι'} (h : s.InjOn
 
 theorem PairwiseDisjoint.range (g : s → ι) (hg : ∀ i : s, f (g i) ≤ f i)
     (ht : s.PairwiseDisjoint f) : (range g).PairwiseDisjoint f := by
-  rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
+  rintro - ⟨x, rfl⟩ - ⟨y, rfl⟩ hxy
   exact ((ht x.2 y.2) fun h => hxy <| congr_arg g <| Subtype.ext h).mono (hg x) (hg y)
 
 theorem pairwiseDisjoint_union :
@@ -405,7 +405,7 @@ theorem pairwiseDisjoint_image_right_iff {f : α → β → γ} {s : Set α} {t 
     rw [h]
     exact mem_image_of_mem _ hy.2
   · refine disjoint_iff_inf_le.mpr ?_
-    rintro _ ⟨⟨a, ha, hab⟩, b, hb, rfl⟩
+    rintro - ⟨⟨a, ha, hab⟩, b, hb, rfl⟩
     exact h (congr_arg Prod.fst <| hs (mk_mem_prod hx ha) (mk_mem_prod hy hb) hab)
 
 /-- The partial images of a binary function `f` whose partial evaluations are injective are pairwise
@@ -419,7 +419,7 @@ theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t :
     rw [h]
     exact mem_image_of_mem _ hy.1
   · refine disjoint_iff_inf_le.mpr ?_
-    rintro _ ⟨⟨a, ha, hab⟩, b, hb, rfl⟩
+    rintro - ⟨⟨a, ha, hab⟩, b, hb, rfl⟩
     exact h (congr_arg Prod.snd <| ht (mk_mem_prod ha hx) (mk_mem_prod hb hy) hab)
 
 lemma exists_ne_mem_inter_of_not_pairwiseDisjoint

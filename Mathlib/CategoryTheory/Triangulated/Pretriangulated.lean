@@ -245,7 +245,7 @@ include hT
 
 lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
     ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
-  obtain ⟨g, ⟨hg₁, _⟩⟩ := complete_distinguished_triangle_morphism T _ hT
+  obtain ⟨g, ⟨hg₁, -⟩⟩ := complete_distinguished_triangle_morphism T _ hT
     (contractible_distinguished₁ X) 0 f (by cat_disch)
   exact ⟨g, by simpa using hg₁.symm⟩
 
@@ -257,7 +257,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma coyoneda_exact₂ {X : C} (f : X ⟶ T.obj₂) (hf : f ≫ T.mor₂ = 0) :
     ∃ (g : X ⟶ T.obj₁), f = g ≫ T.mor₁ := by
-  obtain ⟨a, ⟨ha₁, _⟩⟩ := complete_distinguished_triangle_morphism₁ _ T
+  obtain ⟨a, ⟨ha₁, -⟩⟩ := complete_distinguished_triangle_morphism₁ _ T
     (contractible_distinguished X) hT f 0 (by cat_disch)
   exact ⟨a, by simpa using ha₁⟩
 

@@ -65,7 +65,7 @@ variable {f : ℝ → ℝ}
 
 lemma eventually_atTop_le {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
     ∃ c > 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ≤ c * f x := by
-  obtain ⟨c₁, _, c₂, hc₂, h⟩ := hf b hb
+  obtain ⟨c₁, -, c₂, hc₂, h⟩ := hf b hb
   refine ⟨c₂, hc₂, ?_⟩
   filter_upwards [h]
   exact fun _ H u hu => (H u hu).2
@@ -77,7 +77,7 @@ lemma eventually_atTop_le_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPoly
 
 lemma eventually_atTop_ge {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
     ∃ c > 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, c * f x ≤ f u := by
-  obtain ⟨c₁, hc₁, c₂, _, h⟩ := hf b hb
+  obtain ⟨c₁, hc₁, c₂, -, h⟩ := hf b hb
   refine ⟨c₁, hc₁, ?_⟩
   filter_upwards [h]
   exact fun _ H u hu => (H u hu).1
@@ -157,7 +157,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
 
 lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, 0 ≤ f x) ∨ (∀ᶠ x in atTop, f x ≤ 0) := by
-  obtain ⟨c₁, _, c₂, _, h⟩ := hf (1 / 2) (by norm_num)
+  obtain ⟨c₁, -, c₂, -, h⟩ := hf (1 / 2) (by norm_num)
   match lt_trichotomy c₁ c₂ with
   | .inl hlt => -- c₁ < c₂
     left
@@ -336,7 +336,7 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hf := hf b hb
   have hg := hg b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
-  obtain ⟨c₃, hc₃_mem, c₄, _, hg⟩ := hg
+  obtain ⟨c₃, hc₃_mem, c₄, -, hg⟩ := hg
   refine ⟨min c₁ c₃, by change 0 < min c₁ c₃; positivity, ?_⟩
   refine ⟨max c₂ c₄, by change 0 < max c₂ c₄; positivity, ?_⟩
   filter_upwards [hf, hg,

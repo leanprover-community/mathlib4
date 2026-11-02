@@ -206,7 +206,7 @@ lemma IsOpenMap.denseRange_of_isPreirreducibleSpace {U X : Type*} [TopologicalSp
 
 theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : ContinuousOn f s) :
     IsPreirreducible (f '' s) := by
-  rintro u v hu hv ⟨_, ⟨⟨x, hx, rfl⟩, hxu⟩⟩ ⟨_, ⟨⟨y, hy, rfl⟩, hyv⟩⟩
+  rintro u v hu hv ⟨-, ⟨⟨x, hx, rfl⟩, hxu⟩⟩ ⟨-, ⟨⟨y, hy, rfl⟩, hyv⟩⟩
   rw [← mem_preimage] at hxu hyv
   rcases continuousOn_iff'.1 hf u hu with ⟨u', hu', u'_eq⟩
   rcases continuousOn_iff'.1 hf v hv with ⟨v', hv', v'_eq⟩
@@ -227,7 +227,7 @@ theorem IsIrreducible.image (H : IsIrreducible s) (f : X → Y) (hf : Continuous
 
 theorem Subtype.preirreducibleSpace (h : IsPreirreducible s) : PreirreducibleSpace s where
   isPreirreducible_univ := by
-    rintro _ _ ⟨u, hu, rfl⟩ ⟨v, hv, rfl⟩ ⟨⟨x, hxs⟩, -, hxu⟩ ⟨⟨y, hys⟩, -, hyv⟩
+    rintro - - ⟨u, hu, rfl⟩ ⟨v, hv, rfl⟩ ⟨⟨x, hxs⟩, -, hxu⟩ ⟨⟨y, hys⟩, -, hyv⟩
     rcases h u v hu hv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩ with ⟨x, hxs, ⟨hxu, hxv⟩⟩
     exact ⟨⟨x, hxs⟩, ⟨Set.mem_univ _, ⟨hxu, hxv⟩⟩⟩
 

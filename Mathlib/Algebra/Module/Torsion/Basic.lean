@@ -267,7 +267,7 @@ theorem mem_torsionBy_iff (x : M) : x ∈ torsionBy R M a ↔ a • x = 0 :=
 @[simp]
 theorem mem_torsionBySet_iff (x : M) : x ∈ torsionBySet R M s ↔ ∀ a : s, (a : R) • x = 0 := by
   refine ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_sInf.mpr ?_⟩
-  rintro _ ⟨a, ha, rfl⟩; exact h ⟨a, ha⟩
+  rintro - ⟨a, ha, rfl⟩; exact h ⟨a, ha⟩
 
 @[simp]
 theorem torsionBySet_singleton_eq : torsionBySet R M {a} = torsionBy R M a := by

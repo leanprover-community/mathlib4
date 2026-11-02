@@ -123,14 +123,14 @@ section ExpChar
 variable [hR : ExpChar R p]
 
 lemma add_pow_expChar_of_commute (h : Commute x y) : (x + y) ^ p = x ^ p + y ^ p := by
-  obtain _ | hprime := hR
+  obtain - | hprime := hR
   · simp only [pow_one]
   · let ⟨r, hr⟩ := h.exists_add_pow_prime_eq hprime
     simp [hr]
 
 lemma add_pow_expChar_pow_of_commute (h : Commute x y) :
     (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n := by
-  obtain _ | hprime := hR
+  obtain - | hprime := hR
   · simp only [one_pow, pow_one]
   · let ⟨r, hr⟩ := h.exists_add_pow_prime_pow_eq hprime n
     simp [hr]

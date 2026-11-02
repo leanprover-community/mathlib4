@@ -251,7 +251,7 @@ lemma schnirelmannDensity_setOfPred_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
   simp only [Set.mem_ofPred_eq]
   have : (Icc 0 ((n - 1) / m)).image (· * m + 1) ⊆ {x ∈ Ioc 0 n | x % m = 1} := by
     simp only [subset_iff, mem_image, forall_exists_index, mem_filter, mem_Ioc, mem_Icc, and_imp]
-    rintro _ y _ hy' rfl
+    rintro - y - hy' rfl
     have hm : 2 ≤ m := hm.lt_of_le' hm'
     simp only [Nat.mul_add_mod', Nat.mod_eq_of_lt hm, add_pos_iff, or_true, and_true, true_and,
       ← Nat.le_sub_iff_add_le hn, zero_lt_one]
@@ -297,7 +297,7 @@ theorem add_eq_univ_of_one_le_schirelmannDensity_add_schnirelmannDensity {A B : 
     [DecidablePred (· ∈ A)] [DecidablePred (· ∈ B)] (hA : 0 ∈ A) (hB : 0 ∈ B)
     (h : 1 ≤ schnirelmannDensity A + schnirelmannDensity B) : A + B = .univ := by
   rw [Set.eq_univ_iff_forall]
-  rintro (_ | m)
+  rintro (- | m)
   · exact ⟨0, hA, 0, ⟨hB, rfl⟩⟩
   set n := m + 1
   by_cases hnA : n ∈ A

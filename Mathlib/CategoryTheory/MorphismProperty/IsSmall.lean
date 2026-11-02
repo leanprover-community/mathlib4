@@ -58,7 +58,7 @@ lemma isSmall_iff_eq_ofHoms :
       exact ⟨equivShrink _ ⟨f, hf⟩, by simp⟩
     · rintro ⟨i, hi⟩
       simp only [← W.arrow_mk_mem_toSet_iff, hi, Arrow.mk_eq, Subtype.coe_prop]
-  · rintro ⟨_, _, _, _, rfl⟩
+  · rintro ⟨-, -, -, -, rfl⟩
     infer_instance
 
 instance isSmall_iSup {α : Type*} (W : α → MorphismProperty C)

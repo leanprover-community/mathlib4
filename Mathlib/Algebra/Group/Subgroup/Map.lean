@@ -150,7 +150,7 @@ theorem map_map (g : N →* P) (f : G →* N) : (K.map f).map g = K.map (g.comp 
 @[to_additive (attr := simp)]
 theorem map_one_eq_bot : K.map (1 : G →* N) = ⊥ :=
   eq_bot_iff.mpr <| by
-    rintro x ⟨y, _, rfl⟩
+    rintro x ⟨y, -, rfl⟩
     simp
 
 @[to_additive]

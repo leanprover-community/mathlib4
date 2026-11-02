@@ -236,7 +236,7 @@ theorem isClosed_of_spaced_out [T0Space α] {V₀ : Set (α × α)} (V₀_in : V
 theorem isClosed_range_of_spaced_out {ι} [T0Space α] {V₀ : Set (α × α)} (V₀_in : V₀ ∈ 𝓤 α)
     {f : ι → α} (hf : Pairwise fun x y => (f x, f y) ∉ V₀) : IsClosed (range f) :=
   isClosed_of_spaced_out V₀_in <| by
-    rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ h
+    rintro - ⟨x, rfl⟩ - ⟨y, rfl⟩ h
     exact hf (ne_of_apply_ne f h)
 
 /-!

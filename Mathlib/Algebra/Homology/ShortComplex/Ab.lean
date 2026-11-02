@@ -137,7 +137,7 @@ lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.hom.range = S.g.hom.ker := by
   constructor
   · intro h
     refine le_antisymm ?_ h
-    rintro _ ⟨x₁, rfl⟩
+    rintro - ⟨x₁, rfl⟩
     rw [AddMonoidHom.mem_ker, ← ConcreteCategory.comp_apply, S.zero]
     rfl
   · intro h

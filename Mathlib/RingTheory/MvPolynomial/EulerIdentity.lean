@@ -34,7 +34,7 @@ protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ →
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
     AddMonoidAlgebra.supported_eq_span_single] at h
   refine Submodule.span_induction ?_ ?_ (fun p q _ _ hp hq ↦ ?_) (fun r p _ h ↦ ?_) h
-  · rintro _ ⟨m, hm, rfl⟩
+  · rintro - ⟨m, hm, rfl⟩
     simp_rw [single_eq_monomial, pderiv_monomial, one_mul]
     by_cases hi : m i = 0
     · rw [hi, Nat.cast_zero, monomial_zero]; apply isWeightedHomogeneous_zero
@@ -46,7 +46,7 @@ protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ →
 
 protected lemma IsHomogeneous.pderiv {n : ℕ} {i : σ} (h : φ.IsHomogeneous n) :
     (pderiv i φ).IsHomogeneous (n - 1) := by
-  obtain _ | n := n
+  obtain - | n := n
   · rw [← totalDegree_zero_iff_isHomogeneous, totalDegree_eq_zero_iff_eq_C] at h
     rw [h, pderiv_C]; apply isHomogeneous_zero
   · exact IsWeightedHomogeneous.pderiv h rfl
@@ -60,7 +60,7 @@ theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
     AddMonoidAlgebra.supported_eq_span_single] at h
   refine Submodule.span_induction ?_ ?_ (fun p q _ _ hp hq ↦ ?_) (fun r p _ h ↦ ?_) h
-  · rintro _ ⟨m, hm, rfl⟩
+  · rintro - ⟨m, hm, rfl⟩
     simp_rw [single_eq_monomial, X_mul_pderiv_monomial, smul_smul, ← sum_smul, mul_comm (w _)]
     congr
     rwa [Set.mem_ofPred, weight_apply, sum_fintype] at hm

@@ -1266,7 +1266,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     one considers are the same, using a suitable congruence lemma to avoid dependent type issues.
     This dance has to be done three times, one for `r`, one for `q` and one for `p`. -/
   apply Finset.sum_congr rfl
-  rintro ⟨a, b⟩ _
+  rintro ⟨a, b⟩ -
   dsimp [sigmaEquivSigmaPi]
   -- check that the `r` components are the same. Based on `Composition.length_gather`
   apply r.congr (Composition.length_gather a b).symm

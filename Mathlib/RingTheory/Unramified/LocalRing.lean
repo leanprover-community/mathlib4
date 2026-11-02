@@ -247,9 +247,9 @@ lemma exists_awayMap_injective_of_localRingHom_injective
   obtain ⟨x, _, rfl⟩ := IsLocalization.exists_mk'_eq (.powers r') x
   simp only [awayMap, IsLocalization.Away.map, IsLocalization.map_mk',
     IsLocalization.mk'_eq_zero_iff] at hx
-  obtain ⟨⟨_, n, rfl⟩, hn⟩ := hx
+  obtain ⟨⟨-, n, rfl⟩, hn⟩ := hx
   simp only [← map_pow, ← map_mul] at hn
-  obtain ⟨⟨_, k, rfl⟩, hk⟩ := (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).1) _ _).mp (H hn)
+  obtain ⟨⟨-, k, rfl⟩, hk⟩ := (IsLocalization.map_eq_zero_iff (.powers (∏ i, m i).1) _ _).mp (H hn)
   refine (IsLocalization.mk'_eq_zero_iff _ _).mpr ⟨⟨_, k + n, rfl⟩, ?_⟩
   dsimp only at hk ⊢
   rw [pow_add, mul_assoc, e, mul_pow, ← e, mul_assoc, mul_left_comm, hk, mul_zero]
@@ -286,7 +286,7 @@ lemma exists_awayMap_bijective_of_localRingHom_bijective
     rw [hr', ← Finset.prod_erase_mul s b hxs, map_mul, map_mul, map_mul]
     ring_nf
   intro x
-  obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers (algebraMap R S r')) x
+  obtain ⟨x, ⟨-, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers (algebraMap R S r')) x
   obtain ⟨y, hy : awayMap _ _ _ = _⟩ := H ⟨x, rfl⟩
   dsimp at hy
   refine ⟨y * Localization.Away.invSelf _ ^ n, ?_⟩

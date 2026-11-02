@@ -220,14 +220,14 @@ variable (R M)
 theorem associatedPrimes.nonempty [IsNoetherianRing R] [Nontrivial M] :
     (associatedPrimes R M).Nonempty := by
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
-  obtain ⟨P, hP, _⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x hx
+  obtain ⟨P, hP, -⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x hx
   exact ⟨P, hP⟩
 
 theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R M, p = { r : R | ∃ x : M, x ≠ 0 ∧ r • x = 0 } := by
   simp only [AssociatedPrimes.mem_iff, isAssociatedPrime_iff]
   refine subset_antisymm (Set.iUnion₂_subset ?_) ?_
-  · rintro _ ⟨h, x, ⟨⟩⟩ r h'
+  · rintro - ⟨h, x, ⟨⟩⟩ r h'
     exact ⟨x, by simpa using h.ne_top, by simpa using h'⟩
   · intro r ⟨x, h, h'⟩
     obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h

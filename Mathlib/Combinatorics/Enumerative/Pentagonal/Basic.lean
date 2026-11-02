@@ -38,7 +38,7 @@ theorem pentagonal_neg (k : ℤ) : pentagonal (-k) = (k * (3 * k + 1) / 2).toNat
   grind [pentagonal_def]
 
 theorem natCast_pentagonal (k : ℤ) : (pentagonal k : ℤ) = k * (3 * k - 1) / 2 := by
-  rcases k with (_ | _) | _ <;> grind [pentagonal_def]
+  rcases k with (- | -) | - <;> grind [pentagonal_def]
 
 theorem two_mul_natCast_pentagonal (k : ℤ) : 2 * (pentagonal k : ℤ) = k * (3 * k - 1) := by
   rw [natCast_pentagonal]

@@ -125,7 +125,7 @@ lemma isoClosure_iff :
 include h in
 lemma presentable [LocallySmall.{w} C] (X : C) :
     IsPresentable.{w} X := by
-  obtain ⟨J, _, _, ⟨hX⟩⟩ := h.exists_colimitsOfShape X
+  obtain ⟨J, _, -, ⟨hX⟩⟩ := h.exists_colimitsOfShape X
   obtain ⟨κ', _, le, hκ'⟩ : ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ ≤ κ'),
       HasCardinalLT (Arrow J) κ' := by
     obtain ⟨κ', h₁, h₂⟩ := HasCardinalLT.exists_regular_cardinal_forall.{w}
@@ -139,7 +139,7 @@ lemma presentable [LocallySmall.{w} C] (X : C) :
 include h in
 lemma isStrongGenerator : P.IsStrongGenerator :=
   IsStrongGenerator.mk_of_exists_colimitsOfShape.{w} (fun X ↦ by
-    obtain ⟨_, _, _, hX⟩ := h.exists_colimitsOfShape X
+    obtain ⟨_, _, -, hX⟩ := h.exists_colimitsOfShape X
     exact ⟨_, _, hX⟩)
 
 include h in

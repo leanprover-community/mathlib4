@@ -246,7 +246,7 @@ theorem IsDecompositionField.of_isGaloisGroup [h : IsGaloisGroup (stabilizer G P
   · refine (stabilizerEquiv _ (IsGaloisGroup.mulEquivAlgEquiv G K L) fun _ _ ↦ ?_).symm
     apply FaithfulSMul.algebraMap_injective B L
     simp [algebraMap.smul']
-  · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective B x
+  · obtain ⟨y, z, -, rfl⟩ := IsFractionRing.div_surjective B x
     simp_rw [smul_div₀', subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
       stabilizerEquiv_symm_apply_smul]
 
@@ -260,7 +260,7 @@ theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) E L] :
   · refine (inertiaEquiv _ (IsGaloisGroup.mulEquivAlgEquiv G K L) fun _ _ ↦ ?_).symm
     apply FaithfulSMul.algebraMap_injective B L
     simp [algebraMap.smul']
-  · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective B x
+  · obtain ⟨y, z, -, rfl⟩ := IsFractionRing.div_surjective B x
     simp_rw [smul_div₀', subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
       inertiaEquiv_symm_apply_smul]
 
@@ -425,7 +425,7 @@ variable [FiniteDimensional K L] [p.IsPrime] [Algebra.HasSeparableResidueFieldsA
 include K L D P in
 private lemma ramificationIdxIn_eq_and_inertiaDegIn_eq :
     ramificationIdxIn 𝓟D B = p.ramificationIdxIn B ∧ inertiaDegIn 𝓟D B = p.inertiaDegIn B := by
-  obtain ⟨_, _, _, _, _⟩ := instances A K L P D 𝓞D
+  obtain ⟨_, _, -, _, _⟩ := instances A K L P D 𝓞D
   refine eq_and_eq_of_pos_of_le_of_mul_le_mul ?_ ?_ ?_ ?_ ?_
   · exact Nat.pos_of_ne_zero <| ramificationIdxIn_ne_zero (stabilizer Gal(L/K) P)
   · exact Nat.pos_of_ne_zero <| inertiaDegIn_ne_zero (stabilizer Gal(L/K) P)
@@ -465,7 +465,7 @@ then `𝓟D` is unramified over `K`.
 -/
 theorem ramificationIdx_eq :
     𝓟D.ramificationIdx A = 1 := by
-  obtain ⟨_, _, _, _, _⟩ := instances A K L P D 𝓞D
+  obtain ⟨-, _, -, _, _⟩ := instances A K L P D 𝓞D
   have := ramificationIdx_tower (R := A) 𝓟D P
   rwa [← ramificationIdxIn_eq_ramificationIdx 𝓟D P (stabilizer Gal(L/K) P),
     ramificationIdxIn_eq A K L p P D 𝓞D 𝓟D, ramificationIdxIn_eq_ramificationIdx p P Gal(L/K),
@@ -478,7 +478,7 @@ then the inertia degree of `𝓟D` over `K` is equal to `1`.
 -/
 theorem inertiaDeg_eq :
     𝓟D.inertiaDeg A = 1 := by
-  obtain ⟨_, _, _, _, _⟩ := instances A K L P D 𝓞D
+  obtain ⟨_, _, -, _, _⟩ := instances A K L P D 𝓞D
   have := inertiaDeg_tower (R := A) 𝓟D P
   rwa [← inertiaDegIn_eq_inertiaDeg p P Gal(L/K), ← inertiaDegIn_eq A K L p P D 𝓞D 𝓟D,
     ← inertiaDegIn_eq_inertiaDeg 𝓟D P (stabilizer Gal(L/K) P),

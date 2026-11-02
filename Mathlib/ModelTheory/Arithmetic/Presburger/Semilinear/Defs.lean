@@ -246,7 +246,7 @@ protected lemma IsLinearSet.closure (hs : IsLinearSet s) : IsSemilinearSet (clos
   · rintro (rfl | ⟨x, hx, rfl⟩)
     · simp
     · simp_rw [insert_eq, closure_union, mem_sup, mem_closure_singleton] at hx
-      rcases hx with ⟨_, ⟨n, rfl⟩, ⟨x, hx, rfl⟩⟩
+      rcases hx with ⟨-, ⟨n, rfl⟩, ⟨x, hx, rfl⟩⟩
       rw [add_left_comm]
       refine add_mem (nsmul_mem (mem_closure_of_mem ?_) _)
         (mem_closure_of_mem (vadd_mem_vadd_set hx))
@@ -275,7 +275,7 @@ theorem isProperLinearSet_iff :
     ⟨fun ⟨t, ht, hs⟩ => ⟨ht.toFinset, by simpa⟩, fun ⟨t, hs⟩ => ⟨t, t.finite_toSet, hs⟩⟩
 
 theorem IsProperLinearSet.isLinearSet (hs : IsProperLinearSet s) : IsLinearSet s := by
-  rcases hs with ⟨a, t, ht, _, rfl⟩
+  rcases hs with ⟨a, t, ht, -, rfl⟩
   exact ⟨a, t, ht, rfl⟩
 
 @[simp]
@@ -451,6 +451,6 @@ theorem Nat.isSemilinearSet_iff_ultimately_periodic {s : Set ℕ} :
         · grind
         · exact Nat.add_lt_add_left (Nat.mod_lt _ hp) _
         · rw [add_assoc, Nat.mod_add_div', add_tsub_cancel_of_le hx']
-    · rintro (⟨hx, hx'⟩ | ⟨x, ⟨⟨hx, hx'⟩, _⟩, m, rfl⟩)
+    · rintro (⟨hx, hx'⟩ | ⟨x, ⟨⟨hx, hx'⟩, -⟩, m, rfl⟩)
       · exact hx
       · induction m with grind

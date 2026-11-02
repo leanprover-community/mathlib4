@@ -103,7 +103,7 @@ lemma IsUltraUniformity.mem_nhds_iff_symm_trans [IsUltraUniformity X] {x : X} {s
     rw [IsUltraUniformity.hasBasis.mem_iff'] at V_in
     obtain ⟨U, ⟨U_in, U_sym, U_trans⟩, U_sub⟩ := V_in
     refine ⟨U, U_in, U_sym, U_trans, (SetRel.ball_mono U_sub x).trans V_sub⟩
-  · rintro ⟨V, V_in, _, _, V_sub⟩
+  · rintro ⟨V, V_in, -, -, V_sub⟩
     exact ⟨V, V_in, V_sub⟩
 
 namespace UniformSpace

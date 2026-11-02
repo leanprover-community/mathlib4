@@ -189,7 +189,7 @@ lemma fg_iff_of_isPrime : P.FG ↔ (P.map constantCoeff).FG := by
         Finite.insert X <| Finite.image _ S.finite_toSet
       lift insert X <| (C (R := R)) '' S to Finset R⟦X⟧ using this with T hT
       exact ⟨T, hT ▸ H.symm⟩
-    · obtain ⟨T, hT, hT₂, _⟩ := exist_eq_span_eq_ncard_of_X_notMem hX hS S.finite_toSet
+    · obtain ⟨T, hT, hT₂, -⟩ := exist_eq_span_eq_ncard_of_X_notMem hX hS S.finite_toSet
       lift T to Finset R⟦X⟧ using hT₂
       exact ⟨T, hT.symm⟩
 

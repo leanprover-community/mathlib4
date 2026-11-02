@@ -169,7 +169,7 @@ theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
   apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_ofPred_eq]; refine Subset.trans h1s ?_
   apply iUnion₂_subset; intro g₁ hg₁; rw [preimage_subset_iff]; intro g₂ hg₂
   have := h1t hg₂
-  rcases this with ⟨_, ⟨g₃, rfl⟩, A, ⟨hg₃, rfl⟩, h2V⟩; rw [mem_preimage, ← mul_assoc] at h2V
+  rcases this with ⟨-, ⟨g₃, rfl⟩, A, ⟨hg₃, rfl⟩, h2V⟩; rw [mem_preimage, ← mul_assoc] at h2V
   exact mem_biUnion (Finset.mul_mem_mul hg₃ hg₁) h2V
 
 set_option backward.isDefEq.respectTransparency false in
@@ -212,7 +212,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   have (K : Set G) (hK : K ⊆ ⋃ g ∈ s, (g * ·) ⁻¹' V) :
       index K V ≤ #{g ∈ s | ((g * ·) ⁻¹' V ∩ K).Nonempty} := by
     apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_ofPred_eq]
-    intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
+    intro g hg; rcases hK hg with ⟨-, ⟨g₀, rfl⟩, -, ⟨h1g₀, rfl⟩, h2g₀⟩
     simp only [mem_preimage] at h2g₀
     simp only [mem_iUnion]; use g₀; constructor; swap
     · simp only [Finset.mem_filter, h1g₀, true_and]; use g
@@ -225,7 +225,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   rw [← Finset.card_union_of_disjoint, Finset.filter_union_right]
   · exact s.card_filter_le _
   apply Finset.disjoint_filter.mpr
-  rintro g₁ _ ⟨g₂, h1g₂, h2g₂⟩ ⟨g₃, h1g₃, h2g₃⟩
+  rintro g₁ - ⟨g₂, h1g₂, h2g₂⟩ ⟨g₃, h1g₃, h2g₃⟩
   simp only [mem_preimage] at h1g₃ h1g₂
   refine h.le_bot (?_ : g₁⁻¹ ∈ _)
   constructor <;> simp only [Set.mem_inv, Set.mem_mul]
@@ -243,7 +243,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
   apply Nat.sInf_le; rw [mem_image]
   refine ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, ?_, Finset.card_map _⟩
   simp only [mem_ofPred_eq]; refine Subset.trans (image_mono h1s) ?_
-  rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
+  rintro - ⟨g₁, ⟨-, ⟨g₂, rfl⟩, ⟨-, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
   simp only [mem_preimage] at hg₁
   simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
     exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
@@ -318,7 +318,7 @@ theorem is_left_invariant_prehaar {K₀ : PositiveCompacts G} {U : Set G} (hU : 
 @[to_additive]
 theorem prehaar_mem_haarProduct (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).Nonempty) :
     prehaar (K₀ : Set G) U ∈ haarProduct (K₀ : Set G) := by
-    rintro ⟨K, hK⟩ _; rw [mem_Icc]; exact ⟨prehaar_nonneg K₀ _, prehaar_le_index K₀ _ hU⟩
+    rintro ⟨K, hK⟩ -; rw [mem_Icc]; exact ⟨prehaar_nonneg K₀ _, prehaar_le_index K₀ _ hU⟩
 
 @[to_additive]
 theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
@@ -327,8 +327,8 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
     apply isCompact_univ_pi; intro K; apply isCompact_Icc
   refine this.inter_iInter_nonempty (clPrehaar K₀) (fun s => isClosed_closure) fun t => ?_
   let V₀ := ⋂ V ∈ t, (V : OpenNhdsOf (1 : G)).carrier
-  have h1V₀ : IsOpen V₀ := isOpen_biInter_finset <| by rintro ⟨⟨V, hV₁⟩, hV₂⟩ _; exact hV₁
-  have h2V₀ : (1 : G) ∈ V₀ := by simp only [V₀, mem_iInter]; rintro ⟨⟨V, hV₁⟩, hV₂⟩ _; exact hV₂
+  have h1V₀ : IsOpen V₀ := isOpen_biInter_finset <| by rintro ⟨⟨V, hV₁⟩, hV₂⟩ -; exact hV₁
+  have h2V₀ : (1 : G) ∈ V₀ := by simp only [V₀, mem_iInter]; rintro ⟨⟨V, hV₁⟩, hV₂⟩ -; exact hV₂
   refine ⟨prehaar K₀ V₀, ?_⟩
   constructor
   · apply prehaar_mem_haarProduct K₀; use 1; rwa [h1V₀.interior_eq]
@@ -371,7 +371,7 @@ theorem chaar_empty (K₀ : PositiveCompacts G) : chaar K₀ ⊥ = 0 := by
   change chaar K₀ ∈ eval ⁻¹' {(0 : ℝ)}
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
-  · rintro _ ⟨U, _, rfl⟩; apply prehaar_empty
+  · rintro - ⟨U, -, rfl⟩; apply prehaar_empty
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
 
 @[to_additive addCHaar_self]
@@ -381,7 +381,7 @@ theorem chaar_self (K₀ : PositiveCompacts G) : chaar K₀ K₀.toCompacts = 1 
   change chaar K₀ ∈ eval ⁻¹' {(1 : ℝ)}
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
-  · rintro _ ⟨U, ⟨_, h2U, h3U⟩, rfl⟩; apply prehaar_self
+  · rintro - ⟨U, ⟨-, h2U, h3U⟩, rfl⟩; apply prehaar_self
     rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
 
@@ -393,7 +393,7 @@ theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K�
   rw [← sub_nonneg]; change chaar K₀ ∈ eval ⁻¹' Ici (0 : ℝ)
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
-  · rintro _ ⟨U, ⟨_, h2U, h3U⟩, rfl⟩; simp only [eval, mem_preimage, mem_Ici, sub_nonneg]
+  · rintro - ⟨U, ⟨-, h2U, h3U⟩, rfl⟩; simp only [eval, mem_preimage, mem_Ici, sub_nonneg]
     apply prehaar_mono _ h; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_Ici
 
@@ -406,7 +406,7 @@ theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
   rw [← sub_nonneg]; change chaar K₀ ∈ eval ⁻¹' Ici (0 : ℝ)
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
-  · rintro _ ⟨U, ⟨_, h2U, h3U⟩, rfl⟩; simp only [eval, mem_preimage, mem_Ici, sub_nonneg]
+  · rintro - ⟨U, ⟨-, h2U, h3U⟩, rfl⟩; simp only [eval, mem_preimage, mem_Ici, sub_nonneg]
     apply prehaar_sup_le; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_Ici
 
@@ -433,7 +433,7 @@ theorem chaar_sup_eq {K₀ : PositiveCompacts G}
         ⟨⟨V⁻¹, (h2V₁.inter h2V₂).preimage continuous_inv⟩, by
           simp only [V, mem_inv, inv_one, h3V₁, h3V₂, mem_inter_iff, true_and]⟩)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
-  · rintro _ ⟨U, ⟨h1U, h2U, h3U⟩, rfl⟩
+  · rintro - ⟨U, ⟨h1U, h2U, h3U⟩, rfl⟩
     simp only [eval, mem_preimage, sub_eq_zero, mem_singleton_iff]; rw [eq_comm]
     apply prehaar_sup_eq
     · rw [h2U.interior_eq]; exact ⟨1, h3U⟩
@@ -452,7 +452,7 @@ theorem is_left_invariant_chaar {K₀ : PositiveCompacts G} (g : G) (K : Compact
   rw [← sub_eq_zero]; change chaar K₀ ∈ eval ⁻¹' {(0 : ℝ)}
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
-  · rintro _ ⟨U, ⟨_, h2U, h3U⟩, rfl⟩
+  · rintro - ⟨U, ⟨-, h2U, h3U⟩, rfl⟩
     simp only [eval, mem_singleton_iff, mem_preimage, sub_eq_zero]
     apply is_left_invariant_prehaar; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
@@ -606,7 +606,7 @@ private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerReg
       isClosed_closure, by rwa [hK_comp.measure_closure]⟩
   filter_upwards [eventually_nhds_one_measure_smul_sdiff_lt hK K_closed hKpos.ne' (μ := μ)]
     with g hg
-  obtain ⟨_, ⟨x, hxK, rfl⟩, hgxK⟩ : ∃ x ∈ g • K, x ∈ K :=
+  obtain ⟨-, ⟨x, hxK, rfl⟩, hgxK⟩ : ∃ x ∈ g • K, x ∈ K :=
      not_disjoint_iff.1 fun hd ↦ by simp [hd.symm.sdiff_eq_right, measure_smul] at hg
   simpa using div_mem_div (hKE hgxK) (hKE hxK)
 

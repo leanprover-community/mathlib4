@@ -661,15 +661,15 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
       simp_rw [Seq.seq, Option.bind_eq_some_iff, Option.map_eq_map, Option.map_eq_some_iff,
         exists_exists_and_eq_and] at h
       simp_rw [Seq.seq, Part.map_eq_map, Part.bind_map, Part.mem_bind_iff, Part.mem_map_iff]
-      obtain ⟨_, ⟨y, ef, z, eg, rfl⟩⟩ := h
+      obtain ⟨-, ⟨y, ef, z, eg, rfl⟩⟩ := h
       exact ⟨_, hf _ _ ef, _, hg _ _ eg, rfl⟩
     case comp cf cg hf hg =>
       simp only [Part.bind_eq_bind, Part.mem_bind_iff]
-      obtain ⟨_, ⟨y, eg, ef⟩⟩ := h
+      obtain ⟨-, ⟨y, eg, ef⟩⟩ := h
       exact ⟨_, hg _ _ eg, hf _ _ ef⟩
     case prec cf cg hf hg =>
       simp only [unpaired, Part.bind_eq_bind] at h ⊢
-      obtain ⟨_, h⟩ := h
+      obtain ⟨-, h⟩ := h
       revert h
       induction n.unpair.2 generalizing x with
       | zero =>
@@ -684,7 +684,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
         exact this.2
     case rfind' cf hf =>
       simp only [Part.map_eq_map, Part.mem_map_iff, mem_rfind]
-      obtain ⟨_, ⟨m, h₁, h₂⟩⟩ := h
+      obtain ⟨-, ⟨m, h₁, h₂⟩⟩ := h
       split_ifs at h₂ with m0
       · exact ⟨0, ⟨by simpa [m0] using hf _ _ h₁, fun {m} ↦ (Nat.not_lt_zero _).elim⟩,
           by simpa using h₂⟩

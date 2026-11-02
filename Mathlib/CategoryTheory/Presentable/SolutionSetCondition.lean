@@ -43,7 +43,7 @@ lemma SolutionSetCondition.of_isCardinalAccessible
   have : IsFiltered E := isFiltered_of_isCardinalFiltered _ κ
   have : Nonempty E := IsFiltered.nonempty
   let γ : E := Classical.arbitrary _
-  obtain ⟨_, ⟨i⟩, ⟨e⟩⟩ := h.le _ γ.left.property
+  obtain ⟨-, ⟨i⟩, ⟨e⟩⟩ := h.le _ γ.left.property
   exact ⟨i, _, StructuredArrow.w (e.inv ≫ γ.hom)⟩
 
 end CategoryTheory

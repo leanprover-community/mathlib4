@@ -75,7 +75,7 @@ theorem nth_stream_fr_nonneg_lt_one {ifp_n : IntFractPair K}
     obtain rfl : IntFractPair.of v = ifp_n := by injection nth_stream_eq
     exact ⟨fract_nonneg _, fract_lt_one _⟩
   | succ =>
-    rcases succ_nth_stream_eq_some_iff.1 nth_stream_eq with ⟨_, _, _, rfl⟩
+    rcases succ_nth_stream_eq_some_iff.1 nth_stream_eq with ⟨-, -, -, rfl⟩
     exact ⟨fract_nonneg _, fract_lt_one _⟩
 
 /-- Shows that the fractional parts of the stream are nonnegative. -/
@@ -211,7 +211,7 @@ theorem fib_le_of_contsAux_b :
   Nat.strong_induction_on n
     (by
       intro n IH hyp
-      rcases n with (_ | _ | n)
+      rcases n with (- | - | n)
       · simp [contsAux] -- case n = 0
       · simp -- case n = 1
       · let g := of v -- case 2 ≤ n

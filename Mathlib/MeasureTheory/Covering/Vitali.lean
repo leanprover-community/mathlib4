@@ -164,7 +164,7 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
     ∃ u ⊆ t,
       (u.PairwiseDisjoint fun a => closedBall (x a) (r a)) ∧
         ∀ a ∈ t, ∃ b ∈ u, closedBall (x a) (r a) ⊆ closedBall (x b) (τ * r b) := by
-  rcases eq_empty_or_nonempty t with (rfl | _)
+  rcases eq_empty_or_nonempty t with (rfl | -)
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases! ht : ∀ a ∈ t, r a < 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
@@ -186,7 +186,7 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
   rcases le_or_gt 0 (r a) with (h'a | h'a)
   · exact A a ⟨ha, h'a⟩
   · rcases ht with ⟨b, rb⟩
-    rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
+    rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, -⟩
     exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
 
 /- Note: it seems easier to do the analogous proof again than to apply the previous one, because the
@@ -201,7 +201,7 @@ theorem exists_disjoint_subfamily_covering_enlargement_ball
     ∃ u ⊆ t,
       (u.PairwiseDisjoint fun a => ball (x a) (r a)) ∧
         ∀ a ∈ t, ∃ b ∈ u, ball (x a) (r a) ⊆ ball (x b) (τ * r b) := by
-  rcases eq_empty_or_nonempty t with (rfl | _)
+  rcases eq_empty_or_nonempty t with (rfl | -)
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases! ht : ∀ a ∈ t, r a ≤ 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
@@ -223,7 +223,7 @@ theorem exists_disjoint_subfamily_covering_enlargement_ball
   rcases lt_or_ge 0 (r a) with (h'a | h'a)
   · exact A a ⟨ha, h'a⟩
   · rcases ht with ⟨b, rb⟩
-    rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
+    rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, -⟩
     exact ⟨c, cu, by simp only [ball_eq_empty.2 h'a, empty_subset]⟩
 
 /-- The measurable **Vitali covering theorem**.
@@ -450,7 +450,7 @@ theorem exists_disjoint_covering_ae'
   intro x hx ε hε
   specialize hf x hx
   rw [frequently_nhdsWithin_iff, frequently_nhds_iff] at hf
-  obtain ⟨_, _, ⟨a, ha₁, ha₂, ha₃⟩, _⟩ := hf (Ioo (-ε) ε) (by grind) isOpen_Ioo
+  obtain ⟨_, _, ⟨a, ha₁, ha₂, ha₃⟩, -⟩ := hf (Ioo (-ε) ε) (by grind) isOpen_Ioo
   exact ⟨a, ha₁, by grind, ha₃⟩
 
 /-- Assume that around every point there are arbitrarily small scales at which the measure is

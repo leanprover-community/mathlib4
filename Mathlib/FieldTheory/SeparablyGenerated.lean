@@ -271,7 +271,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
   refine ⟨i, hi.1, ?_⟩
   rw [← separableClosure.eq_top_iff, ← (restrictScalars_injective k).eq_iff,
     restrictScalars_top, eq_top_iff, ← ha, adjoin_le_iff]
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   obtain rfl | ne := eq_or_ne x i
   · exact hi.2
   · exact isSeparable_algebraMap (F := adjoin k (a '' {i}ᶜ)) ⟨_, subset_adjoin _ _ ⟨x, ne, rfl⟩⟩

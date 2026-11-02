@@ -290,7 +290,7 @@ theorem toList_pow_apply_eq_rotate (p : Perm α) (x : α) (k : ℕ) :
 theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y) :
     toList f x ~r toList f y := by
   by_cases hx : x ∈ f.support
-  · obtain ⟨_ | k, _, hy⟩ := h.exists_pow_eq_of_mem_support hx
+  · obtain ⟨- | k, -, hy⟩ := h.exists_pow_eq_of_mem_support hx
     · simp only [coe_one, id, pow_zero] at hy
       -- Porting note: added `IsRotated.refl`
       simp [hy, IsRotated.refl]
@@ -339,7 +339,7 @@ theorem formPerm_toList (f : Perm α) (x : α) : formPerm (toList f x) = f.cycle
       formPerm_nil]
   ext y
   by_cases hy : SameCycle f x y
-  · obtain ⟨k, _, rfl⟩ := hy.exists_pow_eq_of_mem_support (mem_support.mpr hx)
+  · obtain ⟨k, -, rfl⟩ := hy.exists_pow_eq_of_mem_support (mem_support.mpr hx)
     rw [cycleOf_apply_apply_pow_self, List.formPerm_apply_mem_eq_next (nodup_toList f x),
       next_toList_eq_apply, pow_succ', mul_apply]
     rw [mem_toList_iff]

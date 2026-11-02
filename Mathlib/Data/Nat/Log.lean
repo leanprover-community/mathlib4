@@ -132,7 +132,7 @@ theorem log_pos {b n : ℕ} (hb : 1 < b) (hbn : b ≤ n) : 0 < log b n :=
 
 theorem log_of_one_lt_of_le {b n : ℕ} (h : 1 < b) (hn : b ≤ n) : log b n = log b (n / b) + 1 := by
   apply eq_of_forall_gt_iff
-  rintro (_ | c)
+  rintro (- | c)
   · simp
   · have : n / b ≠ 0 := by simp [*, Nat.ne_zero_of_lt h]
     rw [log_lt_iff_lt_pow, Nat.add_lt_add_iff_right, log_lt_iff_lt_pow,
@@ -403,7 +403,7 @@ theorem clog_pos {b n : ℕ} (hb : 1 < b) (hn : 1 < n) : 0 < clog b n := by
 theorem clog_of_one_lt {b n : ℕ} (hb : 1 < b) (hn : 1 < n) :
     clog b n = clog b ((n + b - 1) / b) + 1 := by
   apply eq_of_forall_ge_iff
-  rintro (_ | c)
+  rintro (- | c)
   · simp [Nat.ne_of_gt <| clog_pos hb hn]
   · simp only [clog_le_iff_le_pow, Nat.pow_add_one, Nat.add_le_add_iff_right, Nat.zero_lt_of_lt hb,
       div_le_iff_le_mul, hb]

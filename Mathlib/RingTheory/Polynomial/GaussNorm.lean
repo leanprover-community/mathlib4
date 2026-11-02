@@ -171,9 +171,9 @@ Gauss norm is nonarchimedean. -/
 theorem isNonarchimedean_gaussNorm (hna : IsNonarchimedean v) {c : ℝ} (hc : 0 ≤ c) :
     IsNonarchimedean (gaussNorm v c) := by
   intro p q
-  rcases eq_or_ne p 0 with hp | _
+  rcases eq_or_ne p 0 with hp | -
   · simp [hp]
-  rcases eq_or_ne q 0 with hq | _
+  rcases eq_or_ne q 0 with hq | -
   · simp [hq]
   rcases eq_or_ne (p + q) 0 with hpq | hpq
   · simp [hpq, hc, gaussNorm_nonneg]

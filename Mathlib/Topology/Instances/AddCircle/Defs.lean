@@ -807,7 +807,7 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIco p a f =
       Quot.lift (domRestrict (Icc a <| a + p) f)
           (by
-            rintro _ _ ⟨_⟩
+            rintro - - ⟨-⟩
             exact h) ∘
         equivIccQuot p a :=
   rfl
@@ -816,7 +816,7 @@ theorem liftIoc_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIoc p a f =
       Quot.lift (domRestrict (Icc a <| a + p) f)
           (by
-            rintro _ _ ⟨_⟩
+            rintro - - ⟨-⟩
             exact h) ∘
         equivIccQuot p a := by
   rw [← liftIco_eq_lift_Icc h]

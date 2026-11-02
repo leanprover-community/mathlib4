@@ -930,7 +930,7 @@ lemma RelCWComplex.cellFrontier_subset_skeletonLT [RelCWComplex C D] (n : ℕ) (
   apply union_subset_union_right
   intro x xmem
   simp only [mem_iUnion, exists_prop] at xmem ⊢
-  obtain ⟨i, iltn, j, _, xmem⟩ := xmem
+  obtain ⟨i, iltn, j, -, xmem⟩ := xmem
   exact ⟨i, by norm_cast, j, xmem⟩
 
 @[alias_in CWComplex]

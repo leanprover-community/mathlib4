@@ -320,7 +320,7 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
 set_option backward.isDefEq.respectTransparency false in
 theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   constructor <;> intro h
-  · rcases h with ⟨_, rfl⟩
+  · rcases h with ⟨-, rfl⟩
     apply dvd_mul_right
   · rcases h with ⟨a, h⟩
     obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (n := a) <| by

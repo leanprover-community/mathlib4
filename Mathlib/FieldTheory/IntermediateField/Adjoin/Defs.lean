@@ -146,7 +146,7 @@ theorem sup_toSubfield (S T : IntermediateField F E) :
   simp_rw [sup_def, adjoin_toSubfield, coe_toSubfield]
   congr 1
   rw [Set.union_eq_right]
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   exact Set.mem_union_left _ (algebraMap_mem S x)
 
 @[simp, norm_cast]
@@ -177,7 +177,7 @@ theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
   rw [h, sSup_image, ← Subfield.closure_sUnion, sSup_def, adjoin_toSubfield]
   congr 1
   rw [Set.union_eq_right]
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   obtain ⟨y, hy⟩ := hS
   simp only [Set.mem_sUnion, Set.mem_image, exists_exists_and_eq_and, SetLike.mem_coe]
   exact ⟨y, hy, algebraMap_mem y x⟩
@@ -381,7 +381,7 @@ theorem adjoin_adjoin_left (T : Set E) :
   rw [SetLike.ext'_iff]
   change (adjoin (adjoin F S) T : Set E) = _
   apply subset_antisymm <;> rw [adjoin_subset_adjoin_iff] <;> constructor
-  · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ Set.subset_union_left hx
+  · rintro - ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ Set.subset_union_left hx
   · exact subset_adjoin_of_subset_right _ _ Set.subset_union_right
   · exact Set.range_subset_iff.mpr fun f ↦ Subfield.subset_closure (.inl ⟨f, rfl⟩)
   · exact Set.union_subset

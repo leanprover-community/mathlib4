@@ -186,7 +186,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     exact (mem_supp x _ u).mp hh _ _ hu
   rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ i u usuppx
-    rcases (mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, _, f'ieq⟩
+    rcases (mem_supp x _ u).mp (@usuppx) a' f' xeq'.symm with ⟨i, -, f'ieq⟩
     rw [← f'ieq]
     apply h'
   intro h'
@@ -224,7 +224,7 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
   obtain ⟨a, f⟩ := repr x; constructor
   · rintro ⟨a', f', abseq, hf⟩ u
     rw [supp_eq_of_isUniform h, h _ _ _ _ abseq]
-    rintro b ⟨i, _, hi⟩
+    rintro b ⟨i, -, hi⟩
     rw [← hi]
     apply hf
   intro h'

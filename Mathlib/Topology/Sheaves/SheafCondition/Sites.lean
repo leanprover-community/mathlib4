@@ -126,9 +126,9 @@ theorem coverDense_iff_isBasis [Category* ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
   rw [Opens.isBasis_iff_nbhd]
   constructor
-  · intro hd U x hx; rcases hd.1 U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
+  · intro hd U x hx; rcases hd.1 U x hx with ⟨V, f, ⟨i, f₁, f₂, -⟩, hV⟩
     exact ⟨B.obj i, ⟨i, rfl⟩, f₁.le hV, f₂.le⟩
-  intro hb; constructor; intro U x hx; rcases hb hx with ⟨_, ⟨i, rfl⟩, hx, hi⟩
+  intro hb; constructor; intro U x hx; rcases hb hx with ⟨-, ⟨i, rfl⟩, hx, hi⟩
   exact ⟨B.obj i, ⟨⟨hi⟩⟩, ⟨⟨i, 𝟙 _, ⟨⟨hi⟩⟩, rfl⟩⟩, hx⟩
 
 theorem coverDense_inducedFunctor {B : ι → Opens X} (h : Opens.IsBasis (Set.range B)) :
@@ -150,13 +150,13 @@ theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
   refine ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ ?_⟩
-  obtain ⟨_, _, rfl⟩ := i.le h
+  obtain ⟨-, -, rfl⟩ := i.le h
   exact ⟨_, rfl⟩
 
 theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
     CoverPreserving (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) hf.functor := by
   constructor
-  rintro U S hU _ ⟨x, hx, rfl⟩
+  rintro U S hU - ⟨x, hx, rfl⟩
   obtain ⟨V, i, hV, hxV⟩ := hU x hx
   exact ⟨_, hf.functor.map i, ⟨_, i, 𝟙 _, hV, rfl⟩, Set.mem_image_of_mem f hxV⟩
 

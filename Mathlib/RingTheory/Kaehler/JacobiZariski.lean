@@ -468,7 +468,7 @@ lemma liftBaseChange_range_le :
     (liftBaseChange T (Extension.H1Cotangent.map (Q.toComp P).toExtensionHom)).range ≤
       (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom).ker := by
   rw [range_liftBaseChange, coe_range, Submodule.span_le, Set.range_subset_iff]
-  rintro ⟨x, _⟩
+  rintro ⟨x, -⟩
   obtain ⟨⟨(x : P.Ring), x_in⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
   ext; suffices (Q.ofComp P).toAlgHom ((Q.toComp P).toAlgHom x) ∈ Q.toExtension.ker ^ 2 by
     simpa [Ideal.toCotangent_eq_zero]

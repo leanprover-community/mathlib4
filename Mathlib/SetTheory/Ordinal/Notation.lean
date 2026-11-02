@@ -300,7 +300,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       case gt =>
         rcases nh with nh | nh
         · cases nh; contradiction
-        · obtain ⟨_, nh⟩ := nh
+        · obtain ⟨-, nh⟩ := nh
           rw [ite_eq_iff] at nh; rcases nh with nh | nh
           · exact oadd_lt_oadd_2 h₂ nh.left
           · cases nh; contradiction
@@ -887,7 +887,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       · simp [opow_def, opowAux2, e₁, h, r₁]
       · simpa [opow_def, opowAux2, e₁, h, r₁, eqComm] using mt repr_inj.1 h
     · rcases e₂ : split' o₂ with ⟨b', k⟩
-      obtain ⟨_, r₂⟩ := nf_repr_split' e₂
+      obtain ⟨-, r₂⟩ := nf_repr_split' e₂
       by_cases h : m = 0
       · simp only [opowAux2, opow_def, e₁, h, r₁, r₂, OfNat.ofNat, Zero.zero, One.one,
           repr]
@@ -991,10 +991,10 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
   | zero => rfl
   | oadd a m b iha ihb
   rw [fundamentalSequence]
-  rcases e : b.fundamentalSequence with (⟨_ | b'⟩ | f) <;>
+  rcases e : b.fundamentalSequence with (⟨- | b'⟩ | f) <;>
     simp only [FundamentalSequenceProp] <;>
     rw [e, FundamentalSequenceProp] at ihb
-  · rcases e : a.fundamentalSequence with (⟨_ | a'⟩ | f) <;> rcases e' : m.natPred with - | m' <;>
+  · rcases e : a.fundamentalSequence with (⟨- | a'⟩ | f) <;> rcases e' : m.natPred with - | m' <;>
       simp only <;>
       rw [e, FundamentalSequenceProp] at iha <;>
       (try rw [show m = 1 by

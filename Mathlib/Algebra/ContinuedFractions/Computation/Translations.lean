@@ -287,7 +287,7 @@ theorem of_s_succ (n : ℕ) : (of v).s.get? (n + 1) = (of (fract v)⁻¹).s.get?
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none, stream_succ h, ←
       of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none, terminatedAt_iff_s_none]
   · obtain ⟨p, hp⟩ := Option.ne_none_iff_exists'.mp h₁
-    obtain ⟨p', hp'₁, _⟩ := exists_succ_get?_stream_of_gcf_of_get?_eq_some hp
+    obtain ⟨p', hp'₁, -⟩ := exists_succ_get?_stream_of_gcf_of_get?_eq_some hp
     have Hp := get?_of_eq_some_of_succ_get?_intFractPair_stream hp'₁
     rw [← stream_succ h] at hp'₁
     rw [Hp, get?_of_eq_some_of_succ_get?_intFractPair_stream hp'₁]

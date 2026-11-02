@@ -46,7 +46,7 @@ theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
 
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
-  rintro _ ⟨l, rfl⟩
+  rintro - ⟨l, rfl⟩
   induction l with
   | nil => exact ⟨[], rfl⟩
   | cons b l H =>

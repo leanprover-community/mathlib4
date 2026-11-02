@@ -75,7 +75,7 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
       (setLIntegral_lt_top_of_le_nnreal s_lt_top.ne ⟨N, fun _ h ↦ h.1.2⟩).ne
     have : (ε : ℝ≥0∞) * μ s ≤ 0 := ENNReal.le_of_add_le_add_left B A
     simpa only [ENNReal.coe_eq_zero, nonpos_iff_eq_zero, mul_eq_zero, εpos.ne', false_or]
-  obtain ⟨u, _, u_pos, u_lim⟩ :
+  obtain ⟨u, -, u_pos, u_lim⟩ :
     ∃ u : ℕ → ℝ≥0, StrictAnti u ∧ (∀ n, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ≥0)
   let s := fun n : ℕ => {x | g x + u n ≤ f x ∧ g x ≤ (n : ℝ≥0)} ∩ spanningSets μ n
@@ -194,7 +194,7 @@ lemma ae_eq_of_setLIntegral_prod_eq {β : Type*} {mβ : MeasurableSpace β}
   refine lintegral_eq_lintegral_of_isPiSystem_of_univ_mem generateFrom_prod.symm isPiSystem_prod
     ?_ ?_ hf_int hs
   · exact ⟨Set.univ, .univ, Set.univ, .univ, Set.univ_prod_univ⟩
-  · rintro _ ⟨s, hs, t, ht, rfl⟩
+  · rintro - ⟨s, hs, t, ht, rfl⟩
     exact h hs ht
 
 end PiSystem

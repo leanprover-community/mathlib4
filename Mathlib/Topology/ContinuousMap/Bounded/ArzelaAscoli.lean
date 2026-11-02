@@ -55,11 +55,11 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
   /- For all `x`, the set `hU x` is an open set containing `x` on which the elements of `A`
     fluctuate by at most `ε₂`.
     We extract finitely many of these sets that cover the whole space, by compactness. -/
-  obtain ⟨tα : Set α, _, hfin, htα : univ ⊆ ⋃ x ∈ tα, U x⟩ :=
+  obtain ⟨tα : Set α, -, hfin, htα : univ ⊆ ⋃ x ∈ tα, U x⟩ :=
     isCompact_univ.elim_finite_subcover_image (fun x _ => (hU x).2.1) fun x _ =>
       mem_biUnion (mem_univ _) (hU x).1
   rcases hfin.nonempty_fintype with ⟨_⟩
-  obtain ⟨tβ : Set β, _, hfin, htβ : univ ⊆ ⋃ y ∈ tβ, ball y ε₂⟩ :=
+  obtain ⟨tβ : Set β, -, hfin, htβ : univ ⊆ ⋃ y ∈ tβ, ball y ε₂⟩ :=
     @finite_cover_balls_of_compact β _ _ isCompact_univ _ ε₂0
   rcases hfin.nonempty_fintype with ⟨_⟩
   -- Associate to every point `y` in the space a nearby point `F y` in `tβ`

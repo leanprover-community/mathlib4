@@ -229,10 +229,10 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     refine
       PFunctor.M.bisim (fun a₁ a₂ => ∃ x y, R x y ∧ x.1 = a₁ ∧ y.1 = a₂) ?_ _ _
         ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
-    rintro _ _ ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
+    rintro - - ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
     rcases h _ _ r with ⟨a', f', f₁', f₂', e₁, e₂, h'⟩
     rcases M.bisim_lemma P e₁ with ⟨g₁', e₁', rfl, rfl⟩
-    rcases M.bisim_lemma P e₂ with ⟨g₂', e₂', _, rfl⟩
+    rcases M.bisim_lemma P e₂ with ⟨g₂', e₂', -, rfl⟩
     rw [e₁', e₂']
     exact ⟨_, _, _, rfl, rfl, fun b => ⟨_, _, h' b, rfl, rfl⟩⟩
   subst this

@@ -202,7 +202,7 @@ lemma hasInjectiveDimensionLT_X₁ (h₁ : HasInjectiveDimensionLT S.X₃ n)
     HasInjectiveDimensionLT S.X₁ (n + 1) := by
   let := HasExt.standard C
   rw [hasInjectiveDimensionLT_iff]
-  rintro (_ | i) hi Y x₃
+  rintro (- | i) hi Y x₃
   · simp at hi
   · obtain ⟨x₁, rfl⟩ := Ext.covariant_sequence_exact₁ _ hS x₃
       (Ext.eq_zero_of_hasInjectiveDimensionLT _ (n + 1) hi) rfl
@@ -286,7 +286,7 @@ lemma injectiveDimension_lt_iff {X : C} {n : ℕ} :
   · have : injectiveDimension X ∈ _ := csInf_mem ⟨⊤, by simp⟩
     simp only [Set.mem_ofPred_eq] at this
     exact this _ h
-  · obtain _ | n := n
+  · obtain - | n := n
     · exact ⟨⊥, fun _ _ ↦ hasInjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
     · exact ⟨n, fun i hi ↦ hasInjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
         by simp [ENat.WithBot.lt_add_one_iff]⟩

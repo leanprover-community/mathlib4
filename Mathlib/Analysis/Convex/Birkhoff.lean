@@ -125,7 +125,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     rw [ssubset_iff_of_subset (monotone_filter_right _ _)]
     · simp_rw [mem_filter_univ, not_not, Prod.exists]
       exact ⟨i, σ i, hMi'.ne', by simp [N, Equiv.toPEquiv_apply]⟩
-    · rintro ⟨i', j'⟩ _ hN' hM'
+    · rintro ⟨i', j'⟩ - hN' hM'
       have hσ' : σ i' ≠ j' := by
         simpa [Equiv.toPEquiv_apply] using hσ i' j' hM'
       exact hN' <| by simp [N, hM', hσ', Equiv.toPEquiv_apply]
@@ -179,7 +179,7 @@ theorem extremePoints_doublyStochastic :
   refine subset_antisymm ?_ ?_
   · rw [doublyStochastic_eq_convexHull_permMatrix]
     exact extremePoints_convexHull_subset
-  rintro _ ⟨σ, rfl⟩
+  rintro - ⟨σ, rfl⟩
   refine ⟨permMatrix_mem_doublyStochastic, fun x₁ hx₁ x₂ hx₂ hσ ↦ ?_⟩
   suffices ∀ i j : n, x₁ i j = x₂ i j by
     obtain rfl : x₁ = x₂ := by simpa [← Matrix.ext_iff]

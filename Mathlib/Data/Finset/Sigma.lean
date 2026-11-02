@@ -79,7 +79,7 @@ theorem pairwiseDisjoint_map_sigmaMk :
   intro i _ j _ hij
   rw [Function.onFun, disjoint_left]
   simp_rw [mem_map, Function.Embedding.sigmaMk_apply]
-  rintro _ ⟨y, _, rfl⟩ ⟨z, _, hz'⟩
+  rintro - ⟨y, -, rfl⟩ ⟨z, -, hz'⟩
   exact hij congr($(hz'.symm).fst)
 
 @[simp]
@@ -175,14 +175,14 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
       exact ⟨_, hx, by simp⟩
   · rw [sigmaLift, dite_eq_right h]
     refine iff_of_false (notMem_empty _) ?_
-    rintro ⟨⟨⟩, ⟨⟩, _⟩
+    rintro ⟨⟨⟩, ⟨⟩, -⟩
     exact h rfl
 
 theorem mk_mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (i : ι) (a : α i) (b : β i)
     (x : γ i) : (⟨i, x⟩ : Sigma γ) ∈ sigmaLift f ⟨i, a⟩ ⟨i, b⟩ ↔ x ∈ f a b := by
   rw [sigmaLift, dite_eq_left rfl, mem_map]
   refine ⟨?_, fun hx => ⟨_, hx, rfl⟩⟩
-  rintro ⟨x, hx, _, rfl⟩
+  rintro ⟨x, hx, -, rfl⟩
   exact hx
 
 theorem notMem_sigmaLift_of_ne_left (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α)

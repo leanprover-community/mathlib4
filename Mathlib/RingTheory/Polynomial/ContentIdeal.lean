@@ -103,7 +103,7 @@ theorem contentIdeal_mul_le_mul_contentIdeal (q : R[X]) :
     (p * q).contentIdeal ≤ p.contentIdeal * q.contentIdeal := by
   rw [contentIdeal_def, span_le]
   simp only [Set.subset_def, Finset.mem_coe, mem_coeffs_iff]
-  rintro r ⟨n, _, rfl⟩
+  rintro r ⟨n, -, rfl⟩
   simp [coeff_mul, _root_.sum_mem, Submodule.mul_mem_mul, coeff_mem_contentIdeal]
 
 section CommSemiring
@@ -197,7 +197,7 @@ theorem contentIdeal_le_span_content : p.contentIdeal ≤ span {p.content} := by
   rw [contentIdeal_def, span_le]
   intro _ h1
   rw [Finset.mem_coe, mem_coeffs_iff] at h1
-  obtain ⟨n, _, h2⟩ := h1
+  obtain ⟨n, -, h2⟩ := h1
   rw [SetLike.mem_coe, h2, mem_span_singleton]
   exact content_dvd_coeff n
 

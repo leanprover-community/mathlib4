@@ -79,7 +79,7 @@ theorem coe_toAffineMap : ⇑f.toAffineMap = f := by
   rfl
 
 theorem toAffineMap_injective : Injective (toAffineMap : (P →ᵃⁱ[𝕜] P₂) → P →ᵃ[𝕜] P₂) := by
-  rintro ⟨f, _⟩ ⟨g, _⟩ rfl
+  rintro ⟨f, -⟩ ⟨g, -⟩ rfl
   rfl
 
 theorem coeFn_injective : @Injective (P →ᵃⁱ[𝕜] P₂) (P → P₂) (↑) :=

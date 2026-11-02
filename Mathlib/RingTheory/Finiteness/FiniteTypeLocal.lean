@@ -71,9 +71,9 @@ theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S']
     ∃ m : M, m • x ∈
       Algebra.adjoin R
         (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
-  obtain ⟨⟨_, a, ha, rfl⟩, e⟩ :=
+  obtain ⟨⟨-, a, ha, rfl⟩, e⟩ :=
     IsLocalization.exists_smul_mem_of_mem_adjoin (M.map (algebraMap R S)) x s (Algebra.adjoin R _)
-      Algebra.subset_adjoin (by rintro _ ⟨a, _, rfl⟩; exact Subalgebra.algebraMap_mem _ a) hx
+      Algebra.subset_adjoin (by rintro - ⟨a, -, rfl⟩; exact Subalgebra.algebraMap_mem _ a) hx
   refine ⟨⟨a, ha⟩, ?_⟩
   simpa only [Submonoid.smul_def, algebraMap_smul] using e
 
@@ -150,12 +150,12 @@ lemma Algebra.FiniteType.of_span_eq_top_source (s : Set R) (hs : Ideal.span (s :
   apply (⨆ x : s, Algebra.adjoin R (sf x : Set S)).toSubmodule.mem_of_span_eq_top_of_smul_pow_mem
     _ hs _ _
   intro r
-  obtain ⟨⟨_, n₁, rfl⟩, hn₁⟩ :=
+  obtain ⟨⟨-, n₁, rfl⟩, hn₁⟩ :=
     multiple_mem_adjoin_of_mem_localization_adjoin (Submonoid.powers (r : R))
       (Localization.Away (r : R)) (s₁ r : Set (Localization.Away r.val ⊗[R] S))
       (algebraMap S _ x) (by rw [s₂ r]; trivial)
   rw [Submonoid.smul_def, Algebra.smul_def, IsScalarTower.algebraMap_apply R S, ← map_mul] at hn₁
-  obtain ⟨⟨_, n₂, rfl⟩, hn₂⟩ :=
+  obtain ⟨⟨-, n₂, rfl⟩, hn₂⟩ :=
     IsLocalization.lift_mem_adjoin_finsetIntegerMultiple (Submonoid.powers (r : R)) _ (s₁ r) hn₁
   rw [Submonoid.smul_def, ← Algebra.smul_def, smul_smul, ← pow_add] at hn₂
   simp_rw [Submonoid.map_powers] at hn₂

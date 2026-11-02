@@ -81,7 +81,7 @@ theorem subgroups_basis :
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use (1 : v.ValueGroup₀ˣ)
-        rintro y _
+        rintro y -
         simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq]
         rw [Valuation.map_mul, Hx, zero_mul]
         exact Units.zero_lt _
@@ -99,7 +99,7 @@ theorem subgroups_basis :
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use 1
-        rintro y _
+        rintro y -
         simp only [coe_ltAddSubgroup, preimage_ofPred_eq, mem_ofPred_eq, Valuation.map_mul, Hx,
           mul_zero, Units.zero_lt]
       · set u : v.ValueGroup₀ˣ := Units.mk0 (restrict₀ (v : R →*₀ Γ₀) x)

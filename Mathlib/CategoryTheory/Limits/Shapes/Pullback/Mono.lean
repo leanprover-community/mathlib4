@@ -76,7 +76,7 @@ given in `PullbackCone.is_id_of_mono`.
 theorem mono_of_isLimitMkIdId (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f)) :
     Mono f :=
   ⟨fun {Z} g h eq => by
-    rcases PullbackCone.IsLimit.lift' t _ _ eq with ⟨_, rfl, rfl⟩
+    rcases PullbackCone.IsLimit.lift' t _ _ eq with ⟨-, rfl, rfl⟩
     rfl⟩
 
 /-- Suppose `f` and `g` are two morphisms with a common codomain and `s` is a limit cone over the
@@ -248,7 +248,7 @@ The converse is given in `PushoutCocone.isColimitMkIdId`.
 theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
     (t : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f)) : Epi f :=
   ⟨fun {Z} g h eq => by
-    rcases PushoutCocone.IsColimit.desc' t _ _ eq with ⟨_, rfl, rfl⟩
+    rcases PushoutCocone.IsColimit.desc' t _ _ eq with ⟨-, rfl, rfl⟩
     rfl⟩
 
 /-- Suppose `f` and `g` are two morphisms with a common domain and `s` is a colimit cocone over the

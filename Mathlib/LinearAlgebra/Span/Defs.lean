@@ -336,7 +336,7 @@ theorem span_range_eq_iSup {ι : Sort*} {v : ι → M} : span R (range v) = ⨆ 
 
 theorem span_smul_le (s : Set M) (r : R) : span R (r • s) ≤ span R s := by
   rw [span_le]
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   exact smul_mem (span R s) r (subset_span hx)
 
 theorem subset_span_trans {U V W : Set M} (hUV : U ⊆ Submodule.span R V)
@@ -386,10 +386,10 @@ theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
       · exact ⟨y, h, 0, by simp, by simp⟩
       · exact ⟨0, by simp, y, h, by simp⟩
     · exact ⟨0, by simp, 0, by simp⟩
-    · rintro _ _ - - ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+    · rintro - - - - ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
       exact ⟨_, add_mem hy₁ hy₂, _, add_mem hz₁ hz₂, by
         rw [add_assoc, add_assoc, ← add_assoc y₂, ← add_assoc z₁, add_comm y₂]⟩
-    · rintro a - _ ⟨y, hy, z, hz, rfl⟩
+    · rintro a - - ⟨y, hy, z, hz, rfl⟩
       exact ⟨_, smul_mem _ a hy, _, smul_mem _ a hz, by simp [smul_add]⟩, by
     rintro ⟨y, hy, z, hz, rfl⟩
     exact add_mem ((le_sup_left : p ≤ p ⊔ p') hy) ((le_sup_right : p' ≤ p ⊔ p') hz)⟩
@@ -447,12 +447,12 @@ theorem nontrivial_span_singleton {x : M} (h : x ≠ 0) : Nontrivial (R ∙ x) :
 theorem mem_span_singleton {y : M} : x ∈ R ∙ y ↔ ∃ a : R, a • y = x :=
   ⟨fun h => by
     refine span_induction ?_ ?_ ?_ ?_ h
-    · rintro y (rfl | ⟨⟨_⟩⟩)
+    · rintro y (rfl | ⟨⟨-⟩⟩)
       exact ⟨1, by simp⟩
     · exact ⟨0, by simp⟩
-    · rintro _ _ - - ⟨a, rfl⟩ ⟨b, rfl⟩
+    · rintro - - - - ⟨a, rfl⟩ ⟨b, rfl⟩
       exact ⟨a + b, by simp [add_smul]⟩
-    · rintro a _ - ⟨b, rfl⟩
+    · rintro a - - ⟨b, rfl⟩
       exact ⟨a * b, by simp [smul_smul]⟩, by
     rintro ⟨a, y, rfl⟩; exact smul_mem _ _ (subset_span <| by simp)⟩
 
@@ -463,7 +463,7 @@ theorem le_span_singleton_iff {s : Submodule R M} {v₀ : M} :
 theorem eq_span_singleton_of_surjective {s : Submodule R M}
     {f : R →ₗ[R] s} (hf : Surjective f) : s = span R {(f 1 : M)} := by
   refine le_antisymm (fun x hx ↦ mem_span_singleton.mpr ?_)
-    (span_le.mpr <| by rintro _ rfl; exact (f 1).2)
+    (span_le.mpr <| by rintro - rfl; exact (f 1).2)
   have ⟨r, eq⟩ := hf ⟨x, hx⟩
   exact ⟨r, by rw [← coe_smul, ← map_smul, smul_eq_mul, mul_one, eq]⟩
 
@@ -567,7 +567,7 @@ theorem submodule_eq_sSup_le_nonzero_spans (p : Submodule R M) :
       simp
     · exact @le_sSup _ _ S _ ⟨m, ⟨hm, ⟨h, rfl⟩⟩⟩ m (mem_span_singleton_self m)
   · rw [sSup_le_iff]
-    rintro S ⟨_, ⟨_, ⟨_, rfl⟩⟩⟩
+    rintro S ⟨_, ⟨_, ⟨-, rfl⟩⟩⟩
     rwa [span_singleton_le_iff_mem]
 
 theorem lt_sup_iff_notMem {I : Submodule R M} {a : M} : I < I ⊔ R ∙ a ↔ a ∉ I := by simp

@@ -82,7 +82,7 @@ theorem exists_isMatching_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂
 lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
     (h₂ : ∀ s : Set V, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) : p₁ ∪ p₂ = Set.univ := by
   classical
-  obtain ⟨f, _, hf₂⟩ := Finset.all_card_le_biUnion_card_iff_exists_injective
+  obtain ⟨f, -, hf₂⟩ := Finset.all_card_le_biUnion_card_iff_exists_injective
       (fun x ↦ G.neighborFinset x) |>.mp fun s ↦ by
     have := h₂ s
     simpa [← Set.ncard_coe_finset, neighborFinset_def]

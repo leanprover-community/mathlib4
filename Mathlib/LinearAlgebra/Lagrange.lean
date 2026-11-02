@@ -265,7 +265,7 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
     rw [eval_finsetSum, eval_one, ← add_sum_erase _ _ hi, eval_basis_self hvs hi,
       add_eq_left]
     refine sum_eq_zero fun j hj => ?_
-    rcases mem_erase.mp hj with ⟨hij, _⟩
+    rcases mem_erase.mp hj with ⟨hij, -⟩
     rw [eval_basis_of_ne hij hi]
 
 theorem basisDivisor_add_symm {x y : F} (hxy : x ≠ y) :
@@ -425,7 +425,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
           (mem_insert_self _ _),
         mul_one, add_eq_left]
       refine sum_eq_zero fun j hj => ?_
-      rcases mem_erase.mp hj with ⟨hij, _⟩
+      rcases mem_erase.mp hj with ⟨hij, -⟩
       rw [eval_basis_of_ne hij hi', mul_zero]
     · have H : (∑ j ∈ s, eval (v i) (Lagrange.basis s v j)) = 1 := by
         rw [← eval_finsetSum, sum_basis (hvt.mono hst) hs, eval_one]

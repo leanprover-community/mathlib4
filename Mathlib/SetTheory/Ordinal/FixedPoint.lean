@@ -122,7 +122,7 @@ theorem not_bddAbove_fp_family [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
     ¬ BddAbove (⋂ i, Function.fixedPoints (f i)) := by
   rw [not_bddAbove_iff]
   refine fun a ↦ ⟨nfpFamily f (succ a), ?_, (lt_succ a).trans_le (le_nfpFamily f _)⟩
-  rintro _ ⟨i, rfl⟩
+  rintro - ⟨i, rfl⟩
   exact nfpFamily_fp (H i) _
 
 /-- The derivative of a family of normal functions is the sequence of their common fixed points.

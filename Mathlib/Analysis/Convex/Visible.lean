@@ -88,7 +88,7 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
       sum_eq_zero_iff_of_nonneg fun j hj ↦ hw₀ _ <| erase_subset _ _ hj] at hw₁
     refine sum_eq_single _ (fun j hj hji ↦ ?_) (by simp [hi])
     rw [hw₁ _ <| mem_erase.2 ⟨hji, hj⟩, zero_smul]
-  rintro _ hε ⟨⟨ε, ⟨hε₀, hε₁⟩, rfl⟩, h⟩
+  rintro - hε ⟨⟨ε, ⟨hε₀, hε₁⟩, rfl⟩, h⟩
   replace hε₀ : 0 < ε := hε₀.lt_of_ne <| by rintro rfl; simp at h
   replace hε₁ : ε < 1 := hε₁.lt_of_ne <| by rintro rfl; simp at h
   have : 0 < 1 - ε := by linarith
@@ -127,7 +127,7 @@ variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [TopologicalSpace V] [IsTo
 lemma IsVisible.eq_of_mem_interior (hsxy : IsVisible 𝕜 s x y) (hy : y ∈ interior s) :
     x = y := by
   by_contra! hxy
-  suffices h : ∀ᶠ (_δ : 𝕜) in 𝓝[>] 0, False by obtain ⟨_, ⟨⟩⟩ := h.exists
+  suffices h : ∀ᶠ (_δ : 𝕜) in 𝓝[>] 0, False by obtain ⟨-, ⟨⟩⟩ := h.exists
   have hmem : ∀ᶠ (δ : 𝕜) in 𝓝[>] 0, lineMap y x δ ∈ s :=
     lineMap_continuous.continuousWithinAt.eventually_mem
       (by simpa using mem_interior_iff_mem_nhds.1 hy)
@@ -171,7 +171,7 @@ lemma IsClosed.exists_wbtw_isVisible (hs : IsClosed s) (hy : y ∈ s) (x : V) :
   obtain ⟨hδ₀, hδ⟩ : 0 ≤ δ ∧ lineMap x y δ ∈ s :=
     (isClosed_Ici.inter <| hs.preimage lineMap_continuous).csInf_mem ⟨1, ht₁⟩ ht
   refine ⟨lineMap x y δ, hδ, wbtw_lineMap_iff.2 <| .inr ⟨hδ₀, hδ₁⟩, ?_⟩
-  rintro _ hε ⟨⟨ε, ⟨hε₀, hε₁⟩, rfl⟩, -, h⟩
+  rintro - hε ⟨⟨ε, ⟨hε₀, hε₁⟩, rfl⟩, -, h⟩
   replace hδ₀ : 0 < δ := hδ₀.lt_of_ne' <| by rintro hδ₀; simp [hδ₀] at h
   replace hε₁ : ε < 1 := hε₁.lt_of_ne <| by rintro rfl; simp at h
   rw [lineMap_lineMap_right] at hε

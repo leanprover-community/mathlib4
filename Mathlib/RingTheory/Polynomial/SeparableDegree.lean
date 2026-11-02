@@ -124,7 +124,7 @@ theorem contraction_degree_eq_or_insep [hq : NeZero q] [CharP F q] (g g' : F[X])
 theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
     (hg : IsSeparableContraction q f g) : g.natDegree = hf.degree := by
   cases hF
-  · rcases hg with ⟨_, m, hm⟩
+  · rcases hg with ⟨-, m, hm⟩
     rw [one_pow, expand_one] at hm
     rw [hf.eq_degree, hm]
   · rcases hg with ⟨hg, m, hm⟩

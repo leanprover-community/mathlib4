@@ -206,7 +206,7 @@ instance : PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ (forget A) :=
 lemma toPresheafFiber_jointly_surjective (p : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z : ToType (P.obj (op X))),
       Φ.toPresheafFiber X x P z = p := by
-  obtain ⟨_, z, rfl⟩ := Types.jointly_surjective_of_isColimit
+  obtain ⟨-, z, rfl⟩ := Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (forget A)
       (colimit.isColimit ((Functor.Elements.π Φ.fiber).op ⋙ P))) p
   exact ⟨_, _, z, rfl⟩
@@ -214,7 +214,7 @@ lemma toPresheafFiber_jointly_surjective (p : ToType (Φ.presheafFiber.obj P)) :
 lemma toPresheafFiber_jointly_surjective₂ (p₁ p₂ : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (P.obj (op X))),
       Φ.toPresheafFiber X x P z₁ = p₁ ∧ Φ.toPresheafFiber X x P z₂ = p₂ := by
-  obtain ⟨_, z₁, z₂, rfl, rfl⟩ := Types.FilteredColimit.jointly_surjective_of_isColimit₂
+  obtain ⟨-, z₁, z₂, rfl, rfl⟩ := Types.FilteredColimit.jointly_surjective_of_isColimit₂
     (isColimitOfPreserves (forget A)
       (colimit.isColimit ((Functor.Elements.π Φ.fiber).op ⋙ P))) p₁ p₂
   exact ⟨_, _, z₁, z₂, rfl, rfl⟩

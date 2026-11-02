@@ -74,7 +74,7 @@ instance : Inhabited {s : Set α // IsCofinal s} :=
 theorem IsCofinal.image {f : α → β} {s : Set α} (hs : IsCofinal s)
     (hf : Monotone f) (hf' : IsCofinal (.range f)) : IsCofinal (f '' s) := by
   intro a
-  obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' a
+  obtain ⟨-, ⟨b, rfl⟩, hb⟩ := hf' a
   obtain ⟨c, hc, hc'⟩ := hs b
   exact ⟨_, mem_image_of_mem f hc, hb.trans (hf hc')⟩
 

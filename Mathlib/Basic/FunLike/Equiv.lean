@@ -169,7 +169,7 @@ instance (priority := 100) toFunLike : FunLike E α β where
 @[simp] theorem coe_apply {e : E} {a : α} : coe e a = e a := rfl
 
 theorem inv_apply_eq {e : E} {b : β} {a : α} : inv e b = a ↔ b = e a := by
-  constructor <;> rintro ⟨_, rfl⟩
+  constructor <;> rintro ⟨-, rfl⟩
   exacts [(right_inv e b).symm, left_inv e a]
 
 instance (priority := 100) toEmbeddingLike : EmbeddingLike E α β where

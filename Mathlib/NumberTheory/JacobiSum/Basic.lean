@@ -251,7 +251,7 @@ private
 lemma MulChar.exists_apply_sub_one_eq_mul_sub_one {n : ℕ} [NeZero n] {χ : MulChar F R} {μ : R}
     (hχ : χ ^ n = 1) (hμ : IsPrimitiveRoot μ n) {x : F} (hx : x ≠ 0) :
     ∃ z ∈ ℤ[μ], χ x - 1 = z * (μ - 1) := by
-  obtain ⟨k, _, hk⟩ := exists_apply_eq_pow hχ hμ hx
+  obtain ⟨k, -, hk⟩ := exists_apply_eq_pow hχ hμ hx
   refine hk ▸ ⟨(Finset.range k).sum (μ ^ ·), ?_, (geom_sum_mul μ k).symm⟩
   exact Subalgebra.sum_mem _ fun m _ ↦ Subalgebra.pow_mem _ (self_mem_adjoin_singleton _ μ) _
 

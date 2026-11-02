@@ -163,7 +163,7 @@ lemma pairwiseDisjoint_piAntidiag_map_addRightEmbedding (hi : i ∉ s) (n : μ) 
   rintro ⟨a, b⟩ hab ⟨c, d⟩ hcd
   simp only [ne_eq, HasAntidiagonal.antidiagonal_congr' hab hcd, disjoint_left, mem_map,
     mem_piAntidiag, addRightEmbedding_apply, not_exists, not_and, and_imp, forall_exists_index]
-  rintro hfg _ f rfl - rfl g rfl - hgf
+  rintro hfg - f rfl - rfl g rfl - hgf
   exact hfg <| by simpa [sum_add_distrib, hi] using congr(∑ j ∈ s, $hgf.symm j)
 
 lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
@@ -177,7 +177,7 @@ lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
   · rintro ⟨hn, hf⟩
     refine ⟨_, _, hn, update f i 0, ⟨sum_update_of_notMem hi _ _, fun j ↦ ?_⟩, by aesop⟩
     grind
-  · rintro ⟨a, _, hn, g, ⟨rfl, hg⟩, rfl⟩
+  · rintro ⟨a, -, hn, g, ⟨rfl, hg⟩, rfl⟩
     have := hg i
     aesop (add simp [sum_add_distrib])
 

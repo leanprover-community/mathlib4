@@ -403,7 +403,7 @@ theorem IsSmoothAt.exists_isStandardEtale_mvPolynomial
       ((Ideal.disjoint_powers_iff_notMem_of_isPrime _).mpr hfp)
   obtain ⟨g₀, hg, H⟩ := IsEtaleAt.exists_isStandardEtale (R := (MvPolynomial (Fin n) R))
     (S := (Localization.Away f)) (p.map (algebraMap _ _))
-  obtain ⟨g, ⟨_, m, rfl⟩, hg₀⟩ := IsLocalization.exists_mk'_eq (.powers f) g₀
+  obtain ⟨g, ⟨-, m, rfl⟩, hg₀⟩ := IsLocalization.exists_mk'_eq (.powers f) g₀
   replace hg : g ∉ p := by simpa [Submonoid.mem_powers_iff, Ideal.IsPrime.mul_mem_iff_mem_or_mem,
     IsLocalization.mk'_mem_map_algebraMap_iff, mt (‹p.IsPrime›.mem_of_pow_mem _) hfp,
     ← hg₀] using hg

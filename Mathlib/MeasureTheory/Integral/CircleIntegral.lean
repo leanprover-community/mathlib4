@@ -546,7 +546,7 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
     (hc : ContinuousOn f (sphere c R)) (hf : ∀ z ∈ sphere c R, ‖f z‖ ≤ C)
     (hlt : ∃ z ∈ sphere c R, ‖f z‖ < C) : ‖∮ z in C(c, R), f z‖ < 2 * π * R * C := by
   rw [← _root_.abs_of_pos hR, ← image_circleMap_Ioc] at hlt
-  rcases hlt with ⟨_, ⟨θ₀, hmem, rfl⟩, hlt⟩
+  rcases hlt with ⟨-, ⟨θ₀, hmem, rfl⟩, hlt⟩
   calc
     ‖∮ z in C(c, R), f z‖ ≤ ∫ θ in 0..2 * π, ‖deriv (circleMap c R) θ • f (circleMap c R θ)‖ :=
       intervalIntegral.norm_integral_le_integral_norm Real.two_pi_pos.le

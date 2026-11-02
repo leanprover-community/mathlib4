@@ -103,13 +103,13 @@ theorem lowerBounds_right (A : DedekindCut α) : lowerBounds A.right = A.left :=
 
 theorem image_left_subset_lowerBounds {f : α → β} (hf : Monotone f)
     (A : DedekindCut α) : f '' A.left ⊆ lowerBounds (f '' A.right) := by
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩
   exact hf <| rel_extent_intent hx hy
 
 @[to_dual existing]
 theorem image_right_subset_upperBounds {f : α → β} (hf : Monotone f)
     (A : DedekindCut α) : f '' A.right ⊆ upperBounds (f '' A.left) := by
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩
   exact hf <| rel_extent_intent hy hx
 
 /-- Convert an element into its Dedekind cut (`Iic a`, `Ici a`). This map is order-preserving,

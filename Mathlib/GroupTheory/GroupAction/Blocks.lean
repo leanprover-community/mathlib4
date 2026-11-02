@@ -477,7 +477,7 @@ itself. -/
 of a group on itself. -/]
 lemma isBlock_subgroup : IsBlock G (s : Set H) := by
   simp only [IsBlock, disjoint_left]
-  rintro a b hab _ ⟨c, hc, rfl⟩ ⟨d, hd, (hcd : b • d = a • c)⟩
+  rintro a b hab - ⟨c, hc, rfl⟩ ⟨d, hd, (hcd : b • d = a • c)⟩
   refine hab ?_
   rw [← smul_coe_set hc, ← smul_assoc, ← hcd, smul_assoc, smul_coe_set hc, smul_coe_set hd]
 
@@ -494,7 +494,7 @@ itself. -/
 of a group on itself. -/]
 lemma isBlock_subgroup' : IsBlock G (s : Set H) := by
   simp only [IsBlock, disjoint_left]
-  rintro a b hab _ ⟨c, hc, rfl⟩ ⟨d, hd, (hcd : b • d = a • c)⟩
+  rintro a b hab - ⟨c, hc, rfl⟩ ⟨d, hd, (hcd : b • d = a • c)⟩
   refine hab ?_
   rw [← op_smul_coe_set hc, ← smul_assoc, ← op_smul, ← hcd, op_smul, smul_assoc, op_smul_coe_set hc,
     op_smul_coe_set hd]

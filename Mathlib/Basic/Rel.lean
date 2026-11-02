@@ -386,7 +386,7 @@ protected lemma refl [R.IsRefl] (a : α) : a ~[R] a := refl_of (· ~[R] ·) a
 variable (R) in
 protected lemma rfl [R.IsRefl] : a ~[R] a := R.refl a
 
-lemma id_subset [R.IsRefl] : .id ⊆ R := by rintro ⟨_, _⟩ rfl; exact R.rfl
+lemma id_subset [R.IsRefl] : .id ⊆ R := by rintro ⟨-, -⟩ rfl; exact R.rfl
 
 lemma id_subset_iff : .id ⊆ R ↔ R.IsRefl where
   mp h := ⟨fun _ ↦ h rfl⟩

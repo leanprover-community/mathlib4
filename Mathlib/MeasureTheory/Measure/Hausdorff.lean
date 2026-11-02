@@ -312,7 +312,7 @@ theorem mkMetric'_isMetric (m : Set X → ℝ≥0∞) : (mkMetric' m).IsMetric :
     (mkMetric'.tendsto_pre _ _) ((mkMetric'.tendsto_pre _ _).add (mkMetric'.tendsto_pre _ _)) ?_
   rw [← pos_iff_ne_zero] at r0
   filter_upwards [Ioo_mem_nhdsGT r0]
-  rintro ε ⟨_, εr⟩
+  rintro ε ⟨-, εr⟩
   refine boundedBy_union_of_top_of_nonempty_inter ?_
   rintro u ⟨x, hxs, hxu⟩ ⟨y, hyt, hyu⟩
   have : ε < ediam u := εr.trans_le ((hr x hxs y hyt).trans <| edist_le_ediam_of_mem hxu hyu)

@@ -222,7 +222,7 @@ lemma finite_quotient_iff_exists_finset_iUnion_eq_univ (H K : Subgroup G) :
       simp_rw [← Set.finite_univ_iff, ← this, I.finite_toSet]
     rw [Set.eq_univ_iff_forall] at hI ⊢
     rintro ⟨g⟩
-    obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoubleCoset H K i⟩ := hI g
+    obtain ⟨-, ⟨i, -, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoubleCoset H K i⟩ := hI g
     simpa [← (mem_quotToDoubleCoset_iff _ _).mp hT] using! hi
 
 lemma iUnion_image_mk_leftRel {H K : Subgroup G} :

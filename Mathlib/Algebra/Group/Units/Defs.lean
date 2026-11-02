@@ -403,12 +403,12 @@ variable [Monoid M] {a b : M}
 
 @[to_additive IsAddUnit.exists_neg]
 lemma IsUnit.exists_right_inv (h : IsUnit a) : ∃ b, a * b = 1 := by
-  rcases h with ⟨⟨a, b, hab, _⟩, rfl⟩
+  rcases h with ⟨⟨a, b, hab, -⟩, rfl⟩
   exact ⟨b, hab⟩
 
 @[to_additive IsAddUnit.exists_neg']
 lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
-  rcases h with ⟨⟨a, b, _, hba⟩, rfl⟩
+  rcases h with ⟨⟨a, b, -, hba⟩, rfl⟩
   exact ⟨b, hba⟩
 
 @[to_additive] lemma IsUnit.mul : IsUnit a → IsUnit b → IsUnit (a * b) := by

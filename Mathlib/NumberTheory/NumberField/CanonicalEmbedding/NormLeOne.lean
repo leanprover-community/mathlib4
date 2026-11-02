@@ -555,7 +555,7 @@ theorem logMap_expMapBasis (x : realSpace K) :
 theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
     normAtAllPlaces '' normAtAllPlaces ⁻¹' expMapBasis '' s = expMapBasis '' s := by
   apply normAtAllPlaces_image_preimage_of_nonneg
-  rintro _ ⟨x, _, rfl⟩ w
+  rintro - ⟨x, -, rfl⟩ w
   exact (expMapBasis_pos _ _).le
 
 open scoped Classical in
@@ -672,9 +672,9 @@ theorem normAtAllPlaces_normLeOne_eq_image :
     · exact hw ▸ h₂
     · exact h₁ w hw
   · refine ⟨?_, ?_⟩
-    · rintro ⟨a, ⟨ha, _⟩, rfl⟩
+    · rintro ⟨a, ⟨ha, -⟩, rfl⟩
       exact (hx fun w ↦ fundamentalCone.normAtPlace_pos_of_mem ha w).elim
-    · rintro ⟨a, _, rfl⟩
+    · rintro ⟨a, -, rfl⟩
       exact (hx fun w ↦ expMapBasis_pos a w).elim
 
 theorem normLeOne_eq_preimage :
@@ -745,7 +745,7 @@ theorem zero_mem_compactSet :
 
 theorem nonneg_of_mem_compactSet {x : realSpace K} (hx : x ∈ compactSet K) (w : InfinitePlace K) :
     0 ≤ x w := by
-  obtain ⟨c, hc, ⟨_, ⟨⟨a, ha, rfl⟩, _, rfl⟩⟩⟩ := hx
+  obtain ⟨c, hc, ⟨-, ⟨⟨a, ha, rfl⟩, -, rfl⟩⟩⟩ := hx
   exact mul_nonneg hc.1 (expMapBasis_pos _ _).le
 
 variable {K} in
@@ -753,7 +753,7 @@ theorem compactSet_eq_union_aux₁ {x : realSpace K} (hx₀ : x ≠ 0)
     (hx₁ : x ∈ compactSet K) :
     x ∈ expMapBasis '' closure (paramSet K) := by
   classical
-  obtain ⟨c, hc, ⟨_, ⟨y, hy, rfl⟩, rfl⟩⟩ := hx₁
+  obtain ⟨c, hc, ⟨-, ⟨y, hy, rfl⟩, rfl⟩⟩ := hx₁
   refine ⟨fun w ↦ if w = w₀ then Real.log c else y w, ?_, ?_⟩
   · rw [closure_paramSet, Set.mem_univ_pi]
     intro w

@@ -227,7 +227,7 @@ lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (
   have hb' (i) : b' ≤ b i := calc b (min_bi b) / 2
     _ ≤ b i / 2 := by gcongr; aesop
     _ ≤ b i := le_of_lt <| div_two_lt_of_pos (R.b_pos i)
-  obtain ⟨c₁, _, c₂, _, hq_poly⟩ := hq_poly b' hb
+  obtain ⟨c₁, -, c₂, -, hq_poly⟩ := hq_poly b' hb
   rw [isBigO_iff]
   refine ⟨c₂, ?_⟩
   have h_tendsto : Tendsto (fun x => b' * x) atTop atTop :=

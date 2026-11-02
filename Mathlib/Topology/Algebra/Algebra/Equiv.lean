@@ -106,7 +106,7 @@ theorem coe_apply (e : A ≃A[R] B) (a : A) : (e : A →A[R] B) a = e a := rfl
 theorem coe_coe (e : A ≃A[R] B) : ⇑(e : A →A[R] B) = e := rfl
 
 theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv : (A ≃A[R] B) → A ≃ₐ[R] B) := by
-  rintro ⟨e, _, _⟩ ⟨e', _, _⟩ rfl
+  rintro ⟨e, -, -⟩ ⟨e', -, -⟩ rfl
   rfl
 
 @[ext]

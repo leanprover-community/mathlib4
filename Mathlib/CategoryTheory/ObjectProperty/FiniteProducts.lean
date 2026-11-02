@@ -41,7 +41,7 @@ abbrev IsClosedUnderBinaryProducts :=
 lemma prop_of_isLimit_binaryFan [P.IsClosedUnderBinaryProducts] {X Y : C} {B : BinaryFan X Y}
     (hB : IsLimit B) (hX : P X) (hY : P Y) :
     P B.pt :=
-  P.prop_of_isLimit hB (by rintro ⟨_ | _⟩ <;> assumption)
+  P.prop_of_isLimit hB (by rintro ⟨- | -⟩ <;> assumption)
 
 lemma prop_prod [P.IsClosedUnderBinaryProducts] (X Y : C) [HasBinaryProduct X Y]
     (hX : P X) (hY : P Y) :
@@ -133,7 +133,7 @@ abbrev IsClosedUnderBinaryCoproducts :=
 lemma prop_of_isColimit_binaryCofan [P.IsClosedUnderBinaryCoproducts] {X Y : C}
     {B : BinaryCofan X Y} (hB : IsColimit B) (hX : P X) (hY : P Y) :
     P B.pt :=
-  P.prop_of_isColimit hB (by rintro ⟨_ | _⟩ <;> assumption)
+  P.prop_of_isColimit hB (by rintro ⟨- | -⟩ <;> assumption)
 
 lemma prop_coprod [P.IsClosedUnderBinaryCoproducts] (X Y : C) [HasBinaryCoproduct X Y]
     (hX : P X) (hY : P Y) :

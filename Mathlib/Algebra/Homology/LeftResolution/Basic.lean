@@ -153,7 +153,7 @@ lemma chainComplexMap_id : Λ.chainComplexMap (𝟙 X) = 𝟙 _ := by
   ext n
   induction n with
   | zero => simp
-  | succ n hn => obtain _ | n := n <;> simp [hn]
+  | succ n hn => obtain - | n := n <;> simp [hn]
 
 variable (X Y) in
 @[simp]
@@ -162,7 +162,7 @@ lemma chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
   ext n
   induction n with
   | zero => simp
-  | succ n hn => obtain _ | n := n <;> simp [hn]
+  | succ n hn => obtain - | n := n <;> simp [hn]
 
 @[reassoc, simp]
 lemma chainComplexMap_comp :
@@ -171,7 +171,7 @@ lemma chainComplexMap_comp :
   induction n with
   | zero => simp
   | succ n hn =>
-    obtain _ | n := n
+    obtain - | n := n
     all_goals
       dsimp
       simp only [chainComplexMap_f_succ_succ, assoc, Iso.cancel_iso_hom_left,

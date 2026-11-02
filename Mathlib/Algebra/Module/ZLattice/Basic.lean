@@ -471,7 +471,7 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
       exact Metric.finite_isBounded_inter_isClosed
         DiscreteTopology.isDiscrete (fundamentalDomain_isBounded b) inferInstance
     refine Set.Finite.subset this ?_
-    rintro _ ⟨_, ⟨⟨x, ⟨h_mem, rfl⟩⟩, rfl⟩⟩
+    rintro - ⟨-, ⟨⟨x, ⟨h_mem, rfl⟩⟩, rfl⟩⟩
     rw [Function.comp_apply, mkQ_apply, quotientEquiv_apply_mk, fractRestrict_apply]
     refine ⟨?_, ?_⟩
     · exact fract_mem_fundamentalDomain b x
@@ -796,7 +796,7 @@ lemma IsZLattice.isCompact_range_of_periodic
   let b := Module.Free.chooseBasis ℤ L
   convert (b.ofZLatticeBasis ℝ).parallelepiped.isCompact.image hf
   refine le_antisymm ?_ (Set.image_subset_range _ _)
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   let x' : L := b.repr.symm (Finsupp.equivFunOnFinite.symm
     fun i ↦ ⌊(b.ofZLatticeBasis ℝ).repr x i⌋)
   refine ⟨x + (- x'), ?_, hf' _ _ (- x').2⟩

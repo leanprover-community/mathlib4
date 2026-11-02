@@ -581,7 +581,7 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
       ← NNReal.coe_le_coe, NNReal.coe_one] at hε hεbound
   by_contra! nh
   choose μ hμInS hcontradiction using nh
-  obtain ⟨μlim, _, sub, hsubmono, hμconverges⟩ :=
+  obtain ⟨μlim, -, sub, hsubmono, hμconverges⟩ :=
       hcomp.isSeqCompact (fun n ↦ subset_closure <| hμInS n)
   have Measurebound n : (μlim (⋃ (i ≤ n), U i) : ℝ) ≤ 1 - ε := calc
     (μlim (⋃ (i ≤ n), U i) : ℝ)

@@ -362,7 +362,7 @@ theorem convexHull_eq (s : Set E) : convexHull R s =
     · intro i hi
       rw [Finset.mem_disjSum] at hi
       rcases hi with (⟨j, hj, rfl⟩ | ⟨j, hj, rfl⟩) <;> apply_rules [hzx, hzy]
-  · rintro _ ⟨ι, t, w, z, hw₀, hw₁, hz, rfl⟩
+  · rintro - ⟨ι, t, w, z, hw₀, hw₁, hz, rfl⟩
     exact t.centerMass_mem_convexHull hw₀ (hw₁.symm ▸ zero_lt_one) hz
 
 /-- Universe polymorphic version of the reverse implication of `mem_convexHull_iff_exists_fintype`.
@@ -406,7 +406,7 @@ theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     · rintro i hi
       apply_rules [add_nonneg, mul_nonneg, hwx₀, hwy₀]
     · simp only [Finset.sum_add_distrib, ← mul_sum, mul_one, *]
-  · rintro _ ⟨w, hw₀, hw₁, rfl⟩
+  · rintro - ⟨w, hw₀, hw₁, rfl⟩
     exact
       s.centerMass_mem_convexHull (fun x hx => hw₀ _ hx) (hw₁.symm ▸ zero_lt_one) fun x hx => hx
 

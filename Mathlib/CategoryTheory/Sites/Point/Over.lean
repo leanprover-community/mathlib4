@@ -74,7 +74,7 @@ lemma IsConservativeFamilyOfPoints.over
     obtain ⟨ι, Z, g, rfl⟩ := S.exists_eq_ofArrows
     rw [hP.jointly_reflect_ofArrows_mem_of_small]
     intro Φ y
-    obtain ⟨T, a, ⟨_, b, _, ⟨i⟩, hb⟩, ⟨z, hz₁⟩, hz₂⟩ := hS (⟨_, ⟨⟨Φ, Φ.obj.fiber.map f y⟩⟩⟩)
+    obtain ⟨T, a, ⟨-, b, -, ⟨i⟩, hb⟩, ⟨z, hz₁⟩, hz₂⟩ := hS (⟨_, ⟨⟨Φ, Φ.obj.fiber.map f y⟩⟩⟩)
       (⟨by exact y, by rw [FunctorToTypes.mem_fromOverSubfunctor_iff]; rfl⟩)
     rw [Subtype.ext_iff] at hz₂
     exact ⟨i, Φ.obj.fiber.map b z,

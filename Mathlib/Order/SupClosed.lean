@@ -88,7 +88,7 @@ lemma SupClosed.preimage [FunLike F β α] [SupHomClass F β α] (hs : SupClosed
 @[to_dual]
 lemma SupClosed.image [FunLike F α β] [SupHomClass F α β] (hs : SupClosed s) (f : F) :
     SupClosed (f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
   rw [← map_sup]
   exact Set.mem_image_of_mem _ <| hs ha hb
 
@@ -263,7 +263,7 @@ lemma supClosure_univ : supClosure (Set.univ : Set α) = Set.univ := by simp
 @[to_dual (attr := simp)]
 lemma upperBounds_supClosure (s : Set α) : upperBounds (supClosure s) = upperBounds s :=
   (upperBounds_mono_set subset_supClosure).antisymm <| by
-    rintro a ha _ ⟨t, ht, hts, rfl⟩
+    rintro a ha - ⟨t, ht, hts, rfl⟩
     exact sup'_le _ _ fun b hb ↦ ha <| hts hb
 
 @[to_dual (attr := simp)]
@@ -288,7 +288,7 @@ protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite :=
   classical
   refine ({t ∈ s.powerset | t.Nonempty}.attach.image
     fun t ↦ t.1.sup' (mem_filter.1 t.2).2 id).finite_toSet.subset ?_
-  rintro _ ⟨t, ht, hts, rfl⟩
+  rintro - ⟨t, ht, hts, rfl⟩
   simp only [id_eq, coe_image, mem_image, mem_coe, mem_attach, true_and, Subtype.exists,
     Finset.mem_powerset, mem_filter]
   exact ⟨t, ⟨hts, ht⟩, rfl⟩
@@ -297,7 +297,7 @@ protected lemma Set.Finite.supClosure (hs : s.Finite) : (supClosure s).Finite :=
     supClosure (s ×ˢ t) = supClosure s ×ˢ supClosure t :=
   le_antisymm (supClosure_min (Set.prod_mono subset_supClosure subset_supClosure) <|
     supClosed_supClosure.prod supClosed_supClosure) <| by
-      rintro ⟨_, _⟩ ⟨⟨u, hu, hus, rfl⟩, v, hv, hvt, rfl⟩
+      rintro ⟨-, -⟩ ⟨⟨u, hu, hus, rfl⟩, v, hv, hvt, rfl⟩
       refine ⟨u ×ˢ v, hu.product hv, ?_, ?_⟩
       · simpa only [coe_product] using Set.prod_mono hus hvt
       · simp [prodMk_sup'_sup']
@@ -363,9 +363,9 @@ lemma image_latticeClosure (s : Set α) (f : α → β)
   · rintro a - b - ha hb
     simpa [map_inf] using isSublattice_latticeClosure.infClosed ha hb
   · exact Set.image_mono subset_latticeClosure
-  · rintro _ - _ - ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+  · rintro - - - - ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
     exact ⟨a ⊔ b, isSublattice_latticeClosure.supClosed ha hb, map_sup ..⟩
-  · rintro _ - _ - ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+  · rintro - - - - ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
     exact ⟨a ⊓ b, isSublattice_latticeClosure.infClosed ha hb, map_inf ..⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -388,7 +388,7 @@ variable [DistribLattice α] [DistribLattice β] {s : Set α}
 
 @[to_dual]
 protected lemma SupClosed.infClosure (hs : SupClosed s) : SupClosed (infClosure s) := by
-  rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
+  rintro - ⟨t, ht, hts, rfl⟩ - ⟨u, hu, hus, rfl⟩
   rw [inf'_sup_inf']
   exact finsetInf'_mem_infClosure _
     fun i hi ↦ hs (hts (mem_product.1 hi).1) (hus (mem_product.1 hi).2)

@@ -460,7 +460,7 @@ lemma get_append_left (h : n < x.length) : (x ++ₛ a).get n = x[n] := by
   induction x generalizing n with
   | nil => simp at h
   | cons b x ih =>
-    rcases n with (_ | n)
+    rcases n with (- | n)
     · simp
     · simp [ih n (by simpa using h), cons_append_stream]
 

@@ -340,7 +340,7 @@ lemma ofHoms_homFamily (P : MorphismProperty C) : ofHoms P.homFamily = P := by
   constructor
   · intro hf
     rw [ofHoms_iff] at hf
-    obtain ⟨⟨f, hf⟩, ⟨_, _⟩⟩ := hf
+    obtain ⟨⟨f, hf⟩, ⟨-, -⟩⟩ := hf
     exact hf
   · intro hf
     exact ⟨(⟨f, hf⟩ : P.toSet)⟩

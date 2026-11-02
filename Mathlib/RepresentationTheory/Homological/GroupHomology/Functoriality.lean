@@ -510,7 +510,7 @@ previous assumptions. -/
     intro w hw
     obtain (hl | hr) := Finset.mem_union.1 (support_add hw)
     /- The first sum clearly has support in `S`: -/
-    · obtain ⟨t, _, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
+    · obtain ⟨t, -, ht⟩ := Finset.mem_biUnion.1 (support_sum hl)
       apply support_single_subset at ht
       simp_all [← QuotientGroup.eq]
     /- The third sum is 0, by `hv`. -/

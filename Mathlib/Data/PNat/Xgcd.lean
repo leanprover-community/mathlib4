@@ -443,7 +443,7 @@ theorem gcd_props :
   grind
 
 theorem gcd_eq : gcdD a b = gcd a b := by
-  rcases gcd_props a b with ⟨_, h₁, h₂, _, _, h₅, _⟩
+  rcases gcd_props a b with ⟨-, h₁, h₂, -, -, h₅, -⟩
   apply dvd_antisymm
   · apply dvd_gcd
     · exact Dvd.intro (gcdA' a b) (h₁.trans (mul_comm _ _)).symm

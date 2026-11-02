@@ -245,7 +245,7 @@ theorem cauchySeq_finset_iff_tprod_vanishing :
       rw [← prod_subtype_map_embedding fun _ _ ↦ by rfl]
       apply hs
       simp_rw [Finset.mem_map]
-      rintro _ ⟨b, -, rfl⟩
+      rintro - ⟨b, -, rfl⟩
       exact hts b.prop
     · exact tprod_eq_one_of_not_multipliable ht ▸ mem_of_mem_nhds ho
   · obtain ⟨s, hs⟩ := vanish _ he

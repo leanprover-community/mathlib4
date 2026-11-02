@@ -452,7 +452,7 @@ theorem diophFn_compn :
       dsimp
       -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x` but that does not work.
       congr! 1
-      ext x; obtain _ | _ | _ := x; rfl
+      ext x; obtain - | - | - := x; rfl
   | succ n, S, d, f =>
     f.consElim fun f fl => by
         simp only [vectorAllP_cons, and_imp]
@@ -465,13 +465,13 @@ theorem diophFn_compn :
                 -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x`
                 -- but that does not work.
                 congr! 1
-                ext x; obtain _ | _ | _ := x <;> rfl
+                ext x; obtain - | - | - := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
             @diophFn_compn n {v | (v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr) ∈ S} this _ dfl
           ext this fun v => by
             dsimp
             congr! 3 with x
-            obtain _ | _ | _ := x <;> rfl
+            obtain - | - | - := x <;> rfl
 
 theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α → ℕ) → ℕ) n)
     (df : VectorAllP DiophFn f) : Dioph {v | (fun i => f i v) ∈ S} :=

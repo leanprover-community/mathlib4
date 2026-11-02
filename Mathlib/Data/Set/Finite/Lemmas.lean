@@ -83,7 +83,7 @@ theorem exists_lower_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
     (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f a ≤ f b := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · exact ‹Nonempty α›.elim fun a => ⟨a, fun _ => False.elim⟩
-  · rcases Set.exists_min_image s f h hs with ⟨x₀, _, hx₀⟩
+  · rcases Set.exists_min_image s f h hs with ⟨x₀, -, hx₀⟩
     exact ⟨x₀, fun x hx => hx₀ x hx⟩
 
 end Set

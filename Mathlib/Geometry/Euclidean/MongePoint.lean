@@ -642,7 +642,7 @@ theorem OrthocentricSystem.affineIndependent {s : Set P} (ho : OrthocentricSyste
     (hps : Set.range p ⊆ s) (hpi : Function.Injective p) : AffineIndependent ℝ p := by
   rcases ho with ⟨t, hto, hst⟩
   rw [hst] at hps
-  rcases exists_dist_eq_circumradius_of_subset_insert_orthocenter hto hps hpi with ⟨c, _, hc⟩
+  rcases exists_dist_eq_circumradius_of_subset_insert_orthocenter hto hps hpi with ⟨c, -, hc⟩
   exact Cospherical.affineIndependent ⟨c, t.circumradius, hc⟩ Set.Subset.rfl hpi
 
 /-- Any three points in an orthocentric system span the same subspace
@@ -651,7 +651,7 @@ theorem affineSpan_of_orthocentricSystem {s : Set P} (ho : OrthocentricSystem s)
     (hps : Set.range p ⊆ s) (hpi : Function.Injective p) :
     affineSpan ℝ (Set.range p) = affineSpan ℝ s := by
   have ha := ho.affineIndependent hps hpi
-  rcases ho with ⟨t, _, hts⟩
+  rcases ho with ⟨t, -, hts⟩
   have hs : affineSpan ℝ s = affineSpan ℝ (Set.range t.points) := by
     rw [hts, affineSpan_insert_eq_affineSpan ℝ t.orthocenter_mem_affineSpan]
   refine ext_of_direction_eq ?_

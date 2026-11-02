@@ -308,7 +308,7 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
       { (c.π.app i ⁻¹ᵁ V : c.pt.Opens) | (i : I) (V : (D.obj i).Opens) (_ : IsAffineOpen V) } := by
   refine TopologicalSpace.Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_
   obtain ⟨i⟩ := IsCofiltered.nonempty (C := I)
-  obtain ⟨_, ⟨V, hV : IsAffineOpen V, rfl⟩, hxV, -⟩ :=
+  obtain ⟨-, ⟨V, hV : IsAffineOpen V, rfl⟩, hxV, -⟩ :=
     (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (c.π.app i x)) isOpen_univ
   have (j : _) : IsAffine ((opensDiagram D i V).op.obj j).unop := hV.preimage _
   have (j : _) : IsAffine ((opensDiagram D i V).obj j) := hV.preimage _
@@ -733,7 +733,7 @@ lemma exists_appTop_map_eq_zero_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom
   classical
   have (x : D.obj i) : ∃ (U : (D.obj i).Opens) (hU : IsAffineOpen U)
       (hU : x ∈ U) (j : I) (f : j ⟶ i), (D.map f).app U (s |_ U) = 0 := by
-    obtain ⟨_, ⟨U, hU : IsAffineOpen U, rfl⟩, hxU, -⟩ :=
+    obtain ⟨-, ⟨U, hU : IsAffineOpen U, rfl⟩, hxU, -⟩ :=
       (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
     have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
     obtain ⟨j, f, hj⟩ := exists_appTop_map_eq_zero_of_isAffine_of_isLimit _ _
@@ -831,7 +831,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
   have (x : c.pt) : ∃ (i : I) (U : (D.obj i).Opens) (hU : IsAffineOpen U)
       (hU : (c.π.app i).base x ∈ U) (t : Γ(D.obj i, U)), (c.π.app i).app U t = s |_ _ := by
     have i := IsCofiltered.nonempty (C := I).some
-    obtain ⟨_, ⟨U, hU : IsAffineOpen U, rfl⟩, hxU, -⟩ :=
+    obtain ⟨-, ⟨U, hU : IsAffineOpen U, rfl⟩, hxU, -⟩ :=
       (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open
         (Set.mem_univ ((c.π.app i).base x)) isOpen_univ
     have (j : Over i) : IsAffine ((opensDiagram D i U).obj j) := hU.preimage (D.map _)
@@ -974,9 +974,9 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
   have (x : c.pt) : ∃ (i : I) (f : Γ(D.obj i, ⊤)),
       IsAffineOpen (Scheme.basicOpen _ f) ∧ c.π.app i x ∈ (Scheme.basicOpen _ f) := by
     obtain ⟨i⟩ := IsCofiltered.nonempty (C := I)
-    obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open
+    obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ := (D.obj i).isBasis_affineOpens.exists_subset_of_mem_open
       (Set.mem_univ (c.π.app i x)) isOpen_univ
-    obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, hrU⟩ :=
+    obtain ⟨-, ⟨-, ⟨r, hr, rfl⟩, rfl⟩, hxr, hrU⟩ :=
       (IsQuasiAffine.isBasis_basicOpen c.pt).exists_subset_of_mem_open hxU (c.π.app i ⁻¹ᵁ U).isOpen
     obtain ⟨j, r, rfl⟩ := exists_appTop_π_eq_of_isLimit D c hc r
     obtain ⟨k, fki, fkj, -⟩ := IsCofilteredOrEmpty.cone_objs i j

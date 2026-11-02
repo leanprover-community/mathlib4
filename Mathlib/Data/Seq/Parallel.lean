@@ -109,7 +109,7 @@ private theorem terminates_parallel.aux :
       rw [H2]
       refine @Computation.think_terminates _ _ ?_
       have := H1 _ h
-      rcases Seq.destruct S with (_ | ⟨_ | c, S'⟩) <;> apply IH <;> simp [this]
+      rcases Seq.destruct S with (- | ⟨- | c, S'⟩) <;> apply IH <;> simp [this]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : Terminates c] :

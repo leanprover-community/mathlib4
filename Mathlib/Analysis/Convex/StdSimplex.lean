@@ -152,7 +152,7 @@ variable (R : Type*) (ι : Type*) [Field R] [LinearOrder R] [IsStrictOrderedRing
 theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
     convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι := by
   refine Subset.antisymm (convexHull_min ?_ (convex_stdSimplex R ι)) ?_
-  · rintro _ ⟨i, rfl⟩
+  · rintro - ⟨i, rfl⟩
     exact ite_eq_mem_stdSimplex R i
   · rintro w ⟨hw₀, hw₁⟩
     rw [pi_eq_sum_univ w]
@@ -173,7 +173,7 @@ lemma Convexity.ConvexSpace.AffineMap.convex_range {X : Type*}
     [ConvexSpace R X] {E : Type*} [AddCommGroup E] [Module R E]
     [ConvexSpace R E] [IsModuleConvexSpace R E] (f : ConvexSpace.AffineMap R X E) :
     Convex R (range f) := by
-  rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ a b ha hb h
+  rintro - ⟨x, rfl⟩ - ⟨y, rfl⟩ a b ha hb h
   exact ⟨convexCombPair a b ha hb h x y, by simp [f.isAffineMap.map_convexCombPair]⟩
 
 /-- The convex hull of a set `s` is the range of the affine map
@@ -187,7 +187,7 @@ theorem Set.convexHull_eq_range_iConvexComb
   · rw [Convex.convexHull_subset_iff (ConvexSpace.AffineMap.convex_range _)]
     intro x hx
     exact ⟨.single ⟨x, hx⟩, by simp⟩
-  · rintro _ ⟨w, rfl⟩
+  · rintro - ⟨w, rfl⟩
     rw [StdSimplex.affineMapMk_apply, iConvexComb_eq_sum, Finsupp.sum]
     convert affineCombination_mem_convexHull (s := w.weights.support) (v := fun x ↦ x.val)
       (w := w.weights) (by simp) w.total
@@ -352,7 +352,7 @@ lemma le_one (s : stdSimplex S X) (x : X) : s x ≤ 1 := by
 lemma image_linearMap (f : X → Y) :
     Set.image (FunOnFinite.linearMap S S f) (stdSimplex S X) ⊆ stdSimplex S Y := by
   classical
-  rintro _ ⟨s, ⟨hs₀, hs₁⟩, rfl⟩
+  rintro - ⟨s, ⟨hs₀, hs₁⟩, rfl⟩
   refine ⟨fun y ↦ ?_, ?_⟩
   · rw [FunOnFinite.linearMap_apply_apply]
     exact Finset.sum_nonneg (by aesop)

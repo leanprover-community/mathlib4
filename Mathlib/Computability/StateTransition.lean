@@ -113,7 +113,7 @@ theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches 
     · rw [Part.mem_unique h
           (PFun.mem_fix_iff.2 <| Or.inl <| Part.mem_some_iff.2 <| by rw [e]; rfl)]
       exact ⟨ReflTransGen.refl, e⟩
-    · rcases PFun.mem_fix_iff.1 h with (h | ⟨_, h, _⟩) <;> rw [e] at h <;>
+    · rcases PFun.mem_fix_iff.1 h with (h | ⟨_, h, -⟩) <;> rw [e] at h <;>
         cases Part.mem_some_iff.1 h
       obtain ⟨h₁, h₂⟩ := IH a' e
       exact ⟨ReflTransGen.head e h₁, h₂⟩
@@ -210,8 +210,8 @@ theorem tr_eval_rev {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H :
   rcases hfc : f₁ c₁ with - | d₁
   · rfl
   rw [hfc] at this
-  rcases this with ⟨d₂, _, bd⟩
-  rcases TransGen.head'_iff.1 bd with ⟨e, h, _⟩
+  rcases this with ⟨d₂, -, bd⟩
+  rcases TransGen.head'_iff.1 bd with ⟨e, h, -⟩
   cases b0.symm.trans h
 
 theorem tr_eval_dom {σ₁ σ₂ f₁ f₂} {tr : σ₁ → σ₂ → Prop} (H : Respects f₁ f₂ tr) {a₁ a₂}
@@ -246,7 +246,7 @@ theorem tr_eval' {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ →
       (Part.mem_map_iff _).2 ⟨b₁, hb, bb⟩,
       fun h ↦ by
       rcases (Part.mem_map_iff _).1 h with ⟨b₁, ab, bb⟩
-      rcases tr_eval H rfl ab with ⟨_, rfl, h⟩
+      rcases tr_eval H rfl ab with ⟨-, rfl, h⟩
       rwa [bb] at h⟩
 
 section EvalsTo

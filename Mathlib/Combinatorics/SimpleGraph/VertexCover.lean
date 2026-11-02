@@ -109,7 +109,7 @@ theorem vertexCoverNum_exists (G) :
 theorem exists_of_le_vertexCoverNum (n : ℕ) (h₁ : vertexCoverNum G ≤ n)
     (h₂ : n ≤ ENat.card V) : ∃ s : Set V, s.encard = n ∧ IsVertexCover G s := by
   obtain ⟨s, hs₁, hs₂⟩ := vertexCoverNum_exists G
-  obtain ⟨r, hr₁, _, hr₃⟩ :=
+  obtain ⟨r, hr₁, -, hr₃⟩ :=
     Set.exists_superset_subset_encard_eq (by simp) (le_of_eq_of_le hs₁ h₁) (Set.encard_univ _ ▸ h₂)
   exact ⟨r, hr₃, hs₂.subset hr₁⟩
 

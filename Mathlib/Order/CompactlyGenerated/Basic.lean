@@ -138,13 +138,13 @@ lemma IsCompactElement.exists_le_finsetSup_of_le_isLUB {α : Type*} [Semilattice
     ∃ t : Finset α, ↑t ⊆ s ∧ k ≤ t.sup id := by
   classical
   have hdir : DirectedOn (· ≤ ·) {x | ∃ t : Finset α, ↑t ⊆ s ∧ x = t.sup id} := by
-    rintro _ ⟨t, ht, rfl⟩ _ ⟨t', ht', rfl⟩
+    rintro - ⟨t, ht, rfl⟩ - ⟨t', ht', rfl⟩
     use (t ∪ t').sup id
     grind
   specialize hk {x | ∃ t : Finset α, ↑t ⊆ s ∧ x = t.sup id} u ⟨⊥, ∅, by simp⟩ hdir
   simp only [Set.mem_ofPred_eq, ↓existsAndEq, and_true] at hk
   refine hk ⟨?_, ?_⟩ hle
-  · rintro _ ⟨t, ht, rfl⟩
+  · rintro - ⟨t, ht, rfl⟩
     exact Finset.sup_le fun x hx => hu.1 (ht hx)
   · intro u' hu'
     refine hu.2 (upperBounds_mono_set ?_ hu')
@@ -546,7 +546,7 @@ theorem sSupIndep_iUnion_of_directed {η : Type*} {s : η → Set α}
     obtain ⟨i, hi⟩ := hs.finset_le fi.toFinset
     exact (h i).mono
         (Set.Subset.trans hI <| Set.iUnion₂_subset fun j hj => hi j (fi.mem_toFinset.2 hj))
-  · rintro a ⟨_, ⟨i, _⟩, _⟩
+  · rintro a ⟨-, ⟨i, -⟩, -⟩
     exfalso
     exact hη ⟨i⟩
 
@@ -652,7 +652,7 @@ theorem iSupIndep.iInf {ι : Type*} {κ : ι → Type*} (f : (i : ι) → κ i �
       refine Finset.SupIndep.biUnion ?_ (by grind)
       apply ((h_indep i).supIndep' _).mono
       simp_rw [Finset.sup_le_iff, Finset.mem_filter, and_imp]
-      rintro _ _ _ _ rfl
+      rintro - - - - rfl
       exact iInf_le _ _
 
 instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice α] : IsAtomic α :=
@@ -713,7 +713,7 @@ theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
         fun _ => Set.subset_sUnion_of_mem⟩
   swap
   · rw [sSup_sUnion, ← sSup_image, DirectedOn.disjoint_sSup_right]
-    · rintro _ ⟨s, hs, rfl⟩
+    · rintro - ⟨s, hs, rfl⟩
       exact (hc1 hs).2.1
     · rw [directedOn_image]
       exact hc2.directedOn.mono @fun s t => sSup_le_sSup

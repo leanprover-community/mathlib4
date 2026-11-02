@@ -57,7 +57,7 @@ lemma ShortComplex.ShortExact.push
     (S.push f).ShortExact := by
   have := hS.mono_f
   have := hS.epi_g
-  obtain ⟨h, _⟩ := (S.push f).exact_and_epi_g_iff_g_is_cokernel.2 ⟨by
+  obtain ⟨h, -⟩ := (S.push f).exact_and_epi_g_iff_g_is_cokernel.2 ⟨by
     refine Cofork.IsColimit.mk' _ (fun s ↦ ?_)
     obtain ⟨l, hl⟩ := CokernelCofork.IsColimit.desc' hS.gIsCokernel (pushout.inl _ _ ≫ s.π)
       (by simp [pushout.condition_assoc])

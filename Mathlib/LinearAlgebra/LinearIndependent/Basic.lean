@@ -240,7 +240,7 @@ theorem LinearIndependent.eq_of_smul_apply_eq_smul_apply {M : Type*} [AddCommMon
     (h : c • v i = d • v j) : i = j := by
   have h_single_eq : Finsupp.single i c = Finsupp.single j d :=
     li <| by simpa [Finsupp.linearCombination_apply] using h
-  rcases (Finsupp.single_eq_single_iff ..).mp h_single_eq with (⟨H, _⟩ | ⟨hc, _⟩)
+  rcases (Finsupp.single_eq_single_iff ..).mp h_single_eq with (⟨H, -⟩ | ⟨hc, -⟩)
   · exact H
   · contradiction
 
@@ -251,7 +251,7 @@ section Subtype
 theorem LinearIndependent.disjoint_span_image (hv : LinearIndependent R v) {s t : Set ι}
     (hs : Disjoint s t) : Disjoint (Submodule.span R <| v '' s) (Submodule.span R <| v '' t) := by
   simp only [disjoint_def, Finsupp.mem_span_image_iff_linearCombination]
-  rintro _ ⟨l₁, hl₁, rfl⟩ ⟨l₂, hl₂, H⟩
+  rintro - ⟨l₁, hl₁, rfl⟩ ⟨l₂, hl₂, H⟩
   rw [hv.finsuppLinearCombination_injective.eq_iff] at H; subst l₂
   have : l₁ = 0 := Submodule.disjoint_def.mp (Finsupp.disjoint_supported_supported hs) _ hl₁ hl₂
   simp [this]

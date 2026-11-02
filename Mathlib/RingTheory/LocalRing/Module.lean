@@ -243,7 +243,7 @@ injective, then `M` is free.
 theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     (H : Function.Injective ((𝔪).subtype.rTensor M)) :
     Module.Free R M := by
-  obtain ⟨_, _, b, _⟩ := exists_basis_of_span_of_maximalIdeal_rTensor_injective H id (by simp)
+  obtain ⟨_, -, b, -⟩ := exists_basis_of_span_of_maximalIdeal_rTensor_injective H id (by simp)
   exact Free.of_basis b
 
 set_option backward.isDefEq.respectTransparency.types false in

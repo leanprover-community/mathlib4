@@ -383,7 +383,7 @@ to `s`. -/
 theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
     (hf : IntegrableOn f s μ) (h's : ∀ x ∈ s, ‖f x‖ₑ ≠ 0) :
     μ.restrict (toMeasurable μ s) = μ.restrict s := by
-  rcases exists_seq_strictAnti_tendsto' ENNReal.zero_lt_top with ⟨u, _, u_pos, u_lim⟩
+  rcases exists_seq_strictAnti_tendsto' ENNReal.zero_lt_top with ⟨u, -, u_pos, u_lim⟩
   let v n := toMeasurable (μ.restrict s) { x | u n ≤ ‖f x‖ₑ }
   have A : ∀ n, μ (s ∩ v n) ≠ ∞ := by
     intro n

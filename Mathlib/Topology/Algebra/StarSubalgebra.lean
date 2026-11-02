@@ -163,7 +163,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
   rw [DFunLike.ext'_iff]
   have : DenseRange (Set.inclusion (le_topologicalClosure S)) := by simp [-SetLike.coe_sort_coe]
   refine Continuous.ext_on this hφ hψ ?_
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   simpa only using! congr($h x)
 
 theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}

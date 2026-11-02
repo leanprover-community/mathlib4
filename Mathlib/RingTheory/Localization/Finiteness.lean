@@ -78,7 +78,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   -- That is, there exists some `x' : S` in the span of `s'` in `S` and `x' = y' • x` in `S'`.
   -- Thus `a • (y' • x) = a • x' ∈ span s'` in `S` for some `a ∈ M`.
   obtain ⟨x', hx', hx'' : algebraMap _ _ _ = _⟩ := hx
-  obtain ⟨⟨_, a, ha₁, rfl⟩, ha₂⟩ :=
+  obtain ⟨⟨-, a, ha₁, rfl⟩, ha₂⟩ :=
     (IsLocalization.eq_iff_exists (M.map (algebraMap R S)) S').mp hx''
   use (⟨a, ha₁⟩ : M) * (⟨y', hy'⟩ : M)
   convert
@@ -208,10 +208,10 @@ theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) 
   rintro x -
   refine Submodule.mem_of_span_eq_top_of_smul_pow_mem _ (t : Set R) ht _ (fun r ↦ ?_)
   set S : Submonoid R := Submonoid.powers r.val
-  obtain ⟨⟨_, n₁, rfl⟩, hn₁⟩ := multiple_mem_span_of_mem_localization_span S (Rₚ r)
+  obtain ⟨⟨-, n₁, rfl⟩, hn₁⟩ := multiple_mem_span_of_mem_localization_span S (Rₚ r)
     (s₁ r : Set (Mₚ r)) (IsLocalizedModule.mk' (f r) x (1 : S)) (by rw [s₂ r]; trivial)
   rw [Submonoid.smul_def, ← IsLocalizedModule.mk'_smul, IsLocalizedModule.mk'_one] at hn₁
-  obtain ⟨⟨_, n₂, rfl⟩, hn₂⟩ := IsLocalizedModule.smul_mem_finsetIntegerMultiple_span
+  obtain ⟨⟨-, n₂, rfl⟩, hn₂⟩ := IsLocalizedModule.smul_mem_finsetIntegerMultiple_span
     S (f r) _ (s₁ r) hn₁
   rw [Submonoid.smul_def] at hn₂
   use n₂ + n₁

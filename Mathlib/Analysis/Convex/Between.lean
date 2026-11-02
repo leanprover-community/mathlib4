@@ -736,11 +736,11 @@ theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) 
   simpa using sameRay_of_mem_segment ((mem_segment_iff_wbtw).2 (h.vsub_const x))
 
 theorem Wbtw.sameRay_vsub_left {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ x) := by
-  rcases h with ⟨t, ⟨ht0, _⟩, rfl⟩
+  rcases h with ⟨t, ⟨ht0, -⟩, rfl⟩
   simp [SameRay.sameRay_nonneg_smul_left (z -ᵥ x) ht0]
 
 theorem Wbtw.sameRay_vsub_right {x y z : P} (h : Wbtw R x y z) : SameRay R (z -ᵥ x) (z -ᵥ y) := by
-  rcases h with ⟨t, ⟨_, ht1⟩, rfl⟩
+  rcases h with ⟨t, ⟨-, ht1⟩, rfl⟩
   simp [SameRay.sameRay_nonneg_smul_right (z -ᵥ x) (sub_nonneg.2 ht1)]
 
 end StrictOrderedCommRing

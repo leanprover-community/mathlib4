@@ -116,7 +116,7 @@ lemma freeLocus_localization (S : Submonoid R) :
     have := IsLocalization.isLocalization_of_submonoid_le (Localization S) Rₚ _ _ hp'
     apply IsLocalization.isLocalization_of_is_exists_mul_mem _
       (Submonoid.map (algebraMap R (Localization S)) p'.primeCompl)
-    · rintro _ ⟨x, hx, rfl⟩; exact hx
+    · rintro - ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
       obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
       refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
@@ -140,7 +140,7 @@ lemma freeLocus_localization (S : Submonoid R) :
       IsLocalizedModule.of_restrictScalars p'.primeCompl ..
     apply IsLocalizedModule.of_exists_mul_mem
       (Algebra.algebraMapSubmonoid (Localization S) p'.primeCompl)
-    · rintro _ ⟨x, hx, rfl⟩; exact hx
+    · rintro - ⟨x, hx, rfl⟩; exact hx
     · rintro ⟨x, hx⟩
       obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
       refine ⟨algebraMap _ _ s.1, x, fun H ↦ hx ?_, by simp⟩
@@ -170,7 +170,7 @@ lemma isOpen_freeLocus [Module.FinitePresentation R M] :
     IsOpen (freeLocus R M) := by
   refine isOpen_iff_forall_mem_open.mpr fun x hx ↦ ?_
   have : Module.Free _ _ := hx
-  obtain ⟨r, hr, hr', _⟩ := Module.FinitePresentation.exists_free_localizedModule_powers
+  obtain ⟨r, hr, hr', -⟩ := Module.FinitePresentation.exists_free_localizedModule_powers
     x.asIdeal.primeCompl (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M)
     (Localization.AtPrime x.asIdeal)
   exact ⟨basicOpen r, basicOpen_subset_freeLocus_iff.mpr inferInstance, (basicOpen r).2, hr⟩

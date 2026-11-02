@@ -209,7 +209,7 @@ variable [LinearOrder α] {s : Set α} {a : α} {f : ι → α}
 theorem IsGLB.biUnion_Ioi_eq (h : IsGLB s a) : ⋃ x ∈ s, Ioi x = Ioi a := by
   refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
   · exact Ioi_subset_Ioi (h.1 hx)
-  · rcases h.exists_between hx with ⟨y, hys, _, hyx⟩
+  · rcases h.exists_between hx with ⟨y, hys, -, hyx⟩
     exact mem_biUnion hys hyx
 
 theorem IsGLB.iUnion_Ioi_eq (h : IsGLB (range f) a) : ⋃ x, Ioi (f x) = Ioi a :=
@@ -233,7 +233,7 @@ theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
   refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
   · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_notMem) hx)
-  · rcases a_glb.exists_between hx with ⟨y, hys, _, hyx⟩
+  · rcases a_glb.exists_between hx with ⟨y, hys, -, hyx⟩
     rw [mem_iUnion₂]
     exact ⟨y, hys, hyx.le⟩
 

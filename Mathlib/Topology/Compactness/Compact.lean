@@ -509,7 +509,7 @@ theorem isCompact_iUnion {ι : Sort*} {f : ι → Set X} [Finite ι] (h : ∀ i,
 
 theorem IsCompact.finite_of_discrete [DiscreteTopology X] (hs : IsCompact s) : s.Finite := by
   have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]
-  rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, _, hst⟩
+  rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, -, hst⟩
   simp only [← t.set_biUnion_coe, biUnion_of_singleton] at hst
   exact t.finite_toSet.subset hst
 
@@ -850,7 +850,7 @@ lemma compactSpace_generateFrom_of_compl_mem [T : TopologicalSpace X]
   contrapose! hP
   simp_rw [← Set.nonempty_compl, Set.compl_sUnion] at hP ⊢
   refine h _ ?_ fun Q hQP hQ ↦ ?_
-  · rintro _ ⟨S, hS, rfl⟩
+  · rintro - ⟨S, hS, rfl⟩
     exact h𝔅 _ (hP𝔅 hS)
   · replace hP : Q ⊆ compl '' P → (compl '' Q).Finite → (⋂₀ Q).Nonempty := by
       simpa [← compl_involutive.image_eq_preimage_symm] using hP (compl '' Q)
@@ -988,7 +988,7 @@ theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
 theorem Topology.IsInducing.isCompact_iff {f : X → Y} (hf : IsInducing f) :
     IsCompact s ↔ IsCompact (f '' s) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot F_le => ?_⟩
-  obtain ⟨_, ⟨x, x_in : x ∈ s, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
+  obtain ⟨-, ⟨x, x_in : x ∈ s, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 

@@ -253,7 +253,7 @@ theorem eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMa
 theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
     (hdvd : DvdNotUnit a (minpoly A x)) : Polynomial.aeval x a ≠ 0 := by
   refine fun ha => (min A x hamonic ha).not_gt (degree_lt_degree ?_)
-  obtain ⟨_, c, hu, he⟩ := hdvd
+  obtain ⟨-, c, hu, he⟩ := hdvd
   have hcm := hamonic.of_mul_monic_left (he.subst <| monic hx)
   rw [he, hamonic.natDegree_mul hcm]
   -- TODO: port Nat.lt_add_of_zero_lt_left from lean3 core

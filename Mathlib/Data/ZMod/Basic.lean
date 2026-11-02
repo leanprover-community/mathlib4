@@ -931,7 +931,7 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
 
 lemma subsingleton_iff {n : ℕ} : Subsingleton (ZMod n) ↔ n = 1 := by
   constructor
-  · obtain (_ | _ | n) := n
+  · obtain (- | - | n) := n
     · simpa [ZMod] using not_subsingleton _
     · simp [ZMod]
     · simpa [ZMod] using not_subsingleton _

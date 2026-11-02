@@ -136,7 +136,7 @@ theorem one_lt_rootMultiplicity_iff_isRoot
     1 < p.rootMultiplicity t ↔ p.IsRoot t ∧ (derivative p).IsRoot t := by
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by simp), h 1 (by simp)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
-  obtain (_ | _ | m) := m
+  obtain (- | - | m) := m
   exacts [h0, h1, by lia]
 
 end CommRing

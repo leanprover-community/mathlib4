@@ -65,7 +65,7 @@ variable {S R : Sieve X}
 attribute [simp] downward_closed
 
 theorem arrows_ext : ∀ {R S : Sieve X}, R.arrows = S.arrows → R = S := by
-  rintro ⟨_, _⟩ ⟨_, _⟩ rfl
+  rintro ⟨-, -⟩ ⟨-, -⟩ rfl
   rfl
 
 @[ext]
@@ -282,7 +282,7 @@ variable {Y f} {W : C} {g : W ⟶ X} (hg : ofArrows Y f g)
 
 include hg in
 lemma ofArrows.exists : ∃ (i : I) (h : W ⟶ Y i), g = h ≫ f i := by
-  obtain ⟨_, h, _, ⟨i⟩, rfl⟩ := hg
+  obtain ⟨-, h, -, ⟨i⟩, rfl⟩ := hg
   exact ⟨i, h, rfl⟩
 
 /-- When `hg : Sieve.ofArrows Y f g`, this is a choice of `i` such that `g`
@@ -305,9 +305,9 @@ lemma ofArrows_category' {S : C} (R : Presieve S) :
     Sieve.ofArrows _ (fun (f : R.category) ↦ f.obj.hom) = generate R := by
   refine le_antisymm ?_ ?_
   · rw [Sieve.generate_le_iff]
-    rintro _ _ ⟨f, hf⟩
+    rintro - - ⟨f, hf⟩
     exact ⟨_, 𝟙 _, f.hom, hf, by simp⟩
-  · rintro _ _ ⟨_, a, b, h, rfl⟩
+  · rintro - - ⟨_, a, b, h, rfl⟩
     exact ⟨_, _, _, .mk (ι := R.category) ⟨Over.mk b, h⟩, rfl⟩
 
 lemma ofArrows_category {S : C} (R : Sieve S) :
@@ -388,7 +388,7 @@ lemma pullback_ofArrows_of_iso
   constructor
   · rintro ⟨T, b, c, ⟨i⟩, fac⟩
     exact ⟨_, b, _, ⟨i⟩, by simp [reassoc_of% fac]⟩
-  · rintro ⟨_, a, _, ⟨i⟩, rfl⟩
+  · rintro ⟨-, a, -, ⟨i⟩, rfl⟩
     exact ⟨_, a, _, ⟨i⟩, by simp⟩
 
 theorem mem_iff_pullback_eq_top (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
@@ -465,7 +465,7 @@ lemma pushforward_eq_bot_iff {f : Y ⟶ X} {S : Sieve Y} : S.pushforward f = ⊥
 
 theorem pushforward_le_bind_of_mem (S : Presieve X) (R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y)
     (f : Y ⟶ X) (h : S f) : (R h).pushforward f ≤ bind S R := by
-  rintro Z _ ⟨g, rfl, hg⟩
+  rintro Z - ⟨g, rfl, hg⟩
   exact ⟨_, g, f, h, hg, rfl⟩
 
 theorem le_pullback_bind (S : Presieve X) (R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y) (f : Y ⟶ X)
@@ -492,7 +492,7 @@ theorem pullbackArrows_comm {X Y : C} (f : Y ⟶ X) (R : Presieve X) [R.HasPullb
     Sieve.generate (R.pullbackArrows f) = (Sieve.generate R).pullback f := by
   ext W g
   constructor
-  · rintro ⟨_, h, k, ⟨W, g, hg⟩, rfl⟩
+  · rintro ⟨-, h, k, ⟨W, g, hg⟩, rfl⟩
     have := R.hasPullback f hg
     rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
     exact Sieve.downward_closed _ (by exact Sieve.le_generate R W _ hg) (h ≫ pullback.fst g f)

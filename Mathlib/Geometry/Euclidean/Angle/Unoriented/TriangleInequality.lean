@@ -235,7 +235,7 @@ public theorem angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
     by_cases hxz₂ : angle x z = 0
     · have hxy : angle x y = 0 := by grind [angle_nonneg]
       rw [angle_eq_zero_iff] at hxy hxz₂
-      obtain ⟨_, ⟨r2, ⟨hr2, rfl⟩⟩⟩ := hxy
+      obtain ⟨-, ⟨r2, ⟨hr2, rfl⟩⟩⟩ := hxy
       lift r2 to ℝ≥0 using hr2.le
       exact Submodule.smul_mem _ _ (Submodule.mem_span_of_mem (by simp))
     have h_sin_xz : Real.sin (angle x z) ≠ 0 := by
@@ -243,7 +243,7 @@ public theorem angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
     by_cases hx : x = 0
     · subst x; simp only [angle_zero_left, left_eq_add] at h
       rw [angle_eq_zero_iff] at h
-      obtain ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩ := h
+      obtain ⟨-, ⟨r, ⟨hr, rfl⟩⟩⟩ := h
       lift r to ℝ≥0 using hr.le
       rw [← NNReal.smul_def, Submodule.span_insert_zero, Submodule.span_singleton_smul_eq]
       · simp
@@ -252,7 +252,7 @@ public theorem angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :
     by_cases hz : z = 0
     · subst z; simp only [angle_zero_right, right_eq_add] at h
       rw [angle_eq_zero_iff] at h
-      obtain ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩ := h
+      obtain ⟨-, ⟨r, ⟨hr, rfl⟩⟩⟩ := h
       lift r to ℝ≥0 using hr.le
       exact Submodule.smul_mem _ _ (Submodule.mem_span_of_mem (by simp))
     have hnneg₁ : 0 ≤ Real.sin (angle y z) / ‖x‖ := by

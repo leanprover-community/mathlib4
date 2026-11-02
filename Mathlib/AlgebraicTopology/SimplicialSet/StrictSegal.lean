@@ -81,7 +81,7 @@ lemma IsStrictSegal.hom_ext {Y : SSet.Truncated.{u} (n + 1)} [Y.IsStrictSegal]
     {f g : X ⟶ Y} (h : ∀ (x : X _⦋1⦌ₙ₊₁), f.app _ x = g.app _ x) : f = g := by
   ext ⟨⟨m, hm⟩⟩ x
   induction m using SimplexCategory.rec with | _ m
-  obtain _ | m := m
+  obtain - | m := m
   · have fac := δ_comp_σ_self (i := (0 : Fin 1))
     dsimp at fac
     simpa [← NatTrans.naturality_apply,

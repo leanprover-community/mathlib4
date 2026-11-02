@@ -76,7 +76,7 @@ theorem einfsep_lt_iff {d} :
   simp_rw [einfsep, iInf_lt_iff, exists_prop]
 
 theorem nontrivial_of_einfsep_lt_top (hs : s.einfsep < ∞) : s.Nontrivial := by
-  rcases einfsep_lt_top.1 hs with ⟨_, hx, _, hy, hxy, _⟩
+  rcases einfsep_lt_top.1 hs with ⟨_, hx, _, hy, hxy, -⟩
   exact ⟨_, hx, _, hy, hxy⟩
 
 theorem nontrivial_of_einfsep_ne_top (hs : s.einfsep ≠ ∞) : s.Nontrivial :=
@@ -374,7 +374,7 @@ theorem infsep_eq_iInf [Decidable s.Nontrivial] :
   · have hb : BddBelow (uncurry dist '' s.offDiag) := by
       refine ⟨0, fun d h => ?_⟩
       simp_rw [mem_image, Prod.exists, uncurry_apply_pair] at h
-      rcases h with ⟨_, _, _, rfl⟩
+      rcases h with ⟨-, -, -, rfl⟩
       exact dist_nonneg
     refine eq_of_forall_le_iff fun _ => ?_
     simp_rw [hs.le_infsep_iff, le_ciInf_set_iff (offDiag_nonempty.mpr hs) hb, imp_forall_iff,

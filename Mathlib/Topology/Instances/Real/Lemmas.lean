@@ -78,7 +78,7 @@ theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
 theorem Real.subfield_eq_of_closed {K : Subfield ℝ} (hc : IsClosed (K : Set ℝ)) : K = ⊤ := by
   rw [SetLike.ext'_iff, Subfield.coe_top, ← hc.closure_eq]
   refine Rat.denseRange_cast.mono ?_ |>.closure_eq
-  rintro - ⟨_, rfl⟩
+  rintro - ⟨-, rfl⟩
   exact SubfieldClass.ratCast_mem K _
 
 theorem Real.exists_seq_rat_strictMono_tendsto (x : ℝ) :

@@ -731,7 +731,7 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
     IsLocalization (M.map h) S := by
   let : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   constructor; constructor
-  · rintro ⟨_, ⟨y, hy, rfl⟩⟩
+  · rintro ⟨-, ⟨y, hy, rfl⟩⟩
     convert IsLocalization.map_units S ⟨y, hy⟩
     dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply]
     exact congr_arg _ (h.symm_apply_apply _)

@@ -242,7 +242,7 @@ instance : Group (CoprodI G) :=
 
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     (h : ∀ i, (f i).range ≤ s) : (lift f).range ≤ s := by
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   induction x using CoprodI.induction_on with
   | one => exact s.one_mem
   | of i x =>
@@ -255,7 +255,7 @@ theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
 theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
   apply le_antisymm (lift_range_le _ f fun i => le_iSup (fun i => MonoidHom.range (f i)) i)
   apply iSup_le _
-  rintro i _ ⟨x, rfl⟩
+  rintro i - ⟨x, rfl⟩
   exact ⟨of x, by simp only [lift_of]⟩
 
 end Group
@@ -539,7 +539,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
         cases w.toList
         · simp
         · simp +contextual [Sigma.ext_iff]
-  · rcases w with ⟨_ | _, _, _⟩ <;>
+  · rcases w with ⟨- | -, -, -⟩ <;>
     simp [or_comm, hij, Ne.symm hij, eq_comm]
 
 theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {m₂ : M j} {w : Word M} :

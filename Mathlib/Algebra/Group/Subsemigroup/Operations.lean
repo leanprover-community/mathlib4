@@ -659,7 +659,7 @@ def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
 @[to_additive]
 theorem subsemigroupMap_surjective (f : M →ₙ* N) (M' : Subsemigroup M) :
     Function.Surjective (f.subsemigroupMap M') := by
-  rintro ⟨_, x, hx, rfl⟩
+  rintro ⟨-, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
 
 end MulHom

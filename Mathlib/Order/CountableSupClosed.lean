@@ -283,7 +283,7 @@ lemma mem_countableSupClosure_iff_iSup [CompleteLattice α] :
     simp [iSup_unpair, ← hB_eq]
   refine le_antisymm (countableSupClosure_min ?_ h_csc) ?_
   · exact fun a ha ↦ ⟨fun _ ↦ a, by simp [ha]⟩
-  · rintro _ ⟨u, hus, rfl⟩
+  · rintro - ⟨u, hus, rfl⟩
     exact countableSupClosed_countableSupClosure.iSup_mem fun n ↦ subset_countableSupClosure (hus n)
 
 @[to_dual (attr := simp)] lemma supClosed_countableSupClosure [SemilatticeSup α] :

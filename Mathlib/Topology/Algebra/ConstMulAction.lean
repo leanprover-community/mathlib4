@@ -577,7 +577,7 @@ variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
   choose u v hu hv u_v_disjoint using fun γ : Γ₀ ↦ t2_separation_nhds γ.2.2
   refine ⟨V ∩ ⋂ γ : Γ₀, (γ.1 • ·) ⁻¹' u γ ∩ v γ, inter_mem V_nhd (iInter_mem.mpr fun γ ↦
     inter_mem ((continuous_const_smul _).continuousAt <| hu γ) (hv γ)), fun γ hγ ↦ ?_⟩
-  obtain ⟨_, ⟨z, hz, rfl⟩, hγz⟩ := hγ
+  obtain ⟨-, ⟨z, hz, rfl⟩, hγz⟩ := hγ
   by_contra h
   rw [mem_inter_iff, mem_iInter] at hz hγz
   let γ : Γ₀ := ⟨γ, ⟨_, ⟨z, hz.1, rfl⟩, hγz.1⟩, h⟩

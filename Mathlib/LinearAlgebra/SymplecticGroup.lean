@@ -232,7 +232,7 @@ theorem fromBlocks_mem_iff :
         (Dᵀ * A - Bᵀ * C) (Dᵀ * B - Bᵀ * D) = J l R := by
       simpa [mem_iff, fromBlocks_transpose, J, fromBlocks_multiply,
         sub_eq_add_neg] using transpose_mem h
-    obtain ⟨h_eq1, h_eq2, _, h_eq3⟩ := fromBlocks_inj.1 h_final
+    obtain ⟨h_eq1, h_eq2, -, h_eq3⟩ := fromBlocks_inj.1 h_final
     exact ⟨(sub_eq_zero.1 h_eq1).symm, (sub_eq_zero.1 h_eq3).symm, by grind⟩
   · simp only [fromBlocks_transpose, J, fromBlocks_multiply, mul_zero, mul_one, zero_add, mul_neg,
       add_zero, neg_mul, ← sub_eq_add_neg, fromBlocks_inj, sub_eq_zero]

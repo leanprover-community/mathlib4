@@ -621,7 +621,7 @@ lemma exists_fun_isClopen_of_infinite [Infinite (ConnectedComponents α)] (n : �
       Pairwise (Function.onFun Disjoint U) ∧ ⋃ i, U i = Set.univ := by
   cases isEmpty_or_nonempty α
   · exact (not_finite (ConnectedComponents α)).elim
-  obtain (_ | n) := n
+  obtain (- | n) := n
   · simp at hn
   clear hn
   induction n with

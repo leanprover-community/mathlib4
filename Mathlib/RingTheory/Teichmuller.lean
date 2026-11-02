@@ -34,7 +34,7 @@ noncomputable def teichmullerAux (x : Perfection (R ⧸ I) p) : ℕ → R
 
 theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
     teichmullerAux x m ≡ teichmullerAux x (m + 1) [SMOD I ^ m] := by
-  obtain _ | m := m
+  obtain - | m := m
   · simp
   symm
   rw [teichmullerAux, pow_succ' p, pow_mul]

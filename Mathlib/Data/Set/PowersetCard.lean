@@ -255,7 +255,7 @@ protected theorem card :
     Nat.card (powersetCard α n) = (Nat.card α).choose n := by
   cases fintypeOrInfinite α
   · simp [coe_finset]
-  · rcases n with _ | n
+  · rcases n with - | n
     · simp [powersetCard]
     · rw [Nat.card_eq_zero_of_infinite (α := α), Nat.choose_zero_succ]
       exact Nat.card_eq_zero_of_infinite

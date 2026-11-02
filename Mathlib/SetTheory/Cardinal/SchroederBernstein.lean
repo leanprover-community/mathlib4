@@ -67,8 +67,8 @@ theorem schroeder_bernstein_of_rel {f : α → β} {g : β → α} (hf : Functio
   have : Injective h := by
     refine (injective_piecewise_iff _).2 ⟨hf.injOn, ?_, ?_⟩
     · intro x hx y hy hxy
-      obtain ⟨x', _, rfl⟩ : x ∈ g '' (f '' s)ᶜ := by rwa [hns]
-      obtain ⟨y', _, rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
+      obtain ⟨x', -, rfl⟩ : x ∈ g '' (f '' s)ᶜ := by rwa [hns]
+      obtain ⟨y', -, rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
       rw [g'g _, g'g _] at hxy
       rw [hxy]
     · intro x hx y hy hxy
@@ -81,7 +81,7 @@ theorem schroeder_bernstein_of_rel {f : α → β} {g : β → α} (hf : Functio
   · exact hp₁ a
   · have : g (invFun g a) = a := by
       have : a ∈ g '' (f '' s)ᶜ := by grind
-      obtain ⟨x, _, hx⟩ := mem_image _ _ _ |>.mp this
+      obtain ⟨x, -, hx⟩ := mem_image _ _ _ |>.mp this
       exact Function.invFun_eq ⟨x, hx⟩
     grind
 
@@ -89,7 +89,7 @@ theorem schroeder_bernstein_of_rel {f : α → β} {g : β → α} (hf : Functio
 Given injections `α → β` and `β → α`, we can get a bijection `α → β`. -/
 theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
     (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
-  obtain ⟨f, hf, _⟩ := schroeder_bernstein_of_rel hf hg (fun x y ↦ True) (by simp) (by simp)
+  obtain ⟨f, hf, -⟩ := schroeder_bernstein_of_rel hf hg (fun x y ↦ True) (by simp) (by simp)
   exact ⟨f, hf⟩
 
 /-- **The Schröder-Bernstein Theorem**: Given embeddings `α ↪ β` and `β ↪ α`, there exists an

@@ -219,7 +219,7 @@ theorem contract_mul_expand {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
     (s₁ := (antidiagonal n).image fun x ↦ (x.1 * p, x.2 * p)), sum_image]
   · simp_rw [coeff_expand_mul hp.bot_lt, coeff_contract hp]
   · intro x hx y hy eq; simpa only [Prod.ext_iff, Nat.mul_right_cancel_iff hp.bot_lt] using eq
-  · simp_rw [subset_iff, mem_image, mem_antidiagonal]; rintro _ ⟨x, rfl, rfl⟩; simp_rw [add_mul]
+  · simp_rw [subset_iff, mem_image, mem_antidiagonal]; rintro - ⟨x, rfl, rfl⟩; simp_rw [add_mul]
   simp_rw [mem_image, mem_antidiagonal]
   intro ⟨x, y⟩ eq nex
   by_cases h : p ∣ y
@@ -256,7 +256,7 @@ variable [ExpChar R p]
 
 theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0) :
     expand R p (contract p f) = f := by
-  obtain _ | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
+  obtain - | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
   · rw [expand_one, contract_one]
   · have := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 

@@ -164,7 +164,7 @@ lemma isDenseSubsite_of_isOneHypercoverDense [F.IsLocallyFull J] [F.IsLocallyFai
     IsDenseSubsite J₀ J F where
   isCoverDense' := ⟨fun X ↦ by
     refine J.superset_covering ?_ (F.oneHypercoverDenseData J₀ J X).mem₀
-    rintro Y _ ⟨_, a, _, h, rfl⟩
+    rintro Y - ⟨_, a, _, h, rfl⟩
     cases h
     exact ⟨{ fac := rfl, ..}⟩⟩
   functorPushforward_mem_iff := h
@@ -199,7 +199,7 @@ lemma IsOneHypercoverDense.of_hasPullbacks [HasPullbacks C] [F.Full] [F.Faithful
         refine J.superset_covering ?_
           (IsCoverDense.functorPullback_pushforward_covering
             ⟨_, J.pullback_stable (pullback.lift _ _ hp) (hf (pullback (f _ i) (f _ j)))⟩)
-        rintro T _ ⟨Z, q, r, ⟨_, s, _, ⟨k⟩, fac⟩, rfl⟩
+        rintro T - ⟨Z, q, r, ⟨-, s, -, ⟨k⟩, fac⟩, rfl⟩
         have fac₁ := fac =≫ pullback.fst _ _
         have fac₂ := fac =≫ pullback.snd _ _
         simp only [Category.assoc, pullback.lift_fst, pullback.lift_snd] at fac₁ fac₂
@@ -241,7 +241,7 @@ lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) 
     apply data.mem₁₀
     simp only [str.cover.1.choose_spec, str.cover.2.choose_spec, assoc, w])
   refine J.superset_covering ?_ hT
-  rintro U f ⟨V, a, b, hb, h, _, rfl⟩
+  rintro U f ⟨V, a, b, hb, h, -, rfl⟩
   let str := Presieve.getFunctorPushforwardStructure hb.bindStruct.hg
   obtain ⟨W₀, c : _ ⟶ _, d, ⟨j, e, h₁, h₂⟩, fac⟩ := h
   dsimp
@@ -300,7 +300,7 @@ lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
   refine J.superset_covering ?_
     (J.bind_covering (J.pullback_stable f (data.toOneHypercover.mem₀)) (R := R)
     (fun W p hp ↦ J.bind_covering (F.is_cover_of_isCoverDense J W) ?_))
-  · rintro W' _ ⟨W, _, p, hp, ⟨Y₀, a, b, hb, ⟨U, c, d, ⟨x₁, w₁⟩, fac⟩, rfl⟩, rfl⟩
+  · rintro W' - ⟨W, -, p, hp, ⟨Y₀, a, b, hb, ⟨U, c, d, ⟨x₁, w₁⟩, fac⟩, rfl⟩, rfl⟩
     have hp' := Sieve.ofArrows.fac hp
     dsimp at hp'
     refine ⟨U, x₁, d, ⟨Sieve.ofArrows.i hp,
@@ -376,7 +376,7 @@ private lemma fac (a : S.Arrow) :
     Presheaf.IsSheaf.hom_ext hG₀
       ⟨_, cover_lift F J₀ _
         (J.pullback_stable ((data a.Y).f i ≫ a.f) (data X).mem₀)⟩ _ _ (by
-        rintro ⟨X₀, b, ⟨_, c, _, h, fac₁⟩⟩
+        rintro ⟨X₀, b, ⟨-, c, -, h, fac₁⟩⟩
         obtain ⟨j⟩ := h
         refine Presheaf.IsSheaf.hom_ext hG₀
           ⟨_, IsDenseSubsite.imageSieve_mem J₀ J F c⟩ _ _ ?_
@@ -607,7 +607,7 @@ lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g 
     (hS := cover_lift F J₀ J (J.pullback_stable f (data X).mem₀)) (hR := fun Y₀ a ha ↦
       cover_lift F J₀ J (J.pullback_stable
         (Sieve.ofArrows.h ha ≫ (data X).f (Sieve.ofArrows.i ha) ≫ g) (data Y).mem₀))⟩ _ _ ?_
-  rintro ⟨U₀, _, Y₀, c, d, hd, hc, rfl⟩
+  rintro ⟨U₀, -, Y₀, c, d, hd, hc, rfl⟩
   have hc' := Sieve.ofArrows.fac hc
   have hd' := Sieve.ofArrows.fac hd
   dsimp at hc hd hc' hd' ⊢
@@ -739,7 +739,7 @@ lemma inv_restriction {Y₀ : C₀} (f : F.obj Y₀ ⟶ F.obj X₀) :
   rintro ⟨W₀, a, b, fac₁⟩
   refine Presheaf.IsSheaf.hom_ext G₀.property
     ⟨_, J₀.pullback_stable b (cover_lift F J₀ _ (data (F.obj X₀)).mem₀)⟩ _ _ ?_
-  rintro ⟨T₀, c, _, d, _, ⟨i⟩, fac₂⟩
+  rintro ⟨T₀, c, -, d, -, ⟨i⟩, fac₂⟩
   dsimp at i d fac₂ ⊢
   simp only [assoc, ← Functor.map_comp, ← op_comp]
   rw [restriction_map data G₀ f (c ≫ a) d

@@ -243,7 +243,7 @@ theorem iteratedDerivWithin_comp_const_sub (c : 𝕜) :
 @[to_fun iteratedDerivWithin_fun_id]
 lemma iteratedDerivWithin_id :
     iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
-  obtain (_ | n) := n
+  obtain (- | n) := n
   · simp
   · rw [iteratedDerivWithin_succ', iteratedDerivWithin_congr (g := fun _ ↦ 1) _ hx]
     · simp [iteratedDerivWithin_const]
@@ -281,7 +281,7 @@ theorem iteratedDerivWithin_pow (m : ℕ) (k : ℕ) :
   induction m generalizing k with
   | zero => cases k <;> simp [iteratedDerivWithin_const]
   | succ i IH =>
-    obtain (_ | k) := k
+    obtain (- | k) := k
     · simp
     simp only [pow_succ]
     refine (iteratedDerivWithin_mul hx h (by fun_prop) (by fun_prop)).trans ?_
@@ -407,7 +407,7 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
 @[to_fun iteratedDeriv_fun_id]
 lemma iteratedDeriv_id {n : ℕ} {x : 𝕜} :
     iteratedDeriv n id x = if n = 0 then x else if n = 1 then 1 else 0 := by
-  obtain (_ | _ | n) := n <;>
+  obtain (- | - | n) := n <;>
     simp [iteratedDeriv_succ', iteratedDeriv_const]
 
 lemma iteratedDeriv_fun_id_zero :

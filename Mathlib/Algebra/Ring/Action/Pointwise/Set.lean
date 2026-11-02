@@ -50,7 +50,7 @@ section Semiring
 variable [Semiring α] [AddCommMonoid β] [Module α β]
 
 lemma add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)
 
 variable [IsDomain α] [Module.IsTorsionFree α β] {a : α} {s : Set α} {t : Set β}

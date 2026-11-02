@@ -169,7 +169,7 @@ theorem coe_coe (e : M₁ ≃SL[σ₁₂] M₂) : ⇑(e : M₁ →SL[σ₁₂] M
 
 theorem toLinearEquiv_injective :
     Function.Injective (toLinearEquiv : (M₁ ≃SL[σ₁₂] M₂) → M₁ ≃ₛₗ[σ₁₂] M₂) := by
-  rintro ⟨e, _, _⟩ ⟨e', _, _⟩ rfl
+  rintro ⟨e, -, -⟩ ⟨e', -, -⟩ rfl
   rfl
 
 @[ext]

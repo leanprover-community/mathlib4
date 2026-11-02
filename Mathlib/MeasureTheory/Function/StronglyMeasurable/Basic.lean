@@ -670,7 +670,7 @@ protected theorem isSeparable_range {m : MeasurableSpace α} [TopologicalSpace �
   have : IsSeparable (closure (⋃ n, range (hf.approx n))) :=
     .closure <| .iUnion fun n => (hf.approx n).finite_range.isSeparable
   apply this.mono
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   apply mem_closure_of_tendsto (hf.tendsto_approx x)
   filter_upwards with n
   apply mem_iUnion_of_mem n
@@ -797,7 +797,7 @@ theorem _root_.stronglyMeasurable_of_tendsto {ι : Type*} {m : MeasurableSpace �
     have : IsSeparable (closure (⋃ i, range (f (v i)))) :=
       .closure <| .iUnion fun i => (hf (v i)).isSeparable_range
     apply this.mono
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     rw [tendsto_pi_nhds] at lim
     apply mem_closure_of_tendsto ((lim x).comp hv)
     filter_upwards with n

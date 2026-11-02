@@ -32,7 +32,7 @@ instance [DecidableEq α] {r : α → α → Prop} [DecidableRel r] {s : Finset 
 
 theorem Finset.pairwiseDisjoint_range_singleton :
     (Set.range (singleton : α → Finset α)).PairwiseDisjoint id := by
-  rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ h
+  rintro - ⟨a, rfl⟩ - ⟨b, rfl⟩ h
   exact disjoint_singleton.2 (ne_of_apply_ne _ h)
 
 namespace Set

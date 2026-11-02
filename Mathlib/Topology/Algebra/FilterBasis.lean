@@ -153,7 +153,7 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
   · intro a U U_in
     rcases GroupFilterBasis.mul U_in with ⟨V, V_in, hVU⟩
     filter_upwards [image_mem_map (B.mem_filter_of_mem V_in)]
-    rintro _ ⟨x, hx, rfl⟩
+    rintro - ⟨x, hx, rfl⟩
     calc
       (a * x) • V ∈ (a * x) • B.filter := smul_set_mem_smul_filter <| B.mem_filter_of_mem V_in
       _ = a • x • V := smul_smul .. |>.symm

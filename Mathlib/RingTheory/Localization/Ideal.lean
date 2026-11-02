@@ -262,11 +262,11 @@ theorem ideal_eq_iInf_under_map_away {S : Finset R} (hS : Ideal.span (α := R) S
     apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ _ hS
     rintro ⟨s, hs⟩
     simp only [Ideal.mem_iInf, Ideal.mem_comap] at hx
-    obtain ⟨⟨y, ⟨_, n, rfl⟩⟩, e⟩ :=
+    obtain ⟨⟨y, ⟨-, n, rfl⟩⟩, e⟩ :=
       (IsLocalization.mem_map_algebraMap_iff (.powers s) _).mp (hx s hs)
     dsimp only at e
     rw [← map_mul, IsLocalization.eq_iff_exists (.powers s)] at e
-    obtain ⟨⟨_, m, rfl⟩, e⟩ := e
+    obtain ⟨⟨-, m, rfl⟩, e⟩ := e
     use m + n
     dsimp at e ⊢
     rw [pow_add, mul_assoc, ← mul_comm x, e]
@@ -356,7 +356,7 @@ lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {R
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
   simp only [IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
     Subtype.exists, exists_prop, this] at hx ⊢
-  obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
+  obtain ⟨-, ⟨a, ha, rfl⟩, H⟩ := hx
   simp only [← map_mul,
     (injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
   exact ⟨a, ha, H⟩
@@ -366,7 +366,7 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     (H : g.comp (algebraMap R S) = (algebraMap _ _).comp f)
     (H' : RingHom.ker g ≤ (RingHom.ker f).map (algebraMap R S)) : IsLocalization (M.map f) S' where
   map_units := by
-    rintro ⟨_, y, hy, rfl⟩
+    rintro ⟨-, y, hy, rfl⟩
     simpa only [← RingHom.comp_apply, H] using (IsLocalization.map_units S ⟨y, hy⟩).map g
   surj := by
     intro z

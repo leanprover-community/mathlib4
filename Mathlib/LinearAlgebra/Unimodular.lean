@@ -64,9 +64,9 @@ functionals on `M`. In particular this ideal does not depend on `b`. -/
 theorem span_repr_eq_range_applyₗ {ι : Type*} (b : Basis ι R M) (v : M) :
     Ideal.span (Set.range (b.repr v)) = LinearMap.range (LinearMap.applyₗ v) := by
   refine le_antisymm (Ideal.span_le.mpr ?_) ?_
-  · rintro _ ⟨i, rfl⟩
+  · rintro - ⟨i, rfl⟩
     exact ⟨b.coord i, rfl⟩
-  · rintro _ ⟨f, rfl⟩
+  · rintro - ⟨f, rfl⟩
     simp only [LinearMap.applyₗ_apply_apply, ← congr_arg f (b.linearCombination_repr v),
       Finsupp.linearCombination_apply, map_finsuppSum, map_smul, smul_eq_mul]
     exact Submodule.finsuppSum_mem R _ _ _ fun i _ ↦

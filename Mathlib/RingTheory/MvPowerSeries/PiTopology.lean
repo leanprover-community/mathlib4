@@ -139,7 +139,7 @@ theorem tendsto_trunc_atTop [DecidableEq σ] [CommSemiring R] [Nonempty σ] (f :
     Tendsto (fun d ↦ (trunc R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
   rw [tendsto_iff_coeff_tendsto]
   intro d
-  obtain ⟨s, _⟩ := (exists_const σ).mpr trivial
+  obtain ⟨s, -⟩ := (exists_const σ).mpr trivial
   apply tendsto_atTop_of_eventually_const (i₀ := d + Finsupp.single s 1)
   intro n hn
   rw [MvPolynomial.coeff_coe, coeff_trunc, ite_eq_left]

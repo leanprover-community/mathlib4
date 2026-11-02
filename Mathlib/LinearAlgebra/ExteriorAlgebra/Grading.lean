@@ -66,7 +66,7 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
   | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
   | add _ _ _ _ _ ihx ihy => simp_rw [map_add, ihx, ihy, ← map_add]; rfl
   | mem_mul _ hm _ _ _ ih =>
-      obtain ⟨_, rfl⟩ := hm
+      obtain ⟨-, rfl⟩ := hm
       simp_rw [map_mul, ih, GradedAlgebra.liftι, lift_ι_apply, GradedAlgebra.ι_apply R M,
         DirectSum.of_mul_of]
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)

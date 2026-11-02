@@ -79,7 +79,7 @@ lemma Scheme.Hom.app_injective (f : X ⟶ Y) [IsSchemeTheoreticallyDominant f] [
   rw [injective_iff_map_eq_zero]
   intro s hs
   refine Y.IsSheaf.section_ext fun x hx ↦ ?_
-  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU : V ≤ U⟩ :=
+  obtain ⟨-, ⟨V, hV, rfl⟩, hxV, hVU : V ≤ U⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open hx U.isOpen
   refine ⟨V, hVU, hxV, this V hV ?_⟩
   rw [← ConcreteCategory.comp_apply, f.naturality]

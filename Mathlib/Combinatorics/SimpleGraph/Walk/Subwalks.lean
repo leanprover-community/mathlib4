@@ -79,13 +79,13 @@ lemma isSubwalk_nil_iff {u v u'} (p : G.Walk u v) :
   cases p with
   | nil =>
     constructor
-    · rintro ⟨_ | _, _, ⟨⟩⟩
+    · rintro ⟨- | -, -, ⟨⟩⟩
       simp
-    · rintro ⟨rfl, _, _⟩
+    · rintro ⟨rfl, -, -⟩
       simp
   | cons h p =>
     constructor
-    · rintro ⟨_ | _, _, h⟩ <;> simp at h
+    · rintro ⟨- | _, _, h⟩ <;> simp at h
     · rintro ⟨rfl, rfl, ⟨⟩⟩
 
 lemma nil_isSubwalk_iff_exists {u' u v} (q : G.Walk u v) :

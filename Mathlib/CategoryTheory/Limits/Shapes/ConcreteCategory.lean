@@ -244,7 +244,7 @@ theorem widePullback_ext {B : C} {ι : Type w} {X : ι → C} (f : ∀ j : ι, X
     (x y : ToType (widePullback B X f)) (h₀ : base f x = base f y) (h : ∀ j, π f j x = π f j y) :
     x = y := by
   apply Concrete.limit_ext
-  rintro (_ | j)
+  rintro (- | j)
   · exact h₀
   · apply h
 
@@ -341,7 +341,7 @@ theorem widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f : ∀ j :
     [HasWidePushout.{v} B X f] [PreservesColimit (wideSpan B X f) (forget C)]
     (x : ToType (widePushout B X f)) :
     (∃ y : ToType B, head f y = x) ∨ ∃ (i : α) (y : ToType (X i)), ι f i y = x := by
-  obtain ⟨_ | j, y, rfl⟩ := Concrete.colimit_exists_rep _ x
+  obtain ⟨- | j, y, rfl⟩ := Concrete.colimit_exists_rep _ x
   · left
     use y
   · right

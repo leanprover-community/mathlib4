@@ -189,7 +189,7 @@ namespace MeasurableEquiv
 variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 theorem toEquiv_injective : Injective (toEquiv : α ≃ᵐ β → α ≃ β) := by
-  rintro ⟨e₁, _, _⟩ ⟨e₂, _, _⟩ (rfl : e₁ = e₂)
+  rintro ⟨e₁, -, -⟩ ⟨e₂, -, -⟩ (rfl : e₁ = e₂)
   rfl
 
 @[macro_inline]
@@ -681,7 +681,7 @@ theorem iff_comap_eq :
       measurable := by rw [← hf.2.1]; exact comap_measurable f
       measurableSet_image' := by
         rw [← hf.2.1]
-        rintro _ ⟨s, hs, rfl⟩
+        rintro - ⟨s, hs, rfl⟩
         simpa only [image_preimage_eq_inter_range] using hs.inter hf.2.2 }⟩
 
 /-- A set is equivalent to its image under a function `f` as measurable spaces,

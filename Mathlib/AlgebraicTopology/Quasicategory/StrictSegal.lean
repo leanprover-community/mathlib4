@@ -62,7 +62,7 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       Quiver.Hom.unop_op, SSet.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_gt hgt]
     rfl
-  · obtain _ | n := n
+  · obtain - | n := n
     · /- The only inner horn of `Δ[2]` does not contain the diagonal edge. -/
       obtain rfl : k = 0 := by omega
       fin_cases i <;> contradiction

@@ -303,7 +303,7 @@ theorem primaryComponent.disjoint {p' : ℕ} [hp' : Fact p'.Prime] (hne : p ≠ 
     Disjoint (CommMonoid.primaryComponent G p) (CommMonoid.primaryComponent G p') :=
   Submonoid.disjoint_def.mpr fun {g} hg hg' ↦ by
     rw [mem_primaryComponent_iff_orderOf] at hg hg'
-    obtain ⟨_ | n, hn⟩ := hg
+    obtain ⟨- | n, hn⟩ := hg
     · rwa [pow_zero, orderOf_eq_one_iff] at hn
     · obtain ⟨_, hn'⟩ := hg'
       exact absurd (eq_of_prime_pow_eq hp.out.prime hp'.out.prime n.succ_pos (hn ▸ hn')) hne

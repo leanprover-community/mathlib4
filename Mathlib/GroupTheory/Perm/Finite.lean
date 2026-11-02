@@ -111,8 +111,8 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
   · rintro ⟨a, rfl⟩
     obtain ⟨y, hy⟩ := h ⟨l, rfl⟩
     grind
-  · rintro _; exact ⟨r, rfl⟩
-  · rintro _; exact ⟨l, rfl⟩
+  · rintro -; exact ⟨r, rfl⟩
+  · rintro -; exact ⟨l, rfl⟩
   · rintro ⟨a, rfl⟩
     obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
     grind
@@ -122,9 +122,9 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
   have h1 : ∀ x : m ⊕ n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
-    rintro _ ⟨a, rfl⟩; exact h ⟨a, rfl⟩
+    rintro - ⟨a, rfl⟩; exact h ⟨a, rfl⟩
   have h3 : ∀ x : m ⊕ n, (∃ b : n, Sum.inr b = x) → ∃ b : n, Sum.inr b = σ x := by
-    rintro _ ⟨b, rfl⟩; exact (perm_mapsTo_inl_iff_mapsTo_inr σ).mp h ⟨b, rfl⟩
+    rintro - ⟨b, rfl⟩; exact (perm_mapsTo_inl_iff_mapsTo_inr σ).mp h ⟨b, rfl⟩
   let σ₁' := subtypePermOfFintype σ h1
   let σ₂' := subtypePermOfFintype σ h3
   let σ₁ := permCongr (Equiv.ofInjective _ Sum.inl_injective).symm σ₁'

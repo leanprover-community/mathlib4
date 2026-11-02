@@ -403,7 +403,7 @@ theorem dense_span_mahler : Dense (span R
 lemma ext_mahler {μ : C(ℤ_[p], R) →L[R] R}
     (hμ : ∀ n, μ ((mahler n : C(ℤ_[p], ℤ_[p])) • 1) = 0) : μ = 0 := by
   apply ContinuousLinearMap.ext_on dense_span_mahler
-  rintro _ ⟨n, rfl⟩
+  rintro - ⟨n, rfl⟩
   simpa using hμ n
 
 end DenseSpan

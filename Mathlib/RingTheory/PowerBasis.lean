@@ -127,7 +127,7 @@ theorem exists_eq_aeval [Nontrivial S] (pb : PowerBasis R S) (y : S) :
 
 theorem exists_eq_aeval' (pb : PowerBasis R S) (y : S) : ∃ f : R[X], y = aeval pb.gen f := by
   nontriviality S
-  obtain ⟨f, _, hf⟩ := exists_eq_aeval pb y
+  obtain ⟨f, -, hf⟩ := exists_eq_aeval pb y
   exact ⟨f, hf⟩
 
 theorem algHom_ext {S' : Type*} [Semiring S'] [Algebra R S'] (pb : PowerBasis R S)

@@ -404,7 +404,7 @@ theorem mem_closure_iff_sup_sdiff {a : α} :
   · rintro ⟨t, rfl⟩
     exact t.sup_mem _ (subset_closure bot_mem) (fun _ h _ ↦ sup_mem h) _
       fun x hx ↦ sdiff_mem (subset_closure x.1.2) (subset_closure x.2.2)
-  · rintro _ - _ - ⟨t₁, rfl⟩ ⟨t₂, rfl⟩
+  · rintro - - - - ⟨t₁, rfl⟩ ⟨t₂, rfl⟩
     exact ⟨t₁ ∪ t₂, by rw [Finset.sup_union]⟩
   rintro x - ⟨t, rfl⟩
   refine t.induction ⟨{(⟨⊤, top_mem⟩, ⟨⊥, bot_mem⟩)}, by simp⟩ fun ⟨x, y⟩ t _ ⟨tc, eq⟩ ↦ ?_

@@ -63,7 +63,7 @@ lemma le_inducedTopology_iff {J : GrothendieckTopology C} :
   · apply Presieve.isSheaf_of_le _ h
     exact Functor.op_comp_isSheaf_of_types F (F.inducedTopology K) K G
   · apply Sheaf.le_finestTopology
-    rintro _ ⟨P, rfl⟩
+    rintro - ⟨P, rfl⟩
     exact Functor.op_comp_isSheaf_of_types F J K P
 
 /-- [SGA4, III, Proposition 3.2][sga-4-tome-1] -/

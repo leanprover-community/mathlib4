@@ -254,7 +254,7 @@ theorem cocompact_eq_atTop [NoMaxOrder α] [OrderBot α]
 /-- The **extreme value theorem**: a continuous function realizes its minimum on a compact set. -/
 theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMinOn f s x := by
-  rcases (hs.image_of_continuousOn hf).exists_isLeast (ne_s.image f) with ⟨_, ⟨x, hxs, rfl⟩, hx⟩
+  rcases (hs.image_of_continuousOn hf).exists_isLeast (ne_s.image f) with ⟨-, ⟨x, hxs, rfl⟩, hx⟩
   refine ⟨x, hxs, forall_mem_image.1 (fun _ hb => hx <| mem_image_of_mem f ?_)⟩
   rwa [(image_id' s).symm]
 
@@ -326,7 +326,7 @@ theorem Continuous.exists_forall_ge [ClosedIciTopology α] [Nonempty β] {f : β
 theorem Continuous.exists_forall_le_of_hasCompactMulSupport [ClosedIicTopology α] [Nonempty β]
     [One α] {f : β → α} (hf : Continuous f) (h : HasCompactMulSupport f) :
     ∃ x : β, ∀ y : β, f x ≤ f y := by
-  obtain ⟨_, ⟨x, rfl⟩, hx⟩ := (h.isCompact_range hf).exists_isLeast (range_nonempty _)
+  obtain ⟨-, ⟨x, rfl⟩, hx⟩ := (h.isCompact_range hf).exists_isLeast (range_nonempty _)
   rw [mem_lowerBounds, forall_mem_range] at hx
   exact ⟨x, hx⟩
 
@@ -386,7 +386,7 @@ theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → �
     fun h => ?_⟩
   obtain ⟨x, hx, h2x⟩ := hK.exists_isMaxOn h0K hf
   refine (csSup_le (h0K.image f) ?_).trans_lt (h x hx)
-  rintro _ ⟨x', hx', rfl⟩; exact h2x hx'
+  rintro - ⟨x', hx', rfl⟩; exact h2x hx'
 
 theorem IsCompact.lt_sInf_iff_of_continuous [ClosedIicTopology α] {f : β → α} {K : Set β}
     (hK : IsCompact K) (h0K : K.Nonempty) (hf : ContinuousOn f K) (y : α) :
@@ -521,7 +521,7 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
   · have h : ({x} : Set γ) ×ˢ K ⊆ ↿f ⁻¹' Iio z := by
       rintro ⟨x', y'⟩ ⟨(rfl : x' = x), hy'⟩
       exact (hy y' hy').trans_lt hz
-    obtain ⟨u, v, hu, _, hxu, hKv, huv⟩ :=
+    obtain ⟨u, v, hu, -, hxu, hKv, huv⟩ :=
       generalized_tube_lemma isCompact_singleton hK (isOpen_Iio.preimage hf) h
     refine eventually_of_mem (hu.mem_nhds (singleton_subset_iff.mp hxu)) fun x' hx' => ?_
     rw [hK.sSup_lt_iff_of_continuous h0K

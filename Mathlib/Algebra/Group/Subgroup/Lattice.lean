@@ -473,9 +473,9 @@ theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n 
     rw [eq_of_mem_singleton hy]
     exact ⟨1, zpow_one x⟩
   · exact ⟨0, zpow_zero x⟩
-  · rintro _ _ _ _ ⟨n, rfl⟩ ⟨m, rfl⟩
+  · rintro - - - - ⟨n, rfl⟩ ⟨m, rfl⟩
     exact ⟨n + m, zpow_add x n m⟩
-  rintro _ _ ⟨n, rfl⟩
+  rintro - - ⟨n, rfl⟩
   exact ⟨-n, zpow_neg x n⟩
 
 @[to_additive]
@@ -541,10 +541,10 @@ theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {
     refine fun hx ↦ closure_induction (fun _ ↦ ?_) ?_ ?_ ?_ hx
     · simp
     · exact ⟨i, hp, (K i).one_mem⟩
-    · rintro x y _ _ ⟨i, hip, hi⟩ ⟨j, hjp, hj⟩
+    · rintro x y - - ⟨i, hip, hi⟩ ⟨j, hjp, hj⟩
       rcases hK i hip j hjp with ⟨k, hk, hki, hkj⟩
       exact ⟨k, hk, mul_mem (hki hi) (hkj hj)⟩
-    · rintro _ _ ⟨i, hi', hi⟩
+    · rintro _ - ⟨i, hi', hi⟩
       exact ⟨i, hi', inv_mem hi⟩
   · apply le_iSup (fun i ↦ ⨆ (_ : p i), K i) i
     simp [hi, hi']
@@ -610,9 +610,9 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
       · exact ⟨y, h, 1, t.one_mem, by simp⟩
       · exact ⟨1, s.one_mem, y, h, by simp⟩
     · exact ⟨1, s.one_mem, 1, ⟨t.one_mem, mul_one 1⟩⟩
-    · rintro _ _ _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+    · rintro - - - - ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
       exact ⟨_, mul_mem hy₁ hy₂, _, mul_mem hz₁ hz₂, by simp [mul_assoc, mul_left_comm]⟩
-    · rintro _ _ ⟨y, hy, z, hz, rfl⟩
+    · rintro - - ⟨y, hy, z, hz, rfl⟩
       exact ⟨_, inv_mem hy, _, inv_mem hz, mul_comm z y ▸ (mul_inv_rev z y).symm⟩, by
     rintro ⟨y, hy, z, hz, rfl⟩; exact mul_mem_sup hy hz⟩
 
@@ -642,10 +642,10 @@ theorem mem_sup_of_normal_right {s t : Subgroup G} [ht : t.Normal] {x : G} :
       · exact ⟨x, hx, 1, t.one_mem, by simp⟩
       · exact ⟨1, s.one_mem, x, hx, by simp⟩
     · exact ⟨1, s.one_mem, 1, t.one_mem, by simp⟩
-    · rintro _ _ _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+    · rintro - - - - ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
       exact ⟨y₁ * y₂, s.mul_mem hy₁ hy₂,
             (y₂⁻¹ * z₁ * y₂) * z₂, t.mul_mem (ht.conj_mem' z₁ hz₁ y₂) hz₂, by simp [mul_assoc]⟩
-    · rintro _ _ ⟨y, hy, z, hz, rfl⟩
+    · rintro - - ⟨y, hy, z, hz, rfl⟩
       exact ⟨y⁻¹, s.inv_mem hy,
             y * z⁻¹ * y⁻¹, ht.conj_mem z⁻¹ (t.inv_mem hz) y, by simp [mul_assoc]⟩
   · rintro ⟨y, hy, z, hz, rfl⟩; exact mul_mem_sup hy hz

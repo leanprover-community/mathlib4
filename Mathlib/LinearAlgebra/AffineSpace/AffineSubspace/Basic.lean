@@ -310,7 +310,7 @@ theorem vectorSpan_range_eq_span_range_vsub_left_ne (p : ι → P) (i₀ : ι) :
   congr with v
   simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, Subtype.exists]
   constructor
-  · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
+  · rintro ⟨x, ⟨i₁, ⟨⟨-, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
   · exact fun ⟨i₁, hi₁, hv⟩ => ⟨p i₁, ⟨i₁, ⟨Set.mem_univ _, hi₁⟩, rfl⟩, hv⟩
 
@@ -323,7 +323,7 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
   congr with v
   simp only [Set.mem_range, Set.mem_image, Set.mem_sdiff, Set.mem_singleton_iff, Subtype.exists]
   constructor
-  · rintro ⟨x, ⟨i₁, ⟨⟨_, hi₁⟩, rfl⟩⟩, hv⟩
+  · rintro ⟨x, ⟨i₁, ⟨⟨-, hi₁⟩, rfl⟩⟩, hv⟩
     exact ⟨i₁, hi₁, hv⟩
   · exact fun ⟨i₁, hi₁, hv⟩ => ⟨p i₁, ⟨i₁, ⟨Set.mem_univ _, hi₁⟩, rfl⟩, hv⟩
 

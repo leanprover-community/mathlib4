@@ -93,7 +93,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     constructor
     · intro hx
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
-      obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
+      obtain ⟨-, ⟨s, rfl⟩, -, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine ⟨s, hs, ?_⟩
       rwa [dite_eq_left hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, C.w]
     · intro hx

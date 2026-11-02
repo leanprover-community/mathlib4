@@ -424,7 +424,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
   rw [clusterPt_principal_iff] at hf
   have : Tendsto f (cocompact α) (𝓝 0) := by
     refine Metric.tendsto_nhds.mpr fun ε hε => ?_
-    obtain ⟨_, hg, g, rfl⟩ := hf (ball f (ε / 2)) (ball_mem_nhds f <| half_pos hε)
+    obtain ⟨-, hg, g, rfl⟩ := hf (ball f (ε / 2)) (ball_mem_nhds f <| half_pos hε)
     refine (Metric.tendsto_nhds.mp (zero_at_infty g) (ε / 2) (half_pos hε)).mp
       (Eventually.of_forall fun x hx => ?_)
     calc

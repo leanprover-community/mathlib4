@@ -433,7 +433,7 @@ variable {f : α → β}
 theorem minimal_mem_image_monotone (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y))
     (hx : Minimal (· ∈ s) x) : Minimal (· ∈ f '' s) (f x) := by
   refine ⟨mem_image_of_mem f hx.prop, ?_⟩
-  rintro _ ⟨y, hy, rfl⟩
+  rintro - ⟨y, hy, rfl⟩
   rw [hf hx.prop hy, hf hy hx.prop]
   exact hx.le_of_le hy
 
@@ -524,7 +524,7 @@ theorem minimal_apply_mem_inter_range_iff :
   refine ⟨fun h ↦ ⟨h.prop.1, fun y hy ↦ ?_⟩, fun h ↦ ⟨⟨h.prop, mem_range_self x⟩, ?_⟩⟩
   · rw [← f.le_iff_le, ← f.le_iff_le]
     exact h.le_of_le ⟨hy, mem_range_self y⟩
-  rintro _ ⟨hyt, ⟨y, rfl⟩⟩
+  rintro - ⟨hyt, ⟨y, rfl⟩⟩
   simp_rw [f.le_iff_le]
   exact h.le_of_le hyt
 

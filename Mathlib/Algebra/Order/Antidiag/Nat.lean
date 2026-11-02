@@ -77,7 +77,7 @@ theorem mem_finMulAntidiag {d n : ℕ} {f : Fin d → ℕ} :
     constructor
     · rintro ⟨a, ha_mem, rfl⟩
       exact ⟨ha_mem, h.ne.symm⟩
-    · rintro ⟨rfl, _⟩
+    · rintro ⟨rfl, -⟩
       refine ⟨fun i ↦ ⟨f i, ?_⟩, rfl, funext fun _ => rfl⟩
       apply Nat.pos_of_ne_zero
       exact Finset.prod_ne_zero_iff.mp h.ne.symm _ (mem_univ _)

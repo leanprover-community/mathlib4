@@ -113,7 +113,7 @@ lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}
   · apply hF.isSheafFor
     convert (⊥_ Scheme).bot_mem_grothendieckTopology
     rw [eq_bot_iff]
-    rintro Y f ⟨g, _, _, ⟨i⟩, _⟩
+    rintro Y f ⟨g, -, -, ⟨i⟩, -⟩
     exact i.elim
   · intro i j
     exact CoproductDisjoint.isPullback_of_isInitial

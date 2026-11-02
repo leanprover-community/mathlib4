@@ -126,7 +126,7 @@ variable [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace ℝ E]
 theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   have : CompleteSpace E ↔ CompleteSpace F :=
     completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
-  obtain ⟨_, _⟩ | ⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
+  obtain ⟨_, _⟩ | ⟨-, _⟩ := iff_iff_and_or_not_and_not.mp this
   · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitzWith _
   · simp [integral_of_not_completeSpace, *]
 

@@ -273,7 +273,7 @@ theorem sqrt_ne_zero' : √x ≠ 0 ↔ 0 < x := by rw [← not_le, not_iff_not, 
 
 /-- Variant of `sq_sqrt` without a non-negativity assumption on `x`. -/
 theorem sq_sqrt' : √x ^ 2 = max x 0 := by
-  rcases lt_trichotomy x 0 with _ | _ | _ <;> grind [sqrt_eq_zero', sq_sqrt]
+  rcases lt_trichotomy x 0 with - | - | - <;> grind [sqrt_eq_zero', sq_sqrt]
 
 -- Add the rule for `√x ^ 2` to the grind whiteboard whenever we see a real square root.
 grind_pattern sq_sqrt' => √x

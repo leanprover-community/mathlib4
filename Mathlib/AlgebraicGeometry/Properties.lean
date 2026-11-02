@@ -155,12 +155,12 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
     (h₃ : ∀ R : CommRingCat, P (X := Spec R) ⊤) : P U := by
   apply h₁
   intro x
-  obtain ⟨_, ⟨j, rfl⟩, hx, i⟩ :=
+  obtain ⟨-, ⟨j, rfl⟩, hx, i⟩ :=
     X.affineBasisCover_is_basis.exists_subset_of_mem_open (SetLike.mem_coe.2 x.prop) U.isOpen
   let U' : Opens _ := ⟨_, (X.affineBasisCover.f j).isOpenEmbedding.isOpen_range⟩
   let i' : U' ⟶ U := homOfLE i
   refine ⟨U', hx, i', ?_⟩
-  obtain ⟨_, _, rfl, rfl, h₂'⟩ := h₂ _ _ (X.affineBasisCover.f j)
+  obtain ⟨-, -, rfl, rfl, h₂'⟩ := h₂ _ _ (X.affineBasisCover.f j)
   apply h₂'
   apply h₃
 
@@ -191,7 +191,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     exact H
   | h₂ X Y f =>
     refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by simp, rfl, ?_⟩
-    rintro H hX s hs _ ⟨x, rfl⟩
+    rintro H hX s hs - ⟨x, rfl⟩
     have := isReduced_of_isOpenImmersion f
     specialize H (f.app _ s) _ x ⟨x, rfl⟩
     · rw [← Scheme.preimage_basicOpen, hs]; ext1; simp [Opens.map]

@@ -616,7 +616,7 @@ lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMon
   rw [← map_top, ← Submodule.map_comp, map_top]
   refine le_antisymm ?_ fun q h ↦ Submodule.smul_induction_on h
     (fun r hr q _ ↦ ⟨⟨r, hr⟩ ⊗ₜ q, by simp⟩) (by simp +contextual [add_mem])
-  rintro _ ⟨t, rfl⟩
+  rintro - ⟨t, rfl⟩
   exact t.inductionOn (by simp +contextual [Submodule.smul_mem_smul])
     (by simp +contextual [add_mem])
 
@@ -629,7 +629,7 @@ variable (R S M) in
 theorem TensorProduct.mk_surjective (h : Function.Surjective (algebraMap R S)) :
     Function.Surjective (TensorProduct.mk R S M 1) := by
   rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
-  rintro _ ⟨x, y, rfl⟩
+  rintro - ⟨x, y, rfl⟩
   obtain ⟨x, rfl⟩ := h x
   rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
   exact ⟨x • y, rfl⟩
@@ -638,7 +638,7 @@ variable (S) in
 lemma TensorProduct.flip_mk_surjective (h : Function.Surjective (algebraMap R T)) :
     Function.Surjective ((TensorProduct.mk R S T).flip 1) := by
   rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
-  rintro _ ⟨s, t, rfl⟩
+  rintro - ⟨s, t, rfl⟩
   obtain ⟨r, rfl⟩ := h t
   rw [Algebra.algebraMap_eq_smul_one, ← smul_tmul]
   exact ⟨r • s, rfl⟩

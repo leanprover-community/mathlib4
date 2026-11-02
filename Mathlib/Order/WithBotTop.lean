@@ -31,7 +31,7 @@ namespace WithBotTop
 
 instance : Coe ι (WithBotTop ι) := ⟨WithBotTop.coe⟩
 
-theorem coe_injective : Function.Injective (WithBotTop.coe : ι → _) := by rintro _ _ ⟨⟩; rfl
+theorem coe_injective : Function.Injective (WithBotTop.coe : ι → _) := by rintro - - ⟨⟩; rfl
 
 @[simp] lemma coe_ne_bot (a : ι) : (a : WithBotTop ι) ≠ ⊥ := by rintro ⟨⟩
 @[simp] lemma coe_ne_top (a : ι) : (a : WithBotTop ι) ≠ ⊤ := by rintro ⟨⟩

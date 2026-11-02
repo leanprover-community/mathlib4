@@ -93,7 +93,7 @@ lemma isCollinear_pair (a b : ℙ K V) : IsCollinear {a, b} := by
   all_goals rintro rfl; simp [Submodule.mem_span_of_mem]
 
 lemma isCollinear_of_card_eq_two (hS : S.ncard = 2) : IsCollinear S := by
-  obtain ⟨x, y, _, rfl⟩ := Set.ncard_eq_two.1 hS
+  obtain ⟨x, y, -, rfl⟩ := Set.ncard_eq_two.1 hS
   exact isCollinear_pair x y
 
 lemma line_unique' {u v : V} (hu : u ≠ 0) (hv : v ≠ 0) (huv : LinearIndependent K ![u, v])

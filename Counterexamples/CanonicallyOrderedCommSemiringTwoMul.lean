@@ -31,7 +31,7 @@ https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/canonic
 namespace Counterexample
 
 theorem mem_zmod_2 (a : ZMod 2) : a = 0 ∨ a = 1 := by
-  rcases a with ⟨_ | _, _ | _ | _ | _⟩
+  rcases a with ⟨- | -, - | - | - | -⟩
   · exact Or.inl rfl
   · exact Or.inr rfl
 

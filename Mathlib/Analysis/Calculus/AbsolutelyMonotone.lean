@@ -66,7 +66,7 @@ variable {f g : ℝ → ℝ} {s : Set ℝ}
 
 /-- An absolutely monotone function on `s` is `C^∞` on `s`. -/
 theorem contDiffOn (hf : AbsolutelyMonotoneOn f s) : ContDiffOn ℝ ∞ f s := by
-  obtain ⟨_, hp, _⟩ := hf
+  obtain ⟨_, hp, -⟩ := hf
   exact hp.contDiffOn
 
 /-- A globally `C^∞` function whose iterated derivatives are nonnegative on `s` is absolutely

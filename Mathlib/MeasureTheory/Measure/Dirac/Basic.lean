@@ -97,7 +97,7 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
     ∃ s : Set α, μ = Measure.sum (fun x : s ↦ μ (measurableAtom x) • dirac (x : α)) := by
   let measurableAtoms := measurableAtom '' (Set.univ : Set α)
   have h_nonempty (s : measurableAtoms) : Set.Nonempty s.1 := by
-    obtain ⟨y, _, hy⟩ := s.2
+    obtain ⟨y, -, hy⟩ := s.2
     rw [← hy]
     exact ⟨y, mem_measurableAtom_self y⟩
   let points : measurableAtoms → α := fun s ↦ (h_nonempty s).some

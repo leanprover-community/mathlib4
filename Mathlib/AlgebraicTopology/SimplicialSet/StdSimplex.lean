@@ -719,7 +719,7 @@ lemma hasDimensionLT_face {n : ℕ} (S : Finset (Fin (n + 1)))
     (d : ℕ) (hd : S.card ≤ d) :
     HasDimensionLT (face.{u} S) d := by
   generalize hm : S.card = m
-  obtain _ | m := m
+  obtain - | m := m
   · obtain rfl : S = ∅ := by rwa [← Finset.card_eq_zero]
     rw [face_empty]
     infer_instance

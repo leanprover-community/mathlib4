@@ -272,7 +272,7 @@ theorem submodule_closure_single :
     AddSubmonoid.closure (⋃ i, single R i '' (F.N i : Set M)) = F.submodule.toAddSubmonoid := by
   apply le_antisymm
   · rw [AddSubmonoid.closure_le, Set.iUnion_subset_iff]
-    rintro i _ ⟨m, hm, rfl⟩ j
+    rintro i - ⟨m, hm, rfl⟩ j
     rw [coeff_single, Finsupp.single_apply]
     split_ifs with h
     · rwa [← h]
@@ -303,7 +303,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     rw [PolynomialModule.coeff_single, Finsupp.single_apply, ite_eq_left rfl] at hl
     rw [← hl, Finsupp.linearCombination_apply, PolynomialModule.coeff_finsuppSum, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
-    rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
+    rintro ⟨-, -, ⟨n', rfl⟩, -, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
     rw [Subalgebra.smul_def, smul_single_apply, ite_eq_left (show n' ≤ n + 1 by lia)]
     have e : n' ≤ n := by lia
@@ -323,7 +323,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     · exact this _ hj'
     simp only [not_le, Nat.lt_succ_iff] at hj'
     rw [← hF _ hj']
-    rintro _ ⟨m, hm, rfl⟩
+    rintro - ⟨m, hm, rfl⟩
     refine Submodule.smul_induction_on hm (fun r hr m' hm' => ?_) (fun x y hx hy => ?_)
     · rw [add_comm, ← monomial_smul_single]
       exact F'.smul_mem
@@ -445,7 +445,7 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
     refine Or.inl (eq_bot_iff.mpr ?_)
     rw [← Ideal.iInf_pow_eq_bot_of_isLocalRing I ‹_›]
     apply le_iInf
-    rintro (_ | n) <;> simp [H.pow_succ_eq]
+    rintro (- | n) <;> simp [H.pow_succ_eq]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
 open IsLocalRing in

@@ -513,7 +513,7 @@ theorem nat_casesOn_right {f : α → ℕ} {g : α → σ} {h : α → ℕ →. 
     rcases f a with - | n
     · simp
     · refine ext fun b => ⟨fun H => ?_, fun H => ?_⟩
-      · rcases mem_bind_iff.1 H with ⟨c, _, h₂⟩
+      · rcases mem_bind_iff.1 H with ⟨c, -, h₂⟩
         exact h₂
       · have : ∀ m, (Nat.rec (motive := fun _ => Part σ)
             (Part.some (g a)) (fun y IH => IH.bind fun _ => h a n) m).Dom := by
@@ -754,7 +754,7 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
     intro a₁ h₁
     apply @PFun.fixInduction _ _ _ _ _ _ h₁
     intro a₂ h₂ IH k hk
-    rcases PFun.mem_fix_iff.1 h₂ with (h₂ | ⟨a₃, am₃, _⟩)
+    rcases PFun.mem_fix_iff.1 h₂ with (h₂ | ⟨a₃, am₃, -⟩)
     · refine ⟨k.succ, ?_, fun m mk km => ⟨a₂, ?_⟩⟩
       · simpa [F] using Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]

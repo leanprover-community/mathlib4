@@ -129,7 +129,7 @@ theorem bijOn_exp_Ioo_centeredArc {r : ℝ} (hr : r ≤ π) :
   grind
 
 theorem centeredArc_mono {r s : ℝ} (h : r ≤ s) : centeredArc r ⊆ centeredArc s := by
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   exact ⟨x, hx.trans_le h, rfl⟩
 
 theorem mem_centeredArc {r : ℝ} (hr : r ≤ π) {z : Circle} :

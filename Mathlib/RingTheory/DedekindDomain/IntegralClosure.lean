@@ -67,7 +67,7 @@ theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] 
   have : IsTorsionFree A L := .trans_faithfulSMul A K L
   have : IsTorsionFree A C := IsIntegralClosure.isTorsionFree A L
   refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1, ?_⟩⟩
-  · rintro ⟨_, x, hx, rfl⟩
+  · rintro ⟨-, x, hx, rfl⟩
     rw [isUnit_iff_ne_zero, map_ne_zero_iff _ (IsIntegralClosure.algebraMap_injective C A L),
       Subtype.coe_mk, map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective A C)]
     exact mem_nonZeroDivisors_iff_ne_zero.mp hx
@@ -93,7 +93,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [Algebra.IsSeparable K L] {ι 
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
   rw [← LinearMap.BilinForm.dualSubmodule_span_of_basis,
     ← LinearMap.BilinForm.le_flip_dualSubmodule, Submodule.span_le]
-  rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
+  rintro - ⟨i, rfl⟩ - ⟨y, rfl⟩
   simp only [LinearMap.coe_restrictScalars, linearMap_apply, LinearMap.BilinForm.flip_apply,
     traceForm_apply]
   refine Submodule.mem_one.mpr <| IsIntegrallyClosed.isIntegral_iff.mp ?_

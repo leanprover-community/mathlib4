@@ -843,7 +843,7 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
   rw [memℓp_infty_iff]
   obtain ⟨⟨Cf, hCf⟩, ⟨Cg, hCg⟩⟩ := hf.bddAbove, hg.bddAbove
   refine ⟨Cf * Cg, ?_⟩
-  rintro _ ⟨i, rfl⟩
+  rintro - ⟨i, rfl⟩
   calc
     ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le (f i) (g i)
     _ ≤ Cf * Cg :=
@@ -1331,7 +1331,7 @@ theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.ra
   rcases eq_top_or_lt_top p with (rfl | hp)
   · apply memℓp_infty
     use C
-    rintro _ ⟨a, rfl⟩
+    rintro - ⟨a, rfl⟩
     exact norm_apply_le_of_tendsto (Eventually.of_forall hCF) hf a
   · apply memℓp_gen'
     exact sum_rpow_le_of_tendsto hp.ne (Eventually.of_forall hCF) hf

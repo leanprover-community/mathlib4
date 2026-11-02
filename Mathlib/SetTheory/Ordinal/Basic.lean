@@ -1119,7 +1119,7 @@ theorem ord_aleph0 : ord.{u} ℵ₀ = ω := by
 @[simp]
 theorem lift_ord (c) : Ordinal.lift.{u, v} (ord c) = ord (lift.{u, v} c) := by
   refine le_antisymm (le_of_forall_lt fun a ha => ?_) ?_
-  · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, _, rfl⟩
+  · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, -, rfl⟩
     rwa [lt_ord, ← lift_card, lift_lt, ← lt_ord, ← Ordinal.lift_lt]
   · rw [ord_le, ← lift_card, card_ord]
 

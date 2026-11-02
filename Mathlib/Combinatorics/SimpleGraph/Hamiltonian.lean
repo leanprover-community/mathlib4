@@ -207,7 +207,7 @@ lemma IsHamiltonianCycle.map (hf : Bijective f)
   isHamiltonian_tail := by
     simp only [IsHamiltonian, hf.surjective.forall]
     intro x
-    rcases p with (_ | ⟨y, p⟩)
+    rcases p with (- | ⟨y, p⟩)
     · cases hp.ne_nil rfl
     simp only [map_cons, getVert_cons_succ, tail_cons, support_copy, support_map]
     rw [List.count_map_of_injective _ _ hf.injective]

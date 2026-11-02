@@ -107,33 +107,33 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
             _).nonempty_congr]
       · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.2⟩
       · refine Cocone.ext (Iso.refl c'.pt) ?_
-        rintro (_ | _ | _) <;> dsimp <;>
+        rintro (- | - | -) <;> dsimp <;>
           simp only [c'.w, Category.id_comp, Category.comp_id]
     · exact ⟨congr($(eα.symm).app _)⟩
     · exact ⟨congr($(eα.symm).app _)⟩
     · exact ⟨by simp⟩
     constructor
-    · rintro ⟨h₁, h₂⟩ (_ | _ | _)
+    · rintro ⟨h₁, h₂⟩ (- | - | -)
       · rw [← c'.w WalkingSpan.Hom.fst]; exact (hα WalkingSpan.Hom.fst).paste_horiz h₁
       exacts [h₁, h₂]
     · intro h; exact ⟨h _, h _⟩
   · introv H W' hf hg hh hi w
     refine
-      Iff.trans ?_ ((H w.cocone ⟨by rintro (_ | _ | _); exacts [αW, αX, αY], ?_⟩ αZ ?_ ?_).trans ?_)
+      Iff.trans ?_ ((H w.cocone ⟨by rintro (- | - | -); exacts [αW, αX, αY], ?_⟩ αZ ?_ ?_).trans ?_)
     rotate_left
-    · rintro i _ (_ | _ | _)
+    · rintro i - (- | - | -)
       · dsimp; simp only [Functor.map_id, Category.comp_id, Category.id_comp]
       exacts [hf.w, hg.w]
     · ext (_ | _ | _)
       · simp [hh.w, hf.w_assoc]
       exacts [hh.w.symm, hi.w.symm]
-    · rintro i _ (_ | _ | _)
+    · rintro i - (- | - | -)
       · dsimp; simp_rw [Functor.map_id]
         exact IsPullback.of_horiz_isIso ⟨by rw [Category.comp_id, Category.id_comp]⟩
       exacts [hf, hg]
     · constructor
       · intro h; exact ⟨h WalkingCospan.left, h WalkingCospan.right⟩
-      · rintro ⟨h₁, h₂⟩ (_ | _ | _)
+      · rintro ⟨h₁, h₂⟩ (- | - | -)
         · dsimp; rw [PushoutCocone.condition_zero]; exact hf.paste_horiz h₁
         exacts [h₁, h₂]
     · exact ⟨fun h => h.2, fun h => ⟨w, h⟩⟩
@@ -175,7 +175,7 @@ lemma IsPushout.isVanKampen_isPullback_isPullback_hom_ext
     {αX : X' ⟶ X} [HasPullback αX f] {αY : Y' ⟶ Y} {αZ : Z' ⟶ Z} {W : C} {f₁ f₂ : Z' ⟶ W}
     (hh : IsPullback h' αX αZ h) (hi : IsPullback i' αY αZ i)
     (h'_w : h' ≫ f₁ = h' ≫ f₂) (i'_w : i' ≫ f₁ = i' ≫ f₂) : f₁ = f₂ := by
-  obtain ⟨W', f', g', αW, _, _, H''⟩ := H'.exists_cube_filling hh hi
+  obtain ⟨W', f', g', αW, -, -, H''⟩ := H'.exists_cube_filling hh hi
   exact H''.hom_ext h'_w i'_w
 
 set_option backward.isDefEq.respectTransparency false in

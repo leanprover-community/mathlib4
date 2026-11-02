@@ -152,7 +152,7 @@ lemma IsMulFreimanIso.threeGPFree_congr (hf : IsMulFreimanIso 2 s t f) :
 /-- Arithmetic progressions of length three are preserved under semigroup homomorphisms. -/]
 theorem ThreeGPFree.image' [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
     (h : ThreeGPFree s) : ThreeGPFree (f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ habc
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩ - ⟨c, hc, rfl⟩ habc
   rw [h ha hb hc (hf (mul_mem_mul ha hc) (mul_mem_mul hb hb) <| by rwa [map_mul, map_mul])]
 
 end CommMonoid
@@ -189,7 +189,7 @@ variable [CommMonoid α] [IsCancelMul α] {s : Set α} {a : α}
 
 @[to_additive]
 theorem ThreeGPFree.smul_set (hs : ThreeGPFree s) : ThreeGPFree (a • s) := by
-  rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
+  rintro - ⟨b, hb, rfl⟩ - ⟨c, hc, rfl⟩ - ⟨d, hd, rfl⟩ h
   congrm a • $(hs hb hc hd <| by simpa [mul_mul_mul_comm _ _ a] using h)
 
 @[to_additive] lemma threeGPFree_smul_set : ThreeGPFree (a • s) ↔ ThreeGPFree s where
@@ -219,7 +219,7 @@ section CancelCommMonoidWithZero
 variable [CommMonoidWithZero α] [IsCancelMulZero α] {s : Set α} {a : α}
 
 lemma ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) : ThreeGPFree (a • s) := by
-  rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h
+  rintro - ⟨b, hb, rfl⟩ - ⟨c, hc, rfl⟩ - ⟨d, hd, rfl⟩ h
   congrm a • $(hs hb hc hd <| by simpa [mul_mul_mul_comm _ _ a, ha] using h)
 
 theorem threeGPFree_smul_set₀ (ha : a ≠ 0) : ThreeGPFree (a • s) ↔ ThreeGPFree s :=

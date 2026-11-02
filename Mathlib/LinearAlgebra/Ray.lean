@@ -537,7 +537,7 @@ theorem sameRay_or_sameRay_neg_iff_not_linearIndependent {x y : M} :
   by_cases hy : y = 0; · simpa [hy] using fun h : LinearIndependent R ![x, 0] => h.ne_zero 1 rfl
   simp_rw [Fintype.not_linearIndependent_iff]
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · rcases h with ((hx0 | hy0 | ⟨r₁, r₂, hr₁, _, h⟩) | (hx0 | hy0 | ⟨r₁, r₂, hr₁, _, h⟩))
+  · rcases h with ((hx0 | hy0 | ⟨r₁, r₂, hr₁, -, h⟩) | (hx0 | hy0 | ⟨r₁, r₂, hr₁, -, h⟩))
     · exact False.elim (hx hx0)
     · exact False.elim (hy hy0)
     · refine ⟨![r₁, -r₂], ?_⟩

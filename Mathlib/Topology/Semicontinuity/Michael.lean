@@ -140,7 +140,7 @@ theorem LowerHemicontinuous.exists_continuous_selection (hf : LowerHemicontinuou
         intro k j x _; simpa using mem_of_mem_nhds (hV_anti.mem k)
       | succ m ih =>
         intro k j x hj
-        obtain ⟨_, rfl, v, hv, hv'⟩ := hh_mem_ball j x
+        obtain ⟨-, rfl, v, hv, hv'⟩ := hh_mem_ball j x
         have h1 : h (j + 1) x - h j x ∈ V (k + 1) := by
           simpa [← hv'] using hV_anti.antitone hj hv
         have h2 : h (j + 1 + m) x - h (j + 1) x ∈ V (k + 1) := ih (k + 1) (j + 1) x (by lia)

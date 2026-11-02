@@ -72,7 +72,7 @@ theorem mem_sieves_iff_hasEffectiveEpi (S : Sieve X) :
     | of Y T hS =>
       rcases hS with ⟨Y', π, h'⟩
       refine ⟨Y', π, h'.2, ?_⟩
-      rcases h' with ⟨rfl, _⟩
+      rcases h' with ⟨rfl, -⟩
       exact ⟨Y', 𝟙 Y', π, Presieve.ofArrows.mk (), (by simp)⟩
     | top Y => exact ⟨Y, (𝟙 Y), inferInstance, by simp only [Sieve.top_apply]⟩
     | transitive Y R S _ _ a b =>

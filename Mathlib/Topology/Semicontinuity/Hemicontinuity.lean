@@ -553,7 +553,7 @@ theorem TendstoUniformlyOn.upperHemicontinuousOn (htendsto : TendstoUniformlyOn 
   rw [upperHemicontinuousOn_iff_forall_isOpen]
   intro x₀ hx₀s u hu hx₀u
   -- Find an open entourage `U` such that `U ○ U.symm ⊆ u`
-  obtain ⟨W, hW, _, hWu⟩ := lebesgue_number_of_compact_open (hf_compact x₀ hx₀s) hu hx₀u
+  obtain ⟨W, hW, -, hWu⟩ := lebesgue_number_of_compact_open (hf_compact x₀ hx₀s) hu hx₀u
   obtain ⟨V, hV, hVsym, hVcomp⟩ := comp_symm_mem_uniformity_sets hW
   obtain ⟨U, ⟨hUmem, hUopen⟩, hUsub⟩ := uniformity_hasBasis_open.mem_iff.mp hV
   -- Then choose a sufficiently large `N` such that `⟨f x, F N x⟩ ∈ hausdorffEntourage U`

@@ -781,7 +781,7 @@ private lemma isLocalizing_iff_aux (M : (Spec R).Modules) :
     refine ⟨fun f hle s ↦ ?_, fun f hle s hs ↦ ?_⟩
     · obtain ⟨n, y, hy⟩ := (hf f).surj _ _ s
       use n, y, hy.symm
-    · obtain ⟨⟨_, n, rfl⟩, hn⟩ := (IsLocalizedModule.eq_zero_iff (.powers f) (φ f)).mp hs
+    · obtain ⟨⟨-, n, rfl⟩, hn⟩ := (IsLocalizedModule.eq_zero_iff (.powers f) (φ f)).mp hs
       use n, hn
   · exact Scheme.Modules.isUnit_algebraMap_end_of_le_basicOpen f le_rfl
   · intro x

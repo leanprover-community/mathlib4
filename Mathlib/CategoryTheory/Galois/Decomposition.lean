@@ -306,7 +306,7 @@ lemma exists_hom_from_galois_of_fiber (X : C) (x : F.obj X) :
 lemma exists_hom_from_galois_of_fiber_nonempty (X : C) (h : Nonempty (F.obj X)) :
     ∃ (A : C) (_ : A ⟶ X), IsGalois A := by
   obtain ⟨x⟩ := h
-  obtain ⟨A, f, a, h1, _⟩ := exists_hom_from_galois_of_fiber F X x
+  obtain ⟨A, f, a, h1, -⟩ := exists_hom_from_galois_of_fiber F X x
   exact ⟨A, f, h1⟩
 
 include F in

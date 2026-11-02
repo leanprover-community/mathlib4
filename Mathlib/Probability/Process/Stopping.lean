@@ -299,7 +299,7 @@ lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous' [hf : f.IsRightCo
       Eventually.frequently <| eventually_nhdsWithin_of_forall fun _ hx ↦ hx
     have := exists_seq_forall_of_frequently h_freq
     simp_rw [tendsto_nhdsWithin_iff] at this
-    obtain ⟨s, ⟨hs_tendsto, _⟩, hs_gt⟩ := this
+    obtain ⟨s, ⟨hs_tendsto, -⟩, hs_gt⟩ := this
     exact ⟨s, hs_gt, hs_tendsto⟩
   have h_exists_lt (u : ι) (hu : t < u) : ∃ i, s i < u :=
     Eventually.exists (f := atTop) (hs_tendsto.eventually_lt_const hu)

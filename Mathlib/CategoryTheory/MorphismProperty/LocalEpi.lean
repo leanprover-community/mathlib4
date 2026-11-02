@@ -110,7 +110,7 @@ lemma localEpi_mem_range_iff_epi {X Y : C} (f : X ⟶ Y) :
   · refine G.map_injective ?_
     apply h ⟨Z, rfl⟩
     simp [← Functor.map_comp, huv]
-  · rintro h _ ⟨Z, rfl⟩ u v huv
+  · rintro h - ⟨Z, rfl⟩ u v huv
     obtain ⟨u, rfl⟩ := G.map_surjective u
     obtain ⟨v, rfl⟩ := G.map_surjective v
     simp only [← G.map_comp, G.map_injective_iff, cancel_epi] at huv

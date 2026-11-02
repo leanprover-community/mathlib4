@@ -184,7 +184,7 @@ variable (s : Cocone F) [s_pt : IsLocalRing s.pt] [s_ι : ∀ j, IsLocalHom (s.�
 theorem isLocalHom_desc (hc : IsColimit c) : IsLocalHom (hc.desc s).hom := by
   have : IsLocalRing c.pt := isLocalRing_of_isColimit F hc
   refine ((IsLocalRing.local_hom_tfae (hc.desc s).hom).out 1 2).mpr ?_
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp ((maximalIdeal_eq_iUnion_of_isColimit F hc).le hx)
   rw [← comp_apply, hc.fac]
   exact map_nonunit (S := s.pt) (s.ι.app j).hom x hx'

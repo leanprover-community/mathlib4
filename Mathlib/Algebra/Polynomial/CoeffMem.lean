@@ -55,7 +55,7 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Mo
       exacts [H₀ _, zero_mem _]
     have H : span R coeffs(r) ≤ span R coeffs(p) ⊔ span R coeffs(q) * span R coeffs(p) := by
       rw [span_le, ← hr]
-      rintro _ ⟨i, rfl⟩
+      rintro - ⟨i, rfl⟩
       rw [coeff_sub, ← mul_assoc, coeff_mul_X_pow', coeff_mul_C]
       apply sub_mem
       · exact mem_of_le_of_mem le_sup_left (subset_span (mem_range_self _))

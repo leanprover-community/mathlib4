@@ -451,7 +451,7 @@ private lemma prod_one_div_prime_den_coprime (k : ℕ) {p : ℕ} [Fact p.Prime] 
     (∏ q ∈ vonStaudtPrimes k with q ≠ p, ((1 : ℚ) / q).den).Coprime p := by
   refine Nat.Coprime.prod_left fun q hq ↦ ?_
   simp only [Finset.mem_filter, Finset.mem_range] at hq
-  obtain ⟨⟨_, hq_prime, _⟩, hne⟩ := hq
+  obtain ⟨⟨-, hq_prime, -⟩, hne⟩ := hq
   rw [show ((1 : ℚ) / q).den = q by simp [hq_prime.ne_zero]]
   exact (Nat.coprime_primes hq_prime Fact.out).mpr hne
 
@@ -575,7 +575,7 @@ private lemma faulhaber_sum_mem_pIntegrals {k p : ℕ} [Fact p.Prime]
       bernoulli i * ((2 * k + 1).choose i) * p ^ (2 * k - i) / (2 * k + 1)) ∈ pIntegrals p := by
   refine (Rat.padicValuation p).map_sum_le fun i hi ↦ ?_
   rw [Finset.mem_range] at hi
-  rcases i with _ | _ | i
+  rcases i with - | - | i
   · simp only [bernoulli_zero, one_mul, Nat.choose_zero_right, Nat.cast_one, Nat.sub_zero]
     exact mod_cast pow_div_mem_pIntegrals (by lia)
       (factorization_succ_le_sub_one (by lia) |>.trans tsub_le_self)

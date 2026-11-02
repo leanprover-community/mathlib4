@@ -353,7 +353,7 @@ theorem exists_subset_iUnion_closure_subset_t2space (hs : IsCompact s) (uo : ∀
     exact v.pred_of_mem (this i)
   · intro i
     by_contra hi
-    rcases exists_gt_t2space v hs i hi with ⟨v', hlt, _⟩
+    rcases exists_gt_t2space v hs i hi with ⟨v', hlt, -⟩
     exact hv.not_lt hlt
 
 /-- **Shrinking lemma**. A point-finite open cover of a compact subset of a locally compact T2 space

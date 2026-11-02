@@ -366,7 +366,7 @@ private theorem exists_mono_in_high_dimension' :
     by_cases h : Nonempty α
     case neg =>
       refine ⟨Unit, inferInstance, fun C => ⟨diagonal _ Unit, C fun _ => none, ?_⟩⟩
-      rintro (_ | ⟨a⟩)
+      rintro (- | ⟨a⟩)
       · rfl
       · exact (h ⟨a⟩).elim
     -- The key idea is to show that for every `r`, in high dimension we can either find
@@ -420,7 +420,7 @@ private theorem exists_mono_in_high_dimension' :
     -- If so then this is a `C'`-monochromatic line and we are done.
     · obtain ⟨p, p_mem, hp⟩ := h
       refine Or.inr (mono_of_mono ⟨p.line, p.color, ?_⟩)
-      rintro (_ | _)
+      rintro (- | -)
       · rw [hp, s.is_focused p p_mem]
       · apply p.has_color
     -- If not, we get `r+1` color focused lines by taking the product of the `r` lines with `l'`
@@ -434,7 +434,7 @@ private theorem exists_mono_in_high_dimension' :
     · rw [vertical_apply, ← congr_fun (hl' x), Line.map_apply]
     -- Our `r+1` lines have the same endpoint.
     · simp_rw [Multiset.mem_cons, Multiset.mem_map]
-      rintro _ (rfl | ⟨q, hq, rfl⟩)
+      rintro - (rfl | ⟨q, hq, rfl⟩)
       · simp only [vertical_apply]
       · simp only [prod_apply, s.is_focused q hq]
     -- Our `r+1` lines have distinct colors (this is why we needed to split into cases above).

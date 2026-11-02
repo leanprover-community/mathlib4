@@ -104,7 +104,7 @@ theorem coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
   change _ = ite _ _ _
   rw [ite_eq_right, preimage_image_eq, ite_eq_left hs]
   · exact Option.some_injective _
-  · rintro ⟨x, _, ⟨⟩⟩
+  · rintro ⟨x, -, ⟨⟩⟩
 
 @[to_dual]
 theorem sSup_empty (α : Type*) [CompleteLattice α] : (sSup ∅ : WithTop α) = ⊥ := by
@@ -759,7 +759,7 @@ theorem MonotoneOn.sInf_image_Icc [Preorder α] [ConditionallyCompleteLattice β
   refine IsGLB.csInf_eq ?_ ((nonempty_Icc.mpr hab).image f)
   refine isGLB_iff_le_iff.mpr (fun b' ↦ ⟨?_, ?_⟩)
   · intro hb'
-    rintro _ ⟨x, hx, rfl⟩
+    rintro - ⟨x, hx, rfl⟩
     exact hb'.trans <| h' (left_mem_Icc.mpr hab) hx hx.1
   · exact fun hb' ↦ hb' ⟨a, by simp [hab]⟩
 

@@ -102,7 +102,7 @@ theorem range_d₁₀_eq_coinvariantsKer :
     LinearMap.range (d₁₀ A).hom = Coinvariants.ker A.ρ := by
   symm
   apply Submodule.span_eq_of_le
-  · rintro _ ⟨x, rfl⟩
+  · rintro - ⟨x, rfl⟩
     use single x.1⁻¹ x.2
     simp [d₁₀]
   · rintro x ⟨y, hy⟩

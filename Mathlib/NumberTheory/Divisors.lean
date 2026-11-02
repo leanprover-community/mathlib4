@@ -158,7 +158,7 @@ lemma pairwise_divisorsAntidiagonalList_snd {n : ℕ} :
   refine (List.sortedLT_range' _ _ Nat.one_ne_zero).pairwise.filterMap _ ?_
   simp only [Option.ite_none_right_eq_some, Option.some.injEq, gt_iff_lt,
     and_imp, Prod.forall, Prod.mk.injEq]
-  rintro a b hab _ _ ha rfl rfl _ _ hb rfl rfl
+  rintro a b hab - - ha rfl rfl - - hb rfl rfl
   rwa [Nat.div_lt_div_left hn ⟨_, hb.symm⟩ ⟨_, ha.symm⟩]
 
 lemma sortedLT_map_fst_divisorsAntidiagonalList {n : ℕ} :
@@ -666,7 +666,7 @@ lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
 
 @[simp]
 lemma mem_divisorsAntidiag : xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0 := by
-  rcases z, xy with ⟨_ | _, ⟨_ | _, _ | _⟩⟩
+  rcases z, xy with ⟨- | -, ⟨- | -, - | -⟩⟩
   -- splitting this case saves about 1770 heartbeats i.e. 12.5% faster
   case ofNat.negSucc.negSucc =>
     simp [divisorsAntidiag]

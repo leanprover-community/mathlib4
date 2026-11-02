@@ -83,7 +83,7 @@ def botSet : Set R := {x | IsBot x}
 
 @[simp] lemma Ioc_sdiff_botSet (a b : R) : Ioc a b \ botSet = Ioc a b := by
   rw [sdiff_eq_left, disjoint_iff_forall_ne]
-  rintro c ⟨hc, _⟩ _ hc' rfl
+  rintro c ⟨hc, -⟩ _ hc' rfl
   exact (hc' a).not_gt hc
 
 @[deprecated (since := "2026-06-03")] alias Ioc_diff_botSet := Ioc_sdiff_botSet

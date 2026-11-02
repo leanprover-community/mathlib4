@@ -221,7 +221,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
   apply eq_of_infinite_eval_eq
   -- The two polynomials agree on all `x` of the form `x = y + y⁻¹`.
   apply @Set.Infinite.mono _ { x : K | ∃ y, x = y + y⁻¹ ∧ y ≠ 0 }
-  · rintro _ ⟨x, rfl, hx⟩
+  · rintro - ⟨x, rfl, hx⟩
     simp only [eval_X, eval_pow, Set.mem_ofPred_eq, ZMod.cast_one', add_pow_char,
       dickson_one_one_eval_add_inv _ _ (mul_inv_cancel₀ hx), ZMod.castHom_apply]
   -- Now we need to show that the set of such `x` is infinite.

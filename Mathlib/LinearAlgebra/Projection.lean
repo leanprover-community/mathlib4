@@ -388,7 +388,7 @@ theorem ofIsCompl_apply_right (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →
 theorem ofIsCompl_eq (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} {χ : E →ₗ[R] F}
     (hφ : ∀ u, φ u = χ u) (hψ : ∀ u, ψ u = χ u) : ofIsCompl h φ ψ = χ := by
   ext x
-  obtain ⟨_, _, rfl, _⟩ := existsUnique_add_of_isCompl h x
+  obtain ⟨-, -, rfl, -⟩ := existsUnique_add_of_isCompl h x
   simp [ofIsCompl, hφ, hψ]
 
 theorem ofIsCompl_eq' (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} {χ : E →ₗ[R] F}
@@ -398,7 +398,7 @@ theorem ofIsCompl_eq' (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F
 theorem ofIsCompl_eq_add (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
     ofIsCompl hpq φ ψ = (φ ∘ₗ p.projectionOnto q hpq) + (ψ ∘ₗ q.projectionOnto p hpq.symm) := by
   ext x
-  obtain ⟨a, b, rfl, _⟩ := existsUnique_add_of_isCompl hpq x
+  obtain ⟨a, b, rfl, -⟩ := existsUnique_add_of_isCompl hpq x
   simp
 
 @[simp]
@@ -690,7 +690,7 @@ lemma IsIdempotentElem.ext_iff {p q : E →ₗ[R] E}
     p = q ↔ range p = range q ∧ ker p = ker q := by
   refine ⟨fun h => ⟨congrArg range h, congrArg ker h⟩, fun ⟨hr, hk⟩ => ?_⟩
   ext x
-  obtain ⟨⟨v, hv⟩, ⟨w, hw⟩, rfl, _⟩ :=
+  obtain ⟨⟨v, hv⟩, ⟨w, hw⟩, rfl, -⟩ :=
     (ker p).existsUnique_add_of_isCompl hp.isCompl.symm x
   simp [mem_ker.mp, hv, (hk ▸ hv), (mem_range_iff hp).mp, hw, (mem_range_iff hq).mp, (hr ▸ hw)]
 

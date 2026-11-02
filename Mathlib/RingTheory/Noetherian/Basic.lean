@@ -293,7 +293,7 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot
   suffices t : ∃ n : ℕ, ∀ m, n ≤ m → f (m + 1) = ⊥ by
     obtain ⟨n, w⟩ := t
     use n + 1
-    rintro (_ | m) p
+    rintro (- | m) p
     · cases p
     · apply w
       exact Nat.succ_le_succ_iff.mp p

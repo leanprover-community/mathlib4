@@ -148,7 +148,7 @@ lemma preservesFinOfPreservesBinaryAndTerminal :
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
     · apply (Category.id_comp _).symm
-    · rintro i _
+    · rintro i -
       dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π_app]
       change F.map _ ≫ _ = 𝟙 _ ≫ _
       simp only [id_comp, ← F.map_comp]
@@ -274,7 +274,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
     rintro ⟨j⟩
     refine Fin.inductionOn j ?_ ?_
     · apply Category.comp_id
-    · rintro i _
+    · rintro i -
       dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]
       rw [comp_id, ← F.map_comp]
       rfl

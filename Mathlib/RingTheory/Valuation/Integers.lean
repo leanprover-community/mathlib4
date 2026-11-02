@@ -428,7 +428,7 @@ lemma leIdeal_map_algebraMap_eq_leSubmodule_min {K : Type*} [Field K] (v : Valua
   simp only [Submodule.mem_map, mem_leIdeal_iff, Algebra.linearMap_apply, mem_leSubmodule_iff]
   constructor
   · rintro ⟨y, hy, rfl⟩
-    rcases min_cases 1 γ with ⟨h, _⟩ | ⟨h, _⟩
+    rcases min_cases 1 γ with ⟨h, -⟩ | ⟨h, -⟩
     · rw [h]
       exact y.prop
     · rw [h]

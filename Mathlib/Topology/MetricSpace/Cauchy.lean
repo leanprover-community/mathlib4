@@ -133,7 +133,7 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     have hS : ∀ N, ∃ x, ∀ y ∈ S N, y ≤ x := by
       rcases cauchySeq_bdd hs with ⟨R, -, hR⟩
       refine fun N => ⟨R, ?_⟩
-      rintro _ ⟨⟨m, n⟩, _, rfl⟩
+      rintro - ⟨⟨m, n⟩, -, rfl⟩
       exact le_of_lt (hR m n)
     -- Prove that it bounds the distances of points in the Cauchy sequence
     have ub : ∀ m n N, N ≤ m → N ≤ n → dist (s m) (s n) ≤ sSup (S N) := fun m n N hm hn =>
@@ -145,7 +145,7 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     refine (Metric.cauchySeq_iff.1 hs (ε / 2) (half_pos ε0)).imp fun N hN n hn => ?_
     rw [Real.dist_0_eq_abs, abs_of_nonneg (S0 n)]
     refine lt_of_le_of_lt (csSup_le ⟨_, S0m _⟩ ?_) (half_lt_self ε0)
-    rintro _ ⟨⟨m', n'⟩, ⟨hm', hn'⟩, rfl⟩
+    rintro - ⟨⟨m', n'⟩, ⟨hm', hn'⟩, rfl⟩
     exact le_of_lt (hN _ (le_trans hn hm') _ (le_trans hn hn')),
    fun ⟨b, _, b_bound, b_lim⟩ => cauchySeq_of_le_tendsto_0 b b_bound b_lim⟩
 

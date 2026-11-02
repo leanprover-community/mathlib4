@@ -118,7 +118,7 @@ theorem Set.Subsingleton.strictConvex (hs : s.Subsingleton) : StrictConvex 𝕜 
 theorem StrictConvex.linear_image [Semiring 𝕝] [Module 𝕝 E] [Module 𝕝 F]
     [LinearMap.CompatibleSMul E F 𝕜 𝕝] (hs : StrictConvex 𝕜 s) (f : E →ₗ[𝕝] F) (hf : IsOpenMap f) :
     StrictConvex 𝕜 (f '' s) := by
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ hxy a b ha hb hab
+  rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩ hxy a b ha hb hab
   refine hf.image_interior_subset _ ⟨a • x + b • y, hs hx hy (ne_of_apply_ne _ hxy) ha hb hab, ?_⟩
   rw [map_add, f.map_smul_of_tower a, f.map_smul_of_tower b]
 
@@ -216,7 +216,7 @@ variable [ContinuousAdd E] {s t : Set E}
 
 theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
     StrictConvex 𝕜 (s + t) := by
-  rintro _ ⟨v, hv, w, hw, rfl⟩ _ ⟨x, hx, y, hy, rfl⟩ h a b ha hb hab
+  rintro - ⟨v, hv, w, hw, rfl⟩ - ⟨x, hx, y, hy, rfl⟩ h a b ha hb hab
   rw [smul_add, smul_add, add_add_add_comm]
   obtain rfl | hvx := eq_or_ne v x
   · refine interior_mono (add_subset_add (singleton_subset_iff.2 hv) Subset.rfl) ?_
@@ -329,7 +329,7 @@ theorem StrictConvex.affine_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {f :
 /-- The image of a strictly convex set under an affine map is strictly convex. -/
 theorem StrictConvex.affine_image (hs : StrictConvex 𝕜 s) {f : E →ᵃ[𝕜] F} (hf : IsOpenMap f) :
     StrictConvex 𝕜 (f '' s) := by
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ hxy a b ha hb hab
+  rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩ hxy a b ha hb hab
   exact
     hf.image_interior_subset _
       ⟨a • x + b • y, ⟨hs hx hy (ne_of_apply_ne _ hxy) ha hb hab, Convex.combo_affine_apply hab⟩⟩

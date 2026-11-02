@@ -68,7 +68,7 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
       clear n
       let g := of v
       intro n IH
-      rcases n with (_ | _ | n)
+      rcases n with (- | - | n)
       -- n = 0
       · suffices ∃ gp : Pair ℚ, Pair.mk (1 : K) 0 = gp.map (↑) by simpa [contsAux]
         use Pair.mk 1 0
@@ -200,7 +200,7 @@ theorem coe_of_s_get?_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
   simp only [of, IntFractPair.seq1, Stream'.Seq.map_get?, Stream'.Seq.get?_tail]
   simp only [Stream'.Seq.get?]
   rw [← IntFractPair.coe_stream'_rat_eq v_eq_q]
-  rcases succ_nth_stream_eq : IntFractPair.stream q (n + 1) with (_ | ⟨_, _⟩) <;>
+  rcases succ_nth_stream_eq : IntFractPair.stream q (n + 1) with (- | ⟨_, _⟩) <;>
     simp [Stream'.map, Stream'.get, succ_nth_stream_eq]
 
 theorem coe_of_s_rat_eq (v_eq_q : v = (↑q : K)) :
@@ -260,7 +260,7 @@ theorem stream_succ_nth_fr_num_lt_nth_fr_num_rat {ifp_n ifp_succ_n : IntFractPai
   have : ifp_n = ifp_n' := by injection Eq.trans stream_nth_eq.symm stream_nth_eq'
   cases this
   rw [← IntFractPair.of_eq_ifp_succ_n]
-  obtain ⟨zero_le_ifp_n_fract, _⟩ := nth_stream_fr_nonneg_lt_one stream_nth_eq
+  obtain ⟨zero_le_ifp_n_fract, -⟩ := nth_stream_fr_nonneg_lt_one stream_nth_eq
   have : 0 < ifp_n.fr := lt_of_le_of_ne zero_le_ifp_n_fract ifp_n_fract_ne_zero.symm
   exact of_inv_fr_num_lt_num_of_pos this
 

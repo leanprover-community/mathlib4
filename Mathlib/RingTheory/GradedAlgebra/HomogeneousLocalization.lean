@@ -806,7 +806,7 @@ set_option backward.privateInPublic.warn false in
 include hg in
 lemma range_awayMapAux_subset :
     Set.range (awayMapAux 𝒜 (f := f) ⟨_, hx⟩) ⊆ Set.range (val (𝒜 := 𝒜)) := by
-  rintro _ ⟨z, rfl⟩
+  rintro - ⟨z, rfl⟩
   obtain ⟨⟨n, ⟨a, ha⟩, ⟨b, hb'⟩, j, rfl : _ = b⟩, rfl⟩ := mk_surjective z
   use mk ⟨n+j•e,⟨a*g^j, ?_⟩, ⟨x^j, ?_⟩, j, rfl⟩
   · simp [awayMapAux_mk 𝒜 (hx := hx)]
@@ -920,7 +920,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     replace e := congr(val $e)
     simp only [RingHom.algebraMap_toAlgebra, awayMap_mk, val_mk,
       Localization.mk_eq_mk_iff, Localization.r_iff_exists] at e
-    obtain ⟨⟨_, k, rfl⟩, hc⟩ := e
+    obtain ⟨⟨-, k, rfl⟩, hc⟩ := e
     refine ⟨⟨_, k + m + n, rfl⟩, ?_⟩
     ext
     simp only [val_mul, val_pow, val_mk, Localization.mk_pow,
@@ -1008,7 +1008,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
   rw [← top_le_iff]
   change ⊤ ≤ (Algebra.adjoin (𝒜 0) _).toSubmodule
   rw [← HomogeneousLocalization.Away.span_mk_prod_pow_eq_top hf v hx dv hxd, Submodule.span_le]
-  rintro _ ⟨a, ai, hai, rfl⟩
+  rintro - ⟨a, ai, hai, rfl⟩
   have H₀ : (a - ∑ i : ι', dv i * (ai i / d)) • d = ∑ k : ι', (ai k % d) • dv k := by
     rw [smul_eq_mul, tsub_mul, ← smul_eq_mul, ← hai]
     conv => enter [1, 1, 2, i]; rw [← Nat.mod_add_div (ai i) d]
@@ -1083,7 +1083,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top {f : A} {d : ℕ} (hf : f ∈ 𝒜 d)
     exact Algebra.subset_adjoin ⟨⟨i, by simpa [s] using hi⟩, rfl⟩
   rw [← top_le_iff, ← this]
   apply Algebra.adjoin_mono
-  rintro _ ⟨a, ai, hai : ∑ x ∈ s.attach, _ = _, h, rfl⟩
+  rintro - ⟨a, ai, hai : ∑ x ∈ s.attach, _ = _, h, rfl⟩
   refine ⟨a, fun i ↦ if hi : i ∈ s then ai ⟨i, hi⟩ else 0, ?_, ?_, ?_⟩
   · simpa [Finset.sum_attach_eq_sum_dite] using hai
   · simp [apply_dite, dite_apply, h]
@@ -1103,7 +1103,7 @@ lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
   · let f' := Away.mk 𝒜 hf 1 1 (by simp [hd, GradedOne.one_mem])
     refine ⟨{f'}, Set.finite_singleton f', ?_⟩
     rw [Algebra.adjoin_le_iff]
-    rintro _ ⟨a, ai, hai, hai', rfl⟩
+    rintro - ⟨a, ai, hai, hai', rfl⟩
     obtain rfl : ai = 0 := funext <| by simpa [hd, hdx] using hai
     simp only [Finset.univ_eq_attach, Pi.zero_apply, pow_zero, Finset.prod_const_one, mem_coe]
     convert pow_mem (Algebra.self_mem_adjoin_singleton (𝒜 0) f') a using 1
@@ -1115,7 +1115,7 @@ lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
   let F : s' → Away 𝒜 f := fun ai ↦ Away.mk 𝒜 hf ai.1.1.1 (∏ i, i ^ (ai.1.2 i).1)
     (by convert SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i; exact ai.2.symm)
   apply (Set.finite_range F).subset
-  rintro _ ⟨a, ai, hai, hai', rfl⟩
+  rintro - ⟨a, ai, hai, hai', rfl⟩
   refine ⟨⟨⟨⟨a, ?_⟩, fun i ↦ ⟨ai i, (hai' i).trans_lt d.lt_succ_self⟩⟩, hai⟩, rfl⟩
   rw [Nat.lt_succ_iff, ← mul_le_mul_iff_of_pos_right hd, ← smul_eq_mul, ← hai, Finset.sum_mul]
   simp_rw [smul_eq_mul, mul_comm _ d]

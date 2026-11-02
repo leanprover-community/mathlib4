@@ -181,7 +181,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
     refine Relation.EqvGen.mono ?_ _ _ (D.eqvGen_of_π_eq h :)
-    rintro _ _ ⟨x⟩
+    rintro - - ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
@@ -390,7 +390,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   intro s hs
   rw [(ofOpenSubsets U).isOpen_iff] at hs
   rw [isOpen_iff_forall_mem_open]
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion' ↧α (U i))
   use Set.inter_subset_left
@@ -417,7 +417,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
     obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
     rw [ι_fromOpenSubsetsGlue_apply]
     exact Set.subset_iUnion _ i hx'
-  · rintro ⟨_, ⟨i, rfl⟩, hx⟩
+  · rintro ⟨-, ⟨i, rfl⟩, hx⟩
     rename_i x
     exact ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
 

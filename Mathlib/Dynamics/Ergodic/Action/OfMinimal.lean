@@ -122,7 +122,7 @@ theorem ErgodicSMul.trans_isMinimal (N : Type*) [MulAction M N]
   aeconst_of_forall_preimage_smul_ae_eq {s} hsm hs := by
     refine aeconst_of_dense_setOfPred_preimage_smul_ae (M := N) hsm.nullMeasurableSet ?_
     refine (MulAction.dense_orbit M 1).mono ?_
-    rintro _ ⟨g, rfl⟩
+    rintro - ⟨g, rfl⟩
     simpa using hs g
 
 end IsScalarTower
@@ -188,7 +188,7 @@ theorem DenseRange.zpow_of_ergodic_mul_left [OpensMeasurableSpace G]
   have hsne : s.Nonempty := ⟨1, mem_iUnion.2 ⟨0, by simpa⟩⟩
   have hd : Disjoint s (a • V) := by
     simp_rw [s, disjoint_iUnion_left, disjoint_left]
-    rintro m _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
+    rintro m - ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
     apply hV y hy x hx m
     simp_all
   have hgs : (g * ·) ⁻¹' s = s := by

@@ -50,7 +50,7 @@ theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
   refine le_antisymm
     (generateFrom_le ?_)
     (generateFrom_mono <| iUnion_subset fun q ↦ singleton_subset_iff.mpr <| mem_range_self _)
-  rintro _ ⟨a, rfl⟩
+  rintro - ⟨a, rfl⟩
   have : IsLUB (range ((↑) : ℚ → ℝ) ∩ Iio a) a := by
     simp [isLUB_iff_le_iff, mem_upperBounds, ← le_iff_forall_rat_lt_imp_le]
   rw [← this.biUnion_Iio_eq, ← image_univ, ← image_inter_preimage, univ_inter, biUnion_image]
@@ -62,7 +62,7 @@ theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
   refine le_antisymm
     (generateFrom_le ?_)
     (generateFrom_mono <| iUnion_subset fun q ↦ singleton_subset_iff.mpr <| mem_range_self _)
-  rintro _ ⟨a, rfl⟩
+  rintro - ⟨a, rfl⟩
   have : IsGLB (range ((↑) : ℚ → ℝ) ∩ Ioi a) a := by
     simp [isGLB_iff_le_iff, mem_lowerBounds, ← le_iff_forall_lt_rat_imp_le]
   rw [← this.biUnion_Ioi_eq, ← image_univ, ← image_inter_preimage, univ_inter, biUnion_image]
@@ -72,7 +72,7 @@ theorem borel_eq_generateFrom_Ioi_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
 theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Iic (a : ℝ)}) := by
   rw [borel_eq_generateFrom_Ioi_rat, iUnion_singleton_eq_range, iUnion_singleton_eq_range]
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_) <;>
-  rintro _ ⟨q, rfl⟩ <;>
+  rintro - ⟨q, rfl⟩ <;>
   dsimp only <;>
   [rw [← compl_Iic]; rw [← compl_Ioi]] <;>
   exact MeasurableSet.compl (GenerateMeasurable.basic _ (mem_range_self q))
@@ -80,7 +80,7 @@ theorem borel_eq_generateFrom_Iic_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
 theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, {Ici (a : ℝ)}) := by
   rw [borel_eq_generateFrom_Iio_rat, iUnion_singleton_eq_range, iUnion_singleton_eq_range]
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_) <;>
-  rintro _ ⟨q, rfl⟩ <;>
+  rintro - ⟨q, rfl⟩ <;>
   dsimp only <;>
   [rw [← compl_Ici]; rw [← compl_Iio]] <;>
   exact MeasurableSet.compl (GenerateMeasurable.basic _ (mem_range_self q))
@@ -130,7 +130,7 @@ theorem measure_ext_Ioo_rat {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ]
     (h : ∀ a b : ℚ, μ (Ioo a b) = ν (Ioo a b)) : μ = ν :=
   (finiteSpanningSetsInIooRat μ).ext borel_eq_generateFrom_Ioo_rat isPiSystem_Ioo_rat <| by
     simp only [mem_iUnion, mem_singleton_iff]
-    rintro _ ⟨a, b, -, rfl⟩
+    rintro - ⟨a, b, -, rfl⟩
     apply h
 
 end Real

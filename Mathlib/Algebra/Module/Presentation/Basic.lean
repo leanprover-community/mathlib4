@@ -161,7 +161,7 @@ lemma range_π : LinearMap.range solution.π = Submodule.span A (Set.range solut
 lemma span_relation_le_ker_π :
     Submodule.span A (Set.range relations.relation) ≤ LinearMap.ker solution.π := by
   rw [Submodule.span_le]
-  rintro _ ⟨r, rfl⟩
+  rintro - ⟨r, rfl⟩
   simp only [SetLike.mem_coe, LinearMap.mem_ker, π_relation]
 
 /-- Given `relations : Relations A` and `solution : relations.Solution M`, this is

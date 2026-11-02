@@ -241,7 +241,7 @@ theorem IsLindelof.inter_iInter_nonempty {ι : Type v} (hs : IsLindelof s) (t : 
     (htc : ∀ i, IsClosed (t i)) (hst : ∀ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i).Nonempty) :
     (s ∩ ⋂ i, t i).Nonempty := by
   contrapose! hst
-  rcases hs.elim_countable_subfamily_closed t htc hst with ⟨u, ⟨_, husub⟩⟩
+  rcases hs.elim_countable_subfamily_closed t htc hst with ⟨u, ⟨-, husub⟩⟩
   exact ⟨u, fun _ ↦ husub⟩
 
 /-- For every open cover of a Lindelöf set, there exists a countable subcover. -/
@@ -367,7 +367,7 @@ theorem Set.Finite.isLindelof (hs : s.Finite) : IsLindelof s :=
 theorem IsLindelof.countable_of_discrete [DiscreteTopology X] (hs : IsLindelof s) :
     s.Countable := by
   have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]
-  rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, ht, _, hssubt⟩
+  rcases hs.elim_nhds_subcover (fun x => {x}) fun x _ => this x with ⟨t, ht, -, hssubt⟩
   rw [biUnion_of_singleton] at hssubt
   exact ht.mono hssubt
 
@@ -607,7 +607,7 @@ theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
 theorem Topology.IsInducing.isLindelof_iff {f : X → Y} (hf : IsInducing f) :
     IsLindelof s ↔ IsLindelof (f '' s) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot _ F_le => ?_⟩
-  obtain ⟨_, ⟨x, x_in : x ∈ s, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
+  obtain ⟨-, ⟨x, x_in : x ∈ s, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 

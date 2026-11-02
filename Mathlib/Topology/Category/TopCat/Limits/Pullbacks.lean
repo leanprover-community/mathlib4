@@ -195,7 +195,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f₂ : X
       ← ConcreteCategory.comp_apply, pullback.condition, ConcreteCategory.comp_apply]
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
   apply Concrete.limit_ext
-  rintro (_ | _ | _) <;>
+  rintro (- | - | -) <;>
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
   · simp [hx₁, ← limit.w _ WalkingCospan.Hom.inl]
   · simp [hx₁]
@@ -391,7 +391,7 @@ lemma isOpen_iff_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) (U : Se
   constructor
   · intro h
     exact h .one
-  · rintro h (_ | _)
+  · rintro h (- | -)
     · rw [← c.w .left]
       exact Continuous.isOpen_preimage f.hom.continuous (c.π ⁻¹' U) h
     · exact h

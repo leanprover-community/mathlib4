@@ -246,7 +246,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
   dsimp [δ, Fin.succAbove]
   rcases i with ⟨i, _⟩
   rcases j with ⟨j, _⟩
-  rcases k with ⟨k, _⟩
+  rcases k with ⟨k, -⟩
   split_ifs <;> simp at *
   all_goals lia
 
@@ -323,8 +323,8 @@ set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ⦋n⦌ := by
   ext j
-  rcases i with ⟨i, _⟩
-  rcases j with ⟨j, _⟩
+  rcases i with ⟨i, -⟩
+  rcases j with ⟨j, -⟩
   dsimp [δ, σ, Fin.succAbove, Fin.predAbove]
   split_ifs <;> simp <;> simp at * <;> lia
 

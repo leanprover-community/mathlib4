@@ -349,9 +349,9 @@ public theorem minimax
   apply le_antisymm
   -- the obvious inequality
   · rw [le_isGLB_iff hinf_sup, mem_lowerBounds]
-    rintro _ ⟨x, hx, rfl⟩
+    rintro - ⟨x, hx, rfl⟩
     rw [isLUB_le_iff hsup_inf, mem_upperBounds]
-    rintro _ ⟨y, hy, rfl⟩
+    rintro - ⟨y, hy, rfl⟩
     trans f x y
     · exact (hinf_x y hy).1 ⟨x, hx, rfl⟩
     · exact (hsup_y x hx).1 ⟨y, hy, rfl⟩

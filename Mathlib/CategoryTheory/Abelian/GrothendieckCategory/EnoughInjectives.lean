@@ -91,7 +91,7 @@ instance (G : C) [Small.{w} (Subobject G)] :
 
 lemma generatingMonomorphisms_le_monomorphisms (G : C) :
     generatingMonomorphisms G ≤ MorphismProperty.monomorphisms C := by
-  rintro _ _ _ ⟨X⟩
+  rintro - - - ⟨X⟩
   exact inferInstanceAs (Mono _)
 
 variable (G : C)

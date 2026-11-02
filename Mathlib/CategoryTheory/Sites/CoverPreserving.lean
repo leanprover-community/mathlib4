@@ -163,7 +163,7 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
           (hF₁.apply_map _ hx hf)⟩
     · intro y₁ y₂ hy₁ hy₂
       apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.2).isSeparated _ (hF₂.cover_preserve hS)).ext
-      rintro Y _ ⟨Z, g, h, hg, rfl⟩
+      rintro Y - ⟨Z, g, h, hg, rfl⟩
       simpa using! congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
 
 variable (F J K) in

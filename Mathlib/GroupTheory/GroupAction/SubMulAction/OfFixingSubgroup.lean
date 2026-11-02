@@ -110,7 +110,7 @@ alias not_mem_of_mem_ofFixingSubgroup := notMem_of_mem_ofFixingSubgroup
 theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :
     Disjoint s (Subtype.val '' t) := by
   rw [Set.disjoint_iff]
-  rintro a ⟨hbs, ⟨b, _, rfl⟩⟩; exact (b.prop hbs).elim
+  rintro a ⟨hbs, ⟨b, -, rfl⟩⟩; exact (b.prop hbs).elim
 
 variable (M s) in
 /-- The identity map of the `SubMulAction` of the `fixingSubgroup`

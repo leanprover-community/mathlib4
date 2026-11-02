@@ -451,7 +451,7 @@ variable {u : Set α} {P : Partition u} {f g : α → α} {a b c : α}
 lemma apply_mem (hf : IsRepFun P f) (ha : a ∈ u) : f a ∈ u := (hf.rel_apply ha).right_mem
 
 lemma image_subset (hf : IsRepFun P f) (hs : u ⊆ s) : f '' s ⊆ s := by
-  rintro _ ⟨a, haS, rfl⟩
+  rintro - ⟨a, haS, rfl⟩
   by_cases ha : a ∈ u
   · exact hs <| hf.apply_mem ha
   exact (hf.apply_of_notMem ha).symm ▸ haS

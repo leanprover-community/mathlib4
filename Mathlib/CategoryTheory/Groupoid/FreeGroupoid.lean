@@ -72,7 +72,7 @@ instance {V} [Quiver V] [Nonempty V] : Nonempty (Quiver.FreeGroupoid V) := by
 set_option backward.isDefEq.respectTransparency false in
 theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
     HomRel.CompClosure redStep p q → HomRel.CompClosure redStep p.reverse q.reverse := by
-  rintro ⟨_, _, XW, _, _, WY, _, _, f⟩
+  rintro ⟨-, -, XW, -, -, WY, -, -, f⟩
   have : HomRel.CompClosure redStep (WY.reverse ≫ 𝟙 _ ≫ XW.reverse)
       (WY.reverse ≫ (f.toPath ≫ (Quiver.reverse f).toPath) ≫ XW.reverse) := by
     constructor

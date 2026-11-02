@@ -168,13 +168,13 @@ def evalNNRatCast : NormNumExt where eval {u α} e := do
 
 theorem isNNRat_inv_pos {α} [DivisionSemiring α] [CharZero α] {a : α} {n d : ℕ} :
     IsNNRat a (Nat.succ n) d → IsNNRat a⁻¹ d (Nat.succ n) := by
-  rintro ⟨_, rfl⟩
+  rintro ⟨-, rfl⟩
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   exact ⟨this, by simp⟩
 
 theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.ofNat (Nat.succ n)) d → IsRat a⁻¹ (.ofNat d) (Nat.succ n) := by
-  rintro ⟨_, rfl⟩
+  rintro ⟨-, rfl⟩
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   exact ⟨this, by simp⟩
 
@@ -192,7 +192,7 @@ theorem isInt_inv_neg_one {α} [DivisionRing α] : {a : α} →
 
 theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
     IsRat a (.negOfNat (Nat.succ n)) d → IsRat a⁻¹ (.negOfNat d) (Nat.succ n) := by
-  rintro ⟨_, rfl⟩
+  rintro ⟨-, rfl⟩
   simp only [Int.negOfNat_eq]
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   generalize Nat.succ n = n at *

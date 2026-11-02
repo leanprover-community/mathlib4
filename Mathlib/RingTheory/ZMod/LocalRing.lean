@@ -24,7 +24,7 @@ namespace ZMod
 theorem isLocalHom_castHom_pow {n r : ℕ} [NeZero n] (hr : r ≠ 0) :
     IsLocalHom (castHom (dvd_pow_self n hr) (ZMod n)) where
   map_nonunit x := by
-    obtain ⟨_, rfl⟩ := natCast_zmod_surjective x
+    obtain ⟨-, rfl⟩ := natCast_zmod_surjective x
     simp [isUnit_iff_coprime, Nat.coprime_pow_right_iff (Nat.pos_of_ne_zero hr)]
 
 /-- `ZMod (p ^ r)` is a local ring for `p` prime and `r ≠ 0`. -/

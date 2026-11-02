@@ -50,7 +50,7 @@ theorem Subgroup.zpowers_eq_of_isLeast_mem_and_one_lt {H : Subgroup G} {a : G}
     (ha : IsLeast { g : G | g ∈ H ∧ 1 < g } a) : zpowers a = H := by
   obtain ⟨⟨a_in, a_pos⟩, a_min⟩ := ha
   refine H.zpowers_le.mpr a_in |>.antisymm fun g g_in ↦ ?_
-  obtain ⟨k, ⟨nonneg, lt⟩, _⟩ := existsUnique_zpow_near_of_one_lt a_pos g
+  obtain ⟨k, ⟨nonneg, lt⟩, -⟩ := existsUnique_zpow_near_of_one_lt a_pos g
   have h_zero : g / (a ^ k) = 1 := by
     by_contra h
     have h : a ≤ g / (a ^ k) := by

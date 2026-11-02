@@ -341,7 +341,7 @@ lemma ordProj_dvd_ordProj_iff_dvd (ha : a ≠ 0) (hb : b ≠ 0) :
     (∀ p : ℕ, ordProj[p] a ∣ ordProj[p] b) ↔ a ∣ b := by
   rw [← factorization_le_iff_dvd ha hb, Finsupp.le_def]
   congr! 1 with p
-  obtain _ | _ | p := p <;> simp [Nat.pow_dvd_pow_iff_le_right]
+  obtain - | - | p := p <;> simp [Nat.pow_dvd_pow_iff_le_right]
 
 /-! ### Factorization LCM definitions -/
 

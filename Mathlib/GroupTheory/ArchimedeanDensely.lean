@@ -372,7 +372,7 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOfPred_le_lt_iff_nonempty_discr
       exact hz'' ⟨w, hw.le⟩ hw hw'
     · exfalso
       obtain ⟨x, y, hy0, H⟩ := H
-      obtain ⟨_, ⟨n, rfl⟩, hz⟩ :=
+      obtain ⟨-, ⟨n, rfl⟩, hz⟩ :=
         h (Set.range (fun n : ℕ ↦ ⟨x - n • y, sub_nonneg.mpr (H _).le⟩)) (range_nonempty _)
       refine hz ⟨x - (n + 1) • y, sub_nonneg.mpr (H _).le⟩ ⟨_, rfl⟩ ?_
       simp [add_smul, hy0]

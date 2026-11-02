@@ -203,8 +203,8 @@ theorem pi_caratheodory :
   simp_rw [piPremeasure]
   refine Finset.prod_add_prod_le' (Finset.mem_univ i) ?_ ?_ ?_
   · simp [image_inter_preimage, image_sdiff_preimage, measure_inter_add_sdiff _ hs]
-  · rintro j - _; gcongr; apply inter_subset_left
-  · rintro j - _; gcongr; apply sdiff_subset
+  · rintro j - -; gcongr; apply inter_subset_left
+  · rintro j - -; gcongr; apply sdiff_subset
 
 /-- `Measure.pi μ` is the finite product of the measures `{μ i | i : ι}`.
   It is defined to be measure corresponding to `MeasureTheory.OuterMeasure.pi`. -/
@@ -269,7 +269,7 @@ theorem pi_eq_generateFrom {C : ∀ i, Set (Set (α i))}
   refine
     (FiniteSpanningSetsIn.pi h3C).ext
       (generateFrom_eq_pi hC fun i => (h3C i).isCountablySpanning).symm (IsPiSystem.pi h2C) ?_
-  rintro _ ⟨s, hs, rfl⟩
+  rintro - ⟨s, hs, rfl⟩
   rw [mem_univ_pi] at hs
   have := fun i => (h3C i).sigmaFinite
   simp_rw [h₁ s hs, pi_pi_aux μ s fun i => h4C i _ (hs i)]
@@ -361,7 +361,7 @@ theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
     Measure.pi μ (eval i ⁻¹' s) = 0 := by
   classical
   -- WLOG, `s` is measurable
-  rcases exists_measurable_superset_of_null hs with ⟨t, hst, _, hμt⟩
+  rcases exists_measurable_superset_of_null hs with ⟨t, hst, -, hμt⟩
   suffices Measure.pi μ (eval i ⁻¹' t) = 0 from measure_mono_null (preimage_mono hst) this
   -- Now rewrite it as `Set.pi`, and apply `pi_pi`
   rw [← univ_pi_update_univ, pi_pi]
@@ -763,7 +763,7 @@ theorem measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [Measurable
     · refine (generateFrom_eq_prod generateFrom_pi generateFrom_pi ?_ ?_).symm
       · exact (FiniteSpanningSetsIn.pi (fun i ↦ (μ i).toFiniteSpanningSetsIn)).isCountablySpanning
       · exact (FiniteSpanningSetsIn.pi (fun i ↦ (ν i).toFiniteSpanningSetsIn)).isCountablySpanning
-    · rintro _ ⟨s, ⟨s, _, rfl⟩, ⟨_, ⟨t, _, rfl⟩, rfl⟩⟩
+    · rintro - ⟨s, ⟨s, -, rfl⟩, ⟨-, ⟨t, -, rfl⟩, rfl⟩⟩
       rw [MeasurableEquiv.map_apply, MeasurableEquiv.arrowProdEquivProdArrow,
         MeasurableEquiv.coe_mk]
       rw [show Equiv.arrowProdEquivProdArrow γ _ _ ⁻¹' (univ.pi s ×ˢ univ.pi t) =

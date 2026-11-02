@@ -40,7 +40,7 @@ def sigmaIsoHom : C((x : Fiber f) × x.val, S) where
 
 set_option backward.isDefEq.respectTransparency false in
 lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
-  rintro ⟨⟨_, _, rfl⟩, ⟨_, hx⟩⟩ ⟨⟨_, _, rfl⟩, ⟨_, hy⟩⟩ h
+  rintro ⟨⟨-, _, rfl⟩, ⟨_, hx⟩⟩ ⟨⟨-, _, rfl⟩, ⟨_, hy⟩⟩ h
   refine Sigma.subtype_ext ?_ h
   simp only [sigmaIsoHom_apply] at h
   rw [Set.mem_preimage, Set.mem_singleton_iff] at hx hy

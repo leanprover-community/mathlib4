@@ -809,7 +809,7 @@ theorem graph_map_fst_eq_domain [Module R F] (f : E →ₗ.[R] F) :
   simp only [Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left,
     LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right]
   constructor <;> intro h
-  · rcases h with ⟨x, hx, _⟩
+  · rcases h with ⟨x, hx, -⟩
     exact hx
   · use f ⟨x, h⟩
     simp only [h, exists_const]

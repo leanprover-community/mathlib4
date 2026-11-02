@@ -503,9 +503,9 @@ theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Pri
 
 /-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t. `p`. -/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
-  rcases n with _ | n
+  rcases n with - | n
   · simp
-  rcases p with _ | _ | p
+  rcases p with - | - | p
   · simp
   · simp
   exact Nat.le_log_of_pow_le p.one_lt_succ_succ (le_of_dvd n.succ_pos pow_padicValNat_dvd)

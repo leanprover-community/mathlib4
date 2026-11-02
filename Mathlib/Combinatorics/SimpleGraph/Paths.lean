@@ -801,7 +801,7 @@ theorem nodup_support {u v : V} (p : G.Path u v) : (p : G.Walk u v).support.Nodu
   (Walk.isPath_def _).mp p.property
 
 theorem loop_eq {v : V} (p : G.Path v v) : p = Path.nil := by
-  obtain ⟨_ | _, h⟩ := p
+  obtain ⟨- | -, h⟩ := p
   · rfl
   · simp at h
 

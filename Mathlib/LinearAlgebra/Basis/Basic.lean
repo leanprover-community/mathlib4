@@ -80,7 +80,7 @@ theorem _root_.Submodule.eq_top_iff_forall_basis_mem {p : Submodule R M} :
 
 theorem index_nonempty (b : Basis ι R M) [Nontrivial M] : Nonempty ι := by
   obtain ⟨x, y, ne⟩ : ∃ x y : M, x ≠ y := Nontrivial.exists_pair_ne
-  obtain ⟨i, _⟩ := not_forall.mp (mt b.ext_elem_iff.2 ne)
+  obtain ⟨i, -⟩ := not_forall.mp (mt b.ext_elem_iff.2 ne)
   exact ⟨i⟩
 
 protected theorem linearIndependent : LinearIndependent R b :=

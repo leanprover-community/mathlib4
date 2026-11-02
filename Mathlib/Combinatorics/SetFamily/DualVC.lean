@@ -71,7 +71,7 @@ of `S` is a filter on `𝒜`. -/
 private lemma subset_of_dualFamily_shatters {S : Finset (Finset α)}
     (hS : (𝒜.dualFamily X).Shatters S) : S ⊆ 𝒜 := by
   obtain ⟨u, hu, hSu⟩ := hS.exists_superset
-  obtain ⟨_, _, rfl⟩ := mem_dualFamily.mp hu
+  obtain ⟨_, -, rfl⟩ := mem_dualFamily.mp hu
   exact hSu.trans (filter_subset _ _)
 
 /-- Embedding `(Fin n → Bool) ↪ ↥S` when `2 ^ n ≤ #S`,
@@ -92,7 +92,7 @@ private def cubeBitSlice {n : ℕ} {S : Finset (Finset α)} (cube : (Fin n → B
 private lemma cubeBitSlice_subset {n : ℕ} {S : Finset (Finset α)}
     (cube : (Fin n → Bool) ↪ ↥S) (k : Fin n) : cubeBitSlice cube k ⊆ S := by
   intro A hA
-  obtain ⟨b, _, rfl⟩ := mem_image.mp hA
+  obtain ⟨b, -, rfl⟩ := mem_image.mp hA
   exact (cube b).property
 
 /-- Codeword `(cube b).val` is in `cubeBitSlice cube k` iff `b k = true`. -/
@@ -139,14 +139,14 @@ theorem exists_shatters_of_dualFamily_shatters
     exact h2 (hjk ▸ h1)
   refine ⟨univ.map ⟨x, hx_inj⟩, ?_, by simp, fun t ht ↦ ?_⟩
   · intro y hy
-    obtain ⟨k, _, rfl⟩ := mem_map.mp hy
+    obtain ⟨k, -, rfl⟩ := mem_map.mp hy
     exact hxX k
   · refine ⟨(cube fun k ↦ decide (x k ∈ t)).val, hSsub (cube _).property, ?_⟩
     ext y
     refine mem_inter.trans ⟨fun ⟨hyT, hyA⟩ ↦ ?_, fun hyt ↦ ?_⟩
-    · obtain ⟨k, _, rfl⟩ := mem_map.mp hyT
+    · obtain ⟨k, -, rfl⟩ := mem_map.mp hyT
       exact of_decide_eq_true ((hx_cube _ k).mp hyA)
-    · obtain ⟨k, _, rfl⟩ := mem_map.mp (ht hyt)
+    · obtain ⟨k, -, rfl⟩ := mem_map.mp (ht hyt)
       exact ⟨ht hyt, (hx_cube _ k).mpr (decide_eq_true hyt)⟩
 
 /-- **Assouad's dual VC bound.** If `𝒜 : Finset (Finset α)` has VC dimension
@@ -165,7 +165,7 @@ theorem vcDim_dualFamily_le (𝒜 : Finset (Finset α)) (X : Finset α)
   have hpos : 0 < 2 ^ (d + 1) := Nat.two_pow_pos (d + 1)
   obtain ⟨S, hS_mem, hS_card⟩ :=
     (Finset.le_sup_iff hpos).mp (hge : 2 ^ (d + 1) ≤ _)
-  obtain ⟨T, _, hT_card, hT_shat⟩ :=
+  obtain ⟨T, -, hT_card, hT_shat⟩ :=
     exists_shatters_of_dualFamily_shatters 𝒜 X (mem_shatterer.mp hS_mem) hS_card
   have : d + 1 ≤ 𝒜.vcDim := hT_card ▸ hT_shat.card_le_vcDim
   lia

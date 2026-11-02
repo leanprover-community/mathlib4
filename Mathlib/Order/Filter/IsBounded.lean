@@ -104,7 +104,7 @@ lemma isBoundedUnder_iff_eventually_bddAbove :
     f.IsBoundedUnder (· ≤ ·) u ↔ ∃ s, BddAbove (u '' s) ∧ ∀ᶠ x in f, x ∈ s := by
   constructor
   · rintro ⟨b, hb⟩
-    exact ⟨{a | u a ≤ b}, ⟨b, by rintro _ ⟨a, ha, rfl⟩; exact ha⟩, hb⟩
+    exact ⟨{a | u a ≤ b}, ⟨b, by rintro - ⟨a, ha, rfl⟩; exact ha⟩, hb⟩
   · rintro ⟨s, ⟨b, hb⟩, hs⟩
     exact ⟨b, hs.mono <| by simpa [upperBounds] using hb⟩
 

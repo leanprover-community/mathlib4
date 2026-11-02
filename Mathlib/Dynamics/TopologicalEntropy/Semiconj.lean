@@ -65,7 +65,7 @@ variable {X Y : Type*} {s F : Set X} {V : SetRel Y Y} {S : X → X} {T : Y → Y
 
 lemma IsDynCoverOf.image (h : Semiconj φ S T) (h' : IsDynCoverOf S F (map φ φ ⁻¹' V) n s) :
     IsDynCoverOf T (φ '' F) V n (φ '' s) := by
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   obtain ⟨y, hy, hxy⟩ := h' hx
   refine ⟨_, Set.mem_image_of_mem _ hy, show (x, y) ∈ map φ φ ⁻¹' dynEntourage T V n from ?_⟩
   rwa [h.preimage_dynEntourage V n]

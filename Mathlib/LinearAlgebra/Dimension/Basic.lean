@@ -134,7 +134,7 @@ theorem le_rank_iff_exists_finset {n : ℕ} :
     n ≤ Module.rank R M ↔ ∃ s : Finset M, s.card = n ∧ LinearIndepOn R id (s : Set M) where
   mp le := by
     contrapose! le
-    obtain _ | n := n; · simp at le
+    obtain - | n := n; · simp at le
     rw [Module.rank, Nat.cast_add_one, lt_natCast_add_one_iff, ciSup_le_iff bddAbove_of_small]
     intro s
     contrapose! le

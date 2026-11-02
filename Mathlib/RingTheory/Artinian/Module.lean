@@ -173,7 +173,7 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
   -- A little off-by-one cleanup first:
   rsuffices ⟨n, w⟩ : ∃ n : ℕ, ∀ m, n ≤ m → OrderDual.toDual f (m + 1) = ⊤
   · use n + 1
-    rintro (_ | m) p
+    rintro (- | m) p
     · cases p
     · apply w
       exact Nat.succ_le_succ_iff.mp p

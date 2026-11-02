@@ -89,7 +89,7 @@ theorem norm_extends {i : ι} (hBi : B i = (1 : L)) (x : K) :
 /-- For any `K`-basis of `L`, if the norm on `K` is nonarchimedean, then so is `B.norm`. -/
 theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
     IsNonarchimedean B.norm := fun x y ↦ by
-  obtain ⟨ixy, _, hixy⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x + y)) i‖)
+  obtain ⟨ixy, -, hixy⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x + y)) i‖)
   have hxy : ‖B.repr (x + y) ixy‖ ≤ max ‖B.repr x ixy‖ ‖B.repr y ixy‖ := by
     rw [map_add, Finsupp.coe_add, Pi.add_apply]; exact hna _ _
   rw [Basis.norm, hixy]
@@ -103,13 +103,13 @@ theorem norm_mul_le_const_mul_norm {i : ι} (hBi : B i = (1 : L))
     (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
     ∃ (c : ℝ) (_ : 0 < c), ∀ x y : L, B.norm (x * y) ≤ c * B.norm x * B.norm y := by
   -- The bounding constant `c` will be the maximum of the products `B.norm (B i * B j)`.
-  obtain ⟨c, _, hc⟩ := exists_mem_eq_sup' univ_nonempty (fun i : ι × ι ↦ B.norm (B i.1 * B i.2))
+  obtain ⟨c, -, hc⟩ := exists_mem_eq_sup' univ_nonempty (fun i : ι × ι ↦ B.norm (B i.1 * B i.2))
   use B.norm (B c.1 * B c.2)
   constructor
   -- ∀ (x y : L), B.norm (x * y) ≤ B.norm (⇑B c.fst * ⇑B c.snd) * B.norm x * B.norm y
   · intro x y
     -- `ixy` is an index for which `‖B.repr (x*y) i‖` is maximum.
-    obtain ⟨ixy, _, hixy_def⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x * y)) i‖)
+    obtain ⟨ixy, -, hixy_def⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x * y)) i‖)
     -- We rewrite the LHS using `ixy`.
     conv_lhs => simp only [Basis.norm]; rw [hixy_def, ← Basis.sum_repr B x, ← Basis.sum_repr B y]
     rw [sum_mul, map_finsetSum]
@@ -195,7 +195,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   -- g (-a) = g a
   have hg_neg : ∀ a : L, g (-a) = g a := B.norm_neg
   -- g is multiplicatively bounded
-  obtain ⟨_, _, hg_bdd⟩ := Basis.norm_mul_le_const_mul_norm hB1 hna
+  obtain ⟨_, -, hg_bdd⟩ := Basis.norm_mul_le_const_mul_norm hB1 hna
   -- g is a K-module norm
   have hg_mul : ∀ (k : K) (y : L), g ((algebraMap K L) k * y) = g ((algebraMap K L) k) * g y :=
     fun k y ↦ Basis.norm_smul hB1 k y

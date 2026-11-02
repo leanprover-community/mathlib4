@@ -104,7 +104,7 @@ lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u
     (_ : ∀ i, Nonempty (V i)), Nonempty (G ≃g completeMultipartiteGraph V) := by
   constructor <;> intro h
   · exact ⟨_, _, fun _ ↦ ⟨_, h.setoid.refl _⟩, ⟨h.iso⟩⟩
-  · obtain ⟨_, _, _, ⟨e⟩⟩ := h
+  · obtain ⟨_, _, -, ⟨e⟩⟩ := h
     refine ⟨fun _ _ _ h1 h2 ↦ ?_⟩
     rw [← e.map_rel_iff] at *
     exact completeMultipartiteGraph.isCompleteMultipartite _ |>.trans _ _ _ h1 h2

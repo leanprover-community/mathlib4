@@ -117,7 +117,7 @@ theorem Ioi_subset_Ioi_iff : Ioi b ⊆ Ioi a ↔ a ≤ b := by
 @[to_dual (attr := simp)]
 theorem Ioi_ssubset_Ioi_iff : Ioi b ⊂ Ioi a ↔ a < b := by
   refine ⟨fun h => ?_, Ioi_ssubset_Ioi⟩
-  obtain ⟨_, c, ac, cb⟩ := ssubset_iff_exists.mp h
+  obtain ⟨-, c, ac, cb⟩ := ssubset_iff_exists.mp h
   exact ac.trans_le (le_of_not_gt cb)
 
 @[to_dual (attr := simp)]

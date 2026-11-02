@@ -354,7 +354,7 @@ lemma sub_add_single_one_cancel {u : ι →₀ ℕ} {i : ι} (h : u i ≠ 0) :
 
 theorem isLowerSet_range_embDomain (f : α ↪ β) :
     IsLowerSet ((Set.range (embDomain f)) : Set (β →₀ ℕ)) := by
-  rintro _ y h ⟨z, rfl⟩
+  rintro - y h ⟨z, rfl⟩
   obtain ⟨w, hw⟩ := exists_add_of_le h
   rw [mem_range_embDomain_iff]
   trans ↑(y + w).support

@@ -123,7 +123,7 @@ lemma of_isPullback {X' : C} (i : 𝒰.I₀) {fst : X' ⟶ X} {snd : X' ⟶ 𝒰
 
 lemma of_zeroHypercover [K.HasPullbacks] (h : ∀ (i : 𝒰.I₀), P (pullback.snd f (𝒰.f i))) :
     P f :=
-  of_forall_pullbackSnd 𝒰.mem₀ (by rintro _ _ _ ⟨i⟩; exact h _)
+  of_forall_pullbackSnd 𝒰.mem₀ (by rintro - - - ⟨i⟩; exact h _)
 
 lemma iff_of_zeroHypercover [K.HasPullbacks] : P f ↔ ∀ i, P (pullback.snd f (𝒰.f i)) :=
   ⟨fun hf _ ↦ pullbackSnd 𝒰.mem₀ ⟨_⟩ hf, fun h ↦ of_zeroHypercover _ h⟩

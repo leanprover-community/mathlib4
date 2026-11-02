@@ -50,7 +50,7 @@ lemma exists_of_isFiltered :
       exact ⟨_, ObjectProperty.strictMap_obj _ _ (X := f.right) (by tauto), ⟨f.hom⟩⟩
     have : IsFiltered P.FullSubcategory :=
       { nonempty := by
-          obtain ⟨X, hX, _⟩ := hP (Classical.arbitrary C₀)
+          obtain ⟨X, hX, -⟩ := hP (Classical.arbitrary C₀)
           exact ⟨X, hX⟩
         cocone_objs := by
           rintro ⟨X, hX⟩ ⟨Y, hY⟩
@@ -67,7 +67,7 @@ lemma exists_of_isFiltered :
         map f := ObjectProperty.homMk ((fromFinalModel.{w} C₀).map f) }
     have : (G ⋙ P.ι).Final := inferInstanceAs (fromFinalModel.{w} C₀).Final
     exact ⟨P.FullSubcategory, small_of_surjective (f := G.obj)
-      (by rintro ⟨_, Y, _, rfl⟩; exact ⟨Y, rfl⟩), inferInstance, inferInstance, P.ι,
+      (by rintro ⟨-, Y, -, rfl⟩; exact ⟨Y, rfl⟩), inferInstance, inferInstance, P.ι,
       Functor.final_of_comp_full_faithful' G P.ι ⟩
   /- We get the conclusion under the assumption `Category.{w}`
   (instead of `LocallySmall.{w}`). -/

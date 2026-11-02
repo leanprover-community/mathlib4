@@ -514,7 +514,7 @@ theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
     hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) ≤ HD f := by
   refine le_trans (le_of_forall_gt_imp_ge_of_dense fun r hr => ?_) (HD_optimalGHDist_le X Y f h)
   have A : ∀ x ∈ range (optimalGHInjl X Y), ∃ y ∈ range (optimalGHInjr X Y), dist x y ≤ r := by
-    rintro _ ⟨z, rfl⟩
+    rintro - ⟨z, rfl⟩
     have I1 : (⨆ x, ⨅ y, optimalGHDist X Y (inl x, inr y)) < r :=
       lt_of_le_of_lt (le_max_left _ _) hr
     have I2 :
@@ -527,7 +527,7 @@ theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
   · inhabit X
     rcases A _ (mem_range_self default) with ⟨y, -, hy⟩
     exact le_trans dist_nonneg hy
-  · rintro _ ⟨z, rfl⟩
+  · rintro - ⟨z, rfl⟩
     have I1 : (⨆ y, ⨅ x, optimalGHDist X Y (inl x, inr y)) < r :=
       lt_of_le_of_lt (le_max_right _ _) hr
     have I2 :

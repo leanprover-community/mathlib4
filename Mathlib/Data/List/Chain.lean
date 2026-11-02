@@ -498,8 +498,8 @@ variable {r}
   `l` is accessible by the lexicographic order `List.Lex r`. -/
 theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r a) :
     Acc (List.lex_chains r) l := by
-  obtain ⟨_ | ⟨a, l⟩, hl⟩ := l
-  · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+  obtain ⟨- | ⟨a, l⟩, hl⟩ := l
+  · apply Acc.intro; rintro ⟨-⟩ ⟨-⟩
   specialize acc a _
   · rw [List.head?_cons, Option.mem_some_iff]
   /- For an r-decreasing chain of the form a :: l, apply induction on a -/
@@ -510,7 +510,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     let l' : List.chains r := ⟨l, hl'⟩
     have : Acc (List.lex_chains r) l' := by
       rcases l with - | ⟨b, l⟩
-      · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+      · apply Acc.intro; rintro ⟨-⟩ ⟨-⟩
       /- l' is accessible by induction hypothesis -/
       · apply ih b (List.isChain_cons_cons.1 hl).1
     /- make l' a free variable and induct on l' -/
@@ -521,8 +521,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
     | intro l _ ihl =>
       intro hl
       apply Acc.intro
-      rintro ⟨_ | ⟨b, m⟩, hm⟩ (_ | hr | hr)
-      · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
+      rintro ⟨- | ⟨b, m⟩, hm⟩ (- | hr | hr)
+      · apply Acc.intro; rintro ⟨-⟩ ⟨-⟩
       · apply ih b hr
       · apply ihl ⟨m, (List.isChain_cons.1 hm).2⟩ hr
 

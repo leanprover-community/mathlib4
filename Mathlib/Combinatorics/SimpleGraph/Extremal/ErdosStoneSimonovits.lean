@@ -76,7 +76,7 @@ lemma degree_between_verts_lt_of_mem_sdiff
     obtain ⟨s, hs⟩ := powersetCard_nonempty.mpr hs
     have hs' : s ∈ p.powersetCard t := powersetCard_mono (filter_subset _ _) hs
     refine ⟨s, hs', fun w hw ↦ ?_⟩
-    obtain ⟨_, hadj, _⟩ := by
+    obtain ⟨-, hadj, -⟩ := by
       rw [mem_powersetCard] at hs
       apply hs.1 at hw
       rwa [mem_filter, between_adj] at hw

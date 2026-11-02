@@ -786,7 +786,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
   · have hv₁ : (extChartAt I x).symm '' v ⊆ (extChartAt I x).source :=
       image_subset_iff.2 fun y hy ↦ (extChartAt I x).map_target (hsub hy).1
     have hv₂ : MapsTo f ((extChartAt I x).symm '' v) (extChartAt I' (f x)).source := by
-      rintro _ ⟨y, hy, rfl⟩
+      rintro - ⟨y, hy, rfl⟩
       exact (hsub hy).2.2
     rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, PartialEquiv.image_symm_image_of_subset_target]
     exact hsub.trans inter_subset_left

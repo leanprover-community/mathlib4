@@ -116,7 +116,7 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
     and_congr_right fun p2 =>
       forall_congr' fun m =>
         ⟨fun h m2 l d => not_lt_of_ge m2 ((h l d).symm ▸ by decide), fun h l d => by
-          rcases m with (_ | _ | m)
+          rcases m with (- | - | m)
           · omega
           · rfl
           · exact (h (le_add_left 2 m) l).elim d⟩
@@ -272,7 +272,7 @@ private theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac 
   · simp [n0, minFacProp]
   have n2 : 2 ≤ n := by
     revert n0 n1
-    rcases n with (_ | _ | _) <;> simp [succ_le_succ]
+    rcases n with (- | - | -) <;> simp [succ_le_succ]
   simp only [minFac_eq]
   by_cases d2 : 2 ∣ n <;> simp only [d2, ↓reduceIte]
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩

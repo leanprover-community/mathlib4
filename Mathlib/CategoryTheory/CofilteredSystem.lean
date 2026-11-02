@@ -210,7 +210,7 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
     obtain ⟨j₁, g₁, f₁, -⟩ := IsCofilteredOrEmpty.cone_objs i j
     obtain ⟨j₂, f₂, h₂⟩ := F.isMittagLeffler_iff_eventualRange.1 h j₁
     refine ⟨j₂, f₂ ≫ f₁, fun j₃ f₃ => ?_⟩
-    rintro _ ⟨⟨x, hx⟩, rfl⟩
+    rintro - ⟨⟨x, hx⟩, rfl⟩
     have : F.map f₂ x ∈ F.eventualRange j₁ := by
       rw [h₂]
       exact ⟨_, rfl⟩
@@ -235,7 +235,7 @@ theorem isMittagLeffler_of_exists_finite_range
     ⟨_, i, hi, hf.coe_toFinset⟩
   refine ⟨i, f, fun k g =>
     (F.ranges_directed j).directedOn_range.is_bot_of_is_min ⟨⟨i, f⟩, rfl⟩ ?_ _ ⟨⟨k, g⟩, rfl⟩⟩
-  rintro _ ⟨⟨k', g'⟩, rfl⟩ hl
+  rintro - ⟨⟨k', g'⟩, rfl⟩ hl
   refine (eq_of_le_of_not_lt hl ?_).ge
   have := hmin _ ⟨k', g', (m.finite_toSet.subset <| hm.substr hl).coe_toFinset⟩
   rwa [← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
@@ -294,7 +294,7 @@ theorem eval_section_injective_of_eventually_injective {j}
     (Finj : ∀ (i) (f : i ⟶ j), Function.Injective (F.map f)) (i) (f : i ⟶ j) :
     (fun s : F.sections => s.val j).Injective := by
   refine fun s₀ s₁ h => Subtype.ext <| funext fun k => ?_
-  obtain ⟨m, mi, mk, _⟩ := IsCofilteredOrEmpty.cone_objs i k
+  obtain ⟨m, mi, mk, -⟩ := IsCofilteredOrEmpty.cone_objs i k
   dsimp at h
   rw [← s₀.prop (mi ≫ f), ← s₁.prop (mi ≫ f)] at h
   rw [← s₀.prop mk, ← s₁.prop mk]

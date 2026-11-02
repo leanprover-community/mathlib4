@@ -82,7 +82,7 @@ theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s)
     DiscreteTopology (f '' s) ↔ DiscreteTopology s := by
   refine ⟨fun _ ↦ h.discreteTopology_of_image, ?_⟩
   simp_rw [discreteTopology_iff_isOpen_singleton]
-  rintro hX ⟨_, x, hx, rfl⟩
+  rintro hX ⟨-, x, hx, rfl⟩
   obtain ⟨e, hxe, rfl⟩ := h x hx
   refine ⟨e '' {x}, e.isOpen_image_of_subset_source ?_ (Set.singleton_subset_iff.mpr hxe), ?_⟩
   · simpa using hs.isOpenMap_subtype_val _ (hX ⟨x, hx⟩)
@@ -132,7 +132,7 @@ theorem of_comp_left (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hg : IsLocalHomeom
 
 theorem of_comp_right (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hf : IsLocalHomeomorphOn f s) :
     IsLocalHomeomorphOn g (f '' s) := mk g _ <| by
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   obtain ⟨f, hxf, rfl⟩ := hf x hx
   obtain ⟨gf, hgf, he⟩ := hgf x hx
   refine ⟨f.symm.trans gf, ⟨f.map_source hxf, ?_⟩, fun y hy ↦ ?_⟩
@@ -266,7 +266,7 @@ form a basis of the source space. -/
 theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
   refine isTopologicalBasis_of_isOpen_of_nhds ?_ fun x U hx hU ↦ ?_
-  · rintro _ ⟨U, hU, s, hs, rfl⟩
+  · rintro - ⟨U, hU, s, hs, rfl⟩
     refine (isOpenEmbedding_of_comp hf (hs ▸ ⟨IsEmbedding.subtypeVal, ?_⟩)
       s.continuous).isOpen_range
     rwa [Subtype.range_val]

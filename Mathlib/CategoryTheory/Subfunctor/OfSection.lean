@@ -47,7 +47,7 @@ lemma ofSection_le_iff (G : Subfunctor F) :
   constructor
   · intro hx
     exact hx _ (mem_ofSection_obj x)
-  · rintro hx U _ ⟨f, rfl⟩
+  · rintro hx U - ⟨f, rfl⟩
     exact G.map f hx
 
 @[simp]

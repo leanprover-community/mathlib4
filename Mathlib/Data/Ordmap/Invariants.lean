@@ -392,11 +392,11 @@ theorem all_dual {P : α → Prop} : ∀ {t : Ordnode α}, All P (dual t) ↔ Al
       ⟨all_dual.2 hr, hx, all_dual.2 hl⟩⟩
 
 theorem all_iff_forall {P : α → Prop} : ∀ {t}, All P t ↔ ∀ x, Emem x t → P x
-  | nil => (iff_true_intro <| by rintro _ ⟨⟩).symm
+  | nil => (iff_true_intro <| by rintro - ⟨⟩).symm
   | node _ l x r => by simp [All, Emem, all_iff_forall, Any, or_imp, forall_and]
 
 theorem any_iff_exists {P : α → Prop} : ∀ {t}, Any P t ↔ ∃ x, Emem x t ∧ P x
-  | nil => ⟨by rintro ⟨⟩, by rintro ⟨_, ⟨⟩, _⟩⟩
+  | nil => ⟨by rintro ⟨⟩, by rintro ⟨-, ⟨⟩, -⟩⟩
   | node _ l x r => by simp only [Emem]; simp [Any, any_iff_exists, or_and_right, exists_or]
 
 theorem emem_iff_all {x : α} {t} : Emem x t ↔ ∀ P, All P t → P x :=
@@ -696,11 +696,11 @@ theorem balanceL_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : S
     @balanceL α l x r = balance' l x r := by
   rw [← balance_eq_balance' hl hr sl sr, balanceL_eq_balance sl sr]
   · intro l0; rw [l0] at H
-    rcases H with (⟨_, ⟨⟨⟩⟩ | ⟨⟨⟩⟩, H⟩ | ⟨r', e, H⟩)
+    rcases H with (⟨-, ⟨⟨⟩⟩ | ⟨⟨⟩⟩, H⟩ | ⟨r', e, H⟩)
     · exact balancedSz_zero.1 H.symm
     exact le_trans (raised_iff.1 e).1 (balancedSz_zero.1 H.symm)
   · intro l1 _
-    rcases H with (⟨l', e, H | ⟨_, H₂⟩⟩ | ⟨r', e, H | ⟨_, H₂⟩⟩)
+    rcases H with (⟨l', e, H | ⟨-, H₂⟩⟩ | ⟨r', e, H | ⟨-, H₂⟩⟩)
     · exact le_trans (le_trans (Nat.le_add_left _ _) H) (mul_pos (by decide) l1 : (0 : ℕ) < _)
     · exact le_trans H₂ (Nat.mul_le_mul_left _ (raised_iff.1 e).1)
     · cases raised_iff.1 e; unfold delta; lia

@@ -47,7 +47,7 @@ lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparatin
     ObjectProperty.IsSeparating (.ofObj (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda J X (S i))) := by
   intro F G f g hfg
   refine (sheafToPresheaf J A).map_injective (Presheaf.isSeparating C hS _ _ ?_)
-  rintro _ ⟨X, i⟩ a
+  rintro - ⟨X, i⟩ a
   apply ((sheafificationAdjunction _ _).homEquiv _ _).symm.injective
   simpa only [← Adjunction.homEquiv_naturality_right_symm] using
     hfg _ (ObjectProperty.ofObj_apply _ ⟨X, i⟩)

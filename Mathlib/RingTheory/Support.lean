@@ -101,7 +101,7 @@ lemma LocalizedModule.subsingleton_iff_support_subset {f : R} :
   constructor
   · rintro H x hx' f rfl
     obtain ⟨m, hm⟩ := Module.mem_support_iff_exists_annihilator.mp hx'
-    obtain ⟨_, ⟨n, rfl⟩, e⟩ := H m
+    obtain ⟨-, ⟨n, rfl⟩, e⟩ := H m
     exact Ideal.IsPrime.mem_of_pow_mem inferInstance n
       (hm ((Submodule.mem_annihilator_span_singleton _ _).mpr e))
   · intro H m

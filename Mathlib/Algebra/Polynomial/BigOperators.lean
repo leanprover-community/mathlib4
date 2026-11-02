@@ -73,7 +73,7 @@ the sum of the leading coefficients, provided that this sum is nonzero.
 theorem leadingCoeff_sum_of_degree_eq {f : ι → S[X]} {s : Finset ι} {d}
     (hd : ∀ k ∈ s, (f k).degree = d) (hf : ∑ k ∈ s, (f k).leadingCoeff ≠ 0) :
     (∑ k ∈ s, f k).leadingCoeff = ∑ k ∈ s, (f k).leadingCoeff := by
-  obtain _ | d := d
+  obtain - | d := d
   · simp_all [WithBot.none_eq_bot]
   · replace hd k (hk : k ∈ s) : (f k).natDegree = d := natDegree_eq_of_degree_eq_some <| hd k hk
     suffices (∑ k ∈ s, f k).natDegree = d by simp_all [leadingCoeff]
@@ -273,7 +273,7 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
   · rw [natDegree_multiset_prod_of_monic]
     swap
     · simp only [Multiset.mem_map]
-      rintro _ ⟨_, _, rfl⟩
+      rintro - ⟨-, -, rfl⟩
       apply monic_X_sub_C
     simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map]
     obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp ht
@@ -376,7 +376,7 @@ theorem natDegree_multiset_prod (h : (0 : R[X]) ∉ t) :
   nontriviality R
   rw [natDegree_multiset_prod']
   simp_rw [Ne, Multiset.prod_eq_zero_iff, Multiset.mem_map, leadingCoeff_eq_zero]
-  rintro ⟨_, h, rfl⟩
+  rintro ⟨-, h, rfl⟩
   contradiction
 
 /-- The degree of a product of polynomials is equal to

@@ -469,7 +469,7 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
   by_cases N_bot : N = ⊥
   · subst N_bot
     exact ⟨0, m, Nat.zero_le _, b'M, Basis.empty _, finZeroElim, finZeroElim⟩
-  obtain ⟨y, hy, a, _, M', M'_le_M, N', _, N'_le_M', y_ortho, _, h⟩ :=
+  obtain ⟨y, hy, a, -, M', M'_le_M, N', -, N'_le_M', y_ortho, -, h⟩ :=
     Submodule.basis_of_pid_aux M0 N b'M N_bot N_le_O
   obtain ⟨n', m', hn'm', bM', bN', as', has'⟩ := ih M' M'_le_M y hy y_ortho N' N'_le_M'
   obtain ⟨bN, h'⟩ := h n' bN'
@@ -625,7 +625,7 @@ variable {S : Type*} [CommRing S] [IsDomain S] [Algebra R S]
 
 theorem Ideal.finrank_eq_finrank [Finite ι] (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     Module.finrank R (restrictScalars R I) = Module.finrank R S := by
-  obtain ⟨_, bS, bI, _, _, _⟩ := (I.restrictScalars R).smithNormalForm b
+  obtain ⟨_, bS, bI, -, -, -⟩ := (I.restrictScalars R).smithNormalForm b
   cases nonempty_fintype ι
   rw [Module.finrank_eq_card_basis bS, Module.finrank_eq_card_basis bI]
   exact Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))

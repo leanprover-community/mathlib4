@@ -158,7 +158,7 @@ lemma closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T
     change a' * b' ∈ closure (S * T)
     exact subset_closure (Set.mul_mem_mul ha' hb')
   · rw [closure_le]
-    rintro _ ⟨a, ha, b, hb, rfl⟩
+    rintro - ⟨a, ha, b, hb, rfl⟩
     exact mul_mem_mul (subset_closure ha) (subset_closure hb)
 
 lemma mul_eq_closure_mul_set (M N : AddSubmonoid R) : M * N = closure (M * N : Set R) := by

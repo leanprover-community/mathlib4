@@ -684,7 +684,7 @@ lemma _root_.LinearMap.isSymmetricProjection_iff_eq_coe_starProjection {p : E �
     p.IsSymmetricProjection
       ↔ ∃ (K : Submodule 𝕜 E) (_ : K.HasOrthogonalProjection), p = K.starProjection :=
   ⟨fun h ↦ ⟨LinearMap.range p, p.isSymmetricProjection_iff_eq_coe_starProjection_range.mp h⟩,
-    by rintro ⟨_, _, rfl⟩; exact isSymmetricProjection_starProjection _⟩
+    by rintro ⟨-, -, rfl⟩; exact isSymmetricProjection_starProjection _⟩
 
 theorem starProjection_apply_eq_zero_iff [K.HasOrthogonalProjection] {v : E} :
     K.starProjection v = 0 ↔ v ∈ Kᗮ := by

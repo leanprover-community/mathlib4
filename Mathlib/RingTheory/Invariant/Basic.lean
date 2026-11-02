@@ -333,7 +333,7 @@ theorem IsFractionRing.ker_stabilizerHom :
 private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
     (hx : ∀ g : MulAction.stabilizer G Q, IsFractionRing.stabilizerHom G P Q K L g x = x) :
     f x = x := by
-  obtain ⟨_⟩ := nonempty_fintype G
+  obtain ⟨-⟩ := nonempty_fintype G
   have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under A Q
   have : Algebra.IsIntegral A B := Algebra.IsInvariant.isIntegral A B G
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (B ⧸ Q) x
@@ -425,7 +425,7 @@ lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
     let e := (AlgEquiv.ofInjective f hf)
     exact ⟨(e.symm.toAlgHom.comp (Subalgebra.inclusion this)).comp (σ.comp f).rangeRestrict,
       fun x ↦ congr($(e.apply_symm_apply ⟨_, _⟩).val)⟩
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   cases nonempty_fintype G
   algebraize [(algebraMap (A ⧸ P) k).comp (algebraMap A (A ⧸ P)),

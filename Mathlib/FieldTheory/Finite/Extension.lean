@@ -144,7 +144,7 @@ theorem exists_forall_apply_eq_pow (l : Type*) [Field l] [Algebra k l] [Finite l
     ∃ i, ∀ x, g x = x ^ Nat.card k ^ i := by
   let n := Module.finrank k l
   have : NeZero n := NeZero.of_pos Module.finrank_pos
-  obtain ⟨i, _, hi⟩ := Extension.exists_frob_pow_eq k p n <|
+  obtain ⟨i, -, hi⟩ := Extension.exists_frob_pow_eq k p n <|
     (algEquivExtension k p n l rfl).symm.trans (g.trans (algEquivExtension k p n l rfl))
   refine ⟨i, fun x ↦ ?_⟩
   simpa using (AlgEquiv.congr_arg (f := (algEquivExtension k p n l rfl).symm) <|

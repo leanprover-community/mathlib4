@@ -161,7 +161,7 @@ theorem unifTight_congr_ae {g : ι → α → β} (hfg : ∀ n, f n =ᵐ[μ] g n
 theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : MemLp g p μ) :
     UnifTight (fun _ : ι => g) p μ := by
   intro ε hε
-  obtain ⟨s, _, hμs, hgε⟩ := hg.exists_eLpNorm_indicator_compl_lt hp_ne_top hε.ne'
+  obtain ⟨s, -, hμs, hgε⟩ := hg.exists_eLpNorm_indicator_compl_lt hp_ne_top hε.ne'
   exact ⟨s, ne_of_lt hμs, fun _ => hgε.le⟩
 
 /-- A single function is tight. -/
@@ -170,7 +170,7 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   by_cases hι : Nonempty ι
   case neg => exact ⟨∅, (by simp), fun i => False.elim <| hι <| Nonempty.intro i⟩
   obtain ⟨i⟩ := hι
-  obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top hε.ne'
+  obtain ⟨s, -, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top hε.ne'
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le
 
@@ -356,7 +356,7 @@ theorem tendsto_Lp_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hfg : TendstoInMeasure μ f atTop g) :
     Tendsto (fun n ↦ eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
   refine tendsto_of_subseq_tendsto fun ns hns ↦ ?_
-  obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε ↦ (hfg ε hε).comp hns
+  obtain ⟨ms, -, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε ↦ (hfg ε hε).comp hns
   exact ⟨ms, tendsto_Lp_of_tendsto_ae hp hp' (fun _ ↦ hf _) hg (hui.comp _) (hut.comp _) hms'⟩
 
 /-- **Vitali's convergence theorem** (non-finite measure version).

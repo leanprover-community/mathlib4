@@ -70,7 +70,7 @@ lemma PrespectralSpace.of_isInducing [PrespectralSpace Y]
     (f : X → Y) (hf : IsInducing f) (hf' : IsSpectralMap f) : PrespectralSpace X :=
   .of_isTopologicalBasis (hf.isTopologicalBasis PrespectralSpace.isTopologicalBasis) <| by
     simp only [Set.mem_image, Set.mem_ofPred_eq, forall_exists_index, and_imp]
-    rintro _ U h₁ h₂ rfl
+    rintro - U h₁ h₂ rfl
     exact hf'.isCompact_preimage_of_isOpen h₁ h₂
 
 lemma PrespectralSpace.of_isClosedEmbedding [PrespectralSpace Y]

@@ -54,7 +54,7 @@ theorem isMulCommutative_iff_card_le_two :
   classical
   rintro ⟨⟨h⟩⟩
   rw [← not_lt, ← Set.ncard_univ, Set.two_lt_ncard_iff]
-  rintro ⟨a, b, c, _, _, _, hab, hac, hbc⟩
+  rintro ⟨a, b, c, -, -, -, hab, hac, hbc⟩
   apply hbc
   simp_rw [Perm.ext_iff] at h
   simpa [swap_apply_of_ne_of_ne hab hac] using h (swap a b) (swap b c) a

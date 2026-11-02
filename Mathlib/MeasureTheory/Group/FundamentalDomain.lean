@@ -443,7 +443,7 @@ theorem exists_ne_one_smul_eq (hs : IsFundamentalDomain G s μ) (htm : NullMeasu
   dsimp [Function.onFun]
   refine (Disjoint.inf_left _ ?_).inf_right _
   rw [Set.disjoint_left]
-  rintro _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy : g₂ • y = g₁ • x⟩
+  rintro - ⟨x, hx, rfl⟩ ⟨y, hy, hxy : g₂ • y = g₁ • x⟩
   refine ht x hx y hy (g₂⁻¹ * g₁) (mt inv_mul_eq_one.1 hne.symm) ?_
   rw [mul_smul, ← hxy, inv_smul_smul]
 
@@ -546,7 +546,7 @@ theorem fundamentalInterior_smul [Group H] [MulAction H α] [SMulCommClass H G �
 theorem pairwise_disjoint_fundamentalInterior :
     Pairwise (Disjoint on fun g : G => g • fundamentalInterior G s) := by
   refine fun a b hab => disjoint_left.2 ?_
-  rintro _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
+  rintro - ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
   rw [mem_fundamentalInterior] at hx hy
   refine hx.2 (a⁻¹ * b) ?_ ?_
   · rwa [Ne, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]

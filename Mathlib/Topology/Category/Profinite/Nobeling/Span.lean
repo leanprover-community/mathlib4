@@ -103,7 +103,7 @@ theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x)
   rw [list_prod_apply (π C (· ∈ s)) y _]
   apply List.prod_eq_one
   simp only [h, List.mem_map, LocallyConstant.evalMonoidHom, factors]
-  rintro _ ⟨a, ⟨b, _, rfl⟩, rfl⟩
+  rintro - ⟨a, ⟨b, -, rfl⟩, rfl⟩
   dsimp
   split_ifs with hh
   · rw [e, LocallyConstant.coe_mk, ite_eq_left hh]
@@ -113,7 +113,7 @@ theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x)
 
 theorem e_mem_of_eq_true {x : (π C (· ∈ s))} {a : I} (hx : x.val a = true) :
     e (π C (· ∈ s)) a ∈ factors C s x := by
-  rcases x with ⟨_, z, hz, rfl⟩
+  rcases x with ⟨-, z, hz, rfl⟩
   simp only [factors, List.mem_map, Finset.mem_sort]
   refine ⟨a, ?_, ite_eq_left hx⟩
   aesop (add simp Proj)
@@ -123,7 +123,7 @@ theorem one_sub_e_mem_of_false {x y : (π C (· ∈ s))} {a : I} (ha : y.val a =
   simp only [factors, List.mem_map, Finset.mem_sort]
   use a
   simp only [hx]
-  rcases y with ⟨_, z, hz, rfl⟩
+  rcases y with ⟨-, z, hz, rfl⟩
   aesop (add simp Proj)
 
 theorem factors_prod_eq_basis_of_ne {x y : (π C (· ∈ s))} (h : y ≠ x) :
@@ -174,7 +174,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
   rw [span_iff_products]
   refine le_trans (spanFinBasis.span C s) ?_
   rw [Submodule.span_le]
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   rw [← factors_prod_eq_basis]
   let l := s.sort (· ≥ ·)
   dsimp [factors]

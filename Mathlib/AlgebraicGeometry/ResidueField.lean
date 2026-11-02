@@ -397,8 +397,8 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
   constructor
   · rintro rfl
     simp
-  · obtain ⟨f, _⟩ := f₁
-    obtain ⟨g, _⟩ := f₂
+  · obtain ⟨f, -⟩ := f₁
+    obtain ⟨g, -⟩ := f₂
     rintro ⟨(rfl : f = g), h⟩
     simpa
 

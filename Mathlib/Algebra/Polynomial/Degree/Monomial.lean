@@ -31,7 +31,7 @@ section Semiring
 variable [Semiring R] {p : R[X]}
 
 lemma natDegree_le_pred (hf : p.natDegree ≤ n) (hn : p.coeff n = 0) : p.natDegree ≤ n - 1 := by
-  obtain _ | n := n
+  obtain - | n := n
   · exact hf
   · refine (Nat.le_succ_iff_eq_or_le.1 hf).resolve_left fun h ↦ ?_
     rw [← Nat.succ_eq_add_one, ← h, coeff_natDegree, leadingCoeff_eq_zero] at hn

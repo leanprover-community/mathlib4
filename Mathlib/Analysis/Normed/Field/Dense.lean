@@ -106,7 +106,7 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
   have bbot : b ∈ (⊥ : IntermediateField L F) := by
     rw [Polynomial.aroots_def, Splits.roots_map ((IsAlgClosed.splits g).map _),
         Multiset.mem_map] at hb
-    obtain ⟨bCp, _, hbCp⟩ := hb
+    obtain ⟨bCp, -, hbCp⟩ := hb
     rw [IntermediateField.mem_bot]
     exact ⟨bCp, hbCp⟩
   simp only [Polynomial.mem_roots', ne_eq, Polynomial.map_eq_zero, Polynomial.IsRoot.def,

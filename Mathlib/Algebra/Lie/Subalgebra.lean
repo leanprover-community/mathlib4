@@ -333,7 +333,7 @@ end LieHom
 theorem Submodule.exists_lieSubalgebra_coe_eq_iff (p : Submodule R L) :
     (∃ K : LieSubalgebra R L, ↑K = p) ↔ ∀ x y : L, x ∈ p → y ∈ p → ⁅x, y⁆ ∈ p := by
   constructor
-  · rintro ⟨K, rfl⟩ _ _
+  · rintro ⟨K, rfl⟩ - -
     exact K.lie_mem'
   · intro h
     use { p with lie_mem' := h _ _ }

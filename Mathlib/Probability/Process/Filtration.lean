@@ -456,7 +456,7 @@ theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontr
   refine Filtration.ext <| funext fun i ↦ ?_
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop]
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_)
-  · rintro _ ⟨j, hij, rfl⟩
+  · rintro - ⟨j, hij, rfl⟩
     refine measurableSet_generateFrom ⟨j, measurableSet_generateFrom ⟨hij, ?_⟩⟩
     rw [comap_eq_generateFrom]
     refine measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, ?_⟩
@@ -468,7 +468,7 @@ theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontr
         MeasurableSpace.generateFrom {t | ∃ (j : ι), j ≤ i ∧ s j = t} by
       exact this _ ht
     refine generateFrom_le ?_
-    rintro t ⟨hn, u, _, hu'⟩
+    rintro t ⟨hn, u, -, hu'⟩
     obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β n)
     on_goal 4 => rw [Set.mem_singleton_iff] at heq
     all_goals rw [heq] at hu'; rw [← hu']

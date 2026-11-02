@@ -195,7 +195,7 @@ theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite)
 theorem span_le_degreeLE_of_finite {s : Set R[X]} (s_fin : s.Finite) :
     ∃ n : ℕ, Submodule.span R s ≤ degreeLE R n := by
   by_cases s_emp : s.Nonempty
-  · rcases exists_degree_le_of_mem_span_of_finite s_fin s_emp with ⟨p', _, hp'max⟩
+  · rcases exists_degree_le_of_mem_span_of_finite s_fin s_emp with ⟨p', -, hp'max⟩
     exact ⟨natDegree p', fun p hp => mem_degreeLE.mpr ((hp'max _ hp).trans degree_le_natDegree)⟩
   · rw [Set.not_nonempty_iff_eq_empty] at s_emp
     rw [s_emp, Submodule.span_empty]
@@ -463,7 +463,7 @@ theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.
   rw [leadingCoeff, Submodule.mem_iSup_of_directed]
   · simp only [mem_leadingCoeffNth]
     constructor
-    · rintro ⟨i, p, hpI, _, rfl⟩
+    · rintro ⟨i, p, hpI, -, rfl⟩
       exact ⟨p, hpI, rfl⟩
     rintro ⟨p, hpI, rfl⟩
     exact ⟨natDegree p, p, hpI, degree_le_natDegree, rfl⟩

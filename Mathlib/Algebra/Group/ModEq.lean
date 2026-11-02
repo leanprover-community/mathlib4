@@ -342,7 +342,7 @@ theorem modEq_nsmul_cases (n : ℕ) (hn : n ≠ 0) :
     · refine Int.emod_lt_of_pos _ ?_
       lia
     · rw [hk, Int.ediv_mul_add_emod]
-  · rintro ⟨k, _, j, hj⟩
+  · rintro ⟨k, -, j, hj⟩
     rw [hj]
     exact ⟨_, rfl⟩
 

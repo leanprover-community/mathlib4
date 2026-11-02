@@ -57,7 +57,7 @@ namespace Isδ₀
 
 theorem iff {j : ℕ} {i : Fin (j + 2)} : Isδ₀ (SimplexCategory.δ i) ↔ i = 0 := by
   constructor
-  · rintro ⟨_, h₂⟩
+  · rintro ⟨-, h₂⟩
     by_contra h
     exact h₂ (Fin.succAbove_ne_zero_zero h)
   · rintro rfl
@@ -346,7 +346,7 @@ theorem PInfty_on_Γ₀_splitting_summand_eq_self (K : ChainComplex C ℕ) {n : 
       (PInfty : K[Γ₀.obj K] ⟶ _).f n =
       ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) := by
   rw [PInfty_f]
-  rcases n with _ | n
+  rcases n with - | n
   · simpa only [P_f_0_eq] using! comp_id _
   · exact (HigherFacesVanish.on_Γ₀_summand_id K n).comp_P_eq_self
 

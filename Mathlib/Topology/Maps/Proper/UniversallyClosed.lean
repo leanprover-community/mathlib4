@@ -47,7 +47,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
       this.mem_of_tendsto (hy.prodMk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
         (Eventually.of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
   -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(x, 𝒰) ∈ F`.
-    rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
+    rcases this with ⟨⟨x, -⟩, hx, ⟨-, -⟩⟩
   -- We already know that `f x = y`, so to finish the proof we just have to check that `𝒰` tends
   -- to `x`. So, for `U ∈ 𝓝 x` arbitrary, let's show that `U ∈ 𝒰`. Since `𝒰` is an ultrafilter,
   -- it is enough to show that `Uᶜ` is not in `𝒰`.
@@ -81,7 +81,7 @@ theorem isProperMap_iff_isClosedMap_ultrafilter {X : Type u} {Y : Type v} [Topol
     have : (y, 𝒰) ∈ Prod.map f id '' F :=
       this.mem_of_tendsto (hy.prodMk_nhds (Ultrafilter.tendsto_pure_self 𝒰))
         (Eventually.of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
-    rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
+    rcases this with ⟨⟨x, _⟩, hx, ⟨-, -⟩⟩
     refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_notMem_iff.mp fun hUc ↦ ?_⟩
     rw [mem_closure_iff_nhds] at hx
     rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU ((ultrafilter_isOpen_basic _).mem_nhds hUc))

@@ -73,7 +73,7 @@ lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
     · rintro ⟨y, hy, rfl⟩ z
       exact ⟨_, hy z, map_mul _ _ _⟩
     · intro H
-      obtain ⟨y, _, e⟩ := H 1
+      obtain ⟨y, -, e⟩ := H 1
       rw [map_one, mul_one] at e
       subst e
       simp only [← map_mul, (FaithfulSMul.algebraMap_injective S L).eq_iff,

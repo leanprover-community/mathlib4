@@ -250,7 +250,7 @@ lemma ofReal_limsup {u : α → ℝ}
   simp only [ofReal_le_coe]
   rw [limsup_le_iff, limsup_le_iff]
   constructor
-  · rintro h (_ | x) hx
+  · rintro h (- | x) hx
     · simp
     filter_upwards [h x (by simpa using hx)] with a ha
     obtain ha₀ | ha₀ := le_total (u a) 0
@@ -289,7 +289,7 @@ lemma toReal_limsup {u : α → ℝ≥0∞} (h₁ : ∀ᶠ a in f, u a ≠ ∞)
     have : 0 < x := hx.trans_le' hr
     filter_upwards [h (.ofReal x) (by simpa [this] using hx)] with i hi
     exact toReal_lt_of_lt_ofReal hi
-  · rintro h (_ | x) hx
+  · rintro h (- | x) hx
     · simpa [lt_top_iff_ne_top]
     filter_upwards [h₁, h x (by simpa [ofReal_lt_coe_iff hr] using hx)] with i hi
     simp [← lt_ofReal_iff_toReal_lt hi]

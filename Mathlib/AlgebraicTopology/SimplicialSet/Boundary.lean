@@ -80,7 +80,7 @@ lemma boundary_obj_eq_univ (m n : ℕ) (h : m < n := by lia) :
   ext x
   obtain ⟨f, rfl⟩ := stdSimplex.objEquiv.symm.surjective x
   simp only [Set.mem_univ, iff_true]
-  obtain _ | n := n
+  obtain - | n := n
   · simp at h
   · obtain ⟨i, q, rfl⟩ := SimplexCategory.eq_comp_δ_of_not_surjective f (fun hf ↦ by
       rw [← SimplexCategory.epi_iff_surjective] at hf

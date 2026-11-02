@@ -82,7 +82,7 @@ theorem subsingleton_orbit_iff_mem_fixedPoints {a : α} :
   rw [mem_fixedPoints]
   constructor
   · exact fun h m ↦ h (mem_orbit a m) (mem_orbit_self a)
-  · rintro h _ ⟨m, rfl⟩ y ⟨p, rfl⟩
+  · rintro h - ⟨m, rfl⟩ y ⟨p, rfl⟩
     simp only [h]
 
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]

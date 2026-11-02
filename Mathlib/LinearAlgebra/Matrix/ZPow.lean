@@ -156,7 +156,7 @@ theorem zpow_add {A : M} (ha : IsUnit A.det) (m n : ℤ) : A ^ (m + n) = A ^ m *
 
 theorem zpow_add_of_nonpos {A : M} {m n : ℤ} (hm : m ≤ 0) (hn : n ≤ 0) :
     A ^ (m + n) = A ^ m * A ^ n := by
-  rcases nonsing_inv_cancel_or_zero A with (⟨h, _⟩ | h)
+  rcases nonsing_inv_cancel_or_zero A with (⟨h, -⟩ | h)
   · exact zpow_add (isUnit_det_of_left_inverse h) m n
   · obtain ⟨k, rfl⟩ := exists_eq_neg_ofNat hm
     obtain ⟨l, rfl⟩ := exists_eq_neg_ofNat hn
@@ -190,7 +190,7 @@ theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det
       hy'.val_inv_mul, one_smul, Matrix.mul_one, Matrix.one_mul]
 
 theorem Commute.zpow_right {A B : M} (h : Commute A B) (m : ℤ) : Commute A (B ^ m) := by
-  rcases nonsing_inv_cancel_or_zero B with (⟨hB, _⟩ | hB)
+  rcases nonsing_inv_cancel_or_zero B with (⟨hB, -⟩ | hB)
   · refine SemiconjBy.zpow_right ?_ ?_ h _ <;> exact isUnit_det_of_left_inverse hB
   · cases m
     · simpa using h.pow_right _
@@ -215,7 +215,7 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
   | (n : ℕ), _ => by simp only [pow_succ, ← Nat.cast_succ, zpow_natCast]
   | -1, h => absurd rfl h
   | -((n : ℕ) + 2), _ => by
-    rcases nonsing_inv_cancel_or_zero A with (⟨h, _⟩ | h)
+    rcases nonsing_inv_cancel_or_zero A with (⟨h, -⟩ | h)
     · apply zpow_add_one (isUnit_det_of_left_inverse h)
     · change A ^ (-((n + 1 : ℕ) : ℤ)) = A ^ (-((n + 2 : ℕ) : ℤ)) * A
       simp_rw [zpow_neg_natCast, ← inv_pow', h, zero_pow <| Nat.succ_ne_zero _, zero_mul]

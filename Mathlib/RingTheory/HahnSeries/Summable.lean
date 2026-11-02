@@ -204,7 +204,7 @@ theorem hsum_zero : (0 : SummableFamily Γ R α).hsum = 0 := by
 theorem support_hsum_subset {s : SummableFamily Γ R α} : s.hsum.support ⊆ ⋃ a : α, (s a).support :=
   fun g hg => by
   rw [mem_support, coeff_hsum, finsum_eq_sum _ (s.finite_co_support _)] at hg
-  obtain ⟨a, _, h2⟩ := exists_ne_zero_of_sum_ne_zero hg
+  obtain ⟨a, -, h2⟩ := exists_ne_zero_of_sum_ne_zero hg
   rw [Set.mem_iUnion]
   exact ⟨a, h2⟩
 
@@ -298,7 +298,7 @@ theorem hsum_smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R)
 theorem le_hsum_support_mem {s : SummableFamily Γ R α} {g g' : Γ}
     (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hg' : g' ∈ s.hsum.support) : g ≤ g' := by
   rw [mem_support, coeff_hsum_eq_sum] at hg'
-  obtain ⟨i, _, hi⟩ := Finset.exists_ne_zero_of_sum_ne_zero hg'
+  obtain ⟨i, -, hi⟩ := Finset.exists_ne_zero_of_sum_ne_zero hg'
   exact hg i g' hi
 
 theorem hsum_orderTop_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
@@ -702,10 +702,10 @@ theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
   refine ((((antidiagonal x.isPWO_support hpwo y).finite_toSet.biUnion
     fun ij hij => hy ij.snd (mem_antidiagonal.1 (mem_coe.1 hij)).2.1 ?_).image Nat.succ).union
       (Set.finite_singleton 0)).subset ?_
-  · obtain ⟨hi, _, rfl⟩ := mem_antidiagonal.1 (mem_coe.1 hij)
+  · obtain ⟨hi, -, rfl⟩ := mem_antidiagonal.1 (mem_coe.1 hij)
     exact lt_add_of_pos_left ij.2 <| lt_of_lt_of_le ((zero_lt_orderTop_iff h0).mp hx) <|
       order_le_of_coeff_ne_zero <| Function.mem_support.mp hi
-  · rintro (_ | n) hn
+  · rintro (- | n) hn
     · exact Set.mem_union_right _ (Set.mem_singleton 0)
     · obtain ⟨i, hi, j, hj, rfl⟩ := support_mul_subset hn
       refine Set.mem_union_left _ ⟨n, Set.mem_iUnion.2 ⟨⟨j, i⟩, Set.mem_iUnion.2 ⟨?_, hi⟩⟩, rfl⟩
@@ -759,7 +759,7 @@ theorem embDomain_succ_smul_powers :
     (x • powers x).embDomain ⟨Nat.succ, Nat.succ_injective⟩ =
       powers x - ofFinsupp (Finsupp.single 0 1) := by
   apply SummableFamily.ext
-  rintro (_ | n)
+  rintro (- | n)
   · simp [hx]
   · -- FIXME: smul_eq_mul introduces type confusion between HahnModule and HahnSeries.
     simp [embDomain_apply, of_symm_smul_of_eq_mul, powers_of_orderTop_pos hx, pow_succ',

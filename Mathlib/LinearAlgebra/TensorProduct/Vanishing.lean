@@ -128,7 +128,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
     apply top_le_iff.mp
     rw [← hm]
     apply Submodule.span_le.mpr
-    rintro _ ⟨i, rfl⟩
+    rintro - ⟨i, rfl⟩
     use Finsupp.single i 1, G_basis_eq i
   /- Consider the element $\sum_i e_i \otimes n_i$ of $R^\iota \otimes N$. It is in the kernel of
   $R^\iota \otimes N \to M \otimes N$. -/
@@ -169,7 +169,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
     split
     · next h'x => rw [h'x, zero_smul]
     · rfl
-  · rintro ⟨⟨⟨k, hk⟩, _⟩, _⟩
+  · rintro ⟨⟨⟨k, hk⟩, -⟩, -⟩
     simpa only [hG, linearCombination_apply, zero_smul, implies_true, Finsupp.sum_fintype] using
       mem_ker.mp hk
 

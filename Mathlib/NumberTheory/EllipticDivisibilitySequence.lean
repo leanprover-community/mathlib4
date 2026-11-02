@@ -557,7 +557,7 @@ lemma preNormEDS_even (m : ℤ) : preNormEDS b c d (2 * m) =
       preNormEDS b c d (m - 2) * preNormEDS b c d m * preNormEDS b c d (m + 1) ^ 2 := by
   induction m using Int.negInduction with
   | nat m =>
-    rcases m with _ | _ | _ | m
+    rcases m with - | - | - | m
     on_goal 1 2 3 => simp
     simp_rw [Nat.cast_succ, Int.add_sub_cancel, show (m : ℤ) + 1 + 1 + 1 = m + 1 + 2 by rfl,
       Int.add_sub_cancel]
@@ -572,13 +572,13 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
       preNormEDS b c d (m - 1) * preNormEDS b c d (m + 1) ^ 3 * (if Even m then 1 else b) := by
   induction m using Int.negInduction with
   | nat m =>
-    rcases m with _ | _ | _
+    rcases m with - | - | -
     on_goal 1 2 => simp
     simp_rw [Nat.cast_succ, Int.add_sub_cancel, Int.even_add_one, not_not, Int.even_natCast]
     norm_cast
     simpa only [preNormEDS_ofNat] using preNormEDS'_odd ..
   | neg ih m =>
-    rcases m with _ | m
+    rcases m with - | m
     · simp
     simp_rw [Nat.cast_succ, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
       show -(m + 1 : ℤ) + 2 = -(m - 1) by ring1, show -(m + 1 : ℤ) - 1 = -(m + 2) by rfl,
@@ -808,7 +808,7 @@ lemma complEDS_even (m : ℤ) :
     complEDS b c d k (2 * m) = complEDS b c d k m * complEDS₂ b c d (m * k) := by
   induction m using Int.negInduction with
   | nat m =>
-    rcases m with _ | _
+    rcases m with - | -
     · simp
     norm_cast
     simpa only [complEDS_ofNat] using! complEDS'_even ..
@@ -819,12 +819,12 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
       complEDS b c d k (m + 1) ^ 2 * normEDS b c d (m * k + 1) * normEDS b c d (m * k - 1) := by
   induction m using Int.negInduction with
   | nat m =>
-    rcases m with _ | _
+    rcases m with - | -
     · simp
     norm_cast
     simpa only [complEDS_ofNat] using! complEDS'_odd ..
   | neg ih m =>
-    rcases m with _ | m
+    rcases m with - | m
     · simp
     simp_rw [Nat.cast_succ, show 2 * -(m + 1 : ℤ) + 1 = -(2 * m + 1) by rfl,
       show (-(m + 1 : ℤ) + 1) = -m by ring1, neg_mul, ← sub_neg_eq_add, ← neg_sub', sub_neg_eq_add,

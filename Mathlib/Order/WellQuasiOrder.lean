@@ -170,7 +170,7 @@ theorem wellQuasiOrderedLE_iff :
     exact (RelEmbedding.ofMonotone _ h1).swap
   · contrapose! hc
     refine ⟨Set.range (f ∘ g), ?_, ?_⟩
-    · rintro _ ⟨m, rfl⟩ _ ⟨n, rfl⟩ _ hf
+    · rintro - ⟨m, rfl⟩ - ⟨n, rfl⟩ _ hf
       obtain h | rfl | h := lt_trichotomy m n
       · exact hc _ _ (g.strictMono h) hf
       · contradiction

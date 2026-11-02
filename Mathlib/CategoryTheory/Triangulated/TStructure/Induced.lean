@@ -94,7 +94,7 @@ lemma mem_of_hasInducedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t :
     (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (h₁ : t.IsLE T.obj₁ n₀) (h₂ : P T.obj₂)
     (h₃ : t.IsGE T.obj₃ n₁) :
     P T.obj₁ ∧ P T.obj₃ := by
-  obtain ⟨e, _⟩ := t.triangle_iso_exists hT
+  obtain ⟨e, -⟩ := t.triangle_iso_exists hT
     (P.ι.map_distinguished _ ((P.tStructure t).triangleLEGE_distinguished n₀ n₁ h ⟨_, h₂⟩))
     (Iso.refl _) n₀ n₁ inferInstance inferInstance
       (by dsimp; rw [← P.tStructure_isLE_iff]; infer_instance)

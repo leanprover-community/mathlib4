@@ -67,7 +67,7 @@ lemma ofArrows_mem_smallEtaleTopology_iff
     ext y
     simp only [Set.mem_iUnion, Set.mem_range, Set.mem_univ, iff_true]
     obtain ⟨i, ⟨u, rfl⟩⟩ := ((ofArrows_mem_precoverage_iff _).1 U.mem₀).1 y
-    obtain ⟨_, b, _, ⟨j⟩, fac⟩ := hU _ _ ⟨i⟩
+    obtain ⟨-, b, -, ⟨j⟩, fac⟩ := hU _ _ ⟨i⟩
     replace fac : b.left ≫ (f j).left = U.f i :=
       (Etale.forget _ ⋙ CategoryTheory.Over.forget _).congr_map fac
     exact ⟨j, b.left u, by simp [← fac]⟩
@@ -83,7 +83,7 @@ lemma ofArrows_mem_smallEtaleTopology_iff
         isOver_map w := by cat_disch }
     have (w : W.left) : Etale (V.X w ↘ X) := (Z (i w)).prop
     refine ⟨V, inferInstance, inferInstance, ?_⟩
-    rintro _ _ ⟨w⟩
+    rintro - - ⟨w⟩
     refine ⟨_, 𝟙 _, _, ⟨i w⟩, by cat_disch⟩
 
 instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage @Etale)) (i : 𝒰.I₀) : Etale (𝒰.f i) :=

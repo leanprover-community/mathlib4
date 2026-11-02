@@ -231,7 +231,7 @@ lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by
   have : ∀ (i : ι) (i' : ι') (_ : e.f i = i'),
       QuasiIsoAt (truncGEMap φ e) i' ↔ QuasiIsoAt φ i' := by
-    rintro i _ rfl
+    rintro i - rfl
     rw [← quasiIsoAt_iff_comp_left (K.πTruncGE e), πTruncGE_naturality φ e,
       quasiIsoAt_iff_comp_right]
   rw [quasiIso_iff]

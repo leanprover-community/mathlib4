@@ -122,7 +122,7 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     rw [← H, ← exp_nat_mul]
     congr 1
     ring
-  · rintro ⟨i, _, H⟩
+  · rintro ⟨i, -, H⟩
     rw [← H, ← exp_nat_mul, exp_eq_one_iff]
     use i
     simp [field]

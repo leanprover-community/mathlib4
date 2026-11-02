@@ -152,14 +152,14 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
 theorem multiplicity_le : multiplicity E ≤ 5 ^ finrank ℝ E := by
   apply csSup_le
   · refine ⟨0, ⟨∅, by simp⟩⟩
-  · rintro _ ⟨s, ⟨rfl, h⟩⟩
+  · rintro - ⟨s, ⟨rfl, h⟩⟩
     exact Besicovitch.card_le_of_separated s h.1 h.2
 
 theorem card_le_multiplicity {s : Finset E} (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     (h's : ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖) : s.card ≤ multiplicity E := by
   apply le_csSup
   · refine ⟨5 ^ finrank ℝ E, ?_⟩
-    rintro _ ⟨s, ⟨rfl, h⟩⟩
+    rintro - ⟨s, ⟨rfl, h⟩⟩
     exact Besicovitch.card_le_of_separated s h.1 h.2
   · simp only [mem_ofPred_eq, Ne]
     exact ⟨s, rfl, hs, h's⟩
@@ -198,7 +198,7 @@ theorem exists_goodδ :
   choose! F hF using this
   -- Choose a converging subsequence when `δ → 0`.
   have : ∃ f : Fin N → E, (∀ i : Fin N, ‖f i‖ ≤ 2) ∧ Pairwise fun i j => 1 ≤ ‖f i - f j‖ := by
-    obtain ⟨u, _, zero_lt_u, hu⟩ :
+    obtain ⟨u, -, zero_lt_u, hu⟩ :
       ∃ u : ℕ → ℝ,
         (∀ m n : ℕ, m < n → u n < u m) ∧ (∀ n : ℕ, 0 < u n) ∧ Filter.Tendsto u Filter.atTop (𝓝 0) :=
       exists_seq_strictAnti_tendsto (0 : ℝ)

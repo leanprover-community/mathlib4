@@ -323,7 +323,7 @@ lemma injOn_of_subsingleton [Subsingleton α] (f : α → β) (s : Set α) : Inj
   (injective_of_subsingleton _).injOn
 
 theorem _root_.Function.Injective.injOn_range (h : Injective (g ∘ f)) : InjOn g (range f) := by
-  rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ H
+  rintro - ⟨x, rfl⟩ - ⟨y, rfl⟩ H
   exact congr_arg f (h H)
 
 theorem _root_.Set.InjOn.injective_iff (s : Set β) (h : InjOn g s) (hs : range f ⊆ s) :
@@ -709,9 +709,9 @@ theorem bijOn_image_image {p₁ : α → γ} {p₂ : β → δ} {g : γ → δ} 
     (hbij : BijOn f s t) (hinj : InjOn g (p₁ '' s)) : BijOn g (p₁ '' s) (p₂ '' t) := by
   obtain ⟨h1, h2, h3⟩ := hbij
   refine ⟨?_, hinj, ?_⟩
-  · rintro _ ⟨a, ha, rfl⟩
+  · rintro - ⟨a, ha, rfl⟩
     exact ⟨f a, h1 ha, by rw [comm a]⟩
-  · rintro _ ⟨b, hb, rfl⟩
+  · rintro - ⟨b, hb, rfl⟩
     obtain ⟨a, ha, rfl⟩ := h3 hb
     grind
 
@@ -829,16 +829,16 @@ theorem mono (hf : LeftInvOn f' f s) (ht : s₁ ⊆ s) : LeftInvOn f' f s₁ := 
 
 theorem image_inter' (hf : LeftInvOn f' f s) : f '' (s₁ ∩ s) = f' ⁻¹' s₁ ∩ f '' s := by
   apply Subset.antisymm
-  · rintro _ ⟨x, ⟨h₁, h⟩, rfl⟩
+  · rintro - ⟨x, ⟨h₁, h⟩, rfl⟩
     exact ⟨by rwa [mem_preimage, hf h], mem_image_of_mem _ h⟩
-  · rintro _ ⟨h₁, ⟨x, h, rfl⟩⟩
+  · rintro - ⟨h₁, ⟨x, h, rfl⟩⟩
     exact mem_image_of_mem _ ⟨by rwa [← hf h], h⟩
 
 theorem image_inter (hf : LeftInvOn f' f s) :
     f '' (s₁ ∩ s) = f' ⁻¹' (s₁ ∩ s) ∩ f '' s := by
   rw [hf.image_inter']
   refine Subset.antisymm ?_ (inter_subset_inter_left _ (preimage_mono inter_subset_left))
-  rintro _ ⟨h₁, x, hx, rfl⟩; exact ⟨⟨h₁, by rwa [hf hx]⟩, mem_image_of_mem _ hx⟩
+  rintro - ⟨h₁, x, hx, rfl⟩; exact ⟨⟨h₁, by rwa [hf hx]⟩, mem_image_of_mem _ hx⟩
 
 theorem image_image (hf : LeftInvOn f' f s) : f' '' f '' s = s := by
   rw [Set.image_image, image_congr hf, image_id']
@@ -1001,12 +1001,12 @@ theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
 
 theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : Set α) :
     Set.InjOn (invFunOn f s) (f '' s) := by
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨x', hx', rfl⟩ he
+  rintro - ⟨x, hx, rfl⟩ - ⟨x', hx', rfl⟩ he
   rw [← invFunOn_apply_eq (f := f) hx, he, invFunOn_apply_eq (f := f) hx']
 
 theorem _root_.Function.invFunOn_image_image_subset [Nonempty α] (f : α → β) (s : Set α) :
     (invFunOn f s) '' f '' s ⊆ s := by
-  rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
+  rintro - ⟨-, ⟨x, hx, rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
 
 theorem SurjOn.rightInvOn_invFunOn [Nonempty α] (h : SurjOn f s t) :
     RightInvOn (invFunOn f s) f t := fun _y hy => invFunOn_eq <| h hy
@@ -1017,7 +1017,7 @@ theorem BijOn.invOn_invFunOn [Nonempty α] (h : BijOn f s t) : InvOn (invFunOn f
 theorem SurjOn.invOn_invFunOn [Nonempty α] (h : SurjOn f s t) :
     InvOn (invFunOn f s) f (invFunOn f s '' t) t := by
   refine ⟨?_, h.rightInvOn_invFunOn⟩
-  rintro _ ⟨y, hy, rfl⟩
+  rintro - ⟨y, hy, rfl⟩
   rw [h.rightInvOn_invFunOn hy]
 
 theorem SurjOn.mapsTo_invFunOn [Nonempty α] (h : SurjOn f s t) : MapsTo (invFunOn f s) t s :=
@@ -1037,7 +1037,7 @@ theorem SurjOn.image_invFunOn_image [Nonempty α] (hf : SurjOn f s t) :
 
 theorem SurjOn.bijOn_subset [Nonempty α] (h : SurjOn f s t) : BijOn f (invFunOn f s '' t) t := by
   refine h.invOn_invFunOn.bijOn ?_ (mapsTo_image _ _)
-  rintro _ ⟨y, hy, rfl⟩
+  rintro - ⟨y, hy, rfl⟩
   rwa [h.rightInvOn_invFunOn hy]
 
 theorem surjOn_iff_exists_bijOn_subset : SurjOn f s t ↔ ∃ s' ⊆ s, BijOn f s' t := by
@@ -1172,7 +1172,7 @@ theorem surjOn_range (h : Semiconj f fa fb) (ha : Surjective fa) :
 
 theorem injOn_image (h : Semiconj f fa fb) (ha : InjOn fa s) (hf : InjOn f (fa '' s)) :
     InjOn fb (f '' s) := by
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ H
+  rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩ H
   simp only [← h.eq] at H
   exact congr_arg f (ha hx hy <| hf (mem_image_of_mem fa hx) (mem_image_of_mem fa hy) H)
 
@@ -1229,11 +1229,11 @@ variable {p : β → Prop} [DecidablePred p] {f : α ≃ Subtype p} {g g₁ g₂
 
 protected lemma MapsTo.extendDomain (h : MapsTo g s t) :
     MapsTo (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) := by
-  rintro _ ⟨a, ha, rfl⟩; exact ⟨_, h ha, by simp_rw [Function.comp_apply, extendDomain_apply_image]⟩
+  rintro - ⟨a, ha, rfl⟩; exact ⟨_, h ha, by simp_rw [Function.comp_apply, extendDomain_apply_image]⟩
 
 protected lemma SurjOn.extendDomain (h : SurjOn g s t) :
     SurjOn (g.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) := by
-  rintro _ ⟨a, ha, rfl⟩
+  rintro - ⟨a, ha, rfl⟩
   obtain ⟨b, hb, rfl⟩ := h ha
   exact ⟨_, ⟨_, hb, rfl⟩, by simp_rw [Function.comp_apply, extendDomain_apply_image]⟩
 
@@ -1243,11 +1243,11 @@ protected lemma BijOn.extendDomain (h : BijOn g s t) :
 
 protected lemma LeftInvOn.extendDomain (h : LeftInvOn g₁ g₂ s) :
     LeftInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
+  rintro - ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
 
 protected lemma RightInvOn.extendDomain (h : RightInvOn g₁ g₂ t) :
     RightInvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' t) := by
-  rintro _ ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
+  rintro - ⟨a, ha, rfl⟩; simp_rw [Function.comp_apply, extendDomain_apply_image, h ha]
 
 protected lemma InvOn.extendDomain (h : InvOn g₁ g₂ s t) :
     InvOn (g₁.extendDomain f) (g₂.extendDomain f) ((↑) ∘ f '' s) ((↑) ∘ f '' t) :=

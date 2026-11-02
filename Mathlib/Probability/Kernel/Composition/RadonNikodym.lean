@@ -62,7 +62,7 @@ private lemma rnDeriv_measure_compProd_left_of_ac (hμν : μ ≪ ν) (κ : Kern
       Measure.compProd_apply_prod ht₁ ht₂]
   refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ s hs
   · simp
-  · rintro _ ⟨t₁, ht₁, t₂, ht₂, rfl⟩
+  · rintro - ⟨t₁, ht₁, t₂, ht₂, rfl⟩
     exact h_key t₁ t₂ ht₁ ht₂
   · intro t ht ht_eq
     rw [setLIntegral_compl ht, ht_eq, setLIntegral_compl ht]

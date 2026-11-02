@@ -113,7 +113,7 @@ lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
 
 lemma nhdsWithin_stolzCone_le_nhdsWithin_stolzSet {s : ℝ} (hs : 0 < s) :
     ∃ M, 𝓝[stolzCone s] 1 ≤ 𝓝[stolzSet M] 1 := by
-  obtain ⟨M, ε, _, hε, H⟩ := stolzCone_subset_stolzSet_aux hs
+  obtain ⟨M, ε, -, hε, H⟩ := stolzCone_subset_stolzSet_aux hs
   use M
   rw [nhdsWithin_le_iff, mem_nhdsWithin]
   refine ⟨{w | 1 - ε < w.re}, isOpen_lt continuous_const continuous_re, ?_, H⟩

@@ -263,7 +263,7 @@ theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAff
     (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
   have := (hU.isLocalization_basicOpen f).1.2
-  obtain ⟨⟨y, _, n, rfl⟩, d⟩ := this x
+  obtain ⟨⟨y, -, n, rfl⟩, d⟩ := this x
   use n, y
   simpa [mul_comm x] using! d.symm
 
@@ -292,7 +292,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
       ((f |_ U₂ |_ X.basicOpen _) ^ n₂) * x |_ X.basicOpen _) :
     ∃ n : ℕ, ∀ m, n ≤ m →
       ((f |_ U₁) ^ (m + n₂) * y₁) |_ S.1 = ((f |_ U₂) ^ (m + n₁) * y₂) |_ S.1 := by
-  obtain ⟨⟨_, n, rfl⟩, e⟩ :=
+  obtain ⟨⟨-, n, rfl⟩, e⟩ :=
     (@IsLocalization.eq_iff_exists _ _ _ _ _ _
       (S.2.isLocalization_basicOpen (f |_ S.1))
         (((f |_ U₁) ^ n₂ * y₁) |_ S.1)
@@ -400,7 +400,7 @@ theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsComp
     (hU' : IsQuasiSeparated U.1) (f : Γ(X, U)) :
     IsLocalization.Away f (Γ(X, X.basicOpen f)) := by
   constructor; constructor
-  · rintro ⟨_, n, rfl⟩
+  · rintro ⟨-, n, rfl⟩
     simp only [map_pow, RingHom.algebraMap_toAlgebra]
     exact IsUnit.pow _ (RingedSpace.isUnit_res_basicOpen _ f)
   · intro z

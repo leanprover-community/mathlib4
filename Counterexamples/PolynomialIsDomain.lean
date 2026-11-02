@@ -64,7 +64,7 @@ theorem natCast_eq_one (n : ℕ) : ∀ [NeZero n], (n : NatMaxAdd) = 1 := by
   induction n with
   | zero => intro; exact (NeZero.ne 0 rfl).elim
   | succ n ih =>
-    obtain _ | n := n
+    obtain - | n := n
     · intro; rfl
     · rw [Nat.cast_succ, ih]; intro; rfl
 

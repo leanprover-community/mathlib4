@@ -86,7 +86,7 @@ satisfies the requirements for applying Zorn's lemma -/
 lemma structured_arrows_elements_sheaf_chains_bounded (c : Set (Under g s))
     (h : IsChain (fun x y ↦ Nonempty (y ⟶ x)) c) : ∃ ub, ∀ a ∈ c, Nonempty (ub ⟶ a) := by
   let f : c → (Opens X) := fun x => x.1.right.1.unop
-  obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.right.2) s_1 := by
+  obtain ⟨t, ht, -⟩ : ∃! s_1, IsGluing F.obj f (fun x => x.val.right.2) s_1 := by
     refine Sheaf.existsUnique_gluing F _ _ (fun i j ↦ ?_)
     obtain (rfl | h₁ | h₁) : i = j ∨ Nonempty (i.val ⟶ j.val) ∨ Nonempty (j.val ⟶ i.val) := by
       grind [Subtype.ext_iff, h i.property j.property]
@@ -146,7 +146,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S
       dsimp [sf, f]
       simp only [restrict_sum, ← map_restrict, ht₄, ht₃, t₂, add_sub_cancel]
     -- We glue `t.right.2` and `t₁ + (S.f.hom.app (op W)) t₄` together to form `t₅`
-    obtain ⟨t₅, ht₅, _⟩ : ∃! t₅, IsGluing S.X₂.obj f sf t₅ := by
+    obtain ⟨t₅, ht₅, -⟩ : ∃! t₅, IsGluing S.X₂.obj f sf t₅ := by
       apply Sheaf.existsUnique_gluing
       simp only [IsCompatible, Fin.forall_fin_two]
       refine ⟨⟨rfl, this⟩, Eq.symm ?_, rfl⟩

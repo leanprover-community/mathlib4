@@ -145,7 +145,7 @@ theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ suppor
   obtain ⟨hse, hsf⟩ := hs
   apply Subset.antisymm
   · refine subset_inter (subset_inter (hsf.trans ball_subset_closedBall) ?_) ?_
-    · rintro _ ⟨x, -, rfl⟩; exact mem_range_self _
+    · rintro - ⟨x, -, rfl⟩; exact mem_range_self _
     · rw [(extChartAt I c).image_eq_target_inter_inv_preimage hse]
       exact inter_subset_right
   · refine Subset.trans (inter_subset_inter_left _ f.closedBall_subset) ?_

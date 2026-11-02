@@ -148,7 +148,7 @@ theorem NormedAddGroupHom.norm_completion (f : NormedAddGroupHom G H) : ‖f.com
 
 theorem NormedAddGroupHom.ker_le_ker_completion (f : NormedAddGroupHom G H) :
     (toCompl.comp <| incl f.ker).range ≤ f.completion.ker := by
-  rintro _ ⟨⟨g, h₀ : f g = 0⟩, rfl⟩
+  rintro - ⟨⟨g, h₀ : f g = 0⟩, rfl⟩
   simp [h₀, mem_ker, Completion.coe_zero]
 
 theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
@@ -160,7 +160,7 @@ theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
   intro ε ε_pos
   rcases h.exists_pos with ⟨C', C'_pos, hC'⟩
   rcases exists_pos_mul_lt ε_pos (1 + C' * ‖f‖) with ⟨δ, δ_pos, hδ⟩
-  obtain ⟨_, ⟨g : G, rfl⟩, hg : ‖hatg - g‖ < δ⟩ :=
+  obtain ⟨-, ⟨g : G, rfl⟩, hg : ‖hatg - g‖ < δ⟩ :=
     SeminormedAddCommGroup.mem_closure_iff.mp (Completion.isDenseInducing_coe.dense hatg) δ δ_pos
   obtain ⟨g' : G, hgg' : f g' = f g, hfg : ‖g'‖ ≤ C' * ‖f g‖⟩ := hC' (f g) (mem_range_self _ g)
   have mem_ker : g - g' ∈ f.ker := by rw [f.mem_ker, map_sub, sub_eq_zero.mpr hgg'.symm]

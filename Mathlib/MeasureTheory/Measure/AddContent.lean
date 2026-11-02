@@ -336,13 +336,13 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
   refine sum_addContent_le_of_subset hC (I := I.image f) ?_ ?_ hf_Union ?_
   · simp only [coe_image, Set.image_subset_iff]
     refine (subset_preimage_image f I).trans (preimage_mono ?_)
-    rintro i ⟨j, _, rfl⟩
+    rintro i ⟨j, -, rfl⟩
     exact hf j
   · simp only [coe_image]
     intro s hs t ht hst
     rw [Set.mem_image] at hs ht
-    obtain ⟨i, _, rfl⟩ := hs
-    obtain ⟨j, _, rfl⟩ := ht
+    obtain ⟨i, -, rfl⟩ := hs
+    obtain ⟨j, -, rfl⟩ := ht
     have hij : i ≠ j := by intro h_eq; rw [h_eq] at hst; exact hst rfl
     exact hf_disj hij
   · simp only [Finset.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]

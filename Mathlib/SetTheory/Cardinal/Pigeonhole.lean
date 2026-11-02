@@ -56,7 +56,7 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
     ∃ (a : α) (t : Set β) (h : t ⊆ s), θ ≤ #t ∧ ∀ ⦃x⦄ (hx : x ∈ t), f ⟨x, h hx⟩ = a := by
   obtain ⟨a, ha⟩ := infinite_pigeonhole_card f θ hθ h₁ h₂
   refine ⟨a, { x | ∃ h, f ⟨x, h⟩ = a }, ?_, ?_, ?_⟩
-  · rintro x ⟨hx, _⟩
+  · rintro x ⟨hx, -⟩
     exact hx
   · refine
       ha.trans
@@ -64,7 +64,7 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
           Quotient.sound ⟨Equiv.trans ?_ (Equiv.subtypeSubtypeEquivSubtypeExists _ _).symm⟩)
     simp only [coe_eq_subtype, mem_singleton_iff, mem_preimage, mem_ofPred_eq]
     rfl
-  rintro x ⟨_, hx'⟩; exact hx'
+  rintro x ⟨-, hx'⟩; exact hx'
 
 /-- A function whose domain's cardinality is infinite and strictly greater than its codomain's
 has a fiber with cardinality strictly great than the codomain. -/

@@ -62,7 +62,7 @@ lemma egirth_anti : Antitone (egirth : SimpleGraph α → ℕ∞) :=
 lemma exists_egirth_eq_length :
     (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.egirth = w.length) ↔ ¬ G.IsAcyclic := by
   refine ⟨?_, fun h ↦ ?_⟩
-  · rintro ⟨a, w, hw, _⟩ hG
+  · rintro ⟨a, w, hw, -⟩ hG
     exact hG _ hw
   · simp_rw [← egirth_eq_top, ← Ne.eq_def, egirth, iInf_subtype', iInf_sigma',
       ENat.iInf_natCast_ne_top, ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢

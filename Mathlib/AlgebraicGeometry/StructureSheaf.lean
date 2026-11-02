@@ -285,7 +285,7 @@ theorem exists_const (U) (s : Γ(M, U)) (x : PrimeSpectrum.Top R)
     ∃ (g : R) (_ : x ∈ basicOpen g) (i : basicOpen g ≤ U) (f : M),
       const f g _ le_rfl = (structureSheafInType R M).1.map i.hom.op s := by
   obtain ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
-  obtain ⟨_, ⟨_, ⟨g', rfl⟩, rfl⟩, hxg', hg'U⟩ :=
+  obtain ⟨-, ⟨-, ⟨g', rfl⟩, rfl⟩, hxg', hg'U⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxV V.2
   refine ⟨g' * g, ?_, ?_, g' • f, Subtype.ext <| funext fun ⟨y, hy⟩ ↦ ?_⟩ <;>
     simp only [PrimeSpectrum.basicOpen_mul]
@@ -408,7 +408,7 @@ def toBasicOpenₗ (f : R) :
 theorem toBasicOpenₗ_mk (s : R) (f : M) (g : Submonoid.powers s) :
     toBasicOpenₗ R M s (.mk f g) = const f g.1 (basicOpen s) (by
     have := PrimeSpectrum.le_basicOpen_pow s; aesop (add simp [Submonoid.mem_powers_iff])) := by
-  obtain ⟨_, n, rfl⟩ := g
+  obtain ⟨-, n, rfl⟩ := g
   apply ((Module.End.isUnit_iff _).mp ((isUnit_basicOpen_end ..).pow n)).1 ?_
   rw [← map_pow]
   dsimp [toBasicOpenₗ]
@@ -523,7 +523,7 @@ public lemma toOpenₗ_top_bijective : Function.Bijective (toOpenₗ R M ⊤) :=
     convert (inferInstance : IsLocalizedModule (.powers 1) (toOpenₗ R M (basicOpen 1)))
     rw [PrimeSpectrum.basicOpen_one, Submonoid.powers_one]
   refine ⟨fun x y e ↦ by simpa using (IsLocalizedModule.eq_iff_exists ⊥ _).mp e, fun x ↦ ?_⟩
-  obtain ⟨⟨x, _, rfl⟩, rfl⟩ := IsLocalizedModule.mk'_surjective ⊥ (toOpenₗ R M ⊤) x
+  obtain ⟨⟨x, -, rfl⟩, rfl⟩ := IsLocalizedModule.mk'_surjective ⊥ (toOpenₗ R M ⊤) x
   exact ⟨x, (IsLocalizedModule.mk'_one ..).symm⟩
 
 public lemma algebraMap_obj_top_bijective :

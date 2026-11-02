@@ -481,7 +481,7 @@ theorem sOppSide_iff_exists_right {s : AffineSubspace R P} {x y p₂ : P} (h : p
     s.SOppSide x y ↔ x ∉ s ∧ y ∉ s ∧ ∃ p₁ ∈ s, SameRay R (x -ᵥ p₁) (p₂ -ᵥ y) := by
   rw [SOppSide, and_comm, wOppSide_iff_exists_right h, and_assoc, and_congr_right_iff,
     and_congr_right_iff]
-  rintro _ hy
+  rintro - hy
   rw [or_iff_right hy]
 
 theorem WSameSide.trans {s : AffineSubspace R P} {x y z : P} (hxy : s.WSameSide x y)

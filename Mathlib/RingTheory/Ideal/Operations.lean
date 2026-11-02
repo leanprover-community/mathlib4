@@ -76,7 +76,7 @@ theorem smul_le_right : I • N ≤ N :=
 
 theorem map_le_smul_top (I : Ideal R) (f : R →ₗ[R] M) :
     Submodule.map f I ≤ I • (⊤ : Submodule R M) := by
-  rintro _ ⟨y, hy, rfl⟩
+  rintro - ⟨y, hy, rfl⟩
   rw [← mul_one y, ← smul_eq_mul, f.map_smul]
   exact smul_mem_smul hy mem_top
 
@@ -229,7 +229,7 @@ theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs 
     (x : M) (H : ∀ r : s, ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M') : x ∈ M' := by
   choose f hf using H
   apply M'.mem_of_span_top_of_smul_mem _ (Ideal.span_range_pow_eq_top s hs f)
-  rintro ⟨_, r, hr, rfl⟩
+  rintro ⟨-, r, hr, rfl⟩
   exact hf r
 
 open scoped Pointwise in
@@ -350,7 +350,7 @@ theorem iSup_mul {ι : Sort*} (J : ι → Ideal R) (I : Ideal R) :
 variable {I J K}
 
 theorem pow_le_pow_right {m n : ℕ} (h : m ≤ n) : I ^ n ≤ I ^ m := by
-  obtain _ | m := m
+  obtain - | m := m
   · rw [Submodule.pow_zero, one_eq_top]; exact le_top
   obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
   rw [add_comm, Submodule.pow_add _ m.add_one_ne_zero]
@@ -760,7 +760,7 @@ theorem isCoprime_span_singleton_iff (x y : R) :
   simp_rw [isCoprime_iff_codisjoint, codisjoint_iff, eq_top_iff_one, mem_span_singleton_sup,
     mem_span_singleton]
   constructor
-  · rintro ⟨a, _, ⟨b, rfl⟩, e⟩; exact ⟨a, b, mul_comm b y ▸ e⟩
+  · rintro ⟨a, -, ⟨b, rfl⟩, e⟩; exact ⟨a, b, mul_comm b y ▸ e⟩
   · rintro ⟨a, b, e⟩; exact ⟨a, _, ⟨b, rfl⟩, mul_comm y b ▸ e⟩
 
 theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
@@ -1202,7 +1202,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
       · rw [Finset.coe_empty, Set.biUnion_empty] at h
         exact (h I.zero_mem).elim
       · obtain ⟨i, his⟩ := hsne
-        obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
+        obtain ⟨t, -, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
           ⟨s.erase i, Finset.notMem_erase i s, Finset.insert_erase his⟩
         have hp' : ∀ j ∈ t, IsPrime (f j) := by
           intro j hj

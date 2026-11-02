@@ -120,7 +120,7 @@ lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
   · obtain rfl : y = x := by simpa
     simp
   · rw [← dist_ne_zero] at hne
-    obtain ⟨a, b, _, hb, _, H⟩ := this
+    obtain ⟨a, b, -, hb, -, H⟩ := this
     rw [smul_zero, zero_add] at H
     have H' := congr(norm $H)
     rw [norm_smul, Real.norm_of_nonneg hb, ← dist_eq_norm_vsub', ← dist_eq_norm_vsub', hxy,

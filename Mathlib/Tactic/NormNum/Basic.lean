@@ -196,7 +196,7 @@ theorem isNNRat_add {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
     Nat.add (Nat.mul na db) (Nat.mul nb da) = Nat.mul k nc →
     Nat.mul da db = Nat.mul k dc →
     IsNNRat (f a b) nc dc := by
-  rintro rfl ⟨_, rfl⟩ ⟨_, rfl⟩ (h₁ : na * db + nb * da = k * nc) (h₂ : da * db = k * dc)
+  rintro rfl ⟨-, rfl⟩ ⟨-, rfl⟩ (h₁ : na * db + nb * da = k * nc) (h₂ : da * db = k * dc)
   have : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
   have := invertibleOfMul' (α := α) h₂
   use this
@@ -218,7 +218,7 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     Int.add (Int.mul na db) (Int.mul nb da) = Int.mul k nc →
     Nat.mul da db = Nat.mul k dc →
     IsRat (f a b) nc dc := by
-  rintro rfl ⟨_, rfl⟩ ⟨_, rfl⟩ (h₁ : na * db + nb * da = k * nc) (h₂ : da * db = k * dc)
+  rintro rfl ⟨-, rfl⟩ ⟨-, rfl⟩ (h₁ : na * db + nb * da = k * nc) (h₂ : da * db = k * dc)
   have : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
   have := invertibleOfMul' (α := α) h₂
   use this
@@ -444,7 +444,7 @@ theorem isNNRat_mul {α} [Semiring α] {f : α → α → α} {a b : α} {na nb 
     Nat.mul na nb = Nat.mul k nc →
     Nat.mul da db = Nat.mul k dc →
     IsNNRat (f a b) nc dc := by
-  rintro rfl ⟨_, rfl⟩ ⟨_, rfl⟩ (h₁ : na * nb = k * nc) (h₂ : da * db = k * dc)
+  rintro rfl ⟨-, rfl⟩ ⟨-, rfl⟩ (h₁ : na * nb = k * nc) (h₂ : da * db = k * dc)
   have : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
   have := invertibleOfMul' (α := α) h₂
   refine ⟨this, ?_⟩
@@ -464,7 +464,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     Int.mul na nb = Int.mul k nc →
     Nat.mul da db = Nat.mul k dc →
     IsRat (f a b) nc dc := by
-  rintro rfl ⟨_, rfl⟩ ⟨_, rfl⟩ (h₁ : na * nb = k * nc) (h₂ : da * db = k * dc)
+  rintro rfl ⟨-, rfl⟩ ⟨-, rfl⟩ (h₁ : na * nb = k * nc) (h₂ : da * db = k * dc)
   have : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
   have := invertibleOfMul' (α := α) h₂
   refine ⟨this, ?_⟩

@@ -141,7 +141,7 @@ theorem Convex.combo_self_interior_mem_interior {s : Set E} (hs : Convex 𝕜 s)
 
 theorem Convex.openSegment_interior_closure_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ interior s) (hy : y ∈ closure s) : openSegment 𝕜 x y ⊆ interior s := by
-  rintro _ ⟨a, b, ha, hb, hab, rfl⟩
+  rintro - ⟨a, b, ha, hb, hab, rfl⟩
   exact hs.combo_interior_closure_mem_interior hx hy ha hb.le hab
 
 omit [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] in
@@ -156,7 +156,7 @@ theorem Convex.openSegment_image_interior_closure_preimage_subset {F : Type*}
     [ContinuousConstSMul 𝕜 F] {A : F →ᵃ[𝕜] E} {s} (hs : Convex 𝕜 s)
     {x y} (hx : x ∈ interior (A ⁻¹' s)) (hy : y ∈ closure (A ⁻¹' s)) :
     openSegment 𝕜 (A x) (A y) ⊆ A '' interior (A ⁻¹' s) := by
-  rintro _ ⟨a, b, ha, hb, hab, rfl⟩
+  rintro - ⟨a, b, ha, hb, hab, rfl⟩
   refine ⟨AffineMap.lineMap x y b, ?_, ?_⟩
   · apply (hs.affine_preimage A).openSegment_interior_closure_subset_interior hx hy
     refine ⟨a, b, ha, hb, hab, ?_⟩
@@ -169,7 +169,7 @@ theorem Convex.openSegment_interior_self_subset_interior {s : Set E} (hs : Conve
 
 theorem Convex.openSegment_closure_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
     (hx : x ∈ closure s) (hy : y ∈ interior s) : openSegment 𝕜 x y ⊆ interior s := by
-  rintro _ ⟨a, b, ha, hb, hab, rfl⟩
+  rintro - ⟨a, b, ha, hb, hab, rfl⟩
   exact hs.combo_closure_interior_mem_interior hx hy ha.le hb hab
 
 theorem Convex.openSegment_self_interior_subset_interior {s : Set E} (hs : Convex 𝕜 s) {x y : E}
@@ -264,7 +264,7 @@ protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
     StrictConvex 𝕜 s := by
   refine hs.strictConvex' <| h.imp_on fun x hx y hy _ => ?_
   simp only [segment_eq_image_lineMap, ← self_sdiff_frontier]
-  rintro ⟨_, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
+  rintro ⟨-, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
   refine ⟨c, hs.segment_subset hx.1 hy.1 ?_, hcs⟩
   exact lineMap_mem_segment 𝕜 x y hc
 

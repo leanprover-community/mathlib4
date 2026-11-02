@@ -111,7 +111,7 @@ public theorem exists_measurePreserving_probabilityMeasure
     ∃ μ : Measure X, MeasurePreserving f μ μ ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ := by
   obtain ⟨x⟩ := ‹Nonempty X›
   -- starting from any point, the empirical measures must accumulate at some measure μ
-  obtain ⟨μ, _, hμ⟩ := isCompact_univ.exists_mapClusterPt
+  obtain ⟨μ, -, hμ⟩ := isCompact_univ.exists_mapClusterPt
     (u := fun n ↦ (empiricalMeasure f x n).toProbabilityMeasure) (f := atTop) (by simp)
   -- μ gives us a regular measure ν, and the rest is showing ν satisfies the other properties
   obtain ⟨ν, hνreg, hνfin, hμν⟩ := (μ : Measure X).exists_regular_eq_of_compactSpace

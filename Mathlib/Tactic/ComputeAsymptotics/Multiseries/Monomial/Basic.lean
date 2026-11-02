@@ -344,12 +344,12 @@ lemma isLittleO_of_lt {basis : Basis} {m1 m2 : UnitMonomial}
     (h2 : m2.length = basis.length)
     (h_lt : m1 < m2) :
     m1.toFun basis =o[atTop] m2.toFun basis := by
-  obtain _ | ⟨basis_hd, basis_tl⟩ := basis
+  obtain - | ⟨basis_hd, basis_tl⟩ := basis
   · simp only [List.length_nil, List.length_eq_zero_iff] at h1 h2
     simp [h1, h2] at h_lt
-  obtain _ | ⟨exp1, m1⟩ := m1
+  obtain - | ⟨exp1, m1⟩ := m1
   · simp at h1
-  obtain _ | ⟨exp2, m2⟩ := m2
+  obtain - | ⟨exp2, m2⟩ := m2
   · simp at h2
   cases h_lt with
   | cons h =>

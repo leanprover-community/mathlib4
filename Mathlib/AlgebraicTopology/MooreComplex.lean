@@ -101,7 +101,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
     -- after the first rw the proofs are almost identical
-  rcases n with _ | n <;> dsimp [objD]
+  rcases n with - | n <;> dsimp [objD]
   · rw [Subobject.factorThru_arrow_assoc, Category.assoc, ← Fin.castSucc_zero,
       ← X.δ_comp_δ_assoc (Fin.zero_le (0 : Fin 2)),
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin 2) (by simp)),

@@ -122,7 +122,7 @@ theorem lift_cof_congr_of_strictMono {f : α → β} (hf : StrictMono f) (hf' : 
   · have H (x : s) : ∃ y : α, x ≤ f y := by simpa using hf' x
     choose g hg using H
     refine (lift_le.2 <| cof_le (s := range g) fun a ↦ ?_).trans mk_range_le_lift
-    obtain ⟨_, ⟨b, rfl⟩, hb⟩ := hf' (f a)
+    obtain ⟨-, ⟨b, rfl⟩, hb⟩ := hf' (f a)
     obtain ⟨c, hc, hc'⟩ := hs (f b)
     refine ⟨_, Set.mem_range_self ⟨c, hc⟩, ?_⟩
     rw [← hf.le_iff_le]
@@ -200,5 +200,5 @@ then `s` has a cofinal member. -/
 theorem isCofinal_of_isCofinal_iUnion {α : Type*} {ι} [LinearOrder α] {s : ι → Set α}
     (h₁ : IsCofinal (⋃ i, s i)) (h₂ : #ι < Order.cof α) : ∃ i, IsCofinal (s i) := by
   rw [← sUnion_range] at h₁
-  obtain ⟨_, ⟨i, rfl⟩, h⟩ := isCofinal_of_isCofinal_sUnion h₁ (mk_range_le.trans_lt h₂)
+  obtain ⟨-, ⟨i, rfl⟩, h⟩ := isCofinal_of_isCofinal_sUnion h₁ (mk_range_le.trans_lt h₂)
   exact ⟨i, h⟩

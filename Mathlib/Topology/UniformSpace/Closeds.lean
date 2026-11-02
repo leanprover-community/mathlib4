@@ -320,7 +320,7 @@ theorem IsCompact.nhds_hausdorff_eq_nhds_vietoris {s : Set α} (hs : IsCompact s
     𝓝 s = @nhds _ (.vietoris α) s := by
   refine le_antisymm ?_ hs.totallyBounded.nhds_vietoris_le_nhds_hausdorff
   simp_rw [TopologicalSpace.nhds_generateFrom, le_iInf₂_iff, Filter.le_principal_iff]
-  rintro _ ⟨hs', (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)⟩
+  rintro - ⟨hs', (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)⟩
   · obtain ⟨V : SetRel α α, hV₁, hV₂⟩ :=
       hs.nhdsSet_basis_uniformity (𝓤 α).basis_sets |>.mem_iff.mp (hU.mem_nhdsSet.mpr hs')
     filter_upwards [SetRel.ball_mem_nhds _ (Filter.mem_lift' hV₁)]

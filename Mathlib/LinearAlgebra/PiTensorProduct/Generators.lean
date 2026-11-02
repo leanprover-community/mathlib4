@@ -135,7 +135,7 @@ lemma submodule_span_eq_top
   have := Fintype.ofFinite ι
   simp_rw [eq_top_iff, ← span_tprod_eq_top, Submodule.span_le, Set.subset_def, SetLike.mem_coe]
   simp_rw [Submodule.eq_top_iff', Finsupp.mem_span_range_iff_exists_finsupp] at hg
-  rintro _ ⟨m, rfl⟩
+  rintro - ⟨m, rfl⟩
   choose c hc using fun i ↦ hg i (m i)
   simp_rw [← funext hc, Finsupp.sum, MultilinearMap.map_sum_finset, MultilinearMap.map_smul_univ]
   exact sum_mem fun r _ ↦ Submodule.smul_mem _ _ (Submodule.mem_span_of_mem (Set.mem_range_self r))

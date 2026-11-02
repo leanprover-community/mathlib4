@@ -99,7 +99,7 @@ lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
       Set.mem_compl_iff, and_imp, ← specializes_iff_mem_closure, ← le_iff_specializes,
       not_imp_not]
     constructor
-    · rintro rfl _ _
+    · rintro rfl - -
       rw [stableUnderGeneralization_singleton, ← isMin_iff] at h₂
       exact h₂.eq_of_le
     · intro hp

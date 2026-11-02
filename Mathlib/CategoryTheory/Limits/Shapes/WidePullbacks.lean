@@ -267,7 +267,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
   apply
     (limit.isLimit (WidePullbackShape.wideCospan B objs arrows)).uniq
       (WidePullbackShape.mkCone f fs w)
-  rintro (_ | _)
+  rintro (- | -)
   · apply h2
   · apply h1
 
@@ -281,7 +281,7 @@ theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
     g1 ≫ π arrows j = g2 ≫ π arrows j) → g1 ≫ base arrows = g2 ≫ base arrows → g1 = g2 := by
   intro h1 h2
   apply limit.hom_ext
-  rintro (_ | _)
+  rintro (- | -)
   · apply h2
   · apply h1
 
@@ -338,7 +338,7 @@ lemma IsLimit.hom_ext {s : WidePullbackCone f} (hs : IsLimit s)
     (hπ : ∀ i, k ≫ s.π i = l ≫ s.π i) :
     k = l := by
   apply hs.hom_ext
-  rintro (_ | j)
+  rintro (- | j)
   · exact hbase
   · exact hπ j
 

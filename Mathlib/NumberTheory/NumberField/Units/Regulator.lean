@@ -128,7 +128,7 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
     rw [← SetLike.isDiscrete_iff_discreteTopology]
     refine (inferInstance : DiscreteTopology (unitLattice K)).isDiscrete.mono ?_
     rw [SetLike.coe_subset_coe, Submodule.span_le]
-    rintro _ ⟨i, rfl⟩
+    rintro - ⟨i, rfl⟩
     exact ⟨Additive.ofMul (u i), mem_top, rfl⟩
   rw [finiteIndex_iff_sup_torsion_finiteIndex, finiteIndex_iff, h₁, finiteQuotient_iff,
     unitLattice_rank, ← Set.finrank, IsMaxRank, linearIndependent_iff_card_eq_finrank_span,

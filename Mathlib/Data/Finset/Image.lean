@@ -523,7 +523,7 @@ theorem mem_range_iff_mem_finset_range_of_mod_eq' [DecidableEq α] {f : ℕ → 
     exact ⟨i % n, Nat.mod_lt i hn, (rfl.congr hi).mp (h i)⟩
   · rintro h
     simp only [mem_image, Set.mem_range, mem_range] at *
-    rcases h with ⟨i, _, ha⟩
+    rcases h with ⟨i, -, ha⟩
     exact ⟨i, ha⟩
 
 theorem mem_range_iff_mem_finset_range_of_mod_eq [DecidableEq α] {f : ℤ → α} {a : α} {n : ℕ}
@@ -673,7 +673,7 @@ theorem subtype_mem_eq_attach (s : Finset α) [DecidablePred (· ∈ s)] :
 the subtype. -/
 theorem property_of_mem_map_subtype {p : α → Prop} (s : Finset { x // p x }) {a : α}
     (h : a ∈ s.map (Embedding.subtype _)) : p a := by
-  rcases mem_map.1 h with ⟨x, _, rfl⟩
+  rcases mem_map.1 h with ⟨x, -, rfl⟩
   exact x.2
 
 /-- If a `Finset` of a subtype is converted to the main type with

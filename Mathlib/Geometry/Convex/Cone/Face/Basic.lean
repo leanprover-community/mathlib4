@@ -78,7 +78,7 @@ theorem isFaceOf_iff_le (h₁ : F₁.IsFaceOf C) (h₂ : F₂.IsFaceOf C) :
 /-- A face of a cone is an extreme subset of the cone. -/
 theorem isExtreme (h : F.IsFaceOf C) : IsExtreme R (C : Set M) F := by
   refine ⟨h.1, ?_⟩
-  rintro _ xc _ yc _ zf ⟨_, _, a0, b0, -, rfl⟩
+  rintro _ xc _ yc - zf ⟨_, _, a0, b0, -, rfl⟩
   exact h.mem_of_smul_add_smul_mem_left xc yc a0 b0 zf
 
 /-- The intersection of two faces of two cones is a face of the intersection of the cones. -/
@@ -156,7 +156,7 @@ protected theorem map (f : M →ₗ[R] N) (hf : Function.Injective f) (hF : F.Is
     (F.map f).IsFaceOf (C.map f) where
   le := map_mono hF.le
   mem_of_smul_add_mem := by
-    rintro _ _ a ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩ ha ⟨z, hz₁, hz₂⟩
+    rintro - - a ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩ ha ⟨z, hz₁, hz₂⟩
     dsimp at hz₂
     rw [← map_smul, ← map_add] at hz₂
     exact ⟨x, hF.mem_of_smul_add_mem hx hy ha (hf hz₂ ▸ hz₁), rfl⟩

@@ -173,7 +173,7 @@ lemma exists_infinite_setOfPred_apply_eq : ∃ m, {i | a i = m}.Infinite := by
     simp only [Set.mem_singleton_iff, Set.rangeFactorization, Subtype.ext_iff] at hn
     exact ⟨↑n, hn⟩
   have hinj : Set.InjOn (fun i ↦ Nat.nth (a · = i) 0 + 1) (Set.range a \ Set.Ico 0 (M a N)) := by
-    rintro _ ⟨⟨_, rfl⟩, hi⟩ _ ⟨⟨_, rfl⟩, hj⟩ h
+    rintro - ⟨⟨_, rfl⟩, hi⟩ - ⟨⟨_, rfl⟩, hj⟩ h
     simp only [Set.mem_Ico, zero_le, true_and, not_lt] at hi hj
     simp only [add_left_inj] at h
     convert! congr(a $h) using 1 <;> simp [apply_nth_zero]

@@ -64,11 +64,11 @@ variable {s t : Finset α} {a : α}
 
 /-- Finsets form an order-connected suborder of multisets. -/
 lemma ordConnected_range_val : Set.OrdConnected (Set.range val : Set <| Multiset α) :=
-  ⟨by rintro _ _ _ ⟨s, rfl⟩ t ht; exact ⟨⟨t, Multiset.nodup_of_le ht.2 s.2⟩, rfl⟩⟩
+  ⟨by rintro _ - - ⟨s, rfl⟩ t ht; exact ⟨⟨t, Multiset.nodup_of_le ht.2 s.2⟩, rfl⟩⟩
 
 /-- Finsets form an order-connected suborder of sets. -/
 lemma ordConnected_range_coe : Set.OrdConnected (Set.range ((↑) : Finset α → Set α)) :=
-  ⟨by rintro _ _ _ ⟨s, rfl⟩ t ht; exact ⟨_, (s.finite_toSet.subset ht.2).coe_toFinset⟩⟩
+  ⟨by rintro _ - - ⟨s, rfl⟩ t ht; exact ⟨_, (s.finite_toSet.subset ht.2).coe_toFinset⟩⟩
 
 @[simp] lemma val_wcovBy_val : s.1 ⩿ t.1 ↔ s ⩿ t :=
   ordConnected_range_val.apply_wcovBy_apply_iff ⟨⟨_, val_injective⟩, val_le_iff⟩

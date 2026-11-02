@@ -126,7 +126,7 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
     norm_cast
     rw [coe_mem_cutMap_iff]
     exact mod_cast sub_lt_comm.mp hq₁q
-  · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
+  · rintro - ⟨-, ⟨qa, ha, rfl⟩, -, ⟨qb, hb, rfl⟩, rfl⟩
     -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
     refine ⟨qa + qb, ?_, by beta_reduce; norm_cast⟩
     rw [mem_ofPred_eq, cast_add]

@@ -105,7 +105,7 @@ lemma linearMap_eq_iff_of_eq_span {V : Submodule R M} (f g : V →ₗ[R] N)
     f = g ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using! subset_span (by simp)⟩ =
       g ⟨s, by simpa only [hV] using! subset_span (by simp)⟩ := by
   constructor
-  · rintro rfl _
+  · rintro rfl -
     rfl
   · intro h
     subst hV
@@ -312,7 +312,7 @@ theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
   · exact AddSubmonoid.zero_mem _
   · exact AddSubmonoid.add_mem _ hx hy
   · refine AddSubmonoid.closure_induction ?_ ?_ ?_ hx
-    · rintro x ⟨_, ⟨i, rfl⟩, hix : x ∈ p i⟩
+    · rintro x ⟨-, ⟨i, rfl⟩, hix : x ∈ p i⟩
       apply AddSubmonoid.subset_closure (Set.mem_iUnion.mpr ⟨i, _⟩)
       exact smul_mem _ r hix
     · rw [smul_zero]
@@ -568,7 +568,7 @@ theorem comap_map_eq_self {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M} (
 theorem comap_map_sup_of_comap_le {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M} {q : Submodule R₂ M₂}
     (le : comap f q ≤ p) : comap f (map f p ⊔ q) = p := by
   refine le_antisymm (fun x h ↦ ?_) (map_le_iff_le_comap.mp le_sup_left)
-  obtain ⟨_, ⟨y, hy, rfl⟩, z, hz, eq⟩ := mem_sup.mp h
+  obtain ⟨-, ⟨y, hy, rfl⟩, z, hz, eq⟩ := mem_sup.mp h
   rw [add_comm, ← eq_sub_iff_add_eq, ← map_sub] at eq; subst eq
   simpa using p.add_mem (le hz) hy
 

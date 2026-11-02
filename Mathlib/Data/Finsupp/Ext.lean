@@ -44,7 +44,7 @@ then they are equal. -/
 theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x y, f (single x y) = g (single x y)) : f = g := by
   refine AddMonoidHom.eq_of_eqOn_denseM add_closure_setOfPred_eq_single ?_
-  rintro _ ⟨x, y, rfl⟩
+  rintro - ⟨x, y, rfl⟩
   apply H
 
 /-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,

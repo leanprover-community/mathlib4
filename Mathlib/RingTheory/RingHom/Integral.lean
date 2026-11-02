@@ -53,7 +53,7 @@ theorem isIntegral_ofLocalizationSpan :
     (IsLocalization.lift_comp _).symm
   have : _root_.IsIntegral (Localization.Away t) (algebraMap S (Localization.Away (f t)) r) :=
     H ⟨t, ht⟩ (algebraMap _ _ r)
-  obtain ⟨⟨_, n, rfl⟩, p, hp, hp'⟩ := this.exists_multiple_integral_of_isLocalization (.powers t)
+  obtain ⟨⟨-, n, rfl⟩, p, hp, hp'⟩ := this.exists_multiple_integral_of_isLocalization (.powers t)
   rw [IsScalarTower.algebraMap_eq R S, Submonoid.smul_def, Algebra.smul_def,
     IsScalarTower.algebraMap_apply R S, ← map_mul, ← hom_eval₂,
     IsLocalization.map_eq_zero_iff (.powers (f t))] at hp'

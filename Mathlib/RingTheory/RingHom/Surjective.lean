@@ -58,7 +58,7 @@ theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective 
 theorem surjective_localizationPreserves :
     LocalizationPreserves surjective := by
   introv R H x
-  obtain ⟨x, ⟨_, s, hs, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (M.map f) x
+  obtain ⟨x, ⟨-, s, hs, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (M.map f) x
   obtain ⟨y, rfl⟩ := H x
   use IsLocalization.mk' R' y ⟨s, hs⟩
   rw [IsLocalization.map_mk']
@@ -74,10 +74,10 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
     (LinearMap.range (Algebra.linearMap R S)) s e
   intro r
   obtain ⟨a, e'⟩ := H r (algebraMap _ _ x)
-  obtain ⟨b, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (Submonoid.powers (r : R)) a
+  obtain ⟨b, ⟨-, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (Submonoid.powers (r : R)) a
   rw [Localization.awayMap, IsLocalization.Away.map, IsLocalization.map_mk', eq_comm,
     IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, Subtype.coe_mk, ← map_mul] at e'
-  obtain ⟨⟨_, n', rfl⟩, e''⟩ := (IsLocalization.eq_iff_exists (Submonoid.powers (f r)) _).mp e'
+  obtain ⟨⟨-, n', rfl⟩, e''⟩ := (IsLocalization.eq_iff_exists (Submonoid.powers (f r)) _).mp e'
   dsimp only at e''
   rw [mul_comm x, ← mul_assoc, ← map_pow, ← map_mul, ← map_mul, ← pow_add] at e''
   exact ⟨n' + n, _, e''.symm⟩

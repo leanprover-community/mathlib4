@@ -515,7 +515,7 @@ include hr hu
 
 /-- If `dist (f n) (f (n+1))` is bounded by `C * r^n`, `r < 1`, then `f` is a Cauchy sequence. -/
 theorem aux_hasSum_of_le_geometric : HasSum (fun n : ℕ ↦ C * r ^ n) (C / (1 - r)) := by
-  rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ dist_nonneg.trans (hu n) with (rfl | ⟨_, r₀⟩)
+  rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ dist_nonneg.trans (hu n) with (rfl | ⟨-, r₀⟩)
   · simp [hasSum_zero]
   · refine HasSum.mul_left C ?_
     simpa using hasSum_geometric_of_lt_one r₀ hr
@@ -640,7 +640,7 @@ namespace ENNReal
 theorem exists_pos_sum_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Countable ι] :
     ∃ ε' : ι → ℝ≥0, (∀ i, 0 < ε' i) ∧ (∑' i, (ε' i : ℝ≥0∞)) < ε := by
   rcases exists_between (pos_iff_ne_zero.2 hε) with ⟨r, h0r, hrε⟩
-  rcases lt_iff_exists_coe.1 hrε with ⟨x, rfl, _⟩
+  rcases lt_iff_exists_coe.1 hrε with ⟨x, rfl, -⟩
   rcases NNReal.exists_pos_sum_of_countable (coe_pos.1 h0r).ne' ι with ⟨ε', hp, c, hc, hcr⟩
   exact ⟨ε', hp, (ENNReal.tsum_coe_eq hc).symm ▸ lt_trans (coe_lt_coe.2 hcr) hrε⟩
 

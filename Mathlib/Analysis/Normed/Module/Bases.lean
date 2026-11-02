@@ -179,12 +179,12 @@ theorem tendsto_proj (x : X) : Tendsto (fun A ↦ b.proj A x) L.filter (𝓝 x) 
 theorem range_proj_eq_span (A : Finset β) :
     (b.proj A).toLinearMap.range = Submodule.span 𝕜 (b '' A) := by
   apply le_antisymm
-  · rintro _ ⟨x, rfl⟩
+  · rintro - ⟨x, rfl⟩
     rw [ContinuousLinearMap.coe_coe, proj_apply]
     exact Submodule.sum_mem _ fun i hi ↦
       Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, hi, rfl⟩)
   · rw [Submodule.span_le]
-    rintro _ ⟨i, hi, rfl⟩
+    rintro - ⟨i, hi, rfl⟩
     use b i
     rw [ContinuousLinearMap.coe_coe, proj_apply_basis_mem, ite_eq_left (Finset.mem_coe.mp hi)]
 
@@ -252,7 +252,7 @@ theorem bddAbove_range_nnnorm_proj [CompleteSpace X] :
   obtain ⟨C, hC⟩ := b.exists_norm_proj_le
   have hCpos : 0 ≤ C := by simpa [GeneralSchauderBasis.proj_empty] using hC ∅
   refine ⟨C.toNNReal, ?_⟩
-  rintro _ ⟨A, rfl⟩
+  rintro - ⟨A, rfl⟩
   rw [← NNReal.coe_le_coe, Real.coe_toNNReal C hCpos, coe_nnnorm]
   exact hC A
 
@@ -341,7 +341,7 @@ theorem bddAbove_range_nnnorm_proj [CompleteSpace X] :
   obtain ⟨C, hC⟩ := b.exists_norm_proj_le
   have hCpos : 0 ≤ C := by simpa [proj_zero] using hC 0
   refine ⟨C.toNNReal, ?_⟩
-  rintro _ ⟨n, rfl⟩
+  rintro - ⟨n, rfl⟩
   rw [← NNReal.coe_le_coe, Real.coe_toNNReal C hCpos, coe_nnnorm]
   exact hC n
 
@@ -401,10 +401,10 @@ lemma finrank_range_succSub_eq_one {P : ℕ → X →L[𝕜] X}
   let V := (P n).toLinearMap.range
   let W := (P (n + 1)).toLinearMap.range
   have hV : V ≤ W := by
-    rintro _ ⟨y, rfl⟩
+    rintro - ⟨y, rfl⟩
     exact ⟨P n y, by simp [ContinuousLinearMap.coe_coe, hcomp]⟩
   have hUW : U ≤ W := by
-    rintro _ ⟨y, rfl⟩
+    rintro - ⟨y, rfl⟩
     exact Submodule.sub_mem W ⟨y, rfl⟩ (hV ⟨y, rfl⟩)
   have hW : W = U ⊔ V := by
     apply le_antisymm

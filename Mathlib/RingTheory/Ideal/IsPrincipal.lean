@@ -70,7 +70,7 @@ theorem span_singleton_mem_isPrincipalSubmonoid (a : R) :
 
 theorem spanSubmonoid_le_isPrincipalSubmonoid (S : Submonoid R) :
     spanSubmonoid S ≤ isPrincipalSubmonoid R := by
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   exact ⟨x, rfl⟩
 
 @[simp]

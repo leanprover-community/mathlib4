@@ -343,7 +343,7 @@ lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b =
   · rw [← hp, coeff_natDegree, leadingCoeff_eq_zero] at h
     simp_all
   · ext n
-    obtain _ | _ | n := n
+    obtain - | - | n := n
     · simp
     · simp
     · simp only [coeff_add, coeff_mul_X, coeff_C_succ, add_zero]

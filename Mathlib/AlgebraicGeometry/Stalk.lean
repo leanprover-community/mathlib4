@@ -108,7 +108,7 @@ lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
       X.presheaf.germ U x hxU ≫
         (ΓSpecIso (X.presheaf.stalk x)).inv ≫
           (Spec (X.presheaf.stalk x)).presheaf.map (homOfLE le_top).op := by
-  obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
+  obtain ⟨-, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
     hxU U.2
   rw [← hV.fromSpecStalk_eq_fromSpecStalk hxV, IsAffineOpen.fromSpecStalk, Scheme.Hom.comp_app,
     hV.fromSpec_app_of_le _ hVU, ← X.presheaf.germ_res (homOfLE hVU) x hxV]
@@ -125,7 +125,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma SpecMap_stalkSpecializes_fromSpecStalk {x y : X} (h : x ⤳ y) :
     Spec.map (X.presheaf.stalkSpecializes h) ≫ X.fromSpecStalk y = X.fromSpecStalk x := by
-  obtain ⟨_, ⟨U, hU, rfl⟩, hyU, -⟩ :=
+  obtain ⟨-, ⟨U, hU, rfl⟩, hyU, -⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ y) isOpen_univ
   have hxU : x ∈ U := h.mem_open U.2 hyU
   rw [← hU.fromSpecStalk_eq_fromSpecStalk hyU, ← hU.fromSpecStalk_eq_fromSpecStalk hxU,
@@ -138,9 +138,9 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma SpecMap_stalkMap_fromSpecStalk {x} :
     Spec.map (f.stalkMap x) ≫ Y.fromSpecStalk _ = X.fromSpecStalk x ≫ f := by
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
+  obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
     (Set.mem_univ (f x)) isOpen_univ
-  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
+  obtain ⟨-, ⟨V, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
     hxU (f ⁻¹ᵁ U).2
   rw [← hU.fromSpecStalk_eq_fromSpecStalk hxU, ← hV.fromSpecStalk_eq_fromSpecStalk hxV,
     IsAffineOpen.fromSpecStalk, ← Spec.map_comp_assoc, Scheme.Hom.germ_stalkMap f _ x hxU,
@@ -349,7 +349,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma Spec_stalkClosedPointTo_fromSpecStalk :
     Spec.map (stalkClosedPointTo f) ≫ X.fromSpecStalk _ = f := by
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
+  obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
     (Set.mem_univ (f (closedPoint R))) isOpen_univ
   have := IsAffineOpen.SpecMap_appLE_fromSpec f hU (isAffineOpen_top _)
     (preimage_eq_top_of_closedPoint_mem f hxU).ge

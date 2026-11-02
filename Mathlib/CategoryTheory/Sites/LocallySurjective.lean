@@ -222,7 +222,7 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
       equalizerSieve (f₁.app _ (localPreimage (f₁ ≫ f₂) (f₂.app _ x) f hf)) (F₂.map f.op x)
     refine J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
       (Sieve.bind S.1 T) ?_)
-    · rintro Y _ ⟨Z, a, g, hg, ha, rfl⟩
+    · rintro Y - ⟨Z, a, g, hg, ha, rfl⟩
       exact ⟨F₁.map a.op (localPreimage (f₁ ≫ f₂) _ _ hg), by simpa using! ha⟩
     · intro Y f hf
       apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
@@ -431,7 +431,7 @@ lemma imageSieve_cofanIsColimitDesc_shrinkYoneda_map
         ((Cofan.IsColimit.fac hc (fun i ↦ shrinkYoneda.{w}.map (f i))) i) (op V))
           (shrinkYonedaObjObjEquiv.symm a)).symm
     · exact (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm v.op g).symm
-  · rintro ⟨_, a, _, ⟨i⟩, fac⟩
+  · rintro ⟨-, a, -, ⟨i⟩, fac⟩
     refine ⟨(c.inj i).app (op V) (shrinkYonedaObjObjEquiv.symm a),
       (ConcreteCategory.congr_hom (NatTrans.congr_app
       ((Cofan.IsColimit.fac hc (fun i ↦ shrinkYoneda.{w}.map (f i))) i) (op V))

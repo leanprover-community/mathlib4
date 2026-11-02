@@ -102,7 +102,7 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
           _ (him.image _)]
     apply (Finset.max'_lt_iff _ (him.image _)).mpr
     simp only [Finset.mem_image]
-    rintro _ ⟨x, ⟨k, -, rfl⟩, rfl⟩
+    rintro - ⟨x, ⟨k, -, rfl⟩, rfl⟩
     exact hy k
   have y'_nonneg : 0 ≤ y' := le_trans (abv.nonneg _) (hy' i)
   apply (Int.cast_le.mpr (norm_le abv bS a hy')).trans_lt
@@ -118,11 +118,11 @@ theorem exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),
       b ≠ 0 ∧ ∀ c ∈ (I : Ideal S), abv (Algebra.norm R c) < abv (Algebra.norm R b) → c =
       (0 : S) := by
-  obtain ⟨_, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ := @Int.exists_least_of_bdd
+  obtain ⟨-, ⟨b, b_mem, b_ne_zero, rfl⟩, min⟩ := @Int.exists_least_of_bdd
       (fun a => ∃ b ∈ (I : Ideal S), b ≠ (0 : S) ∧ abv (Algebra.norm R b) = a)
     (by
       use 0
-      rintro _ ⟨b, _, _, rfl⟩
+      rintro - ⟨b, -, -, rfl⟩
       apply abv.nonneg)
     (by
       obtain ⟨b, b_mem, b_ne_zero⟩ := (I : Ideal S).ne_bot_iff.mp (nonZeroDivisors.coe_ne_zero I)
@@ -170,7 +170,7 @@ theorem mem_finsetApprox {x : R} :
     x := by
   simp only [finsetApprox, Finset.mem_erase, Finset.mem_image]
   constructor
-  · rintro ⟨hx, ⟨i, j⟩, _, rfl⟩
+  · rintro ⟨hx, ⟨i, j⟩, -, rfl⟩
     refine ⟨i, j, ?_, rfl⟩
     rintro rfl
     simp at hx

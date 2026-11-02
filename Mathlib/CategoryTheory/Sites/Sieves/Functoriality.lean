@@ -192,8 +192,8 @@ variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
 theorem arrows_generate_map_eq_functorPushforward {s : Presieve X} :
     (generate (s.map F)).arrows = s.functorPushforward F := by
   refine funext fun Z ↦ funext fun u ↦ propext ⟨?_, ?_⟩
-  · rintro ⟨_, _, _, ⟨hu⟩, rfl⟩; exact ⟨_, _, _, hu, rfl⟩
-  · rintro ⟨_, _, _, hu, rfl⟩; exact ⟨_, _, _, ⟨hu⟩, rfl⟩
+  · rintro ⟨-, -, -, ⟨hu⟩, rfl⟩; exact ⟨_, _, _, hu, rfl⟩
+  · rintro ⟨_, _, -, hu, rfl⟩; exact ⟨_, _, _, ⟨hu⟩, rfl⟩
 
 /--
 If `R` is a sieve, then the `CategoryTheory.Presieve.functorPullback` of `R` is actually a sieve.

@@ -384,14 +384,14 @@ theorem basicOpen_eq_union_of_projection (f : A) :
           rw [← DirectSum.sum_support_decompose 𝒜 f]
           apply Ideal.sum_mem _ fun i _ => H i with ⟨i, hi⟩
         exact ⟨basicOpen 𝒜 (GradedRing.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
-      · obtain ⟨_, ⟨i, rfl⟩, hz⟩ := hz
+      · obtain ⟨-, ⟨i, rfl⟩, hz⟩ := hz
         exact fun rid => hz (z.1.2 i rid)
 
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
       (Set.range fun r : A => (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜))) := by
   apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
-  · rintro _ ⟨r, rfl⟩
+  · rintro - ⟨r, rfl⟩
     exact isOpen_basicOpen 𝒜
   · rintro p U hp ⟨s, hs⟩
     rw [← compl_compl U, Set.mem_compl_iff, ← hs, mem_zeroLocus, Set.not_subset] at hp

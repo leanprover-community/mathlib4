@@ -130,7 +130,7 @@ lemma surjective_hom₁ : Function.Surjective (hom₁ pres) := by
   rw [← top_le_iff, ← h₁, LinearMap.range_eq_map, ← h₂]
   dsimp
   rw [Submodule.map_span_le]
-  rintro _ ⟨r, rfl⟩
+  rintro - ⟨r, rfl⟩
   simp only [LinearMap.mem_range]
   refine ⟨Finsupp.single r 1, ?_⟩
   simp only [LinearMap.coe_mk, AddHom.coe_mk, hom₁_single, φ]

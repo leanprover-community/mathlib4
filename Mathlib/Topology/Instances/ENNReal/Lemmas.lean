@@ -434,7 +434,7 @@ theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (
 theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ≥0∞ | x ≠ ∞ } := by
   rw [show (fun x => a - x) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨a, x⟩ by rfl]
   apply continuousOn_sub.comp (by fun_prop)
-  rintro _ h (_ | _)
+  rintro - h (- | -)
   exact h none_eq_top
 
 theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ => x - a := by
@@ -605,7 +605,7 @@ theorem EMetric.cauchySeq_iff_le_tendsto_0 [Nonempty β] [SemilatticeSup β] {s 
     · refine ENNReal.tendsto_nhds_zero.2 fun ε ε0 => ?_
       rcases hs ε ε0 with ⟨N, hN⟩
       refine (eventually_ge_atTop N).mono fun n hn => Metric.ediam_le ?_
-      rintro _ ⟨k, hk, rfl⟩ _ ⟨l, hl, rfl⟩
+      rintro - ⟨k, hk, rfl⟩ - ⟨l, hl, rfl⟩
       exact (hN _ (hn.trans hk) _ (hn.trans hl)).le
   · rintro ⟨b, ⟨b_bound, b_lim⟩⟩ ε εpos
     have : ∀ᶠ n in atTop, b n < ε := b_lim.eventually (gt_mem_nhds εpos)

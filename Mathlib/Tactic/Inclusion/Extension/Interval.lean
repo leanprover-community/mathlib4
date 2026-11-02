@@ -226,11 +226,11 @@ def Interval.add [Add α] (I J : Interval α) : Interval α where
 
 @[simp]
 theorem Interval.add_lb [AddZero α] (I J : Interval α) : (I.add J).lb = I.lb + J.lb := by
-  rcases I with ⟨_ | il, iu⟩ <;> rcases J with ⟨_ | jl, ju⟩ <;> rfl
+  rcases I with ⟨- | il, iu⟩ <;> rcases J with ⟨- | jl, ju⟩ <;> rfl
 
 @[simp]
 theorem Interval.add_ub [AddZero α] (I J : Interval α) : (I.add J).ub = I.ub + J.ub := by
-  rcases I with ⟨il, _ | iu⟩ <;> rcases J with ⟨jl, _ | ju⟩ <;> rfl
+  rcases I with ⟨il, - | iu⟩ <;> rcases J with ⟨jl, - | ju⟩ <;> rfl
 
 theorem Interval.add_mem [AddZero α] [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β]
     (f : α →+ β) {x y : β} {I J : Interval α} (hx : x ∈ I.map f) (hy : y ∈ J.map f) :
@@ -399,7 +399,7 @@ theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder �
       · apply pow_le_pow_left₀ _ (hl _ ha) n
         simpa [ha, map_zero] using f.monotone.withBot_map hpos
       · exact pow_le_pow_left₀ hx0 (hu _ ha) n
-  all_goals obtain ⟨hn, _⟩ : Even n ∧ ¬0 ≤ I.lb := by grind
+  all_goals obtain ⟨hn, -⟩ : Even n ∧ ¬0 ≤ I.lb := by grind
   · obtain ⟨ub, hub, hub0⟩ := WithTop.le_coe_iff.mp hneg
     have hub0 : f ub ≤ 0 := by simpa [map_zero] using f.monotone hub0
     constructor
@@ -412,7 +412,7 @@ theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder �
           hn.pow_le_pow_of_nonpos ((hu _ hub).trans hub0) (hl _ h)
   · constructor
     · simpa [Interval.map, map_zero] using hn.pow_nonneg x
-    · rcases I with ⟨_ | lb, _ | ub⟩ <;> try exact le_top
+    · rcases I with ⟨- | lb, - | ub⟩ <;> try exact le_top
       apply WithTop.coe_le_coe.mpr
       rw [map_pow, f.monotone.map_max, map_neg, ← hn.pow_abs x]
       apply pow_le_pow_left₀ (abs_nonneg x)
@@ -430,9 +430,9 @@ theorem Interval.orderRelFalse_mem [Preorder β] {r : α → α → Prop} {s : �
     [DecidableRel r] [Trans (· ≤ ·) s s] [Trans s (· ≤ ·) s] (f : r ↪r s)
     {x y : β} {I J : Interval α} (hx : x ∈ I.map f) (hy : y ∈ J.map f) :
     s x y ∈ Interval.orderRelFalse r I J := by
-  rcases I with ⟨_ | il, iu⟩
+  rcases I with ⟨- | il, iu⟩
   · simp [Interval.orderRelFalse]
-  rcases J with ⟨jl, _ | ju⟩
+  rcases J with ⟨jl, - | ju⟩
   · simp [Interval.orderRelFalse]
   dsimp [Interval.orderRelFalse]
   split_ifs with h
@@ -456,9 +456,9 @@ theorem Interval.orderRel_mem [Preorder β] {r : α → α → Prop} {s : β →
     {x y : β} {I J : Interval α} (hx : x ∈ I.map f) (hy : y ∈ J.map f) :
     s x y ∈ Interval.orderRel r I J := by
   have hFalse := Interval.orderRelFalse_mem f hx hy
-  rcases I with ⟨il, _ | iu⟩
+  rcases I with ⟨il, - | iu⟩
   · exact hFalse
-  rcases J with ⟨_ | jl, ju⟩
+  rcases J with ⟨- | jl, ju⟩
   · exact hFalse
   dsimp [Interval.orderRel]
   split_ifs with h

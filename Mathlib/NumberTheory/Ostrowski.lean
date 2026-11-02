@@ -231,14 +231,14 @@ theorem equiv_padic_of_bounded :
   refine ⟨p, ⟨inferInstance, t⁻¹, inv_pos.mpr ht, fun n ↦ ?_⟩, fun q ⟨hq, heq⟩ ↦ ?_⟩
   · rcases eq_or_ne n 0 with rfl | hn
     · simp [ht.ne']
-    · rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hp.ne_one with ⟨_, m, hpm, rfl⟩
+    · rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hp.ne_one with ⟨-, m, hpm, rfl⟩
       have := (padicNorm.nat_eq_one_iff m).mpr hpm
       simp_all [← rpow_natCast, ← rpow_mul, mul_comm t, mul_inv_cancel_right₀ ht.ne',
         eq_one_of_not_dvd bdd hp0 hp1 hmin hpm]
   · by_contra! hpq
     apply hq.elim.ne_one
     rw [ne_comm, ← Nat.coprime_primes hp hq.elim, hp.coprime_iff_not_dvd] at hpq
-    rcases heq with ⟨_, _, heq⟩
+    rcases heq with ⟨_, -, heq⟩
     simpa [eq_one_of_not_dvd bdd hp0 hp1 hmin hpq] using heq q
 
 end Non_archimedean

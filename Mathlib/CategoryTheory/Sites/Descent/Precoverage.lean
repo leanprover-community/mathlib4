@@ -120,7 +120,7 @@ variable {i : ι} {Z : C} {q : Z ⟶ X i}
 
 include hq in
 lemma exists_fac : ∃ (j : ι') (a : Z ⟶ X' j), a ≫ f' j = q ≫ f i := by
-  obtain ⟨_, q, _, ⟨j⟩, fac⟩ := hq
+  obtain ⟨-, q, -, ⟨j⟩, fac⟩ := hq
   exact ⟨j, q, fac⟩
 
 /-- If a morphism `q : Z ⟶ X i` belongs to `sieve f f' i`, this is a choice of
@@ -226,8 +226,8 @@ lemma compatible_familyOfElements (i : ι) :
   obtain rfl : f₂ = Over.homMk Y₂.hom := by ext; simpa using Over.w f₂
   obtain ⟨g₁, hg₁, rfl⟩ := Over.homMk_surjective g₁
   obtain ⟨g₂, hg₂, rfl⟩ := Over.homMk_surjective g₂
-  obtain ⟨_, a₁, _, ⟨j₁⟩, fac₁⟩ := h₁
-  obtain ⟨_, a₂, _, ⟨j₂⟩, fac₂⟩ := h₂
+  obtain ⟨-, a₁, -, ⟨j₁⟩, fac₁⟩ := h₁
+  obtain ⟨-, a₂, -, ⟨j₂⟩, fac₂⟩ := h₂
   dsimp at *
   rw [familyOfElements_eq _ _ _ _ fac₁, familyOfElements_eq _ _ _ _ fac₂,
     ← dsimp% mor_precomp w φ Y₁.hom a₁ fac₁ _ _ _ hg₁ rfl,
@@ -278,7 +278,7 @@ lemma comm ⦃W : C⦄ (q : W ⟶ S) ⦃i₁ i₂ : ι⦄
     exact J.pullback_stable _ hf'
   refine ((isSheaf_iff_isSheaf_of_type _ _).1
     (IsPrestack.isSheaf J (D₁.obj i₁) (D₂.obj i₁)) _ H).isSeparatedFor.ext ?_
-  rintro T p ⟨_, g, _, ⟨j⟩, fac⟩
+  rintro T p ⟨-, g, -, ⟨j⟩, fac⟩
   obtain ⟨T, t, rfl⟩ := T.mk_surjective
   obtain ⟨p, hp, rfl⟩ := Over.homMk_surjective p
   dsimp [pullHom] at t g p hp fac ⊢
@@ -331,7 +331,7 @@ lemma isEquivalence_toDescentData_of_sieve_le
     [(F.toDescentData f').IsEquivalence] :
     (F.toDescentData f).IsEquivalence := by
   have H (i' : ι') : ∃ (i : ι) (p : X' i' ⟶ X i), p ≫ f i = f' i' := by
-    obtain ⟨_, p, _, ⟨i⟩, fac⟩ := h₂ _ (Sieve.ofArrows_mk _ f' i')
+    obtain ⟨-, p, -, ⟨i⟩, fac⟩ := h₂ _ (Sieve.ofArrows_mk _ f' i')
     exact ⟨_, _, fac⟩
   choose α p hp using H
   obtain ⟨H, h, ⟨e⟩⟩ :

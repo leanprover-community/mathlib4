@@ -110,7 +110,7 @@ theorem map_injective_iff : Function.Injective (map f) ↔ Function.Injective f 
 
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := fun p =>
   p.induction_on'
-    (by rintro _ _ ⟨p, rfl⟩ ⟨q, rfl⟩; exact ⟨p + q, Polynomial.map_add f⟩)
+    (by rintro - - ⟨p, rfl⟩ ⟨q, rfl⟩; exact ⟨p + q, Polynomial.map_add f⟩)
     fun n s ↦
     let ⟨r, hr⟩ := hf s
     ⟨monomial n r, by rw [map_monomial f, hr]⟩

@@ -168,7 +168,7 @@ theorem resultant_C_zero_right (r : R) : resultant f (C r) m 0 = r ^ m := by sim
 
 @[simp]
 theorem resultant_zero_right : resultant f 0 m n = 0 ^ m * f.coeff 0 ^ n := by
-  obtain _ | m := m; · simp
+  obtain - | m := m; · simp
   have (i : Fin (m + 1 + n)) : sylvester f 0 (m + 1) n i ⟨0, by lia⟩ = 0 := by
     simp [sylvester, show (0 : Fin (m + 1 + n)) = Fin.castAdd _ 0 from rfl, Fin.addCases_left]
   simpa [resultant] using Matrix.det_eq_zero_of_column_eq_zero ⟨0, by lia⟩ this
@@ -290,7 +290,7 @@ lemma resultant_C_mul_left (r : R) :
 
 lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
     resultant f g (m + 1) n = (-1) ^ n * g.coeff n * resultant f g m n := by
-  obtain _ | n := n
+  obtain - | n := n
   · simp [pow_succ']
   rw [resultant, Matrix.det_succ_row (i := .last _),
       Finset.sum_eq_single (by exact ((Fin.last m).castAdd (n + 1))) _ (by simp)]
@@ -346,8 +346,8 @@ lemma resultant_add_right_deg (k : ℕ) (hg : g.natDegree ≤ n) :
 
 lemma resultant_eq_zero_of_lt_lt (hf : f.natDegree < m) (hg : g.natDegree < n) :
     resultant f g m n = 0 := by
-  obtain _ | m := m; · lia
-  obtain _ | n := n; · lia
+  obtain - | m := m; · lia
+  obtain - | n := n; · lia
   rw [resultant_add_left_deg _ _ _ _ _ (by lia), resultant_add_right_deg _ _ _ _ _ (by lia)]
   simp [coeff_eq_zero_of_natDegree_lt hg]
 

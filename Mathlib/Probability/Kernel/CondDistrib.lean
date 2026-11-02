@@ -336,7 +336,7 @@ theorem condExp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSp
     (integrable_map_measure hf_int.1 (hX.aemeasurable.prodMk hY)).mp hf_int
   refine (ae_eq_condExp_of_forall_setIntegral_eq hX.comap_le hf_int' (fun s _ _ => ?_) ?_ ?_).symm
   · exact (hf_int.integral_condDistrib hX.aemeasurable hY).integrableOn
-  · rintro s ⟨t, ht, rfl⟩ _
+  · rintro s ⟨t, ht, rfl⟩ -
     change ∫ a in X ⁻¹' t, ((fun x' => ∫ y, f (x', y) ∂(condDistrib Y X μ) x') ∘ X) a ∂μ =
       ∫ a in X ⁻¹' t, f (X a, Y a) ∂μ
     simp only [Function.comp_apply]

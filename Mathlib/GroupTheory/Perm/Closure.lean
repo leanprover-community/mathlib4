@@ -90,7 +90,7 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     rw [← swap_mul_swap_mul_swap h5 h6, swap_comm z x]
     exact H.mul_mem (H.mul_mem (step3 y) (step3 z)) (step3 y)
   rw [eq_top_iff, ← closure_isSwap, closure_le]
-  rintro τ ⟨y, z, _, h6⟩
+  rintro τ ⟨y, z, -, h6⟩
   rw [h6]
   exact step4 y z
 

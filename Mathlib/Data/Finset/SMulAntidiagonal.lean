@@ -46,7 +46,7 @@ theorem IsWF.min_smul [LinearOrder G] [LinearOrder P] [SMul G P] [IsOrderedSMul 
     (hs.smul ht).min (hsn.smul htn) = hs.min hsn • ht.min htn := by
   refine le_antisymm (IsWF.min_le _ _ (mem_smul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) ?_
   rw [IsWF.le_min_iff]
-  rintro _ ⟨x, hx, y, hy, rfl⟩
+  rintro - ⟨x, hx, y, hy, rfl⟩
   exact IsOrderedSMul.smul_le_smul (hs.min_le _ hx) (ht.min_le _ hy)
 
 end Set

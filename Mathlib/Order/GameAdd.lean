@@ -140,7 +140,7 @@ def GameAdd (rα : α → α → Prop) : Sym2 α → Sym2 α → Prop :=
 
 theorem gameAdd_iff : ∀ {x y : α × α},
     GameAdd rα s(x.1, x.2) s(y.1, y.2) ↔ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.swap y := by
-  rintro ⟨_, _⟩ ⟨_, _⟩
+  rintro ⟨-, -⟩ ⟨-, -⟩
   rfl
 
 theorem gameAdd_mk'_iff {a₁ a₂ b₁ b₂ : α} :

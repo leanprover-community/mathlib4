@@ -97,7 +97,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
       rw [map_add, ihx, ihy, ← map_add]
       rfl
     | mem_mul m hm i x hx ih =>
-      obtain ⟨_, rfl⟩ := hm
+      obtain ⟨-, rfl⟩ := hm
       rw [map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
       refine DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext ?_ ?_) <;>
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]

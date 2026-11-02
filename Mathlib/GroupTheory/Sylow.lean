@@ -780,7 +780,7 @@ theorem exists_orderEmbedding_of_isChain [Finite G] {p n : ℕ} (hp : p.Prime)
 there is a tower of subgroups of orders `p ^ 0, …, p ^ n`. -/
 theorem exists_orderEmbedding [Finite G] {p n : ℕ} (hp : p.Prime) (h : p ^ n ∣ Nat.card G) :
     ∃ f : Fin (n + 1) ↪o Subgroup G, ∀ k, Nat.card (f k) = p ^ k.val := by
-  obtain ⟨f, _, hcard⟩ := exists_orderEmbedding_of_isChain hp h IsChain.empty (by simp)
+  obtain ⟨f, -, hcard⟩ := exists_orderEmbedding_of_isChain hp h IsChain.empty (by simp)
   exact ⟨f, hcard⟩
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group of size at least `p ^ n`

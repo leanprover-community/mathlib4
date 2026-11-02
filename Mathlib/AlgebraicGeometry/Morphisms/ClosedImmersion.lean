@@ -266,7 +266,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
   rw [TopCat.Presheaf.Γgerm, Scheme.Hom.germ_stalkMap_apply] at h
   obtain ⟨U, w, (hx : x ∈ U), hg⟩ :=
     X.toRingedSpace.exists_res_eq_zero_of_germ_eq_zero ⊤ (φ g) ⟨x, trivial⟩ h
-  obtain ⟨_, ⟨s, rfl⟩, hyv, bsle⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_basicOpen Y)
+  obtain ⟨-, ⟨s, rfl⟩, hyv, bsle⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_basicOpen Y)
     (show f x ∈ ⟨f '' U.carrier, hfopen U.carrier U.is_open'⟩ from ⟨x, by simpa⟩)
   let W (i : 𝒰.I₀) : TopologicalSpace.Opens (𝒰.X i) := (𝒰.X i).basicOpen ((res i) (φ s))
   have hwle (i : 𝒰.I₀) : W i ≤ (𝒰.f i) ⁻¹ᵁ U := by
@@ -437,9 +437,9 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton 
     · have : IsEmpty ((X.affineCover.pullback₁ g).X i) := by
         apply Scheme.isEmpty_pullback
         rw [← Set.subset_compl_iff_disjoint_left]
-        rintro _ hx ⟨x, rfl⟩
+        rintro - hx ⟨x, rfl⟩
         apply hxU
-        rintro _ ⟨y, rfl⟩
+        rintro - ⟨y, rfl⟩
         exact Subsingleton.elim x y ▸ hx
       infer_instance
   obtain ⟨R, rfl⟩ := hX

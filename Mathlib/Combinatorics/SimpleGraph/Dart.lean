@@ -112,7 +112,7 @@ theorem dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d�
 
 theorem dart_edge_eq_mk'_iff :
     ∀ {d : G.Dart} {u v : V}, d.edge = s(u, v) ↔ d.toProd = (u, v) ∨ d.toProd = (v, u) := by
-  rintro ⟨p, h⟩ _ _
+  rintro ⟨p, h⟩ - -
   simp
 
 theorem dart_edge_eq_mk'_iff' :

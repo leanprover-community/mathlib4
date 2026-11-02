@@ -187,7 +187,7 @@ lemma Reachable.of_subsingleton {G : SimpleGraph V} [Subsingleton V] {u v : V} :
 
 lemma Reachable.nonempty_neighborSet_left {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
     (hreach : G.Reachable u v) : (G.neighborSet u).Nonempty := by
-  obtain ⟨_ | @⟨u, x, v, hadj, w'⟩⟩ := hreach
+  obtain ⟨- | @⟨u, x, v, hadj, w'⟩⟩ := hreach
   · contradiction
   · exact ⟨x, hadj⟩
 

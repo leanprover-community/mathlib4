@@ -63,7 +63,7 @@ protected lemma Shatters.nonempty (h : 𝒜.Shatters s) : 𝒜.Nonempty :=
   ⟨Shatters.nonempty, fun ⟨s, hs⟩ t ht ↦ ⟨s, hs, by rwa [empty_inter, eq_comm, ← subset_empty]⟩⟩
 
 protected lemma Shatters.subset_iff (h : 𝒜.Shatters s) : t ⊆ s ↔ ∃ u ∈ 𝒜, s ∩ u = t :=
-  ⟨fun ht ↦ h ht, by rintro ⟨u, _, rfl⟩; exact inter_subset_left⟩
+  ⟨fun ht ↦ h ht, by rintro ⟨u, -, rfl⟩; exact inter_subset_left⟩
 
 lemma shatters_iff : 𝒜.Shatters s ↔ 𝒜.image (fun t ↦ s ∩ t) = s.powerset :=
   ⟨fun h ↦ by ext t; rw [mem_image, mem_powerset, h.subset_iff],
@@ -128,7 +128,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
   rw [← card_union_add_card_inter, ← hℬ, ← card_union_of_disjoint]
   swap
   · simp only [ℬ, disjoint_left, mem_union, mem_shatterer, mem_image, not_exists, not_and]
-    rintro _ (hs | hs) s - rfl
+    rintro - (hs | hs) s - rfl
     · exact aux (fun t ht ↦ (mem_memberSubfamily.1 ht).2) hs <| mem_insert_self _ _
     · exact aux (fun t ht ↦ (mem_nonMemberSubfamily.1 ht).2) hs <| mem_insert_self _ _
   refine card_mono <| union_subset (union_subset ?_ <| shatterer_mono <| filter_subset _ _) ?_

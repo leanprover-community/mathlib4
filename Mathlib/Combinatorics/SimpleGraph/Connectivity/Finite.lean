@@ -50,7 +50,7 @@ theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
     refine r.elim_path fun p => ?_
     refine ⟨⟨_, p.isPath.length_lt⟩, p, ?_⟩
     simp [mem_finsetWalkLength_iff]
-  · rintro ⟨_, p, _⟩
+  · rintro ⟨-, p, -⟩
     exact ⟨p⟩
 
 instance : DecidableRel G.Reachable := fun u v =>

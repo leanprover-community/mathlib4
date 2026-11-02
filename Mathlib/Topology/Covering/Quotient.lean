@@ -300,7 +300,7 @@ end ProperlyDiscontinuousSMul
   apply_eq_iff_mem_orbit := hfG.trans QuotientGroup.rightRel_apply.symm
   disjoint e := have ⟨U, hU, _, disj⟩ := hG.exists_nhds_eq_one_of_image_mulLeft_inter_nonempty
     ⟨_, mul_singleton_mem_nhds_of_nhds_one e hU, fun s hs ↦ Subtype.ext <| disj _ s.2 <| by
-      obtain ⟨_, ⟨_, ⟨x, hx, _, rfl, rfl⟩, rfl⟩, y, hy, g, rfl, he⟩ := hs
+      obtain ⟨-, ⟨-, ⟨x, hx, _, rfl, rfl⟩, rfl⟩, y, hy, g, rfl, he⟩ := hs
       exact ⟨y, ⟨x, hx, mul_right_cancel ((mul_assoc ..).trans he.symm)⟩, hy⟩⟩
 
 @[to_additive] lemma isQuotientCoveringMap_of_subgroupOp [Group E] [IsTopologicalGroup E]
@@ -311,7 +311,7 @@ end ProperlyDiscontinuousSMul
   disjoint e := have ⟨U, hU, _, disj⟩ := hG.exists_nhds_eq_one_of_image_mulRight_inter_nonempty
     ⟨_, singleton_mul_mem_nhds_of_nhds_one e hU, fun ⟨⟨s⟩, hS⟩ hs ↦ Subtype.ext <|
         MulOpposite.unop_injective <| disj _ hS <| by
-      obtain ⟨_, ⟨_, ⟨_, rfl, x, hx, rfl⟩, rfl⟩, g, rfl, y, hy, he⟩ := hs
+      obtain ⟨-, ⟨-, ⟨_, rfl, x, hx, rfl⟩, rfl⟩, g, rfl, y, hy, he⟩ := hs
       exact ⟨y, ⟨x, hx, mul_left_cancel (he.trans <| mul_assoc ..).symm⟩, hy⟩⟩
 
 omit hf in
@@ -345,7 +345,7 @@ end Topology.IsQuotientMap
     have ⟨_, U, heU, hU, hfU, H, hH⟩ := h.1 (f e)
     ⟨Subtype.val '' Prod.snd ∘ H ⁻¹' {(H ⟨e, heU⟩).2}, (hfU.isOpenMap_subtype_val _ <|
         (isOpen_discrete _).preimage <| by fun_prop).mem_nhds ⟨⟨e, heU⟩, rfl, rfl⟩, fun g ↦ by
-      rintro ⟨_, ⟨_, ⟨x, hx, rfl⟩, rfl⟩, y, hy, eq⟩
+      rintro ⟨-, ⟨-, ⟨x, hx, rfl⟩, rfl⟩, y, hy, eq⟩
       have := h.2.2.2.1
       apply IsCancelSMul.right_cancel _ _ x.1
       simp_rw [← eq, one_smul]

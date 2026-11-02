@@ -36,7 +36,7 @@ theorem mem_image2_iff (hf : Injective2 f) : f a b ∈ image2 f s t ↔ a ∈ s 
 /-- image2 is monotone with respect to `⊆`. -/
 @[gcongr]
 theorem image2_subset (hs : s ⊆ s') (ht : t ⊆ t') : image2 f s t ⊆ image2 f s' t' := by
-  rintro _ ⟨a, ha, b, hb, rfl⟩
+  rintro - ⟨a, ha, b, hb, rfl⟩
   exact mem_image2_of_mem (hs ha) (ht hb)
 
 theorem image2_subset_left (ht : t ⊆ t') : image2 f s t ⊆ image2 f s t' :=

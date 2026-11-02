@@ -130,7 +130,7 @@ theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset
   refine @Multiset.induction_on _
     (fun g => (g.prod ~ᵤ a) → (∀ b ∈ g, Prime b) → ∃ p, a ~ᵤ p ∧ g = {p}) f ?_ ?_ pfa.2 pfa.1
   · intro h; exact (ha.not_isUnit (associated_one_iff_isUnit.1 (Associated.symm h))).elim
-  · rintro p s _ ⟨u, hu⟩ hs
+  · rintro p s - ⟨u, hu⟩ hs
     use p
     have hs0 : s = 0 := by
       by_contra hs0
@@ -216,7 +216,7 @@ theorem exists_mem_factors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p
 
 theorem exists_mem_factors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) : ∃ p, p ∈ factors x := by
   obtain ⟨p', hp', hp'x⟩ := WfDvdMonoid.exists_irreducible_factor h hx
-  obtain ⟨p, hp, _⟩ := exists_mem_factors_of_dvd hx hp' hp'x
+  obtain ⟨p, hp, -⟩ := exists_mem_factors_of_dvd hx hp' hp'x
   exact ⟨p, hp⟩
 
 theorem factors_eq_singleton_of_irreducible {a : α} (ha : Irreducible a) :

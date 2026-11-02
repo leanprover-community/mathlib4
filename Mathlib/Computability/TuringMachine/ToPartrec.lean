@@ -727,7 +727,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
   · refine
       TransGen.trans
         (move_ok (by decide)
-          (splitAtPred_eq _ _ [] (some Γ'.consₗ) L₃ (by rintro _ ⟨⟩) ⟨rfl, rfl⟩))
+          (splitAtPred_eq _ _ [] (some Γ'.consₗ) L₃ (by rintro - ⟨⟩) ⟨rfl, rfl⟩))
         (TransGen.head rfl (TransGen.head rfl ?_))
     rw [tr]
     simp only [TM2.step, Option.mem_def, TM2.stepAux, ite_true, id_eq, trList, List.nil_append,
@@ -795,7 +795,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     Reaches₁ (TM2.step tr) ⟨some (Λ'.pred q₁ q₂), s, K'.elim (trList v) [] c d⟩
       (v.headI.rec ⟨some q₁, s', K'.elim (trList v.tail) [] c d⟩ fun n _ =>
         ⟨some q₂, s', K'.elim (trList (n::v.tail)) [] c d⟩) := by
-  rcases v with (_ | ⟨_ | n, v⟩)
+  rcases v with (- | ⟨- | n, v⟩)
   · refine ⟨none, TransGen.single ?_⟩
     simp
   · refine ⟨some Γ'.cons, TransGen.single ?_⟩
@@ -953,7 +953,7 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
     have := StateTransition.tr_eval (b₁ := Cfg.halt v') tr_respects h₁
     simp only [stepNormal_eval, Part.map_eq_map, Part.mem_map_iff, Cfg.halt.injEq,
       exists_eq_right] at this
-    obtain ⟨_, ⟨⟩, h⟩ := this hv
+    obtain ⟨-, ⟨⟩, h⟩ := this hv
     exact h
 
 /-- The set of machine states reachable via downward label jumps, discounting jumps via `ret`. -/

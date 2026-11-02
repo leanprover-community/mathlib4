@@ -459,14 +459,14 @@ def substInv : PowerSeries R := .mk (substInvFun P)
 include hP in
 lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
     coeff n (P.subst (∑ i : Fin (n + 1), C (substInvFun P i.1) * X ^ i.1) - X) = 0 := by
-  obtain (_ | _ | n) := n
+  obtain (- | - | n) := n
   · rw [map_sub, coeff_subst']
     · simp +contextual [finsum_eq_single (a := 0), substInvFun, zero_pow_eq, hP]
     · simp [substInvFun, HasSubst]
   · rw [map_sub, coeff_subst']
     · rw [finsum_eq_single (a := 1)]
       · simp [substInvFun]
-      · rintro (_ | _ | _) _ <;> simp_all [substInvFun, mul_pow, coeff_mul_X_pow']
+      · rintro (- | - | -) _ <;> simp_all [substInvFun, mul_pow, coeff_mul_X_pow']
     · simp [HasSubst, X, substInvFun]
   · rw [Fin.sum_univ_castSucc]
     simp only [Fin.val_castSucc, Fin.val_last, map_sub, substInvFun]
@@ -480,13 +480,13 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
       trans ∑ᶠ d, P.coeff d * (coeff (n + 1 + 1) (B ^ d) - if d = 1 then k else 0)
       · refine finsum_congr fun i ↦ ?_
         congr 1
-        obtain (_ | _ | i) := i
+        obtain (- | - | i) := i
         · simp
         · simp [← sub_eq_add_neg]
         · simp only [add_assoc, Nat.reduceAdd]
           rw [add_comm B, add_pow, map_sum, Finset.sum_eq_single (a := 0)]
           · simp
-          · rintro (_ | _ | j) hj hj'
+          · rintro (- | - | j) hj hj'
             · simp at hj'
             · simp [mul_comm (C k), hB', mul_assoc, coeff_X_pow_mul']
             · rw [← neg_mul, mul_pow, ← pow_mul, mul_comm (_ ^ _)]

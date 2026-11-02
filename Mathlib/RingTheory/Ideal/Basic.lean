@@ -174,7 +174,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   refine span_le.mpr ?_ this
   rintro _ hx
   simp_rw [Set.mem_image] at hx
-  rcases hx with ⟨x, _, rfl⟩
+  rcases hx with ⟨x, -, rfl⟩
   have : span ({(x : α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s) := by
     rw [span_le, Set.singleton_subset_iff]
     exact subset_span ⟨x, x.prop, rfl⟩
@@ -187,7 +187,7 @@ theorem span_range_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : s → ℕ) :
   have ⟨t, hts, mem⟩ := Submodule.mem_span_finite_of_mem_span ((eq_top_iff_one _).mp hs)
   refine top_unique ((span_pow_eq_top _ ((eq_top_iff_one _).mpr mem) <|
     t.attach.sup fun x ↦ n ⟨x, hts x.2⟩).ge.trans <| span_le.mpr ?_)
-  rintro _ ⟨x, hxt, rfl⟩
+  rintro - ⟨x, hxt, rfl⟩
   rw [← Nat.sub_add_cancel (Finset.le_sup <| t.mem_attach ⟨x, hxt⟩)]
   simp_rw [pow_add]
   exact mul_mem_left _ _ (subset_span ⟨_, rfl⟩)

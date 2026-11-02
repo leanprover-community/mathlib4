@@ -1024,7 +1024,7 @@ lemma coeffsIn_eq_span_monomial : coeffsIn σ M = .span R {monomial i m | (m ∈
   · rintro p hp
     rw [p.as_sum]
     exact sum_mem fun i hi ↦ Submodule.subset_span ⟨_, hp i, _, rfl⟩
-  · rintro _ ⟨m, hm, s, n, rfl⟩ i
+  · rintro - ⟨m, hm, s, n, rfl⟩ i
     simp
     split <;> simp [hm]
 

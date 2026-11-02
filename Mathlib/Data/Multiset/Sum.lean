@@ -55,14 +55,14 @@ theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ �
 theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s := by
   rw [mem_disjSum, or_iff_left]
   · simp only [inl.injEq, exists_eq_right]
-  rintro ⟨b, _, hb⟩
+  rintro ⟨b, -, hb⟩
   exact inr_ne_inl hb
 
 @[simp]
 theorem inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t := by
   rw [mem_disjSum, or_iff_right]
   · simp only [inr.injEq, exists_eq_right]
-  rintro ⟨a, _, ha⟩
+  rintro ⟨a, -, ha⟩
   exact inl_ne_inr ha
 
 theorem disjSum_mono (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.disjSum t₁ ≤ s₂.disjSum t₂ :=

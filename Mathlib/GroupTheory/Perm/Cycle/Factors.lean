@@ -452,7 +452,7 @@ theorem list_cycles_perm_list_cycles {α : Type*} [Finite α] {l₁ l₂ : List 
           (nodup_of_pairwise_disjoint_cycles h₁l₂ h₂l₂)).mpr
       fun σ => ?_
   by_cases hσ : σ.IsCycle
-  · obtain _ := not_forall.mp (mt ext hσ.ne_one)
+  · obtain - := not_forall.mp (mt ext hσ.ne_one)
     rw [mem_list_cycles_iff h₁l₁ h₂l₁, mem_list_cycles_iff h₁l₂ h₂l₂, h₀]
   · exact iff_of_false (mt (h₁l₁ σ) hσ) (mt (h₁l₂ σ) hσ)
 
@@ -550,7 +550,7 @@ theorem cycleOf_mem_cycleFactorsFinset_iff {f : Perm α} {x : α} :
     cycleOf f x ∈ cycleFactorsFinset f ↔ x ∈ f.support := by
   rw [mem_cycleFactorsFinset_iff]
   constructor
-  · rintro ⟨hc, _⟩
+  · rintro ⟨hc, -⟩
     contrapose hc
     rw [notMem_support, ← cycleOf_eq_one_iff] at hc
     simp [hc]

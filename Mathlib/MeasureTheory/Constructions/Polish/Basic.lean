@@ -319,7 +319,7 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
   /- For a short proof (avoiding measurable induction), one sees `s` as a closed set for a finer
     topology `t'`. It is analytic for this topology. As the identity from `t'` to `t` is continuous
     and the image of an analytic set is analytic, it follows that `s` is also analytic for `t`. -/
-  obtain ⟨t', t't, t'_polish, s_closed, _⟩ :
+  obtain ⟨t', t't, t'_polish, s_closed, -⟩ :
       ∃ t' : TopologicalSpace α, t' ≤ t ∧ @PolishSpace α t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s :=
     hs.isClopenable
   have A := @IsClosed.analyticSet α t' t'_polish s s_closed
@@ -823,7 +823,7 @@ theorem MeasurableSet.image_of_continuousOn_injOn [OpensMeasurableSpace β]
     [tγ : TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ] [BorelSpace γ]
     (hs : MeasurableSet s)
     (f_cont : ContinuousOn f s) (f_inj : InjOn f s) : MeasurableSet (f '' s) := by
-  obtain ⟨t', t't, t'_polish, s_closed, _⟩ :
+  obtain ⟨t', t't, t'_polish, s_closed, -⟩ :
       ∃ t' : TopologicalSpace γ, t' ≤ tγ ∧ @PolishSpace γ t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s :=
     hs.isClopenable
   exact
@@ -908,7 +908,7 @@ theorem MeasureTheory.isClopenable_iff_measurableSet
   refine ⟨fun hs => ?_, fun hs => hs.isClopenable⟩
   borelize γ
   -- consider a finer topology `t'` in which `s` is open and closed.
-  obtain ⟨t', t't, t'_polish, _, s_open⟩ :
+  obtain ⟨t', t't, t'_polish, -, s_open⟩ :
     ∃ t' : TopologicalSpace γ, t' ≤ tγ ∧ @PolishSpace γ t' ∧ IsClosed[t'] s ∧ IsOpen[t'] s := hs
   rw [← borel_eq_borel_of_le t'_polish _ t't]
   · exact MeasurableSpace.measurableSet_generateFrom s_open
@@ -1109,7 +1109,7 @@ theorem MeasurableSet.isClopenable' {s : Set α} (hs : MeasurableSet s) :
 /-- A measurable subspace of a standard Borel space is standard Borel. -/
 theorem MeasurableSet.standardBorel {s : Set α} (hs : MeasurableSet s) :
     StandardBorelSpace s := by
-  obtain ⟨_, _, _, s_closed, _⟩ := hs.isClopenable'
+  obtain ⟨_, _, _, s_closed, -⟩ := hs.isClopenable'
   have := s_closed.polishSpace
   infer_instance
 

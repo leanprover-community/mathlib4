@@ -399,11 +399,11 @@ lemma exists_equivalence_of_sieve_eq
     ∃ (e : F.DescentData f ≌ F.DescentData f'),
       Nonempty (F.toDescentData f ⋙ e.functor ≅ F.toDescentData f') := by
   have h₁ (i' : ι') : ∃ (i : ι) (g' : X' i' ⟶ X i), g' ≫ f i = f' i' := by
-    obtain ⟨_, _, _, ⟨i⟩, fac⟩ : Sieve.ofArrows X f (f' i') := by
+    obtain ⟨-, _, -, ⟨i⟩, fac⟩ : Sieve.ofArrows X f (f' i') := by
       rw [h]; apply Sieve.ofArrows_mk
     exact ⟨i, _, fac⟩
   have h₂ (i : ι) : ∃ (i' : ι') (g : X i ⟶ X' i'), g ≫ f' i' = f i := by
-    obtain ⟨_, _, _, ⟨i'⟩, fac⟩ : Sieve.ofArrows X' f' (f i) := by
+    obtain ⟨-, _, -, ⟨i'⟩, fac⟩ : Sieve.ofArrows X' f' (f i) := by
       rw [← h]; apply Sieve.ofArrows_mk
     exact ⟨i', _, fac⟩
   choose α p' w using h₁
@@ -565,7 +565,7 @@ lemma isPrestackFor_iff_isSheafFor {S : C} (R : Sieve S) :
     obtain ⟨X, g, rfl⟩ := Over.mk_surjective X
     obtain rfl : f = Over.homMk g := by ext; simpa using Over.w f
     exact Presieve.ofArrows.mk (ι := R.arrows.category) ⟨Over.mk g, hf⟩
-  · rintro _ _ ⟨_, h⟩
+  · rintro - - ⟨-, h⟩
     exact h
 
 lemma isPrestackFor_iff_isSheafFor' {S : C} (R : Sieve S) :

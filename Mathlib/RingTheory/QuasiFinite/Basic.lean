@@ -216,7 +216,7 @@ lemma of_isLocalization (M : Submonoid S) [IsLocalization M T] [QuasiFinite R S]
     refine ⟨fun P hP ↦ .of_surjective (Algebra.linearMap P.ResidueField (P.Fiber T)) ?_⟩
     rw [← LinearMap.coe_restrictScalars (R := S), ← LinearMap.range_eq_top,
       ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
-    rintro _ ⟨p, s, rfl⟩
+    rintro - ⟨p, s, rfl⟩
     obtain ⟨s, t, rfl⟩ := IsLocalization.exists_mk'_eq M s
     use s • p / algebraMap _ _ t.1
     apply ((IsLocalization.map_units T t).map
@@ -249,7 +249,7 @@ lemma of_restrictScalars [QuasiFinite R T] : QuasiFinite S T := by
   have hf : Function.Surjective f := by
     rw [← AlgHom.coe_restrictScalars' (R := S), ← AlgHom.coe_toLinearMap, ← LinearMap.range_eq_top,
       ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
-    rintro _ ⟨a, b, rfl⟩
+    rintro - ⟨a, b, rfl⟩
     exact ⟨a ⊗ₜ b, by simp [f]⟩
   have : Module.Finite P.ResidueField (P.ResidueField ⊗[R] T) := .of_quasiFinite
   exact .of_surjective f.toLinearMap hf
@@ -335,7 +335,7 @@ lemma of_isIntegral_of_finiteType [Algebra.IsIntegral R S] [Algebra.FiniteType R
   have : IsScalarTower R (Localization.Away sA) T := .to₁₃₄ R A (Localization.Away sA) T
   have : Algebra.IsIntegral (Localization.Away sA) T := by
     refine ⟨fun x ↦ ?_⟩
-    obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s) x
+    obtain ⟨x, ⟨-, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s) x
     have : _root_.IsIntegral (Localization.Away sA) (algebraMap S T x) :=
       (Algebra.IsIntegral.isIntegral (R := R) x).algebraMap.tower_top
     convert this.smul (Localization.Away.invSelf sA ^ n)

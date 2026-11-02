@@ -501,7 +501,7 @@ lemma monotoneOn_rightDeriv (hfc : ConvexOn ℝ S f) :
     rw [image_nonempty]
     obtain ⟨z, hxz, hzb⟩ := exists_between hxab.2
     exact ⟨z, habs ⟨hxab.1.trans hxz, hzb⟩, hxz⟩
-  · rintro _ ⟨z, ⟨hzs, hyz : y < z⟩, rfl⟩
+  · rintro - ⟨z, ⟨hzs, hyz : y < z⟩, rfl⟩
     rw [slope_comm]
     exact slope_mono hfc (interior_subset hys) ⟨interior_subset hxs, hxy.ne⟩ ⟨hzs, hyz.ne'⟩
       (hxy.trans hyz).le
@@ -521,7 +521,7 @@ lemma monotoneOn_leftDeriv (hfc : ConvexOn ℝ S f) :
     rw [image_nonempty]
     obtain ⟨z, hxz, hzb⟩ := exists_between hxab.1
     exact ⟨z, habs ⟨hxz, hzb.trans hxab.2⟩, hzb⟩
-  · rintro _ ⟨z, ⟨hzs, hyz : z < x⟩, rfl⟩
+  · rintro - ⟨z, ⟨hzs, hyz : z < x⟩, rfl⟩
     exact slope_mono hfc (interior_subset hxs) ⟨hzs, hyz.ne⟩ ⟨interior_subset hys, hxy.ne'⟩
       (hyz.trans hxy).le
 
@@ -536,12 +536,12 @@ lemma leftDeriv_le_rightDeriv_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs : x 
   · rw [image_nonempty]
     obtain ⟨z, haz, hzx⟩ := exists_between hxab.1
     exact ⟨z, habs ⟨haz, hzx.trans hxab.2⟩, hzx⟩
-  rintro _ ⟨z, ⟨hzs, hzx⟩, rfl⟩
+  rintro - ⟨z, ⟨hzs, hzx⟩, rfl⟩
   refine le_csInf ?_ ?_
   · rw [image_nonempty]
     obtain ⟨z, hxz, hzb⟩ := exists_between hxab.2
     exact ⟨z, habs ⟨hxab.1.trans hxz, hzb⟩, hxz⟩
-  rintro _ ⟨y, ⟨hys, hxy⟩, rfl⟩
+  rintro - ⟨y, ⟨hys, hxy⟩, rfl⟩
   exact slope_mono hfc (interior_subset hxs) ⟨hzs, hzx.ne⟩ ⟨hys, hxy.ne'⟩ (hzx.trans hxy).le
 
 end Interior

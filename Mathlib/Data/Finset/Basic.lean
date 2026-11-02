@@ -322,7 +322,7 @@ theorem disjoint_filter_filter' (s t : Finset α)
     {p q : α → Prop} [DecidablePred p] [DecidablePred q] (h : Disjoint p q) :
     Disjoint (s.filter p) (t.filter q) := by
   simp_rw [disjoint_left, mem_filter]
-  rintro a ⟨_, hp⟩ ⟨_, hq⟩
+  rintro a ⟨-, hp⟩ ⟨-, hq⟩
   rw [Pi.disjoint_iff] at h
   simpa [hp, hq] using h a
 

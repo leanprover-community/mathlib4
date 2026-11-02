@@ -260,7 +260,7 @@ theorem exists_countable_is_age_of_iff [Countable (Σ l, L.Functions l)] :
   · rintro ⟨M, h1, h2, rfl⟩
     refine ⟨age.nonempty M, age.is_equiv_invariant L M, age.countable_quotient M, fun N hN => hN.1,
       age.hereditary M, age.jointEmbedding M⟩
-  · rintro ⟨Kn, _, cq, hfg, hp, jep⟩
+  · rintro ⟨Kn, -, cq, hfg, hp, jep⟩
     obtain ⟨M, hM, rfl⟩ := exists_cg_is_age_of Kn cq hfg hp jep
     exact ⟨M, Structure.cg_iff_countable.1 hM, rfl⟩
 
@@ -388,7 +388,7 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
 theorem nonempty_equiv : Nonempty (M ≃[L] N) := by
   let S : L.Substructure M := ⊥
   have S_fg : FG L S := (fg_iff_structure_fg _).1 Substructure.fg_bot
-  obtain ⟨_, ⟨emb_S : S ↪[L] N⟩⟩ : ⟨S, inferInstance⟩ ∈ L.age N := by
+  obtain ⟨-, ⟨emb_S : S ↪[L] N⟩⟩ : ⟨S, inferInstance⟩ ∈ L.age N := by
     rw [hN.age, ← hM.age]
     exact ⟨S_fg, ⟨subtype _⟩⟩
   let v : M ≃ₚ[L] N := {

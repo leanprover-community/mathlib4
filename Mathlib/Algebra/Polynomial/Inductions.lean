@@ -41,11 +41,11 @@ theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
   rw [add_comm]; cases p; rfl
 
 theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, coeff_mul_X]
+  ext <| by rintro ⟨- | -⟩ <;> simp [coeff_C, coeff_mul_X]
 
 @[simp]
 theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C]
+  ext <| by rintro ⟨- | -⟩ <;> simp [coeff_C]
 
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=

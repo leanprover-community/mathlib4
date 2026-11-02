@@ -686,10 +686,10 @@ theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ
     simp only [zpow_negSucc, coe_inv this, coe_pow]
 
 lemma zero_zpow_def (n : ℤ) : (0 : ℝ≥0∞) ^ n = if n = 0 then 1 else if 0 < n then 0 else ⊤ := by
-  obtain ((_ | n) | n) := n <;> simp [-Nat.cast_add, -Int.natCast_add]
+  obtain ((- | n) | n) := n <;> simp [-Nat.cast_add, -Int.natCast_add]
 
 lemma top_zpow_def (n : ℤ) : (⊤ : ℝ≥0∞) ^ n = if n = 0 then 1 else if 0 < n then ⊤ else 0 := by
-  obtain ((_ | n) | n) := n <;> simp [-Nat.cast_add, -Int.natCast_add]
+  obtain ((- | n) | n) := n <;> simp [-Nat.cast_add, -Int.natCast_add]
 
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n

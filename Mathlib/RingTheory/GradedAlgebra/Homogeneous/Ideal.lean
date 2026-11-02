@@ -499,7 +499,7 @@ theorem Ideal.IsHomogeneous.toIdeal_homogeneousHull_eq_self (h : I.IsHomogeneous
     (Ideal.homogeneousHull 𝒜 I).toIdeal = I := by
   apply le_antisymm _ (Ideal.le_toIdeal_homogeneousHull _ _)
   apply Ideal.span_le.2
-  rintro _ ⟨i, x, rfl⟩
+  rintro - ⟨i, x, rfl⟩
   exact h _ x.prop
 
 @[simp]
@@ -520,7 +520,7 @@ theorem Ideal.toIdeal_homogeneousHull_eq_iSup :
 theorem Ideal.homogeneousHull_eq_iSup :
     I.homogeneousHull 𝒜 =
       ⨆ i, ⟨Ideal.span (GradedRing.proj 𝒜 i '' I), Ideal.homogeneous_span 𝒜 _ (by
-        rintro _ ⟨x, -, rfl⟩
+        rintro - ⟨x, -, rfl⟩
         apply SetLike.isHomogeneousElem_coe)⟩ := by
   ext1
   rw [Ideal.toIdeal_homogeneousHull_eq_iSup, toIdeal_iSup]

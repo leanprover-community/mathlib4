@@ -81,7 +81,7 @@ lemma ScottContinuousOn.id : ScottContinuousOn D (id : α → α) := by simp [Sc
 
 @[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuousOn.const (x : β) : ScottContinuousOn D (Function.const α x) := by
-  rintro s _ ⟨a⟩ _ _ _
+  rintro s - ⟨a⟩ - - -
   simp [IsLUB, IsLeast, upperBounds, lowerBounds]; grind
 
 @[fun_prop, to_fun]

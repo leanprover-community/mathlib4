@@ -492,9 +492,9 @@ theorem ext_of_generateFrom_of_iUnion (C : Set (Set α)) (B : ℕ → Set α) (h
     (hC : IsPiSystem C) (h1B : ⋃ i, B i = univ) (h2B : ∀ i, B i ∈ C) (hμB : ∀ i, μ (B i) ≠ ∞)
     (h_eq : ∀ s ∈ C, μ s = ν s) : μ = ν := by
   refine ext_of_generateFrom_of_cover_subset hA hC ?_ (countable_range B) h1B ?_ h_eq
-  · rintro _ ⟨i, rfl⟩
+  · rintro - ⟨i, rfl⟩
     apply h2B
-  · rintro _ ⟨i, rfl⟩
+  · rintro - ⟨i, rfl⟩
     apply hμB
 
 @[simp]

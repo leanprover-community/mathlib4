@@ -367,7 +367,7 @@ lemma card_bij (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
   · congr 1
     ext b
     constructor <;> intro h
-    · obtain ⟨_, _, rfl⟩ := mem_image.1 h; apply hi
+    · obtain ⟨-, -, rfl⟩ := mem_image.1 h; apply hi
     · obtain ⟨a, ha, rfl⟩ := i_surj b h; exact mem_image.2 ⟨⟨a, ha⟩, by simp⟩
 
 /-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`

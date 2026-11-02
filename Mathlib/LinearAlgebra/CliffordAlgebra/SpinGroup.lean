@@ -137,7 +137,7 @@ theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzG
       simp only [map_inv, smul_inv_smul]
   intro x hx
   rw [Submodule.pointwise_smul_def, Submodule.map_le_iff_le_comap]
-  rintro _ ⟨m, rfl⟩
+  rintro - ⟨m, rfl⟩
   exact conjAct_smul_ι_mem_range_ι hx _
 
 theorem coe_mem_iff_mem {x : (CliffordAlgebra Q)ˣ} :

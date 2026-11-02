@@ -188,7 +188,7 @@ theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
   induction x <;> simp [rmatch, matchEpsilon, *]
 
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
-  rcases x with - | ⟨_, x⟩
+  rcases x with - | ⟨-, x⟩
   · exact of_decide_eq_true rfl
   · rcases x with - | ⟨head, tail⟩
     · rw [rmatch, deriv, List.singleton_inj]

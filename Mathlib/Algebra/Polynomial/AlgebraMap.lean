@@ -735,7 +735,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
     intro i hi
     rw [coeff_eq_zero_of_natDegree_lt hi, zero_smul]
   intro l IH
-  obtain _ | hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
+  obtain - | hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
   · apply eq_zero_of_mul_eq_zero_of_smul _ h (P.coeff l • Q)
     rw [smul_eq_C_mul, mul_left_comm, hQ, mul_zero]
   suffices P.coeff l * Q.leadingCoeff = 0 by

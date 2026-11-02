@@ -275,7 +275,7 @@ theorem coe_closure_eq_range_term_realize :
   change _ = (S : Set M)
   rw [← SetLike.ext'_iff]
   refine closure_eq_of_le (fun x hx => ⟨var ⟨x, hx⟩, rfl⟩) (le_sInf fun S' hS' => ?_)
-  rintro _ ⟨t, rfl⟩
+  rintro - ⟨t, rfl⟩
   exact t.realize_mem _ fun i => hS' i.2
 
 instance small_closure [Small.{u} s] : Small.{u} (closure L s) := by

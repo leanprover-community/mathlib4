@@ -154,12 +154,12 @@ theorem strictMono_leastExt : StrictMono φ := fun i j h ↦ by
 
 theorem adjoin_image_leastExt (i : ι) : E⟮<i⟯ = adjoin F (b '' Iio (φ i)) := by
   refine le_antisymm (adjoin.mono _ _ _ ?_) (adjoin_le_iff.mpr ?_)
-  · rw [image_comp]; apply image_mono; rintro _ ⟨j, hj, rfl⟩; exact strictMono_leastExt hj
-  · rintro _ ⟨j, hj, rfl⟩; contrapose hj; exact ((isLeast_leastExt i).2 hj).not_gt
+  · rw [image_comp]; apply image_mono; rintro - ⟨j, hj, rfl⟩; exact strictMono_leastExt hj
+  · rintro - ⟨j, hj, rfl⟩; contrapose hj; exact ((isLeast_leastExt i).2 hj).not_gt
 
 theorem iSup_adjoin_eq_top : ⨆ i : ι, E⟮<i⟯ = ⊤ := by
   simp_rw [adjoin_image_leastExt, eq_top_iff, ← adjoin_basis_eq_top, adjoin_le_iff]
-  rintro _ ⟨i, rfl⟩
+  rintro - ⟨i, rfl⟩
   refine le_iSup (α := IntermediateField F E) _ (i⁺) (subset_adjoin _ _ ⟨i, ?_, rfl⟩)
   exact (lt_succ i).trans_le strictMono_leastExt.le_apply
 
@@ -259,7 +259,7 @@ theorem iSup_filtration : ⨆ j : Iio i, filtration j = filtration i := by
   cases i
   · rw [← range_coe, iSup_range']; exact iSup_adjoin_eq_top
   refine (iSup_le fun j ↦ filtration.monotone (mem_Iio.1 j.2).le).antisymm (adjoin_le_iff.2 ?_)
-  rintro _ ⟨j, hj, rfl⟩
+  rintro - ⟨j, hj, rfl⟩
   refine le_iSup (α := IntermediateField F E) _ ⟨j⁺, ?_⟩ (subset_adjoin F _ ?_)
   exacts [⟨j, lt_succ j, rfl⟩, hi.succ_lt (coe_lt_coe.mpr hj)]
 

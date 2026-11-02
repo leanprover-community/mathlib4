@@ -100,7 +100,7 @@ private lemma IsProper.lintegral_indicator_mul (hπ : IsProper π) (h𝓑𝓧 : 
     simp_rw [← smul_indicator_one_apply, mul_smul_comm, smul_eq_mul]
     rw [lintegral_const_mul, lintegral_const_mul, hπ.lintegral_indicator_mul_indicator h𝓑𝓧 hA hB,
       mul_left_comm] <;> measurability
-  · rintro f₁ f₂ - _ _ hf₁ hf₂
+  · rintro f₁ f₂ - - _ hf₁ hf₂
     simp only [Pi.add_apply, mul_add]
     rw [lintegral_add_right, lintegral_add_right, hf₁, hf₂, mul_add] <;> measurability
   · rintro f' hf'_meas hf'_mono hf'
@@ -129,7 +129,7 @@ lemma IsProper.lintegral_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) (hf
     simp_rw [← smul_indicator_one_apply, smul_mul_assoc, smul_eq_mul]
     rw [lintegral_const_mul, hπ.lintegral_indicator_mul h𝓑𝓧 hf hA]
     measurability
-  · rintro g₁ g₂ - _ hg₂_meas hg₁ hg₂
+  · rintro g₁ g₂ - - hg₂_meas hg₁ hg₂
     simp only [Pi.add_apply, add_mul]
     rw [lintegral_add_right, hg₁, hg₂]
     exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf

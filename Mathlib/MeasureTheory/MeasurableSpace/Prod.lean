@@ -33,7 +33,7 @@ theorem generateFrom_prod_eq {α β} {C : Set (Set α)} {D : Set (Set β)} (hC :
       generateFrom (image2 (· ×ˢ ·) C D) := by
   apply le_antisymm
   · refine sup_le ?_ ?_ <;> rw [comap_generateFrom] <;> apply generateFrom_le <;>
-      rintro _ ⟨s, hs, rfl⟩
+      rintro - ⟨s, hs, rfl⟩
     · rcases hD with ⟨t, h1t, h2t⟩
       rw [← prod_univ, ← h2t, prod_iUnion]
       apply MeasurableSet.iUnion
@@ -47,7 +47,7 @@ theorem generateFrom_prod_eq {α β} {C : Set (Set α)} {D : Set (Set β)} (hC :
       apply measurableSet_generateFrom
       exact mem_image2_of_mem (h1t n) hs
   · apply generateFrom_le
-    rintro _ ⟨s, hs, t, ht, rfl⟩
+    rintro - ⟨s, hs, t, ht, rfl⟩
     dsimp only
     rw [prod_eq]
     apply (measurable_fst _).inter (measurable_snd _)

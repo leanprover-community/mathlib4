@@ -115,7 +115,7 @@ lemma ObjectProperty.IsStrongGenerator.isDense_colimitsCardinalClosure_ι
       let obj : (P.colimitsCardinalClosure κ).FullSubcategory :=
         ⟨coequalizer φ₁ φ₂, by
           apply ObjectProperty.prop_colimit
-          rintro (_ | _)
+          rintro (- | -)
           · exact P.le_colimitsCardinalClosure _ _ hG
           · exact j.left.2⟩
       let a : (P.colimitsCardinalClosure κ).ι.obj obj ⟶ X :=

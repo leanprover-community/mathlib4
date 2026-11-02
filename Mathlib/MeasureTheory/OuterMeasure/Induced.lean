@@ -450,7 +450,7 @@ theorem trim_iSup {ι} [Countable ι] (μ : ι → OuterMeasure α) :
     trim (⨆ i, μ i) = ⨆ i, trim (μ i) := by
   simp_rw [← @iSup_plift_down _ ι]
   ext1 s
-  obtain ⟨t, _, _, hμt⟩ :=
+  obtain ⟨t, -, -, hμt⟩ :=
     exists_measurable_superset_forall_eq_trim
       (Option.elim' (⨆ i, μ (PLift.down i)) (μ ∘ PLift.down)) s
   simp only [Option.forall, Option.elim'] at hμt

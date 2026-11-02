@@ -80,7 +80,7 @@ lemma cardinalMk_closure_le_max : #(closure s) ≤ max #s ℵ₀ :=
       · rw [max_eq_right h.le, max_eq_right]
         exact (add_lt_aleph0 this h).le
       · rw [max_eq_left h, add_eq_right h (this.le.trans h), max_eq_left h]
-    rintro (n | _)
+    rintro (n | -)
     · fin_cases n <;> (dsimp only [id_eq]; infer_instance)
     infer_instance
 

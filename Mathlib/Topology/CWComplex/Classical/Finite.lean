@@ -327,7 +327,7 @@ lemma RelCWComplex.finite_of_finite_cells (finite : _root_.Finite (Σ n, cell C 
     have hmA : m ∈ A := by
       simp only [Finset.mem_image, Finset.mem_univ, true_and, A]
       simp only [← exists_true_iff_nonempty] at h'
-      obtain ⟨j, _⟩ := h'
+      obtain ⟨j, -⟩ := h'
       use ⟨m, j⟩
     linarith [A.le_max' m hmA]
   finite_cell _ := Finite.of_injective (Sigma.mk _) sigma_mk_injective

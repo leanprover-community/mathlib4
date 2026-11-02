@@ -346,7 +346,7 @@ theorem transcendental_iff_transcendental_val {S : Subalgebra R A} {x : S} :
 theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : IsAlgebraic (⊥ : Subalgebra R S) x) :
     IsAlgebraic R x :=
   halg.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
-    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id rfl
+    (RingHom.id S) (by rintro ⟨-, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id rfl
 
 theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
     IsAlgebraic (⊥ : Subalgebra R S) x ↔ IsAlgebraic R x :=
@@ -357,7 +357,7 @@ variable (R S) in
 theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot_left
     [Algebra.IsAlgebraic (⊥ : Subalgebra R S) S] : Algebra.IsAlgebraic R S :=
   Algebra.IsAlgebraic.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
-    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id (by ext; rfl)
+    (RingHom.id S) (by rintro ⟨-, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id (by ext; rfl)
 
 theorem algebra_isAlgebraic_bot_left_iff (h : Function.Injective (algebraMap R S)) :
     Algebra.IsAlgebraic (⊥ : Subalgebra R S) S ↔ Algebra.IsAlgebraic R S := by

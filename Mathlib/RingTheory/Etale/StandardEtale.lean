@@ -151,7 +151,7 @@ lemma existsUnique_hasMap_of_hasMap_quotient_of_sq_eq_bot
     ∃! ε, ε ∈ I ∧ P.HasMap (x + ε) := by
   have hf := Ideal.Quotient.eq_zero_iff_mem.mp
     ((aeval_algHom_apply (Ideal.Quotient.mkₐ R I) _ _).symm.trans hx.1)
-  obtain ⟨⟨_, a, ha, -⟩, rfl⟩ := hx.2
+  obtain ⟨⟨-, a, ha, -⟩, rfl⟩ := hx.2
   obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective a
   simp_rw [← Ideal.Quotient.mkₐ_eq_mk R, aeval_algHom_apply, ← map_mul, ← map_one
     (Ideal.Quotient.mkₐ R I), Ideal.Quotient.mkₐ_eq_mk, Ideal.Quotient.mk_eq_mk_iff_sub_mem] at ha
@@ -327,7 +327,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma StandardEtalePresentation.exists_mul_aeval_x_g_pow_eq_aeval_x (x : S) :
     ∃ p : R[X], ∃ n, x * P.g.aeval P.x ^ n = p.aeval P.x := by
   obtain ⟨x, rfl⟩ := (P.equivRing.trans P.P.equivAwayAdjoinRoot).symm.surjective x
-  obtain ⟨⟨p, ⟨_, n, rfl⟩⟩, e⟩ := IsLocalization.surj (.powers (AdjoinRoot.mk P.f P.g)) x
+  obtain ⟨⟨p, ⟨-, n, rfl⟩⟩, e⟩ := IsLocalization.surj (.powers (AdjoinRoot.mk P.f P.g)) x
   obtain ⟨p, rfl⟩ := AdjoinRoot.mk_surjective p
   refine ⟨p, n, P.equivRing.injective ?_⟩
   simpa [← aeval_algHom_apply, StandardEtalePair.equivAwayAdjoinRoot, ← aeval_def] using

@@ -265,7 +265,7 @@ noncomputable abbrev powEquiv' {n : ℕ} (hn : ¬p ∣ n) : G ≃ G :=
 @[to_additive]
 theorem index (H : Subgroup G) [H.FiniteIndex] : ∃ n : ℕ, H.index = p ^ n := by
   obtain ⟨n, hn⟩ := iff_card.mp (hG.to_quotient H.normalCore)
-  obtain ⟨k, _, hk2⟩ :=
+  obtain ⟨k, -, hk2⟩ :=
     (Nat.dvd_prime_pow hp.out).mp
       ((congr_arg _ (H.normalCore.index_eq_card.trans hn)).mp
         (Subgroup.index_dvd_of_le H.normalCore_le))
@@ -537,7 +537,7 @@ theorem card_center_eq_prime_pow (hGpn : Nat.card G = p ^ n) (hn : 0 < n) :
     ∃ k > 0, Nat.card (center G) = p ^ k := by
   have : Finite G := Nat.finite_of_card_ne_zero (hGpn ▸ pow_ne_zero n (NeZero.ne p))
   have hcG := to_subgroup (of_card hGpn) (center G)
-  rcases iff_card.1 hcG with _
+  rcases iff_card.1 hcG with -
   have : Nontrivial G := (nontrivial_iff_card <| of_card hGpn).2 ⟨n, hn, hGpn⟩
   exact (nontrivial_iff_card hcG).mp (center_nontrivial (of_card hGpn))
 

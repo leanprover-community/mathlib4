@@ -39,7 +39,7 @@ lemma IsUltraUniformity.comap {u : UniformSpace Y} (h : IsUltraUniformity Y) (f 
   let := u.comap f
   refine .mk_of_hasBasis (h.hasBasis.comap (Prod.map f f)) ?_ ?_ <;>
   · dsimp
-    rintro _ ⟨_, _, _⟩
+    rintro _ ⟨-, _, _⟩
     infer_instance
 
 lemma IsUltraUniformity.inf {u u' : UniformSpace X} (h : @IsUltraUniformity _ u)
@@ -48,7 +48,7 @@ lemma IsUltraUniformity.inf {u u' : UniformSpace X} (h : @IsUltraUniformity _ u)
   let := u ⊓ u'
   refine .mk_of_hasBasis (h.hasBasis.inf h'.hasBasis) ?_ ?_ <;>
   · dsimp
-    rintro _ ⟨⟨_, _, _⟩, _, _, _⟩
+    rintro _ ⟨⟨-, _, _⟩, -, _, _⟩
     infer_instance
 
 /-- The product of uniform spaces with nonarchimedean uniformities has a
@@ -64,7 +64,7 @@ lemma IsUltraUniformity.iInf {ι : Type*} {U : (i : ι) → UniformSpace X}
   let : UniformSpace X := ⨅ i, U i
   refine .mk_of_hasBasis (iInf_uniformity ▸ Filter.HasBasis.iInf fun i ↦ (hU i).hasBasis) ?_ ?_ <;>
   · simp only [forall_and, Subtype.forall, id_eq, Set.iInter_coe_set, and_imp]
-    rintro _ _ _ _ _
+    rintro _ - - _ _
     infer_instance
 
 /-- The indexed product of uniform spaces with nonarchimedean uniformities has a

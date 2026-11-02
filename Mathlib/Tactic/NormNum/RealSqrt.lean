@@ -27,7 +27,7 @@ lemma isNat_nnrealSqrt {x : ℝ≥0} {nx ny : ℕ} (h : IsNat x nx) (hy : ny * n
 lemma isNNRat_nnrealSqrt_of_isNNRat {x : ℝ≥0} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsNNRat x n d) :
     IsNNRat (NNReal.sqrt x) sn sd := by
-  obtain ⟨_, rfl⟩ := h
+  obtain ⟨-, rfl⟩ := h
   refine ⟨?_, ?out⟩
   · apply invertibleOfNonzero
     rw [← mul_self_ne_zero, ← Nat.cast_mul, hd]
@@ -48,7 +48,7 @@ lemma isNat_realSqrt_of_isRat_negOfNat {x : ℝ} {num : ℕ} {denom : ℕ}
 lemma isNNRat_realSqrt_of_isNNRat {x : ℝ} {n sn : ℕ} {d sd : ℕ} (hn : sn * sn = n)
     (hd : sd * sd = d) (h : IsNNRat x n d) :
     IsNNRat √x sn sd := by
-  obtain ⟨_, rfl⟩ := h
+  obtain ⟨-, rfl⟩ := h
   refine ⟨?_, ?out⟩
   · apply invertibleOfNonzero
     rw [← mul_self_ne_zero, ← Nat.cast_mul, hd]

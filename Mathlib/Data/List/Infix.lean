@@ -153,7 +153,7 @@ theorem singleton_infix_iff (x : α) (xs : List α) :
 theorem singleton_infix_singleton_iff {x y : α} :
     [x] <:+: [y] ↔ x = y := by
   constructor
-  · rintro ⟨_ | _, bs, h⟩ <;> simp_all
+  · rintro ⟨- | _, bs, h⟩ <;> simp_all
   · rintro rfl; rfl
 
 theorem infix_singleton_iff (xs : List α) (x : α) :
@@ -163,7 +163,7 @@ theorem infix_singleton_iff (xs : List α) (x : α) :
   | [_] => simp [List.singleton_infix_singleton_iff]
   | _ :: _ :: _ =>
     constructor
-    · rintro ⟨_ | _, _, h⟩ <;> simp at h
+    · rintro ⟨- | _, _, h⟩ <;> simp at h
     · simp
 
 lemma infix_antisymm {l₁ l₂ : List α} (h₁ : l₁ <:+: l₂) (h₂ : l₂ <:+: l₁) :

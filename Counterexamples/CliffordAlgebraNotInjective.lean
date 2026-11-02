@@ -84,7 +84,7 @@ theorem mul_self_mem_kIdeal_of_X_Y_Z_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
   intro m' hm'
   obtain rfl := Finset.mem_singleton.1 (support_monomial_subset hm')
   rw [mem_ideal_span_X_image] at this
-  obtain ⟨i, _, hi⟩ := this m hm
+  obtain ⟨i, -, hi⟩ := this m hm
   simp_rw [← one_add_one_eq_two]
   refine ⟨i, Nat.add_le_add ?_ ?_⟩ <;> rwa [Nat.one_le_iff_ne_zero]
 
@@ -96,7 +96,7 @@ theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZM
   refine (Ideal.comap_le_map_of_inverse _ _ _ (constantCoeff_C _)).trans ?_
   rw [kIdeal, Ideal.map_span]
   refine (Ideal.span_le).2 ?_
-  rintro x ⟨_, ⟨i, rfl⟩, rfl⟩
+  rintro x ⟨-, ⟨i, rfl⟩, rfl⟩
   rw [map_mul, constantCoeff_X, mul_zero, Submodule.bot_coe, Set.mem_singleton_iff]
 
 /-- `k` has characteristic 2. -/

@@ -24,7 +24,7 @@ variable {α β : Type*} {f : α → β}
 
 lemma Fibration.isLowerSet_image [LE α] [LE β] (hf : Fibration (· ≤ ·) (· ≤ ·) f)
     {s : Set α} (hs : IsLowerSet s) : IsLowerSet (f '' s) := by
-  rintro _ y' e ⟨x, hx, rfl⟩; obtain ⟨y, e', rfl⟩ := hf e; exact ⟨_, hs e' hx, rfl⟩
+  rintro - y' e ⟨x, hx, rfl⟩; obtain ⟨y, e', rfl⟩ := hf e; exact ⟨_, hs e' hx, rfl⟩
 
 alias _root_.IsLowerSet.image_fibration := Fibration.isLowerSet_image
 

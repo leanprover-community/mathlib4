@@ -122,7 +122,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
   · -- c + a = 0
     rw [← Finset.sum_add_distrib]
     apply Finset.sum_eq_zero
-    rintro ⟨i, hi⟩ _
+    rintro ⟨i, hi⟩ -
     simp only
     have hia : (⟨i, by lia⟩ : Fin (n + 2)) ≤
         Fin.castSucc (⟨a, by lia⟩ : Fin (n + 1)) := by
@@ -184,7 +184,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
   swap
   · rw [Fin.lt_def]
     simpa only [Fin.val_mk, Fin.val_succ, add_lt_add_iff_right] using haj
-  obtain _ | ham'' := ham.lt_or_eq
+  obtain - | ham'' := ham.lt_or_eq
   · -- case where `a<m`
     rw [← X.δ_comp_δ''_assoc]
     swap

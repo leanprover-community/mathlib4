@@ -185,7 +185,7 @@ theorem unitLattice_inter_ball_finite (r : ℝ) :
   · suffices {x : (𝓞 K)ˣ | IsIntegral ℤ (x : K) ∧
         ∀ (φ : K →+* ℂ), ‖φ x‖ ≤ Real.exp ((Fintype.card (InfinitePlace K)) * r)}.Finite by
       refine (Set.Finite.image (logEmbedding K) this).subset ?_
-      rintro _ ⟨⟨x, ⟨_, rfl⟩⟩, hx⟩
+      rintro - ⟨⟨x, ⟨-, rfl⟩⟩, hx⟩
       refine ⟨x, ⟨x.val.prop, (le_iff_le _ _).mp (fun w ↦ (Real.log_le_iff_le_exp ?_).mp ?_)⟩, rfl⟩
       · exact pos_iff.mpr (coe_ne_zero x)
       · rw [mem_closedBall_zero_iff] at hx
@@ -193,7 +193,7 @@ theorem unitLattice_inter_ball_finite (r : ℝ) :
     refine Set.Finite.of_finite_image ?_ (coe_injective K).injOn
     refine (Embeddings.finite_of_norm_le K ℂ
         (Real.exp ((Fintype.card (InfinitePlace K)) * r))).subset ?_
-    rintro _ ⟨x, ⟨⟨h_int, h_le⟩, rfl⟩⟩
+    rintro - ⟨x, ⟨⟨h_int, h_le⟩, rfl⟩⟩
     exact ⟨h_int, h_le⟩
 
 section span_top
@@ -526,7 +526,7 @@ theorem closure_fundSystem_sup_torsion_eq_top :
     Subgroup.closure (Set.range (fundSystem K)) ⊔ torsion K = ⊤ := by
   rw [Subgroup.eq_top_iff', sup_comm]
   intro x
-  obtain ⟨c, rfl, _⟩ := exist_unique_eq_mul_prod K x
+  obtain ⟨c, rfl, -⟩ := exist_unique_eq_mul_prod K x
   exact Subgroup.mul_mem_sup (SetLike.coe_mem c.1) <| Subgroup.prod_mem _
     fun i _ ↦ Subgroup.zpow_mem _ (Subgroup.subset_closure (Set.mem_range_self i)) _
 

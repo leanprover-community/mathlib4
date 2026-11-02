@@ -65,7 +65,7 @@ variable [IsSemiprimaryRing R]
   induction n generalizing M with
   | zero => rw [Jac.pow_zero, Ideal.one_eq_top] at hn; exact this (le_top.trans hn)
   | succ n ih => ?_
-  obtain _ | n := n
+  obtain - | n := n
   · rw [Jac.pow_one] at hn; exact this hn
   refine h1 _ (ih _ ?_) (ih _ ?_)
   · rwa [← Submodule.annihilator_top, Submodule.le_annihilator_iff, Jac.pow_succ,

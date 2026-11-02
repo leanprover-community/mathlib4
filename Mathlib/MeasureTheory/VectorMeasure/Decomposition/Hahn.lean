@@ -189,7 +189,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
   cases n with
   | zero =>
     rw [restrictNonposSeq]; rw [← @Set.sdiff_empty _ i] at hi₂
-    rcases someExistsOneDivLT_spec hi₂ with ⟨_, _, h⟩
+    rcases someExistsOneDivLT_spec hi₂ with ⟨-, -, h⟩
     exact lt_trans Nat.one_div_pos_of_nat h
   | succ n =>
     rw [restrictNonposSeq_succ]
@@ -197,7 +197,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
       refine mt (restrict_le_zero_subset _ ?_ (by simp)) hn
       convert measurable_of_not_restrict_le_zero _ hn using 3
       exact funext fun x => by rw [Nat.lt_succ_iff]
-    rcases someExistsOneDivLT_spec h₁ with ⟨_, _, h⟩
+    rcases someExistsOneDivLT_spec h₁ with ⟨-, -, h⟩
     exact lt_trans Nat.one_div_pos_of_nat h
 
 private theorem restrictNonposSeq_measurableSet (n : ℕ) :
@@ -366,7 +366,7 @@ theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
 (the Hahn decomposition theorem) using set complements. -/
 theorem exists_compl_positive_negative (s : SignedMeasure α) :
     ∃ i : Set α, MeasurableSet i ∧ 0 ≤[i] s ∧ s ≤[iᶜ] 0 := by
-  obtain ⟨f, _, hf₂, hf₁⟩ :=
+  obtain ⟨f, -, hf₂, hf₁⟩ :=
     exists_seq_tendsto_sInf ⟨0, @zero_mem_measureOfNegatives _ _ s⟩ bddBelow_measureOfNegatives
   choose B hB using hf₁
   have hB₁ : ∀ n, MeasurableSet (B n) := fun n => (hB n).1.1

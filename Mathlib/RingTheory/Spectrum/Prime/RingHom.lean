@@ -139,7 +139,7 @@ theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
   let J : Ideal (Π i, R i) := -- `J := Π₀ i, R i` is an ideal in `Π i, R i`
   { __ := AddMonoidHom.mrange DFinsupp.coeFnAddMonoidHom
     smul_mem' := by
-      rintro r _ ⟨x, rfl⟩
+      rintro r - ⟨x, rfl⟩
       refine ⟨.mk x.support fun i ↦ r i * x i, funext fun i ↦ show dite _ _ _ = _ from ?_⟩
       simp_rw +instances [DFinsupp.coeFnAddMonoidHom]
       refine dite_eq_left_iff.mpr fun h ↦ ?_
@@ -199,7 +199,7 @@ lemma iUnion_range_comap_comp_evalRingHom
   simp_rw [comap_comp]
   apply subset_antisymm
   · exact Set.iUnion_subset fun _ ↦ Set.range_comp_subset_range _ _
-  · rintro _ ⟨p, rfl⟩
+  · rintro - ⟨p, rfl⟩
     obtain ⟨i, p, rfl⟩ := exists_comap_evalRingHom_eq p
     exact Set.mem_iUnion_of_mem i ⟨p, rfl⟩
 

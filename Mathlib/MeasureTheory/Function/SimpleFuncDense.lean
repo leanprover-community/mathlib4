@@ -111,7 +111,7 @@ theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) 
 theorem tendsto_nearestPt {e : ℕ → α} {x : α} (hx : x ∈ closure (range e)) :
     Tendsto (fun N => nearestPt e N x) atTop (𝓝 x) := by
   refine (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => ?_
-  rcases EMetric.mem_closure_iff.1 hx ε hε with ⟨_, ⟨N, rfl⟩, hN⟩
+  rcases EMetric.mem_closure_iff.1 hx ε hε with ⟨-, ⟨N, rfl⟩, hN⟩
   rw [edist_comm] at hN
   exact ⟨N, trivial, fun n hn => (edist_nearestPt_le e x hn).trans_lt hN⟩
 
@@ -133,7 +133,7 @@ theorem approxOn_mem {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α
     [SeparableSpace s] (n : ℕ) (x : β) : approxOn f hf s y₀ h₀ n x ∈ s := by
   have : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   suffices ∀ n, (Nat.casesOn n y₀ ((↑) ∘ denseSeq s) : α) ∈ s by apply this
-  rintro (_ | n)
+  rintro (- | n)
   exacts [h₀, Subtype.mem _]
 
 lemma approxOn_range_nonneg [Zero α] [Preorder α] {f : β → α}

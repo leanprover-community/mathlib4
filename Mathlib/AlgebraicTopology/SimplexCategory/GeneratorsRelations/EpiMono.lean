@@ -92,7 +92,7 @@ lemma eq_or_len_le_of_P_δ {x y : SimplexCategoryGenRel} {f : x ⟶ y} (h_δ : P
   | of _ hx => cases hx; right; simp
   | id => left; use rfl; simp
   | comp_of i u _ hg h' =>
-    rcases h' with ⟨e, _⟩ | h' <;>
+    rcases h' with ⟨e, -⟩ | h' <;>
     apply Or.inr <;>
     cases hg
     · rw [e]

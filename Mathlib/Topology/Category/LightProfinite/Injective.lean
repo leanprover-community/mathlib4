@@ -74,7 +74,7 @@ lemma exists_lift_of_finite_of_injective_of_surjective {X Y S T : Type*}
   have Z_disj : univ.PairwiseDisjoint Z := by
     rw [Set.pairwiseDisjoint_iff]
     simp only [image_inter_nonempty_iff, Z]
-    rintro _ _ _ _ ⟨_, rfl, ⟨_, rfl, hy⟩⟩
+    rintro - - - - ⟨_, rfl, ⟨_, rfl, hy⟩⟩
     rw [f_inj hy]
   -- define `D i` to be the fiber of `g'` at `f' i`
   let D : S → Set Y := fun i ↦ g' ⁻¹' ({f' i})

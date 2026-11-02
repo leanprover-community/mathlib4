@@ -33,7 +33,7 @@ variable (C κ) in
 lemma isCardinalFilteredGenerator_isCardinalPresentable
     [IsCardinalAccessibleCategory C κ] :
     (isCardinalPresentable C κ).IsCardinalFilteredGenerator κ := by
-  obtain ⟨P, _, hP⟩ := HasCardinalFilteredGenerator.exists_generator C κ
+  obtain ⟨P, -, hP⟩ := HasCardinalFilteredGenerator.exists_generator C κ
   refine hP.of_le_isoClosure ?_ le_rfl
   rw [ObjectProperty.isoClosure_eq_self]
   exact hP.le_isCardinalPresentable

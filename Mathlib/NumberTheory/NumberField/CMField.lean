@@ -346,7 +346,7 @@ theorem index_unitsMulComplexConjInv_range_dvd :
     (unitsMulComplexConjInv K).range.index ∣ 2 := by
   suffices (powMonoidHom 2 : _ →* torsion K).range.index = 2 by
     refine this ▸ Subgroup.index_dvd_of_le ?_
-    rintro _ ⟨ζ, _, rfl⟩
+    rintro - ⟨ζ, -, rfl⟩
     exact ⟨ζ, Subtype.ext_iff.mpr (by simp [pow_two])⟩
   rw [IsCyclic.index_powMonoidHom_range, Nat.gcd_eq_right_iff_dvd]
   exact Even.two_dvd <| even_torsionOrder K
@@ -410,7 +410,7 @@ noncomputable def realFundSystem (i : Fin (rank K)) : (𝓞 K)ˣ :=
 theorem closure_realFundSystem_sup_torsion :
     Subgroup.closure (Set.range (realFundSystem K)) ⊔ torsion K = realUnits K ⊔ torsion K := by
   have : Subgroup.map (Units.map (algebraMap (𝓞 K⁺) (𝓞 K))) (torsion K⁺) ≤ torsion K := by
-    rintro _ ⟨x, hx, rfl⟩
+    rintro - ⟨x, hx, rfl⟩
     exact MonoidHom.isOfFinOrder _ hx
   rw [realUnits, MonoidHom.range_eq_map, ← closure_fundSystem_sup_torsion_eq_top, Subgroup.map_sup,
     sup_assoc, RingHom.toMonoidHom_eq_coe, sup_eq_right.mpr this, MonoidHom.map_closure]

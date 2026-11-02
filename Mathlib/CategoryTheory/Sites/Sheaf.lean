@@ -246,7 +246,7 @@ lemma IsSheaf.hom_ext_ofArrows
     {x y : E ⟶ P.obj (op S)} (h : ∀ i, x ≫ P.map (f i).op = y ≫ P.map (f i).op) :
     x = y := by
   apply hP.hom_ext ⟨_, hf⟩
-  rintro ⟨Z, _, _, g, _, ⟨i⟩, rfl⟩
+  rintro ⟨Z, -, -, g, -, ⟨i⟩, rfl⟩
   dsimp
   rw [P.map_comp, reassoc_of% (h i)]
 

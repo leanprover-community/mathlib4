@@ -463,7 +463,7 @@ The first `k` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first 
 assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iio (k : Fin (n + 1))) (Iio k) val := by
-  obtain _ | k := k
+  obtain - | k := k
   · simp
   have hkmn' : m * k ≤ n := (Nat.mul_le_mul_left _ k.le_succ).trans hkmn
   convert isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x

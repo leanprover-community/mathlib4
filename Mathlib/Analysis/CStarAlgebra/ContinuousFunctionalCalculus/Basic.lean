@@ -398,7 +398,7 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
       intro x y
       constructor
       · intro h
-        obtain ⟨s, hs₁, _, hs₂⟩ :=
+        obtain ⟨s, hs₁, -, hs₂⟩ :=
           CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts h.1 h.2
         refine ⟨s * s, ?_, by rwa [eq_sub_iff_add_eq', eq_comm] at hs₂⟩
         exact AddSubmonoid.subset_closure ⟨s, by simp [hs₁.star_eq]⟩

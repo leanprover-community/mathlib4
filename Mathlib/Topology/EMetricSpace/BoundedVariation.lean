@@ -537,7 +537,7 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
   rcases le_total x y with (h | h)
   · convert comp_eq_of_monotoneOn f φ (hφ.mono Set.inter_subset_left)
     apply le_antisymm
-    · rintro _ ⟨⟨u, us, rfl⟩, vφx, vφy⟩
+    · rintro - ⟨⟨u, us, rfl⟩, vφx, vφy⟩
       rcases le_total x u with (xu | ux)
       · rcases le_total u y with (uy | yu)
         · exact ⟨u, ⟨us, ⟨xu, uy⟩⟩, rfl⟩
@@ -545,7 +545,7 @@ theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β →
           exact ⟨y, ⟨hy, ⟨h, le_rfl⟩⟩, rfl⟩
       · rw [← le_antisymm vφx (hφ us hx ux)]
         exact ⟨x, ⟨hx, ⟨le_rfl, h⟩⟩, rfl⟩
-    · rintro _ ⟨u, ⟨⟨hu, xu, uy⟩, rfl⟩⟩
+    · rintro - ⟨u, ⟨⟨hu, xu, uy⟩, rfl⟩⟩
       exact ⟨⟨u, hu, rfl⟩, ⟨hφ hx hu xu, hφ hu hy uy⟩⟩
   · rw [eVariationOn.subsingleton, eVariationOn.subsingleton]
     exacts [(Set.subsingleton_Icc_of_ge (hφ hy hx h)).anti Set.inter_subset_right,

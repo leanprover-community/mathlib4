@@ -146,7 +146,7 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
     rw [← Nat.cast_inj.mp k_max, mem_image] at key
     simp only [mem_ofPred_eq] at key
     exact key
-  · obtain ⟨s, _, s_card⟩ := h
+  · obtain ⟨s, -, s_card⟩ := h
     rw [← s_card]
     exact WithTop.coe_lt_top s.card
 

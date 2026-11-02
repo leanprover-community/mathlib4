@@ -323,7 +323,7 @@ lemma mk_eq_of_ne_zero [DecidablePred fun b : B ↦ b = 0] (r s : A) (hr : f r �
 
 theorem zero_or_exists_mk (x : ValueGroup₀ f) :
     x = 0 ∨ ∃ r s hr hs, x = valueGroup.mk f r s hr hs := by
-  obtain _ | ⟨x, hx⟩ := x
+  obtain - | ⟨x, hx⟩ := x
   · left; rfl
   · rw [mem_valueGroup_iff_of_comm'] at hx
     obtain ⟨r, hr, s, hs, hrs⟩ := hx

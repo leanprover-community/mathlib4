@@ -152,7 +152,7 @@ theorem isChain_getLast_head_splitBy (r : α → α → Bool) (l : List α) :
   | nil => exact isChain_nil
   | cons _ _ =>
     apply isChain_getLast_head_splitByLoop _ not_mem_nil isChain_nil
-    rintro _ ⟨⟩
+    rintro - ⟨⟩
 
 private theorem splitByLoop_append {r : α → α → Bool} {l g : List α} {a : α}
     (h : (g.reverse ++ a :: l).IsChain fun x y ↦ r x y)
@@ -192,7 +192,7 @@ theorem splitBy_flatten {r : α → α → Bool} {l : List (List α)} (hn : [] �
     intro y hy
     rw [← head_of_mem_head? hy]
     rw [isChain_cons] at hc'
-    obtain ⟨x, hx, _⟩ := flatten_ne_nil_iff.1 (ne_nil_of_mem (mem_of_mem_head? hy))
+    obtain ⟨x, hx, -⟩ := flatten_ne_nil_iff.1 (ne_nil_of_mem (mem_of_mem_head? hy))
     obtain ⟨_, _, H⟩ := hc'.1 (l.head (ne_nil_of_mem hx)) (head_mem_head? _)
     rwa [head_flatten_eq_head_head]
 

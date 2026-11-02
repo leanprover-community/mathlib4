@@ -898,7 +898,7 @@ theorem orderMonoidIso₀_symm (h : v.IsEquiv w) (h' : w.IsEquiv v) :
 theorem orderMonoidIso₀_eq_refl (h : v.IsEquiv v) :
     h.orderMonoidIso₀ = .refl _ := by
   ext x
-  obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
+  obtain (rfl | ⟨x, y, -, -, rfl⟩) := x.zero_or_exists_mk
   · simp
   · simp [orderMonoidIso₀, orderMonoidIso_spec h]
 
@@ -906,7 +906,7 @@ theorem orderMonoidIso₀_eq_refl (h : v.IsEquiv v) :
 theorem orderMonoidIso₀_trans (h : v.IsEquiv w) (h' : w.IsEquiv u) :
     h.orderMonoidIso₀.trans h'.orderMonoidIso₀ = (h.trans h').orderMonoidIso₀ := by
   ext x
-  obtain (rfl | ⟨x, y, _, _, rfl⟩) := x.zero_or_exists_mk
+  obtain (rfl | ⟨x, y, -, -, rfl⟩) := x.zero_or_exists_mk
   · simp
   · simp [orderMonoidIso₀, orderMonoidIso_spec h, orderMonoidIso_spec h',
       orderMonoidIso_spec (trans h h')]

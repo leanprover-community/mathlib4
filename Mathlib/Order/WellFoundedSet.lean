@@ -101,9 +101,9 @@ theorem _root_.WellFounded.wellFoundedOn : WellFounded r → s.WellFoundedOn r :
 theorem wellFoundedOn_range : (range f).WellFoundedOn r ↔ WellFounded (r on f) := by
   let f' : β → range f := fun c => ⟨f c, c, rfl⟩
   refine ⟨fun h => (InvImage.wf f' h).mono fun c c' => id, fun h => ⟨?_⟩⟩
-  rintro ⟨_, c, rfl⟩
+  rintro ⟨-, c, rfl⟩
   refine Acc.of_downward_closed f' ?_ _ ?_
-  · rintro _ ⟨_, c', rfl⟩ -
+  · rintro - ⟨-, c', rfl⟩ -
     exact ⟨c', rfl⟩
   · exact h.apply _
 
@@ -353,7 +353,7 @@ theorem partiallyWellOrderedOn_iff_finite_antichains [Std.Symm r] :
     · refine (H _ _ h ?_).elim
       rw [hmn]
       exact refl _
-  rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩ hmn
+  rintro - ⟨m, hm, rfl⟩ - ⟨n, hn, rfl⟩ hmn
   obtain h | h := (ne_of_apply_ne _ hmn).lt_or_gt
   · exact H _ _ h
   · exact mt symm (H _ _ h)
@@ -511,7 +511,7 @@ theorem IsPWO.exists_le_minimal {a} (hs : s.IsPWO) (ha : a ∈ s) :
 theorem IsPWO.exists_minimal (h : s.IsPWO) (hs : s.Nonempty) :
     ∃ a, Minimal (· ∈ s) a := by
   rcases hs with ⟨a, ha⟩
-  obtain ⟨b, _, hb⟩ := h.exists_le_minimal ha
+  obtain ⟨b, -, hb⟩ := h.exists_le_minimal ha
   exact ⟨b, hb⟩
 
 theorem IsPWO.exists_minimalFor (f : ι → α) (s : Set ι) (h : (f '' s).IsPWO) (hs : s.Nonempty) :

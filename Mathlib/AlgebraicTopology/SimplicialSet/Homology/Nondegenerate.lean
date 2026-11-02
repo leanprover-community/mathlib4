@@ -133,7 +133,7 @@ lemma ιNormalizedChainComplex_eq_zero (x : X _⦋n⦌) (hx : x ∈ X.degenerate
     X.ιNormalizedChainComplex (R := R) x = 0 := by
   rw [← cancel_mono ((X.fromNormalizedChainComplex R).f n), zero_comp,
     ιNormalizedChainComplex_fromNormalizedChainComplex_f]
-  obtain _ | n := n
+  obtain - | n := n
   · simp at hx
   · simp only [degenerate_eq_iUnion_range_σ, Set.mem_iUnion, Set.mem_range] at hx
     let X' := ((SimplicialObject.whiskering _ _).obj (sigmaConst.obj R)).obj X

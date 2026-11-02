@@ -203,10 +203,10 @@ lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
     (H : f.stalkMap x =
       Y.presheaf.stalkSpecializes (Inseparable.of_eq e.symm).specializes ≫ g.stalkMap x) :
     ∃ (U : X.Opens), x ∈ U ∧ U.ι ≫ f = U.ι ≫ g := by
-  obtain ⟨_, ⟨V : Y.Opens, hV, rfl⟩, hxV, -⟩ :=
+  obtain ⟨-, ⟨V : Y.Opens, hV, rfl⟩, hxV, -⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
   have hxV' : g x ∈ V := e ▸ hxV
-  obtain ⟨U, hxU, _, hUV, HU⟩ := X.exists_le_and_germ_injective x (f ⁻¹ᵁ V ⊓ g ⁻¹ᵁ V) ⟨hxV, hxV'⟩
+  obtain ⟨U, hxU, -, hUV, HU⟩ := X.exists_le_and_germ_injective x (f ⁻¹ᵁ V ⊓ g ⁻¹ᵁ V) ⟨hxV, hxV'⟩
   refine ⟨U, hxU, ?_⟩
   rw [← Scheme.Hom.resLE_comp_ι _ (hUV.trans inf_le_left),
     ← Scheme.Hom.resLE_comp_ι _ (hUV.trans inf_le_right)]
@@ -263,7 +263,7 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
     { (X.presheaf.germ _ x H).hom with commutes' := fun x ↦ X.presheaf.germ_res_apply _ _ _ _ }
   change AlgHom.range φ' ≤ AlgHom.range ψ
   rw [← Algebra.map_top, ← hs, AlgHom.map_adjoin, Algebra.adjoin_le_iff]
-  rintro _ ⟨i, hi, rfl : φ i = _⟩
+  rintro - ⟨i, hi, rfl : φ i = _⟩
   refine ⟨X.presheaf.map (homOfLE (inf_le_left.trans (Finset.inf_le hi))).op (f i), ?_⟩
   exact (X.presheaf.germ_res_apply _ _ _ _).trans (hf _)
 
@@ -338,10 +338,10 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
     ∃ (U : X.Opens) (hxU : x ∈ U) (f : U.toScheme ⟶ Y),
       Spec.map φ ≫ Y.fromSpecStalk y = U.fromSpecStalkOfMem x hxU ≫ f ∧
       f ≫ sY = U.ι ≫ sX := by
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+  obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     S.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (sX x)) isOpen_univ
   have hyU : sY y ∈ U := e ▸ hxU
-  obtain ⟨_, ⟨V : Y.Opens, hV, rfl⟩, hyV, iVU⟩ :=
+  obtain ⟨-, ⟨V : Y.Opens, hV, rfl⟩, hyV, iVU⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open hyU (sY ⁻¹ᵁ U).2
   have : sY.appLE U V iVU ≫ Y.presheaf.germ V y hyV ≫ φ =
       sX.app U ≫ X.presheaf.germ (sX ⁻¹ᵁ U) x hxU := by

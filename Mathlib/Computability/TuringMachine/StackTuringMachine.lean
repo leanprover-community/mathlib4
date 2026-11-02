@@ -738,7 +738,7 @@ theorem tr_eval (k) (L : List (Γ k)) {L₁ L₂} (H₁ : L₁ ∈ TM1.eval (tr 
         (∀ k, L'.map (proj k) = ListBlank.mk ((S k).map some).reverse) ∧ S k = L₂ := by
   obtain ⟨c₁, h₁, rfl⟩ := (Part.mem_map_iff _).1 H₁
   obtain ⟨c₂, h₂, rfl⟩ := (Part.mem_map_iff _).1 H₂
-  obtain ⟨_, ⟨L', hT⟩, h₃⟩ := StateTransition.tr_eval (tr_respects M) (trCfg_init k L) h₂
+  obtain ⟨-, ⟨L', hT⟩, h₃⟩ := StateTransition.tr_eval (tr_respects M) (trCfg_init k L) h₂
   cases Part.mem_unique h₁ h₃
   exact ⟨_, L', by simp only [Tape.mk'_right₀], hT, rfl⟩
 

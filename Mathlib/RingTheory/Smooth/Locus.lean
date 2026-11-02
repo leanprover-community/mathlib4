@@ -123,7 +123,7 @@ open PrimeSpectrum in
 lemma isOpen_smoothLocus [FinitePresentation R A] : IsOpen (smoothLocus R A) := by
   rw [isOpen_iff_forall_mem_open]
   intro x hx
-  obtain ⟨_, ⟨_, ⟨f, rfl⟩, rfl⟩, hxf, hf⟩ :=
+  obtain ⟨-, ⟨-, ⟨f, rfl⟩, rfl⟩, hxf, hf⟩ :=
     isBasis_basic_opens.exists_subset_of_mem_open
     (smoothLocus_eq_compl_support_inter.le hx).2 Module.isOpen_freeLocus
   rw [Module.basicOpen_subset_freeLocus_iff] at hf
@@ -149,7 +149,7 @@ open PrimeSpectrum in
 lemma IsSmoothAt.exists_notMem_smooth [FinitePresentation R A] (p : Ideal A) [p.IsPrime]
     [IsSmoothAt R p] :
     ∃ f ∉ p, Smooth R (Localization.Away f) := by
-  obtain ⟨_, ⟨_, ⟨f, rfl⟩, rfl⟩, hxf, hf⟩ :=
+  obtain ⟨-, ⟨-, ⟨f, rfl⟩, rfl⟩, hxf, hf⟩ :=
     isBasis_basic_opens.exists_subset_of_mem_open ‹⟨p, ‹_›⟩ ∈ smoothLocus R A› isOpen_smoothLocus
   refine ⟨f, by simpa using hxf, ⟨?_, inferInstance⟩⟩
   rwa [basicOpen_subset_smoothLocus_iff] at hf

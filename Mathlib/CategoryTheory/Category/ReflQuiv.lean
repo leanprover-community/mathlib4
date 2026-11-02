@@ -240,7 +240,7 @@ lemma morphismProperty_eq_top {W : MorphismProperty (FreeRefl V)}
   le_antisymm (by simp) (by
     rw [← multiplicativeClosure_morphismPropertyHomMk,
       MorphismProperty.multiplicativeClosure_le_iff]
-    rintro _ _ _ ⟨h⟩
+    rintro - - - ⟨h⟩
     apply hW)
 
 section

@@ -221,7 +221,7 @@ section Kernel
 can be written as the union of a countable set and a perfect set. -/
 theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
     (hclosed : IsClosed C) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ C = V ∪ D := by
-  obtain ⟨b, bct, _, bbasis⟩ := TopologicalSpace.exists_countable_basis α
+  obtain ⟨b, bct, -, bbasis⟩ := TopologicalSpace.exists_countable_basis α
   let v := { U ∈ b | (U ∩ C).Countable }
   let V := ⋃ U ∈ v, U
   let D := C \ V

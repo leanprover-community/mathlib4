@@ -278,7 +278,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     (ex : Function.Exact (l12.rTensor M) (l23.rTensor M)) :
     LinearMap.range l12 ≤ LinearMap.ker l23 := by
   -- let `n1 ∈ N1`. We need to show `l23 (l12 n1) = 0`. Suppose this is not the case.
-  rintro _ ⟨n1, rfl⟩
+  rintro - ⟨n1, rfl⟩
   rw [LinearMap.mem_ker]
   by_contra! hn1
   -- Let `E` be the submodule spanned by `l23 (l12 n1)`. Then because `l23 (l12 n1) ≠ 0`, we have

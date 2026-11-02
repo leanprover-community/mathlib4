@@ -88,7 +88,7 @@ lemma le_iff_exists_mono {x y : X.N} :
 
 lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by
   rw [le_iff_exists_mono] at h
-  obtain ⟨f, hf, _⟩ := h
+  obtain ⟨f, hf, -⟩ := h
   exact SimplexCategory.len_le_of_mono f
 
 set_option backward.defeqAttrib.useBackward true in

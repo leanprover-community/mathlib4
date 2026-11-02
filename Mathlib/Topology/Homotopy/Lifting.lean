@@ -189,7 +189,7 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocallyPathConn
     let Γ' : Path e₀ ((p.symm ∘ f) a) :=
       ⟨Γ _ (somePath a₀ a).source, Γ_0 .., by simp [← this, hep, F]⟩
     specialize uniq ((somePath a₀ a).trans γ) _ (Γ'.trans <| γ.map' <| p.continuousOn_symm.comp
-      f.2.continuousOn <| by rintro _ ⟨t, rfl⟩; exact hUp (hγ _)) _ (by simp) (somePath a₀ x).source
+      f.2.continuousOn <| by rintro - ⟨t, rfl⟩; exact hUp (hγ _)) _ (by simp) (somePath a₀ x).source
       (by simp) (Γ_0 _ (somePath a₀ x).source) _ (Γ_lifts ..) (by simp)
     · ext
       simp only [Function.comp, ContinuousMap.coe_ofClass, Path.trans_apply, ContinuousMap.coe_comp]

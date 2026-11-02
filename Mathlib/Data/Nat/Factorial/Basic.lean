@@ -113,7 +113,7 @@ theorem factorial_eq_one : n ! = 1 ↔ n ≤ 1 := by
   · intro h
     rw [← not_lt, ← one_lt_factorial, h]
     apply lt_irrefl
-  · rintro (_ | _ | _) <;> rfl
+  · rintro (- | - | -) <;> rfl
 
 theorem factorial_inj (hn : 1 < n) : n ! = m ! ↔ n = m := by
   refine ⟨fun h => ?_, congr_arg _⟩
@@ -483,7 +483,7 @@ lemma factorial_two_mul_le (n : ℕ) : (2 * n)! ≤ (2 * n) ^ n * n ! := by
   exact Nat.mul_le_mul_right _ (ascFactorial_le_pow_add _ _)
 
 lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 * n)! := by
-  obtain _ | n := n
+  obtain - | n := n
   · simp
   rw [Nat.mul_comm, Nat.two_mul]
   calc

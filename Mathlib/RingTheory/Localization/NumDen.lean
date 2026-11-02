@@ -40,7 +40,7 @@ theorem exists_reduced_fraction (x : K) :
   obtain ⟨a', b', c', no_factor, rfl, rfl⟩ :=
     UniqueFactorizationMonoid.exists_reduced_factors' a b
       (mem_nonZeroDivisors_iff_ne_zero.mp b_nonzero)
-  obtain ⟨_, b'_nonzero⟩ := mul_mem_nonZeroDivisors.mp b_nonzero
+  obtain ⟨-, b'_nonzero⟩ := mul_mem_nonZeroDivisors.mp b_nonzero
   refine ⟨a', ⟨b', b'_nonzero⟩, no_factor, ?_⟩
   refine mul_left_cancel₀ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors b_nonzero) ?_
   simp only [map_mul, Algebra.smul_def] at *

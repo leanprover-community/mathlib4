@@ -192,7 +192,7 @@ theorem SameCycle.exists_pow_eq' [Finite α] : SameCycle f x y → ∃ i < order
 
 theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
     ∃ i : ℕ, 0 < i ∧ i ≤ orderOf f ∧ (f ^ i) x = y := by
-  obtain ⟨_ | i, hi, rfl⟩ := h.exists_pow_eq'
+  obtain ⟨- | i, hi, rfl⟩ := h.exists_pow_eq'
   · refine ⟨orderOf f, orderOf_pos f, le_rfl, ?_⟩
     rw [pow_orderOf_eq_one, pow_zero]
   · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
@@ -204,7 +204,7 @@ theorem SameCycle.exists_fin_pow_eq [Finite α] (h : SameCycle f x y) :
 
 theorem SameCycle.exists_nat_pow_eq [Finite α] (h : SameCycle f x y) :
     ∃ i : ℕ, (f ^ i) x = y := by
-  obtain ⟨i, _, hi⟩ := h.exists_pow_eq'
+  obtain ⟨i, -, hi⟩ := h.exists_pow_eq'
   exact ⟨i, hi⟩
 
 instance (f : Perm α) [DecidableRel (SameCycle f)] :
@@ -479,7 +479,7 @@ theorem IsCycle.support_congr (hf : IsCycle f) (hg : IsCycle g) (h : f.support �
   have : f.support = g.support := by
     refine le_antisymm h ?_
     intro z hz
-    obtain ⟨x, hx, _⟩ := id hf
+    obtain ⟨x, hx, -⟩ := id hf
     have hx' : g x ≠ x := by rwa [← h' x (mem_support.mpr hx)]
     obtain ⟨m, hm⟩ := hg.exists_pow_eq hx' (mem_support.mp hz)
     have h'' : ∀ x ∈ f.support ∩ g.support, f x = g x := by
@@ -814,7 +814,7 @@ theorem IsCycleOn.of_zpow {n : ℤ} (hf : (f ^ n).IsCycleOn s) (h : Set.BijOn f 
 theorem IsCycleOn.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
     (h : g.IsCycleOn s) : (g.extendDomain f).IsCycleOn ((↑) ∘ f '' s) :=
   ⟨h.1.extendDomain, by
-    rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+    rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
     exact (h.2 ha hb).extendDomain⟩
 
 protected theorem IsCycleOn.countable (hs : f.IsCycleOn s) : s.Countable := by
@@ -900,7 +900,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     (range #s : Set ℕ).PairwiseDisjoint fun k =>
       s.map ⟨fun i => (i, (f ^ k) i), fun _ _ => congr_arg Prod.fst⟩ := by
-  obtain hs | _ := (s : Set α).subsingleton_or_nontrivial
+  obtain hs | - := (s : Set α).subsingleton_or_nontrivial
   · refine Set.Subsingleton.pairwise ?_ _
     simp_rw [Set.Subsingleton, mem_coe, ← card_le_one] at hs ⊢
     rwa [card_range]
@@ -908,7 +908,7 @@ theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     rintro m hm n hn hmn
     simp only [disjoint_left, Function.onFun, mem_map, Function.Embedding.coeFn_mk,
       not_exists, not_and, forall_exists_index, and_imp, Prod.forall, Prod.mk_inj]
-    rintro _ _ _ - rfl rfl a ha rfl h
+    rintro _ - _ - rfl rfl a ha rfl h
     rw [hf.pow_apply_eq_pow_apply ha] at h
     rw [mem_coe, mem_range] at hm hn
     exact hmn.symm (h.eq_of_lt_of_lt hn hm)

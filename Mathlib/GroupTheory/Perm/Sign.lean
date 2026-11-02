@@ -127,7 +127,7 @@ theorem mclosure_swap_castSucc_succ (n : ℕ) :
     Submonoid.closure (Set.range fun i : Fin n ↦ swap i.castSucc i.succ) = ⊤ := by
   apply top_unique
   rw [← mclosure_isSwap, Submonoid.closure_le]
-  rintro _ ⟨i, j, ne, rfl⟩
+  rintro - ⟨i, j, ne, rfl⟩
   wlog lt : i < j generalizing i j
   · rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_gt.resolve_left lt)
   induction j using Fin.induction with
@@ -266,7 +266,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
 private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
       -1 := by
-  rcases n with (_ | _ | n)
+  rcases n with (- | - | n)
   · simp at hn
   · simp at hn
   · exact signAux_swap_zero_one' n
@@ -501,7 +501,7 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
   -- but we have to keep track of whether we already passed `a` in the list.
   suffices a ∈ l ∧ (l.map fun a => prodExtendRight a (σ a)).prod (a, b) = (a, σ a b) ∨
       a ∉ l ∧ (l.map fun a => prodExtendRight a (σ a)).prod (a, b) = (a, b) by
-    obtain ⟨_, prod_eq⟩ := Or.resolve_right this (not_and.mpr fun h _ => h (mem_l a))
+    obtain ⟨-, prod_eq⟩ := Or.resolve_right this (not_and.mpr fun h _ => h (mem_l a))
     rw [prod_eq, prodCongrRight_apply]
   clear mem_l
   induction l with

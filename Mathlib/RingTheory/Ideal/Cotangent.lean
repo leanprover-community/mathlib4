@@ -121,7 +121,7 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   rw [eq_bot_iff, pow_two I.cotangentIdeal, ← smul_eq_mul]
   intro x hx
   refine Submodule.smul_induction_on hx ?_ ?_
-  · rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩; apply (Submodule.Quotient.eq _).mpr _
+  · rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩; apply (Submodule.Quotient.eq _).mpr _
     rw [sub_zero, pow_two]; exact Ideal.mul_mem_mul hx hy
   · intro x y hx hy; exact add_mem hx hy
 
@@ -183,7 +183,7 @@ theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
     RingHom.ker f.kerSquareLift.toRingHom = (RingHom.ker f.toRingHom).cotangentIdeal := by
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
-  · rintro _ ⟨x, hx, rfl⟩; exact hx
+  · rintro - ⟨x, hx, rfl⟩; exact hx
 
 instance Algebra.kerSquareLift : Algebra (R ⧸ (RingHom.ker (algebraMap R A) ^ 2)) A :=
   (Algebra.ofId R A).kerSquareLift.toAlgebra

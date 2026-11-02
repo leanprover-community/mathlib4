@@ -112,7 +112,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     _ ≤ sSup (_ '' Metric.closedBall 0 1) := le_csSup ?_ ⟨b, hb, ?_⟩
   -- now we just check the side conditions for `le_csSup`. There is nothing of interest here.
   · refine ⟨‖(star x * x).fst‖ + ‖(star x * x).snd‖, ?_⟩
-    rintro _ ⟨y, hy, rfl⟩
+    rintro - ⟨y, hy, rfl⟩
     refine (norm_add_le _ _).trans ?_
     gcongr
     · rw [Algebra.algebraMap_eq_smul_one]

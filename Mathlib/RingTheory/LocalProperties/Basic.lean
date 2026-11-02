@@ -375,7 +375,7 @@ theorem RingHom.OfLocalizationSpanTarget.ofLocalizationSpan
   apply_fun Ideal.map f at hs
   rw [Ideal.map_span, Ideal.map_top] at hs
   apply hP _ _ hs
-  rintro ⟨_, r, hr, rfl⟩
+  rintro ⟨-, r, hr, rfl⟩
   rw [← IsLocalization.map_comp (M := Submonoid.powers r) (S := Localization.Away r)
     (T := Submonoid.powers (f r))]
   · apply hP' _ r

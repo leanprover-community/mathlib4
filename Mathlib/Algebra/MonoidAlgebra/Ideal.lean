@@ -48,7 +48,7 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
   constructor
   · suffices Ideal.span (⇑(of k G) '' s) ≤ RHS from @this x
     rw [Ideal.span_le]
-    rintro _ ⟨i, hi, rfl⟩ m hm
+    rintro - ⟨i, hi, rfl⟩ m hm
     refine ⟨_, hi, 1, ?_⟩
     simpa using Finsupp.support_single_subset hm
   · intro hx
@@ -86,7 +86,7 @@ theorem AddMonoidAlgebra.mem_ideal_span_of'_image [AddMonoid A] [Semiring k] {s 
   constructor
   · suffices Ideal.span (of' k A '' s) ≤ RHS from @this x
     rw [Ideal.span_le]
-    rintro _ ⟨i, hi, rfl⟩ m hm
+    rintro - ⟨i, hi, rfl⟩ m hm
     refine ⟨_, hi, 0, ?_⟩
     simpa using Finsupp.support_single_subset hm
   · intro hx

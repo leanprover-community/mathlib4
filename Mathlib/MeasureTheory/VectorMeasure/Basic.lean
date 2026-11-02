@@ -64,7 +64,7 @@ theorem m_iUnion (v : VectorMeasure α M) {f : ℕ → Set α} (hf₁ : ∀ i, M
 
 theorem ext_iff (v w : VectorMeasure α M) : v = w ↔ ∀ i : Set α, MeasurableSet i → v i = w i := by
   constructor
-  · rintro rfl _ _
+  · rintro rfl - -
     rfl
   · rw [DFunLike.ext_iff]
     intro h i
