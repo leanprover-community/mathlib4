@@ -96,8 +96,7 @@ abbrev moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
 
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
-simp lemmas: they let `simp` identify `K` with `LinearMap.ker S.g.hom` (and `H` with the quotient)
-inside terms, which the generic lemmas about `LeftHomologyData` cannot do. -/
+not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
 @[implicit_reducible, simps! K H i_hom π_hom]
 def moduleCatLeftHomologyData : S.LeftHomologyData where
   K := ↧S.g.hom.ker
