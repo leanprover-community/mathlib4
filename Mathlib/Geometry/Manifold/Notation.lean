@@ -269,7 +269,7 @@ Assumes that `e` is already in `whnf` and has had metavariables instantiated. -/
 private def isContAlternatingMaps (e : Expr) : TermElabM Expr := do
   match_expr e with
   | ContinuousAlternatingMap R _M _N _ι _ _ _ _ _ _ _ =>
-    trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous alternating maps"
+    trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous alternating maps over `{R}`"
     return R
   | _ => throwError "`{e}` is not a space of continuous alternating maps"
 
