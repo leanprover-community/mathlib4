@@ -732,10 +732,9 @@ where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
   /-- Attempt to find a model from a `TotalSpace` first by seeing if it is the total space of a
-  tangent bundle, and otherwise by finding a model with corners on its base.
-
-  This calls `findModelInner` on the base space, so it cannot easily be factored out into a
-  separate declaration.  -/
+  tangent bundle, and otherwise by finding a model with corners on its base. -/
+  /- This calls `findModelInner` on the base space, so it cannot easily be factored out into a
+  separate declaration. -/
   fromTotalSpace : TermElabM FindModelResult := do
     match_expr e with
     | Bundle.TotalSpace _ F V => do
