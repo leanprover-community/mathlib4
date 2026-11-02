@@ -419,7 +419,7 @@ lemma single_commute [DecidableEq M] (hm : ∀ m', Commute m m') (hr : ∀ r', C
     = ∑ x_1 ∈ mulAntidiagonal m' with x_1.2 = m, x.coeff x_1.1 * r by
       simpa [coeff_mul, Pi.single_apply, sum_ite]
   refine sum_bij (fun p _ ↦ p.swap) ?_ ?_ ?_ ?_
-  any_goals intros; simp_all
+  all_goals intros; simp_all
   all_goals grind
 
 @[to_additive (dont_translate := R) coeff_mul_single_eq_coeff_mul]
@@ -624,7 +624,7 @@ def curryRingEquiv [DecidableEq M] [DecidableEq N] : R⟦M × N⟧ ≃+* R⟦N�
         x.coeff (x_1.fst.1, x_1.snd.1) * y.coeff (x_1.fst.2, x_1.snd.2) by
           simpa [curryAddEquiv, coeff_mul, sum_sigma']
     refine sum_bij (fun p _ ↦ ⟨(p.1.1, p.2.1), (p.1.2, p.2.2)⟩) ?_ ?_ ?_ ?_
-    any_goals intros; simp_all [Prod.ext_iff]
+    all_goals intros; simp_all [Prod.ext_iff]
     grind
 
 @[to_additive (dont_translate := R) (attr := simp)]
@@ -662,7 +662,7 @@ instance nonUnitalCommSemiring [CommSemigroup M] [HasMulAntidiagonal M] :
   mul_comm f g := by
     ext; simp_rw [coeff_mul]
     refine sum_bij (fun p _ ↦ p.swap) ?_ ?_ ?_ ?_
-    any_goals intros; simp_all
+    all_goals intros; simp_all
     all_goals grind
 
 @[to_additive (dont_translate := R)]
