@@ -329,6 +329,11 @@ noncomputable def equalizerIdempotent : A :=
 lemma isIdempotentElem_equalizerIdempotent : IsIdempotentElem (equalizerIdempotent f g) :=
   (isIdempotentElem_elem R S).map (productMap f g)
 
+@[simp]
+lemma map_equalizerIdempotent {B : Type*} [CommRing B] [Algebra R B] (φ : A →ₐ[R] B) :
+    φ (equalizerIdempotent f g) = equalizerIdempotent (φ.comp f) (φ.comp g) := by
+  simp_rw [equalizerIdempotent, ← AlgHom.comp_apply, comp_productMap]
+
 variable {f g} in
 lemma equalizerIdempotent_mul_eq_iff {a : A} :
     equalizerIdempotent f g * a = a ↔ ∀ x : S, f x * a = g x * a := by
@@ -340,11 +345,6 @@ lemma equalizerIdempotent_mul_eq_iff {a : A} :
     induction t with
     | tmul x y => simp [mul_assoc, h]
     | add x y hx hy => simp [add_mul, hx, hy]
-
-@[simp]
-lemma map_equalizerIdempotent {B : Type*} [CommRing B] [Algebra R B] (φ : A →ₐ[R] B) :
-    φ (equalizerIdempotent f g) = equalizerIdempotent (φ.comp f) (φ.comp g) := by
-  simp_rw [equalizerIdempotent, ← AlgHom.comp_apply, comp_productMap]
 
 theorem span_one_sub_equalizerIdempotent_eq :
     Ideal.span {1 - equalizerIdempotent f g} = Ideal.span (Set.range fun x ↦ f x - g x) :=
@@ -368,8 +368,6 @@ lemma equalizerIdempotent_comm : equalizerIdempotent f g = equalizerIdempotent g
   have hfg := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (map_mul_equalizerIdempotent f g x).symm
   have hgf := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (map_mul_equalizerIdempotent g f x).symm
   rw [← hfg, mul_comm, hgf]
-
-
 
 end equalizer
 
