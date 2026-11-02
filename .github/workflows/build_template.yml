@@ -741,6 +741,7 @@ jobs:
   batteries_adaptation_comment:
     name: Report Mathlib CI to Batteries
     needs: [build, test_lint]
+    # Report for Batteries adaptation PRs from the shared fork after test_lint finishes, unless the run was cancelled.
     if: >-
       !cancelled() && github.repository == 'leanprover-community/mathlib4' &&
       github.event.pull_request.head.repo.full_name == 'leanprover-community/mathlib4-adaptations' &&
