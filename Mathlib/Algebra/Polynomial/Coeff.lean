@@ -260,7 +260,7 @@ theorem coeff_monomial_zero_mul (p : R[X]) (d : ℕ) (r : R) :
   coeff_monomial_mul p 0 d r
 
 theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 := by
-  simp_all only [← coeff_eq_zero, Finsupp.ext_iff, Finsupp.coe_zero, Pi.zero_apply]
+  simp_all only [← coeff_eq_zero, Finsupp.ext_iff, zero_apply]
   exact fun k ↦ by simpa using H (k + n)
 
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
