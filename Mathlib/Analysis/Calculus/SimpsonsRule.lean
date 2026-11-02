@@ -3,7 +3,6 @@ Copyright (c) 2026 Chan Kwan Ho. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chan Kwan Ho
 -/
-
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
@@ -46,6 +45,7 @@ fourth-derivative remainder.
 
 * E. Suli and D. Mayers, *An Introduction to Numerical Analysis*.
 -/
+public section
 
 open Polynomial
 
