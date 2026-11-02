@@ -16,7 +16,7 @@ ring at the point in question to be a discrete valuation ring. The results that 
 `Mathlib/AlgebraicGeometry/OrderOfVanishing/Basic.lean`.
 -/
 
-@[expose] public section
+public section
 
 open AlgebraicGeometry CategoryTheory IsLocalRing Order TopologicalSpace WithZero
 
