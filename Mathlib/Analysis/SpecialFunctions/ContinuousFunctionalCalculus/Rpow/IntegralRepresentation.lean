@@ -461,12 +461,13 @@ lemma rpowIntegrandNeg_nonneg (ht : 0 ≤ t) (hx : 0 ≤ x) : 0 ≤ rpowIntegran
   unfold rpowIntegrandNeg
   positivity
 
-lemma rpowIntegrandNeg_antitoneOn (ht : 0 < t) :
+lemma antitoneOn_rpowIntegrandNeg (ht : 0 < t) :
     AntitoneOn (rpowIntegrandNeg p t) (Ioi 0) := by
   intro x (hx : 0 < x) y _ hxy
   unfold rpowIntegrandNeg
   gcongr
 
+@[fun_prop]
 lemma continuousOn_rpowIntegrandNeg_uncurry (s : Set ℝ) (hs : s ⊆ Ici 0) :
     ContinuousOn (rpowIntegrandNeg p).uncurry (Ioi 0 ×ˢ s) := by
   unfold rpowIntegrandNeg
@@ -488,7 +489,7 @@ lemma rpow_eq_const_mul_integral_rpowIntegrandNeg (hp : p ∈ Ioo (-1) 0) (hx : 
       = (∫ t in Ioi 0, rpowIntegrand₀₁ (p + 1) t 1)⁻¹ * ∫ t in Ioi 0, rpowIntegrandNeg p t x := by
   rw [setIntegral_congr_fun measurableSet_Ioi fun t ht ↦
     rpowIntegrandNeg_eq_inv_mul_rpowIntegrand₀₁ hx ht, integral_const_mul, mul_left_comm,
-  ← rpow_eq_const_mul_integral (by grind) hx.le, rpow_add_one hx.ne']
+    ← rpow_eq_const_mul_integral (by grind) hx.le, rpow_add_one hx.ne']
   field_simp
 
 lemma exists_measure_rpow_eq_integral_rpowIntegrandNeg (hp : p ∈ Ioo (-1) 0) :
@@ -661,7 +662,7 @@ lemma exists_measure_rpow_eq_integral_cfc_rpowIntegrand₁₀ [CompleteSpace A] 
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht z hz
     have hz' : 0 < z := ha.spectrum_pos hz
     rw [Real.norm_of_nonneg (rpowIntegrandNeg_nonneg ht.le hz'.le)]
-    exact rpowIntegrandNeg_antitoneOn ht hr hz' (csInf_le (spectrum.isCompact a).bddBelow hz)
+    exact antitoneOn_rpowIntegrandNeg ht hr hz' (csInf_le (spectrum.isCompact a).bddBelow hz)
   refine ⟨integrableOn_cfc measurableSet_Ioi _ _ a hf hbound (hμ r hr).1.2, ?_⟩
   rw [rpow_eq_cfc_real ha.nonneg, ← cfc_setIntegral measurableSet_Ioi _ _ a hf hbound (hμ r hr).1.2]
   congr! with x hx
