@@ -26,64 +26,49 @@ scaling matrix, and descend this order to cusp orbits for slash-invariant forms.
 
 public section
 
+open ConjAct OnePoint Matrix.SpecialLinearGroup
+open scoped MatrixGroups ModularForm Pointwise
+
 namespace UpperHalfPlane
 
-open scoped MatrixGroups ModularForm Pointwise in
 /-- The width-weighted order is unchanged by an upper triangular change of cusp coordinate. -/
-lemma width_mul_orderAtInfty_slash_of_upperTriangular
-    (G : Subgroup (GL (Fin 2) ℝ)) [DiscreteTopology G] (hw : 0 < G.widthInfty)
-    (f : ℍ → ℂ) (k : ℤ) (g : GL (Fin 2) ℝ) (hg : g 1 0 = 0)
-    (ha : 0 < g 0 0 / g 1 1) :
-    (ConjAct.toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
-      G.widthInfty * orderAtInfty f := by
-  rw [Subgroup.widthInfty_conj_of_upperTriangular hw hg ha,
-    orderAtInfty_slash_of_upperTriangular f k g hg, abs_of_pos ha,
-    ← mul_assoc, ← EReal.coe_mul, div_mul_cancel₀ _ ha.ne']
+lemma width_mul_orderAtInfty_slash_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)}
+    [DiscreteTopology G] (hw : 0 < G.widthInfty) (f : ℍ → ℂ) (k : ℤ) {g : GL (Fin 2) ℝ}
+    (hg : g 1 0 = 0) :
+    (toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) = G.widthInfty * orderAtInfty f := by
+  rw [Subgroup.widthInfty_conj_of_upperTriangular hw hg,
+    orderAtInfty_slash_of_upperTriangular f k g hg, ← mul_assoc, ← EReal.coe_mul, div_mul_cancel₀]
+  grind [g.a_ne_zero_of_c_eq_zero hg, g.d_ne_zero_of_c_eq_zero hg]
 
-open OnePoint in
-open scoped MatrixGroups ModularForm Pointwise in
-lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq
-    (G : Subgroup (GL (Fin 2) ℝ)) [DiscreteTopology G]
-    (f : ℍ → ℂ) (k : ℤ) (g h : GL (Fin 2) ℝ)
-    (hw : 0 < (ConjAct.toConjAct g⁻¹ • G).widthInfty)
-    (hcg : g • (∞ : OnePoint ℝ) = h • ∞)
-    (hdg : 0 < g.det.val) (hdh : 0 < h.det.val) :
-    (ConjAct.toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
-      (ConjAct.toConjAct h⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] h) := by
+lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq {G : Subgroup (GL (Fin 2) ℝ)}
+    [DiscreteTopology G] {g h : GL (Fin 2) ℝ} (hw : 0 < (toConjAct g⁻¹ • G).widthInfty)
+    (hcg : g • (∞ : OnePoint ℝ) = h • ∞) (f : ℍ → ℂ) (k : ℤ) :
+    (toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
+      (toConjAct h⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] h) := by
   obtain ⟨t, rfl⟩ : ∃ t, h = g * t := ⟨g⁻¹ * h, (mul_inv_cancel_left g h).symm⟩
   have ht : t 1 0 = 0 := smul_infty_eq_self_iff.mp <| by simpa [mul_smul] using hcg.symm
-  have hd : 0 < t.det.val := pos_of_mul_pos_right (by simpa using hdh) hdg.le
-  have ha : 0 < t 0 0 / t 1 1 :=
-    div_pos_iff.mpr <| mul_pos_iff.mp <| by simpa [Matrix.det_fin_two, ht] using hd
-  rw [mul_inv_rev, ConjAct.toConjAct_mul, mul_smul, SlashAction.slash_mul]
-  exact (width_mul_orderAtInfty_slash_of_upperTriangular _ hw _ k t ht ha).symm
+  rw [mul_inv_rev, toConjAct_mul, mul_smul, SlashAction.slash_mul]
+  exact (width_mul_orderAtInfty_slash_of_upperTriangular hw _ k ht).symm
 
 section Cusps
 
-open OnePoint Matrix.SpecialLinearGroup
-open scoped MatrixGroups ModularForm Pointwise
-
 /-- Independence of the scaling matrix, allowing either orientation. -/
-lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq'
-    (G : Subgroup (GL (Fin 2) ℝ)) [DiscreteTopology G]
-    (f : ℍ → ℂ) (k : ℤ) (g h : GL (Fin 2) ℝ)
-    (hw : 0 < (ConjAct.toConjAct g⁻¹ • G).widthInfty)
-    (hcg : g • (∞ : OnePoint ℝ) = h • ∞) :
-    (ConjAct.toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
-      (ConjAct.toConjAct h⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] h) := by
+lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq' {G : Subgroup (GL (Fin 2) ℝ)}
+    [DiscreteTopology G] {g h : GL (Fin 2) ℝ} (hw : 0 < (toConjAct g⁻¹ • G).widthInfty)
+    (hcg : g • (∞ : OnePoint ℝ) = h • ∞) (f : ℍ → ℂ) (k : ℤ) :
+    (toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
+      (toConjAct h⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] h) := by
   let t := g⁻¹ * h
   have ht : t 1 0 = 0 := by
-    apply OnePoint.smul_infty_eq_self_iff.mp
-    simp only [t, mul_smul, ← hcg, inv_smul_smul]
-  have ha : 0 < |t 0 0 / t 1 1| := by
-    simpa [Matrix.det_fin_two, ht] using t.det_ne_zero
-  have heq : (ConjAct.toConjAct t⁻¹ • (ConjAct.toConjAct g⁻¹ • G)).widthInfty *
+    simp only [← smul_infty_eq_self_iff, t, mul_smul, ← hcg, inv_smul_smul]
+  have ha : |t 0 0 / t 1 1| ≠ 0 := by simpa [Matrix.det_fin_two, ht] using t.det_ne_zero
+  have heq : (toConjAct t⁻¹ • (toConjAct g⁻¹ • G)).widthInfty *
       orderAtInfty ((f ∣[k] g) ∣[k] t) =
-        (ConjAct.toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) := by
-    rw [Subgroup.widthInfty_conj_of_upperTriangular_abs hw ht,
-      orderAtInfty_slash_of_upperTriangular _ k t ht,
-      ← mul_assoc, ← EReal.coe_mul, div_mul_cancel₀ _ ha.ne']
-  simpa only [t, mul_inv_rev, inv_inv, ← ConjAct.toConjAct_mul, ← mul_smul,
+        (toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) := by
+    rw [Subgroup.widthInfty_conj_of_upperTriangular hw ht,
+      orderAtInfty_slash_of_upperTriangular _ k t ht, ← mul_assoc, ← EReal.coe_mul,
+      div_mul_cancel₀ _ ha]
+  simpa only [t, mul_inv_rev, inv_inv, ← toConjAct_mul, ← mul_smul,
     mul_inv_cancel_right, ← SlashAction.slash_mul, mul_inv_cancel_left] using heq.symm
 
 private noncomputable def cuspScalingMatrix (c : OnePoint ℝ) : GL (Fin 2) ℝ :=
@@ -101,59 +86,56 @@ The definition is made for every point of `ℙ¹(ℝ)` and every complex-valued 
 the cusp and discreteness hypotheses belong to the evaluation lemmas. -/
 noncomputable def orderAtCusp (G : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) (c : OnePoint ℝ)
     (f : ℍ → ℂ) : EReal :=
-  (ConjAct.toConjAct (cuspScalingMatrix c)⁻¹ • G).widthInfty *
+  (toConjAct (cuspScalingMatrix c)⁻¹ • G).widthInfty *
     orderAtInfty (f ∣[k] cuspScalingMatrix c)
 
 /-- Compute the order at a cusp using any scaling matrix, of either orientation. -/
-lemma orderAtCusp_eq (G : Subgroup (GL (Fin 2) ℝ)) [DiscreteTopology G]
-    [G.HasDetPlusMinusOne] (k : ℤ) {c : OnePoint ℝ} (hc : IsCusp c G)
-    (f : ℍ → ℂ) (g : GL (Fin 2) ℝ) (hg : g • ∞ = c) :
-    orderAtCusp G k c f = (ConjAct.toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) := by
+lemma orderAtCusp_eq {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G] [G.HasDetPlusMinusOne]
+    {c : OnePoint ℝ} (hc : IsCusp c G) {g : GL (Fin 2) ℝ} (hg : g • ∞ = c) (k : ℤ) (f : ℍ → ℂ) :
+    orderAtCusp G k c f = (toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) := by
   have hchosen : cuspScalingMatrix c • ∞ = c := cuspScalingMatrix_smul c
-  have hw : 0 < (ConjAct.toConjAct (cuspScalingMatrix c)⁻¹ • G).widthInfty := by
+  have hw : 0 < (toConjAct (cuspScalingMatrix c)⁻¹ • G).widthInfty := by
     have heq : (cuspScalingMatrix c)⁻¹ • c = ∞ := inv_smul_eq_iff.mpr hchosen.symm
     simpa only [Subgroup.widthInfty_pos_iff, heq] using hc.smul (cuspScalingMatrix c)⁻¹
-  exact width_mul_orderAtInfty_slash_eq_of_smul_infty_eq' G f k
-    (cuspScalingMatrix c) g hw (hchosen.trans hg.symm)
+  exact width_mul_orderAtInfty_slash_eq_of_smul_infty_eq' hw (hchosen.trans hg.symm) f k
 
 /-- At infinity, the order at a cusp is the width times the exponential order. -/
-lemma orderAtCusp_infty (G : Subgroup (GL (Fin 2) ℝ)) [DiscreteTopology G]
-    [G.HasDetPlusMinusOne] (k : ℤ) (hc : IsCusp ∞ G) (f : ℍ → ℂ) :
+lemma orderAtCusp_infty {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G]
+    [G.HasDetPlusMinusOne] (hc : IsCusp ∞ G) (k : ℤ) (f : ℍ → ℂ) :
     orderAtCusp G k ∞ f = G.widthInfty * orderAtInfty f := by
-  simpa using orderAtCusp_eq G k hc f 1 (by simp)
+  simpa using orderAtCusp_eq hc (g := 1) (by simp) k f
 
 /-- Changing coordinates transports the cusp and the level, preserving the cusp order. -/
-lemma orderAtCusp_slash (G : Subgroup (GL (Fin 2) ℝ)) [DiscreteTopology G]
+lemma orderAtCusp_slash {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G]
     [G.HasDetPlusMinusOne] (k : ℤ) {c : OnePoint ℝ} (hc : IsCusp c G)
-    (f : ℍ → ℂ) (g : GL (Fin 2) ℝ) :
-    orderAtCusp (ConjAct.toConjAct g⁻¹ • G) k (g⁻¹ • c) (f ∣[k] g) =
+    (g : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
+    orderAtCusp (toConjAct g⁻¹ • G) k (g⁻¹ • c) (f ∣[k] g) =
       orderAtCusp G k c f := by
-  rw [orderAtCusp_eq _ k (hc.smul g⁻¹) _ (g⁻¹ * cuspScalingMatrix c)
-      (by simp only [mul_smul, cuspScalingMatrix_smul]),
-    orderAtCusp_eq G k hc f (cuspScalingMatrix c) (cuspScalingMatrix_smul c)]
-  simp only [mul_inv_rev, inv_inv, ← ConjAct.toConjAct_mul, ← mul_smul,
-    mul_inv_cancel_right, ← SlashAction.slash_mul, mul_inv_cancel_left]
+  rw [orderAtCusp_eq (hc.smul g⁻¹) (g := g⁻¹ * cuspScalingMatrix c)
+    (by simp only [mul_smul, cuspScalingMatrix_smul]),
+    orderAtCusp_eq hc (cuspScalingMatrix_smul c)]
+  simp [← mul_smul, ← SlashAction.slash_mul]
 
-variable {F : Type*} (G : Subgroup (GL (Fin 2) ℝ)) [DiscreteTopology G]
-  [G.HasDetPlusMinusOne] (k : ℤ) [FunLike F ℍ ℂ] [SlashInvariantFormClass F G k]
+variable {F : Type*} {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G]
+  [G.HasDetPlusMinusOne] {k : ℤ} [FunLike F ℍ ℂ] [SlashInvariantFormClass F G k]
 
 /-- The order of a slash-invariant form is constant on each cusp orbit. -/
 lemma orderAtCusp_smul {c : OnePoint ℝ} (hc : IsCusp c G) (f : F)
     {g : GL (Fin 2) ℝ} (hg : g ∈ G) :
     orderAtCusp G k (g • c) f = orderAtCusp G k c f := by
-  rw [orderAtCusp_eq G k (hc.smul_of_mem hg) f (g * cuspScalingMatrix c)
-    (by rw [mul_smul, cuspScalingMatrix_smul]),
-    orderAtCusp_eq G k hc f (cuspScalingMatrix c) (cuspScalingMatrix_smul c)]
-  simp only [mul_inv_rev, ConjAct.toConjAct_mul, mul_smul,
+  have aux : (g * cuspScalingMatrix c) • ∞ = g • c := by rw [mul_smul, cuspScalingMatrix_smul]
+  rw [orderAtCusp_eq (hc.smul_of_mem hg) aux, orderAtCusp_eq hc (cuspScalingMatrix_smul c)]
+  simp only [mul_inv_rev, toConjAct_mul, mul_smul,
     G.conjAct_pointwise_smul_eq_self (G.le_normalizer (G.inv_mem hg)),
     SlashAction.slash_mul, SlashInvariantFormClass.slash_action_eq f g hg]
 
+variable (G k) in
 /-- The width-weighted order of a slash-invariant form at a cusp orbit. -/
 noncomputable def orderAtCuspOrbit (c : CuspOrbits G) (f : F) : EReal :=
   Quotient.lift (fun c ↦ orderAtCusp G k c.val f)
     (fun ⟨c, _⟩ ⟨d, hd⟩ ⟨⟨g, hG⟩, hg⟩ ↦ by
       have heq : g • d = c := congr(Subtype.val $hg)
-      simpa only [heq] using orderAtCusp_smul G k hd f hG) c
+      simpa only [heq] using orderAtCusp_smul hd f hG) c
 
 /-- Evaluate the order at a cusp orbit on a representative. -/
 @[simp] lemma orderAtCuspOrbit_mk (c : cuspsSubMulAction G) (f : F) :
@@ -168,15 +150,13 @@ lemma orderAtCuspOrbit_eq (c : CuspOrbits G) (d : cuspsSubMulAction G)
 
 end Cusps
 
-open scoped MatrixGroups ModularForm
-
-variable {F : Type*} (G : Subgroup (GL (Fin 2) ℝ))
+variable {F : Type*} {G : Subgroup (GL (Fin 2) ℝ)}
   [G.HasDetPlusMinusOne] (k : ℤ) [FunLike F ℍ ℂ] [ModularFormClass F G k]
 
-lemma orderAtCusp_eq_qExpansion_order [DiscreteTopology G] [Fact (IsCusp OnePoint.infty G)]
-    (f : F) : orderAtCusp G k OnePoint.infty f =
-      (qExpansion G.strictWidthInfty f).order / G.regularityFactorInfty := by
-  rw [orderAtCusp_infty _ _ Fact.out,
+lemma orderAtCusp_eq_qExpansion_order [DiscreteTopology G] [Fact (IsCusp ∞ G)]
+    [Decidable G.IsRegularAtInfty] (f : F) :
+    orderAtCusp G k ∞ f = (qExpansion G.strictWidthInfty f).order / G.regularityFactorInfty := by
+  rw [orderAtCusp_infty Fact.out,
       orderAtInfty_eq_qExpansion_order (Subgroup.strictWidthInfty_pos_iff.mpr Fact.out)
         (SlashInvariantFormClass.periodic_comp_ofComplex f G.strictWidthInfty_mem_strictPeriods)
         (ModularFormClass.holo f) (ModularFormClass.bdd_at_infty f)]
@@ -185,15 +165,13 @@ lemma orderAtCusp_eq_qExpansion_order [DiscreteTopology G] [Fact (IsCusp OnePoin
     EReal.mul_div_mul_cancel (EReal.coe_ne_bot _) (EReal.coe_ne_top _)]
   exact EReal.coe_ne_zero.mpr (Subgroup.widthInfty_pos_iff.mpr Fact.out).ne'
 
-open scoped Pointwise in
 omit [G.HasDetPlusMinusOne] in
 /-- A modular form has nonnegative order at every cusp. -/
-lemma orderAtCusp_nonneg {c : OnePoint ℝ} (hc : IsCusp c G)
-    (f : F) : 0 ≤ orderAtCusp G k c f := by
-  have hsc : (cuspScalingMatrix c)⁻¹ • c = OnePoint.infty :=
+lemma orderAtCusp_nonneg {c : OnePoint ℝ} (hc : IsCusp c G) (f : F) :
+    0 ≤ orderAtCusp G k c f := by
+  have hsc : (cuspScalingMatrix c)⁻¹ • c = ∞ :=
     inv_smul_eq_iff.mpr (cuspScalingMatrix_smul c).symm
-  have : Fact (IsCusp OnePoint.infty
-      (ConjAct.toConjAct (cuspScalingMatrix c)⁻¹ • G)) :=
+  have : Fact (IsCusp ∞ (toConjAct (cuspScalingMatrix c)⁻¹ • G)) :=
     ⟨by simpa [hsc] using hc.smul (cuspScalingMatrix c)⁻¹⟩
   have : 0 ≤ orderAtInfty (⇑f ∣[k] cuspScalingMatrix c) := by
     simpa only [ModularForm.coe_translate] using (ModularFormClass.bdd_at_infty
@@ -203,8 +181,9 @@ lemma orderAtCusp_nonneg {c : OnePoint ℝ} (hc : IsCusp c G)
 /-- A modular form has nonnegative order at every cusp orbit. -/
 lemma orderAtCuspOrbit_nonneg [DiscreteTopology G] (c : CuspOrbits G) (f : F) :
     0 ≤ orderAtCuspOrbit G k c f :=
-  Quotient.inductionOn c (orderAtCusp_nonneg G k ·.property f)
+  Quotient.inductionOn c (orderAtCusp_nonneg k ·.property f)
 
+variable (G) in
 /--
 The total order of vanishing of `F` at all cusp orbits.
 
@@ -218,48 +197,43 @@ The total order of vanishing of `F` at all cusp orbits.
 lemma orderAtCuspOrbit_le_totalCuspOrder [G.IsArithmetic] (c : CuspOrbits G) (f : F) :
     orderAtCuspOrbit G k c f ≤ totalCuspOrder G k f := by
   let : Fintype (CuspOrbits G) := Fintype.ofFinite _
-  exact Finset.single_le_sum (fun d _ ↦ orderAtCuspOrbit_nonneg G k d f) (Finset.mem_univ c)
+  exact Finset.single_le_sum (fun d _ ↦ orderAtCuspOrbit_nonneg k d f) (Finset.mem_univ c)
 
 lemma totalCuspOrder_nonneg [G.IsArithmetic] (f : F) : 0 ≤ totalCuspOrder G k f :=
-  Finset.sum_nonneg fun c _ ↦ orderAtCuspOrbit_nonneg G k c f
+  Finset.sum_nonneg fun c _ ↦ orderAtCuspOrbit_nonneg k c f
 
-open scoped Pointwise in
 /-- Translation preserves the order at the corresponding cusp orbit. -/
-lemma orderAtCuspOrbit_translate [DiscreteTopology G] (c : CuspOrbits G) (f : F)
-    (g : GL (Fin 2) ℝ) :
-    orderAtCuspOrbit (ConjAct.toConjAct g⁻¹ • G) k (CuspOrbits.conj G g⁻¹ c)
+lemma orderAtCuspOrbit_translate [DiscreteTopology G] (c : CuspOrbits G)
+    (g : GL (Fin 2) ℝ) (f : F) :
+    orderAtCuspOrbit (toConjAct g⁻¹ • G) k (CuspOrbits.conj G g⁻¹ c)
       (ModularForm.translate f g) = orderAtCuspOrbit G k c f := by
-  induction c using Quotient.inductionOn with
-  | h c =>
-    simpa only [CuspOrbits.conj_mk, orderAtCuspOrbit_mk, ModularForm.coe_translate] using
-      orderAtCusp_slash G k c.property f g
+  induction c using Quotient.inductionOn with | h c =>
+  simpa only [CuspOrbits.conj_mk, orderAtCuspOrbit_mk, ModularForm.coe_translate] using
+    orderAtCusp_slash k c.property g f
 
-open scoped Pointwise in
 /-- Translation preserves the total cusp order. -/
 lemma totalCuspOrder_translate [G.IsArithmetic] (f : F) (g : GL (Fin 2) ℝ)
-    [(ConjAct.toConjAct g⁻¹ • G).IsArithmetic] :
-    totalCuspOrder (ConjAct.toConjAct g⁻¹ • G) k (ModularForm.translate f g) =
-      totalCuspOrder G k f := by
+    [(toConjAct g⁻¹ • G).IsArithmetic] :
+    totalCuspOrder (toConjAct g⁻¹ • G) k (ModularForm.translate f g) = totalCuspOrder G k f := by
   classical
   let := Fintype.ofFinite (CuspOrbits G)
-  let := Fintype.ofFinite (CuspOrbits (ConjAct.toConjAct g⁻¹ • G))
+  let := Fintype.ofFinite (CuspOrbits (toConjAct g⁻¹ • G))
   exact (Fintype.sum_bijective _ (CuspOrbits.conj_bijective G g⁻¹)
-    _ _ (fun c ↦ (orderAtCuspOrbit_translate G k c f g).symm)).symm
+    _ _ (fun c ↦ (orderAtCuspOrbit_translate k c g f).symm)).symm
 
-lemma qExpansion_order_le_totalCuspOrder [G.IsArithmetic] (f : F) :
+lemma qExpansion_order_le_totalCuspOrder [G.IsArithmetic] [Decidable G.IsRegularAtInfty] (f : F) :
     (qExpansion G.strictWidthInfty f).order ≤ G.regularityFactorInfty * totalCuspOrder G k f := by
   have hpos : 0 < G.regularityFactorInfty := by
     simp [Subgroup.regularityFactorInfty, apply_ite]
   rw [← EReal.div_le_iff_le_mul (mod_cast hpos) (EReal.natCast_ne_top _),
     ← orderAtCusp_eq_qExpansion_order]
-  exact orderAtCuspOrbit_le_totalCuspOrder G k
-    ⟦⟨OnePoint.infty, (Fact.out : IsCusp OnePoint.infty G)⟩⟧ f
+  exact orderAtCuspOrbit_le_totalCuspOrder k ⟦⟨∞, (Fact.out : IsCusp _ G)⟩⟧ f
 
 /-- At level one there is a single cusp `∞`, of width one, so the total cusp order is equal to the
 order at `∞`. -/
 lemma totalCuspOrder_SL2Z {k : ℤ} (f : ModularForm 𝒮ℒ k) :
     totalCuspOrder 𝒮ℒ k f = orderAtInfty f := by
   simp [-Finset.univ_unique, totalCuspOrder, Fintype.sum_subsingleton _ cuspOrbitInfty,
-    orderAtCusp_infty _ _ Fact.out]
+    orderAtCusp_infty Fact.out]
 
 end UpperHalfPlane
