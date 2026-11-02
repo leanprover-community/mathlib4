@@ -83,7 +83,7 @@ instance : Bracket (L ⧸ s) A where
     intros l l' h
     rw [Submodule.quotientRel_def, mem_toSubmodule] at h
     rw [← sub_eq_zero, ← sub_lie]
-    exact s.isotropic (l - l') a h)
+    exact isotropic h a)
 
 theorem mk_bracket' (x : L) (a : A) : ⁅(mk x : L ⧸ s), a⁆ = ⁅x, a⁆ := rfl
 
