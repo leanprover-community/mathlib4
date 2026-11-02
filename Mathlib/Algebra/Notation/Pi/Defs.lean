@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Tactic.Push.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation for algebraic operators on pi types
 
@@ -45,7 +48,7 @@ variable [∀ i, One (M i)]
 instance instOne : One (∀ i, M i) where one _ := 1
 
 @[to_additive (attr := simp high)]
-lemma one_apply (i : ι) : (1 : ∀ i, M i) i = 1 := rfl
+protected lemma one_apply (i : ι) : (1 : ∀ i, M i) i = 1 := rfl
 
 @[to_additive (attr := push ← high)]
 lemma one_def : (1 : ∀ i, M i) = fun _ ↦ 1 := rfl
@@ -66,7 +69,7 @@ variable [∀ i, Mul (M i)]
 instance instMul : Mul (∀ i, M i) where mul f g i := f i * g i
 
 @[to_additive (attr := simp)]
-lemma mul_apply (f g : ∀ i, M i) (i : ι) : (f * g) i = f i * g i := rfl
+protected lemma mul_apply (f g : ∀ i, M i) (i : ι) : (f * g) i = f i * g i := rfl
 
 @[to_additive (attr := push ←)]
 lemma mul_def (f g : ∀ i, M i) : f * g = fun i ↦ f i * g i := rfl
@@ -88,7 +91,7 @@ variable [∀ i, Inv (G i)]
 instance instInv : Inv (∀ i, G i) where inv f i := (f i)⁻¹
 
 @[to_additive (attr := simp)]
-lemma inv_apply (f : ∀ i, G i) (i : ι) : f⁻¹ i = (f i)⁻¹ := rfl
+protected lemma inv_apply (f : ∀ i, G i) (i : ι) : f⁻¹ i = (f i)⁻¹ := rfl
 
 @[to_additive (attr := push ←)]
 lemma inv_def (f : ∀ i, G i) : f⁻¹ = fun i ↦ (f i)⁻¹ := rfl
@@ -109,7 +112,7 @@ variable [∀ i, Div (G i)]
 instance instDiv : Div (∀ i, G i) where div f g i := f i / g i
 
 @[to_additive (attr := simp)]
-lemma div_apply (f g : ∀ i, G i) (i : ι) : (f / g) i = f i / g i := rfl
+protected lemma div_apply (f g : ∀ i, G i) (i : ι) : (f / g) i = f i / g i := rfl
 
 @[to_additive (attr := push ←)]
 lemma div_def (f g : ∀ i, G i) : f / g = fun i ↦ f i / g i := rfl
@@ -132,7 +135,7 @@ variable [∀ i, Pow (M i) α]
 instance instPow : Pow (∀ i, M i) α where pow f a i := f i ^ a
 
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
-lemma pow_apply (f : ∀ i, M i) (a : α) (i : ι) : (f ^ a) i = f i ^ a := rfl
+protected lemma pow_apply (f : ∀ i, M i) (a : α) (i : ι) : (f ^ a) i = f i ^ a := rfl
 
 @[to_additive (attr := push ←, to_additive) (reorder := 5 6) smul_def]
 lemma pow_def (f : ∀ i, M i) (a : α) : f ^ a = fun i ↦ f i ^ a := rfl

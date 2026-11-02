@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Order.Interval.Multiset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite intervals of naturals
 
