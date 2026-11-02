@@ -48,9 +48,9 @@ theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
   have hV : IsCompact V := (W.isClopen'.1.preimage hp).isCompact
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
-  exact ⟨⟨U, (ContinuousMap.isClopen_setOfPred_mapsTo hV W.isClopen').preimage
-    (ContinuousMap.id (X × Y)).curry.continuous_toFun⟩, by simp [U, V, MapsTo],
-    ⟨V, W.isClopen'.preimage hp⟩, h, hUV⟩
+  exact ⟨⟨U, (ContinuousMap.isClopen_setOfPred_mapsTo hV W.2).preimage
+    (map_continuous (ContinuousMap.id (X × Y)).curry)⟩, by simp [U, V, MapsTo],
+    ⟨V, W.2.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
 
