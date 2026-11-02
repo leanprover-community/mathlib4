@@ -41,6 +41,16 @@ theorem Algebra.coe_norm_int : (Algebra.norm ℤ x : ℚ) = Algebra.norm ℚ (x 
 theorem Algebra.coe_trace_int : (Algebra.trace ℤ _ x : ℚ) = Algebra.trace ℚ K (x : K) :=
   (Algebra.trace_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
 
+/-- If `K` is Galois over `ℚ`, then the trace of `x : 𝓞 K` is the sum of the `σ x` for `σ` in the
+Galois group of `K`. -/
+theorem Algebra.intCast_trace_int_eq_sum_automorphisms [IsGalois ℚ K] (x : 𝓞 K) :
+    (Algebra.trace ℤ _ x : 𝓞 K) = ∑ σ : K ≃ₐ[ℚ] K, RingOfIntegers.mapRingHom (σ : K →+* K) x := by
+  apply RingOfIntegers.coe_injective
+  rw [← eq_intCast (algebraMap ℤ (𝓞 K)), ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply ℤ ℚ K, eq_intCast, Algebra.coe_trace_int,
+    trace_eq_sum_automorphisms, map_sum]
+  simp only [RingOfIntegers.mapRingHom_apply, RingHom.coe_coe]
+
 end Rat
 
 namespace RingOfIntegers
