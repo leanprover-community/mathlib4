@@ -570,7 +570,7 @@ variable {S₁ S₂ : Type*} [Semiring S₁] [Semiring S₂] [Semiring R₁] [Se
   [AddCommMonoid M₂] [Module R₂ M₂]
   {I₁ : R₁ →+* S₁} {I₂ : R₂ →+* S₂}
 
-local instance : SMulCommClass S₁ S₂ M := SMulCommClass.symm _ _ _
+-- local instance : SMulCommClass S₁ S₂ M := SMulCommClass.symm _ _ _
 
 /-- A bilinear map is called left-separating if
 the only element that is left-orthogonal to every other element is `0`; i.e.,
@@ -648,15 +648,15 @@ end Linear
 variable {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 
 @[simp]
-theorem flip_separatingRight : B.flip.SeparatingRight ↔ B.SeparatingLeft :=
+theorem flip_separatingRight [SMulCommClass S₁ S₂ M] : B.flip.SeparatingRight ↔ B.SeparatingLeft :=
   ⟨fun hB x hy ↦ hB x hy, fun hB x hy ↦ hB x hy⟩
 
 @[simp]
-theorem flip_separatingLeft : B.flip.SeparatingLeft ↔ SeparatingRight B := by
+theorem flip_separatingLeft [SMulCommClass S₁ S₂ M] : B.flip.SeparatingLeft ↔ SeparatingRight B := by
   rw [← flip_separatingRight, flip_flip]
 
 @[simp]
-theorem flip_nondegenerate : B.flip.Nondegenerate ↔ B.Nondegenerate :=
+theorem flip_nondegenerate [SMulCommClass S₁ S₂ M] : B.flip.Nondegenerate ↔ B.Nondegenerate :=
   Iff.trans and_comm (and_congr flip_separatingRight flip_separatingLeft)
 
 theorem separatingLeft_iff_linear_nontrivial : B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
@@ -668,7 +668,7 @@ theorem separatingLeft_iff_linear_nontrivial : B.SeparatingLeft ↔ ∀ x : M₁
     exact hB _
   exact h x h'
 
-theorem separatingRight_iff_linear_flip_nontrivial :
+theorem separatingRight_iff_linear_flip_nontrivial [SMulCommClass S₁ S₂ M] :
     B.SeparatingRight ↔ ∀ y : M₂, B.flip y = 0 → y = 0 := by
   rw [← flip_separatingLeft, separatingLeft_iff_linear_nontrivial]
 
@@ -677,11 +677,14 @@ theorem separatingLeft_iff_ker_eq_bot : B.SeparatingLeft ↔ LinearMap.ker B = �
   Iff.trans separatingLeft_iff_linear_nontrivial LinearMap.ker_eq_bot'.symm
 
 /-- A bilinear map is right-separating if and only if its flip has a trivial kernel. -/
-theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
+theorem separatingRight_iff_flip_ker_eq_bot [SMulCommClass S₁ S₂ M] :
+    B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
 
+set_option linter.unusedSectionVars false
 /-- The identity pairing is left-separating. -/
-protected theorem SeparatingLeft.id : SeparatingLeft (.id : (M₁ →ₛₗ[I₁] M) →ₗ[S₂] M₁ →ₛₗ[I₁] M) :=
+protected theorem SeparatingLeft.id [SMulCommClass S₁ S₂ M] :
+    SeparatingLeft (.id : (M₁ →ₛₗ[I₁] M) →ₗ[S₂] M₁ →ₛₗ[I₁] M) :=
   separatingLeft_iff_ker_eq_bot.mpr ker_id
 
 alias id_separatingLeft := SeparatingLeft.id
