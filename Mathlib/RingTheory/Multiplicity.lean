@@ -197,8 +197,8 @@ alias FiniteMultiplicity.not_unit := FiniteMultiplicity.not_isUnit
 
 /-- Finiteness of the multiplicity passes to divisors. -/
 theorem FiniteMultiplicity.of_dvd {c : α} (h : b ∣ c) :
-    FiniteMultiplicity a c → FiniteMultiplicity a b := fun ⟨n, hn⟩ ↦
-  ⟨n, fun h' ↦ hn (h'.trans h)⟩
+    FiniteMultiplicity a c → FiniteMultiplicity a b :=
+  fun ⟨n, hn⟩ ↦ ⟨n, fun h' ↦ hn (h'.trans h)⟩
 
 theorem FiniteMultiplicity.mul_left {c : α} :
     FiniteMultiplicity a (b * c) → FiniteMultiplicity a b :=
