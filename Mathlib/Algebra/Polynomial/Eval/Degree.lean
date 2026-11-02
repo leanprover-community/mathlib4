@@ -21,7 +21,7 @@ This file contains results on the interaction of `Polynomial.eval` and `Polynomi
 
 noncomputable section
 
-open Finset
+open AddMonoidAlgebra Finset
 
 open Polynomial
 
@@ -115,8 +115,8 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
 
 lemma comp_C_mul_X_eq_zero_iff {r : R} (hr : r ∈ nonZeroDivisors R) :
     p.comp (C r * X) = 0 ↔ p = 0 := by
-  simp_rw [ext_iff]
-  refine forall_congr' fun n ↦ ?_
+  simp_rw [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff]
+  congr! 1 with n
   rw [comp_C_mul_X_coeff, coeff_zero, mul_right_mem_nonZeroDivisors_eq_zero_iff (pow_mem hr _)]
 
 end Comp
@@ -129,8 +129,8 @@ variable (f) in
 /-- If `R` and `S` are isomorphic, then so are their polynomial rings. -/
 @[simps!]
 def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
-  RingEquiv.ofRingHom (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
-    (by ext; simp)
+  RingEquiv.ofRingHom (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by simp)
+    (by simp)
 
 theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
   ⟨fun hfp x =>
@@ -138,7 +138,7 @@ theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
       f x = f x * f p.leadingCoeff := by simp only [mul_one, hp.leadingCoeff, f.map_one]
       _ = f x * (p.map f).coeff p.natDegree := congr_arg _ (coeff_map _ _).symm
       _ = 0 := by simp only [hfp, mul_zero, coeff_zero],
-    fun h => ext fun n => by simp only [h, coeff_map, coeff_zero]⟩
+    fun h => by ext n; simp [h]⟩
 
 theorem map_monic_ne_zero (hp : p.Monic) [Nontrivial S] : p.map f ≠ 0 := fun h =>
   f.map_one_ne_zero ((map_monic_eq_zero_iff hp).mp h _)
