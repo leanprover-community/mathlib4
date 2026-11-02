@@ -291,7 +291,7 @@ theorem nnNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x�
 @[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap := nnNorm_algebraMap
 
 theorem enorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ₑ = ‖x‖ₑ * ‖(1 : 𝕜')‖ₑ := by
-  simp only [enorm_eq_nnNorm, nnNorm_algebraMap, ENNReal.coe_mul]
+  simp only [eNorm_eq_nnNorm, nnNorm_algebraMap, ENNReal.coe_mul]
 
 theorem dist_algebraMap (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y * ‖(1 : 𝕜')‖ := by
@@ -333,10 +333,10 @@ theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ 
   (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
 
 @[simp]
-theorem nnNorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
+theorem nnNorm_algebraMap_nnReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
   Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap_nnreal := nnNorm_algebraMap_nnreal
+@[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap_nnreal := nnNorm_algebraMap_nnReal
 
 end NNReal
 

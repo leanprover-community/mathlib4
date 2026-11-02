@@ -92,9 +92,9 @@ variable {E : Type*} [NNNorm E] {x : E} {r : ℝ≥0}
 instance NNNorm.toENorm : ENorm E where enorm := (‖·‖₊ : E → ℝ≥0∞)
 
 @[basify_op]
-lemma enorm_eq_nnNorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
+lemma eNorm_eq_nnNorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
-@[deprecated (since := "2026-10-31")] alias enorm_eq_nnnorm := enorm_eq_nnNorm
+@[deprecated (since := "2026-10-31")] alias eNorm_eq_nnNorm := eNorm_eq_nnNorm
 
 @[simp] lemma toNNReal_enorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
 

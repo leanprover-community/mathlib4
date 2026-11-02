@@ -171,7 +171,7 @@ theorem nnNorm_tsum_le {f : ι → E} (hf : Summable fun i => ‖f i‖₊) : �
 
 theorem tsum_enorm_ne_top_iff_summable_nnNorm {ι : Type*} {f : ι → E} :
     ∑' i, ‖f i‖ₑ ≠ ∞ ↔ Summable fun i ↦ ‖f i‖₊ := by
-  simp only [enorm_eq_nnNorm, ENNReal.tsum_coe_ne_top_iff_summable]
+  simp only [eNorm_eq_nnNorm, ENNReal.tsum_coe_ne_top_iff_summable]
 
 @[deprecated (since := "2026-10-31")]
 alias tsum_enorm_ne_top_iff_summable_nnnorm := tsum_enorm_ne_top_iff_summable_nnNorm

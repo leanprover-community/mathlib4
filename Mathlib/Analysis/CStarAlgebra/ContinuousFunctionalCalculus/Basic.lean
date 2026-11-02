@@ -227,7 +227,7 @@ open NNReal ENNReal
 
 variable [CStarAlgebra A]
 
-lemma SpectrumRestricts.nnreal_iff_nnNorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjoint a) (ht : ‖a‖₊ ≤ t) :
+lemma SpectrumRestricts.nnReal_iff_nnNorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjoint a) (ht : ‖a‖₊ ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔ ‖algebraMap ℝ A t - a‖₊ ≤ t := by
   have : IsSelfAdjoint (algebraMap ℝ A t - a) := IsSelfAdjoint.algebraMap A (.all (t : ℝ)) |>.sub ha
   rw [← ENNReal.coe_le_coe, ← IsSelfAdjoint.spectralRadius_eq_nnNorm,
@@ -238,17 +238,17 @@ lemma SpectrumRestricts.nnreal_iff_nnNorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjo
     assumption
 
 @[deprecated (since := "2026-10-31")]
-alias SpectrumRestricts.nnreal_iff_nnnorm := SpectrumRestricts.nnreal_iff_nnNorm
+alias SpectrumRestricts.nnreal_iff_nnnorm := SpectrumRestricts.nnReal_iff_nnNorm
 
 lemma SpectrumRestricts.nnreal_add {a b : A} (ha₁ : IsSelfAdjoint a)
     (hb₁ : IsSelfAdjoint b) (ha₂ : SpectrumRestricts a ContinuousMap.realToNNReal)
     (hb₂ : SpectrumRestricts b ContinuousMap.realToNNReal) :
     SpectrumRestricts (a + b) ContinuousMap.realToNNReal := by
-  rw [SpectrumRestricts.nnreal_iff_nnNorm (ha₁.add hb₁) (nnNorm_add_le a b), NNReal.coe_add,
+  rw [SpectrumRestricts.nnReal_iff_nnNorm (ha₁.add hb₁) (nnNorm_add_le a b), NNReal.coe_add,
     map_add, add_sub_add_comm]
   refine nnNorm_add_le _ _ |>.trans ?_
   gcongr
-  all_goals rw [← SpectrumRestricts.nnreal_iff_nnNorm] <;> first | rfl | assumption
+  all_goals rw [← SpectrumRestricts.nnReal_iff_nnNorm] <;> first | rfl | assumption
 
 lemma IsSelfAdjoint.sq_spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
     SpectrumRestricts (a ^ 2) ContinuousMap.realToNNReal := by

@@ -370,7 +370,7 @@ theorem div_le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 
   · simp
   rw [ENNReal.div_le_iff (by simpa using h_zero) (by simp)]
   refine le_of_forall_nnreal_lt fun r hr ↦ ?_
-  rw [← ENNReal.div_le_iff (by simpa using h_zero) (by simp), enorm_eq_nnNorm, ← coe_div h_zero.ne']
+  rw [← ENNReal.div_le_iff (by simpa using h_zero) (by simp), eNorm_eq_nnNorm, ← coe_div h_zero.ne']
   obtain ⟨C, hC_pos, hC⟩ := p.norm_mul_pow_le_of_lt_radius hr
   refine le_radius_of_bound _ C fun n ↦ ?_
   calc

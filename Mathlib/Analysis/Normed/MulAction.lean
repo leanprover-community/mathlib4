@@ -83,7 +83,7 @@ theorem IsBoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ 
 
 theorem IsBoundedSMul.of_enorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ) :
     IsBoundedSMul α β :=
-  .of_norm_smul_le (by simpa [enorm_eq_nnNorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using! h)
+  .of_norm_smul_le (by simpa [eNorm_eq_nnNorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using! h)
 
 theorem IsBoundedSMul.of_nnNorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
     IsBoundedSMul α β := .of_norm_smul_le h

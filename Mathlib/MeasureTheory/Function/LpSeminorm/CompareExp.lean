@@ -254,14 +254,14 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable
     eLpNorm (fun x => b (f x) (g x)) r μ ≤ c * eLpNorm f p μ * eLpNorm g q μ := by
   apply eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm_of_not_aestronglyMeasurable p q r b c ?_ hfg hp hq
   filter_upwards [h] with x hx
-  simp only [enorm_eq_nnNorm]
+  simp only [eNorm_eq_nnNorm]
   exact mod_cast hx
 
 private lemma ae_enorm_bilin_le_of_ae_nnNorm_le {b : E → F → G} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖b (f x) (g x)‖₊ ≤ c * ‖f x‖₊ * ‖g x‖₊) :
     ∀ᵐ x ∂μ, ‖b (f x) (g x)‖ₑ ≤ c * ‖f x‖ₑ * ‖g x‖ₑ := by
   filter_upwards [h] with x hx
-  simp only [enorm_eq_nnNorm]
+  simp only [eNorm_eq_nnNorm]
   exact_mod_cast hx
 
 theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm_of_pos (p : ℝ≥0∞) (b : ε → ε' → ε'') (c : ℝ≥0∞)

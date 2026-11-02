@@ -802,6 +802,7 @@ def nnNormHom : α →*₀ ℝ≥0 where
   map_mul' := nnNorm_mul
 
 @[deprecated (since := "2026-10-31")] alias nnnormHom := nnNormHom
+@[deprecated (since := "2026-10-31")] alias nnnormHom_apply := nnNormHom_apply
 
 @[simp]
 theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
@@ -821,7 +822,7 @@ protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).pro
 protected theorem List.nnNorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnNorm).prod :=
   map_list_prod (nnNormHom.toMonoidHom : α →* ℝ≥0) _
 
-@[deprecated (since := "2026-10-31")] alias List.nnnorm_prod := List.nnNorm_prod
+@[deprecated (since := "2026-10-31")] protected alias List.nnnorm_prod := List.nnNorm_prod
 
 @[simp]
 theorem List.norm_prod_map (l : List β) (f : β → α) :
@@ -857,7 +858,7 @@ protected theorem Multiset.norm_prod (s : Multiset α) : ‖s.prod‖ = (s.map n
 protected theorem Multiset.nnNorm_prod (s : Multiset α) : ‖s.prod‖₊ = (s.map nnNorm).prod :=
   map_multiset_prod (nnNormHom.toMonoidHom : α →* ℝ≥0) _
 
-@[deprecated (since := "2026-10-31")] alias Multiset.nnnorm_prod := Multiset.nnNorm_prod
+@[deprecated (since := "2026-10-31")] protected alias Multiset.nnnorm_prod := Multiset.nnNorm_prod
 
 @[simp]
 theorem Multiset.norm_prod_map (s : Multiset β) (f : β → α) :

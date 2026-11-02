@@ -414,7 +414,8 @@ theorem enorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ �
 theorem nnDist_eq_nnNorm_inv_mul (a b : E) : nndist a b = ‖a⁻¹ * b‖₊ :=
   NNReal.eq <| dist_eq_norm_inv_mul _ _
 
-@[deprecated (since := "2026-10-31")] alias nndist_eq_nnnorm_inv_mul := nnDist_eq_nnNorm_inv_mul
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nndist_eq_nnnorm_inv_mul := nnDist_eq_nnNorm_inv_mul
 
 @[to_additive (attr := simp) nnNorm_neg]
 theorem nnNorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
@@ -614,7 +615,8 @@ theorem indiscreteTopology_iff_forall_nnNorm_eq_zero' :
     IndiscreteTopology E ↔ ∀ x : E, ‖x‖₊ = 0 := by
   simpa using nontrivialTopology_iff_exists_nnNorm_ne_zero' (E := E).not
 
-@[deprecated (since := "2026-10-31")]
+@[to_additive (attr := deprecated (since := "2026-10-31"))
+indiscreteTopology_iff_forall_nnnorm_eq_zero]
 alias indiscreteTopology_iff_forall_nnnorm_eq_zero' := indiscreteTopology_iff_forall_nnNorm_eq_zero'
 
 variable (E) in
@@ -850,11 +852,13 @@ alias nndist_nnnorm_nnnorm_le' := nnDist_nnNorm_nnNorm_le'
 theorem nnDist_eq_nnNorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
 
-@[deprecated (since := "2026-10-31")] alias nndist_eq_nnnorm_div := nnDist_eq_nnNorm_div
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nndist_eq_nnnorm_div := nnDist_eq_nnNorm_div
 
 alias nnDist_eq_nnNorm := nnDist_eq_nnNorm_sub
 
-@[deprecated (since := "2026-10-31")] alias nndist_eq_nnnorm := nnDist_eq_nnNorm
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nndist_eq_nnnorm := nnDist_eq_nnNorm
 
 @[to_additive]
 theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
@@ -1058,7 +1062,8 @@ theorem nnNorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fu
     rw [Multiset.map_map]
     exact norm_multiset_prod_le _
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_multiset_prod_le := nnNorm_multiset_prod_le
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_multiset_prod_le := nnNorm_multiset_prod_le
 
 @[to_additive]
 theorem nnNorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖₊ ≤ ∑ a ∈ s, ‖f a‖₊ :=
@@ -1066,14 +1071,14 @@ theorem nnNorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖�
     push_cast
     exact norm_prod_le _ _
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_prod_le := nnNorm_prod_le
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_prod_le := nnNorm_prod_le
 
 @[to_additive]
 theorem nnNorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
   (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_prod_le_of_le := nnNorm_prod_le_of_le
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_prod_le_of_le := nnNorm_prod_le_of_le
 
 @[to_additive]
 theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
@@ -1132,7 +1137,8 @@ theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
 theorem eq_one_or_nnNorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
   eq_one_or_norm_pos a
 
-@[deprecated (since := "2026-10-31")] alias eq_one_or_nnnorm_pos := eq_one_or_nnNorm_pos
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias eq_one_or_nnnorm_pos := eq_one_or_nnNorm_pos
 
 @[to_additive (attr := simp) nnNorm_eq_zero]
 theorem nnNorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by

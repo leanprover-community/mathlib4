@@ -181,7 +181,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
     (integrable_condExp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
   refine setLIntegral_mono
     (stronglyMeasurable_condExp.mono hnm).measurable.nnNorm.coe_nnreal_ennreal fun x hx => ?_
-  rw [enorm_eq_nnNorm, enorm_eq_nnNorm, coe_le_coe, Real.nnNorm_of_nonneg R.coe_nonneg]
+  rw [eNorm_eq_nnNorm, eNorm_eq_nnNorm, coe_le_coe, Real.nnNorm_of_nonneg R.coe_nonneg]
   exact Subtype.mk_le_mk.2 (le_of_lt hx)
 
 end HasSolidNorm
@@ -330,7 +330,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
       rw [toReal_one, rpow_one]
       convert!
         mul_meas_ge_le_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top C
-      rw [ENNReal.toReal_one, ENNReal.rpow_one, enorm_eq_nnNorm]
+      rw [ENNReal.toReal_one, ENNReal.rpow_one, eNorm_eq_nnNorm]
     rw [toReal_one, rpow_one, mul_comm,
       ← ENNReal.le_div_iff_mul_le (Or.inl (coe_ne_zero.2 hCpos.ne'))
         (Or.inl coe_lt_top.ne)] at this

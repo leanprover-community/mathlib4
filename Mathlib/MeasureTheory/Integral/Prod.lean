@@ -268,7 +268,7 @@ theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCom
   calc
     ∫⁻ z, ‖op (f z.1) (g z.2)‖ₑ ∂μ.prod ν ≤ ∫⁻ z, .ofReal C * ‖f z.1‖ₑ * ‖g z.2‖ₑ ∂μ.prod ν := by
       gcongr with z
-      simp only [enorm_eq_nnNorm, ENNReal.ofReal, ← ENNReal.coe_mul, ENNReal.coe_le_coe,
+      simp only [eNorm_eq_nnNorm, ENNReal.ofReal, ← ENNReal.coe_mul, ENNReal.coe_le_coe,
         ← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnNorm]
       refine (hC _ _).trans ?_
       gcongr

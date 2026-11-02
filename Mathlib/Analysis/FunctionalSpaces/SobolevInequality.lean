@@ -417,7 +417,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
         rw [lintegral_mul_const, mul_comm]
         fun_prop
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0) * (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖ₑ) ^ p := by
-        rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, enorm_eq_nnNorm, ← ENNReal.coe_rpow_of_nonneg _ h0p]
+        rw [ENNReal.mul_rpow_of_nonneg _ _ h0p, eNorm_eq_nnNorm, ← ENNReal.coe_rpow_of_nonneg _ h0p]
     _ = (‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p : ℝ≥0)
         * (∫⁻ x, ‖fderiv ℝ u x‖ₑ ∂(volume : Measure (ι → ℝ)).map e.symm) ^ p := by
         congr

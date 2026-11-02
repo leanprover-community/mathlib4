@@ -688,9 +688,9 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
   rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
 
 @[simp, rclike_simps, norm_cast]
-lemma nnNorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnNorm]; rfl
+lemma nnNorm_nnRatCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnNorm]; rfl
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_nnratCast := nnNorm_nnratCast
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnratCast := nnNorm_nnRatCast
 
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
@@ -835,10 +835,10 @@ lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
   simpa [NNRat.cast_smul_eq_nnqsmul] using! norm_smul (q : K) x
 
 variable (K) in
-lemma nnNorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
+lemma nnNorm_nnqsMul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
   simpa [NNRat.cast_smul_eq_nnqsmul] using! nnNorm_smul (q : K) x
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_nnqsmul := nnNorm_nnqsmul
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnqsmul := nnNorm_nnqsMul
 
 @[bound]
 lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=

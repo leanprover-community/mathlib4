@@ -205,7 +205,7 @@ protected lemma norm_map (x : E) : ‖f x‖ = ‖x‖ := by simp
 protected lemma nnNorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
 protected lemma enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by simp
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
+@[deprecated (since := "2026-10-31")] protected alias nnnorm_map := nnNorm_map
 
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap f.norm_map
@@ -547,7 +547,7 @@ protected lemma norm_map (x : E) : ‖e x‖ = ‖x‖ := by simp
 protected lemma nnNorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ := by simp
 protected lemma enorm_map (x : E) : ‖e x‖ₑ = ‖x‖ₑ := by simp
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
+@[deprecated (since := "2026-10-31")] protected alias nnnorm_map := nnNorm_map
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `LinearIsometry`. -/
 def toLinearIsometry : E →ₛₗᵢ[σ₁₂] E₂ :=

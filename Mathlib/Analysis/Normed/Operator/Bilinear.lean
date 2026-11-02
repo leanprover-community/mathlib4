@@ -212,7 +212,7 @@ theorem opNNNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖
 
 @[simp]
 theorem opENorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ₑ = ‖f‖ₑ := by
-  simp [enorm_eq_nnNorm]
+  simp [eNorm_eq_nnNorm]
 
 @[simp]
 lemma flip_zero : flip (0 : E' →SL[σ₁₃] F' →SL[σ₂₃] G') = 0 := rfl

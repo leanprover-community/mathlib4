@@ -81,7 +81,7 @@ lemma enorm_apply_le_semivariation : ‖μ s‖ₑ ≤ μ.semivariation s := by
   obtain ⟨ℓ, ℓ_norm, hℓ⟩ : ∃ ℓ : StrongDual ℝ E, ‖ℓ‖ ≤ 1 ∧ ℓ (μ s) = ‖μ s‖ :=
     exists_dual_vector'' _ _
   have h'ℓ : ℓ ∈ {ℓ : StrongDual ℝ E | ‖ℓ‖ₑ ≤ 1} := by
-    simp [enorm_eq_nnNorm, ← NNReal.coe_le_one, ℓ_norm]
+    simp [eNorm_eq_nnNorm, ← NNReal.coe_le_one, ℓ_norm]
   calc ‖μ s‖ₑ
   _ = ‖(μ.mapRange (ℓ : E →+ ℝ) ℓ.continuous) s‖ₑ := by simp [← ofReal_norm, hℓ]
   _ ≤ (μ.mapRange (ℓ : E →+ ℝ) ℓ.continuous).variation s := enorm_measure_le_variation _ _
@@ -177,7 +177,7 @@ lemma enorm_apply_le_bound : ‖μ s‖ₑ ≤ μ.bound :=
   (enorm_apply_le_semivariation).trans semivariation_apply_le_bound
 
 lemma nnNorm_apply_le_bound : ‖μ s‖₊ ≤ μ.bound := by
-  rw [← ENNReal.coe_le_coe, ← enorm_eq_nnNorm]
+  rw [← ENNReal.coe_le_coe, ← eNorm_eq_nnNorm]
   exact enorm_apply_le_bound
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_apply_le_bound := nnNorm_apply_le_bound

@@ -558,7 +558,7 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     congr! 2 with x
     exact and_congr_left fun h ↦ by simp [← h]
   simp only [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts,
-    and_congr_right (SpectrumRestricts.nnreal_iff_nnNorm · le_rfl), Set.ofPred_and]
+    and_congr_right (SpectrumRestricts.nnReal_iff_nnNorm · le_rfl), Set.ofPred_and]
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
 

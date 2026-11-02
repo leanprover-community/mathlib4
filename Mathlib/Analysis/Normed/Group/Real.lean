@@ -95,11 +95,11 @@ lemma nnNorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖ = q := norm_of_nonneg q.cast_nonneg
 
 @[simp 1100, norm_cast]
-lemma nnNorm_nnratCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by
+lemma nnNorm_nnRatCast (q : ℚ≥0) : ‖(q : ℝ)‖₊ = q := by
   simp [nnNorm]
   rfl
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_nnratCast := nnNorm_nnratCast
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnratCast := nnNorm_nnRatCast
 
 theorem nnNorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = .mk r hr :=
   NNReal.eq <| norm_of_nonneg hr

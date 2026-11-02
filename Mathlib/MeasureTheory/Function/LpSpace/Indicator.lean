@@ -163,7 +163,7 @@ theorem nnNorm_indicatorConstLp_le :
 
 theorem enorm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ₑ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
-  simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← enorm_eq_nnNorm]
+  simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← eNorm_eq_nnNorm]
     using ENNReal.coe_le_coe.2 <| nnNorm_indicatorConstLp_le (c := c) (hμs := hμs)
 
 theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :

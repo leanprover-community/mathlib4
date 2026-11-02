@@ -154,9 +154,9 @@ lemma nnNorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnNo
 @[deprecated (since := "2026-10-31")] alias nnnorm_ratCast := nnNorm_ratCast
 
 @[simp 1100, norm_cast]
-lemma nnNorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnNorm]; rfl
+lemma nnNorm_nnRatCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnNorm]; rfl
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_nnratCast := nnNorm_nnratCast
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnratCast := nnNorm_nnRatCast
 
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   simp [norm_def, sq, Real.mul_self_sqrt (normSq_nonneg _)]

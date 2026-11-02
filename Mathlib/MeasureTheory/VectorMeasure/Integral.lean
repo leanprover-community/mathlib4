@@ -173,7 +173,7 @@ lemma variation_transpose_le :
   apply opENorm_le_bound _ (fun x ↦ ?_)
   simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe, flip_apply,
     smul_apply, Measure.nnreal_smul_coe_apply]
-  grw [le_opENorm, le_opENorm, enorm_measure_le_variation, ← enorm_eq_nnNorm]
+  grw [le_opENorm, le_opENorm, enorm_measure_le_variation, ← eNorm_eq_nnNorm]
   exact le_of_eq (by ring)
 
 lemma absolutelyContinuous_variation_transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :

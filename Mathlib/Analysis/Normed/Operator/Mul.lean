@@ -220,7 +220,7 @@ theorem opNNNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖�
   simpa using opNorm_lsmul_le
 
 theorem opENorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ₑ ≤ 1 := by
-  rw [enorm_eq_nnNorm]
+  rw [eNorm_eq_nnNorm]
   simpa using opNNNorm_lsmul_le
 
 end SMulLinear
@@ -251,7 +251,7 @@ theorem opNNNorm_mul : ‖mul 𝕜 R‖₊ = 1 :=
 
 @[simp]
 theorem opENorm_mul : ‖mul 𝕜 R‖ₑ = 1 := by
-  simp [enorm_eq_nnNorm]
+  simp [eNorm_eq_nnNorm]
 
 end
 
@@ -277,7 +277,7 @@ theorem opNNNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E
 @[simp]
 theorem opENorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
     [IsScalarTower 𝕜 R E] [Nontrivial E] : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ₑ = 1 := by
-  simp [enorm_eq_nnNorm]
+  simp [eNorm_eq_nnNorm]
 
 /-- The norm of `lsmul x` equals `‖x‖` in any nontrivial normed group.
 
@@ -303,7 +303,7 @@ theorem opNNNorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Modu
 theorem opENorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E]
     [NormSMulClass R E] [IsScalarTower 𝕜 R E] [Nontrivial E] {a : R} :
     ‖(lsmul 𝕜 R a : E →L[𝕜] E)‖ₑ = ‖a‖ₑ := by
-  simp [enorm_eq_nnNorm]
+  simp [eNorm_eq_nnNorm]
 
 end ContinuousLinearMap
 

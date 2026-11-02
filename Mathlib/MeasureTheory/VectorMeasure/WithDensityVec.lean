@@ -230,7 +230,7 @@ lemma variation_withDensity' [CompleteSpace G]
         apply lt_of_le_of_lt ?_ (g.integrable_iff.1 (memLp_one_iff_integrable.1 gmem) i h'i)
         exact measure_mono (inter_subset_left.trans (Pg i _ hi.2))
       rw [setIntegral_const, restrict_apply _ hs pmeas, restrict_apply _ hs pmeas]
-      simp [transpose, hB, enorm_eq_nnNorm, mul_comm]
+      simp [transpose, hB, eNorm_eq_nnNorm, mul_comm]
     _ = ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, g x ∂[B; μ.restrict s]‖ₑ := by
       congr! 2 with ⟨i, p⟩ hi
       simp only [Finset.mem_sigma] at hi
