@@ -46,7 +46,7 @@ which is a Lie ideal with respect to the Lie bracket and acts trivially on `A`. 
 structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module A L]
     [LieRingModule L A] extends Submodule A L where
   ideal' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier
-  isotropic (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0
+  isotropic' (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0
 
 namespace StrictLieRinehartIdeal
 
@@ -91,6 +91,9 @@ instance lieRing {s : StrictLieRinehartIdeal A L} : LieRing s where
   add_lie x y z := by aesop
   lie_self x := by aesop
   leibniz_lie x y z := by aesop
+
+lemma isotropic {s : StrictLieRinehartIdeal A L} {l : L} (h : l ∈ s) (a : A) : ⁅l, a⁆ = 0 :=
+  s.isotropic' l a h
 
 @[simp]
 lemma coe_bracket {s : StrictLieRinehartIdeal A L} (x y : s) : ⁅x, y⁆ = ⁅(x : L), (y : L)⁆ := rfl
@@ -224,13 +227,13 @@ identity of `A`) is a strict Lie-Rinehart ideal. -/
     change f.toLinearMap' x ∈ s₂ at h
     rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h
     exact s₂.ideal' h
-  isotropic x a h := by
+  isotropic' x a h := by
     change f.toLinearMap' x ∈ s₂ at h
     rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h
     have h2 := f.apply_lie' a x
     simp only [AlgHom.coe_id, id_eq] at h2
     rw [h2]
-    exact s₂.isotropic (f x) a h }
+    exact s₂.isotropic' (f x) a h }
 
 end StrictLieRinehartIdeal
 
