@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Order.ConditionallyCompleteLattice.Group
 public import Mathlib.Topology.MetricSpace.Isometry
+
+import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Metric space gluing

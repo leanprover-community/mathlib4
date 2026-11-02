@@ -143,7 +143,6 @@ section Specialized
 
 variable (F : C ⥤ FintypeCat.{u₂})
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
 This is a colimit cocone (see `PreGaloisCategory.isColimit`) -/
 def cocone : Cocone ((incl F).op ⋙ coyoneda) where
@@ -354,7 +353,6 @@ lemma endEquivAutGalois_π (f : End F) (A : PointedGaloisObject F) :
   simp only [endEquivSectionsFibers_π]
   erw [evaluationEquivOfIsGalois_symm_fiber]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem endEquivAutGalois_mul (f g : End F) :
     (endEquivAutGalois F) (f * g) = (endEquivAutGalois F g) * (endEquivAutGalois F f) := by
@@ -448,7 +446,6 @@ section General
 
 variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The `Aut F` action on the fiber of a connected object is transitive. -/
 instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
     MulAction.IsPretransitive (Aut F) (F.obj X) where

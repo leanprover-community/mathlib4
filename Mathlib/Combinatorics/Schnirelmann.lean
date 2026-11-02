@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Tactic.Rify
 
 /-!

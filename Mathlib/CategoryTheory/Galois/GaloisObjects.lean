@@ -196,7 +196,6 @@ lemma autMap_surjective_of_isGalois {A B : C} [IsGalois A] [IsGalois B] (f : A �
   apply evaluation_aut_injective_of_isConnected F B (F.map f a)
   simp [hτ, ha']
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma autMap_apply_mul {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ τ : Aut A) :
     autMap f (σ * τ) = autMap f σ * autMap f τ := by

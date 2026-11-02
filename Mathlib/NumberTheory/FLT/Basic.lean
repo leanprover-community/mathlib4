@@ -5,9 +5,10 @@ Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
 module
 
+public import Mathlib.RingTheory.PrincipalIdealDomain
+
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Order.Ring.Abs
-public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Statement of Fermat's Last Theorem
@@ -214,7 +215,7 @@ open Finset in
 /-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
 that the `gcd` of `{a, b, c}` is `1`. -/
 lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [CommSemiring R]
-    [IsDomain R] [DecidableEq R] [NormalizedGCDMonoid R]
+    [DecidableEq R] [NormalizedGCDMonoid R]
     (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset R).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith R n := by

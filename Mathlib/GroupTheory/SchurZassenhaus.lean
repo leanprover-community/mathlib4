@@ -241,7 +241,7 @@ include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
-  refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
+  refine Sylow.nonempty.elim fun P => P.isPGroup.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
   have : (P.1.map N.subtype).Normal :=
     normalizer_eq_top_iff.mp (step1 h1 h2 h3 _ P.normalizer_sup_eq_top)

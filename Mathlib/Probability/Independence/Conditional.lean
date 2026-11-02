@@ -6,8 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Independence.Kernel.IndepFun
-import Mathlib.Probability.Kernel.CompProdEqIff
 public import Mathlib.Probability.Kernel.Condexp
+
+import Mathlib.Probability.Kernel.CompProdEqIff
 
 /-!
 # Conditional Independence
@@ -1005,14 +1006,6 @@ theorem iCondIndepFun.condIndepFun_finsetProd_of_notMem
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
     CondIndepFun m' hm' (∏ j ∈ s, f j) (f i) μ :=
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
-
-@[deprecated (since := "2026-04-08")]
-alias iCondIndepFun.condIndepFun_finset_sum_of_notMem :=
-  iCondIndepFun.condIndepFun_finsetSum_of_notMem
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iCondIndepFun.condIndepFun_finset_prod_of_notMem :=
-  iCondIndepFun.condIndepFun_finsetProd_of_notMem
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_prod_range_succ {f : ℕ → Ω → β}

@@ -6,8 +6,9 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
+
 import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`

@@ -5,8 +5,9 @@ Authors: Winston Yin
 -/
 module
 
-import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
+
+import Mathlib.Analysis.ODE.Gronwall
 
 /-!
 # Existence and uniqueness of solutions to ODEs

@@ -128,7 +128,7 @@ theorem sum_inertiaDeg_eq_finrank [NumberField K] [NumberField L] :
     sum_union (Set.disjoint_toFinset.2 <| disjoint_ramifiedPlacesOver_unramifiedPlacesOver L v),
     sum_congr rfl (fun _ h ↦ inertiaDeg_eq_two (by simpa using h)),
     sum_congr rfl (fun _ h ↦ inertiaDeg_eq_one (by simpa using h)), sum_const, add_comm]
-  simp [← unramifedPlacesOver_ncard_add_eq_finrank L v, mul_comm, ncard_eq_toFinset_card']
+  simp [← unramifiedPlacesOver_ncard_add_eq_finrank L v, mul_comm, ncard_eq_toFinset_card']
 
 end NumberField.InfinitePlace
 

@@ -10,10 +10,11 @@ public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqu
 public import Mathlib.CategoryTheory.Limits.FintypeCat
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.SingleObj
 public import Mathlib.SetTheory.Cardinal.NatCard
+
+import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 
 /-!
 # Definition and basic properties of Galois categories

@@ -6,10 +6,11 @@ Authors: Praneeth Kolichala
 module
 
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 public import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.CategoryTheory.PUnit
+
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+import Mathlib.CategoryTheory.PUnit
 
 /-!
 # Simply connected spaces

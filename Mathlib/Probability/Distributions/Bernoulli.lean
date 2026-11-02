@@ -148,8 +148,9 @@ lemma bernoulliMeasure_real_apply_singleton_right [MeasurableSingletonClass X] (
     Ber(x, y, p).real {y} = 1 - p := by
   simp [h]
 
-instance : IsProbabilityMeasure Ber(x, y, p) where
-  measure_univ := by simp [bernoulliMeasure_def]
+instance : IsProbabilityMeasure Ber(x, y, p) := by
+  rw [bernoulliMeasure_def]
+  infer_instance
 
 @[simp]
 theorem bernoulliMeasure_self_eq_dirac (x : X) (p : I) :

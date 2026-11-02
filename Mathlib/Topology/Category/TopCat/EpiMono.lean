@@ -6,6 +6,7 @@ Authors: Reid Barton
 module
 
 public import Mathlib.Topology.Category.TopCat.Adjunctions
+
 import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!

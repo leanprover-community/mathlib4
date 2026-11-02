@@ -5,11 +5,12 @@ Authors: William Coram
 -/
 module
 
-import Mathlib.Algebra.Order.Antidiag.Tendsto
-import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.RingTheory.MvPowerSeries.Basic
+
+import Mathlib.Algebra.Order.Antidiag.Tendsto
+import Mathlib.Algebra.Order.GroupWithZero.Finset
 
 /-!
 # Multivariate restricted power series
@@ -194,7 +195,7 @@ def Restricted (c : σ → ℝ) : Type _ := MvPowerSeries.IsRestricted.subring (
 /-- Ring structure on `Restricted R c`. -/
 noncomputable
 instance (c : σ → ℝ) : Ring (Restricted R c) :=
-  Subring.toRing (MvPowerSeries.IsRestricted.subring c)
+  inferInstanceAs <| Ring (MvPowerSeries.IsRestricted.subring (R := R) c)
 
 /-- `R`-module structure on `Restricted R c`. -/
 instance (c : σ → ℝ) : Module R (Restricted R c) where
@@ -212,14 +213,13 @@ variable {S : Type*} [NormedCommRing S] [IsUltrametricDist S] (c : σ → ℝ)
 
 /-- Commutative ring structure on `Restricted S c` when `S` is commutative. -/
 noncomputable
-instance : CommRing (Restricted S c) :=
-  { (inferInstance : Ring (Restricted S c)) with
-    mul_comm := fun f g ↦ Subtype.ext (mul_comm f.1 g.1) }
+instance : CommRing (Restricted S c) where
+  mul_comm := fun f g ↦ Subtype.ext (mul_comm f.1 g.1)
 
 /-- Algebra structure on `Restricted S c` when `S` is commutative. -/
 noncomputable
 instance : Algebra S (Restricted S c) :=
-  Algebra.ofModule (fun r f g ↦ Subtype.ext (smul_mul_assoc r f.1 g.1))
+  fast_instance% Algebra.ofModule (fun r f g ↦ Subtype.ext (smul_mul_assoc r f.1 g.1))
     fun r f g ↦ Subtype.ext (mul_smul_comm r f.1 g.1)
 
 /-- Check for diamond instances on algebra and module structures. -/

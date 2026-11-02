@@ -168,7 +168,7 @@ theorem compContinuousLinearMap_applyComposition {n : ℕ} (p : FormalMultilinea
 
 @[simp]
 theorem applyComposition_apply_prod {H : Type*} [CommRing H] [Algebra 𝕜 H] [TopologicalSpace H]
-    [IsTopologicalRing H] [ContinuousConstSMul 𝕜 H] (p : FormalMultilinearSeries 𝕜 E H) {n : ℕ}
+    [IsTopologicalRing H] (p : FormalMultilinearSeries 𝕜 E H) {n : ℕ}
     (c : Composition n) (v : Fin n → E) :
     ∏ i, p.applyComposition c v i = ∏ i, p (c.blocksFun i) (v ∘ c.embedding i) := by
   rfl
@@ -1019,7 +1019,7 @@ namespace Composition
 
 variable {n : ℕ}
 
-/-- Rewriting equality in the dependent type `Σ (a : Composition n), Composition a.length)` in
+/-- Rewriting equality in the dependent type `Σ (a : Composition n), Composition a.length` in
 non-dependent terms with lists, requiring that the blocks coincide. -/
 theorem sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.length) :
     i = j ↔ i.1.blocks = j.1.blocks ∧ i.2.blocks = j.2.blocks := by
@@ -1242,7 +1242,6 @@ namespace FormalMultilinearSeries
 
 open Composition
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by

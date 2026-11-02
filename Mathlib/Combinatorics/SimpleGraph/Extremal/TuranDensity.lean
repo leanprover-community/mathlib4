@@ -6,10 +6,10 @@ Authors: Mitchell Horner
 module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
-import Mathlib.Data.Nat.Choose.Cast
 
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
+import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Tactic.Bound
 import Mathlib.Topology.Instances.Real.Lemmas
 

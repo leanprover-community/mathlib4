@@ -477,7 +477,6 @@ section Action
 
 variable (k G)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Every object in `Rep k G` naturally correspond to an object in `Action`. -/
 @[simps]
 def RepToAction : Rep.{w} k G ⥤ Action (ModuleCat.{w} k) G where

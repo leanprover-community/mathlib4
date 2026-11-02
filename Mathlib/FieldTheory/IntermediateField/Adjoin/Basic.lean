@@ -620,6 +620,10 @@ theorem finiteDimensional_adjoin {S : Set L} [Finite S] (hS : ∀ x ∈ S, IsInt
   have (x : S) := adjoin.finiteDimensional (hS x.1 x.2)
   exact finiteDimensional_iSup_of_finite
 
+instance {S : Set L} [Finite S] [Algebra.IsIntegral K L] :
+    FiniteDimensional K (adjoin K S) :=
+  finiteDimensional_adjoin fun _ _ => Algebra.IsIntegral.isIntegral _
+
 /-- If `x` generates `L` over `K` (i.e., `K⟮x⟯ = ⊤`) and is integral over `K`, then `x`
 defines a `PowerBasis` for `L` over `K`. See `PowerBasis.ofAdjoinEqTop` for a version with
 `Algebra.adjoin`. -/
@@ -678,7 +682,7 @@ theorem _root_.Polynomial.irreducible_comp_iff {f g : K[X]} :
       MulEquiv.isField_congr (AdjoinRoot.compAlgEquiv f g).toMulEquiv]
   intro hfg
   have hg0 : g.natDegree ≠ 0 := by
-    contrapose! hfg
+    contrapose hfg
     rw [natDegree_eq_zero] at hfg
     obtain ⟨r, rfl⟩ := hfg
     simp [not_irreducible_C]
