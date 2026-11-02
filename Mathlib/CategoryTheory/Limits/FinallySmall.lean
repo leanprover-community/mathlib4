@@ -128,6 +128,18 @@ instance initial_fromInitialModel [InitiallySmall.{w} J] : Initial (fromInitialM
 theorem initiallySmall_of_essentiallySmall [EssentiallySmall.{w} J] : InitiallySmall.{w} J :=
   InitiallySmall.mk' (equivSmallModel.{w} J).inverse
 
+@[simp]
+lemma initiallySmall_op_iff : InitiallySmall.{w} Jᵒᵖ ↔ FinallySmall.{w} J :=
+  ⟨fun _ ↦ .mk' (fromInitialModel.{w} Jᵒᵖ).leftOp, fun _ ↦ .mk' (fromFinalModel.{w} J).op⟩
+
+@[simp]
+lemma finallySmall_op_iff : FinallySmall.{w} Jᵒᵖ ↔ InitiallySmall.{w} J :=
+  ⟨fun _ ↦ .mk' (fromFinalModel.{w} Jᵒᵖ).leftOp, fun _ ↦ .mk' (fromInitialModel.{w} J).op⟩
+
+instance [FinallySmall.{w} J] : InitiallySmall.{w} Jᵒᵖ := by simpa
+
+instance [InitiallySmall.{w} J] : FinallySmall.{w} Jᵒᵖ := by simpa
+
 variable {J}
 variable {K : Type u₁} [Category.{v₁} K]
 
@@ -192,8 +204,8 @@ theorem finallySmall_iff_exists_small_weakly_terminal_set [IsFilteredOrEmpty J] 
   exact finallySmall_of_small_weakly_terminal_set s hs'
 
 lemma finallySmall_iff_of_isFiltered [IsFilteredOrEmpty J] [LocallySmall.{w} J] :
-    FinallySmall.{w} J ↔ ∃ (P : ObjectProperty J), ObjectProperty.Small.{w} P ∧
-      P.ι.Final := by
+    FinallySmall.{w} J ↔
+      ∃ (P : ObjectProperty J), ObjectProperty.Small.{w} P ∧ P.ι.Final := by
   refine ⟨fun _ ↦ ?_, fun ⟨P, _, _⟩ ↦ finallySmall_of_final_of_essentiallySmall P.ι⟩
   let e := ShrinkHoms.equivalence.{w} J
   have := IsFilteredOrEmpty.of_equivalence e
@@ -205,6 +217,13 @@ lemma finallySmall_iff_of_isFiltered [IsFilteredOrEmpty J] [LocallySmall.{w} J] 
   intro X
   obtain ⟨Y, hY, ⟨f⟩⟩ := hS (e.functor.obj X)
   exact ⟨_, ObjectProperty.strictMap_obj _ _ hY, ⟨e.toAdjunction.homEquiv _ _ f⟩⟩
+
+lemma initiallySmall_iff_of_isCofiltered [IsCofilteredOrEmpty J] [LocallySmall.{w} J] :
+    InitiallySmall.{w} J ↔
+      ∃ (P : ObjectProperty J), ObjectProperty.Small.{w} P ∧ P.ι.Initial := by
+  rw [← finallySmall_op_iff, finallySmall_iff_of_isFiltered]
+  exact ⟨fun ⟨P, _, _⟩ ↦ ⟨P.unop, inferInstance, by simpa⟩,
+    fun ⟨P, _, _⟩ ↦ ⟨P.op, inferInstance, by simpa⟩⟩
 
 end WeaklyTerminal
 

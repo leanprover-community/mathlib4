@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.FinallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
@@ -22,7 +23,7 @@ this full subcategory contains representable presheaves and is stable under
 
 TODO: in the definition of `CardinalInd C κ`, it may be possible to relax
 the `EssentiallySmall` assumption, by assuming not only that `P.Elementsᵒᵖ`
-is `κ`-filtered but also that `P.Elements` is initially
+is `κ`-filtered but also that `P.Elements` is initially small
 
 ## Implementation notes
 
@@ -140,6 +141,56 @@ instance (κ : Cardinal.{w}) [Fact κ.IsRegular]
 instance (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     (isCardinalFilteredElementsOp C κ).IsClosedUnderCardinalFilteredColimits κ where
 
+end Presheaf
+
+namespace Functor
+
+class IsCardinalIndObject
+    [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
+  isCardinalFiltered_elements_op (P κ) : IsCardinalFiltered P.Elementsᵒᵖ κ
+  initially_small (P κ) : InitiallySmall.{w} P.Elements
+
+variable (C) in
+abbrev isCardinalIndObject [LocallySmall.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    ObjectProperty (Cᵒᵖ ⥤ Type w) :=
+  fun P ↦ P.IsCardinalIndObject κ
+
+attribute [local instance] isCofiltered_of_isFiltered_op in
+instance [LocallySmall.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
+    (isCardinalIndObject C κ).IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := by
+    intro P ⟨p⟩
+    have (j : J) := (p.prop_diag_obj j).isCardinalFiltered_elements_op
+    have (j : J) := isFiltered_of_isCardinalFiltered (p.diag.obj j).Elementsᵒᵖ κ
+    have h₁ (j : J) := (p.prop_diag_obj j).initially_small
+    have : IsCardinalFiltered P.Elementsᵒᵖ κ :=
+      (Presheaf.isCardinalFilteredElementsOp Cᵒᵖ κ).prop_of_isColimit p.isColimit inferInstance
+    have := isFiltered_of_isCardinalFiltered P.Elementsᵒᵖ κ
+    refine ⟨inferInstance, ?_⟩
+    simp only [initiallySmall_iff_of_isCofiltered] at h₁ ⊢
+    choose Q _ hQ using h₁
+    simp only [ObjectProperty.initial_ι_iff_of_isCofiltered] at hQ ⊢
+    choose e he he' using hQ
+    refine ⟨⨆ (j : J), (Q j).strictMap (p.ι.app j).mapElements, inferInstance,
+      fun x ↦ ?_⟩
+    obtain ⟨j, y, hy⟩ := Types.jointly_surjective_of_isColimit
+      (isColimitOfPreserves ((evaluation _ _).obj x.obj) p.isColimit) x.val
+    dsimp at y hy
+    refine ⟨(p.ι.app j).mapElements.obj (e j (elementsMk _ _ y)), ?_, ?_⟩
+    · simp only [const_obj_obj, ObjectProperty.prop_iSup_iff]
+      exact ⟨j, ObjectProperty.strictMap_obj _ _ (he _ _)⟩
+    · obtain ⟨f⟩ := he' j (((p.diag.obj j)).elementsMk x.obj y)
+      refine ⟨Elements.homMk f.hom ?_⟩
+      dsimp
+      simp only [← hy, ← dsimp% f.map_val, NatTrans.naturality_apply]
+
+instance [LocallySmall.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    (isCardinalIndObject C κ).IsClosedUnderCardinalFilteredColimits κ where
+
+end Functor
+
+namespace  Presheaf
 open ObjectProperty.IsClosedUnderCardinalFilteredColimits in
 lemma isCardinalFilteredElementsOp_of_isColimit
     [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
