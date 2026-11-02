@@ -64,6 +64,8 @@ instance : SetLike (StrictLieRinehartIdeal A L) L where
     congr
     exact SetLike.coe_injective h
 
+initialize_simps_projections StrictLieRinehartIdeal (carrier → coe, as_prefix coe)
+
 instance : PartialOrder (StrictLieRinehartIdeal A L) := .ofSetLike (StrictLieRinehartIdeal A L)
 
 instance : AddSubgroupClass (StrictLieRinehartIdeal A L) L where
@@ -213,7 +215,7 @@ variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ 
 
 /-- The preimage of a strict Lie-Rinehart ideal under a homomorphism `f` (which lies over the
 identity of `A`) is a strict Lie-Rinehart ideal. -/
- @[expose] def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
+@[expose] def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
     StrictLieRinehartIdeal A L₁ := {
   s₂.toSubmodule.comap (f.toLinearMap') with
   ideal' {x y} h := by
