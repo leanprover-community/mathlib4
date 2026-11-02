@@ -339,4 +339,47 @@ theorem cprank_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, cprank x �
   Nat.find_min' ⟨ds.prod, show (fun n => CPRankMax n x) ds.prod from cprankMax_upper_bound x⟩
     (cprankMax_upper_bound x)
 
+section HadamardMul
+
+/-- The Hadamard product of two holors of the same type is the pointwise product. -/
+def HadamardMul [Mul α] (x : Holor α ds) (y : Holor α ds) : Holor α ds := fun t ↦ x t * y t
+
+@[inherit_doc] scoped infixl:70 " ⊙ " => HadamardMul
+
+variable (A B C D : Holor α ds)
+
+@[simp]
+theorem hadamard_apply [Mul α] (t : HolorIndex ds) : (A ⊙ B) t = A t * B t := rfl
+
+theorem hadamard_comm [CommMagma α] : A ⊙ B = B ⊙ A :=
+  funext fun _ ↦ mul_comm _ _
+
+theorem hadamard_assoc [Semigroup α] : A ⊙ B ⊙ C = A ⊙ (B ⊙ C) :=
+  funext fun _ ↦ Semigroup.mul_assoc _ _ _
+
+theorem hadamard_add [Mul α] [Add α] [LeftDistribClass α] : A ⊙ (B + C) = A ⊙ B + A ⊙ C :=
+  funext fun _ ↦ left_distrib _ _ _
+
+theorem add_hadamard [Mul α] [Add α] [RightDistribClass α] : (B + C) ⊙ A = B ⊙ A + C ⊙ A :=
+  funext fun _ ↦ right_distrib _ _ _
+
+theorem smul_hadamard [Semigroup α] (k : α) : (k • A) ⊙ B = k • (A ⊙ B) :=
+  funext fun _ ↦ Semigroup.mul_assoc _ _ _
+
+theorem hadamard_smul [CommSemigroup α] (k : α) : A ⊙ (k • B) = k • (A ⊙ B) :=
+  funext fun _ ↦ mul_left_comm _ _ _
+
+@[simp]
+theorem hadamard_zero [MulZeroClass α] : A ⊙ (0 : Holor α ds) = 0 :=
+  funext fun _ ↦ MulZeroClass.mul_zero _
+
+@[simp]
+theorem zero_hadamard [MulZeroClass α] : (0 : Holor α ds) ⊙ A = 0 :=
+  funext fun _ ↦ MulZeroClass.zero_mul _
+
+theorem hadamard_mul_hadamard_comm [CommSemigroup α] : (A ⊗ B) ⊙ (C ⊗ D) = (A ⊙ C) ⊗ (B ⊙ D) :=
+  funext fun _ ↦ mul_mul_mul_comm _ _ _ _
+
+end HadamardMul
+
 end Holor
