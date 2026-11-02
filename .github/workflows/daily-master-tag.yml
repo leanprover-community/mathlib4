@@ -16,18 +16,16 @@ jobs:
     permissions:
       contents: read
       # Required for the token-minting action to request a GitHub OIDC token,
-      # which it exchanges (via Azure Key Vault) for a GitHub App installation token.
+      # which it exchanges at the GitHub App broker for a GitHub App installation token.
       id-token: write
     steps:
       - name: Generate app token
         id: app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-github-app-token@5c94feb419bec2cb85cb6aea6199431aabc0847c
         with:
-          app-id: ${{ secrets.DAILY_MASTER_TAG_APP_ID }}
-          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
-          key-name: daily-master-tag-app-pk
-          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_DAILY_MASTER_TAG }}
-          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          broker-url: ${{ vars.MATHLIB_GITHUB_APP_BROKER_URL }}
+          audience: mathlib-github-app-broker
+          app: mathlib-daily-master-tag
 
       # Check out with the app token so that the credentials persisted into the
       # local git config (and used by `git push` below) are the app's.
