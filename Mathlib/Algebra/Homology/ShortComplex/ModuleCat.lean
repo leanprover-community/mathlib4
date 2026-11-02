@@ -96,8 +96,9 @@ abbrev moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g.hom :=
 
 /-- The explicit left homology data of a short complex of modules that is
 given by a kernel and a quotient given by the `LinearMap` API. The projections to `K` and `H` are
-not simp lemmas because the generic lemmas about `LeftHomologyData` are more useful here. -/
-@[simps! K H i_hom π_hom]
+simp lemmas: they let `simp` identify `K` with `LinearMap.ker S.g.hom` (and `H` with the quotient)
+inside terms, which the generic lemmas about `LeftHomologyData` cannot do. -/
+@[implicit_reducible, simps! K H i_hom π_hom]
 def moduleCatLeftHomologyData : S.LeftHomologyData where
   K := ↧S.g.hom.ker
   H := ↧(S.g.hom.ker ⧸ S.moduleCatToCycles.range)
@@ -130,17 +131,17 @@ the abstract `S.cycles` of the homology API and the more concrete description as
 noncomputable def moduleCatCyclesIso : S.cycles ≅ S.moduleCatLeftHomologyData.K :=
   S.moduleCatLeftHomologyData.cyclesIso
 
-@[reassoc (attr := simp, elementwise)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma moduleCatCyclesIso_hom_i :
     S.moduleCatCyclesIso.hom ≫ S.moduleCatLeftHomologyData.i = S.iCycles :=
   S.moduleCatLeftHomologyData.cyclesIso_hom_comp_i
 
-@[reassoc (attr := simp, elementwise)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma moduleCatCyclesIso_inv_iCycles :
     S.moduleCatCyclesIso.inv ≫ S.iCycles = S.moduleCatLeftHomologyData.i :=
   S.moduleCatLeftHomologyData.cyclesIso_inv_comp_iCycles
 
-@[reassoc (attr := simp, elementwise)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCycles_moduleCatCyclesIso_hom :
     S.toCycles ≫ S.moduleCatCyclesIso.hom = S.moduleCatLeftHomologyData.f' := by
   simp [← cancel_mono S.moduleCatLeftHomologyData.i]
@@ -173,20 +174,38 @@ noncomputable def moduleCatHomologyIso :
     S.homology ≅ S.moduleCatLeftHomologyData.H :=
   S.moduleCatLeftHomologyData.homologyIso
 
-@[reassoc (attr := simp, elementwise)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_moduleCatCyclesIso_hom :
     S.homologyπ ≫ S.moduleCatHomologyIso.hom =
       S.moduleCatCyclesIso.hom ≫ S.moduleCatLeftHomologyData.π :=
   S.moduleCatLeftHomologyData.homologyπ_comp_homologyIso_hom
 
-@[reassoc (attr := simp, elementwise)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma moduleCatCyclesIso_inv_π :
     S.moduleCatCyclesIso.inv ≫ S.homologyπ =
        S.moduleCatLeftHomologyData.π ≫ S.moduleCatHomologyIso.inv :=
   S.moduleCatLeftHomologyData.π_comp_homologyIso_inv
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma moduleCatToCycles_apply_eq_iff (y : S.X₁) (x : LinearMap.ker S.g.hom) :
+    S.moduleCatToCycles y = x ↔ S.f y = (x : S.X₂) :=
+  Subtype.ext_iff
+
+lemma mem_range_moduleCatToCycles_iff (x : LinearMap.ker S.g.hom) :
+    x ∈ LinearMap.range S.moduleCatToCycles ↔ (x : S.X₂) ∈ LinearMap.range S.f.hom :=
+  ⟨fun ⟨y, hy⟩ => ⟨y, congrArg Subtype.val hy⟩, fun ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩⟩
+
+lemma moduleCatLeftHomologyData_π_apply_eq_zero_iff (x : LinearMap.ker S.g.hom) :
+    S.moduleCatLeftHomologyData.π x = 0 ↔ (x : S.X₂) ∈ LinearMap.range S.f.hom := by
+  rw [← mem_range_moduleCatToCycles_iff, ← Submodule.Quotient.mk_eq_zero]
+  rfl
+
+lemma moduleCatLeftHomologyData_π_apply_eq_iff (x y : LinearMap.ker S.g.hom) :
+    S.moduleCatLeftHomologyData.π x = S.moduleCatLeftHomologyData.π y ↔
+      (x : S.X₂) - y ∈ LinearMap.range S.f.hom := by
+  rw [← sub_eq_zero, ← map_sub, moduleCatLeftHomologyData_π_apply_eq_zero_iff]
+  rfl
+
 lemma exact_iff_surjective_moduleCatToCycles :
     S.Exact ↔ Function.Surjective S.moduleCatToCycles := by
   simp [S.moduleCatLeftHomologyData.exact_iff_epi_f',

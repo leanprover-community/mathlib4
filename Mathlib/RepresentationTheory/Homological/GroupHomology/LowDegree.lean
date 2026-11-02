@@ -302,17 +302,17 @@ theorem d₃₂_comp_d₂₁ : d₃₂ A ≫ d₂₁ A = 0 := by
 open ShortComplex
 
 /-- The (exact) short complex `(G →₀ A) ⟶ A ⟶ A.ρ.coinvariants`. -/
-@[simps! -isSimp f g]
+@[implicit_reducible, simps! -isSimp f g]
 def shortComplexH0 : ShortComplex (ModuleCat k) :=
   mk _ _ (d₁₀_comp_coinvariantsMk A)
 
 /-- The short complex `(G² →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A`. -/
-@[simps! -isSimp f g]
+@[implicit_reducible, simps! -isSimp f g]
 def shortComplexH1 : ShortComplex (ModuleCat k) :=
   mk _ _ (d₂₁_comp_d₁₀ A)
 
 /-- The short complex `(G³ →₀ A) --d₃₂--> (G² →₀ A) --d₂₁--> (G →₀ A)`. -/
-@[simps! -isSimp f g]
+@[implicit_reducible, simps! -isSimp f g]
 def shortComplexH2 : ShortComplex (ModuleCat k) :=
   mk _ _ (d₃₂_comp_d₂₁ A)
 
@@ -322,10 +322,12 @@ section Cycles
 
 /-- The 1-cycles `Z₁(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `(G →₀ A) → A` defined by `single g a ↦ ρ_A(g⁻¹)(a) - a`. -/
+@[implicit_reducible]
 def cycles₁ : Submodule k (G →₀ A) := LinearMap.ker (d₁₀ A).hom
 
 /-- The 2-cycles `Z₂(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `(G² →₀ A) → (G →₀ A)` defined by `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
+@[implicit_reducible]
 def cycles₂ : Submodule k (G × G →₀ A) := LinearMap.ker (d₂₁ A).hom
 
 variable {A}
@@ -681,7 +683,6 @@ section cyclesIso₀
 
 instance : Epi (shortComplexH0 A).g := inferInstanceAs <| Epi ((coinvariantsMk k G).app A)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro x (hx : Coinvariants.mk _ _ = 0)
@@ -734,9 +735,6 @@ end cyclesIso₀
 
 section isoCycles₁
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex `(G² →₀ A) --d₂₁--> (G →₀ A) --d₁₀--> A` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
@@ -764,7 +762,6 @@ lemma isoCycles₁_inv_comp_iCycles :
       (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ (chainsIso₁ A).inv :=
   (CommSq.horiz_inv ⟨isoCycles₁_hom_comp_i A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCycles_comp_isoCycles₁_hom :
     toCycles A 2 1 ≫ (isoCycles₁ A).hom =
@@ -772,7 +769,6 @@ lemma toCycles_comp_isoCycles₁_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₂₁_eq,
     shortComplexH1_f]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma cyclesMk₁_eq (x : cycles₁ A) :
     cyclesMk 1 0 (by simp) ((chainsIso₁ A).inv x) (by
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]; simp) =
@@ -780,15 +776,11 @@ lemma cyclesMk₁_eq (x : cycles₁ A) :
   (ModuleCat.mono_iff_injective <| iCycles A 1).1 inferInstance <| by
     rw [iCycles_mk]
     simp only [ChainComplex.of_X, isoCycles₁_inv_comp_iCycles_apply]
-    rfl
 
 end isoCycles₁
 
 section isoCycles₂
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The short complex `(G³ →₀ A) --d₃₂--> (G² →₀ A) --d₂₁--> (G →₀ A)` is isomorphic to the 2nd
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
@@ -816,7 +808,6 @@ lemma isoCycles₂_inv_comp_iCycles :
       (shortComplexH2 A).moduleCatLeftHomologyData.i ≫ (chainsIso₂ A).inv :=
   (CommSq.horiz_inv ⟨isoCycles₂_hom_comp_i A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCycles_comp_isoCycles₂_hom :
     toCycles A 3 2 ≫ (isoCycles₂ A).hom =
@@ -824,7 +815,6 @@ lemma toCycles_comp_isoCycles₂_hom :
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₃₂_eq,
     shortComplexH2_f]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma cyclesMk₂_eq (x : cycles₂ A) :
     cyclesMk 2 1 (by simp) ((chainsIso₂ A).inv x) (by
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]
@@ -832,7 +822,6 @@ lemma cyclesMk₂_eq (x : cycles₂ A) :
   (ModuleCat.mono_iff_injective <| iCycles A 2).1 inferInstance <| by
     rw [iCycles_mk]
     simp only [ChainComplex.of_X, isoCycles₂_inv_comp_iCycles_apply]
-    rfl
 
 end isoCycles₂
 
@@ -852,8 +841,9 @@ def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
 /-- The quotient map from `A` to `H₀(G, A)`. -/
 def H0π : ↧A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 
-set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H0π A) := inferInstanceAs <| Epi (_ ≫ _)
+instance : Epi (H0π A) :=
+  (ModuleCat.epi_iff_surjective _).2 fun x =>
+    groupHomology_induction_on x fun y => ⟨(cyclesIso₀ A).hom y, by simp [H0π]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -896,11 +886,10 @@ def H0IsoOfIsTrivial :
 theorem H0IsoOfIsTrivial_inv_eq_π :
     (H0IsoOfIsTrivial A).inv = H0π A := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem π_comp_H0IsoOfIsTrivial_hom :
     π A 0 ≫ (H0IsoOfIsTrivial A).hom = (cyclesIso₀ A).hom := by
-  simp [H0IsoOfIsTrivial]
+  rw [← Iso.eq_comp_inv, H0IsoOfIsTrivial_inv_eq_π, cyclesIso₀_comp_H0π]
 
 end IsTrivial
 
@@ -916,22 +905,33 @@ abbrev H1 := groupHomology A 1
 def H1π : ↧(cycles₁ A) ⟶ H1 A :=
   (isoCycles₁ A).inv ≫ π A 1
 
-set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H1π A) := inferInstanceAs <| Epi (_ ≫ _)
+instance : Epi (H1π A) :=
+  (ModuleCat.epi_iff_surjective _).2 fun x =>
+    groupHomology_induction_on x fun y => ⟨(isoCycles₁ A).hom y, by simp [H1π]⟩
+
+/-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
+chains, is isomorphic to `cycles₁ A ⧸ boundaries₁ A`, which is a simpler type. -/
+def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H1Iso_hom :
+    π A 1 ≫ (H1Iso A).hom = (isoCycles₁ A).hom ≫
+      (shortComplexH1 A).moduleCatLeftHomologyData.π :=
+  (homologyπ_comp_leftHomologyIso_inv_assoc _ _).trans (leftHomologyπ_naturality' _ _ _)
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H1Iso_inv :
+    (shortComplexH1 A).moduleCatLeftHomologyData.π ≫ (H1Iso A).inv = H1π A :=
+  (CommSq.vert_inv ⟨π_comp_H1Iso_hom A⟩).w
 
 variable {A}
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries₁ A := by
-  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH1 A).inv
-    (shortComplexH1 A).moduleCatLeftHomologyData (leftHomologyData _)
-    ((inhomogeneousChains A).sc 1).leftHomologyIso.hom
-  simp only [H1π, isoCycles₁, π, HomologicalComplex.homologyπ, homologyπ,
-    cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
-    LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective _).1 inferInstance)]
-  simp [LinearMap.range_codRestrict, boundaries₁, shortComplexH1, cycles₁]
+  rw [← π_comp_H1Iso_inv_apply,
+    map_eq_zero_iff _ ((ModuleCat.mono_iff_injective (H1Iso A).inv).1 inferInstance),
+    Submodule.Quotient.mk_eq_zero, mem_range_moduleCatToCycles_iff, shortComplexH1_f]
+  rfl
 
 lemma H1π_eq_iff (x y : cycles₁ A) :
     H1π A x = H1π A y ↔ x.1 - y.1 ∈ boundaries₁ A := by
@@ -944,24 +944,6 @@ theorem H1_induction_on {C : H1 A → Prop} (x : H1 A) (h : ∀ x : cycles₁ A,
   groupHomology_induction_on x fun y => by simpa [H1π] using h ((isoCycles₁ A).hom y)
 
 variable (A)
-
-/-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
-chains, is isomorphic to `cycles₁ A ⧸ boundaries₁ A`, which is a simpler type. -/
-def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H1Iso_hom :
-    π A 1 ≫ (H1Iso A).hom = (isoCycles₁ A).hom ≫
-      (shortComplexH1 A).moduleCatLeftHomologyData.π := by
-  simp [H1Iso, isoCycles₁, π, HomologicalComplex.homologyπ, leftHomologyπ]
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H1Iso_inv :
-    (shortComplexH1 A).moduleCatLeftHomologyData.π ≫ (H1Iso A).inv = H1π A :=
-  (CommSq.vert_inv ⟨π_comp_H1Iso_hom A⟩).w
 
 section IsTrivial
 
@@ -988,19 +970,17 @@ lemma mkH1OfIsTrivial_apply (g : G) (a : A) :
     mkH1OfIsTrivial A (Additive.ofMul (Abelianization.of g)) a =
       H1π A ((cycles₁IsoOfIsTrivial A).inv (single g a)) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a `G`-representation on `A` is trivial, this is the natural map `H₁(G, A) → Gᵃᵇ ⊗[ℤ] A`
 sending `⟦single g a⟧` to `⟦g⟧ ⊗ₜ a`. -/
 def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[ℤ] A :=
   ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => AddMonoidHom.ofClass
     (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g)))).comp
-      (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
-      simp [← hz, d₂₁, sum_sum_index, sum_add_index', tmul_add, sum_sub_index, tmul_sub,
-        shortComplexH1, isTrivial_apply]).comp <|
+      (cycles₁ A).toAddSubgroup.subtype) fun x hx => AddMonoidHom.mem_ker.2 <| by
+      obtain ⟨z, hz⟩ : ∃ z : G × G →₀ A, d₂₁ A z = x.1 := (mem_range_moduleCatToCycles_iff _ _).1 hx
+      simp [← hz, d₂₁, map_finsuppSum, -liftAddHom_apply, liftAddHom_apply_single,
+        isTrivial_apply]).comp <|
           AddMonoidHom.ofClass (H1Iso A).hom.hom).toIntLinearMap
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 @[simp]
 lemma H1ToTensorOfIsTrivial_H1π_single (g : G) (a : A) :
@@ -1009,7 +989,7 @@ lemma H1ToTensorOfIsTrivial_H1π_single (g : G) (a : A) :
   simp only [H1ToTensorOfIsTrivial, H1π, AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_comp]
   -- todo: change this proof so that we don't need `change` that abuses defeq.
   change QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _) = _
-  simp [π_comp_H1Iso_hom_apply, ← Submodule.Quotient.quotientAddGroupMk_eq_mk, Submodule.mkQ,
+  simp [π_comp_H1Iso_hom_apply, ← Submodule.Quotient.quotientAddGroupMk_eq_mk,
     AddSubgroup.subtype, cycles₁IsoOfIsTrivial]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1062,22 +1042,33 @@ abbrev H2 := groupHomology A 2
 def H2π : ↧(cycles₂ A) ⟶ H2 A :=
   (isoCycles₂ A).inv ≫ π A 2
 
-set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H2π A) := inferInstanceAs <| Epi (_ ≫ _)
+instance : Epi (H2π A) :=
+  (ModuleCat.epi_iff_surjective _).2 fun x =>
+    groupHomology_induction_on x fun y => ⟨(isoCycles₂ A).hom y, by simp [H2π]⟩
+
+/-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
+chains, is isomorphic to `cycles₂ A ⧸ boundaries₂ A`, which is a simpler type. -/
+def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H2Iso_hom :
+    π A 2 ≫ (H2Iso A).hom = (isoCycles₂ A).hom ≫
+      (shortComplexH2 A).moduleCatLeftHomologyData.π :=
+  (homologyπ_comp_leftHomologyIso_inv_assoc _ _).trans (leftHomologyπ_naturality' _ _ _)
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_H2Iso_inv :
+    (shortComplexH2 A).moduleCatLeftHomologyData.π ≫ (H2Iso A).inv = H2π A :=
+  (CommSq.vert_inv ⟨π_comp_H2Iso_hom A⟩).w
 
 variable {A}
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries₂ A := by
-  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH2 A).inv
-    (shortComplexH2 A).moduleCatLeftHomologyData (leftHomologyData _)
-    ((inhomogeneousChains A).sc 2).leftHomologyIso.hom
-  simp only [H2π, isoCycles₂, π, HomologicalComplex.homologyπ, homologyπ,
-    cyclesMapIso'_inv, leftHomologyπ, ← h, ← leftHomologyMapIso'_inv, ModuleCat.hom_comp,
-    LinearMap.coe_comp, Function.comp_apply, map_eq_zero_iff _
-    ((ModuleCat.mono_iff_injective _).1 inferInstance)]
-  simp [LinearMap.range_codRestrict, boundaries₂, shortComplexH2, cycles₂]
+  rw [← π_comp_H2Iso_inv_apply,
+    map_eq_zero_iff _ ((ModuleCat.mono_iff_injective (H2Iso A).inv).1 inferInstance),
+    Submodule.Quotient.mk_eq_zero, mem_range_moduleCatToCycles_iff, shortComplexH2_f]
+  rfl
 
 lemma H2π_eq_iff (x y : cycles₂ A) :
     H2π A x = H2π A y ↔ x.1 - y.1 ∈ boundaries₂ A := by
@@ -1088,25 +1079,6 @@ lemma H2π_eq_iff (x y : cycles₂ A) :
 theorem H2_induction_on {C : H2 A → Prop} (x : H2 A) (h : ∀ x : cycles₂ A, C (H2π A x)) :
     C x :=
   groupHomology_induction_on x (fun y => by simpa [H2π] using h ((isoCycles₂ A).hom y))
-
-variable (A)
-
-/-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
-chains, is isomorphic to `cycles₂ A ⧸ boundaries₂ A`, which is a simpler type. -/
-def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
-
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H2Iso_hom :
-    π A 2 ≫ (H2Iso A).hom = (isoCycles₂ A).hom ≫
-      (shortComplexH2 A).moduleCatLeftHomologyData.π := by
-  simp [H2Iso, isoCycles₂, π, HomologicalComplex.homologyπ, leftHomologyπ]
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_H2Iso_inv :
-    (shortComplexH2 A).moduleCatLeftHomologyData.π ≫ (H2Iso A).inv = H2π A :=
-  (CommSq.vert_inv ⟨π_comp_H2Iso_hom A⟩).w
 
 end H2
 

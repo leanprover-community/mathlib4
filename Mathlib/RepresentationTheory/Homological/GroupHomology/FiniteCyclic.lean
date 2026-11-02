@@ -100,15 +100,17 @@ noncomputable abbrev groupHomologyπEven
   (ShortComplex.moduleCatCyclesIso <| subCompNormHom A g).inv ≫
     ShortComplex.homologyπ _ ≫ (groupHomologyIsoEven A g hg i hi).inv
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma groupHomologyπEven_eq_zero_iff (hg : ∀ x, x ∈ Subgroup.zpowers g)
     (i : ℕ) [NeZero i] (hi : Even i) (x : LinearMap.ker A.ρ.norm) :
     groupHomologyπEven A g hg i hi x = 0 ↔
       x.1 ∈ LinearMap.range (applyAsHom A g - 𝟙 A).hom.toLinearMap := by
-  simp [sub_hom, groupHomologyπEven, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1
-    inferInstance), ShortComplex.moduleCatToCycles, -LinearMap.mem_range, Rep.applyAsHom, Rep.norm,
-    LinearMap.range_codRestrict]
+  have h : groupHomologyπEven A g hg i hi x =
+      ((subCompNormHom A g).moduleCatHomologyIso.inv ≫ (groupHomologyIsoEven A g hg i hi).inv)
+        ((subCompNormHom A g).moduleCatLeftHomologyData.π x) :=
+    congrArg (groupHomologyIsoEven A g hg i hi).inv
+      (ShortComplex.moduleCatCyclesIso_inv_π_apply (subCompNormHom A g) x)
+  rw [h, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance)]
+  exact (subCompNormHom A g).moduleCatLeftHomologyData_π_apply_eq_zero_iff x
 
 lemma groupHomologyπEven_eq_iff (hg : ∀ x, x ∈ Subgroup.zpowers g)
     (i : ℕ) [NeZero i] (hi : Even i) (x y : LinearMap.ker A.ρ.norm) :
@@ -134,13 +136,12 @@ noncomputable abbrev groupHomologyπOdd (hg : ∀ x, x ∈ Subgroup.zpowers g) (
   (ShortComplex.moduleCatCyclesIso <| normHomCompSub A g).inv ≫
     ShortComplex.homologyπ _ ≫ (groupHomologyIsoOdd A g hg i hi).inv
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma groupHomologyπOdd_eq_zero_iff (hg : ∀ x, x ∈ Subgroup.zpowers g)
     (i : ℕ) (hi : Odd i) (x : LinearMap.ker (applyAsHom A g - 𝟙 A).hom.toLinearMap) :
     groupHomologyπOdd A g hg i hi x = 0 ↔ x.1 ∈ LinearMap.range A.ρ.norm := by
-  simp [groupHomologyπOdd, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
-    ShortComplex.moduleCatToCycles, -LinearMap.mem_range, Rep.norm, LinearMap.range_codRestrict]
+  rw [groupHomologyπOdd, ShortComplex.moduleCatCyclesIso_inv_π_assoc, ModuleCat.comp_apply,
+    map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance)]
+  exact (normHomCompSub A g).moduleCatLeftHomologyData_π_apply_eq_zero_iff x
 
 lemma groupHomologyπOdd_eq_iff (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g)
     (A : Rep k G) (i : ℕ) (hi : Odd i) (x y : LinearMap.ker
