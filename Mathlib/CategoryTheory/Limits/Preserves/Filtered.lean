@@ -5,8 +5,8 @@ Authors: Kim Morrison, Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservation of filtered colimits and cofiltered limits.

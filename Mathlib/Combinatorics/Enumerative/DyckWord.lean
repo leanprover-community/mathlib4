@@ -155,7 +155,7 @@ def drop (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) 
     rw [← take_append_drop i p.toList, count_append, count_append] at this
     lia
   count_D_le_count_U k := by
-    rw [show i = min i (i + k) by omega, ← take_take] at hi
+    rw [show i = min i (i + k) by lia, ← take_take] at hi
     rw [take_drop, ← add_le_add_iff_left (((p.toList.take (i + k)).take i).count U),
       ← count_append, hi, ← count_append, take_append_drop]
     exact p.count_D_le_count_U _
@@ -211,7 +211,7 @@ def denest (hn : p.IsNested) : DyckWord where
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
       (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos_iff.mpr h).ne'))
-    have lb : 0 < min (1 + i) (p.toList.length - 1) := by omega
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by lia
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
@@ -366,7 +366,7 @@ lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
 @[simp]
 lemma insidePart_nest : p.nest.insidePart = p := by
   simp_rw [insidePart, nest_ne_zero, dite_false, firstReturn_nest]
-  convert! p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
+  convert p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
 @[simp]
@@ -470,7 +470,7 @@ lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
   apply lt_of_le_of_ne (monotone_semilength plq)
   contrapose pnq
-  replace pnq := congr(2 * $(pnq))
+  replace pnq := congr(2 * $pnq)
   simp_rw [two_mul_semilength_eq_length] at pnq
   exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)
 
@@ -545,7 +545,7 @@ instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
 theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
     Fintype.card { p : DyckWord // p.semilength = n } = catalan n := by
   rw [← Fintype.ofEquiv_card (equivTreesOfNumNodesEq n), ← treesOfNumNodesEq_card_eq_catalan]
-  convert! Fintype.card_coe _
+  convert Fintype.card_coe _
 
 end BinaryTree
 

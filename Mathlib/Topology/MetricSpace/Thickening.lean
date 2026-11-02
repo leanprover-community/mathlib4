@@ -357,7 +357,7 @@ theorem ediam_thickening_le (ε : ℝ≥0) : ediam (thickening ε s) ≤ ediam s
 theorem diam_cthickening_le {α : Type*} [PseudoMetricSpace α] (s : Set α) (hε : 0 ≤ ε) :
     diam (cthickening ε s) ≤ diam s + 2 * ε := by
   lift ε to ℝ≥0 using hε
-  refine (toReal_le_add' (ediam_cthickening_le _) ?_ ?_).trans_eq ?_
+  refine (toReal_le_add_of_top_imp_top (ediam_cthickening_le _) ?_ ?_).trans_eq ?_
   · exact fun h ↦ top_unique <| h ▸ ediam_mono (self_subset_cthickening _)
   · simp [mul_eq_top]
   · simp [diam]
@@ -574,7 +574,7 @@ theorem cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α] [P
     isClosed_closure.exists_infDist_eq_dist (closure_nonempty_iff.mpr hne) x
   replace hy : dist x y ≤ δ :=
     (ENNReal.ofReal_le_ofReal_iff hδ).mp
-      (((congr_arg ENNReal.ofReal hy.symm).le.trans ENNReal.ofReal_toReal_le).trans hx)
+      ((congr(ENNReal.ofReal $hy.symm).le.trans ENNReal.ofReal_toReal_le).trans hx)
   exact mem_biUnion yE hy
 
 nonrec theorem _root_.IsClosed.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α]

@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.NeZero
 public import Mathlib.Order.Hom.Basic
@@ -46,7 +45,7 @@ variable [NeZero (1 : α)]
 
 theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 := by
   apply zero_lt_one.trans_le
-  convert! (@mono_cast α _).imp (?_ : 1 ≤ n + 1)
+  convert (@mono_cast α _).imp (?_ : 1 ≤ n + 1)
   <;> simp
 
 /-- See also `Nat.cast_pos`, specialised to `IsOrderedRing`. -/

@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-public import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
+
+import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 
 /-!
 # Derivability structures deduced from localized equivalences
@@ -56,7 +57,6 @@ section
 variable [W₂'.RespectsIso]
   [L.IsLocalizedEquivalence] [R.IsLocalizedEquivalence] [R.functor.EssSurj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
     [T.IsLeftDerivabilityStructure]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -75,7 +75,7 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
   let : CatCommSq T.functor (L.functor ⋙ W₁'.Q) (R.functor ⋙ W₂'.Q) F :=
     CatCommSq.vComp (H₂ := B.functor) _ _ _ _ _ _
   have : (TwoSquare.hComp iso.inv e'.inv).GuitartExact := by
-    convert!
+    convert
       T.guitartExact_of_isLeftDerivabilityStructure' (L.functor ⋙ W₁'.Q) (R.functor ⋙ W₂'.Q) F
         (CatCommSq.iso _ _ _ _)
     ext
@@ -83,8 +83,6 @@ lemma isLeftDerivabilityStructure_of_isLocalizedEquivalence
   rw [B.isLeftDerivabilityStructure_iff W₁'.Q W₂'.Q F e']
   apply TwoSquare.GuitartExact.of_hComp iso.inv
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -116,7 +114,6 @@ lemma isLeftDerivabilityStructure_iff_of_isLocalizedEquivalence
     (R.functor ⋙ W₂'.Q) F e, ← this]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isRightDerivabilityStructure_of_isLocalizedEquivalence
     [T.IsRightDerivabilityStructure]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -128,7 +125,6 @@ lemma isRightDerivabilityStructure_of_isLocalizedEquivalence
     inferInstanceAs (TwoSquare.op iso.hom).GuitartExact
   exact isLeftDerivabilityStructure_of_isLocalizedEquivalence iso'
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isRightDerivabilityStructure_iff_of_isLocalizedEquivalence
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
@@ -146,7 +142,6 @@ variable [W₁'.RespectsIso] [W₂'.RespectsIso] [L.IsInduced] [L.functor.IsEqui
   [R.IsInduced] [R.functor.IsEquivalence]
   (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor)
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isLeftDerivabilityStructure_of_equivalences
     [T.IsLeftDerivabilityStructure]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) :

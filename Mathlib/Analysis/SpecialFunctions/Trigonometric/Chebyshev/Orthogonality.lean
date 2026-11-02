@@ -5,14 +5,15 @@ Authors: Yuval Filmus
 -/
 module
 
-public import Mathlib.RingTheory.Polynomial.Chebyshev
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!
@@ -89,9 +90,6 @@ theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ} :
     · exact fun x hx ↦ (hasDerivAt_arccos (by aesop) (by aesop))
     · simp
   _ = ∫ θ in 0..π, f (cos θ) := by simp
-
-@[deprecated (since := "2026-03-19")]
-alias integral_measureT_eq_integral_cos_of_continuous := integral_measureT_eq_integral_cos
 
 theorem integral_eval_T_real_measureT_zero :
     ∫ x, (T ℝ 0).eval x ∂measureT = π := by

@@ -205,10 +205,10 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
     cases j using Fin.addCases (m := x.len + 1) (n := y.len + 1) with
     | left j =>
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₁
-      simpa [← inl'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₁ j
+      simpa [← inl'_eval, ConcreteCategory.hom, Fin.ext_iff] using congr($h₁ j)
     | right j =>
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₂
-      simpa [← inr'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₂ j
+      simpa [← inr'_eval, ConcreteCategory.hom, Fin.ext_iff] using congr($h₂ j)
   | .of x, .star, .of z, f, g => by
       simp only [inl, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
         whiskerLeft_id_star] at h₁

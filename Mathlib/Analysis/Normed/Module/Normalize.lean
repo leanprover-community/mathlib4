@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Basic.Sign.Defs
 public import Mathlib.Analysis.Normed.Module.Ray
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normalized vector
 
