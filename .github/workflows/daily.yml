@@ -62,8 +62,7 @@ jobs:
           use-mathlib-cache: true
           reinstall-transient-toolchain: true
 
-      - name: Check environments using leanchecker # make sure this name is consistent with "Get job status and URLs" in the notify job
-        id: leanchecker
+      - name: Check environments using leanchecker
         run: |
           # `--fresh` is safe and in fact currently faster for projects with many modules
           lake env leanchecker --fresh Mathlib
@@ -81,7 +80,7 @@ jobs:
       BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
       TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      - name: Get job status and URLs
+      - name: Get job status and URL
         id: get-status
         env:
           GH_TOKEN: ${{ github.token }}
@@ -92,9 +91,7 @@ jobs:
           JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
             ".jobs[] | select(.name == \"$JOB_NAME\")")
 
-          LEANCHECKER_URL=$(echo "$JOB_DATA" | jq -r \
-            '(.url + (.steps[] | select(.name == "Check environments using leanchecker")
-            | "#step:\(.number):1"))')
+          LEANCHECKER_URL=$(echo "$JOB_DATA" | jq -r '.url')
 
           JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
 
@@ -152,8 +149,7 @@ jobs:
           use-mathlib-cache: true
           reinstall-transient-toolchain: true
 
-      - name: Build AesopTest # make sure this name is consistent with "Get job status and URLs" in the notify job
-        id: aesop
+      - name: Build AesopTest
         run: |
           lake build AesopTest
 
@@ -169,7 +165,7 @@ jobs:
       BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
       TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      - name: Get job status and URLs
+      - name: Get job status and URL
         id: get-status
         env:
           GH_TOKEN: ${{ github.token }}
@@ -180,9 +176,7 @@ jobs:
           JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
             ".jobs[] | select(.name == \"$JOB_NAME\")")
 
-          AESOP_URL=$(echo "$JOB_DATA" | jq -r \
-            '(.url + (.steps[] | select(.name == "Build AesopTest")
-            | "#step:\(.number):1"))')
+          AESOP_URL=$(echo "$JOB_DATA" | jq -r '.url')
 
           JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
 
@@ -240,8 +234,7 @@ jobs:
           use-mathlib-cache: true
           reinstall-transient-toolchain: true
 
-      - name: Run mathlib_test_executable # make sure this name is consistent with "Get job status and URLs" in the notify job
-        id: mathlib-test
+      - name: Run mathlib_test_executable
         run: |
           lake exe mathlib_test_executable
 
@@ -257,7 +250,7 @@ jobs:
       BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
       TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      - name: Get job status and URLs
+      - name: Get job status and URL
         id: get-status
         env:
           GH_TOKEN: ${{ github.token }}
@@ -268,9 +261,7 @@ jobs:
           JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
             ".jobs[] | select(.name == \"$JOB_NAME\")")
 
-          MATHLIB_TEST_EXECUTABLE_URL=$(echo "$JOB_DATA" | jq -r \
-            '(.url + (.steps[] | select(.name == "Run mathlib_test_executable")
-            | "#step:\(.number):1"))')
+          MATHLIB_TEST_EXECUTABLE_URL=$(echo "$JOB_DATA" | jq -r '.url')
 
           JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
 
@@ -331,8 +322,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@631a55b12751854ce901bb631d5902ceb48146f7 # stable
 
-      - name: Check Mathlib using nanoda # make sure this name is consistent with "Get job status and URLs" in the notify job
-        id: nanoda
+      - name: Check Mathlib using nanoda
         run: |
           # Clone and build lean4export
           # TODO: Once https://github.com/leanprover/lean4export/pull/11 is merged,
@@ -387,7 +377,7 @@ jobs:
       BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
       TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
     steps:
-      - name: Get job status and URLs
+      - name: Get job status and URL
         id: get-status
         env:
           GH_TOKEN: ${{ github.token }}
@@ -398,9 +388,7 @@ jobs:
           JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
             ".jobs[] | select(.name == \"$JOB_NAME\")")
 
-          NANODA_URL=$(echo "$JOB_DATA" | jq -r \
-            '(.url + (.steps[] | select(.name == "Check Mathlib using nanoda")
-            | "#step:\(.number):1"))')
+          NANODA_URL=$(echo "$JOB_DATA" | jq -r '.url')
 
           JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
 
