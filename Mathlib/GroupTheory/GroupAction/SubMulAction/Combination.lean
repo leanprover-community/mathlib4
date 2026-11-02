@@ -214,11 +214,11 @@ theorem mulActionHom_singleton_bijective :
 variable {α}
 
 /-- The action of `Equiv.Perm α` on `Set.powersetCard α n` is preprimitive
-provided `1 ≤ n < Nat.card α` and `Nat.card α ≠ 2 * n`.
+provided `0 < n < Nat.card α` and `Nat.card α ≠ 2 * n`.
 
 This is a consequence that the stabilizer of such a combination
 is a maximal subgroup. -/
-theorem isPreprimitive_perm {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α)
+theorem isPreprimitive_perm {n : ℕ} (hn₀ : n ≠ 0) (hn : n < Nat.card α)
     (hα : Nat.card α ≠ 2 * n) :
     IsPreprimitive (Perm α) (powersetCard α n) := by
   -- The finiteness of `α` follows from the assumptions of the theorem.
@@ -227,7 +227,7 @@ theorem isPreprimitive_perm {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α
   -- The action is pretransitive.
   have : IsPretransitive (Perm α) (powersetCard α n) := powersetCard.isPretransitive
   -- The type on which the group acts is nontrivial.
-  have : Nontrivial (powersetCard α n) := powersetCard.nontrivial' h_one_le hn
+  have : Nontrivial (powersetCard α n) := powersetCard.nontrivial' (Nat.pos_of_ne_zero hn₀) hn
   obtain ⟨s⟩ := this.to_nonempty
   -- It remains to prove that stabilizer of some point is maximal.
   rw [← isCoatom_stabilizer_iff_preprimitive _ s]
@@ -236,7 +236,7 @@ theorem isPreprimitive_perm {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α
   -- We conclude by `Equiv.Perm.isCoatom_stabilizer`
   apply isCoatom_stabilizer
   -- `s` is nonempty because `n ≠ 0`.
-  · rwa [powersetCard.coe_nonempty_iff]
+  · exact powersetCard.coe_nonempty_iff.mpr (Nat.pos_of_ne_zero hn₀)
   -- `sᶜ` is nonempty because `n < Nat.card α`.
   · rw [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq]
     exact hn.ne
