@@ -50,9 +50,9 @@ lemma self_mem_principalOpen (x : X) : x ∈ principalOpen x := le_refl _
 lemma principalOpen_le_iff {x : X} (U : Opens X) :
     principalOpen x ≤ U ↔ x ∈ U := by
   refine ⟨fun h => h <| self_mem_principalOpen _, fun hx y hy => ?_⟩
-  · have := U.isOpen
-    rw [IsUpperSet.isOpen_iff_isUpperSet] at this
-    exact this hy hx
+  have := U.isOpen
+  rw [IsUpperSet.isOpen_iff_isUpperSet] at this
+  exact this hy hx
 
 lemma principalOpen_le {x y : X} (h : x ≤ y) :
     principalOpen y ≤ principalOpen x :=

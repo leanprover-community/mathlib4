@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Basic.ENNReal.Action
-public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.MetricSpace.Algebra
 
 /-!
@@ -121,7 +120,7 @@ variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β]
 
 theorem NormSMulClass.of_nnnorm_smul (h : ∀ (r : α) (x : β), ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊) :
     NormSMulClass α β where
-  norm_smul r b := congr_arg NNReal.toReal (h r b)
+  norm_smul r b := congr($(h r b).toReal)
 
 variable [NormSMulClass α β]
 

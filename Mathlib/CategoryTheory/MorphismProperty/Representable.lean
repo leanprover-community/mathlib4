@@ -344,7 +344,6 @@ lemma relative.property_snd {f : X ⟶ Y} (hf : P.relative F f) {a : C} (g : F.o
     P (hf.rep.snd g) :=
   hf.property g _ _ (hf.rep.isPullback g)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a morphism property `P` which respects isomorphisms, then to show that a morphism
 `f : X ⟶ Y` satisfies `P.relative` it suffices to show that:
 * The morphism is representable.
@@ -625,7 +624,6 @@ lemma toPullbackTerminal {X : D} {a : C}
   apply (respectsIso F).toRespectsRight.postcomp _ (inferInstance : IsIso _) _
   exact map_preimage F (_ ≫ pbIso.hom) ▸ map F (F.preimage _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Assume that
 1. `C` has binary products and pullbacks,
 2. `D` has pullbacks, binary products and a terminal object, and

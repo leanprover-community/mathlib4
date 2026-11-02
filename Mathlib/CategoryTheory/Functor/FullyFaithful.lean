@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.NatIso
-public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Full and faithful functors
@@ -69,7 +68,7 @@ lemma map_injective_iff (F : C ⥤ D) [Faithful F] {X Y : C} (f g : X ⟶ Y) :
 
 theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective (F.mapIso : (X ≅ Y) → (F.obj X ≅ F.obj Y)) := fun _ _ h =>
-  Iso.ext (map_injective F (congr_arg Iso.hom h :))
+  Iso.ext (map_injective F congr($(h).hom))
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
     Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
@@ -336,7 +335,7 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
 -- but importing `CategoryTheory.EqToHom` causes an import loop:
 -- CategoryTheory.EqToHom → CategoryTheory.Opposites →
 -- CategoryTheory.Equivalence → CategoryTheory.FullyFaithful
-theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
+theorem Faithful.div_comp (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C → D)
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, G.map (map f) ≍ F.map f) :
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by

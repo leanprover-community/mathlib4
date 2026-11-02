@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
 

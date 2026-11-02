@@ -5,10 +5,7 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.Ideal
 public import Mathlib.RingTheory.PolynomialAlgebra
 
@@ -36,18 +33,10 @@ variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemi
 open IsLocalization in
 variable (M S) in
 /-- The span of `I` in a localization of `R` at `M` is the localization of `I` at `M`. -/
--- TODO: golf using `Ideal.localized'_eq_map`
 instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
-    IsLocalizedModule M (Algebra.idealMap I (S := S)) where
-  map_units x :=
-    (Module.End.isUnit_iff _).mpr ⟨fun a b e ↦ Subtype.ext ((map_units S x).mul_right_injective
-      (by simpa [Algebra.smul_def] using congr(($e).1))),
-      fun a ↦ ⟨⟨_, Ideal.mul_mem_left _ (map_units S x).unit⁻¹.1 a.2⟩,
-        Subtype.ext (by simp [Algebra.smul_def, ← mul_assoc])⟩⟩
-  surj y :=
-    have ⟨x, hx⟩ := (mem_map_algebraMap_iff M S).mp y.property
-    ⟨x, Subtype.ext (by simp [Submonoid.smul_def, Algebra.smul_def, mul_comm, hx])⟩
-  exists_of_eq h := ⟨_, Subtype.ext (exists_of_eq congr(($h).1)).choose_spec⟩
+    IsLocalizedModule M (Algebra.idealMap S I) :=
+  .of_linearEquiv M (Submodule.toLocalized' S M _ I)
+    ((LinearEquiv.ofEq _ _ (Ideal.localized'_eq_map S M I)).restrictScalars R)
 
 lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
     RingHom.ker (IsLocalization.map Q g (hT.symm ▸ M.le_comap_map) : S →+* Q) =
@@ -148,7 +137,7 @@ lemma map_eq_toLinearMap_mapₐ (f : A →ₐ[R] B) :
       (IsScalarTower.toAlgHom R B Bₚ).toLinearMap f.toLinearMap =
       (IsLocalization.mapₐ M Rₚ Aₚ Bₚ f).toLinearMap := by
   ext x
-  exact DFunLike.congr_fun (mapExtendScalars_eq_toLinearMap_mapₐ M Rₚ Aₚ Bₚ f) x
+  congrm $(mapExtendScalars_eq_toLinearMap_mapₐ M Rₚ Aₚ Bₚ f) x
 
 lemma map_linearMap_eq_toLinearMap_mapₐ :
     IsLocalizedModule.map M (Algebra.linearMap R Rₚ) (IsScalarTower.toAlgHom R A Aₚ).toLinearMap

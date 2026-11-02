@@ -5,9 +5,7 @@ Authors: Robert Maxton
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
-public import Mathlib.RingTheory.Congruence.Hom
 
 /-!
 # The free product of $R$-algebras
@@ -128,8 +126,7 @@ as a quotient of `PowerAlgebra R A` -/
 noncomputable def asPowersEquiv : asPowers R A ≃ₐ[R] FreeProduct R A :=
   RingCon.congrₐ _
     (powerAlgebraEquivFreeTensorAlgebra R A |>.symm) (by
-      rw [ringCon', ringCon, rel']
-      erw [RingCon.comap_ringConGen_ringEquiv]
+      rw [ringCon', ringCon, rel', RingCon.comap_ringConGen_equiv]
       congr
       ext i x
       simp [Function.onFun])
@@ -167,7 +164,7 @@ theorem mul_injections (a₁ a₂ : A i) :
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   rw [← ι_apply, ← ι_apply, ← RingCon.coe_mul]
   refine Quotient.sound <| RingCon.le_ringConGen _ _ <| ?_
-  convert! rel.prod
+  convert rel.prod
   simp
 
 /-- The `i`th canonical injection, from `A i` to the free product, as
@@ -180,12 +177,12 @@ theorem lof_map_one (i : I) : lof R A i 1 = 1 := by
   rw [lof]; dsimp [mkAlgHom]; exact identify_one R A i
 
 /-- The `i`th canonical injection, from `A i` to the free product -/
-irreducible_def ι (i : I) : A i →ₐ[R] FreeProduct R A :=
+@[no_expose] def ι (i : I) : A i →ₐ[R] FreeProduct R A :=
   AlgHom.ofLinearMap (ι' R A ∘ₗ DirectSum.lof R I A i)
     (lof_map_one R A i) (mul_injections R A · · |>.symm)
 
 /-- The family of canonical injection maps, with `i` left implicit -/
-irreducible_def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
+@[no_expose] def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Universal property of the free product of algebras:

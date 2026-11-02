@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.RingTheory.Valuation.RankOne
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
@@ -131,6 +130,19 @@ theorem norm_eq_zero (v : Valuation L Γ₀) [RankLeOne v] {x : L} (hx : v.norm 
 
 theorem norm_pos_iff_valuation_pos {x : R} : 0 < v.norm x ↔ (0 : Γ₀) < v x := by
   simpa [norm_def] using (RankLeOne.strictMono' (v := v)).lt_iff_lt (a := 0) (b := (v.restrict x))
+
+/-- Absolute value corresponding to a valuation of rank at most one. -/
+@[simps]
+def absoluteValue (v : Valuation L Γ₀) [hv : RankLeOne v] : AbsoluteValue L ℝ where
+  toFun    := v.norm
+  map_mul' := by simp [norm_def]
+  nonneg'  := by simp [norm_def]
+  eq_zero' := by simp [norm_def]
+  add_le' x y := by
+    calc
+      v.norm (x + y) ≤ max (v.norm x) (v.norm y) := by
+        simp [norm_def, hv.strictMono'.le_iff_le]
+      _ ≤ v.norm x + v.norm y := by simp [v.norm_def]
 
 end Valuation
 

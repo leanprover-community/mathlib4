@@ -5,9 +5,6 @@ Authors: Oliver Nash, Jon Bannon
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Exact.Basic
-public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-! # Exactness of sequences
@@ -58,7 +55,7 @@ public lemma sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} (V : Fin (n + 2)
         finrank k ↥(LinearMap.range (f i.castSucc)) :=
       congrArg (fun S : Submodule k (V i.succ.castSucc) => finrank k ↥S)
         (h_exact i).linearMap_ker_eq
-    omega
+    lia
   · #adaptation_note /-- Prior to v4.31.0-rc1, this proof was
       ```
       grind [finrank_top]

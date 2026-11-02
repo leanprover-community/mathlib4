@@ -1,4 +1,6 @@
-import Mathlib.MeasureTheory.Measure.CompleteLattice
+module
+
+public import Mathlib.MeasureTheory.Measure.CompleteLattice
 
 /-!
 # Testing for the `gcongr` tactic
