@@ -170,7 +170,7 @@ lemma nnNorm_zpow_le (x : S) (z : ℤ) :
   cases z <;>
   simpa using nnNorm_pow_le _ _
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_zpow_le := nnNorm_zpow_le
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_zpow_le := nnNorm_zpow_le
 
 @[to_additive]
 lemma norm_zpow_le (x : S) (z : ℤ) :
