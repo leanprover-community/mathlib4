@@ -6,10 +6,8 @@ Authors: Felix Pernegger
 module
 
 public meta import Lean.Elab.Command
+public import Mathlib.Init
 public import Mathlib.Lean.Linter
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # The "longUncommentedProof" linter
@@ -48,7 +46,7 @@ The "longUncommentedProof" linter emits a warning on declaration bodies which co
 `linter.style.longUncommentedProof.minComments` lines containing a comment.
 -/
 public register_option linter.style.longUncommentedProof : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the longUncommentedProof linter"
 }
 
@@ -61,7 +59,7 @@ public register_option linter.style.longUncommentedProof.minLines : Nat := {
 
 /-- The number of commented lines that the `longUncommentedProof` linter expects in long bodies. -/
 public register_option linter.style.longUncommentedProof.minComments : Nat := {
-  defValue := 20
+  defValue := 10
   descr := "minimal number of commented lines expected by the longUncommentedProof linter"
 }
 
