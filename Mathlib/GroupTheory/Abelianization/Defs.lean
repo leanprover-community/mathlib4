@@ -29,20 +29,20 @@ assert_not_exists Cardinal Field
 
 universe u v w
 
--- Let G be a group and A an additive group.
+-- Let G be a group.
 variable (G : Type u) [Group G]
-variable (A : Type u) [AddGroup A]
 
 open Subgroup (centralizer)
 
 open scoped IsMulCommutative in
-/-- The abelianization of the additive group A is the quotient of A by its commutator subgroup. -/
-def AddAbelianization : Type u :=
+/-- The abelianization of the additive group `A` is the quotient of `A` by its commutator
+subgroup. -/
+def AddAbelianization (A : Type*) [AddGroup A] :=
   A ⧸ addCommutator A
 deriving AddCommGroup
 
 open scoped IsMulCommutative in
-/-- The abelianization of the group G is the quotient of G by its commutator subgroup. -/
+/-- The abelianization of the group `G` is the quotient of `G` by its commutator subgroup. -/
 @[to_additive existing AddAbelianization]
 def Abelianization : Type u :=
   G ⧸ commutator G
@@ -59,9 +59,9 @@ instance : Inhabited (Abelianization G) :=
 variable {G}
 
 
-/-- `of` is the canonical projection from the group G to its abelianization. -/
+/-- `of` is the canonical projection from the group `G` to its abelianization. -/
 @[to_additive
-/-- `of` is the canonical projection from the additive group G to its abelianization.-/]
+/-- `of` is the canonical projection from the additive group `G` to its abelianization.-/]
 def of : G →* Abelianization G where
   toFun := QuotientGroup.mk
   map_one' := rfl
@@ -78,7 +78,7 @@ theorem ker_of : of.ker = commutator G :=
 
 section lift
 
--- So far we have built Gᵃᵇ and proved it's an abelian group.
+-- So far we have built `Gᵃᵇ` and proved it's an abelian group.
 -- Furthermore we defined the canonical projection `of : G → Gᵃᵇ`
 -- Let `A` be an abelian group and let `f` be a group homomorphism from `G` to `A`.
 variable {A : Type v} [Group A] [IsMulCommutative A] (f : G →* A)
@@ -111,7 +111,7 @@ theorem coe_lift_symm : (lift.symm : (Abelianization G →* A) → (G →* A)) =
 theorem lift_symm_apply (f : Abelianization G →* A) : lift.symm f = f.comp of := rfl
 
 theorem lift_unique (φ : Abelianization G →* A)
-    -- hφ : φ agrees with f on the image of G in Gᵃᵇ
+    -- `hφ : φ` agrees with `f` on the image of `G` in `Gᵃᵇ`
     (hφ : ∀ x : G, φ (Abelianization.of x) = f x)
     {x : Abelianization G} : φ x = lift f x :=
   QuotientGroup.induction_on x hφ
