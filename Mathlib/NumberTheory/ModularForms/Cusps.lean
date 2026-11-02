@@ -649,7 +649,7 @@ set_option backward.isDefEq.respectTransparency.types false in
     ext i j
     fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow, ← ha]
 
-@[simp] lemma strictWidthInfty_Gamma (N : ℕ) [NeZero N] :
+@[simp] lemma strictWidthInfty_Gamma (N : ℕ) :
     strictWidthInfty (Gamma N : Subgroup (GL (Fin 2) ℝ)) = N :=
   strictWidthInfty_eq_of_strictPeriods_eq_zmultiples (strictPeriods_Gamma N) N.cast_nonneg
 
