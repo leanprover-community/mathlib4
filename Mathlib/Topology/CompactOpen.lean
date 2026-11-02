@@ -164,7 +164,7 @@ theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
 @[continuity, fun_prop]
 theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
-    simpa only [mapsTo_image_iff] using! isOpen_setOfPred_mapsTo (hK.image (map_continuous f)) hU
+    simpa only [mapsTo_image_iff] using! isOpen_setOfPred_mapsTo (hK.image (by fun_prop)) hU
 
 variable (Z) in
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.

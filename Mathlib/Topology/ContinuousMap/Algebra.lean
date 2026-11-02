@@ -816,7 +816,7 @@ variable
   {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousSMul R M]
 
 instance instSMul' : SMul C(α, R) C(α, M) :=
-  ⟨fun f g => ⟨fun x => f x • g x, (map_continuous f).smul (map_continuous g)⟩⟩
+  ⟨fun f g => ⟨fun x => f x • g x, by fun_prop⟩⟩
 
 /-- Coercion to a function for a scalar-valued continuous map multiplying a vector-valued one
 (as opposed to `ContinuousMap.coe_smul` which is multiplication by a constant scalar). -/

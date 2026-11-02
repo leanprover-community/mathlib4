@@ -99,7 +99,7 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
   { hom := ↾fun f ↦ (f : C(Y, X))
-    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr (map_continuous f)⟩ }
+    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr (by fun_prop)⟩ }
 
 section Adjunction
 

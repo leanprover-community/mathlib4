@@ -92,9 +92,9 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     (stoneCechObj X ⟶ Y) ≃ (X ⟶ compHausToTop.obj Y) where
   toFun f := TopCat.ofHom
     { toFun := f ∘ stoneCechUnit
-      continuous_toFun := (map_continuous f.hom.hom).comp (@continuous_stoneCechUnit X _) }
+      continuous_toFun := Continuous.comp (by fun_prop) (@continuous_stoneCechUnit X _) }
   invFun f := CompHausLike.ofHom _
-    { toFun := stoneCechExtend (map_continuous f.hom)
+    { toFun := stoneCechExtend (by fun_prop)
       continuous_toFun := continuous_stoneCechExtend (map_continuous f.hom) }
   left_inv := by
     rintro ⟨f, hf : Continuous f⟩

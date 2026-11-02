@@ -50,7 +50,7 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
   map_continuousAt f x
 
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
-  h.map (map_continuous f)
+  h.map (by fun_prop)
 
 section DiscreteTopology
 variable [DiscreteTopology α]
@@ -473,7 +473,7 @@ noncomputable def lift : C(Y, Z) where
   toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
     Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
   continuous_toFun :=
-    Continuous.comp (continuous_quot_lift _ (map_continuous g)) (Homeomorph.continuous _)
+    Continuous.comp (continuous_quot_lift _ (by fun_prop)) (Homeomorph.continuous _)
 
 /--
 The obvious triangle induced by `IsQuotientMap.lift` commutes:

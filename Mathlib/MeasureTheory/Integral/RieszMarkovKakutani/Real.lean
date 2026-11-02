@@ -156,7 +156,7 @@ lemma exists_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X)
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
   have hε' := ne_of_gt <| Real.toNNReal_pos.mpr hε
   obtain ⟨V₁ : Opens X, hV₁⟩ := Content.outerMeasure_exists_open μ hμ hε'
-  let V₂ : Opens X := ⟨(f ⁻¹' Iio c), IsOpen.preimage (map_continuous f) isOpen_Iio⟩
+  let V₂ : Opens X := ⟨(f ⁻¹' Iio c), IsOpen.preimage (by fun_prop) isOpen_Iio⟩
   use V₁ ⊓ V₂
   refine ⟨subset_inter hV₁.1 hfE, ?_, ?_⟩
   · intro x hx
@@ -313,14 +313,14 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
       · apply Integrable.integrableOn
         dsimp [μ, rieszMeasure]
-        exact Continuous.integrable_of_hasCompactSupport (map_continuous f) f.2
+        exact Continuous.integrable_of_hasCompactSupport (by fun_prop) f.2
     calc
       _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
       _ = ∫ x in (⋃ n, E n), f x ∂μ := by
         refine Eq.symm <| integral_iUnion_fintype hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
         dsimp [μ, rieszMeasure]
         exact fun _ ↦ Integrable.integrableOn <|
-          Continuous.integrable_of_hasCompactSupport (map_continuous f) f.2
+          Continuous.integrable_of_hasCompactSupport (by fun_prop) f.2
       _ = ∫ x in tsupport f, f x ∂μ := by simp_rw [hE.1]
       _ = _ := setIntegral_tsupport
   · -- Rough bound of the sum

@@ -106,7 +106,7 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
   · simp_rw [not_le]
     refine ContinuousOn.mono ?_
       (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
-    exact ContinuousOn.congr ((q e).continuousOn_invFun.comp (map_continuous f).continuousOn
+    exact ContinuousOn.congr ((q e).continuousOn_invFun.comp (by fun_prop)
       fun _ h ↦ huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩)
       fun _ h ↦ ite_eq_left <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩
   · ext ta; rw [Function.comp_apply]; split_ifs with _ hv
@@ -181,7 +181,7 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocallyPathConn
   · obtain ⟨p, hep, rfl⟩ := homeo (F a)
     have hfap : f a ∈ p.target := by rw [← this]; exact p.map_source hep
     refine ContinuousAt.congr (f := p.symm ∘ f)
-      ((p.continuousAt_symm hfap).comp (map_continuous f).continuousAt) ?_
+      ((p.continuousAt_symm hfap).comp (by fun_prop)) ?_
     have ⟨U, ⟨haU, U_conn⟩, hUp⟩ := (path_connected_basis a).mem_iff.mp
       ((p.open_target.preimage f.continuous).mem_nhds hfap)
     refine Filter.mem_of_superset haU fun x hxU ↦ ?_
@@ -189,7 +189,7 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocallyPathConn
     let Γ' : Path e₀ ((p.symm ∘ f) a) :=
       ⟨Γ _ (somePath a₀ a).source, Γ_0 .., by simp [← this, hep, F]⟩
     specialize uniq ((somePath a₀ a).trans γ) _ (Γ'.trans <| γ.map' <| p.continuousOn_symm.comp
-      (map_continuous f).continuousOn <| by rintro _ ⟨t, rfl⟩; exact hUp (hγ _)) _ (by simp)
+      (by fun_prop) <| by rintro _ ⟨t, rfl⟩; exact hUp (hγ _)) _ (by simp)
       (somePath a₀ x).source (by simp) (Γ_0 _ (somePath a₀ x).source) _ (Γ_lifts ..) (by simp)
     · ext
       simp only [Function.comp, ContinuousMap.coe_ofClass, Path.trans_apply, ContinuousMap.coe_comp]
@@ -247,8 +247,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
     rw [q.mem_source, pΓtn]
     exact t_sub ⟨le_rfl, t_mono n.le_succ⟩
   · rw [closure_le_eq continuous_id' continuous_const] at h; exact ⟨h.1.1, h.2⟩
-  · apply q.continuousOn_invFun.comp
-      ((Continuous.prodMk_left _).comp (map_continuous γ)).continuousOn
+  · apply q.continuousOn_invFun.comp (by fun_prop)
     simp_rw [not_le, q.target_eq]; intro s h
     exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
@@ -265,7 +264,7 @@ variable {γ e}
 lemma eq_liftPath_iff {Γ : I → E} : Γ = cov.liftPath γ e γ_0 ↔ Continuous Γ ∧ p ∘ Γ = γ ∧ Γ 0 = e :=
   have lifts := cov.liftPath_lifts γ e γ_0
   have zero := cov.liftPath_zero γ e γ_0
-  ⟨(· ▸ ⟨map_continuous (cov.liftPath γ e γ_0), lifts, zero⟩), fun ⟨Γ_cont, Γ_lifts, Γ_0⟩ ↦
+  ⟨(· ▸ ⟨by fun_prop, lifts, zero⟩), fun ⟨Γ_cont, Γ_lifts, Γ_0⟩ ↦
     cov.eq_of_comp_eq Γ_cont (cov.liftPath γ e γ_0).continuous (Γ_lifts ▸ lifts.symm) 0
       (Γ_0 ▸ zero.symm)⟩
 
@@ -327,14 +326,14 @@ lemma eq_liftHomotopy_iff (H' : I × A → E) : H' = cov.liftHomotopy H f H_0 �
     (∀ a, Continuous (H' ⟨·, a⟩)) ∧ p ∘ H' = H ∧ ∀ a, H' (0, a) = f a := by
   refine ⟨?_, fun ⟨H'_cont, H'_lifts, H'_0⟩ ↦ funext fun ⟨t, a⟩ ↦ ?_⟩
   · rintro rfl; refine ⟨fun a ↦ ?_, cov.liftHomotopy_lifts H f H_0, cov.liftHomotopy_zero H f H_0⟩
-    simp_rw [liftHomotopy_apply]; exact map_continuous (cov.liftPath _ _ <| H_0 a)
+    fun_prop
   · apply congr_fun ((cov.eq_liftPath_iff _).mpr ⟨H'_cont a, _, H'_0 a⟩) t
     ext ⟨t, a⟩; congrm $H'_lifts _
 
 lemma eq_liftHomotopy_iff' (H' : C(I × A, E)) :
     H' = cov.liftHomotopy H f H_0 ↔ p ∘ H' = H ∧ ∀ a, H' (0, a) = f a := by
   simp_rw [← DFunLike.coe_fn_eq, eq_liftHomotopy_iff]
-  exact and_iff_right fun a ↦ (map_continuous H').comp (.prodMk_left a)
+  exact and_iff_right fun a ↦ by fun_prop
 
 variable {f₀ f₁ : C(A, X)} {S : Set A} (F : f₀.HomotopyRel f₁ S)
 
