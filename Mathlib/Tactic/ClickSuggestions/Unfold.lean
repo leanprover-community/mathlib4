@@ -134,15 +134,15 @@ def tacticSyntax (e eNew : Expr) (rwKind : RwKind) :
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
 for pasting the rewrite tactic. Return `none` when there are no unfolds. -/
 public def suggestUnfold (e : Expr) (rwKind : RwKind) :
-    ClickSuggestionsM (Option Html) := do
+    ClickSuggestionsM (Option ProofWidgets.Html) := do
   let results ← filteredUnfolds e
   if results.isEmpty then
     return none
   let htmls ← results.mapM fun unfold => do
     let tactic ← tacticSyntax e unfold rwKind
-    mkSuggestion tactic (← exprToHtml unfold)
+    mkSuggestion tactic "rw" (← exprToHtml unfold) (solves := false)
   return jsx%{<details>
-    <summary className="mv2 pointer"> unfold </summary>
+    <summary className="mv2 pointer">Unfold</summary>
     {.element "div" #[] htmls}
   </details>}
 

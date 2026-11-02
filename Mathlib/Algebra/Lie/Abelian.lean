@@ -89,7 +89,7 @@ theorem isMulCommutative_iff_isLieAbelian {A : Type v} [Ring A] :
 
 @[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
     {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {s : Set L} :
-    IsLieAbelian (lieSpan R L s) ↔ ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0 := by
+    IsLieAbelian (lieSpan R L s) ↔ ∀ x ∈ s, ∀ y ∈ s, ⁅x, y⁆ = 0 := by
   refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
   · let x' : lieSpan R L s := ⟨x, subset_lieSpan hx⟩
     let y' : lieSpan R L s := ⟨y, subset_lieSpan hy⟩
