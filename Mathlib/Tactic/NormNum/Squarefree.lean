@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Xavier Roblot
 -/
 module
 
+public meta import Mathlib.Data.Nat.Squarefree
 public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Data.Nat.Squarefree
 
 /-!
 # `norm_num` extension for `Squarefree`
