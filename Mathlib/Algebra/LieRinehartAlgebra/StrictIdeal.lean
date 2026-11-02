@@ -20,7 +20,7 @@ which is a Lie ideal with respect to the Lie bracket and whose action on `A` is 
 acting trivially on `A`.
 
 * The inverse image of an ideal under a Lie-Rinehart algebra homomorphism over
-`f: L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂` is a Lie-Rinehart ideal. In particular the kernel of such an `f`
+`f : L₁ →ₗ⁅.id R A⁆ L₂` is a Lie-Rinehart ideal. In particular the kernel of such an `f`
 is an ideal.
 
 ## Remark on strictness
@@ -199,7 +199,7 @@ open scoped LieRinehartAlgebra
 variable (R) in
 /-- The embedding of a Lie-Rinehart ideal into the ambient space as a morphism of
 Lie-Rinehart algebras. -/
-@[expose] def incl {s : StrictLieRinehartIdeal A L} : s →ₗ⁅(AlgHom.id R A)⁆ L where
+@[expose] def incl {s : StrictLieRinehartIdeal A L} : s →ₗ⁅.id R A⁆ L where
   __ := s.toSubmodule.subtype.restrictScalars R
   map_lie' {x y} := by simp
   map_smul_apply' a x := s.toSubmodule.subtype.map_smul a x
@@ -213,7 +213,7 @@ variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ 
 
 /-- The preimage of a strict Lie-Rinehart ideal under a homomorphism `f` (which lies over the
 identity of `A`) is a strict Lie-Rinehart ideal. -/
- @[expose] def comap (f : L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
+ @[expose] def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
     StrictLieRinehartIdeal A L₁ := {
   s₂.toSubmodule.comap (f.toLinearMap') with
   ideal' {x y} h := by
@@ -238,7 +238,7 @@ namespace Hom
 
 variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRing L₁] [Module A L₁]
   [LieRingModule L₁ A] [LieAlgebra R L₁] [LieRing L₂] [Module A L₂] [LieRingModule L₂ A]
-  [LieAlgebra R L₂] (f : L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂)
+  [LieAlgebra R L₂] (f : L₁ →ₗ⁅.id R A⁆ L₂)
 
 /-- The kernel of a Lie-Rinehart homomorphism `f` (which lies over the
 identity of `A`) is a strict Lie-Rinehart ideal. -/

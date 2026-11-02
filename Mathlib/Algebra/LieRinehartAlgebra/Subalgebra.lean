@@ -258,7 +258,7 @@ instance : LieRinehartAlgebra R A L' where
 
 /-- The embedding of a Lie-Rinehart subalgebra into the ambient space as a morphism of
 Lie-Rinehart algebras. -/
-@[expose] def incl : L' →ₗ⁅(AlgHom.id R A)⁆ L where
+@[expose] def incl : L' →ₗ⁅.id R A⁆ L where
   __ := L'.toSubmodule.subtype.restrictScalars R
   map_lie' {x y} := coe_bracket L' x y
   map_smul_apply' a x := L'.toSubmodule.subtype.map_smul a x
@@ -274,7 +274,7 @@ namespace Hom
 
 variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRing L₁] [Module A L₁]
   [LieRingModule L₁ A] [LieAlgebra R L₁] [LieRing L₂] [Module A L₂] [LieRingModule L₂ A]
-  [LieAlgebra R L₂] (f : L₁→ₗ⁅.id R A⁆ L₂) {x : L₂}
+  [LieAlgebra R L₂] (f : L₁ →ₗ⁅.id R A⁆ L₂) {x : L₂}
 
 /-- The range of a morphism of Lie-Rinehart algebras over the identity is a Lie-Rinehart
 subalgebra. -/
