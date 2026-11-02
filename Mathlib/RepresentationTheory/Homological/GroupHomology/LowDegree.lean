@@ -748,7 +748,6 @@ def isoCycles₁ : cycles A 1 ≅ ↧(cycles₁ A) :=
     cyclesMapIso' (isoShortComplexH1 A) ((inhomogeneousChains A).sc 1).leftHomologyData
       (shortComplexH1 A).moduleCatLeftHomologyData
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₁_hom_comp_i :
@@ -794,7 +793,6 @@ def isoCycles₂ : cycles A 2 ≅ ↧(cycles₂ A) :=
     cyclesMapIso' (isoShortComplexH2 A) ((inhomogeneousChains A).sc 2).leftHomologyData
       (shortComplexH2 A).moduleCatLeftHomologyData
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₂_hom_comp_i :
@@ -845,7 +843,6 @@ instance : Epi (H0π A) :=
   (ModuleCat.epi_iff_surjective _).2 fun x =>
     groupHomology_induction_on x fun y => ⟨(cyclesIso₀ A).hom y, by simp [H0π]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H0Iso_hom :
     π A 0 ≫ (H0Iso A).hom = (cyclesIso₀ A).hom ≫ (coinvariantsMk k G).app A := by
@@ -934,8 +931,7 @@ lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries�
 
 lemma H1π_eq_iff (x y : cycles₁ A) :
     H1π A x = H1π A y ↔ x.1 - y.1 ∈ boundaries₁ A := by
-  rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff]
-  rfl
+  rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff, Submodule.coe_sub]
 
 @[elab_as_elim]
 theorem H1_induction_on {C : H1 A → Prop} (x : H1 A) (h : ∀ x : cycles₁ A, C (H1π A x)) :
@@ -1072,8 +1068,7 @@ lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries�
 
 lemma H2π_eq_iff (x y : cycles₂ A) :
     H2π A x = H2π A y ↔ x.1 - y.1 ∈ boundaries₂ A := by
-  rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]
-  rfl
+  rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff, Submodule.coe_sub]
 
 @[elab_as_elim]
 theorem H2_induction_on {C : H2 A → Prop} (x : H2 A) (h : ∀ x : cycles₂ A, C (H2π A x)) :
