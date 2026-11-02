@@ -114,7 +114,7 @@ jobs:
       - name: check the cache tool is recent
         # Canonical repo only. This nudge targets human fork-PR / dev-branch
         # contributors who run `lake exe cache get` locally. The nightly-testing
-        # repo's branches (nightly-testing and bump/*) are
+        # repo's branches (nightly-testing, bump/*, batteries-pr-testing-*) are
         # machine-managed and don't merge master the same way, so "merge master
         # and push" is the wrong remedy there; never fail their CI on it.
         if: github.repository == 'leanprover-community/mathlib4'
@@ -686,8 +686,59 @@ jobs:
           action: remove
           linters: gcc
 
-  # Report from a fresh runner so the Batteries write token never reaches PR code.
+  # TODO: Remove this job after leanprover-community/batteries#2049 is deployed
+  # and no active Batteries adaptations remain in mathlib4-nightly-testing.
+  # Keep its App token on a fresh runner, separate from the branch build.
   batteries_pr_comment:
+    name: Comment on batteries-pr-testing branch
+    needs: [build, test_lint]
+    # Report only after test_lint finishes; cancellation before it starts has no results.
+    if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && startsWith(github.ref_name, 'batteries-pr-testing-') && (needs.test_lint.result == 'success' || needs.test_lint.result == 'failure') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
+
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      - name: Generate batteries-pr-testing app token
+        id: batteries-pr-testing-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.MATHLIB_NIGHTLY_TESTING_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_NIGHTLY_TESTING_PRIVATE_KEY }}
+          owner: leanprover-community
+          repositories: batteries
+          permission-pull-requests: write # labels and comments on the Batteries PR
+
+      - name: Post comments for batteries-pr-testing-NNNN branches
+        shell: bash
+        env:
+          TOKEN: ${{ steps.batteries-pr-testing-token.outputs.token }}
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BUILD_OUTCOME: ${{ needs.build.outputs.build-outcome }}
+          NOISY_OUTCOME: ${{ needs.build.outputs.noisy-outcome }}
+          ARCHIVE_OUTCOME: ${{ needs.build.outputs.archive-outcome }}
+          COUNTEREXAMPLES_OUTCOME: ${{ needs.build.outputs.counterexamples-outcome }}
+          LINT_OUTCOME: ${{ needs.test_lint.outputs.lint-outcome }}
+          TEST_OUTCOME: ${{ needs.test_lint.outputs.test-outcome }}
+          NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
+        run: |
+          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
+
+  # Report from a fresh runner so the Batteries write token never reaches PR code.
+  batteries_adaptation_comment:
     name: Report Mathlib CI to Batteries
     needs: [build, test_lint]
     if: >-
@@ -748,7 +799,7 @@ jobs:
         shell: bash
         env:
           TOKEN: ${{ steps.token.outputs.token }}
-          BOT_LOGIN: mathlib-batteries-status[bot]
+          BOT_LOGIN: mathlib-adaptations-status[bot]
           GITHUB_CONTEXT: ${{ toJSON(github) }}
           BATTERIES_SHA: ${{ steps.adaptation.outputs.batteries-sha }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}

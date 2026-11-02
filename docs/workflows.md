@@ -34,6 +34,10 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 | [`build.yml`](../.github/workflows/build.yml) | continuous integration<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/build.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml) | High | `push` | On non-fork PRs, this workflow builds, lints and tests Mathlib using the reusable build template (`build_template.yml`). |
 | [`release_cache.yml`](../.github/workflows/release_cache.yml) | publish release cache<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/release_cache.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/release_cache.yml) | High | `push (v4.* tags), workflow_dispatch` | On every `v4.*` release tag, this workflow builds the tagged commit using the reusable build template (`build_template.yml`) and publishes its cache to the `master` container. When the cache is already complete, the build uploads nothing. |
 
+<!-- TODO: Remove this paragraph when no active Batteries adaptations remain in mathlib4-nightly-testing. -->
+Batteries adaptations on `mathlib4-nightly-testing` also retain push builds and status reports.
+Their reporting job uses the existing `mathlib-nightly-testing` App.
+
 Batteries adaptation PRs come from `leanprover-community/mathlib4-adaptations`.
 They use `build_fork.yml`, including while they are drafts. The shared fork has Actions disabled.
 PR tests accept full commit pins for unmerged dependencies; Bors requires stable dependency references.
