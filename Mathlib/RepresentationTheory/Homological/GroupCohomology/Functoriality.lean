@@ -161,14 +161,12 @@ lemma map_comp {G H K : Type u} [Group G] [Group H]
     (φ : res f A ⟶ B) (ψ : res g B ⟶ C) (n : ℕ) :
     map (f.comp g) ((resFunctor g).map φ ≫ ψ) n = map f φ n ≫ map g ψ n := by
   rw [map, cochainsMap_comp, HomologicalComplex.homologyMap_comp]
-  rfl
 
 @[reassoc]
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
   rw [map, cochainsMap_id_comp, HomologicalComplex.homologyMap_comp]
-  rfl
 
 /-- Let `A` be a representation of `H`, `B` be a representation of `G`,
 `f : G →* H` and `φ : res f A ⟶ B`. If `f` is the trivial morphism,
@@ -255,8 +253,7 @@ section H0
 theorem map_H0Iso_hom_f :
     map f φ 0 ≫ (H0Iso B).hom ≫ (shortComplexH0 B).f =
       (H0Iso A).hom ≫ (shortComplexH0 A).f ≫ φ.toModuleCatHom := by
-  have : Epi (π A 0) := inferInstanceAs (Epi ((inhomogeneousCochains A).homologyπ 0))
-  simp [← cancel_epi (π A 0), π_map_assoc]
+  simp [← cancel_epi (π A 0)]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
@@ -351,7 +348,7 @@ theorem mapCocycles₁_one (φ : res 1 A ⟶ B) :
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H1π_comp_map :
     H1π A ≫ map f φ 1 = mapCocycles₁ f φ ≫ H1π B := by
-  simp [H1π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoCocycles₁_hom_assoc, π_map]
+  simp [H1π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoCocycles₁_hom_assoc]
 
 @[simp]
 theorem map₁_one (φ : res 1 A ⟶ B) :
@@ -498,7 +495,7 @@ lemma cocyclesMap_comp_isoCocycles₂_hom :
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H2π_comp_map :
     H2π A ≫ map f φ 2 = mapCocycles₂ f φ ≫ H2π B := by
-  simp [H2π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoCocycles₂_hom_assoc, π_map]
+  simp [H2π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoCocycles₂_hom_assoc]
 
 end H2
 
