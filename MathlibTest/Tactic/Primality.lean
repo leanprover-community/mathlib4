@@ -56,6 +56,11 @@ example : Nat.Prime (2 ^ 521 - 1) := by
 open Nat in
 example : Nat.Prime (73 ! + 1) := by simp [Nat.factorial]; primality
 
+/-! ## Certificates given by witnesses -/
+
+example : Nat.Prime 65537 := by
+  primality (cert := .witnesses [(65537, .lucas { root := 3, factors := #[2] })])
+
 /-! ## Errors -/
 
 /-- error: n does not evaluate to a numeral; try simplifying it first -/
@@ -66,3 +71,12 @@ example (n : ℕ) : Nat.Prime n := by primality
 provided at `.lucas { roots := … }` if 1000001 is prime. -/
 #guard_msgs in
 example : Nat.Prime 1000001 := by primality
+
+/-- error: the provided witness does not certify the primality of 100000007 -/
+#guard_msgs in
+example : Nat.Prime 100000007 := by primality (cert := .witnesses [])
+
+/-- error: the provided witness does not certify the primality of 65537 -/
+#guard_msgs in
+example : Nat.Prime 65537 := by
+  primality (cert := .witnesses [(65537, .lucas { root := 2, factors := #[2] })])
