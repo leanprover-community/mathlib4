@@ -13,7 +13,7 @@ set_option linter.style.longUncommentedProof.minComments 2
 -- The line `lemma long : True := by` belongs to the statement.
 -- A trailing comment on the last line of the body counts.
 /--
-warning: This declaration body has 4 lines of code, but too few comments (commented lines: 1, expected at least 2). Consider explaining the argument in comments or splitting off auxiliary lemmas.
+warning: This declaration body has 4 lines of code but only 1 commented lines; at least 2 are expected. Consider explaining the argument in comments or splitting off auxiliary lemmas.
 
 Note: This linter can be disabled with `set_option linter.style.longUncommentedProof false`
 -/
@@ -54,7 +54,7 @@ theorem longStatement
 
 -- Comment markers in string literals are code, not comments.
 /--
-warning: This declaration body has 4 lines of code, but too few comments (commented lines: 0, expected at least 2). Consider explaining the argument in comments or splitting off auxiliary lemmas.
+warning: This declaration body has 4 lines of code but only 0 commented lines; at least 2 are expected. Consider explaining the argument in comments or splitting off auxiliary lemmas.
 
 Note: This linter can be disabled with `set_option linter.style.longUncommentedProof false`
 -/
@@ -78,11 +78,11 @@ where
 
 -- Bodies of all declarations in a `mutual` block are checked.
 /--
-warning: This declaration body has 4 lines of code, but too few comments (commented lines: 0, expected at least 2). Consider explaining the argument in comments or splitting off auxiliary lemmas.
+warning: This declaration body has 4 lines of code but only 0 commented lines; at least 2 are expected. Consider explaining the argument in comments or splitting off auxiliary lemmas.
 
 Note: This linter can be disabled with `set_option linter.style.longUncommentedProof false`
 ---
-warning: This declaration body has 4 lines of code, but too few comments (commented lines: 0, expected at least 2). Consider explaining the argument in comments or splitting off auxiliary lemmas.
+warning: This declaration body has 4 lines of code but only 0 commented lines; at least 2 are expected. Consider explaining the argument in comments or splitting off auxiliary lemmas.
 
 Note: This linter can be disabled with `set_option linter.style.longUncommentedProof false`
 -/
@@ -100,9 +100,49 @@ def isOdd : Nat → Bool
   | n + 1 => isEven n
 end
 
+-- The warning is reported on the name of the declaration, otherwise on the start of its body.
+/--
+@ +1:7...17
+warning: This declaration body has 4 lines of code but only 0 commented lines; at least 2 are expected. Consider explaining the argument in comments or splitting off auxiliary lemmas.
+
+Note: This linter can be disabled with `set_option linter.style.longUncommentedProof false`
+-/
+#guard_msgs (positions := true) in
+opaque opaqueDecl : Nat :=
+  1 +
+  2 +
+  3 +
+  4
+
+/--
+@ +1:14...16
+warning: This declaration body has 4 lines of code but only 0 commented lines; at least 2 are expected. Consider explaining the argument in comments or splitting off auxiliary lemmas.
+
+Note: This linter can be disabled with `set_option linter.style.longUncommentedProof false`
+-/
+#guard_msgs (positions := true) in
+example : Nat :=
+  1 +
+  2 +
+  3 +
+  4
+
+-- Field values of `instance ... where` declarations are bodies, too.
+/--
+warning: This declaration body has 4 lines of code but only 0 commented lines; at least 2 are expected. Consider explaining the argument in comments or splitting off auxiliary lemmas.
+
+Note: This linter can be disabled with `set_option linter.style.longUncommentedProof false`
+-/
+#guard_msgs in
+instance : Inhabited (Nat × Nat × Nat) where
+  default :=
+    (0,
+      0,
+      0)
+
 -- Custom declaration commands are checked.
 /--
-warning: This declaration body has 4 lines of code, but too few comments (commented lines: 0, expected at least 2). Consider explaining the argument in comments or splitting off auxiliary lemmas.
+warning: This declaration body has 4 lines of code but only 0 commented lines; at least 2 are expected. Consider explaining the argument in comments or splitting off auxiliary lemmas.
 
 Note: This linter can be disabled with `set_option linter.style.longUncommentedProof false`
 -/
