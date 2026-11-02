@@ -804,19 +804,15 @@ end mdifferentiableOn_union
 
 lemma injective_fderivWithin_writtenInExtChartAt {f : M → M'} {p : M}
     (hf : Injective (mfderiv% f p)) :
-    Injective (fderivWithin 𝕜 (writtenInExtChartAt I I' p f) (range I)
-      (extChartAt I p p)) := by
-  convert! hf
-  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf)]
-  rfl
+    Injective (fderivWithin 𝕜 (writtenInExtChartAt I I' p f) (range I) (extChartAt I p p)) := by
+  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf)] at hf
+  exact hf
 
 lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M → M'} {p : M}
-    (hf : ContinuousLinearMap.IsInvertible (mfderiv% f p)) :
-    ContinuousLinearMap.IsInvertible (fderivWithin 𝕜 (writtenInExtChartAt I I' p f) (range I)
-      (extChartAt I p p)) := by
-  convert! hf
-  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf.injective)]
-  rfl
+    (hf : (mfderiv% f p).IsInvertible) :
+    (fderivWithin 𝕜 (writtenInExtChartAt I I' p f) (range I) (extChartAt I p p)).IsInvertible := by
+  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf.injective)] at hf
+  exact hf
 
 /-! ### Deriving continuity from differentiability on manifolds -/
 
