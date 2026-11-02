@@ -569,8 +569,8 @@ noncomputable def shrinkCoyonedaMap (F : C ⥤ D) (X : Cᵒᵖ) :
   ((flipFunctor ..).map (shrinkYonedaMap₂ F)).app _
 
 lemma shrinkCoyonedaMap_app_shrinkCoyonedaObjObjEquiv_symm (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
-    (shrinkCoyonedaMap.{w} F (op X)).app _ (shrinkYonedaObjObjEquiv.symm f) =
-      shrinkYonedaObjObjEquiv.symm (F.map f) := by
+    (shrinkCoyonedaMap.{w} F (op X)).app _ (shrinkCoyonedaObjObjEquiv.symm f) =
+      shrinkCoyonedaObjObjEquiv.symm (F.map f) := by
   simp [shrinkCoyonedaMap, shrinkYonedaMap_app_shrinkYonedaObjObjEquiv_symm.{w}]
 
 lemma shrinkCoyonedaMap_app (F : C ⥤ D) (X : Cᵒᵖ) (Y : C) :
