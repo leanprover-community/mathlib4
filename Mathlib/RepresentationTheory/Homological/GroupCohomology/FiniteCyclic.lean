@@ -99,7 +99,7 @@ lemma groupCohomologyπEven_eq_zero_iff (i : ℕ) [NeZero i] (hi : Even i)
     groupCohomologyπEven A g hg i hi x = 0 ↔
       x.1 ∈ LinearMap.range A.norm.asHom.hom.toLinearMap := by
   simp [groupCohomologyπEven, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
-    moduleCatToCycles, -LinearMap.mem_range, LinearMap.range_codRestrict ]
+    moduleCatToCycles, -LinearMap.mem_range, LinearMap.range_codRestrict]
 
 lemma groupCohomologyπEven_eq_iff (i : ℕ) [NeZero i] (hi : Even i)
     (x y : LinearMap.ker (applyAsHom A g - 𝟙 A).hom.toLinearMap) :
@@ -125,16 +125,13 @@ noncomputable abbrev groupCohomologyπOdd (i : ℕ) (hi : Odd i) :
   (moduleCatCyclesIso <| subCompNormHom A g).inv ≫
       ShortComplex.homologyπ _ ≫ (groupCohomologyIsoOdd A g hg i hi).inv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma groupCohomologyπOdd_eq_zero_iff (i : ℕ) (hi : Odd i)
     (x : LinearMap.ker A.norm.asHom.hom.toLinearMap) :
     groupCohomologyπOdd A g hg i hi x = 0 ↔
       x.1 ∈ LinearMap.range (applyAsHom A g - 𝟙 A).hom.toLinearMap := by
-  simp only [groupCohomologyπOdd, ModuleCat.hom_comp, LinearMap.comp_apply]
-  rw [moduleCatCyclesIso_inv_π_apply,
-    map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
-    map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
-    Submodule.Quotient.mk_eq_zero, mem_range_moduleCatToCycles_iff]
-  rfl
+  simp [groupCohomologyπOdd, map_eq_zero_iff _ ((ModuleCat.mono_iff_injective _).1 inferInstance),
+    moduleCatToCycles, -LinearMap.mem_range, LinearMap.range_codRestrict]
 
 lemma groupCohomologyπOdd_eq_iff (i : ℕ) (hi : Odd i)
     (x y : LinearMap.ker A.norm.asHom.hom.toLinearMap) :
