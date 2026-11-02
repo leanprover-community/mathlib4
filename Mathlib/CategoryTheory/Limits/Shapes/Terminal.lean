@@ -120,7 +120,8 @@ theorem terminal.comp_from [HasTerminal C] {P Q : C} (f : P ⟶ Q) :
 @[to_dual isIso_to
 /-- If `P` is initial, then the map `⊥_ C → P` is an isomorphism. -/]
 theorem terminal.isIso_from [HasTerminal C] {P : C} (hP : IsTerminal P) :
-    IsIso (terminal.from P) := (hP.uniqueUpToIso terminalIsTerminal).isIso_hom
+    IsIso (terminal.from P) :=
+  hP.isIso terminalIsTerminal _
 
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
 @[to_dual (attr := simps!)
