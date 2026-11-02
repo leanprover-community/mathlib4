@@ -137,7 +137,7 @@ theorem galEquivZMod_stabilizer :
   have : IsGalois ℚ K := IsCyclotomicExtension.isGalois {n} ℚ K
   apply SetLike.ext'
   refine Set.eq_of_subset_of_card_le ?_ ?_
-  · rintro _ ⟨σ, hσ, rfl⟩
+  · rintro - ⟨σ, hσ, rfl⟩
     exact mem_zpowers_galEquivZMod_of_mem_stabilizer n K p P hn hσ
   · replace hn : ¬ p ∣ n := (Nat.Prime.coprime_iff_not_dvd hp.out).mp hn
     rw [Fintype.card_eq_nat_card, Fintype.card_eq_nat_card, SetLike.coe_sort_coe, Nat.card_zpowers,

@@ -424,7 +424,7 @@ theorem iSupIndep_ne_bot :
     bot_le]
 
 theorem iSupIndep.injOn (ht : iSupIndep t) : InjOn t {i | t i ≠ ⊥} := by
-  rintro i _ j (hj : t j ≠ ⊥) h
+  rintro i - j (hj : t j ≠ ⊥) h
   by_contra! contra
   apply hj
   suffices t j ≤ ⨆ (k) (_ : k ≠ i), t k by

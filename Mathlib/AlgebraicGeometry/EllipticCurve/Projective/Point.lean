@@ -540,12 +540,12 @@ lemma toAffineLift_some {X Y : F} (h : W.NonsingularLift ⟦![X, Y, 1]⟧) :
   toAffine_some h
 
 lemma toAffineLift_neg (P : W.Point) : (-P).toAffineLift = -P.toAffineLift := by
-  rcases P with @⟨⟨_⟩, hP⟩
+  rcases P with @⟨⟨-⟩, hP⟩
   exact toAffine_neg hP
 
 lemma toAffineLift_add [DecidableEq F] (P Q : W.Point) :
     (P + Q).toAffineLift = P.toAffineLift + Q.toAffineLift := by
-  rcases P, Q with ⟨@⟨⟨_⟩, hP⟩, @⟨⟨_⟩, hQ⟩⟩
+  rcases P, Q with ⟨@⟨⟨-⟩, hP⟩, @⟨⟨-⟩, hQ⟩⟩
   exact toAffine_add hP hQ
 
 variable (W) in

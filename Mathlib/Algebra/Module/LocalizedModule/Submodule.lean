@@ -71,8 +71,8 @@ lemma restrictScalars_localized' :
   rfl
 
 theorem localized'_eq_span : localized' S p f M' = span S (f '' M') := by
-  refine le_antisymm ?_ (span_le.mpr <| by rintro _ ⟨m, hm, rfl⟩; exact ⟨m, hm, 1, by simp⟩)
-  rintro _ ⟨m, hm, s, rfl⟩
+  refine le_antisymm ?_ (span_le.mpr <| by rintro - ⟨m, hm, rfl⟩; exact ⟨m, hm, 1, by simp⟩)
+  rintro - ⟨m, hm, s, rfl⟩
   rw [← one_smul R m, ← mul_one s, ← IsLocalizedModule.mk'_smul_mk' S]
   exact smul_mem _ _ (subset_span ⟨m, hm, by simp⟩)
 
@@ -102,7 +102,7 @@ noncomputable abbrev localized : Submodule (Localization p) (LocalizedModule p M
 @[simp]
 lemma localized₀_bot : (⊥ : Submodule R M).localized₀ p f = ⊥ := by
   rw [← le_bot_iff]
-  rintro _ ⟨_, rfl, s, rfl⟩
+  rintro - ⟨-, rfl, s, rfl⟩
   simp only [IsLocalizedModule.mk'_zero, mem_bot]
 
 @[simp]
@@ -112,7 +112,7 @@ lemma localized'_bot : (⊥ : Submodule R M).localized' S p f = ⊥ :=
 @[simp]
 lemma localized₀_top : (⊤ : Submodule R M).localized₀ p f = ⊤ := by
   rw [← top_le_iff]
-  rintro x _
+  rintro x -
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f x
   exact ⟨x, trivial, s, rfl⟩
 
@@ -178,14 +178,14 @@ lemma localized'_span (s : Set M) : (span R s).localized' S p f = span S (f '' s
 
 lemma localized₀_smul (I : Submodule R R) : (I • M').localized₀ p f = I • M'.localized₀ p f := by
   apply le_antisymm
-  · rintro _ ⟨a, ha, s, rfl⟩
+  · rintro - ⟨a, ha, s, rfl⟩
     refine Submodule.smul_induction_on ha ?_ ?_
     · intro r hr n hn
       rw [IsLocalizedModule.mk'_smul]
       exact Submodule.smul_mem_smul hr ⟨n, hn, s, rfl⟩
     · simp +contextual only [IsLocalizedModule.mk'_add, add_mem, implies_true]
   · refine Submodule.smul_le.mpr ?_
-    rintro r hr _ ⟨a, ha, s, rfl⟩
+    rintro r hr - ⟨a, ha, s, rfl⟩
     rw [← IsLocalizedModule.mk'_smul]
     exact ⟨_, Submodule.smul_mem_smul hr ha, s, rfl⟩
 
@@ -194,7 +194,7 @@ lemma restrictScalars_localized'_smul (I : Submodule R R) (N' : Submodule S N) :
       I • N'.restrictScalars R := by
   refine le_antisymm (fun x hx ↦ ?_) (Submodule.smul_le.mpr fun r hr n hn ↦ ?_)
   · refine smul_induction_on ((Submodule.restrictScalars_mem _ _ _).mp hx) ?_ fun _ _ ↦ add_mem
-    rintro _ ⟨r, hr, s, rfl⟩ n hn
+    rintro - ⟨r, hr, s, rfl⟩ n hn
     rw [← IsLocalization.mk'_eq_mk', IsLocalization.mk'_eq_mul_mk'_one, mul_smul, algebraMap_smul]
     exact smul_mem_smul hr ((Submodule.restrictScalars_mem _ _ _).mpr <| smul_mem _ _ hn)
   · rw [← algebraMap_smul S, Submodule.restrictScalars_mem]

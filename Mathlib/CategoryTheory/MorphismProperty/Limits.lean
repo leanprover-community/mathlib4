@@ -433,7 +433,7 @@ lemma limitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X�
 lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
     (J : Type*) [Category* J] :
     W₁.limitsOfShape J ≤ W₂.limitsOfShape J := by
-  rintro _ _ _ ⟨_, _, _, _, h₁, _, f, hf⟩
+  rintro - - - ⟨_, _, _, -, h₁, -, f, hf⟩
   exact ⟨_, _, _, _, h₁, _, f, fun j ↦ h _ (hf j)⟩
 
 instance : (W.limitsOfShape J).RespectsIso :=
@@ -470,7 +470,7 @@ class IsStableUnderLimitsOfShape : Prop where
 lemma isStableUnderLimitsOfShape_iff_limitsOfShape_le :
     W.IsStableUnderLimitsOfShape J ↔ W.limitsOfShape J ≤ W := by
   constructor
-  · rintro h _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
+  · rintro h - - - ⟨_, _, _, -, h₁, h₂, f, hf⟩
     exact h.condition _ _ _ _ h₁ h₂ f hf _ (by simp)
   · rintro h
     constructor
@@ -512,7 +512,7 @@ lemma colimitsOfShape.mk' (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Coc
 lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
     (J : Type*) [Category* J] :
     W₁.colimitsOfShape J ≤ W₂.colimitsOfShape J := by
-  rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
+  rintro - - - ⟨_, _, -, _, -, h₂, f, hf⟩
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
 variable {J} in
@@ -582,7 +582,7 @@ class IsStableUnderColimitsOfShape : Prop where
 lemma isStableUnderColimitsOfShape_iff_colimitsOfShape_le :
     W.IsStableUnderColimitsOfShape J ↔ W.colimitsOfShape J ≤ W := by
   constructor
-  · rintro h _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
+  · rintro h - - - ⟨_, _, -, _, h₁, h₂, f, hf⟩
     exact h.condition _ _ _ _ h₁ h₂ f hf _ (by simp)
   · rintro h
     constructor

@@ -59,9 +59,9 @@ lemma toReal_rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     exact measurable_iff_comap_le.mpr le_rfl
   have : SigmaFinite ν := SigmaFinite.of_map _ hg.aemeasurable hσ
   refine ae_eq_condExp_of_forall_setIntegral_eq _ (by fun_prop) ?_ ?_ ?_
-  · rintro _ ⟨t, _, rfl⟩ _
+  · rintro - ⟨t, -, rfl⟩ -
     exact Integrable.integrableOn (Measure.integrable_toReal_rnDeriv.comp_measurable hg)
-  · rintro _ ⟨t, ht, rfl⟩ _
+  · rintro - ⟨t, ht, rfl⟩ -
     calc ∫ x in g ⁻¹' t, ((μ.map g).rnDeriv (ν.map g) (g x)).toReal ∂ν
     _ = ∫ y in t, ((μ.map g).rnDeriv (ν.map g) y).toReal ∂(ν.map g) := by
       rw [setIntegral_map ht _ hg.aemeasurable]

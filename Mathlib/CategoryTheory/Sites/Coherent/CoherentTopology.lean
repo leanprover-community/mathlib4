@@ -93,7 +93,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
     | of Y T hS =>
       obtain ⟨a, h, Y', π, h', _⟩ := hS
       refine ⟨a, h, Y', π, inferInstance, fun a' ↦ ?_⟩
-      obtain ⟨rfl, _⟩ := h'
+      obtain ⟨rfl, -⟩ := h'
       exact ⟨Y' a', 𝟙 Y' a', π a', Presieve.ofArrows.mk a', by simp⟩
     | top Y =>
       exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩

@@ -76,16 +76,16 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
       | zero =>
           rw [map_id, id_comp]
       | succ j hj =>
-          obtain (_ | _ | k) := k
+          obtain (- | - | k) := k
           · lia
           · obtain rfl : j = 0 := by lia
             rw [map_id, comp_id]
           · simp only [map, Nat.reduceAdd]
             rw [hj (fun n ↦ f (n + 1)) (k + 1) (by lia) (by lia)]
-            obtain _ | j := j
+            obtain - | j := j
             all_goals simp [map]
   | succ i hi =>
-      rcases j, k with ⟨(_ | j), (_ | k)⟩
+      rcases j, k with ⟨(- | j), (- | k)⟩
       · lia
       · lia
       · lia

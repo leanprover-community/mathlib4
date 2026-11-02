@@ -112,7 +112,7 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
 theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
     [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
-  rcases n with (_ | _ | _ | n)
+  rcases n with (- | - | - | n)
   · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
   · simp
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]

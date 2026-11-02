@@ -154,7 +154,7 @@ theorem maxTensorProduct_map_le (f : G →ₗ[R] G') (g : H →ₗ[R] H')
     (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     (maxTensorProduct C₁ C₂).map (TensorProduct.map f g) ≤
       maxTensorProduct (C₁.map f) (C₂.map g) := by
-  rintro _ ⟨w, hw, rfl⟩
+  rintro - ⟨w, hw, rfl⟩
   simp only [SetLike.mem_coe, mem_maxTensorProduct] at hw ⊢
   intro φ hφ ψ hψ
   have h_eq : ((dualDistrib R G' H') (φ ⊗ₜ[R] ψ)).comp (TensorProduct.map f g) =

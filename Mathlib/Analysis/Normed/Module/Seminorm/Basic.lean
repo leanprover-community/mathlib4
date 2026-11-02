@@ -418,7 +418,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm �
 /-- Auxiliary lemma to show that the infimum of seminorms is well-defined. -/
 theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
   ⟨0, by
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     dsimp; positivity⟩
 
 noncomputable instance instInf : Min (Seminorm 𝕜 E) where

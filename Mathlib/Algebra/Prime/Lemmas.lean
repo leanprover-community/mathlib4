@@ -162,7 +162,7 @@ section CommMonoidWithZero
 
 theorem DvdNotUnit.isUnit_of_irreducible_right [CommMonoidWithZero M] {p q : M}
     (h : DvdNotUnit p q) (hq : Irreducible q) : IsUnit p := by
-  obtain ⟨_, x, hx, hx'⟩ := h
+  obtain ⟨-, x, hx, hx'⟩ := h
   exact ((irreducible_iff.1 hq).right hx').resolve_right hx
 
 theorem not_irreducible_of_not_isUnit_of_dvdNotUnit [CommMonoidWithZero M] {p q : M}

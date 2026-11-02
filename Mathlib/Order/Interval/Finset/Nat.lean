@@ -177,7 +177,7 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
   ext i
   simp only [mem_image, mem_range, mem_Ico]
   constructor
-  · rintro ⟨i, _, rfl⟩
+  · rintro ⟨i, -, rfl⟩
     exact mod_lt i ha.bot_lt
   intro hia
   have hn := Nat.mod_add_div n a

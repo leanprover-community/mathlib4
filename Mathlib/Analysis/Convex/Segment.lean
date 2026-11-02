@@ -358,7 +358,7 @@ theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[�
 theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] :
     x ∈ openSegment 𝕜 x y ↔ x = y := by
   constructor
-  · rintro ⟨a, b, _, hb, hab, hx⟩
+  · rintro ⟨a, b, -, hb, hab, hx⟩
     refine smul_right_injective _ hb.ne' ((add_right_inj (a • x)).1 ?_)
     rw [hx, ← add_smul, hab, one_smul]
   · rintro rfl

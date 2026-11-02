@@ -305,14 +305,14 @@ lemma ciSup_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
 theorem le_ciSup_ciSup_eq_left {b : β} {f : ∀ x : β, x = b → α} :
     f b rfl ≤ ⨆ x, ⨆ h : x = b, f x h := by
   refine le_ciSup₂ (f := f) ⟨f b rfl, ?_⟩ b rfl
-  rintro a ⟨_, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
+  rintro a ⟨-, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
   rfl
 
 @[to_dual ciInf_ciInf_eq_right_le]
 theorem le_ciSup_ciSup_eq_right {b : β} {f : ∀ x : β, b = x → α} :
     f b rfl ≤ ⨆ x, ⨆ h : b = x, f x h := by
   refine le_ciSup₂ ⟨f b rfl, ?_⟩ b rfl
-  rintro a ⟨_, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
+  rintro a ⟨-, ⟨b, rfl⟩, ⟨rfl, rfl⟩⟩
   rfl
 
 /-- Note that equality need not hold: consider `ι := Bool, p := (·), α := ℤ, f := fun _ ↦ -1`,
@@ -322,7 +322,7 @@ theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih �
   by_cases! h : Exists p
   · have : Nonempty <| Exists p := ⟨h⟩
     refine ciSup_le fun ⟨i, hi⟩ ↦ le_ciSup₂ (f := fun _ _ ↦ _) ⟨f ⟨i, hi⟩, ?_⟩ i hi
-    rintro _ ⟨_, ⟨j, rfl⟩, ⟨hj, rfl⟩⟩
+    rintro - ⟨-, ⟨j, rfl⟩, ⟨hj, rfl⟩⟩
     rfl
   · cases isEmpty_or_nonempty ι <;>
       simp [h, iSup_of_empty', ciSup_const]

@@ -854,7 +854,7 @@ theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     Primrec (@Subtype.val α p) := by
   let := Primcodable.subtype hp
   refine (Primcodable.prim (Subtype p)).of_eq fun n => ?_
-  rcases @decode (Subtype p) _ n with (_ | ⟨a, h⟩) <;> rfl
+  rcases @decode (Subtype p) _ n with (- | ⟨a, h⟩) <;> rfl
 
 theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → Subtype p} :
     haveI := Primcodable.subtype hp

@@ -136,7 +136,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       T.Countable ∧ ⋃ x ∈ T, ball (f' (x : E)) (r (f' x)) = ⋃ x : s, ball (f' x) (r (f' x)) :=
     TopologicalSpace.isOpen_iUnion_countable _ fun x => isOpen_ball
   -- fix a sequence `u` of positive reals tending to zero.
-  obtain ⟨u, _, u_pos, u_lim⟩ :
+  obtain ⟨u, -, u_pos, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictAnti u ∧ (∀ n : ℕ, 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
   -- `M n z` is the set of points `x` such that `f y - f x` is close to `f' z (y - x)` for `y`
@@ -222,7 +222,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
     have : Encodable T := T_count.toEncodable
     have : Nonempty T := by
       rcases hs with ⟨x, xs⟩
-      rcases s_subset x xs with ⟨n, z, _⟩
+      rcases s_subset x xs with ⟨n, z, -⟩
       exact ⟨z⟩
     inhabit ↥T
     exact ⟨_, Encodable.surjective_decode_getD (ℕ × T × ℕ) default⟩
@@ -567,7 +567,7 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
     rcases ((addHaar_image_le_mul_of_det_lt μ A I).and self_mem_nhdsWithin).exists with ⟨δ, h, h'⟩
     exact ⟨δ, h', fun t ht => h t f ht⟩
   choose δ hδ using this
-  obtain ⟨t, A, _, _, t_cover, ht, -⟩ :
+  obtain ⟨t, A, -, -, t_cover, ht, -⟩ :
     ∃ (t : ℕ → Set E) (A : ℕ → E →L[ℝ] E),
       Pairwise (Disjoint on t) ∧
         (∀ n : ℕ, MeasurableSet (t n)) ∧
@@ -696,7 +696,7 @@ theorem aemeasurable_fderivWithin (hs : MeasurableSet s)
   let δ : ℝ≥0 := ⟨ε, le_of_lt εpos⟩
   have δpos : 0 < δ := εpos
   -- partition `s` into sets `s ∩ t n` on which `f` is approximated by linear maps `A n`.
-  obtain ⟨t, A, t_disj, t_meas, t_cover, ht, _⟩ :
+  obtain ⟨t, A, t_disj, t_meas, t_cover, ht, -⟩ :
     ∃ (t : ℕ → Set E) (A : ℕ → E →L[ℝ] E),
       Pairwise (Disjoint on t) ∧
         (∀ n : ℕ, MeasurableSet (t n)) ∧

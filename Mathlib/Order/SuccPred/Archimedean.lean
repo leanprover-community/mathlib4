@@ -172,7 +172,7 @@ lemma StrictMono.not_bddAbove_range_of_isSuccArchimedean [NoMaxOrder α] [SuccOr
   have h : ∀ a, ∃ a', f a < f a' := fun a ↦ (exists_gt a).imp (fun a' h ↦ hf h)
   apply Succ.rec
   · exact h a₀
-  rintro b _ ⟨a, hba⟩
+  rintro b - ⟨a, hba⟩
   exact (h a).imp (fun a' ↦ (succ_le_of_lt hba).trans_lt)
 
 @[to_dual]
@@ -359,7 +359,7 @@ lemma strictMonoOn_of_lt_succ (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMax a → a ∈ s → succ a ∈ s → f a < f (succ a)) : StrictMonoOn f s := by
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le hab.le
-  obtain _ | n := n
+  obtain - | n := n
   · simp at hab
   apply not_isMax_of_lt at hab
   induction n with
@@ -416,7 +416,7 @@ lemma strictMonoOn_of_pred_lt (hs : s.OrdConnected)
     (hf : ∀ a, ¬ IsMin a → a ∈ s → pred a ∈ s → f (pred a) < f a) : StrictMonoOn f s := by
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_pred_iterate_of_le hab.le
-  obtain _ | n := n
+  obtain - | n := n
   · simp at hab
   apply not_isMin_of_lt at hab
   induction n with

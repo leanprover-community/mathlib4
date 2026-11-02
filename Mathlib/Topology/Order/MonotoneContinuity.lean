@@ -50,7 +50,7 @@ theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} 
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
     rw [h_mono.lt_iff_lt has hcs] at hac
     filter_upwards [hs, Ico_mem_nhdsGE hac]
-    rintro x hx ⟨_, hxc⟩
+    rintro x hx ⟨-, hxc⟩
     exact ((h_mono.lt_iff_lt hx hcs).2 hxc).trans_le hcb
 
 /-- If `f` is a monotone function on a right neighborhood of `a` and the image of this neighborhood
@@ -69,7 +69,7 @@ theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β}
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
     have : a < c := not_le.1 fun h => hac.not_ge <| h_mono hcs has h
     filter_upwards [hs, Ico_mem_nhdsGE this]
-    rintro x hx ⟨_, hxc⟩
+    rintro x hx ⟨-, hxc⟩
     exact (h_mono hx hcs hxc.le).trans_lt hcb
 
 /-- If a function `f` with a densely ordered codomain is monotone on a right neighborhood of `a` and

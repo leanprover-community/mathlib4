@@ -66,7 +66,7 @@ variable (X) in
 lemma isConservativeFamilyOfPoints_pointsGrothendieckTopology :
     (pointsGrothendieckTopology X).IsConservativeFamilyOfPoints :=
   .mk' (fun U S hS x hx ↦ by
-    obtain ⟨V, f, hf, ⟨⟨hV⟩⟩, _⟩ := hS ⟨_, ⟨x⟩⟩ ⟨⟨hx⟩⟩
+    obtain ⟨V, f, hf, ⟨⟨hV⟩⟩, -⟩ := hS ⟨_, ⟨x⟩⟩ ⟨⟨hx⟩⟩
     exact ⟨V, f, hf, hV⟩)
 
 instance : HasEnoughPoints.{u} (grothendieckTopology X) where

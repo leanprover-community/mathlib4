@@ -352,8 +352,8 @@ lemma equiv_iff_of_domain_eq_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
     [IsSeparated (Y ↘ S)] {f g : X.PartialMap Y} (hfg : f.domain = g.domain)
     [f.IsOver S] [g.IsOver S] : f.equiv g ↔ f = g := by
   rw [equiv_iff_of_isSeparated_of_le (S := S) f.dense_domain le_rfl hfg.le]
-  obtain ⟨Uf, _, f⟩ := f
-  obtain ⟨Ug, _, g⟩ := g
+  obtain ⟨Uf, -, f⟩ := f
+  obtain ⟨Ug, -, g⟩ := g
   obtain rfl : Uf = Ug := hfg
   simp
 

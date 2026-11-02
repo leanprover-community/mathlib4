@@ -59,7 +59,7 @@ lemma subsetSum_mono {B : Finset M} (hAB : A ⊆ B) : A.subsetSum ⊆ B.subsetSu
 lemma vadd_finset_subsetSum_subset_subsetSum_insert (a_notin_A : a ∉ A) :
     a +ᵥ A.subsetSum ⊆ (insert a A).subsetSum := by
   simp_rw [subset_iff, mem_vadd_finset, mem_subsetSum_iff]
-  rintro _ ⟨_, ⟨B, hB, rfl⟩, rfl⟩
+  rintro - ⟨-, ⟨B, hB, rfl⟩, rfl⟩
   exact ⟨insert a B, by aesop, by rw [sum_insert (fun h => a_notin_A (hB h))]; simp⟩
 
 variable [LinearOrder M] [IsOrderedCancelAddMonoid M]

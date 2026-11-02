@@ -174,7 +174,7 @@ theorem comap_surjective (f : V ↪ W) : Function.Surjective (SimpleGraph.comap 
 
 variable {G G'} in
 theorem map_le_of_le_comap {f : V → W} (h : G ≤ G'.comap f) : G.map f ≤ G' := by
-  rintro _ _ ⟨_, u, v, ha, rfl, rfl⟩
+  rintro - - ⟨-, u, v, ha, rfl, rfl⟩
   exact h ha
 
 variable {G G'} in

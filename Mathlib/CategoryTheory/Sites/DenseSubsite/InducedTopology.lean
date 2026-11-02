@@ -77,27 +77,27 @@ theorem coverPreserving_restrictedTopology : CoverPreserving (G.restrictedTopolo
     | pullback X S _ Y f ih =>
       apply K.transitive (LocallyCoverDense.functorPushforward_functorPullback_mem
         ⟨_, K.pullback_stable (G.map f) ih⟩)
-      rintro Z _ ⟨U, iUY, iZU, ⟨W, iWX, iUW, hiWX, e₁⟩, rfl⟩
+      rintro Z - ⟨U, iUY, iZU, ⟨W, iWX, iUW, hiWX, e₁⟩, rfl⟩
       rw [Sieve.pullback_comp]
       apply K.pullback_stable
       clear iZU Z
       apply K.transitive (G.functorPushforward_imageSieve_mem _ iUW)
-      rintro Z _ ⟨U₁, iU₁U, iZU₁, ⟨iU₁W, e₂⟩, rfl⟩
+      rintro Z - ⟨U₁, iU₁U, iZU₁, ⟨iU₁W, e₂⟩, rfl⟩
       rw [Sieve.pullback_comp]
       apply K.pullback_stable
       clear iZU₁ Z
       apply K.superset_covering ?_ (G.functorPushforward_equalizer_mem _
         (iU₁U ≫ iUY ≫ f) (iU₁W ≫ iWX) (by simp [e₁, e₂]))
-      rintro Z _ ⟨U₂, iU₂U₁, iZU₂, e₃ : _ = _, rfl⟩
+      rintro Z - ⟨U₂, iU₂U₁, iZU₂, e₃ : _ = _, rfl⟩
       refine ⟨_, iU₂U₁ ≫ iU₁U ≫ iUY, iZU₂, ?_, by simp⟩
       simpa [e₃] using S.downward_closed hiWX (iU₂U₁ ≫ iU₁W)
     | transitive X S R _ _ hS H' =>
       apply K.transitive hS
-      rintro Y _ ⟨Z, g, i, hg, rfl⟩
+      rintro Y - ⟨Z, g, i, hg, rfl⟩
       rw [Sieve.pullback_comp]
       apply K.pullback_stable i
       refine K.superset_covering ?_ (H' hg)
-      rintro W _ ⟨Z', g', i', hg, rfl⟩
+      rintro W - ⟨Z', g', i', hg, rfl⟩
       refine ⟨Z', g' ≫ g, i', hg, ?_⟩
       simp
 

@@ -370,7 +370,7 @@ theorem limsup_eq_sInf_sSup {ι R : Type*} (F : Filter ι) [CompleteLattice R] (
     filter_upwards [I_mem_F] with i hi
     exact hI ▸ le_sSup (mem_image_of_mem _ hi)
   · refine le_sInf fun b hb => sInf_le_of_le (mem_image_of_mem _ hb) <| sSup_le ?_
-    rintro _ ⟨_, h, rfl⟩
+    rintro - ⟨_, h, rfl⟩
     exact h
 
 @[to_dual le_limsup_of_frequently_le']
@@ -729,7 +729,7 @@ lemma liminf_le_limsup_of_frequently_le {v : α → β} (h : ∃ᶠ x in f, u x 
     (h₁ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault) :
     liminf u f ≤ limsup v f := by
-  rcases f.eq_or_neBot with rfl | _
+  rcases f.eq_or_neBot with rfl | -
   · exact (frequently_bot h).rec
   have h₃ : f.IsCoboundedUnder (· ≥ ·) u := by
     obtain ⟨a, ha⟩ := h₂.eventually_le

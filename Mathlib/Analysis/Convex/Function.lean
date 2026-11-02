@@ -576,7 +576,7 @@ theorem ConcaveOn.convex_gt (hf : ConcaveOn 𝕜 s f) (r : β) : Convex 𝕜 ({ 
 theorem ConvexOn.openSegment_subset_strict_epigraph (hf : ConvexOn 𝕜 s f) (p q : E × β)
     (hp : p.1 ∈ s ∧ f p.1 < p.2) (hq : q.1 ∈ s ∧ f q.1 ≤ q.2) :
     openSegment 𝕜 p q ⊆ { p : E × β | p.1 ∈ s ∧ f p.1 < p.2 } := by
-  rintro _ ⟨a, b, ha, hb, hab, rfl⟩
+  rintro - ⟨a, b, ha, hb, hab, rfl⟩
   refine ⟨hf.1 hp.1 hq.1 ha.le hb.le hab, ?_⟩
   calc
     f (a • p.1 + b • q.1) ≤ a • f p.1 + b • f q.1 := hf.2 hp.1 hq.1 ha.le hb.le hab

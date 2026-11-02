@@ -99,7 +99,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
       set U := ⨆ k : ℕ, U' k
       suffices Submodule.map (T χ w) U ≤ U from this <| Submodule.mem_map_of_mem hx
       rw [Submodule.map_iSup, iSup_le_iff]
-      rintro (_ | i)
+      rintro (- | i)
       · simp [U']
       · exact (T_apply_succ w i).trans (le_iSup _ _) }
   have hzU (x : V) (hx : x ∈ U) : (π z) x ∈ U := by

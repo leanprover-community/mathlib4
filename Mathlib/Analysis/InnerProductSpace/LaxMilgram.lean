@@ -73,11 +73,11 @@ theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ Ant
 
 theorem ker_eq_bot (coercive : IsCoercive B) : B♯.ker = ⊥ := by
   rw [LinearMap.ker_eq_bot]
-  rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
+  rcases coercive.antilipschitz with ⟨_, -, antilipschitz⟩
   exact antilipschitz.injective
 
 theorem isClosed_range (coercive : IsCoercive B) : IsClosed (B♯.range : Set V) := by
-  rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
+  rcases coercive.antilipschitz with ⟨_, -, antilipschitz⟩
   exact antilipschitz.isClosed_range B♯.uniformContinuous
 
 theorem range_eq_top (coercive : IsCoercive B) : B♯.range = ⊤ := by

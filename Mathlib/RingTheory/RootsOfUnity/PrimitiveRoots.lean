@@ -610,7 +610,7 @@ theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (
     intro x hx
     simp only [Finset.image_val, Finset.range_val, Multiset.mem_dedup, Multiset.mem_map,
       Multiset.mem_range] at hx
-    obtain ⟨m, _, rfl⟩ := hx
+    obtain ⟨m, -, rfl⟩ := hx
     rw [mem_nthRoots hn, mul_pow, e, ← pow_mul, mul_comm m,
       pow_mul, hζ.pow_eq_one, one_pow, one_mul]
   · simpa only [Multiset.card_map, Multiset.card_range] using card_nthRoots n a
@@ -628,14 +628,14 @@ theorem adjoin_pair_eq (S : Type*) [CommSemiring S] [Algebra S R] {ζ₁ ζ₂ :
   have : NeZero (k₁.lcm k₂) := ⟨Nat.lcm_ne_zero hk₁ hk₂⟩
   refine le_antisymm (Algebra.adjoin_le ?_) (Algebra.adjoin_le ?_)
   · refine Set.pair_subset_iff.mpr ⟨?_, ?_⟩
-    · obtain ⟨_, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one <|
+    · obtain ⟨-, -, rfl⟩ := hζ.eq_pow_of_pow_eq_one <|
         (hζ₁.pow_eq_one_iff_dvd _).mpr <| k₁.dvd_lcm_left k₂
       exact Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton S _) _
-    · obtain ⟨_, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one <|
+    · obtain ⟨-, -, rfl⟩ := hζ.eq_pow_of_pow_eq_one <|
         (hζ₂.pow_eq_one_iff_dvd _).mpr <| k₁.dvd_lcm_right k₂
       exact Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton S _) _
   · have hζ' := IsPrimitiveRoot.pow_mul_pow_lcm hζ₁ hζ₂ hk₁ hk₂
-    obtain ⟨_, _, rfl⟩ := hζ'.eq_pow_of_pow_eq_one hζ.pow_eq_one
+    obtain ⟨-, -, rfl⟩ := hζ'.eq_pow_of_pow_eq_one hζ.pow_eq_one
     aesop
 
 open scoped Classical in

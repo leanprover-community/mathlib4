@@ -100,7 +100,7 @@ theorem _root_.Monotone.upperBounds_range_comp_tendsto_atTop [Preorder β] [Preo
     {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) {g : α → β} (hg : Tendsto g l atTop) :
     upperBounds (range (f ∘ g)) = upperBounds (range f) := by
   refine Subset.antisymm ?_ (upperBounds_mono_set <| range_comp_subset_range _ _)
-  rintro c hc _ ⟨b, rfl⟩
+  rintro c hc - ⟨b, rfl⟩
   obtain ⟨a, ha⟩ : ∃ a, b ≤ g a := (hg.eventually_ge_atTop b).exists
   exact (hf ha).trans <| hc <| mem_range_self _
 
@@ -157,7 +157,7 @@ theorem tendsto_atTop_atTop_of_monotone' [Preorder ι] [LinearOrder α] {u : ι 
     (H : ¬BddAbove (range u)) : Tendsto u atTop atTop := by
   apply h.tendsto_atTop_atTop
   intro b
-  rcases not_bddAbove_iff.1 H b with ⟨_, ⟨N, rfl⟩, hN⟩
+  rcases not_bddAbove_iff.1 H b with ⟨-, ⟨N, rfl⟩, hN⟩
   exact ⟨N, le_of_lt hN⟩
 
 /-- If a monotone function `u : ι → α` tends to `atTop` along *some* non-trivial filter `l`, then

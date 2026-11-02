@@ -75,7 +75,7 @@ lemma multipliableLocallyUniformlyOn_one_sub_pow :
   intro K hK hcK
   rcases K.eq_empty_or_nonempty with hN | hN
   · simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn, hN] using tendstoUniformlyOn_empty
-  · obtain ⟨q₀, hq₀, _, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN
+  · obtain ⟨q₀, hq₀, -, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN
       (show ContinuousOn (fun q : ℂ ↦ ‖q‖) K by fun_prop)
     refine ((summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _)
       (by simpa [Metric.mem_ball, dist_zero_right] using hK hq₀))).hasProdUniformlyOn_nat_one_add

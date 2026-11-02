@@ -182,7 +182,7 @@ theorem infEDist_closure_pos_iff_notMem_closure {x : α} {E : Set α} :
 theorem exists_real_pos_lt_infEDist_of_notMem_closure {x : α} {E : Set α} (h : x ∉ closure E) :
     ∃ ε : ℝ, 0 < ε ∧ ENNReal.ofReal ε < infEDist x E := by
   rw [← infEDist_pos_iff_notMem_closure, ENNReal.lt_iff_exists_real_btwn] at h
-  rcases h with ⟨ε, ⟨_, ⟨ε_pos, ε_lt⟩⟩⟩
+  rcases h with ⟨ε, ⟨-, ⟨ε_pos, ε_lt⟩⟩⟩
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
 
 theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x s) :

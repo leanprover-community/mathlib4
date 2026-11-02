@@ -476,7 +476,7 @@ lemma _root_.Monotone.linearGrowthInf_comp_le (h : Monotone u)
     <| EReal.eventually_atTop_exists_nat_between a_a_inv' (inv_nonneg_of_nonneg a_0'.le)
   refine frequently_atTop.2 fun M ↦ ?_
   obtain ⟨M', aM_M'⟩ := exists_nat_ge_mul a_top M
-  obtain ⟨n, n_M', ⟨un_bn, _⟩, k, an_k, k_an'⟩ := frequently_atTop.1 u_b M'
+  obtain ⟨n, n_M', ⟨un_bn, -⟩, k, an_k, k_an'⟩ := frequently_atTop.1 u_b M'
   refine ⟨k, ?_, fun vk_ak' ↦ ?_⟩
   · rw [mul_comm a, ← le_div_iff_mul_le a_0 a_top, EReal.div_eq_inv_mul] at aM_M'
     apply Nat.cast_le.1 <| aM_M'.trans <| an_k.trans' _
@@ -517,7 +517,7 @@ lemma _root_.Monotone.le_linearGrowthSup_comp (h : Monotone u)
     <| EReal.eventually_atTop_exists_nat_between a_a_inv' (inv_nonneg_of_nonneg a_0.le)
   refine frequently_atTop.2 fun M ↦ ?_
   obtain ⟨M', aM_M'⟩ := exists_nat_ge_mul a_top' M
-  obtain ⟨n, n_M', ⟨bn_un, _⟩, k, an_k', k_an⟩ := frequently_atTop.1 b_u M'
+  obtain ⟨n, n_M', ⟨bn_un, -⟩, k, an_k', k_an⟩ := frequently_atTop.1 b_u M'
   refine ⟨k, ?_, fun ak_vk' ↦ ?_⟩
   · rw [mul_comm a', ← le_div_iff_mul_le a_0' a_top', EReal.div_eq_inv_mul] at aM_M'
     apply Nat.cast_le.1 <| aM_M'.trans <| an_k'.trans' _

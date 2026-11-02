@@ -58,7 +58,7 @@ lemma Polynomial.isRegularLocalRing_localization_atPrime_of_comap_eq_maximalIdea
     exact (Submodule.spanFinrank_span_le_ncard_of_finite (fg.image _)).trans (Set.ncard_image_le fg)
   · have lt : q < p := lt_of_le_of_ne qle (Ne.symm eq)
     have : (comap C p).IsMaximal := by simpa [max] using maximalIdeal.isMaximal R
-    obtain ⟨y, _, hy⟩ := Polynomial.exists_monic_span_sup_map_eq R p this (by simpa [max])
+    obtain ⟨y, -, hy⟩ := Polynomial.exists_monic_span_sup_map_eq R p this (by simpa [max])
     have peq : p = Ideal.span (((algebraMap R R[X]) '' (maximalIdeal R).generators) ∪ {y}) := by
       simp only [Ideal.span_union, ← Ideal.map_span, algebraMap_eq, sup_comm]
       nth_rw 1 [hy, max, ← (maximalIdeal R).span_generators]

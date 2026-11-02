@@ -65,7 +65,7 @@ theorem Convex.span_tangentConeAt (conv : Convex ℝ s) (hs : (interior s).Nonem
   rw [mem_interior_iff_mem_nhds]
   replace hy : interior s ∈ 𝓝 y := IsOpen.mem_nhds isOpen_interior hy
   apply mem_of_superset ((isOpenMap_sub_right x).image_mem_nhds hy)
-  rintro _ ⟨z, zs, rfl⟩
+  rintro - ⟨z, zs, rfl⟩
   refine mem_tangentConeAt_of_openSegment_subset (Subset.trans ?_ interior_subset)
   exact conv.openSegment_closure_interior_subset_interior hx zs
 

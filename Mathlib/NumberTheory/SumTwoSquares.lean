@@ -189,7 +189,7 @@ theorem Nat.eq_sq_add_sq_iff_eq_sq_mul {n : ℕ} :
     · exact ⟨0, 1, by rw [h, hxy.1, hxy.2, zero_pow two_ne_zero, add_zero, zero_mul],
         ⟨0, by rw [zero_mul, neg_eq_zero, Fin.one_eq_zero_iff]⟩⟩
     · have hg := Nat.pos_of_ne_zero (mt Nat.gcd_eq_zero_iff.mp hxy)
-      obtain ⟨g, x₁, y₁, _, h₂, h₃, h₄⟩ := Nat.exists_coprime' hg
+      obtain ⟨g, x₁, y₁, -, h₂, h₃, h₄⟩ := Nat.exists_coprime' hg
       exact ⟨g, x₁ ^ 2 + y₁ ^ 2, by rw [h, h₃, h₄]; ring,
         ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime rfl h₂⟩
   · rintro ⟨a, b, h₁, h₂⟩

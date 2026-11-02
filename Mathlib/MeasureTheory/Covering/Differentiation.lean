@@ -136,7 +136,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
         ((v.eventually_filterAt_mem_setsAt x).and
           (v.eventually_filterAt_subset_of_nhds (U_open.mem_nhds (sU hx))))
     apply Frequently.mono this
-    rintro a ⟨ρa, _, aU⟩
+    rintro a ⟨ρa, -, aU⟩
     exact ⟨ρa, aU⟩
   have : Countable h.index := h.index_countable
   calc
@@ -170,7 +170,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
       rwa [ENNReal.top_mul hs.ne']
     set s := {x | ¬∀ᶠ a in v.filterAt x, ρ a < ε * μ a} with hs
     change μ s = 0
-    obtain ⟨o, _, ρo, μo⟩ : ∃ o : Set α, MeasurableSet o ∧ ρ o = 0 ∧ μ oᶜ = 0 := hρ
+    obtain ⟨o, -, ρo, μo⟩ : ∃ o : Set α, MeasurableSet o ∧ ρ o = 0 ∧ μ oᶜ = 0 := hρ
     apply le_antisymm _ bot_le
     calc
       μ s ≤ μ (s ∩ o ∪ oᶜ) := by

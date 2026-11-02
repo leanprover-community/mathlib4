@@ -95,7 +95,7 @@ section LinearOrder
 variable [LinearOrder R] [IsStrictOrderedRing R] {n : ℕ} {x : R}
 
 lemma geom_sum_pos' (hx : 0 < x + 1) (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^ i := by
-  obtain _ | _ | n := n
+  obtain - | - | n := n
   · cases hn rfl
   · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
   obtain hx' | hx' := lt_or_ge x 0
@@ -103,7 +103,7 @@ lemma geom_sum_pos' (hx : 0 < x + 1) (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^
   · exact geom_sum_pos hx' (by simp)
 
 lemma Odd.geom_sum_pos (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
-  rcases n with (_ | _ | k)
+  rcases n with (- | - | k)
   · exact (Nat.not_odd_zero h).elim
   · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
   rw [← Nat.not_even_iff_odd] at h
@@ -124,7 +124,7 @@ lemma geom_sum_pos_iff (hn : n ≠ 0) : 0 < ∑ i ∈ range n, x ^ i ↔ Odd n �
     · exact geom_sum_pos' hx' hn
 
 lemma geom_sum_ne_zero (hx : x ≠ -1) (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i ≠ 0 := by
-  obtain _ | _ | n := n
+  obtain - | - | n := n
   · cases hn rfl
   · simp only [zero_add, range_one, sum_singleton, pow_zero, ne_eq, one_ne_zero, not_false_eq_true]
   rw [Ne, eq_neg_iff_add_eq_zero, ← Ne] at hx

@@ -420,7 +420,7 @@ theorem hasUniqueRoots {F : Type*} [FunLike F M N] [MulHomClass F M N] {f : F}
       rw [← (hf.map_units a₂).mul_left_inj, ha, ← (hf.map_units b₂).mul_left_inj, mul_right_comm,
         hb, ← (hf.map_units c).mul_right_inj, ← map_mul, ← map_mul, ← map_mul, ← map_mul, this]
     refine pow_left_injective hn ?_
-    obtain _ | n := n
+    obtain - | n := n
     · simp
     · simp [mul_pow, pow_succ (c : M), mul_assoc, hc]
 

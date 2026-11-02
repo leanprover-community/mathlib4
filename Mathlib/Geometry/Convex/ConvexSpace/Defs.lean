@@ -81,7 +81,7 @@ variable {R : Type u} [PartialOrder R] [Semiring R] {w : StdSimplex R X} {x : X}
 @[simp] lemma weights_nonneg {w : StdSimplex R X} (i : X) : 0 ≤ w.weights i := w.nonneg i
 
 @[simp] lemma weights_ne_zero [Nontrivial R] : ∀ w : StdSimplex R X, w.weights ≠ 0 := by
-  rintro ⟨_, -, total⟩ rfl; simp at total
+  rintro ⟨-, -, total⟩ rfl; simp at total
 
 @[simp] lemma weights_pos [Nontrivial R] (w : StdSimplex R X) : 0 < w.weights :=
   w.nonneg.lt_of_ne w.weights_ne_zero.symm

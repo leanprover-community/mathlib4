@@ -180,7 +180,7 @@ theorem min_image {r : β → β → Prop} [Std.Trichotomous r] (wf : WellFounde
     {s : Set α} (hne : s.Nonempty) :
     wf.min (f '' s) (hne.image f) = f (wf.onFun (f := f) |>.min s hne) := by
   apply min_eq_of_forall_not_lt wf <| Set.mem_image_of_mem f <| min_mem wf.onFun s hne
-  rintro _ ⟨a, has, rfl⟩
+  rintro - ⟨a, has, rfl⟩
   exact wf.onFun.not_lt_min s has
 
 theorem not_rel_apply_succ [h : WellFounded r] (f : ℕ → α) : ∃ n, ¬ r (f (n + 1)) (f n) := by

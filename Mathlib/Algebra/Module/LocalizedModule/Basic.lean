@@ -736,10 +736,10 @@ lemma IsLocalizedModule.restrictScalars (S : Submonoid R) [Module A M]
     simp only [← IsScalarTower.algebraMap_apply, Module.End.isUnit_iff] at this ⊢
     exact this
   surj y := by
-    obtain ⟨⟨x, ⟨_, ⟨r, ⟨hr₁, rfl⟩⟩⟩⟩, hx⟩ := h.2 y
+    obtain ⟨⟨x, ⟨-, ⟨r, ⟨hr₁, rfl⟩⟩⟩⟩, hx⟩ := h.2 y
     exact ⟨⟨x, ⟨r, hr₁⟩⟩, by simpa [Submonoid.smul_def] using hx⟩
   exists_of_eq {x₁ x₂} e := by
-    obtain ⟨⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩, hc⟩ := h.3 e
+    obtain ⟨⟨-, ⟨r, ⟨hr, rfl⟩⟩⟩, hc⟩ := h.3 e
     exact ⟨⟨r, hr⟩, by simpa [Submonoid.smul_def] using hc⟩
 
 lemma IsLocalizedModule.restrictScalars_powers [Module A M]
@@ -756,7 +756,7 @@ lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
     (f : M →ₗ[A] N) [IsLocalizedModule S (f.restrictScalars R)] :
     IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f where
   map_units x := by
-    obtain ⟨_, x, hx, rfl⟩ := x
+    obtain ⟨-, x, hx, rfl⟩ := x
     have := IsLocalizedModule.map_units (f.restrictScalars R) ⟨x, hx⟩
     simp only [← IsScalarTower.algebraMap_apply, Module.End.isUnit_iff] at this ⊢
     exact this
@@ -1265,7 +1265,7 @@ variable (M)
 /-- The linear map `(LocalizedModule S M) → (LocalizedModule S M)` from `iso` is the identity. -/
 lemma iso_localizedModule_eq_refl : iso S (mkLinearMap S M) = refl R (LocalizedModule S M) := by
   let f := mkLinearMap S M
-  obtain ⟨e, _, univ⟩ := is_universal S f f (map_units f)
+  obtain ⟨e, -, univ⟩ := is_universal S f f (map_units f)
   rw [← toLinearMap_inj, univ (iso S f) ((eq_toLinearMap_symm_comp f f).1 (iso_symm_comp S f).symm)]
   exact Eq.symm <| univ (refl R (LocalizedModule S M)) (by simp)
 

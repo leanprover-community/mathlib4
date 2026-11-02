@@ -550,7 +550,7 @@ lemma transvection_add {i j : ι} (hij : i ≠ j) (b₁ b₂ : F) :
 lemma transvection_mem_center_iff {i j : ι} (hij : i ≠ j) (b : F) :
     transvection hij b ∈ Subgroup.center (SpecialLinearGroup ι F) ↔ b = 0 := by
   refine ⟨fun h ↦ ?_, fun hb ↦ ?_⟩
-  · obtain ⟨r, _, hr⟩ := mem_center_iff.1 h
+  · obtain ⟨r, -, hr⟩ := mem_center_iff.1 h
     simpa [transvection_coe, hij] using congr($hr i j).symm
   · simp only [hb, mem_center_iff, scalar_apply, transvection_coe, single_zero,
       add_zero, diagonal_eq_one]

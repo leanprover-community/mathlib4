@@ -140,7 +140,7 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen (U) (s : Set Γ(X, U))
     IsAffineOpen U := by
   apply isAffine_of_isAffineOpen_basicOpen (U.topIso.inv '' s)
   · rw [← Ideal.map_span U.topIso.inv.hom, hs, Ideal.map_top]
-  · rintro _ ⟨j, hj, rfl⟩
+  · rintro - ⟨j, hj, rfl⟩
     rw [← (Scheme.Opens.ι _).isAffineOpen_iff_of_isOpenImmersion, Scheme.image_basicOpen]
     simpa [Scheme.Opens.toScheme_presheaf_obj] using hs₂ j hj
 
@@ -251,9 +251,9 @@ lemma isAffineHom_of_isInducing
   intro y
   by_cases hy : y ∈ Set.range f
   · obtain ⟨x, rfl⟩ := hy
-    obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+    obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ :=
       Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
-    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
+    obtain ⟨-, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
       X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
     obtain ⟨U', hU'U, rfl⟩ : ∃ U' : Y.Opens, U' ≤ U ∧ f ⁻¹ᵁ U' = V := by
       obtain ⟨U', hU', e⟩ := hf₁.isOpen_iff.mp V.2
@@ -263,7 +263,7 @@ lemma isAffineHom_of_isInducing
     convert hV.basicOpen (f.app _ (Y.presheaf.map (homOfLE hU'U).op r))
     simp only [Scheme.preimage_basicOpen, ← CommRingCat.comp_apply, f.naturality]
     simpa using ((Opens.map f.base).map (homOfLE hrU')).le
-  · obtain ⟨_, ⟨U, hU, rfl⟩, hyU, hU'⟩ :=
+  · obtain ⟨-, ⟨U, hU, rfl⟩, hyU, hU'⟩ :=
       Y.isBasis_affineOpens.exists_subset_of_mem_open hy hf₂.isOpen_compl
     rw [Set.subset_compl_iff_disjoint_right, ← Set.preimage_eq_empty_iff] at hU'
     refine ⟨U, hyU, hU, ?_⟩

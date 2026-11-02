@@ -100,7 +100,7 @@ variable (k)
 theorem spanCoeffs_ne_top : spanCoeffs k ≠ ⊤ := by
   rw [Ideal.ne_top_iff_one, spanCoeffs, Ideal.span, ← Set.image_univ,
     Finsupp.mem_span_image_iff_linearCombination]
-  rintro ⟨v, _, hv⟩
+  rintro ⟨v, -, hv⟩
   classical
   replace hv := congr((toSplittingField <| v.support.image Prod.fst) $hv)
   rw [map_one, Finsupp.linearCombination_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv

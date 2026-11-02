@@ -132,7 +132,7 @@ theorem toFinset_dedup : l.dedup.toFinset = l.toFinset :=
   Finset.eq_of_veq <| by simp
 
 theorem toFinset_surj_on : Set.SurjOn toFinset { l : List α | l.Nodup } Set.univ := by
-  rintro ⟨⟨l⟩, hl⟩ _
+  rintro ⟨⟨l⟩, hl⟩ -
   exact ⟨l, hl, (toFinset_eq hl).symm⟩
 
 theorem toFinset_surjective : Surjective (toFinset : List α → Finset α) := fun s =>

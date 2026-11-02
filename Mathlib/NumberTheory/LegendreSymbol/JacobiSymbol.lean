@@ -214,7 +214,7 @@ theorem sq_one' {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a ^ 2 | b) = 1 := by r
 /-- The symbol `J(a | b)` depends only on `a` mod `b`. -/
 theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
   congr(List.prod $(List.pmap_congr_left _ (by
-        rintro p hp _ h₂
+        rintro p hp - h₂
         conv_rhs =>
           rw [legendreSym.mod, Int.emod_emod_of_dvd _ (Int.natCast_dvd_natCast.2 <|
             dvd_of_mem_primeFactorsList hp), ← legendreSym.mod])))

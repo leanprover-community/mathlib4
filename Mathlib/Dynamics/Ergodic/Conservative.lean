@@ -150,7 +150,7 @@ theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
     exact hs.inter <| .biInter (to_countable <| .Ici n) fun m _ ↦
       (hs.preimage <| hf.toQuasiMeasurePreserving.iterate m).compl
   rcases (hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
-  rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
+  rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨-, hxn⟩, hxm, -⟩
   exact hxn m hmn.lt.le hxm
 
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,

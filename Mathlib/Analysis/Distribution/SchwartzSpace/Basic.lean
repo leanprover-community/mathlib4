@@ -138,7 +138,7 @@ variable (f : 𝓢(E, F))
 /-- Auxiliary lemma, used in proving the more general result `isBigO_cocompact_rpow`. -/
 theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
     f =O[cocompact E] (‖·‖ ^ (-k : ℤ)) := by
-  obtain ⟨d, _, hd'⟩ := f.decay k 0
+  obtain ⟨d, -, hd'⟩ := f.decay k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
   simp_rw [isBigO_iff]
   refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
@@ -1299,7 +1299,7 @@ variable [SecondCountableTopologyEither E F]
 
 /-- Schwartz functions are in `L^∞`; does not require `hμ.HasTemperateGrowth`. -/
 theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f ⊤ μ := by
-  rcases f.decay 0 0 with ⟨C, _, hC⟩
+  rcases f.decay 0 0 with ⟨C, -, hC⟩
   refine memLp_top_of_bound f.continuous.aestronglyMeasurable C (ae_of_all μ fun x ↦ ?_)
   simpa using hC x
 

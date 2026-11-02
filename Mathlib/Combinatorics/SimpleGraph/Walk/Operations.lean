@@ -576,7 +576,7 @@ lemma nil_drop_iff (p : G.Walk u v) (n : ℕ) : (p.drop n).Nil ↔ p.length ≤ 
 lemma drop_cons_eq (h : G.Adj u v) (p : G.Walk v w) (n : ℕ) (hn : n ≠ 0) :
     (cons h p).drop n = (p.drop (n - 1)).copy (p.getVert_cons h hn).symm rfl := by
   apply ext_support
-  obtain ⟨_, rfl⟩ := Nat.exists_add_one_eq.mpr (Nat.ne_zero_iff_zero_lt.mp hn)
+  obtain ⟨-, rfl⟩ := Nat.exists_add_one_eq.mpr (Nat.ne_zero_iff_zero_lt.mp hn)
   conv_lhs => unfold drop
   simp
 

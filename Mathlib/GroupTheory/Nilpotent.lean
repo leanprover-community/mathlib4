@@ -208,7 +208,7 @@ variable (G) in
 theorem commutator_upperCentralSeries_top_le (n : ℕ) :
     ⁅upperCentralSeries G (n + 1), ⊤⁆ ≤ upperCentralSeries G n := by
   apply closure_le _ |>.mpr
-  rintro _ ⟨h, hh, g, _, rfl⟩
+  rintro - ⟨h, hh, g, -, rfl⟩
   exact mem_upperCentralSeries_succ_iff.mp hh g
 
 @[to_additive (attr := simp)]
@@ -573,7 +573,7 @@ theorem upperCentralSeries.map {H : Type*} [Group H] {f : G →* H} (h : Functio
   induction n with
   | zero => simp
   | succ d hd =>
-    rintro _ ⟨x, hx : x ∈ upperCentralSeries G d.succ, rfl⟩ y'
+    rintro - ⟨x, hx : x ∈ upperCentralSeries G d.succ, rfl⟩ y'
     rcases h y' with ⟨y, rfl⟩
     simpa using! hd (mem_map_of_mem f (hx y))
 

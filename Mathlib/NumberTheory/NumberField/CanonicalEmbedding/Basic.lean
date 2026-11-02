@@ -65,7 +65,7 @@ theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
   refine Submodule.span_induction ?_ ?_ (fun _ _ _ _ hx hy => ?_) (fun a _ _ hx => ?_) hx
-  · rintro _ ⟨x, rfl⟩
+  · rintro - ⟨x, rfl⟩
     rw [apply_at, apply_at, ComplexEmbedding.conjugate_coe_eq]
   · rw [Pi.zero_apply, Pi.zero_apply, map_zero]
   · rw [Pi.add_apply, Pi.add_apply, map_add, hx, hy]
@@ -95,14 +95,14 @@ def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
 
 theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
-  obtain hr | _ := lt_or_ge r 0
+  obtain hr | - := lt_or_ge r 0
   · simp [Metric.closedBall_eq_empty.2 hr]
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
       intro x; rw [← norm_le_iff, mem_closedBall_zero_iff]
     convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
     ext; constructor
-    · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
+    · rintro ⟨⟨-, ⟨x, rfl⟩, rfl⟩, hx⟩
       exact ⟨x, ⟨SetLike.coe_mem x, fun φ => (heq _).mp hx φ⟩, rfl⟩
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
@@ -290,7 +290,7 @@ theorem disjoint_span_commMap_ker [NumberField K] :
   refine LinearMap.disjoint_ker.mpr (fun x h_mem h_zero => ?_)
   replace h_mem : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K)) := by
     refine (Submodule.span_mono ?_) h_mem
-    rintro _ ⟨i, rfl⟩
+    rintro - ⟨i, rfl⟩
     exact ⟨integralBasis K i, (canonicalEmbedding.latticeBasis_apply K i).symm⟩
   ext1 φ
   rw [Pi.zero_apply]
@@ -1035,7 +1035,7 @@ theorem iUnion_negAt_plusPart_union :
   ext x
   rw [Set.mem_union, Set.mem_inter_iff, Set.mem_iUnion, Set.mem_iUnion]
   refine ⟨?_, fun h ↦ ?_⟩
-  · rintro (⟨s, ⟨x, ⟨hx, _⟩, rfl⟩⟩ | h)
+  · rintro (⟨s, ⟨x, ⟨hx, -⟩, rfl⟩⟩ | h)
     · simp_rw +singlePass [hA, negAt_apply_norm_isReal, negAt_apply_snd]
       rwa [← hA]
     · exact h.left

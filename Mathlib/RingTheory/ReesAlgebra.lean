@@ -103,7 +103,7 @@ theorem adjoin_monomial_eq_reesAlgebra :
     Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) = reesAlgebra I := by
   apply le_antisymm
   · apply Algebra.adjoin_le _
-    rintro _ ⟨r, hr, rfl⟩
+    rintro - ⟨r, hr, rfl⟩
     exact reesAlgebra.monomial_mem.mpr (by rwa [pow_one])
   · intro p hp
     rw [p.as_sum_support]

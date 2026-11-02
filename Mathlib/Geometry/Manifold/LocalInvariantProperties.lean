@@ -648,7 +648,7 @@ theorem _root_.OpenPartialHomeomorph.isLocalStructomorphWithinAt_iff {G : Struct
     · rw [f.open_source.interior_eq]
       exact Or.resolve_right hx (not_not.mpr h2x)
   · intro hf hx
-    obtain ⟨e, he, _, hfe, hxe⟩ := hf hx
+    obtain ⟨e, he, -, hfe, hxe⟩ := hf hx
     exact ⟨e, he, hfe, hxe⟩
 
 /-- A slight reformulation of `IsLocalStructomorphWithinAt` when `f` is an open partial homeomorph
@@ -683,7 +683,7 @@ theorem HasGroupoid.comp
     @HasGroupoid H₁ _ H₃ _ (ChartedSpace.comp H₁ H₂ H₃) G₁ :=
   let _ := ChartedSpace.comp H₁ H₂ H₃
   { compatible := by
-      rintro _ _ ⟨e, he, f, hf, rfl⟩ ⟨e', he', f', hf', rfl⟩
+      rintro - - ⟨e, he, f, hf, rfl⟩ ⟨e', he', f', hf', rfl⟩
       apply G₁.locality
       intro x hx
       simp only [mfld_simps] at hx

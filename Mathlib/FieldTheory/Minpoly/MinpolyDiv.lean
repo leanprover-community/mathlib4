@@ -150,7 +150,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
           (Submodule.mem_span_singleton_self x))
       rw [Submodule.span_mul_span, Set.mul_singleton, Set.image_image]
       apply Submodule.span_mono
-      rintro _ ⟨j, hj, rfl⟩
+      rintro - ⟨j, hj, rfl⟩
       rw [Set.mem_Iio] at hj
       exact ⟨j + 1, Nat.add_lt_of_lt_sub hj, pow_succ x j⟩
 
@@ -160,7 +160,7 @@ lemma span_coeff_minpolyDiv :
   nontriviality S
   apply le_antisymm
   · rw [Submodule.span_le]
-    rintro _ ⟨i, rfl⟩
+    rintro - ⟨i, rfl⟩
     apply coeff_minpolyDiv_mem_adjoin
   · rw [← Submodule.span_range_natDegree_eq_adjoin (minpoly.monic hx) (minpoly.aeval _ _),
       Submodule.span_le]

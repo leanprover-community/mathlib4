@@ -193,7 +193,7 @@ theorem orthogonal_ker (T : E →L[𝕜] F) :
   all_goals refine Submodule.orthogonal_le fun x hx ↦ ?_
   · refine ext_inner_left 𝕜 fun y ↦ ?_
     simp [← T.adjoint_inner_left, hx _]
-  · rintro _ ⟨y, rfl⟩
+  · rintro - ⟨y, rfl⟩
     simp_all [T.adjoint_inner_left]
 
 theorem orthogonal_range (T : E →L[𝕜] F) : T.rangeᗮ = T†.ker := by
@@ -212,7 +212,7 @@ the adjoint of `A` sends the residual `y - A x` to zero. -/
 theorem forall_norm_sub_apply_le_iff_adjoint_apply_sub_eq_zero
     (A : E →L[𝕜] F) (y : F) (x : E) :
     (∀ z : E, ‖y - A x‖ ≤ ‖y - A z‖) ↔ (A†) (y - A x) = 0 := by
-  have hb : BddBelow (Set.range fun w : A.range => ‖y - w‖) := ⟨0, by rintro - ⟨_, rfl⟩; positivity⟩
+  have hb : BddBelow (Set.range fun w : A.range => ‖y - w‖) := ⟨0, by rintro - ⟨-, rfl⟩; positivity⟩
   rw [← A.norm_eq_iInf_range_iff_adjoint_apply_eq_zero y x, le_antisymm_iff,
     and_iff_left (ciInf_le hb ⟨A x, x, rfl⟩), le_ciInf_iff hb]
   simp
@@ -520,7 +520,7 @@ lemma isStarProjection_iff_eq_starProjection [CompleteSpace E] {p : E →L[𝕜]
     IsStarProjection p
       ↔ ∃ (K : Submodule 𝕜 E) (_ : K.HasOrthogonalProjection), p = K.starProjection :=
   ⟨fun h ↦ ⟨p.range, isStarProjection_iff_eq_starProjection_range.mp h⟩,
-    by rintro ⟨_, _, rfl⟩; simp⟩
+    by rintro ⟨-, -, rfl⟩; simp⟩
 
 namespace LinearMap
 

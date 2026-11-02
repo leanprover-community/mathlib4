@@ -96,7 +96,7 @@ lemma prime_composite_induction {motive : ℕ → Prop} (zero : motive 0) (one :
     (composite : ∀ a, 2 ≤ a → motive a → ∀ b, 2 ≤ b → motive b → motive (a * b))
     (n : ℕ) : motive n := by
   refine induction_on_primes zero one ?_ _
-  rintro p (_ | _ | a) hp ha
+  rintro p (- | - | a) hp ha
   · simpa
   · simpa using prime _ hp
   · exact composite _ hp.two_le (prime _ hp) _ a.one_lt_succ_succ ha

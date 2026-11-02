@@ -213,7 +213,7 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : G ⊣ F) [F.Full] [F.Faithful]
 include adj
 
 lemma isLocal_adj_unit_app (X : D) : isLocal (· ∈ Set.range F.obj) (adj.unit.app X) := by
-  rintro _ ⟨Y, rfl⟩
+  rintro - ⟨Y, rfl⟩
   convert!
     ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.symm.trans
         (adj.homEquiv X Y)).bijective using 1
@@ -247,7 +247,7 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : G ⊣ F) [G.Full] [G.Faithful]
 include adj
 
 lemma isColocal_adj_counit_app (X : C) : isColocal (· ∈ Set.range G.obj) (adj.counit.app X) := by
-  rintro _ ⟨Y, rfl⟩
+  rintro - ⟨Y, rfl⟩
   convert!
     ((Functor.FullyFaithful.ofFullyFaithful G).homEquiv.symm.trans
         (adj.homEquiv Y X).symm).bijective using 1

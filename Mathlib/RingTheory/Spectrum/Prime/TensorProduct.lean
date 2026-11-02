@@ -66,7 +66,7 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
       (isEmbedding_tensorProductTo_of_surjectiveOnStalks_aux R S T hRT p₂ p₁ e.symm)⟩
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
   refine ⟨(continuous_tensorProductTo ..).le_induced.antisymm (isBasis_basic_opens.le_iff.mpr ?_)⟩
-  rintro _ ⟨f, rfl⟩
+  rintro - ⟨f, rfl⟩
   rw [@isOpen_iff_forall_mem_open]
   rintro J (hJ : f ∉ J.asIdeal)
   obtain ⟨t, r, a, ht, e⟩ := hRT.exists_mul_eq_tmul f

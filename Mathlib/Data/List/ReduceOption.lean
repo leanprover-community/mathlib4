@@ -67,7 +67,7 @@ theorem reduceOption_eq_singleton_iff (l : List (Option α)) (a : α) :
   constructor
   · intro h
     rw [filterMap_eq_cons_iff] at h
-    obtain ⟨l₁, _, l₂, h, hl₁, ⟨⟩, hl₂⟩ := h
+    obtain ⟨l₁, -, l₂, h, hl₁, ⟨⟩, hl₂⟩ := h
     rw [filterMap_eq_nil_iff] at hl₂
     apply eq_replicate_of_mem at hl₁
     apply eq_replicate_of_mem at hl₂

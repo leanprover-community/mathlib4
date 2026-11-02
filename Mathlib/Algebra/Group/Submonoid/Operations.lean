@@ -567,10 +567,10 @@ theorem prod_le_iff {s : Submonoid M} {t : Submonoid N} {u : Submonoid (M × N)}
   constructor
   · intro h
     constructor
-    · rintro _ ⟨x, hx, rfl⟩
+    · rintro - ⟨x, hx, rfl⟩
       apply h
       exact ⟨hx, Submonoid.one_mem _⟩
-    · rintro _ ⟨x, hx, rfl⟩
+    · rintro - ⟨x, hx, rfl⟩
       apply h
       exact ⟨Submonoid.one_mem _, hx⟩
   · rintro ⟨hH, hK⟩ ⟨x1, x2⟩ ⟨h1, h2⟩
@@ -899,7 +899,7 @@ def submonoidMap (f : M →* N) (M' : Submonoid M) : M' →* M'.map f where
 @[to_additive]
 theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
     Function.Surjective (f.submonoidMap M') := by
-  rintro ⟨_, x, hx, rfl⟩
+  rintro ⟨-, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
 
 @[to_additive (attr := grind inj)]

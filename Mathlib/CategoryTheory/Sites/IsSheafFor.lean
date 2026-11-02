@@ -664,7 +664,7 @@ theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) :
     IsSheafFor P (Presieve.singleton (𝟙 X)) := by
   intro x _
   refine ⟨x _ (Presieve.singleton_self _), ?_, ?_⟩
-  · rintro _ _ ⟨rfl, rfl⟩
+  · rintro - - ⟨rfl, rfl⟩
     simp
   · intro t ht
     simpa using ht _ (Presieve.singleton_self _)
@@ -859,7 +859,7 @@ theorem isSheafFor_ofArrows_iff_bijective_toCompatible :
       (h _ (Arrows.toCompatible P π x₁).property).unique (fun _ ↦ rfl)
         (congr_fun congr($(hx.symm).val)),
       fun ⟨y, hy⟩ ↦ ?_⟩, fun h x hx ↦ ?_⟩
-  · obtain ⟨x, hx, _⟩ := h y hy
+  · obtain ⟨x, hx, -⟩ := h y hy
     exact ⟨x, by ext; apply hx⟩
   · obtain ⟨y, hy⟩ := h.2 ⟨x, hx⟩
     rw [Subtype.ext_iff] at hy
@@ -933,11 +933,11 @@ lemma isSheafFor_over_map_op_comp_iff
     isSheafFor_over_map_op_comp_ofArrows_iff, isSheafFor_iff_generate]
   convert Iff.rfl
   refine le_antisymm ?_ ?_
-  · rintro W _ ⟨T, _, a, ⟨_, b, _, ⟨i⟩, rfl⟩, rfl⟩
+  · rintro W - ⟨T, -, a, ⟨-, b, -, ⟨i⟩, rfl⟩, rfl⟩
     refine ⟨(Over.map p).obj (Z i), Over.homMk (a.left ≫ b.left) ?_, _, ⟨i⟩, ?_⟩
     · simpa [(Over.w_assoc b)] using Over.w a
     · cat_disch
-  · rintro W _ ⟨_, a, _, ⟨i⟩, rfl⟩
+  · rintro W - ⟨-, a, -, ⟨i⟩, rfl⟩
     exact ⟨_, _, _, Sieve.ofArrows_mk _ _ i, rfl⟩
 
 variable [(ofArrows X π).HasPairwisePullbacks]
@@ -1073,7 +1073,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type*) (U : Sieve X)
       conv_lhs at h => congr; rw [assoc, assoc]
       simp [h]
   refine ⟨hU.amalgamate t hT, ?_, ?_⟩
-  · rintro Z _ ⟨Y, f, g, hg, hf, rfl⟩
+  · rintro Z - ⟨Y, f, g, hg, hf, rfl⟩
     rw [op_comp, Functor.map_comp, comp_apply, Presieve.IsSheafFor.valid_glue _ _ _ hg]
     apply ht hg _ hf
   · intro y hy
@@ -1111,7 +1111,7 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type*) (R S : Sieve X)
         R.pullback f := by
       ext Z g
       constructor
-      · rintro ⟨W, k, l, hl, _, comm⟩
+      · rintro ⟨W, k, l, hl, -, comm⟩
         rw [pullback_apply, ← comm]
         simp [hl]
       · intro a

@@ -95,7 +95,7 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
   have hull_sub_span : (hull ℝ s : Set E) ⊆ Submodule.span ℝ s := by
     intro x hx
     rw [SetLike.mem_coe, PointedCone.mem_hull_set] at hx
-    obtain ⟨c, hc_supp, _, hc_sum⟩ := hx
+    obtain ⟨c, hc_supp, -, hc_sum⟩ := hx
     exact hc_sum ▸ Submodule.sum_mem _ fun m hm =>
       Submodule.smul_mem _ _ (Submodule.subset_span (hc_supp hm))
   -- Extract basis from `C₁.IsSimplicial` + generating

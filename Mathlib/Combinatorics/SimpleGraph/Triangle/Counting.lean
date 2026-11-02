@@ -128,7 +128,7 @@ lemma triangle_counting'
     refine (Nat.cast_le.2 <| card_union_le _ _).trans ?_
     rw [Nat.cast_add]
     gcongr
-  rintro a _ b _ t
+  rintro a - b - t
   rw [Function.onFun, Finset.disjoint_left]
   simp only [Prod.forall, mem_image, not_exists, Prod.mk_inj,
     exists_imp, and_imp, not_and]

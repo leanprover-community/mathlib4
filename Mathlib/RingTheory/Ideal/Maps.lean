@@ -184,7 +184,7 @@ lemma map_mapₐ {R A B C : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [
 
 theorem map_span (s : Set R) : map f (span s) = span (f '' s) := by
   refine (Submodule.span_eq_of_le _ ?_ ?_).symm
-  · rintro _ ⟨x, hx, rfl⟩; exact mem_map_of_mem f (subset_span hx)
+  · rintro - ⟨x, hx, rfl⟩; exact mem_map_of_mem f (subset_span hx)
   · rw [map_le_iff_le_comap, span_le, coe_comap, ← Set.image_subset_iff]
     exact subset_span
 
@@ -660,7 +660,7 @@ protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
         show (f (r * s)) ∈ map f I * map f J by
           rw [map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
     (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <| by
-      rintro _ ⟨_, ⟨r, hri, rfl⟩, _, ⟨s, hsj, rfl⟩, rfl⟩
+      rintro - ⟨-, ⟨r, hri, rfl⟩, -, ⟨s, hsj, rfl⟩, rfl⟩
       simp_rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
 /-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/

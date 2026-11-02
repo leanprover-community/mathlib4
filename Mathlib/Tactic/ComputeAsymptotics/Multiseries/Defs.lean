@@ -890,7 +890,7 @@ theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ �
       ∃ (ms' : MultiseriesExpansion (basis_hd :: basis_tl)) (f' : ℝ → ℝ),
       ms = ms'.replaceFun f' ∧ ms'.Approximates ∧ ms'.toFun =ᶠ[atTop] f'
   apply Approximates.coind motive ⟨ms, f, by grind⟩
-  rintro _ ⟨ms, f, rfl, h_approx, h_eq⟩
+  rintro - ⟨ms, f, rfl, h_approx, h_eq⟩
   cases ms with
   | nil g =>
     simp only [nil_iff, mk_toFun, mk_replaceFun, mk_seq, true_and,

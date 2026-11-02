@@ -384,7 +384,7 @@ theorem comp_mul_le (f g : F →* E) : p.comp (f * g) ≤ p.comp f + p.comp g :=
 theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x / y)) :=
   ⟨0, by
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     dsimp
     positivity⟩
 
@@ -557,7 +557,7 @@ variable [AddCommGroup E]
 theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
     BddBelow (range fun y => p y + q (x - y)) :=
   ⟨0, by
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     dsimp
     positivity⟩
 

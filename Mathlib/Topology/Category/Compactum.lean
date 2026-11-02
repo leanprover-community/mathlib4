@@ -208,7 +208,7 @@ private theorem subset_cl {X : Compactum} (A : Set X) : A ⊆ cl A := fun a ha =
   ⟨X.incl a, ha, by simp⟩
 
 private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
-  rintro _ ⟨F, hF, rfl⟩
+  rintro - ⟨F, hF, rfl⟩
   -- Notation to be used in this proof.
   let fsu := Finset (Set (Ultrafilter X))
   let ssu := Set (Set (Ultrafilter X))

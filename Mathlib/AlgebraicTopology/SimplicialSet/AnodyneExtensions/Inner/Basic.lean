@@ -126,7 +126,7 @@ lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
   ⟨fun hA ↦ by
     obtain ⟨_, P, _, ⟨_, rfl⟩⟩ :
         ∃ (B : X.Subcomplex) (P : B.Pairing) (h : P.IsRegular), P.IsInner ∧ B = A := by
-      obtain ⟨_, P₁, _, P₂⟩ := hA
+      obtain ⟨-, P₁, _, P₂⟩ := hA
       exact ⟨_, P₁, inferInstance, ⟨P₂, by simp⟩⟩
     exact ⟨P, ⟨inferInstance, inferInstance⟩⟩,
   fun ⟨P, ⟨_, _⟩⟩ ↦ P.strongInnerAnodyneExtensions⟩
@@ -139,7 +139,7 @@ lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex
       refine (?_ : (_ : MorphismProperty _) ≤ _ ) _
         (P.rankFunction.relativeCellComplex.attachCells j hj).pushouts_coproducts
       simp only [pushouts_le_iff, coproducts_le_iff]
-      rintro _ _ _ ⟨c⟩
+      rintro - - - ⟨c⟩
       have h0 := Fin.pos_iff_ne_zero.mpr (IsInner.ne_zero c.s rfl)
       have hn := Fin.lt_last_iff_ne_last.mpr (IsInner.ne_last c.s rfl)
       have : NeZero c.dim := ⟨by grind⟩

@@ -76,8 +76,8 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
   obtain ⟨b, hb, hb'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy => by
     simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
       exists_and_left, Slt, Sgt] at hx hy
-    obtain ⟨_, hx, _, rfl⟩ := hx
-    obtain ⟨_, hy, _, rfl⟩ := hy
+    obtain ⟨_, hx, -, rfl⟩ := hx
+    obtain ⟨_, hy, -, rfl⟩ := hy
     exact f.strictMono (hx.trans hy))
   refine ⟨OrderEmbedding.ofStrictMono
     (fun (x : (insert a S : Finset α)) => if hx : x.1 ∈ S then f ⟨x.1, hx⟩ else b) ?_, ?_⟩
@@ -256,7 +256,7 @@ theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α
   exact ⟨OrderIso.ofCmpEqCmp (fun a ↦ (F a).val) (fun b ↦ (G b).val) fun a b ↦ by
       rcases (F a).prop with ⟨f, hf, ha⟩
       rcases (G b).prop with ⟨g, hg, hb⟩
-      rcases our_ideal.directed _ hf _ hg with ⟨m, _, fm, gm⟩
+      rcases our_ideal.directed _ hf _ hg with ⟨m, -, fm, gm⟩
       exact m.prop (a, _) (fm ha) (_, b) (gm hb)⟩
 
 end Order

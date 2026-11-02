@@ -426,7 +426,7 @@ protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] := by
   induction w generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
   · simp
-  · rcases c with ⟨⟨_, _⟩, _⟩ <;> simp_all
+  · rcases c with ⟨⟨-, -⟩, -⟩ <;> simp_all
 
 /-- Young diagram from a sorted list -/
 def ofRowLens (w : List ℕ) (hw : w.SortedGE) : YoungDiagram where

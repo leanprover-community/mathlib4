@@ -336,7 +336,7 @@ lemma integral_rpowIntegrand₀₁_one_pos (hp : p ∈ Ioo 0 1) :
 /-- The integral representation of the function `x ↦ x^p` (where `p ∈ (0, 1)`) . -/
 lemma rpow_eq_const_mul_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     x ^ p = (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹ * ∫ t in Ioi 0, rpowIntegrand₀₁ p t x := by
-  rcases eq_or_lt_of_le' hx with hx_zero | _
+  rcases eq_or_lt_of_le' hx with hx_zero | -
   case inl =>
     push _ ∈ _ at hp
     simp [hx_zero, Real.zero_rpow (by linarith)]

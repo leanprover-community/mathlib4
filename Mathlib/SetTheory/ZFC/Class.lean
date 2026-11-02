@@ -140,7 +140,7 @@ lemma cmem_sInter (h : A.Nonempty) : B ᶜ∈ ⋂₀ A ↔ ∀ z, z ᶜ∈ A →
   refine ⟨fun hy z ↦ cmem_of_cmem_sInter hy, fun H ↦ ?_⟩
   simp_rw [ZFClass.CMem]
   obtain ⟨z, hz⟩ := h
-  obtain ⟨y, rfl, _⟩ := H z (coe_cmem.2 hz)
+  obtain ⟨y, rfl, -⟩ := H z (coe_cmem.2 hz)
   exact ⟨y, rfl, fun w hxw ↦ by simpa using H w hxw⟩
 
 @[simp] lemma sUnion_empty : ⋃₀ (∅ : ZFClass.{u}) = ∅ := by ext; simp [sUnion, classToCong]
@@ -447,7 +447,7 @@ theorem mem_sInter {x y : Class.{u}} (h : x.Nonempty) : y ∈ ⋂₀ x ↔ ∀ z
   refine ⟨fun hy z => mem_of_mem_sInter hy, fun H => ?_⟩
   simp_rw [mem_def, sInter_apply]
   obtain ⟨z, hz⟩ := h
-  obtain ⟨y, rfl, _⟩ := H z (coe_mem.2 hz)
+  obtain ⟨y, rfl, -⟩ := H z (coe_mem.2 hz)
   refine ⟨y, rfl, fun w hxw => ?_⟩
   simpa only [coe_mem, coe_apply] using H w (coe_mem.2 hxw)
 

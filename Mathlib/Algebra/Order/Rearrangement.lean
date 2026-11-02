@@ -181,7 +181,7 @@ theorem MonovaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : MonovaryOn f g s)
   set τ : Perm ι := (Equiv.swap x y).trans σ
   have hτs : {x | τ x ≠ x} ⊆ s := by
     refine (set_support_mul_subset σ <| swap x y).trans (Set.union_subset hσ fun z hz ↦ ?_)
-    obtain ⟨_, rfl | rfl⟩ := swap_apply_ne_self_iff.1 hz <;> assumption
+    obtain ⟨-, rfl | rfl⟩ := swap_apply_ne_self_iff.1 hz <;> assumption
   refine ((hfg.sum_smul_comp_perm_le_sum_smul hτs).trans_lt' ?_).ne
   obtain rfl | hxy := eq_or_ne x y
   · cases lt_irrefl _ hfxy

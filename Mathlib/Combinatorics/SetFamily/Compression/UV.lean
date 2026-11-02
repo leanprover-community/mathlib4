@@ -174,7 +174,7 @@ theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
     compress u v a ∈ 𝓒 u v s := by
   rw [mem_compression] at ha ⊢
   simp only [compress_idem]
-  obtain ⟨_, ha⟩ | ⟨_, b, hb, rfl⟩ := ha
+  obtain ⟨-, ha⟩ | ⟨_, b, hb, rfl⟩ := ha
   · exact Or.inl ⟨ha, ha⟩
   · exact Or.inr ⟨by rwa [compress_idem], b, hb, (compress_idem _ _ _).symm⟩
 
@@ -229,7 +229,7 @@ original family. -/
 theorem sup_sdiff_mem_of_mem_compression (ha : a ∈ 𝓒 u v s) (hva : v ≤ a) (hua : Disjoint u a) :
     (a ⊔ u) \ v ∈ s := by
   rw [mem_compression, compress_of_disjoint_of_le hua hva] at ha
-  obtain ⟨_, ha⟩ | ⟨_, b, hb, rfl⟩ := ha
+  obtain ⟨-, ha⟩ | ⟨-, b, hb, rfl⟩ := ha
   · exact ha
   have hu : u = ⊥ := by
     suffices Disjoint u (u \ v) by rwa [(hua.mono_right hva).sdiff_eq_left, disjoint_self] at this
@@ -248,7 +248,7 @@ family. -/
 theorem mem_of_mem_compression (ha : a ∈ 𝓒 u v s) (hva : v ≤ a) (hvu : v = ⊥ → u = ⊥) :
     a ∈ s := by
   rw [mem_compression] at ha
-  obtain ha | ⟨_, b, hb, h⟩ := ha
+  obtain ha | ⟨-, b, hb, h⟩ := ha
   · exact ha.1
   unfold compress at h
   split_ifs at h
@@ -296,7 +296,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
     rw [mem_compression]
     by_cases hs : s ∈ 𝒜.shadow
     swap
-    · obtain ⟨hus, hvs, h, _⟩ := H _ hs' hs
+    · obtain ⟨hus, hvs, h, -⟩ := H _ hs' hs
       exact Or.inr ⟨hs, _, h, compress_of_disjoint_of_le' hvs hus⟩
     refine Or.inl ⟨hs, ?_⟩
     rw [compress]

@@ -120,7 +120,7 @@ theorem isComplement_singleton_right {g : G} : IsComplement S {g} ↔ S = univ :
 theorem isComplement_univ_left : IsComplement univ S ↔ ∃ g : G, S = {g} := by
   refine
     ⟨fun h => Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩, ?_⟩
-  · obtain ⟨a, _⟩ := h.2 1
+  · obtain ⟨a, -⟩ := h.2 1
     exact ⟨a.2.1, a.2.2⟩
   · have : (⟨⟨_, mem_top a⁻¹⟩, ⟨a, ha⟩⟩ : (⊤ : Set G) × S) = ⟨⟨_, mem_top b⁻¹⟩, ⟨b, hb⟩⟩ :=
       h.1 ((inv_mul_cancel a).trans (inv_mul_cancel b).symm)
@@ -132,7 +132,7 @@ theorem isComplement_univ_left : IsComplement univ S ↔ ∃ g : G, S = {g} := b
 theorem isComplement_univ_right : IsComplement S univ ↔ ∃ g : G, S = {g} := by
   refine
     ⟨fun h => Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩, ?_⟩
-  · obtain ⟨a, _⟩ := h.2 1
+  · obtain ⟨a, -⟩ := h.2 1
     exact ⟨a.1.1, a.1.2⟩
   · have : (⟨⟨a, ha⟩, ⟨_, mem_top a⁻¹⟩⟩ : S × (⊤ : Set G)) = ⟨⟨b, hb⟩, ⟨_, mem_top b⁻¹⟩⟩ :=
       h.1 ((mul_inv_cancel a).trans (mul_inv_cancel b).symm)
@@ -162,7 +162,7 @@ lemma IsComplement.nonempty_right (hst : IsComplement S T) : T.Nonempty := by
 
 @[to_additive] lemma IsComplement.pairwiseDisjoint_smul (hst : IsComplement S T) :
     S.PairwiseDisjoint (· • T) := fun a ha b hb hab ↦ disjoint_iff_forall_ne.2 <| by
-  rintro _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩
+  rintro - ⟨c, hc, rfl⟩ - ⟨d, hd, rfl⟩
   exact hst.1.ne (a₁ := (⟨a, ha⟩, ⟨c, hc⟩)) (a₂ := (⟨b, hb⟩, ⟨d, hd⟩)) (by simp [hab])
 
 @[to_additive AddSubgroup.IsComplement.card_mul_card]

@@ -155,7 +155,7 @@ lemma naturalityProperty_eq_top :
     naturalityProperty f₀ f₁ hδ₁ hδ₀ hY = ⊤ := by
   refine SimplexCategory.Truncated.morphismProperty_eq_top _
     (fun n hn i ↦ ?_) (fun n hn i ↦ ?_)
-  · obtain _ | _ | n := n
+  · obtain - | - | n := n
     · fin_cases i
       · ext; apply hδ₀
       · ext; apply hδ₁
@@ -164,7 +164,7 @@ lemma naturalityProperty_eq_top :
       · ext; apply hδ'₁ f₀ f₁ hδ₁ hδ₀ H hY
       · ext; apply hδ'₂ f₀ f₁ hδ₁ hδ₀ hY
     · lia
-  · obtain _ | _ | n := n
+  · obtain - | - | n := n
     · fin_cases i
       ext; apply hσ
     · fin_cases i

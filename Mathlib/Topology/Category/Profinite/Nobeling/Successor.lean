@@ -250,7 +250,7 @@ theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     ((continuous_swapTrue o).comp continuous_subtype_val) _
   refine ⟨LocallyConstant.piecewise' ?_ (isClosed_C0 C hC ho)
       (isClosed_proj _ o (isClosed_C1 C hC ho)) (f.comap ⟨C₀C, h₀⟩) (f.comap ⟨C₁C, h₁⟩) ?_, ?_⟩
-  · rintro _ ⟨y, hyC, rfl⟩
+  · rintro - ⟨y, hyC, rfl⟩
     simp only [Set.mem_union]
     rw [← union_C0C1_eq C ho] at hyC
     refine hyC.imp (fun hyC ↦ ?_) (fun hyC ↦ ⟨y, hyC, rfl⟩)
@@ -408,7 +408,7 @@ theorem swapTrue_eq_true (x : I → Bool) : SwapTrue o x (term I ho) = true := b
   simp only [SwapTrue, ord_term_aux, ite_true]
 
 theorem mem_C'_eq_false : ∀ x, x ∈ C' C ho → x (term I ho) = false := by
-  rintro x ⟨_, y, _, rfl⟩
+  rintro x ⟨-, y, -, rfl⟩
   simp only [Proj, ord_term_aux, lt_self_iff_false, ite_false]
 
 /-- `List.tail` as a `Products`. -/

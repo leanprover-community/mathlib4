@@ -176,7 +176,7 @@ lemma equiv_iff_eq_of_Z_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hz : P z = Q 
   equiv_iff_eq_of_Z_eq' hz <| mem_nonZeroDivisors_of_ne_zero hQz
 
 lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
-  rcases h with ⟨_, rfl⟩
+  rcases h with ⟨-, rfl⟩
   simp only [Units.smul_def, smul_fin3_ext, Units.mul_right_eq_zero]
 
 lemma X_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P x * Q z = Q x * P z := by

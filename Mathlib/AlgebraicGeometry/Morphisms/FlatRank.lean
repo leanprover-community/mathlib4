@@ -157,7 +157,7 @@ lemma Scheme.Hom.finrank_comp_left_of_isIso (f : X ⟶ Y) (g : Y ⟶ S)
 lemma Scheme.Hom.finrank_pullback_snd {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
     [Flat f] [IsFinite f] (y : Y) :
     finrank (pullback.snd f g) y = finrank f (g y) := by
-  obtain ⟨R, i, _, y', rfl⟩ := Y.exists_Spec_apply_eq y
+  obtain ⟨R, i, -, y', rfl⟩ := Y.exists_Spec_apply_eq y
   rw [← Scheme.Hom.comp_apply, finrank_eq_finrank_snd_of_isAffine,
     finrank_eq_finrank_snd_of_isAffine, ← pullbackLeftPullbackSndIso_hom_snd f g i,
     ← finrank_eq_of_isAffine, ← finrank_eq_of_isAffine, finrank_comp_left_of_isIso]
@@ -258,7 +258,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The rank of an isomorphism is `1`. -/
 lemma Scheme.Hom.finrank_eq_one_of_isIso (f : X ⟶ Y) [IsIso f] : finrank f = 1 := by
   ext y
-  obtain ⟨R, g, _, y, rfl⟩ := Y.exists_Spec_apply_eq y
+  obtain ⟨R, g, -, y, rfl⟩ := Y.exists_Spec_apply_eq y
   have : Nontrivial R := y.nontrivial
   rw [← finrank_pullback_snd, ← Category.comp_id (pullback.snd f g), finrank_comp_left_of_isIso,
     ← Spec.map_id, finrank_SpecMap_eq_finrank, CommRingCat.hom_id, Pi.one_apply,

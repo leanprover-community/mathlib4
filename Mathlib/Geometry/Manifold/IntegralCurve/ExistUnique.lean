@@ -69,7 +69,7 @@ theorem exists_isMIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
     ∃ γ : ℝ → M, γ t₀ = x₀ ∧ IsMIntegralCurveAt γ v t₀ := by
   -- express the differentiability of the vector field `v` in the local chart
   rw [contMDiffAt_iff] at hv
-  obtain ⟨_, hv⟩ := hv
+  obtain ⟨-, hv⟩ := hv
   -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
   obtain ⟨f, hf1, hf2⟩ := hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)
     |>.snd.exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀ t₀
@@ -141,7 +141,7 @@ theorem isMIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPo
       (v ((extChartAt I (γ t₀)).symm x)) with hv'
   -- extract a set `s` on which `v'` is Lipschitz
   rw [contMDiffAt_iff] at hv
-  obtain ⟨_, hv⟩ := hv
+  obtain ⟨-, hv⟩ := hv
   obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ 𝓝 _, LipschitzOnWith K v' s :=
     (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd.exists_lipschitzOnWith
   have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
@@ -208,12 +208,12 @@ theorem isMIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     revert ht t
     apply IsClosed.closure_subset (isClosed_eq _ _)
     · rw [continuous_iff_continuousAt]
-      rintro ⟨_, ht⟩
+      rintro ⟨-, ht⟩
       apply ContinuousAt.comp _ continuousAt_subtype_val
       rw [Subtype.coe_mk]
       exact hγ.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)
     · rw [continuous_iff_continuousAt]
-      rintro ⟨_, ht⟩
+      rintro ⟨-, ht⟩
       apply ContinuousAt.comp _ continuousAt_subtype_val
       rw [Subtype.coe_mk]
       exact hγ'.continuousWithinAt ht |>.continuousAt (Ioo_mem_nhds ht.1 ht.2)

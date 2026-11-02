@@ -94,7 +94,7 @@ proof can be obtained from the other using the equivalence of Heyting algebras a
 logic and duality between Heyting and co-Heyting algebras. It is crucial that the following proof be
 intuitionistic. -/
 example (a b : Prop) : (a ∧ b ∨ ¬(a ∧ b)) ∧ ((a ∨ b) ∨ ¬(a ∨ b)) → a ∨ ¬a := by
-  rintro ⟨⟨ha, _⟩ | hnab, (ha | hb) | hnab⟩ <;> try exact Or.inl ha
+  rintro ⟨⟨ha, -⟩ | hnab, (ha | hb) | hnab⟩ <;> try exact Or.inl ha
   · exact Or.inr fun ha => hnab ⟨ha, hb⟩
   · exact Or.inr fun ha => hnab <| Or.inl ha
 

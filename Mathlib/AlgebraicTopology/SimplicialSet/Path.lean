@@ -305,7 +305,7 @@ lemma spine_arrow (Δ : X _⦋n⦌) (i : Fin n) :
 
 lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
     X.spine m (X.δ 0 x) = (X.spine (m + 1) x).interval 1 m := by
-  obtain _ | m := m
+  obtain - | m := m
   · ext
     simp [spine, Path.vertex, Truncated.Path.vertex,
       Truncated.spine, Path.interval, Truncated.Path.interval,

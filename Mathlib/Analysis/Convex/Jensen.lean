@@ -413,7 +413,7 @@ lemma ConvexOn.bddAbove_convexHull {s t : Set E} (hst : s ⊆ t) (hf : ConvexOn 
     BddAbove (f '' s) → BddAbove (f '' convexHull 𝕜 s) := by
   rintro ⟨b, hb⟩
   refine ⟨b, ?_⟩
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   obtain ⟨y, hy, hxy⟩ := hf.exists_ge_of_mem_convexHull hst hx
   exact hxy.trans <| hb <| mem_image_of_mem _ hy
 

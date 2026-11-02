@@ -57,7 +57,7 @@ lemma exists_lift_of_kanComplex [KanComplex X]
     (hf : horn.IsCompatible f) :
     ∃ (φ : Δ[n + 1] ⟶ X),
       ∀ (j : Fin (n + 2)) (hj : j ≠ i), stdSimplex.δ j ≫ φ = f j hj := by
-  obtain ⟨φ, hφ, _⟩ := hf.exists_lift (terminal.from _) (terminal.from _) (by simp)
+  obtain ⟨φ, hφ, -⟩ := hf.exists_lift (terminal.from _) (terminal.from _) (by simp)
   exact ⟨φ, hφ⟩
 
 /-- If `X` is a Kan complex and `f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), Δ[n] ⟶ X`

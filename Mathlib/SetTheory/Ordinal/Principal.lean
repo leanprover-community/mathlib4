@@ -257,7 +257,7 @@ theorem isPrincipal_add_opow_of_isPrincipal_add {a} (ha : IsPrincipal (· + ·) 
 
 theorem isPrincipal_add_mul_of_isPrincipal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : IsPrincipal (· + ·) b) : IsPrincipal (· + ·) (a * b) := by
-  rcases eq_zero_or_pos a with (rfl | _)
+  rcases eq_zero_or_pos a with (rfl | -)
   · rw [zero_mul]
     exact isPrincipal_zero
   · rcases eq_zero_or_pos b with (rfl | hb₁')

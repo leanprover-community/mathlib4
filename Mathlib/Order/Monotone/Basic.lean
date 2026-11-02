@@ -597,7 +597,7 @@ theorem exists_strictMono_subsequence {P : ℕ → Prop} (h : ∀ N, ∃ n > N, 
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
   have : NoMaxOrder {n // P n} :=
     ⟨fun n ↦ Exists.intro ⟨(h n.1).choose, (h n.1).choose_spec.2⟩ (h n.1).choose_spec.1⟩
-  obtain ⟨f, hf, _⟩ := Nat.exists_strictMono' (⟨(h 0).choose, (h 0).choose_spec.2⟩ : {n // P n})
+  obtain ⟨f, hf, -⟩ := Nat.exists_strictMono' (⟨(h 0).choose, (h 0).choose_spec.2⟩ : {n // P n})
   exact Exists.intro (fun n ↦ (f n).1) ⟨hf, fun n ↦ (f n).2⟩
 
 variable (α)
@@ -664,7 +664,7 @@ theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
   rcases Nat.exists_strictMono' (default : α) with ⟨f, hf, hf₀⟩
   rcases Nat.exists_strictAnti' (default : α) with ⟨g, hg, hg₀⟩
   refine ⟨fun n ↦ Int.casesOn n f fun n ↦ g (n + 1), strictMono_int_of_lt_succ ?_⟩
-  rintro (n | _ | n)
+  rintro (n | - | n)
   · exact hf n.lt_succ_self
   · change g 1 < f 0
     rw [hf₀, ← hg₀]

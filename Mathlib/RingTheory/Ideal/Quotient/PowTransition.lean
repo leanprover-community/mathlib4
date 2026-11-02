@@ -162,7 +162,7 @@ lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
 variable {I} in
 lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
     (h : IsUnit (factorPow I n.le_succ a)) : IsUnit a := by
-  rcases isUnit_iff_exists.mp h with ⟨b, hb, _⟩
+  rcases isUnit_iff_exists.mp h with ⟨b, hb, -⟩
   rcases factor_surjective (pow_le_pow_right n.le_succ) b with ⟨b', hb'⟩
   rw [← hb', ← map_one (factorPow I n.le_succ), ← map_mul] at hb
   apply (RingHom.sub_mem_ker_iff (factorPow I n.le_succ)).mpr at hb

@@ -310,7 +310,7 @@ theorem balancedCore_mem_nhds_zero (hU : U ∈ 𝓝 (0 : E)) : balancedCore 𝕜
   -- It remains to show that `y • V ⊆ balancedCore 𝕜 U`
   refine Filter.mem_of_superset this (subset_balancedCore (mem_of_mem_nhds hU) fun a ha => ?_)
   rw [smul_smul]
-  rintro _ ⟨z, hz, rfl⟩
+  rintro - ⟨z, hz, rfl⟩
   refine hrVU _ _ ?_ hz
   rw [norm_mul, ← one_mul r]
   exact mul_lt_mul' ha hyr (norm_nonneg y) one_pos

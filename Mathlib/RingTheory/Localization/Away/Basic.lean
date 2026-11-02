@@ -386,7 +386,7 @@ lemma Away.algebraMap_surjective_of_isIdempotentElem
     (e : R) (he : IsIdempotentElem e) [IsLocalization.Away e S] :
     Function.Surjective (algebraMap R S) := by
   intro x
-  obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers e) x
+  obtain ⟨x, ⟨-, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers e) x
   suffices ∃ a k, e ^ k * (a * e ^ n) = e ^ k * x by
     simpa [IsLocalization.eq_mk'_iff_mul_eq, ← map_pow, ← map_mul,
       IsLocalization.eq_iff_exists (.powers e), Submonoid.mem_powers_iff]

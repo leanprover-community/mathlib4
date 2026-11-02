@@ -143,7 +143,7 @@ variable [One M] [Semigroup M] (m n : ℕ) (hn : n ≠ 0) (a : M) (ha : 1 * a = 
 include hn ha
 
 @[to_additive] theorem npowRec_add : npowRec (m + n) a = npowRec m a * npowRec n a := by
-  obtain _ | n := n; · exact (hn rfl).elim
+  obtain - | n := n; · exact (hn rfl).elim
   induction n with
   | zero => simp only [npowRec, ha]
   | succ n ih => rw [← Nat.add_assoc, npowRec, ih n.succ_ne_zero]; simp only [npowRec, mul_assoc]

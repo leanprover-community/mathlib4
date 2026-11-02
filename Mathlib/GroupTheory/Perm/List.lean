@@ -152,7 +152,7 @@ theorem formPerm_apply_head (x y : α) (xs : List α) (h : Nodup (x :: y :: xs))
 
 theorem formPerm_apply_getElem_zero (l : List α) (h : Nodup l) (hl : 1 < l.length) :
     formPerm l l[0] = l[1] := by
-  rcases l with (_ | ⟨x, _ | ⟨y, tl⟩⟩)
+  rcases l with (- | ⟨x, - | ⟨y, tl⟩⟩)
   · simp at hl
   · simp at hl
   · rw [getElem_cons_zero, formPerm_apply_head _ _ _ h, getElem_cons_succ, getElem_cons_zero]
@@ -168,7 +168,7 @@ theorem formPerm_apply_lt_getElem (xs : List α) (h : Nodup xs) (n : ℕ) (hn : 
   induction n generalizing xs with
   | zero => simpa using formPerm_apply_getElem_zero _ h _
   | succ n IH =>
-    rcases xs with (_ | ⟨x, _ | ⟨y, l⟩⟩)
+    rcases xs with (- | ⟨x, - | ⟨y, l⟩⟩)
     · simp at hn
     · rw [formPerm_singleton, getElem_singleton, getElem_singleton, one_apply]
     · specialize IH (y :: l) h.of_cons _
@@ -334,7 +334,7 @@ theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 :
 
 theorem formPerm_eq_formPerm_iff {l l' : List α} (hl : l.Nodup) (hl' : l'.Nodup) :
     l.formPerm = l'.formPerm ↔ l ~r l' ∨ l.length ≤ 1 ∧ l'.length ≤ 1 := by
-  rcases l with (_ | ⟨x, _ | ⟨y, l⟩⟩)
+  rcases l with (- | ⟨x, - | ⟨y, l⟩⟩)
   · suffices l'.length ≤ 1 ↔ l' = nil ∨ l'.length ≤ 1 by
       simpa [eq_comm, formPerm_eq_one_iff, hl, hl', length_eq_zero_iff]
     refine ⟨fun h => Or.inr h, ?_⟩
@@ -347,7 +347,7 @@ theorem formPerm_eq_formPerm_iff {l l' : List α} (hl : l.Nodup) (hl' : l'.Nodup
     rintro (h | h)
     · simp [← h.perm.length_eq]
     · exact h
-  · rcases l' with (_ | ⟨x', _ | ⟨y', l'⟩⟩)
+  · rcases l' with (- | ⟨x', - | ⟨y', l'⟩⟩)
     · simp [formPerm_eq_one_iff _ hl, -formPerm_cons_cons]
     · simp [formPerm_eq_one_iff _ hl, -formPerm_cons_cons]
     · simp [-formPerm_cons_cons, formPerm_ext_iff hl hl']

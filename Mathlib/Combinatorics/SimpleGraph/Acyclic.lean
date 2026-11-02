@@ -252,7 +252,7 @@ theorem isTree_iff_existsUnique_path :
   · rintro ⟨hV, h⟩
     refine ⟨Connected.mk ?_, ?_⟩
     · intro v w
-      obtain ⟨p, _⟩ := h v w
+      obtain ⟨p, -⟩ := h v w
       exact p.reachable
     · rintro v w ⟨p, hp⟩ ⟨q, hq⟩
       simp only [ExistsUnique.unique (h v w) hp hq]
@@ -397,7 +397,7 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   let s : F.ConnectedComponent := .mk _ u
   have : v ∉ s := this ∘ s.reachable_of_mem_supp rfl
   have : ∃ d ∈ p.darts, d.fst ∈ s ∧ d.snd ∉ s := p.exists_boundary_dart s rfl this
-  rcases this with ⟨⟨⟨u', v'⟩, huv⟩, _, hu, hv⟩
+  rcases this with ⟨⟨⟨u', v'⟩, huv⟩, -, hu, hv⟩
   have : ¬F.Reachable v' u' := mt ConnectedComponent.sound <| s.mem_supp_iff u' |>.mp hu ▸ hv
   suffices F ⊔ edge v' u' ≤ F by grind [Adj.reachable, sup_le_iff, le_iff_adj]
   refine h.le_of_ge ⟨?_, h.prop.right.sup_edge_of_not_reachable this⟩ le_sup_left

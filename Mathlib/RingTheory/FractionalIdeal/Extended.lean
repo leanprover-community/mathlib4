@@ -108,10 +108,10 @@ variable (I)
 theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
   refine coeToSubmodule_injective <| Submodule.ext fun x ↦ ⟨fun hx ↦ span_induction
     ?_ (zero_mem _) (fun y z _ _ hy hz ↦ add_mem hy hz) (fun b y _ hy ↦ smul_mem _ b hy) hx, ?_⟩
-  · rintro ⟨b, _, rfl⟩
+  · rintro ⟨b, -, rfl⟩
     rw [Algebra.linearMap_apply, Algebra.algebraMap_eq_smul_one]
     exact smul_mem _ _ <| subset_span ⟨1, by simpa using one_mem_one⟩
-  · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
+  · rintro - ⟨-, ⟨a, ha, rfl⟩, rfl⟩
     exact ⟨f a, ha, by rw [Algebra.linearMap_apply, Algebra.linearMap_apply, map_eq]⟩
 
 theorem extended_le_one_of_le_one (hI : I ≤ 1) : extended L hf I ≤ 1 := by
@@ -131,12 +131,12 @@ theorem extended_add : (I + J).extended L hf = (I.extended L hf) + (J.extended L
   apply coeToSubmodule_injective
   simp only [coe_extended_eq_span, coe_add, Submodule.add_eq_sup, ← span_union, ← Set.image_union]
   apply Submodule.span_eq_span
-  · rintro _ ⟨y, hy, rfl⟩
+  · rintro - ⟨y, hy, rfl⟩
     obtain ⟨i, hi, j, hj, rfl⟩ := (mem_add I J y).mp <| SetLike.mem_coe.mp hy
     rw [map_add]
     exact add_mem (Submodule.subset_span ⟨i, Set.mem_union_left _ hi, by simp⟩)
       (Submodule.subset_span ⟨j, Set.mem_union_right _ hj, by simp⟩)
-  · rintro _ ⟨y, hy, rfl⟩
+  · rintro - ⟨y, hy, rfl⟩
     suffices y ∈ I + J from SetLike.mem_coe.mpr <| Submodule.subset_span ⟨y, by simp [this]⟩
     exact hy.elim (fun h ↦ (mem_add I J y).mpr ⟨y, h, 0, zero_mem J, add_zero y⟩)
       (fun h ↦ (mem_add I J y).mpr ⟨0, zero_mem I, y, h, zero_add y⟩)
@@ -168,7 +168,7 @@ theorem extended_extended {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
         I.extended W (f := g.comp f) (hf.trans (Submonoid.monotone_comap hg)) := by
   rw [← coeToSubmodule_inj, coe_extended_eq_span, coe_extended_eq_span]
   refine Submodule.span_eq_span ?_ ?_
-  · rintro _ ⟨x, hx, rfl⟩
+  · rintro - ⟨x, hx, rfl⟩
     have hx' : x ∈ span B (IsLocalization.map L f hf '' (I : Set K)) :=
       (mem_extended_iff L hf I x).1 hx
     refine span_induction (fun y hy ↦ ?_) (by simp) (fun y z _ _ hy hz ↦ ?_) (fun b y _ hy ↦ ?_) hx'
@@ -178,7 +178,7 @@ theorem extended_extended {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
       exact add_mem hy hz
     · rw [IsLocalization.map_smul]
       exact smul_mem _ (g b) hy
-  · rintro _ ⟨x, hx, rfl⟩
+  · rintro - ⟨x, hx, rfl⟩
     refine Submodule.subset_span ⟨IsLocalization.map L f hf x, ?_, ?_⟩
     · exact (mem_extended_iff L hf I _).2 <| Submodule.subset_span ⟨x, hx, rfl⟩
     · rw [IsLocalization.map_map]
@@ -189,10 +189,10 @@ theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
   rw [Ideal.map, Ideal.span, ← coeToSubmodule_inj, Ideal.submodule_span_eq, coe_coeIdeal,
     IsLocalization.coeSubmodule_span, coe_extended_eq_span]
   refine Submodule.span_eq_span ?_ ?_
-  · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
+  · rintro - ⟨-, ⟨a, ha, rfl⟩, rfl⟩
     exact Submodule.subset_span
       ⟨f a, Set.mem_image_of_mem f ha, by rw [Algebra.linearMap_apply, IsLocalization.map_eq hf a]⟩
-  · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
+  · rintro - ⟨-, ⟨a, ha, rfl⟩, rfl⟩
     exact Submodule.subset_span
       ⟨algebraMap A K a, mem_coeIdeal_of_mem M ha, IsLocalization.map_eq hf a⟩
 
@@ -203,7 +203,7 @@ theorem extended_spanSingleton (x : K) :
   ext
   rw [mem_extended_iff, mem_spanSingleton, ← mem_span_singleton]
   refine ⟨fun hy ↦ span_le.2 ?_ hy, fun hy ↦ span_le.2 (fun _ h ↦ ?_) hy⟩
-  · rintro _ ⟨w, hw, rfl⟩
+  · rintro - ⟨w, hw, rfl⟩
     obtain ⟨a, rfl⟩ := (mem_spanSingleton _).1 hw
     rw [SetLike.mem_coe, Algebra.smul_def, map_mul, IsLocalization.map_eq, ← Algebra.smul_def]
     exact smul_mem _ _ (mem_span_singleton_self _)

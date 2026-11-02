@@ -108,7 +108,7 @@ theorem comp_attachBound_mem_closure (A : Subalgebra ℝ C(X, ℝ)) (f : A)
             p).tendsto.frequently_map
       _ ?_ frequently_mem_polynomials
   -- but need to show that those pullbacks are actually in `A`.
-  rintro _ ⟨g, ⟨-, rfl⟩⟩
+  rintro - ⟨g, ⟨-, rfl⟩⟩
   simp only [SetLike.mem_coe, AlgHom.coe_toRingHom,
     Polynomial.toContinuousMapOnAlgHom_apply]
   apply polynomial_comp_attachBound_mem
@@ -373,7 +373,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
         (ofRealAm.compLeftContinuous ℝ continuous_ofReal)).SeparatesPoints := by
   intro x₁ x₂ hx
   -- Let `f` in the subalgebra `A` separate the points `x₁`, `x₂`
-  obtain ⟨_, ⟨f, hfA, rfl⟩, hf⟩ := hA hx
+  obtain ⟨-, ⟨f, hfA, rfl⟩, hf⟩ := hA hx
   let F : C(X, 𝕜) := f - const _ (f x₂)
   -- Subtract the constant `f x₂` from `f`; this is still an element of the subalgebra
   have hFA : F ∈ A := by

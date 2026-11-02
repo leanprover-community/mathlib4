@@ -72,7 +72,7 @@ lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
 
 lemma LocallyLinear.map (f : α ↪ β) (hG : G.LocallyLinear) : (G.map f).LocallyLinear := by
   refine ⟨hG.1.map _, ?_⟩
-  rintro _ _ ⟨-, a, b, h, rfl, rfl⟩
+  rintro - - ⟨-, a, b, h, rfl, rfl⟩
   obtain ⟨s, hs, ha, hb⟩ := hG.2 h
   exact ⟨s.map f, hs.map, mem_map_of_mem _ ha, mem_map_of_mem _ hb⟩
 
@@ -118,13 +118,13 @@ lemma edgeDisjointTriangles_iff_mem_sym2_subsingleton :
     rintro hG a b hab
     simp only [Sym2.mk_isDiag_iff] at hab
     rw [this _ _ (Sym2.mk_isDiag_iff.not.2 hab)]
-    rintro _ ⟨hab, c, hac, hbc, rfl⟩ _ ⟨-, d, had, hbd, rfl⟩
+    rintro - ⟨hab, c, hac, hbc, rfl⟩ - ⟨-, d, had, hbd, rfl⟩
     refine hG.eq ?_ ?_ (Set.Nontrivial.not_subsingleton ⟨a, ?_, b, ?_, hab.ne⟩) <;>
       simp [is3Clique_triple_iff, *]
   · simp only [EdgeDisjointTriangles, is3Clique_iff, Set.Pairwise, mem_cliqueSet_iff, Ne,
       forall_exists_index, and_imp, ← Set.not_nontrivial_iff (s := _ ∩ _), not_imp_not,
       Set.Nontrivial, Set.mem_inter_iff, mem_coe]
-    rintro hG _ a b c hab hac hbc rfl _ d e f hde hdf hef rfl g hg₁ hg₂ h hh₁ hh₂ hgh
+    rintro hG - a b c hab hac hbc rfl - d e f hde hdf hef rfl g hg₁ hg₂ h hh₁ hh₂ hgh
     refine hG (Sym2.mk_isDiag_iff.not.2 hgh) ⟨⟨a, b, c, ?_⟩, by simpa using And.intro hg₁ hh₁⟩
       ⟨⟨d, e, f, ?_⟩, by simpa using And.intro hg₂ hh₂⟩ <;> simp [*]
 
@@ -145,7 +145,7 @@ lemma EdgeDisjointTriangles.card_edgeFinset_le (hG : G.EdgeDisjointTriangles) :
   rw [mul_comm, ← mul_one #G.edgeFinset]
   refine card_mul_le_card_mul (fun s e ↦ e ∈ s.sym2) ?_ (fun e he ↦ ?_)
   · simp only [is3Clique_iff, mem_cliqueFinset_iff, mem_sym2_iff, forall_exists_index, and_imp]
-    rintro _ a b c hab hac hbc rfl
+    rintro - a b c hab hac hbc rfl
     have : #{s(a, b), s(a, c), s(b, c)} = 3 := by
       refine card_eq_three.2 ⟨_, _, _, ?_, ?_, ?_, rfl⟩ <;> simp [hab.ne, hac.ne, hbc.ne]
     rw [← this]
@@ -164,7 +164,7 @@ lemma LocallyLinear.card_edgeFinset (hG : G.LocallyLinear) :
         Finset.Nonempty]
       using hG.2
   simp only [mem_cliqueFinset_iff, is3Clique_iff, forall_exists_index, and_imp]
-  rintro _ a b c hab hac hbc rfl
+  rintro - a b c hab hac hbc rfl
   calc
     _ ≤ #{s(a, b), s(a, c), s(b, c)} := card_le_card ?_
     _ ≤ 3 := (card_insert_le _ _).trans (succ_le_succ <| (card_insert_le _ _).trans_eq <| by

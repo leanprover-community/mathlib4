@@ -187,7 +187,7 @@ lemma subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE (X Y : CochainComplex C �
     Subsingleton (Q.obj X ⟶ Q.obj Y) := by
   suffices ∀ (f : Q.obj X ⟶ Q.obj Y), f = 0 from ⟨by simp [this]⟩
   intro f
-  obtain ⟨X', _, s, _, g, rfl⟩ := right_fac_of_isStrictlyLE f a
+  obtain ⟨X', _, s, -, g, rfl⟩ := right_fac_of_isStrictlyLE f a
   have : g = 0 := by
     ext i
     by_cases hi : a < i

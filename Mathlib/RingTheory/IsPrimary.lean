@@ -63,7 +63,7 @@ lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ 
 protected lemma IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
     (h : (S.colon Set.univ).radical = (T.colon Set.univ).radical) :
     (S ⊓ T).IsPrimary := by
-  obtain ⟨_, hS⟩ := hS
+  obtain ⟨-, hS⟩ := hS
   obtain ⟨_, hT⟩ := hT
   refine ⟨by grind, fun ⟨hS', hT'⟩ ↦ ?_⟩
   simp_rw [← mem_colon_iff_le, ← Ideal.mem_radical_iff, inf_colon, Ideal.radical_inf,

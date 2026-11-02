@@ -402,7 +402,7 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
 
 @[norm_cast]
 theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log b n := by
-  obtain _ | _ | b := b
+  obtain - | - | b := b
   · simp [Real.logb]
   · simp [Real.logb]
   obtain rfl | hn := eq_or_ne n 0
@@ -413,7 +413,7 @@ theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log 
 
 @[norm_cast]
 theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
-  obtain _ | _ | b := b
+  obtain - | - | b := b
   · simp [Real.logb]
   · simp [Real.logb]
   obtain rfl | hn := eq_or_ne n 0

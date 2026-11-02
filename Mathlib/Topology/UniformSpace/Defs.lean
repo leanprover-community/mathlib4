@@ -411,7 +411,7 @@ theorem subset_comp_self_of_mem_uniformity {s : SetRel α α} (h : s ∈ 𝓤 α
 
 theorem comp_comp_symm_mem_uniformity_sets {s : SetRel α α} (hs : s ∈ 𝓤 α) :
     ∃ t ∈ 𝓤 α, SetRel.IsSymm t ∧ t ○ t ○ t ⊆ s := by
-  rcases comp_symm_mem_uniformity_sets hs with ⟨w, w_in, _, w_sub⟩
+  rcases comp_symm_mem_uniformity_sets hs with ⟨w, w_in, -, w_sub⟩
   rcases comp_symm_mem_uniformity_sets w_in with ⟨t, t_in, t_symm, t_sub⟩
   use t, t_in, t_symm
   have : t ⊆ t ○ t := subset_comp_self_of_mem_uniformity t_in
@@ -583,7 +583,7 @@ theorem UniformSpace.mem_nhds_iff_symm {x : α} {s : Set α} :
   · rintro ⟨V, V_in, V_sub⟩
     use SetRel.symmetrize V, symmetrize_mem_uniformity V_in, inferInstance
     exact Subset.trans (SetRel.ball_mono SetRel.symmetrize_subset_self x) V_sub
-  · rintro ⟨V, V_in, _, V_sub⟩
+  · rintro ⟨V, V_in, -, V_sub⟩
     exact ⟨V, V_in, V_sub⟩
 
 theorem UniformSpace.hasBasis_nhds (x : α) :

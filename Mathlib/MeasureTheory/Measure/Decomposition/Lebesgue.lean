@@ -225,7 +225,7 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
     μ ≪ μ.withDensity (ν.rnDeriv μ) := by
   rw [haveLebesgueDecomposition_add ν μ] at hμν
   refine AbsolutelyContinuous.mk (fun s _ hνs ↦ ?_)
-  obtain ⟨t, _, ht1, ht2⟩ := mutuallySingular_singularPart ν μ
+  obtain ⟨t, -, ht1, ht2⟩ := mutuallySingular_singularPart ν μ
   rw [← inter_union_compl s, ← nonpos_iff_eq_zero]
   refine (measure_union_le (s ∩ t) (s ∩ tᶜ)).trans ?_
   simp only [nonpos_iff_eq_zero, add_eq_zero]

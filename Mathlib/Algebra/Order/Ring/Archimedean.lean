@@ -183,7 +183,7 @@ theorem lt_of_neg_of_archimedean [Archimedean S] (f : S →+*o R)
 
 @[simp]
 theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
-  obtain _ | _ := subsingleton_or_nontrivial S
+  obtain _ | - := subsingleton_or_nontrivial S
   · exact Subsingleton.allEq ..
   · exact mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
 
@@ -255,7 +255,7 @@ theorem mk_le_mk_iff_denselyOrdered [Ring S] [IsStrictOrderedRing S]
     mk x ≤ mk y ↔ ∃ q : R, 0 < f q ∧ f q * |y| ≤ |x| := by
   have H {q} : 0 < f q ↔ 0 < q := by simpa using hf.lt_iff_lt (a := 0)
   constructor
-  · rintro ⟨(_ | n), hn⟩
+  · rintro ⟨(- | n), hn⟩
     · simp_all [exists_zero_lt]
     · obtain ⟨q, hq₀, hq⟩ := exists_nsmul_lt_of_pos (one_pos (α := R)) (n + 1)
       refine ⟨q, H.2 hq₀, le_of_mul_le_mul_left ?_ n.cast_add_one_pos⟩

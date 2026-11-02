@@ -91,7 +91,7 @@ theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
   exact h
 
 theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
-  obtain ⟨⟨_, h⟩, _⟩ := (P.isPartition.2 v).choose_spec
+  obtain ⟨⟨-, h⟩, -⟩ := (P.isPartition.2 v).choose_spec
   exact h
 
 theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ P.partOfVertex w := by

@@ -82,7 +82,7 @@ lemma disjoint_iInf_maxGenEigenspace {χ₁ χ₂ : ι → R} (h : χ₁ ≠ χ�
 lemma injOn_iInf_maxGenEigenspace :
     InjOn (fun χ : ι → R ↦ ⨅ i, (f i).maxGenEigenspace (χ i))
       {χ | ⨅ i, (f i).maxGenEigenspace (χ i) ≠ ⊥} := by
-  rintro χ₁ _ χ₂
+  rintro χ₁ - χ₂
     hχ₂ (hχ₁₂ : ⨅ i, (f i).maxGenEigenspace (χ₁ i) = ⨅ i, (f i).maxGenEigenspace (χ₂ i))
   contrapose! hχ₂
   simpa [hχ₁₂] using disjoint_iInf_maxGenEigenspace f hχ₂

@@ -246,7 +246,7 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
     rw [M⟮x⟯.eq_bot_of_isPurelyInseparable_of_isSeparable, mem_bot] at hx'
     obtain ⟨y, rfl⟩ := hx'
     exact y.2
-  · rintro _ ⟨y, hy, rfl⟩
+  · rintro - ⟨y, hy, rfl⟩
     exact pow_mem (subset_adjoin F S hy) _
 
 /-- If `E / F` is a separable field extension of exponential characteristic `q`, then
@@ -365,7 +365,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable'
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   let E' := adjoin F (Set.range v)
   have : Algebra.IsSeparable F E' := (isSeparable_adjoin_iff_isSeparable F _).2 <| by
-    rintro _ ⟨y, rfl⟩; exact hsep y
+    rintro - ⟨y, rfl⟩; exact hsep y
   let v' (i : ι) : E' := ⟨v i, subset_adjoin F _ ⟨i, rfl⟩⟩
   have h' : LinearIndependent F v' := h.of_comp E'.val.toLinearMap
   exact (h'.map_pow_expChar_pow_of_isSeparable q n).map'

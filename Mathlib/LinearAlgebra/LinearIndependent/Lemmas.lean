@@ -111,7 +111,7 @@ theorem linearIndepOn_iUnion_of_directed {η : Type*} {s : η → Set ι} (hs : 
     rcases hs.finset_le fi.toFinset with ⟨i, hi⟩
     exact (h i).mono (Subset.trans hI <| iUnion₂_subset fun j hj => hi j (fi.mem_toFinset.2 hj))
   · refine (linearIndepOn_empty R v).mono (t := iUnion (s ·)) ?_
-    rintro _ ⟨_, ⟨i, _⟩, _⟩
+    rintro - ⟨-, ⟨i, -⟩, -⟩
     exact hη ⟨i⟩
 
 theorem linearIndepOn_sUnion_of_directed {s : Set (Set ι)} (hs : DirectedOn (· ⊆ ·) s)
@@ -137,13 +137,13 @@ theorem iSupIndep_range_lsingle :
   suffices ⨆ j ≠ i, LinearMap.range (Finsupp.lsingle j) ≤ Finsupp.supported M R {i}ᶜ by
     have := (Finsupp.mem_supported ..).mp (this hm); simp_all
   refine iSup₂_le fun j ne ↦ ?_
-  rintro _ ⟨m, rfl⟩
+  rintro - ⟨m, rfl⟩
   simp [Finsupp.mem_supported, ne]
 
 theorem LinearMap.iSupIndep_map (f : M →ₗ[R] M') (inj : Injective f) {m : ι → Submodule R M}
     (ind : iSupIndep m) : iSupIndep fun i ↦ (m i).map f := by
   simp_rw [iSupIndep, disjoint_iff_inf_le] at ind ⊢
-  rintro i _ ⟨⟨x, hxi, rfl⟩, hx⟩
+  rintro i - ⟨⟨x, hxi, rfl⟩, hx⟩
   rw [ind i ⟨hxi, _⟩]; · simp
   simp_rw [← Submodule.map_iSup] at hx
   have ⟨y, hy, eq⟩ := hx
@@ -180,7 +180,7 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
   let e : s ⊕ t ≃ ↥(inl R M M' '' s ∪ inr R M M' '' t) :=
     .ofBijective (Sum.elim (fun i ↦ ⟨_, .inl ⟨_, i.2, rfl⟩⟩) fun i ↦ ⟨_, .inr ⟨_, i.2, rfl⟩⟩)
       ⟨by rintro (_ | _) (_ | _) eq <;> simp [hs.ne_zero, ht.ne_zero] at eq <;> aesop,
-        by rintro ⟨_, ⟨_, _, rfl⟩ | ⟨_, _, rfl⟩⟩ <;> aesop⟩
+        by rintro ⟨-, ⟨-, -, rfl⟩ | ⟨-, -, rfl⟩⟩ <;> aesop⟩
   refine (linearIndependent_equiv' e ?_).mp (linearIndependent_inl_union_inr' hs ht)
   ext (_ | _) <;> rfl
 
@@ -551,7 +551,7 @@ theorem exists_linearIndepOn_smul_mem_span [CommRing R] [IsDomain R] [AddCommGro
   suffices span R (Set.range v) ≤ (span R (v '' I)).comap (LinearMap.lsmul R M (∏ i, a i)) from
     this (hs ▸ mem_top)
   rw [span_le]
-  rintro _ ⟨i, rfl⟩
+  rintro - ⟨i, rfl⟩
   rw [comap_coe, mem_preimage, LinearMap.lsmul_apply, SetLike.mem_coe,
     ← Finset.prod_erase_mul _ _ (Finset.mem_univ i), mul_smul]
   exact smul_mem _ _ (ha' i)

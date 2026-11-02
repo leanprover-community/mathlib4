@@ -66,7 +66,7 @@ lemma toFreeMonoid_ne_one (x : FreeSemigroup α) : toFreeMonoid x ≠ 1 := by
 @[to_additive]
 lemma eq_one_or_toFreeMonoid (x : FreeMonoid α) : x = 1 ∨ ∃ y, toFreeMonoid y = x :=
   x.inductionOn' (by simp) <| by
-    rintro b _ (rfl | ⟨y, rfl⟩)
+    rintro b - (rfl | ⟨y, rfl⟩)
     · exact Or.inr ⟨of b, by simp⟩
     · exact Or.inr ⟨of b * y, by simp⟩
 

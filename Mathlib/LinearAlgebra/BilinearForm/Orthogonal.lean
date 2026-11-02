@@ -190,7 +190,7 @@ theorem toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
     rw [Submodule.mem_dualCoannihilator] at hx
     exact hx (B.domRestrict W ⟨y, hy⟩) ⟨⟨y, hy⟩, rfl⟩
   · rw [Submodule.mem_dualCoannihilator]
-    rintro _ ⟨⟨w, hw⟩, rfl⟩
+    rintro - ⟨⟨w, hw⟩, rfl⟩
     exact hx w hw
 
 lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)

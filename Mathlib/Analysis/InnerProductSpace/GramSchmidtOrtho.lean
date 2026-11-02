@@ -338,7 +338,7 @@ theorem inner_gramSchmidtOrthonormalBasis_eq_zero {f : ι → E} {i : ι}
     rw [span_gramSchmidtNormed]
     exact mem_span_gramSchmidt 𝕜 f le_rfl
   rw [isOrtho_span]
-  rintro u ⟨k, _, rfl⟩ v (rfl : v = _)
+  rintro u ⟨k, -, rfl⟩ v (rfl : v = _)
   by_cases hk : gramSchmidtNormed 𝕜 f k = 0
   · rw [hk, inner_zero_left]
   rw [← gramSchmidtOrthonormalBasis_apply h hk]

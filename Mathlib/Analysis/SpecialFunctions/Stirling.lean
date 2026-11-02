@@ -102,7 +102,7 @@ theorem log_stirlingSeq'_antitone : Antitone (Real.log ∘ stirlingSeq ∘ succ)
 `log (stirlingSeq n) - log (stirlingSeq (n+1)) ≤ 1 / (12 n (n + 1))`. -/
 theorem log_stirlingSeq_sdiff_le (n : ℕ) :
     log (stirlingSeq n) - log (stirlingSeq (n + 1)) ≤ 1 / (12 * n * (n + 1)) := by
-  rcases n with (_ | n)
+  rcases n with (- | n)
   · suffices 0 ≤ Real.log (Real.exp 1 / Real.sqrt 2) by simpa
     apply Real.log_nonneg
     grw [one_le_div (by positivity), Real.sqrt_le_left (by positivity), ← Real.add_one_le_exp]

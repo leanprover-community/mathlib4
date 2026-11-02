@@ -236,7 +236,7 @@ theorem exist_integer_multiples_notMem {J : Ideal A} (hJ : J ≠ ⊤) {ι : Type
   have hI0 : I ≠ 0 := spanFinset_ne_zero.mpr ⟨j, hjs, hjf⟩
   -- We claim the multiplier `a` we're looking for is in `I⁻¹ \ (J / I)`.
   suffices ↑J / I < I⁻¹ by
-    obtain ⟨_, a, hI, hpI⟩ := IsConcreteLE.lt_iff_le_and_exists.mp this
+    obtain ⟨-, a, hI, hpI⟩ := IsConcreteLE.lt_iff_le_and_exists.mp this
     rw [mem_inv_iff hI0] at hI
     refine ⟨a, fun i hi => ?_, ?_⟩
     -- By definition, `a ∈ I⁻¹` multiplies elements of `I` into elements of `1`,
@@ -246,7 +246,7 @@ theorem exist_integer_multiples_notMem {J : Ideal A} (hJ : J ≠ ⊤) {ι : Type
       -- And if all `a`-multiples of `I` are an element of `J`,
       -- then `a` is actually an element of `J / I`, contradiction.
       refine (mem_div_iff_of_ne_zero hI0).mpr fun y hy => Submodule.span_induction ?_ ?_ ?_ ?_ hy
-      · rintro _ ⟨i, hi, rfl⟩; exact hpI i hi
+      · rintro - ⟨i, hi, rfl⟩; exact hpI i hi
       · rw [mul_zero]; exact Submodule.zero_mem _
       · intro x y _ _ hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy
       · intro b x _ hx; rw [mul_smul_comm]; exact Submodule.smul_mem _ b hx

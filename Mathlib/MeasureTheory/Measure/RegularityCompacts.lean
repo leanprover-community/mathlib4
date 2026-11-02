@@ -49,7 +49,7 @@ lemma innerRegularWRT_isCompact_isClosed_iff_innerRegularWRT_isCompact_closure
     μ.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) IsClosed
       ↔ μ.InnerRegularWRT (IsCompact ∘ closure) IsClosed := by
   constructor <;> intro h A hA r hr
-  · obtain ⟨K, hK1, ⟨hK2, _⟩, hK4⟩ := h hA r hr
+  · obtain ⟨K, hK1, ⟨hK2, -⟩, hK4⟩ := h hA r hr
     refine ⟨K, hK1, ?_, hK4⟩
     simp only [Function.comp_apply]
     exact hK2.closure

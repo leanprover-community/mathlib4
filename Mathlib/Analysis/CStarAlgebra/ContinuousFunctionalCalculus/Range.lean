@@ -133,7 +133,7 @@ lemma range_cfc_nnreal
   apply subset_antisymm (range_cfc_nnreal_subset a ha)
   rw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.ofPred_and, SetLike.setOfPred_mem_eq,
     ← range_cfc _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
-  rintro _ ⟨f, hf, rfl⟩
+  rintro - ⟨f, hf, rfl⟩
   exact cfc_cases _ a f ⟨0, by simp, by simp⟩ fun hf' ha' ↦
     ⟨f, (cfc_nonneg_iff f a hf' ha').mp (by simpa), by simp [cfc_apply f a ha' hf']⟩
 
@@ -250,7 +250,7 @@ lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 
   rw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.ofPred_and, SetLike.setOfPred_mem_eq,
     ← range_cfcₙ _ ha.isSelfAdjoint, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
   refine Set.Subset.antisymm (Set.image_mono (fun _ ↦ cfcₙ_nonneg)) ?_
-  rintro _ ⟨f, hf, rfl⟩
+  rintro - ⟨f, hf, rfl⟩
   simp only [Set.preimage_ofPred_eq, Set.mem_ofPred_eq, Set.mem_image] at hf ⊢
   by_cases h : ContinuousOn f (quasispectrum ℝ a) ∧ f 0 = 0 ∧ IsSelfAdjoint a
   · obtain ⟨h₁, h₂, h₃⟩ := h

@@ -58,7 +58,7 @@ theorem cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀
       Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f) := by
   apply hfunext rfl
   simp only [heq_iff_eq]
-  rintro a'' _ rfl
+  rintro a'' - rfl
   refine hfunext (by rw [Multiset.cons_swap]) fun ha₁ ha₂ _ => ?_
   rcases Decidable.ne_or_eq a'' a with (h₁ | rfl)
   on_goal 1 => rcases Decidable.eq_or_ne a'' a' with (rfl | h₂)

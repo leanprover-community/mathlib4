@@ -132,7 +132,7 @@ lemma comm₁ (j : J) :
       HomologicalComplex₂.ι_D₁_assoc,
       HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
   have : ∀ {X Y : D} (a b c d e f : X ⟶ Y), a = c → b = e → f = -d →
-      a + b = c + d + (e + f) := by rintro X Y a b _ d _ _ rfl rfl rfl; abel
+      a + b = c + d + (e + f) := by rintro X Y a b - d - - rfl rfl rfl; abel
   apply this
   · by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
     · rw [HomologicalComplex₂.d₁_eq _ _ h₃ _ _ (by rw [← h, ComplexShape.next_π₁ c₂ c h₃]),

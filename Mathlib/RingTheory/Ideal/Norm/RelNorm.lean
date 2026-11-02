@@ -140,7 +140,7 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     simp only [Set.mem_preimage, submodule_span_eq, ← map_spanIntNorm, SetLike.mem_coe,
       IsLocalization.mem_map_algebraMap_iff (Algebra.algebraMapSubmonoid S M) Sₘ,
       IsLocalization.mem_map_algebraMap_iff M Rₘ, Prod.exists] at ha' ⊢
-    obtain ⟨⟨a, ha⟩, ⟨_, ⟨s, hs, rfl⟩⟩, has⟩ := ha'
+    obtain ⟨⟨a, ha⟩, ⟨-, ⟨s, hs, rfl⟩⟩, has⟩ := ha'
     refine ⟨⟨Algebra.intNorm R S a, intNorm_mem_spanNorm _ ha⟩,
       ⟨s ^ Module.finrank K L, pow_mem hs _⟩, ?_⟩
     simp only [map_pow] at has ⊢
@@ -165,7 +165,7 @@ theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
   nth_rw 1 [map]; nth_rw 1 [map]
   rw [Ideal.span_mul_span, ← Set.image_mul]
   refine Ideal.span_mono (Set.monotone_image ?_)
-  rintro _ ⟨x, hxI, y, hyJ, rfl⟩
+  rintro - ⟨x, hxI, y, hyJ, rfl⟩
   exact Ideal.mul_mem_mul hxI hyJ
 
 /-- This condition `eq_bot_or_top` is equivalent to being a field.
@@ -228,7 +228,7 @@ open _root_.Algebra
 theorem le_spanNorm_spanNorm (I : Ideal S) : spanNorm R I ≤ spanNorm R (spanNorm T I) := by
   simp_rw [spanNorm, map]
   refine span_mono ?_
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   exact ⟨intNorm T S x, subset_span <| Set.mem_image_of_mem _ hx, by rw [intNorm_intNorm]⟩
 
 /--
@@ -392,7 +392,7 @@ theorem exists_relNorm_eq_pow_of_isPrime [p.IsPrime] : ∃ s, relNorm R P = p ^ 
   have h : relNorm R (map (algebraMap R S) p) ≤ relNorm R P :=
     relNorm_mono _ <| map_le_iff_le_comap.mpr <| le_of_eq <| (liesOver_iff _ _).mp hPp
   rw [relNorm_algebraMap S, ← dvd_iff_le, dvd_prime_pow (prime_of_isPrime hp inferInstance)] at h
-  obtain ⟨s, _, hs⟩ := h
+  obtain ⟨s, -, hs⟩ := h
   exact ⟨s, by rwa [associated_iff_eq] at hs⟩
 
 /--

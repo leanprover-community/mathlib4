@@ -139,7 +139,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
     let J' : LieIdeal R L :=
     { __ := J.toSubmodule.map I.incl.toLinearMap
       lie_mem := by
-        rintro x _ ⟨y, hy, rfl⟩
+        rintro x - ⟨y, hy, rfl⟩
         -- We need to show that `⁅x, y⁆ ∈ J` for any `x ∈ L` and `y ∈ J`.
         -- Since `L` is semisimple, `x` is contained
         -- in the supremum of `I` and the atoms not equal to `I`.
@@ -187,7 +187,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
     rw [lt_iff_le_and_ne]
     constructor
     -- We know that `J ≤ I` since `J` is an ideal of `I`.
-    · rintro _ ⟨x, -, rfl⟩
+    · rintro - ⟨x, -, rfl⟩
       exact x.2
     -- So we need to show `J ≠ I` as ideals of `L`.
     -- This follows from our assumption that `J ≠ ⊤` as ideals of `I`.

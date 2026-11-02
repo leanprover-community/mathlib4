@@ -156,12 +156,12 @@ lemma essentiallySmall_costructuredArrow_Spec
       refine .of_le (Q := .isoClosure (· ∈ Set.range (Opposite.unop ∘ F.obj))) ?_
       exact fun R ⟨S, e⟩ ↦ ⟨_, ⟨S, rfl⟩, ⟨e.some.unop⟩⟩
     refine CommRingCat.essentiallySmall_of_localizationAway (Q := Q'.isoClosure) ?_
-    rintro _ ⟨S, rfl⟩
+    rintro - ⟨S, rfl⟩
     have (q : Spec (F.obj S).unop) : ∃ f, q ∈ PrimeSpectrum.basicOpen f ∧
         Q' Γ(Spec (F.obj S).unop, PrimeSpectrum.basicOpen f) := by
-      obtain ⟨_, ⟨U, hU, rfl⟩, hqU, -⟩ :=
+      obtain ⟨-, ⟨U, hU, rfl⟩, hqU, -⟩ :=
         X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ <| S.hom q) isOpen_univ
-      obtain ⟨_, ⟨_, ⟨f, rfl⟩, rfl⟩, hqf, hfU⟩ :=
+      obtain ⟨-, ⟨-, ⟨f, rfl⟩, rfl⟩, hqf, hfU⟩ :=
         PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hqU (S.hom ⁻¹ᵁ U).isOpen
       have : LocallyOfFiniteType S.hom := hP _ S.prop
       exact ⟨f, hqf, _, ⟨U, rfl⟩, S.hom.appLE _ _ hfU,

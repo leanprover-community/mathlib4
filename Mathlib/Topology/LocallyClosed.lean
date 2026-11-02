@@ -320,9 +320,9 @@ lemma Topology.IsInducing.isLocallyClosed_iff {s : Set X}
     IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ f ⁻¹' s' = s := by
   simp_rw [IsLocallyClosed, hf.isOpen_iff, hf.isClosed_iff]
   constructor
-  · rintro ⟨_, _, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
+  · rintro ⟨-, -, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
     exact ⟨_, ⟨U, Z, hU, hZ, rfl⟩, rfl⟩
-  · rintro ⟨_, ⟨U, Z, hU, hZ, rfl⟩, rfl⟩
+  · rintro ⟨-, ⟨U, Z, hU, hZ, rfl⟩, rfl⟩
     exact ⟨_, _, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
 
 lemma Topology.IsEmbedding.isLocallyClosed_iff {s : Set X}

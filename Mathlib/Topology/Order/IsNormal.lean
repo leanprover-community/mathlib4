@@ -51,7 +51,7 @@ theorem isNormal_iff_strictMono_and_continuous {f : α → β} :
   mpr := by
     rintro ⟨hs, hc⟩
     refine ⟨hs, fun {a} ha ↦ (isLUB_of_mem_closure ?_ ?_).2⟩
-    · rintro _ ⟨b, hb, rfl⟩
+    · rintro - ⟨b, hb, rfl⟩
       exact (hs hb).le
     · apply image_closure_subset_closure_image hc (mem_image_of_mem ..)
       exact ha.isLUB_Iio.mem_closure (Iio_nonempty.2 ha.1)

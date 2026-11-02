@@ -47,7 +47,7 @@ theorem exists_embedding_disjoint_range_of_add_le_ENat_card
   rsuffices ⟨y⟩ : Nonempty (Fin n ↪ (sᶜ : Set α))
   · use y.trans (subtype _)
     rw [Set.disjoint_right]
-    rintro _ ⟨i, rfl⟩
+    rintro - ⟨i, rfl⟩
     simpa only [← mem_compl_iff] using! Subtype.coe_prop (y i)
   rcases finite_or_infinite α with hα | hα
   · let _ : Fintype α := Fintype.ofFinite α

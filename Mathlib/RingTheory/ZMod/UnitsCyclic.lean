@@ -206,7 +206,7 @@ theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ)
 theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     IsCyclic (ZMod (p ^ n))ˣ := by
   have := Fact.mk hp
-  rcases n with _ | n
+  rcases n with - | n
   · rw [pow_zero]; infer_instance
   -- We first consider the element `1 + p` of order `p ^ n`
   set a := (1 + p : ZMod (p ^ (n + 1))) with ha_def

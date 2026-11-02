@@ -802,7 +802,7 @@ theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
       swap
       · rw [vectorSpan_range_eq_span_range_vsub_right k p i0, ← Set.image_univ,
           Finsupp.mem_span_image_iff_linearCombination]
-        rintro ⟨l, _, hv⟩
+        rintro ⟨l, -, hv⟩
         use insert i0 l.support
         set w :=
           (l : ι → k) - Function.update (Function.const ι 0 : ι → k) i0 (∑ i ∈ l.support, l i) with

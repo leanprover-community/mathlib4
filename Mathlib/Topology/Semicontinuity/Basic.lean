@@ -110,7 +110,7 @@ theorem LowerSemicontinuousOn.bddBelow_of_isCompact [Nonempty β] {s : Set α} (
       simp only [h, Set.image_empty]
       exact bddBelow_empty
   | inr h =>
-      obtain ⟨a, _, has⟩ := LowerSemicontinuousOn.exists_isMinOn h hs hf
+      obtain ⟨a, -, has⟩ := LowerSemicontinuousOn.exists_isMinOn h hs hf
       exact has.bddBelow
 
 end

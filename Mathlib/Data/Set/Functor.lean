@@ -124,7 +124,7 @@ theorem coe_subset : (γ : Set α) ⊆ β := by
   intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert! ha
 
 theorem mem_of_mem_coe {a : α} (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
-  rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert! ha
+  rcases ha with ⟨-, ⟨-, rfl⟩, -, ⟨ha, rfl⟩, -⟩; convert! ha
 
 theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
   eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
@@ -159,7 +159,7 @@ theorem mem_image_val_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ 
 theorem image_val_subset : (γ : Set α) ⊆ β := Subtype.coe_image_subset _ _
 
 theorem mem_of_mem_image_val (ha : a ∈ (γ : Set α)) : ⟨a, image_val_subset ha⟩ ∈ γ := by
-  rcases ha with ⟨_, ha, rfl⟩; exact ha
+  rcases ha with ⟨-, ha, rfl⟩; exact ha
 
 theorem eq_univ_of_image_val_eq (hγ : (γ : Set α) = β) : γ = univ :=
   eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_image_val <| hγ.symm ▸ ha

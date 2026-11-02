@@ -389,7 +389,7 @@ theorem wordProd_surjective : Surjective cs.wordProd := by
   apply cs.simple_induction_left w
   · use []
     rw [wordProd_nil]
-  · rintro _ i ⟨ω, rfl⟩
+  · rintro - i ⟨ω, rfl⟩
     use i :: ω
     rw [wordProd_cons]
 

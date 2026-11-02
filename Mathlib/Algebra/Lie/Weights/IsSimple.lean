@@ -51,7 +51,7 @@ lemma corootSubmodule_le (I : LieIdeal K L) {α : Weight K H L}
   have : (⟨a.val, a.property⟩ : H) ∈ corootSpace α := ha
   rw [mem_corootSpace] at this
   refine (Submodule.span_le.mpr ?_) this
-  rintro _ ⟨y, hy, _, -, rfl⟩
+  rintro - ⟨y, hy, -, -, rfl⟩
   exact lie_mem_left K L I y _ (hα hy)
 
 /-- The set of roots whose root space is contained in a given Lie ideal. -/
@@ -197,7 +197,7 @@ lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
   have hα_nz := H.isNonZero_coe_root α
   have : I.rootSpan ≤ LinearMap.ker (Dual.eval K H (coroot (α : Weight K H L))) := by
     rw [LieIdeal.rootSpan, Submodule.span_le]
-    rintro _ ⟨γ, hγ, rfl⟩
+    rintro - ⟨γ, hγ, rfl⟩
     simp only [SetLike.mem_coe, LinearMap.mem_ker, Dual.eval_apply, rootSystem_root_apply]
     exact I.rootSet_apply_coroot_eq_zero_of_notMem_rootSet hγ hα_not
   have := LinearMap.mem_ker.mp (this hα_span)

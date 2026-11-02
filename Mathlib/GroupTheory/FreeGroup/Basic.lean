@@ -142,7 +142,7 @@ theorem Step.cons_left_iff {a : α} {b : Bool} :
     Step ((a, b) :: L₁) L₂ ↔ (∃ L, Step L₁ L ∧ L₂ = (a, b) :: L) ∨ L₁ = (a, ! b) :: L₂ := by
   constructor
   · generalize hL : ((a, b) :: L₁ : List _) = L
-    rintro @⟨_ | ⟨p, s'⟩, e, a', b'⟩ <;> simp_all
+    rintro @⟨- | ⟨p, s'⟩, e, a', b'⟩ <;> simp_all
   · rintro (⟨L, h, rfl⟩ | rfl)
     · exact Step.cons h
     · exact Step.cons_not
@@ -301,7 +301,7 @@ reduces to `y + w₂`, then `w₁` reduces to `-x + y + w₂`. -/]
 theorem inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
     (H2 : Red ((x1, b1) :: L₁) ((x2, b2) :: L₂)) : Red L₁ ((x1, not b1) :: (x2, b2) :: L₂) := by
   have : Red ((x1, b1) :: L₁) ([(x2, b2)] ++ L₂) := H2
-  rcases to_append_iff.1 this with ⟨_ | ⟨p, L₃⟩, L₄, eq, h₁, h₂⟩
+  rcases to_append_iff.1 this with ⟨- | ⟨p, L₃⟩, L₄, eq, h₁, h₂⟩
   · simp [nil_iff] at h₁
   · cases eq
     change Red (L₃ ++ L₄) ([(x1, not b1), (x2, b2)] ++ L₂)
@@ -655,7 +655,7 @@ def Lift.aux : List (α × Bool) → β := fun L =>
 
 @[to_additive]
 theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁ = Lift.aux f L₂ := by
-  obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux, List.prod_append]
+  obtain @⟨-, -, -, b⟩ := H; cases b <;> simp [Lift.aux, List.prod_append]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
@@ -695,7 +695,7 @@ theorem lift_of_apply (x : FreeGroup α) : lift FreeGroup.of x = x :=
 
 @[to_additive]
 theorem range_lift_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
-  rintro _ ⟨⟨L⟩, rfl⟩
+  rintro - ⟨⟨L⟩, rfl⟩
   exact List.recOn L s.one_mem fun ⟨x, b⟩ tl ih ↦
     Bool.recOn b (by simpa using s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
       (by simpa using s.mul_mem (H ⟨x, rfl⟩) ih)
@@ -704,7 +704,7 @@ theorem range_lift_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range
 theorem range_lift_eq_closure : (lift f).range = Subgroup.closure (Set.range f) := by
   apply le_antisymm (range_lift_le Subgroup.subset_closure)
   rw [Subgroup.closure_le]
-  rintro _ ⟨a, rfl⟩
+  rintro - ⟨a, rfl⟩
   exact ⟨FreeGroup.of a, by simp only [lift_apply_of]⟩
 
 @[to_additive]

@@ -108,7 +108,7 @@ theorem _root_.BddAbove.range_finsetSup (hf : BddAbove (.range f)) :
     BddAbove (.range fun s : Finset β => s.sup f) := by
   obtain ⟨a, ha⟩ := hf
   refine ⟨a, ?_⟩
-  rintro _ ⟨s, rfl⟩
+  rintro - ⟨s, rfl⟩
   exact Finset.sup_le fun b _ => ha ⟨b, rfl⟩
 
 @[to_dual le_inf_const]
@@ -328,7 +328,7 @@ theorem exists_sup_ge [SemilatticeSup β] [OrderBot β] [WellFoundedGT β] (f : 
     ∃ t : Finset α, ∀ a, f a ≤ t.sup f := by
   cases isEmpty_or_nonempty α
   · exact ⟨⊥, isEmptyElim⟩
-  obtain ⟨_, ⟨t, rfl⟩, ht⟩ := wellFounded_gt.has_min _ (Set.range_nonempty (sup · f))
+  obtain ⟨-, ⟨t, rfl⟩, ht⟩ := wellFounded_gt.has_min _ (Set.range_nonempty (sup · f))
   refine ⟨t, fun a ↦ ?_⟩
   classical
   have := ht (f a ⊔ t.sup f) ⟨insert a t, by simp⟩

@@ -730,7 +730,7 @@ lemma condIndepFun_of_measurable_left {mβ : MeasurableSpace β} {mβ' : Measura
     {X : Ω → β} {Y : Ω → β'} (hX : Measurable[m'] X) (hY : Measurable Y) :
     CondIndepFun m' hm' X Y μ := by
   rw [condIndepFun_iff _ hm' _ _ (hX.mono hm' le_rfl) hY]
-  rintro _ _ ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+  rintro - - ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
   rw [show (fun ω : Ω ↦ (1 : ℝ)) = 1 from rfl, Set.inter_indicator_one]
   calc μ[(X ⁻¹' s).indicator 1 * (Y ⁻¹' t).indicator 1 | m']
   _ =ᵐ[μ] (X ⁻¹' s).indicator 1 * μ[(Y ⁻¹' t).indicator 1 | m'] := by

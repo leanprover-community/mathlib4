@@ -158,7 +158,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
     (hμ : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀))) :
     Tendsto μ 𝓕 (𝓝 μ₀) := by
   let := TopologicalSpace.upgradeIsCompletelyMetrizable E
-  obtain rfl | _ := 𝓕.eq_or_neBot
+  obtain rfl | - := 𝓕.eq_or_neBot
   · simp
   refine (Filter.tendsto_iff_ultrafilter _ _ _).2 fun U hU ↦ ?_
   have h_compact : IsCompact (closure {μ n | n}) :=

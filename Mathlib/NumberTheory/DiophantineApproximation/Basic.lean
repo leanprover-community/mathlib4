@@ -196,7 +196,7 @@ rational approximations to `ξ`. -/
 theorem infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational {ξ : ℝ} (hξ : Irrational ξ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2}.Infinite := by
   refine Or.resolve_left (Set.finite_or_infinite _) fun h => ?_
-  obtain ⟨q, _, hq⟩ :=
+  obtain ⟨q, -, hq⟩ :=
     exists_min_image {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2} (fun q => |ξ - q|) h
       ⟨⌊ξ⌋, by simp [abs_of_nonneg, Int.fract_lt_one]⟩
   obtain ⟨q', hmem, hbetter⟩ := exists_rat_abs_sub_lt_and_lt_of_irrational hξ q
@@ -385,7 +385,7 @@ include hv h
 private theorem aux₁ : 0 < fract ξ := by
   have hv₀ : (0 : ℝ) < v := cast_pos.mpr (zero_lt_two.trans_le hv)
   obtain ⟨hv₁, hv₂⟩ := aux₀ (zero_lt_two.trans_le hv)
-  obtain ⟨hcop, _, h⟩ := h
+  obtain ⟨hcop, -, h⟩ := h
   refine fract_pos.mpr fun hf => ?_
   rw [hf] at h
   have H : (2 * v - 1 : ℝ) < 1 := by
@@ -401,7 +401,7 @@ private theorem aux₁ : 0 < fract ξ := by
 
 -- An auxiliary lemma for the inductive step.
 private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
-  obtain ⟨hcop, _, h⟩ := h
+  obtain ⟨hcop, -, h⟩ := h
   obtain ⟨hv₀, hv₀'⟩ := aux₀ (zero_lt_two.trans_le hv)
   have hv₁ : 0 < 2 * v - 1 := by linarith only [hv]
   rw [← one_div, lt_div_iff₀ (mul_pos hv₀ hv₀'), ← abs_of_pos (mul_pos hv₀ hv₀'), ← abs_mul,
@@ -497,7 +497,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
       cast_zero, inv_zero] at h
     exact False.elim (lt_irrefl _ <| (abs_nonneg ξ).trans_lt h)
   · rw [Nat.cast_one, div_one]
-    obtain ⟨_, h₁, h₂⟩ := h
+    obtain ⟨-, h₁, h₂⟩ := h
     rcases le_or_gt (u : ℝ) ξ with ht | ht
     · use 0
       rw [convergent_zero, Rat.intCast_inj, eq_comm, floor_eq_iff]

@@ -134,7 +134,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right
     rw [Submodule.map_le_iff_le_comap]
-    rintro _ ⟨y, rfl⟩
+    rintro - ⟨y, rfl⟩
     simp only [pow_succ', mul_apply_eq_comp, Submodule.mem_comap, mem_toSubmodule]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]

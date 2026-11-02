@@ -172,7 +172,7 @@ theorem restrict_le_restrict_union (hi₁ : MeasurableSet i) (hi₂ : v ≤[i] w
   rw [Set.union_eq_iUnion]
   refine restrict_le_restrict_countable_iUnion v w ?_ ?_
   · measurability
-  · rintro (_ | _) <;> simpa
+  · rintro (- | -) <;> simpa
 
 end
 

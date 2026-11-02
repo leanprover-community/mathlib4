@@ -239,13 +239,13 @@ theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
     ⟨x.1, by
       obtain ⟨x, h⟩ := x
       rw [Finset.mem_map] at h
-      obtain ⟨a, _, rfl⟩ := h
+      obtain ⟨a, -, rfl⟩ := h
       simp only [Subtype.coe_prop, Embedding.coe_subtype]⟩
   convert! AlgebraicIndependent.comp li f _
   rintro ⟨x, hx⟩ ⟨y, hy⟩
   rw [Finset.mem_map] at hx hy
-  obtain ⟨a, _, rfl⟩ := hx
-  obtain ⟨b, _, rfl⟩ := hy
+  obtain ⟨a, -, rfl⟩ := hx
+  obtain ⟨b, -, rfl⟩ := hy
   simp only [f, imp_self, Subtype.mk_eq_mk]
 
 /-- If every finite set of algebraically independent element has cardinality at most `n`,
@@ -476,7 +476,7 @@ theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
       MvPolynomial.aeval fun o : Option ι ↦ o.elim a x := by
   refine MvPolynomial.algHom_ext fun o ↦ ?_
   simp only [AlgHom.comp_apply, AlgHom.restrictScalars_apply, AlgEquiv.coe_toAlgHom]
-  rcases o with _ | i
+  rcases o with - | i
   · rw [hx.mvPolynomialOptionEquivPolynomialAdjoin_X_none, Polynomial.aeval_X, aeval_X, Option.elim]
   · rw [hx.mvPolynomialOptionEquivPolynomialAdjoin_X_some, Polynomial.aeval_C,
       hx.algebraMap_aevalEquiv, aeval_X, aeval_X, Option.elim]

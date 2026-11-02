@@ -107,7 +107,7 @@ lemma δ₀Iter_σ' (i : ℕ) {n m : ℕ} (j : Fin (m + 1))
     obtain rfl : j = j' := by lia
     simp
   | succ i hi =>
-    obtain _ | m := m
+    obtain - | m := m
     · grind
     · obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero
         (by rintro rfl; dsimp at hj'; lia)

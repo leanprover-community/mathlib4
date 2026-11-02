@@ -333,7 +333,7 @@ lemma stableUnderSpecialization_iff_exists_sUnion_eq {s : Set X} :
     StableUnderSpecialization s ↔ ∃ (S : Set (Set X)), (∀ s ∈ S, IsClosed s) ∧ ⋃₀ S = s := by
   refine ⟨fun H ↦ ⟨(fun x : X ↦ closure {x}) '' s, ?_, ?_⟩, fun ⟨S, hS, e⟩ ↦ e ▸
     stableUnderSpecialization_sUnion S (fun x hx ↦ (hS x hx).stableUnderSpecialization)⟩
-  · rintro _ ⟨_, _, rfl⟩; exact isClosed_closure
+  · rintro - ⟨-, -, rfl⟩; exact isClosed_closure
   · conv_rhs => rw [← H.Union_eq]
     simp
 

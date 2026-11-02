@@ -135,7 +135,7 @@ theorem map_algebraMap_eq_valuationSubring : Subring.map (algebraMap A K) ⊤ =
     ((maximalIdeal A).valuation K).valuationSubring.toSubring := by
   ext
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨_, _, rfl⟩ := Subring.mem_map.mp h
+  · obtain ⟨-, -, rfl⟩ := Subring.mem_map.mp h
     apply valuation_le_one
   · obtain ⟨y, rfl⟩ := exists_lift_of_le_one h
     rw [Subring.mem_map]

@@ -101,7 +101,7 @@ noncomputable def F [NormedSpace ℂ E] (ε : ℝ) := fun z ↦ invInterpStrip f
 /-- `sSup` of `norm` is nonneg applied to the image of `f` on the vertical line `re z = x` -/
 lemma sSupNormIm_nonneg (x : ℝ) : 0 ≤ sSupNormIm f x := by
   apply Real.sSup_nonneg
-  rintro y ⟨z1, _, hz2⟩
+  rintro y ⟨z1, -, hz2⟩
   simp only [← hz2, comp, norm_nonneg]
 
 /-- `sSup` of `norm` translated by `ε > 0` is positive applied to the image of `f` on the
@@ -323,7 +323,7 @@ lemma scale_bddAbove {f : ℂ → E} {l u : ℝ} (hul : l < u)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip l u)) :
     BddAbove ((norm ∘ scale f l u) '' verticalClosedStrip 0 1) := by
   refine hB.mono ?_
-  rintro _ ⟨z, hz, rfl⟩
+  rintro - ⟨z, hz, rfl⟩
   exact ⟨l + z * (u - l), scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip hul hz, rfl⟩
 
 /-- A bound to the norm of `f` on the line `z.re = l` induces a bound to the norm of

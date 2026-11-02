@@ -36,7 +36,7 @@ inductive innerHornInclusions : MorphismProperty SSet.{u} where
 
 lemma horn_ι_mem_innerHornInclusions {n : ℕ} {i : Fin (n + 1)}
     (h0 : 0 < i) (hn : i < Fin.last n) : innerHornInclusions (horn.{u} n i).ι := by
-  obtain _ | _ | k := n
+  obtain - | - | k := n
   · grind
   · grind
   · exact ⟨i, h0, hn⟩
@@ -50,7 +50,7 @@ lemma innerHornInclusions_eq_iSup :
     simp only [iSup_iff, ofHoms_iff, Subtype.exists, exists_prop]
     use n, i
   · simp only [iSup_iff, ofHoms_iff] at h
-    obtain ⟨n, ⟨i, h0, hn⟩, _, _⟩ := h
+    obtain ⟨n, ⟨i, h0, hn⟩, -, -⟩ := h
     exact horn_ι_mem_innerHornInclusions h0 hn
 
 lemma innerHornInclusions_le_J : innerHornInclusions.{u} ≤ modelCategoryQuillen.J :=

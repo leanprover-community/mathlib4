@@ -123,7 +123,7 @@ lemma toAut_continuous [TopologicalSpace G] [IsTopologicalGroup G]
   apply continuous_of_continuousAt_one
   rw [continuousAt_def, map_one]
   intro A hA
-  obtain ⟨X, _, hX⟩ := ((nhds_one_has_basis_stabilizers F).mem_iff' A).mp hA
+  obtain ⟨X, -, hX⟩ := ((nhds_one_has_basis_stabilizers F).mem_iff' A).mp hA
   rw [mem_nhds_iff]
   exact ⟨MulAction.stabilizer G X.pt, Set.preimage_mono (f := toAut F G) hX,
     stabilizer_isOpen G X.pt, one_mem _⟩

@@ -65,14 +65,14 @@ inductive strictColimitsOfShape : ObjectProperty C
 variable {P} in
 lemma strictColimitsOfShape_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.strictColimitsOfShape J ≤ Q.strictColimitsOfShape J := by
-  rintro _ ⟨F, hF⟩
+  rintro - ⟨F, hF⟩
   exact ⟨F, fun j ↦ h _ (hF j)⟩
 
 @[simp]
 lemma strictColimitsOfShape_bot [Nonempty J] :
     strictColimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
   rw [eq_bot_iff]
-  rintro _ ⟨_, h⟩
+  rintro - ⟨_, h⟩
   exact h (Classical.arbitrary J)
 
 /-- A structure expressing that `X : C` is the colimit of a functor

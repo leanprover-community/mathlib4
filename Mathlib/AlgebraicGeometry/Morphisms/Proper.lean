@@ -161,7 +161,7 @@ theorem finite_appTop_of_universallyClosed (f : X ⟶ Spec ↧K)
     [IsIntegral X] [UniversallyClosed f] [LocallyOfFiniteType f] :
     f.appTop.hom.Finite := by
   have x : X := Nonempty.some inferInstance
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+  obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   let := ((Scheme.ΓSpecIso ↧K).commRingCatIsoToRingEquiv.toMulEquiv.isField
     (Field.toIsField K)).toField

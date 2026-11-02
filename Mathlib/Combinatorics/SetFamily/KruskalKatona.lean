@@ -359,7 +359,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- Its iterated shadow (∂^[n-2k] 𝒜ᶜˢ) is disjoint from 𝒜 by intersecting-ness
   have : Disjoint 𝒜 (∂^[n - 2 * r] 𝒜ᶜˢ) := disjoint_right.2 fun A hAbar hA ↦ by
     simp only [mem_shadow_iterate_iff_exists_sdiff, mem_compls] at hAbar
-    obtain ⟨C, hC, hAC, _⟩ := hAbar
+    obtain ⟨C, hC, hAC, -⟩ := hAbar
     exact h𝒜 hA hC (disjoint_of_subset_left hAC disjoint_compl_right)
   have : r ≤ n := h₃.trans (Nat.div_le_self n 2)
   have : 1 ≤ n := ‹1 ≤ r›.trans ‹r ≤ n›

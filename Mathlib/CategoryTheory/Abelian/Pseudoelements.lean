@@ -364,11 +364,11 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
       obtain ⟨a', ha⟩ := hS _ this
       obtain ⟨a, ha'⟩ := Quotient.exists_rep a'
       rw [← ha'] at ha
-      obtain ⟨Z, r, q, _, eq, comm⟩ := Quotient.exact ha
+      obtain ⟨Z, r, q, -, eq, comm⟩ := Quotient.exact ha
       -- Consider the pullback of `kernel.ι (cokernel.π f)` and `kernel.ι g`.
       -- The commutative diagram given by the pseudo-equality `f a = b` induces
       -- a cone over this pullback, so we get a factorization `z`.
-      obtain ⟨z, _, hz₂⟩ := @pullback.lift' _ _ _ _ _ _ (kernel.ι (cokernel.π S.f))
+      obtain ⟨z, -, hz₂⟩ := @pullback.lift' _ _ _ _ _ _ (kernel.ι (cokernel.π S.f))
         (kernel.ι S.g) _ (r ≫ a.hom ≫ Abelian.factorThruImage S.f) q (by
           simp only [Category.assoc, Abelian.image.fac]
           exact comm)
@@ -402,7 +402,7 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
             dsimp at comm
             simp [a'', sub_eq_zero.2 comm],
           fun Z g hh => by
-          obtain ⟨X, p', q', ep', _, comm'⟩ := Quotient.exact hh
+          obtain ⟨X, p', q', ep', -, comm'⟩ := Quotient.exact hh
           have : a'.hom ≫ g = 0 := by
             apply (epi_iff_cancel_zero _).1 ep' _ (a'.hom ≫ g)
             simpa using comm'

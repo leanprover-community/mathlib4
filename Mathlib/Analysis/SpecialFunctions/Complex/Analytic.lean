@@ -172,7 +172,7 @@ theorem hasFPowerSeriesAt_clog_one :
   ext n
   simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, Finset.prod_const_one,
     FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, one_mul]
-  obtain _ | n := n
+  obtain - | n := n
   · simp
   simp [iteratedDeriv_succ_log one_mem_slitPlane, Nat.factorial_succ, pow_succ]
   field_simp [show n.factorial ≠ 0 by positivity]

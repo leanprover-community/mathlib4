@@ -701,7 +701,7 @@ theorem contMDiffVectorBundle : @ContMDiffVectorBundle n
     _ _ F E _ _ _ _ _ _ IB _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle a.toVectorBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { contMDiffOn_coordChangeL := by
-      rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
+      rintro - - ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine (a.contMDiffOn_contMDiffCoordChange he he').congr ?_
       intro b hb
       ext v

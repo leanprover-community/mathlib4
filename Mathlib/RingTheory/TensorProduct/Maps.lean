@@ -583,7 +583,7 @@ theorem map_range (f : A →ₐ[R] C) (g : B →ₐ[R] D) :
     (map f g).range = (includeLeft.comp f).range ⊔ (includeRight.comp g).range := by
   apply le_antisymm
   · rw [← map_top, ← adjoin_tmul_eq_top, ← adjoin_image, adjoin_le_iff]
-    rintro _ ⟨_, ⟨a, b, rfl⟩, rfl⟩
+    rintro - ⟨-, ⟨a, b, rfl⟩, rfl⟩
     rw [map_tmul, ← mul_one (f a), ← one_mul (g b), ← tmul_mul_tmul]
     exact mul_mem_sup (AlgHom.mem_range_self _ a) (AlgHom.mem_range_self _ b)
   · rw [← map_comp_includeLeft f g, ← map_comp_includeRight f g]

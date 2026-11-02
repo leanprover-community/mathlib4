@@ -386,7 +386,7 @@ theorem exists_finset_free_localization :
   · simpa [Ideal.eq_top_iff_one, (LinearEquiv.symm_apply_eq _).mp hS, linearEquiv]
       using Ideal.sum_mem _ fun i hi ↦ Ideal.subset_span (Finset.mem_image_of_mem _ hi)
   -- Part 2: After localizing at any f(m), the module becomes free
-  obtain ⟨⟨f, m⟩, _, rfl⟩ := Finset.mem_image.mp hr
+  obtain ⟨⟨f, m⟩, -, rfl⟩ := Finset.mem_image.mp hr
   -- Extend f to a R_{f(m)}-linear functional f' on the localized module
   let f' : Dual (Localization.Away (f m)) (LocalizedModule.Away (f m) M) :=
     .extendScalarsOfIsLocalization (.powers (f m)) _ <| IsLocalizedModule.map

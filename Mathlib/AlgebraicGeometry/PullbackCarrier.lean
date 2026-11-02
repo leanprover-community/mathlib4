@@ -249,8 +249,8 @@ lemma carrierEquiv_eq_iff {T₁ T₂ : Σ T : Triplet f g, Spec T.tensor} :
   constructor
   · rintro rfl
     simp
-  · obtain ⟨T, _⟩ := T₁
-    obtain ⟨T', _⟩ := T₂
+  · obtain ⟨T, -⟩ := T₁
+    obtain ⟨T', -⟩ := T₂
     rintro ⟨rfl : T = T', e⟩
     simpa [e]
 
@@ -308,7 +308,7 @@ lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y 
   refine ⟨?_, Scheme.isEmpty_pullback f g⟩
   rw [Set.disjoint_iff_forall_ne]
   contrapose!
-  rintro ⟨_, ⟨x, rfl⟩, _, ⟨y, rfl⟩, e⟩
+  rintro ⟨-, ⟨x, rfl⟩, -, ⟨y, rfl⟩, e⟩
   obtain ⟨z, -⟩ := exists_preimage_pullback x y e
   exact ⟨z⟩
 
@@ -369,7 +369,7 @@ lemma range_map {X' Y' S' : Scheme.{u}} (f' : X' ⟶ S') (g' : Y' ⟶ S') (i₁ 
     obtain ⟨w₂, hw₂⟩ := T₂.exists_preimage
     let T : Triplet (pullback.fst (pullback.fst f' g') i₁) (pullback.fst (pullback.snd f' g') i₂) :=
       Triplet.mk' w₁ w₂ <| by simp [hw₁.left, hw₂.left, T₁, T₂]
-    obtain ⟨t, _, ht₂⟩ := T.exists_preimage
+    obtain ⟨t, -, ht₂⟩ := T.exists_preimage
     use (pullbackFstFstIso f g f' g' i₁ i₂ i₃ e₁ e₂).hom t
     rw [pullback_map_eq_pullbackFstFstIso_inv, ← Scheme.Hom.comp_apply, Iso.hom_inv_id_assoc]
     simp [ht₂, T, hw₂.left, T₂]

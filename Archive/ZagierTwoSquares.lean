@@ -59,7 +59,7 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
 
 lemma zagierSet_upper_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
     x ≤ k + 1 ∧ y ≤ k ∧ z ≤ k := by
-  obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
+  obtain ⟨-, _, _⟩ := zagierSet_lower_bound k h
   rw [zagierSet, mem_ofPred_eq] at h
   refine ⟨?_, ?_, ?_⟩ <;> nlinarith
 
@@ -122,7 +122,7 @@ theorem complexInvo_sq : complexInvo k ^ 2 = 1 := by
   change complexInvo k ∘ complexInvo k = id
   funext ⟨⟨x, y, z⟩, h⟩
   rw [comp_apply]
-  obtain ⟨xb, _, _⟩ := zagierSet_lower_bound k h
+  obtain ⟨xb, -, _⟩ := zagierSet_lower_bound k h
   conv_lhs => arg 2; simp only [complexInvo]
   split_ifs with less more <;> rw [complexInvo, Subtype.mk.injEq, id_eq]
   · -- less
@@ -148,14 +148,14 @@ set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (complexInvo k)) :
     t.val = (1, 1, k) := by
   obtain ⟨⟨x, y, z⟩, h⟩ := t
-  obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
+  obtain ⟨-, -, _⟩ := zagierSet_lower_bound k h
   rw [mem_fixedPoints_iff, complexInvo, Subtype.mk.injEq] at mem
   split_ifs at mem with less more <;>
     -- less (completely handled by the pre-applied `simp_all only`)
     simp_all only [not_lt, Prod.mk.injEq, add_eq_left, mul_eq_zero, false_or,
       lt_self_iff_false, reduceCtorEq]
   · -- more
-    obtain ⟨_, _, _⟩ := mem; simp_all
+    obtain ⟨-, _, _⟩ := mem; simp_all
   · -- middle (the one fixed point falls under this case)
     simp only [zagierSet, Set.mem_ofPred_eq] at h
     replace mem := mem.1

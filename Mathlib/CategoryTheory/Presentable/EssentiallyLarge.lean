@@ -40,7 +40,7 @@ lemma essentiallyLarge_top :
     { F : J ⥤ _ // HasColimit (F ⋙ e.inverse ⋙ P.ι) }
   let φ : ι → C := fun ⟨j, _, F, hF⟩ ↦ colimit (F ⋙ e.inverse ⋙ P.ι)
   refine ⟨ObjectProperty.ofObj φ, inferInstance, fun X _ ↦ ?_⟩
-  obtain ⟨J, _, _, ⟨p⟩⟩ := hP.exists_colimitsOfShape X
+  obtain ⟨J, _, -, ⟨p⟩⟩ := hP.exists_colimitsOfShape X
   let G : J ⥤ P.FullSubcategory := P.lift p.diag p.prop_diag_obj
   let iso : (G ⋙ e.functor) ⋙ e.inverse ⋙ P.ι ≅ p.diag :=
     Functor.associator _ _ _ ≪≫

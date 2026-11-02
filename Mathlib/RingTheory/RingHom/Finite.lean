@@ -113,13 +113,13 @@ theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.
   rintro x -
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ (s : Set R) hs _ _
   intro r
-  obtain ⟨⟨_, n₁, rfl⟩, hn₁⟩ :=
+  obtain ⟨⟨-, n₁, rfl⟩, hn₁⟩ :=
     multiple_mem_span_of_mem_localization_span (Submonoid.powers (r : R))
       (Localization.Away (r : R)) (s₁ r : Set (Localization.Away (f r))) (algebraMap S _ x)
       (by rw [s₂ r]; trivial)
   dsimp only at hn₁
   rw [Submonoid.smul_def, Algebra.smul_def, IsScalarTower.algebraMap_apply R S, ← map_mul] at hn₁
-  obtain ⟨⟨_, n₂, rfl⟩, hn₂⟩ :=
+  obtain ⟨⟨-, n₂, rfl⟩, hn₂⟩ :=
     IsLocalization.smul_mem_finsetIntegerMultiple_span (Submonoid.powers (r : R))
       (Localization.Away (f r)) _ (s₁ r) hn₁
   rw [Submonoid.smul_def, ← Algebra.smul_def, smul_smul, ← pow_add] at hn₂

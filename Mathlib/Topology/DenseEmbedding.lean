@@ -124,7 +124,7 @@ protected theorem nhdsWithin_neBot (di : IsDenseInducing i) (b : β) : NeBot (�
 
 theorem comap_nhds_neBot (di : IsDenseInducing i) (b : β) : NeBot (comap i (𝓝 b)) :=
   comap_neBot fun s hs => by
-    rcases mem_closure_iff_nhds.1 (di.dense b) s hs with ⟨_, ⟨ha, a, rfl⟩⟩
+    rcases mem_closure_iff_nhds.1 (di.dense b) s hs with ⟨-, ⟨ha, a, rfl⟩⟩
     exact ⟨a, ha⟩
 
 theorem _root_.Dense.comap_val_nhds_neBot {s : Set α} (hs : Dense s) (a : α) :
@@ -181,7 +181,7 @@ theorem extend_unique_at [T2Space γ] {b : β} {f : α → γ} {g : β → γ} (
     hf.mp (this.mono fun x hgx hfx => hfx ▸ hgx)
   clear hf f
   refine eventually_comap.2 ((hg.eventually hs).mono ?_)
-  rintro _ hxs x rfl
+  rintro - hxs x rfl
   exact hxs
 
 theorem extend_unique [T2Space γ] {f : α → γ} {g : β → γ} (di : IsDenseInducing i)

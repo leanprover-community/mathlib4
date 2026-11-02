@@ -142,12 +142,12 @@ theorem exists_eq_mk₃ (w u v : DirectLimit F f) :
 
 @[elab_as_elim] protected theorem induction₂ {C : DirectLimit F f → DirectLimit F f → Prop}
     (ih : ∀ i x y, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧) (x y : DirectLimit F f) : C x y := by
-  obtain ⟨_, _, _, rfl, rfl⟩ := exists_eq_mk₂ f x y; apply ih
+  obtain ⟨-, -, -, rfl, rfl⟩ := exists_eq_mk₂ f x y; apply ih
 
 @[elab_as_elim] protected theorem induction₃
     {C : DirectLimit F f → DirectLimit F f → DirectLimit F f → Prop}
     (ih : ∀ i x y z, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ ⟦⟨i, z⟩⟧) (x y z : DirectLimit F f) : C x y z := by
-  obtain ⟨_, _, _, _, rfl, rfl, rfl⟩ := exists_eq_mk₃ f x y z; apply ih
+  obtain ⟨-, -, -, -, rfl, rfl, rfl⟩ := exists_eq_mk₃ f x y z; apply ih
 
 theorem mk_injective (h : ∀ i j hij, Function.Injective (f i j hij)) (i) :
     Function.Injective fun x ↦ (⟦⟨i, x⟩⟧ : DirectLimit F f) :=

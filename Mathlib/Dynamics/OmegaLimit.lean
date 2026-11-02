@@ -122,7 +122,7 @@ theorem mem_omegaLimit_iff_frequently (y : β) :
   simp_rw [frequently_iff, omegaLimit_def, mem_iInter, mem_closure_iff_nhds]
   constructor
   · intro h _ hn _ hu
-    rcases h _ hu _ hn with ⟨_, _, _, ht, _, hx, rfl⟩
+    rcases h _ hu _ hn with ⟨-, _, _, ht, _, hx, rfl⟩
     exact ⟨_, ht, _, hx, by rwa [mem_preimage]⟩
   · intro h _ hu _ hn
     rcases h _ hn hu with ⟨_, ht, _, hx, hϕtx⟩

@@ -35,7 +35,7 @@ variable {𝕜 E F : Type*} [Semiring 𝕜]
 theorem subset_tangentConeAt_prod_left (ht : y ∈ closure t) :
     LinearMap.inl 𝕜 E F '' tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
   rw [← tangentConeAt_closure (s := s ×ˢ t), closure_prod_eq]
-  rintro _ ⟨z, hz, rfl⟩
+  rintro - ⟨z, hz, rfl⟩
   rcases exists_fun_of_mem_tangentConeAt hz with ⟨ι, l, hl, c, d, hd₀, hds, hcd⟩
   refine mem_tangentConeAt_of_seq l c (fun n ↦ (d n, 0)) (hd₀.prodMk_nhds tendsto_const_nhds)
     (hds.mono fun n hn ↦ by simp [ht, subset_closure hn]) ?_
@@ -45,7 +45,7 @@ theorem subset_tangentConeAt_prod_left (ht : y ∈ closure t) :
 theorem subset_tangentConeAt_prod_right (hs : x ∈ closure s) :
     LinearMap.inr 𝕜 E F '' tangentConeAt 𝕜 t y ⊆ tangentConeAt 𝕜 (s ×ˢ t) (x, y) := by
   rw [← tangentConeAt_closure (s := s ×ˢ t), closure_prod_eq]
-  rintro _ ⟨z, hz, rfl⟩
+  rintro - ⟨z, hz, rfl⟩
   rcases exists_fun_of_mem_tangentConeAt hz with ⟨ι, l, hl, c, d, hd₀, hds, hcd⟩
   refine mem_tangentConeAt_of_seq l c (fun n ↦ (0, d n)) (tendsto_const_nhds.prodMk_nhds hd₀)
     (hds.mono fun n hn ↦ by simp [hs, subset_closure hn]) ?_

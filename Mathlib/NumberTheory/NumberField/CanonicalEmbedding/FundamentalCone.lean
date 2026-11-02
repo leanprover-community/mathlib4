@@ -272,7 +272,7 @@ theorem mem_integerSet {a : mixedSpace K} :
 that `mixedEmbedding K x = a`. -/
 theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ integerSet K) :
     ∃! x : 𝓞 K, mixedEmbedding K x = a := by
-  obtain ⟨_, ⟨x, rfl⟩⟩ := mem_integerSet.mp ha
+  obtain ⟨-, ⟨x, rfl⟩⟩ := mem_integerSet.mp ha
   refine Function.Injective.existsUnique_of_mem_range ?_ (Set.mem_range_self x)
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
 
@@ -311,13 +311,13 @@ theorem exists_unitSMul_mem_integerSet {x : mixedSpace K} (hx : x ≠ 0)
   replace hx : mixedEmbedding.norm x ≠ 0 :=
       (norm_eq_zero_iff' (Set.mem_range_of_mem_image (mixedEmbedding K) _ hx')).not.mpr hx
   obtain ⟨u, hu⟩ := exists_unit_smul_mem hx
-  obtain ⟨_, ⟨x, rfl⟩, _, rfl⟩ := hx'
+  obtain ⟨-, ⟨x, rfl⟩, -, rfl⟩ := hx'
   exact ⟨u, mem_integerSet.mpr ⟨hu, u * x, by simp_rw [unitSMul_smul, ← map_mul]⟩⟩
 
 /-- The set `integerSet K` is stable under the action of the torsion. -/
 theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K)
     (hx : x ∈ integerSet K) : ζ • x ∈ integerSet K := by
-  obtain ⟨a, ⟨_, rfl⟩, rfl⟩ := (mem_integerSet.mp hx).2
+  obtain ⟨a, ⟨-, rfl⟩, rfl⟩ := (mem_integerSet.mp hx).2
   refine mem_integerSet.mpr ⟨torsion_smul_mem_of_mem hx.1 hζ, ⟨ζ * a, by simp⟩⟩
 
 /-- The action of `torsion K` on `integerSet K`. -/
@@ -502,7 +502,7 @@ theorem idealSetMap_apply (a : idealSet K J) : (idealSetMap K J a : mixedSpace K
 
 theorem preimage_of_IdealSetMap (a : idealSet K J) :
     (preimageOfMemIntegerSet (idealSetMap K J a) : 𝓞 K) ∈ (J : Set (𝓞 K)) := by
-  obtain ⟨_, ⟨x, hx₁, hx₂⟩⟩ := mem_idealSet.mp a.prop
+  obtain ⟨-, ⟨x, hx₁, hx₂⟩⟩ := mem_idealSet.mp a.prop
   simp_rw [idealSetMap, ← hx₂, preimageOfMemIntegerSet_mixedEmbedding]
   exact hx₁
 

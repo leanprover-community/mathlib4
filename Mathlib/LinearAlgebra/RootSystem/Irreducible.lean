@@ -115,7 +115,7 @@ lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
     intro k
     by_cases hk : P.root k ∈ Q
     · refine LinearMap.mem_ker.mp (span_le.mpr ?_ ht)
-      rintro _ ⟨j, hj, rfl⟩
+      rintro - ⟨j, hj, rfl⟩
       rw [SetLike.mem_coe, LinearMap.mem_ker, P.root_coroot'_eq_pairing, P.pairing_eq_zero_iff',
         ← P.root_coroot'_eq_pairing]
       exact LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q hj hk)

@@ -106,7 +106,7 @@ theorem KaehlerDifferential.submodule_span_range_eq_ideal :
       (KaehlerDifferential.ideal R S).restrictScalars S := by
   apply le_antisymm
   · rw [Submodule.span_le]
-    rintro _ ⟨s, rfl⟩
+    rintro - ⟨s, rfl⟩
     exact KaehlerDifferential.one_smul_sub_smul_one_mem_ideal _ _
   · rintro x (hx : _ = _)
     have : x - TensorProduct.lmul' (S := S) R x ⊗ₜ[R] (1 : S) = x := by
@@ -130,7 +130,7 @@ theorem KaehlerDifferential.span_range_eq_ideal :
       KaehlerDifferential.ideal R S := by
   apply le_antisymm
   · rw [Ideal.span_le]
-    rintro _ ⟨s, rfl⟩
+    rintro - ⟨s, rfl⟩
     exact KaehlerDifferential.one_smul_sub_smul_one_mem_ideal _ _
   · change (KaehlerDifferential.ideal R S).restrictScalars S ≤ (Ideal.span _).restrictScalars S
     rw [← KaehlerDifferential.submodule_span_range_eq_ideal, Ideal.span]
@@ -260,7 +260,7 @@ theorem KaehlerDifferential.span_range_derivation :
   -- TODO: this proof looks like we're reinventing `Submodule.span_le`.
   -- I'm not sure what's the RHS here though.
   refine Submodule.span_induction ?_ ?_ ?_ ?_ hx
-  · rintro _ ⟨x, rfl⟩
+  · rintro - ⟨x, rfl⟩
     refine ⟨KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R x, ?_⟩
     apply Submodule.subset_span
     exact ⟨x, KaehlerDifferential.DLinearMap_apply R S x⟩
@@ -277,7 +277,7 @@ lemma KaehlerDifferential.subsingleton_of_surjective (h : Function.Surjective (a
   suffices (⊤ : Submodule S Ω[S⁄R]) ≤ ⊥ from
     (subsingleton_iff_forall_eq 0).mpr fun y ↦ this trivial
   rw [← KaehlerDifferential.span_range_derivation, Submodule.span_le]
-  rintro _ ⟨x, rfl⟩; obtain ⟨x, rfl⟩ := h x; simp
+  rintro - ⟨x, rfl⟩; obtain ⟨x, rfl⟩ := h x; simp
 
 variable {R S}
 
@@ -322,7 +322,7 @@ theorem Derivation.liftKaehlerDifferential_unique (f f' : Ω[S⁄R] →ₗ[S] M)
   have : x ∈ Submodule.span S (Set.range <| KaehlerDifferential.D R S) := by
     rw [KaehlerDifferential.span_range_derivation]; trivial
   refine Submodule.span_induction ?_ ?_ ?_ ?_ this
-  · rintro _ ⟨x, rfl⟩; congrm $hf x
+  · rintro - ⟨x, rfl⟩; congrm $hf x
   · rw [map_zero, map_zero]
   · intro x y _ _ hx hy; rw [map_add, map_add, hx, hy]
   · intro a x _ e; simp [e]
@@ -439,10 +439,10 @@ theorem KaehlerDifferential.ideal_fg [EssFiniteType R S] :
   use (EssFiniteType.finset R S).image (fun s ↦ (1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S))
   apply le_antisymm
   · rw [Finset.coe_image, Ideal.span_le]
-    rintro _ ⟨x, _, rfl⟩
+    rintro - ⟨x, -, rfl⟩
     exact KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R x
   · rw [← KaehlerDifferential.span_range_eq_ideal, Ideal.span_le]
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     let I : Ideal (S ⊗[R] S) := Ideal.span
       ((EssFiniteType.finset R S).image (fun s ↦ (1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S)))
     change _ - _ ∈ I
@@ -570,7 +570,7 @@ theorem KaehlerDifferential.kerTotal_eq :
     rw [← KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination]
     exact LinearMap.ker_le_ker_comp _ _
   · rw [KaehlerDifferential.kerTotal, Submodule.span_le]
-    rintro _ ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩) <;> simp [LinearMap.mem_ker]
+    rintro - ((⟨⟨x, y⟩, rfl⟩ | ⟨⟨x, y⟩, rfl⟩) | ⟨x, rfl⟩) <;> simp [LinearMap.mem_ker]
 
 theorem KaehlerDifferential.linearCombination_surjective :
     Function.Surjective (Finsupp.linearCombination S (KaehlerDifferential.D R S)) := by
@@ -731,7 +731,7 @@ theorem KaehlerDifferential.map_surjective_of_surjective
   rw [← LinearMap.range_eq_top, _root_.eq_top_iff,
     ← @Submodule.restrictScalars_top A B, ← span_range_derivation,
     Submodule.restrictScalars_span _ _ h, Submodule.span_le]
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   obtain ⟨y, rfl⟩ := h x
   rw [← KaehlerDifferential.map_D R S A B]
   exact ⟨_, rfl⟩
@@ -755,7 +755,7 @@ theorem KaehlerDifferential.mapBaseChange_tmul (x : B) (y : Ω[A⁄R]) :
 lemma KaehlerDifferential.range_mapBaseChange :
     LinearMap.range (mapBaseChange R A B) = LinearMap.ker (map R A B B) := by
   apply le_antisymm
-  · rintro _ ⟨x, rfl⟩
+  · rintro - ⟨x, rfl⟩
     induction x with
     | tmul r s =>
       obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ s

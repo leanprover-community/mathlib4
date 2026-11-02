@@ -386,7 +386,7 @@ theorem IsQuotient.norm_le {f : NormedAddGroupHom M N} (hquot : IsQuotient f) (m
   rw [hquot.norm]
   apply csInf_le
   · use 0
-    rintro _ ⟨m', -, rfl⟩
+    rintro - ⟨m', -, rfl⟩
     apply norm_nonneg
   · exact ⟨0, f.ker.zero_mem, by simp⟩
 

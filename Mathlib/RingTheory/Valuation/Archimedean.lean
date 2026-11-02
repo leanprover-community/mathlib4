@@ -53,7 +53,7 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
     one_ne_zero, ← Set.wellFoundedOn_range]
   classical
   refine ⟨fun h ↦ (h.mapsTo Subtype.val ?_).mono' (by simp), fun h ↦ (h.mapsTo ?_ ?_).mono' ?_⟩
-  · rintro ⟨_, x, rfl⟩
+  · rintro ⟨-, x, rfl⟩
     simp only [← Subtype.coe_le_coe, OneMemClass.coe_one, Set.mem_ofPred_eq, Set.mem_range,
       Function.comp_apply]
     intro hx

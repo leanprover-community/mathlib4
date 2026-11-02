@@ -373,4 +373,4 @@ theorem Right.sign_neg [AddRightStrictMono α] (a : α) :
 end AddGroup
 
 theorem Int.sign_eq_sign (n : ℤ) : Int.sign n = SignType.sign n := by
-  obtain (n | _) | _ := n <;> simp [sign, negSucc_lt_zero]
+  obtain (n | -) | - := n <;> simp [sign, negSucc_lt_zero]

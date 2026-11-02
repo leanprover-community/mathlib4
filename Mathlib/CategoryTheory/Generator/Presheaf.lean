@@ -72,7 +72,7 @@ lemma isSeparating {ι : Type w} {S : ι → A} (hS : ObjectProperty.IsSeparatin
   intro F G f g h
   ext ⟨X⟩
   refine hS _ _ ?_
-  rintro _ ⟨i⟩ α
+  rintro - ⟨i⟩ α
   apply freeYonedaHomEquiv.symm.injective
   simpa only [freeYonedaHomEquiv_symm_comp] using
     h _ (ObjectProperty.ofObj_apply _ ⟨X, i⟩) (freeYonedaHomEquiv.symm α)

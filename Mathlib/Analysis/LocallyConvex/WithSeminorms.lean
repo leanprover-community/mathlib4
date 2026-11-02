@@ -137,7 +137,7 @@ theorem basisSets_add (U) (hU : U ∈ p.basisSets) :
 
 theorem basisSets_neg (U) (hU' : U ∈ p.basisSets) :
     ∃ V ∈ p.basisSets, V ⊆ (fun x : E => -x) ⁻¹' U := by
-  rcases p.basisSets_iff.mp hU' with ⟨s, r, _, hU⟩
+  rcases p.basisSets_iff.mp hU' with ⟨s, r, -, hU⟩
   rw [hU, neg_preimage, neg_ball (s.sup p), neg_zero]
   exact ⟨U, hU', Eq.subset hU⟩
 
@@ -263,7 +263,7 @@ theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂
     (hf : IsBounded p q f) (s' : Finset ι') :
     ∃ (C : ℝ≥0) (s : Finset ι), (s'.sup q).comp f ≤ C • s.sup p := by
   classical
-  obtain rfl | _ := s'.eq_empty_or_nonempty
+  obtain rfl | - := s'.eq_empty_or_nonempty
   · exact ⟨1, ∅, by simp [Seminorm.bot_eq_zero]⟩
   choose fₛ fC hf using hf
   use #s' • s'.sup fC, Finset.biUnion s' fₛ
@@ -645,7 +645,7 @@ theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp 
   intro h s' hs'
   rcases p.basisSets_iff.mp hs' with ⟨I, r, hr, hs'⟩
   rw [id, hs']
-  rcases h I with ⟨r', _, h'⟩
+  rcases h I with ⟨r', -, h'⟩
   simp_rw [← (I.sup p).mem_ball_zero] at h'
   refine Absorbs.mono_right ?_ h'
   exact (Finset.sup I p).ball_zero_absorbs_ball_zero hr
@@ -1087,7 +1087,7 @@ theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : 
   · intro s hs
     change s ∈ Set.iUnion _ at hs
     simp_rw [Set.mem_iUnion, Set.mem_singleton_iff] at hs
-    rcases hs with ⟨I, r, _, rfl⟩
+    rcases hs with ⟨I, r, -, rfl⟩
     exact convex_ball _ _ _
 
 /-- A `PolynormableSpace` over `ℝ` is locally convex.

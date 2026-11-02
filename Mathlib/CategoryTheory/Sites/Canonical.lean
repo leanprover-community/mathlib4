@@ -85,7 +85,7 @@ theorem sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type w)) (h : P ∈ Ps) 
 lemma mem_finestTopology_of_forall_isSheafFor {Ps : Set (Cᵒᵖ ⥤ Type w)} {X : C} {S : Sieve X}
     (H : ∀ P ∈ Ps, ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f).arrows) :
     S ∈ finestTopology Ps X := by
-  rintro _ ⟨⟨_, _, ⟨P, hP, rfl⟩, rfl⟩, rfl⟩ Y f
+  rintro - ⟨⟨-, -, ⟨P, hP, rfl⟩, rfl⟩, rfl⟩ Y f
   exact H P hP _
 
 /--

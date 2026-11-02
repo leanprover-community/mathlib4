@@ -360,7 +360,7 @@ theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (h
   (head_terminates_iff _).2 <| by
     rcases (head_terminates_iff _).1 T with ⟨⟨a, h⟩⟩
     simp? [tail] at h says simp only [tail, destruct_flatten, bind_map_left] at h
-    rcases exists_of_mem_bind h with ⟨s', h1, _⟩
+    rcases exists_of_mem_bind h with ⟨s', h1, -⟩
     exact terminates_of_mem h1
 
 theorem destruct_some_of_destruct_tail_some {s : WSeq α} {a} (h : some a ∈ destruct (tail s)) :

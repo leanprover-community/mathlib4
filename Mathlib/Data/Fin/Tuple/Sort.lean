@@ -92,7 +92,7 @@ theorem self_comp_sort (f : Fin n → α) : f ∘ sort f = graph.proj ∘ graphE
   show graph.proj ∘ (graphEquiv₁ f ∘ (graphEquiv₁ f).symm) ∘ (graphEquiv₂ f).toEquiv = _ by simp
 
 theorem monotone_proj (f : Fin n → α) : Monotone (graph.proj : graph f → α) := by
-  rintro ⟨⟨x, i⟩, hx⟩ ⟨⟨y, j⟩, hy⟩ (_ | h)
+  rintro ⟨⟨x, i⟩, hx⟩ ⟨⟨y, j⟩, hy⟩ (- | h)
   · exact le_of_lt ‹_›
   · simp [graph.proj]
 

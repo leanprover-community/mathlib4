@@ -40,7 +40,7 @@ namespace NonarchimedeanGroup
 @[to_additive]
 lemma exists_openSubgroup_separating {a b : G} (h : a ≠ b) :
     ∃ V : OpenSubgroup G, Disjoint (a • (V : Set G)) (b • V) := by
-  obtain ⟨u, v, _, open_v, mem_u, mem_v, dis⟩ := t2_separation (h ∘ inv_mul_eq_one.mp)
+  obtain ⟨u, v, -, open_v, mem_u, mem_v, dis⟩ := t2_separation (h ∘ inv_mul_eq_one.mp)
   obtain ⟨V, hV⟩ := is_nonarchimedean v (open_v.mem_nhds mem_v)
   use V
   simp only [Disjoint, Set.bot_eq_empty, Set.subset_empty_iff]

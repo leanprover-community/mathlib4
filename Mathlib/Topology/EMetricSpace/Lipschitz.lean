@@ -173,7 +173,7 @@ protected theorem weaken (hf : LipschitzWith K f) {K' : ℝ≥0} (h : K ≤ K') 
 theorem ediam_image_le (hf : LipschitzWith K f) (s : Set α) :
     Metric.ediam (f '' s) ≤ K * Metric.ediam s := by
   apply Metric.ediam_le
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩
   exact hf.edist_le_mul_of_le (Metric.edist_le_ediam_of_mem hx hy)
 
 theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥0∞}

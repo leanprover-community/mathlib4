@@ -167,7 +167,7 @@ def homotopyEquivOfIso {C D : HomologicalComplex V c}
 variable (V c) in
 lemma quotient_inverts_homotopyEquivalences :
     (HomologicalComplex.homotopyEquivalences V c).IsInvertedBy (quotient V c) := by
-  rintro K L _ ⟨e, rfl⟩
+  rintro K L - ⟨e, rfl⟩
   change IsIso (isoOfHomotopyEquiv e).hom
   infer_instance
 

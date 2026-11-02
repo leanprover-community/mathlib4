@@ -86,7 +86,7 @@ lemma Module.FinitePresentation.exists_free_localizedModule_powers
   let I := Module.Free.ChooseBasisIndex Rₛ M'
   let b : Basis I Rₛ M' := Module.Free.chooseBasis Rₛ M'
   have : Module.Finite Rₛ M' := Module.Finite.of_isLocalizedModule S (Rₚ := Rₛ) f
-  obtain ⟨r, hr, b', _⟩ := Module.FinitePresentation.exists_basis_localizedModule_powers S f Rₛ b
+  obtain ⟨r, hr, b', -⟩ := Module.FinitePresentation.exists_basis_localizedModule_powers S f Rₛ b
   have := (show Localization (.powers r) →+* Rₛ from IsLocalization.map (M := .powers r) (T := S) _
     (RingHom.id _) (Submonoid.powers_le.mpr hr)).domain_nontrivial
   refine ⟨r, hr, .of_basis b', ?_⟩

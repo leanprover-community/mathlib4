@@ -49,7 +49,7 @@ theorem iSup_add_one_eq (hf : IsFundamentalSeq f) : ⨆ i, (f i).1 + 1 = o := by
   · simp_rw [Ordinal.iSup_le_iff, add_one_le_iff]
     exact fun i ↦ (f i).2
   · refine le_of_forall_lt fun b hb ↦ ?_
-    obtain ⟨_, ⟨c, rfl⟩, hc : b ≤ _⟩ := hf.isCofinal_range ⟨b, hb⟩
+    obtain ⟨-, ⟨c, rfl⟩, hc : b ≤ _⟩ := hf.isCofinal_range ⟨b, hb⟩
     apply hc.trans_lt
     rw [← add_one_le_iff]
     apply Ordinal.le_iSup
@@ -103,7 +103,7 @@ theorem comp_isNormal {g : Ordinal → Ordinal}
     rintro ⟨b, hb⟩
     rw [mem_Iio, hg.lt_iff_exists_lt ho] at hb
     obtain ⟨c, hc, hc'⟩ := hb
-    obtain ⟨_, ⟨d, rfl⟩, hd⟩ := hf.isCofinal_range ⟨c, hc⟩
+    obtain ⟨-, ⟨d, rfl⟩, hd⟩ := hf.isCofinal_range ⟨c, hc⟩
     refine ⟨⟨_, hg.strictMono (f d).2⟩, ?_, hc'.le.trans (hg.monotone hd)⟩
     simp
 

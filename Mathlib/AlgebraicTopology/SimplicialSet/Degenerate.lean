@@ -47,7 +47,7 @@ def nonDegenerate (n : ℕ) : Set (X _⦋n⦌) := (X.degenerate n)ᶜ
 lemma degenerate_zero : X.degenerate 0 = ∅ := by
   ext x
   simp only [Set.mem_empty_iff_false, iff_false]
-  rintro ⟨m, hm, _⟩
+  rintro ⟨m, hm, -⟩
   simp at hm
 
 @[simp]
@@ -288,7 +288,7 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
   · aesop
   · rintro h ⟨n⟩ x hx
     induction n using SimplexCategory.rec with | _ n =>
-    obtain ⟨m, f, _, ⟨a, ha⟩, ha'⟩ := exists_nonDegenerate A ⟨x, hx⟩
+    obtain ⟨m, f, -, ⟨a, ha⟩, ha'⟩ := exists_nonDegenerate A ⟨x, hx⟩
     simp only [Subfunctor.toFunctor_obj, Subtype.ext_iff,
       Subfunctor.toFunctor_map] at ha'
     subst ha'

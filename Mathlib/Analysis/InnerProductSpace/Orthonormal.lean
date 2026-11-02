@@ -248,7 +248,7 @@ theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Dir
     Orthonormal 𝕜 (fun x => x : (⋃ i, s i) → E) := by
   classical
   rw [orthonormal_subtype_iff_ite]
-  rintro x ⟨_, ⟨i, rfl⟩, hxi⟩ y ⟨_, ⟨j, rfl⟩, hyj⟩
+  rintro x ⟨-, ⟨i, rfl⟩, hxi⟩ y ⟨-, ⟨j, rfl⟩, hyj⟩
   obtain ⟨k, hik, hjk⟩ := hs i j
   have h_orth : Orthonormal 𝕜 (fun x => x : s k → E) := h k
   rw [orthonormal_subtype_iff_ite] at h_orth

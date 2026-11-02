@@ -87,7 +87,7 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
       (Ideal.pow_le_pow_right (by simp) h₂)⟩
   rw [H.1]
   refine ⟨n, trivial, ?_⟩
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   have := Ring.mem_jacobson_iff.mp (hI (Ideal.pow_le_self hn hx)) 1
   rw [mul_one, add_comm] at this
   refine hn' this.unit (by simpa using hx) ?_

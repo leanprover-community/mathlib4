@@ -27,7 +27,7 @@ public section
 theorem isReduced_localizationPreserves : LocalizationPreserves fun R _ => IsReduced R := by
   introv R _ _
   constructor
-  rintro x ⟨_ | n, e⟩
+  rintro x ⟨- | n, e⟩
   · simpa using congr($e * x)
   obtain ⟨⟨y, m⟩, hx⟩ := IsLocalization.surj M x
   dsimp only at hx

@@ -155,7 +155,7 @@ theorem Prime.not_perfect (h : Prime p) : ¬ Perfect p :=
 
 /-- Any natural number power of a prime is deficient -/
 theorem Prime.deficient_pow (h : Prime n) : Deficient (n ^ m) := by
-  rcases Nat.eq_zero_or_pos m with (rfl | _)
+  rcases Nat.eq_zero_or_pos m with (rfl | -)
   · simpa using deficient_one
   · rw [Deficient, properDivisors_prime_pow h]
     calc

@@ -126,11 +126,11 @@ theorem comp_inj {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (hq : q₁.length
   refine ⟨fun h => ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
   induction q₁ with
   | nil =>
-    rcases q₂ with _ | ⟨q₂, f₂⟩
+    rcases q₂ with - | ⟨q₂, f₂⟩
     · exact ⟨h, rfl⟩
     · cases hq
   | cons q₁ f₁ ih =>
-    rcases q₂ with _ | ⟨q₂, f₂⟩
+    rcases q₂ with - | ⟨q₂, f₂⟩
     · cases hq
     · simp only [comp_cons, cons.injEq] at h
       obtain rfl := h.1

@@ -263,7 +263,7 @@ theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin
   rw [← hmono.range_inj_of_wellFoundedLT (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin,
     ← Set.image_univ, ← coe_univ, ← coe_image, coe_inj]
   refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
-  · rcases mem_image.1 hx with ⟨x, _, rfl⟩
+  · rcases mem_image.1 hx with ⟨x, -, rfl⟩
     exact hfs x
   · rw [h, card_image_of_injective _ hmono.injective, card_univ, Fintype.card_fin]
 

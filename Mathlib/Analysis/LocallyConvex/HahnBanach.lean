@@ -94,7 +94,7 @@ theorem StrongDual.exists_extension {𝕜} [NontriviallyNormedField 𝕜] [IsRCL
     ∃ g : StrongDual 𝕜 E, ∀ x : S, g x = f x := by
   obtain ⟨q, hq_cont, hq⟩ := Seminorm.exists_le_comp_of_isInducing (f := S.subtype)
     (p := f.toSeminorm) f.continuous.norm IsInducing.subtypeVal
-  obtain ⟨g, hg, _⟩ := Dual.exists_continuous_extension_of_le_seminorm S f.toLinearMap hq_cont hq
+  obtain ⟨g, hg, -⟩ := Dual.exists_continuous_extension_of_le_seminorm S f.toLinearMap hq_cont hq
   exact ⟨g, hg⟩
 
 variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]

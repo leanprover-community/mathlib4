@@ -187,12 +187,12 @@ theorem starConvex_iff_openSegment_subset [ZeroLEOneClass 𝕜] (hx : x ∈ s) :
     forall₂_congr fun _ hy => (openSegment_subset_iff_segment_subset hx hy).symm
 
 theorem starConvex_singleton (x : E) : StarConvex 𝕜 x {x} := by
-  rintro y (rfl : y = x) a b _ _ hab
+  rintro y (rfl : y = x) a b - - hab
   exact Convex.combo_self hab _
 
 theorem StarConvex.linear_image (hs : StarConvex 𝕜 x s) (f : E →ₗ[𝕜] F) :
     StarConvex 𝕜 (f x) (f '' s) := by
-  rintro _ ⟨y, hy, rfl⟩ a b ha hb hab
+  rintro - ⟨y, hy, rfl⟩ a b ha hb hab
   exact ⟨a • x + b • y, hs hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
 
 theorem StarConvex.is_linear_image (hs : StarConvex 𝕜 x s) {f : E → F} (hf : IsLinearMap 𝕜 f) :

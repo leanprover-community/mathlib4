@@ -78,7 +78,7 @@ theorem mem_stabilizer_submodule_of_le_fixedSubmodule
     e ∈ stabilizer (V ≃ₗ[R] V) W := by
   rw [mem_stabilizer_submodule_iff_map_eq]
   apply le_antisymm
-  · rintro _ ⟨x, hx : x ∈ W, rfl⟩
+  · rintro - ⟨x, hx : x ∈ W, rfl⟩
     suffices e x = x by simpa [this, coe_coe]
     rw [← coe_toLinearMap, ← mem_fixedSubmodule_iff]
     exact hW hx

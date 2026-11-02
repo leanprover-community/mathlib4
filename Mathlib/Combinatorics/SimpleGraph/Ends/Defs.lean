@@ -178,7 +178,7 @@ theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.Co
     refine C.ind fun x xnL => ?_
     exact ⟨x, ⟨xnL, rfl⟩, ⟨fun xK => xnL (h xK), rfl⟩⟩
   · refine C.ind fun x xnL => ?_
-    rintro ⟨x, ⟨_, e₁⟩, _, rfl⟩
+    rintro ⟨x, ⟨_, e₁⟩, -, rfl⟩
     rw [← e₁]
     rfl
 

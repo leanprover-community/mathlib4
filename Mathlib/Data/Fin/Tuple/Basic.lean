@@ -1106,7 +1106,7 @@ theorem removeNth_removeNth_heq_swap {α : Fin (n + 2) → Sort*} (m : ∀ i, α
       (i.predAbove j).removeNth ((j.succAbove i).removeNth m) := by
   apply Function.hfunext rfl
   simp only [heq_iff_eq]
-  rintro k _ rfl
+  rintro k - rfl
   unfold removeNth
   apply congr_arg_heq
   rw [succAbove_succAbove_succAbove_predAbove]

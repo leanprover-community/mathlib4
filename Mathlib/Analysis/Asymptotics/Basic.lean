@@ -112,7 +112,7 @@ theorem isBigOWith_inv (hc : 0 < c) : IsBigOWith c⁻¹ l f g ↔ ∀ᶠ x in l,
 theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x, 0 ≤ ‖g x‖) :
     f =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f x‖ ≤ ‖g x‖ := by
   constructor
-  · rintro H (_ | n)
+  · rintro H (- | n)
     · refine (H.def one_pos).mono fun x h₀' => ?_
       rw [Nat.cast_zero, zero_mul]
       refine h₀.elim (fun hf => (hf x).trans ?_) fun hg => hg x

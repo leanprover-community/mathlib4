@@ -353,7 +353,7 @@ theorem IsRestriction.finitary {M : Matroid α} [Finitary M] (h : N ≤r M) : N.
 
 theorem finite_setOfPred_isRestriction (M : Matroid α) [M.Finite] : {N | N ≤r M}.Finite :=
   (M.ground_finite.finite_subsets.image (fun R ↦ M ↾ R)).subset <|
-    by rintro _ ⟨R, hR, rfl⟩; exact ⟨_, hR, rfl⟩
+    by rintro - ⟨R, hR, rfl⟩; exact ⟨_, hR, rfl⟩
 
 @[deprecated (since := "2026-07-09")]
 alias finite_setOf_isRestriction := finite_setOfPred_isRestriction

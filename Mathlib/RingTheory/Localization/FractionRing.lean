@@ -331,7 +331,7 @@ variable (A K) in
 the image of `algebraMap A K` is equal to the whole field `K`. -/
 theorem closure_range_algebraMap : Subfield.closure (Set.range (algebraMap A K)) = ⊤ :=
   top_unique fun z _ ↦ by
-    obtain ⟨_, _, -, rfl⟩ := div_surjective A z
+    obtain ⟨-, -, -, rfl⟩ := div_surjective A z
     apply div_mem <;> exact Subfield.subset_closure ⟨_, rfl⟩
 
 variable {L : Type*} [Field L] {g : A →+* L} {f : K →+* L}
@@ -705,7 +705,7 @@ theorem fixingSubgroup_range_algebraMap :
       fixingSubgroup G (Set.range (algebraMap K L)) := by
   simp_rw [Subgroup.ext_iff, mem_fixingSubgroup_iff, Set.forall_mem_range]
   refine fun g ↦ ⟨fun h x ↦ ?_, fun h x ↦ FaithfulSMul.algebraMap_injective B L ?_⟩
-  · obtain ⟨a, b, _, rfl⟩ := IsFractionRing.div_surjective A x
+  · obtain ⟨a, b, -, rfl⟩ := IsFractionRing.div_surjective A x
     simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply A B L, smul_div₀', ← algebraMap.smul', h]
   · simp_rw [algebraMap.smul', ← IsScalarTower.algebraMap_apply,

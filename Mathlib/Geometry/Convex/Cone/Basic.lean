@@ -307,7 +307,7 @@ theorem Salient.anti (h : C₂ ≤ C₁) : C₁.Salient → C₂.Salient :=
 
 /-- A flat cone is always pointed (contains `0`). -/
 theorem Flat.pointed (hC : C.Flat) : C.Pointed := by
-  obtain ⟨x, hx, _, hxneg⟩ := hC
+  obtain ⟨x, hx, -, hxneg⟩ := hC
   rw [Pointed, ← add_neg_cancel x]
   exact add_mem hx hxneg
 
@@ -431,13 +431,13 @@ theorem IsReproducing.of_span_eq_top {R : Type*} {M : Type*} [Ring R] [LinearOrd
   let S : Submodule R M := {
     carrier := (C : Set M) - (C : Set M)
     add_mem' := by
-      rintro _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+      rintro - - ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
       exact ⟨y₁ + y₂, C.add_mem hy₁ hy₂, z₁ + z₂, C.add_mem hz₁ hz₂, add_sub_add_comm ..⟩
     zero_mem' := by
       obtain ⟨c, hc⟩ := hne
       exact ⟨c, hc, c, hc, sub_self c⟩
     smul_mem' := by
-      rintro r _ ⟨y, hy, z, hz, rfl⟩
+      rintro r - ⟨y, hy, z, hz, rfl⟩
       simp only [Set.mem_sub, SetLike.mem_coe]
       rcases lt_trichotomy r 0 with hr | rfl | hr
       · -- r < 0: use (-r) • z - (-r) • y = r • (y - z)
@@ -494,7 +494,7 @@ lemma disjoint_hull_left_of_convex (hs : Convex 𝕜 s) : Disjoint (hull 𝕜 s)
   mp := by rw [← disjoint_coe]; exact .mono_left subset_hull
   mpr := by
     simp_rw [← disjoint_coe, disjoint_left, SetLike.mem_coe, mem_hull_of_convex hs]
-    rintro hsC _ ⟨r, hr, y, hy, rfl⟩
+    rintro hsC - ⟨r, hr, y, hy, rfl⟩
     exact (C.smul_mem_iff hr).not.mpr (hsC hy)
 
 lemma disjoint_hull_right_of_convex (hs : Convex 𝕜 s) : Disjoint C (hull 𝕜 s) ↔ Disjoint ↑C s := by

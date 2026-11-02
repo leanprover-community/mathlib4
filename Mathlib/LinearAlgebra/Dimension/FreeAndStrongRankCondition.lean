@@ -145,7 +145,7 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀, s ≤ K ∙ v₀ := by
   constructor
   · rw [rank_submodule_le_one_iff]
-    rintro ⟨v₀, _, h⟩
+    rintro ⟨v₀, -, h⟩
     exact ⟨v₀, h⟩
   · rintro ⟨v₀, h⟩
     obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := K) (M := s)

@@ -529,7 +529,7 @@ theorem contDiffWithinAt_iff_contDiffOn_nhds (hn : n ≠ ∞) :
 
 protected theorem ContDiffWithinAt.eventually (h : ContDiffWithinAt 𝕜 n f s x) (hn : n ≠ ∞) :
     ∀ᶠ y in 𝓝[insert x s] x, ContDiffWithinAt 𝕜 n f s y := by
-  rcases h.contDiffOn le_rfl (by simp [hn]) with ⟨u, hu, _, hd⟩
+  rcases h.contDiffOn le_rfl (by simp [hn]) with ⟨u, hu, -, hd⟩
   have : ∀ᶠ y : E in 𝓝[insert x s] x, u ∈ 𝓝[insert x s] y ∧ y ∈ u :=
     (eventually_eventually_nhdsWithin.2 hu).and hu
   refine this.mono fun y hy => (hd y hy.2).mono_of_mem_nhdsWithin ?_
@@ -551,7 +551,7 @@ theorem contDiffOn_infty : ContDiffOn 𝕜 ∞ f s ↔ ∀ n : ℕ, ContDiffOn �
 theorem contDiffOn_all_iff_nat :
     (∀ (n : ℕ∞), ContDiffOn 𝕜 n f s) ↔ ∀ n : ℕ, ContDiffOn 𝕜 n f s := by
   refine ⟨fun H n => H n, ?_⟩
-  rintro H (_ | n)
+  rintro H (- | n)
   exacts [contDiffOn_infty.2 H, H n]
 
 theorem ContDiffOn.continuousOn (h : ContDiffOn 𝕜 n f s) : ContinuousOn f s := fun x hx =>
@@ -1087,7 +1087,7 @@ theorem contDiffOn_univ : ContDiffOn 𝕜 n f univ ↔ ContDiff 𝕜 n f := by
       refine ⟨H.ftaylorSeriesWithin uniqueDiffOn_univ, fun i ↦ ?_⟩
       rw [← analyticOn_univ]
       exact H.analyticOn.iteratedFDerivWithin uniqueDiffOn_univ _
-    · rintro ⟨p, hp, h'p⟩ x _
+    · rintro ⟨p, hp, h'p⟩ x -
       exact ⟨univ, Filter.univ_sets _, p, (hp.hasFTaylorSeriesUpToOn univ).of_le le_top,
         fun i ↦ (h'p i).analyticOn⟩
   | (n : ℕ∞) =>
@@ -1096,7 +1096,7 @@ theorem contDiffOn_univ : ContDiffOn 𝕜 n f univ ↔ ContDiff 𝕜 n f := by
       use ftaylorSeriesWithin 𝕜 f univ
       rw [← hasFTaylorSeriesUpToOn_univ_iff]
       exact H.ftaylorSeriesWithin uniqueDiffOn_univ
-    · rintro ⟨p, hp⟩ x _ m hm
+    · rintro ⟨p, hp⟩ x - m hm
       exact ⟨univ, Filter.univ_sets _, p,
         (hp.hasFTaylorSeriesUpToOn univ).of_le (mod_cast hm)⟩
 

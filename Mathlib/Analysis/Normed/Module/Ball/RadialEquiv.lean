@@ -79,7 +79,7 @@ then their pointwise scalar product is an open set. -/
 theorem IsOpen.smul_sphere {r : ℝ} (hr : r ≠ 0) {U : Set ℝ} {V : Set (Metric.sphere (0 : E) r)}
     (hU : IsOpen U) (hU₀ : 0 ∉ U) (hV : IsOpen V) : IsOpen (U • (V : Set E)) := by
   rw [isOpen_iff_mem_nhds]
-  rintro _ ⟨x, hxU, _, ⟨y, hyV, rfl⟩, rfl⟩
+  rintro - ⟨x, hxU, -, ⟨y, hyV, rfl⟩, rfl⟩
   wlog hx₀ : 0 < x generalizing x U
   · replace hx₀ : 0 < -x := by
       rw [not_lt, le_iff_eq_or_lt, ← neg_pos] at hx₀
@@ -95,7 +95,7 @@ theorem IsOpen.smul_sphere {r : ℝ} (hr : r ≠ 0) {U : Set ℝ} {V : Set (Metr
   rw [← Filter.map_map, (homeomorphSphereProd _ r hr₀).symm.map_nhds_eq,
     map_nhds_subtype_val, IsOpen.nhdsWithin_eq, homeomorphSphereProd_symm_apply_coe] at this
   · filter_upwards [this]
-    rintro _ ⟨⟨a, b⟩, ⟨ha, hb⟩, rfl⟩
+    rintro - ⟨⟨a, b⟩, ⟨ha, hb⟩, rfl⟩
     rw [Function.comp_apply, homeomorphSphereProd_symm_apply_coe]
     apply Set.smul_mem_smul
     exacts [hb, mem_image_of_mem _ ha]

@@ -190,7 +190,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β] (f : α → β) :
     Continuous[t, (coinduced f).toTopologicalSpace] f := by
   rw [continuous_sInf_rng]
-  rintro _ ⟨t', ht', rfl⟩
+  rintro - ⟨t', ht', rfl⟩
   exact continuous_iff_coinduced_le.2 ht'
 
 end GroupTopology

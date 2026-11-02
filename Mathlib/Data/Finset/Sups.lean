@@ -450,7 +450,7 @@ theorem forall_disjSups_iff {p : α → Prop} :
     (∀ c ∈ s ○ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, Disjoint a b → p (a ⊔ b) := by
   simp_rw [mem_disjSups]
   refine ⟨fun h a ha b hb hab => h _ ⟨_, ha, _, hb, hab, rfl⟩, ?_⟩
-  rintro h _ ⟨a, ha, b, hb, hab, rfl⟩
+  rintro h - ⟨a, ha, b, hb, hab, rfl⟩
   exact h _ ha _ hb hab
 
 @[simp]
@@ -503,7 +503,7 @@ variable [DistribLattice α] [OrderBot α] [DecidableRel (α := α) Disjoint] (s
 theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
   refine (associative_of_commutative_of_le inferInstance ?_).assoc
   simp only [disjSups_subset_iff, mem_disjSups]
-  rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
+  rintro s t u - ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
   rw [disjoint_sup_left] at habc
   exact ⟨a, ha, _, ⟨b, hb, c, hc, habc.2, rfl⟩, hab.sup_right habc.1, (sup_assoc ..).symm⟩
 

@@ -342,7 +342,7 @@ theorem lookupAll_eq_dlookup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) :
     lookupAll a l = (dlookup a l).toList := by
   rw [← head?_lookupAll]
   have h1 := lookupAll_length_le_one a h; revert h1
-  rcases lookupAll a l with (_ | ⟨b, _ | ⟨c, l⟩⟩) <;> intro h1 <;> try rfl
+  rcases lookupAll a l with (- | ⟨b, - | ⟨c, l⟩⟩) <;> intro h1 <;> try rfl
   exact absurd h1 (by simp)
 
 theorem lookupAll_nodup (a : α) {l : List (Sigma β)} (h : l.NodupKeys) : (lookupAll a l).Nodup := by

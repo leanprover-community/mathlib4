@@ -140,7 +140,7 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
   have hsec' : (Submodule.mkQ _) ∘ sec = _root_.id := funext hsec
   have hst : Disjoint s (sec '' t) := by
     rw [Set.disjoint_iff]
-    rintro _ ⟨hxs, ⟨x, hxt, rfl⟩⟩
+    rintro - ⟨hxs, ⟨x, hxt, rfl⟩⟩
     apply ht'.ne_zero ⟨x, hxt⟩
     rw [Subtype.coe_mk, ← hsec x, mkQ_apply, Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs

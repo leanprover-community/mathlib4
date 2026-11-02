@@ -248,7 +248,7 @@ theorem Submodule.le_linearEquiv_of_le_sSup [hs : ∀ m : s, IsSemisimpleModule 
   have e := LinearEquiv.ofInjective _ (inclusion_injective hN)
   have := IsSimpleModule.congr e.symm
   have := isSemisimpleModule_biSup_of_isSemisimpleModule_submodule fun m hm ↦ hs ⟨m, hm⟩
-  obtain ⟨_, ⟨m, hm, rfl⟩, S, le, ⟨e'⟩⟩ := LinearMap.range (inclusion hN)
+  obtain ⟨-, ⟨m, hm, rfl⟩, S, le, ⟨e'⟩⟩ := LinearMap.range (inclusion hN)
       |>.le_linearEquiv_of_sSup_eq_top (comap (⨆ i ∈ s, i).subtype '' s) <| by
     rw [sSup_image, biSup_comap_subtype_eq_top]
   exact ⟨m, hm, _, map_le_iff_le_comap.mpr le,
@@ -297,7 +297,7 @@ theorem sSupIndep_isotypicComponents : sSupIndep (isotypicComponents R M) :=
     have : IsSemisimpleModule R c := by obtain ⟨S, _, rfl⟩ := hc; infer_instance
     have := IsSemisimpleModule.of_injective _
       (Submodule.inclusion_injective (inf_le_left : c ⊓ sSup s ≤ c))
-    have (c : s) : IsSemisimpleModule R c := by obtain ⟨_, ⟨_, _, rfl⟩, _⟩ := c; infer_instance
+    have (c : s) : IsSemisimpleModule R c := by obtain ⟨-, ⟨-, -, rfl⟩, -⟩ := c; infer_instance
     have ⟨S, le, _⟩ := (IsSemisimpleModule.eq_bot_or_exists_simple_le _).resolve_left ne
     have ⟨c', hc', S', le', ⟨e⟩⟩ := S.le_linearEquiv_of_le_sSup _ (le.trans inf_le_right)
     have := IsSimpleModule.congr e.symm
@@ -474,7 +474,7 @@ form a complete atomic Boolean algebra. -/
 theorem isFullyInvariant_iff_sSup_isotypicComponents {m : Submodule R M} :
     m.IsFullyInvariant ↔ ∃ s ⊆ isotypicComponents R M, m = sSup s := by
   refine ⟨fun h ↦ ⟨OrderIso.setIsotypicComponents.symm ⟨m, h⟩, ⟨?_, ?_⟩⟩, ?_⟩
-  · rintro _ ⟨c, _, rfl⟩; exact c.2
+  · rintro - ⟨c, -, rfl⟩; exact c.2
   · convert Subtype.ext_iff.mp (OrderIso.setIsotypicComponents.right_inv ⟨m, h⟩).symm
     simp [sSup_image, OrderIso.setIsotypicComponents, OrderIso.symm]
   · rintro ⟨_, hs, rfl⟩

@@ -40,9 +40,9 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     have scaling_eq_self : (· * m) '' N = N := by
       apply hN.eq_of_subset
       · refine ⟨(continuous_const_mul m).isClosedMap _ N_closed, ⟨_, ⟨m, hm, rfl⟩⟩, ?_⟩
-        rintro _ ⟨m'', hm'', rfl⟩ _ ⟨m', hm', rfl⟩
+        rintro - ⟨m'', hm'', rfl⟩ - ⟨m', hm', rfl⟩
         exact ⟨m'' * m * m', N_mul _ (N_mul _ hm'' _ hm) _ hm', mul_assoc _ _ _⟩
-      · rintro _ ⟨m', hm', rfl⟩
+      · rintro - ⟨m', hm', rfl⟩
         exact N_mul _ hm' _ hm
     /- In particular, this means that `m' * m = m` for some `m'`. We now use minimality again
        to show that this holds for all `m' ∈ N`. -/

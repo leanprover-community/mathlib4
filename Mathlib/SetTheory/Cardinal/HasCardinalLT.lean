@@ -163,7 +163,7 @@ lemma hasCardinalLT_subtype_iSup
     HasCardinalLT (Subtype (⨆ i, P i)) κ :=
   (hasCardinalLT_sigma (fun i ↦ Subtype (P i)) κ hι hP).of_surjective
     (fun ⟨i, x, hx⟩ ↦ ⟨x, by simp only [iSup_apply, iSup_Prop_eq]; exact ⟨i, hx⟩⟩) (by
-    rintro ⟨_, h⟩
+    rintro ⟨-, h⟩
     simp only [iSup_apply, iSup_Prop_eq] at h
     obtain ⟨i, hi⟩ := h
     exact ⟨⟨i, _, hi⟩, rfl⟩)

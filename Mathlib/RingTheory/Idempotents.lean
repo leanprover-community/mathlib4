@@ -267,7 +267,7 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker_aux
       (by simp [Finset.mul_sum, h₂', he.mul_eq, eq_comm])
       (by simp [Finset.sum_mul, h₂', he.mul_eq])
     refine ⟨_, (h₁.option _ h₃ h₅ h₆).embedding (finSuccEquiv n).toEmbedding, funext fun i ↦ ?_⟩
-    obtain ⟨_ | i, rfl⟩ := (finSuccEquiv n).symm.surjective i <;> simp [*]
+    obtain ⟨- | i, rfl⟩ := (finSuccEquiv n).symm.surjective i <;> simp [*]
 
 variable {I : Type*} {e : I → R}
 
@@ -492,7 +492,7 @@ lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
   choose k hk using fun i ↦ Ideal.mem_span_singleton.mp
       (hfe₀.le (show f (e' i * e' i - e' i) = 0 by simp [he', (he.1.1 i).eq]))
   refine ⟨(1 - e₀) • e', ⟨⟨Option.rec he₀ fun i ↦ ?_, ?_⟩, ?_⟩, ?_⟩
-  · rintro (_|i) (_|j) h
+  · rintro (-|i) (-|j) h
     · simp at h
     · dsimp; linear_combination - he₀.eq * e' j
     · dsimp; linear_combination - he₀.eq * e' i

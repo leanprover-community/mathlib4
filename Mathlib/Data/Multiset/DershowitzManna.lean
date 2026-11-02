@@ -153,7 +153,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
 
 private lemma isDershowitzMannaLT_of_transGen_oneStep (hMN : TransGen OneStep M N) :
     IsDershowitzMannaLT M N :=
-  hMN.trans_induction_on (by rintro _ _ ⟨X, Y, a, rfl, rfl, hYa⟩; exact ⟨X, Y, {a}, by simpa⟩)
+  hMN.trans_induction_on (by rintro - - ⟨X, Y, a, rfl, rfl, hYa⟩; exact ⟨X, Y, {a}, by simpa⟩)
     fun _ _ ↦ .trans
 
 /-- `TransGen OneStep` and `IsDershowitzMannaLT` are equivalent. -/

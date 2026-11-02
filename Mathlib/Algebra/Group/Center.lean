@@ -90,11 +90,11 @@ protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b 
 protected theorem map {F} [FunLike F M N] [MulHomClass F M N] {f : F} (h : IsMulCentral a)
     (hf : Function.Surjective f) : IsMulCentral (f a) := by
   refine ⟨fun a ↦ ?_ , fun a b ↦ ?_, fun a b ↦ ?_⟩
-  · obtain ⟨_, rfl⟩ := hf a
+  · obtain ⟨-, rfl⟩ := hf a
     rw [commute_iff_eq, ← map_mul, ← map_mul, h.comm]
   all_goals
-    obtain ⟨_, rfl⟩ := hf a
-    obtain ⟨_, rfl⟩ := hf b
+    obtain ⟨-, rfl⟩ := hf a
+    obtain ⟨-, rfl⟩ := hf b
     simp only [← map_mul, h.left_assoc, h.right_assoc]
 
 @[to_additive]

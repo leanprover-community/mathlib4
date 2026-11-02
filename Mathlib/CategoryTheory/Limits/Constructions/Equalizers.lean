@@ -103,7 +103,7 @@ lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
           · exact c.π.app WalkingParallelPair.zero
           · exact c.π.app WalkingParallelPair.zero
           apply (mapIsLimitOfPreservesOfIsLimit G _ _ (prodIsProd _ _)).hom_ext
-          rintro (_ | _)
+          rintro (- | -)
           · simp only [Category.assoc, ← G.map_comp, prod.lift_fst, BinaryFan.π_app_left,
               BinaryFan.mk_fst]
           · simp only [BinaryFan.π_app_right, BinaryFan.mk_snd, Category.assoc, ← G.map_comp,
@@ -112,7 +112,7 @@ lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
               (c.π.naturality WalkingParallelPairHom.left).symm.trans
                 (c.π.naturality WalkingParallelPairHom.right)
         fac := fun c j => by
-          rcases j with (_ | _) <;>
+          rcases j with (- | -) <;>
             simp only [Category.comp_id, PreservesPullback.iso_inv_fst, Cone.ofFork_π, G.map_comp,
               PreservesPullback.iso_inv_fst_assoc, Functor.mapCone_π_app, eqToHom_refl,
               Category.assoc, Fork.ofι_π_app, pullback.lift_fst, pullback.lift_fst_assoc]
@@ -200,7 +200,7 @@ lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinary
           · exact c.ι.app WalkingParallelPair.one
           · exact c.ι.app WalkingParallelPair.one
           apply (mapIsColimitOfPreservesOfIsColimit G _ _ (coprodIsCoprod _ _)).hom_ext
-          rintro (_ | _)
+          rintro (- | -)
           · simp only [BinaryCofan.ι_app_left, BinaryCofan.mk_inl, ←
               G.map_comp_assoc, coprod.inl_desc]
           · simp only [BinaryCofan.ι_app_right, BinaryCofan.mk_inr, ←
@@ -209,7 +209,7 @@ lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinary
               (c.ι.naturality WalkingParallelPairHom.left).trans
                 (c.ι.naturality WalkingParallelPairHom.right).symm
         fac := fun c j => by
-          rcases j with (_ | _) <;>
+          rcases j with (- | -) <;>
             simp only [Functor.mapCocone_ι_app, Cocone.ofCofork_ι, Category.id_comp,
               eqToHom_refl, Category.assoc, Functor.map_comp, Cofork.ofπ_ι_app, pushout.inl_desc,
               PreservesPushout.inl_iso_inv_assoc]

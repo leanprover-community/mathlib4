@@ -624,7 +624,7 @@ lemma iff_exists_appLE_locally
     (RingHom.locally_stableUnderCompositionWithLocalizationAwaySource hQ)
   refine ⟨fun hf x ↦ ?_,
       fun hf ↦ (IsZariskiLocalAtSource.iff_exists_resLE (P := P)).mpr <| fun x ↦ ?_⟩
-  · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
+  · obtain ⟨U, hU, hfx, -⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
       (Opens.mem_top <| f x)
     obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp X.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ U from hfx)
@@ -719,7 +719,7 @@ lemma stalkMap_of_respectsIso
       (J : Ideal S) (_ : J.IsPrime), Q' (Localization.localRingHom _ J f rfl))
     (hf : P f) (x : X) : Q' (f.stalkMap x).hom := by
   wlog h : IsAffine X ∧ IsAffine Y generalizing X Y f
-  · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
+  · obtain ⟨U, hU, hfx, -⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
       (Opens.mem_top <| f x)
     obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp X.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ U from hfx)

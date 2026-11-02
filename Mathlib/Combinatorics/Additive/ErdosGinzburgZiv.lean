@@ -43,7 +43,7 @@ private lemma totalDegree_f₁_add_totalDegree_f₂ {a : ι → ZMod p} :
     (f₁ s a).totalDegree + (f₂ s a).totalDegree < 2 * p - 1 := by
   calc
     _ ≤ (p - 1) + (p - 1) := by
-      gcongr <;> apply totalDegree_finsetSum_le <;> rintro i _
+      gcongr <;> apply totalDegree_finsetSum_le <;> rintro i -
       · exact (totalDegree_X_pow ..).le
       · exact (totalDegree_smul_le ..).trans (totalDegree_X_pow ..).le
     _ < 2 * p - 1 := by have := (Fact.out : p.Prime).two_le; lia

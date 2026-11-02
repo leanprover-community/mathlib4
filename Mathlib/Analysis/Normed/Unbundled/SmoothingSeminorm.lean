@@ -316,13 +316,13 @@ private theorem μ_bddAbove (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : 
   by_cases! hx : μ x ≤ 1
   · use 1
     simp only [mem_upperBounds, Set.mem_range, forall_exists_index]
-    rintro _ n rfl
+    rintro - n rfl
     apply le_trans (rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hμ1 _ _) (hψ n))
     rw [← rpow_natCast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
     exact rpow_le_one (apply_nonneg _ _) hx (div_nonneg (cast_nonneg _) (cast_nonneg _))
   · use μ x
     simp only [mem_upperBounds, Set.mem_range, forall_exists_index]
-    rintro _ n rfl
+    rintro - n rfl
     apply le_trans (rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hμ1 _ _) (hψ n))
     rw [← rpow_natCast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
     conv_rhs => rw [← rpow_one (μ x)]

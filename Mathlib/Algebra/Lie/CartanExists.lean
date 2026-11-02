@@ -137,8 +137,8 @@ Lemma 2 in [barnes1967]. -/
 lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     (E : {engel K x | x ∈ U}) (hUle : U ≤ E) (hmin : IsMin E) :
     IsBot E := by
-  rcases E with ⟨_, x, hxU, rfl⟩
-  rintro ⟨_, y, hyU, rfl⟩
+  rcases E with ⟨-, x, hxU, rfl⟩
+  rintro ⟨-, y, hyU, rfl⟩
   -- It will be useful to repackage the Engel subalgebras
   set Ex : {engel K x | x ∈ U} := ⟨engel K x, x, hxU, rfl⟩
   set Ey : {engel K y | y ∈ U} := ⟨engel K y, y, hyU, rfl⟩
@@ -363,7 +363,7 @@ lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K
   set Ex : {engel K z | z ∈ engel K x} := ⟨engel K x, x, self_mem_engel _ _, rfl⟩
   suffices IsBot Ex from @this ⟨engel K y, y, hy, rfl⟩
   apply engel_isBot_of_isMin h (engel K x) Ex le_rfl
-  rintro ⟨_, y, hy, rfl⟩ hyx
+  rintro ⟨-, y, hy, rfl⟩ hyx
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
     suffices engel K y = engel K x from this.ge
     apply LieSubalgebra.toSubmodule_injective

@@ -252,7 +252,7 @@ theorem exists_clopen_partition_of_clopen_cover
     -- and verify the needed properties
     let C : Option I → Set X := fun i ↦ Option.casesOn i C0 C'
     refine ⟨C, ?_, ?_, ?_, ?_, ?_⟩
-    all_goals try rintro (_ | i); all_goals grind
+    all_goals try rintro (- | i); all_goals grind
     · intro x hx
       rw [mem_iUnion] at hx ⊢
       by_cases hx0 : x ∈ C0; { exact ⟨none, hx0⟩ }
@@ -265,7 +265,7 @@ theorem exists_clopen_partition_of_clopen_cover
         obtain ⟨k, hk⟩ := mem_iUnion.mp <| C'_cover_D' hxD'
         exact ⟨some k, hk⟩
     · rw [Set.pairwiseDisjoint_iff]
-      rintro (_ | i) _ (_ | j) _
+      rintro (- | i) - (- | j) -
       · simp
       · simpa [C, C0, Set.not_nonempty_iff_eq_empty, ← Set.disjoint_iff_inter_eq_empty] using
           Disjoint.mono_right (subset_iUnion C' j) disjoint_sdiff_left

@@ -46,7 +46,7 @@ lemma prop_subobjectSSup {X : C} (s : Set (Subobject X)) (hs : ∀ A ∈ s, P (A
   -- members of `s`, so it is a quotient of a coproduct of objects satisfying `P`.
   refine P.prop_of_iso (Subobject.underlyingIso _).symm ?_
   refine P.prop_of_epi (factorThruImage _) (prop_colimit _ _ ?_)
-  rintro ⟨⟨_, S, hS, rfl⟩⟩
+  rintro ⟨⟨-, S, hS, rfl⟩⟩
   simpa using hs S hS
 
 end Sup

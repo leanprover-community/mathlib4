@@ -109,7 +109,7 @@ theorem mFourierSubalgebra_coe :
   · ext z
     simp only [mFourier, Pi.zero_apply, fourier_zero, Finset.prod_const, one_pow,
       ContinuousMap.coe_mk, ContinuousMap.one_apply]
-  · rintro _ _ _ _ ⟨m, rfl⟩ ⟨n, rfl⟩
+  · rintro - - - - ⟨m, rfl⟩ ⟨n, rfl⟩
     refine ⟨m + n, ?_⟩
     ext z
     simp only [mFourier, Pi.add_apply, fourier_apply, fourier_add', Finset.prod_mul_distrib,

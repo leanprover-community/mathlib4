@@ -305,7 +305,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
       induction x using PFunctor.M.casesOn'
       induction y using PFunctor.M.casesOn'
       simp only [approx_mk] at h
-      obtain - | ⟨_, _, hagree⟩ := h
+      obtain - | ⟨-, -, hagree⟩ := h
       constructor <;> try rfl
       intro i
       apply n_ih
@@ -349,14 +349,14 @@ inductive IsPath : Path F → M F → Prop
 theorem isPath_cons {xs : Path F} {a a'} {f : F.B a → M F} {i : F.B a'} :
     IsPath (⟨a', i⟩ :: xs) (M.mk (.mk a f)) → a = a' := by
   generalize h : M.mk (.mk a f) = x
-  rintro (_ | ⟨_, _, _, _, rfl, _⟩)
+  rintro (- | ⟨-, -, _, -, rfl, -⟩)
   cases mk_inj h
   rfl
 
 theorem isPath_cons' {xs : Path F} {a} {f : F.B a → M F} {i : F.B a} :
     IsPath (⟨a, i⟩ :: xs) (M.mk (.mk a f)) → IsPath xs (f i) := by
   generalize h : M.mk (.mk a f) = x
-  rintro (_ | ⟨_, _, _, _, rfl, hp⟩)
+  rintro (- | ⟨_, -, _, _, rfl, hp⟩)
   cases mk_inj h
   exact hp
 

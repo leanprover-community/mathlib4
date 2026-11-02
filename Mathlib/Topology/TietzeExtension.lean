@@ -353,7 +353,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
     have hd : Disjoint (range e ∪ g ⁻¹' Ici c) (g ⁻¹' {a}) := by
       refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
       · rw [Set.disjoint_left]
-        rintro _ ⟨x, rfl⟩ (rfl : g (e x) = a)
+        rintro - ⟨x, rfl⟩ (rfl : g (e x) = a)
         exact ha' ⟨x, congr($hgf x).symm⟩
       · exact Set.disjoint_singleton_right.2 hac.not_ge
     rcases exists_bounded_mem_Icc_of_closed_of_le
@@ -371,7 +371,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
           0 < c - g y := sub_pos.2 hac
           _ = dg y := (dga rfl).symm
       · exact hlt.trans_le (le_add_of_nonneg_right (dgmem y).1)
-    rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
+    rcases ha.exists_between hay with ⟨-, ⟨x, rfl⟩, -, hxy⟩
     refine ⟨x, hxy.le, ?_⟩
     rcases le_total c (g y) with hc | hc
     · simp [dg0 (Or.inr hc), (hg_mem y).2]
@@ -386,7 +386,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
   have hd : Disjoint (range e ∪ g ⁻¹' Iic c) (g ⁻¹' {b}) := by
     refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
     · rw [Set.disjoint_left]
-      rintro _ ⟨x, rfl⟩ (rfl : g (e x) = b)
+      rintro - ⟨x, rfl⟩ (rfl : g (e x) = b)
       exact hb' ⟨x, congr($hgf x).symm⟩
     · exact Set.disjoint_singleton_right.2 hcb.not_ge
   rcases exists_bounded_mem_Icc_of_closed_of_le
@@ -404,9 +404,9 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
         0 < g y - c := sub_pos.2 hcb
         _ = dg y := (dgb rfl).symm
     · exact ((sub_le_self_iff _).2 (dgmem _).1).trans_lt hlt
-  rcases hb.exists_between hyb with ⟨_, ⟨xu, rfl⟩, hyxu, _⟩
+  rcases hb.exists_between hyb with ⟨-, ⟨xu, rfl⟩, hyxu, -⟩
   rcases lt_or_ge c (g y) with hc | hc
-  · rcases em (a ∈ range f) with (⟨x, rfl⟩ | _)
+  · rcases em (a ∈ range f) with (⟨x, rfl⟩ | -)
     · refine ⟨x, xu, ?_, hyxu.le⟩
       calc
         f x = c - (b - c) := by rw [← hsub, sub_sub_cancel]
@@ -416,7 +416,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
           a = c - (b - c) := by rw [← hsub, sub_sub_cancel]
           _ < g y - (b - c) := sub_lt_sub_right hc _
           _ ≤ g y - dg y := sub_le_sub_left (dgmem _).2 _
-      rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
+      rcases ha.exists_between hay with ⟨-, ⟨x, rfl⟩, -, hxy⟩
       exact ⟨x, xu, hxy.le, hyxu.le⟩
   · refine ⟨xl y, xu, ?_, hyxu.le⟩
     simp [dg0 (Or.inr hc), hxl]
@@ -478,7 +478,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
   have ht_sub : t' ⊆ Ioo (-1 : ℝ) 1 := image_subset_iff.2 fun x _ => (h x).2
   have : OrdConnected t' := by
     constructor
-    rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ z hz
+    rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩ z hz
     lift z to Ioo (-1 : ℝ) 1 using Icc_subset_Ioo (h x).2.1 (h y).2.2 hz
     change z ∈ Icc (h x) (h y) at hz
     rw [← h.image_Icc] at hz

@@ -95,7 +95,7 @@ theorem det_eq_prod_roots_charpoly_of_splits [IsDomain R] (hAps : B.charpoly.Spl
 
 theorem trace_eq_sum_roots_charpoly_of_splits [IsDomain R] (hAps : B.charpoly.Splits) :
     B.trace = (Matrix.charpoly B).roots.sum := by
-  rcases isEmpty_or_nonempty n with h | _
+  rcases isEmpty_or_nonempty n with h | -
   · simp
   · rw [trace_eq_neg_charpoly_nextCoeff, neg_eq_iff_eq_neg,
       ← hAps.nextCoeff_eq_neg_sum_roots_of_monic B.charpoly_monic]

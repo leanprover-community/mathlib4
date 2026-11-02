@@ -278,7 +278,7 @@ theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
 
 /-- There are at least two cubes in a valley -/
 theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
-  rcases v.1 c.b_mem_bottom with ⟨_, ⟨i, rfl⟩, hi⟩
+  rcases v.1 c.b_mem_bottom with ⟨-, ⟨i, rfl⟩, hi⟩
   have h2i : i ∈ bcubes cs c :=
     ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j => c.b_mem_side j.succ⟩⟩
   let j : Fin (n + 1) := ⟨2, h.three_le⟩
@@ -291,7 +291,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
     by_cases hj' : j'.succ = j
     · simp [p, ite_eq_left, side, hj', hw', w_lt_w h v h2i]
     · simp [p, ite_eq_right hj']
-  rcases v.1 hp with ⟨_, ⟨i', rfl⟩, hi'⟩
+  rcases v.1 hp with ⟨-, ⟨i', rfl⟩, hi'⟩
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
   refine ⟨i, h2i, i', h2i', ?_⟩
   rintro rfl
@@ -393,7 +393,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     by_cases hj₂ : j₂ = j
     · simp [hj₂, hx]
     simp only [hj₂, ite_false]; apply tail_sub hi; apply b_mem_side
-  rcases v.1 hp with ⟨_, ⟨i', rfl⟩, hi'⟩
+  rcases v.1 hp with ⟨-, ⟨i', rfl⟩, hi'⟩
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
   have i_i' : i ≠ i' := by rintro rfl; simpa [i, p, side_tail, h2x] using hi'.2 j
   have : Nonempty (↥((cs i').tail.side j' \ (cs i).tail.side j')) := by
@@ -408,7 +408,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     intro j₂
     by_cases hj₂ : j₂ = j'; · simpa [hj₂] using! tail_sub h2i' _ hx'.1
     simp only [ite_false, hj₂]; apply tail_sub hi; apply b_mem_side
-  rcases v.1 hp' with ⟨_, ⟨i'', rfl⟩, hi''⟩
+  rcases v.1 hp' with ⟨-, ⟨i'', rfl⟩, hi''⟩
   have h2i'' : i'' ∈ bcubes cs c := ⟨hi''.1.symm, v.2.1 i'' hi''.1.symm ⟨tail p', hi''.2, hp'.2⟩⟩
   have i'_i'' : i' ≠ i'' := by
     rintro ⟨⟩
@@ -475,7 +475,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     rcases this with ⟨p3, h1p3, h2p3, h3p3⟩
     let p := @cons n (fun _ => ℝ) (c.b 0) p3
     have hp : p ∈ c.bottom := by refine ⟨rfl, ?_⟩; rwa [tail_cons]
-    rcases v.1 hp with ⟨_, ⟨i'', rfl⟩, hi''⟩
+    rcases v.1 hp with ⟨-, ⟨i'', rfl⟩, hi''⟩
     have h2i'' : i'' ∈ bcubes cs c := by
       use hi''.1.symm; apply v.2.1 i'' hi''.1.symm
       use tail p; constructor

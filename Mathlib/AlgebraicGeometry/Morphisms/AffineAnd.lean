@@ -93,7 +93,7 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
     refine ⟨Γ(Y, Y.basicOpen a.val), Γ(X, X.basicOpen (f.appTop a.val)), inferInstance,
       inferInstance, inferInstance, inferInstance, inferInstance, ?_, ?_⟩
     · exact (isAffineOpen_top X).isLocalization_basicOpen (f.appTop a.val)
-    · obtain ⟨_, hf⟩ := hf a
+    · obtain ⟨-, hf⟩ := hf a
       rw [morphismRestrict_appTop, CommRingCat.hom_comp, hPi.cancel_right_isIso] at hf
       -- Not sure why the `show` fixes the following `rw` complaining about "motive is incorrect"
       have hf : Q (Scheme.Hom.app f ((Y.basicOpen a.1).ι ''ᵁ ⊤)).hom := hf

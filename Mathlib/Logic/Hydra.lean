@@ -107,7 +107,7 @@ theorem cutExpand_iff [DecidableEq α] [Std.Irrefl r] {s' s : Multiset α} :
 theorem not_cutExpand_zero [Std.Irrefl r] (s) : ¬CutExpand r s 0 := by
   classical
   rw [cutExpand_iff]
-  rintro ⟨_, _, _, ⟨⟩, _⟩
+  rintro ⟨-, -, -, ⟨⟩, -⟩
 
 lemma cutExpand_zero {x} : CutExpand r 0 {x} := ⟨0, x, nofun, add_comm 0 _⟩
 

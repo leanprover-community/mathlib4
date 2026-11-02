@@ -116,7 +116,7 @@ theorem domRestrict₂_comp_domRestrict₂ {s t u : Set α} (hst : s ⊆ t) (htu
 theorem range_extend_subset (f : ι → β) (g : ι → γ) (g' : β → γ) :
     range (extend f g g') ⊆ range g ∪ g' '' (range f)ᶜ := by
   classical
-  rintro _ ⟨y, rfl⟩
+  rintro - ⟨y, rfl⟩
   rw [extend_def]
   split_ifs with h
   exacts [Or.inl (mem_range_self _), Or.inr (mem_image_of_mem _ h)]
@@ -132,7 +132,7 @@ range of `f`. -/
 lemma _root_.Function.FactorsThrough.extend_injOn {f : α → β} {g : α → γ} {j : β → γ}
     (hf : g.FactorsThrough f) (hg : g.Injective) :
     (range f).InjOn (extend f g j) := by
-  rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ heq
+  rintro - ⟨x, rfl⟩ - ⟨y, rfl⟩ heq
   rw [hf.extend_apply, hf.extend_apply] at heq
   rw [hg heq]
 

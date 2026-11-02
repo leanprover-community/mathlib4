@@ -90,7 +90,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
     (H _).2.2 (by simpa only [encodek₂, bind_some, coe_some] using! h)
   exists hk
   simp only [mem_map_iff, mem_coe, mem_bind_iff, Option.mem_def] at H
-  obtain ⟨a', _, y, _, e⟩ | ⟨a', _, y, _, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
+  obtain ⟨a', -, y, -, e⟩ | ⟨a', -, y, -, e⟩ := (H _).1 _ ⟨hk, rfl⟩ <;>
     simp only [e.symm, encodek, coe_some, some_dom]
 
 theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)

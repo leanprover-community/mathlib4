@@ -321,7 +321,7 @@ lemma degree_preimage_add {σ : Type*} (s t : Set ℕ) :
 open scoped Pointwise in
 lemma degree_preimage_nsmul {σ : Type*} (s : Set ℕ) (n : ℕ) (hn : n ≠ 0) :
     degree (σ := σ) ⁻¹' (n • s) = n • degree (σ := σ) ⁻¹' s := by
-  obtain (_ | n) := n; · contradiction
+  obtain (- | n) := n; · contradiction
   induction n <;> simp_all [succ_nsmul, degree_preimage_add]
 
 open scoped Pointwise in

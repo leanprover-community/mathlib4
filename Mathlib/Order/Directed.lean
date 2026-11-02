@@ -101,7 +101,7 @@ theorem DirectedOn.mono_comp {r : α → α → Prop} {rb : β → β → Prop} 
 lemma directedOn_onFun_iff {r : α → α → Prop} {f : β → α} {s : Set β} :
     DirectedOn (r on f) s ↔ DirectedOn r (f '' s) := by
   refine ⟨DirectedOn.mono_comp (by simp), fun h x hx y hy ↦ ?_⟩
-  obtain ⟨_, ⟨z, hz, rfl⟩, hz'⟩ := h (f x) (Set.mem_image_of_mem f hx) (f y)
+  obtain ⟨-, ⟨z, hz, rfl⟩, hz'⟩ := h (f x) (Set.mem_image_of_mem f hx) (f y)
     (Set.mem_image_of_mem f hy)
   grind
 

@@ -54,12 +54,12 @@ lemma isUnit_algebraMap : IsUnit (algebraMap R (Module.End R N) r) :=
   IsLocalizedModule.map_units (S := .powers r) f ⟨_, 1, by simp⟩
 
 lemma exists_of_eq {x y : M} (h : f x = f y) : ∃ (n : ℕ), r ^ n • x = r ^ n • y := by
-  obtain ⟨⟨_, n, rfl⟩, hn⟩ := IsLocalizedModule.exists_of_eq (S := .powers r) h
+  obtain ⟨⟨-, n, rfl⟩, hn⟩ := IsLocalizedModule.exists_of_eq (S := .powers r) h
   use n, hn
 
 variable (f) in
 lemma surj (y : N) : ∃ (n : ℕ) (x : M), r ^ n • y = f x := by
-  obtain ⟨⟨x, ⟨_, n, rfl⟩⟩, h⟩ := IsLocalizedModule.surj (S := .powers r) f y
+  obtain ⟨⟨x, ⟨-, n, rfl⟩⟩, h⟩ := IsLocalizedModule.surj (S := .powers r) f y
   use n, x, h
 
 lemma of_associated {r r' : R} (h : Associated r r') [IsLocalizedModule.Away r f] :

@@ -138,7 +138,7 @@ theorem _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
     (hU : IsOpen U) : DifferentiableOn ℂ f U := by
   rintro x hx
   obtain ⟨K, ⟨hKx, hK⟩, hKU⟩ := (compact_basis_nhds x).mem_iff.mp (hU.mem_nhds hx)
-  obtain ⟨δ, _, _, h1⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
+  obtain ⟨δ, -, -, h1⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
   have h2 : interior K ⊆ U := interior_subset.trans hKU
   have h3 : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) (interior K) := by
     filter_upwards [hF] with n h using h.mono h2

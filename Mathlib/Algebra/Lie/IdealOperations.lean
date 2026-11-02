@@ -115,7 +115,7 @@ theorem lieIdeal_oper_eq_linear_span' [LieModule R L M] :
 theorem lie_le_iff : ⁅I, N⁆ ≤ N' ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅x, m⁆ ∈ N' := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   refine ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
-  rintro h _ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩
+  rintro h - ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩
   exact h x hx m hm
 
 variable {N I} in

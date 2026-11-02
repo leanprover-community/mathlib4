@@ -123,7 +123,7 @@ theorem RemoveNone.fiber_none : RemoveNone.fiber (@none α) = ∅ := by
   rw [Set.eq_empty_iff_forall_notMem]
   intro f hyp
   rw [RemoveNone.mem_fiber] at hyp
-  rcases hyp with ⟨F, F_derangement, F_none, _⟩
+  rcases hyp with ⟨F, F_derangement, F_none, -⟩
   exact F_derangement none F_none
 
 /-- For any `a : α`, the fiber over `some a` is the set of permutations

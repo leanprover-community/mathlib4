@@ -87,8 +87,8 @@ private lemma exists_variableChange_of_char_two_of_j_eq_zero
 
 private lemma exists_variableChange_of_char_two (heq : E.j = E'.j) :
     ∃ C : VariableChange F, C • E = E' := by
-  obtain ⟨C, _ | _⟩ := E.exists_variableChange_isCharTwoNF
-  · obtain ⟨C', _ | _⟩ := E'.exists_variableChange_isCharTwoNF
+  obtain ⟨C, - | -⟩ := E.exists_variableChange_isCharTwoNF
+  · obtain ⟨C', - | -⟩ := E'.exists_variableChange_isCharTwoNF
     · simp_rw [← variableChange_j E C, ← variableChange_j E' C',
         j_of_isCharTwoJNeZeroNF_of_char_two, one_div, inv_inj] at heq
       obtain ⟨C'', hC⟩ := exists_variableChange_of_char_two_of_j_ne_zero _ _ heq
@@ -98,7 +98,7 @@ private lemma exists_variableChange_of_char_two (heq : E.j = E'.j) :
       rw [variableChange_j, heq, ← variableChange_j E' C',
         j_of_isCharTwoJEqZeroNF_of_char_two] at h
       exact False.elim (h rfl)
-  · obtain ⟨C', _ | _⟩ := E'.exists_variableChange_isCharTwoNF
+  · obtain ⟨C', - | -⟩ := E'.exists_variableChange_isCharTwoNF
     · have h := (C' • E').j_ne_zero_of_isCharTwoJNeZeroNF_of_char_two
       rw [variableChange_j, ← heq, ← variableChange_j E C,
         j_of_isCharTwoJEqZeroNF_of_char_two] at h
@@ -185,8 +185,8 @@ private lemma exists_variableChange_of_char_three_of_j_eq_zero
 
 private lemma exists_variableChange_of_char_three (heq : E.j = E'.j) :
     ∃ C : VariableChange F, C • E = E' := by
-  obtain ⟨C, _ | _⟩ := E.exists_variableChange_isCharThreeNF
-  · obtain ⟨C', _ | _⟩ := E'.exists_variableChange_isCharThreeNF
+  obtain ⟨C, - | -⟩ := E.exists_variableChange_isCharThreeNF
+  · obtain ⟨C', - | -⟩ := E'.exists_variableChange_isCharThreeNF
     · rw [← variableChange_j E C, ← variableChange_j E' C'] at heq
       obtain ⟨C'', hC⟩ := exists_variableChange_of_char_three_of_j_ne_zero _ _ heq
       use C'⁻¹ * C'' * C
@@ -194,7 +194,7 @@ private lemma exists_variableChange_of_char_three (heq : E.j = E'.j) :
     · have h := (C • E).j_ne_zero_of_isCharThreeJNeZeroNF_of_char_three
       rw [variableChange_j, heq, ← variableChange_j E' C', j_of_isShortNF_of_char_three] at h
       exact False.elim (h rfl)
-  · obtain ⟨C', _ | _⟩ := E'.exists_variableChange_isCharThreeNF
+  · obtain ⟨C', - | -⟩ := E'.exists_variableChange_isCharThreeNF
     · have h := (C' • E').j_ne_zero_of_isCharThreeJNeZeroNF_of_char_three
       rw [variableChange_j, ← heq, ← variableChange_j E C, j_of_isShortNF_of_char_three] at h
       exact False.elim (h rfl)

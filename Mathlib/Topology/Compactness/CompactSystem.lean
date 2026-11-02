@@ -354,7 +354,7 @@ def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
 theorem isCompactSystem_compactClosedSquareCylinders :
     IsCompactSystem (compactClosedSquareCylinders α) := by
   refine (IsCompactSystem.pi fun i ↦ isCompactSystem_insert_univ_isCompact_isClosed (α i)).mono ?_
-  rintro _ ⟨s, t, ht, rfl⟩
+  rintro - ⟨s, t, ht, rfl⟩
   classical
   exact ⟨fun i ↦ if i ∈ s then t i else univ, by grind⟩
 

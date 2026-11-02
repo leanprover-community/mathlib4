@@ -173,7 +173,7 @@ theorem mem_addWellApproximable_iff (δ : ℕ → ℝ) (x : UnitAddCircle) :
     mem_ofPred_eq]
   refine iff_of_eq congr(Set.Infinite $(ext fun n => ⟨fun hn => ?_, fun hn => ?_⟩))
   · exact (mem_approxAddOrderOf_iff hn.1).mp hn.2
-  · have h : 0 < n := by obtain ⟨m, hm₁, _, _⟩ := hn; exact pos_of_gt hm₁
+  · have h : 0 < n := by obtain ⟨m, hm₁, -, -⟩ := hn; exact pos_of_gt hm₁
     exact ⟨h, (mem_approxAddOrderOf_iff h).mpr hn⟩
 
 end UnitAddCircle

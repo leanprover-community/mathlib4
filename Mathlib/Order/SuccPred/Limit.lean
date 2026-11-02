@@ -333,7 +333,7 @@ variable [IsSuccArchimedean α] [NoMaxOrder α]
 @[to_dual]
 theorem IsSuccPrelimit.isMin_of_noMax (h : IsSuccPrelimit a) : IsMin a := by
   intro b hb
-  rcases hb.exists_succ_iterate with ⟨_ | n, rfl⟩
+  rcases hb.exists_succ_iterate with ⟨- | n, rfl⟩
   · exact le_rfl
   · rw [iterate_succ_apply'] at h
     exact (not_isSuccPrelimit_succ _ h).elim

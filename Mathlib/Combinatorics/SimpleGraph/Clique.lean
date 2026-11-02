@@ -123,7 +123,7 @@ theorem isClique_univ : G.IsClique .univ ↔ G = ⊤ :=
   Set.pairwise_univ.trans G.eq_top_iff_forall_ne_adj.symm
 
 protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).IsClique (f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩ hab
   exact ⟨hab, a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
 
 theorem IsClique.inter_left {s : Set α} (hs : G.IsClique s) (t : Set α) : G.IsClique <| s ∩ t :=
@@ -600,7 +600,7 @@ theorem cliqueFreeOn_empty : G.CliqueFreeOn ∅ n ↔ n ≠ 0 := by
 
 @[simp]
 theorem cliqueFreeOn_singleton : G.CliqueFreeOn {a} n ↔ 1 < n := by
-  obtain _ | _ | n := n <;>
+  obtain - | - | n := n <;>
     simp [CliqueFreeOn, isNClique_iff, ← subset_singleton_iff', (Nat.succ_ne_zero _).symm]
 
 @[simp]
@@ -694,7 +694,7 @@ theorem cliqueSet_map (hn : n ≠ 1) (G : SimpleGraph α) (f : α ↪ β) :
       rw [map_eq_image, image_preimage, filter_true_of_mem]
       rintro a ha
       obtain ⟨b, hb, hba⟩ := exists_mem_ne (hn.lt_of_le' <| Finset.card_pos.2 ⟨a, ha⟩) a
-      obtain ⟨-, c, _, _, hc, _⟩ := hs ha hb hba.symm
+      obtain ⟨-, c, -, -, hc, -⟩ := hs ha hb hba.symm
       exact ⟨c, hc⟩
     refine ⟨s.preimage f f.injective.injOn, ⟨?_, by rw [← card_map f, hs']⟩, hs'⟩
     rw [coe_preimage]
@@ -939,7 +939,7 @@ theorem isIndepSet_neighborSet_of_triangleFree (h : G.CliqueFree 3) (v : α) :
   rw [IsIndepSet, Set.Pairwise] at nind
   push Not at nind
   simp_rw [mem_neighborSet] at nind
-  obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
+  obtain ⟨j, avj, k, avk, -, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
 set_option backward.isDefEq.respectTransparency.types false in

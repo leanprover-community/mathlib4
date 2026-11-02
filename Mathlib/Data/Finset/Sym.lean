@@ -235,7 +235,7 @@ theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
   cases n
   · exact iff_of_false (singleton_ne_empty _) fun h ↦ (h.1 rfl).elim
   · refine ⟨fun h ↦ ⟨Nat.succ_ne_zero _, eq_empty_of_sym_eq_empty h⟩, ?_⟩
-    rintro ⟨_, rfl⟩
+    rintro ⟨-, rfl⟩
     exact sym_empty _
 
 @[simp]

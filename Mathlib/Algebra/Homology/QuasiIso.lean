@@ -355,6 +355,6 @@ lemma homotopyEquivalences_le_quasiIso
     {ι : Type*} (C : Type u) [Category.{v} C] [Preadditive C]
     (c : ComplexShape ι) [CategoryWithHomology C] :
     homotopyEquivalences C c ≤ quasiIso C c := by
-  rintro K L _ ⟨e, rfl⟩
+  rintro K L - ⟨e, rfl⟩
   simp only [HomologicalComplex.mem_quasiIso_iff]
   infer_instance

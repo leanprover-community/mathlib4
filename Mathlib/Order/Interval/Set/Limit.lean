@@ -38,7 +38,7 @@ lemma isSuccLimit_coe {J : Type u} [LinearOrder J] {j : J}
       refine ⟨j, hb', ?_⟩
       by_contra!
       apply hm.1
-      rintro ⟨k, hk⟩ _
+      rintro ⟨k, hk⟩ -
       exact this.trans (by simpa using hk)⟩
 
 end Set.Ici

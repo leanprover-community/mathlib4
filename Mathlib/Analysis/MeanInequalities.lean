@@ -828,7 +828,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.HolderConjugate 
         rpow_sub' A, add_sub_cancel_right, le_refl, true_and, ← mul_div_assoc, B]
       rw [div_eq_iff, ← rpow_add hf.ne', one_div, one_div, hpq.inv_add_inv_eq_one, rpow_one]
       simpa [hpq.symm.ne_zero] using hf.ne'
-  · rintro _ ⟨g, hg, rfl⟩
+  · rintro - ⟨g, hg, rfl⟩
     apply le_trans (inner_le_Lp_mul_Lq s f g hpq)
     simpa only [mul_one] using
       mul_le_mul_right (NNReal.rpow_le_one hg (le_of_lt hpq.symm.one_div_pos)) _

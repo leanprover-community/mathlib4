@@ -190,7 +190,7 @@ namespace IsCompatible
 
 lemma of_hom {i : Fin (n + 2)} (g : (Λ[n + 1, i] : SSet) ⟶ X) :
     horn.IsCompatible (fun j hj ↦ horn.ι i j hj ≫ g) := by
-  obtain _ | n := n
+  obtain - | n := n
   · simp
   · simp only [isCompatible_iff, ← Category.assoc]
     intro j k hj hk hjk

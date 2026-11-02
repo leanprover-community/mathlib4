@@ -735,7 +735,7 @@ theorem isSeparator_coprod (G H : C) [HasBinaryCoproduct G H] :
   simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor
   · rintro (rfl | rfl); exacts [⟨.left, rfl⟩, ⟨.right, rfl⟩]
-  · rintro ⟨⟨_ | _⟩, rfl⟩ <;> tauto
+  · rintro ⟨⟨- | -⟩, rfl⟩ <;> tauto
 
 theorem isSeparator_coprod_of_isSeparator_left (G H : C) [HasBinaryCoproduct G H]
     (hG : IsSeparator G) : IsSeparator (G ⨿ H) :=
@@ -781,7 +781,7 @@ theorem isCoseparator_prod (G H : C) [HasBinaryProduct G H] :
   simp only [ObjectProperty.pair_iff, ObjectProperty.ofObj_iff]
   constructor
   · rintro (rfl | rfl); exacts [⟨.left, rfl⟩, ⟨.right, rfl⟩]
-  · rintro ⟨⟨_ | _⟩, rfl⟩ <;> tauto
+  · rintro ⟨⟨- | -⟩, rfl⟩ <;> tauto
 
 theorem isCoseparator_prod_of_isCoseparator_left (G H : C) [HasBinaryProduct G H]
     (hG : IsCoseparator G) : IsCoseparator (G ⨯ H) :=

@@ -402,7 +402,7 @@ theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
   · rintro ⟨x, h, rfl⟩ t ht hx
     obtain ⟨z, hz₁, hz₂⟩ := h _ (continuous_induced_dom.isOpen_preimage t ht) hx
     exact ⟨z, hz₁, hz₂⟩
-  · rintro _ ⟨t, ht, rfl⟩ hx
+  · rintro - ⟨t, ht, rfl⟩ hx
     obtain ⟨y, hyt, hys⟩ := h _ ht hx
     exact ⟨⟨_, subset_affineSpan 𝕜 s hys⟩, hyt, hys⟩
   · by_contra hc

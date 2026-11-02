@@ -401,7 +401,7 @@ lemma map_functorObj {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsInducing f)
     (U : Opens X) :
     (Opens.map f).obj (hf.functorObj U) = U := by
   apply le_antisymm
-  · rintro x ⟨_, ⟨s, rfl⟩, _, ⟨rfl : _ = U, rfl⟩, hx : f x ∈ s⟩; exact hx
+  · rintro x ⟨-, ⟨s, rfl⟩, -, ⟨rfl : _ = U, rfl⟩, hx : f x ∈ s⟩; exact hx
   · intro x hx
     obtain ⟨U, hU⟩ := U
     obtain ⟨t, ht, rfl⟩ := hf.isOpen_iff.mp hU

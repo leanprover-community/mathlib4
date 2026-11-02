@@ -156,7 +156,7 @@ theorem mem_top_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :
   mem_basicOpen X f x .intro
 
 theorem basicOpen_le {U : Opens X} (f : X.presheaf.obj (op U)) : X.basicOpen f ≤ U := by
-  rintro x ⟨h, _⟩; exact h
+  rintro x ⟨h, -⟩; exact h
 
 /-- The restriction of a section `f` to the basic open of `f` is a unit. -/
 theorem isUnit_res_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) :

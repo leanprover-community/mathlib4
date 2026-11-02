@@ -436,7 +436,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map_algebraMap]
     exact hx.2
   · simp only [mem_ofPred_eq] at hx
-    obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx.2
+    obtain ⟨i, -, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx.2
     refine SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin ?_) _)
     rw [mem_rootSet', map_cyclotomic, ← eval_map_algebraMap, map_cyclotomic, ← IsRoot]
     exact ⟨cyclotomic_ne_zero n B, hζ.isRoot_cyclotomic (NeZero.pos n)⟩
@@ -445,7 +445,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ} [NeZero n] [
     (hζ : IsPrimitiveRoot ζ n) : adjoin A ((cyclotomic n A).rootSet B) = adjoin A {ζ} := by
   refine le_antisymm (adjoin_le fun x hx => ?_) (adjoin_mono fun x hx => ?_)
   · suffices hx : x ^ n = 1 by
-      obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
+      obtain ⟨i, -, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
       exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton ζ) _)
     refine (isRoot_of_unity_iff (NeZero.pos n) B).2 ?_
     refine ⟨n, Nat.mem_divisors_self n (NeZero.ne n), ?_⟩
@@ -551,7 +551,7 @@ theorem nonempty_algEquiv_adjoin_of_isSepClosed [IsCyclotomicExtension S K L]
     IntermediateField.adjoin_eq_top_of_algebra K _ ((iff_adjoin_eq_top S K L).1 ‹_›).2
   rw [AlgHom.fieldRange_eq_map, ← htop, IntermediateField.adjoin_map]
   apply le_antisymm <;> rw [IntermediateField.adjoin_le_iff]
-  · rintro _ ⟨y, ⟨n, hn, h1, h2⟩, rfl⟩
+  · rintro - ⟨y, ⟨n, hn, h1, h2⟩, rfl⟩
     exact IntermediateField.subset_adjoin K _ ⟨n, hn, h1, by simpa using congrArg i h2⟩
   · rintro x ⟨n, hn, h1, h2⟩
     have : NeZero n := ⟨h1⟩
@@ -869,7 +869,7 @@ theorem IsCyclotomicExtension.mem_of_pow_eq_one (C : Subalgebra A B)
   obtain ⟨η, hη⟩ := h.1 h₁ h₂
   replace hη := hη.map_of_injective (FaithfulSMul.algebraMap_injective C B)
   have : NeZero m := ⟨h₂⟩
-  obtain ⟨k, _, rfl⟩ := hη.eq_pow_of_pow_eq_one hζ
+  obtain ⟨k, -, rfl⟩ := hη.eq_pow_of_pow_eq_one hζ
   rw [← map_pow]
   exact Subalgebra.pow_mem _ η.prop _
 
@@ -892,7 +892,7 @@ theorem isCyclotomicExtension_singleton_iff_eq_adjoin (C : Subalgebra A B) {ζ :
     suffices adjoin A {b | n ≠ 0 ∧ b ^ n = 1} = adjoin A {ζ} by rw [this]
     apply le_antisymm
     · refine adjoin_le fun x ⟨_, hx⟩ ↦ ?_
-      obtain ⟨k, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
+      obtain ⟨k, -, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
       exact Subalgebra.pow_mem _ (self_mem_adjoin_singleton A ζ) _
     · exact adjoin_mono <| Set.singleton_subset_iff.mpr ⟨NeZero.ne n, hζ.pow_eq_one⟩
   · simpa only [Set.mem_singleton_iff, ne_eq, forall_eq, NeZero.ne n, not_false_eq_true,

@@ -319,7 +319,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
   induction s using Finset.induction with
   | empty =>
     rw [sum_empty]
-    rintro (_ | n)
+    rintro (- | n)
     · rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
       · exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩

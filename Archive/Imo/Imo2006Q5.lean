@@ -102,7 +102,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
         rw [← H, sub_add_sub_cancel']
     -- This implies that the sign of P(t) - t is the same as the sign of P^k(t) - t, which is 0.
     -- Hence P(t) = t and P(P(t)) = P(t).
-    rcases ht with ⟨_ | k, hk, hk'⟩
+    rcases ht with ⟨- | k, hk, hk'⟩
     · exact (irrefl 0 hk).elim
     · have H := IH k
       rw [hk'.isFixedPt.eq, sub_self, Int.sign_zero, eq_comm, Int.sign_eq_zero_iff_zero,

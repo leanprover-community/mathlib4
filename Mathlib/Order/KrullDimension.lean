@@ -623,7 +623,7 @@ lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
     fun i ↦ by obtain rfl := Subsingleton.elim i 0; simpa⟩).not_gt (by simp), ?_⟩
-  rintro H ⟨_ | n, l, h⟩
+  rintro H ⟨- | n, l, h⟩
   · simp
   · cases H (l 0) (l 1) (h 0)
 
@@ -635,7 +635,7 @@ lemma krullDim_le_one_iff : krullDim α ≤ 1 ↔ ∀ x : α, IsMin x ∨ IsMax 
   simp_rw [isMax_iff_forall_not_lt, isMin_iff_forall_not_lt, krullDim, iSup_le_iff]
   contrapose!
   constructor
-  · rintro ⟨⟨_ | _ | n, l, hl⟩, hl'⟩
+  · rintro ⟨⟨- | - | n, l, hl⟩, hl'⟩
     iterate 2 · cases hl'.not_ge (by simp)
     exact ⟨l 1, ⟨l 0, hl 0⟩, l 2, hl 1⟩
   · rintro ⟨x, ⟨y, hxy⟩, z, hzx⟩

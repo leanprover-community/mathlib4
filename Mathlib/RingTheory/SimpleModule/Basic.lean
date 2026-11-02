@@ -411,7 +411,7 @@ theorem IsSemisimpleModule.sup {p q : Submodule R M}
   let f : Bool → Submodule R M := Bool.rec q p
   rw [show p ⊔ q = ⨆ i ∈ Set.univ, f i by rw [iSup_univ, iSup_bool_eq]]
   exact isSemisimpleModule_biSup_of_isSemisimpleModule_submodule
-    (by rintro (_ | _) _ <;> assumption)
+    (by rintro (- | -) - <;> assumption)
 
 variable (R M) in
 theorem IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule [IsSemisimpleRing R]

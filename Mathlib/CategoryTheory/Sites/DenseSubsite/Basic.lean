@@ -123,7 +123,7 @@ theorem ext [G.IsCoverDense K] (ℱ : Sheaf K Type*) (X : D) {s t : ℱ.obj.obj 
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.obj.map f.op s = ℱ.obj.map f.op t) : s = t := by
   apply ((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.property
     (Sieve.coverByImage G X) (G.is_cover_of_isCoverDense K X)).isSeparatedFor.ext
-  rintro Y _ ⟨Z, f₁, f₂, ⟨rfl⟩⟩
+  rintro Y - ⟨Z, f₁, f₂, ⟨rfl⟩⟩
   simp [h f₂]
 
 variable {G}
@@ -132,10 +132,10 @@ theorem functorPullback_pushforward_covering [G.IsCoverDense K] [G.IsLocallyFull
     (T : K (G.obj X)) : (T.val.functorPullback G).functorPushforward G ∈ K (G.obj X) := by
   refine K.transitive T.2 _ fun Y iYX hiYX ↦ ?_
   apply K.transitive (G.is_cover_of_isCoverDense _ _) _
-  rintro W _ ⟨Z, iWZ, iZY, rfl⟩
+  rintro W - ⟨Z, iWZ, iZY, rfl⟩
   rw [Sieve.pullback_comp]; apply K.pullback_stable; clear W iWZ
   apply K.superset_covering ?_ (G.functorPushforward_imageSieve_mem _ (iZY ≫ iYX))
-  rintro W _ ⟨V, iVZ, iWV, ⟨iVX, e⟩, rfl⟩
+  rintro W - ⟨V, iVZ, iWV, ⟨iVX, e⟩, rfl⟩
   exact ⟨_, iVX, iWV, by simpa [e] using T.1.downward_closed hiYX (G.map iVZ ≫ iZY), by simp [e]⟩
 
 /-- (Implementation). Given a hom between the pullbacks of two sheaves, we can whisker it with

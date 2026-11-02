@@ -930,10 +930,10 @@ establishes that for the topology constructed on the sigma-type using
 theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle
   { trivialization_linear' := by
-      rintro _ ⟨e, he, rfl⟩
+      rintro - ⟨e, he, rfl⟩
       apply linear_trivializationOfMemPretrivializationAtlas
     continuousOn_coordChange' := by
-      rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
+      rintro - - ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
       refine (a.continuousOn_coordChange he he').congr fun b hb ↦ ?_
       ext v
       have h₁ := a.linear_trivializationOfMemPretrivializationAtlas he

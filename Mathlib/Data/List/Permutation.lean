@@ -156,7 +156,7 @@ theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List
   · rintro (rfl | ⟨l₁, l₂, l0, rfl, rfl⟩)
     · exact ⟨[], y :: ys, by simp⟩
     · exact ⟨y :: l₁, l₂, l0, by simp⟩
-  · rintro ⟨_ | ⟨y', l₁⟩, l₂, l0, ye, rfl⟩
+  · rintro ⟨- | ⟨y', l₁⟩, l₂, l0, ye, rfl⟩
     · simp [ye]
     · simp only [cons_append] at ye
       rcases ye with ⟨rfl, rfl⟩
@@ -262,7 +262,7 @@ theorem perm_of_mem_permutationsAux :
   refine permutationsAux.rec (by simp) ?_
   introv IH1 IH2 m
   rw [permutationsAux_cons, permutations, mem_foldr_permutationsAux2] at m
-  rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
+  rcases m with (m | ⟨l₁, l₂, m, -, rfl⟩)
   · exact (IH1 _ m).trans perm_middle
   · have p : l₁ ++ l₂ ~ is := by
       simp only [mem_cons] at m

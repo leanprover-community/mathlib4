@@ -369,7 +369,7 @@ lemma map_one_succ (j : ℕ) (hj : j + 1 < n + 1 + 1) :
     map F f 1 ⟨j + 1, hj⟩ (by simp [Fin.le_def]) = F.map' 0 j := rfl
 
 lemma map_id (i : Fin (n + 1 + 1)) : map F f i i (by simp) = 𝟙 _ := by
-  obtain ⟨_ | _, hi⟩ := i <;> simp
+  obtain ⟨- | -, hi⟩ := i <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
 lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
@@ -378,20 +378,20 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
   obtain ⟨j, hj⟩ := j
   obtain ⟨k, hk⟩ := k
   cases i
-  · obtain _ | _ | j := j
+  · obtain - | - | j := j
     · simp
-    · obtain _ | _ | k := k
+    · obtain - | - | k := k
       · simp at hjk
       · simp
       · rfl
-    · obtain _ | _ | k := k
+    · obtain - | - | k := k
       · simp [Fin.ext_iff] at hjk
       · simp [Fin.le_def] at hjk
       · dsimp
         rw [assoc, ← F.map_comp, homOfLE_comp]
-  · obtain _ | j := j
+  · obtain - | j := j
     · simp [Fin.ext_iff] at hij
-    · obtain _ | k := k
+    · obtain - | k := k
       · simp [Fin.ext_iff] at hjk
       · dsimp
         rw [← F.map_comp, homOfLE_comp]
@@ -606,7 +606,7 @@ end
 lemma hom_ext_succ {F G : ComposableArrows C (n + 1)} {f g : F ⟶ G}
     (h₀ : app' f 0 = app' g 0) (h₁ : δ₀Functor.map f = δ₀Functor.map g) : f = g := by
   ext ⟨i, hi⟩
-  obtain _ | i := i
+  obtain - | i := i
   · exact h₀
   · exact congr_app h₁ ⟨i, by valid⟩
 
@@ -645,7 +645,7 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
       rw [w]
       dsimp [app']
       rw [eqToHom_app, assoc, assoc, eqToHom_trans, eqToHom_refl, comp_id])) this
-    (by rintro ⟨_ | _, hi⟩ <;> simp)
+    (by rintro ⟨- | -, hi⟩ <;> simp)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma precomp_surjective (F : ComposableArrows C (n + 1)) :
@@ -1013,7 +1013,7 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
     refine ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
       | 0 => Iso.refl _
       | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
-    obtain _ | i := i
+    obtain - | i := i
     · simp
     · exact h i (by valid)
 

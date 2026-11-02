@@ -91,7 +91,7 @@ theorem numDerangements_succ (n : ℕ) :
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
   induction n using Nat.strongRecOn with | ind n hyp => _
-  rcases n with _ | _ | n
+  rcases n with - | - | n
   -- knock out cases 0 and 1
   · rfl
   · rfl

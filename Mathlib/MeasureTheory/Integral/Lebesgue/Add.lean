@@ -44,7 +44,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   rw [lintegral_eq_nnreal]
   refine iSup_le fun s => iSup_le fun hsf => ?_
   refine ENNReal.le_of_forall_lt_one_mul_le fun a ha => ?_
-  rcases ENNReal.lt_iff_exists_coe.1 ha with ⟨r, rfl, _⟩
+  rcases ENNReal.lt_iff_exists_coe.1 ha with ⟨r, rfl, -⟩
   have ha : r < 1 := ENNReal.coe_lt_coe.1 ha
   let rs := s.map fun a => r * a
   have eq_rs : rs.map c = (const α r : α →ₛ ℝ≥0∞) * map c s := rfl

@@ -722,7 +722,7 @@ theorem continuousOn_symm (e : Trivialization F (π F E)) :
     ContinuousOn (fun z : B × F => TotalSpace.mk' F z.1 (e.symm z.1 z.2)) (e.baseSet ×ˢ univ) := by
   have : ∀ z ∈ e.baseSet ×ˢ (univ : Set F),
       TotalSpace.mk z.1 (e.symm z.1 z.2) = e.toOpenPartialHomeomorph.symm z := by
-    rintro x ⟨hx : x.1 ∈ e.baseSet, _⟩
+    rintro x ⟨hx : x.1 ∈ e.baseSet, -⟩
     rw [e.mk_symm hx]
   refine ContinuousOn.congr ?_ this
   rw [← e.target_eq]

@@ -134,7 +134,7 @@ lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f
       Disjoint (image (Pi.cons s a x) (pi s t)) (image (Pi.cons s a y) (pi s t)) := by
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
-      rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
+      rintro _ ⟨p₂, -, eq₂⟩ _ ⟨p₃, -, eq₃⟩ eq
       have : Pi.cons s a x p₂ a (mem_insert_self _ _)
               = Pi.cons s a y p₃ a (mem_insert_self _ _) := by rw [eq₂, eq₃, eq]
       rw [Pi.cons_same, Pi.cons_same] at this

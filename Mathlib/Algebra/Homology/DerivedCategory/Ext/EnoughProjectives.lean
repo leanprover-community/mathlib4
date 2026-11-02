@@ -53,7 +53,7 @@ lemma isSplitEpi_to_singleFunctor_obj_of_projective
       ← singleObjCyclesSelfIso_inv_iCycles, Iso.hom_inv_id_assoc, ← cyclesMap_i]
   exact ⟨⟨{
     section_ := mkHomFromSingle (Projective.factorThru (𝟙 P) α) (by
-      rintro _ rfl
+      rintro - rfl
       apply (K.isZero_of_isStrictlyLE i (i + 1) (by simp)).eq_of_tgt)
     id := by
       apply HomologicalComplex.from_single_hom_ext

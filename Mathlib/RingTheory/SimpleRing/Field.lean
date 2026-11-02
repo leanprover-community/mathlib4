@@ -32,10 +32,10 @@ lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.ce
     replace hx2 : x ≠ 0 := by simpa [Subtype.ext_iff] using hx2
     -- Todo: golf the following `let` once `TwoSidedIdeal.span` is defined
     let I := TwoSidedIdeal.mk' (Set.range (x * ·)) ⟨0, by simp⟩
-      (by rintro _ _ ⟨x, rfl⟩ ⟨y, rfl⟩; exact ⟨x + y, mul_add _ _ _⟩)
-      (by rintro _ ⟨x, rfl⟩; exact ⟨-x, by simp⟩)
-      (by rintro a _ ⟨c, rfl⟩; exact ⟨a * c, by dsimp; rw [← mul_assoc, ← hx1, mul_assoc]⟩)
-      (by rintro _ b ⟨a, rfl⟩; exact ⟨a * b, by dsimp; rw [← mul_assoc, ← hx1, mul_assoc]⟩)
+      (by rintro - - ⟨x, rfl⟩ ⟨y, rfl⟩; exact ⟨x + y, mul_add _ _ _⟩)
+      (by rintro - ⟨x, rfl⟩; exact ⟨-x, by simp⟩)
+      (by rintro a - ⟨c, rfl⟩; exact ⟨a * c, by dsimp; rw [← mul_assoc, ← hx1, mul_assoc]⟩)
+      (by rintro - b ⟨a, rfl⟩; exact ⟨a * b, by dsimp; rw [← mul_assoc, ← hx1, mul_assoc]⟩)
     have mem : 1 ∈ I := one_mem_of_ne_zero_mem I hx2 (by simpa [I, mem_mk'] using ⟨1, by simp⟩)
     simp only [TwoSidedIdeal.mem_mk', Set.mem_range, I] at mem
     obtain ⟨y, hy⟩ := mem

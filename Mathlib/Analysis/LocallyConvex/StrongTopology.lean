@@ -49,7 +49,7 @@ theorem locallyConvexSpace (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty)
   apply LocallyConvexSpace.ofBasisZero _ _ _ _
     (UniformConvergenceCLM.hasBasis_nhds_zero_of_basis _ _ _ h𝔖₁ h𝔖₂
       (LocallyConvexSpace.convex_basis_zero R F)) _
-  rintro ⟨S, V⟩ ⟨_, _, hVconvex⟩ f hf g hg a b ha hb hab x hx
+  rintro ⟨S, V⟩ ⟨-, -, hVconvex⟩ f hf g hg a b ha hb hab x hx
   exact hVconvex (hf x hx) (hg x hx) ha hb hab
 
 end UniformConvergenceCLM

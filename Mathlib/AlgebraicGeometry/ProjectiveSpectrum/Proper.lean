@@ -229,7 +229,7 @@ theorem valuativeCriterion_existence_aux
   let φ' := IsLocalization.Away.lift (S := Away 𝒜 (x j * x i₀)) _ hunit
   have hφ'1 (s) : φ' (awayMap 𝒜 (hxdi i₀) rfl s) = φ s := IsLocalization.Away.lift_eq _ hunit s
   use i₀, φ', IsLocalization.Away.lift_comp ..
-  rintro _ ⟨sx, rfl⟩
+  rintro - ⟨sx, rfl⟩
   rw [RingHom.mem_range, ← ValuationRing.mem_integer_iff, Valuation.mem_integer_iff]
   have := (Away.span_mk_prod_pow_eq_top (hxdi i₀) x h2 d hxdi).ge (Submodule.mem_top (x := sx))
   induction this using Submodule.span_induction with
@@ -325,7 +325,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
   obtain ⟨i, hi⟩ := this
   have : Set.range i₁ ⊆ (Proj.awayι 𝒜 _ (hxd i i.2) (hd i i.2).bot_lt).opensRange := by
     rw [Proj.opensRange_awayι]
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     obtain rfl := Subsingleton.elim x (IsLocalRing.closedPoint K)
     exact hi
   let φ : Spec (.of K) ⟶ _ := IsOpenImmersion.lift _ _ this

@@ -292,7 +292,7 @@ private lemma exists_of_j₁_of_j₂' (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
     (F₁.map j₁.hom ≫ f.hom)
   dsimp at ha
   simp only [Category.id_comp] at ha
-  obtain ⟨j₂', b, c, _⟩ := IsFilteredOrEmpty.cocone_objs j₂ k
+  obtain ⟨j₂', b, c, -⟩ := IsFilteredOrEmpty.cocone_objs j₂ k
   refine ⟨j₂', b, a ≫ F₂.map c.left.hom, ?_⟩
   simp [← ha, ← Functor.map_comp, dsimp% CostructuredArrow.w c]
 
@@ -303,12 +303,12 @@ private lemma exists_of_j₁_of_j₂ (j₁ : J₁ κ f) (j₂ : J₂ κ f) :
 
 private lemma exists_of_j₁ (j₁ : J₁ κ f) :
     ∃ (j : J κ f), Nonempty (j₁ ⟶ j.fst) := by
-  obtain ⟨j, a, _⟩ := exists_of_j₁_of_j₂ j₁ (Classical.arbitrary _)
+  obtain ⟨j, a, -⟩ := exists_of_j₁_of_j₂ j₁ (Classical.arbitrary _)
   exact ⟨j, ⟨a⟩⟩
 
 private lemma exists_of_j₂ [IsCardinalAccessibleCategory C₁ κ] (j₂ : J₂ κ f) :
     ∃ (j : J κ f), Nonempty (j₂ ⟶ j.snd) := by
-  obtain ⟨j, _, ⟨a⟩⟩ := exists_of_j₁_of_j₂ (Classical.arbitrary _) j₂
+  obtain ⟨j, -, ⟨a⟩⟩ := exists_of_j₁_of_j₂ (Classical.arbitrary _) j₂
   exact ⟨j, ⟨a⟩⟩
 
 end

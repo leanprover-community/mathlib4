@@ -51,7 +51,7 @@ theorem exists_mem_stabilizer_isThreeCycle_of_two_lt_ncard
   obtain ⟨a, b, c, ha, hb, hc, hab, hac, hbc⟩ := hs
   refine ⟨swap a b * swap a c, ?_, isThreeCycle_swap_mul_swap_same hab hac hbc⟩
   rw [mem_stabilizer_set_iff_subset_smul_set s.toFinite, subset_smul_set_iff]
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   aesop
 
 theorem exists_mem_stabilizer_isThreeCycle

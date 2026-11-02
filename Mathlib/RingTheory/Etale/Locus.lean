@@ -107,7 +107,7 @@ lemma etaleLocus_eq_univ_iff_etale :
 lemma exists_etale_of_isEtaleAt
     (P : Ideal A) [P.IsPrime] [IsEtaleAt R P] :
     ∃ f ∉ P, Algebra.Etale R (Localization.Away f) := by
-  obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hpr, hr⟩ :=
+  obtain ⟨-, ⟨-, ⟨r, rfl⟩, rfl⟩, hpr, hr⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open
       (show ⟨P, ‹_›⟩ ∈ etaleLocus R A by assumption) isOpen_etaleLocus
   exact ⟨r, hpr, ⟨basicOpen_subset_etaleLocus_iff.mp hr, .of_isLocalizationAway r⟩⟩

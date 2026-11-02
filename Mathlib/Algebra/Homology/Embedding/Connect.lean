@@ -102,8 +102,8 @@ lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
   | .negSucc 0, .ofNat 0 => by simp at hnm
   | .ofNat _, .negSucc m => rfl
   | .negSucc n, .ofNat m => by
-    obtain _ | n := n
-    · obtain _ | m := m
+    obtain - | n := n
+    · obtain - | m := m
       · simp at hnm
       · rfl
     · simp only [d]
@@ -115,7 +115,7 @@ lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
   · rw [h.shape n m hnm, zero_comp]
   by_cases hmp : m + 1 = p; swap
   · rw [h.shape m p hmp, comp_zero]
-  obtain n | (_ | _ | n) := n
+  obtain n | (- | - | n) := n
   · obtain rfl : m = .ofNat (n + 1) := by simp [← hnm]
     obtain rfl : p = .ofNat (n + 2) := by simp [← hmp]; lia
     simp only [Int.ofNat_eq_natCast, X_ofNat, d_ofNat, HomologicalComplex.d_comp_d]

@@ -433,10 +433,10 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
       exact (max_bot_right _).symm
     · rw [← not_congr degree_eq_bot] at hp hq
       -- Porting note: BUG `cases` tactic does not modify assumptions in `hp'` and `hq'`
-      rcases hp' : p.degree with _ | dp -- `hp' : ` should be redundant
+      rcases hp' : p.degree with - | dp -- `hp' : ` should be redundant
       · exact (hp hp').elim -- `hp'` should be `rfl`
       · rw [hp'] at hdp hdpq -- line should be redundant
-        rcases hq' : q.degree with _ | dq -- `hq' : ` should be redundant
+        rcases hq' : q.degree with - | dq -- `hq' : ` should be redundant
         · exact (hq hq').elim -- `hq'` should be `rfl`
         · rw [hq'] at hdpq hdq -- line should be redundant
           rcases le_or_gt dp (dq + 1) with hpq | hpq
@@ -458,8 +458,8 @@ lemma degree_norm_ne_one [IsDomain R] (x : W'.CoordinateRing) :
     (Algebra.norm R[X] x).degree ≠ 1 := by
   rcases exists_smul_basis_eq x with ⟨p, q, rfl⟩
   rw [degree_norm_smul_basis]
-  rcases p.degree with (_ | _ | _ | _) <;> cases q.degree
-  any_goals rintro (_ | _)
+  rcases p.degree with (- | - | - | -) <;> cases q.degree
+  any_goals rintro (- | -)
   exact (lt_max_of_lt_right <| (cmp_eq_lt_iff ..).mp rfl).ne'
 
 lemma natDegree_norm_ne_one [IsDomain R] (x : W'.CoordinateRing) :
@@ -614,7 +614,7 @@ lemma zero_def : 0 = (zero : W'.Point) :=
   rfl
 
 lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : some _ _ h ≠ 0 := by
-  rintro (_ | _)
+  rintro (- | -)
 
 /-- The negation of a nonsingular point on a Weierstrass curve in affine coordinates.
 
@@ -771,7 +771,7 @@ lemma toClass_some {x y : F} (h : W.Nonsingular x y) :
   rfl
 
 private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
-  rcases P, Q with ⟨_ | ⟨x₁, y₁, _⟩, _ | ⟨x₂, y₂, _⟩⟩
+  rcases P, Q with ⟨- | ⟨x₁, y₁, -⟩, - | ⟨x₂, y₂, -⟩⟩
   any_goals rfl
   · rw [← zero_def, zero_add, eq_comm (a := 0), neg_eq_iff_eq_neg, neg_zero]
   · rw [neg_some, some.injEq]
@@ -783,7 +783,7 @@ private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
   · intro hP
-    rcases P with (_ | ⟨_, _, h, _⟩)
+    rcases P with (- | ⟨_, _, h, _⟩)
     · rfl
     · rcases (ClassGroup.mk_eq_one_of_coe_ideal <| by rfl).mp hP with ⟨p, h0, hp⟩
       apply (p.natDegree_norm_ne_one _).elim
@@ -793,7 +793,7 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   · exact congr_arg toClass
 
 lemma toClass_injective : Function.Injective <| toClass (W := W) := by
-  rintro (_ | ⟨_, _, h⟩) _ hP
+  rintro (- | ⟨_, _, h⟩) _ hP
   all_goals rw [← neg_inj, ← add_eq_zero, ← toClass_eq_zero, map_add, ← hP]
   · exact zero_add 0
   · exact CoordinateRing.mk_XYIdeal'_neg_mul h
@@ -847,7 +847,7 @@ lemma map_map (P : (W'⁄F).Point) : map g (map f P) = map (g.comp f) P := by
   cases P <;> rfl
 
 lemma map_injective : Function.Injective <| map (W' := W') f := by
-  rintro (_ | _) (_ | _) h
+  rintro (- | _) (- | _) h
   any_goals contradiction
   · rfl
   · simpa only [some.injEq] using ⟨f.injective (some.inj h).left, f.injective (some.inj h).right⟩

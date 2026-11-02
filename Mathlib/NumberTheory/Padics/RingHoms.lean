@@ -256,7 +256,7 @@ lemma zmodRepr_natCast_of_lt {n : ℕ} (hn : n < p) :
 lemma zmodRepr_natCast_ofNat {n : ℕ} (hn : ofNat(n) < p) :
     zmodRepr (ofNat(n) : ℤ_[p]) = ofNat(n) := by
   convert zmodRepr_natCast_of_lt hn
-  rcases n with _ | _ | n <;> simp
+  rcases n with - | - | n <;> simp
 
 lemma zmodRepr_units_ne_zero (x : ℤ_[p]ˣ) : x.val.zmodRepr ≠ 0 := by
   rw [ne_eq, zmodRepr_eq_zero_iff_dvd]
@@ -712,7 +712,7 @@ theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y
   · intro h
     rw [← lift_self x, ← lift_self y]
     simp +unfoldPartialApp [lift, limNthHom, nthHom, h]
-  · rintro rfl _
+  · rintro rfl -
     rfl
 
 theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* ℤ_[p]} :
@@ -724,7 +724,7 @@ theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* �
     intro n
     change (toZModPow n).comp g x = (toZModPow n).comp g' x
     rw [hg n]
-  · rintro rfl _
+  · rintro rfl -
     rfl
 
 lemma isCauSeq_padicNorm_of_pow_dvd_sub

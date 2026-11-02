@@ -127,7 +127,7 @@ theorem den_mul_self_eq_num (I : FractionalIdeal S P) :
     I.den • (I : Submodule R P) = Submodule.map (Algebra.linearMap R P) I.num := by
   rw [den, num, Submodule.map_comap_eq]
   refine (inf_of_le_right ?_).symm
-  rintro _ ⟨a, ha, rfl⟩
+  rintro - ⟨a, ha, rfl⟩
   exact I.2.choose_spec.2 a ha
 
 /-- The linear equivalence between the fractional ideal `I` and the integral ideal `I.num`
@@ -455,7 +455,7 @@ theorem _root_.IsFractional.inf_right {I : Submodule R P} :
     IsFractional S I → ∀ J, IsFractional S (I ⊓ J)
   | ⟨aI, haI, hI⟩, J =>
     ⟨aI, haI, fun b hb => by
-      rcases mem_inf.mp hb with ⟨hbI, _⟩
+      rcases mem_inf.mp hb with ⟨hbI, -⟩
       exact hI b hbI⟩
 
 instance : Min (FractionalIdeal S P) :=

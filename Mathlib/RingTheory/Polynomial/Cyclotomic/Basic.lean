@@ -196,7 +196,7 @@ theorem int_coeff_of_cyclotomic' {K : Type*} [CommRing K] [IsDomain K] {ζ : K} 
     rw [mul_comm] at hd
     exact ihk x xsmall (h.pow hpos hd)
   replace Bint := lifts_and_degree_eq_and_monic Bint Bmo
-  obtain ⟨B₁, hB₁, _, hB₁mo⟩ := Bint
+  obtain ⟨B₁, hB₁, -, hB₁mo⟩ := Bint
   let Q₁ : ℤ[X] := (X ^ k - 1) /ₘ B₁
   have huniq : 0 + B * cyclotomic' k K = X ^ k - 1 ∧ (0 : K[X]).degree < B.degree := by
     constructor

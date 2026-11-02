@@ -792,7 +792,7 @@ theorem map_linearDependent {K M N : Type*} [Ring K] [IsDomain K] [AddCommGroup 
   rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]
   apply Finset.sum_eq_zero
   intro j hj
-  obtain ⟨hij, _⟩ := Finset.mem_erase.mp hj
+  obtain ⟨hij, -⟩ := Finset.mem_erase.mp hj
   rw [f.map_update_smul, f.map_update_self _ hij.symm, smul_zero]
 
 section Fin

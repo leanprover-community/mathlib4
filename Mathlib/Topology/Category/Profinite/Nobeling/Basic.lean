@@ -187,11 +187,11 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
     rw [Subtype.ext_iff] at h
     by_cases hi : J i
     · congrm $h ⟨i, hi⟩
-    · rcases a with ⟨_, c, hc, rfl⟩
-      rcases b with ⟨_, d, hd, rfl⟩
+    · rcases a with ⟨-, c, hc, rfl⟩
+      rcases b with ⟨-, d, hd, rfl⟩
       simp only [Proj, ite_eq_right hi]
   · refine ⟨⟨fun i ↦ if hi : J i then a.val ⟨i, hi⟩ else false, ?_⟩, ?_⟩
-    · rcases a with ⟨_, y, hy, rfl⟩
+    · rcases a with ⟨-, y, hy, rfl⟩
       exact ⟨y, hy, rfl⟩
     · ext i
       exact dite_eq_left i.prop
@@ -391,7 +391,7 @@ theorem eval_eq (l : Products I) (x : C) :
   · simp only [List.map_map]
     apply List.prod_eq_one
     simp only [List.mem_map, Function.comp_apply]
-    rintro _ ⟨i, hi, rfl⟩
+    rintro - ⟨i, hi, rfl⟩
     exact ite_eq_left (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
     push Not at h

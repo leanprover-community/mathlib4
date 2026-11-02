@@ -148,7 +148,7 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
   ext i
   simp only [mem_image, mem_Ico]
   constructor
-  · rintro ⟨i, _, rfl⟩
+  · rintro ⟨i, -, rfl⟩
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
   rintro ⟨hi₀, hia⟩
   have hn := Int.emod_add_mul_ediv n a

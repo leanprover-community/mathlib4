@@ -527,7 +527,7 @@ theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α}
   refine le_antisymm (generateFrom_anti ?_) (le_generateFrom ?_)
   · simp only [union_subset_iff, image_subset_iff]
     exact ⟨fun a _ ↦ ⟨a, .inl rfl⟩, fun a _ ↦ ⟨a, .inr rfl⟩⟩
-  · rintro _ ⟨a, rfl | rfl⟩
+  · rintro - ⟨a, rfl | rfl⟩
     · rw [hs.Ioi_eq_biUnion]
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inl <| mem_image_of_mem _ h.1
@@ -660,7 +660,7 @@ theorem countable_image_lt_image_Ioi_within
   -- (the intervals `(f x, z x)`) is at most countable.
   have fs_count : (f '' s).Countable := by
     have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
-      rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
+      rintro - ⟨u, us, rfl⟩ - ⟨v, vs, rfl⟩ huv
       wlog hle : u ≤ v generalizing u v
       · exact (this v vs u us huv.symm (le_of_not_ge hle)).symm
       have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
@@ -669,7 +669,7 @@ theorem countable_image_lt_image_Ioi_within
       simp only [I.leftInvOn_invFunOn us, I.leftInvOn_invFunOn vs] at ha hb
       exact lt_irrefl _ ((ha.2.trans_le ((hz u us).2 v vs.1 hlt)).trans hb.1)
     apply Set.PairwiseDisjoint.countable_of_Ioo A
-    rintro _ ⟨y, ys, rfl⟩
+    rintro - ⟨y, ys, rfl⟩
     simpa only [I.leftInvOn_invFunOn ys] using (hz y ys).1
   exact MapsTo.countable_of_injOn (mapsTo_image f s) I fs_count
 

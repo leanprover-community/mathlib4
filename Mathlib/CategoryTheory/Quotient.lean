@@ -88,7 +88,7 @@ variable [IsStableUnderPrecomp r] [IsStableUnderPostcomp r]
 lemma compClosure_iff_self {X Y : C} (f g : X ⟶ Y) :
     CompClosure r f g ↔ r f g := by
   refine ⟨?_, CompClosure.of⟩
-  rintro ⟨_, _, _, _, _, _, h⟩
+  rintro ⟨_, _, -, _, _, -, h⟩
   exact HomRel.comp_left _ (HomRel.comp_right _ h)
 
 @[simp]
@@ -264,7 +264,7 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
   · rintro X
     dsimp [lift, Functor]
     congr
-  · rintro _ _ f
+  · rintro - - f
     dsimp [lift, Functor]
     refine Quot.inductionOn f fun _ ↦ ?_
     simp only [heq_eq_eq]

@@ -243,7 +243,7 @@ def symEquivSym' {α : Type*} {n : ℕ} : Sym α n ≃ Sym' α n :=
 
 theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) :
     (a :: symEquivSym' s) = symEquivSym' (a ::ₛ s) := by
-  rcases s with ⟨⟨l⟩, _⟩
+  rcases s with ⟨⟨l⟩, -⟩
   rfl
 
 instance instZeroSym : Zero (Sym α 0) :=
@@ -622,7 +622,7 @@ theorem encode_decode [DecidableEq α] (s : Sym (Option α) n ⊕ Sym α n.succ)
   · simp
   · unfold SymOptionSuccEquiv.encode
     split_ifs with h
-    · obtain ⟨a, _, ha⟩ := Multiset.mem_map.mp h
+    · obtain ⟨a, -, ha⟩ := Multiset.mem_map.mp h
       exact Option.some_ne_none _ ha
     · congrm Sum.inr ?_
       refine map_injective (Option.some_injective _) _ ?_

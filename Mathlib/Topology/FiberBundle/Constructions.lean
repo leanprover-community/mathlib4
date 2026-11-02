@@ -150,7 +150,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   refine ((hf₃.comp_continuousOn hf₂).comp hf₁.continuousOn ?_).congr ?_
   · rw [e₁.source_eq, e₂.source_eq]
     exact mapsTo_preimage _ _
-  rintro ⟨b, v₁, v₂⟩ ⟨hb₁, _⟩
+  rintro ⟨b, v₁, v₂⟩ ⟨hb₁, -⟩
   simp only [f₁, f₂, f₃, Prod.toFun', Prod.mk_inj, Function.comp_apply, and_true]
   rw [e₁.coe_fst]
   rw [e₁.source_eq, mem_preimage]

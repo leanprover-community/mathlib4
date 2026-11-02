@@ -884,7 +884,7 @@ theorem sSupFun_strictMono [IsOrderedAddMonoid R] {c : Set (Partial seed)}
   have : (sSupFun hc) (y - x) = f ⟨(y - x).val, hf⟩ :=
     LinearPMap.sSup_apply _ hmem ⟨(y - x).val, hf⟩
   rw [this]
-  obtain ⟨f', _, hf'⟩ := (Set.mem_image _ _ _).mp hmem
+  obtain ⟨f', -, hf'⟩ := (Set.mem_image _ _ _).mp hmem
   have hmono : StrictMono f := hf'.symm ▸ f'.prop.strictMono
   rw [show 0 = f 0 by simp]
   apply hmono

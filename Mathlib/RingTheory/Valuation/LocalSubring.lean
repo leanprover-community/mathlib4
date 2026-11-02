@@ -150,7 +150,7 @@ lemma Ideal.image_subset_nonunits_valuationSubring {A : Subring K} (I : Ideal A)
   refine .trans ?_ (Set.image_mono <| ((local_hom_tfae _).out 1 3).mp hV.2)
   rw [← IsLocalization.AtPrime.map_eq_maximalIdeal M, map_map]
   refine .trans ?_ (Set.image_mono <| map_mono le)
-  rintro _ ⟨a, ha, rfl⟩
+  rintro - ⟨a, ha, rfl⟩
   exact ⟨_, mem_map_of_mem _ ha, rfl⟩
 
 open Polynomial Algebra in
@@ -231,13 +231,13 @@ lemma bijective_rangeRestrict_comp_of_valuationRing [IsDomain R] [ValuationRing 
   · let V : ValuationSubring K :=
       ⟨(algebraMap R K).range, ValuationRing.isInteger_or_isInteger R⟩
     suffices LocalSubring.range g ≤ V.toLocalSubring by
-      rintro ⟨_, x, rfl⟩
+      rintro ⟨-, x, rfl⟩
       obtain ⟨y, hy⟩ := this.1 ⟨x, rfl⟩
       exact ⟨y, Subtype.ext (by simpa [← h] using hy)⟩
     apply V.isMax_toLocalSubring
     have H : (algebraMap R K).range ≤ g.range := fun x ⟨a, ha⟩ ↦ ⟨f a, by simp [← ha, ← h]⟩
     refine ⟨H, ⟨?_⟩⟩
-    rintro ⟨_, a, rfl⟩ (ha : IsUnit (M := g.range) ⟨algebraMap R K a, _⟩)
+    rintro ⟨-, a, rfl⟩ (ha : IsUnit (M := g.range) ⟨algebraMap R K a, _⟩)
     suffices IsUnit a from this.map (algebraMap R K).rangeRestrict
     apply IsUnit.of_map f
     apply (IsLocalHom.of_surjective g.rangeRestrict g.rangeRestrict_surjective).1

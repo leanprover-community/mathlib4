@@ -532,9 +532,9 @@ theorem map_prodMap_const_id_principal_coprod_principal {α β ι : Type*} (a : 
   congr
   ext ⟨b', i'⟩
   constructor
-  · rintro ⟨⟨a'', i''⟩, _, h₂, h₃⟩
+  · rintro ⟨⟨a'', i''⟩, -, h₂, h₃⟩
     simp
-  · rintro ⟨h₁, _⟩
+  · rintro ⟨h₁, -⟩
     use (a, i')
     simpa using h₁.symm
 

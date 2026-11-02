@@ -238,7 +238,7 @@ lemma mem_upShadow_iterate_iff_exists_card :
     constructor
     · rintro ⟨a, hat, u, rfl, ⟨hut, hau⟩, htu⟩
       exact ⟨_, ⟨_, _, hau, rfl, rfl⟩, insert_subset hat hut, htu⟩
-    · rintro ⟨_, ⟨a, u, hau, rfl, rfl⟩, hut, htu⟩
+    · rintro ⟨-, ⟨a, u, hau, rfl, rfl⟩, hut, htu⟩
       rw [insert_subset_iff] at hut
       exact ⟨a, hut.1, _, rfl, ⟨hut.2, hau⟩, htu⟩
 

@@ -102,7 +102,7 @@ lemma ofObj_iff (Y : C) : ofObj X Y ↔ ∃ i, X i = Y := by
 
 lemma ofObj_le_iff (P : ObjectProperty C) :
     ofObj X ≤ P ↔ ∀ i, P (X i) :=
-  ⟨fun h i ↦ h _ (by simp), fun h ↦ by rintro _ ⟨i⟩; exact h i⟩
+  ⟨fun h i ↦ h _ (by simp), fun h ↦ by rintro - ⟨i⟩; exact h i⟩
 
 instance [Nonempty ι] : (ofObj X).Nonempty :=
   nonempty_of_prop (ofObj_apply X (Classical.arbitrary ι))
@@ -135,7 +135,7 @@ def pair (X Y : C) : ObjectProperty C :=
 lemma pair_iff (X Y Z : C) :
     pair X Y Z ↔ X = Z ∨ Y = Z := by
   constructor
-  · rintro ⟨_ | _⟩ <;> tauto
+  · rintro ⟨- | -⟩ <;> tauto
   · rintro (rfl | rfl); exacts [⟨Sum.inl .unit⟩, ⟨Sum.inr .unit⟩]
 
 instance (X Y : C) : (pair X Y).Nonempty := inferInstanceAs (ofObj _).Nonempty
@@ -190,12 +190,12 @@ instance (P : ObjectProperty C) (F : C ⥤ D) [P.Nonempty] : (P.strictMap F).Non
 
 lemma strictMap_monotone {P Q : ObjectProperty C} (h : P ≤ Q) (F : C ⥤ D) :
     P.strictMap F ≤ Q.strictMap F := by
-  rintro _ ⟨X, hX⟩
+  rintro - ⟨X, hX⟩
   exact ⟨X, h _ hX⟩
 
 lemma strictMap_le_map (P : ObjectProperty C) (F : C ⥤ D) :
     P.strictMap F ≤ P.map F := by
-  rintro _ ⟨X, hX⟩
+  rintro - ⟨X, hX⟩
   exact ⟨X, hX, ⟨Iso.refl _⟩⟩
 
 @[simp]

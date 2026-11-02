@@ -421,7 +421,7 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
   classical
   revert i m
   induction s using Finset.induction_on with
-  | empty => rintro _ ⟨⟩
+  | empty => rintro - ⟨⟩
   | insert _ _ _ ih =>
     intro _ m
     rw [Finset.inf_insert]
@@ -541,7 +541,7 @@ theorem finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subob
   classical
   revert h
   induction s using Finset.induction_on with
-  | empty => rintro ⟨_, ⟨⟨⟩, _⟩⟩
+  | empty => rintro ⟨-, ⟨⟨⟩, -⟩⟩
   | insert _ _ _ ih =>
     rintro ⟨j, ⟨m, h⟩⟩
     simp only [Finset.sup_insert]
@@ -725,7 +725,7 @@ end CompleteLattice
 lemma subsingleton_of_isInitial {X : C} (hX : IsInitial X) : Subsingleton (Subobject X) := by
   suffices ∀ (S : Subobject X), S = .mk (𝟙 _) from ⟨by simp [this]⟩
   intro S
-  obtain ⟨A, i, _, rfl⟩ := S.mk_surjective
+  obtain ⟨A, i, -, rfl⟩ := S.mk_surjective
   have fac : hX.to A ≫ i = 𝟙 X := hX.hom_ext _ _
   let e : A ≅ X :=
     { hom := i

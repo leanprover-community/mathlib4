@@ -440,7 +440,7 @@ lemma autEquivRootsOfUnity_smul [NeZero n] (σ : Gal(L/K)) :
   rw [← mem_nthRoots hn, (hζ'.map_of_injective (algebraMap K L).injective).nthRoots_eq
     (rootOfSplitsXPowSubC_pow a L)] at hα
   simp only [Multiset.mem_map, Multiset.mem_range] at hα
-  obtain ⟨i, _, rfl⟩ := hα
+  obtain ⟨i, -, rfl⟩ := hα
   simp only [← map_pow, ← Algebra.smul_def, map_smul,
     autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _

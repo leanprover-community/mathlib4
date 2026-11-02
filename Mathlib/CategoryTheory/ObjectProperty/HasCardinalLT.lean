@@ -34,7 +34,7 @@ protected abbrev HasCardinalLT (P : ObjectProperty C) (κ : Cardinal.{w}) :=
 lemma hasCardinalLT_subtype_ofObj
     {ι : Type*} (X : ι → C) {κ : Cardinal.{w}}
     (h : HasCardinalLT ι κ) : (ObjectProperty.ofObj X).HasCardinalLT κ :=
-  h.of_surjective (fun i ↦ ⟨X i, by simp⟩) (by rintro ⟨_, ⟨i⟩⟩; exact ⟨i, rfl⟩)
+  h.of_surjective (fun i ↦ ⟨X i, by simp⟩) (by rintro ⟨-, ⟨i⟩⟩; exact ⟨i, rfl⟩)
 
 lemma HasCardinalLT.iSup
     {ι : Type*} {P : ι → ObjectProperty C} {κ : Cardinal.{w}} [Fact κ.IsRegular]

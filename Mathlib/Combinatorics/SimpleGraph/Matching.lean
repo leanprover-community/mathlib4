@@ -201,11 +201,11 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
 
 protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
     (hf : Injective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
-  rintro _ ⟨v, hv, rfl⟩
+  rintro - ⟨v, hv, rfl⟩
   obtain ⟨v', hv'⟩ := hM hv
   use f v'
   refine ⟨⟨v, v', hv'.1, rfl, rfl⟩, ?_⟩
-  rintro _ ⟨w, w', hw, hw', rfl⟩
+  rintro - ⟨w, w', hw, hw', rfl⟩
   cases hf hw'.symm
   rw [hv'.2 w' hw]
 

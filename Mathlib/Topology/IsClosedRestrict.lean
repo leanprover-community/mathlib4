@@ -111,7 +111,7 @@ lemma image_snd_preimageImageRestrict [∀ i, TopologicalSpace (α i)] :
     mem_image, mem_preimage, Subtype.exists, exists_and_left, Prod.exists, Prod.mk.injEq,
     exists_and_right, exists_eq_right, Subtype.mk.injEq, exists_prop]
   constructor
-  · rintro ⟨y, _, z, hz_mem, _, hzx⟩
+  · rintro ⟨y, -, z, hz_mem, -, hzx⟩
     exact ⟨z, hz_mem, hzx⟩
   · rintro ⟨z, hz_mem, hzx⟩
     exact ⟨Sᶜ.domRestrict z, mem_image_of_mem Sᶜ.domRestrict hz_mem, z, hz_mem,

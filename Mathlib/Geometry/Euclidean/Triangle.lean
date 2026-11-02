@@ -158,7 +158,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     (cos_angle_eq_cos_angle_add_add_angle_add hx hy)
     (sin_angle_eq_sin_angle_add_add_angle_add hx hy)
   rw [add_comm y x] at h
-  obtain ⟨_, ⟨n, rfl⟩, h⟩ := (QuotientAddGroup.mk'_eq_mk' _).mp h
+  obtain ⟨-, ⟨n, rfl⟩, h⟩ := (QuotientAddGroup.mk'_eq_mk' _).mp h
   simp only at h
   have : -1 < n := by
     replace h := h.ge

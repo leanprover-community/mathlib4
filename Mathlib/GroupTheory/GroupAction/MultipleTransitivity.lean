@@ -100,7 +100,7 @@ theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bij
     Function.Bijective (hf.injective.mulActionHom_embedding ι) := by
   refine ⟨hf.injective.mulActionHom_embedding_isInjective, ?_⟩
   intro y
-  obtain ⟨g, _, hfg⟩ := Function.bijective_iff_has_inverse.mp hf
+  obtain ⟨g, -, hfg⟩ := Function.bijective_iff_has_inverse.mp hf
   use ⟨g ∘ y, hfg.injective.comp (EmbeddingLike.injective y)⟩
   ext
   simp only [hf.injective.mulActionHom_embedding_apply, coeFn_mk, comp_apply]
@@ -233,7 +233,7 @@ theorem isPretransitive_of_is_two_pretransitive
     by_cases h : a = b
     · exact ⟨1, by simp [h]⟩
     · rw [is_two_pretransitive_iff] at h2
-      obtain ⟨g, h, _⟩ := h2 h (Ne.symm h)
+      obtain ⟨g, h, -⟩ := h2 h (Ne.symm h)
       exact ⟨g, h⟩
 
 /-- A `2`-transitive action is primitive. -/
@@ -477,7 +477,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
         · rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
         apply Set.toFinite
       intro h
-      obtain ⟨⟨b, hb⟩, _, hb'⟩ := h
+      obtain ⟨⟨b, hb⟩, -, hb'⟩ := h
       apply hb
       simp only [← hb', Set.mem_singleton_iff]
     suffices (fixingSubgroup (stabilizer G a) t).index *
@@ -610,7 +610,7 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
   -- 2 ≤ Nat.card α
   apply Equiv.Perm.alternatingGroup_le_of_index_le_two
   -- one picks up a set of cardinality (card α - 2)
-  obtain ⟨s, _, hs⟩ :=
+  obtain ⟨s, -, hs⟩ :=
     Set.exists_subset_card_eq (s := (Set.univ : Set α)) (n := Nat.card α - 2)
       (by rw [Set.ncard_univ]; exact sub_le (Nat.card α) 2)
   rw [← hs] at hmt

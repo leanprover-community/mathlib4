@@ -556,7 +556,7 @@ noncomputable def infinitePlace : InfinitePlace ℚ := .mk (Rat.castHom _)
 @[simp]
 lemma infinitePlace_apply (v : InfinitePlace ℚ) (x : ℚ) : v x = |x| := by
   rw [NumberField.InfinitePlace.coe_apply]
-  obtain ⟨_, _, rfl⟩ := v
+  obtain ⟨-, -, rfl⟩ := v
   simp
 
 instance : Subsingleton (InfinitePlace ℚ) where
@@ -577,19 +577,19 @@ variable {K : Type*} [Field K] {v w : InfinitePlace K}
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_ratCast (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
-  rcases v with ⟨_, _⟩
+  rcases v with ⟨-, -⟩
   aesop (add simp [coe_apply])
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_natCast (v : InfinitePlace K) (n : ℕ) : v n = n := by
-  rcases v with ⟨_, _⟩
+  rcases v with ⟨-, -⟩
   aesop (add simp [coe_apply])
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 protected theorem map_intCast (v : InfinitePlace K) (z : ℤ) : v z = ‖z‖ := by
-  rcases v with ⟨_, _⟩
+  rcases v with ⟨-, -⟩
   aesop (add simp [coe_apply])
 
 /-- If `v` and `w` are infinite places of `K` and `v = w ^ t` for some `t` then `t = 1`. -/
@@ -602,7 +602,7 @@ theorem eq_one_of_rpow_eq {t : ℝ} (h : (w ·) ^ t = v) : t = 1 := by
 are equivalent. -/
 theorem eq_iff_isEquiv : w = v ↔ w.1.IsEquiv v.1 := by
   refine ⟨fun h ↦ h ▸ .rfl, fun h ↦ ?_⟩
-  obtain ⟨t, _, h⟩ := w.1.isEquiv_iff_exists_rpow_eq.1 h
+  obtain ⟨t, -, h⟩ := w.1.isEquiv_iff_exists_rpow_eq.1 h
   exact ext _ _ fun k ↦ by simpa [eq_one_of_rpow_eq h, ext, coe_apply] using funext_iff.1 h k
 
 variable (v)

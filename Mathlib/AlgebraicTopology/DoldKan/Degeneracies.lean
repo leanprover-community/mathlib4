@@ -65,7 +65,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
     by_cases h : n + 1 ≤ (i : ℕ) + q
     · rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]
     · replace hi : n = i + q := by lia
-      rcases n with _ | n
+      rcases n with - | n
       · fin_cases i
         dsimp at h hi
         rw [show q = 0 by lia]
@@ -166,20 +166,20 @@ variable {f} in
 lemma DegeneraciesVanish.comp
     {f : X _⦋n⦌ ⟶ T} (hf : DegeneraciesVanish f) {U : C} (g : T ⟶ U) :
     DegeneraciesVanish (f ≫ g) := by
-  obtain _ | n := n
+  obtain - | n := n
   · simp
   · simp [degeneraciesVanish_succ_iff, hf.σ_comp_assoc]
 
 variable (X) in
 lemma degeneraciesVanishPInfty_f (n : ℕ) :
     DegeneraciesVanish ((PInfty (X := X)).f n) := by
-  obtain _ | n := n
+  obtain - | n := n
   · simp
   · simp [degeneraciesVanish_succ_iff]
 
 lemma degeneraciesVanish_iff_QInfty_f_comp (f : X _⦋n⦌ ⟶ T) :
     DegeneraciesVanish f ↔ QInfty.f n ≫ f = 0 := by
-  obtain _ | n := n
+  obtain - | n := n
   · simp
   · refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
     · simp [QInfty_f, decomposition_Q, Preadditive.sum_comp, hf.σ_comp]

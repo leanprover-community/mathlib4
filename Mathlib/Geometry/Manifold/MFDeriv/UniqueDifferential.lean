@@ -50,7 +50,7 @@ theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffAt[s] x)
   case pt => simp only [mfld_simps]
   case sub1 => mfld_set_tac
   case sub2 =>
-    rintro _ ⟨y, ⟨⟨hys, hfy⟩, -⟩, rfl⟩
+    rintro - ⟨y, ⟨⟨hys, hfy⟩, -⟩, rfl⟩
     exact ⟨⟨_, hys, ((extChartAt I' (f x)).left_inv hfy).symm⟩, mem_range_self _⟩
 
 /-- If `s` has the unique differential property, `f` is differentiable on `s` and its derivative

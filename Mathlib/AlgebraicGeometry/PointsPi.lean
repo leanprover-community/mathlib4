@@ -121,7 +121,7 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
   have (i : _) : ∃ j, Set.range (f i) ⊆ (𝒰.f j).opensRange := by
     refine ⟨𝒰.idx ((f i) (IsLocalRing.closedPoint (R i))), ?_⟩
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     exact ((IsLocalRing.specializes_closedPoint x).map (f i).continuous).mem_open
       (𝒰.f _).opensRange.2 (𝒰.covers _)
   choose j hj using this

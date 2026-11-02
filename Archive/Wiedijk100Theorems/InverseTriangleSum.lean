@@ -30,7 +30,7 @@ open Finset
 public theorem Theorems100.inverse_triangle_sum (n : ℕ) :
     ∑ k ∈ range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
   apply sum_range_induction _ _ rfl
-  rintro (_ | _)
+  rintro (- | -)
   · norm_num
   · simp [field]
     ring_nf

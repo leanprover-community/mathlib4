@@ -132,7 +132,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
   · rintro ⟨RPID, Punique⟩
     have : IsLocalRing R := IsLocalRing.of_unique_nonzero_prime Punique
     refine { not_a_field' := ?_ }
-    rcases Punique with ⟨P, ⟨hP1, hP2⟩, _⟩
+    rcases Punique with ⟨P, ⟨hP1, hP2⟩, -⟩
     have hPM : P ≤ maximalIdeal R := le_maximalIdeal hP2.1
     order
 
@@ -223,7 +223,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
   symm
   rw [Multiset.eq_replicate]
   simp only [true_and, and_imp, Multiset.card_map, Multiset.mem_map, exists_imp]
-  rintro _ q hq rfl
+  rintro - q hq rfl
   rw [Associates.mk_eq_mk_iff_associated]
   apply h₂ (hfx.1 _ hq) hp
 
@@ -241,7 +241,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R]
     use 0
     simp only [Set.singleton_zero, Submodule.span_zero]
   obtain ⟨x, hxI, hx0⟩ : ∃ x ∈ I, x ≠ (0 : R) := I.ne_bot_iff.mp I0
-  obtain ⟨p, _, H⟩ := HasUnitMulPowIrreducibleFactorization.of_ufd_of_unique_irreducible h₁ h₂
+  obtain ⟨p, -, H⟩ := HasUnitMulPowIrreducibleFactorization.of_ufd_of_unique_irreducible h₁ h₂
   have ex : ∃ n : ℕ, p ^ n ∈ I := by
     obtain ⟨n, u, rfl⟩ := H hx0
     refine ⟨n, ?_⟩
@@ -327,7 +327,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
   congr 1
   rw [Multiset.eq_replicate]
   simp only [true_and, and_imp, Multiset.card_map, Multiset.mem_map, exists_imp]
-  rintro _ _ _ rfl
+  rintro - _ _ rfl
   rw [Associates.mk_eq_mk_iff_associated]
   refine associated_of_irreducible _ ?_ hirr
   apply hfx.1

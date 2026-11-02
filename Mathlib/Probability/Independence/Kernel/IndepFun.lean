@@ -143,7 +143,7 @@ theorem indepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
         → ∀ᵐ a ∂μ, κ a (f ⁻¹' s ∩ g ⁻¹' t) = κ a (f ⁻¹' s) * κ a (g ⁻¹' t) := by
   constructor <;> intro h
   · refine fun s t hs ht => h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-  · rintro _ _ ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩; exact h s t hs ht
+  · rintro - - ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩; exact h s t hs ht
 
 alias ⟨IndepFun.measure_inter_preimage_eq_mul, _⟩ := indepFun_iff_measure_inter_preimage_eq_mul
 
@@ -237,7 +237,7 @@ theorem IndepFun.congr' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {f' : Ω → β} {g' : Ω → β'} (hfg : IndepFun f g κ μ)
     (hf : ∀ᵐ a ∂μ, f =ᵐ[κ a] f') (hg : ∀ᵐ a ∂μ, g =ᵐ[κ a] g') :
     IndepFun f' g' κ μ := by
-  rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
+  rintro - - ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   filter_upwards [hf, hg, hfg _ _ ⟨_, hA, rfl⟩ ⟨_, hB, rfl⟩] with a hf' hg' hfg'
   have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.fun_comp (· ∈ A)
   have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp (· ∈ B)
@@ -247,7 +247,7 @@ theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {mγ : MeasurableSpace γ} {mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
     (hfg : IndepFun f g κ μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
     IndepFun (φ ∘ f) (ψ ∘ g) κ μ := by
-  rintro _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
+  rintro - - ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   apply hfg
   · exact ⟨φ ⁻¹' A, hφ hA, Set.preimage_comp.symm⟩
   · exact ⟨ψ ⁻¹' B, hψ hB, Set.preimage_comp.symm⟩
@@ -360,7 +360,7 @@ theorem iIndepFun.indepFun_set (S T : Set ι) (hST : Disjoint S T)
   refine IndepSets.indep (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i))
     (Measurable.comap_le (measurable_pi_iff.mpr fun i => hf_meas i)) hπS_pi hπT_pi hπS_gen hπT_gen
     ?_
-  rintro _ _ ⟨s, ⟨s', sets_s, hs1, hs2⟩, rfl⟩ ⟨t, ⟨t', sets_t, ht1, ht2⟩, rfl⟩
+  rintro - - ⟨s, ⟨s', sets_s, hs1, hs2⟩, rfl⟩ ⟨t, ⟨t', sets_t, ht1, ht2⟩, rfl⟩
   simp only [mem_pi, mem_univ, mem_ofPred_eq, forall_const, Subtype.forall] at hs1 ht1
   rw [hs2, ht2]
   classical

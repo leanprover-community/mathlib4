@@ -60,7 +60,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
     Opens.IsBasis { X.basicOpen r | (r : Γ(X, ⊤)) (_ : IsAffineOpen (X.basicOpen r)) } := by
   refine Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_
-  obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hxr, hrU⟩ := (PrimeSpectrum.isBasis_basic_opens
+  obtain ⟨-, ⟨-, ⟨r, rfl⟩, rfl⟩, hxr, hrU⟩ := (PrimeSpectrum.isBasis_basic_opens
     (R := Γ(X, ⊤))).exists_subset_of_mem_open (Set.mem_image_of_mem _ hxU) (X.toSpecΓ ''ᵁ U).2
   simp_rw [← toSpecΓ_preimage_basicOpen]
   refine ⟨_, ⟨r, ?_, rfl⟩, hxr, (Set.preimage_mono hrU).trans_eq
@@ -93,7 +93,7 @@ lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpac
 lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasiAffine := by
   have := QuasiCompact.compactSpace_of_compactSpace f
   refine .of_forall_exists_mem_basicOpen _ fun x ↦ ?_
-  obtain ⟨_, ⟨_, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ := (IsQuasiAffine.isBasis_basicOpen
+  obtain ⟨-, ⟨-, ⟨r, hr, rfl⟩, rfl⟩, hxr, -⟩ := (IsQuasiAffine.isBasis_basicOpen
     Y).exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
   refine ⟨f.appTop r, ?_⟩
   rw [← preimage_basicOpen_top]

@@ -436,14 +436,14 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
       · simp only [basicOpen_eq_zeroLocus_compl, Set.compl_eq_univ_sdiff]
         congr 1
         rw [← Set.univ_subset_iff]
-        rintro x _ _ ⟨_, rfl⟩
+        rintro x - - ⟨-, rfl⟩
         exact zero_mem x.asIdeal
       · suffices Set.range f.coeff = ⋃ i < f.natDegree + 2, {f.coeff i} by
           simp [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet,
             ← Set.compl_eq_univ_sdiff, eq_compl_comm (y := zeroLocus _), ← zeroLocus_iUnion₂, this]
         trans f.coeff '' (Set.Iio (f.natDegree + 2))
         · refine ((Set.image_subset_range _ _).antisymm ?_).symm
-          rintro _ ⟨i, rfl⟩
+          rintro - ⟨i, rfl⟩
           by_cases! hi : i ≤ f.natDegree
           · exact ⟨i, hi.trans_lt (by simp), rfl⟩
           · exact ⟨f.natDegree + 1, by simp, by simp [f.coeff_eq_zero_of_natDegree_lt hi]⟩
@@ -495,7 +495,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             · refine Set.iUnion_subset fun k ↦ ?_
               simp only [update_apply, hi', modByMonic_one, c']
               split_ifs
-              · rintro _ ⟨_, rfl⟩
+              · rintro - ⟨-, rfl⟩
                 exact zero_mem _
               · exact (Set.subset_iUnion (fun i ↦ coeff(c.val i)) k).trans
                   (Set.subset_union_right.trans Submodule.subset_span)

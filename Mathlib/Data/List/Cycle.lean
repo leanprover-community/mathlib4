@@ -169,7 +169,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   rw [next, get, ← dropLast_append_getLast (cons_ne_nil y l), hx, nextOr_concat]
   subst hx
   intro H
-  obtain ⟨_ | k, hk, hk'⟩ := getElem_of_mem H
+  obtain ⟨- | k, hk, hk'⟩ := getElem_of_mem H
   · grind
   suffices k + 1 = l.length by simp [this] at hk
   rcases l with - | ⟨hd, tl⟩
@@ -550,7 +550,7 @@ def Nontrivial (s : Cycle α) : Prop :=
 theorem nontrivial_coe_nodup_iff {l : List α} (hl : l.Nodup) :
     Nontrivial (l : Cycle α) ↔ 2 ≤ l.length := by
   rw [Nontrivial]
-  rcases l with (_ | ⟨hd, _ | ⟨hd', tl⟩⟩)
+  rcases l with (- | ⟨hd, - | ⟨hd', tl⟩⟩)
   · simp
   · simp
   · simp only [mem_cons, mem_coe_iff, List.length, Ne, Nat.succ_le_succ_iff,
@@ -566,7 +566,7 @@ theorem nontrivial_reverse_iff {s : Cycle α} : s.reverse.Nontrivial ↔ s.Nontr
 theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s := by
   obtain ⟨x, y, hxy, hx, hy⟩ := h
   induction s using Quot.inductionOn with | _ l
-  rcases l with (_ | ⟨hd, _ | ⟨hd', tl⟩⟩)
+  rcases l with (- | ⟨hd, - | ⟨hd', tl⟩⟩)
   · simp at hx
   · simp only [mem_coe_iff, mk_eq_coe, mem_singleton] at hx hy
     simp [hx, hy] at hxy

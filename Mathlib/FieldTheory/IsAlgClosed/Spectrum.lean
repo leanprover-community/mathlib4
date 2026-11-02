@@ -79,7 +79,7 @@ open Polynomial
 because it holds over any field, whereas `spectrum.map_polynomial_aeval_of_degree_pos` and
 `spectrum.map_polynomial_aeval_of_nonempty` need the field to be algebraically closed. -/
 theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ σ (aeval a p) := by
-  rintro _ ⟨k, hk, rfl⟩
+  rintro - ⟨k, hk, rfl⟩
   let q := C (eval k p) - p
   have hroot : IsRoot q k := by simp only [q, eval_C, eval_sub, sub_self, IsRoot.def]
   rw [← mul_div_eq_iff_isRoot, ← neg_mul_neg, neg_sub] at hroot
@@ -152,7 +152,7 @@ theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontriv
   obtain ⟨p, ⟨h_mon, h_eval_p⟩⟩ := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 I) a
   have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p; rw [h_eval_p]; simp
   rw [(IsAlgClosed.splits p).eq_prod_roots_of_monic h_mon] at nu
-  obtain ⟨k, hk, _⟩ := exists_mem_of_not_isUnit_aeval_prod nu
+  obtain ⟨k, hk, -⟩ := exists_mem_of_not_isUnit_aeval_prod nu
   exact ⟨k, hk⟩
 
 end ScalarField

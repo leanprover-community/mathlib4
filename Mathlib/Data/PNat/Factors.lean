@@ -75,7 +75,7 @@ theorem coeNat_ofPrime (p : Nat.Primes) : (ofPrime p : Multiset ℕ) = {(p : ℕ
   rfl
 
 theorem coeNat_prime (v : PrimeMultiset) (p : ℕ) (h : p ∈ (v : Multiset ℕ)) : p.Prime := by
-  rcases Multiset.mem_map.mp h with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩
+  rcases Multiset.mem_map.mp h with ⟨⟨_, hp'⟩, ⟨-, h_eq⟩⟩
   exact h_eq ▸ hp'
 
 /-- Converts a `PrimeMultiset` to a `Multiset ℕ+`. -/
@@ -100,7 +100,7 @@ theorem coePNat_ofPrime (p : Nat.Primes) : (ofPrime p : Multiset ℕ+) = {(p : �
   rfl
 
 theorem coePNat_prime (v : PrimeMultiset) (p : ℕ+) (h : p ∈ (v : Multiset ℕ+)) : p.Prime := by
-  rcases Multiset.mem_map.mp h with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩
+  rcases Multiset.mem_map.mp h with ⟨⟨_, hp'⟩, ⟨-, h_eq⟩⟩
   exact h_eq ▸ hp'
 
 instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=

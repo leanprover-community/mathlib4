@@ -78,7 +78,7 @@ theorem normalize_normalized_factor {a : α} :
   rw [normalizedFactors, factors]
   split_ifs with h; · simp
   intro x hx
-  obtain ⟨y, _, rfl⟩ := Multiset.mem_map.1 hx
+  obtain ⟨y, -, rfl⟩ := Multiset.mem_map.1 hx
   apply normalize_idem
 
 theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
@@ -120,7 +120,7 @@ theorem exists_mem_normalizedFactors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irr
 theorem exists_mem_normalizedFactors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) :
     ∃ p, p ∈ normalizedFactors x := by
   obtain ⟨p', hp', hp'x⟩ := WfDvdMonoid.exists_irreducible_factor h hx
-  obtain ⟨p, hp, _⟩ := exists_mem_normalizedFactors_of_dvd hx hp' hp'x
+  obtain ⟨p, hp, -⟩ := exists_mem_normalizedFactors_of_dvd hx hp' hp'x
   exact ⟨p, hp⟩
 
 @[simp]
@@ -312,7 +312,7 @@ theorem normalizedFactors_of_isUnit {x : α} (hx : IsUnit x) :
 theorem dvdNotUnit_iff_normalizedFactors_lt_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
     DvdNotUnit x y ↔ normalizedFactors x < normalizedFactors y := by
   constructor
-  · rintro ⟨_, c, hc, rfl⟩
+  · rintro ⟨-, c, hc, rfl⟩
     simp only [hx, right_ne_zero_of_mul hy, normalizedFactors_mul, Ne, not_false_iff,
       lt_add_iff_pos_right, normalizedFactors_pos, hc]
   · intro h

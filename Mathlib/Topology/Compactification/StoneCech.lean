@@ -60,7 +60,7 @@ instance Ultrafilter.topologicalSpace : TopologicalSpace (Ultrafilter α) :=
 
 theorem ultrafilterBasis_is_basis : TopologicalSpace.IsTopologicalBasis (ultrafilterBasis α) :=
   ⟨by
-    rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ u ⟨ua, ub⟩
+    rintro - ⟨a, rfl⟩ - ⟨b, rfl⟩ u ⟨ua, ub⟩
     refine ⟨_, ⟨a ∩ b, rfl⟩, inter_mem ua ub, fun v hv ↦ ⟨?_, ?_⟩⟩ <;> apply mem_of_superset hv <;>
       simp,
     eq_univ_of_univ_subset <| subset_sUnion_of_mem ⟨univ, eq_univ_of_forall fun _ ↦ univ_mem⟩,
@@ -359,7 +359,7 @@ variable {g : α → β} (hg : Continuous g)
 theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (h : g₁ ∘ stoneCechUnit = g₂ ∘ stoneCechUnit) : g₁ = g₂ := by
   apply h₁.ext_on denseRange_stoneCechUnit h₂
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   congrm $h x
 
 variable [CompactSpace β]

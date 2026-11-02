@@ -193,7 +193,7 @@ only if `s` is countably compact. -/
 theorem Topology.IsInducing.isCountablyCompact_iff {f : E → F} (hf : IsInducing f) :
     IsCountablyCompact A ↔ IsCountablyCompact (f '' A) := by
   refine ⟨fun hs => hs.image hf.continuous, fun hs F F_ne_bot Fc F_le => ?_⟩
-  obtain ⟨_, ⟨x, x_in : x ∈ A, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
+  obtain ⟨-, ⟨x, x_in : x ∈ A, rfl⟩, hx : ClusterPt (f x) (map f F)⟩ :=
     hs ((map_mono F_le).trans_eq map_principal)
   exact ⟨x, x_in, hf.mapClusterPt_iff.1 hx⟩
 

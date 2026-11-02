@@ -67,7 +67,7 @@ of the ring. -/
 protected theorem isOpen : IsOpen { x : R | IsUnit x } := by
   nontriviality R
   rw [Metric.isOpen_iff]
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   refine ⟨‖(↑x⁻¹ : R)‖⁻¹, _root_.inv_pos.mpr (Units.norm_pos x⁻¹), fun y hy ↦ ?_⟩
   rw [mem_ball_iff_norm] at hy
   exact (x.ofNearby y hy).isUnit

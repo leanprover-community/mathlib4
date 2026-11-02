@@ -187,11 +187,11 @@ namespace LeftFraction₂Rel
 variable {X Y : C} {z₁ z₂ : W.LeftFraction₂ X Y}
 
 lemma fst (h : LeftFraction₂Rel z₁ z₂) : LeftFractionRel z₁.fst z₂.fst := by
-  obtain ⟨Z, t₁, t₂, hst, hft, _, ht⟩ := h
+  obtain ⟨Z, t₁, t₂, hst, hft, -, ht⟩ := h
   exact ⟨Z, t₁, t₂, hst, hft, ht⟩
 
 lemma snd (h : LeftFraction₂Rel z₁ z₂) : LeftFractionRel z₁.snd z₂.snd := by
-  obtain ⟨Z, t₁, t₂, hst, _, hft', ht⟩ := h
+  obtain ⟨Z, t₁, t₂, hst, -, hft', ht⟩ := h
   exact ⟨Z, t₁, t₂, hst, hft', ht⟩
 
 end LeftFraction₂Rel

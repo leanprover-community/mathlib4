@@ -272,7 +272,7 @@ theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log 
   _ = ∑ m ∈ ((Icc 1 n).filter Prime).biUnion fun p ↦ image (p ^ ·) (Icc 1 (p.log n)), Λ m := by
     refine (sum_subset (fun q hq ↦ ?_) fun x hx ↦ ?_).symm
     · simp only [mem_biUnion, mem_filter, mem_Icc, mem_image] at hq ⊢
-      obtain ⟨p, _, k, ⟨_, hk⟩, rfl⟩ := hq
+      obtain ⟨p, _, k, ⟨-, hk⟩, rfl⟩ := hq
       exact ⟨by grind, pow_le_of_le_log (by linarith) hk⟩
     · simp only [mem_biUnion, mem_filter, mem_Icc, mem_image, not_exists, not_and, and_imp,
         vonMangoldt_eq_zero_iff, isPrimePow_nat_iff]
@@ -377,7 +377,7 @@ theorem sum_PrimePow_eq_sum_sum' {R : Type*} [AddCommMonoid R] (f : ℕ → R) {
       exact (hp₁.pow_inj' hp₂ hk₁ hk₂ H).symm
     · simp +contextual only [mem_filter, mem_Ioc, hx, le_floor_iff, and_assoc, rpow_nonneg,
         mem_product, mem_Icc, succ_le_iff, exists_prop, Prod.exists, exists_and_left, and_imp]
-      rintro b _ hbx ⟨p, k, hp, hk₀, rfl⟩
+      rintro b - hbx ⟨p, k, hp, hk₀, rfl⟩
       rw [cast_pow] at hbx
       refine ⟨k, hk₀, (le_floor ?_).trans hN, p, hp.nat_prime.pos, ?_, hp.nat_prime, ?_, rfl⟩
       · rw [le_div_iff₀ (log_pos (by simp)), ← Real.log_pow]

@@ -196,7 +196,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     have aux (μ') (_hμ' : μ' ∈ m.support.erase μ) :
         (f.genEigenspace μ') ↑l₀ ≤ (f.genEigenspace μ') k := by
       apply (f.genEigenspace μ').mono
-      obtain _ | k := k
+      obtain - | k := k
       · exact le_top
       · exact Nat.cast_le.2 <| Finset.sup_le fun i _ ↦ Nat.cast_le.1 <| hlk i
     rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker, ← Finset.sup_eq_iSup]

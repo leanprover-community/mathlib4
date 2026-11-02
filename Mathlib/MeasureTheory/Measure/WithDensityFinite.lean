@@ -64,7 +64,7 @@ lemma ae_toFiniteAux [SFinite μ] : ae μ.toFiniteAux = ae μ := by
   rw [Measure.toFiniteAux]
   split_ifs
   · simp
-  · obtain ⟨_, h₁, h₂⟩ := (exists_isFiniteMeasure_absolutelyContinuous μ).choose_spec
+  · obtain ⟨-, h₁, h₂⟩ := (exists_isFiniteMeasure_absolutelyContinuous μ).choose_spec
     exact h₂.ae_le.antisymm h₁.ae_le
 
 @[local instance]

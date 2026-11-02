@@ -237,17 +237,17 @@ theorem isGoodApprox_or (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey ξ p 
   rcases hne.lt_or_gt with hm | hm
   · -- ξ < (p + r) / (q + s)
     have h' := h.of_lt_mediant hm
-    obtain ⟨H2, _⟩ := aux₁ hqR H1
+    obtain ⟨H2, -⟩ := aux₁ hqR H1
     have H1' := aux₀ h'.det hA (one_le_sqrt_five_mul_of_not_isGoodApprox_right hqs_pos h'.right h3)
-    obtain ⟨_, H2'⟩ := aux₁ hqR H1'
+    obtain ⟨-, H2'⟩ := aux₁ hqR H1'
     push_cast at H2'
     have heq : 2 * s = (√5 - 1) * q := by linarith
     exact two_mul_ne_sqrt_five_sub_one_mul h.q_pos heq
   · -- (p + r) / (q + s) < ξ
     have h' := h.of_mediant_lt hm
-    obtain ⟨H2, _⟩ := aux₁' hsR H1
+    obtain ⟨H2, -⟩ := aux₁' hsR H1
     have H1' := aux₀ h'.det (one_le_sqrt_five_mul_of_not_isGoodApprox_left hqs_pos h'.left h3) hB
-    obtain ⟨_, H2'⟩ := aux₁' hsR H1'
+    obtain ⟨-, H2'⟩ := aux₁' hsR H1'
     push_cast at H2'
     have heq : 2 * q = (√5 - 1) * s := by linarith
     exact two_mul_ne_sqrt_five_sub_one_mul h.s_pos heq
@@ -351,11 +351,11 @@ is infinite. -/
 theorem infinite_rat_abs_sub_lt_one_div_sqrt_five_mul_den_sq_of_irrational (hξ : Irrational ξ) :
     {t : ℚ | |ξ - t| < 1 / (√5 * (t.den : ℝ) ^ 2)}.Infinite := by
   have hne : {t : ℚ | |ξ - t| < 1 / (√5 * (t.den : ℝ) ^ 2)}.Nonempty := by
-    obtain ⟨t', hgood', _⟩ :=
+    obtain ⟨t', hgood', -⟩ :=
       Hurwitz.exists_rat_abs_sub_lt_one_div_sqrt_five_mul_den_sq_and_lt_of_irrational hξ 0
     use t', hgood'
   refine Or.resolve_left (Set.finite_or_infinite _) fun h => ?_
-  obtain ⟨t₀, _, ht₀⟩ :=
+  obtain ⟨t₀, -, ht₀⟩ :=
     Set.exists_min_image _ (fun t : ℚ => |ξ - (t : ℝ)|) h hne
   obtain ⟨t, ht_good, hbetter⟩ :=
     Hurwitz.exists_rat_abs_sub_lt_one_div_sqrt_five_mul_den_sq_and_lt_of_irrational hξ t₀

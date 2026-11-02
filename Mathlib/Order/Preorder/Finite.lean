@@ -81,7 +81,7 @@ is finite rather than `s` itself. -/
 `s` is finite rather than `s` itself.-/]
 lemma Finite.exists_maximalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finite) (hs : s.Nonempty) :
     ∃ i, MaximalFor (· ∈ s) f i := by
-  obtain ⟨_, ⟨a, ha, rfl⟩, hmax⟩ := Finite.exists_maximalFor id (f '' s) h (hs.image f)
+  obtain ⟨-, ⟨a, ha, rfl⟩, hmax⟩ := Finite.exists_maximalFor id (f '' s) h (hs.image f)
   exact ⟨a, ha, fun a' ha' hf ↦ hmax (mem_image_of_mem f ha') hf⟩
 
 end IsTrans
@@ -98,7 +98,7 @@ variable [Nonempty α]
 lemma infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
   inhabit α
   let f (n : ℕ) : α := Nat.recOn n (h default).choose fun _ a ↦ (h a).choose
-  have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
+  have hf : ∀ n, f n ∈ s := by rintro (- | -) <;> exact (h _).choose_spec.1
   exact infinite_of_injective_forall_mem
     (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
 

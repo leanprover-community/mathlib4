@@ -347,7 +347,7 @@ theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div
     exact tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
   have h₂ : IsBoundedUnder
       (fun x1 x2 ↦ x1 ≤ x2) (𝓝[>] 1) fun s : ℝ ↦ ‖(s - 1) * LSeries f s - s * l‖ := by
-    obtain ⟨C, _, hC₂⟩ :=
+    obtain ⟨C, -, hC₂⟩ :=
       LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃ hlim hfS zero_lt_one
     exact h₁.isBoundedUnder_le.mono_le hC₂
   suffices Tendsto (fun s : ℝ ↦ (s - 1) * LSeries f s - s * l) (𝓝[>] 1) (𝓝 0) by

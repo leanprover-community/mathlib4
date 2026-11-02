@@ -438,7 +438,7 @@ theorem IsPathConnected.image' (hF : IsPathConnected F)
     {f : X → Y} (hf : ContinuousOn f F) : IsPathConnected (f '' F) := by
   rcases hF with ⟨x, x_in, hx⟩
   use f x, mem_image_of_mem f x_in
-  rintro _ ⟨y, y_in, rfl⟩
+  rintro - ⟨y, y_in, rfl⟩
   refine ⟨(hx y_in).somePath.map' ?_, fun t ↦ ⟨_, (hx y_in).somePath_mem t, rfl⟩⟩
   exact hf.mono (range_subset_iff.2 (hx y_in).somePath_mem)
 

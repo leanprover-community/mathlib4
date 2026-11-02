@@ -367,7 +367,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by
   obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.exists_germ_eq _ y
-  obtain ⟨_, ⟨r, rfl⟩, hpr : p ∈ PrimeSpectrum.basicOpen r, hrU : PrimeSpectrum.basicOpen r ≤ U⟩ :=
+  obtain ⟨-, ⟨r, rfl⟩, hpr : p ∈ PrimeSpectrum.basicOpen r, hrU : PrimeSpectrum.basicOpen r ≤ U⟩ :=
     PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U from hp) U.2
   change PrimeSpectrum.basicOpen r ≤ U at hrU
   replace e :=
@@ -379,7 +379,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
       p hpr) s' = y := by
     rw [h]; exact e
   clear_value s'; clear! U
-  obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
+  obtain ⟨⟨s, ⟨-, n, rfl⟩⟩, hsn⟩ :=
     @IsLocalization.surj _ _ _ _ _ _
       (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) s'
   refine ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, ?_⟩

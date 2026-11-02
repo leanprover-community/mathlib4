@@ -31,7 +31,7 @@ lemma Measure.zero_one (μ : Measure α) [IsZeroOneMeasure μ] :
   intro s
   by_cases hs : MeasurableSet s
   · exact IsZeroOneMeasure.zero_one₀ hs
-  · obtain ⟨t, _, mt, ht⟩ := exists_measurable_superset μ s
+  · obtain ⟨t, -, mt, ht⟩ := exists_measurable_superset μ s
     rw [← ht]
     exact IsZeroOneMeasure.zero_one₀ mt
 

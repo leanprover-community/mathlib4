@@ -410,7 +410,7 @@ def map (r : Setoid α) (f : α → β) : Setoid β :=
 
 theorem coe_map_of_ker_le (r : Setoid α) (f : α → β) (hf : ker f ≤ r) :
     ⇑(map r f) = Relation.Map r f f ⊔ (· = ·) := by
-  refine le_antisymm ?_ (sup_le Relation.EqvGen.rel (by rintro _ _ rfl; exact .refl _))
+  refine le_antisymm ?_ (sup_le Relation.EqvGen.rel (by rintro - - rfl; exact .refl _))
   rintro _ _ hxy
   induction hxy with
   | rel _ _ hab => exact .inl hab

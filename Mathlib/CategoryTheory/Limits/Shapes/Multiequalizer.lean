@@ -169,7 +169,7 @@ lemma functor_ext {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
     F = G :=
   Functor.ext_of_iso
     (functorExt (fun _ ↦ eqToIso (left _)) (fun _ ↦ eqToIso (right _)) wl wr)
-    (by rintro (_ | _) <;> grind) (by rintro (_ | _) <;> simp)
+    (by rintro (- | -) <;> grind) (by rintro (- | -) <;> simp)
 
 end WalkingMulticospan
 
@@ -618,7 +618,7 @@ variable {K}
 lemma IsLimit.hom_ext (hK : IsLimit K) {T : C} {f g : T ⟶ K.pt}
     (h : ∀ a, f ≫ K.ι a = g ≫ K.ι a) : f = g := by
   apply hK.hom_ext
-  rintro (_ | b)
+  rintro (- | b)
   · apply h
   · dsimp
     rw [app_right_eq_ι_comp_fst, reassoc_of% h]
@@ -879,7 +879,7 @@ variable {K}
 lemma IsColimit.hom_ext (hK : IsColimit K) {T : C} {f g : K.pt ⟶ T}
     (h : ∀ a, K.π a ≫ f = K.π a ≫ g) : f = g := by
   apply hK.hom_ext
-  rintro (_ | _) <;> simp [h]
+  rintro (- | -) <;> simp [h]
 
 /-- Constructor for morphisms from the point of a colimit multicofork. -/
 def IsColimit.desc (hK : IsColimit K) {T : C} (k : ∀ a, I.right a ⟶ T)

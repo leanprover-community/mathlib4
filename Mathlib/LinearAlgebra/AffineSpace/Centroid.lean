@@ -187,7 +187,7 @@ theorem centroid_eq_centroid_image_of_inj_on {p : ι → P}
     ext x
     rw [mem_map]
     constructor
-    · rintro ⟨i, _, rfl⟩
+    · rintro ⟨i, -, rfl⟩
       exact (hf' i).1
     · intro hx
       use ⟨p x, hps.symm ▸ Set.mem_image_of_mem _ hx⟩, mem_univ _

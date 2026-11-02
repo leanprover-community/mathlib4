@@ -430,7 +430,7 @@ variable (κ) in
 lemma isCardinalFilteredGenerator_hasCardinalLTWithTerminal :
     (hasCardinalLTWithTerminal κ).IsCardinalFilteredGenerator κ where
   le_isCardinalPresentable := by
-    rintro J ⟨_, _⟩
+    rintro J ⟨_, -⟩
     rwa [isCardinalPresentable_iff, J.isCardinalPresentable_iff']
   exists_colimitsOfShape J :=
     ⟨_, inferInstance, inferInstance, ⟨{

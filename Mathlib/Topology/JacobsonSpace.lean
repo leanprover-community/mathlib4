@@ -134,7 +134,7 @@ lemma JacobsonSpace.of_isOpenEmbedding [JacobsonSpace Y] (hf : IsOpenEmbedding f
     JacobsonSpace X := by
   rw [jacobsonSpace_iff_locallyClosed, ← hf.preimage_closedPoints]
   intro Z hZ hZ'
-  obtain ⟨_, ⟨x, hx, rfl⟩, hx'⟩ := nonempty_inter_closedPoints
+  obtain ⟨-, ⟨x, hx, rfl⟩, hx'⟩ := nonempty_inter_closedPoints
     (hZ.image f) (hZ'.image hf.isInducing hf.isOpen_range.isLocallyClosed)
   exact ⟨_, hx, hx'⟩
 
@@ -142,7 +142,7 @@ lemma JacobsonSpace.of_isClosedEmbedding [JacobsonSpace Y] (hf : IsClosedEmbeddi
     JacobsonSpace X := by
   rw [jacobsonSpace_iff_locallyClosed, ← hf.preimage_closedPoints]
   intro Z hZ hZ'
-  obtain ⟨_, ⟨x, hx, rfl⟩, hx'⟩ := nonempty_inter_closedPoints
+  obtain ⟨-, ⟨x, hx, rfl⟩, hx'⟩ := nonempty_inter_closedPoints
     (hZ.image f) (hZ'.image hf.isInducing hf.isClosed_range.isLocallyClosed)
   exact ⟨_, hx, hx'⟩
 
@@ -202,7 +202,7 @@ theorem subsingleton_image_closure_of_finite_of_isPreirreducible [JacobsonSpace 
     rwa [← isIrreducible_iff_closure, ← JacobsonSpace.closure_inter_closedPoints_eq_closure hS,
       isIrreducible_iff_closure] at hS'
   have H₂ : f '' (S ∩ closedPoints X) ⊆ closedPoints Y := by
-    rintro _ ⟨x, hx, rfl⟩; simpa using hf₂ _ hx.2
+    rintro - ⟨x, hx, rfl⟩; simpa using hf₂ _ hx.2
   have H₃ := ((hfS.subset (Set.image_mono Set.inter_subset_left)).isDiscrete_of_subset_closedPoints
     H₂).subsingleton_of_isPreirreducible (H₁.image _ hf₁.continuousOn).isPreirreducible
   have H₄ : IsClosed (f '' (S ∩ closedPoints X)) := by

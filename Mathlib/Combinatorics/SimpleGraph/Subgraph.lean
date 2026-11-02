@@ -615,7 +615,7 @@ theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂
 lemma disjoint_verts_iff_disjoint {H H' : Subgraph G} :
     Disjoint H.verts H'.verts ↔ Disjoint H H' := by
   constructor
-  · rintro hdisj M' ⟨hsub₀, _⟩ ⟨hsub₁, _⟩
+  · rintro hdisj M' ⟨hsub₀, -⟩ ⟨hsub₁, -⟩
     rw [le_bot_iff]
     ext
     · grind [verts_bot]
@@ -654,7 +654,7 @@ lemma map_comp {U : Type*} {G'' : SimpleGraph U} (H : G.Subgraph) (f : G →g G'
     simp only [map_verts, Set.mem_image, forall_exists_index, and_imp]
     rintro v hv rfl
     exact ⟨_, hH.1 hv, rfl⟩
-  · rintro _ _ ⟨u, v, ha, rfl, rfl⟩
+  · rintro - - ⟨u, v, ha, rfl, rfl⟩
     exact ⟨_, _, hH.2 ha, rfl, rfl⟩
 
 lemma map_monotone : Monotone (Subgraph.map f) := fun _ _ ↦ map_mono
@@ -670,7 +670,7 @@ theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f
 
 protected lemma IsInduced.map {H : G.Subgraph} (hH : H.IsInduced) (e : G ↪g G') :
     (H.map e.toHom).IsInduced := by
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hAdj
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩ hAdj
   exact ⟨a, b, hH ha hb (e.map_adj_iff.mp hAdj), rfl, rfl⟩
 
 @[simp] protected lemma isInduced_map_iso (e : G ≃g G') {H : G.Subgraph} :

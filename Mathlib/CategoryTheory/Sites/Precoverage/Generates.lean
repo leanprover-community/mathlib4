@@ -111,7 +111,7 @@ lemma Generates.isSheaf_of_forall (h : K.Generates J) (F : Cᵒᵖ ⥤ Type w)
       h.isSheaf_of_forall_aux _ fun X R hR ↦ isSheafFor_subsheafify _ hR (H _ hR)
     /- By assumption, `Q` is a `J`-sheaf, so the family of sections `x` glues and gives rise
     to an amalgamation of `x` in `F`. -/
-    obtain ⟨t, ht, _⟩ := hQ _ hS (fun Z g hg ↦ ⟨x g hg, .base ⟨⟨g, hg⟩, rfl⟩⟩) (.of_mono Q.ι hx)
+    obtain ⟨t, ht, -⟩ := hQ _ hS (fun Z g hg ↦ ⟨x g hg, .base ⟨⟨g, hg⟩, rfl⟩⟩) (.of_mono Q.ι hx)
     exact ⟨t.val, ht.map Q.ι⟩
 
 /-- If `K` generates `J`, then any presheaf is a sheaf if and only if it is a sheaf

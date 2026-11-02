@@ -67,10 +67,10 @@ representable iff `N - n` is not. In particular `N` is not representable, solvin
 coin problem for two coins: https://en.wikipedia.org/wiki/Coin_problem#n_=_2. -/
 theorem Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le (p q n : ℕ) (dvd : p.gcd q ∣ n)
     (le : p.pred * q.pred ≤ n) : ∃ a b : ℕ, a * p + b * q = n := by
-  obtain _ | p := p
+  obtain - | p := p
   · have ⟨b, eq⟩ := q.gcd_zero_left ▸ dvd
     exact ⟨0, b, by simpa [mul_comm, eq_comm] using eq⟩
-  obtain _ | q := q
+  obtain - | q := q
   · have ⟨a, eq⟩ := p.gcd_zero_right ▸ dvd
     exact ⟨a, 0, by simpa [mul_comm, eq_comm] using eq⟩
   rw [← Int.gcd_natCast_natCast, Int.gcd_dvd_iff] at dvd

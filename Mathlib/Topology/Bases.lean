@@ -84,11 +84,11 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
     IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
   subst t; let := generateFrom s
   refine ⟨?_, ?_, le_antisymm (le_generateFrom ?_) <| generateFrom_anti fun t ht => ?_⟩
-  · rintro _ ⟨t₁, ⟨hft₁, ht₁b⟩, rfl⟩ _ ⟨t₂, ⟨hft₂, ht₂b⟩, rfl⟩ x h
+  · rintro - ⟨t₁, ⟨hft₁, ht₁b⟩, rfl⟩ - ⟨t₂, ⟨hft₂, ht₂b⟩, rfl⟩ x h
     exact ⟨_, ⟨_, ⟨hft₁.union hft₂, union_subset ht₁b ht₂b⟩, sInter_union t₁ t₂⟩, h, Subset.rfl⟩
   · rw [sUnion_image, iUnion₂_eq_univ_iff]
     exact fun x => ⟨∅, ⟨finite_empty, empty_subset _⟩, sInter_empty.substr <| mem_univ x⟩
-  · rintro _ ⟨t, ⟨hft, htb⟩, rfl⟩
+  · rintro - ⟨t, ⟨hft, htb⟩, rfl⟩
     exact hft.isOpen_sInter fun s hs ↦ GenerateOpen.basic _ <| htb hs
   · rw [← sInter_singleton t]
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
@@ -97,7 +97,7 @@ theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : 
     (hsi : FiniteInter s) : IsTopologicalBasis s := by
   convert isTopologicalBasis_of_subbasis hsg
   refine le_antisymm (fun t ht ↦ ⟨{t}, by simpa using ht⟩) ?_
-  rintro _ ⟨g, ⟨hg, hgs⟩, rfl⟩
+  rintro - ⟨g, ⟨hg, hgs⟩, rfl⟩
   lift g to Finset (Set α) using hg
   exact hsi.finiteInter_mem g hgs
 
@@ -657,7 +657,7 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, X i) → X i) := by
   classical
   refine (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).isOpenMap_iff.2 ?_
-  rintro _ ⟨U, s, hU, rfl⟩
+  rintro - ⟨U, s, hU, rfl⟩
   obtain h | h := ((s : Set ι).pi U).eq_empty_or_nonempty
   · simp [h]
   by_cases hi : i ∈ s
@@ -932,7 +932,7 @@ theorem isOpen_iUnion_countable [SecondCountableTopology α] {ι} (s : ι → Se
   choose f hf using fun b : B => b.2.2
   have : Countable B := ((countable_countableBasis α).mono (sep_subset _ _)).to_subtype
   refine ⟨_, countable_range f, (iUnion₂_subset_iUnion _ _).antisymm (sUnion_subset ?_)⟩
-  rintro _ ⟨i, rfl⟩ x xs
+  rintro - ⟨i, rfl⟩ x xs
   rcases (isBasis_countableBasis α).exists_subset_of_mem_open xs (H _) with ⟨b, hb, xb, bs⟩
   exact ⟨_, ⟨_, rfl⟩, _, ⟨⟨⟨_, hb, _, bs⟩, rfl⟩, rfl⟩, hf _ xb⟩
 

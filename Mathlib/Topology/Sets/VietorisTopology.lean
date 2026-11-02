@@ -161,7 +161,7 @@ theorem continuous_iff {f : α → Set β} :
       ⟨fun U hU => hU.powerset_vietoris.preimage hf, fun F hF => hF.powerset_vietoris.preimage hf⟩,
     fun ⟨h₁, h₂⟩ => ?_⟩
   rw [continuous_generateFrom_iff]
-  rintro _ (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)
+  rintro - (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)
   · exact h₁ U hU
   · simp_rw [preimage_ofPred_eq, ← not_disjoint_iff_nonempty_inter, ← compl_ofPred,
       isOpen_compl_iff, ← subset_compl_iff_disjoint_right]
@@ -193,7 +193,7 @@ theorem _root_.TopologicalSpace.isClosed_range_singleton [T2Space α] {t : Topol
   · cases hs <| Set.mem_range_self x
   obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := t2_separation hxy
   filter_upwards [(h₂ hU).inter (h₂ hV) |>.mem_nhds ⟨⟨x, hx, hxU⟩, ⟨y, hy, hyV⟩⟩]
-  rintro _ ⟨hzU, hzV⟩ ⟨z, rfl⟩
+  rintro - ⟨hzU, hzV⟩ ⟨z, rfl⟩
   rw [Set.mem_ofPred, Set.singleton_inter_nonempty] at hzU hzV
   exact hUV.notMem_of_mem_left hzU hzV
 
@@ -307,7 +307,7 @@ theorem specializes_iff {s t : Set α} : s ⤳ t ↔ (∀ x ∈ s, ∃ y ∈ t, 
       (isClosed_inter_nonempty_of_isClosed isClosed_closure) ⟨x, hx, subset_closure rfl⟩
     exact ⟨y, hyt, specializes_iff_mem_closure.mpr hxy⟩
   · simp_rw [Specializes, nhds_generateFrom, le_iInf₂_iff]
-    rintro _ ⟨hs, ⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩⟩
+    rintro - ⟨hs, ⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩⟩
     · refine iInf₂_le U.powerset ⟨fun x hx => ?_, .inl <| mem_image_of_mem _ hU⟩
       obtain ⟨y, hyt, hxy⟩ := hst x hx
       exact hxy.mem_open hU <| hs hyt
@@ -545,7 +545,7 @@ theorem isOpen_biUnion_coe_of_isOpen {S : Set (Compacts α)} (hS : IsOpen S) :
 @[fun_prop]
 theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 ×ˢ p.2 := by
   rw [continuous_induced_rng, continuous_generateFrom_iff]
-  rintro _ (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)
+  rintro - (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩)
   · rw [isOpen_iff_forall_mem_open]
     intro ⟨K, L⟩ (hKL : (K : Set α) ×ˢ (L : Set β) ⊆ U)
     obtain ⟨V, W, hV, hW, hK, hL, hVW⟩ := generalized_tube_lemma K.isCompact L.isCompact hU hKL

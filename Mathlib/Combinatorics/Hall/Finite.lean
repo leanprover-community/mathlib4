@@ -215,7 +215,7 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, #s ≤ #(s.biUnion t)) :
   cases nonempty_fintype ι
   generalize hn : Fintype.card ι = m
   induction m using Nat.strongRecOn generalizing ι with | ind n ih => _
-  rcases n with (_ | n)
+  rcases n with (- | n)
   · rw [Fintype.card_eq_zero_iff] at hn
     exact ⟨isEmptyElim, isEmptyElim, isEmptyElim⟩
   · have ih' : ∀ (ι' : Type u) [Fintype ι'] (t' : ι' → Finset α), Fintype.card ι' ≤ n →

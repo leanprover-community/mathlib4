@@ -174,7 +174,7 @@ theorem mem_support_nil_iff {u v : V} : u ∈ (nil : G.Walk v v).support ↔ u =
 
 @[simp]
 theorem end_mem_tail_support_of_ne {u v : V} (h : u ≠ v) (p : G.Walk u v) : v ∈ p.support.tail := by
-  obtain ⟨_, _, _, rfl⟩ := exists_eq_cons_of_ne h p
+  obtain ⟨-, -, -, rfl⟩ := exists_eq_cons_of_ne h p
   simp
 
 theorem support_suffix_support_cons (p : G.Walk v w) (hadj : G.Adj u v) :

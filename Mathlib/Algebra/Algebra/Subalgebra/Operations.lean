@@ -63,7 +63,7 @@ theorem mem_of_finsetSum_eq_one_of_pow_smul_mem
   let N := ι'.sup n
   have hN := Ideal.span_pow_eq_top _ this N
   apply (Algebra.ofId S' S).range.toSubmodule.mem_of_span_top_of_smul_mem _ hN
-  rintro ⟨_, _, ⟨i, hi, rfl⟩, rfl⟩
+  rintro ⟨-, -, ⟨i, hi, rfl⟩, rfl⟩
   change s' i ^ N • x ∈ _
   rw [← tsub_add_cancel_of_le (show n i ≤ N from Finset.le_sup hi), pow_add, mul_smul]
   refine Submodule.smul_mem _ (⟨_, pow_mem (hs i) _⟩ : S') ?_

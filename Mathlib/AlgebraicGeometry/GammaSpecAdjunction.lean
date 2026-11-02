@@ -88,7 +88,7 @@ theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
 /-- `toΓSpecFun` is continuous. -/
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
   rw [isTopologicalBasis_basic_opens.continuous_iff]
-  rintro _ ⟨r, rfl⟩
+  rintro - ⟨r, rfl⟩
   rw [X.toΓSpec_preimage_basicOpen_eq r]
   exact (X.toRingedSpace.basicOpen r).2
 

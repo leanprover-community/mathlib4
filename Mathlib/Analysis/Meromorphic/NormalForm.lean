@@ -112,7 +112,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
   rw [meromorphicNFAt_iff_analyticAt_or] at hf
   rcases hf with h | h
   · exact h.meromorphicAt
-  · obtain ⟨hf, _⟩ := h
+  · obtain ⟨hf, -⟩ := h
     exact hf
 
 open Asymptotics in
@@ -144,7 +144,7 @@ theorem MeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt (hf : Meromorph
     0 ≤ meromorphicOrderAt f x ↔ AnalyticAt 𝕜 f x := by
   constructor <;> intro h₂f
   · rw [meromorphicNFAt_iff_analyticAt_or] at hf
-    rcases hf with h | ⟨_, h₃f, _⟩
+    rcases hf with h | ⟨-, h₃f, -⟩
     · exact h
     · by_contra h'
       exact lt_irrefl 0 (lt_of_le_of_lt h₂f h₃f)
@@ -531,7 +531,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
       simp only [toMeromorphicNFAt, hf, ↓reduceDIte, ← hn, WithTop.coe_zero,
         WithTop.coe_eq_zero, ne_eq, Function.update_self, sub_self]
       split_ifs with h₃f
-      · obtain ⟨h₁G, _, h₃G⟩ :=
+      · obtain ⟨h₁G, -, h₃G⟩ :=
           Classical.choose_spec ((meromorphicOrderAt_eq_int_iff hf).1 (h₃f ▸ hn.symm))
         apply Filter.EventuallyEq.eq_of_nhds
         apply (h₁G.continuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE (by fun_prop)).1

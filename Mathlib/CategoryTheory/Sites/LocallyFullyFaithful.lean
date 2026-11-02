@@ -113,7 +113,7 @@ theorem IsLocallyFull.ext [G.IsLocallyFull K]
       ℱ.1.map (G.map j).op s = ℱ.1.map (G.map j).op t) : s = t := by
   apply (((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.property) _
     (G.functorPushforward_imageSieve_mem K i)).isSeparatedFor.ext
-  rintro Z _ ⟨W, iWX, iZW, ⟨iWY, e⟩, rfl⟩
+  rintro Z - ⟨W, iWX, iZW, ⟨iWY, e⟩, rfl⟩
   simp [h iWX iWY e]
 
 theorem IsLocallyFaithful.ext [G.IsLocallyFaithful K] (ℱ : Sheaf K Type*)
@@ -123,7 +123,7 @@ theorem IsLocallyFaithful.ext [G.IsLocallyFaithful K] (ℱ : Sheaf K Type*)
       ℱ.1.map (G.map j).op s = ℱ.1.map (G.map j).op t) : s = t := by
   apply (((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.property) _
     (G.functorPushforward_equalizer_mem K i₁ i₂ e)).isSeparatedFor.ext
-  rintro Z _ ⟨W, iWX, iZW, hiWX, rfl⟩
+  rintro Z - ⟨W, iWX, iZW, hiWX, rfl⟩
   simp [h iWX hiWX]
 
 instance (priority := 900) IsLocallyFull.of_full [G.Full] : G.IsLocallyFull K where

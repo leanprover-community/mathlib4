@@ -161,7 +161,7 @@ def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n 
 
 theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by lia⟩ := by
   obtain ⟨i, ih⟩ := i; dsimp
-  rcases x with ⟨_ | _, h⟩ <;> try rfl
+  rcases x with ⟨- | -, h⟩ <;> try rfl
   rw [List.length] at h
   rw [← h] at ih
   contradiction

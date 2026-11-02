@@ -123,7 +123,7 @@ lemma isOpen_def (T : Set (WithLower α)) : IsOpen T ↔ IsOpen[lower α] (WithL
 
 theorem continuous_toLower [TopologicalSpace α] [ClosedIciTopology α] :
     Continuous (toLower : α → WithLower α) :=
-  continuous_generateFrom_iff.mpr <| by rintro _ ⟨a, rfl⟩; exact isClosed_Ici.isOpen_compl
+  continuous_generateFrom_iff.mpr <| by rintro - ⟨a, rfl⟩; exact isClosed_Ici.isOpen_compl
 
 end Preorder
 
@@ -176,7 +176,7 @@ lemma isOpen_def {s : Set (WithUpper α)} : IsOpen s ↔ (upper α).IsOpen (toUp
 
 theorem continuous_toUpper [TopologicalSpace α] [ClosedIicTopology α] :
     Continuous (toUpper : α → WithUpper α) :=
-  continuous_generateFrom_iff.mpr <| by rintro _ ⟨a, rfl⟩; exact isClosed_Iic.isOpen_compl
+  continuous_generateFrom_iff.mpr <| by rintro - ⟨a, rfl⟩; exact isClosed_Iic.isOpen_compl
 
 end Preorder
 
@@ -321,7 +321,7 @@ variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
 lemma isTopologicalBasis_insert_univ_subbasis :
     IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) :=
   isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq α, lower]) (by
-    rintro _ ⟨b, rfl⟩ _ ⟨c, rfl⟩
+    rintro - ⟨b, rfl⟩ - ⟨c, rfl⟩
     use b ⊓ c
     rw [compl_Ici, compl_Ici, compl_Ici, Iio_inter_Iio])
 

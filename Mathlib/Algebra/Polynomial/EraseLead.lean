@@ -395,9 +395,9 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
   simp_rw [Finset.ext_iff, mem_support_iff, finsetSum_coeff, coeff_C_mul_X_pow, mem_image,
     mem_univ, true_and]
   refine fun i => ⟨fun h => ?_, ?_⟩
-  · obtain ⟨j, _, h⟩ := exists_ne_zero_of_sum_ne_zero h
+  · obtain ⟨j, -, h⟩ := exists_ne_zero_of_sum_ne_zero h
     exact ⟨j, (ite_ne_right_iff.mp h).1.symm⟩
-  · rintro ⟨j, _, rfl⟩
+  · rintro ⟨j, -, rfl⟩
     rw [sum_eq_single_of_mem j (mem_univ j), ite_eq_left rfl]
     · exact hx j
     · exact fun m _ hmj => ite_eq_right fun h => hmj.symm (hk h)
@@ -451,7 +451,7 @@ theorem card_support_eq {n : ℕ} :
 theorem card_support_eq_one : #f.support = 1 ↔
     ∃ (k : ℕ) (x : R) (_ : x ≠ 0), f = C x * X ^ k := by
   refine ⟨fun h => ?_, ?_⟩
-  · obtain ⟨k, x, _, hx, rfl⟩ := card_support_eq.mp h
+  · obtain ⟨k, x, -, hx, rfl⟩ := card_support_eq.mp h
     exact ⟨k 0, x 0, hx 0, Fin.sum_univ_one _⟩
   · rintro ⟨k, x, hx, rfl⟩
     rw [support_C_mul_X_pow k hx, card_singleton]

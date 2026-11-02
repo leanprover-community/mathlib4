@@ -103,7 +103,7 @@ instance : Normal (focalSubgroupOf H) := by
 @[to_additive /-- Lemma: The focal subgroup is contained in the commutator subgroup G'. -/]
 lemma focalSubgroup_le_commutator : focalSubgroup H ≤ _root_.commutator G := by
   rw [focalSubgroup_def, closure_le]
-  rintro g ⟨_, x, _, u, rfl⟩
+  rintro g ⟨-, x, -, u, rfl⟩
   exact commutator_mem_commutator (mem_top x) (mem_top u)
 
 /--

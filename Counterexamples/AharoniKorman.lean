@@ -548,7 +548,7 @@ theorem exists_partition_iff_nonempty_spinalMap
     exact ⟨⟨f, fun x ↦ hGC _ _, hfCid, hf⟩⟩
   · rintro ⟨f⟩
     refine ⟨_, (Setoid.ker f).isPartition_classes, ?_⟩
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     exact ⟨f.fibre_antichain _, f x, by simp⟩
 
 variable {f : SpinalMap C}
@@ -864,7 +864,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma square_subset_R (h : (C ∩ level n).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ R n C \ (C ∩ level n) := by
   filter_upwards [square_subset_above h] with a ha
-  rintro _ ⟨⟨x, y⟩, hxy, rfl⟩
+  rintro - ⟨⟨x, y⟩, hxy, rfl⟩
   exact ⟨⟨by simp [embed], fun b hb ↦ .inr ((ha ⟨_, hxy, rfl⟩).1 _ hb)⟩, (ha ⟨_, hxy, rfl⟩).2⟩
 
 lemma R_sdiff_infinite (h : (C ∩ level n).Finite) : (R n C \ (C ∩ level n)).Infinite := by
@@ -968,7 +968,7 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
       Set.mem_inter_iff, Set.mem_ofPred_eq, and_imp, «forall», Prod.forall,
       Set.subset_def, Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, forall_exists_index,
       Prod.mk.injEq, Hollom.ext_iff]
-    rintro d hbd hcd _ _ _ e f hde hdf rfl rfl rfl g h _ hgh rfl
+    rintro d hbd hcd _ _ _ e f hde hdf rfl rfl rfl g h - hgh rfl
     right
     apply toHollom_le_toHollom _ (by simp)
     have := hab _ _ hgh
@@ -1191,7 +1191,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
   have F_inj : Set.InjOn f F := f.injOn_of_isChain image_chainBetween_isChain
   -- By definition of `T`, the `line` map sends it to the interval `[0, 2a)`
   have line_mapsTo : Set.MapsTo line T (range (2 * a)) := by
-    rintro x ⟨_, hx⟩
+    rintro x ⟨-, hx⟩
     simpa using hx
   -- and it does so injectively, as `T` is a chain.
   have line_inj : Set.InjOn line T :=

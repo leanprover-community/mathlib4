@@ -80,7 +80,7 @@ def digits : ℕ → ℕ → List ℕ
 
 @[simp]
 theorem digits_zero (b : ℕ) : digits b 0 = [] := by
-  rcases b with (_ | ⟨_ | ⟨_⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
+  rcases b with (- | ⟨- | ⟨-⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
 
 theorem digits_zero_zero : digits 0 0 = [] :=
   rfl
@@ -359,7 +359,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
 
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
 theorem digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < b := by
-  rcases b with (_ | _ | b) <;> simp_all [@digits_lt_base' _ m d]
+  rcases b with (- | - | b) <;> simp_all [@digits_lt_base' _ m d]
 
 /-- an n-digit number in base b + 2 is less than (b + 2)^n -/
 theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l, x < b + 2) :
@@ -377,7 +377,7 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
 /-- an n-digit number in base b is less than b^n if b > 1 -/
 theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
     ofDigits b l < b ^ l.length := by
-  rcases b with (_ | _ | b) <;> simp_all [ofDigits_lt_base_pow_length']
+  rcases b with (- | - | b) <;> simp_all [ofDigits_lt_base_pow_length']
 
 /-- Any number m is less than (b+2)^(number of digits in the base b + 2 representation of m) -/
 theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m).length := by
@@ -386,7 +386,7 @@ theorem lt_base_pow_length_digits' {b m : ℕ} : m < (b + 2) ^ (digits (b + 2) m
 
 /-- Any number m is less than b^(number of digits in the base b representation of m) -/
 theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m).length := by
-  rcases b with (_ | _ | b) <;> simp_all [lt_base_pow_length_digits']
+  rcases b with (- | - | b) <;> simp_all [lt_base_pow_length_digits']
 
 theorem digits_base_mul {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     b.digits (b * m) = 0 :: b.digits m := by

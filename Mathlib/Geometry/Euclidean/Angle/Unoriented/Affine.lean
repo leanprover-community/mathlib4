@@ -176,7 +176,7 @@ theorem angle_eq_zero_of_angle_eq_pi_right {p₁ p₂ p₃ : P} (h : ∠ p₁ p�
 theorem angle_eq_angle_of_angle_eq_pi (p₁ : P) {p₂ p₃ p₄ : P} (h : ∠ p₂ p₃ p₄ = π) :
     ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p₄ := by
   unfold angle at *
-  rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, hpr⟩⟩⟩
+  rcases angle_eq_pi_iff.1 h with ⟨-, ⟨r, ⟨hr, hpr⟩⟩⟩
   rw [eq_comm]
   replace hpr : (-r + 1) • (p₃ -ᵥ p₂) = p₄ -ᵥ p₂ := by
     rw [add_smul, ← neg_vsub_eq_vsub_rev p₂ p₃, smul_neg, neg_smul, ← hpr]

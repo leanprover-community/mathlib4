@@ -75,7 +75,7 @@ lemma SimpleGraph.LocallyLinear.le_ruzsaSzemerediNumber [DecidableRel G.Adj]
 lemma ruzsaSzemerediNumber_mono (f : α ↪ β) : ruzsaSzemerediNumber α ≤ ruzsaSzemerediNumber β := by
   classical
   refine findGreatest_mono ?_ (choose_mono _ <| Fintype.card_le_of_embedding f)
-  rintro n ⟨G, _, rfl, hG⟩
+  rintro n ⟨G, -, rfl, hG⟩
   refine ⟨G.map f, inferInstance, ?_, hG.map _⟩
   rw [← card_map ⟨map f, Finset.map_injective _⟩, ← cliqueFinset_map G f]
   decide
@@ -140,7 +140,7 @@ private lemma noAccidental (hs : ThreeAPFree (s : Set α)) :
     NoAccidental (triangleIndices s : Finset (α × α × α)) where
   eq_or_eq_or_eq := by
     simp only [mem_triangleIndices, Prod.mk_inj, forall_exists_index, and_imp]
-    rintro _ _ _ _ _ _ d a ha rfl rfl rfl b' b hb rfl rfl h₁ d' c hc rfl h₂ rfl
+    rintro _ _ - - - - d a ha rfl rfl rfl b' b hb rfl rfl h₁ d' c hc rfl h₂ rfl
     have : a + c = b + b := by linear_combination h₁.symm - h₂.symm
     obtain rfl := hs ha hb hc this
     simp_all

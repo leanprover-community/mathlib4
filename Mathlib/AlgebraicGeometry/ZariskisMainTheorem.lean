@@ -50,9 +50,9 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     ∃ (U : Scheme) (g : U ⟶ S), Etale g ∧ s ∈ Set.range g ∧
     ∃ (V W : (pullback f g).Opens) (v : V), IsCompl V W ∧ IsFinite (V.ι ≫ pullback.snd f g) ∧
       pullback.fst f g v.1 = x := by
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := S.isBasis_affineOpens.exists_subset_of_mem_open
+  obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ := S.isBasis_affineOpens.exists_subset_of_mem_open
     (Set.mem_univ (f x)) isOpen_univ
-  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hUV : V ≤ f ⁻¹ᵁ U⟩ :=
+  obtain ⟨-, ⟨V, hV, rfl⟩, hxV, hUV : V ≤ f ⁻¹ᵁ U⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).2
   have : (f.appLE U V hUV).hom.FiniteType := f.finiteType_appLE hU hV hUV
   algebraize [(f.appLE U V hUV).hom]
@@ -66,7 +66,7 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     simp
   have : Algebra.QuasiFiniteAt Γ(S, U) (hV.primeIdealOf ⟨x, hxV⟩).asIdeal :=
     hx.quasiFiniteAt hV hU hUV hxV
-  obtain ⟨R, _, _, _, P, _, _, e, _, P', _, _, hP', heP', -, _, -⟩ :=
+  obtain ⟨R, _, _, _, P, _, _, e, -, P', _, -, hP', heP', -, _, -⟩ :=
     Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     (hU.primeIdealOf ⟨f x, hxU⟩).asIdeal (hV.primeIdealOf ⟨x, hxV⟩).asIdeal
   have : (algebraMap R (Localization.Away e)).Finite := RingHom.finite_algebraMap.mpr ‹_›
@@ -227,7 +227,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
       ∃ (U : Y.Opens) (r : Γ(f.normalization, f.fromNormalization ⁻¹ᵁ U)),
       IsAffineOpen U ∧ IsAffineOpen (f.toNormalization ⁻¹ᵁ f.normalization.basicOpen r) ∧
       x ∈ f.toNormalization ⁻¹ᵁ f.normalization.basicOpen r ∧ Scheme.basicOpen _ r ≤ V y := by
-    obtain ⟨_, ⟨W, hW, rfl⟩, hxW, hWV : W ≤ _⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
+    obtain ⟨-, ⟨W, hW, rfl⟩, hxW, hWV : W ≤ _⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
       hxVy (f.toNormalization ⁻¹ᵁ V y).isOpen
     have : IsAffine W := hW
     let V' := (X.homOfLE hWV ≫ f.toNormalization ∣_ V y ≫ (V y).ι).opensRange
@@ -242,7 +242,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
         simp only [V', opensRange_comp, Scheme.Hom.preimage_image_eq, opensRange_homOfLE]
       simpa only [image_preimage_eq_opensRange_inf, Opens.opensRange_ι, ← preimage_inf,
         inf_eq_right.mpr, hV'V, hWV] using congr((f.toNormalization ⁻¹ᵁ V y).ι ''ᵁ $this)
-    obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
+    obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
       (Set.mem_univ (f x)) isOpen_univ
     obtain ⟨f₁, f₂, e, hxf⟩ := exists_basicOpen_le_affine_inter (hU.preimage f.fromNormalization)
       hV' (f.toNormalization x) ⟨by simpa [← Scheme.Hom.comp_apply], hV'W.ge hxW⟩
@@ -294,16 +294,16 @@ lemma Scheme.Hom.isOpen_quasiFiniteAt [LocallyOfFiniteType f] :
   wlog H : IsAffineHom f
   · rw [isOpen_iff_forall_mem_open]
     intro x hx
-    obtain ⟨_, ⟨U : Y.Opens, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
+    obtain ⟨-, ⟨U : Y.Opens, hU, rfl⟩, hxU, -⟩ := Y.isBasis_affineOpens.exists_subset_of_mem_open
       (Set.mem_univ (f x)) isOpen_univ
-    obtain ⟨_, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
+    obtain ⟨-, ⟨V : X.Opens, hV, rfl⟩, hxV, hVU⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
       hxU (f ⁻¹ᵁ U).2
     have inst : IsAffineHom (f.resLE U V hVU) :=
       have : IsAffine _ := hU
       have : IsAffine _ := hV
       isAffineHom_of_isAffine _
     refine ⟨_, ?_, V.2.isOpenEmbedding_subtypeVal.isOpenMap _ (this (f.resLE U V hVU) inst), ?_⟩
-    · rintro _ ⟨x : V, hx : (f.resLE U V hVU).QuasiFiniteAt _, rfl⟩
+    · rintro - ⟨x : V, hx : (f.resLE U V hVU).QuasiFiniteAt _, rfl⟩
       rwa [← quasiFiniteAt_comp_iff (g := U.ι), resLE_comp_ι,
         quasiFiniteAt_comp_iff_of_isOpenImmersion] at hx
     · refine ⟨⟨x, hxV⟩, show (f.resLE _ _ _).QuasiFiniteAt _ from ?_, rfl⟩
@@ -434,7 +434,7 @@ lemma exists_finite_imageι_comp_morphismRestrict_of_finite_image_preimage
     refine .of_comp_surjective f.toImage _
   refine exists_isFinite_morphismRestrict_of_finite_preimage_singleton _ _ ?_
   refine .of_finite_image (f := f.imageι) (H.subset ?_) f.imageι.isClosedEmbedding.injective.injOn
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   obtain ⟨x, rfl⟩ := f.toImage.surjective x
   refine ⟨x, ?_, by simp [← Scheme.Hom.comp_apply]⟩
   simpa [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base] using hx

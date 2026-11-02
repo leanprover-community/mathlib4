@@ -733,12 +733,12 @@ locally Lipschitz on `g '' s`. -/
 lemma Isometry.locallyLipschitzOn_image {α β γ : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     [PseudoEMetricSpace γ] {g : α → β} {h : β → γ} {s : Set α} (hg : Isometry g)
     (hL : LocallyLipschitzOn s (h ∘ g)) : LocallyLipschitzOn (g '' s) h := by
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   obtain ⟨K, t, ht, hK⟩ := hL hx
   refine ⟨K, g '' t, ?_, ?_⟩
   · rw [← hg.isEmbedding.map_nhdsWithin_eq]
     exact Filter.image_mem_map ht
-  · rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+  · rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
     simpa [hg.edist_eq] using hK ha hb
 
 namespace IsometryClass

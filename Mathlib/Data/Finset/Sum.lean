@@ -52,7 +52,7 @@ theorem card_disjSum : (s.disjSum t).card = s.card + t.card :=
 
 theorem disjoint_map_inl_map_inr : Disjoint (s.map Embedding.inl) (t.map Embedding.inr) := by
   simp_rw [disjoint_left, mem_map]
-  rintro x ⟨a, _, rfl⟩ ⟨b, _, ⟨⟩⟩
+  rintro x ⟨a, -, rfl⟩ ⟨b, -, ⟨⟩⟩
 
 @[simp]
 theorem map_inl_disjUnion_map_inr :

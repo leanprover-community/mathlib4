@@ -376,7 +376,7 @@ theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2S
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
       ∀ s : Set X, IsCompact s → ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
   constructor
-  · rintro ⟨f, hf⟩ s _
+  · rintro ⟨f, hf⟩ s -
     exact ⟨f.restrict s, tendsto_compactOpen_restrict hf s⟩
   · intro h
     choose f hf using h

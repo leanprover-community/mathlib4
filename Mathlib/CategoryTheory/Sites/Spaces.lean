@@ -81,7 +81,7 @@ theorem toPretopology_grothendieckTopology :
     (Opens.grothendieckTopology T).toPretopology = Opens.pretopology T := by
   apply le_antisymm
   · intro X R hR x hx
-    rcases hR x hx with ⟨U, f, ⟨V, g₁, g₂, hg₂, _⟩, hU⟩
+    rcases hR x hx with ⟨U, f, ⟨V, g₁, g₂, hg₂, -⟩, hU⟩
     exact ⟨V, g₂, hg₂, g₁.le hU⟩
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, hf, hU⟩

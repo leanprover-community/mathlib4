@@ -78,7 +78,7 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : 
     apply mem_erase_of_ne_of_mem i.2 (mem_image_of_mem _ (mem_univ _))
   · intro i hi
     rw [mem_image]
-    rcases mem_image.1 (erase_subset _ _ hi) with ⟨a, _, ha⟩
+    rcases mem_image.1 (erase_subset _ _ hi) with ⟨a, -, ha⟩
     subst ha
     exact ⟨⟨a, ne_of_mem_erase hi⟩, mem_univ _, rfl⟩
 

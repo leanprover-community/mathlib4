@@ -451,7 +451,7 @@ theorem galoisConnection_map_comap (hφ : Function.Injective φ.obj) :
     GaloisConnection (map φ hφ) (comap φ) := by
   rintro S T; simp_rw [le_iff]; constructor
   · exact fun h c d f fS => h (Map.Arrows.im f fS)
-  · rintro h _ _ g ⟨a, gφS⟩
+  · rintro h - - g ⟨a, gφS⟩
     exact h gφS
 
 theorem map_mono (hφ : Function.Injective φ.obj) (S T : Subgroupoid C) :
@@ -518,7 +518,7 @@ theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) 
       obtain ⟨c', rfl⟩ := this
       have : g ∈ (im φ hφ).arrows (φ.obj c) (φ.obj c') := by rw [hφ']; trivial
       rw [mem_im_iff] at this
-      obtain ⟨b, b', f, hb, hb', _, hf⟩ := this; cases hφ hb; cases hφ hb'
+      obtain ⟨b, b', f, hb, hb', -, hf⟩ := this; cases hφ hb; cases hφ hb'
       change Map.Arrows φ hφ S (φ.obj c') (φ.obj c') _
       simp only [eqToHom_refl, Category.comp_id, Category.id_comp, inv_eq_inv]
       suffices Map.Arrows φ hφ S (φ.obj c') (φ.obj c') (φ.map <| Groupoid.inv f ≫ γ ≫ f) by

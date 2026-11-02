@@ -509,7 +509,7 @@ theorem isBounded_iff_subset_smul_ball {s : Set E} :
   rw [← isVonNBounded_iff 𝕜]
   constructor
   · intro h
-    rcases (h (Metric.ball_mem_nhds 0 zero_lt_one)).exists_pos with ⟨ρ, _, hρball⟩
+    rcases (h (Metric.ball_mem_nhds 0 zero_lt_one)).exists_pos with ⟨ρ, -, hρball⟩
     rcases NormedField.exists_lt_norm 𝕜 ρ with ⟨a, ha⟩
     exact ⟨a, hρball a ha.le⟩
   · rintro ⟨a, ha⟩

@@ -118,7 +118,7 @@ theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
     (coeSubmodule S I).IsPrincipal ↔ I.IsPrincipal := by
   constructor <;> rintro ⟨⟨x, hx⟩⟩
   · have x_mem : x ∈ coeSubmodule S I := hx.symm ▸ Submodule.mem_span_singleton_self x
-    obtain ⟨x, _, rfl⟩ := (mem_coeSubmodule _ _).mp x_mem
+    obtain ⟨x, -, rfl⟩ := (mem_coeSubmodule _ _).mp x_mem
     refine ⟨⟨x, coeSubmodule_injective S h ?_⟩⟩
     rw [Ideal.submodule_span_eq, hx, coeSubmodule_span_singleton]
   · refine ⟨⟨algebraMap R S x, ?_⟩⟩
@@ -137,7 +137,7 @@ theorem mem_span_iff {N : Type*} [AddCommMonoid N] [Module R N] [Module S N] [Is
     · rintro x hx
       exact ⟨x, Submodule.subset_span hx, 1, by rw [mk'_one, map_one, one_smul]⟩
     · exact ⟨0, Submodule.zero_mem _, 1, by rw [mk'_one, map_one, one_smul]⟩
-    · rintro _ _ _ _ ⟨y, hy, z, rfl⟩ ⟨y', hy', z', rfl⟩
+    · rintro - - - - ⟨y, hy, z, rfl⟩ ⟨y', hy', z', rfl⟩
       refine
         ⟨(z' : R) • y + (z : R) • y',
           Submodule.add_mem _ (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hy'), z * z', ?_⟩
@@ -146,7 +146,7 @@ theorem mem_span_iff {N : Type*} [AddCommMonoid N] [Module R N] [Module S N] [Is
       congr 1
       · rw [← mul_one (1 : R), mk'_mul, mul_assoc, mk'_spec, map_one, mul_one, mul_one]
       · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, map_one, mul_one, one_mul]
-    · rintro a _ _ ⟨y, hy, z, rfl⟩
+    · rintro a - - ⟨y, hy, z, rfl⟩
       obtain ⟨y', z', rfl⟩ := exists_mk'_eq M a
       refine ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, ?_⟩
       rw [← IsScalarTower.algebraMap_smul S y', smul_smul, ← mk'_mul, smul_smul,
@@ -159,7 +159,7 @@ theorem mem_span_map {x : S} {a : Set R} :
   refine (mem_span_iff M).trans ?_
   constructor
   · rw [← coeSubmodule_span]
-    rintro ⟨_, ⟨y, hy, rfl⟩, z, hz⟩
+    rintro ⟨-, ⟨y, hy, rfl⟩, z, hz⟩
     refine ⟨y, hy, z, ?_⟩
     rw [hz, Algebra.linearMap_apply, smul_eq_mul, mul_comm, mul_mk'_eq_mk'_of_mul, mul_one]
   · rintro ⟨y, hy, z, hz⟩

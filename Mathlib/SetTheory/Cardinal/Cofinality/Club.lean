@@ -119,7 +119,7 @@ protected theorem sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s
     simpa using mk_range_le_lift (f := g)
   refine ⟨_, fun t ht ↦ ?_, le_csSup hg ⟨0, rfl⟩⟩
   apply (hs t ht).isLUB_mem (t := .range fun n ↦ f ⟨t, ht⟩ (g n)) _ (range_nonempty _)
-  · refine ⟨?_, fun b hb ↦ csSup_le' ?_⟩ <;> rintro _ ⟨n, rfl⟩
+  · refine ⟨?_, fun b hb ↦ csSup_le' ?_⟩ <;> rintro - ⟨n, rfl⟩
     · apply (le_csSup (.of_not_isCofinal _) _).trans (le_csSup hg ⟨n + 1, rfl⟩)
       · exact fun hg' ↦ (cof_le hg').not_gt (mk_range_le.trans_lt hsα)
       · use ⟨t, ht⟩
@@ -181,9 +181,9 @@ protected theorem diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : co
       apply (Order.cof_le h).not_gt (hα.trans_le' _)
       simpa using mk_range_le_lift (f := fun n ↦ g^[n] a)
     refine ⟨⨆ n, g^[n] a, fun b hb ↦ ?_, hg'.1 ⟨0, rfl⟩⟩
-    obtain ⟨_, ⟨n, rfl⟩, hb, hn⟩ := hg'.exists_between hb
+    obtain ⟨-, ⟨n, rfl⟩, hb, hn⟩ := hg'.exists_between hb
     apply (hf b).isLUB_mem _ _ (hg'.inter_Ici_of_mem ⟨n + 1, rfl⟩)
-    · rintro _ ⟨⟨m, rfl⟩, hm⟩
+    · rintro - ⟨⟨m, rfl⟩, hm⟩
       rw [Set.mem_Ici, hgm.le_iff_le, Nat.add_one_le_iff] at hm
       cases m with
       | zero => contradiction

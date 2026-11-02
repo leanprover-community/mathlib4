@@ -88,7 +88,7 @@ lemma innerFibration_pullbackObjObjπ [Mono i] [InnerFibration p]
   rw [internalHomAdjunction₂.hasLiftingProperty_iff _ sq₁₃']
   suffices (MorphismProperty.monomorphisms _).rlp sq₁₃'.π from this _ inferInstance
   rw [rlp_monomorphisms]
-  rintro _ _ _ ⟨n⟩
+  rintro - - - ⟨n⟩
   rw [← internalHomAdjunction₂.hasLiftingProperty_iff
     (Subcomplex.unionProd.pushoutObjObj.{u} _ _),
     Subcomplex.unionProd.pushoutObjObj_ι]

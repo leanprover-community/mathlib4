@@ -243,7 +243,7 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
   | succ n hrec =>
     suffices ∃ (a : α) (t : Set (SubMulAction.ofStabilizer G a)),
       a ∈ s ∧ s = insert a (Subtype.val '' t) by
-      obtain ⟨a, t, _, hst⟩ := this
+      obtain ⟨a, t, -, hst⟩ := this
       have ha' : a ∉ Subtype.val '' t := by
         intro h; rw [Set.mem_image] at h; obtain ⟨x, hx⟩ := h
         apply x.prop; rw [hx.right]; exact Set.mem_singleton a
@@ -339,7 +339,7 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
     (hgc : g.IsCycle) (hg : g ∈ G) :
     IsPretransitive (fixingSubgroup G (g.support : Set α)ᶜ)
       (SubMulAction.ofFixingSubgroup G (g.support : Set α)ᶜ) := by
-  obtain ⟨a, _, hgc⟩ := hgc
+  obtain ⟨a, -, hgc⟩ := hgc
   have hs : ∀ x : α, g • x ≠ x ↔
     x ∈ SubMulAction.ofFixingSubgroup G ((↑g.support : Set α)ᶜ) := by
     intro x

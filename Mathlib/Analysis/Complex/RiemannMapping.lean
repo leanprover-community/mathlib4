@@ -96,7 +96,7 @@ theorem exists_injective_not_dense_image_deriv_ne_zero {U : Set ℂ} (hUo : IsOp
     -- because `f a = - f b` implies `a = (f a) ^ 2 = (- f b) ^ 2 = b`, hence `f a = f b = 0`,
     -- which is impossible.
     filter_upwards [this]
-    rintro _ ⟨a, ha, rfl⟩ ⟨b, hb, hab⟩
+    rintro - ⟨a, ha, rfl⟩ ⟨b, hb, hab⟩
     obtain rfl : a = b := by
       rw [← hf_inv b, hab]
       simp [hf_inv a]

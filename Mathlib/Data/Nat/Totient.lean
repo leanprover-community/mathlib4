@@ -189,7 +189,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         hp.coprime_iff_not_dvd]
       intro a ha
       constructor
-      · intro hap b h; rcases h with ⟨_, rfl⟩
+      · intro hap b h; rcases h with ⟨-, rfl⟩
         exact hap (dvd_mul_left ..)
       · rintro h ⟨b, rfl⟩
         rw [pow_succ'] at ha
@@ -248,7 +248,7 @@ theorem totient_two : φ 2 = 1 :=
 /-- Euler's totient function is only odd at `1` or `2`. -/
 theorem odd_totient_iff {n : ℕ} :
     Odd (φ n) ↔ n = 1 ∨ n = 2 := by
-  rcases n with _ | _ | _ | _ <;> simp [Nat.totient_even]
+  rcases n with - | - | - | - <;> simp [Nat.totient_even]
 
 theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | 0 => by simp

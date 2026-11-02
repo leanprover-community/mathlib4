@@ -122,7 +122,7 @@ theorem fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o 
 theorem snd_pos {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
   refine CNF.rec b (by simp) (fun o ho IH ↦ ?_) o
   rw [CNF.ne_zero ho]
-  rintro (h | ⟨_, h⟩)
+  rintro (h | ⟨-, h⟩)
   · exact div_opow_log_pos b ho
   · exact IH h
 
@@ -175,7 +175,7 @@ theorem support_coeff (b o : Ordinal) :
   rw [coeff, lookupFinsupp_support, filter_eq_self.2]
   · simp [List.keys]
   · simp_rw [mem_map]
-    rintro _ ⟨a, ⟨ha, rfl⟩⟩
+    rintro - ⟨a, ⟨ha, rfl⟩⟩
     simpa using (snd_pos ha).ne'
 
 theorem coeff_of_mem_CNF {b o e c : Ordinal} (h : ⟨e, c⟩ ∈ CNF b o) :

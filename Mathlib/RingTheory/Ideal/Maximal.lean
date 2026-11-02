@@ -157,7 +157,7 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
       let J : Ideal α := Submodule.span α (insert x ↑I)
       have IJ : I ≤ J := Set.Subset.trans (subset_insert _ _) subset_span
       have xJ : x ∈ J := Ideal.subset_span (Set.mem_insert x I)
-      obtain ⟨_, oJ⟩ := isMaximal_iff.1 H
+      obtain ⟨-, oJ⟩ := isMaximal_iff.1 H
       specialize oJ J x IJ hx xJ
       rcases Submodule.mem_span_insert.mp oJ with ⟨a, b, h, oe⟩
       obtain F : y * 1 = y * (a • x + b) := congr(y * $oe)
@@ -198,8 +198,8 @@ lemma isPrime_of_maximally_disjoint (I : Ideal α)
     have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_notMem.mpr rid.2)
     simp only [Set.not_disjoint_iff, SetLike.mem_coe, Submodule.mem_sup,
       mem_span_singleton] at hx hy
-    obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁⟩⟩, hs₁⟩ := hx
-    obtain ⟨s₂, ⟨i₂, hi₂, ⟨_, ⟨r₂, rfl⟩, hr₂⟩⟩, hs₂⟩ := hy
+    obtain ⟨s₁, ⟨i₁, hi₁, ⟨-, ⟨r₁, rfl⟩, hr₁⟩⟩, hs₁⟩ := hx
+    obtain ⟨s₂, ⟨i₂, hi₂, ⟨-, ⟨r₂, rfl⟩, hr₂⟩⟩, hs₂⟩ := hy
     refine disjoint.ne_of_mem
       (I.add_mem (I.mul_mem_left (i₁ + x * r₁) hi₂) <| I.add_mem (I.mul_mem_right (y * r₂) hi₁) <|
         I.mul_mem_right (r₁ * r₂) hxy)

@@ -86,7 +86,7 @@ lemma atomistic (hS : BooleanGenerators S) (a : α) (ha : a ≤ sSup S) : ∃ T 
   use sSup {T c h₁ h₂ | (c ∈ C) (h₁ : IsCompactElement c) (h₂ : c ≤ sSup S)}
   constructor
   · apply _root_.sSup_le
-    rintro _ ⟨c, -, h₁, h₂, rfl⟩
+    rintro - ⟨c, -, h₁, h₂, rfl⟩
     apply hT₁
   · apply le_antisymm
     · apply _root_.sSup_le

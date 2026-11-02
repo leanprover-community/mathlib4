@@ -205,12 +205,12 @@ alias ⟨Periodic.isPeriodicPt, IsPeriodicPt.periodic_iterate⟩ := periodic_ite
 
 theorem Periodic.map_vadd_zmultiples [AddCommGroup α] (hf : Periodic f c)
     (a : AddSubgroup.zmultiples c) (x : α) : f (a +ᵥ x) = f x := by
-  rcases a with ⟨_, m, rfl⟩
+  rcases a with ⟨-, m, rfl⟩
   simp [AddSubgroup.vadd_def, add_comm _ x, hf.zsmul m x]
 
 theorem Periodic.map_vadd_multiples [AddCommMonoid α] (hf : Periodic f c)
     (a : AddSubmonoid.multiples c) (x : α) : f (a +ᵥ x) = f x := by
-  rcases a with ⟨_, m, rfl⟩
+  rcases a with ⟨-, m, rfl⟩
   simp [AddSubmonoid.vadd_def, add_comm _ x, hf.nsmul m x]
 
 /-- Lift a periodic function to a function from the quotient group. -/

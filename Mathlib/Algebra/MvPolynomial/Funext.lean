@@ -42,7 +42,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
     rw [map_zero]
     apply Polynomial.eq_zero_of_infinite_isRoot
     apply ((hs 0).image (C_injective ..).injOn).mono
-    rintro _ ⟨r, hr, rfl⟩
+    rintro - ⟨r, hr, rfl⟩
     refine ih (s ·.succ) (fun _ ↦ hs _) fun x hx ↦ ?_
     rw [eval_polynomial_eval_finSuccEquiv]
     exact h _ fun i _ ↦ i.cases (by simpa [eval_C] using hr) (by simpa using hx)
@@ -72,7 +72,7 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
   · simp_rw [Function.extend, dite_eq_right nex, hg]
 
 theorem funext_set_iff : p = q ↔ (∀ x ∈ Set.pi .univ s, eval x p = eval x q) :=
-  ⟨by rintro rfl _ _; rfl, funext_set s hs⟩
+  ⟨by rintro rfl - -; rfl, funext_set s hs⟩
 
 end
 

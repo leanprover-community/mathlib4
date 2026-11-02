@@ -82,7 +82,7 @@ theorem ContinuousOn.if {p : α → Prop} [∀ a, Decidable (p a)]
   · rintro a ha
     simp only [hp a ha, ite_self]
     apply tendsto_nhdsWithin_mono_left (inter_subset_inter_right s subset_closure)
-    rcases ha with ⟨has, ⟨_, ha⟩⟩
+    rcases ha with ⟨has, ⟨-, ha⟩⟩
     rw [← mem_compl_iff, ← closure_compl] at ha
     apply hg a ⟨has, ha⟩
   · exact hf.mono (inter_subset_inter_right s subset_closure)

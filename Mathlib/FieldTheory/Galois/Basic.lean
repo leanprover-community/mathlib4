@@ -694,7 +694,7 @@ theorem map_fixingSubgroup [Normal F E] :
     apply_fun _ using (algebraMap E E').injective
     rw [AlgEquiv.restrictNormal_commutes]
     exact h _ ⟨x, hx, rfl⟩
-  · rintro h _ ⟨x, hx, rfl⟩
+  · rintro h - ⟨x, hx, rfl⟩
     replace h := congr(algebraMap E E' $(show f.restrictNormal E x = x from h x hx))
     rwa [AlgEquiv.restrictNormal_commutes] at h
 

@@ -84,7 +84,7 @@ theorem card_theFourteen (s : Set X) : (theFourteen s).card = 14 := rfl
 then it is in the multiset `theFourteen s`. -/
 theorem IsObtainable.mem_theFourteen {s t : Set X} (h : IsObtainable s t) : t ∈ theFourteen s := by
   induction h with | base => exact .head _ | closure _ mem => ?_ | complement _ mem => ?_
-  all_goals repeat obtain _ | ⟨_, mem⟩ := mem; rotate_left
+  all_goals repeat obtain - | ⟨_, mem⟩ := mem; rotate_left
   all_goals simp [theFourteen]
 
 /-- A set `t` is obtainable by from `s` if and only if they are in the Multiset `theFourteen s`. -/
@@ -92,7 +92,7 @@ theorem mem_theFourteen_iff_isObtainable {s t : Set X} :
     t ∈ theFourteen s ↔ IsObtainable s t where
   mp h := by
     repeat
-      obtain _ | ⟨_, h⟩ := h
+      obtain - | ⟨_, h⟩ := h
       rotate_left
     all_goals
       repeat

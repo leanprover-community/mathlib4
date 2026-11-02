@@ -256,7 +256,7 @@ private def sigmaPartitionWithPartEquiv (n : ℕ) :
 that `m.sum = n`. -/
 theorem bell_eq_sum_partition (n : ℕ) : n.bell = ∑ p : n.Partition, p.parts.bell := by
   refine Nat.strong_induction_on n ?_
-  rintro (_ | n) ih
+  rintro (- | n) ih
   · simp
   rw [Nat.bell_succ]
   calc

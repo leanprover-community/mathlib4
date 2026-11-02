@@ -164,7 +164,7 @@ theorem disjoint_bits (p q : ℕ) :
     Disjoint (List.cons 1 '' countedSequence p (q + 1))
       (List.cons (-1) '' countedSequence (p + 1) q) := by
   simp_rw [disjoint_left, mem_image, not_exists, exists_imp]
-  rintro _ _ ⟨_, rfl⟩ _ ⟨_, _, _⟩
+  rintro - - ⟨-, rfl⟩ - ⟨-, -, -⟩
 
 open MeasureTheory.Measure
 
@@ -206,7 +206,7 @@ theorem first_vote_pos :
         ext
         simp only [mem_inter_iff, mem_image, mem_ofPred_eq, mem_empty_iff_false, iff_false,
           not_and, forall_exists_index, and_imp]
-        rintro l _ rfl
+        rintro l - rfl
         norm_num
       have hint :
         countedSequence (p + 1) (q + 1) ∩ List.cons 1 '' countedSequence p (q + 1) =
@@ -261,7 +261,7 @@ theorem countedSequence_int_pos_counted_succ_succ (p q : ℕ) :
     · ext
       simp only [mem_inter_iff, mem_image, mem_ofPred_eq, and_iff_left_iff_imp, mem_empty_iff_false,
         iff_false, not_and, forall_exists_index, and_imp]
-      rintro y _ rfl
+      rintro y - rfl
       norm_num
 
 theorem ballot_pos (p q : ℕ) :
@@ -288,7 +288,7 @@ theorem countedSequence_int_neg_counted_succ_succ (p q : ℕ) :
     · ext
       simp only [mem_inter_iff, mem_image, and_iff_left_iff_imp, mem_empty_iff_false,
         iff_false, not_and, forall_exists_index, and_imp]
-      rintro y _ rfl
+      rintro y - rfl
       norm_num
 
 theorem ballot_neg (p q : ℕ) (qp : q < p) :

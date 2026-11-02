@@ -183,7 +183,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     Valid'.node' (hl.node' hm.left this.1) (hm.right.node' hr this.2.1) this.2.2
   rcases H with (⟨l0, m1, r0⟩ | ⟨l0, mr₁, lr₁, lr₂, mr₂⟩)
   · rw [hm.2.size_eq, Nat.succ_inj, add_eq_zero] at m1
-    rw [l0, m1.1, m1.2]; revert r0; rcases size r with (_ | _ | _) <;>
+    rw [l0, m1.1, m1.2]; revert r0; rcases size r with (- | - | -) <;>
       [decide; decide; (intro r0; unfold BalancedSz delta; lia)]
   · rcases Nat.eq_zero_or_pos (size r) with r0 | r0
     · rw [r0] at mr₂; cases not_le_of_gt Hm mr₂
@@ -196,10 +196,10 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       rw [l1, r1]
       revert mm; cases size ml <;> cases size mr <;> intro mm
       · decide
-      · rw [zero_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
+      · rw [zero_add] at mm; rcases mm with (- | ⟨⟨⟩⟩)
         decide
-      · rcases mm with (_ | ⟨⟨⟩⟩); decide
-      · rw [Nat.succ_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
+      · rcases mm with (- | ⟨⟨⟩⟩); decide
+      · rw [Nat.succ_add] at mm; rcases mm with (- | ⟨⟨⟩⟩)
     rcases hm.3.1.resolve_left mm with ⟨mm₁, mm₂⟩
     rcases Nat.eq_zero_or_pos (size ml) with ml0 | ml0
     · rw [ml0, mul_zero, Nat.le_zero] at mm₂
@@ -264,7 +264,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
       rw [rr1, show size rl = 1 from le_antisymm (ablem rr0 H3) rl0]
       decide
     replace H3 := H3p l0
-    rcases hr.3.1.resolve_left (hlp l0) with ⟨_, hb₂⟩
+    rcases hr.3.1.resolve_left (hlp l0) with ⟨-, hb₂⟩
     refine ⟨Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩⟩
     · exact Valid'.rotateL_lemma₁ H2 hb₂
     · exact Nat.le_of_lt_succ (Valid'.rotateL_lemma₂ H3 h)
@@ -313,7 +313,7 @@ theorem Valid'.balance'_lemma {α l l' r r'} (H1 : BalancedSz l' r')
     (H2 : Nat.dist (@size α l) l' ≤ 1 ∧ size r = r' ∨ Nat.dist (size r) r' ≤ 1 ∧ size l = l') :
     2 * @size α r ≤ 9 * size l + 5 ∨ size r ≤ 3 := by
   suffices @size α r ≤ 3 * (size l + 1) by lia
-  rcases H2 with (⟨hl, rfl⟩ | ⟨hr, rfl⟩) <;> rcases H1 with (h | ⟨_, h₂⟩)
+  rcases H2 with (⟨hl, rfl⟩ | ⟨hr, rfl⟩) <;> rcases H1 with (h | ⟨-, h₂⟩)
   · exact le_trans (Nat.le_add_left _ _) (le_trans h (Nat.le_add_left _ _))
   · exact
       le_trans h₂

@@ -97,7 +97,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
     ∃ r ∉ p, (Localization.awayMapₐ (Algebra.ofId R T) r).Finite := by
   have := PrimeSpectrum.isClosedMap_comap_of_isIntegral (algebraMap R S)
     (algebraMap_isIntegral_iff.mpr ‹_›) _ (PrimeSpectrum.isClosed_zeroLocus {g})
-  obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hpr, hrg⟩ := PrimeSpectrum.isBasis_basic_opens
+  obtain ⟨-, ⟨-, ⟨r, rfl⟩, rfl⟩, hpr, hrg⟩ := PrimeSpectrum.isBasis_basic_opens
     |>.exists_subset_of_mem_open (a := ⟨p, ‹_›⟩) (ou := this.isOpen_compl) <| by
     rintro ⟨q, hq, e⟩
     have : q.asIdeal.LiesOver p := ⟨congr(($e).1).symm⟩
@@ -113,7 +113,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
     have h₂ : Function.Surjective (IsLocalization.Away.map (Localization.Away (algebraMap R S r))
         (Localization.Away (algebraMap R T r)) f.toRingHom (algebraMap R S r)) := by
       intro x
-      obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers (algebraMap R T r)) x
+      obtain ⟨x, ⟨-, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers (algebraMap R T r)) x
       suffices ∃ a k l, algebraMap R T r ^ (l + n) * f a =
           algebraMap R T r ^ (l + k) * x by
         simpa [(IsLocalization.mk'_surjective (.powers (algebraMap R S r))).exists,
@@ -156,7 +156,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
   obtain ⟨s₁, hs₁q, hs₁⟩ := Ideal.exists_notMem_forall_mem_of_ne_of_liesOver (R := R) p q
   obtain ⟨s₂, hs₂q, hs₂⟩ := Algebra.ZariskisMainProperty.of_finiteType (R := R) q
   obtain ⟨s₃, hs₃⟩ := hs₂.2 (algebraMap _ _ s₁)
-  obtain ⟨s₃, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s₂) s₃
+  obtain ⟨s₃, ⟨-, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s₂) s₃
   obtain ⟨m, hm⟩ : ∃ m, ↑s₂ ^ m * ↑s₃ = ↑s₂ ^ m * (s₁ * ↑s₂ ^ n) := by
     simpa [IsLocalization.Away.map, IsLocalization.map_mk', IsLocalization.mk'_eq_iff_eq_mul,
       ← map_mul, ← map_pow, IsLocalization.eq_iff_exists (.powers s₂.1),
@@ -544,7 +544,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
           ⟨by simp [P.over_def p, Ideal.under, Ideal.comap_comap]⟩⟩).elim
     | succ n =>
     obtain ⟨q, hq, hq'⟩ := Set.nonempty_of_ncard_ne_zero (h.trans_ne (by simp))
-    obtain ⟨R', _, _, _, P, _, _, e, he, P', _, _, hP'q, heP', hpP, _, H⟩ :=
+    obtain ⟨R', _, _, _, P, _, _, e, he, P', _, _, hP'q, heP', hpP, -, H⟩ :=
       Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq p q
     have : (P.primesOver (R' ⊗[R] S ⧸ Ideal.span {e})).ncard < n + 1 := by
       let F := Ideal.fiberIsoOfBijectiveResidueField hpP (S := S)

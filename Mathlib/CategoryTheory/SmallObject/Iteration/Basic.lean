@@ -149,7 +149,7 @@ def toSuccArrow (X : C) : Arrow C := Arrow.mk (Φ.toSucc X)
 lemma prop_iff {X Y : C} (f : X ⟶ Y) :
     Φ.prop f ↔ Arrow.mk f = Φ.toSuccArrow X := by
   constructor
-  · rintro ⟨_⟩
+  · rintro ⟨-⟩
     rfl
   · intro h
     rw [← Φ.prop.arrow_mk_mem_toSet_iff, h]
@@ -351,7 +351,7 @@ lemma ext (h : ∀ (k₁ k₂ : K) (h₁₂ : k₁ ≤ k₂) (h₂ : k₂ ≤ x)
     MapEq F G k₁ k₂ h₁₂ h₂) :
     F = G := by
   apply Arrow.functor_ext
-  rintro ⟨k₁, _⟩ ⟨k₂, h₂⟩ f
+  rintro ⟨k₁, -⟩ ⟨k₂, h₂⟩ f
   apply h
 
 end subsingleton

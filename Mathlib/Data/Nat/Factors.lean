@@ -120,7 +120,7 @@ theorem primeFactorsList_add_two (n : ℕ) :
 @[simp]
 theorem primeFactorsList_eq_nil (n : ℕ) : n.primeFactorsList = [] ↔ n = 0 ∨ n = 1 := by
   constructor <;> intro h
-  · rcases n with (_ | _ | n)
+  · rcases n with (- | - | n)
     · exact Or.inl rfl
     · exact Or.inr rfl
     · rw [primeFactorsList] at h
@@ -237,7 +237,7 @@ theorem dvd_of_primeFactorsList_subperm {a b : ℕ} (ha : a ≠ 0)
     (h : a.primeFactorsList <+~ b.primeFactorsList) : a ∣ b := by
   rcases b.eq_zero_or_pos with (rfl | hb)
   · exact dvd_zero _
-  rcases a with (_ | _ | a)
+  rcases a with (- | - | a)
   · exact (ha rfl).elim
   · exact one_dvd _
   use (b.primeFactorsList.diff a.succ.succ.primeFactorsList).prod
@@ -313,7 +313,7 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
 
 theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
     4 ∣ n ∨ ∃ p, Prime p ∧ p ∣ n ∧ Odd p := by
-  obtain ⟨_ | _ | k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
+  obtain ⟨- | - | k, rfl⟩ | ⟨p, hp, hdvd, hodd⟩ := n.eq_two_pow_or_exists_odd_prime_and_dvd
   · contradiction
   · contradiction
   · simp [Nat.pow_succ, mul_assoc]

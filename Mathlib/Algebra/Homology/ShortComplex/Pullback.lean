@@ -57,7 +57,7 @@ lemma ShortComplex.ShortExact.pull
     (S.pull f).ShortExact := by
   have := hS.mono_f
   have := hS.epi_g
-  obtain ⟨h, _⟩ := (S.pull f).exact_and_mono_f_iff_f_is_kernel.2 ⟨by
+  obtain ⟨h, -⟩ := (S.pull f).exact_and_mono_f_iff_f_is_kernel.2 ⟨by
     refine Fork.IsLimit.mk' _ (fun s ↦ ?_)
     obtain ⟨l, hl⟩ := KernelFork.IsLimit.lift' hS.fIsKernel (s.ι ≫ pullback.snd _ _)
       (by simp [← pullback.condition])

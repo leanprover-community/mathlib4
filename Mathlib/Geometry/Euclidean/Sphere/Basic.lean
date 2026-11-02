@@ -189,7 +189,7 @@ theorem _root_.Isometry.cospherical {E F : Type*} [MetricSpace E] [MetricSpace F
     (hf : Isometry f) {ps : Set E} (hps : Cospherical ps) : Cospherical (f '' ps) := by
   rcases hps with ⟨c, r, hc⟩
   refine ⟨f c, r, ?_⟩
-  rintro _ ⟨p, hp, rfl⟩
+  rintro - ⟨p, hp, rfl⟩
   rw [hf.dist_eq, hc p hp]
 
 end MetricSpace
@@ -228,7 +228,7 @@ include V in
 /-- Two points are cospherical. -/
 theorem cospherical_pair (p₁ p₂ : P) : Cospherical ({p₁, p₂} : Set P) :=
   ⟨midpoint ℝ p₁ p₂, ‖(2 : ℝ)‖⁻¹ * dist p₁ p₂, by
-    rintro p (rfl | rfl | _)
+    rintro p (rfl | rfl | -)
     · rw [dist_comm, dist_midpoint_left (𝕜 := ℝ)]
     · rw [dist_comm, dist_midpoint_right (𝕜 := ℝ)]⟩
 

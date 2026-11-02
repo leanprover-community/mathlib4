@@ -468,7 +468,7 @@ theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K 
       embeddingsMatrixReindex_eq_vandermonde, det_mul, det_transpose]
     refine mt mul_self_eq_zero.mp ?_
     simp only [det_vandermonde, Finset.prod_eq_zero_iff, not_exists, sub_eq_zero]
-    rintro i ⟨_, j, hij, h⟩
+    rintro i ⟨-, j, hij, h⟩
     exact (Finset.mem_Ioi.mp hij).ne' (e.injective <| pb.algHom_ext h)
   · rw [AlgHom.card, pb.finrank]
 

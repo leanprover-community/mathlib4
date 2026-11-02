@@ -767,7 +767,7 @@ theorem ωSup_iterate_mem_fixedPoint (h : x ≤ f x) :
     rw [← this]
     apply le_ωSup
   · apply ωSup_le
-    rintro (_ | n)
+    rintro (- | n)
     · apply le_trans h
       change ((iterateChain f x h).map f) 0 ≤ ωSup ((iterateChain f x h).map (f : α →o α))
       apply le_ωSup

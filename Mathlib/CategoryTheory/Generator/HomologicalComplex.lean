@@ -49,7 +49,7 @@ lemma isSeparating_separatingFamily :
   intro K L f g h
   ext j
   apply hX
-  rintro _ ⟨a⟩ p
+  rintro - ⟨a⟩ p
   have H := evalCompCoyonedaCorepresentable c (X a) j
   apply H.homEquiv.symm.injective
   simpa only [H.homEquiv_symm_comp] using! h _

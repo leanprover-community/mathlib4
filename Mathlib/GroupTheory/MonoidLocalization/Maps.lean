@@ -253,8 +253,8 @@ theorem lift_injective_iff :
       rw [← f.lift_eq hg, ← f.lift_eq hg] at h
       exact H h
   · intro H z w h
-    obtain ⟨_, _⟩ := f.surj z
-    obtain ⟨_, _⟩ := f.surj w
+    obtain ⟨-, -⟩ := f.surj z
+    obtain ⟨-, -⟩ := f.surj w
     rw [← f.mk'_sec z, ← f.mk'_sec w]
     exact (mul_inv f.map_units).2 ((H _ _).2 <| (mul_inv hg).1 h)
 

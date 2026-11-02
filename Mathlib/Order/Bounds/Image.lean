@@ -42,7 +42,7 @@ theorem mem_upperBounds_image_self (Hf : MonotoneOn f t) :
 @[to_dual]
 theorem image_upperBounds_subset_upperBounds_image (Hf : MonotoneOn f t) (Hst : s ⊆ t) :
     f '' (upperBounds s ∩ t) ⊆ upperBounds (f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩
+  rintro - ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image Hst ha.1 ha.2
 
 /-- The image under a monotone function on a set `t` of a subset which has an upper bound in `t`
@@ -108,7 +108,7 @@ theorem mem_upperBounds_image (Ha : a ∈ upperBounds s) : f a ∈ upperBounds (
 @[to_dual]
 theorem image_upperBounds_subset_upperBounds_image :
     f '' upperBounds s ⊆ upperBounds (f '' s) := by
-  rintro _ ⟨a, ha, rfl⟩
+  rintro - ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image ha
 
 /-- The image under a monotone function of a set which is bounded above is bounded above. See also

@@ -142,7 +142,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     obtain ⟨x', rfl⟩ := Submodule.mem_span_singleton.mp hx
     rw [smul_eq_mul, mul_comm, ← Algebra.smul_def] at hx ⊢
     rw [← Submodule.Quotient.mk_eq_zero, Submodule.Quotient.mk_smul]
-    obtain ⟨a', _, quot_x_eq⟩ := exists_sum (Submodule.Quotient.mk x')
+    obtain ⟨a', -, quot_x_eq⟩ := exists_sum (Submodule.Quotient.mk x')
     rw [← quot_x_eq, Finset.smul_sum]
     conv =>
       lhs; congr; next => skip

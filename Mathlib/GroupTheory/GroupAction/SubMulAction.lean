@@ -137,7 +137,7 @@ open scoped Pointwise in
 @[to_additive]
 theorem smul_subset_self {S R M : Type*} [SetLike S M] [SMul R M] [SMulMemClass S R M]
     (r : R) (s : S) : (r • s : Set M) ⊆ s := by
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   simpa using SMulMemClass.smul_mem (r : R) hx
 
 open scoped Pointwise in

@@ -43,7 +43,7 @@ private lemma inductive_claim_mul (hm : 3 ≤ m)
   induction m, hm using Nat.le_induction with
   | base => simpa using h ε hε
   | succ m hm ih =>
-    obtain _ | m := m
+    obtain - | m := m
     · simp at hm
     have hm₀ : m ≠ 0 := by simp at hm; positivity
     have hε₀ i : ε i ≠ 0 := fun h ↦ by simpa [h] using hε i

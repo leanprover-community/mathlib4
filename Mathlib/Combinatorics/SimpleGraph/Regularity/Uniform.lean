@@ -230,7 +230,7 @@ theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε
   rintro ⟨u, v⟩
   simp only [mk_mem_nonUniforms, parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
-  rintro x ⟨_, rfl⟩ y ⟨_, rfl⟩ _
+  rintro x ⟨-, rfl⟩ y ⟨-, rfl⟩ -
   rwa [SimpleGraph.isUniform_singleton]
 
 /-- A finpartition of a graph's vertex set is `ε`-uniform (aka `ε`-regular) iff the proportion of

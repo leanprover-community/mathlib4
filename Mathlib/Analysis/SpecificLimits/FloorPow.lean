@@ -41,7 +41,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     We give a version of this proof by clearing out denominators first, to avoid discussing the sign
     of different quantities. -/
   have lnonneg : 0 ≤ l := by
-    rcases hlim 2 one_lt_two with ⟨c, _, ctop, clim⟩
+    rcases hlim 2 one_lt_two with ⟨c, -, ctop, clim⟩
     have : Tendsto (fun n => u 0 / c n) atTop (𝓝 0) :=
       tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_iff.2 ctop)
     apply le_of_tendsto_of_tendsto' this clim fun n => ?_

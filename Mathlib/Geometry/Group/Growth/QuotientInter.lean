@@ -49,7 +49,7 @@ lemma card_pow_quotient_mul_pow_inter_subgroup_le :
       simp only [Set.InjOn, coe_image, coe_pow, coe_filter, Set.mem_prod, Set.mem_image,
         exists_exists_and_eq_and, Set.mem_ofPred_eq, and_imp, forall_exists_index, Prod.forall,
         Prod.mk.injEq]
-      rintro _ a₁ b₁ hb₁ rfl - ha₁ _ a₂ b₂ hb₂ rfl - ha₂ hab
+      rintro - a₁ b₁ hb₁ rfl - ha₁ - a₂ b₂ hb₂ rfl - ha₂ hab
       have hπa₁ : π a₁ = 1 := (QuotientGroup.eq_one_iff _).2 ha₁
       have hπa₂ : π a₂ = 1 := (QuotientGroup.eq_one_iff _).2 ha₂
       have hπb : π b₁ = π b₂ := by

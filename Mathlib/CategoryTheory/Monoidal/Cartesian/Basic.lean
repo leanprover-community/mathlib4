@@ -123,11 +123,11 @@ abbrev tensorHom (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : tensorObj ℬ X₁ X�
       (((ℬ X₁ X₂).cone.π.app ⟨.right⟩ : (ℬ X₁ X₂).cone.pt ⟶ X₂) ≫ g)).val
 
 lemma id_tensorHom_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensorObj ℬ X Y) :=
-  (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
+  (ℬ _ _).isLimit.hom_ext <| by rintro ⟨- | -⟩ <;> simp [tensorHom]
 
 lemma tensorHom_comp_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
     tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ = tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) :=
-  (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
+  (ℬ _ _).isLimit.hom_ext <| by rintro ⟨- | -⟩ <;> simp [tensorHom]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma pentagon (W X Y Z : C) :
@@ -138,20 +138,20 @@ lemma pentagon (W X Y Z : C) :
         (BinaryFan.associatorOfLimitCone ℬ W X (tensorObj ℬ Y Z)).hom := by
   dsimp [tensorHom]
   apply (ℬ _ _).isLimit.hom_ext
-  rintro ⟨_ | _⟩
+  rintro ⟨- | -⟩
   · simp
   apply (ℬ _ _).isLimit.hom_ext
-  rintro ⟨_ | _⟩
+  rintro ⟨- | -⟩
   · simp
   apply (ℬ _ _).isLimit.hom_ext
-  rintro ⟨_ | _⟩ <;> simp
+  rintro ⟨- | -⟩ <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
 lemma triangle (X Y : C) :
     (BinaryFan.associatorOfLimitCone ℬ X 𝒯.cone.pt Y).hom ≫
         tensorHom ℬ (𝟙 X) (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt Y).isLimit).hom =
       tensorHom ℬ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit).hom (𝟙 Y) :=
-  (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp
+  (ℬ _ _).isLimit.hom_ext <| by rintro ⟨- | -⟩ <;> simp
 
 lemma leftUnitor_naturality (f : X₁ ⟶ X₂) :
     tensorHom ℬ (𝟙 𝒯.cone.pt) f ≫ (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₂).isLimit).hom =
@@ -169,10 +169,10 @@ lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ 
       (BinaryFan.associatorOfLimitCone ℬ X₁ X₂ X₃).hom ≫ tensorHom ℬ f₁ (tensorHom ℬ f₂ f₃) := by
   dsimp [tensorHom]
   apply (ℬ _ _).isLimit.hom_ext
-  rintro ⟨_ | _⟩
+  rintro ⟨- | -⟩
   · simp
   apply (ℬ _ _).isLimit.hom_ext
-  rintro ⟨_ | _⟩ <;> simp
+  rintro ⟨- | -⟩ <;> simp
 
 end ofChosenFiniteProducts
 

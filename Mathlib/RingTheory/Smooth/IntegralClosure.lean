@@ -207,7 +207,7 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
   have := (algebraMap S B).domain_nontrivial
   obtain ⟨y, rfl⟩ := hφ y
   -- Consider the universal extension `S'` of `S` that splits `f`, so that `f = ∏ᵢ X - aᵢ`.
-  obtain ⟨S', _, _, _, _, _, hS'⟩ := hf.exists_splits_map
+  obtain ⟨S', _, _, -, _, _, hS'⟩ := hf.exists_splits_map
   obtain ⟨m, hm⟩ := Polynomial.splits_iff_exists_multiset.mp hS'
   simp only [hf.map _, Monic.leadingCoeff, map_one, one_mul] at hm
   algebraize [(algebraMap S S').comp (algebraMap R S)]
@@ -288,7 +288,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
     algebraize [(e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R (AdjoinRoot 𝓟.f) _)).toRingHom]
     have := IsLocalization.isLocalization_of_algEquiv (R := AdjoinRoot 𝓟.f) (.powers (.mk _ 𝓟.g))
       { toRingEquiv := e.symm.toRingEquiv, commutes' := by simp [RingHom.algebraMap_toAlgebra] }
-    obtain ⟨⟨_, m, rfl⟩, hm⟩ := IsIntegral.exists_multiple_integral_of_isLocalization
+    obtain ⟨⟨-, m, rfl⟩, hm⟩ := IsIntegral.exists_multiple_integral_of_isLocalization
       (R := AdjoinRoot 𝓟.f) (.powers (.mk _ 𝓟.g)) _ hx
     replace hm := fun k : ℕ ↦ (isIntegral_algebraMap (x := AdjoinRoot.mk 𝓟.f 𝓟.g ^ k)).mul hm
     simp only [Submonoid.smul_def, ← @IsScalarTower.algebraMap_smul (AdjoinRoot 𝓟.f) S,
@@ -304,7 +304,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
   let e := 𝓟'.equivRing.trans 𝓟'.equivAwayAdjoinRoot
   obtain ⟨a, rfl⟩ := (Algebra.TensorProduct.comm _ _ _).surjective a
   obtain ⟨a, rfl⟩ := e.symm.surjective a
-  obtain ⟨a, ⟨_, m, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
+  obtain ⟨a, ⟨-, m, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq
     (R := AdjoinRoot 𝓟'.f) (.powers (.mk _ 𝓟'.g)) a
   have hfg : IsIntegral R (AdjoinRoot.mk 𝓟'.f 𝓟'.g) := by
     have := 𝓟.monic_f.finite_adjoinRoot
@@ -369,7 +369,7 @@ private theorem TensorProduct.toIntegralClosure_bijective_of_isStandardEtale
   intro ⟨x, hx⟩
   simp only [toIntegralClosure, Subtype.ext_iff, AlgHom.coe_codRestrict, ← AlgHom.mem_range]
   refine Algebra.adjoin_le ?_ (mem_adjoin_map_integralClosure_of_isStandardEtale x hx)
-  rintro _ ⟨y, hy : IsIntegral _ _, rfl⟩
+  rintro - ⟨y, hy : IsIntegral _ _, rfl⟩
   refine ⟨1 ⊗ₜ ⟨y, hy⟩, by simp⟩
 
 end IsStandardEtale

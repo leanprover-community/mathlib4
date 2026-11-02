@@ -160,7 +160,7 @@ section GhostFun
 @[local simp]
 theorem matrix_vecEmpty_coeff {R} (i j) :
     @coeff p R (Matrix.vecEmpty i) j = (Matrix.vecEmpty i : ℕ → R) j := by
-  rcases i with ⟨_ | _ | _ | _ | i_val, ⟨⟩⟩
+  rcases i with ⟨- | - | - | - | i_val, ⟨⟩⟩
 
 variable [Fact p.Prime]
 variable (x y : WittVector p R)

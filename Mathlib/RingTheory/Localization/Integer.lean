@@ -152,7 +152,7 @@ theorem finsetIntegerMultiple_image [DecidableEq R] (s : Finset S) :
   rw [Finset.coe_image]
   ext
   constructor
-  · rintro ⟨_, ⟨x, -, rfl⟩, rfl⟩
+  · rintro ⟨-, ⟨x, -, rfl⟩, rfl⟩
     rw [map_integerMultiple]
     exact Set.mem_image_of_mem _ x.prop
   · rintro ⟨x, hx, rfl⟩

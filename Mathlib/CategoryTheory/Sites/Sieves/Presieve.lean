@@ -170,9 +170,9 @@ theorem pullback_singleton (g : Z ⟶ X) [HasPullback g f] :
   funext W
   ext h
   constructor
-  · rintro ⟨W, _, _, _⟩
+  · rintro ⟨W, -, -, -⟩
     exact singleton.mk
-  · rintro ⟨_⟩
+  · rintro ⟨-⟩
     exact pullbackArrows.mk Z g singleton.mk
 
 /-- Construct the presieve given by the family of arrows indexed by `ι`. -/
@@ -200,7 +200,7 @@ theorem ofArrows_pullback {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X
   constructor
   · rintro ⟨hk⟩
     exact pullbackArrows.mk _ _ (ofArrows.mk hk)
-  · rintro ⟨W, k, ⟨_⟩⟩
+  · rintro ⟨W, k, ⟨-⟩⟩
     apply ofArrows.mk
 
 theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
@@ -212,7 +212,7 @@ theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
   funext Y
   ext f
   constructor
-  · rintro ⟨_, _, _, ⟨i⟩, ⟨i'⟩, rfl⟩
+  · rintro ⟨-, -, -, ⟨i⟩, ⟨i'⟩, rfl⟩
     exact ofArrows.mk (Sigma.mk _ _)
   · rintro ⟨i⟩
     exact bind_comp _ (ofArrows.mk _) (ofArrows.mk _)
@@ -232,7 +232,7 @@ lemma exists_eq_ofArrows (R : Presieve X) :
 lemma ofArrows_category {S : C} (R : Presieve S) :
     Presieve.ofArrows _ (fun (f : R.category) ↦ f.obj.hom) = R := by
   refine le_antisymm ?_ ?_
-  · rintro _ _ ⟨X, h⟩
+  · rintro - - ⟨X, h⟩
     exact h
   · rintro X g hg
     exact .mk (ι := R.category) ⟨Over.mk g, hg⟩
@@ -319,7 +319,7 @@ lemma pushforward_apply_comp {X Y Z : C} {f : X ⟶ Y} {R : Presieve X} {g : Z �
 lemma pushforward_ofArrows {ι : Type*} {U : ι → C} {X Y : C} (g : ∀ i, U i ⟶ X)
     (f : X ⟶ Y) : (ofArrows _ g).pushforward f = ofArrows _ (g · ≫ f) := by
   refine le_antisymm ?_ ?_
-  · rintro _ _ ⟨u, rfl, ⟨i⟩⟩
+  · rintro - - ⟨u, rfl, ⟨i⟩⟩
     exact ⟨i⟩
   · rw [ofArrows_le_iff]
     intro i

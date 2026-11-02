@@ -233,7 +233,7 @@ theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
       have : a ::ₘ as = a ::ₘ b ::ₘ cs := by rwa [cons_swap]
       simpa using this
   · intro h
-    rcases h with (⟨eq₁, eq₂⟩ | ⟨_, cs, eq₁, eq₂⟩)
+    rcases h with (⟨eq₁, eq₂⟩ | ⟨-, cs, eq₁, eq₂⟩)
     · simp [*]
     · simp [*, cons_swap a b]
 

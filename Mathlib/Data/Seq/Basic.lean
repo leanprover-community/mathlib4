@@ -82,7 +82,7 @@ theorem length_le_iff' {s : Seq α} {n : ℕ} :
     (∃ h, s.length h ≤ n) ↔ s.TerminatedAt n := by
   simp only [length, Nat.find_le_iff, TerminatedAt, Terminates, exists_prop]
   refine ⟨?_, ?_⟩
-  · rintro ⟨_, k, hkn, hk⟩
+  · rintro ⟨-, k, hkn, hk⟩
     exact le_stable s hkn hk
   · intro hn
     exact ⟨⟨n, hn⟩, ⟨n, le_rfl, hn⟩⟩
@@ -301,7 +301,7 @@ theorem append_nil (s : Seq α) : append s nil = s := by
 @[simp]
 theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append t u) := by
   apply eq_of_bisim fun s1 s2 => ∃ s t u, s1 = append (append s t) u ∧ s2 = append s (append t u)
-  · rintro _ _ ⟨s, t, u, rfl, rfl⟩
+  · rintro - - ⟨s, t, u, rfl, rfl⟩
     cases s with
     | nil =>
       cases t with
@@ -940,7 +940,7 @@ theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
   | nil =>
     contradiction
   | cons b_hd b_tl =>
-    obtain ⟨a_hd, a_tl, ha', _⟩ := step _ _ this _ _ rfl
+    obtain ⟨a_hd, a_tl, ha', -⟩ := step _ _ this _ _ rfl
     apply_fun length' at ha'
     simp only [drop_length', length'_of_terminates ha, tsub_self, length'_cons] at ha'
     generalize a_tl.length' = u at ha'

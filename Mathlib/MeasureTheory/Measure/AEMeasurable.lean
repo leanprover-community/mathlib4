@@ -194,7 +194,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
   let g : α → β := piecewise s (fun _ => h₀.some) (H.mk f)
   refine ⟨g, ?_, ?_, ?_⟩
   · exact Measurable.piecewise (measurableSet_toMeasurable _ _) measurable_const H.measurable_mk
-  · rintro _ ⟨x, rfl⟩
+  · rintro - ⟨x, rfl⟩
     by_cases hx : x ∈ s
     · simpa [g, hx] using h₀.some_mem
     · simp only [g, hx, piecewise_eq_of_notMem, not_false_iff]

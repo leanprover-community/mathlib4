@@ -278,7 +278,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
     𝒞.χ ((Subobject.pullback φ).obj 𝒞.truth_as_subobject).arrow = φ := by
-  obtain ⟨Z, i, _, rfl⟩ := 𝒞.surjective_χ φ
+  obtain ⟨Z, i, -, rfl⟩ := 𝒞.surjective_χ φ
   refine (𝒞.uniq _ (?_ : IsPullback _ (𝒞.χ₀ _) _ _)).symm
   refine (IsPullback.of_hasPullback 𝒞.truth (𝒞.χ i)).flip.of_iso
     (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)

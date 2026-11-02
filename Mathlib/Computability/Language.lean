@@ -256,7 +256,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     constructor
     · rintro ⟨a, ha, b, ⟨S, rfl, rfl, hS⟩, rfl⟩
       exact ⟨a :: S, rfl, rfl, forall_mem_cons.2 ⟨ha, hS⟩⟩
-    · rintro ⟨_ | ⟨a, S⟩, rfl, hn, hS⟩ <;> cases hn
+    · rintro ⟨- | ⟨a, S⟩, rfl, hn, hS⟩ <;> cases hn
       rw [forall_mem_cons] at hS
       exact ⟨a, hS.1, _, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
 

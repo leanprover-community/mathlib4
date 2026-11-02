@@ -105,7 +105,7 @@ lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W �
   constructor
   · rintro ⟨j, h, fac₁, fac₂⟩
     exact ⟨_, h, _, ⟨j⟩, by cat_disch⟩
-  · rintro ⟨_, h, w, ⟨j⟩, fac⟩
+  · rintro ⟨-, h, w, ⟨j⟩, fac⟩
     exact ⟨j, h, by simpa using fac.symm =≫ pullback.fst _ _,
       by simpa using fac.symm =≫ pullback.snd _ _⟩
 
@@ -727,13 +727,13 @@ lemma inv_hom_s₁_apply {i j : F.I₀} (k : F.I₁ i j) :
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma hom_inv_h₀ (i : E.I₀) : e.hom.h₀ i ≫ e.inv.h₀ (e.hom.s₀ i) = eqToHom (by simp) := by
-  obtain ⟨hs, hh, _⟩ := Hom.ext'_iff.mp e.hom_inv_id
+  obtain ⟨hs, hh, -⟩ := Hom.ext'_iff.mp e.hom_inv_id
   simpa using hh i
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inv_hom_h₀ (i : F.I₀) : e.inv.h₀ i ≫ e.hom.h₀ (e.inv.s₀ i) = eqToHom (by simp) := by
-  obtain ⟨hs, hh, _⟩ := Hom.ext'_iff.mp e.inv_hom_id
+  obtain ⟨hs, hh, -⟩ := Hom.ext'_iff.mp e.inv_hom_id
   simpa using hh i
 
 set_option backward.defeqAttrib.useBackward true in
@@ -742,7 +742,7 @@ lemma hom_inv_h₁ {i j : E.I₀} (k : E.I₁ i j) :
     e.hom.h₁ k ≫ e.inv.h₁ (e.hom.s₁ k) =
       (E.congrIndexOneOfEqIso (hom_inv_s₀_apply e i).symm (hom_inv_s₀_apply e j).symm k).inv ≫
       eqToHom (by congr 1; simp) := by
-  obtain ⟨hs, _, _, hh⟩ := Hom.ext'_iff.mp e.hom_inv_id
+  obtain ⟨hs, -, _, hh⟩ := Hom.ext'_iff.mp e.hom_inv_id
   simpa using hh i j k
 
 set_option backward.defeqAttrib.useBackward true in
@@ -751,7 +751,7 @@ lemma inv_hom_h₁ {i j : F.I₀} (k : F.I₁ i j) :
     e.inv.h₁ k ≫ e.hom.h₁ (e.inv.s₁ k) =
       (F.congrIndexOneOfEqIso (inv_hom_s₀_apply e i).symm (inv_hom_s₀_apply e j).symm k).inv ≫
       eqToHom (by congr 1; simp) := by
-  obtain ⟨hs, _, _, hh⟩ := Hom.ext'_iff.mp e.inv_hom_id
+  obtain ⟨hs, -, _, hh⟩ := Hom.ext'_iff.mp e.inv_hom_id
   simpa using hh i j k
 
 instance (i : E.I₀) : IsIso (e.hom.h₀ i) := by
@@ -1061,7 +1061,7 @@ def preOneHypercover : PreOneHypercover.{max u v} X where
 lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.1 := by
   ext Y f
   constructor
-  · rintro ⟨_, _, _, ⟨g⟩, rfl⟩
+  · rintro ⟨-, -, -, ⟨g⟩, rfl⟩
     exact S.1.downward_closed g.hf _
   · intro hf
     exact Sieve.ofArrows_mk _ _ ({ hf := hf, .. } : S.Arrow)

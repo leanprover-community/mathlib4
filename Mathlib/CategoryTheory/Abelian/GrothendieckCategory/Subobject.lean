@@ -122,7 +122,7 @@ lemma exists_isIso_of_functor_from_monoOver
     subobjectMk_of_isColimit_eq_iSup F hc f hf] at h
   let s (j : J) : Subobject X := Subobject.mk (F.obj j).obj.hom
   have h' : Function.Surjective (fun (j : J) ↦ (⟨s j, _, rfl⟩ : Set.range s)) := by
-    rintro ⟨_, j, rfl⟩
+    rintro ⟨-, j, rfl⟩
     exact ⟨j, rfl⟩
   obtain ⟨σ, hσ⟩ := h'.hasRightInverse
   have hs : HasCardinalLT (Set.range s) κ :=

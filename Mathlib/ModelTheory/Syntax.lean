@@ -905,7 +905,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp
     · simp
-    · rintro ⟨t, ⟨is, _⟩, ⟨js, _⟩⟩
+    · rintro ⟨t, ⟨is, -⟩, ⟨js, -⟩⟩
       exact ⟨is, js⟩
 
 end Cardinality

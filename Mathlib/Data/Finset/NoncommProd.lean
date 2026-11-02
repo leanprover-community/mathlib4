@@ -176,7 +176,7 @@ variable [FunLike F α β]
 protected theorem map_noncommProd_aux [MulHomClass F α β] (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise Commute) (f : F) : { x | x ∈ s.map f }.Pairwise Commute := by
   simp only [Multiset.mem_map]
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ _
+  rintro - ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩ -
   exact (comm.forall₂ hx hy).map f
 
 @[to_additive]

@@ -40,7 +40,7 @@ namespace Imo2008Q2
 theorem subst_abc {x y z : ℝ} (h : x * y * z = 1) :
     ∃ a b c : ℝ, a ≠ 0 ∧ b ≠ 0 ∧ c ≠ 0 ∧ x = a / b ∧ y = b / c ∧ z = c / a := by
   use x, 1, 1 / y
-  obtain ⟨⟨hx, hy⟩, _⟩ : (x ≠ 0 ∧ y ≠ 0) ∧ z ≠ 0 := by
+  obtain ⟨⟨hx, hy⟩, -⟩ : (x ≠ 0 ∧ y ≠ 0) ∧ z ≠ 0 := by
     have := h.symm ▸ one_ne_zero
     simpa [not_or] using this
   have : z * (y * x) = 1 := by rw [← h]; ac_rfl

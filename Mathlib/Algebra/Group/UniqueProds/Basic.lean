@@ -115,7 +115,7 @@ theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
   ⟨fun _ ↦ ⟨(a0, b0), ⟨Finset.mk_mem_product aA bB, rfl⟩, by simpa⟩,
     fun h ↦ h.elim
       (by
-        rintro ⟨x1, x2⟩ _ J x y hx hy l
+        rintro ⟨x1, x2⟩ - J x y hx hy l
         rcases Prod.mk_inj.mp (J (a0, b0) ⟨Finset.mk_mem_product aA bB, rfl⟩) with ⟨rfl, rfl⟩
         exact Prod.mk_inj.mp (J (x, y) ⟨Finset.mk_mem_product hx hy, l⟩))⟩
 
@@ -263,7 +263,7 @@ lemma uniqueMul_of_twoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < #A * #B �
   by_cases! +distrib hc : #A ≤ 1 ∧ #B ≤ 1
   · exact UniqueMul.of_card_le_one hA hB hc.1 hc.2
   rw [← Finset.card_pos] at hA hB
-  obtain ⟨p, hp, _, _, _, hu, _⟩ := h (Nat.one_lt_mul_iff.mpr ⟨hA, hB, hc⟩)
+  obtain ⟨p, hp, -, -, -, hu, -⟩ := h (Nat.one_lt_mul_iff.mpr ⟨hA, hB, hc⟩)
   rw [Finset.mem_product] at hp
   exact ⟨p.1, hp.1, p.2, hp.2, hu⟩
 
@@ -405,8 +405,8 @@ open MulOpposite in
     · obtain ⟨e, he, f, hf, hu⟩ := this
       clear_value C D
       simp only [UniqueMul, mem_mul, mem_image] at he hf hu
-      obtain ⟨_, ⟨d1, hd1, rfl⟩, c1, hc1, rfl⟩ := he
-      obtain ⟨d2, hd2, _, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
+      obtain ⟨-, ⟨d1, hd1, rfl⟩, c1, hc1, rfl⟩ := he
+      obtain ⟨d2, hd2, -, ⟨c2, hc2, rfl⟩, rfl⟩ := hf
       by_cases! h12 : c1 ≠ 1 ∨ d2 ≠ 1
       · refine ⟨c1, hc1, d2, hd2, h12, fun c3 d3 hc3 hd3 he => ?_⟩
         specialize hu ⟨_, ⟨_, hd1, rfl⟩, _, hc3, rfl⟩ ⟨_, hd3, _, ⟨_, hc2, rfl⟩, rfl⟩

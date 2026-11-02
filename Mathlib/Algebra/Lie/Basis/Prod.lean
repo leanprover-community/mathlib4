@@ -75,7 +75,7 @@ lemma prodCartanEquiv_aux :
       ext; simp
     simp_rw [← LinearMap.disjoint_ker_iff_injOn, LinearMap.disjoint_ker, aux,
       mem_span_image_iff_linearCombination]
-    rintro ⟨_, y⟩ ⟨a, _⟩ rfl
+    rintro ⟨-, y⟩ ⟨a, _⟩ rfl
     specialize this y a
     simp [*]
   intro y f hf

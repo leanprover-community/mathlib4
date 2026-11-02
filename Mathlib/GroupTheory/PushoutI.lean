@@ -340,7 +340,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       (Word.equivPair i w).head := by
     rw [Word.equivPair_head]
     split_ifs with h
-    · rcases h with ⟨_, rfl⟩
+    · rcases h with ⟨-, rfl⟩
       exact hw _ _ (List.head_mem _)
     · rw [equiv_one (d.compl i) (one_mem _) (d.one_mem _)]
   by_contra hh1
@@ -401,7 +401,7 @@ noncomputable def rcons (i : ι) (p : Pair d i) : NormalWord d :=
         · simp }
 
 theorem rcons_injective {i : ι} : Function.Injective (rcons (d := d) i) := by
-  rintro ⟨⟨head₁, tail₁⟩, _⟩ ⟨⟨head₂, tail₂⟩, _⟩
+  rintro ⟨⟨head₁, tail₁⟩, -⟩ ⟨⟨head₂, tail₂⟩, -⟩
   simp only [rcons, NormalWord.mk.injEq, EmbeddingLike.apply_eq_iff_eq,
     Word.Pair.mk.injEq, Pair.mk.injEq, and_imp]
   rintro h₁ rfl h₃
@@ -678,10 +678,10 @@ theorem inf_of_range_eq_base_range
       simp [w, Word.empty] at this)
     (le_inf
       (by rw [← of_comp_eq_base i]
-          rintro _ ⟨h, rfl⟩
+          rintro - ⟨h, rfl⟩
           exact MonoidHom.mem_range.2 ⟨φ i h, rfl⟩)
       (by rw [← of_comp_eq_base j]
-          rintro _ ⟨h, rfl⟩
+          rintro - ⟨h, rfl⟩
           exact MonoidHom.mem_range.2 ⟨φ j h, rfl⟩))
 
 end PushoutI

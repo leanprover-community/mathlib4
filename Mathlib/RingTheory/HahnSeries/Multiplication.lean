@@ -307,7 +307,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
     ext ⟨a1, a2⟩
     simp only [Set.mem_singleton_iff, Prod.mk_inj, mem_vaddAntidiagonal, mem_singleton]
     constructor
-    · rintro ⟨rfl, _, h1⟩
+    · rintro ⟨rfl, -, h1⟩
       exact ⟨rfl, IsCancelVAdd.left_cancel a1 a2 a h1⟩
     · rintro ⟨rfl, rfl⟩
       exact ⟨rfl, by exact hx, rfl⟩
@@ -462,7 +462,7 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ�
     ext ⟨a1, a2⟩
     simp only [Set.mem_singleton_iff, Prod.mk_inj, mem_antidiagonal, mem_singleton]
     constructor
-    · rintro ⟨_, rfl, h1⟩
+    · rintro ⟨-, rfl, h1⟩
       exact ⟨add_right_cancel h1, rfl⟩
     · rintro ⟨rfl, rfl⟩
       simp [hx]
@@ -857,8 +857,8 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
       simp [hx, hy, hf]
     · rintro ⟨_, _⟩ h1 h2
       contrapose! h2
-      obtain ⟨i, _, rfl⟩ := support_embDomain_subset (ne_zero_and_ne_zero_of_mul h2).1
-      obtain ⟨j, _, rfl⟩ := support_embDomain_subset (ne_zero_and_ne_zero_of_mul h2).2
+      obtain ⟨i, -, rfl⟩ := support_embDomain_subset (ne_zero_and_ne_zero_of_mul h2).1
+      obtain ⟨j, -, rfl⟩ := support_embDomain_subset (ne_zero_and_ne_zero_of_mul h2).2
       simp only [mem_map, mem_antidiagonal,
         Function.Embedding.coe_prodMap, mem_support, Prod.exists]
       simp only [mem_antidiagonal, embDomain_coeff, mem_support, ← hf,
@@ -867,8 +867,8 @@ theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
   · rw [embDomain_of_notMem_range hg, eq_comm]
     contrapose! hg
     obtain ⟨_, hi, _, hj, rfl⟩ := support_mul_subset ((mem_support _ _).2 hg)
-    obtain ⟨i, _, rfl⟩ := support_embDomain_subset hi
-    obtain ⟨j, _, rfl⟩ := support_embDomain_subset hj
+    obtain ⟨i, -, rfl⟩ := support_embDomain_subset hi
+    obtain ⟨j, -, rfl⟩ := support_embDomain_subset hj
     exact ⟨i + j, hf i j⟩
 
 omit [IsOrderedCancelAddMonoid Γ] [IsOrderedCancelAddMonoid Γ'] in

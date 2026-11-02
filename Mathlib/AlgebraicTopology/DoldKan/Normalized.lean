@@ -54,7 +54,7 @@ theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
 
 theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
     Subobject.Factors (NormalizedMooreComplex.objX X n) (PInfty.f n) := by
-  rcases n with _ | n
+  rcases n with - | n
   · apply top_factors
   · rw [PInfty_f, NormalizedMooreComplex.objX, finset_inf_factors]
     intro i _

@@ -224,7 +224,7 @@ lemma ObjectProperty.map_top (F : C ⥤ D) :
     (⊤ : ObjectProperty C).map F = F.essImage := by
   ext Y
   refine ⟨?_, ?_⟩
-  · rintro ⟨X, _, ⟨e⟩⟩
+  · rintro ⟨X, -, ⟨e⟩⟩
     exact ⟨X, ⟨e⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
     exact ⟨X, by simp, ⟨e⟩⟩

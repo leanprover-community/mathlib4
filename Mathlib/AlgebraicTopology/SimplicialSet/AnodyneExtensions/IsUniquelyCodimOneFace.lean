@@ -45,7 +45,7 @@ lemma iff {d : ℕ} (x : X _⦋d⦌) (y : X _⦋d + 1⦌) :
     IsUniquelyCodimOneFace (S.mk x) (S.mk y) ↔
       ∃! (i : Fin (d + 2)), X.δ i y = x := by
   constructor
-  · rintro ⟨_, ⟨f, ⟨_, h₁⟩, h₂⟩⟩
+  · rintro ⟨-, ⟨f, ⟨_, h₁⟩, h₂⟩⟩
     obtain ⟨i, rfl⟩ := SimplexCategory.eq_δ_of_mono f
     exact ⟨i, h₁, fun j hj ↦ SimplexCategory.δ_injective (h₂ _ ⟨inferInstance, hj⟩)⟩
   · rintro ⟨i, h₁, h₂⟩

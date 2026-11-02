@@ -105,7 +105,7 @@ theorem IsPiSystem.insert_univ {S : Set (Set α)} (h_pi : IsPiSystem S) :
 
 theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : α → β) :
     IsPiSystem { s : Set α | ∃ t ∈ S, f ⁻¹' t = s } := by
-  rintro _ ⟨s, hs_mem, rfl⟩ _ ⟨t, ht_mem, rfl⟩ hst
+  rintro - ⟨s, hs_mem, rfl⟩ - ⟨t, ht_mem, rfl⟩ hst
   rw [← Set.preimage_inter] at hst ⊢
   exact ⟨s ∩ t, h_pi s hs_mem t ht_mem (nonempty_of_nonempty_preimage hst), rfl⟩
 
@@ -137,7 +137,7 @@ theorem isPiSystem_iUnion_of_monotone {α ι} [SemilatticeSup ι] (p : ι → Se
 /-- Rectangles formed by π-systems form a π-system. -/
 lemma IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C) (hD : IsPiSystem D) :
     IsPiSystem (image2 (· ×ˢ ·) C D) := by
-  rintro _ ⟨s₁, hs₁, t₁, ht₁, rfl⟩ _ ⟨s₂, hs₂, t₂, ht₂, rfl⟩ hst
+  rintro - ⟨s₁, hs₁, t₁, ht₁, rfl⟩ - ⟨s₂, hs₂, t₂, ht₂, rfl⟩ hst
   rw [prod_inter_prod] at hst ⊢; rw [prod_nonempty_iff] at hst
   exact mem_image2_of_mem (hC _ hs₁ _ hs₂ hst.1) (hD _ ht₁ _ ht₂ hst.2)
 
@@ -158,7 +158,7 @@ section Order
 variable {ι ι' : Sort*} [LinearOrder α]
 
 theorem isPiSystem_image_Iio (s : Set α) : IsPiSystem (Iio '' s) := by
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩ -
   exact ⟨a ⊓ b, inf_ind a b ha hb, Iio_inter_Iio.symm⟩
 
 theorem isPiSystem_Iio : IsPiSystem (range Iio : Set (Set α)) :=
@@ -171,7 +171,7 @@ theorem isPiSystem_Ioi : IsPiSystem (range Ioi : Set (Set α)) :=
   @image_univ α _ Ioi ▸ isPiSystem_image_Ioi univ
 
 theorem isPiSystem_image_Iic (s : Set α) : IsPiSystem (Iic '' s) := by
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩ -
   exact ⟨a ⊓ b, inf_ind a b ha hb, Iic_inter_Iic.symm⟩
 
 theorem isPiSystem_Iic : IsPiSystem (range Iic : Set (Set α)) :=
@@ -187,7 +187,7 @@ theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)
     (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (max a₁ a₂) (min b₁ b₂)) (s t : Set α) :
     IsPiSystem { S | ∃ l ∈ s, ∃ u ∈ t, p l u ∧ Ixx l u = S } := by
-  rintro _ ⟨l₁, hls₁, u₁, hut₁, _, rfl⟩ _ ⟨l₂, hls₂, u₂, hut₂, _, rfl⟩
+  rintro - ⟨l₁, hls₁, u₁, hut₁, -, rfl⟩ - ⟨l₂, hls₂, u₂, hut₂, -, rfl⟩
   simp only [Hi]
   exact fun H => ⟨l₁ ⊔ l₂, sup_ind l₁ l₂ hls₁ hls₂, u₁ ⊓ u₂, inf_ind u₁ u₂ hut₁ hut₂, Hne H, rfl⟩
 
@@ -420,10 +420,10 @@ theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
 theorem generateFrom_piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
     generateFrom (piiUnionInter (fun k => {s k}) S) = generateFrom { t | ∃ k ∈ S, s k = t } := by
   refine le_antisymm (generateFrom_le ?_) (generateFrom_mono ?_)
-  · rintro _ ⟨I, hI, f, hf, rfl⟩
+  · rintro - ⟨I, hI, f, hf, rfl⟩
     refine Finset.measurableSet_biInter _ fun m hm => measurableSet_generateFrom ?_
     exact ⟨m, hI hm, (hf m hm).symm⟩
-  · rintro _ ⟨k, hk, rfl⟩
+  · rintro - ⟨k, hk, rfl⟩
     refine ⟨{k}, fun m hm => ?_, s, fun i _ => ?_, ?_⟩
     · rw [Finset.mem_coe, Finset.mem_singleton] at hm
       rwa [hm]
@@ -470,7 +470,7 @@ theorem piiUnionInter_mono_right {π : ι → Set (Set α)} {S T : Set ι} (hST 
 theorem generateFrom_piiUnionInter_le {m : MeasurableSpace α} (π : ι → Set (Set α))
     (h : ∀ n, generateFrom (π n) ≤ m) (S : Set ι) : generateFrom (piiUnionInter π S) ≤ m := by
   refine generateFrom_le ?_
-  rintro t ⟨ht_p, _, ft, hft_mem_pi, rfl⟩
+  rintro t ⟨ht_p, -, ft, hft_mem_pi, rfl⟩
   refine Finset.measurableSet_biInter _ fun x hx_mem => (h x) _ ?_
   exact measurableSet_generateFrom (hft_mem_pi x hx_mem)
 

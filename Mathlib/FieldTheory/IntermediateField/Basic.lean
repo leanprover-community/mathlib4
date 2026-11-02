@@ -679,7 +679,7 @@ theorem lift_inj {F : IntermediateField K L} (E E' : IntermediateField K F) :
   (lift_injective F).eq_iff
 
 theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
-  rintro _ ⟨x, _, rfl⟩
+  rintro - ⟨x, -, rfl⟩
   exact x.2
 
 theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :

@@ -190,7 +190,7 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
       Nat.choose_symm hi, mul_comm, nsmul_eq_mul]
   intro r hr
   simp_rw [Multiset.mem_map] at hr
-  obtain ⟨_, ⟨s, hs, rfl⟩, rfl⟩ := hr
+  obtain ⟨-, ⟨s, hs, rfl⟩, rfl⟩ := hr
   rw [mem_powersetCard] at hs
   lift B to ℝ≥0 using hB
   rw [← coe_nnnorm, ← NNReal.coe_pow, NNReal.coe_le_coe, ← nnnormHom_apply, ← MonoidHom.coe_ofClass,

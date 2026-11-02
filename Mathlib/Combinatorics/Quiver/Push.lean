@@ -84,7 +84,7 @@ theorem lift_unique (Φ : Push σ ⥤q W') (Φ₀ : Φ.obj = τ) (Φcomp : (of �
   · intro X
     simp only
     rw [Φ₀]
-  · rintro _ _ ⟨⟩
+  · rintro - - ⟨⟩
     subst_vars
     simp only [Prefunctor.comp_map]
     rfl

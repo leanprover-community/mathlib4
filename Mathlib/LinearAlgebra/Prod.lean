@@ -454,7 +454,7 @@ theorem ker_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ker (prod f g) 
 theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
     range (prod f g) ≤ (range f).prod (range g) := by
   simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp]
-  rintro _ x rfl
+  rintro - x rfl
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 
 theorem ker_prod_ker_le_ker_coprod {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂] {M₃ : Type*}
@@ -617,10 +617,10 @@ theorem prod_le_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} {q : Submod
   constructor
   · intro h
     constructor
-    · rintro _ ⟨x, hx, rfl⟩
+    · rintro - ⟨x, hx, rfl⟩
       apply h
       exact ⟨hx, zero_mem p₂⟩
-    · rintro _ ⟨x, hx, rfl⟩
+    · rintro - ⟨x, hx, rfl⟩
       apply h
       exact ⟨zero_mem p₁, hx⟩
   · rintro ⟨hH, hK⟩ ⟨x1, x2⟩ ⟨h1, h2⟩
@@ -864,7 +864,7 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
   refine le_antisymm (f.range_prod_le g) ?_
   simp only [IsConcreteLE.le_iff, prod_apply, mem_range, mem_prod, exists_imp, and_imp,
     Prod.forall, Function.prod_apply]
-  rintro _ _ x rfl y rfl
+  rintro - - x rfl y rfl
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
   simp only [Prod.mk_inj, ← sub_mem_ker_iff (f := f)]
   have : y - x ∈ ker f ⊔ ker g := by simp only [h, mem_top]

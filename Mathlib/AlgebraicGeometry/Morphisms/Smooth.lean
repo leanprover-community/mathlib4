@@ -263,9 +263,9 @@ lemma exists_smooth_of_formallySmooth_stalk
     (x : X) (H : (f.stalkMap x).hom.FormallySmooth) :
     ∃ (U : Y.Opens) (_ : IsAffineOpen U) (V : X.Opens) (_ : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U),
       x ∈ V ∧ (f.appLE U V hVU).hom.Smooth := by
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+  obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
-  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
+  obtain ⟨-, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.2.preimage f.continuous)
   have := f.finitePresentation_appLE hU hV hVU
   algebraize [(f.appLE U V hVU).hom]
@@ -307,9 +307,9 @@ lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
     f.smoothLocus = ⊤ := by
   rw [← top_le_iff]
   rintro x -
-  obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+  obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f x)) isOpen_univ
-  obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
+  obtain ⟨-, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hxU (U.2.preimage f.continuous)
   have := f.smooth_appLE hU hV hVU
   algebraize [(f.appLE U V hVU).hom]
@@ -364,7 +364,7 @@ lemma Scheme.Hom.dense_smoothLocus_of_perfectField
   wlog H : CompactSpace X generalizing X
   · rw [dense_iff_closure_eq, Set.eq_univ_iff_forall]
     intro x
-    obtain ⟨_, ⟨U : X.Opens, hU, rfl⟩, hxU, -⟩ :=
+    obtain ⟨-, ⟨U : X.Opens, hU, rfl⟩, hxU, -⟩ :=
       X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
     have := this (U.ι ≫ f) (isCompact_iff_compactSpace.mp hU.isCompact) ⟨x, hxU⟩
     rwa [← preimage_smoothLocus_eq, Scheme.Hom.coe_preimage,

@@ -157,7 +157,7 @@ private def expDegree (n : ℕ) : ℕ :=
 private lemma expDegree_cast {n : ℕ} (hn : n ≠ 0) :
     2 * (expDegree n : ℤ) = n ^ 2 - if Even n then 4 else 1 := by
   rcases n.even_or_odd' with ⟨n, rfl | rfl⟩
-  · rcases n with _ | n
+  · rcases n with - | n
     · contradiction
     push_cast [expDegree, show (2 * (n + 1)) ^ 2 = 2 * (2 * n * (n + 2)) + 4 by ring1, even_two_mul,
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ two_pos]
@@ -266,7 +266,7 @@ lemma leadingCoeff_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :
 lemma preΨ'_ne_zero [Nontrivial R] {n : ℕ} (h : (n : R) ≠ 0) : W.preΨ' n ≠ 0 := by
   by_cases hn : 2 < n
   · exact ne_zero_of_natDegree_gt <| W.natDegree_preΨ'_pos hn h
-  · rcases n with _ | _ | _ <;> aesop
+  · rcases n with - | - | _ <;> aesop
 
 end preΨ'
 
@@ -327,7 +327,7 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
     (W.ΨSq n).natDegree ≤ n ^ 2 - 1 ∧ (W.ΨSq n).coeff (n ^ 2 - 1) = (n ^ 2 : ℤ) := by
   let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
   let h {n} := W.natDegree_coeff_preΨ' n
-  rcases n with _ | n
+  rcases n with - | n
   · simp
   have hd : (n + 1) ^ 2 - 1 = 2 * expDegree (n + 1) + if Even (n + 1) then 3 else 0 := by
     push_cast [← @Nat.cast_inj ℤ, add_sq, expDegree_cast n.succ_ne_zero]
@@ -376,7 +376,7 @@ lemma leadingCoeff_ΨSq [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) :
 lemma ΨSq_ne_zero [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) : W.ΨSq n ≠ 0 := by
   by_cases hn : 1 < n.natAbs
   · exact ne_zero_of_natDegree_gt <| W.natDegree_ΨSq_pos hn h
-  · rcases hm : n.natAbs with _ | m
+  · rcases hm : n.natAbs with - | m
     · push_cast [Int.natAbs_eq_zero.mp hm, ne_self_iff_false] at h
     · rcases Int.natAbs_eq_iff.mp hm with rfl | rfl <;>
         rw [hm, Nat.lt_add_left_iff_pos, Nat.not_lt_eq, Nat.le_zero] at hn <;>
@@ -393,7 +393,7 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
   let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
   let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_add_eq_of_natDegree_le
   let h {n} := W.natDegree_coeff_preΨ' n
-  rcases n with _ | _ | n
+  rcases n with - | - | n
   on_goal 1 2 => simp [natDegree_X_le]
   have hd : (n + 1 + 1) ^ 2 = 1 + 2 * expDegree (n + 2) + if Even (n + 1) then 0 else 3 := by
     push_cast [← @Nat.cast_inj ℤ, expDegree_cast (n + 1).succ_ne_zero, Nat.even_add_one, ite_not]

@@ -777,7 +777,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
     swap; · refine fun t => mt fun ht : f t = 0 => ?_; simp_rw [ht, L.map_zero₂]
     rw [bddAbove_def]
     refine ⟨‖z₀‖ + ε, ?_⟩
-    rintro _ ⟨x, hx, rfl⟩
+    rintro - ⟨x, hx, rfl⟩
     refine norm_le_norm_add_const_of_dist_le (hg x ?_)
     rwa [mem_ball_iff_norm, norm_sub_rev, ← mem_ball_zero_iff]
   have h2 : ∀ t, dist (L (f t) (g (x₀ - t))) (L (f t) z₀) ≤ ‖L (f t)‖ * ε := by

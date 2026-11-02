@@ -396,7 +396,7 @@ lemma range_gluedTo : Set.range I.gluedTo = I.support := by
     rw [ι_gluedTo]
     exact ((I.range_glueDataObjι_ι_eq_support_inter ix).le ⟨_, rfl⟩).1
   · intro x hx
-    obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+    obtain ⟨-, ⟨U, hU, rfl⟩, hxU, -⟩ :=
       X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
     obtain ⟨y, rfl⟩ := (I.range_glueDataObjι_ι_eq_support_inter ⟨U, hU⟩).ge ⟨hx, hxU⟩
     rw [← ι_gluedTo]
@@ -757,7 +757,7 @@ lemma Hom.stalkFunctor_toImage_injective [QuasiCompact f] (x) :
     Function.Injective ((TopCat.Presheaf.stalkFunctor _ x).map f.toImage.c) := by
   apply TopCat.Presheaf.stalkFunctor_map_injective_of_isBasis
     (hB := (Y.isBasis_affineOpens.of_isInducing f.imageι.isEmbedding.isInducing))
-  rintro _ ⟨U, hU, rfl⟩
+  rintro - ⟨U, hU, rfl⟩
   exact f.toImage_app_injective ⟨U, hU⟩
 
 set_option backward.defeqAttrib.useBackward true in

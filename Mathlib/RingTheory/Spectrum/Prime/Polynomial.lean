@@ -157,7 +157,7 @@ lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) C) := by
   obtain ⟨S, hS, rfl⟩ := isTopologicalBasis_basic_opens.open_eq_sUnion hU
   rw [Set.image_sUnion]
   apply isOpen_sUnion
-  rintro _ ⟨t, ht, rfl⟩
+  rintro - ⟨t, ht, rfl⟩
   obtain ⟨r, rfl⟩ := hS ht
   simp only [image_comap_C_basicOpen]
   exact (isClosed_zeroLocus _).isOpen_compl
@@ -220,7 +220,7 @@ lemma isOpenMap_comap_C : IsOpenMap (comap (R := R) (C (σ := σ))) := by
   obtain ⟨S, hS, rfl⟩ := isTopologicalBasis_basic_opens.open_eq_sUnion hU
   rw [Set.image_sUnion]
   apply isOpen_sUnion
-  rintro _ ⟨t, ht, rfl⟩
+  rintro - ⟨t, ht, rfl⟩
   obtain ⟨r, rfl⟩ := hS ht
   simp only [image_comap_C_basicOpen]
   exact (isClosed_zeroLocus _).isOpen_compl

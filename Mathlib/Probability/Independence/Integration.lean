@@ -438,7 +438,7 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {m�
   refine ⟨fun hfg _ _ hφ hψ _ _ => hfg.integral_comp_mul_comp
       hfm.aemeasurable hgm.aemeasurable hφ.aestronglyMeasurable hψ.aestronglyMeasurable, ?_⟩
   rw [IndepFun_iff]
-  rintro h _ _ ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
+  rintro h - - ⟨A, hA, rfl⟩ ⟨B, hB, rfl⟩
   specialize
     h (measurable_one.indicator hA) (measurable_one.indicator hB)
       ((integrable_const 1).indicator (hfm.comp measurable_id hA))

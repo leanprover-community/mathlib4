@@ -166,7 +166,7 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
     f = HPow.hPow → IsRat a an ad → IsNat b b' →
     Int.pow an b' = cn → Nat.pow ad b' = cd →
     IsRat (f a b) cn cd := by
-  rintro rfl ⟨_, rfl⟩ ⟨rfl⟩ (rfl : an ^ b = _) (rfl : ad ^ b = _)
+  rintro rfl ⟨-, rfl⟩ ⟨rfl⟩ (rfl : an ^ b = _) (rfl : ad ^ b = _)
   have := invertiblePow (ad:α) b
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
@@ -175,7 +175,7 @@ theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn :
     f = HPow.hPow → IsNNRat a an ad → IsNat b b' →
     Nat.pow an b' = cn → Nat.pow ad b' = cd →
     IsNNRat (f a b) cn cd := by
-  rintro rfl ⟨_, rfl⟩ ⟨rfl⟩ (rfl : an ^ b = _) (rfl : ad ^ b = _)
+  rintro rfl ⟨-, rfl⟩ ⟨rfl⟩ (rfl : an ^ b = _) (rfl : ad ^ b = _)
   have := invertiblePow (ad:α) b
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow, Nat.cast_commute]

@@ -41,7 +41,7 @@ lemma mem_compactlySupported {f : α →ᵇ γ} :
 lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) : ∃ (x : α),
     ‖f x‖ = ‖f‖ := by
   by_cases hs : (tsupport f).Nonempty
-  · obtain ⟨x, _, hmax⟩ := mem_compactlySupported.mp h |>.exists_isMaxOn hs <|
+  · obtain ⟨x, -, hmax⟩ := mem_compactlySupported.mp h |>.exists_isMaxOn hs <|
       (map_continuous f).norm.continuousOn
     refine ⟨x, le_antisymm (norm_coe_le_norm f x) (norm_le (norm_nonneg _) |>.mpr fun y ↦ ?_)⟩
     by_cases hy : y ∈ tsupport f

@@ -159,14 +159,14 @@ theorem eq_pow_multiplicity_of_choose_modEq_zero_nat (hn : 0 < n)
 `choose n 1, ⋯, choose n (n - 1)`. -/
 theorem minFac_dvd_gcd_choose_of_isPrimePow (h : IsPrimePow n) :
     n.minFac ∣ (Icc 1 (n - 1)).gcd n.choose := by
-  obtain ⟨k, _, _, hn₁⟩ := (isPrimePow_nat_iff_bounded_log_minFac _).mp h
+  obtain ⟨k, -, -, hn₁⟩ := (isPrimePow_nat_iff_bounded_log_minFac _).mp h
   exact dvd_gcd_iff.mpr fun i hi => by
     nth_rw 2 [hn₁]
     exact Prime.dvd_choose_pow (minFac_prime_iff.mpr h.ne_one) (by grind) (by grind)
 
 lemma minFac_sq_ndvd_gcd_choose_of_isPrimePow (h : IsPrimePow n) :
     ¬ n.minFac ^ 2 ∣ (Icc 1 (n - 1)).gcd n.choose := by
-  obtain ⟨k, _, k_pos, hn₁⟩ := (isPrimePow_nat_iff_bounded_log_minFac _).mp h
+  obtain ⟨k, -, k_pos, hn₁⟩ := (isPrimePow_nat_iff_bounded_log_minFac _).mp h
   have isPrime := minFac_prime_iff.mpr (IsPrimePow.ne_one h)
   refine mt Finset.dvd_gcd_iff.mp ?_
   simp only [mem_Icc, not_forall]

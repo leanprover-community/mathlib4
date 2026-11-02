@@ -85,7 +85,7 @@ theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
 
 theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     (digits b m).getLast (digits_ne_nil_iff_ne_zero.mpr hm) ≠ 0 := by
-  rcases b with (_ | _ | b)
+  rcases b with (- | - | b)
   · cases m
     · cases hm rfl
     · simp
@@ -156,7 +156,7 @@ b^((number of digits in the base b representation of m) - 1)
 -/
 theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
     m ≠ 0 → b ^ (digits b m).length ≤ b * m := by
-  rcases b with (_ | _ | b) <;> simp_all [base_pow_length_digits_le']
+  rcases b with (- | - | b) <;> simp_all [base_pow_length_digits_le']
 
 open Finset
 
@@ -259,13 +259,13 @@ theorem ofDigits_mod_eq_head! (b : ℕ) (l : List ℕ) : ofDigits b l % b = l.he
 
 theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b := by
   by_cases hb : 1 < b
-  · rcases n with _ | n
+  · rcases n with - | n
     · simp
     · nth_rw 2 [← Nat.ofDigits_digits b (n + 1)]
       rw [Nat.ofDigits_mod_eq_head! _ _]
       exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
           Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
-  · rcases n with _ | _ <;> simp_all [show b = 0 by lia]
+  · rcases n with - | - <;> simp_all [show b = 0 by lia]
 
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by
@@ -317,7 +317,7 @@ theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 
   induction n using Nat.caseStrongRecOn generalizing i with
   | zero => simp
   | ind n IH =>
-    rcases i with _ | i
+    rcases i with - | i
     · rw [← List.head?_eq_getElem?, ← default_eq_zero, ← List.head!_eq_head?_getD,
         head!_digits (by grind)]
       simp
@@ -345,7 +345,7 @@ theorem length_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) (hn : n < b ^ l) :
 theorem lt_of_mem_digitsAppend {b : ℕ} (hb : 1 < b) (l i : ℕ)
     (hi : i ∈ digitsAppend b l n) : i < b := by
   rw [digitsAppend, mem_append, mem_replicate] at hi
-  obtain hi | ⟨_, rfl⟩ := hi
+  obtain hi | ⟨-, rfl⟩ := hi
   · exact digits_lt_base hb hi
   · linarith
 
@@ -499,13 +499,13 @@ noncomputable def consFixedLengthDigits {b : ℕ} (hb : 1 < b) (l d : ℕ) :
 
 theorem ne_empty_of_mem_consFixedLengthDigits {b : ℕ} (hb : 1 < b) {l d : ℕ} {L : List ℕ}
     (hL : L ∈ consFixedLengthDigits hb l d) : L ≠ [] := by
-  obtain ⟨_, _, rfl⟩ := Finset.mem_image.mp hL
+  obtain ⟨-, -, rfl⟩ := Finset.mem_image.mp hL
   exact cons_ne_nil d _
 
 theorem consFixedLengthDigits_head {b : ℕ} (hb : 1 < b) {l d : ℕ} {L : List ℕ}
     (hL : L ∈ consFixedLengthDigits hb l d) :
     List.head L (ne_empty_of_mem_consFixedLengthDigits hb hL) = d := by
-  obtain ⟨_, _, rfl⟩ := Finset.mem_image.mp hL
+  obtain ⟨-, -, rfl⟩ := Finset.mem_image.mp hL
   rw [head_cons]
 
 /--

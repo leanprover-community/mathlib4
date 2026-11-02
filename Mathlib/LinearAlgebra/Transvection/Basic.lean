@@ -247,7 +247,7 @@ theorem symm_mem_transvections_iff {e : V ≃ₗ[R] V} :
     refine ⟨fun h ↦ ?_, this e⟩
     rw [← symm_symm e]
     exact this _ h
-  rintro _ ⟨f, v, hv, rfl⟩
+  rintro - ⟨f, v, hv, rfl⟩
   rw [transvection.symm_eq]
   apply mem_transvections
 
@@ -373,7 +373,7 @@ theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     rintro ⟨f, v, he⟩
     apply le_trans (rank_mono (t := K ∙ v) ?_)
     · apply le_trans (rank_span_le _) (by simp)
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     simp [mem_span_singleton, he, LinearMap.transvection.apply]
   · intro he
     simp only [Set.mem_ofPred_eq]

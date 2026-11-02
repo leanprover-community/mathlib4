@@ -177,7 +177,7 @@ variable [FiniteDimensional K L] [IsIntegralClosure B A L]
 lemma Submodule.one_le_traceDual_one :
     (1 : Submodule B L) ≤ 1ᵛ := by
   rw [le_traceDual_iff_map_le_one, mul_one, one_eq_range]
-  rintro _ ⟨x, ⟨x, rfl⟩, rfl⟩
+  rintro - ⟨x, ⟨x, rfl⟩, rfl⟩
   rw [mem_one]
   apply IsIntegrallyClosed.isIntegral_iff.mp
   apply isIntegral_trace
@@ -456,7 +456,7 @@ theorem dual_eq_dual_mul_dual :
       (by simp [-extendedHom'_apply])), ← map_inv₀, ← FractionalIdeal.coe_le_coe,
         extendedHom'_apply, coe_mul, coe_spanSingleton, coe_extended_eq_span, coe_dual_one,
         span_mul_span, span_le]
-    rintro _ ⟨x, rfl, _, ⟨a, ha, rfl⟩, rfl⟩ _ ⟨m, rfl⟩
+    rintro - ⟨x, rfl, -, ⟨a, ha, rfl⟩, rfl⟩ - ⟨m, rfl⟩
     simp only [← h_alg, mul_comm _ (algebraMap _ _ _), ← Algebra.smul_def a, map_smul,
       LinearMap.toSpanSingleton_apply, Algebra.smul_def m, mul_one,
       LinearMap.smul_apply, traceForm_apply, smul_eq_mul]
@@ -465,7 +465,7 @@ theorem dual_eq_dual_mul_dual :
     exact Algebra.smul_def m x ▸ smul_mem _ _ hx
   · rw [← FractionalIdeal.coe_le_coe, coe_mul, extendedHom'_apply,
       coe_extended_eq_span, ← span_eq (coeToSubmodule _), span_mul_span, span_le]
-    rintro _ ⟨a, ha, _, ⟨b, hb, rfl⟩, rfl⟩
+    rintro - ⟨a, ha, -, ⟨b, hb, rfl⟩, rfl⟩
     simp only [SetLike.mem_coe, mem_coe, ← h_alg, mul_comm a, ← Algebra.smul_def] at ha hb ⊢
     exact smul_mem_dual_one A K L B C M hb ha
 
@@ -620,8 +620,8 @@ lemma traceForm_dualSubmodule_adjoin
   simp only [← Set.range_comp, smul_eq_mul, div_eq_inv_mul, pbgen,
     minpolyDiv_eq_of_isIntegrallyClosed K hAx]
   apply le_antisymm <;> rw [Submodule.span_le]
-  · rintro _ ⟨i, rfl⟩; exact Submodule.subset_span ⟨i, rfl⟩
-  · rintro _ ⟨i, rfl⟩
+  · rintro - ⟨i, rfl⟩; exact Submodule.subset_span ⟨i, rfl⟩
+  · rintro - ⟨i, rfl⟩
     by_cases! hi : i < pb.dim
     · exact Submodule.subset_span ⟨⟨i, hi⟩, rfl⟩
     · rw [Function.comp_apply, coeff_eq_zero_of_natDegree_lt, mul_zero]
@@ -786,7 +786,7 @@ theorem not_dvd_differentIdeal_of_intTrace_notMem
       (IsLocalization.injective _ le_rfl).eq_iff] at e
     exact e ▸ hy
   refine FractionalIdeal.mul_induction_on (H ⟨_, hxQ, rfl⟩) ?_ ?_
-  · rintro x hx _ ⟨y, hy, rfl⟩
+  · rintro x hx - ⟨y, hy, rfl⟩
     induction hy using Submodule.span_induction generalizing x with
     | mem y h =>
       obtain ⟨y, hy, rfl⟩ := h

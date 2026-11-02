@@ -261,7 +261,7 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
   | nil => simp
   | cons i ω ih =>
     dsimp only [rightInvSeq]
-    rcases j with _ | j'
+    rcases j with - | j'
     · simp
     · simp only [getD_eq_getElem?_getD] at ih
       simp [ih j']
@@ -282,7 +282,7 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
   | nil => simp
   | cons i ω ih =>
     dsimp [leftInvSeq]
-    rcases j with _ | j'
+    rcases j with - | j'
     · simp
     · rw [getD_cons_succ]
       rw [(by simp : 1 = ⇑(MulAut.conj (s i)) 1)]
@@ -337,7 +337,7 @@ theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω
   | nil => simp at ht
   | cons i ω ih =>
     dsimp [rightInvSeq] at ht
-    rcases ht with _ | ⟨_, mem⟩
+    rcases ht with - | ⟨-, mem⟩
     · use (π ω)⁻¹, i
       group
     · exact ih mem

@@ -884,7 +884,7 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     rw [← h, realize_relabel, Formula.Realize, iff_iff_eq]
     simp only [Function.comp_def]
     congr with x
-    · rcases x with _ | x
+    · rcases x with - | x
       · simp
       · refine Fin.lastCases ?_ ?_ x
         · simp [Fin.snoc]
@@ -1078,7 +1078,7 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M 
     refine ⟨⟨xs, fun i j ij => ?_⟩⟩
     contrapose! ij
     exact h _ i j (by simpa using ij) rfl
-  · rintro _ i j ij rfl
+  · rintro - i j ij rfl
     simpa using ij
 
 @[simp]

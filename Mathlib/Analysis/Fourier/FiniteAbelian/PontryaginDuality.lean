@@ -103,7 +103,7 @@ def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
   map_add' ψ χ := rfl
 
 @[simp] lemma card_eq [Fintype α] : card (AddChar α ℂ) = card α := by
-  obtain ⟨ι, _, n, hn, ⟨e⟩⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' α
+  obtain ⟨ι, -, n, hn, ⟨e⟩⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' α
   classical
   have hn' i : NeZero (n i) := by have := hn i; exact ⟨by positivity⟩
   let f : α → AddChar α ℂ := fun a ↦ coeHom.compAddChar ((mkZModAux n <| e a).compAddMonoidHom e)

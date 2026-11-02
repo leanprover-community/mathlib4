@@ -365,7 +365,7 @@ lemma IsCardinalPresentable.exists_commSq_of_isColimit
   have := isFiltered_of_isCardinalFiltered J κ
   obtain ⟨j₁, l', hl'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hc₁ l
   obtain ⟨j₂, r', hr'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hc₂ r
-  obtain ⟨j₃, a, b, _⟩ := IsFilteredOrEmpty.cocone_objs j₁ j₂
+  obtain ⟨j₃, a, b, -⟩ := IsFilteredOrEmpty.cocone_objs j₁ j₂
   obtain ⟨j₄, c, hc⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ
     hc₂ (t ≫ r' ≫ Y.map b) (l' ≫ X.map a ≫ f.app j₃) (by
       simp [dsimp% hr', sq.w, ← dsimp% hf', reassoc_of% dsimp% hl'])

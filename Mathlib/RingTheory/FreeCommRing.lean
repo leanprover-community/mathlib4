@@ -248,7 +248,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       norm_cast
     · use -1
       rw [map_neg, map_one, Int.cast_neg, Int.cast_one]
-    · rintro _ ⟨z, hzs, rfl⟩ _ _
+    · rintro - ⟨z, hzs, rfl⟩ - -
       use 0
       rw [map_mul, lift_of, ite_eq_left hzs, zero_mul]
       norm_cast
@@ -273,7 +273,7 @@ theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
   refine Subring.InClosure.recOn hxs ?_ ?_ ?_ ?_
   · rw [← RingHom.comp_apply, map_one]
   · rw [← RingHom.comp_apply, map_neg, map_one]
-  · rintro _ ⟨p, hps, rfl⟩ n ih
+  · rintro - ⟨p, hps, rfl⟩ n ih
     rw [map_mul, restriction_of, dite_eq_left hps, map_mul, map_of, ih]
   · intro x y ihx ihy
     rw [map_add, map_add, ihx, ihy]

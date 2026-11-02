@@ -40,7 +40,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
 private theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
     ∃ b ∈ M, ∃ (q : R[X]), q.map (algebraMap R S) = b • p ∧ q.support ⊆ p.support := by
-  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C M) p
+  obtain ⟨⟨-, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C M) p
   rw [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
   obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts h
   exact ⟨b, hb, q', h₁, h₂ ▸ support_smul b p⟩
@@ -320,7 +320,7 @@ lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
     [IsLocalization.Away r Sₘ] {x : S} {a : Submonoid.powers r}
     (hx : IsIntegral R (IsLocalization.mk' Sₘ x a)) : ∃ n, IsIntegral R (r ^ n * x) := by
   refine IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap (Sₘ := Sₘ) hr ?_
-  obtain ⟨_, ⟨n, rfl⟩⟩ := a
+  obtain ⟨-, ⟨n, rfl⟩⟩ := a
   convert (hr.pow n).algebraMap.mul hx
   exact (mk'_spec'_mk ..).symm
 
@@ -458,12 +458,12 @@ protected lemma IsLocalization.integralClosure
     IsLocalization (Algebra.algebraMapSubmonoid (integralClosure R S) M)
       (integralClosure Rf Sf) := by
   refine ⟨⟨?_, ?_, ?_⟩⟩
-  · rintro ⟨_, f, hf, rfl⟩
+  · rintro ⟨-, f, hf, rfl⟩
     convert
       (IsLocalization.map_units (S := Rf) ⟨f, hf⟩).map (algebraMap Rf (integralClosure Rf Sf))
     simp [← IsScalarTower.algebraMap_apply]
   · rintro ⟨s, hs⟩
-    obtain ⟨⟨x, _, m₁, hm₁, rfl⟩, e⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid S M) s
+    obtain ⟨⟨x, -, m₁, hm₁, rfl⟩, e⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid S M) s
     simp only [← IsScalarTower.algebraMap_apply] at e
     obtain ⟨⟨m₂, hm₂⟩, hm₂s⟩ := IsIntegral.exists_multiple_integral_of_isLocalization M _ hs
     simp only [Submonoid.smul_def, Algebra.smul_def] at hm₂s
@@ -479,7 +479,7 @@ protected lemma IsLocalization.integralClosure
     have := congr(algebraMap _ Sf $e)
     have : algebraMap S Sf a = algebraMap S Sf b := by
       simpa only [← IsScalarTower.algebraMap_apply] using! this
-    obtain ⟨⟨_, m, hm, rfl⟩, h⟩ :=
+    obtain ⟨⟨-, m, hm, rfl⟩, h⟩ :=
       (IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S M) _).mp this
     refine ⟨⟨_, m, hm, rfl⟩, FaithfulSMul.algebraMap_injective (integralClosure R S) S ?_⟩
     simpa only [← IsScalarTower.algebraMap_apply]

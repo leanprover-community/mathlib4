@@ -122,7 +122,7 @@ lemma ι_map_top (P : ObjectProperty C) :
     (⊤ : ObjectProperty _).map P.ι = P.isoClosure := by
   ext X
   constructor
-  · rintro ⟨⟨Y, hY⟩, _, ⟨e⟩⟩
+  · rintro ⟨⟨Y, hY⟩, -, ⟨e⟩⟩
     exact ⟨Y, hY, ⟨e.symm⟩⟩
   · rintro ⟨Y, hY, ⟨e⟩⟩
     exact ⟨⟨Y, hY⟩, by simp, ⟨e.symm⟩⟩

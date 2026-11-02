@@ -105,7 +105,7 @@ theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
 theorem not_mem_iff (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ.not ∈ p ↔ φ ∉ p :=
   ⟨fun hf ht => by
     have h : ¬IsSatisfiable ({φ, φ.not} : L[[α]].Theory) := by
-      rintro ⟨@⟨_, _, h, _⟩⟩
+      rintro ⟨@⟨_, _, h, -⟩⟩
       simp only [model_iff, mem_insert_iff, mem_singleton_iff, forall_eq_or_imp, forall_eq] at h
       exact h.2 h.1
     refine h (p.isMaximal.1.mono ?_)
@@ -151,7 +151,7 @@ theorem setOfPred_subset_eq_univ_iff (S : L[[α]].Theory) :
     simp [subset_def]
   simp_rw [h, sInter_eq_univ, ← setOfPred_mem_eq_univ_iff]
   refine ⟨fun h φ φS => h _ ⟨_, φS, rfl⟩, ?_⟩
-  rintro h _ ⟨φ, h1, rfl⟩
+  rintro h - ⟨φ, h1, rfl⟩
   exact h _ h1
 
 @[deprecated (since := "2026-07-09")] alias setOf_subset_eq_univ_iff := setOfPred_subset_eq_univ_iff

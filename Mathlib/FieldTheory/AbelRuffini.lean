@@ -269,7 +269,7 @@ private theorem induction_rad {x : E} (hx : x ∈ solvableByRad F E) {n : ℕ} (
       rw [Multiset.mem_map] at hq
       obtain ⟨q, hq, rfl⟩ := hq
       rw [Multiset.mem_map] at hq
-      obtain ⟨q, _, rfl⟩ := hq
+      obtain ⟨q, -, rfl⟩ := hq
       rw [sub_comp, X_comp, C_comp]
       exact gal_X_pow_sub_C_isSolvable n q
 

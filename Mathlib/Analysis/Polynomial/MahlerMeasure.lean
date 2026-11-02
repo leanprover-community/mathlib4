@@ -139,7 +139,7 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
   simp only [Classical.not_imp]
   apply Set.Finite.of_finite_image (f := circleMap 0 1)
   · apply (p * q).roots.finite_toSet.subset
-    rintro _ ⟨_, ⟨_, h⟩, _⟩
+    rintro _ ⟨_, ⟨-, h⟩, _⟩
     contrapose h
     simp_all [log_mul]
   · exact (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp)).mono fun _ h ↦ h.1
@@ -313,7 +313,7 @@ theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
     refine Set.Finite.measure_zero ?_ _
     simp only [norm_pos_iff, ne_eq, compl_ofPred, Classical.not_imp, Decidable.not_not]
     refine Finite.of_finite_image (f := circleMap 0 1) (p.roots.finite_toSet.subset ?_) ?_
-    · rintro z ⟨θ, ⟨_, heval⟩, rfl⟩
+    · rintro z ⟨θ, ⟨-, heval⟩, rfl⟩
       exact (mem_roots hp).mpr heval
     · grw [ofPred_and, inter_subset_left]
       exact injOn_circleMap_of_abs_sub_le one_ne_zero (by simp)

@@ -125,7 +125,7 @@ theorem ofFunction_le (s : Set α) : OuterMeasure.ofFunction m m_empty s ≤ m s
   iInf_le_of_le f <|
     iInf_le_of_le (subset_iUnion f 0) <|
       le_of_eq <| tsum_eq_single 0 <| by
-        rintro (_ | i)
+        rintro (- | i)
         · simp
         · simp [f, m_empty]
 

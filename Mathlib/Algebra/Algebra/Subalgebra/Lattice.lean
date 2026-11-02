@@ -132,7 +132,7 @@ theorem sup_toSubsemiring (S T : Subalgebra R A) :
   simp_rw [sup_def, adjoin_toSubsemiring, Subalgebra.coe_toSubsemiring]
   congr 1
   rw [Set.union_eq_right]
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   exact Set.mem_union_left _ (algebraMap_mem S x)
 
 @[simp, norm_cast]
@@ -164,7 +164,7 @@ theorem sSup_toSubsemiring (S : Set (Subalgebra R A)) (hS : S.Nonempty) :
   rw [h, sSup_image, ← Subsemiring.closure_sUnion, sSup_def, adjoin_toSubsemiring]
   congr 1
   rw [Set.union_eq_right]
-  rintro _ ⟨x, rfl⟩
+  rintro - ⟨x, rfl⟩
   obtain ⟨y, hy⟩ := hS
   simp only [Set.mem_sUnion, Set.mem_image, exists_exists_and_eq_and, SetLike.mem_coe]
   exact ⟨y, hy, algebraMap_mem y x⟩

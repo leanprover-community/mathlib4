@@ -658,7 +658,7 @@ theorem ext_get_iff {l₁ l₂ : List α} :
 
 theorem ext_getElem?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]? :=
-  ⟨by rintro rfl _ _; rfl, ext_getElem?'⟩
+  ⟨by rintro rfl - -; rfl, ext_getElem?'⟩
 
 /-- If two lists `l₁` and `l₂` are the same length and `l₁[n]! = l₂[n]!` for all `n`,
 then the lists are equal. -/
@@ -1186,7 +1186,7 @@ lemma range'_0 (a b : ℕ) : range' a b 0 = replicate b a := by
   | succ b ih => simp [range'_succ, ih, replicate_succ]
 
 lemma left_le_of_mem_range' {a b s x : ℕ} (hx : x ∈ List.range' a b s) : a ≤ x := by
-  obtain ⟨i, _, rfl⟩ := List.mem_range'.mp hx
+  obtain ⟨i, -, rfl⟩ := List.mem_range'.mp hx
   exact le_add_right a (s * i)
 
 end range'

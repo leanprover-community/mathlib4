@@ -454,7 +454,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
     simp [-Finset.union_singleton]
   · intro
     simp only [mem_insert, mem_singleton]
-    rintro (rfl | rfl | rfl | _) <;>
+    rintro (rfl | rfl | rfl | -) <;>
       simp [swap_apply_of_ne_of_ne, h.left.left, h.left.left.symm, h.left.right.symm,
         h.left.right.left.symm, h.right.left.symm]
 
@@ -537,7 +537,7 @@ theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
     grind [asEmbedding_apply]
   · rw [extendDomain_apply_not_subtype _ _ pb]
     simp only [not_exists, false_iff, not_and, not_true]
-    rintro a _ rfl
+    rintro a - rfl
     exact pb (Subtype.prop _)
 
 theorem card_support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :

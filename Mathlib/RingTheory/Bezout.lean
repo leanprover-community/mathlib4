@@ -37,7 +37,7 @@ theorem iff_span_pair_isPrincipal :
     constructor
     apply Submodule.fg_induction
     · exact fun _ => ⟨⟨_, rfl⟩⟩
-    · rintro _ _ _ _ ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩
+    · rintro - - - - ⟨⟨x, rfl⟩⟩ ⟨⟨y, rfl⟩⟩
       rw [← Submodule.span_insert]
       exact H _ _
 

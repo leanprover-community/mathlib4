@@ -330,7 +330,7 @@ theorem liminf_const_mul_of_nonpos_of_ne_bot [NeBot f] {c : EReal} (h₁ : c ≤
 
 lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
     limsup u f * liminf v f ≤ limsup (u * v) f := by
-  rcases f.eq_or_neBot with rfl | _
+  rcases f.eq_or_neBot with rfl | -
   · rw [limsup_bot, limsup_bot, liminf_bot, bot_mul_top]
   have u0 : 0 ≤ limsup u f := le_limsup_of_frequently_le hu
   have uv0 : 0 ≤ limsup (u * v) f :=

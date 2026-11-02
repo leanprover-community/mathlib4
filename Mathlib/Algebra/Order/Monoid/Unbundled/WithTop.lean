@@ -123,16 +123,16 @@ lemma coe_add_eq_top_iff : a + y = ⊤ ↔ y = ⊤ := by simp
 
 lemma _root_.IsAddLeftRegular.withTop (ha : IsAddLeftRegular a) :
     IsAddLeftRegular (a : WithTop α) := by
-  rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
+  rintro (- | b) (- | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
 
 lemma _root_.IsAddRightRegular.withTop (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithTop α) := by
-  rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
+  rintro (- | b) (- | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
     AddLECancellable (a : WithTop α) := by
-  rintro (_ | b) (_ | c)
+  rintro (- | b) (- | c)
   · simp [none_eq_top]
   · simp [none_eq_top]
   · simp [some_eq_coe, ← coe_add, none_eq_top]
@@ -484,16 +484,16 @@ lemma coe_add_eq_bot_iff : a + y = ⊥ ↔ y = ⊥ := by simp
 
 lemma _root_.IsAddLeftRegular.withBot (ha : IsAddLeftRegular a) :
     IsAddLeftRegular (a : WithBot α) := by
-  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
+  rintro (- | b) (- | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
 
 lemma _root_.IsAddRightRegular.withBot (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithBot α) := by
-  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
+  rintro (- | b) (- | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
     AddLECancellable (a : WithBot α) := by
-  rintro (_ | b) (_ | c)
+  rintro (- | b) (- | c)
   · simp [none_eq_bot]
   · simp [none_eq_bot]
   · simp [some_eq_coe, ← coe_add, none_eq_bot]

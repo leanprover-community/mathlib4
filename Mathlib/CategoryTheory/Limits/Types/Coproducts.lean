@@ -312,7 +312,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
         have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
         rw [disjoint_iff.mp h₃.1] at this
         exact this.elim
-      · rintro T _ _ m rfl rfl
+      · rintro T - - m rfl rfl
         ext x
         simp only [TypeCat.Fun.toFun_apply, Set.mem_range,
           comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]

@@ -79,7 +79,7 @@ lemma sigPos_isGreatest [Module.Finite R M] [StrongRankCondition R] : IsGreatest
     {r | ∃ V : Submodule R M, Module.finrank R V = r ∧ (Q.restrict V).PosDef} (sigPos Q) := by
   classical
   refine ⟨(mem_filter.mp <| max'_mem _ _).2, ?_⟩
-  rintro _ ⟨V, rfl, hV⟩
+  rintro - ⟨V, rfl, hV⟩
   apply le_max'
   rw [mem_filter, mem_Iic]
   exact ⟨V.finrank_le, V, rfl, hV⟩

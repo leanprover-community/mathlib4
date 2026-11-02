@@ -76,7 +76,7 @@ set, `HasDerivWithinAt` version. -/
 theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected s)
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : OrdConnected (f' '' s) := by
   apply ordConnected_of_Ioo
-  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ - m ⟨hma, hmb⟩
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩ - m ⟨hma, hmb⟩
   rcases le_total a b with hab | hab
   · have : Icc a b ⊆ s := hs.out ha hb
     rcases exists_hasDerivWithinAt_eq_of_gt_of_lt hab (fun x hx => (hf x <| this hx).mono this) hma

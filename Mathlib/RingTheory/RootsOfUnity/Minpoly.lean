@@ -195,7 +195,7 @@ theorem is_roots_of_minpoly [DecidableEq K] :
   have : NeZero n := ⟨hn⟩
   have hpos := Nat.pos_of_ne_zero hn
   intro x hx
-  obtain ⟨m, _, hcop, rfl⟩ := (isPrimitiveRoot_iff h).1 ((mem_primitiveRoots hpos).1 hx)
+  obtain ⟨m, -, hcop, rfl⟩ := (isPrimitiveRoot_iff h).1 ((mem_primitiveRoots hpos).1 hx)
   simp only [Multiset.mem_toFinset]
   convert pow_isRoot_minpoly h hcop using 0
   rw [← mem_roots]

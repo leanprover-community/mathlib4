@@ -46,7 +46,7 @@ lemma exists_apply_ne_one_aux
       ∃ φ : Multiplicative (ZMod n) →* M, φ (.ofAdd a) ≠ 1)
     {a : G} (ha : a ≠ 1) :
     ∃ φ : G →* M, φ a ≠ 1 := by
-  obtain ⟨ι, _, n, _, h⟩ := CommGroup.equiv_prod_multiplicative_zmod_of_finite G
+  obtain ⟨ι, -, n, -, h⟩ := CommGroup.equiv_prod_multiplicative_zmod_of_finite G
   let e := h.some
   obtain ⟨i, hi⟩ : ∃ i : ι, e a i ≠ 1 := by
     contrapose! ha

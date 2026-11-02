@@ -152,8 +152,8 @@ theorem sublist_iff_exists_orderEmbedding_getElem?_eq {l l' : List α} :
       obtain ⟨f, hf⟩ := IH
       refine
         ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) ?_, ?_⟩
-      · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff]
-      · rintro ⟨_ | i⟩
+      · rintro ⟨- | a⟩ ⟨- | b⟩ <;> simp [Nat.succ_le_succ_iff]
+      · rintro ⟨- | i⟩
         · simp
         · simpa using hf _
   · rintro ⟨f, hf⟩
@@ -211,13 +211,13 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
       refine ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) ?_, ?_⟩
-      · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩
+      · rintro ⟨⟨- | i⟩, hi⟩ ⟨⟨- | j⟩, hj⟩
         · simp
         · simp [hnm]
         · simp
         · simp only [Nat.lt_succ_iff, Nat.succ_le_succ_iff, replicate, length, Nat.le_zero] at hi hj
           simp [hi, hj]
-      · rintro ⟨⟨_ | i⟩, hi⟩
+      · rintro ⟨⟨- | i⟩, hi⟩
         · simpa using h
         · simpa using h'
 

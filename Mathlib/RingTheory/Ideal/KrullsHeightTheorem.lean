@@ -501,7 +501,7 @@ lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S
     · conv_rhs => rw [LiesOver.over (p := p) (P := P), under_def]
       refine comap_mono (le_trans (comap_mono (lq.head_le_last)) ?_)
       simp [hlq, map_le_iff_le_comap, LiesOver.over (p := p) (P := P)]
-  obtain ⟨lp', hlp'len, hlp', _⟩ := exists_ltSeries_of_hasGoingDown lp l'.head.asIdeal
+  obtain ⟨lp', hlp'len, hlp', -⟩ := exists_ltSeries_of_hasGoingDown lp l'.head.asIdeal
   have : (lp'.smash l' hlp').length = lp.length + lq.length := by simp [hlp'len, l']
   rw [← hlenp, ← hlenq, ← Nat.cast_add, ← this, (⟨P, ‹_›⟩ : PrimeSpectrum S).height_eq_orderHeight]
   apply Order.length_le_height

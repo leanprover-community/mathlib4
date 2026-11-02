@@ -60,14 +60,14 @@ lemma liftBaseChange_comp {P} [AddCommMonoid P] [Module R P] (l : M →ₗ[R] N)
 lemma range_liftBaseChange (l : M →ₗ[R] N) :
     LinearMap.range (l.liftBaseChange A) = Submodule.span A (LinearMap.range l) := by
   apply le_antisymm
-  · rintro _ ⟨x, rfl⟩
+  · rintro - ⟨x, rfl⟩
     induction x using TensorProduct.inductionOn
     · rw [LinearMap.liftBaseChange_tmul]
       exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨_, rfl⟩)
     · rw [map_add]
       exact add_mem ‹_› ‹_›
   · rw [Submodule.span_le]
-    rintro _ ⟨x, rfl⟩
+    rintro - ⟨x, rfl⟩
     exact ⟨1 ⊗ₜ x, by simp⟩
 
 end LinearMap

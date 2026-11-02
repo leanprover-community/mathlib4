@@ -160,7 +160,7 @@ theorem smul_bot : I • (⊥ : Submodule R M) = ⊥ :=
 
 @[simp]
 theorem bot_smul : (⊥ : Submodule R A) • N = ⊥ :=
-  le_bot_iff.mp <| smul_le.mpr <| by rintro _ rfl _ _; rw [zero_smul]; exact zero_mem _
+  le_bot_iff.mp <| smul_le.mpr <| by rintro - rfl - -; rw [zero_smul]; exact zero_mem _
 
 theorem smul_sup : I • (N ⊔ P) = I • N ⊔ I • P :=
   toAddSubmonoid_injective <| by
@@ -906,7 +906,7 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
   ext x
   simp only [mem_map, mem_div_iff_forall_mul_mem, AlgEquiv.toLinearMap_apply]
   constructor
-  · rintro ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  · rintro ⟨x, hx, rfl⟩ - ⟨y, hy, rfl⟩
     exact ⟨x * y, hx _ hy, map_mul h x y⟩
   · rintro hx
     refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
@@ -927,7 +927,7 @@ theorem restrictScalars_image_smul_eq {S M : Type*}
   refine le_antisymm (fun x x_in ↦ ?_) (set_smul_le _ _ _ fun r x r_in x_in ↦ ?_)
   · rw [restrictScalars_mem] at x_in
     refine set_smul_inductionOn x x_in ?_ ?_ (fun _ _ _ _ h h' ↦ add_mem h h') (zero_mem _)
-    · rintro _ x ⟨r, r_in, rfl⟩ x_in
+    · rintro - x ⟨r, r_in, rfl⟩ x_in
       rw [algebraMap_smul]
       exact mem_set_smul_of_mem_mem r_in x_in
     · intro r y h h'

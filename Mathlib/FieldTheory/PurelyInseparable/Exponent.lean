@@ -178,7 +178,7 @@ variable {K} in
 theorem elemExponent_le_of_pow_mem {a : L} {n : ℕ}
     (h : a ^ ringExpChar K ^ n ∈ (algebraMap K L).range) : elemExponent K a ≤ n := by
   let ⟨p, _⟩ := ExpChar.exists K
-  rcases ‹ExpChar K p› with _ | ⟨hp⟩
+  rcases ‹ExpChar K p› with - | ⟨hp⟩
   · exact elemExponent_eq_zero_of_charZero K a ▸ Nat.zero_le _
   · obtain ⟨y, hy⟩ := RingHom.mem_range.mp h
     let f := X ^ ringExpChar K ^ n - C y

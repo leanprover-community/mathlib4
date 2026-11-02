@@ -1167,7 +1167,7 @@ theorem pi_generateFrom_eq {A : ι → Type*} {g : ∀ a, Set (Set (A a))} :
         { t | ∃ (s : ∀ a, Set (A a)) (i : Finset ι), (∀ a ∈ i, s a ∈ g a) ∧ t = pi (↑i) s } := by
   refine le_antisymm ?_ ?_
   · apply le_generateFrom
-    rintro _ ⟨s, i, hi, rfl⟩
+    rintro - ⟨s, i, hi, rfl⟩
     let := fun a => generateFrom (g a)
     exact isOpen_set_pi i.finite_toSet (fun a ha => GenerateOpen.basic _ (hi a ha))
   · classical

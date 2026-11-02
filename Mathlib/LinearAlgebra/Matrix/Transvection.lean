@@ -187,11 +187,11 @@ section
 variable [Fintype n]
 
 theorem inv_mul (t : TransvectionStruct n R) : t.inv.toMatrix * t.toMatrix = 1 := by
-  rcases t with ⟨_, _, t_hij⟩
+  rcases t with ⟨-, -, t_hij⟩
   simp [toMatrix, transvection_mul_transvection_same, t_hij]
 
 theorem mul_inv (t : TransvectionStruct n R) : t.toMatrix * t.inv.toMatrix = 1 := by
-  rcases t with ⟨_, _, t_hij⟩
+  rcases t with ⟨-, -, t_hij⟩
   simp [toMatrix, transvection_mul_transvection_same, t_hij]
 
 theorem reverse_inv_prod_mul_prod (L : List (TransvectionStruct n R)) :
@@ -292,7 +292,7 @@ variable [Fintype n] [Fintype p]
 
 theorem toMatrix_reindexEquiv (e : n ≃ p) (t : TransvectionStruct n R) :
     (t.reindexEquiv e).toMatrix = reindexAlgEquiv R _ e t.toMatrix := by
-  rcases t with ⟨t_i, t_j, _⟩
+  rcases t with ⟨t_i, t_j, -⟩
   ext a b
   simp only [reindexEquiv, transvection, toMatrix_mk]
   by_cases ha : e t_i = a <;> by_cases hb : e t_j = b <;> by_cases hab : a = b <;>

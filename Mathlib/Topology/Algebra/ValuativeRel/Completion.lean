@@ -350,7 +350,7 @@ theorem closure_image_coe_ofPred_map_lt {r : Γ₀} (hr : r ≠ 0) :
   refine ⟨fun hx ↦ ?_, fun hx t ht ↦ ?_⟩
   · rcases eq_or_ne x 0 with rfl | h
     · simp [zero_lt_iff, hr]
-    · obtain ⟨_, hy : v.extension _ = v.extension x, y, hy' : v y < r, rfl⟩ :=
+    · obtain ⟨-, hy : v.extension _ = v.extension x, y, hy' : v y < r, rfl⟩ :=
         hx _ (v.extension_locally_const h)
       rwa [← hy, extension_apply_coe]
   · obtain ⟨y, hy, hy'⟩ := v.exists_coe_mem_extension_eq ht

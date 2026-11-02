@@ -360,7 +360,7 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
 lemma sup_range_r_range_b :
     Subcomplex.range (r i d) ⊔ Subcomplex.range (b i d) = ⊤ := by
   rw [← top_le_iff]
-  rintro ⟨n⟩ ⟨x, hx⟩ _
+  rintro ⟨n⟩ ⟨x, hx⟩ -
   simp only [skeletonOfMono_succ, Subfunctor.range_obj, Set.mem_range, not_exists,
     Subfunctor.max_obj, Subfunctor.iSup_obj, Set.iUnion_coe_set, Set.mem_union, Set.mem_iUnion,
     exists_prop] at hx
@@ -400,7 +400,7 @@ lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
     · dsimp
       intro x₁ x₂ hx₁ hx₂ h
       obtain ⟨c₁, f₁, _, rfl⟩ := isPushout_aux x₁ hx₁
-      obtain ⟨c₂, f₂, _, rfl⟩ := isPushout_aux x₂ hx₂
+      obtain ⟨c₂, f₂, -, rfl⟩ := isPushout_aux x₂ hx₂
       rw [Subtype.ext_iff] at h
       replace h : Y.map f₁.op c₁.simplex = Y.map f₂.op c₂.simplex := by
         rwa [← c₁.b_app_ι_app_objEquiv_symm_val f₁, ← c₂.b_app_ι_app_objEquiv_symm_val f₂]

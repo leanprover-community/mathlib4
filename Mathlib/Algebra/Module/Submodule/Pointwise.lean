@@ -416,8 +416,8 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
 
 lemma singleton_set_smul [SMulCommClass S R M] (r : S) : ({r} : Set S) • N = r • N := by
   apply set_smul_eq_of_le
-  · rintro _ m rfl hm; exact ⟨m, hm, rfl⟩
-  · rintro _ ⟨m, hm, rfl⟩
+  · rintro - m rfl hm; exact ⟨m, hm, rfl⟩
+  · rintro - ⟨m, hm, rfl⟩
     rw [mem_set_smul_def, Submodule.mem_sInf]
     intro _ hp; exact hp rfl hm
 

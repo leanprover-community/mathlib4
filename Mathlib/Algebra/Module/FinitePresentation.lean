@@ -616,7 +616,7 @@ lemma IsLocalizedModule.exists_isLocalizedModule_powers_of_finitePresentation
   refine ⟨r, hrp, ⟨fun x ↦ IsLocalizedModule.map_units f ⟨x, hrp' x.2⟩, ?_, ?_⟩⟩
   · intro y
     obtain ⟨x, hx⟩ := (H _ dvd_rfl).2 (LocalizedModule.mkLinearMap _ _ y)
-    obtain ⟨⟨x, ⟨_, n, rfl⟩⟩, rfl⟩ := IsLocalizedModule.mk'_surjective
+    obtain ⟨⟨x, ⟨-, n, rfl⟩⟩, rfl⟩ := IsLocalizedModule.mk'_surjective
       (.powers r) (LocalizedModule.mkLinearMap _ _) x
     obtain ⟨m, hm⟩ : ∃ m, r ^ (m + n) • y = f (r ^ m • x) := by
       simpa [LocalizedModule.map, IsLocalizedModule.mk_eq_mk', -IsLocalizedModule.mk'_one,

@@ -831,7 +831,7 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     apply Subtype.ext
     dsimp only at h ⊢
     refine (preimage_eq_preimage' ?_ ?_).1 h <;> rw [Subtype.range_coe] <;> assumption
-  rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
+  rintro ⟨t, -, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
 
 end computing
 

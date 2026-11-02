@@ -189,7 +189,7 @@ lemma exists_isDynCoverOf_of_isCompact_uniformContinuous [UniformSpace X]
   obtain ⟨(V : SetRel X X), hV, hVsymm, hVU⟩ := symm_of_uniformity U_uni
   have uni_ite := dynEntourage_mem_uniformity h hV n
   let openCover x := (dynEntourage T V n).ball x
-  obtain ⟨s, _, s_cover⟩ := F_comp.elim_nhds_subcover openCover
+  obtain ⟨s, -, s_cover⟩ := F_comp.elim_nhds_subcover openCover
     fun x _ ↦ SetRel.ball_mem_nhds x uni_ite
   exact ⟨s, .of_entourage_subset hVU <| .of_subset_iUnion_ball <| by
     simpa only [openCover, Finset.mem_coe] using s_cover⟩
@@ -198,7 +198,7 @@ lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X]
     (F_comp : IsCompact F) (F_inv : MapsTo T F F) (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     ∃ s : Finset X, IsDynCoverOf T F U n s := by
   obtain ⟨(V : SetRel X X), V_uni, V_symm, V_U⟩ := comp_symm_mem_uniformity_sets U_uni
-  obtain ⟨s, _, s_cover⟩ := F_comp.elim_nhds_subcover (V.ball ·)
+  obtain ⟨s, -, s_cover⟩ := F_comp.elim_nhds_subcover (V.ball ·)
     fun (x : X) _ ↦ SetRel.ball_mem_nhds x V_uni
   have : IsDynCoverOf T F V 1 s := .of_subset_iUnion_ball <| by simpa using s_cover
   obtain ⟨t, t_dyncover, t_card⟩ := this.iterate_le_pow F_inv n
@@ -261,7 +261,7 @@ lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
 lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     coverMincard T F U 0 = 1 := by
   apply le_antisymm _ ((one_le_coverMincard_iff T F U 0).2 h)
-  obtain ⟨x, _⟩ := h
+  obtain ⟨x, -⟩ := h
   have := isDynCoverOf_zero T F U (singleton_nonempty x)
   rw [← Finset.coe_singleton] at this
   apply this.coverMincard_le_card.trans_eq
@@ -269,7 +269,7 @@ lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
 
 lemma coverMincard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : coverMincard T F univ n = 1 := by
   apply le_antisymm _ ((one_le_coverMincard_iff T F univ n).2 h)
-  obtain ⟨x, _⟩ := h
+  obtain ⟨x, -⟩ := h
   have := isDynCoverOf_univ T F n (singleton_nonempty x)
   rw [← Finset.coe_singleton] at this
   apply this.coverMincard_le_card.trans_eq

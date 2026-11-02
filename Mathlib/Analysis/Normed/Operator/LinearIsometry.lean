@@ -164,7 +164,7 @@ theorem coe_mk (f : E →ₛₗ[σ₁₂] E₂) (hf) : ⇑(mk f hf) = f :=
   rfl
 
 theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) (fun f => f) := by
-  rintro ⟨_⟩ ⟨_⟩
+  rintro ⟨-⟩ ⟨-⟩
   simp
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,

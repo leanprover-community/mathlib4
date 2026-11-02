@@ -301,7 +301,7 @@ theorem eventually_splitMany_inf_eq_filter (π : Prepartition I) :
   refine le_antisymm ((biUnion_le_iff _).2 fun J hJ => ?_) (le_inf (fun J hJ => ?_) (filter_le _ _))
   · refine ofWithBot_mono ?_
     simp only [Finset.mem_image, mem_boxes, mem_filter]
-    rintro _ ⟨J₁, h₁, rfl⟩ hne
+    rintro - ⟨J₁, h₁, rfl⟩ hne
     refine ⟨_, ⟨J₁, ⟨h₁, Subset.trans ?_ (π.subset_iUnion hJ)⟩, rfl⟩, le_rfl⟩
     exact ht I J hJ J₁ h₁ (mt disjoint_iff.1 hne)
   · rw [mem_filter] at hJ

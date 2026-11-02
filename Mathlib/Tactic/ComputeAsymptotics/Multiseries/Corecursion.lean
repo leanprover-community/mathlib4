@@ -465,7 +465,7 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
     ∃ opf op', op = opf ∘ op' ∧ FriendlyOperation opf ∧ motive op'
   apply FriendlyOperation.coind motive'
   · exact ⟨_root_.id, op, rfl, FriendlyOperation.id, h_base⟩
-  rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
+  rintro - ⟨opf, op, rfl, h_opf, h_op⟩
   obtain ⟨T, hT⟩ := h_step _ h_op
   use fun hd? ↦
     match (T hd?) with
@@ -511,7 +511,7 @@ theorem FriendlyOperation.coind_comp_friend_right {op : Seq α → Seq α}
   apply FriendlyOperation.coind motive'
   · exact ⟨_root_.id, op, rfl, FriendlyOperation.id, h_base⟩
   clear h_base op
-  rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
+  rintro - ⟨opf, op, rfl, h_opf, h_op⟩
   obtain ⟨T, hT⟩ := h_step _ h_op
   use fun hd? ↦
     match (h_opf.unfold hd?) with

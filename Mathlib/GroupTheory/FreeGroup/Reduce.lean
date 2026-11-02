@@ -108,7 +108,7 @@ theorem reduce.not {p : Prop} :
       split_ifs with h <;> intro H
       · rw [H] at r
         exact @reduce.not _ L1 ((y, c) :: L2) L3 x' b' r
-      rcases L2 with (_ | ⟨a, L2⟩)
+      rcases L2 with (- | ⟨a, L2⟩)
       · injections; subst_vars
         simp at h
       · refine @reduce.not _ L1 L2 L3 x' b' ?_

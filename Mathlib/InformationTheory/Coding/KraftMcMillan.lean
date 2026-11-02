@@ -107,7 +107,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   let T : Finset (List α) := Finset.image concatFn (Finset.univ : Finset (Fin r → S))
   -- Any `x ∈ T` is a concatenation of `r` nonempty codewords, hence `r ≤ |x| ≤ r*maxLen`.
   have hlen_maps (x : List α) (hx : x ∈ T) : x.length ∈ Finset.Icc r (r * maxLen) := by
-    rcases Finset.mem_image.mp hx with ⟨_, _, rfl⟩
+    rcases Finset.mem_image.mp hx with ⟨-, -, rfl⟩
     exact concatFn_length_mem_Icc
       (fun c hnil => h.epsilon_notMem (by simpa [hnil] using c.prop))
   let D := (Fintype.card α : ℝ)
@@ -136,7 +136,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   apply le_trans (Finset.sum_le_sum (fun _ _ => sum_pow_length_filter_eq_le_card_mul))
   -- Summing these bounds over the interval s ∈ [r, r * maxLen] multiplies the term
   -- by the number of lengths. Since r ≥ 1, this count is at most r * maxLen.
-  rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen)
+  rcases r with (- | - | r) <;> rcases maxLen with (- | - | maxLen)
     <;> simp at * <;> norm_cast <;> simp
 
 open Filter

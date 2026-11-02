@@ -257,7 +257,7 @@ theorem exists_finset_of_mem_adjoin {S : Set E} {x : E} (hx : x ∈ adjoin F S) 
   classical
   refine ⟨s.image Subtype.val, by simp, mem_of_le_of_mem ?_ hx'⟩
   simp_rw [Finset.coe_image, iSup_le_iff, adjoin_le_iff]
-  rintro _ h _ rfl
+  rintro _ h - rfl
   exact subset_adjoin F _ ⟨_, h, rfl⟩
 
 /-- Adjoining `x + algebraMap F E y`, where `y` lies in the base field, yields the same simple

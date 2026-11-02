@@ -227,7 +227,7 @@ theorem Machine.map_step {S : Set Λ} (f₂₁ : Function.RightInverse f₁ f₂
   | ⟨q, T⟩, h => by
     unfold step Machine.map Cfg.map
     simp only [Turing.Tape.map_fst, g₂₁ q h, f₂₁ _]
-    rcases M q T.1 with (_ | ⟨q', d | a⟩); · rfl
+    rcases M q T.1 with (- | ⟨q', d | a⟩); · rfl
     · simp only [Option.map_some, Tape.map_move f₁]
       rfl
     · simp only [Option.map_some, Tape.map_write]
@@ -564,7 +564,7 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
       exact ⟨_, ss.1, TM1.stmts₁_self⟩
     · apply Finset.mem_univ
   · intro q a q' s h₁ h₂
-    rcases q with ⟨_ | q, v⟩; · cases h₁
+    rcases q with ⟨- | q, v⟩; · cases h₁
     obtain ⟨q', v'⟩ := q'
     simp only [trStmts, Finset.mem_coe] at h₂ ⊢
     rw [Finset.mem_product] at h₂ ⊢
@@ -822,7 +822,7 @@ theorem stepAux_read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) (v : σ) (L R : Li
     exact this n f (L.flatMap (fun x => (enc x).1.reverse) _)
       (R.flatMap (fun x => (enc x).1) _) [] _ (enc a).2
   clear f L a R
-  rintro _ f L' R' l₁ l₂ rfl
+  rintro - f L' R' l₁ l₂ rfl
   induction l₂ generalizing l₁ with
   | nil => rfl
   | cons a l₂ IH =>

@@ -296,7 +296,7 @@ theorem toEmbedding_toPartialEquiv (f : M ↪[L] N) :
 @[simp]
 theorem toPartialEquiv_toEmbedding {f : M ≃ₚ[L] N} (h : f.dom = ⊤) :
     (PartialEquiv.toEmbeddingOfEqTop h).toPartialEquiv = f := by
-  rcases f with ⟨_, _, _⟩
+  rcases f with ⟨-, -, -⟩
   cases h
   apply PartialEquiv.ext
   · intro _ _

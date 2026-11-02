@@ -41,7 +41,7 @@ variable [Semiring A] [Monoid G] [AddCommMonoid W] [Module A W] {ρ : Representa
 
 lemma toSubmodule_injective :
     Function.Injective (toSubmodule : Subrepresentation ρ → Submodule A W) := by
-  rintro ⟨_, _⟩
+  rintro ⟨-, -⟩
   congr!
 
 instance : SetLike (Subrepresentation ρ) W where

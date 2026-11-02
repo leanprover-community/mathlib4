@@ -147,7 +147,7 @@ lemma isOpen_unramifiedLocus [EssFiniteType R A] : IsOpen (unramifiedLocus R A) 
 
 lemma exists_formallyUnramified_of_isUnramifiedAt [EssFiniteType R A] (p : Ideal A) [p.IsPrime]
     [IsUnramifiedAt R p] : ∃ f ∉ p, Algebra.FormallyUnramified R (Localization.Away f) := by
-  obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hpr, hr⟩ :=
+  obtain ⟨-, ⟨-, ⟨r, rfl⟩, rfl⟩, hpr, hr⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open
       (show ⟨p, ‹_›⟩ ∈ unramifiedLocus R A from ‹_›) isOpen_unramifiedLocus
   exact ⟨r, hpr, basicOpen_subset_unramifiedLocus_iff.mp hr⟩

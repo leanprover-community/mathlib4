@@ -242,7 +242,7 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
   intro r hr
   have hr : r ≤ t := Register.le_of_lt_succ hr
   rcases lt_or_eq_of_le hr with hr | hr
-  · obtain ⟨_, h⟩ := h
+  · obtain ⟨-, h⟩ := h
     specialize h r hr
     simp_all
   · simp_all
@@ -261,7 +261,7 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
   simp only [StateEq, write, StateEqRs] at *
   constructor; · exact h.1
   intro r hr
-  obtain ⟨_, h⟩ := h
+  obtain ⟨-, h⟩ := h
   specialize h r (lt_trans hr (Register.lt_succ_self _))
   rwa [ite_eq_right (ne_of_lt hr)] at h
 
@@ -316,7 +316,7 @@ theorem compiler_correctness
     have hζ₃_ν₂ : ζ₃.ac = ν₂ := by simp_all [StateEq]
     have hζ₃_ν₁ : read t ζ₃ = ν₁ := by
       simp only [StateEq, StateEqRs, write, read] at hζ₃ ⊢
-      obtain ⟨_, hζ₃⟩ := hζ₃
+      obtain ⟨-, hζ₃⟩ := hζ₃
       specialize hζ₃ t (Register.lt_succ_self _)
       simp_all
     have hζ₄ : ζ₄ ≃[t + 1] { write t ν₁ η with ac := ν } := calc

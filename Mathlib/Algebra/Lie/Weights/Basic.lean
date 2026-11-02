@@ -658,7 +658,7 @@ lemma disjoint_genWeightSpace {χ₁ χ₂ : L → R} (h : χ₁ ≠ χ₂) :
 
 lemma injOn_genWeightSpace :
     InjOn (fun (χ : L → R) ↦ genWeightSpace M χ) {χ | genWeightSpace M χ ≠ ⊥} := by
-  rintro χ₁ _ χ₂ hχ₂ (hχ₁₂ : genWeightSpace M χ₁ = genWeightSpace M χ₂)
+  rintro χ₁ - χ₂ hχ₂ (hχ₁₂ : genWeightSpace M χ₁ = genWeightSpace M χ₂)
   contrapose! hχ₂
   simpa [hχ₁₂] using disjoint_genWeightSpace R L M hχ₂
 

@@ -53,7 +53,7 @@ theorem midpoint_fixed {x y : PE} :
   -- On the one hand, `e` cannot send the midpoint `z` of `[x, y]` too far
   have h_bdd : BddAbove (range fun e : s => dist ((e : PE ≃ᵢ PE) z) z) := by
     refine ⟨dist x z + dist x z, forall_mem_range.2 <| Subtype.forall.2 ?_⟩
-    rintro e ⟨hx, _⟩
+    rintro e ⟨hx, -⟩
     calc
       dist (e z) z ≤ dist (e z) x + dist x z := dist_triangle (e z) x z
       _ = dist (e x) (e z) + dist x z := by rw [hx, dist_comm]

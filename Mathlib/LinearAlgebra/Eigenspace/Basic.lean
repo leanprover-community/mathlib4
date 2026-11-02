@@ -680,7 +680,7 @@ lemma disjoint_genEigenspace [IsDomain R] [IsTorsionFree R M]
 
 lemma injOn_genEigenspace [IsDomain R] [IsTorsionFree R M] (f : End R M) (k : ℕ∞) :
     InjOn (f.genEigenspace · k) {μ | f.genEigenspace μ k ≠ ⊥} := by
-  rintro μ₁ _ μ₂ hμ₂ hμ₁₂
+  rintro μ₁ - μ₂ hμ₂ hμ₁₂
   by_contra contra
   apply hμ₂
   simpa only [hμ₁₂, disjoint_self] using f.disjoint_genEigenspace contra k k

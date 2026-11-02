@@ -244,7 +244,7 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
     constructor
     · exact le_iSup (fun t : Bool => if t then U₁ else U₂) true
     · exact le_iSup (fun t : Bool => if t then U₁ else U₂) false
-  · rintro ⟨_ | _⟩
+  · rintro ⟨- | -⟩
     · exact h₂
     · exact h₁
 

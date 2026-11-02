@@ -171,7 +171,7 @@ theorem hom_ext {f g : F} (h : ∀ x, f (ofPoint x) = g (ofPoint x)) : f = g := 
     Set.range_subset_iff]
 
 theorem hom_ext_iff {f g : F} : f = g ↔ ∀ x, f (ofPoint x) = g (ofPoint x) :=
-  ⟨by rintro rfl _; rfl, hom_ext⟩
+  ⟨by rintro rfl -; rfl, hom_ext⟩
 
 end
 
@@ -272,14 +272,14 @@ theorem weight_ofPoint (p : P) : weight (R := R) (ofPoint p) = 1 := by
 
 theorem weight_eq_zero_iff {x : Homogenization R P} : weight x = 0 ↔ ∃ v, x = ofVector v where
   mp := by cases x; simp_all
-  mpr := by rintro ⟨_, rfl⟩; rw [weight_ofVector]
+  mpr := by rintro ⟨-, rfl⟩; rw [weight_ofVector]
 
 theorem weight_eq_one_iff {x : Homogenization R P} : weight x = 1 ↔ ∃ p, x = ofPoint p where
   mp h := by
     cases x with | _ v c p =>
     exists v +ᵥ p
     simp_all
-  mpr := by rintro ⟨_, rfl⟩; rw [weight_ofPoint]
+  mpr := by rintro ⟨-, rfl⟩; rw [weight_ofPoint]
 
 theorem lift_const_apply (u : W) (x : Homogenization R P) :
     lift (.const R P u) x = weight x • u := by

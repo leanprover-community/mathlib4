@@ -44,7 +44,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
   clear hin hs
   induction s, hfs using Set.Finite.induction_on with
   | empty =>
-    rcases H with ⟨r, hr1, hrn, _⟩
+    rcases H with ⟨r, hr1, hrn, -⟩
     refine ⟨r, hr1, fun n hn => ?_⟩
     specialize hrn hn
     rwa [mem_comap, span_empty, smul_bot, mem_bot] at hrn
@@ -75,7 +75,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
     rcases hrn with ⟨y, hy, z, hz, hyz⟩
     dsimp at hyz
     rw [mem_smul_span_singleton] at hy
-    rcases hy with ⟨d, _, rfl⟩
+    rcases hy with ⟨d, -, rfl⟩
     simp only [mem_comap, LinearMap.lsmul_apply]
     rw [mul_smul, ← hyz, smul_add, smul_smul, mul_comm, mul_smul]
     exact add_mem (smul_mem _ _ hci) (smul_mem _ _ hz)

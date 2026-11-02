@@ -87,10 +87,10 @@ theorem exists_euler_s_of_not_terminatedAt_succ
 @[simp]
 theorem isEuler_euler : IsEuler (euler h ρ) := by
   intro n a b hn
-  rcases n with _ | n'
+  rcases n with - | n'
   · simp [euler] at hn; simp [hn]
   · replace hn : ∃ ρₙ, ρ.get? (n' + 1) = some ρₙ ∧ -ρₙ = a ∧ 1 + ρₙ = b := by simp_all [euler]
-    obtain ⟨ρ, _, rfl, rfl⟩ := hn
+    obtain ⟨ρ, -, rfl, rfl⟩ := hn
     simp
 
 /-- This lemma shows that `IsEuler g` means that `g` is an Euler continued fraction in the sense
@@ -132,11 +132,11 @@ theorem terminatedAt_toEuler : g.toEuler.TerminatedAt n ↔ g.TerminatedAt n := 
 
 theorem euler_s_zero : (euler h ρ).s.get? 0 = (ρ.get? 0).map fun ρ => ⟨ρ, 1⟩ := by
   simp only [euler, map_get?, get?_enum]
-  rcases ρ.get? 0 with _ | _ <;> simp
+  rcases ρ.get? 0 with - | - <;> simp
 
 theorem euler_s_succ : (euler h ρ).s.get? (n + 1) = (ρ.get? (n + 1)).map fun ρ => ⟨-ρ, 1 + ρ⟩ := by
   simp only [euler, map_get?, get?_enum]
-  rcases ρ.get? (n + 1) with _ | _ <;> simp
+  rcases ρ.get? (n + 1) with - | - <;> simp
 
 theorem toEuler_s_zero : (toEuler g).s.get? 0 = (g.s.get? 0).map fun ⟨a, b⟩ => ⟨a / b, 1⟩ := by
   simp [toEuler, euler_s_zero]
@@ -162,22 +162,22 @@ theorem toEuler_h : g.toEuler.h = g.h := by rfl
 @[simp]
 theorem partNum_euler_zero : (euler h ρ).partNums.get? 0 = ρ.get? 0 := by
   rw [partNums, @Stream'.Seq.map_get?, euler_s_zero]
-  rcases ρ.get? 0 with _ | _ <;> simp
+  rcases ρ.get? 0 with - | - <;> simp
 
 @[simp]
 theorem partDen_euler_zero : (euler h ρ).partDens.get? 0 = (ρ.get? 0).map (fun _ => 1) := by
   rw [partDens, @Stream'.Seq.map_get?, euler_s_zero]
-  rcases ρ.get? 0 with _ | _ <;> simp
+  rcases ρ.get? 0 with - | - <;> simp
 
 @[simp]
 theorem partNum_euler_succ : (euler h ρ).partNums.get? (n + 1) = (ρ.get? (n + 1)).map (- ·) := by
   rw [partNums, @Stream'.Seq.map_get?, euler_s_succ]
-  rcases ρ.get? (n + 1) with _ | _ <;> simp
+  rcases ρ.get? (n + 1) with - | - <;> simp
 
 @[simp]
 theorem partDen_euler_succ : (euler h ρ).partDens.get? (n + 1) = (ρ.get? (n + 1)).map (1 + ·) := by
   rw [partDens, @Stream'.Seq.map_get?, euler_s_succ]
-  rcases ρ.get? (n + 1) with _ | _ <;> simp
+  rcases ρ.get? (n + 1) with - | - <;> simp
 
 private theorem dens_euler_one : (euler h ρ).dens 1 = 1 :=
   Decidable.em ((euler h ρ).TerminatedAt 0) |>.elim
@@ -210,7 +210,7 @@ private theorem nums_euler_aux : (euler h ρ).nums (n + 1) - (euler h ρ).nums n
   rw [← neg_sub, det, Finset.prod_range_succ', Finset.prod_range_succ']
   simp only [partNum_euler_succ, partNum_euler_zero, mul_neg, neg_neg]
   congr; ext n'
-  rcases ρ.get? (n' + 1) with _ | _ <;> simp
+  rcases ρ.get? (n' + 1) with - | - <;> simp
 
 /-- The numerators of an Euler continued fraction are given by the formula
 $$
@@ -248,7 +248,7 @@ protected theorem IsEuler.toEuler (hg : g.IsEuler) : g.toEuler = g := by
   match n with
   | 0 =>
     rw [toEuler_s_zero, euler]
-    rcases hρ₀ : ρ.get? 0 with _ | _ <;> simp [hρ₀]
+    rcases hρ₀ : ρ.get? 0 with - | _ <;> simp [hρ₀]
   | n' + 1 =>
     rcases Decidable.em <| ρ.TerminatedAt (n' + 1) with hρₙ | hρₙ
     · rw [← terminatedAt_euler (h := g.h)] at hρₙ

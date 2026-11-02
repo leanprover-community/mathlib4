@@ -641,9 +641,9 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
           apply omeas.inter measurableSet_closedBall
   -- show that the balls are disjoint
   · intro k hk l hl hkl
-    obtain ⟨k', _, rfl⟩ : ∃ k' : u i, k' ∈ w ∧ ↑k' = k := by
+    obtain ⟨k', -, rfl⟩ : ∃ k' : u i, k' ∈ w ∧ ↑k' = k := by
       simpa only [mem_image, Finset.mem_coe, Finset.coe_image] using hk
-    obtain ⟨l', _, rfl⟩ : ∃ l' : u i, l' ∈ w ∧ ↑l' = l := by
+    obtain ⟨l', -, rfl⟩ : ∃ l' : u i, l' ∈ w ∧ ↑l' = l := by
       simpa only [mem_image, Finset.mem_coe, Finset.coe_image] using hl
     have k'nel' : (k' : s) ≠ l' := by intro h; rw [h] at hkl; exact hkl rfl
     exact hu i k'.2 l'.2 k'nel'
@@ -936,7 +936,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
     | inr hx =>
       have h'x : x ∈ s' := by
         simp only [mem_iUnion, mem_image] at hx
-        rcases hx with ⟨i, y, _, rfl⟩
+        rcases hx with ⟨i, y, -, rfl⟩
         exact y.2
       simp only [r, ite_eq_left h'x, (hr1 x h'x).1.1]
   · intro x hx

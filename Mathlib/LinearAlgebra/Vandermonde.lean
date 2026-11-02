@@ -225,7 +225,7 @@ theorem det_vandermonde_eq_zero_iff [IsDomain R] {v : Fin n → R} :
     det (vandermonde v) = 0 ↔ ∃ i j : Fin n, v i = v j ∧ i ≠ j := by
   constructor
   · simp only [det_vandermonde v, Finset.prod_eq_zero_iff, sub_eq_zero, forall_exists_index]
-    rintro i ⟨_, j, h₁, h₂⟩
+    rintro i ⟨-, j, h₁, h₂⟩
     exact ⟨j, i, h₂, (mem_Ioi.mp h₁).ne'⟩
   · simp only [Ne, forall_exists_index, and_imp]
     refine fun i j h₁ h₂ => Matrix.det_zero_of_row_eq h₂ (funext fun k => ?_)

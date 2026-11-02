@@ -59,7 +59,7 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
     let : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
     refine generateFrom_le ?_
-    rintro _ ⟨a, rfl | rfl⟩
+    rintro - ⟨a, rfl | rfl⟩
     · rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
       · rw [hb.Ioi_eq, ← compl_Iio]
         exact (H _).compl
@@ -364,7 +364,7 @@ theorem generateFrom_Icc_mem_le_borel {α : Type*} [TopologicalSpace α] [Linear
       ≤ borel α := by
   apply generateFrom_le
   borelize α
-  rintro _ ⟨a, -, b, -, -, rfl⟩
+  rintro - ⟨a, -, b, -, -, rfl⟩
   exact measurableSet_Icc
 
 theorem Dense.borel_eq_generateFrom_Icc_mem_aux {α : Type*} [TopologicalSpace α] [LinearOrder α]
@@ -425,7 +425,7 @@ theorem generateFrom_Ico_mem_le_borel {α : Type*} [TopologicalSpace α] [Linear
       ≤ borel α := by
   apply generateFrom_le
   borelize α
-  rintro _ ⟨a, -, b, -, -, rfl⟩
+  rintro - ⟨a, -, b, -, -, rfl⟩
   exact measurableSet_Ico
 
 theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace α] [LinearOrder α]
@@ -549,7 +549,7 @@ theorem ext_of_Ico' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] [NoMaxOrder α]
     (μ ν : Measure α) (hμ : ∀ ⦃a b⦄, a < b → μ (Ico a b) ≠ ∞)
     (h : ∀ ⦃a b⦄, a < b → μ (Ico a b) = ν (Ico a b)) : μ = ν := by
-  rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, hsb, _⟩
+  rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, hsb, -⟩
   have : (⋃ (l ∈ s) (u ∈ s) (_ : l < u), {Ico l u} : Set (Set α)).Countable :=
     hsc.biUnion fun l _ => hsc.biUnion fun u _ => countable_iUnion fun _ => countable_singleton _
   simp only [← ofPred_eq_eq_singleton, ← ofPred_exists] at this
@@ -557,15 +557,15 @@ theorem ext_of_Ico' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     Measure.ext_of_generateFrom_of_cover_subset
       (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ico α)) (isPiSystem_Ico id id) ?_ this
       ?_ ?_ ?_
-  · rintro _ ⟨l, -, u, -, h, rfl⟩
+  · rintro - ⟨l, -, u, -, h, rfl⟩
     exact ⟨l, u, h, rfl⟩
   · refine sUnion_eq_univ_iff.2 fun x => ?_
     rcases hsd.exists_le' hsb x with ⟨l, hls, hlx⟩
     rcases hsd.exists_gt x with ⟨u, hus, hxu⟩
     exact ⟨_, ⟨l, hls, u, hus, hlx.trans_lt hxu, rfl⟩, hlx, hxu⟩
-  · rintro _ ⟨l, -, u, -, hlt, rfl⟩
+  · rintro - ⟨l, -, u, -, hlt, rfl⟩
     exact hμ hlt
-  · rintro _ ⟨l, u, hlt, rfl⟩
+  · rintro - ⟨l, u, hlt, rfl⟩
     exact h hlt
 
 /-- Two measures which are finite on closed-open intervals are equal if they agree on all
@@ -630,15 +630,15 @@ theorem ext_of_Icc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     Measure.ext_of_generateFrom_of_cover_subset
       (BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Icc α)) (isPiSystem_Icc id id) ?_ this
       ?_ ?_ ?_
-  · rintro _ ⟨l, -, u, -, h, rfl⟩
+  · rintro - ⟨l, -, u, -, h, rfl⟩
     exact ⟨l, u, h, rfl⟩
   · refine sUnion_eq_univ_iff.2 fun x => ?_
     rcases hsd.exists_le' hsb x with ⟨l, hls, hlx⟩
     rcases hsd.exists_ge' hst x with ⟨u, hus, hxu⟩
     exact ⟨_, ⟨l, hls, u, hus, hlx.trans hxu, rfl⟩, hlx, hxu⟩
-  · rintro _ ⟨l, -, u, -, hlt, rfl⟩
+  · rintro - ⟨l, -, u, -, hlt, rfl⟩
     exact hμ hlt
-  · rintro _ ⟨l, u, hlt, rfl⟩
+  · rintro - ⟨l, u, hlt, rfl⟩
     exact h hlt
 
 /-- Two measures which are finite on closed intervals are equal if they agree on all
@@ -695,7 +695,7 @@ variable [LinearOrder α] [OrderTopology α] [SecondCountableTopology α]
 theorem measurable_of_Iio {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iio x)) : Measurable f := by
   convert measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Iio _)
-  · rintro _ ⟨x, rfl⟩; exact hf x
+  · rintro - ⟨x, rfl⟩; exact hf x
 
 theorem nullMeasurable_of_Iio {μ : Measure δ} {f : δ → α}
     (hf : ∀ x, NullMeasurableSet (f ⁻¹' Iio x) μ) : NullMeasurable f μ :=
@@ -708,7 +708,7 @@ theorem UpperSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpa
 theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ioi x)) : Measurable f := by
   convert measurable_generateFrom (α := δ) _
   · exact BorelSpace.measurable_eq.trans (borel_eq_generateFrom_Ioi _)
-  · rintro _ ⟨x, rfl⟩; exact hf x
+  · rintro - ⟨x, rfl⟩; exact hf x
 
 theorem nullMeasurable_of_Ioi {μ : Measure δ} {f : δ → α}
     (hf : ∀ x, NullMeasurableSet (f ⁻¹' Ioi x) μ) : NullMeasurable f μ :=
@@ -774,7 +774,7 @@ theorem Measurable.isLUB {ι} [Countable ι] {f : ι → δ → α} {g : δ → 
   change ∀ b, IsLUB (range fun i => f i b) (g b) at hg
   rw [‹BorelSpace α›.measurable_eq, borel_eq_generateFrom_Ioi α]
   apply measurable_generateFrom
-  rintro _ ⟨a, rfl⟩
+  rintro - ⟨a, rfl⟩
   simp_rw [Set.preimage, mem_Ioi, lt_isLUB_iff (hg _), exists_range_iff, ofPred_exists]
   exact MeasurableSet.iUnion fun i => hf i (isOpen_lt' _).measurableSet
 

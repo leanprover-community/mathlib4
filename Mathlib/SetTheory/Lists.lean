@@ -175,7 +175,7 @@ theorem subset_nil {l : Lists' α true} : l ⊆ Lists'.nil → l = Lists'.nil :=
   rw [← of_toList l]
   induction toList l <;> intro h
   · rfl
-  · rcases cons_subset.1 h with ⟨⟨_, ⟨⟩, _⟩, _⟩
+  · rcases cons_subset.1 h with ⟨⟨-, ⟨⟩, -⟩, -⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂) (_ : a ∈ l₁.toList), a ∈ l₂
@@ -308,7 +308,7 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
       rcases Lists'.mem_of_subset' hr₂ m₃ with ⟨a₂, m₂, e₃₂⟩
       rcases Lists'.mem_of_subset' hr₁ m₂ with ⟨a₁, m₁, e₂₁⟩
       exact ⟨a₁, m₁, (IH _ m₁ e₂₁.symm e₃₂.symm).symm⟩
-  · rintro _ ⟨⟩
+  · rintro - ⟨⟩
   · intro a l IH₁ IH₂
     simpa using ⟨IH₁, IH₂⟩
 

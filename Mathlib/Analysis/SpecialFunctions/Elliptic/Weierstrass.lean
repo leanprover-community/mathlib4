@@ -229,7 +229,7 @@ lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
   refine L.hasSumLocallyUniformly_aux (u := (10 * · * ‖·‖ ^ (-3 : ℝ))) _
     (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
-  rintro _ h s hs l rfl
+  rintro - h s hs l rfl
   split_ifs
   · simpa using! show 0 ≤ 10 * r * (‖↑l‖ ^ 3)⁻¹ by positivity
   · exact weierstrassP_bound r hr s hs l h
@@ -344,7 +344,7 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
   refine L.hasSumLocallyUniformly_aux (u := fun _ ↦ (16 * ‖·‖ ^ (-3 : ℝ))) _
     (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
     Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
-  rintro _ h s hs l rfl
+  rintro - h s hs l rfl
   split_ifs
   · simp
   have : s ≠ ↑l := by rintro rfl; exfalso; linarith
@@ -489,7 +489,7 @@ lemma weierstrassP_add_coe (z : ℂ) (l : L.lattice) : ℘[L] (z + l) = ℘[L] z
       neg_mem' {z} hz := funext fun i ↦ by conv_lhs => rw [← hz]; simp }
   have : L.lattice ≤ G.toIntSubmodule := by
     rw [lattice, Submodule.span_le]
-    rintro _ (rfl | rfl)
+    rintro - (rfl | rfl)
     · ext i
       exact L.weierstrassP_add_coe_aux _ ⟨_, L.ω₁_mem_lattice⟩ L.ω₁_div_two_notMem_lattice
     · ext i

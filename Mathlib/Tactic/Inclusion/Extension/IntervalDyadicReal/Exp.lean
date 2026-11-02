@@ -140,7 +140,7 @@ theorem exp_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
   have h0 : Dyadic.toReal 0 ≤ Real.exp x := by simpa [Dyadic.toReal] using (Real.exp_pos x).le
   have h0I := Interval.mem_map_singleton (0 : Dyadic) Dyadic.toReal
   rw [mem_iff_mem_map]
-  rcases I with ⟨_ | l, _ | u⟩ <;> simp only [exp]
+  rcases I with ⟨- | l, - | u⟩ <;> simp only [exp]
   · exact Interval.mem_Ici_of_le h0 h0I
   · exact Interval.mem_Icc_of_le h0I h0 (Real.exp_le_exp.mpr (hx.2 u rfl)) (expPoint_mem u prec)
   · exact Interval.mem_Ici_of_le (Real.exp_le_exp.mpr (hx.1 l rfl)) (expPoint_mem l prec)

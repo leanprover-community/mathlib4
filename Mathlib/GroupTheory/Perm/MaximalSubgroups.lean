@@ -87,7 +87,7 @@ theorem IsPretransitive.of_partition
       rw [mul_smul, hgab, hk]
   contrapose! hM
   rw [eq_top_iff, le_stabilizer_iff_smul_le]
-  rintro g _ b ⟨a, ha, hgab⟩
+  rintro g - b ⟨a, ha, hgab⟩
   by_contra hb
   exact hM a b g ha (Set.mem_compl hb) hgab
 
@@ -115,7 +115,7 @@ theorem swap_mem_stabilizer [DecidableEq α]
     rw [mem_stabilizer_iff]
     apply Set.Subset.antisymm this
     exact Set.subset_smul_set_iff.mpr this
-  rintro _ ⟨x, hx, rfl⟩
+  rintro - ⟨x, hx, rfl⟩
   by_cases h : x ∈ ({a, b} : Set α)
   · aesop
   · have := swap_apply_of_ne_of_ne (a := a) (b := b) (x := x)

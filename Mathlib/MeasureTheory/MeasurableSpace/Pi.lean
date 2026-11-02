@@ -37,7 +37,7 @@ lemma MeasurableSpace.pi_eq_generateFrom_projections {mα : ∀ i, MeasurableSpa
 /-- Boxes formed by π-systems form a π-system. -/
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
     IsPiSystem (pi univ '' pi univ C) := by
-  rintro _ ⟨s₁, hs₁, rfl⟩ _ ⟨s₂, hs₂, rfl⟩ hst
+  rintro - ⟨s₁, hs₁, rfl⟩ - ⟨s₂, hs₂, rfl⟩ hst
   rw [← pi_inter_distrib] at hst ⊢; rw [univ_pi_nonempty_iff] at hst
   exact mem_image_of_mem _ fun i _ => hC i _ (hs₁ i (mem_univ i)) _ (hs₂ i (mem_univ i)) (hst i)
 
@@ -73,7 +73,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
   cases nonempty_encodable ι
   apply le_antisymm
   · refine iSup_le ?_; intro i; rw [comap_generateFrom]
-    apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
+    apply generateFrom_le; rintro - ⟨s, hs, rfl⟩
     choose t h1t h2t using hC
     simp_rw [eval_preimage, ← h2t]
     rw [← @iUnion_const _ ℕ _ s]
@@ -90,7 +90,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
     -- `grind` can close the goal alone, but is slow
     apply mem_image_of_mem
     grind
-  · apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
+  · apply generateFrom_le; rintro - ⟨s, hs, rfl⟩
     rw [univ_pi_eq_iInter]; apply MeasurableSet.iInter; intro i
     apply @measurable_pi_apply _ _ (fun i => generateFrom (C i))
     exact measurableSet_generateFrom (hs i (mem_univ i))

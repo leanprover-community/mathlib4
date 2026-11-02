@@ -160,7 +160,7 @@ theorem algebraicIndependent_of_finite' (s : Set A)
       ∀ a ∈ s, a ∉ t → Transcendental (adjoin R t) a) :
     AlgebraicIndependent R ((↑) : s → A) :=
   algebraicIndependent_of_finite_type' hinj fun t hfin h i hi ↦ H _
-    (by rintro _ ⟨x, _, rfl⟩; exact x.2) (hfin.image _) h.image _ i.2
+    (by rintro - ⟨x, -, rfl⟩; exact x.2) (hfin.image _) h.image _ i.2
     (mt Subtype.val_injective.mem_set_image.mp hi)
 
 namespace AlgebraicIndependent

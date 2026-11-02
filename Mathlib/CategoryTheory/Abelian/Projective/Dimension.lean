@@ -205,7 +205,7 @@ lemma hasProjectiveDimensionLT_X₃ (h₁ : HasProjectiveDimensionLT S.X₁ n)
     HasProjectiveDimensionLT S.X₃ (n + 1) := by
   let := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
-  rintro (_ | i) hi Y x₃
+  rintro (- | i) hi Y x₃
   · simp at hi
   · obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ hS _ x₃
       (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) hi) (add_comm _ _)
@@ -288,7 +288,7 @@ lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
   · have : projectiveDimension X ∈ _ := csInf_mem ⟨⊤, by simp⟩
     simp only [Set.mem_ofPred_eq] at this
     exact this _ h
-  · obtain _ | n := n
+  · obtain - | n := n
     · exact ⟨⊥, fun _ _ ↦ hasProjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
     · exact ⟨n, fun i hi ↦ hasProjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
         by simp [ENat.WithBot.lt_add_one_iff]⟩

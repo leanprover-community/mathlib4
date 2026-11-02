@@ -354,7 +354,7 @@ lemma HasProd.of_nat_of_neg_add_one {f : ℤ → M}
   have : IsCompl (Set.range ((↑) : ℕ → ℤ)) (Set.range Int.negSucc) := by
     constructor
     · rw [disjoint_iff_inf_le]
-      rintro _ ⟨⟨i, rfl⟩, ⟨j, ⟨⟩⟩⟩
+      rintro - ⟨⟨i, rfl⟩, ⟨j, ⟨⟩⟩⟩
     · rw [codisjoint_iff_le_sup]
       rintro (i | j) <;> simp
   exact (Nat.cast_injective.hasProd_range_iff.mpr hf₁).mul_isCompl

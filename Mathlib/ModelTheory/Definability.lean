@@ -73,7 +73,7 @@ theorem definable_iff_exists_formula_sum :
   simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
     coe_con, Term.realize_relabel]
   congr 1 with a
-  rcases a with (_ | _) | _ <;> rfl
+  rcases a with (- | -) | - <;> rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem empty_definable_iff :

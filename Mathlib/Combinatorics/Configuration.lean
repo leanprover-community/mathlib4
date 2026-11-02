@@ -229,7 +229,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
         refine sum_lt_sum_of_subset (subset_univ _) (mem_univ p) ?_ ?_ fun p _ _ ↦ zero_le
         · simpa only [Finset.mem_map, exists_prop, Finset.mem_univ, true_and]
         · rw [lineCount, Nat.card_eq_fintype_card, Fintype.card_pos_iff]
-          obtain ⟨l, _⟩ := @exists_line P L _ _ p
+          obtain ⟨l, -⟩ := @exists_line P L _ _ p
           exact
             let := not_exists.mp hp l
             ⟨⟨mkLine this, (mkLine_ax this).2⟩⟩

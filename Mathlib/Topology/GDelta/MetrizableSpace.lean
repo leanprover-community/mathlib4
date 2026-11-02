@@ -52,7 +52,7 @@ theorem IsGδ.setOfPred_continuousAt [PseudoMetrizableSpace Y] (f : X → Y) :
     IsGδ { x | ContinuousAt f x } := by
   let := pseudoMetrizableSpaceUniformity Y
   have := pseudoMetrizableSpaceUniformity_countably_generated Y
-  obtain ⟨U, _, hU⟩ := (@uniformity_hasBasis_open_symmetric Y _).exists_antitone_subbasis
+  obtain ⟨U, -, hU⟩ := (@uniformity_hasBasis_open_symmetric Y _).exists_antitone_subbasis
   simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
   simp only [(nhds_basis_opens _).prod_self.tendsto_iff hU.toHasBasis,
     forall_prop_of_true, ofPred_forall]

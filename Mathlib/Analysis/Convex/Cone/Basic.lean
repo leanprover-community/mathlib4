@@ -174,7 +174,7 @@ lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsCl
   let f : 𝕜 → E := (· • x)
   -- The closure of `f (0, ∞)` is a subset of `C`
   have hfS : closure (f '' Set.Ioi 0) ⊆ C :=
-    hSclos.closure_subset_iff.2 <| by rintro _ ⟨_, h, rfl⟩; exact C.smul_mem h hx
+    hSclos.closure_subset_iff.2 <| by rintro - ⟨_, h, rfl⟩; exact C.smul_mem h hx
   -- `f` is continuous at `0` from the right
   have fc : ContinuousWithinAt f (Set.Ioi (0 : 𝕜)) 0 := by fun_prop
   -- `0 ∈ closure f (0, ∞) ⊆ C, 0 ∈ C`

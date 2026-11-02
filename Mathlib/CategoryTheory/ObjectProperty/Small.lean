@@ -126,7 +126,7 @@ lemma EssentiallySmall.exists_small_le (P : ObjectProperty C)
   choose φ hφ using h
   refine ⟨fun X ↦ X ∈ Set.range (Subtype.val ∘ φ), ?_, ?_, ?_⟩
   · exact small_of_surjective (f := fun X ↦ ⟨(φ X).1, by tauto⟩)
-      (by rintro ⟨_, Z, rfl⟩; exact ⟨Z, rfl⟩)
+      (by rintro ⟨-, Z, rfl⟩; exact ⟨Z, rfl⟩)
   · intro X hX
     simp only [Set.mem_range, Function.comp_apply, Subtype.exists] at hX
     obtain ⟨Y, hY, rfl⟩ := hX
@@ -194,9 +194,9 @@ lemma essentiallySmall_op_iff (P : ObjectProperty C) :
     ObjectProperty.EssentiallySmall.{w} P.op ↔
       ObjectProperty.EssentiallySmall.{w} P := by
   refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
-  · obtain ⟨Q, h₁, _, h₂⟩ := EssentiallySmall.exists_small_le P.op
+  · obtain ⟨Q, h₁, -, h₂⟩ := EssentiallySmall.exists_small_le P.op
     exact ⟨Q.unop, inferInstance, by rwa [← unop_isoClosure, ← op_monotone_iff, op_unop]⟩
-  · obtain ⟨Q, h₁, _, h₂⟩ := EssentiallySmall.exists_small_le P
+  · obtain ⟨Q, h₁, -, h₂⟩ := EssentiallySmall.exists_small_le P
     exact ⟨Q.op, inferInstance, by rwa [← op_isoClosure, op_monotone_iff]⟩
 
 @[simp]

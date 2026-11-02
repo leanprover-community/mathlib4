@@ -185,7 +185,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
 lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
-  obtain ⟨p, _⟩ := (r.finiteDimensional_iff).mp ‹_›
+  obtain ⟨p, -⟩ := (r.finiteDimensional_iff).mp ‹_›
   exact ⟨p 0⟩
 
 instance membership : Membership α (RelSeries r) :=
@@ -710,7 +710,7 @@ lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.len
 
 @[simp] lemma head_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).head = p.head := by
-  obtain ⟨_ | _, _⟩ := p
+  obtain ⟨- | -, -⟩ := p
   · simpa [Fin.addCases] using! h.symm
   dsimp only [smash, head]
   exact Fin.addCases_left 0
@@ -850,7 +850,7 @@ lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonem
   ⟨LTSeries.withLength α 0 0⟩
 
 lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
-  obtain ⟨p, _⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›
+  obtain ⟨p, -⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
 variable {α}

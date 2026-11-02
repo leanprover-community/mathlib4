@@ -213,7 +213,7 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
   · rcases hr with ⟨p, hmp, hpr⟩
     refine ⟨_, Finset.finite_toSet _, p.restriction, monic_restriction.2 hmp, ?_⟩
     rw [← aeval_def, ← aeval_map_algebraMap R r p.restriction, map_restriction, aeval_def, hpr]
-  rcases hr with ⟨s, _, hsr⟩
+  rcases hr with ⟨s, -, hsr⟩
   exact hsr.of_subring _
 
 @[stacks 09GH]

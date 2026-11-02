@@ -466,7 +466,7 @@ theorem map_comap (f : Filter β) (m : α → β) : (f.comap m).map m = f ⊓ �
   refine le_antisymm (le_inf map_comap_le <| le_principal_iff.2 range_mem_map) ?_
   rintro t' ⟨t, ht, sub⟩
   refine mem_inf_principal.2 (mem_of_superset ht ?_)
-  rintro _ hxt ⟨x, rfl⟩
+  rintro - hxt ⟨x, rfl⟩
   exact sub hxt
 
 theorem map_comap_setCoe_val (f : Filter β) (s : Set β) :

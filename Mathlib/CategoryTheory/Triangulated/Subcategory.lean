@@ -543,7 +543,7 @@ lemma trW_iff_of_distinguished
     P.trW T.mor₁ ↔ P T.obj₃ := by
   constructor
   · rintro ⟨Z, g, h, hT', mem⟩
-    obtain ⟨e, _⟩ := exists_iso_of_arrow_iso _ _ hT' hT (Iso.refl _)
+    obtain ⟨e, -⟩ := exists_iso_of_arrow_iso _ _ hT' hT (Iso.refl _)
     exact P.prop_of_iso (Triangle.π₃.mapIso e) mem
   · intro h
     exact ⟨_, _, _, hT, h⟩

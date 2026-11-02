@@ -35,7 +35,7 @@ namespace MeasurableSpace
     generateFrom {s} = MeasurableSpace.comap (· ∈ s) ⊤ := by
   let : MeasurableSpace α := generateFrom {s}
   refine le_antisymm (generateFrom_le fun t ht => ⟨{True}, trivial, by simp [ht.symm]⟩) ?_
-  rintro _ ⟨u, -, rfl⟩
+  rintro - ⟨u, -, rfl⟩
   exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
 
 lemma generateFrom_singleton_le {m : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s) :

@@ -69,7 +69,7 @@ theorem even_largeSchroder : ∀ {n : ℕ}, n ≠ 0 → Even (largeSchroder n)
   | n + 2, _ => by
     rw [largeSchroder_succ]
     refine .add (even_largeSchroder n.succ_ne_zero) <| even_sum _ fun k hk ↦ ?_
-    obtain _ | k := k
+    obtain - | k := k
     · simpa using even_largeSchroder n.succ_ne_zero
     have : k < n + 1 := by simp at hk; lia
     exact .mul_right (even_largeSchroder k.succ_ne_zero) _
@@ -95,7 +95,7 @@ theorem smallSchroder_succ (hn : 1 < n) :
     smallSchroder (n + 1) =
       3 * n.smallSchroder +
           2 * ∑ i ∈ Ioo 0 (n - 1), (i + 1).smallSchroder * (n - i).smallSchroder := by
-  obtain _ | _ | n := n
+  obtain - | - | n := n
   · simp at hn
   · simp at hn
   refine Nat.mul_left_cancel zero_lt_two ?_
