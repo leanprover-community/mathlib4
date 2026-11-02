@@ -73,7 +73,7 @@ theorem mul_mem_support_of_left (hP : P.IsPreordering) (h : IsUnit (2 : R))
 
 theorem sSup {S : Set (Subsemiring R)} (hSn : S.Nonempty) (hSd : DirectedOn (· ≤ ·) S)
     (hS : ∀ s ∈ S, s.IsPreordering) : (sSup S).IsPreordering where
-  mem_of_isSquare _ | ⟨_, _⟩ => by grind [membership, mem_sSup_of_directedOn, hSn.some_mem]
+  mem_of_isSquare | ⟨_, _⟩ => by grind [membership, mem_sSup_of_directedOn, hSn.some_mem]
   neg_one_notMem := by grind [membership, mem_sSup_of_directedOn]
 
 end CommRing
