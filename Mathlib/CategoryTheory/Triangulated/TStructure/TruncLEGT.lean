@@ -80,7 +80,6 @@ noncomputable def truncGTIsoTruncGE (a b : ℤ) (h : a + 1 = b) :
 on a category `C` and `n : ℤ`. -/
 noncomputable def truncLEι (n : ℤ) : t.truncLE n ⟶ 𝟭 C := t.truncLTι (n + 1)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncLEIsoTruncLT_hom_ι (a b : ℤ) (h : a + 1 = b) :
@@ -95,7 +94,6 @@ lemma truncLEIsoTruncLT_hom_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
   congr_app (t.truncLEIsoTruncLT_hom_ι a b h) X
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma truncLEIsoTruncLT_inv_ι (a b : ℤ) (h : a + 1 = b) :
     (t.truncLEIsoTruncLT a b h).inv ≫ t.truncLEι a = t.truncLTι b := by
@@ -148,7 +146,6 @@ lemma natTransTruncLEOfLE_trans_app (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c
 on a category `C` and `n : ℤ`. -/
 noncomputable def truncGTπ (n : ℤ) : 𝟭 C ⟶ t.truncGT n := t.truncGEπ (n + 1)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_truncGTIsoTruncGE_hom (a b : ℤ) (h : a + 1 = b) :
@@ -163,7 +160,6 @@ lemma π_truncGTIsoTruncGE_hom_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
   congr_app (t.π_truncGTIsoTruncGE_hom a b h) X
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma π_truncGTIsoTruncGE_inv (a b : ℤ) (h : a + 1 = b) :
     t.truncGEπ b ≫ (t.truncGTIsoTruncGE a b h).inv = t.truncGTπ a := by
@@ -347,7 +343,6 @@ noncomputable abbrev truncLEGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncL
 /-- The composition `t.truncLE b ⋙ t.truncGE a`. -/
 noncomputable abbrev truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELE a b).obj X) a := by
   dsimp; infer_instance
 
@@ -383,7 +378,6 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] :
     t.IsGE ((t.truncLE b).obj X) a := by
   dsimp [truncLE]; infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) :
     t.IsLE ((t.truncGELE a b).obj X) b := by
   dsimp; infer_instance

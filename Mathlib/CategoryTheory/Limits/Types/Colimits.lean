@@ -34,7 +34,7 @@ variable (F : J ⥤ Type u)
 
 /-- If `F : J ⥤ Type u`, then the data of a "type-theoretic" cocone of `F`
 with a point in `Type u` is the same as the data of a cocone (in a categorical sense). -/
-@[simps apply_pt symm_apply_pt apply_ι_app symm_apply_ι]
+@[implicit_reducible, simps apply_pt symm_apply_pt apply_ι_app symm_apply_ι]
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
   toFun c :=
     { pt := c.pt
@@ -48,8 +48,6 @@ def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
 
 variable {F}
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     c.IsColimit ↔ Nonempty (Limits.IsColimit (F.coconeTypesEquiv c)) := by
   constructor
@@ -200,7 +198,6 @@ theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}
   apply Quot.eq.1
   simpa using! congr(colimitEquivColimitType F $w)
 
-set_option backward.defeqAttrib.useBackward true in
 theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : IsColimit t)
     (x : t.pt) : ∃ j y, t.ι.app j y = x := by
   by_contra hx
