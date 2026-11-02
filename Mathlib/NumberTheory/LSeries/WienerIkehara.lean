@@ -671,18 +671,21 @@ private lemma summable_mul {x} {g : ℝ → ℝ} (hg : HasCompactSupport g) (hx 
   rw [finite_iff_bddAbove]
   exact ⟨Nat.ceil (M * x), fun i hi ↦ by simpa using Nat.ceil_mono ((div_le_iff₀ hx).mp (hM hi))⟩
 
+private lemma indicator_Ico_hasCompactSupport {u v} (huv : u < v) : HasCompactSupport
+    (indicator (Ico u v) (1 : ℝ → ℝ)) := by
+  simpa [HasCompactSupport, tsupport, huv.ne] using isCompact_Icc (a := u) (b := v)
+
+private lemma tsum_mul_indicator {N : ℕ} (hN : (0 : ℝ) < N) (u : ℝ) :
+    ∑' n, f n * (indicator (Ico u 1) 1 (n / N)) = ∑ i ∈ .Ico ⌈u * N⌉₊ N, f i := by
+  rw [tsum_eq_sum (s := .Ico ⌈u * N⌉₊ N)]
+  · apply Finset.sum_congr rfl
+    simp +contextual [Nat.ceil_le, le_div_iff₀, div_lt_iff₀, hN]
+  · simp +contextual [Nat.ceil_le, le_div_iff₀, div_lt_iff₀, hN]
+
 include bound hG hG' hpos in
 /-- The *Wiener-Ikehara Tauberian Theorem*, summing over naturals `n < N`; see
 `WienerIkehara.tendsto_sum_div` for the version summing over reals `n ≤ x`. -/
 theorem tendsto_sum_range_div : Tendsto (fun N ↦ (∑ i ∈ .range N, f i) / N) atTop (𝓝 A) := by
-  have hI {u v} (huv : u < v) : HasCompactSupport (indicator (Ico u v) (1 : ℝ → ℝ)) := by
-    simpa [HasCompactSupport, tsupport, huv.ne] using isCompact_Icc (a := u) (b := v)
-  have hsum {N : ℕ} (hN : (0 : ℝ) < N) (u : ℝ) :
-      ∑' n, f n * (indicator (Ico u 1) 1 (n / N)) = ∑ i ∈ .Ico ⌈u * N⌉₊ N, f i := by
-    rw [tsum_eq_sum (s := .Ico ⌈u * N⌉₊ N)]
-    · apply Finset.sum_congr rfl
-      simp +contextual [Nat.ceil_le, le_div_iff₀, div_lt_iff₀, hN]
-    · simp +contextual [Nat.ceil_le, le_div_iff₀, div_lt_iff₀, hN]
   rw [tendsto_order]
   refine ⟨fun c _ ↦ ?_, fun c _ ↦ ?_⟩
   · have hg : ∀ᶠ ε in 𝓝[>] (0 : ℝ), c < _ := (by fun_prop : ContinuousWithinAt
@@ -697,8 +700,9 @@ theorem tendsto_sum_range_div : Tendsto (fun N ↦ (∑ i ∈ .range N, f i) / N
     refine hN1.trans_le ?_
     simp only [comp_apply]
     grw [(h5.trans (indicator_le_indicator_of_subset (by grind : Ioo ε 1 ⊆ Ico 0 1) (by simp))) _,
-      hsum this, zero_mul, Nat.ceil_zero, Nat.Ico_zero_eq_range]
-    exacts [hpos _, summable_mul h2 this, summable_mul (hI zero_lt_one) this]
+      tsum_mul_indicator this, zero_mul, Nat.ceil_zero, Nat.Ico_zero_eq_range]
+    exacts [hpos _, summable_mul h2 this, summable_mul
+      (indicator_Ico_hasCompactSupport zero_lt_one) this]
   · have hg : ∀ᶠ ε in 𝓝[>] (0 : ℝ), _ < c := (by fun_prop : ContinuousWithinAt
         (fun ε ↦ A + 2 * C * ε + ε) (Ioi 0) 0) (Iio_mem_nhds (by grind))
     obtain ⟨ε, _, hε, _⟩ := (hg.and (Ioc_mem_nhdsGT (by norm_num : (0 : ℝ) < 1 / 4))).exists
@@ -711,13 +715,14 @@ theorem tendsto_sum_range_div : Tendsto (fun N ↦ (∑ i ∈ .range N, f i) / N
       (tendsto_const_div_atTop_nhds_zero_nat C).eventually (gt_mem_nhds hε)] with N hN1 _ hN3
     have hN : (0 : ℝ) < N := by norm_cast
     grw [← Finset.sum_range_add_sum_Ico _ (by rw [Nat.ceil_le]; nlinarith : ⌈2 * ε * N⌉₊ ≤ N),
-      add_div, ← hsum hN, ((indicator_le_indicator_of_subset Ico_subset_Icc_self
+      add_div, ← tsum_mul_indicator hN, ((indicator_le_indicator_of_subset Ico_subset_Icc_self
       (by simp)).trans h4) _, (by exact hN1 : (∑' n, f n * ψ (n / N)) / N < _),
       bound, Nat.ceil_lt_add_one, mul_add, add_div, mul_one, hN3]
     · field_simp; grind
     · exact C_nonneg bound hpos
     · positivity
-    exacts [hpos _, summable_mul (hI (by linarith)) hN, summable_mul h2 hN]
+    exacts [hpos _, summable_mul (indicator_Ico_hasCompactSupport (by linarith)) hN,
+      summable_mul h2 hN]
 
 include bound hG hG' hpos in
 /-- The *Wiener-Ikehara Tauberian Theorem*, summing over naturals `n ≤ x` for real `x`; see
