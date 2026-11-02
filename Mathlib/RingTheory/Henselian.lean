@@ -127,58 +127,47 @@ theorem HenselianRing.exists_isRoot {R : Type*} [CommRing R] {I : Ideal R} [Hens
     ∃ a, f.IsRoot a ∧ a - a₀ ∈ I := by
   /- The reduction to the monic case goes as follows: after translating `a₀` to `0` and rescaling by
   `c₀ = f.eval a₀ ∈ I`, one obtains a polynomial `G` with `G ≡ 1 + c₁ * X` modulo `I`, where
-  `c₁ = f.derivative.eval a₀`. Since `G` has constant coefficient `1`, its reverse `P` is monic, and
-  `-c₁` is a simple root of `P` modulo `I`. A root `t` of `P` is a unit, and `⅟t` is then a root of
-  `G`, which produces the root `a₀ + c₀ * ⅟t` of `f`. -/
-  obtain _ | _ := subsingleton_or_nontrivial R
-  · exact ⟨a₀, Subsingleton.elim _ _, by simp⟩
+  `c₁ = f.derivative.eval a₀`. Since `G` has constant coefficient `1`, its reflection
+  `P = X ^ (N + 1) * G (1 / X)` (where `N = G.natDegree`) is monic, and `-c₁` is a simple root of
+  `P` modulo `I`. A root `t` of `P` is a unit, and `⅟t` is then a root of `G`, which produces the
+  root `a₀ + c₀ * ⅟t` of `f`. -/
   have := isLocalHom_of_le_jacobson (HenselianRing.jac (R := R) (I := I))
   set φ := Ideal.Quotient.mk I
-  set c₀ := f.eval a₀ with hc₀
-  set c₁ := f.derivative.eval a₀ with hc
-  have hc₁ : IsUnit c₁ := IsUnit.of_map φ _ h₂
-  have key : ∀ (p : R[X]) (x : R), φ (p.eval x) = (p.map φ).eval (φ x) := fun p x => by
-    rw [eval_map, eval₂_at_apply]
-  -- `f (y + a₀) = c₀ + y * q y`
-  set q := (taylor a₀ f).divX with hq
+  set c₀ := f.eval a₀
+  set c₁ := f.derivative.eval a₀
   -- rescale by `c₀`: we look for a root of `f` of the form `a₀ + c₀ * b`
-  set G : R[X] := 1 + X * q.comp (C c₀ * X) with hG
-  have hGeval : ∀ b, c₀ * G.eval b = f.eval (c₀ * b + a₀) := fun b => by
-    rw [← taylor_eval, ← divX_mul_X_add (taylor a₀ f), hG]
+  set G : R[X] := 1 + X * (taylor a₀ f).divX.comp (C c₀ * X)
+  have hGeval (b : R) : c₀ * G.eval b = f.eval (c₀ * b + a₀) := by
+    rw [← taylor_eval, ← divX_mul_X_add (taylor a₀ f)]
+    simp [G]
+    ring
+  -- `P = X ^ (N + 1) * G (1 / X)` is monic since `G` has constant coefficient `1`; modulo `I` it is
+  -- `X ^ N * (X + c₁)` since `G` is `1 + c₁ * X` modulo `I`, so `-c₁` is a simple root
+  set N := G.natDegree
+  set P := reflect (N + 1) G
+  have hPmonic : P.Monic := monic_of_natDegree_le_of_coeff_eq_one (N + 1)
+    (natDegree_reflect_le.trans (max_le le_rfl N.le_succ)) (by simp [P, G])
+  have hPmap : P.map φ = X ^ N * (X + C (φ c₁)) := by
+    have hGmap : G.map φ = 1 + X * C (φ c₁) := by
+      simp [φ, G, map_comp, Ideal.Quotient.eq_zero_iff_mem.mpr, ← coeff_zero_eq_eval_zero, c₁, h₁]
+    rw [← reflect_map, hGmap, X_mul_C, ← pow_one X, reflect_add, reflect_one,
+      reflect_C_mul_X_pow, revAt_le (by lia)]
     simp
     ring
-  have hG0 : G.coeff 0 = 1 := by simp [hG]
-  have hG1 : G.coeff 1 = c₁ := by simpa [hG, coeff_one, coeff_X_mul, hq]
-  -- modulo `I`, `G` is `1 + c₁ * X`
-  have hGmap : G.map φ = 1 + C (φ c₁) * X := by
-    ext (_ | _ | n)
-    · simp [hG0]
-    · simp [hG1, coeff_one]
-    · have h : G.coeff (n + 2) ∈ I := by
-        simpa [pow_succ, hG, coeff_one] using Ideal.mul_mem_left _ _ (Ideal.mul_mem_left _ _ h₁)
-      simpa [coeff_map, coeff_one, coeff_C_mul, coeff_X] using Ideal.Quotient.eq_zero_iff_mem.mpr h
-  -- `G` has constant coefficient `1`, so its reverse `P` is monic; modulo `I` it is
-  -- `X ^ M * (X + c₁)`, which has `-c₁` as a simple root
-  have hM : G.natDegree = G.natDegree - 1 + 1 := by
-    simp [le_natDegree_of_ne_zero, hG1, IsUnit.ne_zero hc₁]
-  set P := G.reverse with hP
-  have hPmonic : P.Monic := by
-    rw [Monic, hP, reverse_leadingCoeff, trailingCoeff_eq_coeff_zero (hG0 ▸ one_ne_zero), hG0]
-  have hPmap : P.map φ = X ^ (G.natDegree - 1) * (X + C (φ c₁)) := by
-    rw [hP, Polynomial.reverse, map_reflect, hGmap, hM, ← C_1, ← pow_one X, reflect_add, reflect_C,
-      reflect_C_mul_X_pow, revAt_le (Nat.le_add_left 1 _)]
-    simp
-    ring
-  obtain ⟨t, htroot, htI⟩ := HenselianRing.is_henselian P hPmonic (-c₁)
-    (Ideal.Quotient.eq_zero_iff_mem.mp (by rw [key, hPmap]; simp))
-    (by rw [key, ← derivative_map, hPmap]; simpa [derivative_mul] using (h₂.neg.pow _))
-  let : Invertible t := (IsUnit.of_map φ _ ((Ideal.Quotient.eq.2 htI) ▸ hc₁.neg.map _)).invertible
+  obtain ⟨t, htroot, htI⟩ : ∃ t, P.IsRoot t ∧ t - -c₁ ∈ I := by
+    refine HenselianRing.is_henselian _ hPmonic _ ?_ ?_
+    · apply Ideal.Quotient.eq_zero_iff_mem.mp
+      rw [← eval₂_at_apply, ← eval_map, hPmap]
+      simp [φ]
+    · rw [← eval₂_at_apply, ← eval_map, ← derivative_map, hPmap]
+      simpa [φ, derivative_mul] using h₂.neg.pow N
+  let : Invertible t :=
+    (IsUnit.of_map φ _ ((Ideal.Quotient.eq.2 htI) ▸ (IsUnit.of_map φ _ h₂).neg.map _)).invertible
   have hGroot : G.eval (⅟t) = 0 := by
-    have h := eval₂_reflect_eq_zero_iff (RingHom.id R) (⅟t) G.natDegree G le_rfl
-    rw [invOf_invOf, show reflect G.natDegree G = P from rfl] at h
-    simpa [eval₂_eq_eval_map] using h.mp (by simpa [eval₂_eq_eval_map] using htroot)
+    apply (eval₂_reflect_eq_zero_iff _ (⅟t) (N + 1) G N.le_succ).mp
+    simpa
   use c₀ * ⅟t + a₀
-  simp [IsRoot, ← hGeval, hGroot, mul_zero, Ideal.mul_mem_right, h₁]
+  simp [IsRoot, ← hGeval, hGroot, Ideal.mul_mem_right, h₁]
 
 /-- **Hensel's lemma** for a Henselian local ring: a simple root in the residue field of an
 arbitrary polynomial lifts to a root in `R`.
