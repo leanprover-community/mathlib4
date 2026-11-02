@@ -28,7 +28,7 @@ noncomputable section
 
 /-- The additive subgroup of `UnitAddCircle` consisting of the images of the rational numbers. -/
 def ratAddCircle : AddSubgroup UnitAddCircle :=
-  (Rat.castHom ℝ : ℚ →+ ℝ).range.map (QuotientAddGroup.mk' _)
+  (AddCircle.map (1 : ℚ) (Rat.castHom ℝ) (by simp)).range
 
 /-- The quotient of `UnitAddCircle` by the action of `ratAddCircle` on the left. -/
 def vitaliType : Type := AddAction.orbitRel.Quotient ratAddCircle UnitAddCircle
@@ -53,8 +53,8 @@ lemma isAddFundamentalDomain_vitaliSet (hm : NullMeasurableSet vitaliSet volume)
     IsAddFundamentalDomain ratAddCircle vitaliSet volume :=
   .mk' hm existsUnique_vadd_mem_vitaliSet
 
-/-- `ratAddCircle` is countable, being the image of the countable type `ℚ`. -/
-instance : Countable ratAddCircle := (Set.countable_range _).image _
+/-- `ratAddCircle` is countable, being the image of the countable type `AddCircle (1 : ℚ)`. -/
+instance : Countable ratAddCircle := Set.countable_range _
 
 /-- If `vitaliSet` were null-measurable, then the volume of `UnitAddCircle` would be the sum of
 countably many copies of the volume of `vitaliSet`. -/
@@ -62,12 +62,11 @@ lemma one_eq_tsum_volume_vitaliSet (hm : NullMeasurableSet vitaliSet volume) :
     1 = ∑' _ : ratAddCircle, volume vitaliSet := by
   simpa [Set.vadd_set_univ] using (isAddFundamentalDomain_vitaliSet hm).measure_eq_tsum Set.univ
 
-/-- `ratAddCircle` is infinite: as the image of the dense set of rationals under the continuous
-surjective projection `ℝ → UnitAddCircle`, it is dense in the infinite T1 space `UnitAddCircle`. -/
+/-- `ratAddCircle` is infinite, being the image of the infinite group `AddCircle (1 : ℚ)` under an
+injective homomorphism. -/
 instance : Infinite ratAddCircle :=
-  Set.infinite_coe_iff.mpr <| Dense.infinite <|
-    QuotientAddGroup.mk_surjective.denseRange.dense_image (AddCircle.continuous_mk' 1)
-      Rat.denseRange_cast
+  (Set.infinite_range_of_injective
+    (AddCircle.map_injective _ Rat.cast_injective Rat.cast_one)).to_subtype
 
 /-- `vitaliSet` is not null-measurable. -/
 theorem not_nullMeasurableSet_vitaliSet : ¬ NullMeasurableSet vitaliSet volume :=

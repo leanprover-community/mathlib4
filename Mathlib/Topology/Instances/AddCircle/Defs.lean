@@ -30,6 +30,8 @@ See also `Circle` and `Real.Angle`.  For the normed group structure on `AddCircl
 
 * `AddCircle`: the additive circle `𝕜 ⧸ ℤ ∙ p` for some period `p : 𝕜`
 * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
+* `AddCircle.map`: the homomorphism `AddCircle p →+ AddCircle q` induced by `f : 𝕜 →+ 𝕜'` with
+  `f p ∈ zmultiples q`
 * `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
 * `AddCircle.equivIco` and `AddCircle.equivIoc`: the natural equivalences
   `AddCircle p ≃ Ico a (a + p)` and `AddCircle p ≃ Ioc a (a + p)`
@@ -228,6 +230,34 @@ theorem coe_add_period (x : 𝕜) : ((x + p : 𝕜) : AddCircle p) = x := by
 protected theorem continuous_mk' [TopologicalSpace 𝕜] :
     Continuous (QuotientAddGroup.mk' (zmultiples p) : 𝕜 → AddCircle p) :=
   continuous_coinduced_rng
+
+section Map
+
+variable {𝕜' : Type*} [AddCommGroup 𝕜'] {q : 𝕜'}
+
+/-- A group homomorphism `f : 𝕜 →+ 𝕜'` with `f p ∈ zmultiples q` induces a homomorphism
+`AddCircle p →+ AddCircle q`. -/
+def map (f : 𝕜 →+ 𝕜') (h : f p ∈ zmultiples q) : AddCircle p →+ AddCircle q :=
+  QuotientAddGroup.map _ _ f <| zmultiples_le.2 h
+
+@[simp]
+theorem map_coe (f : 𝕜 →+ 𝕜') (h : f p ∈ zmultiples q) (x : 𝕜) :
+    map p f h x = (f x : AddCircle q) :=
+  rfl
+
+theorem map_injective {f : 𝕜 →+ 𝕜'} {h : f p ∈ zmultiples q} (hf : Injective f)
+    (hq : f p = q) : Injective (map p f h) := by
+  subst hq
+  rw [map, QuotientAddGroup.map_injective_iff]
+  intro x
+  simp [mem_zmultiples_iff, ← map_zsmul, hf.eq_iff]
+
+theorem map_surjective {f : 𝕜 →+ 𝕜'} {h : f p ∈ zmultiples q} (hf : Surjective f) :
+    Surjective (map p f h) := by
+  apply QuotientAddGroup.map_surjective_of_surjective
+  exact QuotientAddGroup.mk_surjective.comp hf
+
+end Map
 
 section Torsion
 
