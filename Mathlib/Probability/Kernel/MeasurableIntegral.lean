@@ -55,7 +55,7 @@ omit [IsSFiniteKernel κ] in
 theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ ∫ y, f y ∂κ x := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE, stronglyMeasurable_const]
+  · simp [integral_of_not_completeSpace hE, stronglyMeasurable_const]
   borelize E
   have : TopologicalSpace.SeparableSpace (range f ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
@@ -78,7 +78,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂κ x := by
   classical
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE, stronglyMeasurable_const]
+  · simp [integral_of_not_completeSpace hE, stronglyMeasurable_const]
   borelize E
   have : TopologicalSpace.SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
