@@ -466,7 +466,7 @@ lemma Module.Injective.of_extension_property {R : Type u} [Ring R] {M : Type v} 
     (h : ∀ {X Y : Type v} [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
       (f : X →ₗ[R] Y) (_ : Function.Injective f) (g : X →ₗ[R] M),
       ∃ h : Y →ₗ[R] M, h ∘ₗ f = g) :
-    -- then `P` is projective.
+    -- then `P` is injective.
     Injective R M := by
   refine Module.Baer.injective fun I g ↦ ?_
   let eI := Shrink.linearEquiv R I
