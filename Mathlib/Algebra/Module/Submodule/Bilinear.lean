@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Span.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Images of pairs of submodules under bilinear maps
 

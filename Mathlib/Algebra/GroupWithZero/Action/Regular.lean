@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Regular.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about `IsSMulRegular` for `MonoidWithZero`
 -/
