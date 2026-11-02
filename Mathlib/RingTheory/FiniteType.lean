@@ -136,8 +136,8 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, SetLike.mem_coe, hs]
-    apply mem_top
+    rw [← AlgHom.mem_range, ← adjoin_eq_range, hs]
+    exact mem_top
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 

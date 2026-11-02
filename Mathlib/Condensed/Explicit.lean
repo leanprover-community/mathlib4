@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Module
+
 /-!
 
 # The explicit sheaf condition for condensed sets

@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Kaehler.JacobiZariski
 This file provides APIs for extending the base ring of an algebra extension `P : Extension R S`
 to its own extension ring `P.Ring`. We introduce canonical maps and isomorphisms between
 the cotangent spaces and the first homology of naive cotangent complex associated with
-`P.extendScalars` and `P`. We provide commutativity results of these maps and ismorphisms
+`P.extendScalars` and `P`. We provide commutativity results of these maps and isomorphisms
 (See https://github.com/leanprover-community/mathlib4/pull/39520 for an image of the full diagram).
 In particular, we show the boundary map of the Jacobi-Zariski sequence of `R → P.Ring → S`
 coincides with `P.cotangentComplex` via a canonical isomorphism `P.h1CotangentEquivCotangent`.

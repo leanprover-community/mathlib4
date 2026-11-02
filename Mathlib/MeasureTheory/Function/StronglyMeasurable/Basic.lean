@@ -424,11 +424,11 @@ protected theorem inv₀ [GroupWithZero β] [ContinuousInv₀ β] [MetrizableSpa
   refine ⟨fun n => ((hf.approx n).restrict {x | f x ≠ 0})⁻¹, fun x => ?_⟩
   have : MeasurableSet {x | f x ≠ 0} := ((MeasurableSet.singleton 0).preimage hf.measurable).compl
   by_cases h : f x = 0
-  · simp_all only [ne_eq, measurableSet_setOfPred, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
+  · simp_all only [ne_eq, measurableSet_setOfPred, FunLike.coe_inv, SimpleFunc.coe_restrict,
       Pi.inv_apply, mem_ofPred_eq, not_true_eq_false, not_false_eq_true, indicator_of_notMem,
       _root_.inv_zero]
     exact tendsto_const_nhds
-  · simp_all only [ne_eq, measurableSet_setOfPred, SimpleFunc.coe_inv, SimpleFunc.coe_restrict,
+  · simp_all only [ne_eq, measurableSet_setOfPred, FunLike.coe_inv, SimpleFunc.coe_restrict,
       Pi.inv_apply, mem_ofPred_eq, not_false_eq_true, indicator_of_mem]
     apply (hf.tendsto_approx x).inv₀ h
 
@@ -451,10 +451,10 @@ theorem div [GroupWithZero β] [ContinuousMul β] [ContinuousInv₀ β] [Metriza
   refine ⟨fun n => hf.approx n / (hg.approx n).restrict {x | g x ≠ 0}, fun x => ?_⟩
   have : MeasurableSet {x | g x ≠ 0} := ((MeasurableSet.singleton 0).preimage hg.measurable).compl
   by_cases h : g x = 0
-  · simp_all only [ne_eq, SimpleFunc.coe_div, SimpleFunc.coe_restrict, Pi.div_apply, mem_ofPred_eq,
+  · simp_all only [ne_eq, FunLike.coe_div, SimpleFunc.coe_restrict, Pi.div_apply, mem_ofPred_eq,
       not_true_eq_false, not_false_eq_true, indicator_of_notMem, _root_.div_zero]
     exact tendsto_const_nhds
-  · simp_all only [ne_eq, SimpleFunc.coe_div, SimpleFunc.coe_restrict,
+  · simp_all only [ne_eq, FunLike.coe_div, SimpleFunc.coe_restrict,
       Pi.div_apply, mem_ofPred_eq, not_false_eq_true, indicator_of_mem]
     exact (hf.tendsto_approx x).div (hg.tendsto_approx x) h
 
@@ -856,9 +856,7 @@ theorem of_countable_not_continuousAt [MeasurableSpace α] [TopologicalSpace α]
     [h : SecondCountableTopologyEither α β] {f : α → β}
     (hf : Set.Countable {x | ¬ ContinuousAt f x}) : StronglyMeasurable f := by
   have : ContinuousOn f {x | ContinuousAt f x} := fun x hx ↦ hx.continuousWithinAt
-  apply this.stronglyMeasurable_of_countable_compl
-  convert hf
-  grind
+  exact this.stronglyMeasurable_of_countable_compl hf
 
 @[fun_prop]
 theorem _root_.MeasurableEmbedding.stronglyMeasurable_extend {f : α → β} {g : α → γ} {g' : γ → β}
@@ -1096,7 +1094,7 @@ end StronglyMeasurable
 theorem finStronglyMeasurable_zero {α β} {m : MeasurableSpace α} {μ : Measure α} [Zero β]
     [TopologicalSpace β] : FinStronglyMeasurable (0 : α → β) μ :=
   ⟨0, by
-    simp only [Pi.zero_apply, SimpleFunc.coe_zero, support_zero, measure_empty,
+    simp only [Pi.zero_apply, FunLike.coe_zero, support_zero, measure_empty,
       zero_lt_top, forall_const],
     fun _ => tendsto_const_nhds⟩
 
@@ -1199,7 +1197,7 @@ protected theorem const_smul {𝕜} [TopologicalSpace 𝕜] [Zero β]
     [SMulZeroClass 𝕜 β] [ContinuousSMul 𝕜 β] (hf : FinStronglyMeasurable f μ) (c : 𝕜) :
     FinStronglyMeasurable (c • f) μ := by
   refine ⟨fun n => c • hf.approx n, fun n => ?_, fun x => (hf.tendsto_approx x).const_smul c⟩
-  rw [SimpleFunc.coe_smul]
+  rw [FunLike.coe_smul]
   exact (measure_mono (support_const_smul_subset c _)).trans_lt (hf.fin_support_approx n)
 
 end Arithmetic
@@ -1290,6 +1288,24 @@ theorem measurable_uncurry_of_continuous_of_measurable {α β ι : Type*} [Topol
   refine h_meas.comp (Measurable.prodMk ?_ measurable_snd)
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 
+/-- A countable family of strongly measurable functions is jointly strongly measurable when
+singletons in the index space are measurable. -/
+theorem stronglyMeasurable_uncurry_of_countable {α β ι : Type*} [MeasurableSpace ι]
+    [Countable ι] [MeasurableSingletonClass ι] [MeasurableSpace α] [TopologicalSpace β]
+    {u : ι → α → β} (h : ∀ i, StronglyMeasurable (u i)) :
+    StronglyMeasurable (Function.uncurry u) := by
+  cases isEmpty_or_nonempty ι with
+  | inl hι => exact .of_subsingleton_dom
+  | inr hι =>
+    obtain ⟨e, he⟩ := exists_surjective_nat ι
+    refine ⟨fun n ↦ ((simpleFuncAux id e n).comp Prod.fst measurable_fst).bind
+      (fun i ↦ ((h i).approx n).comp Prod.snd measurable_snd), ?_⟩
+    rintro ⟨i, x⟩
+    obtain ⟨k, rfl⟩ := he i
+    apply ((h (e k)).tendsto_approx x).congr'
+    filter_upwards [simpleFuncAux_eventuallyEq (f := id) (g := e) (m := k)] with n hn
+    simp [hn]
+
 theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι : Type*}
     [TopologicalSpace ι] [MetrizableSpace ι] [MeasurableSpace ι] [SecondCountableTopology ι]
     [OpensMeasurableSpace ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace α]
@@ -1306,20 +1322,8 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
     rw [tendsto_pi_nhds]
     exact fun p => ht_sf p.fst p.snd
   refine stronglyMeasurable_of_tendsto _ (fun n => ?_) h_tendsto
-  have h_str_meas : StronglyMeasurable fun p : (t_sf n).range × α => u (↑p.fst) p.snd := by
-    refine stronglyMeasurable_iff_measurable_separable.2 ⟨?_, ?_⟩
-    · have :
-        (fun p : ↥(t_sf n).range × α => u (↑p.fst) p.snd) =
-          (fun p : α × (t_sf n).range => u (↑p.snd) p.fst) ∘ Prod.swap :=
-        rfl
-      rw [this, measurable_swap_iff]
-      exact measurable_from_prod_countable_left fun j => (h j).measurable
-    · have : IsSeparable (⋃ i : (t_sf n).range, range (u i)) :=
-        .iUnion fun i => (h i).isSeparable_range
-      apply this.mono
-      rintro _ ⟨⟨i, x⟩, rfl⟩
-      simp only [mem_iUnion, mem_range]
-      exact ⟨i, x, rfl⟩
+  have h_str_meas : StronglyMeasurable fun p : (t_sf n).range × α => u (↑p.fst) p.snd :=
+    stronglyMeasurable_uncurry_of_countable (ι := (t_sf n).range) fun i ↦ h i
   have :
     (fun p : ι × α => u (t_sf n p.fst) p.snd) =
       (fun p : ↥(t_sf n).range × α => u p.fst p.snd) ∘ fun p : ι × α =>

@@ -172,7 +172,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
     · refine h_nnnorm_eq_zero.mono fun x hx => ?_
       dsimp only at hx
       rw [Pi.zero_apply] at hx ⊢
-      · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
+      rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
     · refine Measurable.coe_nnreal_ennreal (Measurable.nnnorm ?_)
       exact (Lp.stronglyMeasurable _).measurable
   rw [← nonpos_iff_eq_zero]
@@ -365,7 +365,7 @@ theorem condExpIndSMul_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : G
     condExpIndSMul hm hs hμs (x + y) = condExpIndSMul hm hs hμs x + condExpIndSMul hm hs hμs y := by
   simp_rw [condExpIndSMul]; rw [toSpanSingleton_add, add_compLpL, add_apply]
 
-theorem condExpIndSMul_smul [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs : MeasurableSet s)
+theorem condExpIndSMul_smul [NormedSpace ℝ F] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (c : 𝕜) (x : F) :
     condExpIndSMul hm hs hμs (c • x) = c • condExpIndSMul hm hs hμs x := by
   simp_rw [condExpIndSMul, toSpanSingleton_smul, smul_compLpL, smul_apply]

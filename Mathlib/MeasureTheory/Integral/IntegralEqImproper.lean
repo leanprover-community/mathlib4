@@ -1066,7 +1066,7 @@ theorem integral_eq_zero_of_hasDerivAt_of_integrable
     (hderiv : ∀ x, HasDerivAt f (f' x) x) (hf' : Integrable f') (hf : Integrable f) :
     ∫ x, f' x = 0 := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
   have A : Tendsto f atBot (𝓝 0) :=
     tendsto_zero_of_hasDerivAt_of_integrableOn_Iic (a := 0) (fun x _hx ↦ hderiv x)
       hf'.integrableOn hf.integrableOn
@@ -1110,9 +1110,6 @@ theorem integral_deriv_smul_comp_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
         (le_principal_iff.mpr <| Ici_mem_atTop _) hf hft
   have t1 := (intervalIntegral_tendsto_integral_Ioi _ (hg1.mono_set this) tendsto_id).comp hft
   exact tendsto_nhds_unique_of_eventuallyEq t2 t1 (eventuallyEq_of_mem (Ioi_mem_atTop a) eq)
-
-@[deprecated (since := "2026-03-19")]
-alias integral_comp_smul_deriv_Ioi := integral_deriv_smul_comp_Ioi
 
 /-- Change-of-variables formula for `Ioi` integrals of scalar-valued functions -/
 theorem integral_comp_mul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → ℝ} {a : ℝ}
@@ -1328,7 +1325,7 @@ theorem integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
     (huv : Integrable (fun x ↦ L (u x) (v x))) :
     ∫ (x : ℝ), L (u x) (v' x) = - ∫ (x : ℝ), L (u' x) (v x) := by
   by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
+  · simp [integral_of_not_completeSpace hG]
   have I : Tendsto (fun x ↦ L (u x) (v x)) atBot (𝓝 0) :=
     tendsto_zero_of_hasDerivAt_of_integrableOn_Iic (a := 0)
       (fun x _hx ↦ L.hasDerivAt_of_bilinear (hu x) (hv x))

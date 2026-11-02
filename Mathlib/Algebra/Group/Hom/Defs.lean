@@ -201,7 +201,7 @@ library_note «hom simp lemma priority»
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
 of morphism types, so long as they have an instance of `OneHomClass`. For example, this applies to
-to `MonoidHom`, `RingHom`, `AlgHom`, `StarAlgHom`, as well as their `Equiv` variants, etc. However,
+`MonoidHom`, `RingHom`, `AlgHom`, `StarAlgHom`, as well as their `Equiv` variants, etc. However,
 precisely because these lemmas are so widely applicable, they keys in the `simp` discrimination tree
 are necessarily highly non-specific. For example, the key for `map_one` is
 `@DFunLike.coe _ _ _ _ _ 1`.
@@ -945,8 +945,7 @@ and `M` is commutative, then `N` is commutative. -/
 /-- If `M` and `N` have additions, `f` is a surjective additive map,
 and `M` is commutative, then `N` is commutative. -/]
 theorem Function.Surjective.isMulCommutative [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
-    {f : F} (is_surj : Function.Surjective f) (is_comm : IsMulCommutative M) :
-    IsMulCommutative N where
+    {f : F} (is_surj : Function.Surjective f) [IsMulCommutative M] : IsMulCommutative N where
   is_comm.comm a b := by
     have ⟨a', ha'⟩ := is_surj a
     have ⟨b', hb'⟩ := is_surj b
