@@ -84,6 +84,13 @@ lemma isClosedUnderIsomorphisms : P.IsClosedUnderIsomorphisms where
         prop_diag_obj _ := hX }
     p.prop
 
+instance {D : Type*} [Category* D] (F : D ⥤ C) [F.IsCardinalAccessible κ] :
+    (P.inverseImage F).IsClosedUnderCardinalFilteredColimits κ where
+  isCardinalClosedUnderColimitsOfShape' J _ _ := by
+    have := isCardinalClosedUnderColimitsOfShape P κ J
+    have := F.preservesColimitsOfShape_of_isCardinalAccessible κ J
+    infer_instance
+
 end IsClosedUnderCardinalFilteredColimits
 
 end CategoryTheory.ObjectProperty
