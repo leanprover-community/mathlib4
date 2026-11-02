@@ -969,10 +969,8 @@ lemma π_comp_H1Iso_hom :
 variable {A}
 
 lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundaries₁ A := by
-  rw [← map_eq_zero_iff _ ((ModuleCat.mono_iff_injective (H1Iso A).hom).1 inferInstance), H1π,
-    ModuleCat.comp_apply, π_comp_H1Iso_hom_apply, Iso.inv_hom_id_apply,
-    Submodule.Quotient.mk_eq_zero, mem_range_moduleCatToCycles_iff, shortComplexH1_f]
-  rfl
+  rw [← map_eq_zero_iff _ ((ModuleCat.mono_iff_injective (H1Iso A).hom).1 inferInstance), H1π]
+  simp [π_comp_H1Iso_hom_apply _, LinearMap.range_codRestrict, shortComplexH1, coboundaries₁]
 
 lemma H1π_eq_iff (x y : cocycles₁ A) :
     H1π A x = H1π A y ↔ ⇑x - ⇑y ∈ coboundaries₁ A := by
@@ -1041,10 +1039,8 @@ lemma π_comp_H2Iso_hom :
 variable {A}
 
 lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundaries₂ A := by
-  rw [← map_eq_zero_iff _ ((ModuleCat.mono_iff_injective (H2Iso A).hom).1 inferInstance), H2π,
-    ModuleCat.comp_apply, π_comp_H2Iso_hom_apply, Iso.inv_hom_id_apply,
-    Submodule.Quotient.mk_eq_zero, mem_range_moduleCatToCycles_iff, shortComplexH2_f]
-  rfl
+  rw [← map_eq_zero_iff _ ((ModuleCat.mono_iff_injective (H2Iso A).hom).1 inferInstance)]
+  simp [H2π, π_comp_H2Iso_hom_apply _, LinearMap.range_codRestrict, shortComplexH2, coboundaries₂]
 
 lemma H2π_eq_iff (x y : cocycles₂ A) :
     H2π A x = H2π A y ↔ ⇑x - ⇑y ∈ coboundaries₂ A := by
