@@ -1288,6 +1288,24 @@ theorem measurable_uncurry_of_continuous_of_measurable {α β ι : Type*} [Topol
   refine h_meas.comp (Measurable.prodMk ?_ measurable_snd)
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 
+/-- A countable family of strongly measurable functions is jointly strongly measurable when
+singletons in the index space are measurable. -/
+theorem stronglyMeasurable_uncurry_of_countable {α β ι : Type*} [MeasurableSpace ι]
+    [Countable ι] [MeasurableSingletonClass ι] [MeasurableSpace α] [TopologicalSpace β]
+    {u : ι → α → β} (h : ∀ i, StronglyMeasurable (u i)) :
+    StronglyMeasurable (Function.uncurry u) := by
+  cases isEmpty_or_nonempty ι with
+  | inl hι => exact .of_subsingleton_dom
+  | inr hι =>
+    obtain ⟨e, he⟩ := exists_surjective_nat ι
+    refine ⟨fun n ↦ ((simpleFuncAux id e n).comp Prod.fst measurable_fst).bind
+      (fun i ↦ ((h i).approx n).comp Prod.snd measurable_snd), ?_⟩
+    rintro ⟨i, x⟩
+    obtain ⟨k, rfl⟩ := he i
+    apply ((h (e k)).tendsto_approx x).congr'
+    filter_upwards [simpleFuncAux_eventuallyEq (f := id) (g := e) (m := k)] with n hn
+    simp [hn]
+
 theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι : Type*}
     [TopologicalSpace ι] [MetrizableSpace ι] [MeasurableSpace ι] [SecondCountableTopology ι]
     [OpensMeasurableSpace ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace α]
@@ -1304,20 +1322,8 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
     rw [tendsto_pi_nhds]
     exact fun p => ht_sf p.fst p.snd
   refine stronglyMeasurable_of_tendsto _ (fun n => ?_) h_tendsto
-  have h_str_meas : StronglyMeasurable fun p : (t_sf n).range × α => u (↑p.fst) p.snd := by
-    refine stronglyMeasurable_iff_measurable_separable.2 ⟨?_, ?_⟩
-    · have :
-        (fun p : ↥(t_sf n).range × α => u (↑p.fst) p.snd) =
-          (fun p : α × (t_sf n).range => u (↑p.snd) p.fst) ∘ Prod.swap :=
-        rfl
-      rw [this, measurable_swap_iff]
-      exact measurable_from_prod_countable_left fun j => (h j).measurable
-    · have : IsSeparable (⋃ i : (t_sf n).range, range (u i)) :=
-        .iUnion fun i => (h i).isSeparable_range
-      apply this.mono
-      rintro _ ⟨⟨i, x⟩, rfl⟩
-      simp only [mem_iUnion, mem_range]
-      exact ⟨i, x, rfl⟩
+  have h_str_meas : StronglyMeasurable fun p : (t_sf n).range × α => u (↑p.fst) p.snd :=
+    stronglyMeasurable_uncurry_of_countable (ι := (t_sf n).range) fun i ↦ h i
   have :
     (fun p : ι × α => u (t_sf n p.fst) p.snd) =
       (fun p : ↥(t_sf n).range × α => u p.fst p.snd) ∘ fun p : ι × α =>

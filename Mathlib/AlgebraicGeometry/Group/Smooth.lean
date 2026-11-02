@@ -29,7 +29,6 @@ universe u
 variable {K : Type u} [Field K] {G : Scheme} (f : G ⟶ Spec (.of K))
     [LocallyOfFiniteType f] [GrpObj (Over.mk f)]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open MonObj MonoidalCategory CartesianMonoidalCategory in
 /--
