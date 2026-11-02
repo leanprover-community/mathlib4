@@ -6,6 +6,9 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.Group.Action.FunLike
+public import Mathlib.Algebra.Group.FunLike
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Torsor.Basic
@@ -219,18 +222,17 @@ theorem mk'_linear (f : P1 → P2) (f' : V1 →ₗ[k] V2) (p h) : (mk' f f' p h)
 
 section SMul
 
+instance {R : Type*} [DistribSMul R V2] [SMulCommClass k R V2] : SMul R (P1 →ᵃ[k] V2) where
+  smul c f := ⟨c • ⇑f, c • f.linear, by simp⟩
+
+instance {R : Type*} [DistribSMul R V2] [SMulCommClass k R V2] : IsSMulApply R (P1 →ᵃ[k] V2) where
+
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
-instance : SMul R (P1 →ᵃ[k] V2) where
-  smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add]⟩
-
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
-instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
-  smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add]⟩
-  one_smul _ := ext fun _ => one_smul _ _
-  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
+instance mulAction : MulAction R (P1 →ᵃ[k] V2) := fast_instance% FunLike.mulAction
 
-@[simp, norm_cast]
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-11-02")]
 theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=
   rfl
 
@@ -239,35 +241,42 @@ theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.l
   rfl
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] :
-    IsCentralScalar R (P1 →ᵃ[k] V2) where
-  op_smul_eq_smul _r _x := ext fun _ => op_smul_eq_smul _ _
+    IsCentralScalar R (P1 →ᵃ[k] V2) := FunLike.isCentralScalar
 
 end SMul
 
 instance : Zero (P1 →ᵃ[k] V2) where zero := ⟨0, 0, fun _ _ => (zero_vadd _ _).symm⟩
 
+instance : IsZeroApply (P1 →ᵃ[k] V2) where
+
 instance : Add (P1 →ᵃ[k] V2) where
   add f g := ⟨f + g, f.linear + g.linear, fun p v => by simp [add_add_add_comm]⟩
+
+instance : IsAddApply (P1 →ᵃ[k] V2) where
 
 instance : Sub (P1 →ᵃ[k] V2) where
   sub f g := ⟨f - g, f.linear - g.linear, fun p v => by simp [sub_add_sub_comm]⟩
 
+instance : IsSubApply (P1 →ᵃ[k] V2) where
+
 instance : Neg (P1 →ᵃ[k] V2) where
   neg f := ⟨-f, -f.linear, fun p v => by simp [add_comm, map_vadd f]⟩
 
-@[simp, norm_cast]
+instance : IsNegApply (P1 →ᵃ[k] V2) where
+
+@[deprecated FunLike.coe_zero +typeChanged (since := "2026-11-02")]
 theorem coe_zero : ⇑(0 : P1 →ᵃ[k] V2) = 0 :=
   rfl
 
-@[simp, norm_cast]
+@[deprecated FunLike.coe_add +typeChanged (since := "2026-11-02")]
 theorem coe_add (f g : P1 →ᵃ[k] V2) : ⇑(f + g) = f + g :=
   rfl
 
-@[simp, norm_cast]
+@[deprecated FunLike.coe_neg +typeChanged (since := "2026-11-02")]
 theorem coe_neg (f : P1 →ᵃ[k] V2) : ⇑(-f) = -f :=
   rfl
 
-@[simp, norm_cast]
+@[deprecated FunLike.coe_sub +typeChanged (since := "2026-11-02")]
 theorem coe_sub (f g : P1 →ᵃ[k] V2) : ⇑(f - g) = f - g :=
   rfl
 
@@ -288,9 +297,7 @@ theorem neg_linear (f : P1 →ᵃ[k] V2) : (-f).linear = -f.linear :=
   rfl
 
 /-- The set of affine maps to a vector space is an additive commutative group. -/
-instance : AddCommGroup (P1 →ᵃ[k] V2) :=
-  coeFn_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _)
-    fun _ _ => coe_smul _ _
+instance : AddCommGroup (P1 →ᵃ[k] V2) := fast_instance% FunLike.addCommGroup
 
 /-- The space of affine maps from `P1` to `P2` is an affine space over the space of affine maps
 from `P1` to the vector space `V2` corresponding to `P2`. -/
@@ -307,7 +314,8 @@ instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vadd_vsub' f g := ext fun p => vadd_vsub (f p) (g p)
 
 @[simp]
-theorem vadd_apply (f : P1 →ᵃ[k] V2) (g : P1 →ᵃ[k] P2) (p : P1) : (f +ᵥ g) p = f p +ᵥ g p :=
+protected theorem vadd_apply (f : P1 →ᵃ[k] V2) (g : P1 →ᵃ[k] P2) (p : P1) :
+    (f +ᵥ g) p = f p +ᵥ g p :=
   rfl
 
 @[simp]
@@ -408,18 +416,31 @@ theorem comp_assoc (f₃₄ : P3 →ᵃ[k] P4) (f₂₃ : P2 →ᵃ[k] P3) (f₁
     (f₃₄.comp f₂₃).comp f₁₂ = f₃₄.comp (f₂₃.comp f₁₂) :=
   rfl
 
-instance : Monoid (P1 →ᵃ[k] P1) where
+instance : One (P1 →ᵃ[k] P1) where
   one := id k P1
-  mul := comp
-  one_mul := id_comp
-  mul_one := comp_id
-  mul_assoc := comp_assoc
 
-@[simp]
+instance : IsOneApplyEqSelf (P1 →ᵃ[k] P1) where
+
+instance : Mul (P1 →ᵃ[k] P1) where
+  mul := comp
+
+instance : IsMulApplyEqComp (P1 →ᵃ[k] P1) where
+
+instance : Pow (P1 →ᵃ[k] P1) ℕ where
+  pow f n := ⟨(⇑f)^[n], f.linear ^ n, by
+    induction n with
+    | zero => simp
+    | succ n hn => simp [hn, pow_succ]⟩
+
+instance : IsNPowApplyEqIterate (P1 →ᵃ[k] P1) where
+
+instance : Monoid (P1 →ᵃ[k] P1) := fast_instance% FunLike.compMonoid
+
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-11-02")]
 theorem coe_mul (f g : P1 →ᵃ[k] P1) : ⇑(f * g) = f ∘ g :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-11-02")]
 theorem coe_one : ⇑(1 : P1 →ᵃ[k] P1) = _root_.id :=
   rfl
 
@@ -698,9 +719,8 @@ section DistribMulAction
 variable [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
-instance distribMulAction : DistribMulAction R (P1 →ᵃ[k] V2) where
-  smul_add _ _ _ := ext fun _ => smul_add _ _ _
-  smul_zero _ := ext fun _ => smul_zero _
+instance distribMulAction : DistribMulAction R (P1 →ᵃ[k] V2) :=
+  fast_instance% FunLike.distribMulAction
 
 end DistribMulAction
 
@@ -709,10 +729,7 @@ section Module
 variable [Semiring R] [Module R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps taking values in an `R`-module is an `R`-module. -/
-instance : Module R (P1 →ᵃ[k] V2) :=
-  { AffineMap.distribMulAction with
-    add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _
-    zero_smul := fun _ => ext fun _ => zero_smul _ _ }
+instance : Module R (P1 →ᵃ[k] V2) := fast_instance% FunLike.module
 
 variable (R)
 
