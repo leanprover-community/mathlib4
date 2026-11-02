@@ -60,11 +60,12 @@ instance : SetLike (LieRinehartSubalgebra A L) L where
 
 instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L)
 
-instance : Top (LieRinehartSubalgebra A L) := ⟨{ (⊤ : Submodule A L) with
-      lie_mem' {_ _} _ _ := by aesop }⟩
+initialize_simps_projections LieRinehartSubalgebra (carrier → coe, as_prefix coe)
 
-@[simp]
-theorem coe_top : ((⊤ : LieRinehartSubalgebra A L) : Set L) = Set.univ := rfl
+@[simps! top_toSubmodule top_coe]
+instance : Top (LieRinehartSubalgebra A L) where
+  top.toSubmodule := ⊤
+  top.lie_mem' := by aesop
 
 @[simp]
 theorem coe_eq_univ (L' : LieRinehartSubalgebra A L) : (L' : Set L) = Set.univ ↔ L' = ⊤ := by
