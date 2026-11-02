@@ -104,7 +104,7 @@ theorem condExpIndL1Fin_smul (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : �
   grw [Lp.coeFn_smul, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndL1Fin_ae_eq_condExpIndSMul,
     condExpIndSMul_smul, Lp.coeFn_smul]
 
-theorem condExpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs : MeasurableSet s)
+theorem condExpIndL1Fin_smul' [NormedSpace ℝ F] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (c : 𝕜) (x : F) :
     condExpIndL1Fin hm hs hμs (c • x) = c • condExpIndL1Fin hm hs hμs x := by
   ext1
@@ -186,7 +186,7 @@ theorem condExpIndL1_smul (c : ℝ) (x : G) :
   · simp_rw [condExpIndL1_of_measurableSet_of_measure_ne_top hs hμs]
     exact condExpIndL1Fin_smul hs hμs c x
 
-theorem condExpIndL1_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
+theorem condExpIndL1_smul' [NormedSpace ℝ F] (c : 𝕜) (x : F) :
     condExpIndL1 hm μ s (c • x) = c • condExpIndL1 hm μ s x := by
   by_cases hs : MeasurableSet s
   swap; · simp_rw [condExpIndL1_of_not_measurableSet hs]; rw [smul_zero]
@@ -252,7 +252,7 @@ theorem condExpInd_empty : condExpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[�
   grw [condExpInd_ae_eq_condExpIndSMul hm MeasurableSet.empty (by simp), condExpIndSMul_empty,
     zero_apply, Lp.coeFn_zero, Lp.coeFn_zero]
 
-theorem condExpInd_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
+theorem condExpInd_smul' [NormedSpace ℝ F] (c : 𝕜) (x : F) :
     condExpInd F hm μ s (c • x) = c • condExpInd F hm μ s x :=
   condExpIndL1_smul' c x
 
