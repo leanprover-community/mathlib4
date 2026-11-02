@@ -497,7 +497,8 @@ theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
 @[deprecated coeff_one_zero +typeChanged (since := "2026-10-25")]
 protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by simp
 
--- `simp [X]` parses as `Polynomial simp`!
+-- `simp [X]` parses as `simp` + `[X]` (where `[X]` is the token coming from `Polynomial` notation)
+-- instead of the expected `simp` + `[` + `X` + `]` because the former is a longer match!
 @[simp]
 theorem coeff_X_one : coeff (X : R[X]) 1 = 1 := by simp [X,]
 
