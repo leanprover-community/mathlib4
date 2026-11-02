@@ -272,7 +272,6 @@ noncomputable def homotopyCofiber : HomologicalComplex C c where
 
 namespace homotopyCofiber
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The right inclusion `G ⟶ homotopyCofiber φ`. -/
 @[simps!]
 noncomputable def inr : G ⟶ homotopyCofiber φ where
@@ -310,7 +309,6 @@ section
 
 variable (α : G ⟶ K) (hα : Homotopy (φ ≫ α) 0)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `homotopyCofiber φ ⟶ K` that is induced by a morphism `α : G ⟶ K`
 and a homotopy `hα : Homotopy (φ ≫ α) 0`. -/
 noncomputable def desc :
@@ -346,19 +344,16 @@ lemma inlX_desc_f (i j : ι) (hjk : c.Rel j i) :
   dsimp [desc]
   rw [dite_eq_left hjk, comp_add, inlX_fstX_assoc, inlX_sndX_assoc, zero_comp, add_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inrX_desc_f (i : ι) :
     inrX φ i ≫ (desc φ α hα).f i = α.f i := by
   dsimp [desc]
   split_ifs <;> simp
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inr_desc :
     inr φ ≫ desc φ α hα = α := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inrCompHomotopy_hom_desc_hom (hc : ∀ j, ∃ i, c.Rel i j) (i j : ι) :
     (inrCompHomotopy φ hc).hom i j ≫ (desc φ α hα).f j = hα.hom i j := by
@@ -368,7 +363,6 @@ lemma inrCompHomotopy_hom_desc_hom (hc : ∀ j, ∃ i, c.Rel i j) (i j : ι) :
       comp_add, inlX_fstX_assoc, inlX_sndX_assoc, zero_comp, add_zero]
   · simp only [Homotopy.zero _ _ _ hij, zero_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma eq_desc (f : homotopyCofiber φ ⟶ K) (hc : ∀ j, ∃ i, c.Rel i j) :
     f = desc φ (inr φ ≫ f) (Homotopy.trans (Homotopy.ofEq (by simp))
       (((inrCompHomotopy φ hc).compRight f).trans (Homotopy.ofEq (by simp)))) := by
@@ -416,7 +410,6 @@ variable {F' F'' G' G'' : HomologicalComplex C c} (φ' : F' ⟶ G') (φ'' : F'' 
   [HasHomotopyCofiber φ'] [HasHomotopyCofiber φ'']
   (H : ∀ (j : ι), ∃ i, c.Rel i j)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism between homotopy cofibers that is induced by a
 morphism of arrows. -/
 noncomputable def mapArrowHom (α : Arrow.mk φ ⟶ Arrow.mk φ') :
@@ -426,7 +419,6 @@ noncomputable def mapArrowHom (α : Arrow.mk φ ⟶ Arrow.mk φ') :
         simp [reassoc_of% dsimp% α.w])).trans (((inrCompHomotopy φ' H).compLeft α.left).trans
       (Homotopy.ofEq (by simp))))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapArrowHom_id : mapArrowHom φ φ H (𝟙 _) = 𝟙 _ := by
@@ -437,7 +429,6 @@ lemma mapArrowHom_id : mapArrowHom φ φ H (𝟙 _) = 𝟙 _ := by
     all_goals simp [mapArrowHom, desc_f _ _ _ _ _ hi, inrCompHomotopy_hom _ _ _ _ hi]
   · exact ext_to_X' _ _ hi (by simp [mapArrowHom, desc_f' _ _ _ _ hi])
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapArrowHom_comp
@@ -506,7 +497,6 @@ lemma map_inrX_mapHomologicalComplexObjXIso_hom (i : ι) :
       inrX ((H.mapHomologicalComplex c).map φ) i := by
   rw [← inrX_mapHomologicalComplexObjXIso_inv_assoc, Iso.inv_hom_id, comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism expressing the commutation between taking
 the homotopy cofiber of a morphism of homological complexes and
 applying an additive functor. -/
@@ -599,7 +589,6 @@ noncomputable abbrev inlX (i j : ι) (hij : c.Rel j i) : K.X i ⟶ K.cylinder.X 
 noncomputable abbrev inrX (i : ι) : (K ⊞ K).X i ⟶ K.cylinder.X i :=
   homotopyCofiber.inrX (biprod.lift (𝟙 K) (-𝟙 K)) i
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inlX_π (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (π K).f j = 0 := by
