@@ -371,7 +371,7 @@ where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
       else return none
     | _ => pure none
 
-/-- Attempt to find the trivial model on a normed space. -/
+/-- Attempt to interpret `e` as a normed space and return its trivial model with corners. -/
 private def fromNormedSpace (e : Expr) :
     TermElabM FindModelResult := do
   let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
@@ -387,7 +387,7 @@ private def fromNormedSpace (e : Expr) :
     normedSpaceInfo? := some { normedSpace := e, baseField := K }
   }
 
-/-- Attempt to find a model on a `TangentBundle` -/
+/-- Attempt to interpret `e` as a `TangentBundle` and return its model with corners. -/
 private def fromTangentBundle (e : Expr) : TermElabM Expr := do
   match_expr e with
   | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
@@ -395,7 +395,7 @@ private def fromTangentBundle (e : Expr) : TermElabM Expr := do
     mkAppM ``ModelWithCorners.tangent #[I]
   | _ => throwError "`{e}` is not a `TangentBundle`"
 
-/-- Attempt to find the trivial model on an inner product space. -/
+/-- Attempt to interpret `e` as an inner product space and return its trivial model with corners. -/
 private def fromInnerProductSpace (e : Expr) : TermElabM FindModelResult := do
   let some (inst, K) ← findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
     -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
@@ -413,10 +413,9 @@ private def fromInnerProductSpace (e : Expr) : TermElabM FindModelResult := do
     normedSpaceInfo? := some { normedSpace := e, baseField := K }
   }
 
-/-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant
-on a type (represented by an expression `e`):
-if successful, return `some m` where `m` is an expression describing the model found.
-Otherwise, return `none`. -/
+/-- Attempt to interpret `e` as a Euclidean space, half-space or quadrant.
+If successful, return `some m` where `m` describes its model with corners;
+otherwise return `none`. -/
 -- Shared function used for the `fromManifold` and `fromEuclideanSpace` strategies.
 private def tryFromEuclideanSpace (e : Expr) : TermElabM (Option Expr) := do
   -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
@@ -432,7 +431,8 @@ private def tryFromEuclideanSpace (e : Expr) : TermElabM (Option Expr) := do
     mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
   | _ => return none
 
-/-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
+/-- Attempt to interpret `e` as a manifold, or as the charted space of a manifold,
+and return its model with corners. -/
 private def fromManifold (e : Expr) : TermElabM Expr := do
   -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
   -- or `e` is `H` itself.
@@ -477,7 +477,8 @@ private def fromManifold (e : Expr) : TermElabM Expr := do
         mkAppOptM ``modelWithCornersSelf #[H, none, H, none, none]
   return m
 
-/-- Attempt to find a model with corners on a space of continuous linear maps -/
+/-- Attempt to interpret `e` as a space of continuous linear maps
+and return its trivial model with corners. -/
 -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
 -- corners as a normed space. Merely linear maps are not a normed space either.
 private def fromCLM (e : Expr) : TermElabM Expr := do
@@ -488,18 +489,20 @@ private def fromCLM (e : Expr) : TermElabM Expr := do
   let (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
   mkAppOptM ``modelWithCornersSelf #[k, none, e, none, none]
 
-/-- Attempt to find a model with corners on a space of continuous alternating linear maps -/
+/-- Attempt to interpret `e` as a space of continuous alternating linear maps
+and return its trivial model with corners. -/
 private def fromCAM (e : Expr) : TermElabM Expr := do
   let (R, _M, _N, _ι) ← isContAlternatingMaps e
   mkAppOptM ``modelWithCornersSelf #[R, none, e, none, none]
 
-/-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
+/-- Attempt to interpret `e` as a Euclidean space, half-space or quadrant
+and return its model with corners. -/
 private def fromEuclideanSpace (e : Expr) : TermElabM Expr := do
   if let some m ← tryFromEuclideanSpace e then return m else
   throwError "`{e}` is not a Euclidean space, half-space or quadrant"
 
-/-- Attempt to find a model with corners on a closed interval of real numbers,
-or on the unit interval of real numbers -/
+/-- Attempt to interpret `e` as a closed real interval or the real unit interval
+and return its model with corners. -/
 private def fromRealInterval (e : Expr) : TermElabM Expr := do
   let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
     | throwError "`{e}` is not a coercion of a set to a type"
@@ -522,14 +525,16 @@ private def fromRealInterval (e : Expr) : TermElabM Expr := do
       which is not reducibly definitionally equal to ℝ"
   | _ => throwError "`{e}` is not a closed real interval"
 
-/-- Attempt to find a model with corners on the upper half plane in complex space -/
+/-- Attempt to interpret `e` as the complex upper half plane
+and return its model with corners. -/
 private def fromUpperHalfPlane (e : Expr) : TermElabM Expr := do
   -- We don't use `match_expr` to avoid importing `UpperHalfPlane`.
   if (← instantiateMVars e).cleanupAnnotations.isConstOf `UpperHalfPlane then
     mkAppOptM ``modelWithCornersSelf #[mkConst `Complex, none, mkConst `Complex, none, none]
   else throwError "`{e}` is not the complex upper half plane"
 
-/-- Attempt to find a model with corners on the units in a normed algebra -/
+/-- Attempt to interpret `e` as the units in a normed algebra
+and return its model with corners. -/
 private def fromUnitsOfAlgebra (e : Expr) : TermElabM Expr := do
   match_expr e with
   | Units α _ =>
@@ -591,7 +596,7 @@ private def fromUnitsOfAlgebra (e : Expr) : TermElabM Expr := do
           co-domain `{W}` being not definitionally equal"
   | _ => throwError "`{e}` is not a set of units, in particular not of a complete normed algebra"
 
-/-- Attempt to find a model with corners on the complex unit circle -/
+/-- Attempt to interpret `e` as the complex unit circle and return its model with corners. -/
 private def fromCircle (e : Expr) : TermElabM Expr := do
   -- We don't use `match_expr` to avoid importing `Circle`.
   if (← instantiateMVars e).cleanupAnnotations.isConstOf `Circle then
@@ -600,7 +605,8 @@ private def fromCircle (e : Expr) : TermElabM Expr := do
     mkAppOptM ``modelWithCornersSelf #[q(ℝ), none, euclE, none, none]
   else throwError "`{e}` is not the complex unit circle"
 
-/-- Attempt to find a model with corners on a metric sphere in a real normed space -/
+/-- Attempt to interpret `e` as a metric sphere in a real normed space
+and return its model with corners. -/
 private def fromSphere (e : Expr) : TermElabM Expr := do
   let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
     | throwError "`{e}` is not a coercion of a set to a type"
@@ -667,7 +673,8 @@ private def fromSphere (e : Expr) : TermElabM Expr := do
     else throwError "found no real normed space instance on `{α}`"
   | _ => throwError "`{e}` is not a sphere in a real normed space"
 
-/-- Attempt to find a model with corners from a normed field.
+/-- Attempt to interpret `e` as a nontrivially normed field
+and return its trivial model with corners.
 We attempt to find a global instance here. -/
 private def fromNormedField (e : Expr) : TermElabM Expr :=
   mkAppOptM ``modelWithCornersSelf #[e, none, e, none, none]
