@@ -403,6 +403,10 @@ lemma coe_eq_zero_iff_of_mem_Ico (ha : a ∈ Ico 0 p) :
   have ha' : a ∈ Ico 0 (0 + p) := by rwa [zero_add]
   rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico ha' h0, QuotientAddGroup.mk_zero]
 
+instance [DenselyOrdered 𝕜] : Infinite (AddCircle p) :=
+  (equivIco p 0).infinite_iff.mpr <| Set.infinite_coe_iff.mpr <| Set.Ico_infinite <| by
+    simpa using hp.out
+
 variable (p a)
 
 section Continuity
