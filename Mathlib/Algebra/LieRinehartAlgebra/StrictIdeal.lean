@@ -213,7 +213,7 @@ variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ 
 
 /-- The preimage of a strict Lie-Rinehart ideal under a homomorphism `f` (which lies over the
 identity of `A`) is a strict Lie-Rinehart ideal. -/
-def comap (f : L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
+ @[expose] def comap (f : L₁ →ₗ⁅(AlgHom.id R A)⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
     StrictLieRinehartIdeal A L₁ := {
   s₂.toSubmodule.comap (f.toLinearMap') with
   ideal' {x y} h := by
@@ -242,10 +242,11 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
 
 /-- The kernel of a Lie-Rinehart homomorphism `f` (which lies over the
 identity of `A`) is a strict Lie-Rinehart ideal. -/
-def ker : StrictLieRinehartIdeal A L₁ := StrictLieRinehartIdeal.comap f 0
+@[expose] def ker : StrictLieRinehartIdeal A L₁ := StrictLieRinehartIdeal.comap f 0
 
-@[simp]
-theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := Iff.rfl
+@[simp] theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := Iff.rfl
+
+@[simp] theorem coe_ker : (f.ker : Set L₁) = f⁻¹' {0} := rfl
 
 end Hom
 
