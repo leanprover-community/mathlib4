@@ -369,7 +369,7 @@ instance : IsAffineHom (𝔸(n; S) ↘ S) := MorphismProperty.pullback_fst _ _ i
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance : Surjective (𝔸(n; S) ↘ S) := MorphismProperty.pullback_fst _ _ <| by
-  have := isIso_of_isTerminal specULiftZIsTerminal terminalIsTerminal (terminal.from _)
+  have := specULiftZIsTerminal.isIso terminalIsTerminal (terminal.from _)
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
     MorphismProperty.cancel_right_of_respectsIso (P := @Surjective)]
   exact ⟨MvPolynomial.comap_C_surjective⟩
@@ -380,7 +380,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 instance smoothOfRelativeDimension [Finite n] :
     SmoothOfRelativeDimension (Nat.card n) (𝔸(n; S) ↘ S) :=
   MorphismProperty.pullback_fst _ _ <| by
-  have := isIso_of_isTerminal specULiftZIsTerminal.{u} terminalIsTerminal (terminal.from _)
+  have := (specULiftZIsTerminal.{u}).isIso terminalIsTerminal (terminal.from _)
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
     MorphismProperty.cancel_right_of_respectsIso (P := @SmoothOfRelativeDimension _),
     HasRingHomProperty.Spec_iff (P := @SmoothOfRelativeDimension _)]
@@ -457,7 +457,7 @@ instance [IsEmpty n] : IsIso (𝔸(n; S) ↘ S) := pullback_fst
       ← arrow_mk_iso_iff (isomorphisms _) (arrowIsoΓSpecOfIsAffine _)]
     exact ⟨inferInstance, (ConcreteCategory.isIso_iff_bijective _).mpr
       ⟨C_injective n _, C_surjective _⟩⟩
-  · exact isIso_of_isTerminal specULiftZIsTerminal terminalIsTerminal (terminal.from _)
+  · exact specULiftZIsTerminal.isIso terminalIsTerminal (terminal.from _)
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEmpty S ∨ IsEmpty n := by

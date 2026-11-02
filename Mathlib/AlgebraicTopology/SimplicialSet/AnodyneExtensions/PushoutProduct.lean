@@ -152,7 +152,7 @@ instance {A B : SSet.{u}} (i : A ⟶ B) [Mono i] (X : SSet.{u}) [KanComplex X] :
 
 instance (A : SSet.{u}) : KanComplex ((ihom A).obj (⊤_ _)) := by
   have : IsIso (terminal.from ((ihom A).obj (⊤_ _))) :=
-    isIso_of_isTerminal (IsTerminal.isTerminalObj _ _ terminalIsTerminal)
+    (IsTerminal.isTerminalObj _ _ terminalIsTerminal).isIso
       terminalIsTerminal _
   infer_instance
 
