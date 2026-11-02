@@ -79,7 +79,7 @@ lemma sturmBoundSL2Z (k : ℤ) : sturmBound 𝒮ℒ k = k / 12 := by
   simp [sturmBound, hindex]
 
 private lemma eq_zero_of_sturmBound_lt_orderAtInfty_SL2Z {k : ℤ}
-    (f : ModularForm 𝒮ℒ k) (hf : (sturmBound 𝒮ℒ k : EReal) < orderAtInfty f) : f = 0 := by
+    {f : ModularForm 𝒮ℒ k} (hf : (sturmBound 𝒮ℒ k : EReal) < orderAtInfty f) : f = 0 := by
   rw [sturmBoundSL2Z, orderAtInfty_eq_qExpansion_order one_pos
     (SlashInvariantFormClass.periodic_comp_ofComplex f one_mem_strictPeriods_SL)
     (ModularFormClass.holo f) (ModularFormClass.bdd_at_infty f), EReal.coe_one, div_one] at hf
@@ -97,10 +97,10 @@ private lemma eq_zero_of_sturmBound_lt_orderAtInfty_SL2Z {k : ℤ}
 private lemma totalCuspOrder_le_sturmBound_of_le
     {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
     (hG : G ≤ 𝒮ℒ) (hneg : (-1 : GL (Fin 2) ℝ) ∈ G)
-    {k : ℤ} (f : ModularForm G k) (hf : f ≠ 0) : totalCuspOrder G k f ≤ G.sturmBound k := by
+    {k : ℤ} {f : ModularForm G k} (hf : f ≠ 0) : totalCuspOrder G k f ≤ G.sturmBound k := by
   have hn : ModularForm.norm 𝒮ℒ f ≠ 0 := ModularForm.norm_ne_zero 𝒮ℒ (by simpa using hf)
   have hbound : orderAtInfty (ModularForm.norm 𝒮ℒ f) ≤ sturmBound 𝒮ℒ (k * G.relIndex 𝒮ℒ) :=
-    le_of_not_gt fun h ↦ hn (eq_zero_of_sturmBound_lt_orderAtInfty_SL2Z _ h)
+    le_of_not_gt fun h ↦ hn (eq_zero_of_sturmBound_lt_orderAtInfty_SL2Z h)
   have hrat : G.ratProjIndex = (G.relIndex 𝒮ℒ : ℚ) := by
     simp [ratProjIndex, adjoinNegOne_eq_self_iff.mpr hneg, relIndex_eq_one.mpr hG]
   rw [sturmBoundSL2Z] at hbound
@@ -112,14 +112,14 @@ private lemma totalCuspOrder_le_sturmBound_of_le
     Int.cast_natCast] using hnorm.trans hbound
 
 private lemma totalCuspOrder_le_sturmBound_of_negOne_mem
-    (H : Subgroup (GL (Fin 2) ℝ)) [H.IsArithmetic] [H.HasDetOne]
-    (hneg : (-1 : GL (Fin 2) ℝ) ∈ H) {k : ℤ} (f : ModularForm H k) (hf : f ≠ 0) :
+    {H : Subgroup (GL (Fin 2) ℝ)} [H.IsArithmetic] [H.HasDetOne]
+    (hneg : (-1 : GL (Fin 2) ℝ) ∈ H) {k : ℤ} {f : ModularForm H k} (hf : f ≠ 0) :
     totalCuspOrder H k f ≤ H.sturmBound k := by
   let G := H ⊓ (𝒮ℒ : Subgroup (GL (Fin 2) ℝ))
   have hnegG : (-1 : GL (Fin 2) ℝ) ∈ G :=
     ⟨hneg, ⟨-1, by ext i j; simp [mapGL_coe_matrix]⟩⟩
   have hbound : totalCuspOrder G k (ModularForm.restrict inf_le_left f) ≤ G.sturmBound k :=
-    totalCuspOrder_le_sturmBound_of_le inf_le_right hnegG _ <| by aesop
+    totalCuspOrder_le_sturmBound_of_le inf_le_right hnegG <| by aesop
   have hsum : (G.relIndex H : EReal) * totalCuspOrder H k f ≤ G.sturmBound k :=
     (relIndex_mul_totalCuspOrder_eq_restrict inf_le_left hnegG f).le.trans hbound
   have hrat : (G.ratProjIndex : ℝ) = G.relIndex H * (H.ratProjIndex : ℝ) :=
@@ -141,11 +141,11 @@ namespace ModularForm
 /-- The total cusp order of a nonzero modular form is at most the Sturm bound. -/
 lemma totalCuspOrder_le_sturmBound
     {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [G.HasDetOne] {k : ℤ}
-    (f : ModularForm G k) (hf : f ≠ 0) : totalCuspOrder G k f ≤ G.sturmBound k := by
+    {f : ModularForm G k} (hf : f ≠ 0) : totalCuspOrder G k f ≤ G.sturmBound k := by
   have hsum : (G.relIndex G.adjoinNegOne : EReal) * totalCuspOrder G k f ≤
       G.adjoinNegOne.sturmBound (k * G.relIndex G.adjoinNegOne) :=
     (relIndex_mul_totalCuspOrder_le_norm_adjoinNegOne f).trans <|
-      Subgroup.totalCuspOrder_le_sturmBound_of_negOne_mem _ G.neg_one_mem_adjoinNegOne _ <|
+      Subgroup.totalCuspOrder_le_sturmBound_of_negOne_mem G.neg_one_mem_adjoinNegOne <|
         ModularForm.norm_ne_zero _ (by simpa using hf)
   have hbudget : (G.adjoinNegOne.sturmBound (k * G.relIndex G.adjoinNegOne) : EReal) /
       G.relIndex G.adjoinNegOne = G.sturmBound k := by
@@ -159,19 +159,19 @@ lemma totalCuspOrder_le_sturmBound
 /-- A form vanishes if its total cusp order exceeds the Sturm bound. -/
 lemma eq_zero_of_totalCuspOrder_gt_sturmBound
     {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [G.HasDetOne] {k : ℤ}
-    (f : ModularForm G k) (hf : (G.sturmBound k : EReal) < totalCuspOrder G k f) : f = 0 := by
+    {f : ModularForm G k} (hf : (G.sturmBound k : EReal) < totalCuspOrder G k f) : f = 0 := by
   grind [totalCuspOrder_le_sturmBound]
 
 /-- A form vanishes if its width-weighted order at infinity exceeds the Sturm bound. -/
 lemma eq_zero_of_sturmBound_lt_orderAtInfty
     {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] [G.HasDetOne] {k : ℤ}
-    (f : ModularForm G k) (hf : (G.sturmBound k : EReal) < G.widthInfty * orderAtInfty f) :
+    {f : ModularForm G k} (hf : (G.sturmBound k : EReal) < G.widthInfty * orderAtInfty f) :
     f = 0 := by
-  apply eq_zero_of_totalCuspOrder_gt_sturmBound f
+  apply eq_zero_of_totalCuspOrder_gt_sturmBound
   have h : orderAtCuspOrbit G k ⟦⟨∞, (Fact.out : IsCusp ∞ G)⟩⟧ f ≤
       totalCuspOrder G k f :=
-    orderAtCuspOrbit_le_totalCuspOrder G k ⟦⟨∞, (Fact.out : IsCusp ∞ G)⟩⟧ f
-  rw [orderAtCuspOrbit_mk, orderAtCusp_infty G k Fact.out f] at h
+    orderAtCuspOrbit_le_totalCuspOrder k ⟦⟨∞, (Fact.out : IsCusp ∞ G)⟩⟧ f
+  rw [orderAtCuspOrbit_mk, orderAtCusp_infty Fact.out k f] at h
   exact hf.trans_le h
 
 private noncomputable def qExpansionCoeffMap {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
@@ -185,7 +185,8 @@ private noncomputable def qExpansionCoeffMap {G : Subgroup (GL (Fin 2) ℝ)} [G.
     simp [ModularForm.qExpansion_smul G.strictWidthInfty_pos G.strictWidthInfty_mem_strictPeriods]
 
 private lemma qExpansionCoeffMap_injective {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
-    [G.HasDetOne] {k : ℤ} {N : ℕ} (hN : G.regularityFactorInfty * G.sturmBound k < N) :
+    [G.HasDetOne] [Decidable G.IsRegularAtInfty] {k : ℤ} {N : ℕ}
+    (hN : G.regularityFactorInfty * G.sturmBound k < N) :
     Function.Injective (qExpansionCoeffMap k N : ModularForm G k → Fin N → ℂ) := by
   refine (injective_iff_map_eq_zero _).mpr fun f hf ↦ of_not_not fun hne ↦ ?_
   have horder : (N : EReal) ≤ (qExpansion G.strictWidthInfty f).order := by
@@ -193,8 +194,8 @@ private lemma qExpansionCoeffMap_injective {G : Subgroup (GL (Fin 2) ℝ)} [G.Is
       NNReal.coe_natCast, EReal.coe_natCast] using EReal.coe_ennreal_le_coe_ennreal_iff.mpr
       (ENat.toENNReal_le.mpr (PowerSeries.nat_le_order_iff.mpr fun i hi ↦ congrFun hf ⟨i, hi⟩))
   have hN' : (G.regularityFactorInfty : EReal) * (G.sturmBound k : EReal) < N := mod_cast hN
-  exact hN'.not_ge (horder.trans ((qExpansion_order_le_totalCuspOrder G k f).trans
-    (mul_le_mul_of_nonneg_left (totalCuspOrder_le_sturmBound f hne) (by positivity))))
+  exact hN'.not_ge (horder.trans ((qExpansion_order_le_totalCuspOrder k f).trans
+    (mul_le_mul_of_nonneg_left (totalCuspOrder_le_sturmBound hne) (by positivity))))
 
 open scoped Classical in
 private noncomputable def sturmCoeffIndex (G : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) (n : ℕ) : ℕ :=
@@ -213,6 +214,7 @@ private noncomputable def sturmCoeffMap {G : Subgroup (GL (Fin 2) ℝ)} [G.IsAri
 private lemma sturmCoeffMap_injective {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
     [G.HasDetOne] {k : ℤ} {N : ℕ} (hN : G.sturmBound k < N) :
     Function.Injective (sturmCoeffMap k N : ModularForm G k → Fin N → ℂ) := by
+  classical
   by_cases hreg : G.IsRegularAtInfty
   · simpa [sturmCoeffMap, sturmCoeffIndex, hreg, qExpansionCoeffMap] using
       qExpansionCoeffMap_injective (G := G) (N := N) (by simpa [hreg] using hN)
@@ -253,7 +255,7 @@ instance finiteDimensional_real (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic]
 real-linearly independent families to complex-linearly independent families. -/
 lemma linearIndependent_restrict_detOnePart
     {G : Subgroup (GL (Fin 2) ℝ)} {k : ℤ} {ι : Type*}
-    (f : ι → ModularForm G k) (hf : LinearIndependent ℝ f) {γ : GL (Fin 2) ℝ}
+    {f : ι → ModularForm G k} (hf : LinearIndependent ℝ f) {γ : GL (Fin 2) ℝ}
     (hγ : γ ∈ G) (hdet : γ.det = -1) :
     LinearIndependent ℂ (fun i ↦ (ModularForm.restrict G.detOnePart_le (f i) :
       ModularForm G.detOnePart k)) := by
@@ -304,7 +306,7 @@ lemma restrictBaseChange_injective
   let b := Module.Free.chooseBasis ℝ (ModularForm G k)
   rw [restrictBaseChange, LinearMap.liftBaseChange_injective_iff _ b]
   simpa [Function.comp_def] using
-    linearIndependent_restrict_detOnePart b b.linearIndependent hγ hdet
+    linearIndependent_restrict_detOnePart b.linearIndependent hγ hdet
 
 /-- The real dimension at an arbitrary arithmetic level is bounded using restriction to its
 determinant-one subgroup. -/
@@ -317,7 +319,7 @@ lemma finrank_real_le (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ)
 /-- If an arithmetic subgroup contains an element of determinant `-1`, its real dimension is
 bounded by the complex Sturm bound for its determinant-one part, with no factor of two. -/
 lemma finrank_real_le_of_exists_det_eq_neg_one
-    (G : Subgroup (GL (Fin 2) ℝ)) [G.IsArithmetic] (k : ℤ)
+    {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic] (k : ℤ)
     (hdet : ∃ γ ∈ G, γ.det = -1) :
     Module.finrank ℝ (ModularForm G k) ≤ ⌊G.detOnePart.sturmBound k⌋₊ + 1 := by
   obtain ⟨γ, hγ, hγdet⟩ := hdet
