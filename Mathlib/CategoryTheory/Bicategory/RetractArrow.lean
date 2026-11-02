@@ -68,7 +68,7 @@ lemma comm' {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f) :
   simp
 
 /-- If a `1`-morphism is a retract of another, it stays so
-after the applicaton of a pseudofunctor. -/
+after the application of a pseudofunctor. -/
 @[implicit_reducible, simps]
 def map {f' : X' ⟶ Y'} {f : X ⟶ Y} (r : RetractArrow₁ f' f)
     {D : Type*} [Bicategory D] (F : C ⥤ᵖ D) :

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Ideal.Span
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounding the coefficients of the quotient and remainder of polynomials
 

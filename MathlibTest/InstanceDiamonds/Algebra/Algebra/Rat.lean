@@ -1,4 +1,6 @@
-import Mathlib.Algebra.Algebra.Rat
+module
+
+public import Mathlib.Algebra.Algebra.Rat
 
 /-- The two `Algebra ℚ≥0 ℚ≥0` instances should coincide. -/
 example : DivisionSemiring.toNNRatAlgebra = Algebra.id ℚ≥0 := rfl
