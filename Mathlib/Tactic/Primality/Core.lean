@@ -61,7 +61,7 @@ where
     return cert
 
 /-- Finds a certificate for `p` with the options in `cfg`. The search of a certificate family
-throws its own error at the first value it cannot certify. -/
+throws its own error at the first value it cannot find a witness. -/
 def findCert (cfg : CertConfig) (known : Array Nat) (p : Nat) : CoreM (Cert p) :=
   match cfg with
   | .lucas lucasCfg =>
@@ -69,7 +69,7 @@ def findCert (cfg : CertConfig) (known : Array Nat) (p : Nat) : CoreM (Cert p) :
       lucasCfg.toPrimitiveRootFinder (.ofArray known) p
 
 /-- Proves `Nat.Prime p` from the certificate `cert`. The cache holds the proof of each prime, so
-that a prime is proved only once. -/
+that each prime is proved only once. -/
 partial def certifyPrime {p : Nat} (cert : Cert p) :
     MonadStateCacheT Nat Expr MetaM Q(Nat.Prime $p) :=
   checkCache (β := Expr) p fun _ ↦ do

@@ -46,7 +46,7 @@ def Factorizer.then (f₁ f₂ : Factorizer) : Factorizer := fun n ↦ do
   let (ps, rest) ← f₁.decompose n
   return ps ++ (← f₂ rest)
 
-/-- The primes below `1024` sieved first. This is currently called once per tactic run. -/
+/-- The primes below `1024`. This is currently called once per tactic run. -/
 def smallPrimes : Array Nat := Id.run do
   let bound := 1024
   let mut composite := Array.replicate bound false
@@ -65,10 +65,8 @@ def trialDivision : Factorizer := .ofArray smallPrimes
 
 section PollardRho
 
-/-- Whether `n` passes the Miller–Rabin test to the prime bases up to `41`, which no composite below
-`3.3 * 10 ^ 24` does. -/
-def isProbablePrime (n : Nat) : Bool := Id.run do
-  let bases := [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
+/-- Whether `n` passes the Miller–Rabin test to the prime bases `bases`. -/
+def millerRabin (bases : Array Nat) (n : Nat) : Bool := Id.run do
   if n < 2 then return false
   if let some a := bases.find? (n % · == 0) then return n == a
   let (s, d) := Nat.maxPowDvdDiv 2 (n - 1)
@@ -80,6 +78,11 @@ def isProbablePrime (n : Nat) : Bool := Id.run do
       x := x * x % n
     if x != n - 1 then return false
   return true
+
+/-- Whether `n` passes the Miller–Rabin test to the prime bases up to `41`, which no composite below
+`3.3 * 10 ^ 24` does. -/
+def isProbablePrime (n : Nat) : Bool :=
+  millerRabin #[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41] n
 
 /-- Finds a nontrivial factor of `n` by Pollard's rho method with `x ↦ x ^ 2 + c`, trying
 `c = 1, 2, 3` for at most `steps` steps each. -/
@@ -114,8 +117,7 @@ structure FactorizerConfig where
   /-- Candidate prime factors, tried before trial division on `p - 1` and on `q - 1` for each prime
   `q` required on the way. -/
   factors : List Nat := []
-  /-- The number of steps of Pollard's rho method for each constant it tries. The default finds
-  prime factors below `10 ^ 8`. -/
+  /-- The number of steps of Pollard's rho method for each constant it tries. -/
   rhoSteps : Nat := 2 ^ 15
 
 /-- Tries `factors`, then trial division up to `1024`, then Pollard's rho method. -/

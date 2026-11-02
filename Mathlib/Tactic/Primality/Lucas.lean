@@ -23,18 +23,16 @@ public section
 namespace Mathlib.Tactic.Primality
 
 /-- `b ^ e % m`, computed four bits of `e` at a time by `Nat.pow`, which the kernel evaluates
-natively. Replace it with `Nat.powMod` once the kernel evaluates `Nat.powMod` efficiently. -/
+natively (`^` unfolds `Monoid.npow`'s instances first). Replace it with `Nat.powMod` once the kernel
+evaluates `Nat.powMod` efficiently. -/
 @[expose] def powMod (b e m : ℕ) : ℕ :=
-  if e = 0 then 1 % m else powMod b (e / 16) m ^ 16 * b ^ (e % 16) % m
-termination_by e
-decreasing_by lia
+  if e = 0 then 1 % m else Nat.pow (powMod b (e / 16) m) 16 * Nat.pow b (e % 16) % m
 
 theorem powMod_def (b e m : ℕ) : powMod b e m = b ^ e % m := by
   fun_induction powMod b e m with
   | case1 => simp
   | case2 e _ ih =>
-    rw [ih, Nat.mul_mod, ← Nat.pow_mod, ← Nat.mul_mod, ← Nat.pow_mul, ← Nat.pow_add,
-      Nat.div_add_mod']
+    simp [ih, ← ZMod.natCast_eq_natCast_iff', ← pow_mul, ← pow_add, Nat.div_add_mod']
 
 /-- `lucasCheck p a fs` checks that `a ^ (p - 1) % p = 1`, that `a ^ ((p - 1) / q) % p ≠ 1` for
 each `(q, e) ∈ fs`, and that the `q ^ e` multiply to `p - 1`. -/
@@ -46,9 +44,7 @@ theorem prime_of_lucasCheck {p a : ℕ} {fs : List (Nat.Primes × ℕ)}
     (h : lucasCheck p a fs = true) : p.Prime := by
   simp only [lucasCheck, Bool.and_eq_true, beq_iff_eq, List.all_eq_true, bne_iff_ne] at h
   obtain ⟨⟨ha, hpow⟩, hprod⟩ := h
-  have hp : p ≠ 1 := by
-    rintro rfl
-    simp [powMod_def] at ha
+  have hp : p ≠ 1 := by grind [powMod_def]
   refine lucas_primality p a ?_ fun q hq hqp h1 ↦ ?_
   · rw [← Nat.cast_pow, ← ZMod.natCast_mod, ← powMod_def, ha, Nat.cast_one]
   · obtain ⟨_, hx, hqf⟩ := hq.prime.dvd_prod_iff.mp (hprod ▸ hqp)
@@ -82,8 +78,7 @@ structure LucasWitness where
 def certifyLucas (p root : Nat) (factors : Array ((q : Nat) × Q(Nat.Prime $q))) :
     Q(Nat.Prime $p) :=
   let factorization : Q(List (Nat.Primes × Nat)) := mkListLitQ <| factors.toList.map fun ⟨q, hq⟩ ↦
-    have expQ : Q(Nat) := mkRawNatLit (Nat.maxPowDvdDiv q (p - 1)).1
-    q((⟨$q, $hq⟩, $expQ))
+    q((⟨$q, $hq⟩, $(mkNatLitQ (Nat.maxPowDvdDiv q (p - 1)).1)))
   -- The kernel evaluates `Nat` arithmetic on terms with free variables (such as a hypothesis
   -- proving one of the factors prime) only inside `eagerReduce`.
   have hcheck : Q(lucasCheck $p $root $factorization = true) := eagerReflBoolTrue
@@ -97,7 +92,7 @@ def findLucasWitness (factorizer : Factorizer) (rootFinder : PrimitiveRootFinder
   let factors := if rest == 1 then factors else factors.push rest
   let some root ← rootFinder q factors | do
     if q == p then
-      throwError "primality is unable to find a primitive root for {p}; \
+      throwError "primality could not find a primitive root for {p}; \
         primitive roots can be provided at `.lucas \{ roots := … }` if {p} is prime."
     throwError "primality could not find factors for the intermediate value {q}; factors can \
       be provided at `.lucas \{ factors := … }`. In the rare case that it is prime, add a \
