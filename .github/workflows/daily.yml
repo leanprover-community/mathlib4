@@ -1,5 +1,5 @@
 name: Daily CI Workflow
-# Run expensive checks on master and the current Mathlib bump branch, then report to Zulip.
+# Run scheduled checks on master and the current Mathlib bump branch, then report to Zulip.
 
 on:
   schedule:
@@ -126,6 +126,94 @@ jobs:
           topic: 'leanchecker failure'
           content: |
             ❌ leanchecker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+
+  check-aesop:
+    runs-on: ubuntu-latest
+    needs: resolve
+    if: github.repository == 'leanprover-community/mathlib4' && !cancelled()
+    strategy:
+      fail-fast: false
+      matrix:
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
+    steps:
+      - name: Checkout the tested commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.TESTED_SHA }}
+
+      - name: Configure Lean
+        uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: true
+          reinstall-transient-toolchain: true
+
+      - name: Build AesopTest # make sure this name is consistent with "Get job status and URLs" in the notify job
+        id: aesop
+        run: |
+          lake build AesopTest
+
+  notify-aesop:
+    runs-on: ubuntu-latest
+    needs: [resolve, check-aesop]
+    if: github.repository == 'leanprover-community/mathlib4' && always()
+    strategy:
+      fail-fast: false
+      matrix:
+        branch_type: ${{ fromJSON(needs.resolve.outputs.branch_types || '["master"]') }}
+    env:
+      BRANCH_REF: ${{ matrix.branch_type == 'master' && 'master' || needs.resolve.outputs.bump_ref }}
+      TESTED_SHA: ${{ matrix.branch_type == 'master' && github.sha || needs.resolve.outputs.bump_sha }}
+    steps:
+      - name: Get job status and URLs
+        id: get-status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          JOB_NAME="check-aesop (${{ matrix.branch_type }})"
+
+          # Get URL and conclusion for the specific job
+          JOB_DATA=$(gh run view ${{ github.run_id }} --json jobs --jq \
+            ".jobs[] | select(.name == \"$JOB_NAME\")")
+
+          AESOP_URL=$(echo "$JOB_DATA" | jq -r \
+            '(.url + (.steps[] | select(.name == "Build AesopTest")
+            | "#step:\(.number):1"))')
+
+          JOB_CONCLUSION=$(echo "$JOB_DATA" | jq -r '.conclusion')
+
+          echo "aesop_url=${AESOP_URL}" | tee -a "$GITHUB_OUTPUT"
+          echo "job_conclusion=${JOB_CONCLUSION}" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Post success message for AesopTest on Zulip
+        if: steps.get-status.outputs.job_conclusion == 'success'
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing-mathlib'
+          type: 'stream'
+          topic: 'AesopTest'
+          content: |
+            ✅ AesopTest [succeeded](${{ steps.get-status.outputs.aesop_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+
+      - name: Post failure / cancelled message for AesopTest on Zulip
+        if: steps.get-status.outputs.job_conclusion != 'success'
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing-mathlib'
+          type: 'stream'
+          topic: 'AesopTest failure'
+          content: |
+            ❌ AesopTest [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.aesop_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
 
   check-mathlib_test_executable:
     runs-on: ubuntu-latest
