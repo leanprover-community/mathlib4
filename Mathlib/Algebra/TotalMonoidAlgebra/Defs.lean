@@ -574,9 +574,12 @@ variable (M) in
 /-- The trivial total monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R) (attr := simps! apply)
 /-- The trivial total additive monoid algebra is the base ring. -/]
-def uniqueRingEquiv [Unique M] : R⟦M⟧ ≃+* R where
-  toAddEquiv := coeffAddEquiv.trans <| AddEquiv.funUnique M R
+def uniqueRingEquiv [Subsingleton M] : R⟦M⟧ ≃+* R where
+  toAddEquiv :=
+    letI : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
+    coeffAddEquiv.trans <| AddEquiv.funUnique M R
   map_mul' x y := by
+    let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
     have : mulAntidiagonal (default : M) = {(1, 1)} := by
       ext ⟨a, b⟩
       suffices a * b = default ↔ a = 1 ∧ b = 1 by simpa
@@ -586,12 +589,13 @@ def uniqueRingEquiv [Unique M] : R⟦M⟧ ≃+* R where
 
 variable (M) in
 @[to_additive (dont_translate := R) (attr := simp)]
-lemma uniqueRingEquiv_symm_apply [Unique M] (r : R) : (uniqueRingEquiv M).symm r = single 1 r := by
+lemma uniqueRingEquiv_symm_apply [Subsingleton M] (r : R) : (uniqueRingEquiv M).symm r = single 1 r := by
+  let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
   simp [RingEquiv.symm_apply_eq, Subsingleton.elim (default : M) 1]
 
 -- We want this lemma to fire before `uniqueRingEquiv_symm_apply`.
 @[to_additive (dont_translate := R) (attr := simp↓ high)]
-lemma coeff_uniqueRingEquiv_symm [Unique M] (r : R) (m : M) :
+lemma coeff_uniqueRingEquiv_symm [Subsingleton M] (r : R) (m : M) :
     ((uniqueRingEquiv M).symm r).coeff m = r := by simp [Subsingleton.elim m 1]
 
 /-- A product total monoid algebra is a nested total monoid algebra. -/
