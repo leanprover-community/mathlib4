@@ -41,6 +41,7 @@ variable [Module.Finite ℤ 𝒪]
 open nonZeroDivisors IntermediateField Module
 
 lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
+  rw [Ideal.absNorm_apply]
   refine (differentIdeal ℤ 𝒪).toAddSubgroup.relIndex_top_right.symm.trans ?_
   rw [← Submodule.comap_map_eq_of_injective (f := Algebra.linearMap 𝒪 K)
     (FaithfulSMul.algebraMap_injective 𝒪 K) (differentIdeal ℤ 𝒪)]
@@ -89,7 +90,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 theorem natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow (L 𝒪' : Type*) [Field L]
     [NumberField L] [CommRing 𝒪'] [Algebra 𝒪' L] [IsFractionRing 𝒪' L]
     [IsDedekindDomain 𝒪'] [CharZero 𝒪'] [Algebra K L] [Algebra 𝒪 𝒪'] [Algebra 𝒪 L]
-    [IsScalarTower 𝒪 K L] [IsScalarTower 𝒪 𝒪' L] [IsTorsionFree 𝒪 𝒪'] [Free ℤ 𝒪']
+    [IsScalarTower 𝒪 K L] [IsScalarTower 𝒪 𝒪' L] [IsTorsionFree 𝒪 𝒪']
     [Module.Finite ℤ 𝒪'] [Module.Finite 𝒪 𝒪'] :
     (discr L).natAbs = Ideal.absNorm (differentIdeal 𝒪 𝒪') *
       (discr K).natAbs ^ Module.finrank K L := by

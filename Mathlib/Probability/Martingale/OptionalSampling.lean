@@ -191,8 +191,7 @@ time, then the value of a martingale `f` at the stopping time `min τ σ` is alm
 to the conditional expectation of `f` stopped at `τ` with respect to the σ-algebra generated
 by `σ`. -/
 theorem stoppedValue_min_ae_eq_condExp [SigmaFiniteFiltration μ ℱ] (h : Martingale f ℱ μ)
-    (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) {n : ι} (hτ_le : ∀ x, τ x ≤ n)
-    [h_sf_min : SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
+    (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) {n : ι} (hτ_le : ∀ x, τ x ≤ n) :
     (ℱ.stoppedValue f (fun x => min (σ x) (τ x)) μ) =ᵐ[μ]
       μ[ℱ.stoppedValue f τ μ | hσ.measurableSpace] := by
   refine

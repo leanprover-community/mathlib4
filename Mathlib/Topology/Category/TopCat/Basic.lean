@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 public import Mathlib.Topology.ContinuousMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category instance for topological spaces
 

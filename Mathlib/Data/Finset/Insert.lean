@@ -269,6 +269,10 @@ theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
   grind
 
+theorem exists_mem_cons (h : a ∉ s) (p : α → Prop) :
+    (∃ x, x ∈ cons a s h ∧ p x) ↔ p a ∨ ∃ x, x ∈ s ∧ p x := by
+  grind
+
 /-- Useful in proofs by induction. -/
 theorem forall_of_forall_cons {p : α → Prop} {h : a ∉ s} (H : ∀ x, x ∈ cons a s h → p x) (x)
     (h : x ∈ s) : p x :=
