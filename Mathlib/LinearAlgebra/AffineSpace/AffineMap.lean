@@ -440,9 +440,16 @@ instance : Monoid (P1 →ᵃ[k] P1) := fast_instance% FunLike.compMonoid
 theorem coe_mul (f g : P1 →ᵃ[k] P1) : ⇑(f * g) = f ∘ g :=
   rfl
 
+@[simp]
+lemma mul_linear (f g : P1 →ᵃ[k] P1) : (f * g).linear = f.linear ∘ₗ g.linear :=
+  rfl
+
 @[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-11-02")]
 theorem coe_one : ⇑(1 : P1 →ᵃ[k] P1) = _root_.id :=
   rfl
+
+@[simp]
+lemma one_linear : (1 : P1 →ᵃ[k] P1).linear = LinearMap.id := rfl
 
 /-- `AffineMap.linear` on endomorphisms is a `MonoidHom`. -/
 @[simps]
