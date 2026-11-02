@@ -246,15 +246,15 @@ theorem simpson_error_estimation
   set m := (a + b) / 2
   set h := (b - a) / 2
   -- Basic Definitions
-  have hh: 0 < h := by dsimp [h] ; linarith
-  have h_left : m - h = a := by dsimp [m, h] ; ring
-  have h_right : m + h = b := by dsimp [m, h] ; ring
+  have hh: 0 < h := by dsimp [h]; linarith
+  have h_left : m - h = a := by dsimp [m, h]; ring
+  have h_right : m + h = b := by dsimp [m, h]; ring
   have h_mid : m = (a + b) / 2 := rfl
   have h_error :
       (∫ t in a..b, f t) -
         ((b - a) / 6) * (f a + 4 * f ((a + b) / 2) + f b) =
-        simpsonAuxG f m h := by rw [simpsonAuxG, h_left, h_right, h_mid] ; ring
-  have h_scale : (b - a) ^ 5 / 2880 = h ^ 5 / 90 := by dsimp [h] ; ring
+        simpsonAuxG f m h := by rw [simpsonAuxG, h_left, h_right, h_mid]; ring
+  have h_scale : (b - a) ^ 5 / 2880 = h ^ 5 / 90 := by dsimp [h]; ring
   rw [h_error, h_scale]
   let G : ℝ → ℝ := simpsonAuxG f m
   let c : ℝ := G h / h ^ 5
@@ -294,8 +294,8 @@ theorem simpson_error_estimation
   -- Terms F(0), F(h), F'(0). F''(0) for lemma 'exists_third_deriv_eq_zero'
   have hF0 : F 0 = 0 := by simp [F,G,P,simpsonAuxG_zero]
   have hFh : F h = 0 := by
-    dsimp[F,G,P,c] ;  have hh5 : h^5 ≠ 0 := pow_ne_zero 5 (ne_of_gt hh)
-    field_simp[hh5] ; ring
+    dsimp[F,G,P,c];  have hh5 : h^5 ≠ 0 := pow_ne_zero 5 (ne_of_gt hh)
+    field_simp[hh5]; ring
   have hP'0 : deriv P 0 = 0 := by simp [P]
   have hG'0 : deriv G 0 = 0 := simpsonAuxG_deriv1_zero f m hf1
   have hF'0 : deriv F 0 = 0 := by
@@ -314,13 +314,13 @@ theorem simpson_error_estimation
   have hP''0 : iteratedDeriv 2 P 0 = 0 := by simp [P]
   have hF''0 : iteratedDeriv 2 F 0 = 0 := by
     change iteratedDeriv 2 (G - P) 0 = 0
-    rw [iteratedDeriv_sub hG_d2 hP_d2] ; rw [hG''0, hP''0] ; ring
+    rw [iteratedDeriv_sub hG_d2 hP_d2]; rw [hG''0, hP''0]; ring
   obtain ⟨ξ₃, hξ₃, hF'''1⟩
       := exists_third_deriv_eq_zero hh hF0 hFh hF'0 hF''0 hF_cont hF'_cont hF''_cont
   -- Compute 3rd derivative of P and relate G'''(ξ₃) to c * ξ₃²
   have hP3_deriv : iteratedDeriv 3 P = fun t => 60 * c * t ^ 2 := by
     ext t
-    simp [P, show (3 : ℕ) = 2 + 1 by rfl ] ;ring
+    simp [P, show (3 : ℕ) = 2 + 1 by rfl ];ring
   have hP_cd3 : ContDiff ℝ 3 P := by fun_prop
   have hF'''_eq : iteratedDeriv 3 F ξ₃ = iteratedDeriv 3 G ξ₃ - iteratedDeriv 3 P ξ₃ := by
     change iteratedDeriv 3 (G - P) ξ₃ = _
