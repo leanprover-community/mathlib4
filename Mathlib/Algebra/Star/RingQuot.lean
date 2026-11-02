@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.RingQuot
 public import Mathlib.Algebra.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The \*-ring structure on suitable quotients of a \*-ring.
 -/

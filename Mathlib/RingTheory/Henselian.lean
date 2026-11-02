@@ -64,10 +64,11 @@ universe u v
 open Polynomial IsLocalRing Function List
 open scoped Ring
 
+@[deprecated isLocalHom_of_le_jacobson +typeChanged (since := "2026-10-12")]
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
-  rwa [RingHom.isLocalHom_iff_ker_le_jacobson Ideal.Quotient.mk_surjective,
-    ← Ideal.jacobson_bot, Ideal.mk_ker]
+  rw [Ideal.jacobson_bot] at h
+  exact isLocalHom_of_le_jacobson h
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
@@ -78,7 +79,7 @@ unit. Warning: if `R/I` is not a field then it is not enough to assume that `g` 
 into monic linear factors in which `X - b` shows up only once; for example `1` is not a simple root
 of `X^2-1` over `ℤ/4ℤ`.) -/
 class HenselianRing (R : Type*) [CommRing R] (I : Ideal R) : Prop where
-  jac : I ≤ Ideal.jacobson ⊥
+  jac : I ≤ Ring.jacobson R
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ I)
       (_ : IsUnit (Ideal.Quotient.mk I (f.derivative.eval a₀))), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ I
@@ -139,10 +140,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
 
 instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     HenselianRing R (maximalIdeal R) where
-  jac := by
-    rw [Ideal.jacobson, le_sInf_iff]
-    rintro I ⟨-, hI⟩
-    exact (eq_maximalIdeal hI).ge
+  jac := (ringJacobson_eq_maximalIdeal R).ge
   is_henselian := by
     intro f hf a₀ h₁ h₂
     refine HenselianLocalRing.is_henselian f hf a₀ h₁ ?_
@@ -155,7 +153,7 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
 /-- A ring `R` that is `I`-adically complete is Henselian at `I`. -/
 instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R] (I : Ideal R)
     [IsAdicComplete I R] : HenselianRing R I where
-  jac := IsAdicComplete.le_jacobson_bot _
+  jac := IsAdicComplete.le_jacobson _
   is_henselian := by
     intro f _ a₀ h₁ h₂
     classical
@@ -184,7 +182,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
-        have := isLocalHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
+        have := isLocalHom_of_le_jacobson (IsAdicComplete.le_jacobson I)
         apply IsUnit.of_map (Ideal.Quotient.mk I)
         convert h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)

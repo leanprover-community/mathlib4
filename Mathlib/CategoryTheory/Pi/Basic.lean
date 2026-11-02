@@ -72,7 +72,6 @@ def comap (h : J → I) : (∀ i, C i) ⥤ (∀ j, C (h j)) where
 
 variable (I)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between
 pulling back a grading along the identity function,
 and the identity functor. -/
@@ -86,7 +85,6 @@ example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance
 variable {I}
 variable {K : Type w₂}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism comparing between
 pulling back along two successive functions, and
 pulling back along their composition
