@@ -29,6 +29,8 @@ assert_not_exists Cardinal Field
 
 universe u v w
 
+namespace Group
+
 -- Let G be a group.
 variable (G : Type u) [Group G]
 
@@ -36,8 +38,8 @@ open Subgroup (centralizer)
 
 open scoped IsMulCommutative in
 /-- The abelianization of the group G is the quotient of G by its commutator subgroup. -/
-@[to_additive AddAbelianization /-- The abelianization of the additive group G is the quotient of G
-by its commutator subgroup. -/]
+@[to_additive AddAbelianization
+/-- The abelianization of the additive group G is the quotient of G by its commutator subgroup. -/]
 def Abelianization : Type u :=
   G ⧸ commutator G
 deriving CommGroup
@@ -57,9 +59,10 @@ instance : Inhabited (Abelianization G) :=
 
 variable {G}
 
+
 /-- `of` is the canonical projection from the group G to its abelianization. -/
-@[to_additive /-- `of` is the canonical projection from the additive group G to its abelianization.
--/]
+@[to_additive
+/-- `of` is the canonical projection from the additive group G to its abelianization.-/]
 def of : G →* Abelianization G where
   toFun := QuotientGroup.mk
   map_one' := rfl
@@ -91,8 +94,9 @@ theorem commutator_le_ker : commutator G ≤ f.ker := by
 
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
   from the abelianization of `G` to `A` that factors through `f`. -/
-@[to_additive /-- If `f : G → A` is an additive group homomorphism to an abelian group, then
-`lift f` is the unique map from the abelianization of `G` to `A` that factors through `f`. -/]
+@[to_additive
+/-- If `f : G → A` is an additive group homomorphism to an abelian group, then `lift f` is the
+unique map from the abelianization of `G` to `A` that factors through `f`. -/]
 def lift : (G →* A) ≃ (Abelianization G →* A) where
   toFun f := QuotientGroup.lift _ f fun _ h => MonoidHom.mem_ker.2 <| commutator_le_ker _ h
   invFun F := F.comp of
@@ -214,3 +218,6 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
 @[to_additive instUniqueAddAbelianization]
 instance instUniqueAbelianization [Unique G] :
   Unique (Abelianization G) := Quotient.instUniqueQuotient _
+
+
+end Group
