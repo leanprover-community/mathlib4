@@ -204,7 +204,6 @@ lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
 
-/-- The characteristic polynomial of a strict block triangular matrix is a power of `X`. -/
 lemma StrictBlockTriangular.charpoly {α : Type*} [LinearOrder α] {b : n → α}
     {M : Matrix n n R} (hM : M.StrictBlockTriangular b) : M.charpoly = X ^ Fintype.card n := by
   rw [← charpoly_zero, hM.blockTriangular.charpoly, (blockTriangular_zero (b := b)).charpoly]
