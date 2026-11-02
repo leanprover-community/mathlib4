@@ -802,10 +802,11 @@ lemma mdifferentiable_of_mdifferentiableOn_iUnion_of_isOpen {ι : Type*} {s : ι
 
 end mdifferentiableOn_union
 
-lemma injective_fderivWithin_writtenInExtChartAt {f : M → M'} {p : M}
-    (hf : Injective (mfderiv% f p)) :
-    Injective (fderivWithin 𝕜 (writtenInExtChartAt I I' p f) (range I) (extChartAt I p p)) := by
-  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf)] at hf
+lemma injective_fderivWithin_writtenInExtChartAt {f : M → M'} {s : Set M} {p : M}
+    (hf : Injective (mfderiv[s] f p)) :
+    Injective (fderivWithin 𝕜 (writtenInExtChartAt I I' p f)
+      ((extChartAt I p).symm ⁻¹' s ∩ range I) (extChartAt I p p)) := by
+  rw [mfderivWithin, ite_eq_left (mdifferentiableWithinAt_of_mfderivWithin_injective hf)] at hf
   exact hf
 
 lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M → M'} {p : M}
