@@ -108,10 +108,7 @@ instance (priority := 100) Field.henselian (K : Type*) [Field K] : HenselianLoca
 
 instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
     HenselianRing R (maximalIdeal R) where
-  jac := by
-    rw [Ideal.jacobson, le_sInf_iff]
-    rintro I ⟨-, hI⟩
-    exact (eq_maximalIdeal hI).ge
+  jac := (ringJacobson_eq_maximalIdeal R).ge
   is_henselian := by
     intro f hf a₀ h₁ h₂
     refine HenselianLocalRing.is_henselian f hf a₀ h₁ ?_
@@ -135,7 +132,7 @@ theorem HenselianRing.exists_isRoot {R : Type*} [CommRing R] {I : Ideal R} [Hens
   `G`, which produces the root `a₀ + c₀ * ⅟t` of `f`. -/
   obtain _ | _ := subsingleton_or_nontrivial R
   · exact ⟨a₀, Subsingleton.elim _ _, by simp⟩
-  have := isLocalHom_of_le_jacobson_bot I (HenselianRing.jac (R := R) (I := I))
+  have := isLocalHom_of_le_jacobson (HenselianRing.jac (R := R) (I := I))
   set φ := Ideal.Quotient.mk I
   set c₀ := f.eval a₀ with hc₀
   set c₁ := f.derivative.eval a₀ with hc
@@ -155,7 +152,7 @@ theorem HenselianRing.exists_isRoot {R : Type*} [CommRing R] {I : Ideal R} [Hens
   -- modulo `I`, `G` is `1 + c₁ * X`
   have hGmap : G.map φ = 1 + C (φ c₁) * X := by
     ext (_ | _ | n)
-    · simp [hG0, coeff_one]
+    · simp [hG0]
     · simp [hG1, coeff_one]
     · have h : G.coeff (n + 2) ∈ I := by
         simpa [pow_succ, hG, coeff_one] using Ideal.mul_mem_left _ _ (Ideal.mul_mem_left _ _ h₁)
