@@ -140,7 +140,7 @@ end CommShift
 /-- A functor `F` commutes with the shift by a monoid `A` if it is equipped with
 commutation isomorphisms with the shifts by all `a : A`, and these isomorphisms
 satisfy coherence properties with respect to `0 : A` and the addition in `A`. -/
-class CommShift (F : C ⥤ D) (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A] where
+class CommShift (F : C ⥤ D) (A : outParam Type*) [AddMonoid A] [HasShift C A] [HasShift D A] where
   /-- The commutation isomorphisms for all `a`-shifts this functor is equipped with -/
   commShiftIso (F) (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
   commShiftIso_zero (F) (A) : commShiftIso 0 = CommShift.isoZero F A := by cat_disch
