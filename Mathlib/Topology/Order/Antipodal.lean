@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Order.IntermediateValue
 public import Mathlib.Topology.UniformSpace.Real
+
 import Mathlib.Tactic.Linarith
 
 /-!
