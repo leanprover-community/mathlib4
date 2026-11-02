@@ -5,8 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Group.ContinuousDiv
 public import Mathlib.Topology.Maps.Proper.Basic
+
+import Mathlib.Topology.Algebra.Group.Subgroup
 
 /-!
 # Pointwise operations on sets in topological groups
@@ -83,7 +85,7 @@ theorem MulAction.isClosedMap_quotient [CompactSpace α] :
   intro t ht
   rw [← isQuotientMap_quotient_mk'.isClosed_preimage,
     MulAction.quotient_preimage_image_eq_union_mul]
-  convert! ht.smul_left_of_isCompact (isCompact_univ (X := α))
+  convert ht.smul_left_of_isCompact (isCompact_univ (X := α))
   rw [← biUnion_univ, ← iUnion_smul_left_image]
   simp only [image_smul]
 
@@ -456,7 +458,9 @@ variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 
 /-- If a point in a topological group has a compact neighborhood, then the group is
 locally compact. -/
-@[to_additive]
+@[to_additive
+  /-- If a point in a topological additive group has a compact neighborhood, then the additive group
+  is locally compact. -/]
 theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsCompact K) {x : G}
     (h : K ∈ 𝓝 x) : LocallyCompactSpace G := by
   suffices WeaklyLocallyCompactSpace G from inferInstance

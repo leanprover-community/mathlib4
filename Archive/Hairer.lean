@@ -4,12 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris van Doorn,
 Junyan Xu
 -/
-import Mathlib.Algebra.MvPolynomial.Funext
-import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Topology.Algebra.MvPolynomial
+module
+
+public import Mathlib.Algebra.MvPolynomial.Funext
+public import Mathlib.Analysis.Analytic.Polynomial
+public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.Topology.Algebra.MvPolynomial
 
 /-!
 # Smooth functions whose integral calculates the values of polynomials
@@ -20,7 +22,7 @@ whose integral against a multivariate polynomial `P` of total degree at most `N`
 This is a test of the state of the library suggested by Martin Hairer.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open Metric Set MeasureTheory PiLp
 open MvPolynomial hiding support

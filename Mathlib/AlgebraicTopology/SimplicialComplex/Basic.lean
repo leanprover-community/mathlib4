@@ -5,12 +5,13 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.Order.UpperLower.Relative
-public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Order.BourbakiWitt
-public import Mathlib.Tactic.NormNum.Ineq
-public import Mathlib.Tactic.NormNum.Pow
+public import Mathlib.Order.UpperLower.Relative
+
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Abstract Simplicial complexes
@@ -82,7 +83,7 @@ instance : LT (PreAbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
 instance : IsConcreteLE (PreAbstractSimplicialComplex ι) (Finset ι) where
-  coe_subset_coe' := .rfl
+  le_iff := .rfl
 
 instance : PartialOrder (PreAbstractSimplicialComplex ι) :=
   PartialOrder.lift (fun K => K.faces) (fun _ _ => PreAbstractSimplicialComplex.ext)
@@ -206,7 +207,7 @@ instance : LT (AbstractSimplicialComplex ι) where
   lt K L := K.faces ⊂ L.faces
 
 instance : IsConcreteLE (AbstractSimplicialComplex ι) (Finset ι) where
-  coe_subset_coe' := .rfl
+  le_iff := .rfl
 
 instance : PartialOrder (AbstractSimplicialComplex ι) :=
   PartialOrder.lift (fun K => K.faces) (fun _ _ => AbstractSimplicialComplex.ext)

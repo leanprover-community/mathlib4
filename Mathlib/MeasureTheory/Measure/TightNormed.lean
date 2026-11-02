@@ -139,7 +139,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
     IsTightMeasureSet S := by
   rcases subsingleton_or_nontrivial E with hE | hE
   · simp only [IsTightMeasureSet, cocompact_eq_bot, smallSets_bot]
-    convert! tendsto_pure_nhds (a := ∅) _
+    convert tendsto_pure_nhds (a := ∅) _
     simp
   have h_rank : (0 : ℝ) < Fintype.card ι := by
     simpa [← Module.finrank_eq_card_basis b.toBasis, Module.finrank_pos_iff]
@@ -220,7 +220,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner
   have h_map r : (μ n).map (fun x ↦ ⟪z, x⟫_𝕜) {x | r < ‖x‖} = μ n {x | r < ‖⟪z, x⟫_𝕜‖} := by
     rw [Measure.map_apply (by fun_prop)]
     · simp
-    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+    · exact MeasurableSet.preimage (f := fun x : 𝕜 ↦ ‖x‖) measurableSet_Ioi (by fun_prop)
   simpa [h_map] using h_tight
 
 /-- In a finite-dimensional inner product space, the range of a sequence of measures

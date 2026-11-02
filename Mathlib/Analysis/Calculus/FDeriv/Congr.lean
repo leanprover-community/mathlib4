@@ -24,8 +24,6 @@ open Filter Asymptotics ContinuousLinearMap Set
 
 open scoped Topology
 
-noncomputable section
-
 section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
@@ -48,7 +46,7 @@ theorem hasFDerivWithinAt_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
       hasFDerivWithinAt_sdiff_singleton_self.symm
     _ ↔ HasFDerivWithinAt f f' (t \ {x}) x := by
       suffices 𝓝[s \ {x}] x = 𝓝[t \ {x}] x by simp only [HasFDerivWithinAt, this]
-      simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', sdiff_eq, inter_comm]
+      simpa only [eventuallyEqSet_iff_inf_principal, ← nhdsWithin_inter', sdiff_eq, inter_comm]
         using h
     _ ↔ HasFDerivWithinAt f f' t x := hasFDerivWithinAt_sdiff_singleton_self
 
@@ -83,7 +81,7 @@ theorem differentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
 theorem fderivWithin_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
   classical
-  simp only [fderivWithin, differentiableWithinAt_congr_set_nhdsNE h,
+  simp only [fderivWithin_def, differentiableWithinAt_congr_set_nhdsNE h,
     hasFDerivWithinAt_congr_set_nhdsNE h]
 
 /-- In the case `y = x`, see also `fderivWithin_congr_set_nhdsNE`,
@@ -91,7 +89,8 @@ which does not require the domain to be a T₁ space. -/
 theorem fderivWithin_congr_set' [T1Space E] (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
   classical
-  simp only [fderivWithin, differentiableWithinAt_congr_set' _ h, hasFDerivWithinAt_congr_set' _ h]
+  simp only [fderivWithin_def, differentiableWithinAt_congr_set' _ h,
+    hasFDerivWithinAt_congr_set' _ h]
 
 theorem fderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   fderivWithin_congr_set_nhdsNE <| h.filter_mono inf_le_left
@@ -223,7 +222,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Filter.EventuallyEq.fderivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x := by
   classical
-  simp only [fderivWithin, DifferentiableWithinAt, hs.hasFDerivWithinAt_iff hx]
+  simp only [fderivWithin_def, DifferentiableWithinAt, hs.hasFDerivWithinAt_iff hx]
 
 theorem Filter.EventuallyEq.fderivWithin_eq_of_mem (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x :=

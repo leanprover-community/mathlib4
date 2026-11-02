@@ -215,14 +215,13 @@ lemma dirSupClosed_of_isClosed [IsScott α univ] : IsClosed s → DirSupClosed s
   (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).right
 
 lemma lowerClosure_subset_closure [IsScott α univ] : ↑(lowerClosure s) ⊆ closure s := by
-  convert! closure.mono (@upperSet_le_scott α _)
+  convert closure.mono (@upperSet_le_scott α _)
   · rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
     infer_instance
   · exact topology_eq α univ
 
 instance [IsScott α univ] : ClosedIicTopology α where
-  isClosed_Iic _ :=
-    isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
+  isClosed_Iic _ := isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨.Iic _, .Iic _⟩
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
@@ -310,6 +309,10 @@ instance [TopologicalSpace α] [IsUpper α] : IsScott α univ where
   topology_eq_scott := by
     rw [scott_eq_upper_of_completeLinearOrder]
     exact IsUpper.topology_eq α
+
+instance : IsScott Prop univ :=
+  let := Prop.completeLinearOrder
+  inferInstance
 
 end CompleteLinearOrder
 

@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.GroupTheory.FreeAbelianGroup
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -141,7 +142,7 @@ section Abelianization
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
 -/
 def abelianize : GrpCat.{u} ⥤ CommGrpCat.{u} where
-  obj G := CommGrpCat.of (Abelianization G)
+  obj G := ↧(Abelianization G)
   map f := CommGrpCat.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
   map_id := by
     intros
@@ -177,7 +178,7 @@ end GrpCat
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
 def MonCat.units : MonCat.{u} ⥤ GrpCat.{u} where
-  obj R := GrpCat.of Rˣ
+  obj R := ↧Rˣ
   map f := GrpCat.ofHom <| Units.map f.hom
   map_id _ := GrpCat.ext fun _ => Units.ext rfl
   map_comp _ _ := GrpCat.ext fun _ => Units.ext rfl
@@ -200,7 +201,7 @@ instance : MonCat.units.{u}.IsRightAdjoint :=
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
 def CommMonCat.units : CommMonCat.{u} ⥤ CommGrpCat.{u} where
-  obj R := CommGrpCat.of Rˣ
+  obj R := ↧Rˣ
   map f := CommGrpCat.ofHom <| Units.map f.hom
   map_id _ := CommGrpCat.ext fun _ => Units.ext rfl
   map_comp _ _ := CommGrpCat.ext fun _ => Units.ext rfl

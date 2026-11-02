@@ -308,7 +308,7 @@ protected theorem IsMax.not_isMin [IsDirectedOrder β] {b : β} (hb : IsMax b) :
   intro hb'
   obtain ⟨a, c, hac⟩ := exists_lt_of_directed_le β
   have := hb.isTop a
-  obtain rfl := (hb' <| this).antisymm this
+  obtain rfl := (hb' this).antisymm this
   exact hb'.not_lt hac
 
 @[to_dual]

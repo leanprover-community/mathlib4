@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Patrick Massot
 -/
 module
 
+public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Topology.Neighborhoods
 
 /-!
