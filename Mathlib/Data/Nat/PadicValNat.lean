@@ -23,11 +23,15 @@ def _root_.padicValNat (p n : ℕ) : ℕ := (maxPowDvdDiv p n).fst
 
 open maxPowDvdDiv in
 @[simp]
-theorem divMaxPow_mul_pow_padicValNat (p n : ℕ) : divMaxPow n p * p ^ (maxPowDvdDiv p n).1 = n := by
+theorem divMaxPow_mul_pow_fst_maxPowDvdDiv (p n : ℕ) :
+    divMaxPow n p * p ^ (maxPowDvdDiv p n).1 = n := by
   unfold divMaxPow
   fun_cases maxPowDvdDiv with
   | case1 h => exact go_spec h |>.1
   | case2 h => simp
+
+@[deprecated (since := "2026-11-02")] alias divMaxPow_mul_pow_padicValNat :=
+  divMaxPow_mul_pow_fst_maxPowDvdDiv
 
 @[simp]
 theorem fst_maxPowDvdDiv {p n : ℕ} : (maxPowDvdDiv p n).fst = multiplicity p n := by
@@ -36,10 +40,10 @@ theorem fst_maxPowDvdDiv {p n : ℕ} : (maxPowDvdDiv p n).fst = multiplicity p n
   by_cases hp : p = 1
   · simp [maxPowDvdDiv, hp]
   refine .symm <| multiplicity_eq_of_dvd_of_not_dvd
-    (Dvd.intro_left (n.divMaxPow p) (divMaxPow_mul_pow_padicValNat p n)) ?_
+    (Dvd.intro_left (n.divMaxPow p) (divMaxPow_mul_pow_fst_maxPowDvdDiv p n)) ?_
   by_cases hp0 : p = 0
   · simp_all
-  nth_rw 2 [← divMaxPow_mul_pow_padicValNat p n]
+  nth_rw 2 [← divMaxPow_mul_pow_fst_maxPowDvdDiv p n]
   rw [pow_add_one', mul_dvd_mul_iff_right (pow_ne_zero (maxPowDvdDiv p n).1 hp0)]
   exact not_dvd_divMaxPow (Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨hp0, hp⟩) hn
 
@@ -65,7 +69,7 @@ theorem divMaxPow_one_left (p : ℕ) : divMaxPow 1 p = 1 := by simp [divMaxPow]
 
 @[simp]
 theorem pow_multiplicity_mul_divMaxPow (p n : ℕ) : p ^ multiplicity p n * divMaxPow n p = n := by
-  rw [← fst_maxPowDvdDiv, Nat.mul_comm, divMaxPow_mul_pow_padicValNat]
+  rw [← fst_maxPowDvdDiv, Nat.mul_comm, divMaxPow_mul_pow_fst_maxPowDvdDiv]
 
 @[deprecated (since := "2026-10-28")] alias pow_padicValNat_mul_divMaxPow :=
   pow_multiplicity_mul_divMaxPow
