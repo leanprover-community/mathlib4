@@ -4466,7 +4466,6 @@ public import Mathlib.Data.PNat.Interval
 public import Mathlib.Data.PNat.Notation
 public import Mathlib.Data.PNat.Order
 public import Mathlib.Data.PNat.Prime
-public import Mathlib.Data.PNat.SuccOrder
 public import Mathlib.Data.PNat.Xgcd
 public import Mathlib.Data.PSigma.Order
 public import Mathlib.Data.Part
