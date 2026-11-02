@@ -118,19 +118,20 @@ theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
     -- Then choose a closed entourage `W ⊆ V`
     rcases mem_uniformity_isClosed hV with ⟨W, hW, hWc, hWU⟩
     -- Consider `s = {y ∈ K | (f x, f y) ∈ W}`
-    set s := K ∩ f ⁻¹' ball (f x) W
+    set s := K ∩ f ⁻¹' SetRel.ball W (f x)
     -- This is a neighbourhood of `x` within `K`, because `W` is an entourage.
-    have hnhds : s ∈ 𝓝[K] x := inter_mem_nhdsWithin _ <| f.continuousAt _ (ball_mem_nhds _ hW)
+    have hnhds : s ∈ 𝓝[K] x :=
+      inter_mem_nhdsWithin _ <| f.continuousAt _ (SetRel.ball_mem_nhds _ hW)
     -- This set is compact because it is an intersection of `K`
-    -- with a closed set `{y | (f x, f y) ∈ W} = f ⁻¹' UniformSpace.ball (f x) W`
+    -- with a closed set `{y | (f x, f y) ∈ W} = f ⁻¹' W.ball (f x)`
     have hcomp : IsCompact s := hK.inter_right <| (isClosed_ball _ hWc).preimage f.continuous
-    -- `f` maps `s` to the open set `ball (f x) V = {z | (f x, z) ∈ V}`
-    have hmaps : MapsTo f s (ball (f x) V) := fun x hx ↦ hWU hx.2
+    -- `f` maps `s` to the open set `V.ball (f x) = {z | (f x, z) ∈ V}`
+    have hmaps : MapsTo f s (SetRel.ball V (f x)) := fun x hx ↦ hWU hx.2
     use s, hnhds
-    -- Continuous maps `F i` in a neighbourhood of `f` map `s` to `ball (f x) V` as well.
+    -- Continuous maps `F i` in a neighbourhood of `f` map `s` to `V.ball (f x)`.
     refine (h s hcomp _ (isOpen_ball _ hVo) hmaps).mono fun g hg y hy ↦ ?_
     -- Then for `y ∈ s` we have `(f y, f x) ∈ V` and `(f x, F i y) ∈ V`, thus `(f y, F i y) ∈ U`
-    exact hVU ⟨f x, SetRel.symm V <| hmaps hy, hg hy⟩
+    exact hVU ⟨f x, hmaps hy, SetRel.symm V (hg hy)⟩
   · -- Now we prove that uniform convergence on compacts
     -- implies convergence in the compact-open topology
     -- Consider a compact set `K`, an open set `U`, and a continuous map `f` that maps `K` to `U`
@@ -141,7 +142,8 @@ theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
         with ⟨V, hV, -, hVf⟩
     -- Then any continuous map that is uniformly `V`-close to `f` on `K`
     -- maps `K` to `U` as well
-    filter_upwards [h K hK V hV] with g hg x hx using hVf _ (mem_image_of_mem f hx) (hg x hx)
+    filter_upwards [h K hK (SetRel.inv V) (symm_le_uniformity hV)] with g hg x hx using
+      hVf _ (mem_image_of_mem f hx) (hg x hx)
 
 /-- Interpret a bundled continuous map as an element of `α →ᵤ[{K | IsCompact K}] β`.
 
