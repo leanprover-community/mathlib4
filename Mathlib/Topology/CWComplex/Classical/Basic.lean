@@ -495,8 +495,8 @@ private lemma RelCWComplex.iUnion_openCell_eq_iUnion_closedCell [RelCWComplex C 
     rw [← cellFrontier_union_openCell_eq_closedCell]
     apply union_subset
     · induction m using Nat.case_strong_induction_on with
-      | hz => simp [cellFrontier_zero_eq_empty]
-      | hi m hm' =>
+      | zero => simp [cellFrontier_zero_eq_empty]
+      | succ m hm' =>
         obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell (m + 1) j
         apply hI.trans
         apply union_subset subset_union_left
@@ -570,10 +570,10 @@ lemma RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedC
   refine ⟨?_, hDA⟩
   intro n j
   induction n using Nat.case_strong_induction_on with
-  | hz =>
+  | zero =>
     rw [closedCell_zero_eq_singleton]
     exact isClosed_inter_singleton
-  | hi n hn =>
+  | succ n hn =>
     specialize h n.succ n.zero_lt_succ j
     rcases h with h1 | h2
     · rw [← cellFrontier_union_openCell_eq_closedCell, inter_union_distrib_left]
@@ -614,8 +614,8 @@ lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : �
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ D ∪ (⋃ (m < n) (j ∈ I m), openCell m j) := by
   induction n using Nat.case_strong_induction_on with
-  | hz => simp [cellFrontier_zero_eq_empty]
-  | hi n hn =>
+  | zero => simp [cellFrontier_zero_eq_empty]
+  | succ n hn =>
     -- We apply `cellFrontier_subset_base_union_finite_closedCell` once and then apply
     -- the induction hypothesis to the finitely many cells that
     -- `cellFrontier_subset_base_union_finite_closedCell` gives us.
@@ -680,7 +680,7 @@ instance : SetLike (Subcomplex C) X where
     rw [hE, hF]
     simpa using h
 
-instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C) X
+instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C)
 
 initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
 
@@ -770,7 +770,7 @@ def RelCWComplex.Subcomplex.mk' [T2Space X] (C : Set X) {D : Set X} [RelCWComple
       exact closedCell_subset n ⟨j, h⟩
     · left
       simp_rw [← union, disjoint_union_left, disjoint_iUnion_left]
-      exact ⟨disjointBase n j |>.symm, fun _ _ ↦ disjoint_openCell_of_ne (by aesop)⟩
+      exact ⟨disjointBase n j |>.symm, fun _ _ ↦ disjoint_openCell_of_ne (by grind)⟩
   union' := union
 
 /-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires

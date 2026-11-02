@@ -5,11 +5,12 @@ Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn, S
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Order.Ring.Pow
-public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Tactic.Positivity.Core
+
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Ring.CharZero
 
 /-!
 # Lemmas about powers in ordered fields.
@@ -74,11 +75,11 @@ theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
 lemma zpow_eq_zpow_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
   match n with
   | Int.ofNat m => by
-    simp only [Int.ofNat_eq_natCast, ne_eq, Nat.cast_eq_zero, zpow_natCast, Int.even_coe_nat] at *
+    simp only [Int.ofNat_eq_natCast, ne_eq, Nat.cast_eq_zero, zpow_natCast, Int.even_natCast] at *
     exact pow_eq_pow_iff_of_ne_zero hn
   | Int.negSucc m => by
     simp only [← neg_ofNat_succ, ne_eq, neg_eq_zero, Nat.cast_eq_zero, zpow_neg, zpow_natCast,
-      inv_inj, even_neg, Int.even_coe_nat] at *
+      inv_inj, even_neg, Int.even_natCast] at *
     exact pow_eq_pow_iff_of_ne_zero hn
 
 lemma zpow_eq_zpow_iff_cases₀ : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by
@@ -124,7 +125,7 @@ open Lean Meta Qq
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
 meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
-  let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
+  let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← whnf e | throwError "not ^"
   match (dependent := true) pα? with
   | none =>
     match ← core zα pα? a with
@@ -140,7 +141,7 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
       let _a ← synthInstanceQ q(LinearOrder $α)
       let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
       assumeInstancesCommute
-      match ← whnfR b with
+      match ← whnf b with
       | .app (.app (.app (.const `OfNat.ofNat _) _) (.lit (Literal.natVal n))) _ =>
         guard (n % 2 = 0)
         have m : Q(ℕ) := mkRawNatLit (n / 2)
@@ -148,7 +149,7 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
         haveI' : $e =Q $a ^ $b := ⟨⟩
         pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
       | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
-        let b' ← whnfR b'
+        let b' ← whnf b'
         let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
         let some n := (b'.getRevArg! 1).rawNatLit? | throwError "not a ^ -n where n is a literal"
         guard (n % 2 = 0)

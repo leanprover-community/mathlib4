@@ -5,9 +5,12 @@ Authors: Johan Commelin, Eric Rodriguez
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Center
-public import Mathlib.GroupTheory.ClassEquation
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Basic.Finite.Defs
+
+import Mathlib.Algebra.GroupWithZero.Action.Center
+import Mathlib.GroupTheory.ClassEquation
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
 /-!
 # Wedderburn's Little Theorem
@@ -36,8 +39,6 @@ below proof is free, then the proof works nearly verbatim.
 
 -/
 
-@[expose] public section
-
 open scoped Polynomial
 open Fintype
 
@@ -46,7 +47,7 @@ namespace LittleWedderburn
 
 variable (D : Type*) [DivisionRing D]
 
-private def InductionHyp : Prop :=
+def InductionHyp : Prop :=
   ∀ {R : Subring D}, R < ⊤ → ∀ ⦃x y⦄, x ∈ R → y ∈ R → x * y = y * x
 
 namespace InductionHyp
@@ -56,7 +57,7 @@ open Module Polynomial
 variable {D}
 
 @[instance_reducible]
-private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
+def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
     [Fintype D] [DecidableEq D] [DecidablePred (· ∈ R)] :
     Field R :=
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
@@ -64,7 +65,7 @@ private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
-private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
+theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
   set Z := Subring.center D
@@ -93,7 +94,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
     rw [eval_sub, eval_X_pow, eval_one, ← key, Int.dvd_add_left this] at contra
     refine (Nat.le_of_dvd ?_ ?_).not_gt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
-    · convert! Int.natAbs_dvd_natAbs.mpr contra
+    · convert Int.natAbs_dvd_natAbs.mpr contra
       clear_value q
       simp only [eq_comm, Int.natAbs_eq_iff, Nat.cast_sub hq.le, Nat.cast_one, neg_sub, true_or]
     · by_contra! h
@@ -116,7 +117,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   rw [Set.toFinset_card, ConjClasses.card_carrier, ← card_congr
         (show Zxˣ ≃* _ from unitsCentralizerEquiv _ x).toEquiv, card_units, card_D]
   have hZx : Zx ≠ ⊤ := by
-    by_contra! hZx
+    by_contra hZx
     refine (ConjClasses.mk_bijOn (Dˣ)).mapsTo (Set.subset_center_units ?_) hx
     exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
   let : Field Zx := hD.field hZx.lt_top
@@ -134,14 +135,14 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   refine map_dvd (evalRingHom ↑q) (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
   rw [← Nat.pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
-  obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
+  obtain ⟨b, -, hb⟩ := IsConcreteLE.exists_of_lt hZx.lt_top
   refine card_lt_of_injective_of_notMem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩
   exact hb b.2
 
 end InductionHyp
 
-private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
+theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   classical
   cases nonempty_fintype D
   induction hn : Fintype.card D using Nat.strong_induction_on generalizing D with | _ n IH
@@ -154,9 +155,11 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
   rw [← hn, ← Subring.card_top D]
-  convert! Set.card_lt_card hR
+  convert Set.card_lt_card hR
 
 end LittleWedderburn
+
+public section
 
 open LittleWedderburn
 
@@ -175,3 +178,5 @@ theorem Finite.isDomain_to_isField (D : Type*) [Finite D] [Ring D] [IsDomain D] 
   cases nonempty_fintype D
   let _ := Fintype.divisionRingOfIsDomain D
   exact Field.toIsField D
+
+end

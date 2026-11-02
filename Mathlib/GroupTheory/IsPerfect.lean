@@ -49,7 +49,7 @@ lemma isPerfect_def : IsPerfect G ↔ commutator G = ⊤ :=
 
 lemma _root_.Subgroup.isPerfect_iff : IsPerfect H ↔ ⁅H, H⁆ = H := by
   rw [Group.isPerfect_def, ← map_subtype_inj,
-    map_subtype_commutator, ← MonoidHom.range_eq_map, range_subtype]
+    map_subtype_commutator, Subgroup.map_top, range_subtype]
 
 lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
   isPerfect_iff.mp hH
@@ -65,7 +65,7 @@ instance [Subsingleton G] : IsPerfect G where
 
 theorem top_iff : IsPerfect (⊤ : Subgroup G) ↔ IsPerfect G := by
   rw [isPerfect_def, isPerfect_def, ← map_subtype_inj,
-    map_subtype_commutator, ← MonoidHom.range_eq_map, subtype_range, commutator_def]
+    map_subtype_commutator, Subgroup.map_top, subtype_range, commutator_def]
 
 instance [IsPerfect G] : IsPerfect (⊤ : Subgroup G) :=
   top_iff.mpr inferInstance
@@ -106,11 +106,11 @@ instance instQuotientSubgroup [H.Normal] [IsPerfect G] : IsPerfect (G ⧸ H) :=
 
 variable (G) in
 @[simp]
-theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : derivedSeries G n = ⊤ := by
+theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : Subgroup.derivedSeries G n = ⊤ := by
   match n with
   | 0 => simp
   | n + 1 =>
-    rw [derivedSeries_succ, derivedSeries_eq_top, commutator_eq_self]
+    rw [Subgroup.derivedSeries_succ, derivedSeries_eq_top, commutator_eq_self]
 
 @[simp]
 theorem lowerCentralSeries_eq_top (H : Subgroup G) [IsPerfect H] (n : ℕ) :

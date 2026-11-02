@@ -109,12 +109,11 @@ theorem measure_union_add_inter' (hs : MeasurableSet s) (t : Set α) :
 
 lemma measure_symmDiff_eq (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
     μ (s ∆ t) = μ (s \ t) + μ (t \ s) := by
-  simpa only [symmDiff_def, sup_eq_union]
-    using measure_union₀ (ht.diff hs) disjoint_sdiff_sdiff.aedisjoint
+  simpa only [symmDiff_def] using measure_union₀ (ht.diff hs) disjoint_sdiff_sdiff.aedisjoint
 
 lemma measure_symmDiff_le (s t u : Set α) :
-    μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) :=
-  le_trans (μ.mono <| symmDiff_triangle s t u) (measure_union_le (s ∆ t) (t ∆ u))
+    μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) := by
+  grw [← measure_union_le, symmDiff_triangle s t u]
 
 theorem measure_symmDiff_eq_top (hs : μ s ≠ ∞) (ht : μ t = ∞) : μ (s ∆ t) = ∞ :=
   measure_mono_top subset_union_right (measure_sdiff_eq_top ht hs)
@@ -156,7 +155,7 @@ the sum of the measures of the sets. -/
 theorem tsum_meas_le_meas_iUnion_of_disjoint₀ (μ : Measure α)
     {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
-  rw [ENNReal.tsum_eq_iSup_sum, iSup_le_iff]
+  rw [tsum_eq_iSup_sum, iSup_le_iff]
   intro s
   simp only [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
   gcongr
@@ -398,7 +397,7 @@ theorem sum_measure_le_measure_univ {s : Finset ι} {t : ι → Set α}
 
 theorem tsum_measure_le_measure_univ {s : ι → Set α} (hs : ∀ i, NullMeasurableSet (s i) μ)
     (H : Pairwise (AEDisjoint μ on s)) : ∑' i, μ (s i) ≤ μ (univ : Set α) := by
-  rw [ENNReal.tsum_eq_iSup_sum]
+  rw [tsum_eq_iSup_sum]
   exact iSup_le fun s =>
     sum_measure_le_measure_univ (fun i _hi => hs i) fun i _hi j _hj hij => H hij
 
@@ -468,7 +467,7 @@ lemma Measure.measure_inter_eq_of_ae (h : ∀ᵐ a ∂μ, a ∈ t) :
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (u ∩ s)`.
 Here, we require that the measure of `t` is finite. The conclusion holds without this assumption
 when the measure is s-finite (for example when it is σ-finite),
-see `measure_toMeasurable_inter_of_sFinite`. -/
+see `measure_toMeasurable_inter_of_sfinite`. -/
 theorem Measure.measure_toMeasurable_inter (hs : MeasurableSet s) (ht : μ t ≠ ∞) :
     μ (toMeasurable μ t ∩ s) = μ (t ∩ s) :=
   (measure_inter_eq_of_measure_eq hs (measure_toMeasurable t).symm (subset_toMeasurable μ t)

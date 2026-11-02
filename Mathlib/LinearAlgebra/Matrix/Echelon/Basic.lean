@@ -6,12 +6,8 @@ Authors: Rao Xiaojia
 module
 
 public import Mathlib.Data.Fintype.Defs
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Order.Defs.LinearOrder
-public import Mathlib.Order.RelClasses
-
-import Mathlib.Order.WellFounded
-
 
 /-!
 # Row echelon forms
@@ -52,7 +48,7 @@ def IsRowEchelon [LT m] [LT n] (A : Matrix m n R) : Prop :=
 theorem IsRowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : A.IsRowEchelon)
     (hlt : i₁ < i₂) (h0 : A i₁ = 0) : A i₂ = 0 := by
   funext j
-  exact he hlt fun j₁ _ => congrFun h0 j₁
+  exact he hlt fun j₁ _ => congr($h0 j₁)
 
 /-! ### Leading entries -/
 
@@ -62,7 +58,7 @@ def IsLeadingEntry [LT n] (A : Matrix m n R) (i : m) (c : n) : Prop :=
 
 theorem IsLeadingEntry.row_ne_zero [LT n] {i : m} {c : n} (hc : A.IsLeadingEntry i c) :
     A i ≠ 0 :=
-  fun contra => hc.2 (congrFun contra c)
+  fun contra => hc.2 congr($contra c)
 
 theorem row_ne_zero_iff_exists_isLeadingEntry [LT n] [WellFoundedLT n] {i : m} :
     A i ≠ 0 ↔ ∃ c, A.IsLeadingEntry i c := by
@@ -101,3 +97,21 @@ theorem IsReducedRowEchelon.eq_zero_of_ne_of_isLeadingEntry [LinearOrder m] [LT 
   · exact hA.isRowEchelon hlt hlead.1
 
 end Matrix
+
+/-! ### Properties of row echelon forms -/
+
+namespace Matrix.IsRowEchelon
+
+variable {A : Matrix m m R}
+
+theorem isUpperTriangular [LT m] [WellFoundedLT m] [Zero R] (hA : A.IsRowEchelon) :
+    A.IsUpperTriangular := by
+  intro i
+  induction i using WellFoundedLT.induction with
+  | ind i ih => exact fun j hji ↦ hA hji (ih j hji)
+
+theorem det_eq [DecidableEq m] [Fintype m] [LinearOrder m] [CommRing R] (hA : A.IsRowEchelon) :
+    A.det = ∏ i, A i i :=
+  det_of_isUpperTriangular hA.isUpperTriangular
+
+end Matrix.IsRowEchelon
