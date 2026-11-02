@@ -187,7 +187,7 @@ lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : 
       (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_)
     · cat_disch
     · cat_disch
-    · simp [dsimp% (A.ι.commShiftIso (1 : ℤ)).inv_hom_id_app X]
+    · simp
 
 set_option backward.isDefEq.respectTransparency.types false in
 lemma inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op [A.IsTriangulated]

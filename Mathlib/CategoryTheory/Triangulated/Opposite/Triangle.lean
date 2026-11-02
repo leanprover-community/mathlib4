@@ -41,7 +41,7 @@ namespace TriangleOpEquivalence
 noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle Cᵒᵖ where
   obj T := Triangle.mk T.unop.mor₂.op T.unop.mor₁.op
       ((opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op T.unop.obj₁) ≫
-        T.unop.mor₃.op⟦(1 : ℤ)⟧')
+        T.unop.mor₃.op⟦1⟧')
   map {T₁ T₂} φ :=
     { hom₁ := φ.unop.hom₃.op
       hom₂ := φ.unop.hom₂.op
@@ -59,7 +59,7 @@ noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle Cᵒᵖ where
 @[simps]
 noncomputable def inverse : Triangle Cᵒᵖ ⥤ (Triangle C)ᵒᵖ where
   obj T := Opposite.op (Triangle.mk T.mor₂.unop T.mor₁.unop
-      (((opShiftFunctorEquivalence C 1).unitIso.inv.app T.obj₁).unop ≫ T.mor₃.unop⟦(1 : ℤ)⟧'))
+      (((opShiftFunctorEquivalence C 1).unitIso.inv.app T.obj₁).unop ≫ T.mor₃.unop⟦1⟧'))
   map {T₁ T₂} φ := Quiver.Hom.op
     { hom₁ := φ.hom₃.unop
       hom₂ := φ.hom₂.unop

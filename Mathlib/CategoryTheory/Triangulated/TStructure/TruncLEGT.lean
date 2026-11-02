@@ -179,8 +179,8 @@ lemma π_truncGTIsoTruncGE_inv_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
 /-- The connecting homomorphism `(t.truncGE b).obj X ⟶ ((t.truncLE a).obj X)⟦1⟧`
 when `a + 1 = b`, as a natural transformation. -/
 noncomputable def truncGEδLE (a b : ℤ) (h : a + 1 = b) :
-    t.truncGE b ⟶ t.truncLE a ⋙ shiftFunctor C (1 : ℤ) :=
-  t.truncGEδLT b ≫ Functor.whiskerRight (t.truncLEIsoTruncLT a b h).inv (shiftFunctor C (1 : ℤ))
+    t.truncGE b ⟶ t.truncLE a ⋙ shiftFunctor C 1 :=
+  t.truncGEδLT b ≫ Functor.whiskerRight (t.truncLEIsoTruncLT a b h).inv (shiftFunctor C 1)
 
 /-- The distinguished triangle `(t.truncLE a).obj A ⟶ A ⟶ (t.truncGE b).obj A ⟶ ...`
 as a functor `C ⥤ Triangle C` when `t` is a `t`-structure on a pretriangulated
@@ -211,7 +211,7 @@ lemma triangleLEGE_distinguished (a b : ℤ) (h : a + 1 = b) (X : C) :
 /-- The connecting homomorphism `(t.truncGT n).obj X ⟶ ((t.truncLE n).obj X)⟦1⟧`
 for `n : ℤ`, as a natural transformation. -/
 noncomputable def truncGTδLE (n : ℤ) :
-    t.truncGT n ⟶ t.truncLE n ⋙ shiftFunctor C (1 : ℤ) :=
+    t.truncGT n ⟶ t.truncLE n ⋙ shiftFunctor C 1 :=
   (t.truncGTIsoTruncGE n (n + 1) rfl).hom ≫ t.truncGEδLE n (n + 1) (by lia)
 
 /-- The distinguished triangle `(t.truncLE n).obj A ⟶ A ⟶ (t.truncGT n).obj A ⟶ ...`
@@ -329,7 +329,7 @@ lemma isIso_truncLE_map_iff {X Y : C} (f : X ⟶ Y) (a b : ℤ) (h : a + 1 = b) 
 
 lemma isIso_truncGT_map_iff {Y Z : C} (g : Y ⟶ Z) (n : ℤ) :
     IsIso ((t.truncGT n).map g) ↔
-      ∃ (X : C) (f : X ⟶ Y) (h : ((t.truncGT n).obj Z) ⟶ X⟦(1 : ℤ)⟧)
+      ∃ (X : C) (f : X ⟶ Y) (h : ((t.truncGT n).obj Z) ⟶ X⟦1⟧)
         (_ : Triangle.mk f (g ≫ (t.truncGTπ n).app Z) h ∈ distTriang _), t.IsLE X n :=
   t.isIso_truncGE_map_iff g n (n + 1) rfl
 

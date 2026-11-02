@@ -45,7 +45,7 @@ structure SpectralObject where
   /-- A functor from `ComposableArrows ι 1` to the pretriangulated category. -/
   ω₁ : ComposableArrows ι 1 ⥤ C
   /-- The connecting homomorphism of the spectral object. -/
-  δ' : functorArrows ι 1 2 2 ⋙ ω₁ ⟶ functorArrows ι 0 1 2 ⋙ ω₁ ⋙ shiftFunctor C (1 : ℤ)
+  δ' : functorArrows ι 1 2 2 ⋙ ω₁ ⟶ functorArrows ι 0 1 2 ⋙ ω₁ ⋙ shiftFunctor C 1
   distinguished' (D : ComposableArrows ι 2) :
     Triangle.mk (ω₁.map ((mapFunctorArrows ι 0 1 0 2 2).app D))
       (ω₁.map ((mapFunctorArrows ι 0 2 1 2 2).app D)) (δ'.app D) ∈ distTriang C
@@ -69,16 +69,16 @@ section
 
 variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
 
-/-- The connecting homomorphism `X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧`
+/-- The connecting homomorphism `X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦1⟧`
 of a spectral object `X` in a pretriangulated category when `f : i ⟶ j` and `g : j ⟶ k`
 are composable. -/
-def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧ :=
+def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦1⟧ :=
   X.δ'.app (mk₂ f g)
 
 @[reassoc]
 lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
     (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0) :
-    X.ω₁.map β ≫ X.δ f' g' = X.δ f g ≫ (X.ω₁.map α)⟦(1 : ℤ)⟧' := by
+    X.ω₁.map β ≫ X.δ f' g' = X.δ f g ≫ (X.ω₁.map α)⟦1⟧' := by
   let φ : mk₂ f g ⟶ mk₂ f' g' := homMk₂ (α.app 0) (α.app 1) (β.app 1) (naturality' α 0 1)
     (by simp [Precomp.map, hαβ, dsimp% naturality' β 0 1] )
   have h := X.δ'.naturality φ
@@ -144,7 +144,7 @@ def precomp : SpectralObject C ι' where
   δ'.naturality D₁ D₂ f := by
     have := X.δ'.naturality ((F.mapComposableArrows 2).map f)
     rw [← cancel_epi (X.ω₁.map (F.mapComposableArrowsObjMk₁Iso _).hom)] at this
-    rw [← cancel_mono ((X.ω₁.map (F.mapComposableArrowsObjMk₁Iso _).hom)⟦(1 : ℤ)⟧')]
+    rw [← cancel_mono ((X.ω₁.map (F.mapComposableArrowsObjMk₁Iso _).hom)⟦1⟧')]
     dsimp at this ⊢
     simp only [← Functor.map_comp_assoc, ← Functor.map_comp, Category.assoc,
       Iso.inv_hom_id, Functor.map_id, Category.comp_id] at this ⊢
@@ -185,7 +185,7 @@ variable (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
 def mapTriangulatedFunctor : SpectralObject D ι where
   ω₁ := X.ω₁ ⋙ F
   δ' := Functor.whiskerRight X.δ' F ≫
-      Functor.whiskerLeft (functorArrows ι 0 1 2 ⋙ X.ω₁) (F.commShiftIso (1 : ℤ)).hom
+      Functor.whiskerLeft (functorArrows ι 0 1 2 ⋙ X.ω₁) (F.commShiftIso 1).hom
   distinguished' D := F.map_distinguished _ (X.distinguished' D)
 
 
@@ -201,7 +201,7 @@ structure Hom (Y : SpectralObject C ι) where
   /-- The natural transformation that is part of a morphism between spectral objects. -/
   hom : X.ω₁ ⟶ Y.ω₁
   comm {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
-    X.δ f g ≫ (hom.app (mk₁ f))⟦(1 : ℤ)⟧' = hom.app (mk₁ g) ≫ Y.δ f g := by cat_disch
+    X.δ f g ≫ (hom.app (mk₁ f))⟦1⟧' = hom.app (mk₁ g) ≫ Y.δ f g := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 

@@ -90,7 +90,7 @@ lemma ext_of_isTriangulatedClosed₃'
 
 protected lemma distinguished_cocone_triangle [P.IsTriangulatedClosed₃]
     {X Y : C} (a : X ⟶ Y) (hX : P X) (hY : P Y) :
-    ∃ (Z : C) (_ : P Z) (b : Y ⟶ Z) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+    ∃ (Z : C) (_ : P Z) (b : Y ⟶ Z) (c : Z ⟶ X⟦1⟧), Triangle.mk a b c ∈ distTriang _ := by
   obtain ⟨Z, b, c, h⟩ := distinguished_cocone_triangle a
   obtain ⟨Z', hZ', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ h hX hY
   exact ⟨Z', hZ', b ≫ e.hom, e.inv ≫ c, isomorphic_distinguished _ h _
@@ -98,14 +98,14 @@ protected lemma distinguished_cocone_triangle [P.IsTriangulatedClosed₃]
 
 protected lemma distinguished_cocone_triangle₁ [P.IsTriangulatedClosed₁]
     {Y Z : C} (b : Y ⟶ Z) (hY : P Y) (hZ : P Z) :
-    ∃ (X : C) (_ : P X) (a : X ⟶ Y) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+    ∃ (X : C) (_ : P X) (a : X ⟶ Y) (c : Z ⟶ X⟦1⟧), Triangle.mk a b c ∈ distTriang _ := by
   obtain ⟨X, a, c, h⟩ := distinguished_cocone_triangle₁ b
   obtain ⟨X', hX', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₁' _ h hY hZ
   exact ⟨X', hX', e.inv ≫ a, c ≫ e.hom⟦1⟧', isomorphic_distinguished _ h _
     (Triangle.isoMk _ _ e.symm (Iso.refl _) (Iso.refl _))⟩
 
 protected lemma distinguished_cocone_triangle₂ [P.IsTriangulatedClosed₂]
-    {X Z : C} (c : Z ⟶ X⟦(1 : ℤ)⟧) (hX : P X) (hZ : P Z) :
+    {X Z : C} (c : Z ⟶ X⟦1⟧) (hX : P X) (hZ : P Z) :
     ∃ (Y : C) (_ : P Y) (a : X ⟶ Y) (b : Y ⟶ Z), Triangle.mk a b c ∈ distTriang _ := by
   obtain ⟨Y, a, b, h⟩ := distinguished_cocone_triangle₂ c
   obtain ⟨Y', hY', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₂' _ h hX hZ
@@ -197,15 +197,15 @@ variable (Q R : ObjectProperty C)
 /-- An object `X` satisfies `extensionProduct P Q` if there exists a distinguished triangle
 `Y ⟶ X ⟶ Z ⟶ Y⟦1⟧` such that `Y` satisfies `P` and `Z` satisfies `Q`. -/
 def extensionProduct : ObjectProperty C :=
-  fun X => ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
+  fun X => ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦1⟧),
     Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z
 
 lemma extensionProduct_iff (X : C) : extensionProduct P Q X ↔
-  ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
+  ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦1⟧),
     Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z := Iff.rfl
 
 instance [P.Nonempty] [Q.Nonempty] : (extensionProduct P Q).Nonempty := by
-  obtain ⟨Y, f, g, hT⟩ := distinguished_cocone_triangle₂ (0 : Q.arbitrary ⟶ P.arbitrary⟦(1 : ℤ)⟧)
+  obtain ⟨Y, f, g, hT⟩ := distinguished_cocone_triangle₂ (0 : Q.arbitrary ⟶ P.arbitrary⟦1⟧)
   exact ⟨_, _, _, _, _, _, hT, P.prop_arbitrary, Q.prop_arbitrary⟩
 
 @[simp]
@@ -306,7 +306,7 @@ lemma extensionProduct_retractClosure_retractClosure_le :
     extensionProduct P.retractClosure Q.retractClosure ≤
       (extensionProduct P Q).retractClosure := by
   intro X ⟨A, B, f₁, f₂, f₃, hT, ⟨A', hP, ⟨a₁, b₁, h₁⟩⟩, ⟨B', hQ, ⟨a₃, b₃, h₃⟩⟩⟩
-  obtain ⟨X', g₁, g₂, hT'⟩ := distinguished_cocone_triangle₂ (b₃ ≫ f₃ ≫ a₁⟦(1 : ℤ)⟧')
+  obtain ⟨X', g₁, g₂, hT'⟩ := distinguished_cocone_triangle₂ (b₃ ≫ f₃ ≫ a₁⟦1⟧')
   obtain ⟨a₂ : X ⟶ X', ha₁₂, ha₂₃⟩ :=
     complete_distinguished_triangle_morphism₂ _ _ hT hT' a₁ a₃ (by dsimp; grind)
   obtain ⟨b₂ : X' ⟶ X, hb₁₂, hb₂₃⟩ :=
@@ -448,15 +448,15 @@ of morphisms whose cone satisfies `P`. (The name `trW` contains the prefix `tr`
 for "triangulated", and `W` is a letter that is often used to refer to classes of
 morphisms with respect to which we may consider the localized category.) -/
 def trW : MorphismProperty C :=
-  fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+  fun X Y f => ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧)
     (_ : Triangle.mk f g h ∈ distTriang C), P Z
 
 lemma trW_iff {X Y : C} (f : X ⟶ Y) :
-    P.trW f ↔ ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+    P.trW f ↔ ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧)
       (_ : Triangle.mk f g h ∈ distTriang C), P Z := by rfl
 
 lemma trW_iff' [P.IsStableUnderShift ℤ] {Y Z : C} (g : Y ⟶ Z) :
-    P.trW g ↔ ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦(1 : ℤ)⟧)
+    P.trW g ↔ ∃ (X : C) (f : X ⟶ Y) (h : Z ⟶ X⟦1⟧)
       (_ : Triangle.mk f g h ∈ distTriang C), P X := by
   rw [P.trW_iff]
   constructor
@@ -492,7 +492,7 @@ lemma trW_monotone {Q : ObjectProperty C} (h : P ≤ Q) : P.trW ≤ Q.trW := by
 instance : P.trW.RespectsIso where
   precomp {X' X Y} e (he : IsIso e) := by
     rintro f ⟨Z, g, h, mem, mem'⟩
-    refine ⟨Z, g, h ≫ inv e⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ ?_, mem'⟩
+    refine ⟨Z, g, h ≫ inv e⟦1⟧', isomorphic_distinguished _ mem _ ?_, mem'⟩
     refine Triangle.isoMk _ _ (asIso e) (Iso.refl _) (Iso.refl _) (by simp) (by simp) ?_
     dsimp
     simp only [Functor.map_inv, assoc, IsIso.inv_hom_id, comp_id, id_comp]
@@ -675,7 +675,7 @@ noncomputable instance : Pretriangulated P.FullSubcategory where
     obtain ⟨Z', g', h', mem⟩ := distinguished_cocone_triangle (P.ι.map f)
     obtain ⟨Z'', hZ'', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ mem X.2 Y.2
     exact ⟨⟨Z'', hZ''⟩, P.fullyFaithfulι.preimage (g' ≫ e.hom),
-      P.fullyFaithfulι.preimage (e.inv ≫ h' ≫ (P.ι.commShiftIso (1 : ℤ)).inv.app X),
+      P.fullyFaithfulι.preimage (e.inv ≫ h' ≫ (P.ι.commShiftIso 1).inv.app X),
       isomorphic_distinguished _ mem _ (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm)⟩
   rotate_distinguished_triangle T :=
     (rotate_distinguished_triangle (P.ι.mapTriangle.obj T)).trans
@@ -686,8 +686,8 @@ noncomputable instance : Pretriangulated P.FullSubcategory where
       (by simpa using P.ι.congr_map comm)
     refine ⟨P.fullyFaithfulι.preimage c, ⟨by cat_disch, ?_⟩⟩
     ext
-    have := P.ι.commShiftIso_hom_naturality a (1 : ℤ)
-    rw [← cancel_mono ((Functor.commShiftIso P.ι (1 : ℤ)).hom.app T₂.obj₁)]
+    have := P.ι.commShiftIso_hom_naturality a 1
+    rw [← cancel_mono ((Functor.commShiftIso P.ι 1).hom.app T₂.obj₁)]
     cat_disch
 
 instance : P.ι.IsTriangulated where
@@ -706,7 +706,7 @@ instance (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] :
   toIsTriangulatedClosed₂ := .mk' (by
     rintro T hT ⟨X₁, ⟨e₁⟩⟩ ⟨X₃, ⟨e₃⟩⟩
     have ⟨h, hh⟩ := F.map_surjective (e₃.hom ≫ T.mor₃ ≫ e₁.inv⟦1⟧' ≫
-      (F.commShiftIso (1 : ℤ)).inv.app X₁)
+      (F.commShiftIso 1).inv.app X₁)
     obtain ⟨X₂, f, g, H⟩ := distinguished_cocone_triangle₂ h
     exact ⟨X₂, ⟨Triangle.π₂.mapIso
       (isoTriangleOfIso₁₃ _ _ (F.map_distinguished _ H) hT e₁ e₃

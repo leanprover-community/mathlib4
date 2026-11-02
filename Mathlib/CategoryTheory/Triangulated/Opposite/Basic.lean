@@ -246,7 +246,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma opShiftFunctorEquivalence_zero_unitIso_hom_app (X : Cᵒᵖ) :
     (opShiftFunctorEquivalence C 0).unitIso.hom.app X =
       ((shiftFunctorZero C ℤ).hom.app X.unop).op ≫
-      (((shiftFunctorZero Cᵒᵖ ℤ).inv.app X).unop⟦(0 : ℤ)⟧').op := by
+      (((shiftFunctorZero Cᵒᵖ ℤ).inv.app X).unop⟦0⟧').op := by
   apply Quiver.Hom.unop_inj
   dsimp [opShiftFunctorEquivalence]
   simp only [Category.comp_id]
@@ -256,7 +256,7 @@ lemma opShiftFunctorEquivalence_zero_unitIso_hom_app (X : Cᵒᵖ) :
 set_option backward.defeqAttrib.useBackward true in
 lemma opShiftFunctorEquivalence_zero_unitIso_inv_app (X : Cᵒᵖ) :
     (opShiftFunctorEquivalence C 0).unitIso.inv.app X =
-      (((shiftFunctorZero Cᵒᵖ ℤ).hom.app X).unop⟦(0 : ℤ)⟧').op ≫
+      (((shiftFunctorZero Cᵒᵖ ℤ).hom.app X).unop⟦0⟧').op ≫
         ((shiftFunctorZero C ℤ).inv.app X.unop).op := by
   apply Quiver.Hom.unop_inj
   dsimp [opShiftFunctorEquivalence]

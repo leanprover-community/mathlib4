@@ -51,7 +51,7 @@ structure Triangle where mk' ::
   /-- the second morphism of a triangle -/
   mor₂ : obj₂ ⟶ obj₃
   /-- the third morphism of a triangle -/
-  mor₃ : obj₃ ⟶ obj₁⟦(1 : ℤ)⟧
+  mor₃ : obj₃ ⟶ obj₁⟦1⟧
 
 variable {C}
 
@@ -59,7 +59,7 @@ variable {C}
 and `h : Z ⟶ X⟦1⟧`.
 -/
 @[simps, implicit_reducible]
-def Triangle.mk {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧) : Triangle C where
+def Triangle.mk {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧) : Triangle C where
   obj₁ := X
   obj₂ := Y
   obj₃ := Z
@@ -193,7 +193,7 @@ def Triangle.isoMk (A B : Triangle C)
       comm₁, Iso.inv_hom_id_assoc])
     (by simp only [← cancel_mono iso₃.hom, assoc, Iso.inv_hom_id, comp_id,
       comm₂, Iso.inv_hom_id_assoc])
-    (by simp only [← cancel_mono (iso₁.hom⟦(1 : ℤ)⟧'), Category.assoc, comm₃,
+    (by simp only [← cancel_mono (iso₁.hom⟦1⟧'), Category.assoc, comm₃,
       Iso.inv_hom_id_assoc, ← Functor.map_comp, Iso.inv_hom_id,
       Functor.map_id, Category.comp_id])
 
@@ -344,7 +344,7 @@ section
 
 variable {J : Type*} (T : J → Triangle C)
   [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
-  [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
+  [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦1⟧)]
 
 /-- The product of a family of triangles. -/
 @[simps!]
@@ -391,13 +391,13 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
 
 set_option backward.defeqAttrib.useBackward true in
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
-    (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
+    (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦1⟧' = 0) :
     (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
-  have : HasProduct (fun j => (T j).obj₂⟦(1 : ℤ)⟧) :=
-    ⟨_, isLimitFanMkObjOfIsLimit (shiftFunctor C (1 : ℤ)) _ _
+  have : HasProduct (fun j => (T j).obj₂⟦1⟧) :=
+    ⟨_, isLimitFanMkObjOfIsLimit (shiftFunctor C 1) _ _
       (productIsProduct (fun j => (T j).obj₂))⟩
   dsimp
-  change _ ≫ (Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁))⟦(1 : ℤ)⟧' = 0
+  change _ ≫ (Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁))⟦1⟧' = 0
   rw [assoc, ← cancel_mono (piComparison _ _), zero_comp, assoc, assoc]
   ext j
   simp [h j]
@@ -449,9 +449,9 @@ def π₂Toπ₃ : (π₂ : Triangle C ⥤ C) ⟶ Triangle.π₃ where
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The third morphism of a triangle, as a natural
-transformation `π₃ ⟶ π₁ ⋙ shiftFunctor _ (1 : ℤ)`. -/
+transformation `π₃ ⟶ π₁ ⋙ shiftFunctor _ 1`. -/
 @[simps]
-def π₃Toπ₁ : (π₃ : Triangle C ⥤ C) ⟶ π₁ ⋙ shiftFunctor C (1 : ℤ) where
+def π₃Toπ₁ : (π₃ : Triangle C ⥤ C) ⟶ π₁ ⋙ shiftFunctor C 1 where
   app T := T.mor₃
 
 section
@@ -473,7 +473,7 @@ variable {J : Type*} [Category* J]
 /-- Constructor for functors to the category of triangles. -/
 @[simps]
 def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
-    (mor₁ : obj₁ ⟶ obj₂) (mor₂ : obj₂ ⟶ obj₃) (mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)) :
+    (mor₁ : obj₁ ⟶ obj₂) (mor₂ : obj₂ ⟶ obj₃) (mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C 1) :
     J ⥤ Triangle C where
   obj j := mk (mor₁.app j) (mor₂.app j) (mor₃.app j)
   map φ :=
@@ -488,7 +488,7 @@ def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
     (hom₂ : A ⋙ π₂ ⟶ B ⋙ π₂) (hom₃ : A ⋙ π₃ ⟶ B ⋙ π₃)
     (comm₁ : whiskerLeft A π₁Toπ₂ ≫ hom₂ = hom₁ ≫ whiskerLeft B π₁Toπ₂ := by cat_disch)
     (comm₂ : whiskerLeft A π₂Toπ₃ ≫ hom₃ = hom₂ ≫ whiskerLeft B π₂Toπ₃ := by cat_disch)
-    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight hom₁ (shiftFunctor C (1 : ℤ)) =
+    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight hom₁ (shiftFunctor C 1) =
       hom₃ ≫ whiskerLeft B π₃Toπ₁ := by cat_disch) : A ⟶ B where
   app j :=
     { hom₁ := hom₁.app j
@@ -508,14 +508,14 @@ with `functorMk`. -/
 @[simps!]
 def functorHomMk'
     {obj₁ obj₂ obj₃ : J ⥤ C}
-    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)}
+    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C 1}
     {obj₁' obj₂' obj₃' : J ⥤ C}
     {mor₁' : obj₁' ⟶ obj₂'} {mor₂' : obj₂' ⟶ obj₃'}
-    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C (1 : ℤ)}
+    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C 1}
     (hom₁ : obj₁ ⟶ obj₁') (hom₂ : obj₂ ⟶ obj₂') (hom₃ : obj₃ ⟶ obj₃')
     (comm₁ : mor₁ ≫ hom₂ = hom₁ ≫ mor₁')
     (comm₂ : mor₂ ≫ hom₃ = hom₂ ≫ mor₂')
-    (comm₃ : mor₃ ≫ whiskerRight hom₁ (shiftFunctor C (1 : ℤ)) = hom₃ ≫ mor₃') :
+    (comm₃ : mor₃ ≫ whiskerRight hom₁ (shiftFunctor C 1) = hom₃ ≫ mor₃') :
     functorMk mor₁ mor₂ mor₃ ⟶ functorMk mor₁' mor₂' mor₃' :=
   functorHomMk _ _ hom₁ hom₂ hom₃ comm₁ comm₂ comm₃
 
@@ -527,7 +527,7 @@ def functorIsoMk (A B : J ⥤ Triangle C) (iso₁ : A ⋙ π₁ ≅ B ⋙ π₁)
     (iso₂ : A ⋙ π₂ ≅ B ⋙ π₂) (iso₃ : A ⋙ π₃ ≅ B ⋙ π₃)
     (comm₁ : whiskerLeft A π₁Toπ₂ ≫ iso₂.hom = iso₁.hom ≫ whiskerLeft B π₁Toπ₂)
     (comm₂ : whiskerLeft A π₂Toπ₃ ≫ iso₃.hom = iso₂.hom ≫ whiskerLeft B π₂Toπ₃)
-    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight iso₁.hom (shiftFunctor C (1 : ℤ)) =
+    (comm₃ : whiskerLeft A π₃Toπ₁ ≫ whiskerRight iso₁.hom (shiftFunctor C 1) =
       iso₃.hom ≫ whiskerLeft B π₃Toπ₁) : A ≅ B where
   hom := functorHomMk _ _ iso₁.hom iso₂.hom iso₃.hom comm₁ comm₂ comm₃
   inv := functorHomMk _ _ iso₁.inv iso₂.inv iso₃.inv
@@ -545,14 +545,14 @@ with `functorMk`. -/
 @[simps!]
 def functorIsoMk'
     {obj₁ obj₂ obj₃ : J ⥤ C}
-    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)}
+    {mor₁ : obj₁ ⟶ obj₂} {mor₂ : obj₂ ⟶ obj₃} {mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C 1}
     {obj₁' obj₂' obj₃' : J ⥤ C}
     {mor₁' : obj₁' ⟶ obj₂'} {mor₂' : obj₂' ⟶ obj₃'}
-    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C (1 : ℤ)}
+    {mor₃' : obj₃' ⟶ obj₁' ⋙ shiftFunctor C 1}
     (iso₁ : obj₁ ≅ obj₁') (iso₂ : obj₂ ≅ obj₂') (iso₃ : obj₃ ≅ obj₃')
     (comm₁ : mor₁ ≫ iso₂.hom = iso₁.hom ≫ mor₁')
     (comm₂ : mor₂ ≫ iso₃.hom = iso₂.hom ≫ mor₂')
-    (comm₃ : mor₃ ≫ whiskerRight iso₁.hom (shiftFunctor C (1 : ℤ)) = iso₃.hom ≫ mor₃') :
+    (comm₃ : mor₃ ≫ whiskerRight iso₁.hom (shiftFunctor C 1) = iso₃.hom ≫ mor₃') :
     functorMk mor₁ mor₂ mor₃ ≅ functorMk mor₁' mor₂' mor₃' :=
   functorIsoMk _ _ iso₁ iso₂ iso₃ comm₁ comm₂ comm₃
 
