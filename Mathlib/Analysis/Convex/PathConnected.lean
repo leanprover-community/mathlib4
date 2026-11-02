@@ -38,7 +38,10 @@ namespace Path
 @[simps]
 protected def segment (a b : E) : Path a b where
   toFun t := lineMap a b (t : ℝ)
-  continuous_toFun := by dsimp [lineMap]; fun_prop
+  continuous_toFun := by
+    simp only [lineMap, vsub_eq_sub, vadd_eq_add, add_apply, LinearMap.coe_toAffineMap,
+      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, const_apply]
+    fun_prop
   source' := by simp
   target' := by simp
 
