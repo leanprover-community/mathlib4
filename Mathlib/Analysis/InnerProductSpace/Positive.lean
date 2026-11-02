@@ -499,6 +499,14 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E]
   rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
 
+theorem norm_map_le_iff_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (p : E →L[𝕜] F) :
+    (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ 1 := by
+  rw [← sub_nonneg, ContinuousLinearMap.nonneg_iff_isPositive]
+  refine ⟨fun h => ⟨?_, fun x => ?_⟩, fun h x => ?_⟩
+  · exact ((IsSelfAdjoint.one _).sub (isPositive_adjoint_comp_self p).isSelfAdjoint).isSymmetric
+  · simp [reApplyInnerSelf_apply, inner_sub_left, adjoint_inner_left, sq_le_sq₀, h x]
+  · simpa [reApplyInnerSelf_apply, inner_sub_left, adjoint_inner_left, sq_le_sq₀] using h.2 x
+
 /-- A star projection operator is positive.
 
 The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
