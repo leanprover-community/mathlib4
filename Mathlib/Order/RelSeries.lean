@@ -1065,13 +1065,15 @@ section Fintype
 
 variable [Fintype α]
 
-lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α :=
-  s.length_lt_fintypeCard
+lemma length_lt_fintypeCard (s : LTSeries α) : s.length < Fintype.card α :=
+  RelSeries.length_lt_fintypeCard s
+
+@[deprecated (since := "2026-11-02")] alias length_lt_card := length_lt_fintypeCard
 
 instance [DecidableLT α] : Fintype (LTSeries α) where
   elems := Finset.univ.map (injStrictMono (Fintype.card α))
   complete s := by
-    have bl := s.length_lt_card
+    have bl := s.length_lt_fintypeCard
     obtain ⟨l, f, mf⟩ := s
     simp_rw [Finset.mem_map, Finset.mem_univ, true_and, Subtype.exists]
     use ⟨⟨l, bl⟩, f⟩, Fin.strictMono_iff_lt_succ.mpr mf; rfl
