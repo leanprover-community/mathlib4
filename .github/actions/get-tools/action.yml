@@ -3,11 +3,10 @@
 #
 # Fast path: download the `tools-bin` artifact published by `publish_tools.yml`
 # from its latest successful `master` `push` run, unpack it, and install the
-# matching toolchain. The action uses the artifact only when its tool sources
-# match the tool sources at `github.workflow_sha`, the commit that holds the
-# calling workflow, so the tools match the workflow that invokes them.
-# Fallback: check out `tools_source_ref` and build from source. Any failure in the
-# lookup, the comparison, the download or the unpack also selects the fallback.
+# matching toolchain, but only when the artifact's tool sources match the tool
+# sources at `github.workflow_sha`, the commit of the calling workflow.
+# Fallback: check out `tools_source_ref` and build from source. Any failure on the
+# fast path also selects the fallback.
 #
 # Requires (fast path only): `actions: read` permission and the `gh` CLI, which the
 # self-hosted runner image provides.
@@ -58,16 +57,11 @@ runs:
             --branch master --status success --event push \
             --limit 1 --json databaseId,headSha --jq '.[0] // empty | "\(.databaseId) \(.headSha)"' 2>/dev/null || true)
 
-          # The publisher builds its run's head commit. If the tool sources there
-          # differ from the tool sources at the calling workflow's commit, the
-          # prebuilt tools do not match the workflow that invokes them, so drop
-          # the artifact and build from source. These are the source paths that
-          # determine the bundled tools (the `cache` binary and the build-helper
-          # scripts in publish_tools.yml): the tool sources, and the Lake
-          # configuration, dependency revisions and toolchain that build the
-          # `cache` binary. They live here so callers don't have to duplicate the
-          # list. The comparison reads tree entries only, so the fetch skips all
-          # file contents.
+          # The publisher builds its run's head commit. Use the artifact only if
+          # `tool_paths` there match `tool_paths` at the calling workflow's commit.
+          # `tool_paths` are the bundled tools plus the Lake configuration,
+          # manifest and toolchain that build `cache`. The comparison reads trees
+          # only, so the fetch skips file contents.
           if [[ -n "$run_id" ]]; then
             tool_paths=(Cache scripts/lake-build-with-retry.sh scripts/lake-build-wrapper.py
               lakefile.lean lake-manifest.json lean-toolchain)

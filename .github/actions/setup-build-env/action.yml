@@ -157,13 +157,12 @@ runs:
         echo "LEAN_SRC_PATH=$LEAN_SRC_PATH" >> "$GITHUB_ENV"
 
     # Populate `tools-branch/` with the trusted CI tooling (the `cache` binary and
-    # the `lake-build-*` helper scripts invoked by path). Fast path: download the
-    # prebuilt `tools-bin` artifact published from master. This applies on canonical
-    # mathlib4 only, and get-tools checks that the artifact's tool sources match the
-    # workflow's commit. Source build otherwise. Fork PRs build from
+    # the `lake-build-*` helper scripts invoked by path). On canonical mathlib4,
+    # get-tools uses the prebuilt `tools-bin` artifact when its tool sources match
+    # the workflow's commit. Otherwise it builds from source: for fork PRs at
     # `github.workflow_sha`, the base-branch commit whose workflow
-    # `pull_request_target` runs, so the tools match that workflow and the fork's
-    # code does not build them. `publish_tools.yml` describes the trust model.
+    # `pull_request_target` runs, so fork code never builds the tools.
+    # `publish_tools.yml` describes the trust model.
     - name: Get CI tools
       uses: ./workflow-actions/.github/actions/get-tools
       with:
