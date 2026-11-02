@@ -299,6 +299,19 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
 
+/-- The quotient map `𝕜 → AddCircle p` is injective on `[0, p)`. -/
+theorem injOn_coe_Ico (hp : 0 < p) : InjOn ((↑) : 𝕜 → AddCircle p) (Ico 0 p) := by
+  rintro x ⟨hx₀, hx⟩ y ⟨hy₀, hy⟩ hxy
+  obtain ⟨n, hn⟩ : ∃ n : ℤ, n • p = x - y :=
+    (coe_eq_zero_iff p).1 (by rw [coe_sub, hxy, sub_self])
+  have : |n| • p < (1 : ℤ) • p := by
+    simpa [← hn, abs_zsmul, abs_of_pos hp] using abs_sub_lt_of_nonneg_of_lt hx₀ hx hy₀ hy
+  rw [zsmul_lt_zsmul_iff_left hp, Int.abs_lt_one_iff] at this
+  simpa [this, sub_eq_zero, eq_comm] using hn
+
+instance [hp : Fact (0 < p)] [DenselyOrdered 𝕜] : Infinite (AddCircle p) :=
+  .of_injective _ (injOn_coe_Ico p hp.out).injective
+
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
 /-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse
@@ -402,9 +415,6 @@ lemma coe_eq_zero_iff_of_mem_Ico (ha : a ∈ Ico 0 p) :
   have h0 : 0 ∈ Ico 0 (0 + p) := by simpa [zero_add, left_mem_Ico] using hp.out
   have ha' : a ∈ Ico 0 (0 + p) := by rwa [zero_add]
   rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico ha' h0, QuotientAddGroup.mk_zero]
-
-instance [DenselyOrdered 𝕜] : Infinite (AddCircle p) :=
-  (equivIco p 0).infinite_iff.mpr <| Set.infinite_coe_iff.mpr <| Set.Ico_infinite (by simp [hp.out])
 
 variable (p a)
 
