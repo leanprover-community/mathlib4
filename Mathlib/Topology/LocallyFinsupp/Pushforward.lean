@@ -57,7 +57,7 @@ def map (hf : IsSpectralMap f) (c : locallyFinsupp X R) : Function.locallyFinsup
       refine h.subset (inter_subset_inter_right U fun y hy ↦ ?_)
       obtain ⟨x, (hx : f x = y), h'⟩ := exists_ne_zero_of_finsum_mem_ne_zero hy
       use x
-      grind [mem_support]
+      grind
     suffices (f ⁻¹' (U ∩ {z | (f ⁻¹' {z} ∩ c.support).Nonempty}) ∩ c.support).Finite from
       (this.image f).subset (fun a ha ↦ by grind [Set.Nonempty])
     exact (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf.2 hU.1.1 hU.1.2).subset
@@ -71,7 +71,7 @@ lemma support_map_subset_of_forall_mem (s : Set X) (t : Set Y) (hc : c.support �
     (h : ∀ x : X, x ∈ s → w x ≠ 0 → f x ∈ t) : (map f w hf c).support ⊆ t := by
   intro y hy
   obtain ⟨x, (rfl : f x = y), h'⟩ := exists_ne_zero_of_finsum_mem_ne_zero hy
-  grind [mem_support]
+  grind
 
 @[simp]
 lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :

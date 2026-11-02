@@ -158,7 +158,7 @@ lemma Coinvariants.le_comap_ker (g : G) :
     ker (ρ.comp S.subtype) ≤ (ker <| ρ.comp S.subtype).comap (ρ g) :=
   Submodule.span_le.2 fun _ ⟨⟨s, x⟩, hs⟩ => by
     simpa [← hs] using mem_ker_of_eq
-      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem ‹_› s.1 s.2 g⟩ (ρ g x) _ <| by simp
+      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem s.1 s.2 g⟩ (ρ g x) _ <| by simp
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the kernel of the quotient map to the coinvariants of `ρ|_S`. -/
@@ -426,7 +426,7 @@ lemma coinvariantsTensorMk_apply {A B : Rep.{u} k G} (a : A) (b : B) :
 lemma coinvariantsTensor_hom_ext {A B : Rep.{u} k G} {M : ModuleCat k}
     {f g : ((coinvariantsTensor k G).obj A).obj B ⟶ M}
     (hfg : (coinvariantsTensorMk A B).compr₂ f.hom = (coinvariantsTensorMk A B).compr₂ g.hom) :
-    f = g := coinvariantsFunctor_hom_ext <| ModuleCat.hom_ext <| TensorProduct.ext <| hfg
+    f = g := coinvariantsFunctor_hom_ext <| ModuleCat.hom_ext <| TensorProduct.ext hfg
 
 instance (A : Rep.{u} k G) : ((coinvariantsTensor k G).obj A).Additive where
 

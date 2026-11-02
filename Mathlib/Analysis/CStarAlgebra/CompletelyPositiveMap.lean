@@ -6,7 +6,8 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
-public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+
+import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
 /-! # Completely positive maps
 
@@ -111,6 +112,7 @@ variable {A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
   [StarOrderedRing A₂]
 
+@[macro_inline]
 instance : FunLike (A₁ →CP A₂) A₁ A₂ where
   coe f := f.toFun
   coe_injective f g h := by

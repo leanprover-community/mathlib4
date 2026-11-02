@@ -38,7 +38,7 @@ variable {n : ℕ}
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`.
   The theorem `Nat.prime_def` witnesses this description of a prime number. -/
-@[pp_nodot, wikidata Q49008]
+@[pp_nodot, wikidata Q49008, oeis A000040]
 def Prime (p : ℕ) :=
   Irreducible p
 
@@ -215,6 +215,7 @@ termination_by k => sqrt n + 2 - k
 decreasing_by simp_wf; apply minFac_lemma n k; assumption
 
 /-- Returns the smallest prime factor of `n ≠ 1`. -/
+@[oeis A020639 "the sequence skips `n = 0` which is a junk value"]
 def minFac (n : ℕ) : ℕ :=
   if 2 ∣ n then 2 else minFacAux n 3
 
@@ -340,7 +341,7 @@ def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
   subsingleton
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
-  (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|
+  (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans
     (lt_iff_le_and_ne.trans <| and_iff_right <| minFac_le <| le_of_succ_le n2).symm
 
 theorem minFac_le_div {n : ℕ} (pos : 0 < n) (np : ¬Prime n) : minFac n ≤ n / minFac n :=
@@ -401,6 +402,13 @@ end MinFac
 
 theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) : ∃ p, Prime p ∧ p ∣ n :=
   ⟨minFac n, minFac_prime hn, minFac_dvd _⟩
+
+theorem exists_prime_and_dvd_and_dvd_div {m n : ℕ} (hmn : m ∣ n) (hne : m ≠ n) :
+    ∃ p, Prime p ∧ p ∣ n ∧ m ∣ n / p := by
+  obtain ⟨c, rfl⟩ := hmn
+  refine ⟨c.minFac, minFac_prime (by grind), (minFac_dvd c).mul_left m, ?_⟩
+  rw [Nat.mul_div_assoc m (minFac_dvd c)]
+  exact Nat.dvd_mul_right _ _
 
 theorem coprime_of_dvd {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → ¬k ∣ n) : Coprime m n := by
   rw [coprime_iff_gcd_eq_one]

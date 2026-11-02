@@ -5,9 +5,10 @@ Authors: Richard M. Hill, Ralf Stephan
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Derivation
 public import Mathlib.RingTheory.MvPowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Substitution
+
+import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
 # Formal derivatives of univariate power series
@@ -167,7 +168,7 @@ theorem derivative_pow (g : R⟦X⟧) (n : ℕ) :
 end CommutativeSemiring
 
 /-- If `f` and `g` have the same constant term and derivative, then they are equal. -/
-theorem derivative.ext [CommRing R] [IsAddTorsionFree R] {f g : R⟦X⟧} (hD : d⁄dX f = d⁄dX g)
+theorem derivative.ext [CommRing R] [HasUniqueDiv R] {f g : R⟦X⟧} (hD : d⁄dX f = d⁄dX g)
     (hc : constantCoeff f = constantCoeff g) : f = g :=
   MvPowerSeries.pderiv.ext (fun _ => hD) hc
 
@@ -220,27 +221,23 @@ The formal derivative of a power series in one variable.
 This is defined here as a function, but will be packaged as a
 derivation `derivative` on `R⟦X⟧`.
 -/
-@[deprecated derivative (since := "2026-06-26")]
+@[deprecated derivative +typeChanged (since := "2026-06-26")]
 noncomputable def derivativeFun (f : R⟦X⟧) := derivative.toFun f
 
-set_option linter.deprecated false in
 @[deprecated "Use Derivation.map_add" (since := "2026-06-26")]
 theorem derivativeFun_add (f g : R⟦X⟧) :
     derivativeFun (f + g) = derivativeFun f + derivativeFun g :=
   derivative.map_add f g
 
-set_option linter.deprecated false in
 @[deprecated "Use Derivation.leibniz" (since := "2026-06-26")]
 theorem derivativeFun_mul (f g : R⟦X⟧) :
     derivativeFun (f * g) = f • g.derivativeFun + g • f.derivativeFun :=
   derivative.leibniz f g
 
-set_option linter.deprecated false in
 @[deprecated "Use Derivation.map_one_eq_zero" (since := "2026-06-26")]
 theorem derivativeFun_one : derivativeFun (1 : R⟦X⟧) = 0 :=
   derivative.map_one_eq_zero
 
-set_option linter.deprecated false in
 @[deprecated "Use Derivation.map_smul" (since := "2026-06-26")]
 theorem derivativeFun_smul (r : R) (f : R⟦X⟧) : derivativeFun (r • f) = r • derivativeFun f :=
   derivative.map_smul r f

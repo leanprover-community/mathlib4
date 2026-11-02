@@ -177,7 +177,7 @@ lemma mem_generate_of_mem {s : Set <| Set α} {U : Set α} (h : U ∈ s) :
     U ∈ generate s := GenerateSets.basic h
 
 theorem le_generate_iff {s : Set (Set α)} {f : Filter α} : f ≤ generate s ↔ s ⊆ f.sets :=
-  Iff.intro (fun h _ hu => h <| GenerateSets.basic <| hu) fun h _ hu =>
+  Iff.intro (fun h _ hu => h <| GenerateSets.basic hu) fun h _ hu =>
     hu.recOn (fun h' => h h') univ_mem (fun _ hxy ↦ by gcongr) fun _ _ hx hy =>
       inter_mem hx hy
 
@@ -203,7 +203,7 @@ def giGenerate (α : Type*) :
     @GaloisInsertion (Set (Set α)) (Filter α)ᵒᵈ _ _ Filter.generate Filter.sets where
   gc _ _ := le_generate_iff
   le_l_u _ _ h := GenerateSets.basic h
-  choice s hs := Filter.mkOfClosure s (le_antisymm hs <| le_generate_iff.1 <| le_rfl)
+  choice s hs := Filter.mkOfClosure s (le_antisymm hs <| le_generate_iff.1 le_rfl)
   choice_eq _ _ := mkOfClosure_sets
 
 theorem mem_inf_iff {f g : Filter α} {s : Set α} : s ∈ f ⊓ g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, s = t₁ ∩ t₂ :=
@@ -418,7 +418,7 @@ theorem filter_eq_bot_of_isEmpty [IsEmpty α] (f : Filter α) : f = ⊥ :=
   empty_mem_iff_bot.mp <| univ_mem' isEmptyElim
 
 protected lemma disjoint_iff {f g : Filter α} : Disjoint f g ↔ ∃ s ∈ f, ∃ t ∈ g, Disjoint s t := by
-  simp only [disjoint_iff, ← empty_mem_iff_bot, mem_inf_iff, inf_eq_inter, bot_eq_empty,
+  simp only [disjoint_iff, ← empty_mem_iff_bot, mem_inf_iff, bot_eq_empty,
     @eq_comm _ ∅]
 
 theorem disjoint_of_disjoint_of_mem {f g : Filter α} {s t : Set α} (h : Disjoint s t) (hs : s ∈ f)
@@ -568,7 +568,7 @@ theorem iInf_neBot_iff_of_directed {f : ι → Filter α} [Nonempty α] (hd : Di
 theorem inf_principal {s t : Set α} : 𝓟 s ⊓ 𝓟 t = 𝓟 (s ∩ t) :=
   le_antisymm
     (by simp only [le_principal_iff, mem_inf_iff]; exact ⟨s, Subset.rfl, t, Subset.rfl, rfl⟩)
-    (by simp [le_inf_iff, inter_subset_left, inter_subset_right])
+    (by simp)
 
 @[simp]
 theorem sup_principal {s t : Set α} : 𝓟 s ⊔ 𝓟 t = 𝓟 (s ∪ t) :=
@@ -670,6 +670,13 @@ theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _ in f, False) ↔
 @[simp]
 theorem eventually_const {f : Filter α} [t : NeBot f] {p : Prop} : (∀ᶠ _ in f, p) ↔ p := by
   by_cases h : p <;> simp [h, t.ne]
+
+theorem const_eventuallyEq' {f : Filter α} [NeBot f] {a b : β} : (∀ᶠ _ in f, a = b) ↔ a = b :=
+  eventually_const
+
+@[simp] theorem const_eventuallyEq {f : Filter α} [NeBot f] {a b : β} :
+    ((fun _ => a) =ᶠ[f] fun _ => b) ↔ a = b :=
+  @const_eventuallyEq' _ _ _ _ a b
 
 theorem eventually_iff_exists_mem {p : α → Prop} {f : Filter α} :
     (∀ᶠ x in f, p x) ↔ ∃ v ∈ f, ∀ y ∈ v, p y :=
@@ -983,6 +990,7 @@ protected theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f
   EventuallyEq.refl l f
 
 theorem EventuallyEq.of_eq {l : Filter α} {f g : α → β} (h : f = g) : f =ᶠ[l] g := h ▸ .rfl
+
 alias _root_.Eq.eventuallyEq := EventuallyEq.of_eq
 
 @[symm]
@@ -1090,6 +1098,8 @@ protected lemma refl (l : Filter α) (s : Set α) : s =ᶠ[l] s := EventuallyEq.
 protected lemma rfl : s =ᶠ[l] s := .refl l s
 
 lemma of_eq (h : s = t) : s =ᶠ[l] t := h ▸ .rfl
+
+alias _root_.Eq.eventuallyEqSet := EventuallyEqSet.of_eq
 
 @[symm]
 lemma symm (h : s =ᶠ[l] t) : t =ᶠ[l] s := EventuallyEq.symm h
@@ -1377,8 +1387,6 @@ lemma LE.le.eventuallySubset {α} {l : Filter α} {s t : Set α} (h : s ⊆ t) :
 
 lemma LE.le.eventuallyLE {α β : Type*} [LE β] {l : Filter α} {f g : α → β} (h : f ≤ g) :
     f ≤ᶠ[l] g := .of_forall h
-
-@[deprecated (since := "2026-03-16")] alias HasSubset.Subset.eventuallyLE := LE.le.eventuallySubset
 
 alias Filter.EventuallySubset.of_subset := LE.le.eventuallySubset
 alias Filter.EventuallyLE.of_le := LE.le.eventuallyLE

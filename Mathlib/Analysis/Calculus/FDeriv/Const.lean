@@ -26,8 +26,6 @@ public section
 open Asymptotics Function Filter Set
 open scoped Topology NNReal ENNReal
 
-noncomputable section
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
@@ -184,7 +182,7 @@ theorem differentiableWithinAt_ofNat (n : ℕ) [OfNat F n] :
     DifferentiableWithinAt 𝕜 (ofNat(n) : E → F) s x := differentiableWithinAt_const _
 
 theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 0 := by
-  rw [fderivWithin, ite_eq_left]
+  rw [fderivWithin_def, ite_eq_left]
   apply hasFDerivWithinAt_const
 
 @[simp]
@@ -215,7 +213,7 @@ theorem fderivWithin_ofNat (n : ℕ) [OfNat F n] : fderivWithin 𝕜 (ofNat(n) :
   fderivWithin_const _
 
 theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 := by
-  rw [fderiv, fderivWithin_const_apply]
+  rw [← fderivWithin_univ, fderivWithin_const_apply]
 
 @[simp]
 theorem fderiv_fun_const (c : F) : fderiv 𝕜 (fun _ : E => c) = 0 := by
@@ -395,6 +393,3 @@ protected theorem HasCompactSupport.fderiv_apply (hf : HasCompactSupport f) (v :
   hf.of_isClosed_subset (isClosed_tsupport _) (tsupport_fderiv_apply_subset 𝕜 v)
 
 end Support
-
-
-end

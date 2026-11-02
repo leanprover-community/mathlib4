@@ -216,7 +216,7 @@ theorem inv_mem_resolventSet {r : Rˣ} {a : Aˣ} (h : (r : R) ∈ resolventSet R
   exact (hcomm.isUnit_mul_iff.mp (h₁.symm ▸ h)).2
 
 theorem inv_mem_iff {r : Rˣ} {a : Aˣ} : (r : R) ∈ σ (a : A) ↔ (↑r⁻¹ : R) ∈ σ (↑a⁻¹ : A) :=
-  not_iff_not.2 <| ⟨inv_mem_resolventSet, inv_mem_resolventSet⟩
+  not_iff_not.2 ⟨inv_mem_resolventSet, inv_mem_resolventSet⟩
 
 theorem zero_mem_resolventSet_of_unit (a : Aˣ) : 0 ∈ resolventSet R (a : A) := by
   simpa only [mem_resolventSet_iff, ← notMem_iff, zero_notMem_iff] using a.isUnit
@@ -325,7 +325,7 @@ theorem singleton_sub_eq (a : A) (r : R) : {r} - σ a = σ (↑ₐ r - a) := by
   rw [sub_eq_add_neg, neg_eq, singleton_add_eq, sub_eq_add_neg]
 
 theorem sub_singleton_eq (a : A) (r : R) : σ a - {r} = σ (a - ↑ₐ r) := by
-  simpa only [neg_sub, neg_eq] using congr_arg Neg.neg (singleton_sub_eq a r)
+  simpa only [neg_sub, neg_eq] using congr(-$(singleton_sub_eq a r))
 
 end ScalarRing
 

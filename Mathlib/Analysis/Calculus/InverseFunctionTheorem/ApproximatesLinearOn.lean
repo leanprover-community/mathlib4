@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 /-!
@@ -104,17 +103,23 @@ theorem approximatesLinearOn_iff_lipschitzOnWith {f : E → F} {f' : E →L[𝕜
 alias ⟨lipschitzOnWith, _root_.LipschitzOnWith.approximatesLinearOn⟩ :=
   approximatesLinearOn_iff_lipschitzOnWith
 
-theorem lipschitz_sub (hf : ApproximatesLinearOn f f' s c) :
+theorem lipschitzWith_sub (hf : ApproximatesLinearOn f f' s c) :
     LipschitzWith c fun x : s => f x - f' x :=
   hf.lipschitzOnWith.to_restrict
 
-protected theorem lipschitz (hf : ApproximatesLinearOn f f' s c) :
+@[deprecated (since := "2026-09-26")]
+alias lipschitz_sub := lipschitzWith_sub
+
+protected theorem lipschitzWith (hf : ApproximatesLinearOn f f' s c) :
     LipschitzWith (‖f'‖₊ + c) (s.domRestrict f) := by
   simpa only [domRestrict_apply, add_sub_cancel] using!
-    (f'.lipschitzWith.restrict s).add hf.lipschitz_sub
+    (f'.lipschitzWith.restrict s).add hf.lipschitzWith_sub
+
+@[deprecated (since := "2026-09-26")]
+alias lipschitz := ApproximatesLinearOn.lipschitzWith
 
 protected theorem continuous (hf : ApproximatesLinearOn f f' s c) : Continuous (s.domRestrict f) :=
-  hf.lipschitz.continuous
+  hf.lipschitzWith.continuous
 
 protected theorem continuousOn (hf : ApproximatesLinearOn f f' s c) : ContinuousOn f s :=
   continuousOn_iff_continuous_domRestrict.2 hf.continuous
@@ -233,7 +238,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
                   · exact IH.2
         _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
               (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
-          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert! Jcf' using 1; ring
+          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
           simp [field, pow_succ, -mul_eq_mul_left_iff]
           ring
     refine ⟨?_, Ign⟩
@@ -309,16 +314,19 @@ variable {f' : E ≃L[𝕜] F} {s : Set E} {c : ℝ≥0}
 
 local notation "N" => ‖(f'.symm : F →L[𝕜] E)‖₊
 
-protected theorem antilipschitz (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
+protected theorem antilipschitzWith (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.domRestrict f) := by
   rcases hc with hE | hc
   · exact AntilipschitzWith.of_subsingleton
-  convert! (f'.antilipschitz.domRestrict s).add_lipschitzWith hf.lipschitz_sub hc
+  convert! (f'.antilipschitzWith.domRestrict s).add_lipschitzWith hf.lipschitzWith_sub hc
   simp [domRestrict]
+
+@[deprecated (since := "2026-09-26")]
+alias antilipschitz := ApproximatesLinearOn.antilipschitzWith
 
 protected theorem injective (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : Injective (s.domRestrict f) :=
-  (hf.antilipschitz hc).injective
+  (hf.antilipschitzWith hc).injective
 
 protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : InjOn f s :=
@@ -354,7 +362,7 @@ Use properties of `OpenPartialHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toPartialEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_domRestrict.2
-  refine ((hf.antilipschitz hc).to_rightInvOn' ?_ (hf.toPartialEquiv hc).right_inv').continuous
+  refine ((hf.antilipschitzWith hc).to_rightInvOn' ?_ (hf.toPartialEquiv hc).right_inv').continuous
   exact fun x hx => (hf.toPartialEquiv hc).map_target hx
 
 /-- The inverse function is approximated linearly on `f '' s` by `f'.symm`. -/
@@ -368,7 +376,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
   rw [← Af x', ← Af y', A.left_inv x's, A.left_inv y's]
   calc
     ‖x' - y' - f'.symm (A x' - A y')‖ ≤ N * ‖f' (x' - y' - f'.symm (A x' - A y'))‖ :=
-      (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitz _
+      (f' : E →L[𝕜] F).bound_of_antilipschitz f'.antilipschitzWith _
     _ = N * ‖A y' - A x' - f' (y' - x')‖ := by
       congr 2
       simp only [ContinuousLinearEquiv.apply_symm_apply, map_sub]
@@ -377,7 +385,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
     _ ≤ N * (c * (((N⁻¹ - c)⁻¹ : ℝ≥0) * ‖A y' - A x'‖)) := by
       gcongr
       rw [← dist_eq_norm, ← dist_eq_norm]
-      exact (hf.antilipschitz hc).le_mul_dist ⟨y', y's⟩ ⟨x', x's⟩
+      exact (hf.antilipschitzWith hc).le_mul_dist ⟨y', y's⟩ ⟨x', x's⟩
     _ = (N * (N⁻¹ - c)⁻¹ * c : ℝ≥0) * ‖A x' - A y'‖ := by
       simp only [norm_sub_rev, NNReal.coe_mul]; ring
 

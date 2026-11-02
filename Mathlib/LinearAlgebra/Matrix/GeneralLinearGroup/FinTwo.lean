@@ -5,9 +5,7 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
 # Classification of elements of `GL (Fin 2) R`
@@ -235,9 +233,9 @@ lemma fixpointPolynomial_eq_zero_iff {g : GL (Fin 2) R} :
   rw [fixpointPolynomial]
   constructor
   · refine fun hP ↦ ⟨g 0 0, ?_⟩
-    have hb : g 0 1 = 0 := by simpa using congr_arg (coeff · 0) hP
-    have hc : g 1 0 = 0 := by simpa using congr_arg (coeff · 2) hP
-    have hd : g 1 1 = g 0 0 := by simpa [sub_eq_zero] using congr_arg (coeff · 1) hP
+    have hb : g 0 1 = 0 := by simpa using congr($(hP).coeff 0)
+    have hc : g 1 0 = 0 := by simpa using congr($(hP).coeff 2)
+    have hd : g 1 1 = g 0 0 := by simpa [sub_eq_zero] using congr($(hP).coeff 1)
     ext i j
     fin_cases i <;>
     fin_cases j <;>
