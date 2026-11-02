@@ -30,7 +30,8 @@ See also `Circle` and `Real.Angle`.  For the normed group structure on `AddCircl
 
 * `AddCircle`: the additive circle `𝕜 ⧸ ℤ ∙ p` for some period `p : 𝕜`
 * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
-* `AddCircle.map`: the homomorphism `AddCircle p →+ AddCircle (f p)` induced by `f : 𝕜 →+ 𝕜'`
+* `AddCircle.map`: the homomorphism `AddCircle p →+ AddCircle q` induced by `f : 𝕜 →+ 𝕜'` with
+  `f p ∈ zmultiples q`
 * `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
 * `AddCircle.equivIco` and `AddCircle.equivIoc`: the natural equivalences
   `AddCircle p ≃ Ico a (a + p)` and `AddCircle p ≃ Ioc a (a + p)`
@@ -232,22 +233,27 @@ protected theorem continuous_mk' [TopologicalSpace 𝕜] :
 
 section Map
 
-variable {𝕜' : Type*} [AddCommGroup 𝕜']
+variable {𝕜' : Type*} [AddCommGroup 𝕜'] {q : 𝕜'}
 
-/-- A group homomorphism `f : 𝕜 →+ 𝕜'` induces a homomorphism `AddCircle p →+ AddCircle (f p)`. -/
-def map (f : 𝕜 →+ 𝕜') : AddCircle p →+ AddCircle (f p) :=
-  QuotientAddGroup.map _ _ f <| zmultiples_le.2 <| mem_zmultiples (f p)
+/-- A group homomorphism `f : 𝕜 →+ 𝕜'` with `f p ∈ zmultiples q` induces a homomorphism
+`AddCircle p →+ AddCircle q`. -/
+def map (f : 𝕜 →+ 𝕜') (h : f p ∈ zmultiples q) : AddCircle p →+ AddCircle q :=
+  QuotientAddGroup.map _ _ f <| zmultiples_le.2 h
 
 @[simp]
-theorem map_coe (f : 𝕜 →+ 𝕜') (x : 𝕜) : map p f x = (f x : AddCircle (f p)) :=
+theorem map_coe (f : 𝕜 →+ 𝕜') (h : f p ∈ zmultiples q) (x : 𝕜) :
+    map p f h x = (f x : AddCircle q) :=
   rfl
 
-theorem map_injective {f : 𝕜 →+ 𝕜'} (hf : Injective f) : Injective (map p f) := by
+theorem map_injective {f : 𝕜 →+ 𝕜'} {h : f p ∈ zmultiples q} (hf : Injective f)
+    (hq : f p = q) : Injective (map p f h) := by
+  subst hq
   rw [map, QuotientAddGroup.map_injective_iff]
   intro x
   simp [mem_zmultiples_iff, ← map_zsmul, hf.eq_iff]
 
-theorem map_surjective {f : 𝕜 →+ 𝕜'} (hf : Surjective f) : Surjective (map p f) := by
+theorem map_surjective {f : 𝕜 →+ 𝕜'} {h : f p ∈ zmultiples q} (hf : Surjective f) :
+    Surjective (map p f h) := by
   apply QuotientAddGroup.map_surjective_of_surjective
   exact QuotientAddGroup.mk_surjective.comp hf
 
