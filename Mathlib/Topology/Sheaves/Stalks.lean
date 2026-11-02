@@ -540,7 +540,6 @@ theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshe
   ⟨fun h U => app_injective_of_stalkFunctor_map_injective f U fun x _ => h x,
     stalkFunctor_map_injective_of_app_injective⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance stalkFunctor_preserves_mono (x : X) :
     Functor.PreservesMonomorphisms (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) :=
   ⟨@fun _𝓐 _𝓑 f _ =>
