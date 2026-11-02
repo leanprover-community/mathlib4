@@ -317,7 +317,7 @@ open scoped Classical in
 0 if no such `x` exists. -/
 noncomputable def strictWidthInfty : ℝ :=
   if h : DiscreteTopology 𝒢.strictPeriods then
-    |Exists.choose <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
+    |Exists.choose <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq.mp
       <| AddSubgroup.isAddCyclic_iff_discreteTopology.mpr h|
   else 0
 
@@ -334,7 +334,7 @@ variable {𝒢} in
 lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strictPeriods] :
     𝒢.strictPeriods = AddSubgroup.zmultiples 𝒢.strictWidthInfty := by
   simp [Subgroup.strictWidthInfty, dite_eq_left,
-    Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
+    Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq.mp
       <| AddSubgroup.isAddCyclic_iff_discreteTopology.mpr inferInstance]
 
 lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :

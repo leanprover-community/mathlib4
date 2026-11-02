@@ -264,7 +264,7 @@ theorem measure_integral_sub_linear_isLittleO_of_tendsto_ae' [IsMeasurablyGenera
     (fun t => (∫ x in u t..v t, f x ∂μ) - ∫ _ in u t..v t, c ∂μ) =o[lt] fun t =>
       ∫ _ in u t..v t, (1 : ℝ) ∂μ := by
   by_cases hE : CompleteSpace E; swap
-  · simp [intervalIntegral, integral, hE]
+  · simp [intervalIntegral, integral_of_not_completeSpace hE]
   have A := hf.integral_sub_linear_isLittleO_ae hfm hl (hu.Ioc hv)
   have B := hf.integral_sub_linear_isLittleO_ae hfm hl (hv.Ioc hu)
   simp_rw [integral_const', sub_smul]
@@ -1198,7 +1198,7 @@ theorem integral_deriv_eq_sub_uIoo
 
 /-- A variant of `intervalIntegral.integral_deriv_eq_sub`, the Fundamental theorem
 of calculus, involving integrating over the unit interval. -/
-lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E]
     {f f' : 𝕜 → E} {z₀ z₁ : 𝕜}
     (hcont : ContinuousOn (fun t : ℝ ↦ f' (z₀ + t • z₁)) (Set.Icc 0 1))
     (hderiv : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (f' (z₀ + t • z₁)) (z₀ + t • z₁)) :
