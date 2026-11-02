@@ -210,6 +210,16 @@ theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s 
     indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c ↔ s =ᵐ[μ] t := by
   simp_rw [← indicator_const_eventuallyEq hc, indicatorConstLp, MemLp.toLp_eq_toLp_iff]
 
+theorem indicatorConstLp_eq_zero_iff : indicatorConstLp p hs hμs c = 0 ↔ μ s = 0 ∨ c = 0 := by
+  rw [Lp.eq_zero_iff_ae_eq_zero, indicatorConstLp_coeFn.congr_left, indicator_ae_eq_zero]
+  by_cases hc : c = 0 <;> simp [hc, support_const]
+
+/-- The support of `indicatorConstLp p hs hμs c` is a.e. contained in `s`. -/
+theorem support_indicatorConstLp_ae_le : support (indicatorConstLp p hs hμs c) ≤ᵐ[μ] s := by
+  filter_upwards [indicatorConstLp_coeFn_notMem (p := p) (hs := hs) (hμs := hμs) (c := c)]
+    with x hx
+  simpa [not_imp_comm] using hx
+
 theorem memLp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : AEStronglyMeasurable f μ) :
     MemLp (f + g) p μ ↔ MemLp f p μ ∧ MemLp g p μ := by
@@ -231,36 +241,36 @@ theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (h
   grw [Lp.coeFn_add, indicatorConstLp_coeFn, indicatorConstLp_coeFn, indicatorConstLp_coeFn]
   rw [Set.indicator_union_of_disjoint hst, Pi.add_def]
 
+/-- A family of nonzero elements of `Lp` whose supports are pairwise a.e.-disjoint is linearly
+independent. -/
+theorem Lp.linearIndependent_of_aedisjoint_support {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E]
+    [IsBoundedSMul 𝕜 E] [IsCancelMulZero 𝕜] [Module.IsTorsionFree 𝕜 E] {ι : Type*}
+    {v : ι → Lp E p μ} (hd : Pairwise (AEDisjoint μ on fun i ↦ support (v i)))
+    (h0 : ∀ i, v i ≠ 0) : LinearIndependent 𝕜 v := by
+  rw [linearIndependent_iff']
+  intro F g hg j hj
+  have hsum : ∑ i ∈ F, g i • ⇑(v i) =ᵐ[μ] 0 := by
+    have h := Lp.coeFn_finsetSum F fun i ↦ g i • v i
+    rw [hg] at h
+    refine (eventuallyEq_sum fun i _ ↦ ?_).trans (h.symm.trans (Lp.coeFn_zero E p μ))
+    exact (Lp.coeFn_smul _ _).symm
+  have hj0 := (ae_eq_zero_finsetSum_iff ((hd.set_pairwise _).mono' fun i k h ↦
+    h.mono (support_const_smul_subset _ _) (support_const_smul_subset _ _))).1 hsum j hj
+  by_contra hgj
+  refine h0 j (Lp.eq_zero_iff_ae_eq_zero.2 ?_)
+  filter_upwards [hj0] with x hx
+  exact (smul_eq_zero_iff_right hgj).1 hx
+
 /-- Indicators of pairwise a.e.-disjoint sets of positive finite measure, with a common nonzero
 value, are linearly independent in `Lp`. -/
 theorem linearIndependent_indicatorConstLp {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E]
-    [IsBoundedSMul 𝕜 E] [IsDomain 𝕜] [Module.IsTorsionFree 𝕜 E] {ι : Type*} {s : ι → Set α}
+    [IsBoundedSMul 𝕜 E] [IsCancelMulZero 𝕜] [Module.IsTorsionFree 𝕜 E] {ι : Type*} {s : ι → Set α}
     (hs : ∀ i, MeasurableSet (s i)) (hμs : ∀ i, μ (s i) ≠ ∞) (h0 : ∀ i, μ (s i) ≠ 0)
     (hd : Pairwise (AEDisjoint μ on s)) {c : E} (hc : c ≠ 0) :
     LinearIndependent 𝕜 fun i ↦ indicatorConstLp p (hs i) (hμs i) c := by
-  rw [linearIndependent_iff']
-  intro F g hg j hj
-  have hsum : ∀ᵐ x ∂μ, ∑ i ∈ F, (g i • indicatorConstLp p (hs i) (hμs i) c) x = 0 := by
-    filter_upwards [Lp.coeFn_fun_finsetSum F fun i ↦ g i • indicatorConstLp p (hs i) (hμs i) c,
-      Lp.coeFn_zero E p μ] with x h1 h2
-    rw [← h1, hg, h2, Pi.zero_apply]
-  have hind : ∀ᵐ x ∂μ, ∀ i ∈ F, (g i • indicatorConstLp p (hs i) (hμs i) c) x =
-      g i • (s i).indicator (fun _ ↦ c) x := by
-    rw [eventually_all_finset]
-    intro i _
-    filter_upwards [Lp.coeFn_smul (g i) (indicatorConstLp p (hs i) (hμs i) c),
-      indicatorConstLp_coeFn (p := p) (hs := hs i) (hμs := hμs i) (c := c)] with x h1 h2
-    rw [h1, Pi.smul_apply, h2]
-  have hdisj : ∀ᵐ x ∂μ, ∀ i ∈ F, i ≠ j → x ∉ s j ∩ s i := by
-    rw [eventually_all_finset]
-    exact fun i _ ↦ by simpa using fun hij ↦ measure_eq_zero_iff_ae_notMem.1 (hd (Ne.symm hij))
-  by_contra hgj
-  refine h0 j (measure_eq_zero_iff_ae_notMem.2 ?_)
-  filter_upwards [hsum, hind, hdisj] with x hx hxi hxd hxj
-  rw [Finset.sum_congr rfl hxi, Finset.sum_eq_single_of_mem j hj fun i hi hij ↦ ?_,
-    Set.indicator_of_mem hxj, smul_eq_zero_iff_left hc] at hx
-  · exact hgj hx
-  · simp [Set.indicator_of_notMem fun h ↦ hxd i hi hij ⟨hxj, h⟩]
+  refine Lp.linearIndependent_of_aedisjoint_support (fun i j hij ↦ ?_) fun i ↦ ?_
+  · exact (hd hij).mono_ae support_indicatorConstLp_ae_le support_indicatorConstLp_ae_le
+  · simp [indicatorConstLp_eq_zero_iff, h0 i, hc]
 
 end IndicatorConstLp
 
