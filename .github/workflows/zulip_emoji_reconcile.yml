@@ -82,10 +82,7 @@ jobs:
             echo "config=${config}" >> "$GITHUB_OUTPUT"
             echo "present=true" >> "$GITHUB_OUTPUT"
           else
-            # The nightly config reaches mathlib4-nightly-testing only after the
-            # next master -> nightly-testing sync; until then, no-op rather than
-            # fail a scheduled run.
-            echo "::notice::reconcile config ${config} not present yet; skipping."
+            echo "::notice::reconcile config ${config} not found; skipping."
             echo "present=false" >> "$GITHUB_OUTPUT"
           fi
 

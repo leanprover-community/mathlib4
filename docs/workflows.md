@@ -66,9 +66,6 @@ Primary trigger for this section: PR/merge-queue events (`pull_request`, `pull_r
 
 ## Scheduled CI maintenance
 
-Lean release adaptations are developed in [downstream-lean4](https://github.com/leanprover/downstream-lean4).
-Its export PRs target the current `bump/v4.X.0` branch in `mathlib4`.
-
 Primary trigger for this section: scheduled automation (`schedule`, often with `workflow_dispatch`).
 
 | File | Name | Importance | Triggers | Description |
