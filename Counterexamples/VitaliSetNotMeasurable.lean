@@ -62,18 +62,12 @@ lemma one_eq_tsum_volume_vitaliSet (hm : NullMeasurableSet vitaliSet volume) :
     1 = ∑' _ : ratAddCircle, volume vitaliSet := by
   simpa [Set.vadd_set_univ] using (isAddFundamentalDomain_vitaliSet hm).measure_eq_tsum Set.univ
 
-/-- `ratAddCircle` is infinite: it contains the point `1 / n`, of order `n`, for every `n > 0`,
-while in a finite group every element has order at most the cardinality. -/
-instance : Infinite ratAddCircle := by
-  refine not_finite_iff_infinite.1 fun _ ↦ ?_
-  let n := Nat.card ratAddCircle + 1
-  let x : ratAddCircle := ⟨_, _, ⟨(1 / n : ℚ), rfl⟩, rfl⟩
-  have hx : addOrderOf x = n := by
-    rw [← AddSubgroup.addOrderOf_coe]
-    simpa [x, n] using
-      AddCircle.addOrderOf_period_div (p := (1 : ℝ)) (Nat.card ratAddCircle).succ_pos
-  have := addOrderOf_le_card (x := x)
-  omega
+/-- `ratAddCircle` is infinite: as the image of the dense set of rationals under the continuous
+surjective projection `ℝ → UnitAddCircle`, it is dense in the infinite T1 space `UnitAddCircle`. -/
+instance : Infinite ratAddCircle :=
+  Set.infinite_coe_iff.mpr <| Dense.infinite <|
+    QuotientAddGroup.mk_surjective.denseRange.dense_image (AddCircle.continuous_mk' 1)
+      Rat.denseRange_cast
 
 /-- `vitaliSet` is not null-measurable. -/
 theorem not_nullMeasurableSet_vitaliSet : ¬ NullMeasurableSet vitaliSet volume :=

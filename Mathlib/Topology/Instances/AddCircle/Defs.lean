@@ -299,6 +299,19 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
 
+/-- The quotient map `𝕜 → AddCircle p` is injective on `[0, p)`. -/
+theorem injOn_coe_Ico (hp : 0 < p) : InjOn ((↑) : 𝕜 → AddCircle p) (Ico 0 p) := by
+  rintro x ⟨hx₀, hx⟩ y ⟨hy₀, hy⟩ hxy
+  obtain ⟨n, hn⟩ : ∃ n : ℤ, n • p = x - y :=
+    (coe_eq_zero_iff p).1 (by rw [coe_sub, hxy, sub_self])
+  have : |n| • p < (1 : ℤ) • p := by
+    simpa [← hn, abs_zsmul, abs_of_pos hp] using abs_sub_lt_of_nonneg_of_lt hx₀ hx hy₀ hy
+  rw [zsmul_lt_zsmul_iff_left hp, Int.abs_lt_one_iff] at this
+  simpa [this, sub_eq_zero, eq_comm] using hn
+
+instance [hp : Fact (0 < p)] [DenselyOrdered 𝕜] : Infinite (AddCircle p) :=
+  .of_injective _ (injOn_coe_Ico p hp.out).injective
+
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
 /-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse
