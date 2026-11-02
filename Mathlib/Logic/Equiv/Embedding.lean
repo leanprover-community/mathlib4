@@ -84,7 +84,6 @@ def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 
-@[deprecated (since := "2026-10-07")]
-alias uniqueEmbeddingEquivResult := Function.Embedding.oneEmbeddingEquiv
+@[deprecated (since := "2026-11-02")] alias uniqueEmbeddingEquivResult := embeddingUnique
 
 end Equiv
