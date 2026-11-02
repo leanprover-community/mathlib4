@@ -109,12 +109,11 @@ theorem measure_union_add_inter' (hs : MeasurableSet s) (t : Set α) :
 
 lemma measure_symmDiff_eq (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
     μ (s ∆ t) = μ (s \ t) + μ (t \ s) := by
-  simpa only [symmDiff_def, sup_eq_union]
-    using measure_union₀ (ht.diff hs) disjoint_sdiff_sdiff.aedisjoint
+  simpa only [symmDiff_def] using measure_union₀ (ht.diff hs) disjoint_sdiff_sdiff.aedisjoint
 
 lemma measure_symmDiff_le (s t u : Set α) :
     μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) := by
-  grw [← measure_union_le, symmDiff_triangle s t u]; rfl
+  grw [← measure_union_le, symmDiff_triangle s t u]
 
 theorem measure_symmDiff_eq_top (hs : μ s ≠ ∞) (ht : μ t = ∞) : μ (s ∆ t) = ∞ :=
   measure_mono_top subset_union_right (measure_sdiff_eq_top ht hs)
