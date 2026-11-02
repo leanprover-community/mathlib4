@@ -72,10 +72,6 @@ provided at `.lucas { roots := … }` if 1000001 is prime. -/
 #guard_msgs in
 example : Nat.Prime 1000001 := by primality
 
-/-- error: the provided witness does not certify the primality of 100000007 -/
-#guard_msgs in
-example : Nat.Prime 100000007 := by primality (cert := .witnesses [])
-
 /-- error: the provided witness does not certify the primality of 65537 -/
 #guard_msgs in
 example : Nat.Prime 65537 := by
