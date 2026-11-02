@@ -203,7 +203,8 @@ theorem contMDiffAt_totalSpace_iff {f : M → TotalSpace F E} {x₀ : M} :
 theorem contMDiffWithinAt_section_iff {s : ∀ x, E x} {a : Set B} {x₀ : B} :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
       ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
-  simp_rw [contMDiffWithinAt_totalSpace_iff, and_iff_right_iff_imp]; intro; exact contMDiffWithinAt_id
+  simp_rw [contMDiffWithinAt_totalSpace_iff, and_iff_right_iff_imp]
+  intro; exact contMDiffWithinAt_id
 
 @[deprecated (since := "2026-11-02")]
 alias contMDiffWithinAt_section := contMDiffWithinAt_section_iff
@@ -540,7 +541,7 @@ theorem contMDiffOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas
 
 /-- Smoothness of a `C^n` section at `x₀` within a set `a` can be determined
 using any trivialisation whose `baseSet` contains `x₀`. -/
-theorem contMDiffWithinAt_section {s : ∀ x, E x} (a : Set B) {x₀ : B}
+theorem contMDiffWithinAt_section_iff {s : ∀ x, E x} (a : Set B) {x₀ : B}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
     [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
@@ -550,6 +551,9 @@ theorem contMDiffWithinAt_section {s : ∀ x, E x} (a : Set B) {x₀ : B}
     simp [contMDiffWithinAt_id]
   · rwa [mem_source]
 
+@[deprecated (since := "2026-11-02")]
+alias contMDiffWithinAt_section := contMDiffWithinAt_section_iff
+
 /-- Smoothness of a `C^n` section at `x₀` can be determined
 using any trivialisation whose `baseSet` contains `x₀`. -/
 theorem contMDiffAt_section_iff {s : ∀ x, E x} {x₀ : B}
@@ -558,7 +562,7 @@ theorem contMDiffAt_section_iff {s : ∀ x, E x} {x₀ : B}
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
   simp_rw [← contMDiffWithinAt_univ]
-  exact e.contMDiffWithinAt_section univ hx₀
+  exact e.contMDiffWithinAt_section_iff univ hx₀
 
 @[deprecated (since := "2026-11-02")] alias contMDiffAt_section := contMDiffAt_section_iff
 
