@@ -191,7 +191,7 @@ theorem image_Icc (hf : IsAffineMap R f) (a b : X) : f '' Icc R a b = Icc R (f a
 theorem mem_Icc_image (hf : IsAffineMap R f) {a b c : X} (h : c ∈ Icc R a b) :
     f c ∈ Icc R (f a) (f b) := by
   rw [← image_Icc hf, Set.mem_image]
-  exact ⟨c, ⟨h, rfl⟩⟩
+  exact ⟨c, h, rfl⟩
 
 theorem image_Ioo (hf : IsAffineMap R f) (a b : X) : f '' Ioo R a b = Ioo R (f a) (f b) :=
   Set.ext fun _ ↦ by simp [Ioo, IsAffineMap.map_convexCombPair hf]
@@ -199,7 +199,7 @@ theorem image_Ioo (hf : IsAffineMap R f) (a b : X) : f '' Ioo R a b = Ioo R (f a
 theorem mem_Ioo_image (hf : IsAffineMap R f) {a b c : X} (h : c ∈ Ioo R a b) :
     f c ∈ Ioo R (f a) (f b) := by
   rw [← image_Ioo hf, Set.mem_image]
-  exact ⟨c, ⟨h, rfl⟩⟩
+  exact ⟨c, h, rfl⟩
 
 theorem image_Ico (hf : IsAffineMap R f) (a b : X) : f '' Ico R a b = Ico R (f a) (f b) :=
   Set.ext fun _ ↦ by simp [Ico, IsAffineMap.map_convexCombPair hf]
@@ -207,7 +207,7 @@ theorem image_Ico (hf : IsAffineMap R f) (a b : X) : f '' Ico R a b = Ico R (f a
 theorem mem_Ico_image (hf : IsAffineMap R f) {a b c : X} (h : c ∈ Ico R a b) :
     f c ∈ Ico R (f a) (f b) := by
   rw [← image_Ico hf, Set.mem_image]
-  exact ⟨c, ⟨h, rfl⟩⟩
+  exact ⟨c, h, rfl⟩
 
 end IsAffineMap
 
@@ -226,30 +226,6 @@ theorem Ioo_subset (x y : X × Y) : Ioo R x y ⊆ Ioo R x.1 y.1 ×ˢ Ioo R x.2 y
 theorem Ico_subset (x y : X × Y) : Ico R x y ⊆ Ico R x.1 y.1 ×ˢ Ico R x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   simp [convexCombPair_mem_Ico ha hb]
-
-theorem image_mk_Icc_left (x₁ x₂ : X) (y : Y) :
-    (fun x ↦ (x, y)) '' Icc R x₁ x₂ = Icc R (x₁, y) (x₂, y) :=
-  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Icc ..
-
-theorem image_mk_Icc_right (x : X) (y₁ y₂ : Y) :
-    (fun y ↦ (x, y)) '' Icc R y₁ y₂ = Icc R (x, y₁) (x, y₂) :=
-  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Icc ..
-
-theorem image_mk_Ioo_left (x₁ x₂ : X) (y : Y) :
-    (fun x ↦ (x, y)) '' Ioo R x₁ x₂ = Ioo R (x₁, y) (x₂, y) :=
-  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Ioo ..
-
-theorem image_mk_Ioo_right (x : X) (y₁ y₂ : Y) :
-    (fun y ↦ (x, y)) '' Ioo R y₁ y₂ = Ioo R (x, y₁) (x, y₂) :=
-  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Ioo ..
-
-theorem image_mk_Ico_left (x₁ x₂ : X) (y : Y) :
-    (fun x ↦ (x, y)) '' Ico R x₁ x₂ = Ico R (x₁, y) (x₂, y) :=
-  (IsAffineMap.prodMk IsAffineMap.id (IsAffineMap.const y)).image_Ico ..
-
-theorem image_mk_Ico_right (x : X) (y₁ y₂ : Y) :
-    (fun y ↦ (x, y)) '' Ico R y₁ y₂ = Ico R (x, y₁) (x, y₂) :=
-  (IsAffineMap.prodMk (IsAffineMap.const x) IsAffineMap.id).image_Ico ..
 
 end Prod
 
