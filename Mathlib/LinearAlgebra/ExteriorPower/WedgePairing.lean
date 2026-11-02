@@ -43,6 +43,7 @@ abbrev wedgePairing :
     ⋀[R]^k M →ₗ[R] ⋀[R]^l M →ₗ[R] R :=
   (wedge R M k l).compr₂ (hkl ▸ vol)
 
+@[simp]
 lemma wedgePairing_apply (x : ⋀[R]^k M) (y : ⋀[R]^l M) :
     wedgePairing vol hkl x y =
     vol ⟨x * y, hkl ▸ SetLike.GradedMonoid.toGradedMul.mul_mem x.2 y.2⟩ := by
