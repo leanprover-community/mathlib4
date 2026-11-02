@@ -304,7 +304,7 @@ def mapTriangulatedSpectralObject (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangula
   map α :=
     { hom := Functor.whiskerRight α.hom _
       comm f g := by
-        have hf := (F.commShiftIso (1 : ℤ)).hom.naturality (α.hom.app (mk₁ f))
+        have hf := (F.commShiftIso 1).hom.naturality (α.hom.app (mk₁ f))
         dsimp at hf ⊢
         rw [Category.assoc, ← hf, ← F.map_comp_assoc, α.comm, F.map_comp_assoc] }
 
