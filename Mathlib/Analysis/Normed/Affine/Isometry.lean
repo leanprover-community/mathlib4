@@ -247,12 +247,17 @@ theorem comp_assoc {V₄ P₄ : Type*} [SeminormedAddCommGroup V₄] [NormedSpac
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
-instance : Monoid (P →ᵃⁱ[𝕜] P) where
+instance : One (P →ᵃⁱ[𝕜] P) where
   one := id
+
+instance : IsOneApplyEqSelf (P →ᵃⁱ[𝕜] P) where
+
+instance : Mul (P →ᵃⁱ[𝕜] P) where
   mul := comp
-  mul_assoc := comp_assoc
-  one_mul := id_comp
-  mul_one := comp_id
+
+instance : IsMulApplyEqComp (P →ᵃⁱ[𝕜] P) where
+
+instance : Monoid (P →ᵃⁱ[𝕜] P) := fast_instance% FunLike.monoid
 
 @[simp]
 theorem coe_one : ⇑(1 : P →ᵃⁱ[𝕜] P) = _root_.id :=
