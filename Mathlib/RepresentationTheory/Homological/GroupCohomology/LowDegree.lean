@@ -290,6 +290,8 @@ instance : FunLike (cocycles₁ A) G A := ⟨Subtype.val, Subtype.val_injective�
 @[simp]
 theorem cocycles₁.coe_mk (f : G → A) (hf) : ((⟨f, hf⟩ : cocycles₁ A) : G → A) = f := rfl
 
+lemma cocycles₁.coe_sub (f g : cocycles₁ A) : ((f - g : cocycles₁ A) : G → A) = f - g := rfl
+
 @[simp]
 theorem cocycles₁.val_eq_coe (f : cocycles₁ A) : f.1 = f := rfl
 
@@ -356,6 +358,8 @@ instance : FunLike (cocycles₂ A) (G × G) A := ⟨Subtype.val, Subtype.val_inj
 
 @[simp]
 theorem cocycles₂.coe_mk (f : G × G → A) (hf) : ((⟨f, hf⟩ : cocycles₂ A) : G × G → A) = f := rfl
+
+lemma cocycles₂.coe_sub (f g : cocycles₂ A) : ((f - g : cocycles₂ A) : G × G → A) = f - g := rfl
 
 @[simp]
 theorem cocycles₂.val_eq_coe (f : cocycles₂ A) : f.1 = f := rfl
@@ -974,8 +978,7 @@ lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundar
 
 lemma H1π_eq_iff (x y : cocycles₁ A) :
     H1π A x = H1π A y ↔ ⇑x - ⇑y ∈ coboundaries₁ A := by
-  rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff]
-  rfl
+  rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff, cocycles₁.coe_sub]
 
 @[elab_as_elim]
 theorem H1_induction_on {C : H1 A → Prop} (x : H1 A) (h : ∀ x : cocycles₁ A, C (H1π A x)) :
@@ -1044,8 +1047,7 @@ lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundar
 
 lemma H2π_eq_iff (x y : cocycles₂ A) :
     H2π A x = H2π A y ↔ ⇑x - ⇑y ∈ coboundaries₂ A := by
-  rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]
-  rfl
+  rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff, cocycles₂.coe_sub]
 
 @[elab_as_elim]
 theorem H2_induction_on {C : H2 A → Prop} (x : H2 A) (h : ∀ x : cocycles₂ A, C (H2π A x)) :
