@@ -778,7 +778,7 @@ open scoped Pointwise in
 lemma zeroLocus_setMul {U : X.Opens} (s t : Set Γ(X, U)) :
     X.zeroLocus (s * t) = X.zeroLocus s ∪ X.zeroLocus t := by
   simp only [← Set.image2_mul, zeroLocus_def, Set.biInter_image2]
-  simp [Set.compl_inter, ← Set.union_iInter₂, ← Set.iInter₂_union]
+  simp [← Set.union_iInter₂, ← Set.iInter₂_union]
 
 open scoped Pointwise in
 lemma zeroLocus_mul {U : X.Opens} (I J : Ideal Γ(X, U)) :
@@ -984,7 +984,6 @@ lemma germ_stalkMap_apply (U : Y.Opens) (x : X) (hx : f x ∈ U) (y) :
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If `x = y`, the stalk maps are isomorphic. -/
 noncomputable def arrowStalkMapIsoOfEq {x y : X}
     (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=

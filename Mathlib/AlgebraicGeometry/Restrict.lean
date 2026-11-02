@@ -346,7 +346,6 @@ def Scheme.Opens.iSupOpenCover {J : Type*} {X : Scheme} (U : J → X.Opens) :
     apply Subtype.ext
     simp
 
-set_option backward.defeqAttrib.useBackward true in
 variable (X) in
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
 @[simps! obj_left obj_hom map_left]
@@ -694,7 +693,6 @@ theorem isoImage_ι_inv_morphismRestrict_homOfLE {X : Scheme.{u}} {U V : X.Opens
       X.homOfLE (X.ι_image_homOfLE_le_ι_image e W) ≫ (V.ι.isoImage W).inv := by
   simp [← cancel_mono (V.ι.isoImage W).hom, morphismRestrict_homOfLE_isoImage_ι_hom]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change
 along the immersion. -/
@@ -840,7 +838,6 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma coe_resLE_apply (x : V) : (f.resLE U V e x).1 = f x := by
   simp [resLE, morphismRestrict_base]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The stalk map of `f.resLE U V` at `x : V` is the stalk map of `f` at `x`. -/
 def resLEStalkMap (x : V) :

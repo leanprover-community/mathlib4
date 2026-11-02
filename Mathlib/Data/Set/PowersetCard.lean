@@ -172,8 +172,8 @@ variable [DecidableEq α] [Fintype α] {m : ℕ} (hm : m + n = Fintype.card α)
 
 /-- Complement of `Finset`s as an equivalence on `Set.powersetCard`. -/
 def compl : powersetCard α n ≃ powersetCard α m where
-  toFun s := ⟨(sᶜ : Finset α), by simp [Finset.card_compl, mem_iff.mp s.2]; omega⟩
-  invFun t := ⟨(tᶜ : Finset α), by simp [Finset.card_compl, mem_iff.mp t.2]; omega⟩
+  toFun s := ⟨sᶜ, by lia [mem_iff, card_compl]⟩
+  invFun t := ⟨tᶜ, by lia [mem_iff, card_compl]⟩
   left_inv s := by simp
   right_inv t := by simp
 
