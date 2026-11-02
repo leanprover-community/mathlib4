@@ -237,7 +237,7 @@ theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (
 theorem fourierChar_ne_one : fourierChar ≠ 1 := by
   rw [DFunLike.ne_iff]
   use 2⁻¹
-  simp only [fourierChar_apply', AddChar.one_apply]
+  simp only [fourierChar_apply', one_apply]
   rw [mul_comm, ← mul_assoc, inv_mul_cancel₀ (by positivity), one_mul]
   exact Circle.exp_pi_ne_one
 
