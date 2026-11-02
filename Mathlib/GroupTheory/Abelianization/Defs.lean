@@ -29,8 +29,6 @@ assert_not_exists Cardinal Field
 
 universe u v w
 
-namespace Group
-
 -- Let G be a group.
 variable (G : Type u) [Group G]
 
@@ -52,7 +50,6 @@ instance (G : Type u) [AddGroup G] : AddCommGroup (AddAbelianization G) where
     exact h.is_comm.1
 attribute [to_additive existing instAddCommGroupAddAbelianization] instCommGroupAbelianization
 
-namespace Abelianization
 
 instance : Inhabited (Abelianization G) :=
   ⟨1⟩
@@ -218,6 +215,3 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
 @[to_additive instUniqueAddAbelianization]
 instance instUniqueAbelianization [Unique G] :
   Unique (Abelianization G) := Quotient.instUniqueQuotient _
-
-
-end Group
