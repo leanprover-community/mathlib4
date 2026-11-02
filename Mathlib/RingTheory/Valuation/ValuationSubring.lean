@@ -866,6 +866,40 @@ theorem comap_comap (A : ValuationSubring J) (g : L →+* J) (f : K →+* L) :
 
 end
 
+section IsTrivialOn
+
+variable {k : Type*} [CommSemiring k] [Algebra k K]
+
+theorem algebraMap_mem_of_isTrivialOn [A.valuation.IsTrivialOn k] (a : k) :
+    algebraMap k K a ∈ A :=
+  (A.valuation_le_one_iff _).mp (Valuation.IsTrivialOn.valuation_algebraMap_le_one A.valuation a)
+
+theorem smul_mem_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) {x : K} (hx : x ∈ A) :
+    c • x ∈ A := by
+  rw [Algebra.smul_def]
+  exact A.mul_mem _ _ (A.algebraMap_mem_of_isTrivialOn c) hx
+
+/-- If `A.valuation` is trivial on `k`, then the image of `k` under `algebraMap k K` lies in `A`,
+turning `A` into a `k`-algebra. The scalar action is the restriction of the action of `k` on `K`. -/
+instance algebraOfIsTrivialOn [A.valuation.IsTrivialOn k] : Algebra k A where
+  smul c x      := ⟨c • (x : K), A.smul_mem_of_isTrivialOn c x.2⟩
+  algebraMap    := (algebraMap k K).codRestrict A A.algebraMap_mem_of_isTrivialOn
+  commutes' _ _ := Subtype.ext <| Algebra.commutes ..
+  smul_def' _ _ := Subtype.ext <| Algebra.smul_def ..
+
+@[simp, norm_cast]
+theorem coe_algebraMap_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) :
+    (algebraMap k A c : K) = algebraMap k K c := rfl
+
+@[simp, norm_cast]
+theorem coe_smul_of_isTrivialOn [A.valuation.IsTrivialOn k] (c : k) (x : A) :
+    ((c • x : A) : K) = c • (x : K) := rfl
+
+instance isScalarTowerOfIsTrivialOn [A.valuation.IsTrivialOn k] : IsScalarTower k A K :=
+  IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
+
+end IsTrivialOn
+
 end ValuationSubring
 
 namespace Valuation
@@ -878,5 +912,11 @@ theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
 theorem mem_maximalIdeal_iff {a : v.valuationSubring} :
     a ∈ IsLocalRing.maximalIdeal (v.valuationSubring) ↔ v a < 1 :=
   Integer.not_isUnit_iff_valuation_lt_one
+
+/-- If `v : Valuation K Γ` is trivial on `A`, then so is the valuation of its valuation subring. -/
+instance isTrivialOn_valuationSubring_valuation (A : Type*) [CommSemiring A] [Algebra A K]
+    (v : Valuation K Γ) [IsTrivialOn A v] :
+    IsTrivialOn A v.valuationSubring.valuation :=
+  v.isEquiv_valuation_valuationSubring.isTrivialOn inferInstance
 
 end Valuation

@@ -254,6 +254,11 @@ theorem Disjoint.left_le_of_le_sup_right (h : a ≤ b ⊔ c) (hd : Disjoint a c)
 theorem Disjoint.left_le_of_le_sup_left (h : a ≤ c ⊔ b) (hd : Disjoint a c) : a ≤ b :=
   hd.left_le_of_le_sup_right <| by rwa [sup_comm]
 
+@[to_dual]
+theorem sup_left_inj_of_disjoint (ha : Disjoint c a) (hb : Disjoint c b) :
+    a ⊔ c = b ⊔ c ↔ a = b :=
+  ⟨eq_of_inf_eq_sup_eq (ha.symm.eq_bot.trans hb.symm.eq_bot.symm), congrArg (· ⊔ c)⟩
+
 end DistribLatticeBot
 
 end Disjoint

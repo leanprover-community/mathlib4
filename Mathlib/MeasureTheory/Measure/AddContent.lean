@@ -331,7 +331,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
     (hf_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
   refine le_antisymm (m_subadd f hf hf_Union hf_disj) ?_
-  refine ENNReal.summable.tsum_le_of_sum_le fun I ↦ ?_
+  refine CompleteLattice.summable.tsum_le_of_sum_le fun I ↦ ?_
   rw [← Finset.sum_image_of_disjoint addContent_empty (hf_disj.pairwiseDisjoint _)]
   refine sum_addContent_le_of_subset hC (I := I.image f) ?_ ?_ hf_Union ?_
   · simp only [coe_image, Set.image_subset_iff]

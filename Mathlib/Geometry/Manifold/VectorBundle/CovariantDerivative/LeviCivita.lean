@@ -93,7 +93,7 @@ variable
 variable (IB F E) in
 /-- A vector in `E x` is uniquely determined by its scalar product with sections that
 are differentiable at `x` -/
-public lemma injective_inner_mdifferentiableAt_section  (x : B) :
+public lemma injective_inner_mdifferentiableAt_section (x : B) :
     Function.Injective
       (fun X₀ : E x ↦
         fun (Z : Π x, E x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
