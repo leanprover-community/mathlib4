@@ -513,7 +513,7 @@ instance : (cochainsFunctor k G).PreservesZeroMorphisms where
 instance : (cochainsFunctor k G).Additive where
 
 /-- The functor sending a `G`-representation `A` to `Hⁿ(G, A)`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
   obj A := groupCohomology A n
   map φ := map (MonoidHom.id _) φ n
@@ -531,8 +531,7 @@ sending `A : Rep k H` to `Hⁿ(H, A)` and to `Hⁿ(G, Res(f)(A))`. -/
 noncomputable def resNatTrans (n : ℕ) :
     functor k H n ⟶ resFunctor f ⋙ functor k G n where
   app X := map f (𝟙 _) n
-  naturality {X Y} φ :=
-    (map_comp _ _ _ _ _).symm.trans ((map_congr (by simp) (by simp) n).trans (map_comp _ _ _ _ _))
+  naturality {X Y} φ := by simpa [← map_comp] using map_congr (by simp) (by ext; simp) _
 
 /-- Given a normal subgroup `S ≤ G`, this is a natural transformation between the functors
 sending `A : Rep k G` to `Hⁿ(G ⧸ S, A^S)` and to `Hⁿ(G, A)`. -/
@@ -540,7 +539,6 @@ sending `A : Rep k G` to `Hⁿ(G ⧸ S, A^S)` and to `Hⁿ(G, A)`. -/
 noncomputable def infNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
     quotientToInvariantsFunctor k S ⋙ functor k (G ⧸ S) n ⟶ functor k G n where
   app A := map (QuotientGroup.mk' S) (ofHom <| A.ρ.quotientToInvariants_lift S) n
-  naturality {X Y} φ :=
-    (map_comp _ _ _ _ _).symm.trans ((map_congr (by simp) (by rfl) n).trans (map_comp _ _ _ _ _))
+  naturality {X Y} φ := by simpa [← map_comp] using map_congr (by simp) (by ext; simp) _
 
 end groupCohomology
