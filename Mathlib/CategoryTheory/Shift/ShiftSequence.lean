@@ -104,7 +104,7 @@ lemma shiftIso_inv_naturality {X Y : C} (n a a' : M) (ha' : n + a = a') (f : X �
 
 variable (M) in
 /-- The canonical isomorphism `F.shift 0 ≅ F`. -/
-def isoShiftZero : F.shift (0 : M) ≅ F := ShiftSequence.isoZero
+def isoShiftZero : F.shift 0 ≅ F := ShiftSequence.isoZero
 
 /-- The canonical isomorphism `shiftFunctor C n ⋙ F ≅ F.shift n`. -/
 def isoShift (n : M) : shiftFunctor C n ⋙ F ≅ F.shift n :=

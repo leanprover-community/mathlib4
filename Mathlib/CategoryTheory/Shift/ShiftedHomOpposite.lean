@@ -111,7 +111,7 @@ lemma opEquiv'_symm_comp (f : Y ⟶ X) {n a : ℤ} (x : Opposite.op (Z⟦a⟧) �
     (opEquiv' n a a' h).symm (x ≫ f.op⟦n⟧') = f ≫ (opEquiv' n a a' h).symm x :=
   Quiver.Hom.op_inj (by simp [opEquiv'_symm_apply, opEquiv_symm_apply])
 
-lemma opEquiv'_zero_add_symm (a : ℤ) (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦(0 : ℤ)⟧) :
+lemma opEquiv'_zero_add_symm (a : ℤ) (f : Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦0⟧) :
     (opEquiv' 0 a a (zero_add a)).symm f =
       ((shiftFunctorZero Cᵒᵖ ℤ).hom.app _).unop ≫ f.unop := by
   simp [opEquiv'_symm_apply, opEquiv_symm_apply, shiftFunctorAdd'_add_zero,

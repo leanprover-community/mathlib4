@@ -116,7 +116,7 @@ lemma complete_distinguished_essImageDistTriang_morphism
       Iso.hom_inv_id_triangle_hom₂_assoc, ← reassoc_of% comm₂',
       Iso.hom_inv_id_triangle_hom₃, comp_id]
   · rw [assoc, assoc, ← cancel_epi e₁.inv.hom₃, ← reassoc_of% comm₃,
-      Iso.inv_hom_id_triangle_hom₃_assoc, ← cancel_mono (e₂.hom.hom₁⟦(1 : ℤ)⟧'),
+      Iso.inv_hom_id_triangle_hom₃_assoc, ← cancel_mono (e₂.hom.hom₁⟦1⟧'),
       assoc, assoc, assoc, assoc, assoc, ← Functor.map_comp, ← Functor.map_comp, ← hφ₁,
       h₃, comm₃', Iso.inv_hom_id_triangle_hom₃_assoc]
 
@@ -132,14 +132,14 @@ variable (W : MorphismProperty C) [L.IsLocalization W]
 set_option backward.defeqAttrib.useBackward true in
 include W in
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
-    ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
+    ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧),
       Triangle.mk f g h ∈ L.essImageDistTriang := by
   have := essSurj_mapArrow L W
   obtain ⟨φ, ⟨e⟩⟩ : ∃ (φ : Arrow C), Nonempty (L.mapArrow.obj φ ≅ Arrow.mk f) :=
     ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle φ.hom
   refine ⟨L.obj Z, e.inv.right ≫ L.map g,
-    L.map h ≫ (L.commShiftIso 1).hom.app _ ≫ e.hom.left⟦(1 : ℤ)⟧', _, ?_, H⟩
+    L.map h ≫ (L.commShiftIso 1).hom.app _ ≫ e.hom.left⟦1⟧', _, ?_, H⟩
   refine Triangle.isoMk _ _ (Arrow.leftFunc.mapIso e.symm) (Arrow.rightFunc.mapIso e.symm)
     (Iso.refl _) e.inv.w.symm (by simp) ?_
   dsimp
@@ -256,7 +256,7 @@ lemma distTriang_iff (T : Triangle D) :
   constructor
   · intro hT
     let f := L.mapArrow.objPreimage T.mor₁
-    obtain ⟨Z, g : f.right ⟶ Z, h : Z ⟶ f.left⟦(1 : ℤ)⟧, mem⟩ :=
+    obtain ⟨Z, g : f.right ⟶ Z, h : Z ⟶ f.left⟦1⟧, mem⟩ :=
       Pretriangulated.distinguished_cocone_triangle f.hom
     exact ⟨_, (exists_iso_of_arrow_iso T _ hT (L.map_distinguished _ mem)
       (L.mapArrow.objObjPreimageIso T.mor₁).symm).choose, mem⟩
