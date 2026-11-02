@@ -218,9 +218,20 @@ alias isCompact_setOf_finiteMeasure_le_of_isCompact :=
   isCompact_setOfPred_finiteMeasure_le_of_isCompact
 
 omit [T2Space E] in
-/-- If restrictions to the disjointed pieces of a sequence of measurable sets converge,
-and the masses outside these sets tend uniformly to zero along the filter, then the original
-measures converge to the sum of the component limits. -/
+/--
+Let `f` be a filter on the space `FiniteMeasure E`, and `K` a sequence of measurable sets.
+Suppose that, as the finite measure `ρ` varies along `f`, its restriction to each piece
+`disjointed K n` converges weakly to a finite measure `ν n`. Suppose also that, for each `n`,
+the mass `ρ (K n)ᶜ` is eventually bounded by `u n`, where `u n → 0`.
+
+Under these hypotheses, if the sum of the measures `ν n` is a finite measure `μ`, then `f`
+converges weakly to `μ`.
+
+(This is used in the proof of Prokhorov's theorem,
+`isCompact_setOfPred_finiteMeasure_mass_le_compl_isCompact_le`. In that application, `f` is an
+ultrafilter, the ambient space `E` is Hausdorff, and the sets `K n` are compact; but these
+assumptions are not needed for this particular step.)
+-/
 lemma MeasureTheory.FiniteMeasure.tendsto_of_tendsto_restrict_disjointed
     {f : Filter (FiniteMeasure E)} {K : ℕ → Set E} {u : ℕ → ℝ≥0}
     {ν : ℕ → FiniteMeasure E} {μ : FiniteMeasure E}
