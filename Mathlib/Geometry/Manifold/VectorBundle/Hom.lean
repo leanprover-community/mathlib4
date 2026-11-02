@@ -38,7 +38,8 @@ variable {𝕜 B F₁ : Type*} [NontriviallyNormedField 𝕜]
   [∀ x, IsTopologicalAddGroup (E₁ x)] [∀ x, ContinuousSMul 𝕜 (E₁ x)]
   [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
 
-
+-- TODO: rename to match naming convention;
+-- contrast to Bundle.Trivialization.contMDiffAt_symm; can one re-use the other?
 lemma Bundle.Trivialization.ContMDiffAt_symm {k}
     [ContMDiffVectorBundle k F₁ E₁ IB]
     (e : Bundle.Trivialization F₁ (TotalSpace.proj : TotalSpace F₁ E₁ → B))

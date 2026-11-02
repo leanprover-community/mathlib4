@@ -135,9 +135,6 @@ lemma ContMDiffAt.of_inner_bundle_apply
   let φ : (x : B) → TangentSpace IB x → ℝ :=
     fun x X ↦ ψ x (s x) X
   let φ : (x : B) → TangentSpace IB x →L[ℝ] ℝ := sorry -- φ modulo stuff
-
-  -- this should be ContMDiffAt.clm_bundle_of_apply₂
-  #check ContMDiffAt.clm_bundle_of_apply
   sorry
 
 -- TODO: generalise to any Riemannian bundle
@@ -210,7 +207,13 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     sorry -- only true after restricting further...
   · refine UniqueDiffWithinAt.uniqueMDiffWithinAt ?_
     have aux := UniqueMDiffOn.uniqueDiffWithinAt_range_inter (I := IB) uniqueMDiffOn_univ y
-    simp at aux
+    -- `simp` at aux
+    simp only [extChartAt, OpenPartialHomeomorph.extend, PartialEquiv.trans_target,
+      ModelWithCorners.target_eq, ModelWithCorners.toPartialEquiv_coe_symm,
+      PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_toPartialEquiv_symm,
+      OpenPartialHomeomorph.coe_toPartialHomeomorph_symm, Set.preimage_univ, Set.subset_univ,
+      inf_of_le_left, Set.mem_inter_iff, Set.mem_range, Set.mem_preimage, and_imp,
+      forall_exists_index, forall_apply_eq_imp_iff, ModelWithCorners.left_inv] at aux
     exact aux ((chartAt HB y) y) (by simp)
   -- alternative proof, using orthonormal frames
   -- rw [ContMDiffAt.inner_bundle_iff_apply (IB := IB)]

@@ -445,10 +445,10 @@ instance leviCivitaConnection_baz :
     -- The final step is applying our smoothness criterion for the tensoriality construction.
     -- TODO: do we need a 2-tensor version of that?
     #check' TensorialAt.contMDiff_mkHom
-    have : IsManifold I (↑k + 1) M := sorry
-    -- TODO: this should need to specify the base point `x`
-    let φ : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → ℝ :=
-      fun X Y ↦ leviCivitaAuxInner I σ X Y x
+    -- have : IsManifold I (↑k + 1) M := sorry
+    -- -- TODO: this should need to specify the base point `x`
+    -- let φ : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → ℝ :=
+    --   fun X Y ↦ leviCivitaAuxInner I σ X Y x
     -- apply TensorialAt.contMDiff_mkHom (by simp : (1 : ℕ∞ω) ≤ k + 1)
     --   (φ := φ)
     --   (IB := I) (F₁ := E) (F₂ := E →L[ℝ] ℝ)
