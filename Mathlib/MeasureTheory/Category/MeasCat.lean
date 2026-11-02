@@ -118,7 +118,7 @@ end MeasCat
 
 instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} where
   forget₂.obj X := @MeasCat.of _ (borel X)
-  forget₂.map f := ⟨f.hom', f.hom.continuous_toFun.borel_measurable⟩
+  forget₂.map f := ⟨f.1, Continuous.borel_measurable (by fun_prop)⟩
 
 /-- The Borel functor, the canonical embedding of topological spaces into measurable spaces. -/
 abbrev Borel : TopCat.{u} ⥤ MeasCat.{u} :=
