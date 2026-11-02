@@ -815,11 +815,11 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
 def isoCocycles₁ : cocycles A 1 ≅ ↧(cocycles₁ A) :=
   cyclesMapIso' (isoShortComplexH1 A) _ (shortComplexH1 A).moduleCatLeftHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₁_hom_comp_i :
     (isoCocycles₁ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
       iCocycles A 1 ≫ (cochainsIso₁ A).hom := by
+  set_option backward.isDefEq.respectTransparency false in
   simp [isoCocycles₁, iCocycles, HomologicalComplex.iCycles, iCycles]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -866,11 +866,11 @@ def isoShortComplexH2 :
 def isoCocycles₂ : cocycles A 2 ≅ ↧(cocycles₂ A) :=
   cyclesMapIso' (isoShortComplexH2 A) _ (shortComplexH2 A).moduleCatLeftHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₂_hom_comp_i :
     (isoCocycles₂ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =
       iCocycles A 2 ≫ (cochainsIso₂ A).hom := by
+  set_option backward.isDefEq.respectTransparency false in
   simp [isoCocycles₂, iCocycles, HomologicalComplex.iCycles, iCycles]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
