@@ -626,7 +626,7 @@ theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) 
   rw [isIntertwiningMap_iff]
   intro g' v
   rw [Submonoid.mem_center_iff] at hg
-  rw [← Module.End.mul_apply, ← Module.End.mul_apply, ← ρ.map_mul, ← hg g', ρ.map_mul]
+  rw [← mul_apply_eq_comp, ← mul_apply_eq_comp, ← ρ.map_mul, ← hg g', ρ.map_mul]
 
 /-- If `g` is a central element of a monoid `G`, then this is the action of `g`, considered as an
   intertwining map from any representation of `G` to itself. -/

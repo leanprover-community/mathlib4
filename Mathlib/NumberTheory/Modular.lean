@@ -68,7 +68,7 @@ The characterization of cases with `z ∈ 𝒟` and `g • z ∈ 𝒟` follows T
 
 open Complex hiding I
 
-open Matrix hiding mul_smul
+open Matrix hiding mul_smul zpow_neg_one
 
 open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup Topology
 
@@ -733,7 +733,7 @@ lemma stabilizer_of_ne (hz : z ∈ 𝒟) (hg : g • z = z)
       inv_mul_eq_iff_eq_mul₀ (neg_ne_zero.mpr z.ne_zero), neg_mul, ← neg_eq_iff_eq_neg, ← I_sq,
       ← sq, sq_eq_sq_iff_eq_or_eq_neg, ← coe_I, ← UpperHalfPlane.ext_iff] at hzI
     grind
-  all_goals grind [cases_of_mem_fd_smul_mem_fd hz (hg ▸ hz), SL_neg_smul]
+  grind [cases_of_mem_fd_smul_mem_fd hz (hg ▸ hz), SL_neg_smul]
 
 lemma stabilizer_I : g • I = I ↔ g ∈ ({1, -1, S, -S} : Finset SL(2, ℤ)) := by
   constructor

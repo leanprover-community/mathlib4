@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of subalgebras
 
