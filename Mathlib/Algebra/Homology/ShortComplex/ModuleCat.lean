@@ -186,26 +186,6 @@ lemma moduleCatCyclesIso_inv_π :
        S.moduleCatLeftHomologyData.π ≫ S.moduleCatHomologyIso.inv :=
   S.moduleCatLeftHomologyData.π_comp_homologyIso_inv
 
-@[simp]
-lemma moduleCatToCycles_apply_eq_iff (y : S.X₁) (x : LinearMap.ker S.g.hom) :
-    S.moduleCatToCycles y = x ↔ S.f y = (x : S.X₂) :=
-  Subtype.ext_iff
-
-lemma mem_range_moduleCatToCycles_iff (x : LinearMap.ker S.g.hom) :
-    x ∈ LinearMap.range S.moduleCatToCycles ↔ (x : S.X₂) ∈ LinearMap.range S.f.hom :=
-  ⟨fun ⟨y, hy⟩ => ⟨y, congrArg Subtype.val hy⟩, fun ⟨y, hy⟩ => ⟨y, Subtype.ext hy⟩⟩
-
-lemma moduleCatLeftHomologyData_π_apply_eq_zero_iff (x : LinearMap.ker S.g.hom) :
-    S.moduleCatLeftHomologyData.π x = 0 ↔ (x : S.X₂) ∈ LinearMap.range S.f.hom := by
-  rw [← mem_range_moduleCatToCycles_iff, ← Submodule.Quotient.mk_eq_zero]
-  rfl
-
-lemma moduleCatLeftHomologyData_π_apply_eq_iff (x y : LinearMap.ker S.g.hom) :
-    S.moduleCatLeftHomologyData.π x = S.moduleCatLeftHomologyData.π y ↔
-      (x : S.X₂) - y ∈ LinearMap.range S.f.hom := by
-  rw [← sub_eq_zero, ← map_sub, moduleCatLeftHomologyData_π_apply_eq_zero_iff]
-  rfl
-
 lemma exact_iff_surjective_moduleCatToCycles :
     S.Exact ↔ Function.Surjective S.moduleCatToCycles := by
   simp [S.moduleCatLeftHomologyData.exact_iff_epi_f',
