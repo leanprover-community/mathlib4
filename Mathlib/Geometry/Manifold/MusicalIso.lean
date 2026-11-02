@@ -5,12 +5,12 @@ Authors: Michael Rothgang
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-public import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-!
 # The musical isomorphism preserves smoothness

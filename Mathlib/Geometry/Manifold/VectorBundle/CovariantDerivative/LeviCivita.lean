@@ -5,9 +5,9 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
+public import Mathlib.Geometry.Manifold.MusicalIso
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
-public import Mathlib.Geometry.Manifold.MusicalIso
 
 import Mathlib.Analysis.InnerProductSpace.Dual
 
