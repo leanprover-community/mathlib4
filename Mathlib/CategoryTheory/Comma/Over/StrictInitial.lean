@@ -36,7 +36,7 @@ def overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h : IsInitial X) :
   functor := Functor.star _
   inverse := Functor.fromPUnit (.mk (𝟙 X))
   unitIso := NatIso.ofComponents fun A ↦
-    haveI := h.isIso_to A.hom
+    haveI := StrictInitial.isIso_to h A.hom
     Over.isoMk (asIso A.hom)
   counitIso := Iso.refl _
 
@@ -51,7 +51,7 @@ def underEquivOfIsTerminal [HasStrictTerminalObjects C] (X : C) (h : IsTerminal 
   inverse := Functor.fromPUnit (.mk (𝟙 X))
   counitIso := Iso.refl _
   unitIso := NatIso.ofComponents fun A ↦
-    haveI := h.isIso_from A.hom
+    haveI := StrictTerminal.isIso_from h A.hom
     Under.isoMk (asIso A.hom).symm
 
 variable (P Q : MorphismProperty C) [P.ContainsIdentities] [Q.IsMultiplicative] [Q.RespectsIso]
@@ -67,7 +67,7 @@ def MorphismProperty.overEquivOfIsInitial [HasStrictInitialObjects C] (X : C) (h
   functor := Functor.star _
   inverse := Functor.fromPUnit (.mk _ (𝟙 X) (P.id_mem _))
   unitIso := NatIso.ofComponents fun A ↦
-    haveI := h.isIso_to A.hom
+    haveI := StrictInitial.isIso_to h A.hom
     Over.isoMk (asIso A.hom)
   counitIso := Iso.refl _
 
@@ -83,7 +83,7 @@ def MorphismProperty.underEquivOfIsTerminal [HasStrictTerminalObjects C] (X : C)
   inverse := Functor.fromPUnit (.mk _ (𝟙 X) (P.id_mem _))
   counitIso := Iso.refl _
   unitIso := NatIso.ofComponents fun A ↦
-    haveI := h.isIso_from A.hom
+    haveI := StrictTerminal.isIso_from h A.hom
     Under.isoMk (asIso A.hom).symm
 
 end CategoryTheory
