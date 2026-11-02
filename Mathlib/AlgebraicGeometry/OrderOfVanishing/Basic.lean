@@ -95,7 +95,9 @@ lemma ord_one : ord (1 : X.functionField) = 0 := by
     simp
 
 @[simp]
-lemma ord_inv {z : X} {f : X.functionField} (hf : f ≠ 0) : ord f⁻¹ z = -ord f z := by
+lemma ord_inv {z : X} {f : X.functionField} : ord f⁻¹ z = -ord f z := by
+  by_cases hf : f = 0
+  · simp [hf]
   have h := ord_mul (x := z) hf (inv_ne_zero hf)
   rw [mul_inv_cancel₀ hf] at h
   simp only [ord_one, Pi.zero_apply] at h
@@ -104,12 +106,13 @@ lemma ord_inv {z : X} {f : X.functionField} (hf : f ≠ 0) : ord f⁻¹ z = -ord
 @[simp]
 lemma ord_div {z : X} {f g : X.functionField} (hf : f ≠ 0) (hg : g ≠ 0) :
     ord (f / g) z = ord f z - ord g z := by
-  rw [div_eq_mul_inv, ord_mul hf (inv_ne_zero hg), ord_inv hg]
+  rw [div_eq_mul_inv, ord_mul hf (inv_ne_zero hg), ord_inv]
   ring
 
 @[simp]
-lemma ord_pow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℕ) :
+lemma ord_pow {z : X} {f : X.functionField} (n : ℕ) :
     ord (f ^ n) z = n * ord f z := by
+  by_cases hf : f = 0; by_cases n = 0 <;> simp_all
   induction n with
   | zero => simp
   | succ n ih =>
@@ -118,13 +121,13 @@ lemma ord_pow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℕ) :
     ring
 
 @[simp]
-lemma ord_zpow {z : X} {f : X.functionField} (hf : f ≠ 0) (n : ℤ) :
+lemma ord_zpow {z : X} {f : X.functionField} (n : ℤ) :
     ord (f ^ n) z = n * ord f z := by
   cases n with
   | ofNat n =>
-    rw [Int.ofNat_eq_natCast, zpow_natCast, ord_pow hf]
+    rw [Int.ofNat_eq_natCast, zpow_natCast, ord_pow]
   | negSucc n =>
-    rw [zpow_negSucc, ord_inv (pow_ne_zero _ hf), ord_pow hf, Int.negSucc_eq]
+    rw [zpow_negSucc, ord_inv, ord_pow, Int.negSucc_eq]
     push_cast
     ring
 
@@ -215,19 +218,15 @@ section Chart
 
 variable {U : X.Opens} [Nonempty U]
 
-omit [IsLocallyNoetherian X] in
-lemma algebraMap_section_stalk_ne_zero (w : U) {r : Γ(X, U)}
-    (hr : algebraMap Γ(X, U) X.functionField r ≠ 0) :
-    algebraMap Γ(X, U) (X.presheaf.stalk (w : X)) r ≠ 0 := fun h0 =>
-  hr (by
-    rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk (w : X)) X.functionField, h0,
-      map_zero])
-
-lemma ord_algebraMap_section_nonneg (w : U) {r : Γ(X, U)}
-    (hr : algebraMap Γ(X, U) X.functionField r ≠ 0) :
+lemma ord_algebraMap_section_nonneg (w : U) {r : Γ(X, U)} (hr : r ≠ 0) :
     0 ≤ ord (algebraMap Γ(X, U) X.functionField r) (w : X) := by
   rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk (w : X)) X.functionField]
-  exact ord_algebraMap_nonneg (algebraMap_section_stalk_ne_zero w hr)
+  exact ord_algebraMap_nonneg ((FaithfulSMul.algebraMap_eq_zero_iff _ _).not.mpr hr)
+
+lemma ord_eq_zero_of_mem_basicOpen (w : U) {r : Γ(X, U)} (hmem : (w : X) ∈ X.basicOpen r) :
+    ord (algebraMap Γ(X, U) X.functionField r) (w : X) = 0 := by
+  rw [IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk (w : X)) X.functionField]
+  exact ord_algebraMap_eq_zero_of_isUnit ((X.mem_basicOpen r w w.2).mp hmem)
 
 end Chart
 
