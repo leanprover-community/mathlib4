@@ -34,7 +34,7 @@ open CategoryTheory Category ZeroObject Limits
 variable {C D A : Type*} [Category* C] [Category* D] [Category* A] (F : C ⥤ A)
   {π : C ⥤ D} {H : D ⥤ A} (e : π ⋙ H ≅ F)
   (M : Type*) [AddMonoid M] [HasShift C M] [HasShift D M]
-  {G : Type*} [AddGroup G] [HasShift C G]
+
 
 namespace CategoryTheory
 
@@ -226,6 +226,9 @@ lemma shiftIso_hom_app_comp_shiftMap {X Y : C} {m : M} (f : X ⟶ Y⟦m⟧) (n m
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
     id_comp, comp_obj, shiftIso_hom_naturality_assoc, shiftMap]
 
+section
+
+variable {G : Type*} [AddGroup G] [HasShift C G]
 /--
 If `f : X ⟶ Y⟦m⟧`, `n + m = 0` and `ha' : m + a = a'`, this lemma relates the two
 morphisms `F.shiftMap f a a' ha'` and `(F.shift a').map (f⟦n⟧')`. Indeed,
@@ -243,6 +246,8 @@ lemma shiftIso_hom_app_comp_shiftMap_of_add_eq_zero [F.ShiftSequence G]
     rw [← add_left_inj m, add_assoc, hnm, zero_add, add_zero]
   simp [F.shiftIso_hom_app_comp_shiftMap f n 0 hnm' a' a, shiftIso_zero_hom_app,
     shiftFunctorCompIsoId]
+
+end
 
 section
 
