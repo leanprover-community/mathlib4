@@ -9,6 +9,9 @@ public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances for Euclidean domains
 

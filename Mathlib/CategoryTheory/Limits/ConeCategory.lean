@@ -200,14 +200,14 @@ noncomputable def IsLimit.ofReflectsConeTerminal {F : J ⥤ C} {F' : K ⥤ D} (G
 
 /-- Given a cocone `c` over `F`, we can interpret the legs of `c` as costructured arrows
     `F.obj - ⟶ c.pt`. -/
-@[simps]
+@[implicit_reducible, simps]
 def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ CostructuredArrow F c.pt where
   obj j := CostructuredArrow.mk (c.ι.app j)
   map f := CostructuredArrow.homMk f
 
 /-- If `F` has a colimit, then the colimit inclusions can be interpreted as costructured arrows
     `F.obj - ⟶ colimit F`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def colimit.toCostructuredArrow (F : J ⥤ C) [HasColimit F] :
     J ⥤ CostructuredArrow F (colimit F) where
   obj j := CostructuredArrow.mk (colimit.ι F j)
@@ -282,8 +282,6 @@ def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredAr
   pt := X
   ι := { app := fun j => (G.obj j).hom }
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a cocone `c : Cocone K` and a map `f : F.obj c.X ⟶ X`, we can construct a cocone of
     costructured arrows over `X` with `f` as the cone point. -/
 @[simps]
