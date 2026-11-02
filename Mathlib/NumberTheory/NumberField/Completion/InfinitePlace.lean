@@ -99,8 +99,8 @@ def equivCompletion : v.Completion ≃ v.1.Completion := Equiv.refl _
 theorem equivCompletion_apply (x : v.Completion) : equivCompletion v x = toCompletion x := rfl
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
-theorem equivCompletion_symm_apply (x : v.1.Completion) :
-    (equivCompletion v).symm x = ofCompletion x := rfl
+theorem equivCompletion_symm_apply_toCompletion (x : v.1.Completion) :
+    ((equivCompletion v).symm x).toCompletion = x := rfl
 
 /-- The identity ring isomorphism `v.Completion ≃+* v.1.Completion`. -/
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
@@ -133,6 +133,10 @@ theorem toCompletion_mul (x y : v.Completion) :
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem ext {v : InfinitePlace K} {x y : v.Completion} (h : toCompletion x = toCompletion y) :
     x = y := h
+
+@[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
+theorem ext_iff {v : InfinitePlace K} {x y : v.Completion} :
+    x = y ↔ toCompletion x = toCompletion y := .rfl
 
 @[deprecated "`v.Completion` is now an abbreviation for `v.1.Completion`" (since := "2026-10-30")]
 theorem toCompletion_surjective : Function.Surjective (toCompletion (v := v)) :=
