@@ -112,6 +112,4 @@ lemma hom_counit_eq_counit (A : Type u) [Ring A] [HopfAlgebra R A] :
 
 end hopfEquivalence
 
-end HopfAlgCat
-
-end CategoryTheory
+end CategoryTheory.HopfAlgCat
