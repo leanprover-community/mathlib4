@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangle inequality for `Lp`-seminorm
 

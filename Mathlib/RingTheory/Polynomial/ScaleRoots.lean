@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Splits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scaling the roots of a polynomial
 

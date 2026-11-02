@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 import Mathlib.Algebra.Polynomial.Monic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monic polynomials of given degree
 
