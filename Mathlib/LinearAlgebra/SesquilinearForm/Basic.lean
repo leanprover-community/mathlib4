@@ -652,7 +652,8 @@ theorem flip_separatingRight [SMulCommClass S₁ S₂ M] : B.flip.SeparatingRigh
   ⟨fun hB x hy ↦ hB x hy, fun hB x hy ↦ hB x hy⟩
 
 @[simp]
-theorem flip_separatingLeft [SMulCommClass S₁ S₂ M] : B.flip.SeparatingLeft ↔ SeparatingRight B := by
+theorem flip_separatingLeft [SMulCommClass S₁ S₂ M] :
+    B.flip.SeparatingLeft ↔ SeparatingRight B := by
   rw [← flip_separatingRight, flip_flip]
 
 @[simp]
