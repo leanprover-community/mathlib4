@@ -64,11 +64,11 @@ lemma succ_lt_succ [NoMaxOrder α] (hxy : x < y) : x.succ < y.succ := succ_stric
 end Preorder
 
 section PartialOrder
-variable [PartialOrder α] [OrderBot α] [SuccOrder α] [PredOrder α]
+variable [PartialOrder α] [OrderBot α] [PredOrder α]
   [∀ a : α, Decidable (Order.pred a = a)]
 
 @[to_dual (attr := simp)]
-theorem succ_pred_coe (a : α) : succ (Order.pred (a : WithBot α)) = a := by
+theorem succ_pred_coe [SuccOrder α] (a : α) : succ (Order.pred (a : WithBot α)) = a := by
   by_cases ha : IsMin a
   · rw [pred_coe_of_isMin ha, succ_bot, ha.eq_bot]
   · rw [pred_coe_of_not_isMin ha, succ_coe, Order.succ_pred_of_not_isMin ha]

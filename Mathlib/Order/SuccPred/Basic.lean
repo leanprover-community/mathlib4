@@ -762,6 +762,14 @@ theorem succ_coe_of_not_isMax {a : α} (h : ¬ IsMax a) : succ (↑a : WithTop �
 theorem succ_coe [NoMaxOrder α] {a : α} : succ (↑a : WithTop α) = ↑(succ a) :=
   succ_coe_of_not_isMax <| not_isMax a
 
+@[to_dual (attr := simp)]
+theorem succ_coe_eq_top_iff [OrderTop α] {a : α} : succ (a : WithTop α) = ⊤ ↔ a = (⊤ : α) := by
+  by_cases ha : IsMax a
+  · rw [succ_coe_of_isMax ha, ha.eq_top]
+    tauto
+  · rw [succ_coe_of_not_isMax ha]
+    aesop
+
 end Succ
 
 section Pred
