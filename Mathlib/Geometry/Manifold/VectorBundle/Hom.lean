@@ -46,7 +46,7 @@ lemma Bundle.Trivialization.ContMDiffAt_symm {k}
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₁)) k
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₁) m (Trivialization.symmL 𝕜 e m)) x := by
   have hx' : x ∈ (trivializationAt F₁ E₁ x).baseSet := mem_baseSet_trivializationAt F₁ E₁ x
-  refine contMDiffAt_totalSpace.mpr ⟨contMDiffAt_id, ?_⟩
+  refine contMDiffAt_totalSpace_iff.mpr ⟨contMDiffAt_id, ?_⟩
   apply (contMDiffAt_coordChangeL hx hx').congr_of_eventuallyEq
   filter_upwards [(e.open_baseSet.inter (trivializationAt F₁ E₁ x).open_baseSet).mem_nhds
     ⟨hx, hx'⟩] with b hb
@@ -355,7 +355,7 @@ lemma ContMDiffWithinAt.clm_bundle_apply_trivial_source {ψ : ∀ x, F₁ →L[�
     CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ψ m (w m))) x := by
   apply ContMDiffWithinAt.clm_bundle_apply (E₁ := Bundle.Trivial B F₁) (F₁ := F₁)
   · apply hψ
-  · simp [contMDiffWithinAt_totalSpace, hb, hw]
+  · simp [contMDiffWithinAt_totalSpace_iff, hb, hw]
 
 lemma ContMDiffWithinAt.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x) →L[𝕜] F₂)}
     (hψ : CMDiffAt[s] n
@@ -364,7 +364,7 @@ lemma ContMDiffWithinAt.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x)
     CMDiffAt[s] n (fun m ↦ ψ m (v m)) x := by
   have aux := hψ.clm_bundle_apply (E₂ := Bundle.Trivial B F₂) (F₂ := F₂) hv
   -- TODO: generalise `contMDiffWithinAt_section` to pullback bundles, then golf this proof!
-  simp_rw [contMDiffWithinAt_totalSpace,
+  simp_rw [contMDiffWithinAt_totalSpace_iff,
     Trivial.fiberBundle_trivializationAt', Trivial.trivialization_apply] at aux
   exact aux.2
 
@@ -485,7 +485,7 @@ lemma Bundle.Trivialization.contMDiffWithinAt_apply {k}
     [MemTrivializationAtlas e] {x : B} (hx : x ∈ e.baseSet) {s : Set B}
     {σ : Π b, E₁ b} (hσ : CMDiffAt[s] k (T% σ) x) :
     CMDiffAt[s] k (fun b ↦ e.continuousLinearMapAt 𝕜 b (σ b)) x := by
-  apply (contMDiffWithinAt_section s hx).mp hσ |>.congr_of_eventuallyEq
+  apply (contMDiffWithinAt_section_iff s hx).mp hσ |>.congr_of_eventuallyEq
   · apply mem_nhdsWithin_of_mem_nhds
     filter_upwards [e.open_baseSet.mem_nhds hx] with x' hx'
     simp [hx']

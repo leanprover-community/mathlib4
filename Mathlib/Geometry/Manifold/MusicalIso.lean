@@ -158,7 +158,7 @@ lemma aux {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     ContMDiff IB IB.tangent k (T% p) := by
   dsimp
   intro x₀
-  rw [contMDiffAt_section]
+  rw [contMDiffAt_section_iff]
   simp_rw [TangentBundle.trivializationAt_apply']
   simp
   sorry
@@ -179,7 +179,7 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
   simp only [musicalIsoSimple, LinearIsometryEquiv.toContinuousLinearEquiv_symm,
     ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv]
   -- XXX: is there a better approach than "pair with any smooth section"?
-  rw [contMDiffAt_section]
+  rw [contMDiffAt_section_iff]
   simp_rw [TangentBundle.trivializationAt_apply']
   let p (x' : B) := (InnerProductSpace.toDual ℝ (TangentSpace IB x')).symm (s x')
   have hp : ContMDiff IB IB.tangent k (T% p) := by
