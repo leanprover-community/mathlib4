@@ -98,8 +98,8 @@ theorem derivative_monomial (a : R) (n : ℕ) :
     rw [Nat.add_sub_cancel]
     split_ifs with h₁ h₂ h₂
     · rw [h₂, Nat.cast_add, Nat.cast_one]
-    · omega
-    · omega
+    · lia
+    · lia
     · rw [zero_mul]
 
 @[simp]
