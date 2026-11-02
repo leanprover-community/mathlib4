@@ -589,7 +589,8 @@ def uniqueRingEquiv [Subsingleton M] : R⟦M⟧ ≃+* R where
 
 variable (M) in
 @[to_additive (dont_translate := R) (attr := simp)]
-lemma uniqueRingEquiv_symm_apply [Subsingleton M] (r : R) : (uniqueRingEquiv M).symm r = single 1 r := by
+lemma uniqueRingEquiv_symm_apply [Subsingleton M] (r : R) :
+    (uniqueRingEquiv M).symm r = single 1 r := by
   let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
   simp [RingEquiv.symm_apply_eq, Subsingleton.elim (default : M) 1]
 
