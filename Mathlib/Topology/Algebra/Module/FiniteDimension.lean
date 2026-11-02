@@ -505,26 +505,26 @@ end NormedField
 
 section IsModuleTopology
 
-variable {𝕜 E : Type*} [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [UniformSpace 𝕜] [CompleteSpace 𝕜]
-  [IsUniformAddGroup 𝕜] [IsTopologicalRing 𝕜]
+variable {R E : Type*} [Ring R] [AddCommGroup E] [Module R E] [UniformSpace R] [CompleteSpace R]
+  [IsUniformAddGroup R] [IsTopologicalRing R]
 
-variable (𝕜 E) in
+variable (R E) in
 theorem FiniteDimensional.completeSpace_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
-    [Module.Finite 𝕜 E] [Module.Projective 𝕜 E] [IsModuleTopology 𝕜 E] : CompleteSpace E := by
-  obtain ⟨_, f, g, -, -, hfg⟩ := Module.Finite.exists_comp_eq_id_of_projective 𝕜 E
+    [Module.Finite R E] [Module.Projective R E] [IsModuleTopology R E] : CompleteSpace E := by
+  obtain ⟨_, f, g, -, -, hfg⟩ := Module.Finite.exists_comp_eq_id_of_projective R E
   apply CompleteSpace.of_comp_eq_id f g congr(↑$hfg) (IsModuleTopology.continuous_of_linearMap f)
     (uniformContinuous_addMonoidHom_of_continuous (IsModuleTopology.continuous_of_linearMap g))
 
 theorem Submodule.isComplete_of_finiteDimensional_of_isModuleTopology
     [UniformSpace E] [IsUniformAddGroup E]
-    (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Projective 𝕜 s] [IsModuleTopology 𝕜 s] :
+    (s : Submodule R E) [Module.Finite R s] [Module.Projective R s] [IsModuleTopology R s] :
     IsComplete (s : Set E) :=
   haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
-  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.completeSpace_of_isModuleTopology 𝕜 s)
+  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.completeSpace_of_isModuleTopology R s)
 
 theorem Submodule.isisClosed_of_finiteDimensional_of_isModuleTopology
     [TopologicalSpace E] [IsTopologicalAddGroup E] [T0Space E]
-    (s : Submodule 𝕜 E) [Module.Finite 𝕜 s] [Module.Projective 𝕜 s] [IsModuleTopology 𝕜 s] :
+    (s : Submodule R E) [Module.Finite R s] [Module.Projective R s] [IsModuleTopology R s] :
     IsClosed (s : Set E) :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
