@@ -1054,8 +1054,7 @@ theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
 theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R}
     (a b : ι) (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i := by
-  refine ⟨fun h ↦ ?_, fun ⟨i, his, hi⟩ ↦
-    Set.Subset.trans hi (Set.subset_biUnion_of_mem (u := fun i ↦ (f i : Set R)) his)⟩
+  refine ⟨fun h ↦ ?_, fun ⟨i, his, hi⟩ ↦ Set.subset_iUnion₂_of_subset i his hi⟩
   classical
   induction s using Finset.strongInduction generalizing a b with | H s ih =>
   obtain ⟨i₀, hi₀, -⟩ := Set.mem_iUnion₂.1 (h I.zero_mem)
