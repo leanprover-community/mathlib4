@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Invertible.Basic
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Logic.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # More lemmas about group actions
 
