@@ -274,6 +274,15 @@ protected abbrev commGroup [CommGroup β] [IsOneApply F] [IsMulApply F] [IsInvAp
   DFunLike.coe_injective.commGroup (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div
     coe_pow coe_pow
 
+/-- A `FunLike` type that satisfies `(f * g) x = f (g x)` and `1 x = x` is a monoid. -/
+protected abbrev compMonoid {F : Type*} [FunLike F α α] [One F] [Mul F] [NPow F]
+    [IsOneApplyEqSelf F] [IsMulApplyEqComp F] [IsNPowApplyEqIterate F] : Monoid F where
+  mul_assoc _ _ _ := by apply DFunLike.ext; simp
+  one_mul _ := by apply DFunLike.ext; simp
+  mul_one _ := by apply DFunLike.ext; simp
+  npow_zero _ := by apply DFunLike.ext; simp [pow_apply_eq_iterate]
+  npow_succ _ _ := by apply DFunLike.ext; simp [pow_apply_eq_iterate]
+
 end GroupInstances
 
 section TorsionFree
