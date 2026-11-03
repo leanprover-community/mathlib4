@@ -162,6 +162,14 @@ theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s := by
 theorem isClosed_iff_dirSupClosed : IsClosed s ↔ DirSupClosed s := by
   rw [isClosed_iff_dirSupClosedOn isLowerSet_univ, dirSupClosedOn_univ]
 
+theorem dirSupInacc_interior : DirSupInacc (interior s) := by
+  rw [← isOpen_iff_dirSupInacc]
+  exact isOpen_interior
+
+theorem dirSupClosed_closure : DirSupClosed (closure s) := by
+  rw [← isClosed_iff_dirSupClosed]
+  exact isClosed_closure
+
 end univ
 end Preorder
 
