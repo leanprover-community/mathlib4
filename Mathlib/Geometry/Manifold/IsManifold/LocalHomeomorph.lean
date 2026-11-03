@@ -106,10 +106,7 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse
     ContMDiff I J n F := by
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   apply (hFg.comp (IsLocalHomeomorph.isContMDiffOfRightInverse hf hg h)).congr
-  intro y
-  apply hF
-  exact (hg (f y)).symm
-
+  exact fun y ↦ hF _ _ (hg (f y)).symm
 
 lemma smooth_localInverseAt (x : M)
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
