@@ -337,8 +337,8 @@ theorem ker_map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ Subgroup.c
 
 @[to_additive]
 theorem map_injective_iff (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) :
-    Function.Injective (map N M f h) ↔ M.comap f ≤ N := by
-  rw [← MonoidHom.ker_eq_bot_iff, ker_map, Subgroup.map_eq_bot_iff, ker_mk']
+    Function.Injective (map N M f h) ↔ N = M.comap f := by
+  rw [← MonoidHom.ker_eq_bot_iff, ker_map, Subgroup.map_eq_bot_iff, ker_mk', h.ge_iff_eq]
 
 @[to_additive]
 theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
