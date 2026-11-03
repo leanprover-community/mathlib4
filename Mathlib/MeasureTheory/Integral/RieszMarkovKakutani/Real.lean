@@ -191,8 +191,9 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   intro ε hε
   -- Choose an interval `(a, b)` which contains the range of `f`.
   obtain ⟨a, b, hab⟩ : ∃ a b : ℝ, a < b ∧ range f ⊆ Ioo a b := by
-    obtain ⟨r, hr⟩ := (Metric.isCompact_iff_isClosed_bounded.mp
-      (HasCompactSupport.isCompact_range f.hasCompactSupport' (map_continuous f))).2.subset_ball_lt 0 0
+    obtain ⟨r, hr⟩ := Metric.isCompact_iff_isClosed_bounded.mp
+      (HasCompactSupport.isCompact_range f.hasCompactSupport' (map_continuous f))
+        |>.2.subset_ball_lt 0 0
     exact ⟨-r, r, by linarith, hr.2.trans_eq (by simp [Real.ball_eq_Ioo])⟩
   -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
   obtain ⟨N, hN, hε'⟩ := exists_nat_large (b - a) (2 * μ.real K + |a| + b) hε
