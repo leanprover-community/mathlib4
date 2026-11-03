@@ -1198,35 +1198,8 @@ def ofDiagonalEquivalence.functor (X : T × T) :
       (fun f ↦ f.hom.1) (fun g ↦ by simp [← w g])) _ _
     (fun f ↦ f.hom.2) (fun g ↦ by simp [← w g])
 
-/-- The inverse functor of `ofDiagonalEquivalence.functor`. -/
-@[simps!]
-def ofDiagonalEquivalence.inverse (X : T × T) :
-    StructuredArrow X.2 (Under.forget X.1) ⥤ StructuredArrow X (Functor.diagonal _) :=
-  Functor.toStructuredArrow (StructuredArrow.proj _ _ ⋙ Under.forget _) _ _
-    (fun f => (f.right.hom, f.hom)) (fun m => by have := m.w; cat_disch)
-
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
-/-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
-def ofDiagonalEquivalence (X : T × T) :
-    StructuredArrow X (Functor.diagonal _) ≌ StructuredArrow X.2 (Under.forget X.1) where
-  functor := ofDiagonalEquivalence.functor X
-  inverse := ofDiagonalEquivalence.inverse X
-  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
-
-/-- A version of `StructuredArrow.ofDiagonalEquivalence` with the roles of the first and second
-projection swapped. -/
-def ofDiagonalEquivalence' (X : T × T) :
-    StructuredArrow X (Functor.diagonal _) ≌ StructuredArrow X.1 (Under.forget X.2) :=
-  (ofDiagonalEquivalence X).trans <|
-    (ofStructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
-    StructuredArrow.mapNatIso (Under.forget X.2).rightUnitor
-
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.functor := ofDiagonalEquivalence.functor
-@[deprecated (since := "2026-09-06")]
-alias ofDiagEquivalence.inverse := ofDiagonalEquivalence.inverse
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.functor_map_right_right := ofDiagonalEquivalence.functor_map_right_right
 @[deprecated (since := "2026-09-06")]
@@ -1239,6 +1212,16 @@ alias ofDiagEquivalence.functor_obj_right_hom := ofDiagonalEquivalence.functor_o
 alias ofDiagEquivalence.functor_obj_right_left_as := ofDiagonalEquivalence.functor_obj_right_left_as
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.functor_obj_right_right := ofDiagonalEquivalence.functor_obj_right_right
+
+/-- The inverse functor of `ofDiagonalEquivalence.functor`. -/
+@[simps!]
+def ofDiagonalEquivalence.inverse (X : T × T) :
+    StructuredArrow X.2 (Under.forget X.1) ⥤ StructuredArrow X (Functor.diagonal _) :=
+  Functor.toStructuredArrow (StructuredArrow.proj _ _ ⋙ Under.forget _) _ _
+    (fun f => (f.right.hom, f.hom)) (fun m => by have := m.w; cat_disch)
+
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse := ofDiagonalEquivalence.inverse
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.inverse_map_right := ofDiagonalEquivalence.inverse_map_right
 @[deprecated (since := "2026-09-06")]
@@ -1247,7 +1230,27 @@ alias ofDiagEquivalence.inverse_obj_hom := ofDiagonalEquivalence.inverse_obj_hom
 alias ofDiagEquivalence.inverse_obj_left_as := ofDiagonalEquivalence.inverse_obj_left_as
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.inverse_obj_right := ofDiagonalEquivalence.inverse_obj_right
+
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+/-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
+def ofDiagonalEquivalence (X : T × T) :
+    StructuredArrow X (Functor.diagonal _) ≌ StructuredArrow X.2 (Under.forget X.1) where
+  functor := ofDiagonalEquivalence.functor X
+  inverse := ofDiagonalEquivalence.inverse X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
+
 @[deprecated (since := "2026-09-06")] alias ofDiagEquivalence := ofDiagonalEquivalence
+
+/-- A version of `StructuredArrow.ofDiagonalEquivalence` with the roles of the first and second
+projection swapped. -/
+def ofDiagonalEquivalence' (X : T × T) :
+    StructuredArrow X (Functor.diagonal _) ≌ StructuredArrow X.1 (Under.forget X.2) :=
+  (ofDiagonalEquivalence X).trans <|
+    (ofStructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
+    StructuredArrow.mapNatIso (Under.forget X.2).rightUnitor
+
 @[deprecated (since := "2026-09-06")] alias ofDiagEquivalence' := ofDiagonalEquivalence'
 
 section CommaFst
@@ -1331,36 +1334,8 @@ def ofDiagonalEquivalence.functor (X : T × T) :
     _ _
     (fun f => f.hom.2) (fun m => by have := congrArg (·.2) m.w; cat_disch)
 
-/-- The inverse functor of `ofDiagonalEquivalence.functor`. -/
-@[simps!]
-def ofDiagonalEquivalence.inverse (X : T × T) :
-    CostructuredArrow (Over.forget X.1) X.2 ⥤ CostructuredArrow (Functor.diagonal _) X :=
-  Functor.toCostructuredArrow (CostructuredArrow.proj _ _ ⋙ Over.forget _) _ X
-    (fun f => (f.left.hom, f.hom)) (fun m => by have := m.w; cat_disch)
-
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
-/-- Characterization of the costructured arrow category on the diagonal functor `T ⥤ T × T`. -/
-def ofDiagonalEquivalence (X : T × T) :
-    CostructuredArrow (Functor.diagonal _) X ≌ CostructuredArrow (Over.forget X.1) X.2 where
-  functor := ofDiagonalEquivalence.functor X
-  inverse := ofDiagonalEquivalence.inverse X
-  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
-
-/-- A version of `CostructuredArrow.ofDiagonalEquivalence` with the roles of the first and second
-projection swapped. -/
--- noncomputability is only for performance
-noncomputable def ofDiagonalEquivalence' (X : T × T) :
-    CostructuredArrow (Functor.diagonal _) X ≌ CostructuredArrow (Over.forget X.2) X.1 :=
-  (ofDiagonalEquivalence X).trans <|
-    (ofCostructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
-    CostructuredArrow.mapNatIso (Over.forget X.2).rightUnitor
-
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.functor := ofDiagonalEquivalence.functor
-@[deprecated (since := "2026-09-06")]
-alias ofDiagEquivalence.inverse := ofDiagonalEquivalence.inverse
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.functor_map_left_left := ofDiagonalEquivalence.functor_map_left_left
 @[deprecated (since := "2026-09-06")]
@@ -1373,6 +1348,16 @@ alias ofDiagEquivalence.functor_obj_left_left := ofDiagonalEquivalence.functor_o
 alias ofDiagEquivalence.functor_obj_left_right_as := ofDiagonalEquivalence.functor_obj_left_right_as
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.functor_obj_right_as := ofDiagonalEquivalence.functor_obj_right_as
+
+/-- The inverse functor of `ofDiagonalEquivalence.functor`. -/
+@[simps!]
+def ofDiagonalEquivalence.inverse (X : T × T) :
+    CostructuredArrow (Over.forget X.1) X.2 ⥤ CostructuredArrow (Functor.diagonal _) X :=
+  Functor.toCostructuredArrow (CostructuredArrow.proj _ _ ⋙ Over.forget _) _ X
+    (fun f => (f.left.hom, f.hom)) (fun m => by have := m.w; cat_disch)
+
+@[deprecated (since := "2026-09-06")]
+alias ofDiagEquivalence.inverse := ofDiagonalEquivalence.inverse
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.inverse_map_left := ofDiagonalEquivalence.inverse_map_left
 @[deprecated (since := "2026-09-06")]
@@ -1381,7 +1366,28 @@ alias ofDiagEquivalence.inverse_obj_hom := ofDiagonalEquivalence.inverse_obj_hom
 alias ofDiagEquivalence.inverse_obj_left := ofDiagonalEquivalence.inverse_obj_left
 @[deprecated (since := "2026-09-06")]
 alias ofDiagEquivalence.inverse_obj_right_as := ofDiagonalEquivalence.inverse_obj_right_as
+
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
+/-- Characterization of the costructured arrow category on the diagonal functor `T ⥤ T × T`. -/
+def ofDiagonalEquivalence (X : T × T) :
+    CostructuredArrow (Functor.diagonal _) X ≌ CostructuredArrow (Over.forget X.1) X.2 where
+  functor := ofDiagonalEquivalence.functor X
+  inverse := ofDiagonalEquivalence.inverse X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
+
 @[deprecated (since := "2026-09-06")] alias ofDiagEquivalence := ofDiagonalEquivalence
+
+/-- A version of `CostructuredArrow.ofDiagonalEquivalence` with the roles of the first and second
+projection swapped. -/
+-- noncomputability is only for performance
+noncomputable def ofDiagonalEquivalence' (X : T × T) :
+    CostructuredArrow (Functor.diagonal _) X ≌ CostructuredArrow (Over.forget X.2) X.1 :=
+  (ofDiagonalEquivalence X).trans <|
+    (ofCostructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
+    CostructuredArrow.mapNatIso (Over.forget X.2).rightUnitor
+
 @[deprecated (since := "2026-09-06")] alias ofDiagEquivalence' := ofDiagonalEquivalence'
 
 section CommaFst

@@ -195,11 +195,16 @@ theorem Eventually.diagonal_of_prod {p : α × α → Prop} (h : ∀ᶠ i in f �
     ∀ᶠ i in f, p (i, i) :=
   h.image_of_prod (r := p.curry) tendsto_id
 
+@[deprecated (since := "2026-09-06")] alias Eventually.diag_of_prod := Eventually.diagonal_of_prod
+
 theorem Eventually.diagonal_of_prod_left {f : Filter α} {g : Filter γ} {p : (α × α) × γ → Prop} :
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
   intro h
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
   exact (ht.diagonal_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2]
+
+@[deprecated (since := "2026-09-06")]
+alias Eventually.diag_of_prod_left := Eventually.diagonal_of_prod_left
 
 theorem Eventually.diagonal_of_prod_right {f : Filter α} {g : Filter γ} {p : α × γ × γ → Prop} :
     (∀ᶠ x in f ×ˢ (g ×ˢ g), p x) → ∀ᶠ x : α × γ in f ×ˢ g, p (x.1, x.2, x.2) := by
@@ -207,14 +212,12 @@ theorem Eventually.diagonal_of_prod_right {f : Filter α} {g : Filter γ} {p : �
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
   exact (ht.prod_mk hs.diagonal_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
 
+@[deprecated (since := "2026-09-06")]
+alias Eventually.diag_of_prod_right := Eventually.diagonal_of_prod_right
+
 theorem tendsto_diagonal : Tendsto Prod.diagonal f (f ×ˢ f) :=
   tendsto_iff_eventually.mpr fun _ hpr => hpr.diagonal_of_prod
 
-@[deprecated (since := "2026-09-06")] alias Eventually.diag_of_prod := Eventually.diagonal_of_prod
-@[deprecated (since := "2026-09-06")]
-alias Eventually.diag_of_prod_left := Eventually.diagonal_of_prod_left
-@[deprecated (since := "2026-09-06")]
-alias Eventually.diag_of_prod_right := Eventually.diagonal_of_prod_right
 @[deprecated (since := "2026-09-06")] alias tendsto_diag := tendsto_diagonal
 
 theorem prod_iInf_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :

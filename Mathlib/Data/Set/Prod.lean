@@ -585,13 +585,15 @@ theorem offDiagonal_nonempty : s.offDiagonal.Nonempty ↔ s.Nontrivial := by
 theorem offDiagonal_eq_empty : s.offDiagonal = ∅ ↔ s.Subsingleton := by
   rw [← not_nonempty_iff_eq_empty, ← not_nontrivial_iff, offDiagonal_nonempty.not]
 
+@[deprecated (since := "2026-09-06")] alias offDiag_eq_empty := offDiagonal_eq_empty
+
 alias ⟨_, Nontrivial.offDiagonal_nonempty⟩ := offDiagonal_nonempty
+
+@[deprecated (since := "2026-09-06")]
+alias Nontrivial.offDiag_nonempty := Nontrivial.offDiagonal_nonempty
 
 alias ⟨_, Subsingleton.offDiagonal_eq_empty⟩ := offDiagonal_eq_empty
 
-@[deprecated (since := "2026-09-06")] alias offDiag_eq_empty := offDiagonal_eq_empty
-@[deprecated (since := "2026-09-06")]
-alias Nontrivial.offDiag_nonempty := Nontrivial.offDiagonal_nonempty
 @[deprecated (since := "2026-09-06")]
 alias Subsingleton.offDiag_eq_empty := Subsingleton.offDiagonal_eq_empty
 

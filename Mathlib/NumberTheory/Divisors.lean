@@ -624,6 +624,8 @@ def divisorsAntidiagonal : (z : ℤ) → Finset (ℤ × ℤ)
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
       simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
 
+@[deprecated (since := "2026-09-06")] alias divisorsAntidiag := divisorsAntidiagonal
+
 theorem mem_divisors_iff_natAbs_mem_divisors_natAbs :
     x ∈ z.divisors ↔ x.natAbs ∈ z.natAbs.divisors := calc
   _ ↔ ∃ y ∈ z.natAbs.divisors, ↑y = x ∨ -↑y = x := by
@@ -678,15 +680,25 @@ lemma mem_divisorsAntidiagonal : xy ∈ divisorsAntidiagonal z ↔ xy.fst * xy.s
     simp [divisorsAntidiagonal]
     grind
 
+@[deprecated (since := "2026-09-06")] alias mem_divisorsAntidiag := mem_divisorsAntidiagonal
+
 theorem image_fst_divisorsAntidiagonal : z.divisorsAntidiagonal.image Prod.fst = z.divisors := by
   ext
   simp [Eq.comm, dvd_def]
+
+@[deprecated (since := "2026-09-06")]
+alias image_fst_divisorsAntidiag := image_fst_divisorsAntidiagonal
 
 theorem image_snd_divisorsAntidiagonal : z.divisorsAntidiagonal.image Prod.snd = z.divisors := by
   ext
   simp [Eq.comm, mul_comm, dvd_def]
 
+@[deprecated (since := "2026-09-06")]
+alias image_snd_divisorsAntidiag := image_snd_divisorsAntidiagonal
+
 @[simp] lemma divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := rfl
+
+@[deprecated (since := "2026-09-06")] alias divisorsAntidiag_zero := divisorsAntidiagonal_zero
 
 -- TODO Write a simproc instead of `divisorsAntidiagonal_one`, ..., `divisorsAntidiagonal_four` ...
 
@@ -714,28 +726,44 @@ lemma prodMk_mem_divisorsAntidiagonal (hz : z ≠ 0) :
     (x, y) ∈ z.divisorsAntidiagonal ↔ x * y = z := by
   simp [hz]
 
+@[deprecated (since := "2026-09-06")]
+alias prodMk_mem_divisorsAntidiag := prodMk_mem_divisorsAntidiagonal
+
 @[simp high]
 lemma swap_mem_divisorsAntidiagonal :
     xy.swap ∈ z.divisorsAntidiagonal ↔ xy ∈ z.divisorsAntidiagonal := by
   simp [mul_comm]
 
+@[deprecated (since := "2026-09-06")]
+alias swap_mem_divisorsAntidiag := swap_mem_divisorsAntidiagonal
+
 lemma neg_mem_divisorsAntidiagonal :
     -xy ∈ z.divisorsAntidiagonal ↔ xy ∈ z.divisorsAntidiagonal := by simp
+
+@[deprecated (since := "2026-09-06")] alias neg_mem_divisorsAntidiag := neg_mem_divisorsAntidiagonal
 
 @[simp]
 lemma map_prodComm_divisorsAntidiagonal :
     z.divisorsAntidiagonal.map (Equiv.prodComm _ _).toEmbedding = z.divisorsAntidiagonal := by
   ext; simp [mem_divisorsAntidiagonal]
 
+@[deprecated (since := "2026-09-06")]
+alias map_prodComm_divisorsAntidiag := map_prodComm_divisorsAntidiagonal
+
 @[simp]
 lemma map_neg_divisorsAntidiagonal :
     z.divisorsAntidiagonal.map (Equiv.neg _).toEmbedding = z.divisorsAntidiagonal := by
   ext; simp [mem_divisorsAntidiagonal, mul_comm]
 
+@[deprecated (since := "2026-09-06")]
+alias map_neg_divisorsAntidiag := map_neg_divisorsAntidiagonal
+
 lemma divisorsAntidiagonal_neg :
     (-z).divisorsAntidiagonal =
       z.divisorsAntidiagonal.map (.prodMap (.refl _) (Equiv.neg _).toEmbedding) := by
   ext; simp [mem_divisorsAntidiagonal, Prod.ext_iff, neg_eq_iff_eq_neg]
+
+@[deprecated (since := "2026-09-06")] alias divisorsAntidiag_neg := divisorsAntidiagonal_neg
 
 lemma divisorsAntidiagonal_natCast (n : ℕ) :
     divisorsAntidiagonal n =
@@ -743,17 +771,25 @@ lemma divisorsAntidiagonal_natCast (n : ℕ) :
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
           simp +contextual [disjoint_left, eq_comm]) := rfl
 
+@[deprecated (since := "2026-09-06")]
+alias divisorsAntidiag_natCast := divisorsAntidiagonal_natCast
+
 lemma divisorsAntidiagonal_neg_natCast (n : ℕ) :
     divisorsAntidiagonal (-n) =
       (n.divisorsAntidiagonal.map <| .prodMap natCast negNatCast).disjUnion
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast natCast) (by
           simp +contextual [disjoint_left, eq_comm]) := by cases n <;> rfl
 
+@[deprecated (since := "2026-09-06")]
+alias divisorsAntidiag_neg_natCast := divisorsAntidiagonal_neg_natCast
+
 lemma divisorsAntidiagonal_ofNat (n : ℕ) :
     divisorsAntidiagonal ofNat(n) =
       (n.divisorsAntidiagonal.map <| .prodMap natCast natCast).disjUnion
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
           simp +contextual [disjoint_left, eq_comm]) := rfl
+
+@[deprecated (since := "2026-09-06")] alias divisorsAntidiag_ofNat := divisorsAntidiagonal_ofNat
 
 /-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
 lemma mul_mem_one_two_three_iff {a b : ℤ} :
@@ -776,28 +812,5 @@ lemma mul_mem_zero_one_two_three_four_iff {a b : ℤ} (h₀ : a = 0 ↔ b = 0) :
   simp only [← Int.prodMk_mem_divisorsAntidiagonal, Set.mem_insert_iff, Set.mem_singleton_iff,
     ne_eq, one_ne_zero, not_false_eq_true, OfNat.ofNat_ne_zero]
   aesop
-
-@[deprecated (since := "2026-09-06")] alias divisorsAntidiag := divisorsAntidiagonal
-@[deprecated (since := "2026-09-06")] alias mem_divisorsAntidiag := mem_divisorsAntidiagonal
-@[deprecated (since := "2026-09-06")]
-alias image_fst_divisorsAntidiag := image_fst_divisorsAntidiagonal
-@[deprecated (since := "2026-09-06")]
-alias image_snd_divisorsAntidiag := image_snd_divisorsAntidiagonal
-@[deprecated (since := "2026-09-06")] alias divisorsAntidiag_zero := divisorsAntidiagonal_zero
-@[deprecated (since := "2026-09-06")]
-alias prodMk_mem_divisorsAntidiag := prodMk_mem_divisorsAntidiagonal
-@[deprecated (since := "2026-09-06")]
-alias swap_mem_divisorsAntidiag := swap_mem_divisorsAntidiagonal
-@[deprecated (since := "2026-09-06")] alias neg_mem_divisorsAntidiag := neg_mem_divisorsAntidiagonal
-@[deprecated (since := "2026-09-06")]
-alias map_prodComm_divisorsAntidiag := map_prodComm_divisorsAntidiagonal
-@[deprecated (since := "2026-09-06")]
-alias map_neg_divisorsAntidiag := map_neg_divisorsAntidiagonal
-@[deprecated (since := "2026-09-06")] alias divisorsAntidiag_neg := divisorsAntidiagonal_neg
-@[deprecated (since := "2026-09-06")]
-alias divisorsAntidiag_natCast := divisorsAntidiagonal_natCast
-@[deprecated (since := "2026-09-06")]
-alias divisorsAntidiag_neg_natCast := divisorsAntidiagonal_neg_natCast
-@[deprecated (since := "2026-09-06")] alias divisorsAntidiag_ofNat := divisorsAntidiagonal_ofNat
 
 end Int

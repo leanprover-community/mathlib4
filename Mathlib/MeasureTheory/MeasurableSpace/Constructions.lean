@@ -431,11 +431,12 @@ theorem measurable_prodMk_right {y : β} : Measurable fun x : α => (x, y) :=
 theorem measurable_diagonal : @Measurable α (α × α) m (m.prod m) Prod.diagonal :=
   measurable_id.prodMk measurable_id
 
+@[deprecated (since := "2026-09-06")] alias measurable_diag := measurable_diagonal
+
 theorem measurable_diagonal' {m'} (h : m' ≤ m) :
     @Measurable α (α × α) m (m.prod m') Prod.diagonal :=
   measurable_id.prodMk (measurable_id'' h)
 
-@[deprecated (since := "2026-09-06")] alias measurable_diag := measurable_diagonal
 @[deprecated (since := "2026-09-06")] alias measurable_diag' := measurable_diagonal'
 
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :

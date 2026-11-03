@@ -98,17 +98,19 @@ def diagonalOfSimplicialObjectHomotopy :
       dsimp% congr_hom (h.h_succ_comp_δ_castSucc_of_lt 0 0 (by simp)) e.edge,
       tgt_eq, dsimp% congr_hom (h.h_zero_comp_δ_zero 0) y])
 
+@[deprecated (since := "2026-10-15")]
+alias diagOfSimplicialObjectHomotopy := diagonalOfSimplicialObjectHomotopy
+
 lemma diagonalOfSimplicialObjectHomotopy_edge :
     (diagonalOfSimplicialObjectHomotopy h e).edge = Y.δ 1 (h.h 1 e.edge) := by rfl
+
+@[deprecated (since := "2026-10-15")]
+alias diagOfSimplicialObjectHomotopy_edge := diagonalOfSimplicialObjectHomotopy_edge
 
 lemma diagonalOfSimplicialObjectHomotopy_edge' :
     (diagonalOfSimplicialObjectHomotopy h e).edge = Y.δ 1 (h.h 0 e.edge) :=
   congr_hom (h.h_succ_comp_δ_castSucc_succ (n := 0) 0) e.edge
 
-@[deprecated (since := "2026-10-15")]
-alias diagOfSimplicialObjectHomotopy := diagonalOfSimplicialObjectHomotopy
-@[deprecated (since := "2026-10-15")]
-alias diagOfSimplicialObjectHomotopy_edge := diagonalOfSimplicialObjectHomotopy_edge
 @[deprecated (since := "2026-10-15")]
 alias diagOfSimplicialObjectHomotopy_edge' := diagonalOfSimplicialObjectHomotopy_edge'
 

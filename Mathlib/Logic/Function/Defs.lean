@@ -124,35 +124,42 @@ variable {α β γ : Type*} (f : α → β) (g : α → γ) (a b : α)
 /-- The diagonal map into `Prod`. -/
 @[inline] protected def diagonal {α} : α → α × α := fun a : α ↦ (a, a)
 
+@[deprecated (since := "2026-09-06")] protected alias _root_.Function.diag := Prod.diagonal
+
 theorem diagonal_def : Prod.diagonal = fun a : α ↦ (a, a) := rfl
 
+@[deprecated (since := "2026-09-06")] alias _root_.Function.diag_def := diagonal_def
+
 @[simp, grind =] theorem diagonal_apply : Prod.diagonal a = (a, a) := rfl
+
+@[deprecated (since := "2026-09-06")] alias _root_.Function.diag_apply := diagonal_apply
 
 theorem diagonal_injective : Function.Injective (α := α) Prod.diagonal :=
   fun _ _ ↦ congrArg Prod.fst
 
+@[deprecated (since := "2026-09-06")] alias _root_.Function.diag_injective := diagonal_injective
+
 @[simp] theorem fst_comp_diagonal : Prod.fst ∘ Prod.diagonal = @id α := rfl
 @[simp] theorem snd_comp_diagonal : Prod.snd ∘ Prod.diagonal = @id α := rfl
 
+@[deprecated (since := "2026-09-06")] alias _root_.Function.fst_comp_diag := fst_comp_diagonal
+@[deprecated (since := "2026-09-06")] alias _root_.Function.snd_comp_diag := snd_comp_diagonal
+
 @[simp] theorem diagonal_comp : Prod.diagonal ∘ f = Function.prod f f := rfl
+
+@[deprecated (since := "2026-09-06")] alias _root_.Function.diag_comp := diagonal_comp
 
 @[simp] theorem map_comp_diagonal : Prod.map f g ∘ Prod.diagonal = Function.prod f g := rfl
 
+@[deprecated (since := "2026-09-06")] alias _root_.Function.map_comp_diag := map_comp_diagonal
+
 @[simp] theorem swap_comp_diagonal : Prod.swap ∘ Prod.diagonal = Prod.diagonal (α := α) := rfl
+
+@[deprecated (since := "2026-09-06")] alias _root_.Function.swap_comp_diag := swap_comp_diagonal
 
 end Prod
 
 namespace Function
-
-@[deprecated (since := "2026-09-06")] protected alias diag := Prod.diagonal
-@[deprecated (since := "2026-09-06")] alias diag_def := Prod.diagonal_def
-@[deprecated (since := "2026-09-06")] alias diag_apply := Prod.diagonal_apply
-@[deprecated (since := "2026-09-06")] alias diag_injective := Prod.diagonal_injective
-@[deprecated (since := "2026-09-06")] alias fst_comp_diag := Prod.fst_comp_diagonal
-@[deprecated (since := "2026-09-06")] alias snd_comp_diag := Prod.snd_comp_diagonal
-@[deprecated (since := "2026-09-06")] alias diag_comp := Prod.diagonal_comp
-@[deprecated (since := "2026-09-06")] alias map_comp_diag := Prod.map_comp_diagonal
-@[deprecated (since := "2026-09-06")] alias swap_comp_diag := Prod.swap_comp_diagonal
 
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄}
 
