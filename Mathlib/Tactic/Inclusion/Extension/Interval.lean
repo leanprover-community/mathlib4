@@ -112,6 +112,11 @@ def Interval.Iic (ub : WithTop α) : Interval α := ⟨⊥, ub⟩
 /-- The interval unbounded above with lower endpoint `lb`. -/
 def Interval.Ici (lb : WithBot α) : Interval α := ⟨lb, ⊤⟩
 
+/-- Combine lower and upper bounds into membership in a closed interval. -/
+theorem Interval.mem_Icc_of_mem [Preorder α] {x : α} {lb : WithBot α} {ub : WithTop α}
+    (hl : x ∈ Interval.Ici lb) (hu : x ∈ Interval.Iic ub) : x ∈ Interval.Icc lb ub :=
+  ⟨hl.1, hu.2⟩
+
 theorem Interval.mem_Iic_of_le [Preorder α] {x y : α} {I : Interval α}
     (hxy : x ≤ y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub := by
   grind [Interval.mem_def, Interval.Iic, WithBot.le_coe_iff, WithTop.coe_le_iff]
@@ -121,9 +126,8 @@ theorem Interval.mem_Ici_of_le [Preorder α] {x y : α} {I : Interval α}
   grind [Interval.mem_def, Interval.Ici, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Icc_of_le [Preorder α] {a b x : α} {I J : Interval α}
-    (ha : a ∈ I) (hax : a ≤ x) (hxb : x ≤ b) (hb : b ∈ J) :
-    x ∈ Interval.Icc I.lb J.ub := by
-  grind [Interval.mem_def, Interval.Icc, WithBot.le_coe_iff, WithTop.coe_le_iff]
+    (ha : a ∈ I) (hax : a ≤ x) (hxb : x ≤ b) (hb : b ∈ J) : x ∈ Interval.Icc I.lb J.ub :=
+  Interval.mem_Icc_of_mem (Interval.mem_Ici_of_le hax ha) (Interval.mem_Iic_of_le hxb hb)
 
 theorem Interval.mem_Iic_of_lt [Preorder α] {x y : α} {I : Interval α}
     (hxy : x < y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub :=

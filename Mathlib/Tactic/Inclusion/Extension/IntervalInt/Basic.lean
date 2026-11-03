@@ -34,29 +34,27 @@ section Arithmetic
 
 @[inclusion_op interval_int]
 theorem add_mem {x y : ℤ} {I J : Interval ℤ} (hx : x ∈ I) (hy : y ∈ J) : x + y ∈ I.add J := by
-  simpa using Interval.add_mem (AddMonoidHom.id ℤ) (by simpa using hx) (by simpa using hy)
+  simpa using Interval.add_mem (AddMonoidHom.id ℤ) (by simp [hx]) (by simp [hy])
 
 @[inclusion_op interval_int]
 theorem neg_mem {x : ℤ} {I : Interval ℤ} (hx : x ∈ I) : -x ∈ I.neg := by
-  simpa using Interval.neg_mem (AddMonoidHom.id ℤ) (by simpa using hx)
+  simpa using Interval.neg_mem (AddMonoidHom.id ℤ) (by simp [hx])
 
 @[inclusion_op interval_int]
 theorem abs_mem {x : ℤ} {I : Interval ℤ} (hx : x ∈ I) : |x| ∈ I.abs := by
-  simpa using Interval.abs_mem (OrderEmbedding.id ℤ) rfl (fun _ ↦ rfl) (by simpa using hx)
+  simpa using Interval.abs_mem (OrderEmbedding.id ℤ) rfl (by simp) (by simp [hx])
 
 @[inclusion_op interval_int]
 theorem sub_mem {x y : ℤ} {I J : Interval ℤ} (hx : x ∈ I) (hy : y ∈ J) : x - y ∈ I.sub J := by
-  simpa using Interval.sub_mem (AddMonoidHom.id ℤ) (by simpa using hx) (by simpa using hy)
+  simpa using Interval.sub_mem (AddMonoidHom.id ℤ) (by simp [hx]) (by simp [hy])
 
 @[inclusion_op interval_int]
 theorem mul_mem {x y : ℤ} {I J : Interval ℤ} (hx : x ∈ I) (hy : y ∈ J) : x * y ∈ I.mul J := by
-  simpa using Interval.mul_mem (OrderEmbedding.id ℤ) rfl (fun _ _ ↦ rfl)
-    (by simpa using hx) (by simpa using hy)
+  simpa using Interval.mul_mem (OrderEmbedding.id ℤ) rfl (by simp) (by simp [hx]) (by simp [hy])
 
 @[inclusion_op interval_int]
 theorem pow_mem (n : ℕ) {x : ℤ} {I : Interval ℤ} (hx : x ∈ I) : x ^ n ∈ I.pow n := by
-  simpa using Interval.pow_mem (OrderEmbedding.id ℤ) rfl rfl (fun _ ↦ rfl)
-    (fun _ _ ↦ rfl) n (by simpa using hx)
+  simpa using Interval.pow_mem (OrderEmbedding.id ℤ) rfl rfl (by simp) (by simp) n (by simp [hx])
 
 end Arithmetic
 
@@ -65,17 +63,17 @@ section Props
 @[inclusion_op interval_int]
 theorem le_mem {x y : ℤ} {I J : Interval ℤ} (hx : x ∈ I) (hy : y ∈ J) :
     (x ≤ y) ∈ I.le J :=
-  Interval.le_mem (OrderEmbedding.id ℤ) (by simpa using hx) (by simpa using hy)
+  Interval.le_mem (OrderEmbedding.id ℤ) (by simp [hx]) (by simp [hy])
 
 @[inclusion_op interval_int]
 theorem lt_mem {x y : ℤ} {I J : Interval ℤ} (hx : x ∈ I) (hy : y ∈ J) :
     (x < y) ∈ I.lt J :=
-  Interval.lt_mem (OrderEmbedding.id ℤ) (by simpa using hx) (by simpa using hy)
+  Interval.lt_mem (OrderEmbedding.id ℤ) (by simp [hx]) (by simp [hy])
 
 @[inclusion_op interval_int]
 theorem eq_mem {x y : ℤ} {I J : Interval ℤ} (hx : x ∈ I) (hy : y ∈ J) :
     (x = y) ∈ I.eq J :=
-  Interval.eq_mem (OrderEmbedding.id ℤ) (by simpa using hx) (by simpa using hy)
+  Interval.eq_mem (OrderEmbedding.id ℤ) (by simp [hx]) (by simp [hy])
 
 @[inclusion_op interval_int]
 theorem mem_Ici {a x : ℤ} {I J : Interval ℤ} (ha : a ∈ I) (hx : x ∈ J) :
