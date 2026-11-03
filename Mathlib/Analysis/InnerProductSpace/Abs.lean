@@ -62,20 +62,18 @@ theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
 @[simp]
 theorem abs_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
-  simp [abs_def, CFC.sqrt_eq_zero_iff _ (T.isPositive_adjoint_comp_self.nonneg),
-    adjoint_comp_self_eq_zero_iff]
+  simp [abs_def, CFC.sqrt_eq_zero_iff, adjoint_comp_self_eq_zero_iff]
 
 @[simp]
 theorem abs_comp_abs (T : E →L[ℂ] F) : |T| ∘L |T| = T† ∘L T := by
-  simp [abs_def, ← mul_def, CFC.sqrt_mul_sqrt_self _ (T.isPositive_adjoint_comp_self.nonneg)]
+  simp [abs_def, ← mul_def, CFC.sqrt_mul_sqrt_self]
 
 @[simp]
 theorem norm_abs_apply (T : E →L[ℂ] F) (x : E) : ‖|T| x‖ = ‖T x‖ := by
   apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
   simp_rw [apply_norm_sq_eq_inner_adjoint_left, ContinuousLinearMap.comp_apply]
   rw [T.isPositive_abs.isSelfAdjoint.adjoint_eq]
-  simp [abs_def, ← mul_apply_eq_comp, ContinuousLinearMap.comp_apply,
-    CFC.sqrt_mul_sqrt_self  _ (T.isPositive_adjoint_comp_self.nonneg)]
+  simp [abs_def, ← mul_apply_eq_comp, ContinuousLinearMap.comp_apply, CFC.sqrt_mul_sqrt_self]
 
 theorem ker_abs_eq_ker_adjoint_comp_self (T : E →L[ℂ] F) : |T|.ker = (T† ∘L T).ker := by
   simpa [adjoint_abs, abs_comp_abs] using (ker_adjoint_comp_self |T|).symm
@@ -112,11 +110,8 @@ theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T.adjoint ∘L T| = T.adjoi
   abs_of_isPositive _ (isPositive_adjoint_comp_self T)
 
 theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
-  rw [abs_def, CFC.sqrt_eq_iff _ _
-    ((isPositive_adjoint_comp_self (c • T)).nonneg)
-    (smul_nonneg (norm_nonneg c) (T.isPositive_abs.nonneg)),
-    smul_mul_smul_comm, mul_def, abs_comp_abs]
-  simp [LinearIsometryEquiv.map_smulₛₗ, ← smul_assoc, Complex.mul_conj', ← sq]
+  rw [abs_def, CFC.sqrt_eq_iff _ _ (adjoint_comp_self_nonneg (c • T))]
+  simp [mul_def, ← smul_assoc, Complex.mul_conj', map_smulₛₗ, sq]
   norm_cast
 
 end Abs

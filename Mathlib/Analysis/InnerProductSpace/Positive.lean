@@ -366,6 +366,7 @@ theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
+@[simp]
 theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S ∘L S†).IsPositive := by
   simpa using! isPositive_one.conj_adjoint S
@@ -376,6 +377,7 @@ theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
+@[simp]
 theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
     (S† ∘L S).IsPositive := by
   simpa using! isPositive_one.adjoint_conj S
@@ -483,6 +485,7 @@ lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
 lemma nonneg_iff_isPositive {f : E →L[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
   simpa using le_def (f:=0) (g:=f)
 
+@[aesop safe (rule_sets := [CStarAlgebra])]
 alias ⟨_, IsPositive.nonneg⟩ := nonneg_iff_isPositive
 
 instance : IsOrderedAddMonoid (E →L[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
@@ -492,6 +495,16 @@ instance instIsOrderedModule : IsOrderedModule 𝕜 (E →L[𝕜] E) where
     rw [← coe_le_coe_iff] at hb ⊢; exact smul_le_smul_of_nonneg_left hb hf
   smul_le_smul_of_nonneg_right f hf b₁ b₂ hb := by
     rw [← coe_le_coe_iff]; exact smul_le_smul_of_nonneg_right hb (by simpa)
+
+@[simp]
+lemma adjoint_comp_self_nonneg [CompleteSpace E] [CompleteSpace F] (T : E →L[𝕜] F) :
+    0 ≤ T.adjoint ∘L T := by
+  simp [nonneg_iff_isPositive]
+
+@[simp]
+lemma self_comp_adjoint_nonneg [CompleteSpace E] [CompleteSpace F] (T : E →L[𝕜] F) :
+    0 ≤ T ∘L T.adjoint := by
+  simp [nonneg_iff_isPositive]
 
 end Order
 
