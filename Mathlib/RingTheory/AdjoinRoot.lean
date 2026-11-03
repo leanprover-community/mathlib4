@@ -7,8 +7,8 @@ module
 
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
-public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.RingTheory.Polynomial.Quotient
+public import Mathlib.RingTheory.PowerBasis
 
 /-!
 # Adjoining roots of polynomials
@@ -702,7 +702,8 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
         funext fun i => by simp only [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
       map_smul' := fun f₁ f₂ =>
         funext fun i => by
-          simp only [(modByMonicHom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
+          simp only [(modByMonicHom hg).map_smul, AddMonoidAlgebra.coeff_smul_apply,
+            Pi.smul_apply, RingHom.id_apply]
       left_inv f := AdjoinRoot.induction_on _ f fun f => Eq.symm <| mk_eq_mk.mpr <| by
         simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
         rw [modByMonic_eq_sub_mul_div, sub_sub_cancel]
@@ -712,7 +713,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
           nontriviality R
           simp only [modByMonicHom_mk]
           rw [(modByMonic_eq_self_iff hg).mpr, finsetSum_coeff]
-          · simp_rw [coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq',
+          · simp_rw [coeff_monomial, Finsupp.single_apply, Fin.val_eq_val, Finset.sum_ite_eq',
               ite_eq_left (Finset.mem_univ _)]
           · simp_rw [← C_mul_X_pow_eq_monomial]
             exact (degree_eq_natDegree hg.ne_zero).symm ▸ degree_sum_fin_lt _ }
@@ -795,7 +796,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
   let f' := f * C f.leadingCoeff⁻¹
   have deg_f' : f'.natDegree = f.natDegree := by
     rw [natDegree_mul hf, natDegree_C, add_zero]
-    · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
+    rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
   have minpoly_eq : minpoly K (root f) = f' := minpoly_root hf
   apply Basis.mk (v := fun i : Fin f.natDegree ↦ root f ^ i.val)
   · rw [← deg_f', ← minpoly_eq]
@@ -950,16 +951,10 @@ def quotMapOfEquivQuotMapCMapMk :
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (AdjoinRoot.mk f) :=
   Ideal.quotEquivOfEq (by rw [of, AdjoinRoot.mk, Ideal.map_map])
 
-@[deprecated (since := "2026-03-02")]
-alias quotMapOfEquivQuotMapCMapSpanMk := quotMapOfEquivQuotMapCMapMk
-
 @[simp]
 theorem quotMapOfEquivQuotMapCMapMk_mk (x : AdjoinRoot f) :
     quotMapOfEquivQuotMapCMapMk I f (Ideal.Quotient.mk (I.map (of f)) x) =
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X]))) x := rfl
-
-@[deprecated (since := "2026-03-02")]
-alias quotMapOfEquivQuotMapCMapSpanMk_mk := quotMapOfEquivQuotMapCMapMk_mk
 
 --this lemma should have the simp tag but this causes a lint issue
 set_option backward.isDefEq.respectTransparency.types false in
@@ -970,9 +965,6 @@ theorem quotMapOfEquivQuotMapCMapMk_symm_mk (x : AdjoinRoot f) :
   rw [quotMapOfEquivQuotMapCMapMk, Ideal.quotEquivOfEq_symm]
   exact Ideal.quotEquivOfEq_mk _ _
 
-@[deprecated (since := "2026-03-02")]
-alias quotMapOfEquivQuotMapCMapSpanMk_symm_mk := quotMapOfEquivQuotMapCMapMk_symm_mk
-
 /-- The natural isomorphism `R[α]/((I[x] ⊔ (f)) / (f)) ≅ (R[x]/I[x])/((f) ⊔ I[x] / I[x])`
   for `α` a root of `f : R[X]` and `I : Ideal R` -/
 def quotMapCMapSpanMkEquivQuotMapCQuotMapMk :
@@ -981,17 +973,11 @@ def quotMapCMapSpanMkEquivQuotMapCQuotMapMk :
         (span ({f} : Set R[X])).map (Ideal.Quotient.mk (I.map (C : R →+* R[X]))) :=
   quotQuotEquivComm (Ideal.span ({f} : Set R[X])) (I.map (C : R →+* R[X]))
 
-@[deprecated (since := "2026-03-02")]
-alias quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk := quotMapCMapSpanMkEquivQuotMapCQuotMapMk
-
 -- This lemma should have the simp tag but this causes a lint issue.
 theorem quotMapCMapSpanMkEquivQuotMapCQuotMapMk_mk (p : R[X]) :
     quotMapCMapSpanMkEquivQuotMapCQuotMapMk I f (Ideal.Quotient.mk _ (mk f p)) =
       quotQuotMk (I.map C) (span {f}) p :=
   rfl
-
-@[deprecated (since := "2026-03-02")]
-alias quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_mk := quotMapCMapSpanMkEquivQuotMapCQuotMapMk_mk
 
 @[simp]
 theorem quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk (p : R[X]) :
@@ -999,10 +985,6 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk (p : R[X]) :
       Ideal.Quotient.mk (Ideal.map (Ideal.Quotient.mk (span {f})) (I.map (C : R →+* R[X])))
         (mk f p) :=
   rfl
-
-@[deprecated (since := "2026-03-02")]
-alias quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk :=
-  quotMapCMapSpanMkEquivQuotMapCQuotMapMk_symm_quotQuotMk
 
 /-- The natural isomorphism `(R/I)[x]/(f mod I) ≅ (R[x]/I*R[x])/(f mod I[x])` where
   `f : R[X]` and `I : Ideal R` -/
@@ -1194,7 +1176,7 @@ lemma Polynomial.Monic.exists_splits_map.{u}
     {R : Type u} [CommRing R] [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S) (_ : Module.Finite R S) (_ : Module.Free R S)
       (_ : Nontrivial S), (p.map (algebraMap R S)).Splits := by
-  induction hn : p.natDegree using Nat.strong_induction_on generalizing R with | h n IH =>
+  induction hn : p.natDegree using Nat.strong_induction_on generalizing R with | ind n IH
   by_cases hpu : IsUnit p
   · obtain rfl := hp.eq_one_of_isUnit hpu
     exact ⟨R, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance, by simp⟩

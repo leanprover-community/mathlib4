@@ -46,9 +46,11 @@ When the space is locally compact, `μ.measure` is also regular.
 
 ## References
 
-* Paul Halmos (1950), Measure Theory, §53
+* [P. R. Halmos, *Measure Theory*][halmos1950measure], §53
 * <https://en.wikipedia.org/wiki/Content_(measure_theory)>
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -177,7 +179,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
   · ext1
     rw [Compacts.coe_finset_sup, Finset.sup_eq_iSup]
     exact h3K'
-  refine le_trans (Finset.sum_le_sum ?_) (ENNReal.sum_le_tsum t)
+  refine le_trans (Finset.sum_le_sum ?_) (sum_le_tsum t)
   intro i _
   refine le_trans ?_ (le_iSup _ (L i))
   refine le_trans ?_ (le_iSup _ (h2K' i))
@@ -212,7 +214,7 @@ theorem innerContent_pos_of_is_mul_left_invariant [Group G] [IsTopologicalGroup 
     (hK : μ K ≠ 0) (U : Opens G) (hU : (U : Set G).Nonempty) : 0 < μ.innerContent U := by
   have : (interior (U : Set G)).Nonempty := by rwa [U.isOpen.interior_eq]
   rcases compact_covered_by_mul_left_translates K.2 this with ⟨s, hs⟩
-  suffices μ K ≤ s.card * μ.innerContent U by
+  suffices μ K ≤ #s * μ.innerContent U by
     exact (ENNReal.mul_pos_iff.mp <| hK.bot_lt.trans_le this).2
   have : (K : Set G) ⊆ ↑(⨆ g ∈ s, Opens.comap (Homeomorph.mulLeft g : C(G, G)) U) := by
     simpa only [Opens.iSup_def, Opens.coe_comap, Subtype.coe_mk]

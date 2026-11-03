@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.SetLike
 

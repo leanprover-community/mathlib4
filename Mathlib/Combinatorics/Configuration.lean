@@ -5,9 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Projectivization.Constructions
+
+import Mathlib.Combinatorics.Hall.Basic
 
 /-!
 # Configurations of Points and lines

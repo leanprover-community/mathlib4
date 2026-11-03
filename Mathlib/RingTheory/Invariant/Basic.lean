@@ -47,6 +47,11 @@ assert_not_exists IntermediateField.adjoin
 
 open scoped Pointwise
 
+instance {A B G : Type*} [CommSemiring A] [CommSemiring B] [Algebra A B]
+    [Group G] [MulSemiringAction G B] [SMulCommClass G A B] :
+    Algebra.IsInvariant (FixedPoints.subalgebra A B G) B G :=
+  ⟨fun b hb ↦ ⟨⟨b, hb⟩, rfl⟩⟩
+
 section Quotient
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
@@ -120,7 +125,7 @@ theorem smul_charpoly (b : B) (g : G) : g • (charpoly G b) = charpoly G b := b
 
 theorem smul_coeff_charpoly (b : B) (n : ℕ) (g : G) :
     g • (charpoly G b).coeff n = (charpoly G b).coeff n := by
-  rw [← coeff_smul, smul_charpoly]
+  rw [← AddMonoidAlgebra.coeff_smul_apply, smul_charpoly]
 
 end MulSemiringAction
 
@@ -212,7 +217,8 @@ private theorem fixed_of_fixed1_aux1 :
   have hr : r.map (algebraMap B (B ⧸ Q)) = q := by
     ext n
     rw [Polynomial.coeff_map, Polynomial.finsetSum_coeff]
-    simp only [Polynomial.coeff_monomial, Finset.sum_ite_eq', Finset.mem_range_succ_iff]
+    simp only [Polynomial.coeff_monomial, Finsupp.single_apply, Finset.sum_ite_eq',
+      Finset.mem_range_succ_iff]
     split_ifs with hn
     · rw [← Polynomial.coeff_map, hq, Polynomial.coeff_X_pow_mul]
     · rw [map_zero, eq_comm, Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hn)]

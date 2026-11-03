@@ -5,8 +5,9 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.PeakFunction
+
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-! # Euler's infinite product for the sine function
 

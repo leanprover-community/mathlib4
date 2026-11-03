@@ -44,7 +44,7 @@ variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points `x` and `y` are weakly on the same side of `s`. -/
 def WSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
-  ∃ᵉ (p₁ ∈ s) (p₂ ∈ s), SameRay R (x -ᵥ p₁) (y -ᵥ p₂)
+  ∃ p₁ ∈ s, ∃ p₂ ∈ s, SameRay R (x -ᵥ p₁) (y -ᵥ p₂)
 
 /-- The points `x` and `y` are strictly on the same side of `s`. -/
 def SSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
@@ -52,7 +52,7 @@ def SSameSide (s : AffineSubspace R P) (x y : P) : Prop :=
 
 /-- The points `x` and `y` are weakly on opposite sides of `s`. -/
 def WOppSide (s : AffineSubspace R P) (x y : P) : Prop :=
-  ∃ᵉ (p₁ ∈ s) (p₂ ∈ s), SameRay R (x -ᵥ p₁) (p₂ -ᵥ y)
+  ∃ p₁ ∈ s, ∃ p₂ ∈ s, SameRay R (x -ᵥ p₁) (p₂ -ᵥ y)
 
 /-- The points `x` and `y` are strictly on opposite sides of `s`. -/
 def SOppSide (s : AffineSubspace R P) (x y : P) : Prop :=

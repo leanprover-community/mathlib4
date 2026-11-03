@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
+
 import Mathlib.Basic.Finite.Sigma
 
 /-!

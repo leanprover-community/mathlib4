@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
-import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 public import Mathlib.Algebra.Homology.Embedding.Splitting
+
+import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
+import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 
 /-!
 # Homotopy equivalences between chain complexes

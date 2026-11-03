@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Topology.Algebra.Ring.Basic
+
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!

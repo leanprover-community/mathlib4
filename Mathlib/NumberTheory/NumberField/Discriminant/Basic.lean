@@ -11,6 +11,7 @@ public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
@@ -37,7 +38,8 @@ public section
 
 namespace NumberField
 
-open Module NumberField NumberField.InfinitePlace Matrix
+open Module NumberField NumberField.InfinitePlace
+open Matrix hiding zpow_neg_one zpow_mul
 
 open scoped Real nonZeroDivisors
 

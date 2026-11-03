@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Module.Complement
+
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Sym.Sym2

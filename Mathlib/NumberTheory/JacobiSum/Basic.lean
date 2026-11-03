@@ -6,6 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.NumberTheory.GaussSum
+
 import Mathlib.NumberTheory.MulChar.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Lemmas
 

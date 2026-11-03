@@ -6,12 +6,13 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Basic.Real.Embedding
 public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.Data.Sym.Sym2
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Tactic.NormNum.GCD
 public import Mathlib.Tactic.Positivity
+
+import Mathlib.Basic.Real.Embedding
 
 /-!
 # Rank one valuations

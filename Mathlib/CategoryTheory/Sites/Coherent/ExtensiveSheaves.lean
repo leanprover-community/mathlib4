@@ -7,7 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+
 import Mathlib.CategoryTheory.Sites.Preserves
+
 /-!
 
 # Sheaves for the extensive topology

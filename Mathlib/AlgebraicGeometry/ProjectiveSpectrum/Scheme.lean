@@ -5,8 +5,9 @@ Authors: Jujian Zhang, Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
+
 import Mathlib.RingTheory.GradedAlgebra.Radical
 
 /-!
@@ -408,8 +409,8 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
           rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
             HomogeneousLocalization.val_mul, HomogeneousLocalization.val_mk,
             HomogeneousLocalization.val_mk]
-          · simp_rw [mul_pow]; rw [Localization.mk_mul]
-            · congr; rw [← pow_add, Nat.add_sub_of_le h]
+          simp_rw [mul_pow]; rw [Localization.mk_mul]
+          congr; rw [← pow_add, Nat.add_sub_of_le h]
         · apply Ideal.mul_mem_left (α := A⁰_ f) _ _ (hx _)
           rw [(_ : m • n = _)]
           · mem_tac

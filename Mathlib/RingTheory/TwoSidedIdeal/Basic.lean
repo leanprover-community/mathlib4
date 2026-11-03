@@ -5,8 +5,8 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.Tactic.Abel
 public import Mathlib.RingTheory.Congruence.Opposite
+public import Mathlib.Tactic.Abel
 
 /-!
 # Two Sided Ideals
