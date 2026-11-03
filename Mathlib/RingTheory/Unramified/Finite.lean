@@ -45,13 +45,6 @@ Let `S/R` be formally unramified and essentially of finite type.
 
 @[expose] public section
 
-@[simp]
-theorem foo (M R A : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A] :
-    MulSemiringAction.toAlgHom R A (1 : M) = AlgHom.id R A := by
-  ext
-  simp
-
 open Algebra Module
 open scoped TensorProduct
 
@@ -360,6 +353,7 @@ theorem span_equalizerIdempotent_one_sub_eq :
       (a := 1) (f := (Ideal.Quotient.mkₐ R I).comp f) (g := (Ideal.Quotient.mkₐ R I).comp g))
 
 variable {f g} in
+@[simp]
 lemma equalizerIdempotent_eq_one_iff : equalizerIdempotent f g = 1 ↔ f = g := by
   simpa [AlgHom.ext_iff] using equalizerIdempotent_mul_eq_iff (f := f) (g := g) (a := 1)
 
@@ -390,27 +384,27 @@ of an algebra automorphism `g : G` is an idempotent element `e` of `S` with the 
 noncomputable def inertiaIdempotent (g : G) : S :=
   equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S)
 
+lemma isIdempotentElem_inertiaIdempotent (g : G) : IsIdempotentElem (inertiaIdempotent R S g) :=
+  isIdempotentElem_equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S)
+
 variable (G) in
 @[simp]
 lemma inertiaIdempotent_one : inertiaIdempotent R S (1 : G) = 1 := by
   simp [inertiaIdempotent]
 
-lemma isIdempotentElem_inertiaIdempotent (g : G) : IsIdempotentElem (inertiaIdempotent R S g) :=
-  isIdempotentElem_equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S)
-
 variable {S} in
-lemma inertiaIdempotent_mul_smul (g : G) (x : S) :
-    inertiaIdempotent R S g * (g • x) = inertiaIdempotent R S g * x := by
-  simpa [inertiaIdempotent, mul_comm] using
+lemma smul_mul_inertiaIdempotent (g : G) (x : S) :
+    (g • x) * inertiaIdempotent R S g = x * inertiaIdempotent R S g := by
+  simpa [inertiaIdempotent] using
     apply_mul_equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S) x
 
 variable {S} in
 /-- The inertia idempotent of `g` is congruent to `1` modulo `Q` if and only `g ∈ Q.inertia G`. -/
 @[simp]
-lemma mk_inertiaIdempotent_eq_one_iff (Q : Ideal S) (g : G) :
+lemma mk_inertiaIdempotent_eq_one_iff {Q : Ideal S} {g : G} :
     Ideal.Quotient.mk Q (inertiaIdempotent R S g) = 1 ↔ g ∈ Q.inertia G := by
   rw [inertiaIdempotent, ← Ideal.Quotient.mkₐ_eq_mk R, map_equalizerIdempotent]
-  simp [equalizerIdempotent_eq_one_iff, AlgHom.ext_iff, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+  simp [AlgHom.ext_iff, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
 
 variable {S} in
 open Classical in
