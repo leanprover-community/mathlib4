@@ -51,6 +51,17 @@ lemma isEquivalence_ι (h : P = ⊤) : P.ι.IsEquivalence := by
   rw [h]
   exact (topEquivalence C).isEquivalence_functor
 
+lemma isEquivalence_lift_iff {D : Type*} [Category* D]
+    (P : ObjectProperty D) [P.IsClosedUnderIsomorphisms]
+    (F : C ⥤ D) [F.Full] [F.Faithful] (hF : (∀ (X : C), P (F.obj X))) :
+    (P.lift F hF).IsEquivalence ↔ F.essImage = P := by
+  refine ⟨fun h ↦ le_antisymm (fun _ ⟨_, ⟨e⟩⟩ ↦ P.prop_of_iso e (hF _))
+    (fun X hX ↦ ⟨_, ⟨P.ι.mapIso ((P.lift F hF).objObjPreimageIso ⟨X, hX⟩)⟩⟩),
+    fun h ↦ { essSurj.mem_essImage := fun ⟨X, hX⟩ ↦ ?_ } ⟩
+  rw [← h] at hX
+  obtain ⟨Y, ⟨e⟩⟩ := hX
+  exact ⟨Y, ⟨ObjectProperty.isoMk _ e⟩⟩
+
 end CategoryTheory.ObjectProperty
 
 namespace CategoryTheory.Equivalence
