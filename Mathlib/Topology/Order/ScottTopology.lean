@@ -153,6 +153,20 @@ theorem isClosed_iff_dirSupClosed : IsClosed s ↔ DirSupClosed s := by
 end univ
 end IsScottHausdorff
 
+-- TODO: for a general linear order, its topology is the meet of the Scott-Hausdorff of itself and
+-- its order dual.
+instance {α : Type*} [LinearOrder α] [WellFoundedLT α] [TopologicalSpace α] [OrderTopology α] :
+    IsScottHausdorff α univ where
+  topology_eq_scottHausdorff := by
+    rw [OrderTopology.topology_eq_generate_intervals (α := α)]
+    apply le_antisymm
+    · sorry
+    · apply TopologicalSpace.le_generateFrom_iff_subset_isOpen.2
+      rintro _ ⟨a, rfl | rfl⟩
+      · simp
+
+#exit
+
 /-! ### Scott topology -/
 
 section Scott
