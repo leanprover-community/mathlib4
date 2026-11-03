@@ -647,10 +647,12 @@ end Linear
 
 variable {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 
+set_option linter.unusedVariables false in
 @[simp]
 theorem flip_separatingRight [SMulCommClass S₁ S₂ M] : B.flip.SeparatingRight ↔ B.SeparatingLeft :=
   ⟨fun hB x hy ↦ hB x hy, fun hB x hy ↦ hB x hy⟩
 
+set_option linter.unusedVariables false in
 @[simp]
 theorem flip_separatingLeft [SMulCommClass S₁ S₂ M] :
     B.flip.SeparatingLeft ↔ SeparatingRight B := by
