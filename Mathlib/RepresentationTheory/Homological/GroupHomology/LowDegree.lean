@@ -112,7 +112,6 @@ theorem range_d₁₀_eq_coinvariantsKer :
       simpa [← hy, add_sub_add_comm, sum_add_index, d₁₀_single (G := G)]
         using! Submodule.add_mem _ (Coinvariants.mem_ker_of_eq _ _ _ rfl) (h rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma d₁₀_comp_coinvariantsMk : d₁₀ A ≫ (coinvariantsMk k G).app A = 0 := by
   ext
@@ -959,7 +958,6 @@ lemma π_comp_H1Iso_hom :
       (shortComplexH1 A).moduleCatLeftHomologyData.π := by
   simp [H1Iso, isoCycles₁, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H1Iso_inv :
     (shortComplexH1 A).moduleCatLeftHomologyData.π ≫ (H1Iso A).inv = H1π A :=

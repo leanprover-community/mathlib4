@@ -100,8 +100,6 @@ theorem rank_finsetSum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
   @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
     (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (by gcongr)
 
-@[deprecated (since := "2026-04-08")] alias rank_finset_sum_le := rank_finsetSum_le
-
 end HasRankNullity
 
 section DivisionRing

@@ -11,6 +11,9 @@ public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Tactic.Lift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between types
 
