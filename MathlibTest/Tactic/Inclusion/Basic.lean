@@ -35,9 +35,6 @@ example {x : ℤ} (hx : x ∈ Set.Ioo (-3) 2) :
 
 example {x : ℤ} (hx : x < -2) : x ^ 3 ≤ -27 ∧ 81 ≤ x ^ 4 := by dyadic_interval
 
--- Closed casts still compute directly, including operations outside `interval_int`.
-example : ((((9 : ℕ) : ℤ) / 2 : ℤ) : ℝ) = 4 := by dyadic_interval
-
 -- Integer arithmetic before casting and real arithmetic after casting share the enclosure of `n`.
 example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc 1 2) (hn : n ∈ Set.Ioo (-2) 3) :
     x * ((n ^ 2 + 1 : ℤ) : ℝ) + (n : ℝ) ^ 2 ∈ Set.Icc 1 14 := by dyadic_interval

@@ -44,17 +44,6 @@ theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℝ) ∈ Interval.singleton (n : 
 theorem intCast_mem (z : ℤ) : (z : ℝ) ∈ Interval.singleton (z : Dyadic) := by
   simpa [mem_iff_mem_map] using Interval.mem_map_singleton (z : Dyadic) Dyadic.toReal
 
-/-- Enclose a closed integer cast in a dyadic singleton. -/
-@[inclusion_ext((_ : ℤ) : ℝ)]
-meta def intCastConst : InclusionExt where
-  family := `interval_dyadic_real
-  userName := ``intCast_mem
-  priority := eval_prio high
-  derive e := do
-    let e ← instantiateMVars e
-    if e.hasFVar || e.hasMVar then failure
-    deriveInclusionOp ``intCast_mem #[] #[] e
-
 end Constants
 
 @[inclusion_op interval_dyadic_real]
