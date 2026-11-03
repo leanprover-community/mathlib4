@@ -77,26 +77,38 @@ In fact they automatically intertwine the antipodes, proved below.
 instance : Category (Hopf C) :=
   inferInstanceAs <| Category (InducedCategory (Bimon C) toBimon')
 
-@[ext] lemma ext {X Y : Hopf C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
+@[ext] lemma ext {A B : Hopf C} {f g : A ⟶ B} (w : f.hom = g.hom) : f = g :=
   InducedCategory.Hom.ext w
 
-@[simp] theorem hom_id (M : Hopf C) : (𝟙 M : M ⟶ M).hom = 𝟙 M.toBimon' := rfl
+@[simp] theorem hom_id (A : Hopf C) : (𝟙 A : A ⟶ A).hom = 𝟙 A.toBimon' := rfl
 
 @[simp]
-theorem hom_comp {M N K : Hopf C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
-  rfl
+theorem hom_comp {A₁ A₂ A₃ : Hopf C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
 /-- The forgetful functor from Hopf monoids to bimonoid objects. -/
 abbrev toBimon : Hopf C ⥤ Bimon C := inducedFunctor _
 
-/-- Construct a morphism `Hopf.mk G ⟶ Hopf.mk H` from a  map `f : G ⟶ H` and a `IsBimonHom f`
+/-- Construct a morphism `Hopf.mk X ⟶ Hopf.mk Y` from a  map `f : X ⟶ Y` and a `IsBimonHom f`
 instance. -/
 @[simps!]
 def ofHom {X Y : C} [HopfObj X] [HopfObj Y] (f : X ⟶ Y) [IsBimonHom f] :
     Hopf.mk X ⟶ Hopf.mk Y := InducedCategory.homMk (Bimon.Hom.mk f)
 
-abbrev homMk {X Y : Hopf C} (f : X.X ⟶ Y.X) [IsBimonHom f] : X ⟶ Y :=
-  InducedCategory.homMk (Bimon.Hom.mk f)
+
+/-- Construct a morphism `A ⟶ B` of `Hopf C` from a map `f : A.X ⟶ B.X` and `IsMonHom f` and
+`IsComonHom f` instances. -/
+@[simps!]
+def homMk {A B : Hopf C} (f : A.X ⟶ B.X) [IsMonHom f] [IsComonHom f] : A ⟶ B :=
+  InducedCategory.homMk (Bimon.homMk f)
+
+/-- Construct an isomorphism of Hopf monoids by giving an isomorphism between the underlying
+objects and checking compatibility only in the forward direction. -/
+@[simps! -isSimp]
+abbrev mkIso {A B : Hopf C} (e : A.X ≅ B.X) [IsMonHom e.hom] [IsComonHom e.hom] :
+    A ≅ B where
+  hom := homMk e.hom
+  inv := homMk e.inv
 
 end Hopf
 
@@ -108,8 +120,8 @@ variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [Br
 open HopfObj Hopf
 
 /-- The image of a Hopf monoid under an braided functor is a Hopf monoid. -/
-abbrev obj.instHopfObj (A : C) [HopfObj A] (F : C ⥤ D) [F.Braided] : HopfObj (F.obj A) where
-  __ := obj.instBimonObj A F
+abbrev obj.instHopfObj (X : C) [HopfObj X] (F : C ⥤ D) [F.Braided] : HopfObj (F.obj X) where
+  __ := obj.instBimonObj X F
   antipode := F.map antipode
   antipode_left := by simp [← map_comp]
   antipode_right := by simp [← map_comp]

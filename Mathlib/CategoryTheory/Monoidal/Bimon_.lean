@@ -91,20 +91,20 @@ instance : Inhabited (Bimon C) :=
 
 /-- A morphism of bimonoid objects. -/
 @[ext]
-structure Hom (M N : Bimon C) where
+structure Hom (A B : Bimon C) where
   /-- The underlying morphism -/
-  hom : M.X ⟶ N.X
+  hom : A.X ⟶ B.X
   [isBimonHom_hom : IsBimonHom hom]
 
 attribute [instance] Bimon.Hom.isBimonHom_hom
 
 /-- Construct a morphism `M ⟶ N` of `Bimon C` from a map `f : M ⟶ N` and
 a `IsBimonHom f` instance. -/
-abbrev Hom.mk' {M N : Bimon C} (f : M.X ⟶ N.X)
+abbrev Hom.mk' {A B : Bimon C} (f : A.X ⟶ B.X)
     (one_f : η ≫ f = η := by cat_disch)
     (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch)
-    (f_counit : f ≫ ε[N.X] = ε[M.X] := by cat_disch)
-    (f_comul : f ≫ Δ[N.X] = Δ[M.X] ≫ (f ⊗ₘ f) := by cat_disch) : Hom M N :=
+    (f_counit : f ≫ ε[B.X] = ε[A.X] := by cat_disch)
+    (f_comul : f ≫ Δ[B.X] = Δ[A.X] ≫ (f ⊗ₘ f) := by cat_disch) : Hom A B :=
   have : IsMonHom f := ⟨one_f, mul_f⟩
   have : IsComonHom f := ⟨f_counit, f_comul⟩
   have : IsBimonHom f := ⟨⟩
@@ -116,10 +116,10 @@ instance (X Y Z : C) [BimonObj X] [BimonObj Y] [BimonObj Z] (f : X ⟶ Y) (g : Y
 
 /-- The identity morphism on a bimonoid object. -/
 @[simps]
-def id (M : Bimon C) : Hom M M := ⟨𝟙 M.X⟩
+def id (A : Bimon C) : Hom A A := ⟨𝟙 A.X⟩
 
-instance homInhabited (M : Bimon C) : Inhabited (Hom M M) :=
-  ⟨id M⟩
+instance homInhabited (A : Bimon C) : Inhabited (Hom A A) :=
+  ⟨id A⟩
 
 /-- Composition of morphisms of bimonoid objects. -/
 @[simps]
@@ -127,7 +127,7 @@ def comp {M N O : Bimon C} (f : Hom M N) (g : Hom N O) : Hom M O where
   hom := f.hom ≫ g.hom
 
 instance : Category (Bimon C) where
-  Hom M N := Hom M N
+  Hom A B := Hom A B
   id := id
   comp f g := comp f g
 
@@ -137,13 +137,27 @@ instance. -/
 def ofHom {A B : C} [BimonObj A] [BimonObj B] (f : A ⟶ B) [IsBimonHom f] :
     Bimon.mk A ⟶ Bimon.mk B := .mk f
 
-@[ext] lemma ext {X Y : Bimon C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g := Hom.ext w
+@[ext] lemma ext {A B : Bimon C} {f g : A ⟶ B} (w : f.hom = g.hom) : f = g := Hom.ext w
 
-@[simp] theorem id_hom' (M : Bimon C) : (𝟙 M : Hom M M).hom = 𝟙 M.X := rfl
+@[simp] theorem hom_id (A : Bimon C) : (𝟙 A : Hom A A).hom = 𝟙 A.X := rfl
 
 @[simp]
-theorem comp_hom' {M N K : Bimon C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
+theorem hom_comp {M N K : Bimon C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
+
+/-- Construct a morphism `A ⟶ B` of `Bimon C` from a map `f : A.X ⟶ A.X` and `IsMonHom f` and
+`IsComonHom f` instances. -/
+@[simps!]
+def homMk {A B : Bimon C} (f : A.X ⟶ B.X) [IsMonHom f] [IsComonHom f] : A ⟶ B :=
+  Bimon.Hom.mk' f
+
+/-- Construct an isomorphism of bimonoid objects by giving an isomorphism between the underlying
+objects and checking compatibility only in the forward direction. -/
+@[simps! -isSimp]
+abbrev mkIso {A B : Bimon C} (e : A.X ≅ B.X) [IsMonHom e.hom] [IsComonHom e.hom] :
+    A ≅ B where
+  hom := homMk e.hom
+  inv := homMk e.inv
 
 attribute [local simp] MonObj.tensorObj.one_def in
 @[reassoc]
@@ -246,15 +260,6 @@ end Functor
 /-! ### Lemmas on `Comon (Mon C)` and equivalence with `Mon (Comon C)` -/
 
 namespace ComonMon
-
-@[ext] lemma ext {X Y : Comon (Mon C)} {f g : X ⟶ Y} (w : f.hom.hom = g.hom.hom) : f = g :=
-  Comon.Hom.ext (Mon.Hom.ext w)
-
-@[simp] theorem id_hom' (M : Comon (Mon C)) : Comon.Hom.hom (𝟙 M) = 𝟙 M.X := rfl
-
-@[simp]
-theorem comp_hom' {M N K : Comon (Mon C)} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
-  rfl
 
 variable (C)
 
