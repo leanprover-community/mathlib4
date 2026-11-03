@@ -197,6 +197,14 @@ theorem mem_closure_iff_isLUB {s : Set α} {x : α} :
     x ∈ closure s ↔ ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
   Set.ext_iff.1 (closure_eq_setOfPred_isLUB s) x
 
+theorem continuous_of_leftOrdContinuous {β : Type*} [Preorder β] [TopologicalSpace β]
+    [IsScottHausdorff β univ] {f : α → β} (hf : LeftOrdContinuous f) : Continuous f := by
+  rw [continuous_iff_image_closure_subset_closure_image]
+  rintro s _ ⟨y, hy, rfl⟩
+  obtain ⟨d, hd, hd₀, hx⟩ := Topology.IsScottHausdorff.mem_closure_iff_isLUB.1 hy
+  exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
+    (hf.mono.directedOn_image d) (hf hd₀ hx)
+
 end LinearOrder
 end IsScottHausdorff
 
