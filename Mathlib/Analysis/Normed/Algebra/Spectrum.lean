@@ -803,8 +803,7 @@ as an element of the strong dual (since it is automatically continuous). -/
 def AlgHom.toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
   φ.toNonUnitalAlgHom.toStrongDual
 
-set_option linter.deprecated false in
-@[deprecated NonUnitalAlgHom.coe_toStrongDual (since := "2026-10-30")]
+@[deprecated NonUnitalAlgHom.coe_toStrongDual +typeChanged (since := "2026-10-30")]
 theorem AlgHom.coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuousLinearMap = φ :=
   rfl
 
