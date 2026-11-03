@@ -7,11 +7,12 @@ Authors: Viviana del Barco, Gustavo Infanti, Exequiel Rivas, Paul Schwahn
 module
 
 public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.Algebra.Lie.Ideal
-public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.LinearAlgebra.Span.Defs
 
+import Aesop.BuiltinRules
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.TypeStar
 /-!
 # Leibniz rings and algebras
 
