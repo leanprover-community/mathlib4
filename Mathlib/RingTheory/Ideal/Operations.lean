@@ -1104,10 +1104,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
   classical
   convert subset_union_prime (s := insert a (insert b s)) (I := I) a b
     (fun i _ _ _ ↦ hp i (by grind))
-  · ext
-    simp only [SetLike.mem_coe, Set.mem_union, Set.mem_iUnion, exists_prop, Finset.coe_insert,
-      Set.mem_insert_iff, Set.iUnion_iUnion_eq_or_left]
-    grind
+  · ext; simp; grind
   · simp
 
 /-- Another version of prime avoidance using `Set.Finite` instead of `Finset`. -/
