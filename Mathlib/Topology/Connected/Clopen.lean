@@ -382,7 +382,7 @@ lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u 
     u = ⋃ x ∈ u, connectedComponentIn v x := by
   have := congr(((↑) : Set v → Set X) $hu.biUnion_connectedComponent_eq.symm)
   simp only [Subtype.image_preimage_coe, mem_preimage, iUnion_coe_set, image_val_iUnion,
-    inter_eq_right.mpr huv₁] at this
+    inter_eq_right_iff.mpr huv₁] at this
   nth_rw 1 [this]
   congr! 2 with x hx
   simp only [← connectedComponentIn_eq_image]

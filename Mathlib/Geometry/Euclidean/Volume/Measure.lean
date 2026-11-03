@@ -234,7 +234,7 @@ theorem euclideanHausdorffMeasure_preimage_coe (d : ℕ) {s : AffineSubspace ℝ
 theorem euclideanHausdorffMeasure_preimage_coe_of_subset (d : ℕ) {s : AffineSubspace ℝ P}
     {t : Set P} (ht : t ⊆ s) :
     μHE[d] ((Subtype.val : s → P) ⁻¹' t) = μHE[d] t := by
-  rw [euclideanHausdorffMeasure_preimage_coe, Set.inter_eq_left.mpr ht]
+  rw [euclideanHausdorffMeasure_preimage_coe, Set.inter_eq_left_iff.mpr ht]
 
 end AffineSubspace
 

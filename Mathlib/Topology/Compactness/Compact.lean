@@ -316,7 +316,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
     (⋂ i, t i).Nonempty := by
   let i₀ := hι.some
   suffices (t i₀ ∩ ⋂ i, t i).Nonempty by
-    rwa [inter_eq_right.mpr (iInter_subset _ i₀)] at this
+    rwa [inter_eq_right_iff.mpr (iInter_subset _ i₀)] at this
   refine not_disjoint_iff_nonempty_inter.1 fun hst ↦ ?_
   obtain ⟨i, hi⟩ := (htc i₀).elim_directed_family_closed t htcl hst htd
   rcases htd i₀ i with ⟨j, hji₀, hji⟩

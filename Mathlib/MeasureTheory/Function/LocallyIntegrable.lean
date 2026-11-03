@@ -179,7 +179,7 @@ theorem LocallyIntegrableOn.aestronglyMeasurable [PseudoMetrizableSpace ε]
     [SecondCountableTopology X] (hf : LocallyIntegrableOn f s μ) :
     AEStronglyMeasurable f (μ.restrict s) := by
   rcases hf.exists_nat_integrableOn with ⟨u, -, su, hu⟩
-  have : s = ⋃ n, u n ∩ s := by rw [← iUnion_inter]; exact (inter_eq_right.mpr su).symm
+  have : s = ⋃ n, u n ∩ s := by rw [← iUnion_inter]; exact (inter_eq_right_iff.mpr su).symm
   rw [this, aestronglyMeasurable_iUnion_iff]
   exact fun i : ℕ => (hu i).aestronglyMeasurable
 

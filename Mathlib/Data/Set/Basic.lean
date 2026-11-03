@@ -795,19 +795,23 @@ theorem subset_inter {s t r : Set α} (rs : r ⊆ s) (rt : r ⊆ t) : r ⊆ s �
 
 theorem subset_inter_iff {s t r : Set α} : r ⊆ s ∩ t ↔ r ⊆ s ∧ r ⊆ t := le_inf_iff
 
-lemma inter_eq_left : s ∩ t = s ↔ s ⊆ t := inf_eq_left
+lemma inter_eq_left_iff : s ∩ t = s ↔ s ⊆ t := inf_eq_left
 
-lemma inter_eq_right : s ∩ t = t ↔ t ⊆ s := inf_eq_right
+@[deprecated (since := "2026-11-03")] alias inter_eq_left := inter_eq_left_iff
+
+lemma inter_eq_right_iff : s ∩ t = t ↔ t ⊆ s := inf_eq_right
+
+@[deprecated (since := "2026-11-03")] alias inter_eq_right := inter_eq_right_iff
 
 lemma left_eq_inter : s = s ∩ t ↔ s ⊆ t := left_eq_inf
 
 lemma right_eq_inter : t = s ∩ t ↔ t ⊆ s := right_eq_inf
 
 theorem inter_eq_self_of_subset_left {s t : Set α} : s ⊆ t → s ∩ t = s :=
-  inter_eq_left.mpr
+  inter_eq_left_iff.mpr
 
 theorem inter_eq_self_of_subset_right {s t : Set α} : t ⊆ s → s ∩ t = t :=
-  inter_eq_right.mpr
+  inter_eq_right_iff.mpr
 
 theorem inter_congr_left (ht : s ∩ u ⊆ t) (hu : s ∩ t ⊆ u) : s ∩ t = s ∩ u :=
   inf_congr_left ht hu

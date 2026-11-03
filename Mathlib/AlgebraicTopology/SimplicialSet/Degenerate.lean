@@ -308,7 +308,7 @@ lemma degenerate_eq_top_iff (n : ℕ) :
     intro hx
     simp [← A.mem_degenerate_iff ⟨x, hx⟩, h, Set.top_eq_univ, Set.mem_univ]
   · intro h
-    simp only [Set.inter_eq_right] at h
+    simp only [Set.inter_eq_right_iff] at h
     ext x
     simpa [A.mem_degenerate_iff] using h x.prop
 

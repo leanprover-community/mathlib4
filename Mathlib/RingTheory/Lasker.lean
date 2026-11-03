@@ -209,7 +209,7 @@ lemma comap_localized₀_eq_iInf
   simp_rw [Function.comp_def, id_eq, localized₀FrameHom_apply]
   suffices ∀ q ∈ t, (localized₀ S f q).comap f = if q ∈ s then q else ⊤ by
     rw [Finset.inf_congr rfl this, Finset.inf_ite, Finset.inf_top, inf_top_eq,
-      Finset.filter_mem_eq_inter, Finset.inter_eq_right.mpr hs, Finset.inf_eq_iInf]
+      Finset.filter_mem_eq_inter, Finset.inter_eq_right_iff.mpr hs, Finset.inf_eq_iInf]
   refine fun q hqt ↦ (IsMinimalPrimaryDecomposition.comap_localized₀_eq_ite s₀ hs₀ q
     (ht.primary hqt) ⟨(q.colon Set.univ).radical, ht.mem_associatedPrimes hqt⟩ rfl).trans
     (ite_cond_congr (Iff.trans ?_ (ht.injOn.mem_image_iff hs hqt)).eq)

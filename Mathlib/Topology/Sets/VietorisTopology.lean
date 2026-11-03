@@ -95,7 +95,7 @@ theorem isTopologicalBasis :
     · exists ∅; simpa
     obtain ⟨u, v, hu, hv, rfl⟩ : ∃ u v, u ⊆ powerset '' {U | IsOpen U} ∧
         v ⊆ (fun V => {s | (s ∩ V).Nonempty}) '' {U | IsOpen U} ∧ u ∪ v = t := by
-      rw [← inter_eq_left, inter_union_distrib_left] at ht₂
+      rw [← inter_eq_left_iff, inter_union_distrib_left] at ht₂
       exact ⟨_, _, inter_subset_right, inter_subset_right, ht₂⟩
     rw [finite_union] at ht₁
     obtain ⟨u, hu₁, hu₂, rfl⟩ := exists_subset_image_finite_and.mp ⟨u, hu, ht₁.1, rfl⟩
@@ -107,10 +107,10 @@ theorem isTopologicalBasis :
     rw [mem_inter_iff, mem_powerset_iff, mem_iInter₂] at hs
     exists insert U ((U ∩ ·) '' v)
     simp_rw [show ⋃₀ (insert U ((U ∩ ·) '' v)) = U by simp, mem_ofPred, finite_insert,
-      forall_mem_insert, forall_mem_image, ← inter_assoc, inter_eq_left.mpr hs.1]
+      forall_mem_insert, forall_mem_image, ← inter_assoc, inter_eq_left_iff.mpr hs.1]
     refine ⟨⟨hv₂.image _, hU, fun V hV => hU.inter (hv₁ hV)⟩, by grind,
       fun t ⟨htU, _, ht⟩ => ⟨htU, mem_iInter₂_of_mem ?_⟩⟩
-    simpa only [inter_eq_left.mpr htU] using! ht
+    simpa only [inter_eq_left_iff.mpr htU] using! ht
 
 /-- Given a basis `B` on the underlying topological space, the Vietoris topology has a basis
 consisting of sets of the form `{s | s ⊆ V, s ∩ U₁ ≠ ∅, …, s ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ ∈ B` are

@@ -151,13 +151,13 @@ theorem IsUpperSet.image (hs : IsUpperSet s) (f : α ≃o β) : IsUpperSet (f ''
 theorem OrderEmbedding.image_Ici (e : α ↪o β) (he : IsUpperSet (range e)) (a : α) :
     e '' Ici a = Ici (e a) := by
   rw [← e.preimage_Ici, image_preimage_eq_inter_range,
-    inter_eq_left.2 <| he.Ici_subset (mem_range_self _)]
+    inter_eq_left_iff.2 <| he.Ici_subset (mem_range_self _)]
 
 @[to_dual]
 theorem OrderEmbedding.image_Ioi (e : α ↪o β) (he : IsUpperSet (range e)) (a : α) :
     e '' Ioi a = Ioi (e a) := by
   rw [← e.preimage_Ioi, image_preimage_eq_inter_range,
-    inter_eq_left.2 <| he.Ioi_subset (mem_range_self _)]
+    inter_eq_left_iff.2 <| he.Ioi_subset (mem_range_self _)]
 
 @[simp]
 theorem Set.monotone_mem : Monotone (· ∈ s) ↔ IsUpperSet s :=

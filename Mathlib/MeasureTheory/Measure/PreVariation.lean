@@ -217,7 +217,7 @@ lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Se
       _ ≤ ∑ q ∈ Q.parts, ∑' i, f (q ⊓ s' i) := by
           apply Finset.sum_le_sum fun q hq => ?_
           have hq_eq : q.val = ⋃ i, q.val ∩ s i := by
-            rw [← Set.inter_iUnion]; exact (Set.inter_eq_left.mpr (Q.le hq)).symm
+            rw [← Set.inter_iUnion]; exact (Set.inter_eq_left_iff.mpr (Q.le hq)).symm
           let t (i : ℕ) : Subtype MeasurableSet := ⟨q.val ∩ s i, q.2.inter (hs i)⟩
           have ht_disj : Pairwise (Disjoint on (Subtype.val ∘ t)) :=
             fun i j hij => (hs' hij).mono Set.inter_subset_right Set.inter_subset_right

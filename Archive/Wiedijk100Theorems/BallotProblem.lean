@@ -211,7 +211,7 @@ theorem first_vote_pos :
       have hint :
         countedSequence (p + 1) (q + 1) ∩ List.cons 1 '' countedSequence p (q + 1) =
           List.cons 1 '' countedSequence p (q + 1) := by
-        rw [inter_eq_right, counted_succ_succ]
+        rw [inter_eq_right_iff, counted_succ_succ]
         exact subset_union_left
       rw [(uniformOn_eq_zero_iff <| (countedSequence_finite _ _).image _).2 this, uniformOn,
         cond_apply list_int_measurableSet, hint, count_injective_image List.cons_injective,

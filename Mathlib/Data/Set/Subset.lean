@@ -68,7 +68,7 @@ lemma preimage_val_sInter_eq_sInter : A ↓∩ (⋂₀ S) = ⋂₀ ((A ↓∩ ·
   simp only [preimage_sInter, sInter_image]
 
 lemma eq_of_preimage_val_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
-  simp only [← inter_eq_right] at hB hC
+  simp only [← inter_eq_right_iff] at hB hC
   simp only [Subtype.preimage_val_eq_preimage_val_iff, hB, hC] at h
   exact h
 

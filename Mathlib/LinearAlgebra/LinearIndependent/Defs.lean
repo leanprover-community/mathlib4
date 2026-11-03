@@ -672,7 +672,7 @@ lemma linearIndepOn_finset_iffₒₛ [DecidableEq ι] {s : Finset ι} :
   · simp only [Finset.compl_filter, Finset.sum_filter, Function.comp_apply, Finset.coe_sort_coe]
     rw [Finset.sum_coe_sort s fun i => if i ∈ t then f i • v i else 0,
       Finset.sum_coe_sort s fun i => if i ∉ t then f i • v i else 0]
-    simpa [Finset.inter_eq_right.2 ht, Finset.sum_ite, Finset.filter_notMem_eq_sdiff]
+    simpa [Finset.inter_eq_right_iff.2 ht, Finset.sum_ite, Finset.filter_notMem_eq_sdiff]
   · specialize h (t.map (Embedding.subtype _)) (Finset.map_subtype_subset _)
       (fun i => if h : i ∈ s then f ⟨i, h⟩ else 0) ?_ i i.2
     · conv =>

@@ -158,7 +158,7 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
   · rcases eq_or_ne p 0 with (rfl | hp)
     · simp only [abs_zero, zero_div] at hε
       simp only [not_lt.mpr hε, coe_real_preimage_closedBall_period_zero, abs_zero, zero_div,
-        ite_false, inter_eq_right]
+        ite_false, inter_eq_right_iff]
       exact hs.trans (closedBall_subset_closedBall <| by simp [hε])
     simp [closedBall_eq_univ_of_half_period_le p hp (↑x) hε, not_lt.mpr hε]
   · suffices ∀ z : ℤ, closedBall (x + z • p) ε ∩ s = if z = 0 then closedBall x ε ∩ s else ∅ by

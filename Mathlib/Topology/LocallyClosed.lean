@@ -61,7 +61,7 @@ lemma subset_coborder :
 
 lemma coborder_inter_closure :
     coborder s ∩ closure s = s := by
-  rw [coborder, ← sdiff_eq_compl_inter, sdiff_sdiff_right_self, inter_eq_right]
+  rw [coborder, ← sdiff_eq_compl_inter, sdiff_sdiff_right_self, inter_eq_right_iff]
   exact subset_closure
 
 lemma closure_inter_coborder :
@@ -120,7 +120,7 @@ lemma Topology.IsOpenEmbedding.coborder_preimage (hf : IsOpenEmbedding f) (s : S
 
 lemma isClosed_preimage_val_coborder :
     IsClosed (coborder s ↓∩ s) := by
-  rw [isClosed_preimage_val, inter_eq_right.mpr subset_coborder, coborder_inter_closure]
+  rw [isClosed_preimage_val, inter_eq_right_iff.mpr subset_coborder, coborder_inter_closure]
 
 end coborder
 
@@ -365,7 +365,7 @@ lemma isLocallyClosed_tfae (s : Set X) :
   tfae_have 5 → 1 := fun ⟨U, U_open, eq⟩ ↦ ⟨U, closure s, U_open, isClosed_closure, eq⟩
   tfae_have 5 ↔ 6 := by
     simp [IsInducing.subtypeVal.isOpen_iff, Subtype.preimage_val_eq_preimage_val_iff,
-      inter_eq_right.mpr subset_closure, inter_comm, eq_comm]
+      inter_eq_right_iff.mpr subset_closure, inter_comm, eq_comm]
   tfae_finish
 
 lemma isLocallyClosed_iff_isLocallyClosedAt :

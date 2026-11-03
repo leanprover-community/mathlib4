@@ -256,7 +256,7 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
       exact h.2 h.1
   · rw [← sum_union (disjoint_sdiff_self_right.mono inf_le_left inf_le_left),
       ← union_inter_distrib_right, union_sdiff_of_subset (powerset_mono.2 <| subset_insert _ _),
-      inter_eq_right.2 h𝒜]
+      inter_eq_right_iff.2 h𝒜]
 
 variable [ExistsAddOfLE β]
 

@@ -457,7 +457,7 @@ lemma quasispectrum.mul_comm {R A : Type*} [CommRing R] [NonUnitalRing A] [Modul
   congr! 1
   · simpa [Set.inter_comm _ {r | IsUnit r}, Unitization.quasispectrum_eq_spectrum_inr,
       Unitization.inr_mul] using spectrum.setOfPred_isUnit_inter_mul_comm _ _
-  · rw [Set.inter_eq_right.mpr, Set.inter_eq_right.mpr]
+  · rw [Set.inter_eq_right_iff.mpr, Set.inter_eq_right_iff.mpr]
     all_goals exact fun _ ↦ quasispectrum.not_isUnit_mem _
 
 /-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the

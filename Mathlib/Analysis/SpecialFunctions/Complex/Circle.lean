@@ -282,7 +282,7 @@ lemma compl_range_path (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0
   rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq,
     ← path_image_Ioc_of_ne h, ← union_singleton, compl_union, compl_path_image_Ioc h,
     ← Ioo_insert_right (by simp), image_insert_eq, (y.path x).target, exp_arg,
-    insert_inter_of_notMem (by simp), inter_eq_left]
+    insert_inter_of_notMem (by simp), inter_eq_left_iff]
   rintro z ⟨t, ht, rfl⟩
   exact (path_injective_of_ne h.symm).ne ht.2.ne |>.trans_eq (y.path x).target
 
