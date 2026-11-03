@@ -71,10 +71,8 @@ private lemma Q_continuous : Continuous Q :=
 
 private lemma norm_fourier_le_Q_mul : ‖𝓕 ψ u‖ ≤ ψ.Q * (1 + u ^ 2)⁻¹ := by
   rw [← div_eq_mul_inv, le_div_iff₀ (by positivity : (0 : ℝ) < 1 + u ^ 2)]
-  have := norm_fourier_le_seminorm ψ u
-  have := sq_mul_norm_fourier_le_seminorm ψ u
   unfold Q
-  nlinarith
+  nlinarith [norm_fourier_le_seminorm ψ u, sq_mul_norm_fourier_le_seminorm ψ u]
 
 end SchwartzMap
 
@@ -450,8 +448,7 @@ private lemma S_one_sub : S f A 1 (𝓕 (φ - φ')) x = S f A 1 (𝓕 φ) x - S 
   have hs (ψ : 𝓢(ℝ, ℂ)) := (summable_term_mul bound hpos ψ hx).of_norm
   have hi (ψ : 𝓢(ℝ, ℂ)) : IntegrableOn (fun u ↦ 𝓕 ψ (c₀ * u)) (Ici (-log x)) :=
     ((𝓕 ψ).integrable.comp_mul_left' (by positivity)).integrableOn
-  rw [show 𝓕 (φ - φ') = 𝓕 φ - 𝓕 φ' from map_sub (fourierCLM ℂ 𝓢(ℝ, ℂ)) φ φ']
-  simp only [S, S₁, S₂_one, sub_apply, mul_sub, ofReal_one]
+  simp only [S, S₁, S₂_one, FourierTransform.fourier_sub, sub_apply, mul_sub, ofReal_one]
   rw [Summable.tsum_sub (hs φ) (hs φ'), integral_sub (hi φ) (hi φ')]
   ring
 
@@ -492,7 +489,8 @@ private lemma lim_S_one_fourier_schwartz : Tendsto (S f A 1 (𝓕 Ψ)) atTop (�
     (lim_S_one_fourier bound hG hG' hpos φ hφcs) (ε / 2) (half_pos hε)] with x hx hφ
   rw [dist_zero_right] at hφ ⊢
   calc
-    _ = ‖S f A 1 (𝓕 (Ψ - φ)) x + S f A 1 (𝓕 φ) x‖ := by simp [S_one_sub bound hpos Ψ φ hx]
+    _ = ‖S f A 1 (𝓕 (Ψ - φ)) x + S f A 1 (𝓕 φ) x‖ := by
+      rw [S_one_sub bound hpos Ψ φ hx, sub_add_cancel]
     _ < _ := by grw [norm_add_le, hφ, hK (Ψ - φ) hx, hφQ]; grind
 
 end LimitingFourierIdentitySchwartz
