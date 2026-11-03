@@ -669,8 +669,9 @@ theorem separatingLeft_iff_linear_nontrivial : B.SeparatingLeft ↔ ∀ x : M₁
     exact hB _
   exact h x h'
 
-theorem separatingRight_iff_linear_flip_nontrivial [SMulCommClass S₁ S₂ M] :
+theorem separatingRight_iff_linear_flip_nontrivial :
     B.SeparatingRight ↔ ∀ y : M₂, B.flip y = 0 → y = 0 := by
+  have := SMulCommClass.symm
   rw [← flip_separatingLeft, separatingLeft_iff_linear_nontrivial]
 
 /-- A bilinear map is left-separating if and only if it has a trivial kernel. -/
@@ -682,7 +683,7 @@ theorem separatingRight_iff_flip_ker_eq_bot [SMulCommClass S₁ S₂ M] :
     B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
 
-set_option linter.unusedSectionVars false
+omit [SMulCommClass S₂ S₁ M] in
 /-- The identity pairing is left-separating. -/
 protected theorem SeparatingLeft.id [SMulCommClass S₁ S₂ M] :
     SeparatingLeft (.id : (M₁ →ₛₗ[I₁] M) →ₗ[S₂] M₁ →ₛₗ[I₁] M) :=
