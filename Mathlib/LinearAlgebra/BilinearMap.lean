@@ -112,10 +112,10 @@ attribute [local instance] SMulCommClass.symm
 def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁₂] M →ₛₗ[ρ₁₂] P :=
   mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun _ _ m => (f m).map_add _ _)
     (fun _ _ m => (f m).map_smulₛₗ _ _)
-    (fun n m₁ m₂ => by simp only [map_add, add_apply])
+    (fun n m₁ m₂ => by simp only [map_add, LinearMap.add_apply])
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
     -- It looks like we now run out of assignable metavariables.
-    (fun c n m => by simp only [map_smulₛₗ _, smul_apply])
+    (fun c n m => by simp only [map_smulₛₗ _, LinearMap.smul_apply])
 
 @[simp]
 theorem flip_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (m : M) (n : N) : flip f n m = f m n := rfl
@@ -230,9 +230,10 @@ theorem map_sum₂ {ι : Type*} (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
 /-- Restricting a bilinear map in the second entry -/
 def domRestrict₂ (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) : M →ₛₗ[ρ₁₂] q →ₛₗ[σ₁₂] P where
   toFun m := (f m).domRestrict q
-  map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, domRestrict_apply, add_apply]
+  map_add' m₁ m₂ := LinearMap.ext fun _ => by simp only [map_add, domRestrict_apply,
+    LinearMap.add_apply]
   map_smul' c m :=
-    LinearMap.ext fun _ => by simp only [f.map_smulₛₗ, domRestrict_apply, smul_apply]
+    LinearMap.ext fun _ => by simp only [f.map_smulₛₗ, domRestrict_apply, LinearMap.smul_apply]
 
 theorem domRestrict₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) (q : Submodule S N) (x : M) (y : q) :
     f.domRestrict₂ q x y = f x y := rfl

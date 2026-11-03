@@ -75,14 +75,14 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     induction n generalizing w
     · simp only [zero_add, Nat.lt_one_iff, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
-        LinearMap.smul_apply, Module.End.one_apply, forall_eq, pow_zero, hv w, sub_self, zero_mem]
+        LinearMap.smul_apply, one_apply_eq_self, forall_eq, pow_zero, hv w, sub_self, zero_mem]
     · next n hn =>
       intro m hm
       obtain (hm | rfl) : m < n + 1 ∨ m = n + 1 := by lia
       · exact U'.mono (Nat.le_succ n) (hn w m hm)
       have H : ∀ w, ⁅w, (π z ^ n) v⁆ = (T χ w) ((π z ^ n) v) + χ w • ((π z ^ n) v) := by simp
-      rw [T, LinearMap.sub_apply, pow_succ', Module.End.mul_apply, LieModule.toEnd_apply_apply,
-        LieModule.toEnd_apply_apply, LinearMap.smul_apply, Module.End.one_apply, leibniz_lie,
+      rw [T, LinearMap.sub_apply, pow_succ', mul_apply_eq_comp, LieModule.toEnd_apply_apply,
+        LieModule.toEnd_apply_apply, LinearMap.smul_apply, one_apply_eq_self, leibniz_lie,
         lie_swap_lie w z, H, H, lie_add, lie_smul, add_sub_assoc, add_sub_assoc, sub_self, add_zero]
       refine add_mem (neg_mem <| add_mem ?_ ?_) ?_
       · exact U'.mono n.le_succ (hn _ n n.lt_succ_self)
@@ -134,7 +134,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     obtain ⟨j, hj, hj'⟩ := key i hi
     obtain ⟨k, hk⟩ := ih j hj (hj' <| Submodule.mem_map_of_mem hx)
     use k + 1
-    rw [pow_succ, Module.End.mul_apply, hk]
+    rw [pow_succ, mul_apply_eq_comp, hk]
   have trace_za : (toEnd R A _ ⁅z, a⁆).trace R U = χ ⁅z, a⁆ • (finrank R U) := by
     simpa [T, sub_eq_zero] using trace_T_U_zero ⁅z, a⁆
   suffices finrank R U ≠ 0 by simp_all
@@ -143,7 +143,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     apply Submodule.mem_iSup_of_mem 1
     apply Submodule.subset_span
     use 0, zero_lt_one
-    rw [pow_zero, Module.End.one_apply]
+    rw [pow_zero, one_apply_eq_self]
   exact nontrivial_of_ne ⟨v, hvU⟩ 0 <| by simp [hv']
 
 variable (R V) in

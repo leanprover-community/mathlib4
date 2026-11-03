@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
+public import Mathlib.Algebra.Order.Monoid.Associated
 public import Mathlib.Algebra.Ring.Associated
 
 /-!

@@ -74,7 +74,8 @@ lemma apply_self_mul_coroot_apply {y : M} : B x x * coroot B hx y = 2 * B x y :=
 @[simp]
 lemma smul_coroot : B x x • coroot B hx = 2 • B x := by
   ext y
-  simp [smul_apply, smul_eq_mul, nsmul_eq_mul, Nat.cast_ofNat, apply_self_mul_coroot_apply]
+  simp [LinearMap.smul_apply, smul_eq_mul, nsmul_eq_mul, Nat.cast_ofNat,
+    apply_self_mul_coroot_apply]
 
 @[simp]
 lemma coroot_apply_self : coroot B hx x = 2 :=
@@ -83,8 +84,8 @@ lemma coroot_apply_self : coroot B hx x = 2 :=
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
-  simp only [reflection_apply, map_sub, map_smul, sub_apply,
-    smul_apply, smul_eq_mul]
+  simp only [reflection_apply, map_sub, map_smul, LinearMap.sub_apply,
+    LinearMap.smul_apply, smul_eq_mul]
   refine hx.1.1 ?_
   simp only [mul_sub, ← mul_assoc, apply_self_mul_coroot_apply]
   rw [sub_eq_iff_eq_add, ← hSB.eq x y, RingHom.id_apply, mul_assoc _ _ (B x x), mul_comm _ (B x x),
@@ -166,7 +167,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
     simp only [coe_ofPred, mem_ofPred_eq, Embedding.coeFn_mk, Embedding.subtype_apply,
       Dual.eval_apply, Equiv.coe_fn_mk]
     ext z
-    simp only [sub_apply, smul_apply, smul_eq_mul]
+    simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
     refine y.2.1.1 ?_
     simp only [mem_ofPred_eq, mul_sub, apply_self_mul_coroot_apply B y.2, ← mul_assoc]
     rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB.eq z,

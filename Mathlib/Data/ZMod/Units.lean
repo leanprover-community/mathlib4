@@ -167,7 +167,7 @@ theorem isUnit_intCast_iff_isCoprime (n : ℤ) (m : ℕ) :
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨unitOfIsCoprime n (isCoprime_comm.mp h), by simp⟩⟩
   obtain rfl | hm := eq_or_ne m 0
   · rw [Nat.cast_zero, isCoprime_zero_left]
-    exact_mod_cast h
+    exact mod_cast h
   · have : NeZero m := ⟨hm⟩
     obtain ⟨u, hu⟩ := h
     have h_coprime := val_coe_unit_coprime u

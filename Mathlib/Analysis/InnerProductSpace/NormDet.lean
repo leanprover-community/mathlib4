@@ -412,7 +412,7 @@ theorem hausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpa
       simpa [(f.normDet_eq_zero_tfae.out 2 1).mp h, Set.image_image]
     rw [(LinearIsometry.isometry _).hausdorffMeasure_image (by simp)]
     have h : (finrank ℝ f.range : ℝ) < finrank ℝ U := by
-      exact_mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
+      exact mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
     simp [Real.hausdorffMeasure_of_finrank_lt h]
 
 /--
