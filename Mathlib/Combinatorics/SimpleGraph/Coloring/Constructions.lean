@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-public import Mathlib.Data.Fin.Parity
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
+public import Mathlib.Data.Fin.Parity
 
 /-!
 # Concrete colorings of common graphs
@@ -161,6 +161,15 @@ theorem completeEquipartiteGraph_colorable :
   (completeEquipartiteGraph r t).Colorable r := ⟨Coloring.completeEquipartiteGraph⟩
 
 end CompleteEquipartiteGraph
+
+/-- Taking the remainder upon dividing by `r` produces an `r`-coloring of `turanGraph n r` for
+nonzero `r`. -/
+@[simps]
+protected def Coloring.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Coloring (Fin r) :=
+  ⟨(.ofNat r ·), (Fin.ne_of_val_ne ·)⟩
+
+protected theorem Colorable.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Colorable r :=
+  ⟨.turanGraph n r⟩
 
 open Walk
 lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :

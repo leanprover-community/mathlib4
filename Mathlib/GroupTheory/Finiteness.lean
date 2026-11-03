@@ -42,6 +42,8 @@ general `Monoid.FG` and `Group.FG`, but the new `IsMulFG` defines the general pr
 
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 assert_not_exists MonoidWithZero
@@ -706,8 +708,8 @@ theorem Group.fg_iff :
 
 @[to_additive]
 theorem Group.fg_iff' :
-    Group.FG G ↔ ∃ (n : _) (S : Finset G), S.card = n ∧ Subgroup.closure (S : Set G) = ⊤ :=
-  isMulFG_iff.trans ⟨fun ⟨S, hS⟩ => ⟨S.card, S, rfl, hS⟩, fun ⟨_n, S, _hn, hS⟩ => ⟨S, hS⟩⟩
+    Group.FG G ↔ ∃ (n : _) (S : Finset G), #S = n ∧ Subgroup.closure (S : Set G) = ⊤ :=
+  isMulFG_iff.trans ⟨fun ⟨S, hS⟩ => ⟨#S, S, rfl, hS⟩, fun ⟨_n, S, _hn, hS⟩ => ⟨S, hS⟩⟩
 
 /-- A group is finitely generated if and only if it is finitely generated as a monoid. -/
 @[to_additive /-- An additive group is finitely generated if and only

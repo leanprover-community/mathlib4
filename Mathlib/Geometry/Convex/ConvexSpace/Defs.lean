@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
+
+public meta import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
@@ -55,15 +58,17 @@ being the map `weights : StdSimplex R X → R^⊕X`.
 Note in particular that, in the common case where `X := M` is a `R`-module, `StdSimplex R M` is NOT
 the standard simplex in `M`. Indeed, the notion of a standard simplex depends on a choice of basis,
 and `M` isn't given one. -/
-structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) where
-  /-- The weights of the `StdSimplex` as a `Finsupp`. -/
-  weights : X →₀ R
+structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) extends
+    weights : X →₀ R where
   /-- All weights are non-negative. -/
   nonneg : 0 ≤ weights
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
-attribute [simp] StdSimplex.total
+/-- The weights of an element of the standard simplex` as a `Finsupp`. -/
+add_decl_doc StdSimplex.weights
+
+attribute [simp] StdSimplex.total StdSimplex.nonneg
 grind_pattern StdSimplex.nonneg => self.weights
 grind_pattern StdSimplex.total => self.weights
 
@@ -77,6 +82,9 @@ variable {R : Type u} [PartialOrder R] [Semiring R] {w : StdSimplex R X} {x : X}
 
 @[simp] lemma weights_ne_zero [Nontrivial R] : ∀ w : StdSimplex R X, w.weights ≠ 0 := by
   rintro ⟨_, -, total⟩ rfl; simp at total
+
+@[simp] lemma weights_pos [Nontrivial R] (w : StdSimplex R X) : 0 < w.weights :=
+  w.nonneg.lt_of_ne w.weights_ne_zero.symm
 
 lemma support_weights_nonempty [Nontrivial R] (w : StdSimplex R X) :
     w.weights.support.Nonempty := by simp
@@ -251,7 +259,7 @@ lemma mem_range_map_iff
         aesop
     · rw [Finsupp.notMem_support_iff] at hy
       rw [hy]
-      refine Finsupp.mapDomain_of_not_mem_image_support ?_
+      refine Finsupp.mapDomain_of_notMem_image_support ?_
       simp only [Finset.univ_eq_attach, Set.mem_image, SetLike.mem_coe, Finsupp.mem_support_iff,
         Finsupp.coe_finsetSum, Finset.sum_apply, ne_eq, not_exists, not_and]
       intro x hx rfl
@@ -799,3 +807,43 @@ lemma isAffineMap_convexCombPair (m : X) :
 end CommSemiring
 
 end Convexity
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Convexity
+
+/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative
+(in the sense of `0 ≤ w.weights`),
+and even positive (in the sense of `0 < w.weights`, not `∀ i, 0 < w.weights i`) when `R` is
+nontrivial.
+
+This handles `w.weights`; see `evalStdSimplexWeightsApply` for the applied `w.weights i`. -/
+@[positivity StdSimplex.weights _]
+meta def evalStdSimplexWeights : PositivityExt where eval {_u α} _zα pα? e :=
+  -- FIXME: `PartialOrder α` shouldn't be necessary since we know `α = X →₀ R` and `PartialOrder R`.
+  match pα? with | none => pure .none | some _ => do
+  let some ⟨_uX, _uR, _X, R, _instZero, _hu, _hα⟩ ← matchFinsupp α | throwError "not a `Finsupp`"
+  let _semiringR ← synthInstanceQ q(Semiring $R)
+  let _partialOrderR ← synthInstanceQ q(PartialOrder $R)
+  assertInstancesCommute
+  let ~q(StdSimplex.weights $w) := q($e) | throwError "not `StdSimplex.weights`"
+  assumeInstancesCommute
+  -- `StdSimplex.weights_pos` needs `Nontrivial R`, so fall back to nonnegativity without it.
+  match ← trySynthInstanceQ q(Nontrivial $R) with
+  | .some _instNontrivial => pure <| .positive q(StdSimplex.weights_pos $w)
+  | _ => pure <| .nonnegative q(StdSimplex.nonneg $w)
+
+/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative.
+
+This handles `w.weights i`; see `evalStdSimplexWeights` for the unapplied `w.weights`. -/
+@[positivity StdSimplex.weights _ _]
+meta def evalStdSimplexWeightsApply : PositivityExt where eval {_u α} _zα pα? e :=
+  -- FIXME: `PartialOrder α` shouldn't be necessary since we know `α = X →₀ R` and `PartialOrder R`.
+  match pα? with | none => pure .none | some _ => do
+  let _instPartialOrder ← synthInstanceQ q(PartialOrder $α)
+  let _instSemiring ← synthInstanceQ q(Semiring $α)
+  assumeInstancesCommute
+  match e with
+  | ~q(StdSimplex.weights $w $i) => pure (.nonnegative q($(w).weights_nonneg $i))
+  | _ => throwError "not `StdSimplex.weights`"
+
+end Mathlib.Meta.Positivity

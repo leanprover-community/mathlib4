@@ -27,7 +27,7 @@ coefficients in `R` together with its universal property.
 
 ### Quotient of free non-unital, non-associative algebra
 
-We follow [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975) and construct
+We follow [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975] and construct
 the free Lie algebra as a quotient of the free non-unital, non-associative algebra. Since we do not
 currently have definitions of ideals, lattices of ideals, and quotients for
 `NonUnitalNonAssocSemiring`, we construct our quotient using the low-level `Quot` function on
@@ -97,7 +97,7 @@ theorem Rel.subLeft (a : lib R X) {b c : lib R X} (h : Rel R X b c) : Rel R X (a
 theorem Rel.subRight {a b : lib R X} (c : lib R X) (h : Rel R X a b) : Rel R X (a - c) (b - c) := by
   simpa only [sub_eq_add_neg] using h.add_right (-c)
 
-theorem Rel.smulOfTower {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (t : S)
+theorem Rel.smulOfTower {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] (t : S)
     (a b : lib R X) (h : Rel R X a b) : Rel R X (t • a) (t • b) := by
   rw [← smul_one_smul R t a, ← smul_one_smul R t b]
   exact h.smul _
@@ -125,10 +125,10 @@ instance : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_insta
 
 namespace FreeLieAlgebra
 
-instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
+instance {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] :
     SMul S (FreeLieAlgebra R X) where smul t := Quot.map (t • ·) (Rel.smulOfTower t)
 
-instance {S : Type*} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
+instance {S : Type*} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R]
     [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X) where
   op_smul_eq_smul t := Quot.ind fun a => congr(Quot.mk _ $(op_smul_eq_smul t a))
 

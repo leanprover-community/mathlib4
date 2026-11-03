@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Topology.MetricSpace.Antilipschitz
+
 import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-! # Bilipschitz equivalence

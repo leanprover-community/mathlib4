@@ -5,8 +5,8 @@ Authors: Ben Eltschig, Joël Riou
 -/
 module
 
-public import Mathlib.Topology.Convenient.GeneratedBy
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Topology.Convenient.GeneratedBy
 
 /-!
 # Delta-generated topological spaces

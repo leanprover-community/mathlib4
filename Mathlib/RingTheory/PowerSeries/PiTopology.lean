@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.RingTheory.MvPowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Order
 public import Mathlib.RingTheory.PowerSeries.Trunc
-public import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-! # Product topology on power series
 

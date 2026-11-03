@@ -641,6 +641,9 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableWithinAt`. We also give a version for `MDifferentiableAt`, but no
 version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates,
 only makes sense around a point.
+
+For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
+`inCoordinates`, see `MDifferentiableWithinAt.clm_bundle_apply`.
 -/
 lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
     (hϕ : MDiffAt[s] (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
@@ -674,6 +677,9 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableAt`. We also give a version for `MDifferentiableWithinAt`,
 but no version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written
 in coordinates, only makes sense around a point.
+
+For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
+`inCoordinates`, see `MDifferentiableAt.clm_bundle_apply`.
 -/
 lemma MDifferentiableAt.clm_apply_of_inCoordinates
     (hϕ : MDiffAt (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
@@ -705,14 +711,14 @@ lemma exists_contMDiffOn_extend [(x : M) → Module 𝕜 (V x)] [VectorBundle �
     exact FiberBundle.mem_baseSet_trivializationAt' x₀
   suffices CMDiff[t.baseSet] k (fun x ↦ (t ⟨x, extend F σ₀ x⟩).2) by
     intro x hx
-    rw [t.contMDiffWithinAt_section _ hx]
+    rw [t.contMDiffWithinAt_section_iff _ hx]
     exact this x hx
   let w : F := (t ⟨x₀, σ₀⟩).2
   have : CMDiff[t.baseSet] k (fun (_x : M) ↦ w) := contMDiffOn_const
   exact this.congr (fun x hx ↦ by simp [extend, t, w, hx])
 
 lemma contMDiffAt_extend {x : M} (σ₀ : V x) : CMDiffAt k (T% (extend F σ₀)) x := by
-  rw [contMDiffAt_section]
+  rw [contMDiffAt_section_iff]
   set t := trivializationAt F V x
   let w : F := (t ⟨x, σ₀⟩).2
   have : CMDiffAt k (fun (_x : M) ↦ w) x := contMDiffAt_const

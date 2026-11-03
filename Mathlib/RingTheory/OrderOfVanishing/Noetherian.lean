@@ -6,9 +6,13 @@ Authors: Raphael Douglas Giles
 
 module
 
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.OrderOfVanishing.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
+
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order of vanishing in Noetherian rings.

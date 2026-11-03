@@ -7,8 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Sites.AffineEtale
-import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
+
+import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 
 /-!
 
