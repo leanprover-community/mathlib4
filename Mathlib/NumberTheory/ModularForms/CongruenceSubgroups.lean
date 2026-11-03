@@ -74,7 +74,6 @@ lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
 
 instance instFiniteIndexGamma [NeZero N] : (Gamma N).FiniteIndex := Subgroup.finiteIndex_ker _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The congruence subgroup of `SL(2, ℤ)` of matrices whose lower left-hand entry reduces to zero
 modulo `N`. -/
 def Gamma0 : Subgroup SL(2, ℤ) where
@@ -85,7 +84,8 @@ def Gamma0 : Subgroup SL(2, ℤ) where
     simp only [coe_mul, Set.mem_ofPred_eq] at *
     simp [h, ha, hb]
   inv_mem' {a} ha := by
-    simpa [SL2_inv_expl a] using ha
+    rw [Set.mem_ofPred, SL2_inv_expl]
+    simpa using ha
 
 @[simp]
 theorem Gamma0_mem {N} {A : SL(2, ℤ)} : A ∈ Gamma0 N ↔ (A 1 0 : ZMod N) = 0 :=
@@ -223,7 +223,6 @@ theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
   rw [← Gamma_cong_eq_self N g, Subgroup.pointwise_smul_le_pointwise_smul_iff]
   exact HN
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g x g⁻¹ ∈ Γ(M)` for all
 `x ∈ Γ(N)`. -/
 theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
@@ -240,9 +239,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     fun ⟨y, hy⟩ hy' ↦ ?_⟩
   -- Show that `y` is of the form `1 + (a₁ * a₂) • k` for some integer matrix `k`.
   obtain ⟨k, hk⟩ : ∃ k, y = 1 + (a₁ * a₂ * M) • k := by
-    replace hy' : y.map (Int.cast : ℤ → ZMod (a₁ * a₂ * M)) = 1 := by
-      rw [CongruenceSubgroup.Gamma_mem', Subtype.ext_iff] at hy'
-      simpa using! hy'
+    replace hy' : y.map Int.cast = 1 := congrArg Subtype.val <| Gamma_mem'.mp hy'
     use Matrix.of fun i j ↦ (y - 1) i j / (a₁ * a₂ * M)
     rw [← sub_eq_iff_eq_add']
     ext i j
@@ -270,11 +267,15 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     rwa [mul_right_comm, ← Matrix.det_mul, hA₁₂, Matrix.det_one, one_mul, hy, Int.cast_inj] at this
   refine ⟨⟨z, hz_det⟩, ?_, by simpa only [Subtype.ext_iff, Subgroup.coe_mul, Units.ext_iff,
     Units.val_mul] using! hz_coe⟩
-  rw [SetLike.mem_coe, CongruenceSubgroup.Gamma_mem', Subtype.ext_iff]
-  ext i j
-  simp_rw [map_apply_coe, z, map_add, map_one, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-    Matrix.add_apply, map_apply, coe_one, add_eq_left, Matrix.smul_apply, nsmul_eq_mul,
-    Int.cast_mul, Int.cast_natCast, ZMod.natCast_self M, zero_mul]
+  have hz_map : z.map (Int.cast : ℤ → ZMod M) = 1 := by
+    dsimp only [z]
+    rw [Matrix.map_add _ Int.cast_add, Matrix.map_one _ Int.cast_zero Int.cast_one,
+      Matrix.map_smul _ _ (by simp), add_eq_left]
+    apply Matrix.ext
+    intro i j
+    rw [Matrix.smul_apply, Matrix.zero_apply, nsmul_eq_mul, ZMod.natCast_self M, zero_mul]
+  exact (CongruenceSubgroup.Gamma_mem' (γ := (⟨z, hz_det⟩ : SL(2, ℤ)))).mpr
+    (Subtype.ext hz_map)
 
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g Γ(N) g⁻¹ ≤ Γ(M)`. -/
 theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
