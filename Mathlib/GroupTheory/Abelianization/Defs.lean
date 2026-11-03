@@ -36,22 +36,28 @@ variable (G : Type u) [Group G]
 
 open Subgroup (centralizer)
 
+namespace AddGroup
+
 open scoped IsMulCommutative in
 /-- The abelianization of the additive group `A` is the quotient of `A` by its commutator
 subgroup. -/
-def AddAbelianization (A : Type*) [AddGroup A] :=
+def Abelianization (A : Type*) [AddGroup A] :=
   A ⧸ addCommutator A
 deriving AddCommGroup
 
+end AddGroup
+
+namespace Group
+
 open scoped IsMulCommutative in
 /-- The abelianization of the group `G` is the quotient of `G` by its commutator subgroup. -/
-@[to_additive existing AddAbelianization]
+@[to_additive existing]
 def Abelianization : Type u :=
   G ⧸ commutator G
 deriving CommGroup
 
 -- Register the derived instances as additive/multiplicative counterparts.
-attribute [to_additive existing instAddCommGroupAddAbelianization] instCommGroupAbelianization
+attribute [to_additive existing] instCommGroupAbelianization
 
 namespace Abelianization
 
@@ -92,8 +98,6 @@ theorem commutator_le_ker : commutator G ≤ f.ker := by
   rintro x ⟨p, q, rfl⟩
   simp [MonoidHom.mem_ker, mul_comm' (f p) (f q), commutatorElement_def]
 
-@[deprecated (since := "2026-10-17")] alias commutator_subset_ker := commutator_le_ker
-
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
   from the abelianization of `G` to `A` that factors through `f`. -/
 @[to_additive
@@ -113,6 +117,7 @@ theorem coe_lift_symm : (lift.symm : (Abelianization G →* A) → (G →* A)) =
 @[to_additive (attr := simp)]
 theorem lift_symm_apply (f : Abelianization G →* A) : lift.symm f = f.comp of := rfl
 
+@[to_additive]
 theorem lift_unique (φ : Abelianization G →* A)
     -- `hφ : φ` agrees with `f` on the image of `G` in `Gᵃᵇ`
     (hφ : ∀ x : G, φ (Abelianization.of x) = f x)
@@ -173,7 +178,7 @@ variable {G} {H : Type v} [Group H]
 
 /-- Equivalent groups have equivalent abelianizations -/
 @[to_additive /-- Equivalent additive groups have equivalent abelianizations -/]
-def MulEquiv.abelianizationCongr (e : G ≃* H) : Abelianization G ≃* Abelianization H where
+def _root_.MulEquiv.abelianizationCongr (e : G ≃* H) : Abelianization G ≃* Abelianization H where
   toFun := Abelianization.map e.toMonoidHom
   invFun := Abelianization.map e.symm.toMonoidHom
   left_inv := by
@@ -217,6 +222,55 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
       rintro ⟨a⟩
       rfl }
 
-@[to_additive instUniqueAddAbelianization]
-instance instUniqueAbelianization [Unique G] :
+@[to_additive]
+instance [Unique G] :
   Unique (Abelianization G) := Quotient.instUniqueQuotient _
+
+end Group
+
+/-! ### Deprecated aliases for the old root-namespace names -/
+
+section Deprecated
+
+@[deprecated (since := "2026-11-03")] alias Abelianization := Group.Abelianization
+@[deprecated (since := "2026-11-03")] alias Abelianization.of := Group.Abelianization.of
+@[deprecated (since := "2026-11-03")] alias Abelianization.mk_eq_of := Group.Abelianization.mk_eq_of
+@[deprecated (since := "2026-11-03")] alias Abelianization.ker_of := Group.Abelianization.ker_of
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.commutator_le_ker := Group.Abelianization.commutator_le_ker
+@[deprecated (since := "2026-10-17")]
+alias Abelianization.commutator_subset_ker := Group.Abelianization.commutator_le_ker
+@[deprecated (since := "2026-11-03")] alias Abelianization.lift := Group.Abelianization.lift
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.lift_apply_of := Group.Abelianization.lift_apply_of
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.coe_lift_symm := Group.Abelianization.coe_lift_symm
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.lift_symm_apply := Group.Abelianization.lift_symm_apply
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.lift_unique := Group.Abelianization.lift_unique
+@[deprecated (since := "2026-11-03")] alias Abelianization.lift_of := Group.Abelianization.lift_of
+@[deprecated (since := "2026-11-03")] alias Abelianization.hom_ext := Group.Abelianization.hom_ext
+@[deprecated (since := "2026-11-03")] alias Abelianization.map := Group.Abelianization.map
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.lift_of_comp := Group.Abelianization.lift_of_comp
+@[deprecated (since := "2026-11-03")] alias Abelianization.map_of := Group.Abelianization.map_of
+@[deprecated (since := "2026-11-03")] alias Abelianization.map_id := Group.Abelianization.map_id
+@[deprecated (since := "2026-11-03")] alias Abelianization.map_comp := Group.Abelianization.map_comp
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.map_map_apply := Group.Abelianization.map_map_apply
+@[deprecated (since := "2026-11-03")] alias abelianizationCongr_of := Group.abelianizationCongr_of
+@[deprecated (since := "2026-11-03")]
+alias abelianizationCongr_refl := Group.abelianizationCongr_refl
+@[deprecated (since := "2026-11-03")]
+alias abelianizationCongr_symm := Group.abelianizationCongr_symm
+@[deprecated (since := "2026-11-03")]
+alias abelianizationCongr_trans := Group.abelianizationCongr_trans
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.equivOfComm := Group.Abelianization.equivOfComm
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.equivOfComm_apply := Group.Abelianization.equivOfComm_apply
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.equivOfComm_symm_apply := Group.Abelianization.equivOfComm_symm_apply
+
+end Deprecated
