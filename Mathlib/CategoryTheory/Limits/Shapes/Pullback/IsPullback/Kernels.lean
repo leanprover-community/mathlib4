@@ -47,7 +47,7 @@ lemma isIso_kernel_map_of_isPullback [HasKernel t] [HasKernel b]
 
 lemma isIso_cokernel_map_of_isPushout [HasCokernel t] [HasCokernel b]
     (sq : IsPushout t l r b) :
-    IsIso (cokernel.map _ _ _ _ sq.w) :=
+    IsIso (cokernel.map _ _ _ _ sq.w.symm) :=
   ⟨cokernel.desc _ (sq.desc (cokernel.π t) 0 (by simp)) (by simp),
     by cat_disch, by ext; exact sq.hom_ext (by cat_disch) (by cat_disch)⟩
 

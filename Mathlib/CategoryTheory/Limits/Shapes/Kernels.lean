@@ -425,14 +425,23 @@ lemma kernel.map_zero {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') [HasKernel 
   cat_disch
 
 /-- A commuting square of isomorphisms induces an isomorphism of kernels. -/
-@[to_dual (attr := simps)
-/-- A commuting square of isomorphisms induces an isomorphism of cokernels. -/]
+@[simps]
 def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q : Y ≅ Y')
     (w : f ≫ q.hom = p.hom ≫ f') : kernel f ≅ kernel f' where
   hom := kernel.map f f' p.hom q.hom w
   inv :=
     kernel.map f' f p.inv q.inv
       (by
+        refine (cancel_mono q.hom).1 ?_
+        simp [w])
+
+/-- A commuting square of isomorphisms induces an isomorphism of cokernels. -/
+@[simps]
+def cokernel.mapIso [HasCokernel f] {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f']
+    (p : X ≅ X') (q : Y ≅ Y')
+    (w : f ≫ q.hom = p.hom ≫ f') : cokernel f ≅ cokernel f' where
+  hom := cokernel.map f f' p.hom q.hom w.symm
+  inv := cokernel.map f' f p.inv q.inv (by
         refine (cancel_mono q.hom).1 ?_
         simp [w])
 
