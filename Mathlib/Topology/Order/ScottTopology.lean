@@ -177,6 +177,17 @@ theorem ClosedIicTopology.of_isLowerSet (h : IsLowerSet D) : ClosedIicTopology �
 theorem ClosedIciTopology.of_isLowerSet (h : IsLowerSet D) : ClosedIciTopology α where
   isClosed_Ici := IsClosed.Ici_of_isLowerSet h
 
+theorem IsClopen.Iic_of_isLowerSet (h : IsLowerSet D) (a : α) : IsClopen (Iic a) :=
+  ⟨IsClosed.Iic_of_isLowerSet h a, IsOpen.Iic_of_isLowerSet h a⟩
+
+theorem IsClopen.Ioi_of_isLowerSet {α : Type*} [LinearOrder α] [TopologicalSpace α]
+    {D : Set (Set α)} [IsScottHausdorff α D] (h : IsLowerSet D) (a : α) : IsClopen (Ioi a) :=
+  ⟨IsClosed.Ioi_of_isLowerSet h a, IsOpen.Ioi_of_isLowerSet h a⟩
+
+theorem IsClopen.Ioc_of_isLowerSet {α : Type*} [LinearOrder α] [TopologicalSpace α]
+    {D : Set (Set α)} [IsScottHausdorff α D] (h : IsLowerSet D) (a b : α) : IsClopen (Ioc a b) :=
+  ⟨IsClosed.Ioc_of_isLowerSet h a b, IsOpen.Ioc_of_isLowerSet h a b⟩
+
 end General
 
 section univ
@@ -227,6 +238,17 @@ instance : ClosedIicTopology α where
 
 instance : ClosedIciTopology α where
   isClosed_Ici := IsClosed.Ici
+
+protected theorem IsClopen.Iic (a : α) : IsClopen (Iic a) :=
+  ⟨IsClosed.Iic a, IsOpen.Iic a⟩
+
+protected theorem IsClopen.Ioi {α : Type*} [LinearOrder α] [TopologicalSpace α]
+    [IsScottHausdorff α univ] (a : α) : IsClopen (Ioi a) :=
+  ⟨IsClosed.Ioi a, IsOpen.Ioi a⟩
+
+protected theorem IsClopen.Ioc {α : Type*} [LinearOrder α] [TopologicalSpace α]
+    [IsScottHausdorff α univ] (a b : α) : IsClopen (Ioc a b) :=
+  ⟨IsClosed.Ioc a b, IsOpen.Ioc a b⟩
 
 end univ
 end IsScottHausdorff
