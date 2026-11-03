@@ -300,8 +300,9 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
   · exact ⟨(n : ℤ), by simp⟩
 
 /-- The quotient map `𝕜 → AddCircle p` is injective on `[a, a + p)`. -/
-theorem injOn_coe_Ico (hp : 0 < p) (a : 𝕜) : InjOn ((↑) : 𝕜 → AddCircle p) (Ico a (a + p)) := by
+theorem injOn_coe_Ico (a : 𝕜) : InjOn ((↑) : 𝕜 → AddCircle p) (Ico a (a + p)) := by
   rintro x ⟨hx₀, hx⟩ y ⟨hy₀, hy⟩ hxy
+  have hp : 0 < p := by grind only
   obtain ⟨n, hn⟩ : ∃ n : ℤ, n • p = x - y := by
     simp [← coe_eq_zero_iff, hxy]
   have : |x - y| < p := by grind
@@ -311,7 +312,7 @@ theorem injOn_coe_Ico (hp : 0 < p) (a : 𝕜) : InjOn ((↑) : 𝕜 → AddCircl
   simpa [this, sub_eq_zero, eq_comm] using hn
 
 instance [hp : Fact (0 < p)] [DenselyOrdered 𝕜] : Infinite (AddCircle p) :=
-  .of_injective _ (zero_add p ▸ injOn_coe_Ico p hp.out 0).injective
+  .of_injective _ (zero_add p ▸ injOn_coe_Ico p 0).injective
 
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
