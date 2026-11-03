@@ -6,9 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Topology.Covering.AddCircle
-public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Maps on the unit circle
@@ -508,7 +508,6 @@ theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
           isQuotientMap_quotient_mk' n hn
     ext; simp [zpowGroupHom, e, homeomorphCircle_apply, toCircle_zsmul]
   · convert finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
-    ext
     simp [e, homeomorphCircle_apply, ← toCircle_zsmul, ← (injective_toCircle one_ne_zero).eq_iff]
 
 theorem Circle.isQuotientCoveringMap_npow (n : ℕ) [NeZero n] :

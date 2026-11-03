@@ -9,9 +9,9 @@ public import Mathlib.Data.Set.Order
 public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Order.Interval.Set.Image
 public import Mathlib.Order.Interval.Set.LinearOrder
-public import Mathlib.Tactic.Common
 public import Mathlib.Order.MinMax
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Intervals without endpoints ordering
@@ -235,7 +235,7 @@ lemma monotone_or_antitone_iff_uIcc :
 
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
-      ∀ᵉ (a ∈ s) (b ∈ s) (c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
+      ∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc,
     mem_uIcc]
 

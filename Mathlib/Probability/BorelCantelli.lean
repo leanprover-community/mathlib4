@@ -5,8 +5,8 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Probability.Martingale.BorelCantelli
 public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.Martingale.BorelCantelli
 
 import Mathlib.Probability.ConditionalExpectation
 

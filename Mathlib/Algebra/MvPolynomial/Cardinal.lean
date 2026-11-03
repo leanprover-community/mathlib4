@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.SetTheory.Cardinal.Order
 
-import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Algebra.MonoidAlgebra.Cardinal
+import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Tactic.NormNum
 
 /-!

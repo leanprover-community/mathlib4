@@ -19,7 +19,7 @@ carrying a uniformly locally doubling measure.
   of a metric space is unchanged almost everywhere for a uniformly locally doubling measure if the
   sequence of distances is multiplied by a positive scale factor. This is a generalisation of a
   result of Cassels, appearing as Lemma 9 on page 217 of
-  [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
+  [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
 * `blimsup_thickening_mul_ae_eq`: a variant of `blimsup_cthickening_mul_ae_eq` for thickenings
   rather than closed thickenings.
 
@@ -123,8 +123,8 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     apply hMr.mp
     rw [eventually_atTop]
     refine
-      ⟨i, fun j hj hj' => Disjoint.inf_right (B j) <| Disjoint.inf_right' (blimsup Y₁ atTop p) ?_⟩
-    change Disjoint (b j) (Z i)ᶜ
+      ⟨i, fun j hj hj' => .inf_right (B j) <| .inf_right' (c := blimsup Y₁ atTop p)
+        (?_ : Disjoint (b j) (Z i)ᶜ)⟩
     rw [disjoint_compl_right_iff_subset]
     refine (closedBall_subset_cthickening (hw j) (M * r₁ (f j))).trans
       ((cthickening_mono hj' _).trans fun a ha => ?_)
@@ -181,7 +181,7 @@ such that `rᵢ → 0`, the set of points which belong to infinitely many of the
 the `rᵢ` are all scaled by a positive constant.
 
 This lemma is a generalisation of Lemma 9 appearing on page 217 of
-[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
+[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
 
 See also `blimsup_thickening_mul_ae_eq`.
 
@@ -219,9 +219,8 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     rw [cthickening_of_nonpos hi, cthickening_of_nonpos hi']
   have hp : p = fun i => p i ∧ 0 < r i ∨ p i ∧ r i ≤ 0 := by
     ext i; simp [← and_or_left, lt_or_ge 0 (r i)]
-  rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup]
-  simp only [sup_eq_union]
-  rw [blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
+  rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup,
+    blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
     blimsup_congr (Eventually.of_forall h₂)]
   exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') (ae_eq_refl _)
 
@@ -254,7 +253,7 @@ such that `rᵢ → 0`, the set of points which belong to infinitely many of the
 the `rᵢ` are all scaled by a positive constant.
 
 This lemma is a generalisation of Lemma 9 appearing on page 217 of
-[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
+[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
 
 See also `blimsup_cthickening_mul_ae_eq`.
 

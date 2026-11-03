@@ -291,7 +291,8 @@ instance IsSFiniteKernel.restrict (κ : Kernel α β) [IsSFiniteKernel κ] (hs :
     IsSFiniteKernel (κ.restrict hs) := by
   refine ⟨⟨fun n => Kernel.restrict (seq κ n) hs, inferInstance, ?_⟩⟩
   ext1 a
-  simp_rw [sum_apply, restrict_apply, ← Measure.restrict_sum _ hs, ← sum_apply, kernel_sum_seq]
+  simp_rw [Kernel.sum_apply, restrict_apply, ← Measure.restrict_sum _ hs, ← Kernel.sum_apply,
+    kernel_sum_seq]
 
 end Restrict
 
@@ -342,7 +343,7 @@ protected instance IsSFiniteKernel.comapRight (κ : Kernel α β) [IsSFiniteKern
     (hf : MeasurableEmbedding f) : IsSFiniteKernel (comapRight κ hf) := by
   refine ⟨⟨fun n => comapRight (seq κ n) hf, inferInstance, ?_⟩⟩
   ext1 a
-  rw [sum_apply]
+  rw [Kernel.sum_apply]
   simp_rw [comapRight_apply _ hf]
   have :
     (Measure.sum fun n => Measure.comap f (seq κ n a)) =
@@ -388,7 +389,7 @@ protected instance IsSFiniteKernel.piecewise [IsSFiniteKernel κ] [IsSFiniteKern
     IsSFiniteKernel (piecewise hs κ η) := by
   refine ⟨⟨fun n => piecewise hs (seq κ n) (seq η n), inferInstance, ?_⟩⟩
   ext1 a
-  simp_rw [sum_apply, Kernel.piecewise_apply]
+  simp_rw [Kernel.sum_apply, Kernel.piecewise_apply]
   split_ifs <;> exact (measure_sum_seq _ a).symm
 
 theorem lintegral_piecewise (a : α) (g : β → ℝ≥0∞) :

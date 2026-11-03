@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 import Mathlib.Analysis.Normed.Group.FunctionSeries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform convergence of Eisenstein series
 
@@ -28,8 +31,6 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 -/
 
 public section
-
-noncomputable section
 
 open Complex UpperHalfPlane Set Finset CongruenceSubgroup Topology
 

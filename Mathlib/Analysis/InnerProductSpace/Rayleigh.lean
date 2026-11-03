@@ -5,9 +5,9 @@ Authors: Heather Macbeth, Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Analysis.Calculus.LagrangeMultipliers
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
-public import Mathlib.Analysis.Calculus.LagrangeMultipliers
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 import Mathlib.Analysis.InnerProductSpace.Calculus
@@ -215,9 +215,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by
   have H : IsLocalExtrOn T.reApplyInnerSelf {x : F | ‖x‖ ^ 2 = ‖x₀‖ ^ 2} x₀ := by
-    convert hextr
-    ext x
-    simp
+    simpa [sphere] using hextr
   -- find Lagrange multipliers for the function `T.re_apply_inner_self` and the
   -- hypersurface-defining function `fun x ↦ ‖x‖ ^ 2`
   obtain ⟨a, b, h₁, h₂⟩ :=

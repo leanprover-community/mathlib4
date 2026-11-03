@@ -5,8 +5,8 @@ Authors: Etienne Marion, Kexing Ying, Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Process.Indistinguishable
 public import Mathlib.Probability.Process.Filtration
+public import Mathlib.Probability.Process.Indistinguishable
 
 /-!
 

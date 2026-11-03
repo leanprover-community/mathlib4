@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp

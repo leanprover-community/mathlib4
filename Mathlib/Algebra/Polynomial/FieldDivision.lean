@@ -11,8 +11,8 @@ public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
-import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Group.Finset
 
 /-!
 # Theory of univariate polynomials
@@ -26,7 +26,7 @@ This file starts looking like the ring theory of $R[X]$
 
 noncomputable section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 open scoped Nat
 
 namespace Polynomial
@@ -357,17 +357,15 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
 
 alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
-instance instEuclideanDomain : EuclideanDomain R[X] :=
-  { Polynomial.commRing,
-    Polynomial.nontrivial with
-    quotient := (· / ·)
-    quotient_zero := by simp [div_def]
-    remainder := (· % ·)
-    r := _
-    r_wellFounded := degree_lt_wf
-    quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
-    remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+instance instEuclideanDomain : EuclideanDomain R[X] where
+  quotient := (· / ·)
+  quotient_zero := by simp [div_def]
+  remainder := (· % ·)
+  r := _
+  r_wellFounded := degree_lt_wf
+  quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
+  remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
+  mul_left_not_lt _ _ hq := not_lt_of_ge (degree_le_mul_left _ hq)
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
@@ -453,16 +451,15 @@ theorem mul_mod (p₁ p₂ q : R[X]) : (p₁ * p₂) % q = (p₁ % q) * (p₂ % 
   simp_rw [Polynomial.mod_def]
   apply Polynomial.mul_modByMonic
 
-section
+lemma eval_mod_eq_self_of_root {p q : R[X]} {x : R} (hx : eval x q = 0) :
+    (p % q).eval x = p.eval x :=
+  eval₂_modByMonic_eq_self_of_root (by simp [hx])
 
-open EuclideanDomain
-
+open EuclideanDomain in
 theorem gcd_map [Field k] [DecidableEq R] [DecidableEq k] (f : R →+* k) :
     gcd (p.map f) (q.map f) = (gcd p q).map f :=
   GCD.induction p q (fun x => by simp_rw [Polynomial.map_zero, EuclideanDomain.gcd_zero_left])
     fun x y _ ih => by rw [gcd_val, ← map_mod, ih, ← gcd_val]
-
-end
 
 theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} (hf : f.eval₂ ϕ α = 0)
@@ -538,6 +535,9 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
   ⟨-((p.coeff 1)⁻¹ * p.coeff 0), by
     rw [← mem_roots (by simp [← zero_le_degree_iff, h])]
     simp [roots_degree_eq_one h]⟩
+
+theorem exists_root_of_natDegree_eq_one (h : natDegree p = 1) : ∃ x, IsRoot p x :=
+  exists_root_of_degree_eq_one (degree_eq_iff_natDegree_eq_of_neZero.mpr h)
 
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
   rw [eq_C_of_degree_eq_zero (degree_coe_units u), eq_C_of_degree_eq_zero (degree_coe_units u⁻¹),

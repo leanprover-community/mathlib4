@@ -33,7 +33,7 @@ inputs:
 # `with:` blocks (e.g. constructing further `if:` conditions).
 outputs:
   primary:
-    description: Container name for uploads (master, forks, nightly-testing, pr-toolchain-tests).
+    description: Container name for uploads (master, forks).
     value: ${{ steps.dispatch.outputs.primary }}
   read-chain:
     description: |
@@ -43,9 +43,8 @@ outputs:
   repo-scope:
     description: |
       Per-commit namespace suffix for `MATHLIB_CACHE_REPO_SCOPE`. Set to
-      the head SHA when uploading to fork-trust containers; empty for
-      master / nightly / pr-toolchain-tests uploads where scoping isn't
-      applied.
+      the head SHA for `forks` uploads; empty for `master` uploads, where
+      scoping isn't applied.
     value: ${{ steps.dispatch.outputs.repo-scope }}
 
 runs:
@@ -68,19 +67,20 @@ runs:
         REPO_SCOPE=""
 
         # Security note: this dispatch is NOT the trust boundary for writes.
-        # The real enforcement is the OIDC bearer token minted in the upload jobs:
-        # the token is scoped to a specific container, so a malicious actor
-        # rewriting this case to `--container=master` from a fork build would
-        # be 403'd by Azure regardless. The dispatch exists so the workflow
-        # does the right thing in the honest case; defence in depth is RBAC.
+        # The real enforcement is the OIDC-gated credential minted in the upload
+        # jobs: the credential is scoped to a specific container, so a malicious
+        # actor rewriting this case to `--container=master` from a fork build
+        # would be rejected by the storage regardless. The dispatch exists so the
+        # workflow does the right thing in the honest case; defence in depth is
+        # the credential scope.
 
-        # Privileged containers (master, nightly-testing, pr-toolchain-tests) are
-        # writable only by a repo's own native CI, whose OIDC token is RBAC-scoped
-        # to match. A cross-repo pull request is built by build_fork.yml with
-        # fork-trust credentials whatever repo the PR head lives on (e.g. a `bump/*`
-        # branch on the mathlib4-nightly-testing fork), so it can only write
-        # `forks`. `GITHUB_REPOSITORY` is the repo the workflow runs as (the base
-        # repo for `pull_request_target`), i.e. the one whose credentials this job
+        # The privileged container `master` is writable only by mathlib4's own
+        # native CI, whose OIDC-gated credential is scoped to match. A cross-repo pull
+        # request is built by build_fork.yml with fork-trust credentials
+        # whatever repo the PR head lives on (e.g. a `bump/*` branch on the
+        # mathlib4-nightly-testing fork), so it can only write `forks`.
+        # `GITHUB_REPOSITORY` is the repo the workflow runs as (the base repo
+        # for `pull_request_target`), i.e. the one whose credentials this job
         # holds; when it differs from `$REPO`, the build is a fork and targets
         # `forks` regardless of the head repo's own trust class.
         if [ "$REPO" != "$GITHUB_REPOSITORY" ]; then
@@ -91,11 +91,10 @@ runs:
             if [ "$REF_TYPE" = "tag" ]; then
               case "$BRANCH" in
                 v4.*)
-                  # `v4.*` release tags: release_cache.yml rebuilds off-master
-                  # release commits (patch releases, patched release
-                  # candidates) and publishes them into `master`, the container
-                  # canonical checkouts read. Tag creation is restricted to
-                  # release managers by a tag ruleset, and the
+                  # `v4.*` release tags: release_cache.yml rebuilds every
+                  # release commit and publishes it into `master`, the
+                  # container canonical checkouts read. Tag creation is
+                  # restricted to release managers by a tag ruleset, and the
                   # `cache-upload-master` environment admits `v4.*` tag refs,
                   # so these builds carry master trust. Reads use the tool's
                   # default for the canonical repo, `master` alone, for the
@@ -126,8 +125,8 @@ runs:
                   ;;
                 *)
                   # `bors trying`, `ci-dev/*`, maintainer dev branches on the
-                  # canonical repo: trust level is fork-equivalent (the OIDC
-                  # token's RBAC scopes them to `forks`). Reads must widen
+                  # canonical repo: trust level is fork-equivalent (the
+                  # minted credential scopes them to `forks`). Reads must widen
                   # past the default [master] so the post-build verification
                   # finds the just-uploaded fork-trust artifacts.
                   PRIMARY="forks"
@@ -136,28 +135,9 @@ runs:
               esac
             fi
             ;;
-          "leanprover-community/mathlib4-nightly-testing")
-            case "$BRANCH" in
-              "nightly-testing"|"nightly-testing-green"|"staging"|bump/*)
-                # Trusted nightly refs use the default [nightly-testing, forks].
-                # It excludes `pr-toolchain-tests` so an upload from a
-                # `batteries-pr-testing-*` branch never reaches a trusted-nightly
-                # consumer.
-                PRIMARY="nightly-testing"
-                ;;
-              *)
-                # `batteries-pr-testing-*`, etc.:
-                # least-trusted (can build with arbitrary toolchains). Widen
-                # reads to recover this branch's own previously-uploaded
-                # artifacts; trusted-nightly stays preferred where hash
-                # spaces happen to align.
-                PRIMARY="pr-toolchain-tests"
-                READ_CHAIN="pr-toolchain-tests,nightly-testing"
-                ;;
-            esac
-            ;;
           *)
-            # Foreign fork. The cache tool's default chain for a fork repo
+            # Foreign fork, or the nightly-testing repo, which is a fork in
+            # the cache's model. The cache tool's default chain for a fork repo
             # is [master, forks] (master-first): master supplies the
             # bulk of unchanged upstream deps, forks supplies PR-specific
             # files. No widening needed, so MATHLIB_CACHE_FROM stays unset.
@@ -170,10 +150,8 @@ runs:
         # within-fork temporal replay attack: each commit's CI run gets its
         # own /f/{repo}/{sha}/... namespace, so artifacts from a closed/
         # hidden PR cannot be served to a later honest build on the same
-        # fork. Master / nightly / pr-toolchain-tests uploads stay un-scoped:
-        # master has a single writer (no replay risk), and the per-toolchain
-        # hash partitioning isolates nightly and toolchain-test classes via
-        # their root-hash inputs.
+        # fork. Master uploads are not scoped: master has a single writer, so
+        # it has no replay risk.
         if [ "$PRIMARY" = "forks" ]; then
           REPO_SCOPE="$HEAD_SHA"
         fi

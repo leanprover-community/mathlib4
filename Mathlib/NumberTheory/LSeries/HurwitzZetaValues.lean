@@ -5,8 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.ZetaValues
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.ZetaValues
 
 /-!
 # Special values of Hurwitz and Riemann zeta functions
@@ -190,8 +190,8 @@ theorem hurwitzZeta_neg_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZeta x (-k) =
     -1 / (k + 1) * ((Polynomial.bernoulli (k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rcases Nat.even_or_odd' k with ⟨n, (rfl | rfl)⟩
-  · exact_mod_cast hurwitzZeta_neg_two_mul_nat (by lia : n ≠ 0) hx
-  · exact_mod_cast hurwitzZeta_one_sub_two_mul_nat (by lia : n + 1 ≠ 0) hx
+  · exact mod_cast hurwitzZeta_neg_two_mul_nat (by lia : n ≠ 0) hx
+  · exact mod_cast hurwitzZeta_one_sub_two_mul_nat (by lia : n + 1 ≠ 0) hx
 
 end HurwitzZeta
 

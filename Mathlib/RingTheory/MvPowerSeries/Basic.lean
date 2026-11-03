@@ -5,10 +5,10 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Data.Finsupp.Weight
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Tactic.NormNum
 
 /-!

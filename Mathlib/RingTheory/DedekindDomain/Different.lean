@@ -7,9 +7,9 @@ module
 
 public import Mathlib.NumberTheory.RamificationInertia.Unramified
 public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.Trace.Quotient
-public import Mathlib.RingTheory.Flat.TorsionFree
 
 import Mathlib.RingTheory.Finiteness.Quotient
 
@@ -936,20 +936,20 @@ theorem not_dvd_differentIdeal_iff
     (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
   have := Ideal.IsPrime.isMaximal inferInstance hPbot
   let := Localization.AtPrime.algebraOfLiesOver (P.under A) P
+  have := AtPrime.isDiscreteValuationRing_of_dedekind_domain B hPbot (Localization.AtPrime P)
   constructor
   · intro H
-    · rw [Algebra.isUnramifiedAt_iff_map_eq (p := P.under A)]
-      constructor
-      · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
-        contrapose H
-        exact dvd_differentIdeal_of_not_isSeparable A hp P H
-      · rw [← Ideal.IsDedekindDomain.ramificationIdx'_eq_one_iff hPbot Ideal.map_comap_le]
-        apply Ideal.ramificationIdx'_spec
-        · simp [Ideal.map_le_iff_le_comap]
-        · contrapose H
-          rw [← pow_one P, show 1 = 2 - 1 by simp]
-          apply pow_sub_one_dvd_differentIdeal _ _ _ hp
-          simpa [Ideal.dvd_iff_le] using H
+    have : Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) := by
+      contrapose H
+      exact dvd_differentIdeal_of_not_isSeparable A hp P H
+    · rw [← Ideal.ramificationIdx_eq_one_iff_of_isSeparable,
+        Ideal.IsDedekindDomain.ramificationIdx_eq_multiplicity (P.under A) P hp']
+      apply multiplicity_eq_of_dvd_of_not_dvd <;> rw [Ideal.dvd_iff_le]
+      · simp [Ideal.map_le_iff_le_comap]
+      · contrapose H
+        rw [← pow_one P, show 1 = 2 - 1 by simp]
+        apply pow_sub_one_dvd_differentIdeal _ _ _ hp
+        simpa [Ideal.dvd_iff_le] using H
   · intro H
     obtain ⟨Q, h₁, h₂⟩ := Ideal.eq_prime_pow_mul_coprime hp' P
     rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count _ _ hp',

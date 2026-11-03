@@ -5,8 +5,8 @@ Authors: Alexander Bentkamp
 -/
 module
 
-public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Prod
 
 import Mathlib.Tactic.Abel
 

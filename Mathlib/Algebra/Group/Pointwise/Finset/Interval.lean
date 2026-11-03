@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Order.Interval.Finset.Defs
 
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 

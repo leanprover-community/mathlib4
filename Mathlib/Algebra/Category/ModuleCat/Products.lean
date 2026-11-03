@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.DirectSum.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The concrete products in the category of modules are products in the categorical sense.
 -/

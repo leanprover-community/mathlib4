@@ -5,10 +5,10 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.Category.GaloisConnection
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Skeleton
 public import Mathlib.CategoryTheory.Subobject.MonoOver
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
-public import Mathlib.CategoryTheory.Category.GaloisConnection
 
 import Mathlib.Tactic.ApplyFun
 

@@ -5,10 +5,13 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 module
 
-public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Data.Nat.Cast.Basic
 
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cast of naturals into fields

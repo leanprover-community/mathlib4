@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Center.Basic
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # The center of an additive category
