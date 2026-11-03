@@ -12,6 +12,8 @@ public import Mathlib.Data.Fintype.Pi
 # Fin-indexed tuples of finsets
 -/
 
+open scoped Finset
+
 public section
 
 open Fin Fintype
@@ -86,17 +88,17 @@ lemma filter_piFinset_eq_map_insertNthEquiv (P : (∀ i, α (p.succAbove i)) →
   simp [← map_insertNthEquiv_filter_piFinset, map_map]
 
 lemma card_consEquiv_filter_piFinset (P : (∀ i, α (succ i)) → Prop) [DecidablePred P] :
-    {r ∈ piFinset S | P (tail r)}.card = (S 0).card * {r ∈ piFinset (tail S) | P r}.card := by
+    #{r ∈ piFinset S | P (tail r)} = #(S 0) * #{r ∈ piFinset (tail S) | P r} := by
   rw [← card_product, ← map_consEquiv_filter_piFinset, card_map]
 
 lemma card_snocEquiv_filter_piFinset (P : (∀ i, α (castSucc i)) → Prop) [DecidablePred P] :
-    {r ∈ piFinset S | P (init r)}.card =
-      (S (last _)).card * {r ∈ piFinset (init S) | P r}.card := by
+    #{r ∈ piFinset S | P (init r)} =
+      #(S (last _)) * #{r ∈ piFinset (init S) | P r} := by
   rw [← card_product, ← map_snocEquiv_filter_piFinset, card_map]
 
 lemma card_insertNthEquiv_filter_piFinset (P : (∀ i, α (p.succAbove i)) → Prop) [DecidablePred P] :
-    {r ∈ piFinset S | P (p.removeNth r)}.card =
-      (S p).card * {r ∈ piFinset (p.removeNth  S) | P r}.card := by
+    #{r ∈ piFinset S | P (p.removeNth r)} =
+      #(S p) * #{r ∈ piFinset (p.removeNth  S) | P r} := by
   rw [← card_product, ← map_insertNthEquiv_filter_piFinset, card_map]
 
 end Finset

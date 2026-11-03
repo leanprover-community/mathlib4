@@ -92,23 +92,20 @@ When arguments are provided, only the specified files and their transitive impor
 | `--unsafe-window=N` | Number of cached fork commits `--unsafe` will try (default `1`). Implies `--unsafe`. |
 | `--staging-dir=DIR` | For `stage`/`stage!`/`unstage`/`unstage!`: the staging directory. |
 
-Container names (for `--cache-from`): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
-
 ## Trust-ordered containers
 
 The cache is split across multiple containers, logical namespaces in the URL
 contract `/{container}/{key}`. Container names accepted by `--cache-from=LIST`:
-`master`, `forks`, `nightly-testing`, `pr-toolchain-tests`.
+`master`, `forks`.
 
 `cache get` resolves a file by trying a default chain of containers in
 order, depending on the repo:
 
-| GitHub repo                                     | Container order tried       |
-|-------------------------------------------------|-----------------------------|
-| `leanprover-community/mathlib4`                 | `master`                    |
-| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `forks`  |
-| any fork (PRs)                                  | `master`, `forks`           |
-| downstream with mathlib as a dependency         | `master`                    |
+| GitHub repo                                         | Container order tried |
+|-----------------------------------------------------|-----------------------|
+| `leanprover-community/mathlib4`                     | `master`              |
+| any fork (PRs), `mathlib4-nightly-testing` included | `master`, `forks`     |
+| downstream with mathlib as a dependency             | `master`              |
 
 Override the read chain with `--cache-from=LIST`:
 
@@ -124,31 +121,12 @@ lake exe cache get --cache-from=master,forks
 
 `cache get` reads artifacts through `https://cache.mathlib.org`, the public cache endpoint for mathlib artifacts.
 
-### Troubleshooting
-
-The public cache endpoint has been available since September 2026. The cache client provides an environment variable `MATHLIB_CACHE_DEBUG_USE_LEGACY` to revert to the behavior before this endpoint was available, for troubleshooting any issues that might arise in the transition to this new endpoint:
-
-```bash
-# bash, zsh, Git Bash
-MATHLIB_CACHE_DEBUG_USE_LEGACY=1 lake exe cache get
-
-# PowerShell
-$env:MATHLIB_CACHE_DEBUG_USE_LEGACY = 1; lake exe cache get
-
-# Windows CMD
-set MATHLIB_CACHE_DEBUG_USE_LEGACY=1
-lake exe cache get
-```
-
-The variable is intended as a troubleshooting fallback and it might be retired at any time.
-
 ## Environment Variables
 
 | Variable                         | Description                        | Default                                         |
 |----------------------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR`              | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
 | `MATHLIB_CACHE_GET_URL`          | Download from this single URL as a flat namespace (see [Operating an external cache](#operating-an-external-cache)) | unset |
-| `MATHLIB_CACHE_DEBUG_USE_LEGACY` | See [Troubleshooting](#troubleshooting) | unset |
 
 An empty value means unset. The upload variables are internal to mathlib CI;
 see [`CI.md`](./CI.md).
@@ -199,6 +177,11 @@ The cache covers these packages:
 - `ProofWidgets`
 - `Archive`
 - `Counterexamples`
+- `MathlibTest`
+
+CI uploads `MathlibTest` only for commits that write the `master` container.
+`lake exe cache get` without arguments does not fetch it. To fetch it, run
+`lake exe cache get 'MathlibTest.+'`.
 
 ## Finding Cached Commits with `query`
 
@@ -211,7 +194,7 @@ upstream and you want to avoid waiting for CI to build everything.
 # Find the most recent cached commit on the current branch
 lake exe cache query
 
-# Example output (on a fork checkout; the canonical repos have no
+# Example output (on a fork checkout; the canonical repo has no
 # per-commit namespace and `query` says so instead):
 # Most recent cached commit on this branch for fork alice/mathlib4: 5a3c7e9a...
 #
@@ -219,7 +202,7 @@ lake exe cache query
 #   lake exe cache get --scope=5a3c7e9a...
 ```
 
-The `query` command walks your git log backwards from `HEAD`, stopping at the
+The `query` command walks Mathlib's git log backwards from `HEAD`, stopping at the
 merge base with `master` or a hard cap of 50 commits (whichever comes first),
 and probes each commit for a completed SHA-scoped upload in the `forks`
 container. That signal is written by `cache put` only after a successful
@@ -247,8 +230,10 @@ lake exe cache query 5a3c7e9a2f8c1d6b4e0f9a2c3d4e5f6a7b8c9d0e
 # prints "cached: 5a3c7e9a..." (exit 0) or "not cached: 5a3c7e9a..." (exit 1)
 ```
 
-By default `query` (both modes) targets the cwd's git remote — pass `--repo=`
-to override.
+All Git lookups use the Mathlib source directory, including HEAD, scope refs,
+and history walks. In a downstream project, this is the Mathlib dependency
+directory. By default, `query` targets that checkout's Git remote. Pass
+`--repo=` to override the remote without changing where refs resolve.
 
 ### Unsafe automatic scope walk
 
@@ -292,7 +277,7 @@ security warning to stderr. This happens when:
 3. **`--cache-from` widens the read chain** — you are explicitly telling the tool
    to trust containers beyond the repo default.
 4. **`--repo` overrides the detected git remote** — you are reading cache for a
-   different repository than your cwd's git remote.
+   different repository than the Mathlib checkout's git remote.
 
 Example warning:
 
@@ -334,10 +319,13 @@ Mathlib or `MathlibTest`. Exits 0 on success, non-zero on failure.
 
 The cache system automatically downloads and manages:
 
-- **curl** (>=7.75, preferably >=7.84) - for HTTP transfers
+- **curl** (>=7.84) - for parallel downloads
 - **leantar** - for `.ltar` compression/decompression
 
-If your system curl is too old, a static binary is downloaded automatically on Linux.
+Downloads use a static curl on Linux x86_64 and aarch64 if the system version is too old.
+On other platforms, older curl versions use serial downloads.
+curl 8.18 and 8.19 run parallel downloads without retries (these versions hang on parallel retries).
+Uploads require curl >=8.20 on `PATH`.
 
 ## File Locations
 

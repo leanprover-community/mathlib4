@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types
@@ -48,7 +47,6 @@ open CategoryTheory CompHausLike
 open scoped Topology
 
 /-- The type of profinite topological spaces. -/
-@[to_additive_do_translate] -- This is required
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite

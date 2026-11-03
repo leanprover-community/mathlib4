@@ -6,12 +6,12 @@ Authors: David Loeffler, Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 
-import Mathlib.LinearAlgebra.Transvection.Basic
 import Mathlib.LinearAlgebra.Center
+import Mathlib.LinearAlgebra.Transvection.Basic
 
 /-!
 # Group actions on projectivization

@@ -5,8 +5,8 @@ Authors: Christopher Hoskin, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Notation
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Positive & negative parts

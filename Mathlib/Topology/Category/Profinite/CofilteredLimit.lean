@@ -8,8 +8,8 @@ module
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
-import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
+import Mathlib.Topology.DiscreteQuotient
 
 /-!
 # Cofiltered limits of profinite sets.
@@ -116,7 +116,6 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
     LocallyConstant.ofIsClopen_fiber_zero]
   exact h
 
-set_option backward.defeqAttrib.useBackward true in
 open scoped Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),

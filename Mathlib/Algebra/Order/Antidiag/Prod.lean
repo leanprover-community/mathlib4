@@ -109,6 +109,10 @@ lemma congr (A : Type*) [Mul A] [H1 : HasMulAntidiagonal A] [H2 : HasMulAntidiag
     H1.mulAntidiagonal = H2.mulAntidiagonal := by congr!; subsingleton
 
 @[to_additive]
+lemma coe_mulAntidiagonal_eq_preimage_singleton [Mul A] [HasMulAntidiagonal A] (a : A) :
+    (mulAntidiagonal a : Set (A × A)) = ((fun p ↦ p.1 * p.2) ⁻¹' {a}) := by ext; simp
+
+@[to_additive]
 theorem swap_mem_mulAntidiagonal [CommMagma A] [HasMulAntidiagonal A] {n : A} {xy : A × A} :
     xy.swap ∈ mulAntidiagonal n ↔ xy ∈ mulAntidiagonal n := by
   simp [mul_comm]
@@ -280,6 +284,29 @@ lemma mem_mulAntidiagonal_ofAdd_iff_toAdd_mem_antidiagonal {a : A}
   rw [Multiplicative.ext_iff, toAdd_mul, toAdd_ofAdd]
 
 end Multiplicative
+
+section Prod
+
+variable {A B : Type*} [Monoid A] [Monoid B] [HasMulAntidiagonal A] [HasMulAntidiagonal B]
+
+@[to_additive]
+instance : HasMulAntidiagonal (A × B) where
+  mulAntidiagonal a :=
+    (mulAntidiagonal a.1 ×ˢ mulAntidiagonal a.2).map
+      (Equiv.prodProdProdComm A A B B).toEmbedding
+  mem_mulAntidiagonal := by simp
+
+@[to_additive]
+lemma mulAntidiagonal_prod (a : A × B) :
+    mulAntidiagonal a = (mulAntidiagonal a.1 ×ˢ mulAntidiagonal a.2).map
+      (Equiv.prodProdProdComm A A B B).toEmbedding := rfl
+
+@[to_additive (attr := simp)]
+lemma card_mulAntidiagonal_prod (a : A × B) :
+    #(mulAntidiagonal a) = #(mulAntidiagonal a.1) * #(mulAntidiagonal a.2) := by
+  simp [mulAntidiagonal_prod]
+
+end Prod
 
 end HasMulAntidiagonal
 

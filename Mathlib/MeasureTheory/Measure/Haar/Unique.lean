@@ -6,11 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Measure.EverywherePos
-public import Mathlib.Topology.Metrizable.Urysohn
 public import Mathlib.Topology.ContinuousMap.Ordered
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.Topology.Metrizable.Urysohn
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
@@ -238,7 +238,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
     ∃ (g : C(G, ℝ)), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
   have int_g_pos : 0 < ∫ x, g x ∂μ :=
-    g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one
+    g_cont.integral_pos_of_hasCompactSupport_nonneg_ne_zero g_comp g_nonneg g_one
   -- The proportionality constant we are looking for will be the ratio of the integrals of `g`
   -- with respect to `μ'` and `μ`.
   let c : ℝ := (∫ x, g x ∂μ)⁻¹ * (∫ x, g x ∂μ')
@@ -317,7 +317,7 @@ lemma haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos
     haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
   obtain ⟨f_comp, f_nonneg, f_one⟩ := hf
   have int_f_ne_zero : ∫ (x : G), f x ∂μ ≠ 0 :=
-    ne_of_gt (f.2.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_one)
+    ne_of_gt (f.2.integral_pos_of_hasCompactSupport_nonneg_ne_zero f_comp f_nonneg f_one)
   exact haarScalarFactor_eq_integral_div _ _ f.2 f_comp int_f_ne_zero
 
 @[to_additive (attr := simp) addHaarScalarFactor_smul]
@@ -368,7 +368,7 @@ lemma haarScalarFactor_self (μ : Measure G) [IsHaarMeasure μ] :
   · simp [haarScalarFactor, hG]
   obtain ⟨g, hg⟩ := exists_continuous_nonneg_pos (1 : G)
   have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
-    ne_of_gt (g.2.integral_pos_of_hasCompactSupport_nonneg_nonzero hg.1 hg.2.1 hg.2.2)
+    ne_of_gt (g.2.integral_pos_of_hasCompactSupport_nonneg_ne_zero hg.1 hg.2.1 hg.2.2)
   apply NNReal.coe_injective
   calc
     haarScalarFactor μ μ = (∫ x, g x ∂μ) / ∫ x, g x ∂μ :=
@@ -405,7 +405,7 @@ lemma haarScalarFactor_map (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasur
   · simp [haarScalarFactor, hG]
   obtain ⟨⟨f, f_cont⟩, hf⟩ := exists_continuous_nonneg_pos (1 : G)
   have int_f_ne_zero : ∫ (x : G), f x ∂(map φ μ) ≠ 0 :=
-    ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero hf.1 hf.2.1 hf.2.2)
+    ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_ne_zero hf.1 hf.2.1 hf.2.2)
   rw [← NNReal.coe_inj, haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos _ _ hf,
     haarScalarFactor_eq_integral_div μ' μ (f_cont.comp φ.continuous),
     integral_map (by fun_prop) (by fun_prop),
@@ -799,7 +799,7 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
         · have I : PairwiseDisjoint m fun x ↦ s ∩ x • k :=
             hdj.mono (fun x ↦ inter_subset_right)
           exact I.on_injective Subtype.val_injective (fun x ↦ x.2)
-        · exact lt_of_le_of_lt (measure_mono (by simp [inter_subset_left])) h'm.lt_top
+        · exact lt_of_le_of_lt (measure_mono (by simp)) h'm.lt_top
       have C : Set.Countable (support fun (i : m) ↦ ρ (s ∩ (i : G) • k)) :=
         Summable.countable_support_ennreal this.ne
       have : support (fun (i : m) ↦ ρ (s ∩ (i : G) • k)) = univ := by
@@ -1051,14 +1051,14 @@ lemma addHaarScalarFactor_domSMul (g : Gᵈᵐᵃ) :
   obtain ⟨⟨f, f_cont⟩, f_comp, f_nonneg, f_zero⟩ :
     ∃ f : C(A, ℝ), HasCompactSupport f ∧ 0 ≤ f ∧ f 0 ≠ 0 := exists_continuous_nonneg_pos 0
   have int_f_ne_zero : ∫ x, f x ∂g • ν ≠ 0 :=
-    (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_zero).ne'
+    (f_cont.integral_pos_of_hasCompactSupport_nonneg_ne_zero f_comp f_nonneg f_zero).ne'
   apply NNReal.coe_injective
   rw [addHaarScalarFactor_eq_integral_div (g • μ) (g • ν) f_cont f_comp int_f_ne_zero,
     integral_domSMul, integral_domSMul]
   refine (addHaarScalarFactor_eq_integral_div _ _ (by fun_prop) ?_ ?_).symm
   · exact f_comp.comp_isClosedEmbedding (Homeomorph.smul _).isClosedEmbedding
   · rw [← integral_domSMul]
-    exact (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_zero).ne'
+    exact (f_cont.integral_pos_of_hasCompactSupport_nonneg_ne_zero f_comp f_nonneg f_zero).ne'
 
 variable (μ) in
 lemma addHaarScalarFactor_smul_congr (g : Gᵈᵐᵃ) :

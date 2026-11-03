@@ -5,10 +5,13 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Data.Rat.Cast.Order
 
 import Mathlib.Algebra.Module.Rat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monotonicity of the action by rational numbers

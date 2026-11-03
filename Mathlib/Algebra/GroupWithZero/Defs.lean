@@ -6,8 +6,8 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.DivInvMonoid
-public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Basic.Logic.Basic
+public import Mathlib.Basic.Nontrivial.Defs
 
 import Batteries.Tactic.SeqFocus
 

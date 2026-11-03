@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 public import Mathlib.ModelTheory.Algebra.Field.Basic
+public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 
 import Mathlib.Algebra.CharP.Basic
 

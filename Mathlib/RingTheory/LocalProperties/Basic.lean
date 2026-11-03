@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.LocalProperties.Submodule
+public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.RingHomProperties
 
 import Mathlib.RingTheory.Localization.LocalizationLocalization

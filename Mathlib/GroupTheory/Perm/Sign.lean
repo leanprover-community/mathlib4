@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Conj
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Data.Finset.Fin
+public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.Data.Fintype.Prod
@@ -16,7 +17,6 @@ public import Mathlib.Data.Int.Order.Units
 public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.NormNum.Ineq
-public import Mathlib.Data.Finset.Sigma
 
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 

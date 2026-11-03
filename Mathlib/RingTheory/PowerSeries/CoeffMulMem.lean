@@ -7,8 +7,8 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Basic
 
-import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 

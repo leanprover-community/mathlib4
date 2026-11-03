@@ -5,8 +5,8 @@ Authors: Moritz Doll, Zhouhang Zhou
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 
@@ -348,7 +348,7 @@ namespace LinearIsometry
 open UniformSpace
 
 variable {R R₂ : Type*} [Semiring R] [Semiring R₂] [SeminormedAddCommGroup E] [Module R E]
-  [IsUniformAddGroup E] [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
+  [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
   {σ₁₂ : R →+* R₂} (f : E →ₛₗᵢ[σ₁₂] F)
 
 section fromCompletion

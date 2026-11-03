@@ -6,8 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Compactness.Paracompact
-public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.Topology.UrysohnsLemma
 
 import Mathlib.Topology.ShrinkingLemma
 

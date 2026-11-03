@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.SuccPred.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Successor function on `WithBot`
 

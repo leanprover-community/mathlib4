@@ -6,8 +6,11 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
-public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
+public import Mathlib.Topology.ContinuousMap.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Category instance for topological spaces

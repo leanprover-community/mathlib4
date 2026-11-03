@@ -5,8 +5,8 @@ Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
 module
 
-public import Mathlib.CategoryTheory.CodiscreteCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.CategoryTheory.CodiscreteCategory
 
 /-!
 # The Coherent Isomorphism

@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 module
 
-public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Filter.AtTopBot.Tendsto
+public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Nat
 
 import Mathlib.Tactic.Subsingleton
@@ -147,7 +147,8 @@ variable [Preorder α] [IsDirectedOrder α] {F : Filter β} {u : α → β}
 @[to_dual inf_map_atBot_neBot_iff]
 theorem inf_map_atTop_neBot_iff [Nonempty α] :
     NeBot (F ⊓ map u atTop) ↔ ∀ U ∈ F, ∀ N, ∃ n, N ≤ n ∧ u n ∈ U := by
-  simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop]; rfl
+  simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop]
+  exact ⟨fun h U hU ↦ h (p := (· ∈ U)) hU, fun h p hp ↦ h {x | p x} hp⟩
 
 variable [Preorder β]
 
@@ -167,6 +168,13 @@ theorem exists_lt_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto u atTop atTop) (
   exact ⟨a', ha', lt_of_lt_of_le hb' ha''⟩
 
 end IsDirected
+
+theorem Tendsto.exists_le_lt_succ [LinearOrder α] [NoMaxOrder α] {c : ℕ → α}
+    (hc : Tendsto c atTop atTop) {a : ℕ} {x : α} (hx : c a ≤ x) :
+    ∃ k ≥ a, c k ≤ x ∧ x < c (k + 1) := by
+  by_contra! h
+  obtain ⟨k, hak, hk⟩ := exists_lt_of_tendsto_atTop hc a x
+  exact (Nat.le_induction (motive := fun k _ ↦ c k ≤ x) hx h k hak).not_gt hk
 
 section IsDirected
 variable [Nonempty α] [Preorder α] [IsDirectedOrder α] {f : α → β} {l : Filter β}
