@@ -184,15 +184,15 @@ theorem closure_eq_setOfPred_isLUB (s : Set α) :
     · exact fun x hx ↦ ⟨{x}, singleton_subset_iff.2 hx, singleton_nonempty x, isLUB_singleton⟩
     · rw [isClosed_iff_dirSupClosed]
       intro d hd hd₀ _ x hx
-      choose f hfs hf₀ hfa using hd
+      choose f hfs hf₀ hf using hd
       refine ⟨⋃ y : d, f y.2, ?_, ?_, fun y hy ↦ ?_, fun y hy ↦ ?_⟩
       · simpa
       · aesop
       · obtain ⟨⟨i, hi⟩, hy⟩ := mem_iUnion.1 hy
-        exact ((hfa hi).1 hy).trans (hx.1 hi)
+        exact ((hf hi).1 hy).trans (hx.1 hi)
       · contrapose! hy
         refine fun hy' ↦ (hx.lt_iff.1 hy y ?_).false
-        exact fun z hz ↦ (hfa hz).2 <|
+        exact fun z hz ↦ (hf hz).2 <|
           upperBounds_mono_set (subset_sUnion_of_mem (mem_range_self (ι := d) ⟨z, hz⟩)) hy'
   · rintro x ⟨d, hd, hd₀, hx⟩
     exact mem_closure_of_isLUB isLowerSet_univ (mem_univ _) hd hd₀ (.of_linearOrder _) hx
