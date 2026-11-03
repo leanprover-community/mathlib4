@@ -76,11 +76,16 @@ theorem contMDiffWithinAt_hom_bundle_iff (f : M → LE₁E₂) {s : Set M} {x₀
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffWithinAt_totalSpace_iff
 
+@[deprecated (since := "2026-11-03")]
+alias contMDiffWithinAt_hom_bundle := contMDiffWithinAt_hom_bundle_iff
+
 theorem contMDiffAt_hom_bundle_iff (f : M → LE₁E₂) {x₀ : M} :
     CMDiffAt n f x₀ ↔
       CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ CMDiffAt n
         (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffAt_totalSpace_iff
+
+@[deprecated (since := "2026-11-03")] alias contMDiffAt_hom_bundle := contMDiffAt_hom_bundle_iff
 
 end
 
@@ -104,11 +109,17 @@ theorem mdifferentiableWithinAt_hom_bundle_iff (f : M → LE₁E₂) {s : Set M}
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   mdifferentiableWithinAt_totalSpace_iff IB ..
 
+@[deprecated (since := "2026-11-03")]
+alias mdifferentiableWithinAt_hom_bundle := mdifferentiableWithinAt_hom_bundle_iff
+
 theorem mdifferentiableAt_hom_bundle_iff (f : M → LE₁E₂) {x₀ : M} :
     MDiffAt f x₀ ↔
       MDiffAt (fun x ↦ (f x).1) x₀ ∧
         MDiffAt (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   mdifferentiableAt_totalSpace_iff ..
+
+@[deprecated (since := "2026-11-03")]
+alias mdifferentiableAt_hom_bundle := mdifferentiableAt_hom_bundle_iff
 
 end
 
