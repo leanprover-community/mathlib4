@@ -74,7 +74,7 @@ namespace Topology
 /-- The Scott-Hausdorff topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
-`d` lies in `u` then there is a tail of `d` which is a subset of `u`.
+`d ∈ D` lies in `u` then there is a tail of `d` which is a subset of `u`.
 
 For mild conditions on `D`, this is equivalent to saying that open sets are `DirSupInaccOn D`,
 and closed sets are `DirSupClosedOn D`. -/
@@ -95,7 +95,7 @@ def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSp
 /-- Predicate for an ordered topological space to be equipped with its Scott-Hausdorff topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
-`d` lies in `u` then there is a tail of `d` which is a subset of `u`.
+`d ∈ D` lies in `u` then there is a tail of `d` which is a subset of `u`.
 
 For mild conditions on `D`, this is equivalent to saying that open sets are `DirSupInaccOn D`,
 and closed sets are `DirSupClosedOn D`. -/
@@ -235,37 +235,50 @@ end IsScottHausdorff
 -- TODO: for a general linear order, its topology is the meet of the Scott-Hausdorff topology of
 -- itself and its order dual.
 section WellFounded
-variable {α : Type*} [LinearOrder α] [TopologicalSpace α]
+variable {α : Type*} [LinearOrder α]
 
-instance [OrderTopology α] [WellFoundedLT α] : IsScottHausdorff α univ where
-  topology_eq_scottHausdorff := by
-    have := SuccOrder.ofLinearWellFoundedLT α
-    apply le_antisymm
-    · intro s hs
-      rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)] at hs
-      rw [isOpen_iff_forall_mem_open]
-      intro x hxs
-      by_cases hx : Order.IsSuccLimit x
-      · rw [dirSupInacc_iff_inter_subset] at hs
-        obtain ⟨y, hy, hyx⟩ := hs hx.nonempty_Iio (.of_linearOrder _) hx.isLUB_Iio hxs
-        rw [Ici_inter_Iio] at hyx
-        refine ⟨Ioc y x, ?_, SuccOrder.isOpen_Ioc, ?_⟩
-        · rw [← Ioo_insert_right hy]
-          exact insert_subset hxs (Ioo_subset_Ico_self.trans hyx)
-        · simpa
-      · exact ⟨_, singleton_subset_iff.2 hxs, SuccOrder.isOpen_singleton_of_not_isSuccLimit hx,
-          mem_singleton _⟩
-    · rw [le_orderTopology_iff]
-      refine fun a ↦ ⟨?_, ?_⟩
-      · exact @Topology.IsScottHausdorff.IsOpen.Ioi α _ (scottHausdorff α univ) _ _
-      · exact @Topology.IsScottHausdorff.IsOpen.Iio α _ (scottHausdorff α univ) _ _
+theorem _root_.WellFoundedLT.scottHausdorff_eq_preorderTopology [WellFoundedLT α] :
+    scottHausdorff α univ = Preorder.topology α := by
+  let := Preorder.topology α
+  let : OrderTopology α := ⟨rfl⟩
+  have := SuccOrder.ofLinearWellFoundedLT α
+  apply le_antisymm
+  · rw [le_orderTopology_iff]
+    refine fun a ↦ ⟨?_, ?_⟩
+    · exact @Topology.IsScottHausdorff.IsOpen.Ioi α _ (scottHausdorff α univ) _ _
+    · exact @Topology.IsScottHausdorff.IsOpen.Iio α _ (scottHausdorff α univ) _ _
+  · intro s hs
+    rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)] at hs
+    rw [isOpen_iff_forall_mem_open]
+    intro x hxs
+    by_cases hx : Order.IsSuccLimit x
+    · rw [dirSupInacc_iff_inter_subset] at hs
+      obtain ⟨y, hy, hyx⟩ := hs hx.nonempty_Iio (.of_linearOrder _) hx.isLUB_Iio hxs
+      rw [Ici_inter_Iio] at hyx
+      refine ⟨Ioc y x, ?_, SuccOrder.isOpen_Ioc, ?_⟩
+      · rw [← Ioo_insert_right hy]
+        exact insert_subset hxs (Ioo_subset_Ico_self.trans hyx)
+      · simpa
+    · exact ⟨_, singleton_subset_iff.2 hxs, SuccOrder.isOpen_singleton_of_not_isSuccLimit hx,
+        mem_singleton _⟩
 
-instance [DiscreteTopology α] [WellFoundedGT α] : IsScottHausdorff α univ where
+instance _root_.WellFoundedLT.isScottHausdorff [TopologicalSpace α] [OrderTopology α]
+    [WellFoundedLT α] : IsScottHausdorff α univ where
   topology_eq_scottHausdorff := by
-    rw [DiscreteTopology.eq_bot (α := α), eq_comm, ← le_bot_iff]
-    intro s hs
-    rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)]
-    exact DirSupInacc.of_wellFoundedGT _
+    rw [OrderTopology.topology_eq_generate_intervals (α := α),
+      WellFoundedLT.scottHausdorff_eq_preorderTopology]
+
+theorem _root_.WellFoundedGT.scottHausdorff_eq_bot [WellFoundedGT α] :
+    scottHausdorff α univ = ⊥ := by
+  rw [← le_bot_iff]
+  intro s hs
+  rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)]
+  exact DirSupInacc.of_wellFoundedGT _
+
+instance _root_.WellFoundedGT.isScottHausdorff [TopologicalSpace α] [DiscreteTopology α]
+    [WellFoundedGT α] : IsScottHausdorff α univ where
+  topology_eq_scottHausdorff := by
+    rw [DiscreteTopology.eq_bot (α := α), WellFoundedGT.scottHausdorff_eq_bot]
 
 end WellFounded
 
