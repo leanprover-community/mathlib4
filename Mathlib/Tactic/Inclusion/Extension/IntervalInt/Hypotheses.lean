@@ -11,9 +11,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Init
 /-!
 # Hypothesis operations for integer intervals
 
-This file registers the hypothesis extensions for `interval_int`. Strict bounds are tightened
-using discreteness of the integers: `x < b` gives upper bound `b - 1`, and `a < x` gives lower
-bound `a + 1`. Infinite endpoints remain infinite.
+This file defines the hypothesis extensions for `interval_int`.
 -/
 
 @[expose] public section
@@ -32,25 +30,21 @@ theorem Ici_mem_of_le {x y : ℤ} {I : Interval ℤ} (hxy : x ≤ y) (hx : x ∈
 theorem Iic_mem_of_lt {x y : ℤ} {I : Interval ℤ} (hxy : x < y) (hy : y ∈ I) :
     x ∈ Interval.Iic (I.ub.map (· - 1)) := by
   refine ⟨bot_le, ?_⟩
-  cases h : I.ub with
-  | top => exact le_top
-  | coe ub =>
-    exact WithTop.coe_le_coe.mpr <|
-      Int.le_sub_one_of_lt (hxy.trans_le (WithTop.coe_le_coe.mp (h ▸ hy.2)))
+  cases h : I.ub <;> simp_all [Interval.Iic]
+  norm_cast
+  omega
 
 @[hypothesis_op interval_int]
 theorem Ici_mem_of_lt {x y : ℤ} {I : Interval ℤ} (hxy : x < y) (hx : x ∈ I) :
     y ∈ Interval.Ici (I.lb.map (· + 1)) := by
   refine ⟨?_, le_top⟩
-  cases h : I.lb with
-  | bot => exact bot_le
-  | coe lb =>
-    exact WithBot.coe_le_coe.mpr <|
-      Int.add_one_le_of_lt ((WithBot.coe_le_coe.mp (h ▸ hx.1)).trans_lt hxy)
+  cases h : I.lb <;> simp_all [Interval.Ici]
+  norm_cast
+  omega
 
 @[hypothesis_op interval_int]
 theorem Ici_mem_of_mem_Ici {a x : ℤ} {I : Interval ℤ} (hx : x ∈ Set.Ici a) (ha : a ∈ I) :
-    x ∈ Interval.Ici I.lb := Ici_mem_of_le hx ha
+    x ∈ Interval.Ici I.lb := Interval.mem_Ici_of_mem_Ici hx ha
 
 @[hypothesis_op interval_int]
 theorem Ici_mem_of_mem_Ioi {a x : ℤ} {I : Interval ℤ} (hx : x ∈ Set.Ioi a) (ha : a ∈ I) :
@@ -58,7 +52,7 @@ theorem Ici_mem_of_mem_Ioi {a x : ℤ} {I : Interval ℤ} (hx : x ∈ Set.Ioi a)
 
 @[hypothesis_op interval_int]
 theorem Iic_mem_of_mem_Iic {b x : ℤ} {I : Interval ℤ} (hx : x ∈ Set.Iic b) (hb : b ∈ I) :
-    x ∈ Interval.Iic I.ub := Iic_mem_of_le hx hb
+    x ∈ Interval.Iic I.ub := Interval.mem_Iic_of_mem_Iic hx hb
 
 @[hypothesis_op interval_int]
 theorem Iic_mem_of_mem_Iio {b x : ℤ} {I : Interval ℤ} (hx : x ∈ Set.Iio b) (hb : b ∈ I) :

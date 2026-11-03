@@ -12,8 +12,7 @@ public import Mathlib.Tactic.Inclusion.Extension.Interval
 /-!
 # Initialization for the integer interval extension family
 
-The `interval_int` inclusion family represents integer expressions using `Interval ℤ`,
-with the generic `ToSet`, `Univ`, `Refine` and `Coarsen` instances for intervals.
+This file initializes the `interval_int` inclusion family.
 -/
 
 public meta section

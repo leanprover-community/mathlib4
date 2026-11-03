@@ -11,8 +11,7 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Init
 /-!
 # Basic inclusion extensions for interval_int
 
-This file registers integer literals, arithmetic, comparisons and interval memberships for the
-`interval_int` inclusion family. Computations use the generic operations on `Interval ℤ`.
+This file defines basic operations for the `interval_int` inclusion family.
 -/
 
 @[expose] public section
@@ -24,7 +23,8 @@ namespace Inclusion.IntervalInt
 /-- Construct an inclusion variable for an integer expression using an integer interval. -/
 @[inclusion_ext(_ : ℤ)]
 meta def mkIntIVar : InclusionExt :=
-  mkNDIVarExt `interval_int ⟨q(ℤ), q(Interval ℤ), q(inferInstance : ToSet (Interval ℤ) ℤ)⟩
+  mkNDIVarExt `interval_int
+    ⟨q(ℤ), q(Interval ℤ), q(instToSetIntervalOfPreorder (α := ℤ))⟩
 
 @[inclusion_op interval_int]
 theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℤ) ∈ Interval.singleton (n : ℤ) :=
