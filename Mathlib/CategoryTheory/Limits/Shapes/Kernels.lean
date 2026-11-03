@@ -356,10 +356,22 @@ def kernel.lift' {W : C} (k : W ⟶ X) (h : k ≫ f = 0) : { l : W ⟶ kernel f 
   ⟨kernel.lift f k h, kernel.lift_ι _ _ _⟩
 
 /-- A commuting square induces a morphism of kernels. -/
-@[to_dual /-- A commuting square induces a morphism of cokernels. -/]
 abbrev kernel.map {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
     (w : f ≫ q = p ≫ f') : kernel f ⟶ kernel f' :=
   kernel.lift f' (kernel.ι f ≫ p) (by simp [← w])
+
+/-- A commuting square induces a morphism of cokernels. -/
+abbrev cokernel.map {X Y : C} (f : X ⟶ Y) [HasCokernel f]
+    {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ⟶ X') (q : Y ⟶ Y')
+    (w : f ≫ q = p ≫ f') : cokernel f ⟶ cokernel f' :=
+  cokernel.desc f (q ≫ cokernel.π f') (by
+    have : f ≫ q ≫ π f' = p ≫ f' ≫ π f' := by
+      simp only [← Category.assoc]
+      apply congrArg (· ≫ π f') w
+    simp [this])
+
+to_dual_for cokernel.map := kernel.map f' f q p w.symm
+to_dual_for kernel.map := cokernel.map f' f q p w.symm
 
 @[to_dual (attr := simp)]
 lemma kernel.map_id {X Y : C} (f : X ⟶ Y) [HasKernel f] (q : Y ⟶ Y)
