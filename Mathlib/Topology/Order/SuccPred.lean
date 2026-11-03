@@ -30,8 +30,8 @@ variable [SuccOrder α]
 @[to_dual]
 theorem isOpen_Iic : IsOpen (Iic a) := by
   by_cases ha : IsMax a
-  · convert isOpen_univ
-    grind [IsMax]
+  · rw [ha.isTop.Iic_eq]
+    exact isOpen_univ
   · rw [← (covBy_succ_of_not_isMax ha).Iio_eq]
     exact isOpen_Iio
 
