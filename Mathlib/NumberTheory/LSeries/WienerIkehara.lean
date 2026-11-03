@@ -300,10 +300,10 @@ private abbrev C₀ := 1 + ∫ t in Ioi 0, w t
 private lemma C₀_nonneg : 0 ≤ C₀ :=
   add_nonneg zero_le_one (setIntegral_nonneg measurableSet_Ioi (by grind [w_nonneg]))
 
-variable {x : ℝ} (Ψ : 𝓢(ℝ, ℂ)) (hΨ : HasCompactSupport Ψ) (hx : 1 ≤ x)
+variable {x : ℝ} (Ψ : 𝓢(ℝ, ℂ)) (hΨ : HasCompactSupport Ψ) (hx : 1 ≤ x) (n : ℕ)
 
 include hx in
-private lemma sum_range_ite_w_le (n : ℕ) :
+private lemma sum_range_ite_w_le :
     ∑ i ∈ .range n, (if i = 0 then 1 else x⁻¹ * w (i / x)) ≤ 1 + ∫ t in Ioi 0, w t := by
   have hx₀ : 0 < x := zero_lt_one.trans_le hx
   rcases n with _ | m
@@ -326,7 +326,7 @@ private lemma sum_range_ite_w_le (n : ℕ) :
         Ioc_subset_Ioi_self.eventuallyLE
 
 include bound hpos hx in
-private lemma bound_sum_log_range (n : ℕ) :
+private lemma bound_sum_log_range :
     ∑ i ∈ .range n, ‖f i‖ / i * (1 + (c₀ * log (i / x)) ^ 2)⁻¹ ≤ C * C₀ := by
   have hx₀ : 0 < x := zero_lt_one.trans_le hx
   have := C_nonneg bound hpos
@@ -427,7 +427,7 @@ end LimitingFourierIdentity
 
 section LimitingFourierIdentitySchwartz
 
-variable (Ψ φ φ' : 𝓢(ℝ, ℂ))
+variable (Ψ φ φ' : 𝓢(ℝ, ℂ)) {x : ℝ} (hx : 1 ≤ x)
 
 private lemma norm_setIntegral_fourier_le (x : ℝ) :
     ‖∫ u in Ici (-log x), 𝓕 Ψ (c₀ * u)‖ ≤ Ψ.Q * ∫ u, (1 + (c₀ * u) ^ 2)⁻¹ := by
@@ -438,8 +438,6 @@ private lemma norm_setIntegral_fourier_le (x : ℝ) :
     (.of_forall fun u ↦ Ψ.norm_fourier_le_Q_mul _)).trans
     (setIntegral_le_integral hint (.of_forall fun _ ↦ mul_nonneg Ψ.Q_nonneg (by positivity)))
 
-variable {x : ℝ} (hx : 1 ≤ x)
-
 include bound hpos hx in
 private lemma summable_term_mul : Summable fun n ↦ ‖(term ↗f 1 n) * 𝓕 Ψ (c₀ * log (n / x))‖ :=
   .of_nonneg_of_le (fun _ ↦ norm_nonneg _) (norm_term_mul_le Ψ x ↗f)
@@ -448,12 +446,11 @@ private lemma summable_term_mul : Summable fun n ↦ ‖(term ↗f 1 n) * 𝓕 �
 include bound hpos hx in
 /-- The map `φ ↦ S f A 1 (𝓕 φ) x` is linear in the test function. -/
 private lemma S_one_sub : S f A 1 (𝓕 (φ - φ')) x = S f A 1 (𝓕 φ) x - S f A 1 (𝓕 φ') x := by
-  have hs (ψ : 𝓢(ℝ, ℂ)) := (summable_term_mul bound hpos ψ hx).of_norm
-  have hi (ψ : 𝓢(ℝ, ℂ)) : IntegrableOn (fun u ↦ 𝓕 ψ (c₀ * u)) (Ici (-log x)) :=
+  have (ψ : 𝓢(ℝ, ℂ)) := (summable_term_mul bound hpos ψ hx).of_norm
+  have (ψ : 𝓢(ℝ, ℂ)) : IntegrableOn (fun u ↦ 𝓕 ψ (c₀ * u)) (Ici (-log x)) :=
     ((𝓕 ψ).integrable.comp_mul_left' (by positivity)).integrableOn
-  simp only [S, S₁, S₂_one, fourier_sub, sub_apply, mul_sub, ofReal_one]
-  rw [Summable.tsum_sub (hs φ) (hs φ'), integral_sub (hi φ) (hi φ')]
-  ring
+  simp only [S, S₁, S₂_one]
+  grind [Summable.tsum_sub, integral_sub]
 
 include bound hpos in
 /-- `φ ↦ S f A 1 (𝓕 φ) x` is bounded by a multiple of the seminorm `φ.Q`, uniformly in `x ≥ 1`. -/
