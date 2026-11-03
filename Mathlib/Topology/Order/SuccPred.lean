@@ -17,8 +17,7 @@ This file proves miscellaneous results under the assumption of `OrderTopology` p
 
 public section
 
-variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-  {a b : α} {s : Set α}
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α] {a b : α} {s : Set α}
 
 open Filter Order Set
 
@@ -28,12 +27,14 @@ namespace SuccOrder
 variable [SuccOrder α]
 
 @[to_dual]
-theorem isOpen_Iic : IsOpen (Iic a) := by
+theorem isOpen_Iic [ClosedIciTopology α] : IsOpen (Iic a) := by
   by_cases ha : IsMax a
   · rw [ha.isTop.Iic_eq]
     exact isOpen_univ
   · rw [← (covBy_succ_of_not_isMax ha).Iio_eq]
     exact isOpen_Iio
+
+variable [OrderTopology α]
 
 @[to_dual]
 theorem isOpen_Ioc : IsOpen (Ioc a b) := by
