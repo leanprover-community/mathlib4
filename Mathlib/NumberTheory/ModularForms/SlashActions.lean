@@ -129,7 +129,7 @@ end privateSlash
 
 /-- The weight `k` action of `GL (Fin 2) ℝ` on functions `f : ℍ → ℂ`. -/
 @[no_expose] instance : SlashAction ℤ (GL (Fin 2) ℝ) (ℍ → ℂ) where
-  map k f g := (privateSlash k f g :)
+  map := privateSlash
   zero_slash := zero_slash
   slash_one := slash_one
   slash_mul := slash_mul
