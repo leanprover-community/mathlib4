@@ -114,6 +114,17 @@ instance : NatCast (L.Term α) where
 
 @[simp, norm_cast] theorem natCast_succ (n : ℕ) : (n + 1 : ℕ) = (n : L.Term α) + 1 := rfl
 
+variable [L.Neg]
+
+instance : IntCast (L.Term α) where
+  intCast
+  | .ofNat n => n
+  | .negSucc n => - (n + 1 : L.Term α)
+
+@[simp, norm_cast] theorem intCast_natCast (n : ℕ) : (n : ℤ) = (n : L.Term α) := rfl
+
+@[simp, norm_cast] theorem intCast_negSucc (n : ℕ) : Int.negSucc n = - (n + 1 : L.Term α) := rfl
+
 end
 
 section
@@ -225,6 +236,12 @@ theorem realize_natCast [L.Zero] [L.One] [L.Add] [AddMonoidWithOne M]
     Term.realize v (n : L.Term α) = n := by
   induction n <;> simp [*]
 
+@[simp]
+theorem realize_intCast [L.Zero] [L.One] [L.Add] [L.Neg] [AddGroupWithOne M]
+    [CompatibleZero L M] [CompatibleOne L M] [CompatibleAdd L M] [CompatibleNeg L M] {n : ℤ} :
+    Term.realize v (n : L.Term α) = n := by
+  cases n <;> simp
+
 @[to_additive (attr := simp)]
 theorem realize_npow [L.One] [L.Mul] [Monoid M] [CompatibleOne L M]
     [CompatibleMul L M] {n : ℕ} :
@@ -278,9 +295,25 @@ theorem DefinableFun.inv [L.Inv] [Inv M] [CompatibleInv L M] (hf : A.DefinableFu
   · convert (DefinableFun.fun_symbol (L := L) Functions.inv).of_empty
     simp
 
+@[to_additive (attr := fun_prop)]
+theorem DefinableFun.div [L.Mul] [L.Inv] [DivInvMonoid M] [CompatibleMul L M] [CompatibleInv L M]
+    (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) :
+    A.DefinableFun L fun v => f v / g v := by
+  apply comp (g := fun v => ![f v, g v]) (f := fun v => v 0 / v 1)
+  · simp [DefinableMap, *]
+  · convert (Term.var 0 / Term.var 1 : Term L (Fin 2)).definableFun_realize.of_empty
+    simp
+
 @[fun_prop]
 theorem DefinableFun.natCast [L.Zero] [L.One] [L.Add] [AddMonoidWithOne M]
     [CompatibleZero L M] [CompatibleOne L M] [CompatibleAdd L M] {n : ℕ} :
+    A.DefinableFun L fun _ : α → M => n := by
+  convert (n : Term L α).definableFun_realize.of_empty
+  simp
+
+@[fun_prop]
+theorem DefinableFun.intCast [L.Zero] [L.One] [L.Add] [L.Neg] [AddGroupWithOne M]
+    [CompatibleZero L M] [CompatibleOne L M] [CompatibleAdd L M] [CompatibleNeg L M] {n : ℤ} :
     A.DefinableFun L fun _ : α → M => n := by
   convert (n : Term L α).definableFun_realize.of_empty
   simp
@@ -293,6 +326,15 @@ theorem DefinableFun.npow [L.One] [L.Mul] [Monoid M] [CompatibleOne L M]
   · simp [DefinableMap, *]
   · convert (Term.var 0 ^ n : Term L (Fin 1)).definableFun_realize.of_empty
     simp only [Fin.isValue, realize_npow, Term.realize_var]
+
+@[to_additive (attr := fun_prop)]
+theorem DefinableFun.zpow [L.One] [L.Mul] [L.Inv] [Group M] [CompatibleOne L M]
+    [CompatibleMul L M] [CompatibleInv L M] {n : ℤ} (hf : A.DefinableFun L f) :
+    A.DefinableFun L fun v => (f v) ^ n := by
+  apply comp (g := fun v => ![f v]) (f := fun v => v 0 ^ n)
+  · simp [DefinableMap, *]
+  · convert (Term.var 0 ^ n : Term L (Fin 1)).definableFun_realize.of_empty
+    simp only [Fin.isValue, realize_zpow, Term.realize_var]
 
 @[to_additive (attr := fun_prop)]
 theorem DefinableFun.finsetProd [L.One] [L.Mul] [CommMonoid M] [CompatibleOne L M]
