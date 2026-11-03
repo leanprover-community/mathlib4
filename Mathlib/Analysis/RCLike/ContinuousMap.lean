@@ -29,7 +29,7 @@ variable {X : Type*} (𝕜 : Type*) [TopologicalSpace X] [RCLike 𝕜]
 
 @[simp] lemma spectrum_realToRCLike (f : C(X, ℝ)) :
     spectrum ℝ (f.realToRCLike 𝕜) = spectrum ℝ f := by
-  ext; simp [spectrum.mem_iff, isUnit_iff_forall_isUnit, RCLike.ext_iff (K := 𝕜), Algebra.smul_def]
+  ext; simp [spectrum.mem_iff, isUnit_iff_forall_isUnit, RCLike.ext_iff (K := 𝕜)]
 
 open ComplexOrder
 
