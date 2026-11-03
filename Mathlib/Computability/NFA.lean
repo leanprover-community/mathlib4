@@ -161,30 +161,34 @@ theorem mem_acceptsFrom {S : Set σ} {x : FreeMonoid α} :
 
 variable (M) in
 @[simp]
-theorem nil_mem_acceptsFrom {S : Set σ} : ⟨[]⟩ ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
-  simp only [mem_acceptsFrom, evalFrom_nil]; tauto
+theorem one_mem_acceptsFrom {S : Set σ} : 1 ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
+  simp only [mem_acceptsFrom]; tauto
 
 variable (M) in
 @[simp]
-theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
-    ⟨a :: x⟩ ∈ M.acceptsFrom S ↔ ⟨x⟩ ∈ M.acceptsFrom (M.stepSet S a) := by
+theorem of_mul_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
+    .of a * ⟨x⟩ ∈ M.acceptsFrom S ↔ ⟨x⟩ ∈ M.acceptsFrom (M.stepSet S a) := by
   simp [mem_acceptsFrom]
 
 variable (M) in
 theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
     (⟨a :: ·.toList⟩) ⁻¹' (M.acceptsFrom S).toSet = (M.acceptsFrom (M.stepSet S a)).toSet := by
-  ext x; simp_rw [mem_preimage, SetSemiring.mem_toSet, cons_mem_acceptsFrom M]
+  ext x; simp [of_mul_mem_acceptsFrom M]
 
 variable (M) in
 @[simp]
-theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
-    ⟨x ++ y⟩ ∈ M.acceptsFrom S ↔ ⟨y⟩ ∈ M.acceptsFrom (M.evalFrom S x) := by
+theorem mul_mem_acceptsFrom {S : Set σ} {x y : List α} :
+    ⟨x⟩ * ⟨y⟩ ∈ M.acceptsFrom S ↔ ⟨y⟩ ∈ M.acceptsFrom (M.evalFrom S x) := by
   simp [mem_acceptsFrom]
 
 variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
     (⟨x ++ ·.toList⟩) ⁻¹' (M.acceptsFrom S).toSet = (M.acceptsFrom (M.evalFrom S x)).toSet := by
-  ext y; simp_rw [mem_preimage, SetSemiring.mem_toSet, append_mem_acceptsFrom M]
+  ext y; simp [mul_mem_acceptsFrom M]
+
+@[deprecated (since := "2026-11-03")] alias nil_mem_acceptsFrom := one_mem_acceptsFrom
+@[deprecated (since := "2026-11-03")] alias cons_mem_acceptsFrom := of_mul_mem_acceptsFrom
+@[deprecated (since := "2026-11-03")] alias append_mem_acceptsFrom := mul_mem_acceptsFrom
 
 variable (M) in
 @[simp]
@@ -216,9 +220,9 @@ variable (M) in
 private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
     ⟨x⟩ ∈ M.acceptsFrom {s ∈ S | p} ↔ ⟨x⟩ ∈ M.acceptsFrom S ∧ p := by
   induction x generalizing S with
-  | nil => simp only [nil_mem_acceptsFrom, mem_ofPred_eq]; tauto
+  | nil => simp only [FreeMonoid.ofList_nil, one_mem_acceptsFrom, mem_ofPred_eq]; tauto
   | cons a x ih =>
-    simp_rw [cons_mem_acceptsFrom]
+    simp only [FreeMonoid.ofList_cons, of_mul_mem_acceptsFrom]
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
       ext s; simp only [stepSet, mem_ofPred_eq, mem_iUnion, exists_prop]; tauto
     simp [*]
