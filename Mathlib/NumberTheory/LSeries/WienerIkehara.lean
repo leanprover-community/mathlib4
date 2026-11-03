@@ -446,11 +446,12 @@ private lemma summable_term_mul : Summable fun n ↦ ‖(term ↗f 1 n) * 𝓕 �
 include bound hpos hx in
 /-- The map `φ ↦ S f A 1 (𝓕 φ) x` is linear in the test function. -/
 private lemma S_one_sub : S f A 1 (𝓕 (φ - φ')) x = S f A 1 (𝓕 φ) x - S f A 1 (𝓕 φ') x := by
-  have (ψ : 𝓢(ℝ, ℂ)) := (summable_term_mul bound hpos ψ hx).of_norm
-  have (ψ : 𝓢(ℝ, ℂ)) : IntegrableOn (fun u ↦ 𝓕 ψ (c₀ * u)) (Ici (-log x)) :=
+  have hs (ψ : 𝓢(ℝ, ℂ)) := (summable_term_mul bound hpos ψ hx).of_norm
+  have hi (ψ : 𝓢(ℝ, ℂ)) : IntegrableOn (fun u ↦ 𝓕 ψ (c₀ * u)) (Ici (-log x)) :=
     ((𝓕 ψ).integrable.comp_mul_left' (by positivity)).integrableOn
-  simp only [S, S₁, S₂_one]
-  grind [Summable.tsum_sub, integral_sub]
+  simp only [S, S₁, S₂_one, fourier_sub, sub_apply, mul_sub, ofReal_one]
+  rw [Summable.tsum_sub (hs φ) (hs φ'), integral_sub (hi φ) (hi φ')]
+  ring
 
 include bound hpos in
 /-- `φ ↦ S f A 1 (𝓕 φ) x` is bounded by a multiple of the seminorm `φ.Q`, uniformly in `x ≥ 1`. -/
