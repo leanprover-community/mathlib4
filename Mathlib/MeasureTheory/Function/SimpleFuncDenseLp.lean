@@ -396,11 +396,11 @@ def simpleFunc : AddSubgroup (Lp E p μ) where
     rintro f g ⟨s, hs⟩ ⟨t, ht⟩
     use s + t
     simp only [← hs, ← ht, AEEqFun.mk_add_mk, AddSubgroup.coe_add,
-      SimpleFunc.coe_add]
+      FunLike.coe_add]
   neg_mem' := by
     rintro f ⟨s, hs⟩
     use -s
-    simp only [← hs, AEEqFun.neg_mk, SimpleFunc.coe_neg, AddSubgroup.coe_neg]
+    simp only [← hs, AEEqFun.neg_mk, FunLike.coe_neg, AddSubgroup.coe_neg]
 
 variable {E p μ}
 
@@ -851,7 +851,7 @@ theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : 
       have hp_pos : p ≠ 0 := (lt_of_lt_of_le zero_lt_one _i.elim).ne'
       exact indicator c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
     · intro f g hfg hf hg int_fg
-      rw [SimpleFunc.coe_add, memLp_add_of_disjoint hfg f.aestronglyMeasurable] at int_fg
+      rw [FunLike.coe_add, memLp_add_of_disjoint hfg f.aestronglyMeasurable] at int_fg
       exact add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
   have : ∀ f : Lp.simpleFunc E p μ, motive f := by
     intro f
@@ -905,12 +905,12 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
       exact ⟨g, hg, Pg⟩
   · intro f f' hff' hf hf' δ δpos int_ff'
     obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p δpos
-    rw [SimpleFunc.coe_add, memLp_add_of_disjoint hff' f.aestronglyMeasurable] at int_ff'
+    rw [FunLike.coe_add, memLp_add_of_disjoint hff' f.aestronglyMeasurable] at int_ff'
     rcases hf η ηpos.ne' int_ff'.1 with ⟨g, hg, Pg⟩
     rcases hf' η ηpos.ne' int_ff'.2 with ⟨g', hg', Pg'⟩
     refine ⟨g + g', ?_, h1P g g' Pg Pg'⟩
     convert (hη _ _ hg hg').le using 2
-    rw [SimpleFunc.coe_add]
+    rw [FunLike.coe_add]
     abel
 
 section Integrable

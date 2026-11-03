@@ -397,6 +397,7 @@ theorem sum_divisors_eq_sum_properDivisors_add_self :
 @[oeis A000396]
 def Perfect (n : ℕ) : Prop :=
   ∑ i ∈ properDivisors n, i = n ∧ 0 < n
+deriving Decidable
 
 theorem perfect_iff_sum_properDivisors (h : 0 < n) : Perfect n ↔ ∑ i ∈ properDivisors n, i = n :=
   and_iff_left h

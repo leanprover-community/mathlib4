@@ -7,6 +7,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 module
 
 public import Mathlib.Algebra.Group.Center
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.Module.Torsion.Free
 
@@ -46,20 +47,26 @@ variable [Semiring R] [AddCommMonoid M] [AddCommGroup N₁] [Module R M] [Module
 
 instance : One (Module.End R M) := ⟨LinearMap.id⟩
 
+instance : IsOneApplyEqSelf (End R M) where
+
 instance : Mul (Module.End R M) := ⟨fun f g => LinearMap.comp f g⟩
+
+instance : IsMulApplyEqComp (End R M) where
 
 theorem one_eq_id : (1 : Module.End R M) = .id := rfl
 
 theorem mul_eq_comp (f g : Module.End R M) : f * g = f.comp g := rfl
 
-@[simp]
-theorem one_apply (x : M) : (1 : Module.End R M) x = x := rfl
+@[deprecated one_apply_eq_self +typeChanged (since := "2026-10-26")]
+protected theorem one_apply (x : M) : (1 : Module.End R M) x = x := rfl
 
-@[simp]
-theorem mul_apply (f g : Module.End R M) (x : M) : (f * g) x = f (g x) := rfl
+@[deprecated mul_apply_eq_comp +typeChanged (since := "2026-10-26")]
+protected theorem mul_apply (f g : Module.End R M) (x : M) : (f * g) x = f (g x) := rfl
 
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-10-26")]
 theorem coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
 
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-10-26")]
 theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 
 instance instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
@@ -83,9 +90,10 @@ instance instSemiring : Semiring (Module.End R M) where
   natCast_zero := zero_smul ℕ (1 : M →ₗ[R] M)
   natCast_succ := fun n ↦ AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)
 
-/-- See also `Module.End.natCast_def`. -/
-@[simp]
-theorem natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R M) m = n • m := rfl
+instance : IsNatCastApplyEqSMul (End R M) where
+
+@[deprecated natCast_apply_eq_smul +typeChanged (since := "2026-10-26")]
+protected theorem natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R M) m = n • m := rfl
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
@@ -96,9 +104,10 @@ instance instRing : Ring (Module.End R N₁) where
   intCast_ofNat := natCast_zsmul _
   intCast_negSucc := negSucc_zsmul _
 
-/-- See also `Module.End.intCast_def`. -/
-@[simp]
-theorem intCast_apply (z : ℤ) (m : N₁) : (z : Module.End R N₁) m = z • m :=
+instance : IsIntCastApplyEqSMul (End R N₁) where
+
+@[deprecated intCast_apply_eq_smul +typeChanged (since := "2026-10-26")]
+protected theorem intCast_apply (z : ℤ) (m : N₁) : (z : Module.End R N₁) m = z • m :=
   rfl
 
 section
@@ -125,13 +134,16 @@ theorem isUnit_inv_apply_apply_of_isUnit {f : End R M} (h : IsUnit f) (x : M) :
     h.unit.inv (f x) = x :=
   (by simp : (h.unit.inv * f) x = x)
 
+@[deprecated FunLike.coe_pow_eq_iterate +typeChanged (since := "2026-10-26")]
 theorem coe_pow (f : End R M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
-theorem pow_apply (f : End R M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr($(coe_pow f n) m)
+@[deprecated pow_apply_eq_iterate +typeChanged (since := "2026-10-26")]
+protected theorem pow_apply (f : End R M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m :=
+  congr($(coe_pow f n) m)
 
 theorem pow_map_zero_of_le {f : End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
     (hm : (f ^ k) m = 0) : (f ^ l) m = 0 := by
-  rw [← Nat.sub_add_cancel hk, pow_add, mul_apply, hm, map_zero]
+  rw [← Nat.sub_add_cancel hk, pow_add, mul_apply_eq_comp, hm, map_zero]
 
 theorem commute_pow_left_of_commute
     [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₁₂ : R →+* R₂}
@@ -176,7 +188,8 @@ theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
     Surjective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (Nat.pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
+  rw [← Nat.succ_pred_eq_of_pos (Nat.pos_iff_ne_zero.mpr hn), pow_succ',
+    FunLike.coe_mul_eq_comp] at h
   exact Surjective.of_comp h
 
 /-- Scalar multiplication on the left, as a linear map. -/

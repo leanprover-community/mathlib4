@@ -5,8 +5,8 @@ Authors: Kyle Miller, Andreas Gittis
 -/
 module
 
-public meta import Mathlib.Data.Nat.Log
 public meta import Batteries.Lean.Expr
+public meta import Mathlib.Data.Nat.Log
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.NormNum
 
