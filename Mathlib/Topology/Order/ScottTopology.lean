@@ -30,7 +30,6 @@ This file introduces the Scott topology on a preorder.
   monotone.
 - `Topology.IsScott.scottContinuousOn_iff_continuous` - a function is Scott continuous (preserves
   least upper bounds of directed sets) if and only if it is continuous w.r.t. the Scott topology.
-- `Topology.IsScott.instT0Space` - the Scott topology on a partial order is T₀.
 
 ## Implementation notes
 
