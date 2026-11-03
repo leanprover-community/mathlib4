@@ -134,17 +134,24 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
     intro y hy
     congr
     have aux := hf.localInverseAt_symm (g x')
-    sorry
+    have aux' : ∀ z, (hf.localInverseAt (g x')).symm z = f z := by
+      simp
+    rw [← aux']
+    exact ((hf.localInverseAt (g x')).left_inv hy).symm
   refine ⟨(hf.localInverseAt (g x')).source, (hf.localInverseAt (g x')).open_source,
       ?_, ?_⟩
-  · sorry
+  · have aux := hf.apply_self_mem_localInverseAt_source (x:=g x')
+    have aux' : f (g x') = x' := by
+      exact hg x'
+    rw [aux'] at aux
+    exact aux
   · apply ContMDiffOn.congr (h₁ := this)
     apply ContMDiffOn.comp (I' := I) (t := Set.univ)
     -- note : it does not know how to synthetize I' because
     -- it never appears in the goal, only in hg and hf
     -- same with t
     · exact contMDiffOn_univ.mpr hφ
-    · exact smooth_localInverseAt hf hg (g x')
+    · exact smooth_localInverseAt hf hg (g x') h
     · simp
 
 -- maybe this could be just dropped
