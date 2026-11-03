@@ -573,7 +573,7 @@ instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec.{u} := by
   have : IsEmpty (Scheme.Spec.obj (⊥_ CommRingCatᵒᵖ)) :=
     @Function.isEmpty _ _ spec_punit_isEmpty (Scheme.Spec.mapIso
       (initialIsoIsInitial (initialOpOfTerminal CommRingCat.punitIsTerminal))).hom
-  have := preservesInitial_of_iso Scheme.Spec (asIso (initial.to _))
+  have := preservesInitial_of_isIso Scheme.Spec (initial.to _)
   exact preservesColimitsOfShape_pempty_of_preservesInitial _
 
 instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec.{u} :=
