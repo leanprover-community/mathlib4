@@ -10,6 +10,9 @@ public import Mathlib.Control.Traversable.Equiv
 
 import Mathlib.Control.Traversable.Instances
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Traversable instance for DLists
 

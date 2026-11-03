@@ -10,6 +10,7 @@ public import Mathlib.Topology.Category.Profinite.AsLimit
 
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.ClopenBox
+
 /-!
 
 # Light profinite spaces

@@ -236,8 +236,8 @@ open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     #(finMulAntidiag d n) = d ^ ω n := by
   rw [← card_finMulAntidiag_pi d n hn, Finset.card_pi, Finset.prod_const,
-    ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
-    Finset.card_fin]
+    ArithmeticFunction.cardDistinctFactors_eq_length_dedup_primeFactorsList, ← List.card_toFinset,
+    toFinset_factors, Finset.card_fin]
 
 theorem finMulAntidiag_three {n : ℕ} (a) (ha : a ∈ finMulAntidiag 3 n) : a 0 * a 1 * a 2 = n := by
   rw [← (mem_finMulAntidiag.mp ha).1, Fin.prod_univ_three a]

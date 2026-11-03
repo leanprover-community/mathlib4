@@ -200,8 +200,10 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero (MvPolynomial σ 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
 instance [IsCancelAdd R] [IsDomain R] : IsDomain (MvPolynomial σ R) where
 
-theorem C_eq_coe_nat (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
+theorem C_eq_natCast (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
   induction n <;> simp [*]
+
+@[deprecated (since := "2026-10-13")] alias C_eq_coe_nat := C_eq_natCast
 
 theorem C_mul' : MvPolynomial.C a * p = a • p :=
   (Algebra.smul_def a p).symm
@@ -707,7 +709,7 @@ theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolyn
 open scoped symmDiff in
 theorem support_symmDiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     p.support ∆ q.support ⊆ (p + q).support := by
-  rw [symmDiff_def, Finset.sup_eq_union]
+  rw [symmDiff_def]
   apply Finset.union_subset
   · exact support_sdiff_support_subset_support_add p q
   · rw [add_comm]

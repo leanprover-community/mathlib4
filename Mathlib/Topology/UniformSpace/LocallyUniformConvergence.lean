@@ -21,7 +21,7 @@ definition more commonly encountered in the literature. The reason is that in ou
 neighborhood `v` of `x` can depend on the entourage `u`; so our condition is *a priori* weaker than
 the usual one, although the two conditions are equivalent if the domain is locally compact. See
 `tendstoLocallyUniformlyOn_of_forall_exists_nhds` for the one-way implication; the equivalence
-assuming local compactness is part of `tendstoLocallyUniformlyOn_TFAE`.
+assuming local compactness is part of `tendstoLocallyUniformlyOn_tfae`.
 
 We adopt this weaker condition because it is more general but appears to be sufficient for
 the standard applications of locally-uniform convergence (in particular, for proving that a
@@ -229,7 +229,7 @@ theorem TendstoLocallyUniformly.piProd [UniformSpace γ] {G : ι → α → γ} 
 
 Note this is **not** a tautology, since our definition of `TendstoLocallyUniformlyOn` is slightly
 more general (although the conditions are equivalent if `β` is locally compact and `s` is open,
-see `tendstoLocallyUniformlyOn_TFAE`). -/
+see `tendstoLocallyUniformlyOn_tfae`). -/
 lemma tendstoLocallyUniformlyOn_of_forall_exists_nhds
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, TendstoUniformlyOn F f p t) :
     TendstoLocallyUniformlyOn F f p s := by
@@ -247,7 +247,7 @@ lemma tendstoLocallyUniformly_of_forall_exists_nhds
   tendstoLocallyUniformlyOn_univ.mp
     <| tendstoLocallyUniformlyOn_of_forall_exists_nhds (by simpa using h)
 
-theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α → β) (g : α → β)
+theorem tendstoLocallyUniformlyOn_tfae [LocallyCompactSpace α] (G : ι → α → β) (g : α → β)
     (p : Filter ι) (hs : IsOpen s) :
     List.TFAE [
       TendstoLocallyUniformlyOn G g p s,
@@ -266,9 +266,12 @@ theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α �
     exact ⟨v, hv1, hv2 u hu⟩
   tfae_finish
 
+@[deprecated (since := "2026-10-27")]
+alias tendstoLocallyUniformlyOn_TFAE := tendstoLocallyUniformlyOn_tfae
+
 theorem tendstoLocallyUniformlyOn_iff_forall_isCompact [LocallyCompactSpace α] (hs : IsOpen s) :
     TendstoLocallyUniformlyOn F f p s ↔ ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn F f p K :=
-  (tendstoLocallyUniformlyOn_TFAE F f p hs).out 1 2
+  (tendstoLocallyUniformlyOn_tfae F f p hs).out 1 2
 
 lemma tendstoLocallyUniformly_iff_forall_isCompact [LocallyCompactSpace α] :
     TendstoLocallyUniformly F f p ↔ ∀ K : Set α, IsCompact K → TendstoUniformlyOn F f p K := by

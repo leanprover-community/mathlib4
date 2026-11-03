@@ -3,16 +3,18 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Algebra.GroupWithZero.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.RingTheory.Algebraic.Pi
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.GroupWithZero.Action.Prod
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.RingTheory.Algebraic.Pi
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tests that instances do not form diamonds -/
 
@@ -22,7 +24,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 section SMul
 
-open scoped Polynomial
+open scoped AddMonoidAlgebra
 
 example : (ZSMul.toSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
@@ -97,8 +99,8 @@ example (R α : Type _) (β : α → Type _) [Monoid R] [∀ i, MulAction R (β 
     (Units.instMulAction : MulAction Rˣ (∀ i, β i)) = Pi.mulAction _ := by
   with_reducible_and_instances rfl
 
-example (R α : Type _) [Monoid R] [Semiring α] [DistribMulAction R α] :
-    (Units.instDistribMulAction : DistribMulAction Rˣ α[X]) = Polynomial.distribMulAction := by
+example (R α M : Type*) [Monoid R] [Semiring α] [DistribMulAction R α] :
+    (Units.instDistribMulAction : DistribMulAction Rˣ α[M]) = AddMonoidAlgebra.distribMulAction := by
   with_reducible_and_instances rfl
 
 /-!
@@ -144,7 +146,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
-  rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
+  rw [comapSMul_single, Finsupp.smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
     single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
@@ -158,7 +160,7 @@ example {k : Type _} [Semiring k] [Nontrivial kˣ] :
   simp only [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, DFunLike.ext_iff] at h
   replace h := h u (Finsupp.single 1 1) u
   classical
-  rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
+  rw [comapSMul_single, Finsupp.smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
     smul_eq_mul, single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
@@ -166,28 +168,27 @@ end Finsupp
 
 /-! ## `Polynomial` instances -/
 
-
 section Polynomial
 
-variable (R A : Type _)
-
-open scoped Polynomial
+variable (R A M : Type*)
 
 open Polynomial
+open scoped AddMonoidAlgebra
 
 /-- `Polynomial.hasSMulPi` forms a diamond with `Pi.instSMul`. -/
 example [Semiring R] [Nontrivial R] :
     Polynomial.hasSMulPi _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) := by
   intro h
-  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, Polynomial.ext_iff] at h
+  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, AddMonoidAlgebra.ext_iff,
+    Finsupp.ext_iff] at h
   simpa using h X 1 1 0
 
 /-- `Polynomial.hasSMulPi'` forms a diamond with `Pi.instSMul`. -/
 example [CommSemiring R] [Nontrivial R] :
     Polynomial.hasSMulPi' _ _ _ ≠ (Pi.instSMul : SMul R[X] (R → R[X])) := by
   intro h
-  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_), funext_iff, Polynomial.ext_iff] at h
-  simpa using h X 1 1 0
+  simp_rw [SMul.ext_iff, @SMul.smul_eq_hSMul _ _ (_)] at h
+  simpa using congr(($h X 1 1).coeff 0)
 
 -- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 /-- `Polynomial.hasSMulPi'` is consistent with `Polynomial.hasSMulPi`. -/
@@ -196,13 +197,13 @@ example [CommSemiring R] [Nontrivial R] :
   rfl
 
 -- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `Semiring.toNatAlgebra`. -/
-example [Semiring R] : (Polynomial.algebraOfAlgebra : Algebra ℕ R[X]) = Semiring.toNatAlgebra :=
+/-- `AddMonoidAlgebra.algebra` is consistent with `Semiring.toNatAlgebra`. -/
+example [Semiring R] [AddMonoid M] : (AddMonoidAlgebra.algebra : Algebra ℕ R[M]) = Semiring.toNatAlgebra :=
   rfl
 
 -- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
-/-- `Polynomial.algebraOfAlgebra` is consistent with `Ring.toIntAlgebra`. -/
-example [Ring R] : (Polynomial.algebraOfAlgebra : Algebra ℤ R[X]) = Ring.toIntAlgebra _ :=
+/-- `AddMonoidAlgebra.algebra` is consistent with `Ring.toIntAlgebra`. -/
+example [Ring R] [AddMonoid M] : (AddMonoidAlgebra.algebra : Algebra ℤ R[M]) = Ring.toIntAlgebra _ :=
   rfl
 
 end Polynomial
