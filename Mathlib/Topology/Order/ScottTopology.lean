@@ -256,10 +256,23 @@ instance [OrderTopology α] [WellFoundedLT α] : IsScottHausdorff α univ where
         rw [dirSupInacc_iff_inter_subset] at hs
         obtain ⟨y, hy, hyx⟩ := hs hx.nonempty_Iio (.of_linearOrder _) hx.isLUB_Iio hxs
         rw [Ici_inter_Iio] at hyx
-        refine ⟨_, hyx, ?_, ?_⟩
-        · apply SuccOrder.isOpen_Ico
+        refine ⟨Ioc y x, ?_, SuccOrder.isOpen_Ioc, ?_⟩
+        · rw [← Ioo_insert_right hy]
+          exact insert_subset hxs (Ioo_subset_Ico_self.trans hyx)
+        · simpa
+    · rw [le_orderTopology_iff]
+      refine fun a ↦ ⟨?_, ?_⟩
+      · exact @Topology.IsScottHausdorff.IsOpen.Ioi α _ (scottHausdorff α univ) _ _
+      · exact @Topology.IsScottHausdorff.IsOpen.Iio α _ (scottHausdorff α univ) _ _
 
-
+instance [DiscreteTopology α] [WellFoundedGT α] : IsScottHausdorff α univ where
+  topology_eq_scottHausdorff := by
+    rw [DiscreteTopology.eq_bot (α := α), eq_comm, ← le_bot_iff]
+    intro s hs
+    rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)] 
+    rw [isOpen_iff_forall_mem_open]
+    intro x hxs
+    sorry
     · rw [le_orderTopology_iff]
       refine fun a ↦ ⟨?_, ?_⟩
       · exact @Topology.IsScottHausdorff.IsOpen.Ioi α _ (scottHausdorff α univ) _ _

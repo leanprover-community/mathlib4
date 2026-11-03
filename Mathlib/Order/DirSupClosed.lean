@@ -352,6 +352,18 @@ protected theorem DirSupInacc.Ioc (a b : α) : DirSupInacc (Ioc a b) :=
 protected theorem DirSupInaccOn.Ioc (a b : α) : DirSupInaccOn D (Ioc a b) :=
   DirSupInacc.Ioc a b |>.dirSupInaccOn
 
+theorem DirSupClosed.of_wellFoundedGT [WellFoundedGT α] (s : Set α) : DirSupClosed s :=
+  fun _ hdu hd₀ _ _ ha ↦ hdu (ha.mem_of_nonempty hd₀)
+
+theorem DirSupClosedOn.of_wellFoundedGT [WellFoundedGT α] (s : Set α) : DirSupClosedOn D s :=
+  (DirSupClosed.of_wellFoundedGT s).dirSupClosedOn
+
+theorem DirSupInacc.of_wellFoundedGT [WellFoundedGT α] (s : Set α) : DirSupInacc s := by
+  simpa using DirSupClosed.of_wellFoundedGT sᶜ
+
+theorem DirSupInaccOn.of_wellFoundedGT [WellFoundedGT α] (s : Set α) : DirSupInaccOn D s :=
+  (DirSupInacc.of_wellFoundedGT s).dirSupInaccOn
+
 end LinearOrder
 
 section CompleteLattice
