@@ -120,34 +120,6 @@ variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [Br
 open HopfObj Hopf
 
 /-- The image of a Hopf monoid under an braided functor is a Hopf monoid. -/
-abbrev obj.instHopfObj (X : C) [HopfObj X] (F : C ⥤ D) [F.Braided] : HopfObj (F.obj X) where
-  __ := obj.instBimonObj X F
-  antipode := F.map antipode
-  antipode_left := by simp [← map_comp]
-  antipode_right := by simp [← map_comp]
-
-attribute [local instance] obj.instHopfObj
-
-/-- A braided functor takes Hopf monoids to Hopf monoids.
-That is, a braided functor `F : C ⥤ D` induces a functor `Hopf C ⥤ Hopf D`.
--/
-@[implicit_reducible, simps]
-def mapHopf (F : C ⥤ D) [F.Braided] : Hopf C ⥤ Hopf D where
-  obj A := .mk (F.obj A.X)
-  map f := ofHom (F.map f.hom.hom)
-  map_id A := by ext; simp
-  map_comp f g := by ext; simp
-
-end Functor
-
-namespace Functor
-
-variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [BraidedCategory D]
-  (F : C ⥤ D) [F.Braided]
-
-open HopfObj Hopf
-
-/-- The image of a Hopf monoid under an braided functor is a Hopf monoid. -/
 abbrev obj.instHopfObj (A : C) [HopfObj A] (F : C ⥤ D) [F.Braided] : HopfObj (F.obj A) where
   __ := obj.instBimonObj A F
   antipode := F.map antipode
