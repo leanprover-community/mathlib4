@@ -6,8 +6,6 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
-public import Mathlib.Topology.Algebra.LinearTopology
-public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 # Valuative topologies are linear
