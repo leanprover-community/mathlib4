@@ -329,20 +329,6 @@ def IsRegularAtInfty : Prop :=
 
 lemma IsRegularAtInfty.eq (h : 𝒢.IsRegularAtInfty) : 𝒢.strictPeriods = 𝒢.periods := h
 
-/-- The regularity factor at infinity: one for a regular cusp and two otherwise. -/
-noncomputable def regularityFactorInfty [Decidable 𝒢.IsRegularAtInfty] : ℕ :=
-  if 𝒢.IsRegularAtInfty then 1 else 2
-
-@[simp] lemma regularityFactorInfty_eq_one_of_isRegularAtInfty
-    (h : 𝒢.IsRegularAtInfty) [Decidable 𝒢.IsRegularAtInfty] :
-    𝒢.regularityFactorInfty = 1 := by
-  simp [regularityFactorInfty, h]
-
-@[simp] lemma regularityFactorInfty_eq_two_of_not_isRegularAtInfty (h : ¬ 𝒢.IsRegularAtInfty)
-    [Decidable 𝒢.IsRegularAtInfty] :
-    𝒢.regularityFactorInfty = 2 := by
-  simp [regularityFactorInfty, h]
-
 lemma relIndex_strictPeriods :
     𝒢.strictPeriods.relIndex 𝒢.periods = 1 ∨ 𝒢.strictPeriods.relIndex 𝒢.periods = 2 := by
   by_cases h : 𝒢.strictPeriods = 𝒢.periods
@@ -357,14 +343,23 @@ lemma relIndex_strictPeriods :
     · exact Or.inr h
     · simpa only [neg_mul_neg] using Or.inl (mul_mem h <| hu_mem.resolve_left hu_notMem)
 
-/-- The regularity factor is the index of strict periods in periods. -/
-lemma relIndex_strictPeriods_eq_regularityFactorInfty [Decidable 𝒢.IsRegularAtInfty] :
-    𝒢.strictPeriods.relIndex 𝒢.periods = 𝒢.regularityFactorInfty := by
-  by_cases h : 𝒢.IsRegularAtInfty
-  · simp [h.eq, regularityFactorInfty, h]
-  · rw [𝒢.regularityFactorInfty_eq_two_of_not_isRegularAtInfty h]
-    exact 𝒢.relIndex_strictPeriods.resolve_left fun hi ↦
-      h (𝒢.strictPeriods_le_periods.antisymm (AddSubgroup.relIndex_eq_one.mp hi))
+/-- The regularity factor at infinity: the index of the strict periods in the periods. It is `1`
+if `𝒢` is regular at `∞` and `2` otherwise. -/
+noncomputable def regularityFactorInfty : ℕ :=
+  𝒢.strictPeriods.relIndex 𝒢.periods
+
+lemma relIndex_strictPeriods_eq_regularityFactorInfty :
+    𝒢.strictPeriods.relIndex 𝒢.periods = 𝒢.regularityFactorInfty :=
+  rfl
+
+@[simp] lemma regularityFactorInfty_eq_one_of_isRegularAtInfty (h : 𝒢.IsRegularAtInfty) :
+    𝒢.regularityFactorInfty = 1 := by
+  simp [regularityFactorInfty, h.eq]
+
+@[simp] lemma regularityFactorInfty_eq_two_of_not_isRegularAtInfty (h : ¬ 𝒢.IsRegularAtInfty) :
+    𝒢.regularityFactorInfty = 2 :=
+  𝒢.relIndex_strictPeriods.resolve_left fun hi ↦
+    h (𝒢.strictPeriods_le_periods.antisymm (AddSubgroup.relIndex_eq_one.mp hi))
 
 lemma commensurable_strictPeriods_periods :
     𝒢.strictPeriods.Commensurable 𝒢.periods := by
@@ -537,7 +532,7 @@ lemma isRegularAtInfty_iff [DiscreteTopology 𝒢.periods] :
   rwa [periods_eq_zmultiples_widthInfty, AddSubgroup.zmultiples_le]
 
 /-- The strict width is the width multiplied by the regularity factor. -/
-lemma strictWidthInfty_eq_regularityFactorInfty_mul_widthInfty [Decidable 𝒢.IsRegularAtInfty] :
+lemma strictWidthInfty_eq_regularityFactorInfty_mul_widthInfty :
     𝒢.strictWidthInfty = 𝒢.regularityFactorInfty * 𝒢.widthInfty := by
   rw [← relIndex_strictPeriods_eq_regularityFactorInfty]
   by_cases hd : DiscreteTopology 𝒢.strictPeriods
@@ -554,12 +549,10 @@ lemma strictWidthInfty_eq_regularityFactorInfty_mul_widthInfty [Decidable 𝒢.I
 
 lemma strictWidthInfty_of_isRegularAtInfty (h𝒢 : 𝒢.IsRegularAtInfty) :
     𝒢.strictWidthInfty = 𝒢.widthInfty := by
-  classical
   simp [strictWidthInfty_eq_regularityFactorInfty_mul_widthInfty, h𝒢]
 
 lemma strictWidthInfty_of_not_isRegularAtInfty (h𝒢 : ¬ 𝒢.IsRegularAtInfty) :
     𝒢.strictWidthInfty = 2 * 𝒢.widthInfty := by
-  classical
   simp [strictWidthInfty_eq_regularityFactorInfty_mul_widthInfty, h𝒢]
 
 lemma widthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.widthInfty := by
@@ -576,21 +569,22 @@ lemma mem_strictPeriods_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)} 
   rw [upperRightHom_conj_of_upperTriangular hg]
 
 /-- Strict cusp widths scale inversely under an upper triangular change of coordinate. -/
-lemma strictWidthInfty_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G]
-    (hw : 0 < G.strictWidthInfty) {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
+lemma strictWidthInfty_conj_of_upperTriangular (G : Subgroup (GL (Fin 2) ℝ))
+    [DiscreteTopology G.strictPeriods] {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
     (ConjAct.toConjAct g⁻¹ • G).strictWidthInfty = G.strictWidthInfty / |g 0 0 / g 1 1| := by
-  refine strictWidthInfty_eq_of_strictPeriods_eq_zmultiples ?_ (by positivity)
+  refine strictWidthInfty_eq_of_strictPeriods_eq_zmultiples ?_
+    (div_nonneg G.strictWidthInfty_nonneg (abs_nonneg _))
   ext
   rw [← abs_of_nonneg G.strictWidthInfty_nonneg, ← abs_div, zmultiples_abs,
-      mem_strictPeriods_conj_of_upperTriangular hg, strictPeriods_eq_zmultiples_strictWidthInfty]
-  have ha : 0 < |g 0 0 / g 1 1| := by simpa [Matrix.det_fin_two, hg] using g.det_ne_zero
-  grind [AddSubgroup.mem_zmultiples_iff]
+        mem_strictPeriods_conj_of_upperTriangular hg, strictPeriods_eq_zmultiples_strictWidthInfty]
+  grind [AddSubgroup.mem_zmultiples_iff, g.a_ne_zero_of_c_eq_zero hg, g.d_ne_zero_of_c_eq_zero hg]
 
 /-- Cusp widths scale inversely under an upper triangular change of coordinate. -/
-lemma widthInfty_conj_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G]
-    (hw : 0 < G.widthInfty) {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
+lemma widthInfty_conj_of_upperTriangular (G : Subgroup (GL (Fin 2) ℝ))
+    [DiscreteTopology G.periods] {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
     (ConjAct.toConjAct g⁻¹ • G).widthInfty = G.widthInfty / |g 0 0 / g 1 1| := by
-  simpa [widthInfty, adjoinNegOne_conj] using strictWidthInfty_conj_of_upperTriangular hw hg
+  have : DiscreteTopology G.adjoinNegOne.strictPeriods := ‹_›
+  simpa [widthInfty, adjoinNegOne_conj] using strictWidthInfty_conj_of_upperTriangular _ hg
 
 /-- In a discrete determinant-one group with a cusp at infinity, every element fixing
 infinity is a signed translation. -/
@@ -598,8 +592,8 @@ lemma eq_upperRightHom_or_neg_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)}
     [G.HasDetOne] (hw : 0 < G.widthInfty) {g : GL (Fin 2) ℝ} (hgG : g ∈ G) (hg : g 1 0 = 0) :
     g = upperRightHom (g 0 1) ∨ g = -upperRightHom (-g 0 1) := by
   have hdet : g 0 0 * g 1 1 = 1 := by
-    simpa [Matrix.det_fin_two, hg] using congrArg Units.val (HasDetOne.det_eq hgG)
-  have hwidth := widthInfty_conj_of_upperTriangular hw hg
+    simpa [Matrix.det_fin_two, hg] using congr($(HasDetOne.det_eq hgG).val)
+  have hwidth := widthInfty_conj_of_upperTriangular G hg
   rw [conjAct_pointwise_smul_eq_self (G.le_normalizer (G.inv_mem hgG))] at hwidth
   have heq : g 0 0 = g 1 1 := by grind
   rcases (show g 1 1 = 1 ∨ g 1 1 = -1 by grind) with h | h <;> [left; right] <;>
