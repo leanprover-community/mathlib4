@@ -829,6 +829,7 @@ theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
     ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft, lmul'_comp_includeRight,
     AlgHom.id_comp, AlgHom.id_comp]
 
+@[simp]
 theorem comp_productMap : h.comp (productMap f g) = productMap (h.comp f) (h.comp g) :=
   Algebra.TensorProduct.ext' (by simp)
 

@@ -346,11 +346,11 @@ lemma equalizerIdempotent_mul_eq_iff {a : A} :
     | tmul x y => simp [mul_assoc, h]
     | add x y hx hy => simp [add_mul, hx, hy]
 
-theorem span_equalizerIdempotent_sub_one_eq :
-    Ideal.span {equalizerIdempotent f g - 1} = Ideal.span (Set.range fun x ↦ f x - g x) :=
+theorem span_equalizerIdempotent_one_sub_eq :
+    Ideal.span {1 - equalizerIdempotent f g} = Ideal.span (Set.range fun x ↦ f x - g x) :=
   eq_of_forall_ge_iff fun I ↦ by simpa [← map_equalizerIdempotent, ← Ideal.Quotient.eq,
-    Ideal.span_le, Set.range_subset_iff] using (equalizerIdempotent_mul_eq_iff (a := 1)
-      (f := (Ideal.Quotient.mkₐ R I).comp f) (g := (Ideal.Quotient.mkₐ R I).comp g))
+    Ideal.span_le, Set.range_subset_iff, eq_comm] using (equalizerIdempotent_mul_eq_iff
+      (a := 1) (f := (Ideal.Quotient.mkₐ R I).comp f) (g := (Ideal.Quotient.mkₐ R I).comp g))
 
 variable {f g} in
 lemma equalizerIdempotent_eq_one_iff : equalizerIdempotent f g = 1 ↔ f = g := by
@@ -360,13 +360,13 @@ lemma equalizerIdempotent_eq_one_iff : equalizerIdempotent f g = 1 ↔ f = g := 
 lemma equalizerIdempotent_self : equalizerIdempotent f f = 1 :=
   equalizerIdempotent_eq_one_iff.mpr rfl
 
-lemma map_mul_equalizerIdempotent (x : S) :
+lemma apply_mul_equalizerIdempotent (x : S) :
     f x * equalizerIdempotent f g = g x * equalizerIdempotent f g :=
   equalizerIdempotent_mul_eq_iff.mp (isIdempotentElem_equalizerIdempotent f g).eq x
 
 lemma equalizerIdempotent_comm : equalizerIdempotent f g = equalizerIdempotent g f := by
-  have hfg := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (map_mul_equalizerIdempotent f g x).symm
-  have hgf := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (map_mul_equalizerIdempotent g f x).symm
+  have hfg := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (apply_mul_equalizerIdempotent f g x).symm
+  have hgf := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (apply_mul_equalizerIdempotent g f x).symm
   rw [← hfg, mul_comm, hgf]
 
 end equalizer
