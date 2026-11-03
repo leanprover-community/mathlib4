@@ -34,7 +34,7 @@ variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
 /-- Characterization of differentiable functions into a vector bundle.
 Version at a point within a set -/
-theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
+theorem mdifferentiableWithinAt_totalSpace_iff (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
     MDiffAt[s] f x₀ ↔
       MDiffAt[s] (fun x => (f x).proj) x₀ ∧
       MDiffAt[s] (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
@@ -54,27 +54,39 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     exact hx
   · simp only [mfld_simps]
 
+@[deprecated (since := "2026-11-03")]
+alias mdifferentiableWithinAt_totalSpace := mdifferentiableWithinAt_totalSpace_iff
+
 /-- Characterization of differentiable functions into a vector bundle.
 Version at a point -/
-theorem mdifferentiableAt_totalSpace (f : M → TotalSpace F E) {x₀ : M} :
+theorem mdifferentiableAt_totalSpace_iff (f : M → TotalSpace F E) {x₀ : M} :
     MDiffAt f x₀ ↔
       MDiffAt (fun x => (f x).proj) x₀ ∧
       MDiffAt (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
   simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_totalSpace _ f
 
+@[deprecated (since := "2026-11-03")]
+alias mdifferentiableAt_totalSpace := mdifferentiableAt_totalSpace_iff
+
 /-- Characterization of differentiable sections of a vector bundle at a point within a set
 in terms of the preferred trivialization at that point. -/
-theorem mdifferentiableWithinAt_section (s : Π b, E b) {u : Set B} {b₀ : B} :
+theorem mdifferentiableWithinAt_section_iff (s : Π b, E b) {u : Set B} {b₀ : B} :
     MDiffAt[u] (T% s) b₀ ↔ MDiffAt[u] (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
   rw [mdifferentiableWithinAt_totalSpace]
   change MDifferentiableWithinAt _ _ id _ _ ∧ _ ↔ _
   simp [mdifferentiableWithinAt_id]
 
+@[deprecated (since := "2026-11-03")]
+alias mdifferentiableWithinAt_section := mdifferentiableWithinAt_section_iff
+
 /-- Characterization of differentiable sections of a vector bundle at a point within a set
 in terms of the preferred trivialization at that point. -/
-theorem mdifferentiableAt_section (s : Π b, E b) {b₀ : B} :
+theorem mdifferentiableAt_section_iff (s : Π b, E b) {b₀ : B} :
     MDiffAt (T% s) b₀ ↔ MDiffAt (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
   simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_section _ _
+
+@[deprecated (since := "2026-11-03")]
+alias mdifferentiableAt_section := mdifferentiableAt_section_iff
 
 namespace Bundle
 
