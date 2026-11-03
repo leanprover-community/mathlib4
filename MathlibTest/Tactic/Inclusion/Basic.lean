@@ -19,6 +19,20 @@ example : ((-3 : ℤ) : ℝ) = -3 := by dyadic_interval
 
 end Constants
 
+section Integers
+
+example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc 1 2) (hn : n ∈ Set.Ioo (-2) 3) :
+    x ^ 2 ≤ 4 ∧ n ^ 2 ≤ 4 := by dyadic_interval
+
+/-- info: The inclusion check succeeded. -/
+#guard_msgs in
+set_option linter.unusedTactic false in
+example {n : ℤ} (hn₀ : 1 < n) (hn₁ : n < 3) : n = 2 := by
+  dyadic_interval?
+  dyadic_interval
+
+end Integers
+
 section Rationals
 
 example : ((1 / 2 : ℚ) : ℝ) = 0.5 := by dyadic_interval [prec := 1]

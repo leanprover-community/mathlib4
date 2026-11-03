@@ -57,6 +57,10 @@ theorem Interval.mem_def [Preorder α] {x : α} {I : Interval α} :
 def Interval.map (I : Interval α) (f : α → β) : Interval β :=
   ⟨WithBot.map f I.lb, WithTop.map f I.ub⟩
 
+@[simp]
+theorem Interval.map_id (I : Interval α) : I.map id = I := by
+  simp [Interval.map]
+
 theorem Interval.map_map {γ : Type*} (I : Interval α) (f : α → β) (g : β → γ) :
     (I.map f).map g = I.map (g ∘ f) := by
   simp [Interval.map, WithBot.map_map, WithTop.map_map]
