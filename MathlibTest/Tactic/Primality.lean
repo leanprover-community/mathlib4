@@ -69,6 +69,33 @@ example : Nat.Prime (72 * 786433 * 3221225473 + 1) := by
     .lucas { root := 5, factors := #[2, 3] },
     .lucas { root := 10, factors := #[2, 3] }])
 
+-- Curve25519's field prime
+example : Nat.Prime (2 ^ 255 - 19) := by
+  simp
+  primality (cert := .witnesses [
+    .lucas { root := 2, factors := #[2, 3, 65147, 74058212732561358302231226437062788676166966415465897661863160754340907] },
+    .lucas { root := 2, factors := #[2, 3, 353, 57467, 132049, 1923133, 31757755568855353, 75445702479781427272750846543864801] },
+    .lucas { root := 7, factors := #[2, 3, 5, 75707, 72106336199, 1919519569386763] },
+    .lucas { root := 10, factors := #[2, 3, 31, 107, 223, 4153, 430751] },
+    .lucas { root := 2, factors := #[2, 3, 7, 19, 47, 127, 8574133] },
+    .lucas { root := 7, factors := #[2, 13, 2773320623] },
+    .lucas { root := 5, factors := #[2, 2437, 569003] },
+    .lucas { root := 2, factors := #[2, 3, 7, 103, 991] },
+    .lucas { root := 2, factors := #[2, 3, 43, 3727] },
+    .lucas { root := 2, factors := #[2, 7, 97, 419] },
+    .lucas { root := 17, factors := #[2, 5, 1723] },
+    .lucas { root := 26, factors := #[2, 3, 7, 131] },
+    .lucas { root := 2, factors := #[2, 37853] },
+    .lucas { root := 2, factors := #[2, 32573] },
+    .lucas { root := 2, factors := #[2, 59, 487] },
+    .lucas { root := 2, factors := #[2, 9463] },
+    .lucas { root := 2, factors := #[2, 17, 479] },
+    .lucas { root := 3, factors := #[2, 3, 19, 83] },
+    .lucas { root := 5, factors := #[2, 3, 173] },
+    .lucas { root := 3, factors := #[2, 3, 23] },
+    .lucas { root := 2, factors := #[2, 3, 7, 29] },
+    .lucas { root := 3, factors := #[2, 3, 7, 41] }])
+
 /-! ## Errors -/
 
 /-- error: n does not evaluate to a numeral; try simplifying it first -/
