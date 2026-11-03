@@ -68,16 +68,77 @@ namespace Hopf
 variable {C}
 
 /-- A Hopf monoid is a bimonoid. -/
-def toBimon (A : Hopf C) : Bimon C := .mk A.X
+abbrev toBimon' (A : Hopf C) : Bimon C := .mk A.X
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.
 In fact they automatically intertwine the antipodes, proved below.
 -/
 instance : Category (Hopf C) :=
-  inferInstanceAs <| Category (InducedCategory (Bimon C) Hopf.toBimon)
+  inferInstanceAs <| Category (InducedCategory (Bimon C) toBimon')
+
+@[ext] lemma ext {A B : Hopf C} {f g : A ⟶ B} (w : f.hom = g.hom) : f = g :=
+  InducedCategory.Hom.ext w
+
+@[simp] theorem hom_id (A : Hopf C) : (𝟙 A : A ⟶ A).hom = 𝟙 A.toBimon' := rfl
+
+@[simp]
+theorem hom_comp {A₁ A₂ A₃ : Hopf C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
+/-- The forgetful functor from Hopf monoids to bimonoid objects. -/
+abbrev toBimon : Hopf C ⥤ Bimon C := inducedFunctor _
+
+/-- Construct a morphism `Hopf.mk X ⟶ Hopf.mk Y` from a  map `f : X ⟶ Y` and a `IsBimonHom f`
+instance. -/
+@[simps!]
+def ofHom {X Y : C} [HopfObj X] [HopfObj Y] (f : X ⟶ Y) [IsBimonHom f] :
+    Hopf.mk X ⟶ Hopf.mk Y := InducedCategory.homMk (Bimon.Hom.mk f)
+
+
+/-- Construct a morphism `A ⟶ B` of `Hopf C` from a map `f : A.X ⟶ B.X` and `IsMonHom f` and
+`IsComonHom f` instances. -/
+@[simps!]
+def homMk {A B : Hopf C} (f : A.X ⟶ B.X) [IsMonHom f] [IsComonHom f] : A ⟶ B :=
+  InducedCategory.homMk (Bimon.homMk f)
+
+/-- Construct an isomorphism of Hopf monoids by giving an isomorphism between the underlying
+objects and checking compatibility only in the forward direction. -/
+@[simps! -isSimp]
+abbrev mkIso {A B : Hopf C} (e : A.X ≅ B.X) [IsMonHom e.hom] [IsComonHom e.hom] :
+    A ≅ B where
+  hom := homMk e.hom
+  inv := homMk e.inv
 
 end Hopf
+
+namespace Functor
+
+variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [BraidedCategory D]
+  (F : C ⥤ D) [F.Braided]
+
+open HopfObj Hopf
+
+/-- The image of a Hopf monoid under an braided functor is a Hopf monoid. -/
+abbrev obj.instHopfObj (X : C) [HopfObj X] (F : C ⥤ D) [F.Braided] : HopfObj (F.obj X) where
+  __ := obj.instBimonObj X F
+  antipode := F.map antipode
+  antipode_left := by simp [← map_comp]
+  antipode_right := by simp [← map_comp]
+
+attribute [local instance] obj.instHopfObj
+
+/-- A braided functor takes Hopf monoids to Hopf monoids.
+That is, a braided functor `F : C ⥤ D` induces a functor `Hopf C ⥤ Hopf D`.
+-/
+@[implicit_reducible, simps]
+def mapHopf (F : C ⥤ D) [F.Braided] : Hopf C ⥤ Hopf D where
+  obj A := .mk (F.obj A.X)
+  map f := ofHom (F.map f.hom.hom)
+  map_id A := by ext; simp
+  map_comp f g := by ext; simp
+
+end Functor
 
 namespace HopfObj
 
