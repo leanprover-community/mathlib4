@@ -150,10 +150,7 @@ lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I J n (F ∘ g) := by
   apply IsLocalHomeomorph.contMDiff_of_contMDiff_comp hf hg h
-  apply hF'.congr
-  intro y
-  apply hF
-  exact hg (f y)
+  exact hF'.congr (fun y ↦ hF _ _ (hg (f y)))
 
 /-- Suppose `f : M → N` is `G`-invariant, then `f` is `C^n` if and only if the induced map
 `M ⧸ G → N` is. -/
