@@ -857,7 +857,7 @@ alias nndist_eq_nnnorm_div := nnDist_eq_nnNorm_div
 
 alias nnDist_eq_nnNorm := nnDist_eq_nnNorm_sub
 
-@[to_additive (attr := deprecated (since := "2026-10-31"))]
+@[deprecated (since := "2026-10-31")]
 alias nndist_eq_nnnorm := nnDist_eq_nnNorm
 
 @[to_additive]
@@ -1078,7 +1078,8 @@ theorem nnNorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0}
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
   (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
 
-@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_prod_le_of_le := nnNorm_prod_le_of_le
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_prod_le_of_le := nnNorm_prod_le_of_le
 
 @[to_additive]
 theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
