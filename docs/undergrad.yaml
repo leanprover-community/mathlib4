@@ -354,7 +354,7 @@ Single Variable Real Analysis:
     differentiability of the limit of a sequence of functions: 'hasFDerivAt_of_tendstoUniformly'
     differentiability of the sum of a series of functions: 'differentiable_tsum'
     Weierstrass polynomial approximation theorem: 'polynomialFunctions_closure_eq_top'
-    Weierstrass trigonometric approximation theorem: 'span_fourier_closure_eq_top'
+    Weierstrass trigonometric approximation theorem: 'AddCircle.span_fourier_closure_eq_top'
   Convexity:
     convex functions of a real variable: 'ConvexOn'
     continuity and differentiability of convex functions:
@@ -444,7 +444,7 @@ Topology:
     inner product space $L^2$: 'MeasureTheory.L2.innerProductSpace'
     completeness of $L^2$: 'MeasureTheory.Lp.instCompleteSpace'
     Hilbert bases: 'HilbertBasis' # the document specifies "in the separable case" but we don't require this
-    example, the Hilbert basis of trigonometric polynomials: 'fourierBasis'
+    example, the Hilbert basis of trigonometric polynomials: 'AddCircle.fourierBasis'
     example, classical Hilbert bases of orthogonal polynomials: ''
     Lax-Milgram theorem: 'IsCoercive.continuousLinearEquivOfBilin'
     $H^1_0([0,1])$ and its application to the one-dimensional Dirichlet problem: ''
@@ -529,12 +529,12 @@ Measures and integral calculus:
     approximation by convolution: 'ContDiffBump.convolution_tendsto_right'
     regularization by convolution: 'HasCompactSupport.contDiff_convolution_left'
   Fourier analysis:
-    Fourier series of locally integrable periodic real-valued functions: 'fourierBasis'
+    Fourier series of locally integrable periodic real-valued functions: 'AddCircle.fourierBasis'
     Riemann-Lebesgue lemma: 'tendsto_integral_exp_smul_cocompact'
     convolution product of periodic functions: ''
     Dirichlet theorem: ''
     Fejer theorem: ''
-    Parseval theorem: 'tsum_sq_fourierCoeff'
+    Parseval theorem: 'AddCircle.tsum_sq_fourierCoeff'
     Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourier_eq'
     Fourier transform on $\mathrm{L}^2(\R^d)$: 'MeasureTheory.Lp.fourierTransformₗᵢ'
     Plancherel’s theorem: 'SchwartzMap.integral_inner_fourier_fourier'

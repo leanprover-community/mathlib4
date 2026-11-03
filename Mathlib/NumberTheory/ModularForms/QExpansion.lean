@@ -53,7 +53,7 @@ and bounded at infinity.
 
 -/
 
-assert_not_exists fourierCoeffOn -- guard against import creep
+assert_not_exists AddCircle.fourierCoeffOn -- guard against import creep
 
 @[expose] public noncomputable section
 

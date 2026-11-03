@@ -218,24 +218,24 @@ section BernoulliFourierCoeffs
 
 /-- The `n`-th Fourier coefficient of the `k`-th Bernoulli function on the interval `[0, 1]`. -/
 def bernoulliFourierCoeff (k : ℕ) (n : ℤ) : ℂ :=
-  fourierCoeffOn zero_lt_one (fun x => bernoulliFun k x) n
+  AddCircle.fourierCoeffOn zero_lt_one (fun x => bernoulliFun k x) n
 
 /-- Recurrence relation (in `k`) for the `n`-th Fourier coefficient of `Bₖ`. -/
 theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
     bernoulliFourierCoeff k n =
       1 / (-2 * π * I * n) * (ite (k = 1) 1 0 - k * bernoulliFourierCoeff (k - 1) n) := by
   unfold bernoulliFourierCoeff
-  rw [fourierCoeffOn_of_hasDerivAt zero_lt_one hn
+  rw [AddCircle.fourierCoeffOn_of_hasDerivAt zero_lt_one hn
       (fun x _ => (hasDerivAt_bernoulliFun k x).ofReal_comp)
       ((continuous_ofReal.comp <|
             continuous_const.mul <| Polynomial.continuous _).intervalIntegrable
         _ _)]
   simp_rw [ofReal_one, ofReal_zero, sub_zero, one_mul]
-  rw [QuotientAddGroup.mk_zero, fourier_eval_zero, one_mul, ← ofReal_sub, bernoulliFun_eval_one,
-    add_sub_cancel_left]
+  rw [QuotientAddGroup.mk_zero, AddCircle.fourier_eval_zero, one_mul, ← ofReal_sub,
+    bernoulliFun_eval_one, add_sub_cancel_left]
   congr 2
   · split_ifs <;> simp only [ofReal_one, ofReal_zero]
-  · simp_rw [ofReal_mul, ofReal_natCast, fourierCoeffOn.const_mul]
+  · simp_rw [ofReal_mul, ofReal_natCast, AddCircle.fourierCoeffOn_const_mul]
 
 /-- The Fourier coefficients of `B₀(x) = 1`. -/
 theorem bernoulli_zero_fourier_coeff {n : ℤ} (hn : n ≠ 0) : bernoulliFourierCoeff 0 n = 0 := by
@@ -243,9 +243,9 @@ theorem bernoulli_zero_fourier_coeff {n : ℤ} (hn : n ≠ 0) : bernoulliFourier
 
 /-- The `0`-th Fourier coefficient of `Bₖ(x)`. -/
 theorem bernoulliFourierCoeff_zero {k : ℕ} (hk : k ≠ 0) : bernoulliFourierCoeff k 0 = 0 := by
-  simp_rw [bernoulliFourierCoeff, fourierCoeffOn_eq_integral, neg_zero, fourier_zero, sub_zero,
-    div_one, one_smul, intervalIntegral.integral_ofReal, integral_bernoulliFun_eq_zero hk,
-    ofReal_zero]
+  simp_rw [bernoulliFourierCoeff, AddCircle.fourierCoeffOn_eq_integral, neg_zero,
+    AddCircle.fourier_zero, sub_zero, div_one, one_smul, intervalIntegral.integral_ofReal,
+    integral_bernoulliFun_eq_zero hk, ofReal_zero]
 
 theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
     bernoulliFourierCoeff k n = -k ! / (2 * π * I * n) ^ k := by
@@ -266,8 +266,8 @@ end BernoulliFourierCoeffs
 section BernoulliPeriodized
 
 /-! In this section we use the above evaluations of the Fourier coefficients of Bernoulli
-polynomials, together with the theorem `has_pointwise_sum_fourier_series_of_summable` from Fourier
-theory, to obtain an explicit formula for `∑ (n:ℤ), 1 / n ^ k * fourier n x`. -/
+polynomials, together with the theorem `AddCircle.hasSum_fourier_series_apply_of_summable` from
+Fourier theory, to obtain an explicit formula for `∑ (n:ℤ), 1 / n ^ k * fourier n x`. -/
 
 
 /-- The Bernoulli polynomial, extended from `[0, 1)` to the unit circle. -/
@@ -280,10 +280,11 @@ theorem periodizedBernoulli.continuous {k : ℕ} (hk : k ≠ 1) : Continuous (pe
     (Polynomial.continuous _).continuousOn
 
 theorem fourierCoeff_bernoulli_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
-    fourierCoeff ((↑) ∘ periodizedBernoulli k : 𝕌 → ℂ) n = -k ! / (2 * π * I * n) ^ k := by
+    AddCircle.fourierCoeff ((↑) ∘ periodizedBernoulli k : 𝕌 → ℂ) n =
+      -k ! / (2 * π * I * n) ^ k := by
   have : ((↑) ∘ periodizedBernoulli k : 𝕌 → ℂ) = AddCircle.liftIco 1 0 ((↑) ∘ bernoulliFun k) := by
     ext1 x; rfl
-  rw [this, fourierCoeff_liftIco_eq]
+  rw [this, AddCircle.fourierCoeff_liftIco_eq]
   simpa only [zero_add] using! bernoulliFourierCoeff_eq hk n
 
 theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
@@ -301,11 +302,11 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
 
 theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k) {x : ℝ}
     (hx : x ∈ Icc (0 : ℝ) 1) :
-    HasSum (fun n : ℤ => 1 / (n : ℂ) ^ k * fourier n (x : 𝕌))
+    HasSum (fun n : ℤ => 1 / (n : ℂ) ^ k * AddCircle.fourier n (x : 𝕌))
       (-(2 * π * I) ^ k / k ! * bernoulliFun k x) := by
   -- first show it suffices to prove result for `Ico 0 1`
   suffices ∀ {y : ℝ}, y ∈ Ico (0 : ℝ) 1 →
-      HasSum (fun (n : ℤ) ↦ 1 / (n : ℂ) ^ k * fourier n y)
+      HasSum (fun (n : ℤ) ↦ 1 / (n : ℂ) ^ k * AddCircle.fourier n y)
         (-(2 * (π : ℂ) * I) ^ k / k ! * bernoulliFun k y) by
     rw [← Ico_insert_right (zero_le_one' ℝ), mem_insert_iff, or_comm] at hx
     rcases hx with (hx | rfl)
@@ -317,10 +318,10 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
   let B : C(𝕌, ℂ) :=
     ContinuousMap.mk ((↑) ∘ periodizedBernoulli k)
       (continuous_ofReal.comp (periodizedBernoulli.continuous (by lia)))
-  have step1 : ∀ n : ℤ, fourierCoeff B n = -k ! / (2 * π * I * n) ^ k := by
+  have step1 : ∀ n : ℤ, AddCircle.fourierCoeff B n = -k ! / (2 * π * I * n) ^ k := by
     rw [ContinuousMap.coe_mk]; exact fourierCoeff_bernoulli_eq (by lia : k ≠ 0)
   have step2 :=
-    has_pointwise_sum_fourier_series_of_summable
+    AddCircle.hasSum_fourier_series_apply_of_summable
       ((summable_bernoulli_fourier hk).congr fun n => (step1 n).symm) y
   simp_rw [step1] at step2
   convert! step2.mul_left (-(2 * ↑π * I) ^ k / (k ! : ℂ)) using 2 with n
@@ -340,7 +341,8 @@ section Cleanup
 theorem hasSum_one_div_nat_pow_mul_fourier {k : ℕ} (hk : 2 ≤ k) {x : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) :
     HasSum
       (fun n : ℕ =>
-        (1 : ℂ) / (n : ℂ) ^ k * (fourier n (x : 𝕌) + (-1 : ℂ) ^ k * fourier (-n) (x : 𝕌)))
+        (1 : ℂ) / (n : ℂ) ^ k *
+          (AddCircle.fourier n (x : 𝕌) + (-1 : ℂ) ^ k * AddCircle.fourier (-n) (x : 𝕌)))
       (-(2 * π * I) ^ k / k ! * bernoulliFun k x) := by
   convert (hasSum_one_div_pow_mul_fourier_mul_bernoulliFun hk hx).nat_add_neg using 1
   · ext1 n
@@ -358,7 +360,8 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
       ((-1 : ℝ) ^ (k + 1) * (2 * π) ^ (2 * k) / 2 / (2 * k)! *
         (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli (2 * k))).eval x) := by
   have :
-    HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k) * (fourier n (x : 𝕌) + fourier (-n) (x : 𝕌)))
+    HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k) *
+        (AddCircle.fourier n (x : 𝕌) + AddCircle.fourier (-n) (x : 𝕌)))
       ((-1 : ℂ) ^ (k + 1) * (2 * (π : ℂ)) ^ (2 * k) / (2 * k)! * bernoulliFun (2 * k) x) := by
     convert! hasSum_one_div_nat_pow_mul_fourier (by lia : 2 ≤ 2 * k) hx using 3
     · rw [pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul]
@@ -375,9 +378,9 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
-    · rw [ofReal_cos, ofReal_mul, fourier_coe_apply, fourier_coe_apply, cos, ofReal_one, div_one,
-        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_natCast,
-        ofReal_natCast]
+    · rw [ofReal_cos, ofReal_mul, AddCircle.fourier_coe_apply, AddCircle.fourier_coe_apply, cos,
+        ofReal_one, div_one, div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg,
+        Int.cast_natCast, ofReal_natCast]
       congr 3
       · ring
       · ring
@@ -392,7 +395,8 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
       ((-1 : ℝ) ^ (k + 1) * (2 * π) ^ (2 * k + 1) / 2 / (2 * k + 1)! *
         (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli (2 * k + 1))).eval x) := by
   have :
-    HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k + 1) * (fourier n (x : 𝕌) - fourier (-n) (x : 𝕌)))
+    HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k + 1) *
+        (AddCircle.fourier n (x : 𝕌) - AddCircle.fourier (-n) (x : 𝕌)))
       ((-1 : ℂ) ^ (k + 1) * I * (2 * π : ℂ) ^ (2 * k + 1) / (2 * k + 1)! *
         bernoulliFun (2 * k + 1) x) := by
     convert hasSum_one_div_nat_pow_mul_fourier (by lia : 2 ≤ 2 * k + 1) hx using 1
@@ -413,9 +417,10 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
-    · rw [ofReal_sin, ofReal_mul, fourier_coe_apply, fourier_coe_apply, sin, ofReal_one, div_one,
-        div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg, Int.cast_natCast,
-        ofReal_natCast, ← div_div, div_I, div_mul_eq_mul_div₀, ← neg_div, ← neg_mul, neg_sub]
+    · rw [ofReal_sin, ofReal_mul, AddCircle.fourier_coe_apply, AddCircle.fourier_coe_apply, sin,
+        ofReal_one, div_one, div_one, ofReal_mul, ofReal_mul, ofReal_two, Int.cast_neg,
+        Int.cast_natCast, ofReal_natCast, ← div_div, div_I, div_mul_eq_mul_div₀, ← neg_div,
+        ← neg_mul, neg_sub]
       congr 4
       · ring
       · ring
