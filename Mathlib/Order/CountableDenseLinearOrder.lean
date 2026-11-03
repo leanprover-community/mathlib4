@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Ideal
 
+import Mathlib.Basic.Countable.Basic
 import Mathlib.Data.Finset.Max
 
 /-!
