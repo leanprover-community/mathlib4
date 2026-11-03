@@ -1316,7 +1316,7 @@ def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
 instance [ValuativeRel.IsIntegerRing A] : IsIntegerSMul A B :=
   .of_forall_smul_one_vle_one fun a ↦ by
     simpa [Algebra.smul_def] using
-      (vle_iff_vle (B := B) a 1).mpr (vle_one_of_isIntegerRing A a)
+      (vle_iff_vle (B := B)).mpr (vle_one_of_isIntegerRing A a)
 
 end Semiring
 

@@ -90,7 +90,7 @@ instance : (mulValuation.comap (algebraMap ℤ_[p] ℚ_[p])).Compatible where
   vle_iff_le _ _ := Iff.rfl
 
 instance : ValuativeExtension ℤ_[p] ℚ_[p] where
-  vle_iff_vle _ _ := Iff.rfl
+  vle_iff_vle := Iff.rfl
 
 instance : IsValuativeTopology ℤ_[p] :=
   .of_integers integers Topology.IsInducing.subtypeVal
