@@ -96,6 +96,13 @@ instance [L.Inv] : Inv (L.Term α) where
 @[to_additive]
 theorem inv_def [L.Inv] : t⁻¹ = Functions.inv.apply₁ t := rfl
 
+@[to_additive]
+instance [L.Mul] [L.Inv] : Div (L.Term α) where
+  div t₁ t₂ := t₁ * t₂⁻¹
+
+@[to_additive]
+theorem div_def [L.Mul] [L.Inv] : t₁ / t₂ = t₁ * t₂⁻¹ := rfl
+
 section
 
 variable [L.Zero] [L.One] [L.Add]
@@ -118,10 +125,10 @@ instance : Pow (L.Term α) ℕ where
   pow t n := npowRec n t
 
 @[to_additive (attr := simp)]
-theorem pow_zero : t ^ 0 = 1 := rfl
+theorem npow_zero : t ^ 0 = 1 := rfl
 
 @[to_additive (attr := simp)]
-theorem pow_succ {n : ℕ} : t ^ (n + 1) = t ^ n * t := rfl
+theorem npow_succ {n : ℕ} : t ^ (n + 1) = t ^ n * t := rfl
 
 /-- Product over a finite set of terms.
 
@@ -133,6 +140,18 @@ It is defined via choice, so the result only makes sense when the structure sati
 and associativity (see `realize_sum`). -/]
 noncomputable def prod {β : Type*} (s : Finset β) (f : β → L.Term α) : L.Term α :=
   (s.toList.map f).prod
+
+variable [L.Inv]
+
+@[to_additive]
+instance : Pow (L.Term α) ℤ where
+  pow t n := zpowRec npowRec n t
+
+@[to_additive (attr := simp)]
+theorem zpow_natCast {n : ℕ} : t ^ (n : ℤ) = t ^ n := rfl
+
+@[to_additive (attr := simp)]
+theorem zpow_negSucc {n : ℕ} : t ^ (Int.negSucc n) = (t ^ (n + 1))⁻¹ := rfl
 
 end
 
@@ -195,6 +214,11 @@ theorem realize_inv [L.Inv] [Inv M] [CompatibleInv L M] :
     Term.realize v t⁻¹ = (Term.realize v t)⁻¹ := by
   simp [Term.inv_def]
 
+@[to_additive (attr := simp)]
+theorem realize_div [L.Mul] [L.Inv] [DivInvMonoid M] [CompatibleMul L M] [CompatibleInv L M] :
+    Term.realize v (t₁ / t₂) = Term.realize v t₁ / Term.realize v t₂ := by
+  simp [Term.div_def, div_eq_mul_inv]
+
 @[simp]
 theorem realize_natCast [L.Zero] [L.One] [L.Add] [AddMonoidWithOne M]
     [CompatibleZero L M] [CompatibleOne L M] [CompatibleAdd L M] {n : ℕ} :
@@ -206,6 +230,12 @@ theorem realize_npow [L.One] [L.Mul] [Monoid M] [CompatibleOne L M]
     [CompatibleMul L M] {n : ℕ} :
     Term.realize v (t ^ n) = Term.realize v t ^ n := by
   induction n <;> simp [pow_add, *]
+
+@[to_additive (attr := simp)]
+theorem realize_zpow [L.One] [L.Mul] [L.Inv] [Group M] [CompatibleOne L M]
+    [CompatibleMul L M] [CompatibleInv L M] {n : ℤ} :
+    Term.realize v (t ^ n) = Term.realize v t ^ n := by
+  cases n <;> simp [pow_add]
 
 @[to_additive (attr := simp)]
 theorem realize_prod [L.One] [L.Mul] [CommMonoid M] [CompatibleOne L M]
