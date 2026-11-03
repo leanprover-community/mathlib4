@@ -177,9 +177,6 @@ namespace ExponentialModule
 
 open PowerSeries Additive
 
--- /-- The coercion map from `ExponentialModule R` to `R⟦X⟧`. -/
--- @[coe] def toPowerSeries (f : ExponentialModule R) : R⟦X⟧ := toMul f
-
 variable (R) in
 instance : Coe (ExponentialModule R) R⟦X⟧ := ⟨fun f ↦ toMul f⟩
 
@@ -227,7 +224,7 @@ noncomputable instance : Module A (ExponentialModule R) where
   mul_smul _ _ _ := by simp [← coe_inj, rescale_rescale, mul_comm]
   smul_zero _    := by simp [← coe_inj]
   smul_add _ _ _ := by simp [← coe_inj]
-  add_smul r s f := by simp [← coe_inj, ← IsExponential.rescale_add r s (isExponential_coe f)]
+  add_smul r s f := by simp [← coe_inj, ← IsExponential.rescale_add _ _ (isExponential_coe f)]
   zero_smul _    := by simp [← coe_inj]
 
 end ExponentialModule
@@ -246,7 +243,7 @@ protected theorem neg {f : R⟦X⟧} (hf : IsExponential f) :
 protected theorem self_mul_neg_eq_one {f : R⟦X⟧} (hf : IsExponential f) :
     f * (rescale (-1 : R) f) = 1 := by
   have hadd := hf.rescale_add (1 : R) (-1 : R)
-  simp only [Algebra.algebraMap_self, RingHom.id_apply, add_neg_cancel, rescale_zero,
+  simp only [RingHom.id_apply, add_neg_cancel, rescale_zero,
     RingHom.coe_comp, Function.comp_apply, rescale_one] at hadd
   rw [← hadd, hf.constantCoeff, map_one]
 
