@@ -189,22 +189,22 @@ def _root_.MulEquiv.abelianizationCongr (e : G ≃* H) : Abelianization G ≃* A
     simp
   map_mul' := map_mul _
 
-@[to_additive (attr := simp) addAbelianizationCong_of]
+@[to_additive (attr := simp)]
 theorem abelianizationCongr_of (e : G ≃* H) (x : G) :
     e.abelianizationCongr (Abelianization.of x) = Abelianization.of (e x) :=
   rfl
 
-@[to_additive (attr := simp) addAbelianizationCongr_refl]
+@[to_additive (attr := simp)]
 theorem abelianizationCongr_refl :
     (MulEquiv.refl G).abelianizationCongr = MulEquiv.refl (Abelianization G) :=
   MulEquiv.toMonoidHom_injective Abelianization.lift_of
 
-@[to_additive (attr := simp) addAbelianizationCongr_symm]
+@[to_additive (attr := simp)]
 theorem abelianizationCongr_symm (e : G ≃* H) :
     e.abelianizationCongr.symm = e.symm.abelianizationCongr :=
   rfl
 
-@[to_additive (attr := simp) addAbelianizationCongr_trans]
+@[to_additive (attr := simp)]
 theorem abelianizationCongr_trans {I : Type v} [Group I] (e : G ≃* H) (e₂ : H ≃* I) :
     e.abelianizationCongr.trans e₂.abelianizationCongr = (e.trans e₂).abelianizationCongr :=
   MulEquiv.toMonoidHom_injective (Abelianization.hom_ext _ _ rfl)
