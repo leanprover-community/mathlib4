@@ -84,12 +84,6 @@ theorem isOpen_iff {s : Set α} : IsOpen s ↔
   · simp [nhds_eq_pure.2 ho', ho, ho']
 
 @[to_dual]
-theorem isSuccLimit_of_mem_frontier {a : α} {s : Set α} (ha : a ∈ frontier s) : IsSuccLimit a := by
-  rw [← isOpen_singleton_iff.not_left]
-  rw [frontier_eq_closure_inter_closure] at ha
-  grind [mem_closure_iff, Set.Nonempty]
-
-@[to_dual]
 theorem accPt_principal {a : α} {s : Set α} :
     AccPt a (𝓟 s) ↔ ¬ IsMin a ∧ ∀ b < a, (s ∩ Ioo b a).Nonempty := by
   rw [accPt_iff_frequently]
@@ -108,5 +102,11 @@ theorem _root_.AccPt.isSuccLimit {a : α} {s : Set α} (h : AccPt a (𝓟 s)) : 
   rw [isSuccLimit_iff, IsSuccPrelimit]
   simp_rw [accPt_principal, Set.Nonempty] at h
   grind [covBy_iff_Ioo_eq]
+
+@[to_dual]
+theorem isSuccLimit_of_mem_frontier {a : α} {s : Set α} (ha : a ∈ frontier s) : IsSuccLimit a := by
+  rw [← isOpen_singleton_iff.not_left]
+  rw [frontier_eq_closure_inter_closure] at ha
+  grind [mem_closure_iff, Set.Nonempty]
 
 end SuccOrder
