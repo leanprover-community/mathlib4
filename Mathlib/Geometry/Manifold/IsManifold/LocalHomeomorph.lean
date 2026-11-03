@@ -108,12 +108,18 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse
   apply (hFg.comp (IsLocalHomeomorph.isContMDiffOfRightInverse hf hg h)).congr
   exact fun y ↦ hF _ _ (hg (f y)).symm
 
-lemma smooth_localInverseAt (x : M)
+lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
+    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiffAt I I n (hf.localInverseAt (g y)) y := by
+
+  sorry
+
+lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiffOn I I n (↑(hf.localInverseAt x)) (hf.localInverseAt x).source := by
-  sorry
-
+  intro y
+  have aux := foo hf h
 
   sorry
 
@@ -122,7 +128,21 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
     {φ : M' → N} (hφ : ContMDiff I J n (φ ∘ f)) :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I J n φ := by
-  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  --let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  intro _ x'
+  have : φ =ᶠ[𝓝 x'] ((φ ∘ f) ∘ (hf.localInverseAt (g x'))) := by
+    sorry
+  apply ContMDiffAt.congr_of_eventuallyEq (h₁ := this)
+  apply ContMDiffAt.comp (I' := I) x'
+  · exact hφ.contMDiffAt
+  ·
+    --refine (smooth_localInverseAt hf hg (g x') h).contMDiffAt ?_
+
+    sorry
+
+
+
+  /-
   apply contMDiff_of_locally_contMDiffOn
   intro x'
   have : ∀ y ∈ (hf.localInverseAt (g x')).source,
@@ -136,6 +156,7 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
   · simpa only [hg x'] using hf.apply_self_mem_localInverseAt_source (x := g x')
   · exact (ContMDiffOn.comp (contMDiffOn_univ.mpr hφ) (smooth_localInverseAt hf hg (g x') h)
       (by simp)).congr this
+  -/
 
 -- maybe this could be just dropped
 /-- Suppose `F : M → N` is `C^n` and invariant under `f`,
