@@ -33,10 +33,11 @@ inductive Witness where
 inductive CertConfig where
   /-- Lucas certificates. -/
   | lucas (cfg : LucasConfig)
-  /-- The certificate with the witnesses in `witnesses`, each paired with its prime. Nothing is
-  searched, so each prime needs a witness unless it is below `normNumBound` or proved by the
+  /-- The certificate with the witnesses in `witnesses`. A prime `q` takes the first entry whose
+  factors are the prime factors of `q - 1` and whose root is a primitive root of `q`. Nothing is
+  searched, so each prime needs an entry unless it is below `normNumBound` or proved by the
   user. -/
-  | witnesses (witnesses : List (Nat × Witness))
+  | witnesses (witnesses : List Witness)
 
 /-- A certificate that `p` is prime. -/
 inductive Cert : Nat → Type where
@@ -77,13 +78,12 @@ def findCert (cfg : CertConfig) (known : Array Nat) (p : Nat) : CoreM (Cert p) :
     findLucasCert (findLucasWitness ((Factorizer.ofArray known).then lucasCfg.toFactorizer)
       lucasCfg.toPrimitiveRootFinder p) (.ofArray known) p
   | .witnesses witnesses =>
-    let witnesses := Std.HashMap.ofList witnesses
     findLucasCert (fun q ↦ do
-      if let some (.lucas w) := witnesses[q]? then
-        if w.factors.foldl Nat.divMaxPow (q - 1) == 1 &&
+      for .lucas w in witnesses do
+        if w.factors.all (fun r ↦ (q - 1) % r == 0) && w.factors.foldl Nat.divMaxPow (q - 1) == 1 &&
             (← PrimitiveRootFinder.ofArray #[w.root] q w.factors).isSome then
           return w
-      throwError "the provided witness does not certify the primality of {q}") (.ofArray known) p
+      throwError "no provided witness certifies the primality of {q}") (.ofArray known) p
 
 /-- Proves `Nat.Prime p` from the certificate `cert`. The cache holds the proof of each prime, so
 that each prime is proved only once. -/

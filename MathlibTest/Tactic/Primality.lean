@@ -59,7 +59,15 @@ example : Nat.Prime (73 ! + 1) := by simp [Nat.factorial]; primality
 /-! ## Certificates given by witnesses -/
 
 example : Nat.Prime 65537 := by
-  primality (cert := .witnesses [(65537, .lucas { root := 3, factors := #[2] })])
+  primality (cert := .witnesses [.lucas { root := 3, factors := #[2] }])
+
+-- `786433 - 1` and `3221225473 - 1` have the same prime factors, and `5` is a primitive root of
+-- `3221225473` only, so `786433` takes the last entry.
+example : Nat.Prime (72 * 786433 * 3221225473 + 1) := by
+  primality (cert := .witnesses [
+    .lucas { root := 7, factors := #[2, 3, 786433, 3221225473] },
+    .lucas { root := 5, factors := #[2, 3] },
+    .lucas { root := 10, factors := #[2, 3] }])
 
 /-! ## Errors -/
 
@@ -72,7 +80,7 @@ provided at `.lucas { roots := … }` if 1000001 is prime. -/
 #guard_msgs in
 example : Nat.Prime 1000001 := by primality
 
-/-- error: the provided witness does not certify the primality of 65537 -/
+/-- error: no provided witness certifies the primality of 65537 -/
 #guard_msgs in
 example : Nat.Prime 65537 := by
-  primality (cert := .witnesses [(65537, .lucas { root := 2, factors := #[2] })])
+  primality (cert := .witnesses [.lucas { root := 2, factors := #[2] }])
