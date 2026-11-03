@@ -146,6 +146,17 @@ end Presheaf
 
 namespace Functor
 
+example (D : Type*) [Category* D] [EssentiallySmall.{w} D] (P : Dᵒᵖ ⥤ Type w) :
+    InitiallySmall.{w} P.Elements := initiallySmall_of_essentiallySmall _
+
+/-- A presheaf `P : Cᵒᵖ ⥤ Type w` on a locally `w`-small category `C` is a
+`κ`-ind object (for `κ` a regular cardinal) if
+1. the category `P.Elementsᵒᵖ` is `κ`-filtered;
+2. the category `P.Elements` is initially `w`-small.
+(If `C` is essentially `w`-small, 2. always holds and can be proven using the lemma
+`initiallySmall_of_essentiallySmall`.)
+See the lemma `Functor.isCardinalIndObject_iff` for an alternative characterization
+of `κ`-ind objects as (small) `κ`-filtered colimits of representable presheaves. -/
 class IsCardinalIndObject
     [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   isCardinalFiltered_elements_op (P κ) : IsCardinalFiltered P.Elementsᵒᵖ κ
@@ -154,6 +165,7 @@ class IsCardinalIndObject
 variable [LocallySmall.{w} C]
 
 variable (C) in
+/-- `κ`-ind objects, as property of objects in `Cᵒᵖ ⥤ Type w`. -/
 abbrev isCardinalIndObject (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     ObjectProperty (Cᵒᵖ ⥤ Type w) :=
   fun P ↦ P.IsCardinalIndObject κ
@@ -234,48 +246,18 @@ lemma isCardinalIndObject_iff
   exact ⟨J, inferInstance, inferInstance, F ⋙ (Elements.π P).leftOp,  _,
     ⟨(Functor.Final.isColimitWhiskerEquiv F _).symm (Elements.isColimitShrinkYonedaCocone P)⟩⟩
 
+lemma IsCardinalIndObject.small_hom
+    (P Q : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] [P.IsCardinalIndObject κ] :
+  Small.{w} (P ⟶ Q) := by
+    obtain ⟨J, _, _, F, ι, ⟨h⟩⟩ := (P.isCardinalIndObject_iff κ).mp inferInstance
+    let φ (f : P ⟶ Q) (j : J) : shrinkYoneda.{w}.obj (F.obj j) ⟶ Q := ι.app j ≫ f
+    exact small_of_injective (f := φ) (fun a b hab ↦ h.hom_ext (fun j ↦ congr($(hab) j)))
+
 end Functor
 
-namespace  Presheaf
-
---open CategoryTheory.Functor Elements in
---lemma isCardinalFiltered_elements_op_iff [EssentiallySmall.{w} C]
---    (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
---    IsCardinalFiltered P.Elementsᵒᵖ κ ↔
---      ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ) (F : J ⥤ C)
---        (ι : F ⋙ shrinkYoneda.{w} ⟶ (Functor.const _).obj P),
---        Nonempty (IsColimit (Cocone.mk _ ι)) := by
---  /-refine ⟨fun h ↦ ?_,
---    fun ⟨J, _, _, F, ι, ⟨h⟩⟩ ↦ isCardinalFilteredElementsOp_of_isColimit P κ F ι h⟩
---  let e := equivSmallModel.{w} P.Elementsᵒᵖ
---  exact ⟨SmallModel.{w} P.Elementsᵒᵖ, inferInstance, IsCardinalFiltered.of_equivalence κ e,
---    e.inverse ⋙ (π P).leftOp,
---    (Functor.associator _ _ _).hom ≫ whiskerLeft e.inverse (shrinkYonedaCocone P).ι,
---    ⟨IsColimit.equivOfNatIsoOfIso (Functor.associator _ _ _).symm _ _ (Cocone.ext (Iso.refl _))
---      ((isColimitShrinkYonedaCocone P).whiskerEquivalence e.symm)⟩⟩-/
---  sorry
---
---open CategoryTheory.Functor Elements in
---lemma isCardinalFiltered_elements_op_iff' [EssentiallySmall.{w} C]
---    (P : C ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
---    IsCardinalFiltered P.Elementsᵒᵖ κ ↔
---      ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ) (F : J ⥤ Cᵒᵖ)
---        (ι : F ⋙ shrinkCoyoneda.{w} ⟶ (Functor.const _).obj P),
---        Nonempty (IsColimit (Cocone.mk _ ι)) := by
---  sorry
---  /-refine ⟨fun h ↦ ?_,
---    fun ⟨J, _, _, F, ι, ⟨h⟩⟩ ↦ isCardinalFilteredElementsOp_of_isColimit' P κ F ι h⟩
---  let e := equivSmallModel.{w} P.Elementsᵒᵖ
---  refine ⟨SmallModel.{w} P.Elementsᵒᵖ, inferInstance, IsCardinalFiltered.of_equivalence κ e,
---    e.inverse ⋙ (π P).op,
---    (Functor.associator _ _ _).hom ≫ whiskerLeft e.inverse (shrinkCoyonedaCocone P).ι,
---    ⟨IsColimit.equivOfNatIsoOfIso (Functor.associator _ _ _).symm _ _ (Cocone.ext (Iso.refl _))
---      ((isColimitShrinkCoyonedaCocone P).whiskerEquivalence e.symm)⟩⟩-/
-
-
-end Presheaf
-
 variable (C) in
+/-- If `C` is a locally `w`-small category and `κ` a regular cardinal,
+this is the category of `κ`-ind objects in `C`, as a full subcategory of `Cᵒᵖ ⥤ Type w`. -/
 abbrev CardinalInd [LocallySmall.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :=
   (Functor.isCardinalIndObject C κ).FullSubcategory
 
@@ -293,16 +275,24 @@ lemma exists_presentation (P : CardinalInd C κ) :
         Nonempty (IsColimit (Cocone.mk _ ι)) :=
   (P.obj.isCardinalIndObject_iff κ).mp inferInstance
 
+/-- The inclusion of the category of `κ`-ind objects of a category `C`
+into the category of presheaves of types on `C`. -/
+abbrev inclusion : CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w := ObjectProperty.ι _
+
+/-- The fully faithful embedding `C ⥤ CardinalInd C κ` of a category `C` in its
+category of `κ`-ind objects. -/
 noncomputable abbrev ι : C ⥤ CardinalInd C κ :=
   ObjectProperty.lift _ shrinkYoneda.{w} inferInstance
 
-abbrev inclusion : CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w := ObjectProperty.ι _
-
 variable (C κ) in
-@[expose, simps!]
+/-- The composition of `ι : C ⥤ CardinalInd C κ` and
+`inclusion : CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w` identifies the the
+Yoneda embedding. -/
+@[expose, simps! hom_app inv_app]
 noncomputable def ιCompInclusion : ι (C := C) (κ := κ) ⋙ inclusion ≅ shrinkYoneda.{w} := Iso.refl _
 
 variable (C κ) in
+/-- The functor `ι : C ⥤ CardinalInd C κ` is fully faithful. -/
 noncomputable def fullyFaithfulι : (ι : C ⥤ CardinalInd C κ).FullyFaithful :=
   Functor.FullyFaithful.ofCompFaithful
     (.ofIso (fullyFaithfulShrinkYoneda C) (ιCompInclusion C κ).symm)
@@ -318,13 +308,10 @@ instance : PreservesLimitsOfSize.{w₁, w₂} (CardinalInd.ι : C ⥤ CardinalIn
     have := preservesLimitsOfShape_of_natIso (J := J) (ιCompInclusion C κ).symm
     exact preservesLimitsOfShape_of_reflects_of_preserves _ inclusion
 
-instance (P Q : CardinalInd C κ) :
-    Small.{w} (P ⟶ Q) := by
-  obtain ⟨J, _, _, F, ι, ⟨h⟩⟩ := P.exists_presentation
-  let φ (f : P ⟶ Q) (j : J) : shrinkYoneda.{w}.obj (F.obj j) ⟶ Q.obj := ι.app j ≫ f.hom
-  refine small_of_injective (f := φ) (fun a b hab ↦ ?_)
-  ext : 1
-  exact h.hom_ext (fun j ↦ congr($(hab) j))
+instance : LocallySmall.{w} (CardinalInd C κ) where
+  hom_small P Q :=
+    have := Functor.IsCardinalIndObject.small_hom P.obj Q.obj κ
+    small_of_injective (f := fun f ↦ f.hom) (ObjectProperty.ι _).map_injective
 
 end LocallySmall
 

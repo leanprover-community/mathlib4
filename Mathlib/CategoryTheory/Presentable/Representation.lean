@@ -78,6 +78,9 @@ namespace Presheaf
 variable {C D : Type*} [Category* C] [Category* D] [LocallySmall.{w} C] [LocallySmall.{w} D]
   (F : C ⥤ D) [F.Full] [F.Faithful]
 
+/-- If `F : C ⥤ D` is a fully faithful functor between locally `w`-small categories
+and `X : C`, the presheaf `(Presheaf.restrictedShrinkYoneda.{w} F).obj (F.obj X)`
+on `C` is represented by `X`. -/
 noncomputable def restrictedShrinkYonedaObjObjRepresentableBy (X : C) :
     ((Presheaf.restrictedShrinkYoneda.{w} F).obj (F.obj X)).RepresentableBy X :=
   (shrinkYonedaRepresentableBy.{w} X).ofIso (asIso (shrinkYonedaMap.{w} F X))
@@ -142,6 +145,9 @@ lemma essImage_restrictedShrinkYoneda_isCardinalPresentable_ι :
         (Functor.isoWhiskerLeft _ (asIso (shrinkYonedaMap₂.{w} _)) ≪≫
           (Functor.associator _ _ _).symm) _).symm h)⟩⟩
 
+/-- When `C` is a `κ`-accessible category, this is functor
+from `C` to the category of `κ`-ind functors in the category of `κ`-presentable
+objects in `C`. This is an equivalence of categories. -/
 @[implicit_reducible, simps! obj_obj map_hom]
 noncomputable def toCardinalIndObject :
     C ⥤ CardinalInd (isCardinalPresentable C κ).FullSubcategory κ :=

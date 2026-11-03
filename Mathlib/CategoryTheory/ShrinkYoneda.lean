@@ -550,19 +550,6 @@ noncomputable def shrinkYonedaObjCompUliftFunctorIso (Y : C) :
 alias shrinkCoyonedaCompEvaluationCompUliftFunctorIsoUliftFunctor :=
   shrinkYonedaObjCompUliftFunctorIso
 
-noncomputable def shrinkCoyonedaObjOpOpIso (X : C) :
-    shrinkCoyoneda.{w}.obj (op (op X)) ≅ shrinkYoneda.{w}.obj X :=
-  NatIso.ofComponents (fun _ ↦ (shrinkCoyonedaObjObjEquiv.trans (Quiver.Hom.opEquiv.symm.trans
-    shrinkYonedaObjObjEquiv.symm)).toIso) (by
-      rintro ⟨Y₁⟩ ⟨Y₂⟩ f
-      ext x
-      obtain ⟨x, rfl⟩ := shrinkCoyonedaObjObjEquiv.symm.surjective x
-      dsimp [shrinkCoyoneda, shrinkCoyonedaObjObjEquiv]
-      simp only [Equiv.toIso_hom_hom_apply, Equiv.trans_apply, Quiver.Hom.opEquiv_symm_apply]
-      rw [Equiv.apply_symm_apply, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm,
-        Equiv.apply_symm_apply, unop_comp, shrinkYonedaObjObjEquiv_symm_comp,
-        Quiver.Hom.op_unop])
-
 /-- `shrinkCoyoneda.obj X` is corepresented by `X`. -/
 @[simps]
 noncomputable
