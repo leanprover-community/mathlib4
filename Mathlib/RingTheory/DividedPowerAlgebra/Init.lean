@@ -5,10 +5,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos—Fernández
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.RingTheory.Congruence.Hom
-public import Mathlib.RingTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.DividedPowers.Basic
+
+import Mathlib.RingTheory.Congruence.BigOperators
 
 /-!
 # The universal divided power algebra
@@ -95,7 +95,7 @@ end DividedPowerAlgebra
 
 /-- The divided power algebra of a module M is defined as the ring quotient of the polynomial ring
   in the variables `ℕ × M` by the ring relation defined by `DividedPowerAlgebra.Rel`.
-  We will later show that that `DividedPowerAlgebra R M` has divided powers.
+  We will later show that `DividedPowerAlgebra R M` has divided powers.
   It satisfies a weak universal property for morphisms to rings with divided powers. -/
 abbrev DividedPowerAlgebra := DividedPowerAlgebra.ringCon R M |>.Quotient
 

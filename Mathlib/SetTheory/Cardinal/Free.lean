@@ -6,14 +6,13 @@ Authors: Eric Wieser, Daniel Weber
 module
 
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-public import Mathlib.Algebra.Ring.TransferInstance
-public import Mathlib.Data.Finsupp.Fintype
-public import Mathlib.Data.ZMod.Defs
-public import Mathlib.GroupTheory.FreeGroup.Reduce
-public import Mathlib.RingTheory.FreeCommRing
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.Cardinal.Finsupp
 public import Mathlib.Algebra.MonoidAlgebra.Cardinal
+public import Mathlib.RingTheory.FreeCommRing
+
+import Mathlib.Algebra.Ring.TransferInstance
+import Mathlib.Data.Finsupp.Fintype
+import Mathlib.Data.ZMod.Defs
+import Mathlib.GroupTheory.FreeGroup.Reduce
 
 /-!
 # Cardinalities of free constructions
@@ -33,7 +32,9 @@ variable (α : Type u)
 section Infinite
 
 @[to_additive]
-instance [Nonempty α] : Infinite (FreeMonoid α) := inferInstanceAs <| Infinite (List α)
+instance [Nonempty α] : Infinite (FreeMonoid α) := by
+  rw [FreeMonoid.toListEquiv.infinite_iff]
+  infer_instance
 
 @[to_additive]
 instance [Nonempty α] : Infinite (FreeGroup α) := by
@@ -52,7 +53,7 @@ section Countable
 variable [Countable α]
 
 @[to_additive]
-instance : Countable (FreeMonoid α) := inferInstanceAs <| Countable (List α)
+instance : Countable (FreeMonoid α) := .of_equiv _ FreeMonoid.toListEquiv.symm
 
 @[to_additive]
 instance : Countable (FreeGroup α) := inferInstanceAs <| Countable (Quot _)
@@ -72,9 +73,13 @@ namespace Cardinal
 theorem mk_abelianization_le (G : Type u) [Group G] :
     #(Abelianization G) ≤ #G := Cardinal.mk_le_of_surjective Quotient.mk_surjective
 
+@[to_additive]
+lemma mk_freeMonoid_eq_mk_list : #(FreeMonoid α) = #(List α) :=
+  mk_congr FreeMonoid.toListEquiv
+
 @[to_additive (attr := simp)]
-theorem mk_freeMonoid [Nonempty α] : #(FreeMonoid α) = max #α ℵ₀ :=
-  Cardinal.mk_list_eq_max_mk_aleph0 _
+theorem mk_freeMonoid [Nonempty α] : #(FreeMonoid α) = max #α ℵ₀ := by
+  rw [← mk_list_eq_max_mk_aleph0, mk_freeMonoid_eq_mk_list]
 
 @[to_additive (attr := simp)]
 theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by

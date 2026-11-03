@@ -528,7 +528,7 @@ theorem Equiv.coinduced_symm {α β : Type*} (e : α ≃ β) :
 
 lemma WithTopology.topology_eq_induced {X : Type*} (t : TopologicalSpace X) :
     instTopologicalSpace X t = .induced ofTopology t :=
-  congrFun (WithTopology.equiv X t).coinduced_symm t
+  congr($((WithTopology.equiv X t).coinduced_symm) t)
 
 end GaloisConnection
 

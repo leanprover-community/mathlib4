@@ -222,7 +222,6 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Tactic" / "Linter",
       "MathlibTest" / "Linter",
       "scripts" / "lint-style.lean",
-      "scripts" / "lint-style.py",
     ] }
   | .«t-logic» => {
     dirs := #[
@@ -261,7 +260,6 @@ def mathlibLabelData : (l : Label) → LabelData l
     ],
     exclusions := #[
       "scripts" / "lint-style.lean",
-      "scripts" / "lint-style.py",
       "scripts" / "nolints.json",
       "scripts" / "nolints-style.txt",
       "scripts" / "nolints_prime_decls.txt",
@@ -340,7 +338,7 @@ section Tests
 #guard getMatchingLabels #["scripts" / "add_deprecations.sh"] == #[.«CI»]
 #guard getMatchingLabels #["scripts" / "lint-style.lean"] == #[.«t-linter»]
 #guard getMatchingLabels #["Mathlib" / "Tactic" / "Linter" / "TextBased.lean",
-  "scripts" / "lint-style.lean", "scripts" / "lint-style.py"] == #[.«t-linter»]
+  "scripts" / "lint-style.lean"] == #[.«t-linter»]
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
 subfolders of `Mathlib/`. -/
@@ -391,6 +389,7 @@ inductive GithubInteraction where
 
 open IO in
 def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
+  let mut exitCode : UInt32 := 0
   let force := args.hasFlag "force"
   let tool: GithubInteraction :=
     match ((args.flag? "pr").map (·.as! Nat)), args.hasFlag "gh", args.flag? "curl" with
@@ -400,39 +399,33 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
     | some pr, false, some curlFlag => .curl pr (curlFlag.as! String)
 
   -- test: validate that all paths in `mathlibLabelData` actually exist
-  let mut valid := true
   for label in mathlibLabels do
     let data := mathlibLabelData label
     for dir in data.dirs do
       unless ← FilePath.pathExists dir do
-        -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
           s!"directory '{dir}' does not exist but is included by label '{label}'. \
           Please update `{ ``AutoLabel.mathlibLabelData }`!"
-        valid := false
+        exitCode := 2
     for dir in data.exclusions do
       unless ← FilePath.pathExists dir do
-        -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabelData }`"
           s!"directory '{dir}' does not exist but is excluded by label '{label}'. \
           Please update `{ ``AutoLabel.mathlibLabelData }`!"
-        valid := false
-  unless valid do
-    return 2
+        exitCode := 2
 
   -- test: validate that the labels cover all of the `Mathlib/` folder
   let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
   if notMatchedPaths.size > 0 then
-    -- print github annotation warning
     -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
     println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
       s!"Incomplete `{ ``AutoLabel.mathlibLabelData }`"
       s!"the following paths inside `Mathlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
-    -- return 3
+    exitCode := 3
 
   -- get the modified files
   let gitDiff ← IO.Process.run {
@@ -482,7 +475,7 @@ def autoLabelCli (args : Cli.Parsed) : IO UInt32 := do
       println s!"::notice::added label: {newLabels}"
     | .none =>
       println s!"::notice::github interaction disabled, not adding labels."
-  return 0
+  return exitCode
 
 end AutoLabel
 
@@ -509,7 +502,7 @@ def autolabel : Cli.Cmd := `[Cli|
 
 - `0`: success
 - `2`: invalid labels defined
-- `3`: ~labels do not cover all of `Mathlib/`~ (unused; only emitting warning)
+- `3`: labels do not cover all of `Mathlib/`
 -/
 public def main (args : List String) : IO UInt32 :=
   autolabel.validate args

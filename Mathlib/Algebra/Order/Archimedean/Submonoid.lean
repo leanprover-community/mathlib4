@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Order.Archimedean.Defs
-public import Mathlib.Data.Rat.Floor
+
+import Mathlib.Data.Rat.Floor
 
 /-!
 # Submonoids of archimedean monoids

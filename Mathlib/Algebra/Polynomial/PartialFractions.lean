@@ -75,7 +75,7 @@ and referred to as `quo` in the name of the lemma and the variables `rᵢ` are c
 and referred to as `rem` in the name of the lemma.
 For example, `quo_add_sum_rem_div_unique` has the conclusion
 ```
-↑q₁ + ∑ i ∈ s, ↑(r₁ i) / ↑(g i) = ↑q₂ + ∑ i ∈ s, ↑(r₂ i) / ↑(g i)) →
+↑q₁ + ∑ i ∈ s, ↑(r₁ i) / ↑(g i) = ↑q₂ + ∑ i ∈ s, ↑(r₂ i) / ↑(g i) →
   q₁ = q₂ ∧ ∀ i ∈ s, r₁ i = r₂ i
 ```
 The name of the lemmas shows one side of the equality hypothesis (the other is the same),
@@ -395,7 +395,7 @@ theorem quo_add_sum_rem_mul_pow_inverse_unique [FaithfulSMul R[X] K] {ι : Type*
     rw [hff, hff, (FaithfulSMul.algebraMap_injective R[X] K).eq_iff] at hf
     obtain ⟨hq, hr⟩ := quo_mul_prod_pow_add_sum_rem_mul_prod_pow_unique hg hgg
       (fun i hi j => hr₁ i hi j.rev) (fun i hi j => hr₂ i hi j.rev) hf
-    exact ⟨hq, fun i hi => funext fun j => j.rev_rev ▸ congrFun (hr i hi) j.rev⟩
+    exact ⟨hq, fun i hi => funext fun j => j.rev_rev ▸ congr($(hr i hi) j.rev)⟩
   intro q r
   simp_rw [add_mul, Finset.sum_mul, map_add, map_sum, map_mul, map_prod, map_pow]
   refine congrArg (_ + ·) (Finset.sum_congr rfl fun i hi => ?_)

@@ -5,8 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.CharP.Two
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
@@ -36,6 +34,7 @@ namespace Nat
 
 /-- Euler's totient function. This counts the number of naturals strictly less than `n` which are
 coprime with `n`. -/
+@[oeis A000010 "the sequence skips `n = 0`"]
 def totient (n : ℕ) : ℕ := #{a ∈ range n | n.Coprime a}
 
 @[inherit_doc]
@@ -127,8 +126,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
   suffices 2 = orderOf (-1 : (ZMod n)ˣ) by
     rw [← ZMod.card_units_eq_totient, even_iff_two_dvd, this]
     exact orderOf_dvd_card
-  rw [← orderOf_units, Units.coe_neg_one, orderOf_neg_one, ringChar.eq (ZMod n) n,
-    ite_eq_right hn.ne']
+  simp [ZMod.ringChar_zmod_n, hn.ne']
 
 theorem totient_mul {m n : ℕ} (h : m.Coprime n) : φ (m * n) = φ m * φ n :=
   if hmn0 : m * n = 0 then by
@@ -174,7 +172,7 @@ theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   exact sum_congr rfl fun x hx => totient_div_of_dvd (dvd_of_mem_divisors hx)
 
 theorem sum_totient' (n : ℕ) : ∑ m ∈ range n.succ with m ∣ n, φ m = n := by
-  convert! sum_totient _ using 1
+  convert sum_totient _ using 1
   simp only [Nat.divisors, sum_filter, range_eq_Ico]
   rw [sum_eq_sum_Ico_succ_bot] <;> simp
 
@@ -183,20 +181,19 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
   calc
     φ (p ^ (n + 1)) = #{a ∈ range (p ^ (n + 1)) | (p ^ (n + 1)).Coprime a} :=
       totient_eq_card_coprime _
-    _ = #(range (p ^ (n + 1)) \ (range (p ^ n)).image (· * p)) :=
-      congr_arg card
-        (by
-          rw [sdiff_eq_filter]
-          apply filter_congr
-          simp only [mem_range, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
-            hp.coprime_iff_not_dvd]
-          intro a ha
-          constructor
-          · intro hap b h; rcases h with ⟨_, rfl⟩
-            exact hap (dvd_mul_left _ _)
-          · rintro h ⟨b, rfl⟩
-            rw [pow_succ'] at ha
-            exact h b ⟨lt_of_mul_lt_mul_left ha (zero_le _), mul_comm _ _⟩)
+    _ = #(range (p ^ (n + 1)) \ (range (p ^ n)).image (· * p)) := by
+      congr
+      rw [sdiff_eq_filter]
+      apply filter_congr
+      simp only [mem_range, coprime_pow_left_iff n.succ_pos, mem_image, not_exists,
+        hp.coprime_iff_not_dvd]
+      intro a ha
+      constructor
+      · intro hap b h; rcases h with ⟨_, rfl⟩
+        exact hap (dvd_mul_left ..)
+      · rintro h ⟨b, rfl⟩
+        rw [pow_succ'] at ha
+        exact h b ⟨lt_of_mul_lt_mul_left ha (zero_le _), mul_comm _ _⟩
     _ = _ := by
       have h1 : Function.Injective (· * p) := mul_left_injective₀ hp.ne_zero
       have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by

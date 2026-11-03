@@ -6,14 +6,13 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Module
 public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Positivity.Basic
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Rays in modules
@@ -301,8 +300,8 @@ variable [SMulCommClass R G M]
 `G = Rˣ` -/
 instance : MulAction G (Module.Ray R M) where
   smul r := Quotient.map (r • ·) fun _ _ h => h.smul _
-  mul_smul a b := Quotient.ind fun _ => congr_arg Quotient.mk' <| mul_smul a b _
-  one_smul := Quotient.ind fun _ => congr_arg Quotient.mk' <| one_smul _ _
+  mul_smul a b := Quotient.ind fun _ => congr(Quotient.mk' $(mul_smul a b _))
+  one_smul := Quotient.ind fun _ => congr(Quotient.mk' $(one_smul ..))
 
 /-- The action via `LinearEquiv.apply_distribMulAction` corresponds to `Module.Ray.map`. -/
 @[simp]

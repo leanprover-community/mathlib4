@@ -96,7 +96,7 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
 Let `t ∈ K` be an element which does not have a `p`th root in `K`.
 Then the polynomial `x ^ p - t` is irreducible over `K`. -/
 @[stacks 09HF "We proved the result without the condition that `K` is char p in 09HF."]
-theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
+theorem irreducible_X_pow_sub_C_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ p - C a) := by
   -- First of all, We may find an irreducible factor `g` of `X ^ p - C a`.
   have : ¬ IsUnit (X ^ p - C a) := by
@@ -105,7 +105,7 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
   have ⟨g, hg, hg'⟩ := WfDvdMonoid.exists_irreducible_factor this (X_pow_sub_C_ne_zero hp.pos a)
   -- It suffices to show that `deg g = p`.
   suffices natDegree g = p from (associated_of_dvd_of_natDegree_le hg'
-    (X_pow_sub_C_ne_zero hp.pos a) (this.trans natDegree_X_pow_sub_C.symm).ge).irreducible hg
+    (X_pow_sub_C_ne_zero hp.pos a) (this.trans (natDegree_X_pow_sub_C a).symm).ge).irreducible hg
   -- Suppose `deg g ≠ p`.
   by_contra h
   -- Let `r` be a root of `g`, then `N_K(r) ^ p = N_K(r ^ p) = N_K(a) = a ^ (deg g)`.
@@ -117,12 +117,18 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
   -- Since `a ^ (deg g)` is a `p`-power, and `p` is coprime to `deg g`, we conclude that `a` is
   -- also a `p`-power, contradicting the hypothesis
   have : p.Coprime (natDegree g) := hp.coprime_iff_not_dvd.mpr (fun e ↦ h (((natDegree_le_of_dvd hg'
-    (X_pow_sub_C_ne_zero hp.pos a)).trans_eq natDegree_X_pow_sub_C).antisymm (Nat.le_of_dvd
+    (X_pow_sub_C_ne_zero hp.pos a)).trans_eq (natDegree_X_pow_sub_C a)).antisymm (Nat.le_of_dvd
       (natDegree_pos_iff_degree_pos.mpr <| Polynomial.degree_pos_of_irreducible hg) e)))
   exact ha _ ((pow_mem_range_pow_of_coprime this.symm a).mp ⟨_, key⟩).choose_spec
 
-theorem X_pow_sub_C_irreducible_iff_of_prime {p : ℕ} (hp : p.Prime) {a : K} :
+@[deprecated (since := "2026-10-29")]
+alias X_pow_sub_C_irreducible_of_prime := irreducible_X_pow_sub_C_of_prime
+
+theorem irreducible_X_pow_sub_C_iff_of_prime {p : ℕ} (hp : p.Prime) {a : K} :
     Irreducible (X ^ p - C a) ↔ ∀ b, b ^ p ≠ a :=
-  ⟨(pow_ne_of_irreducible_X_pow_sub_C · dvd_rfl hp.ne_one), X_pow_sub_C_irreducible_of_prime hp⟩
+  ⟨(pow_ne_of_irreducible_X_pow_sub_C · dvd_rfl hp.ne_one), irreducible_X_pow_sub_C_of_prime hp⟩
+
+@[deprecated (since := "2026-10-29")]
+alias X_pow_sub_C_irreducible_iff_of_prime := irreducible_X_pow_sub_C_iff_of_prime
 
 end Irreducible
