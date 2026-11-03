@@ -486,8 +486,7 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (g : L.FGEquiv M N)
     Order.exists_ideal_meets_cofinals g _ (fun x : X ↦ H.isCofinal_definedAtLeft x)
   have : Nonempty I := ⟨⟨g, hI⟩⟩
   have : IsDirectedOrder I := I.directed.isDirectedOrder
-  let S : I →o M ≃ₚ[L] N :=
-    ⟨fun f ↦ f.val.val, fun _ _ h ↦ h⟩
+  let S : I →o M ≃ₚ[L] N := ⟨fun f ↦ f.val.val, fun _ _ h ↦ h⟩
   let F := DirectLimit.partialEquivLimit S
   have isTop : F.dom = ⊤ := by
     rw [← top_le_iff, ← X_gen, Substructure.closure_le]
