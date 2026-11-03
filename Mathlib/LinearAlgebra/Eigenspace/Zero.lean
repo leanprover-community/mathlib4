@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.RingTheory.Artinian.Module
 
 /-!
@@ -70,10 +68,10 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
   tfae_have 3 → 1
   | h => by
-    obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp <| φ.eventually_iSup_ker_pow_eq
+    obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp φ.eventually_iSup_ker_pow_eq
     use n
     ext x
-    rw [zero_apply, ← mem_ker, ← hn n le_rfl]
+    rw [LinearMap.zero_apply, ← mem_ker, ← hn n le_rfl]
     obtain ⟨k, hk⟩ := h x
     rw [← mem_ker] at hk
     exact Submodule.mem_iSup_of_mem _ hk
@@ -152,13 +150,13 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
       forall_exists_index]
     intro x n hx
     use n
-    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply, hx, map_zero]
+    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp, hx, map_zero]
   have hφW : ∀ x ∈ W, φ x ∈ W := by
     simp only [W, Submodule.mem_iInf, mem_range]
     intro x H n
     obtain ⟨y, rfl⟩ := H n
     use φ y
-    rw [← Module.End.mul_apply, ← pow_succ, pow_succ', Module.End.mul_apply]
+    rw [← mul_apply_eq_comp, ← pow_succ, pow_succ', mul_apply_eq_comp]
   let F := φ.restrict hφV
   let G := φ.restrict hφW
   let ψ := F.prodMap G

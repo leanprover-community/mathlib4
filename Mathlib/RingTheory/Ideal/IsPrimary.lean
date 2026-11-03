@@ -6,8 +6,6 @@ Authors: Kenny Lau, Yakov Pechersky
 module
 
 public import Mathlib.RingTheory.IsPrimary
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Primary ideals

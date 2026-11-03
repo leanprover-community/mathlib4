@@ -69,6 +69,7 @@ section
 
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 
+@[macro_inline]
 instance : FunLike (VectorMeasure α M) (Set α) M where
   coe := VectorMeasure.measureOf'
   coe_injective v w h := by

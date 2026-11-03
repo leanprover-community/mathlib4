@@ -5,8 +5,8 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
 public import Mathlib.Tactic.TFAE
 
 /-!
@@ -44,7 +44,6 @@ section LeftExtension
 open LeftExtension
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- For an adjunction `f ⊣ u`, `u` is an absolute left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
@@ -108,7 +107,7 @@ def LeftExtension.IsAbsKan.adjunction {f : a ⟶ b} (t : LeftExtension f (𝟙 a
     f ⊣ t.extension :=
   H.isKan.adjunction (H f)
 
-theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
+theorem isLeftAdjoint_tfae (f : a ⟶ b) :
     List.TFAE [
       IsLeftAdjoint f,
       HasAbsLeftKanExtension f (𝟙 a),
@@ -121,6 +120,8 @@ theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
   | ⟨h, h'⟩ => .mk <| (lanIsKan f (𝟙 a)).adjunction <| Lan.CommuteWith.isKan f (𝟙 a) f
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias isLeftAdjoint_TFAE := isLeftAdjoint_tfae
+
 end LeftExtension
 
 section LeftLift
@@ -128,7 +129,6 @@ section LeftLift
 open LeftLift
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- For an adjunction `f ⊣ u`, `f` is an absolute left Kan lift of the identity along `u`.
 The unit of this Kan lift is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
@@ -191,7 +191,7 @@ def LeftLift.IsAbsKan.adjunction {u : b ⟶ a} (t : LeftLift u (𝟙 a)) (H : Is
     t.lift ⊣ u :=
   H.isKan.adjunction (H u)
 
-theorem isRightAdjoint_TFAE (u : b ⟶ a) :
+theorem isRightAdjoint_tfae (u : b ⟶ a) :
     List.TFAE [
       IsRightAdjoint u,
       HasAbsLeftKanLift u (𝟙 a),
@@ -204,11 +204,12 @@ theorem isRightAdjoint_TFAE (u : b ⟶ a) :
   | ⟨h, h'⟩ => .mk <| (lanLiftIsKan u (𝟙 a)).adjunction <| LanLift.CommuteWith.isKan u (𝟙 a) u
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias isRightAdjoint_TFAE := isRightAdjoint_tfae
+
 end LeftLift
 
 namespace LeftExtension
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A left adjoint commutes with a left Kan extension. -/
 def isKanOfWhiskerLeftAdjoint

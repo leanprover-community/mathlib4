@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ShrinkYoneda
 public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.Point.OfIsCofiltered
 
@@ -35,8 +34,6 @@ variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
   {J : GrothendieckTopology C} (Φ : Point.{w} J) (F : C ⥤ D)
   (K : GrothendieckTopology D) [F.IsCocontinuous J K]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma map_aux ⦃X : D⦄ (R : Sieve X) (hR : R ∈ K X)
     ⦃u : Φ.fiber.Elements⦄ (f : (Functor.Elements.π Φ.fiber ⋙ F).obj u ⟶ X) :
     ∃ (Y : D) (g : Y ⟶ X) (_ : R.arrows g) (v : Φ.fiber.Elements)
@@ -116,7 +113,6 @@ lemma toPresheafFiberMap_presheafFiberMapObjIso_hom (P : Dᵒᵖ ⥤ A) (X : C) 
   IsColimit.comp_coconePointUniqueUpToIso_hom
     (Φ.isColimitPresheafFiberMapCocone F K P) _ ⟨.mk x⟩
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma toPresheafFiber_presheafFiberMapObjIso_inv (P : Dᵒᵖ ⥤ A) (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x (F.op ⋙ P) ≫ (Φ.presheafFiberMapObjIso F K P).inv =

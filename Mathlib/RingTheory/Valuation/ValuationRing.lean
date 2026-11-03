@@ -5,14 +5,14 @@ Authors: Adam Topaz
 -/
 module
 
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.RingTheory.Bezout
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Valuation.Integers
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Valuation Rings
@@ -399,14 +399,14 @@ instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
   rcases eq_or_ne g 0 with h | h
   · simp [h]
   have : x * a + y * b = 1 := by
-    apply mul_left_injective₀ h; convert! e' using 1 <;> ring
+    apply mul_left_injective₀ h; convert e' using 1 <;> ring
   rcases IsLocalRing.isUnit_or_isUnit_of_add_one this with h' | h' <;> [left; right]
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 
 theorem iff_local_bezout_domain : ValuationRing R ↔ IsLocalRing R ∧ IsBezout R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ inferInstance⟩
 
-protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
+theorem tfae (R : Type u) [CommRing R] [IsDomain R] :
     List.TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
@@ -417,6 +417,8 @@ protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
   tfae_have 1 ↔ 5 := iff_local_bezout_domain
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] protected alias TFAE := tfae
+
 end
 
 theorem _root_.Function.Surjective.preValuationRing {R S : Type*} [Mul R] [PreValuationRing R]
@@ -425,7 +427,7 @@ theorem _root_.Function.Surjective.preValuationRing {R S : Type*} [Mul R] [PreVa
   ⟨fun a b => by
     obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := hf a, hf b
     obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b
-    exacts [⟨f c, Or.inl <| (map_mul _ _ _).symm⟩, ⟨f c, Or.inr <| (map_mul _ _ _).symm⟩]⟩
+    exacts [⟨f c, Or.inl (map_mul _ _ _).symm⟩, ⟨f c, Or.inr (map_mul _ _ _).symm⟩]⟩
 
 theorem _root_.Function.Surjective.valuationRing {R S : Type*} [NonAssocSemiring R]
     [PreValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :

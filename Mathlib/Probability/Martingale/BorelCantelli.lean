@@ -5,10 +5,11 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Algebra.Order.Archimedean.IndicatorCard
 public import Mathlib.Probability.Martingale.Centering
-public import Mathlib.Probability.Martingale.Convergence
 public import Mathlib.Probability.Martingale.OptionalStopping
+
+import Mathlib.Algebra.Order.Archimedean.IndicatorCard
+import Mathlib.Probability.Martingale.Convergence
 
 /-!
 
@@ -53,6 +54,11 @@ noncomputable def leastGE [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
     (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
   hittingAfter f (Set.Ici r) ⊥
 
+/-- `leastGT f r` is the stopping time corresponding to the first time `f > r`. -/
+noncomputable def leastGT [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
+    (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
+  hittingAfter f (Set.Ioi r) ⊥
+
 theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrderBot ι]
     {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
     [Preorder β] [ClosedIciTopology β] [TopologicalSpace.PseudoMetrizableSpace β]
@@ -60,6 +66,19 @@ theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrder
     {f : ι → Ω → β} (r : β) (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (leastGE f r) :=
   hf.adapted.isStoppingTime_hittingAfter measurableSet_Ici
+
+theorem StronglyAdapted.isStoppingTime_leastGT [ConditionallyCompleteLinearOrderBot ι]
+    {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
+    [LinearOrder β] [ClosedIicTopology β] [TopologicalSpace.PseudoMetrizableSpace β]
+    [MeasurableSpace β] [BorelSpace β]
+    {f : ι → Ω → β} (r : β) (hf : StronglyAdapted ℱ f) :
+    IsStoppingTime ℱ (leastGT f r) :=
+  hf.adapted.isStoppingTime_hittingAfter measurableSet_Ioi
+
+lemma leastGT_lt_iff [ConditionallyCompleteLinearOrder ι] [OrderBot ι] [Preorder β]
+    {f : ι → Ω → β} {r : β} {t : ι} {ω : Ω} :
+    leastGT f r ω < t ↔ ∃ s < t, r < f s ω := by
+  simp [leastGT, hittingAfter_lt_iff]
 
 /-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
 (the first time `f` passes above `r`), and then is constant afterwards. -/
@@ -155,7 +174,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
     simpa only [g, sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
-  convert! hω using 1
+  convert hω using 1
   · refine ⟨fun h => ?_, fun h => ?_⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine ⟨b + |f 0 ω|, fun y hy => ?_⟩ <;> obtain ⟨n, rfl⟩ := hy
     · simp_rw [g, sub_eq_add_neg]

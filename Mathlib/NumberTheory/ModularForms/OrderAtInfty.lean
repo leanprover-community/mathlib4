@@ -1,0 +1,330 @@
+/-
+Copyright (c) 2026 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+
+module
+
+public import Mathlib.Analysis.Asymptotics.Theta
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.NumberTheory.ModularForms.QExpansion
+
+/-!
+# Order at infinity
+
+We define the "order at infinity" of a function `ℍ → ℂ` as the supremum of `t` such that
+`f = O(exp (-(2 * π * τ.im * t)))` as `Im τ → ∞`. This definition is deliberately chosen to be
+independent of any holomorphy or periodicity hypotheses; but if `f` is periodic and
+holomorphic on `ℍ ∪ ∞`, we show that the order of vanishing is determined by the order of
+vanishing of its `q`-expansion (divided by the period).
+
+### Main statements (general functions)
+
+* `UpperHalfPlane.le_orderAtInfty_iff`: the order is at least `t` iff there is an exponential
+  bound at every rate `s < t`.
+* `orderAtInfty_eq_of_isTheta`: matching exponential upper and lower bounds determine the order at
+  infinity.
+
+### Main statements (periodic holomorphic functions)
+
+Here the functions are holomorphic on `ℍ`, bounded at infinity, and periodic with positive
+period `h`. (The obvious examples are modular forms, but we keep the hypotheses un-bundled, since
+only the periodicity is relevant here.)
+
+* `UpperHalfPlane.orderAtInfty_eq_qExpansion_order`: the order at infinity equals the order of
+  the `q`-expansion divided by `h`.
+* `UpperHalfPlane.isTheta_orderAtInfty`: a nonzero function has exact exponential decay rate
+  given by its order at infinity.
+* `UpperHalfPlane.orderAtInfty_eq_top_iff_eq_zero`: the order is infinite iff the function is zero.
+* `UpperHalfPlane.orderAtInfty_mul_of_holo`: the order of a product equals the sum of the orders.
+
+-/
+
+open Real Function Asymptotics
+
+open scoped Manifold
+
+public section
+
+namespace UpperHalfPlane
+
+/-!
+## Elementary theory for arbitrary functions
+-/
+
+variable {E : Type*} {f : ℍ → E} {s t : ℝ}
+
+section Norm
+variable [Norm E]
+
+/-- The supremum of `t` such that `f = O (exp (-(2 * π * τ.im * t)))` as `Im τ → ∞`. We take the
+supremum as an `EReal`, so the zero function has order `+∞`, and a function with no exponential
+bound has order `-∞`. See `lt_orderAtInfty_iff` and `le_orderAtInfty_iff` for characterizations. -/
+noncomputable def orderAtInfty (f : ℍ → E) : EReal :=
+  ⨆ t : {t : ℝ // f =O[atImInfty] fun τ ↦ Real.exp (-(2 * π * τ.im * t))}, (t : EReal)
+
+lemma le_orderAtInfty_of_isBigO (ht : f =O[atImInfty] fun τ ↦ exp (-(2 * π * τ.im * t))) :
+    t ≤ orderAtInfty f :=
+  le_iSup_iff_forall_lt.mpr fun _ hs ↦ ⟨⟨t, ht⟩, hs⟩
+
+private lemma exp_decay_isBigO_of_le (hst : s ≤ t) :
+    (fun τ : ℍ ↦ exp (-(2 * π * τ.im * t))) =O[atImInfty] fun τ ↦ exp (-(2 * π * τ.im * s)) := by
+  refine .of_bound 1 (.of_forall fun τ ↦ ?_)
+  simp only [Real.norm_eq_abs, abs_exp, one_mul, exp_le_exp]
+  linear_combination 2 * π * τ.im * hst
+
+lemma le_orderAtInfty_iff :
+    t ≤ orderAtInfty f ↔ ∀ s < t, f =O[atImInfty] fun τ ↦ exp (-(2 * π * τ.im * s)) where
+  mp ht s hst := by
+    have hs : s < orderAtInfty f := (EReal.coe_lt_coe hst).trans_le ht
+    rw [orderAtInfty, lt_iSup_iff] at hs
+    obtain ⟨u, hsu⟩ := hs
+    exact u.property.trans <| exp_decay_isBigO_of_le (EReal.coe_lt_coe_iff.mp hsu).le
+  mpr ht := by
+    rw [orderAtInfty, le_iSup_iff_forall_lt]
+    intro u hu
+    have := EReal.lt_iff_exists_real_btwn.mp hu
+    aesop
+
+lemma lt_orderAtInfty_iff :
+    t < orderAtInfty f ↔ ∃ s > t, f =O[atImInfty] fun τ ↦ exp (-(2 * π * τ.im * s)) := by
+  rw [orderAtInfty, lt_iSup_iff]
+  aesop
+
+/-- The model function `τ ↦ exp (-(2 * π * τ.im * t))` has order at infinity `t`. -/
+@[simp] lemma orderAtInfty_exp :
+    orderAtInfty (fun τ ↦ exp (-(2 * π * τ.im * t))) = t := by
+  refine le_antisymm (le_of_not_gt fun ht ↦ ?_) (le_orderAtInfty_of_isBigO <| isBigO_refl _ _)
+  obtain ⟨s, hts, hs⟩ := lt_orderAtInfty_iff.mp ht
+  have hb := Real.isBigO_exp_comp_exp_comp.mp hs
+  apply Filter.not_isBoundedUnder_of_tendsto_atTop (l := atImInfty) _ hb
+  -- A faster exponential bound would make a positive multiple of `Im τ` bounded above.
+  convert! (Filter.tendsto_comap : Filter.Tendsto im atImInfty Filter.atTop).const_mul_atTop
+    (show 0 < 2 * π * (s - t) by positivity) using 1
+  grind [Pi.sub_apply]
+
+lemma orderAtInfty_eq_top_iff :
+    orderAtInfty f = ⊤ ↔ ∀ (t : ℝ), f =O[atImInfty] fun τ ↦ exp (-(2 * π * τ.im * t)) := by
+  simp only [EReal.eq_top_iff_forall_lt, lt_orderAtInfty_iff]
+  exact ⟨fun hf s ↦ match hf s with | ⟨t, hst, hf⟩ => hf.trans (exp_decay_isBigO_of_le hst.le),
+    fun hf y ↦ match exists_gt y with | ⟨s, hs⟩ => ⟨s, hs, hf s⟩⟩
+
+lemma IsBoundedAtImInfty.orderAtInfty_nonneg (hf : IsBoundedAtImInfty f) :
+    0 ≤ orderAtInfty f := by
+  apply le_orderAtInfty_of_isBigO
+  simpa [-isBigO_one_iff, Pi.one_def, IsBoundedAtImInfty, Filter.BoundedAtFilter]
+
+variable (f) in
+/-- A change of variables which scales imaginary parts scales the order by the same factor. -/
+lemma orderAtInfty_comp_equiv (e : ℍ ≃ ℍ) {a : ℝ} (ha : 0 < a) (he : ∀ τ, (e τ).im = a * τ.im) :
+    orderAtInfty (f ∘ e) = a * orderAtInfty f := by
+  have hmap {b : ℝ} (hb : 0 < b) {g : ℍ → ℍ} (hg : ∀ τ, (g τ).im = b * τ.im) :
+      Filter.Tendsto g atImInfty atImInfty := by
+    simpa [atImInfty, Function.comp_def, hg] using Filter.tendsto_comap.const_mul_atTop hb
+  have he' (τ : ℍ) : (e.symm τ).im = a⁻¹ * τ.im := by grind
+  have hbigO (t : ℝ) : (f ∘ e) =O[atImInfty] (fun τ ↦ exp (-(2 * π * τ.im * t))) ↔
+      f =O[atImInfty] (fun τ ↦ exp (-(2 * π * τ.im * (t / a)))) := by
+    constructor <;> intro h
+    · convert h.comp_tendsto (hmap (inv_pos.mpr ha) he') using 1 <;> grind
+    · convert h.comp_tendsto (hmap ha he) using 1
+      grind
+  refine le_antisymm (iSup_le fun t ↦ ?_) ?_
+  · rw [← EReal.div_le_iff_le_mul (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a), ← EReal.coe_div]
+    exact le_orderAtInfty_of_isBigO ((hbigO t).mp t.2)
+  · rw [EReal.mul_comm, ← EReal.le_div_iff_mul_le (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a)]
+    refine iSup_le fun ⟨s, hs⟩ ↦ ?_
+    rw [EReal.le_div_iff_mul_le (EReal.coe_pos.mpr ha) (EReal.coe_ne_top a), ← EReal.coe_mul]
+    exact le_orderAtInfty_of_isBigO ((hbigO _).mpr (by grind))
+
+/-- Real translations preserve the order at infinity. -/
+lemma orderAtInfty_vadd (x : ℝ) :
+    orderAtInfty (fun τ ↦ f (x +ᵥ τ)) = orderAtInfty f := by
+  simpa [Function.comp_def] using orderAtInfty_comp_equiv f (AddAction.toPerm x) one_pos (by simp)
+
+end Norm
+
+section SeminormedAddCommGroup
+
+variable {F : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] {g : ℍ → F}
+
+lemma _root_.Asymptotics.IsBigO.orderAtInfty_le (hfg : f =O[atImInfty] g) :
+    orderAtInfty g ≤ orderAtInfty f :=
+  iSup_le fun t ↦ le_orderAtInfty_of_isBigO (hfg.trans t.2)
+
+lemma _root_.Asymptotics.IsTheta.orderAtInfty_eq (hfg : f =Θ[atImInfty] g) :
+    orderAtInfty f = orderAtInfty g :=
+  le_antisymm hfg.2.orderAtInfty_le hfg.1.orderAtInfty_le
+
+@[simp] lemma orderAtInfty_zero : orderAtInfty (0 : ℍ → E) = ⊤ :=
+  orderAtInfty_eq_top_iff.mpr fun _ ↦ isBigO_zero _ _
+
+/-- Matching exponential upper and lower bounds determine the order at infinity. -/
+lemma orderAtInfty_eq_of_isTheta
+    (hf : f =Θ[atImInfty] fun τ ↦ exp (-(2 * π * τ.im * t))) : orderAtInfty f = t :=
+  hf.orderAtInfty_eq.trans orderAtInfty_exp
+
+variable (f) in
+/-- Taking norms preserves the order at infinity. -/
+lemma orderAtInfty_norm : orderAtInfty (fun τ ↦ ‖f τ‖) = orderAtInfty f :=
+  (isTheta_norm_left.mpr (isTheta_refl f _)).orderAtInfty_eq
+
+end SeminormedAddCommGroup
+
+/-- Scalar multiplication by a nonzero constant preserves the order. -/
+lemma orderAtInfty_const_mul [NormedRing E] [NormMulClass E] {c : E} (hc : c ≠ 0) (f : ℍ → E) :
+    orderAtInfty (fun τ ↦ c * f τ) = orderAtInfty f :=
+  IsTheta.orderAtInfty_eq ⟨isBigO_const_mul_self c f _,
+    (isBigO_const_mul_left_iff hc).mp (isBigO_refl _ _)⟩
+
+open ModularForm in
+/-- Negating the matrix in a slash operator preserves the order at infinity. -/
+lemma orderAtInfty_slash_neg (f : ℍ → ℂ) (k : ℤ) (g : GL (Fin 2) ℝ) :
+    orderAtInfty (f ∣[k] (-g)) = orderAtInfty (f ∣[k] g) := by
+  rw [slash_neg]
+  exact orderAtInfty_const_mul (zpow_ne_zero _ (show (-1 : ℂ) ≠ 0 by norm_num)) _
+
+open ModularForm in
+/-- An upper triangular slash operator scales the order by its scale factor on imaginary parts. -/
+lemma orderAtInfty_slash_of_upperTriangular (f : ℍ → ℂ) (k : ℤ) (g : GL (Fin 2) ℝ)
+    (hg : g 1 0 = 0) :
+    orderAtInfty (f ∣[k] g) = (|g 0 0 / g 1 1| : ℝ) * orderAtInfty f := by
+  have hd : g 1 1 ≠ 0 := fun h ↦ g.det_ne_zero (by simp [Matrix.det_fin_two, hg, h])
+  have ha : 0 < |g 0 0 / g 1 1| := by
+    simpa [Matrix.det_fin_two, hg] using g.det_ne_zero
+  have him (τ : ℍ) : (g • τ).im = |g 0 0 / g 1 1| * τ.im := by
+    simp [im_smul, num, denom, hg, abs_div, abs_mul, abs_of_pos τ.im_pos, mul_div_right_comm]
+  have hnorm : (fun τ ↦ ‖(f ∣[k] g) τ‖) =
+      fun τ ↦ (‖g.det.val ^ (k - 1)‖ * ‖g 1 1 ^ (-k)‖) * ‖f (g • τ)‖ := by
+    ext
+    simp [slash_def, denom, hg, mul_assoc, mul_comm ‖f _‖]
+  rw [← orderAtInfty_norm (f ∣[k] g), hnorm,
+    orderAtInfty_const_mul (by simp [hd, g.det_ne_zero, zpow_ne_zero])]
+  simpa only [Function.comp_def, MulAction.toPerm_apply, orderAtInfty_norm] using
+    orderAtInfty_comp_equiv (fun τ ↦ ‖f τ‖) (MulAction.toPerm g) ha him
+
+/-!
+## Theory for periodic holomorphic functions
+
+If we assume `f` is periodic, and holomorphic on `ℍ ∪ ∞`, then its order at infinity is related
+to the order of vanishing of its cusp function.
+-/
+
+section Complex
+
+variable {h : ℝ} {f g : ℍ → ℂ}
+
+/-- A nonzero periodic function holomorphic on `ℍ ∪ ∞` has finite order in the cusp coordinate. -/
+lemma analyticOrderAt_cuspFunction_ne_top (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) (hfne : f ≠ 0) :
+    analyticOrderAt (cuspFunction h f) 0 ≠ ⊤ := by
+  refine fun htop ↦ hfne <| (qExpansion_eq_zero_iff hh hfper hfhol hfbdd).mp ?_
+  ext m
+  simp [qExpansion_coeff, Filter.EventuallyEq.iteratedDeriv_eq m (analyticOrderAt_eq_top.mp htop)]
+
+/-- The asymptotic behaviour of a nonzero periodic function holomorphic on `ℍ ∪ ∞` is determined
+by the order of vanishing of its cusp function at zero. -/
+theorem isTheta_analyticOrderAt (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) (hfne : f ≠ 0) :
+    f =Θ[atImInfty]
+      fun τ ↦ exp (-(2 * π * τ.im * analyticOrderNatAt (cuspFunction h f) 0 / h)) := by
+  have htheta : f =Θ[atImInfty] fun τ ↦
+      (Periodic.qParam h τ - 0) ^ analyticOrderNatAt (cuspFunction h f) 0 := by
+    have heq : f =ᶠ[atImInfty] fun τ ↦ cuspFunction h f (Periodic.qParam h τ) :=
+      .of_forall fun τ ↦ (eq_cuspFunction τ hh.ne' hfper).symm
+    exact heq.trans_isTheta <| (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd).isTheta_pow_sub
+        (analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne) |>.comp_tendsto
+          (qParam_tendsto_atImInfty hh)
+  convert! htheta.norm_right using 2
+  simp [Periodic.norm_qParam, ← exp_nat_mul, field]
+
+/-- The order at infinity is the order of the cusp function divided by the period. -/
+lemma orderAtInfty_eq_analyticOrderAt_div (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
+    orderAtInfty f = analyticOrderAt (cuspFunction h f) 0 / h := by
+  rcases eq_or_ne f 0 with rfl | hfne
+  · simp [cuspFunction, Pi.zero_comp, Function.Periodic.cuspFunction_zero,
+      EReal.top_div_of_pos_ne_top (EReal.coe_pos.mpr hh) (EReal.coe_ne_top h)]
+  -- For a nonzero function, the analytic order is finite and the theta estimate is exact.
+  have hfinite := analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne
+  rw [← Nat.cast_analyticOrderNatAt hfinite]
+  have htheta := isTheta_analyticOrderAt hh hfper hfhol hfbdd hfne
+  simp only [mul_div_assoc] at htheta
+  exact orderAtInfty_eq_of_isTheta htheta
+
+/-- A periodic function holomorphic on `ℍ ∪ ∞` has infinite order exactly when it is zero. -/
+lemma orderAtInfty_eq_top_iff_eq_zero (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
+    orderAtInfty f = ⊤ ↔ f = 0 where
+  mp htop := by
+    by_contra hfne
+    have hfinite := analyticOrderAt_cuspFunction_ne_top hh hfper hfhol hfbdd hfne
+    rw [orderAtInfty_eq_analyticOrderAt_div hh hfper hfhol hfbdd,
+      ← Nat.cast_analyticOrderNatAt hfinite] at htop
+    simp [EReal.div_eq_top_iff] at htop
+  mpr h := h ▸ orderAtInfty_zero
+
+/-- A nonzero periodic function holomorphic on `ℍ ∪ ∞` has matching exponential bounds
+at the rate given by its order at infinity. -/
+lemma isTheta_orderAtInfty (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) (hfne : f ≠ 0) :
+    f =Θ[atImInfty] fun τ ↦ exp (-(2 * π * τ.im * (orderAtInfty f).toReal)) := by
+  have hθ := isTheta_analyticOrderAt hh hfper hfhol hfbdd hfne
+  simp only [mul_div_assoc] at hθ
+  rwa [orderAtInfty_eq_of_isTheta hθ, EReal.toReal_coe]
+
+/-- The order at infinity is additive for finite products of periodic functions holomorphic on
+`ℍ ∪ ∞`. Note that the periods need not be equal (or commensurable). -/
+lemma orderAtInfty_prod_of_holo {ι : Type*} {s : Finset ι} {f : ι → ℍ → ℂ} {h : ι → ℝ}
+    (hh : ∀ i ∈ s, 0 < h i) (hfper : ∀ i ∈ s, Periodic (f i ∘ ofComplex) (h i))
+    (hfhol : ∀ i ∈ s, MDiff (f i)) (hfbdd : ∀ i ∈ s, IsBoundedAtImInfty (f i)) :
+    orderAtInfty (∏ i ∈ s, f i) = ∑ i ∈ s, orderAtInfty (f i) := by
+  -- Note that it does *not* work to prove `orderAtInfty_mul_of_holo` first and deduce this lemma
+  -- by finset induction on `s`, since the product is not in general a periodic function; the
+  -- hypotheses do not force any commensurability between the `h i`. So if `s = insert i t`, then
+  -- `∏ i ∈ t, f i` might not be periodic and we cannot apply `orderAtInfty_mul_of_holo` to it.
+  classical
+  by_cases! hfne : ∀ i ∈ s, f i ≠ 0
+  · have hθ : ∀ i ∈ s,
+        f i =Θ[atImInfty] fun τ ↦ exp (-(2 * π * τ.im * (orderAtInfty (f i)).toReal)) :=
+      fun i hi ↦ isTheta_orderAtInfty (hh i hi) (hfper i hi) (hfhol i hi) (hfbdd i hi) (hfne i hi)
+    have hprodθ := IsTheta.finsetProd hθ
+    simp only [← Real.exp_sum, Finset.sum_neg_distrib, ← Finset.mul_sum] at hprodθ
+    rw [s.prod_fn, orderAtInfty_eq_of_isTheta hprodθ, ← Real.coe_toERealAddHom, map_sum]
+    exact Finset.sum_congr rfl fun i hi ↦ (orderAtInfty_eq_of_isTheta (hθ i hi)).symm
+  · obtain ⟨i, hi, hfi⟩ := hfne
+    have horder : orderAtInfty (f i) = ⊤ := hfi ▸ orderAtInfty_zero
+    rw [Finset.prod_eq_zero hi hfi, orderAtInfty_zero, ← Finset.add_sum_erase _ _ hi, horder,
+      EReal.top_add_iff_ne_bot.mpr]
+    exact (EReal.bot_lt_zero.trans_le <| Finset.sum_nonneg fun j hj ↦
+      (hfbdd j (Finset.mem_of_mem_erase hj)).orderAtInfty_nonneg).ne'
+
+/-- The order at infinity is additive for the product of two periodic functions holomorphic on
+`ℍ ∪ ∞`. Note that the periods need not be equal (or commensurable). -/
+lemma orderAtInfty_mul_of_holo (hh : 0 < h) {h' : ℝ} (hh' : 0 < h')
+    (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f)
+    (hgper : Periodic (g ∘ ofComplex) h') (hghol : MDiff g) (hgbdd : IsBoundedAtImInfty g) :
+    orderAtInfty (f * g) = orderAtInfty f + orderAtInfty g := by
+  simpa using orderAtInfty_prod_of_holo (s := .univ) (f := ![f, g]) (h := ![h, h'])
+    (Fin.forall_fin_two.mpr ⟨fun _ ↦ hh, fun _ ↦ hh'⟩)
+    (Fin.forall_fin_two.mpr ⟨fun _ ↦ hfper, fun _ ↦ hgper⟩)
+    (Fin.forall_fin_two.mpr ⟨fun _ ↦ hfhol, fun _ ↦ hghol⟩)
+    (Fin.forall_fin_two.mpr ⟨fun _ ↦ hfbdd, fun _ ↦ hgbdd⟩)
+
+/-!
+## Relation to the `q`-expansion
+-/
+
+/-- The order at infinity is the order of the `q`-expansion divided by the period. -/
+lemma orderAtInfty_eq_qExpansion_order (hh : 0 < h) (hfper : Periodic (f ∘ ofComplex) h)
+    (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
+    orderAtInfty f = (qExpansion h f).order / h := by
+    rw [orderAtInfty_eq_analyticOrderAt_div hh hfper hfhol hfbdd,
+    analyticOrderAt_eq_qExpansion_order hh hfper hfhol hfbdd]
+
+end Complex
+
+end UpperHalfPlane
+
+end

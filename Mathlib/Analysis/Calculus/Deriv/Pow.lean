@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative of `(f x) ^ n`, `n : ℕ`
 
