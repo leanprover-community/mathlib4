@@ -32,7 +32,7 @@ structure, such as a bottom element, a top element, or a join-semilattice struct
 - `Order.exists_ideal_meets_cofinals p 𝒟`, where `p : P`, and `𝒟` is a countable family of cofinal
   subsets of `P`: an ideal in `P` which contains `p` and intersects every set in `𝒟`. (This a form
   of the Rasiowa–Sikorski lemma; cofinal sets are dual to the notion of 'dense set' used in
-  forcing.)
+  forcing, which are called coinitial sets in Mathlib, see `IsCoinitial`.)
 
 ## References
 
