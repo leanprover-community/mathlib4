@@ -103,7 +103,7 @@ theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
 theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     c • T |>.IsSymmetric := by
   intro x y
-  simp only [LinearMap.smul_apply, inner_smul_left, hc, hT x y, inner_smul_right]
+  simp [inner_smul_left, hc, hT x y, inner_smul_right]
 
 theorem IsSymmetric.natCast (n : ℕ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y => by
   simp [← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, inner_smul_right]
@@ -114,7 +114,7 @@ theorem IsSymmetric.intCast (n : ℤ) : IsSymmetric (n : E →ₗ[𝕜] E) := fu
 @[aesop 30% apply]
 lemma IsSymmetric.mul_of_commute {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
     (hST : Commute S T) : (S * T).IsSymmetric :=
-  fun _ _ ↦ by rw [Module.End.mul_apply, hS, hT, hST, Module.End.mul_apply]
+  fun _ _ ↦ by rw [mul_apply_eq_comp, hS, hT, hST, mul_apply_eq_comp]
 
 @[aesop safe apply]
 lemma IsSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
@@ -361,7 +361,7 @@ theorem IsSymmetricProjection.sub_of_range_le_range {p q : E →ₗ[𝕜] E}
   rw [← hq.isIdempotentElem.comp_eq_right_iff] at hqp
   refine ⟨hp.isIdempotentElem.sub hq.isIdempotentElem (LinearMap.ext fun x => ext_inner_left 𝕜
     fun y => ?_) hqp, hq.isSymmetric.sub hp.isSymmetric⟩
-  simp_rw [Module.End.mul_apply, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
+  simp_rw [mul_apply_eq_comp, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
 
 theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmetric) (hf' : f ≠ 0)
     {α : 𝕜} : (α • f).IsSymmetric ↔ IsSelfAdjoint α := by

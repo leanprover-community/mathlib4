@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dimension of trivial modules
 -/

@@ -591,3 +591,150 @@ end
   let h := mkIdent `h
   let hc ← `(Lean.Parser.Tactic.elimTarget|$h:ident)
   IO.println s!"{(toStained (← `(tactic| cases $hc))).toArray}"
+
+/-!
+## Tests for `simp?`, `simp!`, etc
+-/
+
+-- Check that `simp?` triggers the flexible linter, but `simp? only` does not.
+/--
+info: Try this:
+  [apply] simp only [Nat.add_zero]
+---
+warning: `simp?` is a flexible tactic modifying `⊢`. Use the suggested `simp only [...]` string.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `exact Nat.le_succ_of_le h`
+modifies the current goal, which was modified by the flexible tactic `simp?` on line
+-/
+#guard_msgs (substring := true) in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp?
+  exact Nat.le_succ_of_le h
+
+/--
+info: Try this:
+  [apply] simp only [Nat.add_zero]
+-/
+#guard_msgs in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp? only [Nat.add_zero]
+  exact Nat.le_succ_of_le h
+
+-- Check that `simp_all?` triggers the flexible linter, but its `only` variant does not.
+/--
+info: Try this:
+  [apply] simp_all only [Nat.add_zero]
+---
+warning: `simp_all?` is a flexible tactic modifying `⊢`. Use the suggested `simp_all only [...]` string.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `exact Nat.le_succ_of_le h`
+modifies the current goal, which was modified by the flexible tactic `simp_all?` on line
+-/
+#guard_msgs (substring := true) in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp_all?
+  exact Nat.le_succ_of_le h
+
+/--
+info: Try this:
+  [apply] simp_all only [Nat.add_zero]
+-/
+#guard_msgs in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp_all? only [Nat.add_zero]
+  exact Nat.le_succ_of_le h
+
+-- Check that `simp?!` triggers the flexible linter, but `simp?! only` does not.
+/--
+info: Try this:
+  [apply] simp! only [Nat.add_zero]
+---
+warning: `simp?!` is a flexible tactic modifying `⊢`. Use the suggested `simp! only [...]` string.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `exact Nat.le_succ_of_le h`
+modifies the current goal, which was modified by the flexible tactic `simp?!` on line
+-/
+#guard_msgs (substring := true) in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp?!
+  exact Nat.le_succ_of_le h
+
+/--
+info: Try this:
+  [apply] simp! only [Nat.add_zero]
+-/
+#guard_msgs in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp?! only [Nat.add_zero]
+  exact Nat.le_succ_of_le h
+
+-- Check that `simp_all?!` triggers the flexible linter, but its `only` variant does not.
+/--
+info: Try this:
+  [apply] simp_all! only [Nat.add_zero]
+---
+warning: `simp_all?!` is a flexible tactic modifying `⊢`. Use the suggested `simp_all! only [...]` string.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `exact Nat.le_succ_of_le h`
+modifies the current goal, which was modified by the flexible tactic `simp_all?!` on line
+-/
+#guard_msgs (substring := true) in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp_all?!
+  exact Nat.le_succ_of_le h
+
+/--
+info: Try this:
+  [apply] simp_all! only [Nat.add_zero]
+-/
+#guard_msgs in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp_all?! only [Nat.add_zero]
+  exact Nat.le_succ_of_le h
+
+-- Check that `simp!` triggers the flexible linter, but its `only` variant does not.
+/--
+warning: `simp!` is a flexible tactic modifying `⊢`. Try `simp?!` and use the suggested `simp! only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `exact Nat.le_succ_of_le h`
+modifies the current goal, which was modified by the flexible tactic `simp!` on line
+-/
+#guard_msgs (substring := true) in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp!
+  exact Nat.le_succ_of_le h
+
+#guard_msgs in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp! only [Nat.add_zero]
+  exact Nat.le_succ_of_le h
+
+-- Check that `simp_all!` triggers the flexible linter, but its `only` variant does not.
+/--
+warning: `simp_all!` is a flexible tactic modifying `⊢`. Try `simp_all?!` and use the suggested `simp_all! only [...]`. Alternatively, use `suffices` to explicitly state the simplified form.
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: `exact Nat.le_succ_of_le h`
+modifies the current goal, which was modified by the flexible tactic `simp_all!` on line
+-/
+#guard_msgs (substring := true) in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp_all!
+  exact Nat.le_succ_of_le h
+
+-- An explicit `only` list permits a subsequent rigid tactic.
+#guard_msgs in
+example {a b : Nat} (h : a ≤ b) : a + 0 ≤ b + 1 := by
+  simp_all! only [Nat.add_zero]
+  exact Nat.le_succ_of_le h

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine monoids
 

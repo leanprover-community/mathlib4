@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Finsupp.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive monoid structure on `ι →₀ M`
 -/
