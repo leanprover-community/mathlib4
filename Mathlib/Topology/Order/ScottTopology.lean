@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.ScottContinuity
+public import Mathlib.Topology.Order.SuccPred
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
@@ -231,17 +232,31 @@ instance : ClosedIciTopology α where
 end univ
 end IsScottHausdorff
 
--- TODO: for a general linear order, its topology is the meet of the Scott-Hausdorff of itself and
--- its order dual.
-instance {α : Type*} [LinearOrder α] [WellFoundedLT α] [TopologicalSpace α] [OrderTopology α] :
-    IsScottHausdorff α univ where
+-- TODO: for a general linear order, its topology is the meet of the Scott-Hausdorff topology of
+-- itself and its order dual.
+section WellFounded
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α]
+
+instance [OrderTopology α] [WellFoundedLT α] : IsScottHausdorff α univ where
   topology_eq_scottHausdorff := by
-    rw [OrderTopology.topology_eq_generate_intervals (α := α)]
+    have := SuccOrder.ofLinearWellFoundedLT α
     apply le_antisymm
-    · sorry
-    · apply TopologicalSpace.le_generateFrom_iff_subset_isOpen.2
-      rintro _ ⟨a, rfl | rfl⟩
-      · simp
+    · intro s hs
+      rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)] at hs
+      rw [isOpen_iff_forall_mem_open]
+      intro x hs
+      cases x using SuccOrder.limitRecOn with
+      | isMin x hx =>
+        refine ⟨_, singleton_subset_iff.2 hs, ?_, mem_singleton _⟩
+        apply SuccOrder.isOpen_singleton_of_isMin
+      | succ x hx =>
+        refine ⟨_, singleton_subset_iff.2 hs, ?_, mem_singleton _⟩
+        exact SuccOrder.isOpen_singleton_of_not_isSuccPrelimit (mt Order.IsSuccPrelimit.isMax hx)
+      | isSuccLimit x hx => sorry
+    · rw [le_orderTopology_iff]
+      refine fun a ↦ ⟨?_, ?_⟩
+      · exact @Topology.IsScottHausdorff.IsOpen.Ioi α _ (scottHausdorff α univ) _ _
+      · exact @Topology.IsScottHausdorff.IsOpen.Iio α _ (scottHausdorff α univ) _ _
 
 #exit
 
