@@ -18,7 +18,7 @@ This file proves miscellaneous results under the assumption of `OrderTopology` p
 public section
 
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-  {a : α} {s : Set α}
+  {a b : α} {s : Set α}
 
 open Filter Order Set
 
@@ -28,6 +28,19 @@ namespace SuccOrder
 variable [SuccOrder α]
 
 @[to_dual]
+theorem isOpen_Iic : IsOpen (Iic a) := by
+  by_cases ha : IsMax a
+  · convert isOpen_univ
+    grind [IsMax]
+  · rw [← (covBy_succ_of_not_isMax ha).Iio_eq]
+    exact isOpen_Iio
+
+@[to_dual]
+theorem isOpen_Ioc : IsOpen (Ioc a b) := by
+  rw [← Ioi_inter_Iic]
+  exact isOpen_Ioi.inter isOpen_Iic
+
+@[to_dual]
 theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
   refine ⟨fun h ha ↦ ?_, fun ha ↦ ?_⟩
   · obtain ⟨l, h₁, h₂⟩ := exists_Ioc_subset_of_mem_nhds (h.mem_nhds (mem_singleton a))
@@ -35,17 +48,10 @@ theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
     exact ha.isSuccPrelimit l ⟨h₁, fun b hlb hba ↦ hba.ne <| h₂ ⟨hlb, hba.le⟩⟩
   · rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff] at ha
     obtain (ha | ⟨b, hb⟩) := ha
-    · obtain _ | _ := subsingleton_or_nontrivial α
-      · rw [Subsingleton.eq_univ_of_nonempty (singleton_nonempty a)]
-        exact isOpen_univ
-      · convert isOpen_Iio (a := Order.succ a)
-        rw [Iio_succ_of_not_isMax ha.not_isMax, ha.Iic_eq]
-    · by_cases ha' : IsMax a
-      · convert isOpen_Ioi (a := b)
-        rw [hb.Ioi_eq]
-        grind [IsMax]
-      · convert isOpen_Ioo (a := b) (b := Order.succ a)
-        simp [(covBy_succ_of_not_isMax ha').Ioo_eq_Ioc, hb.Ioc_eq]
+    · rw [← ha.Iic_eq]
+      exact isOpen_Iic
+    · rw [← hb.Ioc_eq]
+      exact isOpen_Ioc
 
 @[to_dual] alias ⟨_, isOpen_singleton_of_not_isSuccLimit⟩ := isOpen_singleton_iff
 
