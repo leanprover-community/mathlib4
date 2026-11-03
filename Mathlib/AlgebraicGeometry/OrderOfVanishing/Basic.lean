@@ -112,7 +112,8 @@ lemma ord_div (z : X) {f g : X.functionField} (hf : f ≠ 0) (hg : g ≠ 0) :
 @[simp]
 lemma ord_pow (z : X) (f : X.functionField) (n : ℕ) :
     ord (f ^ n) z = n * ord f z := by
-  by_cases hf : f = 0; by_cases n = 0 <;> simp_all
+  rcases eq_or_ne f 0 with rfl | hf
+  · rcases n with _ | n <;> simp
   induction n with
   | zero => simp
   | succ n ih =>
