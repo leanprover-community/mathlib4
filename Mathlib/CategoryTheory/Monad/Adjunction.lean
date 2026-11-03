@@ -41,7 +41,6 @@ variable {L : C ⥤ D} {R : D ⥤ C}
 
 namespace Adjunction
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a monad on
 the category `C`.
 -/
@@ -59,7 +58,6 @@ def toMonad (h : L ⊣ R) : Monad C where
     rw [← R.map_comp]
     simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
 -/
@@ -77,14 +75,12 @@ def toComonad (h : L ⊣ R) : Comonad D where
     rw [← L.map_comp]
     simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The monad induced by the Eilenberg-Moore adjunction is the original monad. -/
 @[simps!]
 def adjToMonadIso (T : Monad C) : T.adj.toMonad ≅ T :=
   MonadIso.mk (NatIso.ofComponents fun _ => Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The comonad induced by the Eilenberg-Moore adjunction is the original comonad. -/
 @[simps!]

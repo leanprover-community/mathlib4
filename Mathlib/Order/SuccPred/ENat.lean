@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Order.SuccPred.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `SuccOrder` structure on `ENat`
 -/

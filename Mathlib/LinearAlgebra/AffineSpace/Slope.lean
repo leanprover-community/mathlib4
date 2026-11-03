@@ -12,6 +12,9 @@ public import Mathlib.Tactic.Module
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Tactic.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Slope of a function
 
