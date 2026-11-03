@@ -1049,7 +1049,10 @@ theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   AddSubgroupClass.subset_union
 
-/-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Matsumura Ex.1.6. -/
+/-- **Prime avoidance**: if an ideal `I` is contained in a finite union of ideals `f i`, all of
+which are prime except possibly `f a` and `f b`, then `I` is contained in one of them.
+
+Atiyah-Macdonald 1.11, Eisenbud 3.3, Matsumura Ex.1.6. -/
 @[stacks 00DS]
 theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R}
     (a b : ι) (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
@@ -1057,45 +1060,42 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
   refine ⟨fun h ↦ ?_, fun ⟨i, his, hi⟩ ↦ Set.subset_iUnion₂_of_subset i his hi⟩
   classical
   induction s using Finset.strongInduction generalizing a b with | H s ih =>
-  obtain ⟨i₀, hi₀, -⟩ := Set.mem_iUnion₂.1 (h I.zero_mem)
+  obtain ⟨j, hj, -⟩ := Set.mem_iUnion₂.1 (h I.zero_mem)
   wlog ha : a ∈ s generalizing a
-  · exact this i₀ (fun j hj _ ↦ hp j hj (ne_of_mem_of_not_mem hj ha)) hi₀
+  · exact this j (fun j hj _ ↦ hp j hj (ne_of_mem_of_not_mem hj ha)) hj
   wlog hb : b ∈ s generalizing b
-  · exact this i₀ (fun j hj hja _ ↦ hp j hj hja (ne_of_mem_of_not_mem hj hb)) hi₀
+  · exact this j (fun j hj hja _ ↦ hp j hj hja (ne_of_mem_of_not_mem hj hb)) hj
   by_cases! hab : ∀ j ∈ s, j = a ∨ j = b
-  · have : (I : Set R) ⊆ f a ∪ f b := h.trans <| Set.iUnion₂_subset fun j hj ↦ by
-      obtain rfl | rfl := hab j hj
-      exacts [Set.subset_union_left, Set.subset_union_right]
+  · have : (I : Set R) ⊆ f a ∪ f b := h.trans <| Set.iUnion₂_subset (by grind)
     exact (subset_union.1 this).elim (⟨a, ha, ·⟩) (⟨b, hb, ·⟩)
   obtain ⟨i, his, hia, hib⟩ := hab
   have hpi := hp i his hia hib
-  have ih' {t} (hts : t ⊂ s) (ht : (I : Set R) ⊆ ⋃ j ∈ (t : Set ι), f j) : ∃ j ∈ s, I ≤ f j :=
-    (ih t hts a b (fun j hj ↦ hp j (hts.subset hj)) ht).imp fun _ ⟨hj, hIj⟩ ↦ ⟨hts.subset hj, hIj⟩
-  by_cases ht : (I : Set R) ⊆ ⋃ j ∈ (s.erase i : Set ι), f j
-  · exact ih' (s.erase_ssubset his) ht
+  let t : Finset ι := {j ∈ s | ¬f j ≤ f i}
+  have hts : t ⊂ s := by grind
+  by_cases hIt : (I : Set R) ⊆ ⋃ j ∈ t, f j
+  · obtain ⟨j, hj, hIj⟩ := ih t hts a b (fun j hj ↦ hp j (hts.subset hj)) hIt
+    exact ⟨j, hts.subset hj, hIj⟩
   by_cases hIi : I ≤ f i
   · exact ⟨i, his, hIi⟩
-  by_cases hle : ∃ j ∈ s.erase i, f j ≤ f i
-  · obtain ⟨j, hj, hji⟩ := hle
-    refine ih' (s.erase_ssubset (Finset.mem_of_mem_erase hj)) (h.trans ?_)
-    refine Set.iUnion₂_subset fun k hk ↦ ?_
-    obtain rfl | hkj := eq_or_ne k j
-    · exact Set.subset_iUnion₂_of_subset i
-        (Finset.mem_erase_of_ne_of_mem (Finset.ne_of_mem_erase hj).symm his) hji
-    · exact Set.subset_iUnion₂_of_subset k (Finset.mem_erase_of_ne_of_mem hkj hk) subset_rfl
-  have : ¬I ⊓ (s.erase i).inf f ≤ f i := by rwa [hpi.inf_le, hpi.inf_le', or_iff_right hIi]
-  obtain ⟨r, ⟨hrI, hr⟩, hri⟩ := Set.not_subset.1 this
-  obtain ⟨x, hxI, hx⟩ := Set.not_subset.1 ht
-  obtain ⟨j, hj, hrx⟩ := Set.mem_iUnion₂.1 (h (I.add_mem hrI hxI))
-  obtain ⟨k, hk, hxk⟩ := Set.mem_iUnion₂.1 (h hxI)
+  replace h : (I : Set R) ⊆ f i ∪ ⋃ j ∈ t, f j := by
+    refine h.trans <| Set.iUnion₂_subset fun j hj x hx ↦ ?_
+    by_cases hji : f j ≤ f i
+    · exact .inl (hji hx)
+    · apply Or.inr
+      simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
+      exact ⟨j, by grind, by simpa using hx⟩
+  obtain ⟨x, hxI, hxt⟩ := Set.not_subset.mp hIt
+  have hxi : x ∈ f i := (h hxI).resolve_right hxt
+  have : ¬I ⊓ t.inf f ≤ f i := by
+    rw [hpi.inf_le, hpi.inf_le']
+    exact not_or.2 ⟨hIi, fun ⟨j, hj, hji⟩ ↦ (Finset.mem_filter.mp hj).right hji⟩
+  obtain ⟨r, ⟨hrI, hrt⟩, hri⟩ := IsConcreteLE.not_le_iff_exists.mp this
   exfalso
-  obtain rfl | hji := eq_or_ne j i
-  · obtain rfl | hkj := eq_or_ne k j
-    · exact hri (((f k).add_mem_iff_left hxk).1 hrx)
-    · exact hx (Set.mem_biUnion (Finset.mem_erase_of_ne_of_mem hkj hk) hxk)
-  · have hj' := Finset.mem_erase_of_ne_of_mem hji hj
-    exact hx <| Set.mem_biUnion hj' <|
-      ((f j).add_mem_iff_right (Submodule.mem_finsetInf.1 hr j hj')).1 hrx
+  obtain hrxi | hrxt := h (I.add_mem hrI hxI)
+  · exact hri (((f i).add_mem_iff_left hxi).mp hrxi)
+  · obtain ⟨j, hj, hrxj⟩ := Set.mem_iUnion₂.mp hrxt
+    exact hxt <| Set.mem_biUnion hj <|
+      ((f j).add_mem_iff_right (Submodule.mem_finsetInf.mp hrt j hj)).mp hrxj
 
 /-- Prime avoidance, with the two possibly non-prime ideals `f a`, `f b` written separately. -/
 theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R}
@@ -1103,7 +1103,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔ I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
   classical
   simpa only [Finset.coe_insert, Set.biUnion_insert, Set.union_assoc, Finset.exists_mem_insert]
-    using subset_union_prime (s := insert a (insert b s)) a b (by grind)
+    using subset_union_prime (s := insert a (insert b s)) a b fun i hi hia hib ↦
+      hp i <| Finset.mem_of_mem_insert_of_ne (Finset.mem_of_mem_insert_of_ne hi hia) hib
 
 /-- Another version of prime avoidance using `Set.Finite` instead of `Finset`. -/
 lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
@@ -1111,7 +1112,7 @@ lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
   simpa only [Set.Finite.coe_toFinset, Set.Finite.mem_toFinset] using
-    subset_union_prime (s := hs.toFinset) (f := f) a b fun i hi ↦ hp i (hs.mem_toFinset.1 hi)
+    subset_union_prime (s := hs.toFinset) a b fun i hi ↦ hp i (hs.mem_toFinset.1 hi)
 
 lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
     {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
