@@ -748,15 +748,37 @@ abbrev OrderInfSet.ofOrderSupSet [OrderSupSet α] :
   isGLB_sInf_of_isGLB _ _ h := isLUB_lowerBounds.mp h.isLUB.isLUB_sSup
 
 open Classical in
-/-- Noncomputably constructs an `OrderSupSet` using the axiom of choice,
-where `sSup s` returns `d` if a least upper bound does not exist. -/
-@[to_dual
-/-- Noncomputably constructs an `OrderInfSet` using the axiom of choice,
-where `sInf s` returns `d` if a greatest lower bound does not exist. -/]
-noncomputable abbrev OrderSupSet.choose (d : α) :
+/-- Noncomputably constructs a "supremum" for an arbitrary set using the axiom of choice
+such that it is the actual supremum of the set if one exists, and the default value `d`
+otherwise. -/
+@[to_dual (attr := instance_reducible, simps -isSimp)
+/-- Noncomputably constructs an "infimum" for an arbitrary set using the axiom of choice
+such that it is the actual infimum of the set if one exists, and the default value `d`
+otherwise. -/]
+noncomputable def OrderSupSet.choose (d : α) :
     OrderSupSet α where
   sSup s := if h : ∃ x, IsLUB s x then h.choose else d
   isLUB_sSup_of_isLUB _ _ h := dite_eq_left (Exists.intro _ h) ▸ choose_spec _
+
+/-- Noncomputably constructs a "supremum" for an arbitrary set using the axiom of choice
+such that it is the actual supremum of the set if one exists, the bottom element if the supremum
+doesn't exist but a bottom element does, and the default value `d` if neither exists. -/
+@[to_dual (attr := instance_reducible)
+/-- Noncomputably constructs an "infimum" for an arbitrary set using the axiom of choice
+such that it is the actual infimum of the set if one exists, the top element if the infimum
+doesn't exist but a top element does, and the default value `d` if neither exists. -/]
+noncomputable def OrderSupSet.chooseBot (d : α) : OrderSupSet α :=
+  .choose ((OrderSupSet.choose d).sSup ∅)
+
+@[to_dual]
+theorem OrderSupSet.chooseBot_sSup_of_not_exists {d : α} {s : Set α} (h : ¬∃ x, IsLUB s x) :
+    (chooseBot d).sSup s = (chooseBot d).sSup ∅ := by
+  simp only [choose_sSup]; split_ifs <;> rfl
+
+@[to_dual]
+theorem OrderSupSet.chooseBot_sSup_empty_of_noBotOrder [NoBotOrder α] {d : α} :
+    (chooseBot d).sSup ∅ = d := by
+  simp [choose_sSup]
 
 end OrderSupSet
 

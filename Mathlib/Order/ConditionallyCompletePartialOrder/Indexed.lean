@@ -77,7 +77,7 @@ theorem DirectedOn.le_ciSup_set {f : β → α} {s : Set β} (hd : DirectedOn (�
 
 @[to_dual (attr := simp)]
 theorem ciSup_const [hι : Nonempty ι] {a : α} : ⨆ _ : ι, a = a := by
-  rw [iSup, range_const, csSup_singleton]
+  rw [iSup, range_const, sSup_singleton]
 
 @[to_dual (attr := simp)]
 theorem ciSup_unique [Unique ι] {s : ι → α} : ⨆ i, s i = s default := by

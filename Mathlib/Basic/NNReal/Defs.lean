@@ -457,12 +457,8 @@ theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥
   rcases Set.eq_empty_or_nonempty s with rfl | hs
   · simp
   by_cases H : BddAbove s
-  · have A : sSup (Subtype.val '' s) ∈ Set.Ici 0 := by
-      apply Real.sSup_nonneg
-      rintro - ⟨y, -, rfl⟩
-      exact y.2
-    exact (@subset_sSup_of_within ℝ (Set.Ici (0 : ℝ)) _ _ (_) s hs H A).symm
-  · simp only [csSup_of_not_bddAbove H, csSup_empty, bot_eq_zero', NNReal.coe_zero]
+  · exact @Set.OrdConnected.coe_sSup ℝ (Set.Ici 0) _ (_) _ s hs H
+  · simp only [csSup_of_not_bddAbove H, sSup_empty, bot_eq_zero', NNReal.coe_zero]
     apply (Real.sSup_of_not_bddAbove ?_).symm
     contrapose H
     exact bddAbove_coe.1 H
@@ -475,12 +471,8 @@ theorem coe_iSup {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨆ i, s i) : ℝ) = �
 theorem coe_sInf (s : Set ℝ≥0) : (↑(sInf s) : ℝ) = sInf (((↑) : ℝ≥0 → ℝ) '' s) := by
   rcases Set.eq_empty_or_nonempty s with rfl | hs
   · simp only [Set.image_empty, Real.sInf_empty, coe_eq_zero]
-    exact @subset_sInf_emptyset ℝ (Set.Ici (0 : ℝ)) _ _ (_)
-  have A : sInf (Subtype.val '' s) ∈ Set.Ici 0 := by
-    apply Real.sInf_nonneg
-    rintro - ⟨y, -, rfl⟩
-    exact y.2
-  exact (@subset_sInf_of_within ℝ (Set.Ici (0 : ℝ)) _ _ (_) s hs (OrderBot.bddBelow s) A).symm
+    exact @Set.OrdConnected.sInf_empty_of_noTopOrder ℝ (Set.Ici 0) _ (_) _ _
+  exact @Set.OrdConnected.coe_sInf ℝ (Set.Ici 0) _ (_) _ s hs (OrderBot.bddBelow s)
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set ℝ≥0) = 0 := by
@@ -844,7 +836,7 @@ theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y
   (le_toNNReal_iff_coe_le <| x.2.trans h).2 h
 
 nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
-  grind [csSup_of_not_bddAbove, csSup_empty, bot_eq_zero']
+  grind [csSup_of_not_bddAbove, _root_.sSup_empty, bot_eq_zero']
 
 theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
