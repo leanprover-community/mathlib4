@@ -737,8 +737,8 @@ theorem sum_def {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) :=
   rfl
 
-theorem sum_def' {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
-    p.sum f = p.toFinsupp.coeff.sum f :=
+theorem sum_eq_finsuppSum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
+    p.sum f = p.coeff.sum f :=
   rfl
 
 theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R → S)
@@ -773,8 +773,9 @@ theorem sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 
 
 theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
-    (p + q).sum f = p.sum f + q.sum f :=
-  Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
+    (p + q).sum f = p.sum f + q.sum f := by
+  simp_rw [sum_eq_finsuppSum]
+  rw [coeff_add, sum_add_index' hf h_add]
 
 /-- See also `Polynomial.sum_add`. -/
 @[simp]
