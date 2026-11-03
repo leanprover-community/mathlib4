@@ -71,7 +71,7 @@ lemma mem_maximalIdeal_iff_one_le_ord {a : X.presheaf.stalk x}
   rw [mem_maximalIdeal, mem_nonunits_iff, hiff]
   omega
 
-lemma mem_range_algebraMap_iff_ord_nonneg (f : X.functionField) :
+lemma exists_algebraMap_eq_iff_ord_nonneg (f : X.functionField) :
     (∃ a, algebraMap (X.presheaf.stalk x) X.functionField a = f) ↔ 0 ≤ ord f x := by
   have hx : coheight x = 1 := coheight_eq_one_of_isDiscreteValuationRing
   constructor

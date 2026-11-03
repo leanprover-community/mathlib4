@@ -95,7 +95,7 @@ lemma ord_one : ord (1 : X.functionField) = 0 := by
     simp
 
 @[simp]
-lemma ord_inv {z : X} {f : X.functionField} : ord f⁻¹ z = -ord f z := by
+lemma ord_inv (z : X) (f : X.functionField) : ord f⁻¹ z = -ord f z := by
   by_cases hf : f = 0
   · simp [hf]
   have h := ord_mul (x := z) hf (inv_ne_zero hf)
@@ -104,13 +104,13 @@ lemma ord_inv {z : X} {f : X.functionField} : ord f⁻¹ z = -ord f z := by
   omega
 
 @[simp]
-lemma ord_div {z : X} {f g : X.functionField} (hf : f ≠ 0) (hg : g ≠ 0) :
+lemma ord_div (z : X) {f g : X.functionField} (hf : f ≠ 0) (hg : g ≠ 0) :
     ord (f / g) z = ord f z - ord g z := by
   rw [div_eq_mul_inv, ord_mul hf (inv_ne_zero hg), ord_inv]
   ring
 
 @[simp]
-lemma ord_pow {z : X} {f : X.functionField} (n : ℕ) :
+lemma ord_pow (z : X) (f : X.functionField) (n : ℕ) :
     ord (f ^ n) z = n * ord f z := by
   by_cases hf : f = 0; by_cases n = 0 <;> simp_all
   induction n with
@@ -121,7 +121,7 @@ lemma ord_pow {z : X} {f : X.functionField} (n : ℕ) :
     ring
 
 @[simp]
-lemma ord_zpow {z : X} {f : X.functionField} (n : ℤ) :
+lemma ord_zpow (z : X) (f : X.functionField) (n : ℤ) :
     ord (f ^ n) z = n * ord f z := by
   cases n with
   | ofNat n =>
@@ -132,7 +132,7 @@ lemma ord_zpow {z : X} {f : X.functionField} (n : ℤ) :
     ring
 
 @[simp]
-lemma ord_prod {ι : Type*} {z : X} (T : Finset ι) (F : ι → X.functionField)
+lemma ord_prod {ι : Type*} (z : X) (T : Finset ι) (F : ι → X.functionField)
     (hF : ∀ i ∈ T, F i ≠ 0) : ord (∏ i ∈ T, F i) z = ∑ i ∈ T, ord (F i) z := by
   classical
   induction T using Finset.induction_on with
