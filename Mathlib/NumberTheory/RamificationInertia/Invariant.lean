@@ -22,7 +22,7 @@ from the base ring. The proof uses a separability tensor, a multiplier on which 
 subgroup acts trivially, and a sum over left cosets of the inertia subgroup.
 
 The reusable ingredients are `Algebra.FormallyUnramified.inertiaIdempotent`,
-`Algebra.FormallyUnramified.linearize`, and `Algebra.FormallyUnramified.subgroupIdempotent`.
+`Algebra.FormallyUnramified.extendScalars`, and `Algebra.FormallyUnramified.subgroupIdempotent`.
 The subgroup idempotent only requires the subgroup to be finite; the coset sum does not require
 normality of the subgroup.
 
@@ -33,57 +33,6 @@ by `Algebra.FormallyUnramified.descentMultiplier`.
 @[expose] public section
 
 open scoped Pointwise TensorProduct
-
--- PRed
-namespace Algebra.FormallyUnramified
-
-open Algebra.TensorProduct
-
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
-  [FormallyUnramified A B] [EssFiniteType A B]
-  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
-
-/-- If `B/A` is a formally unramified and essentially finite type, then the inertia idempotent
-of an algebra automorphism `g : G` is an idempotent element `e` of `B` with the properties that
-`g • b ≡ b [MOD e]` and `e ≡ 1 [MOD Q] ↔ g ∈ Q.inertia G`. -/
-noncomputable def inertiaIdempotent (g : G) : B :=
-  productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) (elem A B)
-
-@[simp]
-lemma inertiaIdempotent_one : inertiaIdempotent A B (1 : G) = 1 := by
-  have h : productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B (1 : G)) = lmul' A := by
-    ext <;> simp
-  simpa [inertiaIdempotent, h] using lmul_elem
-
-lemma isIdempotentElem_inertiaIdempotent (g : G) : IsIdempotentElem (inertiaIdempotent A B g) :=
-  (isIdempotentElem_elem A B).map (productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g))
-
-/-- `g • b` is congruent to `b` modulo the inertia idempotent of `g`. -/
-lemma inertiaIdempotent_mul_smul (g : G) (b : B) :
-    inertiaIdempotent A B g * (g • b) = inertiaIdempotent A B g * b := by
-  simpa [inertiaIdempotent, mul_comm] using
-    congr(productMap (AlgHom.id A B) (MulSemiringAction.toAlgHom A B g) $(one_tmul_mul_elem b))
-
-/-- The inertia idempotent of `g` is congruent to `1` modulo `Q` if and only `g ∈ Q.inertia G`. -/
-@[simp]
-lemma mk_inertiaIdempotent_eq_one_iff (Q : Ideal B) (g : G) :
-    Ideal.Quotient.mk Q (inertiaIdempotent A B g) = 1 ↔ g ∈ Q.inertia G := by
-  simp_rw [Q.mem_inertia, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem]
-  refine ⟨fun he b ↦ ?_, fun hg ↦ ?_⟩
-  · simpa [he] using congr(Ideal.Quotient.mk Q $(inertiaIdempotent_mul_smul A B g b))
-  · rw [← map_one (Ideal.Quotient.mk Q), ← inertiaIdempotent_one A B (G := G)]
-    simp_rw [inertiaIdempotent, ← Ideal.Quotient.mkₐ_eq_mk A, ← AlgHom.comp_apply]
-    congr 1
-    ext <;> simp [hg]
-
-open Classical in
-lemma mk_inertiaIdempotent (Q : Ideal B) [Q.IsPrime] (g : G) :
-    Ideal.Quotient.mk Q (inertiaIdempotent A B g) = if g ∈ Q.inertia G then 1 else 0 := by
-  have h := IsIdempotentElem.iff_eq_zero_or_one.mp
-    ((isIdempotentElem_inertiaIdempotent A B g).map (Ideal.Quotient.mk Q))
-  grind [mk_inertiaIdempotent_eq_one_iff]
-
-end Algebra.FormallyUnramified
 
 namespace Algebra.FormallyUnramified
 
@@ -135,7 +84,7 @@ variable {A B G : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [FormallyUnramified A B] [EssFiniteType A B]
   [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-section Linearize
+section extendScalars
 
 variable {L M N : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
   [Module A M] [Module B M] [IsScalarTower A B M]
@@ -144,49 +93,61 @@ variable {L M N : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
 
 variable (B) in
 /-- Separability turns a base-linear map into an algebra-linear map. -/
-noncomputable def linearize : (M →ₗ[A] N) →ₗ[B] (M →ₗ[B] N) :=
+noncomputable def extendScalars : (M →ₗ[A] N) →ₗ[B] (M →ₗ[B] N) :=
   ((sec A B M).lcomp B N).comp (LinearMap.liftBaseChangeEquiv B).toLinearMap
 
-lemma linearize_apply (f : M →ₗ[A] N) : linearize B f = (f.liftBaseChange B).comp (sec A B M) :=
+lemma extendScalars_apply (f : M →ₗ[A] N) :
+    extendScalars B f = (f.liftBaseChange B).comp (sec A B M) :=
   rfl
 
-lemma le_comap_linearize (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
-    (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) : P ≤ Q.comap (linearize B f) :=
+lemma le_comap_extendScalars (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
+    (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) : P ≤ Q.comap (extendScalars B f) :=
   fun _ hx ↦ Submodule.baseChange_le_comap_liftBaseChange_iff.mpr hf (sec_mem_baseChange A B P hx)
 
 @[simp]
-lemma linearize_comp (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
-    linearize B (f.comp (g.restrictScalars A)) = (linearize B f).comp g := by
-  rw [linearize_apply, linearize_apply, LinearMap.comp_assoc, sec_comp,
+lemma extendScalars_comp_restrictScalars (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
+    extendScalars B (f.comp (g.restrictScalars A)) = (extendScalars B f).comp g := by
+  rw [extendScalars_apply, extendScalars_apply, LinearMap.comp_assoc, sec_comp,
     ← LinearMap.comp_assoc, LinearMap.liftBaseChange_comp]
 
 @[simp]
-lemma linearize_comp_mulLeft (f : B →ₗ[A] N) (b : B) :
-    linearize B (f.comp (LinearMap.mulLeft A b)) = (linearize B f).comp (LinearMap.mulLeft B b) :=
-  linearize_comp f (LinearMap.mulLeft B b)
+lemma extendScalars_restrictScalars_comp (f : M →ₗ[B] N) (g : L →ₗ[A] M) :
+    extendScalars B ((f.restrictScalars A).comp g) = f.comp (extendScalars B g) := by
+  rw [extendScalars_apply, extendScalars_apply, ← LinearMap.comp_assoc,
+    LinearMap.comp_liftBaseChange]
 
 @[simp]
-lemma comp_linearize (g : N →ₗ[B] L) (f : M →ₗ[A] N) :
-    linearize B ((g.restrictScalars A).comp f) = g.comp (linearize B f) := by
-  rw [linearize_apply, linearize_apply, ← LinearMap.comp_assoc, LinearMap.comp_liftBaseChange]
+lemma extendScalars_comp_mulLeft (f : B →ₗ[A] M) (b : B) :
+    extendScalars B (f.comp (LinearMap.mulLeft A b)) =
+      (extendScalars B f).comp (LinearMap.mulLeft B b) :=
+  extendScalars_comp_restrictScalars f (LinearMap.mulLeft B b)
 
 @[simp]
-lemma linearize_id : linearize B (LinearMap.id : M →ₗ[A] M) = LinearMap.id :=
+lemma extendScalars_mulLeft_comp (f : M →ₗ[A] B) (b : B) :
+    extendScalars B ((LinearMap.mulLeft A b).comp f) =
+      (LinearMap.mulLeft B b).comp (extendScalars B f) :=
+  extendScalars_restrictScalars_comp (LinearMap.mulLeft B b) f
+
+@[simp]
+lemma extendScalars_id : extendScalars B (LinearMap.id : M →ₗ[A] M) = LinearMap.id :=
   comp_sec A B M
 
 @[simp]
-lemma linearize_restrictScalars (f : M →ₗ[B] N) : linearize B (f.restrictScalars A) = f := by
-  simpa using comp_linearize f (LinearMap.id (R := A))
+lemma extendScalars_restrictScalars (f : M →ₗ[B] N) :
+    extendScalars B (f.restrictScalars A) = f := by
+  simpa using extendScalars_restrictScalars_comp f (LinearMap.id (R := A))
 
 @[simp]
-lemma linearize_toAlgHom (g : G) :
-    linearize B (MulSemiringAction.toAlgHom A B g).toLinearMap =
+lemma extendScalars_toAlgHom (g : G) :
+    extendScalars B (MulSemiringAction.toAlgHom A B g).toLinearMap =
       LinearMap.mulLeft B (inertiaIdempotent A B g) := by
+  rw [inertiaIdempotent, equalizerIdempotent_comm]
   apply LinearMap.ext_ring
-  simp [linearize_apply]
+  rw [LinearMap.mulLeft_apply, mul_one, extendScalars_apply,
+    LinearMap.coe_comp, Function.comp_apply, sec_one]
   rfl
 
-end Linearize
+end extendScalars
 
 variable (A B) (H : Subgroup G)
 
@@ -211,7 +172,9 @@ lemma subgroupIdempotent_mul_smul (h : H) (b : B) :
   let := Fintype.ofFinite H
   obtain ⟨w, hw⟩ : inertiaIdempotent A B (h : G) ∣ subgroupIdempotent A B H :=
     Finset.dvd_prod_of_mem _ (Finset.mem_univ h)
-  rw [Subgroup.smul_def, hw, mul_right_comm, inertiaIdempotent_mul_smul, mul_right_comm]
+  rw [Subgroup.smul_def, hw, mul_right_comm, mul_comm _ ((h : G) • b),
+    smul_mul_inertiaIdempotent, mul_right_comm]
+  grind
 
 @[simp]
 lemma smul_subgroupIdempotent (h : H) :
@@ -277,7 +240,7 @@ private lemma descentMultiplier_mem_colon [Algebra.IsInvariant A B G]
     have : algebraMap A B a ∈ J := Ideal.mem_map_of_mem _ (by simpa [ha] using hzI)
     simpa [T, y, z, ha] using this
   simpa [Submodule.mem_colon, IsConcreteLE.le_iff, descentMultiplier, T,
-    Finset.sum_mul, mul_assoc] using le_comap_linearize T I J hT
+    Finset.sum_mul, mul_assoc] using le_comap_extendScalars T I J hT
 
 lemma mk_descentMultiplier_inertia (Q : Ideal B) [Q.IsPrime] :
     Ideal.Quotient.mk Q (descentMultiplier A B (Q.inertia G)) = 1 := by
