@@ -6,12 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Types.PreservesLimit
-public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.CategoryTheory.Presentable.CardinalInd
-public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
-public import Mathlib.CategoryTheory.Presentable.Presheaf
-public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.SmallRepresentatives
+
+import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
+import Mathlib.CategoryTheory.Presentable.Presheaf
+import Mathlib.CategoryTheory.Presentable.Type
 
 /-!
 # `κ`-continuous functors
@@ -36,8 +36,8 @@ If `C` is an essentially `w`-small category, we show that the category
 `CardinalContinuousFunctor Cᵒᵖ (Type w) κ` contains representable
 presheaves and is stable under `κ`-filtered colimits. If `κ`-small
 colimits exists in `C`, we show that `κ`-continuous presheaves `Cᵒᵖ ⥤ Type w`
-are exactly the `κ`-filtered colimits of representable presheaves,
-see `Presheaf.exists_presentation_of_isCardinalContinuous`.
+and exactly the `κ`-ind objects in `C`,
+see `Presheaf.isCardinalIndObject_eq_isCardinalContinuous`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -373,5 +373,13 @@ lemma isCardinalIndObject_eq_isCardinalContinuous
 end EssentiallySmall
 
 end Presheaf
+
+def Equivalence.congrLeftCardinalContinuousFunctor
+    {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
+    (e : C₁ ≌ C₂) (D : Type*) [Category* D]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    CardinalContinuousFunctor C₁ D κ ≌ CardinalContinuousFunctor C₂ D κ :=
+  sorry
+
 
 end CategoryTheory

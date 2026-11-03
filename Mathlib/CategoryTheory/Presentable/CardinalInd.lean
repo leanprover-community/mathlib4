@@ -5,32 +5,46 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
-public import Mathlib.CategoryTheory.Limits.FinallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-
-import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtCoyoneda
 
 /-!
 # `κ`-ind objects
 
-Let `C` be an essentially `w`-small category and `κ : Cardinal.{w}` be a regular cardinal.
-We define the category `CardinalInd C κ` as the full subcategory of `Cᵒᵖ ⥤ Type w`
-consisting the presheaves `P` such that `P.Elementsᵒᵖ` is `κ`-filtered. We show that
-this full subcategory contains representable presheaves and is stable under
-`κ`-filtered colimits. It follows that the `κ`-ind objects are precisely the
-`κ`-filtered colimits of representable functors.
+Let `C` be a locally small `w`-small category and `κ : Cardinal.{w}` be a regular cardinal`.
+For a presheaf `P : Cᵒᵖ ⥤ Type w`, we introduce a typeclass `P.IsCardinalIndObject κ`
+saying that `P` is a `κ`-ind object in `C`. The lemma `Functor.isCardinalIndObject_iff`
+characterizes `κ`-ind objects as (small) `κ`-filtered colimits of representable presheaves.
+We define the full subcategory `CardinalInd C κ` of `Cᵒᵖ ⥤ Type w` consisting of
+`κ`-ind objects in `C`. We show that `CardinalInd C κ` is also locally `w`-small and
+we show that the corresponding property of objects `isCardinalIndObject C κ`
+of `Cᵒᵖ ⥤ Type w` is closed under `κ`-filtered colimits.
+The inclusion `CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w` preserves with all limits.
 
-TODO: in the definition of `CardinalInd C κ`, it may be possible to relax
-the `EssentiallySmall` assumption, by assuming not only that `P.Elementsᵒᵖ`
-is `κ`-filtered but also that `P.Elements` is initially small
+When `C` is essentially `w`-small, we show that `CardinalInd C κ` is a `κ`-accessible
+category.
 
 ## Implementation notes
 
-We define more generally a property `Presheaf.isCardinalFilteredElementsOp` of objects in
-`C ⥤ Type w` that is satisfied by functors `P` such that `P.Elementsᵒᵖ` is `κ`-filtered.
-In the case the category `C` is replaced by `Cᵒᵖ`, we get the notion of `κ`-ind object.
+If `P : Cᵒᵖ ⥤ Type w` is a presheaf, we do not define `P.IsCardinalIndObject κ`
+by saying that the exists a presentation of `P` as a small `κ`-filtered colimit
+of representable presheaves. Instead, we define this property by requiring
+that the opposite category `P.Elementsᵒᵖ` of the category of elements of `P`
+is both `κ`-filtered and finally `w`-small (i.e. `P.Elements` is initially `w`-small).
+Using this definition, it is relatively easy to show that `κ`-ind objects are
+closed under `κ`-filtered colimits. We do this in two steps, by showing first
+that the stability under `κ`-filtered colimits of the property
+`Presheaf.isCardinalFilteredElementsOp` satisfied by functors `P` such that
+`P.Elementsᵒᵖ` is `κ`-filtered, and secondly that when we restrict to presheaves
+satisfying this property, the initially `w`-small condition is closed under
+`κ`-filtered colimits.
+
+Using the tautological cocone expressing a presheaf `P` as a colimit indexed by
+its category of elements, we easily obtain that `κ`-ind objects are `κ`-filtered
+colimits of representable presheaves. Using the fact that a representable functor
+is a `κ`-ind object and that `κ`-ind objects are closed under `κ`-filtered colimits,
+we obtain that `κ`-ind objects are exactly the `κ`-filtered colimits of
+representable presheaves.
 
 -/
 
@@ -211,7 +225,7 @@ instance (κ : Cardinal.{w}) [Fact κ.IsRegular] :
 
 lemma IsCardinalIndObject.of_iso
     {P Q : Cᵒᵖ ⥤ Type w} (e : P ≅ Q) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (hP : IsCardinalIndObject P κ := by infer_instance) :
+    (hP : P.IsCardinalIndObject κ := by infer_instance) :
     IsCardinalIndObject Q κ :=
   (isCardinalIndObject C κ).prop_of_iso e hP
 
@@ -347,11 +361,15 @@ instance :
 example : (CardinalInd.inclusion : CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w).IsCardinalAccessible κ :=
   inferInstance
 
-example : (CardinalInd.inclusion : CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w).IsCardinalAccessible κ :=
-  inferInstance
-
 end EssentiallySmall
 
 end CardinalInd
+
+def Equivalence.congrCardinalInd
+    {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
+    [LocallySmall.{w} C₁] [LocallySmall.{w} C₂]
+    (e : C₁ ≌ C₂) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    CardinalInd C₁ κ ≌ CardinalInd C₂ κ :=
+  sorry
 
 end CategoryTheory

@@ -5,55 +5,45 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.DenseIff
-public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 public import Mathlib.CategoryTheory.Presentable.Continuous
-public import Mathlib.CategoryTheory.Presentable.Dense
+
+import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+import Mathlib.CategoryTheory.Presentable.Dense
+import Mathlib.CategoryTheory.Presentable.Presheaf
 
 /-!
 # The representation theorem
 
-TODO: Add statements about `κ`-accessible categories
+In this file, we obtain representation theorems for `κ`-accessible categories `C`
+and locally `κ`-presentable categories `C` as suitable full subcategories
+of the category of presheaves on the category of `κ`-presentable objects in `C`.
 
-In this file, we show that if `C` is a locally `κ`-presentable category,
-then `C` identifies to the category of `κ`-continuous presheaves on
-the full subcategory of `κ`-presentable objects of `C`.
+More precisely, if `C` is a `κ`-accessible category, we show that the
+functor `IsCardinalAccessible.toCardinalIndObject C κ` is an equivalence
+of categories between `C` and the category of `κ`-ind objects of the
+category of `κ`-presentable objects in `C`. It follows that a category
+is `κ`-accessible iff it is equivalent to a category of `κ`-ind
+objects of an essentially `w`-small category (see the lemma
+`IsCardinalAccessible.iff_nonempty_equivalence_cardinalInd`):
+this is the equivalence (i) ↔ (iii) from the theorem 2.26 in the book
+by Adámek and and Rosický
 
-This completes the equivalence between the conditions (i)-(iv) in
-the Representation Theorem 1.46 in the book by Adámek and and Rosický:
-if `C` is a locally `w`-small categories and `κ : Cardinal.{w}`, the following
-conditions are equivalent:
-(i) `C` is locally `κ`-presentable;
-(ii) `C` is equivalent to a category `CardinalContinuousFunctor A (Type w) κ` where
-`A` is an (essentially) `w`-small category;
-(iii) `C` is equivalent to a full subcategory of the form `W.isLocal`
-where `W : MorphismProperty (A ⥤ Type w)` is a `w`-small family of morphisms
-between `κ`-presentable objects, and `A` is an (essentially) `w`-small category.
-(iv) `C` is equivalent to a full, reflective subcategory of `A ⥤ Type w` that
-is closed under `κ`-filtered colimits, for some (essentially) `w`-small category A.
+If `C` is a locally `κ`-presentable category, we show that the functor
+`IsCardinalLocallyPresentable.toCardinalContinuousFunctor C κ` from
+`C` to the category of `κ`-continuous presheaves on the category of
+`κ`-presentable objects in `C` is an equivalence. (Note that under
+this assumption that `C` is a locally `κ`-presentable category,
+implies that this full subcategory of `κ`-continuous presheaves
+coincides with the full subcategory of `κ`-ind objects, see the lemma
+`IsCardinalLocallyPresentable.isCardinalIndObject_eq_isCardinalContinuous`.)
+It follows that a category is `κ`-locally presentable iff it is equivalent
+to a category of `κ`-continuous presheaves on a `w`-small category.
+This is the equivalence (i) ↔ (ii) from the theorem 1.46 in the book
+by Adámek and and Rosický.
 
-In (ii)-(iii)-(iv), `A` can be chosen to be the opposite category of the
-full subcategory of `C` consisting of `κ`-presentable objects.
-
-In this file, we show (i) => (ii) (see
-`IsCardinalLocallyPresentable.isEquivalence_toCardinalContinuousFunctor`).
-We showed (ii) => (iii) as `Presheaf.isCardinalContinuous_eq_isLocal` in the
-file `Mathlib/CategoryTheory/Presentable/Continuous.lean`.
-The implication (iii) => (iv) follows from the Orthogonal-reflection construction
-from the file `Mathlib/CategoryTheory/Presentable/OrthogonalReflection.lean`
-(see lemma `MorphismProperty.isRightAdjoint_ι_isLocal`), and the implication
-(iv) => (i) follows from lemma `Adjunction.isCardinalLocallyPresentable` from the
-file `Mathlib/CategoryTheory/Presentable/Adjunction.lean` (and the fact that
-presheaf categories are locally presentable,
-see `Mathlib/CategoryTheory/Presentable/Presheaf.lean`).
-
-The Representation THeorem 1.46 in the book by Adámek and and Rosický contains
-another condition (v) saying that `C` is a `κ`-free completion of a small
-category, but it is not part of this formalization.
-
-The relation between locally `κ`-presentable categories and categories of (`κ`-continuous)
-presheaves that is provided by the representation theorem allows to prove
-the existence of all limits in locally `κ`-presentable categories.
+The relation between locally `κ`-presentable categories and categories of
+(`κ`-continuous) presheaves that is provided by the representation theorem
+allows to prove the existence of all limits in locally `κ`-presentable categories.
 In the file `Mathlib/CategoryTheory/Presentable/Presheaf.lean`,
 we had to assume that a locally `κ`-presentable category `C` had pullbacks in order
 to show that a functor category `J ⥤ C` (with `J` (essentially) small) was also
@@ -167,6 +157,15 @@ instance isEquivalence_toCardinalIndObject :
   rw [ObjectProperty.isEquivalence_lift_iff,
     IsCardinalAccessible.essImage_restrictedShrinkYoneda_isCardinalPresentable_ι]
 
+lemma iff_nonempty_equivalence_cardinalInd
+    (C : Type*) [Category* C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalAccessibleCategory C κ ↔
+      ∃ (A : Type w) (_ : SmallCategory A), Nonempty (C ≌ CardinalInd A κ) :=
+  ⟨fun _ ↦ ⟨SmallModel.{w} (isCardinalPresentable C κ).FullSubcategory,
+    inferInstance, ⟨(toCardinalIndObject C κ).asEquivalence.trans
+      ((equivSmallModel _).congrCardinalInd  κ)⟩⟩,
+    fun ⟨_, _, ⟨e⟩⟩ ↦ e.symm.isCardinalAccessibleCategory κ⟩
+
 end IsCardinalAccessible
 
 namespace IsCardinalLocallyPresentable
@@ -190,15 +189,21 @@ noncomputable def toCardinalContinuousFunctorCompIso :
     toCardinalContinuousFunctor C κ ⋙ ObjectProperty.ι _ ≅
       Presheaf.restrictedShrinkYoneda.{w} (ObjectProperty.ι _) := Iso.refl _
 
+open CategoryTheory.Functor in
+lemma isCardinalIndObject_eq_isCardinalContinuous :
+    isCardinalIndObject (isCardinalPresentable C κ).FullSubcategory κ =
+    isCardinalContinuous (isCardinalPresentable C κ).FullSubcategoryᵒᵖ (Type w) κ := by
+  rw [Presheaf.isCardinalIndObject_eq_isCardinalContinuous]
+  intro J _ hJ
+  have := isClosedUnderColimitsOfShape_isCardinalPresentable C hJ
+  infer_instance
+
 instance isEquivalence_toCardinalContinuousFunctor :
     (toCardinalContinuousFunctor C κ).IsEquivalence := by
   dsimp [toCardinalContinuousFunctor]
   rw [ObjectProperty.isEquivalence_lift_iff,
     IsCardinalAccessible.essImage_restrictedShrinkYoneda_isCardinalPresentable_ι,
-    Presheaf.isCardinalIndObject_eq_isCardinalContinuous]
-  intro J _ hJ
-  have := isClosedUnderColimitsOfShape_isCardinalPresentable C hJ
-  infer_instance
+    isCardinalIndObject_eq_isCardinalContinuous]
 
 include κ in
 lemma hasLimitsOfSize : HasLimitsOfSize.{w, w} C :=
@@ -214,6 +219,16 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] :
     IsCardinalLocallyPresentable (J ⥤ C) κ := by
   have := IsCardinalLocallyPresentable.hasFiniteLimits C κ
   infer_instance
+
+lemma iff_nonempty_equivalence_cardinalInd
+    (C : Type*) [Category* C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalLocallyPresentable C κ ↔
+      ∃ (A : Type w) (_ : SmallCategory A),
+        Nonempty (C ≌ CardinalContinuousFunctor A (Type w) κ) :=
+  ⟨fun _ ↦ ⟨SmallModel.{w} (isCardinalPresentable C κ).FullSubcategoryᵒᵖ,
+    inferInstance, ⟨(toCardinalContinuousFunctor C κ).asEquivalence.trans
+      ((equivSmallModel _).congrLeftCardinalContinuousFunctor _ κ)⟩⟩,
+    fun ⟨_, _, ⟨e⟩⟩ ↦ e.symm.isCardinalLocallyPresentable κ⟩
 
 end IsCardinalLocallyPresentable
 
