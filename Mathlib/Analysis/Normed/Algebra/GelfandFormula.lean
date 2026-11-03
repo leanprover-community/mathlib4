@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Normed.Operator.Mul
 

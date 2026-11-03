@@ -767,12 +767,6 @@ theorem alternatingProd_eq_finsetProd {G : Type*} [DivisionCommMonoid G] :
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
           simp [pow_add]}
 
-@[deprecated (since := "2026-04-08")]
-alias alternatingSum_eq_finset_sum := alternatingSum_eq_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
-
 end List
 
 /-- This is a classic "telescoping sum" lemma. It says:

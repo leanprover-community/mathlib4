@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lagrange's four square theorem
 

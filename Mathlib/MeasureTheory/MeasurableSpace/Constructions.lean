@@ -107,7 +107,7 @@ theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred 
   refine measurable_findGreatest' fun k hk => ?_
   simp only [Nat.findGreatest_eq_iff, ofPred_and, ofPred_forall, ← compl_ofPred]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.iInter,
-    MeasurableSet.compl, hN] <;> try intros
+    MeasurableSet.compl, hN] <;> intros
 
 @[simp, measurability]
 protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
@@ -375,6 +375,12 @@ def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableS
 instance Prod.instMeasurableSpace {α β} [m₁ : MeasurableSpace α] [m₂ : MeasurableSpace β] :
     MeasurableSpace (α × β) :=
   m₁.prod m₂
+
+/-- The product σ-algebra is monotone in both factors. -/
+@[gcongr]
+theorem MeasurableSpace.prod_mono {mα mα' : MeasurableSpace α} {mβ mβ' : MeasurableSpace β}
+    (hα : mα ≤ mα') (hβ : mβ ≤ mβ') : mα.prod mβ ≤ mα'.prod mβ' :=
+  sup_le_sup (comap_mono hα) (comap_mono hβ)
 
 theorem measurable_fst {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     Measurable (Prod.fst : α × β → α) :=
