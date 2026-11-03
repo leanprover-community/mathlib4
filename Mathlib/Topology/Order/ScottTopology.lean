@@ -190,7 +190,7 @@ theorem closure_eq_setOfPred_isLUB (s : Set α) :
         exact ((hf hi).1 hy).trans (hx.1 hi)
       · exact hx.2 fun z hz ↦ (hf hz).2 (upperBounds_mono_set (subset_iUnion _ ⟨z, hz⟩) hy)
   · rintro x ⟨d, hd, hd₀, hx⟩
-    exact mem_closure_of_isLUB isLowerSet_univ (mem_univ _) hd hd₀ (.of_linearOrder _) hx
+    exact mem_closure_of_isLUB (mem_univ _) hd hd₀ (.of_linearOrder _) hx
 
 /-- This theorem can fail in partial orders (even with the directed assumption). -/
 theorem mem_closure_iff_isLUB {s : Set α} {x : α} :
