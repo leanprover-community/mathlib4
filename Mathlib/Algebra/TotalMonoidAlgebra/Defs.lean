@@ -358,29 +358,15 @@ for any element `z : M`, there are only finitely many pairs `(x, y)` such that `
 
 -/
 
-/-- The multiplication in a total additive monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[no_expose]
-def _root_.TotalAddMonoidAlgebra.mul' [Add M] [HasAntidiagonal M]
-    (x y : TotalAddMonoidAlgebra R M) : TotalAddMonoidAlgebra R M :=
-  .ofCoeff fun z ↦ ∑ i ∈ antidiagonal z, x.coeff i.1 * y.coeff i.2
-/-- The multiplication in a total monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[no_expose]
-def _root_.TotalMonoidAlgebra.mul' [Mul M] [HasMulAntidiagonal M]
-    (x y : R⟦M⟧) : R⟦M⟧ :=
-  .ofCoeff fun z ↦ ∑ i ∈ mulAntidiagonal z, x.coeff i.1 * y.coeff i.2
-
 variable [Mul M] [HasMulAntidiagonal M]
 
 /-- The product of `x y : R⟦M⟧` is the function whose value at `m` is the sum of `x m₁ * y m₂`
 over all pairs `m₁, m₂` such that `m₁ * m₂ = m`. -/
-@[to_additive instMul
+@[to_additive (dont_translate := R) instMul
 /-- The product of `x y : R⟦M⟧` is the function whose value at `m` is the sum of `x m₁ * y m₂`
 over all pairs `m₁, m₂` such that `m₁ + m₂ = m`. -/]
-instance instMul : Mul R⟦M⟧ where mul := mul'
+instance instMul : Mul R⟦M⟧ where
+  mul x y := private .ofCoeff fun z ↦ ∑ i ∈ mulAntidiagonal z, x.coeff i.1 * y.coeff i.2
 
 @[to_additive (dont_translate := R) mul_def]
 lemma mul_def (x y : R⟦M⟧) : x * y =
