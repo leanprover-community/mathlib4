@@ -245,21 +245,16 @@ instance [OrderTopology α] [WellFoundedLT α] : IsScottHausdorff α univ where
       rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)] at hs
       rw [isOpen_iff_forall_mem_open]
       intro x hxs
-      cases x using Order.isSuccLimitRecOn with
-      | isMin x hx =>
-        refine ⟨_, singleton_subset_iff.2 hxs, ?_, mem_singleton _⟩
-        exact SuccOrder.isOpen_singleton_of_isMin hx
-      | succ x hx =>
-        refine ⟨_, singleton_subset_iff.2 hxs, ?_, mem_singleton _⟩
-        exact SuccOrder.isOpen_singleton_of_not_isSuccLimit (mt Order.IsSuccLimit.isMax hx)
-      | isSuccLimit x hx =>
-        rw [dirSupInacc_iff_inter_subset] at hs
+      by_cases hx : Order.IsSuccLimit x
+      · rw [dirSupInacc_iff_inter_subset] at hs
         obtain ⟨y, hy, hyx⟩ := hs hx.nonempty_Iio (.of_linearOrder _) hx.isLUB_Iio hxs
         rw [Ici_inter_Iio] at hyx
         refine ⟨Ioc y x, ?_, SuccOrder.isOpen_Ioc, ?_⟩
         · rw [← Ioo_insert_right hy]
           exact insert_subset hxs (Ioo_subset_Ico_self.trans hyx)
         · simpa
+      · exact ⟨_, singleton_subset_iff.2 hxs, SuccOrder.isOpen_singleton_of_not_isSuccLimit hx,
+          mem_singleton _⟩
     · rw [le_orderTopology_iff]
       refine fun a ↦ ⟨?_, ?_⟩
       · exact @Topology.IsScottHausdorff.IsOpen.Ioi α _ (scottHausdorff α univ) _ _
