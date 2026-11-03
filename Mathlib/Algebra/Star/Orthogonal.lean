@@ -66,6 +66,14 @@ lemma add_left {p₁ p₂ : R} (h₁ : p₁ ⋆⟂ q) (h₂ : p₂ ⋆⟂ q) : (
 lemma add_right {q₁ q₂ : R} (h₁ : p ⋆⟂ q₁) (h₂ : p ⋆⟂ q₂) : p ⋆⟂ (q₁ + q₂) :=
   (h₁.symm.add_left h₂.symm).symm
 
+lemma smul_left' {S : Type*} [Star S] [SMulZeroClass S R] [IsScalarTower S R R]
+    [StarModule S R] (h : p ⋆⟂ q) (c : S) : (c • p) ⋆⟂ q := by
+  rw [isStarOrtho_iff'] at *; simp [smul_mul_assoc, h.1, h.2]
+
+lemma smul_right' {S : Type*} [Star S] [SMulZeroClass S R] [IsScalarTower S R R]
+    [StarModule S R] (h : p ⋆⟂ q) (c : S) : p ⋆⟂ (c • q) :=
+  (h.symm.smul_left' c).symm
+
 lemma smul_left {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] [SMulCommClass S R R]
     (h : p ⋆⟂ q) (c : S) : (c • p) ⋆⟂ q :=
   ⟨by rw [smul_mul_assoc, h.mul_star_eq_zero, smul_zero],
@@ -100,45 +108,61 @@ lemma sum_right {ι : Type*} {s : Finset ι} {f : ι → R} (h : ∀ i ∈ s, p 
     p ⋆⟂ (∑ i ∈ s, f i) :=
   (sum_left fun i hi ↦ (h i hi).symm).symm
 
+/- The properties of star-orthogonality involving multiplication below could be proven manually,
+and sometimes with weaker hypotheses, but these are provided for convenience because they come up
+in practice. -/
+
+/-- A version of `IsStarOrtho.mul_left` with slightly weaker hypotheses. -/
+lemma mul_left' {p₁ p₂ q : R} (h₁ : star q * p₁ = 0) (h₂ : p₂ * star q = 0) :
+    (p₁ * p₂) ⋆⟂ q where
+  mul_star_eq_zero := by rw [mul_assoc, h₂, mul_zero]
+  star_mul_eq_zero := by rw [← mul_assoc, h₁, zero_mul]
+
+lemma mul_left {p₁ p₂ q : R} (h₁ : p₁ ⋆⟂ q) (h₂ : p₂ ⋆⟂ q) :
+    (p₁ * p₂) ⋆⟂ q :=
+  .mul_left' h₁.star_mul_eq_zero h₂.mul_star_eq_zero
+
+/-- A version of `IsStarOrtho.mul_right` with slightly weaker hypotheses. -/
+lemma mul_right' {p q₁ q₂ : R} (h₁ : star q₁ * p = 0) (h₂ : p * star q₂ = 0) :
+    p ⋆⟂ (q₁ * q₂) where
+  mul_star_eq_zero := by rw [star_mul, ← mul_assoc, h₂, zero_mul]
+  star_mul_eq_zero := by rw [star_mul, mul_assoc, h₁, mul_zero]
+
+lemma mul_right {p q₁ q₂ : R} (h₁ : p ⋆⟂ q₁) (h₂ : p ⋆⟂ q₂) :
+    p ⋆⟂ (q₁ * q₂) :=
+  .mul_right' h₁.star_mul_eq_zero h₂.mul_star_eq_zero
+
+/-- A version of `IsStarOrtho.mul` with slightly weaker hypotheses. -/
+lemma mul' {p₁ p₂ q₁ q₂ : R} (h₁ : star q₁ * p₁ = 0) (h₂ : p₂ * star q₂ = 0) :
+    (p₁ * p₂) ⋆⟂ (q₁ * q₂) where
+  mul_star_eq_zero := by rw [star_mul, mul_assoc, ← mul_assoc p₂, h₂]; simp
+  star_mul_eq_zero := by rw [star_mul, mul_assoc, ← mul_assoc _ p₁, h₁]; simp
+
+lemma mul {p₁ p₂ q₁ q₂ : R} (h₁ : p₁ ⋆⟂ q₁) (h₂ : p₂ ⋆⟂ q₂) :
+    (p₁ * p₂) ⋆⟂ (q₁ * q₂) :=
+  mul' h₁.star_mul_eq_zero h₂.mul_star_eq_zero
+
+lemma mul_mul {p₁ p₂ q₁ q₂ : R} (h₁ : p₁ ⋆⟂ q₁) (h₂ : p₂ ⋆⟂ q₂) (a b : R) :
+    (p₁ * a * p₂) ⋆⟂ (q₁ * b * q₂) := by
+  refine .mul' (p₁ := p₁ * a) (p₂ := p₂) (q₁ := q₁ * b) (q₂ := q₂) ?_ h₂.mul_star_eq_zero
+  rw [star_mul, mul_assoc, ← mul_assoc _ p₁, h₁.star_mul_eq_zero]
+  simp
+
 /-- If `p` and `q` are star-orthogonal, then so are `p * a * star p` and `q * b * star q`. -/
 protected lemma star_right_conjugate (h : p ⋆⟂ q) (a b : R) :
-    (p * a * star p) ⋆⟂ (q * b * star q) where
-  mul_star_eq_zero := by
-    simp only [star_mul, star_star, mul_assoc]
-    rw [← mul_assoc (star p) q, h.symm.star_mul_eq_zero]
-    simp
-  star_mul_eq_zero := by
-    simp only [star_mul, star_star, mul_assoc]
-    rw [← mul_assoc (star q) p, h.star_mul_eq_zero]
-    simp
+    (p * a * star p) ⋆⟂ (q * b * star q) :=
+  h.mul_mul h.star a b
 
 /-- If `p` and `q` are star-orthogonal, then so are `star p * a * p` and `star q * b * q`. -/
 protected lemma star_left_conjugate (h : p ⋆⟂ q) (a b : R) :
-    (star p * a * p) ⋆⟂ (star q * b * q) := by
-  simpa using h.star.star_right_conjugate a b
+    (star p * a * p) ⋆⟂ (star q * b * q) :=
+  h.star.mul_mul h a b
 
-/-- A version of `IsStarOrtho.mul_mul` with slightly weaker hypotheses. -/
-lemma mul_mul' {p₁ p₂ q₁ q₂ : R} (h₁ : star q₁ * p₁ = 0) (h₂ : p₂ * star q₂ = 0) (a b : R) :
-    (p₁ * a * p₂) ⋆⟂ (q₁ * b * q₂) where
-  mul_star_eq_zero := by
-    have : p₁ * a * p₂ * (star q₂ * (star b * star q₁)) =
-        p₁ * a * (p₂ * star q₂) * star b * star q₁ := by simp [mul_assoc]
-    simp [this, h₂]
-  star_mul_eq_zero := by
-    have : (star q₂ * (star b * star q₁)) * (p₁ * a * p₂) =
-        star q₂ * star b * (star q₁ * p₁) * a * p₂ := by simp [mul_assoc]
-    simp [this, h₁]
+lemma mul_star_self (h : p ⋆⟂ q) : (p * star p) ⋆⟂ (q * star q) :=
+  h.mul h.star
 
-lemma mul_mul {p₁ p₂ q₁ q₂ : R} (h₁ : p₁ ⋆⟂ q₁) (h₂ : p₂ ⋆⟂ q₂) (a b : R) :
-    (p₁ * a * p₂) ⋆⟂ (q₁ * b * q₂) :=
-  mul_mul' h₁.star_mul_eq_zero h₂.mul_star_eq_zero a b
-
-lemma mul_star_self (h : p ⋆⟂ q) : (p * star p) ⋆⟂ (q * star q) where
-  mul_star_eq_zero := by simp [mul_assoc, ← mul_assoc (star p) q, h.symm.star_mul_eq_zero]
-  star_mul_eq_zero := by simp [mul_assoc, ← mul_assoc (star q) p, h.star_mul_eq_zero]
-
-lemma star_mul_self (h : p ⋆⟂ q) : (star p * p) ⋆⟂ (star q * q) := by
-  simpa using h.star.mul_star_self
+lemma star_mul_self (h : p ⋆⟂ q) : (star p * p) ⋆⟂ (star q * q) :=
+  h.star.mul h
 
 lemma map {S F : Type*} [NonUnitalSemiring S] [StarRing S] [FunLike F R S]
     [NonUnitalRingHomClass F R S] [StarHomClass F R S] (f : F) (h : p ⋆⟂ q) : f p ⋆⟂ f q where
