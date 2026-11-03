@@ -421,7 +421,8 @@ alias nndist_eq_nnnorm_inv_mul := nnDist_eq_nnNorm_inv_mul
 theorem nnNorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
 
-@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_inv' := nnNorm_inv'
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_neg]
+alias nnnorm_inv' := nnNorm_inv'
 
 @[to_additive (attr := simp)]
 theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by
@@ -433,7 +434,8 @@ lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nndist,
 @[to_additive (attr := simp) nnNorm_zero]
 theorem nnNorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
 
-@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_one' := nnNorm_one'
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_zero]
+alias nnnorm_one' := nnNorm_one'
 
 @[to_additive]
 theorem ne_one_of_nnNorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
@@ -448,7 +450,7 @@ alias ne_one_of_nnnorm_ne_zero := ne_one_of_nnNorm_ne_zero
 theorem nnNorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
 
-@[to_additive (attr := deprecated (since := "2026-10-31"))]
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_add_le]
 alias nnnorm_mul_le' := nnNorm_mul_le'
 
 @[to_additive norm_nsmul_le]
@@ -474,14 +476,14 @@ alias nnnorm_zpow_abs := nnNorm_zpow_abs
 theorem nnNorm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_pow_natAbs a n
 
-@[to_additive (attr := deprecated (since := "2026-10-31"))]
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_natAbs_smul]
 alias nnnorm_pow_natAbs := nnNorm_pow_natAbs
 
 @[to_additive nnNorm_isUnit_zsmul]
 theorem nnNorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_zpow_isUnit a hn
 
-@[to_additive (attr := deprecated (since := "2026-10-31"))]
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_isUnit_zsmul]
 alias nnnorm_zpow_isUnit := nnNorm_zpow_isUnit
 
 @[simp]
