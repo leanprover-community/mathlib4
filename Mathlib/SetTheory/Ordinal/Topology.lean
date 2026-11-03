@@ -16,7 +16,7 @@ import Mathlib.Topology.Order.Monotone
 /-!
 # Topology of ordinals
 
-This files registers an `OrderTopology` instance on `Ordinal`.
+This file registers an `OrderTopology` instance on `Ordinal`.
 
 In all likelihood, any theorem which you might want to add to this file will generalize to broader
 typeclasses. In particular, the characterization of closed sets as those which are closed under
