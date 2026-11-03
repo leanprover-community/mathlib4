@@ -144,7 +144,7 @@ lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   ext z
   suffices η (-(↑z)⁻¹) ^ 24 * ((z : ℂ) ^ 12)⁻¹ = η z ^ 24 by
     rw [SL_slash_apply, UpperHalfPlane.modular_S_smul]
-    simpa [denom, ModularGroup.coe_S]
+    simpa [denom]
   have he : η (-(↑z)⁻¹) = (sqrt I)⁻¹ * (sqrt z * η z) := by
     simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.2
   simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]

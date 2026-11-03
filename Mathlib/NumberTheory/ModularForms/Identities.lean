@@ -47,7 +47,7 @@ theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Ga
 lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
     (f ∣[k] ModularGroup.S) z = f (.mk _ z.im_inv_neg_coe_pos) * z ^ (-k) := by
   rw [SL_slash_apply, modular_S_smul]
-  simp [ModularGroup.coe_S, denom]
+  simp [denom]
 
 section Generators
 
