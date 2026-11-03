@@ -126,12 +126,10 @@ private def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) wher
   right_inv _ := rfl
 
 -- This instance exists to avoid a zsmul diamond.
-@[no_expose]
 noncomputable instance (R : Type*) [CommSemiring R] [Algebra R (WithAbs v)] :
     SMul R v.Completion where
   smul r x := ofCompletion' (r • x.toCompletion')
 
-@[no_expose]
 noncomputable instance : NormedField v.Completion := fast_instance% (equivAux v).normedField
 
 /-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
@@ -311,7 +309,6 @@ section Algebra
 variable {R : Type*} [CommSemiring R] [Algebra R (WithAbs v)]
   [UniformContinuousConstSMul R (WithAbs v)]
 
-@[no_expose]
 noncomputable instance : Algebra R v.Completion := fast_instance% (equiv v).algebra R
 
 theorem toCompletion_algebraMap (r : R) :
