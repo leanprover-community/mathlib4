@@ -74,11 +74,11 @@ example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
 `ModelTheory/Basic`. -/
 example (n : ℕ) : DecidableEq (Language.ring.Relations n) := inferInstance
 
-instance : ZeroConstant ring := ⟨ringFunc.zero⟩
-instance : OneConstant ring := ⟨ringFunc.one⟩
-instance : AddFunction ring := ⟨ringFunc.add⟩
-instance : MulFunction ring := ⟨ringFunc.mul⟩
-instance : NegFunction ring := ⟨ringFunc.neg⟩
+instance : ring.Zero := ⟨ringFunc.zero⟩
+instance : ring.One := ⟨ringFunc.one⟩
+instance : ring.Add := ⟨ringFunc.add⟩
+instance : ring.Mul := ⟨ringFunc.mul⟩
+instance : ring.Neg := ⟨ringFunc.neg⟩
 
 theorem zero_eq : ringFunc.zero = Constants.zero (L := ring) := rfl
 theorem one_eq : ringFunc.one = Constants.one (L := ring) := rfl
@@ -93,7 +93,7 @@ instance : Fintype Language.ring.Symbols :=
        Sum.inl ⟨1, .neg⟩,
        Sum.inl ⟨0, Constants.zero⟩,
        Sum.inl ⟨0, Constants.one⟩], by
-    simp [← zero_eq, ← one_eq, ← add_eq, ← mul_eq]⟩, by
+    simp [← zero_eq, ← one_eq, ← add_eq, ← mul_eq]; grind⟩, by
     rintro (⟨_, f⟩ | ⟨_, f⟩) <;> cases f <;> simp [zero_eq, one_eq, add_eq, mul_eq, neg_eq]⟩
 
 @[simp]

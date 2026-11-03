@@ -15,8 +15,7 @@ as instances of `Add`, `Mul`, etc. on terms in the language.
 
 ## Main definitions
 
-* `FirstOrder.Language.ZeroContants` etc.: typeclasses for first-order languages that have certain
-  symbols.
+* `FirstOrder.Language.Zero` etc.: typeclasses for first-order languages that have certain symbols.
 * `FirstOrder.Language.Structure.CompatibleZero` etc.: typeclasses stating that a first-order
   structure `M` interprets first-order language symbols the same as its algebraic structure
   instance.
@@ -29,77 +28,77 @@ namespace FirstOrder.Language
 variable {L : Language} {α : Type*} {t t₁ t₂ : L.Term α}
 
 /-- Type class for first-order langauges that have a constant symbol `0` for zero. -/
-class ZeroConstant (L : Language) where
+protected class Zero (L : Language) where
   /-- Constant `0`. Use `Constants.zero` instead for dot notation. -/
   zero : L.Constants
 
 /-- Type class for first-order langauges that have a constant symbol `1` for one. -/
 @[to_additive]
-class OneConstant (L : Language) where
+protected class One (L : Language) where
   /-- Constant `1`. Use `Constants.one` instead for dot notation. -/
   one : L.Constants
 
 /-- Constant `1`. -/
 @[to_additive /-- Constant `0`. -/]
-def Constants.one [OneConstant L] : L.Constants := OneConstant.one
+def Constants.one [L.One] : L.Constants := One.one
 
 /-- Type class for first-order languages that have a binary function symbol `+` for addition. -/
-class AddFunction (L : Language) where
+protected class Add (L : Language) where
   /-- Binary function `+`. Use `Functions.add` instead for dot notation. -/
   add : L.Functions 2
 
 /-- Type class for first-order languages that have a binary function symbol `*` for
 multiplication. -/
 @[to_additive]
-class MulFunction (L : Language) where
+protected class Mul (L : Language) where
   /-- Binary function `*`. Use `Functions.mul` instead for dot notation. -/
   mul : L.Functions 2
 
 /-- Binary function `*`. -/
 @[to_additive /-- Binary function `+`. -/]
-def Functions.mul [MulFunction L] : L.Functions 2 := MulFunction.mul
+def Functions.mul [L.Mul] : L.Functions 2 := Mul.mul
 
 /-- Type class for first-order languages that have a unary function symbol `-` for negation. -/
-class NegFunction (L : Language) where
+protected class Neg (L : Language) where
   /-- Unary function `-`. Use `Functions.neg` instead for dot notation. -/
   neg : L.Functions 1
 
 /-- Type class for first-order languages that have a unary function symbol `⁻¹` for inverse. -/
 @[to_additive]
-class InvFunction (L : Language) where
+protected class Inv (L : Language) where
   /-- Unary function `⁻¹`. Use `Functions.inv` instead for dot notation. -/
   inv : L.Functions 1
 
 /-- Unary function `⁻¹`. -/
 @[to_additive /-- Unary function `-`. -/]
-def Functions.inv [InvFunction L] : L.Functions 1 := InvFunction.inv
+def Functions.inv [L.Inv] : L.Functions 1 := Inv.inv
 
 namespace Term
 
 @[to_additive]
-instance [OneConstant L] : One (L.Term α) where
+instance [L.One] : One (L.Term α) where
   one := Constants.one.term
 
 @[to_additive]
-theorem one_def [OneConstant L] : (1 : L.Term α) = Constants.one.term := rfl
+theorem one_def [L.One] : (1 : L.Term α) = Constants.one.term := rfl
 
 @[to_additive]
-instance [MulFunction L] : Mul (L.Term α) where
+instance [L.Mul] : Mul (L.Term α) where
   mul := Functions.mul.apply₂
 
 @[to_additive]
-theorem mul_def [MulFunction L] : t₁ * t₂ = Functions.mul.apply₂ t₁ t₂ := rfl
+theorem mul_def [L.Mul] : t₁ * t₂ = Functions.mul.apply₂ t₁ t₂ := rfl
 
 @[to_additive]
-instance [InvFunction L] : Inv (L.Term α) where
+instance [L.Inv] : Inv (L.Term α) where
   inv := Functions.inv.apply₁
 
 @[to_additive]
-theorem inv_def [InvFunction L] : t⁻¹ = Functions.inv.apply₁ t := rfl
+theorem inv_def [L.Inv] : t⁻¹ = Functions.inv.apply₁ t := rfl
 
 section
 
-variable [ZeroConstant L] [OneConstant L] [AddFunction L]
+variable [L.Zero] [L.One] [L.Add]
 
 instance : NatCast (L.Term α) where
   natCast := Nat.unaryCast
@@ -112,7 +111,7 @@ end
 
 section
 
-variable [OneConstant L] [MulFunction L]
+variable [L.One] [L.Mul]
 
 @[to_additive]
 instance : Pow (L.Term α) ℕ where
@@ -127,11 +126,11 @@ theorem pow_succ {n : ℕ} : t ^ (n + 1) = t ^ n * t := rfl
 /-- Product over a finite set of terms.
 
 It is defined via choice, so the result only makes sense when the structure satisfies commutativity
-(see `realize_prod`). -/
+and associativity (see `realize_prod`). -/
 @[to_additive /-- Summation over a finite set of terms.
 
 It is defined via choice, so the result only makes sense when the structure satisfies commutativity
-(see `realize_sum`). -/]
+and associativity (see `realize_sum`). -/]
 noncomputable def prod {β : Type*} (s : Finset β) (f : β → L.Term α) : L.Term α :=
   (s.toList.map f).prod
 
@@ -145,35 +144,35 @@ variable (L) (M : Type*) [L.Structure M]
 
 /-- Type class stating that a first-order structure `M` interprets symbol `0` the same as its `Zero`
 instance. -/
-class CompatibleZero [ZeroConstant L] [Zero M] where
+class CompatibleZero [L.Zero] [Zero M] where
   funMap_zero : ∀ x, funMap (L := L) (M := M) Constants.zero x = 0
 
 /-- Type class stating that a first-order structure `M` interprets symbol `1` the same as its `One`
 instance. -/
 @[to_additive]
-class CompatibleOne [OneConstant L] [One M] where
+class CompatibleOne [L.One] [One M] where
   funMap_one : ∀ x, funMap (L := L) (M := M) Constants.one x = 1
 
 /-- Type class stating that a first-order structure `M` interprets symbol `+` the same as its `Add`
 instance. -/
-class CompatibleAdd [AddFunction L] [Add M] where
+class CompatibleAdd [L.Add] [Add M] where
   funMap_add : ∀ x, funMap (L := L) (M := M) Functions.add x = x 0 + x 1
 
 /-- Type class stating that a first-order structure `M` interprets symbol `1` the same as its `One`
 instance. -/
 @[to_additive]
-class CompatibleMul [MulFunction L] [Mul M] where
+class CompatibleMul [L.Mul] [Mul M] where
   funMap_mul : ∀ x, funMap (L := L) (M := M) Functions.mul x = x 0 * x 1
 
 /-- Type class stating that a first-order structure `M` interprets symbol `-` the same as its `Neg`
 instance. -/
-class CompatibleNeg [NegFunction L] [Neg M] where
+class CompatibleNeg [L.Neg] [Neg M] where
   funMap_neg : ∀ x, funMap (L := L) (M := M) Functions.neg x = -x 0
 
 /-- Type class stating that a first-order structure `M` interprets symbol `⁻¹` the same as its `Inv`
 instance. -/
 @[to_additive]
-class CompatibleInv [InvFunction L] [Inv M] where
+class CompatibleInv [L.Inv] [Inv M] where
   funMap_inv : ∀ x, funMap (L := L) (M := M) Functions.inv x = (x 0)⁻¹
 
 attribute [simp] CompatibleZero.funMap_zero CompatibleOne.funMap_one CompatibleAdd.funMap_add
@@ -182,34 +181,34 @@ attribute [simp] CompatibleZero.funMap_zero CompatibleOne.funMap_one CompatibleA
 variable {L M} {v : α → M}
 
 @[to_additive (attr := simp)]
-theorem realize_one [OneConstant L] [One M] [CompatibleOne L M] :
+theorem realize_one [L.One] [One M] [CompatibleOne L M] :
     Term.realize v (1 : L.Term α) = 1 := by
   simp [Term.one_def, constantMap]
 
 @[to_additive (attr := simp)]
-theorem realize_mul [MulFunction L] [Mul M] [CompatibleMul L M] :
+theorem realize_mul [L.Mul] [Mul M] [CompatibleMul L M] :
     Term.realize v (t₁ * t₂) = Term.realize v t₁ * Term.realize v t₂ := by
   simp [Term.mul_def]
 
 @[to_additive (attr := simp)]
-theorem realize_inv [InvFunction L] [Inv M] [CompatibleInv L M] :
+theorem realize_inv [L.Inv] [Inv M] [CompatibleInv L M] :
     Term.realize v t⁻¹ = (Term.realize v t)⁻¹ := by
   simp [Term.inv_def]
 
 @[simp]
-theorem realize_natCast [ZeroConstant L] [OneConstant L] [AddFunction L] [AddMonoidWithOne M]
+theorem realize_natCast [L.Zero] [L.One] [L.Add] [AddMonoidWithOne M]
     [CompatibleZero L M] [CompatibleOne L M] [CompatibleAdd L M] {n : ℕ} :
     Term.realize v (n : L.Term α) = n := by
   induction n <;> simp [*]
 
 @[to_additive (attr := simp)]
-theorem realize_npow [OneConstant L] [MulFunction L] [Monoid M] [CompatibleOne L M]
+theorem realize_npow [L.One] [L.Mul] [Monoid M] [CompatibleOne L M]
     [CompatibleMul L M] {n : ℕ} :
     Term.realize v (t ^ n) = Term.realize v t ^ n := by
   induction n <;> simp [pow_add, *]
 
 @[to_additive (attr := simp)]
-theorem realize_prod [OneConstant L] [MulFunction L] [CommMonoid M] [CompatibleOne L M]
+theorem realize_prod [L.One] [L.Mul] [CommMonoid M] [CompatibleOne L M]
     [CompatibleMul L M] {ι : Type*} {s : Finset ι} {f : ι → L.Term α} :
     Term.realize v (Term.prod s f) = ∏ i ∈ s, Term.realize v (f i) := by
   classical
@@ -227,13 +226,13 @@ namespace Set
 variable {L : Language} {M : Type*} [L.Structure M] {A : Set M} {α : Type*} {f g : (α → M) → M}
 
 @[to_additive (attr := fun_prop)]
-theorem DefinableFun.one [OneConstant L] [One M] [CompatibleOne L M] :
+theorem DefinableFun.one [L.One] [One M] [CompatibleOne L M] :
     A.DefinableFun L fun _ : α → M => 1 := by
   convert (1 : Term L α).definableFun_realize.of_empty
   simp
 
 @[to_additive (attr := fun_prop)]
-theorem DefinableFun.mul [MulFunction L] [Mul M] [CompatibleMul L M]
+theorem DefinableFun.mul [L.Mul] [Mul M] [CompatibleMul L M]
     (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) :
     A.DefinableFun L fun v => f v * g v := by
   apply comp (g := fun v => ![f v, g v]) (f := fun v => v 0 * v 1)
@@ -242,7 +241,7 @@ theorem DefinableFun.mul [MulFunction L] [Mul M] [CompatibleMul L M]
     simp
 
 @[to_additive (attr := fun_prop)]
-theorem DefinableFun.inv [InvFunction L] [Inv M] [CompatibleInv L M] (hf : A.DefinableFun L f) :
+theorem DefinableFun.inv [L.Inv] [Inv M] [CompatibleInv L M] (hf : A.DefinableFun L f) :
     A.DefinableFun L fun v => (f v)⁻¹ := by
   apply comp (g := fun v => ![f v]) (f := fun v => (v 0)⁻¹)
   · simp [DefinableMap, *]
@@ -250,14 +249,14 @@ theorem DefinableFun.inv [InvFunction L] [Inv M] [CompatibleInv L M] (hf : A.Def
     simp
 
 @[fun_prop]
-theorem DefinableFun.natCast [ZeroConstant L] [OneConstant L] [AddFunction L] [AddMonoidWithOne M]
+theorem DefinableFun.natCast [L.Zero] [L.One] [L.Add] [AddMonoidWithOne M]
     [CompatibleZero L M] [CompatibleOne L M] [CompatibleAdd L M] {n : ℕ} :
     A.DefinableFun L fun _ : α → M => n := by
   convert (n : Term L α).definableFun_realize.of_empty
   simp
 
 @[to_additive (attr := fun_prop)]
-theorem DefinableFun.npow [OneConstant L] [MulFunction L] [Monoid M] [CompatibleOne L M]
+theorem DefinableFun.npow [L.One] [L.Mul] [Monoid M] [CompatibleOne L M]
     [CompatibleMul L M] {n : ℕ} (hf : A.DefinableFun L f) :
     A.DefinableFun L fun v => (f v) ^ n := by
   apply comp (g := fun v => ![f v]) (f := fun v => v 0 ^ n)
@@ -266,7 +265,7 @@ theorem DefinableFun.npow [OneConstant L] [MulFunction L] [Monoid M] [Compatible
     simp only [Fin.isValue, realize_npow, Term.realize_var]
 
 @[to_additive (attr := fun_prop)]
-theorem DefinableFun.finsetProd [OneConstant L] [MulFunction L] [CommMonoid M] [CompatibleOne L M]
+theorem DefinableFun.finsetProd [L.One] [L.Mul] [CommMonoid M] [CompatibleOne L M]
     [CompatibleMul L M] {ι : Type*} {s : Finset ι} {f : ι → (α → M) → M}
     (hf : ∀ i ∈ s, A.DefinableFun L (f i)) :
     A.DefinableFun L fun v => ∏ i ∈ s, f i v := by

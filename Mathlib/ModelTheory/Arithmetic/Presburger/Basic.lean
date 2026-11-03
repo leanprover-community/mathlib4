@@ -43,9 +43,9 @@ def Language.presburger : Language :=
 
 namespace Language.presburger
 
-instance : ZeroConstant presburger := ⟨presburgerFunc.zero⟩
-instance : OneConstant presburger := ⟨presburgerFunc.one⟩
-instance : AddFunction presburger := ⟨presburgerFunc.add⟩
+instance : presburger.Zero := ⟨presburgerFunc.zero⟩
+instance : presburger.One := ⟨presburgerFunc.one⟩
+instance : presburger.Add := ⟨presburgerFunc.add⟩
 
 theorem zero_eq : presburgerFunc.zero = Constants.zero (L := presburger) := rfl
 theorem one_eq : presburgerFunc.one = Constants.one (L := presburger) := rfl
