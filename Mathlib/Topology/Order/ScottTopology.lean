@@ -106,11 +106,12 @@ instance (α) (D : Set (Set α)) [Preorder α] : @IsScottHausdorff α D _ (scott
   @IsScottHausdorff.mk _ _ _ (scottHausdorff α D) rfl
 
 namespace IsScottHausdorff
+variable {s : Set α} {D : Set (Set α)} [t : TopologicalSpace α]
 
-variable {s : Set α} {D : Set (Set α)} [Preorder α] [t : TopologicalSpace α]
+section Preorder
+variable [Preorder α]
 
 section General
-
 variable [IsScottHausdorff α D]
 
 variable (α D) in
@@ -126,6 +127,16 @@ lemma dirSupInaccOn_of_isOpen (h : IsOpen s) : DirSupInaccOn D s :=
 
 lemma dirSupClosedOn_of_isClosed (h : IsClosed s) : DirSupClosedOn D s :=
   .of_compl (dirSupInaccOn_of_isOpen h.isOpen_compl)
+
+theorem dirSupInaccOn_interior : DirSupInaccOn D (interior s) :=
+  dirSupInaccOn_of_isOpen isOpen_interior
+
+theorem dirSupClosedOn_closure : DirSupClosedOn D (closure s) :=
+  dirSupClosedOn_of_isClosed isClosed_closure
+
+theorem mem_closure_of_isLUB {d : Set α} (hD : d ∈ D) (hd : d ⊆ s)
+    (hd₀ : d.Nonempty) (hd₁ : DirectedOn (· ≤ ·) d) {x : α} (hx : IsLUB d x) : x ∈ closure s :=
+  dirSupClosedOn_closure hD (hd.trans subset_closure) hd₀ hd₁ hx
 
 theorem isOpen_iff_dirSupInaccOn (hDL : IsLowerSet D) : IsOpen s ↔ DirSupInaccOn D s := by
   rw [isOpen_iff (D := D), dirSupInaccOn_iff_inter_subset hDL]
@@ -181,7 +192,6 @@ theorem ClosedIciTopology.of_isLowerSet (h : IsLowerSet D) : ClosedIciTopology �
 end General
 
 section univ
-
 variable [IsScottHausdorff α univ]
 
 theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s := by
@@ -189,6 +199,14 @@ theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s := by
 
 theorem isClosed_iff_dirSupClosed : IsClosed s ↔ DirSupClosed s := by
   rw [isClosed_iff_dirSupClosedOn isLowerSet_univ, dirSupClosedOn_univ]
+
+theorem dirSupInacc_interior : DirSupInacc (interior s) := by
+  rw [← isOpen_iff_dirSupInacc]
+  exact isOpen_interior
+
+theorem dirSupClosed_closure : DirSupClosed (closure s) := by
+  rw [← isClosed_iff_dirSupClosed]
+  exact isClosed_closure
 
 protected theorem IsOpen.Iio (a : α) : IsOpen (Iio a) :=
   isOpen_iff_dirSupInacc.mpr <| .Iio a
@@ -230,6 +248,35 @@ instance : ClosedIciTopology α where
   isClosed_Ici := IsClosed.Ici
 
 end univ
+end Preorder
+
+section LinearOrder
+variable [LinearOrder α] [IsScottHausdorff α univ]
+
+/-- This theorem can fail in partial orders (even with the directed assumption). -/
+theorem closure_eq_setOfPred_isLUB (s : Set α) :
+    closure s = {x | ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x} := by
+  apply subset_antisymm
+  · rw [IsClosed.closure_subset_iff]
+    · exact fun x hx ↦ ⟨{x}, singleton_subset_iff.2 hx, singleton_nonempty x, isLUB_singleton⟩
+    · rw [isClosed_iff_dirSupClosed]
+      intro d hd hd₀ _ x hx
+      choose f hfs hf₀ hf using hd
+      refine ⟨⋃ y : d, f y.2, ?_, ?_, fun y hy ↦ ?_, fun y hy ↦ ?_⟩
+      · simpa
+      · aesop
+      · obtain ⟨⟨i, hi⟩, hy⟩ := mem_iUnion.1 hy
+        exact ((hf hi).1 hy).trans (hx.1 hi)
+      · exact hx.2 fun z hz ↦ (hf hz).2 (upperBounds_mono_set (subset_iUnion _ ⟨z, hz⟩) hy)
+  · rintro x ⟨d, hd, hd₀, hx⟩
+    exact mem_closure_of_isLUB (mem_univ _) hd hd₀ (.of_linearOrder _) hx
+
+/-- This theorem can fail in partial orders (even with the directed assumption). -/
+theorem mem_closure_iff_isLUB {s : Set α} {x : α} :
+    x ∈ closure s ↔ ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
+  Set.ext_iff.1 (closure_eq_setOfPred_isLUB s) x
+
+end LinearOrder
 end IsScottHausdorff
 
 -- TODO: for a general linear order, its topology is the meet of the Scott-Hausdorff topology of
@@ -242,7 +289,7 @@ instance [OrderTopology α] [WellFoundedLT α] : IsScottHausdorff α univ where
     have := SuccOrder.ofLinearWellFoundedLT α
     apply le_antisymm
     · intro s hs
-      rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)] at hs
+      rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s (scottHausdorff α univ)] at hs
       rw [isOpen_iff_forall_mem_open]
       intro x hxs
       cases x using Order.isSuccLimitRecOn with
@@ -263,13 +310,13 @@ instance [OrderTopology α] [WellFoundedLT α] : IsScottHausdorff α univ where
     · rw [le_orderTopology_iff]
       refine fun a ↦ ⟨?_, ?_⟩
       · exact @Topology.IsScottHausdorff.IsOpen.Ioi α _ (scottHausdorff α univ) _ _
-      · exact @Topology.IsScottHausdorff.IsOpen.Iio α _ (scottHausdorff α univ) _ _
+      · exact @Topology.IsScottHausdorff.IsOpen.Iio α (scottHausdorff α univ) _ _ _
 
 instance [DiscreteTopology α] [WellFoundedGT α] : IsScottHausdorff α univ where
   topology_eq_scottHausdorff := by
     rw [DiscreteTopology.eq_bot (α := α), eq_comm, ← le_bot_iff]
     intro s hs
-    rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)]
+    rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s (scottHausdorff α univ)]
     exact DirSupInacc.of_wellFoundedGT _
 
 end WellFounded
