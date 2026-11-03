@@ -105,11 +105,12 @@ instance (α) (D : Set (Set α)) [Preorder α] : @IsScottHausdorff α D _ (scott
   @IsScottHausdorff.mk _ _ _ (scottHausdorff α D) rfl
 
 namespace IsScottHausdorff
+variable {s : Set α} {D : Set (Set α)} [t : TopologicalSpace α]
 
-variable {s : Set α} {D : Set (Set α)} [Preorder α] [t : TopologicalSpace α]
+section Preorder
+variable [Preorder α]
 
 section General
-
 variable [IsScottHausdorff α D]
 
 variable (α D) in
@@ -138,10 +139,21 @@ theorem isOpen_of_isLowerSet (hDL : IsLowerSet D) (h : IsLowerSet s) : IsOpen s 
 theorem isClosed_of_isUpperSet (hDL : IsLowerSet D) (h : IsUpperSet s) : IsClosed s :=
   (isClosed_iff_dirSupClosedOn hDL).2 h.dirSupClosedOn
 
+theorem dirSupInaccOn_interior (hDL : IsLowerSet D) : DirSupInaccOn D (interior s) := by
+  rw [← isOpen_iff_dirSupInaccOn hDL]
+  exact isOpen_interior
+
+theorem dirSupClosedOn_closure (hDL : IsLowerSet D) : DirSupClosedOn D (closure s) := by
+  rw [← isClosed_iff_dirSupClosedOn hDL]
+  exact isClosed_closure
+
+theorem mem_closure_of_isLUB (hDL : IsLowerSet D) {d : Set α} (hD : d ∈ D) (hd : d ⊆ s)
+    (hd₀ : d.Nonempty) (hd₁ : DirectedOn (· ≤ ·) d) {x : α} (hx : IsLUB d x) : x ∈ closure s :=
+  dirSupClosedOn_closure hDL hD (hd.trans subset_closure) hd₀ hd₁ hx
+
 end General
 
 section univ
-
 variable [IsScottHausdorff α univ]
 
 theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s := by
@@ -151,6 +163,38 @@ theorem isClosed_iff_dirSupClosed : IsClosed s ↔ DirSupClosed s := by
   rw [isClosed_iff_dirSupClosedOn isLowerSet_univ, dirSupClosedOn_univ]
 
 end univ
+end Preorder
+
+section LinearOrder
+variable [LinearOrder α] [IsScottHausdorff α univ]
+
+/-- This theorem can fail in partial orders (even with the directed assumption). -/
+theorem closure_eq_setOfPred_isLUB (s : Set α) :
+    closure s = {x | ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x} := by
+  apply subset_antisymm
+  · rw [IsClosed.closure_subset_iff]
+    · exact fun x hx ↦ ⟨{x}, singleton_subset_iff.2 hx, singleton_nonempty x, isLUB_singleton⟩
+    · rw [isClosed_iff_dirSupClosed]
+      intro d hd hd₀ _ x hx
+      choose f hfs hf₀ hfa using hd
+      refine ⟨⋃ y : d, f y.2, ?_, ?_, fun y hy ↦ ?_, fun y hy ↦ ?_⟩
+      · simpa
+      · aesop
+      · obtain ⟨⟨i, hi⟩, hy⟩ := mem_iUnion.1 hy
+        exact ((hfa hi).1 hy).trans (hx.1 hi)
+      · contrapose! hy
+        refine fun hy' ↦ (hx.lt_iff.1 hy y ?_).false
+        exact fun z hz ↦ (hfa hz).2 <|
+          upperBounds_mono_set (subset_sUnion_of_mem (mem_range_self (ι := d) ⟨z, hz⟩)) hy'
+  · rintro x ⟨d, hd, hd₀, hx⟩
+    exact mem_closure_of_isLUB isLowerSet_univ (mem_univ _) hd hd₀ (.of_linearOrder _) hx
+
+/-- This theorem can fail in partial orders (even with the directed assumption). -/
+theorem mem_closure_iff_isLUB {s : Set α} {x : α} :
+    x ∈ closure s ↔ ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
+  Set.ext_iff.1 (closure_eq_setOfPred_isLUB s) x
+
+end LinearOrder
 end IsScottHausdorff
 
 /-! ### Scott topology -/
