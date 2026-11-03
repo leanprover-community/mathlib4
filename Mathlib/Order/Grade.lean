@@ -178,20 +178,22 @@ end Preorder
 -- grading
 section PartialOrder
 
-variable [PartialOrder 𝕆] [OrderBot 𝕆]
+variable [PartialOrder 𝕆]
 
 @[to_dual (attr := simp)]
-theorem grade_bot [Preorder α] [OrderBot α] [GradeMinOrder 𝕆 α] : grade 𝕆 (⊥ : α) = ⊥ :=
+theorem grade_bot [OrderBot 𝕆] [Preorder α] [OrderBot α] [GradeMinOrder 𝕆 α] :
+    grade 𝕆 (⊥ : α) = ⊥ :=
   (isMin_bot.grade _).eq_bot
 
 @[to_dual (attr := simp)]
-theorem grade_eq_bot_iff [PartialOrder α] [OrderBot α] [GradeMinOrder 𝕆 α] {a : α} :
+theorem grade_eq_bot_iff [OrderBot 𝕆] [PartialOrder α] [OrderBot α] [GradeMinOrder 𝕆 α] {a : α} :
     grade 𝕆 a = ⊥ ↔ a = ⊥ := by
   simpa using isMin_grade_iff (𝕆 := 𝕆) (a := a)
 
 @[to_additive (attr := simp)]
-theorem grade_eq_one_iff [PartialOrder α] [OrderBot α] [GradeMinOrder 𝕆 α] [One 𝕆] [IsBotOneClass 𝕆]
+theorem grade_eq_one_iff [One 𝕆] [IsBotOneClass 𝕆] [PartialOrder α] [OrderBot α] [GradeMinOrder 𝕆 α]
     {a : α} : grade 𝕆 a = 1 ↔ a = ⊥ := by
+  let := IsBotOneClass.toOrderBot 𝕆
   rw [← bot_eq_one, grade_eq_bot_iff]
 
 end PartialOrder
