@@ -1058,63 +1058,61 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
     Set.Subset.trans hi (Set.subset_biUnion_of_mem (u := fun i ↦ (f i : Set R)) his)⟩
   classical
   induction s using Finset.strongInduction generalizing a b with | H s ih =>
-  obtain ⟨i, hi⟩ := s.eq_empty_or_nonempty.resolve_left (by rintro rfl; simpa using h I.zero_mem)
+  obtain ⟨i₀, hi₀, -⟩ := Set.mem_iUnion₂.1 (h I.zero_mem)
   wlog ha : a ∈ s generalizing a
-  · exact this i (fun j hj _ ↦ hp j hj (ne_of_mem_of_not_mem hj ha)) hi
+  · exact this i₀ (fun j hj _ ↦ hp j hj (ne_of_mem_of_not_mem hj ha)) hi₀
   wlog hb : b ∈ s generalizing b
-  · exact this i (fun j hj hja _ ↦ hp j hj hja (ne_of_mem_of_not_mem hj hb)) hi
-  by_cases hab : ∃ i ∈ s, i ≠ a ∧ i ≠ b
-  swap
+  · exact this i₀ (fun j hj hja _ ↦ hp j hj hja (ne_of_mem_of_not_mem hj hb)) hi₀
+  by_cases! hab : ∀ j ∈ s, j = a ∨ j = b
   · have : (I : Set R) ⊆ f a ∪ f b := h.trans <| Set.iUnion₂_subset fun j hj ↦ by
-      obtain rfl | rfl : j = a ∨ j = b := by grind
+      obtain rfl | rfl := hab j hj
       exacts [Set.subset_union_left, Set.subset_union_right]
-    obtain h | h := subset_union.1 this
-    exacts [⟨a, ha, h⟩, ⟨b, hb, h⟩]
+    exact (subset_union.1 this).elim (⟨a, ha, ·⟩) (⟨b, hb, ·⟩)
   obtain ⟨i, his, hia, hib⟩ := hab
   have hpi := hp i his hia hib
   have ih' {t} (hts : t ⊂ s) (ht : (I : Set R) ⊆ ⋃ j ∈ (t : Set ι), f j) : ∃ j ∈ s, I ≤ f j :=
-    have ⟨j, hj, hIj⟩ := ih t hts a b (fun j hj ↦ hp j (hts.subset hj)) ht
-    ⟨j, hts.subset hj, hIj⟩
+    (ih t hts a b (fun j hj ↦ hp j (hts.subset hj)) ht).imp fun _ ⟨hj, hIj⟩ ↦ ⟨hts.subset hj, hIj⟩
   by_cases ht : (I : Set R) ⊆ ⋃ j ∈ (s.erase i : Set ι), f j
   · exact ih' (s.erase_ssubset his) ht
-  by_cases HI : I ≤ f i
-  · exact ⟨i, his, HI⟩
-  by_cases Hj : ∃ j ∈ s.erase i, f j ≤ f i
-  · obtain ⟨j, hj, hji⟩ := Hj
+  by_cases hIi : I ≤ f i
+  · exact ⟨i, his, hIi⟩
+  by_cases hle : ∃ j ∈ s.erase i, f j ≤ f i
+  · obtain ⟨j, hj, hji⟩ := hle
     refine ih' (s.erase_ssubset (Finset.mem_of_mem_erase hj)) (h.trans ?_)
     refine Set.iUnion₂_subset fun k hk ↦ ?_
     obtain rfl | hkj := eq_or_ne k j
-    · exact (SetLike.coe_subset_coe.2 hji).trans (Set.subset_biUnion_of_mem
-        (u := fun k ↦ (f k : Set R)) (by simpa using ⟨his, (Finset.ne_of_mem_erase hj).symm⟩))
-    · exact Set.subset_biUnion_of_mem (u := fun k ↦ (f k : Set R)) (by simpa using ⟨hk, hkj⟩)
-  have : ¬I ⊓ (s.erase i).inf f ≤ f i := by simpa [hpi.inf_le, hpi.inf_le', HI] using Hj
+    · exact Set.subset_iUnion₂_of_subset i
+        (Finset.mem_erase_of_ne_of_mem (Finset.ne_of_mem_erase hj).symm his) hji
+    · exact Set.subset_iUnion₂_of_subset k (Finset.mem_erase_of_ne_of_mem hkj hk) subset_rfl
+  have : ¬I ⊓ (s.erase i).inf f ≤ f i := by rwa [hpi.inf_le, hpi.inf_le', or_iff_right hIi]
   obtain ⟨r, ⟨hrI, hr⟩, hri⟩ := Set.not_subset.1 this
   obtain ⟨x, hxI, hx⟩ := Set.not_subset.1 ht
-  simp only [Finset.inf_eq_iInf, SetLike.mem_coe, Submodule.mem_iInf] at hr
-  simp only [Set.mem_iUnion, SetLike.mem_coe, not_exists, Finset.coe_erase] at hx
-  obtain ⟨j, hj, hrx⟩ : ∃ j ∈ s, r + x ∈ f j := by simpa using h (I.add_mem hrI hxI)
-  obtain ⟨k, hk, hxk⟩ : ∃ k ∈ s, x ∈ f k := by simpa using h hxI
+  obtain ⟨j, hj, hrx⟩ := Set.mem_iUnion₂.1 (h (I.add_mem hrI hxI))
+  obtain ⟨k, hk, hxk⟩ := Set.mem_iUnion₂.1 (h hxI)
   exfalso
   obtain rfl | hji := eq_or_ne j i
-  · obtain rfl : k = j := by_contra fun hkj ↦ hx k (by simpa using ⟨hk, hkj⟩) hxk
-    exact hri (add_sub_cancel_right r x ▸ (f k).sub_mem hrx hxk)
-  · exact hx j (by simpa using ⟨hj, hji⟩) <|
-      add_sub_cancel_left r x ▸ (f j).sub_mem hrx (hr j (Finset.mem_erase.2 ⟨hji, hj⟩))
+  · obtain rfl | hkj := eq_or_ne k j
+    · exact hri (((f k).add_mem_iff_left hxk).1 hrx)
+    · exact hx (Set.mem_biUnion (Finset.mem_erase_of_ne_of_mem hkj hk) hxk)
+  · have hj' := Finset.mem_erase_of_ne_of_mem hji hj
+    exact hx <| Set.mem_biUnion hj' <|
+      ((f j).add_mem_iff_right (Submodule.mem_finsetInf.1 hr j hj')).1 hrx
 
+/-- Prime avoidance, with the two possibly non-prime ideals `f a`, `f b` written separately. -/
 theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R}
     {a b : ι} (hp : ∀ i ∈ s, IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔ I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
   classical
-  simpa [Set.union_assoc] using
-    subset_union_prime (s := insert a (insert b s)) (f := f) a b (by grind)
+  simpa only [Finset.coe_insert, Set.biUnion_insert, Set.union_assoc, Finset.exists_mem_insert]
+    using subset_union_prime (s := insert a (insert b s)) a b (by grind)
 
 /-- Another version of prime avoidance using `Set.Finite` instead of `Finset`. -/
 lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
     (hs : s.Finite) {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
-  convert subset_union_prime (s := @Set.toFinset ι s hs.fintype) (f := f) a b (I := I) (by simpa)
-    <;> simp
+  simpa only [Set.Finite.coe_toFinset, Set.Finite.mem_toFinset] using
+    subset_union_prime (s := hs.toFinset) (f := f) a b fun i hi ↦ hp i (hs.mem_toFinset.1 hi)
 
 lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
     {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
