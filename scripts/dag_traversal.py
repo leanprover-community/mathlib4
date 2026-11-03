@@ -140,7 +140,7 @@ class DAGTraverser:
         if self.shutdown_event.is_set():
             raise ShutdownError("shutdown requested")
         proc = subprocess.Popen(
-            ["lake", "build", module_name],
+            ["lake", "build", "--iofail", module_name],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,

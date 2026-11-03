@@ -15,6 +15,9 @@ public import Mathlib.Data.List.ProdSigma
 public import Mathlib.Data.List.Range
 public import Mathlib.Data.List.Rotate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums and products from lists
 
@@ -59,6 +62,16 @@ lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod =
   have : Std.Symm fun x y ↦ ∀ z : M, y * (x * z) = x * (y * z) := { symm x y h z := h z |>.symm }
   refine h.foldr_eq' (Pairwise.forall_of_forall (fun _ _ _ ↦ rfl) <| hc.imp fun {a b} h z ↦ ?_) 1
   rw [← mul_assoc, ← mul_assoc, h]
+
+@[to_additive (attr := simp)]
+theorem prod_rotate {M : Type*} [CommMonoid M] (l : List M) (n : ℕ) :
+    (l.rotate n).prod = l.prod :=
+  l.rotate_perm n |>.prod_eq
+
+@[to_additive]
+theorem prod_rotate_of_pairwise_commute {l : List M} (n : ℕ) (hc : l.Pairwise Commute) :
+    (l.rotate n).prod = l.prod :=
+  l.rotate_perm n |>.symm |>.prod_eq' hc |>.symm
 
 end Monoid
 
