@@ -30,7 +30,7 @@ definitions in Mathlib which make no use of it.
 
 public section
 
-universe u v
+universe u
 
 namespace Ordinal
 
