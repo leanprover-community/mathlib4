@@ -373,10 +373,6 @@ variable {σ₁ : R₁ →+* T₁} {σ₂ : S₁ →+* T₂}
 variable {ρ₁ : R₂ →+* T₃} {ρ₂ : S₂ →+* T₄}
 variable {π₁ : R₃ →+* T₅} {π₂ : S₃ →+* T₆}
 
-local instance : SMulCommClass T₁ T₂ P := SMulCommClass.symm T₂ T₁ P
-local instance : SMulCommClass T₃ T₄ P := SMulCommClass.symm T₄ T₃ P
-local instance : SMulCommClass T₅ T₆ P := SMulCommClass.symm T₆ T₅ P
-
 variable (B : M →ₛₗ[σ₁] N →ₛₗ[σ₂] P) (B' : M' →ₛₗ[ρ₁] N' →ₛₗ[ρ₂] P)
   {B'' : M'' →ₛₗ[π₁] N'' →ₛₗ[π₂] P}
 
@@ -405,8 +401,6 @@ variable {P : Type*}
 variable [AddCommMonoid P] [Module T₁ P] [Module T₂ P] [SMulCommClass T₂ T₁ P]
 variable {σ₁ : R₁ →+* T₁} {σ₂ : S₁ →+* T₂}
 variable {ρ₁ : R₂ →+* T₁} {ρ₂ : S₂ →+* T₂}
-
-local instance : SMulCommClass T₁ T₂ P := SMulCommClass.symm T₂ T₁ P
 
 variable {B : M →ₛₗ[σ₁] N →ₛₗ[σ₂] P} {B' : M' →ₛₗ[ρ₁] N' →ₛₗ[ρ₂] P}
 
@@ -443,9 +437,6 @@ variable [AddCommGroup M'] [Module R₂ M']
 variable [AddCommGroup P]
 variable [Module T₁ P] [Module T₂ P] [Module T₃ P] [Module T₄ P]
 variable [SMulCommClass T₂ T₁ P] [SMulCommClass T₄ T₃ P]
-
-local instance : SMulCommClass T₁ T₂ P := SMulCommClass.symm T₂ T₁ P
-local instance : SMulCommClass T₃ T₄ P := SMulCommClass.symm T₄ T₃ P
 
 variable {B : M →ₛₗ[σ₁] N →ₛₗ[σ₂] P} {B' : M' →ₛₗ[ρ₁] N' →ₛₗ[ρ₂] P}
 variable {f f' : M → M'} {g g' : N' → N}
