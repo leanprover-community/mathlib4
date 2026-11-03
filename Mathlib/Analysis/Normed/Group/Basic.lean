@@ -469,7 +469,7 @@ alias nnnorm_pow_le_mul_norm := nnNorm_pow_le_mul_norm
 theorem nnNorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_zpow_abs a n
 
-@[to_additive (attr := deprecated (since := "2026-10-31"))]
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_abs_zsmul]
 alias nnnorm_zpow_abs := nnNorm_zpow_abs
 
 @[to_additive (attr := simp) nnNorm_natAbs_smul]
@@ -963,7 +963,7 @@ theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r 
 theorem mem_closedBall_iff_nnNorm'' {r : ℝ≥0} : b ∈ closedBall a r ↔ ‖b / a‖₊ ≤ r :=
   mem_closedBall_iff_norm''
 
-@[to_additive (attr := deprecated (since := "2026-10-31")) mem_closedBall_iff_nnorm]
+@[to_additive (attr := deprecated (since := "2026-10-31")) mem_closedBall_iff_nnnorm]
 alias mem_closedBall_iff_nnnorm'' := mem_closedBall_iff_nnNorm''
 
 @[to_additive mem_closedBall_iff_nnNorm']
