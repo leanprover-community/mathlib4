@@ -320,19 +320,4 @@ theorem inner_fourier_toL2_eq (f g : 𝓢(V, H)) :
 
 end L2
 
-section seminorm
-
-lemma pow_abs_mul_norm_fourier_le (ψ : 𝓢(ℝ, ℂ)) (u : ℝ) (n : ℕ) :
-    |u| ^ n * ‖𝓕 ψ u‖ ≤ (𝓕 ψ).seminorm ℝ n 0 := by
-  simpa [norm_eq_abs, norm_iteratedFDeriv_zero] using le_seminorm (𝕜 := ℝ) n 0 (𝓕 ψ) u
-
-lemma norm_fourier_le_seminorm (ψ : 𝓢(ℝ, ℂ)) (u : ℝ) : ‖𝓕 ψ u‖ ≤ (𝓕 ψ).seminorm ℝ 0 0 := by
-  simpa using pow_abs_mul_norm_fourier_le ψ u 0
-
-lemma sq_mul_norm_fourier_le_seminorm (ψ : 𝓢(ℝ, ℂ)) (u : ℝ) :
-    u ^ 2 * ‖𝓕 ψ u‖ ≤ (𝓕 ψ).seminorm ℝ 2 0 := by
-  simpa using pow_abs_mul_norm_fourier_le ψ u 2
-
-end seminorm
-
 end SchwartzMap

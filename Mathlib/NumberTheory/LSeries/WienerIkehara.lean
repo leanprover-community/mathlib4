@@ -7,7 +7,6 @@ Authors: Jose Francisco Antonio Balderas, Vincent Beffara, Alex Kontorovich, Ter
 module
 
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
-public import Mathlib.MeasureTheory.Group.Circle
 public import Mathlib.NumberTheory.LSeries.Basic
 
 import Mathlib.Algebra.Order.Chebyshev
@@ -16,6 +15,7 @@ import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
 import Mathlib.Analysis.Normed.Group.Tannery
 import Mathlib.Analysis.SumIntegralComparisons
 import Mathlib.Geometry.Manifold.PartitionOfUnity
+import Mathlib.MeasureTheory.Group.Circle
 import Mathlib.NumberTheory.LSeries.SumCoeff
 
 /-!
@@ -39,7 +39,8 @@ between `∑' n, term f σ n * ψ̂ (log (n / x) / (2 * π))` and its polar coun
 halves as Fourier integrals (`sum_term_mul_fourier_eq`, `integral_exp_mul_fourier_eq`) cancels the
 pole and expresses `S` through `G` (`sum_term_mul_sub_mul_integral_eq`); letting `σ → 1`
 and applying the Riemann-Lebesgue lemma gives `S f A 1 ψ̂ x → 0`, first for compactly supported
-test functions (`lim_integ_G_mul`) and then for all Schwartz functions (`lim_S_one_fourier`).
+test functions (`lim_S_one_fourier`) and then for all Schwartz functions
+(`lim_S_one_fourier_schwartz`).
 Surjectivity of the Fourier transform on Schwartz space upgrades this to a smoothed form of the
 theorem (`tendsto_sum_div_smooth_real`), and non-negativity of `f` together with a smooth Urysohn
 lemma (`exists_cutoff`) replaces the smooth cutoff by the indicator of
@@ -71,8 +72,10 @@ private lemma Q_continuous : Continuous Q :=
 
 private lemma norm_fourier_le_Q_mul : ‖𝓕 ψ u‖ ≤ ψ.Q * (1 + u ^ 2)⁻¹ := by
   rw [← div_eq_mul_inv, le_div_iff₀ (by positivity : (0 : ℝ) < 1 + u ^ 2)]
+  have h := norm_pow_mul_le_seminorm ℝ (𝓕 ψ) 2 u
+  rw [Real.norm_eq_abs, sq_abs] at h
   unfold Q
-  nlinarith [norm_fourier_le_seminorm ψ u, sq_mul_norm_fourier_le_seminorm ψ u]
+  linarith [norm_le_seminorm ℝ (𝓕 ψ) u]
 
 end SchwartzMap
 
@@ -173,7 +176,7 @@ private lemma integral_exp_mul_fourier_eq :
       _ = _ := by
         have : (x : ℂ) ^ (t * I) = x ^ ((1 - σ : ℝ) : ℂ) * x ^ (σ - 1 + t * I) := by
           rw [← cpow_add _ _ hx']; push_cast; ring_nf
-        rw [integral_Ioi_neg_log_cexp_neg_mul hx (by simpa using hσ), ofReal_cpow hx.le, this,
+        rw [integral_cexp_neg_mul_Ioi_neg_log hx (by simpa using hσ), ofReal_cpow hx.le, this,
           show (σ : ℂ) + t * I - 1 = σ - 1 + t * I by ring]
         ring
 
@@ -277,7 +280,7 @@ end Weight
 
 section LimitingFourierIdentity
 
-private lemma limiting_cor_aux {ψ : ℝ → ℂ} :
+private lemma tendsto_integral_mul_cpow_mul_I {ψ : ℝ → ℂ} :
     Tendsto (fun x : ℝ ↦ ∫ t, ψ t * x ^ (t * I)) atTop (𝓝 0) := by
   have : ∀ᶠ x : ℝ in atTop, ∫ t, ψ t * x ^ (t * I) = ∫ t, ψ t * exp (log x * t * I) := by
     filter_upwards [eventually_ne_atTop 0, eventually_ge_atTop 0] with x hx hx'
@@ -412,7 +415,7 @@ private theorem lim_integ_G_mul : Tendsto (fun σ : ℝ ↦ ∫ t : ℝ, G (σ +
 
 include bound hG hG' hpos hΨ in
 private lemma lim_S_one_fourier : Tendsto (S f A 1 (𝓕 Ψ)) atTop (𝓝 0) := by
-  apply (limiting_cor_aux (ψ := fun t ↦ G (1 + t * I) * (Ψ t))).congr'
+  apply (tendsto_integral_mul_cpow_mul_I (ψ := fun t ↦ G (1 + t * I) * (Ψ t))).congr'
   filter_upwards [eventually_ge_atTop 1] with x hx
   unfold S
   apply (tendsto_nhds_unique_of_eventuallyEq ((tendsto_S₁ bound hpos Ψ hx).sub (tendsto_S₂ Ψ hx))
@@ -448,7 +451,7 @@ private lemma S_one_sub : S f A 1 (𝓕 (φ - φ')) x = S f A 1 (𝓕 φ) x - S 
   have hs (ψ : 𝓢(ℝ, ℂ)) := (summable_term_mul bound hpos ψ hx).of_norm
   have hi (ψ : 𝓢(ℝ, ℂ)) : IntegrableOn (fun u ↦ 𝓕 ψ (c₀ * u)) (Ici (-log x)) :=
     ((𝓕 ψ).integrable.comp_mul_left' (by positivity)).integrableOn
-  simp only [S, S₁, S₂_one, FourierTransform.fourier_sub, sub_apply, mul_sub, ofReal_one]
+  simp only [S, S₁, S₂_one, fourier_sub, sub_apply, mul_sub, ofReal_one]
   rw [Summable.tsum_sub (hs φ) (hs φ'), integral_sub (hi φ) (hi φ')]
   ring
 
@@ -576,7 +579,7 @@ end Smooth
 origin, additionally controlling the integral of the cutoff from above and below by the lengths of
 `Ioo a d` and `Icc b c` respectively. -/
 private lemma exists_cutoff {a b c d : ℝ} (ha : 0 < a) (hab : a < b) (hbc : b ≤ c) (hcd : c < d) :
-    ∃ ψ, ContDiff ℝ ∞ ψ ∧ HasCompactSupport ψ ∧ closure (support ψ) ⊆ Ioi 0 ∧
+    ∃ ψ, ContDiff ℝ ∞ ψ ∧ HasCompactSupport ψ ∧ tsupport ψ ⊆ Ioi 0 ∧
       indicator (Icc b c) 1 ≤ ψ ∧ ψ ≤ indicator (Ioo a d) 1 ∧
       c - b ≤ ∫ y in Ioi 0, ψ y ∧ ∫ y in Ioi 0, ψ y ≤ d - a := by
   obtain ⟨ψ, h1, h2, h3, h4⟩ := exists_contDiff_support_eq_eq_one_iff
@@ -586,10 +589,10 @@ private lemma exists_cutoff {a b c d : ℝ} (ha : 0 < a) (hab : a < b) (hbc : b 
   have h6 := indicator_le' (fun x hx ↦ ((h4 x).mp hx).ge) fun x _ ↦ (h2 (mem_range_self x)).1
   have h7 : ψ ≤ indicator (Ioo a d) 1 := fun x ↦ le_indicator_apply
     (fun _ ↦ (h2 (mem_range_self x)).2) (by grind)
-  have h8 : closure (support ψ) ⊆ Ioi 0 := by grind [closure_Ioo]
+  have h8 : tsupport ψ ⊆ Ioi 0 := by grind [tsupport, closure_Ioo]
   have h9 : Integrable ψ := h1.continuous.integrable_of_hasCompactSupport h5
   have h10 : ∫ y in Ioi 0, ψ y = _ := setIntegral_eq_integral_of_forall_compl_eq_zero fun x hx ↦
-      notMem_support.1 fun h ↦ hx (h8 (subset_closure h))
+      notMem_support.1 fun h ↦ hx (h8 (subset_tsupport _ h))
   have h11 {s} (hs : MeasurableSet s) (hs' : volume s ≠ ⊤) : Integrable (indicator s (1 : ℝ → ℝ))
     := (integrable_indicator_iff hs).2 (integrableOn_const hs' (by simp))
   refine ⟨ψ, h1, h5, h8, h6, h7, ?_, ?_⟩
