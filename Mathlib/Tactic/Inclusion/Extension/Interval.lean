@@ -125,8 +125,9 @@ theorem Interval.mem_Ici_of_le [Preorder α] {x y : α} {I : Interval α}
   grind [Interval.mem_def, Interval.Ici, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Icc_of_le [Preorder α] {a b x : α} {I J : Interval α}
-    (ha : a ∈ I) (hax : a ≤ x) (hxb : x ≤ b) (hb : b ∈ J) : x ∈ Interval.Icc I.lb J.ub :=
-  ⟨ha.1.trans (WithBot.coe_le_coe.mpr hax), (WithTop.coe_le_coe.mpr hxb).trans hb.2⟩
+    (ha : a ∈ I) (hax : a ≤ x) (hxb : x ≤ b) (hb : b ∈ J) :
+    x ∈ Interval.Icc I.lb J.ub := by
+  grind [Interval.mem_def, Interval.Icc, WithBot.le_coe_iff, WithTop.coe_le_iff]
 
 theorem Interval.mem_Iic_of_lt [Preorder α] {x y : α} {I : Interval α}
     (hxy : x < y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub :=

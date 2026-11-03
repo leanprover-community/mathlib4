@@ -28,19 +28,19 @@ theorem Ici_mem_of_le {x y : ℤ} {I : Interval ℤ} (hxy : x ≤ y) (hx : x ∈
 
 @[hypothesis_op interval_int]
 theorem Iic_mem_of_lt {x y : ℤ} {I : Interval ℤ} (hxy : x < y) (hy : y ∈ I) :
-    x ∈ Interval.Iic (I.ub - 1) := by
-  refine ⟨bot_le, ?_⟩
-  cases h : I.ub <;> simp_all [Interval.Iic]
-  norm_cast
-  omega
+    x ∈ Interval.Iic (I.ub - 1) :=
+  ⟨bot_le, match I.ub, hy.2 with
+    | ⊤, _ => le_top
+    | (ub : ℤ), hu => WithTop.coe_le_coe.mpr <|
+        Int.le_sub_one_of_lt (hxy.trans_le (WithTop.coe_le_coe.mp hu))⟩
 
 @[hypothesis_op interval_int]
 theorem Ici_mem_of_lt {x y : ℤ} {I : Interval ℤ} (hxy : x < y) (hx : x ∈ I) :
-    y ∈ Interval.Ici (I.lb + 1) := by
-  refine ⟨?_, le_top⟩
-  cases h : I.lb <;> simp_all [Interval.Ici]
-  norm_cast
-  omega
+    y ∈ Interval.Ici (I.lb + 1) :=
+  ⟨match I.lb, hx.1 with
+    | ⊥, _ => bot_le
+    | (lb : ℤ), hl => WithBot.coe_le_coe.mpr <|
+        Int.add_one_le_of_lt ((WithBot.coe_le_coe.mp hl).trans_lt hxy), le_top⟩
 
 @[hypothesis_op interval_int]
 theorem Ici_mem_of_mem_Ici {a x : ℤ} {I : Interval ℤ} (hx : x ∈ Set.Ici a) (ha : a ∈ I) :
