@@ -183,19 +183,6 @@ theorem enum_succ_eq_top {o : Ordinal} :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
-theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder α r]
-    (h : ∀ a < type r, succ a < type r) (x : α) : ∃ y, r x y := by
-  use enum r ⟨succ (typein r x), h _ (typein_lt_type r x)⟩
-  convert enum_lt_enum.mpr _
-  · rw [enum_typein]
-  · rw [Subtype.mk_lt_mk, lt_succ_iff]
-
-@[deprecated isSuccPrelimit_type_lt_iff +typeChanged (since := "2026-04-12")]
-theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.ToType :=
-  ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
-
-set_option backward.isDefEq.respectTransparency false in
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSuccLimit (type r)) (x) :
     Bounded r {x} := by
   refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩
@@ -896,6 +883,10 @@ theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
 theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
 
+@[simp]
+theorem ofNat_lt_omega0 (n : ℕ) [n.AtLeastTwo] : ofNat(n) < ω :=
+  natCast_lt_omega0 n
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
@@ -947,7 +938,7 @@ theorem natCast_add_omega0 (n : ℕ) : n + ω = ω := by
   obtain ⟨b, hb', hb⟩ := (lt_add_iff omega0_ne_zero).1 ha
   obtain ⟨m, rfl⟩ := lt_omega0.1 hb'
   apply hb.trans_lt
-  exact_mod_cast natCast_lt_omega0 (n + m)
+  exact mod_cast natCast_lt_omega0 (n + m)
 
 theorem one_add_omega0 : 1 + ω = ω :=
   mod_cast natCast_add_omega0 1

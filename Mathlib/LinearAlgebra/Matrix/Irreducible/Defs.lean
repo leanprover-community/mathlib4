@@ -127,7 +127,7 @@ theorem pow_apply_pos_iff_nonempty_path
       · simp_all
     · simp [Quiver.Path.eq_of_length_zero p hp]
   | succ m ih =>
-    rw [pow_succ, mul_apply]
+    rw [pow_succ, Matrix.mul_apply]
     constructor
     · intro h_pos
       obtain ⟨l, hl_mem, hl_pos⟩ :

@@ -719,7 +719,6 @@ lemma app_basicOpen_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
     ← CommRingCat.hom_comp, ← X.presheaf.map_comp]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `f.app (Y.basicOpen r)` is isomorphic to map induced on localizations
 `Γ(Y, Y.basicOpen r) ⟶ Γ(X, X.basicOpen (f.app U r))` -/
 def appBasicOpenIsoAwayMap {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
@@ -973,7 +972,6 @@ def Scheme.AffineOpenCover.ofIsOpenCover {X : Scheme.{u}} {ι : Type*} (U : ι �
   covers x :=
     ⟨(hU' _).isoSpec.hom ⟨_, (hU.exists_mem x).choose_spec⟩, by simp [← Scheme.Hom.comp_apply]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open _root_.PrimeSpectrum in
 /-- The restriction of `Spec.map f` to a basic open `D(r)` is isomorphic to `Spec.map` of the

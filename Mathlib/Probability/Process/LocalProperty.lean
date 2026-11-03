@@ -44,7 +44,7 @@ localizing sequence, local property, stable property
 
 @[expose] public section
 
-open MeasureTheory Filter Filtration
+open MeasureTheory Filter Filtration CompleteLattice
 open scoped ENNReal Topology
 
 namespace ProbabilityTheory
@@ -193,7 +193,8 @@ lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
     IsLocalizingSequence 𝓕 (fun i ω ↦ ⨅ j ≥ i, τ j ω) P where
   isStoppingTime n := IsStoppingTime.biInf (Set.to_countable {j | j ≥ n})
     (fun j _ ↦ hτ.isStoppingTime j)
-  mono := ae_of_all _ <| fun ω n m hnm ↦ iInf_le_iInf_of_subset <| fun k hk ↦ hnm.trans hk
+  mono := ae_of_all _ <| fun ω n m hnm ↦
+    iInf_le_iInf_of_subset (s := {j | j ≥ m}) (t := {j | j ≥ n}) fun k hk ↦ hnm.trans hk
   tendsto_top := by
     filter_upwards [hτ.tendsto_top] with ω hω
     replace hω := hω.liminf_eq
@@ -248,7 +249,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
   · filter_upwards [(hσ n).mono] with ω hω
     intros i j hij
     specialize hω hij
-    simp [Set.ofPred] at *
+    simp at *
     grind
   · refine fun i ↦ .nullMeasurableSet ?_
     simp_rw [lt_inf_iff, Set.ofPred_and]
@@ -292,7 +293,7 @@ lemma IsLocalizingSequence.isPrelocalizingSequence_inf_extraction
   obtain ⟨nk, T, hnk, hT, hP⟩ := isPreLocalizingSequence_of_isLocalizingSequence_aux hτ hσ
   refine ⟨nk, hnk, fun n ↦ (hτ.isStoppingTime n).min ((hσ _).isStoppingTime _), ?_⟩
   have : ∑' n, P {ω | σ n (nk n) ω < min (τ n ω) (T n)} < ∞ :=
-    lt_of_le_of_lt (ENNReal.summable.tsum_mono ENNReal.summable hP)
+    lt_of_le_of_lt (summable.tsum_mono summable hP)
       (tsum_geometric_lt_top.2 <| by simp)
   filter_upwards [ae_eventually_notMem this.ne, hτ.tendsto_top] with ω hω hωτ
   exact hωτ.min <| tendsto_of_tendsto_of_tendsto_of_le_of_le'
