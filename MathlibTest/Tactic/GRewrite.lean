@@ -561,3 +561,30 @@ example (h : liftEq b a) (h' : liftLE b c) : liftLE a c := by
   grw [← h, ← h']
 
 end universePolymorphic
+
+theorem NeZero.one_lt_add_one (n : Nat) [NeZero n] : 1 < n + 1 := by simp [Nat.pos_of_neZero]
+
+-- This used to fail with an unknown free variable error,
+-- because in the instance search for `NeZero (f i)`, `i` was out of scope.
+example (f : Nat → Nat) (hf : ∀ x, NeZero (f x)) : ∀ i, 1 < (f i) + 1 := by
+  grw [← NeZero.one_lt_add_one]
+  intro; rfl
+
+-- When rewriting under an instance binder, it can be used in type class search.
+example : ∀ n, [NeZero n] → 1 < n + 1 := by
+  grw [← NeZero.one_lt_add_one]
+  intros; rfl
+
+example : ∀ n, [NeZero n] → 1 < n + 1 := by
+  grw [← NeZero.one_lt_add_one _]
+  intros; rfl
+
+/--
+trace: n : ℕ
+a✝ : NeZero n
+⊢ NeZero n
+-/
+#guard_msgs in
+example : ∀ n, [NeZero n] → 1 < n + 1 := by
+  grw [← @NeZero.one_lt_add_one _ (by trace_state; infer_instance)]
+  intros; rfl
