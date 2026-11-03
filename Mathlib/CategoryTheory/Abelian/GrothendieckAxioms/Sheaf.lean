@@ -5,11 +5,12 @@ Authors: Dagur Asgeirsson, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.Generator.Sheaf
 public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.Equivalence
+
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
+import Mathlib.CategoryTheory.Generator.Sheaf
 
 /-!
 
@@ -21,7 +22,7 @@ then `Sheaf J A` is a Grothendieck abelian category.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ v₂ u u₁ u₂
 

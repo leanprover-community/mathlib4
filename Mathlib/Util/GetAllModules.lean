@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Util.Path
+
+import Mathlib.Init
 
 /-!
 # Utility functions for finding all `.lean` files or modules in a project.
@@ -53,6 +54,6 @@ i.e. names of the form `Mathlib/Algebra/Algebra/Basic.lean`.
 In addition, these names are sorted in a platform-independent order. -/
 def getAllModulesSorted (git : Bool) (ml : String) : IO (Array String) := do
   let files ← getAllFiles git ml
-  let names := ← files.mapM fun f => do
+  let names ← files.mapM fun f => do
      return (← moduleNameOfFileName f none).toString
   return names.qsort (· < ·)

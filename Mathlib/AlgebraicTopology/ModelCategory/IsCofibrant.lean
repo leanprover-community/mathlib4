@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Fibrant and cofibrant objects in a model category
@@ -18,7 +17,7 @@ any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

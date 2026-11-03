@@ -8,20 +8,21 @@ module
 public import Mathlib.Algebra.Category.FGModuleCat.Colimits
 public import Mathlib.Algebra.Category.FGModuleCat.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 /-!
 # `FGModuleCat K` is an abelian category.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace FGModuleCat
 

@@ -5,10 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 public import Mathlib.ModelTheory.Definability
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.Nullstellensatz
-public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 
 /-!
 
@@ -32,8 +32,8 @@ theorem mvPolynomial_zeroLocus_definable {ι K : Type*} [Field K]
       (zeroLocus K (Ideal.span (S : Set (MvPolynomial ι K)))) := by
   rw [Set.definable_iff_exists_formula_sum]
   let p' := genericPolyMap (fun p : S => p.1.support)
-  letI := Classical.decEq ι
-  letI := Classical.decEq K
+  let := Classical.decEq ι
+  let := Classical.decEq K
   rw [MvPolynomial.zeroLocus_span]
   refine ⟨BoundedFormula.iInf
       (fun i : S => Term.equal

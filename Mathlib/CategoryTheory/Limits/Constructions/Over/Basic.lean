@@ -5,11 +5,13 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Connected
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-public import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits in the over category
@@ -18,7 +20,7 @@ Declare instances for limits in the over category: If `C` has finite wide pullba
 finite limits, and if `C` has arbitrary wide pullbacks then `Over B` has limits.
 -/
 
-@[expose] public section
+public section
 
 
 universe w v u
@@ -27,7 +29,6 @@ universe w v u
 open CategoryTheory CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-variable {X : C}
 
 namespace CategoryTheory.Over
 

@@ -197,7 +197,7 @@ theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map
 
 @[to_additive]
 theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n := by
-  convert (m.map f).prod_hom (zpowGroupHom n : G →* G)
+  convert! (m.map f).prod_hom (zpowGroupHom n : G →* G)
   simp only [map_map, Function.comp_apply, zpowGroupHom_apply]
 
 end DivisionCommMonoid
@@ -231,8 +231,8 @@ theorem sum_map_tsub [AddCommMonoid M] [PartialOrder M] [ExistsAddOfLE M]
 
 end OrderedSub
 
-instance {M : Type*} : IsAddTorsionFree (Multiset M) :=
-  ⟨fun n hn x y h ↦ open Classical in Multiset.ext' fun _ ↦
+instance {M : Type*} : HasUniqueDiv (Multiset M) :=
+  ⟨fun n hn x y h ↦ open scoped Classical in Multiset.ext' fun _ ↦
     (Nat.mul_right_inj hn).mp <| by simp only [← Multiset.count_nsmul, h]⟩
 
 end Multiset

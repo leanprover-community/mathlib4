@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # Properties of objects that are bounded by a cardinal
@@ -16,7 +16,7 @@ Given `P : ObjectProperty C` and `κ : Cardinal`, we introduce a predicate
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

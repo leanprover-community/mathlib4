@@ -5,10 +5,10 @@ Authors: Yizheng Zhu
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
 
 /-!
 # Fundamental theorem of calculus and integration by parts for absolutely continuous functions
@@ -26,7 +26,9 @@ This file proves that:
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
 
-@[expose] public section
+open scoped Finset
+
+public section
 
 variable {X F : Type*} [PseudoMetricSpace X] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
@@ -57,7 +59,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
     · grind [Metric.closedBall, Real.dist_eq, Pi.sub_apply, abs_le']
     · intro A hA
       simp only [Pi.sub_apply, Real.volume_closedBall, ENNReal.coe_ofNat, Real.volume_Icc]
-      rw [show 6 = ENNReal.ofReal 6 by norm_num, ← ENNReal.ofReal_mul (by norm_num),
+      rw [show 6 = ENNReal.ofReal 6 by simp, ← ENNReal.ofReal_mul (by simp),
           ENNReal.ofReal_le_ofReal_iff (by grind)]
       linarith
     · simp +contextual [t]
@@ -70,14 +72,13 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
       have evn_bound {α : ℝ} (hα : 0 < α) : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, ε < α := by
         rw [eventually_nhdsWithin_iff, eventually_nhds_iff]
         exact ⟨Ioo (-α) α, by grind, isOpen_Ioo, by grind⟩
-      have evn_pos : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, 0 < ε :=
-        eventually_mem_of_tendsto_nhdsWithin (fun _ a ↦ a)
+      have evn_pos : ∀ᶠ (ε : ℝ) in 𝓝[>] 0, 0 < ε := eventually_mem_nhdsWithin
       filter_upwards [evn_pos, evn_bound hη, evn_bound hδ₁,
                       evn_bound (α := (b - x) / 2) (by simp [hx.left.right])]
         with ε hε₁ hε₂ hε₃ hε₄
       refine ⟨(x, x + ε), ⟨⟨hx.1.1, by linarith, by linarith⟩, ?_⟩, by simp, rfl⟩
       exact hδ₂ (by grind) (by simp [abs_eq_self.mpr hε₁.le, hε₃])
-  simp only [t, subset_def, mem_setOf_eq] at hu₁
+  simp only [t, subset_def, mem_ofPred_eq] at hu₁
   refine ⟨u, ⟨hu₁, hu₃, ?_⟩⟩
   have : Countable u := by simp [hu₂]
   have : Pairwise (Disjoint on fun (z : u) ↦ Icc z.val.1 z.val.2) :=
@@ -87,9 +88,9 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : 
     filter_upwards [hf, hu₄] with x hx₁ hx₂
     grind
   have vol_sum : volume (⋃ z : u, Icc z.val.1 z.val.2) = ENNReal.ofReal (b - d) := by
-    convert Real.volume_Ioo ▸
-      measure_eq_measure_of_null_diff (by simp only [iUnion_subset_iff]; grind) hu₄
-      using 2
+    convert
+      Real.volume_Ioo ▸
+        measure_eq_measure_of_null_sdiff (by simp only [iUnion_subset_iff]; grind) hu₄ using 2
     simp
   rw [measure_iUnion this (by simp)] at vol_sum
   simp_rw [Real.volume_Icc] at vol_sum
@@ -120,7 +121,7 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   replace hu₂ (s : Finset u) : (SetLike.coe (u_coe s)).PairwiseDisjoint fun z ↦ Icc z.1 z.2 :=
     hu₂.subset (by grind)
   let T (s : Finset u) :=
-    ((u_coe s).card + 1, fun (i : ℕ) ↦ (u_coe s).intervalGapsWithin rfl d b i)
+    (#(u_coe s) + 1, fun (i : ℕ) ↦ (u_coe s).intervalGapsWithin rfl d b i)
   have hT₁ (s : Finset u) (i : ℕ) := (u_coe s).intervalGapsWithin_le_fst rfl i (hu₁ s)
   have hT₂ (s : Finset u) (i : ℕ) :=
     (u_coe s).intervalGapsWithin_fst_le_snd rfl i hdb (hu₁ s) (hu₂ s)
@@ -142,11 +143,11 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   replace hu₃ : Tendsto T atTop (totalLengthFilter ⊓ 𝓟 (disjWithin d b)) := by
     refine tendsto_inf.mpr ⟨?_, hT.tendsto.mono_left (by simp)⟩
     simp only [totalLengthFilter, tendsto_comap_iff]
-    convert hu₃.const_sub (b - d) with s
+    convert! hu₃.const_sub (b - d) with s
     · simp only [comp_apply]
       rw [Finset.sum_congr rfl (g := fun i ↦ ((T s).2 i).2 - ((T s).2 i).1)
             (fun i hi ↦ by rw [dist_comm, Real.dist_eq, abs_of_nonneg (by grind)])]
-      convert (u_coe s).sum_intervalGapsWithin_eq_sub_sub_sum rfl id
+      convert! (u_coe s).sum_intervalGapsWithin_eq_sub_sub_sum rfl id
       exact u_coe_sum s fun x y ↦ y - x
     · abel
   rw [HasSum] at hu₄
@@ -203,7 +204,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
       have slope_bound := hu₁ z (by simp) |>.right |>.le
       have : 0 < z.val.2 - z.val.1 := by linarith [hu₁ z (by simp)]
       grw [← slope_bound]
-      simp only [dist_eq_norm, slope, vsub_eq_sub, sub_zero, ge_iff_le, g, mul_comm]
+      simp only [dist_eq_norm, slope, vsub_eq_sub, sub_zero, g, mul_comm]
       nth_rw 1 [← Real.norm_of_nonneg this.le]
       simp only [norm_smul, Real.norm_eq_abs, norm_inv]
       field_simp
@@ -250,7 +251,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
   rw [← (hf.fun_mul hg).integral_deriv_eq_sub]
   apply intervalIntegral.integral_congr_ae
   filter_upwards [hf.ae_differentiableAt, hg.ae_differentiableAt] with x hx₁ hx₂ hx₃
-  have hx₄ : x ∈ uIcc a b := by grind [uIcc, uIoc]
+  have hx₄ : x ∈ uIcc a b := uIoc_subset_uIcc hx₃
   have hx₅ := (hx₁ hx₄).hasDerivAt.mul (hx₂ hx₄).hasDerivAt
   exact hx₅.deriv.symm
 

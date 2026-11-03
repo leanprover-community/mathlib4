@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.Inverse
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse function theorem, 1D case
 
@@ -16,7 +19,7 @@ We use `ContinuousLinearEquiv.unitsEquivAut` to translate `HasStrictDerivAt f f'
 `f' ≠ 0` into `HasStrictFDerivAt f (_ : 𝕜 ≃L[𝕜] 𝕜) a`.
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Topology

@@ -21,7 +21,7 @@ This instance is put in a separate file in order to reduce imports.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category
 

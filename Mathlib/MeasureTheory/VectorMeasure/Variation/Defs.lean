@@ -32,9 +32,9 @@ not less than this function. It turns out that this function is a measure.
 
 @[expose] public section
 
-variable {X : Type*} [MeasurableSpace X]
+variable {X : Type*} {mX : MeasurableSpace X}
 
-open MeasureTheory BigOperators NNReal ENNReal Function
+open scoped ENNReal
 
 namespace MeasureTheory.VectorMeasure
 

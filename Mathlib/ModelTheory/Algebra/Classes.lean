@@ -26,8 +26,6 @@ as instances of `Add`, `Mul`, etc. on terms in the language.
 
 namespace FirstOrder.Language
 
-attribute [to_additive_ignore_args 2] Term
-
 variable {L : Language} {α : Type*} {t t₁ t₂ : L.Term α}
 
 /-- Type class for first-order langauges that have a constant symbol `0` for zero. -/

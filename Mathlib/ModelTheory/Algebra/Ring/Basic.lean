@@ -46,7 +46,7 @@ variable {α : Type*}
 namespace FirstOrder
 
 /-- The type of Ring functions, to be used in the definition of the language of rings.
-It contains the operations (+,*,-,0,1) -/
+It contains the operations `(+,*,-,0,1)` -/
 inductive ringFunc : ℕ → Type
   | add : ringFunc 2
   | mul : ringFunc 2
@@ -55,7 +55,7 @@ inductive ringFunc : ℕ → Type
   | one : ringFunc 0
   deriving DecidableEq
 
-/-- The language of rings contains the operations (+,*,-,0,1) -/
+/-- The language of rings contains the operations `(+,*,-,0,1)` -/
 def Language.ring : Language :=
   { Functions := ringFunc
     Relations := fun _ => Empty }
@@ -154,8 +154,8 @@ def languageEquivEquivRingEquiv {R S : Type*}
     (Language.ring.Equiv R S) ≃ (R ≃+* S) :=
   { toFun f :=
     { f with
-      map_add' x y := by simpa using f.map_fun .add ![x, y]
-      map_mul' x y := by simpa using f.map_fun .mul ![x, y] }
+      map_add' x y := by simpa using! f.map_fun .add ![x, y]
+      map_mul' x y := by simpa using! f.map_fun .mul ![x, y] }
     invFun f :=
     { f with
       map_fun' f := by cases f <;> simp [zero_eq, one_eq, add_eq, mul_eq, neg_eq]

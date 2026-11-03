@@ -32,7 +32,7 @@ variable (C ι : Type*) [Category C] [Category ι] [Abelian C]
 
 open ComposableArrows
 
-/-- A spectral object in an abelian category category `C` indexed by a category `ι`
+/-- A spectral object in an abelian category `C` indexed by a category `ι`
 consists of a family of functors `H n : ComposableArrows ι 1 ⥤ C` for all `n : ℤ`, and a
 functorial long exact sequence
 `⋯ ⟶ (H n₀).obj (mk₁ f) ⟶ (H n₀).obj (mk₁ (f ≫ g)) ⟶ (H n₀).obj (mk₁ g) ⟶ (H n₁).obj (mk₁ f) ⟶ ⋯`
@@ -72,9 +72,9 @@ lemma δ_naturality {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
     (X.H n₀).map β ≫ X.δ f' g' n₀ n₁ hn₁ = X.δ f g n₀ n₁ hn₁ ≫ (X.H n₁).map α := by
   have h := (X.δ' n₀ n₁ hn₁).naturality
     (homMk₂ (α.app 0) (α.app 1) (β.app 1) (naturality' α 0 1)
-      (by simpa only [hαβ] using naturality' β 0 1) : mk₂ f g ⟶ mk₂ f' g')
+      (by simpa only [hαβ] using! naturality' β 0 1) : mk₂ f g ⟶ mk₂ f' g')
   dsimp at h
-  convert h <;> cat_disch
+  convert! h <;> cat_disch
 
 end
 

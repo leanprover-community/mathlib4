@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Limits
+
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Preservation of colimits and reflective adjunctions
@@ -20,7 +21,7 @@ iff it does so after precomposition with the sheafification functor.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u v₁ v₂ v₃ u₁ u₂ u₃
 

@@ -8,8 +8,8 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.Order.Interval.Set.Union
+
+import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -45,9 +45,10 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 
 @[expose] public section
 
-open scoped ENNReal BoundedContinuousFunction
-open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
+open CompactlySupportedContinuousMap Filter Function Set
   TopologicalSpace MeasureTheory
+
+open scoped ENNReal BoundedContinuousFunction CompactlySupported Topology
 
 namespace RealRMK
 
@@ -64,6 +65,7 @@ and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK
 `rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
 noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ)).measure
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
 lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
@@ -97,7 +99,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   apply csInf_le'
   rw [Set.mem_image]
   use f.nnrealPart
-  simp_rw [Set.mem_setOf_eq, nnrealPart_apply, Real.one_le_toNNReal]
+  simp_rw [Set.mem_ofPred_eq, nnrealPart_apply, Real.one_le_toNNReal]
   refine ⟨(fun x hx ↦ Eq.ge (hfK x hx)), ?_⟩
   apply NNReal.eq
   rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]
@@ -135,16 +137,11 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     exact fun x _ ↦ partition_aux (mem_range_self x)
   · -- The sets `E n` are pairwise disjoint.
     intro m _ n _ hmn
-    apply Disjoint.preimage
-    simp_rw [mem_preimage, mem_Ioc, disjoint_left]
-    intro x hx
-    rw [mem_setOf_eq, and_assoc] at hx
-    simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
+    rw [Function.onFun, disjoint_left]
+    intro x hx hx'
     rcases (by lia : m < n ∨ n < m) with hc | hc
-    · left
-      exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
-    · right; left
-      exact lt_of_le_of_lt (le_tsub_of_add_le_right (hy hc)) hx.1
+    · exact hx'.1.1.not_ge <| hx.1.2.trans <|le_tsub_of_add_le_right (hy hc)
+    · exact hx.1.1.not_ge <| hx'.1.2.trans <|le_tsub_of_add_le_right (hy hc)
   · -- Upper and lower bound on `f x` follow from the definition of `E n` .
     intro _ _ hx
     simp only [mem_inter_iff, mem_preimage, mem_Ioc, E, y] at hx
@@ -285,7 +282,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
         _ ≤ _ := by
           rw [← ENNReal.toReal_ofReal (div_nonneg (le_of_lt hε'.1) (Nat.cast_nonneg _))]
           apply ENNReal.toReal_le_add (hV n).2.2 (hE' n)
-          · finiteness
+          finiteness
   · -- Use that `μ K ≤ Λ (∑ n, g n)`
     gcongr
     rw [← map_sum Λ g _]

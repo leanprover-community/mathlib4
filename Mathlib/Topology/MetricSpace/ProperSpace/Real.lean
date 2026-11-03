@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Data.Rat.Encodable
 public import Mathlib.Topology.MetricSpace.Isometry
-public import Mathlib.Topology.MetricSpace.ProperSpace
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Order.MonotoneContinuity
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.UniformSpace.Real
+
+import Mathlib.Topology.Order.MonotoneContinuity
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Second countability of the reals
@@ -20,7 +22,7 @@ We prove that `EReal`, `ℝ≥0` and `ℝ≥0∞` are second countable.
 In the process, we also provide the instance `ProperSpace ℝ≥0`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 

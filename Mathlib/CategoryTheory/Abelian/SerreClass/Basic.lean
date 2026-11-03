@@ -5,11 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
-public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
 # Serre classes
@@ -29,7 +27,7 @@ and is closed under subobjects, quotients and extensions.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 

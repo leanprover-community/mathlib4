@@ -16,7 +16,7 @@ product.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

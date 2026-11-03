@@ -5,17 +5,17 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Order.Filter.Germ.OrderedMonoid
 public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Order.Filter.Germ.OrderedMonoid
 
 /-!
 # Lemmas about filters and ordered rings.
 -/
 
-@[expose] public section
+public section
 namespace Filter
 
-open Function Filter
+open Filter
 
 universe u v
 

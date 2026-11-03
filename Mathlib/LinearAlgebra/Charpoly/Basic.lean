@@ -75,7 +75,6 @@ theorem charpoly_monic : f.charpoly.Monic :=
 open Module in
 lemma charpoly_natDegree [StrongRankCondition R] :
     natDegree (charpoly f) = finrank R M := by
-  haveI := nontrivial_of_invariantBasisNumber
   rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
 
 end Coeff
@@ -88,7 +87,7 @@ to the linear map itself, is zero.
 See `Matrix.aeval_self_charpoly` for the equivalent statement about matrices. -/
 theorem aeval_self_charpoly : aeval f f.charpoly = 0 := by
   apply (LinearEquiv.map_eq_zero_iff (algEquivMatrix (chooseBasis R M)).toLinearEquiv).1
-  rw [AlgEquiv.toLinearEquiv_apply, ← AlgEquiv.coe_algHom, ← Polynomial.aeval_algHom_apply _ _ _,
+  rw [AlgEquiv.toLinearEquiv_apply, ← AlgEquiv.coe_toAlgHom, ← Polynomial.aeval_algHom_apply _ _ _,
     charpoly_def]
   exact Matrix.aeval_self_charpoly _
 
@@ -126,7 +125,7 @@ theorem minpoly_coeff_zero_of_injective [Nontrivial R] (hf : Function.Injective 
     exact minpoly.monic (isIntegral f)
   have hzero : aeval f (minpoly R f) = 0 := minpoly.aeval _ _
   simp only [hP, Module.End.mul_eq_comp, LinearMap.ext_iff, hf, aeval_X, map_eq_zero_iff, coe_comp,
-    map_mul, zero_apply, Function.comp_apply] at hzero
+    map_mul, LinearMap.zero_apply, Function.comp_apply] at hzero
   exact not_le.2 hdegP (minpoly.min _ _ hPmonic (LinearMap.ext hzero))
 
 end CayleyHamilton

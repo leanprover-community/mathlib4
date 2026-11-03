@@ -6,9 +6,6 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
-public import Mathlib.RingTheory.EuclideanDomain
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # The degree of rational functions

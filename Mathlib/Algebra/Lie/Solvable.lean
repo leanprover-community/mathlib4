@@ -5,10 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.BaseChange
-public import Mathlib.Algebra.Lie.IdealOperations
-public import Mathlib.Order.Hom.Basic
+public import Mathlib.Algebra.Lie.Quotient
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
@@ -74,6 +72,13 @@ abbrev derivedSeries (k : ℕ) : LieIdeal R L :=
 theorem derivedSeries_def (k : ℕ) : derivedSeries R L k = derivedSeriesOfIdeal R L k ⊤ :=
   rfl
 
+lemma coe_derivedSeries_one_eq :
+    derivedSeries R L 1 = Submodule.span R {⁅x, y⁆ | (x : L) (y : L)} := by
+  ext z
+  simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero,
+    LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span']
+  aesop
+
 variable {R L}
 
 local notation "D" => derivedSeriesOfIdeal R L
@@ -96,17 +101,18 @@ theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J
     · rw [derivedSeriesOfIdeal_succ]; exact le_trans (LieSubmodule.lie_le_left _ _) (ih h)
 
 theorem derivedSeriesOfIdeal_succ_le (k : ℕ) : D (k + 1) I ≤ D k I :=
-  derivedSeriesOfIdeal_le (le_refl I) k.le_succ
+  derivedSeriesOfIdeal_le le_rfl k.le_succ
 
 theorem derivedSeriesOfIdeal_le_self (k : ℕ) : D k I ≤ I :=
-  derivedSeriesOfIdeal_le (le_refl I) (zero_le k)
+  derivedSeriesOfIdeal_le le_rfl zero_le
 
 theorem derivedSeriesOfIdeal_mono {I J : LieIdeal R L} (h : I ≤ J) (k : ℕ) : D k I ≤ D k J :=
-  derivedSeriesOfIdeal_le h (le_refl k)
+  derivedSeriesOfIdeal_le h le_rfl
 
 theorem derivedSeriesOfIdeal_antitone {k l : ℕ} (h : l ≤ k) : D k I ≤ D l I :=
-  derivedSeriesOfIdeal_le (le_refl I) h
+  derivedSeriesOfIdeal_le le_rfl h
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem derivedSeriesOfIdeal_add_le_add (J : LieIdeal R L) (k l : ℕ) :
     D (k + l) (I + J) ≤ D k I + D l J := by
   let D₁ : LieIdeal R L →o LieIdeal R L :=
@@ -348,7 +354,6 @@ theorem le_solvable_ideal_solvable {I J : LieIdeal R L} (h₁ : I ≤ J) (_ : Is
 
 variable (R L)
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) ofAbelianIsSolvable [IsLieAbelian L] : IsSolvable L := by
   use 1
   rw [← abelian_iff_derived_one_eq_bot, lie_abelian_iff_equiv_lie_abelian LieIdeal.topEquiv]
@@ -361,10 +366,10 @@ def radical :=
 /-- The radical of a Noetherian Lie algebra is solvable. -/
 instance radicalIsSolvable [IsNoetherian R L] : IsSolvable (radical R L) := by
   have hwf := LieSubmodule.wellFoundedGT_of_noetherian R L L
-  rw [← CompleteLattice.isSupClosedCompact_iff_wellFoundedGT] at hwf
+  rw [← isSupClosedCompact_iff_wellFoundedGT] at hwf
   refine hwf { I : LieIdeal R L | IsSolvable I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L
-  · rw [Set.mem_setOf_eq] at hI hJ ⊢
+  · rw [Set.mem_ofPred_eq] at hI hJ ⊢
     apply LieAlgebra.isSolvableAdd R L
 
 /-- The `→` direction of this lemma is actually true without the `IsNoetherian` assumption. -/
@@ -372,7 +377,6 @@ theorem LieIdeal.solvable_iff_le_radical [IsNoetherian R L] (I : LieIdeal R L) :
     IsSolvable I ↔ I ≤ radical R L :=
   ⟨fun h => le_sSup h, fun h => le_solvable_ideal_solvable h inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem center_le_radical : center R L ≤ radical R L :=
   have h : IsSolvable (center R L) := inferInstance
   le_sSup h
@@ -458,5 +462,20 @@ theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable 
     obtain ⟨_, h₂⟩ := (derivedSeries_of_derivedLength_succ R L I k).mp h
     have h₃ : I ≠ ⊥ := by rintro rfl; apply h₂; apply derivedSeries_of_bot_eq_bot
     simp only [h₂, h₃]
+
+theorem isSolvable_of_isSolvable_ideal_quotient
+    (Isol : IsSolvable I) (quotsol : IsSolvable (L ⧸ I)) :
+    IsSolvable L := by
+  obtain ⟨k, hk⟩ := IsSolvable.solvable R (L ⧸ I)
+  obtain ⟨l, hl⟩ := IsSolvable.solvable R I
+  rw [← LieIdeal.derivedSeries_map_eq k I.surjective_mkQ, LieIdeal.map_eq_bot_iff, I.mkQ_ker] at hk
+  rw [LieIdeal.derivedSeries_eq_bot_iff] at hl
+  refine (isSolvable_iff R L).mpr ⟨l + k, le_bot_iff.mp ?_⟩
+  rw [derivedSeries_def, derivedSeriesOfIdeal_add, ← hl]
+  exact derivedSeriesOfIdeal_mono hk l
+
+example : IsSolvable I ∧ IsSolvable (L ⧸ I) ↔ IsSolvable L :=
+  ⟨fun ⟨h₁, h₂⟩ ↦ isSolvable_of_isSolvable_ideal_quotient I h₁ h₂,
+    fun _ ↦ ⟨inferInstance, I.surjective_mkQ.lieAlgebra_isSolvable⟩⟩
 
 end LieAlgebra

@@ -6,10 +6,10 @@ Authors: Paul Reichert
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-public import Mathlib.CategoryTheory.Abelian.Subobject
 public import Mathlib.CategoryTheory.Abelian.Transfer
 public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
-public import Mathlib.CategoryTheory.Limits.HasLimits
+
+import Mathlib.CategoryTheory.Abelian.Subobject
 
 /-!
 
@@ -43,7 +43,7 @@ Relevant implications of `IsGrothendieckAbelian` are established in
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

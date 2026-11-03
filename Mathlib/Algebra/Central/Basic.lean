@@ -22,7 +22,7 @@ In this file, we prove some basic results about central algebras over a commutat
   `K` and `k` are fields. If `D` is a nontrivial central algebra over `k`, `K` is isomorphic to `k`.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -47,7 +47,7 @@ lemma baseField_essentially_unique
     [Algebra k K] [Algebra K D] [Algebra k D] [IsScalarTower k K D]
     [IsCentral k D] :
     Function.Bijective (algebraMap k K) := by
-  haveI : IsCentral K D :=
+  have : IsCentral K D :=
   { out := fun x ↦ show x ∈ Subalgebra.center k D → _ by
       simp only [center_eq_bot, mem_bot, Set.mem_range, forall_exists_index]
       rintro x rfl

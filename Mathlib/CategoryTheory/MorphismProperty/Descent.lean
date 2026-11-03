@@ -6,7 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
+
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 # Descent of morphism properties
@@ -16,7 +17,7 @@ if whenever `Q` holds for `X ⟶ Z`, `P` holds for `X ×[Z] Y ⟶ X` implies `P`
 Dually, we define `P.CodescendsAlong Q`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.MorphismProperty
 
@@ -87,7 +88,6 @@ instance [Q.IsStableUnderBaseChange] [P.HasOfPrecompProperty Q] [P.RespectsRight
     rw [← h.1.1]
     exact RespectsRight.postcomp _ hf _ hfst
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` descends along `Q`, then `P.diagonal` descends along `Q`. -/
 instance [HasPullbacks C] (P Q : MorphismProperty C) [P.DescendsAlong Q] [P.RespectsIso]
     [Q.IsStableUnderBaseChange] :
@@ -129,15 +129,18 @@ lemma eq_of_isomorphisms_descendsAlong [(MorphismProperty.isomorphisms C).Descen
     ext <;> simp [pullback.condition]
   simpa [this] using equalizer.ι_of_eq H
 
-set_option backward.isDefEq.respectTransparency false in
-lemma faithful_overPullback_of_isomorphisms_descendAlong
+lemma faithful_overPullback_of_isomorphisms_descendsAlong
     [(MorphismProperty.isomorphisms C).DescendsAlong P] [P.IsStableUnderBaseChange]
     [HasPullbacks C] [HasEqualizers C] {S T : C} {f : T ⟶ S} (hf : P f) :
     (Over.pullback f).Faithful := by
   refine ⟨fun {X} Y a b hab ↦ ?_⟩
   ext
   apply P.eq_of_isomorphisms_descendsAlong (Over.w a) (Over.w b) f hf
-  convert congr($(hab).left) <;> ext <;> simp
+  convert! congr($(hab).left) <;> ext <;> simp
+
+@[deprecated (since := "2026-10-08")]
+alias faithful_overPullback_of_isomorphisms_descendAlong :=
+  faithful_overPullback_of_isomorphisms_descendsAlong
 
 end DescendsAlong
 
@@ -167,9 +170,12 @@ lemma pushout_inl_iff [P.IsStableUnderCobaseChange] [P.CodescendsAlong Q] [HasPu
     (hf : Q f) : P (pushout.inl f g) ↔ P g :=
   iff_of_isPushout (.of_hasPushout f g) hf
 
-lemma of_pushout_inr_of_descendsAlong [P.CodescendsAlong Q] [HasPushout f g] (hg : Q g)
+lemma of_pushout_inr_of_codescendsAlong [P.CodescendsAlong Q] [HasPushout f g] (hg : Q g)
     (hinr : P (pushout.inr f g)) : P f :=
   of_isPushout_of_codescendsAlong (IsPushout.of_hasPushout f g).flip hg hinr
+
+@[deprecated (since := "2026-10-08")]
+alias of_pushout_inr_of_descendsAlong := of_pushout_inr_of_codescendsAlong
 
 lemma pushout_inr_iff [P.IsStableUnderCobaseChange] [P.CodescendsAlong Q] [HasPushout f g]
     (hg : Q g) : P (pushout.inr f g) ↔ P f :=

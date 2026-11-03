@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.CategoryTheory.LiftingProperties.Over
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 # The model category structure on Over categories
@@ -27,7 +27,7 @@ of the axioms is straightforward.)
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

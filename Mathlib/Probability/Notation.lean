@@ -21,6 +21,7 @@ measurable space `m0`, and another measurable space structure `m` with `hm : m �
 - `X =ₐₛ Y`: `X =ᵐ[volume] Y`
 - `X ≤ₐₛ Y`: `X ≤ᵐ[volume] Y`
 - `∂P/∂Q = P.rnDeriv Q`
+
 We note that the notation `∂P/∂Q` applies to three different cases, namely,
 `MeasureTheory.Measure.rnDeriv`, `MeasureTheory.SignedMeasure.rnDeriv` and
 `MeasureTheory.ComplexMeasure.rnDeriv`.

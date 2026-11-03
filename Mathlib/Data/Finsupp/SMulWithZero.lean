@@ -29,7 +29,7 @@ reasonably light.
 This file is a `noncomputable theory` and uses classical logic throughout.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module
 
@@ -37,7 +37,7 @@ noncomputable section
 
 open Finset Function
 
-variable {α β γ ι M M' N P G H R S : Type*}
+variable {α M N R S : Type*}
 
 namespace Finsupp
 

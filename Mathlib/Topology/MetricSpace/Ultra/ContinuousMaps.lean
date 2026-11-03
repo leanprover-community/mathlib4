@@ -8,11 +8,14 @@ module
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultrametric structure on continuous maps
 -/
 
-@[expose] public section
+public section
 
 /-- Continuous maps from a compact space to an ultrametric space are an ultrametric space. -/
 instance ContinuousMap.isUltrametricDist {X Y : Type*}

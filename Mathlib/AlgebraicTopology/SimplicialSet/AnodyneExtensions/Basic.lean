@@ -8,8 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RelativeCellComplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
-public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 public import Mathlib.CategoryTheory.SmallObject.Basic
+
+import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 
 /-!
 # Anodyne extensions
@@ -55,7 +56,9 @@ we show that a strong anodyne extension is an anodyne extension.
 
 universe u
 
-open CategoryTheory HomotopicalAlgebra Simplicial
+open CategoryTheory HomotopicalAlgebra
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -128,6 +131,9 @@ and there exists a regular pairing (in the sense of Moss) for the subcomplex
 def strongAnodyneExtensions : MorphismProperty SSet.{u} :=
   fun _ _ f ↦ Mono f ∧ ∃ (P : (Subcomplex.range f).Pairing), P.IsRegular
 
+lemma strongAnodyneExtensions.mono {X Y : SSet.{u}} {f : X ⟶ Y}
+    (hf : strongAnodyneExtensions f) : Mono f := hf.1
+
 lemma Subcomplex.Pairing.strongAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
     (P : A.Pairing) [P.IsRegular] :
     strongAnodyneExtensions A.ι :=
@@ -156,6 +162,17 @@ lemma Subcomplex.Pairing.anodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
       simp only [pushouts_le_iff, coproducts_le_iff]
       rintro _ _ _ ⟨c⟩
       exact .horn_ι c.index⟩
+
+instance : strongAnodyneExtensions.{u}.RespectsIso where
+  precomp e _ f hf := by
+    obtain ⟨_, P, hP⟩ := hf
+    refine ⟨inferInstance, P.ofIso (Iso.refl _) ?_, inferInstance⟩
+    simp [Subcomplex.range_comp, Subcomplex.range_eq_top e,
+      Subcomplex.image_top]
+  postcomp e _ f hf := by
+    obtain ⟨_, P, hP⟩ := hf
+    refine ⟨inferInstance, P.ofIso (asIso e).symm ?_, inferInstance⟩
+    simp [Subcomplex.preimage_inv, Subcomplex.range_comp]
 
 lemma strongAnodyneExtensions_le_anodyneExtensions :
     strongAnodyneExtensions.{u} ≤ anodyneExtensions := by

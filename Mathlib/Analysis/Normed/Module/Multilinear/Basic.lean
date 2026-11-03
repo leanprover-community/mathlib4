@@ -5,11 +5,10 @@ Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Data.Fintype.CardEmbedding
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
-public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 /-!
 # Operator norm on the space of continuous multilinear maps
@@ -135,7 +134,7 @@ then `f m` has norm `0`.
 Note that we cannot drop the continuity assumption because `f (m : Unit → E) = f (m ())`,
 where the domain has zero norm and the codomain has a nonzero norm
 does not satisfy this condition. -/
-lemma norm_map_coord_zero (f : MultilinearMap 𝕜 E G) (hf : Continuous f)
+lemma norm_map_coord_zero (f : (Π i, E i) →ₘₗ[𝕜] G) (hf : Continuous f)
     {m : ∀ i, E i} {i : ι} (hi : ‖m i‖ = 0) : ‖f m‖ = 0 := by
   classical
   rw [← inseparable_zero_iff_norm] at hi ⊢
@@ -154,7 +153,7 @@ then it satisfies this inequality for all `m`.
 The first assumption is automatically satisfied on normed spaces, see `bound_of_shell` below.
 For seminormed spaces, it follows from continuity of `f`, see next lemma,
 see `bound_of_shell_of_continuous` below. -/
-theorem bound_of_shell_of_norm_map_coord_zero (f : MultilinearMap 𝕜 E G)
+theorem bound_of_shell_of_norm_map_coord_zero (f : (Π i, E i) →ₘₗ[𝕜] G)
     (hf₀ : ∀ {m i}, ‖m i‖ = 0 → ‖f m‖ = 0)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
@@ -170,7 +169,7 @@ theorem bound_of_shell_of_norm_map_coord_zero (f : MultilinearMap 𝕜 E G)
 /-- If a continuous multilinear map in finitely many variables on normed spaces satisfies
 the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i` for some positive
 numbers `ε i` and elements `c i : 𝕜`, `1 < ‖c i‖`, then it satisfies this inequality for all `m`. -/
-theorem bound_of_shell_of_continuous (f : MultilinearMap 𝕜 E G) (hfc : Continuous f)
+theorem bound_of_shell_of_continuous (f : (Π i, E i) →ₘₗ[𝕜] G) (hfc : Continuous f)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
@@ -179,7 +178,7 @@ theorem bound_of_shell_of_continuous (f : MultilinearMap 𝕜 E G) (hfc : Contin
 /-- If a multilinear map in finitely many variables on normed spaces is continuous, then it
 satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, for some `C` which can be chosen to be
 positive. -/
-theorem exists_bound_of_continuous (f : MultilinearMap 𝕜 E G) (hf : Continuous f) :
+theorem exists_bound_of_continuous (f : (Π i, E i) →ₘₗ[𝕜] G) (hf : Continuous f) :
     ∃ C : ℝ, 0 < C ∧ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
   cases isEmpty_or_nonempty ι
   · refine ⟨‖f 0‖ + 1, add_pos_of_nonneg_of_pos (norm_nonneg _) zero_lt_one, fun m => ?_⟩
@@ -205,7 +204,7 @@ The bound reads
 `‖f m - f m'‖ ≤
   C * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
 where the other terms in the sum are the same products where `1` is replaced by any `i`. -/
-theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap 𝕜 E G) {C : ℝ} (hC : 0 ≤ C)
+theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : (Π i, E i) →ₘₗ[𝕜] G) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ C * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
   have A :
@@ -247,7 +246,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap 𝕜 E 
 using the multilinearity. Here, we give a usable but not very precise version. See
 `norm_image_sub_le_of_bound'` for a more precise but less usable version. The bound is
 `‖f m - f m'‖ ≤ C * card ι * ‖m - m'‖ * (max ‖m‖ ‖m'‖) ^ (card ι - 1)`. -/
-theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
+theorem norm_image_sub_le_of_bound (f : (Π i, E i) →ₘₗ[𝕜] G)
     {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ C * Fintype.card ι * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) * ‖m₁ - m₂‖ := by
   classical
@@ -263,10 +262,10 @@ theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
         rcases eq_or_ne j i with rfl | h
         · simp only [ite_true, Function.update_self]
           exact norm_le_pi_norm (m₁ - m₂) _
-        · simp [h, -le_sup_iff, -sup_le_iff, sup_le_sup, norm_le_pi_norm]
+        · simp [h, -le_max_iff, -sup_le_iff, sup_le_sup, norm_le_pi_norm]
       _ = ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by
         rw [prod_update_of_mem (Finset.mem_univ _)]
-        simp [card_univ_diff]
+        simp [card_univ_sdiff]
   calc
     ‖f m₁ - f m₂‖ ≤ C * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
       f.norm_image_sub_le_of_bound' hC H m₁ m₂
@@ -277,7 +276,7 @@ theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
 
 /-- If a multilinear map satisfies an inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, then it is
 continuous. -/
-theorem continuous_of_bound (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
+theorem continuous_of_bound (f : (Π i, E i) →ₘₗ[𝕜] G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
     Continuous f := by
   let D := max C 1
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
@@ -297,23 +296,23 @@ theorem continuous_of_bound (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, 
 
 /-- Constructing a continuous multilinear map from a multilinear map satisfying a boundedness
 condition. -/
-def mkContinuous (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
+def mkContinuous (f : (Π i, E i) →ₘₗ[𝕜] G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
     ContinuousMultilinearMap 𝕜 E G :=
   { f with cont := f.continuous_of_bound C H }
 
 @[simp]
-theorem coe_mkContinuous (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
+theorem coe_mkContinuous (f : (Π i, E i) →ₘₗ[𝕜] G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
     ⇑(f.mkContinuous C H) = f :=
   rfl
 
 /-- Given a multilinear map in `n` variables, if one restricts it to `k` variables putting `z` on
 the other coordinates, then the resulting restricted function satisfies an inequality
 `‖f.restr v‖ ≤ C * ‖z‖^(n-k) * Π ‖v i‖` if the original function satisfies `‖f v‖ ≤ C * Π ‖v i‖`. -/
-theorem restr_norm_le {k n : ℕ} (f : MultilinearMap 𝕜 (fun _ : Fin n => G) G')
-    (s : Finset (Fin n)) (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖)
-    (v : Fin k → G) : ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
+theorem restr_norm_le {k n : ℕ} (f : (Fin n → G) →ₘₗ[𝕜] G') (s : Finset (Fin n))
+    (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (v : Fin k → G) :
+    ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
   rw [mul_right_comm, mul_assoc]
-  convert H _ using 2
+  convert! H _ using 2
   simp only [apply_dite norm, Fintype.prod_dite, prod_const ‖z‖, Finset.card_univ,
     Fintype.card_of_subtype sᶜ fun _ => mem_compl, card_compl, Fintype.card_fin, hk, ←
     (s.orderIsoOfFin hk).symm.bijective.prod_comp fun x => ‖v x‖]
@@ -369,7 +368,7 @@ theorem bounds_bddBelow {f : ContinuousMultilinearMap 𝕜 E G} :
 theorem isLeast_opNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ := by
   refine IsClosed.isLeast_csInf ?_ bounds_nonempty bounds_bddBelow
-  simp only [Set.setOf_and, Set.setOf_forall]
+  simp only [Set.ofPred_and, Set.ofPred_forall]
   exact isClosed_Ici.inter (isClosed_iInter fun m ↦ isClosed_le continuous_const (by fun_prop))
 
 theorem opNorm_nonneg (f : ContinuousMultilinearMap 𝕜 E G) : 0 ≤ ‖f‖ :=
@@ -392,7 +391,7 @@ theorem le_opNorm_mul_prod_of_le (f : ContinuousMultilinearMap 𝕜 E G)
 
 theorem le_opNorm_mul_pow_card_of_le (f : ContinuousMultilinearMap 𝕜 E G) {m b} (hm : ‖m‖ ≤ b) :
     ‖f m‖ ≤ ‖f‖ * b ^ Fintype.card ι := by
-  simpa only [prod_const] using f.le_opNorm_mul_prod_of_le fun i => (norm_le_pi_norm m i).trans hm
+  simpa only [prod_const] using! f.le_opNorm_mul_prod_of_le fun i => (norm_le_pi_norm m i).trans hm
 
 theorem le_opNorm_mul_pow_of_le {n : ℕ} {Ei : Fin n → Type*} [∀ i, SeminormedAddCommGroup (Ei i)]
     [∀ i, NormedSpace 𝕜 (Ei i)] (f : ContinuousMultilinearMap 𝕜 Ei G) {m : ∀ i, Ei i} {b : ℝ}
@@ -532,7 +531,7 @@ theorem opNNNorm_le_iff {f : ContinuousMultilinearMap 𝕜 E G} {C : ℝ≥0} :
 
 theorem isLeast_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ := by
-  simpa only [← opNNNorm_le_iff] using isLeast_Ici
+  simpa only [← opNNNorm_le_iff] using! isLeast_Ici
 
 theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
@@ -541,7 +540,7 @@ theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMul
 
 theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
-  congr_arg NNReal.toReal (opNNNorm_prod f g)
+  congr($(opNNNorm_prod f g).toReal)
 
 theorem opNNNorm_pi
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
@@ -552,14 +551,14 @@ theorem opNorm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
     (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) :
     ‖pi f‖ = ‖f‖ :=
-  congr_arg NNReal.toReal (opNNNorm_pi f)
+  congr($(opNNNorm_pi f).toReal)
 
 section
 
 @[simp]
 theorem norm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
     ‖ofSubsingleton 𝕜 G G' i f‖ = ‖f‖ := by
-  letI : Unique ι := uniqueOfSubsingleton i
+  let : Unique ι := uniqueOfSubsingleton i
   simp [norm_def, ContinuousLinearMap.norm_def, (Equiv.funUnique _ _).symm.surjective.forall]
 
 @[simp]
@@ -675,14 +674,14 @@ variable [Fintype ι]
 /-- If a continuous multilinear map is constructed from a multilinear map via the constructor
 `mkContinuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
-theorem MultilinearMap.mkContinuous_norm_le (f : MultilinearMap 𝕜 E G) {C : ℝ} (hC : 0 ≤ C)
+theorem MultilinearMap.mkContinuous_norm_le (f : (Π i, E i) →ₘₗ[𝕜] G) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ‖f.mkContinuous C H‖ ≤ C :=
   ContinuousMultilinearMap.opNorm_le_bound hC fun m => H m
 
 /-- If a continuous multilinear map is constructed from a multilinear map via the constructor
 `mkContinuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
-theorem MultilinearMap.mkContinuous_norm_le' (f : MultilinearMap 𝕜 E G) {C : ℝ}
+theorem MultilinearMap.mkContinuous_norm_le' (f : (Π i, E i) →ₘₗ[𝕜] G) {C : ℝ}
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ‖f.mkContinuous C H‖ ≤ max C 0 :=
   ContinuousMultilinearMap.opNorm_le_bound (le_max_right _ _) fun m ↦ (H m).trans <|
     mul_le_mul_of_nonneg_right (le_max_left _ _) <| by positivity
@@ -794,7 +793,7 @@ theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
 @[simp]
 theorem norm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖ = ‖f‖ * ‖z‖ :=
-  congr_arg NNReal.toReal (nnnorm_smulRight f z)
+  congr($(nnnorm_smulRight f z).toReal)
 
 @[simp]
 theorem norm_mkPiRing (z : G) : ‖ContinuousMultilinearMap.mkPiRing 𝕜 ι z‖ = ‖z‖ := by
@@ -843,15 +842,15 @@ open ContinuousMultilinearMap
 
 namespace MultilinearMap
 
-/-- Given a map `f : G →ₗ[𝕜] MultilinearMap 𝕜 E G'` and an estimate
+/-- Given a map `f : G →ₗ[𝕜] (Π i, E i) →ₘₗ[𝕜] G'` and an estimate
 `H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖`, construct a continuous linear
 map from `G` to `ContinuousMultilinearMap 𝕜 E G'`.
 
-In order to lift, e.g., a map `f : (MultilinearMap 𝕜 E G) →ₗ[𝕜] MultilinearMap 𝕜 E' G'`
+In order to lift, e.g., a map `f : ((Π i, E i) →ₘₗ[𝕜] G) →ₗ[𝕜] (Π i, E' i) →ₘₗ[𝕜] G'`
 to a map `(ContinuousMultilinearMap 𝕜 E G) →L[𝕜] ContinuousMultilinearMap 𝕜 E' G'`,
 one can apply this construction to `f.comp ContinuousMultilinearMap.toMultilinearMapLinear`
-which is a linear map from `ContinuousMultilinearMap 𝕜 E G` to `MultilinearMap 𝕜 E' G'`. -/
-def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
+which is a linear map from `ContinuousMultilinearMap 𝕜 E G` to `(Π i, E' i) →ₘₗ[𝕜] G'`. -/
+def mkContinuousLinear (f : G →ₗ[𝕜] (Π i, E i) →ₘₗ[𝕜] G') (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   LinearMap.mkContinuous
     { toFun := fun x => (f x).mkContinuous (C * ‖x‖) <| H x
@@ -865,21 +864,21 @@ def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
       simpa using ((f x).mkContinuous_norm_le' _).trans_eq <| by
         rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
 
-theorem mkContinuousLinear_norm_le' (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
+theorem mkContinuousLinear_norm_le' (f : G →ₗ[𝕜] (Π i, E i) →ₘₗ[𝕜] G') (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ max C 0 := by
   dsimp only [mkContinuousLinear]
   exact LinearMap.mkContinuous_norm_le _ (le_max_right _ _) _
 
-theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') {C : ℝ} (hC : 0 ≤ C)
+theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] (Π i, E i) →ₘₗ[𝕜] G') {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ C :=
   (mkContinuousLinear_norm_le' f C H).trans_eq (max_eq_left hC)
 
 variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
 
-/-- Given a map `f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)` and an estimate
+/-- Given a map `f : (Π i, E i) →ₘₗ[𝕜] (Π i, E' i) →ₘₗ[𝕜] G` and an estimate
 `H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `MultilinearMap`s in the type to
 `ContinuousMultilinearMap`s. -/
-def mkContinuousMultilinear (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)) (C : ℝ)
+def mkContinuousMultilinear (f : (Π i, E i) →ₘₗ[𝕜] (Π i, E' i) →ₘₗ[𝕜] G) (C : ℝ)
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ContinuousMultilinearMap 𝕜 E (ContinuousMultilinearMap 𝕜 E' G) :=
   mkContinuous
@@ -897,18 +896,18 @@ def mkContinuousMultilinear (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G
       positivity
 
 @[simp]
-theorem mkContinuousMultilinear_apply (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)) {C : ℝ}
+theorem mkContinuousMultilinear_apply (f : (Π i, E i) →ₘₗ[𝕜] (Π i, E' i) →ₘₗ[𝕜] G) {C : ℝ}
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) (m : ∀ i, E i) :
     ⇑(mkContinuousMultilinear f C H m) = f m :=
   rfl
 
-theorem mkContinuousMultilinear_norm_le' (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)) (C : ℝ)
+theorem mkContinuousMultilinear_norm_le' (f : (Π i, E i) →ₘₗ[𝕜] (Π i, E' i) →ₘₗ[𝕜] G) (C : ℝ)
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ‖mkContinuousMultilinear f C H‖ ≤ max C 0 := by
   dsimp only [mkContinuousMultilinear]
   exact mkContinuous_norm_le _ (le_max_right _ _) _
 
-theorem mkContinuousMultilinear_norm_le (f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)) {C : ℝ}
+theorem mkContinuousMultilinear_norm_le (f : (Π i, E i) →ₘₗ[𝕜] (Π i, E' i) →ₘₗ[𝕜] G) {C : ℝ}
     (hC : 0 ≤ C) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ‖mkContinuousMultilinear f C H‖ ≤ C :=
   (mkContinuousMultilinear_norm_le' f C H).trans_eq (max_eq_left hC)
@@ -932,10 +931,9 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
   MultilinearMap.mkContinuous
     { toFun := fun m =>
         LinearMap.mkContinuous
-          { toFun := fun x => f x m
-            map_add' := fun x y => by simp only [map_add, ContinuousMultilinearMap.add_apply]
-            map_smul' := fun c x => by
-              simp only [ContinuousMultilinearMap.smul_apply, map_smul, RingHom.id_apply] }
+          { toFun := (f · m)
+            map_add' := by simp
+            map_smul' := by simp }
           (‖f‖ * ∏ i, ‖m i‖) fun x => by
           rw [mul_right_comm]
           exact (f x).le_of_opNorm_le (f.le_opNorm x) _
@@ -945,7 +943,7 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
           LinearMap.mkContinuous_apply, AddHom.coe_mk]
       map_update_smul' := fun m i c x => by
         ext1
-        simp only [coe_smul', ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
+        simp only [FunLike.coe_smul, ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk] }
     ‖f‖ fun m => by
       dsimp only [MultilinearMap.coe_mk]
@@ -1072,13 +1070,13 @@ def compContinuousLinearMapLRight (g : ContinuousMultilinearMap 𝕜 E₁ G) :
         intro h f i f₁ f₂
         ext x
         simp only [compContinuousLinearMap_apply, add_apply]
-        convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
+        convert! g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
       map_update_smul' := by
         intro h f i a f₀
         ext x
         simp only [compContinuousLinearMap_apply, smul_apply]
-        convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
+        convert! g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _ }
     (‖g‖) (fun f ↦ by simp [norm_compContinuousLinearMap_le])
 
@@ -1100,19 +1098,19 @@ open Function in
 sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)`
 is continuous-linear in `g` and multilinear in `f₁, ..., fₙ`. -/
 noncomputable def compContinuousLinearMapMultilinear :
-    MultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
-      ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) where
+    (Π i, E i →L[𝕜] E₁ i) →ₘₗ[𝕜]
+      (ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G where
   toFun := compContinuousLinearMapL
   map_update_add' f i f₁ f₂ := by
     ext g x
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
         (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
-    convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
+    convert! g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
       exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
   map_update_smul' f i a f₀ := by
     ext g x
     change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
-    convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
+    convert! g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
       exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
 
 /-- If `f` is a collection of continuous linear maps, then the construction
@@ -1196,7 +1194,7 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
 
-open Classical in
+open scoped Classical in
 /-- The `k`-th iterated derivative of a continuous multilinear map `f` at the point `x`. It is a
 continuous multilinear map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
@@ -1284,7 +1282,7 @@ namespace MultilinearMap
 /-- If a multilinear map in finitely many variables on normed spaces satisfies the inequality
 `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i` for some positive numbers `ε i`
 and elements `c i : 𝕜`, `1 < ‖c i‖`, then it satisfies this inequality for all `m`. -/
-theorem bound_of_shell (f : MultilinearMap 𝕜 E G) {ε : ι → ℝ} {C : ℝ} {c : ι → 𝕜}
+theorem bound_of_shell (f : (Π i, E i) →ₘₗ[𝕜] G) {ε : ι → ℝ} {C : ℝ} {c : ι → 𝕜}
     (hε : ∀ i, 0 < ε i) (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=

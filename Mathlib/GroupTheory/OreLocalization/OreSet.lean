@@ -67,7 +67,9 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 
 /-- Common factors on the right can be turned into common factors on the left, a weak form of
 cancellability. -/
-@[to_additive AddOreLocalization.ore_right_cancel]
+@[to_additive AddOreLocalization.ore_right_cancel
+/-- Common summands on the right can be turned into common summands on the left, a weak form of
+cancellability. -/]
 theorem ore_right_cancel (r₁ r₂ : R) (s : S) (h : r₁ * s = r₂ * s) : ∃ s' : S, s' * r₁ = s' * r₂ :=
   OreSet.ore_right_cancel r₁ r₂ s h
 
@@ -96,7 +98,7 @@ def oreCondition (r : R) (s : S) : Σ' r' : R, Σ' s' : S, s' * r = r' * s :=
   ⟨oreNum r s, oreDenom r s, ore_eq r s⟩
 
 /-- The trivial submonoid is an Ore set. -/
-@[to_additive AddOreLocalization.addOreSetBot]
+@[to_additive AddOreLocalization.addOreSetBot /-- The trivial submonoid is an Ore set. -/]
 instance oreSetBot : OreSet (⊥ : Submonoid R) where
   ore_right_cancel _ _ s h :=
     ⟨s, by
@@ -114,7 +116,8 @@ instance oreSetBot : OreSet (⊥ : Submonoid R) where
     simp [hs]
 
 /-- Every submonoid of a commutative monoid is an Ore set. -/
-@[to_additive AddOreLocalization.addOreSetComm]
+@[to_additive AddOreLocalization.addOreSetComm
+/-- Every submonoid of an additive commutative monoid is an Ore set. -/]
 instance (priority := 100) oreSetComm {R} [CommMonoid R] (S : Submonoid R) : OreSet S where
   ore_right_cancel m n s h := ⟨s, by rw [mul_comm (s : R) n, mul_comm (s : R) m, h]⟩
   oreNum r _ := r

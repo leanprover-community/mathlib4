@@ -8,13 +8,16 @@ module
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral elements over the ring of integers of a valuation
 
 The ring of integers is integrally closed inside the original ring.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

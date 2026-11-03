@@ -50,8 +50,6 @@ def Equifibered : MorphismProperty (J ⥤ C) :=
 theorem Equifibered.of_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α] : Equifibered α :=
   fun _ _ f => IsPullback.of_vert_isIso ⟨naturality _ f⟩
 
-@[deprecated (since := "2026-02-01")] alias equifibered_of_isIso := Equifibered.of_isIso
-
 theorem Equifibered.comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} (hα : Equifibered α)
     (hβ : Equifibered β) : Equifibered (α ≫ β) :=
   fun _ _ f => (hα f).paste_vert (hβ f)
@@ -77,11 +75,6 @@ theorem Equifibered.of_discrete {F G : Discrete ι ⥤ C} (α : F ⟶ G) : Equif
   simp only [Discrete.functor_map_id]
   exact IsPullback.of_horiz_isIso ⟨by rw [Category.id_comp, Category.comp_id]⟩
 
-@[deprecated (since := "2026-01-23")]
-alias _root_.CategoryTheory.mapPair_equifibered := Equifibered.of_discrete
-
-@[deprecated (since := "2026-01-23")] alias equifibered_of_discrete := Equifibered.of_discrete
-
 /-- A natural transformation is co-equifibered if every commutative square of the following form is
 a pushout.
 ```
@@ -95,8 +88,6 @@ def Coequifibered : MorphismProperty (J ⥤ C) :=
 
 theorem Coequifibered.of_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α] : Coequifibered α :=
   fun _ _ f => .of_vert_isIso ⟨naturality _ f⟩
-
-@[deprecated (since := "2026-02-01")] alias Coequifibered_of_isIso := Coequifibered.of_isIso
 
 theorem Coequifibered.comp {F G H : J ⥤ C} {α : F ⟶ G} {β : G ⟶ H} (hα : Coequifibered α)
     (hβ : Coequifibered β) : Coequifibered (α ≫ β) :=

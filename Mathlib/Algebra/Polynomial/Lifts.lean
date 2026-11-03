@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Eval.Subring
-public import Mathlib.Algebra.Polynomial.Monic
+
+import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Polynomials that lift
@@ -85,6 +86,9 @@ theorem lifts_iff_coeffs_subset_range (p : S[X]) :
     · exact ⟨0, by simp [hn]⟩
     · exact h <| coeff_mem_coeffs hn
 
+theorem mem_lifts_of_surjective (hf : Function.Surjective f) (p : S[X]) : p ∈ lifts f :=
+  (lifts_iff_coeff_lifts p).mpr fun n ↦ hf (p.coeff n)
+
 /-- If `(r : R)`, then `C (f r)` lifts. -/
 theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
   ⟨C r, by
@@ -125,10 +129,8 @@ theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈
   intro k
   by_cases hk : k = n
   · use 0
-    simp only [hk, map_zero, erase_same]
-  obtain ⟨i, hi⟩ := h k
-  use i
-  simp only [hi, hk, erase_ne, Ne, not_false_iff]
+    simp [hk]
+  · simpa [hk] using h k
 
 section LiftDeg
 
@@ -150,8 +152,9 @@ theorem exists_support_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
   let q : R[X] := ∑ k ∈ p.support, monomial k (g k)
   have hq : map f q = p := by simp_rw [q, Polynomial.map_sum, map_monomial, hg, ← as_sum_support]
   have hq' : q.support = p.support := by
-    simp_rw [Finset.ext_iff, mem_support_iff, q, finset_sum_coeff, coeff_monomial,
-      Finset.sum_ite_eq', ite_ne_right_iff, mem_support_iff, and_iff_left_iff_imp, not_imp_not]
+    simp_rw [Finset.ext_iff, mem_support_iff, q, finsetSum_coeff, coeff_monomial,
+      Finsupp.single_apply, Finset.sum_ite_eq', ite_ne_right_iff, mem_support_iff,
+      and_iff_left_iff_imp, not_imp_not]
     exact fun k h ↦ by rw [← hg, h, map_zero]
   exact ⟨q, hq, hq'⟩
 
@@ -161,8 +164,9 @@ theorem exists_degree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
   obtain ⟨q, hq, hq'⟩ := exists_support_eq_of_mem_lifts hlifts
   exact ⟨q, hq, congrArg Finset.max hq'⟩
 
-@[deprecated (since := "2026-02-11")]
-alias mem_lifts_and_degree_eq := exists_degree_eq_of_mem_lifts
+theorem exists_natDegree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
+    ∃ q, map f q = p ∧ q.natDegree = p.natDegree :=
+  (exists_degree_eq_of_mem_lifts hlifts).imp fun _ ↦ And.imp_right natDegree_eq_of_degree_eq
 
 end LiftDeg
 

@@ -5,7 +5,6 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Cast.Basic
@@ -37,7 +36,7 @@ We also produce the following instances:
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered
 

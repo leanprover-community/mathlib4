@@ -5,10 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Jacobson radical of modules and rings
@@ -22,7 +23,8 @@ intersection of all maximal submodules of `M`.
 an `R`-module, which is equal to the intersection of all maximal left ideals of `R`. It turns out
 it is in fact a two-sided ideal, and equals the intersection of all maximal right ideals of `R`.
 
-## Reference
+## References
+
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
@@ -99,7 +101,7 @@ theorem jacobson_quotient_jacobson : jacobson R (M ⧸ jacobson R M) = ⊥ := by
 
 theorem jacobson_lt_top [Nontrivial M] [IsCoatomic (Submodule R M)] : jacobson R M < ⊤ := by
   obtain ⟨m, hm, -⟩ := (eq_top_or_exists_le_coatom (⊥ : Submodule R M)).resolve_left bot_ne_top
-  exact (sInf_le <| Set.mem_setOf.mpr hm).trans_lt hm.1.lt_top
+  exact (sInf_le <| Set.mem_ofPred.mpr hm).trans_lt hm.1.lt_top
 
 example [Nontrivial M] [Module.Finite R M] : jacobson R M < ⊤ := jacobson_lt_top R M
 
@@ -125,7 +127,6 @@ variable (M : Type*) [AddCommGroup M] [Module R M]
 namespace Ring
 
 /-- The Jacobson radical of a ring `R` is the Jacobson radical of `R` as an `R`-module. -/
--- TODO: replace all `Ideal.jacobson ⊥` by this.
 abbrev jacobson : Ideal R := Module.jacobson R R
 
 theorem jacobson_eq_sInf_isMaximal : jacobson R = sInf {I : Ideal R | I.IsMaximal} := by
@@ -151,7 +152,6 @@ theorem map_jacobson_of_ker_le (le : RingHom.ker f ≤ jacobson R) :
     Submodule.map f.toSemilinearMap (jacobson R) = jacobson R₂ :=
   Module.map_jacobson_of_ker_le f.surjective le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_jacobson_quotient (I : Ideal R) [I.IsTwoSided] :
     (jacobson (R ⧸ I) : Set (R ⧸ I)) = Module.jacobson R (R ⧸ I) := by
   let f : R ⧸ I →ₛₗ[Ideal.Quotient.mk I] R ⧸ I := ⟨AddHom.id _, fun _ _ ↦ rfl⟩

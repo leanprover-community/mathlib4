@@ -6,7 +6,9 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.Archimedean.Defs
+
+import Mathlib.Data.Rat.Floor
 
 /-!
 # Submonoids of archimedean monoids
@@ -23,7 +25,7 @@ submonoid of the ambient group.
   submonoid.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

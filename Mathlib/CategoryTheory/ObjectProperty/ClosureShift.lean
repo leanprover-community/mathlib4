@@ -5,10 +5,11 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
+
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-! # Closure operators and shifts
 
@@ -17,7 +18,7 @@ closure properties of object properties.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ObjectProperty
 

@@ -6,7 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Data.Bracket
+public import Mathlib.Algebra.Notation.Bracket
 
 /-!
 # The bracket on a group given by commutator.
@@ -33,6 +33,12 @@ namespace commutatorElement
 attribute [scoped instance] commutatorElement
 
 end commutatorElement
+
+namespace addCommutatorElement
+
+attribute [scoped instance] addCommutatorElement
+
+end addCommutatorElement
 
 open scoped commutatorElement
 

@@ -19,12 +19,14 @@ In this file, we prove that any simplicial set satisfying the strict Segal
 condition is a quasicategory.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
 open CategoryTheory
-open Simplicial SimplicialObject SimplexCategory
+open SimplicialObject SimplexCategory
+
+open scoped Simplicial
 
 namespace SSet.StrictSegal
 

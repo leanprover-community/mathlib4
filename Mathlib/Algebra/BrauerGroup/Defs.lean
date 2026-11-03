@@ -8,7 +8,8 @@ module
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Central.Defs
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.Matrix.Reindex
+
+import Mathlib.LinearAlgebra.Matrix.Reindex
 
 /-!
 # Definition of Brauer group of a field K
@@ -89,7 +90,7 @@ end IsBrauerEquivalent
 variable (K)
 
 /-- `CSA` equipped with Brauer Equivalence is indeed a setoid. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Brauer.CSA_Setoid : Setoid (CSA K) where
   r := IsBrauerEquivalent
   iseqv := IsBrauerEquivalent.is_eqv
