@@ -531,7 +531,7 @@ theorem mk_isDiagonal_iff {x y : α} : IsDiagonal s(x, y) ↔ x = y :=
 protected lemma IsDiagonal.map : z.IsDiagonal → (z.map f).IsDiagonal :=
   Sym2.ind (fun _ _ ↦ congr_arg f) z
 
-@[deprecated (since := "2026-09-06")] alias IsDiag.map := IsDiagonal.map
+@[deprecated (since := "2026-09-06")] protected alias IsDiag.map := IsDiagonal.map
 
 lemma isDiagonal_map (hf : Injective f) : (z.map f).IsDiagonal ↔ z.IsDiagonal :=
   Sym2.ind (fun _ _ ↦ hf.eq_iff) z
@@ -620,12 +620,11 @@ theorem diagonalSet_eq_univ_of_subsingleton [Subsingleton α] : @diagonalSet α 
 @[deprecated (since := "2026-09-06")]
 alias diagSet_eq_univ_of_subsingleton := diagonalSet_eq_univ_of_subsingleton
 
-instance IsDiagonal.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiagonal α) :=
+instance (α : Type u) [DecidableEq α] : DecidablePred (@IsDiagonal α) :=
   fun z => z.recOnSubsingleton fun _ _ => decidable_of_iff' _ mk_isDiagonal_iff
 
-instance decidablePred_mem_diagonalSet (α : Type u) [DecidableEq α] :
-    DecidablePred (· ∈ @diagonalSet α) :=
-  IsDiagonal.decidablePred _
+instance (α : Type u) [DecidableEq α] : DecidablePred (· ∈ @diagonalSet α) :=
+  inferInstanceAs (DecidablePred (@IsDiagonal α))
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiagonal z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose hd

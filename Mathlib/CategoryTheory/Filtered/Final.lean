@@ -337,7 +337,7 @@ instance [IsCofilteredOrEmpty C] (X : C × C) : IsCofiltered (CostructuredArrow 
   apply IsCofiltered.of_equivalence (CostructuredArrow.ofDiagonalEquivalence X).symm
 
 /-- The diagonal functor on any cofiltered category is initial. -/
-instance Functor.initial_diagonal_of_isFiltered [IsCofilteredOrEmpty C] :
+instance Functor.initial_diagonal_of_isCofiltered [IsCofilteredOrEmpty C] :
     Initial (Functor.diagonal C) :=
   initial_of_isCofiltered_costructuredArrow _
 

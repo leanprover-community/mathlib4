@@ -91,7 +91,7 @@ instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
   Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 
-instance fintypeOffDiagonal (s : Set α) [Fintype s] : Fintype s.offDiagonal :=
+instance (s : Set α) [Fintype s] : Fintype s.offDiagonal :=
   Fintype.ofFinset s.toFinset.offDiagonal <| by simp
 
 /-- `image2 f s t` is `Fintype` if `s` and `t` are. -/

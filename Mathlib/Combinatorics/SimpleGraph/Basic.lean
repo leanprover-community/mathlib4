@@ -587,12 +587,12 @@ theorem disjoint_of_disjoint_support (h : Disjoint G.support H.support) : Disjoi
 /-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_fromEdgeSet`,
 allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
 @[simp]
-theorem edgeSet_sdiff_sdiff_isDiagonal (G : SimpleGraph V) (s : Set (Sym2 V)) :
+theorem edgeSet_sdiff_sdiff_diagonalSet (G : SimpleGraph V) (s : Set (Sym2 V)) :
     G.edgeSet \ (s \ Sym2.diagonalSet) = G.edgeSet \ s := by
   grind [Sym2.mem_diagonalSet, not_isDiagonal_of_mem_edgeSet]
 
 @[deprecated (since := "2026-09-06")]
-alias edgeSet_sdiff_sdiff_isDiag := edgeSet_sdiff_sdiff_isDiagonal
+alias edgeSet_sdiff_sdiff_isDiag := edgeSet_sdiff_sdiff_diagonalSet
 
 /-- Two vertices are adjacent iff there is an edge between them. The
 condition `v ≠ w` ensures they are different endpoints of the edge,

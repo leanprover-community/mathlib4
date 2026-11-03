@@ -812,19 +812,13 @@ instance : (diagonal C).Monoidal :=
       μIso := fun _ _ ↦ Iso.refl _ }
 
 @[simp] lemma diagonal_ε : ε (diagonal C) = 𝟙 _ := rfl
-
-@[deprecated (since := "2026-09-06")] alias diag_ε := diagonal_ε
-
 @[simp] lemma diagonal_η : η (diagonal C) = 𝟙 _ := rfl
-
-@[deprecated (since := "2026-09-06")] alias diag_η := diagonal_η
-
 @[simp] lemma diagonal_μ (X Y : C) : μ (diagonal C) X Y = 𝟙 _ := rfl
-
-@[deprecated (since := "2026-09-06")] alias diag_μ := diagonal_μ
-
 @[simp] lemma diagonal_δ (X Y : C) : δ (diagonal C) X Y = 𝟙 _ := rfl
 
+@[deprecated (since := "2026-09-06")] alias diag_ε := diagonal_ε
+@[deprecated (since := "2026-09-06")] alias diag_η := diagonal_η
+@[deprecated (since := "2026-09-06")] alias diag_μ := diagonal_μ
 @[deprecated (since := "2026-09-06")] alias diag_δ := diagonal_δ
 
 section Prod'

@@ -323,16 +323,17 @@ theorem offDiagonal_card : (offDiagonal s).card = s.card * s.card - s.card := by
 @[deprecated (since := "2026-09-06")] alias offDiag_card := offDiagonal_card
 
 @[gcongr, mono]
-theorem diagonal_mono : Monotone (diagonal : Finset α → Finset (α × α)) :=
+theorem diagonal_monotone : Monotone (diagonal : Finset α → Finset (α × α)) :=
   fun _ _ ↦ by simp [diagonal]
 
-@[deprecated (since := "2026-09-06")] alias diag_mono := diagonal_mono
+@[deprecated (since := "2026-09-06")] alias diag_mono := diagonal_monotone
 
 @[gcongr, mono]
-theorem offDiagonal_mono : Monotone (offDiagonal : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
-  mem_offDiagonal.2 <| And.imp (@h _) (And.imp_left <| @h _) <| mem_offDiagonal.1 hx
+theorem offDiagonal_monotone : Monotone (offDiagonal : Finset α → Finset (α × α)) :=
+  fun _ _ h _ hx =>
+    mem_offDiagonal.2 <| And.imp (@h _) (And.imp_left <| @h _) <| mem_offDiagonal.1 hx
 
-@[deprecated (since := "2026-09-06")] alias offDiag_mono := offDiagonal_mono
+@[deprecated (since := "2026-09-06")] alias offDiag_mono := offDiagonal_monotone
 
 @[simp]
 theorem diagonal_empty : (∅ : Finset α).diagonal = ∅ :=

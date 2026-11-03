@@ -145,7 +145,7 @@ variable [AddCommMonoid μ'] [HasAntidiagonal μ'] [DecidableEq μ']
 
 set_option backward.isDefEq.respectTransparency false in
 -- This should work under the assumption that e is an embedding and an AddHom
-lemma mapRange_finsuppAntidiagonal_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
+lemma map_finsuppAntidiagonal_mapRange_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     (finsuppAntidiagonal s n).map (mapRange.addEquiv e).toEmbedding ⊆
       finsuppAntidiagonal s (e n) := by
   intro f
@@ -158,19 +158,19 @@ lemma mapRange_finsuppAntidiagonal_subset {e : μ ≃+ μ'} {s : Finset ι} {n :
   · exact subset_trans (support_mapRange) hsupp
 
 @[deprecated (since := "2026-09-06")]
-alias mapRange_finsuppAntidiag_subset := mapRange_finsuppAntidiagonal_subset
+alias mapRange_finsuppAntidiag_subset := map_finsuppAntidiagonal_mapRange_subset
 
 lemma map_finsuppAntidiagonal_mapRange_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     (finsuppAntidiagonal s n).map (mapRange.addEquiv e).toEmbedding =
       finsuppAntidiagonal s (e n) := by
   ext f
   constructor
-  · apply mapRange_finsuppAntidiagonal_subset
+  · apply map_finsuppAntidiagonal_mapRange_subset
   · set h := (mapRange.addEquiv e).toEquiv with hh
     intro hf
     have : n = e.symm (e n) := (AddEquiv.eq_symm_apply e).mpr rfl
     rw [mem_map_equiv, this]
-    apply mapRange_finsuppAntidiagonal_subset
+    apply map_finsuppAntidiagonal_mapRange_subset
     rw [← mem_map_equiv]
     convert hf
     rw [map_map, hh]

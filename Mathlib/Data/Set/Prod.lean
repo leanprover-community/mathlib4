@@ -570,10 +570,10 @@ section OffDiagonal
 
 variable {α : Type*} {s t : Set α} {a : α}
 
-theorem offDiagonal_mono : Monotone (offDiagonal : Set α → Set (α × α)) := fun _ _ h _ =>
+theorem offDiagonal_monotone : Monotone (offDiagonal : Set α → Set (α × α)) := fun _ _ h _ =>
   And.imp (@h _) <| And.imp_left <| @h _
 
-@[deprecated (since := "2026-09-06")] alias offDiag_mono := offDiagonal_mono
+@[deprecated (since := "2026-09-06")] alias offDiag_mono := offDiagonal_monotone
 
 @[simp]
 theorem offDiagonal_nonempty : s.offDiagonal.Nonempty ↔ s.Nontrivial := by
