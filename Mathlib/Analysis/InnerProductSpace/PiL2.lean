@@ -1050,7 +1050,7 @@ theorem _root_.exists_orthonormalBasis :
   ⟨w, hw, hw''⟩
 
 /-- A finite-dimensional `InnerProductSpace` has an orthonormal basis. -/
-irreducible_def stdOrthonormalBasis : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E := by
+@[no_expose] def stdOrthonormalBasis : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E := by
   let b := Classical.choose (Classical.choose_spec <| exists_orthonormalBasis 𝕜 E)
   rw [finrank_eq_card_basis b.toBasis]
   exact b.reindex (Fintype.equivFinOfCardEq rfl)
@@ -1075,7 +1075,7 @@ variable {n : ℕ} (hn : finrank 𝕜 E = n) [DecidableEq ι] {V : ι → Submod
 
 /-- Exhibit a bijection between `Fin n` and the index set of a certain basis of an `n`-dimensional
 inner product space `E`.  This should not be accessed directly, but only via the subsequent API. -/
-irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
+@[no_expose] def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     (Σ i, Fin (finrank 𝕜 (V i))) ≃ Fin n :=
   let b := hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)
@@ -1083,7 +1083,7 @@ irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
 
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct
 sum has an orthonormal basis indexed by `Fin n` and subordinate to that direct sum. -/
-irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasis
+@[no_expose] def DirectSum.IsInternal.subordinateOrthonormalBasis
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     OrthonormalBasis (Fin n) 𝕜 E :=
   (hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)).reindex
@@ -1092,7 +1092,7 @@ irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasis
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct
 sum has an orthonormal basis indexed by `Fin n` and subordinate to that direct sum. This function
 provides the mapping by which it is subordinate. -/
-irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasisIndex (a : Fin n)
+@[no_expose] def DirectSum.IsInternal.subordinateOrthonormalBasisIndex (a : Fin n)
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) : ι :=
   ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a).1
 
@@ -1110,16 +1110,16 @@ theorem DirectSum.IsInternal.exists_subordinateOrthonormalBasisIndex_eq
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) {i : ι} (hi : V i ≠ ⊥) :
     ∃ a : Fin n, hV.subordinateOrthonormalBasisIndex hn a hV' = i := by
   use hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, ⟨0, by grind [finrank_eq_zero (S := V i)]⟩⟩
-  simp [subordinateOrthonormalBasisIndex_def]
+  simp [subordinateOrthonormalBasisIndex]
 
 private def DirectSum.IsInternal.subordinateOrthonormalBasisIndexFiberEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (i : ι) :
     {a : Fin n // hV.subordinateOrthonormalBasisIndex hn a hV' = i} ≃ Fin (finrank 𝕜 (V i)) where
-  toFun a := Fin.cast (by rw [← subordinateOrthonormalBasisIndex_def, a.property])
+  toFun a := Fin.cast (by rw [← subordinateOrthonormalBasisIndex, a.property])
     ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a).snd
   invFun b := ⟨hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, b⟩,
-    by simp [subordinateOrthonormalBasisIndex_def]⟩
-  left_inv := by grind [subordinateOrthonormalBasisIndex_def, Fin.cast_eq_self]
+    by simp [subordinateOrthonormalBasisIndex]⟩
+  left_inv := by grind [subordinateOrthonormalBasisIndex, Fin.cast_eq_self]
   right_inv := by grind
 
 theorem DirectSum.IsInternal.card_filter_subordinateOrthonormalBasisIndex_eq
