@@ -510,7 +510,7 @@ theorem norm_map_le_iff_adjoint_comp_self {G : Type*}
 
 theorem norm_map_le_iff_adjoint_comp_self_le_id [CompleteSpace E] [CompleteSpace F]
     (p : E →L[𝕜] F) :
-    (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ (.id 𝕜 E) := by
+    (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ .id 𝕜 E := by
   simpa [adjoint_id] using norm_map_le_iff_adjoint_comp_self p (.id 𝕜 E)
 
 /-- A star projection operator is positive.
