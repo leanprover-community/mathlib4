@@ -190,10 +190,7 @@ theorem closure_eq_setOfPred_isLUB (s : Set α) :
       · aesop
       · obtain ⟨⟨i, hi⟩, hy⟩ := mem_iUnion.1 hy
         exact ((hf hi).1 hy).trans (hx.1 hi)
-      · contrapose! hy
-        refine fun hy' ↦ (hx.lt_iff.1 hy y ?_).false
-        exact fun z hz ↦ (hf hz).2 <|
-          upperBounds_mono_set (subset_sUnion_of_mem (mem_range_self ⟨z, hz⟩)) hy'
+      · exact hx.2 fun z hz ↦ (hf hz).2 (upperBounds_mono_set (subset_iUnion _ ⟨z, hz⟩) hy)
   · rintro x ⟨d, hd, hd₀, hx⟩
     exact mem_closure_of_isLUB isLowerSet_univ (mem_univ _) hd hd₀ (.of_linearOrder _) hx
 
