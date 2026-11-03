@@ -457,18 +457,20 @@ namespace IsExtensionPair
 protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
-@[deprecated "`Order.Cofinal` is deprecated" (since := "2026-10-04")]
-def definedAtLeft
-    (h : L.IsExtensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
-  carrier := {f | m ∈ f.val.dom}
-  isCofinal := fun f => h f m
+def definedAtLeft (m : M) : Set (FGEquiv L M N) :=
+  {f | m ∈ f.val.dom}
+
+theorem isCofinal_definedAtLeft (h : L.IsExtensionPair M N) (m : M) :
+    IsCofinal (definedAtLeft m : Set (FGEquiv L M N)) :=
+  fun f => h f m
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
-@[deprecated "`Order.Cofinal` is deprecated" (since := "2026-10-04")]
-def definedAtRight
-    (h : L.IsExtensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
-  carrier := {f | n ∈ f.val.cod}
-  isCofinal := fun f => h.cod f n
+def definedAtRight (n : N) : Set (FGEquiv L M N) :=
+  {f | n ∈ f.val.cod}
+
+theorem isCofinal_definedAtRight (h : L.IsExtensionPair N M) (n : N) :
+    IsCofinal (definedAtRight n : Set (FGEquiv L M N)) :=
+  fun f => h.cod f n
 
 end IsExtensionPair
 
@@ -481,7 +483,7 @@ theorem embedding_from_cg (M_cg : Structure.CG L M) (g : L.FGEquiv M N)
   rcases M_cg with ⟨X, _, X_gen⟩
   have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
   obtain ⟨I, hI, hI'⟩ :=
-    Order.exists_ideal_meets_cofinals g (fun x : X ↦ {f | x.1 ∈ f.val.dom}) fun x f => H f x
+    Order.exists_ideal_meets_cofinals g _ (fun x : X ↦ H.isCofinal_definedAtLeft x)
   have : Nonempty I := ⟨⟨g, hI⟩⟩
   have : IsDirectedOrder I := I.directed.isDirectedOrder
   let S : I →o M ≃ₚ[L] N :=
@@ -509,9 +511,9 @@ theorem equiv_between_cg (M_cg : Structure.CG L M) (N_cg : Structure.CG L N)
   have _ : Countable (↑X : Type _) := by simpa only [countable_coe_iff]
   have _ : Countable (↑Y : Type _) := by simpa only [countable_coe_iff]
   let D : Sum X Y → Set (FGEquiv L M N) :=
-    Sum.elim (fun x ↦ {f | x.1 ∈ f.val.dom}) (fun y ↦ {f | y.1 ∈ f.val.cod})
+    Sum.elim (fun x ↦ IsExtensionPair.definedAtLeft x) (fun y ↦ IsExtensionPair.definedAtRight y)
   have hD : ∀ i, IsCofinal (D i) :=
-    Sum.rec (fun x f ↦ ext_dom f x) (fun y f ↦ ext_cod.cod f y)
+    Sum.rec (fun x ↦ ext_dom.isCofinal_definedAtLeft x) (fun y ↦ ext_cod.isCofinal_definedAtRight y)
   obtain ⟨I, hI, hI'⟩ := Order.exists_ideal_meets_cofinals g D hD
   have : Nonempty I := ⟨⟨g, hI⟩⟩
   have : IsDirectedOrder I := I.directed.isDirectedOrder
