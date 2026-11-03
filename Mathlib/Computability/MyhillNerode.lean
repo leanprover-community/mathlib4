@@ -15,13 +15,13 @@ import Mathlib.Data.Set.Finite.Basic
 This file proves the Myhill–Nerode theorem using left quotients.
 
 Given a language `L` and a word `x`, the *left quotient* of `L` by `x` is the set of suffixes `y`
-such that `x * y` is in `L`. The *Myhill–Nerode theorem* shows that each left quotient, in fact,
+such that `x ++ y` is in `L`. The *Myhill–Nerode theorem* shows that each left quotient, in fact,
 corresponds to the state of an automaton that matches `L`, and that `L` is regular if and only if
 there are finitely many such states.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Syntactic_monoid#Myhill%E2%80%93Nerode_theorem>
+* <https://en.wikipedia.org/wiki/Myhill%E2%80%93Nerode_theorem>
 -/
 
 @[expose] public section
@@ -33,28 +33,24 @@ namespace Language
 
 variable (L) in
 /-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
-def leftQuotient (x : FreeMonoid α) : Language α := .ofSet {y | x * y ∈ L}
+def leftQuotient (x : List α) : Language α := .ofSet {y | ⟨x ++ y.toList⟩ ∈ L}
 
 variable (L) in
 @[simp]
-theorem leftQuotient_one : L.leftQuotient 1 = L := rfl
+theorem leftQuotient_nil : L.leftQuotient [] = L := rfl
 
 variable (L) in
-theorem leftQuotient_mul (x y : FreeMonoid α) :
-    L.leftQuotient (x * y) = (L.leftQuotient x).leftQuotient y := by
-  simp [← SetSemiring.mem_toSet, leftQuotient, mul_assoc]
-
-@[deprecated (since := "2026-10-31")] alias leftQuotient_nil := leftQuotient_one
-@[deprecated (since := "2026-10-31")] alias leftQuotient_append := leftQuotient_mul
+theorem leftQuotient_append (x y : List α) :
+    L.leftQuotient (x ++ y) = (L.leftQuotient x).leftQuotient y := by
+  simp [leftQuotient, ← SetSemiring.mem_toSet]
 
 @[simp]
-theorem mem_leftQuotient (x y : FreeMonoid α) : y ∈ L.leftQuotient x ↔ x * y ∈ L :=
-  Iff.rfl
+theorem mem_leftQuotient (x y : List α) : ⟨y⟩ ∈ L.leftQuotient x ↔ ⟨x ++ y⟩ ∈ L := Iff.rfl
 
-theorem leftQuotient_accepts_apply (M : DFA α σ) (x : FreeMonoid α) :
-    M.accepts.leftQuotient x = M.acceptsFrom (M.eval x) := by
-  ext y
-  simp [DFA.mem_accepts, DFA.mem_acceptsFrom, DFA.eval, DFA.evalFrom_mul]
+theorem leftQuotient_accepts_apply (M : DFA α σ) (x : List α) :
+    leftQuotient M.accepts x = M.acceptsFrom (M.eval x) := by
+  ext ⟨y⟩
+  simp [DFA.mem_accepts, DFA.mem_acceptsFrom, DFA.eval, DFA.evalFrom_of_append]
 
 theorem leftQuotient_accepts (M : DFA α σ) : leftQuotient M.accepts = M.acceptsFrom ∘ M.eval :=
   funext <| leftQuotient_accepts_apply M
@@ -70,20 +66,19 @@ variable (L) in
 /-- The left quotients of a language are the states of an automaton that accepts the language. -/
 def toDFA : DFA α (Set.range L.leftQuotient) where
   step s a := by
-    refine ⟨s.val.leftQuotient (.of a), ?_⟩
+    refine ⟨s.val.leftQuotient [a], ?_⟩
     obtain ⟨y, hy⟩ := s.prop
-    exists y * .of a
-    rw [← hy, leftQuotient_mul]
-  start := ⟨L, by exists 1⟩
+    exists y ++ [a]
+    rw [← hy, leftQuotient_append]
+  start := ⟨L, by exists []⟩
   accept := {s | 1 ∈ s.val}
 
 @[simp]
-theorem mem_accept_toDFA (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept ↔ 1 ∈ s.val :=
-  Iff.rfl
+theorem mem_accept_toDFA (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept ↔ 1 ∈ s.val := Iff.rfl
 
 @[simp]
 theorem step_toDFA (s : Set.range L.leftQuotient) (a : α) :
-    (L.toDFA.step s a).val = s.val.leftQuotient (.of a) := rfl
+    (L.toDFA.step s a).val = s.val.leftQuotient [a] := rfl
 
 variable (L) in
 @[simp]
@@ -92,12 +87,12 @@ theorem start_toDFA : L.toDFA.start.val = L := rfl
 variable (L) in
 @[simp]
 theorem accepts_toDFA : L.toDFA.accepts = L := by
-  ext x
+  ext ⟨x⟩
   rw [DFA.mem_accepts]
-  suffices L.toDFA.eval x = L.leftQuotient x by simp [this]
-  induction x using FreeMonoid.reverseMulRecOn with
-  | one => simp
-  | mul_of x a ih => simp [ih, leftQuotient_mul]
+  suffices L.toDFA.eval x = L.leftQuotient x by simp [this, leftQuotient, ← SetSemiring.mem_toSet]
+  induction x using List.reverseRecOn with
+  | nil => simp
+  | append_singleton x a ih => simp [ih, leftQuotient_append]
 
 theorem IsRegular.of_finite_range_leftQuotient (h : Set.Finite (Set.range L.leftQuotient)) :
     L.IsRegular :=
