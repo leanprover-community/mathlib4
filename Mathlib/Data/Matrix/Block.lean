@@ -1021,7 +1021,6 @@ theorem extendedByOneMonoidHom_injective :
 
 end ExtendByOne
 
-
 end Matrix
 
 section Maps
