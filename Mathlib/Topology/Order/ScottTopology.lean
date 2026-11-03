@@ -127,6 +127,16 @@ lemma dirSupInaccOn_of_isOpen (h : IsOpen s) : DirSupInaccOn D s :=
 lemma dirSupClosedOn_of_isClosed (h : IsClosed s) : DirSupClosedOn D s :=
   .of_compl (dirSupInaccOn_of_isOpen h.isOpen_compl)
 
+theorem dirSupInaccOn_interior : DirSupInaccOn D (interior s) :=
+  dirSupInaccOn_of_isOpen isOpen_interior
+
+theorem dirSupClosedOn_closure : DirSupClosedOn D (closure s) :=
+  dirSupClosedOn_of_isClosed isClosed_closure
+
+theorem mem_closure_of_isLUB {d : Set α} (hD : d ∈ D) (hd : d ⊆ s)
+    (hd₀ : d.Nonempty) (hd₁ : DirectedOn (· ≤ ·) d) {x : α} (hx : IsLUB d x) : x ∈ closure s :=
+  dirSupClosedOn_closure hD (hd.trans subset_closure) hd₀ hd₁ hx
+
 theorem isOpen_iff_dirSupInaccOn (hDL : IsLowerSet D) : IsOpen s ↔ DirSupInaccOn D s := by
   rw [isOpen_iff (D := D), dirSupInaccOn_iff_inter_subset hDL]
 
@@ -138,18 +148,6 @@ theorem isOpen_of_isLowerSet (hDL : IsLowerSet D) (h : IsLowerSet s) : IsOpen s 
 
 theorem isClosed_of_isUpperSet (hDL : IsLowerSet D) (h : IsUpperSet s) : IsClosed s :=
   (isClosed_iff_dirSupClosedOn hDL).2 h.dirSupClosedOn
-
-theorem dirSupInaccOn_interior (hDL : IsLowerSet D) : DirSupInaccOn D (interior s) := by
-  rw [← isOpen_iff_dirSupInaccOn hDL]
-  exact isOpen_interior
-
-theorem dirSupClosedOn_closure (hDL : IsLowerSet D) : DirSupClosedOn D (closure s) := by
-  rw [← isClosed_iff_dirSupClosedOn hDL]
-  exact isClosed_closure
-
-theorem mem_closure_of_isLUB (hDL : IsLowerSet D) {d : Set α} (hD : d ∈ D) (hd : d ⊆ s)
-    (hd₀ : d.Nonempty) (hd₁ : DirectedOn (· ≤ ·) d) {x : α} (hx : IsLUB d x) : x ∈ closure s :=
-  dirSupClosedOn_closure hDL hD (hd.trans subset_closure) hd₀ hd₁ hx
 
 end General
 
