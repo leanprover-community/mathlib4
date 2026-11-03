@@ -353,6 +353,7 @@ theorem span_equalizerIdempotent_one_sub_eq :
       (a := 1) (f := (Ideal.Quotient.mkₐ R I).comp f) (g := (Ideal.Quotient.mkₐ R I).comp g))
 
 variable {f g} in
+@[simp]
 lemma equalizerIdempotent_eq_one_iff : equalizerIdempotent f g = 1 ↔ f = g := by
   simpa [AlgHom.ext_iff] using equalizerIdempotent_mul_eq_iff (f := f) (g := g) (a := 1)
 
@@ -370,5 +371,48 @@ lemma equalizerIdempotent_comm : equalizerIdempotent f g = equalizerIdempotent g
   rw [← hfg, mul_comm, hgf]
 
 end equalizer
+
+section inertia
+
+open Algebra.TensorProduct
+
+variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+
+/-- If `S/R` is formally unramified and essentially finite type, then the inertia idempotent
+of an algebra automorphism `g : G` is an idempotent element `e` of `S` with the property that
+`e ≡ 1 [MOD Q] ↔ g ∈ Q.inertia G`, see `mk_inertiaIdempotent_eq_one_iff`. -/
+noncomputable def inertiaIdempotent (g : G) : S :=
+  equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S)
+
+lemma isIdempotentElem_inertiaIdempotent (g : G) : IsIdempotentElem (inertiaIdempotent R S g) :=
+  isIdempotentElem_equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S)
+
+variable (G) in
+@[simp]
+lemma inertiaIdempotent_one : inertiaIdempotent R S (1 : G) = 1 := by
+  simp [inertiaIdempotent]
+
+variable {S} in
+lemma smul_mul_inertiaIdempotent (g : G) (x : S) :
+    (g • x) * inertiaIdempotent R S g = x * inertiaIdempotent R S g := by
+  simpa [inertiaIdempotent] using
+    apply_mul_equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S) x
+
+variable {S} in
+/-- The inertia idempotent of `g` is congruent to `1` modulo `Q` if and only `g ∈ Q.inertia G`. -/
+@[simp]
+lemma mk_inertiaIdempotent_eq_one_iff {Q : Ideal S} {g : G} :
+    Ideal.Quotient.mk Q (inertiaIdempotent R S g) = 1 ↔ g ∈ Q.inertia G := by
+  rw [inertiaIdempotent, ← Ideal.Quotient.mkₐ_eq_mk R, map_equalizerIdempotent]
+  simp [AlgHom.ext_iff, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+
+variable {S} in
+open Classical in
+lemma mk_inertiaIdempotent (Q : Ideal S) [Q.IsPrime] (g : G) :
+    Ideal.Quotient.mk Q (inertiaIdempotent R S g) = if g ∈ Q.inertia G then 1 else 0 := by
+  rw [← mk_inertiaIdempotent_eq_one_iff R]
+  grind [((isIdempotentElem_inertiaIdempotent R S g).map (Ideal.Quotient.mk Q)).eq_zero_or_one]
+
+end inertia
 
 end Algebra.FormallyUnramified
