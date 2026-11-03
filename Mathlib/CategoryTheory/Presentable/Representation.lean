@@ -23,7 +23,7 @@ functor `IsCardinalAccessible.toCardinalIndObject C κ` is an equivalence
 of categories between `C` and the category of `κ`-ind objects of the
 category of `κ`-presentable objects in `C`. It follows that a category
 is `κ`-accessible iff it is equivalent to a category of `κ`-ind
-objects of an essentially `w`-small category (see the lemma
+objects of a `w`-small category (see the lemma
 `IsCardinalAccessible.iff_nonempty_equivalence_cardinalInd`):
 this is the equivalence (i) ↔ (iii) from the theorem 2.26 in the book
 by Adámek and and Rosický
