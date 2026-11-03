@@ -181,7 +181,7 @@ variable {C} in
 /-- If two categories `C` and `C'` are equivalent, then the categories
 of `κ`-continuous functors in `C ⥤ D` and `C' ⥤ D` are also equivalent. -/
 @[implicit_reducible, simps!]
-def CardinalContinuousFunctor.congrLeft {C' : Type*} [Category* C']
+def Equivalence.congrLeftCardinalContinuousFunctor {C' : Type*} [Category* C']
     (e : C ≌ C') (D : Type*) [Category* D] (κ : Cardinal.{w}) :
     CardinalContinuousFunctor C D κ ≌ CardinalContinuousFunctor C' D κ :=
   e.congrLeft.congrFullSubcategory (by aesop)
@@ -288,15 +288,15 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
   isCardinalClosedUnderColimitsOfShape (isCardinalContinuous C (Type w) κ) κ J
 
 instance : IsCardinalLocallyPresentable (CardinalContinuousFunctor C (Type w) κ) κ :=
-  (CardinalContinuousFunctor.congrLeft ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
-    (opOpEquivalence C)) (Type w) κ).isCardinalLocallyPresentable κ
+  (((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
+    (opOpEquivalence C)).congrLeftCardinalContinuousFunctor _ κ).isCardinalLocallyPresentable κ
 
 instance : IsLocallyPresentable.{w} (CardinalContinuousFunctor C (Type w) κ) where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
 
 instance : (CardinalContinuousFunctor.ι C (Type w) κ).IsRightAdjoint := by
   let e := ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans (opOpEquivalence C))
-  let e' := CardinalContinuousFunctor.congrLeft e (Type w) κ
+  let e' := e.congrLeftCardinalContinuousFunctor (Type w) κ
   let iso : e'.inverse ⋙
       CardinalContinuousFunctor.ι (SmallModel.{w} Cᵒᵖ)ᵒᵖ (Type w) κ ⋙ e.congrLeft.functor ≅
       CardinalContinuousFunctor.ι C (Type w) κ :=
@@ -307,8 +307,8 @@ instance : (CardinalContinuousFunctor.ι C (Type w) κ).IsRightAdjoint := by
 instance :
     HasLimitsOfSize.{w, w} (CardinalContinuousFunctor C (Type w) κ) :=
   Adjunction.has_limits_of_equivalence
-    ((CardinalContinuousFunctor.congrLeft ((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
-      (opOpEquivalence C)) (Type w) κ).inverse)
+    ((((equivSmallModel.{w} Cᵒᵖ).op.symm.trans
+      (opOpEquivalence C)).congrLeftCardinalContinuousFunctor (Type w) κ).inverse)
 
 omit [EssentiallySmall.{w} C] in
 lemma isCardinalFiltered_elements_op'_of_isCardinalContinuous
@@ -373,13 +373,5 @@ lemma isCardinalIndObject_eq_isCardinalContinuous
 end EssentiallySmall
 
 end Presheaf
-
-def Equivalence.congrLeftCardinalContinuousFunctor
-    {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
-    (e : C₁ ≌ C₂) (D : Type*) [Category* D]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
-    CardinalContinuousFunctor C₁ D κ ≌ CardinalContinuousFunctor C₂ D κ :=
-  sorry
-
 
 end CategoryTheory

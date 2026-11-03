@@ -56,7 +56,7 @@ namespace CategoryTheory
 
 open Opposite Limits
 
-variable {C : Type*} [Category* C]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace Presheaf
 
@@ -160,9 +160,6 @@ end Presheaf
 
 namespace Functor
 
-example (D : Type*) [Category* D] [EssentiallySmall.{w} D] (P : Dᵒᵖ ⥤ Type w) :
-    InitiallySmall.{w} P.Elements := initiallySmall_of_essentiallySmall _
-
 /-- A presheaf `P : Cᵒᵖ ⥤ Type w` on a locally `w`-small category `C` is a
 `κ`-ind object (for `κ` a regular cardinal) if
 1. the category `P.Elementsᵒᵖ` is `κ`-filtered;
@@ -175,6 +172,8 @@ class IsCardinalIndObject
     [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   isCardinalFiltered_elements_op (P κ) : IsCardinalFiltered P.Elementsᵒᵖ κ
   initiallySmall_elements (P κ) : InitiallySmall.{w} P.Elements
+
+attribute [instance] IsCardinalIndObject.isCardinalFiltered_elements_op
 
 variable [LocallySmall.{w} C]
 
@@ -224,7 +223,7 @@ instance (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     exact (isCardinalIndObject C κ).prop_of_isColimit hc (fun _ ↦ hX)
 
 lemma IsCardinalIndObject.of_iso
-    {P Q : Cᵒᵖ ⥤ Type w} (e : P ≅ Q) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    {P Q : Cᵒᵖ ⥤ Type w} (e : P ≅ Q) {κ : Cardinal.{w}} [Fact κ.IsRegular]
     (hP : P.IsCardinalIndObject κ := by infer_instance) :
     IsCardinalIndObject Q κ :=
   (isCardinalIndObject C κ).prop_of_iso e hP
@@ -252,7 +251,6 @@ lemma isCardinalIndObject_iff
   refine ⟨fun _ ↦ ?_,
     fun ⟨J, _, _, F, ι, ⟨h⟩⟩ ↦ (isCardinalIndObject C κ).prop_of_isColimit h
       (fun j ↦ by dsimp; infer_instance)⟩
-  have := IsCardinalIndObject.isCardinalFiltered_elements_op P κ
   have := IsCardinalIndObject.initiallySmall_elements P κ
   obtain ⟨J, _, _, F, _⟩ :=
     (isCardinalFiltered_and_finallySmall_iff P.Elementsᵒᵖ κ).mp
@@ -266,6 +264,23 @@ lemma IsCardinalIndObject.small_hom
     obtain ⟨J, _, _, F, ι, ⟨h⟩⟩ := (P.isCardinalIndObject_iff κ).mp inferInstance
     let φ (f : P ⟶ Q) (j : J) : shrinkYoneda.{w}.obj (F.obj j) ⟶ Q := ι.app j ≫ f
     exact small_of_injective (f := φ) (fun a b hab ↦ h.hom_ext (fun j ↦ congr($(hab) j)))
+
+instance [LocallySmall.{w} D] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [P.IsCardinalIndObject κ] (F : Dᵒᵖ ⥤ Cᵒᵖ) [F.IsEquivalence] :
+    (F ⋙ P).IsCardinalIndObject κ :=
+  have := IsCardinalIndObject.initiallySmall_elements P κ
+  have e : P.Elements ≌ (F ⋙ P).Elements := F.asEquivalence.congrElements P
+  { isCardinalFiltered_elements_op := IsCardinalFiltered.of_equivalence κ e.op
+    initiallySmall_elements := initiallySmall_of_initial_of_initiallySmall e.functor }
+
+@[simp]
+lemma isCardinalIndObject_precomp_iff
+    [LocallySmall.{w} D] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (F : Dᵒᵖ ⥤ Cᵒᵖ) [F.IsEquivalence] :
+    (F ⋙ P).IsCardinalIndObject κ ↔ P.IsCardinalIndObject κ :=
+  ⟨fun _ ↦ .of_iso (show F.inv ⋙ F ⋙ P ≅ P from
+    (associator _ _ _).symm ≪≫ isoWhiskerRight F.asEquivalence.counitIso _ ≪≫ P.leftUnitor),
+  fun _ ↦ inferInstance⟩
 
 end Functor
 
@@ -370,6 +385,6 @@ def Equivalence.congrCardinalInd
     [LocallySmall.{w} C₁] [LocallySmall.{w} C₂]
     (e : C₁ ≌ C₂) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     CardinalInd C₁ κ ≌ CardinalInd C₂ κ :=
-  sorry
+  e.op.congrLeft.congrFullSubcategory (by aesop)
 
 end CategoryTheory
