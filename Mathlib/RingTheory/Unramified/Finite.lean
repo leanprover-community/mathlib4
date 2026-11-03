@@ -380,7 +380,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
 
 /-- If `S/R` is formally unramified and essentially finite type, then the inertia idempotent
 of an algebra automorphism `g : G` is an idempotent element `e` of `S` with the property that
-`e ≡ 1 [MOD Q] ↔ g ∈ Q.inertia G`. -/
+`e ≡ 1 [MOD Q] ↔ g ∈ Q.inertia G`, see `mk_inertiaIdempotent_eq_one_iff`. -/
 noncomputable def inertiaIdempotent (g : G) : S :=
   equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S)
 
