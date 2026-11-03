@@ -378,7 +378,7 @@ open Algebra.TensorProduct
 
 variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
 
-/-- If `S/R` is a formally unramified and essentially finite type, then the inertia idempotent
+/-- If `S/R` is formally unramified and essentially finite type, then the inertia idempotent
 of an algebra automorphism `g : G` is an idempotent element `e` of `S` with the property that
 `e ≡ 1 [MOD Q] ↔ g ∈ Q.inertia G`. -/
 noncomputable def inertiaIdempotent (g : G) : S :=
@@ -410,8 +410,8 @@ variable {S} in
 open Classical in
 lemma mk_inertiaIdempotent (Q : Ideal S) [Q.IsPrime] (g : G) :
     Ideal.Quotient.mk Q (inertiaIdempotent R S g) = if g ∈ Q.inertia G then 1 else 0 := by
-  grind [mk_inertiaIdempotent_eq_one_iff,
-    ((isIdempotentElem_inertiaIdempotent R S g).map (Ideal.Quotient.mk Q)).eq_zero_or_one]
+  rw [← mk_inertiaIdempotent_eq_one_iff R]
+  grind [((isIdempotentElem_inertiaIdempotent R S g).map (Ideal.Quotient.mk Q)).eq_zero_or_one]
 
 end inertia
 
