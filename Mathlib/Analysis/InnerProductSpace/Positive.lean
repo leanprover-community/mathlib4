@@ -499,8 +499,15 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E]
   rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
 
-theorem norm_map_le_iff_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (p : E →L[𝕜] F) :
+theorem norm_map_le_iff_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (p q : E →L[𝕜] F) :
+    (∀ x : E, ‖p x‖ ≤ ‖q x‖) ↔ adjoint p ∘L p ≤ adjoint q ∘L q := by
+  simp [le_def, isPositive_iff', isSelfAdjoint_iff, star_eq_adjoint, inner_sub_left,
+    adjoint_inner_left, ← RCLike.ofReal_pow, -map_pow, sq_le_sq₀]
+
+theorem norm_map_le_iff_adjoint_comp_self' [CompleteSpace E] [CompleteSpace F] (p : E →L[𝕜] F) :
     (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ 1 := by
+  -- Corollary of `norm_map_le_iff_adjoint_comp_self`, but direct proof is simpler than the
+  -- bookkeeping through the maps `p q : E →L[𝕜] WithLp 2 (E × F)`.
   rw [← sub_nonneg, ContinuousLinearMap.nonneg_iff_isPositive]
   refine ⟨fun h => ⟨?_, fun x => ?_⟩, fun h x => ?_⟩
   · exact ((IsSelfAdjoint.one _).sub (isPositive_adjoint_comp_self p).isSelfAdjoint).isSymmetric
