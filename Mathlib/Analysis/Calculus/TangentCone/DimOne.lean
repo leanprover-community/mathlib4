@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Calculus.TangentCone.Basic
 import Mathlib.Analysis.Normed.Group.Uniform
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unique differentiability property of a set in the base field
 

@@ -58,7 +58,7 @@ theorem range_cfcHom {a : A} (ha : p a) :
     ← StarSubalgebra.topologicalClosure_map _ _ (cfcHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap
       (cfcHom_continuous ha), StarAlgHom.map_adjoin]
   congr
-  simpa using cfcHom_id ha
+  simp
 
 lemma range_cfc {a : A} (ha : p a) : Set.range (cfc (R := 𝕜) · a) = elemental 𝕜 a := by
   rw [range_cfc_eq_range_cfcHom 𝕜 ha, range_cfcHom 𝕜 ha]
@@ -172,7 +172,7 @@ theorem range_cfcₙHom {a : A} (ha : p a) :
     (cfcₙHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap (cfcₙHom_continuous ha),
     NonUnitalStarAlgHom.map_adjoin]
   congr
-  simpa using cfcₙHom_id ha
+  simp
 
 theorem range_cfcₙ {a : A} (ha : p a) : Set.range (cfcₙ (R := 𝕜) · a) = elemental 𝕜 a := by
   rw [range_cfcₙ_eq_range_cfcₙHom 𝕜 ha, range_cfcₙHom 𝕜 ha]
@@ -252,14 +252,11 @@ lemma range_cfcₙ_nnreal [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 
   refine Set.Subset.antisymm (Set.image_mono (fun _ ↦ cfcₙ_nonneg)) ?_
   rintro _ ⟨f, hf, rfl⟩
   simp only [Set.preimage_ofPred_eq, Set.mem_ofPred_eq, Set.mem_image] at hf ⊢
-  obtain (⟨h₁, h₂, h₃⟩ | h | h | h) := by
-    simpa only [not_and_or] using
-      em (ContinuousOn f (quasispectrum ℝ a) ∧ f 0 = 0 ∧ IsSelfAdjoint a)
-  · refine ⟨f, ?_, rfl⟩
+  by_cases h : ContinuousOn f (quasispectrum ℝ a) ∧ f 0 = 0 ∧ IsSelfAdjoint a
+  · obtain ⟨h₁, h₂, h₃⟩ := h
+    refine ⟨f, ?_, rfl⟩
     rwa [cfcₙ_nonneg_iff f a] at hf
-  · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_continuousOn a h]⟩
-  · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_map_zero a h]⟩
-  · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_predicate a h]⟩
+  · exact ⟨0, by simp, by grind [cfcₙ_zero]⟩
 
 open NNReal in
 theorem cfcₙ_nnreal_mem {𝕜 : Type*} [RCLike 𝕜]
