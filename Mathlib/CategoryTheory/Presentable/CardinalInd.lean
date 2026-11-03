@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 public import Mathlib.CategoryTheory.Limits.FinallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.IsClosedUnderCardinalFilteredColimits
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
@@ -148,22 +149,24 @@ namespace Functor
 class IsCardinalIndObject
     [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   isCardinalFiltered_elements_op (P κ) : IsCardinalFiltered P.Elementsᵒᵖ κ
-  initially_small (P κ) : InitiallySmall.{w} P.Elements
+  initiallySmall_elements (P κ) : InitiallySmall.{w} P.Elements
+
+variable [LocallySmall.{w} C]
 
 variable (C) in
-abbrev isCardinalIndObject [LocallySmall.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+abbrev isCardinalIndObject (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     ObjectProperty (Cᵒᵖ ⥤ Type w) :=
   fun P ↦ P.IsCardinalIndObject κ
 
 attribute [local instance] isCofiltered_of_isFiltered_op in
-instance [LocallySmall.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+instance (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     (isCardinalIndObject C κ).IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := by
     intro P ⟨p⟩
     have (j : J) := (p.prop_diag_obj j).isCardinalFiltered_elements_op
     have (j : J) := isFiltered_of_isCardinalFiltered (p.diag.obj j).Elementsᵒᵖ κ
-    have h₁ (j : J) := (p.prop_diag_obj j).initially_small
+    have h₁ (j : J) := (p.prop_diag_obj j).initiallySmall_elements
     have : IsCardinalFiltered P.Elementsᵒᵖ κ :=
       (Presheaf.isCardinalFilteredElementsOp Cᵒᵖ κ).prop_of_isColimit p.isColimit inferInstance
     have := isFiltered_of_isCardinalFiltered P.Elementsᵒᵖ κ
@@ -185,33 +188,40 @@ instance [LocallySmall.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
       dsimp
       simp only [← hy, ← dsimp% f.map_val, NatTrans.naturality_apply]
 
-instance [LocallySmall.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+instance (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     (isCardinalIndObject C κ).IsClosedUnderCardinalFilteredColimits κ where
+
+lemma RepresentableBy.isCardinalIndObject {P : Cᵒᵖ ⥤ Type w} {X : C} (h : P.RepresentableBy X)
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    P.IsCardinalIndObject κ := by
+  have := (Elements.isInitialOfRepresentableBy h).hasInitial
+  exact ⟨isCardinalFiltered_of_hasTerminal .., inferInstance⟩
+
+instance {P : Cᵒᵖ ⥤ Type w} [P.IsRepresentable]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    P.IsCardinalIndObject κ :=
+  P.representableBy.isCardinalIndObject κ
+
+lemma isCardinalIndObject_iff
+    (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    P.IsCardinalIndObject κ ↔
+      ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ) (F : J ⥤ C)
+        (ι : F ⋙ shrinkYoneda.{w} ⟶ (Functor.const _).obj P),
+          Nonempty (IsColimit (Cocone.mk _ ι)) := by
+  refine ⟨fun _ ↦ ?_,
+    fun ⟨J, _, _, F, ι, ⟨h⟩⟩ ↦ (isCardinalIndObject C κ).prop_of_isColimit h
+      (fun j ↦ by dsimp; infer_instance)⟩
+  have := IsCardinalIndObject.isCardinalFiltered_elements_op P κ
+  have := IsCardinalIndObject.initiallySmall_elements P κ
+  obtain ⟨J, _, _, F, _⟩ :=
+    (isCardinalFiltered_and_finallySmall_iff P.Elementsᵒᵖ κ).mp
+      ⟨inferInstance, inferInstance⟩
+  exact ⟨J, inferInstance, inferInstance, F ⋙ (Elements.π P).leftOp,  _,
+    ⟨(Functor.Final.isColimitWhiskerEquiv F _).symm (Elements.isColimitShrinkYonedaCocone P)⟩⟩
 
 end Functor
 
 namespace  Presheaf
-open ObjectProperty.IsClosedUnderCardinalFilteredColimits in
-lemma isCardinalFilteredElementsOp_of_isColimit
-    [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    {J : Type*} [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] (F : J ⥤ C)
-    (ι : F ⋙ shrinkYoneda.{w} ⟶ (Functor.const _).obj P)
-    (h : IsColimit (Cocone.mk _ ι)) :
-    isCardinalFilteredElementsOp Cᵒᵖ κ P :=
-  have := isCardinalClosedUnderColimitsOfShape (isCardinalFilteredElementsOp Cᵒᵖ κ) κ J
-  (isCardinalFilteredElementsOp Cᵒᵖ κ).prop_of_isColimit h
-    (fun _ ↦ isCardinalFilteredElementsOp_shrinkYoneda_obj _ _)
-
-open ObjectProperty.IsClosedUnderCardinalFilteredColimits in
-lemma isCardinalFilteredElementsOp_of_isColimit'
-    [LocallySmall.{w} C] (P : C ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    {J : Type*} [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] (F : J ⥤ Cᵒᵖ)
-    (ι : F ⋙ shrinkCoyoneda.{w} ⟶ (Functor.const _).obj P)
-    (h : IsColimit (Cocone.mk _ ι)) :
-    isCardinalFilteredElementsOp C κ P :=
-  have := isCardinalClosedUnderColimitsOfShape (isCardinalFilteredElementsOp C κ) κ J
-  (isCardinalFilteredElementsOp C κ).prop_of_isColimit h
-    (fun _ ↦ isCardinalFilteredElementsOp_shrinkCoyoneda_obj _ _)
 
 open CategoryTheory.Functor Elements in
 lemma isCardinalFiltered_elements_op_iff [EssentiallySmall.{w} C]
@@ -220,14 +230,15 @@ lemma isCardinalFiltered_elements_op_iff [EssentiallySmall.{w} C]
       ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ) (F : J ⥤ C)
         (ι : F ⋙ shrinkYoneda.{w} ⟶ (Functor.const _).obj P),
         Nonempty (IsColimit (Cocone.mk _ ι)) := by
-  refine ⟨fun h ↦ ?_,
+  /-refine ⟨fun h ↦ ?_,
     fun ⟨J, _, _, F, ι, ⟨h⟩⟩ ↦ isCardinalFilteredElementsOp_of_isColimit P κ F ι h⟩
   let e := equivSmallModel.{w} P.Elementsᵒᵖ
   exact ⟨SmallModel.{w} P.Elementsᵒᵖ, inferInstance, IsCardinalFiltered.of_equivalence κ e,
     e.inverse ⋙ (π P).leftOp,
     (Functor.associator _ _ _).hom ≫ whiskerLeft e.inverse (shrinkYonedaCocone P).ι,
     ⟨IsColimit.equivOfNatIsoOfIso (Functor.associator _ _ _).symm _ _ (Cocone.ext (Iso.refl _))
-      ((isColimitShrinkYonedaCocone P).whiskerEquivalence e.symm)⟩⟩
+      ((isColimitShrinkYonedaCocone P).whiskerEquivalence e.symm)⟩⟩-/
+  sorry
 
 open CategoryTheory.Functor Elements in
 lemma isCardinalFiltered_elements_op_iff' [EssentiallySmall.{w} C]
@@ -236,14 +247,15 @@ lemma isCardinalFiltered_elements_op_iff' [EssentiallySmall.{w} C]
       ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ) (F : J ⥤ Cᵒᵖ)
         (ι : F ⋙ shrinkCoyoneda.{w} ⟶ (Functor.const _).obj P),
         Nonempty (IsColimit (Cocone.mk _ ι)) := by
-  refine ⟨fun h ↦ ?_,
+  sorry
+  /-refine ⟨fun h ↦ ?_,
     fun ⟨J, _, _, F, ι, ⟨h⟩⟩ ↦ isCardinalFilteredElementsOp_of_isColimit' P κ F ι h⟩
   let e := equivSmallModel.{w} P.Elementsᵒᵖ
   refine ⟨SmallModel.{w} P.Elementsᵒᵖ, inferInstance, IsCardinalFiltered.of_equivalence κ e,
     e.inverse ⋙ (π P).op,
     (Functor.associator _ _ _).hom ≫ whiskerLeft e.inverse (shrinkCoyonedaCocone P).ι,
     ⟨IsColimit.equivOfNatIsoOfIso (Functor.associator _ _ _).symm _ _ (Cocone.ext (Iso.refl _))
-      ((isColimitShrinkCoyonedaCocone P).whiskerEquivalence e.symm)⟩⟩
+      ((isColimitShrinkCoyonedaCocone P).whiskerEquivalence e.symm)⟩⟩-/
 
 section
 
@@ -260,7 +272,7 @@ instance (P Q : (isCardinalFilteredElementsOp C κ).FullSubcategory) :
 
 namespace isCardinalFilteredElementsOp
 
-variable (C) in
+/-variable (C) in
 @[expose, simps! obj_obj map_hom, implicit_reducible]
 noncomputable def toFullSubcategory :
     Cᵒᵖ ⥤ (isCardinalFilteredElementsOp C κ).FullSubcategory :=
@@ -270,9 +282,9 @@ noncomputable def toFullSubcategory :
 variable (C) in
 @[expose, simps! hom_app inv_app]
 noncomputable def toFullSubcategoryCompιIso :
-    toFullSubcategory C κ ⋙ ObjectProperty.ι _ ≅ shrinkCoyoneda.{w} := Iso.refl _
+    toFullSubcategory C κ ⋙ ObjectProperty.ι _ ≅ shrinkCoyoneda.{w} := Iso.refl _-/
 
-variable (C) in
+/-variable (C) in
 noncomputable def fullyFaithfulToFullSubcategory :
     (toFullSubcategory C κ).FullyFaithful :=
   Functor.FullyFaithful.ofCompFaithful
@@ -282,9 +294,9 @@ instance : (toFullSubcategory C κ).Faithful :=
   (fullyFaithfulToFullSubcategory C κ).faithful
 
 instance : (toFullSubcategory C κ).Full :=
-  (fullyFaithfulToFullSubcategory C κ).full
+  (fullyFaithfulToFullSubcategory C κ).full-/
 
-variable (C) in
+/-variable (C) in
 def generator :
     ObjectProperty (isCardinalFilteredElementsOp C κ).FullSubcategory :=
   (toFullSubcategory C κ).essImage
@@ -320,7 +332,7 @@ instance :
 
 instance :
     IsAccessibleCategory.{w} (isCardinalFilteredElementsOp C κ).FullSubcategory where
-  exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+  exists_cardinal := ⟨κ, inferInstance, inferInstance⟩-/
 
 end isCardinalFilteredElementsOp
 
@@ -330,7 +342,7 @@ end Presheaf
 
 open Presheaf
 
-variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
+/-variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 variable (C) in
 abbrev CardinalInd [EssentiallySmall.{w} C] :=
@@ -391,6 +403,6 @@ example : IsAccessibleCategory.{w} (CardinalInd C κ) := inferInstance
 example : (CardinalInd.inclusion : CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w).IsCardinalAccessible κ :=
   inferInstance
 
-end CardinalInd
+end CardinalInd-/
 
 end CategoryTheory
