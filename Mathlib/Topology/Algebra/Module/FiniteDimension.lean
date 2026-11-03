@@ -510,8 +510,8 @@ variable {R E : Type*} [Ring R] [AddCommGroup E] [Module R E] [UniformSpace R] [
 
 variable (R E) in
 theorem Module.Finite.completeSpace_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
-    [Module.Finite R E] [Module.Projective R E] [IsModuleTopology R E] : CompleteSpace E := by
-  obtain ⟨_, f, g, -, -, hfg⟩ := Module.Finite.exists_comp_eq_id_of_projective R E
+    [Module.Finite R E] [Projective R E] [IsModuleTopology R E] : CompleteSpace E := by
+  obtain ⟨_, f, g, -, -, hfg⟩ := Finite.exists_comp_eq_id_of_projective R E
   apply CompleteSpace.of_comp_eq_id f g congr(↑$hfg) (IsModuleTopology.continuous_of_linearMap f)
     (uniformContinuous_addMonoidHom_of_continuous (IsModuleTopology.continuous_of_linearMap g))
 
@@ -539,8 +539,8 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 include 𝕜 in
-attribute [local instance] isModuleTopologyOfFiniteDimensional in
 theorem FiniteDimensional.completeSpace [FiniteDimensional 𝕜 E] : CompleteSpace E :=
+  let : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
   Finite.completeSpace_of_isModuleTopology 𝕜 E
 
 @[deprecated (since := "2026-10-29")]
@@ -548,10 +548,10 @@ alias FiniteDimensional.complete := FiniteDimensional.completeSpace
 
 variable {𝕜 E}
 
-attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- A finite-dimensional subspace is complete. -/
 theorem Submodule.isComplete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsComplete (s : Set E) :=
+  let : IsModuleTopology 𝕜 s := isModuleTopologyOfFiniteDimensional
   s.isComplete_of_finite_of_isModuleTopology
 
 @[deprecated (since := "2026-10-29")]
@@ -565,11 +565,11 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
   [ContinuousSMul 𝕜 F]
 
-attribute [local instance] isModuleTopologyOfFiniteDimensional in
 /-- A finite-dimensional subspace is closed. -/
 theorem Submodule.isClosed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
+  let : IsModuleTopology 𝕜 s := isModuleTopologyOfFiniteDimensional
   s.isClosed_of_finite_of_isModuleTopology
 
 @[deprecated (since := "2026-10-29")]
@@ -790,7 +790,7 @@ has finite dimension, then they are in fact topological complements.
 Note that this theorem does not help you to build a closed complement to a finite dimensional
 subspace. That requires the Hahn-Banach theorem, and you don't get much control over what the
 complement is. See `Submodule.ClosedComplemented.of_finiteDimensional`. -/
-theorem Submodule.IsCompl.isTopCompl_of_isisClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
+theorem Submodule.IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
     (h : IsCompl p q) (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 q] :
     IsTopCompl p q := by
   suffices FiniteDimensional 𝕜 (E ⧸ p) from h.isTopCompl_of_finiteDimensional_quotient hp

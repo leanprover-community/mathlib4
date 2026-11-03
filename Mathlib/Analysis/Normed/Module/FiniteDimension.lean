@@ -413,6 +413,9 @@ theorem AffineSubspace.isClosed_of_finiteDimensional {P : Type*} [MetricSpace P]
     IsClosed (s : Set P) :=
   s.isClosed_direction_iff.mp s.direction.isClosed_of_finiteDimensional
 
+@[deprecated (since := "2026-11-03")]
+alias AffineSubspace.closed_of_finiteDimensional := AffineSubspace.isClosed_of_finiteDimensional
+
 section Riesz
 
 /-- In an infinite-dimensional space, given a finite number of points, one may find a point
