@@ -5,7 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.HasExactLimitsOfShape
+
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
 /-!
 

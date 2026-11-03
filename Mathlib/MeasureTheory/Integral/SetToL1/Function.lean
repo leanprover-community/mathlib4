@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.SetToL1.L1
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of set functions to integrable functions
 

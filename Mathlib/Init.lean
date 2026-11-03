@@ -5,7 +5,6 @@ public meta import Batteries.Tactic.HelpCmd
 -- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
 -- available globally.
 public meta import ImportGraph.Tools
-public meta import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
 public meta import Lean.Linter.Sets -- for the definition of linter sets
 public meta import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public meta import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
@@ -38,6 +37,8 @@ public meta import Mathlib.Tactic.TacticAnalysis.Declarations
 public meta import Mathlib.Tactic.TypeStar
 -- This import makes the binder plicity code action available globally
 public meta import Mathlib.Util.CodeActions
+-- This import makes the custom syntax used in Mathlib's Verso docstrings available globally.
+public meta import Mathlib.Util.VersoRoles
 -- This import makes the `alias` command available globally.
 public import Batteries.Tactic.Alias
 -- This import makes the `proof_wanted` command available globally.
