@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!
-## Lemmas on idempotent finitely generated ideals
+# Lemmas on idempotent finitely generated ideals
 -/
 
 public section

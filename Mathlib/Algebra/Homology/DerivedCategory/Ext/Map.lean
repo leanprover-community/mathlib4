@@ -59,7 +59,6 @@ section
 
 open DerivedCategory
 
-set_option backward.defeqAttrib.useBackward true in
 lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
     dsimp% F.mapDerivedCategory.map (triangleOfSESδ hS) =

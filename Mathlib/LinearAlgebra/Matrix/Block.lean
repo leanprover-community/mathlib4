@@ -107,7 +107,7 @@ end Zero
 
 protected theorem BlockTriangular.neg [NegZeroClass R] {M : Matrix m m R}
     (hM : BlockTriangular M b) : BlockTriangular (-M) b :=
-  fun _ _ h => by rw [neg_apply, hM h, neg_zero]
+  fun _ _ h => by rw [Matrix.neg_apply, hM h, neg_zero]
 
 theorem BlockTriangular.add [AddZeroClass R] (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M + N) b := fun i j h => by simp_rw [Matrix.add_apply, hM h, hN h, zero_add]
