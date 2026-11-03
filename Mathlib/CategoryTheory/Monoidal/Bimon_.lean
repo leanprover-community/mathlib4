@@ -561,6 +561,7 @@ end ComonMon
 
 /-! ### Equivalence between `Bimon C` and `Comon (Mon C)` -/
 
+/-- The functor from `Comon (Mon C)` to `Bimon C`. -/
 @[simps]
 def ComonMon.toBimon : Comon (Mon C) ⥤ Bimon C where
   obj M := ⟨M.X.X⟩
@@ -568,6 +569,7 @@ def ComonMon.toBimon : Comon (Mon C) ⥤ Bimon C where
   map_id M := rfl
   map_comp f g := rfl
 
+/-- The functor from `Bimon C` to `Comon (Mon C)`. -/
 @[simps]
 def Bimon.toComonMon : Bimon C ⥤ Comon (Mon C) where
   obj M := ComonMon.mk' M.X
@@ -586,6 +588,7 @@ def Bimon.toComonMon : Bimon C ⥤ Comon (Mon C) where
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
+/-- The equivalence of categories between `Bimon C` and `Comon (Mon C)`. -/
 def equiv : Comon (Mon C) ≌ Bimon C where
   functor := ComonMon.toBimon
   inverse := Bimon.toComonMon
