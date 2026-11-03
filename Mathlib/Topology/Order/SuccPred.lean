@@ -40,7 +40,10 @@ theorem isOpen_Ioc : IsOpen (Ioc a b) := by
   rw [← Ioi_inter_Iic]
   exact isOpen_Ioi.inter isOpen_Iic
 
-@[to_dual]
+/-- In a successor order with the order topology, limit points correspond to successor limits. -/
+@[to_dual
+/-- In a predecessor order with the order topology, limit points correspond to predecessor
+limits. -/]
 theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
   refine ⟨fun h ha ↦ ?_, fun ha ↦ ?_⟩
   · obtain ⟨l, h₁, h₂⟩ := exists_Ioc_subset_of_mem_nhds (h.mem_nhds (mem_singleton a))

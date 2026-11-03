@@ -19,9 +19,12 @@ import Mathlib.Topology.Order.Monotone
 This file registers an `OrderTopology` instance on `Ordinal`.
 
 In all likelihood, any theorem which you might want to add to this file will generalize to broader
-typeclasses. In particular, the characterization of closed sets as those which are closed under
-suprema follows from the fact that the order topology on a well-order equals the Scott-Hausdorff
-topology.
+typeclasses. In particular:
+
+- The topological characterization of limit ordinals is proven as `SuccOrder.isOpen_singleton_iff`
+  for any linear successor order with the order topology.
+- The characterization of closed sets as those which are closed under suprema follows from the fact
+  that the order topology on a well-order equals the Scott-Hausdorff topology.
 
 Note also that concepts like normal functions (`Order.IsNormal`) or club sets (`IsClub`), which are
 defined using the order topology of the ordinals within the literature, are given more general
@@ -41,10 +44,10 @@ instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 
 variable {s : Set Ordinal.{u}} {a : Ordinal.{u}}
 
-open Order Topology IsScottHausdorff
+open Order Topology
 
 open List Set in
-@[deprecated mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
+@[deprecated IsScottHausdorff.mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
 theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     TFAE [a ∈ closure s,
       a ∈ closure (s ∩ Iic a),
@@ -76,20 +79,20 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       bddAbove_of_small
   tfae_finish
 
-@[deprecated mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
+@[deprecated IsScottHausdorff.mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
 theorem mem_closure_iff_iSup :
     a ∈ closure s ↔
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   apply ((mem_closure_tfae a s).out 1 5).trans
   simp_rw [exists_prop]
 
-@[deprecated mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
+@[deprecated IsScottHausdorff.mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
-@[deprecated mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
+@[deprecated IsScottHausdorff.mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
 theorem isClosed_iff_iSup :
     IsClosed s ↔
       ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
