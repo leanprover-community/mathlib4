@@ -69,14 +69,14 @@ theorem chartAt_hom (y₀ y : LE₁E₂) :
     hom_trivializationAt_apply]
 @[deprecated (since := "2026-10-16")] alias hom_chart := chartAt_hom
 
-theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
+theorem contMDiffWithinAt_hom_bundle_iff (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     CMDiffAt[s] n f x₀ ↔
       CMDiffAt[s] n (fun x ↦ (f x).1) x₀ ∧
         CMDiffAt[s] n
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffWithinAt_totalSpace_iff
 
-theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
+theorem contMDiffAt_hom_bundle_iff (f : M → LE₁E₂) {x₀ : M} :
     CMDiffAt n f x₀ ↔
       CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ CMDiffAt n
         (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
@@ -97,14 +97,14 @@ theorem mdifferentiableOn_continuousLinearMapCoordChange
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
-theorem mdifferentiableWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
+theorem mdifferentiableWithinAt_hom_bundle_iff (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     MDiffAt[s] f x₀ ↔
       MDiffAt[s] (fun x ↦ (f x).1) x₀ ∧
         MDiffAt[s]
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   mdifferentiableWithinAt_totalSpace_iff IB ..
 
-theorem mdifferentiableAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
+theorem mdifferentiableAt_hom_bundle_iff (f : M → LE₁E₂) {x₀ : M} :
     MDiffAt f x₀ ↔
       MDiffAt (fun x ↦ (f x).1) x₀ ∧
         MDiffAt (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
@@ -300,7 +300,7 @@ lemma ContMDiffWithinAt.clm_bundle_apply
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
     (hv : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
     CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x := by
-  simp only [contMDiffWithinAt_hom_bundle] at hϕ
+  simp only [contMDiffWithinAt_hom_bundle_iff] at hϕ
   exact hϕ.2.clm_apply_of_inCoordinates hv hϕ.1
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
@@ -354,7 +354,7 @@ lemma MDifferentiableWithinAt.clm_bundle_apply
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
     (hv : MDiffAt[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
     MDiffAt[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x := by
-  simp only [mdifferentiableWithinAt_hom_bundle] at hϕ
+  simp only [mdifferentiableWithinAt_hom_bundle_iff] at hϕ
   exact hϕ.2.clm_apply_of_inCoordinates hv hϕ.1
 
 /-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
