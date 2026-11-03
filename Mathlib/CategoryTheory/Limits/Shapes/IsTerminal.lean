@@ -149,6 +149,9 @@ lemma IsTerminal.isIso {X Y : C} (hX : IsTerminal X) (hY : IsTerminal Y) (f : X 
     IsIso f :=
   ⟨hX.from _, hX.hom_ext .., hY.hom_ext ..⟩
 
+@[to_dual (reorder := hX hY) (attr := deprecated (since := "2026-11-03"))]
+alias isIso_of_isTerminal := IsTerminal.isIso
+
 @[to_dual isIso_to]
 lemma IsTerminal.isIso_from {X Y : C} (hX : IsTerminal X) (hY : IsTerminal Y) :
     IsIso (hX.from Y) :=
