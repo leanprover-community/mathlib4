@@ -33,6 +33,9 @@ This file defines what it means for a set over a first-order structure to be def
   dimensions.
 - The `Set.TermDefinable` property is transitive, and `TermDefinable` functions are closed under
   composition.
+- `FirstOrder.Language.Formula.definable_withConstants` and
+  `FirstOrder.Language.BoundedFormula.definable` show that the set of realizations of a formula is
+  definable, giving a syntax-to-definability bridge for concrete sets.
 
 -/
 
@@ -106,6 +109,7 @@ theorem definable_withConstants (φ : L[[A]].Formula α) :
     A.Definable L {v | φ.Realize v} :=
   ⟨φ, rfl⟩
 
+/-- A formula without parameters defines the set of its realizations, over any parameter set. -/
 theorem definable (φ : L.Formula α) :
     A.Definable L {v | φ.Realize v} :=
   (empty_definable_iff.mpr ⟨φ, rfl⟩).mono (empty_subset A)
@@ -116,24 +120,32 @@ namespace BoundedFormula
 
 variable {n : ℕ}
 
+/-- A bounded formula with parameters from `A` defines the set of its realizations, viewed as a set
+of functions on `α ⊕ Fin n`. -/
 theorem definable_withConstants (φ : L[[A]].BoundedFormula α n) :
     A.Definable L {v | φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr)} := by
   simpa using φ.toFormula.definable_withConstants
 
+/-- A bounded formula without parameters defines the set of its realizations, viewed as a set of
+functions on `α ⊕ Fin n`, over any parameter set. -/
 theorem definable (φ : L.BoundedFormula α n) :
     A.Definable L {v | φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr)} := by
   simpa using φ.toFormula.definable
 
-theorem definable_boundedSection_withConstants (φ : L[[A]].BoundedFormula Empty n) :
+/-- A bounded formula with parameters from `A` and no free variables defines the set of tuples of
+values of its bound variables that satisfy it. -/
+theorem definable_emptyVars_withConstants (φ : L[[A]].BoundedFormula Empty n) :
     A.Definable L {xs | φ.Realize default xs} := by
   convert (φ.toFormula.relabel (Sum.elim Empty.elim id)).definable_withConstants using 1
   ext xs
   simp only [Formula.realize_relabel, realize_toFormula]
   congr!
 
-theorem definable_boundedSection (φ : L.BoundedFormula Empty n) :
+/-- A bounded formula without parameters and no free variables defines the set of tuples of values
+of its bound variables that satisfy it, over any parameter set. -/
+theorem definable_emptyVars (φ : L.BoundedFormula Empty n) :
     A.Definable L {xs | φ.Realize default xs} := by
-  convert (φ.toFormula.relabel (Sum.elim Empty.elim id)).definable
+  convert (φ.toFormula.relabel (Sum.elim Empty.elim id)).definable using 1
   ext xs
   simp only [Formula.realize_relabel, realize_toFormula]
   congr!
@@ -163,14 +175,14 @@ theorem Definable.inter {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
     A.Definable L (f ∩ g) := by
   rcases hf with ⟨φ, rfl⟩
   rcases hg with ⟨θ, rfl⟩
-  simpa using (φ ⊓ θ).definable_withConstants
+  exact ⟨φ ⊓ θ, by ext x; simp⟩
 
 @[simp]
 theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.Definable L g) :
     A.Definable L (f ∪ g) := by
   rcases hf with ⟨φ, rfl⟩
   rcases hg with ⟨θ, rfl⟩
-  simpa using (φ ⊔ θ).definable_withConstants
+  exact ⟨φ ⊔ θ, by ext x; simp⟩
 
 theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
@@ -211,7 +223,7 @@ theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
   rcases hf with ⟨φ, rfl⟩
-  simpa using (φ.not).definable_withConstants
+  exact ⟨φ.not, by ext x; simp⟩
 
 @[simp]
 theorem Definable.sdiff {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.Definable L t) :
@@ -519,7 +531,8 @@ theorem definableFun_iff_empty_definableFun_with_params :
 @[fun_prop]
 theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
     (∅ : Set M).DefinableFun L (t.realize) := by
-  simpa using ((t.relabel some).equal (Term.var none)).definable
+  simpa [DefinableFun, Function.tupleGraph] using
+    ((t.relabel some).equal (Term.var none)).definable
 
 /-- A function symbol is a definable function. -/
 @[fun_prop]
@@ -636,7 +649,8 @@ def TermDefinable (f : (α → M) → M) : Prop :=
 theorem TermDefinable.definable_tupleGraph {f : (α → M) → M} (h : A.TermDefinable L f) :
     A.Definable L f.tupleGraph := by
   obtain ⟨φ, rfl⟩ := h
-  simpa using ((φ.relabel some).equal (Term.var none)).definable_withConstants
+  simpa [Function.tupleGraph] using
+    ((φ.relabel some).equal (Term.var none)).definable_withConstants
 
 variable {L} {A B} {f : (α → M) → M}
 

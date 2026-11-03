@@ -160,8 +160,9 @@ theorem closure_eq_self (hA : L.MeetsDefinable A) :
   refine Subset.antisymm ?_ subset_closure
   rw [coe_closure_eq_range_term_realize]
   rintro x ⟨t, rfl⟩
-  exact singleton_inter_nonempty.mp <| hA _ (singleton_nonempty _) <|
-    by simpa using ((Term.var 0).equal (t.relabel Sum.inl).varsToConstants).definable_withConstants
+  have hD : A.Definable₁ L {Term.realize Subtype.val t} :=
+    ⟨(Term.var 0).equal (t.relabel Sum.inl).varsToConstants, by ext v; simp⟩
+  exact singleton_inter_nonempty.mp <| hA _ (singleton_nonempty _) hD
 
 /-- The closure of a set meeting definable sets is an elementary substructure. -/
 theorem isElementary_closure (hA : L.MeetsDefinable A) :
@@ -169,16 +170,18 @@ theorem isElementary_closure (hA : L.MeetsDefinable A) :
   refine isElementary_of_exists ((closure L).toFun A) ?_
   intro n φ x a hφ
   let D : Set M := {y : M | φ.Realize default (Fin.snoc (Subtype.val ∘ x) y)}
-  have hD_ne : D.Nonempty := ⟨a,hφ⟩
+  have hD_ne : D.Nonempty := ⟨a, hφ⟩
   have hD : A.Definable₁ L D := by
-    apply (φ.definable_boundedSection).preimage_map
+    apply (φ.definable_emptyVars).preimage_map
     simp only [DefinableMap]
     refine Fin.lastCases ?_ ?_
-    · simp only [Fin.snoc_last]; fun_prop
-    · intro i; simp only [Fin.snoc_castSucc];
-      have : ↑(x i) ∈ A := by
+    · simp only [Fin.snoc_last]
+      fun_prop
+    · intro i
+      simp only [Fin.snoc_castSucc]
+      have hxA : (x i : M) ∈ A := by
         nth_rw 1 [← hA.closure_eq_self]
-        simp
+        exact (x i).2
       fun_prop (disch := assumption)
   obtain ⟨b, hbD, hbA⟩ := hA D hD_ne hD
   exact ⟨⟨b, by rwa [← hA.closure_eq_self] at hbA⟩, hbD⟩
