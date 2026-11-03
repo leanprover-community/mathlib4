@@ -159,8 +159,7 @@ theorem hurwitzZetaOdd_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 
   calc
     _ = Complex.sin ((k * π) + π / 2) * (-1) ^ (k + 1) := by congr; ring
     _ = Real.sin ((k * π) + π / 2) * (-1) ^ (k + 1) := by simp
-    _ = Real.cos (k * π) * (-1) ^ (k + 1) := by simp [Real.sin_add_pi_div_two]
-    _ = -1 := by simp [cos_nat_mul_pi, ← pow_add]
+    _ = -1 := by simp [Real.sin_add_pi_div_two, cos_nat_mul_pi, ← pow_add]
 
 -- private because it is superseded by `hurwitzZeta_neg_nat` below
 private lemma hurwitzZeta_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
