@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Util.CompileInductive
+
+import Mathlib.Control.Applicative
+import Mathlib.Tactic.AdaptationNote
 
 
 /-!

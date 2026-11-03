@@ -67,6 +67,7 @@ structure Bicone (F : J → C) where
   ι_π : ∀ j j', ι j ≫ π j' =
     if h : j = j' then eqToHom (congrArg F h) else 0 := by aesop
 
+attribute [reassoc] Bicone.ι_π
 attribute [inherit_doc Bicone] Bicone.pt Bicone.π Bicone.ι Bicone.ι_π
 
 @[reassoc (attr := simp)]
@@ -211,7 +212,7 @@ instance (B : Bicone F) (j : J) : IsSplitEpi (B.π j) := (B.retract j).instIsSpl
 
 open scoped Classical in
 /-- We can turn any limit cone over a discrete collection of objects into a bicone. -/
-@[simps]
+@[implicit_reducible, simps]
 def ofLimitCone {f : J → C} {t : Cone (Discrete.functor f)} (ht : IsLimit t) : Bicone f where
   pt := t.pt
   π j := t.π.app ⟨j⟩
@@ -227,7 +228,7 @@ theorem ι_of_isLimit {f : J → C} {t : Bicone f} (ht : IsLimit t.toCone) (j : 
 
 open scoped Classical in
 /-- We can turn any colimit cocone over a discrete collection of objects into a bicone. -/
-@[simps]
+@[implicit_reducible, simps]
 def ofColimitCocone {f : J → C} {t : Cocone (Discrete.functor f)} (ht : IsColimit t) :
     Bicone f where
   pt := t.pt
@@ -445,7 +446,7 @@ This means you may not be able to `simp` using this lemma unless you `open scope
 @[reassoc]
 theorem biproduct.ι_π [DecidableEq J] (f : J → C) [HasBiproduct f] (j j' : J) :
     biproduct.ι f j ≫ biproduct.π f j' = if h : j = j' then eqToHom (congr_arg f h) else 0 := by
-  convert! (biproduct.bicone f).ι_π j j'
+  convert (biproduct.bicone f).ι_π j j'
 
 @[reassoc] -- Not `simp` because `simp` can prove this
 theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
@@ -946,7 +947,7 @@ end πKernel
 
 section FiniteBiproducts
 
-variable {J : Type} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
+variable {J : Type*} [Finite J] {K : Type} [Finite K] {C : Type u} [Category.{v} C]
   [HasZeroMorphisms C] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
 
 /-- Convert a (dependently typed) matrix to a morphism of biproducts. -/

@@ -6,8 +6,9 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
-public import Mathlib.NumberTheory.LSeries.Linearity
 public import Mathlib.NumberTheory.LSeries.Nonvanishing
+
+import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression
@@ -103,7 +104,7 @@ lemma abscissaOfAbsConv_residueClass_le_one :
   refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable fun y hy ↦ ?_
   unfold LSeriesSummable
   have := LSeriesSummable_vonMangoldt <| show 1 < (y : ℂ).re by simp only [ofReal_re, hy]
-  convert! this.indicator {n : ℕ | (n : ZMod q) = a}
+  convert this.indicator {n : ℕ | (n : ZMod q) = a}
   ext1 n
   by_cases hn : (n : ZMod q) = a
   · simp +contextual only [term, Set.indicator, Set.mem_ofPred_eq, hn, ↓reduceIte, apply_ite,
@@ -451,7 +452,7 @@ theorem forall_exists_prime_gt_and_zmodEq (n : ℕ) {q : ℕ} {a : ℤ} (hq : q 
     ∃ p > n, p.Prime ∧ p ≡ a [ZMOD q] := by
   have : NeZero q := ⟨hq⟩
   have : IsUnit (a : ZMod q) := by
-    rwa [ZMod.coe_int_isUnit_iff_isCoprime, isCoprime_comm]
+    rwa [ZMod.isUnit_intCast_iff_isCoprime, isCoprime_comm]
   obtain ⟨p, hpn, hpp, heq⟩ := forall_exists_prime_gt_and_eq_mod this n
   refine ⟨p, hpn, hpp, ?_⟩
   simpa [← ZMod.intCast_eq_intCast_iff] using heq

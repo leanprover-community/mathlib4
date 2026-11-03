@@ -256,7 +256,6 @@ def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) 
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
 functor. -/

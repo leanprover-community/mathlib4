@@ -5,10 +5,11 @@ Authors: Calle Sönne, Adam Topaz
 -/
 module
 
-public import Mathlib.Data.Setoid.Partition
-public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Order.Setoid.Partition
 public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.LocallyConstant.Basic
+
+import Mathlib.Topology.Separation.Regular
 
 /-!
 
@@ -160,8 +161,6 @@ instance : OrderTop (DiscreteQuotient X) where
 
 instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
-instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
-
 -- TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
@@ -235,9 +234,9 @@ instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
     { toSetoid := connectedComponentSetoid X
       isOpen_setOfPred_rel := fun x => by
-        convert! isOpen_connectedComponent (x := x)
+        convert isOpen_connectedComponent (x := x)
         ext y
-        simpa only [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using! eq_comm }
+        simpa [connectedComponentSetoid, ← connectedComponent_eq_iff_mem] using eq_comm }
   bot_le S := fun x y (h : connectedComponent x = connectedComponent y) =>
     (S.isClopen_setOfPred_rel x).connectedComponent_subset (S.refl _) <|
       h.symm ▸ mem_connectedComponent
@@ -411,7 +410,7 @@ variable (f : LocallyConstant X α)
 /-- Any locally constant function induces a discrete quotient. -/
 def discreteQuotient : DiscreteQuotient X where
   toSetoid := .comap f ⊥
-  isOpen_setOfPred_rel _ := f.isLocallyConstant _
+  isOpen_setOfPred_rel x := f.isLocallyConstant {y | f x = y}
 
 /-- The (locally constant) function from the discrete quotient associated to a locally constant
 function. -/

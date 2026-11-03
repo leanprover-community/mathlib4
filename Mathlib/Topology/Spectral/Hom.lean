@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Maps.Proper.Basic
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Spectral maps

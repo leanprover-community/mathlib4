@@ -5,10 +5,8 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 
@@ -77,7 +75,7 @@ variable [CommSemiring R] [IsLocalRing R] [CommSemiring S] [IsLocalRing S]
 /-- A ring homomorphism between local rings is a local ring hom iff it reflects units,
 i.e. any preimage of a unit is still a unit. -/
 @[stacks 07BJ]
-theorem local_hom_TFAE (f : R →+* S) :
+theorem local_hom_tfae (f : R →+* S) :
     List.TFAE
       [IsLocalHom f, f '' maximalIdeal R ⊆ maximalIdeal S,
         (maximalIdeal R).map f ≤ maximalIdeal S, maximalIdeal R ≤ (maximalIdeal S).comap f,
@@ -92,8 +90,10 @@ theorem local_hom_TFAE (f : R →+* S) :
   tfae_have 5 → 4 := fun h ↦ le_of_eq h.symm
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias local_hom_TFAE := local_hom_tfae
+
 lemma maximalIdeal_comap (f : R →+* S) [IsLocalHom f] : (maximalIdeal S).comap f = maximalIdeal R :=
-  ((local_hom_TFAE _).out 1 5).mp ‹_›
+  ((local_hom_tfae _).out 1 5).mp ‹_›
 
 theorem map_maximalIdeal_le (f : R →+* S) [IsLocalHom f] :
     (maximalIdeal R).map f ≤ maximalIdeal S := by
@@ -119,7 +119,7 @@ lemma _root_.IsLocalHom.of_surjective [CommRing R] [CommRing S] [Nontrivial S] [
     (f : R →+* S) (hf : Function.Surjective f) :
     IsLocalHom f := by
   have := IsLocalRing.of_surjective' f ‹_›
-  refine ((local_hom_TFAE f).out 4 1).mp ?_
+  refine ((local_hom_tfae f).out 4 1).mp ?_
   have := Ideal.comap_isMaximal_of_surjective f hf (K := maximalIdeal S)
   exact ((maximal_ideal_unique R).unique (inferInstanceAs (maximalIdeal R).IsMaximal) this).le
 

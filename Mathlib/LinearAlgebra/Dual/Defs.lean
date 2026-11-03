@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Span.Defs
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Dual vector spaces
@@ -61,15 +60,6 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 @[wikidata Q752487]
 abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] R
-
-/-- The canonical pairing of a vector space and its algebraic dual. -/
-@[deprecated LinearMap.id +typeChanged (since := "2026-04-02")]
-def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
-    Module.Dual R M →ₗ[R] M →ₗ[R] R :=
-  LinearMap.id
-
-@[deprecated "`Module.dualPairing` has been deprecated" (since := "2026-04-02")]
-theorem dualPairing_apply (v x) : dualPairing R M v x = v x := rfl
 
 namespace Dual
 
@@ -482,7 +472,7 @@ theorem ker_dualMap_eq_dualAnnihilator_range :
     LinearMap.ker f.dualMap = (range f).dualAnnihilator := by
   ext
   simp_rw [mem_ker, LinearMap.ext_iff, Submodule.mem_dualAnnihilator,
-    ← SetLike.mem_coe, coe_range, Set.forall_mem_range, dualMap_apply, zero_apply]
+    ← SetLike.mem_coe, coe_range, Set.forall_mem_range, dualMap_apply, LinearMap.zero_apply]
 
 theorem range_dualMap_le_dualAnnihilator_ker :
     LinearMap.range f.dualMap ≤ (ker f).dualAnnihilator := by

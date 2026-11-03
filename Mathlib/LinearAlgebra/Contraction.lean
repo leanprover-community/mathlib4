@@ -6,7 +6,6 @@ Authors: Oliver Nash, Antoine Labelle
 module
 
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
 /-!
@@ -409,7 +408,7 @@ variable (R M N) in
 projective modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
 
-Note that `dualDistribEquiv` is not defined directly in terms of `dualDistri`, but the
+Note that `dualDistribEquiv` is not defined directly in terms of `dualDistrib`, but the
 equivalence between the two is given by `toLinearMap_dualDistribEquiv` and
 `dualDistribEquiv_tmul_tmul`.
 -/

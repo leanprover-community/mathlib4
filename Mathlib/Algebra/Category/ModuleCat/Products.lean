@@ -6,9 +6,10 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Basic
-public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Tactic.CategoryTheory.Elementwise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The concrete products in the category of modules are products in the categorical sense.

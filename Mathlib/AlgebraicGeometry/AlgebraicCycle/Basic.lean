@@ -7,8 +7,8 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
-public import Mathlib.Topology.LocallyFinsupp.Pushforward
 public import Mathlib.AlgebraicGeometry.ResidueField
+public import Mathlib.Topology.LocallyFinsupp.Pushforward
 
 /-!
 # Algebraic Cycles
@@ -34,13 +34,13 @@ universe u v
 variable {X Y : Scheme.{u}} {R : Type*}
 
 /--
-Algebraic cycle on a scheme `X` with coefficients in a type `Z` is just a function from `X` to `Z`
+Algebraic cycle on a scheme `X` with coefficients in a type `R` is just a function from `X` to `R`
 with locally finite support (see the module docstring for more details).
 
 Note: currently this is an abbrev to save some effort in duplicating API. This seems fine for now,
 but be aware of this if there is ever an instance clash involving algebraic cycles.
 -/
-@[stacks 02QR]
+@[stacks 02QR "(1)"]
 abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
   Function.locallyFinsupp X R
 namespace AlgebraicCycle
@@ -51,7 +51,7 @@ variable (f : X ⟶ Y) [Semiring R] (c : AlgebraicCycle X R) (x : X) (z : Y)
 Implementation detail for `AlgebraicCycle.map`: function used to define the coefficient of the
 pushforward of a cycle `c` at a point `z = f x`.
 -/
-@[stacks 02R3]
+@[stacks 02R4 "The multiplicity appearing in (1)."]
 noncomputable def mapCoeff {N : Type*} [DecidableEq N] {Y : Scheme} (f : X ⟶ Y) (wx : X → N)
     (wy : Y → N) (x : X) : ℕ := if wx x = wy (f.base x) then f.residueDegree x else 0
 
@@ -64,7 +64,7 @@ dimension is `Order.height`, and the most common notion of codimension is `Order
 more sophisticated notions exist in the literature which are useful when sufficient
 equidimensionality hypotheses cannot be assumed.
 -/
-@[stacks 02R3]
+@[stacks 02R4 "(2) with arbitrary weight function instead of `δ`-dimension."]
 noncomputable
 def map [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
     (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
@@ -139,7 +139,7 @@ variable {R : Type*}
 /--
 A Weil divisor is an algebraic cycle supported purely in codimension one
 -/
-@[stacks 0BE2]
+@[stacks 0BE2 "(2), as a predicate on algebraic cycles."]
 def IsWeilDivisor [Zero R] (D : AlgebraicCycle X R) : Prop :=
   D.support ⊆ {x | Order.coheight x = 1}
 
@@ -160,7 +160,7 @@ variable (X R) in
 /--
 The Weil divisors on `X`, as a subgroup of the algebraic cycles
 -/
-@[stacks 0BE2]
+@[stacks 0BE2 "The group Div(X) of (2)."]
 def weilDivisors [AddGroup R] : AddSubgroup (AlgebraicCycle X R) :=
   Function.locallyFinsuppWithin.supported R Set.univ {x : X | Order.coheight x = 1}
 

@@ -7,8 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
@@ -40,8 +38,8 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring A]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
-variable [SMulCommClass R A M₁] [IsScalarTower R A M₁]
-variable [SMulCommClass R A N₁] [IsScalarTower R A N₁]
+variable [IsScalarTower R A M₁]
+variable [IsScalarTower R A N₁]
 variable [Module R M₂] [Module R N₂]
 
 namespace BilinMap

@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+
+import Mathlib.LinearAlgebra.Trace
 
 /-!
 

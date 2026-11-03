@@ -6,8 +6,10 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.MvPolynomial.Supported
-public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Algebraic.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Transcendental elements in `MvPolynomial`

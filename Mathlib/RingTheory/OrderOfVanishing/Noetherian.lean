@@ -6,13 +6,13 @@ Authors: Raphael Douglas Giles
 
 module
 
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.OrderOfVanishing.Basic
-public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
+
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order of vanishing in Noetherian rings.

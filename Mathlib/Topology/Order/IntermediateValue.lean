@@ -5,10 +5,11 @@ Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
 module
 
-public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Order.DenselyOrdered
 public import Mathlib.Topology.Order.Monotone
-public import Mathlib.Topology.Connected.TotallyDisconnected
+
+import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Intermediate Value Theorem
@@ -408,7 +409,7 @@ lemma IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_Icc_subset {a b : α} {s : Set
     refine ⟨t₁_mem, fun t ht ↦ ?_⟩
     rcases ht.2.eq_or_lt with rfl | h
     · have : closure A ⊆ s ∩ Icc a b := by
-        apply (closure_subset_iff hs).2 (fun t ht ↦ ⟨?_, ht.1⟩)
+        apply (closure_subset_iff hs).2 (fun t (ht : t ∈ A) ↦ ⟨?_, ht.1⟩)
         have : t ∈ Icc a t := ⟨ht.1.1, le_rfl⟩
         exact ht.2 this
       apply this.trans inter_subset_left

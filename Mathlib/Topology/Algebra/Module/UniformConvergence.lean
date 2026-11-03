@@ -6,8 +6,9 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.UniformConvergence
+
+import Mathlib.Topology.Algebra.FilterBasis
 
 /-!
 # Algebraic facts about the topology of uniform convergence
