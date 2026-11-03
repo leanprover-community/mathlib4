@@ -71,9 +71,8 @@ private lemma Q_continuous : Continuous Q :=
 
 private lemma norm_fourier_le_Q_mul : ‖𝓕 ψ u‖ ≤ ψ.Q * (1 + u ^ 2)⁻¹ := by
   rw [← div_eq_mul_inv, le_div_iff₀ (by positivity : (0 : ℝ) < 1 + u ^ 2)]
-  have : ‖𝓕 ψ u‖ ≤ (𝓕 ψ).seminorm ℝ 0 0 := by simpa using le_seminorm (𝕜 := ℝ) 0 0 (𝓕 ψ) u
-  have : u ^ 2 * ‖𝓕 ψ u‖ ≤ (𝓕 ψ).seminorm ℝ 2 0 := by
-    simpa [norm_eq_abs, sq_abs, norm_iteratedFDeriv_zero] using le_seminorm (𝕜 := ℝ) 2 0 (𝓕 ψ) u
+  have := norm_fourier_le_seminorm ψ u
+  have := sq_mul_norm_fourier_le_seminorm ψ u
   unfold Q
   nlinarith
 
@@ -146,11 +145,6 @@ private lemma sum_term_mul_fourier_eq :
       congr
       field_simp
       ring
-
-private lemma integral_Ioi_neg_log_cexp_neg_mul {x : ℝ} (hx : 0 < x) {s : ℂ} (hs : 0 < s.re) :
-    ∫ u in Ioi (-log x), cexp (-s * u) = x ^ s / s := by
-  rw [integral_exp_mul_complex_Ioi (by simpa using hs), neg_div_neg_eq,
-    cpow_def_of_ne_zero (mod_cast hx.ne'), ofReal_neg, neg_mul_neg, ofReal_log hx.le, mul_comm s]
 
 include hx hσ in
 private lemma integral_exp_mul_fourier_eq :
