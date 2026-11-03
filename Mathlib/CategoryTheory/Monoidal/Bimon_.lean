@@ -82,15 +82,14 @@ attribute [instance] Bimon.bimon
 namespace Bimon
 
 variable (C) in
-/-- The trivial bimonoid object. We later show this is initial in `Bimon C`.
--/
+/-- The trivial bimonoid object. -/
 @[simps!]
 def trivial : Bimon C := mk (𝟙_ C)
 
 instance : Inhabited (Bimon C) :=
   ⟨trivial C⟩
 
-/-- A morphism of monoid objects. -/
+/-- A morphism of bimonoid objects. -/
 @[ext]
 structure Hom (M N : Bimon C) where
   /-- The underlying morphism -/
@@ -99,7 +98,8 @@ structure Hom (M N : Bimon C) where
 
 attribute [instance] Bimon.Hom.isBimonHom_hom
 
-/-- Construct a morphism `M ⟶ N` of `Mon C` from a map `f : M ⟶ N` and a `IsMonHom f` instance. -/
+/-- Construct a morphism `M ⟶ N` of `Bimon C` from a map `f : M ⟶ N` and
+a `IsBimonHom f` instance. -/
 abbrev Hom.mk' {M N : Bimon C} (f : M.X ⟶ N.X)
     (one_f : η ≫ f = η := by cat_disch)
     (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch)
@@ -114,14 +114,14 @@ instance (X : C) [BimonObj X] : IsBimonHom (𝟙 X) := ⟨⟩
 instance (X Y Z : C) [BimonObj X] [BimonObj Y] [BimonObj Z] (f : X ⟶ Y) (g : Y ⟶ Z)
     [IsBimonHom f] [IsBimonHom g] : IsBimonHom (f ≫ g) := ⟨⟩
 
-/-- The identity morphism on a monoid object. -/
+/-- The identity morphism on a bimonoid object. -/
 @[simps]
 def id (M : Bimon C) : Hom M M := ⟨𝟙 M.X⟩
 
 instance homInhabited (M : Bimon C) : Inhabited (Hom M M) :=
   ⟨id M⟩
 
-/-- Composition of morphisms of monoid objects. -/
+/-- Composition of morphisms of bimonoid objects. -/
 @[simps]
 def comp {M N O : Bimon C} (f : Hom M N) (g : Hom N O) : Hom M O where
   hom := f.hom ≫ g.hom
@@ -232,18 +232,13 @@ That is, a monoidal functor `F : C ⥤ D` induces a functor `Bimon' C ⥤ Bimon'
 -/
 @[implicit_reducible, simps]
 def mapBimon (F : C ⥤ D) [F.Braided] : Bimon C ⥤ Bimon D where
-  obj A :=
-    { X := F.obj A.X }
-  map f :=
-    { hom := F.map f.hom }
+  obj A := .mk (F.obj A.X)
+  map f := .mk (F.map f.hom)
   map_id A := by ext; simp
   map_comp f g := by ext; simp
 
 -- TODO We haven't yet set up the category structure on `BraidedFunctor C D`
 -- and so can't state `mapBimonFunctor : BraidedFunctor C D ⥤ Bimon C ⥤ Bimon D`.
-
-example (F : C ⥤ D) [F.Braided] (X : Bimon C) : μ[(F.mapBimon.obj X).X] =
-  LaxMonoidal.μ F _ _ ≫ F.map μ[X.X] := by simp
 
 section FullyFaithful
 

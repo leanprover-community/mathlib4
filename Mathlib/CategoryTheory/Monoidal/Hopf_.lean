@@ -68,26 +68,26 @@ namespace Hopf
 variable {C}
 
 /-- A Hopf monoid is a bimonoid. -/
-abbrev toBimon (A : Hopf C) : Bimon C := .mk A.X
+abbrev toBimon' (A : Hopf C) : Bimon C := .mk A.X
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.
 In fact they automatically intertwine the antipodes, proved below.
 -/
 instance : Category (Hopf C) :=
-  inferInstanceAs <| Category (InducedCategory (Bimon C) Hopf.toBimon)
-
+  inferInstanceAs <| Category (InducedCategory (Bimon C) toBimon')
 
 @[ext] lemma ext {X Y : Hopf C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
   InducedCategory.Hom.ext w
 
-@[simp] theorem id_hom' (M : Hopf C) : (𝟙 M : M ⟶ M).hom = 𝟙 M.toBimon := rfl
+@[simp] theorem hom_id (M : Hopf C) : (𝟙 M : M ⟶ M).hom = 𝟙 M.toBimon' := rfl
 
 @[simp]
-theorem comp_hom' {M N K : Hopf C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
+theorem hom_comp {M N K : Hopf C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
 
-abbrev toBimonFunctor : Hopf C ⥤ Bimon C := inducedFunctor _
+/-- The forgetful functor from Hopf monoids to bimonoid objects. -/
+abbrev toBimon : Hopf C ⥤ Bimon C := inducedFunctor _
 
 /-- Construct a morphism `Hopf.mk G ⟶ Hopf.mk H` from a  map `f : G ⟶ H` and a `IsBimonHom f`
 instance. -/
@@ -107,7 +107,7 @@ variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [Br
 
 open HopfObj Hopf
 
-/-- The image of a Hopf object under an braided functor is a Hopf object. -/
+/-- The image of a Hopf monoid under an braided functor is a Hopf monoid. -/
 abbrev obj.instHopfObj (A : C) [HopfObj A] (F : C ⥤ D) [F.Braided] : HopfObj (F.obj A) where
   __ := obj.instBimonObj A F
   antipode := F.map antipode
@@ -116,7 +116,35 @@ abbrev obj.instHopfObj (A : C) [HopfObj A] (F : C ⥤ D) [F.Braided] : HopfObj (
 
 attribute [local instance] obj.instHopfObj
 
-/-- A braided functor takes Hopf objects to Hopf objects.
+/-- A braided functor takes Hopf monoids to Hopf monoids.
+That is, a braided functor `F : C ⥤ D` induces a functor `Hopf C ⥤ Hopf D`.
+-/
+@[implicit_reducible, simps]
+def mapHopf (F : C ⥤ D) [F.Braided] : Hopf C ⥤ Hopf D where
+  obj A := .mk (F.obj A.X)
+  map f := ofHom (F.map f.hom.hom)
+  map_id A := by ext; simp
+  map_comp f g := by ext; simp
+
+end Functor
+
+namespace Functor
+
+variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D] [BraidedCategory D]
+  (F : C ⥤ D) [F.Braided]
+
+open HopfObj Hopf
+
+/-- The image of a Hopf monoid under an braided functor is a Hopf monoid. -/
+abbrev obj.instHopfObj (A : C) [HopfObj A] (F : C ⥤ D) [F.Braided] : HopfObj (F.obj A) where
+  __ := obj.instBimonObj A F
+  antipode := F.map antipode
+  antipode_left := by simp [← map_comp]
+  antipode_right := by simp [← map_comp]
+
+attribute [local instance] obj.instHopfObj
+
+/-- A braided functor takes Hopf monoids to Hopf monoids.
 That is, a braided functor `F : C ⥤ D` induces a functor `Hopf C ⥤ Hopf D`.
 -/
 @[implicit_reducible, simps]
@@ -130,7 +158,7 @@ section FullyFaithful
 
 variable {F}
 
-/-- Pullback a Hopf object along a fully faithful braided functor. -/
+/-- Pullback a Hopf monoid along a fully faithful braided functor. -/
 @[simps]
 abbrev FullyFaithful.hopfObj (hF : F.FullyFaithful) (X : C) [HopfObj (F.obj X)] : HopfObj X where
   __ := hF.bimonObj X
@@ -142,13 +170,13 @@ abbrev FullyFaithful.hopfObj (hF : F.FullyFaithful) (X : C) [HopfObj (F.obj X)] 
     apply hF.map_injective
     simp [Monoidal.map_whiskerLeft F]
 
-/-- Pullback a Hopf object along a fully faithful braided functor as a bundled object. -/
+/-- Pullback a Hopf monoid along a fully faithful braided functor as a bundled object. -/
 @[implicit_reducible]
 def FullyFaithful.hopf (hF : F.FullyFaithful) (X : C) [HopfObj (F.obj X)] : Hopf C where
   X := X
   hopf := hF.hopfObj X
 
-/-- Pullback a morphism between hopf objects along a fully faithful braided functor. -/
+/-- Pullback a morphism between Hopf monoids along a fully faithful braided functor. -/
 @[simps!]
 def FullyFaithful.hopfMap (hF : F.FullyFaithful) (X Y : C) [HopfObj (F.obj X)]
     [HopfObj (F.obj Y)] (f : F.obj X ⟶ F.obj Y) [IsBimonHom f] : hF.hopf X ⟶ hF.hopf Y :=
