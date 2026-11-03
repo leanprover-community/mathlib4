@@ -178,7 +178,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     -- apply Rudio to get g ∈ G such that a ∈ g • sᶜ, b ∉ g • sᶜ
     obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_notMem_smul (G := G)
       sᶜ.toFinite (Set.nonempty_of_mem ha)
-      (by simpa [Set.nonempty_iff_ne_empty] using hs_nonempty)
+      (by simpa using hs_nonempty)
       hab
     let t := s ∩ g • s
     have ha : a ∉ s ∪ g • s := by

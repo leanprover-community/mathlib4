@@ -145,6 +145,9 @@ theorem nonempty_of_ne_empty {s : Finset α} (h : s ≠ ∅) : s.Nonempty :=
 theorem nonempty_iff_ne_empty {s : Finset α} : s.Nonempty ↔ s ≠ ∅ :=
   ⟨Nonempty.ne_empty, nonempty_of_ne_empty⟩
 
+@[simp] lemma ne_empty_iff_nonempty {s : Finset α} : s ≠ ∅ ↔ s.Nonempty :=
+  nonempty_iff_ne_empty.symm
+
 @[simp, push]
 theorem not_nonempty_iff_eq_empty {s : Finset α} : ¬s.Nonempty ↔ s = ∅ :=
   nonempty_iff_ne_empty.not.trans not_not

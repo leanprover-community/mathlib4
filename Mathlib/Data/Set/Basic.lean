@@ -476,6 +476,8 @@ theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
 
+@[simp] lemma ne_empty_iff_nonempty : s ≠ ∅ ↔ s.Nonempty := nonempty_iff_ne_empty.symm
+
 /-- Variant of `nonempty_iff_ne_empty` used by `push Not`. -/
 @[push ←]
 theorem nonempty_iff_empty_ne : s.Nonempty ↔ ∅ ≠ s :=
@@ -496,7 +498,7 @@ theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
-  not_iff_not.1 <| by simpa using! nonempty_iff_ne_empty
+  not_iff_not.1 <| by simp [Set.Nonempty]
 
 lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
   simpa using ‹IsEmpty s›

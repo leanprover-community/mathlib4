@@ -113,7 +113,7 @@ theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
 theorem isClopen_iff [PreconnectedSpace α] {s : Set α} : IsClopen s ↔ s = ∅ ∨ s = univ :=
   ⟨fun hs =>
     by_contradiction fun h =>
-      have h1 : s.Nonempty ∧ sᶜ.Nonempty := by simpa [nonempty_iff_ne_empty] using h
+      have h1 : s.Nonempty ∧ sᶜ.Nonempty := by simpa [nonempty_compl] using h
       have ⟨_, h2, h3⟩ := nonempty_inter hs.2 hs.1.isOpen_compl (union_compl_self s) h1.1 h1.2
       h3 h2,
     by rintro (rfl | rfl); exacts [isClopen_empty, isClopen_univ]⟩
@@ -285,7 +285,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
       · refine subset_empty_iff.1 fun x ⟨hxs, hxu, v, hvU, hxv⟩ => ?_
         exact ne_of_mem_of_not_mem hvU uU (hU.1 v hvU ⟨x, hxs, hxu, hxv⟩).symm
       · exact IH (fun u hu => (hU.2 u hu).2) hUo.2
-  · simpa [subset_empty_iff, nonempty_iff_ne_empty] using h ∅
+  · simpa [subset_empty_iff] using h ∅
   · rw [← not_nonempty_iff_eq_empty] at hsuv
     have := hsuv; rw [inter_comm u] at this
     simpa [*, or_imp, forall_and] using h {u, v}

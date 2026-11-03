@@ -406,7 +406,7 @@ lemma mem_iff_exists_partOf : s ∈ P ↔ ∃ x ∈ u, partOf P x = s :=
 
 lemma partOf_nonempty_iff : (P.partOf x).Nonempty ↔ x ∈ u := by
   refine ⟨fun ⟨y, hy⟩ ↦ hy.left_mem, fun h ↦ ?_⟩
-  simpa [nonempty_iff_ne_empty] using P.ne_bot_of_mem (partOf_mem h)
+  simpa using P.ne_bot_of_mem (partOf_mem h)
 
 @[simp]
 lemma partOf_eq_empty_iff : P.partOf x = ∅ ↔ x ∉ u := by

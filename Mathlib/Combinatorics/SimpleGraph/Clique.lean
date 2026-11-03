@@ -456,7 +456,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (hle : H ⊑ G) (h : G.CliqueFree 
     (G.map f).CliqueFree n ↔ G.CliqueFree n := by
   obtain (hle | hlt) := le_or_gt n 1
   · obtain (rfl | rfl) := Nat.le_one_iff_eq_zero_or_eq_one.1 hle
-    · simp [CliqueFree]
+    · simp
     simp [CliqueFree, show ∃ (_ : β), True from ⟨f (Classical.arbitrary _), trivial⟩]
   simp [CliqueFree, isNClique_map_iff hlt]
 

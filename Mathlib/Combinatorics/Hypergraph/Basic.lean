@@ -210,8 +210,8 @@ lemma IsNonempty.of_nonempty_edgeSet (hE : E(H).Nonempty) : H.IsNonempty :=
 
 @[simp]
 theorem ne_bot_iff : H ≠ ⊥ ↔ H.IsNonempty := by
-  simp [IsNonempty, Set.nonempty_iff_ne_empty, Hypergraph.ext_iff]
-  grind [bot_vertexSet, bot_edgeSet]
+  simp [IsNonempty, Hypergraph.ext_iff]
+  grind [bot_vertexSet, bot_edgeSet, Set.not_nonempty_iff_eq_empty]
 
 alias ⟨_, IsNonempty.ne_bot⟩ := ne_bot_iff
 
