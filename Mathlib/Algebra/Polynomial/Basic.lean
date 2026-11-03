@@ -967,10 +967,8 @@ theorem ofFinsupp_intCast (z : ℤ) : (ofFinsupp z : R[X]) = z := rfl
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 
-@[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by simp
 
-@[simp]
 theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by simp
 
 @[simp]
