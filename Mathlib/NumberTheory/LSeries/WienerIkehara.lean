@@ -25,6 +25,9 @@ Let `f : ℕ → ℝ` be non-negative with `∑ n ≤ x, f n ≪ x`, whose `L`-s
 continuously to `Re s ≥ 1` after subtracting `A / (s - 1)`.  Then
 `∑ n < N, f n = A * N + o(N)`.
 
+The classical theorem does not need the bound `∑ n ≤ x, f n ≪ x`, only the convergence of `F(s)`
+for `Re s > 1` (which the bound implies); it is assumed here because it simplifies the proof.
+
 ## Main results
 
 * `WienerIkehara.tendsto_sum_div`, `WienerIkehara.tendsto_sum_range_div`: the Wiener-Ikehara
@@ -39,8 +42,8 @@ between `∑' n, term f σ n * ψ̂ (log (n / x) / (2 * π))` and its polar coun
 halves as Fourier integrals (`sum_term_mul_fourier_eq`, `integral_exp_mul_fourier_eq`) cancels the
 pole and expresses `S` through `G` (`sum_term_mul_sub_mul_integral_eq`); letting `σ → 1`
 and applying the Riemann-Lebesgue lemma gives `S f A 1 ψ̂ x → 0`, first for compactly supported
-test functions (`lim_S_one_fourier`) and then for all Schwartz functions
-(`lim_S_one_fourier_schwartz`).
+test functions (`tendsto_S_one_fourier_of_hasCompactSupport`) and then for all Schwartz
+functions (`tendsto_S_one_fourier`).
 Surjectivity of the Fourier transform on Schwartz space upgrades this to a smoothed form of the
 theorem (`tendsto_sum_div_smooth_real`), and non-negativity of `f` together with a smooth Urysohn
 lemma (`exists_cutoff`) replaces the smooth cutoff by the indicator of
@@ -62,19 +65,18 @@ variable (ψ : 𝓢(ℝ, ℂ)) (u : ℝ)
 
 /-- In the arguments of this file, it is convenient to isolate a bespoke seminorm for
 Schwartz functions that controls the decay of their Fourier transform. -/
-private def Q := (𝓕 ψ).seminorm ℝ 0 0 + (𝓕 ψ).seminorm ℝ 2 0
+private def Q : ℝ := (𝓕 ψ).seminorm ℝ 0 0 + (𝓕 ψ).seminorm ℝ 2 0
 
 private lemma Q_nonneg : 0 ≤ ψ.Q := add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)
 
-private lemma Q_continuous : Continuous Q :=
+private lemma continuous_Q : Continuous Q :=
   (((schwartz_withSeminorms ℝ ℝ ℂ).continuous_seminorm (0, 0)).comp (by fun_prop)).add
     (((schwartz_withSeminorms ℝ ℝ ℂ).continuous_seminorm (2, 0)).comp (by fun_prop))
 
 private lemma norm_fourier_le_Q_mul : ‖𝓕 ψ u‖ ≤ ψ.Q * (1 + u ^ 2)⁻¹ := by
-  rw [← div_eq_mul_inv, le_div_iff₀ (by positivity : (0 : ℝ) < 1 + u ^ 2)]
+  rw [← div_eq_mul_inv, le_div_iff₀ (by positivity : (0 : ℝ) < 1 + u ^ 2), Q]
   have h := norm_pow_mul_le_seminorm ℝ (𝓕 ψ) 2 u
   rw [Real.norm_eq_abs, sq_abs] at h
-  unfold Q
   linarith [norm_le_seminorm ℝ (𝓕 ψ) u]
 
 end SchwartzMap
@@ -85,18 +87,18 @@ variable (f : ℕ → ℝ) (A : ℝ) (σ : ℝ) (φ : 𝓢(ℝ, ℂ)) (x : ℝ)
 
 private abbrev c₀ := π⁻¹ * 2⁻¹
 
-private def S₁ := ∑' n, term ↗f σ n * φ (c₀ * log (n / x))
+private def S₁ : ℂ := ∑' n, term ↗f σ n * φ (c₀ * log (n / x))
 
-private def S₂ := A * ↑(x ^ (1 - σ)) * ∫ u in Ici (- log x), rexp (-u * (σ - 1)) * φ (c₀ * u)
+private def S₂ : ℂ := A * ↑(x ^ (1 - σ)) * ∫ u in Ici (-log x), rexp (-u * (σ - 1)) * φ (c₀ * u)
 
 /-- A key statistic in the Wiener--Ikehara analysis involving an exponent `σ`, a test
 function `φ`, and a scale parameter `x`. -/
-private def S := S₁ f σ φ x - S₂ A σ φ x
+private def S : ℂ := S₁ f σ φ x - S₂ A σ φ x
 
 private lemma S₂_one : S₂ A 1 φ x = A * ∫ u in Ici (-log x), φ (c₀ * u) := by
   simp [S₂]
 
-/- The data and hypotheses for the Wiener--Ikehara theorem, supplied as individual hypotheses:
+/- The data and hypotheses for the Wiener-Ikehara theorem, supplied as individual hypotheses:
 a nonnegative function `f` (`hpos`) obeying a Chebyshev-type bound with constant `C` (`bound`),
 an asymptotic constant `A`, and a continuous extension `G` of `s ↦ LSeries f s - A / (s - 1)`
 to `re s ≥ 1` (`hG`, `hG'`). -/
@@ -121,6 +123,14 @@ private lemma lSeriesSummable : LSeriesSummable ↗f (σ : ℂ) := by
       Finset.sum_le_sum_of_subset_of_nonneg (by grind) fun k _ _ ↦ hpos k
     _ ≤ _ := (bound (2 * n)).trans_eq (by push_cast; ring)
 
+include hx in
+private lemma fourierChar_neg_mul_log_div {n : ℕ} (hn : n ≠ 0) (t : ℝ) :
+    (𝐞 (-(c₀ * log (n / x) * t)) : ℂ) = x ^ (t * I) / n ^ (t * I) := by
+  simp [fourierChar_apply, cpow_def_of_ne_zero, hx.ne', hn, ← Complex.exp_sub, log_div,
+    ofReal_log, hx.le]
+  congr
+  field
+
 include bound hpos hx hσ in
 private lemma sum_term_mul_fourier_eq :
     S₁ f σ (𝓕 ψ) x = ∫ t : ℝ, LSeries ↗f (σ + t * I) * ψ t * x ^ (t * I) :=
@@ -139,13 +149,24 @@ private lemma sum_term_mul_fourier_eq :
       congr with n
       by_cases hn : n = 0
       · simp [*]
-      suffices cexp (-(2 * π * ((↑π)⁻¹ * 2⁻¹ * log (n / x) * t) * I))
-          = x ^ (t * I) / n ^ (t * I) by
-        simp [Circle.smul_def, fourierChar_apply, cpow_add, field, *]
-      simp [cpow_def_of_ne_zero, hx.ne.symm, hn, ← Complex.exp_sub, log_div, ofReal_log, hx.le]
-      congr
-      field_simp
-      ring
+      rw [Circle.smul_def, fourierChar_neg_mul_log_div hx hn]
+      simp [cpow_add, field, *]
+
+include hx hσ in
+private lemma mul_integral_exp_mul_fourierChar_eq (t : ℝ) :
+    ↑(x ^ (1 - σ)) * ∫ u in Ici (-log x), (rexp (-u * (σ - 1)) : ℂ) * 𝐞 (-(t * (c₀ * u))) =
+      x ^ (t * I) / (σ + t * I - 1) := by
+  have : ∫ u in Ici (-log x), (rexp (-u * (σ - 1)) : ℂ) * 𝐞 (-(t * (c₀ * u))) =
+      ∫ u in Ioi (-log x), cexp (-(σ - 1 + t * I) * u) := by
+    rw [integral_Ici_eq_integral_Ioi]
+    congr with u
+    push_cast [fourierChar_apply, ← Complex.exp_add]
+    congr 1
+    field
+  rw [this, integral_cexp_neg_mul_Ioi_neg_log hx (by simpa using hσ), ofReal_cpow hx.le,
+    mul_div_assoc', ← cpow_add _ _ (mod_cast hx.ne')]
+  push_cast
+  ring_nf
 
 include hx hσ in
 private lemma integral_exp_mul_fourier_eq :
@@ -154,7 +175,7 @@ private lemma integral_exp_mul_fourier_eq :
     rw [integrableOn_Ici_iff_integrableOn_Ioi]
     convert exp_neg_integrableOn_Ioi (-log x) (sub_pos.mpr hσ) using 1
     ext u; ring_nf
-  unfold S₂; rw [mul_assoc]; congr 1
+  rw [S₂, mul_assoc]; congr 1
   calc
   _ = ↑(x ^ (1 - σ)) * ∫ u in Ici (-log x),
       ∫ t, (rexp (-u * (σ - 1)) : ℂ) • 𝐞 (-(t * (c₀ * u))) • ψ t := by
@@ -165,20 +186,9 @@ private lemma integral_exp_mul_fourier_eq :
   _ = _ := by
     rw [← integral_const_mul]
     congr with t
-    have hx' : (x : ℂ) ≠ 0 := mod_cast hx.ne'
-    calc
-      _ = ↑(x ^ (1 - σ)) * ((∫ u in Ioi (-log x), cexp (-(σ - 1 + t * I) * u)) * ψ t) := by
-        rw [← integral_mul_const, ← integral_Ici_eq_integral_Ioi]
-        congr with u
-        push_cast [Circle.smul_def, fourierChar_apply, smul_eq_mul, ← mul_assoc, ← Complex.exp_add]
-        field_simp
-        grind
-      _ = _ := by
-        have : (x : ℂ) ^ (t * I) = x ^ ((1 - σ : ℝ) : ℂ) * x ^ (σ - 1 + t * I) := by
-          rw [← cpow_add _ _ hx']; push_cast; ring_nf
-        rw [integral_cexp_neg_mul_Ioi_neg_log hx (by simpa using hσ), ofReal_cpow hx.le, this,
-          show (σ : ℂ) + t * I - 1 = σ - 1 + t * I by ring]
-        ring
+    simp_rw [Circle.smul_def, smul_smul, smul_eq_mul, integral_mul_const]
+    rw [← mul_assoc, mul_integral_exp_mul_fourierChar_eq hx hσ]
+    ring
 
 include hx in
 private lemma continuous_cpow_mul_I : Continuous fun t : ℝ ↦ (x : ℂ) ^ (t * I) :=
@@ -210,12 +220,12 @@ section Weight
 
 variable {a c t x : ℝ} {n : ℕ}
 
-/-- A weight function appearing in the analysis -/
-private def w t := (t * (1 + (c₀ * log t) ^ 2))⁻¹
+/-- A weight function appearing in the analysis. -/
+private def w (t : ℝ) : ℝ := (t * (1 + (c₀ * log t) ^ 2))⁻¹
 
-private lemma w_nonneg (ht : 0 ≤ t) : 0 ≤ w t := by unfold w; positivity
+private lemma w_nonneg (ht : 0 ≤ t) : 0 ≤ w t := by rw [w]; positivity
 
-private lemma w_deriv (ht : t ≠ 0) : HasDerivAt w
+private lemma hasDerivAt_w (ht : t ≠ 0) : HasDerivAt w
     (- (c₀ ^ 2 * (log t + 1) ^ 2 + (1 - c₀) * (1 + c₀)) * w t ^ 2) t := by
   have : HasDerivAt (fun t ↦ t * (1 + (c₀ * log t) ^ 2))
       (1 + 2 * c₀ ^ 2 * log t + (c₀ * log t) ^ 2) t := by
@@ -227,10 +237,10 @@ private lemma w_deriv (ht : t ≠ 0) : HasDerivAt w
   convert this.inv (by positivity) using 1
   grind
 
-private lemma w_antitone : AntitoneOn w (Ioi 0) := by
+private lemma antitoneOn_w : AntitoneOn w (Ioi 0) := by
   refine antitoneOn_of_hasDerivWithinAt_nonpos (convex_Ioi _)
-    (fun _ _ ↦ (w_deriv (by grind)).continuousAt.continuousWithinAt)
-    (fun _ _ ↦ (w_deriv (fun _ ↦ by simp_all)).hasDerivWithinAt)
+    (fun _ _ ↦ (hasDerivAt_w (by grind)).continuousAt.continuousWithinAt)
+    (fun _ _ ↦ (hasDerivAt_w (fun _ ↦ by simp_all)).hasDerivWithinAt)
     fun x _ ↦ ?_
   have : 0 < c₀ ^ 2 * (log x + 1) ^ 2 + (1 - c₀) * (1 + c₀) := by
     have : π⁻¹ ≤ 2⁻¹ := by simp [field, two_le_pi]
@@ -238,7 +248,8 @@ private lemma w_antitone : AntitoneOn w (Ioi 0) := by
   simp only [neg_mul, Left.neg_nonpos_iff]
   positivity
 
-private lemma w_integrable (hc : 0 < c) : IntegrableOn (fun t ↦ a * w (t / c)) (Ici 0) := by
+private lemma integrableOn_mul_w_div (hc : 0 < c) :
+    IntegrableOn (fun t ↦ a * w (t / c)) (Ici 0) := by
   have (t) (ht : 0 < t) : t⁻¹ • (a * c * (1 + (c₀ * (log t - log c)) ^ 2)⁻¹) = a * w (t / c)
       := by
     have : 0 < 1 + (c₀ * (log t - log c)) ^ 2 := by positivity
@@ -248,13 +259,15 @@ private lemma w_integrable (hc : 0 < c) : IntegrableOn (fun t ↦ a * w (t / c))
     (((integrable_inv_one_add_mul_sq (by positivity)).comp_sub_right _).const_mul _)).congr_fun
     this measurableSet_Ioi
 
-private lemma mul_w_antitoneOn (hx : 0 < x) : AntitoneOn (fun t ↦ x⁻¹ * w (t / x)) (Ioc 0 n) := by
+private lemma antitoneOn_inv_mul_w_div (hx : 0 < x) :
+    AntitoneOn (fun t ↦ x⁻¹ * w (t / x)) (Ioc 0 n) := by
   intro u ⟨_, _⟩ v ⟨_, _⟩ huv
   apply mul_le_mul le_rfl ?_ (w_nonneg (by positivity)) (by positivity)
-  exact w_antitone (by rw [mem_Ioi]; positivity) (by rw [mem_Ioi]; positivity) (by grw [huv])
+  exact antitoneOn_w (by rw [mem_Ioi]; positivity) (by rw [mem_Ioi]; positivity) (by grw [huv])
 
-private lemma mul_w_integrableOn (hx : 0 < x) : IntegrableOn (fun t ↦ x⁻¹ * w (t / x)) (Icc 0 n) :=
-  .mono_set (w_integrable (by positivity)) Icc_subset_Ici_self
+private lemma integrableOn_inv_mul_w_div (hx : 0 < x) :
+    IntegrableOn (fun t ↦ x⁻¹ * w (t / x)) (Icc 0 n) :=
+  .mono_set (integrableOn_mul_w_div (by positivity)) Icc_subset_Ici_self
 
 private lemma inv_mul_w_div (hx : x ≠ 0) (t : ℝ) :
     x⁻¹ * w (t / x) = (t * (1 + (c₀ * log (t / x)) ^ 2))⁻¹ := by
@@ -274,7 +287,7 @@ private lemma antitone_ite_w (hx : 0 < x) :
   split_ifs with hi
   · exact inv_mul_w_div_le_one hx.ne' (mod_cast Nat.one_le_iff_ne_zero.mpr hj)
   · gcongr
-    exact w_antitone (by rw [mem_Ioi]; positivity) (by rw [mem_Ioi]; positivity) (by gcongr)
+    exact antitoneOn_w (by rw [mem_Ioi]; positivity) (by rw [mem_Ioi]; positivity) (by gcongr)
 
 end Weight
 
@@ -291,7 +304,7 @@ private lemma tendsto_integral_mul_cpow_mul_I {ψ : ℝ → ℂ} :
   · ext; congr with _
     simp only [← ofReal_mul, mul_comm (ψ _), fourierChar, Circle.exp,
       innerₗ_apply_apply, RCLike.inner_apply, conj_trivial, AddChar.coe_mk, mul_neg]
-    congr; field_simp
+    congr; field
   exact (zero_at_infty_fourier ψ).comp <| Tendsto.mono_right
     (tendsto_log_atTop.const_mul_atTop_of_neg (by simp [pi_pos])) atBot_le_cocompact
 
@@ -314,14 +327,15 @@ private lemma sum_range_ite_w_le :
   calc
     _ ≤ ∫ t in 0..m, x⁻¹ * w (t / x) := by
       simpa using @AntitoneOn.sum_le_integral_of_integrableOn 0 m (fun t ↦ x⁻¹ * w (t / x))
-        (by simpa using mul_w_antitoneOn hx₀) (by simpa using mul_w_integrableOn hx₀)
+        (by simpa using antitoneOn_inv_mul_w_div hx₀)
+        (by simpa using integrableOn_inv_mul_w_div hx₀)
     _ = ∫ t in 0..m / x, w t := by
       rw [intervalIntegral.integral_const_mul, intervalIntegral.integral_comp_div w hx₀.ne',
         zero_div, smul_eq_mul, ← mul_assoc, inv_mul_cancel₀ hx₀.ne', one_mul]
     _ ≤ ∫ t in Ioi 0, w t := by
       rw [intervalIntegral.integral_of_le (by positivity)]
       exact setIntegral_mono_set
-        (by simpa using (w_integrable (a := 1) zero_lt_one).mono_set Ioi_subset_Ici_self)
+        (by simpa using (integrableOn_mul_w_div (a := 1) zero_lt_one).mono_set Ioi_subset_Ici_self)
         (eventually_of_mem (self_mem_ae_restrict measurableSet_Ioi) fun t ht ↦ w_nonneg ht.le)
         Ioc_subset_Ioi_self.eventuallyLE
 
@@ -362,7 +376,7 @@ private lemma norm_term_mul_le (x : ℝ) (f : ℕ → ℂ) (n : ℕ) :
 
 include bound hpos hx in
 private theorem tendsto_S₁ : Tendsto (S₁ f · (𝓕 Ψ) x) (𝓝[>] 1) (𝓝 (S₁ f 1 (𝓕 Ψ) x)) := by
-  unfold S₁
+  simp only [S₁]
   refine tendsto_tsum_of_dominated_convergence
     ((summable_sum_log_range bound hpos hx).mul_left Ψ.Q) (fun n ↦ ?_) ?_
   · refine (Continuous.tendsto ?_ 1).mono_left nhdsWithin_le_nhds
@@ -395,8 +409,9 @@ private theorem tendsto_S₂ : Tendsto (S₂ A · (𝓕 Ψ) x) (𝓝[>] 1) (𝓝
     _ = x := exp_log hx₀
 
 include hG hΨ hx in
-private theorem lim_integ_G_mul : Tendsto (fun σ : ℝ ↦ ∫ t : ℝ, G (σ + t * I) * Ψ t * x ^ (t * I))
-    (𝓝[>] 1) (𝓝 (∫ t : ℝ, G (1 + t * I) * Ψ t * x ^ (t * I))) := by
+private theorem tendsto_integral_G_mul :
+    Tendsto (fun σ : ℝ ↦ ∫ t : ℝ, G (σ + t * I) * Ψ t * x ^ (t * I)) (𝓝[>] 1)
+      (𝓝 (∫ t : ℝ, G (1 + t * I) * Ψ t * x ^ (t * I))) := by
   have hcpow := continuous_cpow_mul_I (zero_lt_one.trans_le hx)
   have hGc : Continuous fun p : ℝ × ℝ ↦ G (max p.1 1 + p.2 * I) :=
     hG.comp_continuous (by fun_prop) fun p ↦ by simp
@@ -414,12 +429,13 @@ private theorem lim_integ_G_mul : Tendsto (fun σ : ℝ ↦ ∫ t : ℝ, G (σ +
   simp only [max_eq_left hσ.le]
 
 include bound hG hG' hpos hΨ in
-private lemma lim_S_one_fourier : Tendsto (S f A 1 (𝓕 Ψ)) atTop (𝓝 0) := by
+private lemma tendsto_S_one_fourier_of_hasCompactSupport :
+    Tendsto (S f A 1 (𝓕 Ψ)) atTop (𝓝 0) := by
   apply (tendsto_integral_mul_cpow_mul_I (ψ := fun t ↦ G (1 + t * I) * (Ψ t))).congr'
   filter_upwards [eventually_ge_atTop 1] with x hx
-  unfold S
+  rw [S]
   apply (tendsto_nhds_unique_of_eventuallyEq ((tendsto_S₁ bound hpos Ψ hx).sub (tendsto_S₂ Ψ hx))
-    (lim_integ_G_mul hG Ψ hΨ hx) _).symm
+    (tendsto_integral_G_mul hG Ψ hΨ hx) _).symm
   exact (eventuallyEq_nhdsWithin_iff.mpr (.of_forall fun σ hσ ↦
     sum_term_mul_sub_mul_integral_eq bound hG hG' hpos (by linarith) hΨ hσ))
 
@@ -478,16 +494,17 @@ private lemma exists_norm_S_one_le :
   exact (norm_sub_le _ _).trans ((add_le_add h₁ h₂).trans_eq (mul_add ..).symm)
 
 include bound hG hG' hpos in
-private lemma lim_S_one_fourier_schwartz : Tendsto (S f A 1 (𝓕 Ψ)) atTop (𝓝 0) := by
+private lemma tendsto_S_one_fourier : Tendsto (S f A 1 (𝓕 Ψ)) atTop (𝓝 0) := by
   obtain ⟨K, hK⟩ := exists_norm_S_one_le (A := A) bound hpos
   refine Metric.tendsto_nhds.mpr fun ε hε ↦ ?_
   obtain ⟨φ, hφQ : _ < ε / 2, hφcs⟩ := SchwartzMap.dense_hasCompactSupport.inter_open_nonempty
     {φ | (Ψ - φ).Q * K < ε / 2}
-    (isOpen_lt ((SchwartzMap.Q_continuous.comp (by fun_prop)).mul continuous_const)
+    (isOpen_lt ((SchwartzMap.continuous_Q.comp (by fun_prop)).mul continuous_const)
       continuous_const)
-    ⟨Ψ, by simpa [Q, sub_self, FourierTransform.fourier_zero, _root_.map_zero] using half_pos hε⟩
+    ⟨Ψ, by simpa [Q] using half_pos hε⟩
   filter_upwards [eventually_ge_atTop 1, Metric.tendsto_nhds.mp
-    (lim_S_one_fourier bound hG hG' hpos φ hφcs) (ε / 2) (half_pos hε)] with x hx hφ
+    (tendsto_S_one_fourier_of_hasCompactSupport bound hG hG' hpos φ hφcs) (ε / 2)
+    (half_pos hε)] with x hx hφ
   rw [dist_zero_right] at hφ ⊢
   calc
     _ = ‖S f A 1 (𝓕 (Ψ - φ)) x + S f A 1 (𝓕 φ) x‖ := by
@@ -506,7 +523,7 @@ private lemma eventually_eq_zero_of_tsupport_subset : ∀ᶠ x in 𝓝 0, ψ x =
   notMem_tsupport_iff_eventuallyEq.mp (fun h ↦ lt_irrefl 0 <| mem_Ioi.mp (hplus h))
 
 include hsupp hplus in
-private theorem comp_exp_support : HasCompactSupport (ψ ∘ rexp) := by
+private theorem hasCompactSupport_comp_exp : HasCompactSupport (ψ ∘ rexp) := by
   simp only [hasCompactSupport_iff_eventuallyEq, coclosedCompact_eq_cocompact,
     cocompact_eq_atBot_atTop] at hsupp ⊢
   exact ⟨tendsto_exp_atBot <| eventually_eq_zero_of_tsupport_subset hplus,
@@ -529,7 +546,7 @@ private lemma exists_fourier_eq : ∃ g : 𝓢(ℝ, ℂ), ∀ y > 0, 𝓕 g (c�
     have : ContDiff ℝ ∞ fun x ↦ rexp (2 * π * x) := (contDiff_const.mul contDiff_id).exp
     exact (ofRealCLM.contDiff.comp this).mul (hsmooth.comp this)
   have h2 : HasCompactSupport h := by
-    simpa using! (comp_exp_support hsupp hplus).comp_smul two_pi_pos.ne' |>.mul_left
+    simpa using! (hasCompactSupport_comp_exp hsupp hplus).comp_smul two_pi_pos.ne' |>.mul_left
   refine ⟨𝓕⁻ (h2.toSchwartzMap h1), fun y hy ↦ ?_⟩
   simp only [fourier_fourierInv_eq, HasCompactSupport.toSchwartzMap_toFun, h]
   field_simp
@@ -537,9 +554,9 @@ private lemma exists_fourier_eq : ∃ g : 𝓢(ℝ, ℂ), ∀ y > 0, 𝓕 g (c�
 
 include bound hG hG' hpos hsmooth hsupp hplus in
 /-- A smoothed *Wiener-Ikehara Tauberian Theorem*: If `f` is a nonnegative arithmetic
-function whose L-series has a simple pole at `s = 1` with residue `A` and otherwise extends
-continuously to the closed half-plane `re s ≥ 1`, then `f` behaves like `A` asymptotically
-with respect to smooth weights. -/
+function with `∑ i < n, f i ≤ C * n` whose L-series has a simple pole at `s = 1` with residue `A`
+and otherwise extends continuously to the closed half-plane `re s ≥ 1`, then `f` behaves like `A`
+asymptotically with respect to smooth weights with compact support in `(0, ∞)`. -/
 lemma tendsto_sum_div_smooth : Tendsto (fun x ↦ (∑' n, f n * ψ (n / x)) / x)
     atTop (𝓝 (A * ∫ y in Ioi 0, ψ y)) := by
   obtain ⟨g, hg⟩ := exists_fourier_eq hsmooth hsupp hplus
@@ -559,16 +576,16 @@ lemma tendsto_sum_div_smooth : Tendsto (fun x ↦ (∑' n, f n * ψ (n / x)) / x
       exact congr(_ * $(setIntegral_congr_fun measurableSet_Ioi fun u _ ↦ by
         rw [real_smul, ← hg _ (exp_pos u), Real.log_exp]))
   simpa [tendsto_sub_nhds_zero_iff, tsum_div_const] using
-    (lim_S_one_fourier_schwartz bound hG hG' hpos g).congr' h3
+    (tendsto_S_one_fourier bound hG hG' hpos g).congr' h3
 
 include bound hG hG' hpos in
-/-- A version of smoothed Wiener--Ikehara for real-valued cutoffs. -/
+/-- A version of smoothed Wiener-Ikehara for real-valued cutoffs. -/
 lemma tendsto_sum_div_smooth_real {Ψ : ℝ → ℝ} (hsmooth : ContDiff ℝ ∞ Ψ)
     (hsupp : HasCompactSupport Ψ) (hplus : tsupport Ψ ⊆ Ioi 0) :
     Tendsto (fun x ↦ (∑' n, f n * Ψ (n / x)) / x) atTop (𝓝 (A * ∫ y in Ioi 0, Ψ y)) := by
   have := (continuous_re.tendsto _).comp (tendsto_sum_div_smooth bound hG hG' hpos
       (ofRealCLM.contDiff.comp hsmooth) (hsupp.comp_left rfl)
-      (by unfold tsupport; rwa [support_comp_eq]; simp))
+      (by rwa [tsupport, support_comp_eq]; simp))
   simp at this; norm_cast at this
 
 end Smooth
@@ -609,7 +626,7 @@ private lemma A_nonneg : 0 ≤ A := by
   filter_upwards [eventually_ge_atTop 0] with x hx
   exact div_nonneg (tsum_nonneg fun n ↦ mul_nonneg (hpos n) (hψ _)) hx
 
-private lemma summable_mul {x} {g : ℝ → ℝ} (hg : HasCompactSupport g) (hx : 0 < x) :
+private lemma summable_mul {x : ℝ} {g : ℝ → ℝ} (hg : HasCompactSupport g) (hx : 0 < x) :
     Summable fun n ↦ f n * g (n / x) := by
   obtain ⟨M, hM⟩ := hg.bddAbove.mono subset_closure
   apply summable_of_hasFiniteSupport
