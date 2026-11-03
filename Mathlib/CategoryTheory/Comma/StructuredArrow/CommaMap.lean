@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Structured arrow categories on `Comma.map`
 
