@@ -301,9 +301,9 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   refine ((TopCat.binaryCofan_isColimit_iff _).mpr ⟨?_, ?_, ?_⟩).some
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert! (map_continuous f.hom).1 _ isOpen_range_inl
+    convert! (map_continuous f.hom).isOpen_preimage _ isOpen_range_inl
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert! (map_continuous f.hom).1 _ isOpen_range_inr
+    convert! (map_continuous f.hom).isOpen_preimage _ isOpen_range_inr
   · convert! Set.isCompl_range_inl_range_inr.preimage f
 
 set_option backward.isDefEq.respectTransparency.types false in

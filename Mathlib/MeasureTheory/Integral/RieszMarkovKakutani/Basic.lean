@@ -306,7 +306,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
       fun x hx ↦ (inv_lt_one_of_one_lt₀ hα).trans_le (hfleoneonK x hx),
       preimage_mono Ioi_subset_Ici_self⟩
   have hK'cp : IsCompact K' :=
-    .of_isClosed_subset f.2 (isClosed_Ici.preimage (by fun_prop)) fun x hx ↦
+    .of_isClosed_subset f.hasCompactSupport' (isClosed_Ici.preimage (by fun_prop)) fun x hx ↦
       subset_closure ((inv_pos_of_pos <| zero_lt_one.trans hα).trans_le hx).ne'
   set hb' := hb ⟨K', hK'cp⟩
   simp only [Compacts.coe_mk, le_iInf_iff] at hb'
