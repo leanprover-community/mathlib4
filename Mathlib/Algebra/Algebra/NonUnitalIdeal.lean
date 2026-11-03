@@ -50,6 +50,8 @@ variable (R : Type*) [Semiring R]
 variable (A : Type*) [NonUnitalNonAssocSemiring A]
 variable [Module R A]
 
+/-- A two-sided ideal is an `R`-submodule closed under multiplication by arbitrary elements of `A`
+on both sides. No compatibility between scalar multiplication and multiplication is required. -/
 structure TwoSidedIdeal extends Submodule R A where
   left_mul_mem' (a : A) {x : A} : x ∈ carrier → a * x ∈ carrier
   right_mul_mem' (a : A) {x : A} : x ∈ carrier → x * a ∈ carrier
