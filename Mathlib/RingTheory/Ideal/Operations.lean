@@ -1088,31 +1088,35 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
   have hxi : x ∈ f i := (h hxI).resolve_right hxt
   have : ¬I ⊓ t.inf f ≤ f i := by
     rw [hpi.inf_le, hpi.inf_le']
-    exact not_or.2 ⟨hIi, fun ⟨j, hj, hji⟩ ↦ (Finset.mem_filter.mp hj).right hji⟩
+    exact not_or.mpr ⟨hIi, fun ⟨j, hj, hji⟩ ↦ (Finset.mem_filter.mp hj).right hji⟩
   obtain ⟨r, ⟨hrI, hrt⟩, hri⟩ := IsConcreteLE.not_le_iff_exists.mp this
   exfalso
   obtain hrxi | hrxt := h (I.add_mem hrI hxI)
   · exact hri (((f i).add_mem_iff_left hxi).mp hrxi)
   · obtain ⟨j, hj, hrxj⟩ := Set.mem_iUnion₂.mp hrxt
     exact hxt <| Set.mem_biUnion hj <|
-      ((f j).add_mem_iff_right (Submodule.mem_finsetInf.mp hrt j hj)).mp hrxj
+      ((f j).add_mem_iff_right ((Submodule.mem_finsetInf.mp hrt j hj))).mp hrxj
 
 /-- Prime avoidance, with the two possibly non-prime ideals `f a`, `f b` written separately. -/
 theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R}
     {a b : ι} (hp : ∀ i ∈ s, IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔ I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
   classical
-  simpa only [Finset.coe_insert, Set.biUnion_insert, Set.union_assoc, Finset.exists_mem_insert]
-    using subset_union_prime (s := insert a (insert b s)) a b fun i hi hia hib ↦
-      hp i <| Finset.mem_of_mem_insert_of_ne (Finset.mem_of_mem_insert_of_ne hi hia) hib
+  convert subset_union_prime (s := insert a (insert b s)) (I := I) a b
+    (fun i _ _ _ ↦ hp i (by grind))
+  · ext
+    simp only [SetLike.mem_coe, Set.mem_union, Set.mem_iUnion, exists_prop, Finset.coe_insert,
+      Set.mem_insert_iff, Set.iUnion_iUnion_eq_or_left]
+    grind
+  · simp
 
 /-- Another version of prime avoidance using `Set.Finite` instead of `Finset`. -/
 lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
     (hs : s.Finite) {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
-  simpa only [Set.Finite.coe_toFinset, Set.Finite.mem_toFinset] using
-    subset_union_prime (s := hs.toFinset) a b fun i hi ↦ hp i (hs.mem_toFinset.1 hi)
+  rw [← hs.coe_toFinset, subset_union_prime a b fun i hi ↦ hp i (hs.mem_toFinset.1 hi)]
+  simp
 
 lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
     {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
