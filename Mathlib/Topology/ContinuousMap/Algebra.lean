@@ -5,6 +5,7 @@ Authors: Kim Morrison, Nicolò Cavalleri
 -/
 module
 
+public import Mathlib.Algebra.Algebra.FunLike
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
@@ -697,7 +698,6 @@ theorem Subalgebra.separatesPoints_monotone :
   rcases m with ⟨f, ⟨m, rfl⟩⟩
   exact ⟨_, ⟨f, ⟨r m, rfl⟩⟩, w⟩
 
-@[simp]
 theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1 : A) := by
   rw [Algebra.algebraMap_eq_smul_one]
   rfl
