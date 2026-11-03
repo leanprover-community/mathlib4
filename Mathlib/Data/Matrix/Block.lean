@@ -840,7 +840,7 @@ section ExtendByOne
 
 open Function
 
-variable {l : Type*} [DecidableEq l] [DecidableEq m] [Semiring R] (e : n ↪ m)
+variable [DecidableEq l] [DecidableEq m] [Semiring R] (e : n ↪ m)
 
 /-- Extend a matrix `A : Matrix n n R` along an embedding `e : n ↪ m`: the entry at `(e i, e j)`
 is `A i j`, and every other entry is that of the identity matrix. -/
