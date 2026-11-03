@@ -470,7 +470,7 @@ theorem kernelZeroIsoSource_inv :
   simp [kernelZeroIsoSource]
 
 /-- If two morphisms are known to be equal, then their kernels are isomorphic. -/
-@[to_dual]
+@[to_dual /-- If two morphisms are known to be equal, then their cokernels are isomorphic. -/]
 def kernelIsoOfEq {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) : kernel f ≅ kernel g :=
   HasLimit.isoOfNatIso (by rw [h])
 
