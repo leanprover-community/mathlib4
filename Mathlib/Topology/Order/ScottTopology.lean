@@ -269,16 +269,10 @@ instance [DiscreteTopology α] [WellFoundedGT α] : IsScottHausdorff α univ whe
   topology_eq_scottHausdorff := by
     rw [DiscreteTopology.eq_bot (α := α), eq_comm, ← le_bot_iff]
     intro s hs
-    rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)] 
-    rw [isOpen_iff_forall_mem_open]
-    intro x hxs
-    sorry
-    · rw [le_orderTopology_iff]
-      refine fun a ↦ ⟨?_, ?_⟩
-      · exact @Topology.IsScottHausdorff.IsOpen.Ioi α _ (scottHausdorff α univ) _ _
-      · exact @Topology.IsScottHausdorff.IsOpen.Iio α _ (scottHausdorff α univ) _ _
+    rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s _ (scottHausdorff α univ)]
+    exact DirSupInacc.of_wellFoundedGT _
 
-#exit
+end WellFounded
 
 /-! ### Scott topology -/
 
