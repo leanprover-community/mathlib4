@@ -116,7 +116,6 @@ lemma pullHom'_p₁_p₂ (i₁ i₂ : ι) :
     pullHom' hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (by simp) (by simp) = hom i₁ i₂ := by
   simp [pullHom'_eq_pullHom hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (𝟙 _)]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma pullHom'_self' (hom_self : ∀ i, pullHom' hom (f i) (𝟙 (X i)) (𝟙 (X i)) = 𝟙 _)
     ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (hg : g ≫ f i = q := by cat_disch) :
     pullHom' hom q g g hg hg = 𝟙 _ := by
