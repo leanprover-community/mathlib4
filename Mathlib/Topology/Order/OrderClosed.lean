@@ -567,24 +567,18 @@ end Preorder
 
 section PartialOrder
 
-variable [TopologicalSpace α] [PartialOrder α] [t : OrderClosedTopology α]
+variable [TopologicalSpace α] [PartialOrder α]
 
 -- see Note [lower instance priority]
-instance (priority := 90) ClosedIicTopology.to_t0Space : T0Space α where
+@[to_dual]
+instance (priority := 90) ClosedIicTopology.to_t0Space [ClosedIicTopology α] : T0Space α where
   t0 x y h := by
     apply le_antisymm
     · simpa using h.mem_closed_iff (isClosed_Iic y)
     · simpa using h.mem_closed_iff (isClosed_Iic x)
 
 -- see Note [lower instance priority]
-instance (priority := 90) ClosedIciTopology.to_t0Space : T0Space α where
-  t0 x y h := by
-    apply le_antisymm
-    · simpa using h.mem_closed_iff (isClosed_Ici x)
-    · simpa using h.mem_closed_iff (isClosed_Ici y)
-
--- see Note [lower instance priority]
-instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
+instance (priority := 90) OrderClosedTopology.to_t2Space [t : OrderClosedTopology α] : T2Space α :=
   t2_iff_isClosed_diagonal.2 <| by
     simpa only [diagonal, le_antisymm_iff] using!
       t.isClosed_le'.inter (isClosed_le continuous_snd continuous_fst)
