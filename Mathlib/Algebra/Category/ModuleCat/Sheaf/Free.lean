@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
+
 import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!

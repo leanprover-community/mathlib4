@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Dynamics.Ergodic.Function
+
 import Mathlib.Dynamics.Ergodic.RadonNikodym
 import Mathlib.Probability.ConditionalProbability
 
@@ -45,7 +46,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
       refine ⟨.smul_measure (.smul_measure ?_ _) c, ?_⟩
       · convert hf.restrict_preimage hsm
         exact hfs.symm
-      · rw [Measure.smul_apply, (cond_isProbabilityMeasure hμs).1, smul_eq_mul, mul_one]
+      · rw [smul_apply, (cond_isProbabilityMeasure hμs).1, smul_eq_mul, mul_one]
     intro s hsm hfs
     by_contra H
     obtain ⟨hs, hs'⟩ : μ s ≠ 0 ∧ μ sᶜ ≠ 0 := by

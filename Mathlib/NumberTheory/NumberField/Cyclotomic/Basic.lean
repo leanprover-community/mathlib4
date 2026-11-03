@@ -6,9 +6,10 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-import Mathlib.NumberTheory.Cyclotomic.Discriminant
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
+
+import Mathlib.NumberTheory.Cyclotomic.Discriminant
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Prime
 

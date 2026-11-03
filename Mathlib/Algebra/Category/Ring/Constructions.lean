@@ -8,13 +8,13 @@ module
 public import Mathlib.Algebra.Category.Ring.Adjunctions
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
-import Mathlib.RingTheory.FreeCommRing
 import Mathlib.Algebra.Ring.Subring.Units
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.RingTheory.FreeCommRing
 
 /-!
 # Constructions of (co)limits in `CommRingCat`

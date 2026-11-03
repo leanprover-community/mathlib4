@@ -5,8 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Colon
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Primary submodules

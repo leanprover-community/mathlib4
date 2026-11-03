@@ -10,10 +10,11 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.RingTheory.Norm.Transitivity
+
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.LinearAlgebra.Complex.Determinant
 import Mathlib.RingTheory.Complex
-public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Manifold structure on the upper half plane.
@@ -191,7 +192,7 @@ lemma deriv_smul_ne_zero {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
     deriv (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ ≠ 0 := by
   rw [deriv_smul hg]
   apply div_ne_zero
-  · exact_mod_cast hg.ne'
+  · exact mod_cast hg.ne'
   · exact pow_ne_zero _ (denom_ne_zero g τ)
 
 lemma analyticAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :

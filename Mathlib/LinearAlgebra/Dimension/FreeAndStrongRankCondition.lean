@@ -46,7 +46,6 @@ theorem Basis.ofRankEqZero_apply [Module.Free K V] {ι : Type*} [IsEmpty ι]
 
 theorem le_rank_iff_exists_linearIndependent [Module.Free K V] {c : Cardinal} :
     c ≤ Module.rank K V ↔ ∃ s : Set V, #s = c ∧ LinearIndepOn K id s := by
-  have := nontrivial_of_invariantBasisNumber K
   constructor
   · intro h
     obtain ⟨κ, t'⟩ := Module.Free.exists_basis (R := K) (M := V)
@@ -103,7 +102,6 @@ theorem rank_le_one_iff [Module.Free K V] :
 single non-zero vector of which all vectors are multiples. -/
 theorem rank_eq_one_iff [Module.Free K V] :
     Module.rank K V = 1 ↔ ∃ v₀ : V, v₀ ≠ 0 ∧ ∀ v, ∃ r : K, r • v₀ = v := by
-  have := nontrivial_of_invariantBasisNumber K
   refine ⟨fun h ↦ ?_, fun ⟨v₀, h, hv⟩ ↦ (rank_le_one_iff.2 ⟨v₀, hv⟩).antisymm ?_⟩
   · obtain ⟨v₀, hv⟩ := rank_le_one_iff.1 h.le
     refine ⟨v₀, fun hzero ↦ ?_, hv⟩
@@ -145,7 +143,6 @@ single vector, not necessarily in the submodule, such that the
 submodule is contained in its span. -/
 theorem rank_submodule_le_one_iff' (s : Submodule K V) [Module.Free K s] :
     Module.rank K s ≤ 1 ↔ ∃ v₀, s ≤ K ∙ v₀ := by
-  have := nontrivial_of_invariantBasisNumber K
   constructor
   · rw [rank_submodule_le_one_iff]
     rintro ⟨v₀, _, h⟩
@@ -209,7 +206,6 @@ theorem Module.finrank_le_one_iff_top_isPrincipal [Module.Free K V] [Module.Fini
 variable (K V) in
 theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
     [Module.Finite K V] : lift.{u} #V = lift.{v} #K ^ lift.{u} (Module.rank K V) := by
-  have := nontrivial_of_invariantBasisNumber K
   obtain ⟨s, hs⟩ := Module.Free.exists_basis (R := K) (M := V)
   -- `Module.Finite.finite_basis` is in a much later file, so we copy its proof to here
   have : Finite s := by

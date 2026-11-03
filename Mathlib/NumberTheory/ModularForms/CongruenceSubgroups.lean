@@ -5,8 +5,9 @@ Authors: Chris Birkbeck
 -/
 module
 
-import Mathlib.LinearAlgebra.Matrix.Integer
 public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+
+import Mathlib.LinearAlgebra.Matrix.Integer
 
 /-!
 # Congruence subgroups

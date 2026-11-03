@@ -6,9 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Comma.Over.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
 /-!
 # Subcategories of comma categories defined by morphism properties
@@ -289,7 +289,6 @@ lemma inv_hom {X Y : P.Comma L R Q W} (f : X ⟶ Y) [IsIso f] : (inv f).hom = in
 
 variable (L R P Q W)
 
-set_option backward.defeqAttrib.useBackward true in
 instance [Q.RespectsIso] [W.RespectsIso] : (forget L R P Q W).ReflectsIsomorphisms where
   reflects f hf := by
     simp only [forget_obj, forget_map] at hf

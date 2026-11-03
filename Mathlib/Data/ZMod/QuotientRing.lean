@@ -5,10 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.ZMod
-public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # `ZMod n` and quotient groups / rings

@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.Sets.OpenCover
 
 /-!
 # Properties of maps that are local at the target or at the source.

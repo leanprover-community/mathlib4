@@ -39,7 +39,9 @@ the minimal polynomial of `f` is `minpoly 𝕜 f`.
 -/
 @[stacks 09GM]
 noncomputable def minpoly (x : B) : A[X] :=
-  if hx : IsIntegral A x then degree_lt_wf.min _ hx else 0
+  if hx : IsIntegral A x then
+    degree_lt_wf.min {p | p.Monic ∧ Polynomial.eval₂ (algebraMap A B) x p = 0} hx
+  else 0
 
 end MinPolyDef
 
@@ -54,7 +56,7 @@ variable {x : B}
 theorem monic (hx : IsIntegral A x) : Monic (minpoly A x) := by
   delta minpoly
   rw [dite_eq_left hx]
-  exact (degree_lt_wf.min_mem _ hx).1
+  exact (degree_lt_wf.min_mem {p | p.Monic ∧ Polynomial.eval₂ (algebraMap A B) x p = 0} hx).1
 
 /-- A minimal polynomial is nonzero. -/
 theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
@@ -89,7 +91,7 @@ variable (A x)
 theorem aeval : aeval x (minpoly A x) = 0 := by
   delta minpoly
   split_ifs with hx
-  · exact (degree_lt_wf.min_mem _ hx).2
+  · exact (degree_lt_wf.min_mem {p | p.Monic ∧ Polynomial.eval₂ (algebraMap A B) x p = 0} hx).2
   · exact aeval_zero _
 
 /-- Given any `f : B →ₐ[A] B'` and any `x : L`, the minimal polynomial of `x` vanishes at `f x`. -/
@@ -169,7 +171,8 @@ of `x` over `A`. -/
 theorem eq_of_linearIndependent {p : A[X]} (monic : p.Monic) (hp0 : p.aeval x = 0)
     (n : ℕ) (hpn : p.degree = n) (ind : LinearIndependent A fun i : Fin n ↦ x ^ i.val) :
     minpoly A x = p :=
-  .symm <| unique' _ _ monic hp0 fun q lt ↦ or_iff_not_imp_left.mpr fun ne hq ↦ ne <| ext fun i ↦ by
+  .symm <| unique' _ _ monic hp0 fun q lt ↦ or_iff_not_imp_left.mpr fun ne hq ↦ ne <| by
+    ext i
     rw [q.as_sum_range' _ ((natDegree_lt_iff_degree_lt ne).mpr (hpn ▸ lt))] at hq
     obtain lt | le := lt_or_ge i n
     · simpa using Fintype.linearIndependent_iff.mp ind (q.coeff ·)

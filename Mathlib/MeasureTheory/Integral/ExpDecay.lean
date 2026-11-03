@@ -5,8 +5,9 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.MeasureTheory.Integral.Asymptotics
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+
+import Mathlib.MeasureTheory.Integral.Asymptotics
 
 /-!
 # Integrals with exponential decay at ∞
@@ -22,9 +23,6 @@ for integrability:
 -/
 
 public section
-
-
-noncomputable section
 
 open Real intervalIntegral MeasureTheory Set Filter Asymptotics
 

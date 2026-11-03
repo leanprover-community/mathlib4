@@ -6,10 +6,11 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 module
 
 public import Mathlib.GroupTheory.QuotientGroup.Finite
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Congruence.Basic
 
 /-!
 # Ideal quotients

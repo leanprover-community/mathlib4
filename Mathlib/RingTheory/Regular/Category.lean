@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categorical constructions for `IsSMulRegular`
 -/
@@ -24,13 +27,10 @@ lemma LinearMap.exact_lsmul_mkQ_smul_top (M : Type v) [AddCommGroup M] [Module R
   intro x
   simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_smul_pointwise_iff_exists]
 
-@[deprecated (since := "2026-04-13")]
-alias LinearMap.exact_smul_id_smul_top_mkQ := LinearMap.exact_lsmul_mkQ_smul_top
-
 namespace ModuleCat
 
 /-- The short (exact) complex `M → M → M⧸xM` obtain from the scalar multiple of `x : R` on `M`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def smulShortComplex (r : R) : ShortComplex (ModuleCat R) :=
   ModuleCat.shortComplexOfCompEqZero (LinearMap.lsmul _ M r) (r • (⊤ : Submodule R M)).mkQ
     (LinearMap.exact_lsmul_mkQ_smul_top M r).linearMap_comp_eq_zero

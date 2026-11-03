@@ -38,14 +38,14 @@ jobs:
 
       - name: Mint authz token
         id: authz-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           app-id: ${{ secrets.LPC_TEAM_CHECK_APP_ID }}
           private-key: ${{ secrets.LPC_TEAM_CHECK_PRIVATE_KEY }}
           owner: leanprover-community
 
       - name: Run splice bot action
-        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@644692751ae68be07228437afd13fc014cde11ea # master
+        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@d004ecff78992a31a444fe6ba23914bf9bfbc01e # master
         with:
           source_workflow: ${{ github.event.workflow_run.name }}
           push_to_fork: leanprover-community/mathlib4_copy

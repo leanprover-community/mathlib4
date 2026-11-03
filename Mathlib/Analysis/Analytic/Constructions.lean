@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.Analytic.Composition
 public import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Normed.Operator.Mul
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.Normed.Ring.Units
+
+import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Various ways to combine analytic functions
@@ -44,7 +45,7 @@ variable {𝕝 : Type*} [NormedDivisionRing 𝕝] [NormedAlgebra 𝕜 𝕝]
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
   refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
-  simp [constFormalMultilinearSeries_apply_of_nonzero hn]
+  simp [constFormalMultilinearSeries_apply_of_ne_zero hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
     HasFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e :=

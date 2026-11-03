@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Geometry.RingedSpace.SheafedSpace
+
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Geometry.RingedSpace.SheafedSpace
 
 /-!
 # Ringed spaces

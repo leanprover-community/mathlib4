@@ -5,8 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
 /-!
 # Sinc function

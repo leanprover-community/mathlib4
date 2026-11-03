@@ -5,10 +5,11 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.Data.Finite.Perm
 public import Mathlib.Data.Nat.Prime.Factorial
 public import Mathlib.GroupTheory.Index
 public import Mathlib.Order.Atoms
+
+import Mathlib.Data.Finite.Perm
 
 /-! # Subgroups of small index are normal
 

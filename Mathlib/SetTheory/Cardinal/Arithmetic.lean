@@ -29,8 +29,6 @@ public section
 
 assert_not_exists Module Finsupp Ordinal.log
 
-noncomputable section
-
 open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
@@ -40,7 +38,6 @@ namespace Cardinal
 /-! ### Properties of `mul` -/
 section mul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (hc : ℵ₀ ≤ c) : c * c = c := by
   -- The only nontrivial part is `c * c ≤ c`. We prove it inductively.
@@ -170,6 +167,14 @@ theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
   rw [mul_comm]
   exact le_mul_left h
 
+theorem le_of_dvd {a b : Cardinal} (hb : b ≠ 0) : a ∣ b → a ≤ b := by
+  rintro ⟨b, rfl⟩
+  apply le_mul_right
+  simp_all
+
+theorem dvd_of_le_of_aleph0_le {a b : Cardinal} (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
+  ⟨b, (mul_eq_right hb h ha).symm⟩
+
 theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ b ≠ 0 ∨ b = 1 ∨ a = 0 := by
   rw [max_le_iff]
   refine ⟨fun h => ?_, ?_⟩
@@ -213,6 +218,20 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
   · rintro (⟨⟨ha, hab⟩, hb⟩ | rfl | rfl)
     · rw [mul_eq_max_of_aleph0_le_left ha hb, max_eq_left hab]
     all_goals simp
+
+@[simp, norm_cast]
+theorem natCast_dvd_iff {m n : ℕ} : (n : Cardinal) ∣ m ↔ n ∣ m := by
+  refine ⟨?_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
+  intro ⟨k, hk⟩
+  have : m < ℵ₀ := natCast_lt_aleph0
+  rw [hk, mul_lt_aleph0_iff] at this
+  rcases this with (h | h | ⟨-, hk'⟩)
+  · simp_all
+  · simp_all
+  · lift k to ℕ using hk'
+    exact ⟨k, mod_cast hk⟩
+
+@[deprecated (since := "2026-09-20")] alias nat_coe_dvd_iff := natCast_dvd_iff
 
 end mul
 
@@ -806,7 +825,7 @@ theorem mk_bounded_set_le (α : Type u) (c : Cardinal) :
 theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     #{ t : Set α // t ⊆ s ∧ #t ≤ c } ≤ max #s ℵ₀ ^ c := by
   refine le_trans ?_ (mk_bounded_set_le s c)
-  refine ⟨Embedding.codRestrict _ ?_ ?_⟩
+  refine ⟨.codRestrict {t : Set s | #t ≤ c} ?_ ?_⟩
   · use fun t => (↑) ⁻¹' t.1
     rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.ext

@@ -5,9 +5,10 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.Topology.ContinuousMap.Compact
+
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # Continuous functions in Lp space
