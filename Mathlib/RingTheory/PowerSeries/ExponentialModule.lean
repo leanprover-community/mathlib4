@@ -115,9 +115,8 @@ protected theorem rescale (a : A) {f : R⟦X⟧} (hf : IsExponential f) :
   · rw [← coeff_zero_eq_constantCoeff, coeff_rescale]
     simp [hf.2]
 
-protected theorem rescale_add (r s : A) {f : R⟦X⟧} (hf : IsExponential f) :
-    rescale (algebraMap A R r + algebraMap A R s) f =
-      rescale (algebraMap A R r) f * rescale (algebraMap A R s) f := by
+protected theorem rescale_add (r s : R) {f : R⟦X⟧} (hf : IsExponential f) :
+    rescale (r + s) f = rescale r f * rescale s f := by
   rw [isExponential_iff] at hf
   ext d
   simp only [coeff_rescale, coeff_mul, add_pow', Finset.sum_mul]
