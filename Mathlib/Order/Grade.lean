@@ -192,9 +192,9 @@ theorem grade_eq_bot_iff [OrderBot 𝕆] [PartialOrder α] [OrderBot α] [GradeM
 
 @[to_additive (attr := simp)]
 theorem grade_eq_one_iff [One 𝕆] [IsBotOneClass 𝕆] [PartialOrder α] [OrderBot α] [GradeMinOrder 𝕆 α]
-    {a : α} : grade 𝕆 a = 1 ↔ a = ⊥ := by
+    {a : α} : grade 𝕆 a = 1 ↔ a = ⊥ :=
   let := IsBotOneClass.toOrderBot 𝕆
-  rw [← bot_eq_one, grade_eq_bot_iff]
+  grade_eq_bot_iff
 
 end PartialOrder
 
