@@ -768,7 +768,7 @@ theorem succ_coe_eq_top_iff [OrderTop α] {a : α} : succ (a : WithTop α) = ⊤
   · rw [succ_coe_of_isMax ha, ha.eq_top]
     tauto
   · rw [succ_coe_of_not_isMax ha]
-    aesop
+    simpa using ha
 
 end Succ
 
