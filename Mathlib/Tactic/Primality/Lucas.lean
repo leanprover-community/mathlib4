@@ -8,7 +8,6 @@ module
 public meta import Mathlib.Data.Nat.MaxPowDiv
 public meta import Mathlib.Util.Qq
 public import Mathlib.Data.Nat.Prime.Defs
-public import Mathlib.Tactic.Primality.Producers
 
 import Mathlib.NumberTheory.LucasPrimality
 
@@ -63,9 +62,6 @@ open Lean Qq
 
 namespace Mathlib.Tactic.Primality
 
-/-- Options for Lucas certificates. -/
-structure LucasConfig extends FactorizerConfig, PrimitiveRootFinderConfig
-
 /-- A candidate witness of a Lucas certificate for `p`. -/
 structure LucasWitness where
   /-- A primitive root of `p`. -/
@@ -83,20 +79,5 @@ def certifyLucas (p root : Nat) (factors : Array ((q : Nat) × Q(Nat.Prime $q)))
   -- proving one of the factors prime) only inside `eagerReduce`.
   have hcheck : Q(lucasCheck $p $root $factorization = true) := eagerReflBoolTrue
   q(prime_of_lucasCheck $hcheck)
-
-/-- Searches for a Lucas witness for `q`, a value met while proving `p` prime. The part of `q - 1`
-that the factorizer leaves is taken to be prime. -/
-def findLucasWitness (factorizer : Factorizer) (rootFinder : PrimitiveRootFinder) (p q : Nat) :
-    CoreM LucasWitness := do
-  let (factors, rest) ← factorizer.decompose (q - 1)
-  let factors := if rest == 1 then factors else factors.push rest
-  let some root ← rootFinder q factors | do
-    if q == p then
-      throwError "primality could not find a primitive root for {p}; \
-        primitive roots can be provided at `.lucas \{ roots := … }` if {p} is prime."
-    throwError "primality could not find factors for the intermediate value {q}; factors can \
-      be provided at `.lucas \{ factors := … }`. In the rare case that it is prime, add a \
-      primitive root of it to `.lucas \{ roots := … }`."
-  return { root, factors }
 
 end Mathlib.Tactic.Primality

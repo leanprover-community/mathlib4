@@ -7867,7 +7867,7 @@ public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Positivity.Finset
 public import Mathlib.Tactic.Primality
-public import Mathlib.Tactic.Primality.Core
+public import Mathlib.Tactic.Primality.Cert
 public import Mathlib.Tactic.Primality.Lucas
 public import Mathlib.Tactic.Primality.Producers
 public import Mathlib.Tactic.ProdAssoc
