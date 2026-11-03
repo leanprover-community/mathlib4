@@ -9,6 +9,9 @@ public import Mathlib.Data.ZMod.Basic
 
 import Mathlib.Algebra.BigOperators.Ring.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruence modulo natural and integer numbers for big operators
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.Num.ZNum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primality for binary natural numbers
 

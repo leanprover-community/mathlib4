@@ -260,9 +260,6 @@ theorem conjCAE_toAlgEquiv : conjCAE.toAlgEquiv = conjAe :=
 @[simp] theorem conjCLE_toLinearEquiv : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
 
-@[deprecated "Now provable by simp" (since := "2026-04-13")]
-lemma conjCLE_coe_toLinearMap : (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap := by simp
-
 @[simp]
 theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
   rfl
@@ -434,8 +431,6 @@ theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
 
 theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
   isometry_intCast.isClosedEmbedding
-
-@[deprecated (since := "2026-04-15")] alias closedEmbedding_intCast := isClosedEmbedding_intCast
 
 lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
   Complex.isClosedEmbedding_intCast.isClosed_range

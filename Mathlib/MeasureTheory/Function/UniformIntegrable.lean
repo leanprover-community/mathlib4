@@ -108,9 +108,7 @@ section UnifIntegrable
 
 This section deals with uniform integrability in the measure theory sense. -/
 
-namespace UnifIntegrable
-
-protected theorem mk_iff :
+theorem unifIntegrable_iff_tendsto :
     UnifIntegrable f p μ ↔ Tendsto (fun ε ↦ ⨆ (i : ι) (s : Set α) (_ : MeasurableSet s)
       (_ : μ s ≤ ε), eLpNorm (f i) p (μ.restrict s)) (𝓝 0) (𝓝 0) := by
   rw [UnifIntegrable, iff_iff_eq]
@@ -120,9 +118,13 @@ protected theorem mk_iff :
   grw [← le_iSup₂ t ht, ← le_iSup _ (hμt ▸ hsμ)]
   exact eLpNorm_mono_measure _ (μ.restrict_mono_set hst)
 
+@[deprecated (since := "2026-10-10")] alias UnifIntegrable.mk_iff := unifIntegrable_iff_tendsto
+
+namespace UnifIntegrable
+
 protected theorem add (hf : UnifIntegrable f p μ) (hg : UnifIntegrable g p μ) :
     UnifIntegrable (f + g) p μ := by
-  rw [UnifIntegrable.mk_iff]
+  rw [unifIntegrable_iff_tendsto]
   apply tendsto_nhds_bot_mono (f := fun ε ↦ p.LpAddConst *
     ((⨆ (i : ι) (s : Set α) (_ : μ s ≤ ε), eLpNorm (f i) p (μ.restrict s)) +
       ⨆ (i : ι) (s : Set α) (_ : μ s ≤ ε), eLpNorm (g i) p (μ.restrict s)))
@@ -171,7 +173,7 @@ protected theorem indicator (hf : UnifIntegrable f p μ) {s : Set α} (hs : Null
 /-- Uniform integrability is preserved by restriction of the measure to a set. -/
 protected theorem restrict (hf : UnifIntegrable f p μ) (s : Set α) :
     UnifIntegrable f p (μ.restrict s) := by
-  rw [UnifIntegrable.mk_iff]
+  rw [unifIntegrable_iff_tendsto]
   apply tendsto_nhds_bot_mono hf (nhds_zero_basis.eventually_iff.2 ?_)
   refine ⟨∞, zero_lt_top, fun ε hε ↦ iSup_mono fun i ↦ ?_⟩
   simp only [iSup_le_iff]
@@ -192,7 +194,7 @@ measurable, and is convenient for proving that a family is `UnifIntegrable`. See
 theorem unifIntegrable_iff' :
   UnifIntegrable f p μ ↔
     ∀ ε > 0, ∃ δ > 0, ∀ i s, MeasurableSet s → μ s ≤ δ → eLpNorm (f i) p (μ.restrict s) ≤ ε := by
-  rw [UnifIntegrable.mk_iff, ENNReal.tendsto_nhds_zero]
+  rw [unifIntegrable_iff_tendsto, ENNReal.tendsto_nhds_zero]
   apply forall₂_congr fun ε hε ↦ ?_
   rw [nhds_zero_basis_Iic.eventually_iff]
   apply exists_congr fun δ ↦ and_congr_right fun hδ ↦ ?_
