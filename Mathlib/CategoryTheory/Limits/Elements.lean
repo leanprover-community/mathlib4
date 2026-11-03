@@ -121,7 +121,6 @@ end Initial
 
 end
 
-
 /-- An initial object in the category `F.Elements` of a covariant functor defines a
 corepresentation for that functor. -/
 def corepresentableByOfIsInitial {F : C ⥤ Type w} {E : Elements F} (he : IsInitial E) :
